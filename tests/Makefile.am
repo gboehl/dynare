@@ -144,7 +144,9 @@ MODFILES = \
 	estimation/fs2000_mc4.mod \
 	estimation/fs2000_mc4_mf.mod \
 	estimation/fs2000_mc6.mod \
-	estimation/fs2000_mc6_mf.mod
+	estimation/fs2000_mc6_mf.mod \
+	measurement_errors/fs2000_corr_me_ml_mcmc/fs2000_corr_ME.mod
+
 EXTRA_DIST = \
 	$(MODFILES) \
 	homotopy/common.mod \
@@ -173,6 +175,9 @@ EXTRA_DIST = \
 	k_order_perturbation/run_fs2000kplusplus.m \
 	ls2003/data_ca1.m \
 	measurement_errors/data_ca1.m \
+	measurement_errors/fs2000_corr_me_ml_mcmc/fs2000_corr_ME_mh_mode.mat \
+	measurement_errors/fs2000_corr_me_ml_mcmc/fs2000_corr_ME_steadystate.m \
+	measurement_errors/fs2000_corr_me_ml_mcmc/fsdat_simul.m \
 	missing/simulate_data_with_missing_observations.m \
 	objectives/sgu_ex1.mat \
 	conditional_forecasts/fsdat_simul.m \
