@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2012 Dynare Team
+ * Copyright (C) 2007-2013 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -1954,11 +1954,15 @@ SparseMatrix::Solve_Matlab_GMRES(mxArray *A_m, mxArray *b_m, int Size, double sl
   throw FatalExceptionHandling(tmp.str());
 #endif
   int n = mxGetM(A_m);
+  const char *field_names[] = {"droptol"};
+  mwSize dims[1] = { 1 };
+  mxArray *Setup = mxCreateStructArray(1, dims, 1, field_names);
+  mxSetFieldByNumber(Setup, 0, 0, mxCreateDoubleScalar(lu_inc_tol));
   mxArray *lhs0[2];
   mxArray *rhs0[2];
   rhs0[0] = A_m;
-  rhs0[1] = mxCreateDoubleScalar(lu_inc_tol);
-  mexCallMATLAB(2, lhs0, 2, rhs0, "luinc");
+  rhs0[1] = Setup;
+  mexCallMATLAB(2, lhs0, 2, rhs0, "ilu");
   mxArray *L1 = lhs0[0];
   mxArray *U1 = lhs0[1];
   /*[za,flag1] = gmres(g1a,b,Blck_size,1e-6,Blck_size*periods,L1,U1);*/
@@ -2033,11 +2037,15 @@ SparseMatrix::Solve_Matlab_BiCGStab(mxArray *A_m, mxArray *b_m, int Size, double
 {
   unsigned int n = mxGetM(A_m);
   /*[L1, U1]=luinc(g1a,luinc_tol);*/
+  const char *field_names[] = {"droptol"};
+  mwSize dims[1] = { 1 };
+  mxArray *Setup = mxCreateStructArray(1, dims, 1, field_names);
+  mxSetFieldByNumber(Setup, 0, 0, mxCreateDoubleScalar(lu_inc_tol));
   mxArray *lhs0[2];
   mxArray *rhs0[2];
   rhs0[0] = A_m;
-  rhs0[1] = mxCreateDoubleScalar(lu_inc_tol);
-  mexCallMATLAB(2, lhs0, 2, rhs0, "luinc");
+  rhs0[1] = Setup;
+  mexCallMATLAB(2, lhs0, 2, rhs0, "ilu");
   mxArray *L1 = lhs0[0];
   mxArray *U1 = lhs0[1];
   double flags = 2;

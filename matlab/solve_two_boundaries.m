@@ -43,7 +43,7 @@ function y = solve_two_boundaries(fname, y, x, params, steady_state, y_index, nz
 %   none.
 %  
 
-% Copyright (C) 1996-2011 Dynare Team
+% Copyright (C) 1996-2013 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -67,7 +67,7 @@ g2 = [];
 g3 = [];
 Blck_size=size(y_index,2);
 correcting_factor=0.01;
-luinc_tol=1e-10;
+ilu_setup.droptol=1e-10;
 max_resa=1e100;
 Jacobian_Size=Blck_size*(y_kmin+y_kmax_l +periods);
 g1=spalloc( Blck_size*periods, Jacobian_Size, nze*periods);
@@ -255,7 +255,7 @@ while ~(cvg==1 || iter>maxit_),
         elseif(stack_solve_algo==2),
             flag1=1;
             while(flag1>0)
-                [L1, U1]=luinc(g1a,luinc_tol);
+                [L1, U1]=ilu(g1a,ilu_setup);
                 [za,flag1] = gmres(g1a,b,Blck_size,1e-6,Blck_size*periods,L1,U1);
                 if (flag1>0 || reduced)
                     if(flag1==1)
@@ -265,7 +265,7 @@ while ~(cvg==1 || iter>maxit_),
                     elseif(flag1==3)
                         disp(['Error in simul: GMRES stagnated (Two consecutive iterates were the same.), in block' num2str(Block_Size,'%3d')]);
                     end;
-                    luinc_tol = luinc_tol/10;
+                    ilu_setup.droptol = ilu_setup.droptol/10;
                     reduced = 0;
                 else
                     dx = za - ya;
@@ -276,7 +276,7 @@ while ~(cvg==1 || iter>maxit_),
         elseif(stack_solve_algo==3),
             flag1=1;
             while(flag1>0)
-                [L1, U1]=luinc(g1a,luinc_tol);
+                [L1, U1]=ilu(g1a,ilu_setup);
                 [za,flag1] = bicgstab(g1a,b,1e-7,Blck_size*periods,L1,U1);
                 if (flag1>0 || reduced)
                     if(flag1==1)
@@ -286,7 +286,7 @@ while ~(cvg==1 || iter>maxit_),
                     elseif(flag1==3)
                         disp(['Error in simul: GMRES stagnated (Two consecutive iterates were the same.), in block' num2str(Block_Size,'%3d')]);
                     end;
-                    luinc_tol = luinc_tol/10;
+                    ilu_setup.droptol = ilu_setup.droptol/10;
                     reduced = 0;
                 else
                     dx = za - ya;
