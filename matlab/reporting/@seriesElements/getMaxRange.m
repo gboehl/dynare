@@ -26,10 +26,10 @@ for i=1:ne
     ddt = a.getRange();
     if isempty(ddmin)
         ddmin = ddt(1);
-        ddmax = ddt(size(ddt));
+        ddmax = ddt(end);
     else
         ddmin = min(ddt(1), ddmin);
-        ddmax = max(ddt(size(ddt)), ddmax);
+        ddmax = max(ddt(end), ddmax);
     end
 end
 dd = ddmin:ddmax;
