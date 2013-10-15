@@ -4,7 +4,7 @@ function h = getLine(o, xrange)
 %
 % INPUTS
 %   o       [series]    series object
-%   xrange  [dynDates]  range of x values for line
+%   xrange  [dates]  range of x values for line
 %
 % OUTPUTS
 %   h       [handle]    handle to line
@@ -58,7 +58,7 @@ assert(~(strcmp(o.graphLineStyle, 'none') && isempty(o.graphMarker)), ['@series.
                     'you must provide at least one of graphLineStyle and graphMarker']);
 
 % Validate xrange
-assert(isempty(xrange) || isa(xrange, 'dynDates'));
+assert(isempty(xrange) || isa(xrange, 'dates'));
 
 % Zero tolerance
 assert(isfloat(o.zerotol), '@series.write: zerotol must be a float');

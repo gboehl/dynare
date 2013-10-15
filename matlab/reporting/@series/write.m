@@ -5,7 +5,7 @@ function o = write(o, fid, dates, precision, yrsForAvgs)
 % INPUTS
 %   o            [series]    series object
 %   fid          [int]       file id
-%   dates        [dynDates]  dates for series slice
+%   dates        [dates]  dates for series slice
 %   precision    [float]     precision with which to print the data
 %   yrsForAvgs   [bool]      the years for which to compute averages
 %
@@ -35,7 +35,7 @@ function o = write(o, fid, dates, precision, yrsForAvgs)
 
 %% Validate options passed to function
 assert(fid ~= -1);
-assert(isa(dates, 'dynDates'));
+assert(isa(dates, 'dates'));
 assert(isint(precision));
 
 %% Validate options provided by user

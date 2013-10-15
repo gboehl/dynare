@@ -18,6 +18,6 @@ function ds = getData(o, dates)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-assert(~isempty(o.data) && size(o.data, 2) == 1 && isa(dates, 'dynDates'));
+assert(~isempty(o.data) && size(o.data, 2) == 1 && isa(dates, 'dates'));
 ds = o.data(dates);
 end

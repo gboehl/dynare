@@ -66,8 +66,8 @@ for i=1:length(fields)
             fprintf('false');
         end
     elseif isobject(val)
-        if isa(val, 'dynDates')
-            fprintf('<dynDates: %s, ..., %s>', ...
+        if isa(val, 'dates')
+            fprintf('<dates: %s, ..., %s>', ...
                     val(1).format, val(end).format);
         elseif isa(val, 'dynSeries')
             if numel(val) == 1
