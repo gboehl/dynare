@@ -1,11 +1,11 @@
 function o = addTable(o, varargin)
 %function o = addTable(o, varargin)
-% Add a table to the Cell Array of tables in the report
+% Add a report_table to the Cell Array of report_tables in the report
 %
 % INPUTS
-%   1 args => add empty table
-%   2 args => add given table
-%   3 args => add table at index
+%   1 args => add empty report_table
+%   2 args => add given report_table
+%   3 args => add report_table at index
 %
 % OUTPUTS
 %   updated section object

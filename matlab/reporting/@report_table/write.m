@@ -1,13 +1,13 @@
 function o = write(o, fid)
 %function o = write(o, fid)
-% Write a Table object
+% Write a Report_Table object
 %
 % INPUTS
-%   o           [table]    table object
+%   o           [report_table]    report_table object
 %   fid         [integer]  file id
 %
 % OUTPUTS
-%   o           [table]    table object
+%   o           [report_table]    report_table object
 %
 % SPECIAL REQUIREMENTS
 %   none
@@ -31,7 +31,7 @@ function o = write(o, fid)
 
 assert(fid ~= -1);
 if ~o.seriesElements.numSeriesElements()
-    warning('@table.write: no series to plot, returning');
+    warning('@report_table.write: no series to plot, returning');
     return;
 end
 
@@ -49,7 +49,7 @@ else
 end
 ndates = dates.ndat;
 
-fprintf(fid, '%% Table Object\n');
+fprintf(fid, '%% Report_Table Object\n');
 fprintf(fid, '\\setlength{\\tabcolsep}{4pt}\n');
 fprintf(fid, '\\begin{tabular}{@{}l');
 
@@ -105,7 +105,7 @@ switch dates.freq
             for i=2:size(thdr, 1)
                 split = find(thdr{i-1, 2} == 4, 1, 'first');
                 if isempty(split)
-                    error('@table.write: Shouldn''t arrive here');
+                    error('@report_table.write: Shouldn''t arrive here');
                 else
                     thdr{i, 2} = thdr{i-1, 2}(split+1:end);
                     thdr{i-1, 2} = thdr{i-1, 2}(1:split);
@@ -127,9 +127,9 @@ switch dates.freq
             end
         end
     case 12
-        error('@table.write: weekly dates not yet implemented');
+        error('@report_table.write: weekly dates not yet implemented');
     otherwise
-        error('@table.write: invalid dynSeries frequency');
+        error('@report_table.write: invalid dynSeries frequency');
 end
 for i=1:length(yrsForAvgs)
     fprintf(fid, ' & %d', years(i));
@@ -138,7 +138,7 @@ fprintf(fid, '\\\\[-2pt]%%\n');
 fprintf(fid, '\\hline%%\n');
 fprintf(fid, '%%\n');
 
-% Write Table Data
+% Write Report_Table Data
 ne = o.seriesElements.numSeriesElements();
 for i=1:ne
     o.seriesElements(i).write(fid, dates, o.precision, yrsForAvgs);
@@ -149,5 +149,5 @@ end
 
 fprintf(fid, '\\bottomrule\n');
 fprintf(fid, '\\end{tabular} \\par \\medskip\n\n');
-fprintf(fid, '%% End Table Object\n');
+fprintf(fid, '%% End Report_Table Object\n');
 end
