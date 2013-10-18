@@ -1,15 +1,15 @@
-function o = series(varargin)
-%function o = series(varargin)
-% Series Class Constructor
+function o = report_series(varargin)
+%function o = report_series(varargin)
+% Report_Series Class Constructor
 %
 % INPUTS
-%   varargin        0 args  : empty series object
-%                   1 arg   : must be series object (return a copy of arg)
+%   varargin        0 args  : empty report_series object
+%                   1 arg   : must be report_series object (return a copy of arg)
 %                   > 1 args: option/value pairs (see structure below for
 %                   options)
 %
 % OUTPUTS
-%   o   [series] series object
+%   o   [report_series] report_series object
 %
 % SPECIAL REQUIREMENTS
 %   none
@@ -57,13 +57,13 @@ o.tableRowColor = 'white';
 o.zerotol = 1e-6;
 
 if nargin == 1
-    assert(isa(varargin{1}, 'series'),['@series.series: with one arg you ' ...
-                        'must pass a series object']);
+    assert(isa(varargin{1}, 'report_series'),['@report_series.report_series: with one arg you ' ...
+                        'must pass a report_series object']);
     o = varargin{1};
     return;
 elseif nargin > 1
     if round(nargin/2) ~= nargin/2
-        error(['@series.series: options must be supplied in name/value ' ...
+        error(['@report_series.report_series: options must be supplied in name/value ' ...
                'pairs.']);
     end
 
@@ -76,11 +76,11 @@ elseif nargin > 1
         if ~isempty(ind)
             o.(optNames{ind}) = pair{2};
         else
-            error('@series.series: %s is not a recognized option.', pair{1});
+            error('@report_series.report_series: %s is not a recognized option.', pair{1});
         end
     end
 end
 
-% Create series object
-o = class(o, 'series');
+% Create report_series object
+o = class(o, 'report_series');
 end

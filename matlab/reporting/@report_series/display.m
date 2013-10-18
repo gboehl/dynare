@@ -1,9 +1,9 @@
 function display(o)
 %function display(o)
-% Display a Series object
+% Display a Report_Series object
 %
 % INPUTS
-%   o   [series] series object
+%   o   [report_series] report_series object
 %
 % OUTPUTS
 %   none
