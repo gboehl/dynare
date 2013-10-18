@@ -69,9 +69,9 @@ for i=1:length(fields)
         if isa(val, 'dates')
             fprintf('<dates: %s, ..., %s>', ...
                     val(1).format, val(end).format);
-        elseif isa(val, 'dynSeries')
+        elseif isa(val, 'dseries')
             if numel(val) == 1
-                fprintf('<dynSeries: %s>', val.name{1});
+                fprintf('<dseries: %s>', val.name{1});
             else
                 fprintf('%s', class(val));
             end

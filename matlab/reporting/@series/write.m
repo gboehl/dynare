@@ -41,8 +41,8 @@ assert(isint(precision));
 %% Validate options provided by user
 assert(ischar(o.tableSubSectionHeader), '@series.write: tableSubSectionHeader must be a string');
 if isempty(o.tableSubSectionHeader)
-    assert(~isempty(o.data) && isa(o.data, 'dynSeries'), ...
-           '@series.write: must provide data as a dynSeries');
+    assert(~isempty(o.data) && isa(o.data, 'dseries'), ...
+           '@series.write: must provide data as a dseries');
 end
 
 assert(ischar(o.tableNegColor), '@series.write: tableNegColor must be a string');

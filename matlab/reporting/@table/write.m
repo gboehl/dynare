@@ -129,7 +129,7 @@ switch dates.freq
     case 12
         error('@table.write: weekly dates not yet implemented');
     otherwise
-        error('@table.write: invalid dynSeries frequency');
+        error('@table.write: invalid dseries frequency');
 end
 for i=1:length(yrsForAvgs)
     fprintf(fid, ' & %d', years(i));

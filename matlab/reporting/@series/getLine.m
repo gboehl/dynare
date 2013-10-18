@@ -30,8 +30,8 @@ function h = getLine(o, xrange)
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 %% Validate options provided by user
-assert(~isempty(o.data) && isa(o.data, 'dynSeries'), ['@series.getLine: must ' ...
-                    'provide data as a dynSeries']);
+assert(~isempty(o.data) && isa(o.data, 'dseries'), ['@series.getLine: must ' ...
+                    'provide data as a dseries']);
 
 % Line
 assert(ischar(o.graphLineColor), '@series.getLine: graphLineColor must be a string');
