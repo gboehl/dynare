@@ -1,10 +1,10 @@
 function h = getLine(o, xrange)
 %function h = getLine(o, xrange)
-% Create the series
+% Create the report_series
 %
 % INPUTS
-%   o       [series]    series object
-%   xrange  [dates]  range of x values for line
+%   o       [report_series]    series object
+%   xrange  [dates]            range of x values for line
 %
 % OUTPUTS
 %   h       [handle]    handle to line
@@ -30,15 +30,15 @@ function h = getLine(o, xrange)
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 %% Validate options provided by user
-assert(~isempty(o.data) && isa(o.data, 'dseries'), ['@series.getLine: must ' ...
+assert(~isempty(o.data) && isa(o.data, 'dseries'), ['@report_series.getLine: must ' ...
                     'provide data as a dseries']);
 
 % Line
-assert(ischar(o.graphLineColor), '@series.getLine: graphLineColor must be a string');
+assert(ischar(o.graphLineColor), '@report_series.getLine: graphLineColor must be a string');
 valid_line_style = {'none', '-', '--', ':', '-.'};
 assert(any(strcmp(o.graphLineStyle, valid_line_style)), ...
-       ['@series.getLine: graphLineStyle must be one of ' strjoin(valid_line_style, ' ')]);
-assert(isfloat(o.graphLineWidth), ['@series.getLine: graphLineWidth must be a ' ...
+       ['@report_series.getLine: graphLineStyle must be one of ' strjoin(valid_line_style, ' ')]);
+assert(isfloat(o.graphLineWidth), ['@report_series.getLine: graphLineWidth must be a ' ...
                     'positive number']);
 
 % GraphMarker
@@ -46,22 +46,22 @@ valid_graphMarker = {'+', 'o', '*', '.', 'x', 's', 'square', 'd', 'diamond', ...
                 '^', 'v', '>', '<', 'p', 'pentagram', 'h', 'hexagram', ...
                 'none'};
 assert(isempty(o.graphMarker) || any(strcmp(o.graphMarker, valid_graphMarker)), ...
-       ['@series.getLine: graphMarker must be one of ' strjoin(valid_graphMarker)]);
+       ['@report_series.getLine: graphMarker must be one of ' strjoin(valid_graphMarker)]);
 
-assert(ischar(o.graphMarkerEdgeColor), '@series.getLine: graphMarkerEdgeColor must be a string');
-assert(ischar(o.graphMarkerFaceColor), '@series.getLine: graphMarkerFaceColor must be a string');
-assert(isfloat(o.graphMarkerSize), ['@series.getLine: graphMarkerSize must be a ' ...
+assert(ischar(o.graphMarkerEdgeColor), '@report_series.getLine: graphMarkerEdgeColor must be a string');
+assert(ischar(o.graphMarkerFaceColor), '@report_series.getLine: graphMarkerFaceColor must be a string');
+assert(isfloat(o.graphMarkerSize), ['@report_series.getLine: graphMarkerSize must be a ' ...
                     'positive number']);
 
 % Marker & Line
-assert(~(strcmp(o.graphLineStyle, 'none') && isempty(o.graphMarker)), ['@series.getLine: ' ...
+assert(~(strcmp(o.graphLineStyle, 'none') && isempty(o.graphMarker)), ['@report_series.getLine: ' ...
                     'you must provide at least one of graphLineStyle and graphMarker']);
 
 % Validate xrange
 assert(isempty(xrange) || isa(xrange, 'dates'));
 
 % Zero tolerance
-assert(isfloat(o.zerotol), '@series.write: zerotol must be a float');
+assert(isfloat(o.zerotol), '@report_series.write: zerotol must be a float');
 
 %%
 if isempty(xrange) || xrange == o.data.time
@@ -70,7 +70,7 @@ else
     ds = o.data(xrange);
 end
 
-% if graphing data that is within zerotol, set to zero, create series and
+% if graphing data that is within zerotol, set to zero, create report_series and
 % get line:
 thedata = ds.data;
 stz = bsxfun(@and, ...

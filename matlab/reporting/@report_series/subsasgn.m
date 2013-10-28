@@ -34,9 +34,9 @@ switch S.type
             case fieldnames(A)
                 B.(S.subs) = V;
             otherwise
-                error(['@series.subsasgn: field ' S.subs 'does not exist']);
+                error(['@report_series.subsasgn: field ' S.subs 'does not exist']);
         end
     otherwise
-        error('@series.subsasgn: syntax error');
+        error('@report_series.subsasgn: syntax error');
 end
 end

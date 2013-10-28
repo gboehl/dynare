@@ -1,10 +1,10 @@
-function o = table(varargin)
-%function o = table(varargin)
-% Table Class Constructor
+function o = report_table(varargin)
+%function o = report_table(varargin)
+% Report_Table Class Constructor
 %
 % INPUTS
-%   0 args => empty table
-%   1 arg (table class) => copy object
+%   0 args => empty report_table
+%   1 arg (report_table class) => copy object
 %
 % OUTPUTS
 %   none
@@ -49,13 +49,13 @@ o.range = {};
 o.precision = 1;
 
 if nargin == 1
-    assert(isa(varargin{1}, 'table'),['With one arg to Table constructor, ' ...
-                        'you must pass a table object']);
+    assert(isa(varargin{1}, 'report_table'),['With one arg to Report_Table constructor, ' ...
+                        'you must pass a report_table object']);
     o = varargin{1};
     return;
 elseif nargin > 1
     if round(nargin/2) ~= nargin/2
-        error(['Options to Table constructor must be supplied in name/value ' ...
+        error(['Options to Report_Table constructor must be supplied in name/value ' ...
                'pairs.']);
     end
 
@@ -68,35 +68,35 @@ elseif nargin > 1
         if ~isempty(ind)
             o.(optNames{ind}) = pair{2};
         else
-            error('%s is not a recognized option to the Table constructor.', pair{1});
+            error('%s is not a recognized option to the Report_Table constructor.', pair{1});
         end
     end
 end
 
 % Check options provided by user
-assert(ischar(o.title), '@table.table: title must be a string');
-assert(islogical(o.annualAverages), '@table.table: annualAverages must be true or false');
-assert(islogical(o.showHlines), '@table.table: showHlines must be true or false');
-assert(islogical(o.showVlines), '@table.table: showVlines must be true or false');
-assert(isint(o.precision), '@table.table: precision must be an int');
+assert(ischar(o.title), '@report_table.report_table: title must be a string');
+assert(islogical(o.annualAverages), '@report_table.report_table: annualAverages must be true or false');
+assert(islogical(o.showHlines), '@report_table.report_table: showHlines must be true or false');
+assert(islogical(o.showVlines), '@report_table.report_table: showVlines must be true or false');
+assert(isint(o.precision), '@report_table.report_table: precision must be an int');
 assert(isempty(o.range) || (isa(o.range, 'dates') && o.range.ndat >= 2), ...
-       ['@table.table: range is specified as a dates range, e.g. ' ...
+       ['@report_table.report_table: range is specified as a dates range, e.g. ' ...
         '''dates(''1999q1''):dates(''1999q3'')''.']);
 assert(isempty(o.data) || isa(o.data, 'dseries'), ...
-       '@table.table: data must be a dseries');
+       '@report_table.report_table: data must be a dseries');
 assert(isempty(o.seriesToUse) || iscellstr(o.seriesToUse), ...
-       '@table.table: seriesToUse must be a cell array of string(s)');
+       '@report_table.report_table: seriesToUse must be a cell array of string(s)');
 assert(isempty(o.vlineAfter) || isa(o.vlineAfter, 'dynDate'), ...
-       '@table.table: vlineAfter must be a dynDate');
+       '@report_table.report_table: vlineAfter must be a dynDate');
 if o.showVlines
     o.vlineAfter = '';
 end
 assert(islogical(o.vlineAfterEndOfPeriod), ...
-       '@table.table: vlineAfterEndOfPeriod must be true or false');
+       '@report_table.report_table: vlineAfterEndOfPeriod must be true or false');
 valid_title_sizes = {'Huge', 'huge', 'LARGE', 'Large', 'large', 'normalsize', ...
                     'small', 'footnotesize', 'scriptsize', 'tiny'};
 assert(any(strcmp(o.titleSize, valid_title_sizes)), ...
-       ['@table.table: titleSize must be one of ' strjoin(valid_title_sizes, ' ')]);
+       ['@report_table.report_table: titleSize must be one of ' strjoin(valid_title_sizes, ' ')]);
 
 % using o.seriesToUse, create series objects and put them in o.seriesElements
 if ~isempty(o.data)
@@ -113,6 +113,6 @@ end
 o = rmfield(o, 'seriesToUse');
 o = rmfield(o, 'data');
 
-% Create table object
-o = class(o, 'table');
+% Create report_table object
+o = class(o, 'report_table');
 end

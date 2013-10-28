@@ -3,15 +3,15 @@ function o = write(o, fid, dates, precision, yrsForAvgs)
 % Write Table Row
 %
 % INPUTS
-%   o            [series]    series object
-%   fid          [int]       file id
-%   dates        [dates]  dates for series slice
-%   precision    [float]     precision with which to print the data
-%   yrsForAvgs   [bool]      the years for which to compute averages
+%   o            [report_series]    report_series object
+%   fid          [int]              file id
+%   dates        [dates]            dates for report_series slice
+%   precision    [float]            precision with which to print the data
+%   yrsForAvgs   [bool]             the years for which to compute averages
 %
 %
 % OUTPUTS
-%   o            [series]    series object
+%   o            [report_series]    report_series object
 %
 % SPECIAL REQUIREMENTS
 %   none
@@ -39,24 +39,24 @@ assert(isa(dates, 'dates'));
 assert(isint(precision));
 
 %% Validate options provided by user
-assert(ischar(o.tableSubSectionHeader), '@series.write: tableSubSectionHeader must be a string');
+assert(ischar(o.tableSubSectionHeader), '@report_series.write: tableSubSectionHeader must be a string');
 if isempty(o.tableSubSectionHeader)
     assert(~isempty(o.data) && isa(o.data, 'dseries'), ...
-           '@series.write: must provide data as a dseries');
+           '@report_series.write: must provide data as a dseries');
 end
 
-assert(ischar(o.tableNegColor), '@series.write: tableNegColor must be a string');
-assert(ischar(o.tablePosColor), '@series.write: tablePosColor must be a string');
-assert(ischar(o.tableRowColor), '@series.write: tableRowColor must be a string');
-assert(islogical(o.tableShowMarkers), '@series.write: tableShowMarkers must be true or false');
-assert(islogical(o.tableAlignRight), '@series.write: tableAlignRight must be true or false');
-assert(isfloat(o.tableMarkerLimit), '@series,write: tableMarkerLimit must be a float');
+assert(ischar(o.tableNegColor), '@report_series.write: tableNegColor must be a string');
+assert(ischar(o.tablePosColor), '@report_series.write: tablePosColor must be a string');
+assert(ischar(o.tableRowColor), '@report_series.write: tableRowColor must be a string');
+assert(islogical(o.tableShowMarkers), '@report_series.write: tableShowMarkers must be true or false');
+assert(islogical(o.tableAlignRight), '@report_series.write: tableAlignRight must be true or false');
+assert(isfloat(o.tableMarkerLimit), '@report_series,write: tableMarkerLimit must be a float');
 
 %% Write Output
 dataString = ['%.' num2str(precision) 'f'];
 precision  = 10^precision;
 
-fprintf(fid, '%% Table Row (series)\n');
+fprintf(fid, '%% Table Row (report_series)\n');
 if ~isempty(o.tableRowColor)
     fprintf(fid, '\\rowcolor{%s}', o.tableRowColor);
 end

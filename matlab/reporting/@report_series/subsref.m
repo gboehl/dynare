@@ -31,12 +31,12 @@ switch S(1).type
                     A = feval(S(1).subs, A);
                 end
             otherwise
-                error(['@table.subsref: unknown field or method: ' S(1).subs]);
+                error(['@report_series.subsref: unknown field or method: ' S(1).subs]);
         end
     case {'()', '{}'}
-        error(['@table.subsref: ' S(1).type ' indexing not supported.']);
+        error(['@report_series.subsref: ' S(1).type ' indexing not supported.']);
     otherwise
-        error('@table.subsref: subsref.m impossible case')
+        error('@report_series.subsref: impossible case')
 end
 
 S = shiftS(S);

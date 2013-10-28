@@ -1,5 +1,5 @@
-function B = subsasgn(A, S, V)
-% function B = subsasgn(A, S, V)
+function A = subsref(A, S)
+%function A = subsref(A, S)
 
 % Copyright (C) 2013 Dynare Team
 %
@@ -18,25 +18,29 @@ function B = subsasgn(A, S, V)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-B = A;
-if length(S) > 1
-    for i=1:(length(S)-1)
-        B = subsref(B, S(i));
-    end
-    B = subsasgn(B, S(end), V);
-    B = subsasgn(A, S(1:(end-1)), B);
-    return
+switch S(1).type
+    case '.'
+        switch S(1).subs
+            case fieldnames(A)
+                A = A.(S(1).subs);
+            case methods(A)
+                if areParensNext(S)
+                    A = feval(S(1).subs, A, S(2).subs{:});
+                    S = shiftS(S);
+                else
+                    A = feval(S(1).subs, A);
+                end
+            otherwise
+                error(['@report_table.subsref: unknown field or method: ' S(1).subs]);
+        end
+    case {'()', '{}'}
+        error(['@report_table.subsref: ' S(1).type ' indexing not supported.']);
+    otherwise
+        error('@report_table.subsref: subsref.m impossible case')
 end
 
-switch S.type
-    case '.'
-        switch S.subs
-            case fieldnames(A)
-                B.(S.subs) = V;
-            otherwise
-                error(['@table.subsasgn: field ' S.subs 'does not exist in the table class'])
-        end
-    otherwise
-        error('@table.subsasgn: syntax error')
+S = shiftS(S);
+if length(S) >= 1
+    A = subsref(A, S);
 end
 end

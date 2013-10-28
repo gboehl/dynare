@@ -18,5 +18,5 @@ function e = addTable(e, varargin)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-e.objArray = e.objArray.addObj(table(varargin{:}));
+e.objArray = e.objArray.addObj(report_table(varargin{:}));
 end

@@ -18,5 +18,5 @@ function o = addSeries(o, varargin)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-o.objArray = o.objArray.addObj(series(varargin{:}));
+o.objArray = o.objArray.addObj(report_series(varargin{:}));
 end
