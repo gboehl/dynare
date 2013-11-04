@@ -47,7 +47,7 @@ if ~exist(o.filename, 'file')
 end
 
 middle = ' ./';
-if exist('OCTAVE_VERSION')
+if isoctave
     echo = 1;
 else
     echo = '-echo';
@@ -82,7 +82,7 @@ fprintf(1, '\n\nDone.\n')
 disp('Your compiled report is located here:');
 disp(['     ' pwd filesep rfn '.pdf']);
 
-if ~exist('OCTAVE_VERSION')
+if ~isoctave
     open([pwd filesep rfn '.pdf']);
 end
 end
