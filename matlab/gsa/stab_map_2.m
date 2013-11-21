@@ -86,10 +86,14 @@ for j=1:npar,
                 fprintf(1,'%20s: corrcoef = %7.3f\n',tmp_name,c0(i2(jx),j));
                     
                 if ~options_.nograph,
-                    
+                if strcmp(fnam(1:2),'mc')
+                   type='MC (around posterior mode) StabMap: '; 
+                elseif strcmp(fnam(1:5),'prior')
+                   type='Prior StabMap: ';
+                end
                 if mod(j2,12)==1,
                     ifig=ifig+1;
-                    hh=dyn_figure(options_,'name',['Correlations in the ',figtitle,' sample ', num2str(ifig)]);
+                    hh=dyn_figure(options_,'name',[type,'Correlations in the ',figtitle,' sample ', num2str(ifig)]);
                 end
                 subplot(3,4,j2-(ifig-1)*12)
                 %             bar(c0(i2,j)),
