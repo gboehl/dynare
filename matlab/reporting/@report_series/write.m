@@ -97,7 +97,7 @@ end
 
 % Calculate and display annual averages
 for i=1:length(yrsForAvgs)
-    slice = o.data(dynDate([num2str(yrsForAvgs(i)) 'q1']):dynDate([num2str(yrsForAvgs(i)) 'q4']));
+    slice = o.data(dates([num2str(yrsForAvgs(i)) 'q1']):dates([num2str(yrsForAvgs(i)) 'q4']));
     avg = sum(slice.data)/size(slice);
     fprintf(fid, '&');
     if o.tableShowMarkers

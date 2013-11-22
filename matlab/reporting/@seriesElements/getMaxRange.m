@@ -19,8 +19,8 @@ function dd = getMaxRange(o)
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 ne = numSeriesElements(o);
-ddmin = dynDate();
-ddmax = dynDate();
+ddmin = dates();
+ddmax = dates();
 for i=1:ne
     a = getSeriesElements(o, i);
     ddt = a.getRange();
