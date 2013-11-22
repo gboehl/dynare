@@ -81,10 +81,10 @@ if o.showZeroline
 end
 
 if ~isempty(o.shade)
-    x1 = find(strcmpi(o.shade(1).format(), xlabels));
-    x2 = find(strcmpi(o.shade(o.shade.ndat).format(), xlabels));
+    x1 = find(strcmpi(date2string(o.shade(1)), xlabels));
+    x2 = find(strcmpi(date2string(o.shade(end)), xlabels));
     assert(~isempty(x1) && ~isempty(x2), ['@graph.createGraph: either ' ...
-                        o.shade(1).format() ' or ' o.shade(o.shade.ndat).format() ' is not in the date ' ...
+                        date2string(o.shade(1)) ' or ' date2string(o.shade(end)) ' is not in the date ' ...
                         'range of data selected.']);
     yrange = get(gca, 'YLim');
 

@@ -68,7 +68,7 @@ for i=1:length(fields)
     elseif isobject(val)
         if isa(val, 'dates')
             fprintf('<dates: %s, ..., %s>', ...
-                    val(1).format, val(end).format);
+                    date2string(val(1)), date2string(val(end)));
         elseif isa(val, 'dseries')
             if numel(val) == 1
                 fprintf('<dseries: %s>', val.name{1});
