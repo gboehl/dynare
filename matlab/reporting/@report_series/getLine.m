@@ -64,7 +64,7 @@ assert(isempty(xrange) || isa(xrange, 'dates'));
 assert(isfloat(o.zerotol), '@report_series.write: zerotol must be a float');
 
 %%
-if isempty(xrange) || xrange == o.data.time
+if isempty(xrange) || xrange == o.data.dates
     ds = o.data;
 else
     ds = o.data(xrange);

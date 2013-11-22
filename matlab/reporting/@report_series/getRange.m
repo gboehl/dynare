@@ -19,5 +19,5 @@ function dd = getRange(o)
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 assert(~isempty(o.data) && size(o.data, 2) == 1);
-dd = o.data.time;
+dd = o.data.dates;
 end
