@@ -9109,7 +9109,7 @@ A @code{nobs} by @code{vobs} array of doubles, the data.
 
 @end table
 
-@noindent The following constructors are available:
+@noindent @code{freq}, @code{nobs}, @code{vobs}, @code{data}, @code{name}, @code{tex} are private members. The following constructors are available:
 
 @deftypefn  {dseries} dseries ()
 @deftypefnx {dseries} dseries (@var{INITIAL_DATE})
@@ -9139,9 +9139,9 @@ If a @file{.mat} file is used instead, it should provide the same informations. 
 
 @sp 1
 
-@deftypefn {dseries} dseries (@var{DATA_MATRIX}, @var{INITIAL_DATE}, @var{LIST_OF_NAMES}, @var{LIST_OF_TEX_NAMES})
+@deftypefn {dseries} dseries (@var{DATA_MATRIX}[, @var{INITIAL_DATE}[, @var{LIST_OF_NAMES}[, @var{LIST_OF_TEX_NAMES}]]])
 
-If the data is not read from a file, it can be provided via a @math{T}x@math{N} matrix as the first argument to @code{dseries}' constructor, with @math{T} representing the number of observations on @math{N} variables. The second argument, @var{INITIAL_DATE}, can be either a @dates object representing the period of the first observation or a string which would be used to instantiate a @dates object. The third argument, @var{LIST_OF_NAMES}, is a @math{N} by @math{1} cell of strings  with one entry for each variable name. The final argument, @var{LIST_OF_TEX_NAMES}, is a @math{N} by @math{1} cell of strings composed of the @LaTeX{} names associated with the variables. Input arguments two, three and four are optional. The default value for @var{INITIAL_DATE} is @code{1Y}.
+If the data is not read from a file, it can be provided via a @math{T}x@math{N} matrix as the first argument to @code{dseries}' constructor, with @math{T} representing the number of observations on @math{N} variables. The optional second argument, @var{INITIAL_DATE}, can be either a @dates object representing the period of the first observation or a string which would be used to instantiate a @dates object. Its default value is @code{dates('1Y')}. The optional third argument, @var{LIST_OF_NAMES}, is a @math{N} by @math{1} cell of strings  with one entry for each variable name. The default name associated with column @code{i} of @var{DATA_MATRIX} is @code{Variable_i}. The final argument, @var{LIST_OF_TEX_NAMES}, is a @math{N} by @math{1} cell of strings composed of the @LaTeX{} names associated with the variables. The default @LaTeX{} name associated with column @code{i} of @var{DATA_MATRIX} is @code{Variable\_i}.
 
 @end deftypefn
 
@@ -9169,7 +9169,7 @@ do3 = dseries([1; 2; 3], 1999Q3, @{`var123'@}, @{`var_@{123@}'@});
 
 @sp 1
 
-A list of the available methods, by alphabetical order, is given below.
+@noindent A list of the available methods, by alphabetical order, is given below.
 
 @deftypefn {dseries} {[@var{A}, @var{B}] = } align (@var{A}, @var{B})
 
@@ -9211,7 +9211,7 @@ ts1 is a dseries object:
 
 @deftypefn {dseries} {@var{B} = } baxter_king_filter (@var{A}, @var{hf}, @var{lf}, @var{K})
 
-Implementation of Baxter and King (1999) band pass filter for @dseries objects. This filter isolates business cycle fluctuations with a period of length ranging between @var{hf} (high frequency) to @var{lf} (low frequency) using a symetric moving average smoother with @math{2K+1} points, so that K observations at the beginning and at the end of the  sample are lost in the computation of the filter.
+Implementation of the Baxter and King (1999) band pass filter for @dseries objects. This filter isolates business cycle fluctuations with a period of length ranging between @var{hf} (high frequency) to @var{lf} (low frequency) using a symetric moving average smoother with @math{2K+1} points, so that K observations at the beginning and at the end of the  sample are lost in the computation of the filter.
 
 @examplehead
 @example
@@ -9265,7 +9265,7 @@ Sanity check of @dseries object @var{A}. Returns @math{1} if there is an error, 
 
 @deftypefn {dseries} {@var{B} = } cumsum (@var{A}[, @var{d}[, @var{v}]])
 
-Overloads the Matlab/Octave @code{cumsum} function for @dseries objects. The cumulated sum cannot be computed if the variables in @dseries object @var{A} have @code{NaN}s. If a @dates object @var{d} is provided as a second argument, then the method computes the cumulated sum with the additional constraint that the variables in the @dseries object @var{B} are zero in period @var{d}. If a single observation @dseries object @var{v} is provided as a third argument, the cumulated sum in @var{B} is such that @code{B(d)} matches @var{v}.
+Overloads the Matlab/Octave @code{cumsum} function for @dseries objects. The cumulated sum cannot be computed if the variables in @dseries object @var{A} has @code{NaN}s. If a @dates object @var{d} is provided as a second argument, then the method computes the cumulated sum with the additional constraint that the variables in the @dseries object @var{B} are zero in period @var{d}. If a single observation @dseries object @var{v} is provided as a third argument, the cumulated sum in @var{B} is such that @code{B(@var{d})} matches @var{v} (@dseries objects @var{A} and @var{v} must have the same number of variables).
 
 @examplehead
 @example
@@ -9511,7 +9511,7 @@ The previous code should produce something like:
 
 @deftypefn {dseries} {@var{C} = } insert (@var{A}, @var{B}, @var{I})
 
-Inserts variables contained in @dseries object @var{B} in @dseries object @var{A} at positions specified by integer scalars in vector @var{I}, returns augmented @dseries object @var{C}. The integer scalars in @var{I} must take values between @code{1} and @code{A.length()+1} and refers to @var{A}'s column numbers. The @dseries objects @var{A} and @var{B} need not to be defined over the same time ranges, but it is assumled that they have common frequency.
+Inserts variables contained in @dseries object @var{B} in @dseries object @var{A} at positions specified by integer scalars in vector @var{I}, returns augmented @dseries object @var{C}. The integer scalars in @var{I} must take values between @code{1} and @code{A.length()+1} and refers to @var{A}'s column numbers. The @dseries objects @var{A} and @var{B} need not to be defined over the same time ranges, but it is assumed that they have common frequency.
 
 @examplehead
 @example
@@ -9659,6 +9659,7 @@ ts2 is a dseries object:
 @noindent @remarkhead
 
 @noindent The overloading of the parenthesis for @dseries objects, allows to easily create new @dseries objects by copying/pasting equations declared in the @code{model} block. For instance, if an Euler equation is defined in the @code{model} block:
+
 @example
 model;
     ...
@@ -9666,11 +9667,14 @@ model;
     ...
 end;
 @end example
+
 @noindent and if variables @var{C}, @var{A} and @var{K} are defined as @dseries objects, then by writting:
+
 @example
 Residuals = 1/C - beta/C(1)*(exp(A(1))*K^(alpha-1)+1-delta) ;
 @end example 
-@noindent outside of the @code{model} block, we create a new @dseries object, called @var{Residuals}, for the residuals of the Euler equation (the conditional expectation of the equation defined in the @code{model} block is zero, but the residuals are non zero).
+
+@noindent outside of the @code{model} block, we create a new @dseries object, called @code{Residuals}, for the residuals of the Euler equation (the conditional expectation of the equation defined in the @code{model} block is zero, but the residuals are non zero).
 
 @sp 1
 
@@ -9904,9 +9908,9 @@ Overloads the @code{plus} (@code{+}) operator for @dseries objects, element by e
 
 @sp 1
 
-@deftypefn{dseries} {@var{B} =} pop (@var{A}[, @var{a}])
+@deftypefn{dseries} {@var{C} =} pop (@var{A}[, @var{B}])
 
-Removes variable @var{a} from @dseries object @var{A}. By default, if the second argument is not provided, the last variable is removed.
+Removes variable @var{B} from @dseries object @var{A}. By default, if the second argument is not provided, the last variable is removed.
 
 @examplehead
 @example
