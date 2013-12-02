@@ -8558,7 +8558,9 @@ for monthly  dates and 1-52 for  weekly dates) are stored  in the second
 column.
 
 @end table
+
 @noindent Each member is private, one can display the content of a member but cannot change its value:
+
 @example
 >> d = dates('2009Q2');
 >> d.time
@@ -8578,13 +8580,17 @@ ans =
 @deftypefnx {dates} dates (@code{FREQ})
 
 Returns an empty @dates object with  a given frequency (if the constructor is called with one input argument).  @code{FREQ} is a character equal to 'Y' or 'A'  for annual dates, 'Q' for quaterly dates, 'M' for monthly dates or 'W'  for weekly dates. Note that @code{FREQ} is not  case sensitive,  so that,  for instance,  'q' is  also allowed  for quaterly dates. The frequency can also be set with an integer scalar equal to 1 (annual), 4 (quaterly), 12 (monthly) or 52 (weekly). The instantiation of empty objects can be used to rename  the @dates class. For  instance, if one  only works  with quaterly dates, he can create @code{qq} as:
+
 @example
 qq = dates('Q')
 @end example
-and a @dates object holding the date @code{2009Q2}:
+
+@noindent and a @dates object holding the date @code{2009Q2}:
+
 @example
 d0 = dates(2009,2);
 @end example
+
 @noindent which is much simpler if @dates objects have to be defined programatically.
 
 @end deftypefn
@@ -8597,7 +8603,6 @@ d0 = dates(2009,2);
 Returns a @dates object that represents a date as given by the string @code{STRING}. This string has to be interpretable as a date (only strings of the following forms are admitted: @code{'1990Y'}, @code{'1990A'}, @code{'1990Q1'}, @code{'1990M2'}, @code{'1990W5'}), the routine @code{isdate} can be used to test if a string is interpretable as a date. If more than one argument is provided, they should all be dates represented as strings, the resulting @dates object contains as many elements as arguments to the constructor.
 
 @end deftypefn
-
 
 @sp 1
 
@@ -8628,15 +8633,19 @@ do4 = dates('Q',1950, 1);
 
 @sp 1
 
-A list of the available methods, by alphabetical order, is given below. Note that the Matlab/Octave classes do not allow in place modifications: when a method is applied to an object a new object is instantiated. For instance, to apply the method @code{multiplybytwo} to an object @code{X} we write:
+@noindent A list of the available methods, by alphabetical order, is given below. Note that the Matlab/Octave classes do not allow in place modifications: when a method is applied to an object a new object is instantiated. For instance, to apply the method @code{multiplybytwo} to an object @code{X} we write:
+
 @example
 Y = X.multiplybytwo()
 @end example
-or equivalently:
+
+@noindent or equivalently:
+
 @example
 Y = multiplybytwo(X)
 @end example
-the object @code{X} is left unchanged, and the object @code{Y} is a modified copy of @code{X}.
+
+@noindent the object @code{X} is left unchanged, and the object @code{Y} is a modified copy of @code{X}.
 
 @sp 1
 
