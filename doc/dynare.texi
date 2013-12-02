@@ -9981,26 +9981,32 @@ ts1 is a dseries object:
 
 @sp 1
 
-@deftypefn{dseries} save (@var{A}[, @var{basename}[, @var{format}]])
+@deftypefn{dseries} save (@var{A}, @var{basename}[, @var{format}])
 
-Overloads the Matlab/Octave @code{save} function, saves @dseries object @var{A} to disk. Possible formats are @code{csv} (this is the default), @code{m} (Matlab/Octave script), and @code{mat} (Matlab binary data file). The name of the file without extension is specified by @var{basename}, by default @var{basename} is the name of the first input (namely, the @dseries object @var{A}).
+Overloads the Matlab/Octave @code{save} function, saves @dseries object @var{A} to disk. Possible formats are @code{csv} (this is the default), @code{m} (Matlab/Octave script), and @code{mat} (Matlab binary data file). The name of the file without extension is specified by @var{basename}.
 
 @examplehead
 @example
 >> ts0 = dseries(ones(2,2));
->> ts0.save();
+>> ts0.save('ts0');
 @end example
+
 @noindent The last command will create a file @code{ts0.csv} with the following content:
+
 @example
 ,Variable_1,Variable_2
 1Y,               1,               1
 2Y,               1,               1
 @end example
-To create a Matlab/octave script, the following command:
+
+@noindent To create a Matlab/octave script, the following command:
+
 @example
->> ts0.save([],'m');
+>> ts0.save('ts0','m');
 @end example
-will produce a file @code{ts0.m} with the following content:
+
+@noindent will produce a file @code{ts0.m} with the following content:
+
 @example
 % File created on 14-Nov-2013 12:08:52.
 
@@ -10018,6 +10024,7 @@ Variable_2 = [
               1
               1];
 @end example
+
 @noindent The generated (@code{csv}, @code{m}, or @code{mat}) files can be loaded when instantiating a @dseries object as explained above.
 
 @end deftypefn
