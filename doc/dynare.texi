@@ -8511,7 +8511,7 @@ Tests if a @dates object follows another @dates object or is equal to this objec
 @noindent One can select an element, or some elements, in a @dates object as he would extract some elements from a vector in Matlab/Octave. Let @code{a = 1950Q1:1951Q1} be a @dates object, then @code{a(1)==1950Q1} returns @code{1}, @code{a(end)==1951Q1} returns @code{1} and @code{a(end-1:end)} selects the two last elements of @code{a} (by instantiating the @dates object @code{[1950Q4, 1951Q1]}).
 
 @remarkhead
-@noindent Dynare substitues any occurence of dates in the mod file into an instantiation of the @dates class regardless of the context. For instance, @code{d = 1950Q1;} will be translated as @code{a = dates('1950Q1');}. This automatic substitution can lead to a crash if a date is defined in a string. Typically, if the user wants to display a date:
+@noindent Dynare substitutes any occurence of dates in the mod file into an instantiation of the @dates class regardless of the context. For instance, @code{d = 1950Q1;} will be translated as @code{a = dates('1950Q1');}. This automatic substitution can lead to a crash if a date is defined in a string. Typically, if the user wants to display a date:
 
 @example
 disp('Initial period is 1950Q1');
