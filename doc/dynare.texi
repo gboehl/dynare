@@ -8442,12 +8442,14 @@ using time series.
 
 Dynare  understands dates  in  a  mod file.  Users  can declare  annual,
 quaterly, monthly or weekly dates using the following syntax:
+
 @example
 1990Y
 1990Q3
 1990M11
 1990W49
 @end example
+
 @noindent Behind the scene, the dynare's preprocessor translates these expressions
 into instantiations of the  Matlab/Octave's class @dates described
 below. Basic  operations can be performed  on dates:
