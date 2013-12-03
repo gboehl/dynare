@@ -2857,6 +2857,20 @@ of a heavier programming burden and a lesser efficiency.
 
 @end itemize
 
+Note that both files allow to update parameters in each call of 
+the function. This allows for example to calibrate a model to a labor 
+supply of 0.2 in steady state by setting the labor disutility parameter 
+to a corresponding value (see @file{NK_baseline_steadystate.m} in the 
+@file{examples} directory). They can also be used in estimation 
+where some parameter may be a function of an estimated parameter 
+and needs to be updated for every parameter draw. For example, one might
+ want to set the capital utilization cost parameter as a function 
+of the discount rate to ensure that capacity utilization is 1 in steady 
+state. Treating both parameters as independent or not updating one as 
+a function of the other would lead to wrong results. But this also means 
+that care is required. Do not accidentally overwrite your parameters 
+with new values as it will lead to wrong results.
+
 @anchor{steady_state_model}
 @deffn Block steady_state_model ;
 
