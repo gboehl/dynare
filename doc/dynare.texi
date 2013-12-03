@@ -702,10 +702,10 @@ Contains variable declarations, and computing tasks
 
 @item @var{FILENAME}_dynamic.m
 @vindex M_.lead_lag_incidence
-Contains the dynamic model equations. Note that Dynare might introduce auxiliary equations and variables (@pxref{Auxiliary variables}). Outputs are the residuals of the dynamic model equations in the order the equations were declared and the Jacobian of the dynamic model equations. For higher order approximations also the Hessian and the third-order derivates are provided. When computing the Jacobian of the dynamic model, the order of the endogenous variables in the columns is stored in @code{M_.lead_lag_incidence}. The rows of this matrix represent time periods: the first row denotes a lagged (time t-1) variable, the second row a contemporaneous (time t) variable, and the third row a leaded (time t+1) variable. The colums of the matrix represent the endogenous variables in their order of declaration. A zero in the matrix means that this endogenous does not appear in the model in this time period. The value in the @code{M_.lead_lag_incidence} matrix corresponds to the column of that variable in the Jacobian of the dynamic model. Example: Let the second declared variable be @code{c} and the @code{(3,2)} entry of @code{M_.lead_lag_incidence} be @code{15}. Then the @code{15}th column of the Jacobian is the derivative with respect to @code{y(+1)}. 
- 
+Contains the dynamic model equations. Note that Dynare might introduce auxiliary equations and variables (@pxref{Auxiliary variables}). Outputs are the residuals of the dynamic model equations in the order the equations were declared and the Jacobian of the dynamic model equations. For higher order approximations also the Hessian and the third-order derivates are provided. When computing the Jacobian of the dynamic model, the order of the endogenous variables in the columns is stored in @code{M_.lead_lag_incidence}. The rows of this matrix represent time periods: the first row denotes a lagged (time t-1) variable, the second row a contemporaneous (time t) variable, and the third row a leaded (time t+1) variable. The colums of the matrix represent the endogenous variables in their order of declaration. A zero in the matrix means that this endogenous does not appear in the model in this time period. The value in the @code{M_.lead_lag_incidence} matrix corresponds to the column of that variable in the Jacobian of the dynamic model. Example: Let the second declared variable be @code{c} and the @code{(3,2)} entry of @code{M_.lead_lag_incidence} be @code{15}. Then the @code{15}th column of the Jacobian is the derivative with respect to @code{y(+1)}.
+
 @item @var{FILENAME}_static.m
-Contains the long run static model equations. Note that Dynare might introduce auxiliary equations and variables (@pxref{Auxiliary variables}). Outputs are the residuals of the static model equations in the order the equations were declared and the Jacobian of the static equations. Entry @code{(i,j)} of the Jacobian represents the derivative of the @code{i}th static model equation with respect to the @code{j}th model variable in declaration order. 
+Contains the long run static model equations. Note that Dynare might introduce auxiliary equations and variables (@pxref{Auxiliary variables}). Outputs are the residuals of the static model equations in the order the equations were declared and the Jacobian of the static equations. Entry @code{(i,j)} of the Jacobian represents the derivative of the @code{i}th static model equation with respect to the @code{j}th model variable in declaration order.
 @end table
 
 @noindent
@@ -1222,19 +1222,19 @@ are supposed to be decided one period ahead of all other endogenous
 variables. For stock variables, they are supposed to follow a ``stock at
 the beginning of the period'' convention.
 
-Note that Dynare internally always uses the ``stock at the end of the period'' 
-concept, even when the model has been entered using the 
-@code{predetermined_variables}-command. Thus, when plotting, 
+Note that Dynare internally always uses the ``stock at the end of the period''
+concept, even when the model has been entered using the
+@code{predetermined_variables}-command. Thus, when plotting,
 computing or simulating variables, Dynare will follow the convention to
-use variables that are decided in the current period. For example, 
-when generating impulse response functions for capital, Dynare 
-will plot @code{k}, which is the capital stock decided upon by 
-investment today (and which will be used in tomorrow's production function). 
-This is the reason that capital is shown to be moving on impact, because 
-it is @code{k} and not the predetermined @code{k(-1)} that is displayed. 
-It is important to remember that this also affects simulated time 
-series and output from smoother routines for predetermined variables. 
-Compared to non-predetermined variables they might otherwise appear 
+use variables that are decided in the current period. For example,
+when generating impulse response functions for capital, Dynare
+will plot @code{k}, which is the capital stock decided upon by
+investment today (and which will be used in tomorrow's production function).
+This is the reason that capital is shown to be moving on impact, because
+it is @code{k} and not the predetermined @code{k(-1)} that is displayed.
+It is important to remember that this also affects simulated time
+series and output from smoother routines for predetermined variables.
+Compared to non-predetermined variables they might otherwise appear
 to be falsely shifted to the future by one period.
 @examplehead
 
@@ -1731,7 +1731,7 @@ in those cases.}
 @item block
 @anchor{block}
 Perform the block decomposition of the model, and exploit it in
-computations (steady-state, deterministic simulation, 
+computations (steady-state, deterministic simulation,
 stochastic simulation with first order approximation and estimation). See
 @uref{http://www.dynare.org/DynareWiki/FastDeterministicSimulationAndSteadyStateComputation,Dynare
 wiki} for details on the algorithms used in deterministic simulation and steady-state computation.
@@ -2404,9 +2404,9 @@ values (xx);
 end;
 @end example
 
-In case of conditional forecasts using an extended path method, 
-the shock command is extended in order to determine the nature of the expectation 
-on the endogenous variable paths. The command @code{expectation} has, in this case, 
+In case of conditional forecasts using an extended path method,
+the shock command is extended in order to determine the nature of the expectation
+on the endogenous variable paths. The command @code{expectation} has, in this case,
 to be added after the @code{values} command (@pxref{Forecasting}).
 
 @customhead{In stochastic context}
@@ -2596,7 +2596,7 @@ providing it with a ``steady state file''.
 @descriptionhead
 
 This command computes the steady state of a model using a nonlinear
-Newton-type solver and displays it. When a steady state file is used @code{steady} displays the steady state and checks that it is a solution of the static model. 
+Newton-type solver and displays it. When a steady state file is used @code{steady} displays the steady state and checks that it is a solution of the static model.
 
 More precisely, it computes the equilibrium value of the endogenous
 variables for the value of the exogenous variables specified in the
@@ -2616,9 +2616,9 @@ add new variables one by one.
 @table @code
 
 @item maxit = @var{INTEGER}
-Determines the maximum number of iterations used in the non-linear solver. 
-The default value of @code{maxit} is 10. The @code{maxit} option is shared with the 
-@code{simul} command. So a change in @code{maxit} in a @code{steady} command will 
+Determines the maximum number of iterations used in the non-linear solver.
+The default value of @code{maxit} is 10. The @code{maxit} option is shared with the
+@code{simul} command. So a change in @code{maxit} in a @code{steady} command will
 also be considered in the following @code{simul} commands.
 
 
@@ -3117,12 +3117,12 @@ equation appears in the block, @var{x} is equal to @samp{COMPLETE}.
 @table @code
 
 @item 'static'
-Prints out the block decomposition of the static model. 
-Without 'static' option model_info displays the block decomposition 
+Prints out the block decomposition of the static model.
+Without 'static' option model_info displays the block decomposition
 of the dynamic model.
 
 @item 'incidence'
-Displays the gross incidence matrix and the reordered incidence matrix 
+Displays the gross incidence matrix and the reordered incidence matrix
 of the block decomposed model.
 
 @end table
@@ -3180,9 +3180,9 @@ for the number of periods set in the option @code{periods}.
 Number of periods of the simulation
 
 @item maxit = @var{INTEGER}
-Determines the maximum number of iterations used in the non-linear solver. 
-The default value of @code{maxit} is 10. The @code{maxit} option is shared with the 
-@code{steady} command. So a change in @code{maxit} in a @code{simul} command will 
+Determines the maximum number of iterations used in the non-linear solver.
+The default value of @code{maxit} is 10. The @code{maxit} option is shared with the
+@code{steady} command. So a change in @code{maxit} in a @code{simul} command will
 also be considered in the following @code{steady} commands.
 
 
@@ -3504,10 +3504,10 @@ period(s). The periods must be strictly positive. Conditional variances are give
 decomposition provides the decomposition of the effects of shocks upon
 impact. The results are stored in
 @code{oo_.conditional_variance_decomposition}
-(@pxref{oo_.conditional_variance_decomposition}). The variance decomposition is only conducted, if theoretical moments are requested, i.e. using the @code{periods=0}-option. In case of @code{order=2}, Dynare provides a second-order accurate approximation to the true second moments based on the linear terms of the second-order solution (see @cite{Kim, Kim, Schaumburg and Sims (2008)}). 
+(@pxref{oo_.conditional_variance_decomposition}). The variance decomposition is only conducted, if theoretical moments are requested, i.e. using the @code{periods=0}-option. In case of @code{order=2}, Dynare provides a second-order accurate approximation to the true second moments based on the linear terms of the second-order solution (see @cite{Kim, Kim, Schaumburg and Sims (2008)}).
 
 @item pruning
-Discard higher order terms when iteratively computing simulations of 
+Discard higher order terms when iteratively computing simulations of
 the solution. At second order, Dynare uses the algorithm of @cite{Kim, Kim, Schaumburg and Sims (2008)}, while at third order its generalization by @cite{Andreasen, Fernández-Villaverde and Rubio-Ramírez (2013)} is used.
 
 @item partial_information
@@ -3683,7 +3683,7 @@ If a second order approximation has been requested, contains the
 vector of the mean correction terms.
 @end table
 
-In case of @code{order=2}, the theoretical second moments are a second order accurate approximation of the true second moments, see @code{conditional_variance_decomposition}. 
+In case of @code{order=2}, the theoretical second moments are a second order accurate approximation of the true second moments, see @code{conditional_variance_decomposition}.
 
 @end defvr
 
@@ -3739,7 +3739,7 @@ If @code{order} is greater than 0 Dynare uses a gaussian quadrature to take into
 are generated  by assuming that the agents  believe that there  will no more shocks after period @var{t+S}. This is an experimental feature and can be quite slow. Default: @code{0}.
 
 @item hybrid
-Use the constant of the second order perturbation reduced form to correct the paths generated by the (stochastic) extended path algorithm. 
+Use the constant of the second order perturbation reduced form to correct the paths generated by the (stochastic) extended path algorithm.
 
 @end table
 
@@ -3870,7 +3870,7 @@ A y^h_{t-1} + B u_t + 0.5 C
 
 where @math{y^s} is the steady state value of @math{y},
 @math{y^h_t=y_t-y^s}, and @math{\Delta^2} is the shift effect of the
-variance of future shocks. For the reordering required due to differences in declaration and DR order, see the first order approximation. 
+variance of future shocks. For the reordering required due to differences in declaration and DR order, see the first order approximation.
 
 The coefficients of the decision rules are stored in the variables
 described for first order approximation, plus the following variables:
@@ -4008,7 +4008,7 @@ Note that in order to avoid stochastic singularity, you must have at
 least as many shocks or measurement errors in your model as you have
 observed variables.
 
-The estimation using a first order approximation can benefit from the block 
+The estimation using a first order approximation can benefit from the block
 decomposition of the model (@pxref{block}).
 
 
@@ -4317,17 +4317,17 @@ of option @code{mh_jscale} (see below).
 @algorithmshead
 
 The Monte Carlo Markov Chain (MCMC) diagnostics are generated
-by the estimation command if @ref{mh_replic} is larger than 2000 and if 
+by the estimation command if @ref{mh_replic} is larger than 2000 and if
 option @ref{nodiagnostic} is not used. If @ref{mh_nblocks} is equal to one,
 the convergence diagnostics of @cite{Geweke (1992,1999)} is computed. It uses a
 chi square test to compare the means of the first and last draws specified by
 @ref{geweke_interval} after discarding the burnin of @ref{mh_drop}. The test is
 computed using variance estimates under the assumption of no serial correlation
 as well as using tapering windows specified in @ref{taper_steps}.
-If @ref{mh_nblocks}  is larger  than 1, the convergence diagnostics of 
+If @ref{mh_nblocks}  is larger  than 1, the convergence diagnostics of
 @cite{Brooks and Gelman (1998)} are used instead.
 As described in section  3 of @cite{Brooks and Gelman (1998)} the univariate
-convergence diagnostics are  based on comparing pooled  and within MCMC moments 
+convergence diagnostics are  based on comparing pooled  and within MCMC moments
 (Dynare displays the  second and third order  moments, and
 the length of  the Highest Probability Density interval  covering 80% of
 the  posterior   distribution).   Due  to  computational   reasons,  the
@@ -4517,7 +4517,7 @@ mode is simply read from that file.
 
 When @code{mode_file} option is not
 specified, Dynare reports the value of the log posterior (log likelihood)
-evaluated at the initial value of the parameters. 
+evaluated at the initial value of the parameters.
 
 When @code{mode_file}
 option is not specified and there is no @code{estimated_params} block,
@@ -4561,11 +4561,11 @@ routine (generally more efficient than the MATLAB or Octave implementation
 available with @code{mode_compute=7})
 
 @item 9
-Uses the CMA-ES (Covariance Matrix Adaptation Evolution Strategy) algorithm, an evolutionary algorithm for difficult non-linear non-convex optimization 
+Uses the CMA-ES (Covariance Matrix Adaptation Evolution Strategy) algorithm, an evolutionary algorithm for difficult non-linear non-convex optimization
 
 @item 10
-Uses the simpsa algorithm, based on the combination of the non-linear simplex and simulated annealing algorithms and proposed by 
-@cite{Cardoso, Salcedo and Feyo de Azevedo (1996)}. 
+Uses the simpsa algorithm, based on the combination of the non-linear simplex and simulated annealing algorithms and proposed by
+@cite{Cardoso, Salcedo and Feyo de Azevedo (1996)}.
 
 @item @var{FUNCTION_NAME}
 It is also possible to give a @var{FUNCTION_NAME} to this option,
@@ -4580,7 +4580,7 @@ Default value is @code{4}.
 Tells Dynare which covariance to use for the proposal density of the MCMC sampler. @code{mcmc_jumping_covariance} can be one of the following:
 
 @table @code
-@item hessian 
+@item hessian
 Uses the Hessian matrix computed at the mode.
 
 @item prior_variance
@@ -4618,7 +4618,7 @@ boundary, or in conjunction with @code{mode_check_neighbourhood_size =
 Inf} when the domain in not the entire real line. Default: @code{1}.
 
 @item mode_check_number_of_points = @var{INTEGER}
-Number of points around the posterior mode where the posterior kernel is evaluated (for each parameter). Default is @code{20}  
+Number of points around the posterior mode where the posterior kernel is evaluated (for each parameter). Default is @code{20}
 
 @item prior_trunc = @var{DOUBLE}
 @anchor{prior_trunc} Probability of extreme values of the prior
@@ -4681,7 +4681,7 @@ Number of iterations in the last MCMC (climbing mode).
 Initial covariance matrix of the jumping distribution. Default is @code{'previous'} if option @code{mode_file} is used, @code{'prior'} otherwise.
 
 @item 'AcceptanceRateTarget'
-A real number between zero and one. The scale parameter of the jumping distribution is adjusted so that the effective acceptance rate matches the value of option @code{'AcceptanceRateTarget'}. Default: @code{1.0/3.0}  
+A real number between zero and one. The scale parameter of the jumping distribution is adjusted so that the effective acceptance rate matches the value of option @code{'AcceptanceRateTarget'}. Default: @code{1.0/3.0}
 
 @end table
 
@@ -5030,14 +5030,14 @@ solution). Default: @code{1e-6}.
 
 @item taper_steps = [@var{INTEGER1} @var{INTEGER2} @dots{}]
 @anchor{taper_steps}
-Percent tapering used for the spectral window in the @cite{Geweke (1992,1999)} 
-convergence diagnostics (requires @ref{mh_nblocks}=1). The tapering is used to 
+Percent tapering used for the spectral window in the @cite{Geweke (1992,1999)}
+convergence diagnostics (requires @ref{mh_nblocks}=1). The tapering is used to
 take the serial correlation of the posterior draws into account. Default: @code{[4 8 15]}.
 
 @item geweke_interval = [@var{DOUBLE} @var{DOUBLE}]
 @anchor{geweke_interval}
-Percentage of MCMC draws at the beginning and end of the MCMC chain taken 
-to compute the @cite{Geweke (1992,1999)} convergence diagnostics (requires @ref{mh_nblocks}=1) 
+Percentage of MCMC draws at the beginning and end of the MCMC chain taken
+to compute the @cite{Geweke (1992,1999)} convergence diagnostics (requires @ref{mh_nblocks}=1)
 after discarding the first @ref{mh_drop} percent of draws as a burnin. Default: @code{[0.2 0.5]}.
 
 @end table
@@ -5345,20 +5345,20 @@ Numerical standard error (NSE) when using an x% taper
 Relative numerical efficiency (RNE) when using an x% taper
 
 @item pooled_mean
-Mean of the parameter when pooling the beginning and end parts of the chain 
-specified in @ref{geweke_interval} and weighting them with their relative precision. 
-It is a vector containing the results under the iid assumption followed by the ones 
+Mean of the parameter when pooling the beginning and end parts of the chain
+specified in @ref{geweke_interval} and weighting them with their relative precision.
+It is a vector containing the results under the iid assumption followed by the ones
 using the @ref{taper_steps} (@pxref{taper_steps}).
 
 @item pooled_nse
 NSE of the parameter when pooling the beginning and end parts of the chain and weighting them with their relative precision. See @code{pooled_mean}
 
 @item prob_chi2_test
-p-value of a chi squared test for equality of means in the beginning and the end 
-of the MCMC chain. See @code{pooled_mean}. A value above 0.05 indicates that 
-the null hypothesis of equal means and thus convergence cannot be rejected 
-at the 5 percent level. Differing values along the @ref{taper_steps} signal 
-the presence of significant autocorrelation in draws. In this case, the 
+p-value of a chi squared test for equality of means in the beginning and the end
+of the MCMC chain. See @code{pooled_mean}. A value above 0.05 indicates that
+the null hypothesis of equal means and thus convergence cannot be rejected
+at the 5 percent level. Differing values along the @ref{taper_steps} signal
+the presence of significant autocorrelation in draws. In this case, the
 estimates using a higher tapering are usually more reliable.
 
 @end table
@@ -5447,7 +5447,7 @@ the model.
 
 @vindex oo_.SmoothedVariables
 @vindex oo_.SmoothedShocks
-@vindex oo_.UpdatedVariables 
+@vindex oo_.UpdatedVariables
 By default, the command computes the smoothed variables and shocks and stores the
 results in @code{oo_.SmoothedVariables} and
 @code{oo_.SmoothedShocks}. It also fills @code{oo_.UpdatedVariables}.
@@ -5485,12 +5485,12 @@ DSGE model, by finding the structural shocks that are needed to match
 the restricted paths. Use @code{conditional_forecast},
 @code{conditional_forecast_paths} and @code{plot_conditional_forecast}
 for that purpose.
-If the model contains strong non-linearities, the conditional forecasts 
-can be computed using an extended path method with the @code{simulation_type} 
-option in @code{conditional_forecast} command set to @code{deterministic}. 
-Because in this case deterministic simulations are carried out, 
-the nature of the shocks (surprise or perfect foresight) has to be indicated 
-in the @code{conditional_forecast_paths} block, using the command @code{expectation} 
+If the model contains strong non-linearities, the conditional forecasts
+can be computed using an extended path method with the @code{simulation_type}
+option in @code{conditional_forecast} command set to @code{deterministic}.
+Because in this case deterministic simulations are carried out,
+the nature of the shocks (surprise or perfect foresight) has to be indicated
+in the @code{conditional_forecast_paths} block, using the command @code{expectation}
 for each endogenous path. The forecasts are plotted using the rplot command.
 
 Finally, it is possible to do forecasting with a Bayesian VAR using
@@ -5651,9 +5651,9 @@ structural shocks that are needed to match the restricted paths. This
 command has to be called after estimation.
 
 Use @code{conditional_forecast_paths} block to give the list of
-constrained endogenous, and their constrained future path. 
-If an extended path method is applied on the original dsge model, 
-the nature of the expectation on the constrained endogenous has to be 
+constrained endogenous, and their constrained future path.
+If an extended path method is applied on the original dsge model,
+the nature of the expectation on the constrained endogenous has to be
 specified using expectation command. Option
 @code{controlled_varexo} is used to specify the structural shocks
 which will be matched to generate the constrained path.
@@ -5683,10 +5683,10 @@ Number of simulations. Default: @code{5000}.
 Level of significance for confidence interval. Default: @code{0.80}
 
 @item  simulation_type = @code{stochastic} | @code{deterministic}
-Indicates the nature of simulations used to compute the conditional forecast.  
-The default value @code{stochastic} is used, when simulations are computed 
-using the reduced form representation of the DSGE model. 
-If the model has to be simulated using extended path method on the original 
+Indicates the nature of simulations used to compute the conditional forecast.
+The default value @code{stochastic} is used, when simulations are computed
+using the reduced form representation of the DSGE model.
+If the model has to be simulated using extended path method on the original
 DSGE model, @code{simulation_type} has to be set equal to @code{deterministic}.
 
 
@@ -5796,7 +5796,7 @@ example.
 The syntax of the block is the same than the deterministic shocks in
 the @code{shocks} blocks (@pxref{Shocks on exogenous variables}).
 
-If the conditional forecast is carried out using the extended path method 
+If the conditional forecast is carried out using the extended path method
 on the original DSGE model, the nature of the expectation have to be specified
 for each endogenous path, using the @code{expectation} = @code{surprise} | @code{perfect_foresight}.
 By default, @code{expectation} is equal to @code{surprise}.
@@ -5887,7 +5887,7 @@ This problem is solved using the numerical optimizer @code{csminwel} of Chris Si
 @optionshead
 
 This command accepts the same options as @code{stoch_simul}
-(@pxref{Computing the stochastic solution}) plus 
+(@pxref{Computing the stochastic solution}) plus
 
 @table @code
 
@@ -5895,7 +5895,7 @@ This command accepts the same options as @code{stoch_simul}
 Determines the maximum number of iterations used in the non-linear solver. Default: @code{1000}
 
 @item tolf = @var{DOUBLE}
-Convergence criterion for termination based on the function value. Iteration will 
+Convergence criterion for termination based on the function value. Iteration will
 cease when it proves impossible to improve the function value by more than tolf. Default: @code{1e-7}
 @end table
 
@@ -8455,7 +8455,7 @@ below. Basic  operations can be performed  on dates:
 
 @item plus binary operator (@code{+})
 
-An integer scalar, interpreted as a number of periods, can be added to a date. For instance, if @code{a = 1950Q1} then 
+An integer scalar, interpreted as a number of periods, can be added to a date. For instance, if @code{a = 1950Q1} then
 @code{b = 1951Q2} and @code{b = a + 5} are identical.
 
 @item plus unary operator (@code{+})
@@ -8464,7 +8464,7 @@ Increments a date by one period. @code{+1950Q1} is identical to @code{1950Q2}, @
 
 @item minus binary operator (@code{-})
 
-The difference between two dates is a number of periods. For instance if @code{1951Q2-1950Q1} is equal to  @code{5} (quarters). 
+The difference between two dates is a number of periods. For instance if @code{1951Q2-1950Q1} is equal to  @code{5} (quarters).
 
 @item minus unary operator (@code{-})
 
@@ -8476,7 +8476,7 @@ Can be used to create a range of dates. For instance, @code{r = 1950Q1:1951Q1} c
 
 @item horzcat operator (@code{[,]})
 
-Concatenates @dates objects without removing repetitions. For instance @code{[1950Q1, 1950Q2]} is a a @dates object with two elements (@code{1950Q1} and @code{1950Q2}). 
+Concatenates @dates objects without removing repetitions. For instance @code{[1950Q1, 1950Q2]} is a a @dates object with two elements (@code{1950Q1} and @code{1950Q2}).
 
 @item vertcat operator (@code{[;]})
 
@@ -9181,27 +9181,27 @@ If @dseries objects @var{A} and @var{B} are defined on different time ranges, th
 >> ts1 = dseries(rand(3,1),dates('2000Q4')); % 2000Q4 -> 2001Q2
 >> [ts0, ts1] = align(ts0, ts1);             % 2000Q1 -> 2001Q2
 >> ts0
- 
+
 ts0 is a dseries object:
- 
+
        | Variable_1
-2000Q1 | 0.81472   
-2000Q2 | 0.90579   
-2000Q3 | 0.12699   
-2000Q4 | 0.91338   
-2001Q1 | 0.63236   
-2001Q2 | NaN       
- 
+2000Q1 | 0.81472
+2000Q2 | 0.90579
+2000Q3 | 0.12699
+2000Q4 | 0.91338
+2001Q1 | 0.63236
+2001Q2 | NaN
+
 >> ts1
- 
+
 ts1 is a dseries object:
- 
+
        | Variable_1
-2000Q1 | NaN       
-2000Q2 | NaN       
-2000Q3 | NaN       
-2000Q4 | 0.66653   
-2001Q1 | 0.17813   
+2000Q1 | NaN
+2000Q2 | NaN
+2000Q3 | NaN
+2000Q4 | 0.66653
+2001Q1 | 0.17813
 2001Q2 | 0.12801
 @end example
 
@@ -9215,11 +9215,11 @@ Implementation of the Baxter and King (1999) band pass filter for @dseries objec
 
 @examplehead
 @example
-% Simulate a component model (stochastic trend, deterministic trend, and a 
+% Simulate a component model (stochastic trend, deterministic trend, and a
 % stationary autoregressive process).
 e = .2*randn(200,1);
 u = randn(200,1);
-stochastic_trend = cumsum(e); 
+stochastic_trend = cumsum(e);
 deterministic_trend = .1*transpose(1:200);
 x = zeros(200,1);
 for i=2:200
@@ -9272,53 +9272,53 @@ Overloads the Matlab/Octave @code{cumsum} function for @dseries objects. The cum
 >> ts1 = dseries(ones(10,1));
 >> ts2 = ts1.cumsum();
 >> ts2
- 
+
 ts2 is a dseries object:
- 
+
     | cumsum(Variable_1)
-1Y  | 1                 
-2Y  | 2                 
-3Y  | 3                 
-4Y  | 4                 
-5Y  | 5                 
-6Y  | 6                 
-7Y  | 7                 
-8Y  | 8                 
-9Y  | 9                 
-10Y | 10                
- 
+1Y  | 1
+2Y  | 2
+3Y  | 3
+4Y  | 4
+5Y  | 5
+6Y  | 6
+7Y  | 7
+8Y  | 8
+9Y  | 9
+10Y | 10
+
 >> ts3 = cumsum(dates('3Y'));
 >> ts3
- 
+
 ts3 is a dseries object:
- 
+
     | cumsum(Variable_1)
-1Y  | -2                
-2Y  | -1                
-3Y  | 0                 
-4Y  | 1                 
-5Y  | 2                 
-6Y  | 3                 
-7Y  | 4                 
-8Y  | 5                 
-9Y  | 6                 
-10Y | 7                 
- 
+1Y  | -2
+2Y  | -1
+3Y  | 0
+4Y  | 1
+5Y  | 2
+6Y  | 3
+7Y  | 4
+8Y  | 5
+9Y  | 6
+10Y | 7
+
 >> ts4 = ts1.cumsum(dates('3Y'),dseries(pi));
 >> ts4
- 
+
 ts4 is a dseries object:
- 
+
     | cumsum(Variable_1)
-1Y  | 1.1416            
-2Y  | 2.1416            
-3Y  | 3.1416            
-4Y  | 4.1416            
-5Y  | 5.1416            
-6Y  | 6.1416            
-7Y  | 7.1416            
-8Y  | 8.1416            
-9Y  | 9.1416            
+1Y  | 1.1416
+2Y  | 2.1416
+3Y  | 3.1416
+4Y  | 4.1416
+5Y  | 5.1416
+6Y  | 6.1416
+7Y  | 7.1416
+8Y  | 8.1416
+9Y  | 9.1416
 10Y | 10.1416
 @end example
 
@@ -9366,13 +9366,13 @@ Extracts some variables from a @dseries object @var{A} and returns a @dseries ob
 
 @exampleshead
 
-@noindent The following selections are equivalent: 
+@noindent The following selections are equivalent:
 @example
 >> ts0 = dseries(ones(100,10));
 >> ts1 = ts0@{'Variable_1','Variable_2','Variable_3'@};
 >> ts2 = ts0@{'Variable_@@1,2,3@@'@}
 >> ts3 = ts0@{'Variable_[1-3]$'@}
->> isequal(ts1,ts2) && isequal(ts1,ts3) 
+>> isequal(ts1,ts2) && isequal(ts1,ts3)
 
 ans =
 
@@ -9381,16 +9381,16 @@ ans =
 
 @noindent It is possible to use up to two implicit loops to select variables:
 @example
-names = @{'GDP_1';'GDP_2';'GDP_3'; 'GDP_4'; 'GDP_5'; 'GDP_6'; 'GDP_7'; 'GDP_8'; ... 
+names = @{'GDP_1';'GDP_2';'GDP_3'; 'GDP_4'; 'GDP_5'; 'GDP_6'; 'GDP_7'; 'GDP_8'; ...
       'GDP_9'; 'GDP_10'; 'GDP_11'; 'GDP_12'; ...
       'HICP_1';'HICP_2';'HICP_3'; 'HICP_4'; 'HICP_5'; 'HICP_6'; 'HICP_7'; 'HICP_8'; ...
       'HICP_9'; 'HICP_10'; 'HICP_11'; 'HICP_12'@};
 
 ts0 = dseries(randn(4,24),dates('1973Q1'),names);
 ts0@{'@@GDP,HICP@@_@@1,3,5@@'@}
- 
+
 ans is a dseries object:
- 
+
        | GDP_1    | GDP_3     | GDP_5     | HICP_1   | HICP_3   | HICP_5
 1973Q1 | 1.7906   | -1.6606   | -0.57716  | 0.60963  | -0.52335 | 0.26172
 1973Q2 | 2.1624   | 3.0125    | 0.52563   | 0.70912  | -1.7158  | 1.7792
@@ -9412,17 +9412,17 @@ Overloads the @code{horzcat} Matlab/Octave's method for @dseries objects. Return
 >> ts1 = dseries(rand(7,1),'1950Q3',@{'nafnaf'@});
 >> ts2 = [ts0, ts1];
 >> ts2
- 
+
 ts2 is a dseries object:
- 
-       | nifnif  | noufnouf | nafnaf  
-1950Q1 | 0.17404 | 0.71431  | NaN     
-1950Q2 | 0.62741 | 0.90704  | NaN     
-1950Q3 | 0.84189 | 0.21854  | 0.83666 
-1950Q4 | 0.51008 | 0.87096  | 0.8593  
-1951Q1 | 0.16576 | 0.21184  | 0.52338 
-1951Q2 | NaN     | NaN      | 0.47736 
-1951Q3 | NaN     | NaN      | 0.88988 
+
+       | nifnif  | noufnouf | nafnaf
+1950Q1 | 0.17404 | 0.71431  | NaN
+1950Q2 | 0.62741 | 0.90704  | NaN
+1950Q3 | 0.84189 | 0.21854  | 0.83666
+1950Q4 | 0.51008 | 0.87096  | 0.8593
+1951Q1 | 0.16576 | 0.21184  | 0.52338
+1951Q2 | NaN     | NaN      | 0.47736
+1951Q3 | NaN     | NaN      | 0.88988
 1951Q4 | NaN     | NaN      | 0.065076
 1952Q1 | NaN     | NaN      | 0.50946
 @end example
@@ -9437,11 +9437,11 @@ Extracts the cycle component from a @dseries @var{A} object using Hodrick Presco
 
 @examplehead
 @example
-% Simulate a component model (stochastic trend, deterministic trend, and a 
+% Simulate a component model (stochastic trend, deterministic trend, and a
 % stationary autoregressive process).
 e = .2*randn(200,1);
 u = randn(200,1);
-stochastic_trend = cumsum(e); 
+stochastic_trend = cumsum(e);
 deterministic_trend = .1*transpose(1:200);
 x = zeros(200,1);
 for i=2:200
@@ -9520,19 +9520,19 @@ Inserts variables contained in @dseries object @var{B} in @dseries object @var{A
 >> ts2 = ts0.insert(ts1,3)
 
 ts2 is a dseries object:
- 
+
        | Sly | Gobbo | Noddy  | Sneaky | Stealthy
-1950Q1 | 1   | 1     | 3.1416 | 1      | 1       
-1950Q2 | 1   | 1     | 3.1416 | 1      | 1       
+1950Q1 | 1   | 1     | 3.1416 | 1      | 1
+1950Q2 | 1   | 1     | 3.1416 | 1      | 1
 
 >> ts3 = dseries([pi*ones(2,1) sqrt(pi)*ones(2,1)],'1950Q1',@{'Noddy';'Tessie Bear'@});
 >> ts4 = ts0.insert(ts1,[3, 4])
 
 ts4 is a dseries object:
- 
+
        | Sly | Gobbo | Noddy  | Sneaky | Tessie Bear | Stealthy
-1950Q1 | 1   | 1     | 3.1416 | 1      | 1.7725      | 1       
-1950Q2 | 1   | 1     | 3.1416 | 1      | 1.7725      | 1       
+1950Q1 | 1   | 1     | 3.1416 | 1      | 1.7725      | 1
+1950Q2 | 1   | 1     | 3.1416 | 1      | 1.7725      | 1
 @end example
 
 @end deftypefn
@@ -9563,33 +9563,33 @@ Returns lagged time series. Default value of @var{p}, the number of lags, is @co
 
 @example
 >> ts0 = dseries(transpose(1:4),'1950Q1')
- 
+
 ts0 is a dseries object:
- 
+
        | Variable_1
-1950Q1 | 1         
-1950Q2 | 2         
-1950Q3 | 3         
+1950Q1 | 1
+1950Q2 | 2
+1950Q3 | 3
 1950Q4 | 4
 
 >> ts1 = ts0.lag()
- 
+
 ts1 is a dseries object:
- 
+
        | lag(Variable_1,1)
-1950Q1 | NaN              
-1950Q2 | 1                
-1950Q3 | 2                
+1950Q1 | NaN
+1950Q2 | 1
+1950Q3 | 2
 1950Q4 | 3
 
 >> ts2 = ts0.lag(2)
- 
+
 ts2 is a dseries object:
- 
+
        | lag(Variable_1,2)
-1950Q1 | NaN              
-1950Q2 | NaN              
-1950Q3 | 1            
+1950Q1 | NaN
+1950Q2 | NaN
+1950Q3 | 1
 1950Q4 | 2
 @end example
 
@@ -9597,13 +9597,13 @@ ts2 is a dseries object:
 
 @example
 >> ts0.lag(1)
- 
+
 ans is a dseries object:
- 
+
        | lag(Variable_1,1)
-1950Q1 | NaN              
-1950Q2 | 1                
-1950Q3 | 2                
+1950Q1 | NaN
+1950Q2 | 1
+1950Q3 | 2
 1950Q4 | 3
 @end example
 
@@ -9611,13 +9611,13 @@ ans is a dseries object:
 
 @example
 >> ts0(-1)
- 
+
 ans is a dseries object:
- 
+
        | lag(Variable_1,1)
-1950Q1 | NaN              
-1950Q2 | 1                
-1950Q3 | 2                
+1950Q1 | NaN
+1950Q2 | 1
+1950Q3 | 2
 1950Q4 | 3
 @end example
 
@@ -9634,23 +9634,23 @@ Returns leaded time series. Default value of @var{p}, the number of leads, is @c
 @example
 >> ts0 = dseries(transpose(1:4),'1950Q1');
 >> ts1 = ts0.lead()
- 
+
 ts1 is a dseries object:
- 
+
        | lead(Variable_1,1)
-1950Q1 | 2                 
-1950Q2 | 3                 
-1950Q3 | 4                 
-1950Q4 | NaN               
+1950Q1 | 2
+1950Q2 | 3
+1950Q3 | 4
+1950Q4 | NaN
 
 >> ts2 = ts0(2)
- 
+
 ts2 is a dseries object:
- 
+
        | lead(Variable_1,2)
-1950Q1 | 3                 
-1950Q2 | 4                 
-1950Q3 | NaN               
+1950Q1 | 3
+1950Q2 | 4
+1950Q3 | NaN
 1950Q4 | NaN
 @end example
 
@@ -9672,7 +9672,7 @@ end;
 
 @example
 Residuals = 1/C - beta/C(1)*(exp(A(1))*K^(alpha-1)+1-delta) ;
-@end example 
+@end example
 
 @noindent outside of the @code{model} block, we create a new @dseries object, called @code{Residuals}, for the residuals of the Euler equation (the conditional expectation of the equation defined in the @code{model} block is zero, but the residuals are non zero).
 
@@ -9693,46 +9693,46 @@ Overloads the Matlab/Octave @code{log} function for @dseries objects.
 
 @deftypefn{dseries} {@var{C} =} merge (@var{A}, @var{B})
 
-Merges two @dseries objects @var{A} and @var{B} in @dseries object @var{C}. Objects @var{A} and @var{B} need to have common frequency but can be defined on different time ranges. If a variable, say @code{x}, is defined both in @dseries objects @var{A} and @var{B}, then the merge will select the variable @code{x} as defined in the second input argument, @var{B}. 
+Merges two @dseries objects @var{A} and @var{B} in @dseries object @var{C}. Objects @var{A} and @var{B} need to have common frequency but can be defined on different time ranges. If a variable, say @code{x}, is defined both in @dseries objects @var{A} and @var{B}, then the merge will select the variable @code{x} as defined in the second input argument, @var{B}.
 
 @examplehead
 @example
 >> ts0 = dseries(rand(3,2),'1950Q1',@{'A1';'A2'@})
- 
+
 ts0 is a dseries object:
- 
-       | A1       | A2     
+
+       | A1       | A2
 1950Q1 | 0.42448  | 0.92477
 1950Q2 | 0.60726  | 0.64208
-1950Q3 | 0.070764 | 0.1045 
- 
+1950Q3 | 0.070764 | 0.1045
+
 >> ts1 = dseries(rand(3,1),'1950Q2',@{'A1'@})
- 
+
 ts1 is a dseries object:
- 
-       | A1      
-1950Q2 | 0.70023 
-1950Q3 | 0.3958  
+
+       | A1
+1950Q2 | 0.70023
+1950Q3 | 0.3958
 1950Q4 | 0.084905
- 
+
 >> merge(ts0,ts1)
- 
+
 ans is a dseries object:
- 
-       | A1       | A2     
+
+       | A1       | A2
 1950Q1 | NaN      | 0.92477
 1950Q2 | 0.70023  | 0.64208
-1950Q3 | 0.3958   | 0.1045 
-1950Q4 | 0.084905 | NaN 
+1950Q3 | 0.3958   | 0.1045
+1950Q4 | 0.084905 | NaN
 
 >> merge(ts1,ts0)
- 
+
 ans is a dseries object:
- 
-       | A1       | A2     
+
+       | A1       | A2
 1950Q1 | 0.42448  | 0.92477
 1950Q2 | 0.60726  | 0.64208
-1950Q3 | 0.070764 | 0.1045 
+1950Q3 | 0.070764 | 0.1045
 1950Q4 | NaN      | NaN
 @end example
 
@@ -9749,39 +9749,39 @@ Overloads the @code{minus} (@code{-}) operator for @dseries objects, element by 
 >> ts0 = dseries(rand(3,2));
 >> ts1 = ts0@{'Variable_2'@};
 >> ts0-ts1
- 
+
 ans is a dseries object:
- 
+
    | minus(Variable_1,Variable_2) | minus(Variable_2,Variable_2)
-1Y | -0.48853                     | 0                           
-2Y | -0.50535                     | 0                           
+1Y | -0.48853                     | 0
+2Y | -0.50535                     | 0
 3Y | -0.32063                     | 0
 
 >> ts1
- 
+
 ts1 is a dseries object:
- 
+
    | Variable_2
-1Y | 0.703     
-2Y | 0.75415   
+1Y | 0.703
+2Y | 0.75415
 3Y | 0.54729
 
 >> ts1-ts1.data(1)
- 
+
 ans is a dseries object:
- 
+
    | minus(Variable_2,0.703)
-1Y | 0                      
-2Y | 0.051148               
+1Y | 0
+2Y | 0.051148
 3Y | -0.15572
 
 >> ts1.data(1)-ts1
- 
+
 ans is a dseries object:
- 
+
    | minus(0.703,Variable_2)
-1Y | 0                      
-2Y | -0.051148              
+1Y | 0
+2Y | -0.051148
 3Y | 0.15572
 @end example
 
@@ -9791,7 +9791,7 @@ ans is a dseries object:
 
 @deftypefn{dseries} {@var{C} =} mpower (@var{A}, @var{B})
 
-Overloads the @code{mpower} (@code{^}) operator for @dseries objects and computes element-by-element power. @var{A} is a @dseries object with @code{N} variables and @code{T} observations. If @var{B} is a real scalar, then @code{mpower(@var{A},@var{B})} returns a @dseries object @var{C} with @code{C.data(t,n)=A.data(t,n)^C}. If @var{B} is a @dseries object with @code{N} variables and @code{T} observations then @code{mpower(@var{A},@var{B})} returns a @dseries object @var{C} with @code{C.data(t,n)=A.data(t,n)^C.data(t,n)}. 
+Overloads the @code{mpower} (@code{^}) operator for @dseries objects and computes element-by-element power. @var{A} is a @dseries object with @code{N} variables and @code{T} observations. If @var{B} is a real scalar, then @code{mpower(@var{A},@var{B})} returns a @dseries object @var{C} with @code{C.data(t,n)=A.data(t,n)^C}. If @var{B} is a @dseries object with @code{N} variables and @code{T} observations then @code{mpower(@var{A},@var{B})} returns a @dseries object @var{C} with @code{C.data(t,n)=A.data(t,n)^C.data(t,n)}.
 
 @examplehead
 @example
@@ -9799,16 +9799,16 @@ Overloads the @code{mpower} (@code{^}) operator for @dseries objects and compute
 >> ts1 = ts0^2
 
 ts1 is a dseries object:
- 
+
    | power(Variable_1,2)
-1Y | 1   
-2Y | 4   
-3Y | 9   
- 
+1Y | 1
+2Y | 4
+3Y | 9
+
 >> ts2 = ts0^ts0
- 
+
 ts2 is a dseries object:
- 
+
    | power(Variable_1,Variable_1)
 1Y | 1
 2Y | 4
@@ -9828,20 +9828,20 @@ Overloads the @code{mrdivide} (@code{/}) operator for @dseries objects, element 
 >> ts0 = dseries(rand(3,2))
 
 ts0 is a dseries object:
- 
+
    | Variable_1 | Variable_2
-1Y | 0.72918    | 0.90307   
-2Y | 0.93756    | 0.21819   
-3Y | 0.51725    | 0.87322   
- 
+1Y | 0.72918    | 0.90307
+2Y | 0.93756    | 0.21819
+3Y | 0.51725    | 0.87322
+
 >> ts1 = ts0@{'Variable_2'@};
 >> ts0/ts1
- 
+
 ans is a dseries object:
- 
+
    | divide(Variable_1,Variable_2) | divide(Variable_2,Variable_2)
-1Y | 0.80745                       | 1                            
-2Y | 4.2969                        | 1                            
+1Y | 0.80745                       | 1
+2Y | 4.2969                        | 1
 3Y | 0.59235                       | 1
 @end example
 
@@ -9946,12 +9946,12 @@ Removes variable @var{B} from @dseries object @var{A}. By default, if the second
 @example
 >> ts0 = dseries(ones(3,3));
 >> ts1 = ts0.pop('Variable_2');
- 
+
 ts1 is a dseries object:
- 
+
    | Variable_1 | Variable_3
-1Y | 1          | 1         
-2Y | 1          | 1         
+1Y | 1          | 1
+2Y | 1          | 1
 3Y | 1          | 1
 @end example
 
@@ -9968,27 +9968,27 @@ Computes quaterly differences or growth rates.
 @example
 >> ts0 = dseries(transpose(1:4),'1950Q1');
 >> ts1 = ts0.qdiff()
- 
+
 ts1 is a dseries object:
- 
+
        | qdiff(Variable_1)
-1950Q1 | NaN             
-1950Q2 | 1               
-1950Q3 | 1               
-1950Q4 | 1               
- 
+1950Q1 | NaN
+1950Q2 | 1
+1950Q3 | 1
+1950Q4 | 1
+
 >> ts0 = dseries(transpose(1:6),'1950M1');
 >> ts1 = ts0.qdiff()
- 
+
 ts1 is a dseries object:
- 
+
         | qdiff(Variable_1)
-1950M1  | NaN              
-1950M2  | NaN              
-1950M3  | NaN              
-1950M4  | 3                
-1950M5  | 3                
-1950M6  | 3                
+1950M1  | NaN
+1950M2  | NaN
+1950M3  | NaN
+1950M4  | 3
+1950M5  | 3
+1950M6  | 3
 @end example
 
 @end deftypefn
@@ -10003,11 +10003,11 @@ Rename variable @var{oldname} to @var{newname} in @dseries object @var{A}, retur
 @example
 >> ts0 = dseries(ones(2,2));
 >> ts1 = ts0.rename('Variable_1','Stinkly')
- 
+
 ts1 is a dseries object:
- 
+
    | Stinkly | Variable_2
-1Y | 1       | 1         
+1Y | 1       | 1
 2Y | 1       | 1
 @end example
 
@@ -10073,11 +10073,11 @@ Renames variables in @dseries object @var{A}, returns a @dseries object @var{B} 
 @example
 >> ts0 = dseries(ones(1,3));
 >> ts1 = ts0.set_names('Barbibul',[],'Barbouille')
- 
+
 ts1 is a dseries object:
- 
+
    | Barbibul | Variable_2 | Barbouille
-1Y | 1        | 1          | 1 
+1Y | 1        | 1          | 1
 @end example
 
 @end deftypefn
@@ -10095,7 +10095,7 @@ Overloads the Matlab/Octave's @code{size} function. Returns the number of observ
 
 ans =
 
-     1     3 
+     1     3
 @end example
 
 @end deftypefn
@@ -10117,16 +10117,16 @@ Overloads @code{uminus} (@code{-}, unary minus) for @dseries object.
 @examplehead
 @example
 >> ts0 = dseries(1)
- 
+
 ts0 is a dseries object:
- 
+
    | Variable_1
 1Y | 1
 
 >> ts1 = -ts0
- 
+
 ts1 is a dseries object:
- 
+
    | -Variable_1
 1Y | -1
 @end example
@@ -10144,14 +10144,14 @@ Overloads the @code{vertcat} Matlab/Octave's method for @dseries objects. This m
 >> ts0 = dseries(rand(2,2),'1950Q1',@{'nifnif';'noufnouf'@});
 >> ts1 = dseries(rand(2,2),'1950Q3',@{'nifnif';'noufnouf'@});
 >> ts2 = [ts0; ts1]
- 
+
 ts2 is a dseries object:
- 
+
        | nifnif   | noufnouf
-1950Q1 | 0.82558  | 0.31852 
-1950Q2 | 0.78996  | 0.53406 
-1950Q3 | 0.089951 | 0.13629 
-1950Q4 | 0.11171  | 0.67865 
+1950Q1 | 0.82558  | 0.31852
+1950Q2 | 0.78996  | 0.53406
+1950Q3 | 0.089951 | 0.13629
+1950Q4 | 0.11171  | 0.67865
 @end example
 
 @end deftypefn
@@ -10666,7 +10666,7 @@ Displays informations about the previously saved MCMC draws generated by a mod f
 >> internals --display-mh-history MODFILENAME
 @end example
 
-@item --load-mh-history 
+@item --load-mh-history
 Loads into the Matlab/Octave's workspace informations  about the previously saved MCMC draws generated by a mod file named @var{MODFILENAME}.
 @examplehead
 @example
@@ -10690,7 +10690,7 @@ A @code{1*Nblck} structure array. Initial state of the random number generator.
 A @code{1*Nblck} structure array. Current  state of the random number generator.
 @item AcceptanceRatio
 A @code{1*Nblck} array of doubles. Current acceptance ratios.
-@end table 
+@end table
 
 @end table
 
@@ -10705,7 +10705,7 @@ A @code{1*Nblck} array of doubles. Current acceptance ratios.
 @item
 Abramowitz, Milton and Irene A. Stegun (1964): ``Handbook of Mathematical Functions'', Courier Dover Publications
 
-@item 
+@item
 Adjemian, Stéphane, Matthieu Darracq Parriès and Stéphane Moyen (2008): ``Towards a monetary policy evaluation framework'',
 @i{European Central Bank Working Paper}, 942
 
@@ -10788,13 +10788,13 @@ Fernández-Villaverde, Jesús (2010): ``The econometrics of DSGE models,''
 @i{SERIEs}, 1, 3--49
 
 @item
-Geweke, John (1992): ``Evaluating the accuracy of sampling-based approaches 
-to the calculation of posterior moments'', in J.O. Berger, J.M. Bernardo, 
-A.P. Dawid, and A.F.M. Smith (eds.) Proceedings of the Fourth Valencia 
+Geweke, John (1992): ``Evaluating the accuracy of sampling-based approaches
+to the calculation of posterior moments'', in J.O. Berger, J.M. Bernardo,
+A.P. Dawid, and A.F.M. Smith (eds.) Proceedings of the Fourth Valencia
 International Meeting on Bayesian Statistics, pp. 169--194, Oxford University Press
 
 @item
-Geweke, John (1999): ``Using simulation methods for Bayesian econometric models: 
+Geweke, John (1999): ``Using simulation methods for Bayesian econometric models:
 Inference, development and communication,'' @i{Econometric Reviews}, 18(1), 1--73
 
 @item
