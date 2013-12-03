@@ -281,10 +281,12 @@ if options_gsa.redform && ~isempty(options_gsa.namendo),% ...
         % check existence of the SS_ANOVA toolbox
         if isempty(options_gsa.threshold_redform) && ...
          ~(exist('gsa_sdp','file')==6 || exist('gsa_sdp','file')==2),
-            disp('Download Mapping routines at:')
-            disp('http://eemc.jrc.ec.europa.eu/softwareDYNARE-Dowload.htm')
-            disp(' ' )
-            error('Mapping routines missing!')
+            fprintf('\nThe "SS-ANOVA-R: MATLAB Toolbox for the estimation of Smoothing Spline ANOVA models with Recursive algorithms" is missing.\n')
+            fprintf('To obtain it, go to:\n\n')
+            fprintf('http://ipsc.jrc.ec.europa.eu/?id=790 \n\n')
+            fprintf('and follow the instructions there.\n')
+            fprintf('After obtaining the files, you need to unpack them and set a Matlab Path to those files.\n')
+            error('SS-ANOVA-R Toolbox missing!')
         end
 
         redform_map(OutputDirectoryName,options_gsa);
