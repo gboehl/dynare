@@ -1,14 +1,27 @@
-function [ys,check] = NK_baseline_steadystate(ys,exe)
-global M_ lgy_
+function [ys,check] = NK_baseline_steadystate(ys,exo)
+% function [ys,check] = NK_baseline_steadystate(ys,exo)
+% computes the steady state for the NK_baseline.mod and uses a numerical
+% solver to do so
+% Inputs: 
+%   - ys        [vector] vector of initial values for the steady state of
+%                   the endogenous variables
+%   - exo       [vector] vector of values for the exogenous variables
+%
+% Output: 
+%   - ys        [vector] vector of steady state values fpr the the endogenous variables
+%   - check     [scalar] set to 0 if steady state computation worked and to
+%                    1 of not (allows to impos restriction on parameters)
 
-if isfield(M_,'param_nbr') == 1
+global M_ 
+
+% read out parameters to access them with their name
 NumberOfParameters = M_.param_nbr;
-for i = 1:NumberOfParameters
-  paramname = deblank(M_.param_names(i,:));
-  eval([ paramname ' = M_.params(' int2str(i) ');']);
+for ii = 1:NumberOfParameters
+  paramname = deblank(M_.param_names(ii,:));
+  eval([ paramname ' = M_.params(' int2str(ii) ');']);
 end
+% initialize indicator
 check = 0;
-end
 
 
 %% Enter model equations here
@@ -32,6 +45,11 @@ Lambdax=mu_z;
 
 %set the parameter gammma1
 gammma1=mu_z*mu_I/betta-(1-delta);
+if gammma1<0 % parameter violates restriction; Preventing this cannot be implemented via prior restriction as it is a composite of different parameters and the valid prior region has unknown form
+    check=1; %set failure indicator
+    return; %return without updating steady states
+end
+
 
 r=1*gammma1;
 R=1+(PI*mu_z/betta-1);
@@ -49,9 +67,17 @@ vp=(1-thetap)/(1-thetap*PI^((1-chi)*epsilon))*PIstar^(-epsilon);
 vw=(1-thetaw)/(1-thetaw*PI^((1-chiw)*eta)*mu_z^eta)*PIstarw^(-eta);
 tempvaromega=alppha/(1-alppha)*w/r*mu_z*mu_I;
 
-ld=fsolve(@(ld)(1-betta*thetaw*mu_z^(eta-1)*PI^(-(1-chiw)*(1-eta)))/(1-betta*thetaw*mu_z^(eta*(1+gammma))*PI^(eta*(1-chiw)*(1+gammma)))...
+[ld,fval,exitflag]=fsolve(@(ld)(1-betta*thetaw*mu_z^(eta-1)*PI^(-(1-chiw)*(1-eta)))/(1-betta*thetaw*mu_z^(eta*(1+gammma))*PI^(eta*(1-chiw)*(1+gammma)))...
 -(eta-1)/eta*wstar/(varpsi*PIstarw^(-eta*gammma)*ld^gammma)*((1-h*mu_z^(-1))^(-1)-betta*h*(mu_z-h)^(-1))*...
 ((mu_A*mu_z^(-1)*vp^(-1)*tempvaromega^alppha-tempvaromega*(1-(1-delta)*(mu_z*mu_I)^(-1)))*ld-vp^(-1)*Phi)^(-1),0.25,options);
+if exitflag <1
+    %indicate the SS computation was not sucessful; this would also be detected by Dynare
+    %setting the indicator here shows how to use this functionality to
+    %filter out parameter draws
+    check=1; %set failure indicator
+    return; %return without updating steady states
+end
+
 
 l=vw*ld;
 k=tempvaromega*ld;
@@ -68,27 +94,12 @@ g2=epsilon/(epsilon-1)*g1;
 
 %% end own model equations
 
-
-for iter = 1:length(M_.params)
+for iter = 1:length(M_.params) %update parameters set in the file
   eval([ 'M_.params(' num2str(iter) ') = ' M_.param_names(iter,:) ';' ])
 end
 
-if isfield(M_,'param_nbr') == 1
-
-if isfield(M_,'orig_endo_nbr') == 1
-NumberOfEndogenousVariables = M_.orig_endo_nbr;
-else
-NumberOfEndogenousVariables = M_.endo_nbr;
-end
-ys = zeros(NumberOfEndogenousVariables,1);
-for i = 1:NumberOfEndogenousVariables
-  varname = deblank(M_.endo_names(i,:));
-  eval(['ys(' int2str(i) ') = ' varname ';']);
-end
-else
-ys=zeros(length(lgy_),1);
-for i = 1:length(lgy_)
-    ys(i) = eval(lgy_(i,:));
-end
-check = 0;
+NumberOfEndogenousVariables = M_.orig_endo_nbr; %auxiliary variables are set automatically
+for ii = 1:NumberOfEndogenousVariables
+  varname = deblank(M_.endo_names(ii,:));
+  eval(['ys(' int2str(ii) ') = ' varname ';']);
 end
