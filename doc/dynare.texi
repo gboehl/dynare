@@ -10518,8 +10518,12 @@ Two examples of a small RBC model in a stochastic setup, presented in
 @cite{Collard (2001)} (see the file @file{guide.pdf} which comes with
 Dynare).
 
+@item example3.mod
+A small RBC model in a stochastic setup, presented in
+@cite{Collard (2001)}. The steady state is solved analytically using the  @code{steady_state_model} block (@pxref{steady_state_model}). 
+
 @item fs2000.mod
-A cash in advance model, estimated by @cite{Schorfheide (2000)}.
+A cash in advance model, estimated by @cite{Schorfheide (2000)}. The file shows how to use Dynare for estimation.
 
 @item fs2000_nonstationary.mod
 The same model than @file{fs2000.mod}, but written in non-stationary
@@ -10527,11 +10531,14 @@ form. Detrending of the equations is done by Dynare.
 
 @item bkk.mod
 Multi-country RBC model with time to build, presented in @cite{Backus,
-Kehoe and Kydland (1992)}.
+Kehoe and Kydland (1992)}. The file shows how to use Dynare's macro-processor.
 
 @item agtrend.mod
 Small open economy RBC model with shocks to the growth trend, presented
 in @cite{Aguiar and Gopinath (2004)}.
+
+@item NK_baseline.mod
+Baseline New Keynesian Model estimated in @cite{Fernández-Villaverde (2010)}. It demonstrates how to use an explicit steady state file to update parameters and call a numerical solver.
 
 @end table
 
@@ -10698,6 +10705,10 @@ Dynamic Equilibrium Economies to Data: A Bayesian Approach,''
 Fernández-Villaverde, Jesús and Juan Rubio-Ramírez (2005): ``Estimating
 Dynamic Equilibrium Economies: Linear versus Nonlinear Likelihood,''
 @i{Journal of Applied Econometrics}, 20, 891--910
+
+@item
+Fernández-Villaverde, Jesús (2010): ``The econometrics of DSGE models,''
+@i{SERIEs}, 1, 3--49
 
 @item
 Geweke, John (1992): ``Evaluating the accuracy of sampling-based approaches 
