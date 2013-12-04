@@ -4314,23 +4314,45 @@ acceptance ratio  should be close to  one third or one  quarter. If this
 not the case, you can stop the MCMC (@code{Ctrl-C}) and change the value
 of option @code{mh_jscale} (see below).
 
+Note that by default Dynare generates random numbers using the algorithm
+@code{mt199937ar} (@i{ie} Mersenne Twister method) with a seed set equal
+to @code{0}.   Consequently the MCMCs  in Dynare are  deterministic: one
+will  get  exactly  the  same   results  across  different  Dynare  runs
+(@i{ceteris paribus}).  For instance, the posterior moments or posterior
+densities  will be  exactly the  same. This  behaviour allows  to easily
+identify the  consequences of a change  on the model, the  priors or the
+estimation options. But one may also  want to check that across multiple
+runs, with  different sequences of  proposals, the returned  results are
+almost  identical. This  should  be  true if  the  number of  iterations
+(@i{ie} the value of @code{mh_replic}) is important enough to ensure the
+convergence of  the MCMC to its  ergodic distribution. In this  case the
+default behaviour of the random number generators in not wanted, and the
+user  should set  the  seed according  to the  system  clock before  the
+estimation command using the following command:
+
+@example
+set_dynare_seed('clock');
+@end example
+
+@noindent so that the sequence of proposals will be different across different runs.
+
 @algorithmshead
 
-The Monte Carlo Markov Chain (MCMC) diagnostics are generated
-by the estimation command if @ref{mh_replic} is larger than 2000 and if
-option @ref{nodiagnostic} is not used. If @ref{mh_nblocks} is equal to one,
-the convergence diagnostics of @cite{Geweke (1992,1999)} is computed. It uses a
-chi square test to compare the means of the first and last draws specified by
-@ref{geweke_interval} after discarding the burnin of @ref{mh_drop}. The test is
-computed using variance estimates under the assumption of no serial correlation
-as well as using tapering windows specified in @ref{taper_steps}.
-If @ref{mh_nblocks}  is larger  than 1, the convergence diagnostics of
-@cite{Brooks and Gelman (1998)} are used instead.
-As described in section  3 of @cite{Brooks and Gelman (1998)} the univariate
-convergence diagnostics are  based on comparing pooled  and within MCMC moments
-(Dynare displays the  second and third order  moments, and
-the length of  the Highest Probability Density interval  covering 80% of
-the  posterior   distribution).   Due  to  computational   reasons,  the
+The Monte  Carlo Markov  Chain (MCMC) diagnostics  are generated  by the
+estimation command if @ref{mh_replic} is  larger than 2000 and if option
+@ref{nodiagnostic} is not used. If @ref{mh_nblocks} is equal to one, the
+convergence diagnostics  of @cite{Geweke  (1992,1999)} is  computed.  It
+uses a chi square test to compare  the means of the first and last draws
+specified  by  @ref{geweke_interval}  after  discarding  the  burnin  of
+@ref{mh_drop}. The test  is computed using variance  estimates under the
+assumption of  no serial correlation  as well as using  tapering windows
+specified in  @ref{taper_steps}.  If @ref{mh_nblocks} is  larger than 1,
+the convergence diagnostics of @cite{Brooks  and Gelman (1998)} are used
+instead.  As described  in section 3 of @cite{Brooks  and Gelman (1998)}
+the univariate convergence diagnostics are based on comparing pooled and
+within MCMC moments (Dynare displays the second and third order moments,
+and the length of the  Highest Probability Density interval covering 80%
+of  the  posterior distribution).   Due  to  computational reasons,  the
 multivariate  convergence diagnostic  does not  follow @cite{Brooks  and
 Gelman (1998)}  strictly, but rather  applies their idea  for univariate
 convergence  diagnostics  to  the  range  of  the  posterior  likelihood
@@ -10597,7 +10619,7 @@ Dynare).
 
 @item example3.mod
 A small RBC model in a stochastic setup, presented in
-@cite{Collard (2001)}. The steady state is solved analytically using the  @code{steady_state_model} block (@pxref{steady_state_model}). 
+@cite{Collard (2001)}. The steady state is solved analytically using the  @code{steady_state_model} block (@pxref{steady_state_model}).
 
 @item fs2000.mod
 A cash in advance model, estimated by @cite{Schorfheide (2000)}. The file shows how to use Dynare for estimation.
