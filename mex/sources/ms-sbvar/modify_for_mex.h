@@ -32,6 +32,14 @@
 #define dw_free mxFree
 #define dw_exit msExit
 
+/* Handle Ctrl-C in Matlab/Octave */
+#ifdef MATLAB_MEX_FILE
+extern bool utIsInterruptPending();
+#else
+#include <octave/config.h>
+#include <octave/quit.h>
+#endif
+
 void msExit(int status);
 extern int constant_seed;
 
