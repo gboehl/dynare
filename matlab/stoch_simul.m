@@ -198,7 +198,7 @@ if options_.irf
                          y(i_var(j),:)');
                 eval(['oo_.irfs.' deblank(M_.endo_names(i_var(j),:)) '_' ...
                       deblank(M_.exo_names(i,:)) ' = y(i_var(j),:);']);
-                if max(y(i_var(j),:)) - min(y(i_var(j),:)) > options_.impulse_responses.plot_threshold
+                if max(abs(y(i_var(j),:))) > options_.impulse_responses.plot_threshold
                     irfs  = cat(1,irfs,y(i_var(j),:));
                     if isempty(mylist)
                         mylist = deblank(var_list(j,:));
