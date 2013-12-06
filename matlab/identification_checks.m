@@ -45,7 +45,11 @@ function [condJ, ind0, indnoJ, ixnoJ, McoJ, PcoJ, jweak, jweak_pair] = identific
 npar = size(JJ,2);
 indnoJ = zeros(1,npar);
 
-ind1 = find(vnorm(JJ)>=eps); % take non-zero columns
+if size(JJ,1)>1,
+    ind1 = find(vnorm(JJ)>=eps); % take non-zero columns
+else
+    ind1 = find(abs(JJ)>=eps); % take non-zero columns
+end    
 JJ1 = JJ(:,ind1);
 [eu,ee2,ee1] = svd( JJ1, 0 );
 condJ= cond(JJ1);

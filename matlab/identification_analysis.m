@@ -225,7 +225,11 @@ if info(1)==0,
         deltaM = deltaM.*abs(params');
         deltaM(params==0)=deltaM_prior(params==0);
         quant = siJ./repmat(sqrt(diag(cmm)),1,nparam);
-        siJnorm = vnorm(quant).*normaliz1;
+        if size(quant,1)==1,
+            siJnorm = abs(quant).*normaliz1;
+        else
+            siJnorm = vnorm(quant).*normaliz1;
+        end
         %                 siJnorm = vnorm(siJ(inok,:)).*normaliz;
         quant=[];
 %         inok = find((abs(TAU)<1.e-8));
@@ -238,7 +242,11 @@ if info(1)==0,
         siH=siH(iy,:);
         if ~isempty(iy),
             quant = siH./repmat(sqrt(diag_chh(iy)),1,nparam);
-            siHnorm = vnorm(quant).*normaliz1;
+            if size(quant,1)==1,
+                siHnorm = abs(quant).*normaliz1;
+            else
+                siHnorm = vnorm(quant).*normaliz1;
+            end
         else
             siHnorm = [];
         end
@@ -254,7 +262,11 @@ if info(1)==0,
         siLRE=siLRE(iy,:);
         if ~isempty(iy),
             quant = siLRE./repmat(sqrt(diag_clre(iy)),1,np);
-            siLREnorm = vnorm(quant).*normaliz1(offset+1:end);
+            if size(quant,1)==1,
+                siLREnorm = abs(quant).*normaliz1(offset+1:end);
+            else
+                siLREnorm = vnorm(quant).*normaliz1(offset+1:end);
+            end
         else
             siLREnorm=[];
         end

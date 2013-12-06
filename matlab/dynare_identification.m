@@ -207,15 +207,23 @@ else
     name_tex = [cellstr(M_.exo_names_tex); cellstr(M_.param_names_tex)];
 end
 
+skipline()
+disp(['==== Identification analysis ====' ]),
+skipline()
+if nparam<2,
+    options_ident.advanced=0;
+    advanced = options_ident.advanced;
+    disp('There is only one parameter to study for identitification.')
+    disp('The advanced option is re-set to 0.')
+    skipline()
+end
+
 options_ident = set_default_option(options_ident,'max_dim_cova_group',min([2,nparam-1]));
 options_ident.max_dim_cova_group = min([options_ident.max_dim_cova_group,nparam-1]);
 
 
 MaxNumberOfBytes=options_.MaxNumberOfBytes;
 store_options_ident = options_ident;
-skipline()
-disp(['==== Identification analysis ====' ]),
-skipline()
 
 if iload <=0,
     
