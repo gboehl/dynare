@@ -1,10 +1,10 @@
-function write_latex_definitions(M_)
+function write_latex_definitions
 %function write_latex_definitions
 % Writes a latex file containing the variable names, latex names, and
 % tags/comments
 %
 % INPUTS
-%    M_
+%    none
 %
 % OUTPUTS
 %    none
@@ -28,6 +28,8 @@ function write_latex_definitions(M_)
 %
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+
+global M_;
 
 if M_.exo_det_nbr == 0
     tables = {'Endogenous', 'Exogenous', 'Parameters'};
