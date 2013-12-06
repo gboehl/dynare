@@ -10,7 +10,7 @@ endif
 
 if HAVE_GSL
 if HAVE_MATIO
-SUBDIRS += ms_sbvar estimation
+SUBDIRS += ms_sbvar
 endif
 endif
 
