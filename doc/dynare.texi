@@ -8133,6 +8133,12 @@ the one that is highest on the MATLAB/Octave path).
 
 @end deffn
 
+@deffn {MATLAB/Octave command} write_latex_definitions ;
+
+Writes the names, @LaTeX{} names and long names of model variables to
+tables in a file named @code{<<M_.fname>>_latex_definitions.tex}.
+
+@end deffn
 
 
 @node The Configuration File
