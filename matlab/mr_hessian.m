@@ -101,6 +101,7 @@ while i<n
                 h1(i)=2.1*h1(i);
             end
             h1(i) = min(h1(i),0.5*hmax(i));
+            h1(i) = max(h1(i),1.e-10);
             xh1(i)=x(i)+h1(i);
             try
                 [fx, ffx]=feval(func,xh1,DynareDataset,DynareOptions,Model,EstimatedParameters,BayesInfo,DynareResults);

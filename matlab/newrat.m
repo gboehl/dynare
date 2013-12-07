@@ -122,7 +122,7 @@ while norm(gg)>gtol && check==0 && jit<nit
         fval=fval1;
         x0=x01;
     end
-    if icount==1 || (icount>1 && (fval0(icount-1)-fval0(icount))>1) || ((fval0(icount)-fval)<1.e-2*(gg'*(H*gg))/2 && igibbs),
+%     if icount==1 || (icount>1 && (fval0(icount-1)-fval0(icount))>1) || ((fval0(icount)-fval)<1.e-2*(gg'*(H*gg))/2 && igibbs),
         if length(find(ig))<nx
             ggx=ggx*0;
             ggx(find(ig))=gg(find(ig));
@@ -139,7 +139,7 @@ while norm(gg)>gtol && check==0 && jit<nit
         nig=[nig ig];
         disp('Sequence of univariate steps!!')
         fval=fvala;
-    end
+%     end
     if (fval0(icount)-fval)<ftol && flagit==0
         disp('Try diagonal Hessian')
         ihh=diag(1./(diag(hhg)));
