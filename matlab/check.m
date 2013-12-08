@@ -107,7 +107,7 @@ if options.noprint == 0
     if result
         disp('The rank condition is verified.')
     else
-        disp('The rank conditions AREN''T verified!')
+        disp('The rank condition ISN''T verified!')
     end
     skipline()
 end
