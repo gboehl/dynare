@@ -29,6 +29,11 @@ wsOct
 !/run_test.m
 !/run_test_matlab.m
 !/run_test_octave.m
+!/run_reporting_test_matlab.m
+!/run_reporting_test_octave.m
+!/run_block_byte_tests_matlab.m
+!/run_block_byte_tests_octave.m
+!/run_unitary_tests.m
 !/test.m
 !/AIM/data_ca1.m
 !/AIM/fs2000_b1L1L_AIM_steadystate.m
