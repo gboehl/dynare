@@ -56,6 +56,7 @@ switch ndseries
         end
         hh = plot(ts.data);
     end
+    axis tight;
     id = get(gca,'XTick');
     if isequal(id(1),0)
         dates = strings([ts.dates(1)-1,ts.dates(id(2:end))]);
