@@ -38,11 +38,8 @@ else
     tables = {'Endogenous', 'Exogenous', 'Exogenous Deterministic', 'Parameters'};
     M_var_root = {'M_.endo', 'M_.exo', 'M_.exo_det', 'M_.param'};
 end
-fid = fopen([M_.fname '_latex_definitions.tex'], 'w');
-fprintf(fid, '\\documentclass[12pt,a4paper]{article}\n');
-fprintf(fid, '\\usepackage{longtable}\n');
-fprintf(fid, '\\begin{document}\n');
 
+fid = fopen([M_.fname '_latex_definitions.tex'], 'w');
 for i=1:length(tables)
     fprintf(fid, '\\begin{center}\n');
     fprintf(fid, '\\begin{longtable}{ccc}\n');
@@ -75,9 +72,6 @@ for i=1:length(tables)
     fprintf(fid, '\\hline%%\n');
     fprintf(fid, '\\end{longtable}\n');
     fprintf(fid, '\\end{center}\n');
-    fprintf(fid, '\\newpage\n\n');
 end
-
-fprintf(fid, '\\end{document}\n');
 fclose(fid);
 end
