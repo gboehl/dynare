@@ -255,6 +255,7 @@ EXTRA_DIST = \
 	run_block_byte_tests_octave.m \
 	run_reporting_test_matlab.m \
 	run_reporting_test_octave.m \
+	run_unitary_tests.m \
 	reporting/AnnualTable.m \
 	reporting/CommResidTablePage.m \
 	reporting/CountryGraphPage.m \
