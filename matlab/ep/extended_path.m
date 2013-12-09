@@ -350,4 +350,7 @@ end% (while) loop over t
 
 dyn_waitbar_close(hh);
 
-oo_.endo_simul = oo_.steady_state;
+if ~nargout
+    oo_.endo_simul = [initial_conditions, time_series];
+    dyn2vec;
+end
