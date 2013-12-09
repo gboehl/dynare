@@ -24,9 +24,10 @@ file = 1;
 for f=1:length(dd)
     if ~(isequal(dd(f).name,'.') || isequal(dd(f).name,'..'))
         if dd(f).isdir
-            flist(file) = { get_directory_description([ basedir filesep dd(f).name]) };
+            r = get_directory_description([ basedir filesep dd(f).name]);
+            flist = { flist{:} r{:} };
         else
-            flist(file) = { [basedir filesep dd(f).name] };
+            flist{length(flist)+1} = [basedir filesep dd(f).name];
         end
         file = file + 1; 
     end

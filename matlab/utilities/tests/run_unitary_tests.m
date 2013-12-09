@@ -20,18 +20,13 @@ function [report, time] = run_unitary_tests(listoffiles)
 report = {};
     
 for f=1:length(listoffiles)
-    if iscell(listoffiles{f})
-        info = run_unitary_tests(listoffiles{f});
-        report = [report; info];
-    else
-        if isequal(listoffiles{f}(end-1:end),'.m') && isempty(strfind(listoffiles{f},'.#'))
-            if is_unitary_test_available(listoffiles{f})
-                disp(['***** Process unitary tests in      ' listoffiles{f}])
-                [check, info] = mtest(listoffiles{f});
-                report = [report; info];
-            else
-                disp(['Booh! No unitary tests available in ' listoffiles{f}])
-            end
+    if isequal(listoffiles{f}(end-1:end),'.m') && isempty(strfind(listoffiles{f},'.#'))
+        if is_unitary_test_available(listoffiles{f})
+            disp(['***** Process unitary tests in      ' listoffiles{f}])
+            [check, info] = mtest(listoffiles{f});
+            report = [report; info];
+        else
+            disp(['Booh! No unitary tests available in ' listoffiles{f}])
         end
     end
 end
