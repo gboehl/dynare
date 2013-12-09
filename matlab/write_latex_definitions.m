@@ -39,18 +39,29 @@ else
     M_var_root = {'M_.endo', 'M_.exo', 'M_.exo_det', 'M_.param'};
 end
 fid = fopen([M_.fname '_latex_definitions.tex'], 'w');
-fprintf(fid, '\\documentclass[10pt,a4paper]{article}\n');
-fprintf(fid, '\\usepackage{geometry}\n');
+fprintf(fid, '\\documentclass[12pt,a4paper]{article}\n');
+fprintf(fid, '\\usepackage{longtable}\n');
 fprintf(fid, '\\begin{document}\n');
 
 for i=1:length(tables)
-    fprintf(fid, '\\begin{table}[ht]\n');
-    fprintf(fid, ['\\caption{' tables{i} '}\n']);
-    fprintf(fid, '\\centering\n');
-    fprintf(fid, '\\begin{tabular}{c c c}\n');
-    fprintf(fid, '\\hline\\hline\n');
-    fprintf(fid, 'Variable & LaTeX & Description\\\\\n');
-    fprintf(fid, '\\hline\n');
+    fprintf(fid, '\\begin{center}\n');
+    fprintf(fid, '\\begin{longtable}{ccc}\n');
+    fprintf(fid, ['\\caption{' tables{i} '}\\\\%%\n']);
+
+    fprintf(fid, '\\hline%%\n');
+    fprintf(fid, '\\multicolumn{1}{c}{\\textbf{Variable}} &\n');
+    fprintf(fid, '\\multicolumn{1}{c}{\\textbf{\\LaTeX}} &\n');
+    fprintf(fid, '\\multicolumn{1}{c}{\\textbf{Description}}\\\\%%\n');
+    fprintf(fid, '\\hline\\hline%%\n');
+    fprintf(fid, '\\endfirsthead\n');
+
+    fprintf(fid, '\\multicolumn{3}{c}{{\\tablename} \\thetable{} -- Continued}\\\\%%\n');
+    fprintf(fid, '\\hline%%\n');
+    fprintf(fid, '\\multicolumn{1}{c}{\\textbf{Variable}} &\n');
+    fprintf(fid, '\\multicolumn{1}{c}{\\textbf{\\LaTeX}} &\n');
+    fprintf(fid, '\\multicolumn{1}{c}{\\textbf{Description}}\\\\%%\n');
+    fprintf(fid, '\\hline\\hline%%\n');
+    fprintf(fid, '\\endhead\n');
 
     names = eval([M_var_root{i} '_names']);
     tex = eval([M_var_root{i} '_names_tex']);
@@ -61,11 +72,10 @@ for i=1:length(tables)
             strtrim(tex(j,:)), ...
             regexprep(strtrim(long(j,:)), '_', '\\_'));
     end
-
-    fprintf(fid, '\\hline\n');
-    fprintf(fid, '\\end{tabular}\n');
-    fprintf(fid, '\\end{table}\n');
-    fprintf(fid, '\\newpage\n');
+    fprintf(fid, '\\hline%%\n');
+    fprintf(fid, '\\end{longtable}\n');
+    fprintf(fid, '\\end{center}\n');
+    fprintf(fid, '\\newpage\n\n');
 end
 
 fprintf(fid, '\\end{document}\n');
