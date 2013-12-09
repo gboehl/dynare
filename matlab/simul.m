@@ -55,16 +55,16 @@ if isoctave && options_.stack_solve_algo == 2
 end
 
 if size(M_.lead_lag_incidence,2)-nnz(M_.lead_lag_incidence(M_.maximum_endo_lag+1,:)) > 0
-    mess = ['SIMUL: error in model specification : variable ' M_.endo_names(find(M_.lead_lag_incidence(M_.maximum_lag+1,:)==0),:)] ;
-    mess = [mess ' doesn''t appear as current variable.'] ; 
-    error (mess) ;
+    mess = ['SIMUL: error in model specification : variable ' M_.endo_names(find(M_.lead_lag_incidence(M_.maximum_lag+1,:)==0),:)];
+    mess = [mess ' doesn''t appear as current variable.'];
+    error(mess)
 end
 
 if options_.periods == 0
     error('SIMUL: number of periods for the simulation isn''t specified')
 end
 
-if ~ options_.initval_file
+if ~options_.initval_file
     if isempty(options_.datafile)
         make_ex_;
         make_y_;
@@ -74,10 +74,10 @@ if ~ options_.initval_file
 end
 
 if isempty(options_.scalv) || options_.scalv == 0
-    options_.scalv = oo_.steady_state ;
+    options_.scalv = oo_.steady_state;
 end
 
-options_.scalv= 1 ;
+options_.scalv= 1;
 
 if options_.debug
     model_static = str2func([M_.fname,'_static']);
@@ -102,11 +102,11 @@ if(options_.block)
             oo_.deterministic_simulation.status = 0;
         else
             oo_.deterministic_simulation.status = 1;
-        end;
+        end
         mexErrCheck('bytecode', info);
     else
         eval([M_.fname '_dynamic']);
-    end;
+    end
 else
     if(options_.bytecode)
         [info, oo_.endo_simul]=bytecode('dynamic');
@@ -123,7 +123,7 @@ else
                 sim1_lbj;
             end
         end
-    end;
-end;
+    end
+end
 
 dyn2vec;
