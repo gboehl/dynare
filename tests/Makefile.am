@@ -237,12 +237,12 @@ dsge-var/dsgevar_forward_estimated_lambda.o.trs: dsge-var/simul_hybrid.o.trs
 
 # Matlab TRS Files
 M_TRS_FILES = $(patsubst %.mod, %.m.trs, $(MODFILES))
-M_TRS_FILES += run_block_byte_tests_matlab.m.trs run_reporting_test_matlab.m.trs
+M_TRS_FILES += run_block_byte_tests_matlab.m.trs run_reporting_test_matlab.m.trs run_unitary_tests.m.trs
 M_XFAIL_TRS_FILES = $(patsubst %.mod, %.m.trs, $(XFAIL_MODFILES))
 
 # Octave TRS Files
 O_TRS_FILES = $(patsubst %.mod, %.o.trs, $(MODFILES))
-O_TRS_FILES += run_block_byte_tests_octave.o.trs run_reporting_test_octave.o.trs
+O_TRS_FILES += run_block_byte_tests_octave.o.trs run_reporting_test_octave.o.trs run_unitary_tests.o.trs
 O_XFAIL_TRS_FILES = $(patsubst %.mod, %.o.trs, $(XFAIL_MODFILES))
 
 EXTRA_DIST = \
