@@ -17,19 +17,23 @@ function [vdec, cc, ac] = mc_moments(mm, ss, dr)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-global options_ M_
+global options_ M_ estim_params_ oo_
 
   [nr1, nc1, nsam] = size(mm);
+  nobs=size(options_.varobs,1);
   disp('Computing theoretical moments ...')
   h = dyn_waitbar(0,'Theoretical moments ...');
+  vdec = zeros(nobs,M_.exo_nbr,nsam);
+  cc = zeros(size(options_.varobs,1),size(options_.varobs,1),nsam);
+  ac = zeros(size(options_.varobs,1),size(options_.varobs,1)*options_.ar,nsam);
   
   for j=1:nsam,
-    dr.ghx = mm(:, [1:(nc1-M_.exo_nbr)],j);
-    dr.ghu = mm(:, [(nc1-M_.exo_nbr+1):end], j);
+    oo_.dr.ghx = mm(:, [1:(nc1-M_.exo_nbr)],j);
+    oo_.dr.ghu = mm(:, [(nc1-M_.exo_nbr+1):end], j);
     if ~isempty(ss),
       set_shocks_param(ss(j,:));
     end
-    [vdec(:,:,j), corr, autocorr, z, zz] = th_moments(dr,options_.varobs);
+    [vdec(:,:,j), corr, autocorr, z, zz] = th_moments(oo_.dr,options_.varobs);
     cc(:,:,j)=triu(corr);
     dum=[];
     for i=1:options_.ar

@@ -209,7 +209,7 @@ if opt_gsa.morris==1,
     load([OutputDirectoryName,'/',fname_,'_morris_IDE'],'SAvdec','vdec','ir_vdec','ic_vdec')
   end
   
-  hh = dyn_figure(options_);
+  hh = dyn_figure(options_,'name','Screening identification: variance decomposition');
 %   boxplot(SAvdec,'whis',10,'symbol','r.')
   myboxplot(SAvdec,[],'.',[],10)
   set(gca,'xticklabel',' ','fontsize',10,'xtick',[1:npT])
@@ -221,7 +221,7 @@ if opt_gsa.morris==1,
     text(ip,-2,bayestopt_.name{ip},'rotation',90,'HorizontalAlignment','right','interpreter','none')
   end
   xlabel(' ')
-  title('All variance decomposition')
+  title('Elementary effects variance decomposition')
   dyn_saveas(hh,[OutputDirectoryName,'/',fname_,'_morris_vdec'],options_);
   else
   save([OutputDirectoryName,'/',fname_,'_morris_IDE'],'vdec')
@@ -314,7 +314,7 @@ if opt_gsa.morris==1,
     load([OutputDirectoryName,'/',fname_,'_morris_IDE'],'ac','ir_ac','ic_ac')
   end
   
-  hh=dyn_figure(options_);
+  hh=dyn_figure(options_,'name','Screening identification: theoretical moments');
 %   boxplot(SAcc,'whis',10,'symbol','r.')
   myboxplot(SAcc,[],'.',[],10)
   set(gca,'xticklabel',' ','fontsize',10,'xtick',[1:npT])
@@ -326,7 +326,7 @@ if opt_gsa.morris==1,
     text(ip,-0.02,bayestopt_.name{ip},'rotation',90,'HorizontalAlignment','right','interpreter','none')
   end
   xlabel(' ')
-  title('EET All moments')
+  title('Elementary effects in the moments')
   dyn_saveas(hh,[OutputDirectoryName,'/',fname_,'_morris_moments'],options_);
 %   close(gcf),
 
@@ -709,7 +709,7 @@ if opt_gsa.morris==1,
   else
     load([OutputDirectoryName,'/',fname_,'_morris_IDE'],'SAnorm','SAmunorm','SAsignorm')
   end
-  hh=dyn_figure(options_); %bar(SAnorm(:,irel))
+  hh=dyn_figure(options_,'name','Screening identification: model'); %bar(SAnorm(:,irel))
 %   boxplot(SAnorm','whis',10,'symbol','r.')
   myboxplot(SAnorm',[],'.',[],10)
   set(gca,'xticklabel',' ','fontsize',10,'xtick',[1:npT])
@@ -725,35 +725,35 @@ if opt_gsa.morris==1,
   title('Elementary effects in the model')
   dyn_saveas(hh,[OutputDirectoryName,'/',fname_,'_morris_par'],options_);
 
-  hh=dyn_figure(options_); %bar(SAmunorm(:,irel))
-%   boxplot(SAmunorm','whis',10,'symbol','r.')
-  myboxplot(SAmunorm',[],'.',[],10)
-  set(gca,'xticklabel',' ','fontsize',10,'xtick',[1:npT])
-  set(gca,'xlim',[0.5 npT+0.5])
-  set(gca,'ylim',[-1 1])
-  set(gca,'position',[0.13 0.2 0.775 0.7])
-  xlabel(' ')
-  for ip=1:npT,
-    text(ip,-0.02,bayestopt_.name{ip},'rotation',90,'HorizontalAlignment','right','interpreter','none')
-  end
-  xlabel(' ')
-  title('\mu in the model')
-  dyn_saveas(hh,[OutputDirectoryName,'/',fname_,'_morrismu_par'],options_);
-
-  hh=dyn_figure(options_); %bar(SAsignorm(:,irel))
-%   boxplot(SAsignorm','whis',10,'symbol','r.')
-  myboxplot(SAsignorm',[],'.',[],10)
-  set(gca,'xticklabel',' ','fontsize',10,'xtick',[1:npT])
-  set(gca,'xlim',[0.5 npT+0.5])
-  set(gca,'ylim',[0 1])
-  set(gca,'position',[0.13 0.2 0.775 0.7])
-  xlabel(' ')
-  for ip=1:npT,
-    text(ip,-0.02,bayestopt_.name{ip},'rotation',90,'HorizontalAlignment','right','interpreter','none')
-  end
-  xlabel(' ')
-  title('\sigma in the model')
-  dyn_saveas(hh,[OutputDirectoryName,'/',fname_,'_morrissig_par'],options_);
+%   hh=dyn_figure(options_); %bar(SAmunorm(:,irel))
+% %   boxplot(SAmunorm','whis',10,'symbol','r.')
+%   myboxplot(SAmunorm',[],'.',[],10)
+%   set(gca,'xticklabel',' ','fontsize',10,'xtick',[1:npT])
+%   set(gca,'xlim',[0.5 npT+0.5])
+%   set(gca,'ylim',[-1 1])
+%   set(gca,'position',[0.13 0.2 0.775 0.7])
+%   xlabel(' ')
+%   for ip=1:npT,
+%     text(ip,-0.02,bayestopt_.name{ip},'rotation',90,'HorizontalAlignment','right','interpreter','none')
+%   end
+%   xlabel(' ')
+%   title('\mu in the model')
+%   dyn_saveas(hh,[OutputDirectoryName,'/',fname_,'_morrismu_par'],options_);
+% 
+%   hh=dyn_figure(options_); %bar(SAsignorm(:,irel))
+% %   boxplot(SAsignorm','whis',10,'symbol','r.')
+%   myboxplot(SAsignorm',[],'.',[],10)
+%   set(gca,'xticklabel',' ','fontsize',10,'xtick',[1:npT])
+%   set(gca,'xlim',[0.5 npT+0.5])
+%   set(gca,'ylim',[0 1])
+%   set(gca,'position',[0.13 0.2 0.775 0.7])
+%   xlabel(' ')
+%   for ip=1:npT,
+%     text(ip,-0.02,bayestopt_.name{ip},'rotation',90,'HorizontalAlignment','right','interpreter','none')
+%   end
+%   xlabel(' ')
+%   title('\sigma in the model')
+%   dyn_saveas(hh,[OutputDirectoryName,'/',fname_,'_morrissig_par'],options_);
 
   %     figure, bar(SAnorm(:,irel)')
   %     set(gca,'xtick',[1:j0])
