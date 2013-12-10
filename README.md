@@ -78,9 +78,8 @@ If you have downloaded the sources from an official source archive or the source
 
 If you want to use Git, do the following from a terminal:
 
-    git clone http://github.com/DynareTeam/dynare.git
+    git clone --recursive http://github.com/DynareTeam/dynare.git
     cd dynare
-    git submodule update --init
     autoreconf -si
 
 The last line runs Autoconf and Automake in order to prepare the build environment (this is not necessary if you got the sources from an official source archive or the source snapshot).
