@@ -257,6 +257,9 @@ if fload==0,
         %try stoch_simul([]);
         try
             [Tt,Rr,SteadyState,info,M_,options_,oo_] = dynare_resolve(M_,options_,oo_,'restrict');
+            if info(1)==0,
+                info=endogenous_prior(Tt,Rr,M_,options_,oo_);
+            end
             infox(j,1)=info(1);
             if infox(j,1)==0 && ~exist('T'),
                 dr_=oo_.dr;
@@ -533,6 +536,9 @@ if length(iunstable)>0 && length(iunstable)<Nsam,
         if any(infox==30),
             disp(['    For ',num2str(length(find(infox==30))/Nsam*100,'%1.3f'),'\% Ergodic variance can''t be computed.'])
         end
+        if any(infox==49),
+            disp(['    For ',num2str(length(find(infox==49))/Nsam*100,'%1.3f'),'\% The model violates one (many) endogenous prior restriction(s).'])
+        end
 
     end
     skipline()
@@ -597,7 +603,9 @@ if length(iunstable)>0 && length(iunstable)<Nsam,
     c0=corrcoef(lpmat(istable,:));
     c00=tril(c0,-1);
 
-    stab_map_2(lpmat(istable,:),alpha2, pvalue_corr, asname, OutputDirectoryName,xparam1,astitle);
+    if length(istable)>10,
+        stab_map_2(lpmat(istable,:),alpha2, pvalue_corr, asname, OutputDirectoryName,xparam1,astitle);
+    end
     if length(iunstable)>10,
         stab_map_2(lpmat(iunstable,:),alpha2, pvalue_corr, auname, OutputDirectoryName,xparam1,autitle);
     end
