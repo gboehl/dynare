@@ -130,13 +130,14 @@ if ~isempty(estim_params_) && ~isempty(options_.mode_file) && ~options_.mh_poste
     number_of_estimated_parameters = length(xparam1);
     mode_file = load(options_.mode_file);
     if number_of_estimated_parameters>length(mode_file.xparam1)
+        % More estimated parameters than parameters in the mode file.
         skipline()
         disp(['The posterior mode file ' options_.mode_file ' has been generated using another specification of the model or another model!'])
         disp(['Your mode file contains estimates for ' int2str(length(mode_file.xparam1)) ' parameters, while you are attempting to estimate ' int2str(number_of_estimated_parameters) ' parameters:'])
         for i=1:number_of_estimated_parameters
             id = strmatch(deblank(bayestopt_.name(i,:)),mode_file.parameter_names,'exact');
             if isempty(id)
-                disp(['--> Estimated parameter ' bayestopt_.name{i} ' is not present in the loaded mod_file.'])
+                disp(['--> Estimated parameter ' bayestopt_.name{i} ' is not present in the loaded mode file.'])
             end
         end
         for i=1:length(mode_file.xparam1)
@@ -147,6 +148,7 @@ if ~isempty(estim_params_) && ~isempty(options_.mode_file) && ~options_.mh_poste
         end
         error('Please change the mode_file option or the list of estimated parameters.')
     elseif number_of_estimated_parameters<length(mode_file.xparam1)
+        % Less estimated parameters than parameters in the mode file.
         skipline()
         disp(['The posterior mode file ' options_.mode_file ' has been generated using another specification of the model or another model!'])
         disp(['Your mode file contains estimates for ' int2str(length(mode_file.xparam1)) ' parameters, while you are attempting to estimate only ' int2str(number_of_estimated_parameters) ' parameters:'])
