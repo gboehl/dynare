@@ -1018,9 +1018,9 @@ extension or if the filename contains a non-alphanumeric character;
 
 Declarations of variables and parameters are made with the following commands:
 
-@deffn Command var @var{VARIABLE_NAME} [$@var{LATEX_NAME}$ [(long_name=@var{QUOTED_STRING})]]@dots{};
-@deffnx Command var (deflator = @var{MODEL_EXPRESSION}) @var{VARIABLE_NAME} [$@var{LATEX_NAME}$ [(long_name=@var{QUOTED_STRING})]]@dots{};
-@deffnx Command var (log_deflator = @var{MODEL_EXPRESSION}) @var{VARIABLE_NAME} [$@var{LATEX_NAME}$ [(long_name=@var{QUOTED_STRING})]]@dots{};
+@deffn Command var @var{VARIABLE_NAME} [$@var{LATEX_NAME}$] [(long_name=@var{QUOTED_STRING})]@dots{};
+@deffnx Command var (deflator = @var{MODEL_EXPRESSION}) @var{VARIABLE_NAME} [$@var{LATEX_NAME}$] [(long_name=@var{QUOTED_STRING})]@dots{};
+@deffnx Command var (log_deflator = @var{MODEL_EXPRESSION}) @var{VARIABLE_NAME} [$@var{LATEX_NAME}$] [(long_name=@var{QUOTED_STRING})]@dots{};
 
 @descriptionhead
 
@@ -1073,7 +1073,7 @@ var c $C$ (long_name=`Consumption');
 
 @end deffn
 
-@deffn Command varexo @var{VARIABLE_NAME} [$@var{LATEX_NAME}$ [(long_name=@var{QUOTED_STRING})]]@dots{};
+@deffn Command varexo @var{VARIABLE_NAME} [$@var{LATEX_NAME}$] [(long_name=@var{QUOTED_STRING})]@dots{};
 
 @descriptionhead
 
@@ -1101,7 +1101,7 @@ varexo m gov;
 
 @end deffn
 
-@deffn Command varexo_det @var{VARIABLE_NAME} [$@var{LATEX_NAME}$ [(long_name=@var{QUOTED_STRING})]]@dots{};
+@deffn Command varexo_det @var{VARIABLE_NAME} [$@var{LATEX_NAME}$] [(long_name=@var{QUOTED_STRING})]@dots{};
 
 @descriptionhead
 
@@ -1138,7 +1138,7 @@ varexo_det tau;
 
 @end deffn
 
-@deffn Command parameters @var{PARAMETER_NAME} [$@var{LATEX_NAME}$ [(long_name=@var{QUOTED_STRING})]]@dots{};
+@deffn Command parameters @var{PARAMETER_NAME} [$@var{LATEX_NAME}$] [(long_name=@var{QUOTED_STRING})]@dots{};
 
 @descriptionhead
 
