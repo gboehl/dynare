@@ -153,9 +153,9 @@ if SampleSize == 1,
             dyn_saveas(hh,[ IdentifDirectoryName '/' M_.fname '_ident_collinearity_' tittxt1 '_' int2str(j) ],options_);
         end
         skipline()
+        [U,S,V]=svd(idehess.AHess,0);
+        S=diag(S);
         if idehess.flag_score,
-            [U,S,V]=svd(idehess.AHess,0);
-            S=diag(S);
             if nparam<5,
                 f1 = dyn_figure(options_,'Name',[tittxt,' - Identification patterns (Information matrix)']);
             else
@@ -163,13 +163,13 @@ if SampleSize == 1,
                 f2 = dyn_figure(options_,'Name',[tittxt,' - Identification patterns (Information matrix): HIGHEST SV']);
             end
         else
-            S = idemoments.S;
-            V = idemoments.V;
+%             S = idemoments.S;
+%             V = idemoments.V;
             if nparam<5,
-                f1 = dyn_figure(options_,'Name',[tittxt,' - Identification patterns (moments)']);
+                f1 = dyn_figure(options_,'Name',[tittxt,' - Identification patterns (moments Information matrix)']);
             else
-                f1 = dyn_figure(options_,'Name',[tittxt,' - Identification patterns (moments): SMALLEST SV']);
-                f2 = dyn_figure(options_,'Name',[tittxt,' - Identification patterns (moments): HIGHEST SV']);
+                f1 = dyn_figure(options_,'Name',[tittxt,' - Identification patterns (moments Information matrix): SMALLEST SV']);
+                f2 = dyn_figure(options_,'Name',[tittxt,' - Identification patterns (moments Information matrix): HIGHEST SV']);
             end
         end
         for j=1:min(nparam,8),
