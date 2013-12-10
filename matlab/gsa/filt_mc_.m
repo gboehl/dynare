@@ -524,17 +524,17 @@ else
     % plot trade-offs
     if ~options_.nograph
     a00=jet(size(vvarvecm,1));
-    for ix=1:ceil(length(nsnam)/5),
-        if options_.opt_gsa.ppost
-            temp_name='RMSE Posterior Tradeoffs: Log Posterior';
+    if options_.opt_gsa.ppost
+        temp_name='RMSE Posterior Tradeoffs:';
+    else
+        if options_.opt_gsa.pprior
+            temp_name='RMSE Prior Tradeoffs:';
         else
-            if options_.opt_gsa.pprior
-                temp_name='RMSE Prior Tradeoffs: Log Posterior';
-            else
-                temp_name='RMSE MC Tradeoffs: Log Posterior';
-            end
-        end        
-        hh = dyn_figure(options_,'name',[temp_name,' ',int2str(ix)]);
+            temp_name='RMSE MC Tradeoffs;';
+        end
+    end
+    for ix=1:ceil(length(nsnam)/5),
+        hh = dyn_figure(options_,'name',[temp_name,' observed variables ',int2str(ix)]);
         for j=1+5*(ix-1):min(size(snam2,1),5*ix),
             subplot(2,3,j-5*(ix-1))
             %h0=cumplot(x(:,nsnam(j)+nshock));
@@ -617,7 +617,7 @@ else
                 fnam = ['rmse_mc_',deblank(vvarvecm(i,:))];
             end
         end
-        stab_map_2(x(ixx(1:nfilt0(i),i),:),alpha2,pvalue,fnam, OutDir);
+        stab_map_2(x(ixx(1:nfilt0(i),i),:),alpha2,pvalue,fnam, OutDir,[],[temp_name ' observed variable ' deblank(vvarvecm(i,:))]);
         
         %     [pc,latent,explained] = pcacov(c0);
         %     %figure, bar([explained cumsum(explained)])

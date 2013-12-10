@@ -471,11 +471,11 @@ if pprior
     aunstablename=[aname, '_unst'];  aunstabletitle='Prior StabMap: Parameter driving explosiveness of solution';
     awronguniname=[aname, '_wrong']; awrongunititle='Prior StabMap: Parameter driving inability to find solution';
     % bivariate
-    auname='prior_unacceptable'; autitle='Prior non-existence of unique stable solution (Unacceptable)';
-    aunstname='prior_unstable'; aunsttitle='Prior explosiveness of solution';
-    aindname='prior_indeterm'; aindtitle='Prior Indeterminacy';
-    awrongname='prior_wrong'; awrongtitle='Prior inability to find solution';
-    asname='prior_stable'; astitle='Prior unique Stable Saddle-Path';
+    auname='prior_unacceptable'; autitle='Prior StabMap: non-existence of unique stable solution (Unacceptable)';
+    aunstname='prior_unstable'; aunsttitle='Prior StabMap: explosiveness of solution';
+    aindname='prior_indeterm'; aindtitle='Prior StabMap: Indeterminacy';
+    awrongname='prior_wrong'; awrongtitle='Prior StabMap: inability to find solution';
+    asname='prior_stable'; astitle='Prior StabMap: unique Stable Saddle-Path';
 else
     % univariate
     aname='mc_stab'; atitle='MC (around posterior mode) StabMap: Parameter driving non-existence of unique stable solution (Unacceptable)';
@@ -483,11 +483,11 @@ else
     aunstablename=[aname, '_unst'];  aunstabletitle='MC (around posterior mode) StabMap: Parameter driving explosiveness of solution';
     awronguniname=[aname, '_wrong']; awrongunititle='MC (around posterior mode) StabMap: Parameter driving inability to find solution';
     % bivariate
-    auname='mc_unacceptable'; autitle='MC (around posterior mode) non-existence of unique stable solution (Unacceptable)';
-    aunstname='mc_unstable'; aunsttitle='MC (around posterior mode) explosiveness of solution';
-    aindname='mc_indeterm';  aindtitle='MC (around posterior mode) Indeterminacy';
-    awrongname='mc_wrong'; awrongtitle='MC (around posterior mode) inability to find solution';
-    asname='mc_stable'; astitle='MC (around posterior mode) Unique Stable Saddle-Path';
+    auname='mc_unacceptable'; autitle='MC (around posterior mode) StabMap: non-existence of unique stable solution (Unacceptable)';
+    aunstname='mc_unstable'; aunsttitle='MC (around posterior mode) StabMap: explosiveness of solution';
+    aindname='mc_indeterm';  aindtitle='MC (around posterior mode) StabMap: Indeterminacy';
+    awrongname='mc_wrong'; awrongtitle='MC (around posterior mode) StabMap: inability to find solution';
+    asname='mc_stable'; astitle='MC (around posterior mode) StabMap: Unique Stable Saddle-Path';
 end
 delete([OutputDirectoryName,filesep,fname_,'_',aname,'_*.*']);
 %delete([OutputDirectoryName,filesep,fname_,'_',aname,'_SA_*.*']);
