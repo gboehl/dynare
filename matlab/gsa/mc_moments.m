@@ -24,8 +24,8 @@ global options_ M_ estim_params_ oo_
   disp('Computing theoretical moments ...')
   h = dyn_waitbar(0,'Theoretical moments ...');
   vdec = zeros(nobs,M_.exo_nbr,nsam);
-  cc = zeros(size(options_.varobs,1),size(options_.varobs,1),nsam);
-  ac = zeros(size(options_.varobs,1),size(options_.varobs,1)*options_.ar,nsam);
+  cc = zeros(nobs,nobs,nsam);
+  ac = zeros(nobs,nobs*options_.ar,nsam);
   
   for j=1:nsam,
     oo_.dr.ghx = mm(:, [1:(nc1-M_.exo_nbr)],j);
