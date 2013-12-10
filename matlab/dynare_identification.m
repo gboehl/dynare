@@ -334,6 +334,8 @@ if iload <=0,
             disp('----------- ')
             skipline()
             return
+        else
+            parameters = 'Random_prior_params';
         end
     else
     idehess_point.params=params;
@@ -344,6 +346,7 @@ if iload <=0,
 %     normJ = max(abs(siJ)')';
 %     normLRE = max(abs(siLRE)')';
     save([IdentifDirectoryName '/' M_.fname '_identif.mat'], 'idehess_point', 'idemoments_point','idemodel_point', 'idelre_point','store_options_ident')
+    save([IdentifDirectoryName '/' M_.fname '_' parameters '_identif.mat'], 'idehess_point', 'idemoments_point','idemodel_point', 'idelre_point','store_options_ident')
     disp_identification(params, idemodel_point, idemoments_point, name, advanced);
     if ~options_.nograph,
         plot_identification(params,idemoments_point,idehess_point,idemodel_point,idelre_point,advanced,parameters,name,IdentifDirectoryName);
