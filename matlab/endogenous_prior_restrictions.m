@@ -42,11 +42,11 @@ end
 infos=[0 0];
 varlist=Model.endo_names(DynareResults.dr.order_var,:);
 varlist=varlist(DynareResults.dr.restrict_var_list,:);
-T=1;
+NT=1;
 for j=1:size(endo_prior_restrictions.irf,1),
-    T=max(T,endo_prior_restrictions.irf{j,3});
+    NT=max(NT,endo_prior_restrictions.irf{j,3});
 end
-for t=1:T,
+for t=1:NT,
     RR = T^(t-1)*R;
     for j=1:size(endo_prior_restrictions.irf,1),
 	    if endo_prior_restrictions.irf{j,3}~=t,
