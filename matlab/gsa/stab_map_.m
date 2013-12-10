@@ -258,7 +258,7 @@ if fload==0,
         try
             [Tt,Rr,SteadyState,info,M_,options_,oo_] = dynare_resolve(M_,options_,oo_,'restrict');
             if info(1)==0,
-                info=endogenous_prior(Tt,Rr,M_,options_,oo_);
+                info=endogenous_prior_restrictions(Tt,Rr,M_,options_,oo_);
             end
             infox(j,1)=info(1);
             if infox(j,1)==0 && ~exist('T'),
