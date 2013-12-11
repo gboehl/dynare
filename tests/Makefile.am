@@ -165,6 +165,8 @@ MODFILES = \
 	gradient/fs2000_numgrad_2.mod \
 	gradient/fs2000_numgrad_3.mod \
 	gradient/fs2000_numgrad_5.mod
+	filter_step_ahead/fs2000_filter_step_ahead_bayesian.mod \
+	filter_step_ahead/fs2000_filter_step_ahead_ML.mod
 
 XFAIL_MODFILES = ramst_xfail.mod \
 	estim_param_in_shock_value.mod
@@ -323,6 +325,8 @@ EXTRA_DIST = \
 	shock_decomposition/fsdat_simul.m \
 	estimation/fs2000_MCMC_jumping_covariance_steadystate.m \
 	estimation/fs2000_initialize_from_calib_steadystate.m
+	filter_step_ahead/fs2000_filter_step_ahead_bayesian_steadystate.m \
+	filter_step_ahead/fs2000_filter_step_ahead_ML_steadystate.m
 
 TARGETS =
 
