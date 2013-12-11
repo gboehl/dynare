@@ -64,7 +64,7 @@ steady;
 stoch_simul(order=2,k_order_solver,irf=0);
 
 if ~exist('fs2000k2_m_results.mat','file');
-   error('fs2000k2 must be run first');
+   error('fs2000k2_m must be run first');
 end;
 
 oo1 = load('fs2000k2_m_results','oo_');
