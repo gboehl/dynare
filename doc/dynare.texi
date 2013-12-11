@@ -349,7 +349,7 @@ institutions who cannot afford, or do not want to pay for, MATLAB and
 are willing to bear the concomitant performance loss.
 
 The development of Dynare is mainly done at
-@uref{http://www.cepremap.ens.fr, Cepremap} by a core team of
+@uref{http://www.cepremap.fr, Cepremap} by a core team of
 researchers who devote part of their time to software development.
 Currently the development team of Dynare is composed of Stéphane
 Adjemian (Université du Maine, Gains and Cepremap), Houtan Bastani
@@ -3032,6 +3032,7 @@ must have full rank.
 @xref{solve_algo}, for the possible values and their meaning.
 
 @item qz_zero_threshold = @var{DOUBLE}
+@anchor{qz_zero_threshold}
 Value used to test if a generalized eigenvalue is 0/0 in the generalized
 Schur decomposition  (in which case  the model  does not admit  a unique
 solution). Default: @code{1e-6}.
@@ -3477,9 +3478,7 @@ problems. Default: @code{1.000001} (except when estimating with
 @code{0.999999} in that case; @pxref{Estimation}).
 
 @item qz_zero_threshold = @var{DOUBLE}
-Value used to test if a generalized eigenvalue is 0/0 in the generalized
-Schur decomposition  (in which case  the model  does not admit  a unique
-solution). Default: @code{1e-6}.
+@xref{qz_zero_threshold}.
 
 @item replic = @var{INTEGER}
 Number of simulated series used to compute the IRFs. Default: @code{1}
@@ -4265,7 +4264,7 @@ stderr VARIABLE_NAME | corr VARIABLE_NAME_1, VARIABLE_NAME_2 | PARAMETER_NAME
 @table @code
 
 @item use_calibration
-For not specifically intialized parameters, use the deep parameters and the elements of the covariance matrix specified in the @code{shocks}-block from calibration as starting values for estimation. For components of the @code{shocks}-block that were not explicitly specified during calibration or which violate the prior, the prior mean is used.
+For not specifically initialized parameters, use the deep parameters and the elements of the covariance matrix specified in the @code{shocks} block from calibration as starting values for estimation. For components of the @code{shocks} block that were not explicitly specified during calibration or which violate the prior, the prior mean is used.
 @end table
 
 @xref{estimated_params}, for the meaning and syntax of the various components.
@@ -5063,9 +5062,7 @@ the filter, but rather use a penalty value for the likelihood when
 such a singularity is encountered. Default: @code{1}.
 
 @item qz_zero_threshold = @var{DOUBLE}
-Value used to test if a generalized eigenvalue is 0/0 in the generalized
-Schur decomposition  (in which case  the model  does not admit  a unique
-solution). Default: @code{1e-6}.
+@xref{qz_zero_threshold}.
 
 @item taper_steps = [@var{INTEGER1} @var{INTEGER2} @dots{}]
 @anchor{taper_steps}
@@ -5540,7 +5537,7 @@ option in @code{conditional_forecast} command set to @code{deterministic}.
 Because in this case deterministic simulations are carried out,
 the nature of the shocks (surprise or perfect foresight) has to be indicated
 in the @code{conditional_forecast_paths} block, using the command @code{expectation}
-for each endogenous path. The forecasts are plotted using the rplot command.
+for each endogenous path. The forecasts are plotted using the @code{rplot} command.
 
 Finally, it is possible to do forecasting with a Bayesian VAR using
 the @code{bvar_forecast} command.
@@ -10769,7 +10766,7 @@ Aguiar, Mark and Gopinath, Gita (2004): ``Emerging Market Business
 Cycles: The Cycle is the Trend,'' @i{NBER Working Paper}, 10734
 
 @item
-Andreasen, Martin M., Fernández-Villaverde, Jesús and Juan Rubio-Ramírez (2013): ``The Pruned State-Space System for Non-Linear DSGE Models: Theory and Empirical Applications,'' @i{NBER Working Paper}, 18983
+Andreasen, Martin M., Jesús Fernández-Villaverde, and Juan Rubio-Ramírez (2013): ``The Pruned State-Space System for Non-Linear DSGE Models: Theory and Empirical Applications,'' @i{NBER Working Paper}, 18983
 
 @item
 Backus, David K., Patrick J. Kehoe, and Finn E. Kydland (1992):
@@ -10787,8 +10784,7 @@ monitoring  convergence   of  iterative  simulations,''   @i{Journal  of
 computational and graphical statistics}, 7, pp. 434--455
 
 @item
-Cardoso, Margarida F., R. L. Salcedo and S. Feyo de Azevedo (1996): ``The simplex simulated annealing approach to continuous non-linear optimization'', @i{Computers chem. Engng}, 20(9), 1065-1080
-
+Cardoso, Margarida F., R. L. Salcedo and S. Feyo de Azevedo (1996): ``The simplex simulated annealing approach to continuous non-linear optimization,'' @i{Computers chem. Engng}, 20(9), 1065-1080
 
 @item
 Collard, Fabrice (2001): ``Stochastic simulations with Dynare: A practical guide''
@@ -10844,7 +10840,7 @@ Fernández-Villaverde, Jesús (2010): ``The econometrics of DSGE models,''
 
 @item
 Geweke, John (1992): ``Evaluating the accuracy of sampling-based approaches
-to the calculation of posterior moments'', in J.O. Berger, J.M. Bernardo,
+to the calculation of posterior moments,'' in J.O. Berger, J.M. Bernardo,
 A.P. Dawid, and A.F.M. Smith (eds.) Proceedings of the Fourth Valencia
 International Meeting on Bayesian Statistics, pp. 169--194, Oxford University Press
 
