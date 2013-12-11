@@ -35,11 +35,12 @@ function [vdec, corr, autocorr, z, zz] = th_moments(dr,var_list)
     end
   end
   
-  [gamma_y,ivar] = th_autocovariances(dr,ivar,M_, options_);
-  m = dr.ys(ivar);
+  [gamma_y,stationary_vars] = th_autocovariances(dr,ivar,M_, options_);
+  m = dr.ys(ivar(stationary_vars));
 
   
-  i1 = find(abs(diag(gamma_y{1})) > 1e-12);
+%   i1 = find(abs(diag(gamma_y{1})) > 1e-12);
+  i1 = [1:length(ivar)];
   s2 = diag(gamma_y{1});
   sd = sqrt(s2);
 

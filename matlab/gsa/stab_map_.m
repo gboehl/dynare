@@ -257,6 +257,9 @@ if fload==0,
         %try stoch_simul([]);
         try
             [Tt,Rr,SteadyState,info,M_,options_,oo_] = dynare_resolve(M_,options_,oo_,'restrict');
+            if info(1)==0,
+                info=endogenous_prior_restrictions(Tt,Rr,M_,options_,oo_);
+            end
             infox(j,1)=info(1);
             if infox(j,1)==0 && ~exist('T'),
                 dr_=oo_.dr;
@@ -468,11 +471,11 @@ if pprior
     aunstablename=[aname, '_unst'];  aunstabletitle='Prior StabMap: Parameter driving explosiveness of solution';
     awronguniname=[aname, '_wrong']; awrongunititle='Prior StabMap: Parameter driving inability to find solution';
     % bivariate
-    auname='prior_unacceptable'; autitle='Prior non-existence of unique stable solution (Unacceptable)';
-    aunstname='prior_unstable'; aunsttitle='Prior explosiveness of solution';
-    aindname='prior_indeterm'; aindtitle='Prior Indeterminacy';
-    awrongname='prior_wrong'; awrongtitle='Prior inability to find solution';
-    asname='prior_stable'; astitle='Prior unique Stable Saddle-Path';
+    auname='prior_unacceptable'; autitle='Prior StabMap: non-existence of unique stable solution (Unacceptable)';
+    aunstname='prior_unstable'; aunsttitle='Prior StabMap: explosiveness of solution';
+    aindname='prior_indeterm'; aindtitle='Prior StabMap: Indeterminacy';
+    awrongname='prior_wrong'; awrongtitle='Prior StabMap: inability to find solution';
+    asname='prior_stable'; astitle='Prior StabMap: unique Stable Saddle-Path';
 else
     % univariate
     aname='mc_stab'; atitle='MC (around posterior mode) StabMap: Parameter driving non-existence of unique stable solution (Unacceptable)';
@@ -480,11 +483,11 @@ else
     aunstablename=[aname, '_unst'];  aunstabletitle='MC (around posterior mode) StabMap: Parameter driving explosiveness of solution';
     awronguniname=[aname, '_wrong']; awrongunititle='MC (around posterior mode) StabMap: Parameter driving inability to find solution';
     % bivariate
-    auname='mc_unacceptable'; autitle='MC (around posterior mode) non-existence of unique stable solution (Unacceptable)';
-    aunstname='mc_unstable'; aunsttitle='MC (around posterior mode) explosiveness of solution';
-    aindname='mc_indeterm';  aindtitle='MC (around posterior mode) Indeterminacy';
-    awrongname='mc_wrong'; awrongtitle='MC (around posterior mode) inability to find solution';
-    asname='mc_stable'; astitle='MC (around posterior mode) Unique Stable Saddle-Path';
+    auname='mc_unacceptable'; autitle='MC (around posterior mode) StabMap: non-existence of unique stable solution (Unacceptable)';
+    aunstname='mc_unstable'; aunsttitle='MC (around posterior mode) StabMap: explosiveness of solution';
+    aindname='mc_indeterm';  aindtitle='MC (around posterior mode) StabMap: Indeterminacy';
+    awrongname='mc_wrong'; awrongtitle='MC (around posterior mode) StabMap: inability to find solution';
+    asname='mc_stable'; astitle='MC (around posterior mode) StabMap: Unique Stable Saddle-Path';
 end
 delete([OutputDirectoryName,filesep,fname_,'_',aname,'_*.*']);
 %delete([OutputDirectoryName,filesep,fname_,'_',aname,'_SA_*.*']);
@@ -532,6 +535,9 @@ if length(iunstable)>0 && length(iunstable)<Nsam,
         end
         if any(infox==30),
             disp(['    For ',num2str(length(find(infox==30))/Nsam*100,'%1.3f'),'\% Ergodic variance can''t be computed.'])
+        end
+        if any(infox==49),
+            disp(['    For ',num2str(length(find(infox==49))/Nsam*100,'%1.3f'),'\% The model violates one (many) endogenous prior restriction(s).'])
         end
 
     end
@@ -597,7 +603,9 @@ if length(iunstable)>0 && length(iunstable)<Nsam,
     c0=corrcoef(lpmat(istable,:));
     c00=tril(c0,-1);
 
-    stab_map_2(lpmat(istable,:),alpha2, pvalue_corr, asname, OutputDirectoryName,xparam1,astitle);
+    if length(istable)>10,
+        stab_map_2(lpmat(istable,:),alpha2, pvalue_corr, asname, OutputDirectoryName,xparam1,astitle);
+    end
     if length(iunstable)>10,
         stab_map_2(lpmat(iunstable,:),alpha2, pvalue_corr, auname, OutputDirectoryName,xparam1,autitle);
     end

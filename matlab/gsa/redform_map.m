@@ -132,7 +132,7 @@ for j=1:size(anamendo,1)
                 iplo=iplo+1;
                 js=js+1;
                 xdir0 = [adir,filesep,namendo,'_vs_', namexo];
-                if ilog==0,
+                if ilog==0 || ~isempty(threshold),
                     if isempty(threshold)
                         if isempty(dir(xdir0))
                             mkdir(xdir0)
@@ -233,7 +233,7 @@ for j=1:size(anamendo,1)
                 iplo=iplo+1;
                 js=js+1;
                 xdir0 = [adir,filesep,namendo,'_vs_', namlagendo];
-                if ilog==0,
+                if ilog==0 || ~isempty(threshold),
                     if isempty(threshold)
                         if isempty(dir(xdir0))
                             mkdir(xdir0)
