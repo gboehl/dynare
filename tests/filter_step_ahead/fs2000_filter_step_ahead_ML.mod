@@ -99,7 +99,7 @@ end;
 
 varobs gp_obs gy_obs;
 
-estimation(order=1, datafile=fsdat_simul, nobs=192, loglinear, filter_step_ahead = [1 4 8 12], forecast=20,smoother,filtered_vars) m P c;
+estimation(order=1, datafile='../fs2000/fsdat_simul', nobs=192, loglinear, filter_step_ahead = [1 4 8 12], forecast=20,smoother,filtered_vars) m P c;
 
 
 /*
