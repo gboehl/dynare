@@ -43,6 +43,6 @@ if ~isempty(o.figname)
 end
 
 if ~isempty(o.title)
-    fprintf(fid,'\\end{tabular}',o.title);
+    fprintf(fid,'\\end{tabular}');
 end
 end
