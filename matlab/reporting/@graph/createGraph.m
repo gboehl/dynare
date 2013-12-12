@@ -138,6 +138,7 @@ if isempty(o.figname)
     tn = tempname;
     if strcmp(computer, 'PCWIN') || strcmp(computer, 'PCWIN64')
         tn = strrep(tn, '\', '/');
+        tn = strrep(tn, '_', '\_');
     end
     o.figname = [tn '.tex'];
 end
