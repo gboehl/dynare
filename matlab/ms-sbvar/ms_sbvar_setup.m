@@ -33,7 +33,7 @@ options_.data = read_variables(options_.datafile, ...
 [final_year,final_subperiod] = check_datafile_years_assigned(options_);
 if ~isempty(final_year)
     options_.ms.final_year = final_year;
-    opions_.ms.final_subperiod = final_subperiod;
+    options_.ms.final_subperiod = final_subperiod;
 end
 
 if options_.ms.upper_cholesky
