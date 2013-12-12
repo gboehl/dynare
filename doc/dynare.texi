@@ -10338,7 +10338,7 @@ command. Default: @code{`!'}
 @end table
 @end defmethod
 
-@defmethod Report addGraph data, figname, graphSize, showGrid, showLegend, showLegendBox, legendLocation, legendOrientation, legendFontSize, seriesToUse, shade, shadeColor, shadeOpacity, title, xlabel, ylabel, xrange, xTickLabels, yrange, showZeroline
+@defmethod Report addGraph data, figname, figDirName, graphSize, showGrid, showLegend, showLegendBox, legendLocation, legendOrientation, legendFontSize, seriesToUse, shade, shadeColor, shadeOpacity, title, xlabel, ylabel, xrange, xTickLabels, yrange, showZeroline
 Adds a @code{Graph} to a @code{Section}.
 @optionshead
 @table @code
@@ -10350,6 +10350,10 @@ The @code{dseries} that provides the data for the graph. Default:
 @item figname, @code{STRING}
 The name to use when saving this figure. Default: @code{[tempname
 `.tex']}
+
+@item figDirName, @code{STRING}
+The name of the folder in which to store this figure. Default:
+@code{tmpFigDir}
 
 @item graphSize, @code{NUMERICAL_VECTOR}
 The width and height to be passed to the third and fourth elements of

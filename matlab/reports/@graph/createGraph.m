@@ -135,12 +135,11 @@ end
 drawnow;
 
 if isempty(o.figname)
-    tn = tempname;
+    [junk, tn] = fileparts(tempname);
     if strcmp(computer, 'PCWIN') || strcmp(computer, 'PCWIN64')
-        tn = strrep(tn, '\', '/');
         tn = strrep(tn, '_', '\_');
     end
-    o.figname = [tn '.tex'];
+    o.figname = [o.figDirName filesep tn '.tex'];
 end
 disp('  converting to tex....');
 if isoctave && isempty(regexpi(computer, '.*apple.*', 'once'))
