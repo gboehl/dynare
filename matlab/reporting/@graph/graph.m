@@ -39,6 +39,7 @@ o.title = '';
 o.ylabel = '';
 o.xlabel = '';
 
+o.figDirName = 'tmpFigDir';
 o.figname = '';
 o.data = '';
 o.seriesToUse = '';
@@ -92,6 +93,7 @@ assert(ischar(o.title), '@graph.graph: title must be a string');
 assert(ischar(o.xlabel), '@graph.graph: xlabel file must be a string');
 assert(ischar(o.ylabel), '@graph.graph: ylabel file must be a string');
 assert(ischar(o.figname), '@graph.graph: figname must be a string');
+assert(ischar(o.figDirName), '@graph.graph: figDirName must be a string');
 assert(islogical(o.showGrid), '@graph.graph: showGrid must be either true or false');
 assert(islogical(o.showLegend), '@graph.graph: showLegend must be either true or false');
 assert(islogical(o.showLegendBox), '@graph.graph: showLegendBox must be either true or false');
@@ -149,6 +151,10 @@ if ~isempty(o.data)
 end
 o = rmfield(o, 'seriesToUse');
 o = rmfield(o, 'data');
+
+if ~exist(o.figDirName, 'file')
+    mkdir(o.figDirName);
+end
 
 % Create graph object
 o = class(o, 'graph');
