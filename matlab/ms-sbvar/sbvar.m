@@ -37,7 +37,7 @@ options.data = read_variables(options.datafile,options.varobs,[],options.xls_she
 [final_year,final_subperiod] = check_datafile_years_assigned(options);
 if ~isempty(final_year)
     options.ms.final_year = final_year;
-    opions.ms.final_subperiod = final_subperiod;
+    options.ms.final_subperiod = final_subperiod;
 end
 
 if options.forecast == 0
