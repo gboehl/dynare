@@ -164,7 +164,7 @@ MODFILES = \
 	gradient/fs2000_numgrad_15.mod \
 	gradient/fs2000_numgrad_2.mod \
 	gradient/fs2000_numgrad_3.mod \
-	gradient/fs2000_numgrad_5.mod
+	gradient/fs2000_numgrad_5.mod \
 	filter_step_ahead/fs2000_filter_step_ahead_bayesian.mod \
 	filter_step_ahead/fs2000_filter_step_ahead_ML.mod
 
@@ -324,7 +324,7 @@ EXTRA_DIST = \
 	shock_decomposition/example1_calib_shock_decomp_data.mat \
 	shock_decomposition/fsdat_simul.m \
 	estimation/fs2000_MCMC_jumping_covariance_steadystate.m \
-	estimation/fs2000_initialize_from_calib_steadystate.m
+	estimation/fs2000_initialize_from_calib_steadystate.m \
 	filter_step_ahead/fs2000_filter_step_ahead_bayesian_steadystate.m \
 	filter_step_ahead/fs2000_filter_step_ahead_ML_steadystate.m
 
