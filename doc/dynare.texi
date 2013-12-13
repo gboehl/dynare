@@ -205,7 +205,7 @@ The Model file
 * Markov-switching SBVAR::
 * Displaying and saving results::
 * Macro-processing language::
-* Verbatim   inclusion::
+* Verbatim inclusion::
 * Misc commands::
 
 Expressions
@@ -935,7 +935,7 @@ end of line one and the parser would continue processing.
 * Markov-switching SBVAR::
 * Displaying and saving results::
 * Macro-processing language::
-* Verbatim   inclusion::
+* Verbatim inclusion::
 * Misc commands::
 @end menu
 
@@ -8022,7 +8022,7 @@ array stored in a MATLAB/Octave variable.
 
 @end table
 
-@node Verbatim   inclusion
+@node Verbatim inclusion
 @section Verbatim inclusion
 
 Pass everything contained within the @code{verbatim} block to the @code{<mod_file>.m} file.
