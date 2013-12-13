@@ -9015,6 +9015,26 @@ ans = <dates: 1950Q3, 1950Q4, 1960Q1>
 
 @sp 1
 
+@deftypefn{dates} {@var{C} =} ne (@var{A}, @var{B})
+
+Overloads the Matlab/Octave @code{ne} (not equal, @code{~=}) operator. @dates objects @var{A} and @var{B} must have the  same number of elements (say, @code{n}) or one of the inputs must be a single element @dates object. The returned argument is a @code{n} by @code{1} vector of zeros and ones. The i-th element of @var{C} is equal to @code{1} if and only if the dates @code{A(i)} and @code{B(i)} are different.
+
+@examplehead
+@example
+>> A = dates('1950Q1','1951Q2');
+>> B = dates('1950Q1','1950Q2');
+>> A~=B
+
+ans =
+
+     0
+     1
+@end example
+
+@end deftypefn
+
+@sp 1
+
 @deftypefn{dates} {@var{C} =} plus (@var{A}, @var{B})
 
 Overloads the Matlab/Octave @code{plus} operator (@code{+}). If both input arguments are @dates objects, then the method combines A and B without removing repetitions. If @var{B} is a vector of integers, the @code{plus} operator shifts the @dates object by @var{B} periods forward.
