@@ -1,4 +1,4 @@
-function DirectoryName = CheckPath(type,dname)
+function [DirectoryName, info] = CheckPath(type,dname)
 % Creates the subfolder "./M_.dname/type" if it does not exist yet.
 %
 % INPUTS
@@ -6,12 +6,13 @@ function DirectoryName = CheckPath(type,dname)
 %    dname  [string]    Name of the directory
 %
 % OUTPUTS
-%    none.
+%    DirectoryName      string, name of the directory (with path).
+%    info               integer scalar, equal to 1 if the routine creates directory dname/type, zero otherwise.
 %
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2005-2012 Dynare Team
+% Copyright (C) 2005-2013 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -27,6 +28,8 @@ function DirectoryName = CheckPath(type,dname)
 %
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+
+info = 0;
 
 DirectoryName = [ dname '/' type ];
 
@@ -44,4 +47,5 @@ if ~isdir(DirectoryName)
         delete(DirectoryName)
     end
     mkdir('.',DirectoryName);
+    info = 1;
 end
