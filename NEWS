@@ -209,6 +209,7 @@ Here is the list of major user-visible changes:
    that if a MOD file was updated between runs in the same folder and a
    `file_tag' was not changed, then the results would not change.
 
+ - Correcting evaluation of planner objective function under Ramsey policy.
 
 * References:
 
