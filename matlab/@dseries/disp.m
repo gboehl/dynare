@@ -23,7 +23,7 @@ separator = repmat(' | ',A.nobs+1,1);
 vspace = ' ';
 TABLE = ' ';
 for t=1:A.nobs
-    TABLE = char(TABLE, format(A.dates(t)));
+    TABLE = char(TABLE, date2string(A.dates(t)));
 end
 for i = 1:A.vobs
     TABLE = horzcat(TABLE,separator);
