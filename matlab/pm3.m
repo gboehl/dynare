@@ -66,6 +66,9 @@ filter_step_ahead_indicator=0;
 for file = 1:ifil
     load([DirectoryName '/' M_.fname var_type int2str(file)]);
     if size(size(stock),2) == 4
+        if file==1 %on first run, initialize variable for storing filter_step_ahead
+            stock1_filter_step_ahead=NaN(n1,n2,B,length(options_.filter_step_ahead)); 
+        end
         filter_step_ahead_indicator=1;
         stock_filter_step_ahead=zeros(n1,n2,size(stock,4),length(options_.filter_step_ahead));
         for ii=1:length(options_.filter_step_ahead)
