@@ -22,13 +22,14 @@ if nargout>1
     description = '';
 end
 
-MetropolisFolder = CheckPath('metropolis',M_.dname);
+[MetropolisFolder, info] = CheckPath('metropolis',M_.dname);
 
 % Get informations about mcmc files.
-if ~exist([ M_.dname '/metropolis'],'dir')
+if info
     disp('check_posterior_analysis_data:: Can''t find any mcmc file!')
     return
 end
+
 mhname = get_name_of_the_last_mh_file(M_);
 mhdate = get_date_of_a_file([MetropolisFolder filesep mhname]);
 
