@@ -10344,7 +10344,7 @@ command. Default: @code{`!'}
 @end table
 @end defmethod
 
-@defmethod Report addGraph data, figname, figDirName, graphSize, showGrid, showLegend, showLegendBox, legendLocation, legendOrientation, legendFontSize, seriesToUse, shade, shadeColor, shadeOpacity, title, xlabel, ylabel, xrange, xTickLabels, yrange, showZeroline
+@defmethod Report addGraph data, figname, figDirName, graphSize, showGrid, showLegend, showLegendBox, legendLocation, legendOrientation, legendFontSize, seriesToUse, shade, shadeColor, shadeOpacity, title, xlabel, ylabel, xrange, xTicks, xTickLabels, yrange, showZeroline
 Adds a @code{Graph} to a @code{Section}.
 @optionshead
 @table @code
@@ -10417,9 +10417,16 @@ The y-axis label. Default: @code{none}
 @item xrange, @code{dates}
 The boundary on the x-axis to display in the graph. Default: all
 
+@anchor{xTicks}
+@item xTicks, @code{NUMERICAL_VECTOR}
+Used only in conjunction with @ref{xTickLabels}, this option denotes
+the numerical position of the label along the x-axis. The positions
+begin at @math{1}. Default: set by Matlab/Octave.
+
+@anchor{xTickLabels}
 @item xTickLabels, @code{CELL_ARRAY_STRINGS}
-The labels to use for the xticks in the graph. Default: the dates of
-the @code{dseries}
+The labels to be mapped to the ticks provided by
+@ref{xTicks}. Default: the dates of the @code{dseries}
 
 @item yrange, @code{NUMERICAL_VECTOR}
 The boundary on the y-axis to display in the graph, represented as a

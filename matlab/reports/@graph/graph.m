@@ -61,6 +61,7 @@ o.legendFontSize = 8;
 o.showZeroline = false;
 
 o.graphSize = [];
+o.xTicks = [];
 o.xTickLabels = {};
 
 if nargin == 1
@@ -135,6 +136,8 @@ assert(isempty(o.seriesToUse) || iscellstr(o.seriesToUse), ['@graph.graph: ' ...
 assert(isempty(o.graphSize) || ((isfloat(o.graphSize) && length(o.graphSize) == 2)),...
        ['@graph.graph: graphSize is specified as an array with two float ' ...
         'entries, [width height]']);
+assert(isempty(o.xTicks) || isfloat(o.xTicks),...
+       '@graph.graph: xTicks must be a numerical array');
 assert(iscellstr(o.xTickLabels), ...
        '@graph.graph: xTickLabels must be a cell array of strings');
 % using o.seriesToUse, create series objects and put them in o.seriesElements
