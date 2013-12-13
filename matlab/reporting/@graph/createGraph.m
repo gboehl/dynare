@@ -110,6 +110,7 @@ if isempty(o.xTickLabels)
         end
     end
 else
+    set(gca, 'XTick', o.xTicks);
     xTickLabels = o.xTickLabels;
 end
 set(gca, 'XTickLabel', xTickLabels);
