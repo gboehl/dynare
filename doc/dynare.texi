@@ -6087,7 +6087,10 @@ This command declares the policy maker objective, for use with
 
 You need to give the one-period objective, not the discounted lifetime
 objective. The discount factor is given by the @code{planner_discount}
-option of @code{ramsey_policy} and @code{discretionary_policy}.
+option of @code{ramsey_policy} and @code{discretionary_policy}. The
+objective function can only contain current endogenous variables and no
+exogenous ones. This limitation is easily circumvented by defining an
+appropriate auxiliary variable in the model.
 
 With @code{ramsey_policy}, you are not limited to quadratic
 objectives: you can give any arbitrary nonlinear expression.
