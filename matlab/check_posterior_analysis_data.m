@@ -22,16 +22,18 @@ if nargout>1
     description = '';
 end
 
-%% Get informations about mcmc files. 
+MetropolisFolder = CheckPath('metropolis',M_.dname);
+
+% Get informations about mcmc files.
 if ~exist([ M_.dname '/metropolis'],'dir')
     disp('check_posterior_analysis_data:: Can''t find any mcmc file!')
     return
 end
 mhname = get_name_of_the_last_mh_file(M_);
-mhdate = get_date_of_a_file(mhname);
+mhdate = get_date_of_a_file([MetropolisFolder filesep mhname]);
 
-%% Get informations about _posterior_draws files.
-drawsinfo = dir([ M_.dname '/metropolis/' M_.fname '_posterior_draws*.mat']);
+% Get informations about _posterior_draws files.
+drawsinfo = dir([ MetropolisFolder filesep M_.fname '_posterior_draws*.mat']);
 if isempty(drawsinfo)
     info = 1; % select_posterior_draws has to be called first.
     if nargout>1
@@ -40,8 +42,7 @@ if isempty(drawsinfo)
     return
 else
     number_of_last_posterior_draws_file = length(drawsinfo);
-    pddate = get_date_of_a_file([ M_.dname '/metropolis/' M_.fname '_posterior_draws'...
-                        int2str(number_of_last_posterior_draws_file) '.mat']);
+    pddate = get_date_of_a_file([ MetropolisFolder filesep M_.fname '_posterior_draws' int2str(number_of_last_posterior_draws_file) '.mat']);
     if pddate<mhdate
         info = 2; % _posterior_draws files have to be updated.
         if nargout>1
@@ -56,7 +57,7 @@ else
     end
 end
 
-%% Get informations about posterior data files.
+% Get informations about posterior data files.
 switch type
   case 'variance'
     generic_post_data_file_name = 'Posterior2ndOrderMoments';
@@ -69,7 +70,7 @@ switch type
   otherwise
     disp('This feature is not yest implemented!')
 end
-pdfinfo = dir([ M_.dname '/metropolis/' M_.fname '_' generic_post_data_file_name '*']);
+pdfinfo = dir([ MetropolisFolder filesep M_.fname '_' generic_post_data_file_name '*']);
 if isempty(pdfinfo)
     info = 4; % posterior draws have to be processed.
     if nargout>1
@@ -79,8 +80,7 @@ if isempty(pdfinfo)
 else
     number_of_the_last_post_data_file = length(pdfinfo);
     name_of_the_last_post_data_file = ...
-        [ pwd filesep M_.dname ...
-          filesep 'metropolis' filesep ...
+        [ pwd filesep MetropolisFolder filesep ...
           M_.fname '_' ... 
           generic_post_data_file_name ...
           int2str(number_of_the_last_post_data_file) ...
@@ -95,6 +95,6 @@ else
         info = 6; % Ok (nothing to do ;-)
         if nargout>1
             description = 'There is nothing to do';
-        end        
+        end
     end
 end

@@ -33,7 +33,7 @@ info = 1;
 
 MetropolisFolder = CheckPath('metropolis',M_.dname);
 ModelName = M_.fname;
-BaseName = [MetropolisFolder, ModelName];
+BaseName = [MetropolisFolder filesep ModelName];
 
 load_last_mh_history_file(MetropolisFolder, ModelName);
 
@@ -44,7 +44,7 @@ predicted_mhname = [ BaseName '_mh' int2str(mh_number) '_blck' int2str(bk_number
 
 all_mh_files = dir([BaseName '_mh*_blck*' ]);
 [junk,idx] = sort([all_mh_files.datenum]);
-mhnamme = all_mh_files(idx(end)).name;
+mhname = all_mh_files(idx(end)).name;
 
 if ~strcmpi(mhname,predicted_mhname)
     info = 0;
