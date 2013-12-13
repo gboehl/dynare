@@ -6971,11 +6971,14 @@ The first period of data (@i{i.e.} for quarterly data, an integer in
 [@code{1,4}]). Default: @code{1}
 
 @item final_year = @var{INTEGER}
-The last year of data. Default: Set to encompass entire dataset
+The last year of data. Default: Set to encompass entire dataset.
 
 @item final_subperiod = @var{INTEGER}
 The final period of data (@i{i.e.} for monthly data, an integer in
-[@code{1,12}]. Default: Set to encompass entire dataset
+[@code{1,12}]. Default: When final_year is also missing, set to
+encompass entire dataset; when final_year is indicated, set to the
+maximum number of subperiods given the frequency (@i{i.e}. 4 for
+quarterly data, 12 for monthly,...).
 
 @item datafile = @var{FILENAME}
 @xref{datafile}.

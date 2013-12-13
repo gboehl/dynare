@@ -34,11 +34,7 @@ function sbvar(M, options)
 
 clean_sbvar_files();
 options.data = read_variables(options.datafile,options.varobs,[],options.xls_sheet,options.xls_range);
-[final_year,final_subperiod] = check_datafile_years_assigned(options);
-if ~isempty(final_year)
-    options.ms.final_year = final_year;
-    options.ms.final_subperiod = final_subperiod;
-end
+[options.ms.final_year,options.ms.final_subperiod] = check_datafile_years_assigned(options);
 
 if options.forecast == 0
     options.forecast = 4;
