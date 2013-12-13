@@ -138,7 +138,7 @@ drawnow;
 if isempty(o.figname)
     [junk, tn] = fileparts(tempname);
     if strcmp(computer, 'PCWIN') || strcmp(computer, 'PCWIN64')
-        tn = strrep(tn, '_', '\_');
+        tn = strrep(tn, '_', '-');
     end
     o.figname = [o.figDirName filesep tn '.tex'];
 end
