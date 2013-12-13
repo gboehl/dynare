@@ -110,6 +110,11 @@ if(options_.block)
 else
     if(options_.bytecode)
         [info, oo_.endo_simul]=bytecode('dynamic');
+        if info == 1
+            oo_.deterministic_simulation.status = 0;
+        else
+            oo_.deterministic_simulation.status = 1;
+        end;
         mexErrCheck('bytecode', info);
     else
         if M_.maximum_endo_lead == 0 % Purely backward model
