@@ -89,11 +89,17 @@ Here is the list of major user-visible changes:
 
  - Option `ar' can now be given to the `estimation' command.
 
- - New options `nograph', `nointeractive', `nostrict' and `nowarn' to the
-   `dynare' command.
+ - New options `nograph', `nointeractive' and `nowarn' to the `dynare' command,
+   for a better control of what is displayed.
+
+ - New option `nostrict' to the `dynare' command, for allowing Dynare to
+   continue processing when there are more endogenous variables than equations
+   or when an undeclared symbol is assigned in `initval' or `endval'.
 
  - The information on MCMC acceptance rates, seeds, last log posterior
-   likelihood, and last parameter draw are now saved in `oo_.MC_record'.
+   likelihood, and last parameter draw are now saved on the disk and can
+   be displayed with `internals --display-mh-history' or loaded into the
+   workspace with `internals --load-mh-history'.
 
  - New options `mode_check_neighbourhood_size', `mode_check_symmetric_plots'
    and `mode_check_number_of_points', for a better control of the diagnostic
@@ -209,7 +215,9 @@ Here is the list of major user-visible changes:
    that if a MOD file was updated between runs in the same folder and a
    `file_tag' was not changed, then the results would not change.
 
- - Correcting evaluation of planner objective function under Ramsey policy.
+ - The `ramsey_policy' command was not putting in `oo_.planner_objective_value'
+   the value of the planner objective at the optimum.
+
 
 * References:
 
