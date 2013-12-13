@@ -140,7 +140,7 @@ if isempty(o.figname)
     if strcmp(computer, 'PCWIN') || strcmp(computer, 'PCWIN64')
         tn = strrep(tn, '_', '-');
     end
-    o.figname = [o.figDirName filesep tn '.tex'];
+    o.figname = [o.figDirName '/' tn '.tex'];
 end
 disp('  converting to tex....');
 if isoctave && isempty(regexpi(computer, '.*apple.*', 'once'))
