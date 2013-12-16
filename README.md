@@ -20,7 +20,7 @@ Here, we explain how to build from source:
 
 This source can be retrieved in three forms:
 - via git, at <https://github.com/DynareTeam/dynare.git>
-- using the stable source archive of the latest Dynare version (currently 4.3) from <http://www.dynare.org/download/dynare-4.3/source>
+- using the stable source archive of the latest Dynare version (currently 4.4) from <http://www.dynare.org/download/dynare-stable/>
 - using a source snapshot of the unstable version, from <http://www.dynare.org/download/dynare-unstable/source-snapshot>
 
 Note that if you obtain the source code via git, you will need to install more tools (see below).
@@ -59,18 +59,17 @@ A number of tools and libraries are needed in order to recompile everything. You
 - [CWEB](http://www-cs-faculty.stanford.edu/%7Eknuth/cweb.html), with its tools `ctangle` and `cweave` (only if you want to build Dynare++ and get the source through Git)
 - An implementation of BLAS and LAPACK: either [ATLAS](http://math-atlas.sourceforge.net/), [OpenBLAS](http://xianyi.github.com/OpenBLAS/), Netlib ([BLAS](http://www.netlib.org/blas/), [LAPACK](http://www.netlib.org/lapack/)) or [MKL](http://software.intel.com/en-us/intel-mkl/) (only if you want to build Dynare++)
 - An implementation of [POSIX Threads](http://en.wikipedia.org/wiki/POSIX_Threads) (optional, for taking advantage of multi-core)
-- [MAT File I/O library](http://sourceforge.net/projects/matio/) (if you want to compile Markov-Switching code, the estimation DLL, k-order DLL and Dynare++ in unstable)
+- [MAT File I/O library](http://sourceforge.net/projects/matio/) (if you want to compile Markov-Switching code, the estimation DLL, k-order DLL and Dynare++)
 - [SLICOT](http://www.slicot.org) (if you want to compile the Kalman steady state DLL)
 - [GSL library](http://www.gnu.org/software/gsl/) (if you want to compile Markov-Switching code)
 - A decent LaTeX distribution (if you want to compile PDF documentation). The following extra components may be needed:
-  - The Econometrica bibliography style: you need [harvard](http://www.ctan.org/tex-archive/macros/latex/contrib/harvard/) and [economic](http://www.ctan.org/tex-archive/biblio/bibtex/contrib/economic/) packages from CTAN (only if you want to build Dynare user guide, no more needed with Dynare unstable)
   - [Eplain](http://www.tug.org/eplain/) TeX macros (only if you want to build Dynare++ source documentation)
   - [Beamer](http://latex-beamer.sourceforge.net/) (for some PDF presentations)
 - For building the reference manual:
   - [GNU Texinfo](http://www.gnu.org/software/texinfo/)
   - [Texi2HTML](http://www.nongnu.org/texi2html) and [Latex2HTML](http://www.latex2html.org), if you want nice mathematical formulas in HTML output
   - [Doxygen](http://www.stack.nl/%7Edimitri/doxygen/) (if you want to build Dynare preprocessor source documentation)
-- For Octave, the development libraries corresponding to the UMFPACK packaged with Octave (only in unstable)
+- For Octave, the development libraries corresponding to the UMFPACK packaged with Octave
 
 ### Preparing the sources
 
@@ -138,12 +137,12 @@ apt-get build-dep dynare
 Alternatively, if you want to build everything, manually install the following packages:
 
 - `build-essential` (for gcc, g++ and make)
-- `octave3.2-headers` or `liboctave-dev` (will install ATLAS)
+- `liboctave-dev` or `octave3.2-headers` (will install ATLAS)
 - `libboost-graph-dev`
 - `libgsl0-dev`
 - `libmatio-dev`
 - `libslicot-dev` and `libslicot-pic`
-- `libsuitesparse-dev` (only for Unstable)
+- `libsuitesparse-dev`
 - `flex`
 - `bison`
 - `autoconf`
