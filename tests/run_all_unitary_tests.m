@@ -29,9 +29,9 @@ end
 
 cd(getenv('TOP_TEST_DIR'));
 if isoctave
-    fid = fopen('run_unitary_tests.o.trs', 'w+');
+    fid = fopen('run_all_unitary_tests.o.trs', 'w+');
 else
-    fid = fopen('run_unitary_tests.m.trs', 'w+');
+    fid = fopen('run_all_unitary_tests.m.trs', 'w+');
 end
 if length(failedtests) > 0
   fprintf(fid,':test-result: FAIL\n');
