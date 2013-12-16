@@ -1,12 +1,15 @@
-Announcement for Dynare 4.4.0 (on 2013-12-11)
+Announcement for Dynare 4.4.0 (on 2013-12-16)
 =============================================
 
 We are pleased to announce the release of Dynare 4.4.0.
 
 This major release adds new features and fixes various bugs.
 
-The Windows package is already available for download. The Mac and
-Debian/Ubuntu packages should follow soon.
+The Windows packages are already available for download at:
+
+ http://www.dynare.org/download/dynare-stable
+
+The Mac and Debian/Ubuntu packages should follow soon.
 
 All users are strongly encouraged to upgrade.
 
