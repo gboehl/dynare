@@ -116,7 +116,7 @@ end
 %$ t = zeros(3,1);
 %$
 %$ % Set the dimension of the problem to be solved.
-%$ n = 2000;
+%$ n = 500;
 %$
 %$ % Set the equation to be solved
 %$ A = eye(n);
