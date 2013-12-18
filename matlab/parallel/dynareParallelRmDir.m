@@ -68,7 +68,7 @@ for indPC=1:length(Parallel),
                                         % It is necessary because the command rmdir always ask at the user to confirm your decision before
                                         % deleting a directory: this stops the computation! The Octave native function 'confirm_recursive_rmdir'
                                         % disable this mechanism.
-                val = confirm_recursive_rmdir (false);
+                val = confirm_recursive_rmdir (false, 'local');
                 [stat, mess, id] = rmdir(['\\',Parallel(indPC).ComputerName,'\',Parallel(indPC).RemoteDrive,'$\',Parallel(indPC).RemoteDirectory,'\',PRCDir],'s');
                 
             else
