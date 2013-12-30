@@ -28,8 +28,6 @@
    with the prologue.
 */
 %{
-using namespace std;
-
 #include "MacroValue.hh"
 
 class MacroDriver;

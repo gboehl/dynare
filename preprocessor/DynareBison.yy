@@ -28,8 +28,6 @@
    with the prologue.
 */
 %{
-using namespace std;
-
 class ParsingDriver;
 
 #include "ExprNode.hh"
