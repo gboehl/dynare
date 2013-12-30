@@ -122,7 +122,7 @@ while j<=MaxNumberOfTuningSimulations
     end% ... otherwise I don't move.
     prtfrc = j/MaxNumberOfTuningSimulations;
     if mod(j, 10)==0
-        dyn_waitbar(prtfrc,hh,sprintf('Acceptance ratios: %f [%f]',isux/j,jsux/jj));
+        dyn_waitbar(prtfrc,hh,sprintf('Acceptance ratio [during last 500]: %f [%f]',isux/j,jsux/jj));
     end
     if  j/500 == round(j/500)
         test1 = jsux/jj;
@@ -215,7 +215,7 @@ if strcmpi(info,'LastCall')
         end% ... otherwise I don't move.
         prtfrc = j/MaxNumberOfTuningSimulations;
         if mod(j, 10)==0
-            dyn_waitbar(prtfrc,hh,sprintf('Acceptance rates: %f [%f]',isux/j,jsux/jj));
+            dyn_waitbar(prtfrc,hh,sprintf('Acceptance ratio [during last 1000]: %f [%f]',isux/j,jsux/jj));
         end
         if j/1000 == round(j/1000) 
             test1 = jsux/jj;  
