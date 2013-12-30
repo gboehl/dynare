@@ -5459,6 +5459,15 @@ calibrated model.
 
 @end table
 
+@vindex oo_.shock_decomposition
+The results are stored in the field @code{oo_.shock_decomposition}, which is a three 
+dimensional array. The first dimension contains the endogenous variables for 
+which the shock decomposition has been requested. The second dimension stores 
+in the first @code{M_.exo_nbr} columns the contribution of the respective shocks. 
+Column @code{M_.exo_nbr+1} stores the contribution of the initial conditions, 
+while column @code{M_.exo_nbr+2} stores the smoothed value of the respective 
+endogenous variable. The third dimension stores the time periods.  
+
 @end deffn
 
 

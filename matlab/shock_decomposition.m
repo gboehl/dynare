@@ -1,6 +1,10 @@
 function oo_ = shock_decomposition(M_,oo_,options_,varlist)
 % function z = shock_decomposition(M_,oo_,options_,varlist)
-% Computes shocks contribution to a simulated trajectory
+% Computes shocks contribution to a simulated trajectory. The field set is
+% oo_.shock_decomposition. It is a n_var by nshock+2 by nperiods array. The
+% first nshock columns store the respective shock contributions, column n+1
+% stores the role of the initial conditions, while column n+2 stores the
+% value of the smoothed variables.
 %
 % INPUTS
 %    M_:          [structure]  Definition of the model
