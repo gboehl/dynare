@@ -2404,10 +2404,6 @@ values (xx);
 end;
 @end example
 
-In case of conditional forecasts using an extended path method,
-the shock command is extended in order to determine the nature of the expectation
-on the endogenous variable paths. The command @code{expectation} has, in this case,
-to be added after the @code{values} command (@pxref{Forecasting}).
 
 @customhead{In stochastic context}
 
@@ -4199,7 +4195,7 @@ apply.
 
 The following line:
 @example
-corr eps_1, eps_2, 0.5,  ,  , beta_pdf, 0, 0.3, -1, 1;
+corr eps_1, eps_2, 0.5,  ,  , beta_pdf, 0, 0.3, -1, 1;
 @end example
 sets a generalized beta prior for the correlation between @code{eps_1} and
 @code{eps_2} with mean 0 and variance 0.3. By setting
@@ -4211,7 +4207,7 @@ respectively. The initial value is set to 0.5.
 
 Similarly, the following line:
 @example
-corr eps_1, eps_2, 0.5,  -0.5,  1, beta_pdf, 0, 0.3, -1, 1;
+corr eps_1, eps_2, 0.5,  -0.5,  1, beta_pdf, 0, 0.3, -1, 1;
 @end example
 sets the same generalized beta distribution as before, but now truncates
 this distribution to [-0.5,1] through the use of @var{LOWER_BOUND} and
@@ -5540,13 +5536,6 @@ DSGE model, by finding the structural shocks that are needed to match
 the restricted paths. Use @code{conditional_forecast},
 @code{conditional_forecast_paths} and @code{plot_conditional_forecast}
 for that purpose.
-If the model contains strong non-linearities, the conditional forecasts
-can be computed using an extended path method with the @code{simulation_type}
-option in @code{conditional_forecast} command set to @code{deterministic}.
-Because in this case deterministic simulations are carried out,
-the nature of the shocks (surprise or perfect foresight) has to be indicated
-in the @code{conditional_forecast_paths} block, using the command @code{expectation}
-for each endogenous path. The forecasts are plotted using the @code{rplot} command.
 
 Finally, it is possible to do forecasting with a Bayesian VAR using
 the @code{bvar_forecast} command.
@@ -5707,10 +5696,7 @@ command has to be called after estimation.
 
 Use @code{conditional_forecast_paths} block to give the list of
 constrained endogenous, and their constrained future path.
-If an extended path method is applied on the original dsge model,
-the nature of the expectation on the constrained endogenous has to be
-specified using expectation command. Option
-@code{controlled_varexo} is used to specify the structural shocks
+Option @code{controlled_varexo} is used to specify the structural shocks
 which will be matched to generate the constrained path.
 
 Use @code{plot_conditional_forecast} to graph the results.
@@ -5736,14 +5722,6 @@ Number of simulations. Default: @code{5000}.
 
 @item conf_sig = @var{DOUBLE}
 Level of significance for confidence interval. Default: @code{0.80}
-
-@item  simulation_type = @code{stochastic} | @code{deterministic}
-Indicates the nature of simulations used to compute the conditional forecast.
-The default value @code{stochastic} is used, when simulations are computed
-using the reduced form representation of the DSGE model.
-If the model has to be simulated using extended path method on the original
-DSGE model, @code{simulation_type} has to be set equal to @code{deterministic}.
-
 
 @end table
 
@@ -5814,31 +5792,6 @@ plot_conditional_forecast(periods = 10) a y;
 @end example
 
 
-@examplehead
-@example
-/* conditional forecast using extended path method
-with perfect foresight on r path*/
-var y r
-varexo e u;
-
-@dots{}
-
-conditional_forecast_paths;
-var y;
-periods 1:3, 4:5;
-values 2, 5;
-var r
-periods 1:5;
-values 3;
-expectation perfect_foresight;
-end;
-
-conditional_forecast(parameter_set = calibration, controlled_varexo = (e, u), simulation_type=deterministic);
-
-rplot a;
-rplot y;
-@end example
-
 @end deffn
 
 @deffn Block conditional_forecast_paths ;
@@ -5851,10 +5804,6 @@ example.
 The syntax of the block is the same than the deterministic shocks in
 the @code{shocks} blocks (@pxref{Shocks on exogenous variables}).
 
-If the conditional forecast is carried out using the extended path method
-on the original DSGE model, the nature of the expectation have to be specified
-for each endogenous path, using the @code{expectation} = @code{surprise} | @code{perfect_foresight}.
-By default, @code{expectation} is equal to @code{surprise}.
 
 @end deffn
 
@@ -5888,6 +5837,67 @@ See @file{bvar-a-la-sims.pdf}, which comes with Dynare distribution,
 for more information on this command.
 @end deffn
 
+If the model contains strong non-linearities or if some perfectly expected shocks are considered, the forecasts and the conditional forecasts
+can be computed using an extended path method. The forecast scenario describing the shocks and/or the constrained paths on some endogenous variables should be build. 
+The first step is the forecast scenario initialization using the function @code{init_plan}:
+
+@anchor{init_plan}
+@deffn {MATLAB/Octave command} HANDLE = init_plan(DATES) ;
+
+Creates a new forecast scenario for a forecast period (indicated as a dates class, see @ref{dates class members}). This function return a handle on the new forecast scenario.
+
+@end deffn
+
+The forecast scenario can contain some simple shocks on the exogenous variables. This shocks are described using the function @code{basic_plan}:
+
+@anchor{basic_plan}
+@deffn {MATLAB/Octave command} HANDLE = basic_plan(HANDLE, 'VARIABLE_NAME', 'SHOCK_TYPE', DATES, MATLAB VECTOR OF DOUBLE |  [DOUBLE | EXPRESSION [DOUBLE | | EXPRESSION] ] ) ;
+
+Adds to the forecast scenario a shock on the exogenous variable indicated between quotes in the second argument. The shock type has to be specified in the third argument between quotes: 'surprise' in case of an unexpected shock  or 'perfect_foresight' for a perfectly anticipated shock. The fourth argument indicates the period of the shock using a dates class (see @ref{dates class members}). The last argument is the shock path indicated as a Matlab vector of double. This function return the handle of the updated forecast scenario.
+
+@end deffn
+
+The forecast scenario can also contain a constrained path on an endogenous variable. The values of the related exogenous variable compatible with the constrained path are in this case computed. In other words, a conditional forecast is performed. This kind of shock is described with the function  @code{flip_plan}:
+
+@anchor{flip_plan}
+@deffn {MATLAB/Octave command} HANDLE = flip_plan(HANDLE, 'VARIABLE_NAME, 'VARIABLE_NAME', 'SHOCK_TYPE', DATES, MATLAB VECTOR OF DOUBLE |  [DOUBLE | EXPRESSION [DOUBLE | | EXPRESSION] ] ) ;
+
+Adds to the forecast scenario a constrained path on the endogenous variable specified between quotes in the second argument. The associated exogenous variable provided in the third argument between quotes, is considered as an endogenous variable and its values compatible with the constrained path on the endogenous variable will be computed. The nature of the expectation on the constrained  path has to be specified in the fourth argument between quotes: 'surprise' in case of an unexpected path or 'perfect_foresight' for a perfectly anticipated path. The fifth argument indicates the period where the path of the endogenous variable is constrained using a dates class (see @ref{dates class members}). The last argument contains the constrained path as a Matlab vector of double. This function return the handle of the updated forecast scenario.
+
+@end deffn
+
+Once the forecast scenario if fully described, the forecast is computed with the command @code{det_cond_forecast}:
+@anchor{det_cond_forecast}
+@deffn {MATLAB/Octave command} DSERIES = det_cond_forecast(HANDLE[, DSERIES [, DATES]]) ;
+
+Computes the forecast or the conditional forecast using an extended path method for the given forecast scenario (first argument). The past values of the endogenous and exogenous variables provided with a dseries class (see @ref{dseries class members}) can be indicated in the second argument. By default, the past values of the variables are equal to their steady-state values. The initial date of the forecast can be provided in the third argument. By default, the forecast will start at the first date indicated in the @code{init_plan} command. This function returns a dset containing the historical and forecast values for the endogenous and exogenous variables. 
+
+@end deffn
+
+
+
+@examplehead
+@example
+/* conditional forecast using extended path method
+with perfect foresight on r path*/
+var y r
+varexo e u;
+
+@dots{}
+
+smoothed = dseries('smoothed_variables.csv');
+
+fplan = init_plan(2013Q4:2029Q4);
+
+fplan = flip_plan(fplan, 'y', 'u', 'surprise', 2013Q4:2014Q4,  [1 1.1 1.2 1.1 ]);
+
+fplan = flip_plan(fplan, 'r', 'e', 'perfect_foresight', 2013Q4:2014Q4,  [2 1.9 1.9 1.9 ]);
+
+dset_forecast = det_cond_forecast(fplan, smoothed);
+
+plot(dset_forecast.{'y','u'});
+plot(dset_forecast.{'r','e'});
+@end example
 
 @node Optimal policy
 @section Optimal policy
