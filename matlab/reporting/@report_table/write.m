@@ -74,17 +74,7 @@ for i=1:ndates
 end
 datedata = dates.time;
 years = unique(datedata(:, 1));
-if o.annualAverages
-    yrsForAvgs = years;
-else
-    yrsForAvgs = [];
-end
-for i=1:length(yrsForAvgs)
-    fprintf(fid, 'r');
-    if o.showVlines
-        fprintf(fid, '|');
-    end
-end
+
 fprintf(fid, '@{}}%%\n');
 if ~isempty(o.title)
     fprintf(fid, '\\multicolumn{%d}{c}{\\%s %s}\\\\\n', ...
@@ -131,9 +121,6 @@ switch dates.freq
     otherwise
         error('@report_table.write: invalid dseries frequency');
 end
-for i=1:length(yrsForAvgs)
-    fprintf(fid, ' & %d', years(i));
-end
 fprintf(fid, '\\\\[-2pt]%%\n');
 fprintf(fid, '\\hline%%\n');
 fprintf(fid, '%%\n');
@@ -141,7 +128,7 @@ fprintf(fid, '%%\n');
 % Write Report_Table Data
 ne = o.seriesElements.numSeriesElements();
 for i=1:ne
-    o.seriesElements(i).write(fid, dates, o.precision, yrsForAvgs);
+    o.seriesElements(i).write(fid, dates, o.precision);
     if o.showHlines
         fprintf(fid, '\\hline\n');
     end

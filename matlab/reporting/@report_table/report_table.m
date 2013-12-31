@@ -41,8 +41,6 @@ o.showVlines = false;
 o.vlineAfter = '';
 o.vlineAfterEndOfPeriod = false;
 
-o.annualAverages = false;
-
 o.data = '';
 o.seriesToUse = '';
 o.range = {};
@@ -75,7 +73,6 @@ end
 
 % Check options provided by user
 assert(ischar(o.title), '@report_table.report_table: title must be a string');
-assert(islogical(o.annualAverages), '@report_table.report_table: annualAverages must be true or false');
 assert(islogical(o.showHlines), '@report_table.report_table: showHlines must be true or false');
 assert(islogical(o.showVlines), '@report_table.report_table: showVlines must be true or false');
 assert(isint(o.precision), '@report_table.report_table: precision must be an int');

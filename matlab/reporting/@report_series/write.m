@@ -1,5 +1,5 @@
-function o = write(o, fid, dates, precision, yrsForAvgs)
-%function o = write(o, fid, dates, precision, yrsForAvgs)
+function o = write(o, fid, dates, precision)
+%function o = write(o, fid, dates, precision)
 % Write Table Row
 %
 % INPUTS
@@ -7,7 +7,6 @@ function o = write(o, fid, dates, precision, yrsForAvgs)
 %   fid          [int]              file id
 %   dates        [dates]            dates for report_series slice
 %   precision    [float]            precision with which to print the data
-%   yrsForAvgs   [bool]             the years for which to compute averages
 %
 %
 % OUTPUTS
@@ -62,9 +61,6 @@ if ~isempty(o.tableRowColor)
 end
 if ~isempty(o.tableSubSectionHeader)
     fprintf(fid, '%s', o.tableSubSectionHeader);
-    for i=1:size(dates)+length(yrsForAvgs)
-        fprintf(fid, '&');
-    end
     fprintf(fid, '\\\\%%\n');
     return;
 end
@@ -89,27 +85,6 @@ for i=1:size(data,1)
     end
 
     fprintf(fid, dataString, round(data(i)*precision)/precision);
-
-    if o.tableShowMarkers
-        fprintf(fid, ']');
-    end
-end
-
-% Calculate and display annual averages
-for i=1:length(yrsForAvgs)
-    slice = o.data(dates([num2str(yrsForAvgs(i)) 'q1']):dates([num2str(yrsForAvgs(i)) 'q4']));
-    avg = sum(slice.data)/size(slice);
-    fprintf(fid, '&');
-    if o.tableShowMarkers
-        if avg < -o.tableMarkerLimit
-            fprintf(fid, '\\color{%s}', o.tableNegColor);
-        elseif avg > o.tableMarkerLimit
-            fprintf(fid, '\\color{%s}', o.tablePosColor);
-        end
-        fprintf(fid, '[');
-    end
-
-    fprintf(fid, dataString, round(avg*precision)/precision);
 
     if o.tableShowMarkers
         fprintf(fid, ']');
