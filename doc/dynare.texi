@@ -95,7 +95,7 @@
 @c %**end of header
 
 @copying
-Copyright @copyright{} 1996-2013, Dynare Team.
+Copyright @copyright{} 1996-2014, Dynare Team.
 
 @quotation
 Permission is granted to copy, distribute and/or modify this document
@@ -10511,8 +10511,9 @@ Title for the table. Default: @code{none}
 @item titleSize, @code{STRING}
 @LaTeX{} string representing the size of the table title. Default: @code{large}
 
-@item vlineAfter, @code{dates}
-Show a vertical line after the specified date. Default: @code{empty}
+@item vlineAfter, @code{dates} || @code{CELL_ARRAY_DATES}
+Show a vertical line after the specified date (or dates if a cell
+array of dates is passed). Default: @code{empty}
 
 @item vlineAfterEndOfPeriod, @code{BOOLEAN}
 Show a vertical line after the end of every period (@i{i.e.} after

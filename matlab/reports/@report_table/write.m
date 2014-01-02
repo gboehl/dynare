@@ -64,9 +64,11 @@ for i=1:ndates
             end
         end
         if ~isempty(o.vlineAfter)
-            if dates(i) == o.vlineAfter
-                if ~(o.vlineAfterEndOfPeriod && dates(i).time(2) == dates(i).freq)
-                    fprintf(fid, '|');
+            for j=1:length(o.vlineAfter)
+                if dates(i) == o.vlineAfter{j}
+                    if ~(o.vlineAfterEndOfPeriod && dates(i).time(2) == dates(i).freq)
+                        fprintf(fid, '|');
+                    end
                 end
             end
         end

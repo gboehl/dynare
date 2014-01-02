@@ -12,7 +12,7 @@ function o = report_table(varargin)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2013 Dynare Team
+% Copyright (C) 2013-2014 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -71,6 +71,10 @@ elseif nargin > 1
     end
 end
 
+if isa(o.vlineAfter, 'dates')
+    o.vlineAfter = {o.vlineAfter};
+end
+
 % Check options provided by user
 assert(ischar(o.title), '@report_table.report_table: title must be a string');
 assert(islogical(o.showHlines), '@report_table.report_table: showHlines must be true or false');
@@ -83,7 +87,7 @@ assert(isempty(o.data) || isa(o.data, 'dseries'), ...
        '@report_table.report_table: data must be a dseries');
 assert(isempty(o.seriesToUse) || iscellstr(o.seriesToUse), ...
        '@report_table.report_table: seriesToUse must be a cell array of string(s)');
-assert(isempty(o.vlineAfter) || isa(o.vlineAfter, 'dates'), ...
+assert(isempty(o.vlineAfter) || allCellsAreDates(o.vlineAfter), ...
        '@report_table.report_table: vlineAfter must be a dates');
 if o.showVlines
     o.vlineAfter = '';
