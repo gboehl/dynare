@@ -12,7 +12,7 @@ function o = write(o, fid)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2013 Dynare Team
+% Copyright (C) 2013-2014 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -45,7 +45,7 @@ nlhc = 1;
 if isempty(o.range)
     dates = o.seriesElements.getMaxRange();
 else
-    dates = o.range;
+    dates = o.range{1};
 end
 ndates = dates.ndat;
 
@@ -76,11 +76,26 @@ for i=1:ndates
 end
 datedata = dates.time;
 years = unique(datedata(:, 1));
-
+if length(o.range) > 1
+    rhscols = strings(o.range{2});
+    if o.range{2}.freq == 1
+        rhscols = strrep(rhscols, 'Y', '');
+    end
+else
+    rhscols = {};
+end
+for i=1:length(rhscols)
+    fprintf(fid, 'r');
+    if o.showVlines
+        fprintf(fid, '|');
+    end
+end
+nrhc = length(rhscols);
+ncols = ndates+nlhc+nrhc;
 fprintf(fid, '@{}}%%\n');
 if ~isempty(o.title)
     fprintf(fid, '\\multicolumn{%d}{c}{\\%s %s}\\\\\n', ...
-            ndates+nlhc, o.titleSize, o.title);
+            ncols, o.titleSize, o.title);
 end
 fprintf(fid, '\\toprule%%\n');
 
@@ -90,6 +105,9 @@ switch dates.freq
     case 1
         for i=1:size(thdr, 1)
             fprintf(fid, ' & %d', thdr{i, 1});
+        end
+        for i=1:length(rhscols)
+            fprintf(fid, ' & %s', rhscols{i});
         end
     case 4
         thdr{1, 2} = datedata(:, 2)';
@@ -107,11 +125,10 @@ switch dates.freq
         for i=1:size(thdr, 1)
             fprintf(fid, ' & \\multicolumn{%d}{c}{%d}', size(thdr{i,2}, 2), thdr{i,1});
         end
-        fprintf(fid, '\\\\[-10pt]%%\n');
-        for i=1:size(thdr, 1)
-            fprintf(fid, ' & \\multicolumn{%d}{c}{\\hrulefill}', size(thdr{i,2}, 2));
+        for i=1:length(rhscols)
+            fprintf(fid, ' & %s', rhscols{i});
         end
-        fprintf(fid, '\\\\%%\n');
+        fprintf(fid, '\\\\\\cline{%d-%d}%%\n', nlhc+1, ncols);
         for i=1:size(thdr, 1)
             quarters = thdr{i, 2};
             for j=1:size(quarters, 2)
@@ -130,7 +147,7 @@ fprintf(fid, '%%\n');
 % Write Report_Table Data
 ne = o.seriesElements.numSeriesElements();
 for i=1:ne
-    o.seriesElements(i).write(fid, dates, o.precision);
+    o.seriesElements(i).write(fid, o.range, o.precision);
     if o.showHlines
         fprintf(fid, '\\hline\n');
     end

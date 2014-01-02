@@ -14,7 +14,7 @@ function o = report_series(varargin)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2013 Dynare Team
+% Copyright (C) 2013-2014 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -53,6 +53,8 @@ o.tableSubSectionHeader = '';
 o.tableAlignRight = false;
 
 o.tableRowColor = 'white';
+
+o.tableDataRhs = '';
 
 o.zerotol = 1e-6;
 
