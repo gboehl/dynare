@@ -94,8 +94,9 @@ if isoctave || matlab_ver_less_than('7.4')
     addpath([dynareroot '/missing/ilu'])
 end
 
-% strjoin is missing in older versions of MATLAB and in Octave
-if isoctave || matlab_ver_less_than('8.1')
+% strjoin is missing in older versions of MATLAB and in Octave < 3.8
+if (isoctave && octave_ver_less_than('3.8')) || ...
+        (~isoctave && matlab_ver_less_than('8.1'))
     addpath([dynareroot '/missing/strjoin'])
 end
 

@@ -31,7 +31,12 @@ if test "x$MKOCTFILE" != "x"; then
   FFLAGS=`$MKOCTFILE -p FFLAGS`
   CXXFLAGS=`$MKOCTFILE -p CXXFLAGS`
   LDFLAGS="`$MKOCTFILE -p LFLAGS` `$MKOCTFILE -p LDFLAGS`"
+  OCTAVE_VERSION=`$MKOCTFILE -v 2>&1 | sed 's/mkoctfile, version //'`
+  AX_COMPARE_VERSION([$OCTAVE_VERSION], [lt], [3.6], [AC_MSG_ERROR([Your Octave is too old, please upgrade to version 3.6 at least.])])
+  AX_COMPARE_VERSION([$OCTAVE_VERSION], [ge], [3.8], [OCTAVE38=yes])
 fi
+
+AM_CONDITIONAL([COMPILE_LINSOLVE], [test "$OCTAVE38" != "yes"])
 
 CFLAGS="$CFLAGS -Wall -Wno-parentheses"
 FFLAGS="$FFLAGS -Wall"
@@ -101,6 +106,12 @@ else
    BUILD_MS_SBVAR_MEX_OCTAVE="no (missing GSL or MatIO library)"
 fi
 
+if test -n "$MKOCTFILE" -a "$OCTAVE38" != "yes"; then
+   BUILD_LINSOLVE_OCTAVE="yes"
+else
+   BUILD_LINSOLVE_OCTAVE="no (Octave >= 3.8)"
+fi
+
 AC_ARG_ENABLE([openmp], AS_HELP_STRING([--enable-openmp], [use OpenMP for parallelization of some MEX files]), [
   if test "x$enable_openmp" = "xyes"; then
     CPPFLAGS="$CPPFLAGS -DUSE_OMP"
@@ -118,6 +129,7 @@ Binaries (with "make"):
  MS-SBVAR MEX files for Octave:                                      $BUILD_MS_SBVAR_MEX_OCTAVE
  Kalman Steady State MEX file for Octave:                            $BUILD_KALMAN_STEADY_STATE_OCTAVE
  k-order and dynare_simul MEX for Octave:                            $BUILD_ESTIMATION_KORDER_DYNSIMUL_MEX_OCTAVE
+ Linsolve for Octave:                                                $BUILD_LINSOLVE_OCTAVE
 
 ])
 

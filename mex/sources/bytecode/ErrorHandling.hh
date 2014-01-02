@@ -267,9 +267,6 @@ struct s_plan
 
 #ifdef MATLAB_MEX_FILE
 extern "C" bool utIsInterruptPending();
-#else
-#include <octave/oct.h>
-#include <octave/unwind-prot.h>
 #endif
 
 #ifdef _MSC_VER
@@ -575,9 +572,7 @@ public:
 
     while (go_on)
       {
-#ifdef OCTAVE_MEX_FILE
-        OCTAVE_QUIT;
-#else
+#ifdef MATLAB_MEX_FILE
 	      if ( utIsInterruptPending() )
 		      throw UserExceptionHandling();
 #endif

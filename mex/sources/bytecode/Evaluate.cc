@@ -24,9 +24,6 @@
 
 #ifdef MATLAB_MEX_FILE
 extern "C" bool utIsInterruptPending();
-#else
-#include <octave/oct.h>
-#include <octave/unwind-prot.h>
 #endif
 
 Evaluate::Evaluate()
@@ -139,9 +136,7 @@ Evaluate::compute_block_time(const int Per_u_, const bool evaluate, /*const int 
           jacob_exo_det = mxGetPr(jacobian_det_exo_block[block_num]);
         }
     }
-#ifdef OCTAVE_MEX_FILE
-  OCTAVE_QUIT;
-#else
+#ifdef MATLAB_MEX_FILE
 	if ( utIsInterruptPending() )
 		throw UserExceptionHandling();
 #endif

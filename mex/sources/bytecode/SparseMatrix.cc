@@ -5139,9 +5139,7 @@ dynSparseMatrix::Solve_ByteCode_Symbolic_Sparse_GaussianElimination(int Size, bo
     {
       /*clock_t time11 = clock();
       mexPrintf("t=%d, record = %d\n",t, record);*/
-#ifdef OCTAVE_MEX_FILE
-      OCTAVE_QUIT;
-#else
+#ifdef MATLAB_MEX_FILE
     	if ( utIsInterruptPending() )
 		    throw UserExceptionHandling();
 #endif
