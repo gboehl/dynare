@@ -5895,8 +5895,8 @@ fplan = flip_plan(fplan, 'r', 'e', 'perfect_foresight', 2013Q4:2014Q4,  [2 1.9 1
 
 dset_forecast = det_cond_forecast(fplan, smoothed);
 
-plot(dset_forecast.{'y','u'});
-plot(dset_forecast.{'r','e'});
+plot(dset_forecast.@{'y','u'@});
+plot(dset_forecast.@{'r','e'@});
 @end example
 
 @node Optimal policy
