@@ -10525,7 +10525,7 @@ Whether or not to show vertical lines separating the columns. Default: @code{fal
 @end defmethod
 
 @anchor{addSeries}
-@defmethod Report addSeries data, graphLineColor, graphLineStyle, graphLineWidth, graphMarker, graphMarkerEdgeColor, graphMarkerFaceColor, graphMarkerSize, tableRowColor, tableShowMarkers, tableAlignRight, tableNegColor, tablePosColor, tableSubSectionHeader, zerotol
+@defmethod Report addSeries data, graphLineColor, graphLineStyle, graphLineWidth, graphMarker, graphMarkerEdgeColor, graphMarkerFaceColor, graphMarkerSize, tableDataRhs, tableRowColor, tableShowMarkers, tableAlignRight, tableNegColor, tablePosColor, tableSubSectionHeader, zerotol
 Adds a @code{Series} to a @code{Graph} or a @code{Table}.
 @optionshead
 @table @code
@@ -10553,6 +10553,13 @@ The face color of the graph marker. Default: @code{`auto'}
 
 @item graphMarkerSize, @code{DOUBLE}
 The size of the graph marker. Default: @code{6}
+
+@item tableDataRhs, @code{dseries}
+A series to be added to the right of the current series. Usefull for
+displaying aggregate data for a series. @i{e.g} if the series is
+quarterly @code{tableDataRhs} could point to the yearly averages of
+the quarterly series. This would cause quarterly data to be displayed
+followed by annual data. Default: @code{empty}
 
 @item tableRowColor, @code{STRING}
 The color that you want the row to be. Predefined values include

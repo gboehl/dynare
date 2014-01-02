@@ -70,6 +70,9 @@ elseif nargin > 1
         end
     end
 end
+if ~iscell(o.range)
+    o.range = {o.range};
+end
 
 if isa(o.vlineAfter, 'dates')
     o.vlineAfter = {o.vlineAfter};
@@ -80,7 +83,7 @@ assert(ischar(o.title), '@report_table.report_table: title must be a string');
 assert(islogical(o.showHlines), '@report_table.report_table: showHlines must be true or false');
 assert(islogical(o.showVlines), '@report_table.report_table: showVlines must be true or false');
 assert(isint(o.precision), '@report_table.report_table: precision must be an int');
-assert(isempty(o.range) || (isa(o.range, 'dates') && o.range.ndat >= 2), ...
+assert(isempty(o.range) || length(o.range) <=2 && allCellsAreDatesRange(o.range), ...
        ['@report_table.report_table: range is specified as a dates range, e.g. ' ...
         '''dates(''1999q1''):dates(''1999q3'')''.']);
 assert(isempty(o.data) || isa(o.data, 'dseries'), ...

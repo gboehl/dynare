@@ -15,7 +15,7 @@ function o = write(o, fid, dates, precision)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2013 Dynare Team
+% Copyright (C) 2013-2014 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -34,7 +34,9 @@ function o = write(o, fid, dates, precision)
 
 %% Validate options passed to function
 assert(fid ~= -1);
-assert(isa(dates, 'dates'));
+for i=1:length(dates)
+    assert(isa(dates{i}, 'dates'));
+end
 assert(isint(precision));
 
 %% Validate options provided by user
@@ -42,6 +44,13 @@ assert(ischar(o.tableSubSectionHeader), '@report_series.write: tableSubSectionHe
 if isempty(o.tableSubSectionHeader)
     assert(~isempty(o.data) && isa(o.data, 'dseries'), ...
            '@report_series.write: must provide data as a dseries');
+
+    if ~isempty(o.tableDataRhs)
+        assert(~isempty(o.tableDataRhs) && isa(o.tableDataRhs, 'dseries'), ...
+               '@report_series.write: must provide tableDataRhs as a dseries');
+        assert(iscell(dates) && length(dates) == 2, ...
+               '@report_series.write: must provide second range with tableDataRhs');
+    end
 end
 
 assert(ischar(o.tableNegColor), '@report_series.write: tableNegColor must be a string');
@@ -52,9 +61,6 @@ assert(islogical(o.tableAlignRight), '@report_series.write: tableAlignRight must
 assert(isfloat(o.tableMarkerLimit), '@report_series,write: tableMarkerLimit must be a float');
 
 %% Write Output
-dataString = ['%.' num2str(precision) 'f'];
-precision  = 10^precision;
-
 fprintf(fid, '%% Table Row (report_series)\n');
 if ~isempty(o.tableRowColor)
     fprintf(fid, '\\rowcolor{%s}', o.tableRowColor);
@@ -71,24 +77,11 @@ fprintf(fid, '%s', o.data.tex{:});
 if o.tableAlignRight
     fprintf(fid, '}');
 end
-data = o.data(dates);
-data = data.data;
-for i=1:size(data,1)
-    fprintf(fid, '&');
-    if o.tableShowMarkers
-        if data(i) < -o.tableMarkerLimit
-            fprintf(fid, '\\color{%s}', o.tableNegColor);
-        elseif data(i) > o.tableMarkerLimit
-            fprintf(fid, '\\color{%s}', o.tablePosColor);
-        end
-        fprintf(fid, '[');
-    end
 
-    fprintf(fid, dataString, round(data(i)*precision)/precision);
-
-    if o.tableShowMarkers
-        fprintf(fid, ']');
-    end
+printSeries(o, fid, o.data, dates{1}, precision);
+if ~isempty(o.tableDataRhs)
+    printSeries(o, fid, o.tableDataRhs, dates{2}, precision);
 end
+
 fprintf(fid, '\\\\%%\n');
 end
