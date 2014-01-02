@@ -1,5 +1,5 @@
-function rep = CountryTablePage(rep, countryAbbr, countryName, db_q, dc_q, trange, vline_after)
-% Copyright (C) 2013 Dynare Team
+function rep = CountryTablePage(rep, countryAbbr, countryName, db_q, dc_q, db_a, dc_a, trange, vline_after)
+% Copyright (C) 2013-2014 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -42,8 +42,10 @@ otherThree = {'EA6','LA6','RC6'};
 notForOtherThree = {'BLT_', 'UNR_', 'UNR_BAR_', 'UNR_GAP_'};
 
 rep = rep.addTable('title', countryName, ...
-                   'range', trange, ...
-                   'vlineAfter', vline_after);
+                   'range', {trange, dates('2012a'):dates('2014a')}, ...
+                   'vlineAfter', {vline_after dates('2014q4')});
+
+
 
 for i=1:length(seriesNames)
     if any(strcmp(countryAbbr, otherThree)) && ...
@@ -51,11 +53,16 @@ for i=1:length(seriesNames)
         continue
     end
     db_q = db_q.tex_rename([seriesNames{i}{1} countryAbbr], seriesNames{i}{2});
-    rep = rep.addSeries('data', db_q{[seriesNames{i}{1} countryAbbr]});
+    rep = rep.addSeries('data', db_q{[seriesNames{i}{1} countryAbbr]}, ...
+                        'tableDataRhs', db_a{[seriesNames{i}{1} countryAbbr]});
     delta = db_q{[seriesNames{i}{1} countryAbbr]}-dc_q{[seriesNames{i}{1} countryAbbr]};
     delta = delta.tex_rename('$\Delta$');
+
+    deltaa = db_a{[seriesNames{i}{1} countryAbbr]}-dc_a{[seriesNames{i}{1} countryAbbr]};
+    deltaa = delta.tex_rename('$\Delta$');
     rep = rep.addSeries('data', delta, ...
                         'tableShowMarkers', true, ...
-                        'tableAlignRight', true);
+                        'tableAlignRight', true, ...
+                        'tableDataRhs', deltaa);
 end
 end

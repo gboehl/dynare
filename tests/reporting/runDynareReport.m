@@ -1,5 +1,5 @@
 function runDynareReport(dc_a, dc_q, db_a, db_q)
-% Copyright (C) 2013 Dynare Team
+% Copyright (C) 2013-2014 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -120,7 +120,8 @@ for i=1:length(shortNames)
     rep = rep.addPage('title', 'Jan1 vs Jan2', ...
                       'titleFormat', '\large\bfseries');
     rep = rep.addSection();
-    rep = CountryTablePage(rep, shortNames{i}, longNames{i}, db_q, dc_q, trange, dates('2012q2'));
+    rep = CountryTablePage(rep, shortNames{i}, longNames{i}, db_q, dc_q, ...
+                           db_a, dc_a, trange, dates('2012q2'));
 end
 
 %% Residual Reports
