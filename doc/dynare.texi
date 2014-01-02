@@ -10511,7 +10511,7 @@ Title for the table. Default: @code{none}
 @item titleSize, @code{STRING}
 @LaTeX{} string representing the size of the table title. Default: @code{large}
 
-@item vlineAfter, @code{dates} || @code{CELL_ARRAY_DATES}
+@item vlineAfter, @code{dates} | @code{CELL_ARRAY_DATES}
 Show a vertical line after the specified date (or dates if a cell
 array of dates is passed). Default: @code{empty}
 
