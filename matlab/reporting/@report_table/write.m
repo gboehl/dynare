@@ -101,62 +101,46 @@ fprintf(fid, '\\toprule%%\n');
 
 % Column Headers
 thdr = num2cell(years, size(years, 1));
-switch dates.freq
-    case 1
-        for i=1:size(thdr, 1)
-            fprintf(fid, ' & %d', thdr{i, 1});
+if dates.freq == 1
+    for i=1:size(thdr, 1)
+        fprintf(fid, ' & %d', thdr{i, 1});
+    end
+    for i=1:length(rhscols)
+        fprintf(fid, ' & %s', rhscols{i});
+    end
+else
+    thdr{1, 2} = datedata(:, 2)';
+    if size(thdr, 1) > 1
+        for i=2:size(thdr, 1)
+            split = find(thdr{i-1, 2} == dates.freq, 1, 'first');
+            assert(~isempty(split), '@report_table.write: Shouldn''t arrive here');
+            thdr{i, 2} = thdr{i-1, 2}(split+1:end);
+            thdr{i-1, 2} = thdr{i-1, 2}(1:split);
         end
-        for i=1:length(rhscols)
-            fprintf(fid, ' & %s', rhscols{i});
+    end
+    for i=1:size(thdr, 1)
+        fprintf(fid, ' & \\multicolumn{%d}{c}{%d}', size(thdr{i,2}, 2), thdr{i,1});
+    end
+    for i=1:length(rhscols)
+        fprintf(fid, ' & %s', rhscols{i});
+    end
+    fprintf(fid, '\\\\\\cline{%d-%d}%%\n', nlhc+1, ncols);
+    switch dates.freq
+        case 4
+            sep = 'Q';
+        case 12
+            sep = 'M';
+        case 52
+            sep = 'W';
+        otherwise
+            error('@report_table.write: Invalid frequency.');
+    end
+    for i=1:size(thdr, 1)
+        period = thdr{i, 2};
+        for j=1:size(period, 2)
+            fprintf(fid, ' & \\multicolumn{1}{c}{%s%d}', sep, period(j));
         end
-    case 4
-        thdr{1, 2} = datedata(:, 2)';
-        if size(thdr, 1) > 1
-            for i=2:size(thdr, 1)
-                split = find(thdr{i-1, 2} == 4, 1, 'first');
-                assert(~isempty(split), '@report_table.write: Shouldn''t arrive here');
-                thdr{i, 2} = thdr{i-1, 2}(split+1:end);
-                thdr{i-1, 2} = thdr{i-1, 2}(1:split);
-            end
-        end
-        for i=1:size(thdr, 1)
-            fprintf(fid, ' & \\multicolumn{%d}{c}{%d}', size(thdr{i,2}, 2), thdr{i,1});
-        end
-        for i=1:length(rhscols)
-            fprintf(fid, ' & %s', rhscols{i});
-        end
-        fprintf(fid, '\\\\\\cline{%d-%d}%%\n', nlhc+1, ncols);
-        for i=1:size(thdr, 1)
-            quarters = thdr{i, 2};
-            for j=1:size(quarters, 2)
-                fprintf(fid, ' & \\multicolumn{1}{c}{Q%d}', quarters(j));
-            end
-        end
-    case 12
-        thdr{1, 2} = datedata(:, 2)';
-        if size(thdr, 1) > 1
-            for i=2:size(thdr, 1)
-                split = find(thdr{i-1, 2} == 12, 1, 'first');
-                assert(~isempty(split), '@report_table.write 2: Shouldn''t arrive here');
-                thdr{i, 2} = thdr{i-1, 2}(split+1:end);
-                thdr{i-1, 2} = thdr{i-1, 2}(1:split);
-            end
-        end
-        for i=1:size(thdr, 1)
-            fprintf(fid, ' & \\multicolumn{%d}{c}{%d}', size(thdr{i,2}, 2), thdr{i,1});
-        end
-        for i=1:length(rhscols)
-            fprintf(fid, ' & %s', rhscols{i});
-        end
-        fprintf(fid, '\\\\\\cline{%d-%d}%%\n', nlhc+1, ncols);
-        for i=1:size(thdr, 1)
-            months = thdr{i, 2};
-            for j=1:size(months, 2)
-                fprintf(fid, ' & \\multicolumn{1}{c}{M%d}', months(j));
-            end
-        end
-    otherwise
-        error('@report_table.write: invalid dseries frequency');
+    end
 end
 fprintf(fid, '\\\\[-2pt]%%\n');
 fprintf(fid, '\\hline%%\n');
