@@ -96,6 +96,14 @@ else
     end;
 end;
 
+% Workaround for a strange bug with Octave: if there is any call to exist(fname)
+% before the call to the preprocessor, then Octave will use the old copy of
+% the .m instead of the newly generated one. Deleting the .m beforehand
+% fixes the problem.
+if isoctave && length(dir([fname(1:(end-4)) '.m'])) > 0
+    delete([fname(1:(end-4)) '.m'])
+end
+
 if ~isempty(strfind(fname,filesep))
     fprintf('\nIt seems you are trying to call a mod-file not located in the "Current Folder". This is not possible (the %s symbol is not allowed in the name of the mod file).\n', filesep)
     [pathtomodfile,basename,ext] = fileparts(fname);
