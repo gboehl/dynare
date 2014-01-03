@@ -114,12 +114,9 @@ switch dates.freq
         if size(thdr, 1) > 1
             for i=2:size(thdr, 1)
                 split = find(thdr{i-1, 2} == 4, 1, 'first');
-                if isempty(split)
-                    error('@report_table.write: Shouldn''t arrive here');
-                else
-                    thdr{i, 2} = thdr{i-1, 2}(split+1:end);
-                    thdr{i-1, 2} = thdr{i-1, 2}(1:split);
-                end
+                assert(~isempty(split), '@report_table.write: Shouldn''t arrive here');
+                thdr{i, 2} = thdr{i-1, 2}(split+1:end);
+                thdr{i-1, 2} = thdr{i-1, 2}(1:split);
             end
         end
         for i=1:size(thdr, 1)
