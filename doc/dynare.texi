@@ -8569,7 +8569,10 @@ Tests if two @dates objects are equal. @code{+1950Q1==1950Q2} returns @code{1}, 
 
 @item ne operator (not equal, @code{~=})
 
-Tests if two @dates objects are not equal. @code{+1950Q1==1950Q2} returns @code{0}, @code{1950Q1==1950Q2} returns @code{1}. If the compared objects have both @code{n>1} elements, the @code{ne} operator returns a column vector, @code{n} by @code{1}, of zeros and ones.
+Tests if two @dates objects are not equal. @code{+1950Q1~=1950Q2}
+returns @code{0} while @code{1950Q1~=1950Q2} returns @code{1}. If the
+compared objects both have @code{n>1} elements, the @code{ne} operator
+returns an @code{n} by @code{1} column vector of zeros and ones.
 
 @item lt operator (less than, @code{<})
 
