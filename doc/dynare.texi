@@ -8541,7 +8541,11 @@ Increments a date by one period. @code{+1950Q1} is identical to @code{1950Q2}, @
 
 @item minus binary operator (@code{-})
 
-The difference between two dates is a number of periods. For instance if @code{1951Q2-1950Q1} is equal to  @code{5} (quarters).
+Has two functions: difference and subtraction. If the second argument
+is a date, calculates the difference between the first date and the
+second date (@i{e.g.} @code{1951Q2-1950Q1} is equal to @code{5}). If
+the second argument is an integer @code{X}, subtracts @code{X} periods
+from the date (@i{e.g.} @code{1951Q2-2} is equal to @code{1950Q4}).
 
 @item minus unary operator (@code{-})
 
