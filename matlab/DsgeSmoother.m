@@ -116,7 +116,15 @@ if options_.lik_init == 1               % Kalman filter
     if kalman_algo ~= 2
         kalman_algo = 1;
     end
-    Pstar = lyapunov_symm(T,R*Q*transpose(R),options_.qz_criterium,options_.lyapunov_complex_threshold);
+	if options_.lyapunov_fp == 1
+        Pstar = lyapunov_symm(T,Q,options_.lyapunov_fixed_point_tol,options_.lyapunov_complex_threshold, 3, R);
+    elseif options_.lyapunov_db == 1
+        Pstar = disclyap_fast(T,R*Q*R',options_.lyapunov_doubling_tol);
+    elseif options_.lyapunov_srs == 1
+        Pstar = lyapunov_symm(T,Q,options_.lyapunov_fixed_point_tol,options_.lyapunov_complex_threshold, 4, R);
+    else
+        Pstar = lyapunov_symm(T,R*Q*R',options_.qz_criterium,options_.lyapunov_complex_threshold);
+    end;
     Pinf        = [];
 elseif options_.lik_init == 2           % Old Diffuse Kalman filter
     if kalman_algo ~= 2
