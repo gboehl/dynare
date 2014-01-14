@@ -177,7 +177,7 @@ while notsteady && t<smpl
         atilde(:,t) = a(:,t) + PZI*v(di,t);
         K(:,di,t)    = T*PZI;
         L(:,:,t)    = T-K(:,di,t)*ZZ;
-        P(:,:,t+1)  = T*P(:,:,t)*T'-T*P(:,:,t)*ZZ'*K(:,di,t)' + QQ;
+		P(:,:,t+1)  = T*P(:,:,t)*L(:,:,t)' + QQ;
     end
     a(:,t+1)    = T*atilde(:,t);
     Pf          = P(:,:,t);
