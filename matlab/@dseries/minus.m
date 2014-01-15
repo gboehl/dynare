@@ -23,7 +23,7 @@ function A = minus(B,C) % --*-- Unitary tests --*--
 %! @end deftypefn
 %@eod:
 
-% Copyright (C) 2012-2013 Dynare Team
+% Copyright (C) 2012-2014, Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -40,38 +40,22 @@ function A = minus(B,C) % --*-- Unitary tests --*--
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-if isnumeric(B) && isreal(B) && isequal(length(B),1) && isdseries(C)
-    A = dseries();
-    A.freq = C.freq;
-    A.init = C.init;
-    A.dates = C.dates;
-    A.nobs = C.nobs;
-    A.vobs = C.vobs;
-    A.name = cell(A.vobs,1);
-    A.tex = cell(A.vobs,1);
-    for i=1:A.vobs
-        A.name(i) = {['minus(' num2str(B) ',' C.name{i} ')']};
-        A.tex(i) = {['(' num2str(B) '-' C.tex{i} ')']};
+if isnumeric(B) && (isscalar(B) ||  isvector(B))
+    if ~isdseries(C)
+        error('dseries::minus: Second input argument must be a dseries object!')
     end
-    A.data = bsxfun(@minus, B, C.data);
+    A = C;
+    A.data = bsxfun(@minus,C.data,B);
     return;
 end
 
-if isnumeric(C) && isreal(C) && isequal(length(C),1) && isdseries(B)
-    A = dseries();
-    A.freq = B.freq;
-    A.init = B.init;
-    A.dates = B.dates;
-    A.nobs = B.nobs;
-    A.vobs = B.vobs;
-    A.name = cell(A.vobs,1);
-    A.tex = cell(A.vobs,1);
-    for i=1:A.vobs
-        A.name(i) = {['minus(' B.name{i} ',' num2str(C) ')']};
-        A.tex(i) = {['(' B.tex{i} '-' num2str(C) ')']};
+if isnumeric(C) && (isscalar(C) || isvector(C))
+    if ~isdseries(B)
+        error('dseries::minus: First input argument must be a dseries object!')
     end
-    A.data = bsxfun(@minus, B.data, C);
-    return;
+    A = B;
+    A.data = bsxfun(@minus,B.data,C);
+    return
 end
 
 if ~isequal(B.vobs,C.vobs) && ~(isequal(B.vobs,1) || isequal(C.vobs,1))

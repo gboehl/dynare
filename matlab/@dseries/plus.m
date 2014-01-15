@@ -23,7 +23,7 @@ function A = plus(B,C) % --*-- Unitary tests --*--
 %! @end deftypefn
 %@eod:
 
-% Copyright (C) 2011-2013 Dynare Team
+% Copyright (C) 2011-2014 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -40,37 +40,21 @@ function A = plus(B,C) % --*-- Unitary tests --*--
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-if isnumeric(B) && isscalar(B)
+if isnumeric(B) && (isscalar(B) ||  isvector(B))
     if ~isdseries(C)
         error('dseries::plus: Second input argument must be a dseries object!')
     end
-    b(1:size(C)) = B;
-    BB = dseries(b, C.dates(1));
-    BB.freq = C.freq;
-    BB.dates = C.dates;
-    BB.nobs = C.nobs;
-    BB.vobs = C.vobs;
-    BB.name = cell(BB.vobs,1);
-    BB.tex = cell(BB.vobs,1);
-    BB.name(1) = {num2str(B)};
-    A = BB + C;
+    A = C;
+    A.data = bsxfun(@plus,C.data,B);
     return;
 end
 
-if isnumeric(C) && isscalar(C)
+if isnumeric(C) && (isscalar(C) || isvector(C))
     if ~isdseries(B)
         error('dseries::plus: First input argument must be a dseries object!')
     end
-    c(1:size(C)) = C;
-    CC = dseries(C, B.dates(1));
-    CC.freq = B.freq;
-    CC.dates = B.dates;
-    CC.nobs = B.nobs;
-    CC.vobs = B.vobs;
-    CC.name = cell(CC.vobs,1);
-    CC.tex = cell(CC.vobs,1);
-    CC.name(1) = {num2str(C)};
-    A = B + CC;
+    A = B;
+    A.data = bsxfun(@plus,B.data,C);
     return
 end
 
@@ -255,3 +239,53 @@ A.dates = A.init:A.init+(A.nobs-1);
 %$
 %$ T = all(t);
 %@eof:5
+
+%@test:6
+%$ t = zeros(8,1);
+%$
+%$ try
+%$     ts = dseries(transpose(1:5),'1950q1',{'Output'}, {'Y_t'});
+%$     us = dseries(transpose(1:7),'1950q1',{'Consumption'}, {'C_t'});
+%$     vs = ts+us('1950q1').data;
+%$     t(1) = 1;
+%$ catch
+%$     t = 0;
+%$ end
+%$
+%$ if length(t)>1
+%$     t(2) = dyn_assert(ts.freq,4);
+%$     t(3) = dyn_assert(us.freq,4);
+%$     t(4) = dyn_assert(ts.init.time,[1950, 1]);
+%$     t(5) = dyn_assert(us.init.time,[1950, 1]);
+%$     t(6) = dyn_assert(vs.init.time,[1950, 1]);
+%$     t(7) = dyn_assert(vs.nobs,5);
+%$     t(8) = dyn_assert(vs.data,ts.data+1);
+%$ end
+%$
+%$ T = all(t);
+%@eof:6
+
+%@test:7
+%$ t = zeros(8,1);
+%$
+%$ try
+%$     ts = dseries([transpose(1:5), transpose(1:5)],'1950q1');
+%$     us = dseries([transpose(1:7),2*transpose(1:7)],'1950q1');
+%$     vs = ts+us('1950q1').data;
+%$     t(1) = 1;
+%$ catch
+%$     t = 0;
+%$ end
+%$
+%$ if length(t)>1
+%$     t(2) = dyn_assert(ts.freq,4);
+%$     t(3) = dyn_assert(us.freq,4);
+%$     t(4) = dyn_assert(ts.init.time,[1950, 1]);
+%$     t(5) = dyn_assert(us.init.time,[1950, 1]);
+%$     t(6) = dyn_assert(vs.init.time,[1950, 1]);
+%$     t(7) = dyn_assert(vs.nobs,5);
+%$     t(8) = dyn_assert(vs.data,bsxfun(@plus,ts.data,[1, 2]));
+%$ end
+%$
+%$ T = all(t);
+%@eof:7

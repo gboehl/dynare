@@ -23,7 +23,7 @@ function A = mrdivide(B,C) % --*-- Unitary tests --*--
 %! @end deftypefn
 %@eod:
 
-% Copyright (C) 2012-2013 Dynare Team
+% Copyright (C) 2012-2014 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -39,6 +39,24 @@ function A = mrdivide(B,C) % --*-- Unitary tests --*--
 %
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+ 
+if isnumeric(B) && (isscalar(B) ||  isvector(B))
+    if ~isdseries(C)
+        error('dseries::mrdivide: Second input argument must be a dseries object!')
+    end
+    A = C;
+    A.data = bsxfun(@rdivide,B,C.data);
+    return;
+end
+
+if isnumeric(C) && (isscalar(C) || isvector(C))
+    if ~isdseries(B)
+        error('dseries::mrdivide: First input argument must be a dseries object!')
+    end
+    A = B;
+    A.data = bsxfun(@rdivide,B.data,C);
+    return
+end    
 
 if isdseries(B) && isdseries(C)
     % Element by element divisions of two dseries object
@@ -75,36 +93,6 @@ if isdseries(B) && isdseries(C)
         A.tex(i) = {['(' B.tex{idB(i)} '/' C.tex{idC(i)} ')']};
     end
     A.data = bsxfun(@rdivide,B.data,C.data);
-elseif isnumeric(C) &&  isreal(C) && isequal(length(C),1) && isdseries(B)
-    % division of a dseries object by a real scalar.
-    A = dseries();
-    A.freq = B.freq;
-    A.dates = B.dates;
-    A.init = B.init;
-    A.nobs = B.nobs;
-    A.vobs = B.vobs;
-    A.name = cell(A.vobs,1);
-    A.tex = cell(A.vobs,1);
-    for i=1:A.vobs
-        A.name(i) = {['divide(' B.name{i} ',' num2str(C) ')']};
-        A.tex(i) = {['(' B.tex{i} '/' num2str(C) ')']};
-    end
-    A.data = B.data/C;    
-elseif isnumeric(B) && isreal(B) && isequal(length(B),1) && isdseries(C)
-    % division of a real scalar by a dseries object.
-    A = dseries();
-    A.freq = C.freq;
-    A.dates = C.dates;
-    A.init = C.init;
-    A.nobs = C.nobs;
-    A.vobs = C.vobs;
-    A.name = cell(A.vobs,1);
-    A.tex = cell(A.vobs,1);
-    for i=1:A.vobs
-        A.name(i) = {['divide(' num2str(B) ',' C.name{i} ')']};
-        A.tex(i) = {['(' num2str(B) '/'  C.tex{i} ')']};
-    end
-    A.data = B./C.data;
 else
     error()
 end

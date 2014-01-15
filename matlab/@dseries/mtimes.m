@@ -23,7 +23,7 @@ function A = mtimes(B,C) % --*-- Unitary tests --*--
 %! @end deftypefn
 %@eod:
 
-% Copyright (C) 2012-2013 Dynare Team
+% Copyright (C) 2012-2014 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -39,6 +39,24 @@ function A = mtimes(B,C) % --*-- Unitary tests --*--
 %
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+
+if isnumeric(B) && (isscalar(B) ||  isvector(B))
+    if ~isdseries(C)
+        error('dseries::mtimes: Second input argument must be a dseries object!')
+    end
+    A = C;
+    A.data = bsxfun(@times,C.data,B);
+    return;
+end
+
+if isnumeric(C) && (isscalar(C) || isvector(C))
+    if ~isdseries(B)
+        error('dseries::mtimes: First input argument must be a dseries object!')
+    end
+    A = B;
+    A.data = bsxfun(@times,B.data,C);
+    return
+end
 
 if isdseries(B) && isdseries(C)
     % Element by element multiplication of two dseries object
@@ -75,36 +93,6 @@ if isdseries(B) && isdseries(C)
         A.tex(i) = {['(' B.tex{idB(i)} '*' C.tex{idC(i)} ')']};
     end
     A.data = bsxfun(@times,B.data,C.data);
-elseif isnumeric(C) &&  isreal(C) && isequal(length(C),1) && isdseries(B)
-    % Multiplication of a dseries object by a real scalar.
-    A = dseries();
-    A.freq = B.freq;
-    A.init = B.init;
-    A.dates = B.dates;
-    A.nobs = B.nobs;
-    A.vobs = B.vobs;
-    A.name = cell(A.vobs,1);
-    A.tex = cell(A.vobs,1);
-    for i=1:A.vobs
-        A.name(i) = {['multiply(' B.name{i} ',' num2str(C) ')']};
-        A.tex(i) = {['(' B.tex{i} '*' num2str(C) ')']};
-    end
-    A.data = B.data*C;    
-elseif isnumeric(B) && isreal(B) && isequal(length(B),1) && isdseries(C)
-    % Multiplication of a dseries object by a real scalar.
-    A = dseries();
-    A.freq = C.freq;
-    A.init = C.init;
-    A.dates = C.dates;
-    A.nobs = C.nobs;
-    A.vobs = C.vobs;
-    A.name = cell(A.vobs,1);
-    A.tex = cell(A.vobs,1);
-    for i=1:A.vobs
-        A.name(i) = {['multiply(' num2str(B) ',' C.name{i} ')']};
-        A.tex(i) = {['(' num2str(B) '*'  C.tex{i} ')']};
-    end
-    A.data = C.data*B;
 else
     error()
 end
@@ -157,7 +145,6 @@ end
 %$    t(2) = dyn_assert(ts2.vobs,2);
 %$    t(3) = dyn_assert(ts2.nobs,10);
 %$    t(4) = dyn_assert(ts2.data,A*B,1e-15);
-%$    t(5) = dyn_assert(ts2.name,{['multiply(A1,' num2str(pi) ')'];['multiply(A2,' num2str(pi) ')']});
 %$ end
 %$ T = all(t);
 %@eof:2
@@ -183,7 +170,31 @@ end
 %$    t(2) = dyn_assert(ts2.vobs,2);
 %$    t(3) = dyn_assert(ts2.nobs,10);
 %$    t(4) = dyn_assert(ts2.data,A*B,1e-15);
-%$    t(5) = dyn_assert(ts2.name,{['multiply(' num2str(pi) ',A1)'];['multiply(' num2str(pi) ',A2)']});
 %$ end
 %$ T = all(t);
 %@eof:3
+
+%@test:4
+%$ % Define a datasets.
+%$ A = rand(10,2); B = A(1,:);
+%$
+%$ % Define names
+%$ A_name = {'A1';'A2'};
+%$
+%$
+%$ % Instantiate a time series object.
+%$ try
+%$    ts1 = dseries(A,[],A_name,[]);
+%$    ts2 = B*ts1;
+%$    t = 1;
+%$ catch
+%$    t = 0;
+%$ end
+%$
+%$ if t(1)
+%$    t(2) = dyn_assert(ts2.vobs,2);
+%$    t(3) = dyn_assert(ts2.nobs,10);
+%$    t(4) = dyn_assert(ts2.data,bsxfun(@times,A,B),1e-15);
+%$ end
+%$ T = all(t);
+%@eof:4
