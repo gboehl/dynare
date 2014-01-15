@@ -175,7 +175,7 @@ switch S(1).type
         end
     end
   case '()'
-    if ischar(S(1).subs{1})
+    if ischar(S(1).subs{1}) && ~isdate(S(1).subs{1})
         % If ts is an empty dseries object, populate this object by reading data in a file.
         if isempty(A)
             B = dseries(S(1).subs{1});
