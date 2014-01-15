@@ -203,9 +203,14 @@ switch S(1).type
             % Do nothing.
             B = A;
         end
-    elseif isdates(S(1).subs{1})
+    elseif isdates(S(1).subs{1}) || isdate(S(1).subs{1})
+        if isdate(S(1).subs{1})
+            Dates = dates(S(1).subs{1});
+        else
+            Dates = S(1).subs{1};
+        end
         % Extract a subsample using a dates object
-        [junk,tdx] = intersect(A.dates.time,S(1).subs{1}.time,'rows');
+        [junk,tdx] = intersect(A.dates.time,Dates.time,'rows');
         B = dseries();
         B.data = A.data(tdx,:);
         B.name = A.name;
