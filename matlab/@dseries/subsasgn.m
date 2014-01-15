@@ -214,6 +214,12 @@ switch length(S)
     error('dseries::subsasgn: Wrong syntax!')
 end
 
+if isempty(A)
+    % Assign variables to an empty dseries object.
+    A = B;
+    return
+end
+
 if merge_dseries_objects
     A = merge(A,B);
 end
