@@ -9464,7 +9464,7 @@ Overloads the Matlab/Octave @code{exp} function for @dseries objects.
 
 @sp 1
 
-@deftypefn{dseries} {@var{C} =} extract (@var{A}, @var{B}[, ]...)
+@deftypefn{dseries} {@var{C} =} extract (@var{A}, @var{B}[, ...])
 
 Extracts some variables from a @dseries object @var{A} and returns a @dseries object @var{C}. The input arguments following @var{A} are strings representing the variables to be selected in the new @dseries object @var{C}. To simplify the creation of sub-objects, the @dseries class overloads the curly braces (@code{D = extract (A, B, C)} is equivalent to @code{D = A@{B,C@}}) and allows implicit loops (defined between a pair of @@ symbol, see examples below) or Matlab/Octave's regular expressions (introduced by square brackets).
 
@@ -9506,9 +9506,16 @@ ans is a dseries object:
 
 @sp 1
 
-@deftypefn{dseries} {@var{D} =} horzcat (@var{A}, @var{B}[, ]...)
+@deftypefn{dseries} {@var{D} =} horzcat (@var{A}, @var{B}[, ...])
 
-Overloads the @code{horzcat} Matlab/Octave's method for @dseries objects. Returns a @dseries object @var{D} containing the variables in @dseries objects passed as inputs: @var{A}, @var{B}, ... If the inputs are not defined on the same time ranges, the method add @code{NaN}s to the variables so that the variables are redefined on the smallest common time range. Note that the names in the @dseries objects passed as inputs must be different and these objects must have common frequency.
+Overloads the @code{horzcat} Matlab/Octave's method for @dseries
+objects. Returns a @dseries object @var{D} containing the variables
+in @dseries objects passed as inputs: @var{A}, @var{B}, ... If the
+inputs are not defined on the same time ranges, the method adds
+@code{NaN}s to the variables so that the variables are redefined on
+the smallest common time range. Note that the names in the @dseries
+objects passed as inputs must be different and these objects must have
+common frequency.
 
 @examplehead
 @example
@@ -9537,7 +9544,10 @@ ts2 is a dseries object:
 
 @deftypefn {dseries} {@var{B} = } hpcycle (@var{A}[, @var{lambda}])
 
-Extracts the cycle component from a @dseries @var{A} object using Hodrick Prescott filter and returns a @dseries object, @var{B}. Default value for @var{lambda}, the smoothing parameter, is  @math{1600}.
+Extracts the cycle component from a @dseries @var{A} object using
+Hodrick Prescott filter and returns a @dseries object, @var{B}. The
+default value for @var{lambda}, the smoothing parameter, is
+@math{1600}.
 
 @examplehead
 @example
@@ -9846,7 +9856,28 @@ ans is a dseries object:
 
 @deftypefn{dseries} {@var{C} =} minus (@var{A}, @var{B})
 
-Overloads the @code{minus} (@code{-}) operator for @dseries objects, element by element substraction. If both @var{A} and @var{B} are @dseries objects, they do not need to be defined over the same time ranges. If @var{A} and @var{B} are @dseries object with @math{T_A} and @math{T_B} observations and @math{N_A} and @math{N_B} variables, then  @math{N_A} must be equal to @math{N_B} or @math{1} and  @math{N_B} must be equal to @math{N_A} or @math{1}. If @math{T_A=T_B}, @code{isequal(A.init,B.init)} returns 1 and @math{N_A=N_B}, then the @code{minus} operator will compute for each couple  @math{(t,n)}, with @math{1<=t<=T_A} and @math{1<=n<=N_A}, @code{C.data(t,n)=A.data(t,n)-B.data(t,n)}. If @math{N_B} is equal to @math{1} and @math{N_A>1}, the smaller @dseries object (@var{B}) is ``broadcast'' across the larger @dseries (@var{A}) so that they have compatible shapes, the @code{minus} operator will substract the variable defined in @var{B} to each variable in @var{A}. If @var{B} is a double scalar, then the method @code{minus} will substract @var{B} to all the observations/variables in @var{A}. If @var{B} is a row vector of length @math{N_A}, then the @code{minus} method will substract @code{B(i)} to all the observations of variable @code{i}, for @math{i=1,...,N_A}. If @var{B} is a column vector of length @math{T_A}, then the @code{minus} method will substract @code{B} to all the variables.
+Overloads the @code{minus} (@code{-}) operator for @dseries objects,
+element by element substraction. If both @var{A} and @var{B}
+are @dseries objects, they do not need to be defined over the same
+time ranges. If @var{A} and @var{B} are @dseries objects with
+@math{T_A} and @math{T_B} observations and @math{N_A} and @math{N_B}
+variables, then @math{N_A} must be equal to @math{N_B} or @math{1} and
+@math{N_B} must be equal to @math{N_A} or @math{1}. If @math{T_A=T_B},
+@code{isequal(A.init,B.init)} returns 1 and @math{N_A=N_B}, then the
+@code{minus} operator will compute for each couple @math{(t,n)}, with
+@math{1\le t\le T_A} and @math{1\le n\le N_A},
+@code{C.data(t,n)=A.data(t,n)-B.data(t,n)}. If @math{N_B} is equal to
+@math{1} and @math{N_A>1}, the smaller @dseries object (@var{B}) is
+``broadcast'' across the larger @dseries (@var{A}) so that they have
+compatible shapes, the @code{minus} operator will substract the
+variable defined in @var{B} from each variable in @var{A}. If @var{B}
+is a double scalar, then the method @code{minus} will substract
+@var{B} from all the observations/variables in @var{A}. If @var{B} is
+a row vector of length @math{N_A}, then the @code{minus} method will
+substract @code{B(i)} from all the observations of variable @code{i},
+for @math{i=1,...,N_A}. If @var{B} is a column vector of length
+@math{T_A}, then the @code{minus} method will substract @code{B} from
+all the variables.
 
 @examplehead
 @example
@@ -9925,7 +9956,29 @@ ts2 is a dseries object:
 
 @deftypefn{dseries} {@var{C} =} mrdivide (@var{A}, @var{B})
 
-Overloads the @code{mrdivide} (@code{/}) operator for @dseries objects, element by element division (like the @code{./} Matlab/Octave operator). If both @var{A} and @var{B} are @dseries objects, they do not need to be defined over the same time ranges. If @var{A} and @var{B} are @dseries object with @math{T_A} and @math{T_B} observations and @math{N_A} and @math{N_B} variables, then  @math{N_A} must be equal to @math{N_B} or @math{1} and  @math{N_B} must be equal to @math{N_A} or @math{1}. If @math{T_A=T_B}, @code{isequal(A.init,B.init)} returns 1 and @math{N_A=N_B}, then the @code{mrdivide} operator will compute for each couple  @math{(t,n)}, with @math{1<=t<=T_A} and @math{1<=n<=N_A}, @code{C.data(t,n)=A.data(t,n)/B.data(t,n)}. If @math{N_B} is equal to @math{1} and @math{N_A>1}, the smaller @dseries object (@var{B}) is ``broadcast'' across the larger @dseries (@var{A}) so that they have compatible shapes, @code{mrdivides} operator will divide each variable defined in @var{A} by the variable in @var{B}, observation per observation. If @var{B} is a double scalar, then the method @code{mrdivide} will divide all the observations/variables in @var{A} by @var{B}. If @var{B} is a row vector of length @math{N_A}, then the @code{mrdivide} method will divide all the observations of variable @code{i} by @code{B(i)}, for @math{i=1,...,N_A}. If @var{B} is a column vector of length @math{T_A}, then the @code{mrdivide} method will perform a division of all the variables by @code{B}, element by element. 
+Overloads the @code{mrdivide} (@code{/}) operator for @dseries
+objects, element by element division (like the @code{./} Matlab/Octave
+operator). If both @var{A} and @var{B} are @dseries objects, they do
+not need to be defined over the same time ranges. If @var{A} and
+@var{B} are @dseries objects with @math{T_A} and @math{T_B}
+observations and @math{N_A} and @math{N_B} variables, then @math{N_A}
+must be equal to @math{N_B} or @math{1} and @math{N_B} must be equal
+to @math{N_A} or @math{1}. If @math{T_A=T_B},
+@code{isequal(A.init,B.init)} returns 1 and @math{N_A=N_B}, then the
+@code{mrdivide} operator will compute for each couple @math{(t,n)},
+with @math{1\le t\le T_A} and @math{1\le n\le N_A},
+@code{C.data(t,n)=A.data(t,n)/B.data(t,n)}. If @math{N_B} is equal to
+@math{1} and @math{N_A>1}, the smaller @dseries object (@var{B}) is
+``broadcast'' across the larger @dseries (@var{A}) so that they have
+compatible shapes. In this case the @code{mrdivides} operator will
+divide each variable defined in @var{A} by the variable in @var{B},
+observation per observation. If @var{B} is a double scalar, then
+@code{mrdivide} will divide all the observations/variables in @var{A}
+by @var{B}. If @var{B} is a row vector of length @math{N_A}, then
+@code{mrdivide} will divide all the observations of variable @code{i}
+by @code{B(i)}, for @math{i=1,...,N_A}. If @var{B} is a column vector
+of length @math{T_A}, then @code{mrdivide} will perform a division of
+all the variables by @code{B}, element by element.
 
 @examplehead
 @example
@@ -9955,7 +10008,29 @@ ans is a dseries object:
 
 @deftypefn{dseries} {@var{C} =} mtimes (@var{A}, @var{B})
 
-Overloads the @code{mtimes} (@code{*}) operator for @dseries objects, Hadammard product (the @code{.*} Matlab/Octave operator). If both @var{A} and @var{B} are @dseries objects, they do not need to be defined over the same time ranges. If @var{A} and @var{B} are @dseries object with @math{T_A} and @math{T_B} observations and @math{N_A} and @math{N_B} variables, then  @math{N_A} must be equal to @math{N_B} or @math{1} and  @math{N_B} must be equal to @math{N_A} or @math{1}. If @math{T_A=T_B}, @code{isequal(A.init,B.init)} returns 1 and @math{N_A=N_B}, then the @code{mtimes} operator will compute for each couple  @math{(t,n)}, with @math{1<=t<=T_A} and @math{1<=n<=N_A}, @code{C.data(t,n)=A.data(t,n)*B.data(t,n)}. If @math{N_B} is equal to @math{1} and @math{N_A>1}, the smaller @dseries object (@var{B}) is ``broadcast'' across the larger @dseries (@var{A}) so that they have compatible shapes, @code{mtimes} operator will multiply each variable defined in @var{A} by the variable in @var{B}, observation per observation. If @var{B} is a double scalar, then the method @code{mtimes} will multiply all the observations/variables in @var{A} by @var{B}. If @var{B} is a row vector of length @math{N_A}, then the @code{mtimes} method will multiply all the observations of variable @code{i} by @code{B(i)}, for @math{i=1,...,N_A}. If @var{B} is a column vector of length @math{T_A}, then the @code{mtimes} method will perform a multiplication of all the variables by @code{B}, element by element.
+Overloads the @code{mtimes} (@code{*}) operator for @dseries objects
+and the Hadammard product (the @code{.*} Matlab/Octave operator). If
+both @var{A} and @var{B} are @dseries objects, they do not need to be
+defined over the same time ranges. If @var{A} and @var{B} are @dseries
+objects with @math{T_A} and @math{T_B} observations and @math{N_A} and
+@math{N_B} variables, then @math{N_A} must be equal to @math{N_B} or
+@math{1} and @math{N_B} must be equal to @math{N_A} or @math{1}. If
+@math{T_A=T_B}, @code{isequal(A.init,B.init)} returns 1 and
+@math{N_A=N_B}, then the @code{mtimes} operator will compute for each
+couple @math{(t,n)}, with @math{1\le t\le T_A} and @math{1\le n\le N_A},
+@code{C.data(t,n)=A.data(t,n)*B.data(t,n)}. If @math{N_B} is equal to
+@math{1} and @math{N_A>1}, the smaller @dseries object (@var{B}) is
+``broadcast'' across the larger @dseries (@var{A}) so that they have
+compatible shapes, @code{mtimes} operator will multiply each variable
+defined in @var{A} by the variable in @var{B}, observation per
+observation. If @var{B} is a double scalar, then the method
+@code{mtimes} will multiply all the observations/variables in @var{A}
+by @var{B}. If @var{B} is a row vector of length @math{N_A}, then the
+@code{mtimes} method will multiply all the observations of variable
+@code{i} by @code{B(i)}, for @math{i=1,...,N_A}. If @var{B} is a
+column vector of length @math{T_A}, then the @code{mtimes} method will
+perform a multiplication of all the variables by @code{B}, element by
+element.
 
 @end deftypefn
 
@@ -10036,7 +10111,27 @@ Overloads Matlab/Octave's @code{plot} function for @dseries objects. Returns a M
 
 @deftypefn{dseries} {@var{C} =} plus (@var{A}, @var{B})
 
-Overloads the @code{plus} (@code{+}) operator for @dseries objects, element by element addition. If both @var{A} and @var{B} are @dseries objects, they do not need to be defined over the same time ranges. If @var{A} and @var{B} are @dseries object with @math{T_A} and @math{T_B} observations and @math{N_A} and @math{N_B} variables, then  @math{N_A} must be equal to @math{N_B} or @math{1} and  @math{N_B} must be equal to @math{N_A} or @math{1}. If @math{T_A=T_B}, @code{isequal(A.init,B.init)} returns 1 and @math{N_A=N_B}, then the @code{plus} operator will compute for each couple  @math{(t,n)}, with @math{1<=t<=T_A} and @math{1<=n<=N_A}, @code{C.data(t,n)=A.data(t,n)+B.data(t,n)}. If @math{N_B} is equal to @math{1} and @math{N_A>1}, the smaller @dseries object (@var{B}) is ``broadcast'' across the larger @dseries (@var{A}) so that they have compatible shapes, the @code{plus} operator will add the variable defined in @var{B} to each variable in @var{A}. If @var{B} is a double scalar, then the method @code{plus} will add @var{B} to all the observations/variables in @var{A}. If @var{B} is a row vector of length @math{N_A}, then the @code{plus} method will add @code{B(i)} to all the observations of variable @code{i}, for @math{i=1,...,N_A}. If @var{B} is a column vector of length @math{T_A}, then the @code{plus} method will add @code{B} to all the variables. 
+Overloads the @code{plus} (@code{+}) operator for @dseries objects,
+element by element addition. If both @var{A} and @var{B} are @dseries
+objects, they do not need to be defined over the same time ranges. If
+@var{A} and @var{B} are @dseries objects with @math{T_A} and @math{T_B}
+observations and @math{N_A} and @math{N_B} variables, then @math{N_A}
+must be equal to @math{N_B} or @math{1} and @math{N_B} must be equal
+to @math{N_A} or @math{1}. If @math{T_A=T_B},
+@code{isequal(A.init,B.init)} returns 1 and @math{N_A=N_B}, then the
+@code{plus} operator will compute for each couple @math{(t,n)}, with
+@math{1\le t\le T_A} and @math{1\le n\le N_A},
+@code{C.data(t,n)=A.data(t,n)+B.data(t,n)}. If @math{N_B} is equal to
+@math{1} and @math{N_A>1}, the smaller @dseries object (@var{B}) is
+``broadcast'' across the larger @dseries (@var{A}) so that they have
+compatible shapes, the @code{plus} operator will add the variable
+defined in @var{B} to each variable in @var{A}. If @var{B} is a double
+scalar, then the method @code{plus} will add @var{B} to all the
+observations/variables in @var{A}. If @var{B} is a row vector of
+length @math{N_A}, then the @code{plus} method will add @code{B(i)} to
+all the observations of variable @code{i}, for @math{i=1,...,N_A}. If
+@var{B} is a column vector of length @math{T_A}, then the @code{plus}
+method will add @code{B} to all the variables.
 
 @end deftypefn
 
@@ -10101,7 +10196,8 @@ ts1 is a dseries object:
 
 @deftypefn{dseries} {@var{B} =} rename (@var{A},@var{oldname},@var{newname})
 
-Rename variable @var{oldname} to @var{newname} in @dseries object @var{A}, returns a @dseries object.
+Rename variable @var{oldname} to @var{newname} in @dseries object
+@var{A}. Returns a @dseries object.
 
 @examplehead
 @example
@@ -10121,7 +10217,11 @@ ts1 is a dseries object:
 
 @deftypefn{dseries} save (@var{A}, @var{basename}[, @var{format}])
 
-Overloads the Matlab/Octave @code{save} function, saves @dseries object @var{A} to disk. Possible formats are @code{csv} (this is the default), @code{m} (Matlab/Octave script), and @code{mat} (Matlab binary data file). The name of the file without extension is specified by @var{basename}.
+Overloads the Matlab/Octave @code{save} function and saves @dseries
+object @var{A} to disk. Possible formats are @code{csv} (this is the
+default), @code{m} (Matlab/Octave script), and @code{mat} (Matlab
+binary data file). The name of the file without extension is specified
+by @var{basename}.
 
 @examplehead
 @example
@@ -10171,7 +10271,12 @@ Variable_2 = [
 
 @deftypefn{dseries} {@var{B} =} set_names (@var{A}, @var{s1}, @var{s2}, ...)
 
-Renames variables in @dseries object @var{A}, returns a @dseries object @var{B} with new names @var{s1}, @var{s2}, @var{s3}, ... The number of input arguments after the first one (@dseries object @var{A}) must be equal to @code{A.vobs} (the number of variables in @var{A}). @var{s1} will be the name of the first variable in @var{B}, @var{s2} the name of the second variable in @var{B}, and so on.
+Renames variables in @dseries object @var{A} and returns a @dseries
+object @var{B} with new names @var{s1}, @var{s2}, @var{s3}, ... The
+number of input arguments after the first one (@dseries object
+@var{A}) must be equal to @code{A.vobs} (the number of variables in
+@var{A}). @var{s1} will be the name of the first variable in @var{B},
+@var{s2} the name of the second variable in @var{B}, and so on.
 
 @examplehead
 @example
@@ -10206,9 +10311,10 @@ ans =
 
 @sp 1
 
-@deftypefn{dseries} {@var{B} =} tex_rename (@var{A},@var{name},@var{newtexname})
+@deftypefn{dseries} {@var{B} =} tex_rename (@var{A}, @var{name}, @var{newtexname})
 
-Redefines the tex name of variable @var{name} to @var{newtexname} in @dseries object @var{A}, returns a @dseries object.
+Redefines the tex name of variable @var{name} to @var{newtexname}
+in @dseries object @var{A}. Returns a @dseries object.
 
 @end deftypefn
 
@@ -10239,9 +10345,14 @@ ts1 is a dseries object:
 
 @sp 1
 
-@deftypefn{dseries} {@var{D} =} vertcat (@var{A}, @var{B}[, ]...)
+@deftypefn{dseries} {@var{D} =} vertcat (@var{A}, @var{B}[, ...])
 
-Overloads the @code{vertcat} Matlab/Octave's method for @dseries objects. This method is used to append more observations to a @dseries object. Returns a @dseries object @var{D} containing the variables in @dseries objects passed as inputs. All the input arguments must be @dseries objects with the same variables defined on @emph{different time ranges}.
+Overloads the @code{vertcat} Matlab/Octave method for @dseries
+objects. This method is used to append more observations to a @dseries
+object. Returns a @dseries object @var{D} containing the variables
+in @dseries objects passed as inputs. All the input arguments must
+be @dseries objects with the same variables defined on @emph{different
+time ranges}.
 
 @examplehead
 @example
