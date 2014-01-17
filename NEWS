@@ -1,9 +1,10 @@
-Announcement for Dynare 4.4.1 (on 2014-01-15)
+Announcement for Dynare 4.4.1 (on 2014-01-17)
 =============================================
 
 We are pleased to announce the release of Dynare 4.4.1.
 
-This release adds a few minor features and fixes various bugs.
+This release contains a few changes to the user interface and fixes various
+bugs. It also adds compatibility with Octave 3.8.
 
 The Windows packages are already available for download at:
 
@@ -16,20 +17,32 @@ All users are encouraged to upgrade.
 This release is compatible with MATLAB versions 7.3 (R2006b) to 8.2 (R2013b) and
 with GNU Octave versions 3.6 to 3.8.
 
-* New features in the user interface:
+* Changes to the user interface:
 
  - The syntax introduced in 4.4.0 for conditional forecast in a deterministic
-   setup was changed.
+   setup was removed, and replaced by a new one that is better suited to the
+   task. More precisely, such deterministc forecast are no longer done using
+   the `conditional_forecast' command. The latter is replaced by a group of
+   commands: `init_plan', `basic_plan' and `flip_plan'. See the reference
+   manual for more details.
 
- - Remove option `annualAverages' to `addTable' (use option `tableDataRhs' to
-   `addSeries' instead). Option `vlineAfter' to `addTable' now also accepts a
-   cell array.
+ - Changes to the reporting module: option `annualAverages' to `addTable' has
+   been removed (use option `tableDataRhs' to `addSeries' instead); option
+   `vlineAfter' to `addTable' now also accepts a cell array.
+
+ - Changes to the date and time series classes: implement broadcasting for
+   operations (+,-,* and /) between `dseries' class and scalar or vectors; add
+   the possibility of selecting an observation within a time series using a
+   formatted string containing a date.
 
 * Bugs and problems identified in version 4.4.0 and that have been fixed in
   version 4.4.1:
 
  - In MS-SBVAR, there was a bug preventing the computation of impulse responses
    on a constant regime.
+
+ - Under Octave for Linux, after modifying the MOD file, the changes were not
+   taken into account at the first Dynare run, but only at the second run.
 
 
 Announcement for Dynare 4.4.0 (on 2013-12-16)
