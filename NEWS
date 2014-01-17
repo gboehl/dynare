@@ -41,8 +41,8 @@ with GNU Octave versions 3.6 to 3.8.
  - In MS-SBVAR, there was a bug preventing the computation of impulse responses
    on a constant regime.
 
- - Under Octave for Linux, after modifying the MOD file, the changes were not
-   taken into account at the first Dynare run, but only at the second run.
+ - Under Octave, after modifying the MOD file, the changes were not taken into
+   account at the first Dynare run, but only at the second run.
 
 
 Announcement for Dynare 4.4.0 (on 2013-12-16)
