@@ -8,7 +8,7 @@ function A = subsasgn(A,S,B) % --*-- Unitary tests --*--
 %! @end deftypefn
 %@eod:
 
-% Copyright (C) 2012-2013 Dynare Team
+% Copyright (C) 2012-2014 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -131,10 +131,15 @@ switch length(S)
               end
           end
         case '()' % Date(s) selection
-          if isdates(S(1).subs{1})
-              [junk, tdx] = intersect(A.dates.time,S(1).subs{1}.time,'rows');
+          if isdates(S(1).subs{1}) || isdate(S(1).subs{1})
+                if isdate(S(1).subs{1})
+                    Dates = dates(S(1).subs{1});
+                else
+                    Dates = S(1).subs{1};
+                end
+              [junk, tdx] = intersect(A.dates.time,Dates.time,'rows');
               if isdseries(B)
-                  [junk, tdy] = intersect(B.dates.time,S(1).subs{1}.time,'rows');
+                  [junk, tdy] = intersect(B.dates.time,Dates.time,'rows');
                   if isempty(tdy)
                       error('dseries::subsasgn: Periods of the dseries objects on the left and right hand sides must intersect!')
                   end
