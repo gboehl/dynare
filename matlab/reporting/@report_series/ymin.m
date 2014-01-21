@@ -1,18 +1,7 @@
-function o = write(o, fid)
-%function o = write(o, fid)
-% Write a Graph object
-%
-% INPUTS
-%   o   [graph]   graph object
-%   fid [integer] file id
-%
-% OUTPUTS
-%   o   [graph] graph object
-%
-% SPECIAL REQUIREMENTS
-%   none
+function ymin = ymin(o, dd)
+%function ymin = ymin(o, dd)
 
-% Copyright (C) 2013-2014 Dynare Team
+% Copyright (C) 2014 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -29,16 +18,6 @@ function o = write(o, fid)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-assert(fid ~= -1);
-o = writeGraphFile(o);
-
-if ~isempty(o.title)
-    fprintf(fid,'\\begin{tabular}[x]{@{}c@{}}%s\\\\',o.title);
-end
-
-fprintf(fid, '\\input{%s}', o.figname);
-
-if ~isempty(o.title)
-    fprintf(fid,'\\end{tabular}');
-end
+assert(~isempty(o.data) && size(o.data, 2) == 1);
+ymin = min(o.data(dd).data);
 end

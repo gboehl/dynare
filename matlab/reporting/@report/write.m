@@ -41,7 +41,7 @@ if strcmpi(o.orientation, 'landscape')
     fprintf(fid, ',landscape');
 end
 fprintf(fid, ']{geometry}\n');
-fprintf(fid, '\\usepackage{pdflscape, pgf, booktabs}\n');
+fprintf(fid, '\\usepackage{pdflscape, booktabs, pgfplots}\n');
 fprintf(fid, ['\\makeatletter\n' ...
               '\\def\\blfootnote{\\gdef\\@thefnmark{}\\@footnotetext}\n' ...
               '\\makeatother\n']);
@@ -50,8 +50,6 @@ if isoctave && isempty(regexpi(computer, '.*apple.*', 'once'))
     fprintf(fid, '\\usepackage[T1]{fontenc}\n');
     fprintf(fid, '\\usepackage[utf8x]{inputenc}\n');
     fprintf(fid, '\\usepackage{gnuplot-lua-tikz}\n');
-else
-    fprintf(fid, '\\usepackage{pgfplots}\n');
 end
 
 fprintf(fid, '\\usepackage{color, colortbl}\n');
@@ -74,6 +72,9 @@ fprintf(fid, '\\usepackage[Export,PGF]{adjustbox}\n');
 fprintf(fid, '\\setlength{\\parindent}{0in}\n');
 fprintf(fid, '\\newlength\\sectionheight\n');
 fprintf(fid, '\\begin{document}\n');
+fprintf(fid, '\\pgfdeclarelayer{background}\n');
+fprintf(fid, '\\pgfdeclarelayer{foreground}\n');
+fprintf(fid, '\\pgfsetlayers{background,main,foreground}\n');
 fprintf(fid, '\\centering\n');
 
 nps = length(o.pages);
