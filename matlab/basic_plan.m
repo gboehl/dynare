@@ -42,24 +42,28 @@ function plan = basic_plan(plan, exogenous, expectation_type, date, value)
   sdate = length(date);
   if sdate > 1
       if date(1) < plan.date(1) || date(end) > plan.date(end)
-          error(['in basic_plan the forth argument (date='  date ') must lay inside the plan.date ' plan.date]);
+          error(['in basic_plan the fourth argument (date='  date ') must lay inside the plan.date ' plan.date]);
       end
   else
       if date < plan.date(1) || date > plan.date(end)
-          error(['in basic_plan the forth argument (date='  date ') must lay iside the plan.date ' plan.date]);
+          error(['in basic_plan the fourth argument (date='  date ') must lay iside the plan.date ' plan.date]);
       end
+  end
+  if length(date) ~= length(value)
+      error(['in basic_plan the number of dates (' int2str(length(date)) ') is not equal to the numbers of shock (' int2str(length(value)) ') for exogenous variable ' exogenous]);
   end
   if ~isempty(plan.options_cond_fcst_.controlled_varexo)
       common_var = find(ix == plan.options_cond_fcst_.controlled_varexo);
       if ~isempty(common_var)
           common_date = intersect(date, plan.constrained_date_{common_var});
           if ~isempty(common_date)
+              date = setdiff(date, common_date);
               if common_date.length > 1
                   the_dates = [cell2mat(strings(common_date(1))) ':' cell2mat(strings(common_date(end)))];
               else
                   the_dates = cell2mat(strings(common_date));
               end
-              error(['Impossible case: ' plan.exo_names{plan.options_cond_fcst_.controlled_varexo(common_var)} ' is used both as a shock and as an endogenous variable to control the path of ' plan.endo_names{plan.constrained_vars_(common_var)} ' at the dates ' the_dates]);
+              warning(['Impossible case: ' plan.exo_names{plan.options_cond_fcst_.controlled_varexo(common_var)} ' is used both as a shock and as an endogenous variable to control the path of ' plan.endo_names{plan.constrained_vars_(common_var)} ' at the dates ' the_dates]);
           end
       end
   end
