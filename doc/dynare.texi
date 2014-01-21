@@ -8893,6 +8893,27 @@ C = <dates: 1951Q1, 1951Q2, 1951Q3, 1951Q4>
 
 @sp 1
 
+@deftypefn{dates} {@var{C} =} setdiff(@var{A}, @var{B})
+
+Overloads the Matlab/Octave @code{setdiff} function. All the input arguments must be @dates objects. The returned argument is a @dates object all dates present in @var{A} but not in @var{B}. If @var{A} and @var{B} are disjoint @dates objects, the function returns @var{A}. Returned dates in @dates object @var{C} are sorted by increasing order.
+
+@examplehead
+@example
+>> A = dates('1950Q1'):dates('1969Q4') ;
+>> B = dates('1960Q1'):dates('1969Q4') ;
+>> C = dates('1970Q1'):dates('1979Q4') ;
+>> d1 = setdiff(d1,d2);
+>> d2 = setdiff(d1,d3);
+d1 = <dates: 1950Q1, 1950Q2,  ..., 1959Q3, 1959Q4>
+d2 = <dates: 1950Q1, 1950Q2,  ..., 1969Q3, 1969Q4>
+@end example
+
+@end deftypefn
+
+
+@sp 1
+
+
 @deftypefn{dates} {@var{B} =} isempty (@var{A})
 
 Overloads the Matlab/Octave isempty function for @dates object.
