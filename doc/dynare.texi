@@ -8595,7 +8595,7 @@ Tests if a @dates object follows another @dates object or is equal to this objec
 @noindent One can select an element, or some elements, in a @dates object as he would extract some elements from a vector in Matlab/Octave. Let @code{a = 1950Q1:1951Q1} be a @dates object, then @code{a(1)==1950Q1} returns @code{1}, @code{a(end)==1951Q1} returns @code{1} and @code{a(end-1:end)} selects the two last elements of @code{a} (by instantiating the @dates object @code{[1950Q4, 1951Q1]}).
 
 @remarkhead
-@noindent Dynare substitutes any occurence of dates in the mod file into an instantiation of the @dates class regardless of the context. For instance, @code{d = 1950Q1;} will be translated as @code{a = dates('1950Q1');}. This automatic substitution can lead to a crash if a date is defined in a string. Typically, if the user wants to display a date:
+@noindent Dynare substitutes any occurence of dates in the mod file into an instantiation of the @dates class regardless of the context. For instance, @code{d = 1950Q1;} will be translated as @code{d = dates('1950Q1');}. This automatic substitution can lead to a crash if a date is defined in a string. Typically, if the user wants to display a date:
 
 @example
 disp('Initial period is 1950Q1');
@@ -8672,7 +8672,7 @@ qq = dates('Q')
 @noindent and a @dates object holding the date @code{2009Q2}:
 
 @example
-d0 = dates(2009,2);
+d0 = qq(2009,2);
 @end example
 
 @noindent which is much simpler if @dates objects have to be defined programatically.
@@ -8733,9 +8733,9 @@ Y = multiplybytwo(X)
 
 @sp 1
 
-@deftypefn {dates} {@var{B} = } append (@var{A}, @var{a})
+@deftypefn {dates} {@var{C} = } append (@var{A}, @var{B})
 
-Appends @dates object @var{a}, or a string that can be interpreted as a date, to the @dates object @var{A}. If @code{a} is a @dates object it is assumed that it has no more than one element.
+Appends @dates object @var{B}, or a string that can be interpreted as a date, to the @dates object @var{A}. If @var{B} is a @dates object it is assumed that it has no more than one element.
 
 @examplehead
 @example
@@ -9280,16 +9280,16 @@ Various ways to create a @code{dseries} object:
 
 @example In a mod file:
 do1 = dseries(1999Q3);
-do2 = dseries(`filename.csv');
-do3 = dseries([1; 2; 3], 1999Q3, @{`var123'@}, @{`var_@{123@}'@});
+do2 = dseries('filename.csv');
+do3 = dseries([1; 2; 3], 1999Q3, @{'var123'@}, @{'var_@{123@}'@});
 @end example
 
 @sp 1
 
 @example In a Matlab/Octave script:
 >> do1 = dseries(dates('1999Q3'));
->> do2 = dseries(`filename.csv');
->> do3 = dseries([1; 2; 3], dates('1999Q3'), @{`var123'@}, @{`var_@{123@}'@});
+>> do2 = dseries('filename.csv');
+>> do3 = dseries([1; 2; 3], dates('1999Q3'), @{'var123'@}, @{'var_@{123@}'@});
 @end example
 
 @sp 1
@@ -10429,8 +10429,8 @@ with the example at the end of the section.
 Options to the methods are passed differently than those to Dynare
 commands. They take the form of named options to Matlab functions
 where the arguments come in pairs (@i{e.g.}
-@code{function_name(`option_1_name', `option_1_value',
-`option_2_name', `option_2_value', ...)}, where @code{option_X_name}
+@code{function_name('option_1_name', `option_1_value',
+'option_2_name', 'option_2_value', ...)}, where @code{option_X_name}
 is the name of the option while @code{option_X_value} is the value
 assigned to that option). The ordering of the option pairs matters
 only in the unusual case when an option is provided twice (probably
