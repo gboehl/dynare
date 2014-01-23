@@ -82,7 +82,7 @@ fprintf(fid, '\\end{document}\n');
 fprintf(fid, '%% End Report Object\n');
 status = fclose(fid);
 if status == -1
-    error('@report.wrie: closing %s\n', o.filename);
+    error('@report.write: closing %s\n', o.filename);
 end
 disp('Finished Writing Report!');
 end
