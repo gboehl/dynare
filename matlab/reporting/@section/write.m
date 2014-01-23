@@ -12,7 +12,7 @@ function o = write(o, fid)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2013 Dynare Team
+% Copyright (C) 2013-2014 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -30,7 +30,7 @@ function o = write(o, fid)
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 assert(fid ~= -1);
-
+fprintf(1, '/');
 fprintf(fid, '%% Section Object\n');
 if ~isempty(o.height)
     fprintf(fid, '\\setlength\\sectionheight{%s}%%\n', o.height);
@@ -51,7 +51,6 @@ ne = numElements(o);
 nvspace = numVspace(o);
 nlcounter = 0;
 for i=1:ne
-    disp(['Writing Section Element: ' num2str(i)]);
     if isa(o.elements(i), 'vspace')
         assert(rem(nlcounter, o.cols) == 0, ['@section.write: must place ' ...
                             'vspace command after a linebreak in the table ' ...

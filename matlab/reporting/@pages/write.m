@@ -12,7 +12,7 @@ function o = write(o, fid)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2013 Dynare Team
+% Copyright (C) 2013-2014 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -33,7 +33,7 @@ assert(fid ~= -1);
 fprintf(fid, '\n%% Pages Object\n');
 nps = numPages(o);
 for i=1:nps
-    disp(['Writing Page: ' num2str(i)]);
+    fprintf(1, '\nWriting Page: %d', i);
     o.objArray(i).write(fid);
 end
 fprintf(fid, '%% End Pages Object\n\n');

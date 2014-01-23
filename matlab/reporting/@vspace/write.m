@@ -12,7 +12,7 @@ function o = write(o, fid)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2013 Dynare Team
+% Copyright (C) 2013-2014 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -41,4 +41,5 @@ if o.hline > 0
         fprintf(fid, '\\midrule');
     end
 end
+fprintf(1, '.');
 end

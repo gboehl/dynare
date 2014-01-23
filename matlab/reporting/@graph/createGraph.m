@@ -11,7 +11,7 @@ function o = createGraph(o)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2013 Dynare Team
+% Copyright (C) 2013-2014 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -142,7 +142,7 @@ if isempty(o.figname)
     end
     o.figname = [o.figDirName '/' tn '.tex'];
 end
-disp('  converting to tex....');
+
 if isoctave && isempty(regexpi(computer, '.*apple.*', 'once'))
     print(o.figname, '-dtikz');
 else
@@ -157,4 +157,5 @@ box off;
 hold off;
 close(h);
 clear h;
+fprintf(1, '.');
 end
