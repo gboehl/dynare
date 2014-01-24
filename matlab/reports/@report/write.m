@@ -11,7 +11,7 @@ function o = write(o)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2013 Dynare Team
+% Copyright (C) 2013-2014 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -30,7 +30,7 @@ function o = write(o)
 
 [fid, msg] = fopen(o.filename, 'w');
 if fid == -1
-    error(['@report.subsasgn: ' msg]);
+    error(['@report.write: ' msg]);
 end
 
 fprintf(fid, '%% Report Object\n');
