@@ -50,6 +50,7 @@ end
 ndates = dates.ndat;
 
 fprintf(fid, '%% Report_Table Object\n');
+fprintf(fid, '\\setlength{\\parindent}{6pt}\n');
 fprintf(fid, '\\setlength{\\tabcolsep}{4pt}\n');
 fprintf(fid, '\\begin{tabular}{@{}l');
 
@@ -156,7 +157,7 @@ for i=1:ne
 end
 
 fprintf(fid, '\\bottomrule\n');
-fprintf(fid, '\\end{tabular} \\par \\medskip\n\n');
+fprintf(fid, '\\end{tabular}\\setlength{\\parindent}{0pt}\n \\par \\medskip\n\n');
 fprintf(fid, '%% End Report_Table Object\n');
 fprintf(1, '.');
 end

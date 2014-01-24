@@ -53,6 +53,7 @@ o.tableSubSectionHeader = '';
 o.tableAlignRight = false;
 
 o.tableRowColor = 'white';
+o.tableRowIndent = 0;
 
 o.tableDataRhs = '';
 

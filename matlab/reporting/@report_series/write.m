@@ -56,6 +56,7 @@ end
 assert(ischar(o.tableNegColor), '@report_series.write: tableNegColor must be a string');
 assert(ischar(o.tablePosColor), '@report_series.write: tablePosColor must be a string');
 assert(ischar(o.tableRowColor), '@report_series.write: tableRowColor must be a string');
+assert(isint(o.tableRowIndent), '@report_series.write: tableRowIndent must be an integer');
 assert(islogical(o.tableShowMarkers), '@report_series.write: tableShowMarkers must be true or false');
 assert(islogical(o.tableAlignRight), '@report_series.write: tableAlignRight must be true or false');
 assert(isfloat(o.tableMarkerLimit), '@report_series,write: tableMarkerLimit must be a float');
@@ -73,7 +74,14 @@ end
 if o.tableAlignRight
     fprintf(fid, '\\multicolumn{1}{r}{');
 end
-fprintf(fid, '%s', o.data.tex{:});
+if o.tableRowIndent == 0
+    fprintf(fid, '\\noindent');
+else
+    for i=1:o.tableRowIndent
+        fprintf(fid,'\\indent');
+    end
+end
+fprintf(fid, ' %s', o.data.tex{:});
 if o.tableAlignRight
     fprintf(fid, '}');
 end
