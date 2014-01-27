@@ -8902,7 +8902,7 @@ C = <dates: 1951Q1, 1951Q2, 1951Q3, 1951Q4>
 
 @sp 1
 
-@deftypefn{dates} {@var{C} =} setdiff(@var{A}, @var{B})
+@deftypefn{dates} {@var{C} =} setdiff (@var{A}, @var{B})
 
 Overloads the Matlab/Octave @code{setdiff} function. All the input arguments must be @dates objects. The returned argument is a @dates object all dates present in @var{A} but not in @var{B}. If @var{A} and @var{B} are disjoint @dates objects, the function returns @var{A}. Returned dates in @dates object @var{C} are sorted by increasing order.
 
