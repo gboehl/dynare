@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2012 Dynare Team
+ * Copyright (C) 2008-2014 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -106,7 +106,7 @@ extern "C" {
 
     double qz_criterium = 1+1e-6;
     mxFldp = mxGetField(options_, 0, "qz_criterium");
-    if (mxIsNumeric(mxFldp))
+    if (mxGetNumberOfElements(mxFldp) > 0 && mxIsNumeric(mxFldp))
       qz_criterium = (double) mxGetScalar(mxFldp);
 
     mxFldp = mxGetField(M_, 0, "params");
