@@ -78,8 +78,8 @@ if nblck == 1 % Brooks and Gelman tests need more than one block
         options_.convergence.geweke.geweke_interval=[0.2 0.5];
     end
     first_obs_begin_sample = max(1,ceil(options_.mh_drop*options_.mh_replic));
-    last_obs_begin_sample = first_obs_begin_sample+round(options_.convergence.geweke.geweke_interval(1)*options_.mh_replic*options_.mh_drop);
-    first_obs_end_sample = first_obs_begin_sample+round(options_.convergence.geweke.geweke_interval(2)*options_.mh_replic*options_.mh_drop);
+    last_obs_begin_sample = first_obs_begin_sample+round(options_.convergence.geweke.geweke_interval(1)*options_.mh_replic*(1-options_.mh_drop));
+    first_obs_end_sample = first_obs_begin_sample+round(options_.convergence.geweke.geweke_interval(2)*options_.mh_replic*(1-options_.mh_drop));
     param_name=[];
     for jj=1:npar
         param_name = strvcat(param_name,get_the_name(jj,options_.TeX,M_,estim_params_,options_));
