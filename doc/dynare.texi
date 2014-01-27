@@ -713,6 +713,15 @@ These files may be looked at to understand errors reported at the simulation sta
 
 @code{dynare} will then run the computing tasks by executing @file{@var{FILENAME}.m}.
 
+A few words of warning is warranted here: the filename of the
+@file{.mod} file should be chosen in such a way that the generated
+@file{.m} files described above do not conflict with @file{.m} files
+provided by MATLAB/Octave or by Dynare. Not respecting this rule could
+cause crashes or unexpected behaviour. In particular, it means that
+the @file{.mod} file cannot be given the name of a MATLAB/Octave or
+Dynare command. Under Octave, it also means that the @file{.mod} file
+cannot be named @file{test.mod}.
+
 @optionshead
 
 @table @code
