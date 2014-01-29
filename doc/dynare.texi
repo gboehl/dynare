@@ -9303,6 +9303,8 @@ do3 = dseries([1; 2; 3], 1999Q3, @{'var123'@}, @{'var_@{123@}'@});
 
 @sp 1
 
+@noindent One can easily create subsamples from a @dseries object using the overloaded parenthesis operator. If @var{ds} is a @dseries object with @math{T} observations and @var{d} is a @dates object with @math{S<T} elements, such that @math{min(d)} is not smaller than the date associated to the first observation in @var{ds} and @math{max(d)} is not greater than the date associated to the last observation, then @code{ds(d)} instantiates a new @dseries object containing the subsample defined by @var{d}.
+
 @noindent A list of the available methods, by alphabetical order, is given below.
 
 @deftypefn {dseries} {[@var{A}, @var{B}] = } align (@var{A}, @var{B})
