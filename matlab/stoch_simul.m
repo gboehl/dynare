@@ -38,9 +38,9 @@ elseif options_.order == 3
     options_.k_order_solver = 1;
 end
 
-if options_.loglinear == 1 && options_.periods>0
-   error('The loglinear option does not work with periods>0.')
-end
+% if options_.loglinear == 1 && options_.periods>0
+%    error('The loglinear option does not work with periods>0.')
+% end
 
 if isempty(options_.qz_criterium)
     options_.qz_criterium = 1+1e-6;
@@ -84,6 +84,10 @@ else
     [oo_.dr,info,M_,options_,oo_] = resol(0,M_,options_,oo_);
 end
 
+if options_.loglinear
+    oo_.dr.ys=log(oo_.dr.ys);
+    oo_.steady_state=log(oo_.steady_state);
+end
 if info(1)
     options_ = options_old;
     print_info(info, options_.noprint, options_);
