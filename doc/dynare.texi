@@ -4435,8 +4435,8 @@ likelihood. These first observations are used as a training sample. Default: @co
 @item loglinear
 @anchor{loglinear}
 Computes a log-linear approximation of the model instead of a linear
-approximation. The data must correspond to the definition of the
-variables used in the model. Default: computes a linear approximation
+approximation. As always in the context of estimation, the data must correspond to the definition of the
+variables used in the model (see \cite{Pfeifer 2013} for more details on how to correctly specify observation equations linking model variables and the data). If you specify the loglinear option, Dynare will take the logarithm of both your model variables and of your data as it assumes the data to correspond to the original non-logged model variables. The displayed posterior results like impulse responses, smoothed variables, and moments will be for the logged variables, not the original un-logged ones. Default: computes a linear approximation
 
 @item plot_priors = @var{INTEGER}
 Control the plotting of priors:
@@ -11109,6 +11109,9 @@ to the solution and estimation of DSGE models''
 Pearlman, Joseph, David Currie, and Paul Levine (1986): ``Rational
 expectations models with partial information,'' @i{Economic
 Modelling}, 3(2), 90--105
+
+@item
+Pfeifer, Johannes (2013): ``A Guide to Specifying Observation Equations for the Estimation of DSGE Models'' 
 
 @item
 Rabanal, Pau and Juan Rubio-Ramirez (2003): ``Comparing New Keynesian
