@@ -228,6 +228,7 @@ switch S(1).type
             if size(A.data,2)>1
                 S(1).subs = [S(1).subs, ':'];
             end
+            B = dseries();
             B.data = builtin('subsref', A.data, S(1));
             B.nobs = size(B.data,1);
             B.vobs = A.vobs;
@@ -638,3 +639,20 @@ end
 %$
 %$ T = all(t);
 %@eof:14
+
+%@test:15
+%$ try
+%$     ds = dseries(transpose(1:5));
+%$     ts = ds(2:3);
+%$     t(1) = 1;
+%$ catch
+%$     t(1) = 0;
+%$ end
+%$
+%$ if t(1)>1
+%$     t(2) = isdseries(ts);
+%$     t(3) = isequal(ts.data,ds.data(2:3));
+%$ end
+%$
+%$ T = all(t);
+%@eof:15
