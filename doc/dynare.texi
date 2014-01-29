@@ -4425,7 +4425,7 @@ The number of the first observation to be used. Default: @code{1}
 @item prefilter = @var{INTEGER}
 @anchor{prefilter}
 A value of @code{1} means that the estimation procedure will demean
-the data. Default: @code{0}, @i{i.e.} no prefiltering
+each data series by its empirical mean. Default: @code{0}, @i{i.e.} no prefiltering
 
 @item presample = @var{INTEGER}
 @anchor{presample}
