@@ -4920,7 +4920,7 @@ Use the Univariate Diffuse Kalman Filter
 
 @end table
 @noindent
-Default value is @code{0}.
+Default value is @code{0}. In case of missing observations of single or all series, Dynare treats those missing values as unobserved states and uses the Kalman filter to infer their value (see e.g. @cite{Durbin and Koopman (2012), Ch. 4.10})
 
 
 @item kalman_tol = @var{DOUBLE}
@@ -4954,7 +4954,7 @@ decomposition of the above k-step ahead filtered values.
 
 @item diffuse_filter
 Uses the diffuse Kalman filter (as described in
-@cite{Durbin and Koopman (2001)} and @cite{Koopman and Durbin
+@cite{Durbin and Koopman (2012)} and @cite{Koopman and Durbin
 (2003)}) to estimate models with non-stationary observed variables.
 
 When @code{diffuse_filter} is used the @code{lik_init} option of
@@ -11029,8 +11029,8 @@ Models: New Solution Algorithms,'' @i{Macroeconomic Dynamics}, 11(1),
 31--55
 
 @item
-Durbin, J. and S. J. Koopman (2001), @i{Time Series Analysis by State
-Space Methods}, Oxford University Press
+Durbin, J. and S. J. Koopman (2012), @i{Time Series Analysis by State
+Space Methods}, Second Revised Edition, Oxford University Press
 
 @item
 Fair, Ray and John Taylor (1983): ``Solution and Maximum Likelihood
