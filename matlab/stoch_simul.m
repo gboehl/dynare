@@ -81,12 +81,17 @@ elseif options_.discretionary_policy
     end
     [oo_.dr,ys,info] = discretionary_policy_1(oo_,options_.instruments);
 else
+    if options_.logged_steady_state
+        oo_.dr.ys=exp(oo_.dr.ys);
+        oo_.steady_state=exp(oo_.steady_state);
+    end
     [oo_.dr,info,M_,options_,oo_] = resol(0,M_,options_,oo_);
 end
 
 if options_.loglinear
     oo_.dr.ys=log(oo_.dr.ys);
     oo_.steady_state=log(oo_.steady_state);
+    options_old.logged_steady_state = 1;
 end
 if info(1)
     options_ = options_old;
