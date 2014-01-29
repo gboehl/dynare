@@ -209,6 +209,13 @@ switch S(1).type
         else
             Dates = S(1).subs{1};
         end
+        % Test if Dates is out of bounds
+        if min(Dates)<min(A.dates)
+            error(['dseries::subsref: Indices are out of bounds! Subsample cannot start before ' date2string(A.dates(1)) '.'])
+        end
+        if  max(Dates)>max(A.dates)
+            error(['dseries::subsref: Indices are out of bounds! Subsample cannot end after ' date2string(A.dates(end)) '.'])
+        end
         % Extract a subsample using a dates object
         [junk,tdx] = intersect(A.dates.time,Dates.time,'rows');
         B = dseries();
@@ -656,3 +663,39 @@ end
 %$
 %$ T = all(t);
 %@eof:15
+
+%@test:16
+%$ try
+%$     ds = dseries(transpose(1:5));
+%$     ts = ds(2:6);
+%$     t(1) = 0;
+%$ catch
+%$     t(1) = 1;
+%$ end
+%$
+%$ T = all(t);
+%@eof:16
+
+%@test:17
+%$ try
+%$     ds = dseries(transpose(1:5));
+%$     ts = ds(dates('1Y'):dates('6Y'));
+%$     t(1) = 0;
+%$ catch
+%$     t(1) = 1;
+%$ end
+%$
+%$ T = all(t);
+%@eof:17
+
+%@test:18
+%$ try
+%$     ds = dseries(transpose(1:5));
+%$     ts = ds(dates('-2Y'):dates('4Y'));
+%$     t(1) = 0;
+%$ catch
+%$     t(1) = 1;
+%$ end
+%$
+%$ T = all(t);
+%@eof:18
