@@ -107,6 +107,30 @@ if info(1)
     return
 end
 
+if options.loglinear
+    % Find variables with non positive steady state.
+    idx = find(dr.ys<1e-9);
+    if length(idx)
+        variables_with_non_positive_steady_state = M.endo_names(idx,:);
+        skipline()
+        fprintf('You are attempting to simulate/estimate a loglinear approximation of a model, but\n')
+        fprintf('the steady state level of the following variables is not strictly positive:\n')
+        for i=1:length(idx)
+            fprintf(' - %s (%s)\n',deblank(variables_with_non_positive_steady_state(idx,:)), num2str(dr.ys(idx)))
+        end
+        if isestimation()
+            fprintf('You should check that the priors and/or bounds over the deep parameters are such')
+            frpintf('the steady state levels of all the variables are strictly positive, or consider')
+            fprintf('a linearization of the model instead of a log linearization.')
+        else
+            fprintf('You should check that the calibration of the deep parameters is such that the')
+            fprintf('steady state levels of all the variables are strictly positive, or consider')
+            fprintf('a linearization of the model instead of a log linearization.')
+        end
+        error('stoch_simul::resol: The loglinearization of the model cannot be performed because the steady state is not strictly positive!')
+    end
+end
+
 if options.block
     [dr,info,M,options,oo] = dr_block(dr,check_flag,M,options,oo);
 else
