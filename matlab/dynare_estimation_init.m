@@ -85,7 +85,7 @@ if options_.lik_init == 1
     if isempty(options_.qz_criterium)
         options_.qz_criterium = 1-1e-6;
     elseif options_.qz_criterium > 1-eps
-        error(['estimation: option qz_criterium is too large for estimating ' ...
+        error(['Estimation: option qz_criterium is too large for estimating ' ...
                'a stationary model. If your model contains unit roots, use ' ...
                'option diffuse_filter'])
     end
@@ -274,7 +274,7 @@ end
 
 if isempty(estim_params_)% If estim_params_ is empty (e.g. when running the smoother on a calibrated model)
     if ~options_.smoother
-        error('ESTIMATION: the ''estimated_params'' block is mandatory (unless you are running a smoother)')
+        error('Estimation: the ''estimated_params'' block is mandatory (unless you are running a smoother)')
     end
     xparam1 = [];
     bayestopt_.lb = [];
@@ -494,10 +494,12 @@ else
     options_.noconstant = 0;
     % If the data are prefiltered then there must not be constants in the
     % measurement equation of the DSGE model or in the DSGE-VAR model.
-    if options_.prefilter == 1
-        fprintf('\nestimation_init: You have specified the option "prefilter" to demean your data,\n')
-        fprintf('estimation_init: but your observation equations are not mean zero. Either change your observation\n')
-        fprintf('estimation_init: equation or drop the prefiltering.\n')
+    if options_.prefilter
+        skipline()
+        disp('You have specified the option "prefilter" to demean your data but the')
+        disp('steady state of of the observed variables is non zero.')
+        disp('Either change the measurement equations, by centering the observed')
+        disp('variables in the model block, or drop the prefiltering.')
         error('The option "prefilter" is inconsistent with the non-zero mean measurement equations in the model.')
     end
 end
