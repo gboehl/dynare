@@ -202,11 +202,15 @@ else% ==> Theoretical HP filter.
     IA = eye(size(A,1));
     IE = eye(M_.exo_nbr);
     for ig = 1:ngrid
-        f_omega  =(1/(2*pi))*( [inv(IA-A*tneg(ig))*ghu1;IE]...
-                               *M_.Sigma_e*[ghu1'*inv(IA-A'*tpos(ig)) ...
-                            IE]); % state variables
-        g_omega = [aa*tneg(ig) bb]*f_omega*[aa'*tpos(ig); bb']; % selected variables
-        f_hp = hp1(ig)^2*g_omega; % spectral density of selected filtered series
+        if hp1(ig)==0,
+            f_hp = zeros(length(ivar),length(ivar));
+        else
+            f_omega  =(1/(2*pi))*( [inv(IA-A*tneg(ig))*ghu1;IE]...
+                *M_.Sigma_e*[ghu1'*inv(IA-A'*tpos(ig)) ...
+                IE]); % state variables
+            g_omega = [aa*tneg(ig) bb]*f_omega*[aa'*tpos(ig); bb']; % selected variables
+            f_hp = hp1(ig)^2*g_omega; % spectral density of selected filtered series
+        end
         mathp_col = [mathp_col ; (f_hp(:))'];    % store as matrix row
                                                  % for ifft
     end;
@@ -233,11 +237,15 @@ else% ==> Theoretical HP filter.
         IA = eye(size(A,1));
         IE = eye(M_.exo_nbr);
         for ig = 1:ngrid
-            f_omega  =(1/(2*pi))*( [inv(IA-A*tneg(ig))*b1;IE]...
-                                   *SS*[b1'*inv(IA-A'*tpos(ig)) ...
-                                IE]); % state variables
-            g_omega = [aa*tneg(ig) b2]*f_omega*[aa'*tpos(ig); b2']; % selected variables
-            f_hp = hp1(ig)^2*g_omega; % spectral density of selected filtered series
+            if hp1(ig)==0,
+                f_hp = zeros(length(ivar),length(ivar));
+            else
+                f_omega  =(1/(2*pi))*( [inv(IA-A*tneg(ig))*b1;IE]...
+                    *SS*[b1'*inv(IA-A'*tpos(ig)) ...
+                    IE]); % state variables
+                g_omega = [aa*tneg(ig) b2]*f_omega*[aa'*tpos(ig); b2']; % selected variables
+                f_hp = hp1(ig)^2*g_omega; % spectral density of selected filtered series
+            end
             mathp_col = [mathp_col ; (f_hp(:))'];    % store as matrix row
                                                      % for ifft
         end;  
@@ -247,13 +255,17 @@ else% ==> Theoretical HP filter.
             mathp_col = [];
             SSi = cs(:,i)*cs(:,i)';
             for ig = 1:ngrid
-                f_omega  =(1/(2*pi))*( [inv(IA-A*tneg(ig))*b1;IE]...
-                                       *SSi*[b1'*inv(IA-A'*tpos(ig)) ...
-                                    IE]); % state variables
-                g_omega = [aa*tneg(ig) b2]*f_omega*[aa'*tpos(ig); b2']; % selected variables
-                f_hp = hp1(ig)^2*g_omega; % spectral density of selected filtered series
+                if hp1(ig)==0,
+                    f_hp = zeros(length(ivar),length(ivar));
+                else
+                    f_omega  =(1/(2*pi))*( [inv(IA-A*tneg(ig))*b1;IE]...
+                        *SSi*[b1'*inv(IA-A'*tpos(ig)) ...
+                        IE]); % state variables
+                    g_omega = [aa*tneg(ig) b2]*f_omega*[aa'*tpos(ig); b2']; % selected variables
+                    f_hp = hp1(ig)^2*g_omega; % spectral density of selected filtered series
+                end
                 mathp_col = [mathp_col ; (f_hp(:))'];    % store as matrix row
-                                                         % for ifft
+                % for ifft
             end;
             imathp_col = real(ifft(mathp_col))*(2*pi);
             Gamma_y{nar+2}(:,i) = abs(diag(reshape(imathp_col(1,:),nvar,nvar)))./vv;
