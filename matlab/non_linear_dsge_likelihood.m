@@ -133,6 +133,11 @@ ys              = [];
 trend_coeff     = [];
 exit_flag       = 1;
 
+% Issue an error if loglinear option is used.
+if DynareOptions.loglinear
+    error('non_linear_dsge_likelihood: It is not possible to use a non linear filter with the option loglinear!')
+end
+
 % Set the number of observed variables
 nvobs = DynareDataset.info.nvobs;
 
@@ -229,11 +234,7 @@ BayesInfo.mf = BayesInfo.mf1;
 if DynareOptions.noconstant
     constant = zeros(nvobs,1);
 else
-    if DynareOptions.loglinear
-        constant = log(SteadyState(BayesInfo.mfys));
-    else
-        constant = SteadyState(BayesInfo.mfys);
-    end
+    constant = SteadyState(BayesInfo.mfys);
 end
 
 % Define the deterministic linear trend of the measurement equation.
