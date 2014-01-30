@@ -4946,12 +4946,6 @@ Triggers the computation k-step ahead filtered values. Stores results in
 @anchor{filter_decomposition} Triggers the computation of the shock
 decomposition of the above k-step ahead filtered values.
 
-@item constant
-@dots{}
-
-@item noconstant
-@dots{}
-
 @item diffuse_filter
 Uses the diffuse Kalman filter (as described in
 @cite{Durbin and Koopman (2012)} and @cite{Koopman and Durbin
