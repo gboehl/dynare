@@ -4436,7 +4436,7 @@ likelihood. These first observations are used as a training sample. Default: @co
 @anchor{loglinear}
 Computes a log-linear approximation of the model instead of a linear
 approximation. As always in the context of estimation, the data must correspond to the definition of the
-variables used in the model (see \cite{Pfeifer 2013} for more details on how to correctly specify observation equations linking model variables and the data). If you specify the loglinear option, Dynare will take the logarithm of both your model variables and of your data as it assumes the data to correspond to the original non-logged model variables. The displayed posterior results like impulse responses, smoothed variables, and moments will be for the logged variables, not the original un-logged ones. Default: computes a linear approximation
+variables used in the model (see @cite{Pfeifer 2013} for more details on how to correctly specify observation equations linking model variables and the data). If you specify the loglinear option, Dynare will take the logarithm of both your model variables and of your data as it assumes the data to correspond to the original non-logged model variables. The displayed posterior results like impulse responses, smoothed variables, and moments will be for the logged variables, not the original un-logged ones. Default: computes a linear approximation
 
 @item plot_priors = @var{INTEGER}
 Control the plotting of priors:
