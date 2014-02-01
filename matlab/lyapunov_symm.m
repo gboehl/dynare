@@ -104,9 +104,9 @@ qz_criterium = third_argument;
 if method
     persistent U T k n
 else
-    if exist('U','var')
-        clear('U','T','k','n')
-    end
+    %    if exist('U','var')
+    %        clear('U','T','k','n')
+    %    end
 end
 
 u = [];
