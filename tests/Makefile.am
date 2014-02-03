@@ -74,6 +74,7 @@ MODFILES = \
 	fs2000/fs2000a.mod \
 	fs2000/fs2000c.mod \
 	fs2000/fs2000d.mod \
+	fs2000/fs2000e.mod \
 	fs2000/fs2000_cmaes.mod \
 	fs2000/fs2000_calib.mod \
 	fs2000/fs2000_analytic_derivation.mod \
