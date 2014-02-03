@@ -10,7 +10,7 @@ function writedata(fname)
 % SPECIAL REQUIREMENT
 %   none
 
-% Copyright (C) 2007-2009 Dynare Team
+% Copyright (C) 2007-2014 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -29,9 +29,8 @@ function writedata(fname)
 
 global M_ oo_
 
-% xlswrite doesn't exist on Octave, and appeared in MATLAB 7.0
-if isoctave || matlab_ver_less_than('7.0')
-    error('Function not supported on your version of MATLAB or Octave')
+if isoctave && ~user_has_octave_forge_package('io')
+    error('The io package is required to write XLS files from Octave')
 end
 
 S=[fname '_endo.xls'];
