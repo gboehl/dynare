@@ -50,8 +50,8 @@ assert(isempty(o.graphMarker) || any(strcmp(o.graphMarker, valid_graphMarker)), 
 
 assert(ischar(o.graphMarkerEdgeColor), '@report_series.getLine: graphMarkerEdgeColor must be a string');
 assert(ischar(o.graphMarkerFaceColor), '@report_series.getLine: graphMarkerFaceColor must be a string');
-assert(isfloat(o.graphMarkerSize), ['@report_series.getLine: graphMarkerSize must be a ' ...
-                    'positive number']);
+assert(isfloat(o.graphMarkerSize) && o.graphLineWidth > 0, ...
+                    '@report_series.getLine: graphMarkerSize must be a positive number');
 
 % Marker & Line
 assert(~(strcmp(o.graphLineStyle, 'none') && isempty(o.graphMarker)), ['@report_series.getLine: ' ...
