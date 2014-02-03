@@ -281,25 +281,22 @@ if ~isequal(options_.mode_compute,0) && ~options_.mh_posterior_mode_estimation
         epsilon = options_.gradient_epsilon;
         % Change some options.
         if isfield(options_,'optim_opt')
-            options_list = strsplit(options_.optim_opt,',');
-            number_of_options = length(options_list)/2;
-            o = 1;
-            while o<=number_of_options
-                switch strtrim(options_list{2*(o-1)+1})
-                  case '''MaxIter'''
-                    nit = str2num(options_list{2*(o-1)+2});
-                  case '''InitialInverseHessian'''
-                    H0 = eval(eval(options_list{2*(o-1)+2}));
+            options_list = read_key_value_string(options_.optim_opt);
+            for i=1:rows(options_list)
+                switch options_list{i,1}
+                  case 'MaxIter'
+                    nit = options_list{i,2};
+                  case 'InitialInverseHessian'
+                    H0 = eval(options_list{i,2});
                   case '''TolFun'''
-                    crit = str2double(options_list{2*(o-1)+2});
-                  case '''NumgradAlgorithm'''
-                    numgrad = str2num(options_list{2*(o-1)+2});
-                  case '''NumgradEpsilon'''
-                    epsilon = str2double(options_list{2*(o-1)+2});
+                    crit = options_list{i,2};
+                  case 'NumgradAlgorithm'
+                    numgrad = options_list{i,2};
+                  case 'NumgradEpsilon'
+                    epsilon = options_list{i,2};
                   otherwise
-                    warning(['csminwel: Unknown option (' options_list{2*(o-1)+1}  ')!'])
+                    warning(['csminwel: Unknown option (' options_list{i,1} ')!'])
                 end
-                o = o + 1;
             end
         end
         % Set flag for analytical gradient.
@@ -353,21 +350,19 @@ if ~isequal(options_.mode_compute,0) && ~options_.mh_posterior_mode_estimation
             gmhmaxlikOptions.varinit = 'prior';
         end
         if isfield(options_,'optim_opt')
-            options_list = strsplit(options_.optim_opt,',');
-            number_of_options = length(options_list)/2;
-            o = 1;
-            while o<=number_of_options
-                switch strtrim(options_list{2*(o-1)+1})
-                  case '''NumberOfMh'''
-                    gmhmaxlikOptions.iterations = str2num(options_list{2*(o-1)+2});
-                  case '''ncov-mh'''
-                    gmhmaxlikOptions.number = str2num(options_list{2*(o-1)+2});
-                  case '''nscale'''
-                    gmhmaxlikOptions.nscale = str2double(options_list{2*(o-1)+2});
-                  case '''nclimb'''
-                    gmhmaxlikOptions.nclimb = str2num(options_list{2*(o-1)+2});
-                  case '''InitialCovarianceMatrix'''
-                    switch eval(options_list{2*(o-1)+2})
+            options_list = read_key_value_string(options_.optim_opt);
+            for i=1:rows(options_list)
+                switch options_list{i,1}
+                  case 'NumberOfMh'
+                    gmhmaxlikOptions.iterations = options_list{i,2};
+                  case 'ncov-mh'
+                    gmhmaxlikOptions.number = options_list{i,2};
+                  case 'nscale'
+                    gmhmaxlikOptions.nscale = options_list{i,2};
+                  case 'nclimb'
+                    gmhmaxlikOptions.nclimb = options_list{i,2};
+                  case 'InitialCovarianceMatrix'
+                    switch options_list{i,2}
                       case 'previous'
                         if isempty(hh)
                             error('gmhmaxlik: No previous estimate of the Hessian matrix available!')
@@ -375,21 +370,20 @@ if ~isequal(options_.mode_compute,0) && ~options_.mh_posterior_mode_estimation
                             gmhmaxlikOptions.varinit = 'previous'
                         end
                       case {'prior', 'identity'}
-                        gmhmaxlikOptions.varinit = eval(options_list{2*(o-1)+2});
+                        gmhmaxlikOptions.varinit = options_list{i,2};
                       otherwise
                         error('gmhmaxlik: Unknown value for option ''InitialCovarianceMatrix''!')
                     end
-                  case '''AcceptanceRateTarget'''
-                    gmhmaxlikOptions.target = str2num(options_list{2*(o-1)+2});
+                  case 'AcceptanceRateTarget'
+                    gmhmaxlikOptions.target = options_list{i,2};
                     if gmhmaxlikOptions.target>1 || gmhmaxlikOptions.target<eps
                         error('gmhmaxlik: The value of option AcceptanceRateTarget should be a double between 0 and 1!')
                     end
                   otherwise
-                    Warning(['gmhmaxlik: Unknown option (' options_list{2*(o-1)+1}  ')!'])
+                    Warning(['gmhmaxlik: Unknown option (' options_list{i,1}  ')!'])
                 end
-                o = o + 1;
             end
-        end        
+        end
         % Evaluate the objective function.
         fval = feval(objective_function,xparam1,dataset_,options_,M_,estim_params_,bayestopt_,oo_);
         OldMode = fval;
@@ -485,27 +479,24 @@ if ~isequal(options_.mode_compute,0) && ~options_.mh_posterior_mode_estimation
         % Dynare implementation of the simplex algorithm.
         simplexOptions = options_.simplex;
         if isfield(options_,'optim_opt')
-            options_list = strsplit(options_.optim_opt,',');
-            number_of_options = length(options_list)/2;
-            o = 1;
-            while o<=number_of_options
-                switch strtrim(options_list{2*(o-1)+1})
-                  case '''MaxIter'''
-                    simplexOptions.maxiter = str2num(options_list{2*(o-1)+2});
-                  case '''TolFun'''
-                    simplexOptions.tolerance.f = str2double(options_list{2*(o-1)+2});
-                  case '''TolX'''
-                    simplexOptions.tolerance.x = str2double(options_list{2*(o-1)+2});
-                  case '''MaxFunEvals'''
-                    simplexOptions.maxfcall = str2num(options_list{2*(o-1)+2});
-                  case '''MaxFunEvalFactor'''
-                    simplexOptions.maxfcallfactor = str2num(options_list{2*(o-1)+2});
-                  case '''InitialSimplexSize'''
-                    simplexOptions.delta_factor = str2double(options_list{2*(o-1)+2});
+            options_list = read_key_value_string(options_.optim_opt);
+            for i=1:rows(options_list)
+                switch options_list{i,1}
+                  case 'MaxIter'
+                    simplexOptions.maxiter = options_list{i,2};
+                  case 'TolFun'
+                    simplexOptions.tolerance.f = options_list{i,2};
+                  case 'TolX'
+                    simplexOptions.tolerance.x = options_list{i,2};
+                  case 'MaxFunEvals'
+                    simplexOptions.maxfcall = options_list{i,2};
+                  case 'MaxFunEvalFactor'
+                    simplexOptions.maxfcallfactor = options_list{i,2};
+                  case 'InitialSimplexSize'
+                    simplexOptions.delta_factor = options_list{i,2};
                   otherwise
-                    warning(['simplex: Unknown option (' options_list{2*(o-1)+1}  ')!'])
+                    warning(['simplex: Unknown option (' options_list{i,1} ')!'])
                 end
-                o = o + 1;
             end
         end
         [xparam1,fval,exitflag] = simplex_optimization_routine(objective_function,xparam1,simplexOptions,dataset_,options_,M_,estim_params_,bayestopt_,oo_);
@@ -515,23 +506,20 @@ if ~isequal(options_.mode_compute,0) && ~options_.mh_posterior_mode_estimation
         cmaesOptions = options_.cmaes;
         % Modify defaults
         if isfield(options_,'optim_opt')
-            options_list = strsplit(options_.optim_opt,',');
-            number_of_options = length(options_list)/2;
-            o = 1;
-            while o<=number_of_options
-                switch strtrim(options_list{2*(o-1)+1})
-                  case '''MaxIter'''
-                    cmaesOptions.MaxIter = str2num(options_list{2*(o-1)+2});
-                  case '''TolFun'''
-                    cmaesOptions.TolFun = str2double(options_list{2*(o-1)+2});
-                  case '''TolX'''
-                    cmaesOptions.TolX = str2double(options_list{2*(o-1)+2});
-                  case '''MaxFunEvals'''
-                    cmaesOptions.MaxFunEvals = str2num(options_list{2*(o-1)+2});
+            options_list = read_key_value_string(options_.optim_opt);
+            for i=1:rows(options_list)
+                switch options_list{i,1}
+                  case 'MaxIter'
+                    cmaesOptions.MaxIter = options_list{i,2};
+                  case 'TolFun'
+                    cmaesOptions.TolFun = options_list{i,2};
+                  case 'TolX'
+                    cmaesOptions.TolX = options_list{i,2};
+                  case 'MaxFunEvals'
+                    cmaesOptions.MaxFunEvals = options_list{i,2};
                   otherwise
-                    warning(['cmaes: Unknown option (' options_list{2*(o-1)+1}  ')!'])
+                    warning(['cmaes: Unknown option (' options_list{i,1}  ')!'])
                 end
-                o = o + 1;
             end
         end
         warning('off','CMAES:NonfinitenessRange');
@@ -542,36 +530,33 @@ if ~isequal(options_.mode_compute,0) && ~options_.mh_posterior_mode_estimation
       case 10
         simpsaOptions = options_.simpsa;
         if isfield(options_,'optim_opt')
-            options_list = strsplit(options_.optim_opt,',');
-            number_of_options = length(options_list)/2;
-            o = 1;
-            while o<=number_of_options
-                switch strtrim(options_list{2*(o-1)+1})
-                  case '''MaxIter'''
-                    simpsaOptions.MAX_ITER_TOTAL = str2num(options_list{2*(o-1)+2});
-                  case '''TolFun'''
-                    simpsaOptions.TOLFUN = str2double(options_list{2*(o-1)+2});
-                  case '''TolX'''
-                    tolx = str2double(options_list{2*(o-1)+2});
+            options_list = read_key_value_string(options_.optim_opt);
+            for i=1:rows(options_list)
+                switch options_list{i,1}
+                  case 'MaxIter'
+                    simpsaOptions.MAX_ITER_TOTAL = options_list{i,2};
+                  case 'TolFun'
+                    simpsaOptions.TOLFUN = options_list{i,2};
+                  case 'TolX'
+                    tolx = options_list{i,2};
                     if tolx<0
-                        simpsaOptions = rmfield(simpsaOptions,'TOLX'); % Let cmaes choose the default.
+                        simpsaOptions = rmfield(simpsaOptions,'TOLX'); % Let simpsa choose the default.
                     else
                         simpsaOptions.TOLX = tolx;
                     end
-                  case '''EndTemparature'''
-                    simpsaOptions.TEMP_END = str2double(options_list{2*(o-1)+2});
-                  case '''MaxFunEvals'''
-                    simpsaOptions.MAX_FUN_EVALS = str2num(options_list{2*(o-1)+2});
+                  case 'EndTemparature'
+                    simpsaOptions.TEMP_END = options_list{i,2};
+                  case 'MaxFunEvals'
+                    simpsaOptions.MAX_FUN_EVALS = options_list{i,2};
                   otherwise
-                    warning(['simpsa: Unknown option (' options_list{2*(o-1)+1}  ')!'])
+                    warning(['simpsa: Unknown option (' options_list{i,1}  ')!'])
                 end
-                o = o + 1;
             end
         end
         simpsaOptionsList = options2cell(simpsaOptions);
         simpsaOptions = simpsaset(simpsaOptionsList{:});
         [xparam1, fval, exitflag] = simpsa(func2str(objective_function),xparam1,lb,ub,simpsaOptions,dataset_,options_,M_,estim_params_,bayestopt_,oo_);
-      case 11 
+      case 11
          options_.cova_compute = 0 ;
          [xparam1,stdh,lb_95,ub_95,med_param] = online_auxiliary_filter(xparam1,dataset_,options_,M_,estim_params_,bayestopt_,oo_) ;
       case 101
@@ -632,7 +617,6 @@ if ~isequal(options_.mode_compute,0) && ~options_.mh_posterior_mode_estimation
                 [junk1, junk2, hh] = feval(objective_function,xparam1, ...
                     dataset_,options_,M_,estim_params_,bayestopt_,oo_);
                 options_.analytic_derivation = ana_deriv;
-                
             else
                 hh = reshape(hessian(objective_function,xparam1, ...
                     options_.gstep,dataset_,options_,M_,estim_params_,bayestopt_,oo_),nx,nx);
@@ -657,13 +641,13 @@ switch options_.MCMC_jumping_covariance
     case 'prior_variance' %Use prior variance
         if any(isinf(bayestopt_.p2))
             error('Infinite prior variances detected. You cannot use the prior variances as the proposal density, if some variances are Inf.')
-        else            
+        else
             hh = diag(1./(bayestopt_.p2.^2));
         end
     case 'identity_matrix' %Use identity
-        hh = eye(nx);   
+        hh = eye(nx);
     otherwise %user specified matrix in file
-        try 
+        try
             load(options_.MCMC_jumping_covariance,'jumping_covariance')
             hh=jumping_covariance;
         catch
