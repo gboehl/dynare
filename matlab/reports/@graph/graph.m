@@ -140,6 +140,13 @@ assert(isempty(o.xTicks) || isfloat(o.xTicks),...
        '@graph.graph: xTicks must be a numerical array');
 assert(iscellstr(o.xTickLabels), ...
        '@graph.graph: xTickLabels must be a cell array of strings');
+if ~isempty(o.xTickLabels)
+    assert(~isempty(o.xTicks), '@graph.graph: if you set xTickLabels, you must set xTicks');
+end
+if ~isempty(o.xTicks)
+    assert(~isempty(o.xTickLabels), '@graph.graph: if you set xTicks, you must set xTickLabels');
+end
+
 % using o.seriesToUse, create series objects and put them in o.seriesElements
 if ~isempty(o.data)
     if isempty(o.seriesToUse)
