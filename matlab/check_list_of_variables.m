@@ -14,7 +14,7 @@ function varlist = check_list_of_variables(options_, M_, varlist)
 %        
 % SPECIAL REQUIREMENTS
 
-% Copyright (C) 2003-2012 Dynare Team
+% Copyright (C) 2003-2014 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -86,7 +86,7 @@ if isempty(varlist)
         if isempty(cas)
             cas = 'Forecasts';
         else
-            cas = [ cas , ' and forecats'];
+            cas = [ cas , ' and forecasts'];
         end
     end
     if ~isempty(cas)
