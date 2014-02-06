@@ -12,7 +12,7 @@ function o = page(varargin)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2013 Dynare Team
+% Copyright (C) 2013-2014 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -35,7 +35,7 @@ o.title = {};
 o.titleFormat = {};
 o.orientation = '';
 o.footnote = {};
-o.sections = sections();
+o.sections = {};
 
 if nargin == 1
     assert(isa(varargin{1}, 'page'), ['@page.page: with one arg to Page ' ...

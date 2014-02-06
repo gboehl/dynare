@@ -12,7 +12,7 @@ function o = write(o, fid)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2013 Dynare Team
+% Copyright (C) 2013-2014 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -46,7 +46,10 @@ for i=1:length(o.title)
     fprintf(fid,'\\multicolumn{1}{c}{%s %s}\\\\\n', o.titleFormat{i}, o.title{i});
 end
 
-o.sections.write(fid);
+nps = length(o.sections);
+for i=1:nps
+    o.sections{i}.write(fid);
+end
 
 if strcmpi(o.orientation, 'landscape')
     fprintf(fid, '\\end{landscape}\n');
