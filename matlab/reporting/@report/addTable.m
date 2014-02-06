@@ -12,7 +12,7 @@ function o = addTable(o, varargin)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2013 Dynare Team
+% Copyright (C) 2013-2014 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -29,6 +29,6 @@ function o = addTable(o, varargin)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-o.pages(end).sections(end) = ...
-    o.pages(end).sections(end).addTable(varargin{:});
+o.pages{end}.sections(end) = ...
+    o.pages{end}.sections(end).addTable(varargin{:});
 end

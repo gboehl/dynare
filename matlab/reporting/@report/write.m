@@ -76,7 +76,11 @@ fprintf(fid, '\\newlength\\sectionheight\n');
 fprintf(fid, '\\begin{document}\n');
 fprintf(fid, '\\centering\n');
 
-o.pages.write(fid);
+nps = length(o.pages);
+for i=1:nps
+    fprintf(1, '\nWriting Page: %d', i);
+    o.pages{i}.write(fid);
+end
 
 fprintf(fid, '\\end{document}\n');
 fprintf(fid, '%% End Report Object\n');

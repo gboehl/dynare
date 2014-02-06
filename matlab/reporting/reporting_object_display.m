@@ -5,7 +5,6 @@ function reporting_object_display(o)
 %                 graph
 %                 objArray
 %                 page
-%                 pages
 %                 report
 %                 section
 %                 sections
@@ -23,7 +22,7 @@ function reporting_object_display(o)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2013 Dynare Team
+% Copyright (C) 2013-2014 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -48,10 +47,18 @@ for i=1:length(fields)
     if iscell(val)
         fprintf('{');
         for j=1:length(val)
-            assert(ischar(val{j}));
-            fprintf('''%s''', val{j});
-            if j~=length(val)
-                fprintf(', ');
+            if ischar(val{j});
+                fprintf('''%s''', val{j});
+                if j~=length(val)
+                    fprintf(', ');
+                end
+            else
+                if fields{i} == 'pages'
+                    fprintf('%d', length(val));
+                    break;
+                else
+                    fprintf('fix this');
+                end
             end
         end
         fprintf('}');
@@ -80,7 +87,6 @@ for i=1:length(fields)
             fprintf('%d', val.(['num' upper(cl(1)) cl(2:end)]));
         end
     else
-        keyboard
         fprintf('fix this');
     end
     fprintf('\n');

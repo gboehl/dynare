@@ -13,7 +13,7 @@ function o = report(varargin)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2013 Dynare Team
+% Copyright (C) 2013-2014 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -37,7 +37,7 @@ o.orientation = 'portrait';
 o.paper = 'a4';
 o.margin = 2.5;
 o.marginUnit = 'cm';
-o.pages = pages();
+o.pages = {};
 o.filename = 'report.tex';
 o.showDate = true;
 o.compiler = '';

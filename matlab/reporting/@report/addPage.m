@@ -12,7 +12,7 @@ function o = addPage(o, varargin)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2013 Dynare Team
+% Copyright (C) 2013-2014 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -29,6 +29,7 @@ function o = addPage(o, varargin)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-o.pages = o.pages.addPage('orientation', o.orientation, 'paper', o.paper, ...
-                          varargin{:});
+np = length(o.pages) + 1;
+fprintf(1, '\nAdding Page: %d', np);
+o.pages{np} = page('orientation', o.orientation, 'paper', o.paper, varargin{:});
 end

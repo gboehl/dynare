@@ -12,7 +12,7 @@ function o = addSeries(o, varargin)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2013 Dynare Team
+% Copyright (C) 2013-2014 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -29,10 +29,10 @@ function o = addSeries(o, varargin)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-assert(isa(o.pages(end).sections(end).elements(end), 'graph') || ...
-       isa(o.pages(end).sections(end).elements(end), 'report_table'), ...
+assert(isa(o.pages{end}.sections(end).elements(end), 'graph') || ...
+       isa(o.pages{end}.sections(end).elements(end), 'report_table'), ...
        '@report.addSeries: you can only add a series to a report_table or graph object');
 
-o.pages(end).sections(end).elements(end) = ...
-    o.pages(end).sections(end).elements(end).addSeries(varargin{:});
+o.pages{end}.sections(end).elements(end) = ...
+    o.pages{end}.sections(end).elements(end).addSeries(varargin{:});
 end

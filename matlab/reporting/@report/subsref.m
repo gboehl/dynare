@@ -34,7 +34,7 @@ switch S(1).type
                 error(['@report.subsasgn: unknown field or method: ' S(1).subs]);
         end
     case '()'
-        A = A.pages.getPages(S(1).subs{:});
+        A = A.pages{S(1).subs{:}};
     case '{}'
         error(['@report.subsasgn: ' S(1).type ' indexing not supported.']);
     otherwise
