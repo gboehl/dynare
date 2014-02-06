@@ -1,5 +1,5 @@
-function o = addSeries(o, varargin)
-% function o = addSeries(o, varargin)
+function dd = getMaxRange(cellser)
+% function dd = getMaxRange(cellser)
 
 % Copyright (C) 2013-2014 Dynare Team
 %
@@ -18,5 +18,17 @@ function o = addSeries(o, varargin)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-o.series{end+1} = report_series(varargin{:});
+ddmin = dates();
+ddmax = dates();
+ne = length(cellser)
+for i=1:ne
+    ddt = cellser{i}.getRange();
+    if isempty(ddmin)
+        ddmin = ddt(1);
+        ddmax = ddt(end);
+    else
+        ddmin = min(ddt(1), ddmin);
+        ddmax = max(ddt(end), ddmax);
+    end
 end
+dd = ddmin:ddmax;

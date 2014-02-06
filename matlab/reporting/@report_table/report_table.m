@@ -31,7 +31,7 @@ function o = report_table(varargin)
 
 o = struct;
 
-o.seriesElements = seriesElements();
+o.series = {};
 
 o.title = '';
 o.titleSize = 'large';
@@ -102,15 +102,15 @@ valid_title_sizes = {'Huge', 'huge', 'LARGE', 'Large', 'large', 'normalsize', ..
 assert(any(strcmp(o.titleSize, valid_title_sizes)), ...
        ['@report_table.report_table: titleSize must be one of ' strjoin(valid_title_sizes, ' ')]);
 
-% using o.seriesToUse, create series objects and put them in o.seriesElements
+% using o.seriesToUse, create series objects and put them in o.series
 if ~isempty(o.data)
     if isempty(o.seriesToUse)
         for i=1:o.data.vobs
-            o.seriesElements = o.seriesElements.addSeries('data', o.data{o.data.name{i}});
+            o.series{end} = report_series('data', o.data{o.data.name{i}});
         end
     else
         for i=1:length(o.seriesToUse)
-            o.seriesElements = o.seriesElements.addSeries('data', o.data{o.seriesToUse{i}});
+            o.series{end} = report_series('data', o.data{o.seriesToUse{i}});
         end
     end
 end

@@ -30,7 +30,7 @@ function o = write(o, fid)
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 assert(fid ~= -1);
-if ~o.seriesElements.numSeriesElements()
+if length(o.series) == 0
     warning('@report_table.write: no series to plot, returning');
     return;
 end
@@ -43,7 +43,7 @@ end
 nlhc = 1;
 
 if isempty(o.range)
-    dates = o.seriesElements.getMaxRange();
+    dates = getMaxRange(o.series);
 else
     dates = o.range{1};
 end
@@ -148,9 +148,9 @@ fprintf(fid, '\\hline%%\n');
 fprintf(fid, '%%\n');
 
 % Write Report_Table Data
-ne = o.seriesElements.numSeriesElements();
+ne = length(o.series);
 for i=1:ne
-    o.seriesElements(i).write(fid, o.range, o.precision);
+    o.series{i}.write(fid, o.range, o.precision);
     if o.showHlines
         fprintf(fid, '\\hline\n');
     end
