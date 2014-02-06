@@ -33,7 +33,7 @@ assert(fid ~= -1);
 
 fprintf(fid, '\n%% Page Object\n');
 if strcmpi(o.orientation, 'landscape')
-    fprintf(fid, '\\begin{landscape}\n')
+    fprintf(fid, '\\begin{landscape}\n');
 end
 
 for i=1:length(o.footnote)
