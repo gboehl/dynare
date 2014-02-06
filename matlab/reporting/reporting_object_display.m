@@ -7,7 +7,6 @@ function reporting_object_display(o)
 %                 page
 %                 report
 %                 section
-%                 sections
 %                 series
 %                 seriesElements
 %                 table
@@ -53,7 +52,7 @@ for i=1:length(fields)
                     fprintf(', ');
                 end
             else
-                if fields{i} == 'pages'
+                if strcmp(fields{i}, 'pages') || strcmp(fields{i}, 'sections')
                     fprintf('%d', length(val));
                     break;
                 else
