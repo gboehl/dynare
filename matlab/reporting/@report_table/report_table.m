@@ -106,11 +106,11 @@ assert(any(strcmp(o.titleSize, valid_title_sizes)), ...
 if ~isempty(o.data)
     if isempty(o.seriesToUse)
         for i=1:o.data.vobs
-            o.series{end} = report_series('data', o.data{o.data.name{i}});
+            o = o.addSeries('data', o.data{o.data.name{i}});
         end
     else
         for i=1:length(o.seriesToUse)
-            o.series{end} = report_series('data', o.data{o.seriesToUse{i}});
+            o = o.addSeries('data', o.data{o.seriesToUse{i}});
         end
     end
 end
