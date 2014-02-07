@@ -30,6 +30,5 @@ function p = addSection(p, varargin)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-fprintf(1, '/');
 p.sections{end+1} = section(varargin{:});
 end

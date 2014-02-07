@@ -41,5 +41,4 @@ if o.hline > 0
         fprintf(fid, '\\midrule');
     end
 end
-fprintf(1, '.');
 end

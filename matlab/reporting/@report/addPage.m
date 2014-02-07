@@ -30,6 +30,6 @@ function o = addPage(o, varargin)
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 np = length(o.pages) + 1;
-fprintf(1, '\nAdding Page: %d', np);
+fprintf(1, 'Adding Page: %d\n', np);
 o.pages{np} = page('orientation', o.orientation, 'paper', o.paper, varargin{:});
 end

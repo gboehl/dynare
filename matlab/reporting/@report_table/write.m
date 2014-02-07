@@ -159,5 +159,4 @@ end
 fprintf(fid, '\\bottomrule\n');
 fprintf(fid, '\\end{tabular}\\setlength{\\parindent}{0pt}\n \\par \\medskip\n\n');
 fprintf(fid, '%% End Report_Table Object\n');
-fprintf(1, '.');
 end

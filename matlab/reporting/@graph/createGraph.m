@@ -157,5 +157,4 @@ box off;
 hold off;
 close(h);
 clear h;
-fprintf(1, '.');
 end

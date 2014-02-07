@@ -30,7 +30,6 @@ function o = write(o, fid)
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 assert(fid ~= -1);
-fprintf(1, '/');
 fprintf(fid, '%% Section Object\n');
 if ~isempty(o.height)
     fprintf(fid, '\\setlength\\sectionheight{%s}%%\n', o.height);
