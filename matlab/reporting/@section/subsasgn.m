@@ -32,7 +32,7 @@ switch S.type
     case '()'
         index = S.subs{:};
         assert(isnumeric(index));
-        B.elements(index) = V;
+        B.elements{index} = V;
     case '{}'
         index = S.subs{:};
         assert(isnumeric(index));

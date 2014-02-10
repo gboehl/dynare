@@ -34,7 +34,7 @@ switch S(1).type
                 error(['@section.subsref: unknown field or method: ' S(1).subs]);
         end
     case '()'
-        A = A.elements.getElements(S(1).subs{:});
+        A = A.elements{S(1).subs{:}};
     case '{}'
         error(['@section.subsref: ' S(1).type ' indexing not supported.']);
     otherwise

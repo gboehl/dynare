@@ -1,7 +1,7 @@
 function n = numElements(o)
 % function n = numElements(o)
 
-% Copyright (C) 2013 Dynare Team
+% Copyright (C) 2013-2014 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -18,5 +18,5 @@ function n = numElements(o)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-n = o.elements.numElements();
+n = length(o.elements);
 end

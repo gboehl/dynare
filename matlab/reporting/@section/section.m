@@ -3,7 +3,7 @@ function o = section(varargin)
 
 % Section produces a latex minipage
 
-% Copyright (C) 2013 Dynare Team
+% Copyright (C) 2013-2014 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -21,7 +21,7 @@ function o = section(varargin)
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 o = struct;
-o.elements = elements();
+o.elements = {};
 o.cols = 1;
 o.height = '';
 

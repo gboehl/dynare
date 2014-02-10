@@ -49,14 +49,14 @@ fprintf(fid, '}\n');
 ne = numElements(o);
 nlcounter = 0;
 for i=1:ne
-    if isa(o.elements(i), 'vspace')
+    if isa(o.elements{i}, 'vspace')
         assert(rem(nlcounter, o.cols) == 0, ['@section.write: must place ' ...
                             'vspace command after a linebreak in the table ' ...
                             'or series of charts']);
-        o.elements(i).write(fid);
+        o.elements{i}.write(fid);
         fprintf(fid, '\\\\\n');
     else
-        o.elements(i).write(fid);
+        o.elements{i}.write(fid);
         nlcounter = nlcounter + 1;
         if rem(nlcounter, o.cols)
             fprintf(fid, ' & ');
