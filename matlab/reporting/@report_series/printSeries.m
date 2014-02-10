@@ -32,7 +32,7 @@ function o = printSeries(o, fid, dser, dates, precision)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-dataString = ['%.' num2str(precision) 'f'];
+dataString = sprintf('%%.%df', precision);
 precision  = 10^precision;
 
 data = dser(dates);
