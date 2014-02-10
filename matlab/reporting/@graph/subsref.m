@@ -34,9 +34,14 @@ switch S(1).type
                 error(['@graph.subsref: unknown field or method: ' S(1).subs]);
         end
     case '()'
-        A = A.seriesElements.getSeriesElements(S(1).subs{:});
+        if isempty(S(1).subs{:})
+            A = A.series;
+        else
+            assert(isnumeric(S(1).subs{:}));
+            A = A.series{S(1).subs{:}};
+        end
     case '{}'
-        error(['@graph.subsref: ' S(1).type ' indexing not supported.']);
+        A = A.series{S(1).subs{:}};
     otherwise
         error('@graph.subsref: impossible case')
 end

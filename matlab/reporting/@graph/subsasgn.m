@@ -1,7 +1,7 @@
 function B = subsasgn(A, S, V)
 % function B = subsasgn(A, S, V)
 
-% Copyright (C) 2013 Dynare Team
+% Copyright (C) 2013-2014 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -32,7 +32,7 @@ switch S.type
     case '()'
         index = S.subs{:};
         assert(isnumeric(index));
-        B.seriesElements(index) = V;
+        B.series{index} = V;
     case '.'
         switch S.subs
             case fieldnames(A)

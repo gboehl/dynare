@@ -14,7 +14,7 @@ function o = graph(varargin)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2013 Dynare Team
+% Copyright (C) 2013-2014 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -33,7 +33,7 @@ function o = graph(varargin)
 
 o = struct;
 
-o.seriesElements = seriesElements();
+o.series = {};
 
 o.title = '';
 o.ylabel = '';
@@ -147,15 +147,15 @@ if ~isempty(o.xTicks)
     assert(~isempty(o.xTickLabels), '@graph.graph: if you set xTicks, you must set xTickLabels');
 end
 
-% using o.seriesToUse, create series objects and put them in o.seriesElements
+% using o.seriesToUse, create series objects and put them in o.series
 if ~isempty(o.data)
     if isempty(o.seriesToUse)
         for i=1:o.data.vobs
-            o.seriesElements = o.seriesElements.addSeries('data', o.data{o.data.name{i}});
+            o = o.addSeries('data', o.data{o.data.name{i}});
         end
     else
         for i=1:length(o.seriesToUse)
-            o.seriesElements = o.seriesElements.addSeries('data', o.data{o.seriesToUse{i}});
+            o = o.addSeries('data', o.data{o.seriesToUse{i}});
         end
     end
 end

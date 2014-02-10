@@ -1,15 +1,12 @@
 function reporting_object_display(o)
 %function reporting_object_display(o)
 % Display a Reporting Object
-%   i.e., one of: elements
-%                 graph
-%                 objArray
+%   i.e., one of: graph
 %                 page
 %                 report
+%                 report_series
+%                 report_table
 %                 section
-%                 series
-%                 seriesElements
-%                 table
 %                 vspace
 %
 % INPUTS

@@ -1,17 +1,7 @@
-function display(oa)
-%function display(oa)
-% Display an objArray object
-%
-% INPUTS
-%   o   [objArray] objArray object
-%
-% OUTPUTS
-%   none
-%
-% SPECIAL REQUIREMENTS
-%   none
+function names = getTexNames(cellser)
+%function names = getTexNames(cellser)
 
-% Copyright (C) 2013 Dynare Team
+% Copyright (C) 2013-2014 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -28,5 +18,9 @@ function display(oa)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-reporting_object_display(o);
+ne = length(cellser);
+names = cell(ne, 1);
+for i=1:ne
+    names(i) = cellser{i}.getTexName();
+end
 end

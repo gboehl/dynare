@@ -33,7 +33,8 @@ if ~isempty(o.figname)
             o.figname);
 end
 
-if ~o.seriesElements.numSeriesElements()
+ne = length(o.series);
+if ne < 1
     warning('@graph.crepateGraph: no series to plot, returning');
     return;
 end
@@ -51,15 +52,14 @@ if o.showGrid
 end
 
 if isempty(o.xrange)
-    dd = o.seriesElements.getMaxRange();
+    dd = getMaxRange(o.series);
 else
     dd = o.xrange;
 end
 
-ne = o.seriesElements.numSeriesElements();
 line_handles = zeros(ne, 1);
 for i=1:ne
-    line_handles(i) = o.seriesElements(i).getLine(dd);
+    line_handles(i) = o.series{i}.getLine(dd);
 end
 
 x = 1:1:dd.ndat;
@@ -116,7 +116,7 @@ end
 set(gca, 'XTickLabel', xTickLabels);
 
 if o.showLegend
-    lh = legend(line_handles, o.seriesElements.getTexNames(), ...
+    lh = legend(line_handles, getTexNames(o.series), ...
                 'orientation', o.legendOrientation, ...
                 'location', o.legendLocation);
     set(lh, 'FontSize', o.legendFontSize);

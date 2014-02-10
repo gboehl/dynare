@@ -13,7 +13,7 @@ function lastIndex = end(o, k, n)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2013 Dynare Team
+% Copyright (C) 2013-2014 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -31,5 +31,5 @@ function lastIndex = end(o, k, n)
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 assert(k==1 && n==1, '@graph/end: graph only has one dimension');
-lastIndex = o.seriesElements.numSeriesElements();
+lastIndex = length(o.series);
 end
