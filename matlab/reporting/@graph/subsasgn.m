@@ -40,6 +40,9 @@ switch S.type
             otherwise
                 error(['@graph.subsasgn: field ' S.subs 'does not exist']);
         end
+    case '{}'
+        assert(isint(S.subs{1}));
+        B{S.subs{1}} = V;
     otherwise
         error('@graph.subsasgn: syntax error');
 end

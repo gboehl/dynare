@@ -40,6 +40,9 @@ switch S.type
             otherwise
                 error(['@vspace.subsasgn: field ' S.subs 'does not exist']);
         end
+    case '{}'
+        assert(isint(S.subs{1}));
+        B{S.subs{1}} = V;
     otherwise
         error('@vspace.subsasgn: syntax error');
 end
