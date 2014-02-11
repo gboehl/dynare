@@ -84,7 +84,7 @@ if any(stz)
     thedata(stz) = 0;
 end
 
-fprintf(fid, '%%series %s\n\\addplot[color=%s,%s,line width=%fpt,forget plot,line join=round',...
+fprintf(fid, '%%series %s\n\\addplot[color=%s,%s,line width=%fpt,line join=round',...
         o.data.name{:}, o.graphLineColor, o.graphLineStyle, o.graphLineWidth);
 if ~isempty(o.graphMarker)
     if isempty(o.graphMarkerEdgeColor)

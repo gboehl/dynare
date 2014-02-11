@@ -105,6 +105,18 @@ fprintf(fid, ['},\n',...
               'ymax=%d,\n'...
               'axis lines=box,\n'], o.width, o.height, dd.ndat, ymin, ymax);
 
+if o.showLegend
+    fprintf(fid, 'legend style={');
+    if ~o.showLegendBox
+        fprintf(fid, 'draw=none,');
+    end
+    fprintf(fid, 'font=\\%s,', o.legendFontSize);
+    if strcmp(o.legendOrientation, 'horizontal')
+        fprintf(fid,'legend columns=-1,');
+    end
+    fprintf(fid, '},\nlegend pos=%s,\n', o.legendLocation);
+end
+
 if o.showGrid
     fprintf(fid, 'xmajorgrids=true,\nymajorgrids=true,\n');
 end
@@ -136,22 +148,13 @@ end
 
 for i=1:ne
     o.series{i}.writeSeriesForGraph(fid, dd);
+    if o.showLegend
+        fprintf(fid, '\\addlegendentry{%s}\n', o.series{i}.getTexName());
+    end
 end
 
-fprintf(fid, '\\end{axis}\\end{tikzpicture}\n');
+fprintf(fid, '\\end{axis}\n\\end{tikzpicture}\n');
 if fclose(fid) == -1
     error('@graph.writeGraphFile: closing %s\n', o.filename);
-end
-return
-
-if o.showLegend
-    lh = legend(line_handles, getTexNames(o.series), ...
-                'orientation', o.legendOrientation, ...
-                'location', o.legendLocation);
-    set(lh, 'FontSize', o.legendFontSize);
-    set(lh, 'interpreter', 'latex');
-    if ~o.showLegendBox
-        legend('boxoff');
-    end
 end
 end

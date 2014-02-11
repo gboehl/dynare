@@ -54,9 +54,9 @@ o.showGrid = true;
 
 o.showLegend = false;
 o.showLegendBox = false;
-o.legendLocation = 'SouthEast';
+o.legendLocation = 'south east';
 o.legendOrientation = 'horizontal';
-o.legendFontSize = 8;
+o.legendFontSize = 'tiny';
 
 o.showZeroline = false;
 
@@ -103,7 +103,6 @@ assert(ischar(o.figDirName), '@graph.graph: figDirName must be a string');
 assert(islogical(o.showGrid), '@graph.graph: showGrid must be either true or false');
 assert(islogical(o.showLegend), '@graph.graph: showLegend must be either true or false');
 assert(islogical(o.showLegendBox), '@graph.graph: showLegendBox must be either true or false');
-assert(isint(o.legendFontSize), '@graph.graph: legendFontSize must be an integer');
 assert(islogical(o.showZeroline), '@graph.graph: showZeroline must be either true or false');
 assert(ischar(o.shadeColor), '@graph.graph: shadeColor must be a string');
 assert(isfloat(o.shadeOpacity) && length(o.shadeOpacity)==1 && ...
@@ -115,14 +114,14 @@ assert(isfloat(o.xTickLabelRotation), '@graph.graph: o.xTickLabelRotation must b
 assert(ischar(o.xTickLabelAnchor), '@graph.graph: xTickLabelAnchor must be a string');
 
 valid_legend_locations = ...
-    {'North', 'South', 'East', 'West', ...
-     'NorthEast', 'SouthEast', 'NorthWest', 'SouthWest', ...
-     'NorthOutside', 'SouthOutside', 'EastOutside', 'WestOutside', ...
-     'NorthEastOutside', 'SouthEastOutside', 'NorthWestOutside', 'SouthWestOutside', ...
-     'Best', 'BestOutside', ...
-    };
+    {'south west','south east','north west','north east','outer north east'};
 assert(any(strcmp(o.legendLocation, valid_legend_locations)), ...
        ['@graph.graph: legendLocation must be one of ' strjoin(valid_legend_locations, ' ')]);
+
+valid_legend_font_sizes = {'tiny', 'scriptsize', 'footnotesize', 'small', ...
+                    'normalsize', 'large', 'Large', 'LARGE', 'huge', 'Huge'};
+assert(any(strcmp(o.legendFontSize, valid_legend_font_sizes)), ...
+       ['@graph.graph: legendFontSize must be one of ' strjoin(valid_legend_font_sizes)]);
 
 valid_legend_orientations = {'vertical', 'horizontal'};
 assert(any(strcmp(o.legendOrientation, valid_legend_orientations)), ...
