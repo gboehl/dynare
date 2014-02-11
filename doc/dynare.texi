@@ -680,7 +680,7 @@ In practice, the handling of the model file is done in two steps: in the
 first one, the model and the processing instructions written by the user
 in a @emph{model file} are interpreted and the proper MATLAB or GNU
 Octave instructions are generated; in the second step, the program
-actually runs the computations. Boths steps are triggered automatically
+actually runs the computations. Both steps are triggered automatically
 by the @code{dynare} command.
 
 @deffn {MATLAB/Octave command} dynare @var{FILENAME}[.mod] [@var{OPTIONS}@dots{}]
@@ -702,7 +702,7 @@ Contains variable declarations, and computing tasks
 
 @item @var{FILENAME}_dynamic.m
 @vindex M_.lead_lag_incidence
-Contains the dynamic model equations. Note that Dynare might introduce auxiliary equations and variables (@pxref{Auxiliary variables}). Outputs are the residuals of the dynamic model equations in the order the equations were declared and the Jacobian of the dynamic model equations. For higher order approximations also the Hessian and the third-order derivates are provided. When computing the Jacobian of the dynamic model, the order of the endogenous variables in the columns is stored in @code{M_.lead_lag_incidence}. The rows of this matrix represent time periods: the first row denotes a lagged (time t-1) variable, the second row a contemporaneous (time t) variable, and the third row a leaded (time t+1) variable. The colums of the matrix represent the endogenous variables in their order of declaration. A zero in the matrix means that this endogenous does not appear in the model in this time period. The value in the @code{M_.lead_lag_incidence} matrix corresponds to the column of that variable in the Jacobian of the dynamic model. Example: Let the second declared variable be @code{c} and the @code{(3,2)} entry of @code{M_.lead_lag_incidence} be @code{15}. Then the @code{15}th column of the Jacobian is the derivative with respect to @code{y(+1)}.
+Contains the dynamic model equations. Note that Dynare might introduce auxiliary equations and variables (@pxref{Auxiliary variables}). Outputs are the residuals of the dynamic model equations in the order the equations were declared and the Jacobian of the dynamic model equations. For higher order approximations also the Hessian and the third-order derivatives are provided. When computing the Jacobian of the dynamic model, the order of the endogenous variables in the columns is stored in @code{M_.lead_lag_incidence}. The rows of this matrix represent time periods: the first row denotes a lagged (time t-1) variable, the second row a contemporaneous (time t) variable, and the third row a leaded (time t+1) variable. The columns of the matrix represent the endogenous variables in their order of declaration. A zero in the matrix means that this endogenous does not appear in the model in this time period. The value in the @code{M_.lead_lag_incidence} matrix corresponds to the column of that variable in the Jacobian of the dynamic model. Example: Let the second declared variable be @code{c} and the @code{(3,2)} entry of @code{M_.lead_lag_incidence} be @code{15}. Then the @code{15}th column of the Jacobian is the derivative with respect to @code{y(+1)}.
 
 @item @var{FILENAME}_static.m
 Contains the long run static model equations. Note that Dynare might introduce auxiliary equations and variables (@pxref{Auxiliary variables}). Outputs are the residuals of the static model equations in the order the equations were declared and the Jacobian of the static equations. Entry @code{(i,j)} of the Jacobian represents the derivative of the @code{i}th static model equation with respect to the @code{j}th model variable in declaration order.
@@ -754,7 +754,7 @@ the macro-processor independently of the rest of Dynare toolbox.
 
 @item nolinemacro
 Instructs the macro-preprocessor to omit line numbering information in
-the intermediary @file{.mod} file created after the maco-processing
+the intermediary @file{.mod} file created after the macro-processing
 step. Useful in conjunction with @code{savemacro} when one wants that to
 reuse the intermediary @file{.mod} file, without having it cluttered by
 line numbering directives.
@@ -856,7 +856,7 @@ The output of Dynare is left into three main variables in the
 MATLAB/Octave workspace:
 
 @defvr {MATLAB/Octave variable} M_
-Structure containing various informations about the model.
+Structure containing various information about the model.
 @end defvr
 
 @defvr {MATLAB/Octave variable} options_
@@ -872,11 +872,11 @@ Structure containing the various results of the computations.
 @node Dynare hooks
 @section Dynare hooks
 
-It is possible to call pre and post dynare preprocessor hooks written as matlab scripts.
+It is possible to call pre and post Dynare preprocessor hooks written as MATLAB scripts.
 The script @file{@var{MODFILENAME}/hooks/priorprocessing.m} is executed before the
-call to Dynare's preprocessor, and  can be used to programatically transform the mod file
+call to Dynare's preprocessor, and  can be used to programmatically transform the mod file
 that will be read by the preprocessor. The script @file{@var{MODFILENAME}/hooks/postprocessing.m}
-is executed just after the call to Dynare's preprocessor, and can be used to programatically
+is executed just after the call to Dynare's preprocessor, and can be used to programmatically
 transform the files generated by Dynare's preprocessor before actual computations start. The
 pre and/or post dynare preprocessor hooks are executed if and only if the aforementioned scripts
 are detected in the same folder as the the model file, @file{@var{FILENAME}.mod}.
@@ -1968,7 +1968,7 @@ variables will have a name beginning with @code{AUX_EXO_LEAD} or
 @code{AUX_EXO_LAG} respectively).
 
 Another transformation is done for the @code{EXPECTATION}
-operator. For each occurence of this operator, Dynare creates an
+operator. For each occurrence of this operator, Dynare creates an
 auxiliary variable defined by a new equation, and replaces the
 expectation operator by a reference to the new auxiliary variable. For
 example, the expression @code{EXPECTATION(-1)(x(+1))} is replaced by
@@ -2010,20 +2010,20 @@ possibly terminal) conditions. It is also necessary to provide initial
 guess values for non-linear solvers. This section describes the
 statements used for those purposes.
 
-In many contexts (determistic or stochastic), it is necessary to
+In many contexts (deterministic or stochastic), it is necessary to
 compute the steady state of a non-linear model: @code{initval} then
 specifies numerical initial values for the non-linear solver. The
 command @code{resid} can be used to compute the equation residuals for
 the given initial values.
 
-Used in perfect foresight mode, the types of forward-loking models for
+Used in perfect foresight mode, the types of forward-looking models for
 which Dynare was designed require both initial and terminal
 conditions. Most often these initial and terminal conditions are
 static equilibria, but not necessarily.
 
 One typical application is to consider an economy at the equilibrium,
 trigger a shock in first period, and study the trajectory of return at
-the initial equilbrium. To do that, one needs @code{initval} and
+the initial equilibrium. To do that, one needs @code{initval} and
 @code{shocks} (@pxref{Shocks on exogenous variables}.
 
 Another one is to study, how an economy, starting from arbitrary
@@ -2066,7 +2066,7 @@ implemented in @code{simul}.
 For this last reason, it necessary to provide values for all the
 endogenous variables in an @code{initval} block (even though,
 theoretically, initial conditions are only necessary for lagged
-variables). If some variables, endogenous or exogenous, are not mentionned in the
+variables). If some variables, endogenous or exogenous, are not mentioned in the
 @code{initval} block, a zero value is assumed.
 
 Note that if the @code{initval} block is immediately followed by a
@@ -2141,7 +2141,7 @@ form:
 @var{VARIABLE_NAME} = @var{EXPRESSION};
 @end example
 
-The @code{endval} block makes only sense in a determistic model, and
+The @code{endval} block makes only sense in a deterministic model, and
 serves two purposes.
 
 First, it sets the terminal conditions for all the periods succeeding
@@ -2153,7 +2153,7 @@ for the non-linear solver implemented in @code{simul}.
 For this last reason, it necessary to provide values for all the
 endogenous variables in an @code{endval} block (even though,
 theoretically, initial conditions are only necessary for forward
-variables). If some variables, endogenous or exogenous, are not mentionned in the
+variables). If some variables, endogenous or exogenous, are not mentioned in the
 @code{endval} block, the value assumed is that of the last
 @code{initval} block or @code{steady} command.
 
@@ -2343,7 +2343,7 @@ in each period. In Dynare, these random values follow a normal
 distribution with zero mean, but it belongs to the user to specify the
 variability of these shocks. The non-zero elements of the matrix of
 variance-covariance of the shocks can be entered with the @code{shocks}
-command. Or, the entire matrix can be direclty entered with
+command. Or, the entire matrix can be directly entered with
 @code{Sigma_e} (this use is however deprecated).
 
 If the variance of an exogenous variable is set to zero, this variable
@@ -2454,7 +2454,7 @@ var v, w = 2;
 end;
 @end example
 
-@customhead{Mixing determininistic and stochastic shocks}
+@customhead{Mixing deterministic and stochastic shocks}
 
 It is possible to mix deterministic and stochastic shocks to build
 models where agents know from the start of the simulation about future
@@ -2523,7 +2523,7 @@ discouraged.} You should use a @code{shocks} block instead.
 
 This special variable specifies directly the covariance matrix of the
 stochastic shocks, as an upper (or lower) triangular matrix. Dynare
-builds the corresponding symmetrix matrix. Each row of the triangular
+builds the corresponding symmetric matrix. Each row of the triangular
 matrix, except the last one, must be terminated by a semi-colon
 @code{;}. For a given element, an arbitrary @var{EXPRESSION} is
 allowed (instead of a simple constant), but in that case you need to
@@ -2685,7 +2685,7 @@ values:
 
 @item 1
 In this mode, all the parameters are changed simultaneously, and the
-distance between the boudaries for each parameter is divided in as
+distance between the boundaries for each parameter is divided in as
 many intervals as there are steps (as defined by @code{homotopy_steps}
 option); the problem is solves as many times as there are steps.
 
@@ -2727,7 +2727,7 @@ variables are NOT at the value expected by the user
 Default is @code{0}.
 
 @item nocheck
-Don't check the steady state values when they are provided explicitely either by a steady state file or a @code{steady_state_model} block. This is useful for models with unit roots as, in this case, the steady state is not unique or doesn't exist.
+Don't check the steady state values when they are provided explicitly either by a steady state file or a @code{steady_state_model} block. This is useful for models with unit roots as, in this case, the steady state is not unique or doesn't exist.
 
 @item markowitz = @var{DOUBLE}
 Value of the Markowitz criterion, used to select the pivot. Only used
@@ -2862,18 +2862,18 @@ of a heavier programming burden and a lesser efficiency.
 
 @end itemize
 
-Note that both files allow to update parameters in each call of 
-the function. This allows for example to calibrate a model to a labor 
-supply of 0.2 in steady state by setting the labor disutility parameter 
-to a corresponding value (see @file{NK_baseline_steadystate.m} in the 
-@file{examples} directory). They can also be used in estimation 
-where some parameter may be a function of an estimated parameter 
+Note that both files allow to update parameters in each call of
+the function. This allows for example to calibrate a model to a labor
+supply of 0.2 in steady state by setting the labor disutility parameter
+to a corresponding value (see @file{NK_baseline_steadystate.m} in the
+@file{examples} directory). They can also be used in estimation
+where some parameter may be a function of an estimated parameter
 and needs to be updated for every parameter draw. For example, one might
- want to set the capital utilization cost parameter as a function 
-of the discount rate to ensure that capacity utilization is 1 in steady 
-state. Treating both parameters as independent or not updating one as 
-a function of the other would lead to wrong results. But this also means 
-that care is required. Do not accidentally overwrite your parameters 
+ want to set the capital utilization cost parameter as a function
+of the discount rate to ensure that capacity utilization is 1 in steady
+state. Treating both parameters as independent or not updating one as
+a function of the other would lead to wrong results. But this also means
+that care is required. Do not accidentally overwrite your parameters
 with new values as it will lead to wrong results.
 
 @anchor{steady_state_model}
@@ -3260,7 +3260,7 @@ periods. Only used when @code{stack_solve_algo = 5}. Default: @code{1}.
 @item datafile = @var{FILENAME}
 If the variables of the model are not constant over time, their
 initial values, stored in a text file, could be loaded, using that
-option, as initial values before a deteministic simulation.
+option, as initial values before a deterministic simulation.
 @end table
 
 @outputhead
@@ -3397,7 +3397,7 @@ increase it for highly autocorrelated processes. Default: @code{512}.
 @item irf = @var{INTEGER}
 @anchor{irf}
 Number of periods on which to compute the IRFs. Setting @code{irf=0},
-suppresses the plotting of IRF's. Default: @code{40}.
+suppresses the plotting of IRFs. Default: @code{40}.
 
 @item irf_shocks = ( @var{VARIABLE_NAME} [[,] @var{VARIABLE_NAME} @dots{}] )
 @anchor{irf_shocks}
@@ -3548,7 +3548,7 @@ Determines the algorithm used to solve the Sylvester equation for block decompos
 
 @item default
 Uses the default solver for Sylvester equations (@code{gensylv}) based
-on Ondra Kamenik algorithm (see
+on Ondra Kamenik's algorithm (see
 @uref{http://www.dynare.org/documentation-and-support/dynarepp/sylvester.pdf/at_download/file,the
 Dynare Website} for more information).
 
@@ -3562,7 +3562,7 @@ Default value is @code{default}
 
 @item sylvester_fixed_point_tol = @var{DOUBLE}
 @anchor{sylvester_fixed_point_tol}
-It is the convergence criterion used in the fixed point sylvester solver. Its default value is 1e-12.
+It is the convergence criterion used in the fixed point Sylvester solver. Its default value is 1e-12.
 
 @item dr = @var{OPTION}
 @anchor{dr}
@@ -3601,9 +3601,9 @@ The maximum number of iterations used in the logarithmic reduction algorithm. It
 
 @item loglinear
 @xref{loglinear}. Note that ALL variables are log-transformed by using the Jacobian transformation,
-not only selected ones. Thus, you have to make sure that your variables have strictly positive 
-steady states. @code{stoch_simul} will display the moments, decision rules, 
-and impulse responses for the log-linearized variables. The decision rules saved 
+not only selected ones. Thus, you have to make sure that your variables have strictly positive
+steady states. @code{stoch_simul} will display the moments, decision rules,
+and impulse responses for the log-linearized variables. The decision rules saved
 in @code{oo_.dr} and the simulated variables will also be the ones for the log-linear variables.
 
 @end table
@@ -3721,7 +3721,7 @@ of a one standard deviation shock on @code{ea}.
 The approximated solution of a model takes the form of a set of decision
 rules or transition equations expressing the current value of the endogenous
 variables of the model as function of the previous state of the model and
-shocks oberved at the beginning of the period. The decision rules are stored
+shocks observed at the beginning of the period. The decision rules are stored
 in the structure @code{oo_.dr} which is described below.
 
 @deffn Command extended_path ;
@@ -4448,7 +4448,7 @@ No prior plot
 @item 1
 Prior density for each estimated parameter is plotted. It is important
 to check that the actual shape of prior densities matches what you
-have in mind. Ill choosen values for the prior standard density can
+have in mind. Ill-chosen values for the prior standard density can
 result in absurd prior densities.
 @end table
 
@@ -4690,7 +4690,7 @@ Available options are:
 Maximum number of iterations. Default: @code{1000}
 
 @item 'NumgradAlgorithm'
-Possible values are @code{2}, @code{3} and @code{5} respectively corresponding to the two, three and five points formula used to compute the gradient of the objective function (see @cite{Abramowitz and Stegun (1964)}). Values @code{13} and @code{15} are more experimental. If perturbations on the right and the left increase the value of the objective function (we minimize this function) then we force the corresponding element of the gradient to be zero. The idea is to temporarly reduce the size of the optimization problem. Default: @code{2}.
+Possible values are @code{2}, @code{3} and @code{5} respectively corresponding to the two, three and five points formula used to compute the gradient of the objective function (see @cite{Abramowitz and Stegun (1964)}). Values @code{13} and @code{15} are more experimental. If perturbations on the right and the left increase the value of the objective function (we minimize this function) then we force the corresponding element of the gradient to be zero. The idea is to temporarily reduce the size of the optimization problem. Default: @code{2}.
 
 @item 'NumgradEpsilon'
 Size of the perturbation used to compute numerically the gradient of the objective function. Default: @code{1e-6}
@@ -4867,7 +4867,7 @@ this variable)
 
 @item smoother
 @anchor{smoother} Triggers the computation of the posterior distribution
-of smoothered endogenous variables and shocks, i.e. the expected value of variables and shocks given the information available in all observations up to the @emph{final} date (@math{E_{T}{y_t}}). Results are stored in
+of smoothed endogenous variables and shocks, i.e. the expected value of variables and shocks given the information available in all observations up to the @emph{final} date (@math{E_{T}{y_t}}). Results are stored in
 @code{oo_.SmoothedVariables}, @code{oo_.SmoothedShocks} and
 @code{oo_.SmoothedMeasurementErrors}.  Also triggers the computation of
 @code{oo_.UpdatedVariables}, which contains the estimation of the expected value of variables given the information available at the @emph{current} date (@math{E_{t}{y_t}}).  See below for a description of all these
@@ -4974,7 +4974,7 @@ Order of approximation, either @code{1} or @code{2}. When equal to
 @code{2}, the likelihood is evaluated with a particle filter based on
 a second order approximation of the model (see
 @cite{Fernandez-Villaverde and Rubio-Ramirez (2005)}).  Default is
-@code{1}, ie the lilkelihood of the linearized model is evaluated
+@code{1}, ie the likelihood of the linearized model is evaluated
 using a standard Kalman filter.
 
 @item irf = @var{INTEGER}
@@ -4998,7 +4998,7 @@ with @ref{dsge_var}.
 
 @item lyapunov = @var{OPTION}
 @anchor{lyapunov}
-Determines the algorithm used to solve the Laypunov equation to initialized the variance-covariance matrix of the Kalman filter using the steady-state value of state variables. Possible values for @code{@var{OPTION}} are:
+Determines the algorithm used to solve the Lyapunov equation to initialized the variance-covariance matrix of the Kalman filter using the steady-state value of state variables. Possible values for @code{@var{OPTION}} are:
 
 @table @code
 
@@ -5027,11 +5027,11 @@ Default value is @code{default}
 
 @item lyapunov_fixed_point_tol = @var{DOUBLE}
 @anchor{lyapunov_fixed_point_tol}
-This is the convergence criterion used in the fixed point lyapunov solver. Its default value is 1e-10.
+This is the convergence criterion used in the fixed point Lyapunov solver. Its default value is 1e-10.
 
 @item lyapunov_doubling_tol = @var{DOUBLE}
 @anchor{lyapunov_doubling_tol}
-This is the convergence criterion used in the doubling algorithm to solve the lyapunov equation. Its default value is 1e-16.
+This is the convergence criterion used in the doubling algorithm to solve the Lyapunov equation. Its default value is 1e-16.
 
 @item analytic_derivation
 Triggers estimation with analytic gradient. The final hessian is also
@@ -5039,7 +5039,7 @@ computed analytically. Only works for stationary models without
 missing observations.
 
 @item ar = @var{INTEGER}
-@xref{ar}. Only useful in conjuction with option @code{moments_varendo}.
+@xref{ar}. Only useful in conjunction with option @code{moments_varendo}.
 
 @item endogenous_prior
 Use endogenous priors as in @cite{Christiano, Trabandt and Walentin
@@ -5178,7 +5178,7 @@ Variable set by the @code{estimation} command, if it is used with the
 
 @defvr {MATLAB/Octave variable} oo_.FilteredVariablesKStepAhead
 Variable set by the @code{estimation} command, if it is used with the
-@code{filter_step_ahead} option. The k-steps are stored along the rows while the columns indicate the respective variables. The third dimension of the array provides the observation for which the forecast has been made. For example, if @code{filter_step_ahead=[1 2 4]} and @code{nobs=200}, the element (3,5,204) stores the four period ahead filtered value of variable 5 computed at time t=200 for time t=204. The periods at the beginning and end of the sample for which no forecasts can be made, e.g. entries (1,5,1) and (1,5,204) in the example, are set to zero.  
+@code{filter_step_ahead} option. The k-steps are stored along the rows while the columns indicate the respective variables. The third dimension of the array provides the observation for which the forecast has been made. For example, if @code{filter_step_ahead=[1 2 4]} and @code{nobs=200}, the element (3,5,204) stores the four period ahead filtered value of variable 5 computed at time t=200 for time t=204. The periods at the beginning and end of the sample for which no forecasts can be made, e.g. entries (1,5,1) and (1,5,204) in the example, are set to zero.
 @end defvr
 
 @defvr {MATLAB/Octave variable} oo_.FilteredVariablesKStepAheadVariances
@@ -5258,7 +5258,7 @@ Auto- and cross-correlation of endogenous variables. Fields are vectors with cor
 @item VarianceDecomposition
 Decomposition of variance@footnote{When the shocks are correlated, it
 is the decomposition of orthogonalized shocks via Cholesky
-decompostion according to the order of declaration of shocks
+decomposition according to the order of declaration of shocks
 (@pxref{Variable declarations})}
 
 @item ConditionalVarianceDecomposition
@@ -5452,13 +5452,13 @@ calibrated model.
 @end table
 
 @vindex oo_.shock_decomposition
-The results are stored in the field @code{oo_.shock_decomposition}, which is a three 
-dimensional array. The first dimension contains the endogenous variables for 
-which the shock decomposition has been requested. The second dimension stores 
-in the first @code{M_.exo_nbr} columns the contribution of the respective shocks. 
-Column @code{M_.exo_nbr+1} stores the contribution of the initial conditions, 
-while column @code{M_.exo_nbr+2} stores the smoothed value of the respective 
-endogenous variable. The third dimension stores the time periods.  
+The results are stored in the field @code{oo_.shock_decomposition}, which is a three
+dimensional array. The first dimension contains the endogenous variables for
+which the shock decomposition has been requested. The second dimension stores
+in the first @code{M_.exo_nbr} columns the contribution of the respective shocks.
+Column @code{M_.exo_nbr+1} stores the contribution of the initial conditions,
+while column @code{M_.exo_nbr+2} stores the smoothed value of the respective
+endogenous variable. The third dimension stores the time periods.
 
 @end deffn
 
@@ -5542,7 +5542,7 @@ This command computes a simulation of a stochastic model from an
 arbitrary initial point.
 
 When the model also contains deterministic exogenous shocks, the
-simulation is computed conditionaly to the agents knowing the future
+simulation is computed conditionally to the agents knowing the future
 values of the deterministic exogenous variables.
 
 @code{forecast} must be called after @code{stoch_simul}.
@@ -5831,7 +5831,7 @@ for more information on this command.
 @end deffn
 
 If the model contains strong non-linearities or if some perfectly expected shocks are considered, the forecasts and the conditional forecasts
-can be computed using an extended path method. The forecast scenario describing the shocks and/or the constrained paths on some endogenous variables should be build. 
+can be computed using an extended path method. The forecast scenario describing the shocks and/or the constrained paths on some endogenous variables should be build.
 The first step is the forecast scenario initialization using the function @code{init_plan}:
 
 @anchor{init_plan}
@@ -5863,7 +5863,7 @@ Once the forecast scenario if fully described, the forecast is computed with the
 @anchor{det_cond_forecast}
 @deffn {MATLAB/Octave command} DSERIES = det_cond_forecast(HANDLE[, DSERIES [, DATES]]) ;
 
-Computes the forecast or the conditional forecast using an extended path method for the given forecast scenario (first argument). The past values of the endogenous and exogenous variables provided with a dseries class (see @ref{dseries class members}) can be indicated in the second argument. By default, the past values of the variables are equal to their steady-state values. The initial date of the forecast can be provided in the third argument. By default, the forecast will start at the first date indicated in the @code{init_plan} command. This function returns a dset containing the historical and forecast values for the endogenous and exogenous variables. 
+Computes the forecast or the conditional forecast using an extended path method for the given forecast scenario (first argument). The past values of the endogenous and exogenous variables provided with a dseries class (see @ref{dseries class members}) can be indicated in the second argument. By default, the past values of the variables are equal to their steady-state values. The initial date of the forecast can be provided in the third argument. By default, the forecast will start at the first date indicated in the @code{init_plan} command. This function returns a dset containing the historical and forecast values for the endogenous and exogenous variables.
 
 @end deffn
 
@@ -6827,7 +6827,7 @@ the given chain. One, but not both, of @code{coefficients} or
 @code{variances} must appear. Default: @code{none}
 
 @item equations
-Defines the equation controlled by the given chain. If not specificed,
+Defines the equation controlled by the given chain. If not specified,
 then all equations are controlled by @code{chain}. Default: @code{none}
 
 @item chain = @var{INTEGER}
@@ -7014,7 +7014,7 @@ Use cross @math{A^0} and @math{A^+} restrictions. Default: @code{off}
 Use contemporaneous recursive reduced form. Default: @code{off}
 
 @item no_bayesian_prior
-Do not use bayesian prior. Default: @code{off} (@i{i.e.} use bayesian
+Do not use Bayesian prior. Default: @code{off} (@i{i.e.} use Bayesian
 prior)
 
 @item alpha = @var{INTEGER}
@@ -7040,7 +7040,7 @@ parameters. Default: @code{Random Walk}
 @item convergence_starting_value = @var{DOUBLE}
 This is the tolerance criterion for convergence and refers to changes in
 the objective function value. It should be rather loose since it will
-gradually be tighened during estimation. Default: @code{1e-3}
+gradually be tightened during estimation. Default: @code{1e-3}
 
 @item convergence_ending_value = @var{DOUBLE}
 The convergence criterion ending value. Values much smaller than square
@@ -7089,7 +7089,7 @@ The entire process described by @ref{max_block_iterations} is repeated
 with random starting values drawn from the posterior. This specifies the
 number of random starting values used. Set this to @code{0} to not use
 random starting values. A larger number should be specified to ensure
-that the entire parameter space has been covererd. Default: @code{5}
+that the entire parameter space has been covered. Default: @code{5}
 
 @item number_of_small_perturbations = @var{INTEGER}
 The number of small perturbations to make after the large perturbations
@@ -7103,7 +7103,7 @@ small number will result in a small perturbation. Default: @code{1}
 
 @item max_number_of_stages = @var{INTEGER}
 The small and large perturbation are repeated until improvement has
-stopped. This specifices the maximum number of stages allowed. Default:
+stopped. This specifics the maximum number of stages allowed. Default:
 @code{20}
 
 @item random_function_convergence_criterion = @var{DOUBLE}
@@ -7164,7 +7164,7 @@ The total number of draws is equal to
 @code{thinning_factor*mh_replic+drop}.  Default: @code{1}
 
 @item adaptive_mh_draws = @var{INTEGER}
-Tuning period for Metropolis-Hasting draws. Default: @code{30,000}
+Tuning period for Metropolis-Hastings draws. Default: @code{30,000}
 
 @item save_draws
 Save all elements of @math{A^0}, @math{A^+}, @math{Q}, and
@@ -7209,7 +7209,7 @@ log marginal densities are contained in the @code{oo_.ms} structure.
 
 @item simulation_file_tag = @var{FILENAME}
 @anchor{simulation_file_tag} The portion of the filename associated with
-the simulation run.  Defualt: @code{<file_tag>}
+the simulation run.  Default: @code{<file_tag>}
 
 @item proposal_type = @var{INTEGER}
 The proposal type:
@@ -7843,7 +7843,7 @@ Includes @file{modeldesc.mod}, calibrates parameters and runs
 stochastic simulations
 @item estim.mod
 Includes @file{modeldesc.mod}, declares priors on parameters and runs
-bayesian estimation
+Bayesian estimation
 @end table
 
 Dynare can be called on @file{simul.mod} and @file{estim.mod}, but it
@@ -7936,7 +7936,7 @@ The labor share in GDP is defined as:
 In the model, @math{\alpha} is a (share) parameter, and
 @code{lab_rat} is an endogenous variable.
 
-It is clear that calibrating @math{\alpha} is not straigthforward; but
+It is clear that calibrating @math{\alpha} is not straightforward; but
 on the contrary, we have real world data for @code{lab_rat}, and
 it is clear that these two variables are economically linked.
 
@@ -8240,7 +8240,7 @@ processing. Currently, there is only one option available.
 @descriptionhead
 
 The @code{[hooks]} block can be used to specify configuration options
-that will be used when running dynare.
+that will be used when running Dynare.
 
 @optionshead
 
@@ -8509,7 +8509,7 @@ using time series.
 @subsection dates in a mod file
 
 Dynare  understands dates  in  a  mod file.  Users  can declare  annual,
-quaterly, monthly or weekly dates using the following syntax:
+quarterly, monthly or weekly dates using the following syntax:
 
 @example
 1990Y
@@ -8518,7 +8518,7 @@ quaterly, monthly or weekly dates using the following syntax:
 1990W49
 @end example
 
-@noindent Behind the scene, the dynare's preprocessor translates these expressions
+@noindent Behind the scene, Dynare's preprocessor translates these expressions
 into instantiations of the  Matlab/Octave's class @dates described
 below. Basic  operations can be performed  on dates:
 @table @strong
@@ -8542,7 +8542,7 @@ from the date (@i{e.g.} @code{1951Q2-2} is equal to @code{1950Q4}).
 
 @item minus unary operator (@code{-})
 
-Substracts one period to a date. @code{-1950Q1} is identical to @code{1949Q4}. The unary minus operator is the reciprocal of the unary plus operator, @code{+-1950Q1} is identical to @code{1950Q1}.
+Subtracts one period to a date. @code{-1950Q1} is identical to @code{1949Q4}. The unary minus operator is the reciprocal of the unary plus operator, @code{+-1950Q1} is identical to @code{1950Q1}.
 
 @item colon operator (@code{:})
 
@@ -8588,7 +8588,7 @@ Tests if a @dates object follows another @dates object or is equal to this objec
 @noindent One can select an element, or some elements, in a @dates object as he would extract some elements from a vector in Matlab/Octave. Let @code{a = 1950Q1:1951Q1} be a @dates object, then @code{a(1)==1950Q1} returns @code{1}, @code{a(end)==1951Q1} returns @code{1} and @code{a(end-1:end)} selects the two last elements of @code{a} (by instantiating the @dates object @code{[1950Q4, 1951Q1]}).
 
 @remarkhead
-@noindent Dynare substitutes any occurence of dates in the mod file into an instantiation of the @dates class regardless of the context. For instance, @code{d = 1950Q1;} will be translated as @code{d = dates('1950Q1');}. This automatic substitution can lead to a crash if a date is defined in a string. Typically, if the user wants to display a date:
+@noindent Dynare substitutes any occurrence of dates in the mod file into an instantiation of the @dates class regardless of the context. For instance, @code{d = 1950Q1;} will be translated as @code{d = dates('1950Q1');}. This automatic substitution can lead to a crash if a date is defined in a string. Typically, if the user wants to display a date:
 
 @example
 disp('Initial period is 1950Q1');
@@ -8612,7 +8612,7 @@ disp('Initial period is $1950Q1');
 disp('Initial period is 1950Q1');
 @end example
 
-@noindent in the generated matlab script.
+@noindent in the generated MATLAB script.
 
 @node dates class
 @subsection dates class
@@ -8622,7 +8622,7 @@ The @dates class has three members:
 @anchor{dates class members}
 
 @item freq
-an integer equal to 1, 4, 12  or 52 (resp. for annual, quaterly, monthly
+an integer equal to 1, 4, 12  or 52 (resp. for annual, quarterly, monthly
 or weekly dates).
 
 @item ndat
@@ -8630,7 +8630,7 @@ an integer scalar, the number of declared dates in the object.
 
 @item time
 a @code{ndat}*2  array of integers,  the years  are stored in  the first
-column, the subperiods (1 for annual dates, 1-4 for quaterly dates, 1-12
+column, the subperiods (1 for annual dates, 1-4 for quarterly dates, 1-12
 for monthly  dates and 1-52 for  weekly dates) are stored  in the second
 column.
 
@@ -8656,7 +8656,7 @@ ans =
 @deftypefn  {dates} dates ()
 @deftypefnx {dates} dates (@code{FREQ})
 
-Returns an empty @dates object with  a given frequency (if the constructor is called with one input argument).  @code{FREQ} is a character equal to 'Y' or 'A'  for annual dates, 'Q' for quaterly dates, 'M' for monthly dates or 'W'  for weekly dates. Note that @code{FREQ} is not  case sensitive,  so that,  for instance,  'q' is  also allowed  for quaterly dates. The frequency can also be set with an integer scalar equal to 1 (annual), 4 (quaterly), 12 (monthly) or 52 (weekly). The instantiation of empty objects can be used to rename  the @dates class. For  instance, if one  only works  with quaterly dates, he can create @code{qq} as:
+Returns an empty @dates object with  a given frequency (if the constructor is called with one input argument).  @code{FREQ} is a character equal to 'Y' or 'A'  for annual dates, 'Q' for quarterly dates, 'M' for monthly dates or 'W'  for weekly dates. Note that @code{FREQ} is not  case sensitive,  so that,  for instance,  'q' is  also allowed  for quarterly dates. The frequency can also be set with an integer scalar equal to 1 (annual), 4 (quarterly), 12 (monthly) or 52 (weekly). The instantiation of empty objects can be used to rename  the @dates class. For  instance, if one  only works  with quarterly dates, he can create @code{qq} as:
 
 @example
 qq = dates('Q')
@@ -8668,7 +8668,7 @@ qq = dates('Q')
 d0 = qq(2009,2);
 @end example
 
-@noindent which is much simpler if @dates objects have to be defined programatically.
+@noindent which is much simpler if @dates objects have to be defined programmatically.
 
 @end deftypefn
 
@@ -8694,7 +8694,7 @@ Returns a copy of the  @dates object @code{DATES} passed as input arguments. If 
 
 @deftypefn {dates} dates (@code{FREQ}, @code{YEAR}, @code{SUBPERIOD})
 
-where @code{FREQ} is a single character ('Y', 'A', 'Q', 'M', 'W') or integer (1, 4, 12 or 52) specifying the frequency, @code{YEAR} and @code{SUBPERIOD} are @code{n*1} vectors of integers. Returns a @dates object with @code{n} elements. If @code{FREQ} is equal to @code{'Y', 'A'} or @code{1}, the third argument is not needed (because @code{SUBPERIOD} is necessarly a vector of ones in this case).
+where @code{FREQ} is a single character ('Y', 'A', 'Q', 'M', 'W') or integer (1, 4, 12 or 52) specifying the frequency, @code{YEAR} and @code{SUBPERIOD} are @code{n*1} vectors of integers. Returns a @dates object with @code{n} elements. If @code{FREQ} is equal to @code{'Y', 'A'} or @code{1}, the third argument is not needed (because @code{SUBPERIOD} is necessarily a vector of ones in this case).
 
 @end deftypefn
 
@@ -9331,7 +9331,7 @@ ts1 is a dseries object:
 
 @deftypefn {dseries} {@var{B} = } baxter_king_filter (@var{A}, @var{hf}, @var{lf}, @var{K})
 
-Implementation of the Baxter and King (1999) band pass filter for @dseries objects. This filter isolates business cycle fluctuations with a period of length ranging between @var{hf} (high frequency) to @var{lf} (low frequency) using a symetric moving average smoother with @math{2K+1} points, so that K observations at the beginning and at the end of the  sample are lost in the computation of the filter.
+Implementation of the Baxter and King (1999) band pass filter for @dseries objects. This filter isolates business cycle fluctuations with a period of length ranging between @var{hf} (high frequency) to @var{lf} (low frequency) using a symmetric moving average smoother with @math{2K+1} points, so that K observations at the beginning and at the end of the  sample are lost in the computation of the filter.
 
 @examplehead
 @example
@@ -9561,7 +9561,7 @@ ts2 is a dseries object:
 @deftypefn {dseries} {@var{B} = } hpcycle (@var{A}[, @var{lambda}])
 
 Extracts the cycle component from a @dseries @var{A} object using
-Hodrick Prescott filter and returns a @dseries object, @var{B}. The
+Hodrick Prescott (1997) filter and returns a @dseries object, @var{B}. The
 default value for @var{lambda}, the smoothing parameter, is
 @math{1600}.
 
@@ -9609,7 +9609,7 @@ The previous code should produce something like:
 
 @deftypefn {dseries} {@var{B} = } hptrend (@var{A}[, @var{lambda}])
 
-Extracts the trend component from a @dseries @var{A} object using Hodrick Prescott filter and returns a @dseries object, @var{B}. Default value for @var{lambda}, the smoothing parameter, is  @math{1600}.
+Extracts the trend component from a @dseries @var{A} object using Hodrick Prescott (1997) filter and returns a @dseries object, @var{B}. Default value for @var{lambda}, the smoothing parameter, is  @math{1600}.
 
 @examplehead
 Using the same generating data process as in the previous example:
@@ -9873,7 +9873,7 @@ ans is a dseries object:
 @deftypefn{dseries} {@var{C} =} minus (@var{A}, @var{B})
 
 Overloads the @code{minus} (@code{-}) operator for @dseries objects,
-element by element substraction. If both @var{A} and @var{B}
+element by element subtraction. If both @var{A} and @var{B}
 are @dseries objects, they do not need to be defined over the same
 time ranges. If @var{A} and @var{B} are @dseries objects with
 @math{T_A} and @math{T_B} observations and @math{N_A} and @math{N_B}
@@ -9885,14 +9885,14 @@ variables, then @math{N_A} must be equal to @math{N_B} or @math{1} and
 @code{C.data(t,n)=A.data(t,n)-B.data(t,n)}. If @math{N_B} is equal to
 @math{1} and @math{N_A>1}, the smaller @dseries object (@var{B}) is
 ``broadcast'' across the larger @dseries (@var{A}) so that they have
-compatible shapes, the @code{minus} operator will substract the
+compatible shapes, the @code{minus} operator will subtract the
 variable defined in @var{B} from each variable in @var{A}. If @var{B}
-is a double scalar, then the method @code{minus} will substract
+is a double scalar, then the method @code{minus} will subtract
 @var{B} from all the observations/variables in @var{A}. If @var{B} is
 a row vector of length @math{N_A}, then the @code{minus} method will
-substract @code{B(i)} from all the observations of variable @code{i},
+subtract @code{B(i)} from all the observations of variable @code{i},
 for @math{i=1,...,N_A}. If @var{B} is a column vector of length
-@math{T_A}, then the @code{minus} method will substract @code{B} from
+@math{T_A}, then the @code{minus} method will subtract @code{B} from
 all the variables.
 
 @examplehead
@@ -10177,7 +10177,7 @@ ts1 is a dseries object:
 @deftypefn{dseries} {@var{B} =} qdiff (@var{A})
 @deftypefnx{dseries} {@var{B} =} qgrowth (@var{A})
 
-Computes quaterly differences or growth rates.
+Computes quarterly differences or growth rates.
 
 @examplehead
 @example
@@ -10405,7 +10405,7 @@ created through Dynare or pick out the pieces you want for inclusion
 in your own paper.
 
 Reports are created and modified by calling methods on class
-objects. The objects are hierarchichal, with the following order (from
+objects. The objects are hierarchical, with the following order (from
 highest to lowest): @code{Report, Page, Section, Graph/Table/Vspace,
 Series}. For simplicity of syntax, we abstract away from these
 classes, allowing you to operate directly on a @code{Report} object,
@@ -10902,10 +10902,10 @@ At this time, will work properly for only a small number of routines. At
 the top of the (available)  Matlab/Octave routines a commented block for
 the internal documentation  is written in the  GNU texinfo documentation
 format.   This   block   is    processed   by   calling   texinfo   from
-matlab. Consequently, texinfo has to be installed on your machine.
+MATLAB. Consequently, texinfo has to be installed on your machine.
 
 @item --display-mh-history
-Displays informations about the previously saved MCMC draws generated by a mod file named @var{MODFILENAME}. This file must be in the current directory.
+Displays information about the previously saved MCMC draws generated by a mod file named @var{MODFILENAME}. This file must be in the current directory.
 @examplehead
 @example
 >> internals --display-mh-history MODFILENAME
@@ -11091,7 +11091,7 @@ expectations models with partial information,'' @i{Economic
 Modelling}, 3(2), 90--105
 
 @item
-Pfeifer, Johannes (2013): ``A Guide to Specifying Observation Equations for the Estimation of DSGE Models'' 
+Pfeifer, Johannes (2013): ``A Guide to Specifying Observation Equations for the Estimation of DSGE Models''
 
 @item
 Rabanal, Pau and Juan Rubio-Ramirez (2003): ``Comparing New Keynesian
