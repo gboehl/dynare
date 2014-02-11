@@ -2152,7 +2152,7 @@ for the non-linear solver implemented in @code{simul}.
 
 For this last reason, it necessary to provide values for all the
 endogenous variables in an @code{endval} block (even though,
-theoretically, initial conditions are only necessary for forward
+theoretically, terminal conditions are only necessary for forward
 variables). If some variables, endogenous or exogenous, are not mentioned in the
 @code{endval} block, the value assumed is that of the last
 @code{initval} block or @code{steady} command.
@@ -2201,6 +2201,82 @@ steady;
 
 The initial equilibrium is computed by @code{steady} for @code{x=1},
 and the terminal one, for @code{x=2}.
+
+@examplehead
+
+@example
+var c k;
+varexo x;
+@dots{}
+model;
+c + k - aa*x*k(-1)^alph - (1-delt)*k(-1);
+c^(-gam) - (1+bet)^(-1)*(aa*alph*x(+1)*k^(alph-1) + 1 - delt)*c(+1)^(-gam);
+end;
+
+initval;
+c = 1.2;
+k = 12;
+x = 1;
+end;
+
+endval;
+c = 2;
+k = 20;
+x = 1.1;
+end;
+simul(periods=200);
+
+In this example, the problem is finding the optimal path for consumption
+and capital for the periods t=1 to T=200, given the path of the exogenous
+technology level @code{x}. Setting @code{x=1.1} in the
+@code{endval}-block without a @code{shocks}-block implies that technology
+jumps to this new level in t=1 and stays there forever. Because the law
+of motion for capital is backward-looking, we also need an initial
+condition for @code{k} at time 0, specified in the @code{initval}-block.
+Similarly, because the Euler equation is forward-looking, we need a
+terminal condition for @code{c} at t=201, which is specified in the
+@code{endval}-block. Specifying @code{c} in the @code{initval}-block and
+@code{k} in the @code{endval}-block has no impact on the results: due to
+the optimization problem in the first period being to choose @code{c,k}
+at t=1 given predetermined capital stock @code{k} inherited from t=0 as
+well as the current and future values for technology, the value for
+@code{c} at time t=0 plays no role. The same applies to the choice of
+@code{c,k} at time t=200, which does not depend on @code{k} at t=201. As
+the Euler equation shows, that choice only depends on current capital as
+well as future consumption @code{c} and technology @code{x}, but not on
+future capital @code{k}. The intuitive reason is that those variables are
+the consequence of optimization problems taking place in at periods t=0
+and t=201, respectively, which are not considered. Thus, when specifying
+those values in the @code{initval} and @code{endval}-blocks, Dynare takes
+them as given and basically assumes that there were realizations
+of exogenous variables and states (basically initial/terminal conditions
+at the unspecified time periods t<0 and t>201) that make those choices
+equilibrium values.
+ 
+This also suggest another way of looking at the use of @code{steady}
+after @code{initval} and @code{endval}. Instead of saying that the
+implicit unspecified conditions before and after the simulation range
+have to fit the initial/terminal conditions of the endogenous variables
+in those blocks, @code{steady} specifies that those conditions at t<0 and
+t>201 are equal to being at the steady state given the exogenous
+variables in the @code{initval} and @code{endval}-blocks and sets the
+endogenous variables at t=0 and t=201 to the corresponding steady state
+equilibrium values.
+ 
+The fact that @code{c} at t=0 and @code{k} at t=201 specified in
+@code{initval} and @code{endval} are taken as given has an important
+implication for plotting the simulated vector for the endogenous
+variables: this vector will also contain the initial and terminal
+conditions and thus is 202 periods long in the example. When you specify
+arbitrary values for the initial and terminal conditions for forward- and
+backward-looking variables, respectively, these values can be very far
+away from the endogenously determined values at t=1 and t=200. While the
+values at t=0 and t=201 are unrelated to the dynamics for 0<t<201, they
+may result in strange-looking large jumps. In the example above,
+consumption will display a large jump from t=0 to t=1 and capital will
+jump from t=200 to t=201.
+
+@end example
 
 @end deffn
 
