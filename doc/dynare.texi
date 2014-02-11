@@ -3718,7 +3718,6 @@ For example, @code{oo_.irfs.gnp_ea} contains the effect on @code{gnp}
 of a one standard deviation shock on @code{ea}.
 @end defvr
 
-@vindex oo_.dr
 The approximated solution of a model takes the form of a set of decision
 rules or transition equations expressing the current value of the endogenous
 variables of the model as function of the previous state of the model and
@@ -4809,7 +4808,6 @@ To change the defaults of csminwel (@code{mode_compute=4}):
 Metropolis-Hastings. Default: diagnostics are computed and displayed
 
 @item bayesian_irf
-@vindex oo_.PosteriorIRF.dsge
 @anchor{bayesian_irf} Triggers the computation of the posterior
 distribution of IRFs. The length of the IRFs are controlled by the
 @code{irf} option. Results are stored in @code{oo_.PosteriorIRF.dsge}
@@ -4837,7 +4835,6 @@ deprecated and will be removed in a future release of Dynare.
 model. Default: @code{4}.
 
 @item moments_varendo
-@vindex oo_.PosteriorTheoreticalMoments
 @anchor{moments_varendo} Triggers the computation of the posterior
 distribution of the theoretical moments of the endogenous
 variables. Results are stored in
@@ -4863,17 +4860,12 @@ but currently there is no output. Note that this option requires the
 option @code{moments_varendo} to be specified.
 
 @item filtered_vars
-@vindex oo_.FilteredVariables
 @anchor{filtered_vars} Triggers the computation of the posterior
 distribution of filtered endogenous variables/one-step ahead forecasts, i.e. @math{E_{t}{y_{t+1}}}. Results are
 stored in @code{oo_.FilteredVariables} (see below for a description of
 this variable)
 
 @item smoother
-@vindex oo_.SmoothedVariables
-@vindex oo_.SmoothedShocks
-@vindex oo_.SmoothedMeasurementErrors
-@vindex oo_.UpdatedVariables
 @anchor{smoother} Triggers the computation of the posterior distribution
 of smoothered endogenous variables and shocks, i.e. the expected value of variables and shocks given the information available in all observations up to the @emph{final} date (@math{E_{T}{y_t}}). Results are stored in
 @code{oo_.SmoothedVariables}, @code{oo_.SmoothedShocks} and
@@ -4882,7 +4874,6 @@ of smoothered endogenous variables and shocks, i.e. the expected value of variab
 variables.
 
 @item forecast = @var{INTEGER}
-@vindex oo_.forecast
 @anchor{forecast} Computes the posterior distribution of a forecast on
 @var{INTEGER} periods after the end of the sample used in
 estimation. If no Metropolis-Hastings is computed, the result is
@@ -4936,8 +4927,6 @@ See below.
 
 @item filter_step_ahead = [@var{INTEGER1} @var{INTEGER2}  @dots{}]
 @anchor{filter_step_ahead}
-@vindex oo_.FilteredVariablesKStepAhead
-@vindex oo_.FilteredVariablesKStepAheadVariances
 Triggers the computation k-step ahead filtered values. Stores results in
 @code{oo_.FilteredVariablesKStepAhead} and
 @code{oo_.FilteredVariablesKStepAheadVariances}.
@@ -5503,9 +5492,6 @@ A datafile must be provided, and the observable variables declared with
 @code{varobs}. The smoother is based on a first-order approximation of
 the model.
 
-@vindex oo_.SmoothedVariables
-@vindex oo_.SmoothedShocks
-@vindex oo_.UpdatedVariables
 By default, the command computes the smoothed variables and shocks and stores the
 results in @code{oo_.SmoothedVariables} and
 @code{oo_.SmoothedShocks}. It also fills @code{oo_.UpdatedVariables}.
