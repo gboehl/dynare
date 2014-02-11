@@ -55,14 +55,19 @@ else
     dd = o.xrange;
 end
 
-ymax = zeros(1, ne);
-ymin = zeros(1, ne);
-for i=1:ne
-    ymax(i) = o.series{i}.ymax(dd);
-    ymin(i) = o.series{i}.ymin(dd);
+if isempty(o.yrange)
+    ymax = zeros(1, ne);
+    ymin = zeros(1, ne);
+    for i=1:ne
+        ymax(i) = o.series{i}.ymax(dd);
+        ymin(i) = o.series{i}.ymin(dd);
+    end
+    ymax = ceil(max(ymax));
+    ymin = floor(min(ymin));
+else
+    ymin = o.yrange(1);
+    ymax = o.yrange(2);
 end
-ymax = ceil(max(ymax));
-ymin = floor(min(ymin));
 
 fprintf(fid, '\\begin{axis}[%%\n');
 % set tick labels
@@ -112,12 +117,6 @@ if ~isempty(o.ylabel)
     fprintf(fid, 'ylabel=%s,\n', o.ylabel);
 end
 fprintf(fid, ']\n');
-
-
-%if ~isempty(o.yrange)
-%    fprintf(fid, '\\clip (1,%f) rectangle (%d, %f);\n', ...
-%            o.yrange(1), dd.ndat, o.yrange(2));
-%end
 
 if o.showZeroline
     fprintf(fid, '%%zeroline\n\\addplot[black,line width=.5,forget plot] coordinates {(1,0)(%d,0)};\n',dd.ndat);
