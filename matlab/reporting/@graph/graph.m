@@ -64,6 +64,7 @@ o.graphSize = [];
 o.xTicks = [];
 o.xTickLabels = {};
 o.xTickLabelRotation = 45;
+o.xTickLabelAnchor = 'east';
 
 o.width = 6;
 o.height = 4.5;
@@ -111,6 +112,7 @@ assert(isfloat(o.shadeOpacity) && length(o.shadeOpacity)==1 && ...
 assert(isfloat(o.width), '@graph.graph: o.width must be a real number');
 assert(isfloat(o.height), '@graph.graph: o.height must be a real number');
 assert(isfloat(o.xTickLabelRotation), '@graph.graph: o.xTickLabelRotation must be a real number');
+assert(ischar(o.xTickLabelAnchor), '@graph.graph: xTickLabelAnchor must be a string');
 
 valid_legend_locations = ...
     {'North', 'South', 'East', 'West', ...
