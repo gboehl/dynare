@@ -64,6 +64,9 @@ o.graphSize = [];
 o.xTicks = [];
 o.xTickLabels = {};
 
+o.width = 6;
+o.height = 4.5;
+
 if nargin == 1
     assert(isa(varargin{1}, 'graph'),['@graph.graph: with one arg you ' ...
                         'must pass a graph object']);
@@ -104,6 +107,9 @@ assert(ischar(o.shadeColor), '@graph.graph: shadeColor must be a string');
 assert(isfloat(o.shadeOpacity) && length(o.shadeOpacity)==1 && ...
        o.shadeOpacity >= 0 && o.shadeOpacity <= 1, ...
        '@graph.graph: o.shadeOpacity must be a real in [0 1]');
+assert(isfloat(o.width), '@graph.graph: o.width must be a real number');
+assert(isfloat(o.height), '@graph.height: o.width must be a real number');
+
 valid_legend_locations = ...
     {'North', 'South', 'East', 'West', ...
      'NorthEast', 'SouthEast', 'NorthWest', 'SouthWest', ...
