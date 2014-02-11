@@ -63,6 +63,7 @@ o.showZeroline = false;
 o.graphSize = [];
 o.xTicks = [];
 o.xTickLabels = {};
+o.xTickLabelRotation = 45;
 
 o.width = 6;
 o.height = 4.5;
@@ -109,6 +110,7 @@ assert(isfloat(o.shadeOpacity) && length(o.shadeOpacity)==1 && ...
        '@graph.graph: o.shadeOpacity must be a real in [0 1]');
 assert(isfloat(o.width), '@graph.graph: o.width must be a real number');
 assert(isfloat(o.height), '@graph.height: o.width must be a real number');
+assert(isfloat(o.xTickLabelRotation), '@graph.graph: o.xTickLabelRotation must be a real number');
 
 valid_legend_locations = ...
     {'North', 'South', 'East', 'West', ...
