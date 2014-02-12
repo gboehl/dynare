@@ -40,9 +40,9 @@ o.graphLineStyle = 'solid';
 o.graphLineWidth = 0.5;
 
 o.graphMarker = '';
-o.graphMarkerEdgeColor = 'auto';
-o.graphMarkerFaceColor = 'auto';
-o.graphMarkerSize = 6;
+o.graphMarkerEdgeColor = '';
+o.graphMarkerFaceColor = '';
+o.graphMarkerSize = 1;
 
 o.tableShowMarkers = false;
 o.tableNegColor = 'red';

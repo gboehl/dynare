@@ -44,9 +44,11 @@ assert(isfloat(o.graphLineWidth) && o.graphLineWidth > 0, ...
                     '@report_series.writeLine: graphLineWidth must be a positive number');
 
 % GraphMarker
-valid_graphMarker = {'+', 'o', '*', '.', 'x', 's', 'square', 'd', 'diamond', ...
-                '^', 'v', '>', '<', 'p', 'pentagram', 'h', 'hexagram', ...
-                'none'};
+valid_graphMarker = {'x', '+', '-', '|', 'o', 'asterisk', 'star', '10-pointed star', 'oplus', ...
+                    'oplus*', 'otimes', 'otimes*', 'square', 'square*', 'triangle', 'triangle*', 'diamond', ...
+                    'diamond*', 'halfdiamond*', 'halfsquare*', 'halfsquare right*', ...
+                    'halfsquare left*','Mercedes star','Mercedes star flipped','halfcircle',...
+                    'halfcircle*','pentagon','pentagon star'};
 assert(isempty(o.graphMarker) || any(strcmp(o.graphMarker, valid_graphMarker)), ...
        ['@report_series.writeLine: graphMarker must be one of ' strjoin(valid_graphMarker)]);
 
@@ -82,20 +84,21 @@ if any(stz)
     thedata(stz) = 0;
 end
 
-fprintf(fid, '%%series %s\n\\addplot[color=%s,%s,line width=%fpt,forget plot,line join=round]\ntable[row sep=crcr]{\nx y\\\\\n', ...
+fprintf(fid, '%%series %s\n\\addplot[color=%s,%s,line width=%fpt,forget plot,line join=round',...
         o.data.name{:}, o.graphLineColor, o.graphLineStyle, o.graphLineWidth);
+if ~isempty(o.graphMarker)
+    if isempty(o.graphMarkerEdgeColor)
+        o.graphMarkerEdgeColor = o.graphLineColor;
+    end
+    if isempty(o.graphMarkerFaceColor)
+        o.graphMarkerFaceColor = o.graphLineColor;
+    end
+    fprintf(fid, ',mark=%s,mark size=%f,every mark/.append style={draw=%s,fill=%s}',...
+            o.graphMarker,o.graphMarkerSize,o.graphMarkerEdgeColor,o.graphMarkerFaceColor);
+end
+fprintf(fid,']\ntable[row sep=crcr]{\nx y\\\\\n');
 for i=1:ds.dates.ndat
     fprintf(fid, '%d %f\\\\\n', i, thedata(i));
 end
 fprintf(fid,'};\n');
-
-
-%opt = {'XData', 1:length(thedata)};
-
-if ~isempty(o.graphMarker)
-    %opt = {opt{:}, 'Marker', o.graphMarker};
-    %opt = {opt{:}, 'MarkerSize', o.graphMarkerSize};
-    %opt = {opt{:}, 'MarkerEdgeColor', o.graphMarkerEdgeColor};
-    %opt = {opt{:}, 'MarkerFaceColor', o.graphMarkerFaceColor};
-end
 end
