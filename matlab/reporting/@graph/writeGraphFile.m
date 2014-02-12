@@ -135,7 +135,7 @@ if ~isempty(o.shade)
 end
 
 for i=1:ne
-    o.series{i}.writeLine(fid, dd);
+    o.series{i}.writeSeriesForGraph(fid, dd);
 end
 
 fprintf(fid, '\\end{axis}\\end{tikzpicture}\n');

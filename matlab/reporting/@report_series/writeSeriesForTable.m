@@ -1,5 +1,5 @@
-function o = write(o, fid, dates, precision)
-%function o = write(o, fid, dates, precision)
+function o = writeSeriesForTable(o, fid, dates, precision)
+%function o = writeSeriesForTable(o, fid, dates, precision)
 % Write Table Row
 %
 % INPUTS

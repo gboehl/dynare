@@ -1,5 +1,5 @@
-function o = writeLine(o, fid, xrange)
-%function o = writeLine(o, fid, xrange)
+function o = writeSeriesForGraph(o, fid, xrange)
+%function o = writeSeriesForGraph(o, fid, xrange)
 % Print a TikZ line
 %
 % INPUTS
