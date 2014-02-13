@@ -30,7 +30,7 @@ function o = writeSeriesForGraph(o, fid, xrange)
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 %% Validate options provided by user
-assert(~isempty(o.data) && isa(o.data, 'dseries'), ['@report_series.writeLine: must ' ...
+assert(~isempty(o.data) && isa(o.data, 'dseries'), ['@report_series.writeSeriesForGraph: must ' ...
                     'provide data as a dseries']);
 
 % Line
@@ -38,10 +38,10 @@ valid_graphLineColor = {'red', 'green', 'blue', 'cyan ', 'magenta', 'yellow', ..
                     'black', 'gray', 'darkgray', 'lightgray', 'brown', ...
                     'lime', 'olive', 'orange', 'pink', 'purple', 'teal', 'violet', 'white'};
 assert(any(strcmp(o.graphLineColor, valid_graphLineColor)), ...
-       ['@report_series.writeLine: graphLineColor must be one of ' strjoin(valid_graphLineColor)]);
-assert(ischar(o.graphLineStyle), '@report_series.writeLine: graphLineStyle must be a string');
+       ['@report_series.writeSeriesForGraph: graphLineColor must be one of ' strjoin(valid_graphLineColor)]);
+assert(ischar(o.graphLineStyle), '@report_series.writeSeriesForGraph: graphLineStyle must be a string');
 assert(isfloat(o.graphLineWidth) && o.graphLineWidth > 0, ...
-                    '@report_series.writeLine: graphLineWidth must be a positive number');
+                    '@report_series.writeSeriesForGraph: graphLineWidth must be a positive number');
 
 % GraphMarker
 valid_graphMarker = {'x', '+', '-', '|', 'o', 'asterisk', 'star', '10-pointed star', 'oplus', ...
@@ -50,15 +50,15 @@ valid_graphMarker = {'x', '+', '-', '|', 'o', 'asterisk', 'star', '10-pointed st
                     'halfsquare left*','Mercedes star','Mercedes star flipped','halfcircle',...
                     'halfcircle*','pentagon','pentagon star'};
 assert(isempty(o.graphMarker) || any(strcmp(o.graphMarker, valid_graphMarker)), ...
-       ['@report_series.writeLine: graphMarker must be one of ' strjoin(valid_graphMarker)]);
+       ['@report_series.writeSeriesForGraph: graphMarker must be one of ' strjoin(valid_graphMarker)]);
 
-assert(ischar(o.graphMarkerEdgeColor), '@report_series.writeLine: graphMarkerEdgeColor must be a string');
-assert(ischar(o.graphMarkerFaceColor), '@report_series.writeLine: graphMarkerFaceColor must be a string');
+assert(ischar(o.graphMarkerEdgeColor), '@report_series.writeSeriesForGraph: graphMarkerEdgeColor must be a string');
+assert(ischar(o.graphMarkerFaceColor), '@report_series.writeSeriesForGraph: graphMarkerFaceColor must be a string');
 assert(isfloat(o.graphMarkerSize) && o.graphMarkerSize > 0, ...
-                    '@report_series.writeLine: graphMarkerSize must be a positive number');
+                    '@report_series.writeSeriesForGraph: graphMarkerSize must be a positive number');
 
 % Marker & Line
-assert(~(strcmp(o.graphLineStyle, 'none') && isempty(o.graphMarker)), ['@report_series.writeLine: ' ...
+assert(~(strcmp(o.graphLineStyle, 'none') && isempty(o.graphMarker)), ['@report_series.writeSeriesForGraph: ' ...
                     'you must provide at least one of graphLineStyle and graphMarker']);
 
 % Validate xrange

@@ -40,26 +40,26 @@ end
 assert(isint(precision));
 
 %% Validate options provided by user
-assert(ischar(o.tableSubSectionHeader), '@report_series.write: tableSubSectionHeader must be a string');
+assert(ischar(o.tableSubSectionHeader), '@report_series.writeSeriesForTable: tableSubSectionHeader must be a string');
 if isempty(o.tableSubSectionHeader)
     assert(~isempty(o.data) && isa(o.data, 'dseries'), ...
-           '@report_series.write: must provide data as a dseries');
+           '@report_series.writeSeriesForTable: must provide data as a dseries');
 
     if ~isempty(o.tableDataRhs)
         assert(~isempty(o.tableDataRhs) && isa(o.tableDataRhs, 'dseries'), ...
-               '@report_series.write: must provide tableDataRhs as a dseries');
+               '@report_series.writeSeriesForTable: must provide tableDataRhs as a dseries');
         assert(iscell(dates) && length(dates) == 2, ...
-               '@report_series.write: must provide second range with tableDataRhs');
+               '@report_series.writeSeriesForTable: must provide second range with tableDataRhs');
     end
 end
 
-assert(ischar(o.tableNegColor), '@report_series.write: tableNegColor must be a string');
-assert(ischar(o.tablePosColor), '@report_series.write: tablePosColor must be a string');
-assert(ischar(o.tableRowColor), '@report_series.write: tableRowColor must be a string');
-assert(isint(o.tableRowIndent), '@report_series.write: tableRowIndent must be an integer');
-assert(islogical(o.tableShowMarkers), '@report_series.write: tableShowMarkers must be true or false');
-assert(islogical(o.tableAlignRight), '@report_series.write: tableAlignRight must be true or false');
-assert(isfloat(o.tableMarkerLimit), '@report_series,write: tableMarkerLimit must be a float');
+assert(ischar(o.tableNegColor), '@report_series.writeSeriesForTable: tableNegColor must be a string');
+assert(ischar(o.tablePosColor), '@report_series.writeSeriesForTable: tablePosColor must be a string');
+assert(ischar(o.tableRowColor), '@report_series.writeSeriesForTable: tableRowColor must be a string');
+assert(isint(o.tableRowIndent), '@report_series.writeSeriesForTable: tableRowIndent must be an integer');
+assert(islogical(o.tableShowMarkers), '@report_series.writeSeriesForTable: tableShowMarkers must be true or false');
+assert(islogical(o.tableAlignRight), '@report_series.writeSeriesForTable: tableAlignRight must be true or false');
+assert(isfloat(o.tableMarkerLimit), '@report_series.writeSeriesForTable: tableMarkerLimit must be a float');
 
 %% Write Output
 fprintf(fid, '%% Table Row (report_series)\n');
