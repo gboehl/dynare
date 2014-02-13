@@ -104,7 +104,6 @@ assert(islogical(o.showGrid), '@graph.graph: showGrid must be either true or fal
 assert(islogical(o.showLegend), '@graph.graph: showLegend must be either true or false');
 assert(islogical(o.showLegendBox), '@graph.graph: showLegendBox must be either true or false');
 assert(islogical(o.showZeroline), '@graph.graph: showZeroline must be either true or false');
-assert(ischar(o.shadeColor), '@graph.graph: shadeColor must be a string');
 assert(isfloat(o.shadeOpacity) && length(o.shadeOpacity)==1 && ...
        o.shadeOpacity >= 0 && o.shadeOpacity <= 1, ...
        '@graph.graph: o.shadeOpacity must be a real in [0 1]');
@@ -112,6 +111,12 @@ assert(isfloat(o.width), '@graph.graph: o.width must be a real number');
 assert(isfloat(o.height), '@graph.graph: o.height must be a real number');
 assert(isfloat(o.xTickLabelRotation), '@graph.graph: o.xTickLabelRotation must be a real number');
 assert(ischar(o.xTickLabelAnchor), '@graph.graph: xTickLabelAnchor must be a string');
+
+valid_shadeColor = {'red', 'green', 'blue', 'cyan ', 'magenta', 'yellow', ...
+                    'black', 'gray', 'darkgray', 'lightgray', 'brown', ...
+                    'lime', 'olive', 'orange', 'pink', 'purple', 'teal', 'violet', 'white'};
+assert(any(strcmp(o.shadeColor, valid_shadeColor)), ['@graph.graph: shadeColor must be one of ' ...
+        strjoin(valid_shadeColor)]);
 
 valid_legend_locations = ...
     {'south west','south east','north west','north east','outer north east'};
