@@ -48,7 +48,7 @@ o.yrange = '';
 
 o.shade = '';
 o.shadeColor = 'green';
-o.shadeOpacity = .2;
+o.shadeOpacity = 20;
 
 o.showGrid = true;
 
@@ -105,8 +105,8 @@ assert(islogical(o.showLegend), '@graph.graph: showLegend must be either true or
 assert(islogical(o.showLegendBox), '@graph.graph: showLegendBox must be either true or false');
 assert(islogical(o.showZeroline), '@graph.graph: showZeroline must be either true or false');
 assert(isfloat(o.shadeOpacity) && length(o.shadeOpacity)==1 && ...
-       o.shadeOpacity >= 0 && o.shadeOpacity <= 1, ...
-       '@graph.graph: o.shadeOpacity must be a real in [0 1]');
+       o.shadeOpacity >= 0 && o.shadeOpacity <= 100, ...
+       '@graph.graph: o.shadeOpacity must be a real in [0 100]');
 assert(isfloat(o.width), '@graph.graph: o.width must be a real number');
 assert(isfloat(o.height), '@graph.graph: o.height must be a real number');
 assert(isfloat(o.xTickLabelRotation), '@graph.graph: o.xTickLabelRotation must be a real number');
