@@ -44,7 +44,9 @@ o.figname = '';
 o.data = '';
 o.seriesToUse = '';
 o.xrange = '';
+o.xAxisTight = true;
 o.yrange = '';
+o.yAxisTight = false;
 
 o.shade = '';
 o.shadeColor = 'green';
@@ -101,6 +103,8 @@ assert(ischar(o.ylabel), '@graph.graph: ylabel file must be a string');
 assert(ischar(o.figname), '@graph.graph: figname must be a string');
 assert(ischar(o.figDirName), '@graph.graph: figDirName must be a string');
 assert(islogical(o.showGrid), '@graph.graph: showGrid must be either true or false');
+assert(islogical(o.xAxisTight), '@graph.graph: xAxisTight must be either true or false');
+assert(islogical(o.yAxisTight), '@graph.graph: yAxisTight must be either true or false');
 assert(islogical(o.showLegend), '@graph.graph: showLegend must be either true or false');
 assert(islogical(o.showLegendBox), '@graph.graph: showLegendBox must be either true or false');
 assert(islogical(o.showZeroline), '@graph.graph: showZeroline must be either true or false');
