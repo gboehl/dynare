@@ -47,6 +47,7 @@ if ~exist(o.filename, 'file')
 end
 
 middle = ' ./';
+options = '-synctex=1';
 if isoctave
     echo = 1;
 else
@@ -71,7 +72,7 @@ if isempty(compiler)
     o.compiler = compiler;
 end
 
-status = system([compiler middle o.filename], echo);
+status = system([compiler ' ' options middle o.filename], echo);
 [junk, rfn, junk] = fileparts(o.filename);
 
 if status ~= 0
