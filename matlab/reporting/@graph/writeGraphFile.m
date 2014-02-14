@@ -1,9 +1,13 @@
-function o = writeGraphFile(o)
-%function o = writeGraphFile(o)
+function o = writeGraphFile(o, pg, sec, row, col)
+%function o = writeGraphFile(o, pg, sec, row, col)
 % Write the tikz file that contains the graph
 %
 % INPUTS
-%   o   [graph] graph object
+%   o   [graph]   graph object
+%   pg  [integer] this page number
+%   sec [integer] this section number
+%   row [integer] this row number
+%   col [integer] this col number
 %
 % OUTPUTS
 %   o   [graph] graph object
@@ -35,11 +39,7 @@ if ne < 1
 end
 
 if isempty(o.figname)
-    [junk, tn] = fileparts(tempname);
-    if strcmp(computer, 'PCWIN') || strcmp(computer, 'PCWIN64')
-        tn = strrep(tn, '_', '-');
-    end
-    o.figname = [o.figDirName '/' tn '.tex'];
+    o.figname = sprintf('%s/pg%d_sec%d_row%d_col%d.tex', o.figDirName, pg, sec, row, col);
 end
 
 [fid, msg] = fopen(o.figname, 'w');

@@ -80,7 +80,7 @@ fprintf(fid, '\\centering\n');
 nps = length(o.pages);
 for i=1:nps
     fprintf(1, 'Writing Page: %d\n', i);
-    o.pages{i}.write(fid);
+    o.pages{i}.write(fid, i);
 end
 
 fprintf(fid, '\\end{document}\n');

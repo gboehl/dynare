@@ -1,10 +1,12 @@
-function o = write(o, fid)
-%function o = write(o, fid)
+function o = write(o, fid, pg, sec)
+%function o = write(o, fid, pg, sec)
 % Write Section object
 %
 % INPUTS
 %   o         [section] section object
 %   fid       [integer] file id
+%   pg        [integer] this page number
+%   sec       [integer] this section number
 %
 % OUTPUTS
 %   o         [section] section object
@@ -48,20 +50,24 @@ end
 fprintf(fid, '}\n');
 ne = numElements(o);
 nlcounter = 0;
+row = 1;
+col = 1;
 for i=1:ne
     if isa(o.elements{i}, 'vspace')
-        assert(rem(nlcounter, o.cols) == 0, ['@section.write: must place ' ...
+        assert(col == o.cols, ['@section.write: must place ' ...
                             'vspace command after a linebreak in the table ' ...
                             'or series of charts']);
         o.elements{i}.write(fid);
         fprintf(fid, '\\\\\n');
     else
-        o.elements{i}.write(fid);
-        nlcounter = nlcounter + 1;
-        if rem(nlcounter, o.cols)
+        o.elements{i}.write(fid, pg, sec, row, col);
+        if col ~= o.cols
             fprintf(fid, ' & ');
+            col = col + 1;
         else
             fprintf(fid, '\\\\\n');
+            row = row + 1;
+            col = 1;
         end
     end
 end

@@ -1,10 +1,14 @@
-function o = write(o, fid)
-%function o = write(o, fid)
+function o = write(o, fid, pg, sec, row, col)
+%function o = write(o, fid, pg, sec, row, col)
 % Write a Graph object
 %
 % INPUTS
 %   o   [graph]   graph object
 %   fid [integer] file id
+%   pg  [integer] this page number
+%   sec [integer] this section number
+%   row [integer] this row number
+%   col [integer] this col number
 %
 % OUTPUTS
 %   o   [graph] graph object
@@ -30,6 +34,6 @@ function o = write(o, fid)
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 assert(fid ~= -1);
-o = writeGraphFile(o);
+o = writeGraphFile(o, pg, sec, row, col);
 fprintf(fid, '\\input{%s}', o.figname);
 end

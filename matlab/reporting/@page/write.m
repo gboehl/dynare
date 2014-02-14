@@ -1,10 +1,11 @@
-function o = write(o, fid)
-%function o = write(o, fid)
+function o = write(o, fid, pg)
+%function o = write(o, fid, pg)
 % Write a Page object
 %
 % INPUTS
 %   o              [page]     page object
 %   fid            [integer]  file id
+%   pg             [integer]  this page number
 %
 % OUTPUTS
 %   o              [page]     page object
@@ -48,7 +49,7 @@ end
 
 nps = length(o.sections);
 for i=1:nps
-    o.sections{i}.write(fid);
+    o.sections{i}.write(fid, pg, i);
 end
 
 if strcmpi(o.orientation, 'landscape')

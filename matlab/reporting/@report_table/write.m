@@ -1,5 +1,5 @@
-function o = write(o, fid)
-%function o = write(o, fid)
+function o = write(o, fid, pg, sec, row, col)
+%function o = write(o, fid, pg, sec, row, col)
 % Write a Report_Table object
 %
 % INPUTS
