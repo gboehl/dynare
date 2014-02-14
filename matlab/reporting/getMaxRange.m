@@ -20,7 +20,7 @@ function dd = getMaxRange(cellser)
 
 ddmin = dates();
 ddmax = dates();
-ne = length(cellser)
+ne = length(cellser);
 for i=1:ne
     ddt = cellser{i}.getRange();
     if isempty(ddmin)
