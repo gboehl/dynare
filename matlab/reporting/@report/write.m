@@ -41,7 +41,7 @@ if strcmpi(o.orientation, 'landscape')
     fprintf(fid, ',landscape');
 end
 fprintf(fid, ']{geometry}\n');
-fprintf(fid, '\\usepackage{pdflscape, booktabs, pgfplots}\n');
+fprintf(fid, '\\usepackage{pdflscape, booktabs, pgfplots, colortbl, adjustbox}\n');
 fprintf(fid, ['\\makeatletter\n' ...
               '\\def\\blfootnote{\\gdef\\@thefnmark{}\\@footnotetext}\n' ...
               '\\makeatother\n']);
@@ -52,7 +52,6 @@ if isoctave && isempty(regexpi(computer, '.*apple.*', 'once'))
     fprintf(fid, '\\usepackage{gnuplot-lua-tikz}\n');
 end
 
-fprintf(fid, '\\usepackage{color, colortbl}\n');
 fprintf(fid, '\\definecolor{LightCyan}{rgb}{0.88,1,1}\n');
 fprintf(fid, '\\definecolor{Gray}{gray}{0.9}\n');
 if o.showDate
@@ -68,7 +67,6 @@ end
 fprintf(fid, '\\renewcommand{\\textfraction}{0.05}\n');
 fprintf(fid, '\\renewcommand{\\topfraction}{0.8}\n');
 fprintf(fid, '\\renewcommand{\\bottomfraction}{0.8}\n');
-fprintf(fid, '\\usepackage[Export,PGF]{adjustbox}\n');
 fprintf(fid, '\\setlength{\\parindent}{0in}\n');
 fprintf(fid, '\\newlength\\sectionheight\n');
 fprintf(fid, '\\begin{document}\n');
