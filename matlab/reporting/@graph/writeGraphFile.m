@@ -88,6 +88,10 @@ fprintf(fid, ['},\n',...
               'axis lines=box,\n'...
               'unbounded coords=jump,\n'], o.width, o.height);
 
+if ~isempty(o.title)
+    fprintf(fid, 'title=%s,\n', o.title);
+end
+
 if o.xAxisTight
     fprintf(fid, 'enlarge x limits=false,\n');
 else

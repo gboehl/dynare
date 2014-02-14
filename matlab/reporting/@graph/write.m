@@ -31,14 +31,5 @@ function o = write(o, fid)
 
 assert(fid ~= -1);
 o = writeGraphFile(o);
-
-if ~isempty(o.title)
-    fprintf(fid,'\\begin{tabular}[x]{@{}c@{}}%s\\\\',o.title);
-end
-
 fprintf(fid, '\\input{%s}', o.figname);
-
-if ~isempty(o.title)
-    fprintf(fid,'\\end{tabular}');
-end
 end
