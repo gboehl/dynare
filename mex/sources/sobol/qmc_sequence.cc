@@ -21,12 +21,16 @@
 ** AUTHOR(S): stephane DOT adjemian AT univ DASH lemans DOT fr
 **/
 
+#include <sstream>
 #include <string.h>
 #include <stdint.h>
 #include <dynmex.h>
 
 #include "sobol.hh"
 #include "gaussian.hh"
+
+// the maximum dimension defined in sobol.ff (but undef at the end)
+#define DIM_MAX 1111
 
 void mexFunction( int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
@@ -100,6 +104,13 @@ void mexFunction( int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     {
       DYN_MEX_FUNC_ERR_MSG_TXT("qmc_sequence:: First input (dimension) has to be greater than 1 for a uniform QMC on an hypershere!");
     }
+  else if (dimension > DIM_MAX)
+    {
+      stringstream msg;
+      msg << "qmc_sequence:: First input (dimension) has to be smaller than " << DIM_MAX << " !";
+      DYN_MEX_FUNC_ERR_MSG_TXT(msg.str().c_str());
+    }
+
   /*
   ** Test the optional fourth input argument and assign it to sequence_size.
   */
