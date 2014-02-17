@@ -94,9 +94,11 @@ end
 nrhc = length(rhscols);
 ncols = ndates+nlhc+nrhc;
 fprintf(fid, '@{}}%%\n');
-if ~isempty(o.title)
-    fprintf(fid, '\\multicolumn{%d}{c}{\\%s %s}\\\\\n', ...
-            ncols, o.titleSize, o.title);
+for i=1:length(o.title)
+    if ~isempty(o.title{i})
+        fprintf(fid, '\\multicolumn{%d}{c}{%s %s}\\\\\n', ...
+                ncols, o.titleFormat{i}, o.title{i});
+    end
 end
 fprintf(fid, '\\toprule%%\n');
 

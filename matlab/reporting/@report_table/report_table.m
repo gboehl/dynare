@@ -33,8 +33,8 @@ o = struct;
 
 o.series = {};
 
-o.title = '';
-o.titleSize = 'large';
+o.title = {''};
+o.titleFormat = {'\large'};
 
 o.showHlines = false;
 o.showVlines = false;
@@ -79,7 +79,12 @@ if isa(o.vlineAfter, 'dates')
 end
 
 % Check options provided by user
-assert(ischar(o.title), '@report_table.report_table: title must be a string');
+if ischar(o.title)
+    o.title = {o.title};
+end
+if ischar(o.titleFormat)
+    o.titleFormat = {o.titleFormat};
+end
 assert(islogical(o.showHlines), '@report_table.report_table: showHlines must be true or false');
 assert(islogical(o.showVlines), '@report_table.report_table: showVlines must be true or false');
 assert(isint(o.precision), '@report_table.report_table: precision must be an int');
@@ -97,10 +102,12 @@ if o.showVlines
 end
 assert(islogical(o.vlineAfterEndOfPeriod), ...
        '@report_table.report_table: vlineAfterEndOfPeriod must be true or false');
-valid_title_sizes = {'Huge', 'huge', 'LARGE', 'Large', 'large', 'normalsize', ...
-                    'small', 'footnotesize', 'scriptsize', 'tiny'};
-assert(any(strcmp(o.titleSize, valid_title_sizes)), ...
-       ['@report_table.report_table: titleSize must be one of ' strjoin(valid_title_sizes, ' ')]);
+assert(iscellstr(o.title), ...
+       '@report_table.report_table: title must be a cell array of string(s)');
+assert(iscellstr(o.titleFormat), ...
+       '@report_table.report_table: titleFormat must be a cell array of string(s)');
+assert(length(o.title) == length(o.titleFormat), ...
+       '@report_table.report_table: title and titleFormat must have the same length');
 
 % using o.seriesToUse, create series objects and put them in o.series
 if ~isempty(o.data)
