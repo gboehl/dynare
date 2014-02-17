@@ -34,7 +34,8 @@ o = struct;
 o.series = {};
 
 o.title = {''};
-o.titleFormat = {'\large'};
+titleFormatDefalut = {'\large'};
+o.titleFormat = titleFormatDefalut;
 
 o.showHlines = false;
 o.showVlines = false;
@@ -85,6 +86,9 @@ end
 if ischar(o.titleFormat)
     o.titleFormat = {o.titleFormat};
 end
+if length(o.title) ~= length(o.titleFormat)
+    o.titleFormat = repmat(titleFormatDefalut, 1, length(o.title));
+end
 assert(islogical(o.showHlines), '@report_table.report_table: showHlines must be true or false');
 assert(islogical(o.showVlines), '@report_table.report_table: showVlines must be true or false');
 assert(isint(o.precision), '@report_table.report_table: precision must be an int');
@@ -106,8 +110,6 @@ assert(iscellstr(o.title), ...
        '@report_table.report_table: title must be a cell array of string(s)');
 assert(iscellstr(o.titleFormat), ...
        '@report_table.report_table: titleFormat must be a cell array of string(s)');
-assert(length(o.title) == length(o.titleFormat), ...
-       '@report_table.report_table: title and titleFormat must have the same length');
 
 % using o.seriesToUse, create series objects and put them in o.series
 if ~isempty(o.data)
