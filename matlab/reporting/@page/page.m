@@ -31,8 +31,8 @@ function o = page(varargin)
 
 o = struct;
 o.paper = '';
-o.title = {};
-o.titleFormat = {};
+o.title = {''};
+o.titleFormat = {'\large\bfseries'};
 o.orientation = '';
 o.footnote = {};
 o.sections = {};
