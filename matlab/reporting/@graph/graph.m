@@ -36,6 +36,7 @@ o = struct;
 o.series = {};
 
 o.title = '';
+o.titleFormat = '';
 o.ylabel = '';
 o.xlabel = '';
 
@@ -97,7 +98,11 @@ elseif nargin > 1
 end
 
 % Check options provided by user
-assert(ischar(o.title), '@graph.graph: title must be a string');
+if ischar(o.title)
+    o.title = {o.title};
+end
+assert(iscellstr(o.title), '@graph.graph: title must be a cell array of string(s)');
+assert(ischar(o.titleFormat), '@graph.graph: titleFormat file must be a string');
 assert(ischar(o.xlabel), '@graph.graph: xlabel file must be a string');
 assert(ischar(o.ylabel), '@graph.graph: ylabel file must be a string');
 assert(ischar(o.figname), '@graph.graph: figname must be a string');

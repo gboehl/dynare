@@ -88,8 +88,20 @@ fprintf(fid, ['},\n',...
               'axis lines=box,\n'...
               'unbounded coords=jump,\n'], o.width, o.height);
 
-if ~isempty(o.title)
-    fprintf(fid, 'title=%s,\n', o.title);
+if ~isempty(o.title{1})
+    fprintf(fid, 'title style={align=center');
+    if ~isempty(o.titleFormat)
+        fprintf(fid, ',font=%s', o.titleFormat);
+    end
+    fprintf(fid, '},\ntitle=');
+    nt = length(o.title);
+    for i=1:nt
+        fprintf(fid, '%s', o.title{i});
+        if i ~= nt
+            fprintf(fid, '\\\\');
+        end
+    end
+    fprintf(fid, ',\n');
 end
 
 if o.xAxisTight
