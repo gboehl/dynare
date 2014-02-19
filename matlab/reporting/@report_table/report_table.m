@@ -32,7 +32,7 @@ function o = report_table(varargin)
 o = struct;
 
 o.tableDirName = 'tmpRepDir';
-o.tablename = '';
+o.tableName = '';
 
 o.series = {};
 
@@ -113,7 +113,7 @@ assert(iscellstr(o.title), ...
        '@report_table.report_table: title must be a cell array of string(s)');
 assert(iscellstr(o.titleFormat), ...
        '@report_table.report_table: titleFormat must be a cell array of string(s)');
-assert(ischar(o.tablename), '@report_table.report_table: tablename must be a string');
+assert(ischar(o.tableName), '@report_table.report_table: tableName must be a string');
 assert(ischar(o.tableDirName), '@report_table.report_table: tableDirName must be a string');
 
 % using o.seriesToUse, create series objects and put them in o.series

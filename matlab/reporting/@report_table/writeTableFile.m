@@ -38,11 +38,11 @@ if length(o.series) == 0
     return;
 end
 
-if isempty(o.tablename)
-    o.tablename = sprintf('%s/table_pg%d_sec%d_row%d_col%d.tex', o.tableDirName, pg, sec, row, col);
+if isempty(o.tableName)
+    o.tableName = sprintf('%s/table_pg%d_sec%d_row%d_col%d.tex', o.tableDirName, pg, sec, row, col);
 end
 
-[fid, msg] = fopen(o.tablename, 'w');
+[fid, msg] = fopen(o.tableName, 'w');
 if fid == -1
     error(['@report_table.writeTableFile: ' msg]);
 end

@@ -35,5 +35,5 @@ function o = write(o, fid, pg, sec, row, col)
 
 assert(fid ~= -1);
 o = writeGraphFile(o, pg, sec, row, col);
-fprintf(fid, '\\input{%s}', o.figname);
+fprintf(fid, '\\input{%s}', o.figName);
 end

@@ -38,7 +38,7 @@ o.paper = 'a4';
 o.margin = 2.5;
 o.marginUnit = 'cm';
 o.pages = {};
-o.filename = 'report.tex';
+o.fileName = 'report.tex';
 o.showDate = true;
 o.compiler = '';
 
@@ -69,7 +69,7 @@ end
 
 % Check options provided by user
 assert(ischar(o.title), '@report.report: title must be a string');
-assert(ischar(o.filename), '@report.report: filename must be a string');
+assert(ischar(o.fileName), '@report.report: fileName must be a string');
 assert(ischar(o.compiler), '@report.report: compiler file must be a string');
 assert(islogical(o.showDate), '@report.report: showDate must be either true or false');
 assert(isfloat(o.margin) && o.margin > 0, '@report.report: margin must be a float > 0.');

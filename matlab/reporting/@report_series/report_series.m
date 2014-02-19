@@ -57,7 +57,7 @@ o.tableRowIndent = 0;
 
 o.tableDataRhs = '';
 
-o.zerotol = 1e-6;
+o.zeroTol = 1e-6;
 
 if nargin == 1
     assert(isa(varargin{1}, 'report_series'),['@report_series.report_series: with one arg you ' ...

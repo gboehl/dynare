@@ -35,5 +35,5 @@ function o = write(o, fid, pg, sec, row, col)
 
 assert(fid ~= -1);
 o = writeTableFile(o, pg, sec, row, col);
-fprintf(fid, '\\input{%s}', o.tablename);
+fprintf(fid, '\\input{%s}', o.tableName);
 end

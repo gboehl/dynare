@@ -13,7 +13,7 @@ function o = compile(o, varargin)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2013 Dynare Team
+% Copyright (C) 2013-2014 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -42,7 +42,7 @@ else
     compiler = o.compiler;
 end
 
-if ~exist(o.filename, 'file')
+if ~exist(o.fileName, 'file')
     o.write();
 end
 
@@ -72,8 +72,8 @@ if isempty(compiler)
     o.compiler = compiler;
 end
 
-status = system([compiler ' ' options middle o.filename], echo);
-[junk, rfn, junk] = fileparts(o.filename);
+status = system([compiler ' ' options middle o.fileName], echo);
+[junk, rfn, junk] = fileparts(o.fileName);
 
 if status ~= 0
     error(['@report.compile: There was an error in compiling ' rfn '.pdf.' ...

@@ -65,7 +65,7 @@ assert(~(strcmp(o.graphLineStyle, 'none') && isempty(o.graphMarker)), ['@report_
 
 
 % Zero tolerance
-assert(isfloat(o.zerotol), '@report_series.write: zerotol must be a float');
+assert(isfloat(o.zeroTol), '@report_series.write: zeroTol must be a float');
 
 %%
 if isempty(xrange) || all(xrange == o.data.dates)
@@ -74,12 +74,12 @@ else
     ds = o.data(xrange);
 end
 
-% if graphing data that is within zerotol, set to zero, create report_series and
+% if graphing data that is within zeroTol, set to zero, create report_series and
 % get line:
 thedata = ds.data;
 stz = bsxfun(@and, ...
-             bsxfun(@lt, thedata, o.zerotol), ...
-             bsxfun(@gt, thedata, -o.zerotol));
+             bsxfun(@lt, thedata, o.zeroTol), ...
+             bsxfun(@gt, thedata, -o.zeroTol));
 if any(stz)
     thedata(stz) = 0;
 end

@@ -28,7 +28,7 @@ function o = write(o)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-[fid, msg] = fopen(o.filename, 'w');
+[fid, msg] = fopen(o.fileName, 'w');
 if fid == -1
     error(['@report.write: ' msg]);
 end
@@ -85,7 +85,7 @@ fprintf(fid, '\\end{document}\n');
 fprintf(fid, '%% End Report Object\n');
 status = fclose(fid);
 if status == -1
-    error('@report.write: closing %s\n', o.filename);
+    error('@report.write: closing %s\n', o.fileName);
 end
 disp('Finished Writing Report!');
 end
