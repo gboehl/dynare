@@ -40,7 +40,7 @@ o.titleFormat = '';
 o.ylabel = '';
 o.xlabel = '';
 
-o.figDirName = 'tmpFigDir';
+o.figDirName = 'tmpRepDir';
 o.figname = '';
 o.data = '';
 o.seriesToUse = '';

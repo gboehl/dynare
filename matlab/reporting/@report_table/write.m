@@ -1,13 +1,17 @@
 function o = write(o, fid, pg, sec, row, col)
 %function o = write(o, fid, pg, sec, row, col)
-% Write a Report_Table object
+% Write a Table object
 %
 % INPUTS
-%   o           [report_table]    report_table object
-%   fid         [integer]  file id
+%   o   [table]   table object
+%   fid [integer] file id
+%   pg  [integer] this page number
+%   sec [integer] this section number
+%   row [integer] this row number
+%   col [integer] this col number
 %
 % OUTPUTS
-%   o           [report_table]    report_table object
+%   o   [table] table object
 %
 % SPECIAL REQUIREMENTS
 %   none
@@ -30,135 +34,6 @@ function o = write(o, fid, pg, sec, row, col)
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 assert(fid ~= -1);
-ne = length(o.series);
-if ne == 0
-    warning('@report_table.write: no series to plot, returning');
-    return;
-end
-
-%number of left-hand columns, 1 until we allow the user to group data,
-% e.g.: GDP Europe
-%         GDP France
-%         GDP Germany
-% this example would be two lh columns, with GDP Europe spanning both
-nlhc = 1;
-
-if isempty(o.range)
-    dates = getMaxRange(o.series);
-else
-    dates = o.range{1};
-end
-ndates = dates.ndat;
-
-fprintf(fid, '%% Report_Table Object\n');
-fprintf(fid, '\\setlength{\\parindent}{6pt}\n');
-fprintf(fid, '\\setlength{\\tabcolsep}{4pt}\n');
-fprintf(fid, '\\begin{tabular}{@{}l');
-
-for i=1:ndates
-    if o.showVlines
-        fprintf(fid, 'r|');
-    else
-        fprintf(fid, 'r');
-        if o.vlineAfterEndOfPeriod
-            if dates(i).time(2) == dates(i).freq
-                fprintf(fid, '|');
-            end
-        end
-        if ~isempty(o.vlineAfter)
-            for j=1:length(o.vlineAfter)
-                if dates(i) == o.vlineAfter{j}
-                    if ~(o.vlineAfterEndOfPeriod && dates(i).time(2) == dates(i).freq)
-                        fprintf(fid, '|');
-                    end
-                end
-            end
-        end
-    end
-end
-datedata = dates.time;
-years = unique(datedata(:, 1));
-if length(o.range) > 1
-    rhscols = strings(o.range{2});
-    if o.range{2}.freq == 1
-        rhscols = strrep(rhscols, 'Y', '');
-    end
-else
-    rhscols = {};
-end
-for i=1:length(rhscols)
-    fprintf(fid, 'r');
-    if o.showVlines
-        fprintf(fid, '|');
-    end
-end
-nrhc = length(rhscols);
-ncols = ndates+nlhc+nrhc;
-fprintf(fid, '@{}}%%\n');
-for i=1:length(o.title)
-    if ~isempty(o.title{i})
-        fprintf(fid, '\\multicolumn{%d}{c}{%s %s}\\\\\n', ...
-                ncols, o.titleFormat{i}, o.title{i});
-    end
-end
-fprintf(fid, '\\toprule%%\n');
-
-% Column Headers
-thdr = num2cell(years, size(years, 1));
-if dates.freq == 1
-    for i=1:size(thdr, 1)
-        fprintf(fid, ' & %d', thdr{i, 1});
-    end
-    for i=1:length(rhscols)
-        fprintf(fid, ' & %s', rhscols{i});
-    end
-else
-    thdr{1, 2} = datedata(:, 2)';
-    if size(thdr, 1) > 1
-        for i=2:size(thdr, 1)
-            split = find(thdr{i-1, 2} == dates.freq, 1, 'first');
-            assert(~isempty(split), '@report_table.write: Shouldn''t arrive here');
-            thdr{i, 2} = thdr{i-1, 2}(split+1:end);
-            thdr{i-1, 2} = thdr{i-1, 2}(1:split);
-        end
-    end
-    for i=1:size(thdr, 1)
-        fprintf(fid, ' & \\multicolumn{%d}{c}{%d}', size(thdr{i,2}, 2), thdr{i,1});
-    end
-    for i=1:length(rhscols)
-        fprintf(fid, ' & %s', rhscols{i});
-    end
-    fprintf(fid, '\\\\\\cline{%d-%d}%%\n', nlhc+1, ncols);
-    switch dates.freq
-        case 4
-            sep = 'Q';
-        case 12
-            sep = 'M';
-        case 52
-            sep = 'W';
-        otherwise
-            error('@report_table.write: Invalid frequency.');
-    end
-    for i=1:size(thdr, 1)
-        period = thdr{i, 2};
-        for j=1:size(period, 2)
-            fprintf(fid, ' & \\multicolumn{1}{c}{%s%d}', sep, period(j));
-        end
-    end
-end
-fprintf(fid, '\\\\[-2pt]%%\n');
-fprintf(fid, '\\hline%%\n');
-fprintf(fid, '%%\n');
-
-% Write Report_Table Data
-for i=1:ne
-    o.series{i}.writeSeriesForTable(fid, o.range, o.precision);
-    if o.showHlines
-        fprintf(fid, '\\hline\n');
-    end
-end
-
-fprintf(fid, '\\bottomrule\n');
-fprintf(fid, '\\end{tabular}\\setlength{\\parindent}{0pt}\n \\par \\medskip\n\n');
-fprintf(fid, '%% End Report_Table Object\n');
+o = writeTableFile(o, pg, sec, row, col);
+fprintf(fid, '\\input{%s}', o.tablename);
 end

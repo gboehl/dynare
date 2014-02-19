@@ -39,7 +39,7 @@ if ne < 1
 end
 
 if isempty(o.figname)
-    o.figname = sprintf('%s/pg%d_sec%d_row%d_col%d.tex', o.figDirName, pg, sec, row, col);
+    o.figname = sprintf('%s/graph_pg%d_sec%d_row%d_col%d.tex', o.figDirName, pg, sec, row, col);
 else
     o.figname = [o.figDirName '/' o.figname];
 end
