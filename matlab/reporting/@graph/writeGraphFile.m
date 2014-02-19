@@ -38,13 +38,13 @@ if ne < 1
     return;
 end
 
-if isempty(o.figName)
-    o.figName = sprintf('%s/graph_pg%d_sec%d_row%d_col%d.tex', o.figDirName, pg, sec, row, col);
+if isempty(o.graphName)
+    o.graphName = sprintf('%s/graph_pg%d_sec%d_row%d_col%d.tex', o.graphDirName, pg, sec, row, col);
 else
-    o.figName = [o.figDirName '/' o.figName];
+    o.graphName = [o.graphDirName '/' o.graphName];
 end
 
-[fid, msg] = fopen(o.figName, 'w');
+[fid, msg] = fopen(o.graphName, 'w');
 if fid == -1
     error(['@graph.writeGraphFile: ' msg]);
 end

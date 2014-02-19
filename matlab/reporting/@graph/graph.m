@@ -40,8 +40,8 @@ o.titleFormat = '';
 o.ylabel = '';
 o.xlabel = '';
 
-o.figDirName = 'tmpRepDir';
-o.figName = '';
+o.graphDirName = 'tmpRepDir';
+o.graphName = '';
 o.data = '';
 o.seriesToUse = '';
 o.xrange = '';
@@ -105,8 +105,8 @@ assert(iscellstr(o.title), '@graph.graph: title must be a cell array of string(s
 assert(ischar(o.titleFormat), '@graph.graph: titleFormat file must be a string');
 assert(ischar(o.xlabel), '@graph.graph: xlabel file must be a string');
 assert(ischar(o.ylabel), '@graph.graph: ylabel file must be a string');
-assert(ischar(o.figName), '@graph.graph: figName must be a string');
-assert(ischar(o.figDirName), '@graph.graph: figDirName must be a string');
+assert(ischar(o.graphName), '@graph.graph: graphName must be a string');
+assert(ischar(o.graphDirName), '@graph.graph: graphDirName must be a string');
 assert(islogical(o.showGrid), '@graph.graph: showGrid must be either true or false');
 assert(islogical(o.xAxisTight), '@graph.graph: xAxisTight must be either true or false');
 assert(islogical(o.yAxisTight), '@graph.graph: yAxisTight must be either true or false');
@@ -185,8 +185,8 @@ end
 o = rmfield(o, 'seriesToUse');
 o = rmfield(o, 'data');
 
-if ~exist(o.figDirName, 'file')
-    mkdir(o.figDirName);
+if ~exist(o.graphDirName, 'file')
+    mkdir(o.graphDirName);
 end
 
 % Create graph object
