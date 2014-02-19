@@ -40,6 +40,8 @@ end
 
 if isempty(o.figname)
     o.figname = sprintf('%s/pg%d_sec%d_row%d_col%d.tex', o.figDirName, pg, sec, row, col);
+else
+    o.figname = [o.figDirName '/' o.figname];
 end
 
 [fid, msg] = fopen(o.figname, 'w');
