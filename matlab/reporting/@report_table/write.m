@@ -30,7 +30,8 @@ function o = write(o, fid, pg, sec, row, col)
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 assert(fid ~= -1);
-if length(o.series) == 0
+ne = length(o.series);
+if ne == 0
     warning('@report_table.write: no series to plot, returning');
     return;
 end
@@ -150,7 +151,6 @@ fprintf(fid, '\\hline%%\n');
 fprintf(fid, '%%\n');
 
 % Write Report_Table Data
-ne = length(o.series);
 for i=1:ne
     o.series{i}.writeSeriesForTable(fid, o.range, o.precision);
     if o.showHlines
