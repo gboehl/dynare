@@ -60,7 +60,18 @@ while weight<1
         flag = 1;
     end
     if flag
-        [flag,tmp] = solve_perfect_foresight_model(endo_simul0,exo_simul0,pfm);
+        if ~options_.ep.stochastic.order
+            [flag,tmp,err] = solve_perfect_foresight_model(endo_simul0,exo_simul0,pfm);
+        else
+            switch options_.ep.stochastic.algo
+              case 0
+                [flag,tmp] = ...
+                    solve_stochastic_perfect_foresight_model(endo_simul0,exo_simul0,pfm,options_.ep.stochastic.quadrature.nodes,options_.ep.stochastic.order);
+              case 1
+                [flag,tmp] = ...
+                    solve_stochastic_perfect_foresight_model_1(endo_simul0,exo_simul0,options_.ep,pfm,options_.ep.stochastic.order);
+            end
+        end
     end
     info.convergence = ~flag;% Equal to one if the perfect foresight solver converged for the current value of weight.
     if verbose
@@ -133,7 +144,18 @@ if weight<1
         flag = 1;
     end
     if flag
-        [flag,tmp] = solve_perfect_foresight_model(endo_simul0,exo_simul0,pfm);
+        if ~options_.ep.stochastic.order
+            [flag,tmp,err] = solve_perfect_foresight_model(endo_simul0,exo_simul0,pfm);
+        else
+            switch options_.ep.stochastic.algo
+              case 0
+                [flag,tmp] = ...
+                    solve_stochastic_perfect_foresight_model(endo_simul0,exo_simul0,pfm,options_.ep.stochastic.quadrature.nodes,options_.ep.stochastic.order);
+              case 1
+                [flag,tmp] = ...
+                    solve_stochastic_perfect_foresight_model_1(endo_simul0,exo_simul0,options_.ep,pfm,options_.ep.stochastic.order);
+            end
+        end
     end
     info.convergence = ~flag;
     if info.convergence
