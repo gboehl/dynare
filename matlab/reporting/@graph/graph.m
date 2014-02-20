@@ -66,7 +66,7 @@ o.showZeroline = false;
 o.graphSize = [];
 o.xTicks = [];
 o.xTickLabels = {};
-o.xTickLabelRotation = 45;
+o.xTickLabelRotation = 0;
 o.xTickLabelAnchor = 'east';
 
 o.width = 6;

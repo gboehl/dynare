@@ -56,12 +56,19 @@ if isempty(o.xrange)
 else
     dd = o.xrange;
 end
+stringsdd = strings(dd);
 
 fprintf(fid, '\\begin{axis}[%%\n');
 % set tick labels
 if isempty(o.xTickLabels)
-    x = 1:1:dd.ndat;
-    xTickLabels = strings(dd);
+    if ~isempty(o.shade)
+        x1 = find(strcmpi(date2string(o.shade(1)), stringsdd));
+        x = [1 x1 dd.ndat];
+        xTickLabels = [stringsdd(1) stringsdd(x1) stringsdd(end)];
+    else
+        x = [1 dd.ndat];
+        xTickLabels = [stringsdd(1) stringsdd(end)];
+    end
     fprintf(fid, 'xminorticks=true,\nyminorticks=true,\n');
 else
     fprintf(fid,'minor xtick,\n');
@@ -69,11 +76,12 @@ else
     xTickLabels = o.xTickLabels;
 end
 fprintf(fid, 'xticklabels={');
-for i = 1:length(x)
+xlen = length(x);
+for i = 1:xlen
     fprintf(fid,'%s,',lower(xTickLabels{i}));
 end
 fprintf(fid, '},\nxtick={');
-for i = 1:length(x)
+for i = 1:xlen
     fprintf(fid, '%d',x(i));
     if i ~= length(x)
         fprintf(fid,',');
@@ -159,9 +167,8 @@ for i=1:ne
 end
 
 if ~isempty(o.shade)
-    xTickLabels = strings(dd);
-    x1 = find(strcmpi(date2string(o.shade(1)), xTickLabels));
-    x2 = find(strcmpi(date2string(o.shade(end)), xTickLabels));
+    x1 = find(strcmpi(date2string(o.shade(1)), stringsdd));
+    x2 = find(strcmpi(date2string(o.shade(end)), stringsdd));
     assert(~isempty(x1) && ~isempty(x2), ['@graph.writeGraphFile: either ' ...
                         date2string(o.shade(1)) ' or ' date2string(o.shade(end)) ' is not in the date ' ...
                         'range of data selected.']);
