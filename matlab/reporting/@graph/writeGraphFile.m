@@ -56,11 +56,11 @@ if isempty(o.xrange)
 else
     dd = o.xrange;
 end
-stringsdd = strings(dd);
 
 fprintf(fid, '\\begin{axis}[%%\n');
 % set tick labels
 if isempty(o.xTickLabels)
+    stringsdd = strings(dd);
     if ~isempty(o.shade)
         x1 = find(strcmpi(date2string(o.shade(1)), stringsdd));
         x = [1 x1 dd.ndat];
@@ -70,10 +70,13 @@ if isempty(o.xTickLabels)
         xTickLabels = [stringsdd(1) stringsdd(end)];
     end
     fprintf(fid, 'xminorticks=true,\nyminorticks=true,\n');
-else
+elseif iscell(o.xTickLabels)
     fprintf(fid,'minor xtick,\n');
     x = o.xTicks;
     xTickLabels = o.xTickLabels;
+else
+    x = [1:dd.ndat];
+    xTickLabels = strings(dd);
 end
 fprintf(fid, 'xticklabels={');
 xlen = length(x);
@@ -167,6 +170,7 @@ for i=1:ne
 end
 
 if ~isempty(o.shade)
+    stringsdd = strings(dd);
     x1 = find(strcmpi(date2string(o.shade(1)), stringsdd));
     x2 = find(strcmpi(date2string(o.shade(end)), stringsdd));
     assert(~isempty(x1) && ~isempty(x2), ['@graph.writeGraphFile: either ' ...
