@@ -288,7 +288,7 @@ if ~isequal(options_.mode_compute,0) && ~options_.mh_posterior_mode_estimation
                     nit = options_list{i,2};
                   case 'InitialInverseHessian'
                     H0 = eval(options_list{i,2});
-                  case '''TolFun'''
+                  case 'TolFun'
                     crit = options_list{i,2};
                   case 'NumgradAlgorithm'
                     numgrad = options_list{i,2};
