@@ -380,7 +380,7 @@ if ~isequal(options_.mode_compute,0) && ~options_.mh_posterior_mode_estimation
                         error('gmhmaxlik: The value of option AcceptanceRateTarget should be a double between 0 and 1!')
                     end
                   otherwise
-                    Warning(['gmhmaxlik: Unknown option (' options_list{i,1}  ')!'])
+                    warning(['gmhmaxlik: Unknown option (' options_list{i,1}  ')!'])
                 end
             end
         end
