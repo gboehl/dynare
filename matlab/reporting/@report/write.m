@@ -42,6 +42,7 @@ if strcmpi(o.orientation, 'landscape')
 end
 fprintf(fid, ']{geometry}\n');
 fprintf(fid, '\\usepackage{pdflscape, booktabs, pgfplots, colortbl, adjustbox}\n');
+fprintf(fid, '\\pgfplotsset{compat=1.5.1}');
 fprintf(fid, ['\\makeatletter\n' ...
               '\\def\\blfootnote{\\gdef\\@thefnmark{}\\@footnotetext}\n' ...
               '\\makeatother\n']);
