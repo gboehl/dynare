@@ -204,7 +204,7 @@ if ~isempty(o.shade)
     end
 end
 
-fprintf(fid, '\\end{axis}\n\\end{tikzpicture}\n');
+fprintf(fid, '\\end{axis}\n\\end{tikzpicture}%%');
 if fclose(fid) == -1
     error('@graph.writeGraphFile: closing %s\n', o.filename);
 end
