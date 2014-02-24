@@ -63,8 +63,17 @@ if isempty(o.xTickLabels)
     stringsdd = strings(dd);
     if ~isempty(o.shade)
         x1 = find(strcmpi(date2string(o.shade(1)), stringsdd));
-        x = [1 x1 dd.ndat];
-        xTickLabels = [stringsdd(1) stringsdd(x1) stringsdd(end)];
+        x2 = find(strcmpi(date2string(o.shade(end)), stringsdd));
+        if x1 == 1
+            x = [1 x2 dd.ndat];
+            xTickLabels = [stringsdd(1) stringsdd(x2) stringsdd(end)];
+        elseif x2 == dd.ndat
+            x = [1 x1 dd.ndat];
+            xTickLabels = [stringsdd(1) stringsdd(x1) stringsdd(end)];
+        else
+            x = [1 x1 x2 dd.ndat];
+            xTickLabels = [stringsdd(1) stringsdd(x1) stringsdd(x2) stringsdd(end)];
+        end
     else
         x = [1 dd.ndat];
         xTickLabels = [stringsdd(1) stringsdd(end)];
