@@ -69,6 +69,15 @@ if issue_an_error_message
     error('Estimation::mcmc::diagnostics: I cannot proceed because some MCMC files are missing. Check your MCMC files...')
 end
 
+PastDraws = sum(record.MhDraws,1);
+LastFileNumber = PastDraws(2);
+LastLineNumber = record.MhDraws(end,3);
+NumberOfDraws  = PastDraws(1);
+
+if LastLineNumber<=2000
+    warning(['estimation:: MCMC convergence diagnostics are not computed because the total number of iterations is less than 2000!'])
+    return
+end
 
 if nblck == 1 % Brooks and Gelman tests need more than one block
     convergence_diagnostics_geweke=zeros(npar,4+2*length(options_.convergence.geweke.taper_steps));
@@ -120,11 +129,6 @@ if nblck == 1 % Brooks and Gelman tests need more than one block
     skipline(2);
     return;
 end
-
-PastDraws = sum(record.MhDraws,1);
-LastFileNumber = PastDraws(2);
-LastLineNumber = record.MhDraws(end,3);
-NumberOfDraws  = PastDraws(1);
 
 Origin = 1000;
 StepSize = ceil((NumberOfDraws-Origin)/100);% So that the computational time does not 
