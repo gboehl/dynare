@@ -137,8 +137,7 @@ ub = bayestopt_.ub;
 
 dr = oo_.dr;
 
-%% load optimal_mh_scale parameter if previous run was with
-%% mode_compute=6
+% load optimal_mh_scale parameter if previous run was with mode_compute=6
 mh_scale_fname = [M_.fname '_optimal_mh_scale_parameter.mat'];
 if exist(mh_scale_fname)
     if options_.mode_compute == 0
@@ -147,7 +146,7 @@ if exist(mh_scale_fname)
         clear tmp;
     else
         % remove the file if mode_compute ~= 0
-        delete('mh_scale_fname')
+        delete(mh_scale_fname)
     end
 end
 
