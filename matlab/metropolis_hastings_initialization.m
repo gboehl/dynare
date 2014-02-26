@@ -243,13 +243,14 @@ elseif options_.load_mh_file && ~options_.mh_recover
     LastLineNumber = record.LastLineNumber;
     if LastLineNumber < MAX_nruns
         NewFile = ones(nblck,1)*LastFileNumber;
+        fline = ones(nblck,1)*(LastLineNumber+1);
     else
         NewFile = ones(nblck,1)*(LastFileNumber+1);
+        fline = ones(nblck,1);
     end
     ilogpo2 = record.LastLogPost;
     ix2 = record.LastParameters;
     fblck = 1;
-    fline = ones(nblck,1)*(LastLineNumber+1);
     NumberOfPreviousSimulations = sum(record.MhDraws(:,1),1);
     fprintf('Estimation::mcmc: I am writting a new mh-history file... ');
     record.MhDraws = [record.MhDraws;zeros(1,3)];
