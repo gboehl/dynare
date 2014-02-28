@@ -3252,13 +3252,29 @@ models, this return to equilibrium is only an asymptotic phenomenon,
 which one must approximate by an horizon of simulation far enough in
 the future.  Another exercise for which Dynare is well suited is to
 study the transition path to a new equilibrium following a permanent
-shock.  For deterministic simulations, Dynare uses a Newton-type
-algorithm, first proposed by @cite{Laffargue (1990)} and
-@cite{Boucekkine (1995)}, instead of a first order technique like the
-one proposed by @cite{Fair and Taylor (1983)}, and used in earlier
-generation simulation programs. We believe this approach to be in
-general both faster and more robust. The details of the algorithm can
-be found in @cite{Juillard (1996)}.
+shock.  For deterministic simulations, the numerical problem consists of solving
+ a nonlinar system of simultaneous equations in @code{n} endogenous
+ variables in @code{T} periods. Dynare offers several algorithms for
+ solving this problem, which can be chosen via the
+ @code{stack_solve_algo}-option. By default (@code{stack_solve_algo=0}),
+Dynare uses a Newton-type method to solve the simultaneous equation
+system. Because the resulting Jacobian is in the order of @code{n} by
+@code{T} and hence will be very large for long simulations with many
+variables, Dynare makes use of the sparse matrix capacities of
+MATLAB/Octave. A slower but potentially less memory consuming alternative
+(@code{stack_solve_algo=6}) is based on a Newton-type algorithm first
+proposed by @cite{Laffargue (1990)} and @cite{Boucekkine (1995)}, which
+uses relaxation techniques. Thereby, the algorithm avoids ever storing
+the full Jacobian. The details of the algorithm can be found in
+@cite{Juillard (1996)}. The third type of algorithms makes use of block
+decomposition techniques (divide-and-conquer methods) that exploit the
+structure of the model. The principle is to identify recursive and
+simultaneous blocks in the model structure and use this information to
+aid the solution process.  These solution algorithms can provide a
+significant speed-up on large models.
+
+
+
 
 @deffn Command simul ;
 @deffnx Command simul (@var{OPTIONS}@dots{});
