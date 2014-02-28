@@ -82,6 +82,7 @@ end
 % Testing if file have extension
 % If no extension default .mod is added
 if isempty(strfind(fname,'.'))
+    fnamelength = length(fname);
     fname1 = [fname '.dyn'];
     d = dir(fname1);
     if length(d) == 0
@@ -94,7 +95,12 @@ else
             && ~strcmp(upper(fname(size(fname,2)-3:size(fname,2))),'.DYN')
         error('DYNARE: argument must be a filename with .mod or .dyn extension')
     end;
+    fnamelength = length(fname) - 4;
 end;
+
+if fnamelength + length('_set_auxiliary_variables') > namelengthmax()
+    error('The name of your MOD file is too long, please shorten it')
+end
 
 % Workaround for a strange bug with Octave: if there is any call to exist(fname)
 % before the call to the preprocessor, then Octave will use the old copy of
