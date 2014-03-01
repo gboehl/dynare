@@ -74,7 +74,7 @@ LastFileNumber = PastDraws(2);
 LastLineNumber = record.MhDraws(end,3);
 NumberOfDraws  = PastDraws(1);
 
-if LastLineNumber<=2000
+if NumberOfDraws<=2000
     warning(['estimation:: MCMC convergence diagnostics are not computed because the total number of iterations is less than 2000!'])
     return
 end
