@@ -99,6 +99,10 @@ function [ys,params,info] = evaluate_steady_state_file(ys_init,exo_ss,M,options)
             info(2) = residuals'*residuals;
             return
         end
+        if any(isnan(residuals))
+            info(1) = 22;
+            return
+        end
     elseif ~isempty(options.steadystate_partial)
         ssvar = options.steadystate_partial.ssvar;
         nov   = length(ssvar);
