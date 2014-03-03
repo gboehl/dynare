@@ -140,7 +140,8 @@ end
 
 if options_.periods > 0 && ~PI_PCL_solver
     if options_.periods <= options_.drop
-        disp(['STOCH_SIMUL error: The horizon of simulation is shorter than the number of observations to be dropped'])
+        fprintf('\nSTOCH_SIMUL error: The horizon of simulation is shorter than the number of observations to be dropped.\n')
+        fprintf('STOCH_SIMUL error: Either increase options_.periods or decrease options_.drop.\n')
         options_ =options_old;
         return
     end
