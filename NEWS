@@ -1,3 +1,53 @@
+Announcement for Dynare 4.4.2 (on 2014-03-04)
+=============================================
+
+We are pleased to announce the release of Dynare 4.4.2.
+
+This is a bugfix release.
+
+The Windows packages are already available for download at:
+
+ http://www.dynare.org/download/dynare-stable
+
+The Mac and GNU/Linux packages (for Debian and Ubuntu LTS) should follow soon.
+
+This release is compatible with MATLAB versions 7.3 (R2006b) to 8.2 (R2013b)
+and with GNU Octave versions 3.6 to 3.8.
+
+Here is a list of the problems identified in version 4.4.1 and that have been
+fixed in version 4.4.2:
+
+ - Geweke convergence diagnostics was computed on the wrong sample if `mh_drop'
+   was not equal to the default of 0.5.
+
+ - The confidence level for computations in `estimation' (`conf_sig') could not
+   be changed and was fixed at 0.9.
+
+ - The `loglinear' option of `stoch_simul' was displaying the steady state of
+   the original values, not the logged ones, and was producing incorrect
+   simulations and simulated moments. Theoretical moments were unaffected.
+
+ - The `optim' option of `estimation (for setting options to `mode_compute')
+   was only working with at least MATLAB 8.1 (R2013a) or Octave 3.8.
+
+ - For unit root models, theoretical HP filtered moments were sometimes
+   erroneously displayed as NaN.
+
+ - Specifying an endogenous variable twice after the `estimation' command would
+   lead to a crash in the computation of moments.
+
+ - Deterministic simulations were crashing on some models with more than one
+   lead or one lag on exogenous variables.
+
+ - Homotopy in stochastic extended path with order greater than 0 was not
+   working correctly (during the homotopy steps the perfect foresight model
+   solver was called instead of the stochastic perfect foresight model solver).
+
+ - MCMC convergence diagnostics were not computed if `mh_replic' was less than
+   2000; the test now relies on the total number of iterations (this only makes
+   a difference if option `load_mh_file' is used).
+
+
 Announcement for Dynare 4.4.1 (on 2014-01-17)
 =============================================
 
@@ -21,7 +71,7 @@ with GNU Octave versions 3.6 to 3.8.
 
  - The syntax introduced in 4.4.0 for conditional forecast in a deterministic
    setup was removed, and replaced by a new one that is better suited to the
-   task. More precisely, such deterministc forecast are no longer done using
+   task. More precisely, such deterministic forecasts are no longer done using
    the `conditional_forecast' command. The latter is replaced by a group of
    commands: `init_plan', `basic_plan' and `flip_plan'. See the reference
    manual for more details.
