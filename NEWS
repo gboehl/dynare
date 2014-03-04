@@ -20,9 +20,6 @@ fixed in version 4.4.2:
  - Geweke convergence diagnostics was computed on the wrong sample if `mh_drop'
    was not equal to the default of 0.5.
 
- - The confidence level for computations in `estimation' (`conf_sig') could not
-   be changed and was fixed at 0.9.
-
  - The `loglinear' option of `stoch_simul' was displaying the steady state of
    the original values, not the logged ones, and was producing incorrect
    simulations and simulated moments. Theoretical moments were unaffected.
