@@ -4596,7 +4596,11 @@ Default value is @code{1}. For advanced use only.
 For internal use and testing only.
 
 @item conf_sig = @var{DOUBLE}
-@xref{conf_sig}.
+Confidence interval used for classical forecasting after estimation. See @xref{conf_sig}.
+
+@item mh_conf_sig = @var{DOUBLE}
+@anchor{mh_conf_sig} 
+Confidence/HPD interval used for the computation of prior and  posterior statistics like: parameter distributions, prior/posterior moments, conditional variance decomposition, impulse response functions, Bayesian forecasting. Default: @code{0.9} 
 
 @item mh_replic = @var{INTEGER}
 @anchor{mh_replic} Number of replications for Metropolis-Hastings

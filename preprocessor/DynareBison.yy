@@ -108,7 +108,7 @@ class ParsingDriver;
 %token KALMAN_ALGO KALMAN_TOL SUBSAMPLES OPTIONS TOLF
 %token LAPLACE LIK_ALGO LIK_INIT LINEAR LOAD_IDENT_FILES LOAD_MH_FILE LOAD_PARAMS_AND_STEADY_STATE LOGLINEAR LYAPUNOV
 %token LYAPUNOV_FIXED_POINT_TOL LYAPUNOV_DOUBLING_TOL LYAPUNOV_SQUARE_ROOT_SOLVER_TOL LOG_DEFLATOR LOG_TREND_VAR LOG_GROWTH_FACTOR MARKOWITZ MARGINAL_DENSITY MAX MAXIT
-%token MFS MH_DROP MH_INIT_SCALE MH_JSCALE MH_MODE MH_NBLOCKS MH_REPLIC MH_RECOVER MIN MINIMAL_SOLVING_PERIODS
+%token MFS MH_CONF_SIG MH_DROP MH_INIT_SCALE MH_JSCALE MH_MODE MH_NBLOCKS MH_REPLIC MH_RECOVER MIN MINIMAL_SOLVING_PERIODS
 %token MODE_CHECK MODE_CHECK_NEIGHBOURHOOD_SIZE MODE_CHECK_SYMMETRIC_PLOTS MODE_CHECK_NUMBER_OF_POINTS MODE_COMPUTE MODE_FILE MODEL MODEL_COMPARISON MODEL_INFO MSHOCKS ABS SIGN
 %token MODEL_DIAGNOSTICS MODIFIEDHARMONICMEAN MOMENTS_VARENDO DIFFUSE_FILTER SUB_DRAWS TAPER_STEPS GEWEKE_INTERVAL MCMC_JUMPING_COVARIANCE
 %token <string_val> NAME
@@ -1560,6 +1560,7 @@ estimation_options : o_datafile
                    | o_nodisplay
                    | o_graph_format
                    | o_conf_sig
+                   | o_mh_conf_sig
                    | o_mh_replic
                    | o_mh_drop
                    | o_mh_jscale
@@ -2170,6 +2171,7 @@ dynare_sensitivity_option : o_gsa_identification
                           | o_nodisplay
                           | o_graph_format
                           | o_conf_sig
+                          | o_mh_conf_sig
                           | o_loglinear
                           | o_mode_file
                           | o_load_ident_files
@@ -2411,6 +2413,7 @@ o_subsample_name : symbol EQUAL date_expr ':' date_expr
                    { driver.set_subsample_name_equal_to_date_range($1, $3, $5); }
                  ;
 o_conf_sig : CONF_SIG EQUAL non_negative_number { driver.option_num("conf_sig", $3); };
+o_mh_conf_sig : MH_CONF_SIG EQUAL non_negative_number { driver.option_num("mh_conf_sig", $3); };
 o_mh_replic : MH_REPLIC EQUAL INT_NUMBER { driver.option_num("mh_replic", $3); };
 o_mh_drop : MH_DROP EQUAL non_negative_number { driver.option_num("mh_drop", $3); };
 o_mh_jscale : MH_JSCALE EQUAL non_negative_number { driver.option_num("mh_jscale", $3); };
