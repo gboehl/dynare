@@ -156,6 +156,12 @@ fi
 AM_CONDITIONAL([HAVE_BLAS], [test x"$ax_blas_ok" = "xyes"])
 AM_CONDITIONAL([HAVE_LAPACK], [test x"$ax_lapack_ok" = "xyes"])
 
+case ${host_os} in
+  *mingw32*)
+    # Ensure that -lpthread is statically linked under MinGW
+    PTHREAD_LIBS="-Wl,-Bstatic -lpthread -Wl,-Bdynamic"
+    ;;
+esac
 AX_PTHREAD
 
 AC_CONFIG_FILES([Makefile

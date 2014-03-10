@@ -60,7 +60,15 @@ AC_PROG_RANLIB
 AX_PROG_LN_S
 AC_PROG_MKDIR_P
 AM_PROG_AR
+
+case ${host_os} in
+  *mingw32*)
+    # Ensure that -lpthread is statically linked under MinGW
+    PTHREAD_LIBS="-Wl,-Bstatic -lpthread -Wl,-Bdynamic"
+    ;;
+esac
 AX_PTHREAD
+
 # Check for dlopen(), needed by k_order_perturbation DLL
 AC_CHECK_LIB([dl], [dlopen], [LIBADD_DLOPEN="-ldl"], [])
 AC_SUBST([LIBADD_DLOPEN])
