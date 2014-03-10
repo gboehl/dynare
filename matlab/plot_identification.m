@@ -249,11 +249,11 @@ else
         dyn_saveas(hh,[IdentifDirectoryName '/' M_.fname '_ident_COND' ],options_);
         ncut=floor(SampleSize/10*9);
         [dum,is]=sort(idelre.cond);
-        [proba, dproba] = stab_map_1(params, is(1:ncut), is(ncut+1:end), 'MC_HighestCondNumberLRE', 1, [], IdentifDirectoryName, 0.1);
+        [proba, dproba] = stab_map_1(params, is(1:ncut), is(ncut+1:end), 'MC_HighestCondNumberLRE', 1, [], IdentifDirectoryName, 0.1,'MC Highest Condition Number LRE Model');
         [dum,is]=sort(idemodel.cond);
-        [proba, dproba] = stab_map_1(params, is(1:ncut), is(ncut+1:end), 'MC_HighestCondNumberModel', 1, [], IdentifDirectoryName, 0.1);
+        [proba, dproba] = stab_map_1(params, is(1:ncut), is(ncut+1:end), 'MC_HighestCondNumberModel', 1, [], IdentifDirectoryName, 0.1,'MC Highest Condition Number Model Solution');
         [dum,is]=sort(idemoments.cond);
-        [proba, dproba] = stab_map_1(params, is(1:ncut), is(ncut+1:end), 'MC_HighestCondNumberMoments', 1, [], IdentifDirectoryName, 0.1);
+        [proba, dproba] = stab_map_1(params, is(1:ncut), is(ncut+1:end), 'MC_HighestCondNumberMoments', 1, [], IdentifDirectoryName, 0.1,'MC Highest Condition Number Model Moments');
 %         [proba, dproba] = stab_map_1(idemoments.Mco', is(1:ncut), is(ncut+1:end), 'HighestCondNumberMoments_vs_Mco', 1, [], IdentifDirectoryName);
 %         for j=1:nparam,
 % %             ibeh=find(idemoments.Mco(j,:)<0.9);

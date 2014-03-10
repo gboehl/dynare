@@ -533,7 +533,7 @@ if SampleSize > 1,
     disp('Testing MC sample')
     disp_identification(pdraws, idemodel, idemoments, name);
     if ~options_.nograph,
-        plot_identification(pdraws,idemoments,idehess_point,idemodel,idelre,advanced,'MC sample - ',name, IdentifDirectoryName);
+        plot_identification(pdraws,idemoments,idehess_point,idemodel,idelre,advanced,'MC sample ',name, IdentifDirectoryName);
     end
     if advanced,
         jcrit=find(idemoments.ino);
