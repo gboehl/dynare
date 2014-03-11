@@ -23,6 +23,10 @@ function x0=dynare_sensitivity(options_gsa)
 
 global M_ options_ oo_ bayestopt_ estim_params_
 
+if options_.dsge_var
+   error('Identification does not support DSGE-VARs at the current stage') 
+end
+
 fname_ = M_.fname;
 if ~isfield(M_,'dname'),
     M_.dname = M_.fname;
