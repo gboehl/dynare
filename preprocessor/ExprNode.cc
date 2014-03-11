@@ -4313,7 +4313,7 @@ ExternalFunctionNode::composeDerivatives(const vector<expr_t> &dargs)
   for (int i = 0; i < (int) dargs.size(); i++)
     if (dargs.at(i) != 0)
       dNodes.push_back(datatree.AddTimes(dargs.at(i),
-                                         datatree.AddFirstDerivExternalFunctionNode(symb_id, arguments, i+1)));
+                                         datatree.AddFirstDerivExternalFunction(symb_id, arguments, i+1)));
 
   expr_t theDeriv = datatree.Zero;
   for (vector<expr_t>::const_iterator it = dNodes.begin(); it != dNodes.end(); it++)
@@ -4904,7 +4904,7 @@ FirstDerivExternalFunctionNode::composeDerivatives(const vector<expr_t> &dargs)
   for (int i = 0; i < (int) dargs.size(); i++)
     if (dargs.at(i) != 0)
       dNodes.push_back(datatree.AddTimes(dargs.at(i),
-                                         datatree.AddSecondDerivExternalFunctionNode(symb_id, arguments, inputIndex, i+1)));
+                                         datatree.AddSecondDerivExternalFunction(symb_id, arguments, inputIndex, i+1)));
   expr_t theDeriv = datatree.Zero;
   for (vector<expr_t>::const_iterator it = dNodes.begin(); it != dNodes.end(); it++)
     theDeriv = datatree.AddPlus(theDeriv, *it);
@@ -5143,8 +5143,8 @@ FirstDerivExternalFunctionNode::cloneDynamic(DataTree &dynamic_datatree) const
   for (vector<expr_t>::const_iterator it = arguments.begin();
        it != arguments.end(); it++)
     dynamic_arguments.push_back((*it)->cloneDynamic(dynamic_datatree));
-  return dynamic_datatree.AddFirstDerivExternalFunctionNode(symb_id, dynamic_arguments,
-                                                            inputIndex);
+  return dynamic_datatree.AddFirstDerivExternalFunction(symb_id, dynamic_arguments,
+                                                        inputIndex);
 }
 
 SecondDerivExternalFunctionNode::SecondDerivExternalFunctionNode(DataTree &datatree_arg,
@@ -5356,6 +5356,6 @@ SecondDerivExternalFunctionNode::cloneDynamic(DataTree &dynamic_datatree) const
   for (vector<expr_t>::const_iterator it = arguments.begin();
        it != arguments.end(); it++)
     dynamic_arguments.push_back((*it)->cloneDynamic(dynamic_datatree));
-  return dynamic_datatree.AddSecondDerivExternalFunctionNode(symb_id, dynamic_arguments,
-                                                             inputIndex1, inputIndex2);
+  return dynamic_datatree.AddSecondDerivExternalFunction(symb_id, dynamic_arguments,
+                                                         inputIndex1, inputIndex2);
 }
