@@ -65,6 +65,11 @@ global options_
 dataset = read_variables(options_.datafile, options_.varobs, [], options_.xls_sheet, options_.xls_range);
 options_ = set_default_option(options_, 'nobs', size(dataset,1)-options_.first_obs+1);
 
+if (options_.first_obs+options_.nobs-1)> size(dataset,1)
+    fprintf('Incorrect or missing specification of the number of observations. nobs can be at most %4u\n',size(dataset,1)-options_.first_obs+1);
+    error('Inconsistent number of observations.') 
+end
+
 % Parameters for prior
 if options_.first_obs + options_.presample <= nlags
     error('first_obs+presample should be > nlags (for initializing the VAR)')
