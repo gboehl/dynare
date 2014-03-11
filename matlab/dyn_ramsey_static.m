@@ -36,9 +36,14 @@ steady_state = [];
 params = M.params;
 check = 0;
 options_.steadystate.nocheck = 1;
+% dyn_ramsey_static_1 is a subfunction
 nl_func = @(x) dyn_ramsey_static_1(x,M,options_,oo);
 
-if options_.steadystate_flag
+% check_static_model is a subfunction
+if check_static_model(oo.steady_state,M,options_,oo)
+    steady_state = oo.steady_state;
+    return
+elseif options_.steadystate_flag
     k_inst = [];
     instruments = options_.instruments;
     inst_nbr = size(options_.instruments,1);
@@ -46,7 +51,6 @@ if options_.steadystate_flag
         k_inst = [k_inst; strmatch(options_.instruments(i,:), ...
                                    M.endo_names,'exact')];
     end
-    ys = oo.steady_state;
     if inst_nbr == 1
         inst_val = csolve(nl_func,oo.steady_state(k_inst),'',options_.solve_tolf,100);
     else
@@ -145,9 +149,9 @@ end
 aux_eq = [1:orig_endo_aux_nbr, orig_endo_aux_nbr+orig_eq_nbr+1:size(fJ,1)];
 A = fJ(aux_eq,orig_endo_aux_nbr+1:end);
 y = res(aux_eq);
-aux_vars = -A\y;
+mult = -A\y;
 
-resids1 = y+A*aux_vars;
+resids1 = y+A*mult;
 if inst_nbr == 1
     r1 = sqrt(resids1'*resids1);
 else
@@ -161,4 +165,22 @@ else
     resids = [res(orig_endo_nbr+(1:orig_endo_nbr-inst_nbr)); r1];
 end
 rJ = [];
-steady_state = [xx(1:orig_endo_aux_nbr); aux_vars];
+if needs_set_auxiliary_variables
+    steady_state = s_a_v_func([xx(1:orig_endo_aux_nbr); mult]);
+else
+    steady_state = [xx(1:orig_endo_aux_nbr); mult];
+end
+
+function result = check_static_model(ys,M,options_,oo)
+result = false;
+if (options_.bytecode)
+    [chck, res, junk] = bytecode('static',ys,[oo.exo_simul oo.exo_det_simul], ...
+                                 M.params, 'evaluate'); 
+else
+    res = feval([M.fname '_static'],ys,[oo.exo_simul oo.exo_det_simul], ...
+                M.params);
+end
+if norm(res) < options_.solve_tolf
+    result = true;
+end
+
