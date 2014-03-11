@@ -6034,9 +6034,11 @@ The quadratic objectives must be listed with @code{optim_weights}.
 
 This problem is solved using the numerical optimizer @code{csminwel} of Chris Sims.
 
+
 @optionshead
 
-This command accepts the same options as @code{stoch_simul}
+The @code{osr} command will subsequently run @code{stoch_simul}
+and accepts the same options, including restricting the endogenous variables by listing them after the command, as @code{stoch_simul}
 (@pxref{Computing the stochastic solution}) plus
 
 @table @code
