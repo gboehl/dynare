@@ -4376,9 +4376,12 @@ ExternalFunctionNode::writeOutput(ostream &output, ExprNodeOutputType output_typ
                                   const temporary_terms_t &temporary_terms,
                                   deriv_node_temp_terms_t &tef_terms) const
 {
-  if (output_type == oMatlabOutsideModel || output_type == oSteadyStateFile)
+  if (output_type == oMatlabOutsideModel || output_type == oSteadyStateFile
+      || IS_LATEX(output_type))
     {
-      output << datatree.symbol_table.getName(symb_id) << "(";
+      string name = IS_LATEX(output_type) ? datatree.symbol_table.getTeXName(symb_id)
+        : datatree.symbol_table.getName(symb_id);
+      output << name << "(";
       writeExternalFunctionArguments(output, output_type, temporary_terms, tef_terms);
       output << ")";
       return;
@@ -4915,6 +4918,15 @@ FirstDerivExternalFunctionNode::writeOutput(ostream &output, ExprNodeOutputType 
 {
   assert(output_type != oMatlabOutsideModel);
 
+  if (IS_LATEX(output_type))
+    {
+      output << "\\frac{\\partial " << datatree.symbol_table.getTeXName(symb_id)
+             << "}{\\partial " << inputIndex << "}(";
+      writeExternalFunctionArguments(output, output_type, temporary_terms, tef_terms);
+      output << ")";
+      return;
+    }
+
   // If current node is a temporary term
   temporary_terms_t::const_iterator it = temporary_terms.find(const_cast<FirstDerivExternalFunctionNode *>(this));
   if (it != temporary_terms.end())
@@ -5172,6 +5184,15 @@ SecondDerivExternalFunctionNode::writeOutput(ostream &output, ExprNodeOutputType
                                              deriv_node_temp_terms_t &tef_terms) const
 {
   assert(output_type != oMatlabOutsideModel);
+
+  if (IS_LATEX(output_type))
+    {
+      output << "\\frac{\\partial^2 " << datatree.symbol_table.getTeXName(symb_id)
+             << "}{\\partial " << inputIndex1 << "\\partial " << inputIndex2 << "}(";
+      writeExternalFunctionArguments(output, output_type, temporary_terms, tef_terms);
+      output << ")";
+      return;
+    }
 
   // If current node is a temporary term
   temporary_terms_t::const_iterator it = temporary_terms.find(const_cast<SecondDerivExternalFunctionNode *>(this));
