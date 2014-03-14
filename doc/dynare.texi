@@ -6994,6 +6994,25 @@ To be documented. For now, see the wiki: @uref{http://www.dynare.org/DynareWiki/
 @end deffn
 
 
+@deffn Block svar_identification ;
+
+@descriptionhead
+
+This block is terminated by @code{end;}, and contains lines of the
+form:
+@example
+UPPER_CHOLESKY;
+LOWER_CHOLESKY;
+EXCLUSION CONSTANTS;
+EXCLUSION LAG @var{INTEGER}; @var{VARIABLE_NAME} [,@var{VARIABLE_NAME}@dots{}]
+EXCLUSION LAG @var{INTEGER}; EQUATION @var{INTEGER}, @var{VARIABLE_NAME} [,@var{VARIABLE_NAME}@dots{}]
+RESTRICTION EQUATION @var{INTEGER}, @var{EXPRESSION} = @var{EXPRESSION};
+@end example
+
+To be documented. For now, see the wiki: @uref{http://www.dynare.org/DynareWiki/MarkovSwitchingInterface}
+
+@end deffn
+
 @anchor{ms_estimation}
 @deffn Command ms_estimation (@var{OPTIONS}@dots{});
 @descriptionhead
