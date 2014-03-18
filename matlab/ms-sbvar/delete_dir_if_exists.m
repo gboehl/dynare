@@ -11,7 +11,7 @@ function delete_dir_if_exists(dirname)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2011-2013 Dynare Team
+% Copyright (C) 2011-2014 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -29,6 +29,6 @@ function delete_dir_if_exists(dirname)
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 if exist(dirname, 'dir')
-    rmdir(dirname);
+    rmdir(dirname, 's');
 end
 end
