@@ -6005,7 +6005,7 @@ This command computes optimal simple policy rules for
 linear-quadratic problems of the form:
 
 @quotation
-@math{\max_\gamma E(y'_tWy_t)}
+@math{\min_\gamma E(y'_tWy_t)}
 @end quotation
 
 such that:
@@ -6015,78 +6015,196 @@ such that:
 
 where:
 
-@itemize
+@itemize 
+@item @math{E} denotes the unconditional expectations operator;
 
-@item
-@math{\gamma} are parameters to be optimized. They must be elements of matrices
-@math{A_1}, @math{A_2}, @math{A_3};
+@item @math{\gamma} are parameters to be optimized. They must be elements
+of the matrices @math{A_1}, @math{A_2}, @math{A_3}, i.e. be specified as
+parameters in the @code{params}-command and be entered in the
+@code{model}-block;
 
-@item
-@math{y} are the endogenous variables;
+@item @math{y} are the endogenous variables, specified in the
+@code{var}-command, whose (co)-variance enters the loss function;
 
-@item
-@math{e} are the exogenous stochastic shocks;
+@item @math{e} are the exogenous stochastic shocks, specified in the
+@code{var_exo}-command;
+
+@item @math{W} is the weighting matrix;
+
 @end itemize
 
-The parameters to be optimized must be listed with @code{osr_params}.
+The linear quadratic problem consists of choosing a subset of model
+parameters to minimize the weighted (co)-variance of a specified subset
+of endogenous variables, subject to a linear law of motion implied by the
+first order conditions of the model. A few things are worth mentioning.
+First, @math{y} denotes the selected endogenous variables' deviations
+from their steady state, i.e. in case they are not already mean 0 the
+variables entering the loss function are automatically demeaned so that
+the centered second moments are minimized. Second, @code{osr} only solves
+linear quadratic problems of the type resulting from combining the
+specified quadratic loss function with a first order approximation to the
+model's equilibrium conditions. The reason is that the first order
+state-space representation is used to compute the unconditional
+(co)-variances. Hence, @code{osr} will automatically select
+@code{order=1}. Third, because the objective involves minimizing a
+weighted sum of unconditional second moments, those second moments must
+be finite. In particular, unit roots in @math{y} are not allowed.
 
-The quadratic objectives must be listed with @code{optim_weights}.
+The subset of the model parameters over which the optimal simple rule is
+to be optimized, @math{\gamma}, must be listed with @code{osr_params}.
 
-This problem is solved using the numerical optimizer @code{csminwel} of Chris Sims.
+The weighting matrix @math{W} used for the quadratic objective function
+is specified in the @code{optim_weights}-block. By attaching weights to
+endogenous variables, the subset of endogenous variables entering the
+objective function, @math{y}, is implicitly specified.
+
+The linear quadratic problem is solved using the numerical optimizer
+@code{csminwel} of Chris Sims.
 
 
 @optionshead
 
-The @code{osr} command will subsequently run @code{stoch_simul}
-and accepts the same options, including restricting the endogenous variables by listing them after the command, as @code{stoch_simul}
+The @code{osr} command will subsequently run @code{stoch_simul} and
+accepts the same options, including restricting the endogenous variables
+by listing them after the command, as @code{stoch_simul}
 (@pxref{Computing the stochastic solution}) plus
 
 @table @code
 
-@item maxit = @var{INTEGER}
-Determines the maximum number of iterations used in the non-linear solver. Default: @code{1000}
+@item maxit = @var{INTEGER} Determines the maximum number of iterations
+used in the non-linear solver. Default: @code{1000}
 
-@item tolf = @var{DOUBLE}
-Convergence criterion for termination based on the function value. Iteration will
-cease when it proves impossible to improve the function value by more than tolf. Default: @code{1e-7}
-@end table
+@item tolf = @var{DOUBLE} Convergence criterion for termination based on
+the function value. Iteration will cease when it proves impossible to
+improve the function value by more than tolf. Default: @code{1e-7} @end
+table
 
 The value of the objective is stored in the variable
 @code{oo_.osr.objective_function}, which is described below.
 
+After running @code{osr} the parameters entering the simple rule will be
+set to their optimal value so that subsequent runs of @code{stoch_simul}
+will be conducted at these values.
+
 @end deffn
 
-@anchor{osr_params}
-@deffn Command osr_params @var{PARAMETER_NAME}@dots{};
-This command declares parameters to be optimized by @code{osr}.
-@end deffn
+@anchor{osr_params} @deffn Command osr_params
+@var{PARAMETER_NAME}@dots{}; This command declares parameters to be
+optimized by @code{osr}. @end deffn
 
-@anchor{optim_weights}
-@deffn Block optim_weights ;
+@anchor{optim_weights} @deffn Block optim_weights ;
 
 This block specifies quadratic objectives for optimal policy problems
 
-More precisely, this block specifies the nonzero elements of the
-quadratic weight matrices for the objectives in @code{osr}.
+More precisely, this block specifies the nonzero elements of the weight
+matrix @math{W} used in the quadratic form of the objective function in
+@code{osr}.
 
-An element of the diagonal of the weight matrix is given by a line of
-the form:
-@example
-@var{VARIABLE_NAME} @var{EXPRESSION};
-@end example
+An element of the diagonal of the weight matrix is given by a line of the
+form: @example @var{VARIABLE_NAME} @var{EXPRESSION}; @end example
 
 An off-the-diagonal element of the weight matrix is given by a line of
-the form:
-@example
-@var{VARIABLE_NAME},  @var{VARIABLE_NAME} @var{EXPRESSION};
-@end example
+the form: @example @var{VARIABLE_NAME},  @var{VARIABLE_NAME}
+@var{EXPRESSION}; @end example
 
 @end deffn
 
-@defvr {MATLAB/Octave variable} oo_.osr.objective_function
-After an execution of the @code{osr} command, this variable contains
-the value of the objective under optimal policy.
-@end defvr
+@examplehead
+
+@example var y inflation r; 
+varexo y_ inf_;
+
+parameters delta sigma alpha kappa gammarr gammax0 gammac0 gamma_y_
+gamma_inf_;
+
+delta =  0.44; kappa =  0.18; alpha =  0.48; sigma = -0.06;
+
+gammarr = 0; gammax0 = 0.2; gammac0 = 1.5; gamma_y_ = 8; gamma_inf_ = 3;
+
+model(linear); 
+y  = delta * y(-1)  + (1-delta)*y(+1)+sigma *(r -
+inflation(+1)) + y_; inflation  =   alpha * inflation(-1) + (1-alpha) *
+inflation(+1) + kappa*y + inf_; r =
+gammax0*y(-1)+gammac0*inflation(-1)+gamma_y_*y_+gamma_inf_*inf_; 
+end;
+
+shocks; 
+var y_; stderr 0.63; 
+var inf_; stderr 0.4; 
+end;
+
+optim_weights; 
+inflation 1; 
+y 1; 
+y, inflation 0.5; 
+end;
+
+osr_params gammax0 gammac0 gamma_y_ gamma_inf_; 
+osr y; 
+@end example
+
+@defvr {MATLAB/Octave variable} oo_.osr.objective_function 
+After an execution of the @code{osr} command, this variable contains the value of
+the objective under optimal policy. @end defvr
+
+@anchor{Ramsey}
+
+@deffn Command ramsey_model (@var{OPTIONS}@dots{});
+
+@descriptionhead
+
+This command computes the First Order Conditions for maximizing the policy maker objective function subject to the
+constraints provided by the equilibrium path of the economy.
+
+The planner objective must be declared with the @code{planner_objective} command.
+
+This command only creates the expanded model, it doesn't perform any
+computations. It needs to be followed by other instructions to actually
+perfrom desired computations. Note that it is the only way to perform
+perfect foresight simulation of the Ramsey policy problem.
+
+@xref{Auxiliary
+variables}, for an explanation of how Lagrange multipliers are
+automatically created.
+
+@optionshead
+
+This command accepts the following options:
+
+@table @code
+
+@item planner_discount = @var{EXPRESSION}
+Declares the discount factor of the central planner. Default: @code{1.0}
+
+@item instruments = (@var{VARIABLE_NAME},@dots{})
+Declares instrument variables for the computation of the steady state
+under optimal policy. Requires a @code{steady_state_model} block or a
+@code{@dots{}_steadystate.m} file. See below.
+
+@end table
+
+@customhead{Steady state}
+
+Dynare takes advantage of the fact that the Lagrange multipliers appear
+linearly in the equations of the steady state of the model under optimal
+policy. Nevertheless, it is in general very difficult to compute the
+steady state with simply a numerical guess in @code{initval} for the
+endogenous variables.
+
+It greatly facilitates the computation, if the user provides an
+analytical solution for the steady state (in @code{steady_state_model}
+block or in a @code{@dots{}_steadystate.m} file). In this case, it is
+necessary to provide a steady state solution CONDITIONAL on the value
+of the instruments in the optimal policy problem and declared with
+option @code{instruments}. Note that choosing the instruments is
+partly a matter of interpretation and you can choose instruments that
+are handy from a mathematical point of view but different from the
+instruments you would refer to in the analysis of the paper. A typical
+example is choosing inflation or nominal interest rate as an
+instrument.
+
+
+@end deffn
 
 @deffn Command ramsey_policy [@var{VARIABLE_NAME}@dots{}];
 @deffnx Command ramsey_policy (@var{OPTIONS}@dots{}) [@var{VARIABLE_NAME}@dots{}];
