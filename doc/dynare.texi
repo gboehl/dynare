@@ -2226,6 +2226,8 @@ x = 1.1;
 end;
 simul(periods=200);
 
+@end example
+
 In this example, the problem is finding the optimal path for consumption
 and capital for the periods t=1 to T=200, given the path of the exogenous
 technology level @code{x}. Setting @code{x=1.1} in the
@@ -2275,8 +2277,6 @@ values at t=0 and t=201 are unrelated to the dynamics for 0<t<201, they
 may result in strange-looking large jumps. In the example above,
 consumption will display a large jump from t=0 to t=1 and capital will
 jump from t=200 to t=201.
-
-@end example
 
 @end deffn
 
