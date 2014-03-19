@@ -40,7 +40,15 @@ if ~ M_.lead_lag_incidence(M_.maximum_lag+1,:) > 0
 end
 
 if M_.maximum_lead == 0
-    error ('Backward or static model: no point in using OSR') ;
+    error ('OSR: Backward or static model: no point in using OSR') ;
+end
+
+if any(any(isinf(weights)))
+    error ('OSR: At least one of the optim_weights is infinite.') ;
+end
+
+if any(isnan(M_.params(i_params)))
+    error ('OSR: At least one of the initial parameter values for osr_params is NaN') ;
 end
 
 exe =zeros(M_.exo_nbr,1);
@@ -50,6 +58,8 @@ oo_.dr = set_state_space(oo_.dr,M_,options_);
 
 np = size(i_params,1);
 t0 = M_.params(i_params);
+
+
 inv_order_var = oo_.dr.inv_order_var;
 
 H0 = 1e-4*eye(np);
@@ -63,6 +73,12 @@ if info~=0
    print_info(info, options_.noprint, options_);
 else
    fprintf('\nOSR: Initial value of the objective function: %g \n\n',loss);
+end
+if isinf(loss)
+   fprintf('\nOSR: The initial value of the objective function is infinite.\n');
+   fprintf('\nOSR: Check whether the unconditional variance of a target variable is infinite\n');
+   fprintf('\nOSR: due to the presence of a unit root.\n');
+   error('OSR: Initial likelihood is infinite')
 end
 
 %%do actual optimization
