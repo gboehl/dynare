@@ -2284,6 +2284,8 @@ jump from t=200 to t=201.
 
 @descriptionhead
 
+@customhead{In a deterministic perfect foresight context}
+
 In models with lags on more than one period, the @code{histval} block
 permits to specify different historical initial values for different
 periods.
@@ -2310,6 +2312,14 @@ differs from the case where there is no @code{histval} block, where all
 variables are initialized at their steady state value at period 0 and
 before (except when a @code{steady} command doesn't follow an
 @code{initval} block).
+
+@customhead{In a stochastic simulation context}
+
+In the context of stochastic simulations, @code{histval} allows setting
+the starting point of those simulations in the state space (it does not
+affect the starting point for impulse response functions). As for the case of
+perfect foresight simulations, all not explicitly specified variables are set to 0.
+Moreover, as only states enter the recursive policy functions, all values specified for control variables will be ignored.
 
 @examplehead
 
