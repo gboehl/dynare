@@ -612,6 +612,9 @@ options_.gpu = 0;
 options_.convergence.geweke.taper_steps=[4 8 15];
 options_.convergence.geweke.geweke_interval=[0.2 0.5];
 
+% DMM
+options_.multinomial_index = 1;
+
 % initialize persistent variables in priordens()
 priordens([],[],[],[],[],[],1);
 % initialize persistent variables in dyn_first_order_solver()

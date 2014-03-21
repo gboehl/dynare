@@ -92,7 +92,7 @@ class ParsingDriver;
 %token CONSIDER_ALL_ENDOGENOUS CONSIDER_ONLY_OBSERVED
 %token DATAFILE FILE DOUBLING DR_CYCLE_REDUCTION_TOL DR_LOGARITHMIC_REDUCTION_TOL DR_LOGARITHMIC_REDUCTION_MAXITER DR_ALGO DROP DSAMPLE DYNASAVE DYNATYPE CALIBRATION DIFFERENTIATE_FORWARD_VARS
 %token END ENDVAL EQUAL ESTIMATION ESTIMATED_PARAMS ESTIMATED_PARAMS_BOUNDS ESTIMATED_PARAMS_INIT EXTENDED_PATH ENDOGENOUS_PRIOR
-%token FILENAME FILTER_STEP_AHEAD FILTERED_VARS FIRST_OBS LAST_OBS SET_TIME
+%token FILENAME FILTER_STEP_AHEAD FILTERED_VARS FIRST_OBS LAST_OBS SET_TIME PROCESS PROBABILITY MULTINOMIAL
 %token <string_val> FLOAT_NUMBER DATES
 %token DEFAULT FIXED_POINT
 %token FORECAST K_ORDER_SOLVER INSTRUMENTS SHIFT MEAN STDEV VARIANCE MODE INTERVAL SHAPE DOMAINN
@@ -253,6 +253,7 @@ statement : parameters
           | plot_conditional_forecast
           | svar_identification
           | markov_switching
+          | multinomial
           | svar
           | external_function
           | steady_state_model
@@ -1056,6 +1057,14 @@ stoch_simul_options : stoch_simul_primary_options
                     | o_loglinear
                     ;
 
+prob_symbol_list : prob_symbol_list symbol
+                   { driver.add_in_prob_symbol_list($2); }
+                 | prob_symbol_list COMMA symbol
+                   { driver.add_in_prob_symbol_list($3); }
+                 | symbol
+                   { driver.add_in_prob_symbol_list($1); }
+                 ;
+
 symbol_list : symbol_list symbol
                { driver.add_in_symbol_list($2); }
              | symbol_list COMMA symbol
@@ -1539,6 +1548,22 @@ options_eq_opt : symbol '.' OPTIONS
                    $$->push_back($8);
                  }
                ;
+
+
+multinomial : MULTINOMIAL '(' multinomial_options_list ')' ';'
+              { driver.multinomial(); }
+            ;
+
+multinomial_options_list : multinomial_options_list COMMA multinomial_options
+                         | multinomial_options
+                         ;
+
+multinomial_options : o_multinomial_process
+                    | o_multinomial_number_of_regimes
+                    | o_multinomial_parameters
+                    | o_multinomial_probability
+                    | o_multinomial_values
+                    ;
 
 estimation : ESTIMATION ';'
              { driver.run_estimation(); }
@@ -2740,6 +2765,16 @@ o_equations : EQUATIONS EQUAL vec_int
             | EQUATIONS EQUAL vec_int_number
               { driver.option_vec_int("ms.equations",$3); }
             ;
+
+o_multinomial_process : PROCESS EQUAL INT_NUMBER { driver.option_num("multinomial.process",$3); };
+o_multinomial_number_of_regimes : NUMBER_OF_REGIMES EQUAL INT_NUMBER { driver.option_num("multinomial.number_of_regimes",$3); };
+o_multinomial_parameters : PARAMETERS EQUAL '[' symbol_list ']' { driver.option_symbol_list("multinomial.parameters"); };
+o_multinomial_probability : PROBABILITY EQUAL vec_value
+                            { driver.option_num("multinomial.probability",$3); }
+                          | PROBABILITY EQUAL '[' prob_symbol_list ']'
+                            { driver.option_symbol_list("multinomial.probability"); }
+                          ;
+o_multinomial_values : VALUES EQUAL vec_value  { driver.option_num("multinomial.values",$3); };
 
 o_instruments : INSTRUMENTS EQUAL '(' symbol_list ')' {driver.option_symbol_list("instruments"); };
 

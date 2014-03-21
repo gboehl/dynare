@@ -162,6 +162,7 @@ DATE -?[0-9]+([YyAa]|[Mm]([1-9]|1[0-2])|[Qq][1-4]|[Ww]([1-9]{1}|[1-4][0-9]|5[0-2
 <INITIAL>markov_switching {BEGIN DYNARE_STATEMENT; return token::MARKOV_SWITCHING;}
 <INITIAL>svar {BEGIN DYNARE_STATEMENT; return token::SVAR;}
 <INITIAL>external_function {BEGIN DYNARE_STATEMENT; return token::EXTERNAL_FUNCTION;}
+<INITIAL>multinomial {BEGIN DYNARE_STATEMENT; return token::MULTINOMIAL;}
  /* End of a Dynare statement */
 <INITIAL>calib_smoother { BEGIN DYNARE_STATEMENT; return token::CALIB_SMOOTHER; } 
 <INITIAL>model_diagnostics {BEGIN DYNARE_STATEMENT; return token::MODEL_DIAGNOSTICS;}
@@ -543,7 +544,7 @@ DATE -?[0-9]+([YyAa]|[Mm]([1-9]|1[0-2])|[Qq][1-4]|[Ww]([1-9]{1}|[1-4][0-9]|5[0-2
  /* Inside a Dynare block */
 <DYNARE_BLOCK>var {return token::VAR;}
 <DYNARE_BLOCK>stderr {return token::STDERR;}
-<DYNARE_BLOCK>values {return token::VALUES;}
+<DYNARE_BLOCK,DYNARE_STATEMENT>values {return token::VALUES;}
 <DYNARE_BLOCK>corr {return token::CORR;}
 <DYNARE_BLOCK>periods {return token::PERIODS;}
 <DYNARE_BLOCK>cutoff {return token::CUTOFF;}
@@ -614,6 +615,9 @@ DATE -?[0-9]+([YyAa]|[Mm]([1-9]|1[0-2])|[Qq][1-4]|[Ww]([1-9]{1}|[1-4][0-9]|5[0-2
 <DYNARE_STATEMENT>coefficients {return token::COEFFICIENTS;}
 <DYNARE_STATEMENT>variances {return token::VARIANCES;}
 <DYNARE_STATEMENT>equations {return token::EQUATIONS;}
+
+<DYNARE_STATEMENT>process {return token::PROCESS;}
+<DYNARE_STATEMENT>probability {return token::PROBABILITY;}
 
 <DYNARE_STATEMENT>[\.] {return Dynare::parser::token_type (yytext[0]);}
 <DYNARE_STATEMENT>[\\] {return Dynare::parser::token_type (yytext[0]);}

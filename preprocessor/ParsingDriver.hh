@@ -208,7 +208,8 @@ private:
   SymbolList graph_formats;
   //! Temporary storage for equation tags
   vector<pair<string, string> > eq_tags;
-
+  //! Temporary storage for list of probabilities declared in multinomial statement(s)
+  set<string> declared_multinomial_probabilities;
   //! The mod file representation constructed by this ParsingDriver
   ModFile *mod_file;
 
@@ -381,6 +382,8 @@ public:
   void linear();
   //! Adds a variable to temporary symbol list
   void add_in_symbol_list(string *tmp_var);
+  //! Adds a variable to temporary symbol list, declaring it as a probability first
+  void add_in_prob_symbol_list(string *tmp_var);
   //! Writes a rplot() command
   void rplot();
   //! Writes a stock_simul command
@@ -429,6 +432,8 @@ public:
   void set_corr_prior(string *arg1, string *arg2, string *arg3);
  //! Sets the options for estimated correlation
   void set_corr_options(string *arg1, string *arg2, string *arg3);
+  //! Multinomial statement
+  void multinomial();
   //! Runs estimation process
   void run_estimation();
   //! Runs dynare_sensitivy()

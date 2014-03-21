@@ -1516,6 +1516,24 @@ SvarIdentificationStatement::writeOutput(ostream &output, const string &basename
     }
 }
 
+MultinomialStatement::MultinomialStatement(const OptionsList &options_list_arg) :
+  options_list(options_list_arg)
+{
+}
+
+void
+MultinomialStatement::checkPass(ModFileStructure &mod_file_struct, WarningConsolidation &warnings)
+{
+}
+
+void
+MultinomialStatement::writeOutput(ostream &output, const string &basename) const
+{
+  options_list.writeOutput(output);
+  output << "options_.multinomial_info(options_.multinomial_index) = options_.multinomial;" << endl
+         << "options_.multinomial_index = options_.multinomial_index + 1;" << endl;
+}
+
 MarkovSwitchingStatement::MarkovSwitchingStatement(const OptionsList &options_list_arg) :
   options_list(options_list_arg)
 {

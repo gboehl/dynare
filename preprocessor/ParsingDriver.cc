@@ -1147,6 +1147,17 @@ ParsingDriver::option_symbol_list(const string &name_option)
           error("Variables passed to the parameters option of the markov_switching statement must be parameters. Caused by: " + *it);
     }
 
+  if (name_option.compare("multinomial.parameters")==0)
+    {
+      vector<string> probs = symbol_list.get_symbols();
+      for (vector<string>::const_iterator it = probs.begin();
+           it != probs.end(); it++)
+        {
+          string tmp = *it;
+          check_symbol_is_parameter(&tmp);
+        }
+    }
+
   options_list.symbol_list_options[name_option] = symbol_list;
   symbol_list.clear();
 }
@@ -1176,6 +1187,18 @@ ParsingDriver::add_in_symbol_list(string *tmp_var)
 {
   if (*tmp_var != ":")
     check_symbol_existence(*tmp_var);
+  symbol_list.addSymbol(*tmp_var);
+  delete tmp_var;
+}
+
+void
+ParsingDriver::add_in_prob_symbol_list(string *tmp_var)
+{
+  if (declared_multinomial_probabilities.find(*tmp_var) == declared_multinomial_probabilities.end())
+    {
+      declare_symbol(tmp_var, eMultinomialProbability, NULL, NULL);
+      declared_multinomial_probabilities.insert(*tmp_var);
+    }
   symbol_list.addSymbol(*tmp_var);
   delete tmp_var;
 }
@@ -1563,6 +1586,13 @@ ParsingDriver::set_corr_options(string *name1, string *name2, string *subsample_
   delete name1;
   delete name2;
   delete subsample_name;
+}
+
+void
+ParsingDriver::multinomial()
+{
+  mod_file->addStatement(new MultinomialStatement(options_list));
+  options_list.clear();
 }
 
 void

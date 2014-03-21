@@ -150,7 +150,8 @@ enum SymbolType
     eTrend = 13,                    //!< Trend variable
     eStatementDeclaredVariable = 14, //!< Local variable assigned within a Statement (see subsample statement for example)
     eLogTrend = 15,                 //!< Log-trend variable
-    eUnusedEndogenous = 16
+    eUnusedEndogenous = 16,
+    eMultinomialProbability = 17    //!< Probability declared in the Multinomial statement
   };
 
 enum ExpressionType

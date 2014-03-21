@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2003-2012 Dynare Team
+ * Copyright (C) 2003-2014 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -611,6 +611,16 @@ private:
   const OptionsList options_list;
 public:
   EstimationDataStatement(const OptionsList &options_list_arg);
+  virtual void checkPass(ModFileStructure &mod_file_struct, WarningConsolidation &warnings);
+  virtual void writeOutput(ostream &output, const string &basename) const;
+};
+
+class MultinomialStatement : public Statement
+{
+private:
+  const OptionsList options_list;
+public:
+  MultinomialStatement(const OptionsList &options_list_arg);
   virtual void checkPass(ModFileStructure &mod_file_struct, WarningConsolidation &warnings);
   virtual void writeOutput(ostream &output, const string &basename) const;
 };
