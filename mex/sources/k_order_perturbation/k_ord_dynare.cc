@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2013 Dynare Team
+ * Copyright (C) 2008-2014 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -194,6 +194,8 @@ KordpDynare::populateDerivativesContainer(const TwoDMatrix &g, int ord, const ve
         {
           int j = (int) g.get(i, 0)-1; // hessian indices start with 1
           int i1 = (int) g.get(i, 1) -1;
+          if (j < 0 || i1 < 0)
+            continue; // Discard empty entries (see comment in DynamicModelAC::unpackSparseMatrix())
           int s0 = i1 / nJcols;
           int s1 = i1 % nJcols;
           if (s0 < nJcols1)
@@ -222,6 +224,8 @@ KordpDynare::populateDerivativesContainer(const TwoDMatrix &g, int ord, const ve
         {
           int j = (int) g.get(i, 0)-1;
           int i1 = (int) g.get(i, 1) -1;
+          if (j < 0 || i1 < 0)
+            continue; // Discard empty entries (see comment in DynamicModelAC::unpackSparseMatrix())
           int s0 = i1 / nJcols2;
           int i2 = i1 % nJcols2;
           int s1 = i2 / nJcols;

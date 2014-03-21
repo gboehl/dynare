@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010-2011 Dynare Team
+ * Copyright (C) 2010-2014 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -51,6 +51,17 @@ DynamicModelAC::unpackSparseMatrix(mxArray *sparseMat)
         newMat[retvalind1++] = i + 1;
         newMat[retvalind2++] = ptr[rind];
       }
+
+  /* If there are less elements than Nzmax (that might happen if some
+     derivative is symbolically not zero but numerically zero at the evaluation
+     point), then fill in the matrix with empty entries, that will be
+     recognized as such by KordpDynare::populateDerivativesContainer() */
+  while (retvalind0 < (int) sizeRowIdxVector)
+    {
+      newMat[retvalind0++] = 0;
+      newMat[retvalind1++] = 0;
+      newMat[retvalind2++] = 0;
+    }
 
   return newMat;
 }
