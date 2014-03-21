@@ -6026,20 +6026,25 @@ such that:
 where:
 
 @itemize 
-@item @math{E} denotes the unconditional expectations operator;
+@item
+@math{E} denotes the unconditional expectations operator;
 
-@item @math{\gamma} are parameters to be optimized. They must be elements
+@item
+@math{\gamma} are parameters to be optimized. They must be elements
 of the matrices @math{A_1}, @math{A_2}, @math{A_3}, i.e. be specified as
 parameters in the @code{params}-command and be entered in the
 @code{model}-block;
 
-@item @math{y} are the endogenous variables, specified in the
+@item
+@math{y} are the endogenous variables, specified in the
 @code{var}-command, whose (co)-variance enters the loss function;
 
-@item @math{e} are the exogenous stochastic shocks, specified in the
+@item
+@math{e} are the exogenous stochastic shocks, specified in the
 @code{var_exo}-command;
 
-@item @math{W} is the weighting matrix;
+@item
+@math{W} is the weighting matrix;
 
 @end itemize
 
@@ -6086,8 +6091,9 @@ used in the non-linear solver. Default: @code{1000}
 
 @item tolf = @var{DOUBLE} Convergence criterion for termination based on
 the function value. Iteration will cease when it proves impossible to
-improve the function value by more than tolf. Default: @code{1e-7} @end
-table
+improve the function value by more than tolf. Default: @code{1e-7}
+
+@end table
 
 The value of the objective is stored in the variable
 @code{oo_.osr.objective_function}, which is described below.
@@ -6098,11 +6104,13 @@ will be conducted at these values.
 
 @end deffn
 
-@anchor{osr_params} @deffn Command osr_params
-@var{PARAMETER_NAME}@dots{}; This command declares parameters to be
-optimized by @code{osr}. @end deffn
+@anchor{osr_params}
+@deffn Command osr_params @var{PARAMETER_NAME}@dots{};
+This command declares parameters to be optimized by @code{osr}.
+@end deffn
 
-@anchor{optim_weights} @deffn Block optim_weights ;
+@anchor{optim_weights}
+@deffn Block optim_weights ;
 
 This block specifies quadratic objectives for optimal policy problems
 
@@ -6111,31 +6119,42 @@ matrix @math{W} used in the quadratic form of the objective function in
 @code{osr}.
 
 An element of the diagonal of the weight matrix is given by a line of the
-form: @example @var{VARIABLE_NAME} @var{EXPRESSION}; @end example
+form:
+@example
+@var{VARIABLE_NAME} @var{EXPRESSION};
+@end example
 
 An off-the-diagonal element of the weight matrix is given by a line of
-the form: @example @var{VARIABLE_NAME},  @var{VARIABLE_NAME}
-@var{EXPRESSION}; @end example
+the form:
+@example
+@var{VARIABLE_NAME},  @var{VARIABLE_NAME} @var{EXPRESSION};
+@end example
 
 @end deffn
 
 @examplehead
 
-@example var y inflation r; 
+@example
+var y inflation r; 
 varexo y_ inf_;
 
-parameters delta sigma alpha kappa gammarr gammax0 gammac0 gamma_y_
-gamma_inf_;
+parameters delta sigma alpha kappa gammarr gammax0 gammac0 gamma_y_ gamma_inf_;
 
-delta =  0.44; kappa =  0.18; alpha =  0.48; sigma = -0.06;
+delta =  0.44;
+kappa =  0.18;
+alpha =  0.48;
+sigma = -0.06;
 
-gammarr = 0; gammax0 = 0.2; gammac0 = 1.5; gamma_y_ = 8; gamma_inf_ = 3;
+gammarr = 0;
+gammax0 = 0.2;
+gammac0 = 1.5;
+gamma_y_ = 8;
+gamma_inf_ = 3;
 
 model(linear); 
-y  = delta * y(-1)  + (1-delta)*y(+1)+sigma *(r -
-inflation(+1)) + y_; inflation  =   alpha * inflation(-1) + (1-alpha) *
-inflation(+1) + kappa*y + inf_; r =
-gammax0*y(-1)+gammac0*inflation(-1)+gamma_y_*y_+gamma_inf_*inf_; 
+y  = delta * y(-1)  + (1-delta)*y(+1)+sigma *(r - inflation(+1)) + y_;
+inflation  =   alpha * inflation(-1) + (1-alpha) * inflation(+1) + kappa*y + inf_;
+r = gammax0*y(-1)+gammac0*inflation(-1)+gamma_y_*y_+gamma_inf_*inf_; 
 end;
 
 shocks; 
@@ -6155,7 +6174,8 @@ osr y;
 
 @defvr {MATLAB/Octave variable} oo_.osr.objective_function 
 After an execution of the @code{osr} command, this variable contains the value of
-the objective under optimal policy. @end defvr
+the objective under optimal policy.
+@end defvr
 
 @anchor{Ramsey}
 
