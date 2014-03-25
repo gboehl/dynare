@@ -5272,9 +5272,16 @@ Variable set by the @code{estimation} command, if it is used with
 
 @defvr {MATLAB/Octave variable} oo_.FilteredVariables
 Variable set by the @code{estimation} command, if it is used with the
-@code{filtered_vars} option. Fields are of the form:
+@code{filtered_vars} option.
+
+After an estimation without Metropolis, fields are of the form:
 @example
 @code{oo_.FilteredVariables.@var{VARIABLE_NAME}}
+@end example
+
+After an estimation with Metropolis, fields are of the form:
+@example
+@code{oo_.FilteredVariables.@var{MOMENT_NAME}.@var{VARIABLE_NAME}}
 @end example
 @end defvr
 
@@ -5315,28 +5322,53 @@ Variable set by the @code{estimation} command, if it is used with the
 @end defvr
 
 @defvr {MATLAB/Octave variable} oo_.SmoothedShocks
-Variable set by the @code{estimation} command, if it is used with the
-@code{smoother} option. Fields are of the form:
+Variable set by the @code{estimation} command (if used with the
+@code{smoother} option), or by the @code{calib_smoother} command.
+
+After an estimation without Metropolis, or if computed by
+@code{calib_smoother}, fields are of the form:
 @example
 @code{oo_.SmoothedShocks.@var{VARIABLE_NAME}}
 @end example
+
+After an estimation with Metropolis, fields are of the form:
+@example
+@code{oo_.SmoothedShocks.@var{MOMENT_NAME}.@var{VARIABLE_NAME}}
+@end example
+
 @end defvr
 
 @defvr {MATLAB/Octave variable} oo_.SmoothedVariables
-Variable set by the @code{estimation} command, if it is used with the
-@code{smoother} option. Fields are of the form:
+Variable set by the @code{estimation} command (if used with the
+@code{smoother} option), or by the @code{calib_smoother} command.
+
+After an estimation without Metropolis, or if computed by
+@code{calib_smoother}, fields are of the form:
 @example
 @code{oo_.SmoothedVariables.@var{VARIABLE_NAME}}
+@end example
+
+After an estimation with Metropolis, fields are of the form:
+@example
+@code{oo_.SmoothedVariables.@var{MOMENT_NAME}.@var{VARIABLE_NAME}}
 @end example
 @end defvr
 
 @defvr {MATLAB/Octave variable} oo_.UpdatedVariables
-Variable set by the @code{estimation} command, if it is used with the
-@code{smoother} option. Contains the estimation of the expected value of
-variables given the information available at the @emph{current}
-date. Fields are of the form:
+Variable set by the @code{estimation} command (if used with the
+@code{smoother} option), or by the @code{calib_smoother} command.
+Contains the estimation of the expected value of variables given the
+information available at the @emph{current} date.
+
+After an estimation without Metropolis, or if computed by
+@code{calib_smoother}, fields are of the form:
 @example
 @code{oo_.UpdatedVariables.@var{VARIABLE_NAME}}
+@end example
+
+After an estimation with Metropolis, fields are of the form:
+@example
+@code{oo_.UpdatedVariables.@var{MOMENT_NAME}.@var{VARIABLE_NAME}}
 @end example
 @end defvr
 
