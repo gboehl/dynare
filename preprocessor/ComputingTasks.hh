@@ -692,6 +692,17 @@ protected:
   void writeCDomain(ostream &output) const;
 };
 
+class TransitionProbPriorStatement : public BasicPriorStatement
+{
+public:
+  TransitionProbPriorStatement(const string &name_arg,
+                               const string &subsample_name_arg,
+                               const PriorDistributions &prior_shape_arg,
+                               const expr_t &variance_arg,
+                               const OptionsList &options_list_arg);
+  virtual void writeOutput(ostream &output, const string &basename) const;
+};
+
 class PriorStatement : public BasicPriorStatement
 {
 public:

@@ -233,6 +233,7 @@ DATE -?[0-9]+([YyAa]|[Mm]([1-9]|1[0-2])|[Qq][1-4]|[Ww]([1-9]{1}|[1-4][0-9]|5[0-2
 <DYNARE_STATEMENT>file                  {return token::FILE;}
 <DYNARE_STATEMENT>datafile 		{return token::DATAFILE;}
 <DYNARE_STATEMENT>nobs 			{return token::NOBS;}
+<DYNARE_STATEMENT>params        {return token::PARAMS;}
 <DYNARE_STATEMENT>last_obs 		{return token::LAST_OBS;}
 <DYNARE_STATEMENT>first_obs 		{return token::FIRST_OBS;}
 <DYNARE_STATEMENT>mean                  {return token::MEAN;}

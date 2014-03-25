@@ -304,7 +304,8 @@ options_.timeless = 0;
 estimation_info.empty_prior = struct(...
     'domain', [], 'interval', [], 'mean', [], ...
     'median', [], 'mode', [], 'shape', [], ...
-    'shift', [], 'stdev', [], 'truncate', [], 'variance', []);
+    'shift', [], 'stdev', [], 'truncate', [], ...
+    'variance', [], 'params', []);
 estimation_info.empty_options = struct(...
     'bounds',[], 'init', [], 'jscale', []);
 estimation_info.subsamples.range = struct('date1', [], 'date2', []);
@@ -328,6 +329,7 @@ estimation_info.measurement_error_corr.prior = estimation_info.empty_prior;
 estimation_info.measurement_error_corr.subsample_prior = estimation_info.empty_prior;
 estimation_info.measurement_error_corr.options = estimation_info.empty_options;
 estimation_info.measurement_error_corr.subsample_options = estimation_info.empty_options;
+estimation_info.transition_probability.prior = estimation_info.empty_prior;
 estimation_info.subsamples_index = {};
 estimation_info.subsamples.range_index = {};
 estimation_info.parameter_prior_index = {};
@@ -345,6 +347,7 @@ estimation_info.measurement_error_corr.range_index = {};
 estimation_info.structural_innovation_corr_prior_index = {};
 estimation_info.structural_innovation_corr_options_index = {};
 estimation_info.structural_innovation_corr.range_index = {};
+estimation_info.transition_probability_index = {};
 options_.initial_period = dates(1,1);
 options_.dataset.firstobs = options_.initial_period;
 options_.dataset.lastobs = NaN;

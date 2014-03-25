@@ -50,10 +50,18 @@ ParsingDriver::check_symbol_existence(const string &name)
 void
 ParsingDriver::check_symbol_is_parameter(string *name)
 {
+  if (!is_symbol_parameter(name))
+    error(*name + " is not a parameter");
+}
+
+bool
+ParsingDriver::is_symbol_parameter(string *name)
+{
   check_symbol_existence(*name);
   int symb_id = mod_file->symbol_table.getID(*name);
   if (mod_file->symbol_table.getType(symb_id) != eParameter)
-    error(*name + " is not a parameter");
+    return false;
+  return true;
 }
 
 void
@@ -1416,6 +1424,15 @@ ParsingDriver::check_subsample_declaration_exists(string *name1, string *name2, 
     error("The subsample name " + *subsample_name + " was not previously declared in a subsample statement.");
 }
 
+void
+ParsingDriver::set_transition_prob_prior(string *name)
+{
+  mod_file->addStatement(new TransitionProbPriorStatement(*name, "", prior_shape, prior_variance, options_list));
+  options_list.clear();
+  set_prior_variance();
+  prior_shape = eNoShape;
+  delete name;
+}
 
 void
 ParsingDriver::set_prior(string *name, string *subsample_name)

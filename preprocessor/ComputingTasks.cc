@@ -1534,6 +1534,25 @@ MultinomialStatement::writeOutput(ostream &output, const string &basename) const
          << "options_.multinomial_index = options_.multinomial_index + 1;" << endl;
 }
 
+TransitionProbPriorStatement::TransitionProbPriorStatement(const string &name_arg,
+                                                           const string &subsample_name_arg,
+                                                           const PriorDistributions &prior_shape_arg,
+                                                           const expr_t &variance_arg,
+                                                           const OptionsList &options_list_arg) :
+  BasicPriorStatement(name_arg, subsample_name_arg, prior_shape_arg, variance_arg, options_list_arg)
+{
+}
+
+void
+TransitionProbPriorStatement::writeOutput(ostream &output, const string &basename) const
+{
+  string lhs_field = "estimation_info.transition_probability(eifind)";
+  output << "eifind = get_new_or_existing_ei_index('transition_probability_index', '"
+         << name << "', '');" << endl
+         << "estimation_info.transition_probability_index(eifind) = {'" << name << "'};" << endl;
+  writePriorOutput(output, lhs_field, "");
+}
+
 MarkovSwitchingStatement::MarkovSwitchingStatement(const OptionsList &options_list_arg) :
   options_list(options_list_arg)
 {
@@ -2105,6 +2124,7 @@ BasicPriorStatement::writeCommonOutput(ostream &output, const string &lhs_field)
   writeCommonOutputHelper(output, "shift", lhs_field);
   writeCommonOutputHelper(output, "stdev", lhs_field);
   writeCommonOutputHelper(output, "truncate", lhs_field);
+  writeCommonOutputHelper(output, "params", lhs_field);
 
   if (variance)
     {

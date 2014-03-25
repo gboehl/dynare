@@ -84,7 +84,7 @@ class ParsingDriver;
 
 %token AIM_SOLVER ANALYTIC_DERIVATION AR AUTOCORR
 %token BAYESIAN_IRF BETA_PDF BLOCK USE_CALIBRATION
-%token BVAR_DENSITY BVAR_FORECAST
+%token BVAR_DENSITY BVAR_FORECAST PARAMS
 %token BVAR_PRIOR_DECAY BVAR_PRIOR_FLAT BVAR_PRIOR_LAMBDA
 %token BVAR_PRIOR_MU BVAR_PRIOR_OMEGA BVAR_PRIOR_TAU BVAR_PRIOR_TRAIN
 %token BVAR_REPLIC BYTECODE ALL_VALUES_REQUIRED
@@ -1379,7 +1379,12 @@ subsamples_name_list : subsamples_name_list COMMA o_subsample_name
                      ;
 
 prior : symbol '.' PRIOR { driver.set_prior_variance(); driver.prior_shape = eNoShape; } '(' prior_options_list ')' ';'
-        { driver.set_prior($1, new string ("")); }
+        {
+          if (!driver.is_symbol_parameter($1))
+            driver.set_transition_prob_prior($1);
+          else
+            driver.set_prior($1, new string (""));
+        }
       | symbol '.' symbol '.' PRIOR { driver.set_prior_variance(); driver.prior_shape = eNoShape; } '(' prior_options_list ')' ';'
         { driver.set_prior($1, $3); }
       | STD '(' symbol ')' '.' PRIOR { driver.set_prior_variance(); driver.prior_shape = eNoShape; } '(' prior_options_list ')' ';'
@@ -1406,6 +1411,7 @@ prior_options : o_shift
               | o_interval
               | o_shape
               | o_domain
+              | o_params
               ;
 
 prior_eq : prior_eq_opt EQUAL prior_eq_opt ';'
@@ -2489,6 +2495,7 @@ o_jscale : JSCALE EQUAL non_negative_number { driver.option_num("jscale", $3); }
 o_init : INIT EQUAL signed_number { driver.option_num("init", $3); };
 o_bounds : BOUNDS EQUAL vec_value_w_inf { driver.option_num("bounds", $3); };
 o_domain : DOMAINN EQUAL vec_value { driver.option_num("domain", $3); };
+o_params : PARAMS EQUAL vec_value { driver.option_num("params", $3); };
 o_interval : INTERVAL EQUAL vec_value { driver.option_num("interval", $3); };
 o_variance : VARIANCE EQUAL expression { driver.set_prior_variance($3); }
 o_new_estimation_data_nobs : NOBS EQUAL INT_NUMBER { driver.option_num("nobs", $3); };

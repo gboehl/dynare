@@ -412,6 +412,8 @@ public:
   void set_time(string *arg);
   //! Estimation Data
   void estimation_data();
+  //! Sets the prior on the transition probability declared in the multinomial statement
+  void set_transition_prob_prior(string *name);
   //! Sets the prior for a parameter
   void set_prior(string *arg1, string *arg2);
   //! Adds the variance option to its temporary holding place
@@ -494,6 +496,8 @@ public:
   void run_identification();
   void add_mc_filename(string *filename, string *prior = new string("1"));
   void run_model_comparison();
+  //! Performs the check without failing
+  bool is_symbol_parameter(string *name);
   //! Begin a planner_objective statement
   void begin_planner_objective();
   //! End a planner objective statement
