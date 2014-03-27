@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006-2013 Dynare Team
+ * Copyright (C) 2006-2014 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -51,7 +51,8 @@ ModFileStructure::ModFileStructure() :
   estimation_data_statement_present(false),
   last_markov_switching_chain(0),
   calib_smoother_present(false),
-  estim_params_use_calib(false)
+  estim_params_use_calib(false),
+  dmm_present(false)
 {
 }
 

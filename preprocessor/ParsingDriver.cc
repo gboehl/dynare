@@ -1976,6 +1976,13 @@ ParsingDriver::svar()
 }
 
 void
+ParsingDriver::dmm()
+{
+  mod_file->addStatement(new DmmStatement(options_list));
+  options_list.clear();
+}
+
+void
 ParsingDriver::markov_switching()
 {
   OptionsList::num_options_t::const_iterator it0;

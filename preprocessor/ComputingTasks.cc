@@ -1553,6 +1553,23 @@ TransitionProbPriorStatement::writeOutput(ostream &output, const string &basenam
   writePriorOutput(output, lhs_field, "");
 }
 
+DmmStatement::DmmStatement(const OptionsList &options_list_arg) :
+  options_list(options_list_arg)
+{
+}
+
+void
+DmmStatement::checkPass(ModFileStructure &mod_file_struct, WarningConsolidation &warnings)
+{
+  mod_file_struct.dmm_present = true;
+}
+
+void
+DmmStatement::writeOutput(ostream &output, const string &basename) const
+{
+  options_list.writeOutput(output);
+}
+
 MarkovSwitchingStatement::MarkovSwitchingStatement(const OptionsList &options_list_arg) :
   options_list(options_list_arg)
 {

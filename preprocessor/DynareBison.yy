@@ -145,7 +145,7 @@ class ParsingDriver;
 %token RESTRICTION RESTRICTION_FNAME CROSS_RESTRICTIONS NLAGS CONTEMP_REDUCED_FORM REAL_PSEUDO_FORECAST
 %token DUMMY_OBS NSTATES INDXSCALESSTATES NO_BAYESIAN_PRIOR SPECIFICATION SIMS_ZHA
 %token <string_val> ALPHA BETA ABAND NINV CMS NCMS CNUM GAMMA INV_GAMMA INV_GAMMA1 INV_GAMMA2 NORMAL UNIFORM EPS PDF FIG DR NONE PRIOR PRIOR_VARIANCE HESSIAN IDENTITY_MATRIX DIRICHLET
-%token GSIG2_LMDM Q_DIAG FLAT_PRIOR NCSK NSTD
+%token GSIG2_LMDM Q_DIAG FLAT_PRIOR NCSK NSTD DMM BURNIN SIMULREC SEED
 %token INDXPARR INDXOVR INDXAP APBAND INDXIMF IMFBAND INDXFORE FOREBAND INDXGFOREHAT INDXGIMFHAT
 %token INDXESTIMA INDXGDLS EQ_MS FILTER_COVARIANCE FILTER_DECOMPOSITION
 %token EQ_CMS TLINDX TLNUMBER BANACT RESTRICTIONS
@@ -271,6 +271,7 @@ statement : parameters
           | model_diagnostics
           | moment_calibration
           | irf_calibration
+          | dmm
           ;
 
 dsample : DSAMPLE INT_NUMBER ';'
@@ -834,6 +835,22 @@ restriction_elem_expression : COEFF '(' symbol COMMA INT_NUMBER ')'
                             | expression TIMES COEFF '(' symbol COMMA INT_NUMBER ')'
                                  { driver.add_positive_restriction_element($1,$5,$7);}
                             ;
+
+dmm : DMM '(' dmm_options_list ')' ';'
+      { driver.dmm(); }
+    ;
+
+dmm_options_list : dmm_options_list COMMA dmm_options
+                 | dmm_options
+                 ;
+
+dmm_options : o_dmm_burnin
+            | o_dmm_seed
+            | o_dmm_thinning_factor
+            | o_dmm_simulrec
+            | o_datafile
+            ;
+
 
 markov_switching : MARKOV_SWITCHING '(' ms_options_list ')' ';'
                    { driver.markov_switching(); }
@@ -2879,6 +2896,10 @@ o_mcmc_jumping_covariance : MCMC_JUMPING_COVARIANCE EQUAL HESSIAN
                           | MCMC_JUMPING_COVARIANCE EQUAL filename
                             { driver.option_str("MCMC_jumping_covariance", $3); }
                           ;
+o_dmm_thinning_factor : THINNING_FACTOR EQUAL INT_NUMBER { driver.option_num("dmm.thinning_factor",$3); };
+o_dmm_burnin : BURNIN EQUAL INT_NUMBER { driver.option_num("dmm.burnin",$3); };
+o_dmm_seed : SEED EQUAL INT_NUMBER { driver.option_num("dmm.seed",$3); };
+o_dmm_simulrec : SIMULREC EQUAL INT_NUMBER { driver.option_num("dmm.simulrec",$3); };
 o_irf_plot_threshold : IRF_PLOT_THRESHOLD EQUAL non_negative_number { driver.option_num("impulse_responses.plot_threshold", $3); };
 o_consider_all_endogenous : CONSIDER_ALL_ENDOGENOUS { driver.option_str("endo_vars_for_moment_computations_in_estimation", "all_endogenous_variables"); };
 o_consider_only_observed : CONSIDER_ONLY_OBSERVED { driver.option_str("endo_vars_for_moment_computations_in_estimation", "only_observed_variables"); };

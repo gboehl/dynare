@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006-2013 Dynare Team
+ * Copyright (C) 2006-2014 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -121,6 +121,8 @@ public:
   bool corr_options_statement_present;
   //! Whether a Markov Switching DSGE is present
   bool ms_dsge_present;
+  //! Whether a Dynamic Mixture Model is present
+  bool dmm_present;
 };
 
 class Statement

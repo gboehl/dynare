@@ -161,6 +161,7 @@ DATE -?[0-9]+([YyAa]|[Mm]([1-9]|1[0-2])|[Qq][1-4]|[Ww]([1-9]{1}|[1-4][0-9]|5[0-2
 
 <INITIAL>markov_switching {BEGIN DYNARE_STATEMENT; return token::MARKOV_SWITCHING;}
 <INITIAL>svar {BEGIN DYNARE_STATEMENT; return token::SVAR;}
+<INITIAL>dmm {BEGIN DYNARE_STATEMENT; return token::DMM;}
 <INITIAL>external_function {BEGIN DYNARE_STATEMENT; return token::EXTERNAL_FUNCTION;}
 <INITIAL>multinomial {BEGIN DYNARE_STATEMENT; return token::MULTINOMIAL;}
  /* End of a Dynare statement */
@@ -602,6 +603,9 @@ DATE -?[0-9]+([YyAa]|[Mm]([1-9]|1[0-2])|[Qq][1-4]|[Ww]([1-9]{1}|[1-4][0-9]|5[0-2
 <DYNARE_STATEMENT>planner_discount {return token::PLANNER_DISCOUNT;}
 <DYNARE_STATEMENT>calibration {return token::CALIBRATION;}
 <DYNARE_STATEMENT>irf_plot_threshold {return token::IRF_PLOT_THRESHOLD;}
+<DYNARE_STATEMENT>seed {return token::SEED;}
+<DYNARE_STATEMENT>burnin {return token::BURNIN;}
+<DYNARE_STATEMENT>simulrec {return token::SIMULREC;}
 
 <DYNARE_BLOCK>equation {return token::EQUATION;}
 <DYNARE_BLOCK>exclusion {return token::EXCLUSION;}

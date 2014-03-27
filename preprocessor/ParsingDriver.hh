@@ -518,6 +518,8 @@ public:
   void bvar_forecast(string *nlags);
   //! SBVAR statement
   void sbvar();
+  //! Dynamic Mixture Model
+  void dmm();
   //! Markov Switching Statement: Estimation
   void ms_estimation();
   //! Markov Switching Statement: Simulation

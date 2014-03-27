@@ -574,6 +574,17 @@ public:
   virtual void writeOutput(ostream &output, const string &basename) const;
 };
 
+class DmmStatement : public Statement
+{
+private:
+  const OptionsList options_list;
+public:
+  DmmStatement(const OptionsList &options_list_arg);
+  virtual void checkPass(ModFileStructure &mod_file_struct, WarningConsolidation &warnings);
+  virtual void writeOutput(ostream &output, const string &basename) const;
+};
+
+
 class MarkovSwitchingStatement : public Statement
 {
 private:
