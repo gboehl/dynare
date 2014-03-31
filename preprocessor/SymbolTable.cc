@@ -283,6 +283,8 @@ SymbolTable::writeOutput(ostream &output) const throw (NotYetFrozenException)
            it != varobs.end(); it++)
         output << getTypeSpecificID(*it)+1 << " ";
       output << " ];"  << endl;
+
+      output << "options_.varobs_nbr = " << observedVariablesNbr() << ";" << endl;
     }
 }
 
