@@ -40,7 +40,7 @@ fprintf(fid, 'from %s.mod on %d-%d-%d at %d:%d:%d\n', M_.fname, fix(clock));
 
 %% SSM
 fprintf(fid, '\n&ssm\n');
-fprintf(fid, 'nu=%d nv=%d nx=%d d=%d %d dllname=%s', M_.exo_nbr, size(options_.multinomial_info,2), 0, 0, 0, [M_.fname '.dll']);
+fprintf(fid, 'nu=%d nv=%d nx=%d d=%d %d dllname=%s', M_.exo_nbr, size(options_.multinomial_info,2), 0, options_.dmm.max_order_of_integration, options_.dmm.num_nonstationary, [M_.fname '.dll']);
 fprintf(fid, '\n&end\n');
 
 %% Prior

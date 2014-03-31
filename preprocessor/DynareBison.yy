@@ -93,7 +93,7 @@ class ParsingDriver;
 %token DATAFILE FILE DOUBLING DR_CYCLE_REDUCTION_TOL DR_LOGARITHMIC_REDUCTION_TOL DR_LOGARITHMIC_REDUCTION_MAXITER DR_ALGO DROP DSAMPLE DYNASAVE DYNATYPE CALIBRATION DIFFERENTIATE_FORWARD_VARS
 %token END ENDVAL EQUAL ESTIMATION ESTIMATED_PARAMS ESTIMATED_PARAMS_BOUNDS ESTIMATED_PARAMS_INIT EXTENDED_PATH ENDOGENOUS_PRIOR
 %token FILENAME FILTER_STEP_AHEAD FILTERED_VARS FIRST_OBS LAST_OBS SET_TIME PROCESS PROBABILITY MULTINOMIAL
-%token <string_val> FLOAT_NUMBER DATES
+%token <string_val> FLOAT_NUMBER DATES NUM_NONSTATIONARY MAX_ORDER_OF_INTEGRATION
 %token DEFAULT FIXED_POINT
 %token FORECAST K_ORDER_SOLVER INSTRUMENTS SHIFT MEAN STDEV VARIANCE MODE INTERVAL SHAPE DOMAINN
 %token GAMMA_PDF GRAPH GRAPH_FORMAT CONDITIONAL_VARIANCE_DECOMPOSITION NOCHECK STD
@@ -849,8 +849,9 @@ dmm_options : o_mcmc_drop
             | o_dmm_seed
             | o_dmm_thinning_factor
             | o_datafile
+            | o_dmm_max_order_of_integration
+            | o_dmm_num_nonstationary
             ;
-
 
 markov_switching : MARKOV_SWITCHING '(' ms_options_list ')' ';'
                    { driver.markov_switching(); }
@@ -2900,6 +2901,8 @@ o_mcmc_jumping_covariance : MCMC_JUMPING_COVARIANCE EQUAL HESSIAN
                           ;
 o_dmm_thinning_factor : THINNING_FACTOR EQUAL INT_NUMBER { driver.option_num("dmm.thinning_factor",$3); };
 o_dmm_seed : SEED EQUAL INT_NUMBER { driver.option_num("dmm.seed",$3); };
+o_dmm_max_order_of_integration : MAX_ORDER_OF_INTEGRATION EQUAL INT_NUMBER { driver.option_num("dmm.max_order_of_integration",$3); };
+o_dmm_num_nonstationary : NUM_NONSTATIONARY EQUAL INT_NUMBER { driver.option_num("dmm.num_nonstationary",$3); };
 o_irf_plot_threshold : IRF_PLOT_THRESHOLD EQUAL non_negative_number { driver.option_num("impulse_responses.plot_threshold", $3); };
 o_consider_all_endogenous : CONSIDER_ALL_ENDOGENOUS { driver.option_str("endo_vars_for_moment_computations_in_estimation", "all_endogenous_variables"); };
 o_consider_only_observed : CONSIDER_ONLY_OBSERVED { driver.option_str("endo_vars_for_moment_computations_in_estimation", "only_observed_variables"); };
