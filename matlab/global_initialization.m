@@ -385,8 +385,6 @@ options_.mh_mode = 1;
 options_.mh_nblck = 2;
 options_.mh_recover = 0;
 options_.mh_replic = 20000;
-options_.mcmc.replic = options_.mh_replic;
-options_.mcmc.drop = options_.mh_drop;
 options_.recursive_estimation_restart = 0;
 options_.MCMC_jumping_covariance='hessian';
 options_.use_calibration_initialization = 0;
@@ -619,6 +617,14 @@ options_.convergence.geweke.geweke_interval=[0.2 0.5];
 
 % DMM
 options_.multinomial_index = 1;
+options_.dmm.seed = 0;
+options_.dmm.thinning_factor  = 1;
+options_.dmm.hbl = 1;
+options_.dmm.marglik = 'N';
+options_.dmm.check = 'N';
+options_.dmm.datasim = 'N';
+options_.mcmc.drop = 100;
+options_.mcmc.replic = 1000;
 
 % initialize persistent variables in priordens()
 priordens([],[],[],[],[],[],1);
