@@ -844,10 +844,10 @@ dmm_options_list : dmm_options_list COMMA dmm_options
                  | dmm_options
                  ;
 
-dmm_options : o_dmm_burnin
+dmm_options : o_mcmc_drop
+            | o_mcmc_replic
             | o_dmm_seed
             | o_dmm_thinning_factor
-            | o_dmm_simulrec
             | o_datafile
             ;
 
@@ -2550,6 +2550,8 @@ o_subsample_name : symbol EQUAL date_expr ':' date_expr
 o_conf_sig : CONF_SIG EQUAL non_negative_number { driver.option_num("conf_sig", $3); };
 o_mh_conf_sig : MH_CONF_SIG EQUAL non_negative_number { driver.option_num("mh_conf_sig", $3); };
 o_mh_replic : MH_REPLIC EQUAL INT_NUMBER { driver.option_num("mh_replic", $3); };
+o_mcmc_replic : REPLIC EQUAL INT_NUMBER { driver.option_num("mcmc.replic", $3); };
+o_mcmc_drop : DROP EQUAL non_negative_number { driver.option_num("mcmc.drop", $3); };
 o_posterior_max_subsample_draws : POSTERIOR_MAX_SUBSAMPLE_DRAWS EQUAL INT_NUMBER { driver.option_num("posterior_max_subsample_draws", $3); };
 o_mh_drop : MH_DROP EQUAL non_negative_number { driver.option_num("mh_drop", $3); };
 o_mh_jscale : MH_JSCALE EQUAL non_negative_number { driver.option_num("mh_jscale", $3); };
@@ -2897,9 +2899,7 @@ o_mcmc_jumping_covariance : MCMC_JUMPING_COVARIANCE EQUAL HESSIAN
                             { driver.option_str("MCMC_jumping_covariance", $3); }
                           ;
 o_dmm_thinning_factor : THINNING_FACTOR EQUAL INT_NUMBER { driver.option_num("dmm.thinning_factor",$3); };
-o_dmm_burnin : BURNIN EQUAL INT_NUMBER { driver.option_num("dmm.burnin",$3); };
 o_dmm_seed : SEED EQUAL INT_NUMBER { driver.option_num("dmm.seed",$3); };
-o_dmm_simulrec : SIMULREC EQUAL INT_NUMBER { driver.option_num("dmm.simulrec",$3); };
 o_irf_plot_threshold : IRF_PLOT_THRESHOLD EQUAL non_negative_number { driver.option_num("impulse_responses.plot_threshold", $3); };
 o_consider_all_endogenous : CONSIDER_ALL_ENDOGENOUS { driver.option_str("endo_vars_for_moment_computations_in_estimation", "all_endogenous_variables"); };
 o_consider_only_observed : CONSIDER_ONLY_OBSERVED { driver.option_str("endo_vars_for_moment_computations_in_estimation", "only_observed_variables"); };

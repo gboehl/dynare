@@ -604,8 +604,6 @@ DATE -?[0-9]+([YyAa]|[Mm]([1-9]|1[0-2])|[Qq][1-4]|[Ww]([1-9]{1}|[1-4][0-9]|5[0-2
 <DYNARE_STATEMENT>calibration {return token::CALIBRATION;}
 <DYNARE_STATEMENT>irf_plot_threshold {return token::IRF_PLOT_THRESHOLD;}
 <DYNARE_STATEMENT>seed {return token::SEED;}
-<DYNARE_STATEMENT>burnin {return token::BURNIN;}
-<DYNARE_STATEMENT>simulrec {return token::SIMULREC;}
 
 <DYNARE_BLOCK>equation {return token::EQUATION;}
 <DYNARE_BLOCK>exclusion {return token::EXCLUSION;}

@@ -75,7 +75,7 @@ end
 %% MCMC
 fprintf(fid, '\n&mcmc\n');
 fprintf(fid, 'seed=%d thin=%d burnin=%d simulrec=%d', options_.dmm.seed, options_.dmm.thinning_factor,...
-    options_.dmm.burnin, options_.dmm.simulrec);
+    options_.mcmc.drop, options_.mcmc.replic);
 fprintf(fid, '\n&end\n');
 %% Dataset
 
