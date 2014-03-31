@@ -448,7 +448,25 @@ NumConstNode::isVariableNodeEqualTo(SymbolType type_arg, int variable_id, int la
 }
 
 bool
+NumConstNode::containsObserved() const
+{
+  return false;
+}
+
+bool
 NumConstNode::containsEndogenous(void) const
+{
+  return false;
+}
+
+bool
+NumConstNode::isVariableNode() const
+{
+  return false;
+}
+
+bool
+NumConstNode::isLaggedOrLeadNonStateVarPresent() const
 {
   return false;
 }
@@ -1306,6 +1324,27 @@ VariableNode::containsEndogenous(void) const
     return true;
   else
     return false;
+}
+
+bool
+VariableNode::containsObserved() const
+{
+  return datatree.symbol_table.isObservedVariable(symb_id);
+}
+
+bool
+VariableNode::isVariableNode() const
+{
+  return true;
+}
+
+bool
+VariableNode::isLaggedOrLeadNonStateVarPresent() const
+{
+  if (!(type == eEndogenous && !containsObserved()))
+    if (lag != 0)
+      return true;
+  return false;
 }
 
 expr_t
@@ -2384,6 +2423,24 @@ bool
 UnaryOpNode::containsEndogenous(void) const
 {
   return arg->containsEndogenous();
+}
+
+bool
+UnaryOpNode::containsObserved() const
+{
+  return arg->containsObserved();
+}
+
+bool
+UnaryOpNode::isVariableNode() const
+{
+  return false;
+}
+
+bool
+UnaryOpNode::isLaggedOrLeadNonStateVarPresent() const
+{
+  return arg->isLaggedOrLeadNonStateVarPresent();
 }
 
 expr_t
@@ -3639,6 +3696,24 @@ BinaryOpNode::containsEndogenous(void) const
   return (arg1->containsEndogenous() || arg2->containsEndogenous());
 }
 
+bool
+BinaryOpNode::containsObserved() const
+{
+  return (arg1->containsObserved() || arg2->containsObserved());
+}
+
+bool
+BinaryOpNode::isVariableNode() const
+{
+  return false;
+}
+
+bool
+BinaryOpNode::isLaggedOrLeadNonStateVarPresent() const
+{
+  return (arg1->isLaggedOrLeadNonStateVarPresent() || arg2->isLaggedOrLeadNonStateVarPresent());
+}
+
 expr_t
 BinaryOpNode::replaceTrendVar() const
 {
@@ -3667,6 +3742,59 @@ bool
 BinaryOpNode::isInStaticForm() const
 {
   return arg1->isInStaticForm() && arg2->isInStaticForm();
+}
+
+void
+BinaryOpNode::checkDmm() const
+{
+  // LHS must be endog at time t
+  if (!(arg1->isVariableNode() && arg1->containsEndogenous() && arg1->maxEndoLead() == 0))
+    {
+      cerr << "Error: In DMM, the LHS of every equation must be a single endogenous variable at time t." << endl;
+      exit(EXIT_FAILURE);
+    }
+  bool lhsstate = !arg1->containsObserved();
+
+  /* RHS must satisfy:
+     - no observed vars
+     - no leads
+     - no lags, except for state vars (x_t)
+     - x_{t-1} can only appear when x_t is on LHS
+   */
+  if (arg2->containsObserved())
+    {
+      cerr << "Error: In DMM, the RHS cannot contain an observed variable." << endl;
+      exit(EXIT_FAILURE);
+    }
+
+  if (arg2->maxLead() > 0)
+    {
+      cerr << "Error: In DMM, you cannot have any variables with leads." << endl;
+      exit(EXIT_FAILURE);
+    }
+
+  int maxRhsLag = max(arg2->maxEndoLag(), arg2->maxExoLag());
+  if (lhsstate)
+    if (maxRhsLag > 1)
+      {
+        cerr << "Error: In DMM, you cannot have a lag greater than 1." << endl;
+        exit(EXIT_FAILURE);
+      }
+    else
+      { // lag == 0 || 1
+        if (maxRhsLag != 0 && arg2->isLaggedOrLeadNonStateVarPresent())
+          {
+            cout << maxRhsLag << endl;
+            cerr << "Error: In DMM, only state variables can appear with a lag." << endl;
+            exit(EXIT_FAILURE);
+          }
+      }
+  else
+    if (maxRhsLag != 0)
+      {
+        cerr << "Error: In DMM, you can only have lags on the RHS if the LHS is a state variable." << endl;
+        exit(EXIT_FAILURE);
+      }
 }
 
 TrinaryOpNode::TrinaryOpNode(DataTree &datatree_arg, const expr_t arg1_arg,
@@ -4247,6 +4375,24 @@ bool
 TrinaryOpNode::containsEndogenous(void) const
 {
   return (arg1->containsEndogenous() || arg2->containsEndogenous() || arg3->containsEndogenous());
+}
+
+bool
+TrinaryOpNode::containsObserved() const
+{
+  return (arg1->containsObserved() || arg2->containsObserved() || arg3->containsObserved());
+}
+
+bool
+TrinaryOpNode::isVariableNode() const
+{
+  return false;
+}
+
+bool
+TrinaryOpNode::isLaggedOrLeadNonStateVarPresent() const
+{
+  return (arg1->isLaggedOrLeadNonStateVarPresent() || arg2->isLaggedOrLeadNonStateVarPresent() || arg3->isLaggedOrLeadNonStateVarPresent());
 }
 
 expr_t
@@ -4847,6 +4993,30 @@ AbstractExternalFunctionNode::containsEndogenous(void) const
   bool result = false;
   for (vector<expr_t>::const_iterator it = arguments.begin(); it != arguments.end(); it++)
     result = result || (*it)->containsEndogenous();
+  return result;
+}
+
+bool
+AbstractExternalFunctionNode::containsObserved() const
+{
+  bool result = false;
+  for (vector<expr_t>::const_iterator it = arguments.begin(); it != arguments.end(); it++)
+    result = result || (*it)->containsObserved();
+  return result;
+}
+
+bool
+AbstractExternalFunctionNode::isVariableNode() const
+{
+  return false;
+}
+
+bool
+AbstractExternalFunctionNode::isLaggedOrLeadNonStateVarPresent() const
+{
+  bool result = false;
+  for (vector<expr_t>::const_iterator it = arguments.begin(); it != arguments.end(); it++)
+    result = result || (*it)->isLaggedOrLeadNonStateVarPresent();
   return result;
 }
 

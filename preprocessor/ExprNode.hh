@@ -385,6 +385,12 @@ public:
   //! Returns true if the expression contains one or several endogenous variable
   virtual bool containsEndogenous(void) const = 0;
 
+  //! Returns true if the expression contains one or more observed variables
+  virtual bool containsObserved() const = 0;
+
+  //! Returns true if the state variable appears with a lead of 0 or -1
+  virtual bool isLaggedOrLeadNonStateVarPresent() const = 0;
+
   //! Return true if the nodeID is a variable withe a type equal to type_arg, a specific variable id aqual to varfiable_id and a lag equal to lag_arg and false otherwise
   /*!
     \param[in] the type (type_arg), specifique variable id (variable_id and the lag (lag_arg)
@@ -412,6 +418,9 @@ public:
 
   //! Returns true if the expression is in static form (no lead, no lag, no expectation, no STEADY_STATE)
   virtual bool isInStaticForm() const = 0;
+
+  //! Returns true if the expression is a VariableNode
+  virtual bool isVariableNode() const = 0;
 };
 
 //! Object used to compare two nodes (using their indexes)
@@ -463,12 +472,15 @@ public:
   virtual expr_t differentiateForwardVars(const vector<string> &subset, subst_table_t &subst_table, vector<BinaryOpNode *> &neweqs) const;
   virtual bool isNumConstNodeEqualTo(double value) const;
   virtual bool containsEndogenous(void) const;
+  virtual bool containsObserved() const;
   virtual bool isVariableNodeEqualTo(SymbolType type_arg, int variable_id, int lag_arg) const;
   virtual expr_t replaceTrendVar() const;
   virtual expr_t detrend(int symb_id, bool log_trend, expr_t trend) const;
   virtual expr_t cloneDynamic(DataTree &dynamic_datatree) const;
   virtual expr_t removeTrendLeadLag(map<int, expr_t> trend_symbols_map) const;
   virtual bool isInStaticForm() const;
+  virtual bool isVariableNode() const;
+  virtual bool isLaggedOrLeadNonStateVarPresent() const;
 };
 
 //! Symbol or variable node
@@ -525,12 +537,15 @@ public:
   virtual expr_t differentiateForwardVars(const vector<string> &subset, subst_table_t &subst_table, vector<BinaryOpNode *> &neweqs) const;
   virtual bool isNumConstNodeEqualTo(double value) const;
   virtual bool containsEndogenous(void) const;
+  virtual bool containsObserved() const;
   virtual bool isVariableNodeEqualTo(SymbolType type_arg, int variable_id, int lag_arg) const;
   virtual expr_t replaceTrendVar() const;
   virtual expr_t detrend(int symb_id, bool log_trend, expr_t trend) const;
   virtual expr_t cloneDynamic(DataTree &dynamic_datatree) const;
   virtual expr_t removeTrendLeadLag(map<int, expr_t> trend_symbols_map) const;
   virtual bool isInStaticForm() const;
+  virtual bool isVariableNode() const;
+  virtual bool isLaggedOrLeadNonStateVarPresent() const;
 };
 
 //! Unary operator node
@@ -602,12 +617,15 @@ public:
   virtual expr_t differentiateForwardVars(const vector<string> &subset, subst_table_t &subst_table, vector<BinaryOpNode *> &neweqs) const;
   virtual bool isNumConstNodeEqualTo(double value) const;
   virtual bool containsEndogenous(void) const;
+  virtual bool containsObserved() const;
   virtual bool isVariableNodeEqualTo(SymbolType type_arg, int variable_id, int lag_arg) const;
   virtual expr_t replaceTrendVar() const;
   virtual expr_t detrend(int symb_id, bool log_trend, expr_t trend) const;
   virtual expr_t cloneDynamic(DataTree &dynamic_datatree) const;
   virtual expr_t removeTrendLeadLag(map<int, expr_t> trend_symbols_map) const;
   virtual bool isInStaticForm() const;
+  virtual bool isVariableNode() const;
+  virtual bool isLaggedOrLeadNonStateVarPresent() const;
 };
 
 //! Binary operator node
@@ -692,6 +710,7 @@ public:
   virtual expr_t differentiateForwardVars(const vector<string> &subset, subst_table_t &subst_table, vector<BinaryOpNode *> &neweqs) const;
   virtual bool isNumConstNodeEqualTo(double value) const;
   virtual bool containsEndogenous(void) const;
+  virtual bool containsObserved() const;
   virtual bool isVariableNodeEqualTo(SymbolType type_arg, int variable_id, int lag_arg) const;
   virtual expr_t replaceTrendVar() const;
   virtual expr_t detrend(int symb_id, bool log_trend, expr_t trend) const;
@@ -704,6 +723,9 @@ public:
   //! Returns the non-zero hand-side of an equation (that must have a hand side equal to zero)
   expr_t getNonZeroPartofEquation() const;
   virtual bool isInStaticForm() const;
+  virtual bool isVariableNode() const;
+  virtual bool isLaggedOrLeadNonStateVarPresent() const;
+  void checkDmm() const;
 };
 
 //! Trinary operator node
@@ -762,12 +784,15 @@ public:
   virtual expr_t differentiateForwardVars(const vector<string> &subset, subst_table_t &subst_table, vector<BinaryOpNode *> &neweqs) const;
   virtual bool isNumConstNodeEqualTo(double value) const;
   virtual bool containsEndogenous(void) const;
+  virtual bool containsObserved() const;
   virtual bool isVariableNodeEqualTo(SymbolType type_arg, int variable_id, int lag_arg) const;
   virtual expr_t replaceTrendVar() const;
   virtual expr_t detrend(int symb_id, bool log_trend, expr_t trend) const;
   virtual expr_t cloneDynamic(DataTree &dynamic_datatree) const;
   virtual expr_t removeTrendLeadLag(map<int, expr_t> trend_symbols_map) const;
   virtual bool isInStaticForm() const;
+  virtual bool isVariableNode() const;
+  virtual bool isLaggedOrLeadNonStateVarPresent() const;
 };
 
 //! External function node
@@ -836,6 +861,7 @@ public:
   virtual expr_t differentiateForwardVars(const vector<string> &subset, subst_table_t &subst_table, vector<BinaryOpNode *> &neweqs) const;
   virtual bool isNumConstNodeEqualTo(double value) const;
   virtual bool containsEndogenous(void) const;
+  virtual bool containsObserved() const;
   virtual bool isVariableNodeEqualTo(SymbolType type_arg, int variable_id, int lag_arg) const;
   virtual void writePrhs(ostream &output, ExprNodeOutputType output_type, const temporary_terms_t &temporary_terms, deriv_node_temp_terms_t &tef_terms, const string &ending) const;
   virtual expr_t replaceTrendVar() const;
@@ -843,6 +869,8 @@ public:
   virtual expr_t cloneDynamic(DataTree &dynamic_datatree) const = 0;
   virtual expr_t removeTrendLeadLag(map<int, expr_t> trend_symbols_map) const;
   virtual bool isInStaticForm() const;
+  virtual bool isVariableNode() const;
+  virtual bool isLaggedOrLeadNonStateVarPresent() const;
 };
 
 class ExternalFunctionNode : public AbstractExternalFunctionNode

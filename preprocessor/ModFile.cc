@@ -301,6 +301,9 @@ ModFile::checkPass()
         }
       warnings << ") are declared but not used in the model. This may lead to crashes or unexpected behaviour." << endl;
     }
+
+  if (mod_file_struct.dmm_present)
+    dynamic_model.checkDmm();
 }
 
 void

@@ -3505,6 +3505,13 @@ DynamicModel::replaceMyEquations(DynamicModel &dynamic_model) const
 }
 
 void
+DynamicModel::checkDmm() const
+{
+  for (int i = 0; i < (int) equations.size(); i++)
+    equations[i]->checkDmm();
+}
+
+void
 DynamicModel::computeRamseyPolicyFOCs(const StaticModel &static_model)
 {
   // Add aux LM to constraints in equations
