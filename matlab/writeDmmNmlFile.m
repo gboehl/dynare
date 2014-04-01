@@ -40,7 +40,10 @@ fprintf(fid, 'from %s.mod on %d-%d-%d at %d:%d:%d\n', M_.fname, fix(clock));
 
 %% SSM
 fprintf(fid, '\n&ssm\n');
-fprintf(fid, 'nu=%d nv=%d nx=%d d=%d %d dllname=%s', M_.exo_nbr, size(options_.multinomial_info,2), options_.dmm.nx, options_.dmm.max_order_of_integration, options_.dmm.num_nonstationary, [M_.fname '.dll']);
+fprintf(fid, 'nu=%d nv=%d nx=%d d=%d %d dllname=%s check=%s', M_.exo_nbr, ...
+        size(options_.multinomial_info,2), options_.dmm.nx, ...
+        options_.dmm.max_order_of_integration, options_.dmm.num_nonstationary, ...
+        [M_.fname '.dll'], options_.dmm.check_mats);
 fprintf(fid, '\n&end\n');
 
 %% Prior
@@ -56,27 +59,33 @@ for i=1:nt
         case 4
             shape = 'IG';
         otherwise
-            error('Only inv_gamma, normal, and beta are supported for the prior distributions of dmm.');
+            error(['Only inv_gamma, normal, and beta are supported for the ' ...
+                   'prior distributions of dmm.']);
     end
-    fprintf(fid, 'pdftheta(%d) = %s hyptheta(1, %d) = %d %d %d %d\n', i, shape, i, ...
-        estimation_info.parameter(i).prior(1).mean, estimation_info.parameter(i).prior(1).stdev, ...
-        estimation_info.parameter(i).prior(1).interval);
+    fprintf(fid, 'pdftheta(%d) = %s hyptheta(1, %d) = %d %d %d %d\n', i, ...
+            shape, i, estimation_info.parameter(i).prior(1).mean, ...
+            estimation_info.parameter(i).prior(1).stdev, ...
+            estimation_info.parameter(i).prior(1).interval);
 end
 fprintf(fid, '&end\n');
 
 %% S*
 for i=1:size(options_.multinomial_info,2)
     fprintf(fid, '\n&S%d\n',i);
-    fprintf(fid, 'dynS%d=%s nS%d=%d hypS%d(1,1)=%d %d matS%d=%s',i,'I',i,options_.multinomial_info(i).number_of_regimes,...
-        i,options_.multinomial_info(i).values,i,'G');
+    fprintf(fid, 'dynS%d=%s nS%d=%d hypS%d(1,1)=%d %d matS%d=%s',i,'I',i, ...
+            options_.multinomial_info(i).number_of_regimes, i, ...
+            options_.multinomial_info(i).values,i,'G');
     fprintf(fid, '\n&end\n');
 end
 
 %% MCMC
 fprintf(fid, '\n&mcmc\n');
-fprintf(fid, 'seed=%d thin=%d burnin=%d simulrec=%d', options_.dmm.seed, options_.dmm.thinning_factor,...
-    options_.mcmc.drop, options_.mcmc.replic);
+fprintf(fid, 'seed=%d thin=%d burnin=%d simulrec=%d hbl=%d MargLik=%s', ...
+        options_.dmm.seed, options_.dmm.thinning_factor, options_.mcmc.drop, ...
+        options_.mcmc.replic, options_.dmm.block_length, ...
+        options_.dmm.calc_marg_lik);
 fprintf(fid, '\n&end\n');
+
 %% Dataset
 
 fclose(fid);

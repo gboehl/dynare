@@ -164,9 +164,9 @@ class ParsingDriver;
 %token ADAPTIVE_MH_DRAWS THINNING_FACTOR COEFFICIENTS_PRIOR_HYPERPARAMETERS
 %token CONVERGENCE_STARTING_VALUE CONVERGENCE_ENDING_VALUE CONVERGENCE_INCREMENT_VALUE
 %token MAX_ITERATIONS_STARTING_VALUE MAX_ITERATIONS_INCREMENT_VALUE MAX_BLOCK_ITERATIONS
-%token MAX_REPEATED_OPTIMIZATION_RUNS FUNCTION_CONVERGENCE_CRITERION
+%token MAX_REPEATED_OPTIMIZATION_RUNS FUNCTION_CONVERGENCE_CRITERION BLOCK_LENGTH CALC_MARG_LIK
 %token PARAMETER_CONVERGENCE_CRITERION NUMBER_OF_LARGE_PERTURBATIONS NUMBER_OF_SMALL_PERTURBATIONS
-%token NUMBER_OF_POSTERIOR_DRAWS_AFTER_PERTURBATION MAX_NUMBER_OF_STAGES
+%token NUMBER_OF_POSTERIOR_DRAWS_AFTER_PERTURBATION MAX_NUMBER_OF_STAGES CHECK_MATS SIMULATE_DATA
 %token RANDOM_FUNCTION_CONVERGENCE_CRITERION RANDOM_PARAMETER_CONVERGENCE_CRITERION
 
 %type <node_val> expression expression_or_empty
@@ -851,6 +851,10 @@ dmm_options : o_mcmc_drop
             | o_datafile
             | o_dmm_max_order_of_integration
             | o_dmm_num_nonstationary
+            | o_dmm_simulate_data
+            | o_dmm_check_mats
+            | o_dmm_calc_marg_lik
+            | o_dmm_block_length
             ;
 
 markov_switching : MARKOV_SWITCHING '(' ms_options_list ')' ';'
@@ -2904,6 +2908,10 @@ o_dmm_seed : SEED EQUAL INT_NUMBER { driver.option_num("dmm.seed",$3); };
 o_dmm_max_order_of_integration : MAX_ORDER_OF_INTEGRATION EQUAL INT_NUMBER { driver.option_num("dmm.max_order_of_integration",$3); };
 o_dmm_num_nonstationary : NUM_NONSTATIONARY EQUAL INT_NUMBER { driver.option_num("dmm.num_nonstationary",$3); };
 o_irf_plot_threshold : IRF_PLOT_THRESHOLD EQUAL non_negative_number { driver.option_num("impulse_responses.plot_threshold", $3); };
+o_dmm_simulate_data : SIMULATE_DATA EQUAL symbol { driver.option_str("dmm.simulate_data", $3); };
+o_dmm_check_mats : CHECK_MATS EQUAL symbol { driver.option_str("dmm.check_mats", $3); };
+o_dmm_calc_marg_lik : CALC_MARG_LIK EQUAL symbol { driver.option_str("dmm.calc_marg_lik", $3); };
+o_dmm_block_length : BLOCK_LENGTH EQUAL symbol { driver.option_str("dmm.block_length", $3); };
 o_consider_all_endogenous : CONSIDER_ALL_ENDOGENOUS { driver.option_str("endo_vars_for_moment_computations_in_estimation", "all_endogenous_variables"); };
 o_consider_only_observed : CONSIDER_ONLY_OBSERVED { driver.option_str("endo_vars_for_moment_computations_in_estimation", "only_observed_variables"); };
 

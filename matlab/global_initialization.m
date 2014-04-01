@@ -619,10 +619,10 @@ options_.convergence.geweke.geweke_interval=[0.2 0.5];
 options_.multinomial_index = 1;
 options_.dmm.seed = 0;
 options_.dmm.thinning_factor  = 1;
-options_.dmm.hbl = 1;
-options_.dmm.marglik = 'N';
-options_.dmm.check = 'N';
-options_.dmm.datasim = 'N';
+options_.dmm.block_length = 1;
+options_.dmm.calc_marg_lik = 'N';
+options_.dmm.check_mats = 'N';
+options_.dmm.simulate_data = 'N';
 options_.mcmc.drop = 100;
 options_.mcmc.replic = 1000;
 

@@ -606,6 +606,10 @@ DATE -?[0-9]+([YyAa]|[Mm]([1-9]|1[0-2])|[Qq][1-4]|[Ww]([1-9]{1}|[1-4][0-9]|5[0-2
 <DYNARE_STATEMENT>seed {return token::SEED;}
 <DYNARE_STATEMENT>max_order_of_integration {return token::MAX_ORDER_OF_INTEGRATION;}
 <DYNARE_STATEMENT>num_nonstationary {return token::NUM_NONSTATIONARY;}
+<DYNARE_STATEMENT>block_length {return token::BLOCK_LENGTH;}
+<DYNARE_STATEMENT>calc_marg_lik {return token::CALC_MARG_LIK;}
+<DYNARE_STATEMENT>check_mats {return token::CHECK_MATS;}
+<DYNARE_STATEMENT>simulate_data {return token::SIMULATE_DATA;}
 
 <DYNARE_BLOCK>equation {return token::EQUATION;}
 <DYNARE_BLOCK>exclusion {return token::EXCLUSION;}
