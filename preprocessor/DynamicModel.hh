@@ -219,6 +219,8 @@ public:
   //! Adds informations for simulation in a binary file
   void Write_Inf_To_Bin_File_Block(const string &dynamic_basename, const string &bin_basename,
                                    const int &num, int &u_count_int, bool &file_open, bool is_two_boundaries) const;
+  //! Writes the Dmm M file
+  void writeDmmMFile(const string &basename) const;
   //! Writes dynamic model file
   void writeDynamicFile(const string &basename, bool block, bool bytecode, bool use_dll, int order) const;
   //! Writes file containing parameters derivatives

@@ -290,6 +290,8 @@ public:
   int observedVariablesNbr() const;
   //! Is a given symbol in the set of observed variables
   bool isObservedVariable(int symb_id) const;
+  //! Returns the index of the symb_id within the varobs vector
+  int getIndexInVarobs(int symb_id) const;
   //! Return the index of a given observed variable in the vector of all observed variables
   int getObservedVariableIndex(int symb_id) const;
   vector <int> getTrendVarIds() const;

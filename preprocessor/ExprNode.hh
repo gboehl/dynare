@@ -546,6 +546,7 @@ public:
   virtual bool isInStaticForm() const;
   virtual bool isVariableNode() const;
   virtual bool isLaggedOrLeadNonStateVarPresent() const;
+  int getSymbId() const;
 };
 
 //! Unary operator node
@@ -726,6 +727,7 @@ public:
   virtual bool isVariableNode() const;
   virtual bool isLaggedOrLeadNonStateVarPresent() const;
   void checkDmm() const;
+  int getLhsSymbId() const;
 };
 
 //! Trinary operator node

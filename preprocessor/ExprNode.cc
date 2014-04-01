@@ -1431,6 +1431,12 @@ VariableNode::isInStaticForm() const
   return lag == 0;
 }
 
+int
+VariableNode::getSymbId() const
+{
+  return symb_id;
+}
+
 UnaryOpNode::UnaryOpNode(DataTree &datatree_arg, UnaryOpcode op_code_arg, const expr_t arg_arg, int expectation_information_set_arg, int param1_symb_id_arg, int param2_symb_id_arg) :
   ExprNode(datatree_arg),
   arg(arg_arg),
@@ -3742,6 +3748,13 @@ bool
 BinaryOpNode::isInStaticForm() const
 {
   return arg1->isInStaticForm() && arg2->isInStaticForm();
+}
+
+int
+BinaryOpNode::getLhsSymbId() const
+{
+  assert(arg1->isVariableNode());
+  return dynamic_cast<VariableNode *>(arg1)->getSymbId();
 }
 
 void

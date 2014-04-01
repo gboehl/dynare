@@ -1498,6 +1498,111 @@ DynamicModel::writeModelEquationsCode_Block(string &file_name, const string &bin
 }
 
 void
+DynamicModel::writeDmmMFile(const string &basename) const
+{
+  ofstream mOutputFile;
+  string fname(basename);
+  fname += "_dmm.m";
+  mOutputFile.open(fname.c_str(), ios::out | ios::binary);
+  if (!mOutputFile.is_open())
+    {
+      cerr << "ERROR: Can't open file " << fname << " for writing" << endl;
+      exit(EXIT_FAILURE);
+    }
+
+  mOutputFile << "% --------------------------------------------------------------------" << endl
+              << "% State-space format:   y(t) = c(t)z(t) + H(t)x(t)   + G(t)u(t)" << endl
+              << "%                       x(t) = a(t)     + F(t)x(t-1) + R(t)u(t)" << endl
+              << "%" << endl
+              << "% y(t) (ny x 1)          ny  = # of endogenous series" << endl
+              << "% z(t) (nz x 1)          nz  = # of exogenous series" << endl
+              << "% x(t) (nx x 1)          nx  = # of continous states" << endl
+              << "% u(t) (nu x 1)          nu  = # of shocks" << endl
+              << "% C(t) (ny x nz x ns1)   ns1 = # of states for C(t)" << endl
+              << "% H(t) (ny x nx x ns2)   ns2 = # of states for H(t)" << endl
+              << "% G(t) (ny x nu x ns3)   ns3 = # of states for G(t)" << endl
+              << "% a(t) (nx x ns4)        ns4 = # of states for a(t)" << endl
+              << "% F(t) (nx x nx x ns5)   ns5 = # of states for F(t)" << endl
+              << "% R(t) (nx x nu x ns6)   ns6 = # of states for R(t)" << endl
+              << "% ---------------------------------------------------------------------" << endl
+              << "function [C, H, G, A, F, R] = " << basename << "_dmm(ny, nz, nx, nu, ns, theta)" << endl
+              << "% *** The following declaration are fixed ***" << endl
+              << "C = zeros(ny,max(1,nz),ns(1));" << endl
+              << "H = zeros(ny,nx,ns(2));" << endl
+              << "G = zeros(ny,nu,ns(3));" << endl
+              << "A = zeros(nx,ns(4));" << endl
+              << "F = zeros(nx,nx,ns(5));" << endl
+              << "R = zeros(nx,nu,ns(6));" << endl
+              << "% *** Set non-zero elements below   ***" << endl;
+
+  deriv_node_temp_terms_t tef_terms; // need to make this a member of the class
+  for (first_derivatives_t::const_iterator it = first_derivatives.begin();
+       it != first_derivatives.end(); it++)
+    {
+      int eqnum = it->first.first;
+      int lhs_symb_id = equations[eqnum]->getLhsSymbId();
+
+      int deriv_id = it->first.second;
+      int symb_id = getSymbIDByDerivID(deriv_id);
+
+      expr_t d1 = it->second;
+
+      if (symbol_table.isObservedVariable(lhs_symb_id))
+        {
+          int lhs_col_num = symbol_table.getIndexInVarobs(lhs_symb_id) + 1;
+          if (!symbol_table.isObservedVariable(symb_id) && getTypeByDerivID(deriv_id) == eEndogenous)
+            { // Write H
+              int rhs_col_num = symbol_table.getTypeSpecificID(symb_id) - symbol_table.observedVariablesNbr() + 1;
+              mOutputFile << "H(" << lhs_col_num << "," << rhs_col_num << ")=";
+              d1->writeOutput(mOutputFile, oMatlabDynamicModel, temporary_terms, tef_terms);
+              mOutputFile << ";" << endl;
+            }
+          else if (getTypeByDerivID(deriv_id) == eExogenous)
+            { // Write G
+              int rhs_col_num = symbol_table.getTypeSpecificID(symb_id);
+              mOutputFile << "G(" << lhs_col_num << "," << rhs_col_num << ")=";
+              d1->writeOutput(mOutputFile, oMatlabDynamicModel, temporary_terms, tef_terms);
+              mOutputFile << ";" << endl;
+            }
+          else if (lhs_symb_id == symb_id)
+            { // ignore case as we cannot have y_t on both lhs and rhs in first draft
+            }
+          else
+            {
+              cerr << "ERROR: have not dealt with the case of C matrix yet." << endl;
+              exit(EXIT_FAILURE);
+            }
+        }
+      else if (symbol_table.getType(lhs_symb_id) == eEndogenous)
+        {
+          int lhs_col_num = lhs_symb_id;
+          if (!symbol_table.isObservedVariable(symb_id) && getTypeByDerivID(deriv_id) == eEndogenous)
+            { // Write F
+              int rhs_col_num = symbol_table.getTypeSpecificID(symb_id) - symbol_table.observedVariablesNbr() + 1;
+              mOutputFile << "F(" << lhs_col_num << "," << rhs_col_num << ")=";
+              d1->writeOutput(mOutputFile, oMatlabDynamicModel, temporary_terms, tef_terms);
+              mOutputFile << ";" << endl;
+            }
+          else if (getTypeByDerivID(deriv_id) == eExogenous)
+            { // Write R
+              int rhs_col_num = symbol_table.getTypeSpecificID(symb_id);
+              mOutputFile << "R(" << lhs_col_num << "," << rhs_col_num << ")=";
+              d1->writeOutput(mOutputFile, oMatlabDynamicModel, temporary_terms, tef_terms);
+              mOutputFile << ";" << endl;
+            }
+        }
+      else
+        {
+          cerr << "ERROR: DMM should not arrive here." << endl;
+          exit(EXIT_FAILURE);
+        }
+    }
+
+  mOutputFile << "end" << endl;
+  mOutputFile.close();
+}
+
+void
 DynamicModel::writeDynamicMFile(const string &dynamic_basename) const
 {
   string filename = dynamic_basename + ".m";

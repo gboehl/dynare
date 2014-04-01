@@ -551,7 +551,16 @@ SymbolTable::observedVariablesNbr() const
 bool
 SymbolTable::isObservedVariable(int symb_id) const
 {
-  return (find(varobs.begin(), varobs.end(), symb_id) != varobs.end());
+  return (getIndexInVarobs(symb_id) != -1);
+}
+
+int
+SymbolTable::getIndexInVarobs(int symb_id) const
+{
+  vector<int>::const_iterator pos = find(varobs.begin(), varobs.end(), symb_id);
+  if (pos == varobs.end())
+    return -1;
+  return distance(varobs.begin(), pos);
 }
 
 int
