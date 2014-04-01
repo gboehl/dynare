@@ -93,7 +93,7 @@ switch (extension)
         for dyn_i_01=1:var_size_01
             iv = strmatch(strtrim(var_names_01(dyn_i_01,:)),varlist,'exact');
             if ~isempty(iv)
-                dyn_tmp_01 = [data(2:end,iv)]';
+                dyn_tmp_01 = [data(:,iv)]';
                 if length(dyn_tmp_01) > dyn_size_01 && dyn_size_01 > 0
                     cd(old_pwd)
                     error('data size is too large')
@@ -110,7 +110,7 @@ switch (extension)
         for dyn_i_01=1:var_size_01
             iv = strmatch(strtrim(var_names_01(dyn_i_01,:)),varlist,'exact');
             if ~isempty(iv)
-                dyn_tmp_01 = [data(2:end,iv)]';
+                dyn_tmp_01 = [data(:,iv)]';
                 if length(dyn_tmp_01) > dyn_size_01 && dyn_size_01 > 0
                     cd(old_pwd)
                     error('data size is too large')
