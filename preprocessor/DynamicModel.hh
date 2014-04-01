@@ -253,7 +253,10 @@ public:
 
   //! Returns number of static only equations
   size_t staticOnlyEquationsNbr() const;
-  
+
+  // Test that the Hessian is equal to zero
+  void testHessianEqualsZero() const;
+
   //! Returns number of dynamic only equations
   size_t dynamicOnlyEquationsNbr() const;
 

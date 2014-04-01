@@ -480,7 +480,7 @@ ModFile::computingPass(bool no_tmp_terms, FileOutputType output)
           || mod_file_struct.stoch_simul_present
           || mod_file_struct.estimation_present || mod_file_struct.osr_present
           || mod_file_struct.ramsey_model_present || mod_file_struct.identification_present
-          || mod_file_struct.calib_smoother_present)
+          || mod_file_struct.calib_smoother_present || mod_file_struct.dmm_present)
         {
           if (mod_file_struct.simul_present)
             dynamic_model.computingPass(true, false, false, false, global_eval_context, no_tmp_terms, block, use_dll, byte_code);
@@ -496,11 +496,12 @@ ModFile::computingPass(bool no_tmp_terms, FileOutputType output)
                   cerr << "ERROR: Incorrect order option..." << endl;
                   exit(EXIT_FAILURE);
                 }
-              bool hessian = mod_file_struct.order_option >= 2 
-		|| mod_file_struct.identification_present 
-		|| mod_file_struct.estimation_analytic_derivation
-		|| output == second 
-		|| output == third;
+              bool hessian = mod_file_struct.order_option >= 2
+                || mod_file_struct.identification_present
+                || mod_file_struct.estimation_analytic_derivation
+                || mod_file_struct.dmm_present
+                || output == second
+                || output == third;
               bool thirdDerivatives = mod_file_struct.order_option == 3 
 		|| mod_file_struct.estimation_analytic_derivation
 		|| output == third;
@@ -515,6 +516,9 @@ ModFile::computingPass(bool no_tmp_terms, FileOutputType output)
   for (vector<Statement *>::iterator it = statements.begin();
        it != statements.end(); it++)
     (*it)->computingPass();
+
+  if (mod_file_struct.dmm_present)
+    dynamic_model.testHessianEqualsZero();
 }
 
 void

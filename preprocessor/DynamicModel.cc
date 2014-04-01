@@ -3832,6 +3832,16 @@ DynamicModel::getDynJacobianCol(int deriv_id) const throw (UnknownDerivIDExcepti
 }
 
 void
+DynamicModel::testHessianEqualsZero() const
+{
+  if (second_derivatives.size() > 0)
+    {
+      cerr << "The Hessian is not equal to zero." << endl;
+      exit(EXIT_FAILURE);
+    }
+}
+
+void
 DynamicModel::testTrendDerivativesEqualToZero(const eval_context_t &eval_context)
 {
   for (deriv_id_table_t::const_iterator it = deriv_id_table.begin();
