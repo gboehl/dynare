@@ -418,9 +418,6 @@ public:
 
   //! Returns true if the expression is in static form (no lead, no lag, no expectation, no STEADY_STATE)
   virtual bool isInStaticForm() const = 0;
-
-  //! Returns true if the expression is a VariableNode
-  virtual bool isVariableNode() const = 0;
 };
 
 //! Object used to compare two nodes (using their indexes)
@@ -479,7 +476,6 @@ public:
   virtual expr_t cloneDynamic(DataTree &dynamic_datatree) const;
   virtual expr_t removeTrendLeadLag(map<int, expr_t> trend_symbols_map) const;
   virtual bool isInStaticForm() const;
-  virtual bool isVariableNode() const;
   virtual bool isLaggedOrLeadNonStateVarPresent() const;
 };
 
@@ -544,7 +540,6 @@ public:
   virtual expr_t cloneDynamic(DataTree &dynamic_datatree) const;
   virtual expr_t removeTrendLeadLag(map<int, expr_t> trend_symbols_map) const;
   virtual bool isInStaticForm() const;
-  virtual bool isVariableNode() const;
   virtual bool isLaggedOrLeadNonStateVarPresent() const;
   int getSymbId() const;
 };
@@ -625,7 +620,6 @@ public:
   virtual expr_t cloneDynamic(DataTree &dynamic_datatree) const;
   virtual expr_t removeTrendLeadLag(map<int, expr_t> trend_symbols_map) const;
   virtual bool isInStaticForm() const;
-  virtual bool isVariableNode() const;
   virtual bool isLaggedOrLeadNonStateVarPresent() const;
 };
 
@@ -724,10 +718,10 @@ public:
   //! Returns the non-zero hand-side of an equation (that must have a hand side equal to zero)
   expr_t getNonZeroPartofEquation() const;
   virtual bool isInStaticForm() const;
-  virtual bool isVariableNode() const;
   virtual bool isLaggedOrLeadNonStateVarPresent() const;
   void checkDmm() const;
   int getLhsSymbId() const;
+  bool isLhsVarNode() const;
 };
 
 //! Trinary operator node
@@ -793,7 +787,6 @@ public:
   virtual expr_t cloneDynamic(DataTree &dynamic_datatree) const;
   virtual expr_t removeTrendLeadLag(map<int, expr_t> trend_symbols_map) const;
   virtual bool isInStaticForm() const;
-  virtual bool isVariableNode() const;
   virtual bool isLaggedOrLeadNonStateVarPresent() const;
 };
 
@@ -871,7 +864,6 @@ public:
   virtual expr_t cloneDynamic(DataTree &dynamic_datatree) const = 0;
   virtual expr_t removeTrendLeadLag(map<int, expr_t> trend_symbols_map) const;
   virtual bool isInStaticForm() const;
-  virtual bool isVariableNode() const;
   virtual bool isLaggedOrLeadNonStateVarPresent() const;
 };
 

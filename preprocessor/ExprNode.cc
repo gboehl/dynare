@@ -460,12 +460,6 @@ NumConstNode::containsEndogenous(void) const
 }
 
 bool
-NumConstNode::isVariableNode() const
-{
-  return false;
-}
-
-bool
 NumConstNode::isLaggedOrLeadNonStateVarPresent() const
 {
   return false;
@@ -1330,12 +1324,6 @@ bool
 VariableNode::containsObserved() const
 {
   return datatree.symbol_table.isObservedVariable(symb_id);
-}
-
-bool
-VariableNode::isVariableNode() const
-{
-  return true;
 }
 
 bool
@@ -2435,12 +2423,6 @@ bool
 UnaryOpNode::containsObserved() const
 {
   return arg->containsObserved();
-}
-
-bool
-UnaryOpNode::isVariableNode() const
-{
-  return false;
 }
 
 bool
@@ -3709,12 +3691,6 @@ BinaryOpNode::containsObserved() const
 }
 
 bool
-BinaryOpNode::isVariableNode() const
-{
-  return false;
-}
-
-bool
 BinaryOpNode::isLaggedOrLeadNonStateVarPresent() const
 {
   return (arg1->isLaggedOrLeadNonStateVarPresent() || arg2->isLaggedOrLeadNonStateVarPresent());
@@ -3750,10 +3726,16 @@ BinaryOpNode::isInStaticForm() const
   return arg1->isInStaticForm() && arg2->isInStaticForm();
 }
 
+bool
+BinaryOpNode::isLhsVarNode() const
+{
+  return (dynamic_cast<VariableNode *>(arg1) != NULL);
+}
+
 int
 BinaryOpNode::getLhsSymbId() const
 {
-  assert(arg1->isVariableNode());
+  assert(isLhsVarNode());
   return dynamic_cast<VariableNode *>(arg1)->getSymbId();
 }
 
@@ -3761,7 +3743,7 @@ void
 BinaryOpNode::checkDmm() const
 {
   // LHS must be endog at time t
-  if (!(arg1->isVariableNode() && arg1->containsEndogenous() && arg1->maxEndoLead() == 0))
+  if (!(isLhsVarNode() && arg1->containsEndogenous() && arg1->maxEndoLead() == 0))
     {
       cerr << "Error: In DMM, the LHS of every equation must be a single endogenous variable at time t." << endl;
       exit(EXIT_FAILURE);
@@ -4397,12 +4379,6 @@ TrinaryOpNode::containsObserved() const
 }
 
 bool
-TrinaryOpNode::isVariableNode() const
-{
-  return false;
-}
-
-bool
 TrinaryOpNode::isLaggedOrLeadNonStateVarPresent() const
 {
   return (arg1->isLaggedOrLeadNonStateVarPresent() || arg2->isLaggedOrLeadNonStateVarPresent() || arg3->isLaggedOrLeadNonStateVarPresent());
@@ -5016,12 +4992,6 @@ AbstractExternalFunctionNode::containsObserved() const
   for (vector<expr_t>::const_iterator it = arguments.begin(); it != arguments.end(); it++)
     result = result || (*it)->containsObserved();
   return result;
-}
-
-bool
-AbstractExternalFunctionNode::isVariableNode() const
-{
-  return false;
 }
 
 bool
