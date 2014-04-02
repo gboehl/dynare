@@ -1529,6 +1529,7 @@ MultinomialStatement::checkPass(ModFileStructure &mod_file_struct, WarningConsol
 void
 MultinomialStatement::writeOutput(ostream &output, const string &basename) const
 {
+  output << "options_.multinomial = set_multinomial_default();" << endl;
   options_list.writeOutput(output);
   output << "options_.multinomial_info(options_.multinomial_index) = options_.multinomial;" << endl
          << "options_.multinomial_index = options_.multinomial_index + 1;" << endl;
