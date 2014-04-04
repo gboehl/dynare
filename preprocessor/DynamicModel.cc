@@ -1525,7 +1525,8 @@ DynamicModel::writeDmmMFile(const string &basename) const
               << "% F(t) (nx x nx x ns5)   ns5 = # of states for F(t)" << endl
               << "% R(t) (nx x nu x ns6)   ns6 = # of states for R(t)" << endl
               << "% ---------------------------------------------------------------------" << endl
-              << "function [C, H, G, A, F, R] = " << basename << "_dmm(ny, nz, nx, nu, ns, theta)" << endl
+              << "function [C, H, G, A, F, R] = " << basename << "_dmm(ny, nz, nx, nu, ns, params)" << endl
+              << "global M_ options_" << endl
               << "% *** The following declaration are fixed ***" << endl
               << "C = zeros(ny,max(1,nz),ns(1));" << endl
               << "H = zeros(ny,nx,ns(2));" << endl
@@ -1533,7 +1534,12 @@ DynamicModel::writeDmmMFile(const string &basename) const
               << "A = zeros(nx,ns(4));" << endl
               << "F = zeros(nx,nx,ns(5));" << endl
               << "R = zeros(nx,nu,ns(6));" << endl
-              << "% *** Set non-zero elements below   ***" << endl;
+              << "% *** Set non-zero elements below   ***" << endl << endl
+              << "latent_vars_params_indx = zeros(1,options_.multinomial_index-1);" << endl
+              << "for i=1:options_.multinomial_index-1" << endl
+              << "  latent_vars_params_indx(i) = find(strcmp(cellstr(M_.param_names),"
+              << "options_.multinomial_info(i).parameters));" << endl
+              << "end" << endl;
 
   deriv_node_temp_terms_t tef_terms; // need to make this a member of the class
   for (first_derivatives_t::const_iterator it = first_derivatives.begin();
@@ -1550,7 +1556,10 @@ DynamicModel::writeDmmMFile(const string &basename) const
       if (symbol_table.isObservedVariable(lhs_symb_id))
         {
           int lhs_col_num = symbol_table.getIndexInVarobs(lhs_symb_id) + 1;
-          if (!symbol_table.isObservedVariable(symb_id) && getTypeByDerivID(deriv_id) == eEndogenous)
+          if (lhs_symb_id == symb_id)
+            { // ignore case as we cannot have y_t on both lhs and rhs in first draft
+            }
+          else if (!symbol_table.isObservedVariable(symb_id) && getTypeByDerivID(deriv_id) == eEndogenous)
             { // Write H
               int rhs_col_num = symbol_table.getTypeSpecificID(symb_id) - symbol_table.observedVariablesNbr() + 1;
               mOutputFile << "H(" << lhs_col_num << "," << rhs_col_num << ")=";
@@ -1559,13 +1568,10 @@ DynamicModel::writeDmmMFile(const string &basename) const
             }
           else if (getTypeByDerivID(deriv_id) == eExogenous)
             { // Write G
-              int rhs_col_num = symbol_table.getTypeSpecificID(symb_id);
+              int rhs_col_num = symbol_table.getTypeSpecificID(symb_id) + 1;
               mOutputFile << "G(" << lhs_col_num << "," << rhs_col_num << ")=";
               d1->writeOutput(mOutputFile, oMatlabDynamicModel, temporary_terms, tef_terms);
               mOutputFile << ";" << endl;
-            }
-          else if (lhs_symb_id == symb_id)
-            { // ignore case as we cannot have y_t on both lhs and rhs in first draft
             }
           else
             {
@@ -1576,7 +1582,8 @@ DynamicModel::writeDmmMFile(const string &basename) const
       else if (symbol_table.getType(lhs_symb_id) == eEndogenous)
         {
           int lhs_col_num = lhs_symb_id;
-          if (!symbol_table.isObservedVariable(symb_id) && getTypeByDerivID(deriv_id) == eEndogenous)
+          if (!symbol_table.isObservedVariable(symb_id) && getTypeByDerivID(deriv_id) == eEndogenous &&
+              getLagByDerivID(deriv_id) != 0)
             { // Write F
               int rhs_col_num = symbol_table.getTypeSpecificID(symb_id) - symbol_table.observedVariablesNbr() + 1;
               mOutputFile << "F(" << lhs_col_num << "," << rhs_col_num << ")=";
@@ -1585,10 +1592,18 @@ DynamicModel::writeDmmMFile(const string &basename) const
             }
           else if (getTypeByDerivID(deriv_id) == eExogenous)
             { // Write R
-              int rhs_col_num = symbol_table.getTypeSpecificID(symb_id);
+              int rhs_col_num = symbol_table.getTypeSpecificID(symb_id) + 1;
               mOutputFile << "R(" << lhs_col_num << "," << rhs_col_num << ")=";
               d1->writeOutput(mOutputFile, oMatlabDynamicModel, temporary_terms, tef_terms);
               mOutputFile << ";" << endl;
+            }
+          else if (lhs_symb_id == symb_id)
+            { // ignore case as we cannot have x_t on both lhs and rhs in first draft
+            }
+          else
+            {
+              cerr << "ERROR: have not dealt with the case of A matrix yet." << endl;
+              exit(EXIT_FAILURE);
             }
         }
       else
