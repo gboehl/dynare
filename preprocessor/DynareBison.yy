@@ -1588,7 +1588,6 @@ multinomial_options_list : multinomial_options_list COMMA multinomial_options
 
 multinomial_options : o_multinomial_process
                     | o_multinomial_number_of_regimes
-                    | o_multinomial_parameters
                     | o_multinomial_probability
                     ;
 
@@ -2798,7 +2797,6 @@ o_equations : EQUATIONS EQUAL vec_int
 
 o_multinomial_process : PROCESS EQUAL INT_NUMBER { driver.option_num("multinomial.process",$3); };
 o_multinomial_number_of_regimes : NUMBER_OF_REGIMES EQUAL INT_NUMBER { driver.option_num("multinomial.number_of_regimes",$3); };
-o_multinomial_parameters : PARAMETERS EQUAL '[' symbol_list ']' { driver.option_symbol_list("multinomial.parameters"); };
 o_multinomial_probability : PROBABILITY EQUAL vec_value
                             { driver.option_num("multinomial.probability",$3); }
                           | PROBABILITY EQUAL '[' prob_symbol_list ']'
