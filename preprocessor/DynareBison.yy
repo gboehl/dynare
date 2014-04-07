@@ -1590,7 +1590,6 @@ multinomial_options : o_multinomial_process
                     | o_multinomial_number_of_regimes
                     | o_multinomial_parameters
                     | o_multinomial_probability
-                    | o_multinomial_values
                     ;
 
 estimation : ESTIMATION ';'
@@ -2805,8 +2804,6 @@ o_multinomial_probability : PROBABILITY EQUAL vec_value
                           | PROBABILITY EQUAL '[' prob_symbol_list ']'
                             { driver.option_symbol_list("multinomial.probability"); }
                           ;
-o_multinomial_values : VALUES EQUAL vec_value  { driver.option_num("multinomial.values",$3); };
-
 o_instruments : INSTRUMENTS EQUAL '(' symbol_list ')' {driver.option_symbol_list("instruments"); };
 
 o_ext_func_name : EXT_FUNC_NAME EQUAL filename { driver.external_function_option("name", $3); };
