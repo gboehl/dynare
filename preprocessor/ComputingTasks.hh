@@ -626,6 +626,18 @@ public:
   virtual void writeOutput(ostream &output, const string &basename) const;
 };
 
+class CalibrationStatement : public Statement
+{
+private:
+  const string name;
+  const OptionsList options_list;
+public:
+  CalibrationStatement(const string &name_arg,
+                       const OptionsList &options_list_arg);
+  virtual void writeOutput(ostream &output, const string &basename) const;
+  void writeOutputHelper(ostream &output, const string &lhs_field, const string &field) const;
+};
+
 class MultinomialStatement : public Statement
 {
 private:

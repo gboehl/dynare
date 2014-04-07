@@ -626,6 +626,8 @@ options_.dmm.simulate_data = 'N';
 options_.mcmc.drop = 100;
 options_.mcmc.replic = 1000;
 
+options_.calibration = [];
+
 % initialize persistent variables in priordens()
 priordens([],[],[],[],[],[],1);
 % initialize persistent variables in dyn_first_order_solver()

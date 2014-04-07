@@ -1516,6 +1516,38 @@ SvarIdentificationStatement::writeOutput(ostream &output, const string &basename
     }
 }
 
+CalibrationStatement::CalibrationStatement(const string &name_arg,
+                                           const OptionsList &options_list_arg) :
+  name(name_arg),
+  options_list(options_list_arg)
+{
+}
+
+void
+CalibrationStatement::writeOutput(ostream &output, const string &basename) const
+{
+  string lhs_field = "options_.calibration(calibind)";
+  output << "calibind = size(options_.calibration, 2) + 1;" << endl
+         << lhs_field << ".param = '" << name << "';" << endl;
+  writeOutputHelper(output, lhs_field, "process");
+  writeOutputHelper(output, lhs_field, "regime");
+  writeOutputHelper(output, lhs_field, "value");
+}
+
+void
+CalibrationStatement::writeOutputHelper(ostream &output, const string &lhs_field, const string &field) const
+{
+  OptionsList::num_options_t::const_iterator itn = options_list.num_options.find(field);
+  if (itn != options_list.num_options.end())
+    {
+      output << lhs_field << "." << field << " = "<< itn->second << ";" << endl;
+      return;
+    }
+  OptionsList::string_options_t::const_iterator its = options_list.string_options.find(field);
+  if (its != options_list.string_options.end())
+    output << lhs_field << "." << field << " = '"<< its->second << "';" << endl;
+}
+
 MultinomialStatement::MultinomialStatement(const OptionsList &options_list_arg) :
   options_list(options_list_arg)
 {

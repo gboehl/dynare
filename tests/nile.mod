@@ -3,7 +3,7 @@ varobs y;
 varexo ee emu;
 parameters Ve, Vmu, delta, S1, S2;
 
-multinomial( process=1, number_of_regimes=2, probability = [P1]);
+multinomial( process=A, number_of_regimes=2, probability = [P1]);
 multinomial( process=2, number_of_regimes=2, probability = [P2]);
 // probability can be a single object representing a vector with a Dirlichet prior (see below) or a vector of calibrated values
 //add bernoulli instruction (similar to markov-switching for independent draws) and new options to create bernoulli process
@@ -18,6 +18,10 @@ shocks;
 var ee; stderr 1;
 var emu; stderr 1;
 end;
+
+S1.calibration(process=A);
+S2.calibration(process=2, regime=1) = 1;
+S2.calibration(process=2, regime=2) = 2;
 
 P1.prior(shape=dirichlet,mean=3,variance=3,params=[16,2]);
 P2.prior(shape=dirichlet,mean=3,variance=3,params=[16,2]);

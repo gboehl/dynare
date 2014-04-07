@@ -214,6 +214,7 @@ statement : parameters
           | estimated_params_init
           | set_time
           | data
+          | calibration
           | prior
           | prior_eq
           | subsamples
@@ -1399,6 +1400,23 @@ subsamples_eq_opt : symbol '.' SUBSAMPLES
 subsamples_name_list : subsamples_name_list COMMA o_subsample_name
                      | o_subsample_name
                      ;
+
+calibration : symbol '.' CALIBRATION '(' calibration_options_list ')' EQUAL signed_number ';'
+              {
+                driver.option_num("value", $8);
+                driver.set_calibration($1);
+              }
+            | symbol '.' CALIBRATION '(' calibration_options_list ')' ';'
+              { driver.set_calibration($1); }
+            ;
+
+calibration_options_list : calibration_options_list COMMA calibration_options
+                         | calibration_options
+                         ;
+
+calibration_options : o_calibration_process
+                    | o_calibration_regime
+                    ;
 
 prior : symbol '.' PRIOR { driver.set_prior_variance(); driver.prior_shape = eNoShape; } '(' prior_options_list ')' ';'
         {
@@ -2909,6 +2927,10 @@ o_dmm_simulate_data : SIMULATE_DATA EQUAL symbol { driver.option_str("dmm.simula
 o_dmm_check_mats : CHECK_MATS EQUAL symbol { driver.option_str("dmm.check_mats", $3); };
 o_dmm_calc_marg_lik : CALC_MARG_LIK EQUAL symbol { driver.option_str("dmm.calc_marg_lik", $3); };
 o_dmm_block_length : BLOCK_LENGTH EQUAL symbol { driver.option_str("dmm.block_length", $3); };
+o_calibration_process : PROCESS EQUAL symbol { driver.option_str("process",$3); }
+                      | PROCESS EQUAL INT_NUMBER { driver.option_num("process",$3); }
+                      ;
+o_calibration_regime : REGIME EQUAL INT_NUMBER { driver.option_num("regime",$3); };
 o_consider_all_endogenous : CONSIDER_ALL_ENDOGENOUS { driver.option_str("endo_vars_for_moment_computations_in_estimation", "all_endogenous_variables"); };
 o_consider_only_observed : CONSIDER_ONLY_OBSERVED { driver.option_str("endo_vars_for_moment_computations_in_estimation", "only_observed_variables"); };
 

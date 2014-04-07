@@ -412,6 +412,8 @@ public:
   void set_time(string *arg);
   //! Estimation Data
   void estimation_data();
+  //! Sets the calibration for a parameter
+  void set_calibration(string *arg1);
   //! Sets the prior on the transition probability declared in the multinomial statement
   void set_transition_prob_prior(string *name);
   //! Sets the prior for a parameter

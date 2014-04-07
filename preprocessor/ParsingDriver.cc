@@ -1425,6 +1425,15 @@ ParsingDriver::check_subsample_declaration_exists(string *name1, string *name2, 
 }
 
 void
+ParsingDriver::set_calibration(string *name)
+{
+  check_symbol_is_parameter(name);
+  mod_file->addStatement(new CalibrationStatement(*name, options_list));
+  options_list.clear();
+  delete name;
+}
+
+void
 ParsingDriver::set_transition_prob_prior(string *name)
 {
   mod_file->addStatement(new TransitionProbPriorStatement(*name, "", prior_shape, prior_variance, options_list));
