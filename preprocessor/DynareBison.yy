@@ -159,7 +159,7 @@ class ParsingDriver;
 %token SELECTED_VARIABLES_ONLY COVA_COMPUTE SIMULATION_FILE_TAG FILE_TAG
 %token NO_ERROR_BANDS ERROR_BAND_PERCENTILES SHOCKS_PER_PARAMETER NO_CREATE_INIT
 %token SHOCK_DRAWS FREE_PARAMETERS MEDIAN DATA_OBS_NBR NEIGHBORHOOD_WIDTH PVALUE_KS PVALUE_CORR
-%token FILTERED_PROBABILITIES REAL_TIME_SMOOTHED
+%token FILTERED_PROBABILITIES REAL_TIME_SMOOTHED PARAMETER
 %token PROPOSAL_TYPE PROPOSAL_UPPER_BOUND PROPOSAL_LOWER_BOUND PROPOSAL_DRAWS USE_MEAN_CENTER
 %token ADAPTIVE_MH_DRAWS THINNING_FACTOR COEFFICIENTS_PRIOR_HYPERPARAMETERS
 %token CONVERGENCE_STARTING_VALUE CONVERGENCE_ENDING_VALUE CONVERGENCE_INCREMENT_VALUE
@@ -1414,7 +1414,7 @@ calibration_options_list : calibration_options_list COMMA calibration_options
                          | calibration_options
                          ;
 
-calibration_options : o_calibration_process
+calibration_options : o_process
                     | o_calibration_regime
                     ;
 
@@ -1604,9 +1604,10 @@ multinomial_options_list : multinomial_options_list COMMA multinomial_options
                          | multinomial_options
                          ;
 
-multinomial_options : o_multinomial_process
+multinomial_options : o_process
                     | o_multinomial_number_of_regimes
-                    | o_multinomial_probability
+                    | o_probability
+                    | o_parameter
                     ;
 
 estimation : ESTIMATION ';'
@@ -2812,16 +2813,13 @@ o_equations : EQUATIONS EQUAL vec_int
             | EQUATIONS EQUAL vec_int_number
               { driver.option_vec_int("ms.equations",$3); }
             ;
-
-o_multinomial_process : PROCESS EQUAL symbol { driver.option_str("multinomial.process",$3); }
-                      | PROCESS EQUAL INT_NUMBER { driver.option_num("multinomial.process",$3); }
-                      ;
-o_multinomial_number_of_regimes : NUMBER_OF_REGIMES EQUAL INT_NUMBER { driver.option_num("multinomial.number_of_regimes",$3); };
-o_multinomial_probability : PROBABILITY EQUAL vec_value
-                            { driver.option_num("multinomial.probability",$3); }
-                          | PROBABILITY EQUAL '[' prob_symbol_list ']'
-                            { driver.option_symbol_list("multinomial.probability"); }
-                          ;
+o_multinomial_number_of_regimes : NUMBER_OF_REGIMES EQUAL INT_NUMBER { driver.option_num("number_of_regimes",$3); };
+o_parameter : PARAMETER EQUAL symbol{ driver.option_str("parameter", $3); };
+o_probability : PROBABILITY EQUAL vec_value
+                { driver.option_num("probability",$3); }
+              | PROBABILITY EQUAL '[' prob_symbol_list ']'
+                { driver.option_symbol_list("probability"); }
+              ;
 o_instruments : INSTRUMENTS EQUAL '(' symbol_list ')' {driver.option_symbol_list("instruments"); };
 
 o_ext_func_name : EXT_FUNC_NAME EQUAL filename { driver.external_function_option("name", $3); };
@@ -2927,9 +2925,9 @@ o_dmm_simulate_data : SIMULATE_DATA EQUAL symbol { driver.option_str("dmm.simula
 o_dmm_check_mats : CHECK_MATS EQUAL symbol { driver.option_str("dmm.check_mats", $3); };
 o_dmm_calc_marg_lik : CALC_MARG_LIK EQUAL symbol { driver.option_str("dmm.calc_marg_lik", $3); };
 o_dmm_block_length : BLOCK_LENGTH EQUAL symbol { driver.option_str("dmm.block_length", $3); };
-o_calibration_process : PROCESS EQUAL symbol { driver.option_str("process",$3); }
-                      | PROCESS EQUAL INT_NUMBER { driver.option_num("process",$3); }
-                      ;
+o_process : PROCESS EQUAL symbol { driver.option_str("process",$3); }
+          | PROCESS EQUAL INT_NUMBER { driver.option_num("process",$3); }
+          ;
 o_calibration_regime : REGIME EQUAL INT_NUMBER { driver.option_num("regime",$3); };
 o_consider_all_endogenous : CONSIDER_ALL_ENDOGENOUS { driver.option_str("endo_vars_for_moment_computations_in_estimation", "all_endogenous_variables"); };
 o_consider_only_observed : CONSIDER_ONLY_OBSERVED { driver.option_str("endo_vars_for_moment_computations_in_estimation", "only_observed_variables"); };

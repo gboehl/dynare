@@ -616,7 +616,6 @@ options_.convergence.geweke.taper_steps=[4 8 15];
 options_.convergence.geweke.geweke_interval=[0.2 0.5];
 
 % DMM
-options_.multinomial_index = 1;
 options_.dmm.seed = 0;
 options_.dmm.thinning_factor  = 1;
 options_.dmm.block_length = 1;
@@ -627,6 +626,7 @@ options_.mcmc.drop = 100;
 options_.mcmc.replic = 1000;
 
 options_.calibration = [];
+options_.multinomial = [];
 
 % initialize persistent variables in priordens()
 priordens([],[],[],[],[],[],1);

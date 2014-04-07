@@ -646,6 +646,7 @@ public:
   MultinomialStatement(const OptionsList &options_list_arg);
   virtual void checkPass(ModFileStructure &mod_file_struct, WarningConsolidation &warnings);
   virtual void writeOutput(ostream &output, const string &basename) const;
+  void writeOutputHelper(ostream &output, const string &lhs_field, const string &field) const;
 };
 
 class SubsamplesStatement : public Statement

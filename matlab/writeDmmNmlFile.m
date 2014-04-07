@@ -41,7 +41,7 @@ fprintf(fid, 'from %s.mod on %d-%d-%d at %d:%d:%d\n', M_.fname, fix(clock));
 %% SSM
 fprintf(fid, '\n&ssm\n');
 fprintf(fid, 'nu=%d nv=%d nx=%d d=%d %d dllname=%s check=%s', M_.exo_nbr, ...
-        size(options_.multinomial_info,2), options_.dmm.nx, ...
+        size(options_.multinomial, 2), options_.dmm.nx, ...
         options_.dmm.max_order_of_integration, options_.dmm.num_nonstationary, ...
         [M_.fname '.dll'], options_.dmm.check_mats);
 fprintf(fid, '\n&end\n');
@@ -70,11 +70,13 @@ end
 fprintf(fid, '&end\n');
 
 %% S*
-for i=1:size(options_.multinomial_info,2)
+for i=1:size(options_.multinomial,2)
     fprintf(fid, '\n&S%d\n',i);
+    indx = find(strcmp(estimation_info.transition_probability_index, options_.multinomial(i).probability));
+    params = estimation_info.transition_probability(indx).prior.params;
     fprintf(fid, 'dynS%d=%s nS%d=%d hypS%d(1,1)=%d %d matS%d=%s',i,'I',i, ...
-            options_.multinomial_info(i).number_of_regimes, i, ...
-            options_.multinomial_info(i).values,i,'G');
+            options_.multinomial(i).number_of_regimes, i, ...
+            params, i, 'G');
     fprintf(fid, '\n&end\n');
 end
 

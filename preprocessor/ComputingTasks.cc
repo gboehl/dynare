@@ -1556,15 +1556,63 @@ MultinomialStatement::MultinomialStatement(const OptionsList &options_list_arg) 
 void
 MultinomialStatement::checkPass(ModFileStructure &mod_file_struct, WarningConsolidation &warnings)
 {
+  if (options_list.string_options.find("parameter") == options_list.string_options.end())
+    {
+      cerr << "ERROR: The parameter option must be passed to the multinomial statement" << endl;
+      exit(EXIT_FAILURE);
+    }
+
+  if (options_list.string_options.find("process") == options_list.string_options.end() &&
+      options_list.num_options.find("process") == options_list.num_options.end())
+    {
+      cerr << "ERROR: The process option must be passed to the multinomial statement" << endl;
+      exit(EXIT_FAILURE);
+    }
+
+  if (options_list.num_options.find("number_of_regimes") == options_list.num_options.end())
+    {
+      cerr << "ERROR: The number_of_regimes option must be passed to the multinomial statement" << endl;
+      exit(EXIT_FAILURE);
+    }
+
+  if (options_list.symbol_list_options.find("probability") == options_list.symbol_list_options.end())
+    {
+      cerr << "ERROR: The probability option must be passed to the multinomial statement" << endl;
+      exit(EXIT_FAILURE);
+    }
 }
 
 void
 MultinomialStatement::writeOutput(ostream &output, const string &basename) const
 {
-  output << "options_.multinomial = set_multinomial_default();" << endl;
-  options_list.writeOutput(output);
-  output << "options_.multinomial_info(options_.multinomial_index) = options_.multinomial;" << endl
-         << "options_.multinomial_index = options_.multinomial_index + 1;" << endl;
+  string lhs_field = "options_.multinomial(multind)";
+  output << "multind = size(options_.multinomial, 2) + 1;" << endl;
+  writeOutputHelper(output, lhs_field, "process");
+  writeOutputHelper(output, lhs_field, "parameter");
+  writeOutputHelper(output, lhs_field, "probability");
+  writeOutputHelper(output, lhs_field, "number_of_regimes");
+}
+
+void
+MultinomialStatement::writeOutputHelper(ostream &output, const string &lhs_field, const string &field) const
+{
+  OptionsList::num_options_t::const_iterator itn = options_list.num_options.find(field);
+  if (itn != options_list.num_options.end())
+    {
+      output << lhs_field << "." << field << " = "<< itn->second << ";" << endl;
+      return;
+    }
+
+  OptionsList::string_options_t::const_iterator its = options_list.string_options.find(field);
+  if (its != options_list.string_options.end())
+    {
+      output << lhs_field << "." << field << " = '"<< its->second << "';" << endl;
+      return;
+    }
+
+  OptionsList::symbol_list_options_t::const_iterator itsl = options_list.symbol_list_options.find(field);
+  if (itsl != options_list.symbol_list_options.end())
+    itsl->second.writeOutput(lhs_field + "." + field, output);
 }
 
 TransitionProbPriorStatement::TransitionProbPriorStatement(const string &name_arg,
