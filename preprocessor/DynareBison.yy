@@ -2795,7 +2795,9 @@ o_equations : EQUATIONS EQUAL vec_int
               { driver.option_vec_int("ms.equations",$3); }
             ;
 
-o_multinomial_process : PROCESS EQUAL INT_NUMBER { driver.option_num("multinomial.process",$3); };
+o_multinomial_process : PROCESS EQUAL symbol { driver.option_str("multinomial.process",$3); }
+                      | PROCESS EQUAL INT_NUMBER { driver.option_num("multinomial.process",$3); }
+                      ;
 o_multinomial_number_of_regimes : NUMBER_OF_REGIMES EQUAL INT_NUMBER { driver.option_num("multinomial.number_of_regimes",$3); };
 o_multinomial_probability : PROBABILITY EQUAL vec_value
                             { driver.option_num("multinomial.probability",$3); }
