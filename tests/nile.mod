@@ -3,8 +3,8 @@ varobs y;
 varexo ee emu;
 parameters Ve, Vmu, delta, S1, S2;
 
-multinomial( process=1, number_of_regimes=2, probability = [P1], parameter = S1);
-multinomial( process=2, number_of_regimes=2, probability = [P2], parameter = S2);
+multinomial( process=1, number_of_regimes=2, probability = [P1]);
+multinomial( process=2, number_of_regimes=2, probability = [P2]);
 // probability can be a single object representing a vector with a Dirlichet prior (see below) or a vector of calibrated values
 //add bernoulli instruction (similar to markov-switching for independent draws) and new options to create bernoulli process
 // I don' know if probabilities would be a better name than probability (vector  being implicit)

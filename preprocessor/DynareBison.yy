@@ -159,7 +159,7 @@ class ParsingDriver;
 %token SELECTED_VARIABLES_ONLY COVA_COMPUTE SIMULATION_FILE_TAG FILE_TAG
 %token NO_ERROR_BANDS ERROR_BAND_PERCENTILES SHOCKS_PER_PARAMETER NO_CREATE_INIT
 %token SHOCK_DRAWS FREE_PARAMETERS MEDIAN DATA_OBS_NBR NEIGHBORHOOD_WIDTH PVALUE_KS PVALUE_CORR
-%token FILTERED_PROBABILITIES REAL_TIME_SMOOTHED PARAMETER
+%token FILTERED_PROBABILITIES REAL_TIME_SMOOTHED
 %token PROPOSAL_TYPE PROPOSAL_UPPER_BOUND PROPOSAL_LOWER_BOUND PROPOSAL_DRAWS USE_MEAN_CENTER
 %token ADAPTIVE_MH_DRAWS THINNING_FACTOR COEFFICIENTS_PRIOR_HYPERPARAMETERS
 %token CONVERGENCE_STARTING_VALUE CONVERGENCE_ENDING_VALUE CONVERGENCE_INCREMENT_VALUE
@@ -1607,7 +1607,6 @@ multinomial_options_list : multinomial_options_list COMMA multinomial_options
 multinomial_options : o_process
                     | o_multinomial_number_of_regimes
                     | o_probability
-                    | o_parameter
                     ;
 
 estimation : ESTIMATION ';'
@@ -2814,7 +2813,6 @@ o_equations : EQUATIONS EQUAL vec_int
               { driver.option_vec_int("ms.equations",$3); }
             ;
 o_multinomial_number_of_regimes : NUMBER_OF_REGIMES EQUAL INT_NUMBER { driver.option_num("number_of_regimes",$3); };
-o_parameter : PARAMETER EQUAL symbol{ driver.option_str("parameter", $3); };
 o_probability : PROBABILITY EQUAL vec_value
                 { driver.option_num("probability",$3); }
               | PROBABILITY EQUAL '[' prob_symbol_list ']'

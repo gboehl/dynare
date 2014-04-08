@@ -1556,12 +1556,6 @@ MultinomialStatement::MultinomialStatement(const OptionsList &options_list_arg) 
 void
 MultinomialStatement::checkPass(ModFileStructure &mod_file_struct, WarningConsolidation &warnings)
 {
-  if (options_list.string_options.find("parameter") == options_list.string_options.end())
-    {
-      cerr << "ERROR: The parameter option must be passed to the multinomial statement" << endl;
-      exit(EXIT_FAILURE);
-    }
-
   if (options_list.string_options.find("process") == options_list.string_options.end() &&
       options_list.num_options.find("process") == options_list.num_options.end())
     {
@@ -1588,7 +1582,6 @@ MultinomialStatement::writeOutput(ostream &output, const string &basename) const
   string lhs_field = "options_.multinomial(multind)";
   output << "multind = size(options_.multinomial, 2) + 1;" << endl;
   writeOutputHelper(output, lhs_field, "process");
-  writeOutputHelper(output, lhs_field, "parameter");
   writeOutputHelper(output, lhs_field, "probability");
   writeOutputHelper(output, lhs_field, "number_of_regimes");
 }

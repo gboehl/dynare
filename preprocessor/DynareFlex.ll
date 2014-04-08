@@ -731,7 +731,6 @@ DATE -?[0-9]+([YyAa]|[Mm]([1-9]|1[0-2])|[Qq][1-4]|[Ww]([1-9]{1}|[1-4][0-9]|5[0-2
 <DYNARE_STATEMENT>neighborhood_width {return token::NEIGHBORHOOD_WIDTH;}
 <DYNARE_STATEMENT>pvalue_ks {return token::PVALUE_KS;}
 <DYNARE_STATEMENT>pvalue_corr {return token::PVALUE_CORR;}
-<DYNARE_STATEMENT>parameter {return token::PARAMETER;}
  /* end of GSA options */
 
  /* For identification() statement */
