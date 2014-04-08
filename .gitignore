@@ -194,5 +194,8 @@ mex/build/matlab/run_m2html.m
 /contrib/ms-sbvar/sbvar_commandline
 /contrib/ms-sbvar/sbvar_init_file
 
+# DMM
+*.nml
+
 # Reporting
 *synctex.gz
