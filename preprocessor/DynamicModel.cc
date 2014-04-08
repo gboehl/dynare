@@ -1534,13 +1534,17 @@ DynamicModel::writeDmmMFile(const string &basename) const
               << "A = zeros(nx,ns(4));" << endl
               << "F = zeros(nx,nx,ns(5));" << endl
               << "R = zeros(nx,nu,ns(6));" << endl
+              << "matrixOrder = {'C', 'H', 'G', 'A', 'F', 'R'};" << endl
               << "% *** Set non-zero elements below   ***" << endl << endl
-              << "latent_vars_params_indx = zeros(1,options_.multinomial_index-1);" << endl
-              << "for i=1:options_.multinomial_index-1" << endl
-              << "  latent_vars_params_indx(i) = find(strcmp(cellstr(M_.param_names),"
-              << "options_.multinomial_info(i).parameters));" << endl
-              << "end" << endl;
+              << "numLatentVars = size(options_.multinomial, 2);" << endl
+              << "paramsIdx = zeros(numLatentVars, 1);" << endl
+              << "for i=1:numLatentVars" << endl
+              << "    paramsIdx(i) = find(strcmp(cellstr(M_.param_names), options_.multinomial(i).parameter));"
+              << endl << "end" << endl;
 
+  // matrix Number, row, col, index in first_derivatives
+  typedef map<pair<int, pair<int, int> >, expr_t > matrixvals_t;
+  matrixvals_t matrixVals;
   deriv_node_temp_terms_t tef_terms; // need to make this a member of the class
   for (first_derivatives_t::const_iterator it = first_derivatives.begin();
        it != first_derivatives.end(); it++)
@@ -1565,6 +1569,8 @@ DynamicModel::writeDmmMFile(const string &basename) const
               mOutputFile << "H(" << lhs_col_num << "," << rhs_col_num << ")=";
               d1->writeOutput(mOutputFile, oMatlabDynamicModel, temporary_terms, tef_terms);
               mOutputFile << ";" << endl;
+
+              matrixVals[make_pair(2, make_pair(lhs_col_num, rhs_col_num))] = it->second;
             }
           else if (getTypeByDerivID(deriv_id) == eExogenous)
             { // Write G
@@ -1572,6 +1578,8 @@ DynamicModel::writeDmmMFile(const string &basename) const
               mOutputFile << "G(" << lhs_col_num << "," << rhs_col_num << ")=";
               d1->writeOutput(mOutputFile, oMatlabDynamicModel, temporary_terms, tef_terms);
               mOutputFile << ";" << endl;
+
+              matrixVals[make_pair(3, make_pair(lhs_col_num, rhs_col_num))] = it->second;
             }
           else
             {
@@ -1589,6 +1597,8 @@ DynamicModel::writeDmmMFile(const string &basename) const
               mOutputFile << "F(" << lhs_col_num << "," << rhs_col_num << ")=";
               d1->writeOutput(mOutputFile, oMatlabDynamicModel, temporary_terms, tef_terms);
               mOutputFile << ";" << endl;
+
+              matrixVals[make_pair(5, make_pair(lhs_col_num, rhs_col_num))] = it->second;
             }
           else if (getTypeByDerivID(deriv_id) == eExogenous)
             { // Write R
@@ -1596,6 +1606,8 @@ DynamicModel::writeDmmMFile(const string &basename) const
               mOutputFile << "R(" << lhs_col_num << "," << rhs_col_num << ")=";
               d1->writeOutput(mOutputFile, oMatlabDynamicModel, temporary_terms, tef_terms);
               mOutputFile << ";" << endl;
+
+              matrixVals[make_pair(6, make_pair(lhs_col_num, rhs_col_num))] = it->second;
             }
           else if (lhs_symb_id == symb_id)
             { // ignore case as we cannot have x_t on both lhs and rhs in first draft
@@ -1613,6 +1625,45 @@ DynamicModel::writeDmmMFile(const string &basename) const
         }
     }
 
+  mOutputFile << "paramsbak = params;" << endl;
+  for (int i = 1; i < 7; i++)
+    {
+      mOutputFile << "for i=1:ns(" << i << ")" << endl
+                  << "    eval(['params = setState' num2str(eval('i')) '();']);" << endl;
+      for (matrixvals_t::const_iterator it = matrixVals.begin();
+           it != matrixVals.end(); it++)
+        {
+          switch (it->first.first)
+            {
+            case 1:
+              mOutputFile << "    C";
+              break;
+            case 2:
+              mOutputFile << "    H";
+              break;
+            case 3:
+              mOutputFile << "    G";
+              break;
+            case 4:
+              mOutputFile << "    A";
+              break;
+            case 5:
+              mOutputFile << "    F";
+              break;
+            case 6:
+              mOutputFile << "    R";
+              break;
+            default:
+              cerr << "Error: impossible case" << it->first.first << endl;
+              exit(EXIT_FAILURE);
+            }
+          mOutputFile << "(" << it->first.second.first << ", " << it->first.second.second << ", i) = ";
+          it->second->writeOutput(mOutputFile, oMatlabDynamicModel, temporary_terms, tef_terms);
+          mOutputFile << ";" << endl
+                      << "    params = paramsbak;" << endl;
+        }
+      mOutputFile << "end" << endl;
+    }
   mOutputFile << "end" << endl;
   mOutputFile.close();
 }
