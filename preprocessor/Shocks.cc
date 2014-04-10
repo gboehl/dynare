@@ -99,10 +99,12 @@ ShocksStatement::writeOutput(ostream &output, const string &basename) const
   writeDetShocks(output);
   writeVarAndStdShocks(output);
   writeCovarAndCorrShocks(output);
+
+  /* M_.sigma_e_is_diagonal is initialized to 1 by ModFile.cc. If there are no
+     off-diagonal elements, then we don't reset it to 1, since there might be
+     previous shocks blocks with off-diagonal elements. */
   if (covar_shocks.size()+corr_shocks.size() > 0)
     output << "M_.sigma_e_is_diagonal = 0;" << endl;
-  else
-    output << "M_.sigma_e_is_diagonal = 1;" << endl;
 }
 
 void
