@@ -20,7 +20,7 @@ dnl along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 AC_PREREQ([2.62])
 AC_INIT([dynare], [4.5-unstable])
 AC_CONFIG_SRCDIR([configure.ac])
-AM_INIT_AUTOMAKE([-Wall -Wno-portability foreign])
+AM_INIT_AUTOMAKE([-Wall -Wno-portability foreign subdir-objects])
 
 dnl The following must occur before we modify CFLAGS/CXXFLAGS
 AC_CANONICAL_HOST
@@ -54,6 +54,7 @@ FFLAGS="$FFLAGS -Wall"
 CXXFLAGS="$CXXFLAGS -Wall -Wno-parentheses"
 
 AC_PROG_F77([gfortran g77 f77])
+AC_PROG_FC([gfortran])
 AC_PROG_CC
 AC_PROG_CXX
 AC_PROG_RANLIB
@@ -164,9 +165,10 @@ AC_CONFIG_FILES([Makefile
                  dynare_simul_/Makefile
                  estimation/Makefile
                  kalman_steady_state/Makefile
+                 dmm/Makefile
                  ms_sbvar/Makefile
                  block_kalman_filter/Makefile
-	         sobol/Makefile
-		 local_state_space_iterations/Makefile])
+                 sobol/Makefile
+                 local_state_space_iterations/Makefile])
 
 AC_OUTPUT
