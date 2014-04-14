@@ -79,3 +79,6 @@ nodist_dmm_SOURCES = \
 	$(DMMDIR)/recpr.for \
 	$(DMMDIR)/ReadMatLabDesign.for \
 	$(MSMEXSRCDIR)/dmm.f90
+
+clean-local:
+	rm -f *.mod
