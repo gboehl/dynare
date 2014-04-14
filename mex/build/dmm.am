@@ -6,6 +6,7 @@ DYNMEXSRCDIR = $(top_srcdir)/../../sources
 MSMEXSRCDIR = $(DYNMEXSRCDIR)/dmm
 
 AM_FFLAGS += -DDYNARE -cpp -fcray-pointer
+AM_FCFLAGS += -fdefault-integer-8
 
 nodist_dmm_SOURCES = \
 	$(MSMEXSRCDIR)/dynare.f90 \

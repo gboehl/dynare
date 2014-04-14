@@ -4,6 +4,8 @@ AM_CPPFLAGS = $(MATLAB_CPPFLAGS)
 AM_CPPFLAGS += -I$(top_srcdir)/../../sources
 AM_FFLAGS = $(MATLAB_FFLAGS)
 AM_FFLAGS += -I$(top_srcdir)/../../sources
+AM_FCFLAGS = $(MATLAB_FFLAGS)
+AM_FCFLAGS += -I$(top_srcdir)/../../sources
 
 DEFS += $(MATLAB_DEFS)
 DEFS += -DMATLAB_MEX_FILE
