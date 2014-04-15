@@ -79,6 +79,33 @@ nodist_dmm_SOURCES = \
 	$(DMMDIR)/simstate2.for \
 	$(DMMDIR)/recpr.for \
 	$(DMMDIR)/ReadMatLabDesign.for \
+	$(DMMDIR)/randlib/advnst.f \
+	$(DMMDIR)/randlib/genmn.f \
+	$(DMMDIR)/randlib/genunf.f \
+	$(DMMDIR)/randlib/ignlgi.f \
+	$(DMMDIR)/randlib/inrgcm.f \
+	$(DMMDIR)/randlib/phrtsd.f \
+	$(DMMDIR)/randlib/sdot.f \
+	$(DMMDIR)/randlib/setgmn.f \
+	$(DMMDIR)/randlib/sgamma.f \
+	$(DMMDIR)/randlib/genbet.f \
+	$(DMMDIR)/randlib/gennor.f \
+	$(DMMDIR)/randlib/getcgn.f \
+	$(DMMDIR)/randlib/ignuin.f \
+	$(DMMDIR)/randlib/lennob.f \
+	$(DMMDIR)/randlib/qrgnin.f \
+	$(DMMDIR)/randlib/setall.f \
+	$(DMMDIR)/randlib/setsd.f \
+	$(DMMDIR)/randlib/snorm.f \
+	$(DMMDIR)/randlib/gengam.f \
+	$(DMMDIR)/randlib/genprm.f \
+	$(DMMDIR)/randlib/getsd.f \
+	$(DMMDIR)/randlib/initgn.f \
+	$(DMMDIR)/randlib/mltmod.f \
+	$(DMMDIR)/randlib/ranf.f \
+	$(DMMDIR)/randlib/setant.f \
+	$(DMMDIR)/randlib/sexpo.f \
+	$(DMMDIR)/randlib/spofa.f \
 	$(MSMEXSRCDIR)/dmm.f90
 
 clean-local:
