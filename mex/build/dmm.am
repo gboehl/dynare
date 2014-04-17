@@ -5,11 +5,11 @@ DMMDIR = $(top_srcdir)/../../../contrib/dmm
 DYNMEXSRCDIR = $(top_srcdir)/../../sources
 MSMEXSRCDIR = $(DYNMEXSRCDIR)/dmm
 
-AM_FFLAGS += -DDYNARE -cpp -fcray-pointer -ffixed-form -ffixed-line-length-none
-AM_FCFLAGS += -fdefault-integer-8
+AM_FFLAGS += -cpp -fcray-pointer -ffixed-form -ffixed-line-length-none
+AM_FCFLAGS += -cpp -fdefault-integer-8
 
 nodist_dmm_SOURCES = \
-	$(MSMEXSRCDIR)/dynare.f90 \
+	$(DMMDIR)/gfortran.f90 \
 	$(DMMDIR)/gammln.for \
 	$(DMMDIR)/invfbis.for \
 	$(DMMDIR)/recest.for \
