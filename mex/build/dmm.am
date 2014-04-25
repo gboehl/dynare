@@ -9,6 +9,7 @@ AM_FFLAGS += -cpp -fcray-pointer -ffixed-form -ffixed-line-length-none -std=lega
 AM_FCFLAGS += -cpp -fdefault-integer-8
 
 LIBS += -leng
+AM_LDFLAGS = $(MATLAB_F_LDFLAGS) -static
 
 nodist_dmm_SOURCES = \
 	$(DMMDIR)/gfortran.f90 \
