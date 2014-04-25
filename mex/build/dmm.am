@@ -110,7 +110,7 @@ nodist_dmm_SOURCES = \
 	$(DMMDIR)/randlib/setant.f \
 	$(DMMDIR)/randlib/sexpo.f \
 	$(DMMDIR)/randlib/spofa.f \
-	$(MSMEXSRCDIR)/dmm.f90
+	$(MSMEXSRCDIR)/dmm.F
 
 clean-local:
 	rm -f *.mod
