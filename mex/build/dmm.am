@@ -82,7 +82,7 @@ nodist_dmm_SOURCES = \
 	$(DMMDIR)/simstate.for \
 	$(DMMDIR)/simstate2.for \
 	$(DMMDIR)/recpr.for \
-	$(DMMDIR)/ReadMatLabDesign.for \
+	$(DMMDIR)/ReadMatLabDesign.F \
 	$(DMMDIR)/randlib/advnst.f \
 	$(DMMDIR)/randlib/genmn.f \
 	$(DMMDIR)/randlib/genunf.f \
