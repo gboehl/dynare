@@ -10,6 +10,8 @@ AM_FCFLAGS += -cpp -fdefault-integer-8
 
 nodist_dmm_SOURCES = \
 	$(DMMDIR)/gfortran.f90 \
+	$(DMMDIR)/iso_c_utilities.f90 \
+	$(DMMDIR)/dlfcn.f90 \
 	$(DMMDIR)/gammln.for \
 	$(DMMDIR)/invfbis.for \
 	$(DMMDIR)/recest.for \
