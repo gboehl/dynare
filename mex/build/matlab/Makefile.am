@@ -31,4 +31,4 @@ clean-local:
 endif
 endif
 
-EXTRA_DIST = mex.def mexFunction-MacOSX.map
+EXTRA_DIST = mex.def

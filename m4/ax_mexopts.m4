@@ -72,7 +72,7 @@ case ${MATLAB_ARCH} in
     MATLAB_CXXFLAGS="-fno-common -fexceptions -arch $ARCHS -mmacosx-version-min=$MACOSX_DEPLOYMENT_TARGET"
     MATLAB_FFLAGS="-fexceptions -fbackslash -arch $ARCHS"
     MATLAB_LDFLAGS_NOMAP="-L$MATLAB/bin/${MATLAB_ARCH} -Wl,-twolevel_namespace -undefined error -arch $ARCHS -mmacosx-version-min=$MACOSX_DEPLOYMENT_TARGET -bundle"
-    MATLAB_LDFLAGS="$MATLAB_LDFLAGS_NOMAP -Wl,-exported_symbols_list,$(pwd)/$srcdir/mexFunction-MacOSX.map"
+    MATLAB_LDFLAGS="$MATLAB_LDFLAGS_NOMAP -Wl,-exported_symbols_list,$MATLAB/extern/lib/${MATLAB_ARCH}/mexFunction.map"
     MATLAB_F_LDFLAGS="$MATLAB_LDFLAGS_NOMAP -Wl,-exported_symbols_list,$MATLAB/extern/lib/${MATLAB_ARCH}/fexport.map"
     MATLAB_LIBS="-lmx -lmex -lmat -lstdc++ -lmwlapack -lmwblas"
     ax_mexopts_ok="yes"
