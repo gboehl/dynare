@@ -245,6 +245,16 @@ else
 end
 if verbose
     disp([ message 'Markov Switching SBVAR.' ])
+end
+
+% Test if DMM DLL is present
+if exist('dmm', 'file') == 3
+    message = '[mex] ';
+else
+    message = '[no]  ';
+end
+if verbose
+    disp([ message 'Dynamic Mixture Models.' ])
     skipline()
 end
 
