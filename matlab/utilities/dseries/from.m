@@ -59,10 +59,7 @@ if ~isequal(do_id,4)
 end
 
 % Build the recursive expression.
-EXPRESSION = [];
-for i=5:nargin
-    EXPRESSION = [EXPRESSION, varargin{i}];
-end
+EXPRESSION = char([varargin{5:end}]);
 
 % Get all the variables involved in the recursive expression.
 variables = regexpi(EXPRESSION, '\w*\(t\)|\w*\(t\-\d\)|\w*\(t\+\d\)','match');
