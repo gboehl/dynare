@@ -20,26 +20,30 @@ function from(varargin)
 lvarargin = lower(varargin);
 
 if ~(ismember('to',lvarargin) && ismember('do',lvarargin))
-    error('This command must be followed by TO and DO keywords (in that order).')
+    error(get_error_message_0())
 end
 
 to_id = strmatch('to',lvarargin);
 do_id = strmatch('do',lvarargin);
 
 if do_id<to_id
-    error(sprintf('Wrong syntax! The TO keyword must preceed the DO keyword.\nThe correct syntax is:\n\n    from d1 to d2 do SOMETHING\n\n where d1<d2 are dates objects, and SOMETHING is a recursive expression involving dseries objects.'))
+    msg = sprinf('Wrong syntax! The TO keyword must preceed the DO keyword.\n');
+    error(get_error_message_0(msg))
 end
 
 if ~isdate(varargin{1})
-    error('Wrong syntax! The FROM statement must be followed by a dates object')
+    msg = sprintf('Wrong syntax! The FROM statement must be followed by a dates object.\n');
+    error(get_error_message_0(msg))
 end
 
 if ~isequal(to_id,2)
-    error('Wrong syntax! The first dates object must be immediately followed by the TO keyword.')
+    msg = sprintf('Wrong syntax! The first dates object must be immediately followed by the TO keyword.\n');
+    error(get_error_message_0(msg))
 end
 
 if ~isdate(varargin{3})
-    error('Wrong syntax! The TO keyword must be followed by a second dates object')
+    msg = sprintf('Wrong syntax! The TO keyword must be followed by a second dates object.\n');
+    error(get_error_message_0(msg))
 end
 
 d1 = dates(varargin{1});
@@ -50,7 +54,8 @@ if d1>d2
 end
 
 if ~isequal(do_id,4)
-    error('Wrong syntax! The second dates object must be immediately followed by the DO keyword.')
+    msg = sprintf('Wrong syntax! The second dates object must be immediately followed by the DO keyword.\n');
+    error(get_error_message_0(msg))
 end
 
 % Build the recursive expression.
@@ -117,3 +122,14 @@ eval(sprintf('t=dates(''%s''); while t<=dates(''%s''), %s; t = t+1; end',char(d1
 
 % Put assigned variable back in the caller workspace...
 eval(sprintf('assignin(''caller'', assignedvariablename, %s)',assignedvariablename));
+
+
+
+function msg = get_error_message_0(msg)
+    if ~nargin
+        msg = sprintf('Wrong syntax! The correct syntax is:\n\n');
+    else
+        msg = [msg, sprintf('The correct syntax is:\n\n')];
+    end
+    msg = [msg, sprintf('    from d1 to d2 do SOMETHING\n\n')];
+    msg = [msg, sprintf('where d1<d2 are dates objects, and SOMETHING is a recursive expression involving dseries objects.')];
