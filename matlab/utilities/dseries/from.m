@@ -46,8 +46,8 @@ if ~isdate(varargin{3})
     error(get_error_message_0(msg))
 end
 
-d1 = dates(varargin{1});
-d2 = dates(varargin{3});
+d1 = dates(varargin{1}); % First date
+d2 = dates(varargin{3}); % Last date
 
 if d1>d2
     error('The first date must preceed the second one!')
