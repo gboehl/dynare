@@ -64,7 +64,7 @@ for i=5:nargin
     EXPRESSION = [EXPRESSION, varargin{i}];
 end
 
-% Get all the variables involved in the recusive expression.
+% Get all the variables involved in the recursive expression.
 variables = regexpi(EXPRESSION, '\w*\(t\)|\w*\(t\-\d\)|\w*\(t\+\d\)','match');
 
 % Remove the time indices.
