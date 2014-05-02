@@ -17,12 +17,14 @@ function from(varargin)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-if ~(ismember('to',varargin) && ismember('do',varargin))
+lvarargin = lower(varargin);
+
+if ~(ismember('to',lvarargin) && ismember('do',lvarargin))
     error('This command must be followed by TO and DO keywords (in that order).')
 end
 
-to_id = strmatch('to',varargin);
-do_id = strmatch('do',varargin);
+to_id = strmatch('to',lvarargin);
+do_id = strmatch('do',lvarargin);
 
 if do_id<to_id
     error(sprintf('Wrong syntax! The TO keyword must preceed the DO keyword.\nThe correct syntax is:\n\n    from d1 to d2 do SOMETHING\n\n where d1<d2 are dates objects, and SOMETHING is a recursive expression involving dseries objects.'))
