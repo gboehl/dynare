@@ -73,16 +73,23 @@ end
 % Remove duplicates.
 variables = unique(variables);
 
-% Test that all the involved variables are available dseries objects.
+% Test that all the involved variables are available dseries objects. Also check
+% that these time series are defined over the time range given by d1 and d2.
 for i=1:length(variables)
     try
         var = evalin('caller',variables{i});
     catch
-        error(['Variable ' variables{i} ' is unknown!'])
+        error(['dseries::from: Variable ' variables{i} ' is unknown!'])
     end
     if ~isdseries(var)
-        error(['Variable ' variables{i} ' is not a dseries object!'])
+        error(['dseries::from: Variable ' variables{i} ' is not a dseries object!'])
     else
+        if d1<var.dates(1)
+            error(sprintf('dseries::from: First date in variable %s is posterior to %s!\n               Check the initial date of the loop.', variables{i}, char(d1)))
+        end
+        if d2>var.dates(end)
+            error(sprintf('dseries::from: Last date in variable %s is anterior to %s!\n               Check the terminal date of the loop.', variables{i}, char(d2)))
+        end
         eval(sprintf('%s = var;',variables{i}));
     end
 end
