@@ -153,20 +153,32 @@ end
 % Check that the recursion is assigning something to a variable
 equal_id = strfind(EXPRESSION,'=');
 if isempty(equal_id)
-    error('The expression following the DO keyword must be an assignment (missing equal symbol)!')
+    error('Wrong syntax! The expression following the DO keyword must be an assignment (missing equal symbol).')
 end
 if isequal(length(equal_id),1)
+    % Get the name of the assigned variable (with time index)
     assignedvariablename = regexpi(EXPRESSION(1:equal_id-1), '\w*\(t\)|\w*\(t\-\d\)|\w*\(t\+\d\)','match');
     if isempty(assignedvariablename)
-        error('The expression following the DO keyword must be an assignment (missing variable before the equal symbol)!')
+        error('Wrong syntax! The expression following the DO keyword must be an assignment (missing variable before the equal symbol).')
     end
     if length(assignedvariablename)>1
         error('No more than one variable can be assigned!')
     end
-    assignedvariablename = assignedvariablename{1}(1:regexpi(assignedvariablename{1},'\(t\)|\(t\-\d\)|\(t\+\d\)')-1);
-    eval(sprintf('wrongtype = ~isdseries(%s);',assignedvariablename))
-    if wrongtype
-        error('The assigned variable must be a dseries object!')
+    % Check that the dynamic model for the endogenous variable is not forward looking.
+    start = regexpi(assignedvariablename{1},'\(t\)|\(t\-\d\)|\(t\+\d\)');
+    index = assignedvariablename{1}(start:end);
+    assignedvariablename = assignedvariablename{1}(1:start-1);
+    indum = index2num(index);
+    indva = strmatch(assignedvariablename, leadlagtable(:,1));
+    if indum<leadlagtable{indva,4}
+        error('dseries::from: It is not possible to simulate a forward looking model!')
+    end
+    % Check that the assigned variable does not depend on itself (the assigned variable can depend on its past level but not on the current level).
+    tmp = regexpi(EXPRESSION(equal_id+1:end), sprintf('%s\\(t\\)|%s\\(t\\-\\d\\)|%s\\(t\\+\\d\\)',assignedvariablename,assignedvariablename,assignedvariablename),'match');
+    tmp = cellfun(@extractindex, tmp);
+    tmp = cellfun(@index2num, tmp);
+    if ~all(tmp(:)<indum)
+        error(sprintf('dseries::from: On the righthand side, the endogenous variable, %s, must be indexed by %s at most.',assignedvariablename,num2index(indum-1)))
     end
 else
     error('Not yet implemented! Only one assignment is allowed in the FROM-TO-DO statement.')
@@ -193,3 +205,31 @@ function msg = get_error_message_0(msg)
     end
     msg = [msg, sprintf('    from d1 to d2 do SOMETHING\n\n')];
     msg = [msg, sprintf('where d1<d2 are dates objects, and SOMETHING is a recursive expression involving dseries objects.')];
+
+
+function index = extractindex(str)
+    index = regexpi(str,'\(t\)|\(t\-\d\)|\(t\+\d\)','match');
+
+
+function i = index2num(id)
+    if isequal('(t)',id)
+        i = 0;
+        return
+    end
+    if isequal('-',id(3))
+        i = - str2num(id(4:end-1));
+    else
+        i = str2num(id(4:end-1));
+    end
+
+
+function id = num2index(i)
+    if isequal(i,0)
+        id = '(t)';
+        return
+    end
+    if i<0
+        id = ['(t-' int2str(abs(i)) ')'];
+    else
+        id = ['(t+' int2str(i) ')'];
+    end
