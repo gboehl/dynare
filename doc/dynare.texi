@@ -5979,37 +5979,37 @@ can be computed using an extended path method. The forecast scenario describing 
 The first step is the forecast scenario initialization using the function @code{init_plan}:
 
 @anchor{init_plan}
-@deffn {MATLAB/Octave command} HANDLE = init_plan(DATES) ;
+@deftypefn {MATLAB/Octave command} {HANDLE =} init_plan (DATES) ;
 
 Creates a new forecast scenario for a forecast period (indicated as a dates class, see @ref{dates class members}). This function return a handle on the new forecast scenario.
 
-@end deffn
+@end deftypefn
 
 The forecast scenario can contain some simple shocks on the exogenous variables. This shocks are described using the function @code{basic_plan}:
 
 @anchor{basic_plan}
-@deffn {MATLAB/Octave command} HANDLE = basic_plan(HANDLE, 'VARIABLE_NAME', 'SHOCK_TYPE', DATES, MATLAB VECTOR OF DOUBLE |  [DOUBLE | EXPRESSION [DOUBLE | | EXPRESSION] ] ) ;
+@deftypefn {MATLAB/Octave command} {HANDLE =} basic_plan (HANDLE, 'VARIABLE_NAME', 'SHOCK_TYPE', DATES, MATLAB VECTOR OF DOUBLE |  [DOUBLE | EXPRESSION [DOUBLE | | EXPRESSION] ] ) ;
 
 Adds to the forecast scenario a shock on the exogenous variable indicated between quotes in the second argument. The shock type has to be specified in the third argument between quotes: 'surprise' in case of an unexpected shock  or 'perfect_foresight' for a perfectly anticipated shock. The fourth argument indicates the period of the shock using a dates class (see @ref{dates class members}). The last argument is the shock path indicated as a Matlab vector of double. This function return the handle of the updated forecast scenario.
 
-@end deffn
+@end deftypefn
 
 The forecast scenario can also contain a constrained path on an endogenous variable. The values of the related exogenous variable compatible with the constrained path are in this case computed. In other words, a conditional forecast is performed. This kind of shock is described with the function  @code{flip_plan}:
 
 @anchor{flip_plan}
-@deffn {MATLAB/Octave command} HANDLE = flip_plan(HANDLE, 'VARIABLE_NAME, 'VARIABLE_NAME', 'SHOCK_TYPE', DATES, MATLAB VECTOR OF DOUBLE |  [DOUBLE | EXPRESSION [DOUBLE | | EXPRESSION] ] ) ;
+@deftypefn {MATLAB/Octave command} {HANDLE =} flip_plan (HANDLE, 'VARIABLE_NAME, 'VARIABLE_NAME', 'SHOCK_TYPE', DATES, MATLAB VECTOR OF DOUBLE |  [DOUBLE | EXPRESSION [DOUBLE | | EXPRESSION] ] ) ;
 
 Adds to the forecast scenario a constrained path on the endogenous variable specified between quotes in the second argument. The associated exogenous variable provided in the third argument between quotes, is considered as an endogenous variable and its values compatible with the constrained path on the endogenous variable will be computed. The nature of the expectation on the constrained  path has to be specified in the fourth argument between quotes: 'surprise' in case of an unexpected path or 'perfect_foresight' for a perfectly anticipated path. The fifth argument indicates the period where the path of the endogenous variable is constrained using a dates class (see @ref{dates class members}). The last argument contains the constrained path as a Matlab vector of double. This function return the handle of the updated forecast scenario.
 
-@end deffn
+@end deftypefn
 
 Once the forecast scenario if fully described, the forecast is computed with the command @code{det_cond_forecast}:
 @anchor{det_cond_forecast}
-@deffn {MATLAB/Octave command} DSERIES = det_cond_forecast(HANDLE[, DSERIES [, DATES]]) ;
+@deftypefn {MATLAB/Octave command} {DSERIES =} det_cond_forecast (HANDLE[, DSERIES [, DATES]]) ;
 
 Computes the forecast or the conditional forecast using an extended path method for the given forecast scenario (first argument). The past values of the endogenous and exogenous variables provided with a dseries class (see @ref{dseries class members}) can be indicated in the second argument. By default, the past values of the variables are equal to their steady-state values. The initial date of the forecast can be provided in the third argument. By default, the forecast will start at the first date indicated in the @code{init_plan} command. This function returns a dset containing the historical and forecast values for the endogenous and exogenous variables.
 
-@end deffn
+@end deftypefn
 
 
 
