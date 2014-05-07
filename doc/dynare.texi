@@ -5702,7 +5702,7 @@ confidence interval.
 @table @code
 
 @item periods = @var{INTEGER}
-Number of periods of the forecast. Default: @code{40}
+Number of periods of the forecast. Default: @code{5}.
 
 @item conf_sig = @var{DOUBLE}
 @anchor{conf_sig} Level of significance for confidence
