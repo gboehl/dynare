@@ -184,16 +184,40 @@ else
     error('Not yet implemented! Only one assignment is allowed in the FROM-TO-DO statement.')
 end
 
-% Transform the indexed variables after the assignment symbol: X(t-1) -> X(t-1).data
-expression = EXPRESSION(equal_id+1:end);
-expression = regexprep(expression,'\w*\(t\)|\w*\(t\-\d\)|\w*\(t\+\d\)','$0.data');
-EXPRESSION = [EXPRESSION(1:equal_id),expression];
+% Put all the variables in a unique dseries object.
+list_of_variables = leadlagtable{1,1};
+for i=2:number_of_variables
+   list_of_variables = [list_of_variables, ',' leadlagtable{i,1}];
+end
+try
+    eval(sprintf('tmp = [%s];', list_of_variables));
+catch
+    error('dseries::from: All the dseries objects should contain variables with different names!')
+end
 
-% Run the recursion!
-eval(sprintf('t=dates(''%s''); while t<=dates(''%s''), %s; t = t+1; end',char(d1),char(d2),EXPRESSION))
+% Get base time index
+t1 = find(d1==tmp.dates);
+t2 = find(d2==tmp.dates);
+
+% Get data
+data = tmp.data;
+
+% Transform EXPRESSION by replacing calls to the dseries objects by references to data.
+for i=1:number_of_variables
+    EXPRESSION = regexprep(EXPRESSION,sprintf('%s\\(t\\)',leadlagtable{i,1}),sprintf('data(t,%s)',num2str(i)));
+    for lag=1:leadlagtable{i,2}
+        EXPRESSION = regexprep(EXPRESSION,sprintf('%s\\(t-%s\\)',leadlagtable{i,1},num2str(lag)),sprintf('data(t-%s,%s)',num2str(lag),num2str(i)));
+    end
+    for lead=1:leadlagtable{i,4}
+        EXPRESSION = regexprep(EXPRESSION,sprintf('%s\\(t+%s\\)',leadlagtable{i,1},num2str(lead)),sprintf('data(t+%s,%s)',num2str(lead),num2str(i)));
+    end
+end
+
+% Do the job. Evaluate the recursion.
+eval(sprintf('for t=%s:%s, %s; end',num2str(t1),num2str(t2),EXPRESSION));
 
 % Put assigned variable back in the caller workspace...
-eval(sprintf('assignin(''caller'', assignedvariablename, %s)',assignedvariablename));
+eval(sprintf('assignin(''caller'', ''%s'', dseries(data(:,indva),y.init,y.name,y.tex));',assignedvariablename))
 
 
 
