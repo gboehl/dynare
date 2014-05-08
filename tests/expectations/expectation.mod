@@ -15,7 +15,7 @@ theta = 2.95;
 phi   = 0.1;
 
 model;
-c*theta*h^(1+psi)=expectation(1)((1-alpha)*y)+expectation(-2)((1-alpha)*y);
+c*theta*h^(1+psi)=(expectation(1)((1-alpha)*y)+expectation(-2)((1-alpha)*y))/2;
 k = beta*(((exp(b)*c)/(exp(b(+1))*c(+1)))
     *(exp(b(+1))*alpha*y(+1)+(1-delta)*k));
 y = exp(a)*(k(-1)^alpha)*(h^(1-alpha));
