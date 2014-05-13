@@ -9634,7 +9634,7 @@ ts1 is a dseries object:
 
 @deftypefn {dseries} {@var{B} = } baxter_king_filter (@var{A}, @var{hf}, @var{lf}, @var{K})
 
-Implementation of the Baxter and King (1999) band pass filter for @dseries objects. This filter isolates business cycle fluctuations with a period of length ranging between @var{hf} (high frequency) to @var{lf} (low frequency) using a symmetric moving average smoother with @math{2K+1} points, so that K observations at the beginning and at the end of the  sample are lost in the computation of the filter.
+Implementation of the Baxter and King (1999) band pass filter for @dseries objects. This filter isolates business cycle fluctuations with a period of length ranging between @var{hf} (high frequency) to @var{lf} (low frequency) using a symmetric moving average smoother with @math{2K+1} points, so that K observations at the beginning and at the end of the  sample are lost in the computation of the filter. The default value for @var{hf} is @math{6}, for @var{lf} is @math{32}, and for @var{K} is 12.
 
 @examplehead
 @example
