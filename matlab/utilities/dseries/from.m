@@ -19,12 +19,12 @@ function from(varargin)
 
 lvarargin = lower(varargin);
 
-if ~(ismember('to',lvarargin) && ismember('do',lvarargin))
-    error(get_error_message_0())
-end
-
 to_id = strmatch('to',lvarargin);
 do_id = strmatch('do',lvarargin);
+
+if isempty(to_id) || isempty(do_id)
+    error(get_error_message_0())
+end
 
 if do_id<to_id
     msg = sprinf('Wrong syntax! The TO keyword must preceed the DO keyword.\n');
