@@ -42,25 +42,39 @@ end
 if isequal(A.ndat, B.ndat)
     C = NaN(A.ndat,1);
     for i=1:A.ndat
-        C(i) = compare_vectors(@gt, A.time(i,:), B.time(i,:));
+        C(i) = greaterthan(A.time(i,:), B.time(i,:));
     end
 else
-    if isequal(A.ndat,1) && isequal(B.ndat,1)
-        C = compare_vectors(@gt, A.time, B.time);
-    elseif isequal(A.ndat,1)
+    if isequal(A.ndat,1)
         C = NaN(B.ndat,1);
         for i=1:B.ndat
-            C(i) = compare_vectors(@gt, A.time, B.time(i,:));
+            C(i) = greaterthan(A.time, B.time(i,:));
         end
     elseif isequal(B.ndat,1)
         C = NaN(A.ndat,1);
         for i=1:A.ndat
-            C(i) = compare_vectors(@gt, A.time(i,:), B.time);
+            C(i) = greaterthan(A.time(i,:), B.time);
         end
     else
         C = 0;
     end
 end
+
+
+function c = greaterthan(a,b)
+    if a(1)>b(1)
+        c = 1;
+    else
+        if a(1)<b(1)
+            c = 0;
+        else
+            if a(2)>b(2)
+                c = 1;
+            else
+                c = 0;
+            end
+        end
+    end
 
 %@test:1
 %$ % Define some dates
