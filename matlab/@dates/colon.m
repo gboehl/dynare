@@ -68,22 +68,17 @@ end
 
 C = dates();
 n = (B-A)+1;
+if d>1
+    n = length(1:d:n);
+end
 C.freq = A.freq;
 C.ndat = n;
 C.time = NaN(n,2);
 C.time(1,:) = A.time;
 
-current_date = A;
-linee = 1;
-
-while current_date<B
-    linee = linee+1;
+for linee=2:n
     C.time(linee,:) = add_periods_to_array_of_dates(C.time(linee-1,:), C.freq, d);
-    current_date = current_date + d;
 end
-
-C.time = C.time(1:linee,:);
-C.ndat = rows(C.time);
 
 %@test:1
 %$ % Define two dates

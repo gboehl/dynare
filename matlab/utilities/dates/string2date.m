@@ -26,7 +26,7 @@ end
 if isyearly(a)
     year = 1:(regexp(a,'[AaYy]')-1);
     date.freq = 1;
-    date.time = write_time_field(a, year);
+    date.time = write_time_field_y(a, year);
     return
 end
 
@@ -51,13 +51,14 @@ if isweekly(a)
     return
 end
 
+
 function b = write_time_field(c, d)
-    b(1) = str2num(c(d));
-    if ismember(c(d(end)+1),{'Y','y','A','a'})
-        b(2) = 1;
-    else
-        b(2) = str2num(c(d(end)+2:end));
-    end
+    b(1) = str2double(c(d));
+    b(2) = str2double(c(d(end)+2:end));
+
+function b = write_time_field_y(c, d)
+    b(1) = str2double(c(d));
+    b(2) = 1;
 
 %@test:1
 %$

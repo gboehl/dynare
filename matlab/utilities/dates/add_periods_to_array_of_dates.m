@@ -27,12 +27,16 @@ time(:,1) = time(:,1) + fix(p/freq);
 time(:,2) = time(:,2) + rem(p,freq);
 
 id1 = find(time(:,2)>freq);
-time(id1,1) = time(id1,1) + 1;
-time(id1,2) = time(id1,2) - freq;
+if ~isempty(id1)
+    time(id1,1) = time(id1,1) + 1;
+    time(id1,2) = time(id1,2) - freq;
+end
 
 id2 = find(time(:,2)<1);
-time(id2,1) = time(id2,1) - 1;
-time(id2,2) = time(id2,2) + freq;
+if ~isempty(id2)
+    time(id2,1) = time(id2,1) - 1;
+    time(id2,2) = time(id2,2) + freq;
+end
 
 %@test:1
 %$ t(1) = dyn_assert(add_periods_to_array_of_dates([1950 1], 4, 1),[1950 2]);
