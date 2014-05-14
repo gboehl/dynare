@@ -116,6 +116,8 @@ mex/build/matlab/run_m2html.m
 /matlab/dynare_m
 /matlab/dynare_m.exe
 /matlab/dynare_version.m
+/matlab/empty-dates-object.mat
+/matlab/empty-dseries-object.mat
 
 # DLL rules
 *.mex
