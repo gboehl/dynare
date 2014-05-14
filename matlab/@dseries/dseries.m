@@ -76,9 +76,7 @@ function ts = dseries(varargin) % --*-- Unitary tests --*--
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-if exist('empty-dseries-object.mat','file')
-    load('empty-dseries-object');
-else
+if nargin>0 && isequal(varargin{1},'initialize')
     ts = struct;
     ts.data  = [];
     ts.nobs  = 0;
@@ -88,7 +86,12 @@ else
     ts.freq  = [];
     ts.init  = dates();
     ts.dates = dates();
+    ts = class(ts,'dseries');
+    assignin('base','emptydseriesobject',ts);
+    return
 end
+
+ts = evalin('base','emptydseriesobject');
 
 switch nargin
   case 0
