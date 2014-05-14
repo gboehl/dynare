@@ -249,4 +249,18 @@ if verbose
     skipline()
 end
 
+% Delete empty dates and dseries saved on disk.
+if exist('empty-dates-object.mat','file')
+    delete([dynareroot 'empty-dates-object.mat']);
+end
+if exist('empty-dseries-object.mat','file')
+    delete([dynareroot 'empty-dseries-object.mat']);
+end
+
+% Save empty dates and dseries objects on disk.
+dd = dates();
+ts = dseries();
+save([dynareroot 'empty-dates-object.mat'],'dd');
+save([dynareroot 'empty-dseries-object.mat'],'ts');
+
 cd(origin);
