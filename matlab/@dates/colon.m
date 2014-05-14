@@ -77,7 +77,7 @@ C.time = NaN(n,2);
 C.time(1,:) = A.time;
 
 for linee=2:n
-    C.time(linee,:) = add_periods_to_array_of_dates(C.time(linee-1,:), C.freq, d);
+    C.time(linee,:) = add_periods_to_date(C.time(linee-1,:), C.freq, d) ;%add_periods_to_array_of_dates(C.time(linee-1,:), C.freq, d);
 end
 
 %@test:1
