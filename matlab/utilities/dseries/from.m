@@ -178,21 +178,27 @@ if isequal(length(equal_id),1)
     if length(assignedvariablename)>1
         error('No more than one variable can be assigned!')
     end
-    % Check that the dynamic model for the endogenous variable is not forward looking.
+    % Check if the model is static
     start = regexpi(assignedvariablename{1},'\(t\)|\(t\-\d\)|\(t\+\d\)');
     index = assignedvariablename{1}(start:end);
     assignedvariablename = assignedvariablename{1}(1:start-1);
-    indum = index2num(index);
     indva = strmatch(assignedvariablename, leadlagtable(:,1));
-    if indum<leadlagtable{indva,4}
-        error('dseries::from: It is not possible to simulate a forward looking model!')
+    dynamicmodel = ~isempty(regexpi(EXPRESSION(equal_id:end), sprintf('%s\\(t\\)|%s\\(t\\-\\d\\)|%s\\(t\\+\\d\\)',assignedvariablename,assignedvariablename,assignedvariablename),'match'));
+    % Check that the dynamic model for the endogenous variable is not forward looking.
+    if dynamicmodel
+        indum = index2num(index);
+        if indum<leadlagtable{indva,4}
+            error('dseries::from: It is not possible to simulate a forward looking model!')
+        end
     end
     % Check that the assigned variable does not depend on itself (the assigned variable can depend on its past level but not on the current level).
-    tmp = regexpi(EXPRESSION(equal_id+1:end), sprintf('%s\\(t\\)|%s\\(t\\-\\d\\)|%s\\(t\\+\\d\\)',assignedvariablename,assignedvariablename,assignedvariablename),'match');
-    tmp = cellfun(@extractindex, tmp);
-    tmp = cellfun(@index2num, tmp);
-    if ~all(tmp(:)<indum)
-        error(sprintf('dseries::from: On the righthand side, the endogenous variable, %s, must be indexed by %s at most.',assignedvariablename,num2index(indum-1)))
+    if dynamicmodel
+        tmp = regexpi(EXPRESSION(equal_id+1:end), sprintf('%s\\(t\\)|%s\\(t\\-\\d\\)|%s\\(t\\+\\d\\)',assignedvariablename,assignedvariablename,assignedvariablename),'match');
+        tmp = cellfun(@extractindex, tmp);
+        tmp = cellfun(@index2num, tmp);
+        if ~all(tmp(:)<indum)
+            error(sprintf('dseries::from: On the righthand side, the endogenous variable, %s, must be indexed by %s at most.',assignedvariablename,num2index(indum-1)))
+        end
     end
 else
     error('Not yet implemented! Only one assignment is allowed in the FROM-TO-DO statement.')
@@ -216,21 +222,41 @@ t2 = find(d2==tmp.dates);
 % Get data
 data = tmp.data;
 
-% Transform EXPRESSION by replacing calls to the dseries objects by references to data.
-for i=1:number_of_variables
-    EXPRESSION = regexprep(EXPRESSION,sprintf('%s\\(t\\)',leadlagtable{i,1}),sprintf('data(t,%s)',num2str(i)));
-    for j=1:length(leadlagtable{i,5})
-        lag = leadlagtable{i,5}(j);
-        EXPRESSION = regexprep(EXPRESSION,sprintf('%s\\(t-%s\\)',leadlagtable{i,1},num2str(lag)),sprintf('data(t-%s,%s)',num2str(lag),num2str(i)));
+if dynamicmodel
+    % Transform EXPRESSION by replacing calls to the dseries objects by references to data.
+    for i=1:number_of_variables
+        EXPRESSION = regexprep(EXPRESSION,sprintf('%s\\(t\\)',leadlagtable{i,1}),sprintf('data(t,%s)',num2str(i)));
+        for j=1:length(leadlagtable{i,5})
+            lag = leadlagtable{i,5}(j);
+            EXPRESSION = regexprep(EXPRESSION,sprintf('%s\\(t-%s\\)',leadlagtable{i,1},num2str(lag)),sprintf('data(t-%s,%s)',num2str(lag),num2str(i)));
+        end
+        for j=1:length(leadlagtable{i,6})
+            lead = leadlagtable{i,6}(j);
+            EXPRESSION = regexprep(EXPRESSION,sprintf('%s\\(t+%s\\)',leadlagtable{i,1},num2str(lead)),sprintf('data(t+%s,%s)',num2str(lead),num2str(i)));
+        end
     end
-    for j=1:length(leadlagtable{i,6})
-        lead = leadlagtable{i,6}(j);
-        EXPRESSION = regexprep(EXPRESSION,sprintf('%s\\(t+%s\\)',leadlagtable{i,1},num2str(lead)),sprintf('data(t+%s,%s)',num2str(lead),num2str(i)));
+    % Do the job. Evaluate the recursion.
+    eval(sprintf('for t=%s:%s, %s; end',num2str(t1),num2str(t2),EXPRESSION));
+else
+    % Transform EXPRESSION by replacing calls to the dseries objects by references to data.
+    for i=1:number_of_variables
+        EXPRESSION = regexprep(EXPRESSION,sprintf('%s\\(t\\)',leadlagtable{i,1}),sprintf('data(%s:%s,%s)',num2str(t1),num2str(t2),num2str(i)));
+        for j=1:length(leadlagtable{i,5})
+            lag = leadlagtable{i,5}(j);
+            EXPRESSION = regexprep(EXPRESSION,sprintf('%s\\(t-%s\\)',leadlagtable{i,1},num2str(lag)),sprintf('data(%s:%s,%s)',num2str(t1-lag),num2str(t2-lag),num2str(i)));
+        end
+        for j=1:length(leadlagtable{i,6})
+            lead = leadlagtable{i,6}(j);
+            EXPRESSION = regexprep(EXPRESSION,sprintf('%s\\(t+%s\\)',leadlagtable{i,1},num2str(lead)),sprintf('data(%s:%s,%s)',num2str(t1-lead),num2str(t2-lead),num2str(i)));
+        end
     end
+    % Transform some operators (^ -> .^, / -> ./, * -> .*)
+    EXPRESSION = strrep(EXPRESSION,'^','.^');
+    EXPRESSION = strrep(EXPRESSION,'*','.*');
+    EXPRESSION = strrep(EXPRESSION,'/','./');
+    % Do the job. Evaluate the static expression.
+    eval(sprintf('%s;',EXPRESSION));
 end
-
-% Do the job. Evaluate the recursion.
-eval(sprintf('for t=%s:%s, %s; end',num2str(t1),num2str(t2),EXPRESSION));
 
 % Put assigned variable back in the caller workspace...
 eval(sprintf('assignin(''caller'', ''%s'', dseries(data(:,indva),y.init,y.name,y.tex));',assignedvariablename))
