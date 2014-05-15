@@ -250,7 +250,7 @@ else
             EXPRESSION = regexprep(EXPRESSION,sprintf('%s\\(t+%s\\)',leadlagtable{i,1},num2str(lead)),sprintf('data(%s:%s,%s)',num2str(t1-lead),num2str(t2-lead),num2str(i)));
         end
     end
-    % Transform some operators (^ -> .^, / -> ./, * -> .*)
+    % Transform some operators (^ -> .^, / -> ./ and * -> .*)
     EXPRESSION = strrep(EXPRESSION,'^','.^');
     EXPRESSION = strrep(EXPRESSION,'*','.*');
     EXPRESSION = strrep(EXPRESSION,'/','./');
