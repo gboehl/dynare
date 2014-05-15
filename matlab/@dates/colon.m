@@ -81,9 +81,9 @@ if isequal(C.freq,1)
     C.time(:,2) = 1;
 else
     C.time = NaN(n,2);
-    initperiods = C.freq-A.time(2)+1;
+    initperiods = min(C.freq-A.time(2)+1,n);
     C.time(1:initperiods,1) = A.time(1);
-    C.time(1:initperiods,2) = transpose(A.time(2):C.freq);
+    C.time(1:initperiods,2) = transpose(A.time(2)-1+(1:initperiods));
     if n>initperiods
         p = n-initperiods;
         if p<=C.freq
@@ -99,12 +99,12 @@ else
                 C.time(initperiods+C.freq+(1:r),2) = transpose(1:r);
             end
         end
-        if d>1
-            C.time = C.time(1:d:n,:);
-            C.ndat = m;
-        else
-            C.ndat = n;
-        end
+    end
+    if d>1
+        C.time = C.time(1:d:n,:);
+        C.ndat = m;
+    else
+        C.ndat = n;
     end
 end
 
@@ -173,3 +173,20 @@ end
 %$ t(2) = dyn_assert(d.freq,e.freq);
 %$ T = all(t);
 %$ @eof:3
+
+%$ @test:4
+%$ % Create an empty dates object for quaterly data
+%$ qq = dates('Q');
+%$
+%$ % Define expected results.
+%$ e.freq = 4;
+%$ e.time = [1950 1; 1950 2; 1950 3];
+%$
+%$ % Call the tested routine.
+%$ d = qq(1950,1):qq(1950,3);
+%$
+%$ % Check the results.
+%$ t(1) = dyn_assert(d.time,e.time);
+%$ t(2) = dyn_assert(d.freq,e.freq);
+%$ T = all(t);
+%$ @eof:4
