@@ -110,7 +110,7 @@ switch nargin
         dd = subsref(dd,S);
         return
     else
-        error(['dates::dates: Wrong calling sequence!'])
+        error('dates::dates: Wrong calling sequence!')
     end
     for i=2:dd.ndat
         if isdate(varargin{i})
@@ -118,10 +118,10 @@ switch nargin
             if isequal(date.freq,dd.freq)
                 dd.time(i,:) = date.time;
             else
-                 error(['dates::dates: Check that all the inputs have the same frequency (see input number ' str2num(i) ')!'])
+                 error(sprintf('dates::dates: Check that all the inputs have the same frequency (see input number %i)!',i))
             end
         else
-            error(['dates::dates: Input ' str2num(i) ' has to be a string date!'])
+            error(sprintf('dates::dates: Input %i has to be a string date!',i))
         end
     end
 end

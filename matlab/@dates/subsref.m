@@ -93,7 +93,7 @@ switch S(1).type
                 elseif isequal(m,1)
                     B.time = [S(1).subs{2}, ones(n,1)];
                 else
-                    error(['dates::subsref: This is a bug!'])
+                    error('dates::subsref: This is a bug!')
                 end
                 B.ndat = rows(B.time);
             elseif isequal(length(S(1).subs),3)
@@ -148,7 +148,7 @@ switch S(1).type
                 elseif isequal(m,1) && isequal(B.freq,1)
                     B.time = [S(1).subs{1}, ones(n,1)];
                 else
-                    error(['dates::subsref: This is a bug!'])
+                    error('dates::subsref: This is a bug!')
                 end
                 B.ndat = rows(B.time);
             else
@@ -267,7 +267,7 @@ end
 %$
 %$ % Define a ranges of dates using qq.
 %$ try
-%$     r1 = qq(1950,1):qq([1950, 3]);
+%$     r1 = qq(1950,1):qq(1950,3);%qq([1950, 3]);
 %$     t(1) = 1;
 %$ catch
 %$     t(1) = 0;

@@ -26,7 +26,11 @@ function b = isweekly(str)  % --*-- Unitary tests --*--
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 if ischar(str)
-    b = ~isempty(regexp(str,'^-?[0-9]*[Ww]([1-9]|[1-4][0-9]|5[0-2])$'));
+    if isempty(regexp(str,'^-?[0-9]*[Ww]([1-9]|[1-4][0-9]|5[0-2])$','once'))
+        b = 0;
+    else
+        b = 1;
+    end
 else
     b = 0;
 end
