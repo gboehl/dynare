@@ -219,10 +219,12 @@ data = tmp.data;
 % Transform EXPRESSION by replacing calls to the dseries objects by references to data.
 for i=1:number_of_variables
     EXPRESSION = regexprep(EXPRESSION,sprintf('%s\\(t\\)',leadlagtable{i,1}),sprintf('data(t,%s)',num2str(i)));
-    for lag=1:leadlagtable{i,2}
+    for j=1:length(leadlagtable{i,5})
+        lag = leadlagtable{i,5}(j);
         EXPRESSION = regexprep(EXPRESSION,sprintf('%s\\(t-%s\\)',leadlagtable{i,1},num2str(lag)),sprintf('data(t-%s,%s)',num2str(lag),num2str(i)));
     end
-    for lead=1:leadlagtable{i,4}
+    for j=1:length(leadlagtable{i,6})
+        lead = leadlagtable{i,6}(j);
         EXPRESSION = regexprep(EXPRESSION,sprintf('%s\\(t+%s\\)',leadlagtable{i,1},num2str(lead)),sprintf('data(t+%s,%s)',num2str(lead),num2str(i)));
     end
 end
