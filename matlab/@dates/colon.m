@@ -30,7 +30,7 @@ function C = colon(varargin) % --*-- Unitary tests --*--
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-if isequal(nargin,2)    
+if isequal(nargin,2)
     A = varargin{1};
     B = varargin{2};
     d = 1;
@@ -68,16 +68,44 @@ end
 
 C = dates();
 n = (B-A)+1;
+m = n;
 if d>1
-    n = length(1:d:n);
+    m = length(1:d:n);
 end
 C.freq = A.freq;
-C.ndat = n;
-C.time = NaN(n,2);
-C.time(1,:) = A.time;
 
-for linee=2:n
-    C.time(linee,:) = add_periods_to_date(C.time(linee-1,:), C.freq, d) ;%add_periods_to_array_of_dates(C.time(linee-1,:), C.freq, d);
+if isequal(C.freq,1)
+    C.ndat = m;
+    C.time = NaN(m,2);
+    C.time(:,1) = A.time(1)+transpose(0:d:n-1);
+    C.time(:,2) = 1;
+else
+    C.time = NaN(n,2);
+    initperiods = C.freq-A.time(2)+1;
+    C.time(1:initperiods,1) = A.time(1);
+    C.time(1:initperiods,2) = transpose(A.time(2):C.freq);
+    if n>initperiods
+        p = n-initperiods;
+        if p<=C.freq
+            C.time(initperiods+(1:p),1) = A.time(1)+1;
+            C.time(initperiods+(1:p),2) = transpose(1:p);
+        else
+            q = fix(p/C.freq);
+            r = rem(p,C.freq);
+            C.time(initperiods+(1:C.freq*q),2) = repmat(transpose(1:C.freq),q,1);
+            C.time(initperiods+(1:C.freq*q),1) = kron(A.time(1)+transpose(1:q),ones(C.freq,1));
+            if r>0
+                C.time(initperiods+C.freq+(1:r),1) = C.time(initperiods+C.freq,1)+1;
+                C.time(initperiods+C.freq+(1:r),2) = transpose(1:r);
+            end
+        end
+        if d>1
+            C.time = C.time(1:d:n,:);
+            C.ndat = m;
+        else
+            C.ndat = n;
+        end
+    end
 end
 
 %@test:1
