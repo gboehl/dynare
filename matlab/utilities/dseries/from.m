@@ -70,7 +70,12 @@ variables = unique(regexpi(EXPRESSION, '\w*\(t\)|\w*\(t\-\d\)|\w*\(t\+\d\)','mat
 % Column 2: Maximum lag order.
 % Column 3: Equal to 1 if the variable appears at the current period, 0 otherwise.
 % Column 4: Maximum lead order.
-leadlagtable = cell(0,4);
+% Column 5: Vector of effective lag orders.
+% Column 6: Vector of effective lead orders.
+%
+% Initialization.
+leadlagtable = cell(0,6);
+% Loop over the variables (dseries objects).
 for i=1:length(variables)
     current = ~isempty(regexpi(variables{i},'\(t\)'));
     lag = ~isempty(regexpi(variables{i},'\(t\-\d\)'));
@@ -87,35 +92,44 @@ for i=1:length(variables)
         end
         if lag
             tmp = regexpi(index,'\d','match');
-            leadlagtable(1,2) = {str2num(tmp{1})};
+            leadlagtable(1,2) = {str2double(tmp{1})};
+            leadlagtable(1,5) = {str2double(tmp{1})};
         else
             leadlagtable(1,2) = {0};
+            leadlagtable(1,5) = {[]};
         end
         if lead
             tmp = regexpi(index,'\d','match');
-            leadlagtable(1,4) = {str2num(tmp{1})};
+            leadlagtable(1,4) = {str2double(tmp{1})};
+            leadlagtable(1,6) = {str2double(tmp{1})};
         else
             leadlagtable(1,4) = {0};
+            leadlagtable(1,6) = {[]};
         end
     else
         linea = strmatch(variables{i},leadlagtable(:,1));
         if isempty(linea)
+            % This is a new variable!
             linea = size(leadlagtable,1)+1;
             leadlagtable(linea,1) = {variables{i}};
             leadlagtable(linea,2) = {0};
             leadlagtable(linea,3) = {0};
             leadlagtable(linea,4) = {0};
+            leadlagtable(linea,5) = {[]};
+            leadlagtable(linea,6) = {[]};
         end
         if current
             leadlagtable(linea,3) = {1};
         end
         if lag
             tmp = regexpi(index,'\d','match');
-            leadlagtable(linea,2) = {max(str2num(tmp{1}),leadlagtable{linea,2})};
+            leadlagtable(linea,2) = {max(str2double(tmp{1}),leadlagtable{linea,2})};
+            leadlagtable(linea,5) = {sortrows([leadlagtable{linea,5}; str2double(tmp{1})])};
         end
         if lead
             tmp = regexpi(index,'\d','match');
-            leadlagtable(linea,4) = {max(str2num(tmp{1}),leadlagtable{linea,4})};
+            leadlagtable(linea,4) = {max(str2double(tmp{1}),leadlagtable{linea,4})};
+            leadlagtable(linea,6) = {sortrows([leadlagtable{linea,6}; str2double(tmp{1})])};
         end
     end
 end
