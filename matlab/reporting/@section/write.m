@@ -71,6 +71,6 @@ for i=1:ne
         end
     end
 end
-fprintf(fid, '\\end{tabular}}\n');
+fprintf(fid, '\\end{tabular}}\\\\\n');
 fprintf(fid, '%% End Section Object\n\n');
 end
