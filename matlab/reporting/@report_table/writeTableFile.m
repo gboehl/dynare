@@ -56,6 +56,7 @@ nlhc = 1;
 
 if isempty(o.range)
     dates = getMaxRange(o.series);
+    o.range = {dates};
 else
     dates = o.range{1};
 end
