@@ -64,6 +64,9 @@ EXPRESSION = char([varargin{5:end}]);
 % Get all the variables involved in the recursive expression.
 variables = unique(regexpi(EXPRESSION, '\w*\(t\)|\w*\(t\-\d\)|\w*\(t\+\d\)','match'));
 
+% Copy EXPRESSION in expression. In the next loop we will remove all indexed variables from expression.
+expression = EXPRESSION;
+
 % Build an incidence table (max lag/lead for each variable)
 %
 % Column 1: Name of the variable.
@@ -77,6 +80,7 @@ variables = unique(regexpi(EXPRESSION, '\w*\(t\)|\w*\(t\-\d\)|\w*\(t\+\d\)','mat
 leadlagtable = cell(0,6);
 % Loop over the variables (dseries objects).
 for i=1:length(variables)
+    expression = strrep(expression,variables{i},'');
     current = ~isempty(regexpi(variables{i},'\(t\)'));
     lag = ~isempty(regexpi(variables{i},'\(t\-\d\)'));
     lead = ~isempty(regexpi(variables{i},'\(t\+\d\)'));
@@ -222,6 +226,13 @@ t2 = find(d2==tmp.dates);
 % Get data
 data = tmp.data;
 
+% Isolate the (potential) parameters in the expression to be evaluated
+[~, TMP314] = strsplit(expression,'([0-9]*\.[0-9]*|\w*)','DelimiterType','RegularExpression','CollapseDelimiters',false);
+% Here I remove the numbers (TMP314 -> TMP314159).
+TMP3141 = regexp(TMP314,'(([0-9]*\.[0-9]*)|([0-9]*))','match');
+TMP31415 = find(cellfun(@isempty,TMP3141));
+TMP314159 = TMP314(TMP31415);
+
 if dynamicmodel
     % Transform EXPRESSION by replacing calls to the dseries objects by references to data.
     for i=1:number_of_variables
@@ -233,6 +244,18 @@ if dynamicmodel
         for j=1:length(leadlagtable{i,6})
             lead = leadlagtable{i,6}(j);
             EXPRESSION = regexprep(EXPRESSION,sprintf('%s\\(t+%s\\)',leadlagtable{i,1},num2str(lead)),sprintf('data(t+%s,%s)',num2str(lead),num2str(i)));
+        end
+    end
+    % Get values for the parameters (if any)
+    if ~isempty(TMP314159)
+        for i=1:length(TMP314159)
+            wordcandidate = TMP314159{i};
+            try % If succesful, word is a reference to a variable in the caller function/script.
+                thiswordisaparameter = evalin('caller', wordcandidate);
+                eval(sprintf('%s = thiswordisaparameter;',wordcandidate));
+            catch
+                % I assume that word is a reference to a function.
+            end
         end
     end
     % Do the job. Evaluate the recursion.
@@ -254,14 +277,24 @@ else
     EXPRESSION = strrep(EXPRESSION,'^','.^');
     EXPRESSION = strrep(EXPRESSION,'*','.*');
     EXPRESSION = strrep(EXPRESSION,'/','./');
+    % Get values for the parameters (if any)
+    if ~isempty(TMP314159)
+        for i=1:length(TMP314159)
+            wordcandidate = TMP314159{i};
+            try % If succesful, word is a reference to a variable in the caller function/script.
+                thiswordisaparameter = evalin('caller', wordcandidate);
+                eval(sprintf('%s = thiswordisaparameter;',wordcandidate));
+            catch
+                % I assume that word is a reference to a function.
+            end
+        end
+    end
     % Do the job. Evaluate the static expression.
     eval(sprintf('%s;',EXPRESSION));
 end
 
 % Put assigned variable back in the caller workspace...
 eval(sprintf('assignin(''caller'', ''%s'', dseries(data(:,indva),y.init,y.name,y.tex));',assignedvariablename))
-
-
 
 function msg = get_error_message_0(msg)
     if ~nargin
