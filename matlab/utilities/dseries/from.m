@@ -154,6 +154,10 @@ for i=1:number_of_variables
     if ~isdseries(var)
         error(['dseries::from: Variable ' current_variable ' is not a dseries object!'])
     else
+        if ~var.vobs
+            msg = sprintf('dseries::from: Object %s must not be empty!\n',current_variable);
+            error(msg)
+        end
         if var.vobs>1
             msg = sprintf('dseries::from: Object %s must contain only one variable!\n',current_variable);
             error(msg)
