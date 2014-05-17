@@ -141,6 +141,9 @@ end
 % Set the number of variables
 number_of_variables = size(leadlagtable,1);
 
+% Initialize a cell array containing the names of the variables.
+variable_names = cell(1);
+
 % Test that all the involved variables are available dseries objects. Also check that
 % these time series are defined over the time range given by d1 and d2 (taking care of
 % the lags and leads) and check that each object is a singleton
@@ -161,6 +164,15 @@ for i=1:number_of_variables
         if var.vobs>1
             msg = sprintf('dseries::from: Object %s must contain only one variable!\n',current_variable);
             error(msg)
+        end
+        if i>1
+            if ismember(var.name,variable_names)
+                error('dseries::from: All the dseries objects should contain variables with different names!')
+            else
+                variable_names(i) = {var.name{1}};
+            end
+        else
+            variable_names(i) = {var.name{1}};
         end
         if d1<var.dates(1)+leadlagtable{i,2}
             msg = sprintf('dseries::from: Initial date of the loop (%s) is inconsistent with %s''s range!\n',char(d1),current_variable);
@@ -221,11 +233,7 @@ list_of_variables = leadlagtable{1,1};
 for i=2:number_of_variables
    list_of_variables = [list_of_variables, ',' leadlagtable{i,1}];
 end
-try
-    eval(sprintf('tmp = [%s];', list_of_variables));
-catch
-    error('dseries::from: All the dseries objects should contain variables with different names!')
-end
+eval(sprintf('tmp = [%s];', list_of_variables));
 
 % Get base time index
 t1 = find(d1==tmp.dates);
