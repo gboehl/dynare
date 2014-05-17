@@ -143,7 +143,7 @@ number_of_variables = size(leadlagtable,1);
 
 % Test that all the involved variables are available dseries objects. Also check that
 % these time series are defined over the time range given by d1 and d2 (taking care of
-% the lags and leads).
+% the lags and leads) and check that each object is a singleton
 for i=1:number_of_variables
     current_variable = leadlagtable{i,1};
     try
@@ -154,6 +154,10 @@ for i=1:number_of_variables
     if ~isdseries(var)
         error(['dseries::from: Variable ' current_variable ' is not a dseries object!'])
     else
+        if var.vobs>1
+            msg = sprintf('dseries::from: Object %s must contain only one variable!\n',current_variable);
+            error(msg)
+        end
         if d1<var.dates(1)+leadlagtable{i,2}
             msg = sprintf('dseries::from: Initial date of the loop (%s) is inconsistent with %s''s range!\n',char(d1),current_variable);
             msg = [msg, sprintf('               Initial date should be greater than or equal to %s.',char(var.dates(1)+leadlagtable{i,2}))];
