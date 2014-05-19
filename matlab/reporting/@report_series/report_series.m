@@ -78,7 +78,7 @@ elseif nargin > 1
 
     % overwrite default values
     for pair = reshape(varargin, 2, [])
-        ind = strmatch(lower(pair{1}), lower(optNames), 'exact');
+        ind = find(strcmpi(optNames, pair{1}));
         assert(isempty(ind) || length(ind) == 1);
         if ~isempty(ind)
             o.(optNames{ind}) = pair{2};

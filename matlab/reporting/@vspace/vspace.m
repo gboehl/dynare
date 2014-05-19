@@ -12,7 +12,7 @@ function o = vspace(varargin)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2013 Dynare Team
+% Copyright (C) 2013-2014 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -48,7 +48,7 @@ elseif nargin > 1
 
     % overwrite default values
     for pair = reshape(varargin, 2, [])
-        ind = strmatch(lower(pair{1}), lower(optNames), 'exact');
+        ind = find(strcmpi(optNames, pair{1}));
         assert(isempty(ind) || length(ind) == 1);
         if ~isempty(ind)
             o.(optNames{ind}) = pair{2};
