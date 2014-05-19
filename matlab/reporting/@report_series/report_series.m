@@ -46,6 +46,8 @@ o.graphMarkerEdgeColor = '';
 o.graphMarkerFaceColor = '';
 o.graphMarkerSize = 1;
 
+o.graphMiscTikzAddPlotOptions = '';
+
 o.tableShowMarkers = false;
 o.tableNegColor = 'red';
 o.tablePosColor = 'blue';

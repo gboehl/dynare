@@ -33,6 +33,9 @@ function o = writeSeriesForGraph(o, fid, xrange)
 assert(~isempty(o.data) && isa(o.data, 'dseries'), ['@report_series.writeSeriesForGraph: must ' ...
                     'provide data as a dseries']);
 
+assert(ischar(o.graphMiscTikzAddPlotOptions), ['@report_series.writeSeriesForGraph: ' ...
+                    'graphMiscTikzAddPlotOptions file must be a string']);
+
 % Line
 valid_graphLineColor = {'red', 'green', 'blue', 'cyan ', 'magenta', 'yellow', ...
                     'black', 'gray', 'darkgray', 'lightgray', 'brown', ...
@@ -95,6 +98,9 @@ if ~isempty(o.graphMarker)
     end
     fprintf(fid, ',mark=%s,mark size=%f,every mark/.append style={draw=%s,fill=%s}',...
             o.graphMarker,o.graphMarkerSize,o.graphMarkerEdgeColor,o.graphMarkerFaceColor);
+end
+if ~isempty(o.graphMiscTikzAddPlotOptions)
+    fprintf(fid, ',%s', o.graphMiscTikzAddPlotOptions)
 end
 fprintf(fid,']\ntable[row sep=crcr]{\nx y\\\\\n');
 for i=1:ds.dates.ndat
