@@ -100,7 +100,7 @@ if ~isempty(o.graphMarker)
             o.graphMarker,o.graphMarkerSize,o.graphMarkerEdgeColor,o.graphMarkerFaceColor);
 end
 if ~isempty(o.graphMiscTikzAddPlotOptions)
-    fprintf(fid, ',%s', o.graphMiscTikzAddPlotOptions)
+    fprintf(fid, ',%s', o.graphMiscTikzAddPlotOptions);
 end
 fprintf(fid,']\ntable[row sep=crcr]{\nx y\\\\\n');
 for i=1:ds.dates.ndat
