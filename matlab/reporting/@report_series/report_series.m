@@ -35,6 +35,8 @@ o = struct;
 
 o.data = '';
 
+o.graphLegendName = '';
+
 o.graphLineColor = 'black';
 o.graphLineStyle = 'solid';
 o.graphLineWidth = 0.5;
@@ -82,6 +84,10 @@ elseif nargin > 1
             error('@report_series.report_series: %s is not a recognized option.', pair{1});
         end
     end
+end
+
+if ~isempty(o.graphLegendName)
+    o.data = o.data.tex_rename(o.graphLegendName);
 end
 
 % Create report_series object
