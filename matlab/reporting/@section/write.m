@@ -49,7 +49,6 @@ for i=1:o.cols
 end
 fprintf(fid, '}\n');
 ne = numElements(o);
-nlcounter = 0;
 row = 1;
 col = 1;
 for i=1:ne
