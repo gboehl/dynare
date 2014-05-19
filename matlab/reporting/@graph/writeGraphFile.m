@@ -169,6 +169,10 @@ end
 if ~isempty(o.ylabel)
     fprintf(fid, 'ylabel=%s,\n', o.ylabel);
 end
+
+if ~isempty(o.miscTikzAxisOptions)
+    fprintf(fid, '%s', o.miscTikzAxisOptions);
+end
 fprintf(fid, ']\n');
 
 if o.showZeroline
