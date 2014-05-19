@@ -72,6 +72,8 @@ o.xTickLabelAnchor = 'east';
 o.width = 6;
 o.height = 4.5;
 
+o.miscTikzPictureOptions = '';
+
 if nargin == 1
     assert(isa(varargin{1}, 'graph'),['@graph.graph: with one arg you ' ...
                         'must pass a graph object']);
@@ -105,6 +107,7 @@ assert(iscellstr(o.title), '@graph.graph: title must be a cell array of string(s
 assert(ischar(o.titleFormat), '@graph.graph: titleFormat file must be a string');
 assert(ischar(o.xlabel), '@graph.graph: xlabel file must be a string');
 assert(ischar(o.ylabel), '@graph.graph: ylabel file must be a string');
+assert(ischar(o.miscTikzPictureOptions), '@graph.graph: miscTikzPictureOptions file must be a string');
 assert(ischar(o.graphName), '@graph.graph: graphName must be a string');
 assert(ischar(o.graphDirName), '@graph.graph: graphDirName must be a string');
 assert(islogical(o.showGrid), '@graph.graph: showGrid must be either true or false');

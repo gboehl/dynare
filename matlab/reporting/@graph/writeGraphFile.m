@@ -49,7 +49,11 @@ if fid == -1
     error(['@graph.writeGraphFile: ' msg]);
 end
 
-fprintf(fid, '\\begin{tikzpicture}[baseline]');
+fprintf(fid, '\\begin{tikzpicture}[baseline');
+if ~isempty(o.miscTikzPictureOptions)
+    fprintf(fid, ',%s', o.miscTikzPictureOptions);
+end
+fprintf(fid, ']');
 
 if isempty(o.xrange)
     dd = getMaxRange(o.series);
