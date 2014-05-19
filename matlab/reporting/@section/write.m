@@ -54,11 +54,13 @@ row = 1;
 col = 1;
 for i=1:ne
     if isa(o.elements{i}, 'vspace')
-        assert(col == o.cols, ['@section.write: must place ' ...
-                            'vspace command after a linebreak in the table ' ...
-                            'or series of charts']);
         o.elements{i}.write(fid);
         fprintf(fid, '\\\\\n');
+        if col ~= o.cols
+            fprintf(fid, '\\end{tabular}}\\\\\n');
+            fprintf(fid, '%% End Section Object\n\n');
+            return;
+        end
     else
         o.elements{i}.write(fid, pg, sec, row, col);
         if col ~= o.cols
