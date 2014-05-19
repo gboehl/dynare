@@ -79,7 +79,7 @@ if status ~= 0
     error(['@report.compile: There was an error in compiling ' rfn '.pdf.' ...
           '  ' compiler ' returned the error code: ' num2str(status)]);
 end
-fprintf(1, '\n\nDone.\n')
+fprintf(1, '\n\nDone.\n');
 disp('Your compiled report is located here:');
 disp(['     ' pwd filesep rfn '.pdf']);
 
