@@ -71,9 +71,9 @@ fprintf(fid, '\\renewcommand{\\bottomfraction}{0.8}\n');
 fprintf(fid, '\\setlength{\\parindent}{0in}\n');
 fprintf(fid, '\\newlength\\sectionheight\n');
 fprintf(fid, '\\begin{document}\n');
-fprintf(fid, '\\pgfdeclarelayer{background}\n');
-fprintf(fid, '\\pgfdeclarelayer{foreground}\n');
-fprintf(fid, '\\pgfsetlayers{background,main,foreground}\n');
+fprintf(fid, '\\pgfdeclarelayer{background0}\n');
+fprintf(fid, '\\pgfdeclarelayer{background1}\n');
+fprintf(fid, '\\pgfsetlayers{background0,background1,main}\n');
 fprintf(fid, '\\centering\n');
 
 nps = length(o.pages);
