@@ -69,7 +69,7 @@ for i=1:length(fields)
             fprintf('false');
         end
     elseif isobject(val)
-        if isa(val, 'dates')
+        if isdates(val)
             fprintf('<dates: %s, ..., %s>', ...
                     date2string(val(1)), date2string(val(end)));
         elseif isa(val, 'dseries')

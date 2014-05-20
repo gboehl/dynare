@@ -31,7 +31,7 @@ function tf = allCellsAreDatesRange(dcell)
 assert(iscell(dcell));
 tf = true;
 for i=1:length(dcell)
-    if ~(isa(dcell{i}, 'dates') && dcell{i}.ndat >= 2)
+    if ~(isdates(dcell{i}) && dcell{i}.ndat >= 2)
         tf = false;
         return;
     end

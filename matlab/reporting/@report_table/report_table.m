@@ -78,7 +78,7 @@ if ~iscell(o.range)
     o.range = {o.range};
 end
 
-if isa(o.vlineAfter, 'dates')
+if isdates(o.vlineAfter)
     o.vlineAfter = {o.vlineAfter};
 end
 

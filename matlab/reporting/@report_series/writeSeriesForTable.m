@@ -35,7 +35,7 @@ function o = writeSeriesForTable(o, fid, dates, precision)
 %% Validate options passed to function
 assert(fid ~= -1);
 for i=1:length(dates)
-    assert(isa(dates{i}, 'dates'));
+    assert(isdates(dates{i}));
 end
 assert(isint(precision));
 
