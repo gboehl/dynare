@@ -48,6 +48,7 @@ o.graphMarkerSize = 1;
 
 o.graphMiscTikzAddPlotOptions = '';
 
+o.graphHline = {};
 o.graphVline = dates();
 
 o.tableShowMarkers = false;
