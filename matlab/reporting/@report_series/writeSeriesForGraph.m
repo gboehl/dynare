@@ -70,57 +70,30 @@ assert(~(strcmp(o.graphLineStyle, 'none') && isempty(o.graphMarker)), ['@report_
 assert(isempty(o.graphVline) || (isdates(o.graphVline) && o.graphVline.ndat == 1), ...
     '@report_series.writeSeriesForGraph: graphVline must be a dates of size one');
 assert(isempty(o.graphHline) || isnumeric(o.graphHline), ...
-       '@report_series.writeSeriesForGraph: graphHline must a single numeric value');
+    '@report_series.writeSeriesForGraph: graphHline must a single numeric value');
 
 % Zero tolerance
 assert(isfloat(o.zeroTol), '@report_series.write: zeroTol must be a float');
 
-%% graphVline
-
+%% graphVline && graphHline
+if ~isempty(o.graphVline)
+    fprintf(fid, '%%Vertical Line\n\\begin{pgfonlayer}{background1}\n\\draw');
+    writeLineOptions(o, fid);
+    stringsdd = strings(xrange);
+    x = find(strcmpi(date2string(o.graphVline), stringsdd));
+    fprintf(fid, ['(axis cs:%d,\\pgfkeysvalueof{/pgfplots/ymin}) -- (axis ' ...
+        'cs:%d,\\pgfkeysvalueof{/pgfplots/ymax});\n\\end{pgfonlayer}\n'], ...
+        x, x);
+end
+if ~isempty(o.graphHline)
+    fprintf(fid, '%%Horizontal Line\n\\begin{pgfonlayer}{background1}\n\\draw');
+    writeLineOptions(o, fid);
+    fprintf(fid, ['(axis cs:\\pgfkeysvalueof{/pgfplots/xmin},%f) -- (axis ' ...
+        'cs:\\pgfkeysvalueof{/pgfplots/xmax},%f);\n\\end{pgfonlayer}\n'], ...
+        o.graphHline, o.graphHline);
+end
 if ~isempty(o.graphVline) || ~isempty(o.graphHline)
-    for i=1:o.graphVline.ndat
-        fprintf(fid, '%%vline %d\n\\begin{pgfonlayer}{background1}\n\\draw[color=%s,%s,line width=%fpt,line join=round',...
-                i, o.graphLineColor, o.graphLineStyle, o.graphLineWidth);
-        if ~isempty(o.graphMarker)
-            if isempty(o.graphMarkerEdgeColor)
-                o.graphMarkerEdgeColor = o.graphLineColor;
-            end
-        if isempty(o.graphMarkerFaceColor)
-            o.graphMarkerFaceColor = o.graphLineColor;
-        end
-        fprintf(fid, ',mark=%s,mark size=%f,every mark/.append style={draw=%s,fill=%s}',...
-                o.graphMarker,o.graphMarkerSize,o.graphMarkerEdgeColor,o.graphMarkerFaceColor);
-        end
-        if ~isempty(o.graphMiscTikzAddPlotOptions)
-            fprintf(fid, ',%s', o.graphMiscTikzAddPlotOptions);
-        end
-        stringsdd = strings(xrange);
-        x = find(strcmpi(date2string(o.graphVline(i)), stringsdd));
-        fprintf(fid, ['] (axis cs:%d,\\pgfkeysvalueof{/pgfplots/ymin}) -- (axis ' ...
-                      'cs:%d,\\pgfkeysvalueof{/pgfplots/ymax});\n\\end{pgfonlayer}\n'], ...
-                x, x);
-    end
-
-    if ~isempty(o.graphHline)
-        fprintf(fid, '%%hline %d\n\\begin{pgfonlayer}{background1}\n\\draw[color=%s,%s,line width=%fpt,line join=round',...
-                i, o.graphLineColor, o.graphLineStyle, o.graphLineWidth);
-        if ~isempty(o.graphMarker)
-            if isempty(o.graphMarkerEdgeColor)
-                o.graphMarkerEdgeColor = o.graphLineColor;
-            end
-        if isempty(o.graphMarkerFaceColor)
-            o.graphMarkerFaceColor = o.graphLineColor;
-        end
-        fprintf(fid, ',mark=%s,mark size=%f,every mark/.append style={draw=%s,fill=%s}',...
-                o.graphMarker,o.graphMarkerSize,o.graphMarkerEdgeColor,o.graphMarkerFaceColor);
-        end
-        if ~isempty(o.graphMiscTikzAddPlotOptions)
-            fprintf(fid, ',%s', o.graphMiscTikzAddPlotOptions);
-        end
-        fprintf(fid, ['] (axis cs:\\pgfkeysvalueof{/pgfplots/xmin},%f) -- (axis ' ...
-                      'cs:\\pgfkeysvalueof{/pgfplots/xmax},%f);\n\\end{pgfonlayer}\n'], ...
-                o.graphHline, o.graphHline);
-    end
+    % return since the code below assumes that o.data exists
     return
 end
 
@@ -141,8 +114,19 @@ if any(stz)
     thedata(stz) = 0;
 end
 
-fprintf(fid, '%%series %s\n\\addplot[color=%s,%s,line width=%fpt,line join=round',...
-        o.data.name{:}, o.graphLineColor, o.graphLineStyle, o.graphLineWidth);
+fprintf(fid, '%%series %s\n\\addplot', o.data.name{:});
+writeLineOptions(o, fid);
+fprintf(fid,'\ntable[row sep=crcr]{\nx y\\\\\n');
+for i=1:ds.dates.ndat
+    fprintf(fid, '%d %f\\\\\n', i, thedata(i));
+end
+fprintf(fid,'};\n');
+end
+
+function writeLineOptions(o, fid)
+fprintf(fid, '[color=%s,%s,line width=%fpt,line join=round',...
+    o.graphLineColor, o.graphLineStyle, o.graphLineWidth);
+
 if ~isempty(o.graphMarker)
     if isempty(o.graphMarkerEdgeColor)
         o.graphMarkerEdgeColor = o.graphLineColor;
@@ -151,14 +135,10 @@ if ~isempty(o.graphMarker)
         o.graphMarkerFaceColor = o.graphLineColor;
     end
     fprintf(fid, ',mark=%s,mark size=%f,every mark/.append style={draw=%s,fill=%s}',...
-            o.graphMarker,o.graphMarkerSize,o.graphMarkerEdgeColor,o.graphMarkerFaceColor);
+        o.graphMarker,o.graphMarkerSize,o.graphMarkerEdgeColor,o.graphMarkerFaceColor);
 end
 if ~isempty(o.graphMiscTikzAddPlotOptions)
     fprintf(fid, ',%s', o.graphMiscTikzAddPlotOptions);
 end
-fprintf(fid,']\ntable[row sep=crcr]{\nx y\\\\\n');
-for i=1:ds.dates.ndat
-    fprintf(fid, '%d %f\\\\\n', i, thedata(i));
-end
-fprintf(fid,'};\n');
+fprintf(fid,']');
 end
