@@ -31,7 +31,7 @@ function o = writeSeriesForGraph(o, fid, xrange)
 
 %% Validate options provided by user
 if isempty(o.graphVline) && isempty(o.graphHline)
-    assert(~isempty(o.data) && isa(o.data, 'dseries'), ['@report_series.writeSeriesForGraph: must ' ...
+    assert(~isempty(o.data) && isdseries(o.data), ['@report_series.writeSeriesForGraph: must ' ...
                         'provide data as a dseries']);
 end
 

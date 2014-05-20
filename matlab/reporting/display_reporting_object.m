@@ -72,7 +72,7 @@ for i=1:length(fields)
         if isdates(val)
             fprintf('<dates: %s, ..., %s>', ...
                     date2string(val(1)), date2string(val(end)));
-        elseif isa(val, 'dseries')
+        elseif isdseries(val)
             if numel(val) == 1
                 fprintf('<dseries: %s>', val.name{1});
             else
