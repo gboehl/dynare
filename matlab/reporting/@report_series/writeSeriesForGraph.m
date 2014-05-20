@@ -67,7 +67,8 @@ assert(~(strcmp(o.graphLineStyle, 'none') && isempty(o.graphMarker)), ['@report_
                     'you must provide at least one of graphLineStyle and graphMarker']);
 
 % Validate graphVline
-assert(isdates(o.graphVline), '@report_series.writeSeriesForGraph: graphVline must be a dates');
+assert(isempty(o.graphVline) || (isdates(o.graphVline) && o.graphVline.ndat == 1), ...
+    '@report_series.writeSeriesForGraph: graphVline must be a dates of size one');
 assert(isempty(o.graphHline) || isnumeric(o.graphHline), ...
        '@report_series.writeSeriesForGraph: graphHline must a single numeric value');
 
