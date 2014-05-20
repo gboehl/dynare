@@ -182,7 +182,10 @@ end
 for i=1:ne
     o.series{i}.writeSeriesForGraph(fid, dd);
     if o.showLegend
-        fprintf(fid, '\\addlegendentry{%s}\n', o.series{i}.getTexName());
+        le = o.series{i}.getTexName();
+        if ~isempty(le)
+            fprintf(fid, '\\addlegendentry{%s}\n', le);
+        end
     end
 end
 

@@ -30,8 +30,10 @@ function o = writeSeriesForGraph(o, fid, xrange)
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 %% Validate options provided by user
-assert(~isempty(o.data) && isa(o.data, 'dseries'), ['@report_series.writeSeriesForGraph: must ' ...
-                    'provide data as a dseries']);
+if isempty(o.graphVline)
+    assert(~isempty(o.data) && isa(o.data, 'dseries'), ['@report_series.writeSeriesForGraph: must ' ...
+                        'provide data as a dseries']);
+end
 
 assert(ischar(o.graphMiscTikzAddPlotOptions), ['@report_series.writeSeriesForGraph: ' ...
                     'graphMiscTikzAddPlotOptions file must be a string']);
@@ -64,11 +66,39 @@ assert(isfloat(o.graphMarkerSize) && o.graphMarkerSize > 0, ...
 assert(~(strcmp(o.graphLineStyle, 'none') && isempty(o.graphMarker)), ['@report_series.writeSeriesForGraph: ' ...
                     'you must provide at least one of graphLineStyle and graphMarker']);
 
-% Validate xrange
-
+% Validate graphVline
+assert(isdates(o.graphVline), '@report_series.writeSeriesForGraph: graphVline must be a dates');
 
 % Zero tolerance
 assert(isfloat(o.zeroTol), '@report_series.write: zeroTol must be a float');
+
+%% graphVline
+
+if ~isempty(o.graphVline)
+    for i=1:o.graphVline.ndat
+        fprintf(fid, '%%vline %d\n\\begin{pgfonlayer}{background1}\n\\draw[color=%s,%s,line width=%fpt,line join=round',...
+                i, o.graphLineColor, o.graphLineStyle, o.graphLineWidth);
+        if ~isempty(o.graphMarker)
+            if isempty(o.graphMarkerEdgeColor)
+                o.graphMarkerEdgeColor = o.graphLineColor;
+            end
+        if isempty(o.graphMarkerFaceColor)
+            o.graphMarkerFaceColor = o.graphLineColor;
+        end
+        fprintf(fid, ',mark=%s,mark size=%f,every mark/.append style={draw=%s,fill=%s}',...
+                o.graphMarker,o.graphMarkerSize,o.graphMarkerEdgeColor,o.graphMarkerFaceColor);
+        end
+        if ~isempty(o.graphMiscTikzAddPlotOptions)
+            fprintf(fid, ',%s', o.graphMiscTikzAddPlotOptions);
+        end
+        stringsdd = strings(xrange);
+        x = find(strcmpi(date2string(o.graphVline(i)), stringsdd));
+        fprintf(fid, ['] (axis cs:%d,\\pgfkeysvalueof{/pgfplots/ymin}) -- (axis ' ...
+                      'cs:%d,\\pgfkeysvalueof{/pgfplots/ymax});\n\\end{pgfonlayer}\n'], ...
+                x, x);
+    end
+    return
+end
 
 %%
 if isempty(xrange) || all(xrange == o.data.dates)

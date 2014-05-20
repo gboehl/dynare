@@ -48,6 +48,8 @@ o.graphMarkerSize = 1;
 
 o.graphMiscTikzAddPlotOptions = '';
 
+o.graphVline = dates();
+
 o.tableShowMarkers = false;
 o.tableNegColor = 'red';
 o.tablePosColor = 'blue';
