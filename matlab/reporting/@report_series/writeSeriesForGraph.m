@@ -37,6 +37,7 @@ end
 
 assert(ischar(o.graphMiscTikzAddPlotOptions), ['@report_series.writeSeriesForGraph: ' ...
                     'graphMiscTikzAddPlotOptions file must be a string']);
+assert(islogical(o.graphShowInLegend), '@graph.graph: graphShowInLegend must be either true or false');
 
 % Line
 valid_graphLineColor = {'red', 'green', 'blue', 'cyan ', 'magenta', 'yellow', ...

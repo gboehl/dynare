@@ -41,6 +41,8 @@ o.graphLineColor = 'black';
 o.graphLineStyle = 'solid';
 o.graphLineWidth = 0.5;
 
+o.graphShowInLegend = true;
+
 o.graphMarker = '';
 o.graphMarkerEdgeColor = '';
 o.graphMarkerFaceColor = '';
