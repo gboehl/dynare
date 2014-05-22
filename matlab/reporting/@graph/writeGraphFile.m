@@ -145,6 +145,7 @@ if isempty(o.yrange)
 else
     fprintf(fid, 'ymin=%f,\nymax=%f,\n',o.yrange(1),o.yrange(2));
 end
+fprintf(fid, 'xmin = 1,\nxmax = %d,\n', length(dd));
 
 if o.showLegend
     fprintf(fid, 'legend style={');

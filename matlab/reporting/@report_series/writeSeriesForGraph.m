@@ -86,11 +86,11 @@ if ~isempty(o.graphVline)
         x, x);
 end
 if ~isempty(o.graphHline)
-    fprintf(fid, '%%Horizontal Line\n\\begin{pgfonlayer}{background1}\n\\draw');
+    fprintf(fid, '%%Horizontal Line\n\\begin{pgfonlayer}{background1}\n\\addplot');
     writeLineOptions(o, fid);
-    fprintf(fid, ['(axis cs:\\pgfkeysvalueof{/pgfplots/xmin},%f) -- (axis ' ...
-        'cs:\\pgfkeysvalueof{/pgfplots/xmax},%f);\n\\end{pgfonlayer}\n'], ...
-        o.graphHline, o.graphHline);
+    fprintf(fid, ['coordinates {(\\pgfkeysvalueof{/pgfplots/xmin},%f)' ...
+                  '(\\pgfkeysvalueof{/pgfplots/xmax},%f)};\n\\end{pgfonlayer}\n'], ...
+            o.graphHline, o.graphHline);
 end
 if ~isempty(o.graphVline) || ~isempty(o.graphHline)
     % return since the code below assumes that o.data exists
