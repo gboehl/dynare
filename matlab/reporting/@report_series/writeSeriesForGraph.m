@@ -105,16 +105,7 @@ else
     ds = o.data(xrange);
 end
 
-% if graphing data that is within zeroTol, set to zero, create report_series and
-% get line:
-thedata = ds.data;
-stz = bsxfun(@and, ...
-             bsxfun(@lt, thedata, o.zeroTol), ...
-             bsxfun(@gt, thedata, -o.zeroTol));
-if any(stz)
-    thedata(stz) = 0;
-end
-
+thedata = setDataToZeroFromZeroTol(o, ds);
 fprintf(fid, '%%series %s\n\\addplot', o.data.name{:});
 writeLineOptions(o, fid);
 fprintf(fid,'\ntable[row sep=crcr]{\nx y\\\\\n');

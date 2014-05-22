@@ -36,7 +36,7 @@ dataString = sprintf('%%.%df', precision);
 precision  = 10^precision;
 
 data = dser(dates);
-data = data.data;
+data = setDataToZeroFromZeroTol(o, data);
 for i=1:size(data,1)
     fprintf(fid, '&');
     if o.tableShowMarkers
