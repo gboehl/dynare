@@ -23,12 +23,14 @@ ddmax = dates();
 ne = length(cellser);
 for i=1:ne
     ddt = cellser{i}.getRange();
-    if isempty(ddmin)
-        ddmin = ddt(1);
-        ddmax = ddt(end);
-    else
-        ddmin = min(ddt(1), ddmin);
-        ddmax = max(ddt(end), ddmax);
+    if ~isempty(ddt)
+        if isempty(ddmin)
+            ddmin = ddt(1);
+            ddmax = ddt(end);
+        else
+            ddmin = min(ddt(1), ddmin);
+            ddmax = max(ddt(end), ddmax);
+        end
     end
 end
 dd = ddmin:ddmax;
