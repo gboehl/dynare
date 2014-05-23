@@ -1,19 +1,19 @@
-function o = addTable(o, varargin)
-%function o = addTable(o, varargin)
-% Add a report_table to the Cell Array of report_tables in the report
+function o = addParagraph(o, varargin)
+%function o = addParagraph(o, varargin)
+% Add a paragraph to the Cell Array of elements in this section
 %
 % INPUTS
-%   1 args => add empty report_table
-%   2 args => add given report_table
-%   3 args => add report_table at index
+%   1 args => add empty paragraph
+%   2 args => add given paragraph
+%   3 args => add paragraph at index
 %
 % OUTPUTS
-%   updated section object
+%   updated page object
 %
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2013-2014 Dynare Team
+% Copyright (C) 2014 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -30,9 +30,13 @@ function o = addTable(o, varargin)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
+assert(o.cols == 1, ...
+    ['@addParagraph: you can only add a paragraph to a Section that ' ...
+    'contains one column']);
 for i=1:length(o.elements)
-    assert(~isa(o.elements{i}, 'paragraph'), ...
-           '@addTable: A Section that contains a Paratable cannot contain a Table');
+    assert(isa(o.elements{i}, 'paragraph'), ...
+           ['@addParagraph: you can only add a paragraph to a Section that ' ...
+            'contains only paragraphs']);
 end
-o.elements{end+1} = report_table(varargin{:});
+o.elements{end+1} = paragraph(varargin{:});
 end
