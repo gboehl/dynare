@@ -75,7 +75,7 @@ if ~isempty(i)
     disp('   i) if all parameters occurring in these equations are defined')
     disp('  ii) that no division by an endogenous variable initialized to 0 occurs') 
     info = 1;
-    x = NaN;
+    x = NaN(size(fvec));
     return;
 end
 
