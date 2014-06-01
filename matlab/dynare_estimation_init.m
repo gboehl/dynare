@@ -199,6 +199,10 @@ if ~isempty(estim_params_) && ~isempty(options_.mode_file) && ~options_.mh_poste
     else
         % The number of declared estimated parameters match the number of parameters in the mode file. 
         % Check that the parameters in the mode file and according to the current mod file are identical.
+        if ~isfield(mode_file,'parameter_names')
+            disp(['The posterior mode file ' options_.mode_file ' has been generated using an older version of Dynare. It cannot be verified if it matches the present model. Proceed at your own risk.'])
+            mode_file.parameter_names=deblank(bayestopt_.name); %set names
+        end
         if isequal(mode_file.parameter_names, bayestopt_.name)
             xparam1 = mode_file.xparam1;
             if isfield(mode_file,'hh')
