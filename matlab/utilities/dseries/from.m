@@ -43,7 +43,7 @@ if ~isdate(varargin{1})
         error(['dseries::from: Variable ' varargin{1} ' is unknown!'])
     end
     if ~exist('d1')
-        msg = sprintf('Wrong syntax! The FROM statement must be followed by a string formatted date.\n');
+        msg = sprintf('dseries::from: Wrong syntax! The FROM statement must be followed by a string formatted date.\n');
         error(get_error_message_0(msg))
     end
 else
@@ -75,11 +75,11 @@ else
 end
 
 if d1>d2
-    error('The first date must preceed the second one!')
+    error('dseries::from: The first date must preceed the second one!')
 end
 
 if ~isequal(do_id,4)
-    msg = sprintf('Wrong syntax! The second dates object must be immediately followed by the DO keyword.\n');
+    msg = sprintf('dseries::from: Wrong syntax! The second dates object must be immediately followed by the DO keyword.\n');
     error(get_error_message_0(msg))
 end
 
@@ -216,16 +216,16 @@ end
 % Check that the recursion is assigning something to a variable
 equal_id = strfind(EXPRESSION,'=');
 if isempty(equal_id)
-    error('Wrong syntax! The expression following the DO keyword must be an assignment (missing equal symbol).')
+    error('dseries::from: Wrong syntax! The expression following the DO keyword must be an assignment (missing equal symbol).')
 end
 if isequal(length(equal_id),1)
     % Get the name of the assigned variable (with time index)
     assignedvariablename = regexpi(EXPRESSION(1:equal_id-1), '\w*\(t\)|\w*\(t\-\d\)|\w*\(t\+\d\)','match');
     if isempty(assignedvariablename)
-        error('Wrong syntax! The expression following the DO keyword must be an assignment (missing variable before the equal symbol).')
+        error('dseries::from: Wrong syntax! The expression following the DO keyword must be an assignment (missing variable before the equal symbol).')
     end
     if length(assignedvariablename)>1
-        error('No more than one variable can be assigned!')
+        error('dseries::from: No more than one variable can be assigned!')
     end
     % Check if the model is static
     start = regexpi(assignedvariablename{1},'\(t\)|\(t\-\d\)|\(t\+\d\)');
@@ -250,7 +250,7 @@ if isequal(length(equal_id),1)
         end
     end
 else
-    error('Not yet implemented! Only one assignment is allowed in the FROM-TO-DO statement.')
+    error('dseries::from: Not yet implemented! Only one assignment is allowed in the FROM-TO-DO statement.')
 end
 
 % Put all the variables in a unique dseries object.
