@@ -95,8 +95,8 @@ else
             C.time(initperiods+(1:C.freq*q),2) = repmat(transpose(1:C.freq),q,1);
             C.time(initperiods+(1:C.freq*q),1) = kron(A.time(1)+transpose(1:q),ones(C.freq,1));
             if r>0
-                C.time(initperiods+C.freq+(1:r),1) = C.time(initperiods+C.freq,1)+1;
-                C.time(initperiods+C.freq+(1:r),2) = transpose(1:r);
+                C.time(initperiods+C.freq*q+(1:r),1) = C.time(initperiods+C.freq,1)+1;
+                C.time(initperiods+C.freq*q+(1:r),2) = transpose(1:r);
             end
         end
     end
