@@ -27,27 +27,52 @@ if isempty(to_id) || isempty(do_id)
 end
 
 if do_id<to_id
-    msg = sprinf('Wrong syntax! The TO keyword must preceed the DO keyword.\n');
+    msg = sprinf('dseries::from: Wrong syntax! The TO keyword must preceed the DO keyword.\n');
     error(get_error_message_0(msg))
 end
 
 if ~isdate(varargin{1})
-    msg = sprintf('Wrong syntax! The FROM statement must be followed by a dates object.\n');
-    error(get_error_message_0(msg))
+    % The first argument is not a string formatted date. Test if this argument refers to a dates object
+    % in the caller workspace.
+    try
+        d1 = evalin('caller', varargin{1});
+        if ~isdates(d1)
+            error(['dseries::from: Variable ' varargin{1} ' is not a dates object!'])
+        end
+    catch
+        error(['dseries::from: Variable ' varargin{1} ' is unknown!'])
+    end
+    if ~exist('d1')
+        msg = sprintf('Wrong syntax! The FROM statement must be followed by a string formatted date.\n');
+        error(get_error_message_0(msg))
+    end
+else
+    d1 = dates(varargin{1}); % First date
 end
 
 if ~isequal(to_id,2)
-    msg = sprintf('Wrong syntax! The first dates object must be immediately followed by the TO keyword.\n');
+    msg = sprintf('dseries::from: Wrong syntax! The first dates object must be immediately followed by the TO keyword.\n');
     error(get_error_message_0(msg))
 end
 
 if ~isdate(varargin{3})
-    msg = sprintf('Wrong syntax! The TO keyword must be followed by a second dates object.\n');
-    error(get_error_message_0(msg))
+    % The third argument is not a string formatted date. Test if this argument refers to a dates object
+    % in the caller workspace.
+    try
+        d2 = evalin('caller', varargin{3});
+        if ~isdates(d2)
+            error(['dseries::from: Variable ' varargin{3} ' is not a dates object!'])
+        end
+    catch
+        error(['dseries::from: Variable ' varargin{3} ' is unknown!'])
+    end
+    if ~exist('d2')
+        msg = sprintf('dseries::from: Wrong syntax! The TO keyword must be followed by a second dates object.\n');
+        error(get_error_message_0(msg))
+    end
+else
+    d2 = dates(varargin{3}); % Last date
 end
-
-d1 = dates(varargin{1}); % First date
-d2 = dates(varargin{3}); % Last date
 
 if d1>d2
     error('The first date must preceed the second one!')
