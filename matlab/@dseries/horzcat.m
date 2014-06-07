@@ -51,6 +51,14 @@ end
 
 function a = concatenate(b,c)
     [n,message] = common_strings_in_cell_arrays(b.name,c.name);
+    if isempty(b)
+        a = c;
+        return
+    end
+    if isempty(c)
+        a = b;
+        return
+    end
     if n
         error(['dseries::horzcat: I cannot concatenate dseries objects with common variable names (' message ')!'])
     end
@@ -289,3 +297,28 @@ function a = concatenate(b,c)
 %$
 %$ T = t;
 %@eof:6
+
+%@test:7
+%$ % Define X
+%$ X = randn(30,2);
+%$
+%$ % Instantiate two time series objects.
+%$ ts1 = dseries();
+%$ ts2 = dseries(randn(30,2),'1950Q2');
+%$
+%$ % Call the tested method.
+%$ try
+%$   ts3 = [ts1,ts2];
+%$   t = 1;
+%$ catch
+%$   t = 0;
+%$ end
+%$
+%$ if t(1)
+%$   t(2) = dyn_assert(ts3.freq,4);
+%$   t(3) = dyn_assert(ts3.data,X);
+%$   t(4) = dyn_assert(isequal(ts3.dates(1),dates('1950Q2')),1);
+%$ end
+%$
+%$ T = t;
+%@eof:7
