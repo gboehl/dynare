@@ -62,7 +62,7 @@ function dd = dates(varargin) % --*-- Unitary tests --*--
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-if nargin>0 && isequal(varargin{1},'initialize')
+if nargin>0 && ischar(varargin{1}) && isequal(varargin{1},'initialize')
     dd = struct('ndat', 0, 'freq', NaN(0), 'time', NaN(0,2));
     dd = class(dd,'dates');
     assignin('base','emptydatesobject',dd);

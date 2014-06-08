@@ -76,7 +76,7 @@ function ts = dseries(varargin) % --*-- Unitary tests --*--
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-if nargin>0 && isequal(varargin{1},'initialize')
+if nargin>0 && ischar(varargin{1}) && isequal(varargin{1},'initialize')
     ts = struct;
     ts.data  = [];
     ts.nobs  = 0;
