@@ -231,25 +231,7 @@ switch S(1).type
         B.init = A.init+(tdx(1)-1);
         B.dates = A.dates(tdx);
     elseif isvector(S(1).subs{1}) && all(isint(S(1).subs{1}))
-        % Extract a subsample using a vector of integers (observation index).
-        % Note that this does not work if S(1).subs is an integer scalar... In which case S(1).subs is interpreted as a lead/lag operator (as in the Dynare syntax).
-        % To extract one observation, a dates with one element input must be used.
-        if all(S(1).subs{1}>0) && all(S(1).subs{1}<=A.nobs)
-            if size(A.data,2)>1
-                S(1).subs = [S(1).subs, ':'];
-            end
-            B = dseries();
-            B.data = builtin('subsref', A.data, S(1));
-            B.nobs = size(B.data,1);
-            B.vobs = A.vobs;
-            B.freq = A.freq;
-            B.dates = A.dates(S(1).subs{1});
-            B.init = B.dates(1);
-            B.name = A.name;
-            B.tex  = A.tex;
-        else
-            error('dseries::subsref: Indices are out of bounds!')
-        end
+        error('dseries::subsref: It is not possible to select observations with a vector of integers. You have to index with a dates object instead!');
     else
         error('dseries::subsref: I have no idea of what you are trying to do!')
     end
