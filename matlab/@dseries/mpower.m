@@ -40,7 +40,25 @@ function A = mpower(B,C) % --*-- Unitary tests --*--
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-if isdseries(B) && isnumeric(C) && isreal(C) && isscalar(C)
+if isnumeric(B) && isvector(B) && length(B)>1
+    if ~isdseries(C)
+        error('dseries::mpower: Second input argument must be a dseries object!')
+    end
+    A = C;
+    A.data = bsxfun(@power,C.data,B);
+    return;
+end
+
+if isnumeric(C) && isvector(C) && length(C)>1
+    if ~isdseries(B)
+        error('dseries::mpower: First input argument must be a dseries object!')
+    end
+    A = B;
+    A.data = bsxfun(@power,B.data,C);
+    return
+end
+
+if isdseries(B) && isnumeric(C) && isreal(C) &&  isscalar(C)
     A = dseries();
     A.freq = B.freq;
     A.init = B.init;
