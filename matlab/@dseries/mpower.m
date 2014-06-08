@@ -152,3 +152,25 @@ error(['dseries::mpower: Wrong calling sequence!'])
 %$ end
 %$ T = all(t);
 %@eof:2
+
+%@test:3
+%$ % Define a dseries object
+%$ ts1=dseries([1 1;2 2;3 3], '1999y', {'MyVar1','MyVar2'});
+%$
+%$ % Use the power
+%$ try
+%$    ts2 = ts1^transpose(1:3);
+%$    t = 1;
+%$ catch
+%$    t = 0;
+%$ end
+%$
+%$ if t(1)
+%$    t(2) = dyn_assert(ts2.vobs,2);
+%$    t(3) = dyn_assert(ts2.nobs,3);
+%$    t(4) = dyn_assert(ts2.data,bsxfun(@power,ts1.data,transpose(1:3)),1e-15);
+%$    t(5) = dyn_assert(ts2.name,{'MyVar1';'MyVar2'});
+%$    t(6) = dyn_assert(ts2.tex,{'MyVar1';'MyVar2'});
+%$ end
+%$ T = all(t);
+%@eof:3
