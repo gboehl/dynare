@@ -77,6 +77,12 @@ switch length(S)
                   end
               end
           end
+          if isempty(B)
+              for i=1:length(S(1).subs)
+                  A = remove(A,S(1).subs{i});
+              end
+              return
+          end
           if ~isequal(length(S(1).subs),B.vobs)
               error('dseries::subsasgn: Wrong syntax!')
           end
@@ -845,7 +851,7 @@ end
 %$ T = all(t);
 %@eof:21
 
-%@test:21
+%@test:22
 %$ % Define a datasets.
 %$ A = rand(1,3);
 %$
@@ -867,4 +873,28 @@ end
 %$    t(4) = dyn_assert(ts.data,repmat(A,4,1),1e-15);
 %$ end
 %$ T = all(t);
-%@eof:21
+%@eof:22
+
+%@test:23
+%$ % Instantiate a dseries object.
+%$ ts0 = dseries(randn(10,6), '1999y');
+%$
+%$ % Try to remove Variable_2 and Variable_3
+%$ try
+%$     ts0{'Variable_@2,3@'} = [];
+%$     t(1) = 1;
+%$ catch
+%$     t(1) = 0;
+%$ end
+%$
+%$ if t(1)
+%$    % Try to display Variable_2 and Variable_3 again (should fail because already removed)
+%$    try
+%$       ts0{'Variable_@2,3@'};
+%$       t(2) = 0;
+%$    catch
+%$       t(2) = 1;
+%$    end
+%$ end
+%$ T = all(t);
+%@eof:23
