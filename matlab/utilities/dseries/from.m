@@ -364,7 +364,7 @@ if isempty(strfind(assignedvariablename,'.'))
 else
     DATA = num2cell(data(:,indva));
     strdata = sprintf('%f ', DATA{:});
-    evalin('caller',sprintf('%s = dseries(transpose([%s]),%s.init,%s.name,%s.tex)', ...
+    evalin('caller',sprintf('%s = dseries(transpose([%s]),%s.init,%s.name,%s.tex);', ...
                             assignedvariablename,strdata,assignedvariablename,assignedvariablename,assignedvariablename))
 end
 
