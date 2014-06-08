@@ -87,7 +87,7 @@ end
 EXPRESSION = char([varargin{5:end}]);
 
 % Get all the variables involved in the recursive expression.
-variables = unique(regexpi(EXPRESSION, '\w*\(t\)|\w*\(t\-\d\)|\w*\(t\+\d\)','match'));
+variables = unique(regexpi(EXPRESSION, '\w*\(t\)|\w*\(t\-\d\)|\w*\(t\+\d\)|\w*\.\w*\(t\)|\w*\.\w*\(t\-\d\)|\w*\.\w*\(t\+\d\)','match'));
 
 % Copy EXPRESSION in expression. In the next loop we will remove all indexed variables from expression.
 expression = EXPRESSION;
@@ -174,10 +174,26 @@ variable_names = cell(1);
 % the lags and leads) and check that each object is a singleton
 for i=1:number_of_variables
     current_variable = leadlagtable{i,1};
+    idvar = strfind(current_variable,'.');
+    if isempty(idvar)
+        idvar = 0;
+    end
+    if idvar
+        current_variable_0 = current_variable(1:idvar-1);
+    else
+        current_variable_0 = current_variable;
+    end
     try
-        var = evalin('caller',current_variable);
+        var = evalin('caller',current_variable_0);
     catch
-        error(['dseries::from: Variable ' current_variable ' is unknown!'])
+        error(['dseries::from: Variable ' current_variable_0 ' is unknown!'])
+    end
+    if idvar
+        try
+            eval(sprintf('var = var.%s;',current_variable(idvar+1:end)))
+        catch
+            error(sprintf('dseries::from: Variable %s is not a member of dseries oject %s!', current_variable(idvar+1:end), current_variable_0))
+        end
     end
     if ~isdseries(var)
         error(['dseries::from: Variable ' current_variable ' is not a dseries object!'])
@@ -220,7 +236,7 @@ if isempty(equal_id)
 end
 if isequal(length(equal_id),1)
     % Get the name of the assigned variable (with time index)
-    assignedvariablename = regexpi(EXPRESSION(1:equal_id-1), '\w*\(t\)|\w*\(t\-\d\)|\w*\(t\+\d\)','match');
+    assignedvariablename = regexpi(EXPRESSION(1:equal_id-1), '\w*\(t\)|\w*\(t\-\d\)|\w*\(t\+\d\)|\w*\.\w*\(t\)|\w*\.\w*\(t\-\d\)|\w*\.\w*\(t\+\d\)','match');
     if isempty(assignedvariablename)
         error('dseries::from: Wrong syntax! The expression following the DO keyword must be an assignment (missing variable before the equal symbol).')
     end
@@ -232,7 +248,8 @@ if isequal(length(equal_id),1)
     index = assignedvariablename{1}(start:end);
     assignedvariablename = assignedvariablename{1}(1:start-1);
     indva = strmatch(assignedvariablename, leadlagtable(:,1));
-    dynamicmodel = ~isempty(regexpi(EXPRESSION(equal_id:end), sprintf('%s\\(t\\)|%s\\(t\\-\\d\\)|%s\\(t\\+\\d\\)',assignedvariablename,assignedvariablename,assignedvariablename),'match'));
+    dynamicmodel = ~isempty(regexpi(EXPRESSION(equal_id:end), ...
+                                    sprintf('%s\\(t\\)|%s\\(t\\-\\d\\)|%s\\(t\\+\\d\\)',assignedvariablename,assignedvariablename,assignedvariablename),'match'));
     % Check that the dynamic model for the endogenous variable is not forward looking.
     if dynamicmodel
         indum = index2num(index);
@@ -242,7 +259,8 @@ if isequal(length(equal_id),1)
     end
     % Check that the assigned variable does not depend on itself (the assigned variable can depend on its past level but not on the current level).
     if dynamicmodel
-        tmp = regexpi(EXPRESSION(equal_id+1:end), sprintf('%s\\(t\\)|%s\\(t\\-\\d\\)|%s\\(t\\+\\d\\)',assignedvariablename,assignedvariablename,assignedvariablename),'match');
+        tmp = regexpi(EXPRESSION(equal_id+1:end), ...
+                      sprintf('%s\\(t\\)|%s\\(t\\-\\d\\)|%s\\(t\\+\\d\\)',assignedvariablename,assignedvariablename,assignedvariablename),'match');
         tmp = cellfun(@extractindex, tmp);
         tmp = cellfun(@index2num, tmp);
         if ~all(tmp(:)<indum)
@@ -280,11 +298,13 @@ if dynamicmodel
         EXPRESSION = regexprep(EXPRESSION,sprintf('%s\\(t\\)',leadlagtable{i,1}),sprintf('data(t,%s)',num2str(i)));
         for j=1:length(leadlagtable{i,5})
             lag = leadlagtable{i,5}(j);
-            EXPRESSION = regexprep(EXPRESSION,sprintf('%s\\(t-%s\\)',leadlagtable{i,1},num2str(lag)),sprintf('data(t-%s,%s)',num2str(lag),num2str(i)));
+            EXPRESSION = regexprep(EXPRESSION,sprintf('%s\\(t-%s\\)',leadlagtable{i,1},num2str(lag)), ...
+                                   sprintf('data(t-%s,%s)',num2str(lag),num2str(i)));
         end
         for j=1:length(leadlagtable{i,6})
             lead = leadlagtable{i,6}(j);
-            EXPRESSION = regexprep(EXPRESSION,sprintf('%s\\(t+%s\\)',leadlagtable{i,1},num2str(lead)),sprintf('data(t+%s,%s)',num2str(lead),num2str(i)));
+            EXPRESSION = regexprep(EXPRESSION,sprintf('%s\\(t+%s\\)',leadlagtable{i,1},num2str(lead)), ...
+                                   sprintf('data(t+%s,%s)',num2str(lead),num2str(i)));
         end
     end
     % Get values for the parameters (if any)
@@ -304,14 +324,17 @@ if dynamicmodel
 else
     % Transform EXPRESSION by replacing calls to the dseries objects by references to data.
     for i=1:number_of_variables
-        EXPRESSION = regexprep(EXPRESSION,sprintf('%s\\(t\\)',leadlagtable{i,1}),sprintf('data(%s:%s,%s)',num2str(t1),num2str(t2),num2str(i)));
+        EXPRESSION = regexprep(EXPRESSION,sprintf('%s\\(t\\)',leadlagtable{i,1}), ...
+                               sprintf('data(%s:%s,%s)',num2str(t1),num2str(t2),num2str(i)));
         for j=1:length(leadlagtable{i,5})
             lag = leadlagtable{i,5}(j);
-            EXPRESSION = regexprep(EXPRESSION,sprintf('%s\\(t-%s\\)',leadlagtable{i,1},num2str(lag)),sprintf('data(%s:%s,%s)',num2str(t1-lag),num2str(t2-lag),num2str(i)));
+            EXPRESSION = regexprep(EXPRESSION,sprintf('%s\\(t-%s\\)',leadlagtable{i,1},num2str(lag)), ...
+                                   sprintf('data(%s:%s,%s)',num2str(t1-lag),num2str(t2-lag),num2str(i)));
         end
         for j=1:length(leadlagtable{i,6})
             lead = leadlagtable{i,6}(j);
-            EXPRESSION = regexprep(EXPRESSION,sprintf('%s\\(t+%s\\)',leadlagtable{i,1},num2str(lead)),sprintf('data(%s:%s,%s)',num2str(t1-lead),num2str(t2-lead),num2str(i)));
+            EXPRESSION = regexprep(EXPRESSION,sprintf('%s\\(t+%s\\)',leadlagtable{i,1},num2str(lead)), ...
+                                   sprintf('data(%s:%s,%s)',num2str(t1-lead),num2str(t2-lead),num2str(i)));
         end
     end
     % Transform some operators (^ -> .^, / -> ./ and * -> .*)
@@ -335,7 +358,15 @@ else
 end
 
 % Put assigned variable back in the caller workspace...
-eval(sprintf('assignin(''caller'', ''%s'', dseries(data(:,indva),y.init,y.name,y.tex));',assignedvariablename))
+if isempty(strfind(assignedvariablename,'.'))
+    eval(sprintf('assignin(''caller'', ''%s'', dseries(data(:,indva),%s.init,%s.name,%s.tex));', ...
+                 assignedvariablename,assignedvariablename,assignedvariablename,assignedvariablename))
+else
+    DATA = num2cell(data(:,indva));
+    strdata = sprintf('%f ', DATA{:});
+    evalin('caller',sprintf('%s = dseries(transpose([%s]),%s.init,%s.name,%s.tex)', ...
+                            assignedvariablename,strdata,assignedvariablename,assignedvariablename,assignedvariablename))
+end
 
 function msg = get_error_message_0(msg)
     if ~nargin
