@@ -9709,12 +9709,6 @@ A @code{nobs}*1 cell of strings or a @code{nobs}*p character array, the names of
 @item tex
  A @code{nobs}*1 cell of strings or a @code{nobs}*p character array, the tex names of the variables.
 
-@item freq
-A scalar integer equal to 1, 4, 12 or 52, the frequency of the dataset.
-
-@item init
-A single element @dates object, the initial date of the sample.
-
 @item dates
 A @dates object with @code{nobs} element, the dates of the sample.
 
@@ -9723,13 +9717,13 @@ A @code{nobs} by @code{vobs} array of doubles, the data.
 
 @end table
 
-@noindent @code{freq}, @code{nobs}, @code{vobs}, @code{data}, @code{name}, @code{tex} are private members. The following constructors are available:
+@noindent @code{nobs}, @code{vobs}, @code{data}, @code{name}, @code{tex} are private members. The following constructors are available:
 
 @deftypefn  {dseries} dseries ()
 @deftypefnx {dseries} dseries (@var{INITIAL_DATE})
 @deftypefnx {dseries} dseries (@var{RANGE_OF_DATES})
 
-Instantiates an empty @dseries object, with, if defined, an initial date given by the single element @dates object @var{INITIAL_DATE} or the first element of the @dates object @var{RANGE_OF_DATES} (the frequency is then set accordingly).
+Instantiates an empty @dseries object, with, if defined, an initial date given by the single element @dates object @var{INITIAL_DATE} or the first element of the @dates object @var{RANGE_OF_DATES}.
 
 @end deftypefn
 
@@ -10156,6 +10150,24 @@ ans is a dseries object:
 
 @sp 1
 
+@deftypefn {dseries} {@var{f} =} freq (@var{B})
+
+Returns the frequency of the variables in @dseries object @var{B}.
+
+@examplehead
+@example
+>> ts = dseries(randn(3,2),'1973Q1');
+>> ts.freq
+
+ans =
+
+     4
+@end example
+
+@end deftypefn
+
+@sp 1
+
 @deftypefn{dseries} {@var{D} =} horzcat (@var{A}, @var{B}[, ...])
 
 Overloads the @code{horzcat} Matlab/Octave's method for @dseries
@@ -10273,6 +10285,21 @@ The previous code should produce something like:
 
 @sp 1
 
+@deftypefn {dseries} {@var{f} =} init (@var{B})
+
+Returns the initial date in @dseries object @var{B}.
+
+@examplehead
+@example
+>> ts = dseries(randn(3,2),'1973Q1');
+>> ts.init
+ans = <dates: 1973Q1>
+@end example
+
+@end deftypefn
+
+@sp 1
+
 @deftypefn {dseries} {@var{C} = } insert (@var{A}, @var{B}, @var{I})
 
 Inserts variables contained in @dseries object @var{B} in @dseries object @var{A} at positions specified by integer scalars in vector @var{I}, returns augmented @dseries object @var{C}. The integer scalars in @var{I} must take values between @code{1} and @code{A.length()+1} and refers to @var{A}'s column numbers. The @dseries objects @var{A} and @var{B} need not to be defined over the same time ranges, but it is assumed that they have common frequency.
@@ -10383,6 +10410,21 @@ ans is a dseries object:
 1950Q2 | 1
 1950Q3 | 2
 1950Q4 | 3
+@end example
+
+@end deftypefn
+
+@sp 1
+
+@deftypefn {dseries} {@var{l} =} last (@var{B})
+
+Returns the last date in @dseries object @var{B}.
+
+@examplehead
+@example
+>> ts = dseries(randn(3,2),'1973Q1');
+>> ts.last
+ans = <dates: 1973Q3>
 @end example
 
 @end deftypefn
