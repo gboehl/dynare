@@ -69,6 +69,10 @@ o.xTickLabels = {};
 o.xTickLabelRotation = 0;
 o.xTickLabelAnchor = 'east';
 
+o.yTickLabelPrecision = 0;
+o.yTickLabelFixed = true;
+o.yTickLabelZeroFill = true;
+
 o.width = 6;
 o.height = 4.5;
 
@@ -125,6 +129,9 @@ assert(isfloat(o.width), '@graph.graph: o.width must be a real number');
 assert(isfloat(o.height), '@graph.graph: o.height must be a real number');
 assert(isfloat(o.xTickLabelRotation), '@graph.graph: o.xTickLabelRotation must be a real number');
 assert(ischar(o.xTickLabelAnchor), '@graph.graph: xTickLabelAnchor must be a string');
+assert(isint(o.yTickLabelPrecision), '@graph.graph: o.yTickLabelPrecision must be an integer');
+assert(islogical(o.yTickLabelFixed), '@graph.graph: yTickLabelFixed must be either true or false');
+assert(islogical(o.yTickLabelZeroFill), '@graph.graph: yTickLabelZeroFill must be either true or false');
 
 valid_shadeColor = {'red', 'green', 'blue', 'cyan ', 'magenta', 'yellow', ...
                     'black', 'gray', 'darkgray', 'lightgray', 'brown', ...

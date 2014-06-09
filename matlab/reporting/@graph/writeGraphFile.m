@@ -103,7 +103,15 @@ for i = 1:xlen
         fprintf(fid,',');
     end
 end
-fprintf(fid, '},\nx tick label style={rotate=%f', o.xTickLabelRotation);
+fprintf(fid, '},\ny tick label style={\n/pgf/number format/.cd,\n');
+if o.yTickLabelFixed
+    fprintf(fid, 'fixed,\n');
+end
+if o.yTickLabelZeroFill
+    fprintf(fid, 'zerofill,\n');
+end
+fprintf(fid, 'precision=%d,\n/tikz/.cd\n},\n', o.yTickLabelPrecision);
+fprintf(fid, 'x tick label style={rotate=%f', o.xTickLabelRotation);
 if o.xTickLabelRotation ~= 0
     fprintf(fid, ',anchor=%s', o.xTickLabelAnchor);
 end
