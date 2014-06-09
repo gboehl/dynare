@@ -10886,6 +10886,40 @@ ts1 is a dseries object:
 
 @sp 1
 
+@deftypefn{dseries} {@var{C} =} remove (@var{A}, @var{B})
+
+Alias for the @code {pop} method with two arguments. Removes variable @var{B} from @dseries object @var{A}.
+
+@examplehead
+@example
+>> ts0 = dseries(ones(3,3));
+>> ts1 = ts0.remove('Variable_2');
+
+ts1 is a dseries object:
+
+   | Variable_1 | Variable_3
+1Y | 1          | 1
+2Y | 1          | 1
+3Y | 1          | 1
+@end example
+
+@sp 1
+
+A shorter syntax is available: @code{remove(ts,'Variable_2')} is
+equivalent to @code{ts@{'Variable_2'@} = []} (@code{[]} can be replaced
+by any empty object). This alternative syntax is usefull if more than
+one variable has to be removed. For instance:
+@example
+ts@{'Variable_@@2,3,4@@'@} = [];
+@end example
+will remove @code{Variable_2}, @code{Variable_3} and @code{Variable_4}
+from @dseries object @code{ts} (if these variables exist). Regular
+expressions cannot be used but implicit loops can.
+
+@end deftypefn
+
+@sp 1
+
 @deftypefn{dseries} {@var{B} =} rename (@var{A},@var{oldname},@var{newname})
 
 Rename variable @var{oldname} to @var{newname} in @dseries object
