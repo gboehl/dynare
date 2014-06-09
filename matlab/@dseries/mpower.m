@@ -60,8 +60,6 @@ end
 
 if isdseries(B) && isnumeric(C) && isreal(C) &&  isscalar(C)
     A = dseries();
-    A.freq = B.freq;
-    A.init = B.init;
     A.dates = B.dates;
     A.nobs = B.nobs;
     A.vobs = B.vobs;
@@ -76,10 +74,8 @@ if isdseries(B) && isnumeric(C) && isreal(C) &&  isscalar(C)
 end
 
 if isdseries(B) && isdseries(C)
-    if isequal(B.nobs,C.nobs) && isequal(B.vobs,C.vobs) && isequal(B.freq,C.freq)
+    if isequal(B.nobs,C.nobs) && isequal(B.vobs,C.vobs) && isequal(frequency(B),frequency(C))
         A = dseries();
-        A.freq = B.freq;
-        A.init = B.init;
         A.dates = B.dates;
         A.nobs = B.nobs;
         A.vobs = B.vobs;

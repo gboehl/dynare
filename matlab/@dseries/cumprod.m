@@ -67,7 +67,7 @@ switch nargin
         B = cumprod(varargin{1});
         t = find(B.dates==varargin{2});
         if isempty(t)
-            if varargin{2}==(B.init-1)
+            if varargin{2}==(firstdate(B)-1)
                 return
             else
                 error(['dseries::cumprod: date ' date2string(varargin{2}) ' is not in the sample!'])
@@ -96,7 +96,7 @@ switch nargin
     B = cumprod(varargin{1});
     t = find(B.dates==varargin{2});
     if isempty(t)
-        if varargin{2}==(B.init-1)
+        if varargin{2}==(firstdate(B)-1)
             B.data = bsxfun(@times,B.data,varargin{3}.data);
             return
         else

@@ -44,50 +44,50 @@ function [a,b] = align(a, b) % --*-- Unitary tests --*--
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-if ~isequal(a.freq,b.freq)
+if ~isequal(frequency(a),frequency(b))
     error(['dseries::align: ''' inputname(1) ''' and ''' inputname(2) ''' dseries objects must have common frequencies!'])
 end
 
-init = min(a.init,b.init);
+init = min(firstdate(a),firstdate(b));
+last = max(lastdate(a),lastdate(b));
 
-time_range_of_a = a.init:a.init+a.nobs;
-time_range_of_b = b.init:b.init+b.nobs;
-
-last_a = time_range_of_a(a.nobs);
-last_b = time_range_of_b(b.nobs);
-
-common_time_range = intersect(time_range_of_a,time_range_of_b);
-
-if isempty(common_time_range)
+if isempty(intersect(a.dates,b.dates))
     error(['dseries::align: ''' inputname(1) ''' and ''' inputname(2) ''' dseries object must have at least one common date!'])
 end
 
-if a.init<b.init
-    n = b.init-a.init;
+a_init = init;
+b_init = init;
+a_last = last;
+b_last = last;
+
+if firstdate(b)>init
+    n = firstdate(b)-init;
     b.data = [NaN(n,b.vobs); b.data];
     b.nobs = b.nobs+n;
-    b.init = init;
+    b_init = init;
 end
 
-if a.init>b.init
-    n = a.init-b.init;
+if firstdate(a)>init
+    n = firstdate(a)-init;
     a.data = [NaN(n,a.vobs); a.data];
     a.nobs = a.nobs+n;
-    a.init = init;
+    a_init = init;
 end
 
-if last_a>last_b
-    n = last_a-last_b;
+if lastdate(b)<last
+    n = last-lastdate(b);
     b.data = [b.data; NaN(n,b.vobs)];
     b.nobs = b.nobs+n;
-elseif last_a<last_b
-    n = last_b-last_a;
+end
+
+if lastdate(a)<last
+    n = last-lastdate(a);
     a.data = [a.data; NaN(n,a.vobs)];
     a.nobs = a.nobs+n;
 end
 
-a.dates = a.init:a.init+(a.nobs-1);
-b.dates = b.init:b.init+(b.nobs-1);
+a.dates = a_init:a_init+(a.nobs-1);
+b.dates = b_init:b_init+(b.nobs-1);
 
 %@test:1
 %$ % Define a datasets.
@@ -111,7 +111,7 @@ b.dates = b.init:b.init+(b.nobs-1);
 %$ catch
 %$   t(1) = 0;
 %$ end
-%$ 
+%$
 %$ if t(1)
 %$   t(2) = dyn_assert(ts1.nobs,ts2.nobs);
 %$   t(3) = dyn_assert(isequal(ts1.init,ts2.init),1);

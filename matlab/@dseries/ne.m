@@ -38,35 +38,35 @@ if ~(isdseries(A) && isdseries(B))
 end
 
 if ~isequal(A.nobs,B.nobs)
-    warning('dseries::eq: Both input arguments should have the same number of observations!')
+    warning('dseries::ne: Both input arguments should have the same number of observations!')
     C = 1;
     return
 end
 
 if ~isequal(A.vobs,B.vobs)
-    warning('dseries::eq: Both input arguments should have the same number of observations!')
+    warning('dseries::ne: Both input arguments should have the same number of observations!')
     C = 1;
     return
 end
 
-if ~isequal(A.freq,B.freq)
-    warning('dseries::eq: Both input arguments should have the same frequencies!')
+if ~isequal(frequency(A),frequency(B))
+    warning('dseries::ne: Both input arguments should have the same frequencies!')
     C = 1;
     return
 end
 
-if ~isequal(A.init,B.init)
-    warning('dseries::eq: Both input arguments should have the same initial period!')
+if ~isequal(firstdate(A),firstdate(B))
+    warning('dseries::ne: Both input arguments should have the same initial period!')
     C = 1;
     return
 end
 
 if ~isequal(A.name,B.name)
-    warning('dseries::eq: Both input arguments do not have the same variables!')
+    warning('dseries::ne: Both input arguments do not have the same variables!')
 end
 
 if ~isequal(A.tex,B.tex)
-    warning('dseries::eq: Both input arguments do not have the same tex names!')
+    warning('dseries::ne: Both input arguments do not have the same tex names!')
 end
 
 C = ne(A.data, B.data);

@@ -73,11 +73,11 @@ else
     end
 end
 
-if ~isequal(B.freq,C.freq)
+if ~isequal(frequency(B),frequency(C))
     error(['dseries::plus: Cannot add ' inputname(1) ' and ' inputname(2) ' (frequencies are different)!'])
 end
 
-if ~isequal(B.nobs,C.nobs) || ~isequal(B.init,C.init)
+if ~isequal(B.nobs,C.nobs) || ~isequal(firstdate(B),firstdate(C))
     [B, C] = align(B, C);
 end
 
@@ -93,8 +93,9 @@ end
 
 A = dseries();
 
-A.freq = B.freq;
-A.init = B.init;
+A.dates = B.dates;
+%A.freq = B.freq;
+%A.init = B.init;
 A.nobs = max(B.nobs,C.nobs);
 A.vobs = max(B.vobs,C.vobs);
 A.name = cell(A.vobs,1);
@@ -104,7 +105,7 @@ for i=1:A.vobs
     A.tex(i) = {['(' B.tex{idB(i)} '+' C.tex{idC(i)} ')']};
 end
 A.data = bsxfun(@plus,B.data,C.data);
-A.dates = A.init:A.init+(A.nobs-1);
+%A.dates = A.init:A.init+(A.nobs-1);
 
 %@test:1
 %$ % Define a datasets.

@@ -44,12 +44,12 @@ if ~isequal(A.vobs,B.vobs)
     return
 end
 
-if ~isequal(A.freq,B.freq)
+if ~isequal(frequency(A),frequency(B))
     C = 0;
     return
 end
 
-if ~isequal(A.init,B.init)
+if ~isequal(A.dates,B.dates)
     C = 0;
     return
 end

@@ -62,11 +62,10 @@ function a = concatenate(b,c)
     if n
         error(['dseries::horzcat: I cannot concatenate dseries objects with common variable names (' message ')!'])
     end
-    if ~isequal(b.freq,c.freq)
+    if ~isequal(frequency(b),frequency(c))
         error('dseries::horzcat: All time series objects must have common frequency!')
     else
         a = dseries();
-        a.freq = b.freq;
     end
     d_nobs_flag = 0;
     if ~isequal(b.nobs,c.nobs)
@@ -75,29 +74,26 @@ function a = concatenate(b,c)
         a.nobs = b.nobs;
     end
     d_init_flag = 0;
-    if ~isequal(b.init,c.init)
+    if ~isequal(firstdate(b),firstdate(c))
         d_init_flag = 1;
     end
     a.vobs = b.vobs+c.vobs;
     a.name = vertcat(b.name,c.name);
     a.tex  = vertcat(b.tex,c.tex);
     if ~( d_nobs_flag(1) || d_init_flag(1) )
-        a.init = b.init;
         a.data = [b.data,c.data];
         a.dates = b.dates;
     else
-        if b.init<=c.init
-            a.init = b.init;
-            if b.init<c.init
-                c.data = [NaN(c.init-b.init,c.vobs); c.data];
+        if firstdate(b)<=firstdate(c)
+            if firstdate(b)<firstdate(c)
+                c.data = [NaN(firstdate(c)-firstdate(b),c.vobs); c.data];
             end
         else
-            a.init = c.init;
-            b_first_lines = b.init-c.init;
-            b.data = [NaN(b.init-c.init,b.vobs); b.data];
+            b_first_lines = firstdate(b)-firstdate(c);
+            b.data = [NaN(firstdate(b)-firstdate(c),b.vobs); b.data];
         end
-        b_last_date = b.init+b.nobs;
-        c_last_date = c.init+c.nobs;
+        b_last_date = firstdate(b)+b.nobs;
+        c_last_date = firstdate(c)+c.nobs;
         if b_last_date<c_last_date
             b.data = [b.data; NaN(c_last_date-b_last_date,b.vobs)];
         elseif b_last_date>c_last_date

@@ -42,10 +42,8 @@ function A = uminus(B) % --*-- Unitary tests --*--
 
 A = dseries();
 
-A.freq = B.freq;
 A.nobs = B.nobs;
 A.vobs = B.vobs;
-A.init = B.init;
 A.dates = B.dates;
 A.name = cell(A.vobs,1);
 A.tex = cell(A.vobs,1);

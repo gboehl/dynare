@@ -52,7 +52,7 @@ if n
     error(['dseries::insert: Variable(s) ' message ' already exist in ''' inputname(1) '''!'])
 end
 
-if ~isequal(ts.freq,us.freq)
+if ~isequal(frequency(ts),frequency(us))
     error(['dseries::insert: ''' inputname(1) ''' and ''' inputname(2) ''' dseries objects must have common frequencies!'])
 end
 

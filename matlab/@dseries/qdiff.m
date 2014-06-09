@@ -41,7 +41,7 @@ function us = qdiff(ts) % --*-- Unitary tests --*--
 
 us = ts;
 
-switch ts.freq
+switch frequency(ts)
   case 1
     error('dseries::qgrowth: I cannot compute quaterly differences from yearly data!')
   case 4

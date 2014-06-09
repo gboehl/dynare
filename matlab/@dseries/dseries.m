@@ -83,8 +83,6 @@ if nargin>0 && ischar(varargin{1}) && isequal(varargin{1},'initialize')
     ts.vobs  = 0;
     ts.name  = {};
     ts.tex   = {};
-    ts.freq  = [];
-    ts.init  = dates();
     ts.dates = dates();
     ts = class(ts,'dseries');
     assignin('base','emptydseriesobject',ts);
@@ -104,13 +102,10 @@ switch nargin
             error(['dseries::dseries: Input ' inputname(1) ' (identified as a dates object) must be non empty!'])
           case 1
             % Create an empty dseries object with an initial date.
-            ts.init = varargin{1};
-            ts.freq = varargin{1}.freq;
+            ts.dates = varargin{1};
           otherwise
             % A range of dates is passed to the constructor
             ts.dates = varargin{1};
-            ts.init = varargin{1}(1);
-            ts.freq = varargin{1}.freq;
         end
         return
     elseif ischar(varargin{1})
@@ -140,12 +135,11 @@ switch nargin
         else
             error(['dseries:: I''m not able to load data from ' inputname(1) '!'])
         end
-        ts.init = init;
-        ts.freq = freq;
         ts.data = data;
         ts.name = varlist;
         ts.vobs = length(varlist);
         ts.nobs = size(data,1);
+        ts.dates = init:init+(ts.nobs-1);
         if isempty(tex)
             ts.tex = name2tex(varlist);
         else
@@ -154,10 +148,9 @@ switch nargin
     elseif isnumeric(varargin{1}) && isequal(ndims(varargin{1}),2)
         ts.data = varargin{1};
         [ts.nobs, ts.vobs] = size(ts.data);
-        ts.freq = 1;
-        ts.init = dates(1,1);
         ts.name = default_name(ts.vobs);
         ts.tex = name2tex(ts.name);
+        ts.dates = dates(1,1):dates(1,1)+(ts.nobs-1);
     end
   case {2,3,4}
     a = varargin{1};
@@ -184,20 +177,15 @@ switch nargin
     ts.vobs = size(a,2);
     % Get the first date and set the frequency.
     if isempty(b)
-        ts.freq = 1;
-        ts.init = dates(1,1);
+        init = dates(1,1);
     elseif (isdates(b) && isequal(length(b),1))
-        ts.freq = b.freq;
-        ts.init = b;
+        init = b;
     elseif isdate(b)% Weekly, Monthly, Quaterly or Annual data (string).
-        ts.init = dates(b);
-        ts.freq = ts.init.freq;
+        init = dates(b);
     elseif (isnumeric(b) && isscalar(b) && isint(b)) % Yearly data.
-        ts.freq = 1;
-        ts.init = dates([num2str(b) 'Y']);
+        init = dates([num2str(b) 'Y']);
     elseif isdates(b) % Range of dates
-        ts.freq = b.freq;
-        ts.init = b(1);
+        init = b(1);
         if ts.nobs>1 && ~isequal(b.ndat,ts.nobs)
             message =   'dseries::dseries: If second input is a range, its number of elements must match ';
             message = char(message, '                  the number of rows in the first input, unless the first input');
@@ -222,7 +210,7 @@ switch nargin
     if ~isempty(c)
         if ts.vobs==length(c)
             for i=1:ts.vobs
-                ts.name = vertcat(ts.name, c(i) );
+                ts.name = vertcat(ts.name, c(i));
             end
         else
             error('dseries::dseries: The number of declared names does not match the number of variables!')
@@ -246,7 +234,7 @@ switch nargin
 end
 
 if isempty(ts.dates)
-    ts.dates = ts.init:ts.init+(ts.nobs-1);
+    ts.dates = init:init+(ts.nobs-1);
 end
 
 %@test:1

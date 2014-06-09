@@ -49,13 +49,13 @@ if ~isequal(A.vobs,B.vobs)
     return
 end
 
-if ~isequal(A.freq,B.freq)
+if ~isequal(frequency(A),frequency(B))
     warning('dseries::eq: Both input arguments should have the same frequencies!')
     C = 0;
     return
 end
 
-if ~isequal(A.init,B.init)
+if ~isequal(firstdate(A),firstdate(B))
     warning('dseries::eq: Both input arguments should have the same initial period!')
     C = 0;
     return

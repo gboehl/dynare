@@ -35,8 +35,8 @@ switch format
     fid = fopen([basename, '.m'],'w');
     fprintf(fid,'%% File created on %s.\n',datestr(now));
     fprintf(fid,'\n');
-    fprintf(fid,'FREQ__ = %s;\n',num2str(A.freq));
-    fprintf(fid,'INIT__ = '' %s'';\n',date2string(A.init));
+    fprintf(fid,'FREQ__ = %s;\n',num2str(frequency(A)));
+    fprintf(fid,'INIT__ = '' %s'';\n',date2string(firstdate(A)));
     fprintf(fid,'\n');
     fprintf(fid,'NAMES__ = {');
     for i=1:A.vobs
@@ -61,8 +61,8 @@ switch format
     end
     fclose(fid);
   case 'mat'
-    FREQ__ = A.freq;
-    INIT__ = date2string(A.init);
+    FREQ__ = frequency(A);
+    INIT__ = date2string(firstdate(A));
     NAMES__ = A.name;
     TEX__ = A.tex;
     str = [];

@@ -60,7 +60,7 @@ end
 
 function d = vertcat_(b, c)
     d = NaN;
-    if ~isequal(b.freq, c.freq)
+    if ~isequal(frequency(b), frequency(c))
         error('dseries::vertcat: Frequencies must be common!')
     end
     if ~isequal(b.vobs, c.vobs)

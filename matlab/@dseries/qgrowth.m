@@ -41,7 +41,7 @@ function us = qgrowth(ts) % --*-- Unitary tests --*--
 
 us = ts;
 
-switch ts.freq
+switch frequency(ts)
   case 1
     error('dseries::qgrowth: I cannot compute quaterly growth rates from yearly data!')
   case 4

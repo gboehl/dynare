@@ -126,8 +126,6 @@ end
 
 A.data = B.data(:,idVariableName);
 A.dates = B.dates;
-A.init = B.init;
-A.freq = B.freq;
 A.nobs = B.nobs;
 A.vobs = length(idVariableName);
 A.name = B.name(idVariableName);

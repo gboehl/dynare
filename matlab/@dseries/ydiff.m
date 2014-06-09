@@ -41,7 +41,7 @@ function us = ydiff(ts) % --*-- Unitary tests --*--
 
 us = ts;
 
-switch ts.freq
+switch frequency(ts)
   case 1
     us.data(2:end,:) = ts.data(2:end,:)-ts.data(1:end-1,:);
     us.data(1,:) = NaN;
@@ -55,21 +55,21 @@ switch ts.freq
     for i = 1:ts.vobs
         us.name(i) = {['ydiff(' us.name{i} ')']};
         us.tex(i) = {['\Delta_4 ' us.tex{i}]};
-    end  
+    end
   case 12
     us.data(13:end,:) = ts.data(13:end,:)-ts.data(1:end-12,:);
     us.data(1:12,:) = NaN;
     for i = 1:ts.vobs
         us.name(i) = {['ydiff(' us.name{i} ')']};
         us.tex(i) = {['\Delta_{12} ' us.tex{i}]};
-    end    
+    end
   case 52
     us.data(53:end,:) = ts.data(53:end,:)-ts.data(1:end-52,:);
     us.data(1:52,:) = NaN;
     for i = 1:ts.vobs
         us.name(i) = {['ydiff(' us.name{i} ')']};
         us.tex(i) = {['\Delta_{52} ' us.tex{i}]};
-    end    
+    end
   otherwise
     error(['dseries::ygrowth: object ' inputname(1) ' has unknown frequency']);
 end

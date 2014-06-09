@@ -66,7 +66,7 @@ switch nargin
         B = cumsum(varargin{1});
         t = find(B.dates==varargin{2});
         if isempty(t)
-            if varargin{2}==(B.init-1)
+            if varargin{2}==(firstdate(B)-1)
                 return
             else
                 error(['dseries::cumsum: date ' date2string(varargin{2}) ' is not in the sample!'])
@@ -95,7 +95,7 @@ switch nargin
     B = cumsum(varargin{1});
     t = find(B.dates==varargin{2});
     if isempty(t)
-        if varargin{2}==(B.init-1)
+        if varargin{2}==(firstdate(B)-1)
             B.data = bsxfun(@plus,B.data,varargin{3}.data);
             return
         else

@@ -41,7 +41,7 @@ function us = ygrowth(ts) % --*-- Unitary tests --*--
 
 us = ts;
 
-switch ts.freq
+switch frequency(ts)
   case 1
     us.data(2:end,:) = ts.data(2:end,:)./ts.data(1:end-1,:) - 1;
     us.data(1,:) = NaN;
@@ -55,7 +55,7 @@ switch ts.freq
     for i = 1:ts.vobs
         us.name(i) = {['ygrowth(' us.name{i} ')']};
         us.tex(i) = {['\delta_4 ' us.tex{i}]};
-    end  
+    end
   case 12
     us.data(13:end,:) = ts.data(13:end,:)./ts.data(1:end-12,:) - 1;
     us.data(1:12,:) = NaN;
