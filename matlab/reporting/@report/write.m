@@ -74,6 +74,7 @@ fprintf(fid, '\\begin{document}\n');
 fprintf(fid, '\\pgfdeclarelayer{background0}\n');
 fprintf(fid, '\\pgfdeclarelayer{background1}\n');
 fprintf(fid, '\\pgfsetlayers{background0,background1,main}\n');
+fprintf(fid, '\\pgfplotsset{tick scale binop={\\times}}\n');
 fprintf(fid, '\\centering\n');
 
 nps = length(o.pages);
