@@ -1,7 +1,7 @@
 function tex = name2tex(name, info) % --*-- Unitary tests --*--
 
 % Converts plain text name into tex name.
- 
+
 % Copyright (C) 2013 Dynare Team
 %
 % This file is part of Dynare.
@@ -64,7 +64,7 @@ if info
             if gotonextcondition && ndx>2
                 if idx(end)<ntx
                     texname = [ texname(1:idx(end)-2) '_{' texname(idx(end)+1:end) '}' ];
-                else 
+                else
                     texname = [ texname(1:idx(end-1)-2) '_{' texname(idx(end-1)+1:end) '}' ];
                 end
             end
@@ -93,9 +93,9 @@ end
 %$ t14 = name2tex('azert_uiop',1);
 %$ t15 = name2tex('azert_uiop_qsdfg',1);
 %$ t16 = name2tex('azert_uiop_qsdfg_',1);
-%$ t17 = name2tex('_azert_uiop_qsdfg',1); 
+%$ t17 = name2tex('_azert_uiop_qsdfg',1);
 %$ t18 = name2tex('_azert_uiop_qsdfg_',1);
-%$ 
+%$
 %$ t(1) = dyn_assert(strcmp(t1,'\\_azert'),1);
 %$ t(2) = dyn_assert(strcmp(t2,'azert\\_'),1);
 %$ t(3) = dyn_assert(strcmp(t3,'\\_azert\\_'),1);
@@ -106,7 +106,7 @@ end
 %$ t(8) = dyn_assert(strcmp(t8,'\\_azert\\_uiop\\_qsdfg\\_'),1);
 %$ t(9) = dyn_assert(strcmp(t11,'\\_azert'),1);
 %$ t(10) = dyn_assert(strcmp(t12,'azert\\_'),1);
-%$ t(11) = dyn_assert(strcmp(t13,'\\_azert\\_'),1); 
+%$ t(11) = dyn_assert(strcmp(t13,'\\_azert\\_'),1);
 %$ t(12) = dyn_assert(strcmp(t14,'azert_{uiop}'),1);
 %$ t(13) = dyn_assert(strcmp(t15,'azert\\_uiop_{qsdfg}'),1);
 %$ t(14) = dyn_assert(strcmp(t16,'azert\\_uiop_{qsdfg\\_}'),1);
@@ -185,7 +185,6 @@ end
 %@eof:3
 
 %@test:4
-%$ pwd
 %$ try
 %$     db = dseries('csv/dd.csv');
 %$     t(1) = 1;
