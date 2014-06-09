@@ -69,12 +69,13 @@ fprintf(fid, '\\renewcommand{\\textfraction}{0.05}\n');
 fprintf(fid, '\\renewcommand{\\topfraction}{0.8}\n');
 fprintf(fid, '\\renewcommand{\\bottomfraction}{0.8}\n');
 fprintf(fid, '\\setlength{\\parindent}{0in}\n');
+fprintf(fid, '\\setlength{\\tabcolsep}{1em}\n');
 fprintf(fid, '\\newlength\\sectionheight\n');
 fprintf(fid, '\\begin{document}\n');
 fprintf(fid, '\\pgfdeclarelayer{background0}\n');
 fprintf(fid, '\\pgfdeclarelayer{background1}\n');
 fprintf(fid, '\\pgfsetlayers{background0,background1,main}\n');
-fprintf(fid, '\\pgfplotsset{tick scale binop={\\times}}\n');
+fprintf(fid, '\\pgfplotsset{tick scale binop={\\times},\ntrim axis left}\n');
 fprintf(fid, '\\centering\n');
 
 nps = length(o.pages);
