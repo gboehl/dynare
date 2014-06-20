@@ -62,6 +62,7 @@ o.legendOrientation = 'horizontal';
 o.legendFontSize = 'tiny';
 
 o.showZeroline = false;
+o.zeroLineColor = 'black';
 
 o.graphSize = [];
 o.xTicks = [];
@@ -132,12 +133,13 @@ assert(ischar(o.xTickLabelAnchor), '@graph.graph: xTickLabelAnchor must be a str
 assert(isint(o.yTickLabelPrecision), '@graph.graph: o.yTickLabelPrecision must be an integer');
 assert(islogical(o.yTickLabelFixed), '@graph.graph: yTickLabelFixed must be either true or false');
 assert(islogical(o.yTickLabelZeroFill), '@graph.graph: yTickLabelZeroFill must be either true or false');
-
 valid_shadeColor = {'red', 'green', 'blue', 'cyan ', 'magenta', 'yellow', ...
                     'black', 'gray', 'darkgray', 'lightgray', 'brown', ...
                     'lime', 'olive', 'orange', 'pink', 'purple', 'teal', 'violet', 'white'};
 assert(any(strcmp(o.shadeColor, valid_shadeColor)), ['@graph.graph: shadeColor must be one of ' ...
         strjoin(valid_shadeColor)]);
+assert(any(strcmp(o.zeroLineColor, valid_shadeColor)), ...
+       ['@graph.graph: zeroLineColor must be one of ' strjoin(valid_shadeColor)]);
 
 valid_legend_locations = ...
     {'south west','south east','north west','north east','outer north east'};

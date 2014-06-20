@@ -212,7 +212,8 @@ if ~isempty(o.shade)
 end
 
 if o.showZeroline
-    fprintf(fid, '%%zeroline\n\\addplot[black,line width=.5,forget plot] coordinates {(1,0)(%d,0)};\n',dd.ndat);
+    fprintf(fid, '%%zeroline\n\\addplot[%s,line width=.5,forget plot] coordinates {(1,0)(%d,0)};\n', ...
+        o.zeroLineColor, dd.ndat);
 end
 
 for i=1:ne
