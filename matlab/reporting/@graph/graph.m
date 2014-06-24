@@ -40,6 +40,8 @@ o.titleFormat = '';
 o.ylabel = '';
 o.xlabel = '';
 
+o.axisShape = 'box';
+
 o.graphDirName = 'tmpRepDir';
 o.graphName = '';
 o.data = '';
@@ -140,7 +142,8 @@ assert(any(strcmp(o.shadeColor, valid_shadeColor)), ['@graph.graph: shadeColor m
         strjoin(valid_shadeColor)]);
 assert(any(strcmp(o.zeroLineColor, valid_shadeColor)), ...
        ['@graph.graph: zeroLineColor must be one of ' strjoin(valid_shadeColor)]);
-
+assert(any(strcmp(o.axisShape, {'box', 'L'})), ['@graph.graph: shadeColor ' ...
+                    'must be one of ''box'' or ''L''']);
 valid_legend_locations = ...
     {'south west','south east','north west','north east','outer north east'};
 assert(any(strcmp(o.legendLocation, valid_legend_locations)), ...
