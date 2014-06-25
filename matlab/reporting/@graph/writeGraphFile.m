@@ -189,6 +189,10 @@ if ~isempty(o.miscTikzAxisOptions)
 end
 fprintf(fid, ']\n');
 
+if ~isempty(o.title{1})
+    fprintf(fid, '\\tikzstyle{every axis title}=[font=\\%s]\n', o.titleFontSize);
+end
+
 if ~isempty(o.shade)
     fprintf(fid, '%%shading\n');
     stringsdd = strings(dd);
