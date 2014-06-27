@@ -37,7 +37,7 @@ o.series = {};
 
 o.title = '';
 o.titleFormat = '';
-o.titleFontSize = 'normalsize'
+o.titleFontSize = 'normalsize';
 o.ylabel = '';
 o.xlabel = '';
 
