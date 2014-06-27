@@ -77,6 +77,8 @@ o.yTickLabelPrecision = 0;
 o.yTickLabelFixed = true;
 o.yTickLabelZeroFill = true;
 
+o.tickFontSize = 'normalsize';
+
 o.width = 6;
 o.height = 4.5;
 
@@ -156,6 +158,8 @@ assert(any(strcmp(o.legendFontSize, valid_font_sizes)), ...
        ['@graph.graph: legendFontSize must be one of ' strjoin(valid_font_sizes)]);
 assert(any(strcmp(o.titleFontSize, valid_font_sizes)), ...
        ['@graph.graph: titleFontSize must be one of ' strjoin(valid_font_sizes)]);
+assert(any(strcmp(o.tickFontSize, valid_font_sizes)), ...
+       ['@graph.graph: tickFontSize must be one of ' strjoin(valid_font_sizes)]);
 
 valid_legend_orientations = {'vertical', 'horizontal'};
 assert(any(strcmp(o.legendOrientation, valid_legend_orientations)), ...

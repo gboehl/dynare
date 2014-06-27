@@ -172,6 +172,8 @@ if o.showLegend
     fprintf(fid, '},\nlegend pos=%s,\n', o.legendLocation);
 end
 
+fprintf(fid, 'tick label style={font=\\%s},\n', o.tickFontSize);
+
 if o.showGrid
     fprintf(fid, 'xmajorgrids=true,\nymajorgrids=true,\n');
 end
