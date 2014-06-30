@@ -330,26 +330,6 @@ ModFile::transformPass(bool nostrict)
       dynamic_model.removeTrendVariableFromEquations();
     }
 
-  if (mod_file_struct.ramsey_model_present)
-    {
-      StaticModel *planner_objective = NULL;
-      for (vector<Statement *>::iterator it = statements.begin(); it != statements.end(); it++)
-        {
-          PlannerObjectiveStatement *pos = dynamic_cast<PlannerObjectiveStatement *>(*it);
-          if (pos != NULL)
-            planner_objective = pos->getPlannerObjective();
-        }
-      assert(planner_objective != NULL);
-      ramsey_model_orig_eqn_nbr = dynamic_model.equation_number();
-
-      /*
-        clone the model then clone the new equations back to the original because
-        we have to call computeDerivIDs (in computeRamseyPolicyFOCs and computingPass)
-       */
-      dynamic_model.cloneDynamic(ramsey_FOC_equations_dynamic_model);
-      ramsey_FOC_equations_dynamic_model.computeRamseyPolicyFOCs(*planner_objective);
-      ramsey_FOC_equations_dynamic_model.replaceMyEquations(dynamic_model);
-    }
 
   if (mod_file_struct.stoch_simul_present
       || mod_file_struct.estimation_present
@@ -369,6 +349,27 @@ ModFile::transformPass(bool nostrict)
       // In deterministic models, create auxiliary vars for leads and lags endogenous greater than 2, only on endos (useless on exos)
       dynamic_model.substituteEndoLeadGreaterThanTwo(true);
       dynamic_model.substituteEndoLagGreaterThanTwo(true);
+    }
+
+  if (mod_file_struct.ramsey_model_present)
+    {
+      StaticModel *planner_objective = NULL;
+      for (vector<Statement *>::iterator it = statements.begin(); it != statements.end(); it++)
+        {
+          PlannerObjectiveStatement *pos = dynamic_cast<PlannerObjectiveStatement *>(*it);
+          if (pos != NULL)
+            planner_objective = pos->getPlannerObjective();
+        }
+      assert(planner_objective != NULL);
+      ramsey_model_orig_eqn_nbr = dynamic_model.equation_number();
+
+      /*
+        clone the model then clone the new equations back to the original because
+        we have to call computeDerivIDs (in computeRamseyPolicyFOCs and computingPass)
+       */
+      dynamic_model.cloneDynamic(ramsey_FOC_equations_dynamic_model);
+      ramsey_FOC_equations_dynamic_model.computeRamseyPolicyFOCs(*planner_objective);
+      ramsey_FOC_equations_dynamic_model.replaceMyEquations(dynamic_model);
     }
 
   if (differentiate_forward_vars)
