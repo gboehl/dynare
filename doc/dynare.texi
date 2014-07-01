@@ -5552,8 +5552,12 @@ estimates using a higher tapering are usually more reliable.
 @descriptionhead
 
 This command computes odds ratios and estimate a posterior density
-over a collection of models. The priors over models can be specified
-as the @var{DOUBLE} values, otherwise a uniform prior is assumed.
+over a collection of models 
+(see e.g. @cite{Koop (2003), Ch. 1}). The priors over models can be specified
+as the @var{DOUBLE} values, otherwise a uniform prior over all models is assumed. 
+In contrast to frequentist econometrics, the models to be compared do not need to be nested. 
+However, as the computation of posterior odds ratios is a Bayesian technique, 
+the comparison of models estimated with maximum likelihood is not supported.
 
 @examplehead
 
@@ -11368,6 +11372,9 @@ Kim, Jinill, Sunghyun Kim, Ernst Schaumburg, and Christopher A. Sims
 (2008): ``Calculating and using second-order accurate solutions of
 discrete time dynamic equilibrium models,'' @i{Journal of Economic
 Dynamics and Control}, 32(11), 3397--3414
+
+@item
+Koop, Gary (2003), @i{Bayesian Econometrics}, John Wiley & Sons
 
 @item
 Koopman, S. J. and J. Durbin (2003): ``Filtering and Smoothing of

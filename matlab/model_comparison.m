@@ -75,10 +75,18 @@ for i=1:NumberOfModels
         eval(['MarginalLogDensity(i) = mstruct.oo_.MarginalDensity.' type ';']) 
     catch
         if strcmpi(type,'LaplaceApproximation')
-            disp(['MODEL_COMPARISON: I cant''t find the Laplace approximation associated to model ' ModelNames{i}])
+            if isfield(mstruct.oo_,'mle_mode')
+                disp(['MODEL_COMPARISON: Model comparison is a Bayesian approach and does not support models estimated with ML'])
+            else
+                disp(['MODEL_COMPARISON: I cant''t find the Laplace approximation associated to model ' ModelNames{i}])
+            end
             return
         elseif strcmpi(type,'ModifiedHarmonicMean')
-            disp(['MODEL_COMPARISON: I cant''t find the modified harmonic mean estimate associated to model ' ModelNames{i}])
+            if isfield(mstruct.oo_,'mle_mode')
+                disp(['MODEL_COMPARISON: Model comparison is a Bayesian approach and does not support models estimated with ML'])
+            else
+                disp(['MODEL_COMPARISON: I cant''t find the modified harmonic mean estimate associated to model ' ModelNames{i}])
+            end
             return
         end
     end
@@ -124,7 +132,7 @@ name = modelname(idx(end)+1:end);
 function name = get_model_name_without_extension(modelname)
 idx = strfind(modelname,'.mod');
 if isempty(idx)
-    idx = strfind(modelname,'.dyn')
+    idx = strfind(modelname,'.dyn');
 end
 if isempty(idx)
     name = modelname;
