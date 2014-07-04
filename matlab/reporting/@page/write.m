@@ -52,10 +52,10 @@ for i=1:nps
     o.sections{i}.write(fid, pg, i);
 end
 
+fprintf(fid, '\\end{tabular}\n');
 if strcmpi(o.orientation, 'landscape')
     fprintf(fid, '\\end{landscape}\n');
 end
-fprintf(fid, '\\end{tabular}\n');
 fprintf(fid, '\\clearpage\n');
 fprintf(fid, '%% End Page Object\n\n');
 end
