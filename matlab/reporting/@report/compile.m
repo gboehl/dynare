@@ -32,6 +32,7 @@ function o = compile(o, varargin)
 
 opts.compiler = o.compiler;
 opts.showReport = true;
+opts.showOutput = true;
 
 if nargin > 1
     if round((nargin-1)/2) ~= (nargin-1)/2
@@ -54,6 +55,7 @@ end
 
 assert(ischar(opts.compiler), '@report.compile: compiler file must be a string');
 assert(islogical(opts.showReport), '@report.compile: showReport must be either true or false');
+assert(islogical(opts.showOutput), '@report.compile: showOutput must be either true or false');
 
 if ~exist(o.fileName, 'file')
     o.write();
@@ -85,7 +87,11 @@ if isempty(opts.compiler)
     o.compiler = opts.compiler;
 end
 
-status = system([opts.compiler ' ' options middle o.fileName], echo);
+if opts.showOutput
+    status = system([opts.compiler ' ' options middle o.fileName], echo);
+else
+    [status, junk] = system([opts.compiler ' ' options middle o.fileName]);
+end
 [junk, rfn, junk] = fileparts(o.fileName);
 
 if status ~= 0
