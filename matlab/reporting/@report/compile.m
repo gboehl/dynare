@@ -31,6 +31,7 @@ function o = compile(o, varargin)
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 opts.compiler = o.compiler;
+opts.showReport = true;
 
 if nargin > 1
     if round((nargin-1)/2) ~= (nargin-1)/2
@@ -52,6 +53,7 @@ if nargin > 1
 end
 
 assert(ischar(opts.compiler), '@report.compile: compiler file must be a string');
+assert(islogical(opts.showReport), '@report.compile: showReport must be either true or false');
 
 if ~exist(o.fileName, 'file')
     o.write();
@@ -94,7 +96,7 @@ fprintf(1, '\n\nDone.\n');
 disp('Your compiled report is located here:');
 disp(['     ' pwd filesep rfn '.pdf']);
 
-if ~isoctave
+if opts.showReport && ~isoctave
     open([pwd filesep rfn '.pdf']);
 end
 end
