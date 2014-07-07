@@ -186,6 +186,10 @@ if ~isempty(o.ylabel)
     fprintf(fid, 'ylabel=%s,\n', o.ylabel);
 end
 
+if ~o.yTickLabelScaled
+    fprintf(fid, 'scaled y ticks = false,\n');
+end
+
 if ~isempty(o.miscTikzAxisOptions)
     fprintf(fid, '%s', o.miscTikzAxisOptions);
 end

@@ -72,6 +72,7 @@ o.xTickLabels = {};
 o.xTickLabelRotation = 0;
 o.xTickLabelAnchor = 'east';
 
+o.yTickLabelScaled = true;
 o.yTickLabelPrecision = 0;
 o.yTickLabelFixed = true;
 o.yTickLabelZeroFill = true;
@@ -137,6 +138,7 @@ assert(ischar(o.xTickLabelAnchor), '@graph.graph: xTickLabelAnchor must be a str
 assert(isint(o.yTickLabelPrecision), '@graph.graph: o.yTickLabelPrecision must be an integer');
 assert(islogical(o.yTickLabelFixed), '@graph.graph: yTickLabelFixed must be either true or false');
 assert(islogical(o.yTickLabelZeroFill), '@graph.graph: yTickLabelZeroFill must be either true or false');
+assert(islogical(o.yTickLabelScaled), '@graph.graph: yTickLabelScaled must be either true or false');
 
 assert(ischar(o.shadeColor), '@graph.graph: shadeColor must be a string');
 assert(ischar(o.zeroLineColor), '@graph.graph: zeroLineColor must be a string');
