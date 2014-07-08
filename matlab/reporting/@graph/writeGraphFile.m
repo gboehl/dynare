@@ -196,7 +196,7 @@ end
 fprintf(fid, ']\n');
 
 if ~isempty(o.title{1})
-    fprintf(fid, '\\tikzstyle{every axis title}=[font=\\%s]\n', o.titleFontSize);
+    fprintf(fid, '\\pgfplotsset{every axis title/.append style={}}=[font=\\%s]\n', o.titleFontSize);
 end
 
 if ~isempty(o.shade)
