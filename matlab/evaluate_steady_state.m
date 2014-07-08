@@ -133,7 +133,7 @@ function [ys,params,info] = evaluate_steady_state(ys_init,M,options,oo,steadysta
             [chck, r, junk]= bytecode('dynamic','evaluate', z, zx, M.params, ys, 1);
             mexErrCheck('bytecode', chck);
         elseif options.block
-            [r, data] = feval([M.fname '_dynamic'], z', zx, M.params, ys, M.maximum_lag+1, data);
+            [r, oo.dr] = feval([M.fname '_dynamic'], z', zx, M.params, ys, M.maximum_lag+1, oo.dr);
         else
             iyv = M.lead_lag_incidence';
             iyr0 = find(iyv(:));
