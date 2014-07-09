@@ -131,6 +131,10 @@ end
 o = rmfield(o, 'seriesToUse');
 o = rmfield(o, 'data');
 
+if ~exist(o.tableDirName, 'file')
+    mkdir(o.tableDirName);
+end
+
 % Create report_table object
 o = class(o, 'report_table');
 end
