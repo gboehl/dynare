@@ -120,11 +120,11 @@ assert(ischar(o.tableDirName), '@report_table.report_table: tableDirName must be
 if ~isempty(o.data)
     if isempty(o.seriesToUse)
         for i=1:o.data.vobs
-            o = o.addSeries('data', o.data{o.data.name{i}});
+            o.series{end+1} = report_series('data', o.data{o.data.name{i}});
         end
     else
         for i=1:length(o.seriesToUse)
-            o = o.addSeries('data', o.data{o.seriesToUse{i}});
+            o.series{end+1} = report_series('data', o.data{o.seriesToUse{i}});
         end
     end
 end
