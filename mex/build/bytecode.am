@@ -1,4 +1,4 @@
-noinst_PROGRAMS = bytecode
+mex_PROGRAMS = bytecode
 
 bytecode_CPPFLAGS = $(AM_CPPFLAGS) -I$(top_srcdir)/../../sources -I$(top_srcdir)/../../sources/bytecode -I$(top_srcdir)/../../../preprocessor
 

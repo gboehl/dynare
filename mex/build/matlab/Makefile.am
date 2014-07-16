@@ -29,6 +29,9 @@ clean-local:
 	rm -f run_m2html.m
 	rm -rf ../../../doc/m2html
 endif
+
+install-exec-local:
+	$(MKDIR_P) $(DESTDIR)$(pkglibdir)/mex/matlab
 endif
 
 EXTRA_DIST = mex.def mexFunction-MacOSX.map

@@ -1,4 +1,4 @@
-noinst_PROGRAMS = k_order_perturbation
+mex_PROGRAMS = k_order_perturbation
 
 k_order_perturbation_CPPFLAGS = $(AM_CPPFLAGS) -I$(top_srcdir)/../../../dynare++/src -I$(top_srcdir)/../../../dynare++/kord -I$(top_srcdir)/../../../dynare++/tl/cc -I$(top_srcdir)/../../../dynare++/utils/cc -I$(top_srcdir)/../../../dynare++/sylv/cc -I$(top_srcdir)/../../../dynare++/integ/cc -I$(top_srcdir)/../../sources $(CPPFLAGS_MATIO)
 

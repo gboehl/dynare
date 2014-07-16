@@ -17,6 +17,8 @@ LIBS += $(shell $(MKOCTFILE) -p FFTW_LIBS)
 LIBS += $(shell $(MKOCTFILE) -p LIBS)
 LIBS += $(shell $(MKOCTFILE) -p FLIBS)
 
+mexdir = $(DESTDIR)$(libdir)/dynare/mex/octave
+
 all-local:
 	$(MKDIR_P) $(top_srcdir)/../../octave
 	cd $(top_srcdir)/../../octave && \

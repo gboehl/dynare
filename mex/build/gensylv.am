@@ -1,4 +1,4 @@
-noinst_PROGRAMS = gensylv
+mex_PROGRAMS = gensylv
 
 gensylv_CPPFLAGS = $(AM_CPPFLAGS) -I$(top_srcdir)/../../../dynare++/sylv/cc -I$(top_srcdir)/../../sources
 
