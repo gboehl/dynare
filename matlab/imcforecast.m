@@ -45,7 +45,6 @@ function imcforecast(constrained_paths, constrained_vars, options_cond_fcst)
 
 global options_ oo_ M_ bayestopt_
 
-
 if ~isfield(options_cond_fcst,'parameter_set') || isempty(options_cond_fcst.parameter_set)
     options_cond_fcst.parameter_set = 'posterior_mode';
 end
@@ -145,7 +144,12 @@ end
 if isempty(options_.qz_criterium)
     options_.qz_criterium = 1+1e-6;
 end
+
 [T,R,ys,info,M_,options_,oo_] = dynare_resolve(M_,options_,oo_);
+
+if ~isdiagonal(M_.Sigma_e)
+    warning(sprintf('The innovations are correlated (the covariance matrix has non zero off diagonal elements), the results of the conditional forecasts will\ndepend on the ordering of the innovations (as declared after varexo) because a Cholesky decomposition is used to factorize the covariance matrix.\n\n=> It is preferable to declare the correlations in the model block (explicitly imposing the identification restrictions), unless you are satisfied\nwith the implicit identification restrictions implied by the Cholesky decomposition.'))
+end
 
 sQ = chol(M_.Sigma_e,'lower');
 
