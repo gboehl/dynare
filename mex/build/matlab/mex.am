@@ -10,7 +10,7 @@ DEFS += -DMEXEXT=\"$(MEXEXT)\"
 AM_LDFLAGS = $(MATLAB_LDFLAGS)
 LIBS += $(MATLAB_LIBS)
 
-mexdir = $(DESTDIR)$(libdir)/dynare/mex/matlab
+mexdir = $(libdir)/dynare/mex/matlab
 
 all-local:
 	$(MKDIR_P) $(top_srcdir)/../../matlab
