@@ -337,7 +337,7 @@ if iload <=0,
         else
             parameters = 'Random_prior_params';
         end
-    else
+    end
     idehess_point.params=params;
 %     siH = idemodel_point.siH;
 %     siJ = idemoments_point.siJ;
@@ -350,7 +350,6 @@ if iload <=0,
     disp_identification(params, idemodel_point, idemoments_point, name, advanced);
     if ~options_.nograph,
         plot_identification(params,idemoments_point,idehess_point,idemodel_point,idelre_point,advanced,parameters,name,IdentifDirectoryName);
-    end
     end
 
     if SampleSize > 1,
