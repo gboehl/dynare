@@ -47,6 +47,9 @@ case ${host_os} in
     AC_MSG_WARN([not run from MATLAB, because it cannot load the Cygwin DLL.])
     AC_MSG_WARN([This is probably not what you want. Consider using a MinGW cross-compiler.])
     ;;
+  *darwin13*)
+    CXXFLAGS="$CXXFLAGS -std=c++11"
+    ;;
 esac
 
 CFLAGS="$CFLAGS -Wall -Wno-parentheses"
