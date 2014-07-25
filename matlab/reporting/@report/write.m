@@ -80,7 +80,9 @@ fprintf(fid, '\\centering\n');
 
 nps = length(o.pages);
 for i=1:nps
-    fprintf(1, 'Writing Page: %d\n', i);
+    if o.showOutput
+        fprintf(1, 'Writing Page: %d\n', i);
+    end
     o.pages{i}.write(fid, i);
 end
 
@@ -90,5 +92,7 @@ status = fclose(fid);
 if status == -1
     error('@report.write: closing %s\n', o.fileName);
 end
-disp('Finished Writing Report!');
+if o.showOutput
+    disp('Finished Writing Report!');
+end
 end

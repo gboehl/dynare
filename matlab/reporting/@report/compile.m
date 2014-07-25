@@ -32,7 +32,7 @@ function o = compile(o, varargin)
 
 opts.compiler = o.compiler;
 opts.showReport = true;
-opts.showOutput = true;
+opts.showOutput = o.showOutput;
 
 if nargin > 1
     if round((nargin-1)/2) ~= (nargin-1)/2
@@ -71,15 +71,28 @@ end
 if isempty(opts.compiler)
     if strncmp(computer, 'MACI', 4) || ~isempty(regexpi(computer, '.*apple.*', 'once'))
         % Add most likely places for pdflatex to exist outside of default $PATH
-        [status, opts.compiler] = ...
-            system(['PATH=$PATH:/usr/texbin:/usr/local/bin:/usr/local/sbin;' ...
-                    'which pdflatex'], echo);
+        if opts.showOutput
+            [status, opts.compiler] = ...
+                system(['PATH=$PATH:/usr/texbin:/usr/local/bin:/usr/local/sbin;' ...
+                        'which pdflatex'], echo);
+        else
+            [status, opts.compiler] = ...
+                system('PATH=$PATH:/usr/texbin:/usr/local/bin:/usr/local/sbin;which pdflatex');
+        end
     elseif strcmp(computer, 'PCWIN') || strcmp(computer, 'PCWIN64')
-        [status, opts.compiler] = system('findtexmf --file-type=exe pdflatex', echo);
+        if opts.showOutput
+            [status, opts.compiler] = system('findtexmf --file-type=exe pdflatex', echo);
+        else
+            [status, opts.compiler] = system('findtexmf --file-type=exe pdflatex');
+        end
         middle = ' ';
         opts.compiler = ['"' strtrim(opts.compiler) '"'];
     else % gnu/linux
-        [status, opts.compiler] = system('which pdflatex', echo);
+        if opts.showOutput
+            [status, opts.compiler] = system('which pdflatex', echo);
+        else
+            [status, opts.compiler] = system('which pdflatex');
+        end
     end
     assert(status == 0, ...
            '@report.compile: Could not find a tex compiler on your system');
@@ -98,10 +111,11 @@ if status ~= 0
     error(['@report.compile: There was an error in compiling ' rfn '.pdf.' ...
           '  ' compiler ' returned the error code: ' num2str(status)]);
 end
-fprintf(1, '\n\nDone.\n');
-disp('Your compiled report is located here:');
-disp(['     ' pwd filesep rfn '.pdf']);
-
+if o.showOutput || opts.showOutput
+    fprintf(1, 'Done.\n');
+    disp('Your compiled report is located here:');
+    disp(['     ' pwd filesep rfn '.pdf']);
+end
 if opts.showReport && ~isoctave
     open([pwd filesep rfn '.pdf']);
 end
