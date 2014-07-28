@@ -68,22 +68,15 @@ fprintf(fid, '\\setlength{\\tabcolsep}{4pt}\n');
 fprintf(fid, '\\begin{tabular}{@{}l');
 
 for i=1:ndates
+    fprintf(fid, 'r');
     if o.showVlines
-        fprintf(fid, 'r|');
-    else
-        fprintf(fid, 'r');
-        if o.vlineAfterEndOfPeriod
-            if dates(i).time(2) == dates(i).freq
+        fprintf(fid, '|');
+    elseif o.vlineAfterEndOfPeriod && dates(i).time(2) == dates(i).freq
+        fprintf(fid, '|');
+    elseif ~isempty(o.vlineAfter)
+        for j=1:length(o.vlineAfter)
+            if dates(i) == o.vlineAfter{j}
                 fprintf(fid, '|');
-            end
-        end
-        if ~isempty(o.vlineAfter)
-            for j=1:length(o.vlineAfter)
-                if dates(i) == o.vlineAfter{j}
-                    if ~(o.vlineAfterEndOfPeriod && dates(i).time(2) == dates(i).freq)
-                        fprintf(fid, '|');
-                    end
-                end
             end
         end
     end
@@ -140,7 +133,7 @@ else
     for i=1:length(rhscols)
         fprintf(fid, ' & %s', rhscols{i});
     end
-    fprintf(fid, '\\\\\\cline{%d-%d}%%\n', nlhc+1, ncols);
+    fprintf(fid, '\\\\\n');
     switch dates.freq
         case 4
             sep = 'Q';
@@ -154,7 +147,20 @@ else
     for i=1:size(thdr, 1)
         period = thdr{i, 2};
         for j=1:size(period, 2)
-            fprintf(fid, ' & \\multicolumn{1}{c}{%s%d}', sep, period(j));
+            fprintf(fid, ' & \\multicolumn{1}{c');
+            if o.showVlines
+                fprintf(fid, '|');
+            elseif o.vlineAfterEndOfPeriod && j == size(period, 2)
+                fprintf(fid, '|');
+            elseif ~isempty(o.vlineAfter)
+                for k=1:length(o.vlineAfter)
+                    if o.vlineAfter{k}.time(1) == thdr{i} && ...
+                            o.vlineAfter{k}.time(2) == period(j)
+                        fprintf(fid, '|');
+                    end
+                end
+            end
+            fprintf(fid, '}{%s%d}', sep, period(j));
         end
     end
 end
