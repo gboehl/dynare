@@ -69,7 +69,7 @@ if ~isempty(o.tableRowColor)
     fprintf(fid, '\\rowcolor{%s}', o.tableRowColor);
 end
 if ~isempty(o.tableSubSectionHeader)
-    fprintf(fid, '%s', o.tableSubSectionHeader);
+    fprintf(fid, '\\textbf{%s}', o.tableSubSectionHeader);
     for i=1:ncols-1
         fprintf(fid, ' &');
     end
