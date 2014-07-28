@@ -56,7 +56,8 @@ end
 assert(ischar(o.tableNegColor), '@report_series.writeSeriesForTable: tableNegColor must be a string');
 assert(ischar(o.tablePosColor), '@report_series.writeSeriesForTable: tablePosColor must be a string');
 assert(ischar(o.tableRowColor), '@report_series.writeSeriesForTable: tableRowColor must be a string');
-assert(isint(o.tableRowIndent), '@report_series.writeSeriesForTable: tableRowIndent must be an integer');
+assert(isint(o.tableRowIndent) && o.tableRowIndent >= 0, ...
+       '@report_series.writeSeriesForTable: tableRowIndent must be an integer >= 0');
 assert(islogical(o.tableShowMarkers), '@report_series.writeSeriesForTable: tableShowMarkers must be true or false');
 assert(islogical(o.tableAlignRight), '@report_series.writeSeriesForTable: tableAlignRight must be true or false');
 assert(isfloat(o.tableMarkerLimit), '@report_series.writeSeriesForTable: tableMarkerLimit must be a float');
