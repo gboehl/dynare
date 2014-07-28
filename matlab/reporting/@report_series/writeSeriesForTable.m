@@ -1,5 +1,5 @@
-function o = writeSeriesForTable(o, fid, dates, precision)
-%function o = writeSeriesForTable(o, fid, dates, precision)
+function o = writeSeriesForTable(o, fid, dates, precision, ncols)
+%function o = writeSeriesForTable(o, fid, dates, precision, ncols)
 % Write Table Row
 %
 % INPUTS
@@ -7,6 +7,7 @@ function o = writeSeriesForTable(o, fid, dates, precision)
 %   fid          [int]              file id
 %   dates        [dates]            dates for report_series slice
 %   precision    [float]            precision with which to print the data
+%   ncols        [int]              total number of columns in table
 %
 %
 % OUTPUTS
@@ -69,6 +70,9 @@ if ~isempty(o.tableRowColor)
 end
 if ~isempty(o.tableSubSectionHeader)
     fprintf(fid, '%s', o.tableSubSectionHeader);
+    for i=1:ncols-1
+        fprintf(fid, ' &');
+    end
     fprintf(fid, '\\\\%%\n');
     return;
 end

@@ -170,7 +170,7 @@ fprintf(fid, '%%\n');
 
 % Write Report_Table Data
 for i=1:ne
-    o.series{i}.writeSeriesForTable(fid, o.range, o.precision);
+    o.series{i}.writeSeriesForTable(fid, o.range, o.precision, ncols);
     if o.showHlines
         fprintf(fid, '\\hline\n');
     end
