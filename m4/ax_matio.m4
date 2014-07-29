@@ -1,6 +1,6 @@
 dnl Detect the MATIO Library.
 dnl
-dnl Copyright (C) 2012 Dynare Team
+dnl Copyright (C) 2012-2014 Dynare Team
 dnl
 dnl This file is part of Dynare.
 dnl
@@ -41,9 +41,10 @@ AC_ARG_WITH(matio, AC_HELP_STRING([--with-matio=DIR], [prefix to MATIO installat
   LDFLAGS="$LDFLAGS_MATIO $LDFLAGS"
 
   dnl Workaround for the matio from RHEL 6 + EPEL 6
-  dnl If detected, libz is added to LIBS, used for matio test
+  dnl If detected, libz and libhdf5 are added to LIBS, used for matio test
   LIBS=""
   AC_CHECK_LIB([z], [compress])
+  AC_CHECK_LIB([hdf5], [H5Fcreate])
 
   AC_CHECK_HEADER([matio.h], [], [has_matio=no])
   AC_CHECK_LIB([matio], [Mat_Open], [LIBADD_MATIO="-lmatio $LIBS"], [has_matio=no])
