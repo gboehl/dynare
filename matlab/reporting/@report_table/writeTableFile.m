@@ -40,6 +40,8 @@ end
 
 if isempty(o.tableName)
     o.tableName = sprintf('%s/table_pg%d_sec%d_row%d_col%d.tex', o.tableDirName, pg, sec, row, col);
+else
+    o.tableName = [o.tableDirName '/' o.tableName];
 end
 
 [fid, msg] = fopen(o.tableName, 'w');
