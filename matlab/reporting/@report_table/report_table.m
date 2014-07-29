@@ -49,6 +49,7 @@ o.data = '';
 o.seriesToUse = '';
 o.range = {};
 o.precision = 1;
+o.writeCSV = false;
 
 if nargin == 1
     assert(isa(varargin{1}, 'report_table'),['With one arg to Report_Table constructor, ' ...
@@ -115,6 +116,7 @@ assert(iscellstr(o.titleFormat), ...
        '@report_table.report_table: titleFormat must be a cell array of string(s)');
 assert(ischar(o.tableName), '@report_table.report_table: tableName must be a string');
 assert(ischar(o.tableDirName), '@report_table.report_table: tableDirName must be a string');
+assert(islogical(o.writeCSV), '@report_table.report_table: writeCSV must be either true or false');
 
 % using o.seriesToUse, create series objects and put them in o.series
 if ~isempty(o.data)
