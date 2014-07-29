@@ -89,7 +89,7 @@ if isdseries(B) && isdseries(C)
     A.name = cell(A.vobs,1);
     A.tex = cell(A.vobs,1);
     for i=1:A.vobs
-        A.name(i) = {['multiply(' B.name{idB(i)} ',' C.name{idC(i)} ')']};
+        A.name(i) = {['multiply(' B.name{idB(i)} ';' C.name{idC(i)} ')']};
         A.tex(i) = {['(' B.tex{idB(i)} '*' C.tex{idC(i)} ')']};
     end
     A.data = bsxfun(@times,B.data,C.data);
@@ -119,7 +119,7 @@ end
 %$    t(2) = dyn_assert(ts3.vobs,2);
 %$    t(3) = dyn_assert(ts3.nobs,10);
 %$    t(4) = dyn_assert(ts3.data,[A(:,1).*B, A(:,2).*B],1e-15);
-%$    t(5) = dyn_assert(ts3.name,{'multiply(A1,B1)';'multiply(A2,B1)'});
+%$    t(5) = dyn_assert(ts3.name,{'multiply(A1;B1)';'multiply(A2;B1)'});
 %$ end
 %$ T = all(t);
 %@eof:1
