@@ -92,6 +92,7 @@ ar-lib
 doc/m2html
 doc/internals/*.html
 doc/internals/ltxpng
+doc/manual/build
 mex/build/matlab/run_m2html.m
 
 # Preprocessor
