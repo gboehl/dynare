@@ -4,7 +4,7 @@ Dynare's Reference manual
 =========================
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
    introduction
    installation-and-configuration
