@@ -51,6 +51,8 @@ o.range = {};
 o.precision = 1;
 o.writeCSV = false;
 
+o.highlightRows = {''};
+
 if nargin == 1
     assert(isa(varargin{1}, 'report_table'),['With one arg to Report_Table constructor, ' ...
                         'you must pass a report_table object']);
@@ -117,6 +119,7 @@ assert(iscellstr(o.titleFormat), ...
 assert(ischar(o.tableName), '@report_table.report_table: tableName must be a string');
 assert(ischar(o.tableDirName), '@report_table.report_table: tableDirName must be a string');
 assert(islogical(o.writeCSV), '@report_table.report_table: writeCSV must be either true or false');
+assert(iscellstr(o.highlightRows), '@report_table.report_table: highlightRowsmust be a cell string');
 
 % using o.seriesToUse, create series objects and put them in o.series
 if ~isempty(o.data)

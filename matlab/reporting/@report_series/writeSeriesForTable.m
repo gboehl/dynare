@@ -1,5 +1,5 @@
-function o = writeSeriesForTable(o, fid, dates, precision, ncols)
-%function o = writeSeriesForTable(o, fid, dates, precision, ncols)
+function o = writeSeriesForTable(o, fid, dates, precision, ncols, rowcolor)
+%function o = writeSeriesForTable(o, fid, dates, precision, ncols, rowcolor)
 % Write Table Row
 %
 % INPUTS
@@ -8,6 +8,7 @@ function o = writeSeriesForTable(o, fid, dates, precision, ncols)
 %   dates        [dates]            dates for report_series slice
 %   precision    [float]            precision with which to print the data
 %   ncols        [int]              total number of columns in table
+%   rowcolor     [string]           string to color this row
 %
 %
 % OUTPUTS
@@ -65,7 +66,11 @@ assert(isfloat(o.tableMarkerLimit), '@report_series.writeSeriesForTable: tableMa
 
 %% Write Output
 fprintf(fid, '%% Table Row (report_series)\n');
-if ~isempty(o.tableRowColor)
+if ~isempty(o.tableRowColor) && ~strcmpi(o.tableRowColor, 'white')
+    fprintf(fid, '\\rowcolor{%s}', o.tableRowColor);
+elseif ~isempty(rowcolor)
+    fprintf(fid, '\\rowcolor{%s}', rowcolor);
+else
     fprintf(fid, '\\rowcolor{%s}', o.tableRowColor);
 end
 if ~isempty(o.tableSubSectionHeader)

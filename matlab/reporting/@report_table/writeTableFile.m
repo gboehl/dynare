@@ -175,7 +175,7 @@ if o.writeCSV
     csvseries = dseries();
 end
 for i=1:ne
-    o.series{i}.writeSeriesForTable(fid, o.range, o.precision, ncols);
+    o.series{i}.writeSeriesForTable(fid, o.range, o.precision, ncols, o.highlightRows{mod(i,length(o.highlightRows))+1});
     if o.writeCSV
         if isempty(o.series{i}.tableSubSectionHeader)
             csvseries = [csvseries ...
