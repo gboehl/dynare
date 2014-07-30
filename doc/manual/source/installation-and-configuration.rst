@@ -166,7 +166,11 @@ to Octave path, using the addpath at the Octave command prompt.
 
     >> addpath /Applications/Dynare/4.x.y/matlab
 
-If you do not want to type this command every time you run Octave, you can put it in a file called ‘.octaverc’ in your home directory (under Windows this will generally be ‘c:\\Documents and Settings\\USERNAME\\’ while under Mac OS X it is ‘/Users/USERNAME/’). This file is run by Octave at every startup.
+If you do not want to type this command every time you run Octave, you
+can put it in a file called ‘.octaverc’ in your home directory (under
+Windows this will generally be ‘c:\\Documents and
+Settings\\USERNAME\\’ while under Mac OS X it is
+‘/Users/USERNAME/’). This file is run by Octave at every startup.
 
 
 .. installation_config_warnings:
