@@ -1,3 +1,84 @@
+Announcement for Dynare 4.4.3 (on 2014-07-31)
+=============================================
+
+We are pleased to announce the release of Dynare 4.4.3.
+
+This is a bugfix release.
+
+The Windows packages are already available for download at:
+
+ http://www.dynare.org/download/dynare-stable
+
+The Mac and GNU/Linux packages (for Debian and Ubuntu LTS) should follow soon.
+
+This release is compatible with MATLAB versions 7.3 (R2006b) to 8.2 (R2013b)
+and with GNU Octave versions 3.6 to 3.8.
+
+Here is a list of the problems identified in version 4.4.2 and that have been
+fixed in version 4.4.3:
+
+ - When loading a dataset in XLS, XLSX or CSV format, the first
+   observation was discarded.
+
+ - Reading data in an Excel-file with only one variable wasz leading
+   to a crash.
+
+ - When using the k_order_perturbation option (which is implicit at
+   3rd order) without the use_dll option, crashes or unexpected
+   behavior could happen if some 2nd or 3rd derivative evaluates to
+   zero (while not being symbolically zero)
+
+ - When using external function, Ramsey policy could crash or return
+   wrong results.
+
+ - For Ramsey policy, the equation numbers associated with the
+   Lagrange multipliers stored in M_.aux_vars were erroneously one too
+   low
+
+ - When updating deep parameters in the steady state file, the changes
+   were not fully taken into account (this was only affecting the
+   Ramsey policy).
+
+ - When using external functions and the bytecode option, wrong
+   results were returned (if second order derivates of the external
+   functions were needed).
+
+ - The confidence level for computations in estimation, conf_sig could
+   not be changed and was fixed at 0.9. The new option mh_conf_sig is
+   now used to set this interval
+
+ - Conditional forecasts with non-diagonal covariance matrix used an
+   incorrect decomposition of the covariance matrix. A Cholesky
+   factorization is used.
+
+ - Option geweke_interval was not effective, Dynare always defaulted
+   to the standard value.
+
+ - The mode_file option lacked backward compatibility with older
+   Dynare versions.
+
+ - Loading an mh_mode file with the mode_file option was broken.
+
+ - Using identification with var_exo_det leaded to crashes (the
+   preprocessor now returns an error if they are used simultaneously)
+
+ - The identification command did not print results if the initial
+   parameter set was invalid and then crashed later on if the MC
+   sample is bigger than 1
+
+ - Inconsistencies between static and dynamic models leaded to crashes
+   instead of error messages (only with block option).
+
+ - The use of external functions crashed the preprocessor when the
+   derivatives of the external function are explicitly called in the
+   model block. The preprocessor now forbids the use of external
+   functions derivates in the model block.
+
+ - Using the block option when a variable does not appear in the
+   current period crashed Dynare instead of providing an error
+   message.
+
+
 Announcement for Dynare 4.4.2 (on 2014-03-04)
 =============================================
 
