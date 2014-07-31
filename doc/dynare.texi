@@ -515,9 +515,8 @@ Please refer to the
 @uref{http://www.dynare.org/DynareWiki/InstallOnDebianOrUbuntu,Dynare
 Wiki} for detailed instructions.
 
-Dynare will be installed under @file{/usr/share/dynare} and
-@file{/usr/lib/dynare}. Documentation will be under
-@file{/usr/share/doc/dynare}.
+Dynare will be installed under @file{/usr/lib/dynare}. Documentation will be
+under @file{/usr/share/doc/dynare-doc}.
 
 @node On Mac OS X
 @subsection On Mac OS X
@@ -580,7 +579,7 @@ addpath c:\dynare\4.@var{x}.@var{y}\matlab
 Under Debian GNU/Linux or Ubuntu, type:
 
 @example
-addpath /usr/share/dynare/matlab
+addpath /usr/lib/dynare/matlab
 @end example
 
 Under Mac OS X, assuming that you have installed Dynare in the standard
