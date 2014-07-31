@@ -472,6 +472,12 @@ NumConstNode::replaceTrendVar() const
 }
 
 expr_t
+NumConstNode::replaceVarNodeWithNumConstNode(SymbolType type, int lag, expr_t newNode) const
+{
+  return const_cast<NumConstNode *>(this);
+}
+
+expr_t
 NumConstNode::detrend(int symb_id, bool log_trend, expr_t trend) const
 {
   return const_cast<NumConstNode *>(this);
@@ -1344,6 +1350,15 @@ VariableNode::replaceTrendVar() const
     return datatree.Zero;
   else
     return const_cast<VariableNode *>(this);
+}
+
+expr_t
+VariableNode::replaceVarNodeWithNumConstNode(SymbolType type, int lag, expr_t newNode) const
+{
+  assert(dynamic_cast<NumConstNode *>(newNode));
+  if (get_type() == type && get_lag() == lag)
+    return dynamic_cast<NumConstNode *>(newNode);
+  return const_cast<VariableNode *>(this);
 }
 
 expr_t
@@ -2435,6 +2450,13 @@ expr_t
 UnaryOpNode::replaceTrendVar() const
 {
   expr_t argsubst = arg->replaceTrendVar();
+  return buildSimilarUnaryOpNode(argsubst, datatree);
+}
+
+expr_t
+UnaryOpNode::replaceVarNodeWithNumConstNode(SymbolType type, int lag, expr_t newNode) const
+{
+  expr_t argsubst = arg->replaceVarNodeWithNumConstNode(type, lag, newNode);
   return buildSimilarUnaryOpNode(argsubst, datatree);
 }
 
@@ -3705,6 +3727,14 @@ BinaryOpNode::replaceTrendVar() const
 }
 
 expr_t
+BinaryOpNode::replaceVarNodeWithNumConstNode(SymbolType type, int lag, expr_t newNode) const
+{
+  expr_t arg1subst = arg1->replaceVarNodeWithNumConstNode(type, lag, newNode);
+  expr_t arg2subst = arg2->replaceVarNodeWithNumConstNode(type, lag, newNode);
+  return buildSimilarBinaryOpNode(arg1subst, arg2subst, datatree);
+}
+
+expr_t
 BinaryOpNode::detrend(int symb_id, bool log_trend, expr_t trend) const
 {
   expr_t arg1subst = arg1->detrend(symb_id, log_trend, trend);
@@ -4394,6 +4424,15 @@ TrinaryOpNode::replaceTrendVar() const
 }
 
 expr_t
+TrinaryOpNode::replaceVarNodeWithNumConstNode(SymbolType type, int lag, expr_t newNode) const
+{
+  expr_t arg1subst = arg1->replaceVarNodeWithNumConstNode(type, lag, newNode);
+  expr_t arg2subst = arg2->replaceVarNodeWithNumConstNode(type, lag, newNode);
+  expr_t arg3subst = arg2->replaceVarNodeWithNumConstNode(type, lag, newNode);
+  return buildSimilarTrinaryOpNode(arg1subst, arg2subst, arg3subst, datatree);
+}
+
+expr_t
 TrinaryOpNode::detrend(int symb_id, bool log_trend, expr_t trend) const
 {
   expr_t arg1subst = arg1->detrend(symb_id, log_trend, trend);
@@ -5009,6 +5048,15 @@ AbstractExternalFunctionNode::replaceTrendVar() const
   vector<expr_t> arguments_subst;
   for (vector<expr_t>::const_iterator it = arguments.begin(); it != arguments.end(); it++)
     arguments_subst.push_back((*it)->replaceTrendVar());
+  return buildSimilarExternalFunctionNode(arguments_subst, datatree);
+}
+
+expr_t
+AbstractExternalFunctionNode::replaceVarNodeWithNumConstNode(SymbolType type, int lag, expr_t newNode) const
+{
+  vector<expr_t> arguments_subst;
+  for (vector<expr_t>::const_iterator it = arguments.begin(); it != arguments.end(); it++)
+    arguments_subst.push_back((*it)->replaceVarNodeWithNumConstNode(type, lag, newNode));
   return buildSimilarExternalFunctionNode(arguments_subst, datatree);
 }
 

@@ -1,4 +1,4 @@
-var y mu;
+var y mu e;
 varobs y;
 varexo ee emu;
 parameters Ve, Vmu, delta, S1, S2;
@@ -10,7 +10,8 @@ multinomial( process=2, number_of_regimes=2, probability = [P2]);
 // I don' know if probabilities would be a better name than probability (vector  being implicit)
 
 model;
-y = mu + ((S1 - 1)*sqrt(delta) + (2 - S1))*sqrt(Ve)*ee;
+y = mu + e;
+e = ((S1 - 1)*sqrt(delta) + (2 - S1))*sqrt(Ve)*ee;
 mu = mu(-1) + (S2-1)*sqrt(Vmu)*emu;
 end;
 

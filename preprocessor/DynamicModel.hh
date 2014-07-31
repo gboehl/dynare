@@ -69,6 +69,14 @@ private:
 
   vector<temporary_terms_inuse_t> v_temporary_terms_inuse;
 
+  //! DMM Matrices
+  first_derivatives_t dmm_c;
+  first_derivatives_t dmm_H;
+  first_derivatives_t dmm_G;
+  map<int, expr_t> dmm_a;
+  first_derivatives_t dmm_F;
+  first_derivatives_t dmm_R;
+
   //! Store the derivatives or the chainrule derivatives:map<pair< equation, pair< variable, lead_lag >, expr_t>
   typedef map< pair< int, pair< int, int> >, expr_t> first_chain_rule_derivatives_t;
   first_chain_rule_derivatives_t first_chain_rule_derivatives;
@@ -221,6 +229,8 @@ public:
                                    const int &num, int &u_count_int, bool &file_open, bool is_two_boundaries) const;
   //! Writes the Dmm M file
   void writeDmmMFile(const string &basename) const;
+  //! Write DMM latent variable info to M file for use in creation of NML file
+  void writeDmmLatentVarInfo(ostream &output) const;
   //! Writes dynamic model file
   void writeDynamicFile(const string &basename, bool block, bool bytecode, bool use_dll, int order) const;
   //! Writes file containing parameters derivatives
@@ -245,6 +255,8 @@ public:
   void cloneDynamic(DynamicModel &dynamic_model) const;
   //! Check DMM equations take the appropriate form
   void checkDmm() const;
+  //! Compute DMM Matrices c, H, G, a, F, and R
+  void computeDmmMatrices();
   //! Replaces model equations with derivatives of Lagrangian w.r.t. endogenous
   void computeRamseyPolicyFOCs(const StaticModel &static_model);
   //! Replaces the model equations in dynamic_model with those in this model
@@ -268,6 +280,8 @@ public:
   virtual int getDerivID(int symb_id, int lag) const throw (UnknownDerivIDException);
   virtual int getDynJacobianCol(int deriv_id) const throw (UnknownDerivIDException);
   virtual void addAllParamDerivId(set<int> &deriv_id_set);
+  void addAllNonObsEndogId(set<int> &deriv_id_set);
+  void addAllTypeId(set<int> &deriv_id_set, int etype);
 
   //! Returns true indicating that this is a dynamic model
   virtual bool

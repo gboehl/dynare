@@ -517,7 +517,10 @@ ModFile::computingPass(bool no_tmp_terms, FileOutputType output)
     (*it)->computingPass();
 
   if (mod_file_struct.dmm_present)
-    dynamic_model.testHessianEqualsZero();
+    {
+      dynamic_model.testHessianEqualsZero();
+      dynamic_model.computeDmmMatrices();
+    }
 }
 
 void
@@ -599,6 +602,9 @@ ModFile::writeOutputFiles(const string &basename, bool clear_all, bool no_log, b
   else
     mOutputFile << "M_.H = 0;" << endl
                 << "M_.Correlation_matrix_ME = 1;" << endl;
+
+  if (mod_file_struct.dmm_present)
+    dynamic_model.writeDmmLatentVarInfo(mOutputFile);
 
   if (linear == 1)
     mOutputFile << "options_.linear = 1;" << endl;

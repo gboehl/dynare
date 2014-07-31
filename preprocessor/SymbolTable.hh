@@ -303,6 +303,8 @@ public:
   bool isAuxiliaryVariable(int symb_id) const;
   //! Get list of endogenous variables without aux vars
   set <int> getOrigEndogenous() const;
+  //! Get list of endogenous variables without varobs; maps symb_id -> endog idx w/o observed vars (for DMM)
+  map <int, int> createNonVarObsVarIdx() const;
 };
 
 inline bool

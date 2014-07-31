@@ -532,6 +532,16 @@ SymbolTable::predeterminedNbr() const
   return (predetermined_variables.size());
 }
 
+map<int, int>
+SymbolTable::createNonVarObsVarIdx() const
+{
+  map<int, int> nonVarObsVarIdx;
+  for (vector<int>::const_iterator it = endo_ids.begin(); it != endo_ids.end(); it++)
+    if (!isObservedVariable(*it))
+      nonVarObsVarIdx.insert(make_pair(*it, nonVarObsVarIdx.size()));
+  return nonVarObsVarIdx;
+}
+
 void
 SymbolTable::addObservedVariable(int symb_id) throw (UnknownSymbolIDException)
 {

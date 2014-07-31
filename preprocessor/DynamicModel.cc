@@ -4048,6 +4048,105 @@ DynamicModel::testTrendDerivativesEqualToZero(const eval_context_t &eval_context
 }
 
 void
+DynamicModel::addAllTypeId(set<int> &deriv_id_set, int etype)
+{
+  for (size_t i = 0; i < inv_deriv_id_table.size(); i++)
+    if (symbol_table.getType(inv_deriv_id_table[i].first) == etype)
+      deriv_id_set.insert(i);
+}
+
+void
+DynamicModel::addAllNonObsEndogId(set<int> &deriv_id_set)
+{
+  for (size_t i = 0; i < inv_deriv_id_table.size(); i++)
+    if (symbol_table.getType(inv_deriv_id_table[i].first) == eEndogenous &&
+        !symbol_table.isObservedVariable(inv_deriv_id_table[i].first))
+      deriv_id_set.insert(i);
+}
+
+void
+DynamicModel::computeDmmMatrices()
+{
+  map<int, int> nonVarObsVarIdx = symbol_table.createNonVarObsVarIdx();
+
+  set<int> exo_deriv_id_set;
+  addAllTypeId(exo_deriv_id_set, eExogenous);
+  for (set<int>::const_iterator it = exo_deriv_id_set.begin();
+       it != exo_deriv_id_set.end(); it++)
+    {
+      const int v = *it;
+      for (int eq = 0; eq < (int) equations.size(); eq++)
+        {
+          expr_t d1 = equations[eq]->getDerivative(v);
+          int LHSsymb_id = dynamic_cast<VariableNode *>(equations[eq]->get_arg1())->get_symb_id();
+          if (d1 != Zero)
+            if (symbol_table.isObservedVariable(LHSsymb_id))
+              dmm_G[make_pair(symbol_table.getIndexInVarobs(LHSsymb_id),
+                              symbol_table.getTypeSpecificID(v))] = d1;
+            else
+              dmm_R[make_pair(nonVarObsVarIdx[LHSsymb_id],
+                              symbol_table.getTypeSpecificID(v))] = d1;
+        }
+    }
+
+  set<int> endo_deriv_id_set;
+  addAllTypeId(endo_deriv_id_set, eEndogenous);
+  for (set<int>::const_iterator it = endo_deriv_id_set.begin();
+       it != endo_deriv_id_set.end(); it++)
+    if (!symbol_table.isObservedVariable(inv_deriv_id_table[*it].first))
+      {
+        const int v = *it;
+        for (int eq = 0; eq < (int) equations.size(); eq++)
+          {
+            expr_t d1 = equations[eq]->getDerivative(v);
+            int LHSsymb_id = dynamic_cast<VariableNode *>(equations[eq]->get_arg1())->get_symb_id();
+            if (d1 != Zero)
+              if (symbol_table.isObservedVariable(LHSsymb_id))
+                dmm_H[make_pair(symbol_table.getIndexInVarobs(LHSsymb_id),
+                                nonVarObsVarIdx[v])] = d1;
+              else if (getLagByDerivID(v) == -1)
+                dmm_F[make_pair(nonVarObsVarIdx[v], nonVarObsVarIdx[v])] = d1;
+          }
+      }
+
+  set<int> exodet_deriv_id_set;
+  addAllTypeId(exodet_deriv_id_set, eExogenousDet);
+  for (set<int>::const_iterator it = exodet_deriv_id_set.begin();
+       it != exodet_deriv_id_set.end(); it++)
+    {
+      const int v = *it;
+      for (int eq = 0; eq < (int) equations.size(); eq++)
+        {
+          int LHSsymb_id = dynamic_cast<VariableNode *>(equations[eq]->get_arg1())->get_symb_id();
+          expr_t d1 = equations[eq]->getDerivative(v);
+          if (d1 != Zero)
+            dmm_c[make_pair(symbol_table.getIndexInVarobs(LHSsymb_id),
+                            symbol_table.getTypeSpecificID(v))] = d1;
+        }
+    }
+
+  for (int eq = 0; eq < (int) equations.size(); eq++)
+    if (!symbol_table.isObservedVariable
+        (dynamic_cast<VariableNode *>(equations[eq]->get_arg1())->get_symb_id()))
+      {
+        expr_t tmp = dynamic_cast<BinaryOpNode *>(equations[eq]
+                                                  ->replaceVarNodeWithNumConstNode(eEndogenous, -1, Zero)
+                                                  ->replaceVarNodeWithNumConstNode(eExogenous, 0, Zero))->get_arg2();
+        if (tmp != Zero)
+          {
+            int LHSsymb_id = dynamic_cast<VariableNode *>(equations[eq]->get_arg1())->get_symb_id();
+            int LHStsid = symbol_table.getTypeSpecificID(LHSsymb_id);
+            dmm_a[LHStsid - symbol_table.observedVariablesNbr()] = tmp;
+          }
+      }
+}
+
+void
+DynamicModel::writeDmmLatentVarInfo(ostream &output) const
+{
+}
+
+void
 DynamicModel::writeParamsDerivativesFile(const string &basename) const
 {
   if (!residuals_params_derivatives.size()

@@ -401,6 +401,9 @@ public:
   //! Replaces the Trend var with datatree.One
   virtual expr_t replaceTrendVar() const = 0;
 
+  //! Replaces a VaiableNode that matches type and lag with the NumConstNode in the argument
+  virtual expr_t replaceVarNodeWithNumConstNode(SymbolType type, int lag, expr_t newNode) const = 0;
+
   //! Constructs a new expression where the variable indicated by symb_id has been detrended
   /*!
     \param[in] symb_id indicating the variable to be detrended
@@ -472,6 +475,7 @@ public:
   virtual bool containsObserved() const;
   virtual bool isVariableNodeEqualTo(SymbolType type_arg, int variable_id, int lag_arg) const;
   virtual expr_t replaceTrendVar() const;
+  virtual expr_t replaceVarNodeWithNumConstNode(SymbolType type, int lag, expr_t newNode) const;
   virtual expr_t detrend(int symb_id, bool log_trend, expr_t trend) const;
   virtual expr_t cloneDynamic(DataTree &dynamic_datatree) const;
   virtual expr_t removeTrendLeadLag(map<int, expr_t> trend_symbols_map) const;
@@ -536,6 +540,7 @@ public:
   virtual bool containsObserved() const;
   virtual bool isVariableNodeEqualTo(SymbolType type_arg, int variable_id, int lag_arg) const;
   virtual expr_t replaceTrendVar() const;
+  virtual expr_t replaceVarNodeWithNumConstNode(SymbolType type, int lag, expr_t newNode) const;
   virtual expr_t detrend(int symb_id, bool log_trend, expr_t trend) const;
   virtual expr_t cloneDynamic(DataTree &dynamic_datatree) const;
   virtual expr_t removeTrendLeadLag(map<int, expr_t> trend_symbols_map) const;
@@ -616,6 +621,7 @@ public:
   virtual bool containsObserved() const;
   virtual bool isVariableNodeEqualTo(SymbolType type_arg, int variable_id, int lag_arg) const;
   virtual expr_t replaceTrendVar() const;
+  virtual expr_t replaceVarNodeWithNumConstNode(SymbolType type, int lag, expr_t newNode) const;
   virtual expr_t detrend(int symb_id, bool log_trend, expr_t trend) const;
   virtual expr_t cloneDynamic(DataTree &dynamic_datatree) const;
   virtual expr_t removeTrendLeadLag(map<int, expr_t> trend_symbols_map) const;
@@ -708,6 +714,7 @@ public:
   virtual bool containsObserved() const;
   virtual bool isVariableNodeEqualTo(SymbolType type_arg, int variable_id, int lag_arg) const;
   virtual expr_t replaceTrendVar() const;
+  virtual expr_t replaceVarNodeWithNumConstNode(SymbolType type, int lag, expr_t newNode) const;
   virtual expr_t detrend(int symb_id, bool log_trend, expr_t trend) const;
   virtual expr_t cloneDynamic(DataTree &dynamic_datatree) const;
   virtual expr_t removeTrendLeadLag(map<int, expr_t> trend_symbols_map) const;
@@ -783,6 +790,7 @@ public:
   virtual bool containsObserved() const;
   virtual bool isVariableNodeEqualTo(SymbolType type_arg, int variable_id, int lag_arg) const;
   virtual expr_t replaceTrendVar() const;
+  virtual expr_t replaceVarNodeWithNumConstNode(SymbolType type, int lag, expr_t newNode) const;
   virtual expr_t detrend(int symb_id, bool log_trend, expr_t trend) const;
   virtual expr_t cloneDynamic(DataTree &dynamic_datatree) const;
   virtual expr_t removeTrendLeadLag(map<int, expr_t> trend_symbols_map) const;
@@ -860,6 +868,7 @@ public:
   virtual bool isVariableNodeEqualTo(SymbolType type_arg, int variable_id, int lag_arg) const;
   virtual void writePrhs(ostream &output, ExprNodeOutputType output_type, const temporary_terms_t &temporary_terms, deriv_node_temp_terms_t &tef_terms, const string &ending) const;
   virtual expr_t replaceTrendVar() const;
+  virtual expr_t replaceVarNodeWithNumConstNode(SymbolType type, int lag, expr_t newNode) const;
   virtual expr_t detrend(int symb_id, bool log_trend, expr_t trend) const;
   virtual expr_t cloneDynamic(DataTree &dynamic_datatree) const = 0;
   virtual expr_t removeTrendLeadLag(map<int, expr_t> trend_symbols_map) const;
