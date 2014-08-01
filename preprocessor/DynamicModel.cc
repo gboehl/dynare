@@ -1542,10 +1542,63 @@ DynamicModel::writeDmmMFile(const string &basename) const
               << "    paramsIdx(i) = find(strcmp(cellstr(M_.param_names), options_.multinomial(i).parameter));"
               << endl << "end" << endl;
 
+  deriv_node_temp_terms_t tef_terms; // need to make this a member of the class
+  for (first_derivatives_t::const_iterator it = dmm_c.begin();
+       it != dmm_c.end(); it++)
+    {
+      mOutputFile << "C(" << it->first.first + 1
+                  << ", " << it->first.second + 1 << ", i) = ";
+      it->second->writeOutput(mOutputFile, oMatlabDynamicModel, temporary_terms, tef_terms);
+      mOutputFile << ";" << endl;
+    }
+
+  for (first_derivatives_t::const_iterator it = dmm_H.begin();
+       it != dmm_H.end(); it++)
+    {
+      mOutputFile << "H(" << it->first.first + 1
+                  << ", " << it->first.second + 1 << ", i) = ";
+      it->second->writeOutput(mOutputFile, oMatlabDynamicModel, temporary_terms, tef_terms);
+      mOutputFile << ";" << endl;
+    }
+
+  for (first_derivatives_t::const_iterator it = dmm_G.begin();
+       it != dmm_G.end(); it++)
+    {
+      mOutputFile << "G(" << it->first.first + 1
+                  << ", " << it->first.second + 1 << ", i) = ";
+      it->second->writeOutput(mOutputFile, oMatlabDynamicModel, temporary_terms, tef_terms);
+      mOutputFile << ";" << endl;
+    }
+
+  for (map<int, expr_t>::const_iterator it = dmm_a.begin();
+       it != dmm_a.end(); it++)
+    {
+      mOutputFile << "A(" << it->first + 1 << ", i) = ";
+      it->second->writeOutput(mOutputFile, oMatlabDynamicModel, temporary_terms, tef_terms);
+      mOutputFile << ";" << endl;
+    }
+
+  for (first_derivatives_t::const_iterator it = dmm_F.begin();
+       it != dmm_F.end(); it++)
+    {
+      mOutputFile << "F(" << it->first.first + 1
+                  << ", " << it->first.second + 1 << ", i) = ";
+      it->second->writeOutput(mOutputFile, oMatlabDynamicModel, temporary_terms, tef_terms);
+      mOutputFile << ";" << endl;
+    }
+
+  for (first_derivatives_t::const_iterator it = dmm_R.begin();
+       it != dmm_R.end(); it++)
+    {
+      mOutputFile << "R(" << it->first.first + 1
+                  << ", " << it->first.second + 1 << ", i) = ";
+      it->second->writeOutput(mOutputFile, oMatlabDynamicModel, temporary_terms, tef_terms);
+      mOutputFile << ";" << endl;
+    }
+
   // matrix Number, row, col, index in first_derivatives
   typedef map<pair<int, pair<int, int> >, expr_t > matrixvals_t;
   matrixvals_t matrixVals;
-  deriv_node_temp_terms_t tef_terms; // need to make this a member of the class
   for (first_derivatives_t::const_iterator it = first_derivatives.begin();
        it != first_derivatives.end(); it++)
     {
