@@ -1523,6 +1523,26 @@ CalibrationStatement::CalibrationStatement(const string &name_arg,
 {
 }
 
+bool
+CalibrationStatement::hasMultinomialProcess() const
+{
+  return options_list.string_options.find("process") != options_list.string_options.end();
+}
+
+string
+CalibrationStatement::getProcessName() const
+{
+  if (hasMultinomialProcess())
+    return options_list.string_options.find("process")->second;
+  return NULL;
+}
+
+string
+CalibrationStatement::getParamName() const
+{
+  return name;
+}
+
 void
 CalibrationStatement::writeOutput(ostream &output, const string &basename) const
 {
@@ -1553,11 +1573,22 @@ MultinomialStatement::MultinomialStatement(const OptionsList &options_list_arg) 
 {
 }
 
+string
+MultinomialStatement::getProcessName() const
+{
+  return options_list.string_options.find("process")->second;
+}
+
+int
+MultinomialStatement::getNumRegimes() const
+{
+  return atoi(options_list.num_options.find("number_of_regimes")->second.c_str());
+}
+
 void
 MultinomialStatement::checkPass(ModFileStructure &mod_file_struct, WarningConsolidation &warnings)
 {
-  if (options_list.string_options.find("process") == options_list.string_options.end() &&
-      options_list.num_options.find("process") == options_list.num_options.end())
+  if (options_list.string_options.find("process") == options_list.string_options.end())
     {
       cerr << "ERROR: The process option must be passed to the multinomial statement" << endl;
       exit(EXIT_FAILURE);

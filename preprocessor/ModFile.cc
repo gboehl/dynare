@@ -393,6 +393,23 @@ ModFile::transformPass(bool nostrict)
         exit(EXIT_FAILURE);
       }
 
+  if (mod_file_struct.dmm_present)
+    {
+      map<int, string> latentParamIds;
+      map<string, int> multinomial;
+      for (vector<Statement *>::iterator it = statements.begin(); it != statements.end(); it++)
+        {
+          CalibrationStatement *cs = dynamic_cast<CalibrationStatement *>(*it);
+          if (cs != NULL && cs->hasMultinomialProcess())
+            latentParamIds.insert(make_pair(symbol_table.getID(cs->getParamName()), cs->getProcessName()));
+
+          MultinomialStatement *ms = dynamic_cast<MultinomialStatement *>(*it);
+          if (ms != NULL)
+            multinomial.insert(make_pair(ms->getProcessName(), ms->getNumRegimes()));
+        }
+      dynamic_model.setDmmLatentVarInfo(latentParamIds, multinomial);
+    }
+
   // Freeze the symbol table
   symbol_table.freeze();
 
@@ -520,6 +537,7 @@ ModFile::computingPass(bool no_tmp_terms, FileOutputType output)
     {
       dynamic_model.testHessianEqualsZero();
       dynamic_model.computeDmmMatrices();
+      dynamic_model.findLatentVarsInMats();
     }
 }
 

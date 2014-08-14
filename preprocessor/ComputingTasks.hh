@@ -636,6 +636,9 @@ public:
                        const OptionsList &options_list_arg);
   virtual void writeOutput(ostream &output, const string &basename) const;
   void writeOutputHelper(ostream &output, const string &lhs_field, const string &field) const;
+  bool hasMultinomialProcess() const;
+  string getParamName() const;
+  string getProcessName() const;
 };
 
 class MultinomialStatement : public Statement
@@ -647,6 +650,8 @@ public:
   virtual void checkPass(ModFileStructure &mod_file_struct, WarningConsolidation &warnings);
   virtual void writeOutput(ostream &output, const string &basename) const;
   void writeOutputHelper(ostream &output, const string &lhs_field, const string &field) const;
+  string getProcessName() const;
+  int getNumRegimes() const;
 };
 
 class SubsamplesStatement : public Statement

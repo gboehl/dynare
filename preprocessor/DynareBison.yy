@@ -2923,8 +2923,13 @@ o_dmm_simulate_data : SIMULATE_DATA EQUAL symbol { driver.option_str("dmm.simula
 o_dmm_check_mats : CHECK_MATS EQUAL symbol { driver.option_str("dmm.check_mats", $3); };
 o_dmm_calc_marg_lik : CALC_MARG_LIK EQUAL symbol { driver.option_str("dmm.calc_marg_lik", $3); };
 o_dmm_block_length : BLOCK_LENGTH EQUAL symbol { driver.option_str("dmm.block_length", $3); };
-o_process : PROCESS EQUAL symbol { driver.option_str("process",$3); }
-          | PROCESS EQUAL INT_NUMBER { driver.option_num("process",$3); }
+o_process : PROCESS EQUAL symbol { driver.option_str("process", $3); }
+          | PROCESS EQUAL INT_NUMBER
+          {
+            ostringstream int2str;
+            int2str << *$3;
+            driver.option_str("process", int2str.str());
+          }
           ;
 o_calibration_regime : REGIME EQUAL INT_NUMBER { driver.option_num("regime",$3); };
 o_consider_all_endogenous : CONSIDER_ALL_ENDOGENOUS { driver.option_str("endo_vars_for_moment_computations_in_estimation", "all_endogenous_variables"); };

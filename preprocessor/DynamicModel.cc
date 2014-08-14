@@ -4195,8 +4195,67 @@ DynamicModel::computeDmmMatrices()
 }
 
 void
+DynamicModel::findLatentVarsInMats()
+{
+  for (map<int, string>::const_iterator it = dmmLatentVars.begin(); it != dmmLatentVars.end(); it++)
+    {
+      for (first_derivatives_t::const_iterator it1 = dmm_c.begin(); it1 != dmm_c.end(); it1++)
+        if (it1->second->containsVarNodeWithId(it->first))
+          insertDmmMatS(it->first, "C");
+
+      for (first_derivatives_t::const_iterator it1 = dmm_H.begin(); it1 != dmm_H.end(); it1++)
+        if (it1->second->containsVarNodeWithId(it->first))
+          insertDmmMatS(it->first, "H");
+
+      for (first_derivatives_t::const_iterator it1 = dmm_G.begin(); it1 != dmm_G.end(); it1++)
+        if (it1->second->containsVarNodeWithId(it->first))
+          insertDmmMatS(it->first, "G");
+
+      for (map<int, expr_t>::const_iterator it1 = dmm_a.begin(); it1 != dmm_a.end(); it1++)
+        if (it1->second->containsVarNodeWithId(it->first))
+          insertDmmMatS(it->first, "A");
+
+      for (first_derivatives_t::const_iterator it1 = dmm_F.begin(); it1 != dmm_F.end(); it1++)
+        if (it1->second->containsVarNodeWithId(it->first))
+          insertDmmMatS(it->first, "F");
+
+      for (first_derivatives_t::const_iterator it1 = dmm_R.begin(); it1 != dmm_R.end(); it1++)
+        if (it1->second->containsVarNodeWithId(it->first))
+          insertDmmMatS(it->first, "R");
+    }
+}
+
+void
+DynamicModel::insertDmmMatS(int symb_id, string mat)
+{
+  if (dmmLatentVarMat.find(symb_id) != dmmLatentVarMat.end())
+    {
+      cerr << "ERROR: DMM: A latent variable can only impact one of the C, H, G, A, F, or R matrices" << endl;
+      exit(EXIT_FAILURE);
+    }
+  dmmLatentVarMat.insert(make_pair(symb_id, mat));
+}
+
+void
+DynamicModel::setDmmLatentVarInfo(map<int, string> &latentParamIds, map<string,int> &multinomial)
+{
+  dmmLatentVars = latentParamIds;
+  dmmMultinomial = multinomial;
+}
+
+void
 DynamicModel::writeDmmLatentVarInfo(ostream &output) const
 {
+  output << "dmmSind = 1;" << endl;
+  for (map<int, string>::const_iterator it = dmmLatentVars.begin(); it != dmmLatentVars.end(); it++)
+    {
+      output << "options_.dmm.S(dmmSind).ns = "
+             << dmmMultinomial.find(it->second)->second << ";" << endl;
+      map<int, string>::const_iterator it1 = dmmLatentVarMat.find(it->first);
+      if (it1 != dmmLatentVarMat.end())
+        output << "options_.dmm.S(dmmSind).mat = '" << it1->second << "';" << endl;
+      output << "dmmLatentVarIdx = dmmSind + 1;" << endl;
+    }
 }
 
 void

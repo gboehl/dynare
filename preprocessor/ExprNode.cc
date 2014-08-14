@@ -495,6 +495,12 @@ NumConstNode::isInStaticForm() const
   return true;
 }
 
+bool
+NumConstNode::containsVarNodeWithId(int sid) const
+{
+  return false;
+}
+
 VariableNode::VariableNode(DataTree &datatree_arg, int symb_id_arg, int lag_arg) :
   ExprNode(datatree_arg),
   symb_id(symb_id_arg),
@@ -1315,6 +1321,12 @@ VariableNode::isVariableNodeEqualTo(SymbolType type_arg, int variable_id, int la
     return true;
   else
     return false;
+}
+
+bool
+VariableNode::containsVarNodeWithId(int sid) const
+{
+  return symb_id == sid;
 }
 
 bool
@@ -2426,6 +2438,12 @@ bool
 UnaryOpNode::isVariableNodeEqualTo(SymbolType type_arg, int variable_id, int lag_arg) const
 {
   return false;
+}
+
+bool
+UnaryOpNode::containsVarNodeWithId(int sid) const
+{
+  return arg->containsVarNodeWithId(sid);
 }
 
 bool
@@ -3707,6 +3725,12 @@ BinaryOpNode::containsEndogenous(void) const
 }
 
 bool
+BinaryOpNode::containsVarNodeWithId(int sid) const
+{
+  return arg1->containsVarNodeWithId(sid) || arg2->containsVarNodeWithId(sid);
+}
+
+bool
 BinaryOpNode::containsObserved() const
 {
   return (arg1->containsObserved() || arg2->containsObserved());
@@ -4397,6 +4421,12 @@ TrinaryOpNode::isVariableNodeEqualTo(SymbolType type_arg, int variable_id, int l
 }
 
 bool
+TrinaryOpNode::containsVarNodeWithId(int sid) const
+{
+  return arg1->containsVarNodeWithId(sid) || arg2->containsVarNodeWithId(sid) || arg3->containsVarNodeWithId(sid);
+}
+
+bool
 TrinaryOpNode::containsEndogenous(void) const
 {
   return (arg1->containsEndogenous() || arg2->containsEndogenous() || arg3->containsEndogenous());
@@ -5021,6 +5051,15 @@ AbstractExternalFunctionNode::containsEndogenous(void) const
   bool result = false;
   for (vector<expr_t>::const_iterator it = arguments.begin(); it != arguments.end(); it++)
     result = result || (*it)->containsEndogenous();
+  return result;
+}
+
+bool
+AbstractExternalFunctionNode::containsVarNodeWithId(int sid) const
+{
+  bool result = false;
+  for (vector<expr_t>::const_iterator it = arguments.begin(); it != arguments.end(); it++)
+    result = result || (*it)->containsVarNodeWithId(sid);
   return result;
 }
 

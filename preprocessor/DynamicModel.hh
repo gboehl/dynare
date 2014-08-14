@@ -76,6 +76,9 @@ private:
   map<int, expr_t> dmm_a;
   first_derivatives_t dmm_F;
   first_derivatives_t dmm_R;
+  map<int, string> dmmLatentVars;
+  map<int, string> dmmLatentVarMat;
+  map<string, int> dmmMultinomial;
 
   //! Store the derivatives or the chainrule derivatives:map<pair< equation, pair< variable, lead_lag >, expr_t>
   typedef map< pair< int, pair< int, int> >, expr_t> first_chain_rule_derivatives_t;
@@ -257,6 +260,12 @@ public:
   void checkDmm() const;
   //! Compute DMM Matrices c, H, G, a, F, and R
   void computeDmmMatrices();
+  //! Find which matrices the latent params impact (DMM)
+  void findLatentVarsInMats();
+  //! Store information about the matrices that latent variables impact in dmmLatentVarMat
+  void insertDmmMatS(int symb_id, string mat);
+  //! Set DMM Latent Variable symb ids
+  void setDmmLatentVarInfo(map<int,string> &latentParamIds, map<string,int> &multinomial);
   //! Replaces model equations with derivatives of Lagrangian w.r.t. endogenous
   void computeRamseyPolicyFOCs(const StaticModel &static_model);
   //! Replaces the model equations in dynamic_model with those in this model

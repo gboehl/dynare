@@ -421,6 +421,9 @@ public:
 
   //! Returns true if the expression is in static form (no lead, no lag, no expectation, no STEADY_STATE)
   virtual bool isInStaticForm() const = 0;
+
+  //! Returns true if a variable node has the same symb_id as that passed
+  virtual bool containsVarNodeWithId(int sid) const = 0;
 };
 
 //! Object used to compare two nodes (using their indexes)
@@ -481,6 +484,7 @@ public:
   virtual expr_t removeTrendLeadLag(map<int, expr_t> trend_symbols_map) const;
   virtual bool isInStaticForm() const;
   virtual bool isLaggedOrLeadNonStateVarPresent() const;
+  virtual bool containsVarNodeWithId(int sid) const;
 };
 
 //! Symbol or variable node
@@ -547,6 +551,7 @@ public:
   virtual bool isInStaticForm() const;
   virtual bool isLaggedOrLeadNonStateVarPresent() const;
   int getSymbId() const;
+  virtual bool containsVarNodeWithId(int sid) const;
 };
 
 //! Unary operator node
@@ -627,6 +632,7 @@ public:
   virtual expr_t removeTrendLeadLag(map<int, expr_t> trend_symbols_map) const;
   virtual bool isInStaticForm() const;
   virtual bool isLaggedOrLeadNonStateVarPresent() const;
+  virtual bool containsVarNodeWithId(int sid) const;
 };
 
 //! Binary operator node
@@ -729,6 +735,7 @@ public:
   void checkDmm() const;
   int getLhsSymbId() const;
   bool isLhsVarNode() const;
+  virtual bool containsVarNodeWithId(int sid) const;
 };
 
 //! Trinary operator node
@@ -796,6 +803,7 @@ public:
   virtual expr_t removeTrendLeadLag(map<int, expr_t> trend_symbols_map) const;
   virtual bool isInStaticForm() const;
   virtual bool isLaggedOrLeadNonStateVarPresent() const;
+  virtual bool containsVarNodeWithId(int sid) const;
 };
 
 //! External function node
@@ -874,6 +882,7 @@ public:
   virtual expr_t removeTrendLeadLag(map<int, expr_t> trend_symbols_map) const;
   virtual bool isInStaticForm() const;
   virtual bool isLaggedOrLeadNonStateVarPresent() const;
+  virtual bool containsVarNodeWithId(int sid) const;
 };
 
 class ExternalFunctionNode : public AbstractExternalFunctionNode
