@@ -24,8 +24,9 @@ S1.calibration(process=A);
 S2.calibration(process=2, regime=1) = 1;
 S2.calibration(process=2, regime=2) = 2;
 
-P1.prior(shape=dirichlet,mean=3,variance=3,params=[16,2]);
 P2.prior(shape=dirichlet,mean=3,variance=3,params=[16,2]);
+P1.prior(shape=dirichlet,mean=3,variance=3,params=[18,2]);
+
 // we need to add Dirichlet shape and params field the number of params must be equal to number of regimes in multinomial declaration
 Ve.prior(shape=inv_gamma,mean=6e4,stdev=6,interval=[0,5e4]);
 Vmu.prior(shape=inv_gamma,mean=6e4,stdev=6,interval=[0,5e4]);

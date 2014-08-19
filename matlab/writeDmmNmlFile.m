@@ -70,13 +70,15 @@ end
 fprintf(fid, '&end\n');
 
 %% S*
-for i=1:size(options_.multinomial,2)
-    fprintf(fid, '\n&S%d\n',i);
-    indx = find(strcmp(estimation_info.transition_probability_index, options_.multinomial(i).probability));
-    params = estimation_info.transition_probability(indx).prior.params;
+for i=1:size(options_.dmm.S, 2)
+    fprintf(fid, '\n&S%d\n', i);
+
+    multidx = find(strcmp({options_.multinomial(:).process}, options_.dmm.S(i).process));
+    tpidx = find(strcmp(estimation_info.transition_probability_index, options_.multinomial(multidx).probability));
+    params = estimation_info.transition_probability(tpidx).prior.params;
+
     fprintf(fid, 'dynS%d=%s nS%d=%d hypS%d(1,1)=%d %d matS%d=%s',i,'I',i, ...
-            options_.multinomial(i).number_of_regimes, i, ...
-            params, i, 'G');
+            options_.dmm.S(i).ns, i, params, i, options_.dmm.S(i).mat);
     fprintf(fid, '\n&end\n');
 end
 

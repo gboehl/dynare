@@ -4250,7 +4250,8 @@ DynamicModel::writeDmmLatentVarInfo(ostream &output) const
   for (map<int, string>::const_iterator it = dmmLatentVars.begin(); it != dmmLatentVars.end(); it++)
     {
       output << "options_.dmm.S(dmmSind).ns = "
-             << dmmMultinomial.find(it->second)->second << ";" << endl;
+             << dmmMultinomial.find(it->second)->second << ";" << endl
+             << "options_.dmm.S(dmmSind).process = '" << it->second << "';" << endl;
       map<int, string>::const_iterator it1 = dmmLatentVarMat.find(it->first);
       if (it1 != dmmLatentVarMat.end())
         output << "options_.dmm.S(dmmSind).mat = '" << it1->second << "';" << endl;
