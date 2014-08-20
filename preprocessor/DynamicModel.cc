@@ -1543,8 +1543,8 @@ DynamicModel::writeDmmMFile(const string &basename) const
               << endl << "end" << endl;
 
   deriv_node_temp_terms_t tef_terms; // need to make this a member of the class
-  for (first_derivatives_t::const_iterator it = dmm_c.begin();
-       it != dmm_c.end(); it++)
+  for (first_derivatives_t::const_iterator it = dmm_C.begin();
+       it != dmm_C.end(); it++)
     {
       mOutputFile << "C(" << it->first.first + 1
                   << ", " << it->first.second + 1 << ", i) = ";
@@ -1570,8 +1570,8 @@ DynamicModel::writeDmmMFile(const string &basename) const
       mOutputFile << ";" << endl;
     }
 
-  for (map<int, expr_t>::const_iterator it = dmm_a.begin();
-       it != dmm_a.end(); it++)
+  for (map<int, expr_t>::const_iterator it = dmm_A.begin();
+       it != dmm_A.end(); it++)
     {
       mOutputFile << "A(" << it->first + 1 << ", i) = ";
       it->second->writeOutput(mOutputFile, oMatlabDynamicModel, temporary_terms, tef_terms);
@@ -4173,7 +4173,7 @@ DynamicModel::computeDmmMatrices()
           int LHSsymb_id = dynamic_cast<VariableNode *>(equations[eq]->get_arg1())->get_symb_id();
           expr_t d1 = equations[eq]->getDerivative(v);
           if (d1 != Zero)
-            dmm_c[make_pair(symbol_table.getIndexInVarobs(LHSsymb_id),
+            dmm_C[make_pair(symbol_table.getIndexInVarobs(LHSsymb_id),
                             symbol_table.getTypeSpecificID(v))] = d1;
         }
     }
@@ -4189,7 +4189,7 @@ DynamicModel::computeDmmMatrices()
           {
             int LHSsymb_id = dynamic_cast<VariableNode *>(equations[eq]->get_arg1())->get_symb_id();
             int LHStsid = symbol_table.getTypeSpecificID(LHSsymb_id);
-            dmm_a[LHStsid - symbol_table.observedVariablesNbr()] = tmp;
+            dmm_A[LHStsid - symbol_table.observedVariablesNbr()] = tmp;
           }
       }
 }
@@ -4199,7 +4199,7 @@ DynamicModel::findLatentVarsInMats()
 {
   for (map<int, string>::const_iterator it = dmmLatentVars.begin(); it != dmmLatentVars.end(); it++)
     {
-      for (first_derivatives_t::const_iterator it1 = dmm_c.begin(); it1 != dmm_c.end(); it1++)
+      for (first_derivatives_t::const_iterator it1 = dmm_C.begin(); it1 != dmm_C.end(); it1++)
         if (it1->second->containsVarNodeWithId(it->first))
           insertDmmMatS(it->first, "C");
 
@@ -4211,7 +4211,7 @@ DynamicModel::findLatentVarsInMats()
         if (it1->second->containsVarNodeWithId(it->first))
           insertDmmMatS(it->first, "G");
 
-      for (map<int, expr_t>::const_iterator it1 = dmm_a.begin(); it1 != dmm_a.end(); it1++)
+      for (map<int, expr_t>::const_iterator it1 = dmm_A.begin(); it1 != dmm_A.end(); it1++)
         if (it1->second->containsVarNodeWithId(it->first))
           insertDmmMatS(it->first, "A");
 

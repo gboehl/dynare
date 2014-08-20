@@ -70,10 +70,10 @@ private:
   vector<temporary_terms_inuse_t> v_temporary_terms_inuse;
 
   //! DMM Matrices
-  first_derivatives_t dmm_c;
+  first_derivatives_t dmm_C;
   first_derivatives_t dmm_H;
   first_derivatives_t dmm_G;
-  map<int, expr_t> dmm_a;
+  map<int, expr_t> dmm_A;
   first_derivatives_t dmm_F;
   first_derivatives_t dmm_R;
   map<int, string> dmmLatentVars;
