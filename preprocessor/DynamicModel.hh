@@ -76,9 +76,9 @@ private:
   map<int, expr_t> dmm_A;
   first_derivatives_t dmm_F;
   first_derivatives_t dmm_R;
-  map<int, string> dmmLatentVars;
-  map<int, string> dmmLatentVarMat;
-  map<string, int> dmmMultinomial;
+  map<int, string> dmmLatentVars; //symb_id -> multinomial process name
+  map<int, string> dmmLatentVarMat; // symb_id -> Impacted Matrix (e.g. "C")
+  map<string, int> dmmMultinomial; // multinomial process name -> number of states
 
   //! Store the derivatives or the chainrule derivatives:map<pair< equation, pair< variable, lead_lag >, expr_t>
   typedef map< pair< int, pair< int, int> >, expr_t> first_chain_rule_derivatives_t;
@@ -234,6 +234,8 @@ public:
   void writeDmmMFile(const string &basename) const;
   //! Write DMM latent variable info to M file for use in creation of NML file
   void writeDmmLatentVarInfo(ostream &output) const;
+  //! Reverse lookup in dmmLatentVarMat map
+  void dmmIsMatImpactedByS(vector<int> &symbids, string &mat) const;
   //! Writes dynamic model file
   void writeDynamicFile(const string &basename, bool block, bool bytecode, bool use_dll, int order) const;
   //! Writes file containing parameters derivatives

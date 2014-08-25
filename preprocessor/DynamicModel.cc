@@ -1527,198 +1527,115 @@ DynamicModel::writeDmmMFile(const string &basename) const
               << "% ---------------------------------------------------------------------" << endl
               << "function [C, H, G, A, F, R] = " << basename << "_dmm(ny, nz, nx, nu, ns, params)" << endl
               << "global M_ options_" << endl
-              << "% *** The following declaration are fixed ***" << endl
+              << "% *** The following declarations are fixed ***" << endl
               << "C = zeros(ny,max(1,nz),ns(1));" << endl
               << "H = zeros(ny,nx,ns(2));" << endl
               << "G = zeros(ny,nu,ns(3));" << endl
               << "A = zeros(nx,ns(4));" << endl
               << "F = zeros(nx,nx,ns(5));" << endl
               << "R = zeros(nx,nu,ns(6));" << endl
-              << "matrixOrder = {'C', 'H', 'G', 'A', 'F', 'R'};" << endl
-              << "% *** Set non-zero elements below   ***" << endl << endl
-              << "numLatentVars = size(options_.multinomial, 2);" << endl
-              << "paramsIdx = zeros(numLatentVars, 1);" << endl
-              << "for i=1:numLatentVars" << endl
-              << "    paramsIdx(i) = find(strcmp(cellstr(M_.param_names), options_.multinomial(i).parameter));"
-              << endl << "end" << endl;
+              << "paramsbak = params;" << endl
+              << "% *** Set non-zero elements below   ***" << endl << endl;
 
   deriv_node_temp_terms_t tef_terms; // need to make this a member of the class
-  for (first_derivatives_t::const_iterator it = dmm_C.begin();
-       it != dmm_C.end(); it++)
+  if (!dmm_C.empty())
     {
-      mOutputFile << "C(" << it->first.first + 1
-                  << ", " << it->first.second + 1 << ", i) = ";
-      it->second->writeOutput(mOutputFile, oMatlabDynamicModel, temporary_terms, tef_terms);
-      mOutputFile << ";" << endl;
-    }
-
-  for (first_derivatives_t::const_iterator it = dmm_H.begin();
-       it != dmm_H.end(); it++)
-    {
-      mOutputFile << "H(" << it->first.first + 1
-                  << ", " << it->first.second + 1 << ", i) = ";
-      it->second->writeOutput(mOutputFile, oMatlabDynamicModel, temporary_terms, tef_terms);
-      mOutputFile << ";" << endl;
-    }
-
-  for (first_derivatives_t::const_iterator it = dmm_G.begin();
-       it != dmm_G.end(); it++)
-    {
-      mOutputFile << "G(" << it->first.first + 1
-                  << ", " << it->first.second + 1 << ", i) = ";
-      it->second->writeOutput(mOutputFile, oMatlabDynamicModel, temporary_terms, tef_terms);
-      mOutputFile << ";" << endl;
-    }
-
-  for (map<int, expr_t>::const_iterator it = dmm_A.begin();
-       it != dmm_A.end(); it++)
-    {
-      mOutputFile << "A(" << it->first + 1 << ", i) = ";
-      it->second->writeOutput(mOutputFile, oMatlabDynamicModel, temporary_terms, tef_terms);
-      mOutputFile << ";" << endl;
-    }
-
-  for (first_derivatives_t::const_iterator it = dmm_F.begin();
-       it != dmm_F.end(); it++)
-    {
-      mOutputFile << "F(" << it->first.first + 1
-                  << ", " << it->first.second + 1 << ", i) = ";
-      it->second->writeOutput(mOutputFile, oMatlabDynamicModel, temporary_terms, tef_terms);
-      mOutputFile << ";" << endl;
-    }
-
-  for (first_derivatives_t::const_iterator it = dmm_R.begin();
-       it != dmm_R.end(); it++)
-    {
-      mOutputFile << "R(" << it->first.first + 1
-                  << ", " << it->first.second + 1 << ", i) = ";
-      it->second->writeOutput(mOutputFile, oMatlabDynamicModel, temporary_terms, tef_terms);
-      mOutputFile << ";" << endl;
-    }
-
-  // matrix Number, row, col, index in first_derivatives
-  typedef map<pair<int, pair<int, int> >, expr_t > matrixvals_t;
-  matrixvals_t matrixVals;
-  for (first_derivatives_t::const_iterator it = first_derivatives.begin();
-       it != first_derivatives.end(); it++)
-    {
-      int eqnum = it->first.first;
-      int lhs_symb_id = equations[eqnum]->getLhsSymbId();
-
-      int deriv_id = it->first.second;
-      int symb_id = getSymbIDByDerivID(deriv_id);
-
-      expr_t d1 = it->second;
-
-      if (symbol_table.isObservedVariable(lhs_symb_id))
+      mOutputFile << "for i=1:ns(1)" << endl
+                  << "  params = setState('C', i, paramsbak);" << endl;
+      for (first_derivatives_t::const_iterator it = dmm_C.begin();
+           it != dmm_C.end(); it++)
         {
-          int lhs_col_num = symbol_table.getIndexInVarobs(lhs_symb_id) + 1;
-          if (lhs_symb_id == symb_id)
-            { // ignore case as we cannot have y_t on both lhs and rhs in first draft
-            }
-          else if (!symbol_table.isObservedVariable(symb_id) && getTypeByDerivID(deriv_id) == eEndogenous)
-            { // Write H
-              int rhs_col_num = symbol_table.getTypeSpecificID(symb_id) - symbol_table.observedVariablesNbr() + 1;
-              mOutputFile << "H(" << lhs_col_num << "," << rhs_col_num << ")=";
-              d1->writeOutput(mOutputFile, oMatlabDynamicModel, temporary_terms, tef_terms);
-              mOutputFile << ";" << endl;
-
-              matrixVals[make_pair(2, make_pair(lhs_col_num, rhs_col_num))] = it->second;
-            }
-          else if (getTypeByDerivID(deriv_id) == eExogenous)
-            { // Write G
-              int rhs_col_num = symbol_table.getTypeSpecificID(symb_id) + 1;
-              mOutputFile << "G(" << lhs_col_num << "," << rhs_col_num << ")=";
-              d1->writeOutput(mOutputFile, oMatlabDynamicModel, temporary_terms, tef_terms);
-              mOutputFile << ";" << endl;
-
-              matrixVals[make_pair(3, make_pair(lhs_col_num, rhs_col_num))] = it->second;
-            }
-          else
-            {
-              cerr << "ERROR: have not dealt with the case of C matrix yet." << endl;
-              exit(EXIT_FAILURE);
-            }
-        }
-      else if (symbol_table.getType(lhs_symb_id) == eEndogenous)
-        {
-          int lhs_col_num = lhs_symb_id;
-          if (!symbol_table.isObservedVariable(symb_id) && getTypeByDerivID(deriv_id) == eEndogenous &&
-              getLagByDerivID(deriv_id) != 0)
-            { // Write F
-              int rhs_col_num = symbol_table.getTypeSpecificID(symb_id) - symbol_table.observedVariablesNbr() + 1;
-              mOutputFile << "F(" << lhs_col_num << "," << rhs_col_num << ")=";
-              d1->writeOutput(mOutputFile, oMatlabDynamicModel, temporary_terms, tef_terms);
-              mOutputFile << ";" << endl;
-
-              matrixVals[make_pair(5, make_pair(lhs_col_num, rhs_col_num))] = it->second;
-            }
-          else if (getTypeByDerivID(deriv_id) == eExogenous)
-            { // Write R
-              int rhs_col_num = symbol_table.getTypeSpecificID(symb_id) + 1;
-              mOutputFile << "R(" << lhs_col_num << "," << rhs_col_num << ")=";
-              d1->writeOutput(mOutputFile, oMatlabDynamicModel, temporary_terms, tef_terms);
-              mOutputFile << ";" << endl;
-
-              matrixVals[make_pair(6, make_pair(lhs_col_num, rhs_col_num))] = it->second;
-            }
-          else if (lhs_symb_id == symb_id)
-            { // ignore case as we cannot have x_t on both lhs and rhs in first draft
-            }
-          else
-            {
-              cerr << "ERROR: have not dealt with the case of A matrix yet." << endl;
-              exit(EXIT_FAILURE);
-            }
-        }
-      else
-        {
-          cerr << "ERROR: DMM should not arrive here." << endl;
-          exit(EXIT_FAILURE);
-        }
-    }
-
-  mOutputFile << "paramsbak = params;" << endl;
-  for (int i = 1; i < 7; i++)
-    {
-      mOutputFile << "for i=1:ns(" << i << ")" << endl
-                  << "    eval(['params = setState' num2str(eval('i')) '();']);" << endl;
-      for (matrixvals_t::const_iterator it = matrixVals.begin();
-           it != matrixVals.end(); it++)
-        {
-          switch (it->first.first)
-            {
-            case 1:
-              mOutputFile << "    C";
-              break;
-            case 2:
-              mOutputFile << "    H";
-              break;
-            case 3:
-              mOutputFile << "    G";
-              break;
-            case 4:
-              mOutputFile << "    A";
-              break;
-            case 5:
-              mOutputFile << "    F";
-              break;
-            case 6:
-              mOutputFile << "    R";
-              break;
-            default:
-              cerr << "Error: impossible case" << it->first.first << endl;
-              exit(EXIT_FAILURE);
-            }
-          mOutputFile << "(" << it->first.second.first << ", " << it->first.second.second << ", i) = ";
+          mOutputFile << "  C(" << it->first.first + 1
+                      << ", " << it->first.second + 1 << ", i) = ";
           it->second->writeOutput(mOutputFile, oMatlabDynamicModel, temporary_terms, tef_terms);
-          mOutputFile << ";" << endl
-                      << "    params = paramsbak;" << endl;
+          mOutputFile << ";" << endl;
+        }
+      mOutputFile << "end" << endl << endl;
+    }
+
+  if (!dmm_H.empty())
+    {
+      mOutputFile << "for i=1:ns(2)" << endl
+                  << "  params = setState('H', i, paramsbak);" << endl;
+      for (first_derivatives_t::const_iterator it = dmm_H.begin();
+           it != dmm_H.end(); it++)
+        {
+          mOutputFile << "  H(" << it->first.first + 1
+                      << ", " << it->first.second + 1 << ", i) = ";
+          it->second->writeOutput(mOutputFile, oMatlabDynamicModel, temporary_terms, tef_terms);
+          mOutputFile << ";" << endl;
+        }
+      mOutputFile << "end" << endl << endl;
+    }
+
+  if (!dmm_G.empty())
+    {
+      mOutputFile << "for i=1:ns(3)" << endl
+                  << "  params = setState('G', i, paramsbak);" << endl;
+      for (first_derivatives_t::const_iterator it = dmm_G.begin();
+           it != dmm_G.end(); it++)
+        {
+          mOutputFile << "  G(" << it->first.first + 1
+                      << ", " << it->first.second + 1 << ", i) = ";
+          it->second->writeOutput(mOutputFile, oMatlabDynamicModel, temporary_terms, tef_terms);
+          mOutputFile << ";" << endl;
+        }
+      mOutputFile << "end" << endl << endl;
+    }
+
+  if (!dmm_A.empty())
+    {
+      mOutputFile << "for i=1:ns(4)" << endl
+                  << "  params = setState('A', i, paramsbak);" << endl;
+      for (map<int, expr_t>::const_iterator it = dmm_A.begin();
+           it != dmm_A.end(); it++)
+        {
+          mOutputFile << "  A(" << it->first + 1 << ", i) = ";
+          it->second->writeOutput(mOutputFile, oMatlabDynamicModel, temporary_terms, tef_terms);
+          mOutputFile << ";" << endl;
+        }
+      mOutputFile << "end" << endl << endl;
+    }
+
+  if (!dmm_F.empty())
+    {
+      mOutputFile << "for i=1:ns(5)" << endl
+                  << "  params = setState('F', i, paramsbak);" << endl;
+      for (first_derivatives_t::const_iterator it = dmm_F.begin();
+           it != dmm_F.end(); it++)
+        {
+          mOutputFile << "  F(" << it->first.first + 1
+                      << ", " << it->first.second + 1 << ", i) = ";
+          it->second->writeOutput(mOutputFile, oMatlabDynamicModel, temporary_terms, tef_terms);
+          mOutputFile << ";" << endl;
+        }
+      mOutputFile << "end" << endl << endl;
+    }
+
+  if (!dmm_R.empty())
+    {
+      mOutputFile << "for i=1:ns(6)" << endl
+                  << "  params = setState('R', i, paramsbak);" << endl;
+      for (first_derivatives_t::const_iterator it = dmm_R.begin();
+           it != dmm_R.end(); it++)
+        {
+          mOutputFile << "  R(" << it->first.first + 1
+                      << ", " << it->first.second + 1 << ", i) = ";
+          it->second->writeOutput(mOutputFile, oMatlabDynamicModel, temporary_terms, tef_terms);
+          mOutputFile << ";" << endl;
         }
       mOutputFile << "end" << endl;
     }
   mOutputFile << "end" << endl;
   mOutputFile.close();
+}
+
+void
+DynamicModel::dmmIsMatImpactedByS(vector<int> &symbids, string &mat) const
+{
+  for (map<int, string>::const_iterator it = dmmLatentVarMat.begin(); it != dmmLatentVarMat.end(); it++)
+    if (mat == it->second)
+      symbids.push_back(it->first);
 }
 
 void
