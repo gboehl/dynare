@@ -22,26 +22,26 @@ function h = plot(ts, varargin)
 % Get the number of dseries objects
 if isequal(nargin,1)
     ndseries = 1;
-    nvariables = ts.vobs;
-    nobservations = ts.nobs;
+    nvariables = vobs(ts);
+    nobservations = nobs(ts);
 else
     if isdseries(varargin{1})
         ndseries = 2;
-        nvariables = ts.vobs;
-        nobservations = ts.nobs;
+        nvariables = vobs(ts);
+        nobservations = nobs(ts);
         if nargin>2 && any(cellfun(@isdseries,varargin(2:end)))
             error('dseries::plot: You cannot pass more two dseries objects!')
         end
-        if ~isequal(nvariables,varargin{1}.vobs)
+        if ~isequal(nvariables, vobs(varargin{1}))
             error('dseries::plot: The two dseries objects must have the same number of variables!')
         end
-        if ~isequal(nobservations,varargin{1}.nobs)
+        if ~isequal(nobservations, nobs(varargin{1}))
             error('dseries::plot: The two dseries objects must have the same number of observations!')
         end
     else
         ndseries = 1;
-        nvariables = ts.vobs;
-        nobservations = ts.nobs;
+        nvariables = vobs(ts);
+        nobservations = nobs(ts);
     end
 end
 

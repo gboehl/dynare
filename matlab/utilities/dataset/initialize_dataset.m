@@ -1,4 +1,4 @@
-function dataset_ = initialize_dataset(datafile,varobs,first,nobs,transformation,prefilter,xls)
+function dataset_ = initialize_dataset(datafile,varobs,first,nobs,logged_data_flag,prefilter,xls)
 % Initializes a structure describing the dataset.
 
 % Copyright (C) 2011-2013 Dynare Team
@@ -17,8 +17,6 @@ function dataset_ = initialize_dataset(datafile,varobs,first,nobs,transformation
 %
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
-
-% Original author: stephane DOT adjemian AT univ DASH lemans DOT fr
 
 if isempty(datafile)
     error('Estimation::initialize_dataset: You have to declare a dataset file!')
@@ -43,7 +41,7 @@ end
 
 % Fill the dataset structure
 dataset_.info.ntobs = nobs;
-dataset_.info.nvobs = rows(varobs);
+dataset_.info.nvobs = length(varobs);
 dataset_.info.varobs = varobs;
 
 % Test the number of variables in the database.
@@ -61,9 +59,9 @@ if size(rawdata,1)~=dataset_.info.ntobs
 end
 rawdata = rawdata(first:(first+dataset_.info.ntobs-1),:);
 
-% Take the log (or anything else) of the variables if needed
-if isempty(transformation)
-    dataset_.rawdata = rawdata;
+% Take the log of the variables if needed
+if logged_data_flag
+    dataset_.rawdata = log(rawdata);
 else
     if isequal(transformation,@log)
         if ~isreal(rawdata)

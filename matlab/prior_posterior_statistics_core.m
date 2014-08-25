@@ -133,14 +133,14 @@ end
 if run_smoother
   stock_smooth=NaN(endo_nbr,gend,MAX_nsmoo);
   stock_update=NaN(endo_nbr,gend,MAX_nsmoo);
-  stock_innov=NaN(M_.exo_nbr,gend,MAX_ninno);  
+  stock_innov=NaN(M_.exo_nbr,gend,MAX_ninno);
   if horizon
       stock_forcst_mean= NaN(endo_nbr,horizon+maxlag,MAX_nforc1);
       stock_forcst_point = NaN(endo_nbr,horizon+maxlag,MAX_nforc2);
   end
 end
 if nvn
-  stock_error = NaN(size(varobs,1),gend,MAX_nerro);
+  stock_error = NaN(length(varobs),gend,MAX_nerro);
 end
 if naK
     stock_filter_step_ahead =NaN(length(options_.filter_step_ahead),endo_nbr,gend+max(options_.filter_step_ahead),MAX_naK);
@@ -150,10 +150,6 @@ stock_logpo = NaN(MAX_nruns,1);
 stock_ys = NaN(MAX_nruns,endo_nbr);
 
 for b=fpar:B
-
-    %    [deep, logpo] = GetOneDraw(type);
-    %    set_all_parameters(deep);
-    %    dr = resol(oo_.steady_state,0);
     if strcmpi(type,'prior')
 
         [deep, logpo] = GetOneDraw(type);
@@ -304,22 +300,7 @@ for b=fpar:B
         end
         irun(7) = 1;
     end
-
-    % if moments_varendo && (irun(8) > MAX_momentsno || b == B)
-    %    stock = stock_moments(1:irun(8)-1);
-    %    ifil(8) = ifil(8) + 1;
-    %    save([DirectoryName '/' M_.fname '_moments' int2str(ifil(8)) '.mat'],'stock');
-    %    if RemoteFlag==1,
-    %    OutputFileName_moments = [OutputFileName_moments; {[DirectoryName filesep], [M_.fname '_moments' int2str(ifil(8)) '.mat']}];
-    %    end
-    %    irun(8) = 1;
-    % end
-
-    %   DirectoryName=TempPath;
-
-
     dyn_waitbar((b-fpar+1)/(B-fpar+1),h);
-
 end
 
 myoutput.ifil=ifil;
@@ -332,7 +313,6 @@ if RemoteFlag==1,
                         OutputFileName_param;
                         OutputFileName_forc_mean;
                         OutputFileName_forc_point];
-    % OutputFileName_moments];
 end
 
 dyn_waitbar_close(h);

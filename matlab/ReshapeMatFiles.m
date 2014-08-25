@@ -70,7 +70,7 @@ switch type
     TYPEarray = 4;    
   case 'irf_bvardsge'
     CAPtype  = 'IRF_BVARDSGE';
-    TYPEsize = [ options_.irf , size(options_.varobs,1) , M_.exo_nbr ];
+    TYPEsize = [ options_.irf , length(options_.varobs) , M_.exo_nbr ];
     TYPEarray = 4;      
   case 'smooth'
     CAPtype  = 'SMOOTH';
@@ -82,7 +82,7 @@ switch type
     TYPEarray = 3;
   case 'error'
     CAPtype = 'ERROR';
-    TYPEsize = [ size(options_.varobs,1) , options_.nobs ];
+    TYPEsize = [ length(options_.varobs) , options_.nobs ];
     TYPEarray = 3;
   case 'innov'
     CAPtype = 'INNOV';

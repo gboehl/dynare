@@ -25,8 +25,12 @@ function b = isquaterly(str)  % --*-- Unitary tests --*--
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-if ischar(str)    
-    b = ~isempty(regexp(str,'^-?[0-9]*[Qq][1-4]$'));
+if ischar(str)
+    if isempty(regexp(str,'^-?[0-9]*[Qq][1-4]$','once'))
+        b = 0;
+    else
+        b = 1;
+    end
 else
     b = 0;
 end

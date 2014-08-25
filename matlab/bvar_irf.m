@@ -138,9 +138,9 @@ save([ DirectoryName '/simulations.mat'], 'sampled_irfs');
 
 % Save results in oo_
 for i=1:ny
-    shock_name = options_.varobs(i, :);
+    shock_name = options_.varobs{i};
     for j=1:ny
-        variable_name = options_.varobs(j, :);
+        variable_name = options_.varobs{j};
         eval(['oo_.bvar.irf.Mean.' variable_name '.' shock_name ' = posterior_mean_irfs(' int2str(j) ',' int2str(i) ',:);'])
         eval(['oo_.bvar.irf.Median.' variable_name '.' shock_name ' = posterior_median_irfs(' int2str(j) ',' int2str(i) ',:);'])
         eval(['oo_.bvar.irf.Var.' variable_name '.' shock_name ' = posterior_variance_irfs(' int2str(j) ',' int2str(i) ',:);'])

@@ -19,6 +19,10 @@ function b = check_file_extension(file,type)
 
 % AUTHOR(S) stephane DOT adjemian AT univ DASH lemans DOT fr
 
+% Clean-up path
+file = strrep(file, '../', '');
+file = strrep(file, './', '');
+
 remain = file;
 while ~isempty(remain)
     [ext, remain] = strtok(remain,'.');

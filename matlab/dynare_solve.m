@@ -64,7 +64,7 @@ if ~isempty(i)
     disp('   i) if all parameters occurring in these equations are defined')
     disp('  ii) that no division by an endogenous variable initialized to 0 occurs') 
     info = 1;
-    x = NaN;
+    x = NaN(size(fvec));
     return;
 end
 
@@ -109,7 +109,11 @@ if options_.solve_algo == 0
         info = 1;
     end
 elseif options_.solve_algo == 1
-    [x,info]=solve1(func,x,1:nn,1:nn,jacobian_flag,options_.gstep, ...
+        [x,info]=solve1(func,x,1:nn,1:nn,jacobian_flag,options_.gstep, ...
+                    tolf,options_.solve_tolx, ...
+                    options_.steady.maxit,options_.debug,varargin{:});
+elseif options_.solve_algo == 9
+        [x,info]=trust_region(func,x,1:nn,1:nn,jacobian_flag,options_.gstep, ...
                     tolf,options_.solve_tolx, ...
                     options_.steady.maxit,options_.debug,varargin{:});
 elseif options_.solve_algo == 2 || options_.solve_algo == 4
@@ -160,6 +164,14 @@ elseif options_.solve_algo == 3
     else
         [x,info] = csolve(func,x,[],1e-6,500,varargin{:});
     end
+elseif options_.solve_algo == 10
+    olmmcp = options_.lmmcp;
+    [x,fval,exitflag] = lmmcp(func,x,olmmcp.lb,olmmcp.ub,olmmcp,varargin{:});
+    if exitflag == 1
+        info = 0;
+    else
+        info = 1;
+    end
 else
-    error('DYNARE_SOLVE: option solve_algo must be one of [0,1,2,3,4]')
+    error('DYNARE_SOLVE: option solve_algo must be one of [0,1,2,3,4,9]')
 end

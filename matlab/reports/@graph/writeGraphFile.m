@@ -49,7 +49,11 @@ if fid == -1
     error(['@graph.writeGraphFile: ' msg]);
 end
 
-fprintf(fid, '\\begin{tikzpicture}[baseline]');
+fprintf(fid, '\\begin{tikzpicture}[baseline');
+if ~isempty(o.miscTikzPictureOptions)
+    fprintf(fid, ',%s', o.miscTikzPictureOptions);
+end
+fprintf(fid, ']');
 
 if isempty(o.xrange)
     dd = getMaxRange(o.series);
@@ -99,7 +103,15 @@ for i = 1:xlen
         fprintf(fid,',');
     end
 end
-fprintf(fid, '},\nx tick label style={rotate=%f', o.xTickLabelRotation);
+fprintf(fid, '},\ny tick label style={\n/pgf/number format/.cd,\n');
+if o.yTickLabelFixed
+    fprintf(fid, 'fixed,\n');
+end
+if o.yTickLabelZeroFill
+    fprintf(fid, 'zerofill,\n');
+end
+fprintf(fid, 'precision=%d,\n/tikz/.cd\n},\n', o.yTickLabelPrecision);
+fprintf(fid, 'x tick label style={rotate=%f', o.xTickLabelRotation);
 if o.xTickLabelRotation ~= 0
     fprintf(fid, ',anchor=%s', o.xTickLabelAnchor);
 end
@@ -107,8 +119,13 @@ fprintf(fid, ['},\n',...
               'width=%fin,\n'...
               'height=%fin,\n'...
               'scale only axis,\n'...
-              'axis lines=box,\n'...
               'unbounded coords=jump,\n'], o.width, o.height);
+
+if strcmpi(o.axisShape, 'box')
+    fprintf(fid, 'axis lines=box,\n');
+elseif strcmpi(o.axisShape, 'L')
+    fprintf(fid, 'axis x line=bottom,\naxis y line=left,\n');
+end
 
 if ~isempty(o.title{1})
     fprintf(fid, 'title style={align=center');
@@ -141,6 +158,7 @@ if isempty(o.yrange)
 else
     fprintf(fid, 'ymin=%f,\nymax=%f,\n',o.yrange(1),o.yrange(2));
 end
+fprintf(fid, 'xmin = 1,\nxmax = %d,\n', length(dd));
 
 if o.showLegend
     fprintf(fid, 'legend style={');
@@ -154,6 +172,8 @@ if o.showLegend
     fprintf(fid, '},\nlegend pos=%s,\n', o.legendLocation);
 end
 
+fprintf(fid, 'tick label style={font=\\%s},\n', o.tickFontSize);
+
 if o.showGrid
     fprintf(fid, 'xmajorgrids=true,\nymajorgrids=true,\n');
 end
@@ -165,20 +185,22 @@ end
 if ~isempty(o.ylabel)
     fprintf(fid, 'ylabel=%s,\n', o.ylabel);
 end
-fprintf(fid, ']\n');
 
-if o.showZeroline
-    fprintf(fid, '%%zeroline\n\\addplot[black,line width=.5,forget plot] coordinates {(1,0)(%d,0)};\n',dd.ndat);
+if ~o.yTickLabelScaled
+    fprintf(fid, 'scaled y ticks = false,\n');
 end
 
-for i=1:ne
-    o.series{i}.writeSeriesForGraph(fid, dd);
-    if o.showLegend
-        fprintf(fid, '\\addlegendentry{%s}\n', o.series{i}.getTexName());
-    end
+if ~isempty(o.miscTikzAxisOptions)
+    fprintf(fid, '%s', o.miscTikzAxisOptions);
+end
+fprintf(fid, ']\n');
+
+if ~isempty(o.title{1})
+    fprintf(fid, '\\pgfplotsset{every axis title/.append style={}}=[font=\\%s]\n', o.titleFontSize);
 end
 
 if ~isempty(o.shade)
+    fprintf(fid, '%%shading\n');
     stringsdd = strings(dd);
     x1 = find(strcmpi(date2string(o.shade(1)), stringsdd));
     x2 = find(strcmpi(date2string(o.shade(end)), stringsdd));
@@ -186,24 +208,58 @@ if ~isempty(o.shade)
                         date2string(o.shade(1)) ' or ' date2string(o.shade(end)) ' is not in the date ' ...
                         'range of data selected.']);
     if x1 == 1
-        fprintf(fid,['\\begin{pgfonlayer}{background}\n\\fill[%s!%f]\n(axis ' ...
+        fprintf(fid,['\\begin{pgfonlayer}{background0}\n\\fill[%s!%f]\n(axis ' ...
                      'cs:\\pgfkeysvalueof{/pgfplots/xmin},\\pgfkeysvalueof{/pgfplots/ymin})\nrectangle (axis ' ...
                      'cs:%f,\\pgfkeysvalueof{/pgfplots/ymax});\n\\end{pgfonlayer}\n'], ...
                 o.shadeColor, o.shadeOpacity, x2);
     elseif x2 == dd.ndat
-        fprintf(fid,['\\begin{pgfonlayer}{background}\n\\fill[%s!%f]\n(axis ' ...
+        fprintf(fid,['\\begin{pgfonlayer}{background0}\n\\fill[%s!%f]\n(axis ' ...
                      'cs:%f,\\pgfkeysvalueof{/pgfplots/ymin})\nrectangle (axis ' ...
                      'cs:\\pgfkeysvalueof{/pgfplots/xmax},\\pgfkeysvalueof{/' ...
                      'pgfplots/ymax});\n\\end{pgfonlayer}\n'], ...
                 o.shadeColor, o.shadeOpacity, x1);
     else
-        fprintf(fid,['\\begin{pgfonlayer}{background}\n\\fill[%s!%f]\n(axis ' ...
+        fprintf(fid,['\\begin{pgfonlayer}{background0}\n\\fill[%s!%f]\n(axis ' ...
                      'cs:%f,\\pgfkeysvalueof{/pgfplots/ymin})\nrectangle (axis ' ...
                      'cs:%f,\\pgfkeysvalueof{/pgfplots/ymax});\n\\end{pgfonlayer}\n'], ...
                 o.shadeColor, o.shadeOpacity, x1, x2);
     end
 end
 
+if o.showZeroline
+    fprintf(fid, '%%zeroline\n\\addplot[%s,line width=.5,forget plot] coordinates {(1,0)(%d,0)};\n', ...
+        o.zeroLineColor, dd.ndat);
+end
+
+if o.writeCSV
+    csvseries = dseries();
+end
+for i=1:ne
+    o.series{i}.writeSeriesForGraph(fid, dd);
+    if o.writeCSV
+        csvseries = [csvseries ...
+            o.series{i}.data(dd).set_names([...
+            o.series{i}.data.name{:} '_' ...
+            o.series{i}.graphLegendName '_' ...
+            o.series{i}.graphLineColor '_' ...
+            o.series{i}.graphLineStyle '_' ...
+            num2str(o.series{i}.graphLineWidth) '_' ...
+            o.series{i}.graphMarker '_' ...
+            o.series{i}.graphMarkerEdgeColor '_' ...
+            o.series{i}.graphMarkerFaceColor '_' ...
+            num2str(o.series{i}.graphMarkerSize)]) ...
+            ];
+    end
+    if o.showLegend
+        le = o.series{i}.getNameForLegend();
+        if ~isempty(le)
+            fprintf(fid, '\\addlegendentry{%s}\n', le);
+        end
+    end
+end
+if o.writeCSV
+    csvseries.save(strrep(o.graphName, '.tex', ''), 'csv');
+end
 fprintf(fid, '\\end{axis}\n\\end{tikzpicture}%%');
 if fclose(fid) == -1
     error('@graph.writeGraphFile: closing %s\n', o.filename);

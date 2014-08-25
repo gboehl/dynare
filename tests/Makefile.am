@@ -80,10 +80,13 @@ MODFILES = \
 	fs2000/fs2000e.mod \
 	fs2000/fs2000_cmaes.mod \
 	fs2000/fs2000_calib.mod \
+	fs2000/fs2000_calib_dseries.mod \
 	fs2000/fs2000_analytic_derivation.mod \
 	fs2000/fs2000_missing_data.mod \
 	fs2000/fs2000_sd.mod \
 	fs2000/fs2000_mode_compute_8.mod \
+	fs2000/fs2000_dseries_a.mod \
+	fs2000/fs2000_dseries_b.mod \
 	homotopy/homotopy1_test.mod \
 	homotopy/homotopy2_test.mod \
 	homotopy/homotopy3_test.mod \
@@ -156,6 +159,7 @@ MODFILES = \
 	deterministic_simulations/rbc_det4.mod \
 	deterministic_simulations/rbc_det5.mod \
 	deterministic_simulations/rbc_det6.mod \
+	deterministic_simulations/homotopy.mod \
 	walsh.mod \
 	measurement_errors/fs2000_corr_me_ml_mcmc/fs2000_corr_ME.mod \
 	trend_var/fs2000_nonstationary.mod \
@@ -173,7 +177,11 @@ MODFILES = \
 	gradient/fs2000_numgrad_5.mod \
 	filter_step_ahead/fs2000_filter_step_ahead_bayesian.mod \
 	filter_step_ahead/fs2000_filter_step_ahead_ML.mod \
-    loglinear/example4_loglinear.mod
+	loglinear/example4_loglinear.mod \
+	smoother2histval/fs2000_simul.mod \
+	smoother2histval/fs2000_smooth.mod \
+	smoother2histval/fs2000_smooth_stoch_simul.mod \
+	reporting/example1.mod
 
 XFAIL_MODFILES = ramst_xfail.mod \
 	estim_param_in_shock_value.mod
@@ -243,6 +251,9 @@ dsge-var/dsgevar_forward_calibrated_lambda.m.trs: dsge-var/simul_hybrid.m.trs
 dsge-var/dsgevar_forward_estimated_lambda.m.trs: dsge-var/simul_hybrid.m.trs
 dsge-var/dsgevar_forward_calibrated_lambda.o.trs: dsge-var/simul_hybrid.o.trs
 dsge-var/dsgevar_forward_estimated_lambda.o.trs: dsge-var/simul_hybrid.o.trs
+
+smoother2histval/fs2000_simul.m.trs: smoother2histval/fs2000_smooth.m.trs
+smoother2histval/fs2000_simul.o.trs: smoother2histval/fs2000_smooth.o.trs
 
 # Matlab TRS Files
 M_TRS_FILES = $(patsubst %.mod, %.m.trs, $(MODFILES))
@@ -334,7 +345,8 @@ EXTRA_DIST = \
 	estimation/fs2000_initialize_from_calib_steadystate.m \
 	filter_step_ahead/fs2000_filter_step_ahead_bayesian_steadystate.m \
 	filter_step_ahead/fs2000_filter_step_ahead_ML_steadystate.m \
-    loglinear/results_exp.mat 
+	loglinear/results_exp.mat \
+	smoother2histval/fsdat_simul.m
 
 TARGETS =
 

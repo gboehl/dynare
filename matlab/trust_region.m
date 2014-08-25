@@ -65,7 +65,6 @@ info = 0;
 fvec = fcn (x, varargin{:});
 fvec = fvec(j1);
 fn = norm (fvec);
-jcn = nan(n, 1);
 
 % Outer loop.
 while (niter < maxiter && ~info)
@@ -88,9 +87,7 @@ while (niter < maxiter && ~info)
     end
 
     % Get column norms, use them as scaling factors.
-    for j = 1:n
-        jcn(j) = norm(fjac(:,j));
-    end
+    jcn = sqrt(sum(fjac.*fjac))';
     if (niter == 1)
         dg = jcn;
         dg(dg == 0) = 1;
@@ -178,23 +175,8 @@ while (niter < maxiter && ~info)
     % iterations, so we need scaling-independent tolerances wherever
     % possible.
 
-    % FIXME -- why tolf*n*xn? If abs (e) ~ abs(x) * eps is a vector
-    % of perturbations of x, then norm (fjac*e) <= eps*n*xn, i.e. by
-    % tolf ~ eps we demand as much accuracy as we can expect.
-    if (fn <= tolf*n*xn)
+    if (fn <= tolf)
         info = 1;
-        % The following tests done only after successful step.
-    elseif (ratio >= 1e-4)
-        % This one is classic. Note that we use scaled variables again,
-        % but compare to scaled step, so nothing bad.
-        if (sn <= tolx*xn)
-            info = 2;
-            % Again a classic one. It seems weird to use the same tolf
-            % for two different tests, but that's what M*b manual appears
-            % to say.
-        elseif (actred < tolf)
-            info = 3;
-        end
     end
 end
 
@@ -228,7 +210,7 @@ if (xn > delta)
             bn = norm (b);
             dxn = delta/xn; snmd = snm/delta;
             t = (bn/sn) * (bn/xn) * snmd;
-            t = t - dxn * snmd^2 - sqrt ((t-dxn)^2 + (1-dxn^2)*(1-snmd^2));
+            t = t - dxn * snmd^2 + sqrt ((t-dxn)^2 + (1-dxn^2)*(1-snmd^2));
             alpha = dxn*(1-snmd^2) / t;
         else
             alpha = 0;

@@ -1,11 +1,11 @@
-function test_for_deep_parameters_calibration(M_)
+function info=test_for_deep_parameters_calibration(M_)
 % Issues a warning is some of the parameters are NaNs.
 %
 % INPUTS
 %   M_    [structure]   Description of the (simulated or estimated) model.
 %  
 % OUTPUTS
-%   none
+%   info  [scalar]      0 if no problems detected, 1 otherwise 
 %    
 % ALGORITHM
 %   none
@@ -13,7 +13,7 @@ function test_for_deep_parameters_calibration(M_)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2010 Dynare Team
+% Copyright (C) 2010-2014 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -31,6 +31,7 @@ function test_for_deep_parameters_calibration(M_)
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.    
 plist = list_of_parameters_calibrated_as_NaN(M_);
 if ~isempty(plist)
+    info=1;
     message = ['Some of the parameters have no value (' ];
     for i=1:size(plist,1)
         if i<size(plist,1)
@@ -47,4 +48,6 @@ if ~isempty(plist)
     if strmatch('optimal_policy_discount_factor',plist,'exact')
         warning('Either you have not correctly initialized planner_discount or you are calling a command like steady or stoch_simul that is not allowed in the context of ramsey_policy')
     end
+else
+    info=0;
 end

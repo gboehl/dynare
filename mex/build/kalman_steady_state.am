@@ -1,4 +1,4 @@
-noinst_PROGRAMS = kalman_steady_state
+mex_PROGRAMS = kalman_steady_state
 
 kalman_steady_state_LDADD = $(LIBADD_SLICOT)
 kalman_steady_state_LDFLAGS = $(AM_LDFLAGS) $(LDFLAGS_SLICOT)

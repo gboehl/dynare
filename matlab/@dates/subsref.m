@@ -37,7 +37,7 @@ switch S(1).type
             error(['dates::subsref: ' S(1).subs ' is not a method but a member!'])
         end
         B = builtin('subsref', A, S(1));
-      case {'sort','unique','double','isempty','length'}% Public methods (without arguments)
+      case {'sort','unique','double','isempty','length','char'}% Public methods (without input arguments)
         B = feval(S(1).subs,A);
         if length(S)>1 && isequal(S(2).type,'()') && isempty(S(2).subs)
            S = shiftS(S,1);
@@ -49,6 +49,9 @@ switch S(1).type
         else
             error('dates::subsref: Something is wrong in your syntax!')
         end
+      case {'disp'}
+        feval(S(1).subs,A);
+        return
       otherwise
         error('dates::subsref: Unknown public member or method!')
     end
@@ -90,7 +93,7 @@ switch S(1).type
                 elseif isequal(m,1)
                     B.time = [S(1).subs{2}, ones(n,1)];
                 else
-                    error(['dates::subsref: This is a bug!'])
+                    error('dates::subsref: This is a bug!')
                 end
                 B.ndat = rows(B.time);
             elseif isequal(length(S(1).subs),3)
@@ -145,7 +148,7 @@ switch S(1).type
                 elseif isequal(m,1) && isequal(B.freq,1)
                     B.time = [S(1).subs{1}, ones(n,1)];
                 else
-                    error(['dates::subsref: This is a bug!'])
+                    error('dates::subsref: This is a bug!')
                 end
                 B.ndat = rows(B.time);
             else
@@ -264,7 +267,7 @@ end
 %$
 %$ % Define a ranges of dates using qq.
 %$ try
-%$     r1 = qq(1950,1):qq([1950, 3]);
+%$     r1 = qq(1950,1):qq(1950,3);%qq([1950, 3]);
 %$     t(1) = 1;
 %$ catch
 %$     t(1) = 0;

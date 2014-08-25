@@ -43,25 +43,40 @@ if isequal(A.ndat, B.ndat)
     C = (A==B);
     idx = find(C==0);
     for i=1:length(idx)
-        C(idx(i)) = compare_vectors(@lt, A.time(idx(i),:), B.time(idx(i),:));
+        C(idx(i)) = lessorequal(A.time(idx(i),:), B.time(idx(i),:));
     end
 else
-    if isequal(A.ndat,1) && isequal(B.ndat,1)
-        C = compare_vectors(@le, A.time, B.time);
-    elseif isequal(A.ndat,1)
+    if isequal(A.ndat,1)
         C = NaN(B.ndat,1);
         for i=1:B.ndat
-            C(i) = compare_vectors(@le, A.time, B.time(i,:));
+            C(i) = lessorequal(A.time, B.time(i,:));
         end
     elseif isequal(B.ndat,1)
         C = NaN(A.ndat,1);
         for i=1:A.ndat
-            C(i) = compare_vectors(@le, A.time(i,:), B.time);
+            C(i) = lessorequal(A.time(i,:), B.time);
         end
     else
         C = 0;
     end
 end
+
+
+function c = lessorequal(a, b)
+    if a(1)<b(1)
+        c = 1;
+    else
+        if a(1)>b(1)
+            c = 0;
+        else
+            if a(2)<=b(2)
+                c = 1;
+            else
+                c = 0;
+            end
+        end
+    end
+
 
 %@test:1
 %$ % Define some dates
@@ -79,7 +94,7 @@ end
 %$ i2 = (d3<=d4);
 %$ i3 = (d4<=d2);
 %$ i4 = (d5<=d4);
-%$ i5 = (d5<=d5); 
+%$ i5 = (d5<=d5);
 %$
 %$ % Check the results.
 %$ t(1) = dyn_assert(i1,1);

@@ -171,7 +171,7 @@ if stop
         skipline();
         fprintf('\nSimulation terminated after %d iterations.\n',iter);
         fprintf('Total time of simulation: %16.13f\n',etime(clock,h1));
-        error('Simulation terminated with NaN or Inf in the residuals or endogenous variables. There is most likely something wrong with your model.');
+        fprintf('WARNING: Simulation terminated with NaN or Inf in the residuals or endogenous variables. There is most likely something wrong with your model.\n');
     else
         skipline();
         fprintf('\nSimulation concluded successfully after %d iterations.\n',iter);
@@ -189,7 +189,7 @@ elseif ~stop
     fprintf('\nSimulation terminated after %d iterations.\n',iter);
     fprintf('Total time of simulation: %16.13f\n',etime(clock,h1));
     fprintf('Max. Abs. Error         : %16.13f\n',err);
-    fprintf('WARNING : maximum number of iterations is reached (modify options_.simul.maxit).\n') ;
+    fprintf('WARNING : maximum number of iterations is reached (modify option maxit).\n') ;
     oo_.deterministic_simulation.status = 0;% more iterations are needed.
     oo_.deterministic_simulation.error = err;
     oo_.deterministic_simulation.periods = vperiods(1:iter);

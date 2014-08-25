@@ -36,7 +36,7 @@ function [freq,init,data,varlist,tex] = load_m_file_data(file)
 if isoctave
     run(file);
 else
-    [basename, ext] = strtok(file,'.');
+    basename = file(1:end-2);
     run(basename);
 end
 

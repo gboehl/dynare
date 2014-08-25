@@ -35,38 +35,40 @@ switch format
     fid = fopen([basename, '.m'],'w');
     fprintf(fid,'%% File created on %s.\n',datestr(now));
     fprintf(fid,'\n');
-    fprintf(fid,'FREQ__ = %s;\n',num2str(A.freq));
-    fprintf(fid,'INIT__ = '' %s'';\n',date2string(A.init));
+    fprintf(fid,'FREQ__ = %s;\n',num2str(frequency(A)));
+    fprintf(fid,'INIT__ = ''%s'';\n',date2string(firstdate(A)));
     fprintf(fid,'\n');
     fprintf(fid,'NAMES__ = {');
-    for i=1:A.vobs
+    for i=1:vobs(A)
         fprintf(fid,[ '''' A.name{i}  '''']);
-        if i<A.vobs
+        if i<vobs(A)
             fprintf(fid,'; ');
         end
     end
     fprintf(fid,'};\n');
-    fprintf(fid,'TEX__ = {');
-    for i=1:A.vobs
-        fprintf(fid,['''' A.tex{i}  '''']);
-        if i<A.vobs
-            fprintf(fid,'; ');
-        end
+    str = 'TEX__ = {';
+    for i=1:vobs(A)-1
+        str = [str, '''%s''; '];
     end
-    fprintf(fid,'};\n');
-    for v=1:A.vobs
+    str = [str, '''%s''};'];
+    str = sprintf(str, A.tex{:});
+    pattern = '(\w*)(\\\_)';
+    str = regexprep(str, pattern, '$1\\\\_');
+    fprintf(fid,str);
+    fprintf(fid,'\n\n');
+    for v=1:vobs(A)
         fprintf(fid,'%s = [\n', A.name{v});
         fprintf(fid,'%15.8g\n',A.data(1:end-1,v));
         fprintf(fid,'%15.8g];\n\n',A.data(end,v));
     end
     fclose(fid);
   case 'mat'
-    FREQ__ = A.freq;
-    INIT__ = date2string(A.init);
+    FREQ__ = frequency(A);
+    INIT__ = date2string(firstdate(A));
     NAMES__ = A.name;
     TEX__ = A.tex;
     str = [];
-    for v=1:A.vobs
+    for v=1:vobs(A)
         str = [str, A.name{v} ' = A.data(:,' num2str(v) ');' ];
     end
     eval(str);
@@ -81,7 +83,7 @@ switch format
     fid = fopen([basename, '.csv'],'w');
     fprintf(fid,',%s', A.name{:});
     fprintf(fid,'\n');
-    for t=1:A.nobs
+    for t=1:nobs(A)
         str = sprintf(', %15.8g',A.data(t,:));
         fprintf(fid, '%s%s\n',date2string(A.dates(t)),str);
     end

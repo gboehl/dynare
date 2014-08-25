@@ -1,21 +1,21 @@
-function dataset_ = compute_stdv(dataset_) 
+function variances = nanvariance(data) 
 % Compute the standard deviation for each observed variable (possibly with missing observations).
 
 %@info:
-%! @deftypefn {Function File} {@var{dataset_} =} compute_stdv(@var{dataset_})
-%! @anchor{compute_stdv}
-%! This function computes the standard deviation of the observed variables (possibly with missing observations).
+%! @deftypefn {Function File} {@var{variances} =} nanvariance(@var{data})
+%! @anchor{nanvariance}
+%! This function computes the variances of the observed variables (possibly with missing observations).
 %!
 %! @strong{Inputs}
 %! @table @var
-%! @item dataset_
-%! Dynare structure describing the dataset, built by @ref{initialize_dataset}
+%! @item datas
+%! A T*N array of real numbers.
 %! @end table
 %!
 %! @strong{Outputs}
 %! @table @var
-%! @item dataset_
-%! Dynare structure describing the dataset, built by @ref{initialize_dataset}
+%! @item variances
+%! A N*1 vector of real numbers
 %! @end table
 %! 
 %! @strong{This function is called by:} 
@@ -30,7 +30,7 @@ function dataset_ = compute_stdv(dataset_)
 %! @end deftypefn
 %@eod:
 
-% Copyright (C) 2011-2012 Dynare Team
+% Copyright (C) 2011-2014 Dynare Team
 %    
 % This file is part of Dynare.
 %
@@ -47,10 +47,8 @@ function dataset_ = compute_stdv(dataset_)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-% Original author: stephane DOT adjemian AT univ DASH lemans DOT fr
-
-if dataset_.missing.state
-    dataset_.descriptive.stdv = sqrt(nanmean(bsxfun(@power,nandemean(transpose(dataset_.data)),2)));
+if isanynan(data)
+    variances = transpose(nanmean(bsxfun(@power,nandemean(data),2)));
 else
-    dataset_.descriptive.stdv = sqrt(mean(bsxfun(@power,demean(transpose(dataset_.data)),2)));
+    variances = transpose(mean(bsxfun(@power,demean(data),2)));
 end

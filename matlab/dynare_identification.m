@@ -128,11 +128,11 @@ options_ = set_default_option(options_,'datafile','');
 options_.mode_compute = 0;
 options_.plot_priors = 0;
 options_.smoother=1;
-[dataset_,xparam1,hh, M_, options_, oo_, estim_params_,bayestopt_]=dynare_estimation_init(M_.endo_names,fname_,1, M_, options_, oo_, estim_params_, bayestopt_);
+[dataset_,dataset_info,xparam1,hh, M_, options_, oo_, estim_params_,bayestopt_]=dynare_estimation_init(M_.endo_names,fname_,1, M_, options_, oo_, estim_params_, bayestopt_);
 options_ident.analytic_derivation_mode = options_.analytic_derivation_mode;
 if isempty(dataset_),
     dataset_.info.ntobs = periods;
-    dataset_.info.nvobs = rows(options_.varobs);
+    dataset_.info.nvobs = length(options_.varobs);
     dataset_.info.varobs = options_.varobs;
     dataset_.rawdata = [];
     dataset_.missing.state = 0;
@@ -145,16 +145,7 @@ if isempty(dataset_),
     dataset_.missing.no_more_missing_observations = 1;
     dataset_.descriptive.mean = [];
     dataset_.data = [];
-
-%     data_info.gend = periods;
-%     data_info.data = [];
-%     data_info.data_index = [];
-%     data_info.number_of_observations = periods*size(options_.varobs,1);
-%     data_info.no_more_missing_observations = 0;
-%     data_info.missing_value = 0;
 end
-
-% results = prior_sampler(0,M_,bayestopt_,options_,oo_);
 
 if prior_exist
     if any(bayestopt_.pshape > 0)
@@ -278,7 +269,7 @@ if iload <=0,
         disp('Testing current parameter values')
     end
     [idehess_point, idemoments_point, idemodel_point, idelre_point, derivatives_info_point, info] = ...
-        identification_analysis(params,indx,indexo,options_ident,dataset_, prior_exist, name_tex,1);
+        identification_analysis(params,indx,indexo,options_ident,dataset_, dataset_info, prior_exist, name_tex,1);
     if info(1)~=0,
         skipline()
         disp('----------- ')
@@ -321,7 +312,7 @@ if iload <=0,
                 kk=kk+1;
                 params = prior_draw();
                 [idehess_point, idemoments_point, idemodel_point, idelre_point, derivatives_info_point, info] = ...
-                    identification_analysis(params,indx,indexo,options_ident,dataset_, prior_exist, name_tex,1);
+                    identification_analysis(params,indx,indexo,options_ident,dataset_,dataset_info, prior_exist, name_tex,1);
             end
         end
         if info(1)
@@ -337,7 +328,7 @@ if iload <=0,
         else
             parameters = 'Random_prior_params';
         end
-    else
+    end
     idehess_point.params=params;
 %     siH = idemodel_point.siH;
 %     siJ = idemoments_point.siJ;
@@ -350,7 +341,6 @@ if iload <=0,
     disp_identification(params, idemodel_point, idemoments_point, name, advanced);
     if ~options_.nograph,
         plot_identification(params,idemoments_point,idehess_point,idemodel_point,idelre_point,advanced,parameters,name,IdentifDirectoryName);
-    end
     end
 
     if SampleSize > 1,
@@ -375,7 +365,7 @@ if iload <=0,
             params = prior_draw();
         end
         [dum1, ideJ, ideH, ideGP, dum2 , info] = ...
-            identification_analysis(params,indx,indexo,options_MC,dataset_, prior_exist, name_tex,0);
+            identification_analysis(params,indx,indexo,options_MC,dataset_, dataset_info, prior_exist, name_tex,0);
         if iteration==0 && info(1)==0,
             MAX_tau   = min(SampleSize,ceil(MaxNumberOfBytes/(size(ideH.siH,1)*nparam)/8));
             stoH = zeros([size(ideH.siH,1),nparam,MAX_tau]);
@@ -546,7 +536,7 @@ if SampleSize > 1,
                 disp(['Testing ',tittxt, '. Press ENTER']), pause(5),
                 if ~iload,
                     [idehess_max, idemoments_max, idemodel_max, idelre_max, derivatives_info_max] = ...
-                        identification_analysis(pdraws(jmax,:),indx,indexo,options_ident,dataset_, prior_exist, name_tex,1);
+                        identification_analysis(pdraws(jmax,:),indx,indexo,options_ident,dataset_,dataset_info, prior_exist, name_tex,1);
                     save([IdentifDirectoryName '/' M_.fname '_identif.mat'], 'idehess_max', 'idemoments_max','idemodel_max', 'idelre_max', 'jmax', '-append');
                 end
                 disp_identification(pdraws(jmax,:), idemodel_max, idemoments_max, name,1);
@@ -561,7 +551,7 @@ if SampleSize > 1,
                 disp(['Testing ',tittxt, '. Press ENTER']), pause(5),
                 if ~iload,
                     [idehess_min, idemoments_min, idemodel_min, idelre_min, derivatives_info_min] = ...
-                        identification_analysis(pdraws(jmin,:),indx,indexo,options_ident,dataset_, prior_exist, name_tex,1);
+                        identification_analysis(pdraws(jmin,:),indx,indexo,options_ident,dataset_, dataset_info, prior_exist, name_tex,1);
                     save([IdentifDirectoryName '/' M_.fname '_identif.mat'], 'idehess_min', 'idemoments_min','idemodel_min', 'idelre_min', 'jmin', '-append');
                 end
                 disp_identification(pdraws(jmin,:), idemodel_min, idemoments_min, name,1);
@@ -576,7 +566,7 @@ if SampleSize > 1,
                     disp(['Testing ',tittxt, '. Press ENTER']), pause(5),
                     if ~iload,
                         [idehess_(j), idemoments_(j), idemodel_(j), idelre_(j), derivatives_info_(j)] = ...
-                            identification_analysis(pdraws(jcrit(j),:),indx,indexo,options_ident,dataset_, prior_exist, name_tex,1);
+                            identification_analysis(pdraws(jcrit(j),:),indx,indexo,options_ident,dataset_, dataset_info, prior_exist, name_tex,1);
                     end
                     disp_identification(pdraws(jcrit(j),:), idemodel_(j), idemoments_(j), name,1);
                     close all,

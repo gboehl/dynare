@@ -47,7 +47,7 @@ function [ts,id] = pop(ts,a) % --*-- Unitary tests --*--
 
 if nargin<2
     % Removes the last variable
-    id = ts.vobs;
+    id = vobs(ts);
 else
     id = find(strcmp(a,ts.name));
 end
@@ -57,7 +57,6 @@ if isempty(id)
     return
 end
 
-ts.vobs = ts.vobs-1; 
 ts.data(:,id) = [];
 ts.name(id) = [];
 ts.tex(id) = [];

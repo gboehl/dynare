@@ -44,14 +44,14 @@ function oo_=evaluate_smoother(parameters,var_list)
 
 global options_ M_ bayestopt_ oo_ estim_params_   % estim_params_ may be emty
 
-persistent dataset_
+persistent dataset_ dataset_info
 
 if ischar(parameters) && strcmp(parameters,'calibration')
     options_.smoother=1;
 end
 
 if isempty(dataset_) || isempty(bayestopt_)
-    [dataset_,xparam1, hh, M_, options_, oo_, estim_params_,bayestopt_] = dynare_estimation_init(var_list, M_.fname, [], M_, options_, oo_, estim_params_, bayestopt_);
+    [dataset_,dataset_info,xparam1, hh, M_, options_, oo_, estim_params_,bayestopt_] = dynare_estimation_init(var_list, M_.fname, [], M_, options_, oo_, estim_params_, bayestopt_);
 end
 
 if nargin==0
@@ -88,7 +88,7 @@ if ischar(parameters)
 end
 
 [atT,innov,measurement_error,updated_variables,ys,trend_coeff,aK,T,R,P,PK,decomp] = ...
-    DsgeSmoother(parameters,dataset_.info.ntobs,dataset_.data,dataset_.missing.aindex,dataset_.missing.state);
+    DsgeSmoother(parameters,dataset_.nobs,transpose(dataset_.data),dataset_info.missing.aindex,dataset_info.missing.state);
 
 oo_.Smoother.SteadyState = ys;
 oo_.Smoother.TrendCoeffs = trend_coeff;

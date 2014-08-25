@@ -1,11 +1,12 @@
-function DynareResults = initial_estimation_checks(objective_function,xparam1,DynareDataset,Model,EstimatedParameters,DynareOptions,BayesInfo,DynareResults)
+function DynareResults = initial_estimation_checks(objective_function,xparam1,DynareDataset,DatasetInfo,Model,EstimatedParameters,DynareOptions,BayesInfo,DynareResults)
 % function initial_estimation_checks(xparam1,gend,data,data_index,number_of_observations,no_more_missing_observations)
 % Checks data (complex values, ML evaluation, initial values, BK conditions,..)
 %
 % INPUTS
 %   objective_function  [function handle] of the objective function
 %   xparam1:            [vector] of parameters to be estimated
-%   DynareDataset:      [structure] storing the dataset information
+%   DynareDataset:      [dseries] object storing the dataset
+%   DataSetInfo:        [structure] storing informations about the sample.
 %   Model:              [structure] decribing the model
 %   EstimatedParameters [structure] characterizing parameters to be estimated
 %   DynareOptions       [structure] describing the options
@@ -35,11 +36,11 @@ function DynareResults = initial_estimation_checks(objective_function,xparam1,Dy
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-if DynareDataset.info.nvobs>Model.exo_nbr+EstimatedParameters.nvn
+if DynareDataset.vobs>Model.exo_nbr+EstimatedParameters.nvn
     error(['initial_estimation_checks:: Estimation can''t take place because there are less declared shocks than observed variables!'])
 end
- 
-if DynareDataset.info.nvobs>length(find(diag(Model.Sigma_e)))+EstimatedParameters.nvn
+
+if DynareDataset.vobs>length(find(diag(Model.Sigma_e)))+EstimatedParameters.nvn
     error(['initial_estimation_checks:: Estimation can''t take place because too many shocks have been calibrated with a zero variance!'])
 end
 
@@ -72,7 +73,7 @@ end
 % Evaluate the likelihood.
 ana_deriv = DynareOptions.analytic_derivation;
 DynareOptions.analytic_derivation=0;
-[fval,junk1,junk2,a,b,c,d] = feval(objective_function,xparam1,DynareDataset,DynareOptions,Model,EstimatedParameters,BayesInfo,DynareResults);
+[fval,junk1,junk2,a,b,c,d] = feval(objective_function,xparam1,DynareDataset,DatasetInfo,DynareOptions,Model,EstimatedParameters,BayesInfo,DynareResults);
 DynareOptions.analytic_derivation=ana_deriv;
 
 if DynareOptions.dsge_var || strcmp(func2str(objective_function),'non_linear_dsge_likelihood')

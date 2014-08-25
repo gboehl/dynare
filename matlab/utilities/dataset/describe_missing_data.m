@@ -26,9 +26,9 @@ function [i,n,s,j] = describe_missing_data(data)
 %!
 %! @end deftypefn
 %@eod:
-    
-% Copyright (C) 2008-2012 Dynare Team
-%    
+
+% Copyright (C) 2008-2014 Dynare Team
+%
 % This file is part of Dynare.
 %
 % Dynare is free software: you can redistribute it and/or modify
@@ -85,7 +85,7 @@ end
 
 
 %@test:1
-%$ % Define a data set.    
+%$ % Define a data set.
 %$ A = [ 1    1   ;   ...
 %$       1    NaN ;   ...
 %$       NaN  1   ;   ...
@@ -99,7 +99,7 @@ end
 %$       1    1  ];
 %$
 %$ % Define expected results.
-%$ eB = cell(1,11);   
+%$ eB = cell(1,11);
 %$ eB(1)  = { transpose(1:2) };
 %$ eB(2)  = { 1 };
 %$ eB(3)  = { 2 };
@@ -107,7 +107,7 @@ end
 %$ eB(5)  = { [] };
 %$ eB(6)  = { 1 };
 %$ eB(7)  = { 1 };
-%$ eB(8)  = { transpose(1:2) };    
+%$ eB(8)  = { transpose(1:2) };
 %$ eB(9)  = { transpose(1:2) };
 %$ eB(10) = { transpose(1:2) };
 %$ eB(11) = { transpose(1:2) };
@@ -117,7 +117,7 @@ end
 %$ eE(1) = { [1; 2; 4; transpose(6:11)] };
 %$ eE(2) = { [1; 3; 4; transpose(8:11)] };
 %$
-%$ % Call the tested routine.    
+%$ % Call the tested routine.
 %$ [B,C,D,E] = describe_missing_data(transpose(A));
 %$
 %$ % Check the results.

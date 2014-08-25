@@ -52,7 +52,7 @@ if n
     error(['dseries::insert: Variable(s) ' message ' already exist in ''' inputname(1) '''!'])
 end
 
-if ~isequal(ts.freq,us.freq)
+if ~isequal(frequency(ts),frequency(us))
     error(['dseries::insert: ''' inputname(1) ''' and ''' inputname(2) ''' dseries objects must have common frequencies!'])
 end
 
@@ -73,11 +73,6 @@ for i=1:n
     ts.tex = insert_object_in_a_one_dimensional_cell_array(ts.tex,us.tex{i},id(i));
     id = id+1;
 end
-
-% Update vobs member.
-ts.vobs = columns(ts.data);
-
-
 
 %@test:1
 %$ % Define a datasets.

@@ -17,4 +17,4 @@ function val = subsasgn(val, idx, rhs)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-error('dynTimeIndex::subsasgn: Members of dynDate class are private!')
+error('dynTimeIndex::subsasgn: Members of dynTimeIndex class are private!')

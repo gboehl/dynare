@@ -42,7 +42,7 @@ if ~isempty(directory)
 end
 
 dyn_size_01 = size(dyn_data_01,1);
-var_size_01 = size(var_names_01,1);
+var_size_01 = length(var_names_01);
 
 % Auto-detect extension if not provided
 if isempty(extension)
@@ -71,7 +71,7 @@ switch (extension)
     case '.m'
         eval(basename);
         for dyn_i_01=1:var_size_01
-            dyn_tmp_01 = eval(var_names_01(dyn_i_01,:));
+            dyn_tmp_01 = eval(var_names_01{dyn_i_01});
             if length(dyn_tmp_01) > dyn_size_01 && dyn_size_01 > 0
                 cd(old_pwd)
                 error('data size is too large')
@@ -81,7 +81,7 @@ switch (extension)
     case '.mat'
         s = load(basename);
         for dyn_i_01=1:var_size_01
-            dyn_tmp_01 = s.(deblank(var_names_01(dyn_i_01,:)));
+            dyn_tmp_01 = s.(var_names_01{dyn_i_01});
             if length(dyn_tmp_01) > dyn_size_01 && dyn_size_01 > 0
                 cd(old_pwd)
                 error('data size is too large')
@@ -106,9 +106,8 @@ switch (extension)
         end
     case '.csv'
         [freq,init,data,varlist] = load_csv_file_data(fullname);
-        %var_names_01 = deblank(var_names_01);
         for dyn_i_01=1:var_size_01
-            iv = strmatch(strtrim(var_names_01(dyn_i_01,:)),varlist,'exact');
+            iv = strmatch(var_names_01{dyn_i_01},varlist,'exact');
             if ~isempty(iv)
                 dyn_tmp_01 = [data(:,iv)]';
                 if length(dyn_tmp_01) > dyn_size_01 && dyn_size_01 > 0
@@ -118,7 +117,7 @@ switch (extension)
                 dyn_data_01(:,dyn_i_01) = dyn_tmp_01;
             else
                 cd(old_pwd)
-                error([strtrim(var_names_01(dyn_i_01,:)) ' not found in ' fullname])
+                error([var_names_01{dyn_i_01} ' not found in ' fullname])
             end
         end
     otherwise

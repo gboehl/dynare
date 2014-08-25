@@ -115,12 +115,12 @@ if options.loglinear
         skipline()
         fprintf('You are attempting to simulate/estimate a loglinear approximation of a model, but\n')
         fprintf('the steady state level of the following variables is not strictly positive:\n')
-        for i=1:length(idx)
-            fprintf(' - %s (%s)\n',deblank(variables_with_non_positive_steady_state(idx,:)), num2str(dr.ys(idx)))
+        for var_iter=1:length(idx)
+            fprintf(' - %s (%s)\n',deblank(variables_with_non_positive_steady_state(var_iter,:)), num2str(dr.ys(idx)))
         end
         if isestimation()
             fprintf('You should check that the priors and/or bounds over the deep parameters are such')
-            frpintf('the steady state levels of all the variables are strictly positive, or consider')
+            fprintf('the steady state levels of all the variables are strictly positive, or consider')
             fprintf('a linearization of the model instead of a log linearization.')
         else
             fprintf('You should check that the calibration of the deep parameters is such that the')

@@ -1,6 +1,6 @@
-function a = size(b)
+function varargout = size(o)
 
-% Copyright (C) 2013 Dynare Team
+% Copyright (C) 2013 -2014 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -17,4 +17,19 @@ function a = size(b)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-a = b.ndat;
+switch nargout
+  case 0
+    if isempty(o)
+        size([])
+    else
+        size(o.time)
+    end
+  case 1
+    if isempty(o)
+        varargout{1} = size([]);
+    else
+        varargout{1} = size(o.time);
+    end
+  otherwise
+    error('dates::size: Wrong calling sequence! Cannot return more than one argument.')
+end

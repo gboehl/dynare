@@ -1,4 +1,4 @@
-noinst_PROGRAMS = dynare_simul_
+mex_PROGRAMS = dynare_simul_
 
 dynare_simul__CPPFLAGS = $(AM_CPPFLAGS) -I$(top_srcdir)/../../../dynare++/sylv/cc -I$(top_srcdir)/../../../dynare++/tl/cc -I$(top_srcdir)/../../../dynare++/kord -I$(top_srcdir)/../../sources $(CPPFLAGS_MATIO)
 

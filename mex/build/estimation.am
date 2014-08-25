@@ -1,4 +1,4 @@
-noinst_PROGRAMS = logposterior logMHMCMCposterior
+mex_PROGRAMS = logposterior logMHMCMCposterior
 
 # We use shared flags so that automake does not compile things two times
 AM_CPPFLAGS += -I$(top_srcdir)/../../sources/estimation/libmat -I$(top_srcdir)/../../sources/estimation/utils $(CPPFLAGS_MATIO) $(BOOST_CPPFLAGS) $(GSL_CPPFLAGS)

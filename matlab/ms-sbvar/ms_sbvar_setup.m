@@ -122,7 +122,7 @@ pctindx = [];
 % Select the variable to use and rearrange columns if desired
 %vlist = [3 1 2];
 %options_.ms.vlist = [1 2 3];
-options_.ms.vlist = 1:size(options_.varobs,1);
+options_.ms.vlist = 1:length(options_.varobs);
 vlist1=options_.ms.vlist;
 
 %==========================================================================

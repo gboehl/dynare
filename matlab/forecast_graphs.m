@@ -24,10 +24,6 @@ nr = 3;
 exo_nbr = M_.exo_nbr;
 endo_names = M_.endo_names;
 fname = M_.fname;
-% $$$     varobs = options_.varobs;
-% $$$     y = oo_.SmoothedVariables;
-% $$$     ys = oo_.dr.ys;
-% $$$     gend = size(y,2);
 yf = oo_.forecast.Mean;
 hpdinf = oo_.forecast.HPDinf;
 hpdsup = oo_.forecast.HPDsup;
@@ -43,13 +39,6 @@ for i = 1:size(var_list)
     i_var = [i_var; tmp];
 end
 nvar = length(i_var);
-
-% $$$     % build trend for smoothed variables if necessary
-% $$$     trend = zeros(size(varobs,1),10);
-% $$$     if isfield(oo_.Smoother,'TrendCoeffs')
-% $$$         trend_coeffs = oo_.Smoother.TrendCoeffs;
-% $$$         trend = trend_coeffs*(gend-9:gend);
-% $$$     end
 
 % create subdirectory <fname>/graphs if id doesn't exist
 if ~exist(fname, 'dir')

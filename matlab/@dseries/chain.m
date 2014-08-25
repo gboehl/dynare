@@ -1,4 +1,4 @@
-function vs = chain(ts,us)
+function vs = chain(ts,us)  % --*-- Unitary tests --*--
 
 % Copyright (C) 2014 Dynare Team
 %
@@ -17,15 +17,15 @@ function vs = chain(ts,us)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-if ts.vobs-us.vobs
+if vobs(ts)-vobs(us)
     error(['dseries::chain: dseries objects ' inputname(1) ' and ' inputname(2) ' must have the same number of variables!'])
 end
 
-if ts.freq-us.freq
+if frequency(ts)-frequency(us)
     error(['dseries::chain: dseries objects ' inputname(1) ' and ' inputname(2) ' must have common frequencies!'])
 end
 
-if ts.dates(end)<us.dates(1)
+if lastdate(ts)<firstdate(us)
     error(['dseries::chain: The last date in ' inputname(1) ' (' date2string(ts.dates(end)) ') must not preceed the first date in ' inputname(2) ' (' date2string(us.dates(1)) ')!'])
 end
 
@@ -35,9 +35,8 @@ CumulatedGrowthFactors = cumprod(GrowthFactor);
 
 vs = ts;
 vs.data = [vs.data; bsxfun(@times,CumulatedGrowthFactors,vs.data(end,:))];
-vs.nobs = rows(vs.data);
 
-vs.dates = vs.init:(vs.init+vs.nobs);
+vs.dates = firstdate(vs):firstdate(vs)+nobs(vs);
 
 %@test:1
 %$ try

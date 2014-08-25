@@ -51,54 +51,55 @@ end
 
 function a = concatenate(b,c)
     [n,message] = common_strings_in_cell_arrays(b.name,c.name);
+    if isempty(b)
+        a = c;
+        return
+    end
+    if isempty(c)
+        a = b;
+        return
+    end
     if n
         error(['dseries::horzcat: I cannot concatenate dseries objects with common variable names (' message ')!'])
     end
-    if ~isequal(b.freq,c.freq)
+    if ~isequal(frequency(b),frequency(c))
         error('dseries::horzcat: All time series objects must have common frequency!')
     else
         a = dseries();
-        a.freq = b.freq;
     end
     d_nobs_flag = 0;
-    if ~isequal(b.nobs,c.nobs)
+    if ~isequal(nobs(b),nobs(c))
         d_nobs_flag = 1;
-    else
-        a.nobs = b.nobs;
     end
     d_init_flag = 0;
-    if ~isequal(b.init,c.init)
+    if ~isequal(firstdate(b),firstdate(c))
         d_init_flag = 1;
     end
-    a.vobs = b.vobs+c.vobs;
     a.name = vertcat(b.name,c.name);
     a.tex  = vertcat(b.tex,c.tex);
     if ~( d_nobs_flag(1) || d_init_flag(1) )
-        a.init = b.init;
         a.data = [b.data,c.data];
         a.dates = b.dates;
     else
-        if b.init<=c.init
-            a.init = b.init;
-            if b.init<c.init
-                c.data = [NaN(c.init-b.init,c.vobs); c.data];
+        nobs_b = nobs(b);
+        nobs_c = nobs(c);
+        if firstdate(b)<=firstdate(c)
+            if firstdate(b)<firstdate(c)
+                c.data = [NaN(firstdate(c)-firstdate(b), vobs(c)); c.data];
             end
         else
-            a.init = c.init;
-            b_first_lines = b.init-c.init;
-            b.data = [NaN(b.init-c.init,b.vobs); b.data];
+            b.data = [NaN(firstdate(b)-firstdate(c), vobs(b)); b.data];
         end
-        b_last_date = b.init+b.nobs;
-        c_last_date = c.init+c.nobs;
+        b_last_date = firstdate(b)+nobs_b;
+        c_last_date = firstdate(c)+nobs_c;
         if b_last_date<c_last_date
-            b.data = [b.data; NaN(c_last_date-b_last_date,b.vobs)];
+            b.data = [b.data; NaN(c_last_date-b_last_date, vobs(b))];
         elseif b_last_date>c_last_date
-            c.data = [c.data; NaN(b_last_date-c_last_date,c.vobs)];
+            c.data = [c.data; NaN(b_last_date-c_last_date, vobs(c))];
         end
         a.data = [b.data, c.data];
         a.dates = unique([b.dates, c.dates]);
     end
-    a.nobs = size(a.data,1);
 
 %@test:1
 %$ % Define a data set.
@@ -289,3 +290,28 @@ function a = concatenate(b,c)
 %$
 %$ T = t;
 %@eof:6
+
+%@test:7
+%$ % Define X
+%$ X = randn(30,2);
+%$
+%$ % Instantiate two time series objects.
+%$ ts1 = dseries();
+%$ ts2 = dseries(randn(30,2),'1950Q2');
+%$
+%$ % Call the tested method.
+%$ try
+%$   ts3 = [ts1,ts2];
+%$   t = 1;
+%$ catch
+%$   t = 0;
+%$ end
+%$
+%$ if t(1)
+%$   t(2) = dyn_assert(ts3.freq,4);
+%$   t(3) = dyn_assert(ts3.data,X);
+%$   t(4) = dyn_assert(isequal(ts3.dates(1),dates('1950Q2')),1);
+%$ end
+%$
+%$ T = t;
+%@eof:7

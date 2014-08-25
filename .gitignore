@@ -201,3 +201,4 @@ mex/build/matlab/run_m2html.m
 
 # Reporting
 *synctex.gz
+tests/reporting/tmpRepDir

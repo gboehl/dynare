@@ -1,4 +1,4 @@
-function [fval,DLIK,Hess,exit_flag,ys,trend_coeff,info,Model,DynareOptions,BayesInfo,DynareResults] = dsge_likelihood(xparam1,DynareDataset,DynareOptions,Model,EstimatedParameters,BayesInfo,DynareResults,derivatives_info)
+function [fval,DLIK,Hess,exit_flag,ys,trend_coeff,info,Model,DynareOptions,BayesInfo,DynareResults] = dsge_likelihood(xparam1,DynareDataset,DatasetInfo,DynareOptions,Model,EstimatedParameters,BayesInfo,DynareResults,derivatives_info)
 % Evaluates the posterior kernel of a dsge model using the specified
 % kalman_algo; the resulting posterior includes the 2*pi constant of the
 % likelihood function
@@ -259,7 +259,7 @@ end
 
 % Return, with endogenous penalty when possible, if dynare_resolve issues an error code (defined in resol).
 if info(1) == 1 || info(1) == 2 || info(1) == 5 || info(1) == 7 || info(1) ...
-            == 8 || info(1) == 22 || info(1) == 24 || info(1) == 19
+            == 8 || info(1) == 22 || info(1) == 24 || info(1) == 19 || info(1) == 25
     fval = objective_function_penalty_base+1;
     info = info(1);
     exit_flag = 0;
@@ -295,7 +295,7 @@ BayesInfo.mf = BayesInfo.mf1;
 
 % Define the constant vector of the measurement equation.
 if DynareOptions.noconstant
-    constant = zeros(DynareDataset.info.nvobs,1);
+    constant = zeros(DynareDataset.vobs,1);
 else
     if DynareOptions.loglinear
         constant = log(SteadyState(BayesInfo.mfys));
@@ -306,28 +306,28 @@ end
 
 % Define the deterministic linear trend of the measurement equation.
 if BayesInfo.with_trend
-    trend_coeff = zeros(DynareDataset.info.nvobs,1);
+    trend_coeff = zeros(DynareDataset.vobs,1);
     t = DynareOptions.trend_coeffs;
     for i=1:length(t)
         if ~isempty(t{i})
             trend_coeff(i) = evalin('base',t{i});
         end
     end
-    trend = repmat(constant,1,DynareDataset.info.ntobs)+trend_coeff*[1:DynareDataset.info.ntobs];
+    trend = repmat(constant,1,DynareDataset.nobs)+trend_coeff*[1:DynareDataset.nobs];
 else
-    trend = repmat(constant,1,DynareDataset.info.ntobs);
+    trend = repmat(constant,1,DynareDataset.nobs);
 end
 
 % Get needed informations for kalman filter routines.
 start = DynareOptions.presample+1;
-Z = BayesInfo.mf; % old mf
-no_missing_data_flag = ~DynareDataset.missing.state;
-mm = length(T); % old np
-pp = DynareDataset.info.nvobs;
+Z = BayesInfo.mf;
+no_missing_data_flag = ~DatasetInfo.missing.state;
+mm = length(T);
+pp = DynareDataset.vobs;
 rr = length(Q);
 kalman_tol = DynareOptions.kalman_tol;
 riccati_tol = DynareOptions.riccati_tol;
-Y   = DynareDataset.data-trend;
+Y = transpose(DynareDataset.data)-trend;
 
 %------------------------------------------------------------------------------
 % 3. Initial condition of the Kalman filter
@@ -406,7 +406,7 @@ switch DynareOptions.lik_init
                                                        kalman_tol, riccati_tol, DynareOptions.presample, ...
                                                        T,R,Q,H,Z,mm,pp,rr);
         else
-            [dLIK,dlik,a,Pstar] = missing_observations_kalman_filter_d(DynareDataset.missing.aindex,DynareDataset.missing.number_of_observations,DynareDataset.missing.no_more_missing_observations, ...
+            [dLIK,dlik,a,Pstar] = missing_observations_kalman_filter_d(DatasetInfo.missing.aindex,DatasetInfo.missing.number_of_observations,DatasetInfo.missing.no_more_missing_observations, ...
                                                               Y, 1, size(Y,2), ...
                                                               zeros(mm,1), Pinf, Pstar, ...
                                                               kalman_tol, riccati_tol, DynareOptions.presample, ...
@@ -441,9 +441,9 @@ switch DynareOptions.lik_init
         % no need to test again for correlation elements
         correlated_errors_have_been_checked = 1;
 
-        [dLIK,dlik,a,Pstar] = univariate_kalman_filter_d(DynareDataset.missing.aindex,...
-                                                        DynareDataset.missing.number_of_observations,...
-                                                        DynareDataset.missing.no_more_missing_observations, ...
+        [dLIK,dlik,a,Pstar] = univariate_kalman_filter_d(DatasetInfo.missing.aindex,...
+                                                        DatasetInfo.missing.number_of_observations,...
+                                                        DatasetInfo.missing.no_more_missing_observations, ...
                                                         Y, 1, size(Y,2), ...
                                                         zeros(mmm,1), Pinf, Pstar, ...
                                                         kalman_tol, riccati_tol, DynareOptions.presample, ...
@@ -523,7 +523,7 @@ if analytic_derivation,
     DLIK = [];
     AHess = [];
     iv = DynareResults.dr.restrict_var_list;
-    if nargin<8 || isempty(derivatives_info)
+    if nargin<9 || isempty(derivatives_info)
         [A,B,nou,nou,Model,DynareOptions,DynareResults] = dynare_resolve(Model,DynareOptions,DynareResults);
         if ~isempty(EstimatedParameters.var_exo)
             indexo=EstimatedParameters.var_exo(:,1);
@@ -655,10 +655,10 @@ if ((kalman_algo==1) || (kalman_algo==3))% Multivariate Kalman Filter
         end
     else
         if 0 %DynareOptions.block
-            [err, LIK,lik] = block_kalman_filter(DynareDataset.missing.aindex,DynareDataset.missing.number_of_observations,DynareDataset.missing.no_more_missing_observations,...
+            [err, LIK,lik] = block_kalman_filter(DatasetInfo.missing.aindex,DatasetInfo.missing.number_of_observations,DatasetInfo.missing.no_more_missing_observations,...
                                                                  T,R,Q,H,Pstar,Y,start,Z,kalman_tol,riccati_tol, Model.nz_state_var, Model.n_diag, Model.nobs_non_statevar);
         else
-            [LIK,lik] = missing_observations_kalman_filter(DynareDataset.missing.aindex,DynareDataset.missing.number_of_observations,DynareDataset.missing.no_more_missing_observations,Y,diffuse_periods+1,size(Y,2), ...
+            [LIK,lik] = missing_observations_kalman_filter(DatasetInfo.missing.aindex,DatasetInfo.missing.number_of_observations,DatasetInfo.missing.no_more_missing_observations,Y,diffuse_periods+1,size(Y,2), ...
                                                a, Pstar, ...
                                                kalman_tol, DynareOptions.riccati_tol, ...
                                                DynareOptions.presample, ...
@@ -733,7 +733,7 @@ if (kalman_algo==2) || (kalman_algo==4)
         end
     end
 
-    [LIK, lik] = univariate_kalman_filter(DynareDataset.missing.aindex,DynareDataset.missing.number_of_observations,DynareDataset.missing.no_more_missing_observations,Y,diffuse_periods+1,size(Y,2), ...
+    [LIK, lik] = univariate_kalman_filter(DatasetInfo.missing.aindex,DatasetInfo.missing.number_of_observations,DatasetInfo.missing.no_more_missing_observations,Y,diffuse_periods+1,size(Y,2), ...
                                        a,Pstar, ...
                                        DynareOptions.kalman_tol, ...
                                        DynareOptions.riccati_tol, ...
@@ -809,6 +809,7 @@ if analytic_derivation
 else
     lnprior = priordens(xparam1,BayesInfo.pshape,BayesInfo.p6,BayesInfo.p7,BayesInfo.p3,BayesInfo.p4);
 end
+
 if DynareOptions.endogenous_prior==1
   if DynareOptions.lik_init==2 || DynareOptions.lik_init==3
     error('Endogenous prior not supported with non-stationary models')
@@ -818,6 +819,11 @@ if DynareOptions.endogenous_prior==1
   end
 else
   fval    = (likelihood-lnprior);
+end
+
+if DynareOptions.prior_restrictions.status
+    tmp = feval(DynareOptions.prior_restrictions.routine, Model, DynareResults, DynareOptions, DynareDataset, DatasetInfo);
+    fval = fval - tmp;
 end
 
 if isnan(fval)

@@ -58,26 +58,26 @@ if isnumeric(C) && (isscalar(C) || isvector(C))
     return
 end
 
-if ~isequal(B.vobs,C.vobs) && ~(isequal(B.vobs,1) || isequal(C.vobs,1))
+if ~isequal(vobs(B), vobs(C)) && ~(isequal(vobs(B), 1) || isequal(vobs(C), 1))
     error(['dseries::plus: Cannot add ' inputname(1) ' and ' inputname(2) ' (wrong number of variables)!'])
 else
-    if B.vobs>C.vobs
-        idB = 1:B.vobs;
-        idC = ones(1,B.vobs);
-    elseif B.vobs<C.vobs
-        idB = ones(1,C.vobs);
-        idC = 1:C.vobs;
+    if vobs(B)>vobs(C)
+        idB = 1:vobs(B);
+        idC = ones(1,vobs(B));
+    elseif vobs(B)<vobs(C)
+        idB = ones(1,vobs(C));
+        idC = 1:vobs(C);
     else
-        idB = 1:B.vobs;
-        idC = 1:C.vobs;
+        idB = 1:vobs(B);
+        idC = 1:vobs(C);
     end
 end
 
-if ~isequal(B.freq,C.freq)
+if ~isequal(frequency(B),frequency(C))
     error(['dseries::plus: Cannot add ' inputname(1) ' and ' inputname(2) ' (frequencies are different)!'])
 end
 
-if ~isequal(B.nobs,C.nobs) || ~isequal(B.init,C.init)
+if ~isequal(nobs(B), nobs(C)) || ~isequal(firstdate(B),firstdate(C))
     [B, C] = align(B, C);
 end
 
@@ -93,18 +93,16 @@ end
 
 A = dseries();
 
-A.freq = B.freq;
-A.init = B.init;
-A.nobs = max(B.nobs,C.nobs);
-A.vobs = max(B.vobs,C.vobs);
-A.name = cell(A.vobs,1);
-A.tex = cell(A.vobs,1);
-for i=1:A.vobs
-    A.name(i) = {['plus(' B.name{idB(i)} ',' C.name{idC(i)} ')']};
+A.data = bsxfun(@plus,B.data,C.data);
+A.dates = B.dates;
+
+A_vobs = max(vobs(B), vobs(C));
+A.name = cell(A_vobs,1);
+A.tex = cell(A_vobs,1);
+for i=1:A_vobs
+    A.name(i) = {['plus(' B.name{idB(i)} ';' C.name{idC(i)} ')']};
     A.tex(i) = {['(' B.tex{idB(i)} '+' C.tex{idC(i)} ')']};
 end
-A.data = bsxfun(@plus,B.data,C.data);
-A.dates = A.init:A.init+(A.nobs-1);
 
 %@test:1
 %$ % Define a datasets.
@@ -129,7 +127,7 @@ A.dates = A.init:A.init+(A.nobs-1);
 %$    t(2) = dyn_assert(ts3.vobs,2);
 %$    t(3) = dyn_assert(ts3.nobs,10);
 %$    t(4) = dyn_assert(ts3.data,[A(:,1)+B, A(:,2)+B],1e-15);
-%$    t(5) = dyn_assert(ts3.name,{'plus(A1,B1)';'plus(A2,B1)'});
+%$    t(5) = dyn_assert(ts3.name,{'plus(A1;B1)';'plus(A2;B1)'});
 %$ end
 %$ T = all(t);
 %@eof:1
@@ -158,7 +156,7 @@ A.dates = A.init:A.init+(A.nobs-1);
 %$    t(2) = dyn_assert(ts4.vobs,2);
 %$    t(3) = dyn_assert(ts4.nobs,10);
 %$    t(4) = dyn_assert(ts4.data,[A(:,1)+B, A(:,2)+B]+A,1e-15);
-%$    t(5) = dyn_assert(ts4.name,{'plus(plus(A1,B1),A1)';'plus(plus(A2,B1),A2)'});
+%$    t(5) = dyn_assert(ts4.name,{'plus(plus(A1;B1);A1)';'plus(plus(A2;B1);A2)'});
 %$ end
 %$ T = all(t);
 %@eof:2
@@ -187,7 +185,7 @@ A.dates = A.init:A.init+(A.nobs-1);
 %$    t(2) = dyn_assert(ts3.vobs,2);
 %$    t(3) = dyn_assert(ts3.nobs,10);
 %$    t(4) = dyn_assert(ts3.data,[A(1:5,1)+B(1:5), A(1:5,2)+B(1:5) ; NaN(5,2)],1e-15);
-%$    t(5) = dyn_assert(ts3.name,{'plus(A1,B1)';'plus(A2,B1)'});
+%$    t(5) = dyn_assert(ts3.name,{'plus(A1;B1)';'plus(A2;B1)'});
 %$ end
 %$ T = all(t);
 %@eof:3
@@ -289,3 +287,39 @@ A.dates = A.init:A.init+(A.nobs-1);
 %$
 %$ T = all(t);
 %@eof:7
+
+%@test:8
+%$ ts1 = dseries(ones(3,1));
+%$ ts2 = ts1+1;
+%$ ts3 = 1+ts1;
+%$ t(1) = isequal(ts2.data, 2*ones(3,1));
+%$ t(2) = isequal(ts3.data, 2*ones(3,1));
+%$ T = all(t);
+%@eof:8
+
+%@test:9
+%$ ts1 = dseries(ones(3,2));
+%$ ts2 = ts1+1;
+%$ ts3 = 1+ts1;
+%$ t(1) = isequal(ts2.data, 2*ones(3,2));
+%$ t(2) = isequal(ts3.data, 2*ones(3,2));
+%$ T = all(t);
+%@eof:9
+
+%@test:10
+%$ ts1 = dseries(ones(3,2));
+%$ ts2 = ts1+ones(3,1);
+%$ ts3 = ones(3,1)+ts1;
+%$ t(1) = isequal(ts2.data, 2*ones(3,2));
+%$ t(2) = isequal(ts3.data, 2*ones(3,2));
+%$ T = all(t);
+%@eof:10
+
+%@test:11
+%$ ts1 = dseries(ones(3,2));
+%$ ts2 = ts1+ones(1,2);
+%$ ts3 = ones(1,2)+ts1;
+%$ t(1) = isequal(ts2.data, 2*ones(3,2));
+%$ t(2) = isequal(ts3.data, 2*ones(3,2));
+%$ T = all(t);
+%@eof:11

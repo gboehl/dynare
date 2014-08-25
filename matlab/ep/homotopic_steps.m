@@ -33,12 +33,13 @@ exxo_simul = exo_simul0;
 initial_step_length = step_length;
 max_iter = 1000/step_length;
 weight   = initial_weight;
-verbose  = options_.ep.debug;
+verbose  = options_.ep.verbosity;
 
 reduce_step_flag = 0;
 
 if verbose
     format long
+    disp('Entering homotopic_steps')
 end
 
 % (re)Set iter.
@@ -59,6 +60,9 @@ while weight<1
     else
         flag = 1;
     end
+    if options_.debug
+        save ep-test3 weight exo_simul0 endo_simul0
+    end
     if flag
         if ~options_.ep.stochastic.order
             [flag,tmp,err] = solve_perfect_foresight_model(endo_simul0,exo_simul0,pfm);
@@ -69,7 +73,8 @@ while weight<1
                     solve_stochastic_perfect_foresight_model(endo_simul0,exo_simul0,pfm,options_.ep.stochastic.quadrature.nodes,options_.ep.stochastic.order);
               case 1
                 [flag,tmp] = ...
-                    solve_stochastic_perfect_foresight_model_1(endo_simul0,exo_simul0,options_.ep,pfm,options_.ep.stochastic.order);
+                    solve_stochastic_perfect_foresight_model_1(endo_simul0,exxo_simul,options_,pfm,options_.ep.stochastic.order,weight);
+                %                    solve_stochastic_perfect_foresight_model_1(endo_simul0,exo_simul0,options_.ep,pfm,options_.ep.stochastic.order);
             end
         end
     end
@@ -82,9 +87,10 @@ while weight<1
         end
     end
     if info.convergence
-        %if d<stochastic_extended_path_depth
-            endo_simul0 = tmp;
-            %end
+        if options_.debug
+            save ep-test2 weight exo_simul0 endo_simul0
+        end
+        endo_simul0 = tmp;
         jter = jter + 1;
         if jter>3
             if verbose
@@ -108,7 +114,6 @@ while weight<1
                 endo_simul0 = endo_simul;
                 exo_simul0 = exxo_simul;
                 info.convergence = 0;
-                info.depth = d;
                 tmp = [];
                 return
             end
@@ -153,7 +158,8 @@ if weight<1
                     solve_stochastic_perfect_foresight_model(endo_simul0,exo_simul0,pfm,options_.ep.stochastic.quadrature.nodes,options_.ep.stochastic.order);
               case 1
                 [flag,tmp] = ...
-                    solve_stochastic_perfect_foresight_model_1(endo_simul0,exo_simul0,options_.ep,pfm,options_.ep.stochastic.order);
+                    solve_stochastic_perfect_foresight_model_1(endo_simul0,exxo_simul,options_,pfm,options_.ep.stochastic.order,weight);
+                %                    solve_stochastic_perfect_foresight_model_1(endo_simul0,exo_simul0,options_.ep,pfm,options_.ep.stochastic.order);
             end
         end
     end
@@ -166,7 +172,6 @@ if weight<1
             endo_simul0 = endo_simul;
             exo_simul0 = exxo_simul;
             info.convergence = 0;
-            info.depth = d;
             tmp = [];
             return
         else

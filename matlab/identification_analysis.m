@@ -1,4 +1,4 @@
-function [ide_hess, ide_moments, ide_model, ide_lre, derivatives_info, info] = identification_analysis(params,indx,indexo,options_ident,data_info, prior_exist, name_tex, init)
+function [ide_hess, ide_moments, ide_model, ide_lre, derivatives_info, info] = identification_analysis(params,indx,indexo,options_ident,dataset_,dataset_info, prior_exist, name_tex, init)
 % function [ide_hess, ide_moments, ide_model, ide_lre, derivatives_info, info] = identification_analysis(params,indx,indexo,options_ident,data_info, prior_exist, name_tex, init)
 % given the parameter vector params, wraps all identification analyses
 %
@@ -134,17 +134,18 @@ if info(1)==0,
             options_.noprint = 1;
             options_.order = 1;
             options_.SpectralDensity.trigger = 0;
-            options_.periods = data_info.info.ntobs+100;
+            options_.periods = dataset_.nobs+100;
             if options_.kalman_algo > 2,
                 options_.kalman_algo = 1;
             end
             analytic_derivation = options_.analytic_derivation;
             options_.analytic_derivation = -2;
-            info = stoch_simul(options_.varobs);
-            data_info.data=oo_.endo_simul(options_.varobs_id,100+1:end);
+            info = stoch_simul(char(options_.varobs));
+            dataset_ = dseries(oo_.endo_simul(options_.varobs_id,100+1:end),dataset_.dates(1),dataset_.names,dataset_.tex);
+            %data_info.data=oo_.endo_simul(options_.varobs_id,100+1:end);
             %                         datax=data;
             derivatives_info.no_DLIK=1;
-            [fval,DLIK,AHess,cost_flag,ys,trend_coeff,info,M_,options_,bayestopt_,oo_] = dsge_likelihood(params',data_info,options_,M_,estim_params_,bayestopt_,oo_,derivatives_info);
+            [fval,DLIK,AHess,cost_flag,ys,trend_coeff,info,M_,options_,bayestopt_,oo_] = dsge_likelihood(params',dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,oo_,derivatives_info);
 %                 fval = DsgeLikelihood(xparam1,data_info,options_,M_,estim_params_,bayestopt_,oo_);
             options_.analytic_derivation = analytic_derivation;
             AHess=-AHess;

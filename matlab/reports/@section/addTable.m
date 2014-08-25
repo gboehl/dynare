@@ -30,5 +30,9 @@ function o = addTable(o, varargin)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
+for i=1:length(o.elements)
+    assert(~isa(o.elements{i}, 'paragraph'), ...
+           '@addTable: A Section that contains a Paratable cannot contain a Table');
+end
 o.elements{end+1} = report_table(varargin{:});
 end

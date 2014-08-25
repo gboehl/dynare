@@ -35,14 +35,23 @@ o = struct;
 
 o.data = '';
 
+o.graphLegendName = '';
+
 o.graphLineColor = 'black';
 o.graphLineStyle = 'solid';
 o.graphLineWidth = 0.5;
+
+o.graphShowInLegend = true;
 
 o.graphMarker = '';
 o.graphMarkerEdgeColor = '';
 o.graphMarkerFaceColor = '';
 o.graphMarkerSize = 1;
+
+o.graphMiscTikzAddPlotOptions = '';
+
+o.graphHline = {};
+o.graphVline = dates();
 
 o.tableShowMarkers = false;
 o.tableNegColor = 'red';
@@ -74,7 +83,7 @@ elseif nargin > 1
 
     % overwrite default values
     for pair = reshape(varargin, 2, [])
-        ind = strmatch(lower(pair{1}), lower(optNames), 'exact');
+        ind = find(strcmpi(optNames, pair{1}));
         assert(isempty(ind) || length(ind) == 1);
         if ~isempty(ind)
             o.(optNames{ind}) = pair{2};
@@ -82,6 +91,10 @@ elseif nargin > 1
             error('@report_series.report_series: %s is not a recognized option.', pair{1});
         end
     end
+end
+
+if ~isempty(o.graphLegendName)
+    o.data = o.data.tex_rename(o.graphLegendName);
 end
 
 % Create report_series object

@@ -59,7 +59,7 @@ R             = [];
 P             = [];
 PK            = [];
 decomp        = [];
-nobs            = size(options_.varobs,1);
+vobs            = length(options_.varobs);
 smpl          = size(Y,2);
 
 M_ = set_all_parameters(xparam1,estim_params_,M_);
@@ -72,7 +72,7 @@ oo_.dr.restrict_columns = bayestopt_.smoother_restrict_columns;
 [T,R,SteadyState,info,M_,options_,oo_] = dynare_resolve(M_,options_,oo_);
 bayestopt_.mf = bayestopt_.smoother_mf;
 if options_.noconstant
-    constant = zeros(nobs,1);
+    constant = zeros(vobs,1);
 else
     if options_.loglinear
         constant = log(SteadyState(bayestopt_.mfys));
@@ -80,9 +80,9 @@ else
         constant = SteadyState(bayestopt_.mfys);
     end
 end
-trend_coeff = zeros(nobs,1);
+trend_coeff = zeros(vobs,1);
 if bayestopt_.with_trend == 1
-    trend_coeff = zeros(nobs,1);
+    trend_coeff = zeros(vobs,1);
     t = options_.trend_coeffs;
     for i=1:length(t)
         if ~isempty(t{i})
@@ -108,7 +108,7 @@ Q = M_.Sigma_e;
 H = M_.H;
 
 if isequal(H,0)
-    H = zeros(nobs,nobs);
+    H = zeros(vobs,vobs);
 end
 
 kalman_algo = options_.kalman_algo;
@@ -138,7 +138,7 @@ elseif options_.lik_init == 3           % Diffuse Kalman filter
     end
     [Z,ST,R1,QT,Pstar,Pinf] = schur_statespace_transformation(mf,T,R,Q,options_.qz_criterium);
 elseif options_.lik_init == 4           % Start from the solution of the Riccati equation.
-    [err, Pstar] = kalman_steady_state(transpose(T),R*Q*transpose(R),transpose(build_selection_matrix(mf,np,nobs)),H);
+    [err, Pstar] = kalman_steady_state(transpose(T),R*Q*transpose(R),transpose(build_selection_matrix(mf,np,vobs)),H);
     mexErrCheck('kalman_steady_state',err);
     Pinf  = [];
     if kalman_algo~=2
@@ -180,15 +180,15 @@ data1 = Y-trend;
 
 if ~missing_value
     for i=1:smpl
-        data_index{i}=(1:nobs)';
+        data_index{i}=(1:vobs)';
     end
 end
 
 if kalman_algo == 1 || kalman_algo == 2
     ST = T;
     R1 = R;
-    Z = zeros(nobs,size(T,2));
-    for i=1:nobs
+    Z = zeros(vobs,size(T,2));
+    for i=1:vobs
         Z(i,mf(i)) = 1;
     end
 end
@@ -196,7 +196,7 @@ end
 if kalman_algo == 1 || kalman_algo == 3
     [alphahat,epsilonhat,etahat,ahat,P,aK,PK,decomp] = missing_DiffuseKalmanSmootherH1_Z(ST, ...
                                                       Z,R1,Q,H,Pinf,Pstar, ...
-                                                      data1,nobs,np,smpl,data_index, ...
+                                                      data1,vobs,np,smpl,data_index, ...
                                                       options_.nk,kalman_tol,options_.filter_decomposition);
     if isinf(alphahat)
         if kalman_algo == 1
@@ -211,19 +211,19 @@ end
 
 if kalman_algo == 2 || kalman_algo == 4
     if estim_params_.ncn
-        ST = [ zeros(nobs,nobs) Z; zeros(np,nobs) T];
+        ST = [ zeros(vobs,vobs) Z; zeros(np,vobs) T];
         ns = size(Q,1);
-        R1 = [ eye(nobs) zeros(nobs, ns); zeros(np,nobs) R];
-        Q = [H zeros(nobs,ns); zeros(ns,nobs) Q]; 
-        Z = [eye(nobs) zeros(nobs, np)];
+        R1 = [ eye(vobs) zeros(vobs, ns); zeros(np,vobs) R];
+        Q = [H zeros(vobs,ns); zeros(ns,vobs) Q]; 
+        Z = [eye(vobs) zeros(vobs, np)];
         if kalman_algo == 4
-            [Z,ST,R1,QT,Pstar,Pinf] = schur_statespace_transformation((1:nobs)',ST,R1,Q,options_.qz_criterium);
+            [Z,ST,R1,QT,Pstar,Pinf] = schur_statespace_transformation((1:vobs)',ST,R1,Q,options_.qz_criterium);
         end
         
     end
     [alphahat,epsilonhat,etahat,ahat,P,aK,PK,decomp] = missing_DiffuseKalmanSmootherH3_Z(ST, ...
                                                       Z,R1,Q,diag(H), ...
-                                                      Pinf,Pstar,data1,nobs,np,smpl,data_index, ...
+                                                      Pinf,Pstar,data1,vobs,np,smpl,data_index, ...
                                                       options_.nk,kalman_tol,...
                                                       options_.filter_decomposition);
 end
@@ -251,7 +251,7 @@ end
 if estim_params_.ncn && (kalman_algo == 2 || kalman_algo == 4)
     % extracting measurement errors
     % removing observed variables from the state vector
-    k = nobs+(1:np);
+    k = vobs+(1:np);
     alphahat = alphahat(k,:);
     ahat = ahat(k,:);
     aK = aK(:,k,:,:);

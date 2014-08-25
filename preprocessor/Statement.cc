@@ -23,7 +23,7 @@
 ModFileStructure::ModFileStructure() :
   check_present(false),
   steady_present(false),
-  simul_present(false),
+  perfect_foresight_solver_present(false),
   stoch_simul_present(false),
   estimation_present(false),
   osr_present(false),
@@ -40,7 +40,6 @@ ModFileStructure::ModFileStructure() :
   identification_present(false),
   estimation_analytic_derivation(false),
   partial_information(false),
-  shocks_present_but_simul_not_yet(false),
   histval_present(false),
   k_order_solver(false),
   calibrated_measurement_errors(false),
@@ -85,7 +84,7 @@ NativeStatement::writeOutput(ostream &output, const string &basename) const
 {
   using namespace boost::xpressive;
   string date_regex = "(-?\\d+([YyAa]|[Mm]([1-9]|1[0-2])|[Qq][1-4]|[Ww]([1-9]{1}|[1-4]\\d|5[0-2])))";
-  sregex regex_lookbehind = sregex::compile("(?<!\\$|\\d|[a-zA-Z]|\\')" + date_regex);
+  sregex regex_lookbehind = sregex::compile("(?<!\\$|\\d|[a-zA-Z_]|\\')" + date_regex);
   sregex regex_dollar = sregex::compile("(\\$)"+date_regex);
 
   string ns = regex_replace(native_statement, regex_lookbehind, "dates('$&')");
@@ -137,7 +136,20 @@ OptionsList::writeOutput(ostream &output) const
 void
 OptionsList::writeOutput(ostream &output, const string &option_group) const
 {
-  output << option_group << " = struct();" << endl;
+  // Initialize option_group as an empty struct iff the field does not exist!
+  unsigned idx = option_group.find_last_of(".");
+  if (idx<UINT_MAX)
+    {
+      output << option_group << endl;
+      output << idx << endl;
+      output << "if ~isfield(" << option_group.substr(0,idx) << ",'" << option_group.substr(idx+1) << "')" << endl;
+      output << "    " << option_group << " = struct();" << endl;
+      output << "end" << endl;
+    }
+  else
+    {
+      output << option_group << " = struct();" << endl;
+    }
 
   for (num_options_t::const_iterator it = num_options.begin();
        it != num_options.end(); it++)

@@ -21,16 +21,16 @@ function display(A)
 vspace = ' ';
 TABLE = ' ';
 
-if A.vobs<=10
-    if A.nobs<=40
-        separator = repmat(' | ',A.nobs+1,1);
-        for t=1:A.nobs
+if vobs(A)<=10
+    if nobs(A)<=40
+        separator = repmat(' | ', nobs(A)+1,1);
+        for t=1:nobs(A)
             TABLE = char(TABLE, date2string(A.dates(t)));
         end
-        for i = 1:A.vobs
+        for i = 1:vobs(A)
             TABLE = horzcat(TABLE,separator);
             tmp = A.name{i};
-            for t=1:A.nobs
+            for t=1:nobs(A)
                 tmp = char(tmp,num2str(A.data(t,i)));
             end
             TABLE = horzcat(TABLE, tmp);
@@ -42,17 +42,17 @@ if A.vobs<=10
             TABLE = char(TABLE, date2string(A.dates(t)));
         end
         TABLE = char(TABLE,vspace);
-        for t = A.nobs-n:A.nobs
+        for t = nobs(A)-n:nobs(A)
             TABLE = char(TABLE, date2string(A.dates(t)));
         end
-        for i=1:A.vobs
+        for i=1:vobs(A)
             TABLE = horzcat(TABLE,separator);
             tmp = A.name{i};
             for t=1:10
                 tmp = char(tmp,num2str(A.data(t,i)));
             end
             tmp = char(tmp,vspace);
-            for t=A.nobs-10:A.nobs
+            for t=nobs(A)-10:nobs(A)
                 tmp = char(tmp,num2str(A.data(t,i)));
             end
             TABLE = horzcat(TABLE, tmp);
@@ -60,24 +60,24 @@ if A.vobs<=10
     end
 else
     m = 4;
-    if A.nobs<=40
-        separator = repmat(' | ',A.nobs+1,1);
-        for t=1:A.nobs
+    if nobs(A)<=40
+        separator = repmat(' | ', nobs(A)+1,1);
+        for t=1:nobs(A)
             TABLE = char(TABLE, date2string(A.dates(t)));
         end
         for i = 1:m
             TABLE = horzcat(TABLE,separator);
             tmp = A.name{i};
-            for t=1:A.nobs
+            for t=1:nobs(A)
                 tmp = char(tmp,num2str(A.data(t,i)));
             end
             TABLE = horzcat(TABLE, tmp);
         end
-        TABLE = horzcat(TABLE, separator, repmat(' ... ', A.nobs+1,1));
-        for i = A.vobs-m+1:A.vobs
+        TABLE = horzcat(TABLE, separator, repmat(' ... ', nobs(A)+1,1));
+        for i = vobs(A)-m+1:vobs(A)
             TABLE = horzcat(TABLE,separator);
             tmp = A.name{i};
-            for t=1:A.nobs
+            for t=1:nobs(A)
                 tmp = char(tmp,num2str(A.data(t,i)));
             end
             TABLE = horzcat(TABLE, tmp);
@@ -89,7 +89,7 @@ else
             TABLE = char(TABLE, date2string(A.dates(t)));
         end
         TABLE = char(TABLE,vspace);
-        for t = A.nobs-n:A.nobs
+        for t = nobs(A)-n:nobs(A)
             TABLE = char(TABLE, date2string(A.dates(t)));
         end
         for i=1:m
@@ -99,20 +99,20 @@ else
                 tmp = char(tmp,num2str(A.data(t,i)));
             end
             tmp = char(tmp,vspace);
-            for t=A.nobs-10:A.nobs
+            for t=nobs(A)-10:nobs(A)
                 tmp = char(tmp,num2str(A.data(t,i)));
             end
             TABLE = horzcat(TABLE, tmp);
         end
         TABLE = horzcat(TABLE, separator, repmat(' ... ', 2*n+3,1));
-        for i=A.vobs-m+1:A.vobs
+        for i=vobs(A)-m+1:vobs(A)
             TABLE = horzcat(TABLE,separator);
             tmp = A.name{i};
             for t=1:10
                 tmp = char(tmp,num2str(A.data(t,i)));
             end
             tmp = char(tmp,vspace);
-            for t=A.nobs-10:A.nobs
+            for t=nobs(A)-10:nobs(A)
                 tmp = char(tmp,num2str(A.data(t,i)));
             end
             TABLE = horzcat(TABLE, tmp);

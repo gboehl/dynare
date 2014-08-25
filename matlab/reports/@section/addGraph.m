@@ -30,5 +30,9 @@ function o = addGraph(o, varargin)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
+for i=1:length(o.elements)
+    assert(~isa(o.elements{i}, 'paragraph'), ...
+           '@addGraph: A Section that contains a Paragraph cannot contain a Graph');
+end
 o.elements{end+1} = graph(varargin{:});
 end

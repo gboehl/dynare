@@ -60,10 +60,10 @@ end
 
 function d = vertcat_(b, c)
     d = NaN;
-    if ~isequal(b.freq, c.freq)
+    if ~isequal(frequency(b), frequency(c))
         error('dseries::vertcat: Frequencies must be common!')
     end
-    if ~isequal(b.vobs, c.vobs)
+    if ~isequal(vobs(b), vobs(c))
         error('dseries::vertcat: Number of variables must be common!')
     end
     if ~isequal(b.name, c.name)
@@ -72,7 +72,6 @@ function d = vertcat_(b, c)
     d = b;
     d.data = [b.data; c.data];
     d.dates = [b.dates; c.dates];
-    d.nobs = b.nobs+c.nobs;
 
 %@test:1
 %$ % Define a data set.

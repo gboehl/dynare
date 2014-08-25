@@ -76,10 +76,14 @@ if isequal(t1,0) && isequal(t2,0)
     % The file contains no informations about the variables and dates.
     notime = 1;
     noname = 1;
-elseif isequal(t2,1) && t1>=t2
-    % The file contains no informations about the variables.
+elseif isequal(t2,1) && t1>=t2 && n2~=t2  %only one column present, but no var name in header text
+    % The file contains no informations about the dates.
     notime = 0;
     noname = 1;
+elseif isequal(t2,1) && t1>=t2 && n2==t2 %only one column present with var name in header text
+    % The file contains no informations about the variables.
+    notime = 1;
+    noname = 0;
 elseif isequal(t1,1) && t2>=t1
     % The file contains no informations about the dates.
     notime = 1;

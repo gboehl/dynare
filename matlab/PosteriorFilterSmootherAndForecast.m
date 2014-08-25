@@ -48,7 +48,7 @@ MaxNumberOfPlotPerFigure = 4;% The square root must be an integer!
 MaxNumberOfBytes=options_.MaxNumberOfBytes;
 endo_nbr=M_.endo_nbr;
 exo_nbr=M_.exo_nbr;
-nvobs     = size(options_.varobs,1);
+nvobs     = length(options_.varobs);
 nn = sqrt(MaxNumberOfPlotPerFigure);
 iendo = 1:endo_nbr;
 i_last_obs = gend+(1-M_.maximum_endo_lag:0);
@@ -74,9 +74,9 @@ B = 200;
 MAX_nruns = min(B,ceil(options_.MaxNumberOfBytes/(npar+2)/8));
 MAX_nsmoo = min(B,ceil(MaxNumberOfBytes/((endo_nbr)*gend)/8));
 MAX_ninno = min(B,ceil(MaxNumberOfBytes/(exo_nbr*gend)/8));
-MAX_nerro = min(B,ceil(MaxNumberOfBytes/(size(options_.varobs,1)*gend)/8));
+MAX_nerro = min(B,ceil(MaxNumberOfBytes/(length(options_.varobs)*gend)/8));
 if naK
-    MAX_naK   = min(B,ceil(MaxNumberOfBytes/(size(options_.varobs,1)* ...
+    MAX_naK   = min(B,ceil(MaxNumberOfBytes/(length(options_.varobs)* ...
                                              length(options_.filter_step_ahead)*gend)/8));
 end
 if horizon

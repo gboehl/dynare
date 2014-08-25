@@ -41,6 +41,7 @@ o.pages = {};
 o.fileName = 'report.tex';
 o.showDate = true;
 o.compiler = '';
+o.showOutput = true;
 
 if nargin == 1
     assert(isa(varargin{1}, 'report'), ['@report.report: with one arg, ' ...
@@ -57,7 +58,7 @@ elseif nargin > 1
 
     % overwrite default values
     for pair = reshape(varargin, 2, [])
-        ind = strmatch(lower(pair{1}), lower(optNames), 'exact');
+        ind = find(strcmpi(optNames, pair{1}));
         assert(isempty(ind) || length(ind) == 1);
         if ~isempty(ind)
             o.(optNames{ind}) = pair{2};
@@ -72,6 +73,7 @@ assert(ischar(o.title), '@report.report: title must be a string');
 assert(ischar(o.fileName), '@report.report: fileName must be a string');
 assert(ischar(o.compiler), '@report.report: compiler file must be a string');
 assert(islogical(o.showDate), '@report.report: showDate must be either true or false');
+assert(islogical(o.showOutput), '@report.report: showOutput must be either true or false');
 assert(isfloat(o.margin) && o.margin > 0, '@report.report: margin must be a float > 0.');
 
 valid_margin_unit = {'cm', 'in'};

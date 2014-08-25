@@ -36,7 +36,7 @@ else
     lambda = [];
 end
 
-for i=1:ts.vobs
+for i=1:vobs(ts)
     ts.name(i) = {['hptrend(' ts.name{i} ')']};
     ts.tex(i) = {['\text{hptrend}(' ts.tex{i} ')']};
 end

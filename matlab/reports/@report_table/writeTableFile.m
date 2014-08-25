@@ -33,13 +33,15 @@ function o = writeTableFile(o, pg, sec, row, col)
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 ne = length(o.series);
-if length(o.series) == 0
+if ne == 0
     warning('@report_table.write: no series to plot, returning');
     return;
 end
 
 if isempty(o.tableName)
     o.tableName = sprintf('%s/table_pg%d_sec%d_row%d_col%d.tex', o.tableDirName, pg, sec, row, col);
+else
+    o.tableName = [o.tableDirName '/' o.tableName];
 end
 
 [fid, msg] = fopen(o.tableName, 'w');
@@ -56,6 +58,7 @@ nlhc = 1;
 
 if isempty(o.range)
     dates = getMaxRange(o.series);
+    o.range = {dates};
 else
     dates = o.range{1};
 end
@@ -67,22 +70,15 @@ fprintf(fid, '\\setlength{\\tabcolsep}{4pt}\n');
 fprintf(fid, '\\begin{tabular}{@{}l');
 
 for i=1:ndates
+    fprintf(fid, 'r');
     if o.showVlines
-        fprintf(fid, 'r|');
-    else
-        fprintf(fid, 'r');
-        if o.vlineAfterEndOfPeriod
-            if dates(i).time(2) == dates(i).freq
+        fprintf(fid, '|');
+    elseif o.vlineAfterEndOfPeriod && dates(i).time(2) == dates(i).freq
+        fprintf(fid, '|');
+    elseif ~isempty(o.vlineAfter)
+        for j=1:length(o.vlineAfter)
+            if dates(i) == o.vlineAfter{j}
                 fprintf(fid, '|');
-            end
-        end
-        if ~isempty(o.vlineAfter)
-            for j=1:length(o.vlineAfter)
-                if dates(i) == o.vlineAfter{j}
-                    if ~(o.vlineAfterEndOfPeriod && dates(i).time(2) == dates(i).freq)
-                        fprintf(fid, '|');
-                    end
-                end
             end
         end
     end
@@ -139,7 +135,7 @@ else
     for i=1:length(rhscols)
         fprintf(fid, ' & %s', rhscols{i});
     end
-    fprintf(fid, '\\\\\\cline{%d-%d}%%\n', nlhc+1, ncols);
+    fprintf(fid, '\\\\\n');
     switch dates.freq
         case 4
             sep = 'Q';
@@ -153,7 +149,20 @@ else
     for i=1:size(thdr, 1)
         period = thdr{i, 2};
         for j=1:size(period, 2)
-            fprintf(fid, ' & \\multicolumn{1}{c}{%s%d}', sep, period(j));
+            fprintf(fid, ' & \\multicolumn{1}{c');
+            if o.showVlines
+                fprintf(fid, '|');
+            elseif o.vlineAfterEndOfPeriod && j == size(period, 2)
+                fprintf(fid, '|');
+            elseif ~isempty(o.vlineAfter)
+                for k=1:length(o.vlineAfter)
+                    if o.vlineAfter{k}.time(1) == thdr{i} && ...
+                            o.vlineAfter{k}.time(2) == period(j)
+                        fprintf(fid, '|');
+                    end
+                end
+            end
+            fprintf(fid, '}{%s%d}', sep, period(j));
         end
     end
 end
@@ -162,13 +171,26 @@ fprintf(fid, '\\hline%%\n');
 fprintf(fid, '%%\n');
 
 % Write Report_Table Data
+if o.writeCSV
+    csvseries = dseries();
+end
 for i=1:ne
-    o.series{i}.writeSeriesForTable(fid, o.range, o.precision);
+    o.series{i}.writeSeriesForTable(fid, o.range, o.precision, ncols, o.highlightRows{mod(i,length(o.highlightRows))+1});
+    if o.writeCSV
+        if isempty(o.series{i}.tableSubSectionHeader)
+            csvseries = [csvseries ...
+                o.series{i}.data(dates).set_names([...
+                num2str(i) '_' ...
+                o.series{i}.data.name{:}])];
+        end
+    end
     if o.showHlines
         fprintf(fid, '\\hline\n');
     end
 end
-
+if o.writeCSV
+    csvseries.save(strrep(o.tableName, '.tex', ''), 'csv');
+end
 fprintf(fid, '\\bottomrule\n');
 fprintf(fid, '\\end{tabular}\\setlength{\\parindent}{0pt}\n \\par \\medskip\n\n');
 fprintf(fid, '%% End Report_Table Object\n');

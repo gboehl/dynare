@@ -20,8 +20,6 @@ function jndx = subset()
 global options_ estim_params_ M_
 
 ExcludedParamNames = options_.ExcludedParams;
-VarObs = options_.varobs;
-VarExo = M_.exo_names;
 info   = options_.ParamSubSet;
 
 nvx = estim_params_.nvx;

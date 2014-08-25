@@ -1,11 +1,11 @@
 function PosteriorIRF(type)
-% Builds posterior IRFs after the MH algorithm. 
-% 
-% INPUTS 
+% Builds posterior IRFs after the MH algorithm.
+%
+% INPUTS
 %   o type       [char]     string specifying the joint density of the
-%                           deep parameters ('prior','posterior'). 
-%  
-% OUTPUTS 
+%                           deep parameters ('prior','posterior').
+%
+% OUTPUTS
 %   None                    (oo_ and plots).
 %
 % SPECIAL REQUIREMENTS
@@ -34,15 +34,16 @@ function PosteriorIRF(type)
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 
-global options_ estim_params_ oo_ M_ bayestopt_ dataset_
+global options_ estim_params_ oo_ M_ bayestopt_ dataset_ dataset_info
+
 % Set the number of periods
-if isempty(options_.irf) || ~options_.irf 
+if isempty(options_.irf) || ~options_.irf
     options_.irf = 40;
 end
 % Set varlist if necessary
 varlist = options_.varlist;
 if isempty(varlist)
-    varlist = options_.varobs;
+    varlist = char(options_.varobs);
 end
 options_.varlist = varlist;
 nvar = size(varlist,1);
@@ -58,7 +59,7 @@ end
 
 % Get index of shocks for requested IRFs
 irf_shocks_indx = getIrfShocksIndx();
-    
+
 % Set various parameters & Check or create directories
 nvx  = estim_params_.nvx;
 nvn  = estim_params_.nvn;
@@ -68,8 +69,8 @@ np   = estim_params_.np ;
 npar = nvx+nvn+ncx+ncn+np;
 offset = npar-np; clear('nvx','nvn','ncx','ncn','np');
 
-nvobs = dataset_.info.nvobs;
-gend = dataset_.info.ntobs;
+nvobs = dataset_.vobs;
+gend = dataset_.nobs;
 MaxNumberOfPlotPerFigure = 9;
 nn = sqrt(MaxNumberOfPlotPerFigure);
 MAX_nirfs_dsge = ceil(options_.MaxNumberOfBytes/(options_.irf*nvar*M_.exo_nbr)/8);
@@ -111,14 +112,14 @@ else% type = 'prior'
     B = options_.prior_draws;
     options_.B = B;
 end
-try 
+try
     delete([MhDirectoryName filesep M_.fname '_irf_dsge*.mat'])
-catch 
+catch
     disp('No _IRFs (dsge) files to be deleted!')
 end
-try 
+try
     delete([MhDirectoryName filesep M_.fname '_irf_bvardsge*.mat'])
-catch 
+catch
     disp('No _IRFs (bvar-dsge) files to be deleted!')
 end
 irun = 0;
@@ -144,10 +145,6 @@ if MAX_nirfs_dsgevar
     else
         stock_irf_bvardsge = zeros(options_.irf,nvobs,M_.exo_nbr,B);
     end
-    [mYY,mXY,mYX,mXX,Ydata,Xdata] = ...
-        var_sample_moments(options_.first_obs,options_.first_obs+options_.nobs-1,...
-                           options_.dsge_varlag,-1,options_.datafile,options_.varobs,...
-                           options_.xls_sheet,options_.xls_range);
     NumberOfLags = options_.dsge_varlag;
     NumberOfLagsTimesNvobs = NumberOfLags*nvobs;
     if options_.noconstant
@@ -174,7 +171,7 @@ localVars.npar = npar;
 
 localVars.type=type;
 if strcmpi(type,'posterior')
-    while b<B 
+    while b<B
         b = b + 1;
         x(b,:) = GetOneDraw(type);
     end
@@ -192,7 +189,7 @@ if options_.dsge_var
     localVars.NumberOfLags = options_.dsge_varlag;
     localVars.NumberOfLagsTimesNvobs = NumberOfLags*nvobs;
     localVars.Companion_matrix = diag(ones(nvobs*(NumberOfLags-1),1),-nvobs);
-end 
+end
 localVars.nvar=nvar;
 localVars.IndxVariables=IndxVariables;
 localVars.MAX_nirfs_dsgevar=MAX_nirfs_dsgevar;
@@ -225,14 +222,15 @@ else
     localVars.NumberOfIRFfiles_dsge=NumberOfIRFfiles_dsge;
     localVars.NumberOfIRFfiles_dsgevar=NumberOfIRFfiles_dsgevar;
     localVars.ifil2=ifil2;
-    
+
     globalVars = struct('M_',M_, ...
                         'options_', options_, ...
                         'bayestopt_', bayestopt_, ...
                         'estim_params_', estim_params_, ...
                         'oo_', oo_, ...
-                        'dataset_',dataset_);
-    
+                        'dataset_',dataset_, ...
+                        'dataset_info',dataset_info);
+
     % which files have to be copied to run remotely
     NamFileInput(1,:) = {'',[M_.fname '_static.m']};
     NamFileInput(2,:) = {'',[M_.fname '_dynamic.m']};
@@ -244,13 +242,13 @@ else
     for j=1:length(fout),
         nosaddle = nosaddle + fout(j).nosaddle;
     end
-    
+
 end
 
 % END first parallel section!
 
 if nosaddle
-    disp(['PosteriorIRF :: Percentage of discarded posterior draws = ' num2str(nosaddle/(B+nosaddle))]) 
+    disp(['PosteriorIRF :: Percentage of discarded posterior draws = ' num2str(nosaddle/(B+nosaddle))])
 end
 
 ReshapeMatFiles('irf_dsge',type)
@@ -323,7 +321,7 @@ if MAX_nirfs_dsgevar
     MedianIRFdsgevar = zeros(options_.irf,nvar,M_.exo_nbr);
     VarIRFdsgevar = zeros(options_.irf,nvar,M_.exo_nbr);
     DistribIRFdsgevar = zeros(options_.irf,9,nvar,M_.exo_nbr);
-    HPDIRFdsgevar = zeros(options_.irf,2,nvar,M_.exo_nbr);    
+    HPDIRFdsgevar = zeros(options_.irf,2,nvar,M_.exo_nbr);
     fprintf('Estimation::mcmc: Posterior (bvar-dsge) IRFs...\n');
     tit(M_.exo_names_orig_ord,:) = M_.exo_names;
     kdx = 0;
@@ -341,7 +339,7 @@ if MAX_nirfs_dsgevar
         end
         kdx = kdx + size(STOCK_IRF_BVARDSGE,1);
     end
-    clear STOCK_IRF_BVARDSGE; 
+    clear STOCK_IRF_BVARDSGE;
     for i = irf_shocks_indx
         for j = 1:nvar
             name = [deblank(M_.endo_names(IndxVariables(j),:)) '_' deblank(tit(i,:))];
@@ -384,7 +382,7 @@ localVars.MaxNumberOfPlotPerFigure=MaxNumberOfPlotPerFigure;
 if options_.dsge_var
     localVars.HPDIRFdsgevar=HPDIRFdsgevar;
     localVars.MeanIRFdsgevar = MeanIRFdsgevar;
-end    
+end
 
 % The files .TeX are genereted in sequential way always!
 
@@ -394,14 +392,14 @@ if options_.TeX
     fprintf(fidTeX,['%% ' datestr(now,0) '\n']);
     fprintf(fidTeX,' \n');
     titTeX(M_.exo_names_orig_ord,:) = M_.exo_names_tex;
-    
+
     for i=irf_shocks_indx
         NAMES = [];
         TEXNAMES = [];
-        
+
         for j=1:nvar
-            if max(abs(MeanIRF(:,j,i))) > options_.impulse_responses.plot_threshold  
-                
+            if max(abs(MeanIRF(:,j,i))) > options_.impulse_responses.plot_threshold
+
                 name = deblank(varlist(j,:));
                 texname = deblank(varlist_TeX(j,:));
 
@@ -413,7 +411,7 @@ if options_.TeX
                     TEXNAMES = char(TEXNAMES,['$' texname '$']);
                 end
             end
-            
+
         end
         fprintf(fidTeX,'\\begin{figure}[H]\n');
         for jj = 1:size(TEXNAMES,1)
@@ -430,10 +428,10 @@ if options_.TeX
         fprintf(fidTeX,'\\end{figure}\n');
         fprintf(fidTeX,' \n');
     end
-    
+
     fprintf(fidTeX,'%% End of TeX file.\n');
     fclose(fidTeX);
-    
+
 end
 
 % The others file format are generated in parallel by PosteriorIRF_core2!
@@ -453,7 +451,7 @@ if ~isoctave
         else
             globalVars = struct('M_',M_, ...
                 'options_', options_);
-            
+
             [fout] = masterParallel(options_.parallel, 1, M_.exo_nbr,NamFileInput,'PosteriorIRF_core2', localVars, globalVars, options_.parallel_info);
         end
     end

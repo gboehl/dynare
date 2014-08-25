@@ -52,9 +52,9 @@ end
 us = ts;
 
 % Update data member
-us.data = [NaN(p,ts.vobs);  ts.data(1:end-p,:)];
+us.data = [NaN(p, vobs(ts));  ts.data(1:end-p,:)];
 
-for i=1:ts.vobs
+for i=1:vobs(ts)
     us.name(i) = {[ 'lag(' ts.name{i} ',' int2str(p) ')']};
     us.tex(i) = {[ ts.tex{i} '_{-' int2str(p) '}']};
 end

@@ -84,7 +84,7 @@ if ~isempty(options_gsa.datafile) || isempty(bayestopt_) || options_gsa.rmse,
     options_.mode_compute = 0;
     options_.filtered_vars = 1;
     options_.plot_priors = 0;
-    [dataset_,xparam1,hh, M_, options_, oo_, estim_params_,bayestopt_]=dynare_estimation_init(M_.endo_names,fname_,1, M_, options_, oo_, estim_params_, bayestopt_);
+    [dataset_,dataset_info,xparam1,hh, M_, options_, oo_, estim_params_,bayestopt_]=dynare_estimation_init(M_.endo_names,fname_,1, M_, options_, oo_, estim_params_, bayestopt_);
     % computes a first linear solution to set up various variables
 else
     if isempty(options_.qz_criterium)
@@ -154,7 +154,7 @@ options_gsa = set_default_option(options_gsa,'namlagendo',[]);
 options_gsa = set_default_option(options_gsa,'namexo',[]);
 % RMSE mapping
 options_gsa = set_default_option(options_gsa,'lik_only',0);
-options_gsa = set_default_option(options_gsa,'var_rmse',options_.varobs);
+options_gsa = set_default_option(options_gsa,'var_rmse',char(options_.varobs));
 options_gsa = set_default_option(options_gsa,'pfilt_rmse',0.1);
 options_gsa = set_default_option(options_gsa,'istart_rmse',options_.presample+1);
 options_gsa = set_default_option(options_gsa,'alpha_rmse',0.001);
@@ -343,7 +343,7 @@ if options_gsa.rmse,
             end
             
         end
-        prior_posterior_statistics('gsa',dataset_);
+        prior_posterior_statistics('gsa',dataset_, dataset_info);
         if options_.bayesian_irf
             PosteriorIRF('gsa');
         end
@@ -366,7 +366,7 @@ if options_gsa.rmse,
     end
     clear a;
 %     filt_mc_(OutputDirectoryName,data_info);
-    filt_mc_(OutputDirectoryName,options_gsa,dataset_);
+    filt_mc_(OutputDirectoryName,options_gsa,dataset_,dataset_info);
 end
 options_.opt_gsa = options_gsa;
 
@@ -405,9 +405,9 @@ if options_gsa.glue,
     Obs.data = data;
     Obs.time = [1:gend];
     Obs.num  = gend;
-    for j=1:size(options_.varobs,1)
-        Obs.name{j} = deblank(options_.varobs(j,:));
-        vj=deblank(options_.varobs(j,:));
+    for j=1:length(options_.varobs)
+        Obs.name{j} = options_.varobs{j};
+        vj = options_.varobs{j};
         
         jxj = strmatch(vj,lgy_(dr_.order_var,:),'exact');
         js = strmatch(vj,lgy_,'exact');
@@ -445,7 +445,7 @@ if options_gsa.glue,
         ismoo(j)=jxj;
         
     end
-    jsmoo = size(options_.varobs,1);
+    jsmoo = length(options_.varobs);
     for j=1:M_.endo_nbr,
         if ~ismember(j,ismoo),
             jsmoo=jsmoo+1;
@@ -470,10 +470,10 @@ if options_gsa.glue,
         Exo(j).name = deblank(tit(j,:));    
     end
     if ~options_gsa.ppost
-        Lik(size(options_.varobs,1)+1).name = 'logpo';
-        Lik(size(options_.varobs,1)+1).ini  = 'yes';
-        Lik(size(options_.varobs,1)+1).isam = 1;
-        Lik(size(options_.varobs,1)+1).data = -logpo2;
+        Lik(length(options_.varobs)+1).name = 'logpo';
+        Lik(length(options_.varobs)+1).ini  = 'yes';
+        Lik(length(options_.varobs)+1).isam = 1;
+        Lik(length(options_.varobs)+1).data = -logpo2;
     end
     Sam.name = bayestopt_.name;
     Sam.dim  = [size(x) 0];

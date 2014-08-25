@@ -59,7 +59,12 @@ function [ys,params,info] = evaluate_steady_state_file(ys_init,exo_ss,M,options)
         info(2) = NaN;
     end
     
-    updated_params_flag = max(abs(params1-params)) > 1e-12 || ~isequal(isnan(params1),isnan(params)); %checks whether numbers or NaN changed
+    if M.param_nbr > 0
+        updated_params_flag = max(abs(params1-params)) > 1e-12 ...
+            || ~isequal(isnan(params1),isnan(params)); %checks whether numbers or NaN changed
+    else
+        updated_params_flag = 0
+    end
 
     h_set_auxiliary_variables = str2func([M.fname '_set_auxiliary_variables']);
     if  isnan(updated_params_flag) || (updated_params_flag  && any(isnan(params(~isnan(params))-params1(~isnan(params))))) %checks if new NaNs were added

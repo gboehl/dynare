@@ -105,7 +105,7 @@ if nvx
     disp(tit1)
     ip = nvx+1;
     for i=1:nvn
-        name = deblank(options_.varobs(estim_params_.nvn_observable_correspondence(i,1),:));
+        name = options_.varobs{estim_params_.nvn_observable_correspondence(i,1)};
         if strcmp(field_name,'posterior')           
             fprintf('%-*s %7.3f %8.4f %7.4f %4s %6.4f \n', ...
                      header_width,name,bayestopt_.p1(ip), ...
@@ -276,7 +276,7 @@ if any(bayestopt_.pshape > 0) && options_.TeX %% Bayesian estimation (posterior 
         fprintf(fidTeX,'\\hline \\hline \\endlastfoot \n');
         ip = nvx+1;
         for i=1:nvn
-            idx = strmatch(options_.varobs(estim_params_.nvn_observable_correspondence(i,1),:),M_.endo_names);
+            idx = strmatch(options_.varobs{estim_params_.nvn_observable_correspondence(i,1)},M_.endo_names);
             fprintf(fidTeX,'$%s$ & %4s & %7.3f & %6.4f & %8.4f & %7.4f \\\\ \n',...
                     deblank(M_.endo_names_tex(idx,:)), ...
                     deblank(pnames(bayestopt_.pshape(ip)+1,:)), ...
@@ -469,7 +469,7 @@ elseif all(bayestopt_.pshape == 0) && options_.TeX %% MLE and GMM Latex output
         fprintf(fidTeX,'\\hline \\hline \\endlastfoot \n');
         ip = nvx+1;
         for i=1:nvn
-           idx = strmatch(options_.varobs(estim_params_.nvn_observable_correspondence(i,1),:),M_.endo_names);
+           idx = strmatch(options_.varobs{estim_params_.nvn_observable_correspondence(i,1)},M_.endo_names);
            fprintf(fidTeX,'$%s$ & %8.4f & %7.4f & %7.4f \\\\ \n',...
                     deblank(M_.endo_names_tex(idx,:)), ...
                     xparam1(ip),...

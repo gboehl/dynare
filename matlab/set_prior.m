@@ -76,12 +76,12 @@ end
 if nvn
     estim_params_.nvn_observable_correspondence=NaN(nvn,1); % stores number of corresponding observable
     if isequal(M_.H,0) %if no previously set measurement error, initialize H
-        nvarobs = size(options_.varobs,1);
+        nvarobs = length(options_.varobs);
         M_.H = zeros(nvarobs,nvarobs);
         M_.Correlation_matrix_ME = eye(nvarobs);
     end
     for i=1:nvn
-        obsi_ = strmatch(deblank(M_.endo_names(estim_params_.var_endo(i,1),:)),deblank(options_.varobs),'exact');
+        obsi_ = strmatch(deblank(M_.endo_names(estim_params_.var_endo(i,1),:)),options_.varobs,'exact');
         if isempty(obsi_)
             error(['The variable ' deblank(M_.endo_names(estim_params_.var_endo(i,1),:)) ' has to be declared as observable since you assume a measurement error on it.'])
         end
@@ -96,7 +96,7 @@ if nvn
     bayestopt_.p3 = [ bayestopt_.p3; estim_params_.var_endo(:,8)]; %take generalized distribution into account
     bayestopt_.p4 = [ bayestopt_.p4; estim_params_.var_endo(:,9)]; %take generalized distribution into account
     bayestopt_.jscale = [ bayestopt_.jscale; estim_params_.var_endo(:,10)];
-    bayestopt_.name = [ bayestopt_.name; cellstr(options_.varobs(estim_params_.nvn_observable_correspondence,:))];
+    bayestopt_.name = [ bayestopt_.name; transpose(options_.varobs(estim_params_.nvn_observable_correspondence))];
 end
 if ncx
     xparam1 = [xparam1; estim_params_.corrx(:,3)];
@@ -115,7 +115,7 @@ end
 if ncn
     estim_params_.corrn_observable_correspondence=NaN(ncn,2);
     if isequal(M_.H,0)
-        nvarobs = size(options_.varobs,1);
+        nvarobs = length(options_.varobs);
         M_.H = zeros(nvarobs,nvarobs);
         M_.Correlation_matrix_ME = eye(nvarobs);
     end
@@ -134,8 +134,8 @@ if ncn
     for i=1:ncn
         k1 = estim_params_.corrn(i,1);
         k2 = estim_params_.corrn(i,2);
-        obsi1 = strmatch(deblank(M_.endo_names(k1,:)),deblank(options_.varobs),'exact'); %find correspondence to varobs to construct H in set_all_paramters
-        obsi2 = strmatch(deblank(M_.endo_names(k2,:)),deblank(options_.varobs),'exact');
+        obsi1 = strmatch(deblank(M_.endo_names(k1,:)),options_.varobs,'exact'); %find correspondence to varobs to construct H in set_all_paramters
+        obsi2 = strmatch(deblank(M_.endo_names(k2,:)),options_.varobs,'exact');
         estim_params_.corrn_observable_correspondence(i,:)=[obsi1,obsi2]; %save correspondence
     end
 end

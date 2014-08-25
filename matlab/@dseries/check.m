@@ -21,7 +21,7 @@ error_flag = 0;
 
 [n,m] = size(A.data);
 
-if ~isequal(m,A.vobs);
+if ~isequal(m, vobs(A));
     error_flag = 1;
     if nargout>1
         message = ['dseries: Wrong number of variables in dseries object ''' inputname(1) '''!'];
@@ -29,7 +29,7 @@ if ~isequal(m,A.vobs);
     return
 end
 
-if ~isequal(n,A.nobs);
+if ~isequal(n,nobs(A));
     error_flag = 1;
     if nargout>1
         message = ['dseries: Wrong number of observations in dseries object ''' inputname(1) '''!'];
@@ -69,7 +69,7 @@ if ~isequal(numel(unique(A.name)),numel(A.name));
     return
 end
 
-if ~isequa(numel(unique(A.tex)),numel(A.tex));
+if ~isequal(numel(unique(A.tex)),numel(A.tex));
     error_flag = 1;
     if nargout>1
         message = ['dseries: The variable tex names in dseries object ''' inputname(1) ''' are not unique!'];
@@ -77,7 +77,7 @@ if ~isequa(numel(unique(A.tex)),numel(A.tex));
     return
 end
 
-if ~isequal(A.dates,A.init:A.init+A.nobs)
+if ~isequal(A.dates,firstdate(A):firstdate(A)+nobs(A))
     error_flag = 1;
     if nargout>1
         message = ['dseries: Wrong definition of the dates member in dseries object ''' inputname(1) '''!'];

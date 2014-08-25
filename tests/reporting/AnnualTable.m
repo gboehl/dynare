@@ -20,6 +20,8 @@ shortNames = {'US', 'EU', 'JA', 'EA6', 'LA6', 'RC6'};
 longNames  = {'Coca Cola', 'Kinder Bueno', 'Pizza', ...
               'Vegetarianism Is Good', 'OS X', 'Dothraki'};
 
+rep = rep.addSeries('tableSubSectionHeader', 'A group', ...
+                    'tableRowColor', 'red!22');
 for i=1:length(shortNames)
     db_a = db_a.tex_rename([seriesRootName shortNames{i}], longNames{i});
     rep = rep.addSeries('data', db_a{[seriesRootName shortNames{i}]});

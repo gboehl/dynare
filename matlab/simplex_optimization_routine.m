@@ -11,8 +11,15 @@ function [x,fval,exitflag] = simplex_optimization_routine(objective_function,x,o
 %  o objective_function     [string]                  Name of the objective function to be minimized.
 %  o x                      [double]                  n*1 vector, starting guess of the optimization routine.
 %  o options                [structure]               Options of this implementation of the simplex algorithm.
-%  o varargin               [cell of structures]      Structures to be passed to the objective function: dataset_,
-%                                                     options_, M_, estim_params_, bayestopt_, and oo_.
+%  o varargin               [cell of structures]      Structures to be passed to the objective function.
+%
+%     varargin{1} --> DynareDataset
+%     varargin{2} --> DatasetInfo
+%     varargin{3} --> DynareOptions
+%     varargin{4} --> Model
+%     varargin{5} --> EstimatedParameters
+%     varargin{6} --> BayesInfo
+%     varargin{1} --> DynareResults
 %
 % OUTPUTS 
 %  o x                      [double]                  n*1 vector, estimate of the optimal inputs.
@@ -187,7 +194,7 @@ else
         disp(['Current parameter values: '])
         fprintf(1,'%s: \t\t\t %s \t\t\t %s \t\t\t %s \t\t\t %s \t\t\t %s \n','Names','Best point', 'Worst point', 'Mean values', 'Min values', 'Max values');
         for i=1:number_of_variables
-            fprintf(1,'%s: \t\t\t %+8.6f \t\t\t %+8.6f \t\t\t %+8.6f \t\t\t %+8.6f \t\t\t %+8.6f \n',varargin{5}.name{i},v(i,1), v(i,end), mean(v(i,:),2), min(v(i,:),[],2), max(v(i,:),[],2));
+            fprintf(1,'%s: \t\t\t %+8.6f \t\t\t %+8.6f \t\t\t %+8.6f \t\t\t %+8.6f \t\t\t %+8.6f \n',varargin{6}.name{i},v(i,1), v(i,end), mean(v(i,:),2), min(v(i,:),[],2), max(v(i,:),[],2));
         end
         skipline()
     end
@@ -399,7 +406,7 @@ while (func_count < max_func_calls) && (iter_count < max_iterations) && (simplex
         disp(['Current parameter values: '])
         fprintf(1,'%s: \t\t\t %s \t\t\t %s \t\t\t %s \t\t\t %s \t\t\t %s \n','Names','Best point', 'Worst point', 'Mean values', 'Min values', 'Max values');
         for i=1:number_of_variables
-            fprintf(1,'%s: \t\t\t %+8.6f \t\t\t %+8.6f \t\t\t %+8.6f \t\t\t %+8.6f \t\t\t %+8.6f \n',varargin{5}.name{i}, v(i,1), v(i,end), mean(v(i,:),2), min(v(i,:),[],2), max(v(i,:),[],2));
+            fprintf(1,'%s: \t\t\t %+8.6f \t\t\t %+8.6f \t\t\t %+8.6f \t\t\t %+8.6f \t\t\t %+8.6f \n',varargin{6}.name{i}, v(i,1), v(i,end), mean(v(i,:),2), min(v(i,:),[],2), max(v(i,:),[],2));
         end
         skipline()
     end
@@ -425,7 +432,7 @@ while (func_count < max_func_calls) && (iter_count < max_iterations) && (simplex
                 disp(['values for the control variables. '])
                 disp(['New value of delta (size of the new simplex) is: '])
                 for i=1:number_of_variables
-                    fprintf(1,'%s: \t\t\t %+8.6f \n',varargin{5}.name{i}, delta(i));
+                    fprintf(1,'%s: \t\t\t %+8.6f \n',varargin{6}.name{i}, delta(i));
                 end
             end
             % Reset counters
@@ -472,7 +479,7 @@ while (func_count < max_func_calls) && (iter_count < max_iterations) && (simplex
                 disp(['values for the control variables. '])
                 disp(['New value of delta (size of the new simplex) is: '])
                 for i=1:number_of_variables
-                    fprintf(1,'%s: \t\t\t %+8.6f \n',varargin{5}.name{i}, delta(i));
+                    fprintf(1,'%s: \t\t\t %+8.6f \n',varargin{6}.name{i}, delta(i));
                 end
             end
             % Reset counters

@@ -1,4 +1,4 @@
-function bvar = dsgevar_posterior_density(deep,DynareDataset,DynareOptions,Model,EstimatedParameters,BayesInfo,DynareResults)
+function bvar = dsgevar_posterior_density(deep,DynareDataset,DatasetInfo,DynareOptions,Model,EstimatedParameters,BayesInfo,DynareResults)
 % This function characterizes the posterior distribution of a bvar with
 % a dsge prior (as in Del Negro and Schorfheide 2003) for a given value
 % of the deep parameters (structural parameters + the size of the
@@ -33,12 +33,12 @@ function bvar = dsgevar_posterior_density(deep,DynareDataset,DynareOptions,Model
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-gend = options_.nobs;
+gend = DynareDataset.nobs;
 dsge_prior_weight = M_.params(strmatch('dsge_prior_weight',M_.param_names));
 DSGE_PRIOR_WEIGHT = floor(gend*(1+dsge_prior_weight));
 
 bvar.NumberOfLags = options_.varlag;
-bvar.NumberOfVariables = size(options_.varobs,1);
+bvar.NumberOfVariables = length(options_.varobs);
 bvar.Constant = 'no';
 bvar.NumberOfEstimatedParameters = bvar.NumberOfLags*bvar.NumberOfVariables;
 if ~options_.noconstant
@@ -47,7 +47,7 @@ if ~options_.noconstant
         bvar.NumberOfVariables;
 end
 
-[fval,cost_flag,info,PHI,SIGMAu,iXX,prior] =  dsge_var_likelihood(deep',DynareDataset,DynareOptions,Model,EstimatedParameters,BayesInfo,DynareResults);
+[fval,cost_flag,info,PHI,SIGMAu,iXX,prior] =  dsge_var_likelihood(deep',DynareDataset,DatasetInfo,DynareOptions,Model,EstimatedParameters,BayesInfo,DynareResults);
 
 % Conditionnal posterior density of the lagged matrices (given Sigma) ->
 % Matric-variate normal distribution.

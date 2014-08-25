@@ -87,15 +87,14 @@ weights = [flipud(weights(2:K+1)); weights];
 tmp = zeros(size(ts.data));
 
 % Filtering step.
-for t = K+1:ts.nobs-K
+for t = K+1:nobs(ts)-K
     tmp(t,:)  = weights'*ts.data(t-K:t+K,:);    
 end
 
 % Update dseries object.
 ts.data = tmp(K+1:end-K,:);
-ts.nobs = ts.nobs-2*K;
-ts.init = ts.init+K;
-ts.dates = ts.init:ts.init+(ts.nobs-1);
+init = firstdate(ts)+K;
+ts.dates = init:init+(nobs(ts)-1);
 
 %@test:1
 %$ plot_flag = 0;

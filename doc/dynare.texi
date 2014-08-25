@@ -2059,9 +2059,9 @@ period (unless some of these initial values are modified by
 Second, in the absence of an @code{endval} block, it sets the terminal
 conditions for all the periods succeeding the last simulation period.
 
-Third, in the absence of an @code{endval} block, it provides initial
-guess values at all simulation dates for the non-linear solver
-implemented in @code{simul}.
+Third, in the absence of an @code{endval} block, it provides initial guess
+values at all simulation dates for the perfect foresight solver, and is
+therefore used by @code{perfect_foresight_setup} and @code{simul}.
 
 For this last reason, it necessary to provide values for all the
 endogenous variables in an @code{initval} block (even though,
@@ -2147,8 +2147,9 @@ serves two purposes.
 First, it sets the terminal conditions for all the periods succeeding
 the last simulation period.
 
-Second, it provides initial guess values at all the simulation dates
-for the non-linear solver implemented in @code{simul}.
+Second, it provides initial guess values at all the simulation dates for the
+perfect foresight solver, and is therefore used by
+@code{perfect_foresight_setup} and @code{simul}.
 
 For this last reason, it necessary to provide values for all the
 endogenous variables in an @code{endval} block (even though,
@@ -2410,6 +2411,15 @@ type.
 
 @end deffn
 
+@deffn Command histval_file (filename = @var{FILENAME});
+
+This command is equivalent to @code{histval}, except that it reads its input
+from a file.
+
+This command is typically used in conjunction with @code{smoother2histval}.
+
+@end deffn
+
 @node Shocks on exogenous variables
 @section Shocks on exogenous variables
 
@@ -2438,7 +2448,16 @@ isn't used in the computation of moments and of Impulse Response
 Functions. Setting a variance to zero is an easy way of removing an
 exogenous shock.
 
+Note that, by default, if there are several @code{shocks} or @code{mshocks}
+blocks in the same @file{.mod} file, then they are cumulative: all the shocks
+declared in all the blocks are considered; however, if a @code{shocks} or
+@code{mshocks} block is declared with the @code{overwrite} option, then it
+replaces all the previous @code{shocks} and @code{mshocks} blocks.
+
 @deffn Block shocks ;
+@deffnx Block shocks (overwrite) ;
+
+See above for the meaning of the @code{overwrite} option.
 
 @customhead{In deterministic context}
 
@@ -2574,6 +2593,7 @@ forecast;
 
 
 @deffn Block mshocks ;
+@deffnx Block mshocks (overwrite) ;
 
 The purpose of this block is similar to that of the @code{shocks}
 block for deterministic shocks, except that the numeric values given
@@ -2595,6 +2615,8 @@ on exogenous variables with a non-zero steady state, in a deterministic setup,
 on deterministic exogenous variables with a non-zero steady state, in
 a stochastic setup.
 @end itemize
+
+See above for the meaning of the @code{overwrite} option.
 
 @end deffn
 
@@ -2644,9 +2666,9 @@ Reduces the number of periods considered in subsequent output commands.
 
 @descriptionhead
 
-This command is now deprecated (but will still work for older model
-files). It is not necessary when no simulation is performed and is
-replaced by an option @code{periods} in @code{simul} and
+This command is now deprecated (but will still work for older model files). It
+is not necessary when no simulation is performed and is replaced by an option
+@code{periods} in @code{perfect_foresight_setup}, @code{simul} and
 @code{stoch_simul}.
 
 This command sets the number of periods in the simulation. The periods
@@ -2707,10 +2729,11 @@ add new variables one by one.
 @table @code
 
 @item maxit = @var{INTEGER}
-Determines the maximum number of iterations used in the non-linear solver.
-The default value of @code{maxit} is 10. The @code{maxit} option is shared with the
-@code{simul} command. So a change in @code{maxit} in a @code{steady} command will
-also be considered in the following @code{simul} commands.
+Determines the maximum number of iterations used in the non-linear solver. The
+default value of @code{maxit} is 10. The @code{maxit} option is shared with the
+@code{perfect_foresight_solver} and @code{simul} commands. So a change in
+@code{maxit} in a @code{steady} command will also be considered in the
+following @code{perfect_foresight_solver} and @code{simul} commands.
 
 
 @item solve_algo = @var{INTEGER}
@@ -2735,7 +2758,8 @@ using the same solver as value @code{1}
 Use Chris Sims' solver
 
 @item 4
-Trust-region solver with autoscaling.
+Splits the model into recursive blocks and solves each block in turn
+using a trust-region solver with autoscaling.
 
 @item 5
 Newton algorithm with a sparse Gaussian elimination (SPE) (requires
@@ -2754,6 +2778,9 @@ each iteration (requires @code{bytecode} and/or @code{block} option,
 Newton algorithm with a Stabilized Bi-Conjugate Gradient (BICGSTAB)
 solver at each iteration (requires @code{bytecode} and/or @code{block}
 option, @pxref{Model declaration})
+
+@item 9
+Trust-region algorithm on the entire model.
 @end table
 
 @noindent
@@ -3283,15 +3310,17 @@ aid the solution process.  These solution algorithms can provide a
 significant speed-up on large models.
 
 
-
-
-@deffn Command simul ;
-@deffnx Command simul (@var{OPTIONS}@dots{});
+@deffn Command perfect_foresight_setup ;
+@deffnx Command perfect_foresight_setup (@var{OPTIONS}@dots{});
 
 @descriptionhead
 
-Triggers the computation of a deterministic simulation of the model
-for the number of periods set in the option @code{periods}.
+Prepares a perfect foresight simulation, by extracting the information in the
+@code{initval}, @code{endval} and @code{shocks} blocks and converting them into
+simulation paths for exogenous and endogenous variables.
+
+This command must always be called before running the simulation with
+@code{perfect_foresight_solver}.
 
 @optionshead
 
@@ -3300,23 +3329,43 @@ for the number of periods set in the option @code{periods}.
 @item periods = @var{INTEGER}
 Number of periods of the simulation
 
-@item endogenous_terminal_period
-The  number of  periods is  not constant  across Newton  iterations when
-solving the perfect foresight model. The size of the nonlinear system of
-equations  is  reduced  by  removing  the  portion  of  the  paths  (and
-associated equations) for which the solution has already been identified
-(up to the  tolerance parameter). This strategy can be  interpreted as a
-mix  of the  shooting and  relaxation  approaches. Note  that round  off
-errors are  more important with  this mixed strategy (user  should check
-the reported value  of the maximum absolute error).  Only available with
-option @code{stack_solve_algo==0}.
+@item datafile = @var{FILENAME}
+If the variables of the model are not constant over time, their
+initial values, stored in a text file, could be loaded, using that
+option, as initial values before a deterministic simulation.
+@end table
+
+@outputhead
+
+The paths for the exogenous variables are stored into @code{oo_.exo_simul}.
+
+The initial and terminal conditions for the endogenous variables and the
+initial guess for the path of endogenous variables are stored into
+@code{oo_.endo_simul}.
+
+@end deffn
+
+
+@deffn Command perfect_foresight_solver ;
+@deffnx Command perfect_foresight_solver (@var{OPTIONS}@dots{});
+
+@descriptionhead
+
+Computes the perfect foresight (or deterministic) simulation of the model.
+
+Note that @code{perfect_foresight_setup} must be called before this command, in
+order to setup the environment for the simulation.
+
+@optionshead
+
+@table @code
 
 @item maxit = @var{INTEGER}
-Determines the maximum number of iterations used in the non-linear solver.
-The default value of @code{maxit} is 10. The @code{maxit} option is shared with the
-@code{steady} command. So a change in @code{maxit} in a @code{simul} command will
-also be considered in the following @code{steady} commands.
-
+Determines the maximum number of iterations used in the non-linear solver. The
+default value of @code{maxit} is 10. The @code{maxit} option is shared with the
+@code{steady} command. So a change in @code{maxit} in a
+@code{perfect_foresight_solver} command will also be considered in the
+following @code{steady} commands.
 
 @item stack_solve_algo = @var{INTEGER}
 Algorithm used for computing the solution. Possible values are:
@@ -3360,6 +3409,12 @@ options).
 
 @end table
 
+@item no_homotopy
+By default, the perfect foresight solver uses a homotopy technique if it cannot
+solve the problem. Concretely, it divides the problem into smaller steps by
+diminishing the size of shocks and increasing them progressively until the
+problem converges. This option tells Dynare to disable that behavior.
+
 @item markowitz = @var{DOUBLE}
 Value of the Markowitz criterion, used to select the pivot. Only used
 when @code{stack_solve_algo = 5}. Default: @code{0.5}.
@@ -3369,10 +3424,17 @@ Specify the minimal number of periods where the model has to be
 solved, before using a constant set of operations for the remaining
 periods. Only used when @code{stack_solve_algo = 5}. Default: @code{1}.
 
-@item datafile = @var{FILENAME}
-If the variables of the model are not constant over time, their
-initial values, stored in a text file, could be loaded, using that
-option, as initial values before a deterministic simulation.
+@item endogenous_terminal_period
+The  number of  periods is  not constant  across Newton  iterations when
+solving the perfect foresight model. The size of the nonlinear system of
+equations  is  reduced  by  removing  the  portion  of  the  paths  (and
+associated equations) for which the solution has already been identified
+(up to the  tolerance parameter). This strategy can be  interpreted as a
+mix  of the  shooting and  relaxation  approaches. Note  that round  off
+errors are  more important with  this mixed strategy (user  should check
+the reported value  of the maximum absolute error).  Only available with
+option @code{stack_solve_algo==0}.
+
 @end table
 
 @outputhead
@@ -3382,11 +3444,28 @@ The simulated endogenous variables are available in global matrix
 
 @end deffn
 
+@deffn Command simul ;
+@deffnx Command simul (@var{OPTIONS}@dots{});
+
+@descriptionhead
+
+Short-form command for triggering the computation of a deterministic simulation
+of the model. It is strictly equivalent to a call to
+@code{perfect_foresight_setup} followed by a call to
+@code{perfect_foresight_solver}.
+
+@optionshead
+
+Accepts all the options of @code{perfect_foresight_setup} and
+@code{perfect_foresight_solver}.
+
+@end deffn
+
 @anchor{oo_.endo_simul}
 @defvr {MATLAB/Octave variable} oo_.endo_simul
-This variable stores the result of a deterministic simulation
-(computed by @code{simul}) or of a stochastic simulation (computed by
-@code{stoch_simul} with the @code{periods} option or by
+This variable stores the result of a deterministic simulation (computed by
+@code{perfect_foresight_solver} or @code{simul}) or of a stochastic simulation
+(computed by @code{stoch_simul} with the @code{periods} option or by
 @code{extended_path}).
 
 The variables are arranged row by row, in order of declaration (as in
@@ -3397,9 +3476,9 @@ and terminal conditions, so it has more columns than the value of
 
 @anchor{oo_.exo_simul}
 @defvr {MATLAB/Octave variable} oo_.exo_simul
-This variable stores the path of exogenous variables during a
-simulation (computed by @code{simul}, @code{stoch_simul} or
-@code{extended_path}).
+This variable stores the path of exogenous variables during a simulation
+(computed by @code{perfect_foresight_solver}, @code{simul}, @code{stoch_simul}
+or @code{extended_path}).
 
 The variables are arranged in columns, in order of declaration (as in
 @code{M_.endo_names}). Periods are in rows. Note that this convention
@@ -3634,7 +3713,7 @@ period(s). The periods must be strictly positive. Conditional variances are give
 decomposition provides the decomposition of the effects of shocks upon
 impact. The results are stored in
 @code{oo_.conditional_variance_decomposition}
-(@pxref{oo_.conditional_variance_decomposition}). The variance decomposition is only conducted, if theoretical moments are requested, i.e. using the @code{periods=0}-option. In case of @code{order=2}, Dynare provides a second-order accurate approximation to the true second moments based on the linear terms of the second-order solution (see @cite{Kim, Kim, Schaumburg and Sims (2008)}).
+(@pxref{oo_.conditional_variance_decomposition}). The variance decomposition is only conducted, if theoretical moments are requested, i.e. using the @code{periods=0}-option. In case of @code{order=2}, Dynare provides a second-order accurate approximation to the true second moments based on the linear terms of the second-order solution (see @cite{Kim, Kim, Schaumburg and Sims (2008)}). Note that the unconditional variance decomposition (i.e. at horizon infinity) is automatically conducted if theoretical moments are requested (@pxref{oo_.variance_decomposition})
 
 @item pruning
 Discard higher order terms when iteratively computing simulations of
@@ -3783,7 +3862,7 @@ number of the matrix in the cell array corresponds to the order of
 autocorrelation. The option @code{ar} specifies the number of
 autocorrelation matrices available. Contains theoretical
 autocorrelations if the @code{periods} option is not present (or an approximation thereof for @code{order=2}), and
-empirical autocorrelations otherwise.
+empirical autocorrelations otherwise. The field is only created if stationary variables are present.
 
 The element @code{oo_.autocorr@{i@}(k,l)} is equal to the correlation
 between @math{y^k_t} and @math{y^l_{t-i}}, where @math{y^k}
@@ -3810,7 +3889,7 @@ details. Beware, this is the @i{autocorrelation} function, not the
 @i{autocovariance} function.
 
 @item oo_.gamma@{nar+2@}
-Variance decomposition.
+Unconditional variance decomposition @pxref{oo_.variance_decomposition}
 
 @item oo_.gamma@{nar+3@}
 If a second order approximation has been requested, contains the
@@ -3819,6 +3898,22 @@ vector of the mean correction terms.
 
 In case of @code{order=2}, the theoretical second moments are a second order accurate approximation of the true second moments, see @code{conditional_variance_decomposition}.
 
+@end defvr
+
+@anchor{oo_.variance_decomposition}
+@defvr {MATLAB/Octave variable} oo_.variance_decomposition
+After a run of @code{stoch_simul} when requesting theoretical moments (@code{periods=0}), contains a matrix with the result of the unconditional variance decomposition (i.e. at horizon infinity). The first dimension corresponds to the endogenous variables (in the order of declaration) and the second dimension corresponds to exogenous variables (in the order of declaration). Numbers are in percent and sum up to 100 across columns.
+@end defvr
+
+@anchor{oo_.conditional_variance_decomposition}
+@defvr {MATLAB/Octave variable} oo_.conditional_variance_decomposition
+After a run of @code{stoch_simul} with the
+@code{conditional_variance_decomposition} option, contains a
+three-dimensional array with the result of the decomposition. The
+first dimension corresponds to forecast horizons (as declared with the
+option), the second dimension corresponds to endogenous variables (in
+the order of declaration), the third dimension corresponds to
+exogenous variables (in the order of declaration).
 @end defvr
 
 @defvr {MATLAB/Octave variable} oo_.irfs
@@ -4114,16 +4209,6 @@ three times in the unfolded @math{G_3} matrix, they must be multiplied
 by 3 when computing the decision rules.
 @end itemize
 
-@anchor{oo_.conditional_variance_decomposition}
-@defvr {MATLAB/Octave variable} oo_.conditional_variance_decomposition
-After a run of @code{stoch_simul} with the
-@code{conditional_variance_decomposition} option, contains a
-three-dimensional array with the result of the decomposition. The
-first dimension corresponds to forecast horizons (as declared with the
-option), the second dimension corresponds to endogenous variables (in
-the order of declaration), the third dimension corresponds to
-exogenous variables (in the order of declaration).
-@end defvr
 
 @node Estimation
 @section Estimation
@@ -4953,7 +5038,7 @@ distribution of IRFs. The length of the IRFs are controlled by the
 @item dsge_var = @var{DOUBLE}
 @anchor{dsge_var} Triggers the estimation of a DSGE-VAR model, where the
 weight of  the DSGE prior  of the VAR model  is calibrated to  the value
-passed (see @cite{Del  Negro and Schorfheide (2004)}). NB:  The previous method
+passed (see @cite{Del  Negro and Schorfheide (2004)}). It represents ratio of dummy over actual observations. To assure that the prior is proper, the value must be bigger than @math{(k+n)/T}, where @math{k} is the number of estimated parameters, @math{n} is the number of observables, and @math{T} is the number of observations. NB:  The previous method
 of   declaring  @code{dsge_prior_weight}   as  a   parameter  and   then
 calibrating it is now deprecated and will be removed in a future release
 of Dynare.
@@ -4975,8 +5060,7 @@ model. Default: @code{4}.
 @anchor{moments_varendo} Triggers the computation of the posterior
 distribution of the theoretical moments of the endogenous
 variables. Results are stored in
-@code{oo_.PosteriorTheoreticalMoments} (see below for a description of
-this variable). The number of lags in the autocorrelation function is
+@code{oo_.PosteriorTheoreticalMoments} (@pxref{oo_.PosteriorTheoreticalMoments}). The number of lags in the autocorrelation function is
 controlled by the @code{ar} option.
 
 @item conditional_variance_decomposition = @var{INTEGER}
@@ -4993,7 +5077,7 @@ period 1, the conditional variance decomposition provides the
 decomposition of the effects of shocks upon impact. The results are
 stored in
 @code{oo_.PosteriorTheoreticalMoments.dsge.ConditionalVarianceDecomposition},
-but currently there is no output. Note that this option requires the
+but currently there is no displayed output. Note that this option requires the
 option @code{moments_varendo} to be specified.
 
 @item filtered_vars
@@ -5420,6 +5504,7 @@ After an estimation with Metropolis, fields are of the form:
 @end defvr
 
 @defvr {MATLAB/Octave variable} oo_.PosteriorTheoreticalMoments
+@anchor{oo_.PosteriorTheoreticalMoments}
 Variable set by the @code{estimation} command, if it is used with the
 @code{moments_varendo} option. Fields are of the form:
 @example
@@ -5437,7 +5522,7 @@ Auto- and cross-correlation of endogenous variables. Fields are vectors with cor
 
 
 @item VarianceDecomposition
-Decomposition of variance@footnote{When the shocks are correlated, it
+Decomposition of variance (unconditional variance, i.e. at horizon infinity)@footnote{When the shocks are correlated, it
 is the decomposition of orthogonalized shocks via Cholesky
 decomposition according to the order of declaration of shocks
 (@pxref{Variable declarations})}
@@ -5589,8 +5674,12 @@ estimates using a higher tapering are usually more reliable.
 @descriptionhead
 
 This command computes odds ratios and estimate a posterior density
-over a collection of models. The priors over models can be specified
-as the @var{DOUBLE} values, otherwise a uniform prior is assumed.
+over a collection of models 
+(see e.g. @cite{Koop (2003), Ch. 1}). The priors over models can be specified
+as the @var{DOUBLE} values, otherwise a uniform prior over all models is assumed. 
+In contrast to frequentist econometrics, the models to be compared do not need to be nested. 
+However, as the computation of posterior odds ratios is a Bayesian technique, 
+the comparison of models estimated with maximum likelihood is not supported.
 
 @examplehead
 
@@ -5739,7 +5828,7 @@ confidence interval.
 @table @code
 
 @item periods = @var{INTEGER}
-Number of periods of the forecast. Default: @code{40}
+Number of periods of the forecast. Default: @code{5}.
 
 @item conf_sig = @var{DOUBLE}
 @anchor{conf_sig} Level of significance for confidence
@@ -5862,11 +5951,51 @@ Fields are of the form:
 
 @descriptionhead
 
-This command computes forecasts on an estimated model for a given
-constrained path of some future endogenous variables. This is done,
-from the reduced form representation of the DSGE model, by finding the
-structural shocks that are needed to match the restricted paths. This
-command has to be called after estimation.
+This command computes forecasts on an estimated or calibrated model for a
+given constrained path of some future endogenous variables. This is done
+using the reduced form first order state-space representation of the DSGE
+model by finding the structural shocks that are needed to match the
+restricted paths. Consider the an augmented state space representation
+that stacks both predetermined and non-predetermined variables into a
+vector @math{y_{t}}:
+
+@math{y_t=Ty_{t-1}+R\varepsilon_t}
+
+Both
+@math{y_t} and @math{\varepsilon_t} are split up into controlled and
+uncontrolled ones to get:
+
+@math{y_t(contr\_vars)=Ty_{t-1}(contr\_vars)+R(contr\_vars,uncontr\_shocks)\varepsilon_t(uncontr\_shocks)
++R(contr\_vars,contr\_shocks)\varepsilon_t(contr\_shocks)}
+
+which can be solved algebraically for @math{\varepsilon_t(contr\_shocks)}.
+
+Using these controlled shocks, the state-space representation can be used
+for forecasting. A few things need to be noted. First, it is assumed that
+controlled exogenous variables are fully under control of the policy
+maker for all forecast periods and not just for the periods where the
+endogenous variables are controlled. For all uncontrolled periods, the
+controlled exogenous variables are assumed to be 0. This implies that
+there is no forecast uncertainty arising from these exogenous variables
+in uncontrolled periods. Second, by making use of the first order state
+space solution, even if a higher-order approximation was performed, the
+conditional forecasts will be based on a first order approximation.
+Third, although controlled exogenous variables are taken as instruments
+perfectly under the control of the policy-maker, they are nevertheless
+random and unforeseen shocks from the perspective of the households. That is,
+households are in each period surprised by the realization of a shock
+that keeps the controlled endogenous variables at their respective level.
+Fourth, keep in mind that if the structural innovations are correlated,
+because the calibrated or estimated covariance matrix has non zero off
+diagonal elements, the results of the conditional forecasts will depend on
+the ordering of the innovations (as declared after @code{varexo}). As in VAR
+models, a Cholesky decomposition is used to factorize the covariance matrix
+and identify orthogonal impulses. It is preferable to declare the correlations
+in the @code{model} block (explicitly imposing the identification restrictions),
+unless you are satisfied with the implicit identification restrictions implied
+by the Cholesky decomposition.
+
+This command has to be called after @code{estimation} or @code{stoch_simul}.
 
 Use @code{conditional_forecast_paths} block to give the list of
 constrained endogenous, and their constrained future path.
@@ -6016,37 +6145,37 @@ can be computed using an extended path method. The forecast scenario describing 
 The first step is the forecast scenario initialization using the function @code{init_plan}:
 
 @anchor{init_plan}
-@deffn {MATLAB/Octave command} HANDLE = init_plan(DATES) ;
+@deftypefn {MATLAB/Octave command} {HANDLE =} init_plan (DATES) ;
 
 Creates a new forecast scenario for a forecast period (indicated as a dates class, see @ref{dates class members}). This function return a handle on the new forecast scenario.
 
-@end deffn
+@end deftypefn
 
 The forecast scenario can contain some simple shocks on the exogenous variables. This shocks are described using the function @code{basic_plan}:
 
 @anchor{basic_plan}
-@deffn {MATLAB/Octave command} HANDLE = basic_plan(HANDLE, 'VARIABLE_NAME', 'SHOCK_TYPE', DATES, MATLAB VECTOR OF DOUBLE |  [DOUBLE | EXPRESSION [DOUBLE | | EXPRESSION] ] ) ;
+@deftypefn {MATLAB/Octave command} {HANDLE =} basic_plan (HANDLE, 'VARIABLE_NAME', 'SHOCK_TYPE', DATES, MATLAB VECTOR OF DOUBLE |  [DOUBLE | EXPRESSION [DOUBLE | | EXPRESSION] ] ) ;
 
 Adds to the forecast scenario a shock on the exogenous variable indicated between quotes in the second argument. The shock type has to be specified in the third argument between quotes: 'surprise' in case of an unexpected shock  or 'perfect_foresight' for a perfectly anticipated shock. The fourth argument indicates the period of the shock using a dates class (see @ref{dates class members}). The last argument is the shock path indicated as a Matlab vector of double. This function return the handle of the updated forecast scenario.
 
-@end deffn
+@end deftypefn
 
 The forecast scenario can also contain a constrained path on an endogenous variable. The values of the related exogenous variable compatible with the constrained path are in this case computed. In other words, a conditional forecast is performed. This kind of shock is described with the function  @code{flip_plan}:
 
 @anchor{flip_plan}
-@deffn {MATLAB/Octave command} HANDLE = flip_plan(HANDLE, 'VARIABLE_NAME, 'VARIABLE_NAME', 'SHOCK_TYPE', DATES, MATLAB VECTOR OF DOUBLE |  [DOUBLE | EXPRESSION [DOUBLE | | EXPRESSION] ] ) ;
+@deftypefn {MATLAB/Octave command} {HANDLE =} flip_plan (HANDLE, 'VARIABLE_NAME, 'VARIABLE_NAME', 'SHOCK_TYPE', DATES, MATLAB VECTOR OF DOUBLE |  [DOUBLE | EXPRESSION [DOUBLE | | EXPRESSION] ] ) ;
 
 Adds to the forecast scenario a constrained path on the endogenous variable specified between quotes in the second argument. The associated exogenous variable provided in the third argument between quotes, is considered as an endogenous variable and its values compatible with the constrained path on the endogenous variable will be computed. The nature of the expectation on the constrained  path has to be specified in the fourth argument between quotes: 'surprise' in case of an unexpected path or 'perfect_foresight' for a perfectly anticipated path. The fifth argument indicates the period where the path of the endogenous variable is constrained using a dates class (see @ref{dates class members}). The last argument contains the constrained path as a Matlab vector of double. This function return the handle of the updated forecast scenario.
 
-@end deffn
+@end deftypefn
 
 Once the forecast scenario if fully described, the forecast is computed with the command @code{det_cond_forecast}:
 @anchor{det_cond_forecast}
-@deffn {MATLAB/Octave command} DSERIES = det_cond_forecast(HANDLE[, DSERIES [, DATES]]) ;
+@deftypefn {MATLAB/Octave command} {DSERIES =} det_cond_forecast (HANDLE[, DSERIES [, DATES]]) ;
 
 Computes the forecast or the conditional forecast using an extended path method for the given forecast scenario (first argument). The past values of the endogenous and exogenous variables provided with a dseries class (see @ref{dseries class members}) can be indicated in the second argument. By default, the past values of the variables are equal to their steady-state values. The initial date of the forecast can be provided in the third argument. By default, the forecast will start at the first date indicated in the @code{init_plan} command. This function returns a dset containing the historical and forecast values for the endogenous and exogenous variables.
 
-@end deffn
+@end deftypefn
 
 
 
@@ -6072,6 +6201,68 @@ dset_forecast = det_cond_forecast(fplan, smoothed);
 plot(dset_forecast.@{'y','u'@});
 plot(dset_forecast.@{'r','e'@});
 @end example
+
+@deffn Command smoother2histval [(@var{OPTIONS}@dots{})]
+
+@descriptionhead
+
+The purpose of this command is to construct initial conditions (for a
+subsequent simulation) that are the smoothed values of a previous estimation.
+
+More precisely, after an estimation run with the @code{smoother} option,
+@code{smoother2histval} will extract the smoothed values (from
+@code{oo_.SmoothedVariables}, and possibly from @code{oo_.SmoothedShocks} if
+there are lagged exogenous), and will use these values to construct initial
+conditions (as if they had been manually entered through @code{histval}).
+
+@optionshead
+
+@table @code
+
+@item period = @var{INTEGER}
+Period number to use as the starting point for the subsequent simulation.
+It should be between @code{1} and the number of observations that were used to produce the
+smoothed values. Default: the last observation.
+
+@item infile = @var{FILENAME}
+Load the smoothed values from a @file{_results.mat} file created by a previous
+Dynare run. Default: use the smoothed values currently in the global workspace.
+
+@item invars = ( @var{VARIABLE_NAME} [@var{VARIABLE_NAME} @dots{}] )
+A list of variables to read from the smoothed values. It can contain state
+endogenous variables, and also exogenous variables having a lag. Default: all
+the state endogenous variables, and all the exogenous variables with a lag.
+
+@item outfile = @var{FILENAME}
+Write the initial conditions to a file. Default: write the initial conditions
+in the current workspace, so that a simulation can be performed.
+
+@item outvars = ( @var{VARIABLE_NAME} [@var{VARIABLE_NAME} @dots{}] )
+A list of variables which will be given the initial conditions. This list must
+have the same length than the list given to @code{invars}, and there will be a
+one-to-one mapping between the two list. Default: same value as option
+@code{invars}.
+
+@end table
+
+@customhead{Use cases}
+
+There are three possible ways of using this command:
+
+@itemize
+
+@item
+Everything in a single file: run an estimation with a smoother, then run @code{smoother2histval} (without the @code{infile} and @code{outfile} options), then run a stochastic simulation.
+
+@item
+In two files: in the first file, run the smoother and then run @code{smoother2histval} with the @code{outfile} option; in the second file, run @code{histval_file} to load the initial conditions, and run a (deterministic or stochastic) simulation
+
+@item
+In two files: in the first file, run the smoother; in the second file, run @code{smoother2histval} with the @code{infile} option equal to the @file{_results.mat} file created by the first file, and then run a (deterministic or stochastic) simulation
+
+@end itemize
+
+@end deffn
 
 @node Optimal policy
 @section Optimal policy
@@ -7848,10 +8039,10 @@ Dynare has comments to plot the results of a simulation and to save the results.
 @deffn Command rplot @var{VARIABLE_NAME}@dots{};
 
 Plots the simulated path of one or several variables, as stored in
-@var{oo_.endo_simul} by either @var{simul} (@pxref{Deterministic
-simulation}) or @var{stoch_simul} with
-option @var{periods} (@pxref{Computing the stochastic solution}). The
-variables are plotted in levels.
+@code{oo_.endo_simul} by either @code{perfect_foresight_solver}, @code{simul}
+(@pxref{Deterministic simulation}) or @code{stoch_simul} with option
+@code{periods} (@pxref{Computing the stochastic solution}). The variables are
+plotted in levels.
 
 @end deffn
 
@@ -9554,23 +9745,11 @@ The Matlab/Octave @dseries class handles time series data. As any Matlab/Octave 
 @table @code
 @anchor{dseries class members}
 
-@item nobs
-A scalar integer, the number of observations.
-
-@item vobs
-A scalar integer, the number of variables.
-
 @item name
 A @code{nobs}*1 cell of strings or a @code{nobs}*p character array, the names of the variables.
 
 @item tex
  A @code{nobs}*1 cell of strings or a @code{nobs}*p character array, the tex names of the variables.
-
-@item freq
-A scalar integer equal to 1, 4, 12 or 52, the frequency of the dataset.
-
-@item init
-A single element @dates object, the initial date of the sample.
 
 @item dates
 A @dates object with @code{nobs} element, the dates of the sample.
@@ -9580,19 +9759,19 @@ A @code{nobs} by @code{vobs} array of doubles, the data.
 
 @end table
 
-@noindent @code{freq}, @code{nobs}, @code{vobs}, @code{data}, @code{name}, @code{tex} are private members. The following constructors are available:
+@noindent @code{data}, @code{name}, @code{tex} are private members. The following constructors are available:
 
 @deftypefn  {dseries} dseries ()
 @deftypefnx {dseries} dseries (@var{INITIAL_DATE})
 @deftypefnx {dseries} dseries (@var{RANGE_OF_DATES})
 
-Instantiates an empty @dseries object, with, if defined, an initial date given by the single element @dates object @var{INITIAL_DATE} or the first element of the @dates object @var{RANGE_OF_DATES} (the frequency is then set accordingly).
+Instantiates an empty @dseries object, with, if defined, an initial date given by the single element @dates object @var{INITIAL_DATE} or the first element of the @dates object @var{RANGE_OF_DATES}.
 
 @end deftypefn
 
 @sp 1
 
-@deftypefn {dseries} dseries (@var{FILENAME})
+@deftypefn {dseries} dseries (@var{FILENAME}[, @var{INITIAL_DATE}])
 
 Instantiates and populates a @dseries object with a data file specified by @var{FILENAME}, a string passed as input. Valid file types are @file{.m} file, @file{.mat} file, @file{.csv} file, and @file{.xls} file. A typical @file{.m} file will have the following form:
 
@@ -9605,7 +9784,7 @@ azert = randn(100,1);
 yuiop = randn(100,1);
 @end example
 
-If a @file{.mat} file is used instead, it should provide the same informations. Note that the @code{INIT__} variable can be either a @dates object or a string which could be used to instantiate the same @dates object.
+If a @file{.mat} file is used instead, it should provide the same informations. Note that the @code{INIT__} variable can be either a @dates object or a string which could be used to instantiate the same @dates object. If @code{INIT__} is not provided in the @file{.mat} or @file{.m} file, the initial is by default set equal to @code{dates('1Y')}. If a second input argument is passed to the constructor, @dates object @var{INITIAL_DATE}, the initial date defined in @var{FILENAME} is reset to @var{INITIAL_DATE}. This is typically usefull if @code{INIT__} is not provided in the data file.
 
 @end deftypefn
 
@@ -9724,7 +9903,7 @@ ts1 is a dseries object:
 
 @deftypefn {dseries} {@var{B} = } baxter_king_filter (@var{A}, @var{hf}, @var{lf}, @var{K})
 
-Implementation of the Baxter and King (1999) band pass filter for @dseries objects. This filter isolates business cycle fluctuations with a period of length ranging between @var{hf} (high frequency) to @var{lf} (low frequency) using a symmetric moving average smoother with @math{2K+1} points, so that K observations at the beginning and at the end of the  sample are lost in the computation of the filter.
+Implementation of the Baxter and King (1999) band pass filter for @dseries objects. This filter isolates business cycle fluctuations with a period of length ranging between @var{hf} (high frequency) to @var{lf} (low frequency) using a symmetric moving average smoother with @math{2K+1} points, so that K observations at the beginning and at the end of the  sample are lost in the computation of the filter. The default value for @var{hf} is @math{6}, for @var{lf} is @math{32}, and for @var{K} is 12.
 
 @examplehead
 @example
@@ -9774,7 +9953,7 @@ Merge two @dseries objects along the time dimension. The two objects must have t
 
 @examplehead
 @example
->> ts = dseries([1; 2; 3; 4],dates('1950Q1'))
+>> ts = dseries([1; 2; 3; 4],dates(`1950Q1'))
 
 ts is a dseries object:
 
@@ -9784,15 +9963,15 @@ ts is a dseries object:
 1950Q3 | 3
 1950Q4 | 4
 
->> us = dseries([3; 4; 5; 6],dates('1950Q3'))
+>> us = dseries([3; 4; 5; 6],dates(`1950Q3'))
 
 us is a dseries object:
 
        | Variable_1
-1950Q3 | 3.1
-1950Q4 | 4.1
-1951Q1 | 8.2
-1951Q2 | 16.4
+1950Q3 | 3
+1950Q4 | 4
+1951Q1 | 5
+1951Q2 | 6
 
 >> chain(ts, us)
 
@@ -9803,8 +9982,8 @@ ans is a dseries object:
 1950Q2 | 2
 1950Q3 | 3
 1950Q4 | 4
-1951Q1 | 8
-1951Q2 | 16
+1951Q1 | 5
+1951Q2 | 6
 
 @end example
 
@@ -10013,6 +10192,24 @@ ans is a dseries object:
 
 @sp 1
 
+@deftypefn {dseries} {@var{f} =} freq (@var{B})
+
+Returns the frequency of the variables in @dseries object @var{B}.
+
+@examplehead
+@example
+>> ts = dseries(randn(3,2),'1973Q1');
+>> ts.freq
+
+ans =
+
+     4
+@end example
+
+@end deftypefn
+
+@sp 1
+
 @deftypefn{dseries} {@var{D} =} horzcat (@var{A}, @var{B}[, ...])
 
 Overloads the @code{horzcat} Matlab/Octave's method for @dseries
@@ -10130,6 +10327,21 @@ The previous code should produce something like:
 
 @sp 1
 
+@deftypefn {dseries} {@var{f} =} init (@var{B})
+
+Returns the initial date in @dseries object @var{B}.
+
+@examplehead
+@example
+>> ts = dseries(randn(3,2),'1973Q1');
+>> ts.init
+ans = <dates: 1973Q1>
+@end example
+
+@end deftypefn
+
+@sp 1
+
 @deftypefn {dseries} {@var{C} = } insert (@var{A}, @var{B}, @var{I})
 
 Inserts variables contained in @dseries object @var{B} in @dseries object @var{A} at positions specified by integer scalars in vector @var{I}, returns augmented @dseries object @var{C}. The integer scalars in @var{I} must take values between @code{1} and @code{A.length()+1} and refers to @var{A}'s column numbers. The @dseries objects @var{A} and @var{B} need not to be defined over the same time ranges, but it is assumed that they have common frequency.
@@ -10240,6 +10452,21 @@ ans is a dseries object:
 1950Q2 | 1
 1950Q3 | 2
 1950Q4 | 3
+@end example
+
+@end deftypefn
+
+@sp 1
+
+@deftypefn {dseries} {@var{l} =} last (@var{B})
+
+Returns the last date in @dseries object @var{B}.
+
+@examplehead
+@example
+>> ts = dseries(randn(3,2),'1973Q1');
+>> ts.last
+ans = <dates: 1973Q3>
 @end example
 
 @end deftypefn
@@ -10564,6 +10791,24 @@ ans =
 
 @sp 1
 
+@deftypefn{dseries} {@var{B} =} nobs (@var{A})
+
+Returns the number of observations in @dseries object @var{A}.
+
+@examplehead
+@example
+>> ts0 = dseries(randn(10));
+>> ts0.nobs
+
+ans =
+
+    10
+@end example
+
+@end deftypefn
+
+@sp 1
+
 @deftypefn{dseries} {@var{h} =} plot (@var{A})
 @deftypefnx{dseries} {@var{h} =} plot (@var{A}, @var{B})
 @deftypefnx{dseries} {@var{h} =} plot (@var{A}[, ...])
@@ -10701,6 +10946,40 @@ ts1 is a dseries object:
 
 @sp 1
 
+@deftypefn{dseries} {@var{C} =} remove (@var{A}, @var{B})
+
+Alias for the @code{pop} method with two arguments. Removes variable @var{B} from @dseries object @var{A}.
+
+@examplehead
+@example
+>> ts0 = dseries(ones(3,3));
+>> ts1 = ts0.remove('Variable_2');
+
+ts1 is a dseries object:
+
+   | Variable_1 | Variable_3
+1Y | 1          | 1
+2Y | 1          | 1
+3Y | 1          | 1
+@end example
+
+@sp 1
+
+A shorter syntax is available: @code{remove(ts,'Variable_2')} is
+equivalent to @code{ts@{'Variable_2'@} = []} (@code{[]} can be replaced
+by any empty object). This alternative syntax is usefull if more than
+one variable has to be removed. For instance:
+@example
+ts@{'Variable_@@2,3,4@@'@} = [];
+@end example
+will remove @code{Variable_2}, @code{Variable_3} and @code{Variable_4}
+from @dseries object @code{ts} (if these variables exist). Regular
+expressions cannot be used but implicit loops can.
+
+@end deftypefn
+
+@sp 1
+
 @deftypefn{dseries} {@var{B} =} rename (@var{A},@var{oldname},@var{newname})
 
 Rename variable @var{oldname} to @var{newname} in @dseries object
@@ -10818,6 +11097,7 @@ ans =
 
 @sp 1
 
+@anchor{tex_rename}
 @deftypefn{dseries} {@var{B} =} tex_rename (@var{A}, @var{name}, @var{newtexname})
 
 Redefines the tex name of variable @var{name} to @var{newtexname}
@@ -10878,6 +11158,26 @@ ts2 is a dseries object:
 
 @end deftypefn
 
+@sp 1
+
+@deftypefn{dseries} {@var{B} =} vobs (@var{A})
+
+Returns the number of variables in @dseries object @var{A}.
+
+@examplehead
+@example
+>> ts0 = dseries(randn(10,2));
+>> ts0.vobs
+
+ans =
+
+    2
+@end example
+
+@end deftypefn
+
+@sp 1
+
 @deftypefn{dseries} {@var{B} =} ydiff (@var{A})
 @deftypefnx{dseries} {@var{B} =} ygrowth (@var{A})
 
@@ -10890,13 +11190,15 @@ Computes yearly differences or growth rates.
 @node Reporting
 @chapter Reporting
 
-Dynare provides a simple interface for creating @LaTeX{} reports,
-comprised of @LaTeX{} tables and @code{PGFPLOTS/TikZ/PGF} graphs. You
-can use the report as created through Dynare or pick out the pieces
-(tables and graphs) you want for inclusion in your own paper. Though
-Dynare provides a subset of options available through @code{PGFPLOTS},
-you can easily modify the graphs created by Dynare using the options
-available in the @code{PGFPLOTS} manual.
+Dynare provides a simple interface for creating @LaTeX{} reports, comprised of
+@LaTeX{} tables and @code{PGFPLOTS/Ti}@i{k}@code{Z} graphs. You can use the
+report as created through Dynare or pick out the pieces (tables and graphs) you
+want for inclusion in your own paper. Though Dynare provides a subset of
+options available through @code{PGFPLOTS/Ti}@i{k}@code{Z}, you can easily
+modify the graphs created by Dynare using the options available in the
+@code{PGFPLOTS/Ti}@i{k}@code{Z} manual. You can either do this manually or by
+passing the options to @ref{miscTikzAxisOptions}, @ref{miscTikzAxisOptions}, or
+@ref{graphMiscTikzAddPlotOptions}.
 
 Reports are created and modified by calling methods on class
 objects. The objects are hierarchical, with the following order (from
@@ -10929,7 +11231,7 @@ used.
 Below, you will see a list of methods available for the Report class and
 a clarifying example.
 
-@defmethod Report report compiler, showDate, fileName, margin, marginUnit, orientation, paper, title
+@defmethod Report report compiler, showDate, fileName, margin, marginUnit, orientation, paper, showOutput, title
 Instantiates a @code{Report} object.
 @optionshead
 @table @code
@@ -10964,6 +11266,12 @@ Paper orientation: Default: @code{`portrait'}
 @item paper, `a4' | `letter'
 Paper size. Default: @code{`a4'}
 
+@anchor{showOutput}
+@item showOutput, @code{BOOLEAN}
+Print report creation progress to screen. Shows you the page number as it is
+created and as it is written. This is useful to see where a potential error
+occurs in report creation. Default: @code{true}
+
 @item title, @code{STRING}
 Report Title. Default: @code{none}
 @end table
@@ -10985,16 +11293,17 @@ A footnote to be included at the bottom of this page. Default: @code{none}
 
 @anchor{title}
 @item title, @code{STRING} | @code{CELL_ARRAY_STRINGS}
-With one entry (a @code{STRING}), the title of the page. With more
-than one entry (a @code{CELL_ARRAY_STRINGS}), the title and subtitle(s)
-of the page. Default: @code{none}
+With one entry (a @code{STRING}), the title of the page. With more than one
+entry (a @code{CELL_ARRAY_STRINGS}), the title and subtitle(s) of the
+page. Values passed must be valid @LaTeX{} code (@i{e.g.,} `%' must be
+`\%'). Default: @code{none}
 
 @anchor{titleFormat}
 @item titleFormat, @code{STRING} | @code{CELL_ARRAY_STRINGS}
 A string representing the @LaTeX{} markup to use on @ref{title}. The
 number of cell array entries must be equal to that of the @ref{title}
-option, if you do not want to use the default value for the title and
-subtitle(s). Default: @code{\large\bfseries}
+option if you do not want to use the default value for the title (and
+subtitles). Default: @code{\large\bfseries}
 
 @end table
 @end defmethod
@@ -11012,7 +11321,8 @@ command. Default: @code{`!'}
 @end table
 @end defmethod
 
-@defmethod Report addGraph data, graphDirName, graphName, graphSize, height, showGrid, showLegend, showLegendBox, legendLocation, legendOrientation, legendFontSize, seriesToUse, shade, shadeColor, shadeOpacity, title, width, xlabel, ylabel, xAxisTight, xrange, xTicks, xTickLabels, xTickLabelAnchor, xTickLabelRotation, yAxisTight, yrange, showZeroline
+@anchor{addGraph}
+@defmethod Report addGraph axisShape, data, graphDirName, graphName, graphSize, height, showGrid, showLegend, showLegendBox, legendLocation, legendOrientation, legendFontSize, miscTikzAxisOptions, miscTikzPictureOptions, seriesToUse, shade, shadeColor, shadeOpacity, tickFontSize, title, titleFontSize, titleFormat, width, writeCSV, xlabel, ylabel, xAxisTight, xrange, xTicks, xTickLabels, xTickLabelAnchor, xTickLabelRotation, yAxisTight, yTickLabelFixed, yTickLabelPrecision, yTickLabelScaled, yTickLabelZeroFill, yrange, showZeroline, zeroLineColor
 Adds a @code{Graph} to a @code{Section}.
 @optionshead
 @table @code
@@ -11021,19 +11331,21 @@ Adds a @code{Graph} to a @code{Section}.
 The @code{dseries} that provides the data for the graph. Default:
 @code{none}
 
+@item axisShape, @code{`box'} | @code{`L'}
+The shape the axis should have. @code{`box'} means that there is an axis line
+to the left, right, bottom, and top of the graphed line(s). @code{`L'} means
+that there is an axis to the left and bottom of the graphed line(s). Default:
+@code{`box'}
+
+@anchor{graphDirName}
 @item graphDirName, @code{STRING}
 The name of the folder in which to store this figure. Default:
 @code{tmpRepDir}
 
+@anchor{graphName}
 @item graphName, @code{STRING}
 The name to use when saving this figure. Default: something of the
 form @code{graph_pg1_sec2_row1_col3.tex}
-
-@item graphSize, @code{NUMERICAL_VECTOR}
-The width and height to be passed to the third and fourth elements of
-the array passed to the @code{`Position'} option of Matlab's
-@code{figure} command, passed as a vector of size @math{2}. Default:
-Matlab sets width and height
 
 @item height, @code{DOUBLE}
 The height of the graph, in inches. Default: @code{4.5}
@@ -11042,8 +11354,12 @@ The height of the graph, in inches. Default: @code{4.5}
 Whether or not to display the major grid on the graph. Default:
 @code{true}
 
+@anchor{showLegend}
 @item showLegend, @code{BOOLEAN}
-Whether or not to display the legend. Default: @code{false}
+Whether or not to display the legend. NB: Unless you use the
+@ref{graphLegendName} option, the name displayed in the legend is the
+@code{tex} name associated with the @code{dseries}. You can modify this
+@code{tex} name by using @ref{tex_rename}. Default: @code{false}
 
 @item showLegendBox, @code{BOOLEAN}
 Whether or not to display a box around the legend. Default:
@@ -11058,6 +11374,24 @@ Orientation of the legend. Default: @code{`horizontal'}
 @item legendFontSize, @code{`tiny'} | @code{`scriptsize'} | @code{`footnotesize'} | @code{`small'} | @code{`normalsize'} | @code{`large'} | @code{`Large'} | @code{`LARGE'} | @code{`huge'} | @code{`Huge'}
 The font size for legend entries. Default: @code{tiny}
 
+@anchor{miscTikzAxisOptions}
+@item miscTikzAxisOptions, @code{STRING}
+If you are comfortable with @code{PGFPLOTS/Ti}@i{k}@code{Z}, you can use this
+option to pass arguments directly to the @code{PGFPLOTS/Ti}@i{k}@code{Z}
+@code{axis} environment command. Specifically to be used for desired
+@code{PGFPLOTS/Ti}@i{k}@code{Z} options that have not been incorporated into
+Dynare Reproting. Default: @code{empty}
+
+@anchor{miscTikzPictureOptions}
+@item miscTikzPictureOptions, @code{STRING}
+If you are comfortable with @code{PGFPLOTS/Ti}@i{k}@code{Z}, you can use this
+option to pass arguments directly to the @code{PGFPLOTS/Ti}@i{k}@code{Z}
+@code{tikzpicture} environment command. (@i{e.g.,} to scale the graph in the x
+and y dimensions, you can pass following to this option: @code{`xscale=2.5,
+yscale=0.5'}). Specifically to be used for desired
+@code{PGFPLOTS/Ti}@i{k}@code{Z} options that have not been incorporated into
+Dynare Reproting. Default: @code{empty}
+
 @anchor{seriesToUse}
 @item seriesToUse, @code{CELL_ARRAY_STRINGS}
 The names of the series contained in the @code{dseries} provided to
@@ -11069,16 +11403,22 @@ the @ref{data} option. If empty, use all series provided to
 The date range showing the portion of the graph that should be
 shaded. Default: @code{none}
 
-@item shadeColor, @code{`red'} | @code{`green'} | @code{`blue'} | @code{`cyan'} | @code{`magenta'} | @code{`yellow'} | @code{`black'} | @code{`gray'} | @code{`darkgray'} | @code{`lightgray'} | @code{`brown'} | @code{`lime'} | @code{`olive'} | @code{`orange'} | @code{`pink'} | @code{`purple'} | @code{`teal'} | @code{`violet'} | @code{`white'}
-The color to use in the shaded portion of the graph. Default:
-@code{`green'}
+@anchor{shadeColor}
+@item shadeColor, @code{STRING}
+The color to use in the shaded portion of the graph. All valid color strings defined for use by @code{PGFPLOTS/Ti}@i{k}@code{Z} are valid. A list of defined colors is: @code{`red'}, @code{`green'}, @code{`blue'}, @code{`cyan'}, @code{`magenta'}, @code{`yellow'}, @code{`black'}, @code{`gray'}, @code{`white'}, @code{`darkgray'}, @code{`lightgray'}, @code{`brown'}, @code{`lime'}, @code{`olive'}, @code{`orange'}, @code{`pink'}, @code{`purple'}, @code{`teal'}, and @code{`violet'}. Furthermore, You can use combinations of these colors. For example, if you wanted a color that is @math{20\%} green and @math{80\%} purple, you could pass the string @code{`green!20!purple'}. You can also use RGB colors, following the syntax: @code{`rgb,255:red,231;green,84;blue,121'} which corresponds to the RGB color @code{(231;84;121)}. More examples are available in the section 4.7.5 of the @code{PGFPLOTS/Ti}@i{k}@code{Z} manual, revision 1.10. Default: @code{`green'}
 
 @item shadeOpacity, @code{DOUBLE}
 The opacity of the shaded area, must be in @math{[0,100]}. Default: @code{20}
 
+@item tickFontSize, , @code{`tiny'} | @code{`scriptsize'} | @code{`footnotesize'} | @code{`small'} | @code{`normalsize'} | @code{`large'} | @code{`Large'} | @code{`LARGE'} | @code{`huge'} | @code{`Huge'}
+The font size for x- and y-axis tick labels. Default: @code{normalsize}
+
 @anchor{graph.title}
 @item title, @code{STRING} | @code{CELL_ARRAY_STRINGS}
 Same as @ref{title}, just for graphs.
+
+@item titleFontSize, @code{`tiny'} | @code{`scriptsize'} | @code{`footnotesize'} | @code{`small'} | @code{`normalsize'} | @code{`large'} | @code{`Large'} | @code{`LARGE'} | @code{`huge'} | @code{`Huge'}
+The font size for title. Default: @code{normalsize}
 
 @item titleFormat, @code{STRING}
 The format to use for @ref{graph.title,,the graph title}. Unlike
@@ -11088,6 +11428,12 @@ the title and subtitles. Default: @code{TikZ default}
 @item width, @code{DOUBLE}
 The width of the graph, in inches. Default: @code{6.0}
 
+@item writeCSV, @code{BOOLEAN}
+Whether or not to write a CSV file with only the plotted data. The file will be
+saved in the directory specified by @ref{graphDirName} with the same base name
+as specified by @ref{graphName} with the ending @code{.csv}. Default:
+@code{false}
+
 @item xlabel, @code{STRING}
 The x-axis label. Default: @code{none}
 
@@ -11095,8 +11441,8 @@ The x-axis label. Default: @code{none}
 The y-axis label. Default: @code{none}
 
 @item xAxisTight, @code{BOOLEAN}
-Use a tight x axis. If false, uses pgfplots @code{enlarge x limits} to
-choose appropriate axis size. Default: @code{true}
+Use a tight x axis. If false, uses @code{PGFPLOTS/Ti}@i{k}@code{Z}
+@code{enlarge x limits} to choose appropriate axis size. Default: @code{true}
 
 @item xrange, @code{dates}
 The boundary on the x-axis to display in the graph. Default: all
@@ -11122,27 +11468,54 @@ Where to anchor the x tick label. Default: @code{`south'}
 The amount to rotate the x tick labels by. Default: @code{0}
 
 @item yAxisTight, @code{BOOLEAN}
-Use a tight y axis. If false, uses pgfplots @code{enlarge y limits} to
-choose appropriate axis size. Default: @code{false}
+Use a tight y axis. If false, uses @code{PGFPLOTS/Ti}@i{k}@code{Z}
+@code{enlarge y limits} to choose appropriate axis size. Default: @code{false}
 
 @item yrange, @code{NUMERICAL_VECTOR}
 The boundary on the y-axis to display in the graph, represented as a
 @code{NUMERICAL_VECTOR} of size @math{2}, with the first entry less
 than the second entry. Default: all
 
+@item yTickLabelFixed, @code{BOOLEAN}
+Round the y tick labels to a fixed number of decimal places, given by
+@ref{yTickLabelPrecision}. Default: @code{true}
+
+@anchor{yTickLabelPrecision}
+@item yTickLabelPrecision, @code{INTEGER}
+The precision with which to report the yTickLabel. Default: @code{1}
+
+@item yTickLabelScaled, @code{BOOLEAN}
+Determines whether or not there is a common scaling factor for the y
+axis. Default: @code{true}
+
+@item yTickLabelZeroFill, @code{BOOLEAN}
+Whether or not to fill missing precision spots with zeros. Default: @code{true}
+
+@anchor{showZeroLine}
 @item showZeroline, @code{BOOLEAN}
 Display a solid black line at @math{y = 0}. Default: @code{false}
+
+@item zeroLineColor, @code{STRING}
+The color to use for the zero line. Only used if @ref{showZeroLine} is
+true. See the explanation in @ref{shadeColor} for how to use colors with
+reports. Default: @code{`black'}
 
 @end table
 @end defmethod
 
-@defmethod Report addTable data, showHlines, precision, range, seriesToUse, tableDirName, tableName, title, titleFormat, vlineAfter, vlineAfterEndOfPeriod, showVlines
+@defmethod Report addTable data, highlightRows, showHlines, precision, range, seriesToUse, tableDirName, tableName, title, titleFormat, vlineAfter, vlineAfterEndOfPeriod, showVlines, writeCSV
 Adds a @code{Table} to a @code{Section}.
 @optionshead
 @table @code
 
 @item data, @code{dseries}
 @xref{data}.
+
+@item highlightRows, @code{CELL_ARRAY_STRINGS}
+A cell array containing the colors to use for row highlighting. See
+@ref{shadeColor} for how to use colors with reports. Highlighting for a
+specific row can be overridden by using the @ref{tableRowColor} option to
+@ref{addSeries}. Default: @code{empty}
 
 @item showHlines, @code{BOOLEAN}
 Whether or not to show horizontal lines separating the rows. Default: @code{false}
@@ -11156,10 +11529,12 @@ The date range of the data to be displayed. Default: @code{all}
 @item seriesToUse, @code{CELL_ARRAY_STRINGS}
 @xref{seriesToUse}.
 
+@anchor{tableDirName}
 @item tableDirName, @code{STRING}
 The name of the folder in which to store this table. Default:
 @code{tmpRepDir}
 
+@anchor{tableName}
 @item tableName, @code{STRING}
 The name to use when saving this table. Default: something of the
 form @code{table_pg1_sec2_row1_col3.tex}
@@ -11180,20 +11555,39 @@ every year, after the fourth quarter, etc.). Default: @code{false}
 
 @item showVlines, @code{BOOLEAN}
 Whether or not to show vertical lines separating the columns. Default: @code{false}
+
+@item writeCSV, @code{BOOLEAN}
+Whether or not to write a CSV file containing the data displayed in the
+table. The file will be saved in the directory specified by @ref{tableDirName}
+with the same base name as specified by @ref{tableName} with the ending
+@code{.csv}. Default: @code{false}
+
 @end table
 @end defmethod
 
 @anchor{addSeries}
-@defmethod Report addSeries data, graphLineColor, graphLineStyle, graphLineWidth, graphMarker, graphMarkerEdgeColor, graphMarkerFaceColor, graphMarkerSize, tableDataRhs, tableRowColor, tableRowIndent, tableShowMarkers, tableAlignRight, tableNegColor, tablePosColor, tableSubSectionHeader, zeroTol
-Adds a @code{Series} to a @code{Graph} or a @code{Table}.
+@defmethod Report addSeries data, graphHline, graphLegendName, graphLineColor, graphLineStyle, graphLineWidth, graphMarker, graphMarkerEdgeColor, graphMarkerFaceColor, graphMarkerSize, graphMiscTikzAddPlotOptions, graphShowInLegend, graphVline, tableDataRhs, tableRowColor, tableRowIndent, tableShowMarkers, tableAlignRight, tableNegColor, tablePosColor, tableSubSectionHeader, zeroTol
+Adds a @code{Series} to a @code{Graph} or a @code{Table}. NB: Options specific
+to graphs begin with `@code{graph}' while options specific to tables begin with
+`@code{table}'.
 @optionshead
 @table @code
 
 @item data, @code{dseries}
 @xref{data}.
 
-@item graphLineColor, @code{`red'} | @code{`green'} | @code{`blue'} | @code{`cyan'} | @code{`magenta'} | @code{`yellow'} | @code{`black'} | @code{`gray'} | @code{`darkgray'} | @code{`lightgray'} | @code{`brown'} | @code{`lime'} | @code{`olive'} | @code{`orange'} | @code{`pink'} | @code{`purple'} | @code{`teal'} | @code{`violet'} | @code{`white'}
-Color to use for the series in a graph. Default: @code{`black'}
+@item graphHline, @code{DOUBLE}
+Use this option to draw a horizontal line at the given value. Default:
+@code{empty}
+
+@anchor{graphLegendName}
+@item graphLegendName, @code{STRING}
+The name to display in the legend for this series. Will be displayed only if
+the @ref{data} option has been set. Default: the @code{tex} name of the series
+
+@item graphLineColor, @code{STRING}
+Color to use for the series in a graph. See the explanation in @ref{shadeColor}
+for how to use colors with reports. Default: @code{`black'}
 
 @item graphLineStyle, @code{`none'} | @code{`solid'} | @code{`dotted'} | @code{`densely dotted'} | @code{`loosely dotted'} | @code{`dashed'} | @code{`densely dashed'} | @code{`loosely dashed'} | @code{`dashdotted'} | @code{`densely dashdotted'} | @code{`loosely dashdotted'} | @code{`dashdotdotted'} | @code{`densely dashdotdotted'} | @code{`loosely dashdotdotted'}
 Line style for this series in a graph. Default: @code{`solid'}
@@ -11204,14 +11598,33 @@ Line width for this series in a graph. Default: @code{0.5}
 @item graphMarker, @code{`x'} | @code{`+'} | @code{`-'} | @code{`|'} | @code{`o'} | @code{`asterisk'} | @code{`star'} | @code{`10-pointed star'} | @code{`oplus'} | @code{`oplus*'} | @code{`otimes'} | @code{`otimes*'} | @code{`square'} | @code{`square*'} | @code{`triangle'} | @code{`triangle*'} | @code{`diamond'} | @code{`diamond*'} | @code{`halfdiamond*'} | @code{`halfsquare*'} | @code{`halfsquare right*'} | @code{`halfsquare left*'} | @code{`Mercedes star'} | @code{`Mercedes star flipped'} | @code{`halfcircle'} | @code{`halfcircle*'} | @code{`pentagon'} | @code{`pentagon star'}
 The Marker to use on this series in a graph. Default: @code{none}
 
-@item graphMarkerEdgeColor, @code{`red'} | @code{`green'} | @code{`blue'} | @code{`cyan'} | @code{`magenta'} | @code{`yellow'} | @code{`black'} | @code{`gray'} | @code{`darkgray'} | @code{`lightgray'} | @code{`brown'} | @code{`lime'} | @code{`olive'} | @code{`orange'} | @code{`pink'} | @code{`purple'} | @code{`teal'} | @code{`violet'} | @code{`white'}
-The edge color of the graph marker. Default: @code{graphLineColor}
+@item graphMarkerEdgeColor, @code{STRING}
+The edge color of the graph marker. See the explanation in @ref{shadeColor} for
+how to use colors with reports. Default: @code{graphLineColor}
 
-@item graphMarkerFaceColor, @code{`red'} | @code{`green'} | @code{`blue'} | @code{`cyan'} | @code{`magenta'} | @code{`yellow'} | @code{`black'} | @code{`gray'} | @code{`darkgray'} | @code{`lightgray'} | @code{`brown'} | @code{`lime'} | @code{`olive'} | @code{`orange'} | @code{`pink'} | @code{`purple'} | @code{`teal'} | @code{`violet'} | @code{`white'}
-The face color of the graph marker. Default: @code{graphLineColor}
+@item graphMarkerFaceColor, @code{STRING}
+The face color of the graph marker. See the explanation in @ref{shadeColor} for
+how to use colors with reports. Default: @code{graphLineColor}
 
 @item graphMarkerSize, @code{DOUBLE}
 The size of the graph marker. Default: @code{1}
+
+@anchor{graphMiscTikzAddPlotOptions}
+@item graphMiscTikzAddPlotOptions, @code{STRING}
+If you are comfortable with @code{PGFPLOTS/Ti}@i{k}@code{Z}, you can use this
+option to pass arguments directly to the @code{PGFPLOTS/Ti}@i{k}@code{Z}
+@code{addPlots} command. (@i{e.g.,} Instead of passing the marker options
+above, you can pass a string such as the following to this option:
+@code{`mark=halfcircle*,mark options=@{rotate=90,scale=3@}'}). Specifically to be
+used for desired @code{PGFPLOTS/Ti}@i{k}@code{Z} options that have not been
+incorporated into Dynare Reproting. Default: @code{empty}
+
+@item graphShowInLegend, @code{BOOLEAN}
+Whether or not to show this series in the legend, given that the
+@ref{showLegend} option was passed to @ref{addGraph}. Default: @code{true}
+
+@item graphVline, @code{dates}
+Use this option to draw a vertical line at a given date. Default: @code{empty}
 
 @item tableDataRhs, @code{dseries}
 A series to be added to the right of the current series. Usefull for
@@ -11220,6 +11633,7 @@ quarterly @code{tableDataRhs} could point to the yearly averages of
 the quarterly series. This would cause quarterly data to be displayed
 followed by annual data. Default: @code{empty}
 
+@anchor{tableRowColor}
 @item tableRowColor, @code{STRING}
 The color that you want the row to be. Predefined values include
 @code{LightCyan} and @code{Gray}. Default: @code{white}.
@@ -11259,9 +11673,36 @@ with it. It is equivalent to adding an empty series with a
 name. Default: @code{''}
 
 @item zeroTol, @code{DOUBLE}
-The zero tolerance. Anything smaller than @code{zeroTol} and larger
-than @code{-zeroTol} will be set to zero before being
-graphed. Default: @math{1e-6}
+The zero tolerance. Anything smaller than @code{zeroTol} and larger than
+@code{-zeroTol} will be set to zero before being graphed or written to the
+table. Default: @math{1e-6}
+
+@end table
+@end defmethod
+
+@defmethod Report addParagraph balancedCols, cols, heading, indent, text
+Adds a @code{Paragraph} to a @code{Section}. NB: The @code{Section} can only be
+comprised of @code{Paragraphs} and must only have 1 column.
+@optionshead
+@table @code
+
+@item balancedCols, @code{BOOLEAN}
+Determines whether the text is spread out evenly across the columns when the
+@code{Paragraph} has more than one column. Default: @code{true}
+
+@item cols, @code{INTEGER}
+The number of columns for the @code{Paragraph}. Default: @code{1}
+
+@item heading, @code{STRING}
+The heading for the Paragraph (like a section heading). The string must be
+correct @LaTeX{} code. Default: @code{empty}
+
+@item indent, @code{BOOLEAN}
+Whether or not to indent the paragraph. Default: @code{true}
+
+@item text, @code{STRING}
+The paragraph itself. The string must be correct @LaTeX{} code. Default:
+@code{empty}
 
 @end table
 @end defmethod
@@ -11284,17 +11725,28 @@ Writes the @LaTeX{} representation of this @code{Report}, saving it to
 the file specified by @ref{filename}.
 @end defmethod
 
-@defmethod Report compile compiler
+@defmethod Report compile compiler, showOutput, showReport
 Compiles the report written by @ref{write} into a @code{pdf} file. If
 the report has not already been written (determined by the existence
 of the file specified by @ref{filename}, @ref{write} is called.
 optionshead
 @table @code
+
 @item compiler, @code{FILENAME}
 Like @ref{compiler}, except will not overwrite the value of
 @code{compiler} contained in the report object. Hence, passing the
 value here is useful for using different @LaTeX{} compilers or just
 for passing the value at the last minute.
+
+@item showOutput, @code{BOOLEAN}
+Print the compiler output to the screen. Useful for debugging your code as the
+@LaTeX{} compiler hangs if there is a problem. Default: the value of
+@ref{showOutput}
+
+@item showReport, @code{BOOLEAN}
+Open the compiled report (works on Windows and OS X on Matlab). Default:
+@code{true}
+
 @end table
 @end defmethod
 
@@ -11321,16 +11773,16 @@ rep = rep.addSection(`cols', 2);
 rep = rep.addGraph(`title', `Graph (1,1)', `showLegend', true, ...
                    `xrange', dates(`2007q1'):dates(`2013q4'), ...
                    `shade', dates(`2012q2'):dates(`2013q4'));
-rep = rep.addSeries(`data', dsq@{`SERIES1'@}, `color', `b', ...
+rep = rep.addSeries(`data', dsq@{`SERIES1'@}, `graphLineColor', `blue', ...
                     `graphLineWidth', 1);
-rep = rep.addSeries(`data', dsq@{`SERIES2'@}, `color', `g', ...
+rep = rep.addSeries(`data', dsq@{`SERIES2'@}, `graphLineColor', `green', ...
                     `graphLineStyle', '--', `graphLineWidth', 1.5);
 rep = rep.addGraph(`title', `Graph (1,2)', `showLegend', true, ...
                    `xrange', dates(`2007q1'):dates(`2013q4'), ...
                    `shade', dates(`2012q2'):dates(`2013q4'));
-rep = rep.addSeries(`data', dsq@{`SERIES3'@}, `color', `b', ...
+rep = rep.addSeries(`data', dsq@{`SERIES3'@}, `graphLineColor', `blue', ...
                     `graphLineWidth', 1);
-rep = rep.addSeries(`data', dsq@{`SERIES4'@}, `color', `g', ...
+rep = rep.addSeries(`data', dsq@{`SERIES4'@}, `graphLineColor', `green', ...
                     `graphLineStyle', '--', `graphLineWidth', 1.5);
 
 % Section 2
@@ -11602,6 +12054,9 @@ Kim, Jinill, Sunghyun Kim, Ernst Schaumburg, and Christopher A. Sims
 (2008): ``Calculating and using second-order accurate solutions of
 discrete time dynamic equilibrium models,'' @i{Journal of Economic
 Dynamics and Control}, 32(11), 3397--3414
+
+@item
+Koop, Gary (2003), @i{Bayesian Econometrics}, John Wiley & Sons
 
 @item
 Koopman, S. J. and J. Durbin (2003): ``Filtering and Smoothing of

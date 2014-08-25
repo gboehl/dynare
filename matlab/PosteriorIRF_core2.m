@@ -5,7 +5,7 @@ function myoutput=PosteriorIRF_core2(myinputs,fpar,npar,whoiam, ThisMatlab)
 % Perform in parallel execution a portion of the PosteriorIRF.m code.
 % See also the comment in random_walk_metropolis_hastings_core.m funtion.
 %
-% INPUTS 
+% INPUTS
 %   See the comment in random_walk_metropolis_hastings_core.m funtion.
 %
 % OUTPUTS
@@ -13,8 +13,8 @@ function myoutput=PosteriorIRF_core2(myinputs,fpar,npar,whoiam, ThisMatlab)
 %  Contained:
 %  OutputFileName (i.e. the figures without the file .txt).
 %
-% ALGORITHM 
-%   Portion of PosteriorIRF.m function code. Specifically the last 'for' cycle.       
+% ALGORITHM
+%   Portion of PosteriorIRF.m function code. Specifically the last 'for' cycle.
 %
 % SPECIAL REQUIREMENTS.
 %   None.
@@ -36,7 +36,7 @@ function myoutput=PosteriorIRF_core2(myinputs,fpar,npar,whoiam, ThisMatlab)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-global options_  M_ 
+global options_  M_
 
 if nargin<4,
     whoiam=0;
@@ -87,7 +87,7 @@ OutputFileName={};
 subplotnum = 0;
 for i=fpar:npar,
     figunumber = 0;
-    
+
     for j=1:nvar
         if max(abs(MeanIRF(:,j,i))) > options_.impulse_responses.plot_threshold
             subplotnum = subplotnum+1;
@@ -96,7 +96,7 @@ for i=fpar:npar,
             elseif subplotnum == 1 && ~options_.relative_irf
                 hh = dyn_figure(options_,'Name',['Orthogonalized shock to ' tit(i,:)]);
             end
-            
+
             set(0,'CurrentFigure',hh)
             subplot(nn,nn,subplotnum);
             if ~MAX_nirfs_dsgevar
@@ -108,12 +108,12 @@ for i=fpar:npar,
                 set(h2,'FaceColor',[1 1 1]);
                 set(h2,'BaseValue',min(HPDIRF(:,1,j,i)));
                 plot(1:options_.irf,MeanIRF(:,j,i),'-k','linewidth',3)
-                % plot([1 options_.irf],[0 0],'-r','linewidth',0.5);          
+                % plot([1 options_.irf],[0 0],'-r','linewidth',0.5);
                 box on
                 axis tight
                 xlim([1 options_.irf]);
                 hold off
-            else    
+            else
                 h1 = area(1:options_.irf,HPDIRF(:,2,j,i));
                 set(h1,'FaceColor',[.9 .9 .9]);
                 set(h1,'BaseValue',min([min(HPDIRF(:,1,j,i)),min(HPDIRFdsgevar(:,1,j,i))]));
@@ -136,9 +136,9 @@ for i=fpar:npar,
         else
             if options_.debug
                 fprintf('POSTERIOR_IRF: The IRF of %s to %s is smaller than the irf_plot_threshold of %4.3f and will not be displayed.\n',deblank(varlist(j,:)),tit(i,:),options_.impulse_responses.plot_threshold)
-            end                
+            end
         end
-        
+
         if subplotnum == MaxNumberOfPlotPerFigure || (j == nvar  && subplotnum> 0)
             figunumber = figunumber+1;
             dyn_saveas(hh,[DirectoryName '/'  M_.fname '_Bayesian_IRF_' deblank(tit(i,:)) '_' int2str(figunumber)],options_);
@@ -154,9 +154,8 @@ for i=fpar:npar,
 %         fMessageStatus((i-fpar+1)/(npar-fpar+1),whoiam,waitbarString, waitbarTitle, Parallel(ThisMatlab));
         dyn_waitbar((i-fpar+1)/(npar-fpar+1),[],waitbarString);
     end
-end% loop over exo_var  
+end% loop over exo_var
 
 
 
 myoutput.OutputFileName = OutputFileName;
-

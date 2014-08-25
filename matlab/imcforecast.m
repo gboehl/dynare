@@ -45,7 +45,6 @@ function imcforecast(constrained_paths, constrained_vars, options_cond_fcst)
 
 global options_ oo_ M_ bayestopt_
 
-
 if ~isfield(options_cond_fcst,'parameter_set') || isempty(options_cond_fcst.parameter_set)
     options_cond_fcst.parameter_set = 'posterior_mode';
 end
@@ -102,30 +101,13 @@ if estimated_model
             error('imcforecast:: The dimension of the vector of parameters doesn''t match the number of estimated parameters!')
         end
     end
-
     set_parameters(xparam);
-
-    % Load and transform data.
-    transformation = [];
-    if options_.loglinear && ~options_.logdata
-        transformation = @log;
-    end
-    xls.sheet = options_.xls_sheet;
-    xls.range = options_.xls_range;
-    
-    if ~isfield(options_,'nobs')
-        options_.nobs = [];
-    end
-    
-    dataset_ = initialize_dataset(options_.datafile,options_.varobs,options_.first_obs,options_.nobs,transformation,options_.prefilter,xls);
-
-    data = dataset_.data;
-    data_index = dataset_.missing.aindex;
-    gend = options_.nobs;
-    missing_value = dataset_.missing.state;
-
+    [dataset_,dataset_info] = makedataset(options_);
+    data = transpose(dataset_.data);
+    data_index = dataset_info.missing.aindex;
+    gend = dataset_.nobs;
+    missing_value = dataset_info.missing.state;
     [atT,innov,measurement_error,filtered_state_vector,ys,trend_coeff] = DsgeSmoother(xparam,gend,data,data_index,missing_value);
-
     trend = repmat(ys,1,options_cond_fcst.periods+1);
     for i=1:M_.endo_nbr
         j = strmatch(deblank(M_.endo_names(i,:)),options_.varobs,'exact');
@@ -134,7 +116,6 @@ if estimated_model
         end
     end
     trend = trend(oo_.dr.order_var,:);
-
     InitState(:,1) = atT(:,end);
 else
     InitState(:,1) = zeros(M_.endo_nbr,1);
@@ -145,9 +126,14 @@ end
 if isempty(options_.qz_criterium)
     options_.qz_criterium = 1+1e-6;
 end
+
 [T,R,ys,info,M_,options_,oo_] = dynare_resolve(M_,options_,oo_);
 
-sQ = sqrt(M_.Sigma_e);
+if ~isdiagonal(M_.Sigma_e)
+    warning(sprintf('The innovations are correlated (the covariance matrix has non zero off diagonal elements), the results of the conditional forecasts will\ndepend on the ordering of the innovations (as declared after varexo) because a Cholesky decomposition is used to factorize the covariance matrix.\n\n=> It is preferable to declare the correlations in the model block (explicitly imposing the identification restrictions), unless you are satisfied\nwith the implicit identification restrictions implied by the Cholesky decomposition.'))
+end
+
+sQ = chol(M_.Sigma_e,'lower');
 
 NumberOfStates = length(InitState);
 FORCS1 = zeros(NumberOfStates,options_cond_fcst.periods+1,options_cond_fcst.replic);

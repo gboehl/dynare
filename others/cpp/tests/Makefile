@@ -24,13 +24,13 @@ test1.o : test1.cc ../dynare_cpp_driver.hh ../dynare_cpp_driver.cc
 dynare_cpp_driver.o: ../dynare_cpp_driver.cc ../dynare_cpp_driver.hh
 	gcc -g -c ../dynare_cpp_driver.cc -I..
 example1.cc example1_steadystate.cc: example1.mod
-	$(DYNARE) example1.mod output=first
+	$(DYNARE) example1.mod output=first language=C++
 example1.o: example1.cc
 	gcc -g -c example1.cc -I..
-example1_steadystate.o: example1_steadystate.cc
-	gcc -g -c example1_steadystate.cc
-example1_first_derivatives.o: example1_first_derivatives.cc
-	gcc -g -c example1_first_derivatives.cc
+example1_steadystate.o: example1_steadystate.c
+	gcc -g -c example1_steadystate.c
+example1_first_derivatives.o: example1_first_derivatives.c
+	gcc -g -c example1_first_derivatives.c
 
 test1 : test1.o example1.o example1_steadystate.o example1_first_derivatives.o dynare_cpp_driver.o Matrix.o Vector.o QRDecomposition.o GeneralizedSchurDecomposition.o LUSolver.o DecisionRules.o
 	gcc -g -o test1 test1.o example1.o example1_steadystate.o example1_first_derivatives.o dynare_cpp_driver.o Matrix.o Vector.o QRDecomposition.o GeneralizedSchurDecomposition.o LUSolver.o DecisionRules.o -llapack -lblas -lm -lstdc++

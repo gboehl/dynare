@@ -35,8 +35,11 @@ global M_ options_ oo_
 options_.verbosity = options_.ep.verbosity;
 verbosity = options_.ep.verbosity+options_.ep.debug;
 
+% Set maximum number of iterations for the deterministic solver.
+options_.simul.maxit = options_.ep.maxit;
+
 % Prepare a structure needed by the matlab implementation of the perfect foresight model solver
-pfm = setup_stochastic_perfect_foresight_model_solver(M_,options_,oo_,'Tensor-Gaussian-Quadrature');
+pfm = setup_stochastic_perfect_foresight_model_solver(M_,options_,oo_);
 
 exo_nbr = M_.exo_nbr;
 periods = options_.periods;
@@ -53,12 +56,10 @@ if isempty(initial_conditions)
     end
 end
 
-% Set maximum number of iterations for the deterministic solver.
-options_.simul.maxit = options_.ep.maxit;
 
 % Set the number of periods for the perfect foresight model
 periods = options_.ep.periods;
-pfm.periods = options_.ep.periods;
+pfm.periods = periods;
 pfm.i_upd = pfm.ny+(1:pfm.periods*pfm.ny);
 
 % keep a copy of pfm.i_upd
@@ -120,8 +121,6 @@ switch options_.ep.innovation_distribution
     error(['extended_path:: ' options_.ep.innovation_distribution ' distribution for the structural innovations is not (yet) implemented!'])
 end
 
-% Initializes some variables.
-t  = 0;
 
 % Set waitbar (graphic or text  mode)
 hh = dyn_waitbar(0,'Please wait. Extended Path simulations...');
@@ -138,6 +137,37 @@ else
     pfm.dr = [];
 end
 
+% number of nonzero derivatives
+pfm.nnzA = M_.NNZDerivatives(1);
+
+% setting up integration nodes if order > 0
+if options_.ep.stochastic.order > 0
+    [nodes,weights,nnodes] = setup_integration_nodes(options_.ep,pfm);
+    pfm.nodes = nodes;
+    pfm.weights = weights; 
+    pfm.nnodes = nnodes;
+
+    % compute number of blocks
+    [block_nbr,pfm.world_nbr] = get_block_world_nbr(options_.ep.stochastic.algo,nnodes,options_.ep.ut.k,options_.ep.periods);
+else
+    block_nbr = options_.ep.periods
+end
+
+
+% set boundaries if mcp
+[lb,ub,pfm.eq_index] = get_complementarity_conditions(M_);
+options_.lmmcp.lb = repmat(lb,block_nbr,1);
+options_.lmmcp.ub = repmat(ub,block_nbr,1);
+pfm.block_nbr = block_nbr;
+
+% storage for failed draws
+oo_.ep.failures.periods = [];
+oo_.ep.failures.previous_period = cell(0);
+oo_.ep.failures.shocks = cell(0);
+
+% Initializes some variables.
+t  = 0;
+tsimul = 1;
 % Main loop.
 while (t<sample_size)
     if ~mod(t,10)
@@ -168,6 +198,9 @@ while (t<sample_size)
     increase_periods = 0;
     % Keep a copy of endo_simul_1
     endo_simul = endo_simul_1;
+    if verbosity
+        save ep_test_1 endo_simul_1 exo_simul_1
+    end
     while 1
         if ~increase_periods
             if bytecode_flag && ~options_.ep.stochastic.order
@@ -185,7 +218,7 @@ while (t<sample_size)
                             solve_stochastic_perfect_foresight_model(endo_simul_1,exo_simul_1,pfm1,options_.ep.stochastic.quadrature.nodes,options_.ep.stochastic.order);
                         case 1
                           [flag,tmp] = ...
-                              solve_stochastic_perfect_foresight_model_1(endo_simul_1,exo_simul_1,pfm1,options_.ep.stochastic.quadrature.nodes,options_.ep.stochastic.order);
+                              solve_stochastic_perfect_foresight_model_1(endo_simul_1,exo_simul_1,options_,pfm1,options_.ep.stochastic.order);
                     end
                 end
             end
@@ -263,7 +296,14 @@ while (t<sample_size)
                 if options_.ep.stochastic.order == 0
                     [flag,tmp,err] = solve_perfect_foresight_model(endo_simul_1,exo_simul_1,pfm1);
                 else
-                    [flag,tmp] = solve_stochastic_perfect_foresight_model(endo_simul_1,exo_simul_1,pfm1,options_.ep.stochastic.nodes,options_.ep.stochastic.order);
+                    switch(options_.ep.stochastic.algo)
+                        case 0
+                        [flag,tmp] = ...
+                            solve_stochastic_perfect_foresight_model(endo_simul_1,exo_simul_1,pfm1,options_.ep.stochastic.quadrature.nodes,options_.ep.stochastic.order);
+                        case 1
+                          [flag,tmp] = ...
+                              solve_stochastic_perfect_foresight_model_1(endo_simul_1,exo_simul_1,options_,pfm1,options_.ep.stochastic.order);
+                    end
                 end
             end
             info_convergence = ~flag;
@@ -307,7 +347,8 @@ while (t<sample_size)
             end% if info_convergence
         end
     end% while
-    if ~info_convergence% If exited from the while loop without achieving convergence, use an homotopic approach
+    if ~info_convergence && ep.homotopic_steps % If exited from the while loop without achieving
+                                               % convergence use an homotopic approach
         if ~do_not_check_stability_flag
             periods1 = ep.periods;
             pfm1.periods = periods1;
@@ -345,11 +386,18 @@ while (t<sample_size)
             end
         end
     end
-    % Save results of the perfect foresight model solver.
-    time_series(:,t) = endo_simul_1(:,2);
-    endo_simul_1(:,1:end-1) = endo_simul_1(:,2:end);
-    endo_simul_1(:,1) = time_series(:,t);
-    endo_simul_1(:,end) = oo_.steady_state;
+    if info_convergence
+        % Save results of the perfect foresight model solver.
+        time_series(:,tsimul) = endo_simul_1(:,2);
+        endo_simul_1(:,1:end-1) = endo_simul_1(:,2:end);
+        endo_simul_1(:,1) = time_series(:,tsimul);
+        endo_simul_1(:,end) = oo_.steady_state;
+        tsimul = tsimul+1;
+    else
+        oo_.ep.failures.periods = [oo_.ep.failures.periods t];
+        oo_.ep.failures.previous_period = [oo_.ep.failures.previous_period  endo_simul_1(:,1)];
+        oo_.ep.failures.shocks = [oo_.ep.failures.shocks  shocks];
+    end
 end% (while) loop over t
 
 dyn_waitbar_close(hh);

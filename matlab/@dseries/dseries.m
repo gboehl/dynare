@@ -10,7 +10,7 @@ function ts = dseries(varargin) % --*-- Unitary tests --*--
 %! @sp 2
 %! If @code{nargin==0} then an empty dseries object is created. The object can be populated with data subsequently using the overloaded subsref method.
 %! @sp 2
-%! If @code{nargin==1} and if the input argument is a @ref{dynDate} object, then a dseries object without data is created. This object can be populated with the overload subsref method.
+%! If @code{nargin==1} and if the input argument is a @ref{dates} object, then a dseries object without data is created. This object can be populated with the overload subsref method.
 %! @sp 2
 %! If @code{nargin==1} and if the input argument is a string for the name of a csv, m or mat file containing data, then a dseries object is created from these data.
 %! @sp 2
@@ -54,7 +54,7 @@ function ts = dseries(varargin) % --*-- Unitary tests --*--
 %! frequency is unspecified. @var{freq} is equal to 4 if data are on a quaterly basis. @var{freq} is equal to
 %! 12 if data are on a monthly basis. @var{freq} is equal to 52 if data are on a weekly basis.
 %! @item init
-%! @ref{dynDate} object, initial date of the dataset.
+%! @ref{dates} object, initial date of the dataset.
 %! @end table
 %! @end deftypefn
 %@eod:
@@ -76,18 +76,18 @@ function ts = dseries(varargin) % --*-- Unitary tests --*--
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-ts = struct;
+if nargin>0 && ischar(varargin{1}) && isequal(varargin{1},'initialize')
+    ts = struct;
+    ts.data  = [];
+    ts.name  = {};
+    ts.tex   = {};
+    ts.dates = dates();
+    ts = class(ts,'dseries');
+    assignin('base','emptydseriesobject',ts);
+    return
+end
 
-ts.data  = [];
-ts.nobs  = 0;
-ts.vobs  = 0;
-ts.name  = {};
-ts.tex   = {};
-ts.freq  = [];
-ts.init  = dates();
-ts.dates = dates();
-
-ts = class(ts,'dseries');
+ts = evalin('base','emptydseriesobject');
 
 switch nargin
   case 0
@@ -100,13 +100,10 @@ switch nargin
             error(['dseries::dseries: Input ' inputname(1) ' (identified as a dates object) must be non empty!'])
           case 1
             % Create an empty dseries object with an initial date.
-            ts.init = varargin{1};
-            ts.freq = varargin{1}.freq;
+            ts.dates = varargin{1};
           otherwise
             % A range of dates is passed to the constructor
             ts.dates = varargin{1};
-            ts.init = varargin{1}(1);
-            ts.freq = varargin{1}.freq;
         end
         return
     elseif ischar(varargin{1})
@@ -136,12 +133,9 @@ switch nargin
         else
             error(['dseries:: I''m not able to load data from ' inputname(1) '!'])
         end
-        ts.init = init;
-        ts.freq = freq;
         ts.data = data;
         ts.name = varlist;
-        ts.vobs = length(varlist);
-        ts.nobs = size(data,1);
+        ts.dates = init:init+(nobs(ts)-1);
         if isempty(tex)
             ts.tex = name2tex(varlist);
         else
@@ -149,13 +143,23 @@ switch nargin
         end
     elseif isnumeric(varargin{1}) && isequal(ndims(varargin{1}),2)
         ts.data = varargin{1};
-        [ts.nobs, ts.vobs] = size(ts.data);
-        ts.freq = 1;
-        ts.init = dates(1,1);
-        ts.name = default_name(ts.vobs);
+        ts.name = default_name(vobs(ts));
         ts.tex = name2tex(ts.name);
+        ts.dates = dates(1,1):dates(1,1)+(nobs(ts)-1);
     end
   case {2,3,4}
+    if isequal(nargin,2) && ischar(varargin{1}) && isdates(varargin{2})
+        % Instantiate dseries object with a data file and force the initial date to be as given by the second input argument.
+        ds = dseries(varargin{1});
+        ts = dseries(ds.data, varargin{2}, ds.name, ds.tex);
+        return
+    end
+    if isequal(nargin,2) && ischar(varargin{1}) && ischar(varargin{2}) && isdate(varargin{2})
+        % Instantiate dseries object with a data file and force the initial date to be as given by the second input argument.
+        ds = dseries(varargin{1});
+        ts = dseries(ds.data, dates(varargin{2}), ds.name, ds.tex);
+        return
+    end
     a = varargin{1};
     b = varargin{2};
     if nargin<4
@@ -176,34 +180,26 @@ switch nargin
     end
     % Get data, number of observations and number of variables.
     ts.data = a;
-    ts.nobs = size(a,1);
-    ts.vobs = size(a,2);
     % Get the first date and set the frequency.
     if isempty(b)
-        ts.freq = 1;
-        ts.init = dates(1,1);
+        init = dates(1,1);
     elseif (isdates(b) && isequal(length(b),1))
-        ts.freq = b.freq;
-        ts.init = b;
-    elseif isdate(b)% Weekly, Monthly, Quaterly or Annual data (string).
-        ts.init = dates(b);
-        ts.freq = ts.init.freq;
+        init = b;
+    elseif ischar(b) && isdate(b)% Weekly, Monthly, Quaterly or Annual data (string).
+        init = dates(b);
     elseif (isnumeric(b) && isscalar(b) && isint(b)) % Yearly data.
-        ts.freq = 1;
-        ts.init = dates([num2str(b) 'Y']);
+        init = dates([num2str(b) 'Y']);
     elseif isdates(b) % Range of dates
-        ts.freq = b.freq;
-        ts.init = b(1);
-        if ts.nobs>1 && ~isequal(b.ndat,ts.nobs)
+        init = b(1);
+        if nobs(ts)>1 && ~isequal(b.ndat,nobs(ts))
             message =   'dseries::dseries: If second input is a range, its number of elements must match ';
             message = char(message, '                  the number of rows in the first input, unless the first input');
             message = char(message, '                  has only one row.');
             skipline()
             disp(message);
             error(' ');
-        elseif isequal(ts.nobs, 1)
+        elseif isequal(nobs(ts), 1)
             ts.data = repmat(ts.data,b.ndat,1);
-            ts.nobs = b.ndat;
         end
         ts.dates = b;
     elseif (isnumeric(b) && isint(b)) % Range of yearly dates.
@@ -216,19 +212,19 @@ switch nargin
     end
     % Get the names of the variables.
     if ~isempty(c)
-        if ts.vobs==length(c)
-            for i=1:ts.vobs
-                ts.name = vertcat(ts.name, c(i) );
+        if vobs(ts)==length(c)
+            for i=1:vobs(ts)
+                ts.name = vertcat(ts.name, c(i));
             end
         else
             error('dseries::dseries: The number of declared names does not match the number of variables!')
         end
     else
-        ts.name = default_name(ts.vobs);
+        ts.name = default_name(vobs(ts));
     end
     if ~isempty(d)
-        if ts.vobs==length(d)
-            for i=1:ts.vobs
+        if vobs(ts)==length(d)
+            for i=1:vobs(ts)
                 ts.tex = vertcat(ts.tex, d(i));
             end
         else
@@ -242,7 +238,7 @@ switch nargin
 end
 
 if isempty(ts.dates)
-    ts.dates = ts.init:ts.init+(ts.nobs-1);
+    ts.dates = init:init+(nobs(ts)-1);
 end
 
 %@test:1
@@ -345,12 +341,12 @@ end
 %@test:6
 %$ t = zeros(8,1);
 %$
-%$ %try
+%$ try
 %$     ts = dseries(transpose(1:5),[]);
 %$     t(1) = 1;
-%$ %catch
-%$ %    t = 0;
-%$ %end
+%$ catch
+%$     t = 0;
+%$ end
 %$
 %$ if length(t)>1
 %$     t(2) = dyn_assert(ts.freq,1);

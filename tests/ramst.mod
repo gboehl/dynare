@@ -30,7 +30,8 @@ periods 1;
 values 1.2;
 end;
 
-simul(periods=200);
+perfect_foresight_setup(periods=200);
+perfect_foresight_solver;
 
 rplot c;
 rplot k;

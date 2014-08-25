@@ -63,6 +63,12 @@ if M.exo_nbr == 0
     oo.exo_steady_state = [] ;
 end
 
+
+info=test_for_deep_parameters_calibration(M);
+if info
+    problem_dummy=1;
+end;
+
 % check if ys is steady state
 options.debug=1; %locally set debug option to 1
 [dr.ys,params,check1]=evaluate_steady_state(oo.steady_state,M,options,oo,1);

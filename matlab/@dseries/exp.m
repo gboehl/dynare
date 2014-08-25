@@ -46,7 +46,7 @@ function ts = exp(ts)
 
 ts.data = exp(ts.data);
 
-for i=1:ts.vobs
+for i=1:vobs(ts)
     ts.name(i) = {['exp(' ts.name{i} ')']};
     ts.tex(i) = {['\exp(' ts.tex{i} ')']};
 end

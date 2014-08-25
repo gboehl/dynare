@@ -323,13 +323,16 @@ ParsingDriver::add_model_variable(int symb_id, int lag)
     error("Variable " + mod_file->symbol_table.getName(symb_id) + " not allowed inside model declaration. Its scope is only outside model.");
 
   if (type == eExternalFunction)
-    error("Symbol " + mod_file->symbol_table.getName(symb_id) + " is a function name external to Dynare. It cannot be used inside model.");
+    error("Symbol " + mod_file->symbol_table.getName(symb_id) + " is a function name external to Dynare. It cannot be used like a variable without input argument inside model.");
 
   if (type == eModelLocalVariable && lag != 0)
     error("Model local variable " + mod_file->symbol_table.getName(symb_id) + " cannot be given a lead or a lag.");
 
   if (dynamic_cast<StaticModel *>(model_tree) != NULL && lag != 0)
     error("Leads and lags on variables are forbidden in 'planner_objective'.");
+
+  if (dynamic_cast<StaticModel *>(model_tree) != NULL && type == eModelLocalVariable)
+    error("Model local variable " + mod_file->symbol_table.getName(symb_id) + " cannot be used in 'planner_objective'.");
 
   // It makes sense to allow a lead/lag on parameters: during steady state calibration, endogenous and parameters can be swapped
   return model_tree->AddVariable(symb_id, lag);
@@ -628,9 +631,9 @@ ParsingDriver::begin_model()
 }
 
 void
-ParsingDriver::end_shocks()
+ParsingDriver::end_shocks(bool overwrite)
 {
-  mod_file->addStatement(new ShocksStatement(det_shocks, var_shocks, std_shocks,
+  mod_file->addStatement(new ShocksStatement(overwrite, det_shocks, var_shocks, std_shocks,
                                              covar_shocks, corr_shocks, mod_file->symbol_table));
   det_shocks.clear();
   var_shocks.clear();
@@ -640,9 +643,9 @@ ParsingDriver::end_shocks()
 }
 
 void
-ParsingDriver::end_mshocks()
+ParsingDriver::end_mshocks(bool overwrite)
 {
-  mod_file->addStatement(new MShocksStatement(det_shocks, mod_file->symbol_table));
+  mod_file->addStatement(new MShocksStatement(overwrite, det_shocks, mod_file->symbol_table));
   det_shocks.clear();
 }
 
@@ -2536,7 +2539,8 @@ ParsingDriver::add_model_var_or_external_function(string *function_name, bool in
         { // e.g. this function has already been referenced (either ad hoc or through the external_function() statement
           // => check that the information matches previously declared info
           int symb_id = mod_file->symbol_table.getID(*function_name);
-          assert(mod_file->external_functions_table.exists(symb_id));
+          if (!mod_file->external_functions_table.exists(symb_id))
+            error("Using a derivative of an external function (" + *function_name + ") in the model block is currently not allowed.");
 
           if (in_model_block)
             if (mod_file->external_functions_table.getNargs(symb_id) == eExtFunNotSet)
@@ -2742,3 +2746,31 @@ void ParsingDriver::end_irf_calibration()
   irf_calibration_constraints.clear();
 }
 
+void
+ParsingDriver::smoother2histval()
+{
+  mod_file->addStatement(new Smoother2histvalStatement(options_list));
+  options_list.clear();
+}
+
+void
+ParsingDriver::histval_file(string *filename)
+{
+  mod_file->addStatement(new HistvalFileStatement(*filename));
+  delete filename;
+}
+
+
+void
+ParsingDriver::perfect_foresight_setup()
+{
+  mod_file->addStatement(new PerfectForesightSetupStatement(options_list));
+  options_list.clear();
+}
+
+void
+ParsingDriver::perfect_foresight_solver()
+{
+  mod_file->addStatement(new PerfectForesightSolverStatement(options_list));
+  options_list.clear();
+}

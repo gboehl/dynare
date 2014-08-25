@@ -36,6 +36,7 @@ options_.console_mode = 0;
 ts = extended_path([],100);
 
 options_.ep.stochastic.status = 1;
+options_.ep.IntegrationAlgorithm='Tensor-Gaussian-Quadrature';
 options_.ep.order = 1;
 options_.ep.nnodes = 3;
 sts = extended_path([],100);

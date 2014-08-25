@@ -22,4 +22,7 @@ if HAVE_SLICOT
 SUBDIRS += kalman_steady_state
 endif
 
+install-exec-local:
+	$(MKDIR_P) $(DESTDIR)$(pkglibdir)/mex/octave
+
 endif

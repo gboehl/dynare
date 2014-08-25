@@ -1,4 +1,4 @@
-function prior_posterior_statistics(type,dataset)
+function prior_posterior_statistics(type,dataset,dataset_info)
 
 % function prior_posterior_statistics(type,dataset)
 % Computes Monte Carlo filter smoother and forecasts
@@ -40,11 +40,11 @@ global options_ estim_params_ oo_ M_ bayestopt_
 
 localVars=[];
 
-Y = dataset.data;
-gend = dataset.info.ntobs;
-data_index = dataset.missing.aindex;
-missing_value = dataset.missing.state;
-bayestopt_.mean_varobs = dataset.descriptive.mean';
+Y = transpose(dataset.data);
+gend = dataset.nobs;
+data_index = dataset_info.missing.aindex;
+missing_value = dataset_info.missing.state;
+bayestopt_.mean_varobs = dataset_info.descriptive.mean';
 
 nvx  = estim_params_.nvx;
 nvn  = estim_params_.nvn;
@@ -58,7 +58,7 @@ naK = length(options_.filter_step_ahead);
 MaxNumberOfBytes=options_.MaxNumberOfBytes;
 endo_nbr=M_.endo_nbr;
 exo_nbr=M_.exo_nbr;
-nvobs     = size(options_.varobs,1);
+nvobs     = length(options_.varobs);
 iendo = 1:endo_nbr;
 horizon = options_.forecast;
 filtered_vars = options_.filtered_vars;
@@ -97,7 +97,7 @@ MAX_ninno = min(B,ceil(MaxNumberOfBytes/(exo_nbr*gend)/8));
 MAX_nerro = min(B,ceil(MaxNumberOfBytes/(size(options_.varobs,1)*gend)/8));
 
 if naK
-    MAX_naK   = min(B,ceil(MaxNumberOfBytes/(size(options_.varobs,1)* ...
+    MAX_naK   = min(B,ceil(MaxNumberOfBytes/(length(options_.varobs)* ...
                                              length(options_.filter_step_ahead)*gend)/8));
 end
 
@@ -106,7 +106,7 @@ if horizon
     MAX_nforc2 = min(B,ceil(MaxNumberOfBytes/((endo_nbr)*(horizon+maxlag))/ ...
                             8));
     IdObs    = bayestopt_.mfys;
-    
+
 end
 MAX_momentsno = min(B,ceil(MaxNumberOfBytes/(get_moments_size(options_)*8)));
 
@@ -232,7 +232,7 @@ else
                         'options_', options_, ...
                         'bayestopt_', bayestopt_, ...
                         'estim_params_', estim_params_, ...
-                        'oo_', oo_);    
+                        'oo_', oo_);
     % which files have to be copied to run remotely
     NamFileInput(1,:) = {'',[M_.fname '_static.m']};
     NamFileInput(2,:) = {'',[M_.fname '_dynamic.m']};
@@ -240,11 +240,10 @@ else
         NamFileInput(length(NamFileInput)+1,:)={'',[M_.fname '_steadystate.m']};
     end
     [fout] = masterParallel(options_.parallel, 1, B,NamFileInput,'prior_posterior_statistics_core', localVars,globalVars, options_.parallel_info);
-    
+
 end
 ifil = fout(end).ifil;
 
-% ??????????
 stock_gend=gend;
 stock_data=Y;
 save([DirectoryName '/' M_.fname '_data.mat'],'stock_gend','stock_data');

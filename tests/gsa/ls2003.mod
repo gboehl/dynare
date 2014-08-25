@@ -108,7 +108,7 @@ disp(' ');
 disp('MC FILTERING(rmse=1), TO MAP THE FIT FROM PRIORS');
 disp('Press ENTER to continue'); pause(5);
 
-dynare_sensitivity(nodisplay, datafile=data_ca1,first_obs=8,nobs=79,prefilter=1, // also presample=2,loglinear, are admissible
+dynare_sensitivity(nodisplay, datafile='data_ca1.m',first_obs=8,nobs=79,prefilter=1, // also presample=2,loglinear, are admissible
 load_stab=1,     // load prior sample
 istart_rmse=2,   //start computing rmse from second observation (i.e. rmse does not inlude initial big error)
 stab=0,          // don't  plot again stability analysis results
@@ -121,7 +121,7 @@ disp('BY USING THE COMBINED CALL');
 disp(' ');
 disp('dynare_sensitivity(redform=1,')
 disp('logtrans_redform=1, namendo=(pie,R), namexo=(e_R), namlagendo=(R),')   
-disp('datafile=data_ca1,first_obs=8,nobs=79,prefilter=1,')
+disp('datafile=data_ca1.m,first_obs=8,nobs=79,prefilter=1,')
 disp('istart_rmse=2, rmse=1);')
 disp(' ');
 disp('Press ENTER to continue'); pause(5);
@@ -131,7 +131,7 @@ disp('Press ENTER to continue'); pause(5);
 //namendo=(pie,R),  // evaluate relationships for pie and R (namendo=(:) for all variables)
 //namexo=(e_R),     // evaluate relationships with exogenous e_R (use namexo=(:) for all shocks)
 //namlagendo=(R),   // evaluate relationships with lagged R (use namlagendo=(:) for all lagged endogenous)
-//datafile=data_ca1,first_obs=8,nobs=79,prefilter=1, 
+//datafile='data_ca1.m',first_obs=8,nobs=79,prefilter=1, 
 //istart_rmse=2,   //start computing rmse from second observation (i.e. rmse does not inlude initial big error)
 //rmse=1,          // do rmse analysis
 //);
@@ -144,13 +144,13 @@ disp(' ');
 disp('Press ENTER to continue'); pause(5);
 
 // run this to generate posterior mode and Metropolis files if not yet done
-estimation(datafile=data_ca1,first_obs=8,nobs=79,mh_nblocks=2,
+estimation(datafile='data_ca1.m',first_obs=8,nobs=79,mh_nblocks=2,
    prefilter=1,mh_jscale=0.5,mh_replic=5000, mode_compute=4, mh_drop=0.6, nodisplay,
    bayesian_irf, filtered_vars, smoother) y_obs R_obs pie_obs dq de;
 
 
 // run this to produce posterior samples of filtered, smoothed and irf variables, if not yet done
-//estimation(datafile=data_ca1,first_obs=8,nobs=79,mh_nblocks=2,prefilter=1,mh_jscale=0.3,
+//estimation(datafile='data_ca1.m',first_obs=8,nobs=79,mh_nblocks=2,prefilter=1,mh_jscale=0.3,
 //          mh_replic=0, mode_file=ls2003_mode, mode_compute=0, load_mh_file, bayesian_irf,
 //		  filtered_vars, smoother, mh_drop=0.6);
 
@@ -163,7 +163,7 @@ disp('Press ENTER to continue'); pause(5);
 
 dynare_sensitivity(nodisplay, pprior=0,Nsam=2048,neighborhood_width=0.2,
 mode_file=ls2003_mode,  // specifies the mode file where the mode and Hessian are stored
-datafile=data_ca1,first_obs=8,nobs=79,prefilter=1,
+datafile='data_ca1.m',first_obs=8,nobs=79,prefilter=1,
 rmse=1);
 
 disp(' ');
@@ -182,7 +182,7 @@ disp('RMSE ANALYSIS FOR MULTIVARIATE SAMPLE AT THE POSTERIOR MODE');
 disp(' ');
 disp('Press ENTER to continue'); pause(5);
 dynare_sensitivity(nodisplay, mode_file=ls2003_mode,
-datafile=data_ca1,first_obs=8,nobs=79,prefilter=1,
+datafile='data_ca1.m',first_obs=8,nobs=79,prefilter=1,
 pprior=0,
 stab=0,
 rmse=1,
@@ -195,12 +195,12 @@ disp('THE LAST TWO CALLS COULD BE DONE TOGETHER');
 disp('BY USING THE COMBINED CALL');
 disp(' ');
 disp('dynare_sensitivity(pprior=0,Nsam=2048,alpha2_stab=0.4,mode_file=ls2003_mode,')
-disp('datafile=data_ca1,first_obs=8,nobs=79,prefilter=1,')
+disp('datafile=data_ca1.m,first_obs=8,nobs=79,prefilter=1,')
 disp('rmse=1, alpha2_rmse=0, alpha_rmse=0);')
 disp(' ');
 disp('Press ENTER to continue'); pause(5);
 //dynare_sensitivity(pprior=0,Nsam=2048,alpha2_stab=0.4,mode_file=ls2003_mode,
-//datafile=data_ca1,first_obs=8,nobs=79,prefilter=1,
+//datafile='data_ca1.m',first_obs=8,nobs=79,prefilter=1,
 //rmse=1,
 //alpha2_rmse=0, // no correlation analysis
 //alpha_rmse=0  // no Smirnov sensitivity analysis
@@ -210,10 +210,10 @@ disp(' ');
 disp('RMSE ANALYSIS FOR POSTERIOR MCMC sample (ppost=1)');
 disp('Needs a call to dynare_estimation to load all MH environment');
 disp('Press ENTER to continue'); pause(5);
-//estimation(datafile=data_ca1,first_obs=8,nobs=79,mh_nblocks=2, mode_file=ls2003_mode, load_mh_file,
+//estimation(datafile='data_ca1.m',first_obs=8,nobs=79,mh_nblocks=2, mode_file=ls2003_mode, load_mh_file,
 //  prefilter=1,mh_jscale=0.5,mh_replic=0, mode_compute=0, mh_drop=0.6);
 
 dynare_sensitivity(nodisplay, stab=0, // no need for stability analysis since the posterior sample is surely OK
-datafile=data_ca1,first_obs=8,nobs=79,prefilter=1,
+datafile='data_ca1.m',first_obs=8,nobs=79,prefilter=1,
 rmse=1,ppost=1);
 

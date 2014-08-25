@@ -46,7 +46,7 @@ if options_.dsge_var && options_.bayesian_irf
                 msg = 1;
             end
         end
-        if size(varlist,1)~=size(options_.varobs)
+        if size(varlist,1)~=length(options_.varobs)
             msg = 1;
         end
         if msg
@@ -55,7 +55,7 @@ if options_.dsge_var && options_.bayesian_irf
             skipline()
         end
     end
-    varlist = options_.varobs;
+    varlist = char(options_.varobs);
     return
 end
 
@@ -128,7 +128,7 @@ elseif isempty(varlist) && isempty(options_.endo_vars_for_moment_computations_in
                 if choice==1
                     varlist = M_.endo_names(1:M_.orig_endo_nbr, :);
                 elseif choice==2
-                    varlist = options_.varobs;
+                    varlist = char(options_.varobs);
                 elseif choice==3
                     varlist = NaN;
                 else
@@ -138,13 +138,12 @@ elseif isempty(varlist) && isempty(options_.endo_vars_for_moment_computations_in
                 end
             end
         end
+        if isnan(varlist)
+            edit([M_.fname '.mod'])
+        end
+        skipline()
     end
-    if isnan(varlist)
-        edit([M_.fname '.mod'])
-    end
-    skipline()
 end
-
 
 
 function format_text(remain, max_number_of_words_per_line)

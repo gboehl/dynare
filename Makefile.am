@@ -38,3 +38,15 @@ dist-hook:
 	rm -f $(distdir)/matlab/dynare_m$(EXEEXT) $(distdir)/matlab/dynare_version.m
 	$(MKDIR_P) $(distdir)/mex/matlab $(distdir)/mex/octave
 	rm -rf `find $(distdir)/contrib -name '.git*'`
+
+install-exec-local:
+	$(MKDIR_P) $(DESTDIR)$(pkglibdir)/contrib/ms-sbvar/TZcode
+	cp -r examples $(DESTDIR)$(pkglibdir)
+	cp -r matlab $(DESTDIR)$(pkglibdir)
+	rm -f $(DESTDIR)$(pkglibdir)/matlab/dynare_m
+	cp preprocessor/dynare_m $(DESTDIR)$(pkglibdir)/matlab
+	cp -r contrib/ms-sbvar/TZcode/MatlabFiles $(DESTDIR)$(pkglibdir)/contrib/ms-sbvar/TZcode
+
+uninstall-local:
+	rm -f  $(DESTDIR)$(bindir)/dynare++
+	rm -rf $(DESTDIR)$(pkglibdir)

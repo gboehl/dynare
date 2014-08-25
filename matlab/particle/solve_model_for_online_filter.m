@@ -201,9 +201,10 @@ end
 
 % Get the off-diagonal elements of the covariance matrix for the measurement errors. Test if H is positive definite.
 if EstimatedParameters.ncn
+    corrn_observable_correspondence = EstimatedParameters.corrn_observable_correspondence;
     for i=1:EstimatedParameters.ncn
-        k1 = DynareOptions.lgyidx2varobs(EstimatedParameters.corrn(i,1));
-        k2 = DynareOptions.lgyidx2varobs(EstimatedParameters.corrn(i,2));
+        k1 = corrn_observable_correspondence(i,1);
+        k2 = corrn_observable_correspondence(i,2);
         H(k1,k2) = xparam1(i+offset)*sqrt(H(k1,k1)*H(k2,k2));
         H(k2,k1) = H(k1,k2);
     end

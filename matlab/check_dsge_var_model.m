@@ -20,25 +20,25 @@ function check_dsge_var_model(Model, EstimatedParameters, BayesInfo)
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 if EstimatedParameters.nvn
-    error('DsgeVarLikelihood:: Measurement errors are not allowed!')
+    error('Estimation::DsgeVarLikelihood: Measurement errors are not allowed!')
 end
 
 if EstimatedParameters.ncn
-    error('DsgeVarLikelihood:: Measurement errors are not allowed!')
+    error('Estimation::DsgeVarLikelihood: Measurement errors are not allowed!')
 end
 
 if any(vec(Model.H))
-    error('DsgeVarLikelihood:: Measurement errors are not allowed!')
+    error('Estimation::DsgeVarLikelihood: Measurement errors are not allowed!')
 end
 
 if EstimatedParameters.ncx
-    error('DsgeVarLikelihood:: Structural innovations cannot be correlated using Dynare''s interface! Introduce the correlations in the model block instead.')
+    error('Estimation::DsgeVarLikelihood: Structural innovations cannot be correlated using Dynare''s interface! Introduce the correlations in the model block instead.')
 end
 
 if Model.exo_nbr>1 && any(vec(tril(Model.Sigma_e,-1)))
-    error('DsgeVarLikelihood:: Structural innovations cannot be correlated using Dynare''s interface! Introduce the correlations in the model block instead.')
+    error('Estimation::DsgeVarLikelihood: Structural innovations cannot be correlated using Dynare''s interface! Introduce the correlations in the model block instead.')
 end
 
 if isequal(BayesInfo.with_trend,1)
-    error('DsgeVarLikelihood :: Linear trend is not yet implemented!')
+    error('Estimation::DsgeVarLikelihood: Linear trend is not yet implemented!')
 end

@@ -1,4 +1,4 @@
-## Copyright (C) 2009-2012 Dynare Team
+## Copyright (C) 2009-2014 Dynare Team
 ##
 ## This file is part of Dynare.
 ##
@@ -31,9 +31,8 @@ if !strcmp(dynare_version(), getenv("DYNARE_VERSION"))
 endif
 
 ## Ask gnuplot to create graphics in text mode
-## Note that setenv() was introduced in Octave 3.0.2, for compatibility
-## with MATLAB
-putenv("GNUTERM", "dumb")
+graphics_toolkit gnuplot;
+setenv("GNUTERM", "dumb");
 
 ## Test MOD files listed in Makefile.am
 name = getenv("FILESTEM");

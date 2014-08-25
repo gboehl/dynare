@@ -1,7 +1,7 @@
 function s = getTexName(o)
 %function s = getTexName(o)
 
-% Copyright (C) 2013 Dynare Team
+% Copyright (C) 2013-2014 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -18,6 +18,12 @@ function s = getTexName(o)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-assert(~isempty(o.data) && size(o.data, 2) == 1);
-s = o.data.tex{:};
+if isempty(o.data)
+    % for the case when there is no data in the series
+    % e.g. graphVline was passed
+    s = '';
+else
+    assert(size(o.data,2) == 1);
+    s = o.data.tex{:};
+end
 end

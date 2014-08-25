@@ -34,7 +34,7 @@ if isempty(idx)
     error('dseries::cumsum: All the variables have NaNs. The cumulated sum cannot be computed!')
 end
 
-if ~isequal(idx(:),transpose(1:varargin{1}.vobs))
+if ~isequal(idx(:),transpose(1:vobs(varargin{1})))
     warning('dseries::cumsum: The cumulated sum is not computed for some variables because they have NaNs!')
 end
 
@@ -45,19 +45,19 @@ switch nargin
       % Perform the cumulated sum
       B.data(:,idx) = cumsum(B.data(:,idx));
       % Change the name of the variables
-      for i=1:B.vobs
+      for i=1:vobs(B)
           B.name(i) = {['cumsum(' B.name{i} ')']};
           B.tex(i) = {['\sum_t ' B.tex{i}]};
       end
   case 2
     if isdseries(varargin{2})
-        if ~isequal(varargin{1}.vobs, varargin{2}.vobs)
+        if ~isequal(vobs(varargin{1}), vobs(varargin{2}))
             error('dseries::cumsum: First and second input arguments must be dseries objects with the same number of variables!')
         end
         if ~isequal(varargin{1}.name, varargin{2}.name)
             warning('dseries::cumsum: First and second input arguments must be dseries objects do not have the same variables!')
         end
-        if ~isequal(varargin{2}.nobs,1)
+        if ~isequal(nobs(varargin{2}),1)
             error('dseries::cumsum: Second input argument must be a dseries object with only one observation!')
         end
         B = cumsum(varargin{1});
@@ -66,7 +66,7 @@ switch nargin
         B = cumsum(varargin{1});
         t = find(B.dates==varargin{2});
         if isempty(t)
-            if varargin{2}==(B.init-1)
+            if varargin{2}==(firstdate(B)-1)
                 return
             else
                 error(['dseries::cumsum: date ' date2string(varargin{2}) ' is not in the sample!'])
@@ -83,19 +83,19 @@ switch nargin
     if ~isdseries(varargin{3})
         error('dseries::cumsum: Third input argument must be a dseries object!')
     end
-    if ~isequal(varargin{1}.vobs, varargin{3}.vobs)
+    if ~isequal(vobs(varargin{1}), vobs(varargin{3}))
         error('dseries::cumsum: First and third input arguments must be dseries objects with the same number of variables!')
     end
     if ~isequal(varargin{1}.name, varargin{3}.name)
         warning('dseries::cumsum: First and third input arguments must be dseries objects do not have the same variables!')
     end
-    if ~isequal(varargin{3}.nobs,1)
+    if ~isequal(nobs(varargin{3}),1)
         error('dseries::cumsum: Third input argument must be a dseries object with only one observation!')
     end
     B = cumsum(varargin{1});
     t = find(B.dates==varargin{2});
     if isempty(t)
-        if varargin{2}==(B.init-1)
+        if varargin{2}==(firstdate(B)-1)
             B.data = bsxfun(@plus,B.data,varargin{3}.data);
             return
         else

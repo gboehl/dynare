@@ -35,7 +35,7 @@ function [ivar,vartan,options_] = get_variables_list(options_,M_)
 
 varlist = options_.varlist;
 if isempty(varlist)
-    varlist = options_.varobs;
+    varlist = char(options_.varobs);
     options_.varlist = varlist;
 end
 nvar = rows(varlist);

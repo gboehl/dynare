@@ -89,7 +89,7 @@ for i=1:npar
             eval(['pmod = oo_.posterior_mode.shocks_std.' name ';'])
         end
     elseif i <= nvx+nvn
-        name = deblank(options_.varobs(estim_params_.nvn_observable_correspondence(i-nvx,1),:));
+        name = options_.varobs{estim_params_.nvn_observable_correspondence(i-nvx,1)};
         eval(['x1 = oo_.posterior_density.measurement_errors_std.' name '(:,1);'])
         eval(['f1 = oo_.posterior_density.measurement_errors_std.' name '(:,2);'])    
         eval(['oo_.prior_density.mearsurement_errors_std.' name '(:,1) = x2;'])

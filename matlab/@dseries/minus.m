@@ -45,7 +45,7 @@ if isnumeric(B) && (isscalar(B) ||  isvector(B))
         error('dseries::minus: Second input argument must be a dseries object!')
     end
     A = C;
-    A.data = bsxfun(@minus,C.data,B);
+    A.data = bsxfun(@minus,B,C.data);
     return;
 end
 
@@ -58,26 +58,26 @@ if isnumeric(C) && (isscalar(C) || isvector(C))
     return
 end
 
-if ~isequal(B.vobs,C.vobs) && ~(isequal(B.vobs,1) || isequal(C.vobs,1))
+if ~isequal(vobs(B), vobs(C)) && ~(isequal(vobs(B),1) || isequal(vobs(C),1))
     error(['dseries::minus: Cannot substract ' inputname(1) ' and ' inputname(2) ' (wrong number of variables)!'])
 else
-    if B.vobs>C.vobs
-        idB = 1:B.vobs;
-        idC = ones(1:B.vobs);
-    elseif B.vobs<C.vobs
-        idB = ones(1,C.vobs);
-        idC = 1:C.vobs;
+    if vobs(B)>vobs(C)
+        idB = 1:vobs(B);
+        idC = ones(1:vobs(B));
+    elseif vobs(B)<vobs(C)
+        idB = ones(1,vobs(C));
+        idC = 1:vobs(C);
     else
-        idB = 1:B.vobs;
-        idC = 1:C.vobs;
+        idB = 1:vobs(B);
+        idC = 1:vobs(C);
     end
 end
 
-if ~isequal(B.freq,C.freq)
+if ~isequal(frequency(B),frequency(C))
     error(['dseries::plus: Cannot substract ' inputname(1) ' and ' inputname(2) ' (frequencies are different)!'])
 end
 
-if ~isequal(B.nobs,C.nobs) || ~isequal(B.init,C.init)
+if ~isequal(nobs(B), nobs(C)) || ~isequal(firstdate(B),firstdate(C))
     [B, C] = align(B, C);
 end
 
@@ -93,15 +93,12 @@ end
 
 A = dseries();
 
-A.freq = B.freq;
-A.init = B.init;
 A.dates = B.dates;
-A.nobs = max(B.nobs,C.nobs);
-A.vobs = max(B.vobs,C.vobs);
-A.name = cell(A.vobs,1);
-A.tex = cell(A.vobs,1);
-for i=1:A.vobs
-    A.name(i) = {['minus(' B.name{idB(i)} ',' C.name{idC(i)} ')']};
+A_vobs = max(vobs(B), vobs(C));
+A.name = cell(A_vobs,1);
+A.tex = cell(A_vobs,1);
+for i=1:A_vobs
+    A.name(i) = {['minus(' B.name{idB(i)} ';' C.name{idC(i)} ')']};
     A.tex(i) = {['(' B.tex{idB(i)} '-' C.tex{idC(i)} ')']};
 end
 A.data = bsxfun(@minus,B.data,C.data);
@@ -129,7 +126,7 @@ A.data = bsxfun(@minus,B.data,C.data);
 %$    t(2) = dyn_assert(ts3.vobs,2);
 %$    t(3) = dyn_assert(ts3.nobs,10);
 %$    t(4) = dyn_assert(ts3.data,[A(:,1)-B, A(:,2)-B],1e-15);
-%$    t(5) = dyn_assert(ts3.name,{'minus(A1,B1)';'minus(A2,B1)'});
+%$    t(5) = dyn_assert(ts3.name,{'minus(A1;B1)';'minus(A2;B1)'});
 %$ end
 %$ T = all(t);
 %@eof:1
@@ -157,7 +154,43 @@ A.data = bsxfun(@minus,B.data,C.data);
 %$    t(2) = dyn_assert(ts3.vobs,2);
 %$    t(3) = dyn_assert(ts3.nobs,10);
 %$    t(4) = dyn_assert(ts3.data,[A(1:5,1)-B(1:5), A(1:5,2)-B(1:5) ; NaN(5,2)],1e-15);
-%$    t(5) = dyn_assert(ts3.name,{'minus(A1,B1)';'minus(A2,B1)'});
+%$    t(5) = dyn_assert(ts3.name,{'minus(A1;B1)';'minus(A2;B1)'});
 %$ end
 %$ T = all(t);
 %@eof:3
+
+%@test:4
+%$ ts1 = dseries(ones(3,1));
+%$ ts2 = ts1-1;
+%$ ts3 = 2-ts1;
+%$ t(1) = isequal(ts2.data, zeros(3,1));
+%$ t(2) = isequal(ts3.data, ts1.data);
+%$ T = all(t);
+%@eof:4
+
+%@test:5
+%$ ts1 = dseries(ones(3,2));
+%$ ts2 = ts1-1;
+%$ ts3 = 2-ts1;
+%$ t(1) = isequal(ts2.data, zeros(3,2));
+%$ t(2) = isequal(ts3.data, ts1.data);
+%$ T = all(t);
+%@eof:5
+
+%@test:6
+%$ ts1 = dseries(ones(3,2));
+%$ ts2 = ts1-ones(3,1);
+%$ ts3 = 2*ones(3,1)-ts1;
+%$ t(1) = isequal(ts2.data, zeros(3,2));
+%$ t(2) = isequal(ts3.data, ts1.data);
+%$ T = all(t);
+%@eof:6
+
+%@test:7
+%$ ts1 = dseries(ones(3,2));
+%$ ts2 = ts1-ones(1,2);
+%$ ts3 = 2*ones(1,2)-ts1;
+%$ t(1) = isequal(ts2.data, zeros(3,2));
+%$ t(2) = isequal(ts3.data, ts1.data);
+%$ T = all(t);
+%@eof:7

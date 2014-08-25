@@ -28,7 +28,7 @@ function ms_write_markov_file(fname, options)
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
     n_chains = length(options.ms.ms_chain);
-    nvars = size(options.varobs,1);
+    nvars = length(options.varobs);
     
     fh = fopen(fname,'w');
     %/******************************************************************************/

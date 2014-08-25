@@ -1,4 +1,4 @@
-function [rmse_MC, ixx] = filt_mc_(OutDir,options_gsa_,dataset_)
+function [rmse_MC, ixx] = filt_mc_(OutDir,options_gsa_,dataset_,dataset_info)
 % function [rmse_MC, ixx] = filt_mc_(OutDir)
 % inputs (from opt_gsa structure)
 % vvarvecm = options_gsa_.var_rmse;
@@ -120,10 +120,10 @@ if ~loadSA,
         ys_mean=steady_(M_,options_,oo_);
     end
     %   eval(options_.datafile)
-    Y = dataset_.data;
-    gend = dataset_.info.ntobs;
-    data_index = dataset_.missing.aindex;
-    missing_value = dataset_.missing.state;
+    Y = transpose(dataset_.data);
+    gend = dataset_.nobs;
+    data_index = dataset_info.missing.aindex;
+    missing_value = dataset_info.missing.state;
     for jx=1:gend, data_indx(jx,data_index{jx})=true; end
     %stock_gend=data_info.gend;
     %stock_data = data_info.data;

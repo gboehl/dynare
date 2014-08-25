@@ -41,35 +41,35 @@ function us = ydiff(ts) % --*-- Unitary tests --*--
 
 us = ts;
 
-switch ts.freq
+switch frequency(ts)
   case 1
     us.data(2:end,:) = ts.data(2:end,:)-ts.data(1:end-1,:);
     us.data(1,:) = NaN;
-    for i = 1:ts.vobs
+    for i = 1:vobs(ts)
         us.name(i) = {['ydiff(' us.name{i} ')']};
         us.tex(i) = {['\Delta ' us.tex{i}]};
     end
   case 4
     us.data(5:end,:) = ts.data(5:end,:)-ts.data(1:end-4,:);
     us.data(1:4,:) = NaN;
-    for i = 1:ts.vobs
+    for i = 1:vobs(ts)
         us.name(i) = {['ydiff(' us.name{i} ')']};
         us.tex(i) = {['\Delta_4 ' us.tex{i}]};
-    end  
+    end
   case 12
     us.data(13:end,:) = ts.data(13:end,:)-ts.data(1:end-12,:);
     us.data(1:12,:) = NaN;
-    for i = 1:ts.vobs
+    for i = 1:vobs(ts)
         us.name(i) = {['ydiff(' us.name{i} ')']};
         us.tex(i) = {['\Delta_{12} ' us.tex{i}]};
-    end    
+    end
   case 52
     us.data(53:end,:) = ts.data(53:end,:)-ts.data(1:end-52,:);
     us.data(1:52,:) = NaN;
-    for i = 1:ts.vobs
+    for i = 1:vobs(ts)
         us.name(i) = {['ydiff(' us.name{i} ')']};
         us.tex(i) = {['\Delta_{52} ' us.tex{i}]};
-    end    
+    end
   otherwise
     error(['dseries::ygrowth: object ' inputname(1) ' has unknown frequency']);
 end
@@ -151,7 +151,7 @@ end
 %$
 %$ try
 %$     data = transpose(1:100);
-%$     ts = dseries(data,1950,{'A1'},{'A_1'});
+%$     ts = dseries(data,'1950Y',{'A1'},{'A_1'});
 %$     ts = ts.ydiff;
 %$     t(1) = 1;
 %$ catch

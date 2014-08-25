@@ -1,4 +1,5 @@
-function clean()
+function s = getNameForLegend(o)
+%function s = getNameForLegend(o)
 
 % Copyright (C) 2014 Dynare Team
 %
@@ -17,18 +18,14 @@ function clean()
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-a = dir('*.mod');
-
-for i = 1:length(a)
-    [junk,basename,extension] = fileparts(a(i).name);
-    delete([basename '.m']);
-    delete([basename '.log']);
-    rmdir(basename,'s');
-    if exist([basename '_steadystate.m'])
-        movefile([basename '_steadystate.m'],['protect_' basename '_steadystate.m']);
-    end
-    delete([basename '_*'])
-    if exist(['protect_' basename '_steadystate.m'])
-        movefile(['protect_' basename '_steadystate.m'],[basename '_steadystate.m']);
-    end
+if isempty(o.data) || ~o.graphShowInLegend
+    % for the case when there is no data in the series
+    % e.g. graphVline was passed
+    % or when the user does not want this series shown in
+    % the legend
+    s = '';
+else
+    assert(size(o.data,2) == 1);
+    s = o.data.tex{:};
+end
 end

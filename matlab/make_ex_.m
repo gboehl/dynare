@@ -12,7 +12,7 @@ function make_ex_()
 % SPECIAL REQUIREMENTS
 %  
 
-% Copyright (C) 1996-2012 Dynare Team
+% Copyright (C) 1996-2014 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -29,7 +29,7 @@ function make_ex_()
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-global M_ options_ oo_ ex0_ ex_det0_
+global M_ options_ oo_ ex0_
 
 if isempty(oo_.exo_steady_state)
     oo_.exo_steady_state = zeros(M_.exo_nbr,1);
@@ -37,24 +37,37 @@ end
 if M_.exo_det_nbr > 1 && isempty(oo_.exo_det_steady_state)
     oo_.exo_det_steady_state = zeros(M_.exo_det_nbr,1);
 end
-if isempty(oo_.exo_simul)
-    if isempty(ex0_)
-        oo_.exo_simul = repmat(oo_.exo_steady_state',M_.maximum_lag+options_.periods+M_.maximum_lead,1);
-    else
-        oo_.exo_simul = [ repmat(ex0_',M_.maximum_lag,1) ; repmat(oo_.exo_steady_state',options_.periods+M_.maximum_lead,1) ];
-    end
-elseif size(oo_.exo_simul,1) < M_.maximum_lag+M_.maximum_lead+options_.periods
-    oo_.exo_simul = [ oo_.exo_simul ; repmat(oo_.exo_steady_state',M_.maximum_lag+options_.periods+M_.maximum_lead-size(oo_.exo_simul,1),1) ];
+
+% Initialize oo_.exo_simul
+if isempty(ex0_)
+    oo_.exo_simul = repmat(oo_.exo_steady_state',M_.maximum_lag+options_.periods+M_.maximum_lead,1);
+else
+    oo_.exo_simul = [ repmat(ex0_',M_.maximum_lag,1) ; repmat(oo_.exo_steady_state',options_.periods+M_.maximum_lead,1) ];
 end
 
+% Initialize oo_.exo_det_simul
 if M_.exo_det_nbr > 0
-    if isempty(oo_.exo_det_simul)
-        if isempty(ex_det0_)
-            oo_.exo_det_simul = [ones(M_.maximum_lag+options_.periods+M_.maximum_lead,1)*oo_.exo_det_steady_state'];
+    oo_.exo_det_simul = [ones(M_.maximum_lag+options_.periods+M_.maximum_lead,1)*oo_.exo_det_steady_state'];
+end
+
+% Add temporary shocks
+if isfield(M_, 'det_shocks')
+    for i = 1:length(M_.det_shocks)
+        k = M_.det_shocks(i).periods + M_.maximum_lag;
+        ivar = M_.det_shocks(i).exo_id;
+        v = M_.det_shocks(i).value;
+        if ~M_.det_shocks(i).exo_det
+            if ~M_.det_shocks(i).multiplicative
+                oo_.exo_simul(k,ivar) = v;
+            else
+                oo_.exo_simul(k,ivar) = oo_.exo_simul(k,ivar) * v;
+            end
         else
-            oo_.exo_det_simul = [ones(M_.maximum_lag,1)*ex_det0_';ones(options_.periods+M_.maximum_lead,1)*oo_.exo_det_steady_state'];
+            if ~M_.det_shocks(i).multiplicative
+                oo_.exo_det_simul(k,ivar) = v;
+            else
+                oo_.exo_det_simul(k,ivar) = oo_.exo_det_simul(k,ivar) * v;
+            end
         end
-    elseif size(oo_.exo_det_simul,1) < M_.maximum_lag+M_.maximum_lead+options_.periods
-        oo_.exo_det_simul = [oo_.exo_det_simul; ones(M_.maximum_lag+options_.periods+M_.maximum_lead-size(oo_.exo_det_simul,1),1)*oo_.exo_det_steady_state'];
     end
 end

@@ -75,6 +75,14 @@ catch
     [marginal,oo_] = marginal_density(M_, options_, estim_params_, oo_);
     disp(sprintf('Log data density is %f.',oo_.MarginalDensity.ModifiedHarmonicMean))
 end
+num_draws=length(NumberOfDraws*options_.mh_nblck);
+hpd_draws = round((1-options_.mh_conf_sig)*num_draws);
+if hpd_draws<2
+    fprintf('posterior_moments: There are not enough draws computes to compute HPD Intervals. Skipping their computation.\n')
+end
+if num_draws<9
+    fprintf('posterior_moments: There are not enough draws computes to compute deciles. Skipping their computation.\n')
+end
 if np
     type = 'parameters';
     if TeX
@@ -180,17 +188,17 @@ if nvn
             Draws = GetAllPosteriorDraws(ip,FirstMhFile,FirstLine,TotalNumberOfMhFiles,NumberOfDraws);
             [post_mean, post_median, post_var, hpd_interval, post_deciles, density] = ...
                 posterior_moments(Draws,1,options_.mh_conf_sig);
-            name = deblank(options_.varobs(estim_params_.nvn_observable_correspondence(i,1),:));
+            name = options_.varobs{estim_params_.nvn_observable_correspondence(i,1)};
             oo_ = Filloo(oo_,name,type,post_mean,hpd_interval,post_median,post_var,post_deciles,density);
         else
             try
-                name = deblank(options_.varobs(estim_params_.nvn_observable_correspondence(i,1),:));
+                name = options_.varobs{estim_params_.nvn_observable_correspondence(i,1)};
                 [post_mean,hpd_interval,post_var] = Extractoo(oo_,name,type);
             catch
                 Draws = GetAllPosteriorDraws(ip,FirstMhFile,FirstLine,TotalNumberOfMhFiles,NumberOfDraws);
                 [post_mean, post_median, post_var, hpd_interval, post_deciles, density] = ...
                     posterior_moments(Draws,1,options_.mh_conf_sig);
-                name = deblank(options_.varobs(estim_params_.nvn_observable_correspondence(i,1),:));
+                name = options_.varobs{estim_params_.nvn_observable_correspondence(i,1)};
                 oo_ = Filloo(oo_,name,type,post_mean,hpd_interval,post_median,post_var,post_deciles,density);
             end
         end

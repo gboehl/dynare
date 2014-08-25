@@ -1,5 +1,5 @@
-function o = writeSeriesForTable(o, fid, dates, precision)
-%function o = writeSeriesForTable(o, fid, dates, precision)
+function o = writeSeriesForTable(o, fid, dates, precision, ncols, rowcolor)
+%function o = writeSeriesForTable(o, fid, dates, precision, ncols, rowcolor)
 % Write Table Row
 %
 % INPUTS
@@ -7,6 +7,8 @@ function o = writeSeriesForTable(o, fid, dates, precision)
 %   fid          [int]              file id
 %   dates        [dates]            dates for report_series slice
 %   precision    [float]            precision with which to print the data
+%   ncols        [int]              total number of columns in table
+%   rowcolor     [string]           string to color this row
 %
 %
 % OUTPUTS
@@ -35,18 +37,18 @@ function o = writeSeriesForTable(o, fid, dates, precision)
 %% Validate options passed to function
 assert(fid ~= -1);
 for i=1:length(dates)
-    assert(isa(dates{i}, 'dates'));
+    assert(isdates(dates{i}));
 end
 assert(isint(precision));
 
 %% Validate options provided by user
 assert(ischar(o.tableSubSectionHeader), '@report_series.writeSeriesForTable: tableSubSectionHeader must be a string');
 if isempty(o.tableSubSectionHeader)
-    assert(~isempty(o.data) && isa(o.data, 'dseries'), ...
+    assert(~isempty(o.data) && isdseries(o.data), ...
            '@report_series.writeSeriesForTable: must provide data as a dseries');
 
     if ~isempty(o.tableDataRhs)
-        assert(~isempty(o.tableDataRhs) && isa(o.tableDataRhs, 'dseries'), ...
+        assert(~isempty(o.tableDataRhs) && isdseries(o.tableDataRhs), ...
                '@report_series.writeSeriesForTable: must provide tableDataRhs as a dseries');
         assert(iscell(dates) && length(dates) == 2, ...
                '@report_series.writeSeriesForTable: must provide second range with tableDataRhs');
@@ -56,18 +58,26 @@ end
 assert(ischar(o.tableNegColor), '@report_series.writeSeriesForTable: tableNegColor must be a string');
 assert(ischar(o.tablePosColor), '@report_series.writeSeriesForTable: tablePosColor must be a string');
 assert(ischar(o.tableRowColor), '@report_series.writeSeriesForTable: tableRowColor must be a string');
-assert(isint(o.tableRowIndent), '@report_series.writeSeriesForTable: tableRowIndent must be an integer');
+assert(isint(o.tableRowIndent) && o.tableRowIndent >= 0, ...
+       '@report_series.writeSeriesForTable: tableRowIndent must be an integer >= 0');
 assert(islogical(o.tableShowMarkers), '@report_series.writeSeriesForTable: tableShowMarkers must be true or false');
 assert(islogical(o.tableAlignRight), '@report_series.writeSeriesForTable: tableAlignRight must be true or false');
 assert(isfloat(o.tableMarkerLimit), '@report_series.writeSeriesForTable: tableMarkerLimit must be a float');
 
 %% Write Output
 fprintf(fid, '%% Table Row (report_series)\n');
-if ~isempty(o.tableRowColor)
+if ~isempty(o.tableRowColor) && ~strcmpi(o.tableRowColor, 'white')
+    fprintf(fid, '\\rowcolor{%s}', o.tableRowColor);
+elseif ~isempty(rowcolor)
+    fprintf(fid, '\\rowcolor{%s}', rowcolor);
+else
     fprintf(fid, '\\rowcolor{%s}', o.tableRowColor);
 end
 if ~isempty(o.tableSubSectionHeader)
-    fprintf(fid, '%s', o.tableSubSectionHeader);
+    fprintf(fid, '\\textbf{%s}', o.tableSubSectionHeader);
+    for i=1:ncols-1
+        fprintf(fid, ' &');
+    end
     fprintf(fid, '\\\\%%\n');
     return;
 end

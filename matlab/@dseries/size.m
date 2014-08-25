@@ -1,6 +1,6 @@
-function [a,b] = size(c,dim)
+function varargout = size(o, varargin)
 
-% Copyright (C) 2013 Dynare Team
+% Copyright (C) 2013-2014 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -17,22 +17,18 @@ function [a,b] = size(c,dim)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-a = c.nobs;
-b = c.vobs;
-
-if nargin>1
-    if nargout>1
+switch nargout
+  case 0
+    size(o.data, varargin{:})
+  case 1
+    varargout{1} = size(o.data, varargin{:});
+  case 2
+    if isequal(nargin, 1)
+        varargout{1} = size(o.data, 1);
+        varargout{2} = size(o.data, 2);
+    else
         error('dseries::size: Wrong calling sequence!')
     end
-    switch dim
-      case 1
-        a = c.nobs;
-      case 2
-        a = c.vobs;
-      otherwise
-        error(['dseries::size: Wrong calling sequence! Argument ''' inputname(2) ''' must be equal to 1 or 2.' ])
-    end
-else
-    a = c.nobs;
-    b = c.vobs;
+  otherwise
+    error('dseries::size: Wrong calling sequence! Cannot return more than two arguments.')
 end

@@ -31,7 +31,7 @@ function tf = allCellsAreDates(dcell)
 assert(iscell(dcell));
 tf = true;
 for i=1:length(dcell)
-    if ~isa(dcell{i}, 'dates')
+    if ~isdates(dcell{i})
         tf = false;
         return;
     end

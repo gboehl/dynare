@@ -50,7 +50,7 @@ end
 
 for i=1:nvn
     k1 = estim_params_.nvn_observable_correspondence(i,1);
-    name1 = deblank(options_.varobs(k1,:));
+    name1 = options_.varobs{k1};
     xparam(m) = eval(['oo_.posterior_' type '.measurement_errors_std.' name1]);
     m = m+1;
 end
@@ -69,8 +69,8 @@ end
 for i=1:ncn
     k1 = estim_params_.corrn_observable_correspondence(i,1);
     k2 = estim_params_.corrn_observable_correspondence(i,2);
-    name1 = deblank(options_.varobs(k1,:));
-    name2 = deblank(options_.varobs(k2,:));
+    name1 = options_.varobs{k1};
+    name2 = options_.varobs{k2};
     xparam(m) = eval(['oo_.posterior_' type '.measurement_errors_corr.' name1 '_' name2]);
     m = m+1;
 end

@@ -33,6 +33,17 @@ function options=set_default_option(options,field,default)
 
 if ~isfield(options,field)
     options.(field) = default;
+    return
+end
+
+if isempty(options.(field))
+    options.(field) = default;
+    return
+end
+
+if isnan(options.(field))
+    options.(field) = default;
+    return
 end
 
 % 06/07/03 MJ added ; to eval expression

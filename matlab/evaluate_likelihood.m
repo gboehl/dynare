@@ -37,7 +37,7 @@ function [llik,parameters] = evaluate_likelihood(parameters)
 
 global options_ M_ bayestopt_ oo_ estim_params_
 
-persistent dataset
+persistent dataset dataset_info
 
 if nargin==0
     parameters = 'posterior mode';
@@ -67,22 +67,9 @@ if ischar(parameters)
 end
 
 if isempty(dataset)
-    % Load and transform data.
-    transformation = [];
-    if options_.loglinear && ~options_.logdata
-        transformation = @log;
-    end
-    xls.sheet = options_.xls_sheet;
-    xls.range = options_.xls_range;
-
-    if ~isfield(options_,'nobs')
-        options_.nobs = [];
-    end
-
-    dataset = initialize_dataset(options_.datafile,options_.varobs,options_.first_obs,options_.nobs,transformation,options_.prefilter,xls);
+    [dataset, dataset_info] = makedataset(options_);
 end
 
-llik = -dsge_likelihood(parameters,dataset,options_,M_,estim_params_,bayestopt_,oo_);
+llik = -dsge_likelihood(parameters,dataset,dataset_info,options_,M_,estim_params_,bayestopt_,oo_);
 ldens = evaluate_prior(parameters);
 llik = llik - ldens;
-

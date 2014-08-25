@@ -128,12 +128,12 @@ function [ys,params,info] = evaluate_steady_state(ys_init,M,options,oo,steadysta
         % Evaluate residual of *dynamic* model using the steady state
         % computed on the *static* one
         z = repmat(ys,1,M.maximum_lead + M.maximum_lag + 1);
-        zx = repmat([oo.exo_simul oo.exo_det_simul],M.maximum_lead + M.maximum_lag + 1, 1);
+        zx = repmat([exo_ss'], M.maximum_lead + M.maximum_lag + 1, 1);
         if options.bytecode
             [chck, r, junk]= bytecode('dynamic','evaluate', z, zx, M.params, ys, 1);
             mexErrCheck('bytecode', chck);
         elseif options.block
-            [r, data] = feval([M.fname '_dynamic'], z', zx, M.params, ys, M.maximum_lag+1, data);
+            [r, oo.dr] = feval([M.fname '_dynamic'], z', zx, M.params, ys, M.maximum_lag+1, oo.dr);
         else
             iyv = M.lead_lag_incidence';
             iyr0 = find(iyv(:));

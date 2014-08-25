@@ -129,7 +129,7 @@ ModFile::checkPass()
   // Allow empty model only when doing a standalone BVAR estimation
   if (dynamic_model.equation_number() == 0
       && (mod_file_struct.check_present
-          || mod_file_struct.simul_present
+          || mod_file_struct.perfect_foresight_solver_present
           || stochastic_statement_present))
     {
       cerr << "ERROR: At least one model equation must be declared!" << endl;
@@ -153,9 +153,9 @@ ModFile::checkPass()
       exit(EXIT_FAILURE);
     }
 
-  if (mod_file_struct.simul_present && stochastic_statement_present)
+  if (mod_file_struct.perfect_foresight_solver_present && stochastic_statement_present)
     {
-      cerr << "ERROR: A .mod file cannot contain both a simul command and one of {stoch_simul, estimation, osr, ramsey_policy, discretionary_policy}" << endl;
+      cerr << "ERROR: A .mod file cannot contain both one of {perfect_foresight_solver,simul} and one of {stoch_simul, estimation, osr, ramsey_policy, discretionary_policy}. This is not possible: one cannot mix perfect foresight context with stochastic context in the same file." << endl;
       exit(EXIT_FAILURE);
     }
 
@@ -427,9 +427,9 @@ ModFile::transformPass(bool nostrict)
       exit(EXIT_FAILURE);
     }
 
-  if (symbol_table.exo_det_nbr() > 0 && mod_file_struct.simul_present)
+  if (symbol_table.exo_det_nbr() > 0 && mod_file_struct.perfect_foresight_solver_present)
     {
-      cerr << "ERROR: A .mod file cannot contain both a simul command and varexo_det declaration (all exogenous variables are deterministic in this case)" << endl;
+      cerr << "ERROR: A .mod file cannot contain both one of {perfect_foresight_solver,simul}  and varexo_det declaration (all exogenous variables are deterministic in this case)" << endl;
       exit(EXIT_FAILURE);
     }
 
@@ -493,13 +493,13 @@ ModFile::computingPass(bool no_tmp_terms, FileOutputType output)
                                      false, paramsDerivatives, block, byte_code);
         }
       // Set things to compute for dynamic model
-      if (mod_file_struct.simul_present || mod_file_struct.check_present
+      if (mod_file_struct.perfect_foresight_solver_present || mod_file_struct.check_present
           || mod_file_struct.stoch_simul_present
           || mod_file_struct.estimation_present || mod_file_struct.osr_present
           || mod_file_struct.ramsey_model_present || mod_file_struct.identification_present
           || mod_file_struct.calib_smoother_present)
         {
-          if (mod_file_struct.simul_present)
+          if (mod_file_struct.perfect_foresight_solver_present)
             dynamic_model.computingPass(true, false, false, false, global_eval_context, no_tmp_terms, block, use_dll, byte_code);
           else
             {
@@ -581,6 +581,10 @@ ModFile::writeOutputFiles(const string &basename, bool clear_all, bool no_log, b
     mOutputFile << "clear all" << endl;
 
   mOutputFile << "tic;" << endl
+	      << "% Save empty dates and dseries objects in memory." << endl
+	      << "dates('initialize');" << endl
+	      << "dseries('initialize');" << endl
+	      << "% Define global variables." << endl
               << "global M_ oo_ options_ ys0_ ex0_ estimation_info" << endl
               << "options_ = [];" << endl
               << "M_.fname = '" << basename << "';" << endl
@@ -620,6 +624,12 @@ ModFile::writeOutputFiles(const string &basename, bool clear_all, bool no_log, b
   else
     mOutputFile << "M_.H = 0;" << endl
                 << "M_.Correlation_matrix_ME = 1;" << endl;
+
+  // May be later modified by a shocks block
+  mOutputFile << "M_.sigma_e_is_diagonal = 1;" << endl;
+
+  // Initialize M_.det_shocks
+  mOutputFile << "M_.det_shocks = [];" << endl;
 
   if (mod_file_struct.dmm_present)
     dynamic_model.writeDmmLatentVarInfo(mOutputFile);
@@ -848,107 +858,3 @@ ModFile::writeOutputFiles(const string &basename, bool clear_all, bool no_log, b
   cout << "done" << endl;
 }
 
-void
-ModFile::writeModelCC(const string &basename, bool cuda) const
-{
-  string filename = basename + ".cc";
-
-  ofstream mDriverCFile;
-  mDriverCFile.open(filename.c_str(), ios::out | ios::binary);
-  if (!mDriverCFile.is_open())
-    {
-      cerr << "Error: Can't open file " << filename << " for writing" << endl;
-      exit(EXIT_FAILURE);
-    }
-
-  mDriverCFile << "/*" << endl
-               << " * " << filename << " : Driver file for MS-DSGE code" << endl
-               << " *" << endl
-               << " * Warning : this file is generated automatically by Dynare" << endl
-               << " *           from model file (.mod)" << endl
-               << " */" << endl
-               << endl
-               << "#include \"dynare_cpp_driver.hh\"" << endl
-               << endl
-               << "DynareInfo::DynareInfo(void)" << endl
-               << "{" << endl;
-
-  // Write basic info
-  symbol_table.writeCOutput(mDriverCFile);
-
-  mDriverCFile << endl << "params.resize(param_nbr);" << endl;
-
-  if (dynamic_model.equation_number() > 0)
-    {
-      dynamic_model.writeCOutput(mDriverCFile, basename, block, byte_code, use_dll, mod_file_struct.order_option, mod_file_struct.estimation_present);
-      //      if (!no_static)
-      //        static_model.writeCOutput(mOutputFile, block);
-    }
-
-  // Print statements
-  for (vector<Statement *>::const_iterator it = statements.begin();
-       it != statements.end(); it++)
-      (*it)->writeCOutput(mDriverCFile, basename);
-
-  mDriverCFile << "}" << endl;
-  mDriverCFile.close();
-
-  // Write informational m file
-  ofstream mOutputFile;
-
-  if (basename.size())
-    {
-      string fname(basename);
-      fname += ".m";
-      mOutputFile.open(fname.c_str(), ios::out | ios::binary);
-      if (!mOutputFile.is_open())
-        {
-          cerr << "ERROR: Can't open file " << fname
-               << " for writing" << endl;
-          exit(EXIT_FAILURE);
-        }
-    }
-  else
-    {
-      cerr << "ERROR: Missing file name" << endl;
-      exit(EXIT_FAILURE);
-    }
-
-  mOutputFile << "%" << endl
-              << "% Status : informational m file" << endl
-              << "%" << endl
-              << "% Warning : this file is generated automatically by Dynare" << endl
-              << "%           from model file (.mod)" << endl << endl
-              << "disp('The following C file was successfully created:');" << endl
-              << "ls preprocessorOutput.cc" << endl << endl;
-  mOutputFile.close();
-}
-
-void
-ModFile::writeExternalFiles(const string &basename, FileOutputType output, bool cuda) const
-{
-  writeModelCC(basename, cuda);
-  steady_state_model.writeSteadyStateFileCC(basename, mod_file_struct.ramsey_model_present, cuda);
-
-  dynamic_model.writeDynamicFile(basename, block, byte_code, use_dll, mod_file_struct.order_option);
-
-  if (!no_static)
-    static_model.writeStaticFile(basename, false, false, true);
-
-
-  //  static_model.writeStaticCFile(basename, block, byte_code, use_dll);
-  //  static_model.writeParamsDerivativesFileCC(basename, cuda);
-  //  static_model.writeAuxVarInitvalCC(mOutputFile, oMatlabOutsideModel, cuda);
-
-  // dynamic_model.writeResidualsCC(basename, cuda);
-  // dynamic_model.writeParamsDerivativesFileCC(basename, cuda);
-  dynamic_model.writeFirstDerivativesCC(basename, cuda);
-  
-  if (output == second)
-    dynamic_model.writeSecondDerivativesCC_csr(basename, cuda);
-  else if (output == third)
-    {
-        dynamic_model.writeSecondDerivativesCC_csr(basename, cuda);
-  	dynamic_model.writeThirdDerivativesCC_csr(basename, cuda);
-    }
-}

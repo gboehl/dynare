@@ -1,4 +1,4 @@
-function mode_check(fun,x,hessian,DynareDataset,DynareOptions,Model,EstimatedParameters,BayesInfo,DynareResults)
+function mode_check(fun,x,hessian,DynareDataset,DatasetInfo,DynareOptions,Model,EstimatedParameters,BayesInfo,DynareResults)
 % Checks the estimated ML mode or Posterior mode.
 
 %@info:
@@ -62,7 +62,7 @@ if ~isempty(hessian);
     [ s_min, k ] = min(diag(hessian));
 end
 
-fval = feval(fun,x,DynareDataset,DynareOptions,Model,EstimatedParameters,BayesInfo,DynareResults);
+fval = feval(fun,x,DynareDataset,DatasetInfo,DynareOptions,Model,EstimatedParameters,BayesInfo,DynareResults);
 
 if ~isempty(hessian);
     skipline()
@@ -138,7 +138,7 @@ for plt = 1:nbplt,
         end
         for i=1:length(z)
             xx(kk) = z(i);
-            [fval, junk1, junk2, exit_flag] = feval(fun,xx,DynareDataset,DynareOptions,Model,EstimatedParameters,BayesInfo,DynareResults);
+            [fval, junk1, junk2, exit_flag] = feval(fun,xx,DynareDataset,DatasetInfo,DynareOptions,Model,EstimatedParameters,BayesInfo,DynareResults);
             if exit_flag
                 y(i,1) = fval;
             else

@@ -36,14 +36,14 @@ function oo_ = compute_moments_varendo(type,options_,M_,oo_,var_list_)
 if strcmpi(type,'posterior')
     posterior = 1;
     if nargin==4
-        var_list_ = options_.varobs;
+        var_list_ = char(options_.varobs);
     end
 elseif strcmpi(type,'prior')
     posterior = 0;
     if nargin==4
         var_list_ = options_.prior_analysis_endo_var_list;
         if isempty(var_list_)
-            options_.prior_analysis_var_list = options_.varobs;
+            options_.prior_analysis_var_list = char(options_.varobs);
         end
     end
 else

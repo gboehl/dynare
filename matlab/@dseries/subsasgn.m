@@ -25,7 +25,7 @@ function A = subsasgn(A,S,B) % --*-- Unitary tests --*--
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-merge_dseries_objects = 1;    
+merge_dseries_objects = 1;
 
 switch length(S)
     case 1
@@ -77,11 +77,17 @@ switch length(S)
                   end
               end
           end
-          if ~isequal(length(S(1).subs),B.vobs)
+          if isempty(B)
+              for i=1:length(S(1).subs)
+                  A = remove(A,S(1).subs{i});
+              end
+              return
+          end
+          if ~isequal(length(S(1).subs),vobs(B))
               error('dseries::subsasgn: Wrong syntax!')
           end
           if ~isequal(S(1).subs(:),B.name)
-              for i = 1:B.vobs
+              for i = 1:vobs(B)
                   if ~isequal(S(1).subs{i},B.name{i})
                       % Rename a variable.
                       id = find(strcmp(S(1).subs{i},A.name));
@@ -99,20 +105,14 @@ switch length(S)
           end
         case '.'
           if isequal(S(1).subs,'init') && isdates(B) && isequal(length(B),1)
-              % Overwrite the init member...
-              A.init = B;
-              % ... and update freq and time members.
-              A.freq = A.init.freq;
-              A.dates = A.init:A.init+(A.nobs-1);
+              % Change the initial date (update dates member)
+              A.dates = B:B+(nobs(A)-1);
               return
           elseif isequal(S(1).subs,'dates') && isdates(B)
-              % Overwrite the time member...
+              % Overwrite the dates member
               A.dates = B;
-              % ... and update the freq and init members.
-              A.init = B(1);
-              A.freq = A.init.freq;
               return
-          elseif ismember(S(1).subs,{'freq','nobs','vobs','data','name','tex'})
+          elseif ismember(S(1).subs,{'data','name','tex'})
               error(['dseries::subsasgn: You cannot overwrite ' S(1).subs ' member!'])
           elseif ~isequal(S(1).subs,B.name)
               % Single variable selection.
@@ -143,7 +143,7 @@ switch length(S)
                   if isempty(tdy)
                       error('dseries::subsasgn: Periods of the dseries objects on the left and right hand sides must intersect!')
                   end
-                  if ~isequal(A.vobs,B.vobs)
+                  if ~isequal(vobs(A), vobs(B))
                       error('dseries::subsasgn: Dimension error! The number of variables on the left and right hand side must match.')
                   end
                   A.data(tdx,:) = B.data(tdy,:);
@@ -166,28 +166,20 @@ switch length(S)
               if isnumeric(B)
                   if isequal(rows(B),1)
                       A.data = repmat(B,A.dates.ndat,1);
-                      A.nobs = rows(A.data);
-                      A.vobs = columns(A.data);
                   elseif isequal(rows(B),A.dates.ndat)
                       A.data = B;
-                      A.nobs = rows(A.data);
-                      A.vobs = columns(A.data);
                   else
                       error('dseries::subsasgn: Wrong syntax!')
                   end
                   if isempty(A.name)
-                      A.name = default_name(A.vobs);
+                      A.name = default_name(vobs(A));
                       A.tex = name2tex(A.name);
                   end
               elseif isdseries(B)
-                  if isequal(B.nobs,1)
+                  if isequal(nobs(B), 1)
                       A.data = repmat(B.data,A.dates.ndat,1);
-                      A.nobs = rows(A.data);
-                      A.vobs = columns(A.data);
-                  elseif isequal(B.nobs,A.dates.ndat)
+                  elseif isequal(nobs(B), A.dates.ndat)
                       A.data = B;
-                      A.nobs = rows(A.data);
-                      A.vobs = columns(A.data);
                   else
                       error('dseries::subsasgn: Wrong syntax!')
                   end
@@ -211,7 +203,7 @@ switch length(S)
         else
             sA = extract(A,S(1).subs);
         end
-        if (isdseries(B) && isequal(sA.vobs,B.vobs)) || (isnumeric(B) && isequal(sA.vobs,columns(B))) || (isnumeric(B) && isequal(columns(B),1)) 
+        if (isdseries(B) && isequal(vobs(sA), vobs(B))) || (isnumeric(B) && isequal(vobs(sA),columns(B))) || (isnumeric(B) && isequal(columns(B),1))
             if isdates(S(2).subs{1})
                 [junk, tdx] = intersect(sA.dates.time,S(2).subs{1}.time,'rows');
                 if isdseries(B)
@@ -278,8 +270,8 @@ end
 %$     t(1) = 1;
 %$ catch
 %$     t(1) = 0;
-%$ end 
-%$ 
+%$ end
+%$
 %$ % Instantiate a time series object.
 %$ if t(1)
 %$    t(2) = dyn_assert(ts1.vobs,3);
@@ -440,8 +432,8 @@ end
 %$     t(1) = 1;
 %$ catch
 %$     t(1) = 0;
-%$ end 
-%$ 
+%$ end
+%$
 %$ % Instantiate a time series object.
 %$ if t(1)
 %$    t(2) = dyn_assert(ts1.vobs,4);
@@ -469,8 +461,8 @@ end
 %$     t(1) = 1;
 %$ catch
 %$     t(1) = 0;
-%$ end 
-%$ 
+%$ end
+%$
 %$ % Instantiate a time series object.
 %$ if t(1)
 %$    t(2) = dyn_assert(ts1.vobs,4);
@@ -499,8 +491,8 @@ end
 %$     t(1) = 1;
 %$ catch
 %$     t(1) = 0;
-%$ end 
-%$ 
+%$ end
+%$
 %$ % Instantiate a time series object.
 %$ if t(1)
 %$    t(2) = dyn_assert(ts1.vobs,4);
@@ -845,7 +837,7 @@ end
 %$ T = all(t);
 %@eof:21
 
-%@test:21
+%@test:22
 %$ % Define a datasets.
 %$ A = rand(1,3);
 %$
@@ -867,4 +859,28 @@ end
 %$    t(4) = dyn_assert(ts.data,repmat(A,4,1),1e-15);
 %$ end
 %$ T = all(t);
-%@eof:21
+%@eof:22
+
+%@test:23
+%$ % Instantiate a dseries object.
+%$ ts0 = dseries(randn(10,6), '1999y');
+%$
+%$ % Try to remove Variable_2 and Variable_3
+%$ try
+%$     ts0{'Variable_@2,3@'} = [];
+%$     t(1) = 1;
+%$ catch
+%$     t(1) = 0;
+%$ end
+%$
+%$ if t(1)
+%$    % Try to display Variable_2 and Variable_3 again (should fail because already removed)
+%$    try
+%$       ts0{'Variable_@2,3@'};
+%$       t(2) = 0;
+%$    catch
+%$       t(2) = 1;
+%$    end
+%$ end
+%$ T = all(t);
+%@eof:23

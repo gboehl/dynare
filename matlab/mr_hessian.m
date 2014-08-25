@@ -1,10 +1,10 @@
-function [hessian_mat, gg, htol1, ihh, hh_mat0, hh1] = mr_hessian(init,x,func,hflag,htol0,DynareDataset,DynareOptions,Model,EstimatedParameters,BayesInfo,DynareResults)
+function [hessian_mat, gg, htol1, ihh, hh_mat0, hh1] = mr_hessian(init,x,func,hflag,htol0,varargin)
 %  [hessian_mat, gg, htol1, ihh, hh_mat0, hh1] = mr_hessian(init,x,func,hflag,htol0,varargin)
 %
 %  numerical gradient and Hessian, with 'automatic' check of numerical
 %  error
 %
-% adapted from Michel Juillard original rutine hessian.m
+% adapted from Michel Juillard original routine hessian.m
 %
 %  func =  function handle. The function must give two outputs:
 %    - the log-likelihood AND the single contributions at times t=1,...,T
@@ -22,9 +22,17 @@ function [hessian_mat, gg, htol1, ihh, hh_mat0, hh1] = mr_hessian(init,x,func,hf
 %  htol0 = 'precision' of increment of function values for numerical
 %  derivatives
 %
-%  varargin: other parameters of func
+%  varargin{1} --> DynareDataset
+%  varargin{2} --> DatasetInfo
+%  varargin{3} --> DynareOptions
+%  varargin{4} --> Model
+%  varargin{5} --> EstimatedParameters
+%  varargin{6} --> BayesInfo
+%  varargin{1} --> DynareResults
 
-% Copyright (C) 2004-2012 Dynare Team
+
+
+% Copyright (C) 2004-2014 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -45,16 +53,16 @@ persistent h1 htol
 
 n=size(x,1);
 if init
-    gstep_=DynareOptions.gstep;
+    gstep_=varargin{3}.gstep;
     htol = 1.e-4;
-    h1=DynareOptions.gradient_epsilon*ones(n,1);
+    h1=varargin{3}.gradient_epsilon*ones(n,1);
     return
 end
 
-[f0, ff0]=feval(func,x,DynareDataset,DynareOptions,Model,EstimatedParameters,BayesInfo,DynareResults);
-h2=BayesInfo.ub-BayesInfo.lb;
-hmax=BayesInfo.ub-x;
-hmax=min(hmax,x-BayesInfo.lb);
+[f0, ff0]=feval(func,x,varargin{:});
+h2=varargin{6}.ub-varargin{6}.lb;
+hmax=varargin{6}.ub-x;
+hmax=min(hmax,x-varargin{6}.lb);
 if isempty(ff0),
     outer_product_gradient=0;
 else
@@ -83,7 +91,7 @@ while i<n
     hcheck=0;
     xh1(i)=x(i)+h1(i);
     try
-        [fx, ffx]=feval(func,xh1,DynareDataset,DynareOptions,Model,EstimatedParameters,BayesInfo,DynareResults);
+        [fx, ffx]=feval(func,xh1,varargin{:});
     catch
         fx=1.e8;
     end
@@ -104,7 +112,7 @@ while i<n
             h1(i) = max(h1(i),1.e-10);
             xh1(i)=x(i)+h1(i);
             try
-                [fx, ffx]=feval(func,xh1,DynareDataset,DynareOptions,Model,EstimatedParameters,BayesInfo,DynareResults);
+                [fx, ffx]=feval(func,xh1,varargin{:});
             catch
                 fx=1.e8;
             end
@@ -113,21 +121,21 @@ while i<n
             h1(i)= htol/abs(dx(it))*h1(i);
             xh1(i)=x(i)+h1(i);
             try
-                [fx, ffx]=feval(func,xh1,DynareDataset,DynareOptions,Model,EstimatedParameters,BayesInfo,DynareResults);
+                [fx, ffx]=feval(func,xh1,varargin{:});
             catch
                 fx=1.e8;
             end
             while (fx-f0)==0
                 h1(i)= h1(i)*2;
                 xh1(i)=x(i)+h1(i);
-                [fx, ffx]=feval(func,xh1,DynareDataset,DynareOptions,Model,EstimatedParameters,BayesInfo,DynareResults);
+                [fx, ffx]=feval(func,xh1,varargin{:});
                 ic=1;
             end
         end
         it=it+1;
         dx(it)=(fx-f0);
         h0(it)=h1(i);
-        if (h1(i)<1.e-12*min(1,h2(i)) && h1(i)<0.5*hmax(i))% || (icount==10 &&  abs(dx(it))>(3*htol)),
+        if (h1(i)<1.e-12*min(1,h2(i)) && h1(i)<0.5*hmax(i))
             ic=1;
             hcheck=1;
         end
@@ -141,7 +149,7 @@ while i<n
         end
     end
     xh1(i)=x(i)-h1(i);
-    [fx, ffx]=feval(func,xh1,DynareDataset,DynareOptions,Model,EstimatedParameters,BayesInfo,DynareResults);
+    [fx, ffx]=feval(func,xh1,varargin{:});
     f_1(:,i)=fx;
     if outer_product_gradient,
         if any(isnan(ffx)) || isempty(ffx),
@@ -181,8 +189,8 @@ if outer_product_gradient,
                 xh1(j)=x(j)+h_1(j);
                 xh_1(i)=x(i)-h1(i);
                 xh_1(j)=x(j)-h_1(j);
-                temp1 = feval(func,xh1,DynareDataset,DynareOptions,Model,EstimatedParameters,BayesInfo,DynareResults);
-                temp2 = feval(func,xh_1,DynareDataset,DynareOptions,Model,EstimatedParameters,BayesInfo,DynareResults);
+                temp1 = feval(func,xh1,varargin{:});
+                temp2 = feval(func,xh_1,varargin{:});
                 hessian_mat(:,(i-1)*n+j)=-(-temp1 -temp2+temp(:,i)+temp(:,j))./(2*h1(i)*h_1(j));
                 xh1(i)=x(i);
                 xh1(j)=x(j);
@@ -203,7 +211,7 @@ if outer_product_gradient,
             end
         end
     end
-    
+
     gga=ggh.*kron(ones(size(ff1)),2.*h1');  % re-scaled gradient
     hh_mat=gga'*gga;  % rescaled outer product hessian
     hh_mat0=ggh'*ggh;  % outer product hessian
@@ -222,7 +230,7 @@ if outer_product_gradient,
         sd=sqrt(diag(ihh));   %standard errors
         sdh=sqrt(1./diag(hh));   %diagonal standard errors
         for j=1:length(sd)
-            sd0(j,1)=min(BayesInfo.p2(j), sd(j));  %prior std
+            sd0(j,1)=min(varargin{6}.p2(j), sd(j));  %prior std
             sd0(j,1)=10^(0.5*(log10(sd0(j,1))+log10(sdh(j,1))));
         end
         ihh=ihh./(sd*sd').*(sd0*sd0');  %inverse outer product with modified std's
@@ -239,7 +247,7 @@ if outer_product_gradient,
     if hflag<2
         hessian_mat=hh_mat0(:);
     end
-    
+
     if any(isnan(hessian_mat))
         hh_mat0=eye(length(hh_mat0));
         ihh=hh_mat0;

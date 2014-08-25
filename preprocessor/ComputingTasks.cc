@@ -94,17 +94,45 @@ SimulStatement::SimulStatement(const OptionsList &options_list_arg) :
 void
 SimulStatement::checkPass(ModFileStructure &mod_file_struct, WarningConsolidation &warnings)
 {
-  mod_file_struct.simul_present = true;
-
-  // The following is necessary to allow shocks+endval+simul in a loop
-  mod_file_struct.shocks_present_but_simul_not_yet = false;
+  mod_file_struct.perfect_foresight_solver_present = true;
 }
 
 void
 SimulStatement::writeOutput(ostream &output, const string &basename) const
 {
   options_list.writeOutput(output);
-  output << "simul();\n";
+  output << "perfect_foresight_setup;" << endl
+         << "perfect_foresight_solver;" << endl;
+}
+
+PerfectForesightSetupStatement::PerfectForesightSetupStatement(const OptionsList &options_list_arg) :
+  options_list(options_list_arg)
+{
+}
+
+void
+PerfectForesightSetupStatement::writeOutput(ostream &output, const string &basename) const
+{
+  options_list.writeOutput(output);
+  output << "perfect_foresight_setup;" << endl;
+}
+
+PerfectForesightSolverStatement::PerfectForesightSolverStatement(const OptionsList &options_list_arg) :
+  options_list(options_list_arg)
+{
+}
+
+void
+PerfectForesightSolverStatement::checkPass(ModFileStructure &mod_file_struct, WarningConsolidation &warnings)
+{
+  mod_file_struct.perfect_foresight_solver_present = true;
+}
+
+void
+PerfectForesightSolverStatement::writeOutput(ostream &output, const string &basename) const
+{
+  options_list.writeOutput(output);
+  output << "perfect_foresight_solver;" << endl;
 }
 
 StochSimulStatement::StochSimulStatement(const SymbolList &symbol_list_arg,
@@ -2009,9 +2037,17 @@ EstimationDataStatement::checkPass(ModFileStructure &mod_file_struct, WarningCon
         exit(EXIT_FAILURE);
       }
 
-  if (options_list.string_options.find("file") == options_list.string_options.end())
+  if ((options_list.string_options.find("file") == options_list.string_options.end()) &&
+      (options_list.string_options.find("series") == options_list.string_options.end()))
     {
-      cerr << "ERROR: The file option must be passed to the data statement." << endl;
+      cerr << "ERROR: The file or series option must be passed to the data statement." << endl;
+      exit(EXIT_FAILURE);
+    }
+
+  if ((options_list.string_options.find("file") != options_list.string_options.end()) &&
+      (options_list.string_options.find("series") != options_list.string_options.end()))
+    {
+      cerr << "ERROR: The file and series options cannot be used simultaneously in the data statement." << endl;
       exit(EXIT_FAILURE);
     }
 }
@@ -2020,8 +2056,8 @@ void
 EstimationDataStatement::writeOutput(ostream &output, const string &basename) const
 {
   options_list.writeOutput(output, "options_.dataset");
-  if (options_list.date_options.find("first_obs") == options_list.date_options.end())
-    output << "options_.dataset.firstobs = options_.initial_period;" << endl;
+  //if (options_list.date_options.find("first_obs") == options_list.date_options.end())
+  //  output << "options_.dataset.first_obs = options_.initial_period;" << endl;
 }
 
 SubsamplesStatement::SubsamplesStatement(const string &name1_arg,
@@ -2983,4 +3019,16 @@ CorrOptionsStatement::writeCOutput(ostream &output, const string &basename)
   else
     output << "msdsgeinfo->addMeasurementErrorCorrOption(new ModFileMeasurementErrorCorrOption(";
   output << "index, index1, init));" << endl;
+}
+
+Smoother2histvalStatement::Smoother2histvalStatement(const OptionsList &options_list_arg) :
+  options_list(options_list_arg)
+{
+}
+
+void
+Smoother2histvalStatement::writeOutput(ostream &output, const string &basename) const
+{
+  options_list.writeOutput(output, "options_smoother2histval");
+  output << "smoother2histval(options_smoother2histval);" << endl;
 }

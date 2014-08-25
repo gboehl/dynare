@@ -1,4 +1,4 @@
-noinst_PROGRAMS = ms_sbvar_create_init_file ms_sbvar_command_line
+mex_PROGRAMS = ms_sbvar_create_init_file ms_sbvar_command_line
 
 DWSWITCHDIR = $(top_srcdir)/../../../contrib/ms-sbvar/switch_dw
 DWUTILITIESDIR = $(top_srcdir)/../../../contrib/ms-sbvar/utilities_dw

@@ -48,13 +48,13 @@ if ~isdseries(B)
     error(['dseries::rename: ' inputname(1) ' must be a dseries object!'])
 end
 
-if ~isequal(B.vobs,n)
+if ~isequal(vobs(B),n)
     error(['dseries::rename: The number of variables in ' inputname(1) ' does not match the number of declared names!'])
 end
 
 A = B;
 
-for i=1:A.vobs
+for i=1:vobs(A)
     if ~isempty(varargin{i})
         A.name(i) = { varargin{i} };
     end

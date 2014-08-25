@@ -1,4 +1,4 @@
-function [xparam1, hh, gg, fval, igg] = newrat(func0, x, analytic_derivation, ftol0, nit, flagg, DynareDataset,DynareOptions,Model,EstimatedParameters,BayesInfo,DynareResults)
+function [xparam1, hh, gg, fval, igg] = newrat(func0, x, analytic_derivation, ftol0, nit, flagg, varargin)
 %  [xparam1, hh, gg, fval, igg] = newrat(func0, x, hh, gg, igg, ftol0, nit, flagg, varargin)
 %
 %  Optimiser with outer product gradient and with sequences of univariate steps
@@ -21,9 +21,16 @@ function [xparam1, hh, gg, fval, igg] = newrat(func0, x, analytic_derivation, ft
 %             with correlation structure as from outer product gradient,
 %  flagg = 2, full numerical Hessian
 %
-%  varargin = list of parameters for func0
+%  varargin{1} --> DynareDataset
+%  varargin{2} --> DatasetInfo
+%  varargin{3} --> DynareOptions
+%  varargin{4} --> Model
+%  varargin{5} --> EstimatedParameters
+%  varargin{6} --> BayesInfo
+%  varargin{1} --> DynareResults
 
-% Copyright (C) 2004-2013 Dynare Team
+
+% Copyright (C) 2004-2014 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -52,19 +59,19 @@ ftol=ftol0;
 gtol=1.e-3;
 htol=htol_base;
 htol0=htol_base;
-gibbstol=length(BayesInfo.pshape)/50; %25;
+gibbstol=length(varargin{6}.pshape)/50; %25;
 
 % func0 = str2func([func2str(func0),'_hh']);
 % func0 = func0;
-[fval0,gg,hh]=feval(func0,x,DynareDataset,DynareOptions,Model,EstimatedParameters,BayesInfo,DynareResults);
+[fval0,gg,hh]=feval(func0,x,varargin{:});
 fval=fval0;
 
 % initialize mr_gstep and mr_hessian
 
 outer_product_gradient=1;
 if isempty(hh)
-    mr_hessian(1,x,[],[],[],DynareDataset,DynareOptions,Model,EstimatedParameters,BayesInfo,DynareResults);
-    [dum, gg, htol0, igg, hhg, h1]=mr_hessian(0,x,func0,flagit,htol,DynareDataset,DynareOptions,Model,EstimatedParameters,BayesInfo,DynareResults);
+    mr_hessian(1,x,[],[],[],varargin{:});
+    [dum, gg, htol0, igg, hhg, h1]=mr_hessian(0,x,func0,flagit,htol,varargin{:});
     if isempty(dum),
         outer_product_gradient=0;
         igg = 1e-4*eye(nx);
@@ -111,9 +118,9 @@ while norm(gg)>gtol && check==0 && jit<nit
     objective_function_penalty_base = fval0(icount);
     disp([' '])
     disp(['Iteration ',num2str(icount)])
-    [fval,x0,fc,retcode] = csminit1(func0,xparam1,fval0(icount),gg,0,H,DynareDataset,DynareOptions,Model,EstimatedParameters,BayesInfo,DynareResults);
+    [fval,x0,fc,retcode] = csminit1(func0,xparam1,fval0(icount),gg,0,H,varargin{:});
     if igrad
-        [fval1,x01,fc,retcode1] = csminit1(func0,x0,fval,gg,0,inx,DynareDataset,DynareOptions,Model,EstimatedParameters,BayesInfo,DynareResults);
+        [fval1,x01,fc,retcode1] = csminit1(func0,x0,fval,gg,0,inx,varargin{:});
         if (fval-fval1)>1
             disp('Gradient step!!')
         else
@@ -122,28 +129,26 @@ while norm(gg)>gtol && check==0 && jit<nit
         fval=fval1;
         x0=x01;
     end
-%     if icount==1 || (icount>1 && (fval0(icount-1)-fval0(icount))>1) || ((fval0(icount)-fval)<1.e-2*(gg'*(H*gg))/2 && igibbs),
-        if length(find(ig))<nx
-            ggx=ggx*0;
-            ggx(find(ig))=gg(find(ig));
-            if analytic_derivation,
-                hhx=hh;
-            else
-                hhx = reshape(dum,nx,nx);
-            end
-            iggx=eye(length(gg));
-            iggx(find(ig),find(ig)) = inv( hhx(find(ig),find(ig)) );
-            [fvala,x0,fc,retcode] = csminit1(func0,x0,fval,ggx,0,iggx,DynareDataset,DynareOptions,Model,EstimatedParameters,BayesInfo,DynareResults);
+    if length(find(ig))<nx
+        ggx=ggx*0;
+        ggx(find(ig))=gg(find(ig));
+        if analytic_derivation,
+            hhx=hh;
+        else
+            hhx = reshape(dum,nx,nx);
         end
-        [fvala, x0, ig] = mr_gstep(h1,x0,func0,htol,DynareDataset,DynareOptions,Model,EstimatedParameters,BayesInfo,DynareResults);
-        nig=[nig ig];
-        disp('Sequence of univariate steps!!')
-        fval=fvala;
-%     end
+        iggx=eye(length(gg));
+        iggx(find(ig),find(ig)) = inv( hhx(find(ig),find(ig)) );
+        [fvala,x0,fc,retcode] = csminit1(func0,x0,fval,ggx,0,iggx,varargin{:});
+    end
+    [fvala, x0, ig] = mr_gstep(h1,x0,func0,htol,varargin{:});
+    nig=[nig ig];
+    disp('Sequence of univariate steps!!')
+    fval=fvala;
     if (fval0(icount)-fval)<ftol && flagit==0
         disp('Try diagonal Hessian')
         ihh=diag(1./(diag(hhg)));
-        [fval2,x0,fc,retcode2] = csminit1(func0,x0,fval,gg,0,ihh,DynareDataset,DynareOptions,Model,EstimatedParameters,BayesInfo,DynareResults);
+        [fval2,x0,fc,retcode2] = csminit1(func0,x0,fval,gg,0,ihh,varargin{:});
         if (fval-fval2)>=ftol
             disp('Diagonal Hessian successful')
         end
@@ -152,7 +157,7 @@ while norm(gg)>gtol && check==0 && jit<nit
     if (fval0(icount)-fval)<ftol && flagit==0
         disp('Try gradient direction')
         ihh0=inx.*1.e-4;
-        [fval3,x0,fc,retcode3] = csminit1(func0,x0,fval,gg,0,ihh0,DynareDataset,DynareOptions,Model,EstimatedParameters,BayesInfo,DynareResults);
+        [fval3,x0,fc,retcode3] = csminit1(func0,x0,fval,gg,0,ihh0,varargin{:});
         if (fval-fval3)>=ftol
             disp('Gradient direction successful')
         end
@@ -165,14 +170,14 @@ while norm(gg)>gtol && check==0 && jit<nit
         disp('No further improvement is possible!')
         check=1;
         if analytic_derivation,
-            [fvalx,gg,hh]=feval(func0,xparam1,DynareDataset,DynareOptions,Model,EstimatedParameters,BayesInfo,DynareResults);
+            [fvalx,gg,hh]=feval(func0,xparam1,varargin{:});
             hhg=hh;
-            H = inv(hh);            
+            H = inv(hh);
         else
         if flagit==2
             hh=hh0;
         elseif flagg>0
-            [dum, gg, htol0, igg, hhg,h1]=mr_hessian(0,xparam1,func0,flagg,ftol0,DynareDataset,DynareOptions,Model,EstimatedParameters,BayesInfo,DynareResults);
+            [dum, gg, htol0, igg, hhg,h1]=mr_hessian(0,xparam1,func0,flagg,ftol0,varargin{:});
             if flagg==2
                 hh = reshape(dum,nx,nx);
                 ee=eig(hh);
@@ -208,7 +213,7 @@ while norm(gg)>gtol && check==0 && jit<nit
             catch
                 save m1.mat x fval0 nig
             end
-            [dum, gg, htol0, igg, hhg, h1]=mr_hessian(0,xparam1,func0,flagit,htol,DynareDataset,DynareOptions,Model,EstimatedParameters,BayesInfo,DynareResults);
+            [dum, gg, htol0, igg, hhg, h1]=mr_hessian(0,xparam1,func0,flagit,htol,varargin{:});
             if isempty(dum),
                 outer_product_gradient=0;
             end
@@ -237,7 +242,7 @@ while norm(gg)>gtol && check==0 && jit<nit
                 H = igg;
             end
         elseif analytic_derivation,
-            [fvalx,gg,hh]=feval(func0,xparam1,DynareDataset,DynareOptions,Model,EstimatedParameters,BayesInfo,DynareResults);
+            [fvalx,gg,hh]=feval(func0,xparam1,varargin{:});
             hhg=hh;
             H = inv(hh);
         end
@@ -277,5 +282,3 @@ if check==1,
 end
 
 return
-
-

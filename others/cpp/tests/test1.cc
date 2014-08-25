@@ -3,9 +3,10 @@
 #include "DecisionRules.hh"
 
 DynareInfo *preprocessorOutput(void);
-void steadystate(const double *, const double *, double *, int *);
+extern "C"{
+void steadystate(double const*, double const*, double *, int *);
 void FirstDerivatives(const double *y, double *x, int nb_row_x, double *params, double *steady_state, int it_, double *residual, double *g1, double *v2, double *v3);
-
+}
 main(int argc, char **argv)
 {
   DynareInfo model_info;

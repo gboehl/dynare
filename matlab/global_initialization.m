@@ -28,11 +28,12 @@ function global_initialization()
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-global oo_ M_ options_ estim_params_ bayestopt_ estimation_info ex0_ ys0_  ex_det0_
+global oo_ M_ options_ estim_params_ bayestopt_ estimation_info ex0_ ys0_
 
 estim_params_ = [];
 bayestopt_ = [];
 options_.datafile = '';
+options_.dataset = [];
 options_.verbosity = 1;
 options_.terminal_condition = 0;
 options_.rplottype = 0;
@@ -196,6 +197,8 @@ ep.stochastic.quadrature.pruned.status = 0;
 ep.stochastic.quadrature.pruned.relative = 1e-5;
 ep.stochastic.quadrature.pruned.level = 1e-5;
 ep.stochastic.hybrid_order = 0;
+% homotopic step in extended path simulations
+ep.stochastic.homotopic_steps = true;
 % Copy ep structure in options_ global structure
 options_.ep = ep;
 
@@ -272,6 +275,7 @@ options_.stack_solve_algo = 0;
 options_.markowitz = 0.5;
 options_.minimal_solving_periods = 1;
 options_.endogenous_terminal_period = 0;
+options_.no_homotopy = 0;
 
 % Solution
 options_.order = 2;
@@ -351,9 +355,14 @@ estimation_info.transition_probability_index = {};
 options_.initial_period = dates(1,1);
 options_.dataset.firstobs = options_.initial_period;
 options_.dataset.lastobs = NaN;
+options_.initial_period = NaN; %dates(1,1);
+options_.dataset.file = [];
+options_.dataset.series = [];
+options_.dataset.firstobs = dates();
+options_.dataset.lastobs = dates();
 options_.dataset.nobs = NaN;
-options_.dataset.xls_sheet = NaN;
-options_.dataset.xls_range = NaN;
+options_.dataset.xls_sheet = [];
+options_.dataset.xls_range = [];
 options_.Harvey_scale_factor = 10;
 options_.MaxNumberOfBytes = 1e6;
 options_.MaximumNumberOfMegaBytes = 111;
@@ -364,7 +373,8 @@ options_.bayesian_th_moments = 0;
 options_.diffuse_filter = 0;
 options_.filter_step_ahead = [];
 options_.filtered_vars = 0;
-options_.first_obs = 1;
+options_.first_obs = NaN;
+options_.nobs = NaN;
 options_.kalman_algo = 0;
 options_.fast_kalman = 0;
 options_.kalman_tol = 1e-10;
@@ -389,6 +399,10 @@ options_.recursive_estimation_restart = 0;
 options_.MCMC_jumping_covariance='hessian';
 options_.use_calibration_initialization = 0;
 options_.endo_vars_for_moment_computations_in_estimation=[];
+
+% Prior restrictions
+options_.prior_restrictions.status = 0;
+options_.prior_restrictions.routine = [];
 
 options_.mode_compute = 4;
 options_.mode_file = '';
@@ -437,7 +451,6 @@ oo_.exo_simul = [];
 oo_.endo_simul = [];
 ys0_ = [];
 ex0_ = [];
-ex_det0_ = [];
 oo_.dr = [];
 oo_.exo_steady_state = [];
 oo_.exo_det_steady_state = [];
@@ -448,7 +461,7 @@ M_.endo_histval = [];
 M_.Correlation_matrix = [];
 M_.Correlation_matrix_ME = [];
 
-% homotopy
+% homotopy for steady state
 options_.homotopy_mode = 0;
 options_.homotopy_steps = 1;
 options_.homotopy_force_continue = 0;
@@ -628,6 +641,9 @@ options_.mcmc.replic = 1000;
 options_.calibration = [];
 options_.multinomial = [];
 
+% Options for lmmcp solver
+options_.lmmcp = [];
+
 % initialize persistent variables in priordens()
 priordens([],[],[],[],[],[],1);
 % initialize persistent variables in dyn_first_order_solver()
@@ -635,6 +651,7 @@ dyn_first_order_solver();
 
 % Set dynare random generator and seed.
 set_dynare_seed('default');
+
 
 % Create directories
 [junk,junk]=mkdir(M_.fname);

@@ -69,10 +69,14 @@ for i=1:length(fields)
             fprintf('false');
         end
     elseif isobject(val)
-        if isa(val, 'dates')
-            fprintf('<dates: %s, ..., %s>', ...
+        if isdates(val)
+            if isempty(val)
+                fprintf('<dates: empty>');
+            else
+                fprintf('<dates: %s, ..., %s>', ...
                     date2string(val(1)), date2string(val(end)));
-        elseif isa(val, 'dseries')
+            end
+        elseif isdseries(val)
             if numel(val) == 1
                 fprintf('<dseries: %s>', val.name{1});
             else

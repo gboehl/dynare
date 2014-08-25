@@ -73,7 +73,7 @@ if k <= nvx
         texnam = ['$ SE_{' tname '} $'];
     end
 elseif  k <= (nvx+nvn)
-    vname = deblank(options_.varobs(estim_params_.nvn_observable_correspondence(k-estim_params_.nvx,1),:));
+    vname = options_.varobs{estim_params_.nvn_observable_correspondence(k-estim_params_.nvx,1)};
     nam=['SE_EOBS_',vname];
     if TeX
         tname  = deblank(M_.endo_names_tex(estim_params_.var_endo(k-estim_params_.nvx,1),:));

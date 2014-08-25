@@ -21,7 +21,7 @@ assert(nargin <= 3, 'dseries::tex_rename: accepts at most three args');
 
 if nargin == 2
     newtexname = varargin{1};
-    assert(ts.vobs == 1, ['dseries::tex_rename: with one argument, the dseries contain only one variable.']);
+    assert(vobs(ts) == 1, ['dseries::tex_rename: with one argument, the dseries contain only one variable.']);
 else
     newtexname = varargin{2};
     name = varargin{1};

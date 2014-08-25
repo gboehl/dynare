@@ -1,4 +1,4 @@
-function [fval,grad,hess,exit_flag,info,PHI,SIGMAu,iXX,prior] = dsge_var_likelihood(xparam1,DynareDataset,DynareOptions,Model,EstimatedParameters,BayesInfo,DynareResults)
+function [fval,grad,hess,exit_flag,info,PHI,SIGMAu,iXX,prior] = dsge_var_likelihood(xparam1,DynareDataset,DynareInfo,DynareOptions,Model,EstimatedParameters,BayesInfo,DynareResults)
 % Evaluates the posterior kernel of the bvar-dsge model.
 %
 % INPUTS
@@ -55,7 +55,11 @@ end
 nx = EstimatedParameters.nvx + EstimatedParameters.np;
 
 % Get the number of observed variables in the VAR model.
-NumberOfObservedVariables = DynareDataset.info.nvobs;
+NumberOfObservedVariables = DynareDataset.vobs;
+
+% Get the number of observations.
+NumberOfObservations = DynareDataset.nobs;
+
 
 % Get the number of lags in the VAR model.
 NumberOfLags = DynareOptions.dsge_varlag;
@@ -110,10 +114,12 @@ Model.Sigma_e = Q;
 dsge_prior_weight = Model.params(dsge_prior_weight_idx);
 
 % Is the dsge prior proper?
-if dsge_prior_weight<(NumberOfParameters+NumberOfObservedVariables)/DynareDataset.info.ntobs;
-    fval = objective_function_penalty_base+abs(DynareDataset.info.ntobs*dsge_prior_weight-(NumberOfParameters+NumberOfObservedVariables));
+if dsge_prior_weight<(NumberOfParameters+NumberOfObservedVariables)/NumberOfObservations;
+    fval = objective_function_penalty_base+abs(NumberOfObservations*dsge_prior_weight-(NumberOfParameters+NumberOfObservedVariables));
     exit_flag = 0;
     info = 51;
+    info(2)=dsge_prior_weight;
+    info(3)=(NumberOfParameters+NumberOfObservedVariables)/DynareDataset.nobs;
     return
 end
 
@@ -127,7 +133,7 @@ end
 
 % Return, with endogenous penalty when possible, if dynare_resolve issues an error code (defined in resol).
 if info(1) == 1 || info(1) == 2 || info(1) == 5 || info(1) == 7 || info(1) ...
-            == 8 || info(1) == 22 || info(1) == 24
+            == 8 || info(1) == 22 || info(1) == 24 || info(1) == 25
     fval = objective_function_penalty_base+1;
     info = info(1);
     exit_flag = 0;
@@ -197,9 +203,9 @@ assignin('base','GXX',GXX);
 assignin('base','GYX',GYX);
 
 if ~isinf(dsge_prior_weight)% Evaluation of the likelihood of the dsge-var model when the dsge prior weight is finite.
-    tmp0 = dsge_prior_weight*DynareDataset.info.ntobs*TheoreticalAutoCovarianceOfTheObservedVariables(:,:,1) + mYY ;
-    tmp1 = dsge_prior_weight*DynareDataset.info.ntobs*GYX + mYX;
-    tmp2 = inv(dsge_prior_weight*DynareDataset.info.ntobs*GXX+mXX);
+    tmp0 = dsge_prior_weight*NumberOfObservations*TheoreticalAutoCovarianceOfTheObservedVariables(:,:,1) + mYY ;
+    tmp1 = dsge_prior_weight*NumberOfObservations*GYX + mYX;
+    tmp2 = inv(dsge_prior_weight*NumberOfObservations*GXX+mXX);
     SIGMAu = tmp0 - tmp1*tmp2*tmp1'; clear('tmp0');
     [SIGMAu_is_positive_definite, penalty] = ispd(SIGMAu);
     if ~SIGMAu_is_positive_definite
@@ -208,28 +214,28 @@ if ~isinf(dsge_prior_weight)% Evaluation of the likelihood of the dsge-var model
         exit_flag = 0;
         return;
     end
-    SIGMAu = SIGMAu / (DynareDataset.info.ntobs*(1+dsge_prior_weight));
+    SIGMAu = SIGMAu / (NumberOfObservations*(1+dsge_prior_weight));
     PHI = tmp2*tmp1'; clear('tmp1');
-    prodlng1 = sum(gammaln(.5*((1+dsge_prior_weight)*DynareDataset.info.ntobs- ...
+    prodlng1 = sum(gammaln(.5*((1+dsge_prior_weight)*NumberOfObservations- ...
                                NumberOfObservedVariables*NumberOfLags ...
                                +1-(1:NumberOfObservedVariables)')));
-    prodlng2 = sum(gammaln(.5*(dsge_prior_weight*DynareDataset.info.ntobs- ...
+    prodlng2 = sum(gammaln(.5*(dsge_prior_weight*NumberOfObservations- ...
                                NumberOfObservedVariables*NumberOfLags ...
                                +1-(1:NumberOfObservedVariables)')));
-    lik = .5*NumberOfObservedVariables*log(det(dsge_prior_weight*DynareDataset.info.ntobs*GXX+mXX)) ...
-          + .5*((dsge_prior_weight+1)*DynareDataset.info.ntobs-NumberOfParameters)*log(det((dsge_prior_weight+1)*DynareDataset.info.ntobs*SIGMAu)) ...
-          - .5*NumberOfObservedVariables*log(det(dsge_prior_weight*DynareDataset.info.ntobs*GXX)) ...
-          - .5*(dsge_prior_weight*DynareDataset.info.ntobs-NumberOfParameters)*log(det(dsge_prior_weight*DynareDataset.info.ntobs*(GYY-GYX*inv(GXX)*GYX'))) ...
-          + .5*NumberOfObservedVariables*DynareDataset.info.ntobs*log(2*pi)  ...
-          - .5*log(2)*NumberOfObservedVariables*((dsge_prior_weight+1)*DynareDataset.info.ntobs-NumberOfParameters) ...
-          + .5*log(2)*NumberOfObservedVariables*(dsge_prior_weight*DynareDataset.info.ntobs-NumberOfParameters) ...
+    lik = .5*NumberOfObservedVariables*log(det(dsge_prior_weight*NumberOfObservations*GXX+mXX)) ...
+          + .5*((dsge_prior_weight+1)*NumberOfObservations-NumberOfParameters)*log(det((dsge_prior_weight+1)*NumberOfObservations*SIGMAu)) ...
+          - .5*NumberOfObservedVariables*log(det(dsge_prior_weight*NumberOfObservations*GXX)) ...
+          - .5*(dsge_prior_weight*NumberOfObservations-NumberOfParameters)*log(det(dsge_prior_weight*NumberOfObservations*(GYY-GYX*inv(GXX)*GYX'))) ...
+          + .5*NumberOfObservedVariables*NumberOfObservations*log(2*pi)  ...
+          - .5*log(2)*NumberOfObservedVariables*((dsge_prior_weight+1)*NumberOfObservations-NumberOfParameters) ...
+          + .5*log(2)*NumberOfObservedVariables*(dsge_prior_weight*NumberOfObservations-NumberOfParameters) ...
           - prodlng1 + prodlng2;
 else% Evaluation of the likelihood of the dsge-var model when the dsge prior weight is infinite.
     iGXX = inv(GXX);
     SIGMAu = GYY - GYX*iGXX*transpose(GYX);
     PHI = iGXX*transpose(GYX);
-    lik = DynareDataset.info.ntobs * ( log(det(SIGMAu)) + NumberOfObservedVariables*log(2*pi) +  ...
-                   trace(inv(SIGMAu)*(mYY - transpose(mYX*PHI) - mYX*PHI + transpose(PHI)*mXX*PHI)/DynareDataset.info.ntobs));
+    lik = NumberOfObservations * ( log(det(SIGMAu)) + NumberOfObservedVariables*log(2*pi) +  ...
+                   trace(inv(SIGMAu)*(mYY - transpose(mYX*PHI) - mYX*PHI + transpose(PHI)*mXX*PHI)/NumberOfObservations));
     lik = .5*lik;% Minus likelihood
 end
 
@@ -254,7 +260,7 @@ if (nargout==9)
     iGXX = inv(GXX);
     prior.SIGMAstar = GYY - GYX*iGXX*GYX';
     prior.PHIstar = iGXX*transpose(GYX);
-    prior.ArtificialSampleSize = fix(dsge_prior_weight*DynareDataset.info.ntobs);
+    prior.ArtificialSampleSize = fix(dsge_prior_weight*NumberOfObservations);
     prior.DF = prior.ArtificialSampleSize - NumberOfParameters - NumberOfObservedVariables;
     prior.iGXX = iGXX;
 end

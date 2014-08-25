@@ -1,4 +1,4 @@
-function [freq,init,data,varlist,tex] = load_mat_file_data(file)
+function [freq,init,data,varlist,tex] = load_mat_file_data(file)  % --*-- Unitary tests --*--
 
 % Loads data in a matlab/octave mat-file.
 %
@@ -16,7 +16,7 @@ function [freq,init,data,varlist,tex] = load_mat_file_data(file)
 % be a scalar integer and INIT__ a string like '1938M11', '1945Q3', '1973W3' or '2009A'. If these variables are not specified 
 % default values for freq and init are 1 and dates(1,1).
 
-% Copyright (C) 2012-2013 Dynare Team
+% Copyright (C) 2012-2014 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -32,7 +32,7 @@ function [freq,init,data,varlist,tex] = load_mat_file_data(file)
 %
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
-    
+
 datafile = load(file);
 
 if isfield(datafile,'INIT__')
@@ -78,7 +78,8 @@ end
 
 for i=1:length(varlist)
     try
-        data = [data,  getfield(datafile,varlist{i})];
+        tmp = getfield(datafile,varlist{i});
+        data = [data,  tmp(:)];
     catch
         error(['load_mat_file:: All the vectors (variables) in ' inputname(1) ' must have the same number of rows (observations)!'])
     end
@@ -117,3 +118,37 @@ end
 %$ t(9) = dyn_assert(data(:,2),[2;3;4;5;6]);
 %$ T = all(t);
 %@eof:1
+
+%@test:2
+%$ % Create a data mat-file
+%$ FREQ__ = 12;
+%$ INIT__ = '1938M11';
+%$ NAMES__ = {'hagop'; 'bedros'};
+%$ TEX__ = NAMES__;
+%$ hagop  = [1, 2, 3, 4, 5];
+%$ bedros = [2, 3, 4, 5, 6];
+%$ save('datafile_for_test');
+%$
+%$ % Try to read the data mat-file
+%$ t = zeros(8,1);
+%$ try
+%$     [freq,init,data,varlist,tex] = load_mat_file_data('datafile_for_test');
+%$     t(1) = 1;
+%$ catch exception
+%$     t = t(1);
+%$     T = all(t);
+%$     LOG = getReport(exception,'extended');
+%$     return
+%$ end
+%$
+%$ % Check the results.
+%$ t(2) = dyn_assert(freq,12);
+%$ t(3) = dyn_assert(isa(init,'dates'),1);
+%$ t(4) = dyn_assert(init.freq,12);
+%$ t(5) = dyn_assert(init.time,[1938 11]);
+%$ t(6) = dyn_assert(varlist,{'hagop';'bedros'});
+%$ t(7) = dyn_assert(varlist,{'hagop';'bedros'});
+%$ t(8) = dyn_assert(data(:,1),[1;2;3;4;5]);
+%$ t(9) = dyn_assert(data(:,2),[2;3;4;5;6]);
+%$ T = all(t);
+%@eof:2

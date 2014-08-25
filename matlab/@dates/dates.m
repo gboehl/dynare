@@ -45,7 +45,7 @@ function dd = dates(varargin) % --*-- Unitary tests --*--
 %! @end deftypefn
 %@eod:
 
-% Copyright (C) 2011-2013 Dynare Team
+% Copyright (C) 2011-2014 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -60,65 +60,109 @@ function dd = dates(varargin) % --*-- Unitary tests --*--
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
- % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-dd = struct('ndat', 0, 'freq', NaN(0), 'time', NaN(0,2));
-dd = class(dd,'dates');
-
-switch nargin
-  case 0
-    % Returns an empty object
+% Initialization.
+if nargin>0 && ischar(varargin{1}) && isequal(varargin{1},'initialize')
+    dd = struct('ndat', 0, 'freq', NaN(0), 'time', NaN(0,2));
+    dd = class(dd,'dates');
+    assignin('base','emptydatesobject',dd);
     return
-  case 1
-    if isa(varargin{1},'dates')
-        % Returns a copy of the input argument
-        dd = varargin{1};
-    elseif isdate(varargin{1})
-        date = string2date(varargin{1});
-        dd.ndat = 1;
-        dd.freq = date.freq;
-        dd.time = date.time;
-    elseif isfreq(varargin{1})
-        % Instantiate an empty dates object (only set frequency)
-        if ischar(varargin{1})
-            dd.freq = string2freq(varargin{1});
-        else
-            dd.freq = varargin{1};
-        end
+end
+
+dd = evalin('base','emptydatesobject');
+
+if isequal(nargin, 0)
+    % Return an empty dates obect
+    return
+end
+
+if all(cellfun(@isdates, varargin))
+    % Concatenates dates in a dates object.
+    dd = horzcat(varargin{:});
+    return
+end
+
+if all(cellfun(@isstringdate,varargin))
+    % Concatenates dates in a dates object.
+    tmp = cellfun(@string2date,varargin);
+    if all([tmp.freq]-tmp(1).freq==0)
+        dd.freq = tmp(1).freq;
     else
-        error('dates:: Wrong calling sequence of the constructor!')
+        error('dates::dates: Wrong calling sequence of the constructor! All dates must have common frequency.')
     end
-  otherwise
-    if isdate(varargin{1})
-        dd.ndat = nargin;
-        dd.time = NaN(dd.ndat,2);
-        date = string2date(varargin{1});
-        dd.freq = date.freq;
-        dd.time(1,:) = date.time;
-    elseif isdates(varargin{1})
-        dd = horzcat(varargin{:});
-        return
-    elseif isfreq(varargin{1})
-        S.type = '()';
-        S.subs = varargin;
-        dd = subsref(dd,S);
-        return
+    dd.ndat = length(tmp);
+    dd.time = transpose(reshape([tmp.time],2,dd.ndat));
+    return
+end
+
+if isequal(nargin,1) && isfreq(varargin{1})
+    % Instantiate an empty dates object (only set frequency)
+    if ischar(varargin{1})
+        dd.freq = string2freq(varargin{1});
     else
-        error(['dates::dates: Wrong calling sequence!'])
+        dd.freq = varargin{1};
     end
-    for i=2:dd.ndat
-        if isdate(varargin{i})
-            date = string2date(varargin{i});
-            if isequal(date.freq,dd.freq)
-                dd.time(i,:) = date.time;
+    return
+end
+
+if isequal(nargin,3) && isfreq(varargin{1})
+    if ischar(varargin{1})
+        dd.freq = string2freq(varargin{1});
+    else
+        dd.freq = varargin{1};
+    end
+    if (isnumeric(varargin{2}) && isvector(varargin{2}) && all(isint(varargin{2})))
+        if isnumeric(varargin{3}) && isvector(varargin{3}) && all(isint(varargin{3}))
+            if all(varargin{3}>=1) && all(varargin{3}<=dd.freq)
+                dd.time = [varargin{2}(:), varargin{3}(:)];
+                dd.ndat = size(dd.time,1);
             else
-                 error(['dates::dates: Check that all the inputs have the same frequency (see input number ' str2num(i) ')!'])
+                error(sprintf('dates::dates: Wrong calling sequence of the constructor! Third input must contain integers between 1 and %i.',dd.freq))
             end
         else
-            error(['dates::dates: Input ' str2num(i) ' has to be a string date!'])
+            error('dates::dates: Wrong calling sequence of the constructor! Third input must be a vector of integers.')
+        end
+    else
+        error('dates::dates: Wrong calling sequence of the constructor! Second input must be a vector of integers.')
+    end
+    return
+end
+
+if isequal(nargin,2) && isfreq(varargin{1})
+    if ischar(varargin{1})
+        dd.freq = string2freq(varargin{1});
+    else
+        dd.freq = varargin{1};
+    end
+    if isequal(dd.freq, 1)
+        if (isnumeric(varargin{2}) && isvector(varargin{2}) && isint(varargin{2}))
+            dd.time = [varargin{2}, ones(length(varargin{2}),1)];
+            dd.ndat = size(dd.time,1);
+            return
+        else
+            error('dates::dates: Wrong calling sequence of the constructor! Second input must be a vector of integers.')
+        end
+    else
+        if isequal(size(varargin{2},2), 2)
+            if all(isint(varargin{2}(:,1))) && all(isint(varargin{2}(:,1)))
+                if all(varargin{2}(:,2)>=1) && all(varargin{2}(:,2)<=dd.freq)
+                    dd.time = [varargin{2}(:,1), varargin{2}(:,2)];
+                    dd.ndat = size(dd.time,1);
+                else
+                    error(sprintf('dates::dates: Wrong calling sequence of the constructor! Second column of the last input must contain integers between 1 and %i.',dd.freq))
+                end
+            else
+                error('dates::dates: Wrong calling sequence! Second input argument must be an array of integers.')
+            end
+        else
+            error('dates::dates: Wrong calling sequence!')
         end
     end
+    return
 end
+
+error('dates::dates: Wrong calling sequence!')
 
 %@test:1
 %$ % Define some dates
@@ -243,3 +287,25 @@ end
 %$ end
 %$ T = all(t);
 %@eof:6
+
+%@test:7
+%$ try
+%$   B = dates(4,[1950; 1950], [1; 2]);
+%$   t = 1;
+%$ catch
+%$   t = 0;
+%$ end
+%$
+%$ T = all(t);
+%@eof:7
+
+%@test:8
+%$ try
+%$   B = dates(4,[1950, 1950], [1, 2]);
+%$   t = 1;
+%$ catch
+%$   t = 0;
+%$ end
+%$
+%$ T = all(t);
+%@eof:8

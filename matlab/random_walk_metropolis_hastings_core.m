@@ -88,6 +88,7 @@ d=myinputs.d;
 InitSizeArray=myinputs.InitSizeArray;
 record=myinputs.record;
 dataset_ = myinputs.dataset_;
+dataset_info = myinputs.dataset_info;
 bayestopt_ = myinputs.bayestopt_;
 estim_params_ = myinputs.estim_params_;
 options_ = myinputs.options_;
@@ -164,7 +165,7 @@ for b = fblck:nblck,
         par = feval(ProposalFun, ix2(b,:), proposal_covariance_Cholesky_decomposition, n);
         if all( par(:) > mh_bounds(:,1) ) && all( par(:) < mh_bounds(:,2) )
             try
-                logpost = - feval(TargetFun, par(:),dataset_,options_,M_,estim_params_,bayestopt_,oo_);
+                logpost = - feval(TargetFun, par(:),dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,oo_);
             catch
                 logpost = -inf;
             end

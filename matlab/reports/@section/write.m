@@ -33,6 +33,7 @@ function o = write(o, fid, pg, sec)
 
 assert(fid ~= -1);
 fprintf(fid, '%% Section Object\n');
+
 if ~isempty(o.height)
     fprintf(fid, '\\setlength\\sectionheight{%s}%%\n', o.height);
 end
@@ -45,22 +46,34 @@ end
 fprintf(fid, '}{%%\n');
 fprintf(fid, '\\begin{tabular}[t]{');
 for i=1:o.cols
-    fprintf(fid, 'c');
+    if ~isa(o.elements{1}, 'paragraph')
+        % if one element is a paragraph, they all are
+        % due to check in add*.m functions
+        fprintf(fid, 'l');
+    else
+        fprintf(fid, 'c');
+    end
 end
 fprintf(fid, '}\n');
+
 ne = numElements(o);
-nlcounter = 0;
 row = 1;
 col = 1;
 for i=1:ne
     if isa(o.elements{i}, 'vspace')
-        assert(col == o.cols, ['@section.write: must place ' ...
-                            'vspace command after a linebreak in the table ' ...
-                            'or series of charts']);
         o.elements{i}.write(fid);
         fprintf(fid, '\\\\\n');
+        if col ~= o.cols
+            fprintf(fid, '\\end{tabular}}\\\\\n');
+            fprintf(fid, '%% End Section Object\n\n');
+            return;
+        end
     else
-        o.elements{i}.write(fid, pg, sec, row, col);
+        if isa(o.elements{i}, 'paragraph')
+            o.elements{i}.write(fid);
+        else
+            o.elements{i}.write(fid, pg, sec, row, col);
+        end
         if col ~= o.cols
             fprintf(fid, ' & ');
             col = col + 1;
@@ -71,6 +84,6 @@ for i=1:ne
         end
     end
 end
-fprintf(fid, '\\end{tabular}}\n');
+fprintf(fid, '\\end{tabular}}\\\\\n');
 fprintf(fid, '%% End Section Object\n\n');
 end

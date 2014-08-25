@@ -81,8 +81,8 @@ switch task
         order_var = oo_.dr.order_var;
         i_var_obs = [];
         trend_coeffs = [];
-        for i=1:size(var_obs,1)
-            tmp = strmatch(var_obs(i,:),endo_names(i_var,:),'exact');
+        for i=1:length(var_obs)
+            tmp = strmatch(var_obs{i},endo_names(i_var,:),'exact');
             if ~isempty(tmp)
                 i_var_obs = [ i_var_obs; tmp];
                 trend_coeffs = [trend_coeffs; oo_.Smoother.TrendCoeffs(i)];

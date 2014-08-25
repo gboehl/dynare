@@ -1,4 +1,4 @@
-function pfm = setup_stochastic_perfect_foresight_model_solver(DynareModel,DynareOptions,DynareOutput,IntegrationMethod)
+function pfm = setup_stochastic_perfect_foresight_model_solver(DynareModel,DynareOptions,DynareOutput)
 
 % Copyright (C) 2013 Dynare Team
 %
@@ -69,34 +69,3 @@ pfm.verbose = DynareOptions.ep.verbosity;
 pfm.maxit_ = DynareOptions.simul.maxit;
 pfm.tolerance = DynareOptions.dynatol.f;
 
-if nargin>3 && DynareOptions.ep.stochastic.order
-    % Compute weights and nodes for the stochastic version of the extended path.
-    switch IntegrationMethod
-      case 'Tensor-Gaussian-Quadrature'
-        % Get the nodes and weights from a univariate Gauss-Hermite quadrature.
-        [nodes,weights] = gauss_hermite_weights_and_nodes(DynareOptions.ep.stochastic.quadrature.nodes);
-        % Replicate the univariate nodes for each innovation and dates, and, if needed, correlate them. 
-        nodes = repmat(nodes,1,pfm.number_of_shocks*pfm.stochastic_order)*kron(eye(pfm.stochastic_order),pfm.Omega);
-        % Put the nodes and weights in cells
-        for i=1:pfm.number_of_shocks
-            rr(i) = {nodes(:,i)};
-            ww(i) = {weights};
-        end
-        % Build the tensorial grid
-        pfm.nodes = cartesian_product_of_sets(rr{:});
-        pfm.weights = prod(cartesian_product_of_sets(ww{:}),2);
-        pfm.nnodes = length(pfm.weights);
-      case 'Stroud-Cubature-3'
-        [nodes,weights] = cubature_with_gaussian_weight(pfm.number_of_shocks*pfm.stochastic_order,3,'Stroud')
-        pfm.nodes = kron(eye(pfm.stochastic_order),transpose(Omega))*nodes;
-        pfm.weights = weights;
-        pfm.nnodes = length(pfm.weights);
-      case 'Stroud-Cubature-5'
-        [nodes,weights] = cubature_with_gaussian_weight(pfm.number_of_shocks*pfm.stochastic_order,5,'Stroud')
-        pfm.nodes = kron(eye(pfm.stochastic_order),transpose(Omega))*nodes;
-        pfm.weights = weights;
-        pfm.nnodes = length(weights);
-      otherwise
-        error('setup_stochastic_perfect_foresight_model_solver:: Unknown integration algorithm!')
-    end
-end

@@ -40,6 +40,7 @@ ts = extended_path([],1000);
 
 options_.ep.verbosity = 0;
 options_.ep.stochastic.order = 1;
+options_.ep.IntegrationAlgorithm='Tensor-Gaussian-Quadrature';
 options_.ep.stochastic.nodes = 3;
 options_.console_mode = 0;
 

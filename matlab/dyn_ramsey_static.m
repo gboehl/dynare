@@ -137,11 +137,11 @@ Uyy = reshape(Uyy,endo_nbr,endo_nbr);
 % depends on multipliers to 0 to compute residuals
 if (options_.bytecode)
    [chck, res, junk] = bytecode('static',xx,[oo.exo_simul oo.exo_det_simul], ...
-               M.params, 'evaluate'); 
+               params, 'evaluate');
    fJ = junk.g1;
 else
    [res,fJ] = feval([fname '_static'],xx,[oo.exo_simul oo.exo_det_simul], ...
-               M.params);
+               params);
 end
 % index of multipliers and corresponding equations
 % the auxiliary variables before the Lagrange multipliers are treated

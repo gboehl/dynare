@@ -41,7 +41,7 @@ function myoutput=PosteriorIRF_core1(myinputs,fpar,B,whoiam, ThisMatlab)
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 
-global options_ estim_params_ oo_ M_ bayestopt_ dataset_
+global options_ estim_params_ oo_ M_ bayestopt_ dataset_ dataset_info
 
 if nargin<4,
     whoiam=0;
@@ -189,24 +189,24 @@ while fpar<B
     end
     if MAX_nirfs_dsgevar
         IRUN = IRUN+1;
-        [fval,junk1,junk2,cost_flag,info,PHI,SIGMAu,iXX] =  dsge_var_likelihood(deep',dataset_,options_,M_,estim_params_,bayestopt_,oo_);
+        [fval,junk1,junk2,cost_flag,info,PHI,SIGMAu,iXX] =  dsge_var_likelihood(deep',dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,oo_);
         dsge_prior_weight = M_.params(strmatch('dsge_prior_weight',M_.param_names));
-        DSGE_PRIOR_WEIGHT = floor(dataset_.info.ntobs*(1+dsge_prior_weight));
-        SIGMA_inv_upper_chol = chol(inv(SIGMAu*dataset_.info.ntobs*(dsge_prior_weight+1)));
+        DSGE_PRIOR_WEIGHT = floor(dataset_.nobs*(1+dsge_prior_weight));
+        SIGMA_inv_upper_chol = chol(inv(SIGMAu*dataset_.nobs*(dsge_prior_weight+1)));
         explosive_var  = 1;
         while explosive_var
             % draw from the marginal posterior of SIGMA
-            SIGMAu_draw = rand_inverse_wishart(dataset_.info.nvobs, DSGE_PRIOR_WEIGHT-NumberOfParametersPerEquation, ...
+            SIGMAu_draw = rand_inverse_wishart(dataset_.vobs, DSGE_PRIOR_WEIGHT-NumberOfParametersPerEquation, ...
                                                SIGMA_inv_upper_chol);
             % draw from the conditional posterior of PHI
-            PHI_draw = rand_matrix_normal(NumberOfParametersPerEquation,dataset_.info.nvobs, PHI, ...
+            PHI_draw = rand_matrix_normal(NumberOfParametersPerEquation,dataset_.vobs, PHI, ...
                                           chol(SIGMAu_draw)', chol(iXX)');
-            Companion_matrix(1:dataset_.info.nvobs,:) = transpose(PHI_draw(1:NumberOfLagsTimesNvobs,:));
+            Companion_matrix(1:dataset_.vobs,:) = transpose(PHI_draw(1:NumberOfLagsTimesNvobs,:));
             % Check for stationarity
             explosive_var = any(abs(eig(Companion_matrix))>1.000000001);
         end
         % Get the mean
-        mu = zeros(1,dataset_.info.nvobs);
+        mu = zeros(1,dataset_.vobs);
         % Get rotation
         if dsge_prior_weight > 0
             Atheta(oo_.dr.order_var,M_.exo_names_orig_ord) = oo_.dr.ghu*sqrt(M_.Sigma_e);
@@ -216,24 +216,24 @@ while fpar<B
         SIGMAu_chol = chol(SIGMAu_draw)';
         SIGMAtrOMEGA = SIGMAu_chol*OMEGAstar';
         PHIpower = eye(NumberOfLagsTimesNvobs);
-        irfs = zeros (options_.irf,dataset_.info.nvobs*M_.exo_nbr);
-        tmp3 = PHIpower(1:dataset_.info.nvobs,1:dataset_.info.nvobs)*SIGMAtrOMEGA;
+        irfs = zeros (options_.irf,dataset_.vobs*M_.exo_nbr);
+        tmp3 = PHIpower(1:dataset_.vobs,1:dataset_.vobs)*SIGMAtrOMEGA;
         irfs(1,:) = tmp3(:)';
         for t = 2:options_.irf
             PHIpower = Companion_matrix*PHIpower;
-            tmp3 = PHIpower(1:dataset_.info.nvobs,1:dataset_.info.nvobs)*SIGMAtrOMEGA;
+            tmp3 = PHIpower(1:dataset_.vobs,1:dataset_.vobs)*SIGMAtrOMEGA;
             irfs(t,:)  = tmp3(:)'+kron(ones(1,M_.exo_nbr),mu);
         end
         tmp_dsgevar = kron(ones(options_.irf,1),mu);
-        for j = 1:(dataset_.info.nvobs*M_.exo_nbr)
+        for j = 1:(dataset_.vobs*M_.exo_nbr)
             if max(irfs(:,j)) - min(irfs(:,j)) > 1e-10
                 tmp_dsgevar(:,j) = (irfs(:,j));
             end
         end
         if IRUN < MAX_nirfs_dsgevar
-            stock_irf_bvardsge(:,:,:,IRUN) = reshape(tmp_dsgevar,options_.irf,dataset_.info.nvobs,M_.exo_nbr);
+            stock_irf_bvardsge(:,:,:,IRUN) = reshape(tmp_dsgevar,options_.irf,dataset_.vobs,M_.exo_nbr);
         else
-            stock_irf_bvardsge(:,:,:,IRUN) = reshape(tmp_dsgevar,options_.irf,dataset_.info.nvobs,M_.exo_nbr);
+            stock_irf_bvardsge(:,:,:,IRUN) = reshape(tmp_dsgevar,options_.irf,dataset_.vobs,M_.exo_nbr);
             instr = [MhDirectoryName '/' M_.fname '_irf_bvardsge' ...
                      int2str(NumberOfIRFfiles_dsgevar) '.mat stock_irf_bvardsge;'];,
             eval(['save ' instr]);
@@ -242,7 +242,7 @@ while fpar<B
             end
             NumberOfIRFfiles_dsgevar = NumberOfIRFfiles_dsgevar+1;
             IRUN =0;
-            stock_irf_dsgevar = zeros(options_.irf,dataset_.info.nvobs,M_.exo_nbr,MAX_nirfs_dsgevar);
+            stock_irf_dsgevar = zeros(options_.irf,dataset_.vobs,M_.exo_nbr,MAX_nirfs_dsgevar);
         end
     end
     if irun == MAX_nirfs_dsge || irun == B || fpar == B
@@ -279,20 +279,6 @@ while fpar<B
         ifil2 = ifil2 + 1;
         irun2 = 0;
     end
-%     if isoctave
-%         if (whoiam==0),
-%             printf(['Posterior IRF  %3.f%% done\r'],(fpar/B*100));
-%         end
-%     elseif ~whoiam,
-%         waitbar(fpar/B,h);
-%     end
-%     if whoiam,
-%         if ~isoctave
-%             fprintf('Done! \n');
-%         end
-%         waitbarString = [ 'Subdraw ' int2str(fpar) '/' int2str(B) ' done.'];
-%         fMessageStatus((fpar-fpar0)/(B-fpar0),whoiam,waitbarString, waitbarTitle, Parallel(ThisMatlab));
-%     end
     dyn_waitbar((fpar-fpar0)/(B-fpar0),h);
 end
 
@@ -310,9 +296,5 @@ end
 myoutput.OutputFileName = [OutputFileName_dsge;
                     OutputFileName_param;
                     OutputFileName_bvardsge];
-                
+
 myoutput.nosaddle = nosaddle;
-
-
-
-

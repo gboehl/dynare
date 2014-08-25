@@ -18,6 +18,10 @@ function dd = getRange(o)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-assert(~isempty(o.data) && size(o.data, 2) == 1);
-dd = o.data.dates;
+if isempty(o.data)
+    dd = dates();
+else
+    assert(size(o.data, 2) == 1);
+    dd = o.data.dates;
+end
 end
