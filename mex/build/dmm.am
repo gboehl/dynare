@@ -8,6 +8,7 @@ MSMEXSRCDIR = $(DYNMEXSRCDIR)/dmm
 AM_FFLAGS += -cpp -fcray-pointer -ffixed-form -ffixed-line-length-none -std=legacy
 AM_FCFLAGS += -cpp -fdefault-integer-8 -fPIC
 
+AM_LDFLAGS = $(MATLAB_F_LDFLAGS)
 LIBS += -leng $(LIBADD_DLOPEN)
 
 nodist_dmm_SOURCES = \
