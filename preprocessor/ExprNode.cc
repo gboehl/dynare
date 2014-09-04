@@ -460,6 +460,12 @@ NumConstNode::containsEndogenous(void) const
 }
 
 bool
+NumConstNode::containsParameter(void) const
+{
+  return false;
+}
+
+bool
 NumConstNode::isLaggedOrLeadNonStateVarPresent() const
 {
   return false;
@@ -1333,6 +1339,15 @@ bool
 VariableNode::containsEndogenous(void) const
 {
   if (type == eEndogenous)
+    return true;
+  else
+    return false;
+}
+
+bool
+VariableNode::containsParameter(void) const
+{
+  if (type == eParameter)
     return true;
   else
     return false;
@@ -2451,6 +2466,13 @@ UnaryOpNode::containsEndogenous(void) const
 {
   return arg->containsEndogenous();
 }
+
+bool
+UnaryOpNode::containsParameter(void) const
+{
+  return arg->containsParameter();
+}
+
 
 bool
 UnaryOpNode::containsObserved() const
@@ -3725,6 +3747,12 @@ BinaryOpNode::containsEndogenous(void) const
 }
 
 bool
+BinaryOpNode::containsParameter(void) const
+{
+  return (arg1->containsParameter() || arg2->containsParameter());
+}
+
+bool
 BinaryOpNode::containsVarNodeWithId(int sid) const
 {
   return arg1->containsVarNodeWithId(sid) || arg2->containsVarNodeWithId(sid);
@@ -4433,6 +4461,12 @@ TrinaryOpNode::containsEndogenous(void) const
 }
 
 bool
+TrinaryOpNode::containsParameter(void) const
+{
+  return (arg1->containsParameter() || arg2->containsParameter() || arg3->containsParameter());
+}
+
+bool
 TrinaryOpNode::containsObserved() const
 {
   return (arg1->containsObserved() || arg2->containsObserved() || arg3->containsObserved());
@@ -5051,6 +5085,15 @@ AbstractExternalFunctionNode::containsEndogenous(void) const
   bool result = false;
   for (vector<expr_t>::const_iterator it = arguments.begin(); it != arguments.end(); it++)
     result = result || (*it)->containsEndogenous();
+  return result;
+}
+
+bool
+AbstractExternalFunctionNode::containsParameter(void) const
+{
+  bool result = false;
+  for (vector<expr_t>::const_iterator it = arguments.begin(); it != arguments.end(); it++)
+    result = result || (*it)->containsParameter();
   return result;
 }
 

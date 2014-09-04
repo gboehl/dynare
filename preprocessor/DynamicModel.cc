@@ -1537,14 +1537,19 @@ DynamicModel::writeDmmMFile(const string &basename) const
               << "paramsbak = params;" << endl
               << "% *** Set non-zero elements below   ***" << endl << endl;
 
+  bool wroteParams = false;
   deriv_node_temp_terms_t tef_terms; // need to make this a member of the class
   if (!dmm_C.empty())
     {
-      mOutputFile << "for i=1:ns(1)" << endl
-                  << "  params = setState('C', i, paramsbak);" << endl;
+      mOutputFile << "for i=1:ns(1)" << endl;
       for (first_derivatives_t::const_iterator it = dmm_C.begin();
            it != dmm_C.end(); it++)
         {
+          if (it->second->containsParameter() && !wroteParams)
+            {
+              mOutputFile << "  params = setState('C', i, paramsbak);" << endl;
+              wroteParams = true;
+            }
           mOutputFile << "  C(" << it->first.first + 1
                       << ", " << it->first.second + 1 << ", i) = ";
           it->second->writeOutput(mOutputFile, oMatlabDynamicModel, temporary_terms, tef_terms);
@@ -1555,11 +1560,16 @@ DynamicModel::writeDmmMFile(const string &basename) const
 
   if (!dmm_H.empty())
     {
-      mOutputFile << "for i=1:ns(2)" << endl
-                  << "  params = setState('H', i, paramsbak);" << endl;
+      wroteParams = false;
+      mOutputFile << "for i=1:ns(2)" << endl;
       for (first_derivatives_t::const_iterator it = dmm_H.begin();
            it != dmm_H.end(); it++)
         {
+          if (it->second->containsParameter() && !wroteParams)
+            {
+              mOutputFile << "  params = setState('C', i, paramsbak);" << endl;
+              wroteParams = true;
+            }
           mOutputFile << "  H(" << it->first.first + 1
                       << ", " << it->first.second + 1 << ", i) = ";
           it->second->writeOutput(mOutputFile, oMatlabDynamicModel, temporary_terms, tef_terms);
@@ -1570,11 +1580,16 @@ DynamicModel::writeDmmMFile(const string &basename) const
 
   if (!dmm_G.empty())
     {
-      mOutputFile << "for i=1:ns(3)" << endl
-                  << "  params = setState('G', i, paramsbak);" << endl;
+      wroteParams = false;
+      mOutputFile << "for i=1:ns(3)" << endl;
       for (first_derivatives_t::const_iterator it = dmm_G.begin();
            it != dmm_G.end(); it++)
         {
+          if (it->second->containsParameter() && !wroteParams)
+            {
+              mOutputFile << "  params = setState('C', i, paramsbak);" << endl;
+              wroteParams = true;
+            }
           mOutputFile << "  G(" << it->first.first + 1
                       << ", " << it->first.second + 1 << ", i) = ";
           it->second->writeOutput(mOutputFile, oMatlabDynamicModel, temporary_terms, tef_terms);
@@ -1585,11 +1600,16 @@ DynamicModel::writeDmmMFile(const string &basename) const
 
   if (!dmm_A.empty())
     {
-      mOutputFile << "for i=1:ns(4)" << endl
-                  << "  params = setState('A', i, paramsbak);" << endl;
+      wroteParams = false;
+      mOutputFile << "for i=1:ns(4)" << endl;
       for (map<int, expr_t>::const_iterator it = dmm_A.begin();
            it != dmm_A.end(); it++)
         {
+          if (it->second->containsParameter() && !wroteParams)
+            {
+              mOutputFile << "  params = setState('C', i, paramsbak);" << endl;
+              wroteParams = true;
+            }
           mOutputFile << "  A(" << it->first + 1 << ", i) = ";
           it->second->writeOutput(mOutputFile, oMatlabDynamicModel, temporary_terms, tef_terms);
           mOutputFile << ";" << endl;
@@ -1599,11 +1619,16 @@ DynamicModel::writeDmmMFile(const string &basename) const
 
   if (!dmm_F.empty())
     {
-      mOutputFile << "for i=1:ns(5)" << endl
-                  << "  params = setState('F', i, paramsbak);" << endl;
+      wroteParams = false;
+      mOutputFile << "for i=1:ns(5)" << endl;
       for (first_derivatives_t::const_iterator it = dmm_F.begin();
            it != dmm_F.end(); it++)
         {
+          if (it->second->containsParameter() && !wroteParams)
+            {
+              mOutputFile << "  params = setState('C', i, paramsbak);" << endl;
+              wroteParams = true;
+            }
           mOutputFile << "  F(" << it->first.first + 1
                       << ", " << it->first.second + 1 << ", i) = ";
           it->second->writeOutput(mOutputFile, oMatlabDynamicModel, temporary_terms, tef_terms);
@@ -1614,11 +1639,16 @@ DynamicModel::writeDmmMFile(const string &basename) const
 
   if (!dmm_R.empty())
     {
-      mOutputFile << "for i=1:ns(6)" << endl
-                  << "  params = setState('R', i, paramsbak);" << endl;
+      wroteParams = false;
+      mOutputFile << "for i=1:ns(6)" << endl;
       for (first_derivatives_t::const_iterator it = dmm_R.begin();
            it != dmm_R.end(); it++)
         {
+          if (it->second->containsParameter() && !wroteParams)
+            {
+              mOutputFile << "  params = setState('C', i, paramsbak);" << endl;
+              wroteParams = true;
+            }
           mOutputFile << "  R(" << it->first.first + 1
                       << ", " << it->first.second + 1 << ", i) = ";
           it->second->writeOutput(mOutputFile, oMatlabDynamicModel, temporary_terms, tef_terms);

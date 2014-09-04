@@ -385,6 +385,9 @@ public:
   //! Returns true if the expression contains one or several endogenous variable
   virtual bool containsEndogenous(void) const = 0;
 
+  //! Returns true if the expression contains one or several parameters
+  virtual bool containsParameter(void) const = 0;
+
   //! Returns true if the expression contains one or more observed variables
   virtual bool containsObserved() const = 0;
 
@@ -475,6 +478,7 @@ public:
   virtual expr_t differentiateForwardVars(const vector<string> &subset, subst_table_t &subst_table, vector<BinaryOpNode *> &neweqs) const;
   virtual bool isNumConstNodeEqualTo(double value) const;
   virtual bool containsEndogenous(void) const;
+  virtual bool containsParameter(void) const;
   virtual bool containsObserved() const;
   virtual bool isVariableNodeEqualTo(SymbolType type_arg, int variable_id, int lag_arg) const;
   virtual expr_t replaceTrendVar() const;
@@ -541,6 +545,7 @@ public:
   virtual expr_t differentiateForwardVars(const vector<string> &subset, subst_table_t &subst_table, vector<BinaryOpNode *> &neweqs) const;
   virtual bool isNumConstNodeEqualTo(double value) const;
   virtual bool containsEndogenous(void) const;
+  virtual bool containsParameter(void) const;
   virtual bool containsObserved() const;
   virtual bool isVariableNodeEqualTo(SymbolType type_arg, int variable_id, int lag_arg) const;
   virtual expr_t replaceTrendVar() const;
@@ -623,6 +628,7 @@ public:
   virtual expr_t differentiateForwardVars(const vector<string> &subset, subst_table_t &subst_table, vector<BinaryOpNode *> &neweqs) const;
   virtual bool isNumConstNodeEqualTo(double value) const;
   virtual bool containsEndogenous(void) const;
+  virtual bool containsParameter(void) const;
   virtual bool containsObserved() const;
   virtual bool isVariableNodeEqualTo(SymbolType type_arg, int variable_id, int lag_arg) const;
   virtual expr_t replaceTrendVar() const;
@@ -717,6 +723,7 @@ public:
   virtual expr_t differentiateForwardVars(const vector<string> &subset, subst_table_t &subst_table, vector<BinaryOpNode *> &neweqs) const;
   virtual bool isNumConstNodeEqualTo(double value) const;
   virtual bool containsEndogenous(void) const;
+  virtual bool containsParameter(void) const;
   virtual bool containsObserved() const;
   virtual bool isVariableNodeEqualTo(SymbolType type_arg, int variable_id, int lag_arg) const;
   virtual expr_t replaceTrendVar() const;
@@ -794,6 +801,7 @@ public:
   virtual expr_t differentiateForwardVars(const vector<string> &subset, subst_table_t &subst_table, vector<BinaryOpNode *> &neweqs) const;
   virtual bool isNumConstNodeEqualTo(double value) const;
   virtual bool containsEndogenous(void) const;
+  virtual bool containsParameter(void) const;
   virtual bool containsObserved() const;
   virtual bool isVariableNodeEqualTo(SymbolType type_arg, int variable_id, int lag_arg) const;
   virtual expr_t replaceTrendVar() const;
@@ -872,6 +880,7 @@ public:
   virtual expr_t differentiateForwardVars(const vector<string> &subset, subst_table_t &subst_table, vector<BinaryOpNode *> &neweqs) const;
   virtual bool isNumConstNodeEqualTo(double value) const;
   virtual bool containsEndogenous(void) const;
+  virtual bool containsParameter(void) const;
   virtual bool containsObserved() const;
   virtual bool isVariableNodeEqualTo(SymbolType type_arg, int variable_id, int lag_arg) const;
   virtual void writePrhs(ostream &output, ExprNodeOutputType output_type, const temporary_terms_t &temporary_terms, deriv_node_temp_terms_t &tef_terms, const string &ending) const;
