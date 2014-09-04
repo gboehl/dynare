@@ -1567,7 +1567,7 @@ DynamicModel::writeDmmMFile(const string &basename) const
         {
           if (it->second->containsParameter() && !wroteParams)
             {
-              mOutputFile << "  params = setState('C', i, paramsbak);" << endl;
+              mOutputFile << "  params = setState('H', i, paramsbak);" << endl;
               wroteParams = true;
             }
           mOutputFile << "  H(" << it->first.first + 1
@@ -1587,7 +1587,7 @@ DynamicModel::writeDmmMFile(const string &basename) const
         {
           if (it->second->containsParameter() && !wroteParams)
             {
-              mOutputFile << "  params = setState('C', i, paramsbak);" << endl;
+              mOutputFile << "  params = setState('G', i, paramsbak);" << endl;
               wroteParams = true;
             }
           mOutputFile << "  G(" << it->first.first + 1
@@ -1607,7 +1607,7 @@ DynamicModel::writeDmmMFile(const string &basename) const
         {
           if (it->second->containsParameter() && !wroteParams)
             {
-              mOutputFile << "  params = setState('C', i, paramsbak);" << endl;
+              mOutputFile << "  params = setState('A', i, paramsbak);" << endl;
               wroteParams = true;
             }
           mOutputFile << "  A(" << it->first + 1 << ", i) = ";
@@ -1626,7 +1626,7 @@ DynamicModel::writeDmmMFile(const string &basename) const
         {
           if (it->second->containsParameter() && !wroteParams)
             {
-              mOutputFile << "  params = setState('C', i, paramsbak);" << endl;
+              mOutputFile << "  params = setState('F', i, paramsbak);" << endl;
               wroteParams = true;
             }
           mOutputFile << "  F(" << it->first.first + 1
@@ -1646,7 +1646,7 @@ DynamicModel::writeDmmMFile(const string &basename) const
         {
           if (it->second->containsParameter() && !wroteParams)
             {
-              mOutputFile << "  params = setState('C', i, paramsbak);" << endl;
+              mOutputFile << "  params = setState('R', i, paramsbak);" << endl;
               wroteParams = true;
             }
           mOutputFile << "  R(" << it->first.first + 1
