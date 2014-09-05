@@ -20,7 +20,8 @@ var ee; stderr 1;
 var emu; stderr 1;
 end;
 
-S1.calibration(process=A);
+S1.calibration(process=A, regime=1) = 1;
+S1.calibration(process=A, regime=2) = 2;
 S2.calibration(process=2, regime=1) = 1;
 S2.calibration(process=2, regime=2) = 2;
 
