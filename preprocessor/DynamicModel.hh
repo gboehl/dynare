@@ -76,9 +76,12 @@ private:
   map<int, expr_t> dmm_A;
   first_derivatives_t dmm_F;
   first_derivatives_t dmm_R;
-  map<int, string> dmmLatentVars; //symb_id -> multinomial process name
-  map<int, string> dmmLatentVarMat; // symb_id -> Impacted Matrix (e.g. "C")
-  map<string, int> dmmMultinomial; // multinomial process name -> number of states
+  //symb_id -> (multinomial process name, (regime number, value))
+  map<int, pair<string, pair<string, string > > >dmmCalibration;
+  // symb_id -> Impacted Matrix (e.g. "C")
+  map<int, string> dmmLatentVarMat;
+  // multinomial process name -> number of states
+  map<string, int> dmmMultinomial;
 
   //! Store the derivatives or the chainrule derivatives:map<pair< equation, pair< variable, lead_lag >, expr_t>
   typedef map< pair< int, pair< int, int> >, expr_t> first_chain_rule_derivatives_t;
@@ -260,7 +263,8 @@ public:
   //! Store information about the matrices that latent variables impact in dmmLatentVarMat
   void insertDmmMatS(int symb_id, string mat);
   //! Set DMM Latent Variable symb ids
-  void setDmmLatentVarInfo(map<int,string> &latentParamIds, map<string,int> &multinomial);
+  void setDmmLatentVarInfo(map<int, pair<string, pair<string, string > > > &calibration,
+                           map<string,int> &multinomial);
   //! Replaces model equations with derivatives of Lagrangian w.r.t. endogenous
   void computeRamseyPolicyFOCs(const StaticModel &static_model);
   //! Replaces the model equations in dynamic_model with those in this model

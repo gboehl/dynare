@@ -395,19 +395,21 @@ ModFile::transformPass(bool nostrict)
 
   if (mod_file_struct.dmm_present)
     {
-      map<int, string> latentParamIds;
+      map<int, pair<string, pair<string, string > > > calibration;
       map<string, int> multinomial;
       for (vector<Statement *>::iterator it = statements.begin(); it != statements.end(); it++)
         {
           CalibrationStatement *cs = dynamic_cast<CalibrationStatement *>(*it);
           if (cs != NULL && cs->hasMultinomialProcess())
-            latentParamIds.insert(make_pair(symbol_table.getID(cs->getParamName()), cs->getProcessName()));
+            calibration.insert(make_pair(symbol_table.getID(cs->getParamName()),
+                                         make_pair(cs->getProcessName(),
+                                                   make_pair(cs->getRegime(), cs->getValue()))));
 
           MultinomialStatement *ms = dynamic_cast<MultinomialStatement *>(*it);
           if (ms != NULL)
             multinomial.insert(make_pair(ms->getProcessName(), ms->getNumRegimes()));
         }
-      dynamic_model.setDmmLatentVarInfo(latentParamIds, multinomial);
+      dynamic_model.setDmmLatentVarInfo(calibration, multinomial);
     }
 
   // Freeze the symbol table

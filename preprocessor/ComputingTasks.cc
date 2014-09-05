@@ -1571,6 +1571,24 @@ CalibrationStatement::getParamName() const
   return name;
 }
 
+string
+CalibrationStatement::getRegime() const
+{
+  OptionsList::num_options_t::const_iterator itn = options_list.num_options.find("regime");
+  if (itn != options_list.num_options.end())
+    return itn->second;
+  return NULL;
+}
+
+string
+CalibrationStatement::getValue() const
+{
+  OptionsList::num_options_t::const_iterator itn = options_list.num_options.find("value");
+  if (itn != options_list.num_options.end())
+    return itn->second;
+  return NULL;
+}
+
 void
 CalibrationStatement::writeOutput(ostream &output, const string &basename) const
 {

@@ -658,6 +658,8 @@ public:
   bool hasMultinomialProcess() const;
   string getParamName() const;
   string getProcessName() const;
+  string getRegime() const;
+  string getValue() const;
 };
 
 class MultinomialStatement : public Statement
