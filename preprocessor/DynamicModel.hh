@@ -76,10 +76,10 @@ private:
   map<int, expr_t> dmm_A;
   first_derivatives_t dmm_F;
   first_derivatives_t dmm_R;
-  //symb_id -> (multinomial process name, (regime number, value))
-  map<int, pair<string, pair<string, string > > >dmmCalibration;
-  //symb_id -> (multinomial process name, regime number)
-  map<int, pair<string, string > > dmmPrior;
+  // symb_id -> (multinomial process name, (regime number, value))
+  multimap<int, pair<string, pair<string, string > > >dmmCalibration;
+  // symb_id -> (multinomial process name, regime number)
+  multimap<int, pair<string, string > > dmmPrior;
   // symb_id -> Impacted Matrix (e.g. "C")
   map<int, string> dmmLatentVarMat;
   // multinomial process name -> number of states
@@ -265,8 +265,8 @@ public:
   //! Store information about the matrices that latent variables impact in dmmLatentVarMat
   void insertDmmMatS(int symb_id, string mat);
   //! Set DMM Latent Variable symb ids
-  void setDmmLatentVarInfo(map<int, pair<string, pair<string, string > > > &calibration,
-                           map<int, pair<string, string > > &prior,
+  void setDmmLatentVarInfo(multimap<int, pair<string, pair<string, string > > > &calibration,
+                           multimap<int, pair<string, string > > &prior,
                            map<string,int> &multinomial);
   //! Replaces model equations with derivatives of Lagrangian w.r.t. endogenous
   void computeRamseyPolicyFOCs(const StaticModel &static_model);

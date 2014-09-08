@@ -395,8 +395,8 @@ ModFile::transformPass(bool nostrict)
 
   if (mod_file_struct.dmm_present)
     {
-      map<int, pair<string, pair<string, string > > > calibration;
-      map<int, pair<string, string > > prior;
+      multimap<int, pair<string, pair<string, string > > > calibration;
+      multimap<int, pair<string, string > > prior;
       map<string, int> multinomial;
       for (vector<Statement *>::iterator it = statements.begin(); it != statements.end(); it++)
         {

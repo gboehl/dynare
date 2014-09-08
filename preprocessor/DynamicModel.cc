@@ -4090,7 +4090,7 @@ DynamicModel::computeDmmMatrices()
 void
 DynamicModel::findLatentVarsInMats()
 {
-  for (map<int, pair<string, pair<string, string > > >::const_iterator it = dmmCalibration.begin();
+  for (multimap<int, pair<string, pair<string, string > > >::const_iterator it = dmmCalibration.begin();
        it != dmmCalibration.end(); it++)
     {
       for (first_derivatives_t::const_iterator it1 = dmm_C.begin(); it1 != dmm_C.end(); it1++)
@@ -4122,7 +4122,8 @@ DynamicModel::findLatentVarsInMats()
 void
 DynamicModel::insertDmmMatS(int symb_id, string mat)
 {
-  if (dmmLatentVarMat.find(symb_id) != dmmLatentVarMat.end())
+  map<int, string>::const_iterator it = dmmLatentVarMat.find(symb_id);
+  if (it != dmmLatentVarMat.end() && it->second != mat)
     {
       cerr << "ERROR: DMM: A latent variable can only impact one of the C, H, G, A, F, or R matrices" << endl;
       exit(EXIT_FAILURE);
@@ -4131,7 +4132,7 @@ DynamicModel::insertDmmMatS(int symb_id, string mat)
 }
 
 void
-DynamicModel::setDmmLatentVarInfo(map<int, pair<string, pair<string, string > > > &calibration, map<int, pair<string, string > > &prior, map<string,int> &multinomial)
+DynamicModel::setDmmLatentVarInfo(multimap<int, pair<string, pair<string, string > > > &calibration, multimap<int, pair<string, string > > &prior, map<string,int> &multinomial)
 {
   dmmCalibration = calibration;
   dmmPrior = prior;
@@ -4142,7 +4143,7 @@ void
 DynamicModel::writeDmmLatentVarInfo(ostream &output) const
 {
   output << "dmmSind = 1;" << endl;
-  for (map<int, pair<string, pair<string, string > > >::const_iterator it = dmmCalibration.begin();
+  for (multimap<int, pair<string, pair<string, string > > >::const_iterator it = dmmCalibration.begin();
        it != dmmCalibration.end(); it++)
     {
       output << "options_.dmm.S(dmmSind).ns = "
