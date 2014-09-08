@@ -2308,6 +2308,28 @@ BasicPriorStatement::hasRegime() const
   return options_list.num_options.find("regime") != options_list.num_options.end();
 }
 
+string
+BasicPriorStatement::getName() const
+{
+  return name;
+}
+
+string
+BasicPriorStatement::getProcessName() const
+{
+  if (hasMultinomialProcess())
+    return options_list.string_options.find("process")->second;
+  return NULL;
+}
+
+string
+BasicPriorStatement::getRegime() const
+{
+  if (hasRegime())
+    return options_list.num_options.find("regime")->second;
+  return NULL;
+}
+
 bool
 BasicPriorStatement::is_structural_innovation(const SymbolType symb_type) const
 {

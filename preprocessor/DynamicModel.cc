@@ -4131,9 +4131,10 @@ DynamicModel::insertDmmMatS(int symb_id, string mat)
 }
 
 void
-DynamicModel::setDmmLatentVarInfo(map<int, pair<string, pair<string, string > > > &calibration, map<string,int> &multinomial)
+DynamicModel::setDmmLatentVarInfo(map<int, pair<string, pair<string, string > > > &calibration, map<int, pair<string, string > > &prior, map<string,int> &multinomial)
 {
   dmmCalibration = calibration;
+  dmmPrior = prior;
   dmmMultinomial = multinomial;
 }
 
