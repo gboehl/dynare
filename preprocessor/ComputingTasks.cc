@@ -1551,10 +1551,34 @@ CalibrationStatement::CalibrationStatement(const string &name_arg,
 {
 }
 
+void
+CalibrationStatement::checkPass(ModFileStructure &mod_file_struct, WarningConsolidation &warnings)
+{
+  if ((hasMultinomialProcess() && !(hasRegime() && hasValue())) ||
+      (hasRegime() && !(hasMultinomialProcess() && hasValue())))
+    {
+      cerr << "ERROR: The calibration statement for a latent parameter must "
+           << "have a process, a regime, and a value." << endl;
+      exit(EXIT_FAILURE);
+    }
+}
+
 bool
 CalibrationStatement::hasMultinomialProcess() const
 {
   return options_list.string_options.find("process") != options_list.string_options.end();
+}
+
+bool
+CalibrationStatement::hasRegime() const
+{
+  return options_list.num_options.find("regime") != options_list.num_options.end();
+}
+
+bool
+CalibrationStatement::hasValue() const
+{
+  return options_list.num_options.find("value") != options_list.num_options.end();
 }
 
 string
@@ -1574,18 +1598,16 @@ CalibrationStatement::getParamName() const
 string
 CalibrationStatement::getRegime() const
 {
-  OptionsList::num_options_t::const_iterator itn = options_list.num_options.find("regime");
-  if (itn != options_list.num_options.end())
-    return itn->second;
+  if (hasRegime())
+    return options_list.num_options.find("regime")->second;
   return NULL;
 }
 
 string
 CalibrationStatement::getValue() const
 {
-  OptionsList::num_options_t::const_iterator itn = options_list.num_options.find("value");
-  if (itn != options_list.num_options.end())
-    return itn->second;
+  if (hasValue())
+    return options_list.num_options.find("value")->second;
   return NULL;
 }
 

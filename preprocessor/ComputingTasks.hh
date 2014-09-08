@@ -653,8 +653,11 @@ private:
 public:
   CalibrationStatement(const string &name_arg,
                        const OptionsList &options_list_arg);
+  virtual void checkPass(ModFileStructure &mod_file_struct, WarningConsolidation &warnings);
   virtual void writeOutput(ostream &output, const string &basename) const;
   void writeOutputHelper(ostream &output, const string &lhs_field, const string &field) const;
+  bool hasValue() const;
+  bool hasRegime() const;
   bool hasMultinomialProcess() const;
   string getParamName() const;
   string getProcessName() const;
