@@ -730,6 +730,8 @@ protected:
                       const expr_t &variance_arg,
                       const OptionsList &options_list_arg);
   virtual void checkPass(ModFileStructure &mod_file_struct, WarningConsolidation &warnings);
+  bool hasRegime() const;
+  bool hasMultinomialProcess() const;
   void get_base_name(const SymbolType symb_type, string &lhs_field) const;
   void writeCommonOutput(ostream &output, const string &lhs_field) const;
   void writeCommonOutputHelper(ostream &output, const string &field, const string &lhs_field) const;

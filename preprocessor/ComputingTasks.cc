@@ -2288,6 +2288,24 @@ BasicPriorStatement::checkPass(ModFileStructure &mod_file_struct, WarningConsoli
           exit(EXIT_FAILURE);
         }
     }
+
+  if ((hasMultinomialProcess() && !hasRegime()) || (hasRegime() && !hasMultinomialProcess()))
+    {
+      cerr << "ERROR: The prior statement for a latent parameter must have a process and a regime." << endl;
+      exit(EXIT_FAILURE);
+    }
+}
+
+bool
+BasicPriorStatement::hasMultinomialProcess() const
+{
+  return options_list.string_options.find("process") != options_list.string_options.end();
+}
+
+bool
+BasicPriorStatement::hasRegime() const
+{
+  return options_list.num_options.find("regime") != options_list.num_options.end();
 }
 
 bool

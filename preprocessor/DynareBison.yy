@@ -1493,6 +1493,8 @@ prior_options : o_shift
               | o_shape
               | o_domain
               | o_params
+              | o_process
+              | o_calibration_regime
               ;
 
 prior_eq : prior_eq_opt EQUAL prior_eq_opt ';'
