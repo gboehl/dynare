@@ -118,17 +118,17 @@ to MATLAB path. You have two options for doing that:
 
   * Under Windows, assuming that you have installed Dynare in the
     standard location, and replacing 4.x.y with the correct version
-    number, type:::
+    number::
 
     >> addpath c:\dynare\4.x.y\matlab
 
-  * Under Debian GNU/Linux or Ubuntu, type:::
+  * Under Debian GNU/Linux or Ubuntu::
 
     >> addpath /usr/share/dynare/matlab
 
   * Under Mac OS X, assuming that you have installed Dynare in the
     standard location, and replacing 4.x.y with the correct version
-    number, type:::1
+    number::
 
     >> addpath /Applications/Dynare/4.x.y/matlab
 
@@ -153,7 +153,7 @@ You need to add the ‘matlab’ subdirectory of your Dynare installation
 to Octave path, using the addpath at the Octave command prompt.
 
 * Under Windows, assuming that you have installed Dynare in the standard
-  location, and replacing “4.x.y” with the correct version number, type:::
+  location, and replacing “4.x.y” with the correct version number::
 
     >> addpath c:\dynare\4.x.y\matlab
 
@@ -162,7 +162,7 @@ to Octave path, using the addpath at the Octave command prompt.
 
 * Under Mac OS X, assuming that you have installed Dynare in the
   standard location, and replacing “4.x.y” with the correct version
-  number, type:::
+  number::
 
     >> addpath /Applications/Dynare/4.x.y/matlab
 
