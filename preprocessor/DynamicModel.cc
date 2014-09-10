@@ -4090,8 +4090,7 @@ DynamicModel::computeDmmMatrices()
 void
 DynamicModel::findLatentVarsInMats()
 {
-  for (multimap<int, pair<string, pair<string, string > > >::const_iterator it = dmmCalibration.begin();
-       it != dmmCalibration.end(); it++)
+  for (dmmcalib_t::const_iterator it = dmmCalibration.begin(); it != dmmCalibration.end(); it++)
     {
       for (first_derivatives_t::const_iterator it1 = dmm_C.begin(); it1 != dmm_C.end(); it1++)
         if (it1->second->containsVarNodeWithId(it->first))
@@ -4132,7 +4131,7 @@ DynamicModel::insertDmmMatS(int symb_id, string mat)
 }
 
 void
-DynamicModel::setDmmLatentVarInfo(multimap<int, pair<string, pair<string, string > > > &calibration, multimap<int, pair<string, string > > &prior, map<string,int> &multinomial)
+DynamicModel::setDmmLatentVarInfo(vector<pair<int, pair<string, pair<string, string > > > >&calibration, vector<pair<int, pair<string, string > > >&prior, map<string,int> &multinomial)
 {
   dmmCalibration = calibration;
   dmmPrior = prior;
@@ -4143,8 +4142,7 @@ void
 DynamicModel::writeDmmLatentVarInfo(ostream &output) const
 {
   output << "dmmSind = 1;" << endl;
-  for (multimap<int, pair<string, pair<string, string > > >::const_iterator it = dmmCalibration.begin();
-       it != dmmCalibration.end(); it++)
+  for (dmmcalib_t::const_iterator it = dmmCalibration.begin(); it != dmmCalibration.end(); it++)
     {
       output << "options_.dmm.S(dmmSind).ns = "
              << dmmMultinomial.find(it->second.first)->second << ";" << endl

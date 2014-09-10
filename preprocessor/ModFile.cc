@@ -395,21 +395,21 @@ ModFile::transformPass(bool nostrict)
 
   if (mod_file_struct.dmm_present)
     {
-      multimap<int, pair<string, pair<string, string > > > calibration;
-      multimap<int, pair<string, string > > prior;
+      vector<pair<int, pair<string, pair<string, string > > > >calibration;
+      vector<pair<int, pair<string, string > > >prior;
       map<string, int> multinomial;
       for (vector<Statement *>::iterator it = statements.begin(); it != statements.end(); it++)
         {
           CalibrationStatement *cs = dynamic_cast<CalibrationStatement *>(*it);
           if (cs != NULL && cs->hasMultinomialProcess())
-            calibration.insert(make_pair(symbol_table.getID(cs->getParamName()),
-                                         make_pair(cs->getProcessName(),
-                                                   make_pair(cs->getRegime(), cs->getValue()))));
+            calibration.push_back(make_pair(symbol_table.getID(cs->getParamName()),
+                                            make_pair(cs->getProcessName(),
+                                                      make_pair(cs->getRegime(), cs->getValue()))));
 
           PriorStatement *ps = dynamic_cast<PriorStatement *>(*it);
           if (ps != NULL && ps->hasMultinomialProcess())
-            prior.insert(make_pair(symbol_table.getID(ps->getName()),
-                                   make_pair(ps->getProcessName(), ps->getRegime())));
+            prior.push_back(make_pair(symbol_table.getID(ps->getName()),
+                                      make_pair(ps->getProcessName(), ps->getRegime())));
 
           MultinomialStatement *ms = dynamic_cast<MultinomialStatement *>(*it);
           if (ms != NULL)
