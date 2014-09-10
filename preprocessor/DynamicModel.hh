@@ -238,6 +238,10 @@ public:
   void writeDmmMFile(const string &basename) const;
   //! Write DMM latent variable info to M file for use in creation of NML file
   void writeDmmLatentVarInfo(ostream &output) const;
+  //! Write setState.m file
+  void writeSetState(const string &mat) const;
+  //! Write a case statement in the setState.m file
+  void writeSetStateCase(ofstream &mOutputFile, int i, vector<int> &keys) const;
   //! Reverse lookup in dmmLatentVarMat map
   void dmmIsMatImpactedByS(vector<int> &symbids, string &mat) const;
   //! Writes dynamic model file

@@ -1547,7 +1547,7 @@ DynamicModel::writeDmmMFile(const string &basename) const
         {
           if (it->second->containsParameter() && !wroteParams)
             {
-              mOutputFile << "  params = setState('C', i, paramsbak);" << endl;
+              mOutputFile << "  params = setStateC(i, paramsbak);" << endl;
               wroteParams = true;
             }
           mOutputFile << "  C(" << it->first.first + 1
@@ -1567,7 +1567,7 @@ DynamicModel::writeDmmMFile(const string &basename) const
         {
           if (it->second->containsParameter() && !wroteParams)
             {
-              mOutputFile << "  params = setState('H', i, paramsbak);" << endl;
+              mOutputFile << "  params = setStateH(i, paramsbak);" << endl;
               wroteParams = true;
             }
           mOutputFile << "  H(" << it->first.first + 1
@@ -1587,7 +1587,7 @@ DynamicModel::writeDmmMFile(const string &basename) const
         {
           if (it->second->containsParameter() && !wroteParams)
             {
-              mOutputFile << "  params = setState('G', i, paramsbak);" << endl;
+              mOutputFile << "  params = setStateG(i, paramsbak);" << endl;
               wroteParams = true;
             }
           mOutputFile << "  G(" << it->first.first + 1
@@ -1607,7 +1607,7 @@ DynamicModel::writeDmmMFile(const string &basename) const
         {
           if (it->second->containsParameter() && !wroteParams)
             {
-              mOutputFile << "  params = setState('A', i, paramsbak);" << endl;
+              mOutputFile << "  params = setStateA(i, paramsbak);" << endl;
               wroteParams = true;
             }
           mOutputFile << "  A(" << it->first + 1 << ", i) = ";
@@ -1626,7 +1626,7 @@ DynamicModel::writeDmmMFile(const string &basename) const
         {
           if (it->second->containsParameter() && !wroteParams)
             {
-              mOutputFile << "  params = setState('F', i, paramsbak);" << endl;
+              mOutputFile << "  params = setStateF(i, paramsbak);" << endl;
               wroteParams = true;
             }
           mOutputFile << "  F(" << it->first.first + 1
@@ -1646,8 +1646,9 @@ DynamicModel::writeDmmMFile(const string &basename) const
         {
           if (it->second->containsParameter() && !wroteParams)
             {
-              mOutputFile << "  params = setState('R', i, paramsbak);" << endl;
+              mOutputFile << "  params = setStateR(i, paramsbak);" << endl;
               wroteParams = true;
+              writeSetState("R");
             }
           mOutputFile << "  R(" << it->first.first + 1
                       << ", " << it->first.second + 1 << ", i) = ";
@@ -1658,6 +1659,98 @@ DynamicModel::writeDmmMFile(const string &basename) const
     }
   mOutputFile << "end" << endl;
   mOutputFile.close();
+}
+
+void
+DynamicModel::writeSetState(const string &mat) const
+{
+  ofstream mOutputFile;
+  string basename("setState" + mat);
+  string fname(basename + ".m");
+  mOutputFile.open(fname.c_str(), ios::out | ios::binary);
+  if (!mOutputFile.is_open())
+    {
+      cerr << "ERROR: Can't open file " << fname << " for writing" << endl;
+      exit(EXIT_FAILURE);
+    }
+  mOutputFile << "function params = " << basename << "(state, params)" << endl
+              << "%" << endl
+              << "% Created automatically by Dynare preprocessor" << endl
+              << "%" << endl
+              << "switch state" << endl;
+
+  // find index of unique keys in dmmCalibration
+  int i = 0;
+  int lastkey = -1;
+  vector<int> keys;
+  for (dmmcalib_t::const_iterator it = dmmCalibration.begin(); it != dmmCalibration.end(); it++, i++)
+    if (lastkey != it->first)
+      {
+        keys.push_back(i);
+        lastkey = it->first;
+      }
+  vector<int> keysbak = keys;
+
+  // find the number of states
+  int ns = 1;
+  for (map<string, int>::const_iterator it = dmmMultinomial.begin(); it != dmmMultinomial.end(); it++)
+    {
+      bool setInFirstLoop = false;
+      for (dmmcalib_t::const_iterator it1 = dmmCalibration.begin(); it1 != dmmCalibration.end(); it1++)
+        if (it->first == it1->second.first)
+          {
+            ns *= it->second;
+            setInFirstLoop = true;
+            break;
+          }
+
+      if (!setInFirstLoop)
+        for (vector<pair<int, pair<string, string > > >::const_iterator it1 = dmmPrior.begin();
+             it1 != dmmPrior.end(); it1++)
+          if (it->first == it1->second.first)
+            {
+              ns *= it->second;
+              break;
+            }
+    }
+
+  // write file
+  for (int i = 0; i < ns; i++)
+    if (i == 0)
+      writeSetStateCase(mOutputFile, i, keys);
+    else
+      {
+        for (int j = 0; j < keys.size(); j++)
+          if (j+1 < keys.size())
+            if (keys[j]+1 < keysbak[j+1])
+              {
+                keys[j] += 1;
+                break;
+              }
+            else
+              keys[j] = keysbak[j];
+          else
+            if (keys[j]+1 < dmmCalibration.size())
+              keys[j] += 1;
+            else
+              break;
+        writeSetStateCase(mOutputFile, i, keys);
+      }
+
+  mOutputFile << "    otherwise" << endl
+              << "        error('" << fname << ": should not arrive here');" << endl
+              << "end" << endl
+              << "end" << endl;
+  mOutputFile.close();
+}
+
+void
+DynamicModel::writeSetStateCase(ofstream &mOutputFile, int i, vector<int> & keys) const
+{
+  mOutputFile << "    case " << i+1 << endl;
+  for (vector<int>::const_iterator it = keys.begin(); it != keys.end(); it++)
+    mOutputFile << "        params(" << dmmCalibration[*it].first << ") = "
+                << dmmCalibration[*it].second.second.second << ";" << endl;
 }
 
 void
