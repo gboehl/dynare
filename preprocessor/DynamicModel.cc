@@ -1510,7 +1510,11 @@ DynamicModel::writeDmmMFile(const string &basename) const
       exit(EXIT_FAILURE);
     }
 
-  mOutputFile << "% --------------------------------------------------------------------" << endl
+  mOutputFile << "function [C, H, G, A, F, R] = " << basename << "_dmm(ny, nz, nx, nu, ns, params)" << endl
+              << "%" << endl
+              << "% Created automatically by Dynare preprocessor" << endl
+              << "%" << endl
+              << "% --------------------------------------------------------------------" << endl
               << "% State-space format:   y(t) = c(t)z(t) + H(t)x(t)   + G(t)u(t)" << endl
               << "%                       x(t) = a(t)     + F(t)x(t-1) + R(t)u(t)" << endl
               << "%" << endl
@@ -1525,8 +1529,6 @@ DynamicModel::writeDmmMFile(const string &basename) const
               << "% F(t) (nx x nx x ns5)   ns5 = # of states for F(t)" << endl
               << "% R(t) (nx x nu x ns6)   ns6 = # of states for R(t)" << endl
               << "% ---------------------------------------------------------------------" << endl
-              << "function [C, H, G, A, F, R] = " << basename << "_dmm(ny, nz, nx, nu, ns, params)" << endl
-              << "global M_ options_" << endl
               << "% *** The following declarations are fixed ***" << endl
               << "C = zeros(ny,max(1,nz),ns(1));" << endl
               << "H = zeros(ny,nx,ns(2));" << endl
