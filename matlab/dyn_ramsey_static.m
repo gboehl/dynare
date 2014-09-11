@@ -54,7 +54,7 @@ elseif options_.steadystate_flag
     if inst_nbr == 1
         inst_val = csolve(nl_func,oo.steady_state(k_inst),'',options_.solve_tolf,100);
     else
-        [inst_val,info1] = dynare_solve(nl_func,ys(k_inst),0);
+        [inst_val,info1] = dynare_solve(nl_func,oo.steady_state(k_inst),0);
     end
     ys(k_inst) = inst_val;
     exo_ss = [oo.exo_steady_state oo.exo_det_steady_state];
