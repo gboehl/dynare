@@ -162,7 +162,7 @@ class ParsingDriver;
 %token SELECTED_VARIABLES_ONLY COVA_COMPUTE SIMULATION_FILE_TAG FILE_TAG
 %token NO_ERROR_BANDS ERROR_BAND_PERCENTILES SHOCKS_PER_PARAMETER NO_CREATE_INIT
 %token SHOCK_DRAWS FREE_PARAMETERS MEDIAN DATA_OBS_NBR NEIGHBORHOOD_WIDTH PVALUE_KS PVALUE_CORR
-%token FILTERED_PROBABILITIES REAL_TIME_SMOOTHED
+%token FILTERED_PROBABILITIES REAL_TIME_SMOOTHED NUM_FORECASTS
 %token PROPOSAL_TYPE PROPOSAL_UPPER_BOUND PROPOSAL_LOWER_BOUND PROPOSAL_DRAWS USE_MEAN_CENTER
 %token ADAPTIVE_MH_DRAWS THINNING_FACTOR COEFFICIENTS_PRIOR_HYPERPARAMETERS
 %token CONVERGENCE_STARTING_VALUE CONVERGENCE_ENDING_VALUE CONVERGENCE_INCREMENT_VALUE
@@ -868,6 +868,7 @@ dmm_options : o_mcmc_drop
             | o_dmm_check_mats
             | o_dmm_calc_marg_lik
             | o_dmm_block_length
+            | o_dmm_num_forecasts
             ;
 
 markov_switching : MARKOV_SWITCHING '(' ms_options_list ')' ';'
@@ -3009,6 +3010,7 @@ o_dmm_simulate_data : SIMULATE_DATA EQUAL symbol { driver.option_str("dmm.simula
 o_dmm_check_mats : CHECK_MATS EQUAL symbol { driver.option_str("dmm.check_mats", $3); };
 o_dmm_calc_marg_lik : CALC_MARG_LIK EQUAL symbol { driver.option_str("dmm.calc_marg_lik", $3); };
 o_dmm_block_length : BLOCK_LENGTH EQUAL symbol { driver.option_str("dmm.block_length", $3); };
+o_dmm_num_forecasts : NUM_FORECASTS EQUAL INT_NUMBER { driver.option_num("dmm.num_forecasts", $3); };
 o_process : PROCESS EQUAL symbol { driver.option_str("process", $3); }
           | PROCESS EQUAL INT_NUMBER
           {

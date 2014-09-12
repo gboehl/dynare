@@ -647,6 +647,7 @@ options_.dmm.block_length = 1;
 options_.dmm.calc_marg_lik = 'N';
 options_.dmm.check_mats = 'N';
 options_.dmm.simulate_data = 'N';
+options_.dmm.num_forecasts = 0;
 options_.mcmc.drop = 100;
 options_.mcmc.replic = 1000;
 
