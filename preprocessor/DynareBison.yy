@@ -860,7 +860,6 @@ dmm_options : o_mcmc_drop
             | o_mcmc_replic
             | o_dmm_seed
             | o_dmm_thinning_factor
-            | o_datafile
             | o_dmm_max_order_of_integration
             | o_dmm_num_nonstationary
             | o_dmm_simulate_data
