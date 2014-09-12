@@ -4238,16 +4238,20 @@ void
 DynamicModel::writeDmmLatentVarInfo(ostream &output) const
 {
   output << "dmmSind = 1;" << endl;
+  set<int> alreadyWritten;
   for (dmmcalib_t::const_iterator it = dmmCalibration.begin(); it != dmmCalibration.end(); it++)
-    {
-      output << "options_.dmm.S(dmmSind).ns = "
-             << dmmMultinomial.find(it->second.first)->second << ";" << endl
-             << "options_.dmm.S(dmmSind).process = '" << it->second.first << "';" << endl;
-      map<int, string>::const_iterator it1 = dmmLatentVarMat.find(it->first);
-      if (it1 != dmmLatentVarMat.end())
-        output << "options_.dmm.S(dmmSind).mat = '" << it1->second << "';" << endl;
-      output << "dmmSind = dmmSind + 1;" << endl;
-    }
+    if (alreadyWritten.find(it->first) == alreadyWritten.end())
+      {
+        output << "options_.dmm.S(dmmSind).process = '" << it->second.first << "';" << endl
+               << "options_.dmm.S(dmmSind).ns = "
+               << dmmMultinomial.find(it->second.first)->second << ";" << endl;
+
+        map<int, string>::const_iterator it1 = dmmLatentVarMat.find(it->first);
+        if (it1 != dmmLatentVarMat.end())
+          output << "options_.dmm.S(dmmSind).mat = '" << it1->second << "';" << endl;
+        output << "dmmSind = dmmSind + 1;" << endl;
+        alreadyWritten.insert(it->first);
+      }
 }
 
 void
