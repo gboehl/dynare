@@ -77,6 +77,18 @@ fprintf(fid, 'seed=%d thin=%d burnin=%d simulrec=%d hbl=%d MargLik=%s', ...
         options_.dmm.calc_marg_lik);
 fprintf(fid, '\n&end\n');
 
+%% Dataset
+fprintf(fid, '\n&dataset\n');
+data = makedataset(options_);
+
+fprintf(fid, 'T=%d ny=%d nz=%d nf=%d datasim=%s obs=\n', ...
+        size(data,1), M_.endo_nbr, M_.exo_nbr, options_.dmm.num_forecasts, options_.dmm.simulate_data);
+for i=1:size(data,1)
+    fprintf(fid, '%f ', data.data(i,:));
+    fprintf(fid, '\n');
+end
+fprintf(fid, '&end\n');
+
 %% S*
 for i=1:size(options_.dmm.S, 2)
     fprintf(fid, '\n&S%d\n', i);
@@ -89,9 +101,6 @@ for i=1:size(options_.dmm.S, 2)
             options_.dmm.S(i).ns, i, params, i, options_.dmm.S(i).mat);
     fprintf(fid, '\n&end\n');
 end
-
-
-%% Dataset
 
 fclose(fid);
 end
