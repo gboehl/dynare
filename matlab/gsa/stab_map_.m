@@ -253,7 +253,7 @@ if fload==0,
     iindeterm=zeros(1,Nsam);
     iwrong=zeros(1,Nsam);
     for j=1:Nsam,
-        M_.params(estim_params_.param_vals(:,1)) = lpmat(j,:)';
+        M_ = set_all_parameters([lpmat0(j,:) lpmat(j,:)]',estim_params_,M_);
         %try stoch_simul([]);
         try
             [Tt,Rr,SteadyState,info,M_,options_,oo_] = dynare_resolve(M_,options_,oo_,'restrict');
@@ -496,7 +496,7 @@ delete([OutputDirectoryName,filesep,fname_,'_',auname,'_corr_*.*']);
 delete([OutputDirectoryName,filesep,fname_,'_',aunstname,'_corr_*.*']);
 delete([OutputDirectoryName,filesep,fname_,'_',aindname,'_corr_*.*']);
 
-if length(iunstable)>0 && length(iunstable)<Nsam,
+if length(iunstable)>0 ,
     fprintf(['%4.1f%% of the prior support gives unique saddle-path solution.\n'],length(istable)/Nsam*100)
     fprintf(['%4.1f%% of the prior support gives explosive dynamics.\n'],(length(iunstable)-length(iwrong)-length(iindeterm) )/Nsam*100)
     if ~isempty(iindeterm),
@@ -504,137 +504,137 @@ if length(iunstable)>0 && length(iunstable)<Nsam,
     end
     if ~isempty(iwrong),
         skipline()
-        disp(['For ',num2str(length(iwrong)/Nsam*100,'%1.3f'),'\% of the prior support dynare could not find a solution.'])
+        disp(['For ',num2str(length(iwrong)/Nsam*100,'%4.1f'),'% of the prior support dynare could not find a solution.'])
         skipline()
         if any(infox==1),
-            disp(['    For ',num2str(length(find(infox==1))/Nsam*100,'%1.3f'),'\% The model doesn''t determine the current variables uniquely.'])
+            disp(['    For ',num2str(length(find(infox==1))/Nsam*100,'%4.1f'),'% The model doesn''t determine the current variables uniquely.'])
         end
         if any(infox==2),
-            disp(['    For ',num2str(length(find(infox==2))/Nsam*100,'%1.3f'),'\% MJDGGES returned an error code.'])
+            disp(['    For ',num2str(length(find(infox==2))/Nsam*100,'%4.1f'),'% MJDGGES returned an error code.'])
         end
         if any(infox==6),
-            disp(['    For ',num2str(length(find(infox==6))/Nsam*100,'%1.3f'),'\% The jacobian evaluated at the deterministic steady state is complex.'])
+            disp(['    For ',num2str(length(find(infox==6))/Nsam*100,'%4.1f'),'% The jacobian evaluated at the deterministic steady state is complex.'])
         end
         if any(infox==19),
-            disp(['    For ',num2str(length(find(infox==19))/Nsam*100,'%1.3f'),'\% The steadystate routine thrown an exception (inconsistent deep parameters).'])
+            disp(['    For ',num2str(length(find(infox==19))/Nsam*100,'%4.1f'),'% The steadystate routine thrown an exception (inconsistent deep parameters).'])
         end
         if any(infox==20),
-            disp(['    For ',num2str(length(find(infox==20))/Nsam*100,'%1.3f'),'\% Cannot find the steady state.'])
+            disp(['    For ',num2str(length(find(infox==20))/Nsam*100,'%4.1f'),'% Cannot find the steady state.'])
         end
         if any(infox==21),
-            disp(['    For ',num2str(length(find(infox==21))/Nsam*100,'%1.3f'),'\% The steady state is complex.'])
+            disp(['    For ',num2str(length(find(infox==21))/Nsam*100,'%4.1f'),'% The steady state is complex.'])
         end
         if any(infox==22),
-            disp(['    For ',num2str(length(find(infox==22))/Nsam*100,'%1.3f'),'\% The steady has NaNs.'])
+            disp(['    For ',num2str(length(find(infox==22))/Nsam*100,'%4.1f'),'% The steady has NaNs.'])
         end
         if any(infox==23),
-            disp(['    For ',num2str(length(find(infox==23))/Nsam*100,'%1.3f'),'\% M_.params has been updated in the steadystate routine and has complex valued scalars.'])
+            disp(['    For ',num2str(length(find(infox==23))/Nsam*100,'%4.1f'),'% M_.params has been updated in the steadystate routine and has complex valued scalars.'])
         end
         if any(infox==24),
-            disp(['    For ',num2str(length(find(infox==24))/Nsam*100,'%1.3f'),'\% M_.params has been updated in the steadystate routine and has some NaNs.'])
+            disp(['    For ',num2str(length(find(infox==24))/Nsam*100,'%4.1f'),'% M_.params has been updated in the steadystate routine and has some NaNs.'])
         end
         if any(infox==30),
-            disp(['    For ',num2str(length(find(infox==30))/Nsam*100,'%1.3f'),'\% Ergodic variance can''t be computed.'])
+            disp(['    For ',num2str(length(find(infox==30))/Nsam*100,'%4.1f'),'% Ergodic variance can''t be computed.'])
         end
         if any(infox==49),
-            disp(['    For ',num2str(length(find(infox==49))/Nsam*100,'%1.3f'),'\% The model violates one (many) endogenous prior restriction(s).'])
+            disp(['    For ',num2str(length(find(infox==49))/Nsam*100,'%4.1f'),'% The model violates one (many) endogenous prior restriction(s).'])
         end
 
     end
     skipline()
-    % Blanchard Kahn
-    [proba, dproba] = stab_map_1(lpmat, istable, iunstable, aname,0);
-%     indstab=find(dproba>ksstat);
-    indstab=find(proba<pvalue_ks);
-    disp('Smirnov statistics in driving acceptable behaviour')
-    for j=1:length(indstab),
-        disp([M_.param_names(estim_params_.param_vals(indstab(j),1),:),'   d-stat = ', num2str(dproba(indstab(j)),'%1.3f'),'   p-value = ', num2str(proba(indstab(j)),'%1.3f')])
-    end
-    skipline()
-    if ~isempty(indstab)
-        stab_map_1(lpmat, istable, iunstable, aname, 1, indstab, OutputDirectoryName,[],atitle);
-    end
-    ixun=iunstable(find(~ismember(iunstable,[iindeterm,iwrong])));
-    if ~isempty(iindeterm),
-        [proba, dproba] = stab_map_1(lpmat, [1:Nsam], iindeterm, aindetname ,0);
-%         indindet=find(dproba>ksstat);
-        indindet=find(proba<pvalue_ks);
-        disp('Smirnov statistics in driving indeterminacy')
-        for j=1:length(indindet),
-            disp([M_.param_names(estim_params_.param_vals(indindet(j),1),:),'   d-stat = ', num2str(dproba(indindet(j)),'%1.3f'),'   p-value = ', num2str(proba(indindet(j)),'%1.3f')])
+    if length(iunstable)<Nsam
+        % Blanchard Kahn
+        [proba, dproba] = stab_map_1(lpmat, istable, iunstable, aname,0);
+        %     indstab=find(dproba>ksstat);
+        indstab=find(proba<pvalue_ks);
+        disp('Smirnov statistics in driving acceptable behaviour')
+        for j=1:length(indstab),
+            disp([M_.param_names(estim_params_.param_vals(indstab(j),1),:),'   d-stat = ', num2str(dproba(indstab(j)),'%1.3f'),'   p-value = ', num2str(proba(indstab(j)),'%1.3f')])
         end
         skipline()
-        if ~isempty(indindet)
-            stab_map_1(lpmat, [1:Nsam], iindeterm, aindetname, 1, indindet, OutputDirectoryName,[],aindettitle);
+        if ~isempty(indstab)
+            stab_map_1(lpmat, istable, iunstable, aname, 1, indstab, OutputDirectoryName,[],atitle);
         end
-    end
-
-    if ~isempty(ixun),
-        [proba, dproba] = stab_map_1(lpmat, [1:Nsam], ixun, aunstablename,0);
-%         indunst=find(dproba>ksstat);
-        indunst=find(proba<pvalue_ks);
-        disp('Smirnov statistics in driving instability')
-        for j=1:length(indunst),
-            disp([M_.param_names(estim_params_.param_vals(indunst(j),1),:),'   d-stat = ', num2str(dproba(indunst(j)),'%1.3f'),'   p-value = ', num2str(proba(indunst(j)),'%1.3f')])
+        ixun=iunstable(find(~ismember(iunstable,[iindeterm,iwrong])));
+        if ~isempty(iindeterm),
+            [proba, dproba] = stab_map_1(lpmat, [1:Nsam], iindeterm, aindetname ,0);
+            %         indindet=find(dproba>ksstat);
+            indindet=find(proba<pvalue_ks);
+            disp('Smirnov statistics in driving indeterminacy')
+            for j=1:length(indindet),
+                disp([M_.param_names(estim_params_.param_vals(indindet(j),1),:),'   d-stat = ', num2str(dproba(indindet(j)),'%1.3f'),'   p-value = ', num2str(proba(indindet(j)),'%1.3f')])
+            end
+            skipline()
+            if ~isempty(indindet)
+                stab_map_1(lpmat, [1:Nsam], iindeterm, aindetname, 1, indindet, OutputDirectoryName,[],aindettitle);
+            end
         end
+        
+        if ~isempty(ixun),
+            [proba, dproba] = stab_map_1(lpmat, [1:Nsam], ixun, aunstablename,0);
+            %         indunst=find(dproba>ksstat);
+            indunst=find(proba<pvalue_ks);
+            disp('Smirnov statistics in driving instability')
+            for j=1:length(indunst),
+                disp([M_.param_names(estim_params_.param_vals(indunst(j),1),:),'   d-stat = ', num2str(dproba(indunst(j)),'%1.3f'),'   p-value = ', num2str(proba(indunst(j)),'%1.3f')])
+            end
+            skipline()
+            if ~isempty(indunst)
+                stab_map_1(lpmat, [1:Nsam], ixun, aunstablename, 1, indunst, OutputDirectoryName,[],aunstabletitle);
+            end
+        end
+        
+        if ~isempty(iwrong),
+            [proba, dproba] = stab_map_1(lpmat, [1:Nsam], iwrong, awronguniname,0);
+            %         indwrong=find(dproba>ksstat);
+            indwrong=find(proba<pvalue_ks);
+            disp('Smirnov statistics in driving no solution')
+            for j=1:length(indwrong),
+                disp([M_.param_names(estim_params_.param_vals(indwrong(j),1),:),'   d-stat = ', num2str(dproba(indwrong(j)),'%1.3f'),'   p-value = ', num2str(proba(indwrong(j)),'%1.3f')])
+            end
+            skipline()
+            if ~isempty(indwrong)
+                stab_map_1(lpmat, [1:Nsam], iwrong, awronguniname, 1, indwrong, OutputDirectoryName,[],awrongunititle);
+            end
+        end
+        
         skipline()
-        if ~isempty(indunst)
-            stab_map_1(lpmat, [1:Nsam], ixun, aunstablename, 1, indunst, OutputDirectoryName,[],aunstabletitle);
+        disp('Starting bivariate analysis:')
+        
+        c0=corrcoef(lpmat(istable,:));
+        c00=tril(c0,-1);
+        
+        if length(istable)>10,
+            stab_map_2(lpmat(istable,:),alpha2, pvalue_corr, asname, OutputDirectoryName,xparam1,astitle);
         end
-    end
-
-    if ~isempty(iwrong),
-        [proba, dproba] = stab_map_1(lpmat, [1:Nsam], iwrong, awronguniname,0);
-%         indwrong=find(dproba>ksstat);
-        indwrong=find(proba<pvalue_ks);
-        disp('Smirnov statistics in driving no solution')
-        for j=1:length(indwrong),
-            disp([M_.param_names(estim_params_.param_vals(indwrong(j),1),:),'   d-stat = ', num2str(dproba(indwrong(j)),'%1.3f'),'   p-value = ', num2str(proba(indwrong(j)),'%1.3f')])
+        if length(iunstable)>10,
+            stab_map_2(lpmat(iunstable,:),alpha2, pvalue_corr, auname, OutputDirectoryName,xparam1,autitle);
         end
-        skipline()
-        if ~isempty(indwrong)
-            stab_map_1(lpmat, [1:Nsam], iwrong, awronguniname, 1, indwrong, OutputDirectoryName,[],awrongunititle);
+        if length(iindeterm)>10,
+            stab_map_2(lpmat(iindeterm,:),alpha2, pvalue_corr, aindname, OutputDirectoryName,xparam1,aindtitle);
         end
-    end
-
-    skipline()
-    disp('Starting bivariate analysis:')
-
-    c0=corrcoef(lpmat(istable,:));
-    c00=tril(c0,-1);
-
-    if length(istable)>10,
-        stab_map_2(lpmat(istable,:),alpha2, pvalue_corr, asname, OutputDirectoryName,xparam1,astitle);
-    end
-    if length(iunstable)>10,
-        stab_map_2(lpmat(iunstable,:),alpha2, pvalue_corr, auname, OutputDirectoryName,xparam1,autitle);
-    end
-    if length(iindeterm)>10,
-        stab_map_2(lpmat(iindeterm,:),alpha2, pvalue_corr, aindname, OutputDirectoryName,xparam1,aindtitle);
-    end
-    if length(ixun)>10,
-        stab_map_2(lpmat(ixun,:),alpha2, pvalue_corr, aunstname, OutputDirectoryName,xparam1,aunsttitle);
-    end
-    if length(iwrong)>10,
-        stab_map_2(lpmat(iwrong,:),alpha2, pvalue_corr, awrongname, OutputDirectoryName,xparam1,awrongtitle);
-    end
-
-    x0=0.5.*(bayestopt_.ub(1:nshock)-bayestopt_.lb(1:nshock))+bayestopt_.lb(1:nshock);
-    x0 = [x0; lpmat(istable(1),:)'];
-    if istable(end)~=Nsam
-        M_.params(estim_params_.param_vals(:,1)) = lpmat(istable(1),:)';
-        [oo_.dr,info,M_,options_,oo_] = resol(0,M_,options_,oo_);
-        %     stoch_simul([]);
-    end
-else
-    if length(iunstable)==0,
-        disp('All parameter values in the specified ranges give unique saddle-path solution!')
+        if length(ixun)>10,
+            stab_map_2(lpmat(ixun,:),alpha2, pvalue_corr, aunstname, OutputDirectoryName,xparam1,aunsttitle);
+        end
+        if length(iwrong)>10,
+            stab_map_2(lpmat(iwrong,:),alpha2, pvalue_corr, awrongname, OutputDirectoryName,xparam1,awrongtitle);
+        end
+        
         x0=0.5.*(bayestopt_.ub(1:nshock)-bayestopt_.lb(1:nshock))+bayestopt_.lb(1:nshock);
         x0 = [x0; lpmat(istable(1),:)'];
+        if istable(end)~=Nsam
+            M_.params(estim_params_.param_vals(:,1)) = lpmat(istable(1),:)';
+            [oo_.dr,info,M_,options_,oo_] = resol(0,M_,options_,oo_);
+            %     stoch_simul([]);
+        end
     else
         disp('All parameter values in the specified ranges are not acceptable!')
         x0=[];
     end
+else
+    disp('All parameter values in the specified ranges give unique saddle-path solution!')
+        x0=0.5.*(bayestopt_.ub(1:nshock)-bayestopt_.lb(1:nshock))+bayestopt_.lb(1:nshock);
+        x0 = [x0; lpmat(istable(1),:)'];
 
 end
 

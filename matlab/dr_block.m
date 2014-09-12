@@ -51,7 +51,7 @@ function [dr,info,M_,options_,oo_] = dr_block(dr,task,M_,options_,oo_)
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 info = 0;
-verbose = 0;
+verbose = options_.verbosity;
 if options_.order > 1
     error('2nd and 3rd order approximation not implemented with block option')
 end
@@ -463,17 +463,17 @@ for i = 1:Size;
             %First order approximation
             if task ~= 1
                 if nba ~= nyf
-                    sorted_roots = sort(abs(dr.eigval));
                     if isfield(options_,'indeterminacy_continuity')
                         if options_.indeterminacy_msv == 1
-                            [ss,tt,w,q] = qz(e',d');
+                            [ss,tt,w,q] = qz(E',D');
                             [ss,tt,w,junk] = reorder(ss,tt,w,q);
                             ss = ss';
                             tt = tt';
                             w  = w';
-                            %nba = nyf;
+                            nba = nyf;
                         end
                     else
+					    sorted_roots = sort(abs(data(i).eigval));
                         if nba > nyf
                             temp = sorted_roots(nd-nba+1:nd-nyf)-1-options_.qz_criterium;
                             info(1) = 3;

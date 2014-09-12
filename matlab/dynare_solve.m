@@ -8,7 +8,7 @@ function [x,info] = dynare_solve(func,x,jacobian_flag,varargin)
 %    jacobian_flag=1:  jacobian given by the 'func' function
 %    jacobian_flag=0:  jacobian obtained numerically
 %    varargin:         list of arguments following jacobian_flag
-%    
+%
 % OUTPUTS
 %    x:                solution
 %    info=1:           the model can not be solved
@@ -16,7 +16,7 @@ function [x,info] = dynare_solve(func,x,jacobian_flag,varargin)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2001-2012 Dynare Team
+% Copyright (C) 2001-2014 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -47,7 +47,7 @@ if jacobian_flag
         M=evalin('base','M_'); %get variable names from workspace
         fprintf('\nSTEADY:  The Jacobian contains Inf or NaN. The problem arises from: \n\n')
         display_problematic_vars_Jacobian(infrow,infcol,M,x,'static','STEADY: ')
-        error('An element of the Jacobian is not finite or NaN') 
+        error('An element of the Jacobian is not finite or NaN')
     end
 else
     fvec = feval(func,x,varargin{:});
@@ -62,7 +62,7 @@ if ~isempty(i)
     disp(i')
     disp('Please check for example')
     disp('   i) if all parameters occurring in these equations are defined')
-    disp('  ii) that no division by an endogenous variable initialized to 0 occurs') 
+    disp('  ii) that no division by an endogenous variable initialized to 0 occurs')
     info = 1;
     x = NaN(size(fvec));
     return;
@@ -80,8 +80,8 @@ if options_.solve_algo == 0
     end
     options=optimset('fsolve');
     options.MaxFunEvals = 50000;
-    options.MaxIter = 2000;
-    options.TolFun=1e-8;
+    options.MaxIter = options_.steady.maxit;
+    options.TolFun = tolf;
     options.Display = 'iter';
     if jacobian_flag
         options.Jacobian = 'on';
@@ -102,7 +102,7 @@ if options_.solve_algo == 0
             exitval = 3;
         end;
     end
-    
+
     if exitval > 0
         info = 0;
     else
@@ -135,7 +135,7 @@ elseif options_.solve_algo == 2 || options_.solve_algo == 4
     end
 
     [j1,j2,r,s] = dmperm(fjac);
-    
+
     if options_.debug
         disp(['DYNARE_SOLVE (solve_algo=2|4): number of blocks = ' num2str(length(r))]);
     end

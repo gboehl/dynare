@@ -71,6 +71,27 @@ end
 if ~options_.dsge_var
     if options_.particle.status
         objective_function = str2func('non_linear_dsge_likelihood');
+        if options_.particle.filter_algorithm.sis == 1
+            options_.particle.algorithm = 'sequential_importance_particle_filter';
+        else
+            if options_.particle.filter_algorithm.apf == 1
+                options_.particle.algorithm = 'auxiliary_particle_filter';
+            else
+                if options_.particle.filter_algorithm.gf == 1
+                    options_.particle.algorithm = 'gaussian_filter';
+                else
+                    if options_.particle.filter_algorithm.gmf == 1
+                        options_.particle.algorithm = 'gaussian_mixture_filter';
+                    else
+                        if options_.particle.filter_algorithm.cpf == 1
+                            options_.particle.algorithm = 'conditional_particle_filter';
+                        else
+                            error('Estimation: Unknown filter!')
+                        end
+                    end
+                end
+            end
+        end
     else
         objective_function = str2func('dsge_likelihood');
     end
@@ -266,7 +287,6 @@ if ~isequal(options_.mode_compute,0) && ~options_.mh_posterior_mode_estimation
         H0 = 1e-4*eye(nx);
         crit = 1e-7;
         nit = 1000;
-        verbose = 2;
         numgrad = options_.gradient_method;
         epsilon = options_.gradient_epsilon;
         % Change some options.
@@ -325,12 +345,25 @@ if ~isequal(options_.mode_compute,0) && ~options_.mh_posterior_mode_estimation
         else
             nit=1000;
         end
-        [xparam1,hh,gg,fval,invhess] = newrat(objective_function,xparam1,analytic_grad,crit,nit,flag,dataset_, dataset_info, options_,M_,estim_params_,bayestopt_,oo_);
+        [xparam1,hh,gg,fval,invhess] = newrat(objective_function,xparam1,analytic_grad,crit,nit,0,dataset_, dataset_info, options_,M_,estim_params_,bayestopt_,oo_);
         if options_.analytic_derivation,
             options_.analytic_derivation = ana_deriv;
+        else
+            if flag ==0,
+                options_.cova_compute = 1;
+                kalman_algo0 = options_.kalman_algo;
+                if ~((options_.kalman_algo == 2) || (options_.kalman_algo == 4)),
+                    options_.kalman_algo=2;
+                    if options_.lik_init == 3,
+                        options_.kalman_algo=4;
+                    end
+                end
+                hh = reshape(mr_hessian(0,xparam1,objective_function,1,crit,dataset_, dataset_info, options_,M_,estim_params_,bayestopt_,oo_), nx, nx);
+                options_.kalman_algo = kalman_algo0;
+            end
         end
         parameter_names = bayestopt_.name;
-        save([M_.fname '_mode.mat'],'xparam1','hh','gg','fval','invhess','parameter_names');
+        save([M_.fname '_mode.mat'],'xparam1','hh','parameter_names');
       case 6
         % Set default options
         gmhmaxlikOptions = options_.gmhmaxlik;
@@ -607,7 +640,9 @@ if ~isequal(options_.mode_compute,0) && ~options_.mh_posterior_mode_estimation
                 [junk1, junk2, hh] = feval(objective_function,xparam1, ...
                     dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,oo_);
                 options_.analytic_derivation = ana_deriv;
-            else
+            elseif ~(isequal(options_.mode_compute,5) && flag==0), 
+                % with flag==0, we force to use the hessian from outer
+                % product gradient of optimizer 5
                 hh = reshape(hessian(objective_function,xparam1, ...
                     options_.gstep,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,oo_),nx,nx);
             end

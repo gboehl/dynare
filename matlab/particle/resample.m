@@ -51,29 +51,24 @@ function resampled_particles = resample(particles,weights,DynareOptions)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-% AUTHOR(S) frederic DOT karame AT univ DASH evry DOT fr
-%           stephane DOT adjemian AT univ DASH lemans DOT fr
+defaultmethod = 1; % For residual based method set this variable equal to 0.
 
-
-switch DynareOptions.particle.resampling.method1
-  case 'residual'
-    if strcmpi(DynareOptions.particle.resampling.method2,'kitagawa')
+if defaultmethod
+    if DynareOptions.particle.resampling.method.kitagawa
+        resampled_particles = traditional_resampling(particles,weights,rand);
+    elseif DynareOptions.particle.resampling.method.stratified
+        resampled_particles = traditional_resampling(particles,weights,rand(size(weights)));
+    elseif DynareOptions.particle.resampling.method.smooth
+        resampled_particles = multivariate_smooth_resampling(particles,weights);
+    else
+        error('Unknow sampling method!')
+    end
+else
+    if DynareOptions.particle.resampling.method.kitagawa
         resampled_particles = residual_resampling(particles,weights,rand);
-    elseif strcmpi(DynareOptions.particle.resampling.method2,'stratified')
+    elseif DynareOptions.particle.resampling.method.stratified
         resampled_particles = residual_resampling(particles,weights,rand(size(weights)));
     else
-        error('particle::resample: Unknown method!')
+        error('Unknown sampling method!')
     end
-  case 'traditional'
-    if strcmpi(DynareOptions.particle.resampling.method2,'kitagawa')
-        resampled_particles = traditional_resampling(particles,weights,rand);
-    elseif strcmpi(DynareOptions.particle.resampling.method2,'stratified')
-        resampled_particles = traditional_resampling(particles,weights,rand(size(weights)));
-    else
-        error('particle::resample: Unknown method!')
-    end
-  case 'smooth'
-    resampled_particles = multivariate_smooth_resampling(particles,weights) ;
-  otherwise
-    error('particle::resample: Unknown method!')
 end

@@ -1,4 +1,4 @@
-function [fval,ys,trend_coeff,exit_flag,info,Model,DynareOptions,BayesInfo,DynareResults] = non_linear_dsge_likelihood(xparam1,DynareDataset,DynareOptions,Model,EstimatedParameters,BayesInfo,DynareResults)
+function [fval,ys,trend_coeff,exit_flag,info,Model,DynareOptions,BayesInfo,DynareResults] = non_linear_dsge_likelihood(xparam1,DynareDataset,DatasetInfo,DynareOptions,Model,EstimatedParameters,BayesInfo,DynareResults)
 % Evaluates the posterior kernel of a dsge model using a non linear filter.
 
 %@info:
@@ -138,9 +138,6 @@ if DynareOptions.loglinear
     error('non_linear_dsge_likelihood: It is not possible to use a non linear filter with the option loglinear!')
 end
 
-% Set the number of observed variables
-nvobs = DynareDataset.info.nvobs;
-
 %------------------------------------------------------------------------------
 % 1. Get the structural parameters & define penalties
 %------------------------------------------------------------------------------
@@ -217,7 +214,7 @@ end
 % Linearize the model around the deterministic sdteadystate and extract the matrices of the state equation (T and R).
 [T,R,SteadyState,info,Model,DynareOptions,DynareResults] = dynare_resolve(Model,DynareOptions,DynareResults,'restrict');
 
-if info(1) == 1 || info(1) == 2 || info(1) == 5 || info(1) == 25
+if info(1) == 1 || info(1) == 2 || info(1) == 5 || info(1) == 25 || info(1) == 10
     fval = objective_function_penalty_base+1;
     exit_flag = 0;
     return
@@ -232,30 +229,30 @@ BayesInfo.mf = BayesInfo.mf1;
 
 % Define the deterministic linear trend of the measurement equation.
 if DynareOptions.noconstant
-    constant = zeros(nvobs,1);
+    constant = zeros(DynareDataset.vobs,1);
 else
     constant = SteadyState(BayesInfo.mfys);
 end
 
 % Define the deterministic linear trend of the measurement equation.
 if BayesInfo.with_trend
-    trend_coeff = zeros(DynareDataset.info.nvobs,1);
+    trend_coeff = zeros(DynareDataset.vobs,1);
     t = DynareOptions.trend_coeffs;
     for i=1:length(t)
         if ~isempty(t{i})
             trend_coeff(i) = evalin('base',t{i});
         end
     end
-    trend = repmat(constant,1,DynareDataset.info.ntobs)+trend_coeff*[1:DynareDataset.info.ntobs];
+    trend = repmat(constant,1,DynareDataset.nobs)+trend_coeff*[1:DynareDataset.nobs];
 else
-    trend = repmat(constant,1,DynareDataset.info.ntobs);
+    trend = repmat(constant,1,DynareDataset.nobs);
 end
 
 % Get needed informations for kalman filter routines.
 start = DynareOptions.presample+1;
 np    = size(T,1);
 mf    = BayesInfo.mf;
-Y     = transpose(DynareDataset.rawdata);
+Y     = transpose(DynareDataset.data)-trend;
 
 %------------------------------------------------------------------------------
 % 3. Initial condition of the Kalman filter

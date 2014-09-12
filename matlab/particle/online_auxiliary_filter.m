@@ -206,7 +206,7 @@ for t=1:sample_size
     wtilde = lnw./wtilde ;
     % normalization 
     weights = wtilde/sum(wtilde);
-    if (variance_update==1) && (neff(weights)<DynareOptions.particle.resampling.neff_threshold*sample_size)
+    if (variance_update==1) && (neff(weights)<DynareOptions.particle.resampling.threshold*sample_size)
         variance_update = 0 ;
     end
     % final resampling (advised)

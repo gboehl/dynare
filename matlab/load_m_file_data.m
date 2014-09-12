@@ -86,30 +86,38 @@ data = [];
 varlist = {};
 
 if isempty(varlist0)
-    for i=1:length(list_of_variables)
-        if isequal(list_of_variables(i).name,'freq') || isequal(list_of_variables(i).name,'time') || isequal(list_of_variables(i).name,'data') ...
-                || isequal(list_of_variables(i).name,'varlist') ...
-                || isequal(list_of_variables(i).name,'varlist0') ...
-                || isequal(list_of_variables(i).name,'list_of_variables') ...
-                || isequal(list_of_variables(i).name,'tex') ...                
+    for current_variable_index=1:length(list_of_variables)
+        if isequal(list_of_variables(current_variable_index).name,'freq') ...
+                || isequal(list_of_variables(current_variable_index).name,'time') ...
+                || isequal(list_of_variables(current_variable_index).name,'data') ...
+                || isequal(list_of_variables(current_variable_index).name,'varlist') ...
+                || isequal(list_of_variables(current_variable_index).name,'varlist0') ...
+                || isequal(list_of_variables(current_variable_index).name,'list_of_variables') ...
+                || isequal(list_of_variables(current_variable_index).name,'tex') ...
             continue
         end
-        if list_of_variables(i).global || list_of_variables(i).persistent
+        if list_of_variables(current_variable_index).global || list_of_variables(current_variable_index).persistent
+            % A variable cannot be a global or persistent variable.
             continue
         end
-        if list_of_variables(i).complex || ~strcmp(list_of_variables(i).class,'double')
+        if list_of_variables(current_variable_index).complex || ~strcmp(list_of_variables(current_variable_index).class,'double')
+            % A variable cannot be complex.
+            continue
+        end
+        if list_of_variables(current_variable_index).size(2)>1
+            % A variable must be passed as a column vector.
             continue
         end
         try
-            eval(['data = [data, ' list_of_variables(i).name '];'])
-            eval(['varlist = {varlist{:}, ''' list_of_variables(i).name '''};']) 
+            eval(['data = [data, ' list_of_variables(current_variable_index).name '];'])
+            eval(['varlist = {varlist{:}, ''' list_of_variables(current_variable_index).name '''};'])
         catch
             error(['load_m_file:: All the vectors (variables) in ' inputname(1) ' must have the same number of rows (observations)!'])
         end
     end
 else
-    for i=1:length(varlist0)
-       eval(['data = [data, ' varlist0{i} '];']) 
+    for current_variable_index=1:length(varlist0)
+       eval(['data = [data, ' varlist0{current_variable_index} '];'])
     end
     varlist = varlist0;
 end

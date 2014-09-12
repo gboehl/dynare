@@ -49,7 +49,7 @@ A number of tools and libraries are needed in order to recompile everything. You
 
 - A POSIX compliant shell and an implementation of Make (mandatory)
 - The [GNU Compiler Collection](http://gcc.gnu.org/), with gcc, g++ and gfortran (mandatory)
-- [MATLAB](http://www.dynare.org/DynareWiki/BuildingDynareFromSource?action=AttachFile&do=view&target=dynare-mingw64-libs.zip) (if you want to compile MEX for MATLAB)
+- MATLAB (if you want to compile MEX for MATLAB)
 - [GNU Octave](http://www.octave.org), with the development headers (if you want to compile MEX for Octave)
 - [Boost libraries](http://www.boost.org), version 1.36 or later
 - [Bison](http://www.gnu.org/software/bison/), version 2.5 or later (only if you get the source through Git)
@@ -194,8 +194,8 @@ The following instructions are compatible with MATLAB or with Octave/MinGW (as d
     - `mingw64-i686-gcc-core`, `mingw64-i686-gcc-g++`, `mingw64-i686-gcc-fortran` (if you have Octave/MinGW or if you have MATLAB 32-bit)
     - `mingw64-x86_64-gcc-core`, `mingw64-x86_64-gcc-g++`, `mingw64-x86_64-gcc-fortran` (if you have MATLAB 64-bit)
 - Second, install precompiled librairies for BLAS, LAPACK, Boost and GSL:
-    - If you have Octave or MATLAB 32-bit, download [dynare-mingw32-libs.zip](http://www.dynare.org/DynareWiki/BuildingDynareFromSource?action=AttachFile&do=view&target=dynare-mingw32-libs.zip), and uncompress it in `c:\cygwin\usr\local\lib\mingw32`
-    - If you have MATLAB 64-bit, download [dynare-mingw64-libs.zip](http://www.dynare.org/DynareWiki/BuildingDynareFromSource?action=AttachFile&do=view&target=dynare-mingw64-libs.zip), and uncompress it in `c:\cygwin\usr\local\lib\mingw64`
+    - If you have Octave or MATLAB 32-bit, download [dynare-mingw32-libs.zip](http://www.dynare.org/build/dynare-mingw32-libs.zip), and uncompress it in `c:\cygwin\usr\local\lib\mingw32`
+    - If you have MATLAB 64-bit, download [dynare-mingw64-libs.zip](http://www.dynare.org/build/dynare-mingw64-libs.zip), and uncompress it in `c:\cygwin\usr\local\lib\mingw64`
 
 *Remark*: You need to make sure that Cygwin’s git is used and not a potentially installed msysgit. The latter typically happens when one installs msysgit and allows it to set a system path. This will result in wrong line endings and cryptic error messages à la "syntax error near unexpected token `fi'". In that case it might be necessary to uninstall msysgit and reinstall it without setting a system path.
 
@@ -277,7 +277,7 @@ Configure and make:
     - ```brew install texinfo```
     - ```brew install latex2html```
     - ```brew install texi2html```
-- **(On OS X 10.7 Only)** Copy [FlexLexer.h](http://www.dynare.org/DynareWiki/BuildingDynareFromSource?action=AttachFile&do=view&target=FlexLexer.h) into the `preprocessor` directory (there was an error in the `FlexLexer.h` file distributed with 10.7)
+- **(On OS X 10.7 Only)** Copy [FlexLexer.h](http://www.dynare.org/build/FlexLexer.h) into the `preprocessor` directory (there was an error in the `FlexLexer.h` file distributed with 10.7)
 - Finally, switch to the root dynare directory. Ensure your path contains `/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/opt/X11/bin:/usr/texbin:/usr/local/sbin`. Run:
     - `autoreconf -si`
     - `./configure --with-matlab=/Applications/MATLAB_R2013a.app MATLAB_VERSION=8.1 YACC=/usr/local/Cellar/bison/<<BISON VERSION>>/bin/bison`

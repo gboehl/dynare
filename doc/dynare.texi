@@ -515,9 +515,8 @@ Please refer to the
 @uref{http://www.dynare.org/DynareWiki/InstallOnDebianOrUbuntu,Dynare
 Wiki} for detailed instructions.
 
-Dynare will be installed under @file{/usr/share/dynare} and
-@file{/usr/lib/dynare}. Documentation will be under
-@file{/usr/share/doc/dynare}.
+Dynare will be installed under @file{/usr/lib/dynare}. Documentation will be
+under @file{/usr/share/doc/dynare-doc}.
 
 @node On Mac OS X
 @subsection On Mac OS X
@@ -580,7 +579,7 @@ addpath c:\dynare\4.@var{x}.@var{y}\matlab
 Under Debian GNU/Linux or Ubuntu, type:
 
 @example
-addpath /usr/share/dynare/matlab
+addpath /usr/lib/dynare/matlab
 @end example
 
 Under Mac OS X, assuming that you have installed Dynare in the standard
@@ -4593,15 +4592,15 @@ univariate convergence diagnostic.
 @table @code
 
 @item datafile = @var{FILENAME}
-@anchor{datafile}
-The datafile: a @file{.m} file, a @file{.mat} file, a @file{.csv}
-file, or a @file{.xls}/@file{.xlsx} file (under Octave, the
-@uref{http://octave.sourceforge.net/io/,io} from Octave-Forge is
-required for the @file{.csv}, @file{.xls} and @file{.xlsx} formats; in
-addition, for the @file{.xls} and @file{.xlsx} formats, the
-@uref{http://octave.sourceforge.net/java/,java} package is required,
-along with a @uref{http://www.java.com/download,Java Runtime
-Environment})
+@anchor{datafile} The datafile: a @file{.m} file, a @file{.mat} file, a
+@file{.csv} file, or a @file{.xls}/@file{.xlsx} file (under Octave, the
+@uref{http://octave.sourceforge.net/io/,io} from Octave-Forge is required for
+the @file{.csv}, @file{.xls} and @file{.xlsx} formats; in addition, for the
+@file{.xls} and @file{.xlsx} formats, the
+@uref{http://octave.sourceforge.net/java/,java} package is required, along with
+a @uref{http://www.java.com/download,Java Runtime Environment}). Note that the
+base name (ie without extension) of the datafile has to be different from the
+base name of the model file.
 
 @item xls_sheet = @var{NAME}
 @anchor{xls_sheet}
@@ -5301,7 +5300,69 @@ filtered variables and forecasts (when requested) on all the observed
 variables. This is equivalent to manually listing all the observed
 variables after the @code{estimation} command.
 
+@item number_of_particles = @var{INTEGER}
+@anchor{number_of_particles}
+Number of particles used when evaluating the likelihood of a non linear state space model. Default: @code{1000}.
+
+@item resampling = @var{OPTION}
+@anchor{resampling}
+Determines if resampling of the particles is done. Possible values for @var{OPTION} are:
+
+@table @code
+
+@item none
+No resampling.
+
+@item systematic
+Resampling at each iteration, this is the default value.
+
+@item generic
+Resampling if and only if the effective sample size is below a certain level defined by @ref{resampling_threshold}*@ref{number_of_particles}.
+
 @end table
+
+@item resampling_threshold = @var{DOUBLE}
+@anchor{resampling_threshold}
+A real number between zero and one. The resampling step is triggered as soon as the effective number of particles is less than this number times the total number of particles (as set by @ref{number_of_particles}). This option is effective if and only if option @ref{resampling} has value @code{generic}.
+
+@item resampling_method = @var{OPTION}
+@anchor{resampling_method}
+Sets the resampling method. Possible values for @var{OPTION} are: @code{kitagawa}, @code{stratified} and @code{smooth}.
+
+@item filter_algorithm = @var{OPTION}
+@anchor{filter_algorithm}
+Sets the particle filter algorithm. Possible values for @var{OPTION} are:
+
+@table @code
+
+@item sis
+Sequential importance sampling algorithm, this is the default value.
+
+@item apf
+Auxiliary particle filter.
+
+@item gf
+Gaussian filter.
+
+@item gmf
+Gaussian mixture filter.
+
+@item cpf
+Conditional particle filter.
+
+@end table
+
+@item proposal_approximation = @var{OPTION}
+@anchor{proposal_approximation}
+Sets the method for approximating the proposal distribution. Possible values for @var{OPTION} are: @code{cubature}, @code{montecarlo} and @code{unscented}. Default value is @code{cubature}.
+
+@item distribution_approximation = @var{OPTION}
+@anchor{distribution_approximation}
+Sets the method for approximating the particle distribution. Possible values for @var{OPTION} are: @code{cubature}, @code{montecarlo} and @code{unscented}. Default value is @code{unscented}.
+
+
+@end table
+
 
 @customhead{Note}
 
