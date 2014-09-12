@@ -69,6 +69,14 @@ for i=1:nt
 end
 fprintf(fid, '&end\n');
 
+%% MCMC
+fprintf(fid, '\n&mcmc\n');
+fprintf(fid, 'seed=%d thin=%d burnin=%d simulrec=%d hbl=%d MargLik=%s', ...
+        options_.dmm.seed, options_.dmm.thinning_factor, options_.mcmc.drop, ...
+        options_.mcmc.replic, options_.dmm.block_length, ...
+        options_.dmm.calc_marg_lik);
+fprintf(fid, '\n&end\n');
+
 %% S*
 for i=1:size(options_.dmm.S, 2)
     fprintf(fid, '\n&S%d\n', i);
@@ -82,13 +90,6 @@ for i=1:size(options_.dmm.S, 2)
     fprintf(fid, '\n&end\n');
 end
 
-%% MCMC
-fprintf(fid, '\n&mcmc\n');
-fprintf(fid, 'seed=%d thin=%d burnin=%d simulrec=%d hbl=%d MargLik=%s', ...
-        options_.dmm.seed, options_.dmm.thinning_factor, options_.mcmc.drop, ...
-        options_.mcmc.replic, options_.dmm.block_length, ...
-        options_.dmm.calc_marg_lik);
-fprintf(fid, '\n&end\n');
 
 %% Dataset
 
