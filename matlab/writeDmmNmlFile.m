@@ -80,9 +80,20 @@ fprintf(fid, '\n&end\n');
 %% Dataset
 fprintf(fid, '\n&dataset\n');
 data = makedataset(options_);
+Tobs = size(data, 1);
+if M_.exo_det_nbr == 0
+    assert(size(data,2) ==  options_.varobs_nbr, ['Error: when the number of exogenous ' ...
+                        'variables is equal to zero, you must have the same ' ...
+                        'number of columns of data as varobs.']);
+else
+    assert(size(data, 2) == options_.varobs_nbr + M_.exo_det_nbr, ['Error: when the number ' ...
+                        'of exogenous variables is greater than zero, you ' ...
+                        'must have the same number of columns as varobs+varexodet']);
+    Tobs = Tobs - options_.dmm.num_forecasts;
+end
 
 fprintf(fid, 'T=%d ny=%d nz=%d nf=%d datasim=%s obs=\n', ...
-        size(data,1), options_.varobs_nbr, M_.exo_det_nbr, options_.dmm.num_forecasts, options_.dmm.simulate_data);
+        Tobs, options_.varobs_nbr, M_.exo_det_nbr, options_.dmm.num_forecasts, options_.dmm.simulate_data);
 for i=1:size(data,1)
     fprintf(fid, '%f ', data.data(i,:));
     fprintf(fid, '\n');
