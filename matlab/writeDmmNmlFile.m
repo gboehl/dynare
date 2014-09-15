@@ -82,7 +82,7 @@ fprintf(fid, '\n&dataset\n');
 data = makedataset(options_);
 
 fprintf(fid, 'T=%d ny=%d nz=%d nf=%d datasim=%s obs=\n', ...
-        size(data,1), M_.endo_nbr, M_.exo_det_nbr, options_.dmm.num_forecasts, options_.dmm.simulate_data);
+        size(data,1), options_.varobs_nbr, M_.exo_det_nbr, options_.dmm.num_forecasts, options_.dmm.simulate_data);
 for i=1:size(data,1)
     fprintf(fid, '%f ', data.data(i,:));
     fprintf(fid, '\n');
