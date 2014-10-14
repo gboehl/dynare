@@ -70,7 +70,7 @@ case ${MATLAB_ARCH} in
     MATLAB_DEFS="$MATLAB_DEFS -DNDEBUG"
     MATLAB_CFLAGS="-fno-common -arch $ARCHS -mmacosx-version-min=$MACOSX_DEPLOYMENT_TARGET -fexceptions"
     MATLAB_CXXFLAGS="-fno-common -fexceptions -arch $ARCHS -mmacosx-version-min=$MACOSX_DEPLOYMENT_TARGET"
-    MATLAB_FFLAGS="-fexceptions -fbackslash -arch $ARCHS"
+    MATLAB_FFLAGS="-fexceptions -fbackslash -arch $ARCHS -I$MATLAB/extern/include"
     MATLAB_LDFLAGS_NOMAP="-L$MATLAB/bin/${MATLAB_ARCH} -Wl,-twolevel_namespace -undefined error -arch $ARCHS -mmacosx-version-min=$MACOSX_DEPLOYMENT_TARGET -bundle"
     MATLAB_LDFLAGS="$MATLAB_LDFLAGS_NOMAP -Wl,-exported_symbols_list,$MATLAB/extern/lib/${MATLAB_ARCH}/mexFunction.map"
     MATLAB_F_LDFLAGS="$MATLAB_LDFLAGS_NOMAP -Wl,-exported_symbols_list,$MATLAB/extern/lib/${MATLAB_ARCH}/fexport.map"
