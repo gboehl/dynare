@@ -820,8 +820,8 @@ if (any(bayestopt_.pshape  >0 ) && options_.mh_replic) || ...
         if options_.smoother || ~isempty(options_.filter_step_ahead) || options_.forecast
             prior_posterior_statistics('posterior',dataset_);
         end
-        xparam = get_posterior_parameters('mean');
-        M_ = set_all_parameters(xparam,estim_params_,M_);
+        xparam1 = get_posterior_parameters('mean');
+        M_ = set_all_parameters(xparam1,estim_params_,M_);
     end
 end
 
