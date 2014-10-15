@@ -4510,7 +4510,7 @@ The name of the sheet with the data in an Excel file
 
 @item xls_range = @var{RANGE}
 @anchor{xls_range}
-The range with the data in an Excel file
+The range with the data in an Excel file. For example, @code{xls_range=B2:D200}
 
 @item nobs = @var{INTEGER}
 @anchor{nobs}
