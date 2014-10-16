@@ -199,6 +199,13 @@ mex/build/matlab/run_m2html.m
 *.nml
 /mex/build/matlab/dmm/*.mod
 /mex/build/octave/dmm/*.mod
+*.PRI
+*.DIS
+*.FST
+*.INN
+*.ML
+*.PAR
+*.UNB
 
 # Reporting
 *synctex.gz
