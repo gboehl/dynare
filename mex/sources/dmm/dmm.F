@@ -22,5 +22,14 @@
       INTEGER, INTENT(IN) :: nrhs, nlhs
       mwPointer, DIMENSION(nrhs), INTENT(IN) :: prhs
       mwPointer, DIMENSION(nlhs), INTENT(OUT) :: plhs
+      mwPointer mxGetString
+      mwSize  maxchar
+      PARAMETER(maxchar = 200)
+      CHARACTER*200 nmlfile
+      INTEGER status
+
+      status = mxGetString(prhs(1), nmlfile, maxchar)
+
+      CALL DMMMAIN(nmlfile)
 
       END SUBROUTINE mexFunction

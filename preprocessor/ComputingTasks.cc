@@ -1741,8 +1741,9 @@ void
 DmmStatement::writeOutput(ostream &output, const string &basename) const
 {
   options_list.writeOutput(output);
-  output << "options_.dmm.nx = M_.endo_nbr - options_.varobs_nbr;" << endl;
-  output << "writeDmmNmlFile(M_, options_, estimation_info);" << endl;
+  output << "options_.dmm.nx = M_.endo_nbr - options_.varobs_nbr;" << endl
+         << "writeDmmNmlFile(M_, options_, estimation_info);" << endl
+         << "dmm([M_.fname '.nml']);" << endl;
 }
 
 MarkovSwitchingStatement::MarkovSwitchingStatement(const OptionsList &options_list_arg) :
