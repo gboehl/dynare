@@ -39,6 +39,7 @@ if test "x$ax_enable_matlab" = "xyes"; then
   CFLAGS="$MATLAB_CFLAGS"
   CXXFLAGS="$MATLAB_CXXFLAGS"
   FFLAGS="$MATLAB_FFLAGS"
+  FCLAGS="$MATLAB_FCLAGS"
 fi
 
 case ${host_os} in
@@ -54,6 +55,7 @@ esac
 
 CFLAGS="$CFLAGS -Wall -Wno-parentheses"
 FFLAGS="$FFLAGS -Wall"
+FCFLAGS="$FCLAGS -Wall"
 CXXFLAGS="$CXXFLAGS -Wall -Wno-parentheses"
 
 AC_PROG_F77([gfortran g77 f77])

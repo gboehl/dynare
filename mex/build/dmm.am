@@ -83,7 +83,6 @@ nodist_dmm_SOURCES = \
 	$(DMMDIR)/simstate.for \
 	$(DMMDIR)/simstate2.for \
 	$(DMMDIR)/recpr.for \
-	$(DMMDIR)/design.for \
 	$(DMMDIR)/setfilem.for \
 	$(DMMDIR)/geterrstr.for \
 	$(DMMDIR)/randlib/advnst.f \
@@ -113,6 +112,7 @@ nodist_dmm_SOURCES = \
 	$(DMMDIR)/randlib/setant.f \
 	$(DMMDIR)/randlib/sexpo.f \
 	$(DMMDIR)/randlib/spofa.f \
+	$(MSMEXSRCDIR)/design.f90 \
 	$(MSMEXSRCDIR)/dmm.F
 
 clean-local:
