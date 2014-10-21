@@ -35,7 +35,7 @@ delta.prior(shape=beta,mean=2,stdev=4,interval=[1,20]);
 // I'm not sure what are the parameters used in the paper for the IG and beta distribution
 
 data(file=niledata);
-dmm(drop=1000,seed=0,thinning_factor=1,replic=5000,max_order_of_integration=1,num_nonstationary=1);
+dmm(drop=100,seed=0,thinning_factor=1,replic=500,max_order_of_integration=1,num_nonstationary=1);
 
 // calibrated parameter by regime
 //phi1.calibration(regime=1) = 0.2;
