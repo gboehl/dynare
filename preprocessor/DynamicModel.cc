@@ -1551,6 +1551,7 @@ DynamicModel::writeDmmMFile(const string &basename) const
             {
               mOutputFile << "  params = setStateC(i, paramsbak);" << endl;
               wroteParams = true;
+              writeSetState("C");
             }
           mOutputFile << "  C(" << it->first.first + 1
                       << ", " << it->first.second + 1 << ", i) = ";
@@ -1571,6 +1572,7 @@ DynamicModel::writeDmmMFile(const string &basename) const
             {
               mOutputFile << "  params = setStateH(i, paramsbak);" << endl;
               wroteParams = true;
+              writeSetState("H");
             }
           mOutputFile << "  H(" << it->first.first + 1
                       << ", " << it->first.second + 1 << ", i) = ";
@@ -1591,6 +1593,7 @@ DynamicModel::writeDmmMFile(const string &basename) const
             {
               mOutputFile << "  params = setStateG(i, paramsbak);" << endl;
               wroteParams = true;
+              writeSetState("G");
             }
           mOutputFile << "  G(" << it->first.first + 1
                       << ", " << it->first.second + 1 << ", i) = ";
@@ -1611,6 +1614,7 @@ DynamicModel::writeDmmMFile(const string &basename) const
             {
               mOutputFile << "  params = setStateA(i, paramsbak);" << endl;
               wroteParams = true;
+              writeSetState("A");
             }
           mOutputFile << "  A(" << it->first + 1 << ", i) = ";
           it->second->writeOutput(mOutputFile, oMatlabDynamicModel, temporary_terms, tef_terms);
@@ -1630,6 +1634,7 @@ DynamicModel::writeDmmMFile(const string &basename) const
             {
               mOutputFile << "  params = setStateF(i, paramsbak);" << endl;
               wroteParams = true;
+              writeSetState("F");
             }
           mOutputFile << "  F(" << it->first.first + 1
                       << ", " << it->first.second + 1 << ", i) = ";
