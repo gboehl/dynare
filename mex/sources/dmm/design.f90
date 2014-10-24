@@ -77,8 +77,8 @@ SUBROUTINE DESIGN(ny,nz,nx,nu,ns,nt,theta,c,H,G,a,F,R)
 
   ! Free memory
   DO I = 1,6
-     call mxDestroyArray(INPUT(I))
-     call mxDestroyArray(OUTPUT(I))
+     CALL mxDestroyArray(INPUT(I))
+     CALL mxDestroyArray(OUTPUT(I))
   END DO
 END SUBROUTINE DESIGN
 #endif
