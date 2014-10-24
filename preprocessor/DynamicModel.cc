@@ -1751,7 +1751,9 @@ DynamicModel::writeSetStateCase(ofstream &mOutputFile, int i, vector<int> & keys
 {
   mOutputFile << "    case " << i+1 << endl;
   for (vector<int>::const_iterator it = keys.begin(); it != keys.end(); it++)
-    mOutputFile << "        params(" << dmmCalibration[*it].first << ") = "
+    mOutputFile << "        params("
+                << symbol_table.getTypeSpecificID(dmmCalibration[*it].first)+1
+                << ") = "
                 << dmmCalibration[*it].second.second.second << ";" << endl;
 }
 
