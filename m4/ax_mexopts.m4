@@ -26,17 +26,18 @@ AX_COMPARE_VERSION([$MATLAB_VERSION], [lt], [7.5], [AC_MSG_ERROR([Your MATLAB is
 
 AC_MSG_CHECKING([for options to compile MEX for MATLAB])
 
-MATLAB_CPPFLAGS="-I$MATLAB/extern/include"
+MATLAB_INCLUDE_DIR="-I$MATLAB/extern/include"
+MATLAB_CPPFLAGS="$MATLAB_INCLUDE_DIR"
 
 case ${MATLAB_ARCH} in
   glnx86 | glnxa64)
     MATLAB_DEFS="$MATLAB_DEFS -D_GNU_SOURCE -DNDEBUG"
     MATLAB_CFLAGS="-fexceptions -fPIC -pthread -g -O2"
     MATLAB_CXXFLAGS="-fPIC -pthread -g -O2"
-    MATLAB_FFLAGS="-fPIC -g -O2 -fexceptions"
+    MATLAB_FFLAGS="$MATLAB_INCLUDE_DIR -fPIC -g -O2 -fexceptions"
+    MATLAB_FCFLAGS="$MATLAB_FFLAGS"
     MATLAB_LDFLAGS_NOMAP="-shared -Wl,--no-undefined -Wl,-rpath-link,$MATLAB/bin/${MATLAB_ARCH} -L$MATLAB/bin/${MATLAB_ARCH}"
     MATLAB_LDFLAGS="$MATLAB_LDFLAGS_NOMAP -Wl,--version-script,$MATLAB/extern/lib/${MATLAB_ARCH}/mexFunction.map"
-    MATLAB_F_LDFLAGS="$MATLAB_LDFLAGS_NOMAP -Wl,--version-script,$MATLAB/extern/lib/${MATLAB_ARCH}/fexport.map"
     MATLAB_LIBS="-lmx -lmex -lmat -lm -lstdc++ -lmwlapack -lmwblas"
     if test "${MATLAB_ARCH}" = "glnx86"; then
       MATLAB_DEFS="$MATLAB_DEFS -D_FILE_OFFSET_BITS=64"
@@ -51,12 +52,12 @@ case ${MATLAB_ARCH} in
   win32 | win64)
     MATLAB_CFLAGS="-fexceptions -g -O2"
     MATLAB_CXXFLAGS="-g -O2"
-    MATLAB_FFLAGS="-fexceptions -g -O2 -fno-underscoring"
+    MATLAB_FFLAGS="$MATLAB_INCLUDE_DIR -fexceptions -g -O2 -fno-underscoring"
+    MATLAB_FCFLAGS="$MATLAB_FFLAGS"
     MATLAB_DEFS="$MATLAB_DEFS -DNDEBUG"
     # Note that static-libstdc++ is only supported since GCC 4.5 (but generates no error on older versions)
     MATLAB_LDFLAGS_NOMAP="-static-libgcc -static-libstdc++ -shared -L$MATLAB/bin/${MATLAB_ARCH}"
     MATLAB_LDFLAGS="$MATLAB_LDFLAGS_NOMAP $(pwd)/$srcdir/mex.def"
-    MATLAB_F_LDFLAGS="$MATLAB_LD_FLAGS"
     MATLAB_LIBS="-lmex -lmx -lmat -lmwlapack -lmwblas"
     ax_mexopts_ok="yes"
     ;;
@@ -70,11 +71,10 @@ case ${MATLAB_ARCH} in
     MATLAB_DEFS="$MATLAB_DEFS -DNDEBUG"
     MATLAB_CFLAGS="-fno-common -arch $ARCHS -mmacosx-version-min=$MACOSX_DEPLOYMENT_TARGET -fexceptions"
     MATLAB_CXXFLAGS="-fno-common -fexceptions -arch $ARCHS -mmacosx-version-min=$MACOSX_DEPLOYMENT_TARGET"
-    MATLAB_FFLAGS="-fexceptions -fbackslash -arch $ARCHS -I$MATLAB/extern/include"
-    MATLAB_FCLAGS="-fexceptions -fbackslash -arch $ARCHS -I$MATLAB/extern/include"
+    MATLAB_FFLAGS="$MATLAB_INCLUDE_DIR -fexceptions -fbackslash -arch $ARCHS"
+    MATLAB_FCFLAGS="$MATLAB_FFLAGS"
     MATLAB_LDFLAGS_NOMAP="-L$MATLAB/bin/${MATLAB_ARCH} -Wl,-twolevel_namespace -undefined error -arch $ARCHS -mmacosx-version-min=$MACOSX_DEPLOYMENT_TARGET -bundle"
     MATLAB_LDFLAGS="$MATLAB_LDFLAGS_NOMAP -Wl,-exported_symbols_list,$MATLAB/extern/lib/${MATLAB_ARCH}/mexFunction.map"
-    MATLAB_F_LDFLAGS="$MATLAB_LDFLAGS_NOMAP -Wl,-exported_symbols_list,$MATLAB/extern/lib/${MATLAB_ARCH}/fexport.map"
     MATLAB_LIBS="-lmx -lmex -lmat -lstdc++ -lmwlapack -lmwblas"
     ax_mexopts_ok="yes"
     ;;
@@ -107,6 +107,5 @@ AC_SUBST([MATLAB_DEFS])
 AC_SUBST([MATLAB_CFLAGS])
 AC_SUBST([MATLAB_CXXFLAGS])
 AC_SUBST([MATLAB_LDFLAGS])
-AC_SUBST([MATLAB_F_LDFLAGS])
 AC_SUBST([MATLAB_LIBS])
 ])
