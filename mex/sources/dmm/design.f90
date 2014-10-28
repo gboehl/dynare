@@ -37,8 +37,6 @@ SUBROUTINE DESIGN(ny,nz,nx,nu,ns,nt,theta,c,H,G,a,F,R)
   mwPointer INPUT(6), OUTPUT(6)
   INTEGER STATUS, I
   CHARACTER(len=200) :: MEXPRINT
-  INTEGER*4 mexPrintf
-  INTEGER*4 mpfout
   integer*4, PARAMETER :: mxREAL = 0
 
   ! Matlab mex/mx functions
