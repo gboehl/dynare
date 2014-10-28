@@ -3,7 +3,7 @@ noinst_PROGRAMS = dmm
 DMMDIR = $(top_srcdir)/../../../contrib/dmm
 
 DYNMEXSRCDIR = $(top_srcdir)/../../sources
-MSMEXSRCDIR = $(DYNMEXSRCDIR)/dmm
+DMMMEXSRCDIR = $(DYNMEXSRCDIR)/dmm
 
 AM_FFLAGS += -cpp $(DEFS) -fcray-pointer -ffixed-form -ffixed-line-length-none -std=legacy
 AM_FCFLAGS += -cpp $(DEFS) -fdefault-integer-8 -fPIC
@@ -112,8 +112,8 @@ nodist_dmm_SOURCES = \
 	$(DMMDIR)/randlib/setant.f \
 	$(DMMDIR)/randlib/sexpo.f \
 	$(DMMDIR)/randlib/spofa.f \
-	$(MSMEXSRCDIR)/design.f90 \
-	$(MSMEXSRCDIR)/dmm.F
+	$(DMMMEXSRCDIR)/design.f90 \
+	$(DMMMEXSRCDIR)/dmm.F
 
 clean-local:
 	rm -f *.mod
