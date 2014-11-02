@@ -19,6 +19,7 @@ MODFILES = \
 	example1_macroif.mod \
 	t_sgu_ex1.mod \
 	osr_example.mod \
+	optimal_policy/osr_example_objective_correctness.mod \
 	optimal_policy/ramsey.mod \
 	optimal_policy/nk_ramsey.mod \
 	optimal_policy/nk_ramsey_expectation.mod \
