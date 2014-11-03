@@ -88,6 +88,8 @@ end
                 inv_order_var(i_var),weights(i_var,i_var));
 oo_.osr.objective_function = f;
 
+M_.params(i_params)=p; %make sure optimal parameters are set (and not the last draw used in csminwel)
+
 %  options = optimset('fminunc');
 %  options = optimset('display','iter');
 %  [p,f]=fminunc(@osr_obj,t0,options,i_params,...
