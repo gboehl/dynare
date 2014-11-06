@@ -1727,8 +1727,8 @@ DynamicModel::writeSetState(const string &mat) const
       writeSetStateCase(mOutputFile, i, keys);
     else
       {
-        for (int j = 0; j < keys.size(); j++)
-          if (j+1 < keys.size())
+        for (int j = 0; (size_t)j < keys.size(); j++)
+          if ((size_t)(j+1) < keys.size())
             if (keys[j]+1 < keysbak[j+1])
               {
                 keys[j] += 1;
@@ -1737,7 +1737,7 @@ DynamicModel::writeSetState(const string &mat) const
             else
               keys[j] = keysbak[j];
           else
-            if (keys[j]+1 < dmmCalibration.size())
+            if ((size_t)(keys[j]+1) < dmmCalibration.size())
               keys[j] += 1;
             else
               break;
