@@ -28,7 +28,8 @@ function [hessian_mat, gg, htol1, ihh, hh_mat0, hh1] = mr_hessian(init,x,func,hf
 %  varargin{4} --> Model
 %  varargin{5} --> EstimatedParameters
 %  varargin{6} --> BayesInfo
-%  varargin{1} --> DynareResults
+%  varargin{7} --> BayesInfo
+%  varargin{8} --> DynareResults
 
 
 
@@ -60,9 +61,9 @@ if init
 end
 
 [f0, ff0]=feval(func,x,varargin{:});
-h2=varargin{6}.ub-varargin{6}.lb;
-hmax=varargin{6}.ub-x;
-hmax=min(hmax,x-varargin{6}.lb);
+h2=varargin{7}.ub-varargin{7}.lb;
+hmax=varargin{7}.ub-x;
+hmax=min(hmax,x-varargin{7}.lb);
 if isempty(ff0),
     outer_product_gradient=0;
 else

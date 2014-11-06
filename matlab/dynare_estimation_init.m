@@ -1,24 +1,38 @@
-function [dataset_, dataset_info, xparam1, hh, M_, options_, oo_, estim_params_,bayestopt_, fake] = dynare_estimation_init(var_list_, dname, gsa_flag, M_, options_, oo_, estim_params_, bayestopt_)
+function [dataset_, dataset_info, xparam1, hh, M_, options_, oo_, estim_params_,bayestopt_, bounds] = dynare_estimation_init(var_list_, dname, gsa_flag, M_, options_, oo_, estim_params_, bayestopt_)
 
 % function dynare_estimation_init(var_list_, gsa_flag)
-% preforms initialization tasks before estimation or
+% performs initialization tasks before estimation or
 % global sensitivity analysis
 %
 % INPUTS
-%   var_list_:  selected endogenous variables vector
-%   dname:      alternative directory name
-%   gsa_flag:   flag for GSA operation (optional)
-%
+%   var_list_:      selected endogenous variables vector
+%   dname:          alternative directory name
+%   gsa_flag:       flag for GSA operation (optional)
+%   M_:             structure storing the model information
+%   options_:       structure storing the options
+%   oo_:            structure storing the results
+%   estim_params_:  structure storing information about estimated
+%                   parameters
+%   bayestopt_:     structure storing information about priors
+%   optim:          structure storing optimization bounds
+    
 % OUTPUTS
-%   data:    data after required transformation
-%   rawdata:  data as in the data file
-%   xparam1:    initial value of estimated parameters as returned by
-%               set_prior()
-%
+%   dataset_:       the dataset after required transformation
+%   dataset_info:   Various informations about the dataset (descriptive statistics and missing observations).
+%   xparam1:        initial value of estimated parameters as returned by
+%                   set_prior() or loaded from mode-file
+%   hh:             hessian matrix at the loaded mode (or empty matrix)
+%   M_:             structure storing the model information
+%   options_:       structure storing the options
+%   oo_:            structure storing the results
+%   estim_params_:  structure storing information about estimated
+%                   parameters
+%   bayestopt_:     structure storing information about priors
+% 
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2003-2013 Dynare Team
+% Copyright (C) 2003-2014 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -275,22 +289,17 @@ if ~isempty(estim_params_)
         end
         % Set prior bounds
         bounds = prior_bounds(bayestopt_,options_);
-        bounds(:,1)=max(bounds(:,1),lb);
-        bounds(:,2)=min(bounds(:,2),ub);
+        bounds.lb = max(bounds.lb,lb);
+        bounds.ub = min(bounds.ub,ub);
     else  % estimated parameters but no declared priors
         % No priors are declared so Dynare will estimate the model by
         % maximum likelihood with inequality constraints for the parameters.
         options_.mh_replic = 0;% No metropolis.
-        bounds(:,1) = lb;
-        bounds(:,2) = ub;
+        bounds.lb = lb;
+        bounds.ub = ub;
     end
     % Test if initial values of the estimated parameters are all between the prior lower and upper bounds.
     check_prior_bounds(xparam1,bounds,M_,estim_params_,options_,bayestopt_)
-
-    lb = bounds(:,1);
-    ub = bounds(:,2);
-    bayestopt_.lb = lb;
-    bayestopt_.ub = ub;
 end
 
 if isempty(estim_params_)% If estim_params_ is empty (e.g. when running the smoother on a calibrated model)
@@ -298,8 +307,6 @@ if isempty(estim_params_)% If estim_params_ is empty (e.g. when running the smoo
         error('Estimation: the ''estimated_params'' block is mandatory (unless you are running a smoother)')
     end
     xparam1 = [];
-    bayestopt_.lb = [];
-    bayestopt_.ub = [];
     bayestopt_.jscale = [];
     bayestopt_.pshape = [];
     bayestopt_.p1 = [];

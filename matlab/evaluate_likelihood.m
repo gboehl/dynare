@@ -70,6 +70,6 @@ if isempty(dataset)
     [dataset, dataset_info] = makedataset(options_);
 end
 
-llik = -dsge_likelihood(parameters,dataset,dataset_info,options_,M_,estim_params_,bayestopt_,oo_);
+llik = -dsge_likelihood(parameters,dataset,dataset_info,options_,M_,estim_params_,bayestopt_,prior_bounds(bayestopt_,options_),oo_);
 ldens = evaluate_prior(parameters);
 llik = llik - ldens;

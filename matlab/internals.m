@@ -85,7 +85,7 @@ if strcmpi(flag,'--test')
             dynTest(varargin{i},dynare_path);
         end
     else
-        disp('You have to specify at least one matlab routine after --test flag!')
+        disp('You have to specify at least one Matlab routine after --test flag!')
     end
     return
 end
@@ -126,8 +126,8 @@ if strcmpi(flag,'--load-mh-history') || strcmpi(flag,'--display-mh-history')
             disp(repmat('-',1,ltr));
             skipline()
             disp([' o Number of MCMC files is ' num2str(sum(o.MhDraws(:,2)))]);
-            disp([' o Number of draws is ' num2str(sum(o.MhDraws(:,1)))]);
-            disp([' o Overall acceptance ratio is ' num2str(oar(b)*100,'%5.2f') '%']);
+            disp([' o Number of draws per chain is ' num2str(sum(o.MhDraws(:,1)))]);
+            disp([' o Acceptance ratio in the current chain is ' num2str(oar(b)*100,'%5.2f') '%']);
             disp([' o Initial value of the posterior kernel is: ' num2str(oo.InitialLogPost(b),'%10.5f')])
             disp([' o Last value of the posterior kernel is: ' num2str(o.LastLogPost(b),'%10.5f')])
             disp([' o State of the chain:'])
@@ -179,9 +179,9 @@ if strcmpi(flag,'--info')
         dynInfo(varargin{1})
     else
         if nargin<2
-            disp('You have to specify a matlab routine after --info flag!')
+            disp('You have to specify a Matlab routine after --info flag!')
         else
-            disp('I can only show internal documentation for one matlab routine!')
+            disp('I can only show internal documentation for one Matlab routine!')
         end
     end
     return

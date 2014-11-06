@@ -1,7 +1,5 @@
 // See fs2000.mod in the examples/ directory for details on the model
 
-set_time(1950Q1);
-
 var m P c e W R k d n l gy_obs gp_obs y dA;
 varexo e_a e_m;
 

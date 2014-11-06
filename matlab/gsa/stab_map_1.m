@@ -81,25 +81,25 @@ if isempty(ipar),
 end
 nparplot=length(ipar);
 if iplot && ~options_.nograph
-  lpmat=lpmat(:,ipar);
-  ftit=bayestopt_.name(ipar+nshock*(1-ishock));
-  
-for i=1:ceil(nparplot/12),
-  hh=dyn_figure(options_,'name',atitle);
-  for j=1+12*(i-1):min(nparplot,12*i),
-    subplot(3,4,j-12*(i-1))
-    if ~isempty(ibehaviour),
-      h=cumplot(lpmat(ibehaviour,j));
-      set(h,'color',[0 0 1], 'linestyle',':','LineWidth',1.5)
+    lpmat=lpmat(:,ipar);
+    ftit=bayestopt_.name(ipar+nshock*(1-ishock));
+    
+    for i=1:ceil(nparplot/12),
+        hh=dyn_figure(options_,'name',atitle);
+        for j=1+12*(i-1):min(nparplot,12*i),
+            subplot(3,4,j-12*(i-1))
+            if ~isempty(ibehaviour),
+                h=cumplot(lpmat(ibehaviour,j));
+                set(h,'color',[0 0 1], 'linestyle',':','LineWidth',1.5)
+            end
+            hold on,
+            if ~isempty(inonbehaviour),
+                h=cumplot(lpmat(inonbehaviour,j));
+                set(h,'color',[0 0 0],'LineWidth',1.5)
+            end
+            %     title([ftit{j},'. D-stat ', num2str(dproba(ipar(j)),2)],'interpreter','none')
+            title([ftit{j},'. p-value ', num2str(proba(ipar(j)),2)],'interpreter','none')
+        end
+        dyn_saveas(hh,[dirname,filesep,fname_,'_',aname,'_SA_',int2str(i)],options_);
     end
-    hold on,
-    if ~isempty(inonbehaviour),
-      h=cumplot(lpmat(inonbehaviour,j));
-      set(h,'color',[0 0 0],'LineWidth',1.5)
-    end
-%     title([ftit{j},'. D-stat ', num2str(dproba(ipar(j)),2)],'interpreter','none')
-    title([ftit{j},'. p-value ', num2str(proba(ipar(j)),2)],'interpreter','none')
-  end
-  dyn_saveas(hh,[dirname,filesep,fname_,'_',aname,'_SA_',int2str(i)],options_);
-end
 end

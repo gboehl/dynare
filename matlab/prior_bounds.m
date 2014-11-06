@@ -21,8 +21,7 @@ function bounds = prior_bounds(bayestopt,options)
 %! @sp 1
 %! @table @ @var
 %! @item bounds
-%! p*2 matrix of doubles, where p is the number of estimated parameters. The first and second columns report
-%! respectively the lower and upper bounds.
+%! A structure with two fields lb and up (p*1 vectors of doubles, where p is the number of estimated parameters) for the lower and upper bounds.
 %! @end table
 %! @sp 2
 %! @strong{This function is called by:}
@@ -43,7 +42,7 @@ function bounds = prior_bounds(bayestopt,options)
 %    bayestopt  [structure]  characterizing priors (shape, mean, p1..p4)
 %    
 % OUTPUTS
-%    bounds     [double]      matrix specifying prior bounds (row= parameter, column=lower&upper bound)
+%    bounds     [double]      structure specifying prior bounds (lb and ub fields)
 %    
 % SPECIAL REQUIREMENTS
 %    none
@@ -72,27 +71,27 @@ p6 = bayestopt.p6;
 p7 = bayestopt.p7;
 prior_trunc = options.prior_trunc;
 
-bounds = zeros(length(p6),2);
+bounds.lb = zeros(length(p6),1);
+bounds.ub = zeros(length(p6),1);
 
 for i=1:length(p6)
     switch pshape(i)
       case 1
         if prior_trunc == 0
-            bounds(i,1) = p3(i);
-            bounds(i,2) = p4(i);
+            bounds.lb(i) = p3(i);
+            bounds.ub(i) = p4(i);
         else
-            bounds(i,1) = betainv(prior_trunc,p6(i),p7(i))*(p4(i)-p3(i))+p3(i);
-            bounds(i,2) = betainv(1-prior_trunc,p6(i),p7(i))* ...
-                (p4(i)-p3(i))+p3(i);
+            bounds.lb(i) = betainv(prior_trunc,p6(i),p7(i))*(p4(i)-p3(i))+p3(i);
+            bounds.ub(i) = betainv(1-prior_trunc,p6(i),p7(i))*(p4(i)-p3(i))+p3(i);
         end
       case 2
         if prior_trunc == 0
-            bounds(i,1) = p3(i);
-            bounds(i,2) = Inf;
+            bounds.lb(i) = p3(i);
+            bounds.ub(i) = Inf;
         else
             try
-                bounds(i,1) = gaminv(prior_trunc,p6(i),p7(i))+p3(i);
-                bounds(i,2) = gaminv(1-prior_trunc,p6(i),p7(i))+p3(i);
+                bounds.lb(i) = gaminv(prior_trunc,p6(i),p7(i))+p3(i);
+                bounds.ub(i) = gaminv(1-prior_trunc,p6(i),p7(i))+p3(i);
             catch
                 % Workaround for ticket #161
                 if isoctave
@@ -104,21 +103,20 @@ for i=1:length(p6)
         end
       case 3
         if prior_trunc == 0
-            bounds(i,1) = -Inf;
-            bounds(i,2) = Inf;
+            bounds.lb(i) = -Inf;
+            bounds.ub(i) = Inf;
         else
-            bounds(i,1) = norminv(prior_trunc,p6(i),p7(i));
-            bounds(i,2) = norminv(1-prior_trunc,p6(i),p7(i));
+            bounds.lb(i) = norminv(prior_trunc,p6(i),p7(i));
+            bounds.ub(i) = norminv(1-prior_trunc,p6(i),p7(i));
         end
       case 4
         if prior_trunc == 0
-            bounds(i,1) = p3(i);
-            bounds(i,2) = Inf;
+            bounds.lb(i) = p3(i);
+            bounds.ub(i) = Inf;
         else
             try
-                bounds(i,1) = 1/sqrt(gaminv(1-prior_trunc, p7(i)/2, 2/p6(i)))+p3(i);
-                bounds(i,2) = 1/sqrt(gaminv(prior_trunc, p7(i)/2, ...
-                                            2/p6(i)))+p3(i);
+                bounds.lb(i) = 1/sqrt(gaminv(1-prior_trunc, p7(i)/2, 2/p6(i)))+p3(i);
+                bounds.ub(i) = 1/sqrt(gaminv(prior_trunc, p7(i)/2, 2/p6(i)))+p3(i);
             catch
                 % Workaround for ticket #161
                 if isoctave
@@ -130,20 +128,20 @@ for i=1:length(p6)
         end
       case 5
         if prior_trunc == 0
-            bounds(i,1) = p6(i);
-            bounds(i,2) = p7(i);
+            bounds.lb(i) = p6(i);
+            bounds.ub(i) = p7(i);
         else
-            bounds(i,1) = p6(i)+(p7(i)-p6(i))*prior_trunc;
-            bounds(i,2) = p7(i)-(p7(i)-p6(i))*prior_trunc;
+            bounds.lb(i) = p6(i)+(p7(i)-p6(i))*prior_trunc;
+            bounds.ub(i) = p7(i)-(p7(i)-p6(i))*prior_trunc;
         end
       case 6
         if prior_trunc == 0
-            bounds(i,1) = p3(i);
-            bounds(i,2) = Inf;
+            bounds.lb(i) = p3(i);
+            bounds.ub(i) = Inf;
         else
             try
-                bounds(i,1) = 1/gaminv(1-prior_trunc, p7(i)/2, 2/p6(i))+p3(i);
-                bounds(i,2) = 1/gaminv(prior_trunc, p7(i)/2, 2/p6(i))+ p3(i);
+                bounds.lb(i) = 1/gaminv(1-prior_trunc, p7(i)/2, 2/p6(i))+p3(i);
+                bounds.ub(i) = 1/gaminv(prior_trunc, p7(i)/2, 2/p6(i))+ p3(i);
             catch
                 % Workaround for ticket #161
                 if isoctave

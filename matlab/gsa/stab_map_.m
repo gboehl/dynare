@@ -96,6 +96,8 @@ p2 = bayestopt_.p2(nshock+1:end);
 p3 = bayestopt_.p3(nshock+1:end);
 p4 = bayestopt_.p4(nshock+1:end);
 
+bounds = prior_bounds(bayestopt_,options_);
+
 if nargin==0,
     OutputDirectoryName='';
 end
@@ -157,7 +159,7 @@ if fload==0,
                 lpmat0(:,j) = randperm(Nsam)'./(Nsam+1); %latin hypercube
             end
             if opt_gsa.prior_range
-                lpmat0(:,j)=lpmat0(:,j).*(bayestopt_.ub(j)-bayestopt_.lb(j))+bayestopt_.lb(j);
+                lpmat0(:,j)=lpmat0(:,j).*(bounds.ub(j)-bounds.lb(j))+bounds.lb(j);
             end
         end
         if opt_gsa.prior_range
@@ -168,7 +170,7 @@ if fload==0,
             %         end
             %       end
             for j=1:np,
-                lpmat(:,j)=lpmat(:,j).*(bayestopt_.ub(j+nshock)-bayestopt_.lb(j+nshock))+bayestopt_.lb(j+nshock);
+                lpmat(:,j)=lpmat(:,j).*(bounds.ub(j+nshock)-bounds.lb(j+nshock))+bounds.lb(j+nshock);
             end
         else
             xx=prior_draw_gsa(0,[lpmat0 lpmat]);
@@ -221,20 +223,20 @@ if fload==0,
         if neighborhood_width>0,
             for j=1:nshock,
                 lpmat0(:,j) = randperm(Nsam)'./(Nsam+1); %latin hypercube
-                ub=min([bayestopt_.ub(j) xparam1(j)*(1+neighborhood_width)]);
-                lb=max([bayestopt_.lb(j) xparam1(j)*(1-neighborhood_width)]);
+                ub=min([bounds.ub(j) xparam1(j)*(1+neighborhood_width)]);
+                lb=max([bounds.lb(j) xparam1(j)*(1-neighborhood_width)]);
                 lpmat0(:,j)=lpmat0(:,j).*(ub-lb)+lb;
             end
             for j=1:np,
-                ub=min([bayestopt_.ub(j+nshock) xparam1(j+nshock)*(1+neighborhood_width)]);
-                lb=max([bayestopt_.lb(j+nshock) xparam1(j+nshock)*(1-neighborhood_width)]);
+                ub=min([bounds.ub(j+nshock) xparam1(j+nshock)*(1+neighborhood_width)]);
+                lb=max([bounds.lb(j+nshock) xparam1(j+nshock)*(1-neighborhood_width)]);
                 lpmat(:,j)=lpmat(:,j).*(ub-lb)+lb;
             end
         else
             d = chol(inv(hh));
             lp=randn(Nsam*2,nshock+np)*d+kron(ones(Nsam*2,1),xparam1');
             for j=1:Nsam*2,
-                lnprior(j) = any(lp(j,:)'<=bayestopt_.lb | lp(j,:)'>=bayestopt_.ub);
+                lnprior(j) = any(lp(j,:)'<=bounds.lb | lp(j,:)'>=bounds.ub);
             end
             ireal=[1:2*Nsam];
             ireal=ireal(find(lnprior==0));
@@ -620,7 +622,7 @@ if length(iunstable)>0 ,
             stab_map_2(lpmat(iwrong,:),alpha2, pvalue_corr, awrongname, OutputDirectoryName,xparam1,awrongtitle);
         end
         
-        x0=0.5.*(bayestopt_.ub(1:nshock)-bayestopt_.lb(1:nshock))+bayestopt_.lb(1:nshock);
+        x0=0.5.*(bounds.ub(1:nshock)-bounds.lb(1:nshock))+bounds.lb(1:nshock);
         x0 = [x0; lpmat(istable(1),:)'];
         if istable(end)~=Nsam
             M_.params(estim_params_.param_vals(:,1)) = lpmat(istable(1),:)';
@@ -633,7 +635,7 @@ if length(iunstable)>0 ,
     end
 else
     disp('All parameter values in the specified ranges give unique saddle-path solution!')
-        x0=0.5.*(bayestopt_.ub(1:nshock)-bayestopt_.lb(1:nshock))+bayestopt_.lb(1:nshock);
+        x0=0.5.*(bounds.ub(1:nshock)-bounds.lb(1:nshock))+bounds.lb(1:nshock);
         x0 = [x0; lpmat(istable(1),:)'];
 
 end

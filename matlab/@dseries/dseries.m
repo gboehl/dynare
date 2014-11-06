@@ -97,7 +97,7 @@ switch nargin
     if isdates(varargin{1})
         switch length(varargin{1})
           case 0
-            error(['dseries::dseries: Input ' inputname(1) ' (identified as a dates object) must be non empty!'])
+            error(['dseries::dseries: Input (identified as a dates object) must be non empty!'])
           case 1
             % Create an empty dseries object with an initial date.
             ts.dates = varargin{1};
@@ -131,7 +131,7 @@ switch nargin
             [freq,init,data,varlist] = load_xls_file_data(varargin{1}, sheet, range);
             tex = [];
         else
-            error(['dseries:: I''m not able to load data from ' inputname(1) '!'])
+            error(['dseries:: I''m not able to load data from ' varargin{1} '!'])
         end
         ts.data = data;
         ts.name = varlist;

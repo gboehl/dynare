@@ -54,6 +54,8 @@ alpha2=0;
 pvalue_ks = options_gsa_.ksstat_redform;
 pvalue_corr = options_gsa_.alpha2_redform;
 
+bounds = prior_bounds(bayestopt_,options_);
+
 pnames = M_.param_names(estim_params_.param_vals(:,1),:);
 if nargin==0,
     dirname='';
@@ -98,7 +100,7 @@ end
 offset = length(bayestopt_.pshape)-np;
 if options_gsa_.prior_range,
     pshape=5*(ones(np,1));
-    pd =  [NaN(np,1) NaN(np,1) bayestopt_.lb(offset+1:end) bayestopt_.ub(offset+1:end)];
+    pd =  [NaN(np,1) NaN(np,1) bounds.lb(offset+1:end) bounds.ub(offset+1:end)];
 else
     pshape = bayestopt_.pshape(offset+1:end);
     pd =  [bayestopt_.p6(offset+1:end) bayestopt_.p7(offset+1:end) bayestopt_.p3(offset+1:end) bayestopt_.p4(offset+1:end)];

@@ -27,7 +27,7 @@ function check_prior_bounds(xparam1,bounds,M_,estim_params_,options_,bayestopt_)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-outside_bound_pars=find(xparam1 < bounds(:,1) | xparam1 > bounds(:,2));
+outside_bound_pars=find(xparam1 < bounds.lb | xparam1 > bounds.ub);
 if ~isempty(outside_bound_pars)
     for ii=1:length(outside_bound_pars)
         outside_bound_par_names{ii,1}=get_the_name(outside_bound_pars(ii),0,M_,estim_params_,options_);

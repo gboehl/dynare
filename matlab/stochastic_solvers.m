@@ -113,6 +113,30 @@ elseif options_.order == 2
         hessian1 = sparse(hessian1(:,1), hessian1(:,2), hessian1(:,3), ...
                           size(jacobia_, 1), size(jacobia_, 2)*size(jacobia_, 2));
     end
+    [infrow,infcol]=find(isinf(hessian1));
+    if options_.debug
+        if ~isempty(infrow)     
+        fprintf('\nSTOCHASTIC_SOLVER: The Hessian of the dynamic model contains Inf.\n')
+        fprintf('STOCHASTIC_SOLVER: Try running model_diagnostics to find the source of the problem.\n')
+        save([M_.fname '_debug.mat'],'hessian1')
+        end
+    end
+    if ~isempty(infrow)
+        info(1)=11;
+        return
+    end
+    [nanrow,nancol]=find(isnan(hessian1));
+    if options_.debug
+        if ~isempty(nanrow)     
+            fprintf('\nSTOCHASTIC_SOLVER: The Hessian of the dynamic model contains NaN.\n')
+            fprintf('STOCHASTIC_SOLVER: Try running model_diagnostics to find the source of the problem.\n')
+            save([M_.fname '_debug.mat'],'hessian1')
+        end
+    end
+    if ~isempty(nanrow)
+        info(1)=12;
+        return
+    end    
 end
 
 [infrow,infcol]=find(isinf(jacobia_));

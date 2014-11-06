@@ -26,16 +26,29 @@ indx_moment = [];
 skipline()
 disp('Sensitivity analysis for calibration criteria')
 
-filetoload=[OutputDirectoryName '/' fname_ '_prior'];
-load(filetoload,'lpmat','lpmat0','istable','iunstable','iindeterm','iwrong' ,'infox')
-if ~isempty(lpmat0),
-    lpmatx=lpmat0(istable,:);
+if DynareOptions.opt_gsa.ppost,
+    filetoload=dir([Model.dname filesep 'metropolis' filesep fname_ '_param_irf*.mat']);
+    lpmat=[];
+    for j=1:length(filetoload),
+        load([Model.dname filesep 'metropolis' filesep fname_ '_param_irf',int2str(j),'.mat'])
+        lpmat = [lpmat; stock];
+        clear stock
+    end
+    type = 'post';
 else
-    lpmatx=[];
+    if DynareOptions.opt_gsa.pprior
+        filetoload=[OutputDirectoryName '/' fname_ '_prior'];
+        load(filetoload,'lpmat','lpmat0','istable','iunstable','iindeterm','iwrong' ,'infox')
+        lpmat = [lpmat0 lpmat];
+        type = 'prior';
+    else
+        filetoload=[OutputDirectoryName '/' fname_ '_mc'];
+        load(filetoload,'lpmat','lpmat0','istable','iunstable','iindeterm','iwrong' ,'infox')
+        lpmat = [lpmat0 lpmat];
+        type = 'mc';
+    end        
 end
 [Nsam, np] = size(lpmat);
-nshock = size(lpmat0,2);
-npT = np+nshock;
 
 nbr_irf_restrictions = size(DynareOptions.endogenous_prior_restrictions.irf,1);
 mat_irf=cell(nbr_irf_restrictions,1);
@@ -51,7 +64,7 @@ end
 
 irestrictions = [1:Nsam];
 for j=1:Nsam,
-    Model = set_all_parameters([lpmat0(j,:) lpmat(j,:)]',EstimatedParameters,Model);
+    Model = set_all_parameters(lpmat(j,:)',EstimatedParameters,Model);
     [Tt,Rr,SteadyState,info] = dynare_resolve(Model,DynareOptions,DynareResults,'restrict');
     if info(1)==0,
         [info, info_irf, info_moment, data_irf, data_moment]=endogenous_prior_restrictions(Tt,Rr,Model,DynareOptions,DynareResults);
@@ -72,12 +85,13 @@ for j=1:Nsam,
     end
 end
 irestrictions=irestrictions(find(irestrictions));
-xmat=[lpmat0(irestrictions,:) lpmat(irestrictions,:)];
+xmat=lpmat(irestrictions,:);
 skipline()
+save([OutputDirectoryName,filesep,fname_,'_',type,'_restrictions'],'xmat','mat_irf','mat_moment','irestrictions','indx_irf','indx_moment');
 
 if ~isempty(indx_irf),
     indx_irf = indx_irf(irestrictions,:);
-    h1=dyn_figure(DynareOptions,'name','Evaluation of irf restrictions');
+    h1=dyn_figure(DynareOptions,'name',[type ' evaluation of irf restrictions']);
     nrow=ceil(sqrt(nbr_irf_restrictions));
     ncol=nrow;
     if nrow*(nrow-1)>nbr_irf_restrictions,
@@ -108,21 +122,21 @@ if ~isempty(indx_irf),
         indx2 = find(indx_irf(:,ij)~=0);
         atitle=[DynareOptions.endogenous_prior_restrictions.irf{ij,1},' vs ',DynareOptions.endogenous_prior_restrictions.irf{ij,2}, '(', leg,')'];
         fprintf(['%4.1f%% of the prior support matches IRF ',atitle,' inside [%4.1f, %4.1f]\n'],length(indx1)/length(irestrictions)*100,DynareOptions.endogenous_prior_restrictions.irf{ij,4})
-        aname=['irf_calib_',int2str(ij)];
-        atitle=['IRF Calib: Parameter(s) driving ',DynareOptions.endogenous_prior_restrictions.irf{ij,1},' vs ',DynareOptions.endogenous_prior_restrictions.irf{ij,2}, '(', leg,')'];
+        aname=[type '_irf_calib_',int2str(ij)];
+        atitle=[type ' IRF Calib: Parameter(s) driving ',DynareOptions.endogenous_prior_restrictions.irf{ij,1},' vs ',DynareOptions.endogenous_prior_restrictions.irf{ij,2}, '(', leg,')'];
         [proba, dproba] = stab_map_1(xmat, indx1, indx2, aname, 0);
         indplot=find(proba<pvalue_ks);
         if ~isempty(indplot)
             stab_map_1(xmat, indx1, indx2, aname, 1, indplot, OutputDirectoryName,[],atitle);
         end
     end
-    dyn_saveas(h1,[OutputDirectoryName,filesep,fname_,'_irf_restrictions'],DynareOptions);
+    dyn_saveas(h1,[OutputDirectoryName,filesep,fname_,'_',type,'_irf_restrictions'],DynareOptions);
     skipline()
 end
 
 if ~isempty(indx_moment)
     indx_moment = indx_moment(irestrictions,:);
-    h2=dyn_figure(DynareOptions,'name','Evaluation of moment restrictions');
+    h2=dyn_figure(DynareOptions,'name',[type ' evaluation of moment restrictions']);
     nrow=ceil(sqrt(nbr_moment_restrictions));
     ncol=nrow;
     if nrow*(nrow-1)>nbr_moment_restrictions,
@@ -153,15 +167,15 @@ if ~isempty(indx_moment)
         indx2 = find(indx_moment(:,ij)~=0);
         atitle=[DynareOptions.endogenous_prior_restrictions.moment{ij,1},' vs ',DynareOptions.endogenous_prior_restrictions.moment{ij,2}, '(', leg,')'];
         fprintf(['%4.1f%% of the prior support matches MOMENT ',atitle,' inside [%4.1f, %4.1f]\n'],length(indx1)/length(irestrictions)*100,DynareOptions.endogenous_prior_restrictions.moment{ij,4})
-        aname=['moment_calib_',int2str(ij)];
-        atitle=['MOMENT Calib: Parameter(s) driving ',DynareOptions.endogenous_prior_restrictions.moment{ij,1},' vs ',DynareOptions.endogenous_prior_restrictions.moment{ij,2}, '(', leg,')'];
+        aname=[type '_moment_calib_',int2str(ij)];
+        atitle=[type ' MOMENT Calib: Parameter(s) driving ',DynareOptions.endogenous_prior_restrictions.moment{ij,1},' vs ',DynareOptions.endogenous_prior_restrictions.moment{ij,2}, '(', leg,')'];
         [proba, dproba] = stab_map_1(xmat, indx1, indx2, aname, 0);
         indplot=find(proba<pvalue_ks);
         if ~isempty(indplot)
             stab_map_1(xmat, indx1, indx2, aname, 1, indplot, OutputDirectoryName,[],atitle);
         end
     end
-    dyn_saveas(h2,[OutputDirectoryName,filesep,fname_,'_moment_restrictions'],DynareOptions);
+    dyn_saveas(h2,[OutputDirectoryName,filesep,fname_,'_',type,'_moment_restrictions'],DynareOptions);
     skipline()
 end
 return

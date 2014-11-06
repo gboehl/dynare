@@ -68,6 +68,10 @@ if ~noprint
         error(['k_order_pert was unable to compute the solution'])
       case 10
         error(['The Jacobian of the dynamic model contains Inf. For more information, use options_.debug.'])
+      case 11
+        error('The Hessian of the dynamic model used for second order solutions must not contain Inf')
+      case 12
+        error('The Hessian of the dynamic model used for second order solutions must not contain NaN')
       case 19
         error('The steadystate file did not compute the steady state')
       case 20

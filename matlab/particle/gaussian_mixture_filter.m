@@ -83,7 +83,7 @@ end
 SampleWeights = ones(Gsecond,1)/Gsecond ;
 
 % compute gaussian quadrature nodes and weights on states and shocks
-if isempty(nodes2)
+if isempty(nodes)
     if DynareOptions.particle.distribution_approximation.cubature
         [nodes,weights] = spherical_radial_sigma_points(number_of_state_variables);
         weights_c = weights;

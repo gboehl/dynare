@@ -32,20 +32,29 @@ main(int argc, char **argv)
   int nback = zeta_back.size();
   int nmixed = zeta_mixed.size();
   int nstatic = zeta_static.size();
+  int sdyn = nfwrd + nback + 2*nmixed;
 
-  int jacob_cols = zeta_back.size()+zeta_fwrd.size()+zeta_mixed.size()+exo_nbr;
+  int jacob_cols = sdyn + endo_nbr + exo_nbr;
 
   double *exo_steady_state = new double[exo_nbr];
   double *jacob_data = new double[endo_nbr*jacob_cols];
 
+  std::cout << endo_nbr << " " << jacob_cols << endl;
+
   FirstDerivatives(steady_state, exo_steady_state, 0, params, steady_state, 1, NULL, jacob_data, NULL, NULL);
+
+  std::cout << "g1[44] = " << jacob_data[44] << endl;
 
   DecisionRules dr(endo_nbr, exo_nbr, zeta_fwrd, zeta_back, zeta_mixed,
                    zeta_static, qz_criterium);
 
-  int sdyn = nfwrd + nback + 2*nmixed;
+  std::cout << "g1[44] = " << jacob_data[44] << endl;
+
   int jacobian_col_nbr = sdyn + endo_nbr + exo_nbr;
+  std::cout << "g1[44] = " << jacob_data[44] << endl;
   MatrixView jacob_tmp(jacob_data, endo_nbr, jacobian_col_nbr, endo_nbr);
+  std::cout << "g1[44] = " << jacob_data[44] << endl;
+  std::cout << "jacob_tmp(2,7) = "<< jacob_tmp(2,7) << endl;
 
   Matrix jacobian(endo_nbr, jacobian_col_nbr), g_y(endo_nbr, nback+nmixed), g_u(endo_nbr, exo_nbr);
   jacobian = jacob_tmp;

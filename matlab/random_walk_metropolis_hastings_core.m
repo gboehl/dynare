@@ -163,9 +163,9 @@ for b = fblck:nblck,
     j = 1;
     while j <= nruns(b)
         par = feval(ProposalFun, ix2(b,:), proposal_covariance_Cholesky_decomposition, n);
-        if all( par(:) > mh_bounds(:,1) ) && all( par(:) < mh_bounds(:,2) )
+        if all( par(:) > mh_bounds.lb ) && all( par(:) < mh_bounds.ub )
             try
-                logpost = - feval(TargetFun, par(:),dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,oo_);
+                logpost = - feval(TargetFun, par(:),dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,mh_bounds,oo_);
             catch
                 logpost = -inf;
             end

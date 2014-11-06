@@ -1,23 +1,39 @@
 function myoutput = McMCDiagnostics_core(myinputs,fpar,npar,whoiam, ThisMatlab)
+% function myoutput = McMCDiagnostics_core(myinputs,fpar,npar,whoiam, ThisMatlab)
+% Computes the Brooks/Gelman (1998) convergence diagnostics, both the
+% parameteric and the non-parameteric versions
+% 
 % PARALLEL CONTEXT
 % Core functionality for MCMC Diagnostics, which can be parallelized.
 % See also the comment in random_walk_metropolis_hastings_core.m funtion.
-
-
+% 
+% 
 % INPUTS
 %   See See the comment in random_walk_metropolis_hastings_core.m funtion.
 
 % OUTPUTS
 % o myoutput  [struc]
-%  Contained UDIAG.
+%   Contains:
+%       - UDIAG [by 6] double   1st column: length of total sequence interval
+%                               2nd column: sum of length of within sequence intervals; used to compute mean length of within sequence intervals
+%                               3nd column: within sequence variance
+%                               4nd column: sum of within sequence variances; used to compute mean within sequence variances
+%                               5nd column: within sequence kurtosis
+%                               6nd column: sum of within sequence kurtoses; used to compute mean within sequence kurtoses
+%               Averaging to compute mean moments is done in
+%               McMCDiagnostics
 %
 % ALGORITHM
-%   Portion of McMCDiagnostics.m function.
+%   Computes part of the convergence diagnostics, the rest is computed in McMCDiagnostics.m .
+%   The methodology and terminology is based on: Brooks/Gelman (1998): General 
+%   Methods for Monitoring Convergence of Iterative Simulations, Journal of Computational 
+%   and Graphical Statistics, Volume 7, Number 4, Pages 434-455
+% 
 %
 % SPECIAL REQUIREMENTS.
 %   None.
 
-% Copyright (C) 2006-2011 Dynare Team
+% Copyright (C) 2006-2014 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -59,7 +75,7 @@ if ~exist('MetropolisFolder'),
     MetropolisFolder = CheckPath('metropolis',M_.dname);
 end
 
-ALPHA = 0.2;                                % increase too much with the number of simulations.
+ALPHA = 0.2; % percentile for non-parametric statistic
 tmp = zeros(NumberOfDraws*nblck,3);
 UDIAG = zeros(NumberOfLines,6,npar-fpar+1);
 
@@ -80,7 +96,7 @@ for j=fpar:npar,
     else
         fprintf('    Parameter %d...  ',j);
     end
-    for b = 1:nblck
+    for b = 1:nblck %load draws from different chains into 1 matrix
         startline = 0;
         for n = 1:NumberOfMcFilesPerBlock
             load([MetropolisFolder '/' M_.fname '_mh',int2str(n),'_blck' int2str(b) '.mat'],'x2');
@@ -89,29 +105,29 @@ for j=fpar:npar,
             startline = startline + nx2;
         end
     end
-    tmp(:,2) = kron(transpose(1:nblck),ones(NumberOfDraws,1));
-    tmp(:,3) = kron(ones(nblck,1),time');
-    tmp = sortrows(tmp,1);
-    ligne   = 0;
-    for iter  = Origin:StepSize:NumberOfDraws
-        ligne = ligne+1;
-        linea = ceil(mh_drop*iter);
-        n     = iter-linea+1;
-        cinf  = round(n*ALPHA/2);
-        csup  = round(n*(1-ALPHA/2));
-        CINF  = round(nblck*n*ALPHA/2);
-        CSUP  = round(nblck*n*(1-ALPHA/2));
-        temp  = tmp(find((tmp(:,3)>=linea) & (tmp(:,3)<=iter)),1:2);
-        UDIAG(ligne,1,j-fpar+1) = temp(CSUP,1)-temp(CINF,1);
-        moyenne = mean(temp(:,1));%% Pooled mean.
-        UDIAG(ligne,3,j-fpar+1) = sum((temp(:,1)-moyenne).^2)/(nblck*n-1);
-        UDIAG(ligne,5,j-fpar+1) = sum(abs(temp(:,1)-moyenne).^3)/(nblck*n-1);
+    tmp(:,2) = kron(transpose(1:nblck),ones(NumberOfDraws,1)); %add info about chain associated with draw into 2nd column
+    tmp(:,3) = kron(ones(nblck,1),time'); %add timeline for draws to third column
+    tmp = sortrows(tmp,1); %sort draws according to size for non-parametric percentile computation
+    window_iter   = 0;
+    for iter  = Origin:StepSize:NumberOfDraws %begin of window
+        window_iter = window_iter+1;
+        linea = ceil(mh_drop*iter);         %compute first non-discarded draw; drops fraction of sample at each iteration for computational efficiency, see Brooks/Gelman (1998), p.438
+        n     = iter-linea+1;               %number of draws from each block in current batch
+        cinf  = round(n*ALPHA/2);           %lower bound for alpha percentile of within series
+        csup  = round(n*(1-ALPHA/2));       %upper bound for alpha percentile of within series
+        CINF  = round(nblck*n*ALPHA/2);     %lower bound for alpha percentile of pooled series
+        CSUP  = round(nblck*n*(1-ALPHA/2)); %upper bound for alpha percentile of pooled series
+        temp  = tmp(find((tmp(:,3)>=linea) & (tmp(:,3)<=iter)),1:2);    %extract pooled draws in current batch
+        UDIAG(window_iter,1,j-fpar+1) = temp(CSUP,1)-temp(CINF,1);      %length of total sequence interval
+        pooled_mean = mean(temp(:,1));      % Pooled mean.
+        UDIAG(window_iter,3,j-fpar+1) = sum((temp(:,1)-pooled_mean).^2)/(nblck*n-1);        %within sequence variance
+        UDIAG(window_iter,5,j-fpar+1) = sum(abs(temp(:,1)-pooled_mean).^3)/(nblck*n-1);     %within sequence third moment
         for i=1:nblck
             pmet = temp(find(temp(:,2)==i));
-            UDIAG(ligne,2,j-fpar+1) = UDIAG(ligne,2,j-fpar+1) + pmet(csup,1)-pmet(cinf,1);
-            moyenne = mean(pmet,1); %% Within mean.
-            UDIAG(ligne,4,j-fpar+1) = UDIAG(ligne,4,j-fpar+1) + sum((pmet(:,1)-moyenne).^2)/(n-1);
-            UDIAG(ligne,6,j-fpar+1) = UDIAG(ligne,6,j-fpar+1) + sum(abs(pmet(:,1)-moyenne).^3)/(n-1);
+            UDIAG(window_iter,2,j-fpar+1) = UDIAG(window_iter,2,j-fpar+1) + pmet(csup,1)-pmet(cinf,1); %sum of length of within sequence intervals; used to compute mean length of within sequence intervals
+            within_mean = mean(pmet,1); %% Within mean in current chain.
+            UDIAG(window_iter,4,j-fpar+1) = UDIAG(window_iter,4,j-fpar+1) + sum((pmet(:,1)-within_mean).^2)/(n-1); %sum of within sequence variances; used to compute mean within sequence variances
+            UDIAG(window_iter,6,j-fpar+1) = UDIAG(window_iter,6,j-fpar+1) + sum(abs(pmet(:,1)-within_mean).^3)/(n-1); %sum of within sequence kurtoses; used to compute mean within sequence kurtoses
         end
     end
     if isoctave

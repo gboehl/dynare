@@ -51,7 +51,7 @@ elseif flagmoments==-1
     tau=[oo_.dr.ys(oo_.dr.order_var); g1(:)];
 
 else
-    GAM =  lyapunov_symm(A,B*M_.Sigma_e*B',options_.qz_criterium,options_.lyapunov_complex_threshold);
+    GAM =  lyapunov_symm(A,B*M_.Sigma_e*B',options_.qz_criterium,options_.lyapunov_complex_threshold,[],[],options_.debug);
     k = find(abs(GAM) < 1e-12);
     GAM(k) = 0;
     if useautocorr,

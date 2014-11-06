@@ -42,8 +42,7 @@ endo_prior_restrictions.irf= DynareOptions.endogenous_prior_restrictions.irf;
 endo_prior_restrictions.moment= DynareOptions.endogenous_prior_restrictions.moment;
 
 if ~isempty(endo_prior_restrictions.irf),
-   data_irf=cell(size(endo_prior_restrictions.irf,1),1);
-    
+   data_irf=cell(size(endo_prior_restrictions.irf,1),1);    
     if DynareOptions.order>1,
         error('The algorithm for prior (sign) restrictions on irf''s is currently restricted to first-order decision rules')
         return
@@ -53,7 +52,18 @@ if ~isempty(endo_prior_restrictions.irf),
         [T,R,SteadyState,infox,Model,DynareOptions,DynareResults] = dynare_resolve(Model,DynareOptions,DynareResults);
     else % check if T and R are given in the restricted form!!!
         if size(T,1)<size(varlist,1),
-            varlist=varlist(DynareResults.dr.restrict_var_list,:);
+            varlist=varlist(DynareResults.dr.restrict_var_list,:); 
+        end
+        % check if endo_prior_restrictions.irf{:,1} variables are in varlist
+        varlistok=1;
+        for j=1:size(endo_prior_restrictions.irf,1)
+            if isempty(strmatch(endo_prior_restrictions.irf{j,1},varlist,'exact'))
+                varlistok=0;
+            end
+        end
+        if ~varlistok
+            varlist=Model.endo_names(DynareResults.dr.order_var,:);
+            [T,R,SteadyState,infox,Model,DynareOptions,DynareResults] = dynare_resolve(Model,DynareOptions,DynareResults);
         end
     end
     NT=1;

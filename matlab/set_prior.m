@@ -48,8 +48,8 @@ estim_params_.ncn = ncn; % correlation between endogenous variables, i.e. measur
 estim_params_.np = np;   % other parameters of the model
 
 xparam1 = [];
-ub = [];
-lb = [];
+ub = []; % Upper bound imposed for optimization.
+lb = []; % Lower bound imposed for optimization.
 bayestopt_.pshape = [];
 bayestopt_.p1 = []; % prior mean
 bayestopt_.p2 = []; % prior standard deviation
@@ -63,7 +63,7 @@ bayestopt_.jscale = [];
 bayestopt_.name = {};
 if nvx
     xparam1 = estim_params_.var_exo(:,2);
-    ub = estim_params_.var_exo(:,4); 
+    ub = estim_params_.var_exo(:,4);
     lb = estim_params_.var_exo(:,3); 
     bayestopt_.pshape =  estim_params_.var_exo(:,5);
     bayestopt_.p1 =  estim_params_.var_exo(:,6);
@@ -151,9 +151,6 @@ if np
     bayestopt_.jscale = [ bayestopt_.jscale; estim_params_.param_vals(:,10)];
     bayestopt_.name = [bayestopt_.name; cellstr(M_.param_names(estim_params_.param_vals(:,1),:))];
 end
-
-bayestopt_.ub = ub;
-bayestopt_.lb = lb;
 
 bayestopt_.p6 = NaN(size(bayestopt_.p1)) ;
 bayestopt_.p7 = bayestopt_.p6 ;

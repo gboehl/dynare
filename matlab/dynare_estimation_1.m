@@ -99,7 +99,7 @@ else
     objective_function = str2func('dsge_var_likelihood');
 end
 
-[dataset_, dataset_info, xparam1, hh, M_, options_, oo_, estim_params_, bayestopt_] = ...
+[dataset_, dataset_info, xparam1, hh, M_, options_, oo_, estim_params_, bayestopt_, bounds] = ...
     dynare_estimation_init(var_list_, dname, [], M_, options_, oo_, estim_params_, bayestopt_);
 
 if options_.dsge_var
@@ -128,9 +128,9 @@ else
     full_calibration_detected=0;
 end
 if options_.use_calibration_initialization %set calibration as starting values
-    [xparam1,estim_params_]=do_parameter_initialization(estim_params_,xparam1_calib,xparam1); %get explicitly initialized parameters that have precedence to calibrated values
+    [xparam1,estim_params_]=do_parameter_initialization(estim_params_,xparam1_calib,xparam1);   %get explicitly initialized parameters that have precedence to calibrated values
     try
-        check_prior_bounds(xparam1,[bayestopt_.lb bayestopt_.ub],M_,estim_params_,options_,bayestopt_); %check whether calibration satisfies prior bounds
+        check_prior_bounds(xparam1,bounds,M_,estim_params_,options_,bayestopt_); %check whether calibration satisfies prior bounds
     catch
         e = lasterror();
         fprintf('Cannot use parameter values from calibration as they violate the prior bounds.')
@@ -162,9 +162,6 @@ np  = estim_params_.np ;  % Number of deep parameters.
 nx  = nvx+nvn+ncx+ncn+np; % Total number of parameters to be estimated.
 %% Set the names of the priors.
 pnames = ['     ';'beta ';'gamm ';'norm ';'invg ';'unif ';'invg2'];
-%% Set parameters bounds
-lb = bayestopt_.lb;
-ub = bayestopt_.ub;
 
 dr = oo_.dr;
 
@@ -188,7 +185,7 @@ end
 
 %% perform initial estimation checks;
 try
-    oo_ = initial_estimation_checks(objective_function,xparam1,dataset_,dataset_info,M_,estim_params_,options_,bayestopt_,oo_);
+    oo_ = initial_estimation_checks(objective_function,xparam1,dataset_,dataset_info,M_,estim_params_,options_,bayestopt_,bounds,oo_);
 catch % if check fails, provide info on using calibration if present
     e = lasterror();
     if full_calibration_detected %calibrated model present and no explicit starting values
@@ -258,7 +255,7 @@ if ~isequal(options_.mode_compute,0) && ~options_.mh_posterior_mode_estimation
             optim_options = optimset(optim_options,'GradObj','on','TolX',1e-7);
         end
         [xparam1,fval,exitflag,output,lamdba,grad,hessian_fmincon] = ...
-            fmincon(objective_function,xparam1,[],[],[],[],lb,ub,[],optim_options,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,oo_);
+            fmincon(objective_function,xparam1,[],[],[],[],bounds.lb,bounds.ub,[],optim_options,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,bounds,oo_);
       case 2
         error('ESTIMATION: mode_compute=2 option (Lester Ingber''s Adaptive Simulated Annealing) is no longer available')
       case 3
@@ -276,10 +273,10 @@ if ~isequal(options_.mode_compute,0) && ~options_.mh_posterior_mode_estimation
             optim_options = optimset(optim_options,'GradObj','on');
         end
         if ~isoctave
-            [xparam1,fval,exitflag] = fminunc(objective_function,xparam1,optim_options,dataset_,dataset_info_,options_,M_,estim_params_,bayestopt_,oo_);
+            [xparam1,fval,exitflag] = fminunc(objective_function,xparam1,optim_options,dataset_,dataset_info_,options_,M_,estim_params_,bayestopt_,bounds,oo_);
         else
             % Under Octave, use a wrapper, since fminunc() does not have a 4th arg
-            func = @(x) objective_function(x, dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,oo_);
+            func = @(x) objective_function(x, dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,bounds,oo_);
             [xparam1,fval,exitflag] = fminunc(func,xparam1,optim_options);
         end
       case 4
@@ -317,7 +314,7 @@ if ~isequal(options_.mode_compute,0) && ~options_.mh_posterior_mode_estimation
         end
         % Call csminwell.
         [fval,xparam1,grad,hessian_csminwel,itct,fcount,retcodehat] = ...
-            csminwel1(objective_function, xparam1, H0, analytic_grad, crit, nit, numgrad, epsilon, dataset_, dataset_info, options_, M_, estim_params_, bayestopt_, oo_);
+            csminwel1(objective_function, xparam1, H0, analytic_grad, crit, nit, numgrad, epsilon, dataset_, dataset_info, options_, M_, estim_params_, bayestopt_,bounds, oo_);
         % Disp value at the mode.
         disp(sprintf('Objective function at mode: %f',fval))
       case 5
@@ -345,7 +342,7 @@ if ~isequal(options_.mode_compute,0) && ~options_.mh_posterior_mode_estimation
         else
             nit=1000;
         end
-        [xparam1,hh,gg,fval,invhess] = newrat(objective_function,xparam1,analytic_grad,crit,nit,0,dataset_, dataset_info, options_,M_,estim_params_,bayestopt_,oo_);
+        [xparam1,hh,gg,fval,invhess] = newrat(objective_function,xparam1,analytic_grad,crit,nit,0,dataset_, dataset_info, options_,M_,estim_params_,bayestopt_,bounds,oo_);
         if options_.analytic_derivation,
             options_.analytic_derivation = ana_deriv;
         else
@@ -358,7 +355,7 @@ if ~isequal(options_.mode_compute,0) && ~options_.mh_posterior_mode_estimation
                         options_.kalman_algo=4;
                     end
                 end
-                hh = reshape(mr_hessian(0,xparam1,objective_function,1,crit,dataset_, dataset_info, options_,M_,estim_params_,bayestopt_,oo_), nx, nx);
+                hh = reshape(mr_hessian(0,xparam1,objective_function,1,crit,dataset_, dataset_info, options_,M_,estim_params_,bayestopt_,bounds,oo_), nx, nx);
                 options_.kalman_algo = kalman_algo0;
             end
         end
@@ -408,7 +405,7 @@ if ~isequal(options_.mode_compute,0) && ~options_.mh_posterior_mode_estimation
             end
         end
         % Evaluate the objective function.
-        fval = feval(objective_function,xparam1,dataset_, dataset_info, options_,M_,estim_params_,bayestopt_,oo_);
+        fval = feval(objective_function,xparam1,dataset_, dataset_info, options_,M_,estim_params_,bayestopt_,bounds,oo_);
         OldMode = fval;
         if ~exist('MeanPar','var')
             MeanPar = xparam1;
@@ -440,8 +437,8 @@ if ~isequal(options_.mode_compute,0) && ~options_.mh_posterior_mode_estimation
                     flag = 'LastCall';
                 end
                 [xparam1,PostVar,Scale,PostMean] = ...
-                    gmhmaxlik(objective_function,xparam1,[lb ub],gmhmaxlikOptions,Scale,flag,MeanPar,CovJump,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,oo_);
-                fval = feval(objective_function,xparam1,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,oo_);
+                    gmhmaxlik(objective_function,xparam1,[bounds.lb bounds.ub],gmhmaxlikOptions,Scale,flag,MeanPar,CovJump,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,bounds,oo_);
+                fval = feval(objective_function,xparam1,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,bounds,oo_);
                 options_.mh_jscale = Scale;
                 mouvement = max(max(abs(PostVar-OldPostVar)));
                 skipline()
@@ -459,12 +456,12 @@ if ~isequal(options_.mode_compute,0) && ~options_.mh_posterior_mode_estimation
                     flag = 'LastCall';
                 end
                 [xparam1,PostVar,Scale,PostMean] = ...
-                    gmhmaxlik(objective_function,xparam1,[lb ub],...
-                              gmhmaxlikOptions,Scale,flag,PostMean,PostVar,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,oo_);
-                fval = feval(objective_function,xparam1,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,oo_);
+                    gmhmaxlik(objective_function,xparam1,[bounds.lb bounds.ub],...
+                              gmhmaxlikOptions,Scale,flag,PostMean,PostVar,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,bounds,oo_);
+                fval = feval(objective_function,xparam1,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,bounds,oo_);
                 options_.mh_jscale = Scale;
                 mouvement = max(max(abs(PostVar-OldPostVar)));
-                fval = feval(objective_function,xparam1,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,oo_);
+                fval = feval(objective_function,xparam1,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,bounds,oo_);
                 skipline()
                 disp('========================================================== ')
                 disp(['   Change in the covariance matrix = ' num2str(mouvement) '.'])
@@ -497,7 +494,7 @@ if ~isequal(options_.mode_compute,0) && ~options_.mh_posterior_mode_estimation
         if isfield(options_,'optim_opt')
             eval(['optim_options = optimset(optim_options,' options_.optim_opt ');']);
         end
-        [xparam1,fval,exitflag] = fminsearch(objective_function,xparam1,optim_options,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,oo_);
+        [xparam1,fval,exitflag] = fminsearch(objective_function,xparam1,optim_options,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,bounds,oo_);
       case 8
         % Dynare implementation of the simplex algorithm.
         simplexOptions = options_.simplex;
@@ -522,7 +519,7 @@ if ~isequal(options_.mode_compute,0) && ~options_.mh_posterior_mode_estimation
                 end
             end
         end
-        [xparam1,fval,exitflag] = simplex_optimization_routine(objective_function,xparam1,simplexOptions,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,oo_);
+        [xparam1,fval,exitflag] = simplex_optimization_routine(objective_function,xparam1,simplexOptions,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,bounds,oo_);
       case 9
         % Set defaults
         H0 = 1e-4*ones(nx,1);
@@ -547,7 +544,7 @@ if ~isequal(options_.mode_compute,0) && ~options_.mh_posterior_mode_estimation
         end
         warning('off','CMAES:NonfinitenessRange');
         warning('off','CMAES:InitialSigma');
-        [x, fval, COUNTEVAL, STOPFLAG, OUT, BESTEVER] = cmaes(func2str(objective_function),xparam1,H0,cmaesOptions,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,oo_);
+        [x, fval, COUNTEVAL, STOPFLAG, OUT, BESTEVER] = cmaes(func2str(objective_function),xparam1,H0,cmaesOptions,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,bounds,oo_);
         xparam1=BESTEVER.x;
         disp(sprintf('\n Objective function at mode: %f',fval))
       case 10
@@ -578,16 +575,16 @@ if ~isequal(options_.mode_compute,0) && ~options_.mh_posterior_mode_estimation
         end
         simpsaOptionsList = options2cell(simpsaOptions);
         simpsaOptions = simpsaset(simpsaOptionsList{:});
-        [xparam1, fval, exitflag] = simpsa(func2str(objective_function),xparam1,lb,ub,simpsaOptions,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,oo_);
+        [xparam1, fval, exitflag] = simpsa(func2str(objective_function),xparam1,bounds.lb,bounds.ub,simpsaOptions,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,bounds,oo_);
       case 11
          options_.cova_compute = 0 ;
-         [xparam1,stdh,lb_95,ub_95,med_param] = online_auxiliary_filter(xparam1,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,oo_) ;
+         [xparam1,stdh,lb_95,ub_95,med_param] = online_auxiliary_filter(xparam1,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,bounds,oo_) ;
       case 101
         myoptions=soptions;
         myoptions(2)=1e-6; %accuracy of argument
         myoptions(3)=1e-6; %accuracy of function (see Solvopt p.29)
         myoptions(5)= 1.0;
-        [xparam1,fval]=solvopt(xparam1,objective_function,[],myoptions,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,oo_);
+        [xparam1,fval]=solvopt(xparam1,objective_function,[],myoptions,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,bounds,oo_);
       case 102
         %simulating annealing
         %        LB=zeros(size(xparam1))-20;
@@ -624,10 +621,10 @@ if ~isequal(options_.mode_compute,0) && ~options_.mh_posterior_mode_estimation
         disp(['c vector   ' num2str(c')]);
 
         [xparam1, fval, nacc, nfcnev, nobds, ier, t, vm] = sa(objective_function,xparam1,maxy,rt_,epsilon,ns,nt ...
-                                                              ,neps,maxevl,LB,UB,c,idisp ,t,vm,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,oo_);
+                                                              ,neps,maxevl,LB,UB,c,idisp ,t,vm,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,bounds,oo_);
       otherwise
         if ischar(options_.mode_compute)
-            [xparam1, fval, retcode ] = feval(options_.mode_compute,objective_function,xparam1,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,oo_);
+            [xparam1, fval, retcode ] = feval(options_.mode_compute,objective_function,xparam1,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,bounds,oo_);
         else
             error(['dynare_estimation:: mode_compute = ' int2str(options_.mode_compute) ' option is unknown!'])
         end
@@ -638,13 +635,13 @@ if ~isequal(options_.mode_compute,0) && ~options_.mh_posterior_mode_estimation
                 ana_deriv = options_.analytic_derivation;
                 options_.analytic_derivation = 2;
                 [junk1, junk2, hh] = feval(objective_function,xparam1, ...
-                    dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,oo_);
+                    dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,bounds,oo_);
                 options_.analytic_derivation = ana_deriv;
             elseif ~(isequal(options_.mode_compute,5) && flag==0), 
                 % with flag==0, we force to use the hessian from outer
                 % product gradient of optimizer 5
                 hh = reshape(hessian(objective_function,xparam1, ...
-                    options_.gstep,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,oo_),nx,nx);
+                    options_.gstep,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,bounds,oo_),nx,nx);
             end
         end
     end
@@ -699,7 +696,7 @@ if ~options_.mh_posterior_mode_estimation && options_.cova_compute
         disp('=> posterior variance of the estimated parameters are not positive.')
         disp('You should try to change the initial values of the parameters using')
         disp('the estimated_params_init block, or use another optimization routine.')
-        params_at_bound=find(xparam1==ub | xparam1==lb);
+        params_at_bound=find(xparam1==bounds.ub | xparam1==bounds.lb);
         if ~isempty(params_at_bound)
             for ii=1:length(params_at_bound)
             params_at_bound_name{ii,1}=get_the_name(params_at_bound(ii),0,M_,estim_params_,options_);
@@ -713,6 +710,7 @@ if ~options_.mh_posterior_mode_estimation && options_.cova_compute
             fprintf('   - Check your model for mistakes.\n')
             fprintf('   - Check whether model and data are consistent (correct observation equation).\n')
             fprintf('   - Shut off prior_trunc.\n')
+            fprintf('   - Change the optimization bounds.\n')
             fprintf('   - Use a different mode_compute like 6 or 9.\n')
             fprintf('   - Check whether the parameters estimated are identified.\n')
             fprintf('   - Increase the informativeness of the prior.\n')
@@ -724,7 +722,7 @@ end
 if options_.mode_check.status == 1 && ~options_.mh_posterior_mode_estimation
     ana_deriv = options_.analytic_derivation;
     options_.analytic_derivation = 0;
-    mode_check(objective_function,xparam1,hh,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,oo_);
+    mode_check(objective_function,xparam1,hh,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,bounds,oo_);
     options_.analytic_derivation = ana_deriv;
 end
 
@@ -758,7 +756,7 @@ if any(bayestopt_.pshape > 0) && ~options_.mh_posterior_mode_estimation
         estim_params_nbr = size(xparam1,1);
         scale_factor = -sum(log10(diag(invhess)));
         log_det_invhess = -estim_params_nbr*log(scale_factor)+log(det(scale_factor*invhess));
-        likelihood = feval(objective_function,xparam1,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,oo_);
+        likelihood = feval(objective_function,xparam1,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,bounds,oo_);
         oo_.MarginalDensity.LaplaceApproximation = .5*estim_params_nbr*log(2*pi) + .5*log_det_invhess - likelihood;
         skipline()
         disp(sprintf('Log data density [Laplace approximation] is %f.',oo_.MarginalDensity.LaplaceApproximation))
@@ -778,11 +776,7 @@ end
 if (any(bayestopt_.pshape  >0 ) && options_.mh_replic) || ...
         (any(bayestopt_.pshape >0 ) && options_.load_mh_file)  %% not ML estimation
     bounds = prior_bounds(bayestopt_,options_);
-    bounds(:,1)=max(bounds(:,1),lb);
-    bounds(:,2)=min(bounds(:,2),ub);
-    bayestopt_.lb = bounds(:,1);
-    bayestopt_.ub = bounds(:,2);
-    outside_bound_pars=find(xparam1 < bounds(:,1) | xparam1 > bounds(:,2));
+    outside_bound_pars=find(xparam1 < bounds.lb | xparam1 > bounds.ub);
     if ~isempty(outside_bound_pars)
         for ii=1:length(outside_bound_pars)
             outside_bound_par_names{ii,1}=get_the_name(ii,0,M_,estim_params_,options_);
@@ -822,8 +816,7 @@ if (any(bayestopt_.pshape  >0 ) && options_.mh_replic) || ...
         CutSample(M_, options_, estim_params_);
         %% Estimation of the marginal density from the Mh draws:
         if options_.mh_replic
-            [marginal,oo_] = marginal_density(M_, options_, estim_params_, ...
-                                              oo_);
+            [marginal,oo_] = marginal_density(M_, options_, estim_params_, oo_);
             % Store posterior statistics by parameter name
             oo_ = GetPosteriorParametersStatistics(estim_params_, M_, options_, bayestopt_, oo_);
             if ~options_.nograph
@@ -977,9 +970,6 @@ if (~((any(bayestopt_.pshape > 0) && options_.mh_replic) || (any(bayestopt_.psha
     if options_.prefilter == 1
         yf = atT(bayestopt_.mf,:)+repmat(dataset_info.descriptive.mean',1,gend);
     elseif options_.loglinear == 1
-        gend
-        bayestopt_.mfys
-        ys
         yf = atT(bayestopt_.mf,:)+repmat(log(ys(bayestopt_.mfys)),1,gend)+...
              trend_coeff*[1:gend];
     else

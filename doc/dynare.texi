@@ -2066,7 +2066,9 @@ For this last reason, it necessary to provide values for all the
 endogenous variables in an @code{initval} block (even though,
 theoretically, initial conditions are only necessary for lagged
 variables). If some variables, endogenous or exogenous, are not mentioned in the
-@code{initval} block, a zero value is assumed.
+@code{initval} block, a zero value is assumed. It is particularly important to keep 
+this in mind when specifying exogenous variables using @code{varexo} that are not allowed 
+to take on the value of zero, like e.g. TFP. 
 
 Note that if the @code{initval} block is immediately followed by a
 @code{steady} command, its semantics is changed. The @code{steady}
@@ -2729,11 +2731,7 @@ add new variables one by one.
 
 @item maxit = @var{INTEGER}
 Determines the maximum number of iterations used in the non-linear solver. The
-default value of @code{maxit} is 10. The @code{maxit} option is shared with the
-@code{perfect_foresight_solver} and @code{simul} commands. So a change in
-@code{maxit} in a @code{steady} command will also be considered in the
-following @code{perfect_foresight_solver} and @code{simul} commands.
-
+default value of @code{maxit} is 50. 
 
 @item solve_algo = @var{INTEGER}
 @anchor{solve_algo}
@@ -3361,10 +3359,7 @@ order to setup the environment for the simulation.
 
 @item maxit = @var{INTEGER}
 Determines the maximum number of iterations used in the non-linear solver. The
-default value of @code{maxit} is 10. The @code{maxit} option is shared with the
-@code{steady} command. So a change in @code{maxit} in a
-@code{perfect_foresight_solver} command will also be considered in the
-following @code{steady} commands.
+default value of @code{maxit} is 50. 
 
 @item stack_solve_algo = @var{INTEGER}
 Algorithm used for computing the solution. Possible values are:
@@ -4353,10 +4348,20 @@ Specifies a starting value for the posterior mode optimizer or the
 maximum likelihood estimation. If unset, defaults to the prior mean.
 
 @item @var{LOWER_BOUND}
-Specifies a lower bound for the parameter value in maximum likelihood estimation
+@anchor{lower_bound} Specifies a lower bound for the parameter value in maximum
+likelihood estimation. In a Bayesian estimation context, sets a lower bound
+only effective while maximizing the posterior kernel. This lower bound does not
+modify the shape of the prior density, and is only aimed at helping the
+optimizer in identifying the posterior mode (no consequences for the MCMC). For
+some prior densities (namely inverse gamma, gamma, uniform or beta) it is
+possible to shift the support of the prior distributions to the left or the right using
+@ref{prior_3rd_parameter}. In this case the prior density is effectively
+modified (note that the truncated Gaussian density is not implemented in
+Dynare). If unset, defaults to minus infinity (ML) or the natural lower bound
+of the prior (Bayesian estimation).
 
 @item @var{UPPER_BOUND}
-Specifies an upper bound for the parameter value in maximum likelihood estimation
+Same as @ref{lower_bound}, but specifying an upper bound instead.
 
 @item @var{PRIOR_SHAPE}
 A keyword specifying the shape of the prior density.
@@ -4368,16 +4373,18 @@ that @code{inv_gamma_pdf} is equivalent to
 @code{inv_gamma1_pdf}
 
 @item @var{PRIOR_MEAN}
-The mean of the prior distribution
+@anchor{prior_mean} The mean of the prior distribution
 
 @item @var{PRIOR_STANDARD_ERROR}
-The standard error of the prior distribution
+@anchor{prior_standard_error} The standard error of the prior distribution
 
 @item @var{PRIOR_3RD_PARAMETER}
+@anchor{prior_3rd_parameter}
 A third parameter of the prior used for generalized beta distribution,
 generalized gamma and for the uniform distribution. Default: @code{0}
 
 @item @var{PRIOR_4TH_PARAMETER}
+@anchor{prior_4th_parameter}
 A fourth parameter of the prior used for generalized beta distribution
 and for the uniform distribution. Default: @code{1}
 
@@ -5132,7 +5139,11 @@ Use the Univariate Diffuse Kalman Filter
 @end table
 @noindent
 Default value is @code{0}. In case of missing observations of single or all series, Dynare treats those missing values as unobserved states and uses the Kalman filter to infer their value (see e.g. @cite{Durbin and Koopman (2012), Ch. 4.10})
-
+This procedure has the advantage of being capable of dealing with observations where the forecast error variance matrix becomes singular for some variable(s).
+If this happens, the respective observation enters with a weight of zero in the log-likelihood, i.e. this observation for the respective variable(s) is dropped
+from the likelihood computations (for details see @cite{Durbin and Koopman (2012), Ch. 6.4 and 7.2.5}). If the use of a multivariate Kalman filter is specified and a
+singularity is encountered, Dynare by default automatically switches to the univariate Kalman filter for this parameter draw. This behavior can be changed via the
+@ref{use_univariate_filters_if_singularity_is_detected} option.
 
 @item kalman_tol = @var{DOUBLE}
 @anchor{kalman_tol} Numerical tolerance for determining the singularity of the covariance matrix of the prediction errors during the Kalman filter (minimum allowed reciprocal of the matrix condition number). Default value is @code{1e-10}
@@ -5266,6 +5277,7 @@ Use endogenous priors as in @cite{Christiano, Trabandt and Walentin
 (2011)}.
 
 @item use_univariate_filters_if_singularity_is_detected = @var{INTEGER}
+@anchor{use_univariate_filters_if_singularity_is_detected}
 Decide whether Dynare should automatically switch to univariate filter
 if a singularity is encountered in the likelihood computation (this is
 the behaviour if the option is equal to @code{1}). Alternatively, if
@@ -5731,16 +5743,29 @@ estimates using a higher tapering are usually more reliable.
 
 @deffn Command model_comparison @var{FILENAME}[(@var{DOUBLE})]@dots{};
 @deffnx Command model_comparison (marginal_density = laplace | modifiedharmonicmean) @var{FILENAME}[(@var{DOUBLE})]@dots{};
-
+@anchor{model_comparison}
 @descriptionhead
 
-This command computes odds ratios and estimate a posterior density
-over a collection of models 
-(see e.g. @cite{Koop (2003), Ch. 1}). The priors over models can be specified
-as the @var{DOUBLE} values, otherwise a uniform prior over all models is assumed. 
-In contrast to frequentist econometrics, the models to be compared do not need to be nested. 
-However, as the computation of posterior odds ratios is a Bayesian technique, 
-the comparison of models estimated with maximum likelihood is not supported.
+This command computes odds ratios and estimate a posterior density over a
+collection of models (see e.g. @cite{Koop (2003), Ch. 1}). The priors over
+models can be specified as the @var{DOUBLE} values, otherwise a uniform prior
+over all models is assumed.  In contrast to frequentist econometrics, the
+models to be compared do not need to be nested.  However, as the computation of
+posterior odds ratios is a Bayesian technique, the comparison of models
+estimated with maximum likelihood is not supported.
+
+It is important to keep in mind that model comparison of this type is only
+valid with proper priors.  If the prior does not integrate to one for all
+compared models, the comparison is not valid. This may be the case if part of
+the prior mass is implicitly truncated because Blanchard and Kahn conditions
+(instability or indeterminacy of the model) are not fulfilled, or because for
+some regions of the parameters space the deterministic steady state is
+undefined (or Dynare is unable to find it). The compared marginal densities
+should be renormalized by the effective prior mass, but this not done by
+Dynare: it is the user's responsibility to make sure that model comparison is
+based on proper priors. Note that, for obvious reasons, this is not an issue if
+the compared marginal densities are based on Laplace approximations.
+
 
 @examplehead
 
