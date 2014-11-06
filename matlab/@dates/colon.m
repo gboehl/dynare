@@ -55,7 +55,7 @@ else
 end
 
 if ~isequal(A.freq,B.freq)
-    error(['dates::colon: Input arguments ' inputname(1) 'and ' inputname(2) ' must have common frequency!'])
+    error(['dates::colon: Input arguments ' inputname(1) ' and ' inputname(2) ' must have common frequency!'])
 end
 
 if A>B && d>0
