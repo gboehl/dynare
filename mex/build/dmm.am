@@ -115,5 +115,4 @@ nodist_dmm_SOURCES = \
 	$(DMMMEXSRCDIR)/design.f90 \
 	$(DMMMEXSRCDIR)/dmm.cc
 
-clean-local:
-	rm -f *.mod
+CLEANFILES = *.mod
