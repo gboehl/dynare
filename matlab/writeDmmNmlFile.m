@@ -79,7 +79,7 @@ fprintf(fid, '\n&end\n');
 
 %% Dataset
 fprintf(fid, '\n&dataset\n');
-data = dseries(options_.dataset.file);
+data = options_.dmm.dataset;
 Tobs = size(data, 1);
 if M_.exo_det_nbr == 0
     assert(size(data,2) ==  options_.varobs_nbr, ['Error: when the number of exogenous ' ...

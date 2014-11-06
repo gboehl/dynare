@@ -1744,8 +1744,10 @@ DmmStatement::writeOutput(ostream &output, const string &basename) const
 {
   options_list.writeOutput(output);
   output << "options_.dmm.nx = M_.endo_nbr - options_.varobs_nbr;" << endl
+         << "options_.dmm.dataset = dseries(options_.dataset.file);" << endl
          << "writeDmmNmlFile(M_, options_, estimation_info);" << endl
-         << "dmm([M_.fname '.nml']);" << endl;
+         << "dmm([M_.fname '.nml']);" << endl
+         << "dmmgraphs('./', M_.fname, options_.dmm.dataset);" << endl;
 }
 
 MarkovSwitchingStatement::MarkovSwitchingStatement(const OptionsList &options_list_arg) :
