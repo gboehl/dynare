@@ -34,7 +34,7 @@ Vmu.prior(shape=inv_gamma,mean=6e4,stdev=6,interval=[0,5e4]);
 delta.prior(shape=beta,mean=2,stdev=4,interval=[1,20]);
 // I'm not sure what are the parameters used in the paper for the IG and beta distribution
 
-data(file=niledata);
+data(file='niledata.csv');
 dmm(drop=100,seed=0,thinning_factor=1,replic=500,max_order_of_integration=1,num_nonstationary=1);
 
 // calibrated parameter by regime
