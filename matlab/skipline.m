@@ -1,6 +1,6 @@
 function skipline(n,fid)
     
-% Copyright (C) 2013 Dynare Team
+% Copyright (C) 2013-2014 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -22,7 +22,7 @@ if nargin<2
 end
 
 if nargin<1
-    fid = 1;
+    n = 1;
 end
     
 if ~nargin || isequal(n,1)
