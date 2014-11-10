@@ -21,13 +21,6 @@
 
 extern "C" void dmmmain_(char *nmlfile, size_t len);
 
-#ifdef F77_DUMMY_MAIN
-#  ifdef __cplusplus
-extern "C"
-#  endif
-int F77_DUMMY_MAIN() { return 1; }
-#endif
-
 void
 mexFunction(int nlhs, mxArray *plhs[],
             int nrhs, const mxArray *prhs[])
