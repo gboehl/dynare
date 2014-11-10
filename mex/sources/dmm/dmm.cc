@@ -18,6 +18,9 @@
  */
 
 #include <dynmex.h>
+#include <algorithm>
+#include <string.h>
+using namespace std;
 
 extern "C" void dmmmain_(char *nmlfile, size_t len);
 
@@ -25,7 +28,8 @@ void
 mexFunction(int nlhs, mxArray *plhs[],
             int nrhs, const mxArray *prhs[])
 {
-  char nmlfile[200];
+  char nmlfilec[200];
+  char nmlfilef[200];
 
   /*
    * Check args
@@ -36,15 +40,21 @@ mexFunction(int nlhs, mxArray *plhs[],
   /*
    * Get nml file name
    */
-  if (mxGetString(prhs[0], nmlfile, mxGetN(prhs[0])+1))
+  if (mxGetString(prhs[0], nmlfilec, mxGetN(prhs[0])+1))
     DYN_MEX_FUNC_ERR_MSG_TXT("Error in DMM MEX file: error using mxGetString.\n");
+
+  /*
+   * Convert to Fortran
+   */
+  copy(nmlfilec, nmlfilec+strlen(nmlfilec), nmlfilef);
+  fill(nmlfilef + strlen(nmlfilec), nmlfilef + 200, ' ');
 
   /*
    * Call top_level function (formerly main)
    */
   try
     {
-      dmmmain_(nmlfile, 200);
+      dmmmain_(nmlfilef, 200);
     }
   catch (const char *str)
     {
