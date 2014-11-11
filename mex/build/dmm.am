@@ -112,6 +112,8 @@ nodist_dmm_SOURCES = \
 	$(DMMDIR)/randlib/sexpo.f \
 	$(DMMDIR)/randlib/spofa.f \
 	$(DMMMEXSRCDIR)/design.f90 \
+	$(DMMMEXSRCDIR)/mexinterface.f90 \
+	$(DMMMEXSRCDIR)/mexprint.f90 \
 	$(DMMMEXSRCDIR)/dmm.cc
 
 CLEANFILES = *.mod
