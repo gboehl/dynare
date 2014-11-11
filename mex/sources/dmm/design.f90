@@ -37,7 +37,7 @@ SUBROUTINE DESIGN(ny,nz,nx,nu,ns,nt,theta,c,H,G,a,F,R)
   ! LOCAL
   mwPointer INPUT(6), OUTPUT(6)
   INTEGER STATUS, I
-  CHARACTER(len=200) :: MEXPRINT
+  CHARACTER(len=200) :: toprint
   integer*4, PARAMETER :: mxREAL = 0
 
   ! Matlab mex/mx functions
@@ -62,8 +62,8 @@ SUBROUTINE DESIGN(ny,nz,nx,nu,ns,nt,theta,c,H,G,a,F,R)
   ! Call design .m function
   STATUS = mexCallMATLAB(6, OUTPUT, 6, INPUT, mfile)
   IF (STATUS .ne. 0) THEN
-     WRITE(MEXPRINT, '(A,A,A,I2,A)') '\nCall to ',mfile,' failed with code ',STATUS,'\n'
-     CALL mexErrMsgTxt(MEXPRINT)
+     WRITE(toprint, '(A,A,A,I2,A)') '\nCall to ',mfile,' failed with code ',STATUS,'\n'
+     CALL mexErrMsgTxt(toprint)
   ENDIF
 
   ! Copy Matlab output into Fortran
