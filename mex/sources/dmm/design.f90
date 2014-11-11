@@ -19,6 +19,7 @@
 #if defined(MATLAB_MEX_FILE) || defined(OCTAVE_MEX_FILE)
 #include "fintrf.h"
 SUBROUTINE DESIGN(ny,nz,nx,nu,ns,nt,theta,c,H,G,a,F,R)
+  USE MEXINTERFACE
   IMPLICIT NONE
   ! INPUT
   INTEGER ny,nz,nx,nu,ns(6),nt

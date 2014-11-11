@@ -29,5 +29,11 @@ MODULE MEXINTERFACE
        CHARACTER(KIND=C_CHAR), INTENT(IN) :: toprint(*)
      END FUNCTION mexPrintf
 
+     SUBROUTINE mexErrMsgTxt(toprint) BIND(C, NAME="mexErrMsgTxt")
+       USE ISO_C_BINDING
+       IMPLICIT NONE
+       CHARACTER(KIND=C_CHAR), INTENT(IN) :: toprint(*)
+     END SUBROUTINE mexErrMsgTxt
+
   END INTERFACE
 END MODULE MEXINTERFACE
