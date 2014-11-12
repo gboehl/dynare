@@ -11,6 +11,7 @@ AM_FCFLAGS += -cpp $(DEFS) -fdefault-integer-8 -fPIC
 LDADD = $(FLIBS) $(FCLIBS)
 
 nodist_dmm_SOURCES = \
+	$(DMMMEXSRCDIR)/mexinterface.f90 \
 	$(DMMDIR)/gfortran.f90 \
 	$(DMMDIR)/iso_c_utilities.f90 \
 	$(DMMDIR)/dlfcn.f90 \
@@ -112,7 +113,6 @@ nodist_dmm_SOURCES = \
 	$(DMMDIR)/randlib/sexpo.f \
 	$(DMMDIR)/randlib/spofa.f \
 	$(DMMMEXSRCDIR)/design.f90 \
-	$(DMMMEXSRCDIR)/mexinterface.f90 \
 	$(DMMMEXSRCDIR)/mexprint.f90 \
 	$(DMMMEXSRCDIR)/dmm.cc
 
