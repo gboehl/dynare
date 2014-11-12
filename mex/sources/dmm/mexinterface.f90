@@ -24,13 +24,13 @@ MODULE MEXINTERFACE
   INTERFACE
 
      INTEGER(4) FUNCTION mexPrintf(toprint) BIND(C, NAME="mexPrintf")
-       USE ISO_C_BINDING
+       USE ISO_C_BINDING, ONLY : C_CHAR
        IMPLICIT NONE
        CHARACTER(KIND=C_CHAR), INTENT(IN) :: toprint(*)
      END FUNCTION mexPrintf
 
      SUBROUTINE mexErrMsgTxt(toprint) BIND(C, NAME="mexErrMsgTxt")
-       USE ISO_C_BINDING
+       USE ISO_C_BINDING, ONLY : C_CHAR
        IMPLICIT NONE
        CHARACTER(KIND=C_CHAR), INTENT(IN) :: toprint(*)
      END SUBROUTINE mexErrMsgTxt
