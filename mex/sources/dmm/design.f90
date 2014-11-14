@@ -17,7 +17,9 @@
 ! along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 !
 #if defined(MATLAB_MEX_FILE) || defined(OCTAVE_MEX_FILE)
+#if defined(MATLAB_MEX_FILE)
 #include "fintrf.h"
+#endif
 SUBROUTINE DESIGN(ny,nz,nx,nu,ns,nt,theta,c,H,G,a,F,R)
   USE MEXINTERFACE
   IMPLICIT NONE

@@ -25,10 +25,14 @@ AM_INIT_AUTOMAKE([-Wall -Wno-portability foreign])
 AC_CHECK_PROG([MKOCTFILE], [mkoctfile], [mkoctfile])
 
 if test "x$MKOCTFILE" != "x"; then
+  INCDIR=`$MKOCTFILE -p INCFLAGS`
   CC=`$MKOCTFILE -p CC`
   CXX=`$MKOCTFILE -p CXX`
   CFLAGS=`$MKOCTFILE -p CFLAGS`
   FFLAGS=`$MKOCTFILE -p FFLAGS`
+  FFLAGS="$FFLAGS $INCDIR"
+  FCFLAGS=`$MKOCTFILE -p FCFLAGS`
+  FCFLAGS="$FCFLAGS $INCDIR"
   CXXFLAGS=`$MKOCTFILE -p CXXFLAGS`
   LDFLAGS="`$MKOCTFILE -p LFLAGS` `$MKOCTFILE -p LDFLAGS`"
   OCTAVE_VERSION=`$MKOCTFILE -v 2>&1 | sed 's/mkoctfile, version //'`
@@ -40,9 +44,15 @@ AM_CONDITIONAL([COMPILE_LINSOLVE], [test "$OCTAVE38" != "yes"])
 
 CFLAGS="$CFLAGS -Wall -Wno-parentheses"
 FFLAGS="$FFLAGS -Wall"
+FCFLAGS="$FCFLAGS -Wall"
 CXXFLAGS="$CXXFLAGS -Wall -Wno-parentheses"
 
 AC_PROG_F77([gfortran g77 f77])
+AC_F77_LIBRARY_LDFLAGS
+AC_F77_WRAPPERS
+AC_PROG_FC([gfortran])
+AC_FC_LIBRARY_LDFLAGS
+AC_FC_WRAPPERS
 AC_PROG_CC
 AC_PROG_CXX
 AC_PROG_RANLIB
@@ -154,6 +164,7 @@ AC_CONFIG_FILES([Makefile
                  qzcomplex/Makefile
                  ordschur/Makefile
                  kalman_steady_state/Makefile
+                 dmm/Makefile
                  ms_sbvar/Makefile
                  block_kalman_filter/Makefile
 		 sobol/Makefile
