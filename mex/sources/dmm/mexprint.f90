@@ -17,13 +17,12 @@
 ! along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 !
 
-INTEGER(4) FUNCTION mexPrint(toprint)
+SUBROUTINE mexPrint(string)
   USE MEXINTERFACE
-  USE ISO_C_BINDING
   IMPLICIT NONE
 
-  CHARACTER(len=200), INTENT(IN) :: toprint
+  CHARACTER(len=200), INTENT(IN) :: string
 
-  mexPrint = mexPrintf(TRIM(toprint)//NEW_LINE('A')//c_null_char)
+  CALL mexPrintf(TRIM(string)//NEW_LINE('A')//c_null_char)
+END SUBROUTINE mexPrint
 
-END FUNCTION mexPrint

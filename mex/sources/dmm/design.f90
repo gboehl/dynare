@@ -20,66 +20,44 @@
 #if defined(MATLAB_MEX_FILE)
 #include "fintrf.h"
 #endif
+
+#ifndef MWPOINTER
+#define MWPOINTER integer(4)
+#endif
+
+#ifndef mwPointer
+#define mwPointer MWPOINTER
+#endif
+
 SUBROUTINE DESIGN(ny,nz,nx,nu,ns,nt,theta,c,H,G,a,F,R)
   USE MEXINTERFACE
   IMPLICIT NONE
+
   ! INPUT
-  INTEGER ny,nz,nx,nu,ns(6),nt
-  DOUBLE PRECISION theta(nt), nsd(6)
+  INTEGER(C_INT), INTENT(IN) :: ny,nz,nx,nu,nt
+  INTEGER, DIMENSION(6), INTENT(IN) :: ns
+  DOUBLE PRECISION, DIMENSION(nt), INTENT(IN) :: theta
 
   ! OUTPUT
-  DOUBLE PRECISION c(ny,max(1,nz),ns(1)),H(ny,nx,ns(2))
-  DOUBLE PRECISION G(ny,nu,ns(3)),a(nx,ns(4))
-  DOUBLE PRECISION F(nx,nx,ns(5)),R(nx,nu,ns(6))
+  DOUBLE PRECISION, DIMENSION(ny,max(1,nz),ns(1)), INTENT(OUT) :: c
+  DOUBLE PRECISION, DIMENSION(ny,nx,ns(2)), INTENT(OUT) :: H
+  DOUBLE PRECISION, DIMENSION(ny,nu,ns(3)), INTENT(OUT) :: G
+  DOUBLE PRECISION, DIMENSION(nx,ns(4)), INTENT(OUT) :: a
+  DOUBLE PRECISION, DIMENSION(nx,nx,ns(5)), INTENT(OUT) :: F
+  DOUBLE PRECISION, DIMENSION(nx,nu,ns(6)), INTENT(OUT) :: R
 
   ! COMMON
   CHARACTER*200 mfile
   COMMON /M/ mfile
 
   ! LOCAL
-  mwPointer INPUT(6), OUTPUT(6)
-  INTEGER STATUS, I
-  CHARACTER(len=200) :: toprint
-  integer*4, PARAMETER :: mxREAL = 0
-
-  ! Matlab mex/mx functions
-  INTEGER mexCallMATLAB
-  mwPointer mxGetPr, mxCreateDoubleScalar, mxCreateDoubleMatrix
-  EXTERNAL mxGetPr, mxCreateDoubleScalar, mxCreateDoubleMatrix, mxCopyPtrToReal8, mexCallMATLAB
+  INTEGER I
+  INTEGER(C_INT), DIMENSION(6) :: nsC
 
   DO I=1,6
-     nsd(I) = ns(I)
+     nsC(I) = ns(I)
   END DO
+  CALL designInternal(ny,nz,nx,nu,nsC,nt,theta,TRIM(mfile)//C_NULL_CHAR,c,H,G,a,F,R)
 
-  ! Set input values
-  INPUT(1) = mxCreateDoubleScalar(ny*1.d0)
-  INPUT(2) = mxCreateDoubleScalar(nz*1.d0)
-  INPUT(3) = mxCreateDoubleScalar(nx*1.d0)
-  INPUT(4) = mxCreateDoubleScalar(nu*1.d0)
-  INPUT(5) = mxCreateDoubleMatrix(1, 6, mxREAL)
-  CALL mxCopyReal8ToPtr(nsd, mxGetPr(INPUT(5)), 6)
-  INPUT(6) = mxCreateDoubleMatrix(1, nt, mxREAL)
-  CALL mxCopyReal8ToPtr(theta, mxGetPr(INPUT(6)), nt)
-
-  ! Call design .m function
-  STATUS = mexCallMATLAB(6, OUTPUT, 6, INPUT, mfile)
-  IF (STATUS .ne. 0) THEN
-     WRITE(toprint, '(A,A,A,I2,A)') '\nCall to ',mfile,' failed with code ',STATUS,'\n'
-     CALL mexErrMsgTxt(toprint)
-  ENDIF
-
-  ! Copy Matlab output into Fortran
-  CALL mxCopyPtrToReal8(mxGetPr(OUTPUT(1)), c, ny*max(1,nz)*ns(1))
-  CALL mxCopyPtrToReal8(mxGetPr(OUTPUT(2)), H, ny*nx*ns(2))
-  CALL mxCopyPtrToReal8(mxGetPr(OUTPUT(3)), G, ny*nu*ns(3))
-  CALL mxCopyPtrToReal8(mxGetPr(OUTPUT(4)), a, nx*ns(4))
-  CALL mxCopyPtrToReal8(mxGetPr(OUTPUT(5)), F, nx*nx*ns(5))
-  CALL mxCopyPtrToReal8(mxGetPr(OUTPUT(6)), R, nx*nu*ns(6))
-
-  ! Free memory
-  DO I = 1,6
-     CALL mxDestroyArray(INPUT(I))
-     CALL mxDestroyArray(OUTPUT(I))
-  END DO
 END SUBROUTINE DESIGN
 #endif

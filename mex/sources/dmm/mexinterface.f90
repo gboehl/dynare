@@ -23,17 +23,25 @@ MODULE MEXINTERFACE
 
   INTERFACE
 
-     INTEGER(4) FUNCTION mexPrintf(toprint) BIND(C, NAME="mexPrintf")
-       USE ISO_C_BINDING, ONLY : C_CHAR
-       IMPLICIT NONE
-       CHARACTER(KIND=C_CHAR), INTENT(IN) :: toprint(*)
-     END FUNCTION mexPrintf
+     SUBROUTINE mexPrintf(string) BIND(C, NAME="mexPrintf")
+       USE ISO_C_BINDING, ONLY: C_CHAR
+       CHARACTER(KIND=C_CHAR) :: string(*)
+     END SUBROUTINE mexPrintf
 
-     SUBROUTINE mexErrMsgTxt(toprint) BIND(C, NAME="mexErrMsgTxt")
-       USE ISO_C_BINDING, ONLY : C_CHAR
-       IMPLICIT NONE
-       CHARACTER(KIND=C_CHAR), INTENT(IN) :: toprint(*)
+     SUBROUTINE mexErrMsgTxt(string) BIND(C, NAME="mexErrMsgTxt")
+       USE ISO_C_BINDING, ONLY: C_CHAR
+       CHARACTER(KIND=C_CHAR) :: string(*)
      END SUBROUTINE mexErrMsgTxt
+
+     SUBROUTINE designInternal(ny,nz,nx,nu,ns,nt,theta,mfile,c,H,G,a,F,R) BIND(C, NAME="designInternal")
+       USE, INTRINSIC :: ISO_C_BINDING
+       IMPLICIT NONE
+       INTEGER(C_INT), VALUE, INTENT(IN) :: ny, nz, nx, nu, nt
+       INTEGER(C_INT), DIMENSION(*), INTENT(IN) :: ns
+       REAL(C_DOUBLE), DIMENSION(*), INTENT(IN) :: theta
+       CHARACTER(KIND=C_CHAR), DIMENSION(*), INTENT(IN) :: mfile
+       REAL(C_DOUBLE), DIMENSION(*), INTENT(OUT) :: c, H, G, a, F, R
+     END SUBROUTINE designInternal
 
   END INTERFACE
 END MODULE MEXINTERFACE
