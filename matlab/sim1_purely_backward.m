@@ -49,7 +49,11 @@ function sim1_purely_backward()
                               M_.params, oo_.steady_state, it);
 
         if check
-            oo_.deterministic_simulation.status = 0;
+            skipline(2);
+            warning('Simulation terminated after forward recursion of %d periods.\n',it);
+            oo_.deterministic_simulation.status = 0;% more iterations are needed or model could not be solved.
+            return
+
         end
 
         oo_.endo_simul(:,it) = tmp(nyb+1:nyb+M_.endo_nbr);

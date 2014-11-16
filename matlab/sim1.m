@@ -156,7 +156,7 @@ elseif ~stop
     skipline();
     fprintf('\nSimulation terminated after %d iterations.\n',iter);
     fprintf('Total time of simulation        : %10.3f\n',etime(clock,h1));
-    fprintf('WARNING : maximum number of iterations is reached (modify option maxit).\n') ;
+    warning('Maximum number of iterations is reached (modify option maxit).\n') ;
     oo_.deterministic_simulation.status = 0;% more iterations are needed.
     oo_.deterministic_simulation.error = err;
     %oo_.deterministic_simulation.errors = c/abs(err)    
