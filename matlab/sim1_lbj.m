@@ -118,11 +118,11 @@ for iter = 1:options_.simul.maxit
 end
 
 if ~stop
-    skipline(2)
+    fprintf('\n') ;
     disp(['     Total time of simulation        :' num2str(etime(clock,h1))]) ;
-    skipline()
-    warning(['Maximum number of iterations is reached (modify options_.simul.maxit).']) ;
-    skipline()
+    fprintf('\n') ;
+    disp(['WARNING : maximum number of iterations is reached (modify options_.simul.maxit).']) ;
+    fprintf('\n') ;
     oo_.deterministic_simulation.status = 0;% more iterations are needed.
     oo_.deterministic_simulation.error = err;
     oo_.deterministic_simulation.errors = c/abs(err);    
