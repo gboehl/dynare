@@ -42,7 +42,10 @@ function sim1_purely_forward()
                              it);
 
         if info
-            oo_.deterministic_simulation.status = 0;
+            skipline(2);
+            warning('Simulation terminated after backward induction of %d periods.\n',it);
+            oo_.deterministic_simulation.status = 0;% more iterations are needed or model could not be solved.
+            return
         end
 
         oo_.endo_simul(:,it) = tmp(1:M_.endo_nbr);
