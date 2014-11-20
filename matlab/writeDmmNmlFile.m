@@ -100,6 +100,31 @@ for i=1:size(data,1)
 end
 fprintf(fid, '&end\n');
 
+% Check that two latent vars don't impact the same matrix
+if sum(strcmp({options_.dmm.S.mat}, 'C')) > 1
+	canLatentVarsBeCombiend(options_, strcmp({options_.dmm.S.mat}, 'C'));
+end
+
+if sum(strcmp({options_.dmm.S.mat}, 'H')) > 1
+	canLatentVarsBeCombiend(options_, strcmp({options_.dmm.S.mat}, 'H'));
+end
+
+if sum(strcmp({options_.dmm.S.mat}, 'G')) > 1
+	canLatentVarsBeCombiend(options_, strcmp({options_.dmm.S.mat}, 'G'));
+end
+
+if sum(strcmp({options_.dmm.S.mat}, 'A')) > 1
+	canLatentVarsBeCombiend(options_, strcmp({options_.dmm.S.mat}, 'A'));
+end
+
+if sum(strcmp({options_.dmm.S.mat}, 'F')) > 1
+	canLatentVarsBeCombiend(options_, strcmp({options_.dmm.S.mat}, 'F'));
+end
+
+if sum(strcmp({options_.dmm.S.mat}, 'R')) > 1
+	canLatentVarsBeCombiend(options_, strcmp({options_.dmm.S.mat}, 'R'));
+end
+
 %% S*
 for i=1:size(options_.dmm.S, 2)
     fprintf(fid, '\n&S%d\n', i);
@@ -114,4 +139,14 @@ for i=1:size(options_.dmm.S, 2)
 end
 
 fclose(fid);
+end
+
+function canLatentVarsBeCombiend(options_, idxs)
+	% if two latent vars impact the same matrix, see if they have the same
+	% prior and hence can be combined
+	if ~all(strcmp(options_.multinomial(idxs).probability))
+		error(['writeDmmNmlFile: Two latent variables impact DMM matrix ' ...
+			options_.dmm.S(idxs(1)).mat ...
+			' and have different transition probabilities']);
+	end
 end
