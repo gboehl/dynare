@@ -263,6 +263,8 @@ public:
   void cloneDynamic(DynamicModel &dynamic_model) const;
   //! Check DMM equations take the appropriate form
   void checkDmm() const;
+  //! Multiplies the RHS of the equation by -1 to have the correct sign in the _dmm.m file
+  void multiplyRHSByNegOne();
   //! Compute DMM Matrices c, H, G, a, F, and R
   void computeDmmMatrices();
   //! Find which matrices the latent params impact (DMM)

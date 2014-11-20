@@ -333,6 +333,9 @@ ModFile::transformPass(bool nostrict)
       dynamic_model.removeTrendVariableFromEquations();
     }
 
+  if (mod_file_struct.dmm_present)
+    dynamic_model.multiplyRHSByNegOne();
+
   orig_eqn_nbr = dynamic_model.equation_number();
   if (mod_file_struct.ramsey_model_present)
     {

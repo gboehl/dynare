@@ -3548,6 +3548,13 @@ BinaryOpNode::toStatic(DataTree &static_datatree) const
 }
 
 expr_t
+BinaryOpNode::multiplyRHSByNegOne()
+{
+  expr_t substarg2 = datatree.AddUMinus(arg2);
+  return buildSimilarBinaryOpNode(arg1, substarg2, datatree);
+}
+
+expr_t
 BinaryOpNode::cloneDynamic(DataTree &dynamic_datatree) const
 {
   expr_t substarg1 = arg1->cloneDynamic(dynamic_datatree);

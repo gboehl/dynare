@@ -3717,6 +3717,13 @@ DynamicModel::checkDmm() const
 }
 
 void
+DynamicModel::multiplyRHSByNegOne()
+{
+  for (int i = 0; i < (int) equations.size(); i++)
+    equations[i] = dynamic_cast<BinaryOpNode *>(equations[i]->multiplyRHSByNegOne());
+}
+
+void
 DynamicModel::computeRamseyPolicyFOCs(const StaticModel &static_model)
 {
   // Add aux LM to constraints in equations

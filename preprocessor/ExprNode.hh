@@ -743,6 +743,7 @@ public:
   int getLhsSymbId() const;
   bool isLhsVarNode() const;
   virtual bool containsVarNodeWithId(int sid) const;
+  expr_t multiplyRHSByNegOne();
 };
 
 //! Trinary operator node
