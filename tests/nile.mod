@@ -4,7 +4,7 @@ varexo ee emu;
 parameters Ve, Vmu, delta, S1, S2;
 
 multinomial( process=A, number_of_regimes=2, probability = [P1]);
-multinomial( process=2, number_of_regimes=2, probability = [P2]);
+multinomial( process=2, number_of_regimes=2, probability = [P1]);
 // probability can be a single object representing a vector with a Dirlichet prior (see below) or a vector of calibrated values
 //add bernoulli instruction (similar to markov-switching for independent draws) and new options to create bernoulli process
 // I don' know if probabilities would be a better name than probability (vector  being implicit)
@@ -25,7 +25,7 @@ S1.calibration(process=A, regime=2) = 2;
 S2.calibration(process=2, regime=1) = 1;
 S2.calibration(process=2, regime=2) = 2;
 
-P2.prior(shape=dirichlet,mean=3,variance=3,params=[16,2]);
+//P2.prior(shape=dirichlet,mean=3,variance=3,params=[16,2]);
 P1.prior(shape=dirichlet,mean=3,variance=3,params=[18,2]);
 
 // we need to add Dirichlet shape and params field the number of params must be equal to number of regimes in multinomial declaration
