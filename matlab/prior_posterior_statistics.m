@@ -289,9 +289,9 @@ if options_.smoother
         '',M_.exo_names,M_.exo_names_tex,M_.exo_names,...
         M_.exo_names,'SmoothedShocks',DirectoryName,'_inno');
     if nvn
-        for obs_iter=1:length(options_.varobs)        
-            meas_error_names{obs_iter,1}=['SE_EOBS_' M_.endo_names(strmatch(options_.varobs{obs_iter},M_.endo_names,'exact'),:)];
-            texnames{obs_iter,1}=['SE_EOBS_' M_.endo_names_tex(strmatch(options_.varobs{obs_iter},M_.endo_names,'exact'),:)];
+        for obs_iter=1:size(options_.varobs,1)        
+            meas_error_names{obs_iter,1}=['SE_EOBS_' M_.endo_names(strmatch(options_.varobs(obs_iter,:),M_.endo_names,'exact'),:)];
+            texnames{obs_iter,1}=['SE_EOBS_' M_.endo_names_tex(strmatch(options_.varobs(obs_iter,:),M_.endo_names,'exact'),:)];
         end
         meas_error_names=char(meas_error_names);
         texnames=char(texnames);
