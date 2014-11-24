@@ -6127,7 +6127,7 @@ parameters in the @code{params}-command and be entered in the
 
 @item
 @math{e} are the exogenous stochastic shocks, specified in the
-@code{var_exo}-command;
+@code{varexo}-command;
 
 @item
 @math{W} is the weighting matrix;

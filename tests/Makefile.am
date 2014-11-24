@@ -19,6 +19,8 @@ MODFILES = \
 	example1_macroif.mod \
 	t_sgu_ex1.mod \
 	osr_example.mod \
+	optimal_policy/osr_example_objective_correctness.mod \
+	optimal_policy/osr_example_objective_correctness_non_stationary_vars.mod \
 	optimal_policy/ramsey.mod \
 	optimal_policy/nk_ramsey.mod \
 	optimal_policy/nk_ramsey_expectation.mod \
@@ -163,6 +165,7 @@ MODFILES = \
 	shock_decomposition/fs2000_est_varlist.mod \
 	stochastic_purely_forward/stochastic_purely_forward.mod \
 	stochastic_purely_forward/stochastic_purely_forward_with_static.mod \
+	forecast/Hansen_exo_det_forecast.mod \
 	gradient/fs2000_numgrad_13.mod \
 	gradient/fs2000_numgrad_15.mod \
 	gradient/fs2000_numgrad_2.mod \
