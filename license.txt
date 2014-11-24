@@ -75,10 +75,6 @@ Copyright: 1995-2007 Kurt Hornik
            2008-2009 Dynare Team
 License: GPL-3+
 
-Files: matlab/missing/bicgstab/bicgstab.m
-Copyright: 2008 Radek Salac
-License: GPL-3+
-
 Files: matlab/missing/strjoin/strjoin.m
 Copyright: 2007 Muthiah Annamalai <muthiah.annamalai@uta.edu>
            2013 Dynare Team
