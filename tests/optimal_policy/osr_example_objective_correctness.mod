@@ -26,7 +26,7 @@ end;
 
 options_.nograph=1;
 options_.nocorr=1;
-options_.osr.tolf=1e-15;
+options_.osr.tolf=1e-20;
 osr_params gammax0 gammac0 gamma_y_ gamma_inf_;
 
 
@@ -65,11 +65,11 @@ if abs(oo_.osr.objective_function-objective)>1e-8
     error('Objective Function is wrong')
 end
 
-% gammax0=  3.94954;
-% gammac0=  4.39418;
-% gamma_y_= 16.6664;
-% gamma_inf_= 8.28523;
-
+gammax0=1.35533;
+gammac0=1.39664;
+gamma_y_=16.6667;
+gamma_inf_=9.13199;
+        
 %redo computation with double weight on one covariance 
 optim_weights;
 inflation 1;
