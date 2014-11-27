@@ -55,7 +55,7 @@ SUBROUTINE DESIGN(ny,nz,nx,nu,ns,nt,theta,c,H,G,a,F,R)
   INTEGER(C_INT), DIMENSION(6) :: nsC
 
   DO I=1,6
-     nsC(I) = ns(I)
+     nsC(I) = INT2(ns(I))
   END DO
   CALL designInternal(ny,nz,nx,nu,nsC,nt,theta,TRIM(mfile)//C_NULL_CHAR,c,H,G,a,F,R)
 
