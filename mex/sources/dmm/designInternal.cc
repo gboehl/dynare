@@ -1,5 +1,6 @@
 #include <dynmex.h>
 #include <algorithm>
+#include <string.h>
 using namespace std;
 
 extern "C"
