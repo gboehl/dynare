@@ -10,12 +10,12 @@ void designInternal(int ny, int nz, int nx, int nu, int ns[6], int nt,
 {
   mxArray *lhs[6], *rhs[6];
   nz = max(1, nz);
-  const mwSize dimsC[] = {ny, nz, ns[0]};
-  const mwSize dimsH[] = {ny, nx, ns[1]};
-  const mwSize dimsG[] = {ny, nu, ns[2]};
-  const mwSize dimsA[] = {nx,     ns[3]};
-  const mwSize dimsF[] = {nx, nx, ns[4]};
-  const mwSize dimsR[] = {nx, nu, ns[5]};
+  const mwSize dimsC[] = {(mwSize)ny, (mwSize)nz, (mwSize)ns[0]};
+  const mwSize dimsH[] = {(mwSize)ny, (mwSize)nx, (mwSize)ns[1]};
+  const mwSize dimsG[] = {(mwSize)ny, (mwSize)nu, (mwSize)ns[2]};
+  const mwSize dimsA[] = {(mwSize)nx,             (mwSize)ns[3]};
+  const mwSize dimsF[] = {(mwSize)nx, (mwSize)nx, (mwSize)ns[4]};
+  const mwSize dimsR[] = {(mwSize)nx, (mwSize)nu, (mwSize)ns[5]};
 
   lhs[0] = mxCreateNumericArray(3, dimsC, mxDOUBLE_CLASS, mxREAL);
   lhs[1] = mxCreateNumericArray(3, dimsH, mxDOUBLE_CLASS, mxREAL);
