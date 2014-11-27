@@ -45,7 +45,9 @@ number_of_variables = length(x);
 
 % get options.
 if isempty(options.maxfcall)
-    max_func_calls = options.maxfcallfactor*number_of_variables
+    max_func_calls = options.maxfcallfactor*number_of_variables;
+else
+    max_func_calls=options.maxfcall;
 end
 
 % Set tolerance parameter.
@@ -146,8 +148,8 @@ else
 end
 
 % Set delta parameter.
-if isfield(options,'delta_parameter')% Size of the simplex
-    delta = options.delta_parameter;
+if isfield(options,'delta_factor')% Size of the simplex
+    delta = options.delta_factor;
 else
     delta = 0.05;
 end
