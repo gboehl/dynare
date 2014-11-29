@@ -44,7 +44,8 @@ rep = rep.addVspace();
 % Table 1
 rep = rep.addTable('title', {'Real GDP Growth','subtitle 1', 'subtitle 2'}, ...
                    'range', larange, ...
-                   'vlineAfter', dates('2011y'));
+                   'vlineAfter', dates('2011y'), ...
+                   'highlightRows', {'gray!25','white','green!22'});
 rep = AnnualTable(rep, db_a, dc_a, 'PCH_GROWTH4_', larange);
 rep = rep.addVspace('number', 2);
 

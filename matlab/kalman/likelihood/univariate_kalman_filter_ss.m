@@ -79,7 +79,7 @@ smpl = last-start+1;
 
 % Initialize some variables.
 t    = start;              % Initialization of the time index.
-likk = zeros(smpl,1);      % Initialization of the vector gathering the densities.
+likk = zeros(smpl,pp);      % Initialization of the vector gathering the densities.
 LIK  = Inf;                % Default value of the log likelihood.
 l2pi = log(2*pi);
 asy_hess=0;
@@ -131,7 +131,7 @@ while t<=last
             Ki = PPZ/Fi;
             a  = a + Ki*prediction_error;
             PP = PP - PPZ*Ki';
-            likk(s) = likk(s) + log(Fi) + prediction_error*prediction_error/Fi + l2pi;
+            likk(s,i) = log(Fi) + prediction_error*prediction_error/Fi + l2pi;
             if analytic_derivation,
                 if analytic_derivation==2,
                     [Da,DPP,DLIKt,D2a,D2PP, Hesst] = univariate_computeDLIK(k,i,Z(i,:),Zflag,prediction_error,Ki,PPZ,Fi,Da,DYss,DPP,DH(i,:),0,D2a,D2Yss,D2PP);
@@ -159,7 +159,7 @@ end
 
 likk = .5*likk;
 
-LIK = sum(likk);
+LIK = sum(sum(likk));
 if analytic_derivation,
     dlikk = dlikk/2;
     DLIK = DLIK/2;

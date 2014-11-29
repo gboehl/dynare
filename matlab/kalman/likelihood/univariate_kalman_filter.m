@@ -111,7 +111,7 @@ smpl = last-start+1;
 % Initialize some variables.
 QQ   = R*Q*transpose(R);   % Variance of R times the vector of structural innovations.
 t    = start;              % Initialization of the time index.
-lik  = zeros(smpl,1);      % Initialization of the vector gathering the densities.
+lik  = zeros(smpl,pp);     % Initialization of the matrix gathering the densities at each time and each observable
 LIK  = Inf;                % Default value of the log likelihood.
 oldP = Inf;
 l2pi = log(2*pi);
@@ -178,7 +178,7 @@ while notsteady && t<=last
             if t>=no_more_missing_observations
                 K(:,i) = Ki;
             end
-            lik(s) = lik(s) + log(Fi) + prediction_error*prediction_error/Fi + l2pi;
+            lik(s,i) = log(Fi) + prediction_error*prediction_error/Fi + l2pi;
             if analytic_derivation,
                 if analytic_derivation==2,
                     [Da,DP,DLIKt,D2a,D2P, Hesst] = univariate_computeDLIK(k,i,z(i,:),Zflag,prediction_error,Ki,PZ,Fi,Da,DYss,DP,DH(d_index(i),:),notsteady,D2a,D2Yss,D2P);
@@ -214,7 +214,7 @@ while notsteady && t<=last
 end
 
 % Divide by two.
-lik(1:s) = .5*lik(1:s);
+lik(1:s,:) = .5*lik(1:s,:);
 if analytic_derivation,
     DLIK = DLIK/2;
     dlik = dlik/2;
@@ -234,22 +234,22 @@ if t <= last
             [tmp, tmp2] = univariate_kalman_filter_ss(Y,t,last,a,P,kalman_tol,T,H,Z,pp,Zflag, ...
                 analytic_derivation,Da,DT,DYss,DP,DH,asy_hess);
         end
-        lik(s+1:end)=tmp2{1};
+        lik(s+1:end,:)=tmp2{1};
         dlik(s+1:end,:)=tmp2{2};
         DLIK = DLIK + tmp{2};
         if analytic_derivation==2 || asy_hess,
             Hess = Hess + tmp{3};
         end
     else
-        [tmp, lik(s+1:end)] = univariate_kalman_filter_ss(Y,t,last,a,P,kalman_tol,T,H,Z,pp,Zflag);
+        [tmp, lik(s+1:end,:)] = univariate_kalman_filter_ss(Y,t,last,a,P,kalman_tol,T,H,Z,pp,Zflag);
     end
 end
 
 % Compute minus the log-likelihood.
 if presample > diffuse_periods
-    LIK = sum(lik(1+presample-diffuse_periods:end));
+    LIK = sum(sum(lik(1+presample-diffuse_periods:end,:)));
 else
-    LIK = sum(lik);
+    LIK = sum(sum(lik));
 end
 
 if analytic_derivation,

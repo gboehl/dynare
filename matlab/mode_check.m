@@ -1,4 +1,4 @@
-function mode_check(fun,x,hessian,DynareDataset,DatasetInfo,DynareOptions,Model,EstimatedParameters,BayesInfo,DynareResults)
+function mode_check(fun,x,hessian,DynareDataset,DatasetInfo,DynareOptions,Model,EstimatedParameters,BayesInfo,BoundsInfo,DynareResults)
 % Checks the estimated ML mode or Posterior mode.
 
 %@info:
@@ -62,7 +62,7 @@ if ~isempty(hessian);
     [ s_min, k ] = min(diag(hessian));
 end
 
-fval = feval(fun,x,DynareDataset,DatasetInfo,DynareOptions,Model,EstimatedParameters,BayesInfo,DynareResults);
+fval = feval(fun,x,DynareDataset,DatasetInfo,DynareOptions,Model,EstimatedParameters,BayesInfo,BoundsInfo,DynareResults);
 
 if ~isempty(hessian);
     skipline()
@@ -109,23 +109,23 @@ for plt = 1:nbplt,
             end
         end
         xx = x;
-        l1 = max(BayesInfo.lb(kk),(1-sign(x(kk))*ll)*x(kk)); m1 = 0; %lower bound
-        l2 = min(BayesInfo.ub(kk),(1+sign(x(kk))*ll)*x(kk)); %upper bound
+        l1 = max(BoundsInfo.lb(kk),(1-sign(x(kk))*ll)*x(kk)); m1 = 0; %lower bound
+        l2 = min(BoundsInfo.ub(kk),(1+sign(x(kk))*ll)*x(kk)); %upper bound
         binding_lower_bound=0;
         binding_upper_bound=0;
-        if isequal(x(kk),BayesInfo.lb(kk))
+        if isequal(x(kk),BoundsInfo.lb(kk))
             binding_lower_bound=1;
-            bound_value=BayesInfo.lb(kk);
-        elseif isequal(x(kk),BayesInfo.ub(kk))
+            bound_value=BoundsInfo.lb(kk);
+        elseif isequal(x(kk),BoundsInfo.ub(kk))
             binding_upper_bound=1;
-            bound_value=BayesInfo.ub(kk);           
+            bound_value=BoundsInfo.ub(kk);
         end      
         if DynareOptions.mode_check.symmetric_plots && ~binding_lower_bound && ~binding_upper_bound
             if l2<(1+ll)*x(kk) %test whether upper bound is too small due to prior binding
                 l1 = x(kk) - (l2-x(kk)); %adjust lower bound to become closer
                 m1 = 1;
             end
-            if ~m1 && (l1>(1-ll)*x(kk)) && (x(kk)+(x(kk)-l1)<BayesInfo.ub(kk)) % if lower bound was truncated and using difference from lower bound does not violate upper bound
+            if ~m1 && (l1>(1-ll)*x(kk)) && (x(kk)+(x(kk)-l1)<BoundsInfo.ub(kk)) % if lower bound was truncated and using difference from lower bound does not violate upper bound
                 l2 = x(kk) + (x(kk)-l1); %set upper bound to same distance as lower bound
             end
         end
@@ -138,7 +138,7 @@ for plt = 1:nbplt,
         end
         for i=1:length(z)
             xx(kk) = z(i);
-            [fval, junk1, junk2, exit_flag] = feval(fun,xx,DynareDataset,DatasetInfo,DynareOptions,Model,EstimatedParameters,BayesInfo,DynareResults);
+            [fval, junk1, junk2, exit_flag] = feval(fun,xx,DynareDataset,DatasetInfo,DynareOptions,Model,EstimatedParameters,BayesInfo,BoundsInfo,DynareResults);
             if exit_flag
                 y(i,1) = fval;
             else

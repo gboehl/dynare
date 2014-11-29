@@ -65,9 +65,13 @@ if ~noprint
           error(['The Jacobian contains NaNs. For more information, use options_.debug.'])
         end
       case 9
-        error(['k_order_pert was unable to compute the solution']) 
+        error(['k_order_pert was unable to compute the solution'])
       case 10
-        error(['The Jacobian or the dynamic model contains Inf. For more information, use options_.debug.'])         
+        error(['The Jacobian of the dynamic model contains Inf. For more information, use options_.debug.'])
+      case 11
+        error('The Hessian of the dynamic model used for second order solutions must not contain Inf')
+      case 12
+        error('The Hessian of the dynamic model used for second order solutions must not contain NaN')
       case 19
         error('The steadystate file did not compute the steady state')
       case 20
@@ -120,6 +124,18 @@ if ~noprint
       case 72
         error(['Calibrated covariance of the measurement errors implies correlation larger than  +-1.']);
         % Aim Code Conversions by convertAimCodeToInfo.m
+      case 81
+        error(['Ramsey: The solution to the static first order conditions for optimal policy could not be found. Either the model' ...
+               ' doesn''t have a steady state, there are an infinity of steady states, ' ...
+               ' or the guess values are too far from the solution']);
+      case 82
+        error(['Ramsey: The steady state computation resulted in NaN in the static first order conditions for optimal policy']);
+      case 83
+        error(['Ramsey: The steady state computation resulted in NaN in the auxiliary equations for optimal policy']);
+      case 84
+        error(['Ramsey: The steady state file computation for the Ramsey problem resulted in NaNs at the initial values of the instruments']);
+      case 85
+        error(['Ramsey: The steady state file does not solve the static first order conditions conditional on the instruments.']);
       case 102
         error('Aim: roots not correctly computed by real_schur');
       case 103

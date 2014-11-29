@@ -101,7 +101,7 @@ for its = 1:maxit
     end
     if rcond_fjac < sqrt(eps)
         fjac2=fjac'*fjac;
-        p=-(fjac2+1e6*sqrt(nn*eps)*max(sum(abs(fjac2)))*eye(nn))\(fjac'*fvec);
+        p=-(fjac2+sqrt(nn*eps)*max(sum(abs(fjac2)))*eye(nn))\(fjac'*fvec);
     else
         p = -fjac\fvec ;
     end

@@ -352,6 +352,28 @@ DATE -?[0-9]+([YyAa]|[Mm]([1-9]|1[0-2])|[Qq][1-4]|[Ww]([1-9]{1}|[1-4][0-9]|5[0-2
 <DYNARE_STATEMENT>use_univariate_filters_if_singularity_is_detected {return token::USE_UNIVARIATE_FILTERS_IF_SINGULARITY_IS_DETECTED;}
 <DYNARE_STATEMENT>hybrid {return token::HYBRID;}
 <DYNARE_STATEMENT>default {return token::DEFAULT;}
+
+<DYNARE_STATEMENT>number_of_particles {return token::NUMBER_OF_PARTICLES;}
+<DYNARE_STATEMENT>resampling {return token::RESAMPLING;}
+<DYNARE_STATEMENT>systematic {return token::SYSTEMATIC;}
+<DYNARE_STATEMENT>generic {return token::GENERIC;}
+<DYNARE_STATEMENT>resampling_threshold {return token::RESAMPLING_THRESHOLD;}
+<DYNARE_STATEMENT>resampling_method {return token::RESAMPLING_METHOD;}
+<DYNARE_STATEMENT>kitagawa {return token::KITAGAWA;}
+<DYNARE_STATEMENT>smooth {return token::SMOOTH;}
+<DYNARE_STATEMENT>stratified {return token::STRATIFIED;}
+<DYNARE_STATEMENT>filter_algorithm {return token::FILTER_ALGORITHM;}
+<DYNARE_STATEMENT>sis {return token::SIS;}
+<DYNARE_STATEMENT>apf {return token::APF;}
+<DYNARE_STATEMENT>gf {return token::GF;}
+<DYNARE_STATEMENT>gmf {return token::GMF;}
+<DYNARE_STATEMENT>cpf {return token::CPF;}
+<DYNARE_STATEMENT>proposal_approximation {return token::PROPOSAL_APPROXIMATION;}
+<DYNARE_STATEMENT>cubature {return token::CUBATURE;}
+<DYNARE_STATEMENT>unscented {return token::UNSCENTED;}
+<DYNARE_STATEMENT>montecarlo {return token::MONTECARLO;}
+<DYNARE_STATEMENT>distribution_approximation {return token::DISTRIBUTION_APPROXIMATION;}
+
 <DYNARE_STATEMENT>alpha {
   yylval->string_val = new string(yytext);
   return token::ALPHA;
@@ -431,6 +453,7 @@ DATE -?[0-9]+([YyAa]|[Mm]([1-9]|1[0-2])|[Qq][1-4]|[Ww]([1-9]{1}|[1-4][0-9]|5[0-2
   yylval->string_val = new string(yytext);
   return token::CNUM;
 }
+<DYNARE_STATEMENT>nodecomposition {return token::NODECOMPOSITION;};
 <DYNARE_STATEMENT>banact {return token::BANACT;}
 <DYNARE_BLOCK>use_calibration {return token::USE_CALIBRATION;}
 <DYNARE_STATEMENT>output_file_tag {return token::OUTPUT_FILE_TAG;}
@@ -475,6 +498,7 @@ DATE -?[0-9]+([YyAa]|[Mm]([1-9]|1[0-2])|[Qq][1-4]|[Ww]([1-9]{1}|[1-4][0-9]|5[0-2
 <DYNARE_STATEMENT>random_function_convergence_criterion {return token::RANDOM_FUNCTION_CONVERGENCE_CRITERION;}
 <DYNARE_STATEMENT>random_parameter_convergence_criterion {return token::RANDOM_PARAMETER_CONVERGENCE_CRITERION;}
 <DYNARE_STATEMENT>tolf {return token::TOLF;}
+<DYNARE_STATEMENT>opt_algo {return token::OPT_ALGO;}
 <DYNARE_STATEMENT>instruments {return token::INSTRUMENTS;}
 <DYNARE_STATEMENT>hessian  {
   yylval->string_val = new string(yytext);

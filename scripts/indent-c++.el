@@ -1,0 +1,5 @@
+(c++-mode)
+(setq indent-tabs-mode nil)
+(indent-region (point-min) (point-max))
+(set-buffer-file-coding-system 'unix)
+(save-buffer)

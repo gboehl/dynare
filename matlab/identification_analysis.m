@@ -134,18 +134,17 @@ if info(1)==0,
             options_.noprint = 1;
             options_.order = 1;
             options_.SpectralDensity.trigger = 0;
-            options_.periods = dataset_.nobs+100;
+            options_.periods = periods+100;
             if options_.kalman_algo > 2,
                 options_.kalman_algo = 1;
             end
             analytic_derivation = options_.analytic_derivation;
             options_.analytic_derivation = -2;
             info = stoch_simul(char(options_.varobs));
-            dataset_ = dseries(oo_.endo_simul(options_.varobs_id,100+1:end),dataset_.dates(1),dataset_.names,dataset_.tex);
-            %data_info.data=oo_.endo_simul(options_.varobs_id,100+1:end);
-            %                         datax=data;
+            dataset_ = dseries(oo_.endo_simul(options_.varobs_id,100+1:end)',dates('1Q1'), options_.varobs);            
             derivatives_info.no_DLIK=1;
-            [fval,DLIK,AHess,cost_flag,ys,trend_coeff,info,M_,options_,bayestopt_,oo_] = dsge_likelihood(params',dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,oo_,derivatives_info);
+            bounds = prior_bounds(bayestopt_,options_);
+            [fval,DLIK,AHess,cost_flag,ys,trend_coeff,info,M_,options_,bayestopt_,oo_] = dsge_likelihood(params',dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,bounds,oo_,derivatives_info);
 %                 fval = DsgeLikelihood(xparam1,data_info,options_,M_,estim_params_,bayestopt_,oo_);
             options_.analytic_derivation = analytic_derivation;
             AHess=-AHess;

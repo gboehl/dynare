@@ -108,7 +108,7 @@ t    = start;              % Initialization of the time index.
 dlikk= zeros(smpl,1);      % Initialization of the vector gathering the densities.
 dLIK = Inf;                % Default value of the log likelihood.
 oldK = Inf;
-llik = NaN(smpl,pp);
+llik = zeros(smpl,pp);
 
 newRank = rank(Pinf,kalman_tol);
 l2pi = log(2*pi);
@@ -165,3 +165,4 @@ dlikk = .5*dlikk(1:s);
 llik  = .5*llik(1:s,:);
 
 dLIK = sum(dlikk(1+presample:end));
+dlikk = llik;

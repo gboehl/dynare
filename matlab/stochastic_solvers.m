@@ -113,6 +113,30 @@ elseif options_.order == 2
         hessian1 = sparse(hessian1(:,1), hessian1(:,2), hessian1(:,3), ...
                           size(jacobia_, 1), size(jacobia_, 2)*size(jacobia_, 2));
     end
+    [infrow,infcol]=find(isinf(hessian1));
+    if options_.debug
+        if ~isempty(infrow)     
+        fprintf('\nSTOCHASTIC_SOLVER: The Hessian of the dynamic model contains Inf.\n')
+        fprintf('STOCHASTIC_SOLVER: Try running model_diagnostics to find the source of the problem.\n')
+        save([M_.fname '_debug.mat'],'hessian1')
+        end
+    end
+    if ~isempty(infrow)
+        info(1)=11;
+        return
+    end
+    [nanrow,nancol]=find(isnan(hessian1));
+    if options_.debug
+        if ~isempty(nanrow)     
+            fprintf('\nSTOCHASTIC_SOLVER: The Hessian of the dynamic model contains NaN.\n')
+            fprintf('STOCHASTIC_SOLVER: Try running model_diagnostics to find the source of the problem.\n')
+            save([M_.fname '_debug.mat'],'hessian1')
+        end
+    end
+    if ~isempty(nanrow)
+        info(1)=12;
+        return
+    end    
 end
 
 [infrow,infcol]=find(isinf(jacobia_));
@@ -217,8 +241,18 @@ else
         dr = dyn_second_order_solver(jacobia_,hessian1,dr,M_,...
                                      options_.threads.kronecker.A_times_B_kronecker_C,...
                                      options_.threads.kronecker.sparse_hessian_times_B_kronecker_C);
+                                 
+        % reordering second order derivatives, used for deterministic
+        % variables below
+        k1 = nonzeros(M_.lead_lag_incidence(:,order_var)');
+        kk = [k1; length(k1)+(1:M_.exo_nbr+M_.exo_det_nbr)'];
+        nk = size(kk,1);
+        kk1 = reshape([1:nk^2],nk,nk);
+        kk1 = kk1(kk,kk);
+        hessian1 = hessian1(:,kk1(:));
     end
 end
+
 
 %exogenous deterministic variables
 if M_.exo_det_nbr > 0

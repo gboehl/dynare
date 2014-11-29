@@ -49,6 +49,7 @@ if ~isfield(opts, 'infile')
     end
     smoothedvars = oo_.SmoothedVariables;
     smoothedshocks = oo_.SmoothedShocks;
+    steady_state = oo_.steady_state;
 else
     S = load(opts.infile);
     if ~isfield(S, 'oo_') || ~isfield(S.oo_, 'SmoothedVariables')
@@ -56,6 +57,7 @@ else
     end
     smoothedvars = S.oo_.SmoothedVariables;
     smoothedshocks = S.oo_.SmoothedShocks;
+    steady_state = S.oo_.steady_state;
 end
 
 % Hack to determine if oo_.SmoothedVariables was computed after a Metropolis
@@ -71,6 +73,7 @@ if isempty(options_.parameter_set)
     if post_metropolis
         smoothedvars = smoothedvars.Mean;
         smoothedshocks = smoothedshocks.Mean;
+        steady_state = zeros(size(steady_state));
     end
 else
     switch options_.parameter_set
@@ -88,12 +91,14 @@ else
         end
         smoothedvars = smoothedvars.Mean;
         smoothedshocks = smoothedshocks.Mean;
+        steady_state = zeros(size(steady_state));
       case 'posterior_median'
         if ~post_metropolis
             error('Option parameter_set=posterior_median is not consistent with computed smoothed values.')
         end
         smoothedvars = smoothedvars.Median;
         smoothedshocks = smoothedshocks.Median;
+        steady_state = zeros(size(steady_state));
       otherwise
         error([ 'Option parameter_set=' options_.parameter_set ' unsupported.' ])
     end
@@ -156,7 +161,8 @@ for i = 1:length(invars)
         continue
     end
     s = getfield(smoothedvars, invars{i});
-    v = s((period-M_.maximum_endo_lag+1):period);
+    j = strmatch(invars{i}, M_.endo_names, 'exact');
+    v = s((period-M_.maximum_endo_lag+1):period) + steady_state(j);
     if ~isfield(opts, 'outfile')
         j = strmatch(outvars{i}, M_.endo_names, 'exact');
         if isempty(j)
@@ -193,9 +199,9 @@ for i = 1:length(M_.aux_vars)
         if period-M_.maximum_endo_lag+1+l < 1
             error('The period that you indicated is too small to construct initial conditions')
         end
-        v = s((period-M_.maximum_endo_lag+1+l):(period+l));
+        j = M_.aux_vars(i).endo_index;
+        v = s((period-M_.maximum_endo_lag+1+l):(period+l))+steady_state(j);
         if ~isfield(opts, 'outfile')
-            j = M_.aux_vars(i).endo_index;
             M_.endo_histval(j, :) = v;
         else
             % When saving to a file, x(-2) is in the variable called "x_l2"

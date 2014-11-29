@@ -150,7 +150,7 @@ for b = fblck:nblck,
     j = 1;
     while j <= nruns(b)
         par = feval(ProposalFun, xparam1, proposal_covariance, n);
-        if all( par(:) > mh_bounds(:,1) ) && all( par(:) < mh_bounds(:,2) )
+        if all( par(:) > mh_bounds.lb ) && all( par(:) < mh_bounds.ub )
             try
                 logpost = - feval(TargetFun, par(:),varargin{:});
             catch,

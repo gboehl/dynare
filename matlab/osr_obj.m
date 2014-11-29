@@ -86,4 +86,4 @@ switch info(1)
 end
 
 vx = get_variance_of_endogenous_variables(dr,i_var);
-loss = weights(:)'*vx(:);
+loss = full(weights(:)'*vx(:));

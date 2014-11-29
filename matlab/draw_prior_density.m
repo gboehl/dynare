@@ -115,5 +115,3 @@ binf = abscissa(1);
 bsup = abscissa(end);
 x = abscissa;
 f = dens;
-f(find(x<bayestopt_.lb(indx)))=0;
-f(find(x>bayestopt_.ub(indx)))=0;

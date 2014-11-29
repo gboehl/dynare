@@ -356,7 +356,7 @@ Adjemian (Université du Maine, Gains and Cepremap), Houtan Bastani
 (Cepremap), Michel Juillard (Banque de France), Frédéric Karamé
 (Université du Maine, Gains and Cepremap), Junior Maih (Norges Bank),
 Ferhat Mihoubi (Université Paris-Est Créteil, Epee and Cepremap), George
-Perendia, Johannes Pfeifer (University of Mannheim), Marco Ratto (JRC)
+Perendia, Johannes Pfeifer (University of Mannheim), Marco Ratto (European Commission, Joint Research Centre - JRC)
 and Sébastien Villemot (Cepremap).
 Increasingly, the developer base is expanding, as tools developed by
 researchers outside of Cepremap are integrated into Dynare. Financial
@@ -515,9 +515,8 @@ Please refer to the
 @uref{http://www.dynare.org/DynareWiki/InstallOnDebianOrUbuntu,Dynare
 Wiki} for detailed instructions.
 
-Dynare will be installed under @file{/usr/share/dynare} and
-@file{/usr/lib/dynare}. Documentation will be under
-@file{/usr/share/doc/dynare}.
+Dynare will be installed under @file{/usr/lib/dynare}. Documentation will be
+under @file{/usr/share/doc/dynare-doc}.
 
 @node On Mac OS X
 @subsection On Mac OS X
@@ -580,7 +579,7 @@ addpath c:\dynare\4.@var{x}.@var{y}\matlab
 Under Debian GNU/Linux or Ubuntu, type:
 
 @example
-addpath /usr/share/dynare/matlab
+addpath /usr/lib/dynare/matlab
 @end example
 
 Under Mac OS X, assuming that you have installed Dynare in the standard
@@ -2067,7 +2066,9 @@ For this last reason, it necessary to provide values for all the
 endogenous variables in an @code{initval} block (even though,
 theoretically, initial conditions are only necessary for lagged
 variables). If some variables, endogenous or exogenous, are not mentioned in the
-@code{initval} block, a zero value is assumed.
+@code{initval} block, a zero value is assumed. It is particularly important to keep 
+this in mind when specifying exogenous variables using @code{varexo} that are not allowed 
+to take on the value of zero, like e.g. TFP. 
 
 Note that if the @code{initval} block is immediately followed by a
 @code{steady} command, its semantics is changed. The @code{steady}
@@ -2730,11 +2731,7 @@ add new variables one by one.
 
 @item maxit = @var{INTEGER}
 Determines the maximum number of iterations used in the non-linear solver. The
-default value of @code{maxit} is 10. The @code{maxit} option is shared with the
-@code{perfect_foresight_solver} and @code{simul} commands. So a change in
-@code{maxit} in a @code{steady} command will also be considered in the
-following @code{perfect_foresight_solver} and @code{simul} commands.
-
+default value of @code{maxit} is 50. 
 
 @item solve_algo = @var{INTEGER}
 @anchor{solve_algo}
@@ -3362,10 +3359,7 @@ order to setup the environment for the simulation.
 
 @item maxit = @var{INTEGER}
 Determines the maximum number of iterations used in the non-linear solver. The
-default value of @code{maxit} is 10. The @code{maxit} option is shared with the
-@code{steady} command. So a change in @code{maxit} in a
-@code{perfect_foresight_solver} command will also be considered in the
-following @code{steady} commands.
+default value of @code{maxit} is 50. 
 
 @item stack_solve_algo = @var{INTEGER}
 Algorithm used for computing the solution. Possible values are:
@@ -3605,6 +3599,9 @@ Threshold size for plotting IRFs. All IRFs for a particular variable with a maxi
 @item nocorr
 Don't print the correlation matrix (printing them is the default).
 
+@item nodecomposition
+Don't compute (and don't print) unconditional variance decomposition.
+
 @item nofunctions
 Don't print the coefficients of the approximated solution (printing
 them is the default).
@@ -3713,7 +3710,7 @@ period(s). The periods must be strictly positive. Conditional variances are give
 decomposition provides the decomposition of the effects of shocks upon
 impact. The results are stored in
 @code{oo_.conditional_variance_decomposition}
-(@pxref{oo_.conditional_variance_decomposition}). The variance decomposition is only conducted, if theoretical moments are requested, i.e. using the @code{periods=0}-option. In case of @code{order=2}, Dynare provides a second-order accurate approximation to the true second moments based on the linear terms of the second-order solution (see @cite{Kim, Kim, Schaumburg and Sims (2008)}). Note that the unconditional variance decomposition (i.e. at horizon infinity) is automatically conducted if theoretical moments are requested (@pxref{oo_.variance_decomposition})
+(@pxref{oo_.conditional_variance_decomposition}). The variance decomposition is only conducted, if theoretical moments are requested, i.e. using the @code{periods=0}-option. In case of @code{order=2}, Dynare provides a second-order accurate approximation to the true second moments based on the linear terms of the second-order solution (see @cite{Kim, Kim, Schaumburg and Sims (2008)}). Note that the unconditional variance decomposition (i.e. at horizon infinity) is automatically conducted if theoretical moments are requested and if @code{nodecomposition} is not set (@pxref{oo_.variance_decomposition})
 
 @item pruning
 Discard higher order terms when iteratively computing simulations of
@@ -4354,10 +4351,20 @@ Specifies a starting value for the posterior mode optimizer or the
 maximum likelihood estimation. If unset, defaults to the prior mean.
 
 @item @var{LOWER_BOUND}
-Specifies a lower bound for the parameter value in maximum likelihood estimation
+@anchor{lower_bound} Specifies a lower bound for the parameter value in maximum
+likelihood estimation. In a Bayesian estimation context, sets a lower bound
+only effective while maximizing the posterior kernel. This lower bound does not
+modify the shape of the prior density, and is only aimed at helping the
+optimizer in identifying the posterior mode (no consequences for the MCMC). For
+some prior densities (namely inverse gamma, gamma, uniform or beta) it is
+possible to shift the support of the prior distributions to the left or the right using
+@ref{prior_3rd_parameter}. In this case the prior density is effectively
+modified (note that the truncated Gaussian density is not implemented in
+Dynare). If unset, defaults to minus infinity (ML) or the natural lower bound
+of the prior (Bayesian estimation).
 
 @item @var{UPPER_BOUND}
-Specifies an upper bound for the parameter value in maximum likelihood estimation
+Same as @ref{lower_bound}, but specifying an upper bound instead.
 
 @item @var{PRIOR_SHAPE}
 A keyword specifying the shape of the prior density.
@@ -4369,16 +4376,18 @@ that @code{inv_gamma_pdf} is equivalent to
 @code{inv_gamma1_pdf}
 
 @item @var{PRIOR_MEAN}
-The mean of the prior distribution
+@anchor{prior_mean} The mean of the prior distribution
 
 @item @var{PRIOR_STANDARD_ERROR}
-The standard error of the prior distribution
+@anchor{prior_standard_error} The standard error of the prior distribution
 
 @item @var{PRIOR_3RD_PARAMETER}
+@anchor{prior_3rd_parameter}
 A third parameter of the prior used for generalized beta distribution,
 generalized gamma and for the uniform distribution. Default: @code{0}
 
 @item @var{PRIOR_4TH_PARAMETER}
+@anchor{prior_4th_parameter}
 A fourth parameter of the prior used for generalized beta distribution
 and for the uniform distribution. Default: @code{1}
 
@@ -4593,15 +4602,15 @@ univariate convergence diagnostic.
 @table @code
 
 @item datafile = @var{FILENAME}
-@anchor{datafile}
-The datafile: a @file{.m} file, a @file{.mat} file, a @file{.csv}
-file, or a @file{.xls}/@file{.xlsx} file (under Octave, the
-@uref{http://octave.sourceforge.net/io/,io} from Octave-Forge is
-required for the @file{.csv}, @file{.xls} and @file{.xlsx} formats; in
-addition, for the @file{.xls} and @file{.xlsx} formats, the
-@uref{http://octave.sourceforge.net/java/,java} package is required,
-along with a @uref{http://www.java.com/download,Java Runtime
-Environment})
+@anchor{datafile} The datafile: a @file{.m} file, a @file{.mat} file, a
+@file{.csv} file, or a @file{.xls}/@file{.xlsx} file (under Octave, the
+@uref{http://octave.sourceforge.net/io/,io} from Octave-Forge is required for
+the @file{.csv}, @file{.xls} and @file{.xlsx} formats; in addition, for the
+@file{.xls} and @file{.xlsx} formats, the
+@uref{http://octave.sourceforge.net/java/,java} package is required, along with
+a @uref{http://www.java.com/download,Java Runtime Environment}). Note that the
+base name (ie without extension) of the datafile has to be different from the
+base name of the model file.
 
 @item xls_sheet = @var{NAME}
 @anchor{xls_sheet}
@@ -4609,7 +4618,7 @@ The name of the sheet with the data in an Excel file
 
 @item xls_range = @var{RANGE}
 @anchor{xls_range}
-The range with the data in an Excel file
+The range with the data in an Excel file. For example, @code{xls_range=B2:D200}
 
 @item nobs = @var{INTEGER}
 @anchor{nobs}
@@ -5133,7 +5142,11 @@ Use the Univariate Diffuse Kalman Filter
 @end table
 @noindent
 Default value is @code{0}. In case of missing observations of single or all series, Dynare treats those missing values as unobserved states and uses the Kalman filter to infer their value (see e.g. @cite{Durbin and Koopman (2012), Ch. 4.10})
-
+This procedure has the advantage of being capable of dealing with observations where the forecast error variance matrix becomes singular for some variable(s).
+If this happens, the respective observation enters with a weight of zero in the log-likelihood, i.e. this observation for the respective variable(s) is dropped
+from the likelihood computations (for details see @cite{Durbin and Koopman (2012), Ch. 6.4 and 7.2.5}). If the use of a multivariate Kalman filter is specified and a
+singularity is encountered, Dynare by default automatically switches to the univariate Kalman filter for this parameter draw. This behavior can be changed via the
+@ref{use_univariate_filters_if_singularity_is_detected} option.
 
 @item kalman_tol = @var{DOUBLE}
 @anchor{kalman_tol} Numerical tolerance for determining the singularity of the covariance matrix of the prediction errors during the Kalman filter (minimum allowed reciprocal of the matrix condition number). Default value is @code{1e-10}
@@ -5148,13 +5161,14 @@ See below.
 
 @item filter_step_ahead = [@var{INTEGER1} @var{INTEGER2}  @dots{}]
 @anchor{filter_step_ahead}
-Triggers the computation k-step ahead filtered values. Stores results in
+Triggers the computation k-step ahead filtered values, i.e. @math{E_{t}{y_{t+k}}}. Stores results in
 @code{oo_.FilteredVariablesKStepAhead} and
 @code{oo_.FilteredVariablesKStepAheadVariances}.
 
 @item filter_decomposition
 @anchor{filter_decomposition} Triggers the computation of the shock
-decomposition of the above k-step ahead filtered values.
+decomposition of the above k-step ahead filtered values. Stores results in @code{oo_.FilteredVariablesShockDecomposition}.
+
 
 @item diffuse_filter
 Uses the diffuse Kalman filter (as described in
@@ -5173,8 +5187,9 @@ any value of  @math{\bar a} of @math{a} is a  deterministic steady state for pro
 Note that the nonstationary variables in the model must be integrated processes (their first difference or k-difference must be stationary).
 
 @item selected_variables_only
+@anchor{selected_variables_only}
 Only run the smoother on the variables listed just after the
-@code{estimation} command. Default: run the smoother on all the
+@code{estimation} command. This options is incompatible with requesting classical frequentist forecasts and will be overridden in this case. Default: run the smoother on all the
 declared endogenous variables.
 
 @item cova_compute = @var{INTEGER}
@@ -5267,6 +5282,7 @@ Use endogenous priors as in @cite{Christiano, Trabandt and Walentin
 (2011)}.
 
 @item use_univariate_filters_if_singularity_is_detected = @var{INTEGER}
+@anchor{use_univariate_filters_if_singularity_is_detected}
 Decide whether Dynare should automatically switch to univariate filter
 if a singularity is encountered in the likelihood computation (this is
 the behaviour if the option is equal to @code{1}). Alternatively, if
@@ -5301,7 +5317,69 @@ filtered variables and forecasts (when requested) on all the observed
 variables. This is equivalent to manually listing all the observed
 variables after the @code{estimation} command.
 
+@item number_of_particles = @var{INTEGER}
+@anchor{number_of_particles}
+Number of particles used when evaluating the likelihood of a non linear state space model. Default: @code{1000}.
+
+@item resampling = @var{OPTION}
+@anchor{resampling}
+Determines if resampling of the particles is done. Possible values for @var{OPTION} are:
+
+@table @code
+
+@item none
+No resampling.
+
+@item systematic
+Resampling at each iteration, this is the default value.
+
+@item generic
+Resampling if and only if the effective sample size is below a certain level defined by @ref{resampling_threshold}*@ref{number_of_particles}.
+
 @end table
+
+@item resampling_threshold = @var{DOUBLE}
+@anchor{resampling_threshold}
+A real number between zero and one. The resampling step is triggered as soon as the effective number of particles is less than this number times the total number of particles (as set by @ref{number_of_particles}). This option is effective if and only if option @ref{resampling} has value @code{generic}.
+
+@item resampling_method = @var{OPTION}
+@anchor{resampling_method}
+Sets the resampling method. Possible values for @var{OPTION} are: @code{kitagawa}, @code{stratified} and @code{smooth}.
+
+@item filter_algorithm = @var{OPTION}
+@anchor{filter_algorithm}
+Sets the particle filter algorithm. Possible values for @var{OPTION} are:
+
+@table @code
+
+@item sis
+Sequential importance sampling algorithm, this is the default value.
+
+@item apf
+Auxiliary particle filter.
+
+@item gf
+Gaussian filter.
+
+@item gmf
+Gaussian mixture filter.
+
+@item cpf
+Conditional particle filter.
+
+@end table
+
+@item proposal_approximation = @var{OPTION}
+@anchor{proposal_approximation}
+Sets the method for approximating the proposal distribution. Possible values for @var{OPTION} are: @code{cubature}, @code{montecarlo} and @code{unscented}. Default value is @code{cubature}.
+
+@item distribution_approximation = @var{OPTION}
+@anchor{distribution_approximation}
+Sets the method for approximating the particle distribution. Possible values for @var{OPTION} are: @code{cubature}, @code{montecarlo} and @code{unscented}. Default value is @code{unscented}.
+
+
+@end table
+
 
 @customhead{Note}
 
@@ -5410,6 +5488,7 @@ After an estimation without Metropolis, fields are of the form:
 @code{oo_.FilteredVariables.@var{VARIABLE_NAME}}
 @end example
 
+
 After an estimation with Metropolis, fields are of the form:
 @example
 @code{oo_.FilteredVariables.@var{MOMENT_NAME}.@var{VARIABLE_NAME}}
@@ -5418,12 +5497,23 @@ After an estimation with Metropolis, fields are of the form:
 
 @defvr {MATLAB/Octave variable} oo_.FilteredVariablesKStepAhead
 Variable set by the @code{estimation} command, if it is used with the
-@code{filter_step_ahead} option. The k-steps are stored along the rows while the columns indicate the respective variables. The third dimension of the array provides the observation for which the forecast has been made. For example, if @code{filter_step_ahead=[1 2 4]} and @code{nobs=200}, the element (3,5,204) stores the four period ahead filtered value of variable 5 computed at time t=200 for time t=204. The periods at the beginning and end of the sample for which no forecasts can be made, e.g. entries (1,5,1) and (1,5,204) in the example, are set to zero.
+@code{filter_step_ahead} option. The k-steps are stored along the rows while the columns 
+indicate the respective variables. The third dimension of the array provides the
+observation for which the forecast has been made. For example, if @code{filter_step_ahead=[1 2 4]} 
+and @code{nobs=200}, the element (3,5,204) stores the four period ahead filtered 
+value of variable 5 computed at time t=200 for time t=204. The periods at the beginning 
+and end of the sample for which no forecasts can be made, e.g. entries (1,5,1) and 
+(1,5,204) in the example, are set to zero. Note that in case of Bayesian estimation 
+the variables will be ordered in the order of declaration after the estimation 
+command (or in general declaration order if no variables are specified here). In case 
+of running the classical smoother, the variables will always be ordered in general 
+declaration order. If the @xref{selected_variables_only} option is specified with the classical smoother, 
+non-requested variables will be simply left out in this order.
 @end defvr
 
 @defvr {MATLAB/Octave variable} oo_.FilteredVariablesKStepAheadVariances
 Variable set by the @code{estimation} command, if it is used with the
-@code{filter_step_ahead} option.
+@code{filter_step_ahead} option. It is a 4 dimensional array where the k-steps are stored along the first dimension, while the fourth dimension of the array provides the observation for which the forecast has been made. The second and third dimension provide the respective variables. For example, if @code{filter_step_ahead=[1 2 4]} and @code{nobs=200}, the element (3,4,5,204) stores the four period ahead forecast error covariance between variable 4 and variable 5, computed at time t=200 for time t=204. Padding with zeros is analogous to @code{oo_.FilteredVariablesKStepAhead}. 
 @end defvr
 
 @defvr {MATLAB/Octave variable} oo_.Filtered_Variables_X_step_ahead
@@ -5670,16 +5760,29 @@ estimates using a higher tapering are usually more reliable.
 
 @deffn Command model_comparison @var{FILENAME}[(@var{DOUBLE})]@dots{};
 @deffnx Command model_comparison (marginal_density = laplace | modifiedharmonicmean) @var{FILENAME}[(@var{DOUBLE})]@dots{};
-
+@anchor{model_comparison}
 @descriptionhead
 
-This command computes odds ratios and estimate a posterior density
-over a collection of models 
-(see e.g. @cite{Koop (2003), Ch. 1}). The priors over models can be specified
-as the @var{DOUBLE} values, otherwise a uniform prior over all models is assumed. 
-In contrast to frequentist econometrics, the models to be compared do not need to be nested. 
-However, as the computation of posterior odds ratios is a Bayesian technique, 
-the comparison of models estimated with maximum likelihood is not supported.
+This command computes odds ratios and estimate a posterior density over a
+collection of models (see e.g. @cite{Koop (2003), Ch. 1}). The priors over
+models can be specified as the @var{DOUBLE} values, otherwise a uniform prior
+over all models is assumed.  In contrast to frequentist econometrics, the
+models to be compared do not need to be nested.  However, as the computation of
+posterior odds ratios is a Bayesian technique, the comparison of models
+estimated with maximum likelihood is not supported.
+
+It is important to keep in mind that model comparison of this type is only
+valid with proper priors.  If the prior does not integrate to one for all
+compared models, the comparison is not valid. This may be the case if part of
+the prior mass is implicitly truncated because Blanchard and Kahn conditions
+(instability or indeterminacy of the model) are not fulfilled, or because for
+some regions of the parameters space the deterministic steady state is
+undefined (or Dynare is unable to find it). The compared marginal densities
+should be renormalized by the effective prior mass, but this not done by
+Dynare: it is the user's responsibility to make sure that model comparison is
+based on proper priors. Note that, for obvious reasons, this is not an issue if
+the compared marginal densities are based on Laplace approximations.
+
 
 @examplehead
 
@@ -6316,7 +6419,7 @@ parameters in the @code{params}-command and be entered in the
 
 @item
 @math{e} are the exogenous stochastic shocks, specified in the
-@code{var_exo}-command;
+@code{varexo}-command;
 
 @item
 @math{W} is the weighting matrix;
@@ -7051,7 +7154,7 @@ The threshold @math{pvalue} for significant Kolmogorov-Smirnov test (@i{i.e.} pl
 
 @item pvalue_corr = @var{DOUBLE}
 The threshold @math{pvalue} for significant correlation in filtered samples
-(@i{i.e.} plot bivariate samples when @math{pvalue<} @code{pvalue_corr}). Default: @code{0.001}
+(@i{i.e.} plot bivariate samples when @math{pvalue<} @code{pvalue_corr}). Default: @code{1e-5}
 
 @end table
 @customhead{Reduced Form Mapping Options}
@@ -7080,7 +7183,7 @@ are filtered. Default: @code{0.1}
 
 @item alpha2_redform = @var{DOUBLE}
 Critical value for correlations @math{\rho}  when reduced form entries
-are filtered. Default: @code{0.3}
+are filtered. Default: @code{1e-5}
 
 @item namendo = (@var{VARIABLE_NAME}@dots{})
 List of endogenous variables. `@code{:}' indicates all endogenous variables.
@@ -7127,7 +7230,7 @@ Critical value for Smirnov statistics @math{d}: plot parameters with
 
 @item alpha2_rmse = @var{DOUBLE}
 Critical value for correlation @math{\rho}: plot couples of parmaters with
-@math{\left|\rho\right|=} @code{alpha2_rmse}. Default: @code{1.0}
+@math{\left|\rho\right|=} @code{alpha2_rmse}. Default: @code{1e-5}
 
 @item datafile = @var{FILENAME}
 @xref{datafile}.
@@ -10150,6 +10253,31 @@ Overloads the Matlab/Octave @code{exp} function for @dseries objects.
 
 @sp 1
 
+@deftypefn{dseries} {@var{l} =} exist (@var{A}, @var{varname})
+
+Tests if @var{variable} exists in @dseries object @var{A}. Returns 1 (true) iff @var{variable} exists in @var{A}.
+
+@exampleshead
+
+@example
+>> ts = dseries(randn(100,1));
+>> ts.exist('Variable_1')
+
+ans =
+
+     1
+
+>> ts.exist('Variable_2')
+
+ans =
+
+     0
+@end example
+
+@end deftypefn
+
+@sp 1
+
 @deftypefn{dseries} {@var{C} =} extract (@var{A}, @var{B}[, ...])
 
 Extracts some variables from a @dseries object @var{A} and returns a @dseries object @var{C}. The input arguments following @var{A} are strings representing the variables to be selected in the new @dseries object @var{C}. To simplify the creation of sub-objects, the @dseries class overloads the curly braces (@code{D = extract (A, B, C)} is equivalent to @code{D = A@{B,C@}}) and allows implicit loops (defined between a pair of @@ symbol, see examples below) or Matlab/Octave's regular expressions (introduced by square brackets).
@@ -11322,7 +11450,7 @@ command. Default: @code{`!'}
 @end defmethod
 
 @anchor{addGraph}
-@defmethod Report addGraph axisShape, data, graphDirName, graphName, graphSize, height, showGrid, showLegend, showLegendBox, legendLocation, legendOrientation, legendFontSize, miscTikzAxisOptions, miscTikzPictureOptions, seriesToUse, shade, shadeColor, shadeOpacity, tickFontSize, title, titleFontSize, titleFormat, width, xlabel, ylabel, xAxisTight, xrange, xTicks, xTickLabels, xTickLabelAnchor, xTickLabelRotation, yAxisTight, yTickLabelFixed, yTickLabelPrecision, yTickLabelScaled, yTickLabelZeroFill, yrange, showZeroline, zeroLineColor
+@defmethod Report addGraph axisShape, data, graphDirName, graphName, graphSize, height, showGrid, showLegend, showLegendBox, legendLocation, legendOrientation, legendFontSize, miscTikzAxisOptions, miscTikzPictureOptions, seriesToUse, shade, shadeColor, shadeOpacity, tickFontSize, title, titleFontSize, titleFormat, width, writeCSV, xlabel, ylabel, xAxisTight, xrange, xTicks, xTickLabels, xTickLabelAnchor, xTickLabelRotation, yAxisTight, yTickLabelFixed, yTickLabelPrecision, yTickLabelScaled, yTickLabelZeroFill, yrange, showZeroline, zeroLineColor
 Adds a @code{Graph} to a @code{Section}.
 @optionshead
 @table @code
@@ -11337,10 +11465,12 @@ to the left, right, bottom, and top of the graphed line(s). @code{`L'} means
 that there is an axis to the left and bottom of the graphed line(s). Default:
 @code{`box'}
 
+@anchor{graphDirName}
 @item graphDirName, @code{STRING}
 The name of the folder in which to store this figure. Default:
 @code{tmpRepDir}
 
+@anchor{graphName}
 @item graphName, @code{STRING}
 The name to use when saving this figure. Default: something of the
 form @code{graph_pg1_sec2_row1_col3.tex}
@@ -11426,6 +11556,12 @@ the title and subtitles. Default: @code{TikZ default}
 @item width, @code{DOUBLE}
 The width of the graph, in inches. Default: @code{6.0}
 
+@item writeCSV, @code{BOOLEAN}
+Whether or not to write a CSV file with only the plotted data. The file will be
+saved in the directory specified by @ref{graphDirName} with the same base name
+as specified by @ref{graphName} with the ending @code{.csv}. Default:
+@code{false}
+
 @item xlabel, @code{STRING}
 The x-axis label. Default: @code{none}
 
@@ -11495,13 +11631,19 @@ reports. Default: @code{`black'}
 @end table
 @end defmethod
 
-@defmethod Report addTable data, showHlines, precision, range, seriesToUse, tableDirName, tableName, title, titleFormat, vlineAfter, vlineAfterEndOfPeriod, showVlines
+@defmethod Report addTable data, highlightRows, showHlines, precision, range, seriesToUse, tableDirName, tableName, title, titleFormat, vlineAfter, vlineAfterEndOfPeriod, showVlines, writeCSV
 Adds a @code{Table} to a @code{Section}.
 @optionshead
 @table @code
 
 @item data, @code{dseries}
 @xref{data}.
+
+@item highlightRows, @code{CELL_ARRAY_STRINGS}
+A cell array containing the colors to use for row highlighting. See
+@ref{shadeColor} for how to use colors with reports. Highlighting for a
+specific row can be overridden by using the @ref{tableRowColor} option to
+@ref{addSeries}. Default: @code{empty}
 
 @item showHlines, @code{BOOLEAN}
 Whether or not to show horizontal lines separating the rows. Default: @code{false}
@@ -11515,10 +11657,12 @@ The date range of the data to be displayed. Default: @code{all}
 @item seriesToUse, @code{CELL_ARRAY_STRINGS}
 @xref{seriesToUse}.
 
+@anchor{tableDirName}
 @item tableDirName, @code{STRING}
 The name of the folder in which to store this table. Default:
 @code{tmpRepDir}
 
+@anchor{tableName}
 @item tableName, @code{STRING}
 The name to use when saving this table. Default: something of the
 form @code{table_pg1_sec2_row1_col3.tex}
@@ -11539,6 +11683,13 @@ every year, after the fourth quarter, etc.). Default: @code{false}
 
 @item showVlines, @code{BOOLEAN}
 Whether or not to show vertical lines separating the columns. Default: @code{false}
+
+@item writeCSV, @code{BOOLEAN}
+Whether or not to write a CSV file containing the data displayed in the
+table. The file will be saved in the directory specified by @ref{tableDirName}
+with the same base name as specified by @ref{tableName} with the ending
+@code{.csv}. Default: @code{false}
+
 @end table
 @end defmethod
 
@@ -11610,6 +11761,7 @@ quarterly @code{tableDataRhs} could point to the yearly averages of
 the quarterly series. This would cause quarterly data to be displayed
 followed by annual data. Default: @code{empty}
 
+@anchor{tableRowColor}
 @item tableRowColor, @code{STRING}
 The color that you want the row to be. Predefined values include
 @code{LightCyan} and @code{Gray}. Default: @code{white}.

@@ -1,24 +1,38 @@
-function [dataset_, dataset_info, xparam1, hh, M_, options_, oo_, estim_params_,bayestopt_, fake] = dynare_estimation_init(var_list_, dname, gsa_flag, M_, options_, oo_, estim_params_, bayestopt_)
+function [dataset_, dataset_info, xparam1, hh, M_, options_, oo_, estim_params_,bayestopt_, bounds] = dynare_estimation_init(var_list_, dname, gsa_flag, M_, options_, oo_, estim_params_, bayestopt_)
 
 % function dynare_estimation_init(var_list_, gsa_flag)
-% preforms initialization tasks before estimation or
+% performs initialization tasks before estimation or
 % global sensitivity analysis
 %
 % INPUTS
-%   var_list_:  selected endogenous variables vector
-%   dname:      alternative directory name
-%   gsa_flag:   flag for GSA operation (optional)
-%
+%   var_list_:      selected endogenous variables vector
+%   dname:          alternative directory name
+%   gsa_flag:       flag for GSA operation (optional)
+%   M_:             structure storing the model information
+%   options_:       structure storing the options
+%   oo_:            structure storing the results
+%   estim_params_:  structure storing information about estimated
+%                   parameters
+%   bayestopt_:     structure storing information about priors
+%   optim:          structure storing optimization bounds
+    
 % OUTPUTS
-%   data:    data after required transformation
-%   rawdata:  data as in the data file
-%   xparam1:    initial value of estimated parameters as returned by
-%               set_prior()
-%
+%   dataset_:       the dataset after required transformation
+%   dataset_info:   Various informations about the dataset (descriptive statistics and missing observations).
+%   xparam1:        initial value of estimated parameters as returned by
+%                   set_prior() or loaded from mode-file
+%   hh:             hessian matrix at the loaded mode (or empty matrix)
+%   M_:             structure storing the model information
+%   options_:       structure storing the options
+%   oo_:            structure storing the results
+%   estim_params_:  structure storing information about estimated
+%                   parameters
+%   bayestopt_:     structure storing information about priors
+% 
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2003-2013 Dynare Team
+% Copyright (C) 2003-2014 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -275,22 +289,17 @@ if ~isempty(estim_params_)
         end
         % Set prior bounds
         bounds = prior_bounds(bayestopt_,options_);
-        bounds(:,1)=max(bounds(:,1),lb);
-        bounds(:,2)=min(bounds(:,2),ub);
+        bounds.lb = max(bounds.lb,lb);
+        bounds.ub = min(bounds.ub,ub);
     else  % estimated parameters but no declared priors
         % No priors are declared so Dynare will estimate the model by
         % maximum likelihood with inequality constraints for the parameters.
         options_.mh_replic = 0;% No metropolis.
-        bounds(:,1) = lb;
-        bounds(:,2) = ub;
+        bounds.lb = lb;
+        bounds.ub = ub;
     end
     % Test if initial values of the estimated parameters are all between the prior lower and upper bounds.
     check_prior_bounds(xparam1,bounds,M_,estim_params_,options_,bayestopt_)
-
-    lb = bounds(:,1);
-    ub = bounds(:,2);
-    bayestopt_.lb = lb;
-    bayestopt_.ub = ub;
 end
 
 if isempty(estim_params_)% If estim_params_ is empty (e.g. when running the smoother on a calibrated model)
@@ -298,8 +307,6 @@ if isempty(estim_params_)% If estim_params_ is empty (e.g. when running the smoo
         error('Estimation: the ''estimated_params'' block is mandatory (unless you are running a smoother)')
     end
     xparam1 = [];
-    bayestopt_.lb = [];
-    bayestopt_.ub = [];
     bayestopt_.jscale = [];
     bayestopt_.pshape = [];
     bayestopt_.p1 = [];
@@ -377,9 +384,15 @@ oo_.dr.restrict_columns = [ic; length(k2)+(1:nspred-npred)'];
 k3 = [];
 k3p = [];
 if options_.selected_variables_only
-    for i=1:size(var_list_,1)
-        k3 = [k3; strmatch(var_list_(i,:),M_.endo_names(dr.order_var,:), 'exact')];
-        k3p = [k3; strmatch(var_list_(i,:),M_.endo_names, 'exact')];
+    if options_.forecast > 0 && options_.mh_replic == 0 && ~options_.load_mh_file
+        fprintf('\nEstimation: The selected_variables_only option is incompatible with classical forecasts. It will be ignored.\n')
+        k3 = (1:M_.endo_nbr)';
+        k3p = (1:M_.endo_nbr)';    
+    else
+        for i=1:size(var_list_,1)
+            k3 = [k3; strmatch(var_list_(i,:),M_.endo_names(dr.order_var,:), 'exact')];
+            k3p = [k3; strmatch(var_list_(i,:),M_.endo_names, 'exact')];
+        end
     end
 else
     k3 = (1:M_.endo_nbr)';
@@ -444,8 +457,15 @@ if options_.analytic_derivation,
         [tmp1, params] = evaluate_steady_state(oo_.steady_state,M,options_,oo_,steadystate_check_flag);
         change_flag=any(find(params-M.params));
         if change_flag,
-            disp('The steadystate file changed the values for the following parameters: '),
-            disp(M.param_names(find(params-M.params),:))
+            skipline();
+            if any(isnan(params))
+                disp('After computing the steadystate, the following parameters are still NaN: '),
+                disp(M.param_names(isnan(params),:))
+            end
+            if any(find(params(~isnan(params))-M.params(~isnan(params))))
+                disp('The steadystate file changed the values for the following parameters: '),
+                disp(M.param_names(find(params(~isnan(params))-M.params(~isnan(params))),:))
+            end
             disp('The derivatives of jacobian and steady-state will be computed numerically'),
             disp('(re-set options_.analytic_derivation_mode= -2)'),
             options_.analytic_derivation_mode= -2;
@@ -458,6 +478,13 @@ k = find(isnan(bayestopt_.jscale));
 bayestopt_.jscale(k) = options_.mh_jscale;
 
 % Build the dataset
+if ~isempty(options_.datafile)
+    [pathstr,name,ext] = fileparts(options_.datafile);
+    if strcmp(name,M_.fname)
+        error('Data-file and mod-file are not allowed to have the same name. Please change the name of the data file.')
+    end
+end
+
 [dataset_, dataset_info, newdatainterfaceflag] = makedataset(options_, options_.dsge_var*options_.dsge_varlag, gsa_flag);
 
 % Set options_.nobs if needed

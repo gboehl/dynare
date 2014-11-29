@@ -1,21 +1,21 @@
 function [LIK,lik] = gaussian_filter(ReducedForm,Y,start,DynareOptions)
-% Evaluates the likelihood of a non-linear model approximating the 
-% predictive (prior) and filtered (posterior) densities for state variables 
-% by gaussian distributions. 
-% Gaussian approximation is done by:  
-% - a Kronrod-Paterson gaussian quadrature with a limited number of nodes. 
-% Multidimensional quadrature is obtained by the Smolyak operator (ref: Winschel & Kratzig, 2010). 
+% Evaluates the likelihood of a non-linear model approximating the
+% predictive (prior) and filtered (posterior) densities for state variables
+% by gaussian distributions.
+% Gaussian approximation is done by:
+% - a Kronrod-Paterson gaussian quadrature with a limited number of nodes.
+% Multidimensional quadrature is obtained by the Smolyak operator (ref: Winschel & Kratzig, 2010).
 % - a spherical-radial cubature (ref: Arasaratnam & Haykin, 2008,2009).
 % - a scaled unscented transform cubature (ref: )
-% - Monte-Carlo draws from a multivariate gaussian distribution. 
-% First and second moments of prior and posterior state densities are computed 
-% from the resulting nodes/particles and allows to generate new distributions at the 
-% following observation. 
-% => The use of nodes is much faster than Monte-Carlo Gaussian particle and standard particles 
-% filters since it treats a lesser number of particles and there is no need 
+% - Monte-Carlo draws from a multivariate gaussian distribution.
+% First and second moments of prior and posterior state densities are computed
+% from the resulting nodes/particles and allows to generate new distributions at the
+% following observation.
+% => The use of nodes is much faster than Monte-Carlo Gaussian particle and standard particles
+% filters since it treats a lesser number of particles and there is no need
 % of resampling.
-% However, estimations may reveal biaised if the model is truly non-gaussian 
-% since predictive and filtered densities are unimodal. 
+% However, estimations may reveal biaised if the model is truly non-gaussian
+% since predictive and filtered densities are unimodal.
 %
 % INPUTS
 %    reduced_form_model     [structure] Matlab's structure describing the reduced form model.
@@ -53,9 +53,7 @@ function [LIK,lik] = gaussian_filter(ReducedForm,Y,start,DynareOptions)
 
 persistent init_flag mf0 mf1
 persistent nodes2 weights2 weights_c2 number_of_particles
-persistent sample_size number_of_state_variables number_of_observed_variables 
-
-verbose = 1;
+persistent sample_size number_of_state_variables number_of_observed_variables
 
 % Set default
 if isempty(start)
@@ -72,21 +70,24 @@ if isempty(init_flag)
     number_of_particles = DynareOptions.particle.number_of_particles;
     init_flag = 1;
 end
+
 % compute gaussian quadrature nodes and weights on states and shocks
-if isempty(nodes2) && strcmpi(DynareOptions.particle.approximation_method,'quadrature') 
-    [nodes2,weights2] = nwspgr('GQN',number_of_state_variables,DynareOptions.particle.smolyak_accuracy) ;
-    weights_c2 = weights2 ; 
+if isempty(nodes2)
+    if DynareOptions.particle.distribution_approximation.cubature
+        [nodes2,weights2] = spherical_radial_sigma_points(number_of_state_variables);
+        weights_c2 = weights2;
+    elseif DynareOptions.particle.distribution_approximation.unscented
+        [nodes2,weights2,weights_c2] = unscented_sigma_points(number_of_state_variables,DynareOptions);
+    else
+        if ~DynareOptions.particle.distribution_approximation.montecarlo
+            error('Estimation: This approximation for the proposal is not implemented or unknown!')
+        end
+    end
 end
-if isempty(nodes2) && strcmpi(DynareOptions.particle.approximation_method,'cubature')
-    [nodes2,weights2] = spherical_radial_sigma_points(number_of_state_variables) ;
-    weights_c2 = weights2 ; 
+
+if DynareOptions.particle.distribution_approximation.montecarlo
+    set_dynare_seed('default');
 end
-if isempty(nodes2) && strcmpi(DynareOptions.particle.approximation_method,'unscented')
-    [nodes2,weights2,weights_c2] = unscented_sigma_points(number_of_state_variables,DynareOptions) ;    
-end    
-if isempty(nodes2) && strcmpi(DynareOptions.particle.approximation_method,'monte-carlo')
- 	set_dynare_seed('default');
-end 
 
 % Get covariance matrices
 Q = ReducedForm.Q;
@@ -114,46 +115,43 @@ ks = 0 ;
 %Estimate = zeros(number_of_state_variables,sample_size) ;
 %V_Estimate = zeros(number_of_state_variables,number_of_state_variables,sample_size) ;
 for t=1:sample_size
-    % build the proposal 
+    % build the proposal
     [PredictedStateMean,PredictedStateVarianceSquareRoot,StateVectorMean,StateVectorVarianceSquareRoot] = ...
         gaussian_filter_bank(ReducedForm,Y(:,t),StateVectorMean,StateVectorVarianceSquareRoot,Q_lower_triangular_cholesky,H_lower_triangular_cholesky,H,DynareOptions) ;
     %Estimate(:,t) = PredictedStateMean ;
     %V_Estimate(:,:,t) = PredictedStateVarianceSquareRoot ;
-    if strcmpi(DynareOptions.particle.approximation_method,'quadrature') || ... % sparse grids approximations 
-       strcmpi(DynareOptions.particle.approximation_method,'cubature') || ...
-       strcmpi(DynareOptions.particle.approximation_method,'unscented')
-        StateParticles = bsxfun(@plus,StateVectorMean,StateVectorVarianceSquareRoot*nodes2') ;    
+    if DynareOptions.particle.distribution_approximation.cubature || DynareOptions.particle.distribution_approximation.unscented
+        StateParticles = bsxfun(@plus,StateVectorMean,StateVectorVarianceSquareRoot*nodes2') ;
         IncrementalWeights = ...
                     gaussian_densities(Y(:,t),StateVectorMean,...
                                         StateVectorVarianceSquareRoot,PredictedStateMean,...
                                         PredictedStateVarianceSquareRoot,StateParticles,H,const_lik,...
-                                        weights2,weights_c2,ReducedForm,DynareOptions) ;  
-        SampleWeights = weights2.*IncrementalWeights ;			
+                                        weights2,weights_c2,ReducedForm,DynareOptions) ;
+        SampleWeights = weights2.*IncrementalWeights ;
         SumSampleWeights = sum(SampleWeights) ;
         lik(t) = log(SumSampleWeights) ;
-        SampleWeights = SampleWeights./SumSampleWeights ;		
+        SampleWeights = SampleWeights./SumSampleWeights ;
     else % Monte-Carlo draws
         StateParticles = bsxfun(@plus,StateVectorVarianceSquareRoot*randn(state_variance_rank,number_of_particles),StateVectorMean) ;
         IncrementalWeights = ...
                     gaussian_densities(Y(:,t),StateVectorMean,...
                                         StateVectorVarianceSquareRoot,PredictedStateMean,...
                                         PredictedStateVarianceSquareRoot,StateParticles,H,const_lik,...
-                                        1/number_of_particles,1/number_of_particles,ReducedForm,DynareOptions) ;  
-        SampleWeights = SampleWeights.*IncrementalWeights ;			
+                                        1/number_of_particles,1/number_of_particles,ReducedForm,DynareOptions) ;
+        SampleWeights = SampleWeights.*IncrementalWeights ;
         SumSampleWeights = sum(SampleWeights) ;
         %VarSampleWeights = IncrementalWeights-SumSampleWeights ;
         %VarSampleWeights = VarSampleWeights*VarSampleWeights'/(number_of_particles-1) ;
-        lik(t) = log(SumSampleWeights) ; %+ .5*VarSampleWeights/(number_of_particles*(SumSampleWeights*SumSampleWeights)) ; 
-        SampleWeights = SampleWeights./SumSampleWeights ;		
+        lik(t) = log(SumSampleWeights) ; %+ .5*VarSampleWeights/(number_of_particles*(SumSampleWeights*SumSampleWeights)) ;
+        SampleWeights = SampleWeights./SumSampleWeights ;
         Neff = 1/sum(bsxfun(@power,SampleWeights,2)) ;
-        if (Neff<.5*sample_size && strcmpi(DynareOptions.particle.resampling.status,'generic')) || ... 
-                                   strcmpi(DynareOptions.particle.resampling.status,'systematic')
+        if (Neff<.5*sample_size && DynareOptions.particle.resampling.status.generic) || DynareOptions.particle.resampling.status.systematic
             ks = ks + 1 ;
-            StateParticles = resample(StateParticles',SampleWeights,DynareOptions)' ; 
+            StateParticles = resample(StateParticles',SampleWeights,DynareOptions)' ;
             StateVectorMean = mean(StateParticles,2) ;
             StateVectorVarianceSquareRoot = reduced_rank_cholesky( (StateParticles*StateParticles')/(number_of_particles-1) - StateVectorMean*(StateVectorMean') )';
             SampleWeights = 1/number_of_particles ;
-        elseif strcmpi(DynareOptions.particle.resampling.status,'none')
+        elseif DynareOptions.particle.resampling.status.none
             StateVectorMean = (sampleWeights*StateParticles)' ;
             temp = sqrt(SampleWeights').*StateParticles ;
             StateVectorVarianceSquareRoot = reduced_rank_cholesky( temp'*temp - StateVectorMean*(StateVectorMean') )';
@@ -162,4 +160,3 @@ for t=1:sample_size
 end
 
 LIK = -sum(lik(start:end));
-

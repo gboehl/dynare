@@ -1,8 +1,8 @@
-function [ProposalStateVector,Weights] = conditional_filter_proposal(ReducedForm,obs,StateVectors,SampleWeights,Q_lower_triangular_cholesky,H_lower_triangular_cholesky,H,DynareOptions,normconst2) 
+function [ProposalStateVector,Weights] = conditional_filter_proposal(ReducedForm,obs,StateVectors,SampleWeights,Q_lower_triangular_cholesky,H_lower_triangular_cholesky,H,DynareOptions,normconst2)
 %
-% Computes the proposal for each past particle using Gaussian approximations 
-% for the state errors and the Kalman filter 
-% 
+% Computes the proposal for each past particle using Gaussian approximations
+% for the state errors and the Kalman filter
+%
 % INPUTS
 %    reduced_form_model     [structure] Matlab's structure describing the reduced form model.
 %                                       reduced_form_model.measurement.H   [double]   (pp x pp) variance matrix of measurement errors.
@@ -39,8 +39,8 @@ function [ProposalStateVector,Weights] = conditional_filter_proposal(ReducedForm
 %           stephane DOT adjemian AT univ DASH lemans DOT fr
 
 persistent init_flag2 mf0 mf1
-persistent number_of_state_variables number_of_observed_variables 
-persistent number_of_structural_innovations 
+persistent number_of_state_variables number_of_observed_variables
+persistent number_of_structural_innovations
 
 % Set local state space model (first-order approximation).
 ghx  = ReducedForm.ghx;
@@ -73,16 +73,13 @@ if isempty(init_flag2)
     init_flag2 = 1;
 end
 
-if strcmpi(DynareOptions.particle.IS_approximation_method,'cubature') || strcmpi(DynareOptions.particle.IS_approximation_method,'monte-carlo')
-    [nodes,weights] = spherical_radial_sigma_points(number_of_structural_innovations) ; 
+if DynareOptions.particle.proposal_approximation.cubature || DynareOptions.particle.proposal_approximation.montecarlo
+    [nodes,weights] = spherical_radial_sigma_points(number_of_structural_innovations);
     weights_c = weights ;
-end    
-if strcmpi(DynareOptions.particle.IS_approximation_method,'quadrature')
-    [nodes,weights] = nwspgr('GQN',number_of_structural_innovations,DynareOptions.particle.smolyak_accuracy) ;
-    weights_c = weights ;
-end    
-if strcmpi(DynareOptions.particle.IS_approximation_method,'unscented')
-    [nodes,weights,weights_c] = unscented_sigma_points(number_of_structural_innovations,DynareOptions) ; 
+elseif DynareOptions.particle.proposal_approximation.unscented
+    [nodes,weights,weights_c] = unscented_sigma_points(number_of_structural_innovations,DynareOptions);
+else
+    error('Estimation: This approximation for the proposal is not implemented or unknown!')
 end
 
 epsilon = Q_lower_triangular_cholesky*(nodes') ;
@@ -93,38 +90,34 @@ tmp = local_state_space_iteration_2(yhat,epsilon,ghx,ghu,constant,ghxx,ghuu,ghxu
 PredictedStateMean = tmp(mf0,:)*weights ;
 PredictedObservedMean = tmp(mf1,:)*weights;
 
-if strcmpi(DynareOptions.particle.IS_approximation_method,'cubature') || ...
-   strcmpi(DynareOptions.particle.IS_approximation_method,'monte-carlo')
+if DynareOptions.particle.proposal_approximation.cubature || DynareOptions.particle.proposal_approximation.montecarlo
     PredictedStateMean = sum(PredictedStateMean,2) ;
     PredictedObservedMean = sum(PredictedObservedMean,2) ;
     dState = bsxfun(@minus,tmp(mf0,:),PredictedStateMean)'.*sqrt(weights) ;
     dObserved = bsxfun(@minus,tmp(mf1,:),PredictedObservedMean)'.*sqrt(weights);
-    big_mat = [dObserved  dState ; [H_lower_triangular_cholesky zeros(number_of_observed_variables,number_of_state_variables)] ] ;
-    [mat1,mat] = qr2(big_mat,0) ;
-    mat = mat' ; 
+    big_mat = [dObserved  dState; [H_lower_triangular_cholesky zeros(number_of_observed_variables,number_of_state_variables)] ];
+    [mat1,mat] = qr2(big_mat,0);
+    mat = mat';
     clear('mat1');
-    PredictedObservedVarianceSquareRoot = mat(1:number_of_observed_variables,1:number_of_observed_variables) ;
-    CovarianceObservedStateSquareRoot = mat(number_of_observed_variables+(1:number_of_state_variables),1:number_of_observed_variables) ;
-    StateVectorVarianceSquareRoot = mat(number_of_observed_variables+(1:number_of_state_variables),number_of_observed_variables+(1:number_of_state_variables)) ;
-    StateVectorMean = PredictedStateMean + (CovarianceObservedStateSquareRoot/PredictedObservedVarianceSquareRoot)*(obs - PredictedObservedMean) ; 
-end 
-if strcmpi(DynareOptions.particle.IS_approximation_method,'quadrature') || ... 
-   strcmpi(DynareOptions.particle.IS_approximation_method,'unscented') 
+    PredictedObservedVarianceSquareRoot = mat(1:number_of_observed_variables,1:number_of_observed_variables);
+    CovarianceObservedStateSquareRoot = mat(number_of_observed_variables+(1:number_of_state_variables),1:number_of_observed_variables);
+    StateVectorVarianceSquareRoot = mat(number_of_observed_variables+(1:number_of_state_variables),number_of_observed_variables+(1:number_of_state_variables));
+    StateVectorMean = PredictedStateMean + (CovarianceObservedStateSquareRoot/PredictedObservedVarianceSquareRoot)*(obs - PredictedObservedMean);
+else
     dState = bsxfun(@minus,tmp(mf0,:),PredictedStateMean);
     dObserved = bsxfun(@minus,tmp(mf1,:),PredictedObservedMean);
     PredictedStateVariance = dState*diag(weights_c)*dState';
     PredictedObservedVariance = dObserved*diag(weights_c)*dObserved' + H;
     PredictedStateAndObservedCovariance = dState*diag(weights_c)*dObserved';
-    KalmanFilterGain = PredictedStateAndObservedCovariance/PredictedObservedVariance ; 
+    KalmanFilterGain = PredictedStateAndObservedCovariance/PredictedObservedVariance ;
     StateVectorMean = PredictedStateMean + KalmanFilterGain*(obs - PredictedObservedMean);
     StateVectorVariance = PredictedStateVariance - KalmanFilterGain*PredictedObservedVariance*KalmanFilterGain';
     StateVectorVariance = .5*(StateVectorVariance+StateVectorVariance');
-    StateVectorVarianceSquareRoot = reduced_rank_cholesky(StateVectorVariance)'; 
-end 
-    
+    StateVectorVarianceSquareRoot = reduced_rank_cholesky(StateVectorVariance)';
+end
+
 ProposalStateVector = StateVectorVarianceSquareRoot*randn(size(StateVectorVarianceSquareRoot,2),1)+StateVectorMean ;
 ypred = measurement_equations(ProposalStateVector,ReducedForm,DynareOptions) ;
 foo = H_lower_triangular_cholesky \ (obs - ypred) ;
-likelihood = exp(-0.5*(foo)'*foo)/normconst2 + 1e-99 ;			
-Weights = SampleWeights.*likelihood ;	
-
+likelihood = exp(-0.5*(foo)'*foo)/normconst2 + 1e-99 ;
+Weights = SampleWeights.*likelihood;

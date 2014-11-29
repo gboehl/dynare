@@ -194,6 +194,8 @@ mex/build/matlab/run_m2html.m
 /contrib/ms-sbvar/*.dat
 /contrib/ms-sbvar/sbvar_commandline
 /contrib/ms-sbvar/sbvar_init_file
+/tests/ms-sbvar/*.tmp
 
 # Reporting
 *synctex.gz
+tests/reporting/tmpRepDir

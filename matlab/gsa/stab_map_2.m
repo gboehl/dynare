@@ -1,4 +1,4 @@
-function stab_map_2(x,alpha2, pvalue, fnam, dirname,xparam1,figtitle)
+function indcorr = stab_map_2(x,alpha2, pvalue_crit, fnam, dirname,xparam1,figtitle)
 % function stab_map_2(x, alpha2, pvalue, fnam, dirname,xparam1)
 %
 % Written by Marco Ratto
@@ -32,11 +32,13 @@ global bayestopt_ estim_params_ options_ oo_ M_
 npar=size(x,2);
 nsam=size(x,1);
 ishock= npar>estim_params_.np;
+nograph = options_.nograph;
 if nargin<4,
   fnam='';
 end
 if nargin<5,
   dirname='';
+  nograph=1;
 end
 if nargin<6,
   xparam1=[];
@@ -53,7 +55,7 @@ nshock = nshock + estim_params_.nvn;
 nshock = nshock + estim_params_.ncx;
 nshock = nshock + estim_params_.ncn;
 
-c0=corrcoef(x);
+[c0, pvalue] = corrcoef(x);
 c00=tril(c0,-1);
 fig_nam_=[fname_,'_',fnam,'_corr_'];
 
@@ -70,13 +72,13 @@ end
 disp([' '])
 disp(['Correlation analysis for ',fnam])
 
+indcorr = [];
 for j=1:npar,
     i2=find(abs(c00(:,j))>alpha2);
     if length(i2)>0,
         for jx=1:length(i2),
-            tval  = abs(c00(i2(jx),j)*sqrt( (nsam-2)/(1-c00(i2(jx),j)^2) ));
-            tcr = tcrit(nsam-2,pvalue);
-            if tval>tcr,
+            if pvalue(j,i2(jx))<pvalue_crit,
+                indcorr = [indcorr; [j i2(jx)]];
                 j2=j2+1;
                 if ishock,
                     tmp_name = (['[',bayestopt_.name{j},',',bayestopt_.name{i2(jx)},']']);
@@ -85,7 +87,7 @@ for j=1:npar,
                 end
                 fprintf(1,'%20s: corrcoef = %7.3f\n',tmp_name,c0(i2(jx),j));
                     
-                if ~options_.nograph,
+                if ~nograph,
                 if mod(j2,12)==1,
                     ifig=ifig+1;
                     hh=dyn_figure(options_,'name',[figtitle,' sample bivariate projection ', num2str(ifig)]);
@@ -118,12 +120,12 @@ for j=1:npar,
             
         end
     end
-    if ~options_.nograph && (j==(npar)) && j2>0 && (mod(j2,12)~=0),
+    if ~nograph && (j==(npar)) && j2>0 && (mod(j2,12)~=0),
         dyn_saveas(hh,[dirname,filesep,fig_nam_,int2str(ifig)],options_);
     end
     
 end
 if j2==0,
-    disp(['No correlation term with pvalue <', num2str(pvalue),' found for ',fnam])
+    disp(['No correlation term with pvalue <', num2str(pvalue_crit),' and |corr. coef.| >',num2str(alpha2),' found for ',fnam])
 end
 %close all

@@ -84,7 +84,7 @@ class ParsingDriver;
 
 %token AIM_SOLVER ANALYTIC_DERIVATION AR AUTOCORR
 %token BAYESIAN_IRF BETA_PDF BLOCK USE_CALIBRATION
-%token BVAR_DENSITY BVAR_FORECAST
+%token BVAR_DENSITY BVAR_FORECAST NODECOMPOSITION
 %token BVAR_PRIOR_DECAY BVAR_PRIOR_FLAT BVAR_PRIOR_LAMBDA
 %token BVAR_PRIOR_MU BVAR_PRIOR_OMEGA BVAR_PRIOR_TAU BVAR_PRIOR_TRAIN
 %token BVAR_REPLIC BYTECODE ALL_VALUES_REQUIRED
@@ -94,7 +94,7 @@ class ParsingDriver;
 %token END ENDVAL EQUAL ESTIMATION ESTIMATED_PARAMS ESTIMATED_PARAMS_BOUNDS ESTIMATED_PARAMS_INIT EXTENDED_PATH ENDOGENOUS_PRIOR
 %token FILENAME FILTER_STEP_AHEAD FILTERED_VARS FIRST_OBS LAST_OBS SET_TIME
 %token <string_val> FLOAT_NUMBER DATES
-%token DEFAULT FIXED_POINT
+%token DEFAULT FIXED_POINT OPT_ALGO
 %token FORECAST K_ORDER_SOLVER INSTRUMENTS SHIFT MEAN STDEV VARIANCE MODE INTERVAL SHAPE DOMAINN
 %token GAMMA_PDF GRAPH GRAPH_FORMAT CONDITIONAL_VARIANCE_DECOMPOSITION NOCHECK STD
 %token HISTVAL HISTVAL_FILE HOMOTOPY_SETUP HOMOTOPY_MODE HOMOTOPY_STEPS HOMOTOPY_FORCE_CONTINUE HP_FILTER HP_NGRID HYBRID
@@ -107,6 +107,8 @@ class ParsingDriver;
 %token MFS MH_CONF_SIG MH_DROP MH_INIT_SCALE MH_JSCALE MH_MODE MH_NBLOCKS MH_REPLIC MH_RECOVER POSTERIOR_MAX_SUBSAMPLE_DRAWS MIN MINIMAL_SOLVING_PERIODS
 %token MODE_CHECK MODE_CHECK_NEIGHBOURHOOD_SIZE MODE_CHECK_SYMMETRIC_PLOTS MODE_CHECK_NUMBER_OF_POINTS MODE_COMPUTE MODE_FILE MODEL MODEL_COMPARISON MODEL_INFO MSHOCKS ABS SIGN
 %token MODEL_DIAGNOSTICS MODIFIEDHARMONICMEAN MOMENTS_VARENDO DIFFUSE_FILTER SUB_DRAWS TAPER_STEPS GEWEKE_INTERVAL MCMC_JUMPING_COVARIANCE MOMENT_CALIBRATION
+%token NUMBER_OF_PARTICLES RESAMPLING SYSTEMATIC GENERIC RESAMPLING_THRESHOLD RESAMPLING_METHOD KITAGAWA STRATIFIED SMOOTH
+%token FILTER_ALGORITHM SIS APF GF GMF CPF PROPOSAL_APPROXIMATION CUBATURE UNSCENTED MONTECARLO DISTRIBUTION_APPROXIMATION
 %token <string_val> NAME
 %token NAN_CONSTANT NO_STATIC NOBS NOCONSTANT NODISPLAY NOCORR NODIAGNOSTIC NOFUNCTIONS NO_HOMOTOPY
 %token NOGRAPH NOMOMENTS NOPRINT NORMAL_PDF SAVE_DRAWS
@@ -1094,6 +1096,7 @@ stoch_simul_primary_options : o_dr_algo
 
 stoch_simul_options : stoch_simul_primary_options
                     | o_loglinear
+                    | o_nodecomposition
                     ;
 
 symbol_list : symbol_list symbol
@@ -1623,7 +1626,8 @@ estimation_options : o_datafile
                    | o_mh_nblocks
                    | o_load_mh_file
                    | o_loglinear
-		   | o_logdata
+                   | o_logdata
+                   | o_nodecomposition
                    | o_nodiagnostic
                    | o_bayesian_irf
                    | o_dsge_var
@@ -1676,6 +1680,13 @@ estimation_options : o_datafile
                    | o_posterior_max_subsample_draws
                    | o_consider_all_endogenous
                    | o_consider_only_observed
+		   | o_number_of_particles
+		   | o_resampling
+		   | o_resampling_threshold
+		   | o_resampling_method
+		   | o_filter_algorithm
+		   | o_proposal_approximation
+		   | o_distribution_approximation
                    ;
 
 list_optim_option : QUOTED_STRING COMMA QUOTED_STRING
@@ -1730,6 +1741,8 @@ osr_options_list : osr_options_list COMMA osr_options
 osr_options : stoch_simul_primary_options
             | o_osr_maxit
             | o_osr_tolf
+            | o_opt_algo
+            | o_optim
             ;
 
 osr : OSR ';'
@@ -1788,6 +1801,8 @@ identification_option : o_ar
                       | o_nograph
                       | o_nodisplay
                       | o_graph_format
+                      | o_diffuse_filter
+                      | o_prior_trunc
                       ;
 
 model_comparison : MODEL_COMPARISON mc_filename_list ';'
@@ -2351,6 +2366,9 @@ calib_smoother_options_list : calib_smoother_option COMMA calib_smoother_options
 calib_smoother_option : o_filtered_vars
                       | o_filter_step_ahead
                       | o_datafile
+                      | o_prefilter
+                      | o_loglinear
+                      | o_first_obs
                       ;
 
 extended_path : EXTENDED_PATH ';'
@@ -2484,6 +2502,9 @@ o_simul_maxit : MAXIT EQUAL INT_NUMBER { driver.option_num("simul.maxit", $3); }
 o_dp_maxit : MAXIT EQUAL INT_NUMBER { driver.option_num("dp.maxit", $3); };
 o_osr_maxit : MAXIT EQUAL INT_NUMBER { driver.option_num("osr.maxit", $3); };
 o_osr_tolf : TOLF EQUAL non_negative_number { driver.option_num("osr.tolf", $3); };
+o_opt_algo : OPT_ALGO EQUAL INT_NUMBER { driver.option_num("osr.opt_algo", $3); }
+           | OPT_ALGO EQUAL filename { driver.option_str("osr.opt_algo", $3); }
+           ;
 o_cutoff : CUTOFF EQUAL non_negative_number { driver.cutoff($3); };
 o_markowitz : MARKOWITZ EQUAL non_negative_number { driver.option_num("markowitz", $3); };
 o_minimal_solving_periods : MINIMAL_SOLVING_PERIODS EQUAL non_negative_number { driver.option_num("minimal_solving_periods", $3); };
@@ -2638,6 +2659,27 @@ o_bvar_prior_flat : BVAR_PRIOR_FLAT { driver.option_num("bvar_prior_flat", "1");
 o_bvar_prior_train : BVAR_PRIOR_TRAIN EQUAL INT_NUMBER { driver.option_num("bvar_prior_train", $3); };
 o_bvar_replic : BVAR_REPLIC EQUAL INT_NUMBER { driver.option_num("bvar_replic", $3); };
 
+o_number_of_particles : NUMBER_OF_PARTICLES EQUAL INT_NUMBER { driver.option_num("particle.number_of_particles", $3); };
+o_resampling : RESAMPLING EQUAL SYSTEMATIC
+              | RESAMPLING EQUAL NONE {driver.option_num("particle.resampling.status.systematic", "0"); driver.option_num("particle.resampling.status.none", "1"); }
+              | RESAMPLING EQUAL GENERIC {driver.option_num("particle.resampling.status.systematic", "0"); driver.option_num("particle.resampling.status.generic", "1"); };
+o_resampling_threshold : RESAMPLING_THRESHOLD EQUAL non_negative_number { driver.option_num("particle.resampling.threshold", $3); };
+o_resampling_method : RESAMPLING_METHOD EQUAL KITAGAWA {driver.option_num("particle.resampling.method.kitagawa", "1"); driver.option_num("particle.resampling.method.smooth", "0"); driver.option_num("particle.resampling.smethod.stratified", "0"); }
+              | RESAMPLING_METHOD EQUAL SMOOTH {driver.option_num("particle.resampling.method.kitagawa", "0"); driver.option_num("particle.resampling.method.smooth", "1"); driver.option_num("particle.resampling.smethod.stratified", "0"); }
+              | RESAMPLING_METHOD EQUAL STRATIFIED {driver.option_num("particle.resampling.method.kitagawa", "0"); driver.option_num("particle.resampling.method.smooth", "0"); driver.option_num("particle.resampling.method.stratified", "1"); };
+o_filter_algorithm : FILTER_ALGORITHM EQUAL SIS {driver.option_num("particle.filter_algorithm.sis", "1"); driver.option_num("particle.filter_algorithm.apf", "0"); driver.option_num("particle.filter_algorithm.gf", "0"); driver.option_num("particle.filter_algorithm.gmf", "0");driver.option_num("particle.filter_algorithm.cpf", "0");}
+		   | FILTER_ALGORITHM EQUAL APF {driver.option_num("particle.filter_algorithm.sis", "0"); driver.option_num("particle.filter_algorithm.apf", "1"); driver.option_num("particle.filter_algorithm.gf", "0"); driver.option_num("particle.filter_algorithm.gmf", "0"); driver.option_num("particle.filter_algorithm.cpf", "0");}
+		   | FILTER_ALGORITHM EQUAL GF {driver.option_num("particle.filter_algorithm.sis", "0"); driver.option_num("particle.filter_algorithm.apf", "0"); driver.option_num("particle.filter_algorithm.gf", "1");  driver.option_num("particle.filter_algorithm.gmf", "0"); driver.option_num("particle.filter_algorithm.cpf", "0");}
+		   | FILTER_ALGORITHM EQUAL GMF {driver.option_num("particle.filter_algorithm.sis", "0"); driver.option_num("particle.filter_algorithm.apf", "0"); driver.option_num("particle.filter_algorithm.gf", "0"); driver.option_num("particle.filter_algorithm.gmf", "1"); driver.option_num("particle.filter_algorithm.cpf", "0");}
+		   | FILTER_ALGORITHM EQUAL CPF {driver.option_num("particle.filter_algorithm.sis", "0"); driver.option_num("particle.filter_algorithm.apf", "0"); driver.option_num("particle.filter_algorithm.gf", "0"); driver.option_num("particle.filter_algorithm.gmf", "0"); driver.option_num("particle.filter_algorithm.cpf", "1");} ;
+o_proposal_approximation : PROPOSAL_APPROXIMATION EQUAL CUBATURE {driver.option_num("particle.proposal_approximation.cubature", "1"); driver.option_num("particle.proposal_approximation.unscented", "0"); driver.option_num("particle.proposal_approximation.montecarlo", "0");}
+		| PROPOSAL_APPROXIMATION EQUAL UNSCENTED {driver.option_num("particle.proposal_approximation.cubature", "0"); driver.option_num("particle.proposal_approximation.unscented", "1"); driver.option_num("particle.proposal_approximation.montecarlo", "0");}
+		| PROPOSAL_APPROXIMATION EQUAL MONTECARLO {driver.option_num("particle.proposal_approximation.cubature", "0"); driver.option_num("particle.proposal_approximation.unscented", "0"); driver.option_num("particle.proposal_approximation.montecarlo", "1");} ;
+o_distribution_approximation : DISTRIBUTION_APPROXIMATION EQUAL CUBATURE {driver.option_num("particle.distribution_approximation.cubature", "1"); driver.option_num("particle.distribution_approximation.unscented", "0"); driver.option_num("particle.distribution_approximation.montecarlo", "0");}
+		| DISTRIBUTION_APPROXIMATION EQUAL UNSCENTED {driver.option_num("particle.distribution_approximation.cubature", "0"); driver.option_num("particle.distribution_approximation.unscented", "1"); driver.option_num("particle.distribution_approximation.montecarlo", "0");}
+		| DISTRIBUTION_APPROXIMATION EQUAL MONTECARLO {driver.option_num("particle.distribution_approximation.cubature", "0"); driver.option_num("particle.distribution_approximation.unscented", "0"); driver.option_num("particle.distribution_approximation.montecarlo", "1");} ;
+
+
 o_gsa_identification : IDENTIFICATION EQUAL INT_NUMBER { driver.option_num("identification", $3); }; /*not in doc */
 o_gsa_morris : MORRIS EQUAL INT_NUMBER { driver.option_num("morris", $3); };
 o_gsa_stab : STAB  EQUAL INT_NUMBER { driver.option_num("stab", $3); };
@@ -2701,6 +2743,7 @@ o_parameter_set : PARAMETER_SET EQUAL PRIOR_MODE
                 | PARAMETER_SET EQUAL CALIBRATION
                   { driver.option_str("parameter_set", "calibration"); }
                 ;
+o_nodecomposition : NODECOMPOSITION { driver.option_num("nodecomposition", "1"); };
 o_ms_drop : DROP EQUAL INT_NUMBER { driver.option_num("ms.drop", $3); };
 o_ms_mh_replic : MH_REPLIC EQUAL INT_NUMBER { driver.option_num("ms.mh_replic", $3); };
 o_freq : FREQ EQUAL INT_NUMBER

@@ -57,8 +57,8 @@ options_.solve_tolf = eps^(1/3);
 options_.solve_tolx = eps^(2/3);
 
 options_.dp.maxit = 3000;
-options_.steady.maxit = 10;
-options_.simul.maxit = 10;
+options_.steady.maxit = 50;
+options_.simul.maxit = 50;
 
 options_.mode_check.status = 0;
 options_.mode_check.neighbourhood_size = .5;
@@ -144,6 +144,7 @@ options_.relative_irf = 0;
 options_.ar = 5;
 options_.hp_filter = 0;
 options_.hp_ngrid = 512;
+options_.nodecomposition = 0;
 options_.nomoments = 0;
 options_.nocorr = 0;
 options_.periods = 0;
@@ -220,15 +221,11 @@ particle.initial_state_prior_std = .1;
 % Set the default order of approximation of the model (perturbation).
 particle.perturbation = 2;
 % Set the default number of particles.
-particle.number_of_particles = 500;
+particle.number_of_particles = 5000;
 % Set the default approximation order (Smolyak)
 particle.smolyak_accuracy = 3;
 % By default we don't use pruning
 particle.pruning = 0;
-% Set default algorithm
-particle.algorithm = 'sequential_importance_particle_filter';
-% Set the Gaussian approximation method for Importance sampling
-particle.IS_approximation_method = 'unscented';
 % Set the Gaussian approximation method for particles distributions
 particle.approximation_method = 'unscented';
 % Set unscented parameters alpha, beta and kappa for gaussian approximation
@@ -236,11 +233,27 @@ particle.unscented.alpha = .01;
 particle.unscented.beta = 2;
 particle.unscented.kappa = 0;
 % Configuration of resampling in case of particles
-particle.resampling.status = 'systematic'; % 'none', 'generic', 'smoothed'
-particle.resampling.neff_threshold = .5;
-% Choice of the resampling method
-particle.resampling.method1 = 'traditional' ;
-particle.resampling.method2 = 'kitagawa';
+particle.resampling.status.systematic = 1;
+particle.resampling.status.none = 0;
+particle.resampling.status.generic = 0;
+particle.resampling.threshold = .5;
+particle.resampling.method.kitagawa = 1;
+particle.resampling.method.smooth = 0;
+particle.resampling.method.stratified = 0;
+% Set default algorithm
+particle.filter_algorithm.sis = 1;
+particle.filter_algorithm.apf = 0;
+particle.filter_algorithm.gf = 0;
+particle.filter_algorithm.gmf = 0;
+particle.filter_algorithm.cpf = 0;
+% Approximation of the proposal distribution
+particle.proposal_approximation.cubature = 1;
+particle.proposal_approximation.unscented = 0;
+particle.proposal_approximation.montecarlo = 0;
+% Approximation of the particle distribution
+particle.distribution_approximation.cubature = 0;
+particle.distribution_approximation.unscented = 1;
+particle.distribution_approximation.montecarlo = 0;
 % Number of partitions for the smoothed resampling method
 particle.resampling.number_of_partitions = 200;
 % Configuration of the mixture filters
@@ -466,6 +479,8 @@ simplex.tolerance.f = 1e-4;
 simplex.maxiter = 5000;
 simplex.maxfcallfactor = 500;
 simplex.maxfcall = [];
+simplex.verbosity = 2;
+simplex.delta_factor=0.05;
 options_.simplex = simplex;
 
 % CMAES optimization routine.
@@ -609,11 +624,11 @@ options_.risky_steadystate = 0;
 % endogenous prior
 options_.endogenous_prior = 0;
 options_.endogenous_prior_restrictions.irf={};
+options_.endogenous_prior_restrictions.moment={};
 
 % OSR Optimal Simple Rules
 options_.osr.tolf=1e-7;
 options_.osr.maxit=1000;
-options_.osr.verbose=2;
 
 % use GPU
 options_.gpu = 0;

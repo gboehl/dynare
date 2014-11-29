@@ -86,30 +86,38 @@ data = [];
 varlist = {};
 
 if isempty(varlist0)
-    for i=1:length(list_of_variables)
-        if isequal(list_of_variables(i).name,'freq') || isequal(list_of_variables(i).name,'time') || isequal(list_of_variables(i).name,'data') ...
-                || isequal(list_of_variables(i).name,'varlist') ...
-                || isequal(list_of_variables(i).name,'varlist0') ...
-                || isequal(list_of_variables(i).name,'list_of_variables') ...
-                || isequal(list_of_variables(i).name,'tex') ...                
+    for current_variable_index=1:length(list_of_variables)
+        if isequal(list_of_variables(current_variable_index).name,'freq') ...
+                || isequal(list_of_variables(current_variable_index).name,'time') ...
+                || isequal(list_of_variables(current_variable_index).name,'data') ...
+                || isequal(list_of_variables(current_variable_index).name,'varlist') ...
+                || isequal(list_of_variables(current_variable_index).name,'varlist0') ...
+                || isequal(list_of_variables(current_variable_index).name,'list_of_variables') ...
+                || isequal(list_of_variables(current_variable_index).name,'tex') ...
             continue
         end
-        if list_of_variables(i).global || list_of_variables(i).persistent
+        if list_of_variables(current_variable_index).global || list_of_variables(current_variable_index).persistent
+            % A variable cannot be a global or persistent variable.
             continue
         end
-        if list_of_variables(i).complex || ~strcmp(list_of_variables(i).class,'double')
+        if list_of_variables(current_variable_index).complex || ~strcmp(list_of_variables(current_variable_index).class,'double')
+            % A variable cannot be complex.
+            continue
+        end
+        if list_of_variables(current_variable_index).size(2)>1
+            % A variable must be passed as a column vector.
             continue
         end
         try
-            eval(['data = [data, ' list_of_variables(i).name '];'])
-            eval(['varlist = {varlist{:}, ''' list_of_variables(i).name '''};']) 
+            eval(['data = [data, ' list_of_variables(current_variable_index).name '];'])
+            eval(['varlist = {varlist{:}, ''' list_of_variables(current_variable_index).name '''};'])
         catch
             error(['load_m_file:: All the vectors (variables) in ' inputname(1) ' must have the same number of rows (observations)!'])
         end
     end
 else
-    for i=1:length(varlist0)
-       eval(['data = [data, ' varlist0{i} '];']) 
+    for current_variable_index=1:length(varlist0)
+       eval(['data = [data, ' varlist0{current_variable_index} '];'])
     end
     varlist = varlist0;
 end
@@ -138,13 +146,13 @@ end
 %$ end
 %$
 %$ % Check the results.
-%$ t(2) = dyn_assert(freq,4);
-%$ t(3) = dyn_assert(isa(init,'dates'),1);
-%$ t(4) = dyn_assert(init.freq,4);
-%$ t(5) = dyn_assert(init.time,[1938 4]);
-%$ t(6) = dyn_assert(varlist,{'azert';'yuiop'});
-%$ t(7) = dyn_assert(tex,{'azert';'yuiop'});
-%$ t(8) = dyn_assert(data(:,1),[1;2;3;4;5]);
-%$ t(9) = dyn_assert(data(:,2),[2;3;4;5;6]);
+%$ t(2) = dassert(freq,4);
+%$ t(3) = dassert(isa(init,'dates'),1);
+%$ t(4) = dassert(init.freq,4);
+%$ t(5) = dassert(init.time,[1938 4]);
+%$ t(6) = dassert(varlist,{'azert';'yuiop'});
+%$ t(7) = dassert(tex,{'azert';'yuiop'});
+%$ t(8) = dassert(data(:,1),[1;2;3;4;5]);
+%$ t(9) = dassert(data(:,2),[2;3;4;5;6]);
 %$ T = all(t);
 %@eof:1

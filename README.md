@@ -49,7 +49,7 @@ A number of tools and libraries are needed in order to recompile everything. You
 
 - A POSIX compliant shell and an implementation of Make (mandatory)
 - The [GNU Compiler Collection](http://gcc.gnu.org/), with gcc, g++ and gfortran (mandatory)
-- [MATLAB](http://www.dynare.org/DynareWiki/BuildingDynareFromSource?action=AttachFile&do=view&target=dynare-mingw64-libs.zip) (if you want to compile MEX for MATLAB)
+- MATLAB (if you want to compile MEX for MATLAB)
 - [GNU Octave](http://www.octave.org), with the development headers (if you want to compile MEX for Octave)
 - [Boost libraries](http://www.boost.org), version 1.36 or later
 - [Bison](http://www.gnu.org/software/bison/), version 2.5 or later (only if you get the source through Git)
@@ -194,8 +194,8 @@ The following instructions are compatible with MATLAB or with Octave/MinGW (as d
     - `mingw64-i686-gcc-core`, `mingw64-i686-gcc-g++`, `mingw64-i686-gcc-fortran` (if you have Octave/MinGW or if you have MATLAB 32-bit)
     - `mingw64-x86_64-gcc-core`, `mingw64-x86_64-gcc-g++`, `mingw64-x86_64-gcc-fortran` (if you have MATLAB 64-bit)
 - Second, install precompiled librairies for BLAS, LAPACK, Boost and GSL:
-    - If you have Octave or MATLAB 32-bit, download [dynare-mingw32-libs.zip](http://www.dynare.org/DynareWiki/BuildingDynareFromSource?action=AttachFile&do=view&target=dynare-mingw32-libs.zip), and uncompress it in `c:\cygwin\usr\local\lib\mingw32`
-    - If you have MATLAB 64-bit, download [dynare-mingw64-libs.zip](http://www.dynare.org/DynareWiki/BuildingDynareFromSource?action=AttachFile&do=view&target=dynare-mingw64-libs.zip), and uncompress it in `c:\cygwin\usr\local\lib\mingw64`
+    - If you have Octave or MATLAB 32-bit, download [dynare-mingw32-libs.zip](http://www.dynare.org/build/dynare-mingw32-libs.zip), and uncompress it in `c:\cygwin\usr\local\lib\mingw32`
+    - If you have MATLAB 64-bit, download [dynare-mingw64-libs.zip](http://www.dynare.org/build/dynare-mingw64-libs.zip), and uncompress it in `c:\cygwin\usr\local\lib\mingw64`
 
 *Remark*: You need to make sure that Cygwin’s git is used and not a potentially installed msysgit. The latter typically happens when one installs msysgit and allows it to set a system path. This will result in wrong line endings and cryptic error messages à la "syntax error near unexpected token `fi'". In that case it might be necessary to uninstall msysgit and reinstall it without setting a system path.
 
@@ -251,35 +251,34 @@ Configure and make:
 
 ## Mac OS X
 
-- Install the Xcode Common Tools:
-    - Install [Xcode](http://developer.apple.com/xcode/) from the App Store
-    - Open Xcode
-    - Go to `Xcode->Preferences...`
-    - In the window that opens, click on the `Downloads` tab
-    - In the tab that appears, click on the `Components` button
-    - Next to `Command Line Tools`, click on `Install`
-- Download [MacOSX10.6.sdk.zip](http://www.jamesgeorge.org/uploads/MacOSX10.6.sdk.zip) and unzip it in `/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs`. Change the owner to be `root` and the group to be `wheel`
-
+- Install the Xcode Command Line Tools:
+    - Download "Command Line Tools (OS X 10.X) for Xcode," where 10.X corresponds to your OS X version, from https://developer.apple.com/downloads/index.action
 - Install [Homebrew](http://mxcl.github.io/homebrew/) by following the instructions on the website
-- Tap [Homebrew Science](https://github.com/Homebrew/homebrew-science) by doing:
+- Tap [Homebrew Science](https://github.com/Homebrew/homebrew-science) by opening Terminal and typing:
     - ```brew tap homebrew/science```
 - Install the following brews:
+    - ```brew install gcc```
     - ```brew install automake```
     - ```brew install gsl```
     - ```brew install bison```
     - ```brew install boost```
-    - ```brew install gfortran```
     - ```brew install libmatio --with-hdf5```
     - ```brew install slicot --with-default-integer-8```
-- **(Optional)** To compile Dynare mex files for use on Octave, first install Octave following the [Simple Installation Instructions](http://wiki.octave.org/Octave_for_MacOS_X#Simple_Installation_Instructions_3). Then, you will probably also want to install graphicsmagick via Homebrew with `brew install graphicsmagick`.
+- Force link ```flex``` and ```bison```
+    - ```brew link --force flex```
+    - ```brew link --force bison```
+- **(Optional)** To compile Dynare mex files for use on Octave:
+    - ```brew install octave```
 - **(Optional)** To compile Dynare's documentation, first install the latest version of [MacTeX](http://www.tug.org/mactex/). Then install `doxygen`, `latex2html` and `texi2html` via Homebrew with the following commands:
     - ```brew install doxygen```
     - ```brew install texinfo```
     - ```brew install latex2html```
     - ```brew install texi2html```
-- **(On OS X 10.7 Only)** Copy [FlexLexer.h](http://www.dynare.org/DynareWiki/BuildingDynareFromSource?action=AttachFile&do=view&target=FlexLexer.h) into the `preprocessor` directory (there was an error in the `FlexLexer.h` file distributed with 10.7)
-- Finally, switch to the root dynare directory. Ensure your path contains `/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/opt/X11/bin:/usr/texbin:/usr/local/sbin`. Run:
+- **(On OS X 10.7 Only)** Copy [FlexLexer.h](http://www.dynare.org/build/FlexLexer.h) into the `preprocessor` directory (there was an error in the `FlexLexer.h` file distributed with 10.7)
+- Ensure `/usr/local/bin` is at the beginning of your path:
+    - ```PATH=/usr/local/bin:$PATH```
+- Finally, switch to the root dynare directory and compile dynare
     - `autoreconf -si`
-    - `./configure --with-matlab=/Applications/MATLAB_R2013a.app MATLAB_VERSION=8.1 YACC=/usr/local/Cellar/bison/<<BISON VERSION>>/bin/bison`
+    - `./configure --with-matlab=/Applications/MATLAB_R2014b.app MATLAB_VERSION=8.4`
     - `make`
     - `make pdf TEXI2DVI=/usr/local/Cellar/texinfo/5.2/bin/texi2dvi`, where you replace everything after the equal sign with the path to the `texi2dvi` installed by homebrew when you installed `texinfo`.

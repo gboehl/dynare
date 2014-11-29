@@ -113,8 +113,7 @@ for t=1:sample_size
     SumSampleWeights = sum(SampleWeights) ;
     lik(t) = log(SumSampleWeights) ; 
     SampleWeights = SampleWeights./SumSampleWeights ;		
-    if (strcmp(DynareOptions.particle.resampling.status,'generic') && neff(SampleWeights)<DynareOptions.particle.resampling.neff_threshold*sample_size ) || ...
-        strcmp(DynareOptions.particle.resampling.status,'systematic')
+    if (DynareOptions.particle.resampling.status.generic && neff(SampleWeights)<DynareOptions.particle.resampling.threshold*sample_size) || DynareOptions.particle.resampling.status.systematic
         ks = ks + 1 ;
         StateParticles = resample(StateParticles',SampleWeights',DynareOptions)';
         SampleWeights = ones(1,number_of_particles)/number_of_particles ;

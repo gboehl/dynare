@@ -108,9 +108,9 @@ if ~options_.load_mh_file && ~options_.mh_recover
             trial = 1;
             while validate == 0 && trial <= 10
                 candidate = rand_multivariate_normal( transpose(xparam1), d * options_.mh_init_scale, npar);
-                if all(candidate(:) > mh_bounds(:,1)) && all(candidate(:) < mh_bounds(:,2)) 
+                if all(candidate(:) > mh_bounds.lb) && all(candidate(:) < mh_bounds.ub) 
                     ix2(j,:) = candidate;
-                    ilogpo2(j) = - feval(TargetFun,ix2(j,:)',dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,oo_);
+                    ilogpo2(j) = - feval(TargetFun,ix2(j,:)',dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,mh_bounds,oo_);
                     if ~isfinite(ilogpo2(j)) % if returned log-density is
                                              % Inf or Nan (penalized value)
                         validate = 0;
@@ -150,9 +150,9 @@ if ~options_.load_mh_file && ~options_.mh_recover
     else% Case 2: one chain (we start from the posterior mode)
         fprintf(fidlog,['  Initial values of the parameters:\n']);
         candidate = transpose(xparam1(:));%
-        if all(candidate(:) > mh_bounds(:,1)) && all(candidate(:) < mh_bounds(:,2)) 
+        if all(candidate(:) > mh_bounds.lb) && all(candidate(:) < mh_bounds.ub) 
             ix2 = candidate;
-            ilogpo2 = - feval(TargetFun,ix2',dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,oo_);
+            ilogpo2 = - feval(TargetFun,ix2',dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,mh_bounds,oo_);
             disp('Estimation::mcmc: Initialization at the posterior mode.')
             skipline()
             fprintf(fidlog,['    Blck ' int2str(1) 'params:\n']);

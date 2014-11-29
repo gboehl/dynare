@@ -1,4 +1,4 @@
-function [fval,DLIK,Hess,exit_flag,ys,trend_coeff,info,Model,DynareOptions,BayesInfo,DynareResults] = dsge_likelihood(xparam1,DynareDataset,DatasetInfo,DynareOptions,Model,EstimatedParameters,BayesInfo,DynareResults,derivatives_info)
+function [fval,DLIK,Hess,exit_flag,SteadyState,trend_coeff,info,Model,DynareOptions,BayesInfo,DynareResults] = dsge_likelihood(xparam1,DynareDataset,DatasetInfo,DynareOptions,Model,EstimatedParameters,BayesInfo,BoundsInfo,DynareResults,derivatives_info)
 % Evaluates the posterior kernel of a dsge model using the specified
 % kalman_algo; the resulting posterior includes the 2*pi constant of the
 % likelihood function
@@ -39,7 +39,7 @@ function [fval,DLIK,Hess,exit_flag,ys,trend_coeff,info,Model,DynareOptions,Bayes
 %! Integer scalar, equal to zero if the routine return with a penalty (one otherwise).
 %! @item ys
 %! Vector of doubles, steady state level for the endogenous variables.
-%! @item trend_coeffs
+%! @item trend_coeff
 %! Matrix of doubles, coefficients of the deterministic trend in the measurement equation.
 %! @item info
 %! Integer scalar, error code.
@@ -136,16 +136,15 @@ global objective_function_penalty_base
 
 % Initialization of the returned variables and others...
 fval        = [];
-ys          = [];
+SteadyState = [];
 trend_coeff = [];
 exit_flag   = 1;
 info        = 0;
-singularity_flag = 0;
 DLIK        = [];
 Hess       = [];
 
 if DynareOptions.estimation_dll
-    [fval,exit_flag,ys,trend_coeff,info,params,H,Q] ...
+    [fval,exit_flag,SteadyState,trend_coeff,info,params,H,Q] ...
         = logposterior(xparam1,DynareDataset, DynareOptions,Model, ...
                           EstimatedParameters,BayesInfo,DynareResults);
     mexErrCheck('logposterior', exit_flag);
@@ -154,7 +153,7 @@ if DynareOptions.estimation_dll
         Model.H = H;
     end
     Model.Sigma_e = Q;
-    DynareResults.dr.ys = ys;
+    DynareResults.dr.ys = SteadyState;
     return
 end
 
@@ -178,9 +177,9 @@ end
 %------------------------------------------------------------------------------
 
 % Return, with endogenous penalty, if some parameters are smaller than the lower bound of the prior domain.
-if ~isequal(DynareOptions.mode_compute,1) && any(xparam1<BayesInfo.lb)
-    k = find(xparam1<BayesInfo.lb);
-    fval = objective_function_penalty_base+sum((BayesInfo.lb(k)-xparam1(k)).^2);
+if ~isequal(DynareOptions.mode_compute,1) && any(xparam1<BoundsInfo.lb)
+    k = find(xparam1<BoundsInfo.lb);
+    fval = objective_function_penalty_base+sum((BoundsInfo.lb(k)-xparam1(k)).^2);
     exit_flag = 0;
     info = 41;
     if analytic_derivation,
@@ -190,9 +189,9 @@ if ~isequal(DynareOptions.mode_compute,1) && any(xparam1<BayesInfo.lb)
 end
 
 % Return, with endogenous penalty, if some parameters are greater than the upper bound of the prior domain.
-if ~isequal(DynareOptions.mode_compute,1) && any(xparam1>BayesInfo.ub)
-    k = find(xparam1>BayesInfo.ub);
-    fval = objective_function_penalty_base+sum((xparam1(k)-BayesInfo.ub(k)).^2);
+if ~isequal(DynareOptions.mode_compute,1) && any(xparam1>BoundsInfo.ub)
+    k = find(xparam1>BoundsInfo.ub);
+    fval = objective_function_penalty_base+sum((xparam1(k)-BoundsInfo.ub(k)).^2);
     exit_flag = 0;
     info = 42;
     if analytic_derivation,
@@ -258,8 +257,8 @@ end
 [T,R,SteadyState,info,Model,DynareOptions,DynareResults] = dynare_resolve(Model,DynareOptions,DynareResults,'restrict');
 
 % Return, with endogenous penalty when possible, if dynare_resolve issues an error code (defined in resol).
-if info(1) == 1 || info(1) == 2 || info(1) == 5 || info(1) == 7 || info(1) ...
-            == 8 || info(1) == 22 || info(1) == 24 || info(1) == 19 || info(1) == 25
+if info(1) == 1 || info(1) == 2 || info(1) == 5 || info(1) == 7 || info(1) == 8 || ...
+            info(1) == 22 || info(1) == 24 || info(1) == 19 || info(1) == 25 || info(1) == 10
     fval = objective_function_penalty_base+1;
     info = info(1);
     exit_flag = 0;
@@ -315,7 +314,8 @@ if BayesInfo.with_trend
     end
     trend = repmat(constant,1,DynareDataset.nobs)+trend_coeff*[1:DynareDataset.nobs];
 else
-    trend = repmat(constant,1,DynareDataset.nobs);
+   trend_coeff = zeros(DynareDataset.vobs,1);
+   trend = repmat(constant,1,DynareDataset.nobs);
 end
 
 % Get needed informations for kalman filter routines.
@@ -367,13 +367,13 @@ switch DynareOptions.lik_init
         kalman_algo = 1;
     end
     if DynareOptions.lyapunov_fp == 1
-        Pstar = lyapunov_symm(T,Q,DynareOptions.lyapunov_fixed_point_tol,DynareOptions.lyapunov_complex_threshold, 3, R);
+        Pstar = lyapunov_symm(T,R*Q'*R',DynareOptions.lyapunov_fixed_point_tol,DynareOptions.lyapunov_complex_threshold, 3, [], DynareOptions.debug);
     elseif DynareOptions.lyapunov_db == 1
         Pstar = disclyap_fast(T,R*Q*R',DynareOptions.lyapunov_doubling_tol);
     elseif DynareOptions.lyapunov_srs == 1
-        Pstar = lyapunov_symm(T,Q,DynareOptions.lyapunov_fixed_point_tol,DynareOptions.lyapunov_complex_threshold, 4, R);
+        Pstar = lyapunov_symm(T,Q,DynareOptions.lyapunov_fixed_point_tol,DynareOptions.lyapunov_complex_threshold, 4, R, DynareOptions.debug);
     else
-        Pstar = lyapunov_symm(T,R*Q*R',DynareOptions.qz_criterium,DynareOptions.lyapunov_complex_threshold);
+        Pstar = lyapunov_symm(T,R*Q*R',DynareOptions.qz_criterium,DynareOptions.lyapunov_complex_threshold, [], [], DynareOptions.debug);
     end;
     Pinf  = [];
     a     = zeros(mm,1);
@@ -448,7 +448,7 @@ switch DynareOptions.lik_init
                                                         zeros(mmm,1), Pinf, Pstar, ...
                                                         kalman_tol, riccati_tol, DynareOptions.presample, ...
                                                         T,R,Q,H1,Z,mmm,pp,rr);
-        diffuse_periods = length(dlik);
+        diffuse_periods = size(dlik,1);
     end
     if isnan(dLIK),
         info = 45;
@@ -469,7 +469,7 @@ switch DynareOptions.lik_init
     if err
         disp(['dsge_likelihood:: I am not able to solve the Riccati equation, so I switch to lik_init=1!']);
         DynareOptions.lik_init = 1;
-        Pstar = lyapunov_symm(T,R*Q*R',DynareOptions.qz_criterium,DynareOptions.lyapunov_complex_threshold);
+        Pstar = lyapunov_symm(T,R*Q*R',DynareOptions.qz_criterium,DynareOptions.lyapunov_complex_threshold, [], [], DynareOptions.debug);
     end
     Pinf  = [];
     a = zeros(mm,1);
@@ -490,13 +490,13 @@ switch DynareOptions.lik_init
     R_tmp = R(stable, :);
     T_tmp = T(stable,stable);
     if DynareOptions.lyapunov_fp == 1
-        Pstar_tmp = lyapunov_symm(T_tmp,Q,DynareOptions.lyapunov_fixed_point_tol,DynareOptions.lyapunov_complex_threshold, 3, R_tmp);
+        Pstar_tmp = lyapunov_symm(T_tmp,R_tmp*Q*R_tmp',DynareOptions.lyapunov_fixed_point_tol,DynareOptions.lyapunov_complex_threshold, 3, [], DynareOptions.debug);
     elseif DynareOptions.lyapunov_db == 1
         Pstar_tmp = disclyap_fast(T_tmp,R_tmp*Q*R_tmp',DynareOptions.lyapunov_doubling_tol);
     elseif DynareOptions.lyapunov_srs == 1
-        Pstar_tmp = lyapunov_symm(T_tmp,Q,DynareOptions.lyapunov_fixed_point_tol,DynareOptions.lyapunov_complex_threshold, 4, R_tmp);
+        Pstar_tmp = lyapunov_symm(T_tmp,Q,DynareOptions.lyapunov_fixed_point_tol,DynareOptions.lyapunov_complex_threshold, 4, R_tmp, DynareOptions.debug);
     else
-        Pstar_tmp = lyapunov_symm(T_tmp,R_tmp*Q*R_tmp',DynareOptions.qz_criterium,DynareOptions.lyapunov_complex_threshold);
+        Pstar_tmp = lyapunov_symm(T_tmp,R_tmp*Q*R_tmp',DynareOptions.qz_criterium,DynareOptions.lyapunov_complex_threshold, [], [], DynareOptions.debug);
     end    
     Pstar(stable, stable) = Pstar_tmp;
     Pinf  = [];
@@ -523,7 +523,7 @@ if analytic_derivation,
     DLIK = [];
     AHess = [];
     iv = DynareResults.dr.restrict_var_list;
-    if nargin<9 || isempty(derivatives_info)
+    if nargin<10 || isempty(derivatives_info)
         [A,B,nou,nou,Model,DynareOptions,DynareResults] = dynare_resolve(Model,DynareOptions,DynareResults);
         if ~isempty(EstimatedParameters.var_exo)
             indexo=EstimatedParameters.var_exo(:,1);
@@ -576,14 +576,14 @@ if analytic_derivation,
     for i=1:EstimatedParameters.nvx
         k =EstimatedParameters.var_exo(i,1);
         DQ(k,k,i) = 2*sqrt(Q(k,k));
-        dum =  lyapunov_symm(T,DOm(:,:,i),DynareOptions.qz_criterium,DynareOptions.lyapunov_complex_threshold);
+        dum =  lyapunov_symm(T,DOm(:,:,i),DynareOptions.qz_criterium,DynareOptions.lyapunov_complex_threshold,[],[],DynareOptions.debug);
 %         kk = find(abs(dum) < 1e-12);
 %         dum(kk) = 0;
         DP(:,:,i)=dum;
         if full_Hess
         for j=1:i,
             jcount=jcount+1;
-            dum =  lyapunov_symm(T,dyn_unvech(D2Om(:,jcount)),DynareOptions.qz_criterium,DynareOptions.lyapunov_complex_threshold);
+            dum =  lyapunov_symm(T,dyn_unvech(D2Om(:,jcount)),DynareOptions.qz_criterium,DynareOptions.lyapunov_complex_threshold,[],[],DynareOptions.debug);
 %             kk = (abs(dum) < 1e-12);
 %             dum(kk) = 0;
             D2P(:,jcount)=dyn_vech(dum);
@@ -603,7 +603,7 @@ if analytic_derivation,
     offset = offset + EstimatedParameters.nvn;
     if DynareOptions.lik_init==1,
     for j=1:EstimatedParameters.np
-        dum =  lyapunov_symm(T,DT(:,:,j+offset)*Pstar*T'+T*Pstar*DT(:,:,j+offset)'+DOm(:,:,j+offset),DynareOptions.qz_criterium,DynareOptions.lyapunov_complex_threshold);
+        dum =  lyapunov_symm(T,DT(:,:,j+offset)*Pstar*T'+T*Pstar*DT(:,:,j+offset)'+DOm(:,:,j+offset),DynareOptions.qz_criterium,DynareOptions.lyapunov_complex_threshold,[],[],DynareOptions.debug);
 %         kk = find(abs(dum) < 1e-12);
 %         dum(kk) = 0;
         DP(:,:,j+offset)=dum;
@@ -617,7 +617,7 @@ if analytic_derivation,
             D2Tij = reshape(D2T(:,jcount),size(T));
             D2Omij = dyn_unvech(D2Om(:,jcount));
             tmp = D2Tij*Pstar*T' + T*Pstar*D2Tij' + DTi*DPj*T' + DTj*DPi*T' + T*DPj*DTi' + T*DPi*DTj' + DTi*Pstar*DTj' + DTj*Pstar*DTi' + D2Omij;
-            dum = lyapunov_symm(T,tmp,DynareOptions.qz_criterium,DynareOptions.lyapunov_complex_threshold);
+            dum = lyapunov_symm(T,tmp,DynareOptions.qz_criterium,DynareOptions.lyapunov_complex_threshold,[],[],DynareOptions.debug);
 %             dum(abs(dum)<1.e-12) = 0;
             D2P(:,jcount) = dyn_vech(dum);
 %             D2P(:,:,j+offset,i) = dum;

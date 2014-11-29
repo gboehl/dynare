@@ -40,6 +40,8 @@ end
 
 if isempty(o.tableName)
     o.tableName = sprintf('%s/table_pg%d_sec%d_row%d_col%d.tex', o.tableDirName, pg, sec, row, col);
+else
+    o.tableName = [o.tableDirName '/' o.tableName];
 end
 
 [fid, msg] = fopen(o.tableName, 'w');
@@ -169,13 +171,26 @@ fprintf(fid, '\\hline%%\n');
 fprintf(fid, '%%\n');
 
 % Write Report_Table Data
+if o.writeCSV
+    csvseries = dseries();
+end
 for i=1:ne
-    o.series{i}.writeSeriesForTable(fid, o.range, o.precision, ncols);
+    o.series{i}.writeSeriesForTable(fid, o.range, o.precision, ncols, o.highlightRows{mod(i,length(o.highlightRows))+1});
+    if o.writeCSV
+        if isempty(o.series{i}.tableSubSectionHeader)
+            csvseries = [csvseries ...
+                o.series{i}.data(dates).set_names([...
+                num2str(i) '_' ...
+                o.series{i}.data.name{:}])];
+        end
+    end
     if o.showHlines
         fprintf(fid, '\\hline\n');
     end
 end
-
+if o.writeCSV
+    csvseries.save(strrep(o.tableName, '.tex', ''), 'csv');
+end
 fprintf(fid, '\\bottomrule\n');
 fprintf(fid, '\\end{tabular}\\setlength{\\parindent}{0pt}\n \\par \\medskip\n\n');
 fprintf(fid, '%% End Report_Table Object\n');

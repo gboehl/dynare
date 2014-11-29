@@ -32,7 +32,7 @@ function [posterior_mean,posterior_covariance,posterior_mode,posterior_kernel_at
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-global M_ options_ estim_params_
+global M_ options_ estim_params_ bayestopt_
 
 
 n = estim_params_.np + ...
@@ -76,5 +76,6 @@ end
 xparam1 = posterior_mode';
 hh = inv(posterior_covariance);
 fval = posterior_kernel_at_the_mode;
+parameter_names = bayestopt_.name;
 
-save([M_.fname '_mh_mode.mat'],'xparam1','hh','fval');
+save([M_.fname '_mh_mode.mat'],'xparam1','hh','fval','parameter_names');

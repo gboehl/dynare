@@ -55,6 +55,7 @@ NumberOfEndogenousVariables = rows(var_list_);
 NumberOfExogenousVariables = M_.exo_nbr;
 list_of_exogenous_variables = M_.exo_names;
 NumberOfLags = options_.ar;
+NoDecomposition = options_.nodecomposition;
 if isfield(options_,'conditional_variance_decomposition')
     Steps = options_.conditional_variance_decomposition;
 else
@@ -95,18 +96,20 @@ else
 end
 % VARIANCE DECOMPOSITION.
 if M_.exo_nbr > 1
-    if posterior
-        for i=1:NumberOfEndogenousVariables
-            for j=1:NumberOfExogenousVariables
-                oo_ = posterior_analysis('decomposition',var_list_(i,:),M_.exo_names(j,:),[],options_,M_,oo_);
+    if ~NoDecomposition
+        if posterior
+            for i=1:NumberOfEndogenousVariables
+                for j=1:NumberOfExogenousVariables
+                    oo_ = posterior_analysis('decomposition',var_list_(i,:),M_.exo_names(j,:),[],options_,M_,oo_);
+                end
+            end
+        else
+            for i=1:NumberOfEndogenousVariables
+                for j=1:NumberOfExogenousVariables
+                    oo_ = prior_analysis('decomposition',var_list_(i,:),M_.exo_names(j,:),[],options_,M_,oo_);
+                end
             end
         end
-    else
-        for i=1:NumberOfEndogenousVariables
-            for j=1:NumberOfExogenousVariables
-                oo_ = prior_analysis('decomposition',var_list_(i,:),M_.exo_names(j,:),[],options_,M_,oo_);
-            end
-        end        
     end
     % CONDITIONAL VARIANCE DECOMPOSITION.
     if Steps

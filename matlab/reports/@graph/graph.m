@@ -85,6 +85,8 @@ o.height = 4.5;
 o.miscTikzPictureOptions = '';
 o.miscTikzAxisOptions = '';
 
+o.writeCSV = false;
+
 if nargin == 1
     assert(isa(varargin{1}, 'graph'),['@graph.graph: with one arg you ' ...
                         'must pass a graph object']);
@@ -139,7 +141,7 @@ assert(isint(o.yTickLabelPrecision), '@graph.graph: o.yTickLabelPrecision must b
 assert(islogical(o.yTickLabelFixed), '@graph.graph: yTickLabelFixed must be either true or false');
 assert(islogical(o.yTickLabelZeroFill), '@graph.graph: yTickLabelZeroFill must be either true or false');
 assert(islogical(o.yTickLabelScaled), '@graph.graph: yTickLabelScaled must be either true or false');
-
+assert(islogical(o.writeCSV), '@graph.graph: writeCSV must be either true or false');
 assert(ischar(o.shadeColor), '@graph.graph: shadeColor must be a string');
 assert(ischar(o.zeroLineColor), '@graph.graph: zeroLineColor must be a string');
 assert(any(strcmp(o.axisShape, {'box', 'L'})), ['@graph.graph: axisShape ' ...

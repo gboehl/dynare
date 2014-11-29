@@ -19,6 +19,8 @@ MODFILES = \
 	example1_macroif.mod \
 	t_sgu_ex1.mod \
 	optimal_policy/osr_example.mod \
+	optimal_policy/osr_example_objective_correctness.mod \
+	optimal_policy/osr_example_obj_corr_non_stat_vars.mod \
 	optimal_policy/ramsey.mod \
 	optimal_policy/nk_ramsey.mod \
 	optimal_policy/nk_ramsey_model.mod \
@@ -26,6 +28,10 @@ MODFILES = \
 	optimal_policy/nk_ramsey_expectation.mod \
 	optimal_policy/nk_ramsey_expectation_a.mod \
 	optimal_policy/mult_elimination_test.mod \
+	optimal_policy/Ramsey/ramsey_ex_initval.mod \
+	optimal_policy/Ramsey/ramsey_ex.mod \
+	optimal_policy/Ramsey/ramsey_ex_initval_AR2.mod \
+	optimal_policy/Ramsey/ramsey_ex_aux.mod \
 	discretionary_policy/dennis_1.mod \
 	ramst_initval_file.mod \
 	ramst_normcdf_and_friends.mod \
@@ -116,6 +122,9 @@ MODFILES = \
 	identification/kim/kim2.mod \
 	identification/as2007/as2007.mod \
 	simul/example1.mod \
+	simul/Solow_no_varexo.mod \
+	simul/simul_ZLB_purely_forward.mod \
+	simul/simul_ZLB_purely_forward_no_solution.mod \
 	conditional_forecasts/fs2000_cal.mod \
 	conditional_forecasts/fs2000_est.mod \
 	recursive/ls2003.mod \
@@ -130,6 +139,7 @@ MODFILES = \
 	ms-sbvar/test_ms_variances.mod \
 	ms-sbvar/test_ms_variances_repeated_runs.mod \
 	ms-dsge/test_ms_dsge.mod \
+	kalman/lyapunov/fs2000_lyap.mod \
 	kalman_filter_smoother/gen_data.mod \
 	kalman_filter_smoother/algo1.mod \
 	kalman_filter_smoother/algo2.mod \
@@ -144,6 +154,8 @@ MODFILES = \
 	kalman_filter_smoother/fs2000_1.mod \
 	kalman_filter_smoother/fs2000_2.mod \
 	kalman_filter_smoother/fs2000a.mod \
+	kalman_filter_smoother/check_variable_dimensions/fs2000.mod \
+	kalman_filter_smoother/check_variable_dimensions/fs2000_ML.mod \
 	second_order/burnside_1.mod \
 	second_order/ds1.mod \
 	second_order/ds2.mod \
@@ -170,6 +182,7 @@ MODFILES = \
 	shock_decomposition/fs2000_est_varlist.mod \
 	stochastic_purely_forward/stochastic_purely_forward.mod \
 	stochastic_purely_forward/stochastic_purely_forward_with_static.mod \
+	forecast/Hansen_exo_det_forecast.mod \
 	gradient/fs2000_numgrad_13.mod \
 	gradient/fs2000_numgrad_15.mod \
 	gradient/fs2000_numgrad_2.mod \
@@ -184,7 +197,8 @@ MODFILES = \
 	reporting/example1.mod
 
 XFAIL_MODFILES = ramst_xfail.mod \
-	estim_param_in_shock_value.mod
+	estim_param_in_shock_value.mod \
+	optimal_policy/Ramsey/ramsey_ex_wrong_ss_file.mod
 
 # Dependencies
 example1_use_dll.m.trs: example1.m.trs
@@ -346,7 +360,9 @@ EXTRA_DIST = \
 	filter_step_ahead/fs2000_filter_step_ahead_bayesian_steadystate.m \
 	filter_step_ahead/fs2000_filter_step_ahead_ML_steadystate.m \
 	loglinear/results_exp.mat \
-	smoother2histval/fsdat_simul.m
+	smoother2histval/fsdat_simul.m \
+	optimal_policy/Ramsey/find_c.m \
+	optimal_policy/Ramsey/oo_ramsey_policy_initval.mat 
 
 TARGETS =
 

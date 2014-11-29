@@ -36,6 +36,10 @@ x0=[];
 
 options_gsa = set_default_option(options_gsa,'datafile',[]);
 options_gsa = set_default_option(options_gsa,'rmse',0);
+options_gsa = set_default_option(options_gsa,'useautocorr',0);
+
+options_gsa = set_default_option(options_gsa,'moment_calibration',options_.endogenous_prior_restrictions.moment);
+options_gsa = set_default_option(options_gsa,'irf_calibration',options_.endogenous_prior_restrictions.irf);
 if isfield(options_gsa,'nograph'),
     options_.nograph=options_gsa.nograph;
 end
@@ -100,7 +104,6 @@ if options_gsa.identification,
     options_gsa = set_default_option(options_gsa,'trans_ident',0);
     options_gsa = set_default_option(options_gsa,'load_ident_files',0);
     options_gsa = set_default_option(options_gsa,'ar',1);
-    options_gsa = set_default_option(options_gsa,'useautocorr',0);
     options_.ar = options_gsa.ar;
     if options_gsa.morris==0,
         disp('The option morris = 0 is no longer supported (Type I errors)')
@@ -142,13 +145,13 @@ options_gsa = set_default_option(options_gsa,'load_stab',0);
 options_gsa = set_default_option(options_gsa,'alpha2_stab',0);
 options_gsa = set_default_option(options_gsa,'ksstat',0.1);
 options_gsa = set_default_option(options_gsa,'pvalue_ks',0.001);
-options_gsa = set_default_option(options_gsa,'pvalue_corr',0.001);
+options_gsa = set_default_option(options_gsa,'pvalue_corr',1.e-5);
 %options_gsa = set_default_option(options_gsa,'load_mh',0);
 % REDFORM mapping
 options_gsa = set_default_option(options_gsa,'logtrans_redform',0);
 options_gsa = set_default_option(options_gsa,'threshold_redform',[]);
 options_gsa = set_default_option(options_gsa,'ksstat_redform',0.001);
-options_gsa = set_default_option(options_gsa,'alpha2_redform',0);
+options_gsa = set_default_option(options_gsa,'alpha2_redform',1.e-5);
 options_gsa = set_default_option(options_gsa,'namendo',[]);
 options_gsa = set_default_option(options_gsa,'namlagendo',[]);
 options_gsa = set_default_option(options_gsa,'namexo',[]);
@@ -158,7 +161,7 @@ options_gsa = set_default_option(options_gsa,'var_rmse',char(options_.varobs));
 options_gsa = set_default_option(options_gsa,'pfilt_rmse',0.1);
 options_gsa = set_default_option(options_gsa,'istart_rmse',options_.presample+1);
 options_gsa = set_default_option(options_gsa,'alpha_rmse',0.001);
-options_gsa = set_default_option(options_gsa,'alpha2_rmse',0);
+options_gsa = set_default_option(options_gsa,'alpha2_rmse',1.e-5);
 
 if options_gsa.redform && options_gsa.neighborhood_width==0 && isempty(options_gsa.threshold_redform),
     options_gsa.pprior=1;
@@ -239,6 +242,10 @@ end
 % redform_map(namendo, namlagendo, namexo, icomp, pprior, ilog, threshold)
 
 options_.opt_gsa = options_gsa;
+if ~isempty(options_gsa.moment_calibration) || ~isempty(options_gsa.irf_calibration),
+    map_calibration(OutputDirectoryName, M_, options_, oo_, estim_params_,bayestopt_);
+end
+
 if options_gsa.identification,
     map_ident_(OutputDirectoryName,options_gsa);
 end

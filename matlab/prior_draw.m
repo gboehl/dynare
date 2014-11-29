@@ -42,8 +42,9 @@ if nargin>0 && init
     p7 = evalin('base', 'bayestopt_.p7');
     p3 = evalin('base', 'bayestopt_.p3');
     p4 = evalin('base', 'bayestopt_.p4');
-    lb = evalin('base', 'bayestopt_.lb');
-    ub = evalin('base', 'bayestopt_.ub');
+    bounds = evalin('base', 'prior_bounds(bayestopt_,options_)');
+    lb = bounds.lb;
+    ub = bounds.ub;
     number_of_estimated_parameters = length(p6);
     if nargin>1 && uniform
         prior_shape = repmat(5,number_of_estimated_parameters,1);

@@ -35,13 +35,17 @@ global M_ oo_ options_
 
 rplottype = options_.rplottype;
 
+if isempty(oo_.endo_simul)
+    error('rplot: oo_.endo_simul is empty.')
+end
+
 col = ['y','c','r','g','b','w','m'] ;
 ix = [1 - M_.maximum_lag:size(oo_.endo_simul,2)-M_.maximum_lag]' ;
 
 y = [];
 for k=1:size(s1,1)
     if isempty(strmatch(s1(k,:),M_.endo_names,'exact'))
-        error (['One of the variable specified does not exist']) ;
+        error (['rplot: One of the variables specified does not exist']) ;
     end
 
     y = [y; oo_.endo_simul(strmatch(s1(k,:),M_.endo_names,'exact'),:)] ;

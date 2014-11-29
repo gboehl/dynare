@@ -72,6 +72,6 @@ func_handle = @(x) dyn_lmmcp_func(x,model_dynamic, Y0, YT, exo_simul, ...
                                   lead_lag_incidence, i_cols_A1, i_cols_1, ...
                                   i_cols_T, i_cols_j,nnzA,eq_index);
 
-[x, info] = lmmcp(func_handle,x,LB,UB);
+[x, info] = lmmcp(func_handle,x,LB,UB,options.lmmcp);
 
 endo_simul = [Y0 reshape(x,ny,periods) YT];

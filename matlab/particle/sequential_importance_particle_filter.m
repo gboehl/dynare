@@ -158,8 +158,7 @@ for t=1:sample_size
     wtilde = weights.*exp(lnw-dfac);
     lik(t) = log(sum(wtilde))+dfac;
     weights = wtilde/sum(wtilde);
-    if (strcmp(DynareOptions.particle.resampling.status,'generic') && neff(weights)<DynareOptions.particle.resampling.neff_threshold*sample_size ) || ...
-        strcmp(DynareOptions.particle.resampling.status,'systematic')
+    if (DynareOptions.particle.resampling.status.generic && neff(weights)<DynareOptions.particle.resampling.threshold*sample_size) || DynareOptions.particle.resampling.status.systematic
         if pruning
             temp = resample([tmp(mf0,:)' tmp_(mf0,:)'],weights',DynareOptions);
             StateVectors = temp(:,1:number_of_state_variables)';
@@ -168,7 +167,7 @@ for t=1:sample_size
             StateVectors = resample(tmp(mf0,:)',weights',DynareOptions)';
         end
         weights = ones(1,number_of_particles)/number_of_particles;
-    elseif strcmp(DynareOptions.particle.resampling.status,'none')
+    elseif DynareOptions.particle.resampling.status.none
         StateVectors = tmp(mf0,:);
         if pruning
             StateVectors_ = tmp_(mf0,:);

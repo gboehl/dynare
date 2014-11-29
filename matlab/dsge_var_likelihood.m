@@ -1,4 +1,4 @@
-function [fval,grad,hess,exit_flag,info,PHI,SIGMAu,iXX,prior] = dsge_var_likelihood(xparam1,DynareDataset,DynareInfo,DynareOptions,Model,EstimatedParameters,BayesInfo,DynareResults)
+function [fval,grad,hess,exit_flag,info,PHI,SIGMAu,iXX,prior] = dsge_var_likelihood(xparam1,DynareDataset,DynareInfo,DynareOptions,Model,EstimatedParameters,BayesInfo,BoundsInfo,DynareResults)
 % Evaluates the posterior kernel of the bvar-dsge model.
 %
 % INPUTS
@@ -81,18 +81,18 @@ fval = [];
 exit_flag = 1;
 
 % Return, with endogenous penalty, if some dsge-parameters are smaller than the lower bound of the prior domain.
-if DynareOptions.mode_compute ~= 1 && any(xparam1 < BayesInfo.lb)
-    k = find(xparam1 < BayesInfo.lb);
-    fval = objective_function_penalty_base+sum((BayesInfo.lb(k)-xparam1(k)).^2);
+if DynareOptions.mode_compute ~= 1 && any(xparam1 < BoundsInfo.lb)
+    k = find(xparam1 < BoundsInfo.lb);
+    fval = objective_function_penalty_base+sum((BoundsInfo.lb(k)-xparam1(k)).^2);
     exit_flag = 0;
     info = 41;
     return;
 end
 
 % Return, with endogenous penalty, if some dsge-parameters are greater than the upper bound of the prior domain.
-if DynareOptions.mode_compute ~= 1 && any(xparam1 > BayesInfo.ub)
-    k = find(xparam1 > BayesInfo.ub);
-    fval = objective_function_penalty_base+sum((xparam1(k)-BayesInfo.ub(k)).^2);
+if DynareOptions.mode_compute ~= 1 && any(xparam1 > BoundsInfo.ub)
+    k = find(xparam1 > BoundsInfo.ub);
+    fval = objective_function_penalty_base+sum((xparam1(k)-BoundsInfo.ub(k)).^2);
     exit_flag = 0;
     info = 42;
     return;
@@ -132,8 +132,8 @@ end
 [T,R,SteadyState,info,Model,DynareOptions,DynareResults] = dynare_resolve(Model,DynareOptions,DynareResults,'restrict');
 
 % Return, with endogenous penalty when possible, if dynare_resolve issues an error code (defined in resol).
-if info(1) == 1 || info(1) == 2 || info(1) == 5 || info(1) == 7 || info(1) ...
-            == 8 || info(1) == 22 || info(1) == 24 || info(1) == 25
+if info(1) == 1 || info(1) == 2 || info(1) == 5 || info(1) == 7 || info(1) == 8 || ...
+            info(1) == 22 || info(1) == 24 || info(1) == 25 || info(1) == 10
     fval = objective_function_penalty_base+1;
     info = info(1);
     exit_flag = 0;
@@ -162,7 +162,7 @@ end
 %------------------------------------------------------------------------------
 
 % Compute the theoretical second order moments
-tmp0 = lyapunov_symm(T,R*Q*R',DynareOptions.qz_criterium,DynareOptions.lyapunov_complex_threshold);
+tmp0 = lyapunov_symm(T,R*Q*R',DynareOptions.qz_criterium,DynareOptions.lyapunov_complex_threshold, [], [], DynareOptions.debug);
 mf  = BayesInfo.mf1;
 
 % Get the non centered second order moments
