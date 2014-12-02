@@ -44,4 +44,10 @@ void designInternal(int ny, int nz, int nx, int nu, int ns[6], int nt,
   memcpy(a, mxGetPr(lhs[3]), sizeof(double) * mxGetNumberOfElements(lhs[3]));
   memcpy(F, mxGetPr(lhs[4]), sizeof(double) * mxGetNumberOfElements(lhs[4]));
   memcpy(R, mxGetPr(lhs[5]), sizeof(double) * mxGetNumberOfElements(lhs[5]));
+
+  for (int i=0; i<6; i++)
+    {
+      mxDestroyArray(lhs[i]);
+      mxDestroyArray(rhs[i]);
+    }
 }
