@@ -71,7 +71,7 @@ Stéphane Adjemian (`Université du Maine`_, Gains), Houtan Bastani
 (`Université du Maine`_, Gains and `Cepremap`_), Junior Maih (Norges
 Bank), Ferhat Mihoubi (Université Paris-Est Créteil, Epee and
 Cepremap), George Perendia, Johannes Pfeifer (University of Mannheim),
-Marco Ratto (JRC) and Sébastien Villemot (`Cepremap`_). Increasingly,
+Marco Ratto (JRC) and Sébastien Villemot (`OFCE – Sciences Po`_). Increasingly,
 the developer base is expanding, as tools developed by researchers
 outside of Cepremap are integrated into Dynare. Financial support is
 provided by `Cepremap`_, `Banque de France`_ and `DSGE-net`_ (an
@@ -132,3 +132,4 @@ http://www.dynare.org.
 .. _Université du Maine: http://www.univ-lemans.fr
 .. _Banque de France: http://www.banque-france.fr
 .. _DSGE-net: http://www.dsge.net
+.. _OFCE – Sciences Po: http://www.ofce.fr
