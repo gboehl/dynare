@@ -22,7 +22,11 @@
 #include <string.h>
 using namespace std;
 
+#if defined(__CYGWIN32__) || defined(_WIN32)
+extern "C" void dmmmain(char *nmlfile, size_t len);
+#else
 extern "C" void dmmmain_(char *nmlfile, size_t len);
+#endif
 
 void
 mexFunction(int nlhs, mxArray *plhs[],
@@ -54,7 +58,11 @@ mexFunction(int nlhs, mxArray *plhs[],
    */
   try
     {
+#if defined(__CYGWIN32__) || defined(_WIN32)
+      dmmmain(nmlfilef, 200);
+#else
       dmmmain_(nmlfilef, 200);
+#endif
     }
   catch (const char *str)
     {
