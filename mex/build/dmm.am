@@ -12,9 +12,9 @@ LDADD = $(FLIBS) $(FCLIBS)
 
 nodist_dmm_SOURCES = \
 	$(DMMMEXSRCDIR)/mexinterface.f90 \
-	$(DMMDIR)/gfortran.f90 \
 	$(DMMDIR)/iso_c_utilities.f90 \
 	$(DMMDIR)/dlfcn.f90 \
+	$(DMMDIR)/logical2integer.for \
 	$(DMMDIR)/gammln.for \
 	$(DMMDIR)/invfbis.for \
 	$(DMMDIR)/recest.for \
