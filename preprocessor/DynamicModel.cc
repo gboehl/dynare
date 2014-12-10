@@ -1745,7 +1745,7 @@ DynamicModel::writeSetState(const string &mat) const
       }
 
   mOutputFile << "    otherwise" << endl
-              << "        error('" << fname << ": should not arrive here');" << endl
+              << "        error(['" << fname << ": should not arrive here. State passed was ' state]);" << endl
               << "end" << endl
               << "end" << endl;
   mOutputFile.close();
