@@ -36,7 +36,8 @@ end
 if isempty(DynareOptions.datafile) && isempty(DynareOptions.dataset.file) && isempty(DynareOptions.dataset.series)
     if gsa_flag
         DynareDataset = dseries();
-        DatasetInfo = [];
+        DatasetInfo = struct('missing', struct('state', 0, 'aindex', [], 'vindex', [], 'number_of_observations', NaN, 'no_more_missing_observations', NaN), ...
+                     'descriptive', struct('mean', [], 'covariance', [], 'correlation', [], 'autocovariance', []));
         newdatainterface=0;
         return
     else

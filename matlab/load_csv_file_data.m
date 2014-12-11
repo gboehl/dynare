@@ -42,7 +42,13 @@ assert(exist(file, 'file') == 2, ['load_csv_file_data: I can''t find file ' file
 
 if isoctave
     if ~user_has_octave_forge_package('io')
-        error('The io package is required to read CSV files from Octave')
+        try
+            pkg load io
+        catch
+            error(['The io package is required to read CSV files from Octave. ' ...
+                'It can be installed by running the following from the Octave ' ...
+                ' command line: pkg install -forge io']);
+        end
     end
     A = csv2cell(file);
     [data, T, L] = parsecell(A);

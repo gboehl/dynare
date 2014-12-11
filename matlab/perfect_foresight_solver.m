@@ -141,7 +141,7 @@ end
 if oo_.deterministic_simulation.status == 1
     disp('Perfect foresight solution found.')
 else
-    disp('Failed to solve perfect foresight model')
+    warning('Failed to solve perfect foresight model')
 end
 
 dyn2vec;

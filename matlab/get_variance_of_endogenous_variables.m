@@ -48,16 +48,13 @@ n = length(i_var);
 [vx,u] = lyapunov_symm(A,B*Sigma_e*B',options_.qz_criterium,options_.lyapunov_complex_threshold, [], [], options_.debug);
 
 if size(u,2) > 0
-    i_stat_0 = find(any(abs(A*u) < options_.Schur_vec_tol,2));
-    i_stat = find(any(abs(ghx*u) < options_.Schur_vec_tol,2));
-    
+    i_stat = find(any(abs(ghx*u) < options_.Schur_vec_tol,2)); %only set those variances of objective function for which variance is finite     
     ghx = ghx(i_stat,:);
     ghu = ghu(i_stat,:);
 else
-    i_stat_0 = 1:size(ghx,2);
     i_stat = (1:n)';
 end
 
 vx1 = Inf*ones(n,n);
-vx1(i_stat,i_stat) = ghx(:,i_stat_0)*vx(i_stat_0,i_stat_0)*ghx(:,i_stat_0)'+ghu*Sigma_e*ghu';
+vx1(i_stat,i_stat) = ghx*vx*ghx'+ghu*Sigma_e*ghu';
 

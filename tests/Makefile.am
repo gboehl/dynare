@@ -19,6 +19,8 @@ MODFILES = \
 	example1_macroif.mod \
 	t_sgu_ex1.mod \
 	optimal_policy/osr_example.mod \
+	optimal_policy/osr_example_objective_correctness.mod \
+	optimal_policy/osr_example_obj_corr_non_stat_vars.mod \
 	optimal_policy/ramsey.mod \
 	optimal_policy/nk_ramsey.mod \
 	optimal_policy/nk_ramsey_model.mod \
@@ -120,6 +122,9 @@ MODFILES = \
 	identification/kim/kim2.mod \
 	identification/as2007/as2007.mod \
 	simul/example1.mod \
+	simul/Solow_no_varexo.mod \
+	simul/simul_ZLB_purely_forward.mod \
+	simul/simul_ZLB_purely_forward_no_solution.mod \
 	conditional_forecasts/fs2000_cal.mod \
 	conditional_forecasts/fs2000_est.mod \
 	recursive/ls2003.mod \
@@ -149,6 +154,8 @@ MODFILES = \
 	kalman_filter_smoother/fs2000_1.mod \
 	kalman_filter_smoother/fs2000_2.mod \
 	kalman_filter_smoother/fs2000a.mod \
+	kalman_filter_smoother/check_variable_dimensions/fs2000.mod \
+	kalman_filter_smoother/check_variable_dimensions/fs2000_ML.mod \
 	second_order/burnside_1.mod \
 	second_order/ds1.mod \
 	second_order/ds2.mod \
@@ -175,6 +182,7 @@ MODFILES = \
 	shock_decomposition/fs2000_est_varlist.mod \
 	stochastic_purely_forward/stochastic_purely_forward.mod \
 	stochastic_purely_forward/stochastic_purely_forward_with_static.mod \
+	forecast/Hansen_exo_det_forecast.mod \
 	gradient/fs2000_numgrad_13.mod \
 	gradient/fs2000_numgrad_15.mod \
 	gradient/fs2000_numgrad_2.mod \

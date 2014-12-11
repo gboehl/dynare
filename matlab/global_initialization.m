@@ -144,6 +144,7 @@ options_.relative_irf = 0;
 options_.ar = 5;
 options_.hp_filter = 0;
 options_.hp_ngrid = 512;
+options_.nodecomposition = 0;
 options_.nomoments = 0;
 options_.nocorr = 0;
 options_.periods = 0;
@@ -484,6 +485,8 @@ simplex.tolerance.f = 1e-4;
 simplex.maxiter = 5000;
 simplex.maxfcallfactor = 500;
 simplex.maxfcall = [];
+simplex.verbosity = 2;
+simplex.delta_factor=0.05;
 options_.simplex = simplex;
 
 % CMAES optimization routine.

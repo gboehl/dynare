@@ -356,8 +356,8 @@ Adjemian (Université du Maine, Gains and Cepremap), Houtan Bastani
 (Cepremap), Michel Juillard (Banque de France), Frédéric Karamé
 (Université du Maine, Gains and Cepremap), Junior Maih (Norges Bank),
 Ferhat Mihoubi (Université Paris-Est Créteil, Epee and Cepremap), George
-Perendia, Johannes Pfeifer (University of Mannheim), Marco Ratto (JRC)
-and Sébastien Villemot (Cepremap).
+Perendia, Johannes Pfeifer (University of Mannheim), Marco Ratto (European Commission, Joint Research Centre - JRC)
+and Sébastien Villemot (OFCE – Sciences Po).
 Increasingly, the developer base is expanding, as tools developed by
 researchers outside of Cepremap are integrated into Dynare. Financial
 support is provided by Cepremap, Banque de France and DSGE-net (an
@@ -3599,6 +3599,9 @@ Threshold size for plotting IRFs. All IRFs for a particular variable with a maxi
 @item nocorr
 Don't print the correlation matrix (printing them is the default).
 
+@item nodecomposition
+Don't compute (and don't print) unconditional variance decomposition.
+
 @item nofunctions
 Don't print the coefficients of the approximated solution (printing
 them is the default).
@@ -3707,7 +3710,7 @@ period(s). The periods must be strictly positive. Conditional variances are give
 decomposition provides the decomposition of the effects of shocks upon
 impact. The results are stored in
 @code{oo_.conditional_variance_decomposition}
-(@pxref{oo_.conditional_variance_decomposition}). The variance decomposition is only conducted, if theoretical moments are requested, i.e. using the @code{periods=0}-option. In case of @code{order=2}, Dynare provides a second-order accurate approximation to the true second moments based on the linear terms of the second-order solution (see @cite{Kim, Kim, Schaumburg and Sims (2008)}). Note that the unconditional variance decomposition (i.e. at horizon infinity) is automatically conducted if theoretical moments are requested (@pxref{oo_.variance_decomposition})
+(@pxref{oo_.conditional_variance_decomposition}). The variance decomposition is only conducted, if theoretical moments are requested, i.e. using the @code{periods=0}-option. In case of @code{order=2}, Dynare provides a second-order accurate approximation to the true second moments based on the linear terms of the second-order solution (see @cite{Kim, Kim, Schaumburg and Sims (2008)}). Note that the unconditional variance decomposition (i.e. at horizon infinity) is automatically conducted if theoretical moments are requested and if @code{nodecomposition} is not set (@pxref{oo_.variance_decomposition})
 
 @item pruning
 Discard higher order terms when iteratively computing simulations of
@@ -4615,7 +4618,7 @@ The name of the sheet with the data in an Excel file
 
 @item xls_range = @var{RANGE}
 @anchor{xls_range}
-The range with the data in an Excel file
+The range with the data in an Excel file. For example, @code{xls_range=B2:D200}
 
 @item nobs = @var{INTEGER}
 @anchor{nobs}
@@ -5158,13 +5161,14 @@ See below.
 
 @item filter_step_ahead = [@var{INTEGER1} @var{INTEGER2}  @dots{}]
 @anchor{filter_step_ahead}
-Triggers the computation k-step ahead filtered values. Stores results in
+Triggers the computation k-step ahead filtered values, i.e. @math{E_{t}{y_{t+k}}}. Stores results in
 @code{oo_.FilteredVariablesKStepAhead} and
 @code{oo_.FilteredVariablesKStepAheadVariances}.
 
 @item filter_decomposition
 @anchor{filter_decomposition} Triggers the computation of the shock
-decomposition of the above k-step ahead filtered values.
+decomposition of the above k-step ahead filtered values. Stores results in @code{oo_.FilteredVariablesShockDecomposition}.
+
 
 @item diffuse_filter
 Uses the diffuse Kalman filter (as described in
@@ -5183,8 +5187,9 @@ any value of  @math{\bar a} of @math{a} is a  deterministic steady state for pro
 Note that the nonstationary variables in the model must be integrated processes (their first difference or k-difference must be stationary).
 
 @item selected_variables_only
+@anchor{selected_variables_only}
 Only run the smoother on the variables listed just after the
-@code{estimation} command. Default: run the smoother on all the
+@code{estimation} command. This options is incompatible with requesting classical frequentist forecasts and will be overridden in this case. Default: run the smoother on all the
 declared endogenous variables.
 
 @item cova_compute = @var{INTEGER}
@@ -5483,6 +5488,7 @@ After an estimation without Metropolis, fields are of the form:
 @code{oo_.FilteredVariables.@var{VARIABLE_NAME}}
 @end example
 
+
 After an estimation with Metropolis, fields are of the form:
 @example
 @code{oo_.FilteredVariables.@var{MOMENT_NAME}.@var{VARIABLE_NAME}}
@@ -5491,12 +5497,23 @@ After an estimation with Metropolis, fields are of the form:
 
 @defvr {MATLAB/Octave variable} oo_.FilteredVariablesKStepAhead
 Variable set by the @code{estimation} command, if it is used with the
-@code{filter_step_ahead} option. The k-steps are stored along the rows while the columns indicate the respective variables. The third dimension of the array provides the observation for which the forecast has been made. For example, if @code{filter_step_ahead=[1 2 4]} and @code{nobs=200}, the element (3,5,204) stores the four period ahead filtered value of variable 5 computed at time t=200 for time t=204. The periods at the beginning and end of the sample for which no forecasts can be made, e.g. entries (1,5,1) and (1,5,204) in the example, are set to zero.
+@code{filter_step_ahead} option. The k-steps are stored along the rows while the columns 
+indicate the respective variables. The third dimension of the array provides the
+observation for which the forecast has been made. For example, if @code{filter_step_ahead=[1 2 4]} 
+and @code{nobs=200}, the element (3,5,204) stores the four period ahead filtered 
+value of variable 5 computed at time t=200 for time t=204. The periods at the beginning 
+and end of the sample for which no forecasts can be made, e.g. entries (1,5,1) and 
+(1,5,204) in the example, are set to zero. Note that in case of Bayesian estimation 
+the variables will be ordered in the order of declaration after the estimation 
+command (or in general declaration order if no variables are specified here). In case 
+of running the classical smoother, the variables will always be ordered in general 
+declaration order. If the @xref{selected_variables_only} option is specified with the classical smoother, 
+non-requested variables will be simply left out in this order.
 @end defvr
 
 @defvr {MATLAB/Octave variable} oo_.FilteredVariablesKStepAheadVariances
 Variable set by the @code{estimation} command, if it is used with the
-@code{filter_step_ahead} option.
+@code{filter_step_ahead} option. It is a 4 dimensional array where the k-steps are stored along the first dimension, while the fourth dimension of the array provides the observation for which the forecast has been made. The second and third dimension provide the respective variables. For example, if @code{filter_step_ahead=[1 2 4]} and @code{nobs=200}, the element (3,4,5,204) stores the four period ahead forecast error covariance between variable 4 and variable 5, computed at time t=200 for time t=204. Padding with zeros is analogous to @code{oo_.FilteredVariablesKStepAhead}. 
 @end defvr
 
 @defvr {MATLAB/Octave variable} oo_.Filtered_Variables_X_step_ahead
@@ -6402,7 +6419,7 @@ parameters in the @code{params}-command and be entered in the
 
 @item
 @math{e} are the exogenous stochastic shocks, specified in the
-@code{var_exo}-command;
+@code{varexo}-command;
 
 @item
 @math{W} is the weighting matrix;
@@ -7137,7 +7154,7 @@ The threshold @math{pvalue} for significant Kolmogorov-Smirnov test (@i{i.e.} pl
 
 @item pvalue_corr = @var{DOUBLE}
 The threshold @math{pvalue} for significant correlation in filtered samples
-(@i{i.e.} plot bivariate samples when @math{pvalue<} @code{pvalue_corr}). Default: @code{0.001}
+(@i{i.e.} plot bivariate samples when @math{pvalue<} @code{pvalue_corr}). Default: @code{1e-5}
 
 @end table
 @customhead{Reduced Form Mapping Options}
@@ -7166,7 +7183,7 @@ are filtered. Default: @code{0.1}
 
 @item alpha2_redform = @var{DOUBLE}
 Critical value for correlations @math{\rho}  when reduced form entries
-are filtered. Default: @code{0.3}
+are filtered. Default: @code{1e-5}
 
 @item namendo = (@var{VARIABLE_NAME}@dots{})
 List of endogenous variables. `@code{:}' indicates all endogenous variables.
@@ -7213,7 +7230,7 @@ Critical value for Smirnov statistics @math{d}: plot parameters with
 
 @item alpha2_rmse = @var{DOUBLE}
 Critical value for correlation @math{\rho}: plot couples of parmaters with
-@math{\left|\rho\right|=} @code{alpha2_rmse}. Default: @code{1.0}
+@math{\left|\rho\right|=} @code{alpha2_rmse}. Default: @code{1e-5}
 
 @item datafile = @var{FILENAME}
 @xref{datafile}.
@@ -10230,6 +10247,31 @@ Overloads the Matlab/Octave @code{exp} function for @dseries objects.
 @example
 >> ts0 = dseries(rand(10,1));
 >> ts1 = ts0.exp();
+@end example
+
+@end deftypefn
+
+@sp 1
+
+@deftypefn{dseries} {@var{l} =} exist (@var{A}, @var{varname})
+
+Tests if @var{variable} exists in @dseries object @var{A}. Returns 1 (true) iff @var{variable} exists in @var{A}.
+
+@exampleshead
+
+@example
+>> ts = dseries(randn(100,1));
+>> ts.exist('Variable_1')
+
+ans =
+
+     1
+
+>> ts.exist('Variable_2')
+
+ans =
+
+     0
 @end example
 
 @end deftypefn

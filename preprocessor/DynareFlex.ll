@@ -457,6 +457,7 @@ DATE -?[0-9]+([YyAa]|[Mm]([1-9]|1[0-2])|[Qq][1-4]|[Ww]([1-9]{1}|[1-4][0-9]|5[0-2
   yylval->string_val = new string(yytext);
   return token::CNUM;
 }
+<DYNARE_STATEMENT>nodecomposition {return token::NODECOMPOSITION;};
 <DYNARE_STATEMENT>banact {return token::BANACT;}
 <DYNARE_BLOCK>use_calibration {return token::USE_CALIBRATION;}
 <DYNARE_STATEMENT>output_file_tag {return token::OUTPUT_FILE_TAG;}
@@ -501,6 +502,7 @@ DATE -?[0-9]+([YyAa]|[Mm]([1-9]|1[0-2])|[Qq][1-4]|[Ww]([1-9]{1}|[1-4][0-9]|5[0-2
 <DYNARE_STATEMENT>random_function_convergence_criterion {return token::RANDOM_FUNCTION_CONVERGENCE_CRITERION;}
 <DYNARE_STATEMENT>random_parameter_convergence_criterion {return token::RANDOM_PARAMETER_CONVERGENCE_CRITERION;}
 <DYNARE_STATEMENT>tolf {return token::TOLF;}
+<DYNARE_STATEMENT>opt_algo {return token::OPT_ALGO;}
 <DYNARE_STATEMENT>instruments {return token::INSTRUMENTS;}
 <DYNARE_STATEMENT>hessian  {
   yylval->string_val = new string(yytext);

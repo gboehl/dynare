@@ -130,22 +130,6 @@ options_.plot_priors = 0;
 options_.smoother=1;
 [dataset_,dataset_info,xparam1,hh, M_, options_, oo_, estim_params_,bayestopt_]=dynare_estimation_init(M_.endo_names,fname_,1, M_, options_, oo_, estim_params_, bayestopt_);
 options_ident.analytic_derivation_mode = options_.analytic_derivation_mode;
-if isempty(dataset_),
-    dataset_.info.ntobs = periods;
-    dataset_.info.nvobs = length(options_.varobs);
-    dataset_.info.varobs = options_.varobs;
-    dataset_.rawdata = [];
-    dataset_.missing.state = 0;
-    for jdata=1:periods,
-        temp1{jdata}=[1:dataset_.info.nvobs]';
-    end
-    dataset_.missing.aindex = temp1;
-    dataset_.missing.vindex = [];
-    dataset_.missing.number_of_observations = [];
-    dataset_.missing.no_more_missing_observations = 1;
-    dataset_.descriptive.mean = [];
-    dataset_.data = [];
-end
 
 if prior_exist
     if any(bayestopt_.pshape > 0)

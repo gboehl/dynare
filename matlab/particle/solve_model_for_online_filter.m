@@ -307,11 +307,18 @@ end
 
 ReducedForm.ghx  = dr.ghx(restrict_variables_idx,:);
 ReducedForm.ghu  = dr.ghu(restrict_variables_idx,:);
-ReducedForm.ghxx = dr.ghxx(restrict_variables_idx,:);
-ReducedForm.ghuu = dr.ghuu(restrict_variables_idx,:);
-ReducedForm.ghxu = dr.ghxu(restrict_variables_idx,:);
 ReducedForm.steadystate = dr.ys(dr.order_var(restrict_variables_idx));
-ReducedForm.constant = ReducedForm.steadystate + .5*dr.ghs2(restrict_variables_idx);
+if DynareOptions.order>1
+    ReducedForm.ghxx = dr.ghxx(restrict_variables_idx,:);
+    ReducedForm.ghuu = dr.ghuu(restrict_variables_idx,:);
+    ReducedForm.ghxu = dr.ghxu(restrict_variables_idx,:);
+    ReducedForm.constant = ReducedForm.steadystate + .5*dr.ghs2(restrict_variables_idx);
+else 
+    ReducedForm.ghxx = zeros(size(restrict_variables_idx,1),size(dr.kstate,2));
+    ReducedForm.ghuu = zeros(size(restrict_variables_idx,1),size(dr.ghu,2));
+    ReducedForm.ghxu = zeros(size(restrict_variables_idx,1),size(dr.ghx,2));
+    ReducedForm.constant = ReducedForm.steadystate ;
+end
 ReducedForm.state_variables_steady_state = dr.ys(dr.order_var(state_variables_idx));
 ReducedForm.Q = Q;
 ReducedForm.H = H;

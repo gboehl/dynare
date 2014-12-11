@@ -75,7 +75,12 @@ test_for_deep_parameters_calibration(Model);
 % Evaluate the likelihood.
 ana_deriv = DynareOptions.analytic_derivation;
 DynareOptions.analytic_derivation=0;
-[fval,junk1,junk2,a,b,c,d] = feval(objective_function,xparam1,DynareDataset,DatasetInfo,DynareOptions,Model,EstimatedParameters,BayesInfo,BoundsInfo,DynareResults);
+if ~isequal(DynareOptions.mode_compute,11)
+  [fval,junk1,junk2,a,b,c,d] = feval(objective_function,xparam1,DynareDataset,DatasetInfo,DynareOptions,Model,EstimatedParameters,BayesInfo,BoundsInfo,DynareResults);
+else 
+    b=0;
+    fval = 0;
+end
 DynareOptions.analytic_derivation=ana_deriv;
 
 if DynareOptions.dsge_var || strcmp(func2str(objective_function),'non_linear_dsge_likelihood')
@@ -106,4 +111,6 @@ if any(abs(DynareResults.steady_state(BayesInfo.mfys))>1e-9) && (DynareOptions.p
     error('You should change something in your mod file...')
 end
 
-disp(['Initial value of the log posterior (or likelihood): ' num2str(-fval)]);
+if ~isequal(DynareOptions.mode_compute,11)
+    disp(['Initial value of the log posterior (or likelihood): ' num2str(-fval)]);
+end

@@ -145,13 +145,13 @@ options_gsa = set_default_option(options_gsa,'load_stab',0);
 options_gsa = set_default_option(options_gsa,'alpha2_stab',0);
 options_gsa = set_default_option(options_gsa,'ksstat',0.1);
 options_gsa = set_default_option(options_gsa,'pvalue_ks',0.001);
-options_gsa = set_default_option(options_gsa,'pvalue_corr',0.001);
+options_gsa = set_default_option(options_gsa,'pvalue_corr',1.e-5);
 %options_gsa = set_default_option(options_gsa,'load_mh',0);
 % REDFORM mapping
 options_gsa = set_default_option(options_gsa,'logtrans_redform',0);
 options_gsa = set_default_option(options_gsa,'threshold_redform',[]);
 options_gsa = set_default_option(options_gsa,'ksstat_redform',0.001);
-options_gsa = set_default_option(options_gsa,'alpha2_redform',0);
+options_gsa = set_default_option(options_gsa,'alpha2_redform',1.e-5);
 options_gsa = set_default_option(options_gsa,'namendo',[]);
 options_gsa = set_default_option(options_gsa,'namlagendo',[]);
 options_gsa = set_default_option(options_gsa,'namexo',[]);
@@ -161,7 +161,7 @@ options_gsa = set_default_option(options_gsa,'var_rmse',char(options_.varobs));
 options_gsa = set_default_option(options_gsa,'pfilt_rmse',0.1);
 options_gsa = set_default_option(options_gsa,'istart_rmse',options_.presample+1);
 options_gsa = set_default_option(options_gsa,'alpha_rmse',0.001);
-options_gsa = set_default_option(options_gsa,'alpha2_rmse',0);
+options_gsa = set_default_option(options_gsa,'alpha2_rmse',1.e-5);
 
 if options_gsa.redform && options_gsa.neighborhood_width==0 && isempty(options_gsa.threshold_redform),
     options_gsa.pprior=1;
@@ -243,7 +243,7 @@ end
 
 options_.opt_gsa = options_gsa;
 if ~isempty(options_gsa.moment_calibration) || ~isempty(options_gsa.irf_calibration),
-    map_calibration(OutputDirectoryName, M_, options_, oo_, estim_params_);
+    map_calibration(OutputDirectoryName, M_, options_, oo_, estim_params_,bayestopt_);
 end
 
 if options_gsa.identification,

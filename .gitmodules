@@ -10,3 +10,14 @@
 [submodule "contrib/dmm"]
 	path = contrib/dmm
 	url = http://www.dynare.org/git/dmm.git
+[submodule "matlab/utilities/tests"]
+	path = matlab/utilities/tests
+	url = https://github.com/DynareTeam/m-unit-tests.git
+[submodule "matlab/modules/dates"]
+	path = matlab/modules/dates
+	url = https://github.com/DynareTeam/dates.git
+	branch = old-oop-syntax
+[submodule "matlab/modules/dseries"]
+	path = matlab/modules/dseries
+	url = https://github.com/DynareTeam/dseries.git
+	branch = old-oop-style

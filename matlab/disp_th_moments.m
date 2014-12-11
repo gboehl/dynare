@@ -20,6 +20,8 @@ function disp_th_moments(dr,var_list)
 
 global M_ oo_ options_
 
+nodecomposition = options_.nodecomposition;
+
 if size(var_list,1) == 0
     var_list = M_.endo_names(1:M_.orig_endo_nbr, :);
 end
@@ -34,7 +36,7 @@ for i=1:nvar
     end
 end
 
-[oo_.gamma_y,stationary_vars] = th_autocovariances(dr,ivar,M_,options_);
+[oo_.gamma_y,stationary_vars] = th_autocovariances(dr,ivar,M_,options_, nodecomposition);
 m = dr.ys(ivar);
 non_stationary_vars = setdiff(1:length(ivar),stationary_vars);
 m(non_stationary_vars) = NaN;
@@ -51,7 +53,9 @@ oo_.mean = m;
 oo_.var = oo_.gamma_y{1};
 
 if size(stationary_vars, 1) > 0
-    oo_.variance_decomposition=100*oo_.gamma_y{options_.ar+2};
+    if ~nodecomposition
+        oo_.variance_decomposition=100*oo_.gamma_y{options_.ar+2};
+    end
     if ~options_.noprint %options_.nomoments == 0
         if options_.order == 2
             title='APROXIMATED THEORETICAL MOMENTS';
@@ -66,7 +70,7 @@ if size(stationary_vars, 1) > 0
         lh = size(labels,2)+2;
         dyntable(title,headers,labels,z,lh,11,4);
 
-        if M_.exo_nbr > 1
+        if M_.exo_nbr > 1 && ~nodecomposition
             skipline()
             if options_.order == 2
                 title='APPROXIMATED VARIANCE DECOMPOSITION (in percent)';            

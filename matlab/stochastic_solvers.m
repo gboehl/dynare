@@ -241,8 +241,18 @@ else
         dr = dyn_second_order_solver(jacobia_,hessian1,dr,M_,...
                                      options_.threads.kronecker.A_times_B_kronecker_C,...
                                      options_.threads.kronecker.sparse_hessian_times_B_kronecker_C);
+                                 
+        % reordering second order derivatives, used for deterministic
+        % variables below
+        k1 = nonzeros(M_.lead_lag_incidence(:,order_var)');
+        kk = [k1; length(k1)+(1:M_.exo_nbr+M_.exo_det_nbr)'];
+        nk = size(kk,1);
+        kk1 = reshape([1:nk^2],nk,nk);
+        kk1 = kk1(kk,kk);
+        hessian1 = hessian1(:,kk1(:));
     end
 end
+
 
 %exogenous deterministic variables
 if M_.exo_det_nbr > 0

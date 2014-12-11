@@ -85,8 +85,8 @@ small_a = sqrt(1-h_square) ;
 
 % Initialization of parameter particles 
 xparam = zeros(number_of_parameters,number_of_particles) ;
-stderr = sqrt(bsxfun(@power,bounds(:,2)+bounds(:,1),2)/12)/100 ;
-stderr = sqrt(bsxfun(@power,bounds(:,2)+bounds(:,1),2)/12)/50 ;
+%stderr = sqrt(bsxfun(@power,bounds(:,2)+bounds(:,1),2)/12)/100 ;
+stderr = sqrt(bsxfun(@power,bounds(:,2)+bounds(:,1),2)/12)/10 ;
 i = 1 ;
 while i<=number_of_particles
     %candidate = start_param + .001*liu_west_chol_sigma_bar*randn(number_of_parameters,1) ;
@@ -110,7 +110,10 @@ std_xparam = zeros(number_of_parameters,sample_size) ;
 lb95_xparam = zeros(number_of_parameters,sample_size) ;
 ub95_xparam = zeros(number_of_parameters,sample_size) ;
 
-%% The Online filter 
+disp(0) 
+disp(start_param)
+    
+    %% The Online filter 
 for t=1:sample_size
     disp(t)
     % Moments of parameters particles distribution 

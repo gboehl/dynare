@@ -94,7 +94,7 @@ if options_.steadystate_flag
     end
     ys_init=zeros(size(oo.steady_state)); %create starting vector for steady state computation as only instrument value is handed over
     ys_init(k_inst) = x; %set instrument, the only value required for steady state computation, to current value
-    [x,params,check] = evaluate_steady_state_file(ys_init,... returned x now has size endo_nbr as opposed to input size of n_instruments
+    [x,params,check] = evaluate_steady_state_file(ys_init,... %returned x now has size endo_nbr as opposed to input size of n_instruments
                                                   [oo.exo_steady_state; ...
                                                   oo.exo_det_steady_state], ...
                                                   M,options_);

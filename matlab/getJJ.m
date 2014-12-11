@@ -128,7 +128,8 @@ end
 if nargout >2,
     %     sy=sy(mf,mf);
     options_.ar=nlags;
-    [GAM,stationary_vars] = th_autocovariances(oo_.dr,oo_.dr.order_var(mf),M_,options_);
+    nodecomposition = 1;
+    [GAM,stationary_vars] = th_autocovariances(oo_.dr,oo_.dr.order_var(mf),M_,options_,nodecomposition);
     sy=sqrt(diag(GAM{1}));
     sy=sy*sy';
     if useautocorr,
