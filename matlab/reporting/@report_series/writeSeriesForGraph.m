@@ -37,7 +37,8 @@ end
 
 assert(ischar(o.graphMiscTikzAddPlotOptions), ['@report_series.writeSeriesForGraph: ' ...
                     'graphMiscTikzAddPlotOptions file must be a string']);
-assert(islogical(o.graphShowInLegend), '@graph.graph: graphShowInLegend must be either true or false');
+assert(islogical(o.graphShowInLegend), ['@report_series.writeSeriesForGraph: ' ...
+                    'graphShowInLegend must be either true or false']);
 
 % Line
 assert(ischar(o.graphLineColor), '@report_series.writeSeriesForGraph: graphLineColor must be a string');
