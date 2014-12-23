@@ -53,6 +53,11 @@ o.graphMiscTikzAddPlotOptions = '';
 o.graphHline = {};
 o.graphVline = dates();
 
+o.graphBar = false;
+o.graphBarColor = 'black';
+o.graphBarFillColor = 'black';
+o.graphBarWidth = 2;
+
 o.tableShowMarkers = false;
 o.tableNegColor = 'red';
 o.tablePosColor = 'blue';

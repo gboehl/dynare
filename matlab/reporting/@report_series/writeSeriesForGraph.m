@@ -46,6 +46,13 @@ assert(ischar(o.graphLineStyle), '@report_series.writeSeriesForGraph: graphLineS
 assert(isfloat(o.graphLineWidth) && o.graphLineWidth > 0, ...
                     '@report_series.writeSeriesForGraph: graphLineWidth must be a positive number');
 
+% Bar
+assert(islogical(o.graphBar), '@report_series.writeSeriesForGraph: graphBar must be either true or false');
+assert(ischar(o.graphBarColor), '@report_series.writeSeriesForGraph: graphBarColor must be a string');
+assert(ischar(o.graphBarFillColor), '@report_series.writeSeriesForGraph: graphBarFillColor must be a string');
+assert(isfloat(o.graphBarWidth) && o.graphBarWidth > 0, ...
+                    '@report_series.writeSeriesForGraph: graphbarWidth must be a positive number');
+
 % GraphMarker
 valid_graphMarker = {'x', '+', '-', '|', 'o', 'asterisk', 'star', '10-pointed star', 'oplus', ...
                     'oplus*', 'otimes', 'otimes*', 'square', 'square*', 'triangle', 'triangle*', 'diamond', ...
@@ -113,18 +120,23 @@ fprintf(fid,'};\n');
 end
 
 function writeLineOptions(o, fid)
-fprintf(fid, '[color=%s,%s,line width=%fpt,line join=round',...
-    o.graphLineColor, o.graphLineStyle, o.graphLineWidth);
+if o.graphBar
+    fprintf(fid, '[ybar,color=%s,fill=%s,line width=%fpt',...
+            o.graphBarColor, o.graphBarFillColor, o.graphBarWidth);
+else
+    fprintf(fid, '[color=%s,%s,line width=%fpt,line join=round',...
+            o.graphLineColor, o.graphLineStyle, o.graphLineWidth);
 
-if ~isempty(o.graphMarker)
-    if isempty(o.graphMarkerEdgeColor)
-        o.graphMarkerEdgeColor = o.graphLineColor;
+    if ~isempty(o.graphMarker)
+        if isempty(o.graphMarkerEdgeColor)
+            o.graphMarkerEdgeColor = o.graphLineColor;
+        end
+        if isempty(o.graphMarkerFaceColor)
+            o.graphMarkerFaceColor = o.graphLineColor;
+        end
+        fprintf(fid, ',mark=%s,mark size=%f,every mark/.append style={draw=%s,fill=%s}',...
+                o.graphMarker,o.graphMarkerSize,o.graphMarkerEdgeColor,o.graphMarkerFaceColor);
     end
-    if isempty(o.graphMarkerFaceColor)
-        o.graphMarkerFaceColor = o.graphLineColor;
-    end
-    fprintf(fid, ',mark=%s,mark size=%f,every mark/.append style={draw=%s,fill=%s}',...
-        o.graphMarker,o.graphMarkerSize,o.graphMarkerEdgeColor,o.graphMarkerFaceColor);
 end
 if ~isempty(o.graphMiscTikzAddPlotOptions)
     fprintf(fid, ',%s', o.graphMiscTikzAddPlotOptions);
