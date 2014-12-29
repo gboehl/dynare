@@ -169,7 +169,11 @@ if o.showLegend
     if strcmp(o.legendOrientation, 'horizontal')
         fprintf(fid,'legend columns=-1,');
     end
-    fprintf(fid, '},\nlegend pos=%s,\n', o.legendLocation);
+    if isempty(o.legendAt)
+        fprintf(fid, '},\nlegend pos=%s,\n', o.legendLocation);
+    else
+        fprintf(fid, 'at={(%f,%f)}},\n',o.legendAt(1),o.legendAt(2));
+    end
 end
 
 fprintf(fid, 'tick label style={font=\\%s},\n', o.tickFontSize);

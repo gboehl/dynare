@@ -59,6 +59,7 @@ o.shadeOpacity = 20;
 o.showGrid = true;
 
 o.showLegend = false;
+o.legendAt = [];
 o.showLegendBox = false;
 o.legendLocation = 'south east';
 o.legendOrientation = 'horizontal';
@@ -128,6 +129,8 @@ assert(islogical(o.showGrid), '@graph.graph: showGrid must be either true or fal
 assert(islogical(o.xAxisTight), '@graph.graph: xAxisTight must be either true or false');
 assert(islogical(o.yAxisTight), '@graph.graph: yAxisTight must be either true or false');
 assert(islogical(o.showLegend), '@graph.graph: showLegend must be either true or false');
+assert(isempty(o.legendAt) || (isfloat(o.legendAt) && length(o.legendAt)==2), ...
+       '@graph.graph: legendAt must be a double array of size two');
 assert(islogical(o.showLegendBox), '@graph.graph: showLegendBox must be either true or false');
 assert(islogical(o.showZeroline), '@graph.graph: showZeroline must be either true or false');
 assert(isfloat(o.shadeOpacity) && length(o.shadeOpacity)==1 && ...
