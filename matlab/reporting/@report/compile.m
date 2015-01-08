@@ -62,7 +62,7 @@ if ~exist(o.fileName, 'file')
 end
 
 middle = ' ./';
-options = '-synctex=1';
+options = '-synctex=1 -halt-on-error';
 if isoctave
     echo = 1;
 else
