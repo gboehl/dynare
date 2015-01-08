@@ -13,7 +13,7 @@ function o = compile(o, varargin)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2013-2014 Dynare Team
+% Copyright (C) 2013-2015 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -103,7 +103,7 @@ end
 if opts.showOutput
     status = system([opts.compiler ' ' options middle o.fileName], echo);
 else
-    [status, junk] = system([opts.compiler ' ' options middle o.fileName]);
+    [status, junk] = system([opts.compiler ' -interaction=batchmode ' options middle o.fileName]);
 end
 [junk, rfn, junk] = fileparts(o.fileName);
 
