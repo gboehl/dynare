@@ -155,6 +155,9 @@ MODFILES = \
 	deterministic_simulations/rbc_det3.mod \
 	deterministic_simulations/rbc_det4.mod \
 	deterministic_simulations/rbc_det5.mod \
+	deterministic_simulations/rbc_det_exo_lag2a.mod \
+	deterministic_simulations/rbc_det_exo_lag2b.mod \
+	deterministic_simulations/rbc_det_exo_lag2c.mod \
 	walsh.mod \
 	measurement_errors/fs2000_corr_me_ml_mcmc/fs2000_corr_ME.mod \
 	trend_var/fs2000_nonstationary.mod \
@@ -243,6 +246,11 @@ dsge-var/dsgevar_forward_calibrated_lambda.m.trs: dsge-var/simul_hybrid.m.trs
 dsge-var/dsgevar_forward_estimated_lambda.m.trs: dsge-var/simul_hybrid.m.trs
 dsge-var/dsgevar_forward_calibrated_lambda.o.trs: dsge-var/simul_hybrid.o.trs
 dsge-var/dsgevar_forward_estimated_lambda.o.trs: dsge-var/simul_hybrid.o.trs
+
+deterministic_simulations/rbc_det_exo_lag2b.m.trs: deterministic_simulations/rbc_det_exo_lag2a.m.trs
+deterministic_simulations/rbc_det_exo_lag2c.m.trs: deterministic_simulations/rbc_det_exo_lag2a.m.trs
+deterministic_simulations/rbc_det_exo_lag2b.o.trs: deterministic_simulations/rbc_det_exo_lag2a.o.trs
+deterministic_simulations/rbc_det_exo_lag2c.o.trs: deterministic_simulations/rbc_det_exo_lag2a.o.trs
 
 # Matlab TRS Files
 M_TRS_FILES = $(patsubst %.mod, %.m.trs, $(MODFILES))

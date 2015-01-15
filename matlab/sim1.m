@@ -65,7 +65,7 @@ i_cols_T = nonzeros(lead_lag_incidence(1:2,:)');
 i_cols_0 = nonzeros(lead_lag_incidence(2,:)');
 i_cols_A0 = find(lead_lag_incidence(2,:)');
 i_cols_j = 1:nd;
-i_upd = ny+(1:periods*ny);
+i_upd = M_.maximum_lag*ny+(1:periods*ny);
 
 Y = endo_simul(:);
 
@@ -86,9 +86,9 @@ for iter = 1:options_.simul.maxit
     h2 = clock ;
     
     i_rows = 1:ny;
-    i_cols = find(lead_lag_incidence');
-    i_cols_A = i_cols;
-    
+    i_cols_A = find(lead_lag_incidence');
+    i_cols = i_cols_A+(M_.maximum_lag-1)*ny;
+
     for it = (M_.maximum_lag+1):(M_.maximum_lag+periods)
 
         [d1,jacobian] = model_dynamic(Y(i_cols),exo_simul, params, ...
@@ -137,7 +137,7 @@ if stop
         oo_.deterministic_simulation.status = 0;% NaN or Inf occurred
         oo_.deterministic_simulation.error = err;
         oo_.deterministic_simulation.iterations = iter;
-        oo_.endo_simul = reshape(Y,ny,periods+2);
+        oo_.endo_simul = reshape(Y,ny,periods+M_.maximum_lag+M_.maximum_lead);
         skipline();
         fprintf('\nSimulation terminated after %d iterations.\n',iter);
         fprintf('Total time of simulation        : %10.3f\n',etime(clock,h1));
@@ -150,7 +150,7 @@ if stop
         oo_.deterministic_simulation.status = 1;% Convergency obtained.
         oo_.deterministic_simulation.error = err;
         oo_.deterministic_simulation.iterations = iter;
-        oo_.endo_simul = reshape(Y,ny,periods+2);
+        oo_.endo_simul = reshape(Y,ny,periods+M_.maximum_lag+M_.maximum_lead);
     end
 elseif ~stop
     skipline();
