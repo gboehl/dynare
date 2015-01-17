@@ -43,14 +43,14 @@ end
 
 if isempty(M_.endo_histval)
     if isempty(ys0_)
-        oo_.endo_simul = [oo_.steady_state*ones(1,M_.maximum_endo_lag+options_.periods+M_.maximum_endo_lead)];
+        oo_.endo_simul = [oo_.steady_state*ones(1,M_.maximum_lag+options_.periods+M_.maximum_lead)];
     else
-        oo_.endo_simul = [ys0_*ones(1,M_.maximum_endo_lag) oo_.steady_state*ones(1,options_.periods+M_.maximum_endo_lead)];
+        oo_.endo_simul = [ys0_*ones(1,M_.maximum_lag) oo_.steady_state*ones(1,options_.periods+M_.maximum_lead)];
     end
 else
     if ~isempty(ys0_)
         error('histval and endval cannot be used simultaneously')
     end
     oo_.endo_simul = [M_.endo_histval ...
-                      oo_.steady_state*ones(1,options_.periods+M_.maximum_endo_lead)];
+                      oo_.steady_state*ones(1,options_.periods+M_.maximum_lead)];
 end
