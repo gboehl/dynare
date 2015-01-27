@@ -12,7 +12,7 @@ function o = page(varargin)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2013-2014 Dynare Team
+% Copyright (C) 2013-2015 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -34,6 +34,7 @@ o.paper = '';
 o.title = {''};
 titleFormatDefalut = {'\large\bfseries'};
 o.titleFormat = titleFormatDefalut;
+o.titleTruncate = '';
 o.orientation = '';
 o.footnote = {};
 o.sections = {};
@@ -77,6 +78,9 @@ assert(iscellstr(o.title), ...
        '@page.page: title must be a cell array of strings');
 assert(iscellstr(o.titleFormat), ...
        '@page.page: titleFormat must be a cell array of strings');
+assert((ischar(o.titleTruncate) && isempty(o.titleTruncate)) || ...
+        isint(o.titleTruncate), ...
+       '@page.page: titleTruncate must be empty or an integer.');
 
 valid_paper = {'a4', 'letter'};
 assert(any(strcmp(o.paper, valid_paper)), ...

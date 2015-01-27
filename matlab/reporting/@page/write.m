@@ -13,7 +13,7 @@ function o = write(o, fid, pg)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2013-2014 Dynare Team
+% Copyright (C) 2013-2015 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -44,6 +44,11 @@ fprintf(fid,'\n');
 
 fprintf(fid, '\\begin{tabular}[t]{c}\n');
 for i=1:length(o.title)
+    if isint(o.titleTruncate)
+        if length(o.title{i}) > o.titleTruncate
+            o.title{i} = o.title{i}(1:o.titleTruncate);
+        end
+    end
     fprintf(fid,'\\multicolumn{1}{c}{%s %s}\\\\\n', o.titleFormat{i}, o.title{i});
 end
 
