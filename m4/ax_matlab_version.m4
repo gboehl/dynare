@@ -1,4 +1,4 @@
-dnl Copyright (C) 2009-2014 Dynare Team
+dnl Copyright (C) 2009-2015 Dynare Team
 dnl
 dnl This file is part of Dynare.
 dnl
@@ -22,6 +22,9 @@ AC_REQUIRE([AX_MATLAB])
 AC_MSG_CHECKING([for MATLAB version])
 if test "x$MATLAB_VERSION" != "x"; then
   case $MATLAB_VERSION in
+    *2015a | *2015A)
+      MATLAB_VERSION="8.5"
+      ;;
     *2014b | *2014B)
       MATLAB_VERSION="8.4"
       ;;
