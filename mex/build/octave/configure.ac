@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 
-dnl Copyright (C) 2009-2013 Dynare Team
+dnl Copyright (C) 2009-2015 Dynare Team
 dnl
 dnl This file is part of Dynare.
 dnl
@@ -34,9 +34,11 @@ if test "x$MKOCTFILE" != "x"; then
   OCTAVE_VERSION=`$MKOCTFILE -v 2>&1 | sed 's/mkoctfile, version //'`
   AX_COMPARE_VERSION([$OCTAVE_VERSION], [lt], [3.6], [AC_MSG_ERROR([Your Octave is too old, please upgrade to version 3.6 at least.])])
   AX_COMPARE_VERSION([$OCTAVE_VERSION], [ge], [3.8], [OCTAVE38=yes])
+  AX_COMPARE_VERSION([$OCTAVE_VERSION], [ge], [4.0], [OCTAVE40=yes])
 fi
 
 AM_CONDITIONAL([COMPILE_LINSOLVE], [test "$OCTAVE38" != "yes"])
+AM_CONDITIONAL([COMPILE_ORDSCHUR], [test "$OCTAVE40" != "yes"])
 
 CFLAGS="$CFLAGS -Wall -Wno-parentheses"
 FFLAGS="$FFLAGS -Wall"
@@ -112,6 +114,12 @@ else
    BUILD_LINSOLVE_OCTAVE="no (Octave >= 3.8)"
 fi
 
+if test -n "$MKOCTFILE" -a "$OCTAVE40" != "yes"; then
+   BUILD_ORDSCHUR_OCTAVE="yes"
+else
+   BUILD_ORDSCHUR_OCTAVE="no (Octave >= 4.0)"
+fi
+
 AC_ARG_ENABLE([openmp], AS_HELP_STRING([--enable-openmp], [use OpenMP for parallelization of some MEX files]), [
   if test "x$enable_openmp" = "xyes"; then
     CPPFLAGS="$CPPFLAGS -DUSE_OMP"
@@ -130,6 +138,7 @@ Binaries (with "make"):
  Kalman Steady State MEX file for Octave:                            $BUILD_KALMAN_STEADY_STATE_OCTAVE
  k-order and dynare_simul MEX for Octave:                            $BUILD_ESTIMATION_KORDER_DYNSIMUL_MEX_OCTAVE
  Linsolve for Octave:                                                $BUILD_LINSOLVE_OCTAVE
+ Ordschur for Octave:                                                $BUILD_ORDSCHUR_OCTAVE
 
 ])
 
