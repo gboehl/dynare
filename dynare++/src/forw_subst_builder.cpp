@@ -1,5 +1,6 @@
 // Copyright (C) 2006-2011, Ondra Kamenik
 
+
 #include "forw_subst_builder.h"
 
 using namespace ogdyn;
@@ -47,18 +48,20 @@ void ForwSubstBuilder::substitute_for_term(int t, int i, int j)
 		// first make lagsubst be substitution setting f(x(+4)) to f(x(+1))
 		// this is lag = -3 (1-mlead)
 		map<int,int> lagsubst;
-		model.variable_shift_map(model.eqs.nulary_of_term(t), 1-mlead, lagsubst);
+        unordered_set<int> nult = model.eqs.nulary_of_term(t);// make copy of nult!
+		model.variable_shift_map(nult, 1-mlead, lagsubst);
 		int lagt = model.eqs.add_substitution(t, lagsubst);
-		// now maxlead of lagt is +1
-		// add AUXLD_*_*_1 = f(x(+1)) to the model
-		char name[100];
-		sprintf(name, "AUXLD_%d_%d_%d", i, j, 1);
-		model.atoms.register_uniq_endo(name);
-		info.num_aux_variables++;
-		const char* ss = model.atoms.get_name_storage().query(name);
-		int auxt = model.eqs.add_nulary(name);
-		model.eqs.add_formula(model.eqs.add_binary(ogp::MINUS, auxt, lagt));
-		aux_map.insert(Tsubstmap::value_type(ss, lagt));
+
+        // now maxlead of lagt is +1
+        // add AUXLD_*_*_1 = f(x(+1)) to the model
+        char name[100];
+        sprintf(name, "AUXLD_%d_%d_%d", i, j, 1);
+        model.atoms.register_uniq_endo(name);
+        info.num_aux_variables++;
+        const char* ss = model.atoms.get_name_storage().query(name);
+        int auxt = model.eqs.add_nulary(name);
+        model.eqs.add_formula(model.eqs.add_binary(ogp::MINUS, auxt, lagt));
+        aux_map.insert(Tsubstmap::value_type(ss, lagt));
 		// now add variables and equations
 		// AUXLD_*_*_2 = AUXLD_*_*_1(+1) through
 		// AUXLD_*_*_{mlead-1} = AUXLD_*_*_{mlead-2}(+1)
@@ -82,7 +85,9 @@ void ForwSubstBuilder::substitute_for_term(int t, int i, int j)
 			aux_map.insert(Tsubstmap::value_type(ss, lagt));
 		}
 
-		// now we have to substitute AUXLEAD_*_*{mlead-1}(+1) for t
+		// now we have to substitute AUXLD_*_*{mlead-1}(+1) for t
+        sprintf(name, "AUXLD_%d_%d_%d", i, j, mlead-1);
+        ss = model.atoms.get_name_storage().query(name);
 		model.substitute_atom_for_term(ss, +1, t);
 	}
 }
