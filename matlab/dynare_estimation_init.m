@@ -421,7 +421,10 @@ else
                                              bayestopt_.smoother_var_list);
 end;
 
-if options_.analytic_derivation,
+if options_.analytic_derivation
+    if options_.lik_init == 3
+        error('analytic derivation is incompatible with diffuse filter')
+    end
     options_.analytic_derivation = 1;
     if ~(exist('sylvester3','file')==2),
         dynareroot = strrep(which('dynare'),'dynare.m','');

@@ -627,7 +627,7 @@ if analytic_derivation,
         analytic_deriv_info={analytic_derivation,DT,DYss,DOm,DH,DP,asy_Hess};
     else
         analytic_deriv_info={analytic_derivation,DT,DYss,DOm,DH,DP,D2T,D2Yss,D2Om,D2H,D2P};
-        clear DT DYss DOm DH DP D2T D2Yss D2Om D2H D2P,
+        clear DT DYss DOm DP D2T D2Yss D2Om D2H D2P,
     end
 else
     analytic_deriv_info={0};
