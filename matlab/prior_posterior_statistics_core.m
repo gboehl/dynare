@@ -277,6 +277,8 @@ for b=fpar:B
 
     if irun(5) > MAX_nruns || b == B
         stock = stock_param(1:irun(5)-1,:);
+        stock_logpo = stock_logpo(1:irun(5)-1);
+        stock_ys = stock_ys(1:irun(5)-1,:);
         ifil(5) = ifil(5) + 1;
         save([DirectoryName '/' M_.fname '_param' int2str(ifil(5)) '.mat'],'stock','stock_logpo','stock_ys');
         if RemoteFlag==1,
