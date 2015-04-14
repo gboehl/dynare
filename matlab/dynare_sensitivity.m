@@ -160,6 +160,11 @@ options_gsa = set_default_option(options_gsa,'istart_rmse',options_.presample+1)
 options_gsa = set_default_option(options_gsa,'alpha_rmse',0.001);
 options_gsa = set_default_option(options_gsa,'alpha2_rmse',0);
 
+if options_gsa.neighborhood_width,
+    options_gsa.pprior=0;
+    options_gsa.ppost=0;
+end
+
 if options_gsa.redform && options_gsa.neighborhood_width==0 && isempty(options_gsa.threshold_redform),
     options_gsa.pprior=1;
     options_gsa.ppost=0;
