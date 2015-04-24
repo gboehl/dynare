@@ -12,7 +12,7 @@ function o = writeSeriesForGraph(o, fid, xrange)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2014 Dynare Team
+% Copyright (C) 2014-2015 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -82,7 +82,7 @@ assert(isfloat(o.zeroTol), '@report_series.write: zeroTol must be a float');
 
 %% graphVline && graphHline
 if ~isempty(o.graphVline)
-    fprintf(fid, '%%Vertical Line\n\\begin{pgfonlayer}{background1}\n\\draw');
+    fprintf(fid, '%%Vertical Line\n\\begin{pgfonlayer}{axis lines}\n\\draw');
     writeLineOptions(o, fid);
     stringsdd = strings(xrange);
     x = find(strcmpi(date2string(o.graphVline), stringsdd));
@@ -91,7 +91,7 @@ if ~isempty(o.graphVline)
         x, x);
 end
 if ~isempty(o.graphHline)
-    fprintf(fid, '%%Horizontal Line\n\\begin{pgfonlayer}{background1}\n\\addplot');
+    fprintf(fid, '%%Horizontal Line\n\\begin{pgfonlayer}{axis lines}\n\\addplot');
     writeLineOptions(o, fid);
     fprintf(fid, ['coordinates {(\\pgfkeysvalueof{/pgfplots/xmin},%f)' ...
                   '(\\pgfkeysvalueof{/pgfplots/xmax},%f)};\n\\end{pgfonlayer}\n'], ...

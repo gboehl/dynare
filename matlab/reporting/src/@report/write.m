@@ -11,7 +11,7 @@ function o = write(o)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2013-2014 Dynare Team
+% Copyright (C) 2013-2015 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -72,9 +72,6 @@ fprintf(fid, '\\setlength{\\parindent}{0in}\n');
 fprintf(fid, '\\setlength{\\tabcolsep}{1em}\n');
 fprintf(fid, '\\newlength\\sectionheight\n');
 fprintf(fid, '\\begin{document}\n');
-fprintf(fid, '\\pgfdeclarelayer{background0}\n');
-fprintf(fid, '\\pgfdeclarelayer{background1}\n');
-fprintf(fid, '\\pgfsetlayers{background0,background1,main}\n');
 fprintf(fid, '\\pgfplotsset{tick scale binop={\\times},\ntrim axis left}\n');
 fprintf(fid, '\\centering\n');
 
