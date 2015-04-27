@@ -1,10 +1,11 @@
-function o = writeSeriesForGraph(o, fid, xrange)
-%function o = writeSeriesForGraph(o, fid, xrange)
+function o = writeSeriesForGraph(o, fid, xrange, series_num)
+%function o = writeSeriesForGraph(o, fid, xrange, series_num)
 % Print a TikZ line
 %
 % INPUTS
 %   o       [report_series]    series object
 %   xrange  [dates]            range of x values for line
+%   series_num [int]           the number of this series in the total number of series passed to this graph
 %
 % OUTPUTS
 %   NONE
@@ -80,10 +81,14 @@ assert(isempty(o.graphHline) || isnumeric(o.graphHline), ...
 % Zero tolerance
 assert(isfloat(o.zeroTol), '@report_series.write: zeroTol must be a float');
 
+% Fan Chart
+assert(ischar(o.graphFanShadeColor), '@report_series.writeSeriesForGraph: graphFanShadeColor must be a string');
+assert(isint(o.graphFanShadeOpacity), '@report_series.writeSeriesForGraph: graphFanShadeOpacity must be an int');
+
 %% graphVline && graphHline
 if ~isempty(o.graphVline)
     fprintf(fid, '%%Vertical Line\n\\begin{pgfonlayer}{axis lines}\n\\draw');
-    writeLineOptions(o, fid);
+    writeLineOptions(o, fid, series_num);
     stringsdd = strings(xrange);
     x = find(strcmpi(date2string(o.graphVline), stringsdd));
     fprintf(fid, ['(axis cs:%d,\\pgfkeysvalueof{/pgfplots/ymin}) -- (axis ' ...
@@ -92,7 +97,7 @@ if ~isempty(o.graphVline)
 end
 if ~isempty(o.graphHline)
     fprintf(fid, '%%Horizontal Line\n\\begin{pgfonlayer}{axis lines}\n\\addplot');
-    writeLineOptions(o, fid);
+    writeLineOptions(o, fid, series_num);
     fprintf(fid, ['coordinates {(\\pgfkeysvalueof{/pgfplots/xmin},%f)' ...
                   '(\\pgfkeysvalueof{/pgfplots/xmax},%f)};\n\\end{pgfonlayer}\n'], ...
             o.graphHline, o.graphHline);
@@ -111,15 +116,24 @@ end
 
 thedata = setDataToZeroFromZeroTol(o, ds);
 fprintf(fid, '%%series %s\n\\addplot', o.data.name{:});
-writeLineOptions(o, fid);
+writeLineOptions(o, fid, series_num);
 fprintf(fid,'\ntable[row sep=crcr]{\nx y\\\\\n');
 for i=1:ds.dates.ndat
     fprintf(fid, '%d %f\\\\\n', i, thedata(i));
 end
 fprintf(fid,'};\n');
+
+% For Fan charts
+if ~isempty(o.graphFanShadeColor)
+    assert(isint(series_num) && series_num > 1, ['@report_series.writeSeriesForGraph: can only add '...
+                                                 'graphFanShadeColor and graphFanShadeOpacity starting from the ' ...
+                                                 'second series in the graph']);
+    fprintf(fid, '\\addplot[%s!%d] fill between[of=%d and %d];\n', ...
+            o.graphFanShadeColor, o.graphFanShadeOpacity, series_num, series_num - 1);
+end
 end
 
-function writeLineOptions(o, fid)
+function writeLineOptions(o, fid, series_num)
 if o.graphBar
     fprintf(fid, '[ybar,ybar legend,color=%s,fill=%s,line width=%fpt',...
             o.graphBarColor, o.graphBarFillColor, o.graphBarWidth);
@@ -141,5 +155,5 @@ end
 if ~isempty(o.graphMiscTikzAddPlotOptions)
     fprintf(fid, ',%s', o.graphMiscTikzAddPlotOptions);
 end
-fprintf(fid,']');
+fprintf(fid,',name path=%d]', series_num);
 end

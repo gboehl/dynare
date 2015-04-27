@@ -52,7 +52,7 @@ if isoctave && isempty(regexpi(computer, '.*apple.*', 'once'))
     fprintf(fid, '\\usepackage[utf8x]{inputenc}\n');
     fprintf(fid, '\\usepackage{gnuplot-lua-tikz}\n');
 end
-
+fprintf(fid, '\\usepgfplotslibrary{fillbetween}\n');
 fprintf(fid, '\\definecolor{LightCyan}{rgb}{0.88,1,1}\n');
 fprintf(fid, '\\definecolor{Gray}{gray}{0.9}\n');
 if o.showDate

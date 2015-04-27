@@ -239,7 +239,7 @@ if o.writeCSV
     csvseries = dseries();
 end
 for i=1:ne
-    o.series{i}.writeSeriesForGraph(fid, dd);
+    o.series{i}.writeSeriesForGraph(fid, dd, i);
     if o.writeCSV
         csvseries = [csvseries ...
             o.series{i}.data(dd).set_names([...

@@ -14,7 +14,7 @@ function o = report_series(varargin)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2013-2014 Dynare Team
+% Copyright (C) 2013-2015 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -34,6 +34,9 @@ function o = report_series(varargin)
 o = struct;
 
 o.data = '';
+
+o.graphFanShadeColor = '';
+o.graphFanShadeOpacity = 50;
 
 o.graphLegendName = '';
 
