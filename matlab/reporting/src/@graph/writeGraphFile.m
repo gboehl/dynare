@@ -238,6 +238,48 @@ end
 if o.writeCSV
     csvseries = dseries();
 end
+
+if isunix && ~ismac
+  for i=1:ne
+    isfan = ~isempty(o.series{i}.graphFanShadeColor);
+    if isfan
+      break
+    end
+  end
+  if isfan
+      data = dseries();
+      for i=1:ne
+          tmp = o.series{i}.data;
+          tmp = tmp.set_names(int2str(i));
+          data = [data tmp];
+      end
+
+      if isempty(dd) || all(dd == data.dates)
+          ds = data;
+      else
+          ds = data(dd);
+      end
+
+      for i=2:ne
+          tmp = ds{i} - ds{i-1};
+          idx = find(tmp.data ~= 0);
+          split = ds(ds.dates(idx));
+      end
+      idx = find(ds.dates == split.dates(1));
+      for i=2:ne
+          fprintf(fid, '\\addplot[fill=%s!%d, draw=none, forget plot] coordinates {',...
+              o.series{i}.graphFanShadeColor, o.series{i}.graphFanShadeOpacity);
+          for j=idx-1:ds.dates.ndat
+              fprintf(fid, '(%d, %f) ', j, ds{i-1}(ds.dates(j),1).data);
+          end
+          for j=ds.dates.ndat:-1:idx-1
+              fprintf(fid, '(%d, %f) ', j, ds{i}(ds.dates(j),1).data);
+          end
+          fprintf(fid, '} \\closedcycle;\n');
+      end
+  end
+end
+
 for i=1:ne
     o.series{i}.writeSeriesForGraph(fid, dd, i);
     if o.writeCSV

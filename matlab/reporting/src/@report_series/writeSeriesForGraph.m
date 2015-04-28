@@ -124,12 +124,14 @@ end
 fprintf(fid,'};\n');
 
 % For Fan charts
-if ~isempty(o.graphFanShadeColor)
-    assert(isint(series_num) && series_num > 1, ['@report_series.writeSeriesForGraph: can only add '...
-                                                 'graphFanShadeColor and graphFanShadeOpacity starting from the ' ...
-                                                 'second series in the graph']);
-    fprintf(fid, '\\addplot[%s!%d, forget plot] fill between[of=%d and %d];\n', ...
-            o.graphFanShadeColor, o.graphFanShadeOpacity, series_num, series_num - 1);
+if ispc || ismac
+  if ~isempty(o.graphFanShadeColor)
+      assert(isint(series_num) && series_num > 1, ['@report_series.writeSeriesForGraph: can only add '...
+                                                   'graphFanShadeColor and graphFanShadeOpacity starting from the ' ...
+                                                   'second series in the graph']);
+      fprintf(fid, '\\addplot[%s!%d, forget plot] fill between[of=%d and %d];\n', ...
+              o.graphFanShadeColor, o.graphFanShadeOpacity, series_num, series_num - 1);
+  end
 end
 end
 
@@ -155,5 +157,9 @@ end
 if ~isempty(o.graphMiscTikzAddPlotOptions)
     fprintf(fid, ',%s', o.graphMiscTikzAddPlotOptions);
 end
-fprintf(fid,',name path=%d]', series_num);
+if isunix && ~ismac
+  fprintf(fid,']');
+else
+  fprintf(fid,',name path=%d]', series_num);
+end
 end
