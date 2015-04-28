@@ -61,7 +61,11 @@ else
     dd = o.xrange;
 end
 
-fprintf(fid, '\\begin{axis}[%%\nset layers,');
+if ispc || ismac
+    fprintf(fid, '\\begin{axis}[%%\nset layers,\n');
+else
+    fprintf(fid, '\\begin{axis}[%%\n');
+end
 % set tick labels
 if isempty(o.xTickLabels)
     stringsdd = strings(dd);
