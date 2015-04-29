@@ -1155,7 +1155,14 @@ estimated_list : estimated_list estimated_elem
                  { driver.add_estimated_params_element(); }
                ;
 
-estimated_elem : estimated_elem1 COMMA estimated_elem2 ';';
+estimated_elem : estimated_elem1 COMMA estimated_elem2 ';'
+               | symbol ';'
+                  {
+                    driver.estim_params.type = 2;
+                    driver.estim_params.name = *$1;
+                    delete $1;
+                  }
+               ;
 
 estimated_elem1 : STDERR symbol
                   {
@@ -1203,6 +1210,11 @@ estimated_elem2 : prior_pdf COMMA estimated_elem3
                 | expression
                   {
                     driver.estim_params.init_val = $1;
+                  }
+                | COMMA expression_or_empty COMMA expression_or_empty
+                  {
+                    driver.estim_params.low_bound = $2;
+                    driver.estim_params.up_bound = $4;
                   }
                 | expression_or_empty COMMA expression_or_empty COMMA expression_or_empty
                   {
