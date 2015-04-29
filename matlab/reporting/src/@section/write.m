@@ -14,7 +14,7 @@ function o = write(o, fid, pg, sec)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2013-2014 Dynare Team
+% Copyright (C) 2013-2015 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -37,7 +37,7 @@ fprintf(fid, '%% Section Object\n');
 if ~isempty(o.height)
     fprintf(fid, '\\setlength\\sectionheight{%s}%%\n', o.height);
 end
-fprintf(fid, '\\maxsizebox{\\textwidth}{');
+fprintf(fid, '\\maxsizebox{\\linewidth}{');
 if isempty(o.height)
     fprintf(fid, '!');
 else

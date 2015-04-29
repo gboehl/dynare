@@ -12,7 +12,7 @@ function o = write(o, fid)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2014 Dynare Team
+% Copyright (C) 2014-2015 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -30,7 +30,7 @@ function o = write(o, fid)
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 assert(fid ~= -1);
-fprintf(fid, '%% Paragraph Object\n\\multicolumn{1}{p{\\textwidth}}{%%\n');
+fprintf(fid, '%% Paragraph Object\n\\multicolumn{1}{p{\\linewidth}}{%%\n');
 if o.cols ~= 1
     bc = '';
     if o.balancedCols
