@@ -58,13 +58,3 @@ if o.cols ~= 1
 end
 fprintf(fid, '}\n%% End Paragraph Object\n\n');
 end
-
-
-%\multicolumn{1}{p{\textwidth}}
-%{\begin{multicols}{2}
-%Hello, here is some text without a meaning.  This text should show what 
-%a printed text will look like at this place.
-%\columnbreak
-%If you read this text, you will get no information.  Really?  Is there 
-%no information?  Is there...
-%\end{multicols}}\\
