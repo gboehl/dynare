@@ -74,6 +74,10 @@ fprintf(fid, '\\setlength{\\parindent}{0in}\n');
 fprintf(fid, '\\setlength{\\tabcolsep}{1em}\n');
 fprintf(fid, '\\newlength\\sectionheight\n');
 fprintf(fid, '\\begin{document}\n');
+if isunix && ~ismac
+    fprintf(fid, '\\pgfdeclarelayer{axis background}\n');
+    fprintf(fid, '\\pgfdeclarelayer{axis lines}\n');
+end
 fprintf(fid, '\\pgfplotsset{tick scale binop={\\times},\ntrim axis left}\n');
 fprintf(fid, '\\centering\n');
 
