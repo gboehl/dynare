@@ -62,44 +62,34 @@ if ~exist(o.fileName, 'file')
 end
 
 middle = ' ./';
+if isempty(opts.compiler)
+    status = 1;
+    if ismac
+        % Add most likely places for pdflatex to exist outside of default $PATH
+        [status, opts.compiler] = ...
+               system('PATH=$PATH:/usr/texbin:/usr/local/bin:/usr/local/sbin;which pdflatex');
+    elseif ispc
+        [status, opts.compiler] = system('findtexmf --file-type=exe pdflatex');
+        middle = ' ';
+        opts.compiler = ['"' strtrim(opts.compiler) '"'];
+    elseif isunix
+        [status, opts.compiler] = system('which pdflatex');
+    end
+    assert(status == 0, ...
+           '@report.compile: Could not find a tex compiler on your system');
+    opts.compiler = strtrim(opts.compiler);
+    o.compiler = opts.compiler;
+    if opts.showOutput
+        disp(['Using compiler: ' o.compiler]);
+    end
+end
+
 options = '-synctex=1 -halt-on-error';
 if isoctave
     echo = 1;
 else
     echo = '-echo';
 end
-if isempty(opts.compiler)
-    if strncmp(computer, 'MACI', 4) || ~isempty(regexpi(computer, '.*apple.*', 'once'))
-        % Add most likely places for pdflatex to exist outside of default $PATH
-        if opts.showOutput
-            [status, opts.compiler] = ...
-                system(['PATH=$PATH:/usr/texbin:/usr/local/bin:/usr/local/sbin;' ...
-                        'which pdflatex'], echo);
-        else
-            [status, opts.compiler] = ...
-                system('PATH=$PATH:/usr/texbin:/usr/local/bin:/usr/local/sbin;which pdflatex');
-        end
-    elseif strcmp(computer, 'PCWIN') || strcmp(computer, 'PCWIN64')
-        if opts.showOutput
-            [status, opts.compiler] = system('findtexmf --file-type=exe pdflatex', echo);
-        else
-            [status, opts.compiler] = system('findtexmf --file-type=exe pdflatex');
-        end
-        middle = ' ';
-        opts.compiler = ['"' strtrim(opts.compiler) '"'];
-    else % gnu/linux
-        if opts.showOutput
-            [status, opts.compiler] = system('which pdflatex', echo);
-        else
-            [status, opts.compiler] = system('which pdflatex');
-        end
-    end
-    assert(status == 0, ...
-           '@report.compile: Could not find a tex compiler on your system');
-    opts.compiler = strtrim(opts.compiler);
-    o.compiler = opts.compiler;
-end
-
 if opts.showOutput
     status = system([opts.compiler ' ' options middle o.fileName], echo);
 else
@@ -112,9 +102,7 @@ if status ~= 0
           '  ' compiler ' returned the error code: ' num2str(status)]);
 end
 if o.showOutput || opts.showOutput
-    fprintf(1, 'Done.\n');
-    disp('Your compiled report is located here:');
-    disp(['     ' pwd filesep rfn '.pdf']);
+    fprintf(1, ['Done.\nYour compiled report is located here:\n     ' pwd filesep rfn '.pdf']);
 end
 if opts.showReport && ~isoctave
     open([pwd filesep rfn '.pdf']);
