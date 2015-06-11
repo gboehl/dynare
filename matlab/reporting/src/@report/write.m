@@ -50,7 +50,6 @@ fprintf(fid, ['\\makeatletter\n' ...
 if isoctave && isempty(regexpi(computer, '.*apple.*', 'once'))
     fprintf(fid, '\\usepackage[T1]{fontenc}\n');
     fprintf(fid, '\\usepackage[utf8x]{inputenc}\n');
-    fprintf(fid, '\\usepackage{gnuplot-lua-tikz}\n');
 end
 if ispc || ismac
     fprintf(fid, '\\usepgfplotslibrary{fillbetween}\n');
