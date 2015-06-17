@@ -102,7 +102,7 @@ if status ~= 0
           '  ' compiler ' returned the error code: ' num2str(status)]);
 end
 if o.showOutput || opts.showOutput
-    fprintf(1, ['Done.\nYour compiled report is located here:\n     ' pwd filesep rfn '.pdf']);
+    fprintf(1, ['Done.\nYour compiled report is located here:\n     ' pwd filesep rfn '.pdf\n\n']);
 end
 if opts.showReport && ~isoctave
     open([pwd filesep rfn '.pdf']);
