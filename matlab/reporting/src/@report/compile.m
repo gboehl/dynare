@@ -70,6 +70,12 @@ if isempty(opts.compiler)
                system('PATH=$PATH:/usr/texbin:/usr/local/bin:/usr/local/sbin;which pdflatex');
     elseif ispc
         [status, opts.compiler] = system('findtexmf --file-type=exe pdflatex');
+        if status == 1
+            [status] = system('pdflatex.exe --version');
+            if status == 0
+                opts.compiler = 'pdflatex.exe';
+            end
+        end
         middle = ' ';
         opts.compiler = ['"' strtrim(opts.compiler) '"'];
     elseif isunix
