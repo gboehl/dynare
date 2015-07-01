@@ -1,4 +1,4 @@
-function make_report_irfs(oo)
+function make_report_irfs(M, oo)
 % Builds posterior IRFs after the MH algorithm.
 %
 % INPUTS
@@ -28,29 +28,44 @@ function make_report_irfs(oo)
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
   if ~isfield(oo, 'irfs')
-    disp('make_report_irfs: oo_.irfs does not exist');
-    return
+      disp('make_report_irfs: oo_.irfs does not exist');
+      return
   end
   fields = fieldnames(oo.irfs);
   if isempty(fields)
-    disp('make_report_irfs: oo_.irfs is empty');
-    return
+      disp('make_report_irfs: oo_.irfs is empty');
+      return
   end
-
+  if ~isfield(M, 'exo_names')
+      disp('make_report_irfs: M_.exo_names does not exist');
+      return
+  end
+  if ~isfield(M, 'endo_names')
+      disp('make_report_irfs: M_.endo_names does not exist');
+      return
+  end
   
+  n6 = 1;
   r = report();
-  for i = 1:length(fields)
-    if mod(i-1, 6) == 0
-      r = r.addPage('title', {'Canned Irf Report'});
-      r = r.addSection('cols', 2);
-    end
-    r = r.addGraph('data', dseries(oo.irfs.(fields{i})'), ...
-                   'title', strrep(fields{i}, '_', '\_'), ...
-                   'titleFormat', '\Huge', ...
-                   'showGrid', false, ...
-                   'yTickLabelZeroFill', false, ...
-                   'showZeroLine', true, ...
-                   'zeroLineColor', 'red');
+  for i = 1:length(M.exo_names)
+      for j = 1:length(M.endo_names)
+          if mod(n6 - 1, 6) == 0
+              r = r.addPage('title', {'Canned Irf Report'; ['shock ' M.exo_names(i)]});
+              r = r.addSection('cols', 2);
+              n6 = 1;
+          end
+          idx = ismember(fields,[M.endo_names(j) '_' M.exo_names(i)]);
+          if any(idx)
+              r = r.addGraph('data', dseries(oo.irfs.(fields{idx})'), ...
+                  'title', strrep(fields{idx}, '_', '\_'), ...
+                  'titleFormat', '\Huge', ...
+                  'showGrid', false, ...
+                  'yTickLabelZeroFill', false, ...
+                  'showZeroLine', true, ...
+                  'zeroLineColor', 'red');
+              n6 = n6 + 1;
+          end
+      end
   end
   r.write();
   r.compile();
