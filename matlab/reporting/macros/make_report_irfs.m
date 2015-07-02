@@ -47,14 +47,16 @@ function make_report_irfs(M, oo)
   end
   
   n6 = 1;
+  justAddedPage = 0;
   r = report();
   for i = 1:length(M.exo_names)
       for j = 1:length(M.endo_names)
-          if mod(n6 - 1, 6) == 0
+          if mod(n6 - 1, 6) == 0 && ~justAddedPage
               r = r.addPage('title', {'Canned Irf Report'; ['shock ' ...
                   strrep(strtrim(M.exo_names(i,:)),'_','\_')]});
               r = r.addSection('cols', 2);
               n6 = 1;
+              justAddedPage = 1;
           end
           idx = ismember(fields,[strtrim(M.endo_names(j,:)) '_' ...
               strtrim(M.exo_names(i,:))]);
@@ -67,6 +69,7 @@ function make_report_irfs(M, oo)
                   'showZeroLine', true, ...
                   'zeroLineColor', 'red');
               n6 = n6 + 1;
+              justAddedPage = 0;
           end
       end
   end
