@@ -50,16 +50,19 @@ function make_report_irfs(M, oo)
   justAddedPage = 0;
   r = report();
   for i = 1:length(M.exo_names)
+      newexo = 1;
       for j = 1:length(M.endo_names)
-          if mod(n6 - 1, 6) == 0 && ~justAddedPage
+          idx = ismember(fields,[strtrim(M.endo_names(j,:)) '_' ...
+              strtrim(M.exo_names(i,:))]);
+          if (mod(n6 - 1, 6) == 0 && ~justAddedPage) || ...
+                  (newexo && any(idx))
               r = r.addPage('title', {'Canned Irf Report'; ['shock ' ...
                   strrep(strtrim(M.exo_names(i,:)),'_','\_')]});
               r = r.addSection('cols', 2);
               n6 = 1;
               justAddedPage = 1;
+              newexo = 0;
           end
-          idx = ismember(fields,[strtrim(M.endo_names(j,:)) '_' ...
-              strtrim(M.exo_names(i,:))]);
           if any(idx)
               r = r.addGraph('data', dseries(oo.irfs.(fields{idx})'), ...
                   'title', strrep(M.endo_names(j,:), '_', '\_'), ...
