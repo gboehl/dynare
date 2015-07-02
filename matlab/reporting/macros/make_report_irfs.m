@@ -1,7 +1,8 @@
 function make_report_irfs(M, oo)
-% Builds posterior IRFs after the MH algorithm.
+% Builds canned IRF report
 %
 % INPUTS
+%   M             [struct]
 %   oo            [struct]
 %
 % OUTPUTS
@@ -50,11 +51,13 @@ function make_report_irfs(M, oo)
   for i = 1:length(M.exo_names)
       for j = 1:length(M.endo_names)
           if mod(n6 - 1, 6) == 0
-              r = r.addPage('title', {'Canned Irf Report'; ['shock ' M.exo_names(i)]});
+              r = r.addPage('title', {'Canned Irf Report'; ['shock ' ...
+                  strrep(strtrim(M.exo_names(i,:)),'_','\_')]});
               r = r.addSection('cols', 2);
               n6 = 1;
           end
-          idx = ismember(fields,[M.endo_names(j) '_' M.exo_names(i)]);
+          idx = ismember(fields,[strtrim(M.endo_names(j,:)) '_' ...
+              strtrim(M.exo_names(i,:))]);
           if any(idx)
               r = r.addGraph('data', dseries(oo.irfs.(fields{idx})'), ...
                   'title', strrep(fields{idx}, '_', '\_'), ...
