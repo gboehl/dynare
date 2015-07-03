@@ -38,6 +38,7 @@ o.titleTruncate = '';
 o.orientation = '';
 o.footnote = {};
 o.sections = {};
+o.latex = '';
 
 if nargin == 1
     assert(isa(varargin{1}, 'page'), ['@page.page: with one arg to Page ' ...
@@ -80,8 +81,9 @@ assert(iscellstr(o.titleFormat), ...
        '@page.page: titleFormat must be a cell array of strings');
 assert((ischar(o.titleTruncate) && isempty(o.titleTruncate)) || ...
         isint(o.titleTruncate), ...
-       '@page.page: titleTruncate must be empty or an integer.');
-
+        '@page.page: titleTruncate must be empty or an integer.');
+assert(ischar(o.latex), ...
+       '@page.page: latex must be a string');
 valid_paper = {'a4', 'letter'};
 assert(any(strcmp(o.paper, valid_paper)), ...
        ['@page.page: paper must be one of ' strjoin(valid_paper, ' ')]);

@@ -42,22 +42,26 @@ for i=1:length(o.footnote)
 end
 fprintf(fid,'\n');
 
-fprintf(fid, '\\begin{tabular}[t]{c}\n');
-for i=1:length(o.title)
-    if isint(o.titleTruncate)
-        if length(o.title{i}) > o.titleTruncate
-            o.title{i} = o.title{i}(1:o.titleTruncate);
+if ~isempty(o.latex)
+    fprintf(fid, '%s', o.latex);
+else
+    fprintf(fid, '\\begin{tabular}[t]{c}\n');
+    for i=1:length(o.title)
+        if isint(o.titleTruncate)
+            if length(o.title{i}) > o.titleTruncate
+                o.title{i} = o.title{i}(1:o.titleTruncate);
+            end
         end
+        fprintf(fid,'\\multicolumn{1}{c}{%s %s}\\\\\n', o.titleFormat{i}, o.title{i});
     end
-    fprintf(fid,'\\multicolumn{1}{c}{%s %s}\\\\\n', o.titleFormat{i}, o.title{i});
+    
+    nps = length(o.sections);
+    for i=1:nps
+        o.sections{i}.write(fid, pg, i);
+    end
+    fprintf(fid, '\\end{tabular}\n');
 end
 
-nps = length(o.sections);
-for i=1:nps
-    o.sections{i}.write(fid, pg, i);
-end
-
-fprintf(fid, '\\end{tabular}\n');
 if strcmpi(o.orientation, 'landscape')
     fprintf(fid, '\\end{landscape}\n');
 end
