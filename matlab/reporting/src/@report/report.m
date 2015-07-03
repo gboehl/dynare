@@ -13,7 +13,7 @@ function o = report(varargin)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2013-2014 Dynare Team
+% Copyright (C) 2013-2015 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -42,6 +42,7 @@ o.fileName = 'report.tex';
 o.showDate = true;
 o.compiler = '';
 o.showOutput = true;
+o.header = '';
 
 if nargin == 1
     assert(isa(varargin{1}, 'report'), ['@report.report: with one arg, ' ...
@@ -75,7 +76,7 @@ assert(ischar(o.compiler), '@report.report: compiler file must be a string');
 assert(islogical(o.showDate), '@report.report: showDate must be either true or false');
 assert(islogical(o.showOutput), '@report.report: showOutput must be either true or false');
 assert(isfloat(o.margin) && o.margin > 0, '@report.report: margin must be a float > 0.');
-
+assert(ischar(o.header), '@report.report: header must be a string');
 valid_margin_unit = {'cm', 'in'};
 assert(any(strcmp(o.marginUnit, valid_margin_unit)), ...
        ['@report.report: marginUnit must be one of ' strjoin(valid_margin_unit, ' ')]);

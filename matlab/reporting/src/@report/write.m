@@ -72,6 +72,9 @@ fprintf(fid, '\\renewcommand{\\bottomfraction}{0.8}\n');
 fprintf(fid, '\\setlength{\\parindent}{0in}\n');
 fprintf(fid, '\\setlength{\\tabcolsep}{1em}\n');
 fprintf(fid, '\\newlength\\sectionheight\n');
+if ~isempty(o.header)
+    fprintf(fid, '%s\n', o.header);
+end
 fprintf(fid, '\\begin{document}\n');
 if isunix && ~ismac
     fprintf(fid, '\\pgfdeclarelayer{axis background}\n');
