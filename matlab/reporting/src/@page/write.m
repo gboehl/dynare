@@ -43,7 +43,19 @@ end
 fprintf(fid,'\n');
 
 if ~isempty(o.latex)
-    fprintf(fid, '%s', o.latex);
+    if ~exist(o.pageDirName, 'dir')
+        mkdir(o.pageDirName)
+    end
+    pagename = [o.pageDirName filesep 'page_' num2str(pg) '.tex'];
+    [fidp, msg] = fopen(pagename, 'w');
+    if fidp == -1
+        error(['@page.write: ' msg]);
+    end
+    fprintf(fidp, '%s', o.latex);
+    if fclose(fidp) == -1
+        error('@page.write: closing %s\n', pagename);
+    end
+    fprintf(fid, '\\input{%s}', pagename);
 else
     fprintf(fid, '\\begin{tabular}[t]{c}\n');
     for i=1:length(o.title)

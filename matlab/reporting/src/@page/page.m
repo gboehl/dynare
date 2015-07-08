@@ -38,6 +38,8 @@ o.titleTruncate = '';
 o.orientation = '';
 o.footnote = {};
 o.sections = {};
+
+o.pageDirName = 'tmpRepDir';
 o.latex = '';
 
 if nargin == 1
@@ -82,6 +84,7 @@ assert(iscellstr(o.titleFormat), ...
 assert((ischar(o.titleTruncate) && isempty(o.titleTruncate)) || ...
         isint(o.titleTruncate), ...
         '@page.page: titleTruncate must be empty or an integer.');
+assert(ischar(o.pageDirName), '@page.page: pageDirName must be a string');
 assert(ischar(o.latex), ...
        '@page.page: latex must be a string');
 valid_paper = {'a4', 'letter'};
