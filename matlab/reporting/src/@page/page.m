@@ -89,11 +89,11 @@ assert(ischar(o.latex), ...
        '@page.page: latex must be a string');
 valid_paper = {'a4', 'letter'};
 assert(any(strcmp(o.paper, valid_paper)), ...
-       ['@page.page: paper must be one of ' strjoin(valid_paper, ' ')]);
+       ['@page.page: paper must be one of ' strjoin(valid_paper, ', ')]);
 
 valid_orientation = {'portrait', 'landscape'};
 assert(any(strcmp(o.orientation, valid_orientation)), ...
-       ['@page.page: orientation must be one of ' strjoin(valid_orientation, ' ')]);
+       ['@page.page: orientation must be one of ' strjoin(valid_orientation, ', ')]);
 
 if ischar(o.footnote)
     o.footnote = {o.footnote};

@@ -61,7 +61,7 @@ valid_graphMarker = {'x', '+', '-', '|', 'o', 'asterisk', 'star', '10-pointed st
                     'halfsquare left*','Mercedes star','Mercedes star flipped','halfcircle',...
                     'halfcircle*','pentagon','pentagon star'};
 assert(isempty(o.graphMarker) || any(strcmp(o.graphMarker, valid_graphMarker)), ...
-       ['@report_series.writeSeriesForGraph: graphMarker must be one of ' strjoin(valid_graphMarker)]);
+       ['@report_series.writeSeriesForGraph: graphMarker must be one of ' strjoin(valid_graphMarker, ', ')]);
 
 assert(ischar(o.graphMarkerEdgeColor), '@report_series.writeSeriesForGraph: graphMarkerEdgeColor must be a string');
 assert(ischar(o.graphMarkerFaceColor), '@report_series.writeSeriesForGraph: graphMarkerFaceColor must be a string');

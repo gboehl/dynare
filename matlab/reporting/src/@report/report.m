@@ -79,15 +79,15 @@ assert(isfloat(o.margin) && o.margin > 0, '@report.report: margin must be a floa
 assert(ischar(o.header), '@report.report: header must be a string');
 valid_margin_unit = {'cm', 'in'};
 assert(any(strcmp(o.marginUnit, valid_margin_unit)), ...
-       ['@report.report: marginUnit must be one of ' strjoin(valid_margin_unit, ' ')]);
+       ['@report.report: marginUnit must be one of ' strjoin(valid_margin_unit, ', ')]);
 
 valid_paper = {'a4', 'letter'};
 assert(any(strcmp(o.paper, valid_paper)), ...
-       ['@report.report: paper must be one of ' strjoin(valid_paper, ' ')]);
+       ['@report.report: paper must be one of ' strjoin(valid_paper, ', ')]);
 
 valid_orientation = {'portrait', 'landscape'};
 assert(any(strcmp(o.orientation, valid_orientation)), ...
-       ['@report.report: orientation must be one of ' strjoin(valid_orientation, ' ')]);
+       ['@report.report: orientation must be one of ' strjoin(valid_orientation, ', ')]);
 
 % Create report object
 o = class(o, 'report');

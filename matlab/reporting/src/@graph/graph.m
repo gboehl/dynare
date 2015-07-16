@@ -14,7 +14,7 @@ function o = graph(varargin)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2013-2014 Dynare Team
+% Copyright (C) 2013-2015 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -152,20 +152,20 @@ assert(any(strcmp(o.axisShape, {'box', 'L'})), ['@graph.graph: axisShape ' ...
 valid_legend_locations = ...
     {'south west','south east','north west','north east','outer north east'};
 assert(any(strcmp(o.legendLocation, valid_legend_locations)), ...
-       ['@graph.graph: legendLocation must be one of ' strjoin(valid_legend_locations, ' ')]);
+       ['@graph.graph: legendLocation must be one of ' strjoin(valid_legend_locations, ', ')]);
 
 valid_font_sizes = {'tiny', 'scriptsize', 'footnotesize', 'small', ...
                     'normalsize', 'large', 'Large', 'LARGE', 'huge', 'Huge'};
 assert(any(strcmp(o.legendFontSize, valid_font_sizes)), ...
-       ['@graph.graph: legendFontSize must be one of ' strjoin(valid_font_sizes)]);
+       ['@graph.graph: legendFontSize must be one of ' strjoin(valid_font_sizes, ', ')]);
 assert(any(strcmp(o.titleFontSize, valid_font_sizes)), ...
-       ['@graph.graph: titleFontSize must be one of ' strjoin(valid_font_sizes)]);
+       ['@graph.graph: titleFontSize must be one of ' strjoin(valid_font_sizes, ', ')]);
 assert(any(strcmp(o.tickFontSize, valid_font_sizes)), ...
-       ['@graph.graph: tickFontSize must be one of ' strjoin(valid_font_sizes)]);
+       ['@graph.graph: tickFontSize must be one of ' strjoin(valid_font_sizes, ', ')]);
 
 valid_legend_orientations = {'vertical', 'horizontal'};
 assert(any(strcmp(o.legendOrientation, valid_legend_orientations)), ...
-       ['@graph.graph: legendOrientation must be one of ' strjoin(valid_legend_orientations, ' ')]);
+       ['@graph.graph: legendOrientation must be one of ' strjoin(valid_legend_orientations, ', ')]);
 
 assert(isempty(o.shade) || (isdates(o.shade) && o.shade.ndat >= 2), ...
        ['@graph.graph: shade is specified as a dates range, e.g. ' ...
