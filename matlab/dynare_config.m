@@ -91,7 +91,7 @@ if ~isoctave && matlab_ver_less_than('7.4')
 end
 
 % ilu is missing in old versions of MATLAB and in Octave < 4.0
-if (isoctave && octave_ver_less_than('4.0')) || ..
+if (isoctave && octave_ver_less_than('4.0')) || ...
         (~isoctave && matlab_ver_less_than('7.4'))
     addpath([dynareroot '/missing/ilu'])
 end
