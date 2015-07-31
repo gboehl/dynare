@@ -261,7 +261,8 @@ else
     Z11 = Z(indx_stable_root,    indx_stable_root);
     Z21  = Z(indx_explosive_root, indx_stable_root);
     Z22  = Z(indx_explosive_root, indx_explosive_root);
-    [minus_gx,rc] = linsolve(Z22,Z21);
+    opts.TRANSA = false; % needed by Octave 4.0.0
+    [minus_gx,rc] = linsolve(Z22,Z21,opts);
     if rc < 1e-9
         % Z22 is near singular
         info(1) = 5;
@@ -273,7 +274,8 @@ else
     opts.UT = true;
     opts.TRANSA = true;
     hx1 = linsolve(tt(indx_stable_root, indx_stable_root),Z11,opts)';
-    hx2 = linsolve(Z11,ss(indx_stable_root, indx_stable_root)')';
+    opts.TRANSA = false; % needed by Octave 4.0.0
+    hx2 = linsolve(Z11,ss(indx_stable_root, indx_stable_root)',opts)';
     hx =  hx1*hx2;
     ghx = [hx(k1,:); gx(k2(nboth+1:end),:)];
 end
