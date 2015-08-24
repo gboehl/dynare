@@ -341,7 +341,8 @@ XFAIL_MODFILES = ramst_xfail.mod \
 	estimation/fs2000_mixed_ML_xfail.mod \
 	estimation/fs2000_stochastic_singularity_xfail.mod \
 	identification/ident_unit_root/ident_unit_root_xfail.mod \
-	steady_state/Linear_steady_state_xfail.mod
+	steady_state/Linear_steady_state_xfail.mod \
+	example1_extra_exo_xfail.mod
 
 MFILES = initval_file/ramst_initval_file_data.m
 

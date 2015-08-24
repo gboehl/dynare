@@ -95,7 +95,7 @@
 @c %**end of header
 
 @copying
-Copyright @copyright{} 1996-2016, Dynare Team.
+Copyright @copyright{} 1996-2017, Dynare Team.
 
 @quotation
 Permission is granted to copy, distribute and/or modify this document
@@ -928,6 +928,7 @@ Allows Dynare to issue a warning and continue processing when
 @enumerate
 @item there are more endogenous variables than equations
 @item an undeclared symbol is assigned in @code{initval} or @code{endval}
+@item exogenous variables were declared but not used in the @code{model} block
 @end enumerate
 
 @item fast
