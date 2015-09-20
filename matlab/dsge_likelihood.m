@@ -264,7 +264,7 @@ end
 if info(1) == 1 || info(1) == 2 || info(1) == 5 || info(1) == 7 || info(1) == 8 || ...
             info(1) == 22 || info(1) == 24 || info(1) == 19 || info(1) == 25 || info(1) == 10
     fval = Inf;
-    info(2) = 1;
+    info(2) = 0.1;
     exit_flag = 0;
     if analytic_derivation,
         DLIK=ones(length(xparam1),1);
@@ -456,7 +456,7 @@ switch DynareOptions.lik_init
     if isnan(dLIK),
         fval = Inf;
         info(1) = 45;
-        info(2) = 100;
+        info(2) = 0.1;
         exit_flag = 0;
         return
     end
@@ -686,7 +686,7 @@ if ((kalman_algo==1) || (kalman_algo==3))% Multivariate Kalman Filter
             if isinf(LIK)
                 fval = Inf;
                 info(1) = 66;
-                info(2) = 1;
+                info(2) = 0.1;
                 exit_flag = 0;
                 return
             end
@@ -780,7 +780,7 @@ end
 if isnan(LIK)
     fval = Inf;
     info(1) = 45;
-    info(2) = 100;
+    info(2) = 0.1;
     exit_flag = 0;
     return
 end
@@ -788,7 +788,7 @@ end
 if imag(LIK)~=0
     fval = Inf;
     info(1) = 46;
-    info(2) = 100;
+    info(2) = 0.1;
     exit_flag = 0;
     return
 end
@@ -836,7 +836,7 @@ end
 if isnan(fval)
     fval = Inf;
     info(1) = 47;
-    info(2) = 100;
+    info(2) = 0.1;
     exit_flag = 0;
     return
 end
@@ -844,7 +844,7 @@ end
 if imag(fval)~=0
     fval = Inf;
     info(1) = 48;
-    info(2) = 100;
+    info(2) = 0.1;
     exit_flag = 0;
     return
 end
