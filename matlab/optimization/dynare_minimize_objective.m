@@ -244,7 +244,7 @@ switch minimizer_algorithm
         Save_files = 0; 
         Verbose = 0;
     end    
-    [opt_par_values,hessian_mat,gg,fval,invhess] = newrat(objective_function,start_par_value,analytic_grad,crit,nit,0,Verbose, Save_files,varargin{:});
+    [opt_par_values,hessian_mat,gg,fval,invhess] = newrat(objective_function,start_par_value,analytic_grad,crit,nit,newratflag,Verbose, Save_files,varargin{:});
     %hessian_mat is the plain outer product gradient Hessian
   case 6
     [opt_par_values, hessian_mat, Scale, fval] = gmhmaxlik(objective_function, start_par_value, ...
@@ -450,3 +450,4 @@ function [LB, UB]=set_bounds_to_finite_values(bounds, huge_number)
     UB=bounds(:,2);
     UB(isinf(UB))=huge_number;
 end
+

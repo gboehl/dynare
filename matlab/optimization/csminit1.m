@@ -1,9 +1,10 @@
-function [fhat,xhat,fcount,retcode] = csminit1(fcn,x0,f0,g0,badg,H0,Verbose,varargin)
+function [fhat,xhat,fcount,retcode] = csminit1(fcn,x0,penalty,f0,g0,badg,H0,Verbose,varargin)
 % [fhat,xhat,fcount,retcode] = csminit1(fcn,x0,f0,g0,badg,H0,varargin)
 % 
 % Inputs: 
 %   fcn:    [string]        string naming the objective function to be minimized
 %   x0:     [npar by 1]     initial value of the parameter vector
+%   penalty: [sca;ar]       variable penalty in case of failure of objective function
 %   g0:     [npar by 1]     initial value of the gradient vector
 %   H0:     [npar by npar]  initial value for the inverse Hessian.  Must be positive definite.
 %   varargin:               Optional additional inputs that get handed off to fcn each
@@ -137,7 +138,7 @@ else
             dxtest=x0+dx*lambda;
         end
         % home
-        f = feval(fcn,dxtest,varargin{:});
+        f = penalty_objective_function(dxtest,fcn,penalty,varargin{:});
         %ARGLIST
         %f = feval(fcn,dxtest,P1,P2,P3,P4,P5,P6,P7,P8,P9,P10,P11,P12,P13);
         % f = feval(fcn,x0+dx*lambda,P1,P2,P3,P4,P5,P6,P7,P8);

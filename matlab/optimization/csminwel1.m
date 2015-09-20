@@ -59,7 +59,8 @@ function [fh,xh,gh,H,itct,fcount,retcodeh] = csminwel1(fcn,x0,H0,grad,crit,nit,m
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-global objective_function_penalty_base
+% initialize variable penalty    
+penalty = 1e8;
 
 fh = [];
 xh = [];
@@ -72,6 +73,15 @@ fcount=0;
 gh = [];
 H = [];
 retcodeh = [];
+
+% force fcn, grad to function handle
+if ischar(fcn)
+    fcn = str2func(fcn);
+end
+if ischar(grad)
+    grad = str2func(grad)
+end
+
 %tailstr = ')';
 %stailstr = [];
 % Lines below make the number of Pi's optional.  This is inefficient, though, and precludes
@@ -83,7 +93,7 @@ retcodeh = [];
 %   stailstr=[' P' num2str(i) stailstr];
 %end
 
-[f0,junk1,junk2,cost_flag] = feval(fcn,x0,varargin{:});
+[f0,junk1,junk2,cost_flag] = penalty_objective_function(x0,fcn,penalty,varargin{:});
 
 if ~cost_flag
     disp_verbose('Bad initial parameter.',Verbose)
@@ -91,9 +101,9 @@ if ~cost_flag
 end
 
 if NumGrad
-    [g, badg]=get_num_grad(method,fcn,f0,x0,epsilon,varargin{:});
+    [g, badg]=get_num_grad(method,fcn,penalty,f0,x0,epsilon,varargin{:});
 elseif ischar(grad)
-    [g,badg] = feval(grad,x0,varargin{:});
+    [g,badg] = grad(x0,varargin{:});
 else
     g=junk1;
     badg=0;
@@ -105,7 +115,7 @@ H=H0;
 cliff=0;
 while ~done
     % penalty for dsge_likelihood and dsge_var_likelihood
-    objective_function_penalty_base = f;
+    penalty = f;
 
     g1=[]; g2=[]; g3=[];
     %addition fj. 7/6/94 for control
@@ -115,7 +125,7 @@ while ~done
     %   disp_verbose([sprintf('x = ') sprintf('%15.8g %15.8g %15.8g %15.8g\n',x)]);
     %-------------------------
     itct=itct+1;
-    [f1, x1, fc, retcode1] = csminit1(fcn,x,f,g,badg,H,Verbose,varargin{:});
+    [f1, x1, fc, retcode1] = csminit1(fcn,x,penalty,f,g,badg,H,Verbose,varargin{:});
     fcount = fcount+fc;
     % erased on 8/4/94
     % if (retcode == 1) || (abs(f1-f) < crit)
@@ -130,11 +140,11 @@ while ~done
             wall1=1; badg1=1;
         else
             if NumGrad
-                [g1, badg1]=get_num_grad(method,fcn,f1,x1,epsilon,varargin{:});
+                [g1, badg1]=get_num_grad(method,fcn,penalty,f1,x1,epsilon,varargin{:});
             elseif ischar(grad),
-                [g1, badg1] = feval(grad,x1,varargin{:});
+                [g1, badg1] = grad(x1,varargin{:});
             else
-                [junk1,g1,junk2, cost_flag] = feval(fcn,x1,varargin{:});
+                [junk1,g1,junk2, cost_flag] = penalty_objective_function(x1,fcn,penalty,varargin{:});
                 badg1 = ~cost_flag;
             end
             wall1=badg1;
@@ -150,18 +160,18 @@ while ~done
                  %fcliff=fh;xcliff=xh;
             Hcliff=H+diag(diag(H).*rand(nx,1));
             disp_verbose('Cliff.  Perturbing search direction.',Verbose)
-            [f2, x2, fc, retcode2] = csminit1(fcn,x,f,g,badg,Hcliff,Verbose,varargin{:});
+            [f2, x2, fc, retcode2] = csminit1(fcn,x,penalty,f,g,badg,Hcliff,Verbose,varargin{:});
             fcount = fcount+fc; % put by Jinill
             if  f2 < f
                 if retcode2==2 || retcode2==4
                     wall2=1; badg2=1;
                 else
                     if NumGrad
-                        [g2, badg2]=get_num_grad(method,fcn,f2,x2,epsilon,varargin{:});
+                        [g2, badg2]=get_num_grad(method,fcn,penalty,f2,x2,epsilon,varargin{:});
                     elseif ischar(grad),
-                        [g2, badg2] = feval(grad,x2,varargin{:});
+                        [g2, badg2] = grad(x2,varargin{:});
                     else
-                        [junk1,g2,junk2, cost_flag] = feval(fcn,x1,varargin{:});
+                        [junk1,g2,junk2, cost_flag] = penalty_objective_function(x1,fcn,penalty,varargin{:});
                         badg2 = ~cost_flag;
                     end
                     wall2=badg2;
@@ -182,18 +192,18 @@ while ~done
                         if(size(x0,2)>1)
                             gcliff=gcliff';
                         end
-                        [f3, x3, fc, retcode3] = csminit1(fcn,x,f,gcliff,0,eye(nx),Verbose,varargin{:});
+                        [f3, x3, fc, retcode3] = csminit1(fcn,x,penalty,f,gcliff,0,eye(nx),Verbose,varargin{:});
                         fcount = fcount+fc; % put by Jinill
                         if retcode3==2 || retcode3==4
                             wall3=1; 
                             badg3=1;
                         else
                             if NumGrad
-                                [g3, badg3]=get_num_grad(method,fcn,f3,x3,epsilon,varargin{:});
+                                [g3, badg3]=get_num_grad(method,fcn,penalty,f3,x3,epsilon,varargin{:});
                             elseif ischar(grad),
-                                [g3, badg3] = feval(grad,x3,varargin{:});
+                                [g3, badg3] = grad(x3,varargin{:});
                             else
-                                [junk1,g3,junk2, cost_flag] = feval(fcn,x1,varargin{:});
+                                [junk1,g3,junk2, cost_flag] = penalty_objective_function(x1,fcn,penalty,varargin{:});
                                 badg3 = ~cost_flag;
                             end
                             wall3=badg3;
@@ -249,11 +259,11 @@ while ~done
         end
         if nogh
             if NumGrad
-                [gh, badgh]=get_num_grad(method,fcn,fh,xh,epsilon,varargin{:});
+                [gh, badgh]=get_num_grad(method,fcn,penalty,fh,xh,epsilon,varargin{:});
             elseif ischar(grad),
-                [gh, badgh] = feval(grad, xh,varargin{:});
+                [gh, badgh] = grad(xh,varargin{:});
             else
-                [junk1,gh,junk2, cost_flag] = feval(fcn,x1,varargin{:});
+                [junk1,gh,junk2, cost_flag] = penalty_objective_function(x1,penalty,varargin{:});
                 badgh = ~cost_flag;
             end
         end
@@ -303,18 +313,18 @@ end
 
 end
 
-function [g, badg]=get_num_grad(method,fcn,f0,x0,epsilon,varargin)
+function [g, badg]=get_num_grad(method,fcn,penalty,f0,x0,epsilon,varargin)
     switch method
       case 2
-        [g,badg] = numgrad2(fcn, f0, x0, epsilon, varargin{:});
+        [g,badg] = numgrad2(fcn, f0, x0, penalty, epsilon, varargin{:});
       case 3
-        [g,badg] = numgrad3(fcn, f0, x0, epsilon, varargin{:});
+        [g,badg] = numgrad3(fcn, f0, x0, penalty, epsilon, varargin{:});
       case 5
-        [g,badg] = numgrad5(fcn, f0, x0, epsilon, varargin{:});
+        [g,badg] = numgrad5(fcn, f0, x0, penalty, epsilon, varargin{:});
       case 13
-        [g,badg] = numgrad3_(fcn, f0, x0, epsilon, varargin{:});
+        [g,badg] = numgrad3_(fcn, f0, x0, penalty, epsilon, varargin{:});
       case 15
-        [g,badg] = numgrad5_(fcn, f0, x0, epsilon, varargin{:});
+        [g,badg] = numgrad5_(fcn, f0, x0, penalty, epsilon, varargin{:});
       otherwise
         error('csminwel1: Unknown method for gradient evaluation!')
     end

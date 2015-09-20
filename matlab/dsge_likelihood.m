@@ -134,8 +134,6 @@ function [fval,DLIK,Hess,exit_flag,SteadyState,trend_coeff,info,Model,DynareOpti
 
 % AUTHOR(S) stephane DOT adjemian AT univ DASH lemans DOT FR
 
-global objective_function_penalty_base
-
 % Initialization of the returned variables and others...
 fval        = [];
 SteadyState = [];
@@ -181,9 +179,10 @@ end
 % Return, with endogenous penalty, if some parameters are smaller than the lower bound of the prior domain.
 if ~isequal(DynareOptions.mode_compute,1) && any(xparam1<BoundsInfo.lb)
     k = find(xparam1<BoundsInfo.lb);
-    fval = objective_function_penalty_base+sum((BoundsInfo.lb(k)-xparam1(k)).^2);
+    fval = Inf;
     exit_flag = 0;
-    info = 41;
+    info(1) = 41;
+    info(2) = sum((BoundsInfo.lb(k)-xparam1(k)).^2);
     if analytic_derivation,
         DLIK=ones(length(xparam1),1);
     end
@@ -193,9 +192,10 @@ end
 % Return, with endogenous penalty, if some parameters are greater than the upper bound of the prior domain.
 if ~isequal(DynareOptions.mode_compute,1) && any(xparam1>BoundsInfo.ub)
     k = find(xparam1>BoundsInfo.ub);
-    fval = objective_function_penalty_base+sum((xparam1(k)-BoundsInfo.ub(k)).^2);
+    fval = Inf;
     exit_flag = 0;
-    info = 42;
+    info(1) = 42;
+    info(2) = sum((xparam1(k)-BoundsInfo.ub(k)).^2);
     if analytic_derivation,
         DLIK=ones(length(xparam1),1);
     end
@@ -212,18 +212,19 @@ H = Model.H;
 if ~issquare(Q) || EstimatedParameters.ncx || isfield(EstimatedParameters,'calibrated_covariances')
     [Q_is_positive_definite, penalty] = ispd(Q);
     if ~Q_is_positive_definite
-        fval = objective_function_penalty_base+penalty;
+        fval = Inf;
         exit_flag = 0;
-        info = 43;
+        info(1) = 43;
+        info(2) = penalty;
         return
     end
     if isfield(EstimatedParameters,'calibrated_covariances')
         correct_flag=check_consistency_covariances(Q);
         if ~correct_flag
-            penalty = sum(Q(EstimatedParameters.calibrated_covariances.position).^2);
-            fval = objective_function_penalty_base+penalty;
+            fval = Inf;
             exit_flag = 0;
-            info = 71;
+            info(1) = 71;
+            info(2) = sum(Q(EstimatedParameters.calibrated_covariances.position).^2);
             return
         end
     end
@@ -233,18 +234,19 @@ end
 if ~issquare(H) || EstimatedParameters.ncn || isfield(EstimatedParameters,'calibrated_covariances_ME')
     [H_is_positive_definite, penalty] = ispd(H);
     if ~H_is_positive_definite
-        fval = objective_function_penalty_base+penalty;
+        fval = Inf;
         exit_flag = 0;
-        info = 44;
+        info(1) = 44;
+        info(2) = penalty;
         return
     end
     if isfield(EstimatedParameters,'calibrated_covariances_ME')
         correct_flag=check_consistency_covariances(H);
         if ~correct_flag
-            penalty = sum(H(EstimatedParameters.calibrated_covariances_ME.position).^2);
-            fval = objective_function_penalty_base+penalty;
+            fval = Inf;
             exit_flag = 0;
-            info = 72;
+            info(1) = 72;
+            info(2) = sum(H(EstimatedParameters.calibrated_covariances_ME.position).^2);
             return
         end
     end
@@ -261,16 +263,15 @@ end
 % Return, with endogenous penalty when possible, if dynare_resolve issues an error code (defined in resol).
 if info(1) == 1 || info(1) == 2 || info(1) == 5 || info(1) == 7 || info(1) == 8 || ...
             info(1) == 22 || info(1) == 24 || info(1) == 19 || info(1) == 25 || info(1) == 10
-    fval = objective_function_penalty_base+1;
-    info = info(1);
+    fval = Inf;
+    info(2) = 1;
     exit_flag = 0;
     if analytic_derivation,
         DLIK=ones(length(xparam1),1);
     end
     return
 elseif info(1) == 3 || info(1) == 4 || info(1)==6 || info(1) == 20 || info(1) == 21  || info(1) == 23 || info(1)==26
-    fval = objective_function_penalty_base+info(2);
-    info = info(1);
+    fval = Inf;
     exit_flag = 0;
     if analytic_derivation,
         DLIK=ones(length(xparam1),1);
@@ -281,8 +282,7 @@ end
 % check endogenous prior restrictions
 info=endogenous_prior_restrictions(T,R,Model,DynareOptions,DynareResults);
 if info(1),
-    fval = objective_function_penalty_base+info(2);
-    info = info(1);
+    fval = Inf;
     exit_flag = 0;
     if analytic_derivation,
         DLIK=ones(length(xparam1),1);
@@ -454,8 +454,9 @@ switch DynareOptions.lik_init
         diffuse_periods = size(dlik,1);
     end
     if isnan(dLIK),
-        info = 45;
-        fval = objective_function_penalty_base + 100;
+        fval = Inf;
+        info(1) = 45;
+        info(2) = 100;
         exit_flag = 0;
         return
     end
@@ -683,8 +684,9 @@ if ((kalman_algo==1) || (kalman_algo==3))% Multivariate Kalman Filter
             end
         else
             if isinf(LIK)
-                info = 66;
-                fval = objective_function_penalty_base+1;
+                fval = Inf;
+                info(1) = 66;
+                info(2) = 1;
                 exit_flag = 0;
                 return
             end
@@ -776,15 +778,17 @@ if analytic_derivation
 end
 
 if isnan(LIK)
-    info = 45;
-    fval = objective_function_penalty_base + 100;
+    fval = Inf;
+    info(1) = 45;
+    info(2) = 100;
     exit_flag = 0;
     return
 end
 
 if imag(LIK)~=0
-    info = 46;
-    fval = objective_function_penalty_base + 100;
+    fval = Inf;
+    info(1) = 46;
+    info(2) = 100;
     exit_flag = 0;
     return
 end
@@ -830,15 +834,17 @@ if DynareOptions.prior_restrictions.status
 end
 
 if isnan(fval)
-    info = 47;
-    fval = objective_function_penalty_base + 100;
+    fval = Inf;
+    info(1) = 47;
+    info(2) = 100;
     exit_flag = 0;
     return
 end
 
 if imag(fval)~=0
-    info = 48;
-    fval = objective_function_penalty_base + 100;
+    fval = Inf;
+    info(1) = 48;
+    info(2) = 100;
     exit_flag = 0;
     return
 end
@@ -846,7 +852,7 @@ end
 % Update DynareOptions.kalman_algo.
 DynareOptions.kalman_algo = kalman_algo;
 
-if analytic_derivation==0 && nargout==2,
+if analytic_derivation==0 && nargout > 1
     lik=lik(start:end,:);
     DLIK=[-lnprior; lik(:)];
 end

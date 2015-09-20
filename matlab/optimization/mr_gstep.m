@@ -1,4 +1,4 @@
-function [f0, x, ig] = mr_gstep(h1,x,func0,htol0,Verbose,Save_files,varargin)
+function [f0, x, ig] = mr_gstep(h1,x,func0,penalty,htol0,Verbose,Save_files,varargin)
 % function [f0, x, ig] = mr_gstep(h1,x,func0,htol0,varargin)
 %
 % Gibbs type step in optimisation
@@ -39,7 +39,7 @@ if isempty(htol0)
 else
     htol = htol0;
 end
-f0=feval(func0,x,varargin{:});
+f0=penalty_objective_function(x,func0,penalty,varargin{:});
 
 xh1=x;
 f1=zeros(size(f0,1),n);
@@ -53,10 +53,10 @@ while i<n
     hcheck=0;
     dx=[];
     xh1(i)=x(i)+h1(i);
-    fx = feval(func0,xh1,varargin{:});
+    fx = penalty_objective_function(xh1,func0,penalty,varargin{:});
     f1(:,i)=fx;
     xh1(i)=x(i)-h1(i);
-    fx = feval(func0,xh1,varargin{:});
+    fx = penalty_objective_function(xh1,func0,penalty,varargin{:});
     f_1(:,i)=fx;
     if hcheck && htol<1
         htol=min(1,max(min(abs(dx))*2,htol*10));
@@ -69,7 +69,7 @@ while i<n
         gg(i)=(f1(i)'-f_1(i)')./(2.*h1(i));
         hh(i) = 1/max(1.e-9,abs( (f1(i)+f_1(i)-2*f0)./(h1(i)*h1(i)) ));
         if gg(i)*(hh(i)*gg(i))/2 > htol
-            [f0 x fc retcode] = csminit1(func0,x,f0,gg,0,diag(hh),Verbose,varargin{:});
+            [f0 x fc retcode] = csminit1(func0,x,penalty,f0,gg,0,diag(hh),Verbose,varargin{:});
             ig(i)=1;
             if Verbose
                 fprintf(['Done for param %s = %8.4f\n'],varargin{6}.name{i},x(i))
