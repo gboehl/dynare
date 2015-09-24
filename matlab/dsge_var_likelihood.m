@@ -1,4 +1,4 @@
-function [fval,grad,hess,exit_flag,info,PHI,SIGMAu,iXX,prior] = dsge_var_likelihood(xparam1,DynareDataset,DynareInfo,DynareOptions,Model,EstimatedParameters,BayesInfo,BoundsInfo,DynareResults)
+function [fval,grad,hess,exit_flag,SteadyState,trend_coeff,info,PHI,SIGMAu,iXX,prior] = dsge_var_likelihood(xparam1,DynareDataset,DynareInfo,DynareOptions,Model,EstimatedParameters,BayesInfo,BoundsInfo,DynareResults)
 % Evaluates the posterior kernel of the bvar-dsge model.
 %
 % INPUTS
@@ -8,6 +8,10 @@ function [fval,grad,hess,exit_flag,info,PHI,SIGMAu,iXX,prior] = dsge_var_likelih
 % OUTPUTS
 %   o fval          [double]     Value of the posterior kernel at xparam1.
 %   o cost_flag     [integer]    Zero if the function returns a penalty, one otherwise.
+%   o SteadyState   [double]     Steady state vector possibly recomputed
+%                                by call to dynare_results()
+%   o trend_coeff   [double]     place holder for trend coefficients,
+%                                currently not supported by dsge_var
 %   o info          [integer]    Vector of informations about the penalty.
 %   o PHI           [double]     Stacked BVAR-DSGE autoregressive matrices (at the mode associated to xparam1).
 %   o SIGMAu        [double]     Covariance matrix of the BVAR-DSGE (at the mode associated to xparam1).
@@ -34,17 +38,18 @@ function [fval,grad,hess,exit_flag,info,PHI,SIGMAu,iXX,prior] = dsge_var_likelih
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-global objective_function_penalty_base
 persistent dsge_prior_weight_idx
 
 grad=[];
 hess=[];
 exit_flag = [];
-info = [];
+info = 0;
 PHI = [];
 SIGMAu = [];
 iXX = [];
 prior = [];
+SteadyState = [];
+trend_coeff = [];
 
 % Initialization of of the index for parameter dsge_prior_weight in Model.params.
 if isempty(dsge_prior_weight_idx)
@@ -82,19 +87,21 @@ exit_flag = 1;
 
 % Return, with endogenous penalty, if some dsge-parameters are smaller than the lower bound of the prior domain.
 if DynareOptions.mode_compute ~= 1 && any(xparam1 < BoundsInfo.lb)
-    k = find(xparam1 < BoundsInfo.lb);
-    fval = objective_function_penalty_base+sum((BoundsInfo.lb(k)-xparam1(k)).^2);
+    fval = Inf;
     exit_flag = 0;
-    info = 41;
+    info(1) = 41;
+    k = find(xparam1 < BoundsInfo.lb);
+    info(2) = sum((BoundsInfo.lb(k)-xparam1(k)).^2);
     return;
 end
 
 % Return, with endogenous penalty, if some dsge-parameters are greater than the upper bound of the prior domain.
 if DynareOptions.mode_compute ~= 1 && any(xparam1 > BoundsInfo.ub)
-    k = find(xparam1 > BoundsInfo.ub);
-    fval = objective_function_penalty_base+sum((xparam1(k)-BoundsInfo.ub(k)).^2);
+    fval = Inf;
     exit_flag = 0;
-    info = 42;
+    info(1) = 42;
+    k = find(xparam1 > BoundsInfo.ub);
+    info(2) = sum((xparam1(k)-BoundsInfo.ub(k)).^2);
     return;
 end
 
@@ -114,12 +121,14 @@ Model.Sigma_e = Q;
 dsge_prior_weight = Model.params(dsge_prior_weight_idx);
 
 % Is the dsge prior proper?
-if dsge_prior_weight<(NumberOfParameters+NumberOfObservedVariables)/NumberOfObservations;
-    fval = objective_function_penalty_base+abs(NumberOfObservations*dsge_prior_weight-(NumberOfParameters+NumberOfObservedVariables));
+if dsge_prior_weight<(NumberOfParameters+NumberOfObservedVariables)/ ...
+        NumberOfObservations;
+    fval = Inf;
     exit_flag = 0;
-    info = 51;
-    info(2)=dsge_prior_weight;
-    info(3)=(NumberOfParameters+NumberOfObservedVariables)/DynareDataset.nobs;
+    info(1) = 51;
+    info(2) = abs(NumberOfObservations*dsge_prior_weight-(NumberOfParameters+NumberOfObservedVariables));
+    %    info(2)=dsge_prior_weight;
+    %    info(3)=(NumberOfParameters+NumberOfObservedVariables)/DynareDataset.nobs;
     return
 end
 
@@ -134,13 +143,13 @@ end
 % Return, with endogenous penalty when possible, if dynare_resolve issues an error code (defined in resol).
 if info(1) == 1 || info(1) == 2 || info(1) == 5 || info(1) == 7 || info(1) == 8 || ...
             info(1) == 22 || info(1) == 24 || info(1) == 25 || info(1) == 10
-    fval = objective_function_penalty_base+1;
-    info = info(1);
+    fval = Inf;
+    info(2) = 0.1;
     exit_flag = 0;
     return
 elseif info(1) == 3 || info(1) == 4 || info(1) == 19 || info(1) == 20 || info(1) == 21
-    fval = objective_function_penalty_base+info(2);
-    info = info(1);
+    fval = Inf;
+    info(2) = 0.1;
     exit_flag = 0;
     return
 end
@@ -209,8 +218,9 @@ if ~isinf(dsge_prior_weight)% Evaluation of the likelihood of the dsge-var model
     SIGMAu = tmp0 - tmp1*tmp2*tmp1'; clear('tmp0');
     [SIGMAu_is_positive_definite, penalty] = ispd(SIGMAu);
     if ~SIGMAu_is_positive_definite
-        fval = objective_function_penalty_base + penalty;
-        info = 52;
+        fval = Inf;
+        info(1) = 52;
+        info(2) = penalty;
         exit_flag = 0;
         return;
     end
@@ -240,15 +250,17 @@ else% Evaluation of the likelihood of the dsge-var model when the dsge prior wei
 end
 
 if isnan(lik)
-    info = 45;
-    fval = objective_function_penalty_base + 100;
+    info(1) = 45;
+    info(2) = 0.1;
+    fval = Inf;
     exit_flag = 0;
     return
 end
 
 if imag(lik)~=0
-    info = 46;
-    fval = objective_function_penalty_base + 100;
+    info(1) = 46;
+    info(2) = 0.1;
+    fval = Inf;
     exit_flag = 0;
     return
 end
@@ -258,20 +270,22 @@ lnprior = priordens(xparam1,BayesInfo.pshape,BayesInfo.p6,BayesInfo.p7,BayesInfo
 fval = (lik-lnprior);
 
 if isnan(fval)
-    info = 47;
-    fval = objective_function_penalty_base + 100;
+    info(1) = 47;
+    info(2) = 0.1;
+    fval = Inf;
     exit_flag = 0;
     return
 end
 
 if imag(fval)~=0
-    info = 48;
-    fval = objective_function_penalty_base + 100;
+    info(1) = 48;
+    info(2) = 0.1;
+    fval = Inf;
     exit_flag = 0;
     return
 end
 
-if (nargout == 8)
+if (nargout == 10)
     if isinf(dsge_prior_weight)
         iXX = iGXX;
     else
@@ -279,7 +293,7 @@ if (nargout == 8)
     end
 end
 
-if (nargout==9)
+if (nargout==11)
     if isinf(dsge_prior_weight)
         iXX = iGXX;
     else
@@ -291,4 +305,8 @@ if (nargout==9)
     prior.ArtificialSampleSize = fix(dsge_prior_weight*NumberOfObservations);
     prior.DF = prior.ArtificialSampleSize - NumberOfParameters - NumberOfObservedVariables;
     prior.iGXX = iGXX;
+end
+
+if fval == Inf
+    pause
 end

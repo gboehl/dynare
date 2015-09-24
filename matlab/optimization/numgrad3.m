@@ -38,9 +38,9 @@ badg=0;
 for i=1:n
     xiold = x(i);
     x(i) = xiold+h;
-    f1 = penalty_objective_function(x, fcn, penatly, varargin{:});
+    f1 = penalty_objective_function(x, fcn, penalty, varargin{:});
     x(i) = xiold-h;
-    f2 = penalty_objective_function(x, fcn, penatly, varargin{:});
+    f2 = penalty_objective_function(x, fcn, penalty, varargin{:});
     g0 = (f1-f2)/H;
     if abs(g0)< 1e15
         g(i)=g0;
