@@ -121,8 +121,6 @@ function [fval,ys,trend_coeff,exit_flag,info,Model,DynareOptions,BayesInfo,Dynar
 % AUTHOR(S) stephane DOT adjemian AT univ DASH lemans DOT fr
 %           frederic DOT karame AT univ DASH lemans DOT fr
 
-global objective_function_penalty_base
-% Declaration of the penalty as a persistent variable.
 persistent init_flag
 persistent restrict_variables_idx observed_variables_idx state_variables_idx mf0 mf1
 persistent sample_size number_of_state_variables number_of_observed_variables number_of_structural_innovations
@@ -145,18 +143,20 @@ end
 % Return, with endogenous penalty, if some parameters are smaller than the lower bound of the prior domain.
 if (DynareOptions.mode_compute~=1) && any(xparam1<BoundsInfo.lb)
     k = find(xparam1(:) < BoundsInfo.lb);
-    fval = objective_function_penalty_base+sum((BoundsInfo.lb(k)-xparam1(k)).^2);
+    fval = Inf;
     exit_flag = 0;
-    info = 41;
+    info(1) = 41;
+    info(2) = sum((BoundsInfo.lb(k)-xparam1(k)).^2);
     return
 end
 
 % Return, with endogenous penalty, if some parameters are greater than the upper bound of the prior domain.
 if (DynareOptions.mode_compute~=1) && any(xparam1>BoundsInfo.ub)
     k = find(xparam1(:)>BoundsInfo.ub);
-    fval = objective_function_penalty_base+sum((xparam1(k)-BoundsInfo.ub(k)).^2);
+    fval = Inf;
     exit_flag = 0;
-    info = 42;
+    info(1) = 42;
+    info(2) = sum((xparam1(k)-BoundsInfo.ub(k)).^2);
     return
 end
 
@@ -168,18 +168,20 @@ H = Model.H;
 if ~issquare(Q) || EstimatedParameters.ncx || isfield(EstimatedParameters,'calibrated_covariances')
     [Q_is_positive_definite, penalty] = ispd(Q);
     if ~Q_is_positive_definite
-        fval = objective_function_penalty_base+penalty;
+        fval = Inf;
         exit_flag = 0;
-        info = 43;
+        info(1) = 43;
+        info(2) = penalty;
         return
     end
     if isfield(EstimatedParameters,'calibrated_covariances')
         correct_flag=check_consistency_covariances(Q);
         if ~correct_flag
             penalty = sum(Q(EstimatedParameters.calibrated_covariances.position).^2);
-            fval = objective_function_penalty_base+penalty;
+            fval = Inf;
             exit_flag = 0;
-            info = 71;
+            info(1) = 71;
+            info(2) = penalty;
             return
         end
     end
@@ -189,18 +191,20 @@ end
 if ~issquare(H) || EstimatedParameters.ncn || isfield(EstimatedParameters,'calibrated_covariances_ME')
     [H_is_positive_definite, penalty] = ispd(H);
     if ~H_is_positive_definite
-        fval = objective_function_penalty_base+penalty;
+        fval = Inf;
         exit_flag = 0;
-        info = 44;
+        info(1) = 44;
+        info(2) = penalty;
         return
     end
     if isfield(EstimatedParameters,'calibrated_covariances_ME')
         correct_flag=check_consistency_covariances(H);
         if ~correct_flag
             penalty = sum(H(EstimatedParameters.calibrated_covariances_ME.position).^2);
-            fval = objective_function_penalty_base+penalty;
+            fval = Inf;
             exit_flag = 0;
-            info = 72;
+            info(1) = 72;
+            info(2) = penalty;
             return
         end
     end
@@ -215,11 +219,12 @@ end
 [T,R,SteadyState,info,Model,DynareOptions,DynareResults] = dynare_resolve(Model,DynareOptions,DynareResults,'restrict');
 
 if info(1) == 1 || info(1) == 2 || info(1) == 5 || info(1) == 25 || info(1) == 10 || info(1) == 7
-    fval = objective_function_penalty_base+1;
+    fval = Inf;
     exit_flag = 0;
+    info(2) = 0.1;
     return
 elseif info(1) == 3 || info(1) == 4 || info(1)==6 ||info(1) == 19 || info(1) == 20 || info(1) == 21
-    fval = objective_function_penalty_base+info(2);
+    fval = Inf;
     exit_flag = 0;
     return
 end
@@ -298,12 +303,14 @@ DynareOptions.warning_for_steadystate = 0;
 LIK = feval(DynareOptions.particle.algorithm,ReducedForm,Y,start,DynareOptions.particle,DynareOptions.threads);
 set_dynare_random_generator_state(s1,s2);
 if imag(LIK)
-    info = 46;
-    likelihood = objective_function_penalty_base;
+    info(1) = 46;
+    info(2) = 0.1;
+    likelihood = Inf;
     exit_flag  = 0;
 elseif isnan(LIK)
-    info = 45;
-    likelihood = objective_function_penalty_base;
+    info(1) = 45;
+    info(2) = 0.1;
+    likelihood = Inf;
     exit_flag  = 0;
 else
     likelihood = LIK;
@@ -316,15 +323,17 @@ lnprior = priordens(xparam1(:),BayesInfo.pshape,BayesInfo.p6,BayesInfo.p7,BayesI
 fval    = (likelihood-lnprior);
 
 if isnan(fval)
-    info = 47;
-    fval = objective_function_penalty_base + 100;
+    info(1) = 47;
+    info(2) = 0.1;
+    fval = Inf;
     exit_flag = 0;
     return
 end
 
 if imag(fval)~=0
-    info = 48;
-    fval = objective_function_penalty_base + 100;
+    info(1) = 48;
+    info(2) = 0.1
+    fval = Inf;
     exit_flag = 0;
     return
 end

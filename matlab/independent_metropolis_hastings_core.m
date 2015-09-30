@@ -37,7 +37,7 @@ if nargin<4,
     whoiam=0;
 end
 
-global bayestopt_ estim_params_ options_  M_ oo_ objective_function_penalty_base
+global bayestopt_ estim_params_ options_  M_ oo_
 
 % Reshape 'myinputs' for local computation.
 % In order to avoid confusion in the name space, the instruction struct2local(myinputs) is replaced by:
@@ -66,9 +66,6 @@ if whoiam
     priordens(xparam1',bayestopt_.pshape,bayestopt_.p6,bayestopt_.p7, ...
               bayestopt_.p3,bayestopt_.p4,1);
 end
-
-% (re)Set the penalty.
-objective_function_penalty_base = Inf;
 
 MetropolisFolder = CheckPath('metropolis',M_.dname);
 BaseName = [MetropolisFolder filesep ModelName];

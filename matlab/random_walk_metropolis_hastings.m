@@ -57,10 +57,6 @@ function random_walk_metropolis_hastings(TargetFun,ProposalFun,xparam1,vv,mh_bou
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 
-% In Metropolis, we set penalty to Inf so as to reject all parameter sets triggering an error during target density computation
-global objective_function_penalty_base
-objective_function_penalty_base = Inf;
-
 % Initialization of the random walk metropolis-hastings chains.
 [ ix2, ilogpo2, ModelName, MetropolisFolder, fblck, fline, npar, nblck, nruns, NewFile, MAX_nruns, d ] = ...
     metropolis_hastings_initialization(TargetFun, xparam1, vv, mh_bounds,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,oo_);

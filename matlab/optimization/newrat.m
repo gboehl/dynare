@@ -47,8 +47,6 @@ function [xparam1, hh, gg, fval, igg] = newrat(func0, x, analytic_derivation, ft
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-global objective_function_penalty_base
-
 penalty = 1e8;
 
 icount=0;
