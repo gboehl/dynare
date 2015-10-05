@@ -85,10 +85,10 @@ if ~options_.dsge_var
             error(['Estimation: Unknown filter ' options_.particle.filter_algorithm])
         end
     else
-        objective_function = str2func('dsge_likelihood');
+        objective_function = str2func('dsge_likelihood_1');
     end
 else
-    objective_function = str2func('dsge_var_likelihood');
+    objective_function = str2func('dsge_var_likelihood_1');
 end
 
 [dataset_, dataset_info, xparam1, hh, M_, options_, oo_, estim_params_, bayestopt_, bounds] = ...
@@ -253,7 +253,7 @@ if ~isequal(options_.mode_compute,0) && ~options_.mh_posterior_mode_estimation
         if options_.analytic_derivation && strcmp(func2str(objective_function),'dsge_likelihood')
             options = options_.analytic_derivation;
             options.analytic_derivation = 2;
-            [junk1, junk2, hh] = feval(objective_function,xparam1, ...
+            [junk1, junk2, junk3, junk4, hh] = feval(objective_function,xparam1, ...
                                        dataset_,dataset_info,options_,M_, ...
                                        estim_params_,bayestopt_,bounds,oo_);
         elseif isequal(options_.mode_compute,4) || ...

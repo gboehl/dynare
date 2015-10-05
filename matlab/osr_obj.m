@@ -1,5 +1,7 @@
 function [loss,vx,info,exit_flag]=osr_obj(x,i_params,i_var,weights)
-% objective function for optimal simple rules (OSR)
+% objective function for optimal simple rules (OSR). Deprecated
+% interface. New one: osr_obj_1.m
+%
 % INPUTS
 %   x                         vector           values of the parameters
 %                                              over which to optimize
@@ -32,58 +34,4 @@ function [loss,vx,info,exit_flag]=osr_obj(x,i_params,i_var,weights)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-global M_ oo_ options_ optimal_Q_ it_
-%  global ys_ Sigma_e_ endo_nbr exo_nbr optimal_Q_ it_ ykmin_ options_
-
-junk = [];
-exit_flag = 1;
-vx = [];
-info=0;
-loss=[];
-% set parameters of the policiy rule
-M_.params(i_params) = x;
-
-% don't change below until the part where the loss function is computed
-it_ = M_.maximum_lag+1;
-[dr,info,M_,options_,oo_] = resol(0,M_,options_,oo_);
-
-switch info(1)
-  case 1
-    loss = 1e8;
-    return
-  case 2
-    loss = 1e8*min(1e3,info(2));
-    return
-  case 3
-    loss = 1e8*min(1e3,info(2));
-    return
-  case 4
-    loss = 1e8*min(1e3,info(2));
-    return
-  case 5
-    loss = 1e8;
-    return
-  case 6
-    loss = 1e8*min(1e3,info(2));
-    return
-  case 7
-    loss = 1e8*min(1e3);
-    return
-  case 8
-    loss = 1e8*min(1e3,info(2));
-    return
-  case 9
-    loss = 1e8*min(1e3,info(2));
-    return   
-  case 20
-    loss = 1e8*min(1e3,info(2));
-    return
-  otherwise
-    if info(1)~=0
-      loss = 1e8;
-      return;
-    end  
-end
-
-vx = get_variance_of_endogenous_variables(dr,i_var);
-loss = full(weights(:)'*vx(:));
+[loss,info,exit_flag,vx,junk]=osr_obj_1(x,i_params,i_var,weights);

@@ -68,7 +68,7 @@ end
 
 % func0 = str2func([func2str(func0),'_hh']);
 % func0 = func0;
-[fval0,gg,hh]=penalty_objective_function(x,func0,penalty,varargin{:});
+[fval0,exit_flag,gg,hh]=penalty_objective_function(x,func0,penalty,varargin{:});
 fval=fval0;
 
 % initialize mr_gstep and mr_hessian
@@ -180,7 +180,7 @@ while norm(gg)>gtol && check==0 && jit<nit
         disp_verbose('No further improvement is possible!',Verbose)
         check=1;
         if analytic_derivation,
-            [fvalx,gg,hh]=penalty_objective_function(xparam1,func0,varargin{:});
+            [fvalx,exit_flag,gg,hh]=penalty_objective_function(xparam1,func0,penalty,varargin{:});
             hhg=hh;
             H = inv(hh);
         else
@@ -256,7 +256,7 @@ while norm(gg)>gtol && check==0 && jit<nit
                 H = igg;
             end
         elseif analytic_derivation,
-            [fvalx,gg,hh]=penalty_objective_function(xparam1,func0,varargin{:});
+            [fvalx,exit_flag,gg,hh]=penalty_objective_function(xparam1,func0,penalty,varargin{:});
             hhg=hh;
             H = inv(hh);
         end

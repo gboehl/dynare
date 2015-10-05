@@ -1,7 +1,5 @@
-function [fval,DLIK,Hess,exit_flag] = objective_function_penalty(x0,fcn,penalty,varargin)
-    [fval,DLIK,Hess,exit_flag,SteadyState,trend_coeff,info] = fcn(x0,varargin{:});
-
-    
+function [fval,exit_flag,arg1,arg2] = penalty_objective_function(x0,fcn,penalty,varargin)
+    [fval,info,exit_flag,arg1,arg2] = fcn(x0,varargin{:});
     
     if info(1) ~= 0
         fval = penalty + info(2);

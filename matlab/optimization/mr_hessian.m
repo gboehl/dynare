@@ -61,7 +61,7 @@ if init
     return
 end
 
-[f0, ff0]=penalty_objective_function(x,func,penalty,varargin{:});
+[f0, exit_flag, ff0]=penalty_objective_function(x,func,penalty,varargin{:});
 h2=varargin{7}.ub-varargin{7}.lb;
 hmax=varargin{7}.ub-x;
 hmax=min(hmax,x-varargin{7}.lb);
@@ -93,7 +93,7 @@ while i<n
     hcheck=0;
     xh1(i)=x(i)+h1(i);
     try
-        [fx, ffx]=penalty_objective_function(xh1,func,penalty,varargin{:});
+        [fx, exit_flag, ffx]=penalty_objective_function(xh1,func,penalty,varargin{:});
     catch
         fx=1.e8;
     end
@@ -114,7 +114,7 @@ while i<n
             h1(i) = max(h1(i),1.e-10);
             xh1(i)=x(i)+h1(i);
             try
-                [fx, ffx]=penalty_objective_function(xh1,func,penalty,varargin{:});
+                [fx, exit_flag, ffx]=penalty_objective_function(xh1,func,penalty,varargin{:});
             catch
                 fx=1.e8;
             end
@@ -123,14 +123,14 @@ while i<n
             h1(i)= htol/abs(dx(it))*h1(i);
             xh1(i)=x(i)+h1(i);
             try
-                [fx, ffx]=penalty_objective_function(xh1,func,penalty,varargin{:});
+                [fx, exit_flag, ffx]=penalty_objective_function(xh1,func,penalty,varargin{:});
             catch
                 fx=1.e8;
             end
             while (fx-f0)==0
                 h1(i)= h1(i)*2;
                 xh1(i)=x(i)+h1(i);
-                [fx, ffx]=penalty_objective_function(xh1,func,penalty,varargin{:});
+                [fx, exit_flag, ffx]=penalty_objective_function(xh1,func,penalty,varargin{:});
                 ic=1;
             end
         end
@@ -151,7 +151,7 @@ while i<n
         end
     end
     xh1(i)=x(i)-h1(i);
-    [fx, ffx]=penalty_objective_function(xh1,func,penalty,varargin{:});
+    [fx, exit_flag, ffx]=penalty_objective_function(xh1,func,penalty,varargin{:});
     f_1(:,i)=fx;
     if outer_product_gradient,
         if any(isnan(ffx)) || isempty(ffx),

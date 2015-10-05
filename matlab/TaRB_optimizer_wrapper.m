@@ -1,4 +1,4 @@
-function [fval,DLIK,Hess,exit_flag] = TaRB_optimizer_wrapper(optpar,par_vector,parameterindices,TargetFun,varargin)
+function [fval,info,exit_flag,DLIK,Hess,SteadyState,trend_coeff] = TaRB_optimizer_wrapper(optpar,par_vector,parameterindices,TargetFun,varargin)
 % function [fval,DLIK,Hess,exit_flag] = TaRB_optimizer_wrapper(optpar,par_vector,parameterindices,TargetFun,varargin)
 % Wrapper function for target function used in TaRB algorithm; reassembles
 % full parameter vector before calling target function
@@ -36,5 +36,5 @@ function [fval,DLIK,Hess,exit_flag] = TaRB_optimizer_wrapper(optpar,par_vector,p
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 par_vector(parameterindices,:)=optpar; %reassemble parameter
-[fval,DLIK,Hess,exit_flag] = feval(TargetFun,par_vector,varargin{:}); %call target function
+[fval,info,exit_flag,DLIK,Hess,SteadyState,trend_coeff] = feval(TargetFun,par_vector,varargin{:}); %call target function
 
