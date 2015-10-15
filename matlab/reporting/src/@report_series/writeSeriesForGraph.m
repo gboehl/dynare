@@ -119,8 +119,8 @@ fprintf(fid, '%%series %s\n\\addplot', o.data.name{:});
 writeLineOptions(o, fid, series_num);
 fprintf(fid,'\ntable[row sep=crcr]{\nx y\\\\\n');
 for i=1:ds.dates.ndat
-    if ~isnan(thedata(i)) 
-      fprintf(fid, '%d %f\\\\\n', i, thedata(i));
+    if ~isnan(thedata(i))
+        fprintf(fid, '%d %f\\\\\n', i, thedata(i));
     end
 end
 fprintf(fid,'};\n');
