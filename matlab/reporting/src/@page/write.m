@@ -46,7 +46,7 @@ if ~isempty(o.latex)
     if ~exist(o.pageDirName, 'dir')
         mkdir(o.pageDirName)
     end
-    pagename = [o.pageDirName filesep 'page_' num2str(pg) '.tex'];
+    pagename = [o.pageDirName '/page_' num2str(pg) '.tex'];
     [fidp, msg] = fopen(pagename, 'w');
     if fidp == -1
         error(['@page.write: ' msg]);
