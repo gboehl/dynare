@@ -105,7 +105,7 @@ end
 
 if status ~= 0
     error(['@report.compile: There was an error in compiling ' rfn '.pdf.' ...
-          '  ' compiler ' returned the error code: ' num2str(status)]);
+          '  ' opts.compiler ' returned the error code: ' num2str(status)]);
 end
 if o.showOutput || opts.showOutput
     fprintf(1, ['Done.\nYour compiled report is located here:\n     ' pwd filesep rfn '.pdf\n\n']);
