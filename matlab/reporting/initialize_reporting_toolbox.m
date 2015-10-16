@@ -22,6 +22,7 @@ reporting_src_root = [strrep(which('initialize_reporting_toolbox'),'initialize_r
 
 % Add path to reporting source
 addpath(reporting_src_root);
+addpath([reporting_src_root filesep '..' filesep 'macros']);
 
 % Reminder to add and initialize dates & dseries toolboxes
 disp('Remember to add the paths to the dates and dseries toolboxes');
