@@ -79,6 +79,7 @@ fprintf(fid, '\\begin{document}\n');
 if isunix && ~ismac
     fprintf(fid, '\\pgfdeclarelayer{axis background}\n');
     fprintf(fid, '\\pgfdeclarelayer{axis lines}\n');
+    fprintf(fid, '\\pgfsetlayers{axis background,axis lines,main}\n');
 end
 fprintf(fid, '\\pgfplotsset{tick scale binop={\\times},\ntrim axis left}\n');
 fprintf(fid, '\\centering\n');
