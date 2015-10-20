@@ -58,7 +58,7 @@ function make_report_irfs(M, oo, ticks_every)
   n6 = 1;
   justAddedPage = 0;
   calcxticks = false;
-  r = report('filename', [M.fname '_canned_irf_report.pdf']);
+  r = report('filename', [M.fname '_canned_irf_report.tex']);
   for i = 1:length(M.exo_names)
       newexo = 1;
       for j = 1:length(M.endo_names)
