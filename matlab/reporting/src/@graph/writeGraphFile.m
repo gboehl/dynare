@@ -154,6 +154,16 @@ else
 end
 
 if isempty(o.yrange)
+    nonzeroseries = false;
+    for i=1:ne
+        if ~o.series{i}.isZero()
+            nonzeroseries = true;
+            break;
+        end
+    end
+    if ~nonzeroseries
+        fprintf(fid, 'ymin=-1,\nymax=1,\n');
+    end
     if o.yAxisTight
         fprintf(fid, 'enlarge y limits=false,\n');
     else
