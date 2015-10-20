@@ -1,9 +1,10 @@
-function make_report_irfs(M, oo)
+function make_report_irfs(M, oo, ticks_every)
 % Builds canned IRF report
 %
 % INPUTS
 %   M             [struct]
 %   oo            [struct]
+%   ticks_every   [int]      number of spaces between ticks. Default 5.
 %
 % OUTPUTS
 %   None
@@ -45,9 +46,14 @@ function make_report_irfs(M, oo)
       disp('make_report_irfs: M_.endo_names does not exist');
       return
   end
-  
+
+  if nargin < 3
+      ticks_every = 5;
+  end
+
   n6 = 1;
   justAddedPage = 0;
+  calcxticks = false;
   r = report();
   for i = 1:length(M.exo_names)
       newexo = 1;
@@ -64,6 +70,12 @@ function make_report_irfs(M, oo)
               newexo = 0;
           end
           if any(idx)
+              if ~calcxticks
+                  data = dseries(oo.irfs.(fields{idx})');
+                  xTicks = 1:ticks_every:floor(data.nobs/ticks_every)*ticks_every+1;
+                  xTickLabels = strsplit(num2str(xTicks-1));
+                  calcxticks = true;
+              end
               r = r.addGraph('data', dseries(oo.irfs.(fields{idx})'), ...
                   'title', strrep(M.endo_names(j,:), '_', '\_'), ...
                   'titleFormat', '\Huge', ...
@@ -71,7 +83,9 @@ function make_report_irfs(M, oo)
                   'yTickLabelZeroFill', false, ...
                   'yTickLabelPrecision', 1, ...
                   'showZeroLine', true, ...
-                  'zeroLineColor', 'red');
+                  'zeroLineColor', 'red', ...
+                  'xTicks', xTicks, ...
+                  'xTickLabels', xTickLabels);
               n6 = n6 + 1;
               justAddedPage = 0;
           end
