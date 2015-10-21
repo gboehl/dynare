@@ -1,10 +1,11 @@
-function make_report_irfs(M, oo, ticks_every)
+function make_report_irfs(M, oo, ticks_every, showOutput)
 % Builds canned IRF report
 %
 % INPUTS
 %   M             [struct]
 %   oo            [struct]
 %   ticks_every   [int]      number of spaces between ticks. Default 5.
+%   showOutput    [bool]     showOutput the report. Default true
 %
 % OUTPUTS
 %   None
@@ -54,11 +55,15 @@ function make_report_irfs(M, oo, ticks_every)
   if nargin < 3
       ticks_every = 5;
   end
-
+  if nargin < 4
+      showOutput = true;
+  else
+      assert(islogical(showOutput));
+  end
   n6 = 1;
   justAddedPage = 0;
   calcxticks = false;
-  r = report('filename', [M.fname '_canned_irf_report.tex']);
+  r = report('filename', [M.fname '_canned_irf_report.tex'], 'showOutput', showOutput);
   for i = 1:length(M.exo_names)
       newexo = 1;
       for j = 1:length(M.endo_names)
