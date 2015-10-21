@@ -54,6 +54,8 @@ function make_report_irfs(M, oo, ticks_every, showOutput)
 
   if nargin < 3
       ticks_every = 5;
+  else
+      assert(isint(ticks_every));
   end
   if nargin < 4
       showOutput = true;
