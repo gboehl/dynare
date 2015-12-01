@@ -689,6 +689,7 @@ ModFile::writeOutputFiles(const string &basename, bool clear_all, bool clear_glo
       unlink((basename + "_static.bin").c_str());
 
       unlink((basename + "_steadystate2.m").c_str());
+      unlink((basename + "_dynamic_aux.m").c_str());
       unlink((basename + "_set_auxiliary_variables.m").c_str());
     }
   
