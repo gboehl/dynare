@@ -84,7 +84,7 @@ function make_report_irfs(M, oo, ticks_every, showOutput)
               if ~calcxticks
                   data = dseries(oo.irfs.(fields{idx})');
                   xTicks = 1:ticks_every:floor(data.nobs/ticks_every)*ticks_every+1;
-                  xTickLabels = strsplit(num2str(xTicks-1));
+                  xTickLabels = regexp(num2str(xTicks-1), '(?:\s)+', 'split');
                   calcxticks = true;
               end
               r = r.addGraph('data', dseries(oo.irfs.(fields{idx})'), ...
