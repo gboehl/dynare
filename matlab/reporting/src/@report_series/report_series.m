@@ -14,7 +14,7 @@ function o = report_series(varargin)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2013-2015 Dynare Team
+% Copyright (C) 2013-2016 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -73,6 +73,7 @@ o.tableRowColor = 'white';
 o.tableRowIndent = 0;
 
 o.tableDataRhs = '';
+o.tableNaNSymb = 'NaN';
 
 o.zeroTol = 1e-6;
 

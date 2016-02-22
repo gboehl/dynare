@@ -17,7 +17,7 @@ function o = writeSeriesForTable(o, fid, dates, precision, ncols, rowcolor)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2013-2014 Dynare Team
+% Copyright (C) 2013-2016 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -63,6 +63,7 @@ assert(isint(o.tableRowIndent) && o.tableRowIndent >= 0, ...
 assert(islogical(o.tableShowMarkers), '@report_series.writeSeriesForTable: tableShowMarkers must be true or false');
 assert(islogical(o.tableAlignRight), '@report_series.writeSeriesForTable: tableAlignRight must be true or false');
 assert(isfloat(o.tableMarkerLimit), '@report_series.writeSeriesForTable: tableMarkerLimit must be a float');
+assert(ischar(o.tableNaNSymb), '@report_series.writeSeriesForTable: tableNaNSymb must be a string');
 
 %% Write Output
 fprintf(fid, '%% Table Row (report_series)\n');
