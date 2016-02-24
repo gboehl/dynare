@@ -13,7 +13,7 @@ function o = writeSeriesForGraph(o, fid, xrange, series_num)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2014-2015 Dynare Team
+% Copyright (C) 2014-2016 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -61,7 +61,7 @@ valid_graphMarker = {'x', '+', '-', '|', 'o', 'asterisk', 'star', '10-pointed st
                     'halfsquare left*','Mercedes star','Mercedes star flipped','halfcircle',...
                     'halfcircle*','pentagon','pentagon star'};
 assert(isempty(o.graphMarker) || any(strcmp(o.graphMarker, valid_graphMarker)), ...
-       ['@report_series.writeSeriesForGraph: graphMarker must be one of ' strjoin(valid_graphMarker, ', ')]);
+       ['@report_series.writeSeriesForGraph: graphMarker must be one of ' addCommasToCellStr(valid_graphMarker)]);
 
 assert(ischar(o.graphMarkerEdgeColor), '@report_series.writeSeriesForGraph: graphMarkerEdgeColor must be a string');
 assert(ischar(o.graphMarkerFaceColor), '@report_series.writeSeriesForGraph: graphMarkerFaceColor must be a string');
