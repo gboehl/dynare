@@ -17,7 +17,7 @@
  */
 
 /*
- * Copyright (C) 2004-2010 Dynare Team
+ * Copyright (C) 2004-2016 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -115,8 +115,7 @@ end;
 varobs gp_obs gy_obs;
 
 estimation(order=1, datafile='../fsdat_simul',nobs=192, loglinear, mh_replic=30, mh_nblocks=2, mh_jscale=0.5,mode_compute=4,
-use_TaRB,
-tarb_mode_compute=4,
-tarb_new_block_probability=0.3,
+posterior_sampling_method='tarb',
+posterior_sampler_options=('tarb_mode_compute',4,'tarb_new_block_probability',0.3),
 silent_optimizer
 );

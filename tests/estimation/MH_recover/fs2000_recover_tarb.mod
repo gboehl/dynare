@@ -1,14 +1,14 @@
-//Test mh_recover function for RW-MH when use_tarb was also used
+//Test mh_recover function for RW-MH when posterior_sampling_method='tarb' is also used
 
 @#include "fs2000.common.inc"
 
 options_.MaxNumberOfBytes=10*11*8/2;
-estimation(use_tarb,order=1, datafile='../fsdat_simul',nobs=192, loglinear, mh_replic=10, mh_nblocks=2, mh_jscale=0.8);
+estimation(posterior_sampling_method='tarb',order=1, datafile='../fsdat_simul',nobs=192, loglinear, mh_replic=10, mh_nblocks=2, mh_jscale=0.8);
 copyfile([M_.dname filesep 'metropolis' filesep M_.dname '_mh1_blck1.mat'],[M_.dname '_mh1_blck1.mat'])
 copyfile([M_.dname filesep 'metropolis' filesep M_.dname '_mh2_blck2.mat'],[M_.dname '_mh2_blck2.mat'])
 delete([M_.dname filesep 'metropolis' filesep M_.dname '_mh2_blck2.mat'])
 
-estimation(use_tarb,order=1, datafile='../fsdat_simul',mode_compute=0,mode_file=fs2000_recover_mode, nobs=192, loglinear, mh_replic=2000, mh_nblocks=2, mh_jscale=0.8,mh_recover);
+estimation(posterior_sampling_method='tarb',order=1, datafile='../fsdat_simul',mode_compute=0,mode_file=fs2000_recover_mode, nobs=192, loglinear, mh_replic=2000, mh_nblocks=2, mh_jscale=0.8,mh_recover);
 
 %check first unaffected chain
 temp1=load([M_.dname '_mh1_blck1.mat']);
