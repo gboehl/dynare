@@ -1050,22 +1050,6 @@ void
 StaticModel::computingPass(const eval_context_t &eval_context, bool no_tmp_terms, bool hessian, bool thirdDerivatives, int paramsDerivsOrder, bool block, bool bytecode)
 {
   initializeVariablesAndEquations();
-
-  vector<BinaryOpNode *> neweqs;
-  for (unsigned int eq = 0; eq < equations.size() - aux_equations.size(); eq++)
-    {
-      expr_t eq_tmp = equations[eq]->substituteStaticAuxiliaryVariable();
-      neweqs.push_back(dynamic_cast<BinaryOpNode *>(eq_tmp->toStatic(*this)));
-    }
-
-  for (unsigned int eq = 0; eq < aux_equations.size();  eq++)
-    {
-      expr_t eq_tmp = aux_equations[eq]->substituteStaticAuxiliaryDefinition();
-      neweqs.push_back(dynamic_cast<BinaryOpNode *>(eq_tmp->toStatic(*this)));
-    }
-      
-  equations.clear();
-  copy(neweqs.begin(),neweqs.end(),back_inserter(equations));
   // Compute derivatives w.r. to all endogenous, and possibly exogenous and exogenous deterministic
   set<int> vars;
 
