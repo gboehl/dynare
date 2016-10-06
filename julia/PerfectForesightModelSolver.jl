@@ -119,8 +119,8 @@ function simulate_perfect_foresight_model!(endogenousvariables::Matrix{Float64},
             convergence = true
         end
         A = sparse(iA[1:m], jA[1:m], vA[1:m])
-        dy = -A\rd
-        Y[i_upd] += dy
+        @time dy = A\rd
+        Y[i_upd] -= dy
         if maximum(abs(dy))<options.pfmsolver.tolx
             convergence = true
         end

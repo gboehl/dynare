@@ -15,7 +15,7 @@ importall SteadyState
 importall PerfectForesightModelSolver
 
 # First call to the steady state routine (analytical)
-@time SteadyState.steady!(model_, oo_)
+@time SteadyState.steady!(model_, oo_,[3.4, 1.1, 0.4, 1.03, 1.5, 0.0])
 
 println(oo_.steady_state)
 
