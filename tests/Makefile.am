@@ -27,6 +27,7 @@ MODFILES = \
 	ms-sbvar/test_ms_variances_repeated_runs.mod \
 	fs2000/fs2000.mod \
 	ep/rbc.mod \
+	exogenous-observed-variables/preprocessor.mod \
 	estimation/fs2000_with_weibull_prior.mod \
 	estimation/fs2000_initialize_from_calib.mod	\
 	estimation/fs2000_calibrated_covariance.mod \
