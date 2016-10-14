@@ -4754,6 +4754,22 @@ varobs
 
 @end deffn
 
+@deffn Command varexobs @var{VARIABLE_NAME}@dots{};
+
+@descriptionhead
+
+This command lists the name of observed exogenous variables for the
+estimation procedure. These variables must be available in the data
+file (@pxref{estimation_cmd}) and previously declared with @code{varexo}.
+
+Only one instance of @code{varexobs} is allowed in a model file.
+
+@customhead{Simple example}
+
+@example
+varexobs x, z;
+@end example
+
 @deffn Block observation_trends ;
 
 @descriptionhead
