@@ -52,7 +52,10 @@ if ~exist('OCTAVE_VERSION')
           % Add /TP flag as fix for #1227
           eval(['mex -O LINKFLAGS="$LINKFLAGS /export:Dynamic" COMPFLAGS="/TP" ' basename '_dynamic.c ' basename '_dynamic_mex.c'])
           eval(['mex -O LINKFLAGS="$LINKFLAGS /export:Static" COMPFLAGS="/TP" ' basename '_static.c ' basename '_static_mex.c'])
-      elseif strcmp(win_compiler,'cygwin')
+      elseif strcmp(win_compiler,'mingw')
+          eval(['mex -O LINKFLAGS="$LINKFLAGS /export:Dynamic" ' basename '_dynamic.c ' basename '_dynamic_mex.c'])
+          eval(['mex -O LINKFLAGS="$LINKFLAGS /export:Static"  ' basename '_static.c ' basename '_static_mex.c'])
+      elseif strcmp(win_compiler,'cygwin') %legacy support for Cygwin with mexopts.bat
           % MATLAB/Windows + Cygwin g++
           eval(['mex -O PRELINK_CMDS1="echo EXPORTS > mex.def & echo ' ...
                 'mexFunction >> mex.def & echo Dynamic >> mex.def" ' ...
@@ -62,7 +65,7 @@ if ~exist('OCTAVE_VERSION')
                 basename '_static.c ' basename '_static_mex.c'])
       else
         error(['When using the USE_DLL option, you must give either ' ...
-               '''cygwin'' or ''msvc'' option to the ''dynare'' command'])
+               '''cygwin'', ''mingw'' or ''msvc'' option to the ''dynare'' command'])
       end
     elseif isunix
         % MATLAB/Linux

@@ -162,6 +162,7 @@ Installation and configuration
 
 * Software requirements::
 * Installation of Dynare::
+* Compiler installation::
 * Configuration::
 
 Installation of Dynare
@@ -422,6 +423,7 @@ If you want to give a URL, use the address of the Dynare website:
 @menu
 * Software requirements::
 * Installation of Dynare::
+* Compiler installation::
 * Configuration::
 @end menu
 
@@ -461,25 +463,13 @@ If under GNU Octave, the following
 @uref{http://octave.sourceforge.net/,Octave-Forge} packages: optim,
 io, statistics, control.
 
+@item 
+Mac OS X Octave users will also need to install
+gnuplot if they want graphing capabilities.
+
 @end itemize
 
-If you plan to use the @code{use_dll} option of the @code{model}
-command, you will need to install the necessary requirements for
-compiling MEX files on your machine. If you are using MATLAB under
-Windows, install a C++ compiler on your machine and configure it with
-MATLAB: see
-@uref{http://www.dynare.org/DynareWiki/ConfigureMatlabWindowsForMexCompilation,instructions
-on the Dynare wiki}. Users of Octave under Linux should install the
-package for MEX file compilation (under Debian or Ubuntu, it is called
-@file{liboctave-dev}). If you are
-using Octave or MATLAB under Mac OS X, you should install the latest
-version of XCode: see
-@uref{http://www.dynare.org/DynareWiki/InstallOnMacOSX,instructions on
-the Dynare wiki}. Mac OS X Octave users will also need to install
-gnuplot if they want graphing capabilities. Users of MATLAB under
-Linux and Mac OS X, and users of Octave under Windows, normally need
-to do nothing, since a working compilation environment is available by
-default.
+
 
 @node Installation of Dynare
 @section Installation of Dynare
@@ -553,6 +543,59 @@ You need to download Dynare source code from the
 Then you will need to recompile the pre-processor and the dynamic
 loadable libraries. Please refer to
 @uref{https://github.com/DynareTeam/dynare/blob/master/README.md,README.md}.
+
+@node Compiler installation
+@section Compiler installation
+
+If you plan to use the @code{use_dll} option of the @code{model}
+command, you will need to install the necessary requirements for
+compiling MEX files on your machine. 
+
+If you are using MATLAB, please check
+@uref{http://www.mathworks.com/support/compilers} for supported compilers for
+your MATLAB version on your operating system. After installing your compiler,
+select it using @code{mex -setup} in Matlab and clicking on the required compiler.
+
+Octave comes with built-in functionality for compiling mex-files.
+
+@menu
+* On Windows::
+* On Debian GNU/Linux and Ubuntu::
+* On Mac OS X::
+@end menu
+
+@node On Windows
+@subsection On Windows
+
+If you are using MATLAB under Windows, install a C++ compiler on your machine and configure it with
+MATLAB. There are at least two free compilers you can use. First, there is Microsoft's Visual Studio 
+Community (@uref{https://www.visualstudio.com/}), which has the largest history of MATLAB support, but 
+requires much space on the hard-disk. Second, since MATLAB R2015b, MATLAB supports the MinGW-w64 C/C++ 
+Compiler from TDM-GCC. To install this compiler, use the Add-Ons menu of MATLAB. Search for MinGW or 
+select it from Features. 
+
+For older version of MATLAB, in particular before R2014a, it may sometimes make sense to use the gcc compiler 
+provided by Cygwin. However, integrating it in MATLAB can be quite cumbersome and should be considered as a
+legacy option. For details, see
+@uref{http://www.dynare.org/DynareWiki/ConfigureMatlabWindowsForMexCompilation,instructions
+on the Dynare wiki}. 
+
+@node On Debian GNU/Linux and Ubuntu
+@subsection On Debian GNU/Linux and Ubuntu
+
+Users of MATLAB under Linux need to have a working compilation environment installed. If not already present,
+it can be installed via @code{apt-get install build-essential}.
+
+Users of Octave under Linux should install the package for MEX file compilation 
+(under Debian or Ubuntu, it is called @file{liboctave-dev}).
+
+@node On Mac OS X
+@subsection On Mac OS X
+If you are using MATLAB under Mac OS X, you should install the latest
+version of XCode: see
+@uref{http://www.dynare.org/DynareWiki/InstallOnMacOSX,instructions on
+the Dynare wiki}.
+
 
 @node Configuration
 @section Configuration
@@ -821,16 +864,22 @@ used. Alternatively, the path can be temporarly modified by the user at
 the top of the @file{*.mod} file (using Matlab/Octave's @code{addpath}
 command).
 
-@item cygwin
-Tells Dynare that your MATLAB is configured for compiling MEX files with
-Cygwin (@pxref{Software requirements}). This option is only available
-under Windows, and is used in conjunction with @code{use_dll}.
+@item mingw
+Tells Dynare that your MATLAB is configured for compiling MEX files with the
+MinGW-compiler from TDM-GCC (@pxref{Compiler installation}). This option is
+only available under Windows, and is used in conjunction with
+@code{use_dll}.
 
 @item msvc
 Tells Dynare that your MATLAB is configured for compiling MEX files with
-Microsoft Visual C++ (@pxref{Software requirements}). This option is
+Microsoft Visual C++ (@pxref{Compiler installation}). This option is
 only available under Windows, and is used in conjunction with
 @code{use_dll}.
+
+@item cygwin
+Tells Dynare that your MATLAB is configured for compiling MEX files with
+Cygwin (@pxref{Compiler installation}). This option is only available
+under Windows, and is used in conjunction with @code{use_dll}.
 
 @item parallel[=@var{CLUSTER_NAME}]
 Tells Dynare to perform computations in parallel. If @var{CLUSTER_NAME}
@@ -1860,8 +1909,9 @@ NOT trigger linearization of the model.
 Instructs the preprocessor to create dynamic loadable libraries (DLL)
 containing the model equations and derivatives, instead of writing those
 in M-files. You need a working compilation environment, @i{i.e.}
-a working @code{mex} command (see @ref{Software requirements} for more
-details). Using this option can result in faster simulations or
+a working @code{mex} command (see @ref{Compiler installation} for more
+details). On MATLAB for Windows, you will need to also pass the compiler name at 
+the command line. Using this option can result in faster simulations or
 estimations, at the expense of some initial compilation
 time.@footnote{In particular, for big models, the compilation step can
 be very time-consuming, and use of this option may be counter-productive
