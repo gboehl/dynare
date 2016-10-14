@@ -1620,11 +1620,13 @@ DynamicModel::writeDynamicCFile(const string &dynamic_basename, const int order)
 
   // Write function definition if oPowerDeriv is used
   writePowerDerivCHeader(mDynamicModelFile);
+  writeNormcdfCHeader(mDynamicModelFile);
 
   // Writing the function body
   writeDynamicModel(mDynamicModelFile, true, false);
 
   writePowerDeriv(mDynamicModelFile);
+  writeNormcdf(mDynamicModelFile);
   mDynamicModelFile.close();
 
   mDynamicMexFile.open(filename_mex.c_str(), ios::out | ios::binary);
@@ -4883,6 +4885,7 @@ DynamicModel::writeResidualsC(const string &basename, bool cuda) const
   // Write function definition if oPowerDeriv is used
   // even for residuals if doing Ramsey
   writePowerDerivCHeader(mDynamicModelFile);
+  writeNormcdfCHeader(mDynamicModelFile);
 
   mDynamicModelFile << "void Residuals(const double *y, double *x, int nb_row_x, double *params, double *steady_state, int it_, double *residual)" << endl
                     << "{" << endl;
@@ -4900,6 +4903,7 @@ DynamicModel::writeResidualsC(const string &basename, bool cuda) const
 		    << "}" << endl;
 
   writePowerDeriv(mDynamicModelFile);
+  writeNormcdf(mDynamicModelFile);
   mDynamicModelFile.close();
 
 }
@@ -4931,6 +4935,7 @@ DynamicModel::writeFirstDerivativesC(const string &basename, bool cuda) const
 
   // Write function definition if oPowerDeriv is used
   writePowerDerivCHeader(mDynamicModelFile);
+  writeNormcdfCHeader(mDynamicModelFile);
 
   mDynamicModelFile << "void FirstDerivatives(const double *y, double *x, int nb_row_x, double *params, double *steady_state, int it_, double *residual, double *g1, double *v2, double *v3)" << endl
                     << "{" << endl;
@@ -4988,6 +4993,7 @@ DynamicModel::writeFirstDerivativesC_csr(const string &basename, bool cuda) cons
 
   // Write function definition if oPowerDeriv is used
   writePowerDerivCHeader(mDynamicModelFile);
+  writeNormcdfCHeader(mDynamicModelFile);
 
   mDynamicModelFile << "void FirstDerivatives(const double *y, double *x, int nb_row_x, double *params, double *steady_state, int it_, double *residual, int *row_ptr, int *col_ptr, double *value)" << endl
                     << "{" << endl;
@@ -5089,6 +5095,7 @@ DynamicModel::writeSecondDerivativesC_csr(const string &basename, bool cuda) con
 
   // write function definition if oPowerDeriv is used
   writePowerDerivCHeader(mDynamicModelFile);
+  writeNormcdfCHeader(mDynamicModelFile);
 
   mDynamicModelFile << "void SecondDerivatives(const double *y, double *x, int nb_row_x, double *params, double *steady_state, int it_, double *residual, int *row_ptr, int *col_ptr, double *value)" << endl
                     << "{" << endl;
@@ -5151,8 +5158,8 @@ DynamicModel::writeSecondDerivativesC_csr(const string &basename, bool cuda) con
   mDynamicModelFile << "}" << endl;
 
   writePowerDeriv(mDynamicModelFile);
+  writeNormcdf(mDynamicModelFile);
   mDynamicModelFile.close();
-
 }
 
 void
@@ -5182,6 +5189,7 @@ DynamicModel::writeThirdDerivativesC_csr(const string &basename, bool cuda) cons
 
   // Write function definition if oPowerDeriv is used
   writePowerDerivCHeader(mDynamicModelFile);
+  writeNormcdfCHeader(mDynamicModelFile);
 
   mDynamicModelFile << "void ThirdDerivatives(const double *y, double *x, int nb_row_x, double *params, double *steady_state, int it_, double *residual, double *g1, double *v2, double *v3)" << endl
                     << "{" << endl;
@@ -5277,6 +5285,7 @@ DynamicModel::writeThirdDerivativesC_csr(const string &basename, bool cuda) cons
   mDynamicModelFile << "}" << endl;
 
   writePowerDeriv(mDynamicModelFile);
+  writeNormcdf(mDynamicModelFile);
   mDynamicModelFile.close();
 
 }
