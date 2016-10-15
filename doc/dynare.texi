@@ -559,13 +559,13 @@ select it using @code{mex -setup} in Matlab and clicking on the required compile
 Octave comes with built-in functionality for compiling mex-files.
 
 @menu
-* On Windows::
-* On Debian GNU/Linux and Ubuntu::
-* On Mac OS X::
+* Prerequisites on Windows::
+* Prerequisites on Debian GNU/Linux and Ubuntu::
+* Prerequisites on Mac OS X::
 @end menu
 
-@node On Windows
-@subsection On Windows
+@node Prerequisites on Windows
+@subsection Prerequisites on Windows
 
 If you are using MATLAB under Windows, install a C++ compiler on your machine and configure it with
 MATLAB. There are at least two free compilers you can use. First, there is Microsoft's Visual Studio 
@@ -580,8 +580,8 @@ legacy option. For details, see
 @uref{http://www.dynare.org/DynareWiki/ConfigureMatlabWindowsForMexCompilation,instructions
 on the Dynare wiki}. 
 
-@node On Debian GNU/Linux and Ubuntu
-@subsection On Debian GNU/Linux and Ubuntu
+@node Prerequisites on Debian GNU/Linux and Ubuntu
+@subsection Prerequisites on Debian GNU/Linux and Ubuntu
 
 Users of MATLAB under Linux need to have a working compilation environment installed. If not already present,
 it can be installed via @code{apt-get install build-essential}.
@@ -589,8 +589,8 @@ it can be installed via @code{apt-get install build-essential}.
 Users of Octave under Linux should install the package for MEX file compilation 
 (under Debian or Ubuntu, it is called @file{liboctave-dev}).
 
-@node On Mac OS X
-@subsection On Mac OS X
+@node Prerequisites on Mac OS X
+@subsection Prerequisites on Mac OS X
 If you are using MATLAB under Mac OS X, you should install the latest
 version of XCode: see
 @uref{http://www.dynare.org/DynareWiki/InstallOnMacOSX,instructions on
