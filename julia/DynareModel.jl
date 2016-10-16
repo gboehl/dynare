@@ -123,6 +123,7 @@ type Model
     static_params_derivs::Function
     dynamic::Function
     dynamic_params_derivs::Function
+    first_derivatives::Function
     steady_state::Function
 end
 
@@ -172,6 +173,7 @@ function dynare_model()
                  function()end,         # static_params_derivs
                  function()end,         # dynamic
                  function()end,         # dynamic_params_derivs
+                 function()end,         # first_derivatives
                  function()end          # steady_state
                 )
 end

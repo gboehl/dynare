@@ -1582,7 +1582,7 @@ DynamicModel::writeDynamicJuliaFile(const string &basename) const
          << "#     from " << basename << ".mod" << endl
          << "#" << endl
          << "using Utils" << endl << endl
-         << "export dynamic!" << endl << endl;
+         << "export dynamic!, first_derivatives!" << endl << endl;
   writeDynamicModel(output, false, true);
   output << "end" << endl;
   output.close();
@@ -2503,6 +2503,82 @@ DynamicModel::writeDynamicModel(ostream &DynamicOutput, bool use_dll, bool julia
                       << "  # Third order derivatives" << endl
                       << "  #" << endl
                       << third_derivatives_output.str();
+      DynamicOutput << "end" << endl;
+
+      DynamicOutput << "function first_derivatives!(y::Vector{Float64}, x::Matrix{Float64}, "
+                    << "params::Vector{Float64}," << endl
+                    << "                  steady_state::Vector{Float64}, it_::Int, "
+                    << "g1::SparseMatrixCSC{Float64,Int64})" << endl;
+
+      comments << " 6 g1:      SparseMatrixCSC{Float64,Int64,model_.eq_nbr,3*model_.endo_nbr+model_.exo_nbr}   Sparse Jacobian matrix" << endl;
+
+      int cols_nbr = 3*symbol_table.endo_nbr() + symbol_table.exo_nbr() + symbol_table.exo_det_nbr();
+      DynamicOutput << "#=" << endl << comments.str() << "=#" << endl
+                    << "  @assert size(g1) == (" << nrows << ", " <<  cols_nbr << ")" << endl;
+
+      // this is always empty here, but needed by d1->writeOutput
+      deriv_node_temp_terms_t tef_terms;
+
+      // Computing column index
+      vector<derivative> D;
+      for (first_derivatives_t::const_iterator it = first_derivatives.begin();
+           it != first_derivatives.end(); it++)
+        {
+          int eq = it->first.first;
+          int dynvar = it->first.second;
+          int lag = getLagByDerivID(dynvar);
+          int symb_id = getSymbIDByDerivID(dynvar);
+          SymbolType type = getTypeByDerivID(dynvar);
+          int tsid = symbol_table.getTypeSpecificID(symb_id);
+          int col_id;
+          switch(type)
+            {
+            case eEndogenous:
+              col_id = tsid+(lag+1)*symbol_table.endo_nbr();
+              break;
+            case eExogenous:
+              col_id = tsid+3*symbol_table.endo_nbr();
+              break;
+            case eExogenousDet:
+              col_id = tsid+3*symbol_table.endo_nbr()+symbol_table.exo_nbr();
+              break;
+            default:
+              std::cerr << "This case shouldn't happen" << std::endl;
+              exit(1);
+            }
+          derivative deriv(eq + col_id*nrows,col_id,eq,it->second);
+          D.push_back(deriv);
+        }
+      sort(D.begin(), D.end(), derivative_less_than() );
+
+      DynamicOutput << model_local_vars_output.str();
+      writeTemporaryTerms(temp_term_union, temp_term_empty, DynamicOutput, output_type, tef_terms);
+      // writing sparse Jacobian
+      vector<int> col_ptr(cols_nbr);
+      fill(col_ptr.begin(),col_ptr.end(),0);
+      int k = 1;
+      for(vector<derivative>::const_iterator it = D.begin(); it != D.end(); ++it)
+        {
+          col_ptr[it->col_nbr]++;
+          DynamicOutput << "  @inbounds g1.rowval[" << k << "] "
+			<< "=" << it->row_nbr + 1 << ";" << endl;
+          DynamicOutput << "  @inbounds g1.nzval[" << k << "] = ";
+          // oCstaticModel makes reference to the static variables
+          it->value->writeOutput(DynamicOutput, oJuliaDynamicModel, temporary_terms, tef_terms);
+          DynamicOutput << ";" << endl;
+          k++;
+        }
+      
+      // col_ptr must point to the relative address of the first element of the row
+      int cumsum = 1;
+      DynamicOutput << "  @inbounds g1.colptr[1] = 1;" << endl;
+      k = 2;
+      for (vector<int>::iterator it=col_ptr.begin(); it != col_ptr.end(); ++it)
+        {
+          cumsum += *it;
+          DynamicOutput << "  @inbounds g1.colptr[" << k << "] = " << cumsum << ";" << endl;
+          k++;
+        }
       DynamicOutput << "end" << endl;
     }
 }
