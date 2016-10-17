@@ -74,9 +74,12 @@ if ~exist('OCTAVE_VERSION')
                   basename '_dynamic.c ' basename '_dynamic_mex.c'])
             eval(['mex -O LDFLAGS=''-pthread -shared -Wl,--no-undefined'' ' ...
                   basename '_static.c ' basename '_static_mex.c'])
-        else
+        elseif matlab_ver_less_than('9.1')
             eval(['mex -O LINKEXPORT='''' ' basename '_dynamic.c ' basename '_dynamic_mex.c'])
             eval(['mex -O LINKEXPORT='''' ' basename '_static.c ' basename '_static_mex.c'])
+        else
+            eval(['mex -O LINKEXPORTVER='''' ' basename '_dynamic.c ' basename '_dynamic_mex.c'])
+            eval(['mex -O LINKEXPORTVER='''' ' basename '_static.c ' basename '_static_mex.c'])
         end
     elseif ismac
         % MATLAB/MacOS
