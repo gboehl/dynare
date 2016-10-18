@@ -1,4 +1,4 @@
-## Copyright (C) 2015 Dynare Team
+## Copyright (C) 2015-2016 Dynare Team
 ##
 ## This file is part of Dynare.
 ##
@@ -44,8 +44,6 @@ else
   fprintf(fid,':list-of-passed-tests: %s\n', [name '.m']);
 end
 fclose(fid);
-exit;
-
 
 ## Local variables:
 ## mode: Octave
