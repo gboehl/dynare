@@ -45,4 +45,6 @@ else
 end
 fprintf(fid,':cputime: %f\n',0.0);
 fclose(fid);
-exit
+if ~isoctave
+    exit
+end
