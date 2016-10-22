@@ -2437,7 +2437,7 @@ DynamicModel::writeDynamicModel(ostream &DynamicOutput, bool use_dll, bool julia
       DynamicOutput << "function dynamic!(y::Vector{Float64}, x::Matrix{Float64}, "
                     << "params::Vector{Float64}," << endl
                     << "                  steady_state::Vector{Float64}, it_::Int, "
-                    << "residual::Vector{Float64})" << endl
+                    << "residual::AbstractArray{Float64,1})" << endl
                     << "#=" << endl << comments.str() << "=#" << endl
                     << "  @assert length(y)+size(x, 2) == " << dynJacobianColsNbr << endl
                     << "  @assert length(params) == " << symbol_table.param_nbr() << endl
@@ -2517,7 +2517,7 @@ DynamicModel::writeDynamicModel(ostream &DynamicOutput, bool use_dll, bool julia
                     << "                  steady_state::Vector{Float64}, it_::Int, "
                     << "g1::SparseMatrixCSC{Float64,Int64})" << endl;
 
-      comments << " 6 g1:      SparseMatrixCSC{Float64,Int64,model_.eq_nbr,3*model_.endo_nbr+model_.exo_nbr}   Sparse Jacobian matrix" << endl;
+      comments << " 6 g1:      SparseMatrixCSC(Float64,Int64,model_.eq_nbr,3*model_.endo_nbr+model_.exo_nbr)   Sparse Jacobian matrix" << endl;
 
       int cols_nbr = 3*symbol_table.endo_nbr() + symbol_table.exo_nbr() + symbol_table.exo_det_nbr();
       DynamicOutput << "#=" << endl << comments.str() << "=#" << endl
@@ -2587,6 +2587,40 @@ DynamicModel::writeDynamicModel(ostream &DynamicOutput, bool use_dll, bool julia
           k++;
         }
       DynamicOutput << "end" << endl;
+
+      DynamicOutput << "function first_derivatives!(y::Vector{Float64}, x::Matrix{Float64}, "
+                    << "params::Vector{Float64}," << endl
+                    << "                  steady_state::Vector{Float64}, it_::Int, "
+                    << "irows::AbstractArray{Int64,1},icols::AbstractArray{Int64,1},values::AbstractArray{Float64,1})" << endl;
+
+      comments << " 6 irows:  Vector(Int64,nnzderivatives[1] row numbers  " << endl
+               << " 7 icols:  Vector(Int64,nnzderivatives[1] column numbers  " << endl
+               << " 8 values:  Vector(Float64,nnzderivatives[1] nonzero elements of the Jacobian  " << endl;
+      
+      DynamicOutput << "#=" << endl << comments.str() << "=#" << endl;
+
+      DynamicOutput << model_local_vars_output.str();
+      writeTemporaryTerms(temp_term_union, temp_term_empty, DynamicOutput, output_type, tef_terms);
+      // writing sparse Jacobian only for endogenous variables
+      k = 1;
+      for(vector<derivative>::const_iterator it = D.begin(); it != D.end(); ++it)
+        {
+          if ( it->col_nbr < 3*(unsigned)symbol_table.endo_nbr() )
+            {
+              DynamicOutput << "  @inbounds irows[" << k << "] "
+                            << "=" << it->row_nbr + 1 << ";" << endl;
+              DynamicOutput << "  @inbounds icols[" << k << "] "
+                            << "=" << it->col_nbr + 1 << ";" << endl;
+              DynamicOutput << "  @inbounds values[" << k << "] = ";
+              // oCstaticModel makes reference to the static variables
+              it->value->writeOutput(DynamicOutput, oJuliaDynamicModel, temporary_terms, tef_terms);
+              DynamicOutput << ";" << endl;
+              k++;
+            }
+        }
+
+      DynamicOutput << "end" << endl;
+
     }
 }
 
