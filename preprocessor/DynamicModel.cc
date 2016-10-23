@@ -2434,7 +2434,7 @@ DynamicModel::writeDynamicModel(ostream &DynamicOutput, bool use_dll, bool julia
                << " 6 residual:     Array(Float64, model_.eq_nbr, 1)                Vector of residuals of the dynamic model equations in" << endl
                << "                                                                 order of declaration of the equations." << endl;
 
-      DynamicOutput << "function dynamic!(y::Vector{Float64}, x::Matrix{Float64}, "
+      DynamicOutput << "function dynamic!(y::AbstractArray{Float64,1}, x::Matrix{Float64}, "
                     << "params::Vector{Float64}," << endl
                     << "                  steady_state::Vector{Float64}, it_::Int, "
                     << "residual::AbstractArray{Float64,1})" << endl

@@ -63,76 +63,23 @@ function simulate_perfect_foresight_model!(endogenousvariables::Matrix{Float64},
     println("\nMODEL SIMULATION:\n")
 
     rd = zeros(Float64, periods*ny)
-
-    iA = zeros(Int64, periods*model.nnzderivatives[1])
-    jA = zeros(Int64, periods*model.nnzderivatives[1])
-    vA = zeros(Float64, periods*model.nnzderivatives[1])
-    iP = zeros(Int64, model.nnzderivatives[1])
-    jP = zeros(Int64, model.nnzderivatives[1])
-    vP = zeros(Float64,model.nnzderivatives[1])
-    
+    A = spzeros(periods*ny,periods*ny)
     convergence = false
     iteration = 0
+
+    ws = PerfectForesightModelWS(periods,model)
     
     while !convergence
         iteration += 1
-        i_rows = collect(1:ny)
-        i_cols_A = find(lead_lag_incidence')
-        i_cols = i_cols_A
-        m0 = 0
-        m = 0
-        nzd = 0
-        offset_r = 0
-        offset_c = -ny
-        for it = 2:(periods+1)
-            residuals = sub(rd,m0+1:m0+model.eq_nbr)
-            model.dynamic(Y[i_cols], exogenousvariables, params, steadystate, it, residuals)
-            m0 += model.eq_nbr
-            if it == 2
-                model.first_derivatives(Y[i_cols], exogenousvariables, params, steadystate, it, iP, jP, vP)
-                nzd = count(i->(0 .< i .<= 3*ny),jP)
-                k1 = 1
-                for k = 1:nzd
-                    if jP[k] > ny
-                        iA[k1] = iP[k]
-                        jA[k1] = jP[k] + offset_c
-                        vA[k1] = vP[k]
-                        k1 += 1
-                    end
-                end
-                m = k1 - 1
-            elseif it==(periods+1)
-                model.first_derivatives(Y[i_cols], exogenousvariables, params, steadystate, it, iP, jP, vP)
-                for k=1:nzd
-                    if jP[k] <= 2*ny
-                        m += 1
-                        iA[m] = iP[k] + offset_r
-                        jA[m] = jP[k] + offset_c
-                        vA[m] = vP[k]
-                    end
-                end
-            else
-                I = sub(iA,m+1:m+nzd)
-                J = sub(jA,m+1:m+nzd)
-                V = sub(vA,m+1:m+nzd)
-                model.first_derivatives(Y[i_cols], exogenousvariables, params, steadystate, it, I,J,V)
-                for k=m+1:m+nzd
-                    iA[k] += offset_r
-                    jA[k] += offset_c
-                end
-                m += nzd        
-            end
-            offset_r += ny
-            offset_c += ny
-            i_cols += ny
-        end
+        perfect_foresight_model!(Y,exogenousvariables,model,steadystate,ws,rd)
         err = maximum(abs(rd))
         println("Iter. ", iteration, "\t err. ", round(err, 12))
         if err<options.pfmsolver.tolf
             iteration -= 1
             convergence = true
+            break
         end
-        A = sparse(iA[1:m], jA[1:m], vA[1:m])
+        A = perfect_foresight_model!(Y,exogenousvariables,model,steadystate,ws,A)
         @time dy = A\rd
         Y[i_upd] -= dy
         if maximum(abs(dy))<options.pfmsolver.tolx
@@ -143,6 +90,96 @@ function simulate_perfect_foresight_model!(endogenousvariables::Matrix{Float64},
         println("\nPFM solver converged in ", iteration, " iterations!\n")
         endogenousvariables = reshape(Y, ny, periods+2)
     end
+end
+
+type PerfectForesightModelWS
+    periods::Int64
+    iA::Array{Int64,1} 
+    jA::Array{Int64,1} 
+    vA::Array{Float64,1} 
+    iP::Array{Int64,1} 
+    jP::Array{Int64,1} 
+    vP::Array{Float64,1} 
+    function PerfectForesightModelWS(n,model)
+        periods = n
+        nzd = model.nnzderivatives[1]
+        iA = zeros(Int64,n*nzd)
+        jA = zeros(Int64,n*nzd)
+        vA = zeros(Float64,n*nzd)
+        iP = zeros(Int64,nzd)
+        jP = zeros(Int64,nzd)
+        vP = zeros(Float64,nzd)
+        new(periods,iA,jA,vA,iP,jP,vP)
+    end
+end
+
+function perfect_foresight_model!(Y::Array{Float64,1},exogenousvariables::Array{Float64,2},model::Model,steadystate::Array{Float64,1},ws::PerfectForesightModelWS,residuals::Array{Float64,1})
+    periods = ws.periods
+    ny = length(model.endo)
+    i_rows = collect(1:ny)
+    i_cols = find(model.lead_lag_incidence')
+    m = 0
+    for it = 2:(periods+1)
+        res = sub(residuals,m+1:m+model.eq_nbr)
+        Yview = sub(Y,i_cols)
+        model.dynamic(Yview, exogenousvariables, model.params, steadystate, it, res)
+        m += model.eq_nbr
+        i_cols += ny
+    end    
+end
+
+function perfect_foresight_model!(Y::Array{Float64,1},exogenousvariables::Array{Float64,2},model::Model,steadystate::Array{Float64,1},ws::PerfectForesightModelWS,A::SparseMatrixCSC{Float64,Int64})
+    periods = ws.periods
+    ny = length(model.endo)
+    i_rows = collect(1:ny)
+    i_cols = find(model.lead_lag_incidence')
+    m = 0
+    offset_r = 0
+    offset_c = -ny
+    nzd = 0
+    for it = 2:(periods+1)
+        Yview = sub(Y,i_cols)
+        if it == 2
+            model.first_derivatives(Y[i_cols], exogenousvariables, model.params, steadystate, it, ws.iP, ws.jP, ws.vP)
+            nzd = count(i->(0 .< i .<= 3*ny),ws.jP)
+            k1 = 1
+            for k = 1:nzd
+                if ws.jP[k] > ny
+                    ws.iA[k1] = ws.iP[k]
+                    ws.jA[k1] = ws.jP[k] + offset_c
+                    ws.vA[k1] = ws.vP[k]
+                    k1 += 1
+                end
+            end
+            m = k1 - 1
+        elseif it==(periods+1)
+            model.first_derivatives(Y[i_cols], exogenousvariables, model.params, steadystate, it, ws.iP, ws.jP, ws.vP)
+            for k=1:nzd
+                if ws.jP[k] <= 2*ny
+                    m += 1
+                    ws.iA[m] = ws.iP[k] + offset_r
+                    ws.jA[m] = ws.jP[k] + offset_c
+                    ws.vA[m] = ws.vP[k]
+                end
+            end
+        else
+            I = sub(ws.iA,m+1:m+nzd)
+            J = sub(ws.jA,m+1:m+nzd)
+            V = sub(ws.vA,m+1:m+nzd)
+            model.first_derivatives(Y[i_cols], exogenousvariables, model.params, steadystate, it, I,J,V)
+            for k=m+1:m+nzd
+                ws.iA[k] += offset_r
+                ws.jA[k] += offset_c
+            end
+            m += nzd        
+        end
+        offset_r += ny
+        offset_c += ny
+        i_cols += ny
+    end
+    A = sparse(ws.iA[1:m], ws.jA[1:m], ws.vA[1:m])
+    assert(size(A)==(ny*periods,ny*periods))
+    return A
 end
 
 end
