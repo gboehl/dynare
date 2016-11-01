@@ -120,8 +120,8 @@ function perfect_foresight_model!(Y::Array{Float64,1},exogenousvariables::Array{
     i_cols = find(model.lead_lag_incidence')
     m = 0
     for it = 2:(periods+1)
-        res = sub(residuals,m+1:m+model.eq_nbr)
-        Yview = sub(Y,i_cols)
+        res = view(residuals,m+1:m+model.eq_nbr)
+        Yview = view(Y,i_cols)
         model.dynamic(Yview, exogenousvariables, model.params, steadystate, it, res)
         m += model.eq_nbr
         i_cols += ny
@@ -138,7 +138,7 @@ function perfect_foresight_model!(Y::Array{Float64,1},exogenousvariables::Array{
     offset_c = -ny
     nzd = 0
     for it = 2:(periods+1)
-        Yview = sub(Y,i_cols)
+        Yview = view(Y,i_cols)
         if it == 2
             model.first_derivatives(Y[i_cols], exogenousvariables, model.params, steadystate, it, ws.iP, ws.jP, ws.vP)
             nzd = count(i->(0 .< i .<= 3*ny),ws.jP)
@@ -163,9 +163,9 @@ function perfect_foresight_model!(Y::Array{Float64,1},exogenousvariables::Array{
                 end
             end
         else
-            I = sub(ws.iA,m+1:m+nzd)
-            J = sub(ws.jA,m+1:m+nzd)
-            V = sub(ws.vA,m+1:m+nzd)
+            I = view(ws.iA,m+1:m+nzd)
+            J = view(ws.jA,m+1:m+nzd)
+            V = view(ws.vA,m+1:m+nzd)
             model.first_derivatives(Y[i_cols], exogenousvariables, model.params, steadystate, it, I,J,V)
             for k=m+1:m+nzd
                 ws.iA[k] += offset_r
