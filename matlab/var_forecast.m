@@ -1,8 +1,7 @@
-function y = var_forecast(M_, options_, name, h, y, fcv)
+function y = var_forecast(M_, name, h, y, fcv)
 
 % name : filename
 % M_
-% options_
 % name        string    name of var model, provided in var statement
 % h           int       number of steps-ahead forecast
 % y           matrix    rows: realizations of endogenous variables in declaration order; cols: realizations in t, t-1, t-2 ... order of VAR
@@ -25,30 +24,15 @@ function y = var_forecast(M_, options_, name, h, y, fcv)
 % From Matlab backend:
 % >> yt   = [0.0600;    33.0000;    0.0300;    22.0000];
 % >> ytm1 = [0.0550;    11.0000;    0.0300;    88.0000];
-% >> var_forecast(M_, options_, 'm1', 1, [yt ytm1])
-% >> var_forecast(M_, options_, 'm1', 2, [yt ytm1], ['a'])
-
-%% Find var in options_
-order = '';
-var_list = '';
-for i=1:length(options_.var)
-    if strcmp(options_.var(i).name, name)
-        order = options_.var(i).order;
-        var_list = options_.var(i).var_list_;
-        break;
-    end
-end
-
-if isempty(order)
-    error([name ' not found in var specification declared in .mod file']);
-end
+% >> var_forecast(M_, 'm1', 1, [yt ytm1])
+% >> var_forecast(M_, 'm1', 2, [yt ytm1], ['a'])
 
 %% construct y
 assert(length(y) == length(M_.endo_names));
 endo_names = cellstr(M_.endo_names);
 yidx = zeros(size(endo_names));
-for i=1:length(var_list)
-    yidx = yidx | strcmp(strtrim(var_list(i,:)), endo_names);
+for i=1:length(M_.var.(name).var_list_)
+    yidx = yidx | strcmp(strtrim(M_.var.(name).var_list_(i,:)), endo_names);
 end
 y = y(yidx,:);
 
@@ -65,8 +49,8 @@ assert(h >= 1);
 
 lm = length(mu);
 lc = length(coefficients);
-assert(lc == order);
-if size(y,1) ~= lm || size(y,2) ~= order
+assert(lc == M_.var.(name).order);
+if size(y,1) ~= lm || size(y,2) ~= M_.var.(name).order
     error('The dimensions of y are not correct. It should be an nvars x order matrix');
 end
 
