@@ -11,10 +11,10 @@ function y = var_forecast(M_, name, h, y, fcv)
 
 % example calling:
 % In Matlab:
-% >> coefficients{1} = [0.5000    0.1000; 0.4000    0.5000];
-% >> coefficients{2} = [0         0     ; 0.2500    0     ];
-% >> mu              = [0.0200; 0.0300];
-% >> save('m1.mat', 'mu','coefficients');
+% >> autoregressive_matrices{1} = [0.5000    0.1000; 0.4000    0.5000];
+% >> autoregressive_matrices{2} = [0         0     ; 0.2500    0     ];
+% >> mu                         = [0.0200; 0.0300];
+% >> save('m1.mat', 'mu','autoregressive_matrices');
 
 % In .mod file:
 % var a b c d;
@@ -41,14 +41,14 @@ if nargin == 6
 end
 
 %% load .mat file and rewrite as VAR(1)
-load(name, 'coefficients', 'mu');
-if ~exist('coefficients', 'var') || ~exist('mu', 'var')
-    error([name ' : must contain the variables coefficients and mu']);
+load(name, 'autoregressive_matrices', 'mu');
+if ~exist('autoregressive_matrices', 'var') || ~exist('mu', 'var')
+    error([name ' : must contain the variables autoregressive_matrices and mu']);
 end
 assert(h >= 1);
 
 lm = length(mu);
-lc = length(coefficients);
+lc = length(autoregressive_matrices);
 assert(lc == M_.var.(name).order);
 if size(y,1) ~= lm || size(y,2) ~= M_.var.(name).order
     error('The dimensions of y are not correct. It should be an nvars x order matrix');
@@ -56,11 +56,11 @@ end
 
 A = zeros(lm*lc, lm*lc);
 for i=1:lc
-    if any([lm lm] ~= size(coefficients{i}))
-        error('The dimensions of mu and coefficients are off');
+    if any([lm lm] ~= size(autoregressive_matrices{i}))
+        error('The dimensions of mu and autoregressive_matrices are off');
     end
     col = lm*(i-1)+1:lm*i;
-    A(1:lm, col) = coefficients{i};
+    A(1:lm, col) = autoregressive_matrices{i};
     if i ~= lc
         A(lm*i+1:lm*i+lm, col) = eye(lm, lm);
     end
