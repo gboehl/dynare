@@ -1,7 +1,6 @@
-function y = var_forecast(M_, name, h, y, fcv)
+function y = var_forecast(name, h, y, fcv)
 
 % name : filename
-% M_
 % name        string    name of var model, provided in var statement
 % h           int       number of steps-ahead forecast
 % y           matrix    rows: realizations of endogenous variables in declaration order; cols: realizations in t, t-1, t-2 ... order of VAR
@@ -26,6 +25,9 @@ function y = var_forecast(M_, name, h, y, fcv)
 % >> ytm1 = [0.0550;    11.0000;    0.0300;    88.0000];
 % >> var_forecast(M_, 'm1', 1, [yt ytm1])
 % >> var_forecast(M_, 'm1', 2, [yt ytm1], ['a'])
+
+%%
+global M_
 
 %% construct y
 assert(length(y) == length(M_.endo_names));
