@@ -4770,6 +4770,8 @@ Only one instance of @code{varexobs} is allowed in a model file.
 varexobs x, z;
 @end example
 
+@end deffn
+
 @deffn Block observation_trends ;
 
 @descriptionhead
