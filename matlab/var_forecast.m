@@ -23,14 +23,17 @@ function y = var_forecast(name, h, y, fcv)
 % From Matlab backend:
 % >> yt   = [0.0600;    33.0000;    0.0300;    22.0000];
 % >> ytm1 = [0.0550;    11.0000;    0.0300;    88.0000];
-% >> var_forecast(M_, 'm1', 1, [yt ytm1])
-% >> var_forecast(M_, 'm1', 2, [yt ytm1], ['a'])
+% >> var_forecast('m1', 1, [yt ytm1])
+% >> var_forecast('m1', 2, [yt ytm1], ['a'])
 
 %%
 global M_
 
 %% construct y
-assert(length(y) == length(M_.endo_names));
+assert( ...
+    length(y) == length(M_.endo_names) ||             ... % when called from static model
+    length(y) == sum(sum(M_.lead_lag_incidence ~= 0)) ... % when called from dynamic model
+    );
 endo_names = cellstr(M_.endo_names);
 yidx = zeros(size(endo_names));
 for i=1:length(M_.var.(name).var_list_)
@@ -38,17 +41,18 @@ for i=1:length(M_.var.(name).var_list_)
 end
 y = y(yidx,:);
 
-if nargin == 6
+if nargin == 4
     fvidx = strcmp(fcv, endo_names);
 end
 
-%% load .mat file and rewrite as VAR(1)
+%% load .mat file
 load(name, 'autoregressive_matrices', 'mu');
 if ~exist('autoregressive_matrices', 'var') || ~exist('mu', 'var')
     error([name ' : must contain the variables autoregressive_matrices and mu']);
 end
 assert(h >= 1);
 
+%% rewrite as VAR(1)
 lm = length(mu);
 lc = length(autoregressive_matrices);
 assert(lc == M_.var.(name).order);
@@ -67,8 +71,9 @@ for i=1:lc
         A(lm*i+1:lm*i+lm, col) = eye(lm, lm);
     end
 end
-
-mu = [mu; zeros(lm,1)];
+if M_.var.(name).order > 1
+    mu = [mu; zeros(lm*M_.var.(name).order-lm, 1)];
+end
 
 %% Calculate Forecast
 %  New Introduction to Multiple Time Series Analysis
@@ -86,7 +91,7 @@ for i=1:h
 end
 y = y(1:lm);
 
-if nargin == 6
+if nargin == 4
     retidx = find(fvidx & yidx == 1);
     if isempty(retidx)
         return;
