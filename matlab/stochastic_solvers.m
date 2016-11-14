@@ -52,12 +52,18 @@ if options_.linear
     options_.order = 1;
 end
 
-if (options_.aim_solver == 1) && (options_.order > 1)
+local_order = options_.order;
+if M_.hessian_eq_zero
+    local_order = 1;
+    warning('stochastic_solvers: using order = 1 because Hessian is equal to zero');
+end
+
+if (options_.aim_solver == 1) && (local_order > 1)
         error('Option "aim_solver" is incompatible with order >= 2')
 end
 
 if M_.maximum_endo_lag == 0 
-    if options_.order >= 2
+    if local_order >= 2
     fprintf('\nSTOCHASTIC_SOLVER: Dynare does not solve purely forward models at higher order.\n')
     fprintf('STOCHASTIC_SOLVER: To circumvent this restriction, you can add a backward-looking dummy equation of the form:\n')
     fprintf('STOCHASTIC_SOLVER: junk=0.9*junk(-1);\n')
@@ -84,8 +90,11 @@ if options_.k_order_solver;
         [dr,info] = dyn_risky_steadystate_solver(oo_.steady_state,M_,dr, ...
                                              options_,oo_);
     else
+        orig_order = options_.order;
+        options_.order = local_order;
         dr = set_state_space(dr,M_,options_);
         [dr,info] = k_order_pert(dr,M_,options_);
+        options_.order = orig_order;
     end
     return;
 end
@@ -103,7 +112,7 @@ end
 
 it_ = M_.maximum_lag + 1;
 z = repmat(dr.ys,1,klen);
-if options_.order == 1
+if local_order == 1
     if (options_.bytecode)
         [chck, junk, loc_dr] = bytecode('dynamic','evaluate', z,exo_simul, ...
                                         M_.params, dr.ys, 1);
@@ -112,7 +121,7 @@ if options_.order == 1
         [junk,jacobia_] = feval([M_.fname '_dynamic'],z(iyr0),exo_simul, ...
                             M_.params, dr.ys, it_);
     end;
-elseif options_.order == 2
+elseif local_order == 2
     if (options_.bytecode)
         [chck, junk, loc_dr] = bytecode('dynamic','evaluate', z,exo_simul, ...
                             M_.params, dr.ys, 1);
@@ -218,7 +227,7 @@ b(:,cols_b) = jacobia_(:,cols_j);
 
 if M_.maximum_endo_lead == 0
     % backward models: simplified code exist only at order == 1
-    if options_.order == 1
+    if local_order == 1
         [k1,junk,k2] = find(kstate(:,4));
         dr.ghx(:,k1) = -b\jacobia_(:,k2); 
         if M_.exo_nbr
@@ -241,8 +250,11 @@ if M_.maximum_endo_lead == 0
                'backward models'])
     end
 elseif options_.risky_steadystate
+    orig_order = options_.order;
+    options_.order = local_order;
     [dr,info] = dyn_risky_steadystate_solver(oo_.steady_state,M_,dr, ...
                                              options_,oo_);
+    options_.order = orig_order;
 else
     % If required, use AIM solver if not check only
     if (options_.aim_solver == 1) && (task == 0)
@@ -255,7 +267,7 @@ else
         end
     end
 
-    if options_.order > 1
+    if local_order > 1
         % Second order
         dr = dyn_second_order_solver(jacobia_,hessian1,dr,M_,...
                                      options_.threads.kronecker.A_times_B_kronecker_C,...
@@ -287,7 +299,7 @@ if M_.exo_det_nbr > 0
         dr.ghud{i} = -M2*dr.ghud{i-1}(end-nsfwrd+1:end,:);
     end
 
-    if options_.order > 1
+    if local_order > 1
         lead_lag_incidence = M_.lead_lag_incidence;
         k0 = find(lead_lag_incidence(M_.maximum_endo_lag+1,order_var)');
         k1 = find(lead_lag_incidence(M_.maximum_endo_lag+2,order_var)');
@@ -364,7 +376,7 @@ if options_.loglinear
         dr.ghx(il,iklag) = dr.ghx(il,iklag).*repmat(dr.ys(klag1)', ...
                                                     length(il),1);
     end
-    if options_.order>1
+    if local_order > 1
        error('Loglinear options currently only works at order 1')
     end
 end
