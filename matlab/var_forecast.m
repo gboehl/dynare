@@ -27,7 +27,7 @@ function y = var_forecast(name, h, y, fcv)
 % >> var_forecast('m1', 2, [yt ytm1], ['a'])
 
 %%
-global M_
+global M_;
 
 %% construct y
 assert( ...
