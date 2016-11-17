@@ -55,22 +55,16 @@ end
 if M_.var.(var_model_name).order > 1
     mu = [mu; zeros(lm*M_.var.(var_model_name).order-lm, 1)];
 end
-fprintf(fid, '%%%% Calculate 1-step-ahead forecast\n');
-fprintf(fid, 'y = [');
-fprintf(fid, [repmat(' %f ', 1, size(mu, 2)) ';'], mu');
-fprintf(fid, '] + [');
-fprintf(fid, [repmat(' %f ', 1, size(A, 2)) ';'], A');
-fprintf(fid, ']*y(:);\n');
-fprintf(fid, 'y = y(1:%d);\n', lm);
 
 retidx = find(strcmp(dwrt, endo_names) & yidx == 1);
-if isempty(retidx)
-    return;
-elseif retidx == 1
-    fprintf(fid, 'y = y(1);\n');
-else
-    fprintf(fid, 'y = y(%d);\n', sum(yidx(1:retidx-1))+1);
+assert(~isempty(retidx));
+if retidx ~= 1
+    retidx = sum(yidx(1:retidx-1))+1;
 end
+fprintf(fid, '%%%% Calculate 1-step-ahead forecast\n');
+fprintf(fid, 'y = %f + [', mu(retidx));
+fprintf(fid, [repmat(' %f ', 1, size(A, 2)) ';'], A(retidx,:)');
+fprintf(fid, ']*y;\n');
 
 %% close file
 fprintf(fid, 'end\n');
