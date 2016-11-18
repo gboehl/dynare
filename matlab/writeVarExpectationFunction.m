@@ -18,9 +18,9 @@ if ~exist('autoregressive_matrices', 'var') || ~exist('mu', 'var')
 end
 
 %%
-fprintf(fid, 'function y = %s(y)\n', basename);
-fprintf(fid, '%%function y = %s(y)\n', basename);
-fprintf(fid, '%% Calculates the 1-step-ahead forecast for %s from the VAR model %s\n', dwrt, var_model_name);
+fprintf(fid, 'function y = %s(y, h)\n', basename);
+fprintf(fid, '%%function y = %s(y, h)\n', basename);
+fprintf(fid, '%% Calculates the h-step-ahead forecast for %s from the VAR model %s\n', dwrt, var_model_name);
 fprintf(fid, '%%\n%% Created automatically by Dynare\n%%\n\n');
 fprintf(fid, '%%%% Construct y\n');
 fprintf(fid, 'assert(length(y) == %d);\n', sum(sum(M_.lead_lag_incidence ~= 0)));
@@ -55,18 +55,19 @@ end
 if M_.var.(var_model_name).order > 1
     mu = [mu; zeros(lm*M_.var.(var_model_name).order-lm, 1)];
 end
-fprintf(fid, '%%%% Calculate 1-step-ahead forecast\n');
+fprintf(fid, '%%%% Calculate h-step-ahead forecast\n');
+fprintf(fid, 'for i=1:h\n');
 fprintf(fid, 'y = [');
 fprintf(fid, [repmat(' %f ', 1, size(mu, 2)) ';'], mu');
 fprintf(fid, '] + [');
 fprintf(fid, [repmat(' %f ', 1, size(A, 2)) ';'], A');
 fprintf(fid, ']*y(:);\n');
+fprintf(fid, 'end\n');
 fprintf(fid, 'y = y(1:%d);\n', lm);
 
 retidx = find(strcmp(dwrt, endo_names) & yidx == 1);
-if isempty(retidx)
-    return;
-elseif retidx == 1
+assert(~isempty(retidx))
+if retidx == 1
     fprintf(fid, 'y = y(1);\n');
 else
     fprintf(fid, 'y = y(%d);\n', sum(yidx(1:retidx-1))+1);
