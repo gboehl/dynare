@@ -64,9 +64,13 @@ fprintf(fid, [repmat(' %f ', 1, size(mu, 2)) ';'], mu');
 fprintf(fid, '] + [');
 fprintf(fid, [repmat(' %f ', 1, size(A, 2)) ';'], A');
 fprintf(fid, ']*y(:);\n');
-fprintf(fid, '    if any([');
-fprintf(fid, '%d ', horizon);
-fprintf(fid, '] == i)\n');
+if length(horizon) == 1
+    fprintf(fid, '    if %d == i\n', horizon);
+else
+    fprintf(fid, '    if any([');
+    fprintf(fid, '%d ', horizon);
+    fprintf(fid, '] == i)\n');
+end
 fprintf(fid, '        ret(retidx, :) = y(1:%d);\n', lm);
 fprintf(fid, '        retidx = retidx + 1;\n');
 fprintf(fid, '    end\n');
