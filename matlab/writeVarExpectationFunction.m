@@ -1,4 +1,4 @@
-function writeVarExpectationFunction(var_model_name)
+function writeVarExpectationFunction(var_model_name, horizon)
 %function writeVarExpectationFunction(model_name)
 
 %%
@@ -18,9 +18,9 @@ if ~exist('autoregressive_matrices', 'var') || ~exist('mu', 'var')
 end
 
 %%
-fprintf(fid, 'function ret = %s(y, h)\n', basename);
+fprintf(fid, 'function ret = %s(y)\n', basename);
 fprintf(fid, '%%function ret = %s(y, h)\n', basename);
-fprintf(fid, '%% Calculates the h-step-ahead forecast from the VAR model %s\n', var_model_name);
+fprintf(fid, '%% Calculates the %d-step-ahead forecast from the VAR model %s\n', max(horizon), var_model_name);
 fprintf(fid, '%%\n%% Created automatically by Dynare\n%%\n\n');
 fprintf(fid, '%%%% Construct ret\n');
 fprintf(fid, 'assert(length(y) == %d);\n', sum(sum(M_.lead_lag_incidence ~= 0)));
@@ -57,14 +57,16 @@ if M_.var.(var_model_name).order > 1
 end
 fprintf(fid, '%%%% Calculate h-step-ahead forecast\n');
 fprintf(fid, 'retidx = 1;\n');
-fprintf(fid, 'ret = zeros(length(h), %d);\n', lm);
-fprintf(fid, 'for i=1:max(h)\n');
+fprintf(fid, 'ret = zeros(%d, %d);\n', length(horizon), lm);
+fprintf(fid, 'for i=1:%d\n', max(horizon));
 fprintf(fid, '    y = [');
 fprintf(fid, [repmat(' %f ', 1, size(mu, 2)) ';'], mu');
 fprintf(fid, '] + [');
 fprintf(fid, [repmat(' %f ', 1, size(A, 2)) ';'], A');
 fprintf(fid, ']*y(:);\n');
-fprintf(fid, '    if any(h == i)\n');
+fprintf(fid, '    if any([');
+fprintf(fid, '%d ', horizon);
+fprintf(fid, '] == i)\n');
 fprintf(fid, '        ret(retidx, :) = y(1:%d);\n', lm);
 fprintf(fid, '        retidx = retidx + 1;\n');
 fprintf(fid, '    end\n');
