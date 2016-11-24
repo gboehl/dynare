@@ -26,13 +26,14 @@ fprintf(fid, '%%%% Construct y\n');
 fprintf(fid, 'assert(length(y) == %d);\n', sum(sum(M_.lead_lag_incidence ~= 0)));
 
 endo_names = cellstr(M_.endo_names);
-yidx = zeros(size(endo_names));
-for i=1:length(M_.var.(var_model_name).var_list_)
-    yidx = yidx | strcmp(strtrim(M_.var.(var_model_name).var_list_(i,:)), endo_names);
+idxlen = length(M_.var.(var_model_name).var_list_);
+yidx = zeros(idxlen, 1);
+for i=1:idxlen
+    yidx(i) = find(strcmp(strtrim(M_.var.(var_model_name).var_list_(i,:)), endo_names));
 end
-fprintf(fid, 'y = y(logical([');
-fprintf(fid, '%d;', yidx);
-fprintf(fid, ']), :);\n');
+fprintf(fid, 'y = y([');
+fprintf(fid, '%d ', yidx);
+fprintf(fid, '], :);\n');
 
 lm = length(mu);
 lc = length(autoregressive_matrices);
