@@ -1,14 +1,6 @@
 // Example 1 from Collard's guide to Dynare
 var y, c, k, a, h, b;
 varexo e, u;
-
-verbatim;
-% I want these comments included in
-% example1.m 1999q1 1999y
-%
-var = 1;
-end;
-
 parameters beta, rho, alpha, delta, theta, psi, tau;
 
 alpha = 0.36;
@@ -21,7 +13,7 @@ theta = 2.95;
 
 phi   = 0.1;
 
-var_model(model_name=my_var_est, order=1) y c;
+var_model(model_name=my_var_est, order=3) y;
 
 model;
 c*theta*h^(1+psi)=(1-alpha)*y;
@@ -51,3 +43,4 @@ var e, u = phi*0.009*0.009;
 end;
 
 stoch_simul(order=1, periods=200);
+write_latex_dynamic_model;

@@ -17,15 +17,21 @@ disp('VAR Estimation');
 % MLS estimate of mu and B (autoregressive_matrices)
 % Y = mu + B*Z
 % from New Introduction to Multiple Time Series Analysis
-Y = oo_.endo_simul(1:2, 2:end);
+
+% Just y in order 3 var:
+Y = oo_.endo_simul(1, 4:end);
 Z = [ ...
     ones(1, size(Y,2)); ...
-    oo_.endo_simul(1:2, 1:end-1); ...
+    oo_.endo_simul(1, 3:end-1); ...
+    oo_.endo_simul(1, 2:end-2); ...
+    oo_.endo_simul(1, 1:end-3); ...
     ];
 %B = Y*Z'*inv(Z*Z');
 B = Y*Z'/(Z*Z');
 mu = B(:, 1);
-autoregressive_matrices{1} = B(:, 2:end);
+autoregressive_matrices{1} = B(:, 2);
+autoregressive_matrices{2} = B(:, 3);
+autoregressive_matrices{3} = B(:, 4);
 
 % Sims
 % (provides same result as above)
