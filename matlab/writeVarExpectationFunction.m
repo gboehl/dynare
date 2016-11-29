@@ -26,21 +26,43 @@ fprintf(fid, '%%%% Construct y\n');
 fprintf(fid, 'assert(length(y) == %d);\n', sum(sum(M_.lead_lag_incidence ~= 0)));
 
 endo_names = cellstr(M_.endo_names);
-idxlen = length(M_.var.(var_model_name).var_list_);
-yidx = zeros(idxlen, 1);
-for i=1:idxlen
-    yidx(i) = find(strcmp(strtrim(M_.var.(var_model_name).var_list_(i,:)), endo_names));
+nvars = length(M_.var.(var_model_name).var_list_);
+var_model_order = M_.var.(var_model_name).order;
+yidx = zeros(nvars, min(var_model_order, 2));
+% first for order <= 2, drawing variables directly from their endo_names
+for i=1:min(var_model_order, 2)
+    if mod(i, 2) == 0
+        ridx = 1;
+    else
+        ridx = 2;
+    end
+    for j=1:nvars
+        yidx(j, i) = M_.lead_lag_incidence(ridx, strcmp(strtrim(M_.var.(var_model_name).var_list_(j,:)), endo_names)');
+    end
+end
+yidx = yidx(:);
+
+% then for order > 2
+if var_model_order > 2
+    y1idx = zeros((var_model_order - 2)*nvars, var_model_order - 2);
+    for i=3:var_model_order
+        for j=1:nvars
+            varidx = [M_.aux_vars.orig_index] == find(strcmp(strtrim(M_.var.(var_model_name).var_list_(j,:)), endo_names)) ...
+                & [M_.aux_vars.orig_lead_lag] == -i;
+            cidx = [M_.aux_vars.endo_index];
+            cidx = cidx(varidx);
+            y1idx(j, i-2) = M_.lead_lag_incidence(2, cidx);
+        end
+    end
+    yidx = [yidx ; y1idx(:)];
 end
 fprintf(fid, 'y = y([');
 fprintf(fid, '%d ', yidx);
-fprintf(fid, '], :);\n');
+fprintf(fid, ']);\n');
 
 lm = length(mu);
 lc = length(autoregressive_matrices);
-assert(lc == M_.var.(var_model_name).order);
-fprintf(fid, 'if size(y, 1) ~= %d || size(y, 2) ~= %d\n', lm, M_.var.(var_model_name).order);
-fprintf(fid, '    error(''The dimensions of y are not correct. It should be an nvars x order matrix'');\n');
-fprintf(fid, 'end\n');
+assert(lc == var_model_order);
 
 A = zeros(lm*lc, lm*lc);
 for i=1:lc
@@ -53,8 +75,8 @@ for i=1:lc
         A(lm*i+1:lm*i+lm, col) = eye(lm, lm);
     end
 end
-if M_.var.(var_model_name).order > 1
-    mu = [mu; zeros(lm*M_.var.(var_model_name).order-lm, 1)];
+if var_model_order > 1
+    mu = [mu; zeros(lm*var_model_order-lm, 1)];
 end
 fprintf(fid, '\n%%%% Calculate %d-step-ahead forecast\n', max(horizon));
 if max(horizon) == 1
