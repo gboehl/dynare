@@ -13,7 +13,7 @@ theta = 2.95;
 
 phi   = 0.1;
 
-var_model(model_name=my_var_est, order=3) y;
+var_model(model_name=my_var_est, order=3) y c;
 
 model;
 c*theta*h^(1+psi)=(1-alpha)*y;
