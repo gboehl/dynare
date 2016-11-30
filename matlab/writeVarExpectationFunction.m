@@ -78,15 +78,16 @@ end
 if var_model_order > 1
     mu = [mu; zeros(lm*var_model_order-lm, 1)];
 end
-fprintf(fid, '\n%%%% Calculate %d-step-ahead forecast\n', max(horizon));
+fprintf(fid, '\n%%%% Calculate %d-step-ahead forecast for VAR(%d) written as VAR(1)\n', max(horizon), var_model_order);
+fprintf(fid, '%%  Follows Lütkepohl (2005) pg 15 & 34\n');
 if max(horizon) == 1
-    printInsideOfLoop(fid, mu, A, '');
+    printInsideOfLoop(fid, mu, A, false);
     fprintf(fid, 'ret(1, :) = y(1:%d);\n', lm);
 else
     fprintf(fid, 'retidx = 1;\n');
     fprintf(fid, 'ret = zeros(%d, %d);\n', length(horizon), lm);
     fprintf(fid, 'for i=1:%d\n', max(horizon));
-    printInsideOfLoop(fid, mu, A, '    ');
+    printInsideOfLoop(fid, mu, A, true);
     if length(horizon) == 1
         fprintf(fid, '    if %d == i\n', horizon);
     else
@@ -96,27 +97,31 @@ else
     end
     fprintf(fid, '        ret(retidx, :) = y(1:%d);\n', lm);
     fprintf(fid, '        retidx = retidx + 1;\n');
+%    fprintf(fid, '    ret([');
+%    fprintf(fid, '%d ', horizon);
+%    fprintf(fid, '] == i, :) = y(1:%d);\n', lm);
     fprintf(fid, '    end\n');
     fprintf(fid, 'end\n');
 end
-
-% retidx = find(strcmp(dwrt, endo_names) & yidx == 1);
-% assert(~isempty(retidx))
-% if retidx == 1
-%     fprintf(fid, 'y = y(1);\n');
-% else
-%     fprintf(fid, 'y = y(%d);\n', sum(yidx(1:retidx-1))+1);
-% end
 
 %% close file
 fprintf(fid, 'end\n');
 fclose(fid);
 end
 
-function printInsideOfLoop(fid, mu, A, spaces)
-fprintf(fid, '%sy = [',spaces);
-fprintf(fid, [repmat(' %f ', 1, size(mu, 2)) ';'], mu');
-fprintf(fid, '] + [');
-fprintf(fid, [repmat(' %f ', 1, size(A, 2)) ';'], A');
-fprintf(fid, ']*y(:);\n');
+function printInsideOfLoop(fid, mu, A, inloop)
+if inloop
+    fs = '    ';
+    ns = '       ';
+    spaces = '        ';
+else
+    fs = '';
+    ns = '   ';
+    spaces = '    ';
+end
+fprintf(fid, '%sy = ...\n%s[ ... %% intercept\n%s', fs, spaces, ns);
+fprintf(fid, [repmat('% f ', 1, size(mu, 2)) '; ...\n' ns], mu');
+fprintf(fid, ' ] + ...\n%s[ ... %% autoregressive matrices\n%s', spaces, ns);
+fprintf(fid, [repmat('% f ', 1, size(A, 2)) '; ...\n' ns], A');
+fprintf(fid, ' ] * y;\n');
 end
