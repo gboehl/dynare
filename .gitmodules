@@ -18,12 +18,12 @@
 	url = https://github.com/DynareTeam/particles.git
 [submodule "matlab/modules/dates"]
 	path = matlab/modules/dates
-	url = https://github.com/DynareTeam/dates.git
-	branch = old-oop-style
+	url =  git@gitlab.com:McModelTeam/dates.git
+	branch = master
 [submodule "matlab/modules/dseries"]
 	path = matlab/modules/dseries
-	url = https://github.com/DynareTeam/dseries.git
-	branch = old-oop-style
+	url = git@gitlab.com:McModelTeam/dseries.git
+	branch = master-with-fame-io
 [submodule "matlab/modules/reporting"]
 	path = matlab/modules/reporting
 	url = https://github.com/DynareTeam/reporting.git
