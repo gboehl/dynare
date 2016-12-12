@@ -1,4 +1,4 @@
-function [b,c,d] = isint(a)
+function [l,c,d] = isint(a)
 %  This function tests if the input argument is an integer.
 %
 %  INPUT 
@@ -33,7 +33,7 @@ function [b,c,d] = isint(a)
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 if ~isnumeric(a)
-    b = 0;
+    l = false;
     if nargout>1
         c = [];
         d = [];
@@ -41,11 +41,9 @@ if ~isnumeric(a)
     return
 end
 
-[m,n] = size(a);
-
-b = abs(fix(a)-a)<1e-15;
+l = abs(fix(a)-a)<1e-15;
 
 if nargout>1
-    c = find(b==1);
-    d = find(b==0);
+    c = find(l==true);
+    d = find(l==false);
 end
