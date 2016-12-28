@@ -1069,6 +1069,7 @@ end of line one and the parser would continue processing.
 * Optimal policy::
 * Sensitivity and identification analysis::
 * Markov-switching SBVAR::
+* Forecast from VARs::
 * Displaying and saving results::
 * Macro-processing language::
 * Verbatim inclusion::
