@@ -1620,6 +1620,23 @@ variables}, for an explanation of how this operator is handled
 internally and how this affects the output.
 @end deffn
 
+@anchor{var_expectation}
+@deffn Operator VAR_EXPECTATION (@var{VARIABLE_NAME}, model_name = @var{FILENAME})
+@deffnx Operator VAR_EXPECTATION (@var{VARIABLE_NAME}, @var{INTEGER}, model_name = @var{FILENAME})
+
+This operator allows you to use the @code{n}-step ahead forecast from a VAR
+specified by the @ref{var_model} command.
+
+The first argument is the variable whose forecasted value you want. If the
+second argument is an integer @code{n}, then you are saying you want the
+@code{n}-step ahead forceast for the specified variable (@code{n} defaults to
+@code{1} if it is not passed). The last argument is the @code{model_name},
+which must be the same as the @code{var_model} value specified to the
+associated @ref{var_model} command from whence we seek the forcest.
+
+@end deffn
+
+
 @node Functions
 @subsection Functions
 
@@ -10112,6 +10129,36 @@ Do not output percentile error bands (@i{i.e.} compute mean). Default:
 @xref{regimes}.
 
 @end table
+
+@end deffn
+
+@node Forecast from VARs
+@section Forecast from VARs
+
+Dynare allows you to include forecasts from VARs in the @ref{Model
+declaration}. A VAR model must be specified using the @ref{var_model} command
+so it may then be used inside the model block via the @ref{var_expectation}
+operator.
+
+@anchor{var_model}
+@deffn Command var_model (var_model = @var{FILENAME}, var_order = @var{INTEGER}) @var{VARIABLE_NAME} [@var{VARIABLE_NAME}@dots{}];
+
+This declares a VAR model whose forecast can be used in the model block.
+
+The @code{var_model} specifier must be passed to the command as it specifies
+the name of the @code{.mat} file that contains the estimatied intercepts and
+coefficient matricies of the VAR. The intercept must be specified in a variable
+called @code{mu} and the coefficients must be specified in a cell array called
+@code{autoregressive_matrices}. If the command specifies a VAR of order
+@code{p} with @code{n} endogenous variables, then @code{mu} will be an @code{n}
+by @code{1} array and @code{autoregressive_matricies} will have @code{p} cells,
+each containing an @code{n} by @code{n} matrix.
+
+The @code{var_order} specifier must be passed to the command as it specifies
+the lag length of the VAR.
+
+The @ref{var_model} command must be followed by a list of endogenous variables,
+which are the variables of the VAR.
 
 @end deffn
 
