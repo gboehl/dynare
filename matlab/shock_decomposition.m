@@ -68,6 +68,7 @@ end
 
 
 options_.selected_variables_only = 0; %make sure all variables are stored
+options_.plot_priors=0;
 [oo,junk1,junk2,Smoothed_Variables_deviation_from_mean] = evaluate_smoother(parameter_set,varlist,M_,oo_,options_,bayestopt_,estim_params_);
 
 % reduced form
@@ -111,7 +112,9 @@ for i=1:gend
         lags = lags+1;
     end
 
-    z(:,1:nshocks,i) = z(:,1:nshocks,i) + B(inv_order_var,:).*repmat(epsilon(:,i)',endo_nbr,1);
+    if i > options_.shock_decomp.init_state
+       z(:,1:nshocks,i) = z(:,1:nshocks,i) + B(inv_order_var,:).*repmat(epsilon(:,i)',endo_nbr,1);
+    end
     z(:,nshocks+1,i) = z(:,nshocks+2,i) - sum(z(:,1:nshocks,i),2);
 end
 
@@ -131,9 +134,15 @@ if options_.use_shock_groups
         for j = shock_groups.(shock_ind{i}).shocks
             k = find(strcmp(j,cellstr(M_.exo_names)));
             zz(:,i,:) = zz(:,i,:) + z(:,k,:);
+            z(:,k,:) = 0;
         end
     end
-    zz(:,ngroups+(1:2),:) = z(:,nshocks+(1:2),:);
+    zothers = sum(z(:,1:nshocks,:),2);
+    zz(:,ngroups+1,:) = sum(z(:,1:nshocks+1,:),2);
+    if any(any(zothers)),
+        shock_names = [shock_names; {'Others + Initial Values'}];
+    end        
+    zz(:,ngroups+2,:) = z(:,nshocks+2,:);
     z = zz;
 else
     shock_names = M_.exo_names;
