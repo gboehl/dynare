@@ -731,9 +731,9 @@ options_.shock_decomp.steadystate=0;
 options_.shock_decomp.type = '';
 options_.shock_decomp.write_xls=0;
 % Shock decomposition realtime
-options_.shock_decomp.realtime_=0; % 0 is standard; 1 is realtime (pool/vintage); 2 is conditional (pool/vintage); 3 is forecast (pool/vintage)
-options_.shock_decomp.vintage_=0; % 0 pool realtime/conditional; int: forecast/conditional shock decompositions
-options_.shock_decomp.forecast_=0;
+options_.shock_decomp.realtime=0; % 0 is standard; 1 is realtime (pool/vintage); 2 is conditional (pool/vintage); 3 is forecast (pool/vintage)
+options_.shock_decomp.vintage=0; % 0 pool realtime/conditional; int: forecast/conditional shock decompositions
+options_.shock_decomp.forecast=0;
 options_.shock_decomp.presample=NaN;
 options_.shock_decomp.save_realtime=0; % saves memory
 

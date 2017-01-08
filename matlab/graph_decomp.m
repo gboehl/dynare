@@ -39,27 +39,23 @@ SteadyState=[];
 % fig_names='';
 % screen_shocks=0;
 opts_decomp = DynareOptions.shock_decomp;
-    if isfield(opts_decomp,'steady_state')
-        SteadyState = opts_decomp.steady_state;
-    end
-    if isfield(opts_decomp,'fig_mode') && ~isempty(opts_decomp.fig_mode)
-        fig_mode = opts_decomp.fig_mode;
-        fig_mode1 = ['_' fig_mode];        
-        fig_mode = [fig_mode '_'];        
-    end
-    if isfield(opts_decomp,'fig_names')
-        fig_names = opts_decomp.fig_names;
-    end
-    if isfield(opts_decomp,'screen_shocks')
-        if DynareOptions.use_shock_groups,
-            screen_shocks=0;
-        elseif comp_nbr>18
-            screen_shocks = opts_decomp.screen_shocks;
-        end
-    end
-    if screen_shocks
-        fig_names = [fig_names '_screen'];            
-    end
+if isfield(opts_decomp,'steady_state')
+    SteadyState = opts_decomp.steady_state;
+end
+if ~isempty(opts_decomp.fig_mode)
+    fig_mode = opts_decomp.fig_mode;
+    fig_mode1 = ['_' fig_mode];
+    fig_mode = [fig_mode '_'];
+end
+fig_names = opts_decomp.fig_names;
+if DynareOptions.use_shock_groups,
+    screen_shocks=0;
+elseif comp_nbr>18
+    screen_shocks = opts_decomp.screen_shocks;
+end
+if screen_shocks
+    fig_names = [fig_names '_screen'];
+end
 
 
 gend = size(z,3);
