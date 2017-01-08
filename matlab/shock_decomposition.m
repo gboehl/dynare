@@ -148,6 +148,6 @@ else
     shock_names = M_.exo_names;
 end
         
-if ~options_.no_graph.shock_decomposition
+if ~options_.nograph && ~options_.no_graph.shock_decomposition
     graph_decomp(z,shock_names,M_.endo_names,i_var,options_.initial_date,M_,options_)
 end
