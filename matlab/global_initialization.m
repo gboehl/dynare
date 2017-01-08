@@ -721,9 +721,15 @@ options_.discretionary_tol = 1e-7;
 
 % Shock decomposition
 options_.parameter_set = [];
-options_.use_shock_groups = [];
+options_.use_shock_groups = '';
 options_.colormap = '';
+options_.shock_decomp.detail_plot=0;
+options_.shock_decomp.fig_names='';
 options_.shock_decomp.init_state = 0;
+options_.shock_decomp.interactive = 0;
+options_.shock_decomp.steadystate=0;
+options_.shock_decomp.type = '';
+options_.shock_decomp.write_xls=0;
 
 % Nonlinearfilters
 options_.nonlinear_filter = [];
