@@ -7080,8 +7080,12 @@ graphs. See @code{colormap} in Matlab/Octave manual.
 
 @item nograph
 @xref{nograph}. Suppresses the display and creation only within the @code{shock_decomposition}-command
-but does not affect other commands.
+but does not affect other commands. See also @xref{plot_shock_decomposition} for plotting graphs.
 
+@item init_state = @var(INTEGER)
+@xref{init_state}. It can take values of 0 (=default) and 1. 
+If @code{init_state= 1}, the shock decomposition is computed conditional on the smoothed state variables
+in period 1.
 @end table
 
 @vindex oo_.shock_decomposition
@@ -7138,6 +7142,163 @@ end;
 
 shocks_decomposition(use_shock_groups=group1);
 @end example
+
+@end deffn
+
+@deffn Command realtime_shock_decomposition [@var{VARIABLE_NAME}]@dots{};
+@deffnx Command realtime_shock_decomposition (@var{OPTIONS}@dots{}) [@var{VARIABLE_NAME}]@dots{};
+
+@descriptionhead
+
+This command computes the recursive historical shock decomposition for a given sample based on 
+the Kalman smoother, i.e. it decomposes the historical deviations of the endogenous 
+variables from their respective steady state values into the contribution coming 
+from the various shocks. The @code{variable_names} provided govern for which 
+variables the decomposition is plotted.
+
+Note that this command must come after either @code{estimation} (in case
+of an estimated model) or @code{stoch_simul} (in case of a calibrated
+model).
+
+@optionshead
+
+@table @code
+
+@item parameter_set = @var{PARAMETER_SET}
+Specify the parameter set to use for running the smoother. The
+@var{PARAMETER_SET} can take one of the following seven values:
+@code{calibration}, @code{prior_mode}, @code{prior_mean},
+@code{posterior_mode}, @code{posterior_mean},
+@code{posterior_median}, @code{mle_mode}. Default value: @code{posterior_mean} if
+Metropolis has been run, @code{mle_mode} if MLE has been run.
+
+@item datafile = @var{FILENAME}
+@xref{datafile}. Useful when computing the shock decomposition on a
+calibrated model.
+
+@item first_obs = @var{INTEGER}
+@xref{first_obs}.
+
+@item nobs = @var{INTEGER}
+@xref{nobs}.
+
+@item use_shock_groups [= @var{SHOCK_GROUPS_NAME}]
+@anchor{use_shock_groups}. Uses groups of shocks instead of individual shocks in
+the decomposition. Groups of shocks are defined in @xref{shock_groups} block.
+
+@item colormap = @var{COLORMAP_NAME}
+@anchor{colormap}. Controls the colormap used for the shocks decomposition
+graphs. See @code{colormap} in Matlab/Octave manual.
+
+@item nograph
+@anchor{nograph}. Only shock decompositions are computed and stored in @code{oo_.shock_decomposition},
+but no plot is made (@xref{plot_shock_decomposition}).
+
+@item presample
+@anchor{presample}. First data point from which recursive realtime shock decompositions are computed, i.e. for T=(presample:nobs).
+
+@item forecast
+@anchor{forecast}. Compute shock decompositions up to T+k periods, i.e. get shock contributions to k-step ahead forecasts.
+@end table
+
+@vindex oo_.realtime_shock_decomposition
+The results of realtime decompositions are stored in the field @code{oo_.realtime_shock_decomposition}, which is a structure.
+Field @code{pool} stores the pooled decomposition @xref{plot_shock_decomposition}.
+Fields @code{time_*} store the vintages of realtime shock decompositions.
+
+@vindex oo_.conditional_shock_decomposition
+The results of realtime conditional decompositions are stored in the field @code{oo_.conditional_shock_decomposition}, which is a structure.
+Field @code{pool} stores the pooled decomposition @xref{plot_shock_decomposition}.
+Fields @code{time_*} store the vintages of conditional forecast shock decompositions.
+
+@vindex oo_.realtime_forecast_shock_decomposition
+The results of realtime forecast decompositions are stored in the field @code{oo_.realtime_forecast_shock_decomposition}, which is a structure.
+Field @code{pool} stores the pooled decomposition @xref{plot_shock_decomposition}.
+Fields @code{time_*} store the vintages of conditional forecast shock decompositions.
+
+@end deffn
+
+@deffn Command plot_shock_decomposition [@var{VARIABLE_NAME}]@dots{};
+@deffnx Command plot_shock_decomposition (@var{OPTIONS}@dots{}) [@var{VARIABLE_NAME}]@dots{};
+
+@descriptionhead
+
+This command plots the historical shock decomposition already computed by command 
+@code{shock_decomposition}. 
+The @code{variable_names} provided govern for which 
+variables the decomposition is plotted.
+
+Note that this command must come after @code{shock_decomposition} or @code{realtime_shock_decomposition}.
+
+@optionshead
+
+@table @code
+
+@item use_shock_groups [= @var{SHOCK_GROUPS_NAME}]
+@anchor{use_shock_groups}. Uses groups of shocks instead of individual shocks in
+the decomposition. Groups of shocks are defined in @xref{shock_groups} block.
+
+@item colormap = @var{COLORMAP_NAME}
+@anchor{colormap}. Controls the colormap used for the shocks decomposition
+graphs. See @code{colormap} in Matlab/Octave manual.
+
+@item nodisplay
+@xref{nodisplay}.
+
+@item graph_format = (@{GRAPH_FORMAT_LIST})
+@xref{graph_format}.
+
+@item detailed 
+@anchor{detailed}. Plots shock contributions using subplots, one per shock (or group of shocks).
+
+@item interactive 
+@anchor{interactive}. Under MATLAB, add uimenu's for detailed group plots.
+
+@item screen
+@anchor{screen}. For large models [i.e. for models with more than 16 shocks], plots only the shocks 
+that have the largest historical contribution for chosen selected @code{variable_names}. 
+Historical contribution is ranked by the mean absolute value of all historical contributions.
+
+@item steadystate = @var{INTEGER}
+@anchor{steadystate}. 0=default. 
+If =1, the the y-axis value of the zero line in the shock decomposition plot is translated to the steady state level.
+
+@item type = @var{TYPE_NAME}
+@anchor{type}. For quarterly data, the @var{TYPE_NAME} can take one of the following values:
+@code{qoq} for quarter-on-quarter plots, 
+@code{yoy} for year-on-year plots of growth rates, 
+@code{aoa} for annualized variables, i.e. the value in the last quarter for each year is plotted.
+Default value: @code{empty}, i.e. standard period-on-period plots [qoq for quarterly data].
+
+@item fig_name = @var{FIG_NAME}
+@anchor{fig_name}. Specifies a user-defined keyword to be appended to the default figure name set by @code{plot_shock_decomposition}.
+This can avoid to overwrite plots in case of sequential calls to @code{plot_shock_decomposition}.
+
+@item write_xls 
+@anchor{write_xls}. Saves shock decompotions to excel.
+
+@item realtime = @var{INTEGER}
+@anchor{realtime}. Which kind of shock decomposition to plot. @var{INTEGER} can take following values:
+@code{0}: standard shock decomposition [DEFAULT]
+@code{1}: realtime shock decomposition: for T=1:nobs, realtime shock decompositions of Y(T|T)
+@code{2}: conditional shock decomposition: for T=1:nobs, realtime shock decompositions of Y(T|T) CONDITIONAL on Y(T|T-1)
+@code{3}: forecast shock decomposition: for T=1:nobs, realtime shock decompositions of Y(Y|T-1)
+
+@item vintage = @var{INTEGER}
+@anchor{vintage}. If @code{realtime}>0. @var{INTEGER} can take following values:
+
+@code{0}: plots 1step pooled shock decompositions [DEFAULT]
+@code{realtime=1}: pooled realtime shock decomposition. For T=1:nobs, plots last time point Y(T|T) of each vintage shock decomposition Y(1:T|T)
+@code{realtime=2}: pooled conditional shock decomposition. For T=1:nobs, realtime 1-step shock decomposition of Y(T|T) CONDITIONAL on Y(T|T-1)
+[i.e. decomposition of 1-step filter updates of each vintage T]
+@code{realtime=3}: pooled forecast shock decomposition. For T=1:nobs, realtime 1-step ahead shock decomposition of Y(T|T-1) 
+[i.e. decomposition of shock contributions to 1-step ahead forecasts of each vintage T]
+
+@code{>0}: plots shock decompositions for vintage T=@code{vintage} under the following scenarios
+@code{realtime=1}: the full vintage shock decomposition Y(1:T|T)
+@code{realtime=2}: plots conditional forecast shock decomposition from T, i.e. plots Y(T+j|T+j) and the shock contributions needed to get to the data Y(T+j) CONDITIONAL on T=@code{vintage}, with j=(0:@code{forecast}).
+@code{realtime=3}: plots unconditional forecast shock decomposition from T, i.e. Y(T+j|T), where T=@code{vintage} and j=(0:@code{forecast}).
+@end table
 
 @end deffn
 
@@ -13943,7 +14104,7 @@ Small open economy RBC model with shocks to the growth trend, presented
 in @cite{Aguiar and Gopinath (2004)}.
 
 @item NK_baseline.mod
-Baseline New Keynesian Model estimated in @cite{Fernández-Villaverde (2010)}. It demonstrates how to use an explicit steady state file to update parameters and call a numerical solver.
+Baseline New Keynesian Model estimated in @cite{Fern??ndez-Villaverde (2010)}. It demonstrates how to use an explicit steady state file to update parameters and call a numerical solver.
 
 @end table
 
@@ -14128,7 +14289,7 @@ Plots the marginal prior density.
 Abramowitz, Milton and Irene A. Stegun (1964): ``Handbook of Mathematical Functions'', Courier Dover Publications
 
 @item
-Adjemian, Stéphane, Matthieu Darracq Parriès and Stéphane Moyen (2008): ``Towards a monetary policy evaluation framework'',
+Adjemian, St??phane, Matthieu Darracq Parri??s and St??phane Moyen (2008): ``Towards a monetary policy evaluation framework'',
 @i{European Central Bank Working Paper}, 942
 
 @item
@@ -14139,7 +14300,7 @@ Cycles: The Cycle is the Trend,'' @i{NBER Working Paper}, 10734
 Amisano, Gianni and Tristani, Oreste (2010): ``Euro area inflation persistence in an estimated nonlinear DSGE model'', @i{Journal of Economic Dynamics and Control}, 34(10), 1837--1858
 
 @item
-Andreasen, Martin M., Jesús Fernández-Villaverde, and Juan Rubio-Ramírez (2013): ``The Pruned State-Space System for Non-Linear DSGE Models: Theory and Empirical Applications,'' @i{NBER Working Paper}, 18983
+Andreasen, Martin M., Jes??s Fern??ndez-Villaverde, and Juan Rubio-Ram??rez (2013): ``The Pruned State-Space System for Non-Linear DSGE Models: Theory and Empirical Applications,'' @i{NBER Working Paper}, 18983
 
 @item
 Andrews, Donald W.K (1991): ``Heteroskedasticity and autocorrelation consistent covariance matrix estimation'', 
@@ -14221,17 +14382,17 @@ Estimation of Dynamic Nonlinear Rational Expectation Models,''
 @i{Econometrica}, 51, 1169--1185
 
 @item
-Fernández-Villaverde, Jesús and Juan Rubio-Ramírez (2004): ``Comparing
+Fern??ndez-Villaverde, Jes??s and Juan Rubio-Ram??rez (2004): ``Comparing
 Dynamic Equilibrium Economies to Data: A Bayesian Approach,''
 @i{Journal of Econometrics}, 123, 153--187
 
 @item
-Fernández-Villaverde, Jesús and Juan Rubio-Ramírez (2005): ``Estimating
+Fern??ndez-Villaverde, Jes??s and Juan Rubio-Ram??rez (2005): ``Estimating
 Dynamic Equilibrium Economies: Linear versus Nonlinear Likelihood,''
 @i{Journal of Applied Econometrics}, 20, 891--910
 
 @item
-Fernández-Villaverde, Jesús (2010): ``The econometrics of DSGE models,''
+Fern??ndez-Villaverde, Jes??s (2010): ``The econometrics of DSGE models,''
 @i{SERIEs}, 1, 3--49
 
 @item
@@ -14326,9 +14487,9 @@ for local nonlinear optimization problems (version 1.1, Matlab, C, FORTRAN)'',
 University of Graz, Graz, Austria
 
 @item
-Laffargue, Jean-Pierre (1990): ``Résolution d'un modèle
-macroéconomique avec anticipations rationnelles'', @i{Annales
-d'Économie et Statistique}, 17, 97--119
+Laffargue, Jean-Pierre (1990): ``R??solution d'un mod??le
+macro??conomique avec anticipations rationnelles'', @i{Annales
+d'??conomie et Statistique}, 17, 97--119
 
 @item
 Liu, Jane and Mike West (2001): ``Combined parameter and state estimation in simulation-based filtering'', in @i{Sequential Monte Carlo Methods in Practice}, Eds. Doucet, Freitas and Gordon, Springer Verlag
@@ -14344,7 +14505,7 @@ to the solution and estimation of DSGE models''
 
 @item
 Murray, Lawrence M., Emlyn M. Jones and John Parslow (2013): ``On Disturbance State-Space Models and the Particle Marginal
-Metropolis-Hastings Sampler'', @i{SIAM/ASA Journal on Uncertainty Quantification}, 1, 494–521.
+Metropolis-Hastings Sampler'', @i{SIAM/ASA Journal on Uncertainty Quantification}, 1, 494???521.
 
 @item
 Pearlman, Joseph, David Currie, and Paul Levine (1986): ``Rational
@@ -14379,7 +14540,7 @@ Schorfheide, Frank (2000): ``Loss Function-based evaluation of DSGE
 models,'' @i{Journal of Applied Econometrics}, 15(6), 645--670
 
 @item
-Schmitt-Grohé, Stephanie and Martin Uríbe (2004): ``Solving Dynamic
+Schmitt-Groh??, Stephanie and Martin Ur??be (2004): ``Solving Dynamic
 General Equilibrium Models Using a Second-Order Approximation to the
 Policy Function,'' @i{Journal of Economic Dynamics and Control},
 28(4), 755--775
@@ -14408,7 +14569,7 @@ in @i{Computational Methods for the Study of Dynamic
 Economies}, Eds. Ramon Marimon and Andrew Scott, Oxford University Press, 30--61
 
 @item
-Villemot, Sébastien (2011): ``Solving rational expectations models at
+Villemot, S??bastien (2011): ``Solving rational expectations models at
 first order: what Dynare does,'' @i{Dynare Working Papers}, 2,
 CEPREMAP
 
