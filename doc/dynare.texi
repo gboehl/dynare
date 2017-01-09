@@ -14122,7 +14122,7 @@ Small open economy RBC model with shocks to the growth trend, presented
 in @cite{Aguiar and Gopinath (2004)}.
 
 @item NK_baseline.mod
-Baseline New Keynesian Model estimated in @cite{Fern??ndez-Villaverde (2010)}. It demonstrates how to use an explicit steady state file to update parameters and call a numerical solver.
+Baseline New Keynesian Model estimated in @cite{Fernández-Villaverde (2010)}. It demonstrates how to use an explicit steady state file to update parameters and call a numerical solver.
 
 @end table
 
@@ -14307,7 +14307,7 @@ Plots the marginal prior density.
 Abramowitz, Milton and Irene A. Stegun (1964): ``Handbook of Mathematical Functions'', Courier Dover Publications
 
 @item
-Adjemian, St??phane, Matthieu Darracq Parri??s and St??phane Moyen (2008): ``Towards a monetary policy evaluation framework'',
+Adjemian, Stéphane, Matthieu Darracq Parriès and Stéphane Moyen (2008): ``Towards a monetary policy evaluation framework'',
 @i{European Central Bank Working Paper}, 942
 
 @item
@@ -14318,7 +14318,7 @@ Cycles: The Cycle is the Trend,'' @i{NBER Working Paper}, 10734
 Amisano, Gianni and Tristani, Oreste (2010): ``Euro area inflation persistence in an estimated nonlinear DSGE model'', @i{Journal of Economic Dynamics and Control}, 34(10), 1837--1858
 
 @item
-Andreasen, Martin M., Jes??s Fern??ndez-Villaverde, and Juan Rubio-Ram??rez (2013): ``The Pruned State-Space System for Non-Linear DSGE Models: Theory and Empirical Applications,'' @i{NBER Working Paper}, 18983
+Andreasen, Martin M., Jesús Fernández-Villaverde, and Juan Rubio-Ramírez (2013): ``The Pruned State-Space System for Non-Linear DSGE Models: Theory and Empirical Applications,'' @i{NBER Working Paper}, 18983
 
 @item
 Andrews, Donald W.K (1991): ``Heteroskedasticity and autocorrelation consistent covariance matrix estimation'', 
@@ -14400,17 +14400,17 @@ Estimation of Dynamic Nonlinear Rational Expectation Models,''
 @i{Econometrica}, 51, 1169--1185
 
 @item
-Fern??ndez-Villaverde, Jes??s and Juan Rubio-Ram??rez (2004): ``Comparing
+Fernández-Villaverde, Jesús and Juan Rubio-Ramírez (2004): ``Comparing
 Dynamic Equilibrium Economies to Data: A Bayesian Approach,''
 @i{Journal of Econometrics}, 123, 153--187
 
 @item
-Fern??ndez-Villaverde, Jes??s and Juan Rubio-Ram??rez (2005): ``Estimating
+Fernández-Villaverde, Jesús and Juan Rubio-Ramírez (2005): ``Estimating
 Dynamic Equilibrium Economies: Linear versus Nonlinear Likelihood,''
 @i{Journal of Applied Econometrics}, 20, 891--910
 
 @item
-Fern??ndez-Villaverde, Jes??s (2010): ``The econometrics of DSGE models,''
+Fernández-Villaverde, Jesús (2010): ``The econometrics of DSGE models,''
 @i{SERIEs}, 1, 3--49
 
 @item
@@ -14505,9 +14505,9 @@ for local nonlinear optimization problems (version 1.1, Matlab, C, FORTRAN)'',
 University of Graz, Graz, Austria
 
 @item
-Laffargue, Jean-Pierre (1990): ``R??solution d'un mod??le
-macro??conomique avec anticipations rationnelles'', @i{Annales
-d'??conomie et Statistique}, 17, 97--119
+Laffargue, Jean-Pierre (1990): ``Résolution d'un modèle
+macroéconomique avec anticipations rationnelles'', @i{Annales
+d'Économie et Statistique}, 17, 97--119
 
 @item
 Liu, Jane and Mike West (2001): ``Combined parameter and state estimation in simulation-based filtering'', in @i{Sequential Monte Carlo Methods in Practice}, Eds. Doucet, Freitas and Gordon, Springer Verlag
@@ -14523,7 +14523,7 @@ to the solution and estimation of DSGE models''
 
 @item
 Murray, Lawrence M., Emlyn M. Jones and John Parslow (2013): ``On Disturbance State-Space Models and the Particle Marginal
-Metropolis-Hastings Sampler'', @i{SIAM/ASA Journal on Uncertainty Quantification}, 1, 494???521.
+Metropolis-Hastings Sampler'', @i{SIAM/ASA Journal on Uncertainty Quantification}, 1, 494–521.
 
 @item
 Pearlman, Joseph, David Currie, and Paul Levine (1986): ``Rational
@@ -14558,7 +14558,7 @@ Schorfheide, Frank (2000): ``Loss Function-based evaluation of DSGE
 models,'' @i{Journal of Applied Econometrics}, 15(6), 645--670
 
 @item
-Schmitt-Groh??, Stephanie and Martin Ur??be (2004): ``Solving Dynamic
+Schmitt-Grohé, Stephanie and Martin Uríbe (2004): ``Solving Dynamic
 General Equilibrium Models Using a Second-Order Approximation to the
 Policy Function,'' @i{Journal of Economic Dynamics and Control},
 28(4), 755--775
@@ -14587,7 +14587,7 @@ in @i{Computational Methods for the Study of Dynamic
 Economies}, Eds. Ramon Marimon and Andrew Scott, Oxford University Press, 30--61
 
 @item
-Villemot, S??bastien (2011): ``Solving rational expectations models at
+Villemot, Sébastien (2011): ``Solving rational expectations models at
 first order: what Dynare does,'' @i{Dynare Working Papers}, 2,
 CEPREMAP
 
