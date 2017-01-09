@@ -12,7 +12,7 @@ function o = report_table(varargin)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2013-2014 Dynare Team
+% Copyright (C) 2013-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -97,7 +97,7 @@ if length(o.title) ~= length(o.titleFormat)
 end
 assert(islogical(o.showHlines), '@report_table.report_table: showHlines must be true or false');
 assert(islogical(o.showVlines), '@report_table.report_table: showVlines must be true or false');
-assert(isint(o.precision), '@report_table.report_table: precision must be an int');
+assert(isint(o.precision) && o.precision >= 0, '@report_table.report_table: precision must be a non-negative integer');
 assert(isempty(o.range) || length(o.range) <=2 && allCellsAreDatesRange(o.range), ...
        ['@report_table.report_table: range is specified as a dates range, e.g. ' ...
         '''dates(''1999q1''):dates(''1999q3'')''.']);
