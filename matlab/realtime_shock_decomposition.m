@@ -1,7 +1,8 @@
 function oo_ = realtime_shock_decomposition(M_,oo_,options_,varlist,bayestopt_,estim_params_)
-% function z = realtime_shock_decomposition(M_,oo_,options_,varlist,bayestopt_,estim_params_)
-% Computes shocks contribution to a simulated trajectory. The field set is
-% oo_.shock_decomposition. It is a n_var by nshock+2 by nperiods array. The
+% function oo_ = realtime_shock_decomposition(M_,oo_,options_,varlist,bayestopt_,estim_params_)
+% Computes shocks contribution to a simulated trajectory. The fields set are
+% oo_.realtime_shock_decomposition, oo_.conditional_shock_decomposition and oo_.realtime_forecast_shock_decomposition. 
+% Subfields are arrays n_var by nshock+2 by nperiods. The
 % first nshock columns store the respective shock contributions, column n+1
 % stores the role of the initial conditions, while column n+2 stores the
 % value of the smoothed variables.  Both the variables and shocks are stored 
@@ -71,19 +72,15 @@ if isfield(options_.shock_decomp,'presample'),
     presample = max(presample,options_.shock_decomp.presample);
 end
 % forecast_=0;
-if isfield(options_.shock_decomp,'forecast'),
-    forecast_ = options_.shock_decomp.forecast;
-end
+forecast_ = options_.shock_decomp.forecast;
 forecast_params=0;
 if forecast_ && isfield(options_.shock_decomp,'forecast_params'),
     forecast_params = options_.shock_decomp.forecast_params;
 end
 
 % save_realtime=0;
-if isfield(options_.shock_decomp,'save_realtime'),
-    save_realtime = options_.shock_decomp.save_realtime;
-    % array of time points in the range options_.presample+1:options_.nobs
-end
+save_realtime = options_.shock_decomp.save_realtime;
+% array of time points in the range options_.presample+1:options_.nobs
 
 zreal = zeros(endo_nbr,nshocks+2,options_.nobs+forecast_);
 zcond = zeros(endo_nbr,nshocks+2,options_.nobs);
@@ -270,6 +267,6 @@ else
     shock_names = M_.exo_names;
 end
 
-if ~options_.nograph && ~options_.no_graph.shock_decomposition
+if ~options_.no_graph.shock_decomposition
     graph_decomp(z,shock_names,M_.endo_names,i_var,options_.initial_date,M_,options_)
 end
