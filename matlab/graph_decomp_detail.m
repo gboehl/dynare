@@ -29,7 +29,7 @@ function []=graph_decomp_detail(z,shock_names,endo_names,i_var,initial_date,Dyna
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 % interactive = 0;
-% fig_mode='';
+fig_mode='';
 fig_mode1='';
 % fig_names='';
 % screen_shocks=0;

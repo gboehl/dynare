@@ -34,8 +34,8 @@ new_colormap = DynareOptions.colormap;
 comp_nbr = size(z,2)-1;
 
 SteadyState=[];
-% fig_mode='';
-% fig_mode1='';
+fig_mode='';
+fig_mode1='';
 % fig_names='';
 % screen_shocks=0;
 opts_decomp = DynareOptions.shock_decomp;

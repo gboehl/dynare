@@ -41,7 +41,7 @@ endo_nbr = M_.endo_nbr;
 % number of shocks
 nshocks = M_.exo_nbr;
 % type = '';
-% fig_names='';
+fig_names='';
 % detail_plot=0;
 % realtime_=0; % 0 is standard; 1 is realtime (pool/vintage); 2 is conditional (pool/vintage); 3 is forecast (pool/vintage)
 % vintage_=0; % 0 pool realtime/conditional; int: forecast/conditional shock decompositions
@@ -183,7 +183,7 @@ options_.shock_decomp.fig_names=fig_names;
 if detail_plot,
     graph_decomp_detail(z,shock_names,M_.endo_names,i_var,initial_date,M_,options_)
 else
-    graph_decomp(z,shock_names,M_.endo_names,i_var,initial_date,M_,options_,options_.shock_decomp);
+    graph_decomp(z,shock_names,M_.endo_names,i_var,initial_date,M_,options_);
 end
 
 if write_xls
