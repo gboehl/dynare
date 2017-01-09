@@ -14,7 +14,7 @@ Upstream-Contact: Dynare Team, whose members in 2015 are:
 Source: http://www.dynare.org
 
 Files: *
-Copyright: 1996-2015 Dynare Team
+Copyright: 1996-2017 Dynare Team
 License: GPL-3+
 
 License: GPL-3+
