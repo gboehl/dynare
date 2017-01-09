@@ -131,6 +131,7 @@ for j=1:nvar
     if ~isempty(SteadyState)
         if ymin+SteadyState(i_var(j))<0 && ymax+SteadyState(i_var(j))>0,
             plot(ax,[xmin xmax],SteadyState(i_var(j))*[-1 -1],'k--','linewidth',1)
+            plot(ax,[xmin xmax],[0 0],'--','linewidth',1,'color',[0.7 0.7 0.7])
             ytick=get(ax,'ytick');
             ytick1=ytick-SteadyState(i_var(j));
             ind1=min(find(ytick1>=ymin));
