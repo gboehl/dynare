@@ -14,7 +14,7 @@ function o = report_series(varargin)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2013-2016 Dynare Team
+% Copyright (C) 2013-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -74,6 +74,8 @@ o.tableRowIndent = 0;
 
 o.tableDataRhs = '';
 o.tableNaNSymb = 'NaN';
+
+o.tablePrecision = '';
 
 o.zeroTol = 1e-6;
 
