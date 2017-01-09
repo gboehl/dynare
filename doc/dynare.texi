@@ -7084,9 +7084,13 @@ but does not affect other commands. See also @xref{plot_shock_decomposition} for
 
 @item init_state = @var(INTEGER)
 @xref{init_state}. It can take values of 0 (=default) and 1. 
+If @code{init_state= 0}, the shock decomposition is computed conditional on the smoothed state variables
+in period 0, i.e. the smoothed shocks starting in period 1 are used.
 If @code{init_state= 1}, the shock decomposition is computed conditional on the smoothed state variables
 in period 1.
 @end table
+
+@outputhead
 
 @vindex oo_.shock_decomposition
 The results are stored in the field @code{oo_.shock_decomposition}, which is a three
@@ -7150,8 +7154,13 @@ shocks_decomposition(use_shock_groups=group1);
 
 @descriptionhead
 
-This command computes the recursive historical shock decomposition for a given sample based on 
-the Kalman smoother, i.e. it decomposes the historical deviations of the endogenous 
+This command computes the realtime historical shock decomposition for a given sample based on 
+the Kalman smoother. For each period @code{T=presample:nobs}, it computes 
+- realtime historical shock decomposition Y(t|T) for t=1:T, i.e. without observing data in [T+1:nobs];
+- conditional shock decomposition Y(T|T) CONDITIONAL on Y(T|T-1), i.e. Y(t|T) for t=T-1:T;
+- forecast shock decomposition Y(T|T-1).
+
+Like @xref{shock_decomposition} it decomposes the historical deviations of the endogenous 
 variables from their respective steady state values into the contribution coming 
 from the various shocks. The @code{variable_names} provided govern for which 
 variables the decomposition is plotted.
@@ -7183,16 +7192,17 @@ calibrated model.
 @xref{nobs}.
 
 @item use_shock_groups [= @var{SHOCK_GROUPS_NAME}]
-@anchor{use_shock_groups}. Uses groups of shocks instead of individual shocks in
+@xref{use_shock_groups}. Uses groups of shocks instead of individual shocks in
 the decomposition. Groups of shocks are defined in @xref{shock_groups} block.
 
 @item colormap = @var{COLORMAP_NAME}
-@anchor{colormap}. Controls the colormap used for the shocks decomposition
+@xref{colormap}. Controls the colormap used for the shocks decomposition
 graphs. See @code{colormap} in Matlab/Octave manual.
 
 @item nograph
-@anchor{nograph}. Only shock decompositions are computed and stored in @code{oo_.shock_decomposition},
-but no plot is made (@xref{plot_shock_decomposition}).
+@xref{nograph}. Only shock decompositions are computed and stored in @code{oo_.realtime_shock_decomposition},
+@code{oo_.conditional_shock_decomposition} and @code{oo_.realtime_forecast_shock_decomposition} but no plot is made 
+(@xref{plot_shock_decomposition}).
 
 @item presample
 @anchor{presample}. First data point from which recursive realtime shock decompositions are computed, i.e. for T=(presample:nobs).
@@ -7201,20 +7211,27 @@ but no plot is made (@xref{plot_shock_decomposition}).
 @anchor{forecast}. Compute shock decompositions up to T+k periods, i.e. get shock contributions to k-step ahead forecasts.
 @end table
 
+@outputhead
+
 @vindex oo_.realtime_shock_decomposition
-The results of realtime decompositions are stored in the field @code{oo_.realtime_shock_decomposition}, which is a structure.
+The results of realtime historical decompositions are stored in the field @code{oo_.realtime_shock_decomposition}, which is a structure.
 Field @code{pool} stores the pooled decomposition @xref{plot_shock_decomposition}.
-Fields @code{time_*} store the vintages of realtime shock decompositions.
+Fields @code{time_*} store the vintages of realtime historical shock decompositions.
 
 @vindex oo_.conditional_shock_decomposition
 The results of realtime conditional decompositions are stored in the field @code{oo_.conditional_shock_decomposition}, which is a structure.
-Field @code{pool} stores the pooled decomposition @xref{plot_shock_decomposition}.
-Fields @code{time_*} store the vintages of conditional forecast shock decompositions.
+Field @code{pool} stores the pooled decomposition Y(t|T) for t=T-1:T @xref{plot_shock_decomposition}.
+Conditional shock decomposition sets the initial condition in T-1, so only computes the effect of shocks in period T, 
+i.e. it is just a 1-period shock decomposition from T-1 to T. In practice it decomposes the update step of the Kalman filter.
+Fields @code{time_*} store the vintages of k-step conditional forecast shock decompositions Y(t|T+k), for t=T:T+k.
+See also @xref{vintage}.
 
 @vindex oo_.realtime_forecast_shock_decomposition
 The results of realtime forecast decompositions are stored in the field @code{oo_.realtime_forecast_shock_decomposition}, which is a structure.
 Field @code{pool} stores the pooled decomposition @xref{plot_shock_decomposition}.
-Fields @code{time_*} store the vintages of conditional forecast shock decompositions.
+Forecast shock decomposition computes the 1-step ahead effect of shocks on the 1-step ahead prediction, i.e. Y(T|T-1).
+Fields @code{time_*} store the vintages of k-step out-of-sample forecast shock decompositions, i.e. Y(t|T), for t=T:T+k.
+See also @xref{vintage}.
 
 @end deffn
 
@@ -7275,17 +7292,17 @@ Default value: @code{empty}, i.e. standard period-on-period plots [qoq for quart
 This can avoid to overwrite plots in case of sequential calls to @code{plot_shock_decomposition}.
 
 @item write_xls 
-@anchor{write_xls}. Saves shock decompotions to excel.
+@anchor{write_xls}. Saves shock decompositions to excel.
 
 @item realtime = @var{INTEGER}
 @anchor{realtime}. Which kind of shock decomposition to plot. @var{INTEGER} can take following values:
-@code{0}: standard shock decomposition [DEFAULT]
-@code{1}: realtime shock decomposition: for T=1:nobs, realtime shock decompositions of Y(T|T)
-@code{2}: conditional shock decomposition: for T=1:nobs, realtime shock decompositions of Y(T|T) CONDITIONAL on Y(T|T-1)
-@code{3}: forecast shock decomposition: for T=1:nobs, realtime shock decompositions of Y(Y|T-1)
+@code{0}: historical shock decomposition: Y(t|T) for t=1:T, T=nobs full sample [DEFAULT]
+@code{1}: realtime historical shock decomposition: for T=1:nobs, realtime shock decomposition Y(t|T) for t=1:T
+@code{2}: conditional shock decomposition: for T=1:nobs, realtime shock decomposition of Y(T|T) CONDITIONAL on Y(T|T-1), i.e. Y(t|T) for t=T-1:T
+@code{3}: forecast shock decomposition: for T=1:nobs, realtime shock decomposition of Y(T|T-1)
 
 @item vintage = @var{INTEGER}
-@anchor{vintage}. If @code{realtime}>0. @var{INTEGER} can take following values:
+@anchor{vintage}. Applies if @code{realtime}>0. @var{INTEGER} can take following values:
 
 @code{0}: plots 1step pooled shock decompositions [DEFAULT]
 @code{realtime=1}: pooled realtime shock decomposition. For T=1:nobs, plots last time point Y(T|T) of each vintage shock decomposition Y(1:T|T)
@@ -7295,8 +7312,9 @@ This can avoid to overwrite plots in case of sequential calls to @code{plot_shoc
 [i.e. decomposition of shock contributions to 1-step ahead forecasts of each vintage T]
 
 @code{>0}: plots shock decompositions for vintage T=@code{vintage} under the following scenarios
-@code{realtime=1}: the full vintage shock decomposition Y(1:T|T)
-@code{realtime=2}: plots conditional forecast shock decomposition from T, i.e. plots Y(T+j|T+j) and the shock contributions needed to get to the data Y(T+j) CONDITIONAL on T=@code{vintage}, with j=(0:@code{forecast}).
+@code{realtime=1}: the full vintage shock decomposition Y(t|T) for t=1:T
+@code{realtime=2}: plots conditional forecast shock decomposition from T, i.e. plots Y(T+j|T+j) 
+and the shock contributions needed to get to the data Y(T+j) CONDITIONAL on T=@code{vintage}, with j=(0:@code{forecast}).
 @code{realtime=3}: plots unconditional forecast shock decomposition from T, i.e. Y(T+j|T), where T=@code{vintage} and j=(0:@code{forecast}).
 @end table
 
