@@ -136,7 +136,7 @@ if ~isempty(options_.nk) && options_.nk ~= 0
     end
     % add constant
     oo_.FilteredVariablesKStepAhead = aK(options_.filter_step_ahead,i_endo_in_dr_matrices,:)+constant_all_variables;
-    if ~isempty(PK) %get K-step ahead variances
+    if ~isempty(PK) && options_.filter_covariance %get K-step ahead variances
         oo_.FilteredVariablesKStepAheadVariances = ...
             PK(options_.filter_step_ahead,i_endo_in_dr_matrices,i_endo_in_dr_matrices,:);
     end
@@ -157,7 +157,7 @@ for i_endo_in_bayestopt_smoother_varlist=bayestopt_.smoother_saved_var_list'
     end
     oo_.Smoother.Constant.(deblank(M_.endo_names(i_endo_declaration_order,:)))=constant_current_variable;
     oo_.SmoothedVariables.(deblank(M_.endo_names(i_endo_declaration_order,:)))=atT(i_endo_in_dr,:)'+constant_current_variable;
-    if ~isempty(options_.nk) && options_.nk > 0 && ~((any(bayestopt_.pshape > 0) && options_.mh_replic) || (any(bayestopt_.pshape> 0) && options_.load_mh_file))
+    if ~isempty(options_.nk) && options_.nk > 0 % && ~((any(bayestopt_.pshape > 0) && options_.mh_replic) || (any(bayestopt_.pshape> 0) && options_.load_mh_file))
         oo_.FilteredVariables.(deblank(M_.endo_names(i_endo_declaration_order,:)))=squeeze(aK(1,i_endo_in_dr,2:end-(options_.nk-1)))+constant_current_variable;
     end
     oo_.UpdatedVariables.(deblank(M_.endo_names(i_endo_declaration_order,:)))=updated_variables(i_endo_in_dr,:)'+constant_current_variable;
@@ -191,7 +191,7 @@ if ~isempty(options_.nk) && options_.nk ~= 0
     positions_in_declaration_order=oo_.dr.order_var(bayestopt_.smoother_var_list(bayestopt_.smoother_saved_var_list));
     if ~(options_.selected_variables_only && ~(options_.forecast > 0)) %happens only when selected_variables_only is not used
         oo_.FilteredVariablesKStepAhead(:,positions_in_declaration_order,:)=oo_.FilteredVariablesKStepAhead;
-        if ~isempty(PK) %get K-step ahead variances
+        if ~isempty(PK) && options_.filter_covariance %get K-step ahead variances
             oo_.FilteredVariablesKStepAheadVariances(:,positions_in_declaration_order,positions_in_declaration_order,:)=oo_.FilteredVariablesKStepAheadVariances;
         end
         if ~isempty(decomp)
@@ -201,7 +201,7 @@ if ~isempty(options_.nk) && options_.nk ~= 0
         positions_in_declaration_order=oo_.dr.order_var(bayestopt_.smoother_var_list(bayestopt_.smoother_saved_var_list));
         [junk,sorted_index_declaration_order]=sort(positions_in_declaration_order);
         oo_.FilteredVariablesKStepAhead(:,sorted_index_declaration_order,:)=oo_.FilteredVariablesKStepAhead;
-        if ~isempty(PK) %get K-step ahead variances
+        if ~isempty(PK) && options_.filter_covariance %get K-step ahead variances
             oo_.FilteredVariablesKStepAheadVariances(:,sorted_index_declaration_order,sorted_index_declaration_order,:)=oo_.FilteredVariablesKStepAheadVariances;
         end
         if ~isempty(decomp)
