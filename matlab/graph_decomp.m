@@ -48,10 +48,9 @@ if ~isempty(opts_decomp.fig_mode)
     fig_mode = [fig_mode '_'];
 end
 fig_names = opts_decomp.fig_names;
-if DynareOptions.use_shock_groups,
+screen_shocks = opts_decomp.screen_shocks;
+if DynareOptions.use_shock_groups | comp_nbr<=18,
     screen_shocks=0;
-elseif comp_nbr>18
-    screen_shocks = opts_decomp.screen_shocks;
 end
 if screen_shocks
     fig_names = [fig_names '_screen'];
@@ -105,7 +104,7 @@ for j=1:nvar
     if ymax-ymin < 1e-6
         continue
     end
-    fhandle = dyn_figure(DynareOptions,'Name',['Shock decomposition: ',endo_names(i_var(j),:)], 'PaperPositionMode', 'auto','PaperOrientation','landscape','renderermode','auto');
+    fhandle = dyn_figure(DynareOptions,'Name',['Shock decomposition: ' deblank(endo_names(i_var(j),:)) fig_mode fig_names], 'PaperPositionMode', 'auto','PaperOrientation','landscape','renderermode','auto');
     set(fhandle,'position' ,[50 50 1500 750])
     ax=axes('Position',[0.1 0.1 0.6 0.8],'box','on');
 %     plot(ax,x(2:end),z1(end,:),'k-','LineWidth',2)

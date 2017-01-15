@@ -50,10 +50,9 @@ if ~isempty(opts_decomp.fig_mode)
     fig_mode1 = ['_' fig_mode];
     fig_mode = [fig_mode '_'];
 end
-if DynareOptions.use_shock_groups,
+screen_shocks = opts_decomp.screen_shocks;
+if DynareOptions.use_shock_groups | comp_nbr<=18,
     screen_shocks=0;
-elseif comp_nbr>18
-    screen_shocks = opts_decomp.screen_shocks;
 end
 fig_names = opts_decomp.fig_names;
 %         fig_names = ['_' fig_names];
@@ -137,7 +136,7 @@ for j=1:nvar
         continue
     end
     for jf = 1:nfigs
-    fhandle = dyn_figure(DynareOptions,'Name',['Shock decomposition (detail): ' endo_names(i_var(j),:) fig_mode fig_names1],'position',[200 100 650 850], 'PaperPositionMode', 'auto','PaperOrientation','portrait','renderermode','auto');
+    fhandle = dyn_figure(DynareOptions,'Name',['Shock decomposition (detail): ' deblank(endo_names(i_var(j),:)) fig_mode fig_names1],'position',[200 100 650 850], 'PaperPositionMode', 'auto','PaperOrientation','portrait','renderermode','auto');
     a0=zeros(1,4);
     a0(3)=inf;
     a0(4)=-inf;
