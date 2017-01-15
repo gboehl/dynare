@@ -727,6 +727,7 @@ options_.shock_decomp.detail_plot=0;
 options_.shock_decomp.fig_names='';
 options_.shock_decomp.init_state = 0;
 options_.shock_decomp.interactive = 0;
+options_.shock_decomp.screen_shocks=0;
 options_.shock_decomp.steadystate=0;
 options_.shock_decomp.type = '';
 options_.shock_decomp.write_xls=0;
