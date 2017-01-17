@@ -70,9 +70,9 @@ if init
     mh_nblck = options_.mh_nblck;
     % set sub_draws option if empty
     if isempty(options_.sub_draws)
-        options_.sub_draws = min(options_.posterior_max_subsample_draws, round(.25*NumberOfDraws));
+        options_.sub_draws = min(options_.posterior_max_subsample_draws, round(NumberOfDraws*mh_nblck));
     else
-        if options_.sub_draws>NumberOfDraws
+        if options_.sub_draws>NumberOfDraws*mh_nblck
             skipline()
             disp(['Estimation::mcmc: The value of option sub_draws (' num2str(options_.sub_draws) ') is greater than the number of available draws in the MCMC (' num2str(NumberOfDraws) ')!'])
             disp('Estimation::mcmc: You can either change the value of sub_draws, reduce the value of mh_drop, or run another mcmc (with the load_mh_file option).')
