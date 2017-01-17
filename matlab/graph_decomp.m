@@ -110,7 +110,7 @@ for j=1:nvar
     if ymax-ymin < 1e-6
         continue
     end
-    fhandle = dyn_figure(DynareOptions,'Name',['Shock decomposition: ' deblank(endo_names(i_var(j),:)) fig_mode fig_names], 'PaperPositionMode', 'auto','PaperOrientation','landscape','renderermode','auto');
+    fhandle = dyn_figure(DynareOptions,'Name',['Shock decomposition: ' deblank(endo_names(i_var(j),:)) fig_mode1 fig_names], 'PaperPositionMode', 'auto','PaperOrientation','landscape','renderermode','auto');
     set(fhandle,'position' ,[50 50 1500 750])
     ax=axes('Position',[0.1 0.1 0.6 0.8],'box','on');
 %     plot(ax,x(2:end),z1(end,:),'k-','LineWidth',2)

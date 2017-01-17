@@ -136,7 +136,7 @@ for j=1:nvar
         continue
     end
     for jf = 1:nfigs
-    fhandle = dyn_figure(DynareOptions,'Name',['Shock decomposition (detail): ' deblank(endo_names(i_var(j),:)) fig_mode fig_names1],'position',[200 100 650 850], 'PaperPositionMode', 'auto','PaperOrientation','portrait','renderermode','auto');
+    fhandle = dyn_figure(DynareOptions,'Name',['Shock decomposition (detail): ' deblank(endo_names(i_var(j),:)) fig_mode1 fig_names1],'position',[200 100 650 850], 'PaperPositionMode', 'auto','PaperOrientation','portrait','renderermode','auto');
     a0=zeros(1,4);
     a0(3)=inf;
     a0(4)=-inf;
