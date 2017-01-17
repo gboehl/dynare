@@ -118,6 +118,7 @@ if options_.use_shock_groups
         end
     end
     zothers = sum(z(:,1:nshocks,:),2);
+    shock_groups.(['group' int2str(ngroups+1)]).label =  'Others';
     shock_groups.(['group' int2str(ngroups+1)]).shocks =  cellstr(M_.exo_names(find(~ismember([1:M_.exo_nbr],kcum)),:))';
     M_.shock_groups.(options_.use_shock_groups)=shock_groups;
     if any(any(zothers)),
