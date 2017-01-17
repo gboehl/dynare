@@ -164,15 +164,16 @@ for j=1:nvar
         set(gca,'ylim',a0(3:4))
         hold on, h1=plot(x(2:end),z1(end,:),'k-','LineWidth',2);
         if interactive & (~isoctave & use_shock_groups)
+            mydata.fig_names = DynareOptions.shock_decomp.fig_names(2:end);
             mydata.use_shock_groups = DynareOptions.use_shock_groups;
-            mydata.group_members = shock_groups.(shock_ind{ic}).shocks;
-            set(gca,'UserData',mydata);
-            if ~isempty(mydata.group_members{1})
+            mydata.shock_group = shock_groups.(shock_ind{ic});
+            if ~isempty(mydata.shock_group.shocks{1})
                 c = uicontextmenu;
                 hax.UIContextMenu=c;
                 browse_menu = uimenu(c,'Label','Browse group');
                 expand_menu = uimenu(c,'Label','Expand group','Callback',['expand_group(''' mydata.use_shock_groups ''',''' deblank(endo_names(i_var(j),:)) ''',' int2str(ic) ')']);
-                for jmember = mydata.group_members
+                set(expand_menu,'UserData',mydata,'Tag',['group' int2str(ic)]);
+                for jmember = mydata.shock_group.shocks
                     uimenu('parent',browse_menu,'Label',char(jmember))
                 end
             end

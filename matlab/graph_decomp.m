@@ -48,13 +48,19 @@ if ~isempty(opts_decomp.fig_mode)
     fig_mode = [fig_mode '_'];
 end
 fig_names = opts_decomp.fig_names;
+use_shock_groups = DynareOptions.use_shock_groups;
 screen_shocks = opts_decomp.screen_shocks;
-if DynareOptions.use_shock_groups | comp_nbr<=18,
+if use_shock_groups | comp_nbr<=18,
     screen_shocks=0;
+end
+if use_shock_groups
+    shock_groups = DynareModel.shock_groups.(use_shock_groups);
+    shock_ind = fieldnames(shock_groups);
 end
 if screen_shocks
     fig_names = [fig_names '_screen'];
 end
+interactive = opts_decomp.interactive;
 
 
 gend = size(z,3);
@@ -159,10 +165,26 @@ for j=1:nvar
 
     for i=comp_nbr:-1:1
 %     for i=1:comp_nbr
-        fill([0 0 0.2 0.2],[y1 y1+0.7*height y1+0.7*height y1],i);
+        hl = fill([0 0 0.2 0.2],[y1 y1+0.7*height y1+0.7*height y1],i);
         hold on
-        text(0.3,y1+0.3*height,labels(i,:),'Interpreter','none');
+        ht = text(0.3,y1+0.3*height,labels(i,:),'Interpreter','none');
         hold on
+        if interactive & (~isoctave & use_shock_groups)
+            mydata.fig_names = DynareOptions.shock_decomp.fig_names(2:end);
+            mydata.use_shock_groups = DynareOptions.use_shock_groups;
+            mydata.shock_group = shock_groups.(shock_ind{i});
+            if ~isempty(mydata.shock_group.shocks{1})
+                c = uicontextmenu;
+                hl.UIContextMenu=c;
+                browse_menu = uimenu(c,'Label','Browse group');
+                expand_menu = uimenu(c,'Label','Expand group','Callback',['expand_group(''' mydata.use_shock_groups ''',''' deblank(endo_names(i_var(j),:)) ''',' int2str(i) ')']);
+                set(expand_menu,'UserData',mydata,'Tag',['group' int2str(i)]);
+                for jmember = mydata.shock_group.shocks
+                    uimenu('parent',browse_menu,'Label',char(jmember))
+                end
+                ht.UIContextMenu=c;
+            end
+        end
         y1 = y1 + height;
     end
 

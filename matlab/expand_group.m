@@ -30,17 +30,18 @@ function expand_group(use_shock_groups,var_list_, ic)
 M = evalin('base','M_');
 oo = evalin('base','oo_');
 options = evalin('base','options_');
+mydata=get(findobj(gcf,'tag',['group' int2str(ic)]),'userdata');
 
 % define expanded group
-label=M.shock_groups.(use_shock_groups).(['group' int2str(ic)]).label;
-shocks=M.shock_groups.(use_shock_groups).(['group' int2str(ic)]).shocks;
+label = mydata.shock_group.label;
+shocks = mydata.shock_group.shocks;
+options.shock_decomp.fig_names = [mydata.fig_names '_expand'];
 options.use_shock_groups = strrep(label,' ','_'); %[use_shock_groups_old int2str(ic)];
 for j=1:length(shocks)
     M.shock_groups.(options.use_shock_groups).(['group' int2str(j)]).label=shocks{j};
     M.shock_groups.(options.use_shock_groups).(['group' int2str(j)]).shocks=shocks(j);
 end 
 
-options.shock_decomp.fig_names = [options.shock_decomp.fig_names '_expand'];
 options.shock_decomp.interactive=0;
 plot_shock_decomposition(M,oo,options,var_list_);
 
