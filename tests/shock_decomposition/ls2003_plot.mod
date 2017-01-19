@@ -61,7 +61,9 @@ stderr e_ys,inv_gamma_pdf,1.2533,0.6551;
 stderr e_pies,inv_gamma_pdf,1.88,0.9827;
 end;
 
-estimation(datafile=data_ca1,first_obs=8,nobs=79,mh_nblocks=10,prefilter=1,mh_jscale=0.5,mh_replic=0);
+options_.TeX=1;
+estimation(datafile='../ls2003/data_ca1',first_obs=8,nobs=79,mh_nblocks=10,prefilter=1,mh_jscale=0.5,mh_replic=0);
+close all
 
 shock_groups(name=trade);
 supply = e_A ;
@@ -75,14 +77,10 @@ supply = e_A ;
 monetary = e_R ;
 end;
 options_.initial_date=dates('1980Q1');
-shock_decomposition(use_shock_groups=trade,nograph) y_obs R_obs pie_obs dq de;
-
-// compute realtime decompositions [pre-processor not yet available]
-options_.shock_decomp.forecast=8;
-oo_ = realtime_shock_decomposition(M_,oo_,options_,var_list_,bayestopt_,estim_params_);
+shock_decomposition(use_shock_groups=trade) y_obs R_obs pie_obs dq de;
 
 // various tests for plot_shock_decompositions
-// standard plot [using trde group defined before]
+// standard plot [using trade group defined before]
 plot_shock_decomposition(M_,oo_,options_,var_list_);
 
 // test datailed, custom name and yoy plots
@@ -95,6 +93,10 @@ close all,
 
 
 // testing realtime decomposition
+// first compute realtime decompositions [pre-processor not yet available]
+options_.shock_decomp.forecast=8;
+oo_ = realtime_shock_decomposition(M_,oo_,options_,var_list_,bayestopt_,estim_params_);
+
 options_.shock_decomp.detail_plot = 0;
 options_.shock_decomp.type='';
 options_.use_shock_groups='';
@@ -142,3 +144,8 @@ options_.shock_decomp.detail_plot = 1;
 options_.shock_decomp.realtime=3; 
 options_.shock_decomp.vintage=40; 
 plot_shock_decomposition(M_,oo_,options_,var_list_);
+
+collect_latex_files;
+if system(['pdflatex -halt-on-error -interaction=batchmode ' M_.fname '_TeX_binder.tex'])
+    error('TeX-File did not compile.')
+end 
