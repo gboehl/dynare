@@ -237,36 +237,3 @@ end
 
 clear('evaluate_smoother');
 skipline()
-
-z=zreal;
-
-if options_.use_shock_groups
-    shock_groups = M_.shock_groups.(options_.use_shock_groups);
-    shock_ind = fieldnames(shock_groups);
-    ngroups = length(shock_ind);
-    shock_names = shock_ind;
-    for i=1:ngroups,
-        shock_names{i} = (shock_groups.(shock_ind{i}).label);
-    end
-    zz = zeros(endo_nbr,ngroups+2,gend+forecast_);
-    for i=1:ngroups
-        for j = shock_groups.(shock_ind{i}).shocks
-            k = find(strcmp(j,cellstr(M_.exo_names)));
-            zz(:,i,:) = zz(:,i,:) + z(:,k,:);
-            z(:,k,:) = 0;
-        end
-    end
-    zothers = sum(z(:,1:nshocks,:),2);
-    zz(:,ngroups+1,:) = sum(z(:,1:nshocks+1,:),2);
-    if any(any(zothers)),
-        shock_names = [shock_names; {'Others + Initial Values'}];
-    end
-    zz(:,ngroups+2,:) = z(:,nshocks+2,:);
-    z = zz;
-else
-    shock_names = M_.exo_names;
-end
-
-if ~options_.no_graph.shock_decomposition
-    graph_decomp(z,shock_names,M_.endo_names,i_var,options_.initial_date,M_,options_)
-end
