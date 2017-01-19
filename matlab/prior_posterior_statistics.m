@@ -337,7 +337,7 @@ if options_.smoother
     end
 end
 
-if ~isempty(options_.nk) && options_.nk > 0
+if options_.filtered_vars
     pm3(endo_nbr,gend,ifil(4),B,'One step ahead forecast (filtered variables)',...
         '',varlist,M_.endo_names_tex,M_.endo_names,...
         varlist,'FilteredVariables',DirectoryName,'_filter_step_ahead');

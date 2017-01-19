@@ -126,6 +126,9 @@ end
 options_=select_qz_criterium_value(options_);
 
 % Set options related to filtered variables.
+if  isequal(options_.filtered_vars,0) && ~isempty(options_.filter_step_ahead)
+    options_.filtered_vars = 1;
+end
 if ~isequal(options_.filtered_vars,0) && isempty(options_.filter_step_ahead)
     options_.filter_step_ahead = 1;
 end
