@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2014 Dynare Team
+ * Copyright (C) 2008-2017 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -346,6 +346,10 @@ extern "C" {
         ostringstream strstrm;
         strstrm << "dynare:k_order_perturbation: Caught general exception: " << e.message();
         DYN_MEX_FUNC_ERR_MSG_TXT(strstrm.str().c_str());
+      }
+    catch (...)
+      {
+        DYN_MEX_FUNC_ERR_MSG_TXT("dynare:k_order_perturbation: Caught undefined exception.");
       }
     plhs[0] = mxCreateDoubleScalar(0);
   } // end of mexFunction()
