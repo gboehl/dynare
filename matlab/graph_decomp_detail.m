@@ -187,6 +187,26 @@ for j=1:nvar
         subplot(nrow,ncol,isub),
         set(gca,'ylim',a0(3:4))
     end
+    
+% make legend
+    axes('Position',[0.1 0.01 0.8 0.02],'units','normalized');
+    axis([0 1 0 1]);
+    axis off;
+    hold on;
+    x1 = 0;
+    width = 1/2;
+    mylabels = {'Individual contrib.','Residual contrib.'};
+
+    for i=1:2
+%     for i=1:comp_nbr
+        hl = fill([x1 x1 x1+0.3*width x1+0.3*width],[0 1 1 0],i);
+        hold on
+        ht = text(x1+0.4*width,0.3,mylabels{i},'Interpreter','none');
+        hold on
+        x1 = x1 + width;
+    end
+    
+    
     if nfigs>1,
         suffix = ['_detail_' int2str(jf)];
     else
