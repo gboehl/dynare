@@ -49,8 +49,14 @@ fig_names='';
 % steadystate=0;
 % write_xls=0;
 
+if isfield(options_.shock_decomp,'expand'), % private trap for uimenu calls
+    expand=options_.shock_decomp.expand;
+else
+    expand=0;
+end
+
     if ~isempty(options_.shock_decomp.fig_names)
-        fig_names=['_' options_.shock_decomp.fig_names];
+        fig_names=[' ' options_.shock_decomp.fig_names];
     end
     type=options_.shock_decomp.type;
     detail_plot=options_.shock_decomp.detail_plot;
@@ -66,43 +72,47 @@ switch realtime_
     
     case 0
         z = oo_.shock_decomposition;
+        fig_names1=fig_names;
     
     case 1 % realtime
         if vintage_
             z = oo_.realtime_shock_decomposition.(['time_' int2str(vintage_)]);
-            fig_names=[fig_names '_realtime_' char(initial_date+vintage_-1)];
+            fig_names1=[fig_names ' realtime. ' char(initial_date+vintage_-1)];
         else
             z = oo_.realtime_shock_decomposition.pool;
-            fig_names=[fig_names '_realtime_pool'];
+            fig_names1=[fig_names ' realtime pool'];
         end
     
     case 2 % conditional
         if vintage_
             z = oo_.conditional_shock_decomposition.(['time_' int2str(vintage_)]);
             initial_date = options_.initial_date+vintage_-forecast_;
-            fig_names=[fig_names '_conditional_' int2str(forecast_) 'step_' char(initial_date)];
+            fig_names1=[fig_names ' conditional ' int2str(forecast_) '-step ' char(initial_date)];
         else
             z = oo_.conditional_shock_decomposition.pool;
-            fig_names=[fig_names '_conditional_pool'];
+            fig_names1=[fig_names ' conditional pool'];
         end
         
     case 3 % forecast
         if vintage_
             z = oo_.realtime_forecast_shock_decomposition.(['time_' int2str(vintage_)]);
             initial_date = options_.initial_date+vintage_-1;
-            fig_names=[fig_names '_forecast_' int2str(forecast_) 'step_' char(initial_date)];
+            fig_names1=[fig_names ' forecast ' int2str(forecast_) '-step ' char(initial_date)];
         else
             z = oo_.realtime_forecast_shock_decomposition.pool;
-            fig_names=[fig_names '_forecast_1step_pool'];
+            fig_names1=[fig_names ' forecast 1-step pool'];
         end
 end
 
+if ~expand
+    fig_names = fig_names1;
+end
 gend = size(z,3);
 if options_.use_shock_groups
     shock_groups = M_.shock_groups.(options_.use_shock_groups);
     shock_ind = fieldnames(shock_groups);
     ngroups = length(shock_ind);
-    fig_names=[fig_names '_group_' options_.use_shock_groups];
+    fig_names=[fig_names ' group ' options_.use_shock_groups];
     shock_names = shock_ind;
     for i=1:ngroups,
        shock_names{i} = (shock_groups.(shock_ind{i}).label);
@@ -141,7 +151,6 @@ if isempty(options_.colormap),
     options_.colormap = MAP;
 end
 steady_state = oo_.steady_state;
-fig_mode=type;
 
 switch type
 
@@ -156,7 +165,6 @@ switch type
         else
             initial_date = dates('0Q4');
         end
-        fig_mode = type;
         steady_state = 4*steady_state;
         
     case 'aoa'
@@ -169,7 +177,6 @@ switch type
             t0=4-initial_date.time(2)+1;
         end
         z=z(:,:,t0:4:end);
-        fig_mode = 'AoA';
 
     otherwise
 
@@ -179,7 +186,6 @@ end
 if steadystate
     options_.shock_decomp.steady_state=steady_state;
 end
-options_.shock_decomp.fig_mode=fig_mode;
 options_.shock_decomp.fig_names=fig_names;
 if detail_plot,
     graph_decomp_detail(z,shock_names,M_.endo_names,i_var,initial_date,M_,options_)

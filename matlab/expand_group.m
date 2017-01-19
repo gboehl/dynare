@@ -35,7 +35,7 @@ mydata=get(findobj(gcf,'tag',['group' int2str(ic)]),'userdata');
 % define expanded group
 label = mydata.shock_group.label;
 shocks = mydata.shock_group.shocks;
-options.shock_decomp.fig_names = [mydata.fig_names '_expand'];
+options.shock_decomp.fig_names = [mydata.fig_names '. Expand'];
 options.use_shock_groups = strrep(label,' ','_'); %[use_shock_groups_old int2str(ic)];
 for j=1:length(shocks)
     M.shock_groups.(options.use_shock_groups).(['group' int2str(j)]).label=shocks{j};
@@ -43,6 +43,7 @@ for j=1:length(shocks)
 end 
 
 options.shock_decomp.interactive=0;
+options.shock_decomp.expand=1;
 plot_shock_decomposition(M,oo,options,var_list_);
 
 
