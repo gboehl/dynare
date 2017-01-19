@@ -6047,7 +6047,8 @@ is not yet compatible with @code{analytical_derivation}.
 @item filter_covariance
 @anchor{filter_covariance} Saves the series of one step ahead error of
 forecast covariance matrices. With Metropolis, they are saved in @ref{oo_.FilterCovariance},
-otherwise in @ref{oo_.Smoother.Variance}.
+otherwise in @ref{oo_.Smoother.Variance}. Saves also k-step ahead error of
+forecast covariance matrices if @code{filter_step_ahead} is set.
 
 @item filter_step_ahead = [@var{INTEGER1}:@var{INTEGER2}]
 See below.
@@ -6055,8 +6056,9 @@ See below.
 @item filter_step_ahead = [@var{INTEGER1} @var{INTEGER2}  @dots{}]
 @anchor{filter_step_ahead}
 Triggers the computation k-step ahead filtered values, i.e. @math{E_{t}{y_{t+k}}}. Stores results in
-@code{oo_.FilteredVariablesKStepAhead} and
-@code{oo_.FilteredVariablesKStepAheadVariances}.
+@code{oo_.FilteredVariablesKStepAhead}. Also stores 1-step ahead values in @code{oo_.FilteredVariables}. 
+@code{oo_.FilteredVariablesKStepAheadVariances} is stored if @code{filter_covariance}.
+ 
 
 @item filter_decomposition
 @anchor{filter_decomposition} Triggers the computation of the shock
