@@ -7209,6 +7209,9 @@ graphs. See @code{colormap} in Matlab/Octave manual.
 
 @item forecast
 @anchor{forecast}. Compute shock decompositions up to T+k periods, i.e. get shock contributions to k-step ahead forecasts.
+
+@item save_realtime = [@var{integer1} ... @var{integern}]
+@anchor{save_realtime}. Choose for which vintages to save the full realtime shock decomposition. Default = 0.
 @end table
 
 @outputhead
