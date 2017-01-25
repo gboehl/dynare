@@ -77,30 +77,30 @@ switch realtime_
     case 1 % realtime
         if vintage_
             z = oo_.realtime_shock_decomposition.(['time_' int2str(vintage_)]);
-            fig_names1=[fig_names ' realtime. ' char(initial_date+vintage_-1)];
+            fig_names1=[fig_names ' realtime (vintage ' char(initial_date+vintage_-1) ')'];
         else
             z = oo_.realtime_shock_decomposition.pool;
-            fig_names1=[fig_names ' realtime pool'];
+            fig_names1=[fig_names ' realtime (rolling)'];
         end
     
     case 2 % conditional
         if vintage_
             z = oo_.conditional_shock_decomposition.(['time_' int2str(vintage_)]);
             initial_date = options_.initial_date+vintage_-forecast_;
-            fig_names1=[fig_names ' conditional ' int2str(forecast_) '-step ' char(initial_date)];
+            fig_names1=[fig_names ' ' int2str(forecast_) '-step ahead conditional forecast (given ' char(initial_date) ')'];
         else
             z = oo_.conditional_shock_decomposition.pool;
-            fig_names1=[fig_names ' conditional pool'];
+            fig_names1=[fig_names ' 1-step ahead conditional forecast (rolling)'];
         end
         
     case 3 % forecast
         if vintage_
             z = oo_.realtime_forecast_shock_decomposition.(['time_' int2str(vintage_)]);
             initial_date = options_.initial_date+vintage_-1;
-            fig_names1=[fig_names ' forecast ' int2str(forecast_) '-step ' char(initial_date)];
+            fig_names1=[fig_names ' ' int2str(forecast_) '-step ahead forecast (given ' char(initial_date) ')'];
         else
             z = oo_.realtime_forecast_shock_decomposition.pool;
-            fig_names1=[fig_names ' forecast 1-step pool'];
+            fig_names1=[fig_names ' 1-step ahead forecast (rolling)'];
         end
 end
 

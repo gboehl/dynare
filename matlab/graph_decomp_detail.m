@@ -65,6 +65,10 @@ end
 fig_names=regexprep(fig_names_long, ' ', '_');
 fig_names=strrep(fig_names, '.', '');
 fig_names=strrep(fig_names, '-', '');
+fig_names=strrep(fig_names, '(given', '');
+fig_names=strrep(fig_names, '(vintage', '');
+fig_names=strrep(fig_names, ')', '');
+fig_names=strrep(fig_names, '(', '');
 % fig_names1 = [fig_names];
 % fig_names = [fig_names '_'];
 
@@ -107,6 +111,12 @@ if DynareOptions.TeX && any(strcmp('eps',cellstr(DynareOptions.graph_format)))
     fprintf(fidTeX,' \n');
 end
 
+if opts_decomp.vintage && opts_decomp.realtime>1,
+    preamble_txt = 'Shock decomposition';
+else
+    preamble_txt = 'Historical shock decomposition';
+end
+
 ncol=3;
 nrow=ceil(comp_nbr/ncol);
 ntotrow = nrow;
@@ -140,7 +150,7 @@ for j=1:nvar
         continue
     end
     for jf = 1:nfigs
-    fhandle = dyn_figure(DynareOptions,'Name',['Shock decomposition (detail): ' deblank(endo_names(i_var(j),:)) strrep(fig_mode1, '_', ' ') fig_names_long '.'],'position',[200 100 650 850], 'PaperPositionMode', 'auto','PaperOrientation','portrait','renderermode','auto');
+    fhandle = dyn_figure(DynareOptions,'Name',[preamble_txt fig_names_long strrep(fig_mode1, '_', ' ') ': ' deblank(endo_names(i_var(j),:)) ' (detail).'],'position',[200 100 650 850], 'PaperPositionMode', 'auto','PaperOrientation','portrait','renderermode','auto');
     a0=zeros(1,4);
     a0(3)=inf;
     a0(4)=-inf;
@@ -212,13 +222,13 @@ for j=1:nvar
     else
         suffix = ['_detail'];
     end
-    dyn_saveas(fhandle,[GraphDirectoryName, filesep, DynareModel.fname,'_shock_decomposition_',fig_mode,deblank(endo_names(i_var(j),:)),fig_names suffix],DynareOptions);
+    dyn_saveas(fhandle,[GraphDirectoryName, filesep, DynareModel.fname,'_shock_decomposition_',deblank(endo_names(i_var(j),:)),fig_mode1,fig_names suffix],DynareOptions);
     if DynareOptions.TeX && any(strcmp('eps',cellstr(DynareOptions.graph_format)))
         fprintf(fidTeX,'\\begin{figure}[H]\n');
         fprintf(fidTeX,'\\centering \n');
-        fprintf(fidTeX,'\\includegraphics[width=0.8\\textwidth]{%s/graphs/%s_shock_decomposition_%s}\n',DynareModel.fname,DynareModel.fname,[fig_mode deblank(endo_names(i_var(j),:)) fig_names suffix]);
+        fprintf(fidTeX,'\\includegraphics[width=0.8\\textwidth]{%s/graphs/%s_shock_decomposition_%s}\n',DynareModel.fname,DynareModel.fname,[deblank(endo_names(i_var(j),:)) fig_mode1 fig_names suffix]);
         fprintf(fidTeX,'\\label{Fig:shock_decomp_detail:%s}\n',[fig_mode deblank(endo_names(i_var(j),:)) fig_names suffix]);
-        fprintf(fidTeX,['\\caption{Historical shock decomposition: $ %s $ ' strrep(fig_mode1, '_', ' ') fig_names_long, '.}\n'],deblank(DynareModel.endo_names_tex(i_var(j),:)));
+        fprintf(fidTeX,['\\caption{' preamble_txt fig_names_long strrep(fig_mode1, '_',  ' ') ': $ %s $ (detail).}\n'],deblank(DynareModel.endo_names_tex(i_var(j),:)));
         fprintf(fidTeX,'\\end{figure}\n');
         fprintf(fidTeX,' \n');
     end    
