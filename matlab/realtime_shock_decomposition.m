@@ -205,34 +205,7 @@ for j=presample+1:nobs,
         oo_.conditional_shock_decomposition.(['time_' int2str(j-forecast_)])=zn;
     end
     %%
-    
-    %% realtime conditional shock decomp k step ahead
-    if forecast_ && presample<j,
-        for ind_forecast_=0:min(forecast_,j-presample)
-            zn = zeros(endo_nbr,nshocks+2,ind_forecast_+1);
-            zn(:,end,1:ind_forecast_+1) = Smoothed_Variables_deviation_from_mean(:,gend-ind_forecast_:gend);
-            for i=1:ind_forecast_+1,
-                if i > 1 && i <= maximum_lag+1
-                    lags = min(i-1,maximum_lag):-1:1;
-                end
-                
-                if i > 1
-                    tempx = permute(zn(:,1:nshocks,lags),[1 3 2]);
-                    m = min(i-1,maximum_lag);
-                    tempx = [reshape(tempx,endo_nbr*m,nshocks); zeros(endo_nbr*(maximum_lag-i+1-1),nshocks)];
-                    zn(:,1:nshocks,i) = A(inv_order_var,:)*tempx(i_state,:);
-                    lags = lags+1;
-                    zn(:,1:nshocks,i) = zn(:,1:nshocks,i) + B(inv_order_var,:).*repmat(epsilon(:,i+gend-ind_forecast_-1)',endo_nbr,1);
-                end
-                
-                %             zn(:,1:nshocks,i) = zn(:,1:nshocks,i) + B(inv_order_var,:).*repmat(epsilon(:,i+gend-forecast_-1)',endo_nbr,1);
-                zn(:,nshocks+1,i) = zn(:,nshocks+2,i) - sum(zn(:,1:nshocks,i),2);
-            end
-            oo_.realtime_conditional_shock_decomposition.(['time_' int2str(j-ind_forecast_)])(:,:,1+ind_forecast_)=zn(:,:,end);
-        end
-    end
-    %%
-    
+       
     if init,
         zreal(:,:,1:j) = z(:,:,1:j);
     else
@@ -242,10 +215,21 @@ for j=presample+1:nobs,
     if ismember(j,save_realtime)
         oo_.realtime_shock_decomposition.(['time_' int2str(j)])=z;
     end
+    
     if forecast_
         zfrcst(:,:,j+1) = z(:,:,gend+1);
         oo_.realtime_forecast_shock_decomposition.(['time_' int2str(j)])=z(:,:,gend:end);
+        if j>forecast_+presample
+    %% realtime conditional shock decomp k step ahead
+            oo_.realtime_conditional_shock_decomposition.(['time_' int2str(j-forecast_)]) = ...
+                zreal(:,:,j-forecast_:j) - ...
+                oo_.realtime_forecast_shock_decomposition.(['time_' int2str(j-forecast_)]);
+            oo_.realtime_conditional_shock_decomposition.(['time_' int2str(j-forecast_)])(:,end-1,:) = ...
+                oo_.realtime_forecast_shock_decomposition.(['time_' int2str(j-forecast_)])(:,end,:);
+    
+        end
     end
+    
     prctdone=j/nobs;
     if isoctave
         printf([running_text,' %3.f%% done\r'], prctdone*100);
