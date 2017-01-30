@@ -86,7 +86,7 @@ switch realtime_
     case 2 % conditional
         if vintage_
             z = oo_.conditional_shock_decomposition.(['time_' int2str(vintage_)]);
-            initial_date = options_.initial_date+vintage_-forecast_;
+            initial_date = options_.initial_date+vintage_-1;
             fig_names1=[fig_names ' ' int2str(forecast_) '-step ahead conditional forecast (given ' char(initial_date) ')'];
         else
             z = oo_.conditional_shock_decomposition.pool;
@@ -173,8 +173,8 @@ switch type
             initial_date = dates('1Y');
             t0=4;
         else
-            initial_date = dates([int2str(initial_date.time(1)) 'Y']);
             t0=4-initial_date.time(2)+1;
+            initial_date = dates([int2str(initial_date.time(1)) 'Y']);
         end
         z=z(:,:,t0:4:end);
 
