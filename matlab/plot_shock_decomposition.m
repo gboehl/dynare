@@ -67,6 +67,12 @@ end
     write_xls = options_.shock_decomp.write_xls;
 
 initial_date = options_.initial_date;
+ 
+if isfield(options_.shock_decomp,'q2a'), % private trap for aoa calls
+    q2a=options_.shock_decomp.q2a;
+else
+    q2a=0;
+end
 
 switch realtime_
     
@@ -85,7 +91,7 @@ switch realtime_
     
     case 2 % conditional
         if vintage_
-            z = oo_.conditional_shock_decomposition.(['time_' int2str(vintage_)]);
+            z = oo_.realtime_conditional_shock_decomposition.(['time_' int2str(vintage_)]);
             initial_date = options_.initial_date+vintage_-1;
             fig_names1=[fig_names ' ' int2str(forecast_) '-step ahead conditional forecast (given ' char(initial_date) ')'];
         else
@@ -170,14 +176,47 @@ switch type
     case 'aoa'
 
         if isempty(initial_date),
-            initial_date = dates('1Y');
             t0=4;
+            initial_date = dates('1Y');
+        else
+            initial_date0 = dates([int2str(initial_date.time(1)) 'Y']);
+            if initial_date.time(2)==1,
+                t0=4;
+            else
+                t0=4+(4-initial_date.time(2)+1);
+                initial_date1=initial_date0+1;
+            end
+        end
+        if q2a
+            var_type=1;
+            islog=0;
+            GYTREND0 = 0;
+            if isfield(options_.shock_decomp,'var_type'), % private trap for aoa calls
+                var_type=options_.shock_decomp.var_type;
+            end
+            if isfield(options_.shock_decomp,'islog'), % private trap for aoa calls
+                islog=options_.shock_decomp.islog;
+            end
+            if isfield(options_.shock_decomp,'GYTREND0'), % private trap for aoa calls
+                GYTREND0=options_.shock_decomp.GYTREND0;
+            end
+            
+    
+            [za, endo_names, endo_names_tex, steady_state, i_var, oo_] = ...
+                annualized_shock_decomposition(oo_,M_, options_.shock_decomp, i_var, t0, options_.nobs, realtime_, vintage_, steady_state,GYTREND0,var_type,islog);
+            if realtime_<2
+                initial_date = initial_date1;
+            else
+                initial_date = initial_date0;
+            end
+            z = za;
+            M_.endo_names = endo_names;
+            M_.endo_names_tex = endo_names_tex;
         else
             t0=4-initial_date.time(2)+1;
-            initial_date = dates([int2str(initial_date.time(1)) 'Y']);
+            initial_date = initial_date0;
+            z=z(:,:,t0:4:end);
         end
-        z=z(:,:,t0:4:end);
-
     otherwise
 
         error('plot_shock_decomposition:: Wrong type')
