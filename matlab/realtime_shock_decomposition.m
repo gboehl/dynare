@@ -208,7 +208,7 @@ for j=presample+1:nobs,
     
     %% realtime conditional shock decomp k step ahead
     if forecast_ && presample<j,
-        for ind_forecast_=1:min(forecast_,j-presample)
+        for ind_forecast_=0:min(forecast_,j-presample)
             zn = zeros(endo_nbr,nshocks+2,ind_forecast_+1);
             zn(:,end,1:ind_forecast_+1) = Smoothed_Variables_deviation_from_mean(:,gend-ind_forecast_:gend);
             for i=1:ind_forecast_+1,
@@ -227,9 +227,6 @@ for j=presample+1:nobs,
                 
                 %             zn(:,1:nshocks,i) = zn(:,1:nshocks,i) + B(inv_order_var,:).*repmat(epsilon(:,i+gend-forecast_-1)',endo_nbr,1);
                 zn(:,nshocks+1,i) = zn(:,nshocks+2,i) - sum(zn(:,1:nshocks,i),2);
-                if i==1 && ind_forecast_==1
-                    oo_.realtime_conditional_shock_decomposition.(['time_' int2str(j-ind_forecast_)])(:,:,1)=zn(:,:,1);
-                end
             end
             oo_.realtime_conditional_shock_decomposition.(['time_' int2str(j-ind_forecast_)])(:,:,1+ind_forecast_)=zn(:,:,end);
         end
