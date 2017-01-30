@@ -76,7 +76,7 @@ supply = e_A ;
 'RoW shocks' = e_q e_ys e_pies  ;
 monetary = e_R ;
 end;
-options_.initial_date=dates('1980Q1');
+options_.initial_date=dates('1989Q4'); % date arbitrarily set for testing purposes
 shock_decomposition(use_shock_groups=trade) y_obs R_obs pie_obs dq de;
 
 // various tests for plot_shock_decompositions
@@ -95,6 +95,7 @@ close all,
 // testing realtime decomposition
 // first compute realtime decompositions [pre-processor not yet available]
 options_.shock_decomp.forecast=8;
+options_.shock_decomp.save_realtime = [5:4:options_.nobs]; % store values useful for annualized vars
 oo_ = realtime_shock_decomposition(M_,oo_,options_,var_list_,bayestopt_,estim_params_);
 
 options_.shock_decomp.detail_plot = 0;
@@ -114,7 +115,7 @@ plot_shock_decomposition(M_,oo_,options_,var_list_);
 options_.shock_decomp.realtime=2; 
 // conditional 8-step ahead decomposition, given 1989q4
 options_.shock_decomp.detail_plot = 1;
-options_.shock_decomp.vintage=40; 
+options_.shock_decomp.vintage=29; 
 plot_shock_decomposition(M_,oo_,options_,var_list_);
 
 close all,
@@ -128,21 +129,46 @@ plot_shock_decomposition(M_,oo_,options_,var_list_);
 // forecast 8-step ahead decomposition, given 1989q4
 options_.shock_decomp.detail_plot = 1;
 options_.shock_decomp.realtime=3; 
-options_.shock_decomp.vintage=40; 
+options_.shock_decomp.vintage=29; 
 plot_shock_decomposition(M_,oo_,options_,var_list_);
 
 close all,
+
+// now I test annualized variables
+options_.shock_decomp.realtime=0; 
+options_.shock_decomp.detail_plot = 1;
+options_.shock_decomp.interactive=0;
+options_.use_shock_groups='';
+options_.shock_decomp.type='aoa'; 
+options_.shock_decomp.q2a=1; 
+options_.shock_decomp.islog=1; 
+plot_shock_decomposition(M_,oo_,options_,'y');
+
+options_.shock_decomp.realtime=1; 
+options_.shock_decomp.vintage=0; 
+plot_shock_decomposition(M_,oo_,options_,'y');
+
+options_.shock_decomp.vintage=29; 
+options_.shock_decomp.realtime=1; 
+plot_shock_decomposition(M_,oo_,options_,'y');
+options_.shock_decomp.realtime=2; 
+plot_shock_decomposition(M_,oo_,options_,'y');
+options_.shock_decomp.realtime=3; 
+plot_shock_decomposition(M_,oo_,options_,'y');
+
+close all
 
 //test uimenu for groups
 options_.shock_decomp.realtime=0; 
 options_.shock_decomp.detail_plot = 1;
 options_.shock_decomp.interactive=1;
 options_.use_shock_groups='row';
+options_.shock_decomp.type='qoq'; 
 plot_shock_decomposition(M_,oo_,options_,var_list_);
 
 options_.shock_decomp.detail_plot = 1;
 options_.shock_decomp.realtime=3; 
-options_.shock_decomp.vintage=40; 
+options_.shock_decomp.vintage=29; 
 plot_shock_decomposition(M_,oo_,options_,var_list_);
 
 collect_latex_files;
