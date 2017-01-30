@@ -63,11 +63,11 @@ if screen_shocks
     fig_names_long = [fig_names_long ' SCREEN'];
 end
 
-fig_names=regexprep(fig_names_long, ' ', '_');
+fig_names=strrep(fig_names_long, '(given ', '');
+fig_names=strrep(fig_names, '(vintage ', '');
+fig_names=regexprep(fig_names, ' ', '_');
 fig_names=strrep(fig_names, '.', '');
 fig_names=strrep(fig_names, '-', '');
-fig_names=strrep(fig_names, '(given', '');
-fig_names=strrep(fig_names, '(vintage', '');
 fig_names=strrep(fig_names, ')', '');
 fig_names=strrep(fig_names, '(', '');
 
