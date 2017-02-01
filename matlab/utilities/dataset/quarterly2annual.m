@@ -7,9 +7,10 @@ function [ya, yass, gya, gyass] = quarterly2annual(y,yss,GYTREND0,type,islog)
 % y        quarterly time series
 % yss      steady state of y
 % GYTREND0 growth rate of y
-% type     1 flow (default)
-%          2 deflator
-%          0 stock
+% type     1 sum (default)
+%          2 average
+%          3 last period (Q4)
+%          4 geometric average
 % islog    0 level (default)
 %          1 log-level
 %
@@ -62,6 +63,10 @@ switch type
     case 3
         yass=yss;
         tmp = y;
+    case 4
+        yass = yss*(exp(-GYTREND0*3/2));
+        tmp = (lagged(y+yss,3)*exp(-GYTREND0*3).*lagged(y+yss,2)*exp(-GYTREND0*2).*lagged(y+yss,1)*exp(-GYTREND0).*(y+yss)).^(1/4); % annualized level        
+        tmp = tmp - yass;
     otherwise
         error('Wrong type input')
 end
