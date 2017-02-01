@@ -60,8 +60,9 @@ fig_names_long = opts_decomp.fig_names;
 
 if screen_shocks
 %     fig_names1 = [fig_names1 '_screen'];
-    fig_names = [fig_names ' SCREEN'];
+    fig_names_long = [fig_names_long ' SCREEN'];
 end
+
 fig_names=strrep(fig_names_long, '(given ', '');
 fig_names=strrep(fig_names, '(vintage ', '');
 fig_names=regexprep(fig_names, ' ', '_');
