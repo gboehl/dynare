@@ -268,6 +268,34 @@ if ~options_.opt_gsa.ppost
     [dum, ipost]=sort(-logpo2);
     [dum, ilik]=sort(-likelihood);
 end
+
+%% visual scatter analysis!
+if options_.opt_gsa.ppost
+    tmp_title='R2 Posterior:';
+    atitle='R2 Posterior:';
+    asname='r2_post';
+else
+    if options_.opt_gsa.pprior
+        tmp_title='R2 Prior:';
+        atitle='R2 Prior:';
+        asname='r2_prior';
+    else
+        tmp_title='R2 MC:';
+        atitle='R2 MC:';
+        asname='r2_mc';
+    end
+end
+options_scatter.param_names = vvarvecm;
+options_scatter.param_names_tex = vvarvecm_tex;
+options_scatter.fname_ = fname_;
+options_scatter.OutputDirectoryName = OutDir;
+options_scatter.amcf_name = asname;
+options_scatter.amcf_title = atitle;
+options_scatter.title = tmp_title;
+scatter_analysis(r2_MC, x,options_scatter, options_);
+%% end of visual scatter analysis
+
+
 if ~options_.opt_gsa.ppost && options_.opt_gsa.lik_only
     if options_.opt_gsa.pprior
         anam='rmse_prior_post';
