@@ -86,6 +86,19 @@ Copyright: 2016 Benjamin Born and Johannes Pfeifer
            2016 Dynare Team
 License: GPL-3+
 
+Files: matlab/gsa/pick.m
+Copyright: 2001-2017 Marco Ratto
+The program has been developed by M. Ratto, European Commission, Joint Research Centre,
+Institute for the Protection and Security of The Citizen, Technological and Economic Risk Management,
+Applied Statistics, as a deliverable of the IMPACT project 
+(EC Fifth Framework Programme, SCA Project, IST-1999-11313, DG-INFSO).
+Disclaimer: This software has been developed at the Joint Research Centre of European Commission
+by officers in the course of their official duties. This software is not subject to copyright
+protection and is in the public domain. It is an experimental system. The Joint Research Centre
+of European Commission assumes no responsibility whatsoever for its use by other parties
+and makes no guarantees, expressed or implied, about its quality, reliability, or any other
+characteristic. We would appreciate acknowledgement if the software is used.
+
 Files: matlab/optimization/simpsa.m matlab/optimization/simpsaget.m matlab/optimization/simpsaset.m
 Copyright: 2005 Henning Schmidt, FCC, henning@fcc.chalmers.se
            2006 Brecht Donckels, BIOMATH, brecht.donckels@ugent.be

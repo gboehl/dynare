@@ -1,6 +1,8 @@
 function pick
-
-% GLUEWIN, version 1.0, December 01.
+%
+% Copyright: 2001-2017 Marco Ratto
+% 
+% This file is part of GLUEWIN
 % GLUEWIN is a MATLAB code designed for analysing the output
 % of Monte Carlo runs when empirical observations of the model output are available
 % and implements the GSA-GLUE methodology by Ratto et al. [1], based on a combination
@@ -17,7 +19,7 @@ function pick
 % to which the GLUEWIN code introduces several extensions and additional options.
 % Thanks are due to R. Girardi, A. Rossi, A. Saltelli, S. Tarantola and U. Callies for numerous
 % comments and suggestions.
-% For more information, please contact marco.ratto@jrc.it
+% For more information, please contact marco.ratto@ec.europa.eu
 % 
 % Disclaimer: This software has been developed at the Joint Research Centre of European Commission
 % by officers in the course of their official duties. This software is not subject to copyright
