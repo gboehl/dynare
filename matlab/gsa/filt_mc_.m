@@ -59,6 +59,7 @@ skipline(2)
 disp('Starting sensitivity analysis')
 disp('for the fit of EACH observed series ...')
 skipline()
+if ~options_.nograph,
 disp('Deleting old SA figures...')
 a=dir([OutDir,filesep,'*.*']);
 tmp1='0';
@@ -86,7 +87,7 @@ for j=1:length(a),
     end,
 end
 disp('done !')
-
+end
 
 nshock=estim_params_.nvx + estim_params_.nvn + estim_params_.ncx + estim_params_.ncn;
 npar=estim_params_.np;
@@ -113,6 +114,16 @@ else
     else
         fnamtmp=[fname_,'_mc'];
         DirectoryName = CheckPath(['gsa' filesep 'mc'],M_.dname);
+    end
+end
+if loadSA,
+    tmplist =load([OutDir,filesep,fnamtmp, '.mat'],'vvarvecm');
+    if isempty(fieldnames(tmplist)),
+        disp('WARNING: cannot load results since the list of variables used is not present in the mat file')
+        loadSA=0;
+    elseif ~isequal(tmplist.vvarvecm,vvarvecm)
+        disp('WARNING: cannot load results since the list of variables in the mat file differs from the one requested.')
+        loadSA=0;
     end
 end
 if ~loadSA,
@@ -173,7 +184,7 @@ if ~loadSA,
         end
         if exist('xparam1','var')
             [alphahat,etahat,epsilonhat,ahat,SteadyState,trend_coeff,aK] = DsgeSmoother(xparam1,gend,Y,data_index,missing_value,M_,oo_,options_,bayestopt_,estim_params_);
-            y0 = transpose( squeeze(aK(1,jxj,1:gend)));% + kron(ys_mode(js),ones(1,gend)));
+            y0 = reshape( squeeze(aK(1,jxj,1:gend)),[gend length(jxj)]);% + kron(ys_mode(js),ones(1,gend)));
             yobs = transpose( ahat(jxj,:));% + kron(ys_mode(js),ones(1,gend)));
             rmse_mode = sqrt(mean((yobs(istart:end,:)-y0(istart:end,:)).^2));
             r2_mode = 1-sum((yobs(istart:end,:)-y0(istart:end,:)).^2)./sum(yobs(istart:end,:).^2);
@@ -183,7 +194,7 @@ if ~loadSA,
         for j=1:length(filfilt),
             load([DirectoryName filesep M_.fname '_filter_step_ahead',num2str(j),'.mat']);
             nb = size(stock,4);
-            y0(:,:,nbb+1:nbb+nb)=y0(:,:,nbb+1:nbb+nb)+squeeze(stock(1,js,1:gend,:));
+            y0(:,:,nbb+1:nbb+nb)=y0(:,:,nbb+1:nbb+nb)+reshape(stock(1,js,1:gend,:),[length(js) gend nb]);
             nbb=nbb+nb;
             clear stock;
         end
@@ -192,7 +203,7 @@ if ~loadSA,
         for j=1:length(filupdate),
             load([DirectoryName filesep M_.fname '_update',num2str(j),'.mat']);
             nb = size(stock,3);
-            yobs(:,:,nbb+1:nbb+nb)=yobs(:,:,nbb+1:nbb+nb)+squeeze(stock(js,1:gend,:));
+            yobs(:,:,nbb+1:nbb+nb)=yobs(:,:,nbb+1:nbb+nb)+reshape(stock(js,1:gend,:),[length(js) gend nb]);
             nbb=nbb+nb;
             clear stock;
         end
@@ -206,7 +217,7 @@ if ~loadSA,
         if exist('xparam1_mean','var')
             %eval(['rmse_pmean(i) = sqrt(mean((',vj,'(fobs-1+istart:fobs-1+nobs)-y0M(istart:end-1)).^2));'])
             [alphahat,etahat,epsilonhat,ahat,SteadyState,trend_coeff,aK] = DsgeSmoother(xparam1_mean,gend,Y,data_index,missing_value,M_,oo_,options_,bayestopt_,estim_params_);
-            y0 = transpose( squeeze(aK(1,jxj,1:gend)));% + kron(ys_mean(js),ones(1,gend)));
+            y0 = reshape( squeeze(aK(1,jxj,1:gend)),[gend length(jxj)]);% + kron(ys_mean(js),ones(1,gend)));
             yobs = transpose( ahat(jxj,:));% + kron(ys_mean(js),ones(1,gend)));
             rmse_pmean = sqrt(mean((yobs(istart:end,:)-y0(istart:end,:)).^2));
             r2_pmean = 1-mean((yobs(istart:end,:)-y0(istart:end,:)).^2)./mean(yobs(istart:end,:).^2);
@@ -220,7 +231,7 @@ if ~loadSA,
     disp('... done!')
     
     if options_.opt_gsa.ppost
-        save([OutDir,filesep,fnamtmp,'.mat'], 'x', 'logpo2', 'likelihood', 'rmse_MC', 'r2_MC')
+        save([OutDir,filesep,fnamtmp,'.mat'], 'x', 'logpo2', 'likelihood', 'rmse_MC', 'r2_MC', 'vvarvecm')
         if exist('xparam1_mean','var')
             save([OutDir,filesep,fnamtmp, '.mat'], 'rmse_pmean', 'r2_pmean','-append')
         end
@@ -231,7 +242,7 @@ if ~loadSA,
         if options_.opt_gsa.lik_only
             save([OutDir,filesep,fnamtmp, '.mat'], 'x', 'logpo2','likelihood', '-append')
         else
-            save([OutDir,filesep,fnamtmp, '.mat'], 'x', 'logpo2','likelihood', 'rmse_MC', 'r2_MC','-append')
+            save([OutDir,filesep,fnamtmp, '.mat'], 'x', 'logpo2','likelihood', 'rmse_MC', 'r2_MC', 'vvarvecm','-append')
             if exist('xparam1_mean','var')
                 save([OutDir,filesep,fnamtmp, '.mat'], 'rmse_pmean', 'r2_pmean','-append')
             end
@@ -244,7 +255,7 @@ else
     if options_.opt_gsa.lik_only && options_.opt_gsa.ppost==0
         load([OutDir,filesep,fnamtmp, '.mat'],'x','logpo2','likelihood');
     else
-        load([OutDir,filesep,fnamtmp, '.mat'],'x','logpo2','likelihood','rmse_MC','rmse_mode','rmse_pmean', 'r2_MC', 'r2_mode','r2_pmean');
+        load([OutDir,filesep,fnamtmp, '.mat'],'x','logpo2','likelihood','rmse_MC','rmse_mode','rmse_pmean', 'r2_MC', 'vvarvecm', 'r2_mode','r2_pmean');
     end
     lnprior=logpo2(:)-likelihood(:);
     nruns=size(x,1);
