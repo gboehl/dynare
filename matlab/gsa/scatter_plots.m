@@ -1,4 +1,4 @@
-function  scatter_plots(X,xp,vnames,plotsymbol, fnam, dirname, figtitle, xparam1, DynareOptions)
+﻿function  scatter_plots(X,xp,vnames,plotsymbol, fnam, dirname, figtitle, xparam1, DynareOptions)
 %
 % Written by Marco Ratto
 % Joint Research Centre, The European Commission,
@@ -111,7 +111,7 @@ for i = 1:p
 
             %%
             if ~isoctave
-                % Define a context menu; it is not attached to anything
+            % Define a context menu; it is not attached to anything
                 hcmenu = uicontextmenu('Callback','pick','Tag','Run viewer');
                 % Define callbacks for context menu
                 % items that change linestyle
@@ -130,7 +130,6 @@ for i = 1:p
                 end
             end
             %%
-            
             if ~isempty(xparam1)
                 hold on, plot(xparam1(i),xparam1(j),'s','MarkerFaceColor',[0 0.75 0],'MarkerEdgeColor',[0 0.75 0])
             end
