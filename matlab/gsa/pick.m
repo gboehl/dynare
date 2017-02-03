@@ -1,6 +1,6 @@
 function pick
 %
-% Copyright: 2001-2017 Marco Ratto
+% Copyright (C) 2001-2017 European Commission
 % 
 % This file is part of GLUEWIN
 % GLUEWIN is a MATLAB code designed for analysing the output
