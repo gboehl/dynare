@@ -21,7 +21,7 @@ end
 fprintf(fid, 'function ret = %s(y)\n', basename);
 fprintf(fid, '%%function ret = %s(y)\n', basename);
 fprintf(fid, '%% Calculates the %d-step-ahead forecast from the VAR model %s\n', max(horizon), var_model_name);
-fprintf(fid, '%%\n%% Created automatically by Dynare on %s\n%%\n\n', datetime);
+fprintf(fid, '%%\n%% Created automatically by Dynare on %s\n%%\n\n', datestr(now));
 fprintf(fid, '%%%% Construct y\n');
 fprintf(fid, 'assert(length(y) == %d);\n', sum(sum(M_.lead_lag_incidence ~= 0)));
 
