@@ -575,6 +575,8 @@ else
         disp('These variables are excluded from SA')
         disp('[Unless you treat these series as exogenous, there is something wrong in your estimation !]')
     end
+    vvarvecm0=vvarvecm;
+
     ivar = find( std(rmse_MC)./mean(rmse_MC)>0.0001 );
     vvarvecm=vvarvecm(ivar,:);
     rmse_MC=rmse_MC(:,ivar);
@@ -646,7 +648,7 @@ else
     end
     
     %%%%% R2 table
-    
+    vvarvecm=vvarvecm0;
     skipline()
     title_string='R2 over the MC sample:';
     data_mat=[min(r2_MC)' max(r2_MC)'];
@@ -658,6 +660,7 @@ else
     end
     
     r2_MC=r2_MC(:,ivar);
+    vvarvecm=vvarvecm(ivar,:);
     
     skipline()
     disp(['Sample filtered the ',num2str(pfilt*100),'% best R2''s for each observed series ...' ])
