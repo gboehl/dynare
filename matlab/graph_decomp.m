@@ -165,6 +165,8 @@ for j=1:nvar
                 ytick1= [sort(ytick1(1)-dytick:-dytick:ymin) ytick1(1:ind2)];
             end
             set(ax,'ytick',ytick1),
+        else
+            ytick1=get(ax,'ytick');
         end
         ylabel = ytick1'+SteadyState(i_var(j));
         ylabel(abs(ylabel)<eps)=0;
