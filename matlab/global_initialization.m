@@ -645,6 +645,23 @@ options_.saopt.nt=10;
 options_.saopt.step_length_c=0.1;
 options_.saopt.initial_step_length=1;
 
+% particleswarm (global optimization toolbox needed)
+particleswarm.Display = 'iter';
+particleswarm.DisplayInterval = 1;
+particleswarm.FunctionTolerance = 1e-6;
+particleswarm.FunValCheck = 'on';
+particleswarm.HybridFcn = [];
+particleswarm.InertiaRange = [0.1, 1.1];
+particleswarm.MaxIterations = 100000;
+particleswarm.MaxStallIterations = 20;
+particleswarm.MaxStallTime = Inf;
+particleswarm.MaxTime = Inf;
+particleswarm.MinNeighborsFraction = .25;
+particleswarm.ObjectiveLimit = -Inf;
+particleswarm.UseParallel = false;
+particleswarm.UseVectorized = false;
+options_.particleswarm = particleswarm;
+
 % prior analysis
 options_.prior_mc = 20000;
 options_.prior_analysis_endo_var_list = [];

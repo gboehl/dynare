@@ -5410,6 +5410,10 @@ Uses the simpsa algorithm, based on the combination of the non-linear simplex an
 @item 11
 This is not strictly speaking an optimization algorithm. The (estimated) parameters are treated as state variables and estimated jointly with the original state variables of the model using a nonlinear filter. The algorithm implemented in Dynare is described in @cite{Liu and West (2001)}.
 
+@item 12
+Uses @code{particleswarm} optimization routine (available under MATLAB if
+the Global Optimization Toolbox is installed; not available under Octave).
+
 @item 101
 Uses the SolveOpt algorithm for local nonlinear optimization problems proposed by
 @cite{Kuntsevich and Kappel (1997)}.
@@ -5513,7 +5517,7 @@ A list of @var{NAME} and @var{VALUE} pairs. Can be used to set options for the o
 
 @table @code
 
-@item 1, 3, 7
+@item 1, 3, 7, 12
 Available options are given in the documentation of the MATLAB Optimization Toolbox or in Octave's documentation.
 
 @item 2

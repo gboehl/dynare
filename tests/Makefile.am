@@ -309,6 +309,7 @@ MODFILES = \
 	optimizers/fs2000_4_with_optim.mod \
 	optimizers/fs2000_5.mod \
 	optimizers/fs2000_7.mod \
+	optimizers/fs2000_12.mod \
 	optimizers/fs2000_101.mod \
 	optimizers/fs2000_102.mod \
 	optimizers/fs2000_w.mod \
