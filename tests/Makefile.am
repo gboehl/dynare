@@ -893,7 +893,11 @@ clean-local:
 		$(patsubst %.trs, %.log, $(M_TRS_FILES)) \
 		$(patsubst %.trs, %.log, $(M_XFAIL_TRS_FILES)) \
 		$(patsubst %.trs, %.log, $(O_TRS_FILES)) \
-		$(patsubst %.trs, %.log, $(O_XFAIL_TRS_FILES))
+		$(patsubst %.trs, %.log, $(O_XFAIL_TRS_FILES)) \
+		$(patsubst %.trs, %.json, $(M_TRS_FILES)) \
+		$(patsubst %.trs, %.json, $(M_XFAIL_TRS_FILES)) \
+		$(patsubst %.trs, %.json, $(O_TRS_FILES)) \
+		$(patsubst %.trs, %.json, $(O_XFAIL_TRS_FILES))
 
 	rm -f $(patsubst %.mod, %.m, $(MODFILES)) \
 		$(patsubst %.mod, %_static.*, $(MODFILES)) \

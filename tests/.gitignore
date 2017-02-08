@@ -12,6 +12,7 @@
 *.prn
 *_simul
 *-macroexp.mod
+*.json
 
 wsOct
 /run_test_octave_output.txt
