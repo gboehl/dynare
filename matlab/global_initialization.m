@@ -565,6 +565,11 @@ options_.homotopy_mode = 0;
 options_.homotopy_steps = 1;
 options_.homotopy_force_continue = 0;
 
+% numerical hessian
+hessian.use_penalized_objective = false;
+
+options_.hessian = hessian;
+
 %csminwel optimization routine
 csminwel.tolerance.f=1e-7;
 csminwel.maxiter=1000;

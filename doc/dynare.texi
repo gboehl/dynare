@@ -6169,6 +6169,16 @@ This is the convergence criterion used in the fixed point Lyapunov solver. Its d
 @anchor{lyapunov_doubling_tol}
 This is the convergence criterion used in the doubling algorithm to solve the Lyapunov equation. Its default value is 1e-16.
 
+@item use_penalized_objective_for_hessian
+Use the penalized objective instead of the objective function to compute
+numerically the hessian matrix at the mode. The penalties decrease the value of
+the posterior density (or likelihood) when, for some perturbations, Dynare is
+not able to solve the model (issues with steady state existence, Blanchard and
+Kahn conditions, ...). In pratice, the penalized and original
+objectives will only differ if the posterior mode is found to be near a region
+where the model is ill-behaved. By default the original objective function is
+used.
+
 @item analytic_derivation
 Triggers estimation with analytic gradient. The final hessian is also
 computed analytically. Only works for stationary models without
