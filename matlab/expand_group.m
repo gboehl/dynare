@@ -31,7 +31,9 @@ M = evalin('base','M_');
 oo = evalin('base','oo_');
 options = evalin('base','options_');
 mydata=get(findobj(gcf,'tag',['group' int2str(ic)]),'userdata');
-
+if isfield(mydata,'graph_decomp')
+    options.graph_decomp=mydata.graph_decomp;
+end
 % define expanded group
 label = mydata.shock_group.label;
 shocks = mydata.shock_group.shocks;

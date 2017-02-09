@@ -192,6 +192,7 @@ for j=1:nvar
             mydata.fig_names = DynareOptions.shock_decomp.fig_names(2:end);
             mydata.use_shock_groups = DynareOptions.use_shock_groups;
             mydata.shock_group = shock_groups.(shock_ind{i});
+            mydata.shock_decomp = DynareOptions.shock_decomp;
             if ~isempty(mydata.shock_group.shocks{1})
                 c = uicontextmenu;
                 hl.UIContextMenu=c;
