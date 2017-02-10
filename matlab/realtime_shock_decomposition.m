@@ -226,11 +226,13 @@ for j=presample+1:nobs,
                 oo_.realtime_forecast_shock_decomposition.(['time_' int2str(j-forecast_)]);
             oo_.realtime_conditional_shock_decomposition.(['time_' int2str(j-forecast_)])(:,end-1,:) = ...
                 oo_.realtime_forecast_shock_decomposition.(['time_' int2str(j-forecast_)])(:,end,:);
+            oo_.realtime_conditional_shock_decomposition.(['time_' int2str(j-forecast_)])(:,end,:) = ...
+                zreal(:,end,j-forecast_:j);
     
         end
     end
     
-    prctdone=j/nobs;
+    prctdone=(j-presample)/(nobs-presample);
     if isoctave
         printf([running_text,' %3.f%% done\r'], prctdone*100);
     else
