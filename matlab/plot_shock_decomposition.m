@@ -1,4 +1,4 @@
-function plot_shock_decomposition(M_,oo_,options_,varlist)
+function [z, steady_state] = plot_shock_decomposition(M_,oo_,options_,varlist)
 % function plot_shock_decomposition(M_,oo_,options_,varlist)
 % Plots the results of shock_decomposition
 %
@@ -70,6 +70,9 @@ initial_date = options_.initial_date;
  
 if isfield(options_.shock_decomp,'q2a'), % private trap for aoa calls
     q2a=options_.shock_decomp.q2a;
+    if isstruct(q2a) && isempty(fieldnames(q2a)),
+        q2a=0;
+    end
 else
     q2a=0;
 end
@@ -109,6 +112,60 @@ switch realtime_
             fig_names1=[fig_names ' 1-step ahead forecast (rolling)'];
         end
 end
+
+steady_state = oo_.steady_state;
+
+if isequal(type,'aoa') && isstruct(q2a) && realtime_
+        if isempty(initial_date),
+            t0=1;
+            initial_date = dates('1Y');
+        else
+            initial_date0 = dates([int2str(initial_date.time(1)) 'Y']);
+            if initial_date.time(2)==1,
+                t0=1;
+                initial_date1=initial_date0;
+            else
+                t0=(4-initial_date.time(2)+2);
+                initial_date1=initial_date0+1;
+            end
+        end
+        t0=min(options_.shock_decomp.save_realtime);
+    if ~isfield(q2a,'var_type'), % private trap for aoa calls
+        q2a.var_type=1;
+    end
+    if ~isfield(q2a,'islog'), % private trap for aoa calls
+        q2a.islog=0;
+    end
+    if ~isfield(q2a,'GYTREND0'), % private trap for aoa calls
+        q2a.GYTREND0=0;
+    end
+    if ~isfield(q2a,'aux'), % private trap for aoa calls
+        q2a.aux=0;
+    end
+    if ~isfield(q2a,'cumfix'), % private trap for aoa calls
+        q2a.cumfix=1;
+    end
+    if ~isfield(q2a,'plot'), % private trap for aoa calls
+        q2a.plot=1; % growth rate
+    end
+    
+%     if isstruct(q2a.aux) && ischar(q2a.aux.y)
+%         opts=options_;
+%         opts.shock_decomp.type='qoq';
+%         [y_aux, steady_state_aux] = plot_shock_decomposition(M_,oo_,opts,q2a.aux.y);
+%         q2a.aux.y=y_aux;
+%         q2a.aux.yss=steady_state_aux;
+%     end
+    [za, endo_names, endo_names_tex, steady_state, i_var, oo_] = ...
+        annualized_shock_decomposition(oo_,M_, options_, i_var, t0, options_.nobs, realtime_, vintage_, steady_state,q2a);
+%     if realtime_<2
+%         initial_date = initial_date1;
+%     else
+%         initial_date = initial_date0;
+%     end
+end
+
+
 
 if ~expand
     fig_names = fig_names1;
@@ -156,7 +213,6 @@ end
 if isempty(options_.colormap),
     options_.colormap = MAP;
 end
-steady_state = oo_.steady_state;
 
 switch type
 
@@ -181,37 +237,53 @@ switch type
         else
             initial_date0 = dates([int2str(initial_date.time(1)) 'Y']);
             if initial_date.time(2)==1,
-                t0=4;
+                t0=1;
+                initial_date1=initial_date0;
             else
-                t0=4+(4-initial_date.time(2)+1);
+                t0=(4-initial_date.time(2)+2);
                 initial_date1=initial_date0+1;
             end
         end
-        if q2a
-            var_type=1;
-            islog=0;
-            GYTREND0 = 0;
-            if isfield(options_.shock_decomp,'var_type'), % private trap for aoa calls
-                var_type=options_.shock_decomp.var_type;
+        if isstruct(q2a) 
+            if realtime_ == 0
+            if ~isfield(q2a,'var_type'), % private trap for aoa calls
+                q2a.var_type=1;
             end
-            if isfield(options_.shock_decomp,'islog'), % private trap for aoa calls
-                islog=options_.shock_decomp.islog;
+            if ~isfield(q2a,'islog'), % private trap for aoa calls
+                q2a.islog=0;
             end
-            if isfield(options_.shock_decomp,'GYTREND0'), % private trap for aoa calls
-                GYTREND0=options_.shock_decomp.GYTREND0;
+            if ~isfield(q2a,'GYTREND0'), % private trap for aoa calls
+                q2a.GYTREND0=0;
+            end
+            if ~isfield(q2a,'aux'), % private trap for aoa calls
+                q2a.aux=0;
+            end
+            if ~isfield(q2a,'cumfix'), % private trap for aoa calls
+                q2a.cumfix=1;
+            end
+            if ~isfield(q2a,'plot'), % private trap for aoa calls
+                q2a.plot=1; % growth rate
             end
             
-    
+            if isstruct(q2a.aux) && ischar(q2a.aux.y)
+                opts=options_;
+                opts.shock_decomp.type='qoq';
+                [y_aux, steady_state_aux] = plot_shock_decomposition(M_,oo_,opts,q2a.aux.y);
+                q2a.aux.y=y_aux;
+                q2a.aux.yss=steady_state_aux;
+            end
             [za, endo_names, endo_names_tex, steady_state, i_var, oo_] = ...
-                annualized_shock_decomposition(oo_,M_, options_.shock_decomp, i_var, t0, options_.nobs, realtime_, vintage_, steady_state,GYTREND0,var_type,islog);
+                annualized_shock_decomposition(z,M_, options_, i_var, t0, options_.nobs, realtime_, vintage_, steady_state,q2a);
+            end
+            z = za;
+            M_.endo_names = endo_names;
+            M_.endo_names_tex = endo_names_tex;
+%     endo_nbr = size(z,1);
             if realtime_<2
                 initial_date = initial_date1;
             else
                 initial_date = initial_date0;
             end
-            z = za;
-            M_.endo_names = endo_names;
-            M_.endo_names_tex = endo_names_tex;
         else
             t0=4-initial_date.time(2)+1;
             initial_date = initial_date0;
@@ -225,6 +297,13 @@ end
 if steadystate
     options_.shock_decomp.steady_state=steady_state;
 end
+
+if nargout
+    z=z(i_var,:,:);
+    steady_state = steady_state(i_var);
+    return
+end
+
 options_.shock_decomp.fig_names=fig_names;
 if detail_plot,
     graph_decomp_detail(z,shock_names,M_.endo_names,i_var,initial_date,M_,options_)

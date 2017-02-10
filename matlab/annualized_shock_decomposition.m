@@ -1,4 +1,4 @@
-function [z, endo_names, endo_names_tex, steady_state, i_var, oo_] = annualized_shock_decomposition(oo_, M_, opts, i_var, t0, t1, realtime_, vintage_, steady_state,GYTREND0,var_type,islog)
+function [z, endo_names, endo_names_tex, steady_state, i_var, oo_] = annualized_shock_decomposition(oo_, M_, options_, i_var, t0, t1, realtime_, vintage_, steady_state, q2a, cumfix)
 % function oo_ = annualized_shock_decomposition(oo_,t0,options_.nobs);
 % Computes annualized shocks contribution to a simulated trajectory. The fields set are
 % oo_.annualized_shock_decomposition, oo_.annualized_realtime_shock_decomposition, 
@@ -19,9 +19,7 @@ function [z, endo_names, endo_names_tex, steady_state, i_var, oo_] = annualized_
 %    realtime_:    [integer]   
 %    vintage_:     [integer]
 %    steady_state: [array] steady state value of quarterly (log-) level vars
-%    GYTREND0:     [array] growth of level of vars
-%    var_type:     [integer] flag for stock/flow/deflator
-%    islog:        [integer] flag for log-levels 
+%    q2a:          [structure] info on q2a
 %
 % OUTPUTS
 %    z:              [matrix] shock decomp to plot 
@@ -51,15 +49,62 @@ function [z, endo_names, endo_names_tex, steady_state, i_var, oo_] = annualized_
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
+opts = options_.shock_decomp;
 nvar = length(i_var);
-
+GYTREND0 = q2a.GYTREND0;
+var_type = q2a.type;
+islog    = q2a.islog;
+aux      = q2a.aux;
+aux0 = aux;
+cumfix      = q2a.cumfix;
 % usual shock decomp 
-z = oo_.shock_decomposition;
+if isstruct(oo_)
+%     z = oo_.shock_decomposition;
+        myopts=options_;
+        myopts.shock_decomp.type='qoq';
+        myopts.shock_decomp.realtime=0;
+        [z, junk] = plot_shock_decomposition(M_,oo_,myopts,[]);
+else
+    z = oo_;
+end
 z = z(i_var,:,:);
-if var_type==2,
+mytype=var_type;
+if isfield(q2a,'name')
+    mytxt = q2a.name;
+    mytex = q2a.name;
+    if isfield(q2a,'tex_name')
+        mytex = q2a.tex_name;
+    end
+    if mytype==2,
+        gtxt = ['PHI' mytxt]; % inflation rate
+        gtex = ['{\pi(' mytex ')}'];
+    elseif mytype
+        gtxt = ['G' mytxt]; % inflation rate
+        gtex = ['{g(' mytex ')}'];
+    end
+    if isfield(q2a,'gname')
+        gtxt = q2a.gname;
+    end
+    if isfield(q2a,'tex_gname')
+        gtex = q2a.tex_gname;
+    end
+    mytype=0;
+end
+if isstruct(aux)
+    if ischar(aux.y)
+        myopts=options_;
+        myopts.shock_decomp.type='qoq';
+        myopts.shock_decomp.realtime=0;
+        [y_aux, steady_state_aux] = plot_shock_decomposition(M_,oo_,myopts,aux.y);
+        aux.y=y_aux;
+        aux.yss=steady_state_aux;
+    end
+    yaux=aux.y;
+end
+if mytype==2,
     gtxt = 'PHI'; % inflation rate
     gtex = '\pi';
-else
+elseif mytype
     gtxt = 'G'; % growth rate
     gtex = 'g';
 end
@@ -76,48 +121,98 @@ for j=1:nvar
         gendo_names = char(gendo_names,[gtxt endo_names(j,:)]);
         gendo_names_tex = char(gendo_names_tex,[gtex '(' deblank(endo_names_tex(j,:)) ')']);
     else
-        endo_names = [deblank(M_.endo_names(i_var(j),:)) '_A'];
-        endo_names_tex = ['{' deblank(M_.endo_names_tex(i_var(j),:)) '}^A'];
-        gendo_names = [gtxt endo_names(j,:)];
-        gendo_names_tex = [gtex '(' deblank(endo_names_tex(j,:)) ')'];
+        if nvar==1 && ~mytype
+            endo_names = mytxt;
+            endo_names_tex = mytex;
+            gendo_names = gtxt;
+            gendo_names_tex = gtex;
+        else
+            endo_names = [deblank(M_.endo_names(i_var(j),:)) '_A'];
+            endo_names_tex = ['{' deblank(M_.endo_names_tex(i_var(j),:)) '}^A'];
+            gendo_names = [gtxt endo_names(j,:)];
+            gendo_names_tex = [gtex '(' deblank(endo_names_tex(j,:)) ')'];
+        end
     end
     for k =1:nterms,
+        if isstruct(aux),
+            aux.y = squeeze(yaux(j,k,t0:end));
+        end
         [za(j,k,:), steady_state_a(j,1), gza(j,k,:), steady_state_ga(j,1)] = ...
-            quarterly2annual(squeeze(z(j,k,t0:end)),steady_state(j),GYTREND0,var_type,islog);
+            quarterly2annual(squeeze(z(j,k,t0:end)),steady_state(j),GYTREND0,var_type,islog,aux);
     end
     ztmp=squeeze(za(j,:,:));
-    zscale = sum(ztmp(1:end-1,:))./ztmp(end,:);
-    ztmp(1:end-1,:) = ztmp(1:end-1,:)./repmat(zscale,[nterms-1,1]);
+    if cumfix==0,
+        zscale = sum(ztmp(1:end-1,:))./ztmp(end,:);
+        ztmp(1:end-1,:) = ztmp(1:end-1,:)./repmat(zscale,[nterms-1,1]);
+    else
+        zres = ztmp(end,:)-sum(ztmp(1:end-1,:));
+        ztmp(end-1,:) = ztmp(end-1,:) + zres;
+    end
     gztmp=squeeze(gza(j,:,:));
-    gscale = sum(gztmp(1:end-1,:))./ gztmp(end,:);
-    gztmp(1:end-1,:) = gztmp(1:end-1,:)./repmat(gscale,[nterms-1,1]);
+    if cumfix==0,
+        gscale = sum(gztmp(1:end-1,:))./ gztmp(end,:);
+        gztmp(1:end-1,:) = gztmp(1:end-1,:)./repmat(gscale,[nterms-1,1]);
+    else
+        gres = gztmp(end,:) - sum(gztmp(1:end-1,:));
+        gztmp(end-1,:) = gztmp(end-1,:)+gres;
+    end
     za(j,:,:) = ztmp;
     gza(j,:,:) = gztmp;
 end
 
-z=cat(1,za,gza);
-oo_.annualized_shock_decomposition=z;
-endo_names = char(endo_names,gendo_names);
-endo_names_tex = char(endo_names_tex,gendo_names_tex);
+if q2a.plot ==1,
+    z=gza;
+    endo_names = gendo_names;
+    endo_names_tex = gendo_names_tex;
+elseif q2a.plot == 2
+    z=za;
+else
+    z=cat(1,za,gza);
+    endo_names = char(endo_names,gendo_names);
+    endo_names_tex = char(endo_names_tex,gendo_names_tex);
+end
+% if isstruct(oo_)
+%     oo_.annualized_shock_decomposition=z;
+% end
 
 % realtime
+if realtime_ && isstruct(oo_) && isfield(oo_, 'realtime_shock_decomposition'),
 init=1;
-for i=t0:4:t1,
+for i=t0+4:4:t1,
     yr=floor(i/4);
     za=[];
     gza=[];
-    z = oo_.realtime_shock_decomposition.(['time_' int2str(i)]);
-    z = z(i_var,:,:);
+        myopts=options_;
+        myopts.shock_decomp.type='qoq';
+        myopts.shock_decomp.realtime=1;
+        myopts.shock_decomp.vintage=i;
+        [z, steady_state_aux] = plot_shock_decomposition(M_,oo_,myopts,[]);
+        z = z(i_var,:,:);
+if isstruct(aux)
+    if ischar(aux0.y)
+        [y_aux, steady_state_aux] = plot_shock_decomposition(M_,oo_,myopts,aux0.y);
+        aux.y=y_aux;
+        aux.yss=steady_state_aux;
+    end
+    yaux=aux.y;
+end
+        nterms = size(z,2);
+  
+%     z = oo_.realtime_shock_decomposition.(['time_' int2str(i)]);
+%     z = z(i_var,:,:);
            
     for j=1:nvar
         for k =nterms:-1:1,
 %             if k<nterms
 %                 ztmp = squeeze(sum(z(j,[1:k-1,k+1:end-1],t0-4:end)));
 %             else
-                ztmp = squeeze(z(j,k,t0-4:end));
+                ztmp = squeeze(z(j,k,min(t0:-4:1):end));
 %             end
+            if isstruct(aux),
+                aux.y = squeeze(yaux(j,k,min(t0:-4:1):end));
+            end
             [za(j,k,:), steady_state_a(j,1), gza(j,k,:), steady_state_ga(j,1)] = ...
-                quarterly2annual(ztmp,steady_state(j),GYTREND0,var_type,islog);
+                quarterly2annual(ztmp,steady_state(j),GYTREND0,var_type,islog,aux);
 %             if k<nterms
 %                 za(j,k,:) = za(j,end,:) - za(j,k,:);
 %                 gza(j,k,:) = gza(j,end,:) - gza(j,k,:);
@@ -126,19 +221,36 @@ for i=t0:4:t1,
         end
         
         ztmp=squeeze(za(j,:,:));
+
+        if cumfix==0,
+            zscale = sum(ztmp(1:end-1,:))./ztmp(end,:);
+            ztmp(1:end-1,:) = ztmp(1:end-1,:)./repmat(zscale,[nterms-1,1]);
+        else
+            zres = ztmp(end,:)-sum(ztmp(1:end-1,:));
+            ztmp(end-1,:) = ztmp(end-1,:) + zres;
+        end
+        
         gztmp=squeeze(gza(j,:,:));
-        ztmp=squeeze(za(j,:,:));
-        zscale = sum(ztmp(1:end-1,:))./ztmp(end,:);
-        ztmp(1:end-1,:) = ztmp(1:end-1,:)./repmat(zscale,[nterms-1,1]);
-        gztmp=squeeze(gza(j,:,:));
-    gscale = sum(gztmp(1:end-1,:))./ gztmp(end,:);
-        gztmp(1:end-1,:) = gztmp(1:end-1,:)./repmat(gscale,[nterms-1,1]);
+        if cumfix==0,
+            gscale = sum(gztmp(1:end-1,:))./ gztmp(end,:);
+            gztmp(1:end-1,:) = gztmp(1:end-1,:)./repmat(gscale,[nterms-1,1]);
+        else
+            gres = gztmp(end,:) - sum(gztmp(1:end-1,:));
+            gztmp(end-1,:) = gztmp(end-1,:)+gres;
+        end
+        
         za(j,:,:) = ztmp;
         gza(j,:,:) = gztmp;
     end
     
-    z=cat(1,za,gza);
-    steady_state = [steady_state_a;steady_state_ga];
+    if q2a.plot ==1,
+        z=gza;
+    elseif q2a.plot == 2
+        z=za;
+    else
+        z=cat(1,za,gza);
+    end
+    
     if init==1,
         oo_.annualized_realtime_shock_decomposition.pool = z;
     else
@@ -154,6 +266,8 @@ for i=t0:4:t1,
                 oo_.annualized_realtime_forecast_shock_decomposition.(['yr_' int2str(yr-nfrcst)]);
             oo_.annualized_realtime_conditional_shock_decomposition.(['yr_' int2str(yr-nfrcst)])(:,end-1,:) = ...
                 oo_.annualized_realtime_forecast_shock_decomposition.(['yr_' int2str(yr-nfrcst)])(:,end,:);
+            oo_.annualized_realtime_conditional_shock_decomposition.(['yr_' int2str(yr-nfrcst)])(:,end,:) = ...
+                oo_.annualized_realtime_shock_decomposition.pool(:,end,yr-nfrcst:end);
         end
     end
 % ztmp=oo_.realtime_shock_decomposition.pool(:,:,21:29)-oo_.realtime_forecast_shock_decomposition.time_21;
@@ -162,9 +276,6 @@ for i=t0:4:t1,
 
     init=init+1;
 end
-
-i_var=1:2*nvar;
-steady_state = [steady_state_a;steady_state_ga];
 
 
 switch realtime_
@@ -193,3 +304,17 @@ switch realtime_
             error()
         end
 end
+end
+
+if q2a.plot ==0,
+    i_var=1:2*nvar;
+    steady_state = [steady_state_a;steady_state_ga];
+else
+    i_var=1:nvar;
+    if q2a.plot ==1,
+        steady_state = steady_state_ga;
+    else
+        steady_state = steady_state_a;
+    end
+end
+
