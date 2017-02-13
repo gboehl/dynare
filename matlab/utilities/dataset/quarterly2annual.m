@@ -97,25 +97,28 @@ switch type
 
     case 5
         % nominal series
-        [yna, ynass] = quarterly2annual(y.*yaux,yss.*yauxss,GYTREND0+GYTREND0aux,typeaux,0,0);
+        yn = (y+yss).*(yaux+yauxss) - yss.*yauxss;
+        [yna, ynass] = quarterly2annual(yn,yss.*yauxss,GYTREND0+GYTREND0aux,typeaux,0,0);
         % real series
         [yra, yrass] = quarterly2annual(yaux,yauxss,GYTREND0aux,typeaux,0,0);
         % deflator
         yass = ynass/yrass;
-        ya = yna./yra;        
+        ya = (yna+ynass)./(yr+yrass)-yass;        
         
     case 6
         % nominal series
-        [yna, ynass] = quarterly2annual(y.*yaux,yss.*yauxss,GYTREND0+GYTREND0aux,typeaux,0,0);
+        yn = (y+yss).*(yaux+yauxss) - yss.*yauxss;
+        [yna, ynass] = quarterly2annual(yn,yss.*yauxss,GYTREND0+GYTREND0aux,typeaux,0,0);
         % deflator
         [pa, pass] = quarterly2annual(yaux,yauxss,GYTREND0aux,2,0,0);
         % real series
         yass = ynass/pass;
-        ya = yna./pa;        
+        ya = (yna+ynass)./(pa+pass)-yass;        
 
     case 7
         % nominal series
-        [ya, yass] = quarterly2annual(y.*yaux,yss.*yauxss,GYTREND0+GYTREND0aux,typeaux,0,0);
+        yn = (y+yss).*(yaux+yauxss) - yss.*yauxss;
+        [ya, yass] = quarterly2annual(yn,yss.*yauxss,GYTREND0+GYTREND0aux,typeaux,0,0);
         GYTREND0=GYTREND0+GYTREND0aux;
 
     otherwise
