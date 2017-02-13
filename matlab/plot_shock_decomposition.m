@@ -55,16 +55,16 @@ else
     expand=0;
 end
 
-    if ~isempty(options_.shock_decomp.fig_names)
-        fig_names=[' ' options_.shock_decomp.fig_names];
-    end
-    type=options_.shock_decomp.type;
-    detail_plot=options_.shock_decomp.detail_plot;
-    realtime_= options_.shock_decomp.realtime;
-    vintage_ = options_.shock_decomp.vintage;
-    forecast_ = options_.shock_decomp.forecast;
-    steadystate = options_.shock_decomp.steadystate;
-    write_xls = options_.shock_decomp.write_xls;
+if ~isempty(options_.shock_decomp.fig_names)
+    fig_names=[' ' options_.shock_decomp.fig_names];
+end
+type=options_.shock_decomp.type;
+detail_plot=options_.shock_decomp.detail_plot;
+realtime_= options_.shock_decomp.realtime;
+vintage_ = options_.shock_decomp.vintage;
+forecast_ = options_.shock_decomp.forecast;
+steadystate = options_.shock_decomp.steadystate;
+write_xls = options_.shock_decomp.write_xls;
 
 initial_date = options_.initial_date;
  
