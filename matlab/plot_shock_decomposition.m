@@ -291,6 +291,15 @@ switch type
             initial_date = initial_date0;
             z=z(:,:,t0:4:end);
         end
+        
+        if ~isempty(options_.shock_decomp.plot_init_date)
+            options_.shock_decomp.plot_init_date = dates([int2str(options_.shock_decomp.plot_init_date.time(1)) 'Y']);
+        end
+        if ~isempty(options_.shock_decomp.plot_end_date)
+            options_.shock_decomp.plot_end_date = dates([int2str(options_.shock_decomp.plot_end_date.time(1)) 'Y']);
+        end
+        
+        
     otherwise
 
         error('plot_shock_decomposition:: Wrong type')
@@ -306,11 +315,25 @@ if nargout
     return
 end
 
+% here we crop data if needed
+my_initial_date = initial_date;
+a = 1;
+b = size(z,3);
+if ~isempty(options_.shock_decomp.plot_init_date)
+    my_initial_date = max(initial_date,options_.shock_decomp.plot_init_date);
+    a = find((initial_date:initial_date+b-1)==options_.shock_decomp.plot_init_date);
+end
+if ~isempty(options_.shock_decomp.plot_end_date)
+    b = find((initial_date:initial_date+b-1)==options_.shock_decomp.plot_end_date);
+end
+z = z(:,:,a:b);
+% end crop data
+
 options_.shock_decomp.fig_names=fig_names;
 if detail_plot,
-    graph_decomp_detail(z,shock_names,M_.endo_names,i_var,initial_date,M_,options_)
+    graph_decomp_detail(z,shock_names,M_.endo_names,i_var,my_initial_date,M_,options_)
 else
-    graph_decomp(z,shock_names,M_.endo_names,i_var,initial_date,M_,options_);
+    graph_decomp(z,shock_names,M_.endo_names,i_var,my_initial_date,M_,options_);
 end
 
 if write_xls
