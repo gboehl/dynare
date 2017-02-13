@@ -130,6 +130,8 @@ if isequal(type,'aoa') && isstruct(q2a) && realtime_
             end
         end
         t0=min(options_.shock_decomp.save_realtime);
+        ini1 = initial_date+t0-1;
+        t0=t0+(4-ini1.time(2));
     if ~isfield(q2a,'var_type'), % private trap for aoa calls
         q2a.var_type=1;
     end
@@ -225,7 +227,7 @@ switch type
         if ~isempty(initial_date),
             initial_date = initial_date+3;
         else
-            initial_date = dates('0Q4');
+            initial_date = dates('1Q4');
         end
         steady_state = 4*steady_state;
         

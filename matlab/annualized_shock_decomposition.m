@@ -135,10 +135,10 @@ for j=1:nvar
     end
     for k =1:nterms,
         if isstruct(aux),
-            aux.y = squeeze(yaux(j,k,t0:end));
+            aux.y = squeeze(yaux(j,k,min((t0-3):-4:1):end));
         end
         [za(j,k,:), steady_state_a(j,1), gza(j,k,:), steady_state_ga(j,1)] = ...
-            quarterly2annual(squeeze(z(j,k,t0:end)),steady_state(j),GYTREND0,var_type,islog,aux);
+            quarterly2annual(squeeze(z(j,k,min((t0-3):-4:1):end)),steady_state(j),GYTREND0,var_type,islog,aux);
     end
     ztmp=squeeze(za(j,:,:));
     if cumfix==0,
@@ -178,7 +178,7 @@ end
 % realtime
 if realtime_ && isstruct(oo_) && isfield(oo_, 'realtime_shock_decomposition'),
 init=1;
-for i=t0+4:4:t1,
+for i=t0:4:t1,
     yr=floor(i/4);
     za=[];
     gza=[];
@@ -206,10 +206,10 @@ end
 %             if k<nterms
 %                 ztmp = squeeze(sum(z(j,[1:k-1,k+1:end-1],t0-4:end)));
 %             else
-                ztmp = squeeze(z(j,k,min(t0:-4:1):end));
+                ztmp = squeeze(z(j,k,min((t0-3):-4:1):end));
 %             end
             if isstruct(aux),
-                aux.y = squeeze(yaux(j,k,min(t0:-4:1):end));
+                aux.y = squeeze(yaux(j,k,min((t0-3):-4:1):end));
             end
             [za(j,k,:), steady_state_a(j,1), gza(j,k,:), steady_state_ga(j,1)] = ...
                 quarterly2annual(ztmp,steady_state(j),GYTREND0,var_type,islog,aux);
