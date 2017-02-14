@@ -634,6 +634,10 @@ lmmcp: m/lmmcp o/lmmcp
 m/lmmcp: $(patsubst %.mod, %.m.trs, $(filter lmmcp/%.mod, $(MODFILES)))
 o/lmmcp: $(patsubst %.mod, %.o.trs, $(filter lmmcp/%.mod, $(MODFILES)))
 
+loglinear: m/loglinear o/loglinear
+m/loglinear: $(patsubst %.mod, %.m.trs, $(filter loglinear/%.mod, $(MODFILES)))
+o/loglinear: $(patsubst %.mod, %.o.trs, $(filter loglinear/%.mod, $(MODFILES)))
+
 gsa: m/gsa o/gsa
 m/gsa: $(patsubst %.mod, %.m.trs, $(filter gsa/%.mod, $(MODFILES)))
 o/gsa: $(patsubst %.mod, %.o.trs, $(filter gsa/%.mod, $(MODFILES)))
