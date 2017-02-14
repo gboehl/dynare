@@ -16,6 +16,7 @@ function [ya, yass, gya, gyass] = quarterly2annual(y,yss,GYTREND0,type,islog,aux
 %          7 annual nominal from Q real and deflator
 % islog    0 level (default)
 %          1 log-level
+%          2 growth rate Q frequency
 % aux      optional input used when type>4
 % 
 %
@@ -67,7 +68,13 @@ if isstruct(aux),
 elseif type > 4,
     error('TYPE>4 requires auxiliary variable!')
 end
-if islog
+if islog == 2,
+    % construct loglevel out of growth rate
+    y = cumsum(y);
+    yss=0;
+    islog=1;
+end
+if islog == 1
     y=exp(y+yss);
     yss=exp(yss);
     y=y-yss;
