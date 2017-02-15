@@ -113,7 +113,6 @@ if options.loglinear
     % Find variables with non positive steady state. Skip auxiliary
     % variables for lagges/leaded exogenous variables
     idx = find(dr.ys(get_all_variables_but_lagged_leaded_exogenous(M))<threshold);
-    idx
     if length(idx)
         if options.debug
             variables_with_non_positive_steady_state = M.endo_names(idx,:);
