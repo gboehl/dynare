@@ -195,8 +195,8 @@ if ismember('onlymacro', varargin)
     return;
 end
 
-if ismember('language=json', varargin)
-    disp('Preprocesser stopped after preprocessing step because of ''language=json'' option.');
+if ismember('onlyjson', varargin)
+    disp('Preprocesser stopped after preprocessing step because of ''onlyjson'' option.');
     return;
 end
 
