@@ -109,9 +109,10 @@ if info(1)
 end
 
 if options.loglinear
+    threshold = 1e-16;
     % Find variables with non positive steady state. Skip auxiliary
     % variables for lagges/leaded exogenous variables
-    idx = find(dr.ys(get_all_variables_but_lagged_leaded_exogenous(M)) < 1e-9);
+    idx = find(dr.ys(get_all_variables_but_lagged_leaded_exogenous(M))<threshold);
     if length(idx)
         if options.debug
             variables_with_non_positive_steady_state = M.endo_names(idx,:);
@@ -132,7 +133,7 @@ if options.loglinear
             end
         end
         info(1)=26;
-        info(2)=sum(dr.ys(dr.ys<1e-9).^2);
+        info(2)=sum(dr.ys(dr.ys<threshold).^2);
         return
     end
 end
