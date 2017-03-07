@@ -58,7 +58,7 @@ end
     
 horizon = options_.forecast;
 
-if nargin<2 || ~exist(dname) || isempty(dname)
+if nargin<2 || ~exist('dname','var') || isempty(dname)
     dname = options_.dirname;
 end
 
