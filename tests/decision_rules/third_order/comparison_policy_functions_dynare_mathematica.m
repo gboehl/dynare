@@ -1,6 +1,6 @@
 %read in the FV et al. policy functions derived from Mathematica
 if ~isoctave() && ~matlab_ver_less_than('8.4')
-   websave('FV_2011_policyfunctions.mat','http://www.dynare.org/Datasets/FV_2011_policyfunctions.mat')
+   websave('FV_2011_policyfunctions.mat','http://www.dynare.org/Datasets/FV_2011_policyfunctions.mat', weboptions('Timeout', 30))
 else
    urlwrite('http://www.dynare.org/Datasets/FV_2011_policyfunctions.mat','FV_2011_policyfunctions.mat')
 end

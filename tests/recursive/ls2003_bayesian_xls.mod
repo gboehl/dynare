@@ -3,7 +3,7 @@ if isoctave() && octave_ver_less_than('3.8')
 end
 
 if ~isoctave() && ~matlab_ver_less_than('8.4')
-   websave('data_ca1_xls.xlsx','http://www.dynare.org/Datasets/data_ca1_xls.xlsx')
+   websave('data_ca1_xls.xlsx','http://www.dynare.org/Datasets/data_ca1_xls.xlsx', weboptions('Timeout', 30))
 else
    urlwrite('http://www.dynare.org/Datasets/data_ca1_xls.xlsx','data_ca1_xls.xlsx')
 end
