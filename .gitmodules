@@ -17,13 +17,13 @@
 	path = matlab/particles
 	url = git@github.com:DynareTeam/particles.git
 [submodule "matlab/modules/dates"]
-	path = matlab/modules/dates
+	path = matlab5B/modules/dates
 	url =  git@gitlab.com:McModelTeam/dates.git
 	branch = master
 [submodule "matlab/modules/dseries"]
 	path = matlab/modules/dseries
 	url = git@gitlab.com:McModelTeam/dseries.git
-	branch = master-with-fame-io
+	branch = ecb-master
 [submodule "matlab/modules/reporting"]
 	path = matlab/modules/reporting
 	url = git@github.com:DynareTeam/reporting.git
