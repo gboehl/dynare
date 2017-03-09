@@ -17,7 +17,7 @@
 	path = matlab/particles
 	url = git@github.com:DynareTeam/particles.git
 [submodule "matlab/modules/dates"]
-	path = matlab5B/modules/dates
+	path = matlab/modules/dates
 	url =  git@gitlab.com:McModelTeam/dates.git
 	branch = master
 [submodule "matlab/modules/dseries"]
