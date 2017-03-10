@@ -4,7 +4,7 @@
  */
 
 /*
- * Copyright (C) 2001-2010 Dynare Team
+ * Copyright (C) 2001-2017 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -69,7 +69,7 @@ steady(solve_algo=4,maxit=1000);
 stoch_simul;
 
 if ~isoctave() && ~matlab_ver_less_than('8.4')
-   websave('example1_results_dyn_432.mat','http://www.dynare.org/Datasets/example1_results_dyn_432.mat')
+   websave('example1_results_dyn_432.mat','http://www.dynare.org/Datasets/example1_results_dyn_432.mat', weboptions('Timeout', 30))
 else
    urlwrite('http://www.dynare.org/Datasets/example1_results_dyn_432.mat','example1_results_dyn_432.mat')
 end
