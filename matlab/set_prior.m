@@ -169,6 +169,9 @@ k1 = find(isnan(bayestopt_.p4(k)));
 bayestopt_.p4(k(k1)) = ones(length(k1),1);
 for i=1:length(k)
     [bayestopt_.p6(k(i)), bayestopt_.p7(k(i))] = beta_specification(bayestopt_.p1(k(i)), bayestopt_.p2(k(i))^2, bayestopt_.p3(k(i)), bayestopt_.p4(k(i)), bayestopt_.name{k(i)});
+    if bayestopt_.p6(k(i))<1 || bayestopt_.p7(k(i))<1
+        fprintf('Prior distribution for parameter %s has unbounded density!\n',bayestopt_.name{k(i)})        
+    end
     m = compute_prior_mode([ bayestopt_.p6(k(i)) , bayestopt_.p7(k(i)) , bayestopt_.p3(k(i)) , bayestopt_.p4(k(i)) ],1);
     if length(m)==1
         bayestopt_.p5(k(i)) = m;
@@ -186,6 +189,9 @@ bayestopt_.p3(k(k1)) = zeros(length(k1),1);
 bayestopt_.p4(k(k2)) = Inf(length(k2),1);
 for i=1:length(k)
     [bayestopt_.p6(k(i)), bayestopt_.p7(k(i))] = gamma_specification(bayestopt_.p1(k(i)), bayestopt_.p2(k(i))^2, bayestopt_.p3(k(i)), bayestopt_.name{k(i)});
+    if bayestopt_.p6(k(i))<1
+        fprintf('Prior distribution for parameter %s has unbounded density!\n',bayestopt_.name{k(i)})        
+    end
     bayestopt_.p5(k(i)) = compute_prior_mode([ bayestopt_.p6(k(i)) , bayestopt_.p7(k(i)) , bayestopt_.p3(k(i)) ], 2) ;
 end
 
