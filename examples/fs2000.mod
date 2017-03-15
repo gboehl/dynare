@@ -19,7 +19,7 @@
  * Journal of Applied Econometrics, 9, S37-S70.
  * Note that there is an initial minus sign missing in equation (A1), p. S63.
  *
- * This impglementation was originally written by Michel Juillard. Please note that the
+ * This implementation was originally written by Michel Juillard. Please note that the
  * following copyright notice only applies to this Dynare implementation of the
  * model.
  */
