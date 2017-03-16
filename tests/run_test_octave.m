@@ -73,7 +73,7 @@ else
   fprintf(fid,':number-failed-tests: 0\n');
   fprintf(fid,':list-of-passed-tests: %s\n', [name '.mod']);
 end
-fprintf(fid,':cputime: %f\n', ecput);
+fprintf(fid,':elapsed-time: %f\n', ecput);
 fclose(fid);
 
 ## Local variables:
