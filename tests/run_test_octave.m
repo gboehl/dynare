@@ -44,7 +44,7 @@ cd(directory);
 
 printf("\n***  TESTING: %s ***\n", name);
 
-cput = cputime;
+tic;
 save(['wsOct' testfile '.mat']);
 try
   dynare([testfile ext])
@@ -57,7 +57,7 @@ top_test_dir = getenv('TOP_TEST_DIR');
 name = getenv("FILESTEM");
 [directory, testfile, ext] = fileparts([top_test_dir '/' name]);
 load(['wsOct' testfile '.mat']);
-ecput = cputime - cput;
+ecput = toc;
 delete(['wsOct' testfile '.mat']);
 
 cd(top_test_dir);

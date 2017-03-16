@@ -32,7 +32,7 @@ cd(directory);
 disp('');
 disp(['***  TESTING: ' modfile ' ***']);
 
-cput = cputime;
+tic;
 save(['wsMat' testfile '.mat']);
 try
   dynare([testfile ext], 'console')
@@ -45,7 +45,7 @@ top_test_dir = getenv('TOP_TEST_DIR');
 [modfile, name] = strtok(getenv('FILESTEM'));
 [directory, testfile, ext] = fileparts([top_test_dir '/' modfile]);
 load(['wsMat' testfile '.mat']);
-ecput = cputime - cput;
+ecput = toc;
 delete(['wsMat' testfile '.mat']);
 
 cd(top_test_dir);
