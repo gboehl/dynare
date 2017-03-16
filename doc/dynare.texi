@@ -7035,6 +7035,7 @@ Posterior probability of the respective model
 
 @deffn Command shock_decomposition [@var{VARIABLE_NAME}]@dots{};
 @deffnx Command shock_decomposition (@var{OPTIONS}@dots{}) [@var{VARIABLE_NAME}]@dots{};
+@anchor{shock_decomposition}
 
 @descriptionhead
 
@@ -7082,8 +7083,8 @@ graphs. See @code{colormap} in Matlab/Octave manual.
 @xref{nograph}. Suppresses the display and creation only within the @code{shock_decomposition}-command
 but does not affect other commands. See also @xref{plot_shock_decomposition} for plotting graphs.
 
-@item init_state = @var(INTEGER)
-@xref{init_state}. It can take values of 0 (=default) and 1. 
+@item init_state = @var{INTEGER}
+@anchor{init_state}. It can take values of 0 (=default) and 1. 
 If @code{init_state= 0}, the shock decomposition is computed conditional on the smoothed state variables
 in period 0, i.e. the smoothed shocks starting in period 1 are used.
 If @code{init_state= 1}, the shock decomposition is computed conditional on the smoothed state variables
@@ -7151,6 +7152,7 @@ shocks_decomposition(use_shock_groups=group1);
 
 @deffn Command realtime_shock_decomposition [@var{VARIABLE_NAME}]@dots{};
 @deffnx Command realtime_shock_decomposition (@var{OPTIONS}@dots{}) [@var{VARIABLE_NAME}]@dots{};
+@anchor{realtime_shock_decomposition}
 
 @descriptionhead
 
@@ -7192,11 +7194,11 @@ calibrated model.
 @xref{nobs}.
 
 @item use_shock_groups [= @var{SHOCK_GROUPS_NAME}]
-@xref{use_shock_groups}. Uses groups of shocks instead of individual shocks in
+@anchor{use_shock_groups_realtime}. Uses groups of shocks instead of individual shocks in
 the decomposition. Groups of shocks are defined in @xref{shock_groups} block.
 
 @item colormap = @var{COLORMAP_NAME}
-@xref{colormap}. Controls the colormap used for the shocks decomposition
+@anchor{colormap_realtime}. Controls the colormap used for the shocks decomposition
 graphs. See @code{colormap} in Matlab/Octave manual.
 
 @item nograph
@@ -7205,10 +7207,10 @@ graphs. See @code{colormap} in Matlab/Octave manual.
 (@xref{plot_shock_decomposition}).
 
 @item presample
-@anchor{presample}. First data point from which recursive realtime shock decompositions are computed, i.e. for T=(presample:nobs).
+@anchor{presample_shock_decomposition}. First data point from which recursive realtime shock decompositions are computed, i.e. for T=(presample:nobs).
 
 @item forecast
-@anchor{forecast}. Compute shock decompositions up to T+k periods, i.e. get shock contributions to k-step ahead forecasts.
+@anchor{forecast_shock_decomposition}. Compute shock decompositions up to T+k periods, i.e. get shock contributions to k-step ahead forecasts.
 
 @item save_realtime = [@var{integer1} ... @var{integern}]
 @anchor{save_realtime}. Choose for which vintages to save the full realtime shock decomposition. Default = 0.
@@ -7240,6 +7242,7 @@ See also @xref{vintage}.
 
 @deffn Command plot_shock_decomposition [@var{VARIABLE_NAME}]@dots{};
 @deffnx Command plot_shock_decomposition (@var{OPTIONS}@dots{}) [@var{VARIABLE_NAME}]@dots{};
+@anchor{plot_shock_decomposition}
 
 @descriptionhead
 
@@ -7255,17 +7258,17 @@ Note that this command must come after @code{shock_decomposition} or @code{realt
 @table @code
 
 @item use_shock_groups [= @var{SHOCK_GROUPS_NAME}]
-@anchor{use_shock_groups}. Uses groups of shocks instead of individual shocks in
+@anchor{use_shock_groups_plot}. Uses groups of shocks instead of individual shocks in
 the decomposition. Groups of shocks are defined in @xref{shock_groups} block.
 
 @item colormap = @var{COLORMAP_NAME}
-@anchor{colormap}. Controls the colormap used for the shocks decomposition
+@anchor{colormap_plot}. Controls the colormap used for the shocks decomposition
 graphs. See @code{colormap} in Matlab/Octave manual.
 
 @item nodisplay
 @xref{nodisplay}.
 
-@item graph_format = (@{GRAPH_FORMAT_LIST})
+@item graph_format = (@var{GRAPH_FORMAT_LIST})
 @xref{graph_format}.
 
 @item detailed 
