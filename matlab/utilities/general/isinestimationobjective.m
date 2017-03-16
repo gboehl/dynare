@@ -1,8 +1,8 @@
-function a = isestimation()
+function b = isinestimationobjective()
 
-% Returns 1 if we are currently estimating a model, 0 otherwise.
+% Returns true iff the caller function is called by a routine defining the objective of an estimation algorithm.
 
-% Copyright (C) 2014 Dynare Team
+% Copyright (C) 2014-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -19,7 +19,7 @@ function a = isestimation()
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-a = 0;
+b = false;
 
 tmp = struct2cell(dbstack);
 list_of_previously_called_routines = transpose(tmp(2,:));
@@ -28,5 +28,5 @@ if ~isempty(strmatch('dsge_likelihood', list_of_previously_called_routines, 'exa
     ~isempty(strmatch('dsge_var_likelihood', list_of_previously_called_routines, 'exact')) || ...
     ~isempty(strmatch('non_linear_dsge_likelihood', list_of_previously_called_routines, 'exact')) || ...
     ~isempty(strmatch('simulated_moments_estimation', list_of_previously_called_routines, 'exact'))
-    a = 1;
+    b = true;
 end

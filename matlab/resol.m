@@ -122,7 +122,7 @@ if options.loglinear
             for var_iter=1:length(idx)
                 fprintf(' - %s (%s)\n',deblank(variables_with_non_positive_steady_state(var_iter,:)), num2str(dr.ys(idx(var_iter))))
             end
-            if isestimation()
+            if isinestimationobjective()
                 fprintf('You should check that the priors and/or bounds over the deep parameters are such\n')
                 fprintf('that the steady state levels of all the variables are strictly positive, or consider\n')
                 fprintf('a linearization of the model instead of a log linearization.\n')
