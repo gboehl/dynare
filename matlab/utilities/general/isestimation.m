@@ -21,6 +21,6 @@ function b = isestimation(option)
 
 b = false;
 
-if option.mode_compute || option.mh_replic
+if ischar(option.mode_compute) || option.mode_compute || option.mh_replic
     b = true;
 end
