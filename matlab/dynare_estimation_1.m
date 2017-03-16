@@ -31,6 +31,17 @@ function dynare_estimation_1(var_list_,dname)
 
 global M_ options_ oo_ estim_params_ bayestopt_ dataset_ dataset_info
 
+if isempty(estim_params_)
+    mode_compute_o = options_.mode_compute;
+    mh_replic_o = options_.mh_replic;
+    options_.mode_compute = 0;
+    options_.mh_replic = 0;
+    reset_options_related_to_estimation = true;
+else
+    reset_options_related_to_estimation = false;
+end
+
+
 %store qz_criterium
 qz_criterium_old=options_.qz_criterium;
 
@@ -758,3 +769,8 @@ end
 
 %reset qz_criterium
 options_.qz_criterium=qz_criterium_old;
+
+if reset_options_related_to_estimation
+    options_.mode_compute = mode_compute_o;
+    options_.mh_replic = mh_replic_o;
+end
