@@ -103,9 +103,9 @@ k = reshape(1:M_.endo_nbr,3,round(M_.endo_nbr/3));
 kc = k(1,:);
 kr = k(2:3,:);
 
-if norm(Pinf(kr(:),kc)) > 1e-15
+if norm(Pinf(kr(:),kc)) > 1e-14
    error('Pinf isn''t correct')
 end
-if norm(Pinf(kr(:),kc)) > 1e-15
+if norm(Pinf(kr(:),kc)) > 1e-14
    error('Pstar isn''t correct')
 end
