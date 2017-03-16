@@ -102,7 +102,7 @@ mXY = evalin('base', 'mXY');
 mXX = evalin('base', 'mXX');
 
 % Return, with endogenous penalty, if some dsge-parameters are smaller than the lower bound of the prior domain.
-if DynareOptions.mode_compute ~= 1 && any(xparam1 < BoundsInfo.lb)
+if isestimation(DynareOptions) && DynareOptions.mode_compute ~= 1 && any(xparam1 < BoundsInfo.lb)
     k = find(xparam1 < BoundsInfo.lb);
     fval = Inf;
     exit_flag = 0;
@@ -112,7 +112,7 @@ if DynareOptions.mode_compute ~= 1 && any(xparam1 < BoundsInfo.lb)
 end
 
 % Return, with endogenous penalty, if some dsge-parameters are greater than the upper bound of the prior domain.
-if DynareOptions.mode_compute ~= 1 && any(xparam1 > BoundsInfo.ub)
+if isestimation(DynareOptions) && DynareOptions.mode_compute ~= 1 && any(xparam1 > BoundsInfo.ub)
     k = find(xparam1 > BoundsInfo.ub);
     fval = Inf;
     exit_flag = 0;

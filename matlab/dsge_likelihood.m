@@ -180,7 +180,7 @@ end
 %------------------------------------------------------------------------------
 
 % Return, with endogenous penalty, if some parameters are smaller than the lower bound of the prior domain.
-if ~isequal(DynareOptions.mode_compute,1) && any(xparam1<BoundsInfo.lb)
+if isestimation(DynareOptions) && ~isequal(DynareOptions.mode_compute,1) && any(xparam1<BoundsInfo.lb)
     k = find(xparam1<BoundsInfo.lb);
     fval = Inf;
     exit_flag = 0;
@@ -193,7 +193,7 @@ if ~isequal(DynareOptions.mode_compute,1) && any(xparam1<BoundsInfo.lb)
 end
 
 % Return, with endogenous penalty, if some parameters are greater than the upper bound of the prior domain.
-if ~isequal(DynareOptions.mode_compute,1) && any(xparam1>BoundsInfo.ub)
+if isestimation(DynareOptions) && ~isequal(DynareOptions.mode_compute,1) && any(xparam1>BoundsInfo.ub)
     k = find(xparam1>BoundsInfo.ub);
     fval = Inf;
     exit_flag = 0;
