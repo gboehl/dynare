@@ -22,7 +22,7 @@ for file in $1 ; do
     done
   fi
 
-  time=`grep cputime $file | cut -d: -f3`
+  time=`grep elapsed-time $file | cut -d: -f3`
   tosort=`echo $tosort\| $file ' - ' $time:`
 done
 ((passed=$total-$failed));
@@ -42,7 +42,7 @@ for file in $2 ; do
     done
   fi
 
-  time=`grep cputime $file | cut -d: -f3`
+  time=`grep elapsed-time $file | cut -d: -f3`
   tosort=`echo $tosort\| $file ' - ' $time:`
 done
 ((xfailed=$total_xfail-$xpassed));
