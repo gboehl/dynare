@@ -54,6 +54,6 @@ else
   fprintf(fid,':number-failed-tests: 0\n');
   fprintf(fid,':list-of-passed-tests: run_reporting_test_matlab.m\n');
 end
-fprintf(fid,':cputime: %f\n',0.0);
+fprintf(fid,':elapsed-time: %f\n',0.0);
 fclose(fid);
 exit;

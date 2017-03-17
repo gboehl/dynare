@@ -125,8 +125,8 @@ end
 %$
 %$ % Solve the equation with the cycle reduction algorithm
 %$ try
-%$     t=cputime; X1 = cycle_reduction(C,B,A,1e-7); elapsedtime = cputime-t;
-%$     disp(['cputime for cycle reduction algorithm is: ' num2str(elapsedtime) ' (n=' int2str(n) ').'])
+%$     tic; X1 = cycle_reduction(C,B,A,1e-7); elapsedtime = toc;
+%$     disp(['Elapsed time for cycle reduction algorithm is: ' num2str(elapsedtime) ' (n=' int2str(n) ').'])
 %$     t(1) = 1;
 %$ catch
 %$     % nothing to do here.
@@ -134,8 +134,8 @@ end
 %$
 %$ % Solve the equation with the logarithmic reduction algorithm
 %$ try
-%$     t=cputime; X2 = logarithmic_reduction(A,B,C,1e-16,100); elapsedtime = cputime-t;
-%$     disp(['cputime for logarithmic reduction algorithm is: ' num2str(elapsedtime) ' (n=' int2str(n) ').'])
+%$     tic; X2 = logarithmic_reduction(A,B,C,1e-16,100); elapsedtime = toc;
+%$     disp(['Elapsed time for logarithmic reduction algorithm is: ' num2str(elapsedtime) ' (n=' int2str(n) ').'])
 %$     t(2) = 1;
 %$ catch
 %$     % nothing to do here.

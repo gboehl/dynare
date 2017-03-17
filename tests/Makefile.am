@@ -834,7 +834,7 @@ check-octave: $(O_XFAIL_TRS_FILES) $(O_TRS_FILES)
 	@echo "`tput bold``tput setaf 8`MATLAB: $(PWD)/$*... `tput sgr0`"
 	@DYNARE_VERSION="$(PACKAGE_VERSION)" TOP_TEST_DIR="$(PWD)" FILESTEM="$*" \
 		$(MATLAB)/bin/matlab -nosplash -nodisplay -r run_test_matlab > $*.m.log  2> /dev/null || \
-	printf ":test-result: FAIL\n:number-tests: 1\n:number-failed-tests: 1\n:list-of-failed-tests: $*.mod\n:cputime: 0.0\n" > $*.m.trs
+	printf ":test-result: FAIL\n:number-tests: 1\n:number-failed-tests: 1\n:list-of-failed-tests: $*.mod\n:elapsed-time: 0.0\n" > $*.m.trs
 	@if grep -q ":test-result: PASS" $*.m.trs; then \
 	echo "`tput bold``tput setaf 2`MATLAB: $(PWD)/$* PASSED!`tput sgr0`" ; \
 	else \
@@ -854,7 +854,7 @@ check-octave: $(O_XFAIL_TRS_FILES) $(O_TRS_FILES)
 	@echo "`tput bold``tput setaf 8`OCTAVE: $(PWD)/$*... `tput sgr0`"
 	@DYNARE_VERSION="$(PACKAGE_VERSION)" TOP_TEST_DIR="$(PWD)" FILESTEM="$*" \
 		$(OCTAVE) --no-init-file --silent --no-history --path "$*.mod" run_test_octave.m > $*.o.log 2>&1 || \
-	printf ":test-result: FAIL\n:number-tests: 1\n:number-failed-tests: 1\n:list-of-failed-tests: $*.mod\n:cputime: 0.0\n" > $*.o.trs
+	printf ":test-result: FAIL\n:number-tests: 1\n:number-failed-tests: 1\n:list-of-failed-tests: $*.mod\n:elapsed-time: 0.0\n" > $*.o.trs
 	@if grep -q ":test-result: PASS" $*.o.trs; then \
 	echo "`tput bold``tput setaf 2`OCTAVE: $(PWD)/$* PASSED!`tput sgr0`" ; \
 	else \

@@ -82,7 +82,7 @@ else
   fprintf(fid,':number-tests: %d\n', counter);
   fprintf(fid,':number-failed-tests: 0\n');
 end
-fprintf(fid,':cputime: %f\n',0.0);
+fprintf(fid,':elapsed-time: %f\n',0.0);
 fclose(fid);
 if ~isoctave
     exit
