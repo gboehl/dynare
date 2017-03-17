@@ -17,7 +17,9 @@ specifics).
 
 Dynare ```reporting``` depends on the Dynare
 [```dates```](https://github.com/DynareTeam/dates) and
-[```dseries```](https://github.com/DynareTeam/dseries) repositories.
+[```dseries```](https://github.com/DynareTeam/dseries) repositories and on
+utility functions from the [```dynare```](https://github.com/DynareTeam/dynare)
+repository, located in ```dynare/matlab/utilities/general```
 
 # Use the Dynare Reporting code
 
@@ -27,11 +29,13 @@ Dynare ```reporting``` depends on the Dynare
   and [```dseries```](https://github.com/DynareTeam/dseries)
   directories are in your path and initialized correctly (follow the
   directions on the respective sites)
+- Add ```<<dynare>>/matlab/utilities/general``` to your path where ```<<dynare>>``` refers to the base of your Dynare installation
 - Run ```initialize_reporting_toolbox```
 - Use the reporting code as outlined in the Dynare documentation
 
 # Run the example code
 
 - Follow the steps above
-- Change into the ```reporting/examples``` directory
-- Run the ```run_report_example``` matlab script
+- Change into the ```reporting/test``` directory
+- Modify the paths in ```reporting/test/runtest.m``` appropriately
+- Run the ```runtest``` matlab script
