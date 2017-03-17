@@ -1,0 +1,17 @@
+language: python
+
+git:
+  depth: 1
+
+dist: trusty
+
+install:
+  - export
+  - sudo add-apt-repository ppa:octave/stable -y
+  - sudo apt-get update -qq
+  - sudo apt-get install -qq octave liboctave-dev texlive texlive-latex-recommended  texlive-latex-extra
+  - git clone --depth=1 --recursive --branch=master https://github.com/DynareTeam/dynare.git ~/builds/dynare
+
+script:
+  - make check-octave
+  - ./success.sh
