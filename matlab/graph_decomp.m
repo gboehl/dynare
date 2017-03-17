@@ -77,6 +77,7 @@ interactive = opts_decomp.interactive;
 gend = size(z,3);
 if isempty(initial_date)
     x = 0:gend;
+    freq = 1;
 else
     freq = initial_date.freq;
     initial_period = initial_date.time(1) + (initial_date.time(2)-1)/freq;
