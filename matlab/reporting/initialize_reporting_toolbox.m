@@ -1,6 +1,6 @@
 % Script to set the necessary paths for the Reporting toolbox
 
-% Copyright (C) 2015 Dynare Team
+% Copyright (C) 2015-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -25,6 +25,10 @@ addpath(reporting_src_root);
 addpath([reporting_src_root filesep '..' filesep 'macros']);
 
 % Reminder to add and initialize dates & dseries toolboxes
-disp('Remember to add the paths to the dates and dseries toolboxes');
-disp('   before working with the reporting toolbox');
+if ~exist('emptydatesobject', 'var')
+    disp('Remember to add the paths to the dates toolbox before working with the reporting toolbox');
+end
 
+if ~exist('emptydseriesobject', 'var')
+    disp('Remember to add the paths to the dseries toolbox before working with the reporting toolbox');
+end
