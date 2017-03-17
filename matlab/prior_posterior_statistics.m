@@ -219,18 +219,9 @@ if strcmpi(type,'posterior'),
             x(:,column) = GetAllPosteriorDraws(column, FirstMhFile, FirstLine, TotalNumberOfMhFiles, NumberOfDraws);
         end
     else
-
-    b=0;
-    logpost=NaN(B,1);
-        while b<B
-        b = b + 1;
-            [xtmp, ltmp] = GetOneDraw(type);
-            if ~ismember(ltmp,logpost(1:b-1))
-                x(b,:)=xtmp;
-                logpost(b,1) = ltmp;
-            else
-                b=b-1;
-            end
+        logpost=NaN(B,1);
+        for b=1:B
+            [x(b,:), logpost(b)] = GetOneDraw(type);
         end
     end
     localVars.logpost=logpost;
