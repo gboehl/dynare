@@ -1,4 +1,5 @@
-﻿function  scatter_plots(X,xp,vnames,plotsymbol, fnam, dirname, figtitle, xparam1, DynareOptions)
+function scatter_plots(X,xp,vnames,plotsymbol, fnam, dirname, figtitle, xparam1, DynareOptions)
+
 %
 % Written by Marco Ratto
 % Joint Research Centre, The European Commission,

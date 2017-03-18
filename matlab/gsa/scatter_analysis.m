@@ -45,7 +45,8 @@ OutputDirectoryName = options_scatter.OutputDirectoryName;
 if ~DynareOptions.nograph,
     skipline()
     xx=[];
-    if ~ isempty(xparam1), xx=xparam1; end
-    scatter_plots(lpmat, xdata, param_names, ...
-        '.', [fname_,'_',amcf_name], OutputDirectoryName, amcf_title,xx, DynareOptions)
+    if ~isempty(xparam1)
+        xx=xparam1;
+    end
+    scatter_plots(lpmat, xdata, param_names, '.', [fname_, '_', amcf_name], OutputDirectoryName, amcf_title, xx, DynareOptions)
 end
