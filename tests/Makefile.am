@@ -247,7 +247,7 @@ MODFILES = \
 	stochastic-backward-models/solow_cd_with_steadystate.mod \
 	stochastic-backward-models/backward_linear.mod \
 	deterministic_simulations/purely_forward/ar1.mod \
-    deterministic_simulations/purely_forward/nk.mod \
+	deterministic_simulations/purely_forward/nk.mod \
 	deterministic_simulations/purely_backward/ar1.mod \
 	deterministic_simulations/rbc_det1.mod \
 	deterministic_simulations/rbc_det2.mod \
@@ -272,7 +272,7 @@ MODFILES = \
 	deterministic_simulations/multiple_lead_lags/AR2.mod \
 	deterministic_simulations/multiple_lead_lags/AR2_forward.mod \
 	deterministic_simulations/multiple_lead_lags/ramst_augmented_histval.mod \
-    deterministic_simulations/rbc_det.mod \
+	deterministic_simulations/rbc_det.mod \
 	deterministic_simulations/rbc_det_stack_solve_algo_7.mod \
 	lmmcp/rbc.mod \
 	lmmcp/sw_lmmcp.mod \
