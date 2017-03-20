@@ -792,7 +792,6 @@ EXTRA_DIST = \
 	decision_rules/third_order/comparison_policy_functions_dynare_mathematica.m \
 	shock_decomposition/example1_calib_shock_decomp_data.mat \
 	shock_decomposition/fsdat_simul.m \
-	loglinear/results_exp.mat \
 	smoother2histval/fsdat_simul.m \
 	optimal_policy/Ramsey/find_c.m \
 	optimal_policy/Ramsey/oo_ramsey_policy_initval.mat \
