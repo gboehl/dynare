@@ -142,9 +142,9 @@ run_smoother = 0;
 if options_.smoother || options_.forecast || options_.filter_step_ahead || options_.smoothed_state_uncertainty
     run_smoother = 1;
     if options_.loglinear
-        oo_.Smoother.loglinear=1;
+        oo_.Smoother.loglinear = true;
     else
-        oo_.Smoother.loglinear=0;
+        oo_.Smoother.loglinear = false;
     end
 end
 

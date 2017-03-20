@@ -77,9 +77,9 @@ if nargin<16
 end
 
 if options_.loglinear
-    oo_.Smoother.loglinear=1;
+    oo_.Smoother.loglinear = true;
 else
-    oo_.Smoother.loglinear=0;
+    oo_.Smoother.loglinear = false;
 end
 %% write variable steady state
 oo_.Smoother.SteadyState = ys;
