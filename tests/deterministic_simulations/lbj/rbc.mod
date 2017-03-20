@@ -73,10 +73,18 @@ end;
 perfect_foresight_setup(periods=400);
 perfect_foresight_solver(stack_solve_algo=0);
 
+if ~oo_.deterministic_simulation.status
+   error('Perfect foresight simulation failed')
+end
+
 oo0 = oo_;
 
 perfect_foresight_setup(periods=400);
 perfect_foresight_solver(stack_solve_algo=6);
+
+if ~oo_.deterministic_simulation.status
+   error('Perfect foresight simulation failed')
+end
 
 oo6 = oo_;
 

@@ -54,6 +54,10 @@ end;
 // Deterministic simulation of the model for 200 periods
 simul(periods=200);
 
+if ~oo_.deterministic_simulation.status
+   error('Perfect foresight simulation failed')
+end
+
 junk=zeros(1,options_.periods+M_.maximum_lag);
 junk(1)=2;
 junk(2)=1;

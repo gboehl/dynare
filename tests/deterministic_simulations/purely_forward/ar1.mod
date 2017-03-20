@@ -24,6 +24,10 @@ end;
 
 simul(periods=5);
 
+if ~oo_.deterministic_simulation.status
+   error('Perfect foresight simulation failed')
+end
+
 expected_y = ones(1, 6);
 expected_y(2) = exp(-1);
 expected_y(1) = sqrt(exp(-1))*exp(1);

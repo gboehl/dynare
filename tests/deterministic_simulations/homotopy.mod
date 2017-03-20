@@ -46,4 +46,8 @@ steady;
 
 simul(periods=200);
 
+if ~oo_.deterministic_simulation.status
+   error('Perfect foresight simulation failed')
+end
+
 plot(Simulated_time_series.Capital(1Q1:25Q4));
