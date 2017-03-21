@@ -7311,14 +7311,14 @@ graphs. See @code{colormap} in Matlab/Octave manual.
 @item graph_format = (@var{GRAPH_FORMAT_LIST})
 @xref{graph_format}.
 
-@item detailed 
-@anchor{detailed} Plots shock contributions using subplots, one per shock (or group of shocks).
+@item detail_plot
+@anchor{detail_plot} Plots shock contributions using subplots, one per shock (or group of shocks).
 
 @item interactive 
 @anchor{interactive} Under MATLAB, add uimenu's for detailed group plots.
 
-@item screen
-@anchor{screen} For large models (@i{i.e.} for models with more than @math{16}
+@item screen_shocks
+@anchor{screen_shcoks} For large models (@i{i.e.} for models with more than @math{16}
 shocks), plots only the shocks that have the largest historical contribution
 for chosen selected @code{variable_names}.  Historical contribution is ranked
 by the mean absolute value of all historical contributions.
