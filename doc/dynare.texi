@@ -12095,7 +12095,7 @@ plot(ts2.data,'--r');           % Plot of the filtered y.
 hold off
 axis tight
 id = get(gca,'XTick');
-set(gca,'XTickLabel',strings(ts.dates(id)));
+set(gca,'XTickLabel',strings(ts1.dates(id)));
 @end example
 
 @iftex
