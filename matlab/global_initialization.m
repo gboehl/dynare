@@ -11,7 +11,7 @@ function global_initialization()
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2003-2016 Dynare Team
+% Copyright (C) 2003-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -724,7 +724,7 @@ options_.parameter_set = [];
 options_.use_shock_groups = '';
 options_.colormap = '';
 options_.shock_decomp.detail_plot=0;
-options_.shock_decomp.fig_names='';
+options_.shock_decomp.fig_name='';
 options_.shock_decomp.init_state = 0;
 options_.shock_decomp.interactive = 0;
 options_.shock_decomp.plot_end_date=[];

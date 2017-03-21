@@ -41,7 +41,7 @@ endo_nbr = M_.endo_nbr;
 % number of shocks
 nshocks = M_.exo_nbr;
 % type = '';
-fig_names='';
+fig_name='';
 % detail_plot=0;
 % realtime_=0; % 0 is standard; 1 is realtime (pool/vintage); 2 is conditional (pool/vintage); 3 is forecast (pool/vintage)
 % vintage_=0; % 0 pool realtime/conditional; int: forecast/conditional shock decompositions
@@ -55,8 +55,8 @@ else
     expand=0;
 end
 
-if ~isempty(options_.shock_decomp.fig_names)
-    fig_names=[' ' options_.shock_decomp.fig_names];
+if ~isempty(options_.shock_decomp.fig_name)
+    fig_name=[' ' options_.shock_decomp.fig_name];
 end
 type=options_.shock_decomp.type;
 detail_plot=options_.shock_decomp.detail_plot;
@@ -81,35 +81,35 @@ switch realtime_
     
     case 0
         z = oo_.shock_decomposition;
-        fig_names1=fig_names;
+        fig_name1=fig_name;
     
     case 1 % realtime
         if vintage_
             z = oo_.realtime_shock_decomposition.(['time_' int2str(vintage_)]);
-            fig_names1=[fig_names ' realtime (vintage ' char(initial_date+vintage_-1) ')'];
+            fig_name1=[fig_name ' realtime (vintage ' char(initial_date+vintage_-1) ')'];
         else
             z = oo_.realtime_shock_decomposition.pool;
-            fig_names1=[fig_names ' realtime (rolling)'];
+            fig_name1=[fig_name ' realtime (rolling)'];
         end
     
     case 2 % conditional
         if vintage_
             z = oo_.realtime_conditional_shock_decomposition.(['time_' int2str(vintage_)]);
             initial_date = options_.initial_date+vintage_-1;
-            fig_names1=[fig_names ' ' int2str(forecast_) '-step ahead conditional forecast (given ' char(initial_date) ')'];
+            fig_name1=[fig_name ' ' int2str(forecast_) '-step ahead conditional forecast (given ' char(initial_date) ')'];
         else
             z = oo_.conditional_shock_decomposition.pool;
-            fig_names1=[fig_names ' 1-step ahead conditional forecast (rolling)'];
+            fig_name1=[fig_name ' 1-step ahead conditional forecast (rolling)'];
         end
         
     case 3 % forecast
         if vintage_
             z = oo_.realtime_forecast_shock_decomposition.(['time_' int2str(vintage_)]);
             initial_date = options_.initial_date+vintage_-1;
-            fig_names1=[fig_names ' ' int2str(forecast_) '-step ahead forecast (given ' char(initial_date) ')'];
+            fig_name1=[fig_name ' ' int2str(forecast_) '-step ahead forecast (given ' char(initial_date) ')'];
         else
             z = oo_.realtime_forecast_shock_decomposition.pool;
-            fig_names1=[fig_names ' 1-step ahead forecast (rolling)'];
+            fig_name1=[fig_name ' 1-step ahead forecast (rolling)'];
         end
 end
 
@@ -170,14 +170,14 @@ end
 
 
 if ~expand
-    fig_names = fig_names1;
+    fig_name = fig_name1;
 end
 gend = size(z,3);
 if options_.use_shock_groups
     shock_groups = M_.shock_groups.(options_.use_shock_groups);
     shock_ind = fieldnames(shock_groups);
     ngroups = length(shock_ind);
-    fig_names=[fig_names ' group ' options_.use_shock_groups];
+    fig_name=[fig_name ' group ' options_.use_shock_groups];
     shock_names = shock_ind;
     for i=1:ngroups,
        shock_names{i} = (shock_groups.(shock_ind{i}).label);
@@ -329,7 +329,7 @@ end
 z = z(:,:,a:b);
 % end crop data
 
-options_.shock_decomp.fig_names=fig_names;
+options_.shock_decomp.fig_name=fig_name;
 if detail_plot,
     graph_decomp_detail(z,shock_names,M_.endo_names,i_var,my_initial_date,M_,options_)
 else

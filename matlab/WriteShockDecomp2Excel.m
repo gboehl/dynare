@@ -31,7 +31,7 @@ function WriteShockDecomp2Excel(z,shock_names,endo_names,i_var,initial_date,Dyna
 SteadyState=[];
 fig_mode='';
 fig_mode1='';
-fig_names='';
+fig_name='';
 screen_shocks=0;
 use_shock_groups = DynareOptions.use_shock_groups;
 if use_shock_groups
@@ -58,15 +58,15 @@ if nargin==8 ,
             screen_shocks = opts_decomp.screen_shocks;
         end
     end
-    if isfield(opts_decomp,'fig_names')
-        fig_names = opts_decomp.fig_names;
-%         fig_names = ['_' fig_names];
-        fig_names1 = [fig_names];        
-        fig_names = [fig_names '_'];    
+    if isfield(opts_decomp,'fig_name')
+        fig_name = opts_decomp.fig_name;
+%         fig_name = ['_' fig_name];
+        fig_name1 = [fig_name];        
+        fig_name = [fig_name '_'];    
     end
     if screen_shocks
-        fig_names1 = [fig_names1 '_screen'];        
-        fig_names = [fig_names 'screen_'];            
+        fig_name1 = [fig_name1 '_screen'];        
+        fig_name = [fig_name 'screen_'];            
     end
 end   
 
@@ -115,9 +115,9 @@ for j=1:nvar
     
     warning off
     if ~ismac
-        [STATUS,MESSAGE] = xlswrite([DynareModel.fname,'_shock_decomposition',fig_mode,fig_names1],d0,deblank(endo_names(i_var(j),:)));
+        [STATUS,MESSAGE] = xlswrite([DynareModel.fname,'_shock_decomposition',fig_mode,fig_name1],d0,deblank(endo_names(i_var(j),:)));
     else
-        [STATUS] = xlwrite([DynareModel.fname,'_shock_decomposition',fig_mode,fig_names1],d0,deblank(endo_names(i_var(j),:)));
+        [STATUS] = xlwrite([DynareModel.fname,'_shock_decomposition',fig_mode,fig_name1],d0,deblank(endo_names(i_var(j),:)));
     end
     warning on
 
