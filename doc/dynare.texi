@@ -7376,7 +7376,7 @@ time point @math{Y(T|T)} of each vintage shock decomposition @math{Y(1:T|T)}
 @code{2}: pooled conditional shock decomposition. For
 @math{T=[1@dots{}@code{nobs}]}, realtime @math{1}-step shock decomposition of
 @math{Y(T|T)} conditional on @math{Y(T|T-1)} (@i{i.e.} decomposition of
-@math{1}-step filter updates of each vintage @math{T}}
+@math{1}-step filter updates of each vintage @math{T})
 @item
 @code{3}: pooled forecast shock decomposition. For
 @math{T=[1@dots{}@code{nobs}]}, realtime @math{1}-step ahead shock
