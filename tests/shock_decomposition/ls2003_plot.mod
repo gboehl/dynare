@@ -94,9 +94,7 @@ close all,
 
 // testing realtime decomposition
 // first compute realtime decompositions [pre-processor not yet available]
-options_.shock_decomp.forecast=8;
-options_.shock_decomp.save_realtime = [5:4:options_.nobs]; % store values useful for annualized vars
-oo_ = realtime_shock_decomposition(M_,oo_,options_,var_list_,bayestopt_,estim_params_);
+realtime_shock_decomposition(forecast=8, save_realtime=[5 9 13 17 21 25 29 33 37 41 45 49 53 57 61 65 69 73 77]);
 
 options_.shock_decomp.detail_plot = 0;
 options_.shock_decomp.type='';
