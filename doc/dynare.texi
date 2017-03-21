@@ -2303,7 +2303,7 @@ necessary for lagged/leaded variables, while feasible starting values are requir
 It is important to be aware that if some variables, endogenous or exogenous, are not mentioned in the
 @code{initval} block, a zero value is assumed. It is particularly important to keep 
 this in mind when specifying exogenous variables using @code{varexo} that are not allowed 
-to take on the value of zero, like e.g. TFP. 
+to take on the value of zero, like @i{e.g.} TFP.
 
 Note that if the @code{initval} block is immediately followed by a
 @code{steady} command, its semantics are slightly changed. 
@@ -2549,7 +2549,7 @@ equilibrium values.
 The fact that @code{c} at @math{t=0} and @code{k} at @math{t=201} specified in
 @code{initval} and @code{endval} are taken as given has an important
 implication for plotting the simulated vector for the endogenous
-variables, i.e. the rows of @code{oo_.endo_simul}: this vector will 
+variables, @i{i.e.} the rows of @code{oo_.endo_simul}: this vector will
 also contain the initial and terminal
 conditions and thus is 202 periods long in the example. When you specify
 arbitrary values for the initial and terminal conditions for forward- and
@@ -4002,7 +4002,7 @@ Default: no filter.
 
 @item bandpass_filter = @var{[HIGHEST_PERIODICITY LOWEST_PERIODICITY]}
 Uses a bandpass filter before computing moments. The passband is set to a periodicity of @code{HIGHEST_PERIODICITY} 
-to @code{LOWEST_PERIODICITY}, e.g. 6 to 32 quarters if the model frequency is quarterly.
+to @code{LOWEST_PERIODICITY}, @i{e.g.} @math{6} to @math{32} quarters if the model frequency is quarterly.
 Default: @code{[6,32]}.
 
 @item irf = @var{INTEGER}
@@ -4144,7 +4144,7 @@ period(s). The periods must be strictly positive. Conditional variances are give
 decomposition provides the decomposition of the effects of shocks upon
 impact. The results are stored in
 @code{oo_.conditional_variance_decomposition}
-(@pxref{oo_.conditional_variance_decomposition}). The variance decomposition is only conducted, if theoretical moments are requested, i.e. using the @code{periods=0}-option. In case of @code{order=2}, Dynare provides a second-order accurate approximation to the true second moments based on the linear terms of the second-order solution (see @cite{Kim, Kim, Schaumburg and Sims (2008)}). Note that the unconditional variance decomposition (i.e. at horizon infinity) is automatically conducted if theoretical moments are requested and if @code{nodecomposition} is not set (@pxref{oo_.variance_decomposition})
+(@pxref{oo_.conditional_variance_decomposition}). The variance decomposition is only conducted, if theoretical moments are requested, @i{i.e.} using the @code{periods=0}-option. In case of @code{order=2}, Dynare provides a second-order accurate approximation to the true second moments based on the linear terms of the second-order solution (see @cite{Kim, Kim, Schaumburg and Sims (2008)}). Note that the unconditional variance decomposition (@i{i.e.} at horizon infinity) is automatically conducted if theoretical moments are requested and if @code{nodecomposition} is not set (@pxref{oo_.variance_decomposition})
 
 @item pruning
 Discard higher order terms when iteratively computing simulations of
@@ -4372,7 +4372,7 @@ accurate approximation of the true second moments, see @code{conditional_varianc
 @anchor{oo_.variance_decomposition}
 @defvr {MATLAB/Octave variable} oo_.variance_decomposition
 After a run of @code{stoch_simul} when requesting theoretical moments (@code{periods=0}), 
-contains a matrix with the result of the unconditional variance decomposition (i.e. at horizon infinity). 
+contains a matrix with the result of the unconditional variance decomposition (@i{i.e.} at horizon infinity).
 The first dimension corresponds to the endogenous variables (in the order of declaration) and 
 the second dimension corresponds to exogenous variables (in the order of declaration). 
 Numbers are in percent and sum up to 100 across columns.
@@ -4760,7 +4760,7 @@ varobs
 
 This block specifies @emph{linear} trends for observed variables as
 functions of model parameters. In case the @code{loglinear}-option is used,
-this corresponds to a linear trend in the logged observables, i.e. an exponential
+this corresponds to a linear trend in the logged observables, @i{i.e.} an exponential
 trend in the level of the observables.
 
 Each line inside of the block should be of the form:
@@ -5096,7 +5096,7 @@ convergence is  then checked using  the @cite{Brooks and  Gelman (1998)}
 univariate convergence diagnostic.
 
 The inefficiency factors are computed as in @cite{Giordano et al. (2011)} based on 
-Parzen windows as in e.g. @cite{Andrews (1991)}.
+Parzen windows as in @i{e.g.} @cite{Andrews (1991)}.
 
 @optionshead
 
@@ -5311,11 +5311,11 @@ The scale to be used for drawing the initial value of the
 Metropolis-Hastings chain. Generally, the starting points should be overdispersed
 for the @cite{Brooks and Gelman (1998)}-convergence diagnostics to be meaningful. Default: 2*@code{mh_jscale}. 
 It is important to keep in mind that @code{mh_init_scale} is set at the beginning of 
-Dynare execution, i.e. the default will not take into account potential changes in
+Dynare execution, @i{i.e.} the default will not take into account potential changes in
 @ref{mh_jscale} introduced by either @code{mode_compute=6} or the 
 @code{posterior_sampler_options}-option @ref{scale_file}. 
 If @code{mh_init_scale} is too wide during initalization of the posterior sampler so that 100 tested draws 
-are inadmissible (e.g. Blanchard-Kahn conditions are always violated), Dynare will request user input 
+are inadmissible (@i{e.g.} Blanchard-Kahn conditions are always violated), Dynare will request user input 
 of a new @code{mh_init_scale} value with which the next 100 draws will be drawn and tested. 
 If the @ref{nointeractive}-option has been invoked, the program will instead automatically decrease 
 @code{mh_init_scale} by 10 percent after 100 futile draws and try another 100 draws. This iterative 
@@ -5513,7 +5513,7 @@ generator state of the already present draws is currently not supported.
 
 @item load_results_after_load_mh
 @anchor{load_results_after_load_mh} This option is available when loading a previous MCMC run without
-adding additional draws, i.e. when @code{load_mh_file} is specified with @code{mh_replic=0}. It tells Dynare 
+adding additional draws, @i{i.e.} when @code{load_mh_file} is specified with @code{mh_replic=0}. It tells Dynare 
 to load the previously computed convergence diagnostics, marginal data density, and posterior statistics from an
 existing @code{_results}-file instead of recomputing them.
 
@@ -5840,7 +5840,7 @@ Note that @code{'slice'} is incompatible with
 @anchor{posterior_sampler_options}
 A list of @var{NAME} and @var{VALUE} pairs. Can be used to set options for the posterior sampling methods.
 The set of available options depends on the selected posterior sampling routine 
-(i.e. on the value of option @ref{posterior_sampling_method}):
+(@i{i.e.} on the value of option @ref{posterior_sampling_method}):
 
 @table @code
 
@@ -5910,7 +5910,7 @@ mode to perform rotated slice iterations. Default: 0
 
 @item 'initial_step_size'
 Sets the initial size of the interval in the stepping-out procedure as fraction of the prior support
-i.e. the size will be initial_step_size*(UB-LB). @code{initial_step_size} must be a real number in the interval [0, 1]. 
+@i{i.e.} the size will be initial_step_size*(UB-LB). @code{initial_step_size} must be a real number in the interval [0, 1]. 
 Default: 0.8
 
 @item 'use_mh_covariance_matrix'
@@ -5982,13 +5982,13 @@ option @code{moments_varendo} to be specified.
 
 @item filtered_vars
 @anchor{filtered_vars} Triggers the computation of the posterior
-distribution of filtered endogenous variables/one-step ahead forecasts, i.e. @math{E_{t}{y_{t+1}}}. Results are
+distribution of filtered endogenous variables/one-step ahead forecasts, @i{i.e.} @math{E_{t}{y_{t+1}}}. Results are
 stored in @code{oo_.FilteredVariables} (see below for a description of
 this variable)
 
 @item smoother
 @anchor{smoother} Triggers the computation of the posterior distribution
-of smoothed endogenous variables and shocks, i.e. the expected value of variables and shocks given the information available in all observations up to the @emph{final} date (@math{E_{T}{y_t}}). Results are stored in
+of smoothed endogenous variables and shocks, @i{i.e.} the expected value of variables and shocks given the information available in all observations up to the @emph{final} date (@math{E_{T}{y_t}}). Results are stored in
 @code{oo_.SmoothedVariables}, @code{oo_.SmoothedShocks} and
 @code{oo_.SmoothedMeasurementErrors}.  Also triggers the computation of
 @code{oo_.UpdatedVariables}, which contains the estimation of the expected value of variables given the information available at the @emph{current} date (@math{E_{t}{y_t}}).  See below for a description of all these
@@ -6030,9 +6030,9 @@ Use the Univariate Diffuse Kalman Filter
 
 @end table
 @noindent
-Default value is @code{0}. In case of missing observations of single or all series, Dynare treats those missing values as unobserved states and uses the Kalman filter to infer their value (see e.g. @cite{Durbin and Koopman (2012), Ch. 4.10})
+Default value is @code{0}. In case of missing observations of single or all series, Dynare treats those missing values as unobserved states and uses the Kalman filter to infer their value (see @i{e.g.} @cite{Durbin and Koopman (2012), Ch. 4.10})
 This procedure has the advantage of being capable of dealing with observations where the forecast error variance matrix becomes singular for some variable(s).
-If this happens, the respective observation enters with a weight of zero in the log-likelihood, i.e. this observation for the respective variable(s) is dropped
+If this happens, the respective observation enters with a weight of zero in the log-likelihood, @i{i.e.} this observation for the respective variable(s) is dropped
 from the likelihood computations (for details see @cite{Durbin and Koopman (2012), Ch. 6.4 and 7.2.5} and @cite{Koopman and Durbin (2000)}). If the use of a multivariate Kalman filter is specified and a
 singularity is encountered, Dynare by default automatically switches to the univariate Kalman filter for this parameter draw. This behavior can be changed via the
 @ref{use_univariate_filters_if_singularity_is_detected} option.
@@ -6061,7 +6061,7 @@ See below.
 
 @item filter_step_ahead = [@var{INTEGER1} @var{INTEGER2}  @dots{}]
 @anchor{filter_step_ahead}
-Triggers the computation k-step ahead filtered values, i.e. @math{E_{t}{y_{t+k}}}. Stores results in
+Triggers the computation k-step ahead filtered values, @i{i.e.} @math{E_{t}{y_{t+k}}}. Stores results in
 @code{oo_.FilteredVariablesKStepAhead}. Also stores 1-step ahead values in @code{oo_.FilteredVariables}. 
 @code{oo_.FilteredVariablesKStepAheadVariances} is stored if @code{filter_covariance}.
  
@@ -6071,7 +6071,7 @@ Triggers the computation k-step ahead filtered values, i.e. @math{E_{t}{y_{t+k}}
 decomposition of the above k-step ahead filtered values. Stores results in @code{oo_.FilteredVariablesShockDecomposition}.
 
 @item smoothed_state_uncertainty
-@anchor{smoothed_state_uncertainty} Triggers the computation of the variance of smoothed estimates, i.e.
+@anchor{smoothed_state_uncertainty} Triggers the computation of the variance of smoothed estimates, @i{i.e.}
 @code{Var_T(y_t)}. Stores results in @code{oo_.Smoother.State_uncertainty}.
 
 @item diffuse_filter
@@ -6221,7 +6221,7 @@ such a singularity is encountered. Default: @code{1}.
 With the default @ref{use_univariate_filters_if_singularity_is_detected}=1, Dynare will switch 
 to the univariate Kalman filter when it encounters a singular forecast error variance
 matrix during Kalman filtering. Upon encountering such a singularity for the first time, all subsequent
-parameter draws and computations will automatically rely on univariate filter, i.e. Dynare will never try 
+parameter draws and computations will automatically rely on univariate filter, @i{i.e.} Dynare will never try 
 the multivariate filter again. Use the @code{keep_kalman_algo_if_singularity_is_detected} option to have the 
 @code{use_univariate_filters_if_singularity_is_detected} only affect the behavior for the current draw/computation.
 
@@ -6351,7 +6351,7 @@ It is also possible to impose implicit ``endogenous'' priors about IRFs and mome
 estimation. For example, one can specify that all valid parameter draws for the model must generate fiscal multipliers that are
 bigger than 1 by specifying how the IRF to a government spending shock must look like. The prior restrictions can be imposed
 via @code{irf_calibration} and @code{moment_calibration} blocks (@pxref{IRF/Moment calibration}). The way it works internally is that 
-any parameter draw that is inconsistent with the ``calibration'' provided in these blocks is discarded, i.e. assigned a prior density of 0. 
+any parameter draw that is inconsistent with the ``calibration'' provided in these blocks is discarded, @i{i.e.} assigned a prior density of 0. 
 When specifying these blocks, it is important to keep in mind that one won't be able to easily do @code{model_comparison} in this case, 
 because the prior density will not integrate to 1.
 
@@ -6395,7 +6395,7 @@ Upper bound of a 90% HPD interval
 @item HPDinf_ME
 Lower bound of a 90% HPD interval@footnote{See option @ref{conf_sig}
 to change the size of the HPD interval} for observables when taking 
-measurement error into account (see e.g. @cite{Christoffel et al. (2010), p.17}).
+measurement error into account (see @i{e.g.} @cite{Christoffel et al. (2010), p.17}).
 
 @item HPDsup_ME
 Upper bound of a 90% HPD interval for observables when taking 
@@ -6528,7 +6528,7 @@ indicate the respective variables. The third dimension of the array provides the
 observation for which the forecast has been made. For example, if @code{filter_step_ahead=[1 2 4]} 
 and @code{nobs=200}, the element (3,5,204) stores the four period ahead filtered 
 value of variable 5 computed at time t=200 for time t=204. The periods at the beginning 
-and end of the sample for which no forecasts can be made, e.g. entries (1,5,1) and 
+and end of the sample for which no forecasts can be made, @i{e.g.} entries (1,5,1) and 
 (1,5,204) in the example, are set to zero. Note that in case of Bayesian estimation 
 the variables will be ordered in the order of declaration after the estimation 
 command (or in general declaration order if no variables are specified here). In case 
@@ -6564,7 +6564,7 @@ The fourth dimension of the array provides the
 observation for which the forecast has been made. For example, if @code{filter_step_ahead=[1 2 4]} 
 and @code{nobs=200}, the element (3,5,2,204) stores the contribution of the second shock to the 
 four period ahead filtered value of variable 5 (in deviations from the mean) computed at time t=200 for time t=204. The periods at the beginning 
-and end of the sample for which no forecasts can be made, e.g. entries (1,5,1) and 
+and end of the sample for which no forecasts can be made, @i{e.g.} entries (1,5,1) and 
 (1,5,204) in the example, are set to zero. Padding with zeros and variable ordering is analogous to 
 @code{oo_.FilteredVariablesKStepAhead}. 
 @end defvr
@@ -6714,7 +6714,7 @@ Fields are of the form:
 Variable set by the @code{estimation} command (if used with the
 @code{smoother} option), or by the @code{calib_smoother} command.
 Contains the constant part of the endogenous variables used in the
-smoother, accounting e.g. for the data mean when using the @code{prefilter}
+smoother, accounting @i{e.g.} for the data mean when using the @code{prefilter}
 option.
 
 Fields are of the form:
@@ -6750,7 +6750,7 @@ Auto- and cross-correlation of endogenous variables. Fields are vectors with cor
 
 
 @item VarianceDecomposition
-Decomposition of variance (unconditional variance, i.e. at horizon infinity)@footnote{When the shocks are correlated, it
+Decomposition of variance (unconditional variance, @i{i.e.} at horizon infinity)@footnote{When the shocks are correlated, it
 is the decomposition of orthogonalized shocks via Cholesky
 decomposition according to the order of declaration of shocks
 (@pxref{Variable declarations})}
@@ -6916,7 +6916,7 @@ Upper/lower bound of the 90% HPD interval taking into account both parameter and
 
 @end table
 
-@var{VARIABLE_NAME} contains a matrix of the following size: number of time periods for which forecasts are requested using the nobs = [@var{INTEGER1}:@var{INTEGER2}] option times the number of forecast horizons requested by the @code{forecast} option. I.e., the row indicates the period at which the forecast is performed and the column the respective k-step ahead forecast. The starting periods are sorted in ascending order, not in declaration order.
+@var{VARIABLE_NAME} contains a matrix of the following size: number of time periods for which forecasts are requested using the nobs = [@var{INTEGER1}:@var{INTEGER2}] option times the number of forecast horizons requested by the @code{forecast} option. @i{i.e.}, the row indicates the period at which the forecast is performed and the column the respective k-step ahead forecast. The starting periods are sorted in ascending order, not in declaration order.
 
 @end defvr
 
@@ -6976,7 +6976,7 @@ estimates using a higher tapering are usually more reliable.
 @descriptionhead
 
 This command computes odds ratios and estimate a posterior density over a
-collection of models (see e.g. @cite{Koop (2003), Ch. 1}). The priors over
+collection of models (see @i{e.g.} @cite{Koop (2003), Ch. 1}). The priors over
 models can be specified as the @var{DOUBLE} values, otherwise a uniform prior
 over all models is assumed.  In contrast to frequentist econometrics, the
 models to be compared do not need to be nested.  However, as the computation of
@@ -7053,7 +7053,7 @@ Posterior probability of the respective model
 @descriptionhead
 
 This command computes the historical shock decomposition for a given sample based on 
-the Kalman smoother, i.e. it decomposes the historical deviations of the endogenous 
+the Kalman smoother, @i{i.e.} it decomposes the historical deviations of the endogenous 
 variables from their respective steady state values into the contribution coming 
 from the various shocks. The @code{variable_names} provided govern for which 
 variables the decomposition is plotted.
@@ -7118,9 +7118,9 @@ The second dimension stores
 in the first @code{M_.exo_nbr} columns the contribution of the respective shocks.
 Column @code{M_.exo_nbr+1} stores the contribution of the initial conditions,
 while column @code{M_.exo_nbr+2} stores the smoothed value of the respective
-endogenous variable in deviations from their steady state, i.e. the mean and trends are
+endogenous variable in deviations from their steady state, @i{i.e.} the mean and trends are
 subtracted. The third dimension stores the time periods. Both the variables 
-and shocks are stored in the order of declaration, i.e. @code{M_.endo_names} and 
+and shocks are stored in the order of declaration, @i{i.e.} @code{M_.endo_names} and 
 @code{M_.exo_names}, respectively.
 
 @end deffn
@@ -8016,7 +8016,7 @@ where:
 
 @item
 @math{\gamma} are parameters to be optimized. They must be elements
-of the matrices @math{A_1}, @math{A_2}, @math{A_3}, i.e. be specified as
+of the matrices @math{A_1}, @math{A_2}, @math{A_3}, @i{i.e.} be specified as
 parameters in the @code{params}-command and be entered in the
 @code{model}-block;
 
@@ -8038,7 +8038,7 @@ parameters to minimize the weighted (co)-variance of a specified subset
 of endogenous variables, subject to a linear law of motion implied by the
 first order conditions of the model. A few things are worth mentioning.
 First, @math{y} denotes the selected endogenous variables' deviations
-from their steady state, i.e. in case they are not already mean 0 the
+from their steady state, @i{i.e.} in case they are not already mean 0 the
 variables entering the loss function are automatically demeaned so that
 the centered second moments are minimized. Second, @code{osr} only solves
 linear quadratic problems of the type resulting from combining the
@@ -8075,7 +8075,7 @@ by listing them after the command, as @code{stoch_simul}
 Specifies the optimizer for minimizing the objective function. The same solvers as for @code{mode_compute} (@pxref{mode_compute}) are available, except for 5,6, and 10. 
 
 @item optim = (@var{NAME}, @var{VALUE}, ...)
-A list of @var{NAME} and @var{VALUE} pairs. Can be used to set options for the optimization routines. The set of available options depends on the selected optimization routine (i.e. on the value of option @ref{opt_algo}). @xref{optim}.
+A list of @var{NAME} and @var{VALUE} pairs. Can be used to set options for the optimization routines. The set of available options depends on the selected optimization routine (@i{i.e.} on the value of option @ref{opt_algo}). @xref{optim}.
 
 @item maxit = @var{INTEGER} 
 Determines the maximum number of iterations used in @code{opt_algo=4}.  This option is now deprecated and will be 
@@ -8187,7 +8187,7 @@ Each line has the following syntax:
 PARAMETER_NAME, LOWER_BOUND, UPPER_BOUND;
 @end example
 
-Note that the use of this block requires the use of a constrained optimizer, i.e. setting @ref{opt_algo} to 
+Note that the use of this block requires the use of a constrained optimizer, @i{i.e.} setting @ref{opt_algo} to 
 1,2,5, or 9.
 
 @examplehead
@@ -8332,7 +8332,7 @@ maximizes the policy maker's objective function subject to the
 constraints provided by the equilibrium path of the private economy and under 
 commitment to this optimal policy. The Ramsey policy is computed
 by approximating the equilibrium system around the perturbation point where the 
-Lagrange multipliers are at their steady state, i.e. where the Ramsey planner acts 
+Lagrange multipliers are at their steady state, @i{i.e.} where the Ramsey planner acts 
 as if the initial multipliers had 
 been set to 0 in the distant past, giving them time to converge to their steady 
 state value. Consequently, the optimal decision rules are computed around this steady state 
@@ -8395,7 +8395,7 @@ multipliers associated with the planner's problem are set to their steady state
 values (@pxref{ramsey_policy}).
 
 In contrast, the second entry stores the value of the planner objective with 
-initial Lagrange multipliers of the planner's problem set to 0, i.e. it is assumed 
+initial Lagrange multipliers of the planner's problem set to 0, @i{i.e.} it is assumed 
 that the planner exploits its ability to surprise private agents in the first
 period of implementing Ramsey policy. This is the value of implementating
 optimal policy for the first time and committing not to re-optimize in the future.
@@ -8738,7 +8738,7 @@ Maximum number of lags for moments in identification analysis. Default: @code{1}
 
 The @code{irf_calibration} and @code{moment_calibration} blocks allow imposing implicit ``endogenous'' priors 
 about IRFs and moments on the model. The way it works internally is that 
-any parameter draw that is inconsistent with the ``calibration'' provided in these blocks is discarded, i.e. assigned a prior density of 0. 
+any parameter draw that is inconsistent with the ``calibration'' provided in these blocks is discarded, @i{i.e.} assigned a prior density of @math{0}. 
 In the context of @code{dynare_sensitivity}, these restrictions allow tracing out which parameters are driving the model to
 satisfy or violate the given restrictions.
 
@@ -11197,7 +11197,7 @@ This section outlines the steps necessary on most Windows systems to set up Dyna
 
 @enumerate
 @item Write a configuration file containing the options you want. A mimimum working 
-    example setting up a cluster consisting of two local CPU cores that allows for e.g. running
+    example setting up a cluster consisting of two local CPU cores that allows for @i{e.g.} running
     two Monte Carlo Markov Chains in parallel is shown below.
 @item Save the configuration file somwhere. The name and file ending do not matter 
     if you are providing it with the @code{conffile} command line option. The only restrictions are that the 
@@ -11205,8 +11205,8 @@ This section outlines the steps necessary on most Windows systems to set up Dyna
     For the configuration file to be accessible without providing an explicit path at the command line, you must save it 
     under the name @file{dynare.ini} into your user account's @code{Application Data} folder.
 @item Install the @file{PSTools} from @uref{https://technet.microsoft.com/sysinternals/pstools.aspx} 
-    to your system, e.g. into @file{C:\PSTools}.
-@item Set the Windows System Path to the @file{PSTools}-folder (e.g. using something along the line of pressing Windows Key+Pause to 
+    to your system, @i{e.g.} into @file{C:\PSTools}.
+@item Set the Windows System Path to the @file{PSTools}-folder (@i{e.g.} using something along the line of pressing Windows Key+Pause to 
     open the System Configuration, then go to Advanced -> Environment Variables -> Path, see also @uref{https://technet.microsoft.com/sysinternals/pstools.aspx}).
 @item Restart your computer to make the path change effective.
 @item Open Matlab and type into the command window 
