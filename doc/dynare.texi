@@ -7233,12 +7233,12 @@ decomposition graphs. See @code{colormap} in Matlab/Octave manual.
 @code{oo_.conditional_shock_decomposition} and @code{oo_.realtime_forecast_shock_decomposition} but no plot is made 
 (@xref{plot_shock_decomposition}).
 
-@item presample
+@item presample = @var{INTEGER}
 @anchor{presample_shock_decomposition} First data point from which recursive
 realtime shock decompositions are computed, @i{i.e.} for
 @math{T=[@code{presample}@dots{}@code{nobs}]}.
 
-@item forecast
+@item forecast = @var{INTEGER}
 @anchor{forecast_shock_decomposition} Compute shock decompositions up to
 @math{T+k} periods, @i{i.e.} get shock contributions to k-step ahead forecasts.
 
