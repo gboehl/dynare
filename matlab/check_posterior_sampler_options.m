@@ -418,6 +418,10 @@ if strcmp(posterior_sampler_options.posterior_sampling_method,'slice')
             posterior_sampler_options.V1=V1;
             posterior_sampler_options.WR=sqrt(diag(D))*3;
         end
+    else
+        if ~options_.load_mh_file && ~posterior_sampler_options.slice_initialize_with_mode,
+            posterior_sampler_options.invhess=[];
+        end
     end
     
     % needs to be re-set to zero otherwise posterior analysis is filtered
