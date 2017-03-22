@@ -49,7 +49,7 @@ function [z, endo_names, endo_names_tex, steady_state, i_var, oo_] = annualized_
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-opts = options_.shock_decomp;
+opts = options_.plot_shock_decomp;
 nvar = length(i_var);
 GYTREND0 = q2a.GYTREND0;
 var_type = q2a.type;
@@ -61,8 +61,8 @@ cumfix      = q2a.cumfix;
 if isstruct(oo_)
 %     z = oo_.shock_decomposition;
         myopts=options_;
-        myopts.shock_decomp.type='qoq';
-        myopts.shock_decomp.realtime=0;
+        myopts.plot_shock_decomp.type='qoq';
+        myopts.plot_shock_decomp.realtime=0;
         [z, junk] = plot_shock_decomposition(M_,oo_,myopts,[]);
 else
     z = oo_;
@@ -93,8 +93,8 @@ end
 if isstruct(aux)
     if ischar(aux.y)
         myopts=options_;
-        myopts.shock_decomp.type='qoq';
-        myopts.shock_decomp.realtime=0;
+        myopts.plot_shock_decomp.type='qoq';
+        myopts.plot_shock_decomp.realtime=0;
         [y_aux, steady_state_aux] = plot_shock_decomposition(M_,oo_,myopts,aux.y);
         aux.y=y_aux;
         aux.yss=steady_state_aux;
@@ -183,9 +183,9 @@ for i=t0:4:t1,
     za=[];
     gza=[];
         myopts=options_;
-        myopts.shock_decomp.type='qoq';
-        myopts.shock_decomp.realtime=1;
-        myopts.shock_decomp.vintage=i;
+        myopts.plot_shock_decomp.type='qoq';
+        myopts.plot_shock_decomp.realtime=1;
+        myopts.plot_shock_decomp.vintage=i;
         [z, steady_state_aux] = plot_shock_decomposition(M_,oo_,myopts,[]);
         z = z(i_var,:,:);
 if isstruct(aux)

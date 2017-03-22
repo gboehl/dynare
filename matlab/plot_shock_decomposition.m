@@ -28,6 +28,11 @@ function [z, steady_state] = plot_shock_decomposition(M_,oo_,options_,varlist)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
+options_.nodisplay = options_.plot_shock_decomp.nodisplay;
+options_.graph_format = options_.plot_shock_decomp.graph_format;
+options_.use_shock_groups = options_.plot_shock_decomp.use_shock_groups;
+options_.colormap = options_.plot_shock_decomp.colormap;
+
 % indices of endogenous variables
 if size(varlist,1) == 0
     varlist = M_.endo_names(1:M_.orig_endo_nbr,:);
@@ -49,27 +54,27 @@ fig_name='';
 % steadystate=0;
 % write_xls=0;
 
-if isfield(options_.shock_decomp,'expand'), % private trap for uimenu calls
-    expand=options_.shock_decomp.expand;
+if isfield(options_.plot_shock_decomp,'expand'), % private trap for uimenu calls
+    expand=options_.plot_shock_decomp.expand;
 else
     expand=0;
 end
 
-if ~isempty(options_.shock_decomp.fig_name)
-    fig_name=[' ' options_.shock_decomp.fig_name];
+if ~isempty(options_.plot_shock_decomp.fig_name)
+    fig_name=[' ' options_.plot_shock_decomp.fig_name];
 end
-type=options_.shock_decomp.type;
-detail_plot=options_.shock_decomp.detail_plot;
-realtime_= options_.shock_decomp.realtime;
-vintage_ = options_.shock_decomp.vintage;
+type=options_.plot_shock_decomp.type;
+detail_plot=options_.plot_shock_decomp.detail_plot;
+realtime_= options_.plot_shock_decomp.realtime;
+vintage_ = options_.plot_shock_decomp.vintage;
 forecast_ = options_.shock_decomp.forecast;
-steadystate = options_.shock_decomp.steadystate;
-write_xls = options_.shock_decomp.write_xls;
+steadystate = options_.plot_shock_decomp.steadystate;
+write_xls = options_.plot_shock_decomp.write_xls;
 
 initial_date = options_.initial_date;
  
-if isfield(options_.shock_decomp,'q2a'), % private trap for aoa calls
-    q2a=options_.shock_decomp.q2a;
+if isfield(options_.plot_shock_decomp,'q2a'), % private trap for aoa calls
+    q2a=options_.plot_shock_decomp.q2a;
     if isstruct(q2a) && isempty(fieldnames(q2a)),
         q2a=0;
     end
@@ -129,7 +134,7 @@ if isequal(type,'aoa') && isstruct(q2a) && realtime_
                 initial_date1=initial_date0+1;
             end
         end
-        t0=min(options_.shock_decomp.save_realtime);
+        t0=min(options_.plot_shock_decomp.save_realtime);
         ini1 = initial_date+t0-1;
         t0=t0+(4-ini1.time(2));
     if ~isfield(q2a,'var_type'), % private trap for aoa calls
@@ -153,7 +158,7 @@ if isequal(type,'aoa') && isstruct(q2a) && realtime_
     
 %     if isstruct(q2a.aux) && ischar(q2a.aux.y)
 %         opts=options_;
-%         opts.shock_decomp.type='qoq';
+%         opts.plot_shock_decomp.type='qoq';
 %         [y_aux, steady_state_aux] = plot_shock_decomposition(M_,oo_,opts,q2a.aux.y);
 %         q2a.aux.y=y_aux;
 %         q2a.aux.yss=steady_state_aux;
@@ -173,11 +178,11 @@ if ~expand
     fig_name = fig_name1;
 end
 gend = size(z,3);
-if options_.use_shock_groups
-    shock_groups = M_.shock_groups.(options_.use_shock_groups);
+if options_.plot_shock_decomp.use_shock_groups
+    shock_groups = M_.shock_groups.(options_.plot_shock_decomp.use_shock_groups);
     shock_ind = fieldnames(shock_groups);
     ngroups = length(shock_ind);
-    fig_name=[fig_name ' group ' options_.use_shock_groups];
+    fig_name=[fig_name ' group ' options_.plot_shock_decomp.use_shock_groups];
     shock_names = shock_ind;
     for i=1:ngroups,
        shock_names{i} = (shock_groups.(shock_ind{i}).label);
@@ -195,7 +200,7 @@ if options_.use_shock_groups
     zothers = sum(z(:,1:nshocks,:),2);
     shock_groups.(['group' int2str(ngroups+1)]).label =  'Others';
     shock_groups.(['group' int2str(ngroups+1)]).shocks =  cellstr(M_.exo_names(find(~ismember([1:M_.exo_nbr],kcum)),:))';
-    M_.shock_groups.(options_.use_shock_groups)=shock_groups;
+    M_.shock_groups.(options_.plot_shock_decomp.use_shock_groups)=shock_groups;
     if any(any(zothers)),
         shock_names = [shock_names; {'Others + Initial Values'}];
     end        
@@ -212,8 +217,8 @@ end
         MAP(end,:) = [0.7 0.7 0.7];
 %         MAP = [MAP; [0.7 0.7 0.7]; [0.3 0.3 0.3]];
 
-if isempty(options_.colormap),
-    options_.colormap = MAP;
+if isempty(options_.plot_shock_decomp.colormap),
+    options_.plot_shock_decomp.colormap = MAP;
 end
 
 switch type
@@ -269,7 +274,7 @@ switch type
             
             if isstruct(q2a.aux) && ischar(q2a.aux.y)
                 opts=options_;
-                opts.shock_decomp.type='qoq';
+                opts.plot_shock_decomp.type='qoq';
                 [y_aux, steady_state_aux] = plot_shock_decomposition(M_,oo_,opts,q2a.aux.y);
                 q2a.aux.y=y_aux;
                 q2a.aux.yss=steady_state_aux;
@@ -292,11 +297,11 @@ switch type
             z=z(:,:,t0:4:end);
         end
         
-        if ~isempty(options_.shock_decomp.plot_init_date)
-            options_.shock_decomp.plot_init_date = dates([int2str(options_.shock_decomp.plot_init_date.time(1)) 'Y']);
+        if ~isempty(options_.plot_shock_decomp.plot_init_date)
+            options_.plot_shock_decomp.plot_init_date = dates([int2str(options_.plot_shock_decomp.plot_init_date.time(1)) 'Y']);
         end
-        if ~isempty(options_.shock_decomp.plot_end_date)
-            options_.shock_decomp.plot_end_date = dates([int2str(options_.shock_decomp.plot_end_date.time(1)) 'Y']);
+        if ~isempty(options_.plot_shock_decomp.plot_end_date)
+            options_.plot_shock_decomp.plot_end_date = dates([int2str(options_.plot_shock_decomp.plot_end_date.time(1)) 'Y']);
         end
         
         
@@ -306,7 +311,7 @@ switch type
 
 end
 if steadystate
-    options_.shock_decomp.steady_state=steady_state;
+    options_.plot_shock_decomp.steady_state=steady_state;
 end
 
 if nargout
@@ -319,17 +324,17 @@ end
 my_initial_date = initial_date;
 a = 1;
 b = size(z,3);
-if ~isempty(options_.shock_decomp.plot_init_date)
-    my_initial_date = max(initial_date,options_.shock_decomp.plot_init_date);
-    a = find((initial_date:initial_date+b-1)==options_.shock_decomp.plot_init_date);
+if ~isempty(options_.plot_shock_decomp.plot_init_date)
+    my_initial_date = max(initial_date,options_.plot_shock_decomp.plot_init_date);
+    a = find((initial_date:initial_date+b-1)==options_.plot_shock_decomp.plot_init_date);
 end
-if ~isempty(options_.shock_decomp.plot_end_date)
-    b = find((initial_date:initial_date+b-1)==options_.shock_decomp.plot_end_date);
+if ~isempty(options_.plot_shock_decomp.plot_end_date)
+    b = find((initial_date:initial_date+b-1)==options_.plot_shock_decomp.plot_end_date);
 end
 z = z(:,:,a:b);
 % end crop data
 
-options_.shock_decomp.fig_name=fig_name;
+options_.plot_shock_decomp.fig_name=fig_name;
 if detail_plot,
     graph_decomp_detail(z,shock_names,M_.endo_names,i_var,my_initial_date,M_,options_)
 else
@@ -337,5 +342,5 @@ else
 end
 
 if write_xls
-    WriteShockDecomp2Excel(z,shock_names,M_.endo_names,i_var,initial_date,M_,options_,options_.shock_decomp);
+    WriteShockDecomp2Excel(z,shock_names,M_.endo_names,i_var,initial_date,M_,options_,options_.plot_shock_decomp);
 end

@@ -33,7 +33,7 @@ fig_mode='';
 fig_mode1='';
 fig_name='';
 screen_shocks=0;
-use_shock_groups = DynareOptions.use_shock_groups;
+use_shock_groups = DynareOptions.plot_shock_decomp.use_shock_groups;
 if use_shock_groups
     shock_groups = DynareModel.shock_groups.(use_shock_groups);
     shock_ind = fieldnames(shock_groups);

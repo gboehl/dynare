@@ -7271,12 +7271,17 @@ decompositions, @i{i.e.} @math{Y(t|T)}, for @math{t=[T@dots{}T+k]}. @xref{vintag
 
 @descriptionhead
 
-This command plots the historical shock decomposition already computed by command 
-@code{shock_decomposition}. 
-The @code{variable_names} provided govern for which 
-variables the decomposition is plotted.
+This command plots the historical shock decomposition already computed by
+@code{shock_decomposition}. The @code{variable_names} provided govern which
+variables the decomposition is plotted for.
 
 Note that this command must come after @code{shock_decomposition} or @code{realtime_shock_decomposition}.
+
+Further note that, unlike the majority of dynare commands, the options
+specified below are overwritten with their defaults before every call to
+@code{plot_shock_decomposition}. Hence, if you want to reuse an option in a
+subsequent call to @code{plot_shock_decomposition}, you must pass it to the
+command again.
 
 @optionshead
 
@@ -7295,11 +7300,14 @@ Note that this command must come after @code{shock_decomposition} or @code{realt
 @itemx graph_format = ( @var{FORMAT}, @var{FORMAT}@dots{} )
 @xref{graph_format}.
 
-@item detail_plot
-@anchor{detail_plot} Plots shock contributions using subplots, one per shock (or group of shocks).
+@item detail_plot = @var{INT_NUMBER}
+Plots shock contributions using subplots, one per shock (or group of
+shocks). Pass @math{1} to turn it on and @math{0} to turn it off. Default:
+@math{0}
 
-@item interactive 
-@anchor{interactive} Under MATLAB, add uimenu's for detailed group plots.
+@item interactive = @var{INT_NUMBER}
+Under MATLAB, add uimenu's for detailed group plots. Pass @math{1} to turn it
+on and @math{0} to turn it off. Default: @math{0}
 
 @item screen_shocks
 @anchor{screen_shcoks} For large models (@i{i.e.} for models with more than @math{16}
