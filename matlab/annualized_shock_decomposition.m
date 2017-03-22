@@ -271,6 +271,17 @@ end
             % fix total
             oo_.annualized_realtime_conditional_shock_decomposition.(['yr_' int2str(yr-nfrcst)])(:,end,:) = ...
                 oo_.annualized_realtime_shock_decomposition.pool(:,end,yr-nfrcst:end);
+            if i==t1
+                for my_forecast_=(nfrcst-1):-1:1,
+                    oo_.annualized_realtime_conditional_shock_decomposition.(['yr_' int2str(yr-my_forecast_)]) = ...
+                        oo_.annualized_realtime_shock_decomposition.pool(:,:,yr-my_forecast_:yr) - ...
+                        oo_.annualized_realtime_forecast_shock_decomposition.(['yr_' int2str(yr-my_forecast_)])(:,:,1:my_forecast_+1);
+                    oo_.annualized_realtime_conditional_shock_decomposition.(['yr_' int2str(yr-my_forecast_)])(:,end-1,:) = ...
+                        oo_.annualized_realtime_forecast_shock_decomposition.(['yr_' int2str(yr-my_forecast_)])(:,end,1:my_forecast_+1);
+                    oo_.annualized_realtime_conditional_shock_decomposition.(['yr_' int2str(yr-my_forecast_)])(:,end,:) = ...
+                        oo_.annualized_realtime_shock_decomposition.pool(:,end,yr-my_forecast_:yr);
+                end
+            end
         end
     end
 % ztmp=oo_.realtime_shock_decomposition.pool(:,:,21:29)-oo_.realtime_forecast_shock_decomposition.time_21;

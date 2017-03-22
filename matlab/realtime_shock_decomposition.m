@@ -229,6 +229,18 @@ for j=presample+1:nobs,
             oo_.realtime_conditional_shock_decomposition.(['time_' int2str(j-forecast_)])(:,end,:) = ...
                 zreal(:,end,j-forecast_:j);
     
+            if j==nobs
+                for my_forecast_=(forecast_-1):-1:1,
+                    oo_.realtime_conditional_shock_decomposition.(['time_' int2str(j-my_forecast_)]) = ...
+                        zreal(:,:,j-my_forecast_:j) - ...
+                        oo_.realtime_forecast_shock_decomposition.(['time_' int2str(j-my_forecast_)])(:,:,1:my_forecast_+1);
+                    oo_.realtime_conditional_shock_decomposition.(['time_' int2str(j-my_forecast_)])(:,end-1,:) = ...
+                        oo_.realtime_forecast_shock_decomposition.(['time_' int2str(j-my_forecast_)])(:,end,1:my_forecast_+1);
+                    oo_.realtime_conditional_shock_decomposition.(['time_' int2str(j-my_forecast_)])(:,end,:) = ...
+                        zreal(:,end,j-my_forecast_:j);
+                end
+            end
+            
         end
     end
     
