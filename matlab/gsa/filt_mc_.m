@@ -14,7 +14,7 @@ function [rmse_MC, ixx] = filt_mc_(OutDir,options_gsa_,dataset_,dataset_info)
 % marco.ratto@ec.europa.eu 
 
 % Copyright (C) 2012-2016 European Commission
-% Copyright (C) 2012-2016 Dynare Team
+% Copyright (C) 2012-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -407,7 +407,7 @@ else
             end
             if mod(i,9)==1,
                 ifig=ifig+1;
-                hh=dyn_figure(options_,'name',[temp_name,' ',int2str(ifig)]);
+                hh=dyn_figure(options_.nodisplay,'name',[temp_name,' ',int2str(ifig)]);
             end
             subplot(3,3,i-9*(ifig-1))
             h=cumplot(lnprior(ixx(1:nfilt0(i),i)));
@@ -455,7 +455,7 @@ else
             end
             if mod(i,9)==1,
                 ifig=ifig+1;
-                hh = dyn_figure(options_,'Name',[temp_name,' ',int2str(ifig)]);
+                hh = dyn_figure(options_.nodisplay,'Name',[temp_name,' ',int2str(ifig)]);
             end
             subplot(3,3,i-9*(ifig-1))
             h=cumplot(likelihood(ixx(1:nfilt0(i),i)));
@@ -506,7 +506,7 @@ else
             end
             if mod(i,9)==1,
                 ifig=ifig+1;
-                hh = dyn_figure(options_,'Name',[temp_name,' ',int2str(ifig)]);
+                hh = dyn_figure(options_.nodisplay,'Name',[temp_name,' ',int2str(ifig)]);
             end
             subplot(3,3,i-9*(ifig-1))
             h=cumplot(logpo2(ixx(1:nfilt0(i),i)));
@@ -794,7 +794,7 @@ else
         for iy=1:size(vvarvecm,1),
             ipar = find(any(squeeze(PPV(iy,:,:))<alpha));
             for ix=1:ceil(length(ipar)/5),
-                hh = dyn_figure(options_,'name',[temp_name,' observed variable ',deblank(vvarvecm(iy,:))]);
+                hh = dyn_figure(options_.nodisplay,'name',[temp_name,' observed variable ',deblank(vvarvecm(iy,:))]);
                 for j=1+5*(ix-1):min(length(ipar),5*ix),
                     subplot(2,3,j-5*(ix-1))
                     %h0=cumplot(x(:,nsnam(j)+nshock));
@@ -859,7 +859,7 @@ else
         
         % now I plot by individual parameters
         for ix=1:ceil(length(nsnam)/5),
-            hh = dyn_figure(options_,'name',[temp_name,' estimated params and shocks ',int2str(ix)]);
+            hh = dyn_figure(options_.nodisplay,'name',[temp_name,' estimated params and shocks ',int2str(ix)]);
             for j=1+5*(ix-1):min(size(snam2,1),5*ix),
                 subplot(2,3,j-5*(ix-1))
                 %h0=cumplot(x(:,nsnam(j)+nshock));

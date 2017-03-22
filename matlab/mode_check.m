@@ -40,7 +40,7 @@ function mode_check(fun,x,hessian_mat,DynareDataset,DatasetInfo,DynareOptions,Mo
 %! @end deftypefn
 %@eod:
 
-% Copyright (C) 2003-2016 Dynare Team
+% Copyright (C) 2003-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -96,7 +96,7 @@ for plt = 1:nbplt,
         NAMES = [];
         TeXNAMES = [];
     end
-    hh = dyn_figure(DynareOptions,'Name','Mode check plots');
+    hh = dyn_figure(DynareOptions.nodisplay,'Name','Mode check plots');
     for k=1:min(nstar,length(x)-(plt-1)*nstar)
         subplot(nr,nc,k)
         kk = (plt-1)*nstar+k;

@@ -6,7 +6,7 @@ function indcorr = stab_map_2(x,alpha2, pvalue_crit, fnam, dirname,xparam1,figti
 % marco.ratto@ec.europa.eu 
 
 % Copyright (C) 2011-2016 European Commission
-% Copyright (C) 2011-2016 Dynare Team
+% Copyright (C) 2011-2017 Dynare Team
 % This file is part of Dynare.
 %
 % Dynare is free software: you can redistribute it and/or modify
@@ -119,7 +119,7 @@ for j=1:npar,
                 if ~nograph,
                     if mod(j2,12)==1,
                     ifig=ifig+1;
-                    hh=dyn_figure(options_,'name',[figtitle,' sample bivariate projection ', num2str(ifig)]);
+                    hh=dyn_figure(options_.nodisplay,'name',[figtitle,' sample bivariate projection ', num2str(ifig)]);
                 end
                 subplot(3,4,j2-(ifig-1)*12)
                 %             bar(c0(i2,j)),

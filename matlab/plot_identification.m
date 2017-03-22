@@ -19,7 +19,7 @@ function plot_identification(params,idemoments,idehess,idemodel, idelre, advance
 % SPECIAL REQUIREMENTS
 %    None
 
-% Copyright (C) 2008-2016 Dynare Team
+% Copyright (C) 2008-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -60,7 +60,7 @@ tittxt1=regexprep(tittxt, ' ', '_');
 tittxt1=strrep(tittxt1, '.', '');
 if SampleSize == 1,
     siJ = idemoments.siJ;
-    hh = dyn_figure(options_,'Name',[tittxt, ' - Identification using info from observables']);
+    hh = dyn_figure(options_.nodisplay,'Name',[tittxt, ' - Identification using info from observables']);
     subplot(211)
     mmm = (idehess.ide_strength_J);
     [ss, is] = sort(mmm);
@@ -132,7 +132,7 @@ if SampleSize == 1,
         if all(isnan([siJnorm';siHnorm';siLREnorm']))
             fprintf('\nIDENTIFICATION: Skipping sensitivity plot, because standard deviation of parameters is NaN, possibly due to the use of ML.\n')
         else
-            hh = dyn_figure(options_,'Name',[tittxt, ' - Sensitivity plot']);
+            hh = dyn_figure(options_.nodisplay,'Name',[tittxt, ' - Sensitivity plot']);
             subplot(211)
             mmm = (siJnorm)'./max(siJnorm);
             mmm1 = (siHnorm)'./max(siHnorm);
@@ -185,7 +185,7 @@ if SampleSize == 1,
                 end
 %                 fprintf('%-15s [%s] %10.3f\n',name{i},namx,idemoments.cosnJ(i,j))
             end
-            hh = dyn_figure(options_,'Name',[tittxt,' - Collinearity patterns with ', int2str(j) ,' parameter(s)']);
+            hh = dyn_figure(options_.nodisplay,'Name',[tittxt,' - Collinearity patterns with ', int2str(j) ,' parameter(s)']);
             imagesc(pax,[0 1]);
             set(gca,'xticklabel','')
             set(gca,'yticklabel','')
@@ -225,24 +225,24 @@ if SampleSize == 1,
         S=diag(S);
         if idehess.flag_score,
             if nparam<5,
-                f1 = dyn_figure(options_,'Name',[tittxt,' - Identification patterns (Information matrix)']);
+                f1 = dyn_figure(options_.nodisplay,'Name',[tittxt,' - Identification patterns (Information matrix)']);
                 tex_tit_1=[tittxt,' - Identification patterns (Information matrix)'];
             else
-                f1 = dyn_figure(options_,'Name',[tittxt,' - Identification patterns (Information matrix): SMALLEST SV']);
+                f1 = dyn_figure(options_.nodisplay,'Name',[tittxt,' - Identification patterns (Information matrix): SMALLEST SV']);
                 tex_tit_1=[tittxt,' - Identification patterns (Information matrix): SMALLEST SV'];
-                f2 = dyn_figure(options_,'Name',[tittxt,' - Identification patterns (Information matrix): HIGHEST SV']);
+                f2 = dyn_figure(options_.nodisplay,'Name',[tittxt,' - Identification patterns (Information matrix): HIGHEST SV']);
                 tex_tit_2=[tittxt,' - Identification patterns (Information matrix): HIGHEST SV'];
             end
         else
 %             S = idemoments.S;
 %             V = idemoments.V;
             if nparam<5,
-                f1 = dyn_figure(options_,'Name',[tittxt,' - Identification patterns (moments Information matrix)']);
+                f1 = dyn_figure(options_.nodisplay,'Name',[tittxt,' - Identification patterns (moments Information matrix)']);
                 tex_tit_1=[tittxt,' - Identification patterns (moments Information matrix)'];
             else
-                f1 = dyn_figure(options_,'Name',[tittxt,' - Identification patterns (moments Information matrix): SMALLEST SV']);
+                f1 = dyn_figure(options_.nodisplay,'Name',[tittxt,' - Identification patterns (moments Information matrix): SMALLEST SV']);
                 tex_tit_1=[tittxt,' - Identification patterns (moments Information matrix): SMALLEST SV'];
-                f2 = dyn_figure(options_,'Name',[tittxt,' - Identification patterns (moments Information matrix): HIGHEST SV']);
+                f2 = dyn_figure(options_.nodisplay,'Name',[tittxt,' - Identification patterns (moments Information matrix): HIGHEST SV']);
                 tex_tit_2=[tittxt,' - Identification patterns (moments Information matrix): HIGHEST SV'];
             end
         end
@@ -303,7 +303,7 @@ if SampleSize == 1,
     end
     
 else
-    hh = dyn_figure(options_,'Name',['MC sensitivities']);
+    hh = dyn_figure(options_.nodisplay,'Name',['MC sensitivities']);
     subplot(211)
     mmm = (idehess.ide_strength_J);
     [ss, is] = sort(mmm);
@@ -350,7 +350,7 @@ else
             disp('Press ENTER to display advanced diagnostics'), pause(5),
         end
 %         options_.nograph=1;
-        hh = dyn_figure(options_,'Name','MC Condition Number');
+        hh = dyn_figure(options_.nodisplay,'Name','MC Condition Number');
         subplot(221)
         hist(log10(idemodel.cond))
         title('log10 of Condition number in the model')
@@ -398,12 +398,12 @@ else
 %         end
 
         if nparam<5,
-            f1 = dyn_figure(options_,'Name',[tittxt,' - MC Identification patterns (moments): HIGHEST SV']);
+            f1 = dyn_figure(options_.nodisplay,'Name',[tittxt,' - MC Identification patterns (moments): HIGHEST SV']);
             tex_tit_1=[tittxt,' - MC Identification patterns (moments): HIGHEST SV'];
         else
-            f1 = dyn_figure(options_,'Name',[tittxt,' - MC Identification patterns (moments): SMALLEST SV']);
+            f1 = dyn_figure(options_.nodisplay,'Name',[tittxt,' - MC Identification patterns (moments): SMALLEST SV']);
             tex_tit_1=[tittxt,' - MC Identification patterns (moments): SMALLEST SV'];
-            f2 = dyn_figure(options_,'Name',[tittxt,' - MC Identification patterns (moments): HIGHEST SV']);
+            f2 = dyn_figure(options_.nodisplay,'Name',[tittxt,' - MC Identification patterns (moments): HIGHEST SV']);
             tex_tit_2=[tittxt,' - MC Identification patterns (moments): HIGHEST SV'];
         end
         nplots=min(nparam,8);

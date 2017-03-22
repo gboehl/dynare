@@ -13,7 +13,7 @@ function plot_priors(bayestopt_,M_,estim_params_,options_)
 % SPECIAL REQUIREMENTS
 %    None
 
-% Copyright (C) 2004-2016 Dynare Team
+% Copyright (C) 2004-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -43,7 +43,7 @@ if TeX && any(strcmp('eps',cellstr(options_.graph_format)))
     fprintf(fidTeX,' \n');
 end
 for plt = 1:nbplt,
-    hplt = dyn_figure(options_,'Name',figurename);
+    hplt = dyn_figure(options_.nodisplay,'Name',figurename);
     if TeX
         TeXNAMES = [];
         NAMES    = [];

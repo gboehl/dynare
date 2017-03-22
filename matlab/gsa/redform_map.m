@@ -16,7 +16,7 @@ function redform_map(dirname,options_gsa_)
 % marco.ratto@ec.europa.eu 
 
 % Copyright (C) 2012-2016 European Commission
-% Copyright (C) 2012-2016 Dynare Team
+% Copyright (C) 2012-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -165,7 +165,7 @@ for j=1:size(anamendo,1)
             if (max(y0)-min(y0))>1.e-10,
                 if mod(iplo,9)==0 && isempty(threshold) && ~options_.nograph,
                     ifig=ifig+1;
-                    hfig = dyn_figure(options_,'name',['Reduced Form Mapping: ', namendo,' vs shocks ',int2str(ifig)]);
+                    hfig = dyn_figure(options_.nodisplay,'name',['Reduced Form Mapping: ', namendo,' vs shocks ',int2str(ifig)]);
                     iplo=0;
                 end
                 iplo=iplo+1;
@@ -193,7 +193,7 @@ for j=1:size(anamendo,1)
                             mkdir(xdir)
                         end
                         if ~options_.nograph,
-                            hf=dyn_figure(options_,'name',['Reduced Form Mapping (Monte Carlo Filtering): ',namendo,' vs ', namexo]); 
+                            hf=dyn_figure(options_.nodisplay,'name',['Reduced Form Mapping (Monte Carlo Filtering): ',namendo,' vs ', namexo]); 
                             hc = cumplot(y0);
                             a=axis; delete(hc);
                             %     hist(mat_moment{ij}),
@@ -301,7 +301,7 @@ for j=1:size(anamendo,1)
             if (max(y0)-min(y0))>1.e-10,
                 if mod(iplo,9)==0 && isempty(threshold) && ~options_.nograph,
                     ifig=ifig+1;
-                    hfig = dyn_figure(options_,'name',['Reduced Form Mapping: ' namendo,' vs lags ',int2str(ifig)]);
+                    hfig = dyn_figure(options_.nodisplay,'name',['Reduced Form Mapping: ' namendo,' vs lags ',int2str(ifig)]);
                     iplo=0;
                 end
                 iplo=iplo+1;
@@ -329,7 +329,7 @@ for j=1:size(anamendo,1)
                             mkdir(xdir)
                         end
                         if ~options_.nograph,
-                            hf=dyn_figure(options_,'name',['Reduced Form Mapping (Monte Carlo Filtering): ',namendo,' vs lagged ', namlagendo]); 
+                            hf=dyn_figure(options_.nodisplay,'name',['Reduced Form Mapping (Monte Carlo Filtering): ',namendo,' vs lagged ', namlagendo]); 
                             hc = cumplot(y0);
                             a=axis; delete(hc);
                             %     hist(mat_moment{ij}),
@@ -428,7 +428,7 @@ end
 
 if isempty(threshold) && ~options_.nograph,
     if ilog==0,
-        hfig=dyn_figure(options_,'name','Reduced Form GSA'); %bar(si)
+        hfig=dyn_figure(options_.nodisplay,'name','Reduced Form GSA'); %bar(si)
         % boxplot(si','whis',10,'symbol','r.')
         myboxplot(si',[],'.',[],10)
         xlabel(' ')
@@ -444,7 +444,7 @@ if isempty(threshold) && ~options_.nograph,
         create_TeX_loader(options_,[dirname,filesep,M_.fname,'_redform_gsa'],'Reduced Form GSA','redform_gsa')
 
     else
-        hfig=dyn_figure(options_,'name','Reduced Form GSA'); %bar(silog)
+        hfig=dyn_figure(options_.nodisplay,'name','Reduced Form GSA'); %bar(silog)
         % boxplot(silog','whis',10,'symbol','r.')
         myboxplot(silog',[],'.',[],10)
         set(gca,'xticklabel',' ','fontsize',10,'xtick',[1:np])
@@ -522,7 +522,7 @@ if iload==0,
         y1 = log(y0*isig+lam);
     end
     if ~options_.nograph,
-        hfig=dyn_figure(options_,'name',options_map.figtitle); 
+        hfig=dyn_figure(options_.nodisplay,'name',options_map.figtitle); 
         subplot(221)
         if ilog,
             hist(y1,30),
@@ -647,7 +647,7 @@ else
     load([fname,'_map.mat'],'gsa_')
     if ~options_.nograph,
         yf = ss_anova_fcast(x0, gsa_);
-        hfig=dyn_figure(options_,'name',options_map.title);
+        hfig=dyn_figure(options_.nodisplay,'name',options_map.title);
         plot(y0,[yf y0],'.'),
         title([namy,' vs ', namx,' pred'],'interpreter','none')
         dyn_saveas(hfig,[fname '_pred'],options_);
@@ -724,7 +724,7 @@ return
 
 function indmcf = redform_mcf(y0, x0, options_mcf, options_)
 
-hfig=dyn_figure(options_,'name',options_mcf.amcf_title);
+hfig=dyn_figure(options_.nodisplay,'name',options_mcf.amcf_title);
 
 [post_mean, post_median, post_var, hpd_interval, post_deciles, ...
     density] = posterior_moments(y0,1,0.9);

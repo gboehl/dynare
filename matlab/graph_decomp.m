@@ -11,7 +11,7 @@ function []=graph_decomp(z,shock_names,endo_names,i_var,initial_date,DynareModel
 %   DynareModel     [structure]                     Dynare model structure
 %   DynareOptions   [structure]                     Dynare options structure
 
-% Copyright (C) 2010-2016 Dynare Team
+% Copyright (C) 2010-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -128,7 +128,7 @@ for j=1:nvar
     if ymax-ymin < 1e-6
         continue
     end
-    fhandle = dyn_figure(DynareOptions,'Name',[preamble_txt fig_names_long strrep(fig_mode1, '_', ' ') ': ' deblank(endo_names(i_var(j),:)) '.'], 'PaperPositionMode', 'auto','PaperOrientation','landscape','renderermode','auto');
+    fhandle = dyn_figure(DynareOptions.nodisplay,'Name',[preamble_txt fig_names_long strrep(fig_mode1, '_', ' ') ': ' deblank(endo_names(i_var(j),:)) '.'], 'PaperPositionMode', 'auto','PaperOrientation','landscape','renderermode','auto');
     set(fhandle,'position' ,[50 50 1500 750])
     ax=axes('Position',[0.1 0.1 0.6 0.8],'box','on');
 %     plot(ax,x(2:end),z1(end,:),'k-','LineWidth',2)

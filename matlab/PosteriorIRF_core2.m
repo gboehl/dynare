@@ -30,7 +30,7 @@ function myoutput=PosteriorIRF_core2(myinputs,fpar,npar,whoiam,ThisMatlab)
 % SPECIAL REQUIREMENTS.
 %   None.
 %
-% Copyright (C) 2006-2016 Dynare Team
+% Copyright (C) 2006-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -103,9 +103,9 @@ for i=fpar:npar,
         if max(abs(MeanIRF(:,j,i))) >= options_.impulse_responses.plot_threshold
             subplotnum = subplotnum+1;
             if subplotnum == 1 && options_.relative_irf
-                hh = dyn_figure(options_,'Name',['Relative response to orthogonalized shock to ' tit(i,:)]);
+                hh = dyn_figure(options_.nodisplay,'Name',['Relative response to orthogonalized shock to ' tit(i,:)]);
             elseif subplotnum == 1 && ~options_.relative_irf
-                hh = dyn_figure(options_,'Name',['Orthogonalized shock to ' tit(i,:)]);
+                hh = dyn_figure(options_.nodisplay,'Name',['Orthogonalized shock to ' tit(i,:)]);
             end
 
             set(0,'CurrentFigure',hh)

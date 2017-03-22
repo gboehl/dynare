@@ -11,7 +11,7 @@ function []=graph_decomp_detail(z,shock_names,endo_names,i_var,initial_date,Dyna
 %   DynareModel     [structure]                     Dynare model structure
 %   DynareOptions   [structure]                     Dynare options structure
 
-% Copyright (C) 2010-2016 Dynare Team
+% Copyright (C) 2010-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -151,7 +151,7 @@ for j=1:nvar
         continue
     end
     for jf = 1:nfigs
-    fhandle = dyn_figure(DynareOptions,'Name',[preamble_txt fig_names_long strrep(fig_mode1, '_', ' ') ': ' deblank(endo_names(i_var(j),:)) ' (detail).'],'position',[200 100 650 850], 'PaperPositionMode', 'auto','PaperOrientation','portrait','renderermode','auto');
+    fhandle = dyn_figure(DynareOptions.nodisplay,'Name',[preamble_txt fig_names_long strrep(fig_mode1, '_', ' ') ': ' deblank(endo_names(i_var(j),:)) ' (detail).'],'position',[200 100 650 850], 'PaperPositionMode', 'auto','PaperOrientation','portrait','renderermode','auto');
     a0=zeros(1,4);
     a0(3)=inf;
     a0(4)=-inf;

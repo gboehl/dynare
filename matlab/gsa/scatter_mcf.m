@@ -5,7 +5,7 @@ function  scatter_mcf(X,Y,vnames,plotsymbol, fnam, dirname, figtitle, xparam1, D
 % marco.ratto@ec.europa.eu 
 
 % Copyright (C) 2014-2016 European Commission
-% Copyright (C) 2014-2016 Dynare Team
+% Copyright (C) 2014-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -84,7 +84,7 @@ figtitle_tex=strrep(figtitle,'_','\_');
 
 fig_nam_=[fnam];
 if ~nograph,
-    hh=dyn_figure(DynareOptions,'name',figtitle);
+    hh=dyn_figure(DynareOptions.nodisplay,'name',figtitle);
 end
 
 bf = 0.1;

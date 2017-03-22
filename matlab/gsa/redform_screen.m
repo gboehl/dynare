@@ -11,7 +11,7 @@ function redform_screen(dirname, options_gsa_)
 % marco.ratto@ec.europa.eu 
 
 % Copyright (C) 2012-2016 European Commission
-% Copyright (C) 2012-2016 Dynare Team
+% Copyright (C) 2012-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -68,7 +68,7 @@ for j=1:size(anamendo,1),
       if ~isempty(y0),
         if mod(iplo,9)==0,
           ifig=ifig+1;
-          hh=dyn_figure(options_,'name',[namendo,' vs. shocks ',int2str(ifig)]);
+          hh=dyn_figure(options_.nodisplay,'name',[namendo,' vs. shocks ',int2str(ifig)]);
           iplo=0;
         end
         iplo=iplo+1;
@@ -110,7 +110,7 @@ for j=1:size(anamendo,1),
       if ~isempty(y0),
         if mod(iplo,9)==0,
           ifig=ifig+1;
-          hh=dyn_figure(options_,'name',[namendo,' vs. lagged endogenous ',int2str(ifig)]);
+          hh=dyn_figure(options_.nodisplay,'name',[namendo,' vs. lagged endogenous ',int2str(ifig)]);
           iplo=0;
         end
         iplo=iplo+1;
@@ -142,7 +142,7 @@ for j=1:size(anamendo,1),
   end
 end
 
-hh=dyn_figure(options_,'Name','Reduced form screening'); 
+hh=dyn_figure(options_.nodisplay,'Name','Reduced form screening'); 
 %bar(SA)
 % boxplot(SA','whis',10,'symbol','r.')
 myboxplot(SA',[],'.',[],10)

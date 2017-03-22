@@ -21,7 +21,7 @@ function [proba, dproba] = stab_map_1(lpmat, ibehaviour, inonbehaviour, aname, i
 % marco.ratto@ec.europa.eu 
 
 % Copyright (C) 2012-2016 European Commission
-% Copyright (C) 2012-2016 Dynare Team
+% Copyright (C) 2012-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -82,7 +82,7 @@ if iplot && ~options_.nograph
     ftit=bayestopt_.name(ipar+nshock*(1-ishock));
     
     for i=1:ceil(nparplot/12),
-        hh=dyn_figure(options_,'name',atitle);
+        hh=dyn_figure(options_.nodisplay,'name',atitle);
         for j=1+12*(i-1):min(nparplot,12*i),
             subplot(3,4,j-12*(i-1))
             if ~isempty(ibehaviour),
