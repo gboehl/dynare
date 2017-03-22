@@ -52,7 +52,7 @@ if nargin==8 ,
         fig_mode = [fig_mode '_'];        
     end
     if isfield(opts_decomp,'screen_shocks')
-        if DynareOptions.use_shock_groups,
+        if use_shock_groups
             screen_shocks=0;
         elseif comp_nbr>18
             screen_shocks = opts_decomp.screen_shocks;
