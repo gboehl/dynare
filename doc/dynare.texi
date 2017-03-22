@@ -7066,19 +7066,14 @@ model).
 
 @table @code
 
-@item parameter_set = @var{PARAMETER_SET}
-Specify the parameter set to use for running the smoother. The
-@var{PARAMETER_SET} can take one of the following seven values:
-@code{calibration}, @code{prior_mode}, @code{prior_mean},
-@code{posterior_mode}, @code{posterior_mean},
-@code{posterior_median}, @code{mle_mode}. Note that the parameter
-set used in subsequent commands like @code{stoch_simul} will be set to 
-the specified @code{parameter_set}.
-Default value: @code{posterior_mean} if
+@item parameter_set = @code{calibration} | @code{prior_mode} | @code{prior_mean} | @code{posterior_mode} | @code{posterior_mean} | @code{posterior_median} | @code{mle_mode}
+@anchor{parameter_set} Specify the parameter set to use for running the smoother. Note that the
+parameter set used in subsequent commands like @code{stoch_simul} will be set
+to the specified @code{parameter_set}. Default value: @code{posterior_mean} if
 Metropolis has been run, @code{mle_mode} if MLE has been run.
 
 @item datafile = @var{FILENAME}
-@xref{datafile}. Useful when computing the shock decomposition on a
+@anchor{datafile_shock_decomp} @xref{datafile}. Useful when computing the shock decomposition on a
 calibrated model.
 
 @item first_obs = @var{INTEGER}
@@ -7087,16 +7082,16 @@ calibrated model.
 @item nobs = @var{INTEGER}
 @xref{nobs}.
 
-@item use_shock_groups [= @var{SHOCK_GROUPS_NAME}]
+@item use_shock_groups [= @var{STRING}]
 @anchor{use_shock_groups} Uses groups of shocks instead of individual shocks in
 the decomposition. Groups of shocks are defined in the @ref{shock_groups} block.
 
-@item colormap = @var{COLORMAP_NAME}
+@item colormap = @var{STRING}
 @anchor{colormap} Controls the colormap used for the shocks decomposition
-graphs. See @code{colormap} in Matlab/Octave manual.
+graphs. See @code{colormap} in Matlab/Octave manual for valid arguments.
 
 @item nograph
-@xref{nograph} Suppresses the display and creation only within the
+@xref{nograph}. Suppresses the display and creation only within the
 @code{shock_decomposition}-command but does not affect other commands.
 @xref{plot_shock_decomposition} for plotting graphs.
 
@@ -7201,17 +7196,11 @@ model).
 
 @table @code
 
-@item parameter_set = @var{PARAMETER_SET}
-Specify the parameter set to use for running the smoother.
-@var{PARAMETER_SET} can take one of the following seven values:
-@code{calibration}, @code{prior_mode}, @code{prior_mean},
-@code{posterior_mode}, @code{posterior_mean},
-@code{posterior_median}, @code{mle_mode}. Default value: @code{posterior_mean} if
-Metropolis has been run, @code{mle_mode} if MLE has been run.
+@item parameter_set = @code{calibration} | @code{prior_mode} | @code{prior_mean} | @code{posterior_mode} | @code{posterior_mean} | @code{posterior_median} | @code{mle_mode}
+@xref{parameter_set}.
 
 @item datafile = @var{FILENAME}
-@xref{datafile}. Useful when computing the shock decomposition on a
-calibrated model.
+@xref{datafile_shock_decomp}.
 
 @item first_obs = @var{INTEGER}
 @xref{first_obs}.
@@ -7219,14 +7208,11 @@ calibrated model.
 @item nobs = @var{INTEGER}
 @xref{nobs}.
 
-@item use_shock_groups [= @var{SHOCK_GROUPS_NAME}]
-@anchor{use_shock_groups_realtime} Uses groups of shocks instead of individual
-shocks in the decomposition. Groups of shocks are defined in the
-@ref{shock_groups} block.
+@item use_shock_groups [= @var{STRING}]
+@xref{use_shock_groups}.
 
-@item colormap = @var{COLORMAP_NAME}
-@anchor{colormap_realtime} Controls the colormap used for the shocks
-decomposition graphs. See @code{colormap} in Matlab/Octave manual.
+@item colormap = @var{STRING}
+@xref{colormap}.
 
 @item nograph
 @xref{nograph}. Only shock decompositions are computed and stored in @code{oo_.realtime_shock_decomposition},
@@ -7296,19 +7282,17 @@ Note that this command must come after @code{shock_decomposition} or @code{realt
 
 @table @code
 
-@item use_shock_groups [= @var{SHOCK_GROUPS_NAME}]
-@anchor{use_shock_groups_plot} Uses groups of shocks instead of individual
-shocks in the decomposition. Groups of shocks are defined in the
-@ref{shock_groups} block.
+@item use_shock_groups [= @var{STRING}]
+@xref{use_shock_groups}.
 
-@item colormap = @var{COLORMAP_NAME}
-@anchor{colormap_plot} Controls the colormap used for the shocks decomposition
-graphs. See @code{colormap} in Matlab/Octave manual.
+@item colormap = @var{STRING}
+@xref{colormap}.
 
 @item nodisplay
 @xref{nodisplay}.
 
-@item graph_format = (@var{GRAPH_FORMAT_LIST})
+@item graph_format = @var{FORMAT}
+@itemx graph_format = ( @var{FORMAT}, @var{FORMAT}@dots{} )
 @xref{graph_format}.
 
 @item detail_plot
@@ -7328,15 +7312,14 @@ by the mean absolute value of all historical contributions.
 zero line in the shock decomposition plot is translated to the steady state
 level. Default: @math{0}
 
-@item type = @var{TYPE_NAME}
-@anchor{type} For quarterly data, @var{TYPE_NAME} can take one of the
-following values: @code{qoq} for quarter-on-quarter plots, @code{yoy} for
-year-on-year plots of growth rates, @code{aoa} for annualized variables,
-@i{i.e.} the value in the last quarter for each year is plotted.  Default
-value: @code{empty}, @i{i.e.} standard period-on-period plots (@code{qoq} for
-quarterly data).
+@item type = @code{qoq} | @code{yoy} | @code{aoa}
+@anchor{type} For quarterly data, valid arguments are: @code{qoq} for
+quarter-on-quarter plots, @code{yoy} for year-on-year plots of growth rates,
+@code{aoa} for annualized variables, @i{i.e.} the value in the last quarter for
+each year is plotted.  Default value: @code{empty}, @i{i.e.} standard
+period-on-period plots (@code{qoq} for quarterly data).
 
-@item fig_name = @var{FIG_NAME}
+@item fig_name = @var{STRING}
 @anchor{fig_name} Specifies a user-defined keyword to be appended to the
 default figure name set by @code{plot_shock_decomposition}.  This can avoid to
 overwrite plots in case of sequential calls to @code{plot_shock_decomposition}.
