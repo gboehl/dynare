@@ -184,7 +184,33 @@ if stop
         if verbose
             skipline()
             disp(sprintf('Total time of simulation: %s.', num2str(etime(clock,h1))))
-            disp('Simulation terminated with NaN or Inf in the residuals or endogenous variables.')
+            dyy=reshape(dy,[size(endogenousvariables,1) periods])';
+            if ~isreal(res) || ~isreal(Y)
+                disp('Simulation terminated with imaginary parts in the residuals or endogenous variables.')
+                if any(~isreal(dy))
+                    indx = find(any(~isreal(dyy)));
+                    endo_names=cellstr(M.endo_names(indx,:));
+                    disp('Newton algorithm provided complex number for variables:')
+                    fprintf('%s, ', endo_names{:});
+                    skipline()
+                end
+            else
+                disp('Simulation terminated with NaN or Inf in the residuals or endogenous variables.')
+                if any(isnan(dy))
+                    indx = find(any(isnan(dyy)));
+                    endo_names=cellstr(M.endo_names(indx,:));
+                    disp('Newton algorithm provided NaN for variables:')
+                    fprintf('%s, ',endo_names{:});
+                    skipline()
+                end
+                if any(isinf(dy))
+                    indx = find(any(isinf(dyy)));
+                    endo_names=cellstr(M.endo_names(indx,:));
+                    disp('Newton algorithm diverged (Inf) for variables:')
+                    fprintf('%s, ',endo_names{:});
+                    skipline()
+                end
+            end
             disp('There is most likely something wrong with your model. Try model_diagnostics or another simulation method.')
             printline(105)
         end
