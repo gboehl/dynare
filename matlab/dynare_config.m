@@ -118,6 +118,11 @@ if (isoctave && ~user_has_octave_forge_package('statistics')) ...
     p{end+1} = '/missing/nanmean';
 end
 
+% Check if struct2array is available.
+if ~exist('struct2array')
+    p{end+1} = '/missing/struct2array';
+end
+
 P = cellfun(@(c)[dynareroot(1:end-1) c], p, 'uni',false);
 
 % Get mex files folder(s)
