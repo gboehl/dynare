@@ -66,6 +66,10 @@ forecast_ = options_.shock_decomp.forecast;
 steadystate = options_.shock_decomp.steadystate;
 write_xls = options_.shock_decomp.write_xls;
 
+if vintage_,
+    forecast_ = min(forecast_,options_.nobs-vintage_);
+end
+
 initial_date = options_.initial_date;
  
 if isfield(options_.shock_decomp,'q2a'), % private trap for aoa calls
@@ -330,6 +334,8 @@ z = z(:,:,a:b);
 % end crop data
 
 options_.shock_decomp.fig_names=fig_names;
+options_.shock_decomp.orig_varlist = varlist;
+
 if detail_plot,
     graph_decomp_detail(z,shock_names,M_.endo_names,i_var,my_initial_date,M_,options_)
 else
