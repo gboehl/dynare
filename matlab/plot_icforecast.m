@@ -68,4 +68,4 @@ plot(1:H,cci2(1,:),'--k','linewidth',1)
 plot(1:H,cci2(2,:),'--k','linewidth',1)
 axis tight
 hold off
-dyn_saveas(hh,[graphoptions.OutputDirectoryName '/Conditional_forecast_',strrep(deblank(graphoptions.title),' ','_'),'_',deblank(name)],options_)
+dyn_saveas(hh,[graphoptions.OutputDirectoryName '/Conditional_forecast_',strrep(deblank(graphoptions.title),' ','_'),'_',deblank(name)],options_.nodisplay,options_.graph_format)

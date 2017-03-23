@@ -104,4 +104,4 @@ if ~exist([M_.fname filesep 'graphs'])
 end
 
 plot_name=get_the_name(column,0,M_,estim_params_,options_);
-dyn_saveas(hh,[M_.fname, filesep, 'graphs', filesep, 'MH_Autocorrelation_' plot_name],options_)
+dyn_saveas(hh,[M_.fname, filesep, 'graphs', filesep, 'MH_Autocorrelation_' plot_name],options_.nodisplay,options_.graph_format)

@@ -325,7 +325,7 @@ if ~isempty(indx_irf),
         end
     end
     if ~DynareOptions.nograph,
-        dyn_saveas(h1,[OutputDirectoryName,filesep,fname_,'_',type,'_irf_restrictions'],DynareOptions);
+        dyn_saveas(h1,[OutputDirectoryName,filesep,fname_,'_',type,'_irf_restrictions'],DynareOptions.nodisplay,DynareOptions.graph_format);
         create_TeX_loader(DynareOptions,[OutputDirectoryName,filesep,fname_,'_',type,'_irf_restrictions'],[type ' evaluation of irf restrictions'],'irf_restrictions',type,DynareOptions.figures.textwidth*min(ij/ncol,1))
     end
     skipline()
@@ -535,7 +535,7 @@ if ~isempty(indx_moment)
         end
     end
     if ~DynareOptions.nograph,
-        dyn_saveas(h2,[OutputDirectoryName,filesep,fname_,'_',type,'_moment_restrictions'],DynareOptions);
+        dyn_saveas(h2,[OutputDirectoryName,filesep,fname_,'_',type,'_moment_restrictions'],DynareOptions.nodisplay,DynareOptions.graph_format);
         create_TeX_loader(DynareOptions,[OutputDirectoryName,filesep,fname_,'_',type,'_moment_restrictions'],[type ' evaluation of moment restrictions'],'moment_restrictions',type,DynareOptions.figures.textwidth*min(ij/ncol,1))
     end
     

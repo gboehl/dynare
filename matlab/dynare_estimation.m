@@ -208,7 +208,7 @@ if nnobs > 1 && horizon > 0
         xlim([nobs(1)-offsetx nobs(end)+horizon])
         m = m + 1;
         if mod(i+1,nstar) == 1 || i ==size(var_list,1)
-            dyn_saveas(hfig,[M_.fname,filesep,'graphs',filesep M_.fname '_RecursiveForecasts_' int2str(plot_index)],options_);
+            dyn_saveas(hfig,[M_.fname,filesep,'graphs',filesep M_.fname '_RecursiveForecasts_' int2str(plot_index)],options_.nodisplay,options_.graph_format);
         end
     end
 end

@@ -583,7 +583,7 @@ if (~((any(bayestopt_.pshape > 0) && options_.mh_replic) || (any(bayestopt_.psha
                 end
                 title(name,'Interpreter','none')
             end
-            dyn_saveas(fh,[M_.fname '_SmoothedShocks' int2str(plt)],options_);
+            dyn_saveas(fh,[M_.fname '_SmoothedShocks' int2str(plt)],options_.nodisplay,options_.graph_format);
             if options_.TeX && any(strcmp('eps',cellstr(options_.graph_format)))
                 fprintf(fidTeX,'\\begin{figure}[H]\n');
                 for jj = 1:nstar0
@@ -663,7 +663,7 @@ if (~((any(bayestopt_.pshape > 0) && options_.mh_replic) || (any(bayestopt_.psha
                     end
                     title(name,'Interpreter','none')
                 end
-                dyn_saveas(fh,[M_.fname '_SmoothedObservationErrors' int2str(plt)],options_);
+                dyn_saveas(fh,[M_.fname '_SmoothedObservationErrors' int2str(plt)],options_.nodisplay,options_.graph_format);
                 if options_.TeX && any(strcmp('eps',cellstr(options_.graph_format)))
                     fprintf(fidTeX,'\\begin{figure}[H]\n');
                     for jj = 1:nstar0
@@ -738,7 +738,7 @@ if (~((any(bayestopt_.pshape > 0) && options_.mh_replic) || (any(bayestopt_.psha
             end
             title(name,'Interpreter','none')
         end
-        dyn_saveas(fh,[M_.fname '_HistoricalAndSmoothedVariables' int2str(plt)],options_);
+        dyn_saveas(fh,[M_.fname '_HistoricalAndSmoothedVariables' int2str(plt)],options_.nodisplay,options_.graph_format);
         if options_.TeX && any(strcmp('eps',cellstr(options_.graph_format)))
             fprintf(fidTeX,'\\begin{figure}[H]\n');
             for jj = 1:nstar0,

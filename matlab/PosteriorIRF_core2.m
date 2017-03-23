@@ -152,7 +152,7 @@ for i=fpar:npar,
 
         if subplotnum == MaxNumberOfPlotPerFigure || (j == nvar  && subplotnum> 0)
             figunumber = figunumber+1;
-            dyn_saveas(hh,[DirectoryName '/'  M_.fname '_Bayesian_IRF_' deblank(tit(i,:)) '_' int2str(figunumber)],options_);
+            dyn_saveas(hh,[DirectoryName '/'  M_.fname '_Bayesian_IRF_' deblank(tit(i,:)) '_' int2str(figunumber)],options_.nodisplay,options_.graph_format);
             if RemoteFlag==1,
                 OutputFileName = [OutputFileName; {[DirectoryName,filesep], [M_.fname '_Bayesian_IRF_' deblank(tit(i,:)) '_' int2str(figunumber) '.*']}];
             end

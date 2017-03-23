@@ -108,7 +108,7 @@ for i=fpar:nvar
     end
     
     if subplotnum == MaxNumberOfPlotsPerFigure || i == nvar
-        dyn_saveas(hh,[M_.dname '/Output/'  M_.fname '_' name3 '_' deblank(tit3(i,:))],options_);
+        dyn_saveas(hh,[M_.dname '/Output/'  M_.fname '_' name3 '_' deblank(tit3(i,:))],options_.nodisplay,options_.graph_format);
         if RemoteFlag==1,
             OutputFileName = [OutputFileName; {[M_.dname, filesep, 'Output',filesep], [M_.fname '_' name3 '_' deblank(tit3(i,:)) '.*']}];
         end

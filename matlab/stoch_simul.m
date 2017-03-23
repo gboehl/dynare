@@ -269,7 +269,7 @@ if options_.irf
                         remove_fractional_xticks;
                         title(deblank(mylist(j,:)),'Interpreter','none');
                     end
-                    dyn_saveas(hh,[M_.fname '_IRF_' deblank(tit(i,:))],options_);
+                    dyn_saveas(hh,[M_.fname '_IRF_' deblank(tit(i,:))],options_.nodisplay,options_.graph_format);
                     if TeX && any(strcmp('eps',cellstr(options_.graph_format)))
                         fprintf(fidTeX,'\\begin{figure}[H]\n');
                         for j = 1:number_of_plots_to_draw
@@ -301,7 +301,7 @@ if options_.irf
                             remove_fractional_xticks
                             title(deblank(mylist((fig-1)*nstar+plt,:)),'Interpreter','none');
                         end
-                        dyn_saveas(hh,[ M_.fname '_IRF_' deblank(tit(i,:)) int2str(fig)],options_);
+                        dyn_saveas(hh,[ M_.fname '_IRF_' deblank(tit(i,:)) int2str(fig)],options_.nodisplay,options_.graph_format);
                         if TeX && any(strcmp('eps',cellstr(options_.graph_format)))
                             fprintf(fidTeX,'\\begin{figure}[H]\n');
                             for j = 1:nstar
@@ -334,7 +334,7 @@ if options_.irf
                         remove_fractional_xticks
                         title(deblank(mylist((nbplt-1)*nstar+plt,:)),'Interpreter','none');
                     end
-                    dyn_saveas(hh,[ M_.fname '_IRF_' deblank(tit(i,:)) int2str(nbplt) ],options_);
+                    dyn_saveas(hh,[ M_.fname '_IRF_' deblank(tit(i,:)) int2str(nbplt) ],options_.nodisplay,options_.graph_format);
                     if TeX && any(strcmp('eps',cellstr(options_.graph_format)))
                         fprintf(fidTeX,'\\begin{figure}[H]\n');
                         for j = 1:m

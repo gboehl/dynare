@@ -165,6 +165,6 @@ if options_.nograph == 0
         ylabel('f(\omega)')
         box on
         axis tight        
-        dyn_saveas(hh,[M_.fname ,filesep,'graphs', filesep, 'SpectralDensity_' deblank(M_.endo_names(ivar(i),:))],options_)
+        dyn_saveas(hh,[M_.fname ,filesep,'graphs', filesep, 'SpectralDensity_' deblank(M_.endo_names(ivar(i),:))],options_.nodisplay,options_.graph_format)
     end
 end

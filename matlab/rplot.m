@@ -94,7 +94,7 @@ if rplottype == 0
             set(h, 'Interpreter', 'none');
         end
     end
-    dyn_saveas(hh,[M_.fname, filesep, 'graphs', filesep, 'SimulatedTrajectory_' deblank(s1(1,:))],options_)
+    dyn_saveas(hh,[M_.fname, filesep, 'graphs', filesep, 'SimulatedTrajectory_' deblank(s1(1,:))],options_.nodisplay,options_.graph_format)
     if options_.TeX && any(strcmp('eps',cellstr(options_.graph_format)))
         create_TeX_loader(fidTeX,options_,[M_.fname, '/graphs/', 'SimulatedTrajectory_' deblank(s1(1,:))],'Simulated trajectories','SimulatedTrajectory_',deblank(s1(1,:)),1)
     end
@@ -105,7 +105,7 @@ elseif rplottype == 1
         xlim([min(ix(i)) max(ix(i))])
         title(['Plot of ' s1(j,:)],'Interpreter','none') ;
         xlabel('Periods') ;
-        dyn_saveas(hh,[M_.fname, filesep, 'graphs', filesep, 'SimulatedTrajectory_' deblank(s1(j,:))],options_)
+        dyn_saveas(hh,[M_.fname, filesep, 'graphs', filesep, 'SimulatedTrajectory_' deblank(s1(j,:))],options_.nodisplay,options_.graph_format)
         if options_.TeX && any(strcmp('eps',cellstr(options_.graph_format)))
             create_TeX_loader(fidTeX,options_,[M_.fname, '/graphs/', 'SimulatedTrajectory_' deblank(s1(j,:))],'Simulated trajectories','SimulatedTrajectory_',deblank(s1(j,:)),1);
         end
@@ -128,7 +128,7 @@ elseif rplottype == 2
         title(['Plot of ' s1(j,:)],'Interpreter','none') ;
         axis tight;
     end
-    dyn_saveas(hh,[M_.fname, filesep, 'graphs', filesep, 'SimulatedTrajectory_' deblank(s1(1,:))],options_)
+    dyn_saveas(hh,[M_.fname, filesep, 'graphs', filesep, 'SimulatedTrajectory_' deblank(s1(1,:))],options_.nodisplay,options_.graph_format)
     if options_.TeX && any(strcmp('eps',cellstr(options_.graph_format)))
         create_TeX_loader(fidTeX,options_,[M_.fname, '/graphs/', 'SimulatedTrajectory_' deblank(s1(1,:))],'Simulated trajectories','SimulatedTrajectory_',deblank(s1(1,:)),min(j/nc,1));
     end

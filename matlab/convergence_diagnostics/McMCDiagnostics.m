@@ -325,7 +325,7 @@ for i = 1:pages
             boxplot = boxplot + 1;
         end
     end
-    dyn_saveas(h,[OutputFolder '/' ModelName '_udiag' int2str(i)],options_);
+    dyn_saveas(h,[OutputFolder '/' ModelName '_udiag' int2str(i)],options_.nodisplay,options_.graph_format);
     if TeX && any(strcmp('eps',cellstr(options_.graph_format)))
         fprintf(fidTeX,'\\begin{figure}[H]\n');
         for jj = 1:size(NAMES,1)
@@ -388,7 +388,7 @@ if reste
             boxplot = boxplot + 1;
         end
     end
-    dyn_saveas(h,[ OutputFolder '/' ModelName '_udiag' int2str(pages+1)],options_);
+    dyn_saveas(h,[ OutputFolder '/' ModelName '_udiag' int2str(pages+1)],options_.nodisplay,options_.graph_format);
     if TeX && any(strcmp('eps',cellstr(options_.graph_format)))
         fprintf(fidTeX,'\\begin{figure}[H]\n');
         for jj = 1:size(NAMES,1);
@@ -493,7 +493,7 @@ for crit = 1:3
     title(namnam,'Interpreter','none');
     boxplot = boxplot + 1;
 end
-dyn_saveas(h,[ OutputFolder '/' ModelName '_mdiag'],options_);
+dyn_saveas(h,[ OutputFolder '/' ModelName '_mdiag'],options_.nodisplay,options_.graph_format);
 
 if TeX && any(strcmp('eps',cellstr(options_.graph_format)))
     fprintf(fidTeX,'\\begin{figure}[H]\n');

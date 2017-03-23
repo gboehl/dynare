@@ -152,7 +152,7 @@ for i=1:npar
     hold off;
     drawnow
     if subplotnum == MaxNumberOfPlotPerFigure || i == npar;
-        dyn_saveas(hfig,[OutputDirectoryName '/' M_.fname '_PriorsAndPosteriors' int2str(figunumber)],options_);
+        dyn_saveas(hfig,[OutputDirectoryName '/' M_.fname '_PriorsAndPosteriors' int2str(figunumber)],options_.nodisplay,options_.graph_format);
         if TeX && any(strcmp('eps',cellstr(options_.graph_format)))
             fprintf(fidTeX,'\\begin{figure}[H]\n');
             for j = 1:size(NAMES,1)

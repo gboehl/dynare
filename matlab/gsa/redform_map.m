@@ -206,7 +206,7 @@ for j=1:size(anamendo,1)
                             set(hc,'color','k','linewidth',2)
                             hold off,
                             title([namendo,' vs ', namexo ' - threshold [' num2str(threshold(1)) ' ' num2str(threshold(2)) ']'],'interpreter','none')
-                            dyn_saveas(hf,[xdir,filesep, fname_ '_' type '_' namendo,'_vs_', namexo],options_);
+                            dyn_saveas(hf,[xdir,filesep, fname_ '_' type '_' namendo,'_vs_', namexo],options_.nodisplay,options_.graph_format);
                             create_TeX_loader(options_,[xdir,filesep, fname_ '_' type '_' namendo,'_vs_', namexo],['Reduced Form Mapping (Monte Carlo Filtering): ',strrep(namendo,'_','\_'),' vs ', strrep(namexo,'_','\_')],[type '_' namendo,'_vs_', namexo])
                         end
                         si(:,js) = NaN(np,1);
@@ -275,7 +275,7 @@ for j=1:size(anamendo,1)
                     end
                     title([logflag,' ',namendo,' vs ',namexo],'interpreter','none')
                     if iplo==9 
-                        dyn_saveas(hfig,[dirname,filesep,M_.fname,'_redform_', namendo,'_vs_shocks_',logflag,num2str(ifig)],options_);
+                        dyn_saveas(hfig,[dirname,filesep,M_.fname,'_redform_', namendo,'_vs_shocks_',logflag,num2str(ifig)],options_.nodisplay,options_.graph_format);
                         create_TeX_loader(options_,[dirname,filesep,M_.fname,'_redform_', namendo,'_vs_shocks_',logflag,num2str(ifig)],[logflag,' ',strrep(namendo,'_','\_'),' vs ',strrep(namexo,'_','\_')],['redform_', namendo,'_vs_shocks_',logflag,num2str(ifig)],1)
                     end
                 end
@@ -284,7 +284,7 @@ for j=1:size(anamendo,1)
         end
     end
     if iplo<9 && iplo>0 && ifig && ~options_.nograph,
-        dyn_saveas(hfig,[dirname,filesep,M_.fname,'_redform_', namendo,'_vs_shocks_',logflag,num2str(ifig)],options_);
+        dyn_saveas(hfig,[dirname,filesep,M_.fname,'_redform_', namendo,'_vs_shocks_',logflag,num2str(ifig)],options_.nodisplay,options_.graph_format);
         create_TeX_loader(options_,[dirname,filesep,M_.fname,'_redform_', namendo,'_vs_shocks_',logflag,num2str(ifig)],[logflag,' ',strrep(namendo,'_','\_'),' vs ',strrep(namexo,'_','\_')],['redform_', namendo,'_vs_shocks_',logflag,num2str(ifig)],options_.figures.textwidth*min(iplo/3,1))
     end
     ifig=0;
@@ -342,7 +342,7 @@ for j=1:size(anamendo,1)
                             set(hc,'color','k','linewidth',2)
                             hold off,
                             title([namendo,' vs lagged ', namlagendo ' - threshold [' num2str(threshold(1)) ' ' num2str(threshold(2)) ']'],'interpreter','none')
-                            dyn_saveas(hf,[xdir,filesep, fname_ '_' type '_' namendo,'_vs_', namlagendo],options_);
+                            dyn_saveas(hf,[xdir,filesep, fname_ '_' type '_' namendo,'_vs_', namlagendo],options_.nodisplay,options_.graph_format);
                             create_TeX_loader(options_,[xdir,filesep, fname_ '_' type '_' namendo,'_vs_', namlagendo],['Reduced Form Mapping (Monte Carlo Filtering): ',strrep(namendo,'_','\_'),' vs lagged ', strrep(namlagendo,'_','\_')],[type '_' namendo,'_vs_', namlagendo],1)
                         end
                         
@@ -412,7 +412,7 @@ for j=1:size(anamendo,1)
                     end
                     title([logflag,' ',namendo,' vs ',namlagendo,'(-1)'],'interpreter','none')
                     if iplo==9,
-                        dyn_saveas(hfig,[dirname,filesep,M_.fname,'_redform_', namendo,'_vs_lags_',logflag,num2str(ifig)],options_);
+                        dyn_saveas(hfig,[dirname,filesep,M_.fname,'_redform_', namendo,'_vs_lags_',logflag,num2str(ifig)],options_.nodisplay,options_.graph_format);
                         create_TeX_loader(options_,[dirname,filesep,M_.fname,'_redform_', namendo,'_vs_lags_',logflag,num2str(ifig)],[logflag,' ',strrep(namendo,'_','\_'),' vs ',strrep(namlagendo,'_','\_'),'(-1)'],['redform_', namendo,'_vs_lags_',logflag,':',num2str(ifig)],1)
                     end
                 end
@@ -421,7 +421,7 @@ for j=1:size(anamendo,1)
         end
     end
     if iplo<9 && iplo>0 && ifig && ~options_.nograph,
-        dyn_saveas(hfig,[dirname,filesep,M_.fname,'_redform_', namendo,'_vs_lags_',logflag,num2str(ifig)],options_);
+        dyn_saveas(hfig,[dirname,filesep,M_.fname,'_redform_', namendo,'_vs_lags_',logflag,num2str(ifig)],options_.nodisplay,options_.graph_format);
         create_TeX_loader(options_,[dirname,filesep,M_.fname,'_redform_', namendo,'_vs_lags_',logflag,num2str(ifig)],[logflag,' ',strrep(namendo,'_','\_'),' vs ',strrep(namlagendo,'_','\_'),'(-1)'],['redform_', namendo,'_vs_lags_',logflag,':',num2str(ifig)],options_.figures.textwidth*min(iplo/3,1));
     end
 end
@@ -440,7 +440,7 @@ if isempty(threshold) && ~options_.nograph,
             text(ip,-0.02,deblank(pnames(ip,:)),'rotation',90,'HorizontalAlignment','right','interpreter','none')
         end
         title('Reduced form GSA')
-        dyn_saveas(hfig,[dirname,filesep,M_.fname,'_redform_gsa'],options_);
+        dyn_saveas(hfig,[dirname,filesep,M_.fname,'_redform_gsa'],options_.nodisplay,options_.graph_format);
         create_TeX_loader(options_,[dirname,filesep,M_.fname,'_redform_gsa'],'Reduced Form GSA','redform_gsa')
 
     else
@@ -456,7 +456,7 @@ if isempty(threshold) && ~options_.nograph,
             text(ip,-0.02,deblank(pnames(ip,:)),'rotation',90,'HorizontalAlignment','right','interpreter','none')
         end
         title('Reduced form GSA - Log-transformed elements')
-        dyn_saveas(hfig,[dirname,filesep,M_.fname,'_redform_gsa_log'],options_);
+        dyn_saveas(hfig,[dirname,filesep,M_.fname,'_redform_gsa_log'],options_.nodisplay,options_.graph_format);
         create_TeX_loader(options_,[dirname,filesep,M_.fname,'_redform_gsa_log'],'Reduced form GSA - Log-transformed elements','redform_gsa_log')
         
     end
@@ -634,7 +634,7 @@ end
             plot(yn,[yf yn],'.'),
             title(['Out-of-sample prediction - R2=' num2str(r2,2)],'interpreter','none')
         end
-        dyn_saveas(hfig,fname,options_);
+        dyn_saveas(hfig,fname,options_.nodisplay,options_.graph_format);
         create_TeX_loader(options_,fname,['Out-of-sample prediction - R2=' num2str(r2,2)],'redform_gsa_log')
 
         if options_.nodisplay
@@ -650,7 +650,7 @@ else
         hfig=dyn_figure(options_.nodisplay,'name',options_map.title);
         plot(y0,[yf y0],'.'),
         title([namy,' vs ', namx,' pred'],'interpreter','none')
-        dyn_saveas(hfig,[fname '_pred'],options_);
+        dyn_saveas(hfig,[fname '_pred'],options_.nodisplay,options_.graph_format);
         create_TeX_loader(options_,[fname '_pred'],options_map.title,[namy,' vs ', namx,' pred'])
 
     end
@@ -770,7 +770,7 @@ if ~isoctave
         'horizontalalignment','center');
 end
 
-dyn_saveas(hfig,[options_mcf.OutputDirectoryName filesep options_mcf.fname_,'_',options_mcf.amcf_name],options_);
+dyn_saveas(hfig,[options_mcf.OutputDirectoryName filesep options_mcf.fname_,'_',options_mcf.amcf_name],options_.nodisplay,options_.graph_format);
 create_TeX_loader(options_,[options_mcf.OutputDirectoryName filesep options_mcf.fname_,'_',options_mcf.amcf_name],strrep(options_mcf.amcf_title,'_','\_'),[options_mcf.fname_,'_',options_mcf.amcf_name])
         
 return

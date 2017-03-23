@@ -213,7 +213,7 @@ for j=1:nvar
         colormap(new_colormap)
     end
     hold off
-    dyn_saveas(fhandle,[GraphDirectoryName, filesep, DynareModel.fname,'_shock_decomposition_',deblank(endo_names(i_var(j),:)),fig_mode1,fig_names],DynareOptions);
+    dyn_saveas(fhandle,[GraphDirectoryName, filesep, DynareModel.fname,'_shock_decomposition_',deblank(endo_names(i_var(j),:)),fig_mode1,fig_names],DynareOptions.nodisplay,DynareOptions.graph_format);
     if DynareOptions.TeX && any(strcmp('eps',cellstr(DynareOptions.graph_format)))
         fprintf(fidTeX,'\\begin{figure}[H]\n');
         fprintf(fidTeX,'\\centering \n');

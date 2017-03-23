@@ -131,7 +131,7 @@ else
 end
 plot_name=[plot_name,'_blck_',num2str(blck)];
 
-dyn_saveas(hh,[M_.fname, filesep, 'graphs', filesep, 'TracePlot_' plot_name],options_)
+dyn_saveas(hh,[M_.fname, filesep, 'graphs', filesep, 'TracePlot_' plot_name],options_.nodisplay,options_.graph_format)
 
 if options_.TeX
     fid=fopen([M_.fname,'/graphs/',M_.fname,'_TracePlot_' plot_name,'.tex'],'w+');

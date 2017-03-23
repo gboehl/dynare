@@ -70,7 +70,7 @@ for plt = 1:nbplt,
         title(nam,'Interpreter','none')
         drawnow
     end
-    dyn_saveas(hplt,[M_.fname '_Priors' int2str(plt)],options_);
+    dyn_saveas(hplt,[M_.fname '_Priors' int2str(plt)],options_.nodisplay,options_.graph_format);
     if TeX && any(strcmp('eps',cellstr(options_.graph_format)))
         fprintf(fidTeX,'\\begin{figure}[H]\n');
         for jj = 1:nstar0,

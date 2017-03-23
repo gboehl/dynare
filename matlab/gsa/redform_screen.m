@@ -87,7 +87,7 @@ for j=1:size(anamendo,1),
         end
         title([namendo,' vs. ',namexo],'interpreter','none')
         if iplo==9,
-          dyn_saveas(hh,[dirname,'/',M_.fname,'_', namendo,'_vs_shock_',num2str(ifig)],options_); 
+          dyn_saveas(hh,[dirname,'/',M_.fname,'_', namendo,'_vs_shock_',num2str(ifig)],options_.nodisplay,options_.graph_format);
           create_TeX_loader(options_,[dirname,'/',M_.fname,'_', namendo,'_vs_shock_',num2str(ifig)],ifig,[namendo,' vs. shocks ',int2str(ifig)],[namendo,'_vs_shock'],1)
         end
 
@@ -95,7 +95,7 @@ for j=1:size(anamendo,1),
     end
   end
   if iplo<9 && iplo>0 && ifig,
-    dyn_saveas(hh,[dirname,'/',M_.fname,'_', namendo,'_vs_shocks_',num2str(ifig)],options_);
+    dyn_saveas(hh,[dirname,'/',M_.fname,'_', namendo,'_vs_shocks_',num2str(ifig)],options_.nodisplay,options_.graph_format);
     create_TeX_loader(options_,[dirname,'/',M_.fname,'_', namendo,'_vs_shock_',num2str(ifig)],ifig,[namendo,' vs. shocks ',int2str(ifig)],[namendo,'_vs_shock'],options_.figures.textwidth*min(iplo/3))
   end
 
@@ -130,14 +130,14 @@ for j=1:size(anamendo,1),
 
         title([namendo,' vs. ',namlagendo,'(-1)'],'interpreter','none')
         if iplo==9,
-          dyn_saveas(hh,[dirname,'/',M_.fname,'_', namendo,'_vs_lags_',num2str(ifig)],options_);  
+          dyn_saveas(hh,[dirname,'/',M_.fname,'_', namendo,'_vs_lags_',num2str(ifig)],options_.nodisplay,options_.graph_format);
           create_TeX_loader(options_,[dirname,'/',M_.fname,'_', namendo,'_vs_lags_',num2str(ifig)],ifig,[namendo,' vs. lagged endogenous ',int2str(ifig)],[namendo,'_vs_lags'],1)
         end
       end
     end
   end
   if iplo<9 && iplo>0 && ifig,
-    dyn_saveas(hh,[dirname,'/',M_.fname,'_', namendo,'_vs_lags_',num2str(ifig)],options_);      
+    dyn_saveas(hh,[dirname,'/',M_.fname,'_', namendo,'_vs_lags_',num2str(ifig)],options_.nodisplay,options_.graph_format);
     create_TeX_loader(options_,[dirname,'/',M_.fname,'_', namendo,'_vs_lags_',num2str(ifig)],ifig,[namendo,' vs. lagged endogenous ',int2str(ifig)],[namendo,'_vs_lags'],options_.figures.textwidth*min(iplo/3))
   end
 end
@@ -156,7 +156,7 @@ end
 xlabel(' ')
 ylabel('Elementary Effects')
 title('Reduced form screening')
-dyn_saveas(hh,[dirname,'/',M_.fname,'_redform_screen'],options_);
+dyn_saveas(hh,[dirname,'/',M_.fname,'_redform_screen'],options_.nodisplay,options_.graph_format);
 create_TeX_loader(options_,[dirname,'/',M_.fname,'_redform_screen'],1,'Reduced form screening','redform_screen',1)
 
 

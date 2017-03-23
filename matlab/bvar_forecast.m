@@ -11,7 +11,7 @@ function bvar_forecast(nlags)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2007-2013 Dynare Team
+% Copyright (C) 2007-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -125,7 +125,7 @@ for i = 1:ny
                  options_.varobs{i});
 end
 
-dyn_saveas(dyn_graph.fh,[OutputDirectoryName '/' M_.fname '_BVAR_forecast_',num2str(nlags)],options_)
+dyn_saveas(dyn_graph.fh,[OutputDirectoryName '/' M_.fname '_BVAR_forecast_',num2str(nlags)],options_.nodisplay,options_.graph_format)
 
 % Compute RMSE
 

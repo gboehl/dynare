@@ -187,7 +187,7 @@ for plt = 1:nbplt,
         text(0.25,0.5,'log-post')
         text(0.69,0.5,'log-lik kernel')
     end
-    dyn_saveas(hh,[ Model.fname '_CheckPlots' int2str(plt) ],DynareOptions);
+    dyn_saveas(hh,[ Model.fname '_CheckPlots' int2str(plt) ],DynareOptions.nodisplay,DynareOptions.graph_format);
     if TeX && any(strcmp('eps',cellstr(DynareOptions.graph_format)))
         % TeX eps loader file
         fprintf(fidTeX,'\\begin{figure}[H]\n');

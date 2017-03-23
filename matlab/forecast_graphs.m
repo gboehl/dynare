@@ -64,7 +64,7 @@ n_fig = 1;
 hh=dyn_figure(options_.nodisplay,'Name','Forecasts (I)');
 for j= 1:nvar
     if m > nc*nr; 
-        dyn_saveas(hh,[ dname '/graphs/forcst' int2str(n_fig)],options_);
+        dyn_saveas(hh,[ dname '/graphs/forcst' int2str(n_fig)],options_.nodisplay,options_.graph_format);
         if options_.TeX && any(strcmp('eps',cellstr(options_.graph_format)))
             fprintf(fidTeX,'\\begin{figure}[H]\n');
             fprintf(fidTeX,'\\centering \n');
@@ -100,7 +100,7 @@ for j= 1:nvar
 end
 
 if m > 1
-    dyn_saveas(hh,[dname '/graphs/forcst' int2str(n_fig)],options_);
+    dyn_saveas(hh,[dname '/graphs/forcst' int2str(n_fig)],options_.nodisplay,options_.graph_format);
     if options_.TeX && any(strcmp('eps',cellstr(options_.graph_format)))
         fprintf(fidTeX,'\\begin{figure}[H]\n');
         fprintf(fidTeX,'\\centering \n');
@@ -128,7 +128,7 @@ if isfield(oo_.forecast,'HPDinf_ME')
     hh=dyn_figure(options_.nodisplay,'Name','Forecasts including ME (I)');
     for j= 1:length(var_names)
         if m > nc*nr;
-            dyn_saveas(hh,[ dname '/graphs/forcst_ME' int2str(n_fig)],options_);
+            dyn_saveas(hh,[ dname '/graphs/forcst_ME' int2str(n_fig)],options_.nodisplay,options_.graph_format);
             if options_.TeX && any(strcmp('eps',cellstr(options_.graph_format)))
                 fprintf(fidTeX,'\\begin{figure}[H]\n');
                 fprintf(fidTeX,'\\centering \n');
@@ -158,7 +158,7 @@ if isfield(oo_.forecast,'HPDinf_ME')
     end
     
     if m > 1
-        dyn_saveas(hh,[dname '/graphs/forcst_ME' int2str(n_fig)],options_);
+        dyn_saveas(hh,[dname '/graphs/forcst_ME' int2str(n_fig)],options_.nodisplay,options_.graph_format);
         if options_.TeX && any(strcmp('eps',cellstr(options_.graph_format)))
             fprintf(fidTeX,'\\begin{figure}[H]\n');
             fprintf(fidTeX,'\\centering \n');          

@@ -224,7 +224,7 @@ for j=1:nvar
     else
         suffix = ['_detail'];
     end
-    dyn_saveas(fhandle,[GraphDirectoryName, filesep, DynareModel.fname,'_shock_decomposition_',deblank(endo_names(i_var(j),:)),fig_mode1,fig_names suffix],DynareOptions);
+    dyn_saveas(fhandle,[GraphDirectoryName, filesep, DynareModel.fname,'_shock_decomposition_',deblank(endo_names(i_var(j),:)),fig_mode1,fig_names suffix],DynareOptions.nodisplay,DynareOptions.graph_format);
     if DynareOptions.TeX && any(strcmp('eps',cellstr(DynareOptions.graph_format)))
         fprintf(fidTeX,'\\begin{figure}[H]\n');
         fprintf(fidTeX,'\\centering \n');
