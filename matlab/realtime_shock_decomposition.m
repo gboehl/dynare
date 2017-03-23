@@ -106,7 +106,7 @@ for j=presample+1:nobs,
 %    evalin('base',['options_.nobs=' int2str(j) ';'])
     options_.nobs=j;
     clear('evaluate_smoother');
-    [oo, junk1, junk2, junk3, Smoothed_Variables_deviation_from_mean] = evaluate_smoother(parameter_set,varlist,M_,oo_,options_,bayestopt_,estim_params_);
+    [oo, M_, junk2, junk3, Smoothed_Variables_deviation_from_mean] = evaluate_smoother(parameter_set,varlist,M_,oo_,options_,bayestopt_,estim_params_);
     
     % reduced form
     dr = oo.dr;
@@ -143,7 +143,6 @@ for j=presample+1:nobs,
     z(:,end,1:gend) = Smoothed_Variables_deviation_from_mean;
     
     maximum_lag = M_.maximum_lag;
-    lead_lag_incidence = M_.lead_lag_incidence;
     
     k2 = dr.kstate(find(dr.kstate(:,2) <= maximum_lag+1),[1 2]);
     i_state = order_var(k2(:,1))+(min(i,maximum_lag)+1-k2(:,2))*M_.endo_nbr;
