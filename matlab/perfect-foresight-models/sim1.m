@@ -17,7 +17,7 @@ function [endogenousvariables, info] = sim1(endogenousvariables, exogenousvariab
 % SPECIAL REQUIREMENTS
 %   None.
 
-% Copyright (C) 1996-2016 Dynare Team
+% Copyright (C) 1996-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -165,7 +165,7 @@ for iter = 1:options.simul.maxit
             dy = -lin_solve( A, res, verbose );
         end
     end
-    if (any(~isreal(dy)) || any(isnan(dy)) || any(isinf(dy)) ,
+    if any(~isreal(dy)) || any(isnan(dy)) || any(isinf(dy))
         if verbose
             display_critical_variables(reshape(dy,[ny periods])', M);
         end
