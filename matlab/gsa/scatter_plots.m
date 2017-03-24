@@ -1,5 +1,4 @@
 function scatter_plots(X,xp,vnames,plotsymbol, fnam, dirname, figtitle, xparam1, DynareOptions)
-
 %
 % Written by Marco Ratto
 % Joint Research Centre, The European Commission,
@@ -53,16 +52,17 @@ if nargin<4 || isempty(plotsymbol)
     end
 end
 
-if nargin<5
-    fnam='';
+if nargin<5 || isempty(fnam)
+    fnam='scatter_plot';
 end
-if nargin<6,
+if nargin<6 || isempty(dirname),
   dirname='';
   nograph=1;
+  DynareOptions.nodisplay=0;
 else
   nograph=0;    
 end
-if nargin<7,
+if nargin<7 || isempty(figtitle),
   figtitle=fnam;
 end
 if nargin<8,
@@ -75,7 +75,6 @@ fig_nam_=[fnam];
 if ~nograph,
     hh=dyn_figure(DynareOptions.nodisplay,'name',figtitle);
     set(hh,'userdata',{X,xp})
-end
 
 bf = 0.1;
 ffs = 0.05/(p-1);
