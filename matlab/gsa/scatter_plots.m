@@ -72,7 +72,7 @@ end
 figtitle_tex=strrep(figtitle,'_','\_');
 
 fig_nam_=[fnam];
-if ~nograph,
+
     hh=dyn_figure(DynareOptions.nodisplay,'name',figtitle);
     set(hh,'userdata',{X,xp})
 
