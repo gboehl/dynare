@@ -1,4 +1,4 @@
-function []=graph_decomp_detail(z,shock_names,endo_names,i_var,initial_date,DynareModel,DynareOptions,opts_decomp)
+function []=graph_decomp_detail(z,shock_names,endo_names,i_var,initial_date,DynareModel,DynareOptions)
 %function []=graph_decomp_detail(z,shock_names,endo_names,i_var,initial_date,DynareModel,DynareOptions)
 % Plots the results from the shock_decomposition command
 % 
