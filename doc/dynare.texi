@@ -206,6 +206,9 @@ The Model file
 * Deterministic simulation::
 * Stochastic solution and simulation::
 * Estimation::
+* Model Comparison::
+* Shock Decomposition::
+* Calibrated Smoother::
 * Forecasting::
 * Optimal policy::
 * Sensitivity and identification analysis::
@@ -1065,6 +1068,9 @@ end of line one and the parser would continue processing.
 * Deterministic simulation::
 * Stochastic solution and simulation::
 * Estimation::
+* Model Comparison::
+* Shock Decomposition::
+* Calibrated Smoother::
 * Forecasting::
 * Optimal policy::
 * Sensitivity and identification analysis::
@@ -6970,6 +6976,24 @@ estimates using a higher tapering are usually more reliable.
 @end table
 @end defvr
 
+@deffn Command unit_root_vars @var{VARIABLE_NAME}@dots{};
+
+This command is deprecated. Use @code{estimation} option @code{diffuse_filter} instead for estimating a model with non-stationary observed variables or @code{steady} option @code{nocheck} to prevent @code{steady} to check the steady state returned by your steady state file.
+@end deffn
+
+Dynare also has the ability to estimate Bayesian VARs:
+
+@deffn Command bvar_density ;
+Computes the marginal density of an estimated BVAR model, using
+Minnesota priors.
+
+See @file{bvar-a-la-sims.pdf}, which comes with Dynare distribution,
+for more information on this command.
+@end deffn
+
+@node Model Comparison
+@section Model Comparison
+
 @deffn Command model_comparison @var{FILENAME}[(@var{DOUBLE})]@dots{};
 @deffnx Command model_comparison (marginal_density = laplace | modifiedharmonicmean) @var{FILENAME}[(@var{DOUBLE})]@dots{};
 @anchor{model_comparison}
@@ -7045,6 +7069,8 @@ Posterior probability of the respective model
 
 @end defvr
 
+@node Shock Decomposition
+@section Shock Decomposition
 
 @deffn Command shock_decomposition [@var{VARIABLE_NAME}]@dots{};
 @deffnx Command shock_decomposition (@var{OPTIONS}@dots{}) [@var{VARIABLE_NAME}]@dots{};
@@ -7395,20 +7421,8 @@ Default: @math{0}
 
 @end deffn
 
-@deffn Command unit_root_vars @var{VARIABLE_NAME}@dots{};
-
-This command is deprecated. Use @code{estimation} option @code{diffuse_filter} instead for estimating a model with non-stationary observed variables or @code{steady} option @code{nocheck} to prevent @code{steady} to check the steady state returned by your steady state file.
-@end deffn
-
-Dynare also has the ability to estimate Bayesian VARs:
-
-@deffn Command bvar_density ;
-Computes the marginal density of an estimated BVAR model, using
-Minnesota priors.
-
-See @file{bvar-a-la-sims.pdf}, which comes with Dynare distribution,
-for more information on this command.
-@end deffn
+@node Calibrated Smoother
+@section Calibrated Smoother
 
 Dynare can also run the smoother on a calibrated model:
 
