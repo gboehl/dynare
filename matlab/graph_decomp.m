@@ -198,7 +198,7 @@ for j=1:nvar
                 c = uicontextmenu;
                 hl.UIContextMenu=c;
                 browse_menu = uimenu(c,'Label','Browse group');
-                expand_menu = uimenu(c,'Label','Expand group','Callback',['expand_group(''' mydata.use_shock_groups ''',''' deblank(endo_names(i_var(j),:)) ''',' int2str(i) ')']);
+                expand_menu = uimenu(c,'Label','Expand group','Callback',['expand_group(''' mydata.use_shock_groups ''',''' deblank(mydata.shock_decomp.orig_varlist(j,:)) ''',' int2str(i) ')']);
                 set(expand_menu,'UserData',mydata,'Tag',['group' int2str(i)]);
                 for jmember = mydata.shock_group.shocks
                     uimenu('parent',browse_menu,'Label',char(jmember))

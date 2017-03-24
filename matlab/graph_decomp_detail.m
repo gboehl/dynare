@@ -187,7 +187,7 @@ for j=1:nvar
                 c = uicontextmenu;
                 hax.UIContextMenu=c;
                 browse_menu = uimenu(c,'Label','Browse group');
-                expand_menu = uimenu(c,'Label','Expand group','Callback',['expand_group(''' mydata.use_shock_groups ''',''' deblank(endo_names(i_var(j),:)) ''',' int2str(ic) ')']);
+                expand_menu = uimenu(c,'Label','Expand group','Callback',['expand_group(''' mydata.use_shock_groups ''',''' deblank(mydata.shock_decomp.orig_varlist(j,:)) ''',' int2str(ic) ')']);
                 set(expand_menu,'UserData',mydata,'Tag',['group' int2str(ic)]);
                 for jmember = mydata.shock_group.shocks
                     uimenu('parent',browse_menu,'Label',char(jmember))
