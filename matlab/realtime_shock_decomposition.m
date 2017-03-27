@@ -139,7 +139,7 @@ for j=presample+1:nobs,
     epsilon=[epsilon zeros(nshocks,forecast_)];
     
     z = zeros(endo_nbr,nshocks+2,gend+forecast_);
-    Smoothed_Variables_deviation_from_mean
+    
     z(:,end,1:gend) = Smoothed_Variables_deviation_from_mean;
     
     maximum_lag = M_.maximum_lag;
