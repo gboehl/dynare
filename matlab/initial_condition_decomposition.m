@@ -1,5 +1,5 @@
 function oo_ = initial_condition_decomposition(M_,oo_,options_,varlist,bayestopt_,estim_params_)
-% function z = initial_condition_decomposition(M_,oo_,options_,varlist,bayestopt_,estim_params_)
+% function oo_ = initial_condition_decomposition(M_,oo_,options_,varlist,bayestopt_,estim_params_)
 % Computes initial condition contribution to a simulated trajectory. The field set is
 % oo_.initval_decomposition. It is a n_var by n_var+2 by nperiods array. The
 % first n_var columns store the respective endogenous initval contribution, column n+1
