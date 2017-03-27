@@ -1,11 +1,11 @@
 function oo_ = initial_condition_decomposition(M_,oo_,options_,varlist,bayestopt_,estim_params_)
-% function z = initial_condition_decomposition(M_,oo_,options_,varlist)
-% Computes shocks contribution to a simulated trajectory. The field set is
-% oo_.shock_decomposition. It is a n_var by nshock+2 by nperiods array. The
-% first nshock columns store the respective shock contributions, column n+1
-% stores the role of the initial conditions, while column n+2 stores the
-% value of the smoothed variables.  Both the variables and shocks are stored 
-% in the order of declaration, i.e. M_.endo_names and M_.exo_names, respectively.
+% function z = initial_condition_decomposition(M_,oo_,options_,varlist,bayestopt_,estim_params_)
+% Computes initial condition contribution to a simulated trajectory. The field set is
+% oo_.initval_decomposition. It is a n_var by n_var+2 by nperiods array. The
+% first n_var columns store the respective endogenous initval contribution, column n+1
+% stores the role of the shocks, while column n+2 stores the
+% value of the smoothed variables.  Variables are stored 
+% in the order of declaration, i.e. M_.endo_names.
 %
 % INPUTS
 %    M_:          [structure]  Definition of the model
@@ -21,7 +21,7 @@ function oo_ = initial_condition_decomposition(M_,oo_,options_,varlist,bayestopt
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2009-2016 Dynare Team
+% Copyright (C) 2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -117,8 +117,8 @@ end
     oo.shock_decomposition = oo_.initval_decomposition;
     M_.exo_names = M_.endo_names;
     M_.exo_nbr = M_.endo_nbr;
-    options_.shock_decomp.screen_shocks=1;
+    options_.plot_shock_decomp.screen_shocks=1;
     options_.use_shock_groups = '';
-    options_.shock_decomp.fig_names='initval';
+    options_.plot_shock_decomp.fig_names='initval';
     plot_shock_decomposition(M_,oo,options_,varlist);
 % end
