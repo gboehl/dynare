@@ -7202,21 +7202,22 @@ and conducts the shock decomposition for these two groups.
 
 This command computes the realtime historical shock decomposition for a given
 sample based on the Kalman smoother. For each period
-@math{T=[@code{presample},@dots{},@code{nobs}]}, it recursively computes the:
+@math{T=[@code{presample},@dots{},@code{nobs}]}, it recursively computes three objects:
 @itemize @bullet
 @item
 realtime historical shock decomposition @math{Y(t|T)} for @math{t=[1,@dots{},T]},
-@i{i.e.} without observing data in @math{[T+1@dots{}@code{nobs}]};
+@i{i.e.} without observing data in @math{[T+1,@dots{},@code{nobs}]}. This results in a standard 
+shock decomposition being computed for each additional datapoint becoming available after @code{presample}.
 @item
-conditional shock decomposition @math{Y(T|T)} conditional on @math{Y(T|T-1)},
-@i{i.e.} @math{Y(t|T)} for @math{t=[T-1,@dots{},T]}. The conditional shock
-decomposition sets the initial condition in @math{T-1}, so only computes the
-effect of shocks in period @math{T}, @i{i.e.} it is just a @math{1}-period
-shock decomposition from @math{T-1} to @math{T}. In practice it decomposes the
-update step of the Kalman filter. 
+forecast shock decomposition @math{Y(T+k|T)} for @math{k=[1,@dots{},forecast]}, @i{i.e.} the @math{k}-step 
+ahead forecast made for every @math{T} is decomposed in its shock contributions.
+@item
+realtime conditional shock decomposition of the difference between the realtime historical shock decomposition and the 
+forecast shock decomposition. If @ref{vintage} is equal to @math{0}, it computes the effect of shocks realizing in period 
+@math{T}, @i{i.e.} decomposes @math{Y(T|T)-Y(T|T-1)}. Put differently it conducts a @math{1}-period ahead shock decomposition from 
+@math{T-1} to @math{T}, by decomposing the update step of the Kalman filter. If @code{vintage>0} and smaller than @code{nobs},
+the decomposition is conducted of the forecast revision @math{Y(T+k|T+k)-Y(T+k|T)}.
 
-@item
-forecast shock decomposition @math{Y(T|T-1)}.
 @end itemize
 
 Like @ref{shock_decomposition} it decomposes the historical deviations of the endogenous 
@@ -7284,7 +7285,9 @@ where @var{OBJECT} is one of the following:
 @table @code
 
 @item pool
-Stores the pooled decomposition (see @ref{plot_shock_decomposition}). The third dimension of the array will have size 
+Stores the pooled decomposition, @i{i.e.} for every realtime shock decomposition terminal period
+@math{T=[@code{presample},@dots{},@code{nobs}]} it collects the last period's decomposition @math{Y(T|T)}
+(see also @ref{plot_shock_decomposition}). The third dimension of the array will have size 
 @code{nobs+forecast}.
 
 @item time_*
@@ -7294,19 +7297,20 @@ Stores the vintages of realtime historical shock decompositions if @code{save_re
 @end table
 @end defvr
 
-@defvr {MATLAB/Octave variable} oo_.conditional_shock_decomposition
-@vindex oo_.conditional_shock_decomposition
+@defvr {MATLAB/Octave variable} oo_.realtime_conditional_shock_decomposition
+@vindex oo_.realtime_conditional_shock_decomposition
 Structure storing the results of realtime conditional decompositions. Fields are of the form:
 @example
-@code{oo_.conditional_shock_decomposition.@var{OBJECT}}
+@code{oo_.realtime_conditional_shock_decomposition.@var{OBJECT}}
 @end example
 where @var{OBJECT} is one of the following:
 
 @table @code
 
 @item pool
-Stores the pooled decomposition @math{Y(t|T)} for
-@math{t=T-1@dots{}T} (see @ref{plot_shock_decomposition}). The third dimension is of size @code{nobs}.
+Stores the pooled realtime conditional shock decomposition, @i{i.e.} collects the decompositions of 
+@math{Y(T|T)-Y(T|T-1)} for the terminal periods @math{T=[@code{presample},@dots{},@code{nobs}]}. 
+The third dimension is of size @code{nobs}.
 
 @item time_*
 Store the vintages of @math{k}-step conditional forecast shock decompositions @math{Y(t|T+k)}, for
@@ -7326,8 +7330,7 @@ where @var{OBJECT} is one of the following:
 @table @code
 
 @item pool
-Stores the pooled decomposition (see @ref{plot_shock_decomposition}).
-Forecast shock decomposition computes the @math{1}-step ahead effect of shocks
+Stores the pooled realtime forecast decomposition of the @math{1}-step ahead effect of shocks
 on the @math{1}-step ahead prediction, @i{i.e.} @math{Y(T|T-1)}. 
 
 @item time_*
@@ -7372,14 +7375,14 @@ command again.
 @itemx graph_format = ( @var{FORMAT}, @var{FORMAT}@dots{} )
 @xref{graph_format}.
 
-@item detail_plot = @var{BOOLEAN}
+@item detail_plot
 Plots shock contributions using subplots, one per shock (or group of
 shocks). Pass @math{1} to turn it on and @math{0} to turn it off. Default:
-@math{0}
+not activated
 
-@item interactive = @var{BOOLEAN}
+@item interactive
 Under MATLAB, add uimenus for detailed group plots. Pass @math{1} to turn it
-on and @math{0} to turn it off. Default: @math{0}
+on and @math{0} to turn it off. Default: not activated
 
 @item screen_shocks
 @anchor{screen_shcoks} For large models (@i{i.e.} for models with more than @math{16}
@@ -7387,10 +7390,10 @@ shocks), plots only the shocks that have the largest historical contribution
 for chosen selected @code{variable_names}.  Historical contribution is ranked
 by the mean absolute value of all historical contributions.
 
-@item steadystate = @var{BOOLEAN}
+@item steadystate
 @anchor{steadystate} If equal to @math{1}, the the @math{y}-axis value of the
 zero line in the shock decomposition plot is translated to the steady state
-level. Default: @math{0}
+level. Default: not activated
 
 @item type = @code{qoq} | @code{yoy} | @code{aoa}
 @anchor{type} For quarterly data, valid arguments are: @code{qoq} for
@@ -7414,42 +7417,23 @@ configured to be able to write Excel files.@footnote{In case of Excel not being 
 @anchor{realtime} Which kind of shock decomposition to plot. @var{INTEGER} can take following values:
 @itemize @bullet
 @item
-@code{0}: historical shock decomposition: @math{Y(t|T)} for
-@math{t=[1,@dots{},T]}, where @math{T=} @code{nobs} is the full sample
+@code{0}: standard historical shock decomposition. @xref{shock_decomposition}.
 @item
-@code{1}: realtime historical shock decomposition: for
-@math{T=[1,@dots{},@code{nobs}]}, realtime shock decomposition @math{Y(t|T)} for
-@math{t=[1,@dots{},T]}
+@code{1}: realtime historical shock decomposition. @xref{realtime_shock_decomposition}.
 @item
-@code{2}: conditional shock decomposition: for @code{T=1:nobs}, realtime shock
-decomposition of @math{Y(T|T)} conditional on @math{Y(T|T-1)}, @i{i.e.}
-@math{Y(t|T)} for @math{t=[T-1@dots{}T]}
+@code{2}: conditional realtime shock decomposition. @xref{realtime_shock_decomposition}.
 @item
-@code{3}: forecast shock decomposition: for @math{T=[1@dots{}@code{nobs}]},
-realtime shock decomposition of @math{Y(T|T-1)}
+@code{3}: realtime forecast shock decomposition. @xref{realtime_shock_decomposition}.
 @end itemize
+If no @ref{vintage} is requested, @i{i.e.} @code{vintage=0} then the pooled objects from @ref{realtime_shock_decomposition}
+will be plotted and the respective vintage otherwise.
 Default: @math{0}
 
 @item vintage = @var{INTEGER}
-@anchor{vintage} Applies if @code{realtime}@math{>0}. Can take following values:
-@itemize @bullet
-@item
-@code{0}: plots @math{1}-step pooled shock decompositions
-@item
-@code{1}: pooled realtime shock decomposition. For @math{T=[1,@dots{},@code{nobs}]}, plots last
-time point @math{Y(T|T)} of each vintage shock decomposition @math{Y(1:T|T)}
-@item
-@code{2}: pooled conditional shock decomposition. For
-@math{T=[1,@dots{},@code{nobs}]}, realtime @math{1}-step shock decomposition of
-@math{Y(T|T)} conditional on @math{Y(T|T-1)} (@i{i.e.} decomposition of
-@math{1}-step filter updates of each vintage @math{T})
-@item
-@code{3}: pooled forecast shock decomposition. For
-@math{T=[1,@dots{},@code{nobs}]}, realtime @math{1}-step ahead shock
-decomposition of @math{Y(T|T-1)} (@i{i.e.}  decomposition of shock
-contributions to @math{1}-step ahead forecasts of each vintage @math{T})
-@end itemize
-When the value passed is greater than @math{0}, it plots the shock
+@anchor{vintage} Selects a particular data vintage in @math{[presample,@dots{},nobs]} for which to plot the results from
+@ref{realtime_shock_decomposition} selected via the @ref{realtime} option. If the standard 
+historical shock decomposition is selected (@code{realtime=0}), @code{vintage} will have no effect. If @code{vintage=0}
+the pooled objects from @ref{realtime_shock_decomposition} will be plotted. If @code{vintage>0}, it plots the shock
 decompositions for vintage @math{T=@code{vintage}} under the following scenarios:
 @itemize @bullet
 @item
@@ -7459,7 +7443,7 @@ decompositions for vintage @math{T=@code{vintage}} under the following scenarios
 @code{realtime=2}: the conditional forecast shock decomposition from @math{T},
 @i{i.e.} plots @math{Y(T+j|T+j)} and the shock contributions needed to get to
 the data @math{Y(T+j)} conditional on @math{T=}@code{vintage}, with
-@math{j=[0@dots{}@code{forecast}]}.
+@math{j=[0,@dots{},@code{forecast}]}.
 @item
 @code{realtime=3}: plots unconditional forecast shock decomposition from
 @math{T}, @i{i.e.} @math{Y(T+j|T)}, where @math{T=@code{vintage}} and
