@@ -1113,7 +1113,8 @@ mutually exclusive arguments are separated by vertical bars: @samp{|};
 @var{INTEGER} indicates an integer number;
 
 @item
-@var{INTEGER_VECTOR} indicates a vector of integer numbers [@var{INTEGER_1} ... @var{INTEGER_N}]
+@var{INTEGER_VECTOR} indicates a vector of integer numbers separated by spaces,
+enclosed by square brackets;
 
 @item
 @var{DOUBLE} indicates a double precision number. The following syntaxes
@@ -7268,7 +7269,7 @@ realtime shock decompositions are computed, @i{i.e.} for
 @anchor{forecast_shock_decomposition} Compute shock decompositions up to
 @math{T+k} periods, @i{i.e.} get shock contributions to k-step ahead forecasts.
 
-@item save_realtime = [@var{INTEGER_VECTOR}]
+@item save_realtime = @var{INTEGER_VECTOR}
 @anchor{save_realtime} Choose for which vintages to save the full realtime
 shock decomposition. Default: @math{0}.
 @end table
@@ -7380,12 +7381,10 @@ command again.
 
 @item detail_plot
 Plots shock contributions using subplots, one per shock (or group of
-shocks). Pass @math{1} to turn it on and @math{0} to turn it off. Default:
-not activated
+shocks). Default: not activated
 
 @item interactive
-Under MATLAB, add uimenus for detailed group plots. Pass @math{1} to turn it
-on and @math{0} to turn it off. Default: not activated
+Under MATLAB, add uimenus for detailed group plots. Default: not activated
 
 @item screen_shocks
 @anchor{screen_shcoks} For large models (@i{i.e.} for models with more than @math{16}
@@ -7394,9 +7393,9 @@ for chosen selected @code{variable_names}.  Historical contribution is ranked
 by the mean absolute value of all historical contributions.
 
 @item steadystate
-@anchor{steadystate} If equal to @math{1}, the the @math{y}-axis value of the
-zero line in the shock decomposition plot is translated to the steady state
-level. Default: not activated
+@anchor{steadystate} If passed, the the @math{y}-axis value of the zero line in
+the shock decomposition plot is translated to the steady state level. Default:
+not activated
 
 @item type = @code{qoq} | @code{yoy} | @code{aoa}
 @anchor{type} For quarterly data, valid arguments are: @code{qoq} for
