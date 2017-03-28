@@ -1113,6 +1113,9 @@ mutually exclusive arguments are separated by vertical bars: @samp{|};
 @var{INTEGER} indicates an integer number;
 
 @item
+@var{INTEGER_VECTOR} indicates a vector of integer numbers [@var{INTEGER_1} ... @var{INTEGER_N}]
+
+@item
 @var{DOUBLE} indicates a double precision number. The following syntaxes
 are valid: @code{1.1e3}, @code{1.1E3}, @code{1.1d3}, @code{1.1D3}. In
 some places, infinite values @code{Inf} and @code{-Inf} are also allowed;
@@ -7265,7 +7268,7 @@ realtime shock decompositions are computed, @i{i.e.} for
 @anchor{forecast_shock_decomposition} Compute shock decompositions up to
 @math{T+k} periods, @i{i.e.} get shock contributions to k-step ahead forecasts.
 
-@item save_realtime = [@var{integer1} ... @var{integern}]
+@item save_realtime = [@var{INTEGER_VECTOR}]
 @anchor{save_realtime} Choose for which vintages to save the full realtime
 shock decomposition. Default: @math{0}.
 @end table
