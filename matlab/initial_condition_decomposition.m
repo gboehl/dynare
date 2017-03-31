@@ -118,7 +118,7 @@ end
     M_.exo_names = M_.endo_names;
     M_.exo_nbr = M_.endo_nbr;
     options_.plot_shock_decomp.screen_shocks=1;
-    options_.use_shock_groups = '';
+    options_.plot_shock_decomp.use_shock_groups = '';
     options_.plot_shock_decomp.fig_names='initval';
     plot_shock_decomposition(M_,oo,options_,varlist);
 % end
