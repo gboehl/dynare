@@ -122,7 +122,11 @@ end
 
 t = 0;
 icc=0;
-newRank = rank(Z*Pinf(:,:,1)*Z',diffuse_kalman_tol);
+if ~isempty(Pinf(:,:,1))
+    newRank = rank(Z*Pinf(:,:,1)*Z',diffuse_kalman_tol);
+else
+    newRank = rank(Pinf(:,:,1),diffuse_kalman_tol);
+end
 while newRank && t < smpl
     t = t+1;
     a(:,t) = a1(:,t);
@@ -156,7 +160,11 @@ while newRank && t < smpl
         end
     end
     if newRank
-        oldRank = rank(Z*Pinf(:,:,t)*Z',diffuse_kalman_tol);
+        if ~isempty(Pinf(:,:,t))
+            oldRank = rank(Z*Pinf(:,:,t)*Z',diffuse_kalman_tol);
+        else
+            oldRank = rank(Pinf(:,:,t),diffuse_kalman_tol);
+        end        
     else
         oldRank = 0;
     end
@@ -168,7 +176,11 @@ while newRank && t < smpl
     Pstar(:,:,t+1) = T*Pstar(:,:,t)*T'+ QQ;
     Pinf(:,:,t+1) = T*Pinf(:,:,t)*T';
     if newRank
-        newRank       = rank(Z*Pinf(:,:,t+1)*Z',diffuse_kalman_tol);
+        if ~isempty(Pinf(:,:,t+1))
+            newRank = rank(Z*Pinf(:,:,t+1)*Z',diffuse_kalman_tol);
+        else
+            newRank = rank(Pinf(:,:,t+1),diffuse_kalman_tol);
+        end
     end
     if oldRank ~= newRank
         disp('univariate_diffuse_kalman_filter:: T does influence the rank of Pinf!')   
