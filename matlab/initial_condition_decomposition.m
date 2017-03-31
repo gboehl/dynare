@@ -38,6 +38,13 @@ function oo_ = initial_condition_decomposition(M_,oo_,options_,varlist,bayestopt
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
+options_.plot_shock_decomp.detail_plot = options_.initial_condition_decomp.detail_plot;
+options_.plot_shock_decomp.steadystate = options_.initial_condition_decomp.steadystate;
+options_.plot_shock_decomp.write_xls = options_.initial_condition_decomp.write_xls;
+options_.plot_shock_decomp.type = options_.initial_condition_decomp.type;
+options_.plot_shock_decomp.plot_init_date = options_.initial_condition_decomp.plot_init_date;
+options_.plot_shock_decomp.plot_end_date = options_.initial_condition_decomp.plot_end_date;
+
 % indices of endogenous variables
 if size(varlist,1) == 0
     varlist = M_.endo_names(1:M_.orig_endo_nbr,:);
