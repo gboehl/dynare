@@ -255,7 +255,9 @@ if kalman_algo == 2 || kalman_algo == 4
                     [Pstar,Pinf] = compute_Pinf_Pstar(mf,ST,R1,Q,options_.qz_criterium);
                 else
                     Pstar = blkdiag(Pstar,H);
-                    Pinf  = blkdiag(Pinf,zeros(vobs));                    
+                    if ~isempty(Pinf)
+                        Pinf  = blkdiag(Pinf,zeros(vobs));                    
+                    end
                 end
                 %now reset H to 0
                 H   = zeros(vobs,vobs);
