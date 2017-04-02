@@ -47,6 +47,10 @@ if options_.particle.status
                 options_.qz_criterium = 1+1e-6;
             end
         end
+    else
+        if isempty(options_.qz_criterium)
+            options_.qz_criterium = 1-1e-6;
+        end
     end
 else
     % Linear filter
