@@ -36,21 +36,36 @@ function options_=select_qz_criterium_value(options_)
 %     set by default options_.qz_criterium to 1+1e-6
 stack = dbstack;
 
-if isequal(options_.lik_init,1)
-    if isempty(options_.qz_criterium)
-        options_.qz_criterium = 1-1e-6;
-    elseif options_.qz_criterium > 1-eps
-        error([stack(2).file ': option qz_criterium is too large for estimating/smoothing ' ...
-               'a stationary model. If your model contains unit roots, use ' ...
-               'option diffuse_filter'])
+if options_.particle.status
+    % Non linear filter
+    if isequal(options_.particle.initialization, 3)
+        if isempty(options_.qz_criterium)
+            options_.qz_criterium = 1+1e-6;
+        else
+            if options_.qz_criterium <= 1
+                fprintf('\n%s:: You set nonlinear_filter_initialization equal to 3, it is assumed that you try to estimate a non stationary model. Resetting it to 1+1e-6.\n', stack(2).file)
+                options_.qz_criterium = 1+1e-6;
+            end
+        end
     end
 else
-    if isempty(options_.qz_criterium)
-        options_.qz_criterium = 1+1e-6;
+    % Linear filter
+    if isequal(options_.lik_init,1)
+        if isempty(options_.qz_criterium)
+            options_.qz_criterium = 1-1e-6;
+        elseif options_.qz_criterium > 1-eps
+            error([stack(2).file ': option qz_criterium is too large for estimating/smoothing ' ...
+                   'a stationary model. If your model contains unit roots, use ' ...
+                   'option diffuse_filter'])
+        end
     else
-        if options_.qz_criterium <= 1
-            fprintf('\n%s:: diffuse filter is incompatible with a qz_criterium<=1. Resetting it to 1+1e-6.\n',stack(2).file)
+        if isempty(options_.qz_criterium)
             options_.qz_criterium = 1+1e-6;
+        else
+            if options_.qz_criterium <= 1
+                fprintf('\n%s:: diffuse filter is incompatible with a qz_criterium<=1. Resetting it to 1+1e-6.\n',stack(2).file)
+                options_.qz_criterium = 1+1e-6;
+            end
         end
     end
 end

@@ -3480,6 +3480,7 @@ end;
 
 @deffn Command check ;
 @deffnx Command check (solve_algo = @var{INTEGER}) ;
+@anchor{check}
 
 @descriptionhead
 
@@ -6344,6 +6345,22 @@ Sets the method for approximating the particle distribution. Possible values for
 
 @item cpf_weights = @var{OPTION}
 @anchor{cpf_weights} Controls the method used to update the weights in conditional particle filter, possible values are @code{amisanotristani} (@cite{Amisano et al (2010)}) or @code{murrayjonesparslow} (@cite{Murray et al. (2013)}). Default value is @code{amisanotristani}.
+
+@item nonlinear_filter_initialization = @var{INTEGER}
+@anchor{nonlinear_filter_initialization} Sets the initial condition of the
+nonlinear filters. By default the nonlinear filters are initialized with the
+unconditional covariance matrix of the state variables, computed with the
+reduced form solution of the first order approximation of the model. If
+@code{nonlinear_filter_initialization=2}, the nonlinear filter is instead
+initialized with a covariance matrix estimated with a stochastic simulation of
+the reduced form solution of the second order approximation of the model. Both
+these initializations assume that the model is stationary, and cannot be used
+if the model has unit roots (which can be seen with the @ref{check} command
+prior to estimation). If the model has stochastic trends, user must use
+@code{nonlinear_filter_initialization=3}, the filters are then initialized with
+an identity matrix for the covariance matrix of the state variables. Default
+value is @code{nonlinear_filter_initialization=1} (initialization based on the
+first order approximation of the model).
 
 @end table
 
