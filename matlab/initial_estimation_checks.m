@@ -167,8 +167,8 @@ end
 if info(1) > 0
     if DynareOptions.order>1
         [eigenvalues_] = check(Model,DynareOptions, DynareResults);
-        if any(abs(1-abs(eigenvalues_))<1e-10)
-            error('Your model has a unit root, but estimation at order>1 currently only supports stationary models')
+        if any(abs(eigenvalues_)>DynareOptions.qz_criterium)
+            error('Your model has at least one unit root and you are using a nonlinear filter. Please set nonlinear_filter_initialization=3.')
         end
     else
     disp('Error in computing likelihood for initial parameter values')
