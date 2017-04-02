@@ -2,7 +2,7 @@
 @c %**start of header
 @setfilename dynare.info
 @documentencoding UTF-8
-@codequoteundirected on
+@set txicodequoteundirected
 
 @settitle Dynare Reference Manual
 @afourwide
