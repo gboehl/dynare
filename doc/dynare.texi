@@ -932,7 +932,7 @@ over those passed to @ref{@@#includepath}.
 Allows Dynare to issue a warning and continue processing when
 @enumerate
 @item there are more endogenous variables than equations
-@item an undeclared symbol is assigned in @code{initval} or @code{endval}
+@item an undeclared symbol is assigned in @code{initval}, @code{endval}, @code{histval}, or @code{shocks}
 @item exogenous variables were declared but not used in the @code{model} block
 @end enumerate
 
