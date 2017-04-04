@@ -2097,6 +2097,7 @@ Compiling the @TeX{} file requires the following @LaTeX{} packages:
 @anchor{write_latex_dynamic_model}
 
 @deffn Command write_latex_dynamic_model ;
+@deffnx Command write_latex_dynamic_model (@var{OPTIONS}) ;
 
 @descriptionhead
 
@@ -2142,6 +2143,15 @@ also have been replaced by new auxiliary variables and equations.
 @end itemize
 
 For the required @LaTeX{} packages, @pxref{write_latex_original_model}.
+
+@optionshead
+
+@table @code
+
+@item write_equation_tags
+Write the equation tags in the latex output
+
+@end table
 
 @end deffn
 
