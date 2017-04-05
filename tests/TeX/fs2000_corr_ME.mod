@@ -71,7 +71,7 @@ del = 0.02;
 options_.TeX=1;
 
 model;
-[name='technology growth']
+[name='technology growth: $\Delta A_{t}$', eq='\#1']
 dA = exp(gam+e_a);
 [name='money supply rule']
 log(m) = (1-rho)*log(mst) + rho*log(m(-1))+e_m;

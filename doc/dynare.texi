@@ -2149,7 +2149,8 @@ For the required @LaTeX{} packages, @pxref{write_latex_original_model}.
 @table @code
 
 @item write_equation_tags
-Write the equation tags in the latex output
+Write the equation tags in the @LaTeX{} output. NB: the equation tags will be
+interpreted with @LaTeX{} markups.
 
 @end table
 
