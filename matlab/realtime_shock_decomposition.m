@@ -105,7 +105,6 @@ end
 for j=presample+1:nobs,
 %    evalin('base',['options_.nobs=' int2str(j) ';'])
     options_.nobs=j;
-    clear('evaluate_smoother');
     [oo, M_, junk2, junk3, Smoothed_Variables_deviation_from_mean] = evaluate_smoother(parameter_set,varlist,M_,oo_,options_,bayestopt_,estim_params_);
     
     % reduced form
@@ -259,5 +258,4 @@ if forecast_
     oo_.realtime_forecast_shock_decomposition.pool = zfrcst;
 end
 
-clear('evaluate_smoother');
 skipline()

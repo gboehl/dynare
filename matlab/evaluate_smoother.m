@@ -37,7 +37,7 @@ function [oo_,M_,options_,bayestopt_,Smoothed_variables_declaration_order_deviat
 % [1] This function use persistent variables for the dataset and the description of the missing observations. Consequently, if this function
 %     is called more than once (by changing the value of parameters) the sample *must not* change.
 
-% Copyright (C) 2010-2016 Dynare Team
+% Copyright (C) 2010-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -54,21 +54,17 @@ function [oo_,M_,options_,bayestopt_,Smoothed_variables_declaration_order_deviat
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-persistent dataset_ dataset_info
-
-%store qz_criterium
+% store qz_criterium
 qz_criterium_old=options_.qz_criterium;
 
 if ischar(parameters) && strcmp(parameters,'calibration')
     options_.smoother=1;
 end
 
-if isempty(dataset_) || isempty(bayestopt_) || (options_.nobs ~= dataset_.nobs)
-    [dataset_,dataset_info,xparam1, hh, M_, options_, oo_, estim_params_,bayestopt_] = dynare_estimation_init(var_list, M_.fname, [], M_, options_, oo_, estim_params_, bayestopt_);
-else 
+[dataset_,dataset_info,xparam1, hh, M_, options_, oo_, estim_params_,bayestopt_] = dynare_estimation_init(var_list, M_.fname, [], M_, options_, oo_, estim_params_, bayestopt_);
+
 % set the qz_criterium
-    options_=select_qz_criterium_value(options_);
-end
+options_=select_qz_criterium_value(options_);
 
 if nargin==0
     parameters = 'posterior_mode';
