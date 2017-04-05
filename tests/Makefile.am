@@ -13,6 +13,7 @@ MODFILES = \
 	observation_trends_and_prefiltering/MCMC/Trend_prefilter_MC.mod \
 	observation_trends_and_prefiltering/MCMC/Trend_prefilter_first_obs_MC.mod \
 	dates/dseries_interact.mod \
+	dates/fs2000.mod \
 	estimation/slice/fs2000_slice.mod \
 	optimizers/fs2000_9.mod \
 	optimizers/fs2000_10.mod \
@@ -751,6 +752,7 @@ EXTRA_DIST = \
 	AIM/fsdat.m \
 	block_bytecode/run_ls2003.m \
 	bvar_a_la_sims/bvar_sample.m \
+	dates/fsdat_simul.m \
 	external_function/extFunDeriv.m \
 	external_function/extFunNoDerivs.m \
 	external_function/extFunWithFirstAndSecondDerivs.m \
