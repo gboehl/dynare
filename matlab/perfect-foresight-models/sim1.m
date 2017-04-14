@@ -17,7 +17,7 @@ function [endogenousvariables, info] = sim1(endogenousvariables, exogenousvariab
 % SPECIAL REQUIREMENTS
 %   None.
 
-% Copyright (C) 1996-2016 Dynare Team
+% Copyright (C) 1996-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -165,6 +165,11 @@ for iter = 1:options.simul.maxit
             dy = -lin_solve( A, res, verbose );
         end
     end
+    if any(~isreal(dy)) || any(isnan(dy)) || any(isinf(dy))
+        if verbose
+            display_critical_variables(reshape(dy,[ny periods])', M);
+        end
+    end
     Y(i_upd) = Y(i_upd) + dy;
 end
 
@@ -184,7 +189,12 @@ if stop
         if verbose
             skipline()
             disp(sprintf('Total time of simulation: %s.', num2str(etime(clock,h1))))
-            disp('Simulation terminated with NaN or Inf in the residuals or endogenous variables.')
+            if ~isreal(res) || ~isreal(Y)
+                disp('Simulation terminated with imaginary parts in the residuals or endogenous variables.')
+            else
+                disp('Simulation terminated with NaN or Inf in the residuals or endogenous variables.')
+            end
+            display_critical_variables(reshape(dy,[ny periods])', M);
             disp('There is most likely something wrong with your model. Try model_diagnostics or another simulation method.')
             printline(105)
         end
@@ -297,3 +307,29 @@ function [ x, flag, relres ] = lin_solve_robust( A, b , verbose)
     if flag ~= 0 && verbose
         fprintf( 'WARNING : Failed to find a solution to the linear system\n' );
     end
+    
+function display_critical_variables(dyy, M)
+
+            if any(isnan(dyy))
+                indx = find(any(isnan(dyy)));
+                endo_names=cellstr(M.endo_names(indx,:));
+                disp('Last iteration provided NaN for the following variables:')
+                fprintf('%s, ',endo_names{:}),
+                fprintf('\n'),
+            end
+            if any(isinf(dyy))
+                indx = find(any(isinf(dyy)));
+                endo_names=cellstr(M.endo_names(indx,:));
+                disp('Last iteration diverged (Inf) for the following variables:')
+                fprintf('%s, ',endo_names{:}),
+                fprintf('\n'),
+            end
+            if any(~isreal(dyy))
+                indx = find(any(~isreal(dyy)));
+                endo_names=cellstr(M.endo_names(indx,:));
+                disp('Last iteration provided complex number for the following variables:')
+                fprintf('%s, ',endo_names{:}),
+                fprintf('\n'),                
+            end
+
+        

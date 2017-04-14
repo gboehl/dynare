@@ -8,7 +8,7 @@ function forecast_graphs(var_list,M_, oo_,options_)
 %   o oo_                   outputs structure
 %   o options_              options structure
 
-% Copyright (C) 2008-2016 Dynare Team
+% Copyright (C) 2008-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -61,10 +61,10 @@ end
 
 m = 1;
 n_fig = 1;
-hh=dyn_figure(options_,'Name','Forecasts (I)');
+hh=dyn_figure(options_.nodisplay,'Name','Forecasts (I)');
 for j= 1:nvar
     if m > nc*nr; 
-        dyn_saveas(hh,[ dname '/graphs/forcst' int2str(n_fig)],options_);
+        dyn_saveas(hh,[ dname '/graphs/forcst' int2str(n_fig)],options_.nodisplay,options_.graph_format);
         if options_.TeX && any(strcmp('eps',cellstr(options_.graph_format)))
             fprintf(fidTeX,'\\begin{figure}[H]\n');
             fprintf(fidTeX,'\\centering \n');
@@ -75,7 +75,7 @@ for j= 1:nvar
             fprintf(fidTeX,' \n');
         end       
         n_fig =n_fig+1;
-        eval(['hh=dyn_figure(options_,''Name'',''Forecasts (' int2str(n_fig) ')'');']);
+        eval(['hh=dyn_figure(options_.nodisplay,''Name'',''Forecasts (' int2str(n_fig) ')'');']);
         m = 1;
     end
     subplot(nr,nc,m);
@@ -100,7 +100,7 @@ for j= 1:nvar
 end
 
 if m > 1
-    dyn_saveas(hh,[dname '/graphs/forcst' int2str(n_fig)],options_);
+    dyn_saveas(hh,[dname '/graphs/forcst' int2str(n_fig)],options_.nodisplay,options_.graph_format);
     if options_.TeX && any(strcmp('eps',cellstr(options_.graph_format)))
         fprintf(fidTeX,'\\begin{figure}[H]\n');
         fprintf(fidTeX,'\\centering \n');
@@ -125,10 +125,10 @@ if isfield(oo_.forecast,'HPDinf_ME')
     
     m = 1;
     n_fig = 1;
-    hh=dyn_figure(options_,'Name','Forecasts including ME (I)');
+    hh=dyn_figure(options_.nodisplay,'Name','Forecasts including ME (I)');
     for j= 1:length(var_names)
         if m > nc*nr;
-            dyn_saveas(hh,[ dname '/graphs/forcst_ME' int2str(n_fig)],options_);
+            dyn_saveas(hh,[ dname '/graphs/forcst_ME' int2str(n_fig)],options_.nodisplay,options_.graph_format);
             if options_.TeX && any(strcmp('eps',cellstr(options_.graph_format)))
                 fprintf(fidTeX,'\\begin{figure}[H]\n');
                 fprintf(fidTeX,'\\centering \n');
@@ -139,7 +139,7 @@ if isfield(oo_.forecast,'HPDinf_ME')
                 fprintf(fidTeX,' \n');
             end
             n_fig =n_fig+1;
-            eval(['hh=dyn_figure(options_,''Name'',''Forecasts (' int2str(n_fig) ')'');']);
+            eval(['hh=dyn_figure(options_.nodisplay,''Name'',''Forecasts (' int2str(n_fig) ')'');']);
             m = 1;
         end
         subplot(nr,nc,m);
@@ -158,7 +158,7 @@ if isfield(oo_.forecast,'HPDinf_ME')
     end
     
     if m > 1
-        dyn_saveas(hh,[dname '/graphs/forcst_ME' int2str(n_fig)],options_);
+        dyn_saveas(hh,[dname '/graphs/forcst_ME' int2str(n_fig)],options_.nodisplay,options_.graph_format);
         if options_.TeX && any(strcmp('eps',cellstr(options_.graph_format)))
             fprintf(fidTeX,'\\begin{figure}[H]\n');
             fprintf(fidTeX,'\\centering \n');          

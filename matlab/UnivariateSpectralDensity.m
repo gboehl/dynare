@@ -19,7 +19,7 @@ function [oo_] = UnivariateSpectralDensity(M_,oo_,options_,var_list)
 
 % Adapted from th_autocovariances.m.  
 
-% Copyright (C) 2006-2015 Dynare Team
+% Copyright (C) 2006-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -159,12 +159,12 @@ if options_.nograph == 0
     end
 
     for i= 1:nvar
-        hh = dyn_figure(options_,'Name',['Spectral Density of ' deblank(M_.endo_names(ivar(i),:)) '.']);
+        hh = dyn_figure(options_.nodisplay,'Name',['Spectral Density of ' deblank(M_.endo_names(ivar(i),:)) '.']);
         plot(freqs,f(i,:),'-k','linewidth',2)
         xlabel('0 \leq \omega \leq \pi')
         ylabel('f(\omega)')
         box on
         axis tight        
-        dyn_saveas(hh,[M_.fname ,filesep,'graphs', filesep, 'SpectralDensity_' deblank(M_.endo_names(ivar(i),:))],options_)
+        dyn_saveas(hh,[M_.fname ,filesep,'graphs', filesep, 'SpectralDensity_' deblank(M_.endo_names(ivar(i),:))],options_.nodisplay,options_.graph_format)
     end
 end

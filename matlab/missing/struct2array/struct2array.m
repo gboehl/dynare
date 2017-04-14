@@ -1,18 +1,12 @@
-function h = dyn_figure(nodisplay, varargin)
-%function h = dyn_figure(nodisplay, varargin)
-% initializes figures for DYNARE
-%
-% INPUTS
-%    nodisplay: the value of the command-specific nodisplay argument or options_.nodisplay
-%    varargin: the same list of possible inputs of the MATLAB function figure
-%
-% OUTPUTS
-%    h     : figure handle
-%
-% SPECIAL REQUIREMENTS
-%    none
+function a = struct2array(s)
 
-% Copyright (C) 2012-2017 Dynare Team
+% INPUTS 
+% - s  [struct]  with N fields, field i contains a n_i*m_i array of doubles.
+%
+% OUPUTS 
+% - a  [double]  column vector with sum(n_i*m_i, i=1,...,N) elements.
+
+% Copyright (C) 2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -29,8 +23,7 @@ function h = dyn_figure(nodisplay, varargin)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-if nodisplay
-    h = figure(varargin{:},'visible','off');
-else
-    h = figure(varargin{:});
-end
+assert(isstruct(s), 'struct2array:: Argument has to be a structure!')
+
+c = cellfun(@vec, struct2cell(s), 'UniformOutput', false);
+a = vertcat(c{:});

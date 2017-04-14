@@ -316,7 +316,8 @@ switch DynareOptions.particle.initialization
     StateVectorVariance = cov(y_');
     DynareOptions.periods = old_DynareOptionsperiods;
     clear('old_DynareOptionsperiods','y_');
-  case 3% Initial state vector covariance is a diagonal matrix.
+  case 3% Initial state vector covariance is a diagonal matrix (to be used
+        % if model has stochastic trends).
     StateVectorMean = ReducedForm.constant(mf0);
     StateVectorVariance = DynareOptions.particle.initial_state_prior_std*eye(number_of_state_variables);
   otherwise

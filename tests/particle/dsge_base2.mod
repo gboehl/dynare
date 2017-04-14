@@ -1,27 +1,51 @@
-// This file deals with the resolution and estimation of a basic DSGE model with
-//employment for comparison with the benchmark in Gauss which solves with
-//the same particular filter but global methodology.
-//
-// Juin 2015
-
 // DGP
+@#ifndef RISKY_CALIBRATION
 @#define RISKY_CALIBRATION = 0
+@#endif
+@#ifndef EXTREME_CALIBRATION
 @#define EXTREME_CALIBRATION = 1
+@#endif
+@#ifndef BENCHMARK_CALIBRATION
 @#define BENCHMARK_CALIBRATION = 0
+@#endif
 
 // ALGORITHM
-@#define LINEAR_KALMAN = 1
+@#ifndef LINEAR_KALMAN
+@#define LINEAR_KALMAN = 0
+@#endif
+@#ifndef ALGO_SIR
 @#define ALGO_SIR = 0
+@#endif
+@#ifndef ALGO_SISmoothR
 @#define ALGO_SISmoothR = 0
+@#endif
+@#ifndef ALGO_APF
 @#define ALGO_APF = 0
+@#endif
+@#ifndef ALGO_GPF
 @#define ALGO_GPF = 0
+@#endif
+@#ifndef ALGO_GCF
 @#define ALGO_GCF = 0
-@#define ALGO_GUF = 0
+@#endif
+@#ifndef ALGO_GUF
+@#define ALGO_GUF = 1
+@#endif
+@#ifndef ALGO_GMPF
 @#define ALGO_GMPF = 0
+@#endif
+@#ifndef ALGO_GMCF
 @#define ALGO_GMCF = 0
+@#endif
+@#ifndef ALGO_ONLINE_1
 @#define ALGO_ONLINE_1 = 0
+@#endif
+@#ifndef ALGO_ONLINE_2
 @#define ALGO_ONLINE_2 = 0
-
+@#endif
+@#ifndef MCMC
+@#define MCMC = 0
+@#endif
 
 var k A c l i y;
 varexo e_a;
@@ -164,7 +188,9 @@ options_.mode_check.number_of_points = 250;
   estimation(order=1,number_of_particles=1000,mode_compute=11);
 @#endif
 
-options_.mh_nblck = 10 ;
-options_.posterior_sampling_method = 'RWGMH';
-options_.rwgmh_scale_shock = (1e-5)*[10 10 1 1 10 10 10 1000 10 10] ;
-estimation(order=1,mh_replic=5000,mode_compute=0,mode_file=dsge_base2_mode);
+@#if MCMC
+  options_.mh_nblck = 10 ;
+  options_.posterior_sampling_method = 'RWGMH';
+  options_.rwgmh_scale_shock = (1e-5)*[10 10 1 1 10 10 10 1000 10 10] ;
+  estimation(order=1,mh_replic=5000,mode_compute=0,mode_file=dsge_base2_mode);
+@#endif

@@ -37,7 +37,7 @@ end
 % define expanded group
 label = mydata.shock_group.label;
 shocks = mydata.shock_group.shocks;
-options.shock_decomp.fig_names = [mydata.fig_names '. Expand'];
+options.shock_decomp.fig_name = [mydata.fig_name '. Expand'];
 options.use_shock_groups = strrep(label,' ','_'); %[use_shock_groups_old int2str(ic)];
 for j=1:length(shocks)
     M.shock_groups.(options.use_shock_groups).(['group' int2str(j)]).label=shocks{j};

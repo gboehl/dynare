@@ -14,7 +14,7 @@ function [rmse_MC, ixx] = filt_mc_(OutDir,options_gsa_,dataset_,dataset_info)
 % marco.ratto@ec.europa.eu 
 
 % Copyright (C) 2012-2016 European Commission
-% Copyright (C) 2012-2016 Dynare Team
+% Copyright (C) 2012-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -407,7 +407,7 @@ else
             end
             if mod(i,9)==1,
                 ifig=ifig+1;
-                hh=dyn_figure(options_,'name',[temp_name,' ',int2str(ifig)]);
+                hh=dyn_figure(options_.nodisplay,'name',[temp_name,' ',int2str(ifig)]);
             end
             subplot(3,3,i-9*(ifig-1))
             h=cumplot(lnprior(ixx(1:nfilt0(i),i)));
@@ -423,18 +423,18 @@ else
                     annotation('textbox', [0.55,0,0.35,0.05],'String', 'Log-prior for WORSE R2', 'Color','Red','horizontalalignment','center');
                 end
                 if options_.opt_gsa.ppost
-                    dyn_saveas(hh,[OutDir filesep fname_ '_rmse_post_lnprior',int2str(ifig)],options_);
+                    dyn_saveas(hh,[OutDir filesep fname_ '_rmse_post_lnprior',int2str(ifig)],options_.nodisplay,options_.graph_format);
                     if options_.TeX
                     create_TeX_loader(options_,[OutDir '/' fname_ '_rmse_post_lnprior',int2str(ifig)],ifig,[temp_name,' ',int2str(ifig)],'rmse_post_lnprior',options_.figures.textwidth*min((i-9*(ifig-1))/3,1))
                     end
                 else
                     if options_.opt_gsa.pprior
-                        dyn_saveas(hh,[OutDir filesep fname_ '_rmse_prior_lnprior',int2str(ifig) ],options_);
+                        dyn_saveas(hh,[OutDir filesep fname_ '_rmse_prior_lnprior',int2str(ifig) ],options_.nodisplay,options_.graph_format);
                     if options_.TeX
                         create_TeX_loader(options_,[OutDir '/' fname_ '_rmse_prior_lnprior',int2str(ifig)],ifig,[temp_name,' ',int2str(ifig)],'rmse_prior_lnprior',options_.figures.textwidth*min((i-9*(ifig-1))/3,1))
                     end
                     else
-                        dyn_saveas(hh,[OutDir filesep fname_ '_rmse_mc_lnprior',int2str(ifig) ],options_);
+                        dyn_saveas(hh,[OutDir filesep fname_ '_rmse_mc_lnprior',int2str(ifig) ],options_.nodisplay,options_.graph_format);
                     if options_.TeX
                         create_TeX_loader(options_,[OutDir '/' fname_ '_rmse_mc_lnprior',int2str(ifig)],ifig,[temp_name,' ',int2str(ifig)],'rmse_mc_lnprior',options_.figures.textwidth*min((i-9*(ifig-1))/3,1))
                     end
@@ -455,7 +455,7 @@ else
             end
             if mod(i,9)==1,
                 ifig=ifig+1;
-                hh = dyn_figure(options_,'Name',[temp_name,' ',int2str(ifig)]);
+                hh = dyn_figure(options_.nodisplay,'Name',[temp_name,' ',int2str(ifig)]);
             end
             subplot(3,3,i-9*(ifig-1))
             h=cumplot(likelihood(ixx(1:nfilt0(i),i)));
@@ -474,18 +474,18 @@ else
                     annotation('textbox', [0.55,0,0.35,0.05],'String', 'Log-likelihood for WORSE R2', 'Color','Red','horizontalalignment','center');
                 end
                 if options_.opt_gsa.ppost
-                    dyn_saveas(hh,[OutDir filesep fname_ '_rmse_post_lnlik',int2str(ifig) ],options_);
+                    dyn_saveas(hh,[OutDir filesep fname_ '_rmse_post_lnlik',int2str(ifig) ],options_.nodisplay,options_.graph_format);
                     if options_.TeX
                         create_TeX_loader(options_,[OutDir filesep fname_ '_rmse_post_lnprior',int2str(ifig)],ifig,[temp_name,' ',int2str(ifig)],'rmse_post_lnprior',options_.figures.textwidth*min((i-9*(ifig-1))/3,1));
                     end
                 else
                     if options_.opt_gsa.pprior
-                        dyn_saveas(hh,[OutDir filesep fname_ '_rmse_prior_lnlik',int2str(ifig)],options_);
+                        dyn_saveas(hh,[OutDir filesep fname_ '_rmse_prior_lnlik',int2str(ifig)],options_.nodisplay,options_.graph_format);
                         if options_.TeX
                             create_TeX_loader(options_,[OutDir filesep fname_ '_rmse_prior_lnlik',int2str(ifig)],ifig,[temp_name,' ',int2str(ifig)],'rmse_prior_lnlik',options_.figures.textwidth*min((i-9*(ifig-1))/3,1));
                         end
                     else
-                        dyn_saveas(hh,[OutDir filesep fname_ '_rmse_mc_lnlik',int2str(ifig) ],options_);
+                        dyn_saveas(hh,[OutDir filesep fname_ '_rmse_mc_lnlik',int2str(ifig) ],options_.nodisplay,options_.graph_format);
                         if options_.TeX
                             create_TeX_loader(options_,[OutDir filesep fname_ '_rmse_mc_lnlik',int2str(ifig) ],ifig,[temp_name,' ',int2str(ifig)],'rmse_mc_lnlik',options_.figures.textwidth*min((i-9*(ifig-1))/3,1));
                         end
@@ -506,7 +506,7 @@ else
             end
             if mod(i,9)==1,
                 ifig=ifig+1;
-                hh = dyn_figure(options_,'Name',[temp_name,' ',int2str(ifig)]);
+                hh = dyn_figure(options_.nodisplay,'Name',[temp_name,' ',int2str(ifig)]);
             end
             subplot(3,3,i-9*(ifig-1))
             h=cumplot(logpo2(ixx(1:nfilt0(i),i)));
@@ -525,18 +525,18 @@ else
                     annotation('textbox', [0.55,0,0.35,0.05],'String', 'Log-posterior for WORSE R2', 'Color','Red','horizontalalignment','center');
                 end
                 if options_.opt_gsa.ppost
-                    dyn_saveas(hh,[OutDir filesep fname_ '_rmse_post_lnpost',int2str(ifig) ],options_);
+                    dyn_saveas(hh,[OutDir filesep fname_ '_rmse_post_lnpost',int2str(ifig) ],options_.nodisplay,options_.graph_format);
                     if options_.TeX
                         create_TeX_loader(options_,[OutDir filesep fname_ '_rmse_post_lnpost',int2str(ifig) ],ifig,[temp_name,' ',int2str(ifig)],'rmse_post_lnpost',options_.figures.textwidth*min((i-9*(ifig-1))/3,1));
                     end
                 else
                     if options_.opt_gsa.pprior
-                        dyn_saveas(hh,[OutDir filesep fname_ '_rmse_prior_lnpost',int2str(ifig)],options_);
+                        dyn_saveas(hh,[OutDir filesep fname_ '_rmse_prior_lnpost',int2str(ifig)],options_.nodisplay,options_.graph_format);
                         if options_.TeX
                             create_TeX_loader(options_,[OutDir filesep fname_ '_rmse_prior_lnpost',int2str(ifig)],ifig,[temp_name,' ',int2str(ifig)],'rmse_prior_lnpost',options_.figures.textwidth*min((i-9*(ifig-1))/3,1));
                         end
                     else
-                        dyn_saveas(hh,[OutDir filesep fname_ '_rmse_mc_lnpost',int2str(ifig)],options_);
+                        dyn_saveas(hh,[OutDir filesep fname_ '_rmse_mc_lnpost',int2str(ifig)],options_.nodisplay,options_.graph_format);
                         if options_.TeX
                             create_TeX_loader(options_,[OutDir filesep fname_ '_rmse_mc_lnpost',int2str(ifig)],ifig,[temp_name,' ',int2str(ifig)],'rmse_mc_lnpost',options_.figures.textwidth*min((i-9*(ifig-1))/3,1));
                         end
@@ -794,7 +794,7 @@ else
         for iy=1:size(vvarvecm,1),
             ipar = find(any(squeeze(PPV(iy,:,:))<alpha));
             for ix=1:ceil(length(ipar)/5),
-                hh = dyn_figure(options_,'name',[temp_name,' observed variable ',deblank(vvarvecm(iy,:))]);
+                hh = dyn_figure(options_.nodisplay,'name',[temp_name,' observed variable ',deblank(vvarvecm(iy,:))]);
                 for j=1+5*(ix-1):min(length(ipar),5*ix),
                     subplot(2,3,j-5*(ix-1))
                     %h0=cumplot(x(:,nsnam(j)+nshock));
@@ -837,18 +837,18 @@ else
                 %h0=legend({'base',vnam{np}}',0);
                 %set(findobj(get(h0,'children'),'type','text'),'interpreter','none')
                 if options_.opt_gsa.ppost
-                    dyn_saveas(hh,[ OutDir filesep fname_ '_rmse_post_' deblank(vvarvecm(iy,:)) '_' int2str(ix)],options_);
+                    dyn_saveas(hh,[ OutDir filesep fname_ '_rmse_post_' deblank(vvarvecm(iy,:)) '_' int2str(ix)],options_.nodisplay,options_.graph_format);
                     if options_.TeX
                         create_TeX_loader(options_,[ OutDir filesep fname_ '_rmse_post_' deblank(vvarvecm(iy,:)) '_' int2str(ix)],ix,[temp_name,' observed variable $',deblank(vvarvecm_tex(iy,:)) '$'],['rmse_post_' deblank(vvarvecm(iy,:))],1)
                     end
                 else
                     if options_.opt_gsa.pprior
-                        dyn_saveas(hh,[OutDir filesep fname_ '_rmse_prior_' deblank(vvarvecm(iy,:)) '_' int2str(ix) ],options_);
+                        dyn_saveas(hh,[OutDir filesep fname_ '_rmse_prior_' deblank(vvarvecm(iy,:)) '_' int2str(ix) ],options_.nodisplay,options_.graph_format);
                         if options_.TeX
                             create_TeX_loader(options_,[OutDir filesep fname_ '_rmse_prior_' deblank(vvarvecm(iy,:)) '_' int2str(ix) ],ix,[temp_name,' observed variable $',deblank(vvarvecm_tex(iy,:)) '$'],['rmse_prior_' deblank(vvarvecm(iy,:))],1)
                         end
                     else
-                        dyn_saveas(hh,[OutDir filesep fname_ '_rmse_mc_' deblank(vvarvecm(iy,:)) '_' int2str(ix)],options_);
+                        dyn_saveas(hh,[OutDir filesep fname_ '_rmse_mc_' deblank(vvarvecm(iy,:)) '_' int2str(ix)],options_.nodisplay,options_.graph_format);
                         if options_.TeX
                             create_TeX_loader(options_,[OutDir filesep fname_ '_rmse_mc_' deblank(vvarvecm(iy,:)) '_' int2str(ix)],ix,[temp_name,' observed variable $',deblank(vvarvecm_tex(iy,:)) '$'],['rmse_mc_' deblank(vvarvecm(iy,:))],1)
                         end
@@ -859,7 +859,7 @@ else
         
         % now I plot by individual parameters
         for ix=1:ceil(length(nsnam)/5),
-            hh = dyn_figure(options_,'name',[temp_name,' estimated params and shocks ',int2str(ix)]);
+            hh = dyn_figure(options_.nodisplay,'name',[temp_name,' estimated params and shocks ',int2str(ix)]);
             for j=1+5*(ix-1):min(size(snam2,1),5*ix),
                 subplot(2,3,j-5*(ix-1))
                 %h0=cumplot(x(:,nsnam(j)+nshock));
@@ -904,18 +904,18 @@ else
             %h0=legend({'base',vnam{np}}',0);
             %set(findobj(get(h0,'children'),'type','text'),'interpreter','none')
             if options_.opt_gsa.ppost
-                dyn_saveas(hh,[ OutDir filesep fname_ '_rmse_post_params_' int2str(ix)],options_);
+                dyn_saveas(hh,[ OutDir filesep fname_ '_rmse_post_params_' int2str(ix)],options_.nodisplay,options_.graph_format);
                 if options_.TeX
                     create_TeX_loader(options_,[ OutDir filesep fname_ '_rmse_post_params_' int2str(ix)],ix,[temp_name,' estimated params and shocks ',int2str(ix)],'rmse_post_params',1)
                 end
             else
                 if options_.opt_gsa.pprior
-                    dyn_saveas(hh,[OutDir filesep fname_ '_rmse_prior_params_' int2str(ix) ],options_);
+                    dyn_saveas(hh,[OutDir filesep fname_ '_rmse_prior_params_' int2str(ix) ],options_.nodisplay,options_.graph_format);
                     if options_.TeX
                         create_TeX_loader(options_,[OutDir filesep fname_ '_rmse_prior_params_' int2str(ix) ],ix,[temp_name,' estimated params and shocks ',int2str(ix)],'rmse_prior_params',1)
                     end
                 else
-                    dyn_saveas(hh,[OutDir filesep fname_ '_rmse_mc_params_' int2str(ix)],options_);
+                    dyn_saveas(hh,[OutDir filesep fname_ '_rmse_mc_params_' int2str(ix)],options_.nodisplay,options_.graph_format);
                     if options_.TeX
                         create_TeX_loader(options_,[OutDir filesep fname_ '_rmse_mc_params_' int2str(ix)],ix,[temp_name,' estimated params and shocks ',int2str(ix)],'rmse_mc_params',1)
                     end

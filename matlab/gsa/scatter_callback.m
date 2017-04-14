@@ -23,7 +23,7 @@ function  scatter_callback(K, type)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-global oo_ M_
+global oo_ M_ options_ bayestopt_ estim_params_
 
 x=get(gcf,'userdata');
 r2=x{1};
@@ -37,6 +37,6 @@ switch type
         
     case 'eval'
         disp('Evaluating smoother ...')
-        oo_=evaluate_smoother(xparam1,M_.endo_names);
+        [oo_, M_]=evaluate_smoother(xparam1,M_.endo_names,M_,oo_,options_,bayestopt_,estim_params_);
         % [rmse, lnam, r2,vv] = plot_fit(obsname{:});
 end

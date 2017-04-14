@@ -1,20 +1,23 @@
-function datatomfile (s,var_list, names)
-% function datatomfile (s,var_list)
-% This optional command saves the simulation results in a text file. The name of each
-% variable preceeds the corresponding results. This command must follow SIMUL.
-% 
-% INPUTS
-%    s:              data file name
-%    var_list:       vector of selected endogenous variables
-%    names:          vector of strings (alternative names for the endogenous variables in the data file)
-%
-% OUTPUTS
-%    none
-%
-% SPECIAL REQUIREMENTS
-%    none
+function datatomfile (s, var_list, names)
 
-% Copyright (C) 2001-2016 Dynare Team
+% This command saves the simulation results in a text file. The name of each
+% variable preceeds the corresponding results. This command must follow SIMUL
+% or STOCH_SIMUL commands.
+% 
+% INPUTS 
+%  - s:              data file name
+%  - var_list:       vector of selected endogenous variables
+%  - names:          vector of strings (alternative names for the endogenous variables in the data file)
+%
+% OUTPUTS 
+% none
+%
+% REMARKS 
+% Only the first argument is mandatory. If only one input argument is
+% provided, all the variables as defined in M_.endo_names will be saved in
+% the generated m file.
+
+% Copyright (C) 2001-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

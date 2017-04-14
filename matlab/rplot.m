@@ -14,7 +14,7 @@ function rplot(s1)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2001-2016 Dynare Team
+% Copyright (C) 2001-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -81,7 +81,7 @@ if rplottype == 0
     for j = 1:size(y,1)
         t = [t s1(j,:) ' '] ;
     end
-    hh=dyn_figure(options_,'Name',['Simulated Trajectory']);
+    hh=dyn_figure(options_.nodisplay,'Name',['Simulated Trajectory']);
     plot(ix(i),y(:,i)) ;
     title (t,'Interpreter','none') ;
     xlabel('Periods') ;
@@ -94,24 +94,24 @@ if rplottype == 0
             set(h, 'Interpreter', 'none');
         end
     end
-    dyn_saveas(hh,[M_.fname, filesep, 'graphs', filesep, 'SimulatedTrajectory_' deblank(s1(1,:))],options_)
+    dyn_saveas(hh,[M_.fname, filesep, 'graphs', filesep, 'SimulatedTrajectory_' deblank(s1(1,:))],options_.nodisplay,options_.graph_format)
     if options_.TeX && any(strcmp('eps',cellstr(options_.graph_format)))
         create_TeX_loader(fidTeX,options_,[M_.fname, '/graphs/', 'SimulatedTrajectory_' deblank(s1(1,:))],'Simulated trajectories','SimulatedTrajectory_',deblank(s1(1,:)),1)
     end
 elseif rplottype == 1
     for j = 1:size(y,1)
-        hh=dyn_figure(options_,'Name',['Simulated Trajectory']);
+        hh=dyn_figure(options_.nodisplay,'Name',['Simulated Trajectory']);
         plot(ix(i),y(j,i)) ;
         xlim([min(ix(i)) max(ix(i))])
         title(['Plot of ' s1(j,:)],'Interpreter','none') ;
         xlabel('Periods') ;
-        dyn_saveas(hh,[M_.fname, filesep, 'graphs', filesep, 'SimulatedTrajectory_' deblank(s1(j,:))],options_)
+        dyn_saveas(hh,[M_.fname, filesep, 'graphs', filesep, 'SimulatedTrajectory_' deblank(s1(j,:))],options_.nodisplay,options_.graph_format)
         if options_.TeX && any(strcmp('eps',cellstr(options_.graph_format)))
             create_TeX_loader(fidTeX,options_,[M_.fname, '/graphs/', 'SimulatedTrajectory_' deblank(s1(j,:))],'Simulated trajectories','SimulatedTrajectory_',deblank(s1(j,:)),1);
         end
     end
 elseif rplottype == 2
-    hh=dyn_figure(options_,'Name',['Simulated Trajectory']);
+    hh=dyn_figure(options_.nodisplay,'Name',['Simulated Trajectory']);
     nl = max(1,fix(size(y,1)/4)) ;
     nc = ceil(size(y,1)/nl) ;
     for j = 1:size(y,1)
@@ -128,7 +128,7 @@ elseif rplottype == 2
         title(['Plot of ' s1(j,:)],'Interpreter','none') ;
         axis tight;
     end
-    dyn_saveas(hh,[M_.fname, filesep, 'graphs', filesep, 'SimulatedTrajectory_' deblank(s1(1,:))],options_)
+    dyn_saveas(hh,[M_.fname, filesep, 'graphs', filesep, 'SimulatedTrajectory_' deblank(s1(1,:))],options_.nodisplay,options_.graph_format)
     if options_.TeX && any(strcmp('eps',cellstr(options_.graph_format)))
         create_TeX_loader(fidTeX,options_,[M_.fname, '/graphs/', 'SimulatedTrajectory_' deblank(s1(1,:))],'Simulated trajectories','SimulatedTrajectory_',deblank(s1(1,:)),min(j/nc,1));
     end

@@ -11,7 +11,7 @@ function redform_screen(dirname, options_gsa_)
 % marco.ratto@ec.europa.eu 
 
 % Copyright (C) 2012-2016 European Commission
-% Copyright (C) 2012-2016 Dynare Team
+% Copyright (C) 2012-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -68,7 +68,7 @@ for j=1:size(anamendo,1),
       if ~isempty(y0),
         if mod(iplo,9)==0,
           ifig=ifig+1;
-          hh=dyn_figure(options_,'name',[namendo,' vs. shocks ',int2str(ifig)]);
+          hh=dyn_figure(options_.nodisplay,'name',[namendo,' vs. shocks ',int2str(ifig)]);
           iplo=0;
         end
         iplo=iplo+1;
@@ -87,7 +87,7 @@ for j=1:size(anamendo,1),
         end
         title([namendo,' vs. ',namexo],'interpreter','none')
         if iplo==9,
-          dyn_saveas(hh,[dirname,'/',M_.fname,'_', namendo,'_vs_shock_',num2str(ifig)],options_); 
+          dyn_saveas(hh,[dirname,'/',M_.fname,'_', namendo,'_vs_shock_',num2str(ifig)],options_.nodisplay,options_.graph_format);
           create_TeX_loader(options_,[dirname,'/',M_.fname,'_', namendo,'_vs_shock_',num2str(ifig)],ifig,[namendo,' vs. shocks ',int2str(ifig)],[namendo,'_vs_shock'],1)
         end
 
@@ -95,7 +95,7 @@ for j=1:size(anamendo,1),
     end
   end
   if iplo<9 && iplo>0 && ifig,
-    dyn_saveas(hh,[dirname,'/',M_.fname,'_', namendo,'_vs_shocks_',num2str(ifig)],options_);
+    dyn_saveas(hh,[dirname,'/',M_.fname,'_', namendo,'_vs_shocks_',num2str(ifig)],options_.nodisplay,options_.graph_format);
     create_TeX_loader(options_,[dirname,'/',M_.fname,'_', namendo,'_vs_shock_',num2str(ifig)],ifig,[namendo,' vs. shocks ',int2str(ifig)],[namendo,'_vs_shock'],options_.figures.textwidth*min(iplo/3))
   end
 
@@ -110,7 +110,7 @@ for j=1:size(anamendo,1),
       if ~isempty(y0),
         if mod(iplo,9)==0,
           ifig=ifig+1;
-          hh=dyn_figure(options_,'name',[namendo,' vs. lagged endogenous ',int2str(ifig)]);
+          hh=dyn_figure(options_.nodisplay,'name',[namendo,' vs. lagged endogenous ',int2str(ifig)]);
           iplo=0;
         end
         iplo=iplo+1;
@@ -130,19 +130,19 @@ for j=1:size(anamendo,1),
 
         title([namendo,' vs. ',namlagendo,'(-1)'],'interpreter','none')
         if iplo==9,
-          dyn_saveas(hh,[dirname,'/',M_.fname,'_', namendo,'_vs_lags_',num2str(ifig)],options_);  
+          dyn_saveas(hh,[dirname,'/',M_.fname,'_', namendo,'_vs_lags_',num2str(ifig)],options_.nodisplay,options_.graph_format);
           create_TeX_loader(options_,[dirname,'/',M_.fname,'_', namendo,'_vs_lags_',num2str(ifig)],ifig,[namendo,' vs. lagged endogenous ',int2str(ifig)],[namendo,'_vs_lags'],1)
         end
       end
     end
   end
   if iplo<9 && iplo>0 && ifig,
-    dyn_saveas(hh,[dirname,'/',M_.fname,'_', namendo,'_vs_lags_',num2str(ifig)],options_);      
+    dyn_saveas(hh,[dirname,'/',M_.fname,'_', namendo,'_vs_lags_',num2str(ifig)],options_.nodisplay,options_.graph_format);
     create_TeX_loader(options_,[dirname,'/',M_.fname,'_', namendo,'_vs_lags_',num2str(ifig)],ifig,[namendo,' vs. lagged endogenous ',int2str(ifig)],[namendo,'_vs_lags'],options_.figures.textwidth*min(iplo/3))
   end
 end
 
-hh=dyn_figure(options_,'Name','Reduced form screening'); 
+hh=dyn_figure(options_.nodisplay,'Name','Reduced form screening'); 
 %bar(SA)
 % boxplot(SA','whis',10,'symbol','r.')
 myboxplot(SA',[],'.',[],10)
@@ -156,7 +156,7 @@ end
 xlabel(' ')
 ylabel('Elementary Effects')
 title('Reduced form screening')
-dyn_saveas(hh,[dirname,'/',M_.fname,'_redform_screen'],options_);
+dyn_saveas(hh,[dirname,'/',M_.fname,'_redform_screen'],options_.nodisplay,options_.graph_format);
 create_TeX_loader(options_,[dirname,'/',M_.fname,'_redform_screen'],1,'Reduced form screening','redform_screen',1)
 
 

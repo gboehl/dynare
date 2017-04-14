@@ -1,6 +1,6 @@
 function info=stoch_simul(var_list)
 
-% Copyright (C) 2001-2016 Dynare Team
+% Copyright (C) 2001-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -253,10 +253,10 @@ if options_.irf
                 if nbplt == 0
                 elseif nbplt == 1
                     if options_.relative_irf
-                        hh = dyn_figure(options_,'Name',['Relative response to' ...
+                        hh = dyn_figure(options_.nodisplay,'Name',['Relative response to' ...
                                             ' orthogonalized shock to ' tit(i,:)]);
                     else
-                        hh = dyn_figure(options_,'Name',['Orthogonalized shock to' ...
+                        hh = dyn_figure(options_.nodisplay,'Name',['Orthogonalized shock to' ...
                                             ' ' tit(i,:)]);
                     end
                     for j = 1:number_of_plots_to_draw
@@ -269,7 +269,7 @@ if options_.irf
                         remove_fractional_xticks;
                         title(deblank(mylist(j,:)),'Interpreter','none');
                     end
-                    dyn_saveas(hh,[M_.fname '_IRF_' deblank(tit(i,:))],options_);
+                    dyn_saveas(hh,[M_.fname '_IRF_' deblank(tit(i,:))],options_.nodisplay,options_.graph_format);
                     if TeX && any(strcmp('eps',cellstr(options_.graph_format)))
                         fprintf(fidTeX,'\\begin{figure}[H]\n');
                         for j = 1:number_of_plots_to_draw
@@ -285,10 +285,10 @@ if options_.irf
                 else
                     for fig = 1:nbplt-1
                         if options_.relative_irf
-                            hh = dyn_figure(options_,'Name',['Relative response to orthogonalized shock' ...
+                            hh = dyn_figure(options_.nodisplay,'Name',['Relative response to orthogonalized shock' ...
                                                 ' to ' tit(i,:) ' figure ' int2str(fig)]);
                         else
-                            hh = dyn_figure(options_,'Name',['Orthogonalized shock to ' tit(i,:) ...
+                            hh = dyn_figure(options_.nodisplay,'Name',['Orthogonalized shock to ' tit(i,:) ...
                                                 ' figure ' int2str(fig)]);
                         end
                         for plt = 1:nstar
@@ -301,7 +301,7 @@ if options_.irf
                             remove_fractional_xticks
                             title(deblank(mylist((fig-1)*nstar+plt,:)),'Interpreter','none');
                         end
-                        dyn_saveas(hh,[ M_.fname '_IRF_' deblank(tit(i,:)) int2str(fig)],options_);
+                        dyn_saveas(hh,[ M_.fname '_IRF_' deblank(tit(i,:)) int2str(fig)],options_.nodisplay,options_.graph_format);
                         if TeX && any(strcmp('eps',cellstr(options_.graph_format)))
                             fprintf(fidTeX,'\\begin{figure}[H]\n');
                             for j = 1:nstar
@@ -321,7 +321,7 @@ if options_.irf
                             fprintf(fidTeX,' \n');
                         end
                     end
-                    hh = dyn_figure(options_,'Name',['Orthogonalized shock to ' tit(i,:) ' figure ' int2str(nbplt) '.']);
+                    hh = dyn_figure(options_.nodisplay,'Name',['Orthogonalized shock to ' tit(i,:) ' figure ' int2str(nbplt) '.']);
                     m = 0;
                     for plt = 1:number_of_plots_to_draw-(nbplt-1)*nstar;
                         m = m+1;
@@ -334,7 +334,7 @@ if options_.irf
                         remove_fractional_xticks
                         title(deblank(mylist((nbplt-1)*nstar+plt,:)),'Interpreter','none');
                     end
-                    dyn_saveas(hh,[ M_.fname '_IRF_' deblank(tit(i,:)) int2str(nbplt) ],options_);
+                    dyn_saveas(hh,[ M_.fname '_IRF_' deblank(tit(i,:)) int2str(nbplt) ],options_.nodisplay,options_.graph_format);
                     if TeX && any(strcmp('eps',cellstr(options_.graph_format)))
                         fprintf(fidTeX,'\\begin{figure}[H]\n');
                         for j = 1:m

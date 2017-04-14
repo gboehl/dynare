@@ -2,6 +2,8 @@
 @c %**start of header
 @setfilename dynare.info
 @documentencoding UTF-8
+@set txicodequoteundirected
+
 @settitle Dynare Reference Manual
 @afourwide
 @dircategory Math
@@ -206,6 +208,9 @@ The Model file
 * Deterministic simulation::
 * Stochastic solution and simulation::
 * Estimation::
+* Model Comparison::
+* Shock Decomposition::
+* Calibrated Smoother::
 * Forecasting::
 * Optimal policy::
 * Sensitivity and identification analysis::
@@ -371,7 +376,7 @@ Adjemian (Université du Maine, Gains and Cepremap), Houtan Bastani
 (Cepremap), Michel Juillard (Banque de France), Frédéric Karamé
 (Université du Maine, Gains and Cepremap), Junior Maih (Norges Bank),
 Ferhat Mihoubi (Université Paris-Est Créteil, Epee and Cepremap), George
-Perendia, Johannes Pfeifer (University of Mannheim), Marco Ratto (European Commission, Joint Research Centre - JRC)
+Perendia, Johannes Pfeifer (University of Cologne), Marco Ratto (European Commission, Joint Research Centre - JRC)
 and Sébastien Villemot (OFCE – Sciences Po).
 Increasingly, the developer base is expanding, as tools developed by
 researchers outside of Cepremap are integrated into Dynare. Financial
@@ -1065,6 +1070,9 @@ end of line one and the parser would continue processing.
 * Deterministic simulation::
 * Stochastic solution and simulation::
 * Estimation::
+* Model Comparison::
+* Shock Decomposition::
+* Calibrated Smoother::
 * Forecasting::
 * Optimal policy::
 * Sensitivity and identification analysis::
@@ -1104,6 +1112,10 @@ mutually exclusive arguments are separated by vertical bars: @samp{|};
 
 @item
 @var{INTEGER} indicates an integer number;
+
+@item
+@var{INTEGER_VECTOR} indicates a vector of integer numbers separated by spaces,
+enclosed by square brackets;
 
 @item
 @var{DOUBLE} indicates a double precision number. The following syntaxes
@@ -2103,6 +2115,7 @@ Compiling the @TeX{} file requires the following @LaTeX{} packages:
 @anchor{write_latex_dynamic_model}
 
 @deffn Command write_latex_dynamic_model ;
+@deffnx Command write_latex_dynamic_model (@var{OPTIONS}) ;
 
 @descriptionhead
 
@@ -2148,6 +2161,16 @@ also have been replaced by new auxiliary variables and equations.
 @end itemize
 
 For the required @LaTeX{} packages, @pxref{write_latex_original_model}.
+
+@optionshead
+
+@table @code
+
+@item write_equation_tags
+Write the equation tags in the @LaTeX{} output. NB: the equation tags will be
+interpreted with @LaTeX{} markups.
+
+@end table
 
 @end deffn
 
@@ -3486,6 +3509,7 @@ end;
 
 @deffn Command check ;
 @deffnx Command check (solve_algo = @var{INTEGER}) ;
+@anchor{check}
 
 @descriptionhead
 
@@ -6369,6 +6393,22 @@ Sets the method for approximating the particle distribution. Possible values for
 @item cpf_weights = @var{OPTION}
 @anchor{cpf_weights} Controls the method used to update the weights in conditional particle filter, possible values are @code{amisanotristani} (@cite{Amisano et al (2010)}) or @code{murrayjonesparslow} (@cite{Murray et al. (2013)}). Default value is @code{amisanotristani}.
 
+@item nonlinear_filter_initialization = @var{INTEGER}
+@anchor{nonlinear_filter_initialization} Sets the initial condition of the
+nonlinear filters. By default the nonlinear filters are initialized with the
+unconditional covariance matrix of the state variables, computed with the
+reduced form solution of the first order approximation of the model. If
+@code{nonlinear_filter_initialization=2}, the nonlinear filter is instead
+initialized with a covariance matrix estimated with a stochastic simulation of
+the reduced form solution of the second order approximation of the model. Both
+these initializations assume that the model is stationary, and cannot be used
+if the model has unit roots (which can be seen with the @ref{check} command
+prior to estimation). If the model has stochastic trends, user must use
+@code{nonlinear_filter_initialization=3}, the filters are then initialized with
+an identity matrix for the covariance matrix of the state variables. Default
+value is @code{nonlinear_filter_initialization=1} (initialization based on the
+first order approximation of the model).
+
 @end table
 
 
@@ -7006,6 +7046,24 @@ estimates using a higher tapering are usually more reliable.
 @end table
 @end defvr
 
+@deffn Command unit_root_vars @var{VARIABLE_NAME}@dots{};
+
+This command is deprecated. Use @code{estimation} option @code{diffuse_filter} instead for estimating a model with non-stationary observed variables or @code{steady} option @code{nocheck} to prevent @code{steady} to check the steady state returned by your steady state file.
+@end deffn
+
+Dynare also has the ability to estimate Bayesian VARs:
+
+@deffn Command bvar_density ;
+Computes the marginal density of an estimated BVAR model, using
+Minnesota priors.
+
+See @file{bvar-a-la-sims.pdf}, which comes with Dynare distribution,
+for more information on this command.
+@end deffn
+
+@node Model Comparison
+@section Model Comparison
+
 @deffn Command model_comparison @var{FILENAME}[(@var{DOUBLE})]@dots{};
 @deffnx Command model_comparison (marginal_density = laplace | modifiedharmonicmean) @var{FILENAME}[(@var{DOUBLE})]@dots{};
 @anchor{model_comparison}
@@ -7081,6 +7139,8 @@ Posterior probability of the respective model
 
 @end defvr
 
+@node Shock Decomposition
+@section Shock Decomposition
 
 @deffn Command shock_decomposition [@var{VARIABLE_NAME}]@dots{};
 @deffnx Command shock_decomposition (@var{OPTIONS}@dots{}) [@var{VARIABLE_NAME}]@dots{};
@@ -7102,19 +7162,14 @@ model).
 
 @table @code
 
-@item parameter_set = @var{PARAMETER_SET}
-Specify the parameter set to use for running the smoother. The
-@var{PARAMETER_SET} can take one of the following seven values:
-@code{calibration}, @code{prior_mode}, @code{prior_mean},
-@code{posterior_mode}, @code{posterior_mean},
-@code{posterior_median}, @code{mle_mode}. Note that the parameter
-set used in subsequent commands like @code{stoch_simul} will be set to 
-the specified @code{parameter_set}.
-Default value: @code{posterior_mean} if
+@item parameter_set = @code{calibration} | @code{prior_mode} | @code{prior_mean} | @code{posterior_mode} | @code{posterior_mean} | @code{posterior_median} | @code{mle_mode}
+@anchor{parameter_set} Specify the parameter set to use for running the smoother. Note that the
+parameter set used in subsequent commands like @code{stoch_simul} will be set
+to the specified @code{parameter_set}. Default value: @code{posterior_mean} if
 Metropolis has been run, @code{mle_mode} if MLE has been run.
 
 @item datafile = @var{FILENAME}
-@xref{datafile}. Useful when computing the shock decomposition on a
+@anchor{datafile_shock_decomp} @xref{datafile}. Useful when computing the shock decomposition on a
 calibrated model.
 
 @item first_obs = @var{INTEGER}
@@ -7123,22 +7178,21 @@ calibrated model.
 @item nobs = @var{INTEGER}
 @xref{nobs}.
 
-@item use_shock_groups [= @var{SHOCK_GROUPS_NAME}]
-@anchor{use_shock_groups} Uses groups of shocks instead of individual shocks in
-the decomposition. Groups of shocks are defined in the @ref{shock_groups} block.
+@item use_shock_groups [= @var{STRING}]
+@anchor{use_shock_groups} Uses shock grouping defined by the string instead of individual shocks in
+the decomposition. The groups of shocks are defined in the @ref{shock_groups} block.
 
-@item colormap = @var{COLORMAP_NAME}
+@item colormap = @var{STRING}
 @anchor{colormap} Controls the colormap used for the shocks decomposition
-graphs. See @code{colormap} in Matlab/Octave manual.
+graphs. See @code{colormap} in Matlab/Octave manual for valid arguments.
 
 @item nograph
-@xref{nograph} Suppresses the display and creation only within the
-@code{shock_decomposition}-command but does not affect other commands.
+@xref{nograph}. Suppresses the display and creation only within the
+@code{shock_decomposition}-command, but does not affect other commands.
 @xref{plot_shock_decomposition} for plotting graphs.
 
-@item init_state = @var{INTEGER}
-@anchor{init_state} It can take values of @math{0} or @math{1}. If equal to
-@math{0}, the shock decomposition is computed conditional on the smoothed state
+@item init_state = @var{BOOLEAN}
+@anchor{init_state} If equal to @math{0}, the shock decomposition is computed conditional on the smoothed state
 variables in period @math{0}, @i{i.e.} the smoothed shocks starting in period
 @math{1} are used.  If equal to @math{1}, the shock decomposition is computed
 conditional on the smoothed state variables in period @math{1}. Default:
@@ -7147,10 +7201,12 @@ conditional on the smoothed state variables in period @math{1}. Default:
 
 @outputhead
 
+@defvr {MATLAB/Octave variable} oo_.shock_decomposition
 @vindex oo_.shock_decomposition
+@anchor{oo_.shock_decomposition}
 The results are stored in the field @code{oo_.shock_decomposition}, which is a three
 dimensional array. The first dimension contains the @code{M_.endo_nbr} endogenous variables. 
-The second dimension stores
+The second dimension stores 
 in the first @code{M_.exo_nbr} columns the contribution of the respective shocks.
 Column @code{M_.exo_nbr+1} stores the contribution of the initial conditions,
 while column @code{M_.exo_nbr+2} stores the smoothed value of the respective
@@ -7158,6 +7214,7 @@ endogenous variable in deviations from their steady state, @i{i.e.} the mean and
 subtracted. The third dimension stores the time periods. Both the variables 
 and shocks are stored in the order of declaration, @i{i.e.} @code{M_.endo_names} and 
 @code{M_.exo_names}, respectively.
+@end defvr
 
 @end deffn
 
@@ -7168,11 +7225,11 @@ and shocks are stored in the order of declaration, @i{i.e.} @code{M_.endo_names}
 of the shock groups is written in a block delimited by @code{shock_groups} and
 @code{end}.
 
-Each line defines a group of shock as a list of exogenous variables:
+Each line defines a group of shocks as a list of exogenous variables:
 
 @example
 SHOCK_GROUP_NAME   = VARIABLE_1 [[,] VARIABLE_2 [,]@dots{}];
-`SHOCK GROUP NAME' = VARIABLE_1 [[,] VARIABLE_2 [,]@dots{}];
+'SHOCK GROUP NAME' = VARIABLE_1 [[,] VARIABLE_2 [,]@dots{}];
 @end example
 
 @optionshead
@@ -7196,12 +7253,13 @@ varexo e_a, e_b, e_c, e_d;
 
 shock_groups(name=group1);
 supply = e_a, e_b;
-`aggregate demand' = e_c, e_d;
+'aggregate demand' = e_c, e_d;
 end;
 
 shocks_decomposition(use_shock_groups=group1);
 @end example
-
+This example defines a shock grouping with the name @code{group1}, containing a set of supply and demand shocks 
+and conducts the shock decomposition for these two groups.
 @end deffn
 
 @deffn Command realtime_shock_decomposition [@var{VARIABLE_NAME}]@dots{};
@@ -7212,16 +7270,22 @@ shocks_decomposition(use_shock_groups=group1);
 
 This command computes the realtime historical shock decomposition for a given
 sample based on the Kalman smoother. For each period
-@math{T=[@code{presample}@dots{}@code{nobs}]}, it computes the:
+@math{T=[@code{presample},@dots{},@code{nobs}]}, it recursively computes three objects:
 @itemize @bullet
 @item
-realtime historical shock decomposition @math{Y(t|T)} for @math{t=[1@dots{}T]},
-@i{i.e.} without observing data in @math{[T+1@dots{}@code{nobs}]};
+realtime historical shock decomposition @math{Y(t|T)} for @math{t=[1,@dots{},T]},
+@i{i.e.} without observing data in @math{[T+1,@dots{},@code{nobs}]}. This results in a standard 
+shock decomposition being computed for each additional datapoint becoming available after @code{presample}.
 @item
-conditional shock decomposition @math{Y(T|T)} conditional on @math{Y(T|T-1)},
-@i{i.e.} @math{Y(t|T)} for @math{t=[T-1@dots{}T]};
+forecast shock decomposition @math{Y(T+k|T)} for @math{k=[1,@dots{},forecast]}, @i{i.e.} the @math{k}-step 
+ahead forecast made for every @math{T} is decomposed in its shock contributions.
 @item
-forecast shock decomposition @math{Y(T|T-1)}.
+realtime conditional shock decomposition of the difference between the realtime historical shock decomposition and the 
+forecast shock decomposition. If @ref{vintage} is equal to @math{0}, it computes the effect of shocks realizing in period 
+@math{T}, @i{i.e.} decomposes @math{Y(T|T)-Y(T|T-1)}. Put differently it conducts a @math{1}-period ahead shock decomposition from 
+@math{T-1} to @math{T}, by decomposing the update step of the Kalman filter. If @code{vintage>0} and smaller than @code{nobs},
+the decomposition is conducted of the forecast revision @math{Y(T+k|T+k)-Y(T+k|T)}.
+
 @end itemize
 
 Like @ref{shock_decomposition} it decomposes the historical deviations of the endogenous 
@@ -7237,17 +7301,11 @@ model).
 
 @table @code
 
-@item parameter_set = @var{PARAMETER_SET}
-Specify the parameter set to use for running the smoother.
-@var{PARAMETER_SET} can take one of the following seven values:
-@code{calibration}, @code{prior_mode}, @code{prior_mean},
-@code{posterior_mode}, @code{posterior_mean},
-@code{posterior_median}, @code{mle_mode}. Default value: @code{posterior_mean} if
-Metropolis has been run, @code{mle_mode} if MLE has been run.
+@item parameter_set = @code{calibration} | @code{prior_mode} | @code{prior_mean} | @code{posterior_mode} | @code{posterior_mean} | @code{posterior_median} | @code{mle_mode}
+@xref{parameter_set}.
 
 @item datafile = @var{FILENAME}
-@xref{datafile}. Useful when computing the shock decomposition on a
-calibrated model.
+@xref{datafile_shock_decomp}.
 
 @item first_obs = @var{INTEGER}
 @xref{first_obs}.
@@ -7255,14 +7313,11 @@ calibrated model.
 @item nobs = @var{INTEGER}
 @xref{nobs}.
 
-@item use_shock_groups [= @var{SHOCK_GROUPS_NAME}]
-@anchor{use_shock_groups_realtime} Uses groups of shocks instead of individual
-shocks in the decomposition. Groups of shocks are defined in the
-@ref{shock_groups} block.
+@item use_shock_groups [= @var{STRING}]
+@xref{use_shock_groups}.
 
-@item colormap = @var{COLORMAP_NAME}
-@anchor{colormap_realtime} Controls the colormap used for the shocks
-decomposition graphs. See @code{colormap} in Matlab/Octave manual.
+@item colormap = @var{STRING}
+@xref{colormap}.
 
 @item nograph
 @xref{nograph}. Only shock decompositions are computed and stored in @code{oo_.realtime_shock_decomposition},
@@ -7278,40 +7333,79 @@ realtime shock decompositions are computed, @i{i.e.} for
 @anchor{forecast_shock_decomposition} Compute shock decompositions up to
 @math{T+k} periods, @i{i.e.} get shock contributions to k-step ahead forecasts.
 
-@item save_realtime = [@var{integer1} ... @var{integern}]
+@item save_realtime = @var{INTEGER_VECTOR}
 @anchor{save_realtime} Choose for which vintages to save the full realtime
 shock decomposition. Default: @math{0}.
 @end table
 
 @outputhead
 
+@defvr {MATLAB/Octave variable} oo_.realtime_shock_decomposition
 @vindex oo_.realtime_shock_decomposition
-The results of realtime historical decompositions are stored in the field
-@code{oo_.realtime_shock_decomposition}, which is a structure. Field
-@code{pool} stores the pooled decomposition (@xref{plot_shock_decomposition}).
-Fields @code{time_*} store the vintages of realtime historical shock
-decompositions.
+Structure storing the results of realtime historical decompositions. Fields are three-dimensional arrays with 
+the first two dimension equal to the ones of @ref{oo_.shock_decomposition}. The third dimension stores the time 
+periods and is therefore of size @code{T+forecast}. Fields are of the form:
+@example
+@code{oo_.realtime_shock_decomposition.@var{OBJECT}}
+@end example
+where @var{OBJECT} is one of the following:
 
-@vindex oo_.conditional_shock_decomposition
-The results of realtime conditional decompositions are stored in the field
-@code{oo_.conditional_shock_decomposition}, which is a structure. Field
-@code{pool} stores the pooled decomposition @math{Y(t|T)} for
-@math{t=T-1@dots{}T} @xref{plot_shock_decomposition}. Conditional shock
-decomposition sets the initial condition in @math{T-1}, so only computes the
-effect of shocks in period @math{T}, @i{i.e.} it is just a @math{1}-period
-shock decomposition from @math{T-1} to @math{T}. In practice it decomposes the
-update step of the Kalman filter. Fields @code{time_*} store the vintages of
-@math{k}-step conditional forecast shock decompositions @math{Y(t|T+k)}, for
-@math{t=[T@dots{}T+k}. @xref{vintage}.
+@table @code
 
+@item pool
+Stores the pooled decomposition, @i{i.e.} for every realtime shock decomposition terminal period
+@math{T=[@code{presample},@dots{},@code{nobs}]} it collects the last period's decomposition @math{Y(T|T)}
+(see also @ref{plot_shock_decomposition}). The third dimension of the array will have size 
+@code{nobs+forecast}.
+
+@item time_*
+Stores the vintages of realtime historical shock decompositions if @code{save_realtime} is used. For example, if
+@code{save_realtime=[5]} and @code{forecast=8}, the third dimension will be of size 13.
+
+@end table
+@end defvr
+
+@defvr {MATLAB/Octave variable} oo_.realtime_conditional_shock_decomposition
+@vindex oo_.realtime_conditional_shock_decomposition
+Structure storing the results of realtime conditional decompositions. Fields are of the form:
+@example
+@code{oo_.realtime_conditional_shock_decomposition.@var{OBJECT}}
+@end example
+where @var{OBJECT} is one of the following:
+
+@table @code
+
+@item pool
+Stores the pooled realtime conditional shock decomposition, @i{i.e.} collects the decompositions of 
+@math{Y(T|T)-Y(T|T-1)} for the terminal periods @math{T=[@code{presample},@dots{},@code{nobs}]}. 
+The third dimension is of size @code{nobs}.
+
+@item time_*
+Store the vintages of @math{k}-step conditional forecast shock decompositions @math{Y(t|T+k)}, for
+@math{t=[T@dots{}T+k]}. @xref{vintage}. The third dimension is of size @code{1+forecast}.
+
+@end table
+@end defvr
+
+@defvr {MATLAB/Octave variable} oo_.realtime_forecast_shock_decomposition
 @vindex oo_.realtime_forecast_shock_decomposition
-The results of realtime forecast decompositions are stored in the field
-@code{oo_.realtime_forecast_shock_decomposition}, which is a structure. Field
-@code{pool} stores the pooled decomposition @xref{plot_shock_decomposition}.
-Forecast shock decomposition computes the @math{1}-step ahead effect of shocks
-on the @math{1}-step ahead prediction, @i{i.e.} @math{Y(T|T-1)}. Fields
-@code{time_*} store the vintages of @math{k}-step out-of-sample forecast shock
+Structure storing the results of realtime forecast decompositions. Fields are of the form:
+@example
+@code{oo_.realtime_forecast_shock_decomposition.@var{OBJECT}}
+@end example
+where @var{OBJECT} is one of the following:
+
+@table @code
+
+@item pool
+Stores the pooled realtime forecast decomposition of the @math{1}-step ahead effect of shocks
+on the @math{1}-step ahead prediction, @i{i.e.} @math{Y(T|T-1)}. 
+
+@item time_*
+Stores the vintages of @math{k}-step out-of-sample forecast shock
 decompositions, @i{i.e.} @math{Y(t|T)}, for @math{t=[T@dots{}T+k]}. @xref{vintage}.
+@end table
+@end defvr
 
 @end deffn
 
@@ -7321,139 +7415,113 @@ decompositions, @i{i.e.} @math{Y(t|T)}, for @math{t=[T@dots{}T+k]}. @xref{vintag
 
 @descriptionhead
 
-This command plots the historical shock decomposition already computed by command 
-@code{shock_decomposition}. 
-The @code{variable_names} provided govern for which 
-variables the decomposition is plotted.
+This command plots the historical shock decomposition already computed by
+@code{shock_decomposition} or @code{realtime_shock_decomposition}. For that reason,
+it must come after one of these commands. The @code{variable_names} provided govern which
+variables the decomposition is plotted for.
 
-Note that this command must come after @code{shock_decomposition} or @code{realtime_shock_decomposition}.
+Further note that, unlike the majority of Dynare commands, the options
+specified below are overwritten with their defaults before every call to
+@code{plot_shock_decomposition}. Hence, if you want to reuse an option in a
+subsequent call to @code{plot_shock_decomposition}, you must pass it to the
+command again.
 
 @optionshead
 
 @table @code
 
-@item use_shock_groups [= @var{SHOCK_GROUPS_NAME}]
-@anchor{use_shock_groups_plot} Uses groups of shocks instead of individual
-shocks in the decomposition. Groups of shocks are defined in the
-@ref{shock_groups} block.
+@item use_shock_groups [= @var{STRING}]
+@xref{use_shock_groups}.
 
-@item colormap = @var{COLORMAP_NAME}
-@anchor{colormap_plot} Controls the colormap used for the shocks decomposition
-graphs. See @code{colormap} in Matlab/Octave manual.
+@item colormap = @var{STRING}
+@xref{colormap}.
 
 @item nodisplay
 @xref{nodisplay}.
 
-@item graph_format = (@var{GRAPH_FORMAT_LIST})
+@item graph_format = @var{FORMAT}
+@itemx graph_format = ( @var{FORMAT}, @var{FORMAT}@dots{} )
 @xref{graph_format}.
 
-@item detailed 
-@anchor{detailed} Plots shock contributions using subplots, one per shock (or group of shocks).
+@item detail_plot
+Plots shock contributions using subplots, one per shock (or group of
+shocks). Default: not activated
 
-@item interactive 
-@anchor{interactive} Under MATLAB, add uimenu's for detailed group plots.
+@item interactive
+Under MATLAB, add uimenus for detailed group plots. Default: not activated
 
-@item screen
-@anchor{screen} For large models (@i{i.e.} for models with more than @math{16}
+@item screen_shocks
+@anchor{screen_shcoks} For large models (@i{i.e.} for models with more than @math{16}
 shocks), plots only the shocks that have the largest historical contribution
 for chosen selected @code{variable_names}.  Historical contribution is ranked
 by the mean absolute value of all historical contributions.
 
-@item steadystate = @var{INTEGER}
-@anchor{steadystate} If equal to @math{1}, the the @math{y}-axis value of the
-zero line in the shock decomposition plot is translated to the steady state
-level. Default: @math{0}
+@item steadystate
+@anchor{steadystate} If passed, the the @math{y}-axis value of the zero line in
+the shock decomposition plot is translated to the steady state level. Default:
+not activated
 
-@item type = @var{TYPE_NAME}
-@anchor{type} For quarterly data, @var{TYPE_NAME} can take one of the
-following values: @code{qoq} for quarter-on-quarter plots, @code{yoy} for
-year-on-year plots of growth rates, @code{aoa} for annualized variables,
-@i{i.e.} the value in the last quarter for each year is plotted.  Default
-value: @code{empty}, @i{i.e.} standard period-on-period plots (@code{qoq} for
-quarterly data).
+@item type = @code{qoq} | @code{yoy} | @code{aoa}
+@anchor{type} For quarterly data, valid arguments are: @code{qoq} for
+quarter-on-quarter plots, @code{yoy} for year-on-year plots of growth rates,
+@code{aoa} for annualized variables, @i{i.e.} the value in the last quarter for
+each year is plotted.  Default value: @code{empty}, @i{i.e.} standard
+period-on-period plots (@code{qoq} for quarterly data).
 
-@item fig_name = @var{FIG_NAME}
+@item fig_name = @var{STRING}
 @anchor{fig_name} Specifies a user-defined keyword to be appended to the
 default figure name set by @code{plot_shock_decomposition}.  This can avoid to
 overwrite plots in case of sequential calls to @code{plot_shock_decomposition}.
 
 @item write_xls 
-@anchor{write_xls} Saves shock decompositions to excel.
+@anchor{write_xls} Saves shock decompositions to Excel-file in the main directory, named 
+@code{FILENAME_shock_decomposition_TYPE_FIG_NAME.xls}. This option requires your system to be
+configured to be able to write Excel files.@footnote{In case of Excel not being installed, 
+@url{https://mathworks.com/matlabcentral/fileexchange/38591-xlwrite--generate-xls-x--files-without-excel-on-mac-linux-win} may be helpful.}
 
 @item realtime = @var{INTEGER}
 @anchor{realtime} Which kind of shock decomposition to plot. @var{INTEGER} can take following values:
 @itemize @bullet
 @item
-@code{0}: historical shock decomposition: @math{Y(t|T)} for
-@math{t=[1@dots{}T]}, @math{T=} @code{nobs} full sample
+@code{0}: standard historical shock decomposition. @xref{shock_decomposition}.
 @item
-@code{1}: realtime historical shock decomposition: for
-@math{T=[1@dots{}@code{nobs}]}, realtime shock decomposition @math{Y(t|T)} for
-@math{t=[1@dots{}T]}
+@code{1}: realtime historical shock decomposition. @xref{realtime_shock_decomposition}.
 @item
-@code{2}: conditional shock decomposition: for @code{T=1:nobs}, realtime shock
-decomposition of @math{Y(T|T)} conditional on @math{Y(T|T-1)}, @i{i.e.}
-@math{Y(t|T)} for @math{t=[T-1@dots{}T]}
+@code{2}: conditional realtime shock decomposition. @xref{realtime_shock_decomposition}.
 @item
-@code{3}: forecast shock decomposition: for @math{T=[1@dots{}@code{nobs}]},
-realtime shock decomposition of @math{Y(T|T-1)}
+@code{3}: realtime forecast shock decomposition. @xref{realtime_shock_decomposition}.
 @end itemize
+If no @ref{vintage} is requested, @i{i.e.} @code{vintage=0} then the pooled objects from @ref{realtime_shock_decomposition}
+will be plotted and the respective vintage otherwise.
 Default: @math{0}
 
 @item vintage = @var{INTEGER}
-@anchor{vintage} Applies if @code{realtime}@math{>0}. Can take following values:
-@itemize @bullet
-@item
-@code{0}: plots @math{1}-step pooled shock decompositions
-@item
-@code{1}: pooled realtime shock decomposition. For @math{T=[1@dots{}@code{nobs}]}, plots last
-time point @math{Y(T|T)} of each vintage shock decomposition @math{Y(1:T|T)}
-@item
-@code{2}: pooled conditional shock decomposition. For
-@math{T=[1@dots{}@code{nobs}]}, realtime @math{1}-step shock decomposition of
-@math{Y(T|T)} conditional on @math{Y(T|T-1)} (@i{i.e.} decomposition of
-@math{1}-step filter updates of each vintage @math{T})
-@item
-@code{3}: pooled forecast shock decomposition. For
-@math{T=[1@dots{}@code{nobs}]}, realtime @math{1}-step ahead shock
-decomposition of @math{Y(T|T-1)} (@i{i.e.}  decomposition of shock
-contributions to @math{1}-step ahead forecasts of each vintage @math{T})
-@end itemize
-When the value passed is greater than @math{0}, it plots the shock
+@anchor{vintage} Selects a particular data vintage in @math{[presample,@dots{},nobs]} for which to plot the results from
+@ref{realtime_shock_decomposition} selected via the @ref{realtime} option. If the standard 
+historical shock decomposition is selected (@code{realtime=0}), @code{vintage} will have no effect. If @code{vintage=0}
+the pooled objects from @ref{realtime_shock_decomposition} will be plotted. If @code{vintage>0}, it plots the shock
 decompositions for vintage @math{T=@code{vintage}} under the following scenarios:
 @itemize @bullet
 @item
 @code{realtime=1}: the full vintage shock decomposition @math{Y(t|T)} for
-@math{t=[1@dots{}T]}
+@math{t=[1,@dots{},T]}
 @item
 @code{realtime=2}: the conditional forecast shock decomposition from @math{T},
 @i{i.e.} plots @math{Y(T+j|T+j)} and the shock contributions needed to get to
 the data @math{Y(T+j)} conditional on @math{T=}@code{vintage}, with
-@math{j=[0@dots{}@code{forecast}]}.
+@math{j=[0,@dots{},@code{forecast}]}.
 @item
 @code{realtime=3}: plots unconditional forecast shock decomposition from
 @math{T}, @i{i.e.} @math{Y(T+j|T)}, where @math{T=@code{vintage}} and
-@math{j=[0@dots{}@code{forecast}]}.
+@math{j=[0,@dots{},@code{forecast}]}.
 @end itemize
 Default: @math{0}
 @end table
 
 @end deffn
 
-@deffn Command unit_root_vars @var{VARIABLE_NAME}@dots{};
-
-This command is deprecated. Use @code{estimation} option @code{diffuse_filter} instead for estimating a model with non-stationary observed variables or @code{steady} option @code{nocheck} to prevent @code{steady} to check the steady state returned by your steady state file.
-@end deffn
-
-Dynare also has the ability to estimate Bayesian VARs:
-
-@deffn Command bvar_density ;
-Computes the marginal density of an estimated BVAR model, using
-Minnesota priors.
-
-See @file{bvar-a-la-sims.pdf}, which comes with Dynare distribution,
-for more information on this command.
-@end deffn
+@node Calibrated Smoother
+@section Calibrated Smoother
 
 Dynare can also run the smoother on a calibrated model:
 
@@ -12234,7 +12302,7 @@ plot(ts2.data,'--r');           % Plot of the filtered y.
 hold off
 axis tight
 id = get(gca,'XTick');
-set(gca,'XTickLabel',strings(ts.dates(id)));
+set(gca,'XTickLabel',strings(ts1.dates(id)));
 @end example
 
 @iftex

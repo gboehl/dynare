@@ -16,7 +16,7 @@ function oo_ = McMCDiagnostics(options_, estim_params_, M_, oo_)
 % PARALLEL CONTEXT
 % See the comment in posterior_sampler.m funtion.
 
-% Copyright (C) 2005-2016 Dynare Team
+% Copyright (C) 2005-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -287,7 +287,7 @@ clear pmet temp moyenne CSUP CINF csup cinf n linea iter tmp;
 pages = floor(npar/3);
 k = 0;  
 for i = 1:pages
-    h=dyn_figure(options_,'Name','MCMC univariate convergence diagnostic (Brooks and Gelman,1998)');
+    h=dyn_figure(options_.nodisplay,'Name','MCMC univariate convergence diagnostic (Brooks and Gelman,1998)');
     boxplot = 1;
     for j = 1:3 % Loop over parameters
         k = k+1;
@@ -325,7 +325,7 @@ for i = 1:pages
             boxplot = boxplot + 1;
         end
     end
-    dyn_saveas(h,[OutputFolder '/' ModelName '_udiag' int2str(i)],options_);
+    dyn_saveas(h,[OutputFolder '/' ModelName '_udiag' int2str(i)],options_.nodisplay,options_.graph_format);
     if TeX && any(strcmp('eps',cellstr(options_.graph_format)))
         fprintf(fidTeX,'\\begin{figure}[H]\n');
         for jj = 1:size(NAMES,1)
@@ -350,7 +350,7 @@ if reste
         nr = 2;
         nc = 3;
     end
-    h = dyn_figure(options_,'Name','MCMC univariate convergence diagnostic (Brooks and Gelman, 1998)');
+    h = dyn_figure(options_.nodisplay,'Name','MCMC univariate convergence diagnostic (Brooks and Gelman, 1998)');
     boxplot = 1;
     for j = 1:reste
         k = k+1;
@@ -388,7 +388,7 @@ if reste
             boxplot = boxplot + 1;
         end
     end
-    dyn_saveas(h,[ OutputFolder '/' ModelName '_udiag' int2str(pages+1)],options_);
+    dyn_saveas(h,[ OutputFolder '/' ModelName '_udiag' int2str(pages+1)],options_.nodisplay,options_.graph_format);
     if TeX && any(strcmp('eps',cellstr(options_.graph_format)))
         fprintf(fidTeX,'\\begin{figure}[H]\n');
         for jj = 1:size(NAMES,1);
@@ -461,7 +461,7 @@ for iter  = Origin:StepSize:NumberOfDraws
 end
 MDIAG(:,[2 4 6],:) = MDIAG(:,[2 4 6],:)/nblck;  
 
-h = dyn_figure(options_,'Name','Multivariate convergence diagnostic');
+h = dyn_figure(options_.nodisplay,'Name','Multivariate convergence diagnostic');
 boxplot = 1;
 for crit = 1:3
     if crit == 1
@@ -493,7 +493,7 @@ for crit = 1:3
     title(namnam,'Interpreter','none');
     boxplot = boxplot + 1;
 end
-dyn_saveas(h,[ OutputFolder '/' ModelName '_mdiag'],options_);
+dyn_saveas(h,[ OutputFolder '/' ModelName '_mdiag'],options_.nodisplay,options_.graph_format);
 
 if TeX && any(strcmp('eps',cellstr(options_.graph_format)))
     fprintf(fidTeX,'\\begin{figure}[H]\n');

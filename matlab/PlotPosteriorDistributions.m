@@ -16,7 +16,7 @@ function oo_ = PlotPosteriorDistributions(estim_params_, M_, options_, bayestopt
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2005-2016 Dynare Team
+% Copyright (C) 2005-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -63,7 +63,7 @@ for i=1:npar
     subplotnum = subplotnum+1;
     if subplotnum == 1
         figunumber = figunumber+1;
-        hfig=dyn_figure(options_,'Name',figurename);
+        hfig=dyn_figure(options_.nodisplay,'Name',figurename);
     end
     [nam,texnam] = get_the_name(i,TeX,M_,estim_params_,options_);
     if subplotnum == 1
@@ -152,7 +152,7 @@ for i=1:npar
     hold off;
     drawnow
     if subplotnum == MaxNumberOfPlotPerFigure || i == npar;
-        dyn_saveas(hfig,[OutputDirectoryName '/' M_.fname '_PriorsAndPosteriors' int2str(figunumber)],options_);
+        dyn_saveas(hfig,[OutputDirectoryName '/' M_.fname '_PriorsAndPosteriors' int2str(figunumber)],options_.nodisplay,options_.graph_format);
         if TeX && any(strcmp('eps',cellstr(options_.graph_format)))
             fprintf(fidTeX,'\\begin{figure}[H]\n');
             for j = 1:size(NAMES,1)

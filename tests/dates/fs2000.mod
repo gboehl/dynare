@@ -1,11 +1,7 @@
-// See fs2000.mod in the examples/ directory for details on the model
-
 var m P c e W R k d n l gy_obs gp_obs y dA;
 varexo e_a e_m;
 
 parameters alp bet gam mst rho psi del;
-
-set_time(1950Q1);
 
 alp = 0.33;
 bet = 0.99;
@@ -79,19 +75,18 @@ stderr e_a, inv_gamma_pdf, 0.035449, inf;
 stderr e_m, inv_gamma_pdf, 0.008862, inf;
 end;
 
+// List the observed variables.
 varobs gp_obs gy_obs;
 
-options_.solve_tolf = 1e-12;
-
-//data(file=fsdat_simul, first_obs=1950Q3, last_obs=1998Q1);
-
+// Instantiate a dseries object from an m file. Note that the dseries object has more than two variables. 
 ts = dseries('fsdat_simul.m');
-rr = 1950Q3:(1950Q1+ts.nobs);
-nn = length(rr);
-ds = ts(rr);
-ds.save('fsdat_simul2','m');
 
-estimation(order=1,datafile=fsdat_simul2,loglinear,mh_replic=0);
+// Load directly the dseries object as data for the estimation. The declared observed variables must be in the dseries object ts. 
+data(series=ts, first_obs=1950Q3, last_obs=2000Q3);
 
-disp('First date is $1950Q3')
-// disp('Last date is 2000Q1') // This line would trigger an error because of the substitution of 2000Q1 by dates('2000Q1')
+// Print the first date of the sample.
+disp('First date is $1950Q3')  // disp('First date is 1950Q3'), without the $ symbol,  would trigger an error because of the substitution of 1950Q3 by dates('1950Q3')
+
+// Run the estimation. Note that we do not have a datafile option, because of the data command used above.
+estimation(order=1, loglinear, mh_replic=0);
+

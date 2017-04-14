@@ -12,6 +12,8 @@ MODFILES = \
 	observation_trends_and_prefiltering/MCMC/Trend_loglin_prefilt_first_obs_MC.mod \
 	observation_trends_and_prefiltering/MCMC/Trend_prefilter_MC.mod \
 	observation_trends_and_prefiltering/MCMC/Trend_prefilter_first_obs_MC.mod \
+	dates/dseries_interact.mod \
+	dates/fs2000.mod \
 	estimation/slice/fs2000_slice.mod \
 	optimizers/fs2000_9.mod \
 	optimizers/fs2000_10.mod \
@@ -338,6 +340,10 @@ MODFILES = \
 	observation_trends_and_prefiltering/calib_smoother/Tr_prefilter_loglin_calib_smoother.mod \
 	observation_trends_and_prefiltering/calib_smoother/Tr_prefil_f_obs_loglin_cal_smoother.mod \
 	observation_trends_and_prefiltering/ML/Trend_no_prefilter_selected_var.mod
+
+PARTICLEFILES = \
+	particle/dsge_base2.mod \
+	particle/dsge_unit_root.mod
 
 
 XFAIL_MODFILES = ramst_xfail.mod \
@@ -695,6 +701,10 @@ gradient: m/gradient o/gradient
 m/gradient: $(patsubst %.mod, %.m.trs, $(filter gradient/%.mod, $(MODFILES)))
 o/gradient: $(patsubst %.mod, %.o.trs, $(filter gradient/%.mod, $(MODFILES)))
 
+particle: m/particle o/particle
+m/particle: $(patsubst %.mod, %.m.trs, $(PARTICLEFILES))
+o/particle: $(patsubst %.mod, %.o.trs, $(PARTICLEFILES))
+
 # Matlab TRS Files
 M_TRS_FILES = $(patsubst %.mod, %.m.trs, $(MODFILES))
 M_TRS_FILES += run_block_byte_tests_matlab.m.trs run_reporting_test_matlab.m.trs run_all_unitary_tests.m.trs
@@ -710,8 +720,6 @@ M_TLS_FILES = $(patsubst %.m, %.m.tls, $(MFILES))
 
 # Octave TLS Files
 O_TLS_FILES = $(patsubst %.m, %.o.tls, $(MFILES))
-
-
 
 EXTRA_DIST = \
 	read_trs_files.sh \
@@ -745,6 +753,7 @@ EXTRA_DIST = \
 	AIM/fsdat.m \
 	block_bytecode/run_ls2003.m \
 	bvar_a_la_sims/bvar_sample.m \
+	dates/fsdat_simul.m \
 	external_function/extFunDeriv.m \
 	external_function/extFunNoDerivs.m \
 	external_function/extFunWithFirstAndSecondDerivs.m \

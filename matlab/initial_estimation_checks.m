@@ -165,8 +165,15 @@ elseif imag(fval)
 end
 
 if info(1) > 0
+    if DynareOptions.order>1
+        [eigenvalues_] = check(Model,DynareOptions, DynareResults);
+        if any(abs(eigenvalues_)>DynareOptions.qz_criterium)
+            error('Your model has at least one unit root and you are using a nonlinear filter. Please set nonlinear_filter_initialization=3.')
+        end
+    else
     disp('Error in computing likelihood for initial parameter values')
     print_info(info, DynareOptions.noprint, DynareOptions)
+    end
 end
 
 if DynareOptions.prefilter==1

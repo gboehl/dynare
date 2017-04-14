@@ -5,7 +5,7 @@ function map_ident_(OutputDirectoryName,opt_gsa)
 % marco.ratto@ec.europa.eu 
 
 % Copyright (C) 2012-2016 European Commission
-% Copyright (C) 2012-2016 Dynare Team
+% Copyright (C) 2012-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -90,7 +90,7 @@ if opt_gsa.load_ident_files==0,
     ifig=0;
     for j=1:M_.exo_nbr,
       if mod(j,6)==1
-        hh=dyn_figure(options_,'name',['Variance decomposition shocks']);
+        hh=dyn_figure(options_.nodisplay,'name',['Variance decomposition shocks']);
         ifig=ifig+1;
         iplo=0;
       end
@@ -108,7 +108,7 @@ if opt_gsa.load_ident_files==0,
       ylabel(' ')
       title(M_.exo_names(j,:),'interpreter','none')
       if mod(j,6)==0 | j==M_.exo_nbr,
-        dyn_saveas(hh,[OutputDirectoryName,'/',fname_,'_vdec_exo_',int2str(ifig)],options_);  
+        dyn_saveas(hh,[OutputDirectoryName,'/',fname_,'_vdec_exo_',int2str(ifig)],options_.nodisplay,options_.graph_format);
         create_TeX_loader(options_,[OutputDirectoryName,'/',fname_,'_vdec_exo_',int2str(ifig)],ifig,['Variance decomposition shocks'],'vdec_exo',options_.figures.textwidth*min(iplo/3,1))
       end
     end
@@ -219,7 +219,7 @@ if opt_gsa.morris==1,
     load([OutputDirectoryName,'/',fname_,'_morris_IDE'],'SAvdec','vdec','ir_vdec','ic_vdec')
   end
   
-  hh = dyn_figure(options_,'name','Screening identification: variance decomposition');
+  hh = dyn_figure(options_.nodisplay,'name','Screening identification: variance decomposition');
 %   boxplot(SAvdec,'whis',10,'symbol','r.')
   myboxplot(SAvdec,[],'.',[],10)
   set(gca,'xticklabel',' ','fontsize',10,'xtick',[1:npT])
@@ -232,7 +232,7 @@ if opt_gsa.morris==1,
   end
   xlabel(' ')
   title('Elementary effects variance decomposition')
-  dyn_saveas(hh,[OutputDirectoryName,'/',fname_,'_morris_vdec'],options_);
+  dyn_saveas(hh,[OutputDirectoryName,'/',fname_,'_morris_vdec'],options_.nodisplay,options_.graph_format);
   create_TeX_loader(options_,[OutputDirectoryName,'/',fname_,'_morris_vdec'],1,'Screening identification: variance decomposition','morris_vdec',1)
   else
   save([OutputDirectoryName,'/',fname_,'_morris_IDE.mat'],'vdec')
@@ -325,7 +325,7 @@ if opt_gsa.morris==1,
     load([OutputDirectoryName,'/',fname_,'_morris_IDE'],'ac','ir_ac','ic_ac')
   end
   
-  hh=dyn_figure(options_,'name','Screening identification: theoretical moments');
+  hh=dyn_figure(options_.nodisplay,'name','Screening identification: theoretical moments');
 %   boxplot(SAcc,'whis',10,'symbol','r.')
   myboxplot(SAcc,[],'.',[],10)
   set(gca,'xticklabel',' ','fontsize',10,'xtick',[1:npT])
@@ -338,7 +338,7 @@ if opt_gsa.morris==1,
   end
   xlabel(' ')
   title('Elementary effects in the moments')
-  dyn_saveas(hh,[OutputDirectoryName,'/',fname_,'_morris_moments'],options_);
+  dyn_saveas(hh,[OutputDirectoryName,'/',fname_,'_morris_moments'],options_.nodisplay,options_.graph_format);
   create_TeX_loader(options_,[OutputDirectoryName,'/',fname_,'_morris_moments'],1,'Screening identification: theoretical moments','morris_moments',1)
 
 %   close(gcf),
@@ -722,7 +722,7 @@ if opt_gsa.morris==1,
   else
     load([OutputDirectoryName,'/',fname_,'_morris_IDE'],'SAnorm','SAmunorm','SAsignorm')
   end
-  hh=dyn_figure(options_,'name','Screening identification: model'); %bar(SAnorm(:,irel))
+  hh=dyn_figure(options_.nodisplay,'name','Screening identification: model'); %bar(SAnorm(:,irel))
 %   boxplot(SAnorm','whis',10,'symbol','r.')
   myboxplot(SAnorm',[],'.',[],10)
   set(gca,'xticklabel',' ','fontsize',10,'xtick',[1:npT])
@@ -736,10 +736,10 @@ if opt_gsa.morris==1,
   end
   xlabel(' ')
   title('Elementary effects in the model')
-  dyn_saveas(hh,[OutputDirectoryName,'/',fname_,'_morris_par'],options_);
+  dyn_saveas(hh,[OutputDirectoryName,'/',fname_,'_morris_par'],options_.nodisplay,options_.graph_format);
   create_TeX_loader(options_,[OutputDirectoryName,'/',fname_,'_morris_par'],1,'Screening identification: model','morris_par',1)
 
-%   hh=dyn_figure(options_); %bar(SAmunorm(:,irel))
+%   hh=dyn_figure(options_.nodisplay); %bar(SAmunorm(:,irel))
 % %   boxplot(SAmunorm','whis',10,'symbol','r.')
 %   myboxplot(SAmunorm',[],'.',[],10)
 %   set(gca,'xticklabel',' ','fontsize',10,'xtick',[1:npT])
@@ -752,9 +752,9 @@ if opt_gsa.morris==1,
 %   end
 %   xlabel(' ')
 %   title('\mu in the model')
-%   dyn_saveas(hh,[OutputDirectoryName,'/',fname_,'_morrismu_par'],options_);
+%   dyn_saveas(hh,[OutputDirectoryName,'/',fname_,'_morrismu_par'],options_.nodisplay,options_.graph_format);
 % 
-%   hh=dyn_figure(options_); %bar(SAsignorm(:,irel))
+%   hh=dyn_figure(options_.nodisplay); %bar(SAsignorm(:,irel))
 % %   boxplot(SAsignorm','whis',10,'symbol','r.')
 %   myboxplot(SAsignorm',[],'.',[],10)
 %   set(gca,'xticklabel',' ','fontsize',10,'xtick',[1:npT])
@@ -767,7 +767,7 @@ if opt_gsa.morris==1,
 %   end
 %   xlabel(' ')
 %   title('\sigma in the model')
-%   dyn_saveas(hh,[OutputDirectoryName,'/',fname_,'_morrissig_par'],options_);
+%   dyn_saveas(hh,[OutputDirectoryName,'/',fname_,'_morrissig_par'],options_.nodisplay,options_.graph_format);
 
   %     figure, bar(SAnorm(:,irel)')
   %     set(gca,'xtick',[1:j0])
@@ -1522,7 +1522,7 @@ else,  % main effects analysis
 %   SAmeanexo=mean(SAmomN(:,1:nshock));
 
 %   figure, bar(latent'*SAcc),
-  hh=dyn_figure(options_,'Name',['Identifiability indices in the ',fsuffix,' moments.']);
+  hh=dyn_figure(options_.nodisplay,'Name',['Identifiability indices in the ',fsuffix,' moments.']);
   bar(sum(SAcc)),
   set(gca,'xticklabel',' ','fontsize',10,'xtick',[1:npT])
   set(gca,'xlim',[0.5 npT+0.5])
@@ -1535,7 +1535,7 @@ else,  % main effects analysis
   end
   xlabel(' ')
   title(['Identifiability indices in the ',fsuffix,' moments.'],'interpreter','none')
-  dyn_saveas(hh,[OutputDirectoryName,'/',fname_,'_ident_ALL',fsuffix],options_);
+  dyn_saveas(hh,[OutputDirectoryName,'/',fname_,'_ident_ALL',fsuffix],options_.nodisplay,options_.graph_format);
   create_TeX_loader(options_,[OutputDirectoryName,'/',fname_,'_ident_ALL',fsuffix],1,['Identifiability indices in the ',fsuffix,' moments.'],['ident_ALL',fsuffix]',1)
 
 %   figure, bar(SAmeanexo),

@@ -12,7 +12,7 @@ function dynare_estimation_1(var_list_,dname)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2003-2016 Dynare Team
+% Copyright (C) 2003-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -44,6 +44,11 @@ end
 
 %store qz_criterium
 qz_criterium_old=options_.qz_criterium;
+if isnan(options_.first_obs)
+    first_obs_nan_indicator=true;
+else
+    first_obs_nan_indicator=false;
+end
 
 % Set particle filter flag.
 if options_.order > 1
@@ -414,7 +419,6 @@ end
 
 if (any(bayestopt_.pshape  >0 ) && options_.mh_replic) || ...
         (any(bayestopt_.pshape >0 ) && options_.load_mh_file)  %% not ML estimation
-    bounds = prior_bounds(bayestopt_, options_.prior_trunc);
     outside_bound_pars=find(xparam1 < bounds.lb | xparam1 > bounds.ub);
     if ~isempty(outside_bound_pars)
         for ii=1:length(outside_bound_pars)
@@ -542,7 +546,7 @@ if (~((any(bayestopt_.pshape > 0) && options_.mh_replic) || (any(bayestopt_.psha
             fprintf(fidTeX,' \n');
         end
         for plt = 1:nbplt,
-            fh = dyn_figure(options_,'Name','Smoothed shocks');
+            fh = dyn_figure(options_.nodisplay,'Name','Smoothed shocks');
             NAMES = [];
             if options_.TeX, TeXNAMES = []; end
             nstar0=min(nstar,M_.exo_nbr-(plt-1)*nstar);
@@ -583,7 +587,7 @@ if (~((any(bayestopt_.pshape > 0) && options_.mh_replic) || (any(bayestopt_.psha
                 end
                 title(name,'Interpreter','none')
             end
-            dyn_saveas(fh,[M_.fname '_SmoothedShocks' int2str(plt)],options_);
+            dyn_saveas(fh,[M_.fname '_SmoothedShocks' int2str(plt)],options_.nodisplay,options_.graph_format);
             if options_.TeX && any(strcmp('eps',cellstr(options_.graph_format)))
                 fprintf(fidTeX,'\\begin{figure}[H]\n');
                 for jj = 1:nstar0
@@ -621,7 +625,7 @@ if (~((any(bayestopt_.pshape > 0) && options_.mh_replic) || (any(bayestopt_.psha
                 fprintf(fidTeX,' \n');
             end
             for plt = 1:nbplt
-                fh = dyn_figure(options_,'Name','Smoothed observation errors');
+                fh = dyn_figure(options_.nodisplay,'Name','Smoothed observation errors');
                 NAMES = [];
                 if options_.TeX, TeXNAMES = []; end
                 nstar0=min(nstar,number_of_plots_to_draw-(nbplt-1)*nstar);
@@ -663,7 +667,7 @@ if (~((any(bayestopt_.pshape > 0) && options_.mh_replic) || (any(bayestopt_.psha
                     end
                     title(name,'Interpreter','none')
                 end
-                dyn_saveas(fh,[M_.fname '_SmoothedObservationErrors' int2str(plt)],options_);
+                dyn_saveas(fh,[M_.fname '_SmoothedObservationErrors' int2str(plt)],options_.nodisplay,options_.graph_format);
                 if options_.TeX && any(strcmp('eps',cellstr(options_.graph_format)))
                     fprintf(fidTeX,'\\begin{figure}[H]\n');
                     for jj = 1:nstar0
@@ -696,7 +700,7 @@ if (~((any(bayestopt_.pshape > 0) && options_.mh_replic) || (any(bayestopt_.psha
         fprintf(fidTeX,' \n');
     end
     for plt = 1:nbplt,
-        fh = dyn_figure(options_,'Name','Historical and smoothed variables');
+        fh = dyn_figure(options_.nodisplay,'Name','Historical and smoothed variables');
         NAMES = [];
         if options_.TeX, TeXNAMES = []; end
         nstar0=min(nstar,n_varobs-(plt-1)*nstar);
@@ -738,7 +742,7 @@ if (~((any(bayestopt_.pshape > 0) && options_.mh_replic) || (any(bayestopt_.psha
             end
             title(name,'Interpreter','none')
         end
-        dyn_saveas(fh,[M_.fname '_HistoricalAndSmoothedVariables' int2str(plt)],options_);
+        dyn_saveas(fh,[M_.fname '_HistoricalAndSmoothedVariables' int2str(plt)],options_.nodisplay,options_.graph_format);
         if options_.TeX && any(strcmp('eps',cellstr(options_.graph_format)))
             fprintf(fidTeX,'\\begin{figure}[H]\n');
             for jj = 1:nstar0,
@@ -775,4 +779,7 @@ options_.qz_criterium=qz_criterium_old;
 if reset_options_related_to_estimation
     options_.mode_compute = mode_compute_o;
     options_.mh_replic = mh_replic_o;
+end
+if first_obs_nan_indicator
+    options_.first_obs=NaN;
 end

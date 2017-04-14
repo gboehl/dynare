@@ -40,7 +40,7 @@ function mode_check(fun,x,hessian_mat,DynareDataset,DatasetInfo,DynareOptions,Mo
 %! @end deftypefn
 %@eod:
 
-% Copyright (C) 2003-2016 Dynare Team
+% Copyright (C) 2003-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -96,7 +96,7 @@ for plt = 1:nbplt,
         NAMES = [];
         TeXNAMES = [];
     end
-    hh = dyn_figure(DynareOptions,'Name','Mode check plots');
+    hh = dyn_figure(DynareOptions.nodisplay,'Name','Mode check plots');
     for k=1:min(nstar,length(x)-(plt-1)*nstar)
         subplot(nr,nc,k)
         kk = (plt-1)*nstar+k;
@@ -187,7 +187,7 @@ for plt = 1:nbplt,
         text(0.25,0.5,'log-post')
         text(0.69,0.5,'log-lik kernel')
     end
-    dyn_saveas(hh,[ Model.fname '_CheckPlots' int2str(plt) ],DynareOptions);
+    dyn_saveas(hh,[ Model.fname '_CheckPlots' int2str(plt) ],DynareOptions.nodisplay,DynareOptions.graph_format);
     if TeX && any(strcmp('eps',cellstr(DynareOptions.graph_format)))
         % TeX eps loader file
         fprintf(fidTeX,'\\begin{figure}[H]\n');

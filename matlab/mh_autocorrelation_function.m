@@ -18,7 +18,7 @@ function mh_autocorrelation_function(options_,M_,estim_params_,type,blck,name1,n
 %        
 % SPECIAL REQUIREMENTS
 
-% Copyright (C) 2003-2013 Dynare Team
+% Copyright (C) 2003-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -91,7 +91,7 @@ if options_.mh_nblck>1
     FigureName = [ FigureName , ' (block number' int2str(blck)  ').']; 
 end
 
-hh=dyn_figure(options_,'Name',FigureName);
+hh=dyn_figure(options_.nodisplay,'Name',FigureName);
 
 bar(0:options_.mh_autocorrelation_function_size,autocor,'k');
 axis tight
@@ -104,4 +104,4 @@ if ~exist([M_.fname filesep 'graphs'])
 end
 
 plot_name=get_the_name(column,0,M_,estim_params_,options_);
-dyn_saveas(hh,[M_.fname, filesep, 'graphs', filesep, 'MH_Autocorrelation_' plot_name],options_)
+dyn_saveas(hh,[M_.fname, filesep, 'graphs', filesep, 'MH_Autocorrelation_' plot_name],options_.nodisplay,options_.graph_format)

@@ -5,7 +5,7 @@ function map_calibration(OutputDirectoryName, Model, DynareOptions, DynareResult
 % marco.ratto@ec.europa.eu 
 
 % Copyright (C) 2014-2016 European Commission
-% Copyright (C) 2014-2016 Dynare Team
+% Copyright (C) 2014-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -191,7 +191,7 @@ if ~isempty(indx_irf),
     
     indx_irf = indx_irf(irestrictions,:);
     if ~DynareOptions.nograph,
-        h1=dyn_figure(DynareOptions,'name',[type ' evaluation of irf restrictions']);
+        h1=dyn_figure(DynareOptions.nodisplay,'name',[type ' evaluation of irf restrictions']);
         nrow=ceil(sqrt(nbr_irf_couples));
         ncol=nrow;
         if nrow*(nrow-1)>nbr_irf_couples,
@@ -325,7 +325,7 @@ if ~isempty(indx_irf),
         end
     end
     if ~DynareOptions.nograph,
-        dyn_saveas(h1,[OutputDirectoryName,filesep,fname_,'_',type,'_irf_restrictions'],DynareOptions);
+        dyn_saveas(h1,[OutputDirectoryName,filesep,fname_,'_',type,'_irf_restrictions'],DynareOptions.nodisplay,DynareOptions.graph_format);
         create_TeX_loader(DynareOptions,[OutputDirectoryName,filesep,fname_,'_',type,'_irf_restrictions'],[type ' evaluation of irf restrictions'],'irf_restrictions',type,DynareOptions.figures.textwidth*min(ij/ncol,1))
     end
     skipline()
@@ -405,7 +405,7 @@ if ~isempty(indx_moment)
     
     indx_moment = indx_moment(irestrictions,:);
     if ~DynareOptions.nograph,
-        h2=dyn_figure(DynareOptions,'name',[type ' evaluation of moment restrictions']);
+        h2=dyn_figure(DynareOptions.nodisplay,'name',[type ' evaluation of moment restrictions']);
         nrow=ceil(sqrt(nbr_moment_couples));
         ncol=nrow;
         if nrow*(nrow-1)>nbr_moment_couples,
@@ -535,7 +535,7 @@ if ~isempty(indx_moment)
         end
     end
     if ~DynareOptions.nograph,
-        dyn_saveas(h2,[OutputDirectoryName,filesep,fname_,'_',type,'_moment_restrictions'],DynareOptions);
+        dyn_saveas(h2,[OutputDirectoryName,filesep,fname_,'_',type,'_moment_restrictions'],DynareOptions.nodisplay,DynareOptions.graph_format);
         create_TeX_loader(DynareOptions,[OutputDirectoryName,filesep,fname_,'_',type,'_moment_restrictions'],[type ' evaluation of moment restrictions'],'moment_restrictions',type,DynareOptions.figures.textwidth*min(ij/ncol,1))
     end
     

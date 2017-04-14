@@ -81,13 +81,11 @@ shock_decomposition(use_shock_groups=trade) y_obs R_obs pie_obs dq de;
 
 // various tests for plot_shock_decompositions
 // standard plot [using trade group defined before]
-plot_shock_decomposition(M_,oo_,options_,var_list_);
+plot_shock_decomposition;
 
 // test datailed, custom name and yoy plots
-options_.shock_decomp.detail_plot = 1;
-options_.shock_decomp.fig_names = 'MR';
-options_.shock_decomp.type='yoy';
-plot_shock_decomposition(M_,oo_,options_,var_list_);
+plot_shock_decomposition(detail_plot, fig_name = MR, type = yoy);
+
 
 close all,
 
@@ -96,80 +94,42 @@ close all,
 // first compute realtime decompositions [pre-processor not yet available]
 realtime_shock_decomposition(forecast=8, save_realtime=[5 9 13 17 21 25 29 33 37 41 45 49 53 57 61 65 69 73 77]);
 
-options_.shock_decomp.detail_plot = 0;
-options_.shock_decomp.type='';
-options_.use_shock_groups='';
-options_.shock_decomp.fig_names = '';
-
-
 //realtime pooled
-options_.shock_decomp.realtime=1; 
-options_.shock_decomp.vintage=0; 
-plot_shock_decomposition(M_,oo_,options_,var_list_);
+plot_shock_decomposition(realtime = 1);
 
 //conditional pooled
-options_.shock_decomp.realtime=2; 
-plot_shock_decomposition(M_,oo_,options_,var_list_);
-options_.shock_decomp.realtime=2; 
+plot_shock_decomposition(realtime = 2);
+
 // conditional 8-step ahead decomposition, given 1989q4
-options_.shock_decomp.detail_plot = 1;
-options_.shock_decomp.vintage=29; 
-plot_shock_decomposition(M_,oo_,options_,var_list_);
+plot_shock_decomposition(detail_plot, realtime = 2, vintage = 29);
 
 close all,
 
 //forecast pooled
-options_.shock_decomp.detail_plot = 0;
-options_.shock_decomp.realtime=3; 
-options_.shock_decomp.vintage=0; 
-plot_shock_decomposition(M_,oo_,options_,var_list_);
+plot_shock_decomposition(realtime = 3);
 
 // forecast 8-step ahead decomposition, given 1989q4
-options_.shock_decomp.detail_plot = 1;
-options_.shock_decomp.realtime=3; 
-options_.shock_decomp.vintage=29; 
-plot_shock_decomposition(M_,oo_,options_,var_list_);
+plot_shock_decomposition(detail_plot, realtime = 3, vintage = 29);
 
 close all,
 
 // now I test annualized variables
-options_.shock_decomp.realtime=0; 
-options_.shock_decomp.detail_plot = 1;
-options_.shock_decomp.interactive=0;
-options_.use_shock_groups='';
-options_.shock_decomp.type='aoa'; 
-options_.shock_decomp.q2a=1; 
-options_.shock_decomp.islog=1; 
-plot_shock_decomposition(M_,oo_,options_,'y');
+options_.plot_shock_decomp.q2a=1;
+options_.plot_shock_decomp.islog=1;
+plot_shock_decomposition(detail_plot, type = aoa) y;
 
-options_.shock_decomp.realtime=1; 
-options_.shock_decomp.vintage=0; 
-plot_shock_decomposition(M_,oo_,options_,'y');
-
-options_.shock_decomp.vintage=29; 
-options_.shock_decomp.realtime=1; 
-plot_shock_decomposition(M_,oo_,options_,'y');
-options_.shock_decomp.realtime=2; 
-plot_shock_decomposition(M_,oo_,options_,'y');
-options_.shock_decomp.realtime=3; 
-plot_shock_decomposition(M_,oo_,options_,'y');
+plot_shock_decomposition(realtime = 1) y;
+plot_shock_decomposition(realtime = 1, vintage = 29) y;
+plot_shock_decomposition(realtime = 2, vintage = 29) y;
+plot_shock_decomposition(realtime = 3, vintage = 29) y;
 
 close all
 
 //test uimenu for groups
-options_.shock_decomp.realtime=0; 
-options_.shock_decomp.detail_plot = 1;
-options_.shock_decomp.interactive=1;
-options_.use_shock_groups='row';
-options_.shock_decomp.type='qoq'; 
-plot_shock_decomposition(M_,oo_,options_,var_list_);
-
-options_.shock_decomp.detail_plot = 1;
-options_.shock_decomp.realtime=3; 
-options_.shock_decomp.vintage=29; 
-plot_shock_decomposition(M_,oo_,options_,var_list_);
+plot_shock_decomposition(detail_plot, interactive, use_shock_groups = row, type = qoq);
+plot_shock_decomposition(detail_plot, interactive, realtime = 3, vintage = 29);
 
 collect_latex_files;
 if system(['pdflatex -halt-on-error -interaction=batchmode ' M_.fname '_TeX_binder.tex'])
     error('TeX-File did not compile.')
-end 
+end

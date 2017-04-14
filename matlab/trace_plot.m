@@ -18,7 +18,7 @@ function trace_plot(options_,M_,estim_params_,type,blck,name1,name2)
 %
 % SPECIAL REQUIREMENTS
 
-% Copyright (C) 2003-2016 Dynare Team
+% Copyright (C) 2003-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -95,7 +95,7 @@ if options_.mh_nblck>1
     FigureName = [ FigureName , ' (block number ' int2str(blck)  ').'];
 end
 
-hh=dyn_figure(options_,'Name',FigureName);
+hh=dyn_figure(options_.nodisplay,'Name',FigureName);
 plot(1:TotalNumberOfMhDraws,PosteriorDraws,'Color',[.7 .7 .7]);
 
 
@@ -131,7 +131,7 @@ else
 end
 plot_name=[plot_name,'_blck_',num2str(blck)];
 
-dyn_saveas(hh,[M_.fname, filesep, 'graphs', filesep, 'TracePlot_' plot_name],options_)
+dyn_saveas(hh,[M_.fname, filesep, 'graphs', filesep, 'TracePlot_' plot_name],options_.nodisplay,options_.graph_format)
 
 if options_.TeX
     fid=fopen([M_.fname,'/graphs/',M_.fname,'_TracePlot_' plot_name,'.tex'],'w+');
