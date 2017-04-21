@@ -1,6 +1,6 @@
-function err = evaluate_max_dynamic_residual(model_dynamic, Y, exogenous_variables, params, steady_state, periods, ny, max_lag, lead_lag_incidence)
+function err = evaluate_max_dynamic_residual(model_dynamic, Y, exogenous_variables, params, steady_state, steady_state_x, periods, ny, max_lag, lead_lag_incidence)
 
-% Copyright (C) 2013 Dynare Team
+% Copyright (C) 2013-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -23,7 +23,7 @@ i_cols = find(lead_lag_incidence');
 err = 0;
 
 for it = (max_lag+1):(max_lag+periods)
-    d = model_dynamic(Y(i_cols), exogenous_variables, params, steady_state, it);
+    d = model_dynamic(Y(i_cols), exogenous_variables, params, steady_state, steady_state_x, it);
     i_rows = i_rows + ny;
     i_cols = i_cols + ny;
     r = max(abs(d));

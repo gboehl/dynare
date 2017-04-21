@@ -22,7 +22,7 @@ function [ys,params,info] = evaluate_steady_state(ys_init,M,options,oo,steadysta
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2001-2016 Dynare Team
+% Copyright (C) 2001-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -313,12 +313,13 @@ function [ys,params,info] = evaluate_steady_state(ys_init,M,options,oo,steadysta
             [chck, r, junk]= bytecode('dynamic','evaluate', z, zx, M.params, ys, 1);
             mexErrCheck('bytecode', chck);
         elseif options.block
-            [r, oo.dr] = feval([M.fname '_dynamic'], z', zx, M.params, ys, M.maximum_lag+1, oo.dr);
+            [r, oo.dr] = feval([M.fname '_dynamic'], z', zx, M.params, ys, ...
+                               M.maximum_lag+1, oo.dr);
         else
             iyv = M.lead_lag_incidence';
             iyr0 = find(iyv(:));
             xys = z(iyr0);
-            r = feval([M.fname '_dynamic'], z(iyr0), zx, M.params, ys, M.maximum_lag + 1);
+            r = feval([M.fname '_dynamic'], z(iyr0), zx, M.params, ys, oo.exo_steady_state, M.maximum_lag + 1);
         end
 
         % Fail if residual greater than tolerance

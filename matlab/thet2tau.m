@@ -1,7 +1,7 @@
 function tau = thet2tau(params, estim_params_, M_, oo_, indx, indexo, flagmoments,mf,nlags,useautocorr,iv)
 
 %
-% Copyright (C) 2011-2012 Dynare Team
+% Copyright (C) 2011-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -51,7 +51,7 @@ elseif flagmoments==-1
     [I,J]=find(M_.lead_lag_incidence');
     yy0=oo_.dr.ys(I);
     [residual, g1] = feval([M_.fname,'_dynamic'],yy0, oo_.exo_steady_state', ...
-        M_.params, oo_.dr.ys, 1);
+        M_.params, oo_.dr.ys, oo_.exo_steady_state, 1);
     tau=[oo_.dr.ys(oo_.dr.order_var); g1(:)];
 
 else

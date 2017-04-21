@@ -1,4 +1,4 @@
-function [endogenousvariables, info] = sim1_lbj(endogenousvariables, exogenousvariables, steadystate, M, options)
+function [endogenousvariables, info] = sim1_lbj(endogenousvariables, exogenousvariables, steadystate, M, options, oo)
 
 % Performs deterministic simulations with lead or lag on one period using the historical LBJ algorithm
 %
@@ -15,7 +15,7 @@ function [endogenousvariables, info] = sim1_lbj(endogenousvariables, exogenousva
 % SPECIAL REQUIREMENTS
 %   None.
 
-% Copyright (C) 1996-2015 Dynare Team
+% Copyright (C) 1996-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -70,14 +70,14 @@ for iter = 1:options.simul.maxit
     end
     it_ = it_init;
     z = [endogenousvariables(iyp,it_-1) ; endogenousvariables(:,it_) ; endogenousvariables(iyf,it_+1)];
-    [d1, jacobian] = feval(dynamicmodel, z, exogenousvariables, M.params, steadystate, it_);
+    [d1, jacobian] = feval(dynamicmodel, z, exogenousvariables, M.params, steadystate, oo.exo_steady_state, it_);
     jacobian = [jacobian(:,iz), -d1];
     ic = [1:ny];
     icp = iyp;
     c (ic,:) = jacobian(:,is)\jacobian(:,isf1);
     for it_ = it_init+(1:options.periods-1)
         z = [endogenousvariables(iyp,it_-1) ; endogenousvariables(:,it_) ; endogenousvariables(iyf,it_+1)];
-        [d1, jacobian] = feval(dynamicmodel, z, exogenousvariables, M.params, steadystate, it_);
+        [d1, jacobian] = feval(dynamicmodel, z, exogenousvariables, M.params, steadystate, oo.exo_steady_state, it_);
         jacobian = [jacobian(:,iz), -d1];
         jacobian(:,[isf nrs]) = jacobian(:,[isf nrs])-jacobian(:,isp)*c(icp,:);
         ic = ic + ny;

@@ -1,6 +1,6 @@
 function [endogenousvariables, info] = solve_stacked_linear_problem(endogenousvariables, exogenousvariables, steadystate_y, steadystate_x, M, options)
 
-% Copyright (C) 2015 Dynare Team
+% Copyright (C) 2015-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -25,7 +25,7 @@ ic = find(M.lead_lag_incidence(2,:)');
 in = find(M.lead_lag_incidence(3,:)');
 
 % Evaluate the Jacobian of the dynamic model at the deterministic steady state.
-[d1,jacobian] = dynamicmodel(steadystate_y([ip; ic; in]), transpose(steadystate_x), M.params, steadystate_y, 1);
+[d1,jacobian] = dynamicmodel(steadystate_y([ip; ic; in]), transpose(steadystate_x), M.params, steadystate_y, steadystate_x, 1);
 
 % Check that the dynamic model was evaluated at the steady state.
 if max(abs(d1))>1e-12

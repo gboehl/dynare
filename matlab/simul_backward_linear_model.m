@@ -34,7 +34,7 @@ function DynareOutput = simul_backward_linear_model(initial_conditions, sample_s
 %! @end deftypefn
 %@eod:
 
-% Copyright (C) 2012-2016 Dynare Team
+% Copyright (C) 2012-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -79,7 +79,7 @@ Y = DynareOutput.endo_simul;
 [cst,jacob] = model_dynamic(zeros(DynareModel.endo_nbr+ny1,1), ...
                             zeros(2,size(DynareOutput.exo_simul, 2)), ...
                             DynareModel.params, ...
-                            DynareOutput.steadystate,2);
+                            DynareOutput.steadystate, DynareOutput.exo_steady_state, 2);
 A0inv = inv(jacob(:,jdx));
 A1 = jacob(:,nonzeros(DynareModel.lead_lag_incidence(1,:)));
 B = jacob(:,end-number_of_shocks+1:end);

@@ -1,7 +1,7 @@
-function [endogenousvariables, info] = sim1_purely_forward(endogenousvariables, exogenousvariables, steadystate, M, options)
+function [endogenousvariables, info] = sim1_purely_forward(endogenousvariables, exogenousvariables, steadystate, M, options, oo)
 % Performs deterministic simulation of a purely forward model
 
-% Copyright (C) 2012-2015 Dynare Team
+% Copyright (C) 2012-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -36,7 +36,7 @@ for it = options.periods:-1:1
                           1, options.gstep, options.solve_tolf, ...
                           options.solve_tolx, options.simul.maxit, ...
                           options.debug, exogenousvariables, M.params, steadystate, ...
-                          it+M.maximum_lag);
+                          oo.exo_steady_state, it+M.maximum_lag);
     if check
         info.status = 0;
     end

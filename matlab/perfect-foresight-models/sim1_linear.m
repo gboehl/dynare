@@ -1,4 +1,4 @@
-function [endogenousvariables, info] = sim1_linear(endogenousvariables, exogenousvariables, steadystate_y, steadystate_x, M, options)
+function [endogenousvariables, info] = sim1_linear(endogenousvariables, exogenousvariables, steadystate_y, steadystate_x, M, options, oo)
 
 % Solves a linear approximation of a perfect foresight model using sparse matrix.
 %
@@ -38,7 +38,7 @@ function [endogenousvariables, info] = sim1_linear(endogenousvariables, exogenou
 % to center the variables around the deterministic steady state to solve the
 % perfect foresight model.
 
-% Copyright (C) 2015 Dynare Team
+% Copyright (C) 2015-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -111,7 +111,7 @@ dynamicmodel = str2func([M.fname,'_dynamic']);
 z = steadystate_y([ip; ic; in]);
 
 % Evaluate the Jacobian of the dynamic model at the deterministic steady state.
-[d1,jacobian] = dynamicmodel(z, transpose(steadystate_x), params, steadystate_y, 1);
+[d1,jacobian] = dynamicmodel(z, transpose(steadystate_x), params, steadystate_y, oo.exo_steady_state, 1);
 
 % Check that the dynamic model was evaluated at the steady state.
 if max(abs(d1))>1e-12

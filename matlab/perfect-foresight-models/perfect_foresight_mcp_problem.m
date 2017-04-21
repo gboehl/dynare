@@ -1,10 +1,10 @@
 function [residuals,JJacobian] = perfect_foresight_mcp_problem(y, dynamic_function, Y0, YT, ...
-                                           exo_simul, params, steady_state, ...
+                                           exo_simul, params, steady_state, exo_steady_state, ...
                                            maximum_lag, T, ny, i_cols, ...
                                            i_cols_J1, i_cols_1, i_cols_T, ...
                                            i_cols_j,nnzJ,eq_index)
 % function [residuals,JJacobian] = perfect_foresight_mcp_problem(y, dynamic_function, Y0, YT, ...
-%                                            exo_simul, params, steady_state, ...
+%                                            exo_simul, params, steady_state, exo_steady_state, ...
 %                                            maximum_lag, T, ny, i_cols, ...
 %                                            i_cols_J1, i_cols_1, i_cols_T, ...
 %                                            i_cols_j,nnzJ,eq_index)
@@ -20,6 +20,7 @@ function [residuals,JJacobian] = perfect_foresight_mcp_problem(y, dynamic_functi
 %                                for all simulation periods           
 %   params              [double] nparams*1 array, parameter values
 %   steady_state        [double] endo_nbr*1 vector of steady state values
+%   exo_steady_state    [double] exo_nbr*1 vector of steady state values
 %   maximum_lag         [scalar] maximum lag present in the model
 %   T                   [scalar] number of simulation periods
 %   ny                  [scalar] number of endogenous variables
@@ -45,7 +46,7 @@ function [residuals,JJacobian] = perfect_foresight_mcp_problem(y, dynamic_functi
 % SPECIAL REQUIREMENTS
 %   None.
 
-% Copyright (C) 1996-2016 Dynare Team
+% Copyright (C) 1996-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -77,11 +78,11 @@ i_cols_J = i_cols;
 for it = 2:(T+1)
     if nargout == 1
         res = dynamic_function(YY(i_cols),exo_simul, params, ...
-            steady_state,it);
+            steady_state, exo_steady_state, it);
         residuals(i_rows) = res(eq_index);
     elseif nargout == 2
         [res,jacobian] = dynamic_function(YY(i_cols),exo_simul, params, ...
-            steady_state,it);
+            steady_state, exo_steady_state, it);
         residuals(i_rows) = res(eq_index);
         if it == 2
             [rows,cols,vals] = find(jacobian(eq_index,i_cols_1));

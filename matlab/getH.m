@@ -32,7 +32,7 @@ function [H, dA, dOm, Hss, gp, d2A, d2Om, H2ss] = getH(A, B, estim_params_,M_,oo
 %   H2s:            Hessian of steady state with respect to estimated
 %                   structural parameters only (indx)
 
-% Copyright (C) 2010-2016 Dynare Team
+% Copyright (C) 2010-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -125,7 +125,7 @@ end
 if kronflag==-2,
     if nargout>5,
         [residual, g1, g2 ] = feval([M_.fname,'_dynamic'],yy0, oo_.exo_steady_state', ...
-            M_.params, oo_.dr.ys, 1);
+            M_.params, oo_.dr.ys, oo_.exo_steady_state, 1);
         g22 = hessian_sparse('thet2tau',[M_.params(indx)],options_.gstep,estim_params_,M_, oo_, indx,[],-1);
         H2ss=full(g22(1:M_.endo_nbr,:));
         H2ss = reshape(H2ss,[M_.endo_nbr param_nbr param_nbr]);
@@ -145,7 +145,7 @@ if kronflag==-2,
         clear gx22;
     else
         [residual, g1 ] = feval([M_.fname,'_dynamic'],yy0, oo_.exo_steady_state', ...
-            M_.params, oo_.dr.ys, 1);        
+            M_.params, oo_.dr.ys, oo_.exo_steady_state, 1);
     end
     gp = fjaco('thet2tau',[M_.params(indx)],estim_params_,M_, oo_, indx,[],-1);
     Hss=gp(1:M_.endo_nbr,:);
@@ -166,7 +166,7 @@ dyssdtheta = -gg1\df;
 if nargout>5,
     [residual, gg1, gg2] = feval([M_.fname,'_static'],oo_.dr.ys, oo_.exo_steady_state', M_.params);
     [residual, g1, g2, g3] = feval([M_.fname,'_dynamic'],yy0, oo_.exo_steady_state', ...
-        M_.params, oo_.dr.ys, 1);
+        M_.params, oo_.dr.ys, oo_.exo_steady_state, 1);
     [nr, nc]=size(gg2);
 
     [df, gpx, d2f] = feval([M_.fname,'_static_params_derivs'],oo_.dr.ys, oo_.exo_steady_state', ...
@@ -218,7 +218,7 @@ else
     [df, gp] = feval([M_.fname,'_params_derivs'],yy0, repmat(oo_.exo_steady_state',[M_.maximum_exo_lag+M_.maximum_exo_lead+1,1]), ...
         M_.params, oo_.dr.ys, 1, dyssdtheta,d2yssdtheta);
     [residual, g1, g2 ] = feval([M_.fname,'_dynamic'],yy0, repmat(oo_.exo_steady_state',[M_.maximum_exo_lag+M_.maximum_exo_lead+1,1]), ...
-        M_.params, oo_.dr.ys, 1);
+        M_.params, oo_.dr.ys, oo_.exo_steady_state, 1);
 end
 
 [nr, nc]=size(g2);

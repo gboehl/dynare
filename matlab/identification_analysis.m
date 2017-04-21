@@ -28,7 +28,7 @@ function [ide_hess, ide_moments, ide_model, ide_lre, derivatives_info, info, opt
 % SPECIAL REQUIREMENTS
 %    None
 
-% Copyright (C) 2008-2016 Dynare Team
+% Copyright (C) 2008-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -79,7 +79,7 @@ if info(1)==0,
     yy0=oo_.dr.ys(I);
     [residual, g1 ] = feval([M_.fname,'_dynamic'],yy0, ...
         repmat(oo_.exo_steady_state',[M_.maximum_exo_lag+M_.maximum_exo_lead+1]), M_.params, ...
-        oo_.dr.ys, 1);
+        oo_.dr.ys, oo_.exo_steady_state, 1);
     vg1 = [oo_.dr.ys(oo_.dr.order_var); vec(g1)];
 
     [JJ, H, gam, gp, dA, dOm, dYss] = getJJ(A, B, estim_params_, M_,oo0,options_,kron_flag,indx,indexo,bayestopt_.mf2,nlags,useautocorr);

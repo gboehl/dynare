@@ -40,7 +40,7 @@ function [dr,info,M_,options_,oo_] = dr1_PI(dr,task,M_,options_,oo_)
 %   none.
 %  
 
-% Copyright (C) 1996-2012 Dynare Team
+% Copyright (C) 1996-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -131,7 +131,8 @@ else
     end
     z = z(iyr0) ;
     [junk,jacobia_] = feval([M_.fname '_dynamic'],z,[oo_.exo_simul ...
-                        oo_.exo_det_simul], M_.params, dr.ys, it_);
+                        oo_.exo_det_simul], M_.params, dr.ys, oo_.exo_steady_state, ...
+                            it_);
 
     if options_.ACES_solver==1 && (length(sim_ruleids)>0 || length(tct_ruleids)>0 )
         if length(sim_ruleids)>0

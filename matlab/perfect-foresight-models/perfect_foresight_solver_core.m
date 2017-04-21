@@ -11,7 +11,7 @@ function [oo_, maxerror] = perfect_foresight_solver_core(M_, options_, oo_)
 % - oo_                 [struct] contains results
 % - maxerror            [double] contains the maximum absolute error
 
-% Copyright (C) 2015-2016 Dynare Team
+% Copyright (C) 2015-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -79,36 +79,36 @@ else
     else
         if M_.maximum_endo_lead == 0 % Purely backward model
             [oo_.endo_simul, oo_.deterministic_simulation] = ...
-                sim1_purely_backward(oo_.endo_simul, oo_.exo_simul, oo_.steady_state, M_, options_);
+                sim1_purely_backward(oo_.endo_simul, oo_.exo_simul, oo_.steady_state, M_, options_, oo_);
         elseif M_.maximum_endo_lag == 0 % Purely forward model
             [oo_.endo_simul, oo_.deterministic_simulation] = ...
-                sim1_purely_forward(oo_.endo_simul, oo_.exo_simul, oo_.steady_state, M_, options_);
+                sim1_purely_forward(oo_.endo_simul, oo_.exo_simul, oo_.steady_state, M_, options_, oo_);
         else % General case
             switch options_.stack_solve_algo
               case 0
                 if options_.linear_approximation
                     [oo_.endo_simul, oo_.deterministic_simulation] = ...
-                        sim1_linear(oo_.endo_simul, oo_.exo_simul, oo_.steady_state, oo_.exo_steady_state, M_, options_);
+                        sim1_linear(oo_.endo_simul, oo_.exo_simul, oo_.steady_state, oo_.exo_steady_state, M_, options_, oo_);
                 else
                     [oo_.endo_simul, oo_.deterministic_simulation] = ...
-                        sim1(oo_.endo_simul, oo_.exo_simul, oo_.steady_state, M_, options_);
+                        sim1(oo_.endo_simul, oo_.exo_simul, oo_.steady_state, M_, options_, oo_);
                 end
               case 6
                 if options_.linear_approximation
                     error('Invalid value of stack_solve_algo option!')
                 end
                 [oo_.endo_simul, oo_.deterministic_simulation] = ...
-                    sim1_lbj(oo_.endo_simul, oo_.exo_simul, oo_.steady_state, M_, options_);
+                    sim1_lbj(oo_.endo_simul, oo_.exo_simul, oo_.steady_state, M_, options_, oo_);
               case 7
                 if options_.linear_approximation
                     if isequal(options_.solve_algo, 10)
                         warning('It would be more efficient to set option solve_algo equal to 0!')
                     end
                     [oo_.endo_simul, oo_.deterministic_simulation] = ...
-                        solve_stacked_linear_problem(oo_.endo_simul, oo_.exo_simul, oo_.steady_state, oo_.exo_steady_state, M_, options_);
+                        solve_stacked_linear_problem(oo_.endo_simul, oo_.exo_simul, oo_.steady_state, oo_.exo_steady_state, M_, options_, oo_);
                 else
                     [oo_.endo_simul, oo_.deterministic_simulation] = ...
-                        solve_stacked_problem(oo_.endo_simul, oo_.exo_simul, oo_.steady_state, M_, options_);
+                        solve_stacked_problem(oo_.endo_simul, oo_.exo_simul, oo_.steady_state, M_, options_, oo_);
                 end
               otherwise
                 error('Invalid value of stack_solve_algo option!')
@@ -135,7 +135,7 @@ if nargout>1
             [chck, residuals, junk]= bytecode('dynamic','evaluate', oo_.endo_simul, oo_.exo_simul, M_.params, oo_.steady_state, 1);
         else
             residuals = perfect_foresight_problem(yy(:),str2func([M_.fname '_dynamic']), y0, yT, ...
-                                                  oo_.exo_simul,M_.params,oo_.steady_state, ...
+                                                  oo_.exo_simul,M_.params,oo_.steady_state,oo_.exo_steady_state, ...
                                                   M_.maximum_lag,options_.periods,M_.endo_nbr,i_cols, ...
                                                   i_cols_J1, i_cols_1, i_cols_T, i_cols_j, ...
                                                   M_.NNZDerivatives(1));

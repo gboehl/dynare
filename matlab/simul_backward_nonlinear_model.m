@@ -34,7 +34,7 @@ function DynareOutput = simul_backward_nonlinear_model(initial_conditions, sampl
 %! @end deftypefn
 %@eod:
 
-% Copyright (C) 2012-2016 Dynare Team
+% Copyright (C) 2012-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -118,7 +118,7 @@ for it = 2:sample_size+1
                     DynareOptions.solve_tolf,DynareOptions.solve_tolx, ...
                     DynareOptions.simul.maxit,DynareOptions.debug, ...
                     DynareOutput.exo_simul, DynareModel.params, ...
-                    DynareOutput.steady_state, it);
+                    DynareOutput.steady_state, DynareOutput.exo_steady_state, it);
     Y(:,it) = z(jdx);
 end
 

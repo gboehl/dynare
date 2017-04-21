@@ -1,6 +1,6 @@
 function [dr,ys,info]=discretionary_policy_1(oo_,Instruments)
 
-% Copyright (C) 2007-2016 Dynare Team
+% Copyright (C) 2007-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -86,7 +86,8 @@ if exo_nbr == 0
 end
 
 [junk,jacobia_] = feval([M_.fname '_dynamic'],z, [zeros(size(oo_.exo_simul)) ...
-                    oo_.exo_det_simul], M_.params, zeros(endo_nbr,1), it_);
+                    oo_.exo_det_simul], M_.params, zeros(endo_nbr,1), ...
+                        zeros(exo_nbr,1), it_);
 if any(junk~=0)
     error(['discretionary_policy: the model must be written in deviation ' ...
            'form and not have constant terms'])

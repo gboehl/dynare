@@ -62,7 +62,7 @@ function [dr,info] = dyn_risky_steadystate_solver(ys0,M, ...
     %! @end deftypefn
     %@eod:
 
-    % Copyright (C) 2001-2012 Dynare Team
+    % Copyright (C) 2001-2017 Dynare Team
     %
     % This file is part of Dynare.
     %
@@ -162,7 +162,8 @@ function [resid,dr] = risky_residuals(ys,pm,M,dr,options,oo)
     z = z(iyr0) ;
     [resid1,d1,d2] = feval([M.fname '_dynamic'],z,...
                            [oo.exo_simul ...
-                        oo.exo_det_simul], M.params, dr.ys, 2);
+                        oo.exo_det_simul], M.params, dr.ys, oo.exo_steady_state, ...
+                           2);
     if ~isreal(d1) || ~isreal(d2)
         pause
     end
@@ -222,7 +223,8 @@ function [resid,dr] = risky_residuals_ds(x,pm,M,dr,options,oo)
     z = z(iyr0) ;
     [resid1,d1,d2] = feval([M.fname '_dynamic'],z,...
                            [oo.exo_simul ...
-                        oo.exo_det_simul], M.params, dr.ys, 2);
+                        oo.exo_det_simul], M.params, dr.ys, oo.exo_steady_state, ...
+                           2);
     if ~isreal(d1) || ~isreal(d2)
         pause
     end
@@ -255,7 +257,8 @@ function dr_np = first_step_ds(x,pm,M,dr,options,oo)
     z = z(iyr0) ;
     [resid1,d1,d2] = feval([M.fname '_dynamic'],z,...
                            [oo.exo_simul ...
-                        oo.exo_det_simul], M.params, dr.ys, 2);
+                        oo.exo_det_simul], M.params, dr.ys, oo.exo_steady_state, ...
+                           2);
     if ~isreal(d1) || ~isreal(d2)
         pause
     end
@@ -296,7 +299,8 @@ function [resid,dr] = risky_residuals_k_order(ys,pm,M,dr,options,oo)
     z = z(iyr0) ;
     [resid1,d1,d2] = feval([M.fname '_dynamic'],z,...
                               [oo.exo_simul ...
-                        oo.exo_det_simul], M.params, dr.ys, 2);
+                        oo.exo_det_simul], M.params, dr.ys, oo.exo_steady_state, ...
+                           2);
     
     if isfield(options,'portfolio') && options.portfolio == 1
         eq_np = pm.eq_np;
@@ -331,7 +335,8 @@ function [resid,dr] = risky_residuals_k_order(ys,pm,M,dr,options,oo)
     if nargout > 1
         [resid1,d1,d2,d3] = feval([M.fname '_dynamic'],z,...
                                   [oo.exo_simul ...
-                            oo.exo_det_simul], M.params, dr.ys, 2);
+                            oo.exo_det_simul], M.params, dr.ys, oo.exo_steady_state, ...
+                                  2);
 
         
         [a,b,c] = find(d2(eq_np,pm.i_d2_np));
