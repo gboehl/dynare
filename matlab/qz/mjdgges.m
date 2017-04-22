@@ -74,9 +74,9 @@ try
         d = complex(d);
     end
     [ss,tt,qq,w,a,b,c] = qz(e, d);
-    [tt,ss,qq,w] = qzdiv(qz_criterium, tt, ss, qq, w);
     warning_old_state = warning;
     warning off;
+    [tt,ss,qq,w] = qzdiv(qz_criterium, tt, ss, qq, w);
     eigval = diag(ss)./diag(tt);
     warning(warning_old_state);
     sdim = sum(abs(eigval) < qz_criterium);
