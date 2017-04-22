@@ -26,7 +26,7 @@ fprintf(fid, '%%%% Construct y\n');
 fprintf(fid, 'assert(length(y) == %d);\n', sum(sum(M_.lead_lag_incidence ~= 0)));
 
 endo_names = cellstr(M_.endo_names);
-nvars = length(M_.var.(var_model_name).var_list_);
+nvars = size(M_.var.(var_model_name).var_list_,1);
 var_model_order = M_.var.(var_model_name).order;
 yidx = zeros(nvars, min(var_model_order, 2));
 % first for order <= 2, drawing variables directly from their endo_names

@@ -36,7 +36,7 @@ assert( ...
     );
 endo_names = cellstr(M_.endo_names);
 yidx = zeros(size(endo_names));
-for i=1:length(M_.var.(name).var_list_)
+for i=1:size(M_.var.(name).var_list_,1)
     yidx = yidx | strcmp(strtrim(M_.var.(name).var_list_(i,:)), endo_names);
 end
 y = y(yidx,:);
