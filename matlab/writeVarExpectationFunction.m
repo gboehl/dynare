@@ -56,9 +56,25 @@ if var_model_order > 2
     end
     yidx = [yidx ; y1idx(:)];
 end
-fprintf(fid, 'y = y([');
-fprintf(fid, '%d ', yidx);
-fprintf(fid, ']);\n');
+
+if any(yidx == 0)
+    fprintf(fid, 'y = [');
+    for i = 1:length(yidx)
+        if i ~= 1
+            fprintf(fid, '; ');
+        end
+        if yidx(i) == 0
+            fprintf(fid, '0');
+        else
+            fprintf(fid, 'y(%d)', yidx(i));
+        end
+    end
+    fprintf(fid, '];\n');
+else
+    fprintf(fid, 'y = y([');
+    fprintf(fid, '%d ', yidx);
+    fprintf(fid, ']);\n');
+end
 
 lm = length(mu);
 lc = length(autoregressive_matrices);
