@@ -1,4 +1,4 @@
-function [endogenousvariables, info] = solve_stacked_problem(endogenousvariables, exogenousvariables, steadystate, M, options);
+function [endogenousvariables, info] = solve_stacked_problem(endogenousvariables, exogenousvariables, steadystate, M, options)
 % [endogenousvariables, info] = solve_stacked_problem(endogenousvariables, exogenousvariables, steadystate, M, options);
 % Solves the perfect foresight model using dynare_solve
 %
@@ -13,7 +13,7 @@ function [endogenousvariables, info] = solve_stacked_problem(endogenousvariables
 % - endogenousvariables [double] N*T array, paths for the endogenous variables (solution of the perfect foresight model).
 % - info                [struct] contains informations about the results.
 
-% Copyright (C) 2015-16 Dynare Team
+% Copyright (C) 2015-17 Dynare Team
 %
 % This file is part of Dynare.
 %
