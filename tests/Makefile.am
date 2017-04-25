@@ -955,6 +955,8 @@ clean-local:
 
 	rm -rf ramsey_objective
 
+	rm -f ep/*.c
+
 	rm -f fs2000_ssfile_steadystate.m
 
 	rm -f $(shell find -name '*~')
