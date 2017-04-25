@@ -53,7 +53,7 @@ if options_.linear
 end
 
 local_order = options_.order;
-if M_.hessian_eq_zero
+if M_.hessian_eq_zero && local_order~=1
     local_order = 1;
     warning('stochastic_solvers: using order = 1 because Hessian is equal to zero');
 end
