@@ -6249,6 +6249,10 @@ parameter draws and computations will automatically rely on univariate filter, @
 the multivariate filter again. Use the @code{keep_kalman_algo_if_singularity_is_detected} option to have the 
 @code{use_univariate_filters_if_singularity_is_detected} only affect the behavior for the current draw/computation.
 
+@item rescale_prediction_error_covariance
+@anchor{rescale_prediction_error_covariance}
+Rescales the prediction error covariance in the Kalman filter to avoid badly scaled matrix and reduce the probability of a switch to univariate Kalman filters (which are slower). By default no rescaling is done.
+
 @item qz_zero_threshold = @var{DOUBLE}
 @xref{qz_zero_threshold}.
 
