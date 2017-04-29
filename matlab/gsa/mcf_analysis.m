@@ -48,7 +48,6 @@ end
 OutputDirectoryName = options_mcf.OutputDirectoryName;
 
 [proba, dproba] = stab_map_1(lpmat, ibeha, inobeha, [],0);
-%         indindet=find(dproba>ksstat);
 indmcf=find(proba<pvalue_ks);
 [tmp,jtmp] = sort(proba(indmcf),2,'ascend');
 indmcf = indmcf(jtmp);

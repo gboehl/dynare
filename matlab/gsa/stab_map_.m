@@ -59,7 +59,6 @@ global bayestopt_ estim_params_ options_ oo_ M_
 
 Nsam   = opt_gsa.Nsam;
 fload  = opt_gsa.load_stab;
-ksstat = opt_gsa.ksstat;
 alpha2 = opt_gsa.alpha2_stab;
 pvalue_ks = opt_gsa.pvalue_ks;
 pvalue_corr = opt_gsa.pvalue_corr;

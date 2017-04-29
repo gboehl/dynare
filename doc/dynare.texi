@@ -8645,10 +8645,6 @@ Critical value for correlations @math{\rho} in filtered samples:
 plot couples of parmaters with @math{\left|\rho\right|>} @code{alpha2_stab}.
 Default: @code{0}
 
-@item ksstat = @var{DOUBLE}
-Critical value for Smirnov statistics @math{d}: plot parameters with
-@math{d>} @code{ksstat}. Default: @code{0.1}
-
 @item pvalue_ks = @var{DOUBLE}
 The threshold @math{pvalue} for significant Kolmogorov-Smirnov test (@i{i.e.} plot parameters with
 @math{pvalue<} @code{pvalue_ks}). Default: @code{0.001}
