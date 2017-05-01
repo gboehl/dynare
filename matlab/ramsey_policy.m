@@ -33,6 +33,10 @@ if inst_nbr~=0
     elseif inst_nbr<implied_inst_nbr
         error('You have specified fewer instruments than there are omitted equations')
     end
+else
+    if options_.steadystate_flag
+        error('You have specified a steady state file, but not provided an instrument. Either delete the steady state file or provide an instrument')
+    end
 end
         
 info = stoch_simul(var_list);
