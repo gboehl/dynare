@@ -1,12 +1,13 @@
-function [endogenousvariables, exogenousvariables] = model_inversion(constraints, exogenousvariables, initialconditions, DynareModel)
-
-global oo_
+function [endogenousvariables, exogenousvariables] = model_inversion(constraints, ...
+                                                      exogenousvariables, ...
+                                                      initialconditions, DynareModel, DynareOptions, DynareOutput)
 
 % INPUTS 
 % - constraints         [dseries]        with N constrained endogenous variables from t1 to t2.
 % - exogenousvariables  [dseries]        with Q exogenous variables.
 % - initialconditions   [dseries]        with M endogenous variables starting before t1 (M initialcond must contain at least the state variables).
 % - DynareModel         [struct]         M_, Dynare global structure containing informations related to the model.
+% - DynareOptions       [struct]         options_, Dynare global structure containing all the options.
 %
 % OUTPUTS 
 % - endogenous          [dseries]       
@@ -31,7 +32,7 @@ global oo_
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-if ~isequal(nargin, 4)
+if ~isequal(nargin, 6)
     error('model_inversion: This routine require six input arguments!')
 end
 
@@ -71,6 +72,15 @@ end
 endo_names = cellstr(DynareModel.endo_names);
 exo_names = cellstr(DynareModel.exo_names);
 
+% Use specidalized routine if the model is backward looking.
+if ~DynareModel.maximum_lead
+    [endogenousvariables, exogenousvariables] = ...
+        backward_model_inversion(constraints, exogenousvariables, initialconditions, ...
+                                 endo_names, exo_names, freeinnovations, ...
+                                 DynareModel, DynareOptions, DynareOutput);
+    return
+end
+
 % Initialize fplan
 fplan = init_plan(crange);
 
@@ -94,9 +104,3 @@ f = det_cond_forecast(fplan, initialconditions, crange);
 
 endogenousvariables = f{endo_names{:}};
 exogenousvariables = f{exo_names{:}};
-
-%if observed_exogenous_variables_flag
-%    for i=1:length(list_of_observed_exogenous_variables)
-%        exogenousvariables{list_of_observed_exogenous_variables{i}} = observed_exogenous_variables{list_of_observed_exogenous_variables{i}};
-%    end
-%end
