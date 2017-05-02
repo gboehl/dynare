@@ -82,7 +82,10 @@ else
     xx = oo.steady_state(1:n_var);
     opt = options_;
     opt.jacobian_flag = 0;
-    [xx,check] = dynare_solve(nl_func,xx,opt);
+    [xx,info1] = dynare_solve(nl_func,xx,opt);
+    if info1~=0
+        check=81;
+    end
     [junk,junk,steady_state] = nl_func(xx);
 end
 
