@@ -1,4 +1,4 @@
-function  [LIK, lik, a, P] = missing_observations_kalman_filter(data_index,number_of_observations,no_more_missing_observations,Y,start,last,a,P,kalman_tol,riccati_tol,presample,T,Q,R,H,Z,mm,pp,rr,Zflag,diffuse_periods)
+function  [LIK, lik, a, P] = missing_observations_kalman_filter(data_index,number_of_observations,no_more_missing_observations,Y,start,last,a,P,kalman_tol,riccati_tol,rescale_prediction_error_covariance,presample,T,Q,R,H,Z,mm,pp,rr,Zflag,diffuse_periods)
 % Computes the likelihood of a state space model in the case with missing observations.
 %
 % INPUTS
@@ -82,7 +82,7 @@ lik  = zeros(smpl,1);      % Initialization of the vector gathering the densitie
 LIK  = Inf;                % Default value of the log likelihood.
 oldK = Inf;
 notsteady   = 1;
-F_singular  = 1;
+F_singular  = true;
 s = 0;
 
 while notsteady && t<=last
@@ -102,19 +102,34 @@ while notsteady && t<=last
             v = Y(d_index,t) - a(z);
             F = P(z,z) + H(d_index,d_index);
         end
-        sig=sqrt(diag(F));
-        if any(diag(F)<kalman_tol) || rcond(F./(sig*sig')) < kalman_tol
+        badly_conditioned_F = false;
+        if rescale_prediction_error_covariance
+            sig=sqrt(diag(F));
+            if any(diag(F)<kalman_tol) || rcond(F./(sig*sig'))<kalman_tol
+                badly_conditioned_F = true;
+            end
+        else
+            if rcond(F)<kalman_tol
+                badly_conditioned_F = true;
+            end
+        end
+        if badly_conditioned_F
             if ~all(abs(F(:))<kalman_tol)
-                %use diffuse filter
+                % Use univariate filter.
                 return
             else
-                %pathological case, discard draw
+                % Pathological case, discard draw
                 return
             end
         else
-            F_singular = 0;
-            log_dF      = log(det(F./(sig*sig')))+2*sum(log(sig));
-            iF      = inv(F./(sig*sig'))./(sig*sig');
+            F_singular = false;
+            if rescale_prediction_error_covariance,
+                log_dF = log(det(F./(sig*sig')))+2*sum(log(sig));
+                iF = inv(F./(sig*sig'))./(sig*sig');
+            else
+                log_dF = log(det(F));
+                iF = inv(F);
+            end
             lik(s) = log_dF + transpose(v)*iF*v + length(d_index)*log(2*pi);
             if Zflag
                 K = P*z'*iF;
@@ -142,7 +157,7 @@ lik(1:s) = .5*lik(1:s);
 
 % Call steady state Kalman filter if needed.
 if t<=last
-    [tmp, lik(s+1:end)] = kalman_filter_ss(Y,t,last,a,T,K,iF,log_dF,Z,pp,Zflag);
+    [tmp, lik(s+1:end)] = kalman_filter_ss(Y, t, last, a, T, K, iF, log_dF, Z, pp, Zflag);
 end
 
 % Compute minus the log-likelihood.

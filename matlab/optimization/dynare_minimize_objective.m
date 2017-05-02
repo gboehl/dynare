@@ -313,6 +313,9 @@ switch minimizer_algorithm
     % Set defaults
     H0 = (bounds(:,2)-bounds(:,1))*0.2;
     H0(~isfinite(H0)) = 0.01;
+    while max(H0)/min(H0)>1e6 %make sure initial search volume (SIGMA) is not badly conditioned  
+        H0(H0==max(H0))=0.9*H0(H0==max(H0));
+    end
     cmaesOptions = options_.cmaes;
     cmaesOptions.LBounds = bounds(:,1);
     cmaesOptions.UBounds = bounds(:,2);

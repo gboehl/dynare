@@ -105,14 +105,23 @@ SectionEnd
 
 SectionGroupEnd
 
-Section "MEX files for Octave 3.6 (MinGW)"
+SectionGroup "MEX files for OCTAVE"
+
+Section "MEX files for Octave 4.2.1 (MinGW, 64bit)"
  SetOutPath $INSTDIR\mex\octave
  File ..\mex\octave\*.mex ..\mex\octave\*.oct
 SectionEnd
 
+Section "MEX files for Octave 4.2.1 (MinGW, 32bit)"
+ SetOutPath $INSTDIR\mex\octave32
+ File ..\mex\octave32\*.mex ..\mex\octave32\*.oct
+SectionEnd
+
+SectionGroupEnd
+
 Section "Dynare++ (standalone executable)"
  SetOutPath $INSTDIR\dynare++
- File ..\dynare++\src\dynare++.exe ..\dynare++\extern\matlab\dynare_simul.m
+ File ..\dynare++\src\dynare++.exe ..\dynare++\extern\matlab\dynare_simul.m ..\dynare++\*.dll
 SectionEnd
 
 Section "Documentation and examples (Dynare and Dynare++)"

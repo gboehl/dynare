@@ -56,7 +56,6 @@ if isfield(options_gsa,'morris') && options_gsa.morris==1,
         error('sensitivity:: Morris is incompatible with rmse analysis')
     end
     if (isfield(options_gsa,'alpha2_stab') && options_gsa.alpha2_stab<1) || ...
-            (isfield(options_gsa,'ksstat') && options_gsa.ksstat<1) || ...
             (isfield(options_gsa,'pvalue_ks') && options_gsa.pvalue_ks) || ...
             (isfield(options_gsa,'pvalue_corr') && options_gsa.pvalue_corr)
 
@@ -160,7 +159,6 @@ end
 
 % map stability
 options_gsa = set_default_option(options_gsa,'stab',1);
-options_gsa = set_default_option(options_gsa,'redform',0);
 options_gsa = set_default_option(options_gsa,'pprior',1);
 options_gsa = set_default_option(options_gsa,'prior_range',1);
 options_gsa = set_default_option(options_gsa,'ppost',0);
@@ -171,15 +169,14 @@ options_gsa = set_default_option(options_gsa,'glue',0);
 options_gsa = set_default_option(options_gsa,'morris_nliv',6);
 options_gsa = set_default_option(options_gsa,'morris_ntra',20);
 options_gsa = set_default_option(options_gsa,'Nsam',2048);
-options_gsa = set_default_option(options_gsa,'load_redform',0);
-options_gsa = set_default_option(options_gsa,'load_rmse',0);
 options_gsa = set_default_option(options_gsa,'load_stab',0);
 options_gsa = set_default_option(options_gsa,'alpha2_stab',0);
-options_gsa = set_default_option(options_gsa,'ksstat',0.1);
 options_gsa = set_default_option(options_gsa,'pvalue_ks',0.001);
 options_gsa = set_default_option(options_gsa,'pvalue_corr',1.e-5);
 %options_gsa = set_default_option(options_gsa,'load_mh',0);
 % REDFORM mapping
+options_gsa = set_default_option(options_gsa,'redform',0);
+options_gsa = set_default_option(options_gsa,'load_redform',0);
 options_gsa = set_default_option(options_gsa,'logtrans_redform',0);
 options_gsa = set_default_option(options_gsa,'threshold_redform',[]);
 options_gsa = set_default_option(options_gsa,'ksstat_redform',0.001);
@@ -188,6 +185,7 @@ options_gsa = set_default_option(options_gsa,'namendo',[]);
 options_gsa = set_default_option(options_gsa,'namlagendo',[]);
 options_gsa = set_default_option(options_gsa,'namexo',[]);
 % RMSE mapping
+options_gsa = set_default_option(options_gsa,'load_rmse',0);
 options_gsa = set_default_option(options_gsa,'lik_only',0);
 options_gsa = set_default_option(options_gsa,'var_rmse',char(options_.varobs));
 %get corresponding TeX-names;
@@ -232,7 +230,6 @@ if options_gsa.morris==1,
     options_gsa.rmse=0;
     options_gsa.load_rmse=0;
     options_gsa.alpha2_stab=1;
-    options_gsa.ksstat=1;
     options_gsa.pvalue_ks=0;
     options_gsa.pvalue_corr=0;
 %     if options_gsa.morris==3,

@@ -4030,6 +4030,12 @@ moments. If theoretical moments are requested, the spectrum of the model solutio
 following the approach outlined in @cite{Uhlig (2001)}.
 Default: no filter.
 
+@item one_sided_hp_filter = @var{DOUBLE}
+Uses the one-sided HP filter with @math{\lambda} = @var{DOUBLE} described in @cite{Stock and Watson (1999)}
+before computing moments. This option is only available with simulated moments.
+Default: no filter.
+
+
 @item hp_ngrid = @var{INTEGER}
 Number of points in the grid for the discrete Inverse Fast Fourier
 Transform used in the HP filter computation. It may be necessary to
@@ -6284,6 +6290,10 @@ matrix during Kalman filtering. Upon encountering such a singularity for the fir
 parameter draws and computations will automatically rely on univariate filter, @i{i.e.} Dynare will never try 
 the multivariate filter again. Use the @code{keep_kalman_algo_if_singularity_is_detected} option to have the 
 @code{use_univariate_filters_if_singularity_is_detected} only affect the behavior for the current draw/computation.
+
+@item rescale_prediction_error_covariance
+@anchor{rescale_prediction_error_covariance}
+Rescales the prediction error covariance in the Kalman filter to avoid badly scaled matrix and reduce the probability of a switch to univariate Kalman filters (which are slower). By default no rescaling is done.
 
 @item qz_zero_threshold = @var{DOUBLE}
 @xref{qz_zero_threshold}.
@@ -8618,7 +8628,7 @@ This command triggers sensitivity analysis on a DSGE model.
 @anchor{Sampling Options}
 @table @code
 
-@item nsam = @var{INTEGER}
+@item Nsam = @var{INTEGER}
 Size of the Monte-Carlo sample. Default: @code{2048}
 
 @item ilptau = @var{INTEGER}
@@ -8675,11 +8685,7 @@ If equal to @code{0}, generate a new sample. Default: @code{0}
 @item alpha2_stab = @var{DOUBLE}
 Critical value for correlations @math{\rho} in filtered samples:
 plot couples of parmaters with @math{\left|\rho\right|>} @code{alpha2_stab}.
-Default: @code{0.3}
-
-@item ksstat = @var{DOUBLE}
-Critical value for Smirnov statistics @math{d}: plot parameters with
-@math{d>} @code{ksstat}. Default: @code{0.1}
+Default: @code{0}
 
 @item pvalue_ks = @var{DOUBLE}
 The threshold @math{pvalue} for significant Kolmogorov-Smirnov test (@i{i.e.} plot parameters with
@@ -8712,7 +8718,7 @@ An empty vector indicates that these entries will not be filtered. Default: @cod
 
 @item ksstat_redform = @var{DOUBLE}
 Critical value for Smirnov statistics @math{d} when reduced form entries
-are filtered. Default: @code{0.1}
+are filtered. Default: @code{0.001}
 
 @item alpha2_redform = @var{DOUBLE}
 Critical value for correlations @math{\rho}  when reduced form entries
@@ -8759,7 +8765,7 @@ error). Default: @code{presample+1}
 
 @item alpha_rmse = @var{DOUBLE}
 Critical value for Smirnov statistics @math{d}: plot parameters with
-@math{d>} @code{alpha_rmse}. Default: @code{0.002}
+@math{d>} @code{alpha_rmse}. Default: @code{0.001}
 
 @item alpha2_rmse = @var{DOUBLE}
 Critical value for correlation @math{\rho}: plot couples of parmaters with
@@ -14798,6 +14804,10 @@ Metropolis-Hastings Algorithm,'' @i{Scandinavian Journal of Statistics}, 30, 699
 Smets, Frank and Rafael Wouters (2003): ``An Estimated Dynamic
 Stochastic General Equilibrium Model of the Euro Area,'' @i{Journal of
 the European Economic Association}, 1(5), 1123--1175
+
+@item
+Stock, James H. and Mark W. Watson (1999). ``Forecasting Inflation,'', @i{Journal of Monetary
+Economics}, 44(2), 293--335.
 
 @item
 Uhlig, Harald (2001): ``A Toolkit for Analysing Nonlinear Dynamic Stochastic Models Easily,''

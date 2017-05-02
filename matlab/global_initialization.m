@@ -568,6 +568,9 @@ options_.homotopy_force_continue = 0;
 % numerical hessian
 hessian.use_penalized_objective = false;
 
+% Robust prediction error covariance (kalman filter)
+options_.rescale_prediction_error_covariance = false;
+
 options_.hessian = hessian;
 
 %csminwel optimization routine
