@@ -4012,6 +4012,12 @@ moments. If theoretical moments are requested, the spectrum of the model solutio
 following the approach outlined in @cite{Uhlig (2001)}.
 Default: no filter.
 
+@item one_sided_hp_filter = @var{DOUBLE}
+Uses the one-sided HP filter with @math{\lambda} = @var{DOUBLE} described in @cite{Stock and Watson (1999)}
+before computing moments. This option is only available with simulated moments.
+Default: no filter.
+
+
 @item hp_ngrid = @var{INTEGER}
 Number of points in the grid for the discrete Inverse Fast Fourier
 Transform used in the HP filter computation. It may be necessary to
@@ -14732,6 +14738,10 @@ Metropolis-Hastings Algorithm,'' @i{Scandinavian Journal of Statistics}, 30, 699
 Smets, Frank and Rafael Wouters (2003): ``An Estimated Dynamic
 Stochastic General Equilibrium Model of the Euro Area,'' @i{Journal of
 the European Economic Association}, 1(5), 1123--1175
+
+@item
+Stock, James H. and Mark W. Watson (1999). ``Forecasting Inflation,'', @i{Journal of Monetary
+Economics}, 44(2), 293--335.
 
 @item
 Uhlig, Harald (2001): ``A Toolkit for Analysing Nonlinear Dynamic Stochastic Models Easily,''
