@@ -98,7 +98,7 @@ for i=1:nyctrl
 end
 
 % Initialization of the returned simulations (exogenous variables).
-X = exogenousvariables{exo_names{:}}.data;
+X = exogenousvariables{exo_names{:}}(constraints.dates(1)-1:constraints.dates(end)).data;
 
 % Inversion of the model, solvers for the free endogenous and exogenous variables (call a Newton-like algorithm in each period).
 for it = 2:nobs(constraints)+1
