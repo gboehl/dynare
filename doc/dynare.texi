@@ -7214,7 +7214,7 @@ SHOCK_GROUP_NAME   = VARIABLE_1 [[,] VARIABLE_2 [,]@dots{}];
 Specifies a name for the following definition of shock groups. It is possible
 to use several @code{shock_groups} blocks in a model file, each grouping being
 identified by a different name. This name must in turn be used in the
-@code{shocks_decomposition} command.
+@code{shock_decomposition} command.
 
 @end table
 
@@ -7230,7 +7230,7 @@ supply = e_a, e_b;
 'aggregate demand' = e_c, e_d;
 end;
 
-shocks_decomposition(use_shock_groups=group1);
+shock_decomposition(use_shock_groups=group1);
 @end example
 This example defines a shock grouping with the name @code{group1}, containing a set of supply and demand shocks 
 and conducts the shock decomposition for these two groups.
