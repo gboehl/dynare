@@ -66,9 +66,11 @@ for i=1:min(var_model_order, 2)
     end
     for j=1:nvars
         cidx = strcmp(strtrim(M_.var.(var_model_name).var_list_(j,:)), endo_names)';
-        if any(cidx)
-            yidx(j, i) = M_.lead_lag_incidence(ridx, cidx);
+        if ~any(cidx)
+            error([strtrim(M_.var.(var_model_name).var_list_(j,:)) ' not found in the list of endogenous variables']);
         end
+        yidx(j, i) = M_.lead_lag_incidence(ridx, cidx);
+
     end
 end
 yidx = yidx(:);
@@ -79,12 +81,13 @@ if var_model_order > 2
     for i=3:var_model_order
         for j=1:nvars
             idx = find(strcmp(strtrim(M_.var.(var_model_name).var_list_(j,:)), endo_names));
-            if any(idx)
-                varidx = [M_.aux_vars.orig_index] == idx & [M_.aux_vars.orig_lead_lag] == -i;
-                cidx = [M_.aux_vars.endo_index];
-                cidx = cidx(varidx);
-                y1idx(j, i-2) = M_.lead_lag_incidence(2, cidx);
+            if ~any(idx)
+                error([strtrim(M_.var.(var_model_name).var_list_(j,:)) ' not found in the list of endogenous variables']);
             end
+            varidx = [M_.aux_vars.orig_index] == idx & [M_.aux_vars.orig_lead_lag] == -i;
+            cidx = [M_.aux_vars.endo_index];
+            cidx = cidx(varidx);
+            y1idx(j, i-2) = M_.lead_lag_incidence(2, cidx);
         end
     end
     yidx = [yidx ; y1idx(:)];
