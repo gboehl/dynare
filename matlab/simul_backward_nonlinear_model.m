@@ -70,7 +70,6 @@ else
 end
 
 % Get usefull vector of indices.
-ny0 = nnz(DynareModel.lead_lag_incidence(2,:));
 ny1 = nnz(DynareModel.lead_lag_incidence(1,:));
 iy1 = find(DynareModel.lead_lag_incidence(1,:)>0);
 idx = 1:DynareModel.endo_nbr;
@@ -79,6 +78,7 @@ hdx = 1:ny1;
 
 % Get the name of the dynamic model routine.
 model_dynamic = str2func([DynareModel.fname,'_dynamic']);
+model_dynamic_s = str2func('dynamic_backward_model_for_simulation');
 
 % initialization of vector y.
 y = NaN(length(idx)+ny1,1);
@@ -99,14 +99,9 @@ Y = DynareOutput.endo_simul;
 
 % Simulations (call a Newton-like algorithm for each period).
 for it = 2:sample_size+1
-    y(jdx) = Y(:,it-1);                       % A good guess for the initial conditions is the previous values for the endogenous variables.
-    y(hdx) = y(jdx(iy1));                     % Set lagged variables.
-    z = trust_region(model_dynamic, y, idx, jdx, 1, DynareOptions.gstep, ...
-                    DynareOptions.solve_tolf,DynareOptions.solve_tolx, ...
-                    DynareOptions.simul.maxit,DynareOptions.debug, ...
-                    DynareOutput.exo_simul, DynareModel.params, ...
-                    DynareOutput.steady_state, it);
-    Y(:,it) = z(jdx);
+    ylag = Y(iy1,it-1);                   % Set lagged variables.
+    y = Y(:,it-1);                        % A good guess for the initial conditions is the previous values for the endogenous variables.
+    Y(:,it) = dynare_solve(model_dynamic_s, y, DynareOptions, model_dynamic, ylag, DynareOutput.exo_simul, DynareModel.params, DynareOutput.steady_state, it);
 end
 
 DynareOutput.endo_simul = Y;
