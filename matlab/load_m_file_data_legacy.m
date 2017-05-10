@@ -52,7 +52,7 @@ if ~isequal(sort(intersect(Z3s1ZFBffw, U7ORsJ0vy3)), sort(U7ORsJ0vy3))
     error('Some variables are missing (%s)!', qtvUkxKk6b)
 end
 
-% Check that the variables provided as vectors.
+% Check that the variables are provided as vectors.
 N5L9sgRHIu = {};
 for uAiwEPcc3Q=1:length(U7ORsJ0vy3)
     if ~isvector(eval(U7ORsJ0vy3{uAiwEPcc3Q}))
