@@ -58,29 +58,91 @@ else
     maxit = options.steady.maxit;
 end
 
-
 info = 0;
 nn = size(x,1);
 
+% Get status of the initial guess (default values?)
+if any(x)
+    % The current initial guess is not the default for all the variables.
+    idx = find(x);      % Indices of the variables with default initial guess values. 
+    in0 = length(idx);
+else
+    % The current initial guess is the default for all the variables.
+    idx = transpose(1:nn);
+    in0 = nn;
+end
+
 % checking initial values
 if jacobian_flag
-    [fvec,fjac] = feval(func,x,varargin{:});
-    if any(any(isinf(fjac) | isnan(fjac)))
-        info=1;
-        x = NaN(size(fvec));
-        return
+    [fvec, fjac] = feval(func, x, varargin{:});
+    wrong_initial_guess_flag = false;
+    if ~all(isfinite(fvec)) || any(isinf(fjac(:))) || any(isnan((fjac(:))))
+        % Let's try random numbers for the variables initialized with the default value.
+        wrong_initial_guess_flag = true;
+        % First try with positive numbers.
+        tentative_number = 0;
+        while wrong_initial_guess_flag && tentative_number<=in0*10
+            tentative_number = tentative_number+1;
+            x(idx) = rand(in0, 1)*10;
+            [fvec, fjac] = feval(func, x, varargin{:});
+            wrong_initial_guess_flag = ~all(isfinite(fvec)) || any(isinf(fjac(:))) || any(isnan((fjac(:))));
+        end
+        % If all previous attempts failed, try with real numbers.
+        tentative_number = 0;
+        while wrong_initial_guess_flag && tentative_number<=in0*10
+            tentative_number = tentative_number+1;
+            x(idx) = randn(in0, 1)*10;
+            [fvec, fjac] = feval(func, x, varargin{:});
+            wrong_initial_guess_flag = ~all(isfinite(fvec)) || any(isinf(fjac(:))) || any(isnan((fjac(:))));
+        end
+        % Last tentative, ff all previous attempts failed, try with negative numbers.
+        tentative_number = 0;
+        while wrong_initial_guess_flag && tentative_number<=in0*10
+            tentative_number = tentative_number+1;
+            x(idx) = -rand(in0, 1)*10;
+            [fvec, fjac] = feval(func, x, varargin{:});
+            wrong_initial_guess_flag = ~all(isfinite(fvec)) || any(isinf(fjac(:))) || any(isnan((fjac(:))));
+        end
     end
 else
     fvec = feval(func,x,varargin{:});
-    fjac = zeros(nn,nn) ;
+    fjac = zeros(nn,nn);
+    wrong_initial_guess_flag = false;
+    if ~all(isfinite(fvec))
+        % Let's try random numbers for the variables initialized with the default value.
+        wrong_initial_guess_flag = true;
+        % First try with positive numbers.
+        tentative_number = 0;
+        while wrong_initial_guess_flag && tentative_number<=in0*10
+            tentative_number = tentative_number+1;
+            x(idx) = rand(in0, 1)*10;
+            fvec = feval(func, x, varargin{:});
+            wrong_initial_guess_flag = ~all(isfinite(fvec));
+        end
+        % If all previous attempts failed, try with real numbers.
+        tentative_number = 0;
+        while wrong_initial_guess_flag && tentative_number<=in0*10
+            tentative_number = tentative_number+1;
+            x(idx) = randn(in0, 1)*10;
+            fvec = feval(func, x, varargin{:});
+            wrong_initial_guess_flag = ~all(isfinite(fvec));
+        end
+        % Last tentative, ff all previous attempts failed, try with negative numbers.
+        tentative_number = 0;
+        while wrong_initial_guess_flag && tentative_number<=in0*10
+            tentative_number = tentative_number+1;
+            x(idx) = -rand(in0, 1)*10;
+            fvec = feval(func, x, varargin{:});
+            wrong_initial_guess_flag = ~all(isfinite(fvec));
+        end
+    end
 end
 
-i = find(~isfinite(fvec));
-
-if ~isempty(i)
-    info = 1;
+% Exit with error if no initial guess has been found.
+if wrong_initial_guess_flag
+    info=1;
     x = NaN(size(fvec));
-    return;
+    return
 end
 
 % this test doesn't check complementarity conditions and is not used for
