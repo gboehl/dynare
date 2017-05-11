@@ -7,7 +7,7 @@ function writeVarExpectationFunction(var_model_name, horizon)
 %   var_model_name   [string]        the name of the VAR model
 %
 %   horizon          [int]           the forecast horizon
-%    
+%
 % OUTPUTS
 %
 %   NONE
@@ -136,24 +136,29 @@ if max(horizon) == 1
     printInsideOfLoop(fid, mu, A, false);
     fprintf(fid, 'ret(1, :) = y(1:%d);\n', lm);
 else
-    fprintf(fid, 'retidx = 1;\n');
-    fprintf(fid, 'ret = zeros(%d, %d);\n', length(horizon), lm);
+    if length(horizon) ~= 1
+        fprintf(fid, 'retidx = 1;\n');
+        fprintf(fid, 'ret = zeros(%d, %d);\n', length(horizon), lm);
+    end
+
     fprintf(fid, 'for i=1:%d\n', max(horizon));
     printInsideOfLoop(fid, mu, A, true);
-    if length(horizon) == 1
-        fprintf(fid, '    if %d == i\n', horizon);
-    else
+    if length(horizon) ~= 1
         fprintf(fid, '    if any([');
         fprintf(fid, '%d ', horizon);
         fprintf(fid, '] == i)\n');
+        fprintf(fid, '        %% If we want a forecast at more than one\n');
+        fprintf(fid, '        %% horizon save it in ''ret'' when encountered\n');
+        fprintf(fid, '        ret(retidx, :) = y(1:%d);\n', lm);
+        fprintf(fid, '        retidx = retidx + 1;\n');
+        fprintf(fid, '    end\n');
     end
-    fprintf(fid, '        ret(retidx, :) = y(1:%d);\n', lm);
-    fprintf(fid, '        retidx = retidx + 1;\n');
-%    fprintf(fid, '    ret([');
-%    fprintf(fid, '%d ', horizon);
-%    fprintf(fid, '] == i, :) = y(1:%d);\n', lm);
-    fprintf(fid, '    end\n');
+
     fprintf(fid, 'end\n');
+
+    if length(horizon) == 1
+        fprintf(fid, 'ret(1, :) = y(1:%d);\n', lm);
+    end
 end
 
 %% close file
