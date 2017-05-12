@@ -105,7 +105,7 @@ end
 Pinf = zeros(np,np);
 Pinf(1:nk,1:nk) = eye(nk);
 for k = 1:nk
-    if norm(QT(mf,k)) < 1e-8
+    if norm(QT(mf,:)*ST(:,k)) < 1e-8
         Pinf(k,k) = 0;
     end
 end
