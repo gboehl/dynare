@@ -70,7 +70,6 @@ for i=1:min(var_model_order, 2)
             error([strtrim(M_.var.(var_model_name).var_list_(j,:)) ' not found in the list of endogenous variables']);
         end
         yidx(j, i) = M_.lead_lag_incidence(ridx, cidx);
-
     end
 end
 yidx = yidx(:);
