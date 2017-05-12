@@ -83,7 +83,7 @@ ModelInversion.J_id = [ModelInversion.y_free_id ; sum(DynareModel.lead_lag_incid
 
 % Get the name of the dynamic model routines.
 model_dynamic = str2func([DynareModel.fname,'_dynamic']);
-model_dtransf = str2func('dynamic_model_for_inversion');
+model_dtransf = str2func('dynamic_backward_model_for_inversion');
 
 % Initialization of vector y (free endogenous variables and free innovations).
 y = NaN(nyfree+nxfree);

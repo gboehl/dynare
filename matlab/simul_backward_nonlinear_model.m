@@ -1,40 +1,27 @@
 function DynareOutput = simul_backward_nonlinear_model(initial_conditions, sample_size, DynareOptions, DynareModel, DynareOutput, innovations)
 
-%@info:
-%! @deftypefn {Function File} {@var{DynareOutput} =} simul_backward_nonlinear_model (@var{sample_size},@var{DynareOptions}, @var{DynareModel}, @var{DynareOutput})
-%! @anchor{@simul_backward_nonlinear_model}
-%! @sp 1
-%! Simulates a stochastic non linear backward looking model with arbitrary precision (a deterministic solver is used).
-%! @sp 2
-%! @strong{Inputs}
-%! @sp 1
-%! @table @ @var
-%! @item sample_size
-%! Scalar integer, size of the sample to be generated.
-%! @item DynareOptions
-%! Matlab/Octave structure (Options used by Dynare).
-%! @item DynareDynareModel
-%! Matlab/Octave structure (Description of the model).
-%! @item DynareOutput
-%! Matlab/Octave structure (Results reported by Dynare).
-%! @end table
-%! @sp 1
-%! @strong{Outputs}
-%! @sp 1
-%! @table @ @var
-%! @item DynareOutput
-%! Matlab/Octave structure (Results reported by Dynare).
-%! @end table
-%! @sp 2
-%! @strong{This function is called by:}
-%! @sp 2
-%! @strong{This function calls:}
-%! @ref{dynTime}
-%!
-%! @end deftypefn
-%@eod:
+% Simulates a stochastic non linear backward looking model with arbitrary precision (a deterministic solver is used).
+%
+% INPUTS 
+% - initial_conditions  [double]      n*1 vector, initial conditions for the endogenous variables.
+% - sample_size         [integer]     scalar, number of periods for the simulation.
+% - DynareOptions       [struct]      Dynare's options_ global structure.
+% - DynareModel         [struct]      Dynare's M_ global structure.
+% - DynareOutput        [struct]      Dynare's oo_ global structure.
+% - innovations         [double]      T*q matrix, innovations to be used for the simulation.
+%
+% OUTPUTS 
+% - DynareOutput        [struct]      Dynare's oo_ global structure.
+%
+% REMARKS 
+% [1] The innovations used for the simulation are saved in DynareOutput.exo_simul, and the resulting paths for the endogenous
+%     variables are saved in DynareOutput.endo_simul.
+% [2] The last input argument is not mandatory. If absent we use random draws and rescale them with the informations provided
+%     through the shocks block.
+% [3] If the first input argument is empty, the endogenous variables are initialized with 0, or if available with the informations
+%     provided thrtough the histval block.
 
-% Copyright (C) 2012-2016 Dynare Team
+% Copyright (C) 2012-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -83,7 +70,6 @@ else
 end
 
 % Get usefull vector of indices.
-ny0 = nnz(DynareModel.lead_lag_incidence(2,:));
 ny1 = nnz(DynareModel.lead_lag_incidence(1,:));
 iy1 = find(DynareModel.lead_lag_incidence(1,:)>0);
 idx = 1:DynareModel.endo_nbr;
@@ -92,6 +78,7 @@ hdx = 1:ny1;
 
 % Get the name of the dynamic model routine.
 model_dynamic = str2func([DynareModel.fname,'_dynamic']);
+model_dynamic_s = str2func('dynamic_backward_model_for_simulation');
 
 % initialization of vector y.
 y = NaN(length(idx)+ny1,1);
@@ -112,14 +99,9 @@ Y = DynareOutput.endo_simul;
 
 % Simulations (call a Newton-like algorithm for each period).
 for it = 2:sample_size+1
-    y(jdx) = Y(:,it-1);                       % A good guess for the initial conditions is the previous values for the endogenous variables.
-    y(hdx) = y(jdx(iy1));                     % Set lagged variables.
-    z = trust_region(model_dynamic, y, idx, jdx, 1, DynareOptions.gstep, ...
-                    DynareOptions.solve_tolf,DynareOptions.solve_tolx, ...
-                    DynareOptions.simul.maxit,DynareOptions.debug, ...
-                    DynareOutput.exo_simul, DynareModel.params, ...
-                    DynareOutput.steady_state, it);
-    Y(:,it) = z(jdx);
+    ylag = Y(iy1,it-1);                   % Set lagged variables.
+    y = Y(:,it-1);                        % A good guess for the initial conditions is the previous values for the endogenous variables.
+    Y(:,it) = dynare_solve(model_dynamic_s, y, DynareOptions, model_dynamic, ylag, DynareOutput.exo_simul, DynareModel.params, DynareOutput.steady_state, it);
 end
 
 DynareOutput.endo_simul = Y;

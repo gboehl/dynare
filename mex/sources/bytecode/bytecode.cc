@@ -1060,7 +1060,6 @@ main(int nrhs, const char *prhs[])
   if (stack_solve_algo == 7 && !steady_state)
     DYN_MEX_FUNC_ERR_MSG_TXT("bytecode has not been compiled with CUDA option. Bytecode Can't use options_.stack_solve_algo=7\n");
 #endif
-
   size_t size_of_direction = col_y*row_y*sizeof(double);
   double *y = (double *) mxMalloc(size_of_direction);
   error_msg.test_mxMalloc(y, __LINE__, __FILE__, __func__, size_of_direction);
@@ -1081,12 +1080,13 @@ main(int nrhs, const char *prhs[])
       y[i]  = double (yd[i]);
       ya[i] = double (yd[i]);
     }
-  size_t y_size = row_y;
+    size_t y_size = row_y;
   size_t nb_row_x = row_x;
+
   clock_t t0 = clock();
   Interpreter interprete(params, y, ya, x, steady_yd, steady_xd, direction, y_size, nb_row_x, nb_row_xd, periods, y_kmin, y_kmax, maxit_, solve_tolf, size_of_direction, slowc, y_decal,
                          markowitz_c, file_name, minimal_solving_periods, stack_solve_algo, solve_algo, global_temporary_terms, print, print_error, GlobalTemporaryTerms, steady_state,
-                         print_it, col_x
+                         print_it, col_x, col_y
 #ifdef CUDA
                          , CUDA_device, cublas_handle, cusparse_handle, descr
 #endif
@@ -1096,6 +1096,7 @@ main(int nrhs, const char *prhs[])
   int nb_blocks = 0;
   double *pind;
   bool no_error = true;
+
   if (extended_path)
     {
         try
@@ -1151,15 +1152,25 @@ main(int nrhs, const char *prhs[])
                 }
               else
                 {
-                  plhs[1] = mxCreateDoubleMatrix(int(row_y), int(col_y), mxREAL);
+                  int out_periods;
+                  if (extended_path)
+                    out_periods = max_periods + y_kmin;
+                  else
+                    out_periods = row_y;
+                  plhs[1] = mxCreateDoubleMatrix(out_periods, int(col_y), mxREAL);
                   pind = mxGetPr(plhs[1]);
-                  for (i = 0; i < row_y*col_y; i++)
+                  for (i = 0; i < out_periods*col_y; i++)
                     pind[i] = y[i];
                 }
             }
           else
             {
-              plhs[1] = mxCreateDoubleMatrix(int(row_y), int(col_y), mxREAL);
+              int out_periods;
+              if (extended_path)
+                out_periods = max_periods + y_kmin;
+              else
+                out_periods = col_y;
+              plhs[1] = mxCreateDoubleMatrix(int(row_y), out_periods, mxREAL);
               pind = mxGetPr(plhs[1]);
               if (evaluate)
                 {
@@ -1168,8 +1179,8 @@ main(int nrhs, const char *prhs[])
                     pind[i] = residual[i];
                 }
               else
-                for (i = 0; i < row_y*col_y; i++)
-                  pind[i] = y[i];
+                for (i = 0; i < row_y*out_periods; i++)
+                    pind[i] = y[i];
             }
           if (nlhs > 2)
             {
@@ -1227,7 +1238,10 @@ main(int nrhs, const char *prhs[])
                   plhs[2] = mxCreateDoubleMatrix(int(row_x), int(col_x), mxREAL);
                   pind = mxGetPr(plhs[2]);
                   for (i = 0; i < row_x*col_x; i++)
-                    pind[i] = x[i];
+                    {
+                      pind[i] = x[i];
+                    }
+
                 }
               if (nlhs > 3)
                 {

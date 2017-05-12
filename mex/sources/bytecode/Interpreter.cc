@@ -35,7 +35,7 @@ Interpreter::Interpreter(double *params_arg, double *y_arg, double *ya_arg, doub
                          int maxit_arg_, double solve_tolf_arg, size_t size_of_direction_arg, double slowc_arg, int y_decal_arg, double markowitz_c_arg,
                          string &filename_arg, int minimal_solving_periods_arg, int stack_solve_algo_arg, int solve_algo_arg,
                          bool global_temporary_terms_arg, bool print_arg, bool print_error_arg, mxArray *GlobalTemporaryTerms_arg,
-                         bool steady_state_arg, bool print_it_arg, int col_x_arg
+                         bool steady_state_arg, bool print_it_arg, int col_x_arg, int col_y_arg
 #ifdef CUDA
                          , const int CUDA_device_arg, cublasHandle_t cublas_handle_arg, cusparseHandle_t cusparse_handle_arg, cusparseMatDescr_t descr_arg
 #endif
@@ -74,6 +74,7 @@ Interpreter::Interpreter(double *params_arg, double *y_arg, double *ya_arg, doub
   global_temporary_terms = global_temporary_terms_arg;
   print = print_arg;
   col_x = col_x_arg;
+  col_y = col_y_arg;
   GlobalTemporaryTerms = GlobalTemporaryTerms_arg;
   print_error = print_error_arg;
   //steady_state = steady_state_arg;
@@ -855,20 +856,18 @@ bool
 Interpreter::extended_path(string file_name, string bin_basename, bool evaluate, int block, int &nb_blocks, int nb_periods, vector<s_plan> sextended_path, vector<s_plan> sconstrained_extended_path, vector<string> dates, table_conditional_global_type table_conditional_global)
 {
   CodeLoad code;
+
   ReadCodeFile(file_name, code);
   it_code = code_liste.begin();
   it_code_type Init_Code = code_liste.begin();
   /*size_t size_of_direction = y_size*(periods + y_kmax + y_kmin)*sizeof(double);
   double *y_save = (double *) mxMalloc(size_of_direction);
   double *x_save = (double *) mxMalloc((periods + y_kmax + y_kmin) * col_x *sizeof(double));*/
-  int max_periods = max(periods, nb_periods);
-  size_t size_of_direction = y_size*(max_periods + y_kmax + y_kmin)*sizeof(double);
+  size_t size_of_direction = y_size*col_y*sizeof(double);
   double *y_save = (double *) mxMalloc(size_of_direction);
   test_mxMalloc(y_save, __LINE__, __FILE__, __func__, size_of_direction);
-
-
-  double *x_save = (double *) mxMalloc((max_periods + y_kmax + y_kmin) * col_x *sizeof(double));
-  test_mxMalloc(x_save, __LINE__, __FILE__, __func__, (max_periods + y_kmax + y_kmin) * col_x *sizeof(double));
+  double *x_save = (double *) mxMalloc(nb_row_x * col_x *sizeof(double));
+  test_mxMalloc(x_save, __LINE__, __FILE__, __func__, nb_row_x * col_x *sizeof(double));
 
   vector_table_conditional_local_type vector_table_conditional_local;
   vector_table_conditional_local.clear();
@@ -880,9 +879,9 @@ Interpreter::extended_path(string file_name, string bin_basename, bool evaluate,
       x[j] = 0;
     }
   for (int j = 0; j < col_x; j++)
-    x[y_kmin + j * nb_row_x] = x_save[1 + y_kmin + j * nb_row_x];
-  for (int i = 0; i < (y_size*(periods + y_kmax + y_kmin)); i++)
-    y_save[i]  = y[i];
+    x[y_kmin + j * nb_row_x] = x_save[y_kmin + j * nb_row_x];
+  for (int i = 0; i < y_size * col_y; i++)
+    y_save[i] = y[i];
   if (endo_name_length_l < 8)
     endo_name_length_l = 8;
   bool old_print_it = print_it;
@@ -914,7 +913,10 @@ Interpreter::extended_path(string file_name, string bin_basename, bool evaluate,
           mexEvalString("drawnow;");
         }
       for (vector<s_plan>::const_iterator it = sextended_path.begin(); it != sextended_path.end(); it++)
-        x[y_kmin + (it->exo_num - 1) * (periods + y_kmax + y_kmin)] = it->value[t];
+        {
+          x[y_kmin + (it->exo_num - 1) * /*(nb_periods + y_kmax + y_kmin)*/ nb_row_x] = it->value[t];
+        }
+
       it_code = Init_Code;
       vector_table_conditional_local.clear();
       if (table_conditional_global.size())
@@ -932,7 +934,8 @@ Interpreter::extended_path(string file_name, string bin_basename, bool evaluate,
       for (int j = 0; j < col_x; j++)
         {
           x_save[t + y_kmin + j * nb_row_x] = x[y_kmin + j * nb_row_x];
-          x[y_kmin + j * nb_row_x] = x_save[t + 1 + y_kmin + j * nb_row_x];
+          if (t < nb_periods)
+            x[y_kmin + j * nb_row_x] = x_save[t + 1 + y_kmin + j * nb_row_x];
         }
 
       if (old_print_it)
@@ -941,21 +944,21 @@ Interpreter::extended_path(string file_name, string bin_basename, bool evaluate,
           for (unsigned int i = 0; i < endo_name_length; i++)
             if (P_endo_names[CHAR_LENGTH*(max_res_idx+i*y_size)] != ' ')
               res << P_endo_names[CHAR_LENGTH*(max_res_idx+i*y_size)];
-           res1 << std::scientific << max_res;
+          res1 << std::scientific << max_res;
           mexPrintf("%s|%s| %4d  |  x  |\n",elastic(res.str(),endo_name_length_l+2, true).c_str(), elastic(res1.str(), real_max_length+2, false).c_str(), iter);
           mexPrintf(line.c_str());
           mexEvalString("drawnow;");
         }
     }
   print_it = old_print_it;
-  for (int j = 0; j < y_size; j++)
+  /*for (int j = 0; j < y_size; j++)
     {
       for(int k = nb_periods; k < periods; k++)
         y_save[j + (k + y_kmin) * y_size] = y[ j +  ( k - (nb_periods-1) + y_kmin) * y_size];
-    }
-  for (int i = 0; i < (y_size*(periods + y_kmax + y_kmin)); i++)
+    }*/
+    for (int i = 0; i < y_size * col_y; i++)
     y[i]  = y_save[i];
-  for (int j = 0; j < col_x* nb_row_x; j++)
+  for (int j = 0; j < col_x * nb_row_x; j++)
     x[j] = x_save[j];
   if (Init_Code->second)
     mxFree(Init_Code->second);

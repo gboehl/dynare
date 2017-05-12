@@ -3408,9 +3408,9 @@ dynSparseMatrix::Solve_LU_UMFPack(SuiteSparse_long *Ap, SuiteSparse_long *Ai, do
                     {
                       int eq = index_vara[i+Size*(y_kmin)];
                       int flip_exo = vector_table_conditional_local[i].var_exo;
-                      double  yy = -(res[i] + x[y_kmin + flip_exo*/*row_x*/nb_row_x]);
+                      double  yy = -(res[i] + x[y_kmin + flip_exo*nb_row_x]);
                       direction[eq] = 0;
-                      x[flip_exo*/*row_x*/nb_row_x + y_kmin] += slowc_l * yy;
+                      x[flip_exo*nb_row_x + y_kmin] += slowc_l * yy;
                     }
                   else
                     {
