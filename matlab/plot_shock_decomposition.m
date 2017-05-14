@@ -38,7 +38,8 @@ if size(varlist,1) == 0
     varlist = M_.endo_names(1:M_.orig_endo_nbr,:);
 end
 
-[i_var,nvar] = varlist_indices(varlist,M_.endo_names);
+[i_var,nvar,index_uniques] = varlist_indices(varlist,M_.endo_names);
+varlist=varlist(index_uniques,:);
 
 % number of variables
 endo_nbr = M_.endo_nbr;

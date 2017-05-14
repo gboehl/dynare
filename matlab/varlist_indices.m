@@ -1,5 +1,5 @@
 function [i_var,nvar,index_uniques] = varlist_indices(sublist,list)
-% function [i_var,nvar] = varlist_indices(sublist,list)
+% function [i_var,nvar,index_uniques] = varlist_indices(sublist,list)
 % returns the indices of a list of endogenous variables
 %
 % INPUT

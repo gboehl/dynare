@@ -56,7 +56,8 @@ if size(var_list,1) == 0
     var_list = M_.endo_names(1:M_.orig_endo_nbr, :);
 end
 
-[i_var,nvar] = varlist_indices(var_list,M_.endo_names);
+[i_var,nvar,index_uniques] = varlist_indices(var_list,M_.endo_names);
+var_list=var_list(index_uniques,:);
 
 iter_ = max(options_.periods,1);
 if M_.exo_nbr > 0

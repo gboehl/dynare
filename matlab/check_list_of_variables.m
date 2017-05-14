@@ -33,8 +33,8 @@ function varlist = check_list_of_variables(options_, M_, varlist)
 
 %get uniques
 
-[junk1,junk2,index_uniqes] = varlist_indices(varlist,M_.endo_names);
-varlist=varlist(index_uniqes,:);
+[junk1,junk2,index_uniques] = varlist_indices(varlist,M_.endo_names);
+varlist=varlist(index_uniques,:);
 
 msg = 0;
 if options_.dsge_var && options_.bayesian_irf
