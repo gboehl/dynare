@@ -215,6 +215,7 @@ The Model file
 * Optimal policy::
 * Sensitivity and identification analysis::
 * Markov-switching SBVAR::
+* Vector Autoregression::
 * Displaying and saving results::
 * Macro-processing language::
 * Verbatim inclusion::
@@ -267,6 +268,11 @@ Types of analysis and output files
 * RMSE::
 * Screening Analysis::
 * Identification Analysis::
+
+Vector Autoregression
+
+* Estimation::
+* Forecasting::
 
 Macro-processing language
 
@@ -1077,7 +1083,7 @@ end of line one and the parser would continue processing.
 * Optimal policy::
 * Sensitivity and identification analysis::
 * Markov-switching SBVAR::
-* Forecast from VARs::
+* Vector Autoregression::
 * Displaying and saving results::
 * Macro-processing language::
 * Verbatim inclusion::
@@ -10207,36 +10213,180 @@ Do not output percentile error bands (@i{i.e.} compute mean). Default:
 
 @end deffn
 
-@node Forecast from VARs
-@section Forecast from VARs
-
-Dynare allows you to include forecasts from VARs in the @ref{Model
-declaration}. A VAR model must be specified using the @ref{var_model} command
-so it may then be used inside the model block via the @ref{var_expectation}
-operator.
+@node Vector Autoregression
+@section Vector Autoregression
+Dynare allows you to estimate VAR models and to use forecasts from those VARs in the @ref{Model
+declaration}. A VAR model must be specified using the @ref{var_model} command.
 
 @anchor{var_model}
-@deffn Command var_model (var_model = @var{FILENAME}, var_order = @var{INTEGER}) @var{VARIABLE_NAME} [@var{VARIABLE_NAME}@dots{}];
+@deffn Command var_model (@var{OPTIONS}@dots{}) @var{VARIABLE_NAME} [@var{VARIABLE_NAME}@dots{}];
+@descriptionhead
 
-This declares a VAR model whose forecast can be used in the model block.
+This declares a VAR model that can be estimated and/or whose forecast can be used
+in the model block.
 
-The @code{var_model} specifier must be passed to the command as it specifies
-the name of the @code{.mat} file that contains the estimatied intercepts and
-coefficient matricies of the VAR. The intercept must be specified in a variable
-called @code{mu} and the coefficients must be specified in a cell array called
+The @code{var_model} command depends on a data file, specified either by the
+@code{model_name} option or the @code{datafile} option (see below). In the data
+file, the intercept must be stored in a variable called @code{mu} and the
+coefficients must be stored in a cell array called
 @code{autoregressive_matrices}. If the command specifies a VAR of order
 @code{p} with @code{n} endogenous variables, then @code{mu} will be an @code{n}
 by @code{1} array and @code{autoregressive_matricies} will have @code{p} cells,
 each containing an @code{n} by @code{n} matrix.
 
-The @code{var_order} specifier must be passed to the command as it specifies
-the lag length of the VAR.
+The @ref{var_model} command must be followed by a list of endogenous variables,
+which are the variables of the VAR.
+
+@optionshead
+
+@table @code
+
+@anchor{var_model_model_name}
+@item model_name = @var{VARIABLE_NAME}
+The name of the VAR model. By default, it specifies the name of the @code{.mat}
+file that contains the estimatied intercepts and coefficient matricies of the
+VAR. This option is required.
+
+@item datafile = @var{FILENAME}
+By default, the data is contained in @code{<<model_name>>.mat}. If the data for
+estimation is contained in a different file, you can pass the filename to this
+option.
+
+@item order = @var{INTEGER}
+The number of lags in the VAR. Default: @code{1}
+
+@end table
+
+@end deffn
+
+@menu
+* Estimation::
+* Forecasting::
+@end menu
+
+@node Estimation
+@subsection VAR Estimation
+
+To estimate a VAR it must first be declared via the @ref{var_model}
+command. Then it is the @code{var_estimation} command that launches LS
+estimation.
+
+@anchor{var_estimation}
+@deffn Command var_estimation (@var{OPTIONS}@dots{});
+@descriptionhead
+
+This declares a VAR model that can be estimated and/or whose forecast can be used
+in the model block.
 
 The @ref{var_model} command must be followed by a list of endogenous variables,
 which are the variables of the VAR.
 
+@optionshead
+
+@table @code
+
+@item model_name = @var{VARIABLE_NAME}
+The name of the model to be estimated, previously declared via the
+@ref{var_model} command. This is a required argument.
+
+@item datafile = @var{FILENAME}
+By default, the data is contained in @code{<<model_name>>.mat}. If the data for
+estimation is contained in a different file, you can pass the filename to this
+option.
+
+@end table
+
 @end deffn
 
+@deffn Block restrictions (@var{VARIABLE_NAME});
+
+@descriptionhead
+
+The @code{restrictions} block allows you to impose constraints on the VAR to
+be estimated.
+
+The block takes a @var{VARIABLE_NAME} argument which refers to the VAR model to which
+the restrictions apply (as specified by @ref{var_model_model_name}).
+
+The VAR constraints are written in a block delimited by @code{restrictions} and
+@code{end} keywords.
+
+@b{Exclusion Restrictions} can be imposed with a main line indicating the lag
+at which the exclusion restriction should apply:
+@example
+EXCLUSION LAG @var{INTEGER};
+@end example
+All subsequent lines will be applied at the specified lag and look like:
+@example
+EQUATION (@var{VARIABLE_NAME}) @var{VARIABLE_NAME} [@var{VARIABLE_NAME}@dots{}];
+@end example
+Here, the @var{VARIABLE_NAME} between parenthesis specifies the equation from
+which the following @var{VARIABLE_NAME}(s) will be excluded (again, at the
+specified lag).
+
+A concrete example could be helpful. In a VAR(3) with variables @code{a},
+@code{b}, and @code{c}, we could exclude @code{b} and @code{c} at lag @math{2}
+from the equation where @code{a} is the independent variable, and exclude
+@code{c} at lags @math{2} and @math{3} from @code{b}'s equation by including
+the following the @code{.mod} file:
+@example
+restrictions(my_var_model);
+exclusion lag 2;
+equation(a) b c;
+equation(b) c;
+exclusion lag 3;
+equation(b) c;
+end;
+@end example
+
+@anchor{restriction_equation}
+@b{Linear Restrictions in an Equation} of the form @math{C\beta=c} can be imposed with a line in the form of:
+@example
+RESTRICTION EQUATION (@var{VARIABLE_NAME}) ...
+COEFF(@var{VARIABLE_NAME}, @var{INTEGER}) [*|/] @var{EXPRESSION} ...
+[[+|-] COEFF(@var{VARIABLE_NAME}, @var{INTEGER}) [*|/] @var{EXPRESSION}] = @var{DOUBLE};
+@end example
+Here, the first @var{VARIABLE_NAME} is the equation to which this restriction
+applies. @code{COEFF(@var{VARIABLE_NAME}, @var{INTEGER})} means the coefficient
+on @var{VARIABLE_NAME} at lag @var{INTEGER} to which this relation applies. The
+coefficient is either multiplied or divided by an @var{EXPRESSION}. The
+constraint can be additive or subtractive with another coefficient in the same
+equation. All of this is set equal to a constant value, @var{DOUBLE}.
+
+@b{Linear Restrictions accross Equations} can be imposed with a line in the form of:
+@example
+RESTRICTION CROSSEQUATIONS ...
+COEFF(@var{VARIABLE_NAME}, @var{VARIABLE_NAME}, @var{INTEGER}) [*|/] @var{EXPRESSION} ...
+[[+|-] COEFF(@var{VARIABLE_NAME}, @var{VARIABLE_NAME}, @var{INTEGER}) [*|/] @var{EXPRESSION}] ...
+= @var{DOUBLE};
+@end example
+Same as for @ref{restriction_equation}. The only difference being the
+@code{COEFF} operator takes three arguments. The first specifies the equation
+on which the coefficient on the second argument should be applied. The lag at
+which it is applied is the third argument.
+
+@b{Covariance Matrix Exclusion Restrictions} can be imposed with a line in the form of:
+@example
+RESTRICTION COVARIANCE (@var{VARIABLE_NAME}, @var{VARIABLE_NAME}) = 0;
+@end example
+which says that the covariance between the two variables is zero.
+
+@b{Covariance Matrix Restrictions} can be imposed with a line in the form of:
+@example
+RESTRICTION COVARIANCE (@var{VARIABLE_NAME}, @var{VARIABLE_NAME}) = ...
+(@var{VARIABLE_NAME}, @var{VARIABLE_NAME});
+@end example
+which says that the covariance between the two pairs of variables is equal.
+
+@end deffn
+
+
+@node Forecasting
+@subsection VAR Forecasts
+
+To use a forecast from a VAR in the @code{model} block, it must first be
+declared via the @ref{var_model} command. It can then be used in the
+@code{model} block using the @ref{var_expectation} operator.
 
 @node Displaying and saving results
 @section Displaying and saving results
