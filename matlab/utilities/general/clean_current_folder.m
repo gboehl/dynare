@@ -1,4 +1,4 @@
-function clean()
+function clean_current_folder()
 
 % Copyright (C) 2014 Dynare Team
 %
