@@ -12,31 +12,58 @@
 
 using namespace std;
 
-class MMException : public MallocAllocator {
-	string message;
+class MMException : public MallocAllocator
+{
+  string message;
 public:
-	MMException(string mes) : message(mes) {}
-	MMException(const char* mes) : message(mes) {}
-	const char* getMessage() const {return message.data();}
+  MMException(string mes) : message(mes)
+  {
+  }
+  MMException(const char *mes) : message(mes)
+  {
+  }
+  const char *
+  getMessage() const
+  {
+    return message.data();
+  }
 };
 
-class MMMatrixIn : public MallocAllocator {
-	double* data;
-	int rows;
-	int cols;
+class MMMatrixIn : public MallocAllocator
+{
+  double *data;
+  int rows;
+  int cols;
 public:
-	MMMatrixIn(const char* fname);
-	~MMMatrixIn();
-	const double* getData() const {return data;}
-	int size() const {return rows*cols;}
-	int row() const {return rows;}
-	int col() const {return cols;}
+  MMMatrixIn(const char *fname);
+  ~MMMatrixIn();
+  const double *
+  getData() const
+  {
+    return data;
+  }
+  int
+  size() const
+  {
+    return rows*cols;
+  }
+  int
+  row() const
+  {
+    return rows;
+  }
+  int
+  col() const
+  {
+    return cols;
+  }
 };
 
-class MMMatrixOut : public MallocAllocator {
+class MMMatrixOut : public MallocAllocator
+{
 public:
-	static void write(const char* fname, int rows, int cols, const double* data);
-	static void write(const char* fname, const GeneralMatrix& m);
+  static void write(const char *fname, int rows, int cols, const double *data);
+  static void write(const char *fname, const GeneralMatrix &m);
 };
 
 #endif /* MM_MATRIX_H */

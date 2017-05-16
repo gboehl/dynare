@@ -22,45 +22,41 @@
 #include <ctime>
 #include <math.h>
 #ifdef DYN_MEX_FUNC_ERR_MSG_TXT
-  #undef DYN_MEX_FUNC_ERR_MSG_TXT
+# undef DYN_MEX_FUNC_ERR_MSG_TXT
 #endif // DYN_MEX_FUNC_ERR_MSG_TXT
 
-#define DYN_MEX_FUNC_ERR_MSG_TXT(str)                                                                   \
- do {                                                                                                     \
-    mexPrintf("%s\n", str);                                                                             \
-    if (nlhs > 0)                                                                                       \
-      {                                                                                                 \
-        plhs[0] = mxCreateDoubleScalar(1);                                                              \
-        if (nlhs > 1)                                                                                   \
-          {                                                                                             \
-            double *pind;                                                                               \
-            plhs[1] = mxCreateDoubleMatrix(int(row_y), int(col_y), mxREAL);                             \
-            pind = mxGetPr(plhs[1]);                                                                    \
-            if (evaluate )                                                                              \
-              {                                                                                         \
-                for (unsigned int i = 0; i < row_y*col_y; i++)                                                   \
-                  pind[i] = 0;                                                                          \
-              }                                                                                         \
-            else                                                                                        \
-              {                                                                                         \
-                for (unsigned int i = 0; i < row_y*col_y; i++)                                                   \
-                  pind[i] = yd[i];                                                                      \
-              }                                                                                         \
-            for (int i = 2; i < nlhs; i++)                                                              \
-              plhs[i] = mxCreateDoubleScalar(1);                                                        \
-          }                                                                                             \
-      }                                                                                                 \
-    return;                                                                                             \
+#define DYN_MEX_FUNC_ERR_MSG_TXT(str)                                   \
+  do {                                                                  \
+    mexPrintf("%s\n", str);                                             \
+    if (nlhs > 0)                                                       \
+      {                                                                 \
+        plhs[0] = mxCreateDoubleScalar(1);                              \
+        if (nlhs > 1)                                                   \
+          {                                                             \
+            double *pind;                                               \
+            plhs[1] = mxCreateDoubleMatrix(int (row_y), int (col_y), mxREAL); \
+            pind = mxGetPr(plhs[1]);                                    \
+            if (evaluate)                                               \
+              {                                                         \
+                for (unsigned int i = 0; i < row_y*col_y; i++)          \
+                  pind[i] = 0;                                          \
+              }                                                         \
+            else                                                        \
+              {                                                         \
+                for (unsigned int i = 0; i < row_y*col_y; i++)          \
+                  pind[i] = yd[i];                                      \
+              }                                                         \
+            for (int i = 2; i < nlhs; i++)                              \
+              plhs[i] = mxCreateDoubleScalar(1);                        \
+          }                                                             \
+      }                                                                 \
+    return;                                                             \
   } while (0)
-
 
 #ifdef DEBUG_EX
 
 using namespace std;
 # include <sstream>
-
-
-
 
 string
 Get_Argument(const char *argv)
@@ -72,7 +68,6 @@ Get_Argument(const char *argv)
 #else
 
 void (*prev_fn)(int);
-
 
 string
 Get_Argument(const mxArray *prhs)
@@ -90,10 +85,8 @@ Get_Argument(const mxArray *prhs)
 }
 #endif
 
-
 //#include <windows.h>
 #include <stdio.h>
-
 
 #ifdef CUDA
 int
@@ -103,7 +96,7 @@ GPU_Test_and_Info(cublasHandle_t *cublas_handle, cusparseHandle_t *cusparse_hand
   int device_count, device, version, version_max = 0;
   cublasStatus_t cublas_status;
   cudaError_t cuda_error;
-  *descr=0;
+  *descr = 0;
 
   /* ask cuda how many devices it can find */
   cudaGetDeviceCount(&device_count);
@@ -124,9 +117,9 @@ GPU_Test_and_Info(cublasHandle_t *cublas_handle, cusparseHandle_t *cusparse_hand
           cuda_error = cudaGetDeviceProperties(&deviceProp, i);
           if (cuda_error != cudaSuccess)
             {
-               ostringstream tmp;
-               tmp << "  bytecode cudaGetDeviceProperties failed\n";
-               throw FatalExceptionHandling(tmp.str());
+              ostringstream tmp;
+              tmp << "  bytecode cudaGetDeviceProperties failed\n";
+              throw FatalExceptionHandling(tmp.str());
             }
           mexPrintf("> GPU device %d: \"%s\" has:\n   - %d Multi-Processors,\n   - %d threads per multiprocessor,\n", i, deviceProp.name, deviceProp.multiProcessorCount, deviceProp.maxThreadsPerMultiProcessor);
           mexEvalString("drawnow;");
@@ -136,7 +129,7 @@ GPU_Test_and_Info(cublasHandle_t *cublas_handle, cusparseHandle_t *cusparse_hand
               device = i;
               version_max = version;
             }
-          mexPrintf("   - %4.2fMhz clock rate,\n   - %2.0fMb of memory,\n   - %d.%d compute capabilities.\n", double(deviceProp.clockRate) / (1024 * 1024), double(deviceProp.totalGlobalMem) / (1024 * 1024), deviceProp.major, deviceProp.minor);
+          mexPrintf("   - %4.2fMhz clock rate,\n   - %2.0fMb of memory,\n   - %d.%d compute capabilities.\n", double (deviceProp.clockRate) / (1024 * 1024), double (deviceProp.totalGlobalMem) / (1024 * 1024), deviceProp.major, deviceProp.minor);
           mexEvalString("drawnow;");
         }
     }
@@ -146,17 +139,17 @@ GPU_Test_and_Info(cublasHandle_t *cublas_handle, cusparseHandle_t *cusparse_hand
   cuda_error = cudaSetDevice(device);
   if (cuda_error != cudaSuccess)
     {
-       ostringstream tmp;
-       tmp << "  bytecode cudaSetDevice failed\n";
-       throw FatalExceptionHandling(tmp.str());
+      ostringstream tmp;
+      tmp << "  bytecode cudaSetDevice failed\n";
+      throw FatalExceptionHandling(tmp.str());
     }
 
-  if(version_max < 0x11)
+  if (version_max < 0x11)
     {
-       ostringstream tmp;
-       tmp << "  bytecode requires a minimum CUDA compute 1.1 capability\n";
-       cudaDeviceReset();
-       throw FatalExceptionHandling(tmp.str());
+      ostringstream tmp;
+      tmp << "  bytecode requires a minimum CUDA compute 1.1 capability\n";
+      cudaDeviceReset();
+      throw FatalExceptionHandling(tmp.str());
     }
 
   // Initialize CuBlas library
@@ -164,16 +157,16 @@ GPU_Test_and_Info(cublasHandle_t *cublas_handle, cusparseHandle_t *cusparse_hand
   if (cublas_status != CUBLAS_STATUS_SUCCESS)
     {
       ostringstream tmp;
-      switch(cublas_status)
+      switch (cublas_status)
         {
-          case CUBLAS_STATUS_NOT_INITIALIZED:
-            tmp << " the CUBLAS initialization failed.\n";
-            break;
-          case CUBLAS_STATUS_ALLOC_FAILED:
-            tmp << " the resources could not be allocated.\n";
-            break;
-          default:
-            tmp << " unknown error during the initialization of cusparse library.\n";
+        case CUBLAS_STATUS_NOT_INITIALIZED:
+          tmp << " the CUBLAS initialization failed.\n";
+          break;
+        case CUBLAS_STATUS_ALLOC_FAILED:
+          tmp << " the resources could not be allocated.\n";
+          break;
+        default:
+          tmp << " unknown error during the initialization of cusparse library.\n";
         }
       throw FatalExceptionHandling(tmp.str());
     }
@@ -184,19 +177,19 @@ GPU_Test_and_Info(cublasHandle_t *cublas_handle, cusparseHandle_t *cusparse_hand
   if (cusparse_status != CUSPARSE_STATUS_SUCCESS)
     {
       ostringstream tmp;
-      switch(cusparse_status)
+      switch (cusparse_status)
         {
-          case CUSPARSE_STATUS_NOT_INITIALIZED:
-            tmp << " the CUDA Runtime initialization failed.\n";
-            break;
-          case CUSPARSE_STATUS_ALLOC_FAILED:
-            tmp <<  " the resources could not be allocated.\n";
-            break;
-          case CUSPARSE_STATUS_ARCH_MISMATCH:
-            tmp <<  " the device compute capability (CC) is less than 1.1. The CC of at least 1.1 is required.\n";
-            break;
-          default:
-            tmp << " unknown error during the initialization of cusparse library.\n";
+        case CUSPARSE_STATUS_NOT_INITIALIZED:
+          tmp << " the CUDA Runtime initialization failed.\n";
+          break;
+        case CUSPARSE_STATUS_ALLOC_FAILED:
+          tmp <<  " the resources could not be allocated.\n";
+          break;
+        case CUSPARSE_STATUS_ARCH_MISMATCH:
+          tmp <<  " the device compute capability (CC) is less than 1.1. The CC of at least 1.1 is required.\n";
+          break;
+        default:
+          tmp << " unknown error during the initialization of cusparse library.\n";
         }
       throw FatalExceptionHandling(tmp.str());
     }
@@ -221,7 +214,7 @@ GPU_Test_and_Info(cublasHandle_t *cublas_handle, cusparseHandle_t *cusparse_hand
       tmp << " cudaGetVersion has failed\n";
       throw FatalExceptionHandling(tmp.str());
     }
-  mexPrintf("   - CUDA version %5.3f\n", double(cuda_version) / 1000);
+  mexPrintf("   - CUDA version %5.3f\n", double (cuda_version) / 1000);
   int cublas_version;
   cublas_status = cublasGetVersion(*cublas_handle, &cublas_version);
   if (cublas_status != CUBLAS_STATUS_SUCCESS)
@@ -230,7 +223,7 @@ GPU_Test_and_Info(cublasHandle_t *cublas_handle, cusparseHandle_t *cusparse_hand
       tmp << " cublasGetVersion has failed\n";
       throw FatalExceptionHandling(tmp.str());
     }
-  mexPrintf("   - CUBLAS version %5.3f\n", double(cublas_version) / 1000);
+  mexPrintf("   - CUBLAS version %5.3f\n", double (cublas_version) / 1000);
   int cusparse_version;
   cusparse_status = cusparseGetVersion(*cusparse_handle, &cusparse_version);
   if (cusparse_status != CUSPARSE_STATUS_SUCCESS)
@@ -239,7 +232,7 @@ GPU_Test_and_Info(cublasHandle_t *cublas_handle, cusparseHandle_t *cusparse_hand
       tmp << " cusparseGetVersion has failed\n";
       throw FatalExceptionHandling(tmp.str());
     }
-  mexPrintf("   - CUSPARSE version %5.3f\n", double(cusparse_version) / 1000);
+  mexPrintf("   - CUSPARSE version %5.3f\n", double (cusparse_version) / 1000);
   mexPrintf("-----------------------------------------\n");
   return device;
 }
@@ -247,16 +240,16 @@ GPU_Test_and_Info(cublasHandle_t *cublas_handle, cusparseHandle_t *cusparse_hand
 void
 GPU_close(cublasHandle_t cublas_handle, cusparseHandle_t cusparse_handle, cusparseMatDescr_t descr)
 {
-  cublasChk(cublasDestroy(cublas_handle),"in bytecode cublasDestroy failed\n");
+  cublasChk(cublasDestroy(cublas_handle), "in bytecode cublasDestroy failed\n");
   cusparseChk(cusparseDestroyMatDescr(descr), "in bytecode cusparseDestroyMatDescr failed\n");
-  cusparseChk(cusparseDestroy(cusparse_handle),"in bytecode cusparseDestroy failed\n");
+  cusparseChk(cusparseDestroy(cusparse_handle), "in bytecode cusparseDestroy failed\n");
 }
 
 #endif
 string
 deblank(string x)
 {
-  for(int i = 0; i < (int) x.length(); i++)
+  for (int i = 0; i < (int) x.length(); i++)
     if (x[i] == ' ')
       x.erase(i--, 1);
   return x;
@@ -317,7 +310,7 @@ Get_Arguments_and_global_variables(int nrhs,
                 steady_col_y = mxGetN(prhs[i]);
                 break;
               case 4:
-                periods = int(mxGetScalar(prhs[i]));
+                periods = int (mxGetScalar(prhs[i]));
                 break;
               case 5:
                 *block_structur = mxDuplicateArray(prhs[i]);
@@ -327,7 +320,7 @@ Get_Arguments_and_global_variables(int nrhs,
                 *GlobalTemporaryTerms = mxDuplicateArray(prhs[i]);
                 break;
               default:
-                mexPrintf("Unknown argument count_array_argument=%d\n",count_array_argument);
+                mexPrintf("Unknown argument count_array_argument=%d\n", count_array_argument);
                 break;
               }
             count_array_argument++;
@@ -358,7 +351,7 @@ Get_Arguments_and_global_variables(int nrhs,
                     pos += 5;
                   block =  atoi(Get_Argument(prhs[i]).substr(pos, string::npos).c_str())-1;
                 }
-              else if (Get_Argument(prhs[i]).substr(0,13) == "extended_path")
+              else if (Get_Argument(prhs[i]).substr(0, 13) == "extended_path")
                 {
                   *extended_path = true;
                   if ((i+1) >= nrhs)
@@ -430,7 +423,6 @@ Get_Arguments_and_global_variables(int nrhs,
     }
 }
 
-
 #ifdef DEBUG_EX
 int
 main(int nrhs, const char *prhs[])
@@ -467,7 +459,7 @@ main(int nrhs, const char *prhs[])
   double *steady_yd = NULL, *steady_xd = NULL;
   string plan, pfplan;
   bool extended_path;
-  mxArray* extended_path_struct;
+  mxArray *extended_path_struct;
 
   table_conditional_local_type conditional_local;
   vector<s_plan> splan, spfplan, sextended_path, sconditional_extended_path;
@@ -520,76 +512,76 @@ main(int nrhs, const char *prhs[])
           string tmp = "The 'extended_path' option must be followed by the extended_path descriptor";
           DYN_MEX_FUNC_ERR_MSG_TXT(tmp.c_str());
         }
-      mxArray* date_str = mxGetField(extended_path_struct, 0, "date_str");
+      mxArray *date_str = mxGetField(extended_path_struct, 0, "date_str");
       if (date_str == NULL)
         {
           string tmp = "date_str";
-          tmp.insert(0,"The extended_path description structure does not contain the member: ");
+          tmp.insert(0, "The extended_path description structure does not contain the member: ");
           DYN_MEX_FUNC_ERR_MSG_TXT(tmp.c_str());
         }
       int nb_periods = mxGetM(date_str) * mxGetN(date_str);
 
-      mxArray* constrained_vars_ = mxGetField(extended_path_struct, 0, "constrained_vars_");
+      mxArray *constrained_vars_ = mxGetField(extended_path_struct, 0, "constrained_vars_");
       if (constrained_vars_ == NULL)
         {
           string tmp = "constrained_vars_";
-          tmp.insert(0,"The extended_path description structure does not contain the member: ");
+          tmp.insert(0, "The extended_path description structure does not contain the member: ");
           DYN_MEX_FUNC_ERR_MSG_TXT(tmp.c_str());
         }
-      mxArray* constrained_paths_ = mxGetField(extended_path_struct, 0, "constrained_paths_");
+      mxArray *constrained_paths_ = mxGetField(extended_path_struct, 0, "constrained_paths_");
       if (constrained_paths_ == NULL)
         {
           string tmp = "constrained_paths_";
-          tmp.insert(0,"The extended_path description structure does not contain the member: ");
+          tmp.insert(0, "The extended_path description structure does not contain the member: ");
           DYN_MEX_FUNC_ERR_MSG_TXT(tmp.c_str());
         }
-      mxArray* constrained_int_date_ = mxGetField(extended_path_struct, 0, "constrained_int_date_");
+      mxArray *constrained_int_date_ = mxGetField(extended_path_struct, 0, "constrained_int_date_");
       if (constrained_int_date_ == NULL)
         {
           string tmp = "constrained_int_date_";
-          tmp.insert(0,"The extended_path description structure does not contain the member: ");
+          tmp.insert(0, "The extended_path description structure does not contain the member: ");
           DYN_MEX_FUNC_ERR_MSG_TXT(tmp.c_str());
         }
-      mxArray* constrained_perfect_foresight_ = mxGetField(extended_path_struct, 0, "constrained_perfect_foresight_");
+      mxArray *constrained_perfect_foresight_ = mxGetField(extended_path_struct, 0, "constrained_perfect_foresight_");
       if (constrained_perfect_foresight_ == NULL)
         {
           string tmp = "constrained_perfect_foresight_";
-          tmp.insert(0,"The extended_path description structure does not contain the member: ");
+          tmp.insert(0, "The extended_path description structure does not contain the member: ");
           DYN_MEX_FUNC_ERR_MSG_TXT(tmp.c_str());
         }
 
-      mxArray* shock_var_ = mxGetField(extended_path_struct, 0, "shock_vars_");
+      mxArray *shock_var_ = mxGetField(extended_path_struct, 0, "shock_vars_");
       if (shock_var_ == NULL)
         {
           string tmp = "shock_vars_";
-          tmp.insert(0,"The extended_path description structure does not contain the member: ");
+          tmp.insert(0, "The extended_path description structure does not contain the member: ");
           DYN_MEX_FUNC_ERR_MSG_TXT(tmp.c_str());
         }
-      mxArray* shock_paths_ = mxGetField(extended_path_struct, 0, "shock_paths_");
+      mxArray *shock_paths_ = mxGetField(extended_path_struct, 0, "shock_paths_");
       if (shock_paths_ == NULL)
         {
           string tmp = "shock_paths_";
-          tmp.insert(0,"The extended_path description structure does not contain the member: ");
+          tmp.insert(0, "The extended_path description structure does not contain the member: ");
           DYN_MEX_FUNC_ERR_MSG_TXT(tmp.c_str());
         }
-      mxArray* shock_int_date_ = mxGetField(extended_path_struct, 0, "shock_int_date_");
+      mxArray *shock_int_date_ = mxGetField(extended_path_struct, 0, "shock_int_date_");
       if (shock_int_date_ == NULL)
         {
           string tmp = "shock_int_date_";
-          tmp.insert(0,"The extended_path description structure does not contain the member: ");
+          tmp.insert(0, "The extended_path description structure does not contain the member: ");
           DYN_MEX_FUNC_ERR_MSG_TXT(tmp.c_str());
         }
-      mxArray* shock_str_date_ = mxGetField(extended_path_struct, 0, "shock_str_date_");
+      mxArray *shock_str_date_ = mxGetField(extended_path_struct, 0, "shock_str_date_");
       if (shock_str_date_ == NULL)
         {
           string tmp = "shock_str_date_";
-          tmp.insert(0,"The extended_path description structure does not contain the member: ");
+          tmp.insert(0, "The extended_path description structure does not contain the member: ");
           DYN_MEX_FUNC_ERR_MSG_TXT(tmp.c_str());
         }
       int nb_constrained = mxGetM(constrained_vars_) * mxGetN(constrained_vars_);
       int nb_controlled = 0;
-      mxArray* options_cond_fcst_ = mxGetField(extended_path_struct, 0, "options_cond_fcst_");
-      mxArray* controlled_varexo = NULL;
+      mxArray *options_cond_fcst_ = mxGetField(extended_path_struct, 0, "options_cond_fcst_");
+      mxArray *controlled_varexo = NULL;
       if (options_cond_fcst_  != NULL)
         {
           controlled_varexo = mxGetField(options_cond_fcst_, 0, "controlled_varexo");
@@ -599,13 +591,13 @@ main(int nrhs, const char *prhs[])
               DYN_MEX_FUNC_ERR_MSG_TXT("The number of exogenized variables and the number of exogenous controlled variables should be equal.");
             }
         }
-      double * controlled_varexo_value = NULL;
+      double *controlled_varexo_value = NULL;
       if (controlled_varexo != NULL)
         controlled_varexo_value = mxGetPr(controlled_varexo);
-      double * constrained_var_value = mxGetPr(constrained_vars_);
+      double *constrained_var_value = mxGetPr(constrained_vars_);
       sconditional_extended_path.resize(nb_constrained);
       max_periods = 0;
-      if ( nb_constrained)
+      if (nb_constrained)
         {
           conditional_local.is_cond = false;
           conditional_local.var_exo = 0;
@@ -628,18 +620,18 @@ main(int nrhs, const char *prhs[])
         {
           sconditional_extended_path[i].exo_num = ceil(constrained_var_value[i]);
           sconditional_extended_path[i].var_num = ceil(controlled_varexo_value[i]);
-          mxArray* Array_constrained_paths_ = mxGetCell(constrained_paths_, i);
+          mxArray *Array_constrained_paths_ = mxGetCell(constrained_paths_, i);
           double *specific_constrained_paths_ = mxGetPr(Array_constrained_paths_);
           double *specific_constrained_int_date_ = mxGetPr(mxGetCell(constrained_int_date_, i));
           int nb_local_periods = mxGetM(Array_constrained_paths_) * mxGetN(Array_constrained_paths_);
-          int* constrained_int_date = (int*)mxMalloc(nb_local_periods * sizeof(int));
-    		  error_msg.test_mxMalloc(constrained_int_date, __LINE__, __FILE__, __func__, nb_local_periods * sizeof(int));
+          int *constrained_int_date = (int *) mxMalloc(nb_local_periods * sizeof(int));
+          error_msg.test_mxMalloc(constrained_int_date, __LINE__, __FILE__, __func__, nb_local_periods * sizeof(int));
           if (nb_periods < nb_local_periods)
             {
               ostringstream oss;
               oss << nb_periods;
               string tmp = oss.str();
-              tmp.insert(0,"The total number of simulation periods (");
+              tmp.insert(0, "The total number of simulation periods (");
               tmp.append(") is lesser than the number of periods in the shock definitions (");
               oss << nb_local_periods;
               string tmp1 = oss.str();
@@ -653,7 +645,7 @@ main(int nrhs, const char *prhs[])
             sconditional_extended_path[i].value[j] = 0;
           for (int j = 0; j < nb_local_periods; j++)
             {
-              constrained_int_date[j] = int(specific_constrained_int_date_[j]) - 1;
+              constrained_int_date[j] = int (specific_constrained_int_date_[j]) - 1;
               conditional_local.is_cond = true;
               conditional_local.var_exo = sconditional_extended_path[i].var_num - 1;
               conditional_local.var_endo = sconditional_extended_path[i].exo_num - 1;
@@ -662,18 +654,18 @@ main(int nrhs, const char *prhs[])
               sconditional_extended_path[i].per_value[j] = make_pair(constrained_int_date[j], specific_constrained_paths_[j]);
               sconditional_extended_path[i].value[constrained_int_date[j]] = specific_constrained_paths_[j];
               if (max_periods < constrained_int_date[j] + 1)
-                  max_periods = constrained_int_date[j] + 1;
+                max_periods = constrained_int_date[j] + 1;
             }
           mxFree(constrained_int_date);
         }
       vector_table_conditional_local_type vv = table_conditional_global[0];
-      double * shock_var_value = mxGetPr(shock_var_);
+      double *shock_var_value = mxGetPr(shock_var_);
       int nb_shocks = mxGetM(shock_var_) * mxGetN(shock_var_);
       sextended_path.resize(nb_shocks);
       for (int i = 0; i < nb_shocks; i++)
         {
           sextended_path[i].exo_num = ceil(shock_var_value[i]);
-          mxArray* Array_shock_paths_ = mxGetCell(shock_paths_, i);
+          mxArray *Array_shock_paths_ = mxGetCell(shock_paths_, i);
           double *specific_shock_paths_ = mxGetPr(Array_shock_paths_);
           double *specific_shock_int_date_ = mxGetPr(mxGetCell(shock_int_date_, i));
           int nb_local_periods = mxGetM(Array_shock_paths_) * mxGetN(Array_shock_paths_);
@@ -682,7 +674,7 @@ main(int nrhs, const char *prhs[])
               ostringstream oss;
               oss << nb_periods;
               string tmp = oss.str();
-              tmp.insert(0,"The total number of simulation periods (");
+              tmp.insert(0, "The total number of simulation periods (");
               tmp.append(") is lesser than the number of periods in the shock definitions (");
               oss << nb_local_periods;
               string tmp1 = oss.str();
@@ -696,16 +688,16 @@ main(int nrhs, const char *prhs[])
             sextended_path[i].value[j] = 0;
           for (int j = 0; j < nb_local_periods; j++)
             {
-              sextended_path[i].per_value[j] = make_pair(int(specific_shock_int_date_[j]), specific_shock_paths_[j]);
-              sextended_path[i].value[int(specific_shock_int_date_[j]-1)] = specific_shock_paths_[j];
-              if (max_periods < int(specific_shock_int_date_[j]) )
-                  max_periods = int(specific_shock_int_date_[j]);
+              sextended_path[i].per_value[j] = make_pair(int (specific_shock_int_date_[j]), specific_shock_paths_[j]);
+              sextended_path[i].value[int (specific_shock_int_date_[j]-1)] = specific_shock_paths_[j];
+              if (max_periods < int (specific_shock_int_date_[j]))
+                max_periods = int (specific_shock_int_date_[j]);
             }
         }
-      for (int i=0; i < nb_periods; i++)
+      for (int i = 0; i < nb_periods; i++)
         {
           int buflen = mxGetNumberOfElements(mxGetCell(date_str, i)) + 1;
-          char* buf = (char*)mxCalloc(buflen, sizeof(char));
+          char *buf = (char *) mxCalloc(buflen, sizeof(char));
           int info = mxGetString(mxGetCell(date_str, i), buf, buflen);
           if (info)
             {
@@ -715,14 +707,14 @@ main(int nrhs, const char *prhs[])
           dates.push_back(string(buf));//string(Dates[i]);
           mxFree(buf);
         }
-   }
-  if (plan.length()>0)
+    }
+  if (plan.length() > 0)
     {
-      mxArray* plan_struct = mexGetVariable("base", plan.c_str());
+      mxArray *plan_struct = mexGetVariable("base", plan.c_str());
       if (plan_struct == NULL)
         {
           string tmp = plan;
-          tmp.insert(0,"Can't find the plan: ");
+          tmp.insert(0, "Can't find the plan: ");
           DYN_MEX_FUNC_ERR_MSG_TXT(tmp.c_str());
         }
       size_t n_plan = mxGetN(plan_struct);
@@ -731,7 +723,7 @@ main(int nrhs, const char *prhs[])
         {
           splan[i].var = "";
           splan[i].exo = "";
-          mxArray* tmp = mxGetField(plan_struct, i, "exo");
+          mxArray *tmp = mxGetField(plan_struct, i, "exo");
           if (tmp)
             {
               char name [100];
@@ -744,7 +736,7 @@ main(int nrhs, const char *prhs[])
               else
                 {
                   string tmp = name;
-                  tmp.insert(0,"the variable '");
+                  tmp.insert(0, "the variable '");
                   tmp.append("'  defined as var in plan is not an exogenous or a deterministic exogenous\n");
                   DYN_MEX_FUNC_ERR_MSG_TXT(tmp.c_str());
                 }
@@ -762,7 +754,7 @@ main(int nrhs, const char *prhs[])
               else
                 {
                   string tmp = name;
-                  tmp.insert(0,"the variable '");
+                  tmp.insert(0, "the variable '");
                   tmp.append("'  defined as exo in plan is not an endogenous variable\n");
                   DYN_MEX_FUNC_ERR_MSG_TXT(tmp.c_str());
                 }
@@ -772,7 +764,7 @@ main(int nrhs, const char *prhs[])
             {
               size_t num_shocks = mxGetM(tmp);
               (splan[i]).per_value.resize(num_shocks);
-              double * per_value = mxGetPr(tmp);
+              double *per_value = mxGetPr(tmp);
               for (int j = 0; j < (int) num_shocks; j++)
                 (splan[i]).per_value[j] = make_pair(ceil(per_value[j]), per_value[j + num_shocks]);
             }
@@ -788,19 +780,19 @@ main(int nrhs, const char *prhs[])
             mexPrintf(" plan shocks on var=%s for the following periods and with the following values:\n", it->var.c_str());
           for (vector<pair<int, double> >::iterator it1 = it->per_value.begin(); it1 != it->per_value.end(); it1++)
             {
-              mexPrintf("  %3d %10.5f\n",it1->first, it1->second);
+              mexPrintf("  %3d %10.5f\n", it1->first, it1->second);
             }
           i++;
         }
     }
 
-  if (pfplan.length()>0)
+  if (pfplan.length() > 0)
     {
       pfplan_struct = mexGetVariable("base", pfplan.c_str());
       if (!pfplan_struct)
         {
           string tmp = pfplan;
-          tmp.insert(0,"Can't find the pfplan: ");
+          tmp.insert(0, "Can't find the pfplan: ");
           DYN_MEX_FUNC_ERR_MSG_TXT(tmp.c_str());
         }
       size_t n_plan = mxGetN(pfplan_struct);
@@ -809,7 +801,7 @@ main(int nrhs, const char *prhs[])
         {
           spfplan[i].var = "";
           spfplan[i].exo = "";
-          mxArray* tmp = mxGetField(pfplan_struct, i, "var");
+          mxArray *tmp = mxGetField(pfplan_struct, i, "var");
           if (tmp)
             {
               char name [100];
@@ -822,7 +814,7 @@ main(int nrhs, const char *prhs[])
               else
                 {
                   string tmp = name;
-                  tmp.insert(0,"the variable '");
+                  tmp.insert(0, "the variable '");
                   tmp.append("' defined as var in pfplan is not an exogenous or a deterministic exogenous\n");
                   DYN_MEX_FUNC_ERR_MSG_TXT(tmp.c_str());
                 }
@@ -840,7 +832,7 @@ main(int nrhs, const char *prhs[])
               else
                 {
                   string tmp = name;
-                  tmp.insert(0,"the variable '");
+                  tmp.insert(0, "the variable '");
                   tmp.append("' defined as exo in pfplan  is not an endogenous variable\n");
                   DYN_MEX_FUNC_ERR_MSG_TXT(tmp.c_str());
                 }
@@ -849,7 +841,7 @@ main(int nrhs, const char *prhs[])
           if (tmp)
             {
               size_t num_shocks = mxGetM(tmp);
-              double * per_value = mxGetPr(tmp);
+              double *per_value = mxGetPr(tmp);
               (spfplan[i]).per_value.resize(num_shocks);
               for (int j = 0; j < (int) num_shocks; j++)
                 spfplan[i].per_value[j] = make_pair(ceil(per_value[j]), per_value[j+ num_shocks]);
@@ -866,13 +858,11 @@ main(int nrhs, const char *prhs[])
             mexPrintf(" plan shocks on var=%s (%d) for the following periods and with the following values:\n", it->var.c_str(), it->var_num);
           for (vector<pair<int, double> >::iterator it1 = it->per_value.begin(); it1 != it->per_value.end(); it1++)
             {
-              mexPrintf("  %3d %10.5f\n",it1->first, it1->second);
+              mexPrintf("  %3d %10.5f\n", it1->first, it1->second);
             }
           i++;
         }
     }
-
-
 
   int field_steady_state = mxGetFieldNumber(oo_, "steady_state");
   if (field_steady_state < 0)
@@ -893,11 +883,11 @@ main(int nrhs, const char *prhs[])
 
       if (!count_array_argument)
         {
-          mxArray* endo_sim_arr = mxGetFieldByNumber(oo_, 0, field_endo_simul);
+          mxArray *endo_sim_arr = mxGetFieldByNumber(oo_, 0, field_endo_simul);
           yd = mxGetPr(endo_sim_arr);
           row_y = mxGetM(endo_sim_arr);
           col_y = mxGetN(endo_sim_arr);
-          mxArray* exo_sim_arr = mxGetFieldByNumber(oo_, 0, field_exo_simul);
+          mxArray *exo_sim_arr = mxGetFieldByNumber(oo_, 0, field_exo_simul);
           xd = mxGetPr(exo_sim_arr);
           row_x = mxGetM(exo_sim_arr);
           col_x = mxGetN(exo_sim_arr);
@@ -928,9 +918,9 @@ main(int nrhs, const char *prhs[])
             DYN_MEX_FUNC_ERR_MSG_TXT("options_ is not a field of options_");
         }
 
-      if (!steady_yd )
+      if (!steady_yd)
         {
-          mxArray* steady_state_arr = mxGetFieldByNumber(oo_, 0, field_steady_state);
+          mxArray *steady_state_arr = mxGetFieldByNumber(oo_, 0, field_steady_state);
           steady_yd = mxGetPr(steady_state_arr);
           steady_row_y = mxGetM(steady_state_arr);
           steady_col_y = mxGetN(steady_state_arr);
@@ -941,12 +931,12 @@ main(int nrhs, const char *prhs[])
     {
       if (!count_array_argument)
         {
-          mxArray* steady_state_arr = mxGetFieldByNumber(oo_, 0, field_steady_state);
+          mxArray *steady_state_arr = mxGetFieldByNumber(oo_, 0, field_steady_state);
           yd = mxGetPr(steady_state_arr);
           row_y = mxGetM(steady_state_arr);
           col_y = mxGetN(steady_state_arr);
 
-          mxArray* exo_steady_state_arr = mxGetFieldByNumber(oo_, 0, field_exo_steady_state);
+          mxArray *exo_steady_state_arr = mxGetFieldByNumber(oo_, 0, field_exo_steady_state);
           xd = mxGetPr(exo_steady_state_arr);
           row_x = mxGetM(exo_steady_state_arr);
           col_x = mxGetN(exo_steady_state_arr);
@@ -956,7 +946,7 @@ main(int nrhs, const char *prhs[])
   int field = mxGetFieldNumber(options_, "verbosity");
   int verbose = 0;
   if (field >= 0)
-    verbose = int(*mxGetPr((mxGetFieldByNumber(options_, 0, field))));
+    verbose = int (*mxGetPr((mxGetFieldByNumber(options_, 0, field))));
   else
     DYN_MEX_FUNC_ERR_MSG_TXT("verbosity is not a field of options_");
   if (verbose)
@@ -976,7 +966,7 @@ main(int nrhs, const char *prhs[])
         DYN_MEX_FUNC_ERR_MSG_TXT("steady is not a field of options_");
     }
   field = mxGetFieldNumber(temporaryfield, "maxit");
-  if (field<0)
+  if (field < 0)
     {
       if (!steady_state)
         DYN_MEX_FUNC_ERR_MSG_TXT("maxit is not a field of options_.simul");
@@ -1027,7 +1017,7 @@ main(int nrhs, const char *prhs[])
         DYN_MEX_FUNC_ERR_MSG_TXT("dynatol is not a field of options_");
       field = mxGetFieldNumber(dynatol, "f");
       if (field >= 0)
-        solve_tolf= *mxGetPr((mxGetFieldByNumber(dynatol, 0, field)));
+        solve_tolf = *mxGetPr((mxGetFieldByNumber(dynatol, 0, field)));
       else
         DYN_MEX_FUNC_ERR_MSG_TXT("f is not a field of options_.dynatol");
     }
@@ -1040,7 +1030,7 @@ main(int nrhs, const char *prhs[])
   size_t buflen = mxGetM(mxa) * mxGetN(mxa) + 1;
   char *fname;
   fname = (char *) mxCalloc(buflen+1, sizeof(char));
-  size_t status = mxGetString(mxa, fname, int(buflen));
+  size_t status = mxGetString(mxa, fname, int (buflen));
   fname[buflen] = ' ';
   if (status != 0)
     mexWarnMsgTxt("Not enough space. Filename is truncated.");
@@ -1080,7 +1070,7 @@ main(int nrhs, const char *prhs[])
       y[i]  = double (yd[i]);
       ya[i] = double (yd[i]);
     }
-    size_t y_size = row_y;
+  size_t y_size = row_y;
   size_t nb_row_x = row_x;
 
   clock_t t0 = clock();
@@ -1099,25 +1089,25 @@ main(int nrhs, const char *prhs[])
 
   if (extended_path)
     {
-        try
-          {
-            interprete.extended_path(f, f, evaluate, block, nb_blocks, max_periods, sextended_path, sconditional_extended_path, dates, table_conditional_global);
-          }
-        catch (GeneralExceptionHandling &feh)
-          {
-            DYN_MEX_FUNC_ERR_MSG_TXT(feh.GetErrorMsg().c_str());
-          }
+      try
+        {
+          interprete.extended_path(f, f, evaluate, block, nb_blocks, max_periods, sextended_path, sconditional_extended_path, dates, table_conditional_global);
+        }
+      catch (GeneralExceptionHandling &feh)
+        {
+          DYN_MEX_FUNC_ERR_MSG_TXT(feh.GetErrorMsg().c_str());
+        }
     }
   else
     {
-        try
-          {
-            interprete.compute_blocks(f, f, evaluate, block, nb_blocks);
-          }
-        catch (GeneralExceptionHandling &feh)
-          {
-            DYN_MEX_FUNC_ERR_MSG_TXT(feh.GetErrorMsg().c_str());
-          }
+      try
+        {
+          interprete.compute_blocks(f, f, evaluate, block, nb_blocks);
+        }
+      catch (GeneralExceptionHandling &feh)
+        {
+          DYN_MEX_FUNC_ERR_MSG_TXT(feh.GetErrorMsg().c_str());
+        }
     }
 
 #ifdef CUDA
@@ -1145,7 +1135,7 @@ main(int nrhs, const char *prhs[])
               if (evaluate)
                 {
                   vector<double> residual = interprete.get_residual();
-                  plhs[1] = mxCreateDoubleMatrix(int(residual.size()/double(col_y)), int(col_y), mxREAL);
+                  plhs[1] = mxCreateDoubleMatrix(int (residual.size()/double (col_y)), int (col_y), mxREAL);
                   pind = mxGetPr(plhs[1]);
                   for (i = 0; i < residual.size(); i++)
                     pind[i] = residual[i];
@@ -1157,7 +1147,7 @@ main(int nrhs, const char *prhs[])
                     out_periods = max_periods + y_kmin;
                   else
                     out_periods = row_y;
-                  plhs[1] = mxCreateDoubleMatrix(out_periods, int(col_y), mxREAL);
+                  plhs[1] = mxCreateDoubleMatrix(out_periods, int (col_y), mxREAL);
                   pind = mxGetPr(plhs[1]);
                   for (i = 0; i < out_periods*col_y; i++)
                     pind[i] = y[i];
@@ -1170,7 +1160,7 @@ main(int nrhs, const char *prhs[])
                 out_periods = max_periods + y_kmin;
               else
                 out_periods = col_y;
-              plhs[1] = mxCreateDoubleMatrix(int(row_y), out_periods, mxREAL);
+              plhs[1] = mxCreateDoubleMatrix(int (row_y), out_periods, mxREAL);
               pind = mxGetPr(plhs[1]);
               if (evaluate)
                 {
@@ -1180,7 +1170,7 @@ main(int nrhs, const char *prhs[])
                 }
               else
                 for (i = 0; i < row_y*out_periods; i++)
-                    pind[i] = y[i];
+                  pind[i] = y[i];
             }
           if (nlhs > 2)
             {
@@ -1194,7 +1184,7 @@ main(int nrhs, const char *prhs[])
                       jacob_exo_field_number = 1;
                       jacob_exo_det_field_number = 2;
                       jacob_other_endo_field_number = 3;
-                      mwSize dims[1] = {(mwSize)nb_blocks };
+                      mwSize dims[1] = {(mwSize) nb_blocks };
                       plhs[2] = mxCreateStructArray(1, dims, 4, field_names);
                     }
                   else if (!mxIsStruct(block_structur))
@@ -1235,7 +1225,7 @@ main(int nrhs, const char *prhs[])
                 }
               else
                 {
-                  plhs[2] = mxCreateDoubleMatrix(int(row_x), int(col_x), mxREAL);
+                  plhs[2] = mxCreateDoubleMatrix(int (row_x), int (col_x), mxREAL);
                   pind = mxGetPr(plhs[2]);
                   for (i = 0; i < row_x*col_x; i++)
                     {
@@ -1245,7 +1235,7 @@ main(int nrhs, const char *prhs[])
                 }
               if (nlhs > 3)
                 {
-                  plhs[3] = mxCreateDoubleMatrix(int(row_y), int(col_y), mxREAL);
+                  plhs[3] = mxCreateDoubleMatrix(int (row_y), int (col_y), mxREAL);
                   pind = mxGetPr(plhs[3]);
                   for (i = 0; i < row_y*col_y; i++)
                     pind[i] = y[i];
@@ -1253,7 +1243,7 @@ main(int nrhs, const char *prhs[])
                     {
                       mxArray *GlobalTemporaryTerms = interprete.get_Temporary_Terms();
                       size_t nb_temp_terms = mxGetM(GlobalTemporaryTerms);
-                      plhs[4] = mxCreateDoubleMatrix(int(nb_temp_terms), 1, mxREAL);
+                      plhs[4] = mxCreateDoubleMatrix(int (nb_temp_terms), 1, mxREAL);
                       pind = mxGetPr(plhs[4]);
                       double *tt = mxGetPr(GlobalTemporaryTerms);
                       for (i = 0; i < nb_temp_terms; i++)

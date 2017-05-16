@@ -1,6 +1,8 @@
-template<typename T> int initialize_v_array (int dim_max, int log_max, T **v)
+template<typename T>
+int
+initialize_v_array(int dim_max, int log_max, T **v)
 /*
-** This function initializes the v array used in the sobol routine. 
+** This function initializes the v array used in the sobol routine.
 **
 ** Original files downloaded from http://people.sc.fsu.edu/~burkardt/cpp_src/sobol/ (version 17-Feb-2009 09:46)
 **
@@ -23,6 +25,6 @@ template<typename T> int initialize_v_array (int dim_max, int log_max, T **v)
 ** AUTHOR(S): stephane DOT adjemian AT univ DASH lemans DOT fr
 */
 {
-  #include "initialize_v_array.inc"
+#include "initialize_v_array.inc"
   return 1;
 }

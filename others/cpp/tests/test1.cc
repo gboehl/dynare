@@ -3,9 +3,9 @@
 #include "DecisionRules.hh"
 
 DynareInfo *preprocessorOutput(void);
-extern "C"{
-void steadystate(double const*, double const*, double *, int *);
-void FirstDerivatives(const double *y, double *x, int nb_row_x, double *params, double *steady_state, int it_, double *residual, double *g1, double *v2, double *v3);
+extern "C" {
+  void steadystate(double const *, double const *, double *, int *);
+  void FirstDerivatives(const double *y, double *x, int nb_row_x, double *params, double *steady_state, int it_, double *residual, double *g1, double *v2, double *v3);
 }
 main(int argc, char **argv)
 {
@@ -17,8 +17,8 @@ main(int argc, char **argv)
   // Steady state
   double *steady_state = new double[endo_nbr];
   int info;
-  steadystate(NULL,params, steady_state, &info);
-  for (int i=0; i < endo_nbr; ++i)
+  steadystate(NULL, params, steady_state, &info);
+  for (int i = 0; i < endo_nbr; ++i)
     std::cout << model_info.get_endo_name_by_index(i) << " " << steady_state[i] << "\n";
 
   // 1st order approximation
@@ -54,7 +54,7 @@ main(int argc, char **argv)
   std::cout << "g1[44] = " << jacob_data[44] << endl;
   MatrixView jacob_tmp(jacob_data, endo_nbr, jacobian_col_nbr, endo_nbr);
   std::cout << "g1[44] = " << jacob_data[44] << endl;
-  std::cout << "jacob_tmp(2,7) = "<< jacob_tmp(2,7) << endl;
+  std::cout << "jacob_tmp(2,7) = "<< jacob_tmp(2, 7) << endl;
 
   Matrix jacobian(endo_nbr, jacobian_col_nbr), g_y(endo_nbr, nback+nmixed), g_u(endo_nbr, exo_nbr);
   jacobian = jacob_tmp;

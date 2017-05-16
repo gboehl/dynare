@@ -9,54 +9,56 @@
 
 #include <new>
 
-class MallocAllocator {
+class MallocAllocator
+{
 #ifdef USE_MEMORY_POOL
 public:
-	void* operator new(size_t size);
-	void* operator new[](size_t size);
-	void operator delete(void* p);
-	void operator delete[](void* p);
+  void *operator new(size_t size);
+  void *operator new[](size_t size);
+  void operator delete(void *p);
+  void operator delete[](void *p);
 #endif
 };
 
 #ifdef USE_MEMORY_POOL
-void* operator new(size_t size);
-void* operator new[](size_t size);
-void operator delete(void* p);
-void operator delete[](void* p);
+void *operator new(size_t size);
+void *operator new[](size_t size);
+void operator delete(void *p);
+void operator delete[](void *p);
 #endif
 
-class SylvMemoryPool {
-	char* base;
-	size_t length;
-	size_t allocated;
-	bool stack_mode;
-	SylvMemoryPool(const SylvMemoryPool&);
-	const SylvMemoryPool& operator=(const SylvMemoryPool&);
+class SylvMemoryPool
+{
+  char *base;
+  size_t length;
+  size_t allocated;
+  bool stack_mode;
+  SylvMemoryPool(const SylvMemoryPool &);
+  const SylvMemoryPool &operator=(const SylvMemoryPool &);
 public:
-	SylvMemoryPool();
-	~SylvMemoryPool();
-	void init(size_t size);
-	void* allocate(size_t size);
-	void free(void* p);
-	void reset();
-	void setStackMode(bool);
+  SylvMemoryPool();
+  ~SylvMemoryPool();
+  void init(size_t size);
+  void *allocate(size_t size);
+  void free(void *p);
+  void reset();
+  void setStackMode(bool);
 };
 
-class SylvMemoryDriver {
-	SylvMemoryDriver(const SylvMemoryDriver&);
-	const SylvMemoryDriver& operator=(const SylvMemoryDriver&);
+class SylvMemoryDriver
+{
+  SylvMemoryDriver(const SylvMemoryDriver &);
+  const SylvMemoryDriver &operator=(const SylvMemoryDriver &);
 public:
-	SylvMemoryDriver(int num_d, int m, int n, int order);
-	SylvMemoryDriver(const SylvParams& pars, int num_d, int m, int n, int order);
-	static void setStackMode(bool);
-	~SylvMemoryDriver();
+  SylvMemoryDriver(int num_d, int m, int n, int order);
+  SylvMemoryDriver(const SylvParams &pars, int num_d, int m, int n, int order);
+  static void setStackMode(bool);
+  ~SylvMemoryDriver();
 protected:
-	void allocate(int num_d, int m, int n, int order);
+  void allocate(int num_d, int m, int n, int order);
 };
 
 #endif /* SYLV_MEMORY_H */
-
 
 // Local Variables:
 // mode:C++
