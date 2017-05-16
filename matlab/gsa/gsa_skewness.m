@@ -1,4 +1,4 @@
-function s=gsa_skewness(y),
+function s=gsa_skewness(y)
 
 % Written by Marco Ratto
 % Joint Research Centre, The European Commission,

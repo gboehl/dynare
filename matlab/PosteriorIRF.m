@@ -178,7 +178,7 @@ if strcmpi(type,'posterior')
     end
 end
 
-if ~strcmpi(type,'prior'),
+if ~strcmpi(type,'prior')
     localVars.x=x;
 end
 
@@ -202,16 +202,16 @@ localVars.ifil2=ifil2;
 localVars.MhDirectoryName=MhDirectoryName;
 
 % Like sequential execution!
-if isnumeric(options_.parallel),
+if isnumeric(options_.parallel)
     [fout] = PosteriorIRF_core1(localVars,1,B,0);
     nosaddle = fout.nosaddle;
 else
     % Parallel execution!
     [nCPU, totCPU, nBlockPerCPU] = distributeJobs(options_.parallel, 1, B);
-    for j=1:totCPU-1,
+    for j=1:totCPU-1
         nfiles = ceil(nBlockPerCPU(j)/MAX_nirfs_dsge);
         NumberOfIRFfiles_dsge(j+1) =NumberOfIRFfiles_dsge(j)+nfiles;
-        if MAX_nirfs_dsgevar,
+        if MAX_nirfs_dsgevar
             nfiles = ceil(nBlockPerCPU(j)/MAX_nirfs_dsgevar);
         else
             nfiles=0;
@@ -236,8 +236,8 @@ else
     NamFileInput(1,:) = {'',[M_.fname '_static.m']};
     NamFileInput(2,:) = {'',[M_.fname '_dynamic.m']};
     NamFileInput(3,:) = {'',[M_.fname '_set_auxiliary_variables.m']};
-    if options_.steadystate_flag,
-        if options_.steadystate_flag == 1,
+    if options_.steadystate_flag
+        if options_.steadystate_flag == 1
             NamFileInput(length(NamFileInput)+1,:)={'',[M_.fname '_steadystate.m']};
         else
             NamFileInput(length(NamFileInput)+1,:)={'',[M_.fname '_steadystate2.m']};
@@ -245,7 +245,7 @@ else
     end
     [fout] = masterParallel(options_.parallel, 1, B,NamFileInput,'PosteriorIRF_core1', localVars, globalVars, options_.parallel_info);
     nosaddle=0;
-    for j=1:length(fout),
+    for j=1:length(fout)
         nosaddle = nosaddle + fout(j).nosaddle;
     end
 
@@ -443,11 +443,11 @@ end
 
 % Comment for testing!
 if ~isoctave
-    if isnumeric(options_.parallel)  || (M_.exo_nbr*ceil(size(varlist,1)/MaxNumberOfPlotPerFigure))<8,
+    if isnumeric(options_.parallel)  || (M_.exo_nbr*ceil(size(varlist,1)/MaxNumberOfPlotPerFigure))<8
         [fout] = PosteriorIRF_core2(localVars,1,M_.exo_nbr,0);
     else
         isRemoteOctave = 0;
-        for indPC=1:length(options_.parallel),
+        for indPC=1:length(options_.parallel)
             isRemoteOctave = isRemoteOctave + (findstr(options_.parallel(indPC).MatlabOctavePath, 'octave'));
         end
         if isRemoteOctave

@@ -1,4 +1,4 @@
-function [tadj, iff] = gsa_speed(A,B,mf,p),
+function [tadj, iff] = gsa_speed(A,B,mf,p)
 % [tadj, iff] = gsa_speed(A,B,mf,p),
 %
 % Written by Marco Ratto
@@ -33,7 +33,7 @@ tadj=iff;
 disp('Computing speed of adjustement ...')
 h = dyn_waitbar(0,'Speed of adjustement...');
 
-for i=1:nrun,
+for i=1:nrun
   irf=zeros(nvar,nshock);
   a=squeeze(A(:,:,i));
   b=squeeze(B(:,:,i));

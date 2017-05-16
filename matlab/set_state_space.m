@@ -73,7 +73,7 @@ if DynareOptions.block == 1
     order_var = DynareModel.block_structure.variable_reordered;
 else
     order_var = [ stat_var(:); pred_var(:); both_var(:); fwrd_var(:)];
-end;
+end
 inv_order_var(order_var) = (1:endo_nbr);
 
 % building kmask for z state vector in t+1

@@ -82,7 +82,7 @@ if nnobs>1 || nfirstobs > 1
         if nnobs>1
             options_.nobs = nobs(i);
             M_.dname = [dname '_' int2str(nobs(i))];
-        elseif nfirstobs>1;
+        elseif nfirstobs>1
             options_.first_obs=first_obs(i);            
             M_.dname = [dname '_' int2str(first_obs(i))];
         end
@@ -97,7 +97,7 @@ if nnobs>1 || nfirstobs > 1
         end
         if nnobs>1
             oo_recursive_{nobs(i)} = oo_;
-        elseif nfirstobs>1;
+        elseif nfirstobs>1
             oo_recursive_{first_obs(i)} = oo_;
         end
     end
@@ -105,7 +105,7 @@ else
     dynare_estimation_1(var_list,dname);
 end
 
-if isnumeric(options_.mode_compute) && options_.mode_compute && options_.analytic_derivation,
+if isnumeric(options_.mode_compute) && options_.mode_compute && options_.analytic_derivation
     options_.analytic_derivation=analytic_derivation0;
 end
 

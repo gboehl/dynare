@@ -108,7 +108,7 @@ if isestimation(DynareOptions) && DynareOptions.mode_compute ~= 1 && any(xparam1
     exit_flag = 0;
     info(1) = 41;
     info(4)= sum((BoundsInfo.lb(k)-xparam1(k)).^2);
-    return;
+    return
 end
 
 % Return, with endogenous penalty, if some dsge-parameters are greater than the upper bound of the prior domain.
@@ -118,7 +118,7 @@ if isestimation(DynareOptions) && DynareOptions.mode_compute ~= 1 && any(xparam1
     exit_flag = 0;
     info(1) = 42;
     info(4) = sum((xparam1(k)-BoundsInfo.ub(k)).^2);
-    return;
+    return
 end
 
 % Get the variance of each structural innovation.
@@ -137,7 +137,7 @@ Model.Sigma_e = Q;
 dsge_prior_weight = Model.params(dsge_prior_weight_idx);
 
 % Is the dsge prior proper?
-if dsge_prior_weight<(NumberOfParameters+NumberOfObservedVariables)/NumberOfObservations;
+if dsge_prior_weight<(NumberOfParameters+NumberOfObservedVariables)/NumberOfObservations
     fval = Inf;
     exit_flag = 0;
     info(1) = 51;
@@ -239,7 +239,7 @@ if ~SIGMA_u_star_is_positive_definite
     info(1) = 53;
     info(4) = penalty;
     exit_flag = 0;
-    return;
+    return
 end
 
 if ~isinf(dsge_prior_weight)% Evaluation of the likelihood of the dsge-var model when the dsge prior weight is finite.
@@ -254,7 +254,7 @@ if ~isinf(dsge_prior_weight)% Evaluation of the likelihood of the dsge-var model
         info(1) = 52;
         info(4) = penalty;
         exit_flag = 0;
-        return;
+        return
     end
     SIGMA_u_tilde = SIGMA_u_tilde / (NumberOfObservations*(1+dsge_prior_weight));   %prefactor of formula (29), DS (2004)
     PHI_tilde = tmp2*tmp1';                                                   %formula (28), DS (2004)

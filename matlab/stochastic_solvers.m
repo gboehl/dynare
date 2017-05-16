@@ -85,7 +85,7 @@ if M_.maximum_endo_lead==0 && M_.exo_det_nbr~=0
     error(['var_exo_det not implemented for purely backwards models'])
 end
 
-if options_.k_order_solver;
+if options_.k_order_solver
     if options_.risky_steadystate
         [dr,info] = dyn_risky_steadystate_solver(oo_.steady_state,M_,dr, ...
                                              options_,oo_);
@@ -96,7 +96,7 @@ if options_.k_order_solver;
         [dr,info] = k_order_pert(dr,M_,options_);
         options_.order = orig_order;
     end
-    return;
+    return
 end
 
 klen = M_.maximum_lag + M_.maximum_lead + 1;
@@ -120,7 +120,7 @@ if local_order == 1
     else
         [junk,jacobia_] = feval([M_.fname '_dynamic'],z(iyr0),exo_simul, ...
                             M_.params, dr.ys, it_);
-    end;
+    end
 elseif local_order == 2
     if (options_.bytecode)
         [chck, junk, loc_dr] = bytecode('dynamic','evaluate', z,exo_simul, ...
@@ -130,7 +130,7 @@ elseif local_order == 2
         [junk,jacobia_,hessian1] = feval([M_.fname '_dynamic'],z(iyr0),...
                                          exo_simul, ...
                                          M_.params, dr.ys, it_);
-    end;
+    end
     if options_.use_dll
         % In USE_DLL mode, the hessian is in the 3-column sparse representation
         hessian1 = sparse(hessian1(:,1), hessian1(:,2), hessian1(:,3), ...
@@ -263,7 +263,7 @@ else
     else  % use original Dynare solver
         [dr,info] = dyn_first_order_solver(jacobia_,M_,dr,options_,task);
         if info(1) || task
-            return;
+            return
         end
     end
 

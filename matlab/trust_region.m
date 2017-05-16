@@ -150,7 +150,7 @@ while (niter < maxiter && ~info)
             else
                 info = -3;
             end
-            break;
+            break
         end
     elseif (abs (1-ratio) <= 0.1)
         delta = 1.4142*sn;

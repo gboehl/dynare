@@ -87,7 +87,7 @@ end
 %$ catch
 %$    t(1) = 0;
 %$    T = all(t);
-%$    return;
+%$    return
 %$ end
 %$
 %$

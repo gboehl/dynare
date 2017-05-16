@@ -44,7 +44,7 @@ function [SAmeas, OutMatrix] = Morris_Measure_Groups(NumFact, Sample, Output, p,
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-if nargin==0,
+if nargin==0
   skipline()
   disp('[SAmeas, OutMatrix] = Morris_Measure_Groups(NumFact, Sample, Output, p, Group);')
   return
@@ -54,7 +54,7 @@ OutMatrix=[];
 if nargin < 5, Group=[]; end
 
 NumGroups = size(Group,2);
-if nargin < 4 | isempty(p),
+if nargin < 4 | isempty(p)
     p = 4;
 end
 Delt = p/(2*p-2);
@@ -88,7 +88,7 @@ for k=1:size(Output,2)
         % is partitioned in four parts, from order zero to order 4th.
         for j=1:sizea   % For each point in the trajectory i.e for each factor   
             % matrix of factor which changes
-            if NumGroups ~ 0;
+            if NumGroups ~ 0
                 AuxFind (:,1) = A(:,j);
 %                 AuxFind(find(A(:,j)),1)=1;
 %                 Pippo = sum((Group - repmat(AuxFind,1,NumGroups)),1);
@@ -122,7 +122,7 @@ for k=1:size(Output,2)
 
     % Compute Mu AbsMu and StDev
     if any(any(isnan(SAmeas)))
-      for j=1:NumFact,
+      for j=1:NumFact
         SAm = SAmeas(j,:);
         SAm = SAm(find(~isnan(SAm)));
         rr=length(SAm);

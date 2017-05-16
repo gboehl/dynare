@@ -38,7 +38,7 @@ global estimation_info
 
 if eval(['isempty(estimation_info.' substructure_name ')'])
     indx = 1;
-    return;
+    return
 end
 
 if isempty(name2) % parameter or std() statement

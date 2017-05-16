@@ -36,11 +36,11 @@ function [PRCDirSnapshot]=dynareParallelGetNewFiles(PRCDir,Parallel,PRCDirSnapsh
 NewFilesFromSlaves={};
 
 % try
-for indPC=1:length(Parallel),
+for indPC=1:length(Parallel)
     
-    if Parallel(indPC).Local==0;
+    if Parallel(indPC).Local==0
         [NewFilesFromSlaves, PRCDirSnapshot{indPC}]=dynareParallelFindNewFiles(PRCDirSnapshot{indPC},Parallel(indPC), PRCDir);
-        if ~ispc || strcmpi('unix',Parallel(indPC).OperatingSystem),
+        if ~ispc || strcmpi('unix',Parallel(indPC).OperatingSystem)
             fS='/';
         else
             fS='\';

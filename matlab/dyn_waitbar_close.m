@@ -22,12 +22,12 @@ function dyn_waitbar_close(h)
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 global options_
 
-if isoctave || options_.console_mode,
+if isoctave || options_.console_mode
     clear dyn_waitbar;
-    diary on,
+    diary on
     fprintf('\n');
 else
-    close(h),
+    close(h)
 end
 
 clear dyn_waitbar;

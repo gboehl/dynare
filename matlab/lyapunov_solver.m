@@ -63,7 +63,7 @@ elseif DynareOptions.lyapunov_srs == 1
     P = R_P' * R_P;    
 else
     P = lyapunov_symm(T,R*Q*R',DynareOptions.lyapunov_fixed_point_tol,DynareOptions.qz_criterium,DynareOptions.lyapunov_complex_threshold, [], DynareOptions.debug);
-end;
+end
 
 %@test:1
 %$ t = NaN(10,1);

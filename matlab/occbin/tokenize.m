@@ -28,7 +28,7 @@ else
     ndelims = length(posdelims);
     % build positions for substrings
     delims = zeros(ndelims+1,2);
-    for i=1:ndelims+1;
+    for i=1:ndelims+1
         if i==1
                 if posdelims(1) == 1
                    tokens = cellstr(source(1));

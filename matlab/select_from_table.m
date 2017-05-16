@@ -18,7 +18,7 @@ function [indices] = select_from_table(table,key,value)
 candidates = table(strmatch(key,table(:,2),'exact'),:);
 if nargin == 2
     indices = cell2mat( candidates(:,1) );
-    return;
+    return
 end
 indices = candidates(strmatch(value, candidates(:,3), 'exact'),1);
 indices = cell2mat(indices);

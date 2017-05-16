@@ -27,16 +27,16 @@ function t_crit = tcrit(n,pval0)
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 
-if nargin==1 || isempty(pval0),
+if nargin==1 || isempty(pval0)
     pval0=0.05;
 end
-if pval0==1,
+if pval0==1
     t_crit=0;
-    return,
+    return
 end
-if pval0==0,
+if pval0==0
     t_crit=inf;
-    return,
+    return
 end
 pval = [  0.10    0.05   0.025    0.01   0.005   0.001];
 pval0=max(pval0,min(pval));
@@ -146,7 +146,7 @@ t_crit=[
 inf        1.282   1.645   1.960   2.326   2.576   3.090
 ];
 
-if n<=100,
+if n<=100
     t_crit=t_crit(n,ncol);
 else
     t_crit=t_crit(end,ncol);

@@ -77,7 +77,7 @@ switch minimizer_algorithm
     if options_.silent_optimizer
         optim_options = optimset(optim_options,'display','off');
     end
-    if options_.analytic_derivation,
+    if options_.analytic_derivation
         optim_options = optimset(optim_options,'GradObj','on','TolX',1e-7);
     end
     [opt_par_values,fval,exitflag,output,lamdba,grad,hessian_mat] = ...
@@ -148,7 +148,7 @@ switch minimizer_algorithm
     if ~isempty(options_.optim_opt)
         eval(['optim_options = optimset(optim_options,' options_.optim_opt ');']);
     end
-    if options_.analytic_derivation,
+    if options_.analytic_derivation
         optim_options = optimset(optim_options,'GradObj','on');
     end
     if options_.silent_optimizer

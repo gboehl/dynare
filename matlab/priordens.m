@@ -94,7 +94,7 @@ if tt1
         end
         return
     end
-    if nargout == 2,
+    if nargout == 2
         [tmp, dlprior(id1)]=lpdfgbeta(x(id1),p6(id1),p7(id1),p3(id1),p4(id1));
     elseif nargout == 3
         [tmp, dlprior(id1), d2lprior(id1)]=lpdfgbeta(x(id1),p6(id1),p7(id1),p3(id1),p4(id1));
@@ -109,7 +109,7 @@ if tt2
         end
         return
     end
-    if nargout == 2,
+    if nargout == 2
         [tmp, dlprior(id2)]=lpdfgam(x(id2)-p3(id2),p6(id2),p7(id2));
     elseif nargout == 3
         [tmp, dlprior(id2), d2lprior(id2)]=lpdfgam(x(id2)-p3(id2),p6(id2),p7(id2));
@@ -118,7 +118,7 @@ end
 
 if tt3
     logged_prior_density = logged_prior_density + sum(lpdfnorm(x(id3),p6(id3),p7(id3))) ;
-    if nargout == 2,
+    if nargout == 2
         [tmp, dlprior(id3)]=lpdfnorm(x(id3),p6(id3),p7(id3));
     elseif nargout == 3
         [tmp, dlprior(id3), d2lprior(id3)]=lpdfnorm(x(id3),p6(id3),p7(id3));
@@ -133,7 +133,7 @@ if tt4
         end
         return
     end
-    if nargout == 2,
+    if nargout == 2
         [tmp, dlprior(id4)]=lpdfig1(x(id4)-p3(id4),p6(id4),p7(id4));
     elseif nargout == 3
         [tmp, dlprior(id4), d2lprior(id4)]=lpdfig1(x(id4)-p3(id4),p6(id4),p7(id4));
@@ -149,7 +149,7 @@ if tt5
         return
     end
     logged_prior_density = logged_prior_density + sum(log(1./(p4(id5)-p3(id5)))) ;
-    if nargout >1,
+    if nargout >1
         dlprior(id5)=zeros(length(id5),1);
     end
     if nargout == 3
@@ -165,7 +165,7 @@ if tt6
         end
         return
     end
-    if nargout == 2,
+    if nargout == 2
         [tmp, dlprior(id6)]=lpdfig2(x(id6)-p3(id6),p6(id6),p7(id6));
     elseif nargout == 3
         [tmp, dlprior(id6), d2lprior(id6)]=lpdfig2(x(id6)-p3(id6),p6(id6),p7(id6));
@@ -187,7 +187,7 @@ if tt8
     end
 end
 
-if nargout==3,
+if nargout==3
     d2lprior = diag(d2lprior);
 end
 

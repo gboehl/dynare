@@ -52,15 +52,15 @@ persistent FLAG_implicit_skip_nan;
 %% if strcmp(version,'3.6'), FLAG_implicit_skip_nan=(1==1); end;	%% hack for the use with Freemat3.6
 
 %%% set DEFAULT value of FLAG
-if isempty(FLAG_implicit_skip_nan),
+if isempty(FLAG_implicit_skip_nan)
     FLAG_implicit_skip_nan = (1==1); %logical(1); % logical.m not available on 2.0.16
-end;
+end
 
 FLAG = FLAG_implicit_skip_nan;
-if nargin>0,
+if nargin>0
     FLAG_implicit_skip_nan = (i~=0); %logical(i); %logical.m not available in 2.0.16
     if (~i)
         warning('flag_implicit_skipnan(0): You are warned!!! You have turned off skipping NaN in sumskipnan. This is not recommended. Make sure you really know what you do.')
-    end;
-end;
+    end
+end
 

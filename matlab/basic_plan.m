@@ -38,7 +38,7 @@ function plan = basic_plan(plan, exogenous, expectation_type, date, value)
   ix = find(strcmp(exogenous, plan.exo_names));
   if  isempty(ix)
       error(['in basic_plan the second argument ' exogenous ' is not an exogenous variable']);
-  end;
+  end
   sdate = length(date);
   if sdate > 1
       if date(1) < plan.date(1) || date(end) > plan.date(end)

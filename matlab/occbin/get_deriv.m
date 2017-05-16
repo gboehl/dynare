@@ -77,7 +77,7 @@ for i=1:nlea_cols
 end
 
  
-for i = 1:M_.exo_nbr;
+for i = 1:M_.exo_nbr
     j(:,i) =g1(:,i+ny);
 end
 

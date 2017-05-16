@@ -223,7 +223,7 @@ if ~options_.load_mh_file && ~options_.mh_recover
     fprintf(fidlog,['    Expected number of files per block.......: ' int2str(AnticipatedNumberOfFiles) '.\n']);
     fprintf(fidlog,['    Expected number of lines in the last file: ' int2str(AnticipatedNumberOfLinesInTheLastFile) '.\n']);
     fprintf(fidlog,['\n']);
-    for j = 1:NumberOfBlocks,
+    for j = 1:NumberOfBlocks
         fprintf(fidlog,['    Initial state of the Gaussian random number generator for chain number ',int2str(j),':\n']);
         for i=1:length(record.InitialSeeds(j).Normal)
             fprintf(fidlog,['      ' num2str(record.InitialSeeds(j).Normal(i)') '\n']);
@@ -232,7 +232,7 @@ if ~options_.load_mh_file && ~options_.mh_recover
         for i=1:length(record.InitialSeeds(j).Unifor)
             fprintf(fidlog,['      ' num2str(record.InitialSeeds(j).Unifor(i)') '\n']);
         end
-    end,
+    end
     fprintf(fidlog,' \n');
     fclose(fidlog);
 elseif options_.load_mh_file && ~options_.mh_recover

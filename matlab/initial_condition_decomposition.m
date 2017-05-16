@@ -93,7 +93,7 @@ gend = size(oo.SmoothedShocks.(deblank(M_.exo_names(1,:))),1); %+options_.foreca
 z = zeros(endo_nbr,endo_nbr+2,gend);
 z(:,end,:) = Smoothed_Variables_deviation_from_mean;
 
-for i=1:endo_nbr,
+for i=1:endo_nbr
     z(i,i,1) = Smoothed_Variables_deviation_from_mean(i,1);
 end
 

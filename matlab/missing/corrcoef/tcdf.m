@@ -37,10 +37,10 @@ if all(size(x)==1)
 elseif all(size(n)==1)
     n = repmat(n,size(x));
 elseif all(size(x)==size(n))
-    ;	%% OK, do nothing
+    % OK, do nothing
 else
     error('size of input arguments must be equal or scalar')
-end;
+end
 
 % allocate memory
 p = zeros(size(x));

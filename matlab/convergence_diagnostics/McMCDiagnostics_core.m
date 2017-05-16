@@ -50,7 +50,7 @@ function myoutput = McMCDiagnostics_core(myinputs,fpar,npar,whoiam, ThisMatlab)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-if nargin<4,
+if nargin<4
     whoiam=0;
 end
 
@@ -71,7 +71,7 @@ M_=myinputs.M_;
 if whoiam
     Parallel=myinputs.Parallel;
 end
-if ~exist('MetropolisFolder'),
+if ~exist('MetropolisFolder')
     MetropolisFolder = CheckPath('metropolis',M_.dname);
 end
 
@@ -81,16 +81,16 @@ UDIAG = zeros(NumberOfLines,6,npar-fpar+1);
 
 if whoiam
     waitbarString = ['Please wait... McMCDiagnostics (' int2str(fpar) 'of' int2str(npar) ')...'];
-    if Parallel(ThisMatlab).Local,
+    if Parallel(ThisMatlab).Local
         waitbarTitle=['Local '];
     else
         waitbarTitle=[Parallel(ThisMatlab).ComputerName];
     end
     fMessageStatus(0,whoiam,waitbarString, waitbarTitle, Parallel(ThisMatlab));
 end
-for j=fpar:npar,
+for j=fpar:npar
     if isoctave
-        if (whoiam==0),
+        if (whoiam==0)
             printf('    Parameter %d...  ',j);
         end
     else
@@ -131,13 +131,13 @@ for j=fpar:npar,
         end
     end
     if isoctave
-        if (whoiam==0),
+        if (whoiam==0)
             printf('Done! \n');
         end
     else
         fprintf('Done! \n');
     end
-    if whoiam,
+    if whoiam
         waitbarString = [ 'Parameter ' int2str(j) '/' int2str(npar) ' done.'];
         fMessageStatus((j-fpar+1)/(npar-fpar+1),whoiam,waitbarString, waitbarTitle, Parallel(ThisMatlab))
     end

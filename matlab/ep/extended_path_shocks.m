@@ -1,4 +1,4 @@
-function [shocks, spfm_exo_simul, innovations, DynareResults] = extended_path_shocks(innovations, ep, exogenousvariables, sample_size,DynareModel,DynareOptions, DynareResults); 
+function [shocks, spfm_exo_simul, innovations, DynareResults] = extended_path_shocks(innovations, ep, exogenousvariables, sample_size,DynareModel,DynareOptions, DynareResults)
 
 % Copyright (C) 2016 Dynare Team
 %

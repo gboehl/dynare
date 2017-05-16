@@ -34,7 +34,7 @@ function [flag,endo_simul,err] = solve_perfect_foresight_model(endo_simul,exo_si
 
     if pfm.use_bytecode
         [flag, endo_simul]=bytecode(Y, exo_simul, pfm.params);
-        return;
+        return
     end
 
     z = Y(find(pfm.lead_lag_incidence'));

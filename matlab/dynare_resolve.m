@@ -90,7 +90,7 @@ switch nargin
         ic = [ nstatic+(1:nspred) endo_nbr+(1:size(DynareResults.dr.ghx,2)-nspred) ]';
     else
         ic = DynareResults.dr.restrict_columns;
-    end;
+    end
   case 4
     iv = DynareResults.dr.restrict_var_list;
     ic = DynareResults.dr.restrict_columns;

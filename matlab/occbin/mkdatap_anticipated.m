@@ -12,7 +12,7 @@ if nargin<16
     init=zeros(nvars,1);
 end
 
-if nargin<15;
+if nargin<15
     scalefactormod=1;
 end
 

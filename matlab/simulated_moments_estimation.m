@@ -282,7 +282,7 @@ fprintf(fid,['    time_series = extended_path([],' int2str(sample_size) ',1);\n'
 fprintf(fid,['    data = time_series([' int2str(observed_variables_idx) '],' int2str(burn_in_periods) '+1:' int2str(sample_size) ');\n']);
 fprintf(fid,['    eval(''tmp = ' moments_file_name '(data);'');\n']);
 fprintf(fid,['    simulated_moments = simulated_moments + tmp;\n']);
-fprintf(fid,['end;\n\n']);
+fprintf(fid,['end\n\n']);
 
 fprintf(fid,['simulated_moments = simulated_moments/' int2str(number_of_simulations) ';\n']);
 fprintf(fid,['save(''simulated_moments_slave_' int2str(slave_number) '.dat'',''simulated_moments'',''-ascii'');\n']);

@@ -58,7 +58,7 @@ siLREnorm = idelre.siLREnorm;
 % end
 tittxt1=regexprep(tittxt, ' ', '_');
 tittxt1=strrep(tittxt1, '.', '');
-if SampleSize == 1,
+if SampleSize == 1
     siJ = idemoments.siJ;
     hh = dyn_figure(options_.nodisplay,'Name',[tittxt, ' - Identification using info from observables']);
     subplot(211)
@@ -72,7 +72,7 @@ if SampleSize == 1,
     set(gca,'xlim',[0 nparam+1])
     set(gca,'xticklabel','')
     dy = get(gca,'ylim');
-    for ip=1:nparam,
+    for ip=1:nparam
         text(ip,dy(1),name{is(ip)},'rotation',90,'HorizontalAlignment','right','interpreter','none')
     end
     if ~all(isnan(idehess.ide_strength_J_prior))
@@ -80,7 +80,7 @@ if SampleSize == 1,
     else
         legend('relative to param value','Location','Best')
     end
-    if  idehess.flag_score,
+    if  idehess.flag_score
         title('Identification strength with asymptotic Information matrix (log-scale)')
     else
         title('Identification strength with moments Information matrix (log-scale)')
@@ -96,7 +96,7 @@ if SampleSize == 1,
     set(gca,'xlim',[0 nparam+1])
     set(gca,'xticklabel','')
     dy = get(gca,'ylim');
-    for ip=1:nparam,
+    for ip=1:nparam
         text(ip,dy(1),name{is(ip)},'rotation',90,'HorizontalAlignment','right','interpreter','none')
     end
     if ~all(isnan(idehess.deltaM_prior))
@@ -104,7 +104,7 @@ if SampleSize == 1,
     else
         legend('relative to param value','Location','Best')
     end
-    if  idehess.flag_score,
+    if  idehess.flag_score
         title('Sensitivity component with asymptotic Information matrix (log-scale)')
     else
         title('Sensitivity component with moments Information matrix (log-scale)')
@@ -124,8 +124,8 @@ if SampleSize == 1,
     end
     dyn_saveas(hh,[IdentifDirectoryName '/' M_.fname '_ident_strength_' tittxt1],options_.nodisplay,options_.graph_format);
     
-    if advanced,
-        if ~options_.nodisplay,
+    if advanced
+        if ~options_.nodisplay
             skipline()
             disp('Press ENTER to plot advanced diagnostics'), pause(5),
         end
@@ -146,7 +146,7 @@ if SampleSize == 1,
             set(gca,'xlim',[0 nparam+1])
             set(gca,'xticklabel','')
             dy = get(gca,'ylim');
-            for ip=1:nparam,
+            for ip=1:nparam
                 text(ip,dy(1),name{is(ip)},'rotation',90,'HorizontalAlignment','right','interpreter','none')
             end
             legend('Moments','Model','LRE model','Location','Best')
@@ -167,16 +167,16 @@ if SampleSize == 1,
             end
         end
         % identificaton patterns
-        for  j=1:size(idemoments.cosnJ,2),
+        for  j=1:size(idemoments.cosnJ,2)
             pax=NaN(nparam,nparam);
 %             fprintf('\n')
 %             disp(['Collinearity patterns with ', int2str(j) ,' parameter(s)'])
 %             fprintf('%-15s [%-*s] %10s\n','Parameter',(15+1)*j,' Expl. params ','cosn')
-            for i=1:nparam,
+            for i=1:nparam
                 namx='';
-                for in=1:j,
+                for in=1:j
                     dumpindx = idemoments.pars{i,j}(in);
-                    if isnan(dumpindx),
+                    if isnan(dumpindx)
                         namx=[namx ' ' sprintf('%-15s','--')];
                     else
                         namx=[namx ' ' sprintf('%-15s',name{dumpindx})];
@@ -189,7 +189,7 @@ if SampleSize == 1,
             imagesc(pax,[0 1]);
             set(gca,'xticklabel','')
             set(gca,'yticklabel','')
-            for ip=1:nparam,
+            for ip=1:nparam
                 text(ip,(0.5),name{ip},'rotation',90,'HorizontalAlignment','left','interpreter','none')
                 text(0.5,ip,name{ip},'rotation',0,'HorizontalAlignment','right','interpreter','none')
             end
@@ -198,7 +198,7 @@ if SampleSize == 1,
             ax=colormap;
             ax(1,:)=[0.9 0.9 0.9];
             colormap(ax);
-            if nparam>10,
+            if nparam>10
                 set(gca,'xtick',(5:5:nparam))
                 set(gca,'ytick',(5:5:nparam))
             end
@@ -223,8 +223,8 @@ if SampleSize == 1,
         skipline()
         [U,S,V]=svd(idehess.AHess,0);
         S=diag(S);
-        if idehess.flag_score,
-            if nparam<5,
+        if idehess.flag_score
+            if nparam<5
                 f1 = dyn_figure(options_.nodisplay,'Name',[tittxt,' - Identification patterns (Information matrix)']);
                 tex_tit_1=[tittxt,' - Identification patterns (Information matrix)'];
             else
@@ -236,7 +236,7 @@ if SampleSize == 1,
         else
 %             S = idemoments.S;
 %             V = idemoments.V;
-            if nparam<5,
+            if nparam<5
                 f1 = dyn_figure(options_.nodisplay,'Name',[tittxt,' - Identification patterns (moments Information matrix)']);
                 tex_tit_1=[tittxt,' - Identification patterns (moments Information matrix)'];
             else
@@ -246,25 +246,25 @@ if SampleSize == 1,
                 tex_tit_2=[tittxt,' - Identification patterns (moments Information matrix): HIGHEST SV'];
             end
         end
-        for j=1:min(nparam,8),
-            if j<5,
+        for j=1:min(nparam,8)
+            if j<5
                 set(0,'CurrentFigure',f1),
                 jj=j;
             else
                 set(0,'CurrentFigure',f2),
                 jj=j-4;
             end
-            subplot(4,1,jj),
+            subplot(4,1,jj)
             if j<5
-                bar(abs(V(:,end-j+1))),
+                bar(abs(V(:,end-j+1)))
                 Stit = S(end-j+1);
             else
                 bar(abs(V(:,jj))),
                 Stit = S(jj);
             end
             set(gca,'xticklabel','')
-            if j==4 || j==nparam || j==8,
-                for ip=1:nparam,
+            if j==4 || j==nparam || j==8
+                for ip=1:nparam
                     text(ip,-0.02,name{ip},'rotation',90,'HorizontalAlignment','right','interpreter','none')
                 end
             end
@@ -284,7 +284,7 @@ if SampleSize == 1,
             fprintf(fidTeX,'%% End Of TeX file. \n');
             fclose(fidTeX);
         end
-        if nparam>4,
+        if nparam>4
             dyn_saveas(f2,[  IdentifDirectoryName '/' M_.fname '_ident_pattern_' tittxt1 '_2' ],options_.nodisplay,options_.graph_format);
             if options_.TeX && any(strcmp('eps',cellstr(options_.graph_format)))
                 fidTeX = fopen([  IdentifDirectoryName '/' M_.fname '_ident_pattern_' tittxt1 '_2.tex'],'w');
@@ -309,7 +309,7 @@ else
     [ss, is] = sort(mmm);
     mmm = mean(siJnorm)';
     mmm = mmm./max(mmm);
-    if advanced,
+    if advanced
         mmm1 = mean(siHnorm)';
         mmm=[mmm mmm1./max(mmm1)];
         mmm1 = mean(siLREnorm)';
@@ -322,10 +322,10 @@ else
     set(gca,'xlim',[0 nparam+1])
     set(gca,'xticklabel','')
     dy = get(gca,'ylim');
-    for ip=1:nparam,
+    for ip=1:nparam
         text(ip,dy(1),name{is(ip)},'rotation',90,'HorizontalAlignment','right','interpreter','none')
     end
-    if advanced,
+    if advanced
         legend('Moments','Model','LRE model','Location','Best')
     end
     title('MC mean of sensitivity measures')
@@ -344,7 +344,7 @@ else
         fclose(fidTeX);
     end
     
-    if advanced,
+    if advanced
         if ~options_.nodisplay,
             skipline()
             disp('Press ENTER to display advanced diagnostics'), pause(5),
@@ -397,7 +397,7 @@ else
 %             [proba, dproba] = stab_map_1(params, is(1:ncut), is(ncut+1:end), ['MC_HighestMultiCollinearity_',name{j}], 1, [], IdentifDirectoryName, 0.15);
 %         end
 
-        if nparam<5,
+        if nparam<5
             f1 = dyn_figure(options_.nodisplay,'Name',[tittxt,' - MC Identification patterns (moments): HIGHEST SV']);
             tex_tit_1=[tittxt,' - MC Identification patterns (moments): HIGHEST SV'];
         else
@@ -407,13 +407,13 @@ else
             tex_tit_2=[tittxt,' - MC Identification patterns (moments): HIGHEST SV'];
         end
         nplots=min(nparam,8);
-        if nplots>4,
+        if nplots>4
             nsubplo=ceil(nplots/2);
         else
             nsubplo=nplots;
         end
-        for j=1:nplots,
-            if (nparam>4 && j<=ceil(nplots/2)) || nparam<5,
+        for j=1:nplots
+            if (nparam>4 && j<=ceil(nplots/2)) || nparam<5
                 set(0,'CurrentFigure',f1),
                 jj=j;
                 VVV=squeeze(abs(idemoments.V(:,:,end-j+1)));
@@ -424,8 +424,8 @@ else
                 VVV=squeeze(abs(idemoments.V(:,:,jj)));
                 SSS = idemoments.S(:,jj);
             end
-            subplot(nsubplo,1,jj),
-            for i=1:nparam,
+            subplot(nsubplo,1,jj)
+            for i=1:nparam
                 [post_mean, post_median(:,i), post_var, hpd_interval(i,:), post_deciles] = posterior_moments(VVV(:,i),0,0.9);
             end
             bar(post_median)
@@ -433,8 +433,8 @@ else
             Stit=mean(SSS);
 
             set(gca,'xticklabel','')
-            if j==4 || j==nparam || j==8,
-                for ip=1:nparam,
+            if j==4 || j==nparam || j==8
+                for ip=1:nparam
                     text(ip,-0.02,name{ip},'rotation',90,'HorizontalAlignment','right','interpreter','none')
                 end
             end
@@ -454,7 +454,7 @@ else
             fprintf(fidTeX,'%% End Of TeX file. \n');
             fclose(fidTeX);
         end
-        if nparam>4,
+        if nparam>4
             dyn_saveas(f2,[  IdentifDirectoryName '/' M_.fname '_MC_ident_pattern_2' ],options_.nodisplay,options_.graph_format);
             if options_.TeX && any(strcmp('eps',cellstr(options_.graph_format)))
                 fidTeX = fopen([  IdentifDirectoryName '/' M_.fname '_MC_ident_pattern_2.tex'],'w');

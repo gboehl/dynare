@@ -52,7 +52,7 @@ tittxt1=strrep(tittxt1, '.', '');
 
 cosnJ=zeros(k,n);
 pars{k,n}=[];
-for ll = 1:n,
+for ll = 1:n
     h = dyn_waitbar(0,['Brute force collinearity for ' int2str(ll) ' parameters.']);
     for ii = 1:k
         tmp = find([1:k]~=ii);
@@ -63,8 +63,8 @@ for ll = 1:n,
             [cosnJ2(jj,1), b(:,jj)] = cosn([J(:,ii),J(:,tmp2(jj,:))]);
         end
         cosnJ(ii,ll) = max(cosnJ2(:,1));
-        if cosnJ(ii,ll)>1.e-8,
-            if ll>1 && ((cosnJ(ii,ll)-cosnJ(ii,ll-1))<1.e-8),
+        if cosnJ(ii,ll)>1.e-8
+            if ll>1 && ((cosnJ(ii,ll)-cosnJ(ii,ll-1))<1.e-8)
                 pars{ii,ll} = [pars{ii,ll-1} NaN];
                 cosnJ(ii,ll) = cosnJ(ii,ll-1);
             else
@@ -101,10 +101,10 @@ for ll = 1:n,
         fprintf(fidTeX,'\\midrule \\endhead \n');
         fprintf(fidTeX,'\\bottomrule \\multicolumn{3}{r}{(Continued on next page)}\\endfoot \n');
         fprintf(fidTeX,'\\bottomrule\\endlastfoot \n');
-        for i=1:k,
+        for i=1:k
             plist='';
-            for ii=1:ll,
-                if ~isnan(pars{i,ll}(ii)),
+            for ii=1:ll
+                if ~isnan(pars{i,ll}(ii))
                     plist = [plist ' $' pnames_TeX(pars{i,ll}(ii),:) '\;\; $ '];
                 else
                     plist = [plist ' ---- '];

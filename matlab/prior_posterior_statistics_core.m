@@ -49,7 +49,7 @@ function myoutput=prior_posterior_statistics_core(myinputs,fpar,B,whoiam, ThisMa
 
 global options_ oo_ M_ bayestopt_ estim_params_
 
-if nargin<4,
+if nargin<4
     whoiam=0;
 end
 
@@ -103,9 +103,9 @@ MAX_nruns=myinputs.MAX_nruns;
 MAX_momentsno = myinputs.MAX_momentsno;
 ifil=myinputs.ifil;
 
-if ~strcmpi(type,'prior'),
+if ~strcmpi(type,'prior')
     x=myinputs.x;
-    if strcmpi(type,'posterior'),
+    if strcmpi(type,'posterior')
         logpost=myinputs.logpost;
     end
 end
@@ -128,7 +128,7 @@ end
 
 RemoteFlag = 0;
 if whoiam
-    if Parallel(ThisMatlab).Local==0,
+    if Parallel(ThisMatlab).Local==0
         RemoteFlag =1;
     end
     ifil=ifil(:,whoiam);
@@ -138,7 +138,7 @@ else
 end
 h = dyn_waitbar(prct0,['Taking ',type,' subdraws...']);
 
-if RemoteFlag==1,
+if RemoteFlag==1
     OutputFileName_smooth = {};
     OutputFileName_update = {};
     OutputFileName_inno = {};
@@ -345,14 +345,14 @@ for b=fpar:B
     irun = irun +  ones(13,1);
 
 
-    if run_smoother && (irun(1) > MAX_nsmoo || b == B),
+    if run_smoother && (irun(1) > MAX_nsmoo || b == B)
         stock = stock_smooth(:,:,1:irun(1)-1);
         ifil(1) = ifil(1) + 1;
         save([DirectoryName '/' M_.fname '_smooth' int2str(ifil(1)) '.mat'],'stock');
 
         stock = stock_update(:,:,1:irun(1)-1);
         save([DirectoryName '/' M_.fname '_update' int2str(ifil(1)) '.mat'],'stock');
-        if RemoteFlag==1,
+        if RemoteFlag==1
             OutputFileName_smooth = [OutputFileName_smooth; {[DirectoryName filesep], [M_.fname '_smooth' int2str(ifil(1)) '.mat']}];
             OutputFileName_update = [OutputFileName_update; {[DirectoryName filesep], [M_.fname '_update' int2str(ifil(1)) '.mat']}];
         end
@@ -363,7 +363,7 @@ for b=fpar:B
         stock = stock_innov(:,:,1:irun(2)-1);
         ifil(2) = ifil(2) + 1;
         save([DirectoryName '/' M_.fname '_inno' int2str(ifil(2)) '.mat'],'stock');
-        if RemoteFlag==1,
+        if RemoteFlag==1
             OutputFileName_inno = [OutputFileName_inno; {[DirectoryName filesep], [M_.fname '_inno' int2str(ifil(2)) '.mat']}];
         end
         irun(2) = 1;
@@ -373,7 +373,7 @@ for b=fpar:B
         stock = stock_error(:,:,1:irun(3)-1);
         ifil(3) = ifil(3) + 1;
         save([DirectoryName '/' M_.fname '_error' int2str(ifil(3)) '.mat'],'stock');
-        if RemoteFlag==1,
+        if RemoteFlag==1
             OutputFileName_error = [OutputFileName_error; {[DirectoryName filesep], [M_.fname '_error' int2str(ifil(3)) '.mat']}];
         end
         irun(3) = 1;
@@ -383,7 +383,7 @@ for b=fpar:B
         stock = stock_filter_step_ahead(:,:,:,1:irun(4)-1);
         ifil(4) = ifil(4) + 1;
         save([DirectoryName '/' M_.fname '_filter_step_ahead' int2str(ifil(4)) '.mat'],'stock');
-        if RemoteFlag==1,
+        if RemoteFlag==1
             OutputFileName_filter_step_ahead = [OutputFileName_filter_step_ahead; {[DirectoryName filesep], [M_.fname '_filter_step_ahead' int2str(ifil(4)) '.mat']}];
         end
         irun(4) = 1;
@@ -395,7 +395,7 @@ for b=fpar:B
         stock_ys = stock_ys(1:irun(5)-1,:);
         ifil(5) = ifil(5) + 1;
         save([DirectoryName '/' M_.fname '_param' int2str(ifil(5)) '.mat'],'stock','stock_logpo','stock_ys');
-        if RemoteFlag==1,
+        if RemoteFlag==1
             OutputFileName_param = [OutputFileName_param; {[DirectoryName filesep], [M_.fname '_param' int2str(ifil(5)) '.mat']}];
         end
         irun(5) = 1;
@@ -405,7 +405,7 @@ for b=fpar:B
         stock = stock_forcst_mean(:,:,1:irun(6)-1);
         ifil(6) = ifil(6) + 1;
         save([DirectoryName '/' M_.fname '_forc_mean' int2str(ifil(6)) '.mat'],'stock');
-        if RemoteFlag==1,
+        if RemoteFlag==1
             OutputFileName_forc_mean = [OutputFileName_forc_mean; {[DirectoryName filesep], [M_.fname '_forc_mean' int2str(ifil(6)) '.mat']}];
         end
         irun(6) = 1;
@@ -415,7 +415,7 @@ for b=fpar:B
         stock = stock_forcst_point(:,:,1:irun(7)-1);
         ifil(7) = ifil(7) + 1;
         save([DirectoryName '/' M_.fname '_forc_point' int2str(ifil(7)) '.mat'],'stock');
-        if RemoteFlag==1,
+        if RemoteFlag==1
             OutputFileName_forc_point = [OutputFileName_forc_point; {[DirectoryName filesep], [M_.fname '_forc_point' int2str(ifil(7)) '.mat']}];
         end
         irun(7) = 1;
@@ -425,7 +425,7 @@ for b=fpar:B
         stock = stock_filter_covariance(:,:,:,1:irun(8)-1);
         ifil(8) = ifil(8) + 1;
         save([DirectoryName '/' M_.fname '_filter_covar' int2str(ifil(8)) '.mat'],'stock');
-        if RemoteFlag==1,
+        if RemoteFlag==1
             OutputFileName_filter_covar = [OutputFileName_filter_covar; {[DirectoryName filesep], [M_.fname '_filter_covar' int2str(ifil(8)) '.mat']}];
         end
         irun(8) = 1;
@@ -436,7 +436,7 @@ for b=fpar:B
         stock = stock_trend_coeff(:,1:irun(irun_index)-1);
         ifil(irun_index) = ifil(irun_index) + 1;
         save([DirectoryName '/' M_.fname '_trend_coeff' int2str(ifil(irun_index)) '.mat'],'stock');
-        if RemoteFlag==1,
+        if RemoteFlag==1
             OutputFileName_trend_coeff = [OutputFileName_trend_coeff; {[DirectoryName filesep], [M_.fname '_trend_coeff' int2str(ifil(irun_index)) '.mat']}];
         end
         irun(irun_index) = 1;
@@ -447,7 +447,7 @@ for b=fpar:B
         stock = stock_smoothed_constant(:,:,1:irun(irun_index)-1);
         ifil(irun_index) = ifil(irun_index) + 1;
         save([DirectoryName '/' M_.fname '_smoothed_constant' int2str(ifil(irun_index)) '.mat'],'stock');
-        if RemoteFlag==1,
+        if RemoteFlag==1
             OutputFileName_smoothed_constant = [OutputFileName_smoothed_constant; {[DirectoryName filesep], [M_.fname '_smoothed_constant' int2str(ifil(irun_index)) '.mat']}];
         end
         irun(irun_index) = 1;
@@ -458,7 +458,7 @@ for b=fpar:B
         stock = stock_smoothed_trend(:,:,1:irun(irun_index)-1);
         ifil(irun_index) = ifil(irun_index) + 1;
         save([DirectoryName '/' M_.fname '_smoothed_trend' int2str(ifil(irun_index)) '.mat'],'stock');
-        if RemoteFlag==1,
+        if RemoteFlag==1
             OutputFileName_smoothed_trend = [OutputFileName_smoothed_trend; {[DirectoryName filesep], [M_.fname '_smoothed_trend' int2str(ifil(irun_index)) '.mat']}];
         end
         irun(irun_index) = 1;
@@ -469,7 +469,7 @@ for b=fpar:B
         stock = stock_forcst_point_ME(:,:,1:irun(irun_index)-1);
         ifil(irun_index) = ifil(irun_index) + 1;
         save([DirectoryName '/' M_.fname '_forc_point_ME' int2str(ifil(irun_index)) '.mat'],'stock');
-        if RemoteFlag==1,
+        if RemoteFlag==1
             OutputFileName_forc_point_ME = [OutputFileName_forc_point_ME; {[DirectoryName filesep], [M_.fname '_forc_point_ME' int2str(ifil(irun_index)) '.mat']}];
         end
         irun(irun_index) = 1;
@@ -480,7 +480,7 @@ for b=fpar:B
         stock = stock_smoothed_uncert(:,:,:,1:irun(irun_index)-1);
         ifil(irun_index) = ifil(irun_index) + 1;
         save([DirectoryName '/' M_.fname '_state_uncert' int2str(ifil(irun_index)) '.mat'],'stock');
-        if RemoteFlag==1,
+        if RemoteFlag==1
             OutputFileName_state_uncert = [OutputFileName_state_uncert; {[DirectoryName filesep], [M_.fname '_state_uncert' int2str(ifil(irun_index)) '.mat']}];
         end
         irun(irun_index) = 1;
@@ -490,7 +490,7 @@ for b=fpar:B
 end
 
 myoutput.ifil=ifil;
-if RemoteFlag==1,
+if RemoteFlag==1
     myoutput.OutputFileName = [OutputFileName_smooth;
                         OutputFileName_update;
                         OutputFileName_inno;

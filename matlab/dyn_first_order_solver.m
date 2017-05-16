@@ -244,14 +244,13 @@ else
         if nba > nsfwrd
             temp = temp(nd-nba+1:nd-nsfwrd)-1-DynareOptions.qz_criterium;
             info(1) = 3;
-        elseif nba < nsfwrd;
+        elseif nba < nsfwrd
             temp = temp(nd-nsfwrd+1:nd-nba)-1-DynareOptions.qz_criterium;
             info(1) = 4;
         end
         info(2) = temp'*temp;
         return
     end
-
     %First order approximation
     indx_stable_root = 1: (nd - nsfwrd);     %=> index of stable roots
     indx_explosive_root = npred + nboth + 1:nd;  %=> index of explosive roots
@@ -267,7 +266,7 @@ else
         % Z22 is near singular
         info(1) = 5;
         info(2) = -log(rc);
-        return;
+        return
     end
     gx  = -minus_gx;
     % predetermined variables
@@ -285,7 +284,7 @@ if nstatic > 0
     B_static = B(:,1:nstatic);  % submatrix containing the derivatives w.r. to static variables
 else
     B_static = [];
-end;
+end
 %static variables, backward variable, mixed variables and forward variables
 B_pred = B(:,nstatic+1:nstatic+npred+nboth);
 B_fyd = B(:,nstatic+npred+nboth+1:end);
@@ -309,12 +308,12 @@ if exo_nbr
         fu = Q' * jacobia(:,innovations_idx);
     else
         fu = jacobia(:,innovations_idx);
-    end;
+    end
 
     ghu = - A_ \ fu;
 else
     ghu = [];
-end;
+end
 
 dr.ghx = ghx;
 dr.ghu = ghu;

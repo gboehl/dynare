@@ -1,4 +1,4 @@
-function xlag = lagged(x, n);
+function xlag = lagged(x, n)
 % xlag = lagged(x, n);
 % applies n-lags backward shift operator to x
 % 
@@ -26,7 +26,9 @@ function xlag = lagged(x, n);
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-if nargin==1, n=1; end
+if nargin==1
+    n=1;
+end
 
 x=x(:);
 xlag=[NaN(n,1); x(1:end-n)];

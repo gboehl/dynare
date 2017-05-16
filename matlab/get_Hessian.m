@@ -128,13 +128,13 @@ function [Hess] = get_Hessian(T,R,Q,H,P,Y,DT,DYss,DOm,DH,DP,D2T,D2Yss,D2Om,D2H,D
             t = t+1;
             v = Y(:,t)-a(mf);
             tmp = (a+K*v);
-            for ii = 1:k,
+            for ii = 1:k
                 Dv(:,ii)   = -Da(mf,ii)-DYss(mf,ii);
                 dKi  = DK(:,:,ii);
                 diFi = -iF*DF(:,:,ii)*iF;
                 dtmpi = Da(:,ii)+dKi*v+K*Dv(:,ii);
                 
-                for jj = 1:ii,
+                for jj = 1:ii
                     dFj    = DF(:,:,jj);
                     diFj   = -iF*DF(:,:,jj)*iF;
                     dKj  = DK(:,:,jj);
@@ -191,7 +191,7 @@ end
 
 % end of computeDKalman
 
-function [d2K,d2S,d2P1] = computeD2Kalman(A,dA,d2A,d2Om,P0,dP0,d2P0,DH,mf,iF,K0,dK0);
+function [d2K,d2S,d2P1] = computeD2Kalman(A,dA,d2A,d2Om,P0,dP0,d2P0,DH,mf,iF,K0,dK0)
 % computes the second derivatives of the Kalman matrices
 % note: A=T in main func.
         

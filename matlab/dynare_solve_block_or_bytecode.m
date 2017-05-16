@@ -80,7 +80,7 @@ elseif options.bytecode
                     info = 1;
                     return
                 end
-            end;
+            end
         end
     else
         [x, check] = dynare_solve('bytecode_steadystate', y, ...

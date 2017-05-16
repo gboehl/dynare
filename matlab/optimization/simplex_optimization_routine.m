@@ -396,7 +396,7 @@ while (func_count < max_func_calls) && (iter_count < max_iterations) && (simplex
         disp(['Crit. x:                  ' num2str(critX)])
         skipline()
     end
-    if verbose && max(abs(best_point-v(:,1)))>x_tolerance;
+    if verbose && max(abs(best_point-v(:,1)))>x_tolerance
         if verbose<2
             disp(['Simplex iteration number: ' int2str(simplex_iterations) '-' int2str(simplex_init) '-' int2str(simplex_algo_iterations)])
             disp(['Objective function value: ' num2str(fv(1))])

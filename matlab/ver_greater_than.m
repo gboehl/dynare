@@ -36,27 +36,27 @@ ver2 = strsplit(ver2, {'.', '-'});
 maj_ver1 = str2double(ver1{1});
 maj_ver2 = str2double(ver2{1});
 if maj_ver1 > maj_ver2
-    return;
+    return
 end
 
 min_ver1 = str2double(ver1{2});
 min_ver2 = str2double(ver2{2});
 if (maj_ver1 == maj_ver2) && (min_ver1 > min_ver2)
-    return;
+    return
 end
 
 if (length(ver1) == length(ver2) && length(ver1) == 3)
     ismaster1 = isnan(str2double(ver1{3}));
     ismaster2 = isnan(str2double(ver2{3}));
     if (maj_ver1 == maj_ver2) && (min_ver1 == min_ver2) && (ismaster1 && ~ismaster2)
-        return;
+        return
     end
 
     if ~ismaster1 && ~ismaster2
         rev_ver1 = str2double(ver1{3});
         rev_ver2 = str2double(ver2{3});
         if (maj_ver1 == maj_ver2) && (min_ver1 == min_ver2) && (rev_ver1 > rev_ver2)
-            return;
+            return
         end
     end
 end

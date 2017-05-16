@@ -1,4 +1,4 @@
-function  [ldens,Dldens,D2ldens] = lpdfgam(x,a,b);
+function  [ldens,Dldens,D2ldens] = lpdfgam(x,a,b)
 % Evaluates the logged GAMMA PDF at x.
 %
 % INPUTS     

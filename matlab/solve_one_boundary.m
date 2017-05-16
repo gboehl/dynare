@@ -387,7 +387,7 @@ for it_=start:incr:finish
             oo_.deterministic_simulation.block(Block_Num).status = 0;% Convergency failed.
             oo_.deterministic_simulation.block(Block_Num).error = max_res;
             oo_.deterministic_simulation.block(Block_Num).iterations = iter;
-        end;
+        end
         info = -Block_Num*10;
         return
     end

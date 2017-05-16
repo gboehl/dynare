@@ -51,7 +51,7 @@ for i=1:n
     y(i)=x(i)+di(i);
     fi=feval(fun,y,varargin{:});
     if obj
-        if fi==f,
+        if fi==f
             for j=1:3
                 di(i)=di(i)*10;  y(i)=x(i)+di(i);
                 fi=feval(fun,y,varargin{:});

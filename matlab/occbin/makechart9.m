@@ -72,10 +72,10 @@ elseif (nvars==5 | nvars ==6)
 elseif (nvars==7 | nvars==8)
     nrows = 4;
     ncols = 2;
-elseif nvars>8 & nvars<=12;
+elseif nvars>8 & nvars<=12
     nrows = 3;
     ncols = 4;
-elseif nvars>12 & nvars<=15;
+elseif nvars>12 & nvars<=15
     nrows = 5;
     ncols = 3;
 else 
@@ -92,13 +92,13 @@ for i = 1:nvars
         xvalues,zdata5(:,i),'g',...
         xvalues,zdata6(:,i),'c',...
         xvalues,zdata7(:,i),'y');
-    [x0 x1 y10 y11] = pickaxes(xvalues,zdata1(:,i));
-    [x0 x1 y20 y21] = pickaxes(xvalues,zdata2(:,i));
-    [x0 x1 y30 y31] = pickaxes(xvalues,zdata3(:,i));
-    [x0 x1 y40 y41] = pickaxes(xvalues,zdata4(:,i));
-    [x0 x1 y50 y51] = pickaxes(xvalues,zdata5(:,i));
-    [x0 x1 y60 y61] = pickaxes(xvalues,zdata6(:,i));
-    [x0 x1 y70 y71] = pickaxes(xvalues,zdata7(:,i));
+    [x0, x1, y10, y11] = pickaxes(xvalues,zdata1(:,i));
+    [x0, x1, y20, y21] = pickaxes(xvalues,zdata2(:,i));
+    [x0, x1, y30, y31] = pickaxes(xvalues,zdata3(:,i));
+    [x0, x1, y40, y41] = pickaxes(xvalues,zdata4(:,i));
+    [x0, x1, y50, y51] = pickaxes(xvalues,zdata5(:,i));
+    [x0, x1, y60, y61] = pickaxes(xvalues,zdata6(:,i));
+    [x0, x1, y70, y71] = pickaxes(xvalues,zdata7(:,i));
      grid on
     y0 = min([y10,y20,y30,y40,y50,y60,y70]);
     y1 = max([y11,y21,y31,y41,y51,y61,y71]);

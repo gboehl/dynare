@@ -49,9 +49,9 @@ for i = 1:nvars
     h1=plot(xvalues,zdata1(:,i),'b-','linewidth',2); hold on
     h1=plot(xvalues,zdata2(:,i),'r--','linewidth',2); hold on
     h2=plot(xvalues,zdata3(:,i),'b-','LineWidth',3);
-    [x0 x1 y10 y11] = pickaxes(xvalues,zdata1(:,i));
-    [x0 x1 y20 y21] = pickaxes(xvalues,zdata2(:,i));
-    [x0 x1 y30 y31] = pickaxes(xvalues,zdata3(:,i));
+    [x0, x1, y10, y11] = pickaxes(xvalues,zdata1(:,i));
+    [x0, x1, y20, y21] = pickaxes(xvalues,zdata2(:,i));
+    [x0, x1, y30, y31] = pickaxes(xvalues,zdata3(:,i));
     y0 = min([y10,y20,y30]);
     y1 = max([y11,y21,y31]);
     if y0==y1

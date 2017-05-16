@@ -50,11 +50,11 @@ if isempty(hxo)
     X = zeros(size(B, 2), size(C, 1));
 else
     X = hxo;
-end;
+end
 it_fp = 0;
 maxit_fp = 1000;
 Z = - (B * X * C + D);
-while it_fp < maxit_fp && evol > tol;
+while it_fp < maxit_fp && evol > tol
     %X_old = X;
     %X = - A1 * ( B * X * C + D);
     %evol = max(max(abs(X - X_old)));
@@ -64,10 +64,10 @@ while it_fp < maxit_fp && evol > tol;
     evol = max(sum(abs(Z - Z_old))); %norm_1
     %evol = max(sum(abs(Z - Z_old)')); %norm_inf
     it_fp = it_fp + 1;
-end;
+end
 %fprintf('sylvester it_fp=%d evol=%g | ',it_fp,evol);
 if evol < tol
     eval(['hxo_' int2str(block) ' = X;']);
 else
     error(['convergence not achieved in fixed point solution of Sylvester equation after ' int2str(it_fp) ' iterations']);
-end;
+end

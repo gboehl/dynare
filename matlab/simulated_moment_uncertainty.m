@@ -94,17 +94,17 @@ else
 end
 
 
-for j=1:replic;
+for j=1:replic
     [ys, oo_] = simult(y0,oo_.dr,M_,options_,oo_);%do simulation
     oo_=disp_moments(ys,char(options_.varobs),M_,options_,oo_); %get moments
     dum=[oo_.mean; dyn_vech(oo_.var)];
     sd = sqrt(diag(oo_.var));
-    for i=1:options_.ar;
+    for i=1:options_.ar
         dum=[dum; vec(oo_.autocorr{i}.*(sd*sd'))];
     end
     mm(:,j)=dum(indx);
     dyn_waitbar(j/replic,h,['Simulated moment uncertainty. Replic  ',int2str(j),'/',int2str(replic)])
-end;
+end
 dyn_waitbar_close(h);
 
 if logged_steady_state_indicator

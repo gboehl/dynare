@@ -29,7 +29,7 @@
 % to be processed.
 % 6/17/2013 -- Luca replaced external .m file setss.m
 
-function [ zdatalinear_ zdatapiecewise_ zdatass_ oo00_  M00_ ] = ...
+function [ zdatalinear_, zdatapiecewise_, zdatass_, oo00_ , M00_ ] = ...
   solve_two_constraints(modnam_00_,modnam_10_,modnam_01_,modnam_11_,...
     constrain1_, constrain2_,...
     constraint_relax1_, constraint_relax2_,...
@@ -220,8 +220,8 @@ for ishock_ = 1:nshocks
         
         % analyse violvec and isolate contiguous periods in the other
         % regime.
-        [regime1 regimestart1]=map_regime(violvecbool_(:,1));
-        [regime2 regimestart2]=map_regime(violvecbool_(:,2));
+        [regime1, regimestart1]=map_regime(violvecbool_(:,1));
+        [regime2, regimestart2]=map_regime(violvecbool_(:,2));
         
         
         [zdatalinear_]=mkdatap_anticipated_2constraints(nperiods_,decrulea,decruleb,...

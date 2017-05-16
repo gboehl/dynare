@@ -49,7 +49,7 @@ function myoutput=PosteriorIRF_core2(myinputs,fpar,npar,whoiam,ThisMatlab)
 
 global options_  M_
 
-if nargin<4,
+if nargin<4
     whoiam=0;
 end
 
@@ -85,8 +85,8 @@ end
 DirectoryName = CheckPath('Output',M_.dname);
 
 RemoteFlag = 0;
-if whoiam,
-    if Parallel(ThisMatlab).Local==0,
+if whoiam
+    if Parallel(ThisMatlab).Local==0
         RemoteFlag =1;
     end
     prct0={0,whoiam,Parallel(ThisMatlab)};
@@ -96,7 +96,7 @@ end
 OutputFileName={};
 
 subplotnum = 0;
-for i=fpar:npar,
+for i=fpar:npar
     figunumber = 0;
 
     for j=1:nvar
@@ -153,13 +153,13 @@ for i=fpar:npar,
         if subplotnum == MaxNumberOfPlotPerFigure || (j == nvar  && subplotnum> 0)
             figunumber = figunumber+1;
             dyn_saveas(hh,[DirectoryName '/'  M_.fname '_Bayesian_IRF_' deblank(tit(i,:)) '_' int2str(figunumber)],options_.nodisplay,options_.graph_format);
-            if RemoteFlag==1,
+            if RemoteFlag==1
                 OutputFileName = [OutputFileName; {[DirectoryName,filesep], [M_.fname '_Bayesian_IRF_' deblank(tit(i,:)) '_' int2str(figunumber) '.*']}];
             end
             subplotnum = 0;
         end
     end% loop over selected endo_var
-    if whoiam,
+    if whoiam
         fprintf('Done! \n');
         waitbarString = [ 'Exog. shocks ' int2str(i) '/' int2str(npar) ' done.'];
 %         fMessageStatus((i-fpar+1)/(npar-fpar+1),whoiam,waitbarString, waitbarTitle, Parallel(ThisMatlab));

@@ -96,7 +96,7 @@ try
         else
             warning('PI_gensys: Evading inversion of zero matrix UAVinv=inv(U02''*a1*V02)!');
             eu=[0,0];
-            return;
+            return
         end
     end
 catch
@@ -171,7 +171,7 @@ if(options_.ACES_solver==1)
             zeros(num_inst,size(E3,2)), II;
           ];
     eu =[1; 1], nmat=[], gev=[];
-    return; % do not check B&K compliancy
+    return % do not check B&K compliancy
 end
 
 G0pi=eye(n+FL_RANK+NX);

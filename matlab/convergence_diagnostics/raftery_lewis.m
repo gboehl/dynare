@@ -85,7 +85,7 @@ for nv = 1:n_vars % big loop over variables
         work = (runs(:,nv) <= quantile(runs(:,nv),q));
     else
         error('Quantile must be between 0 and 1'); 
-    end;
+    end
     
     k_thin_current_var = 1; 
     bic = 1; 
@@ -95,7 +95,7 @@ for nv = 1:n_vars % big loop over variables
         thinned_chain=work(1:k_thin_current_var:n_runs,1); 
         [g2, bic] = first_vs_second_order_MC_test(thinned_chain);
         k_thin_current_var = k_thin_current_var+1;
-    end;
+    end
     
     k_thin_current_var = k_thin_current_var-1; %undo last step
     
@@ -103,7 +103,7 @@ for nv = 1:n_vars % big loop over variables
     transition_matrix = zeros(2,2);
     for i1 = 2:size(thinned_chain,1)
         transition_matrix(thinned_chain(i1-1)+1,thinned_chain(i1)+1) = transition_matrix(thinned_chain(i1-1)+1,thinned_chain(i1)+1)+1;
-    end;
+    end
     alpha = transition_matrix(1,2)/(transition_matrix(1,1)+transition_matrix(1,2)); %prob of going from 1 to 2
     beta = transition_matrix(2,1)/(transition_matrix(2,1)+transition_matrix(2,2));  %prob of going from 2 to 1
 
@@ -114,7 +114,7 @@ for nv = 1:n_vars % big loop over variables
         thinned_chain=work(1:kmind:n_runs,1); 
         [g2, bic] = independence_chain_test(thinned_chain);
         kmind = kmind+1;
-    end;
+    end
     
     m_star  = log((alpha + beta)*epss/max(alpha,beta))/log(abs(1 - alpha - beta)); %equation bottom page 4
     raftery_lewis.M_burn(nv) = fix((m_star+1)*k_thin_current_var);
@@ -124,7 +124,7 @@ for nv = 1:n_vars % big loop over variables
     raftery_lewis.k_ind(nv)  = max(fix(raftery_lewis.I_stat(nv)+1),kmind);
     raftery_lewis.k_thin(nv) = k_thin_current_var;
     raftery_lewis.N_total(nv)= raftery_lewis.M_burn(nv)+raftery_lewis.N_prec(nv);
-end;
+end
 
 end
 
@@ -135,7 +135,7 @@ g2 = 0;
 tran=zeros(2,2,2);
 for t_iter=3:n_obs     % count state transitions
     tran(d(t_iter-2,1)+1,d(t_iter-1,1)+1,d(t_iter,1)+1)=tran(d(t_iter-2,1)+1,d(t_iter-1,1)+1,d(t_iter,1)+1)+1;
-end;
+end
 % Compute the log likelihood ratio statistic for second-order MC vs first-order MC. G2 statistic of Bishop, Fienberg and Holland (1975)
 for ind_1 = 1:2
     for ind_2 = 1:2
@@ -146,9 +146,9 @@ for ind_1 = 1:2
                 focus = tran(ind_1,ind_2,ind_3);
                 g2 = g2 + log(focus/fitted)*focus;
             end
-        end;       % end of for i3
-    end;        % end of for i2
-end;         % end of for i1
+        end       % end of for i3
+    end        % end of for i2
+end         % end of for i1
 g2 = g2*2;
 bic = g2 - log(n_obs-2)*2;
 
@@ -161,7 +161,7 @@ n_obs=size(d,1);
 trans = zeros(2,2);
 for ind_1 = 2:n_obs
     trans(d(ind_1-1)+1,d(ind_1)+1)=trans(d(ind_1-1)+1,d(ind_1)+1)+1;
-end;
+end
 dcm1 = n_obs - 1;  
 g2 = 0;
 % Compute the log likelihood ratio statistic for second-order MC vs first-order MC. G2 statistic of Bishop, Fienberg and Holland (1975)
@@ -171,9 +171,9 @@ for ind_1 = 1:2
             fitted = ((trans(ind_1,1) + trans(ind_1,2))*(trans(1,ind_2) + trans(2,ind_2)))/dcm1; 
             focus = trans(ind_1,ind_2);
             g2 = g2 + log(focus/fitted)*focus;
-        end;
-    end;
-end;
+        end
+    end
+end
 g2 = g2*2; 
 bic = g2 - log(dcm1);
 end

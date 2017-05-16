@@ -128,7 +128,7 @@ oldK = Inf;
 K = NaN(mm,pp);
 asy_hess=0;
 
-if  analytic_derivation == 0,
+if  analytic_derivation == 0
     DLIK=[];
     Hess=[];
 else
@@ -137,14 +137,14 @@ else
     Da    = zeros(mm,k);                            % Derivative State vector.
     dlik  = zeros(smpl,k);
     
-    if Zflag==0,
+    if Zflag==0
         C = zeros(pp,mm);
-        for ii=1:pp; C(ii,Z(ii))=1;end         % SELECTION MATRIX IN MEASUREMENT EQ. (FOR WHEN IT IS NOT CONSTANT)
+        for ii=1:pp, C(ii,Z(ii))=1; end         % SELECTION MATRIX IN MEASUREMENT EQ. (FOR WHEN IT IS NOT CONSTANT)
     else
         C=Z;
     end
     dC = zeros(pp,mm,k);   % either selection matrix or schur have zero derivatives
-    if analytic_derivation==2,
+    if analytic_derivation==2
         Hess  = zeros(k,k);                             % Initialization of the Hessian
         D2a    = zeros(mm,k,k);                             % State vector.
         d2C = zeros(pp,mm,k,k);
@@ -155,7 +155,7 @@ else
         D2T=[];
         D2Yss=[];
     end
-    if asy_hess,
+    if asy_hess
         Hess  = zeros(k,k);                             % Initialization of the Hessian
     end
     LIK={inf,DLIK,Hess};
@@ -186,15 +186,15 @@ while notsteady && t<=last %loop over t
                 K(:,i) = Ki;
             end
             lik(s,i) = log(Fi) + (prediction_error*prediction_error)/Fi + l2pi; %Top equation p. 175 in DK (2012)
-            if analytic_derivation,
-                if analytic_derivation==2,
+            if analytic_derivation
+                if analytic_derivation==2
                     [Da,DP,DLIKt,D2a,D2P, Hesst] = univariate_computeDLIK(k,i,z(i,:),Zflag,prediction_error,Ki,PZ,Fi,Da,DYss,DP,DH(d_index(i),:),notsteady,D2a,D2Yss,D2P);
                 else
                     [Da,DP,DLIKt,Hesst] = univariate_computeDLIK(k,i,z(i,:),Zflag,prediction_error,Ki,PZ,Fi,Da,DYss,DP,DH(d_index(i),:),notsteady);
                 end
                 if t>presample
                     DLIK = DLIK + DLIKt;
-                    if analytic_derivation==2 || asy_hess,
+                    if analytic_derivation==2 || asy_hess
                         Hess = Hess + Hesst;
                     end
                 end
@@ -207,8 +207,8 @@ while notsteady && t<=last %loop over t
             % p. 157, DK (2012)
         end
     end
-    if analytic_derivation,        
-        if analytic_derivation==2,
+    if analytic_derivation
+        if analytic_derivation==2
             [Da,DP,D2a,D2P] = univariate_computeDstate(k,a,P,T,Da,DP,DT,DOm,notsteady,D2a,D2P,D2T,D2Om);
         else
             [Da,DP] = univariate_computeDstate(k,a,P,T,Da,DP,DT,DOm,notsteady);
@@ -225,10 +225,10 @@ end
 
 % Divide by two.
 lik(1:s,:) = .5*lik(1:s,:);
-if analytic_derivation,
+if analytic_derivation
     DLIK = DLIK/2;
     dlik = dlik/2;
-    if analytic_derivation==2 || asy_hess,
+    if analytic_derivation==2 || asy_hess
 %         Hess = (Hess + Hess')/2;
         Hess = -Hess/2;
     end
@@ -236,8 +236,8 @@ end
 
 % Call steady state univariate kalman filter if needed.
 if t <= last
-    if analytic_derivation,
-        if analytic_derivation==2,
+    if analytic_derivation
+        if analytic_derivation==2
             [tmp, tmp2] = univariate_kalman_filter_ss(Y,t,last,a,P,kalman_tol,T,H,Z,pp,Zflag, ...
                 analytic_derivation,Da,DT,DYss,DP,DH,D2a,D2T,D2Yss,D2P);
         else
@@ -247,7 +247,7 @@ if t <= last
         lik(s+1:end,:)=tmp2{1};
         dlik(s+1:end,:)=tmp2{2};
         DLIK = DLIK + tmp{2};
-        if analytic_derivation==2 || asy_hess,
+        if analytic_derivation==2 || asy_hess
             Hess = Hess + tmp{3};
         end
     else
@@ -262,8 +262,8 @@ else
     LIK = sum(sum(lik));
 end
 
-if analytic_derivation,
-    if analytic_derivation==2 || asy_hess,
+if analytic_derivation
+    if analytic_derivation==2 || asy_hess
         LIK={LIK, DLIK, Hess};
     else
         LIK={LIK, DLIK};

@@ -39,7 +39,7 @@ function [AHess, DLIK, LIK] = AHessian(T,R,Q,H,P,Y,DT,DYss,DOm,DH,DP,start,mf,ka
 
 lik  = zeros(smpl,1);                           % Initialization of the vector gathering the densities.
 LIK  = Inf;                                     % Default value of the log likelihood.
-if nargout > 1,
+if nargout > 1
     DLIK  = zeros(k,1);                             % Initialization of the score.
 end
     AHess  = zeros(k,k);                             % Initialization of the Hessian
@@ -127,7 +127,7 @@ end
     end    
     
 AHess = -AHess;  
-if nargout > 1,
+if nargout > 1
     DLIK = DLIK/2;
 end
 % adding log-likelihhod constants

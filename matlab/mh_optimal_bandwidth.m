@@ -98,10 +98,10 @@ end
 %% Compute the standard deviation of the draws.
 sigma = std(data);
 %% Optimal bandwidth parameter.
-if bandwidth == 0;  % Rule of thumb bandwidth parameter (Silverman [1986].
+if bandwidth == 0  % Rule of thumb bandwidth parameter (Silverman [1986].
     h = 2*sigma*(sqrt(pi)*mu02/(12*(mu21^2)*number_of_draws))^(1/5);
     h = h*correction^(1/5);
-elseif bandwidth == -1; % Sheather and Jones [1991] plug-in estimation of the optimal bandwidth parameter. 
+elseif bandwidth == -1 % Sheather and Jones [1991] plug-in estimation of the optimal bandwidth parameter. 
     if strcmp(kernel_function,'uniform')      || ... 
             strcmp(kernel_function,'triangle')     || ... 
             strcmp(kernel_function,'epanechnikov') || ... 
@@ -123,7 +123,7 @@ elseif bandwidth == -1; % Sheather and Jones [1991] plug-in estimation of the op
     end
     Ihat2 = Ihat2/((number_of_draws^2)*g2^5);
     h     = (correction*mu02/(number_of_draws*Ihat2*mu21^2))^(1/5); % equation (22) in Skold and Roberts [2003]. 
-elseif bandwidth == -2;     % Bump killing... I compute local bandwith parameters in order to remove 
+elseif bandwidth == -2     % Bump killing... I compute local bandwith parameters in order to remove 
                             % spurious bumps introduced by long rejecting periods.   
     if strcmp(kernel_function,'uniform')      || ... 
             strcmp(kernel_function,'triangle')     || ... 
@@ -135,7 +135,7 @@ elseif bandwidth == -2;     % Bump killing... I compute local bandwith parameter
     T = zeros(n,1);
     for i=1:n
         j = i;
-        while j<= n && (data(j,1)-data(i,1))<2*eps;
+        while j<= n && (data(j,1)-data(i,1))<2*eps
             j = j+1;
         end     
         T(i) = (j-i);
@@ -151,7 +151,7 @@ elseif bandwidth == -2;     % Bump killing... I compute local bandwith parameter
     Ihat3 = -Ihat3/((n^2)*g3^7);
     g2    = abs(2*correction*k4(0)/(mu21*Ihat3*n))^(1/7);
     Ihat2 = 0;
-    for i=1:number_of_draws;
+    for i=1:number_of_draws
         Ihat2 = Ihat2 + sum(k4((data(i)-data)/g2));
     end     
     Ihat2 = Ihat2/((number_of_draws^2)*g2^5);
@@ -169,7 +169,7 @@ function correction = correction_for_repeated_draws(draws,n)
 correction = 0;
 for i=1:n
     j = i;
-    while j<=n && ( draws(j,1) - draws(i,1) )<2*eps; 
+    while j<=n && ( draws(j,1) - draws(i,1) )<2*eps
         j = j+1;
     end
     correction = correction + 2*(j-i) - 1;

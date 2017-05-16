@@ -1,4 +1,4 @@
-function [p,q]=get_pq(dr_,nstatic,nfwrd);
+function [p,q]=get_pq(dr_,nstatic,nfwrd)
 
 nvars = size(dr_.ghx,1);
 nshocks = size(dr_.ghu,2);

@@ -79,7 +79,7 @@ elseif strcmpi(type,'gsa')
         DirectoryName = CheckPath(['gsa',filesep,'mc'],M_.dname);
         load([ RootDirectoryName filesep  M_.fname '_mc.mat'],'lpmat0','lpmat','istable')
     end
-    if ~isempty(lpmat0),
+    if ~isempty(lpmat0)
         x=[lpmat0(istable,:) lpmat(istable,:)];
     else
         x=lpmat(istable,:);
@@ -207,7 +207,7 @@ localVars.MAX_momentsno = MAX_momentsno;
 localVars.ifil=ifil;
 localVars.DirectoryName = DirectoryName;
 
-if strcmpi(type,'posterior'),
+if strcmpi(type,'posterior')
     BaseName = [DirectoryName filesep M_.fname];
     load_last_mh_history_file(DirectoryName, M_.fname);
     FirstMhFile = record.KeepedDraws.FirstMhFile;
@@ -217,7 +217,7 @@ if strcmpi(type,'posterior'),
     TotalNumberOfMhDraws = sum(record.MhDraws(:,1));
     NumberOfDraws = TotalNumberOfMhDraws-floor(options_.mh_drop*TotalNumberOfMhDraws);
     mh_nblck = options_.mh_nblck;
-    if B==NumberOfDraws*mh_nblck,
+    if B==NumberOfDraws*mh_nblck
         % we load all retained MH runs !
         logpost=GetAllPosteriorDraws(0, FirstMhFile, FirstLine, TotalNumberOfMhFiles, NumberOfDraws);
         for column=1:npar
@@ -232,18 +232,18 @@ if strcmpi(type,'posterior'),
     localVars.logpost=logpost;
 end
 
-if ~strcmpi(type,'prior'),
+if ~strcmpi(type,'prior')
     localVars.x=x;
 end
 
 % Like sequential execution!
-if isnumeric(options_.parallel),
+if isnumeric(options_.parallel)
     [fout] = prior_posterior_statistics_core(localVars,1,B,0);
     % Parallel execution!
 else
     [nCPU, totCPU, nBlockPerCPU] = distributeJobs(options_.parallel, 1, B);
     ifil=zeros(n_variables_to_fill,totCPU);
-    for j=1:totCPU-1,
+    for j=1:totCPU-1
         if run_smoother
             nfiles = ceil(nBlockPerCPU(j)/MAX_nsmoo);
             ifil(1,j+1) =ifil(1,j)+nfiles;
@@ -295,8 +295,8 @@ else
     NamFileInput(1,:) = {'',[M_.fname '_static.m']};
     NamFileInput(2,:) = {'',[M_.fname '_dynamic.m']};
     NamFileInput(3,:) = {'',[M_.fname '_set_auxiliary_variables.m']};
-    if options_.steadystate_flag,
-        if options_.steadystate_flag == 1,
+    if options_.steadystate_flag
+        if options_.steadystate_flag == 1
             NamFileInput(length(NamFileInput)+1,:)={'',[M_.fname '_steadystate.m']};
         else
             NamFileInput(length(NamFileInput)+1,:)={'',[M_.fname '_steadystate2.m']};
@@ -397,9 +397,9 @@ if options_.filter_covariance
 end
 
 
-if ~isnumeric(options_.parallel),
+if ~isnumeric(options_.parallel)
     options_.parallel_info.leaveSlaveOpen = leaveSlaveOpen;
-    if leaveSlaveOpen == 0,
+    if leaveSlaveOpen == 0
         closeSlave(options_.parallel,options_.parallel_info.RemoteTmpFolder),
     end
 end

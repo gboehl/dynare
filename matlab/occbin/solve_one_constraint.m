@@ -24,7 +24,7 @@
 % 6/17/2013 -- Luca replaced external .m file setss.m
 
 
-function [zdatalinear_ zdatapiecewise_ zdatass_ oobase_ Mbase_  ] = ...
+function [zdatalinear_, zdatapiecewise_, zdatass_, oobase_, Mbase_  ] = ...
     solve_one_constraint(modnam_,modnamstar_,...
     constraint_, constraint_relax_,...
     shockssequence_,irfshock_,nperiods_,maxiter_,init_)
@@ -140,7 +140,7 @@ for ishock_ = 1:nshocks_
         iter_ = iter_ +1;
         
         % analyze when each regime starts based on current guess
-        [regime regimestart]=map_regime(violvecbool_);
+        [regime, regimestart]=map_regime(violvecbool_);
         
         
         

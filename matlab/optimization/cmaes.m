@@ -283,7 +283,7 @@ if nargin < 1 || isequal(fitfun, 'defaults') % pass default options
   if nargin > 1 % supplement second argument with default options
     xmin = getoptions(xstart, defopts);
   end
-  return;
+  return
 end
 
 if isequal(fitfun, 'displayoptions')
@@ -291,7 +291,7 @@ if isequal(fitfun, 'displayoptions')
  for name = names'
    disp([name{:} repmat(' ', 1, 20-length(name{:})) ': ''' defopts.(name{:}) '''']); 
  end
- return; 
+ return 
 end
 
 input.fitfun = fitfun; % record used input
@@ -378,7 +378,7 @@ if ~flgresume % not resuming a former run
 else % flgresume is true, do resume former run
   tmp = whos('-file', opts.SaveFilename);
   for i = 1:length(tmp)
-    if strcmp(tmp(i).name, 'localopts');
+    if strcmp(tmp(i).name, 'localopts')
       error('Saved variables include variable "localopts", please remove');
     end
   end
@@ -576,7 +576,7 @@ else % flgresume
     if any(lbounds>ubounds)
       error('lower bound found to be greater than upper bound');
     end
-    [xmean ti] = xintobounds(xmean, lbounds, ubounds); % just in case
+    [xmean, ti] = xintobounds(xmean, lbounds, ubounds); % just in case
     if any(ti)
       warning('Initial point was out of bounds, corrected');
     end
@@ -910,7 +910,7 @@ while isempty(stopflag)
   % non-parallel evaluation and remaining NaN-values
   % set also the reevaluated solution to NaN
   fitness.raw(lambda + find(isnan(fitness.raw(1:noiseReevals)))) = NaN;  
-  for k=find(isnan(fitness.raw)), 
+  for k=find(isnan(fitness.raw))
     % fitness.raw(k) = NaN; 
     tries = 0;
     % Resample, until fitness is not NaN
@@ -987,7 +987,7 @@ while isempty(stopflag)
       bnd.dfithist = [bnd.dfithist(2:end) val];
     end
 
-    [tx ti]  = xintobounds(xmean, lbounds, ubounds);
+    [tx, ti]  = xintobounds(xmean, lbounds, ubounds);
 
     % Set initial weights
     if bnd.iniphase 
@@ -1148,8 +1148,8 @@ while isempty(stopflag)
         % i-th longest becomes i-th shortest
         % TODO: this is not in compliance with the paper Hansen&Ros2010, 
         %       where simply arnorms = arnorms(end:-1:1) ? 
-        [arnorms idxnorms] = sort(sqrt(sum(arzneg.^2, 1))); 
-        [ignore idxnorms] = sort(idxnorms);  % inverse index 
+        [arnorms, idxnorms] = sort(sqrt(sum(arzneg.^2, 1))); 
+        [ignore, idxnorms] = sort(idxnorms);  % inverse index 
         arnormfacs = arnorms(end:-1:1) ./ arnorms; 
         % arnormfacs = arnorms(randperm(neg.mu)) ./ arnorms;
         arnorms = arnorms(end:-1:1); % for the record
@@ -1510,13 +1510,13 @@ while isempty(stopflag)
     while fid > 0
       strline = fgetl(fid); %fgets(fid, 300);
       if strline < 0 % fgets and fgetl returns -1 at end of file
-        break;
+        break
       end
       % 'stop filename' sets stopflag to manual
       str = sscanf(strline, ' %s %s', 2);
       if strcmp(str, ['stop' opts.LogFilenamePrefix]) 
         stopflag(end+1) = {'manual'};
-        break;
+        break
       end
       % 'skip filename run 3' skips a run, but not the last
       str = sscanf(strline, ' %s %s %s', 3);
@@ -1545,8 +1545,8 @@ while isempty(stopflag)
     if mod(countiter, verbosemodulo) < 1 ...
 	  || (verbosemodulo > 0 && isfinite(verbosemodulo) && ...
 	      (countiter < 3 || ~isempty(stopflag)))
-      [minstd minstdidx] = min(sigma*sqrt(diagC));
-      [maxstd maxstdidx] = max(sigma*sqrt(diagC));
+      [minstd, minstdidx] = min(sigma*sqrt(diagC));
+      [maxstd, maxstdidx] = max(sigma*sqrt(diagC));
       % format display nicely
       disp([repmat(' ',1,4-floor(log10(countiter))) ...
 	    num2str(countiter) ' , ' ...
@@ -1749,7 +1749,7 @@ end
 	|| any(strcmp(stopflag, 'maxfunevals')) ...
 	|| any(strcmp(stopflag, 'stoptoresume')) ...
 	|| any(strcmp(stopflag, 'manual'))
-    break; 
+    break
   end
 end % while irun <= Restarts
 
@@ -1839,10 +1839,10 @@ function opts=getoptions(inopts, defopts)
 
 if nargin < 2 || isempty(defopts) % no default options available
   opts=inopts;
-  return;
+  return
 elseif isempty(inopts) % empty inopts invoke default options
   opts = defopts;
-  return;
+  return
 elseif ~isstruct(defopts) % handle a single option value
   if isempty(inopts) 
     opts = defopts;
@@ -1851,7 +1851,7 @@ elseif ~isstruct(defopts) % handle a single option value
   else
     error('Input options are a struct, while default options are not');
   end
-  return;
+  return
 elseif ~isstruct(inopts) % no valid input options
   error('The options need to be a struct or empty');
 end
@@ -1989,7 +1989,7 @@ end
  
 % sort inar
 if nargin < 3 || isempty(idx)
-  [sar idx] = sort(inar);
+  [sar, idx] = sort(inar);
 else
   sar = inar(idx);
 end
@@ -2024,7 +2024,7 @@ end
 
 
 
-function [s ranks rankDelta] = local_noisemeasurement(arf1, arf2, lamreev, theta, cutlimit)
+function [s, ranks, rankDelta] = local_noisemeasurement(arf1, arf2, lamreev, theta, cutlimit)
 % function [s ranks rankDelta] = noisemeasurement(arf1, arf2, lamreev, theta)
 %
 % Input: 
@@ -2207,7 +2207,7 @@ manual_mode = 0;
   % plot fitness etc
   foffset = 1e-99;
   dfit = d.f(:,6)-min(d.f(:,6)); 
-  [ignore idxbest] = min(dfit);
+  [ignore, idxbest] = min(dfit);
   dfit(dfit<1e-98) = NaN;
   subplot(2,2,1); hold off; 
   dd = abs(d.f(:,7:8)) + foffset; 
@@ -2308,7 +2308,7 @@ manual_mode = 0;
   ax(2) = max(minxend, ax(2)); 
   axis(ax);
   % add some annotation lines
-  [ignore idx] = sort(d.std(end,6:end));
+  [ignore, idx] = sort(d.std(end,6:end));
   % choose no more than 25 indices 
   idxs = round(linspace(1, size(d.x,2)-5, min(size(d.x,2)-5, 25))); 
   yy = repmat(NaN, 2, size(d.std,2)-5);
@@ -2565,7 +2565,7 @@ function f=fbaluja(x)
 
 function f=fschwefel(x)
   f = 0;
-  for i = 1:size(x,1),
+  for i = 1:size(x,1)
     f = f+sum(x(1:i))^2;
   end
 
@@ -2662,7 +2662,7 @@ function f=fsharpR(x)
   f = abs(-x(1, :)).^2 + 100 * sqrt(sum(x(2:end,:).^2, 1));
   
 function f=frosen(x)
-  if size(x,1) < 2 error('dimension must be greater one'); end
+  if size(x,1) < 2, error('dimension must be greater one'); end
   N = size(x,1); 
   popsi = size(x,2); 
   f = 1e2*sum((x(1:end-1,:).^2 - x(2:end,:)).^2,1) + sum((x(1:end-1,:)-1).^2,1);
@@ -2704,7 +2704,7 @@ function f=fschwefelrosen2(x)
   f=sum((x(2:end).^2-x(1)).^2 + (x(2:end)-1).^2);
 
 function f=fdiffpow(x)
-  [N popsi] = size(x); if N < 2 error('dimension must be greater one'); end
+  [N, popsi] = size(x); if N < 2 error('dimension must be greater one'); end
 
   f = sum(abs(x).^repmat(2+10*(0:N-1)'/(N-1), 1, popsi), 1);
   f = sqrt(f); 

@@ -134,6 +134,6 @@ if DynareOptions.ep.solve_algo == 10
 elseif DynareOptions.ep.solve_algo == 11
     DynareOptions.mcppath.lb = repmat(lb,block_nbr,1);
     DynareOptions.mcppath.ub = repmat(ub,block_nbr,1);
-end;
+end
 pfm.block_nbr = block_nbr;
 

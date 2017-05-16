@@ -28,20 +28,20 @@ function dynareParallelDelete(fname,pname,Parallel)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-if nargin ==0,
+if nargin ==0
     disp('dynareParallelDelete(fname)')
     return
 end
 
-if nargin ==1,
+if nargin ==1
     pname='';
 else
     pname=[pname,filesep];
 end
 
-for indPC=1:length(Parallel),
-    if ~ispc || strcmpi('unix',Parallel(indPC).OperatingSystem),
-        if ~isempty(Parallel(indPC).Port),
+for indPC=1:length(Parallel)
+    if ~ispc || strcmpi('unix',Parallel(indPC).OperatingSystem)
+        if ~isempty(Parallel(indPC).Port)
             ssh_token = ['-p ',Parallel(indPC).Port];
         else
             ssh_token = '';

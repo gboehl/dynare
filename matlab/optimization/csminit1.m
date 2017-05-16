@@ -216,7 +216,7 @@ else
                 end
             end
             lambda=lambda*factor;
-            if abs(lambda) > 1e20;
+            if abs(lambda) > 1e20
                 retcode = 5;
                 done =1;
             end

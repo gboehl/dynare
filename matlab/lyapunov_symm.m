@@ -54,7 +54,7 @@ if method == 3
     persistent X method1;
     if ~isempty(method1)
         method = method1;
-    end;
+    end
     if debug
         fprintf('lyapunov_symm:: [method=%d] \n',method);
     end
@@ -67,16 +67,16 @@ if method == 3
             max_it_fp = 2000;
         else
             max_it_fp = 300;
-        end;
+        end
         at = a';
         %fixed point iterations
-        while evol >  lyapunov_fixed_point_tol && it_fp < max_it_fp;
+        while evol >  lyapunov_fixed_point_tol && it_fp < max_it_fp
             X_old = X;
             X = a * X * at + b;
             evol = max(sum(abs(X - X_old))); %norm_1
             %evol = max(sum(abs(X - X_old)')); %norm_inf
             it_fp = it_fp + 1;
-        end;
+        end
         if debug
             fprintf('lyapunov_symm:: lyapunov fixed_point iterations=%d norm=%g\n',it_fp,evol);
         end
@@ -87,9 +87,9 @@ if method == 3
         else
             method1 = 3;
             x = X;
-            return;
-        end;
-    end;
+            return
+        end
+    end
 end
 
 if method

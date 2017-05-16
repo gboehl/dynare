@@ -36,9 +36,9 @@ function [err, E] = gensylv(kron_prod,A,B,C0,D)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 C = C0;
-for i=1:(kron_prod-1);
+for i=1:(kron_prod-1)
     C  = kron(C0,C); 
-end;
+end
 
 x0 = sylvester3(A,B,C,D);
 E  = sylvester3a(x0,A,B,C,D);

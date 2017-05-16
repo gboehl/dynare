@@ -32,31 +32,31 @@ function dynareParallelSendFiles(NamFileInput,PRCDir,Parallel)
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 
-if ischar(NamFileInput),
-    for j=1:size(NamFileInput,1),
+if ischar(NamFileInput)
+    for j=1:size(NamFileInput,1)
         NamFile(j,:)={'',deblank(NamFileInput(j,:))};
     end
     NamFileInput = NamFile;
 end
 
-for indPC=1:length(Parallel),
-    if Parallel(indPC).Local==0,
-        if ~ispc || strcmpi('unix',Parallel(indPC).OperatingSystem),
-            if ~isempty(Parallel(indPC).Port),
+for indPC=1:length(Parallel)
+    if Parallel(indPC).Local==0
+        if ~ispc || strcmpi('unix',Parallel(indPC).OperatingSystem)
+            if ~isempty(Parallel(indPC).Port)
                 ssh_token = ['-p ',Parallel(indPC).Port];
             else
                 ssh_token = '';
             end
-            if ~isempty(Parallel(indPC).Port),
+            if ~isempty(Parallel(indPC).Port)
                 scp_token = ['-P ',Parallel(indPC).Port];
             else
                 scp_token = '';
             end
-            for jfil=1:size(NamFileInput,1),
+            for jfil=1:size(NamFileInput,1)
                 if ~isempty(NamFileInput{jfil,1})
-                    [NonServeL NonServeR]=system(['ssh ',ssh_token,' ',Parallel(indPC).UserName,'@',Parallel(indPC).ComputerName,' mkdir -p ',Parallel(indPC).RemoteDirectory,'/',PRCDir,'/',NamFileInput{jfil,1}]);
+                    [NonServeL, NonServeR]=system(['ssh ',ssh_token,' ',Parallel(indPC).UserName,'@',Parallel(indPC).ComputerName,' mkdir -p ',Parallel(indPC).RemoteDirectory,'/',PRCDir,'/',NamFileInput{jfil,1}]);
                 end
-                [NonServeL NonServeR]=system(['scp ',scp_token,' ',NamFileInput{jfil,1},NamFileInput{jfil,2},' ',Parallel(indPC).UserName,'@',Parallel(indPC).ComputerName,':',Parallel(indPC).RemoteDirectory,'/',PRCDir,'/',NamFileInput{jfil,1}]);
+                [NonServeL, NonServeR]=system(['scp ',scp_token,' ',NamFileInput{jfil,1},NamFileInput{jfil,2},' ',Parallel(indPC).UserName,'@',Parallel(indPC).ComputerName,':',Parallel(indPC).RemoteDirectory,'/',PRCDir,'/',NamFileInput{jfil,1}]);
             end
         else
             for jfil=1:size(NamFileInput,1)
@@ -74,14 +74,14 @@ for indPC=1:length(Parallel),
                             NamFileInputTemp=NamFileInput{jfil,1};
                             while(1)
                                 Bs=strfind(NamFileInputTemp,'/');
-                                if isempty(Bs),
-                                    break;
+                                if isempty(Bs)
+                                    break
                                 else
                                     NamFileInputTemp(1,Bs)='\';
                                 end
                             end
                             
-                            [NonServeL NonServeR]=system(['mkdir \\',Parallel(indPC).ComputerName,'\',Parallel(indPC).RemoteDrive,'$\',Parallel(indPC).RemoteDirectory,'\',PRCDir,'\',NamFileInputTemp]);
+                            [NonServeL, NonServeR]=system(['mkdir \\',Parallel(indPC).ComputerName,'\',Parallel(indPC).RemoteDrive,'$\',Parallel(indPC).RemoteDirectory,'\',PRCDir,'\',NamFileInputTemp]);
 
                         else
                             mkdir(['\\',Parallel(indPC).ComputerName,'\',Parallel(indPC).RemoteDrive,'$\',Parallel(indPC).RemoteDirectory,'\',PRCDir,'\',NamFileInput{jfil,1}]);
@@ -100,14 +100,14 @@ for indPC=1:length(Parallel),
                     NamFileInputTemp=NamFileInput{jfil,1};
                     while(1)
                         Bs=strfind(NamFileInputTemp,'/');
-                        if isempty(Bs),
-                            break;
+                        if isempty(Bs)
+                            break
                         else
                             NamFileInputTemp(1,Bs)='\';
                         end
                     end
                     
-                    [NonServeS NonServeD]=system(['copy ',NamFileInputTemp, NamFileInput{jfil,2},' \\',Parallel(indPC).ComputerName,'\',Parallel(indPC).RemoteDrive,'$\',Parallel(indPC).RemoteDirectory,'\',PRCDir,'\',NamFileInputTemp]);
+                    [NonServeS, NonServeD]=system(['copy ',NamFileInputTemp, NamFileInput{jfil,2},' \\',Parallel(indPC).ComputerName,'\',Parallel(indPC).RemoteDrive,'$\',Parallel(indPC).RemoteDirectory,'\',PRCDir,'\',NamFileInputTemp]);
                     
                 else
                     copyfile([NamFileInput{jfil,1},NamFileInput{jfil,2}],['\\',Parallel(indPC).ComputerName,'\',Parallel(indPC).RemoteDrive,'$\',Parallel(indPC).RemoteDirectory,'\',PRCDir,'\',NamFileInput{jfil,1}]);

@@ -134,7 +134,7 @@ for ig = 1:ngrid
     g_omega = [aa*tneg(ig) bb]*f_omega*[aa'*tpos(ig); bb']; % selected variables
     f_hp = filter_gain(ig)^2*g_omega; % spectral density of selected filtered series
     mathp_col(ig,:) = (f_hp(:))';    % store as matrix row
-end;
+end
 
 f = zeros(nvar,ngrid);
 for i=1:nvar

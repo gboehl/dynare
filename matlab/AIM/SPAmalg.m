@@ -66,12 +66,12 @@ bcols=neq*nlag;q=zeros(qrows,qcols);rts=zeros(qcols,1);
 [h,q,iq,nexact]=SPExact_shift(h,q,iq,qrows,qcols,neq);
 if (iq>qrows)
     aimcode = 61;
-    return;
+    return
 end
 [h,q,iq,nnumeric]=SPNumeric_shift(h,q,iq,qrows,qcols,neq,condn);
 if (iq>qrows)
     aimcode = 62;
-    return;
+    return
 end
 [a,ia,js] = SPBuild_a(h,qcols,neq);
 if (ia ~= 0)
@@ -81,7 +81,7 @@ if (ia ~= 0)
         return 
     end 
     [w,rts,lgroots,flag_trouble]=SPEigensystem(a,uprbnd,min(length(js),qrows-iq+1));
-    if flag_trouble==1; 
+    if flag_trouble==1
         disp('Problem in SPEIG'); 
         aimcode=64;
         return

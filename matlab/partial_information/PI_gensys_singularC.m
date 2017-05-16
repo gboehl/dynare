@@ -87,6 +87,3 @@ catch
     warning(['error callig PI_gensys_singularC: ' errmsg ],'errcode');
     error('errcode',['error callig PI_gensys_singularC: ' errmsg ]);
 end
-
-return;
-

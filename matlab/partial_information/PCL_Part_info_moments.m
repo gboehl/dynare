@@ -48,7 +48,7 @@ LL = sparse(1:NOBS,OBS,ones(NOBS,1),NY,NY);
 
 if exist( 'irfpers')==1
     if ~isempty(irfpers)
-        if irfpers<=0, irfpers=20, end;
+        if irfpers<=0, irfpers=20, end
     else
         irfpers=20;
     end
@@ -170,7 +170,7 @@ ar = options_.ar;
 if ar > 0
     COV_YRk= zeros(nn,ar); 
     AutoCOR_YRk= zeros(nn,ar); 
-    for k=1:ar;
+    for k=1:ar
         COV_P=GAM*COV_P;
         COV_OMEGA= COV_P( end-nn+1:end, end-nn+1:end);
         COV_YRk = VV*COV_OMEGA*VV';

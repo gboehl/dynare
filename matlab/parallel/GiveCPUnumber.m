@@ -33,7 +33,7 @@ function [nCPU]= GiveCPUnumber (ComputerInformations, Environment)
 
 nCPU='';
 
-if nargin < 2,
+if nargin < 2
 % Determine a specific operating system or software version when necessary
 % for different command (sintax, name, ...).
 Environment=~ispc;

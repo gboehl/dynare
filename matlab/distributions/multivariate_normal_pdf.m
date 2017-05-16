@@ -1,4 +1,4 @@
-function density = multivariate_normal_pdf(X,Mean,Sigma_upper_chol,n);
+function density = multivariate_normal_pdf(X,Mean,Sigma_upper_chol,n)
 % Evaluates the density of a multivariate gaussian, with expectation Mean
 % and variance Sigma_upper_chol'*Sigma_upper_chol, at X.
 % 

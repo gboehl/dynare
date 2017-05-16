@@ -55,7 +55,7 @@ fig_name='';
 % steadystate=0;
 % write_xls=0;
 
-if isfield(options_.plot_shock_decomp,'expand'), % private trap for uimenu calls
+if isfield(options_.plot_shock_decomp,'expand') % private trap for uimenu calls
     expand=options_.plot_shock_decomp.expand;
 else
     expand=0;
@@ -72,15 +72,15 @@ forecast_ = options_.shock_decomp.forecast;
 steadystate = options_.plot_shock_decomp.steadystate;
 write_xls = options_.plot_shock_decomp.write_xls;
 
-if vintage_,
+if vintage_
     forecast_ = min(forecast_,options_.nobs-vintage_);
 end
 
 initial_date = options_.initial_date;
  
-if isfield(options_.plot_shock_decomp,'q2a'), % private trap for aoa calls
+if isfield(options_.plot_shock_decomp,'q2a') % private trap for aoa calls
     q2a=options_.plot_shock_decomp.q2a;
-    if isstruct(q2a) && isempty(fieldnames(q2a)),
+    if isstruct(q2a) && isempty(fieldnames(q2a))
         q2a=0;
     end
 else
@@ -126,12 +126,12 @@ end
 steady_state = oo_.steady_state;
 
 if isequal(type,'aoa') && isstruct(q2a) && realtime_
-        if isempty(initial_date),
+        if isempty(initial_date)
             t0=1;
             initial_date = dates('1Y');
         else
             initial_date0 = dates([int2str(initial_date.time(1)) 'Y']);
-            if initial_date.time(2)==1,
+            if initial_date.time(2)==1
                 t0=1;
                 initial_date1=initial_date0;
             else
@@ -142,22 +142,22 @@ if isequal(type,'aoa') && isstruct(q2a) && realtime_
         t0=min(options_.plot_shock_decomp.save_realtime);
         ini1 = initial_date+t0-1;
         t0=t0+(4-ini1.time(2));
-    if ~isfield(q2a,'var_type'), % private trap for aoa calls
+    if ~isfield(q2a,'var_type') % private trap for aoa calls
         q2a.var_type=1;
     end
-    if ~isfield(q2a,'islog'), % private trap for aoa calls
+    if ~isfield(q2a,'islog') % private trap for aoa calls
         q2a.islog=0;
     end
-    if ~isfield(q2a,'GYTREND0'), % private trap for aoa calls
+    if ~isfield(q2a,'GYTREND0') % private trap for aoa calls
         q2a.GYTREND0=0;
     end
-    if ~isfield(q2a,'aux'), % private trap for aoa calls
+    if ~isfield(q2a,'aux') % private trap for aoa calls
         q2a.aux=0;
     end
-    if ~isfield(q2a,'cumfix'), % private trap for aoa calls
+    if ~isfield(q2a,'cumfix') % private trap for aoa calls
         q2a.cumfix=1;
     end
-    if ~isfield(q2a,'plot'), % private trap for aoa calls
+    if ~isfield(q2a,'plot') % private trap for aoa calls
         q2a.plot=1; % growth rate
     end
     
@@ -189,7 +189,7 @@ if options_.plot_shock_decomp.use_shock_groups
     ngroups = length(shock_ind);
     fig_name=[fig_name ' group ' options_.plot_shock_decomp.use_shock_groups];
     shock_names = shock_ind;
-    for i=1:ngroups,
+    for i=1:ngroups
        shock_names{i} = (shock_groups.(shock_ind{i}).label);
     end
     zz = zeros(endo_nbr,ngroups+2,gend);
@@ -206,7 +206,7 @@ if options_.plot_shock_decomp.use_shock_groups
     shock_groups.(['group' int2str(ngroups+1)]).label =  'Others';
     shock_groups.(['group' int2str(ngroups+1)]).shocks =  cellstr(M_.exo_names(find(~ismember([1:M_.exo_nbr],kcum)),:))';
     M_.shock_groups.(options_.plot_shock_decomp.use_shock_groups)=shock_groups;
-    if any(any(zothers)),
+    if any(any(zothers))
         shock_names = [shock_names; {'Others + Initial Values'}];
     end        
     zz(:,ngroups+1,:) = sum(z(:,1:nshocks+1,:),2);
@@ -222,7 +222,7 @@ end
         MAP(end,:) = [0.7 0.7 0.7];
 %         MAP = [MAP; [0.7 0.7 0.7]; [0.3 0.3 0.3]];
 
-if isempty(options_.plot_shock_decomp.colormap),
+if isempty(options_.plot_shock_decomp.colormap)
     options_.plot_shock_decomp.colormap = MAP;
 end
 
@@ -243,12 +243,12 @@ switch type
         
     case 'aoa'
 
-        if isempty(initial_date),
+        if isempty(initial_date)
             t0=4;
             initial_date = dates('1Y');
         else
             initial_date0 = dates([int2str(initial_date.time(1)) 'Y']);
-            if initial_date.time(2)==1,
+            if initial_date.time(2)==1
                 t0=1;
                 initial_date1=initial_date0;
             else
@@ -258,22 +258,22 @@ switch type
         end
         if isstruct(q2a) 
             if realtime_ == 0
-            if ~isfield(q2a,'var_type'), % private trap for aoa calls
+            if ~isfield(q2a,'var_type') % private trap for aoa calls
                 q2a.var_type=1;
             end
-            if ~isfield(q2a,'islog'), % private trap for aoa calls
+            if ~isfield(q2a,'islog') % private trap for aoa calls
                 q2a.islog=0;
             end
-            if ~isfield(q2a,'GYTREND0'), % private trap for aoa calls
+            if ~isfield(q2a,'GYTREND0') % private trap for aoa calls
                 q2a.GYTREND0=0;
             end
-            if ~isfield(q2a,'aux'), % private trap for aoa calls
+            if ~isfield(q2a,'aux') % private trap for aoa calls
                 q2a.aux=0;
             end
-            if ~isfield(q2a,'cumfix'), % private trap for aoa calls
+            if ~isfield(q2a,'cumfix') % private trap for aoa calls
                 q2a.cumfix=1;
             end
-            if ~isfield(q2a,'plot'), % private trap for aoa calls
+            if ~isfield(q2a,'plot') % private trap for aoa calls
                 q2a.plot=1; % growth rate
             end
             
@@ -341,7 +341,7 @@ z = z(:,:,a:b);
 
 options_.plot_shock_decomp.fig_name=fig_name;
 options_.plot_shock_decomp.orig_varlist = varlist;
-if detail_plot,
+if detail_plot
     graph_decomp_detail(z,shock_names,M_.endo_names,i_var,my_initial_date,M_,options_)
 else
     graph_decomp(z,shock_names,M_.endo_names,i_var,my_initial_date,M_,options_);

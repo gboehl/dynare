@@ -36,7 +36,7 @@ else
     k = find(dr.kstate(:,2) <= M_.maximum_lag+1);
     klag = dr.kstate(k,[1 2]);
     k1 = dr.order_var;
-end;
+end
 
 if size(var_list,1) == 0
     var_list = M_.endo_names(1:M_.orig_endo_nbr, :);

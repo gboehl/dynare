@@ -324,7 +324,7 @@ if options_.irf
                     end
                     hh = dyn_figure(options_.nodisplay,'Name',['Orthogonalized shock to ' tit(i,:) ' figure ' int2str(nbplt) '.']);
                     m = 0;
-                    for plt = 1:number_of_plots_to_draw-(nbplt-1)*nstar;
+                    for plt = 1:number_of_plots_to_draw-(nbplt-1)*nstar
                         m = m+1;
                         subplot(lr,lc,m);
                         plot(1:options_.irf,transpose(irfs((nbplt-1)*nstar+plt,:)),'-k','linewidth',1);

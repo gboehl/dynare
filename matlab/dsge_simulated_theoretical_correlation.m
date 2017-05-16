@@ -126,7 +126,7 @@ for file = 1:NumberOfDrawsFiles
                 Correlation_array = zeros(NumberOfLinesInTheLastCorrFile,nvar,nvar,nar);
                 NumberOfCorrLines = NumberOfLinesInTheLastCorrFile;
                 CorrFileNumber = CorrFileNumber - 1;
-            elseif test<0;
+            elseif test<0
                 Correlation_array = zeros(MaXNumberOfCorrLines,nvar,nvar,nar);
             else
                 clear('Correlation_array');

@@ -167,11 +167,11 @@ if analytic_derivation && DynareOptions.loglinear
     error('The analytic_derivation and loglinear options are not compatible')
 end
 
-if nargout==1,
+if nargout==1
     analytic_derivation=0;
 end
 
-if analytic_derivation,
+if analytic_derivation
     kron_flag=DynareOptions.analytic_derivation_mode;
 end
 
@@ -186,7 +186,7 @@ if isestimation(DynareOptions) && ~isequal(DynareOptions.mode_compute,1) && any(
     exit_flag = 0;
     info(1) = 41;
     info(4)= sum((BoundsInfo.lb(k)-xparam1(k)).^2);
-    if analytic_derivation,
+    if analytic_derivation
         DLIK=ones(length(xparam1),1);
     end
     return
@@ -199,7 +199,7 @@ if isestimation(DynareOptions) && ~isequal(DynareOptions.mode_compute,1) && any(
     exit_flag = 0;
     info(1) = 42;
     info(4)= sum((xparam1(k)-BoundsInfo.ub(k)).^2);
-    if analytic_derivation,
+    if analytic_derivation
         DLIK=ones(length(xparam1),1);
     end
     return
@@ -274,35 +274,32 @@ if info(1)
         fval = Inf;
         info(4) = info(2);
         exit_flag = 0;
-        if analytic_derivation,
+        if analytic_derivation
             DLIK=ones(length(xparam1),1);
         end
-        
         return
     else
         fval = Inf;
         info(4) = 0.1;
         exit_flag = 0;
-        if analytic_derivation,
+        if analytic_derivation
             DLIK=ones(length(xparam1),1);
         end
-        
         return
     end
 end
 
 % check endogenous prior restrictions
 info=endogenous_prior_restrictions(T,R,Model,DynareOptions,DynareResults);
-if info(1),
+if info(1)
     fval = Inf;
     info(4)=info(2);
     exit_flag = 0;
-    if analytic_derivation,
+    if analytic_derivation
         DLIK=ones(length(xparam1),1);
     end
     return
 end
-%
 
 % Define a vector of indices for the observed variables. Is this really usefull?...
 BayesInfo.mf = BayesInfo.mf1;
@@ -446,7 +443,7 @@ switch DynareOptions.lik_init
                                                         T,R,Q,H1,Z,mmm,pp,rr);
         diffuse_periods = size(dlik,1);
     end
-    if isnan(dLIK),
+    if isnan(dLIK)
         fval = Inf;
         info(1) = 45;
         info(4) = 0.1;
@@ -495,20 +492,19 @@ switch DynareOptions.lik_init
     error('dsge_likelihood:: Unknown initialization approach for the Kalman filter!')
 end
 
-if analytic_derivation,
+if analytic_derivation
     offset = EstimatedParameters.nvx;
     offset = offset+EstimatedParameters.nvn;
     offset = offset+EstimatedParameters.ncx;
     offset = offset+EstimatedParameters.ncn;
-
     no_DLIK = 0;
     full_Hess = analytic_derivation==2;
     asy_Hess = analytic_derivation==-2;
     outer_product_gradient = analytic_derivation==-1;
-    if asy_Hess,
+    if asy_Hess
         analytic_derivation=1;
     end
-    if outer_product_gradient,
+    if outer_product_gradient
         analytic_derivation=1;
     end
     DLIK = [];
@@ -526,8 +522,7 @@ if analytic_derivation,
         else
             indparam=[];
         end
-
-        if full_Hess,
+        if full_Hess
             [dum, DT, DOm, DYss, dum2, D2T, D2Om, D2Yss] = getH(A, B, EstimatedParameters, Model,DynareResults,DynareOptions,kron_flag,indparam,indexo,iv);
             clear dum dum2;
         else
@@ -537,15 +532,15 @@ if analytic_derivation,
         DT = derivatives_info.DT(iv,iv,:);
         DOm = derivatives_info.DOm(iv,iv,:);
         DYss = derivatives_info.DYss(iv,:);
-        if isfield(derivatives_info,'full_Hess'),
+        if isfield(derivatives_info,'full_Hess')
             full_Hess = derivatives_info.full_Hess;
         end
-        if full_Hess,
+        if full_Hess
         D2T = derivatives_info.D2T;
         D2Om = derivatives_info.D2Om;
         D2Yss = derivatives_info.D2Yss;
         end
-        if isfield(derivatives_info,'no_DLIK'),
+        if isfield(derivatives_info,'no_DLIK')
             no_DLIK = derivatives_info.no_DLIK;
         end
         clear('derivatives_info');
@@ -554,8 +549,8 @@ if analytic_derivation,
     DH=zeros([length(H),length(H),length(xparam1)]);
     DQ=zeros([size(Q),length(xparam1)]);
     DP=zeros([size(T),length(xparam1)]);
-    if full_Hess,
-        for j=1:size(D2Yss,1),
+    if full_Hess
+        for j=1:size(D2Yss,1)
         tmp(j,:,:) = blkdiag(zeros(offset,offset), squeeze(D2Yss(j,:,:)));
         end
         D2Yss = tmp;
@@ -563,7 +558,7 @@ if analytic_derivation,
         D2P=sparse(size(D2Om,1),size(D2Om,2)); %zeros([size(T),length(xparam1),length(xparam1)]);
         jcount=0;
     end
-    if DynareOptions.lik_init==1,
+    if DynareOptions.lik_init==1
     for i=1:EstimatedParameters.nvx
         k =EstimatedParameters.var_exo(i,1);
         DQ(k,k,i) = 2*sqrt(Q(k,k));
@@ -572,7 +567,7 @@ if analytic_derivation,
 %         dum(kk) = 0;
         DP(:,:,i)=dum;
         if full_Hess
-        for j=1:i,
+        for j=1:i
             jcount=jcount+1;
             dum =  lyapunov_symm(T,dyn_unvech(D2Om(:,jcount)),DynareOptions.lyapunov_fixed_point_tol,DynareOptions.qz_criterium,DynareOptions.lyapunov_complex_threshold,[],DynareOptions.debug);
 %             kk = (abs(dum) < 1e-12);
@@ -592,7 +587,7 @@ if analytic_derivation,
         end
     end
     offset = offset + EstimatedParameters.nvn;
-    if DynareOptions.lik_init==1,
+    if DynareOptions.lik_init==1
     for j=1:EstimatedParameters.np
         dum =  lyapunov_symm(T,DT(:,:,j+offset)*Pstar*T'+T*Pstar*DT(:,:,j+offset)'+DOm(:,:,j+offset),DynareOptions.lyapunov_fixed_point_tol,DynareOptions.qz_criterium,DynareOptions.lyapunov_complex_threshold,[],DynareOptions.debug);
 %         kk = find(abs(dum) < 1e-12);
@@ -601,7 +596,7 @@ if analytic_derivation,
         if full_Hess
         DTj = DT(:,:,j+offset);
         DPj = dum;
-        for i=1:j+offset,
+        for i=1:j+offset
             jcount=jcount+1;
             DTi = DT(:,:,i);
             DPi = DP(:,:,i);
@@ -616,11 +611,11 @@ if analytic_derivation,
         end
     end
     end
-    if analytic_derivation==1,
+    if analytic_derivation==1
         analytic_deriv_info={analytic_derivation,DT,DYss,DOm,DH,DP,asy_Hess};
     else
         analytic_deriv_info={analytic_derivation,DT,DYss,DOm,DH,DP,D2T,D2Yss,D2Om,D2H,D2P};
-        clear DT DYss DOm DP D2T D2Yss D2Om D2H D2P,
+        clear DT DYss DOm DP D2T D2Yss D2Om D2H D2P
     end
 else
     analytic_deriv_info={0};
@@ -648,7 +643,6 @@ if ((kalman_algo==1) || (kalman_algo==3))% Multivariate Kalman Filter
                 exit_flag = 0; 
                 return
             end
-
             [LIK,lik] = kalman_filter_fast(Y,diffuse_periods+1,size(Y,2), ...
                                            a,Pstar, ...
                                            kalman_tol, riccati_tol, ...
@@ -677,7 +671,7 @@ if ((kalman_algo==1) || (kalman_algo==3))% Multivariate Kalman Filter
                                                            T,Q,R,H,Z,mm,pp,rr,Zflag,diffuse_periods);
         end
     end
-    if analytic_derivation,
+    if analytic_derivation
         LIK1=LIK;
         LIK=LIK1{1};
         lik1=lik;
@@ -701,8 +695,8 @@ if ((kalman_algo==1) || (kalman_algo==3))% Multivariate Kalman Filter
     else
         if DynareOptions.lik_init==3
             LIK = LIK + dLIK;
-            if analytic_derivation==0 && nargout>3,
-                if ~singular_diffuse_filter,
+            if analytic_derivation==0 && nargout>3
+                if ~singular_diffuse_filter
                     lik = [dlik; lik];
                 else
                     lik = [sum(dlik,2); lik];
@@ -718,7 +712,7 @@ if (kalman_algo==2) || (kalman_algo==4)
     if isequal(H,0)
         H1 = zeros(pp,1);
         mmm = mm;
-        if analytic_derivation,
+        if analytic_derivation
             DH = zeros(pp,length(xparam1));
         end
     else
@@ -726,8 +720,8 @@ if (kalman_algo==2) || (kalman_algo==4)
             H1 = diag(H);
             mmm = mm;
             clear('tmp')
-            if analytic_derivation,
-                for j=1:pp,
+            if analytic_derivation
+                for j=1:pp
                     tmp(j,:)=DH(j,j,:);
                 end
                 DH=tmp;
@@ -756,17 +750,16 @@ if (kalman_algo==2) || (kalman_algo==4)
             end
         end
     end
-    if analytic_derivation,
+    if analytic_derivation
         analytic_deriv_info{5}=DH;
     end
-
     [LIK, lik] = univariate_kalman_filter(DatasetInfo.missing.aindex,DatasetInfo.missing.number_of_observations,DatasetInfo.missing.no_more_missing_observations,Y,diffuse_periods+1,size(Y,2), ...
                                           a,Pstar, ...
                                           DynareOptions.kalman_tol, ...
                                           DynareOptions.riccati_tol, ...
                                           DynareOptions.presample, ...
                                           T,Q,R,H1,Z,mmm,pp,rr,Zflag,diffuse_periods,analytic_deriv_info{:});
-    if analytic_derivation,
+    if analytic_derivation
         LIK1=LIK;
         LIK=LIK1{1};
         lik1=lik;
@@ -774,7 +767,7 @@ if (kalman_algo==2) || (kalman_algo==4)
     end
     if DynareOptions.lik_init==3
         LIK = LIK+dLIK;
-        if analytic_derivation==0 && nargout>3,
+        if analytic_derivation==0 && nargout>3
             lik = [dlik; lik];
         end
     end
@@ -785,12 +778,12 @@ if analytic_derivation
         DLIK = LIK1{2};
         %                 [DLIK] = score(T,R,Q,H,Pstar,Y,DT,DYss,DOm,DH,DP,start,Z,kalman_tol,riccati_tol);
     end
-    if full_Hess ,
+    if full_Hess
         Hess = -LIK1{3};
         %                     [Hess, DLL] = get_Hessian(T,R,Q,H,Pstar,Y,DT,DYss,DOm,DH,DP,D2T,D2Yss,D2Om,D2H,D2P,start,Z,kalman_tol,riccati_tol);
         %                     Hess0 = getHessian(Y,T,DT,D2T, R*Q*transpose(R),DOm,D2Om,Z,DYss,D2Yss);
     end
-    if asy_Hess,
+    if asy_Hess
         %         if ~((kalman_algo==2) || (kalman_algo==4)),
         %             [Hess] = AHessian(T,R,Q,H,Pstar,Y,DT,DYss,DOm,DH,DP,start,Z,kalman_tol,riccati_tol);
         %         else
@@ -829,7 +822,7 @@ likelihood = LIK;
 % 5. Adds prior if necessary
 % ------------------------------------------------------------------------------
 if analytic_derivation
-    if full_Hess,
+    if full_Hess
         [lnprior, dlnprior, d2lnprior] = priordens(xparam1,BayesInfo.pshape,BayesInfo.p6,BayesInfo.p7,BayesInfo.p3,BayesInfo.p4);
         Hess = Hess - d2lnprior;
     else
@@ -838,7 +831,7 @@ if analytic_derivation
     if no_DLIK==0
         DLIK = DLIK - dlnprior';
     end
-    if outer_product_gradient,
+    if outer_product_gradient
         dlik = lik1{2};
         dlik=[- dlnprior; dlik(start:end,:)];
         Hess = dlik'*dlik;
@@ -884,7 +877,7 @@ if ~DynareOptions.kalman.keep_kalman_algo_if_singularity_is_detected
     DynareOptions.kalman_algo = kalman_algo;
 end
 
-if analytic_derivation==0 && nargout>3,
+if analytic_derivation==0 && nargout>3
     lik=lik(start:end,:);
     DLIK=[-lnprior; lik(:)];
 end

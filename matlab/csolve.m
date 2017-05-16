@@ -122,7 +122,7 @@ while ~done
                 factor=factor^.6;
                 shrink=1;
             end
-            if abs(lambda*(1-factor))*dxSize > .1*delta;
+            if abs(lambda*(1-factor))*dxSize > .1*delta
                 lambda = factor*lambda;
             elseif (lambda > 0) && (factor==.6) %i.e., we've only been shrinking
                 lambda=-.3;
@@ -162,7 +162,7 @@ while ~done
     if itct >= itmax
         done=1;
         rc=4;
-    elseif af0<crit;
+    elseif af0<crit
         done=1;
         rc=0;
     end

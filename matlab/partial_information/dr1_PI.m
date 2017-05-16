@@ -452,5 +452,3 @@ end % end if useAIM and...
     % TODO: 
     % if options_.loglinear == 1
     % if exogenous deterministic variables
-    
-    return;

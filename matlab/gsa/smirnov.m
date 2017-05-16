@@ -27,7 +27,7 @@ function [H,prob,d] = smirnov(x1 , x2 , alpha, iflag )
 if nargin<3
     alpha  =  0.05;
 end
-if nargin<4,
+if nargin<4
     iflag=0;
 end
 
@@ -52,7 +52,7 @@ n =  n1*n2 /(n1+n2);
 
 % Compute the d(n1,n2) statistics.
 
-if iflag==0,
+if iflag==0
     d  =  max(abs(cum1 - cum2));
 elseif iflag==-1
     d  =  max(cum2 - cum1);

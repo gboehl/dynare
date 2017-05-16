@@ -24,20 +24,20 @@ persistent DK DF D2K D2F
 if notsteady
 if Zflag
     [DK,DF,DP1] = computeDKalmanZ(T,DT,DOm,P,DP,DH,Z,iF,K);
-    if nargout>4,
+    if nargout>4
         [D2K,D2F,D2P] = computeD2KalmanZ(T,DT,D2T,D2Om,P,DP,D2P,DH,Z,iF,K,DK);
     end
 else
     [DK,DF,DP1] = computeDKalman(T,DT,DOm,P,DP,DH,Z,iF,K);
-    if nargout>4,
+    if nargout>4
         [D2K,D2F,D2P] = computeD2Kalman(T,DT,D2T,D2Om,P,DP,D2P,DH,Z,iF,K,DK);
     end
 end
 DP=DP1;
-clear DP1,
+clear DP1
 else
     DP=DP;
-    if nargout>4,
+    if nargout>4
         D2P=D2P;
     end
 end
@@ -72,7 +72,7 @@ for ii = 1:k
     dKi  = DK(:,:,ii);
     dtmp(:,ii) = Da(:,ii)+dKi*v+K*Dv(:,ii);
     
-    if nargout>4,
+    if nargout>4
         diFi = -iF*DF(:,:,ii)*iF;
         for jj = 1:ii
             jcount=jcount+1;
@@ -94,7 +94,7 @@ for ii = 1:k
             D2a(:,jj,ii) = reshape(D2T(:,jcount),size(T))*tmp + DT(:,:,jj)*dtmp(:,ii) + DT(:,:,ii)*dtmp(:,jj) + T*d2tmpij;
             D2a(:,ii,jj) = D2a(:,jj,ii);
             
-            if nargout==6,
+            if nargout==6
                 Hesst(ii,jj) = getHesst_ij(v,Dv(:,ii),Dv(:,jj),d2vij,iF,diFi,diFj,d2iFij,dFj,d2Fij);
             end
         end
@@ -104,7 +104,7 @@ for ii = 1:k
     DLIK(ii,1)  = trace( iF*DF(:,:,ii) ) + 2*Dv(:,ii)'*iF*v - v'*(iF*DF(:,:,ii)*iF)*v;
 end
 
-if nargout==4,
+if nargout==4
     %         Hesst(ii,jj) = getHesst_ij(v,Dv(:,ii),Dv(:,jj),0,iF,diFi,diFj,0,dFj,0);
     vecDPmf = reshape(DF,[],k);
     D2a = 2*Dv'*iF*Dv + (vecDPmf' * kron(iF,iF) * vecDPmf);
@@ -122,7 +122,7 @@ end
 
 % end of computeDLIK
 
-function Hesst_ij = getHesst_ij(e,dei,dej,d2eij,iS,diSi,diSj,d2iSij,dSj,d2Sij);
+function Hesst_ij = getHesst_ij(e,dei,dej,d2eij,iS,diSi,diSj,d2iSij,dSj,d2Sij)
 % computes (i,j) term in the Hessian
 
 Hesst_ij = trace(diSi*dSj + iS*d2Sij) + e'*d2iSij*e + 2*(dei'*diSj*e + dei'*iS*dej + e'*diSi*dej + e'*iS*d2eij);
@@ -165,7 +165,7 @@ end
 
 % end of computeDKalmanZ
 
-function [d2K,d2S,d2P1] = computeD2Kalman(A,dA,d2A,d2Om,P0,dP0,d2P1,DH,Z,iF,K0,dK0);
+function [d2K,d2S,d2P1] = computeD2Kalman(A,dA,d2A,d2Om,P0,dP0,d2P1,DH,Z,iF,K0,dK0)
 % computes the second derivatives of the Kalman matrices
 % note: A=T in main func.
         
@@ -189,7 +189,7 @@ for ii = 1:k
 %     d2Omi = d2Om(:,:,ii);
     diFi = -iF*dFi*iF;
     dKi = dK0(:,:,ii);
-    for jj = 1:ii,
+    for jj = 1:ii
         jcount=jcount+1;
         dAj = dA(:,:,jj);
         dFj = dP0(Z,Z,jj);
@@ -233,7 +233,7 @@ end
 
 % end of computeD2Kalman
 
-function [d2K,d2S,d2P1] = computeD2KalmanZ(A,dA,d2A,d2Om,P0,dP0,d2P1,DH,Z,iF,K0,dK0);
+function [d2K,d2S,d2P1] = computeD2KalmanZ(A,dA,d2A,d2Om,P0,dP0,d2P1,DH,Z,iF,K0,dK0)
 % computes the second derivatives of the Kalman matrices
 % note: A=T in main func.
         
@@ -251,13 +251,13 @@ d2S  = zeros(no,no,k,k);
 % d2P1 = zeros(ns,ns,k,k);
 
 jcount=0;
-for ii = 1:k,
+for ii = 1:k
     dAi = dA(:,:,ii);
     dFi = Z*dP0(:,:,ii)*Z;
 %     d2Omi = d2Om(:,:,ii);
     diFi = -iF*dFi*iF;
     dKi = dK0(:,:,ii);
-    for jj = 1:ii,
+    for jj = 1:ii
         jcount=jcount+1;
         dAj = dA(:,:,jj);
         dFj = Z*dP0(:,:,jj)*Z;

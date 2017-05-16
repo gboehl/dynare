@@ -92,7 +92,7 @@ while ~(cvg==1 || iter>maxit_)
     [max_res, max_indx]=max(max(abs(r')));
     if ~isreal(r)
         max_res = (-max_res^2)^0.5;
-    end;
+    end
     if ~isreal(max_res) || isnan(max_res)
         cvg = 0;
     elseif(is_linear && iter>0)
@@ -123,7 +123,7 @@ while ~(cvg==1 || iter>maxit_)
                             end
                             dx = (g1aa+correcting_factor*speye(periods*Blck_size))\ba- ya;
                             y(1+y_kmin:periods+y_kmin,y_index)=reshape((ya_save+lambda*dx)',length(y_index),periods)';
-                            continue;
+                            continue
                         else
                             disp('The singularity of the jacobian matrix could not be corrected');
                             return
@@ -178,7 +178,7 @@ while ~(cvg==1 || iter>maxit_)
                 B1_inv = inv(g1a(Elem, Elem));
                 if (t < periods)
                     S1 = B1_inv * g1a(Elem, Elem_1);
-                end;
+                end
                 g1a(Elem, Elem_1) = S1;
                 b(Elem) = B1_inv * b(Elem);
                 g1a(Elem, Elem) = ones(Blck_size, Blck_size);

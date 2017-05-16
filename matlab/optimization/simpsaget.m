@@ -56,7 +56,7 @@ end
 
 if isempty(options)
   o = default;
-  return;
+  return
 end
 
 Names = [

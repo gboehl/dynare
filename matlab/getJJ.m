@@ -56,10 +56,10 @@ function [JJ, H, gam, gp, dA, dOm, dYss] = getJJ(A, B, estim_params_, M_,oo_,opt
 
 if nargin<8 || isempty(indx)
 %     indx = [1:M_.param_nbr];
-end,
+end
 if nargin<9 || isempty(indexo)
     indexo = [];
-end,
+end
 if nargin<11 || isempty(nlags)
     nlags=3; 
 end
@@ -70,7 +70,7 @@ end
 %   if useautocorr,
 warning('off','MATLAB:divideByZero')
 %   end
-if kronflag == -1,
+if kronflag == -1
     fun = 'thet2tau';
     params0 = M_.params;
     para0 = get_all_parameters(estim_params_, M_);
@@ -87,7 +87,7 @@ if kronflag == -1,
     dYss = H(1:M_.endo_nbr,offset+1:end);
     dA = reshape(H(M_.orig_endo_nbr+[1:numel(A)],:),[size(A),size(H,2)]);
     dOm = dA*0;
-    for j=1:size(H,2),
+    for j=1:size(H,2)
         dOm(:,:,j) = dyn_unvech(H(M_.endo_nbr+numel(A)+1:end,j));
     end
     assignin('base','M_', M_);
@@ -115,7 +115,7 @@ else
     %     BB(:,:,j)= dA(:,:,j)*GAM*A'+A*GAM*dA(:,:,j)'+dOm(:,:,j);
     %   end
     %   XX =  lyapunov_symm_mr(A,BB,options_.qz_criterium,options_.lyapunov_complex_threshold,0);
-    for j=1:length(indexo),
+    for j=1:length(indexo)
         dum =  lyapunov_symm(A,dOm(:,:,j),options_.lyapunov_fixed_point_tol,options_.qz_criterium,options_.lyapunov_complex_threshold,2,options_.debug);
         %     dum =  XX(:,:,j);
         k = find(abs(dum) < 1e-12);
@@ -130,7 +130,7 @@ else
         else
             dumm = dyn_vech(dum(mf,mf));
         end
-        for i=1:nlags,
+        for i=1:nlags
             dum1 = A^i*dum;
             if useautocorr
                 dum1 = (dum1.*sy-dsy.*(A^i*GAM))./(sy.*sy);
@@ -140,7 +140,7 @@ else
         JJ(:,j) = dumm;
     end
     nexo = length(indexo);
-    for j=1:length(indx),
+    for j=1:length(indx)
         dum =  lyapunov_symm(A,dA(:,:,j+nexo)*GAM*A'+A*GAM*dA(:,:,j+nexo)'+dOm(:,:,j+nexo),options_.lyapunov_fixed_point_tol,options_.qz_criterium,options_.lyapunov_complex_threshold,2,options_.debug);
         %     dum =  XX(:,:,j);
         k = find(abs(dum) < 1e-12);
@@ -155,9 +155,9 @@ else
         else
             dumm = dyn_vech(dum(mf,mf));
         end
-        for i=1:nlags,
+        for i=1:nlags
             dum1 = A^i*dum;
-            for ii=1:i,
+            for ii=1:i
                 dum1 = dum1 + A^(ii-1)*dA(:,:,j+nexo)*A^(i-ii)*GAM;
             end
             if useautocorr
@@ -171,23 +171,23 @@ else
     JJ = [ [zeros(length(mf),nexo) dYss(mf,:)]; JJ];
     
 end
-if nargout >2,
+if nargout >2
     %     sy=sy(mf,mf);
     options_.ar=nlags;
     nodecomposition = 1;
     [GAM,stationary_vars] = th_autocovariances(oo_.dr,oo_.dr.order_var(mf),M_,options_,nodecomposition);
     sy=sqrt(diag(GAM{1}));
     sy=sy*sy';
-    if useautocorr,
+    if useautocorr
         sy=sy-diag(diag(sy))+eye(length(mf));
         GAM{1}=GAM{1}./sy;
     else
-        for j=1:nlags,
+        for j=1:nlags
             GAM{j+1}=GAM{j+1}.*sy;
         end
     end
     gam = dyn_vech(GAM{1});
-    for j=1:nlags,
+    for j=1:nlags
         gam = [gam; vec(GAM{j+1})];
     end
 end

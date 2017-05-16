@@ -63,7 +63,7 @@ m = 1;
 n_fig = 1;
 hh=dyn_figure(options_.nodisplay,'Name','Forecasts (I)');
 for j= 1:nvar
-    if m > nc*nr; 
+    if m > nc*nr
         dyn_saveas(hh,[ dname '/graphs/forcst' int2str(n_fig)],options_.nodisplay,options_.graph_format);
         if options_.TeX && any(strcmp('eps',cellstr(options_.graph_format)))
             fprintf(fidTeX,'\\begin{figure}[H]\n');
@@ -127,7 +127,7 @@ if isfield(oo_.forecast,'HPDinf_ME')
     n_fig = 1;
     hh=dyn_figure(options_.nodisplay,'Name','Forecasts including ME (I)');
     for j= 1:length(var_names)
-        if m > nc*nr;
+        if m > nc*nr
             dyn_saveas(hh,[ dname '/graphs/forcst_ME' int2str(n_fig)],options_.nodisplay,options_.graph_format);
             if options_.TeX && any(strcmp('eps',cellstr(options_.graph_format)))
                 fprintf(fidTeX,'\\begin{figure}[H]\n');

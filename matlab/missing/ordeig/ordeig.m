@@ -34,7 +34,7 @@ i = 1;
 while i <= n
     if i == n
         eigs(n) = t(n,n);
-        break;
+        break
     elseif t(i+1,i) == 0
         eigs(i) = t(i,i);
         i = i+1;

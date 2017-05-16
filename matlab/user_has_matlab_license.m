@@ -31,7 +31,7 @@ function [hasLicense] = user_has_matlab_license(toolbox)
 if matlab_ver_less_than('7.12')
     hasLicense = license('test', toolbox);
 else
-    [hasLicense junk] = license('checkout',toolbox);
+    [hasLicense, junk] = license('checkout',toolbox);
 end
 if ~hasLicense
     return
@@ -50,7 +50,7 @@ end
 hasInstallation=check_toolbox_installation(n);
 if ~hasInstallation
     hasLicense=0;
-    return;
+    return
 end
 end
 

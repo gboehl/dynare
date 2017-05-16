@@ -34,7 +34,7 @@ while look_for_admissible_initial_condition
             look_for_admissible_initial_condition = 0;
         end
     else
-        if iter == 2000;
+        if iter == 2000
             scale = scale/1.1;
             iter  = 0;
         else

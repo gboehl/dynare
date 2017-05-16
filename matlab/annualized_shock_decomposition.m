@@ -75,7 +75,7 @@ if isfield(q2a,'name')
     if isfield(q2a,'tex_name')
         mytex = q2a.tex_name;
     end
-    if mytype==2,
+    if mytype==2
         gtxt = ['PHI' mytxt]; % inflation rate
         gtex = ['{\pi(' mytex ')}'];
     elseif mytype
@@ -101,7 +101,7 @@ if isstruct(aux)
     end
     yaux=aux.y;
 end
-if mytype==2,
+if mytype==2
     gtxt = 'PHI'; % inflation rate
     gtex = '\pi';
 elseif mytype
@@ -115,7 +115,7 @@ nterms = size(z,2);
 nfrcst = opts.forecast/4;
 
 for j=1:nvar
-    if j>1,
+    if j>1
         endo_names = char(endo_names,[deblank(M_.endo_names(i_var(j),:)) '_A']);
         endo_names_tex = char(endo_names_tex,['{' deblank(M_.endo_names_tex(i_var(j),:)) '}^A']);
         gendo_names = char(gendo_names,[gtxt endo_names(j,:)]);
@@ -133,15 +133,15 @@ for j=1:nvar
             gendo_names_tex = [gtex '(' deblank(endo_names_tex(j,:)) ')'];
         end
     end
-    for k =1:nterms,
-        if isstruct(aux),
+    for k =1:nterms
+        if isstruct(aux)
             aux.y = squeeze(yaux(j,k,min((t0-3):-4:1):end));
         end
         [za(j,k,:), steady_state_a(j,1), gza(j,k,:), steady_state_ga(j,1)] = ...
             quarterly2annual(squeeze(z(j,k,min((t0-3):-4:1):end)),steady_state(j),GYTREND0,var_type,islog,aux);
     end
     ztmp=squeeze(za(j,:,:));
-    if cumfix==0,
+    if cumfix==0
         zscale = sum(ztmp(1:end-1,:))./ztmp(end,:);
         ztmp(1:end-1,:) = ztmp(1:end-1,:)./repmat(zscale,[nterms-1,1]);
     else
@@ -149,7 +149,7 @@ for j=1:nvar
         ztmp(end-1,:) = ztmp(end-1,:) + zres;
     end
     gztmp=squeeze(gza(j,:,:));
-    if cumfix==0,
+    if cumfix==0
         gscale = sum(gztmp(1:end-1,:))./ gztmp(end,:);
         gztmp(1:end-1,:) = gztmp(1:end-1,:)./repmat(gscale,[nterms-1,1]);
     else
@@ -160,7 +160,7 @@ for j=1:nvar
     gza(j,:,:) = gztmp;
 end
 
-if q2a.plot ==1,
+if q2a.plot ==1
     z=gza;
     endo_names = gendo_names;
     endo_names_tex = gendo_names_tex;
@@ -176,9 +176,9 @@ end
 % end
 
 % realtime
-if realtime_ && isstruct(oo_) && isfield(oo_, 'realtime_shock_decomposition'),
+if realtime_ && isstruct(oo_) && isfield(oo_, 'realtime_shock_decomposition')
 init=1;
-for i=t0:4:t1,
+for i=t0:4:t1
     yr=floor(i/4);
     za=[];
     gza=[];
@@ -202,13 +202,13 @@ end
 %     z = z(i_var,:,:);
            
     for j=1:nvar
-        for k =nterms:-1:1,
+        for k =nterms:-1:1
 %             if k<nterms
 %                 ztmp = squeeze(sum(z(j,[1:k-1,k+1:end-1],t0-4:end)));
 %             else
                 ztmp = squeeze(z(j,k,min((t0-3):-4:1):end));
 %             end
-            if isstruct(aux),
+            if isstruct(aux)
                 aux.y = squeeze(yaux(j,k,min((t0-3):-4:1):end));
             end
             [za(j,k,:), steady_state_a(j,1), gza(j,k,:), steady_state_ga(j,1)] = ...
@@ -222,7 +222,7 @@ end
         
         ztmp=squeeze(za(j,:,:));
 
-        if cumfix==0,
+        if cumfix==0
             zscale = sum(ztmp(1:end-1,:))./ztmp(end,:);
             ztmp(1:end-1,:) = ztmp(1:end-1,:)./repmat(zscale,[nterms-1,1]);
         else
@@ -231,7 +231,7 @@ end
         end
         
         gztmp=squeeze(gza(j,:,:));
-        if cumfix==0,
+        if cumfix==0
             gscale = sum(gztmp(1:end-1,:))./ gztmp(end,:);
             gztmp(1:end-1,:) = gztmp(1:end-1,:)./repmat(gscale,[nterms-1,1]);
         else
@@ -243,7 +243,7 @@ end
         gza(j,:,:) = gztmp;
     end
     
-    if q2a.plot ==1,
+    if q2a.plot ==1
         z=gza;
     elseif q2a.plot == 2
         z=za;
@@ -251,7 +251,7 @@ end
         z=cat(1,za,gza);
     end
     
-    if init==1,
+    if init==1
         oo_.annualized_realtime_shock_decomposition.pool = z;
     else
         oo_.annualized_realtime_shock_decomposition.pool(:,:,yr) = z(:,:,end-nfrcst);
@@ -272,7 +272,7 @@ end
             oo_.annualized_realtime_conditional_shock_decomposition.(['yr_' int2str(yr-nfrcst)])(:,end,:) = ...
                 oo_.annualized_realtime_shock_decomposition.pool(:,end,yr-nfrcst:end);
             if i==t1
-                for my_forecast_=(nfrcst-1):-1:1,
+                for my_forecast_=(nfrcst-1):-1:1
                     oo_.annualized_realtime_conditional_shock_decomposition.(['yr_' int2str(yr-my_forecast_)]) = ...
                         oo_.annualized_realtime_shock_decomposition.pool(:,:,yr-my_forecast_:yr) - ...
                         oo_.annualized_realtime_forecast_shock_decomposition.(['yr_' int2str(yr-my_forecast_)])(:,:,1:my_forecast_+1);
@@ -320,12 +320,12 @@ switch realtime_
 end
 end
 
-if q2a.plot ==0,
+if q2a.plot ==0
     i_var=1:2*nvar;
     steady_state = [steady_state_a;steady_state_ga];
 else
     i_var=1:nvar;
-    if q2a.plot ==1,
+    if q2a.plot ==1
         steady_state = steady_state_ga;
     else
         steady_state = steady_state_a;

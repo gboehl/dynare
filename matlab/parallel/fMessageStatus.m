@@ -33,7 +33,7 @@ function fMessageStatus(prtfrc, njob, waitbarString, waitbarTitle, Parallel)
 
 global funcName
 
-if nargin<5,
+if nargin<5
     Parallel.Local=1;
 end
 
@@ -44,7 +44,7 @@ end
 
 fslave = dir( ['slaveParallel_input',int2str(njob),'.mat']);
 fbreak = dir( ['slaveParallel_break.mat']);
-if isempty(fslave) || ~isempty(fbreak),
+if isempty(fslave) || ~isempty(fbreak)
     error('Master asked to break the job');
 end
 

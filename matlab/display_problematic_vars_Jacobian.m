@@ -50,7 +50,7 @@ if strcmp(type,'dynamic')
             type_string='';
         elseif var_row==1
             type_string='lag of';
-        elseif var_row==3;
+        elseif var_row==3
             type_string='lead of';
         end
         if problemcol(ii)<=max(max(M_.lead_lag_incidence)) && var_index<=M_.orig_endo_nbr

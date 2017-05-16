@@ -29,17 +29,17 @@ npar=size(x,2);
 nsam=size(x,1);
 ishock= npar>estim_params_.np;
 nograph = options_.nograph;
-if nargin<4,
+if nargin<4
   fnam='';
 end
-if nargin<5,
+if nargin<5
   dirname='';
   nograph=1;
 end
-if nargin<6,
+if nargin<6
   xparam1=[];
 end
-if nargin<7,
+if nargin<7
   figtitle=fnam;
 end
 
@@ -61,7 +61,7 @@ ifig=0;
 j2=0;
 if ishock==0
   npar=estim_params_.np;
-  if ~isempty(xparam1),
+  if ~isempty(xparam1)
       xparam1=xparam1(nshock+1:end);
   end
 else
@@ -73,14 +73,14 @@ title_string_tex=['Correlation analysis for ',strrep(fnam,'_','\\_')];
 
 indcorr = [];
 entry_iter=1;
-for j=1:npar,
+for j=1:npar
     i2=find(abs(c00(:,j))>alpha2);
-    if length(i2)>0,
-        for jx=1:length(i2),
-            if pvalue(j,i2(jx))<pvalue_crit,
+    if length(i2)>0
+        for jx=1:length(i2)
+            if pvalue(j,i2(jx))<pvalue_crit
                 indcorr = [indcorr; [j i2(jx)]];
                 j2=j2+1;
-                if ishock,
+                if ishock
                     if options_.TeX
                         [param_name_temp1, param_name_tex_temp1]= get_the_name(j,options_.TeX,M_,estim_params_,options_);
                         param_name_tex_temp1 = strrep(param_name_tex_temp1,'$','');
@@ -116,8 +116,8 @@ for j=1:npar,
                 data_mat(entry_iter,1)=c0(i2(jx),j);
                 entry_iter=entry_iter+1;
                 
-                if ~nograph,
-                    if mod(j2,12)==1,
+                if ~nograph
+                    if mod(j2,12)==1
                     ifig=ifig+1;
                     hh=dyn_figure(options_.nodisplay,'name',[figtitle,' sample bivariate projection ', num2str(ifig)]);
                 end
@@ -133,7 +133,7 @@ for j=1:npar,
                 end
                 %             xlabel(deblank(estim_params_.param_names(j,:)),'interpreter','none'),
                 %             ylabel(deblank(estim_params_.param_names(i2(jx),:)),'interpreter','none'),
-                if ishock,
+                if ishock
                     xlabel(bayestopt_.name{j},'interpreter','none'),
                     ylabel(bayestopt_.name{i2(jx)},'interpreter','none'),
                 else
@@ -141,7 +141,7 @@ for j=1:npar,
                     ylabel(bayestopt_.name{i2(jx)+nshock},'interpreter','none'),
                 end
                 title(['cc = ',num2str(c0(i2(jx),j))])
-                if (mod(j2,12)==0) && j2>0,
+                if (mod(j2,12)==0) && j2>0
                     dyn_saveas(hh,[dirname,filesep,fig_nam_,int2str(ifig)],options_.nodisplay,options_.graph_format);
                     if options_.TeX && any(strcmp('eps',cellstr(options_.graph_format)))
                         fidTeX = fopen([dirname,filesep,fig_nam_,int2str(ifig),'.tex'],'w');
@@ -162,7 +162,7 @@ for j=1:npar,
             
         end
     end
-    if ~nograph && (j==(npar)) && j2>0 && (mod(j2,12)~=0),
+    if ~nograph && (j==(npar)) && j2>0 && (mod(j2,12)~=0)
         dyn_saveas(hh,[dirname,filesep,fig_nam_,int2str(ifig)],options_.nodisplay,options_.graph_format);
         if options_.TeX && any(strcmp('eps',cellstr(options_.graph_format)))
             fidTeX = fopen([dirname,filesep,fig_nam_,int2str(ifig),'.tex'],'w');
@@ -180,7 +180,7 @@ for j=1:npar,
     end    
 end
 
-if j2==0,
+if j2==0
     disp(['No correlation term with pvalue <', num2str(pvalue_crit),' and |corr. coef.| >',num2str(alpha2),' found for ',fnam])
 else
     headers=strvcat('Parameters','corrcoef');

@@ -59,7 +59,7 @@ if ~isempty(i)
           'equation(s) resulted in a non-finite number:'])
     disp(j1(i)')
     check = 1;
-    return;
+    return
 end
 
 f = 0.5*(fvec'*fvec) ;

@@ -84,12 +84,12 @@ if isscalar(x)
     else
         retval = NaN(size(y));    
     end
-    return;
+    return
 end
 
 if nargin==2 && isscalar(y)
     retval = NaN(size(x'));    
-    return;
+    return
 end
 
 n = size (x, 1);

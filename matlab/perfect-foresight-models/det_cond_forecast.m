@@ -35,7 +35,7 @@ initial_conditions = oo_.steady_state;
 verbosity = options_.verbosity;
 if options_.periods == 0
 	options_.periods = 25;
-end;
+end
 %We have to get an initial guess for the conditional forecast 
 % and terminal conditions for the non-stationary variables, we
 % use the first order approximation of the rational expectation solution.
@@ -64,7 +64,7 @@ if length(varargin) > 3
     nvars = length(constrained_vars);
     for i = 1:max_periods_simulation
         constraint_index{i} = 1:nvars;
-    end;
+    end
     direct_mode = 0;
     shocks_present = 0;
     controlled_varexo = options_cond_fcst.controlled_varexo;
@@ -193,24 +193,24 @@ else
                     end
                 end
                 data_set = merge(dset(dset.dates(1):(plan.date(1)-1)), data_set);
-                return;
+                return
                 union_names = union(data_set.name, dset.name);
                 dif = setdiff(union_names, data_set.name);
                 data_set_nobs = data_set.nobs;
                 for i = 1:length(dif)
                     data_set{dif{i}} = dseries(nan(data_set_nobs,1),plan.date(1), dif(i), dif(i));
-                end;
+                end
                 dif = setdiff(union_names, dset.name);
                 dset_nobs = dset.nobs;
                 for i = 1:length(dif)
                     dset{dif{i}} = dseries(nan(dset_nobs,1),dset.dates(1), dif(i), dif(i));
-                end;
+                end
                 data_set = [dset(dset.dates(1):(plan.date(1)-1)) ; data_set];
-                return;
-            end;
+                return
+            end
         else
            error('impossible case'); 
-        end;
+        end
             
     else
         oo_.exo_simul = repmat(oo_.exo_steady_state',options_.periods+2,1);
@@ -235,7 +235,7 @@ else
     
     total_periods = plan.date;
     
-end;
+end
 
 if ~isfield(options_cond_fcst,'periods') || isempty(options_cond_fcst.periods)
     options_cond_fcst.periods = 100;
@@ -260,7 +260,7 @@ if direct_mode == 1
         else
             init_periods = period_i;
             tp_end = period_i;
-        end;
+        end
         tp0 = tp;
         while tp < init_periods
             tp = tp + 1;
@@ -271,18 +271,18 @@ if direct_mode == 1
             constrained_paths(i, tp - tp0 + 1) = constrained_paths_cell{i}(j + 1);
             tp = tp + 1;
             j = j + 1;
-        end;
+        end
         if tp - tp0 > max_periods_simulation 
             max_periods_simulation = tp - tp0;
-        end;
+        end
     end
     n_nnz = length(sum(is_constraint,2));
     if n_nnz > 0
         constraint_index = cell(n_nnz,1);
         for i= 1:n_nnz
             constraint_index{i} = find(is_constraint(i,:));
-        end;
-    end;
+        end
+    end
     if shocks_present
         n_periods = length(shock_periods);
         shock_paths_cell = shock_paths;
@@ -299,7 +299,7 @@ if direct_mode == 1
             else
                 init_periods = period_i;
                 tp_end = period_i;
-            end;
+            end
             tp0 = tp;
             while tp < init_periods
                 tp = tp + 1;
@@ -310,17 +310,17 @@ if direct_mode == 1
                 shock_paths(i, tp - tp0 + 1) = shock_paths_cell{i}(j + 1);
                 tp = tp + 1;
                 j = j + 1;
-            end;
+            end
             if tp - tp0 > max_periods_simulation 
                 max_periods_simulation = tp - tp0;
-            end;
-        end;
+            end
+        end
         n_nnz = length(sum(is_shock,2));
         if n_nnz > 0
             shock_index = cell(n_nnz, 1);
             for i= 1:n_nnz
                 shock_index{i} = find(is_shock(i,:));
-            end;
+            end
         end
     end
 else
@@ -342,10 +342,10 @@ if isfield(options_cond_fcst,'controlled_varexo')
     n_control_exo = size(options_cond_fcst.controlled_varexo, 1);
     if n_control_exo ~= n_endo_constrained
         error(['det_cond_forecast: the number of exogenous controlled variables (' int2str(n_control_exo) ') has to be equal to the number of constrained endogenous variabes (' int2str(n_endo_constrained) ')'])
-    end;
+    end
 else
     error('det_cond_forecast: to run a deterministic conditional forecast you have to specified the exogenous variables controlled using the option controlled_varexo in forecast command');
-end;
+end
 
 % if n_endo_constrained == 0
 %     options_.ep.use_bytecode = options_.bytecode;
@@ -377,14 +377,14 @@ if isempty(indx_endo_solve_pf)
     pf = 0;
 else
     pf = length(indx_endo_solve_pf);
-end;
+end
 indx_endo_solve_surprise = setdiff(constrained_vars, indx_endo_solve_pf);
 
 if isempty(indx_endo_solve_surprise)
     surprise = 0;
 else
     surprise = length(indx_endo_solve_surprise);
-end;
+end
 
 
 eps = options_.solve_tolf;
@@ -414,7 +414,7 @@ if pf && ~surprise
     for j = 1:length(constrained_vars)
         indx_endo(col_count : col_count + constrained_periods - 1) = constrained_vars(j) + (time_index_constraint - 1) * ny;
         col_count = col_count + constrained_periods;
-    end;
+    end
     oo_=make_ex_(M_,options_,oo_);
     oo_=make_y_(M_,options_,oo_);
     it = 1;
@@ -436,9 +436,9 @@ if pf && ~surprise
                     y = oo_.endo_simul(constrained_vars(j), time_index_constraint);
                     r(col_count:col_count+constrained_periods - 1) = (y - constrained_paths(j,1:constrained_periods))';
                     col_count = col_count + constrained_periods;
-                end;
+                end
                 normr = norm(r, 1);
-            end;
+            end
             if (~oo_.deterministic_simulation.status || ~result || normr > normra) && it > 1
                 not_achieved = 1;
                 alpha = alpha / 2;
@@ -446,13 +446,13 @@ if pf && ~surprise
                 for j = controlled_varexo'
                     oo_.exo_simul(time_index_constraint,j) = (old_exo(:,j) + alpha * D_exo(col_count: (col_count + constrained_periods - 1)));
                     col_count = col_count + constrained_periods;
-                end;
+                end
                 disp(['Divergence in  Newton: reducing the path length alpha=' num2str(alpha)]);
                 oo_.endo_simul = repmat(oo_.steady_state, 1, options_cond_fcst.periods + 2);
             else
                 not_achieved = 0;
-            end;
-        end;
+            end
+        end
         
         per = 30;
         z = oo_.endo_simul(:, 1 : per + 2 );
@@ -473,7 +473,7 @@ if pf && ~surprise
                 else
                     data1 = M_;
                     Size = 1;
-                end;
+                end
                 data1 = M_;
                 if (options_.bytecode)
                     [chck, zz, data1]= bytecode('dynamic','evaluate', z, zx, M_.params, oo_.steady_state, k, data1);
@@ -482,16 +482,16 @@ if pf && ~surprise
                     data1.g1_x = g1b(:,end - M_.exo_nbr + 1:end);
                     data1.g1 = g1b(:,1 : end - M_.exo_nbr);
                     chck = 0;
-                end;
+                end
                 mexErrCheck('bytecode', chck);
-            end;
+            end
             if k == 1 
                 g1(1:M_.endo_nbr,-M_.endo_nbr + [cur_indx lead_indx]) = data1.g1(:,M_.nspred + 1:end);
             elseif k == per
                 g1(M_.endo_nbr * (k - 1) + 1 :M_.endo_nbr * k,M_.endo_nbr * (k -2) + [lag_indx cur_indx]) = data1.g1(:,1:M_.nspred + M_.endo_nbr);
             else
                 g1(M_.endo_nbr * (k - 1) + 1 :M_.endo_nbr * k, M_.endo_nbr * (k -2) + [lag_indx cur_indx lead_indx]) = data1.g1;
-            end;
+            end
             l2 = 1;
             pf_c = 1;
             if k <= constrained_periods
@@ -504,16 +504,16 @@ if pf && ~surprise
                         for ii = 2:constrained_periods
                             indx_x(l2) = length(controlled_varexo) + pf * (ii - 2) + constraint_index{k + ii - 1}(pf_c);
                             l2 = l2 + 1;
-                        end;
+                        end
                         pf_c = pf_c + 1;
                         cum_index_d_y_x = [cum_index_d_y_x; constrained_vars(l)];
                     else
                         cum_index_d_y_x = [cum_index_d_y_x; constrained_vars(l) + (k - 1) * M_.endo_nbr];
                     end
                     cum_l1 = cum_l1 + length(l1);
-                end;
-            end;
-        end;
+                end
+            end
+        end
         
         d_y_x = - g1 \ g1_x;
 
@@ -533,7 +533,7 @@ if pf && ~surprise
                 cum_l1 = cum_l1 + length(l1);
             end
             cum_l1 = cum_l1 + length(constrained_vars(j1));
-        end;
+        end
         
         
 %         col_count = 1;
@@ -545,8 +545,8 @@ if pf && ~surprise
 %                 J1(:,col_count) = (oo_.endo_simul(indx_endo) - ys) / eps1;
 %                 oo_.exo_simul(time,j) = saved;
 %                 col_count = col_count + 1;
-%             end;
-%         end;
+%             end
+%         end
 %         J1
 %         sdfmlksdf;
         
@@ -564,11 +564,11 @@ if pf && ~surprise
             for j = controlled_varexo'
                 oo_.exo_simul(time_index_constraint,j) = oo_.exo_simul(time_index_constraint,j) + D_exo(col_count: (col_count + constrained_periods - 1));
                 col_count = col_count + constrained_periods - 1;
-            end;
-        end;
+            end
+        end
         it = it + 1;
         normra = normr;
-    end;
+    end
     endo = oo_.endo_simul';
     exo = oo_.exo_simul;
 else
@@ -581,7 +581,7 @@ else
                 pf = 0;
             else
                 pf = length(indx_endo_solve_pf);
-            end;
+            end
         
             [pos_constrained_surprise, junk] = find((1-constrained_perfect_foresight) .* is_constraint(t, :)');
             indx_endo_solve_surprise = constrained_vars(pos_constrained_surprise);
@@ -590,8 +590,8 @@ else
                 surprise = 0;
             else
                 surprise = length(indx_endo_solve_surprise);
-            end;
-        end;
+            end
+        end
         
         if direct_mode && ~isempty(is_shock) 
             [pos_shock_pf, junk] = find(shock_perfect_foresight .* is_shock(t, :)');
@@ -600,7 +600,7 @@ else
                 b_pf = 0;
             else
                 b_pf = length(indx_endo_solve_pf);
-            end;
+            end
         
             [pos_shock_surprise, junk] = find((1-shock_perfect_foresight) .* is_shock(t, :)');
             indx_endo_solve_surprise = shock_vars(pos_shock_surprise);
@@ -609,8 +609,8 @@ else
                 b_surprise = 0;
             else
                 b_surprise = length(indx_endo_solve_surprise);
-            end;
-        end;
+            end
+        end
         
         disp('===============================================================================================');
         disp(['t=' int2str(t) ' conditional (surprise=' int2str(surprise) ' perfect foresight=' int2str(pf) ') unconditional (surprise=' int2str(b_surprise) ' perfect foresight=' int2str(b_pf) ')']);
@@ -623,7 +623,7 @@ else
                 exo_init = zeros(size(oo_.exo_simul));
             end
             oo_=make_y_(M_,options_,oo_);
-        end;
+        end
         %exo_init
         oo_.exo_simul = exo_init;
         oo_.endo_simul(:,1) = initial_conditions;
@@ -668,8 +668,8 @@ else
             else
                 indx_endo(col_count) = constrained_vars(j) + maximum_lag * ny;
                 col_count = col_count + 1;
-            end;
-        end;
+            end
+        end
         
         r = zeros(second_system_size,1);
         
@@ -696,17 +696,17 @@ else
                         else
                             oo_.exo_simul(maximum_lag + 1,j) = old_exo(maximum_lag + 1,j) + alpha * D_exo(col_count);
                             col_count = col_count + 1;
-                        end;
-                    end;
+                        end
+                    end
                     disp(['Divergence in  Newton: reducing the path length alpha=' num2str(alpha) ' result=' num2str(result) ' sum(sum)=' num2str(sum(sum(isfinite(oo_.endo_simul(:,time_index_constraint))))) ' ny * length(time_index_constraint)=' num2str(ny * length(time_index_constraint)) ' oo_.deterministic_simulation.status=' num2str(oo_.deterministic_simulation.status)]);
                     oo_.endo_simul = [initial_conditions repmat(oo_.steady_state, 1, options_cond_fcst.periods + 1)];
                 else
                     not_achieved = 0;
-                end;
-            end;
+                end
+            end
             if t==constrained_periods
                 ycc = oo_.endo_simul;
-            end;
+            end
             yc = oo_.endo_simul(:,maximum_lag + 1);
             ys = oo_.endo_simul(indx_endo);
             
@@ -720,7 +720,7 @@ else
                     y = yc(constrained_vars(j));
                     r(col_count) = y - constrained_paths(j,t);
                     col_count = col_count + 1;
-                end;
+                end
             end
             
             disp('computation of derivatives w.r. to exogenous shocks');
@@ -745,7 +745,7 @@ else
                     else
                         data1 = M_;
                         Size = 1;
-                    end;
+                    end
                     data1 = M_;
                     if (options_.bytecode)
                         [chck, zz, data1]= bytecode('dynamic','evaluate', z, zx, M_.params, oo_.steady_state, k, data1);
@@ -754,16 +754,16 @@ else
                         data1.g1_x = g1b(:,end - M_.exo_nbr + 1:end);
                         data1.g1 = g1b(:,1 : end - M_.exo_nbr);
                         chck = 0;
-                    end;
+                    end
                     mexErrCheck('bytecode', chck);
-                end;
+                end
                 if k == 1 
                     g1(1:M_.endo_nbr,-M_.endo_nbr + [cur_indx lead_indx]) = data1.g1(:,M_.nspred + 1:end);
                 elseif k == per
                     g1(M_.endo_nbr * (k - 1) + 1 :M_.endo_nbr * k,M_.endo_nbr * (k -2) + [lag_indx cur_indx]) = data1.g1(:,1:M_.nspred + M_.endo_nbr);
                 else
                     g1(M_.endo_nbr * (k - 1) + 1 :M_.endo_nbr * k, M_.endo_nbr * (k -2) + [lag_indx cur_indx lead_indx]) = data1.g1;
-                end;
+                end
                 
                 l2 = 1;
                 pf_c = 1;
@@ -779,21 +779,21 @@ else
                                     for ii = 2:constrained_periods - t + 1
                                         indx_x(l2) = length(controlled_varexo) + pf * (ii - 2) + constraint_index{k + ii - 1}(pf_c);
                                         l2 = l2 + 1;
-                                    end;
+                                    end
                                     pf_c = pf_c + 1;
                                 else
                                     indx_x(l2) = l;
                                     l2 = l2 + 1;
-                                end;
+                                end
                                 cum_index_d_y_x = [cum_index_d_y_x; constrained_vars_t(l)];
                             else
                                 cum_index_d_y_x = [cum_index_d_y_x; constrained_vars_t(l) + (k - 1) * M_.endo_nbr];
                             end
                             cum_l1 = cum_l1 + length(l1);
-                        end;
-                    end;
-                end;
-            end;
+                        end
+                    end
+                end
+            end
             
             d_y_x = - g1 \ g1_x;
 
@@ -819,7 +819,7 @@ else
                     count_col = count_col + 1;
                 end
                 cum_l1 = cum_l1 + length(constrained_vars_t(j1));
-            end;
+            end
 
             
 %             % Numerical computation of the derivatives in the second systme        
@@ -835,7 +835,7 @@ else
 %                         J1(:,col_count) = (oo_.endo_simul(indx_endo) - ys) / eps1;
 %                         oo_.exo_simul(time,j_pos) = saved;
 %                         col_count = col_count + 1;
-%                     end;
+%                     end
 %                 else
 %                     saved = oo_.exo_simul(maximum_lag+1,j_pos);
 %                     oo_.exo_simul(maximum_lag+1,j_pos) = oo_.exo_simul(maximum_lag+1,j_pos) + eps1;
@@ -845,8 +845,8 @@ else
 % %                    J(:,col_count) = (oo_.endo_simul((pp - 1) * M_.endo_nbr + 1: pp * M_.endo_nbr) - ys) / eps1;
 %                     oo_.exo_simul(maximum_lag+1,j_pos) = saved;
 %                     col_count = col_count + 1;
-%                 end;
-%             end;
+%                 end
+%             end
 %             disp('J1');
 %             disp(full(J1));
 %             sdfmlk;
@@ -870,7 +870,7 @@ else
                     z_root = find(abs(ev) < 1e-4);
                     z_root
                     disp(V(:,z_root));
-                end;
+                end
                 old_exo = oo_.exo_simul;
                 col_count = 1;
                 for j = constraint_index_t
@@ -881,14 +881,14 @@ else
                     else
                         oo_.exo_simul(maximum_lag + 1,j_pos) = oo_.exo_simul(maximum_lag + 1,j_pos) + D_exo(col_count);
                         col_count = col_count + 1;
-                    end;
-                end;
-            end;
+                    end
+                end
+            end
             it = it + 1;
-        end;
+        end
         if ~convg
             error(['convergence not achived at time ' int2str(t) ' after ' int2str(it) ' iterations']);
-        end;
+        end
         for j = constraint_index_t
             j_pos=controlled_varexo(j);
             if constrained_perfect_foresight(j)
@@ -900,20 +900,20 @@ else
                 end
             else
                 exo(maximum_lag + t,j_pos) = oo_.exo_simul(maximum_lag + 1,j_pos);
-            end;
-        end;
+            end
+        end
         past_val = past_val + length(time_index_constraint);
         if t < constrained_periods
             endo(maximum_lag + t,:) = yc;
         else
             endo(maximum_lag + t :maximum_lag + options_cond_fcst.periods ,:) = ycc(:,maximum_lag + 1:maximum_lag + options_cond_fcst.periods - constrained_periods + 1)';
-        end;
+        end
         initial_conditions = yc;
         if maximum_lag > 0
             exo_init(1,:) = exo(maximum_lag + t,:);
-        end;
-    end;
-end;
+        end
+    end
+end
 options_.periods = save_options_periods;
 options_.dynatol.f = save_options_dynatol_f;
 options_.initval_file = save_options_initval_file;
@@ -922,4 +922,4 @@ oo_.endo_simul = endo';
 oo_.exo_simul = exo;
 if direct_mode
     data_set = dseries([endo(2:end,1:M_.orig_endo_nbr) exo(2:end,:)], total_periods(1), {plan.endo_names{:} plan.exo_names{:}}, {plan.endo_names{:} plan.exo_names{:}});
-end;
+end

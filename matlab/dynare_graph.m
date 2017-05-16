@@ -42,7 +42,7 @@ subplot(dyn_graph.nr,dyn_graph.nc,nplot);
 
 line_types = dyn_graph.line_types;
 line_type = line_types{1};
-for i=1:size(y,2);
+for i=1:size(y,2)
     if length(line_types) > 1
         line_type = line_types{i};
     end

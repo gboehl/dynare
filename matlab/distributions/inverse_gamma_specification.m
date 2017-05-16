@@ -85,10 +85,10 @@ nu = [];
 sigma = sqrt(sigma2);
 mu2 = mu*mu;
 
-if type == 2;       % Inverse Gamma 2
+if type == 2       % Inverse Gamma 2
     nu   = 2*(2+mu2/sigma2);
     s    = 2*mu*(1+mu2/sigma2);
-elseif type == 1;   % Inverse Gamma 1
+elseif type == 1   % Inverse Gamma 1
     if sigma2 < Inf
         nu = sqrt(2*(2+mu2/sigma2));
         if use_fzero_flag

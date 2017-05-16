@@ -127,7 +127,7 @@ if options_.nocorr == 0 && size(stationary_vars, 1) > 0
     if options_.contemporaneous_correlation 
         oo_.contemporaneous_correlation = corr;
     end
-    if ~options_.noprint,
+    if ~options_.noprint
         skipline()
         if options_.order == 2
             title='APPROXIMATED MATRIX OF CORRELATIONS';            
@@ -153,7 +153,7 @@ if options_.ar > 0 && size(stationary_vars, 1) > 0
         oo_.autocorr{i} = oo_.gamma_y{i+1};
         z(:,i) = diag(oo_.gamma_y{i+1}(i1,i1));
     end
-    if ~options_.noprint,      
+    if ~options_.noprint
         skipline()    
         if options_.order == 2
             title='APPROXIMATED COEFFICIENTS OF AUTOCORRELATION';            

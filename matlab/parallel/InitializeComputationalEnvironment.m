@@ -46,15 +46,15 @@ end
 global options_
 
 isHybridMatlabOctave = false;
-for j=1:length(options_.parallel),
-    if isempty(options_.parallel(j).MatlabOctavePath),
+for j=1:length(options_.parallel)
+    if isempty(options_.parallel(j).MatlabOctavePath)
         if isoctave
             options_.parallel(j).MatlabOctavePath = 'octave';
         else
             options_.parallel(j).MatlabOctavePath = 'matlab';
         end
     end
-    if options_.parallel(j).Local && isempty(options_.parallel(j).DynarePath),
+    if options_.parallel(j).Local && isempty(options_.parallel(j).DynarePath)
         dynareroot = strrep(which('dynare'),'dynare.m','');
         options_.parallel(j).DynarePath=dynareroot;
     end
@@ -62,7 +62,7 @@ for j=1:length(options_.parallel),
 end
 isHybridMatlabOctave = isHybridMatlabOctave && ~isoctave;
 options_.parallel_info.isHybridMatlabOctave = isHybridMatlabOctave;
-if isHybridMatlabOctave,
+if isHybridMatlabOctave
     % Reset dynare random generator and seed.
     set_dynare_seed('default');
 end
@@ -94,7 +94,7 @@ CPUWeightTemp=ones(1,lP)*(-1);
 CPUWeightTemp=CPUWeight;
 
 for i=1:lP
-    [NoNServes mP]=max(CPUWeightTemp);
+    [NoNServes, mP]=max(CPUWeightTemp);
     NewPosition(i)=mP;
     CPUWeightTemp(mP)=-1;
 end

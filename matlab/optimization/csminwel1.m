@@ -139,7 +139,7 @@ while ~done
         else
             if NumGrad
                 [g1, badg1]=get_num_grad(method,fcn,penalty,f1,x1,epsilon,varargin{:});
-            elseif ischar(grad),
+            elseif ischar(grad)
                 [g1, badg1] = grad(x1,varargin{:});
             else
                 [junk1,cost_flag,g1] = penalty_objective_function(x1,fcn,penalty,varargin{:});
@@ -166,7 +166,7 @@ while ~done
                 else
                     if NumGrad
                         [g2, badg2]=get_num_grad(method,fcn,penalty,f2,x2,epsilon,varargin{:});
-                    elseif ischar(grad),
+                    elseif ischar(grad)
                         [g2, badg2] = grad(x2,varargin{:});
                     else
                         [junk2,cost_flag,g2] = penalty_objective_function(x1,fcn,penalty,varargin{:});
@@ -198,7 +198,7 @@ while ~done
                         else
                             if NumGrad
                                 [g3, badg3]=get_num_grad(method,fcn,penalty,f3,x3,epsilon,varargin{:});
-                            elseif ischar(grad),
+                            elseif ischar(grad)
                                 [g3, badg3] = grad(x3,varargin{:});
                             else
                                 [junk3,cost_flag,g3] = penalty_objective_function(x1,fcn,penalty,varargin{:});
@@ -258,7 +258,7 @@ while ~done
         if nogh
             if NumGrad
                 [gh, badgh]=get_num_grad(method,fcn,penalty,fh,xh,epsilon,varargin{:});
-            elseif ischar(grad),
+            elseif ischar(grad)
                 [gh, badgh] = grad(xh,varargin{:});
             else
                 [junkh,cost_flag,gh] = penalty_objective_function(x1,fcn,penalty,varargin{:});

@@ -64,10 +64,10 @@ n_draws_used = ns*n_groups; %effective number of draws used after rounding down
 
 window_means= zeros(n_groups,1);
 window_uncentered_variances= zeros(n_groups,1);
-for ig=1:n_groups;
+for ig=1:n_groups
     window_means(ig,1)=sum(draws((ig-1)*ns+1:ig*ns,1))/ns;
     window_uncentered_variances(ig,1)=sum(draws((ig-1)*ns+1:ig*ns,1).^2)/ns;        
-end; %for ig
+end %for ig
 total_mean=mean(window_means);
 total_variance=mean(window_uncentered_variances)-total_mean^2;
 
@@ -88,9 +88,9 @@ results_struct.rne_iid = results_vec(1,4);
 %get autocovariance of grouped means
 centered_window_means=window_means-total_mean;
 autocov_grouped_means=zeros(n_groups,1);
-for lag=0:n_groups-1;
+for lag=0:n_groups-1
     autocov_grouped_means(lag+1)=centered_window_means(lag+1:n_groups,1)'*centered_window_means(1:n_groups-lag,1)/100;
-end;
+end
 
 % numerical standard error with tapered autocovariance functions
 for taper_index=1:length(taper_steps)
@@ -105,5 +105,5 @@ for taper_index=1:length(taper_steps)
 
     eval(['results_struct.nse_taper_',num2str(taper),'= NSE_taper;']);
     eval(['results_struct.rne_taper_',num2str(taper),'= total_variance/(n_draws_used*NSE_taper^2);']);
-end; % end of for mm loop
+end % end of for mm loop
 

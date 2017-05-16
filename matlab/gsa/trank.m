@@ -1,4 +1,4 @@
-function yr = trank(y);
+function yr = trank(y)
 % yr = trank(y);
 % yr is the rank transformation of y
 %
@@ -28,7 +28,7 @@ function yr = trank(y);
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 [nr, nc] = size(y);
-for j=1:nc,
+for j=1:nc
   [dum, is]=sort(y(:,j));
   yr(is,j)=[1:nr]'./nr;
 end

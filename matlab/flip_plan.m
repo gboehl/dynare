@@ -38,12 +38,12 @@ function plan = flip_plan(plan, exogenous, endogenous, expectation_type, date, v
   ix = find(strcmp(exogenous, plan.endo_names));
   if  isempty(ix)
       error(['in flip_plan the second argument ' exogenous ' is not an endogenous variable']);
-  end;
+  end
   endogenous = strtrim(endogenous);
   iy = find(strcmp(endogenous, plan.exo_names));
   if  isempty(iy)
       error(['in flip_plan the third argument ' endogenous ' is not an exogenous variable']);
-  end;
+  end
   sdate = length(date);
   if sdate > 1
       if date(1) < plan.date(1) || date(end) > plan.date(end)

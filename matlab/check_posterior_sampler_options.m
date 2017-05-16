@@ -32,11 +32,11 @@ function [posterior_sampler_options, options_] = check_posterior_sampler_options
 
 
 init=0;
-if isempty(posterior_sampler_options),
+if isempty(posterior_sampler_options)
     init=1;
 end
 
-if init,
+if init
     % set default options and user defined options
     posterior_sampler_options.posterior_sampling_method = options_.posterior_sampler_options.posterior_sampling_method;
     posterior_sampler_options.bounds = bounds;
@@ -253,7 +253,7 @@ if init,
                             % This will automatically trigger <rotated>
                             % default = []
                             tmp_mode = options_list{i,2};
-                            for j=1:size(tmp_mode,2),
+                            for j=1:size(tmp_mode,2)
                                 posterior_sampler_options.mode(j).m = tmp_mode(:,j);
                             end
                             
@@ -328,7 +328,7 @@ if init,
                 end
             end
             
-            if any(isinf(bounds.lb)) || any(isinf(bounds.ub)),
+            if any(isinf(bounds.lb)) || any(isinf(bounds.ub))
                 skipline()
                 disp('some priors are unbounded and prior_trunc is set to zero')
                 error('The option "slice" is inconsistent with prior_trunc=0.')
@@ -347,21 +347,21 @@ if init,
             
             
             posterior_sampler_options.W1=posterior_sampler_options.initial_step_size*(bounds.ub-bounds.lb);
-            if options_.load_mh_file,
+            if options_.load_mh_file
                 posterior_sampler_options.slice_initialize_with_mode = 0;
             else
-                if ~posterior_sampler_options.slice_initialize_with_mode,
+                if ~posterior_sampler_options.slice_initialize_with_mode
                     posterior_sampler_options.invhess=[];
                 end
             end
             
-            if ~isempty(posterior_sampler_options.mode_files), % multimodal case
+            if ~isempty(posterior_sampler_options.mode_files) % multimodal case
                 modes = posterior_sampler_options.mode_files; % these can be also mean files from previous parallel slice chains
                 load(modes, 'xparams')
-                if size(xparams,2)<2,
+                if size(xparams,2)<2
                     error(['check_posterior_sampler_options:: Variable xparams loaded in file <' modes '> has size [' int2str(size(xparams,1)) 'x' int2str(size(xparams,2)) ']: it must contain at least two columns, to allow multi-modal sampling.'])
                 end
-                for j=1:size(xparams,2),
+                for j=1:size(xparams,2)
                     mode(j).m=xparams(:,j);
                 end
                 posterior_sampler_options.mode = mode;
@@ -386,7 +386,7 @@ if ~strcmp(posterior_sampler_options.posterior_sampling_method,'slice')
     end
 end
 
-if options_.load_mh_file && posterior_sampler_options.use_mh_covariance_matrix,
+if options_.load_mh_file && posterior_sampler_options.use_mh_covariance_matrix
     [junk, invhess] = compute_mh_covariance_matrix;
     posterior_sampler_options.invhess = invhess;
 end
@@ -396,10 +396,8 @@ end
 % check specific options for slice sampler
 if strcmp(posterior_sampler_options.posterior_sampling_method,'slice')
     invhess = posterior_sampler_options.invhess;
-    
-    if posterior_sampler_options.rotated,
-        if isempty(posterior_sampler_options.mode_files) && isempty(posterior_sampler_options.mode), % rotated unimodal
-            
+    if posterior_sampler_options.rotated
+        if isempty(posterior_sampler_options.mode_files) && isempty(posterior_sampler_options.mode) % rotated unimodal
             if ~options_.cova_compute && ~(options_.load_mh_file && posterior_sampler_options.use_mh_covariance_matrix)
                 skipline()
                 disp('check_posterior_sampler_options:: I cannot start rotated slice sampler because')
@@ -419,19 +417,13 @@ if strcmp(posterior_sampler_options.posterior_sampling_method,'slice')
             posterior_sampler_options.WR=sqrt(diag(D))*3;
         end
     else
-        if ~options_.load_mh_file && ~posterior_sampler_options.slice_initialize_with_mode,
+        if ~options_.load_mh_file && ~posterior_sampler_options.slice_initialize_with_mode
             posterior_sampler_options.invhess=[];
         end
     end
-    
     % needs to be re-set to zero otherwise posterior analysis is filtered
     % out in dynare_estimation_1.m
     options_.mh_posterior_mode_estimation = 0;
-    
-    
-else
-    
-    
 end
 
 return

@@ -103,7 +103,7 @@ while 1
     else
         if f <= fold+alf*alam*slope
             check = 0;
-            break ;
+            break
         else
             if alam == 1
                 tmplam = -slope/(2*(f-fold-slope)) ;

@@ -53,7 +53,7 @@ function myoutput = posterior_sampler_core(myinputs,fblck,nblck,whoiam, ThisMatl
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-if nargin<4,
+if nargin<4
     whoiam=0;
 end
 
@@ -108,7 +108,7 @@ end
 %
 
 sampler_options.xparam1 = xparam1;
-if ~isempty(d),
+if ~isempty(d)
     sampler_options.proposal_covariance_Cholesky_decomposition = d*diag(bayestopt_.jscale);
     %store information for load_mh_file
     record.ProposalCovariance=d;
@@ -117,7 +117,7 @@ end
 
 block_iter=0;
 
-for curr_block = fblck:nblck,
+for curr_block = fblck:nblck
     LastSeeds=[];
     block_iter=block_iter+1;
     try
@@ -192,7 +192,7 @@ for curr_block = fblck:nblck,
         end
         if (draw_index_current_file == InitSizeArray(curr_block)) || (draw_iter == nruns(curr_block)) % Now I save the simulations, either because the current file is full or the chain is done
             [LastSeeds.(['file' int2str(NewFile(curr_block))]).Unifor, LastSeeds.(['file' int2str(NewFile(curr_block))]).Normal] = get_dynare_random_generator_state();
-            if save_tmp_file,
+            if save_tmp_file
                 delete([BaseName '_mh_tmp_blck' int2str(curr_block) '.mat']);
             end
             save([BaseName '_mh' int2str(NewFile(curr_block)) '_blck' int2str(curr_block) '.mat'],'x2','logpo2','LastSeeds');

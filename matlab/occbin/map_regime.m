@@ -1,4 +1,4 @@
-function [regime regimestart]=map_regimes(violvecbool)
+function [regime, regimestart]=map_regimes(violvecbool)
 
 nperiods = length(violvecbool)-1;
 

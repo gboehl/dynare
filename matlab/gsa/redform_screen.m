@@ -39,7 +39,7 @@ iload = options_gsa_.load_redform;
 nliv = options_gsa_.morris_nliv;
 
 pnames = M_.param_names(estim_params_.param_vals(:,1),:);
-if nargin==0,
+if nargin==0
   dirname='';
 end
 
@@ -53,7 +53,7 @@ nshock = length(bayestopt_.pshape)-np;
 nsok = length(find(M_.lead_lag_incidence(M_.maximum_lag,:)));
 
 js=0;
-for j=1:size(anamendo,1),
+for j=1:size(anamendo,1)
   namendo=deblank(anamendo(j,:));
   iendo=strmatch(namendo,M_.endo_names(oo_.dr.order_var,:),'exact');
 
@@ -63,10 +63,10 @@ for j=1:size(anamendo,1),
     namexo=deblank(anamexo(jx,:));
     iexo=strmatch(namexo,M_.exo_names,'exact');
 
-    if ~isempty(iexo),
+    if ~isempty(iexo)
       y0=teff(T(iendo,iexo+nspred,:),kn,istable);
-      if ~isempty(y0),
-        if mod(iplo,9)==0,
+      if ~isempty(y0)
+        if mod(iplo,9)==0
           ifig=ifig+1;
           hh=dyn_figure(options_.nodisplay,'name',[namendo,' vs. shocks ',int2str(ifig)]);
           iplo=0;
@@ -82,11 +82,11 @@ for j=1:size(anamendo,1),
         %set(gca,'xticklabel',pnames(iso(1:min(np,10)),:),'fontsize',8)
         set(gca,'xticklabel',' ','fontsize',10)
         set(gca,'xlim',[0.5 10.5])
-        for ip=1:min(np,10),
+        for ip=1:min(np,10)
           text(ip,-0.02,deblank(pnames(iso(ip),:)),'rotation',90,'HorizontalAlignment','right','interpreter','none')
         end
         title([namendo,' vs. ',namexo],'interpreter','none')
-        if iplo==9,
+        if iplo==9
           dyn_saveas(hh,[dirname,'/',M_.fname,'_', namendo,'_vs_shock_',num2str(ifig)],options_.nodisplay,options_.graph_format);
           create_TeX_loader(options_,[dirname,'/',M_.fname,'_', namendo,'_vs_shock_',num2str(ifig)],ifig,[namendo,' vs. shocks ',int2str(ifig)],[namendo,'_vs_shock'],1)
         end
@@ -94,7 +94,7 @@ for j=1:size(anamendo,1),
       end
     end
   end
-  if iplo<9 && iplo>0 && ifig,
+  if iplo<9 && iplo>0 && ifig
     dyn_saveas(hh,[dirname,'/',M_.fname,'_', namendo,'_vs_shocks_',num2str(ifig)],options_.nodisplay,options_.graph_format);
     create_TeX_loader(options_,[dirname,'/',M_.fname,'_', namendo,'_vs_shock_',num2str(ifig)],ifig,[namendo,' vs. shocks ',int2str(ifig)],[namendo,'_vs_shock'],options_.figures.textwidth*min(iplo/3))
   end
@@ -105,10 +105,10 @@ for j=1:size(anamendo,1),
     namlagendo=deblank(anamlagendo(je,:));
     ilagendo=strmatch(namlagendo,M_.endo_names(oo_.dr.order_var(M_.nstatic+1:M_.nstatic+nsok),:),'exact');
 
-    if ~isempty(ilagendo),
+    if ~isempty(ilagendo)
       y0=teff(T(iendo,ilagendo,:),kn,istable);
-      if ~isempty(y0),
-        if mod(iplo,9)==0,
+      if ~isempty(y0)
+        if mod(iplo,9)==0
           ifig=ifig+1;
           hh=dyn_figure(options_.nodisplay,'name',[namendo,' vs. lagged endogenous ',int2str(ifig)]);
           iplo=0;
@@ -124,19 +124,19 @@ for j=1:size(anamendo,1),
         %set(gca,'xticklabel',pnames(iso(1:min(np,10)),:),'fontsize',8)
         set(gca,'xticklabel',' ','fontsize',10)
         set(gca,'xlim',[0.5 10.5])
-        for ip=1:min(np,10),
+        for ip=1:min(np,10)
           text(ip,-0.02,deblank(pnames(iso(ip),:)),'rotation',90,'HorizontalAlignment','right','interpreter','none')
         end
 
         title([namendo,' vs. ',namlagendo,'(-1)'],'interpreter','none')
-        if iplo==9,
+        if iplo==9
           dyn_saveas(hh,[dirname,'/',M_.fname,'_', namendo,'_vs_lags_',num2str(ifig)],options_.nodisplay,options_.graph_format);
           create_TeX_loader(options_,[dirname,'/',M_.fname,'_', namendo,'_vs_lags_',num2str(ifig)],ifig,[namendo,' vs. lagged endogenous ',int2str(ifig)],[namendo,'_vs_lags'],1)
         end
       end
     end
   end
-  if iplo<9 && iplo>0 && ifig,
+  if iplo<9 && iplo>0 && ifig
     dyn_saveas(hh,[dirname,'/',M_.fname,'_', namendo,'_vs_lags_',num2str(ifig)],options_.nodisplay,options_.graph_format);
     create_TeX_loader(options_,[dirname,'/',M_.fname,'_', namendo,'_vs_lags_',num2str(ifig)],ifig,[namendo,' vs. lagged endogenous ',int2str(ifig)],[namendo,'_vs_lags'],options_.figures.textwidth*min(iplo/3))
   end
@@ -150,7 +150,7 @@ set(gca,'xticklabel',' ','fontsize',10,'xtick',[1:np])
 set(gca,'xlim',[0.5 np+0.5])
 set(gca,'ylim',[0 1])
 set(gca,'position',[0.13 0.2 0.775 0.7])
-for ip=1:np,
+for ip=1:np
   text(ip,-0.02,deblank(pnames(ip,:)),'rotation',90,'HorizontalAlignment','right','interpreter','none')
 end
 xlabel(' ')

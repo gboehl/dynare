@@ -42,7 +42,7 @@ end
 % number of components equals number of shocks + 1 (initial conditions)
 comp_nbr = size(z,2)-1;
 
-if nargin==8 ,    
+if nargin==8
     if isfield(opts_decomp,'steady_state')
         SteadyState = opts_decomp.steady_state;
     end
@@ -84,7 +84,7 @@ end
 nvar = length(i_var);
 
 labels = char(char(shock_names),'Initial values');
-if ~(screen_shocks && comp_nbr>18),
+if ~(screen_shocks && comp_nbr>18)
     screen_shocks=0;
 end
 comp_nbr0=comp_nbr;
@@ -92,7 +92,7 @@ comp_nbr0=comp_nbr;
 for j=1:nvar
     d0={};
     z1 = squeeze(z(i_var(j),:,:));
-    if screen_shocks,
+    if screen_shocks
         [junk, isort] = sort(mean(abs(z1(1:end-2,:)')), 'descend');
         labels = char(char(shock_names(isort(1:16),:)),'Others', 'Initial values');
         zres = sum(z1(isort(17:end),:),1);
@@ -107,7 +107,7 @@ for j=1:nvar
         d0(LastRow+2,1)={'Legend.'};
         d0(LastRow+2,2)={'Shocks include:'};
         d0(LastRow+3:LastRow+3+comp_nbr-1,1)=cellstr(labels(1:comp_nbr,:));
-        for ic=1:comp_nbr,
+        for ic=1:comp_nbr
             group_members = shock_groups.(shock_ind{ic}).shocks;
             d0(LastRow+2+ic,2:1+length(group_members))=group_members;
         end

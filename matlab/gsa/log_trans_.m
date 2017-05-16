@@ -22,13 +22,13 @@ function [yy, xdir, isig, lam]=log_trans_(y0,xdir0,isig,lam)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-if nargin==4,
+if nargin==4
     % inverse transformation
     yy = (exp(y0)-lam)*isig;
     return
 end
 
-if nargin==1,
+if nargin==1
   xdir0='';
 end
 f=@(lam,y)gsa_skewness(log(y+lam));
@@ -39,8 +39,9 @@ if ~(max(y0)<0 | min(y0)>0)
     y0=-y0;
   end
   n=hist(y0,10);
-  if n(1)>20*n(end),
-    try lam=fzero(f,[-min(y0)+10*eps -min(y0)+abs(median(y0))],[],y0);
+  if n(1)>20*n(end)
+    try 
+        lam=fzero(f,[-min(y0)+10*eps -min(y0)+abs(median(y0))],[],y0);
     catch
       yl(1)=f(-min(y0)+10*eps,y0);
       yl(2)=f(-min(y0)+abs(median(y0)),y0);
@@ -68,7 +69,8 @@ else
     %yy=log(y0);
     xdir=[xdir0,'_log'];
   end
-  try lam=fzero(f,[-min(y0)+10*eps -min(y0)+median(y0)],[],y0);
+  try 
+      lam=fzero(f,[-min(y0)+10*eps -min(y0)+median(y0)],[],y0);
   catch
     yl(1)=f(-min(y0)+10*eps,y0);
       yl(2)=f(-min(y0)+abs(median(y0)),y0);

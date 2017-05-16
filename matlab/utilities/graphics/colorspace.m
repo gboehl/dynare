@@ -155,7 +155,7 @@ else
    varargout = {Image};
 end
 
-return;
+return
 
 
 function [SrcSpace,DestSpace] = parse(Str)
@@ -186,7 +186,7 @@ else
    DestSpace = Conversion;
    if any(size(Conversion) ~= 3), error('Transformation matrix must be 3x3.'); end
 end
-return;
+return
 
 
 function Space = alias(Space)
@@ -204,9 +204,9 @@ case {'hsv','hsb'}
 case {'hsl','hsi','hls'}
    Space = 'hsl';
 case {'rgb','yuv','yiq','ydbdr','ycbcr','jpegycbcr','xyz','lab','luv','lch'}
-   return;
+   return
 end
-return;
+return
 
 
 function T = gettransform(Space)
@@ -240,14 +240,14 @@ case {'rgb','xyz','hsv','hsl','lab','luv','lch','cat02lms'}
 otherwise
    error(['Unknown color space, ''',Space,'''.']);
 end
-return;
+return
 
 
 function Image = rgb(Image,SrcSpace)
 % Convert to sRGB from 'SrcSpace'
 switch SrcSpace
 case 'rgb'
-   return;
+   return
 case 'hsv'
    % Convert HSV to sRGB
    Image = huetorgb((1 - Image(:,:,2)).*Image(:,:,3),Image(:,:,3),Image(:,:,1));
@@ -287,7 +287,7 @@ end
 
 % Clip to [0,1]
 Image = min(max(Image,0),1);
-return;
+return
 
 
 function Image = xyz(Image,SrcSpace)
@@ -296,7 +296,7 @@ WhitePoint = [0.950456,1,1.088754];
 
 switch SrcSpace
 case 'xyz'
-   return;
+   return
 case 'luv'
    % Convert CIE L*uv to XYZ
    WhitePointU = (4*WhitePoint(1))./(WhitePoint(1) + 15*WhitePoint(2) + 3*WhitePoint(3));
@@ -340,7 +340,7 @@ otherwise   % Convert from some gamma-corrected space
    Image(:,:,2) = T(2)*R + T(5)*G + T(8)*B;  % Y
    Image(:,:,3) = T(3)*R + T(6)*G + T(9)*B;  % Z
 end
-return;
+return
 
 
 function Image = hsv(Image,SrcSpace)
@@ -351,7 +351,7 @@ S = (V - min(Image,[],3))./(V + (V == 0));
 Image(:,:,1) = rgbtohue(Image);
 Image(:,:,2) = S;
 Image(:,:,3) = V;
-return;
+return
 
 
 function Image = hsl(Image,SrcSpace)
@@ -377,7 +377,7 @@ otherwise
    Image(:,:,2) = S;
    Image(:,:,3) = L;
 end
-return;
+return
 
 
 function Image = lab(Image,SrcSpace)
@@ -386,7 +386,7 @@ WhitePoint = [0.950456,1,1.088754];
 
 switch SrcSpace
 case 'lab'
-   return;
+   return
 case 'lch'
    % Convert CIE L*CH to CIE L*ab
    C = Image(:,:,2);
@@ -405,7 +405,7 @@ otherwise
    Image(:,:,2) = 500*(fX - fY);  % a*
    Image(:,:,3) = 200*(fY - fZ);  % b*
 end
-return;
+return
 
 
 function Image = luv(Image,SrcSpace)
@@ -423,7 +423,7 @@ L = 116*f(Y) - 16;
 Image(:,:,1) = L;                        % L*
 Image(:,:,2) = 13*L.*(U - WhitePointU);  % u*
 Image(:,:,3) = 13*L.*(V - WhitePointV);  % v*
-return;  
+return
 
 
 function Image = lch(Image,SrcSpace)
@@ -433,7 +433,7 @@ H = atan2(Image(:,:,3),Image(:,:,2));
 H = H*180/pi + 360*(H < 0);
 Image(:,:,2) = sqrt(Image(:,:,2).^2 + Image(:,:,3).^2);  % C
 Image(:,:,3) = H;                                        % H
-return;
+return
 
 
 function Image = cat02lms(Image,SrcSpace)
@@ -446,7 +446,7 @@ Z = Image(:,:,3);
 Image(:,:,1) = T(1)*X + T(4)*Y + T(7)*Z;  % L
 Image(:,:,2) = T(2)*X + T(5)*Y + T(8)*Z;  % M
 Image(:,:,3) = T(3)*X + T(6)*Y + T(9)*Z;  % S
-return;
+return
 
 
 function Image = huetorgb(m0,m2,H)
@@ -461,7 +461,7 @@ Num = length(m0);
 j = [2 1 0;1 2 0;0 2 1;0 1 2;1 0 2;2 0 1;2 1 0]*Num;
 k = floor(H) + 1;
 Image = reshape([M(j(k,1)+(1:Num).'),M(j(k,2)+(1:Num).'),M(j(k,3)+(1:Num).')],[N,3]);
-return;
+return
 
 
 function H = rgbtohue(Image)
@@ -482,7 +482,7 @@ k = (i == 3);
 H(k) = 4 + (R(k) - G(k))./Delta(k);
 H = 60*H + 360*(H < 0);
 H(Delta == 0) = nan;
-return;
+return
 
 
 function Rp = gammacorrection(R)
@@ -490,7 +490,7 @@ Rp = zeros(size(R));
 i = (R <= 0.0031306684425005883);
 Rp(i) = 12.92*R(i);
 Rp(~i) = real(1.055*R(~i).^0.416666666666666667 - 0.055);
-return;
+return
 
 
 function R = invgammacorrection(Rp)
@@ -498,18 +498,18 @@ R = zeros(size(Rp));
 i = (Rp <= 0.0404482362771076);
 R(i) = Rp(i)/12.92;
 R(~i) = real(((Rp(~i) + 0.055)/1.055).^2.4);
-return;
+return
 
 
 function fY = f(Y)
 fY = real(Y.^(1/3));
 i = (Y < 0.008856);
 fY(i) = Y(i)*(841/108) + (4/29);
-return;
+return
 
 
 function Y = invf(fY)
 Y = fY.^3;
 i = (Y < 0.008856);
 Y(i) = (fY(i) - 4/29)*(108/841);
-return;
+return

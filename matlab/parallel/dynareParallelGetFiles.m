@@ -33,26 +33,26 @@ function dynareParallelGetFiles(NamFileInput,PRCDir,Parallel)
 
 NamFileInput0=NamFileInput;
 
-for indPC=1:length(Parallel),
-    if Parallel(indPC).Local==0,
-        if ~ispc || strcmpi('unix',Parallel(indPC).OperatingSystem),
-            if ~isempty(Parallel(indPC).Port),
+for indPC=1:length(Parallel)
+    if Parallel(indPC).Local==0
+        if ~ispc || strcmpi('unix',Parallel(indPC).OperatingSystem)
+            if ~isempty(Parallel(indPC).Port)
                 ssh_token = ['-p ',Parallel(indPC).Port];
             else
                 ssh_token = '';
             end
-            if ~isempty(Parallel(indPC).Port),
+            if ~isempty(Parallel(indPC).Port)
                 scp_token = ['-P ',Parallel(indPC).Port];
             else
                 scp_token = '';
             end
-            if ischar(NamFileInput0),
-                for j=1:size(NamFileInput0,1),
+            if ischar(NamFileInput0)
+                for j=1:size(NamFileInput0,1)
                     NamFile(j,:)={['./'],deblank(NamFileInput0(j,:))};
                 end
                 NamFileInput = NamFile;
             end
-            for jfil=1:size(NamFileInput,1),
+            for jfil=1:size(NamFileInput,1)
 
                 if isoctave % Patch for peculiar behaviour of ls under Linux.
                     % It is necessary to manage the jolly char '*'!
@@ -92,14 +92,14 @@ for indPC=1:length(Parallel),
 
             end
         else
-            if ischar(NamFileInput0),
-                for j=1:size(NamFileInput0,1),
+            if ischar(NamFileInput0)
+                for j=1:size(NamFileInput0,1)
                     NamFile(j,:)={['.\'],deblank(NamFileInput0(j,:))};
                 end
                 NamFileInput = NamFile;
             end
-            for jfil=1:size(NamFileInput,1),
-                if ~isempty(dynareParallelDir(NamFileInput{jfil,2},[PRCDir,filesep,NamFileInput{jfil,1}],Parallel(indPC))),
+            for jfil=1:size(NamFileInput,1)
+                if ~isempty(dynareParallelDir(NamFileInput{jfil,2},[PRCDir,filesep,NamFileInput{jfil,1}],Parallel(indPC)))
                     copyfile(['\\',Parallel(indPC).ComputerName,'\',Parallel(indPC).RemoteDrive,'$\',Parallel(indPC).RemoteDirectory,'\',PRCDir,'\',NamFileInput{jfil,1},NamFileInput{jfil,2}],NamFileInput{jfil,1});
                 end
             end

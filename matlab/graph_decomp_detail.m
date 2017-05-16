@@ -52,7 +52,7 @@ if ~isempty(opts_decomp.type)
     fig_mode = [fig_mode '_'];
 end
 screen_shocks = opts_decomp.screen_shocks;
-if DynareOptions.plot_shock_decomp.use_shock_groups | comp_nbr<=18,
+if DynareOptions.plot_shock_decomp.use_shock_groups | comp_nbr<=18
     screen_shocks=0;
 end
 fig_name_long = opts_decomp.fig_name;
@@ -85,7 +85,7 @@ end
 
 ind_yrs = find(floor(x)==x); 
 dind_tick = 1;
-if floor(length(ind_yrs)/3);
+if floor(length(ind_yrs)/3)
     dind_tick = floor(length(ind_yrs)/3);
     xind_tick = x(ind_yrs(1)):dind_tick:x(ind_yrs(end))+(length(ind_yrs)-(dind_tick*3+1));
 else
@@ -112,7 +112,7 @@ if DynareOptions.TeX && any(strcmp('eps',cellstr(DynareOptions.plot_shock_decomp
     fprintf(fidTeX,' \n');
 end
 
-if opts_decomp.vintage && opts_decomp.realtime>1,
+if opts_decomp.vintage && opts_decomp.realtime>1
     preamble_txt = 'Shock decomposition';
 else
     preamble_txt = 'Historical shock decomposition';
@@ -124,7 +124,7 @@ ntotrow = nrow;
 nrow = min(ntotrow, 6);
 nfigs = ceil(ntotrow/nrow);
 labels = char(char(shock_names),'Initial values');
-if ~(screen_shocks && comp_nbr>18),
+if ~(screen_shocks && comp_nbr>18)
     screen_shocks=0;
 end
 comp_nbr0=comp_nbr;
@@ -155,7 +155,7 @@ for j=1:nvar
     a0=zeros(1,4);
     a0(3)=inf;
     a0(4)=-inf;
-    for ic=1+nrow*ncol*(jf-1):min(nrow*ncol*jf,comp_nbr),
+    for ic=1+nrow*ncol*(jf-1):min(nrow*ncol*jf,comp_nbr)
         i = ic-nrow*ncol*(jf-1);
         zz = z1(ic,:);        
         zz(2,:)=z1(end,:)-zz;
@@ -195,7 +195,7 @@ for j=1:nvar
             end
         end
     end
-    for isub=1:i,
+    for isub=1:i
         subplot(nrow,ncol,isub),
         set(gca,'ylim',a0(3:4))
     end
@@ -219,7 +219,7 @@ for j=1:nvar
     end
     
     
-    if nfigs>1,
+    if nfigs>1
         suffix = ['_detail_' int2str(jf)];
     else
         suffix = ['_detail'];

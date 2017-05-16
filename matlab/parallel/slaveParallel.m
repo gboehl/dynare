@@ -48,9 +48,9 @@ dynareroot = dynare_config();
 load( ['slaveParallel_input',int2str(whoiam)]);
 
 %Loads fGlobalVar Parallel.
-if exist('fGlobalVar'),
+if exist('fGlobalVar')
     globalVars = fieldnames(fGlobalVar);
-    for j=1:length(globalVars),
+    for j=1:length(globalVars)
         eval(['global ',globalVars{j},';']);
         evalin('base',['global ',globalVars{j},';']);
     end
@@ -65,17 +65,17 @@ end
 t0=clock;
 fslave = dir( ['slaveParallel_input',int2str(whoiam),'.mat']);
 
-while (etime(clock,t0)<1200 && ~isempty(fslave)) || ~isempty(dir(['stayalive',int2str(whoiam),'.txt'])),
-    if ~isempty(dir(['stayalive',int2str(whoiam),'.txt'])),
+while (etime(clock,t0)<1200 && ~isempty(fslave)) || ~isempty(dir(['stayalive',int2str(whoiam),'.txt']))
+    if ~isempty(dir(['stayalive',int2str(whoiam),'.txt']))
         t0=clock;
         delete(['stayalive',int2str(whoiam),'.txt']);
     end
     % I wait for 20 min or while mater asks to exit (i.e. it cancels fslave file)
-    pause(1);
+    pause(1)
     
     fjob = dir(['slaveJob',int2str(whoiam),'.mat']);
     
-    if ~isempty(fjob),
+    if ~isempty(fjob)
         clear fGlobalVar fInputVar fblck nblck fname
         
         while(1)
@@ -85,7 +85,7 @@ while (etime(clock,t0)<1200 && ~isempty(fslave)) || ~isempty(dir(['stayalive',in
             
             if Go>0    
                 fclose(Go);
-                pause(1);
+                pause(1)
                 load(['slaveJob',int2str(whoiam),'.mat']);
                 break
             else
@@ -106,9 +106,9 @@ while (etime(clock,t0)<1200 && ~isempty(fslave)) || ~isempty(dir(['stayalive',in
 
         if exist('fGlobalVar') && ~isempty (fGlobalVar)
             globalVars = fieldnames(fGlobalVar);
-            for j=1:length(globalVars),
+            for j=1:length(globalVars)
                 info_whos = whos(globalVars{j});
-                if isempty(info_whos) || ~info_whos.global,
+                if isempty(info_whos) || ~info_whos.global
                     eval(['global ',globalVars{j},';']);
                     evalin('base',['global ',globalVars{j},';']);
                 end
@@ -122,11 +122,11 @@ while (etime(clock,t0)<1200 && ~isempty(fslave)) || ~isempty(dir(['stayalive',in
         fInputVar.Parallel = Parallel;
         
         % Launch the routine to be run in parallel.
-        try,
-            tic,
+        try
+            tic
             fOutputVar = feval(fname, fInputVar ,fblck, nblck, whoiam, ThisMatlab);
-            toc,
-            if isfield(fOutputVar,'OutputFileName'),
+            toc
+            if isfield(fOutputVar,'OutputFileName')
                 OutputFileName = fOutputVar.OutputFileName;
             else
                 OutputFileName = '';
@@ -137,7 +137,7 @@ while (etime(clock,t0)<1200 && ~isempty(fslave)) || ~isempty(dir(['stayalive',in
                 % Save the output result.
                 save([ fname,'_output_',int2str(whoiam),'.mat'],'fOutputVar' );
 %                 keyboard,
-                if isfield(fOutputVar,'CloseAllSlaves'),
+                if isfield(fOutputVar,'CloseAllSlaves')
                     CloseAllSlaves = 1;
                     fOutputVar = rmfield(fOutputVar,'CloseAllSlaves');
                     save([ fname,'_output_',int2str(whoiam),'.mat'],'fOutputVar' )
@@ -150,7 +150,7 @@ while (etime(clock,t0)<1200 && ~isempty(fslave)) || ~isempty(dir(['stayalive',in
 
             disp(['Job ',fname,' on CPU ',int2str(whoiam),' completed.']);
             t0 =clock; % Re-set waiting time of 20 mins
-        catch,
+        catch
             theerror = lasterror;
             if strfind(theerror.message,'Master asked to break the job')
                 disp(['Job ',fname,' on CPU ',int2str(whoiam),' broken from master.']);
@@ -162,7 +162,7 @@ while (etime(clock,t0)<1200 && ~isempty(fslave)) || ~isempty(dir(['stayalive',in
                 fOutputVar.error = lasterror;
                 save([ fname,'_output_',int2str(whoiam),'.mat'],'fOutputVar' );
                 waitbarString = fOutputVar.error.message;
-                if Parallel(ThisMatlab).Local,
+                if Parallel(ThisMatlab).Local
                     waitbarTitle='Local ';
                 else
                     waitbarTitle=[Parallel(ThisMatlab).ComputerName];

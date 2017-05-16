@@ -61,7 +61,7 @@ end
 
 if penalty>0
     flag = 0;
-    return;
+    return
 end
 
 save('estimated_parameters.mat','xparams');

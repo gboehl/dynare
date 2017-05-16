@@ -45,13 +45,13 @@ theta=theta(:);
 npar = length(theta);
 neval = zeros(npar,1);
 W1=[];
-if isfield(sampler_options,'WR'),
+if isfield(sampler_options,'WR')
     W1 = sampler_options.WR;
 end
-if ~isempty(sampler_options.mode),
+if ~isempty(sampler_options.mode)
     mm = sampler_options.mode;
     n = length(mm);
-    for j=1:n,
+    for j=1:n
         distance(j)=sqrt(sum((theta-mm(j).m).^2));
     end
     [m, im] = min(distance);
@@ -59,8 +59,8 @@ if ~isempty(sampler_options.mode),
     r=im;
     V1 = mm(r).m;
     jj=0;
-    for j=1:n,
-        if j~=r,
+    for j=1:n
+        if j~=r
             jj=jj+1;
             tmp=mm(j).m-mm(r).m;
             %tmp=mm(j).m-theta;
@@ -102,7 +102,7 @@ else
 end
 npar=size(V1,2);
     
-for it=1:npar,
+for it=1:npar
     theta0 = theta;
     neval(it) = 0;
     xold  = 0;
@@ -111,7 +111,7 @@ for it=1:npar,
     tb=sort([(thetaprior(:,1)-theta)./V1(:,it) (thetaprior(:,2)-theta)./V1(:,it)],2);
     XLB=max(tb(:,1));
     XUB=min(tb(:,2));  
-    if isempty(W1),
+    if isempty(W1)
         W = (XUB-XLB); %*0.8; 
     else
         W = W1(it);
@@ -141,7 +141,7 @@ for it=1:npar,
         fxl = -feval(objective_function,theta,varargin{:});
         neval(it) = neval(it) + 1;
         if (fxl <= Z)
-            break;
+            break
         end
         L = max(XLB,L-W);
     end
@@ -151,7 +151,7 @@ for it=1:npar,
         fxr = -feval(objective_function,theta,varargin{:});
         neval(it) = neval(it) + 1;
         if (fxr <= Z)
-            break;
+            break
         end
         R = min(XUB,R+W);
     end

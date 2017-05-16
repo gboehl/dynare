@@ -55,7 +55,7 @@ dy=get(gca,'ylim');
 pos=get(gca,'position');
 scalex=dx(2)-dx(1);
 scaley=dy(2)-dy(1);
-if length(X)>1,
+if length(X)>1
     K = dsearchn([(Y./scaley)' (X./scalex)'],[y/scaley x/scalex]);
 else
     az=get(gca,'children');
@@ -68,7 +68,7 @@ KK=K;
 set(button1,'Label',['Save ',num2str(K)],'Callback',['scatter_callback(',num2str(KK),',''save'')']);
 set(button2,'Label',['Eval ',num2str(K)],'Callback',['scatter_callback(',num2str(KK),',''eval'')']);
 hh=findobj(gcf,'type','axes','Tag','scatter');
-for k=1:length(hh),
+for k=1:length(hh)
     axes(hh(k));
     dum=get(gca,'children');
     dumx=get(dum(end),'xdata');
@@ -76,7 +76,7 @@ for k=1:length(hh),
     xmid=min(dumx) + 0.5*(max(dumx)-min(dumx));
     hold on
     plot(dumx(KK),dumy(KK),'or');     
-    if dumx(KK) < xmid,
+    if dumx(KK) < xmid
         text(dumx(KK),dumy(KK),['  ',num2str(K)], ...
             'FontWeight','Bold',...
             'Color','r');

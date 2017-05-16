@@ -30,7 +30,7 @@ if iscell(prctdone)
     prctdone=prctdone{1};
 end
 
-if prctdone==0,
+if prctdone==0
     init=1;
     if isempty(whoiam)
         whoiam=0;
@@ -38,46 +38,41 @@ if prctdone==0,
 else
     init=0;
 end
-if nargout,
+if nargout
     h=[];
 end
 
 if ~whoiam
-    
-    if isoctave || options_.console_mode
-                
-        if init,
+    if isoctave || options_.console_mode     
+        if init
             diary off;
             running_text = varargin{1};
             newString='';
-            return;
-        elseif nargin>2,
+            return
+        elseif nargin>2
             running_text =  varargin{2};
         end
-        
         if isoctave
             printf([running_text,' %3.f%% done\r'], prctdone*100);
         else
             s0=repmat('\b',1,length(newString));
             newString=sprintf([running_text,' %3.f%% done'], prctdone*100);
             fprintf([s0,'%s'],newString);
-        end
-        
+        end 
     else
-        if nargout,
+        if nargout
             h = waitbar(prctdone,varargin{:});
         else
             waitbar(prctdone,varargin{:});
         end
     end
-    
 else
-    if init,
+    if init
         running_text = varargin{1};
     elseif nargin>2
         running_text = varargin{2};
     end
-    if Parallel.Local,
+    if Parallel.Local
         waitbarTitle=['Local '];
     else
         waitbarTitle=[Parallel.ComputerName];

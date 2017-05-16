@@ -40,11 +40,11 @@ function [proba, dproba] = stab_map_1(lpmat, ibehaviour, inonbehaviour, aname, i
 
 global estim_params_ bayestopt_ M_ options_
 
-if nargin<5,
+if nargin<5
   iplot=1;
 end
 fname_ = M_.fname;
-if nargin<7,
+if nargin<7
   dirname='';
 end
 if nargin<9,
@@ -59,20 +59,20 @@ nshock = nshock + estim_params_.ncn;
 npar=size(lpmat,2);
 ishock= npar>estim_params_.np;
 
-if nargin<6,
+if nargin<6
   ipar=[];
 end
-if nargin<8 || isempty(pcrit),
+if nargin<8 || isempty(pcrit)
   pcrit=1;
 end
 
 % Smirnov test for Blanchard; 
-for j=1:npar,
+for j=1:npar
   [H,P,KSSTAT] = smirnov(lpmat(ibehaviour,j),lpmat(inonbehaviour,j));
   proba(j)=P;
   dproba(j)=KSSTAT;
 end
-if isempty(ipar),
+if isempty(ipar)
 %     ipar=find(dproba>dcrit);
     ipar=find(proba<pcrit);
 end
@@ -81,23 +81,23 @@ if iplot && ~options_.nograph
     lpmat=lpmat(:,ipar);
     ftit=bayestopt_.name(ipar+nshock*(1-ishock));
     
-    for i=1:ceil(nparplot/12),
+    for i=1:ceil(nparplot/12)
         hh=dyn_figure(options_.nodisplay,'name',atitle);
-        for j=1+12*(i-1):min(nparplot,12*i),
+        for j=1+12*(i-1):min(nparplot,12*i)
             subplot(3,4,j-12*(i-1))
-            if ~isempty(ibehaviour),
+            if ~isempty(ibehaviour)
                 h=cumplot(lpmat(ibehaviour,j));
                 set(h,'color',[0 0 1], 'linestyle',':','LineWidth',1.5)
             end
-            hold on,
-            if ~isempty(inonbehaviour),
+            hold on
+            if ~isempty(inonbehaviour)
                 h=cumplot(lpmat(inonbehaviour,j));
                 set(h,'color',[0 0 0],'LineWidth',1.5)
             end
             %     title([ftit{j},'. D-stat ', num2str(dproba(ipar(j)),2)],'interpreter','none')
             title([ftit{j},'. p-value ', num2str(proba(ipar(j)),2)],'interpreter','none')
         end
-        if nparplot>12,
+        if nparplot>12
             dyn_saveas(hh,[dirname,filesep,fname_,'_',aname,'_SA_',int2str(i)],options_.nodisplay,options_.graph_format);
             if options_.TeX && any(strcmp('eps',cellstr(options_.graph_format)))
                 fidTeX = fopen([dirname,filesep,fname_,'_',aname,'_SA_',int2str(i) '.tex'],'w');

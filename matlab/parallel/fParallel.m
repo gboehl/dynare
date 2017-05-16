@@ -53,7 +53,7 @@ load( [fname,'_input'])
 
 if exist('fGlobalVar') && ~isempty (fGlobalVar)
     globalVars = fieldnames(fGlobalVar);
-    for j=1:length(globalVars),
+    for j=1:length(globalVars)
         eval(['global ',globalVars{j},';'])
         evalin('base',['global ',globalVars{j},';'])
     end
@@ -67,12 +67,12 @@ fInputVar.Parallel = Parallel;
 
 
 % Launch the routine to be run in parallel.
-try,
-    tic,
+try
+    tic
     
     fOutputVar = feval(fname, fInputVar ,fblck, nblck, whoiam, ThisMatlab);
-    toc,
-    if isfield(fOutputVar,'OutputFileName'),
+    toc
+    if isfield(fOutputVar,'OutputFileName')
         OutputFileName = fOutputVar.OutputFileName;
     else
         OutputFileName = '';
@@ -81,7 +81,7 @@ try,
         % Save the output result.
         save([ fname,'_output_',int2str(whoiam),'.mat'],'fOutputVar' )
     end
-    if isfield(fOutputVar,'CloseAllSlaves'),
+    if isfield(fOutputVar,'CloseAllSlaves')
         CloseAllSlaves = 1;
         fOutputVar = rmfield(fOutputVar,'CloseAllSlaves');
         save([ fname,'_output_',int2str(whoiam),'.mat'],'fOutputVar' )
@@ -89,7 +89,7 @@ try,
     end
     
     disp(['fParallel ',int2str(whoiam),' completed.'])
-catch,
+catch
     theerror = lasterror;
     if strfind(theerror.message,'Master asked to break the job')
         fOutputVar.message = theerror;
@@ -101,7 +101,7 @@ catch,
         save([ fname,'_output_',int2str(whoiam),'.mat'],'fOutputVar' )
         waitbarString = theerror.message;
         %       waitbarTitle=['Metropolis-Hastings ',options_.parallel(ThisMatlab).ComputerName];
-        if Parallel(ThisMatlab).Local,
+        if Parallel(ThisMatlab).Local
             waitbarTitle='Local ';
         else
             waitbarTitle=[Parallel(ThisMatlab).ComputerName];

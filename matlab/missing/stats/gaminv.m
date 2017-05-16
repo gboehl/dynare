@@ -76,7 +76,7 @@ if (any (k))
             h = y_old - y_new;
         end
         if (max (abs (h)) < sqrt (eps))
-            break;
+            break
         end
         y_old = y_new;
     end

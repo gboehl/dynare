@@ -163,7 +163,7 @@ if nvx
         end
         disp(sprintf(pformat,header_width,name,bayestopt_.p1(ip),post_mean,hpd_interval,...
                      pnames(bayestopt_.pshape(ip)+1,:),bayestopt_.p2(ip)));
-        if TeX,
+        if TeX
             name = deblank(M_.exo_names_tex(k,:));
             TeXCore(fid,name,deblank(pnames(bayestopt_.pshape(ip)+1,:)),bayestopt_.p1(ip),...
                     bayestopt_.p2(ip),post_mean,sqrt(post_var),hpd_interval);
@@ -311,7 +311,7 @@ if ncn
         end
         disp(sprintf(pformat, header_width,name,bayestopt_.p1(ip),post_mean,hpd_interval, ...
                      pnames(bayestopt_.pshape(ip)+1,:),bayestopt_.p2(ip)));
-        if TeX,
+        if TeX
             name = ['(',deblank(M_.endo_names_tex(k1,:)) ',' deblank(M_.endo_names_tex(k2,:)),')'];
             TeXCore(fid,name,deblank(pnames(bayestopt_.pshape(ip)+1,:)),bayestopt_.p1(ip),...
                     bayestopt_.p2(ip),post_mean,sqrt(post_var),hpd_interval);            

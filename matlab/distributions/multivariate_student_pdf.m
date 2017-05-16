@@ -1,4 +1,4 @@
-function density = multivariate_student_pdf(X,Mean,Sigma_upper_chol,df);
+function density = multivariate_student_pdf(X,Mean,Sigma_upper_chol,df)
 % Evaluates the density of a multivariate student, with expectation Mean,
 % variance Sigma_upper_chol'*Sigma_upper_chol and degrees of freedom df, at X.
 %

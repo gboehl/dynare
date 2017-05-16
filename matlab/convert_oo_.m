@@ -63,7 +63,7 @@ else
 end
 
 if strcmp(from_ver, to_ver)
-    return;
+    return
 end
 
 if ver_greater_than(to_ver, from_ver)

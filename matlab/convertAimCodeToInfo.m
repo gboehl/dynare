@@ -55,7 +55,7 @@ switch aimCode
     info = 161;
   case 62
     info = 162;
-  case 63; 
+  case 63
     info = 163;
   case 64
     info = 164;

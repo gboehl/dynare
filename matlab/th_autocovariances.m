@@ -114,7 +114,7 @@ else
     trend = 1:M_.endo_nbr;
     inv_order_var = trend(M_.block_structure.variable_reordered);
     ghu1(1:length(dr.state_var),:) = ghu(dr.state_var,:);
-end;
+end
 b = ghu1*M_.Sigma_e*ghu1';
 
 
@@ -122,7 +122,7 @@ if options_.block == 0
     ipred = nstatic+(1:nspred)';
 else
     ipred = dr.state_var;
-end;
+end
 % state space representation for state variables only
 [A,B] = kalman_transition_matrix(dr,ipred,1:nx,M_.exo_nbr);
 % Compute stationary variables (before HP filtering),
@@ -134,7 +134,7 @@ if options_.order == 2 || options_.hp_filter == 0
         iky = inv_order_var(ivar);
     else
         iky = ivar;
-    end;
+    end
     stationary_vars = (1:length(ivar))';
     if ~isempty(u)
         x = abs(ghx*u);
@@ -233,7 +233,7 @@ else% ==> Theoretical filters.
     IA = eye(size(A,1));
     IE = eye(M_.exo_nbr);
     for ig = 1:ngrid
-        if filter_gain(ig)==0,
+        if filter_gain(ig)==0
             f_hp = zeros(length(ivar),length(ivar));
         else
             f_omega  =(1/(2*pi))*([(IA-A*tneg(ig))\ghu1;IE]...
@@ -242,7 +242,7 @@ else% ==> Theoretical filters.
             f_hp = filter_gain(ig)^2*g_omega; % spectral density of selected filtered series; top formula Uhlig (2001), p. 21;
         end
         mathp_col(ig,:) = (f_hp(:))';    % store as matrix row for ifft
-    end;
+    end
     % Covariance of filtered series
     imathp_col = real(ifft(mathp_col))*(2*pi); % Inverse Fast Fourier Transformation; middle formula Uhlig (2001), p. 21;
     Gamma_y{1} = reshape(imathp_col(1,:),nvar,nvar);
@@ -269,7 +269,7 @@ else% ==> Theoretical filters.
             IA = eye(size(A,1));
             IE = eye(M_.exo_nbr);
             for ig = 1:ngrid
-                if filter_gain(ig)==0,
+                if filter_gain(ig)==0
                     f_hp = zeros(length(ivar),length(ivar));
                 else
                     f_omega  =(1/(2*pi))*( [(IA-A*tneg(ig))\b1;IE]...
@@ -278,14 +278,14 @@ else% ==> Theoretical filters.
                     f_hp = filter_gain(ig)^2*g_omega;  % spectral density of selected filtered series; top formula Uhlig (2001), p. 21;
                 end
                 mathp_col(ig,:) = (f_hp(:))';    % store as matrix row for ifft
-            end;  
+            end
             imathp_col = real(ifft(mathp_col))*(2*pi);
             vv = diag(reshape(imathp_col(1,:),nvar,nvar));
             for i=1:M_.exo_nbr
                 mathp_col = NaN(ngrid,length(ivar)^2);
                 SSi = cs(:,i)*cs(:,i)';
                 for ig = 1:ngrid
-                    if filter_gain(ig)==0,
+                    if filter_gain(ig)==0
                         f_hp = zeros(length(ivar),length(ivar));
                     else
                         f_omega  =(1/(2*pi))*( [(IA-A*tneg(ig))\b1;IE]...
@@ -294,7 +294,7 @@ else% ==> Theoretical filters.
                         f_hp = filter_gain(ig)^2*g_omega; % spectral density of selected filtered series; top formula Uhlig (2001), p. 21;
                     end
                     mathp_col(ig,:) = (f_hp(:))';    % store as matrix row for ifft
-                end;
+                end
                 imathp_col = real(ifft(mathp_col))*(2*pi);
                 Gamma_y{nar+2}(:,i) = abs(diag(reshape(imathp_col(1,:),nvar,nvar)))./vv;
             end

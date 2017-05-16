@@ -114,9 +114,9 @@ else
         || ~strcmp(upper(fname(size(fname,2)-3:size(fname,2))),'.MOD') ...
             && ~strcmp(upper(fname(size(fname,2)-3:size(fname,2))),'.DYN')
         error('DYNARE: argument must be a filename with .mod or .dyn extension and must not include any other periods')
-    end;
+    end
     fnamelength = length(fname) - 4;
-end;
+end
 
 if fnamelength + length('_set_auxiliary_variables') > namelengthmax()
     error('The name of your MOD file is too long, please shorten it')
@@ -192,7 +192,7 @@ end
 disp(result)
 if ismember('onlymacro', varargin)
     disp('Preprocesser stopped after macroprocessing step because of ''onlymacro'' option.');
-    return;
+    return
 end
 
 % post-dynare-prerocessor-hook

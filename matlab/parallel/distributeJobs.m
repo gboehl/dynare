@@ -48,7 +48,7 @@ totCPU=0;
 lP=length(Parallel);
 CPUWeight=ones(1,length(Parallel))*(-1);
 
-for j=1:lP,    
+for j=1:lP
     if mod(length(Parallel(j).CPUnbr),Parallel(j).NumberOfThreadsPerJob)
         skipline()
         disp(['PARALLEL_ERROR:: NumberOfThreadsPerJob = ',int2str(Parallel(j).NumberOfThreadsPerJob),' is not an exact divisor of number of CPUs = ',int2str(length(Parallel(j).CPUnbr)),'!'])
@@ -77,7 +77,7 @@ NumbersOfJobs=nBlock-fBlock+1;
 SumOfJobs=0;
 JobsForNode=zeros(1,nC);
 
-for j=1:lP,
+for j=1:lP
     CPUWeight(j)=str2num(Parallel(j).NodeWeight)*nCPUoriginal(j);
 end
 CPUWeight=CPUWeight./sum(CPUWeight);
@@ -161,7 +161,7 @@ for i=1:nC
         ChekOverFlow=ChekOverFlow+JobAssignedCpu;
         
         if ChekOverFlow>=JobsForNode(i)
-            break;
+            break
         end
         
     end
@@ -204,7 +204,7 @@ for i=1:nCPU(nC)
 end
 
 for i=1:nC
-    if JobsForNode(i)~=0;
+    if JobsForNode(i)~=0
         totSLAVES=totSLAVES+1;
     end
 end

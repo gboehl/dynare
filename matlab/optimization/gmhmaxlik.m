@@ -19,7 +19,7 @@ function [PostMode, HessianMatrix, Scale, ModeValue] = gmhmaxlik(fun, xinit, Hin
     
 % Set default options
 
-if ~isempty(Hinit);
+if ~isempty(Hinit)
     gmhmaxlikOptions.varinit = 'previous';
 else
     gmhmaxlikOptions.varinit = 'prior';

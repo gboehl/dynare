@@ -33,7 +33,7 @@ if notched==1, notched=0.25; end
 a=1-notched;
 
 % ## figure out how many data sets we have
-if iscell(data), 
+if iscell(data) 
     nc = length(data);
 else
     %   if isvector(data), data = data(:); end
@@ -149,7 +149,7 @@ cap_y = whisker_y([1,1],:);
 
 mm=min(min(data));
 MM=max(max(data));
-if isnan(mm), mm=0; MM=0; end,
+if isnan(mm), mm=0; MM=0; end
 
 if vertical
     plot (quartile_x, quartile_y, 'b',  ...
@@ -171,7 +171,7 @@ else
     % % % % %     outliers2_y, outliers2_x, [symbol(2),"r;;"]);
 end
 
-if nargout,
+if nargout
     sout=s;
 end
 % % % endfunction

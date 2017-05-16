@@ -64,7 +64,7 @@ if (nargin == 0) && (nargout == 0)
     fprintf('                      DISPLAY: [ ''iter'' or ''none'' {''iter''} ]\n');
     fprintf('                   OUTPUT_FCN: [ function_handle ]\n');
     fprintf('\n');
-return;
+return
 end
 
 Names = [
@@ -97,7 +97,7 @@ i = 1;
 while i <= nargin
   arg = varargin{i};
   if ischar(arg)                         % arg is an option name
-    break;
+    break
   end
   if ~isempty(arg)                      % [] is a valid options argument
     if ~isa(arg,'struct')

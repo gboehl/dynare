@@ -194,11 +194,11 @@ end
 
 % Add observation's densities constants and divide by two.
 likk(1:s) = .5*(likk(1:s) + pp*log(2*pi));
-if analytic_derivation,
+if analytic_derivation
     DLIK = DLIK/2;
     dlikk = dlikk/2;
-    if analytic_derivation==2 || asy_hess,
-        if asy_hess==0,
+    if analytic_derivation==2 || asy_hess
+        if asy_hess==0
         Hess = Hess + tril(Hess,-1)';
         end
         Hess = -Hess/2;
@@ -207,8 +207,8 @@ end
 
 % Call steady state Kalman filter if needed.
 if t <= last
-    if analytic_derivation,
-        if analytic_derivation==2,
+    if analytic_derivation
+        if analytic_derivation==2
             [tmp, tmp2] = kalman_filter_ss(Y,t,last,a,T,K,iF,dF,Z,pp,Zflag, ...
                 analytic_derivation,Da,DT,DYss,D2a,D2T,D2Yss);
         else
@@ -218,7 +218,7 @@ if t <= last
         likk(s+1:end)=tmp2{1};
         dlikk(s+1:end,:)=tmp2{2};
         DLIK = DLIK + tmp{2};
-        if analytic_derivation==2 || asy_hess,
+        if analytic_derivation==2 || asy_hess
             Hess = Hess + tmp{3};
         end
     else
@@ -227,14 +227,14 @@ if t <= last
 end
 
 % Compute minus the log-likelihood.
-if presample>diffuse_periods,
+if presample>diffuse_periods
     LIK = sum(likk(1+(presample-diffuse_periods):end));
 else
     LIK = sum(likk);
 end
 
-if analytic_derivation,
-    if analytic_derivation==2 || asy_hess,
+if analytic_derivation
+    if analytic_derivation==2 || asy_hess
         LIK={LIK, DLIK, Hess};
     else
         LIK={LIK, DLIK};

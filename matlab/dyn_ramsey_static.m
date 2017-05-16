@@ -125,7 +125,7 @@ if options_.steadystate_flag
     if any(imag(x(1:M.orig_endo_nbr))) %return with penalty
         resids=1+sum(abs(imag(x(1:M.orig_endo_nbr)))); %return with penalty
         steady_state=NaN(endo_nbr,1);
-        return;
+        return
     end
 
 end

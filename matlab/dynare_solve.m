@@ -80,7 +80,7 @@ i = find(~isfinite(fvec));
 if ~isempty(i)
     info = 1;
     x = NaN(size(fvec));
-    return;
+    return
 end
 
 % this test doesn't check complementarity conditions and is not used for
@@ -125,7 +125,7 @@ if options.solve_algo == 0
             [x,fval,exitval,output] = fsolve(func,x,options4fsolve);
         else
             exitval = 3;
-        end;
+        end
     end
 
     if exitval == 1

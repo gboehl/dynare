@@ -123,7 +123,7 @@ notsteady   = 1;
 F_singular  = true;
 asy_hess=0;
 
-if  analytic_derivation == 0,
+if  analytic_derivation == 0
     DLIK=[];
     Hess=[];
     LIKK=[];
@@ -133,14 +133,14 @@ else
     Da    = zeros(mm,k);                            % Derivative State vector.
     dlikk = zeros(smpl,k);
     
-    if Zflag==0,
+    if Zflag==0
         C = zeros(pp,mm);
-        for ii=1:pp; C(ii,Z(ii))=1;end         % SELECTION MATRIX IN MEASUREMENT EQ. (FOR WHEN IT IS NOT CONSTANT)
+        for ii=1:pp, C(ii,Z(ii))=1; end         % SELECTION MATRIX IN MEASUREMENT EQ. (FOR WHEN IT IS NOT CONSTANT)
     else
         C=Z;
     end
     dC = zeros(pp,mm,k);   % either selection matrix or schur have zero derivatives
-    if analytic_derivation==2,
+    if analytic_derivation==2
         Hess  = zeros(k,k);                             % Initialization of the Hessian
         D2a    = zeros(mm,k,k);                             % State vector.
         d2C = zeros(pp,mm,k,k);
@@ -151,7 +151,7 @@ else
         D2T=[];
         D2Yss=[];
     end
-    if asy_hess,
+    if asy_hess
         Hess  = zeros(k,k);                             % Initialization of the Hessian
     end
     LIK={inf,DLIK,Hess};
@@ -188,7 +188,7 @@ while notsteady && t<=last
         end
     else
         F_singular = false;
-        if rescale_prediction_error_covariance,
+        if rescale_prediction_error_covariance
             log_dF = log(det(F./(sig*sig')))+2*sum(log(sig));
             iF = inv(F./(sig*sig'))./(sig*sig');
         else
@@ -204,15 +204,15 @@ while notsteady && t<=last
             Ptmp = T*(P-K*P(Z,:))*transpose(T)+QQ;
         end
         tmp = (a+K*v);
-        if analytic_derivation,
-            if analytic_derivation==2,
+        if analytic_derivation
+            if analytic_derivation==2
                 [Da,DP,DLIKt,D2a,D2P, Hesst] = computeDLIK(k,tmp,Z,Zflag,v,T,K,P,iF,Da,DYss,DT,DOm,DP,DH,notsteady,D2a,D2Yss,D2T,D2Om,D2P);
             else
                 [Da,DP,DLIKt,Hesst] = computeDLIK(k,tmp,Z,Zflag,v,T,K,P,iF,Da,DYss,DT,DOm,DP,DH,notsteady);
             end
             if t>presample
                 DLIK = DLIK + DLIKt;
-                if analytic_derivation==2 || asy_hess,
+                if analytic_derivation==2 || asy_hess
                     Hess = Hess + Hesst;
                 end
             end
@@ -232,11 +232,11 @@ end
 
 % Add observation's densities constants and divide by two.
 likk(1:s) = .5*(likk(1:s) + pp*log(2*pi));
-if analytic_derivation,
+if analytic_derivation
     DLIK = DLIK/2;
     dlikk = dlikk/2;
-    if analytic_derivation==2 || asy_hess,
-        if asy_hess==0,
+    if analytic_derivation==2 || asy_hess
+        if asy_hess==0
         Hess = Hess + tril(Hess,-1)';
         end
         Hess = -Hess/2;
@@ -245,8 +245,8 @@ end
 
 % Call steady state Kalman filter if needed.
 if t <= last
-    if analytic_derivation,
-        if analytic_derivation==2,
+    if analytic_derivation
+        if analytic_derivation==2
             [tmp, tmp2] = kalman_filter_ss(Y, t, last, a, T, K, iF, dF, Z, pp, Zflag, analytic_derivation, Da, DT, DYss, D2a, D2T, D2Yss);
         else
             [tmp, tmp2] = kalman_filter_ss(Y, t, last, a, T, K, iF, dF, Z, pp, Zflag, analytic_derivation, Da, DT, DYss, asy_hess);
@@ -263,14 +263,14 @@ if t <= last
 end
 
 % Compute minus the log-likelihood.
-if presample>diffuse_periods,
+if presample>diffuse_periods
     LIK = sum(likk(1+(presample-diffuse_periods):end));
 else
     LIK = sum(likk);
 end
 
-if analytic_derivation,
-    if analytic_derivation==2 || asy_hess,
+if analytic_derivation
+    if analytic_derivation==2 || asy_hess
         LIK={LIK, DLIK, Hess};
     else
         LIK={LIK, DLIK};

@@ -60,7 +60,7 @@ else
     end
 end
 if options_.TeX
-    if isempty(tit_tex),
+    if isempty(tit_tex)
         tit_tex=names1;
     end
         
@@ -321,13 +321,13 @@ nvar0=nvar;
 
 if ~isoctave
     % Commenting for testing!
-    if isnumeric(options_.parallel) || ceil(size(varlist,1)/MaxNumberOfPlotsPerFigure)<4,
+    if isnumeric(options_.parallel) || ceil(size(varlist,1)/MaxNumberOfPlotsPerFigure)<4
         fout = pm3_core(localVars,1,nvar,0);
         
         % Parallel execution!
     else
         isRemoteOctave = 0;
-        for indPC=1:length(options_.parallel),
+        for indPC=1:length(options_.parallel)
             isRemoteOctave = isRemoteOctave + (findstr(options_.parallel(indPC).MatlabOctavePath, 'octave'));
         end
         if isRemoteOctave
@@ -356,12 +356,12 @@ if options_.TeX && any(strcmp('eps',cellstr(options_.graph_format)))
     nvar0=cumsum(nvar0);
 
     i=0;    
-    for j=1:length(nvar0),
+    for j=1:length(
     
     NAMES = [];
     TEXNAMES = [];
     nvar=nvar0(j);
-    while i<nvar,
+    while i<nvar
         i=i+1;
         if max(abs(Mean(:,i))) > 10^(-6)
             subplotnum = subplotnum+1;

@@ -43,8 +43,8 @@ function [theta, fxsim, neval] = slice_sampler(objective_function,theta,thetapri
 
 if sampler_options.rotated %&& ~isempty(sampler_options.V1),
     [theta, fxsim, neval] = rotated_slice_sampler(objective_function,theta,thetaprior,sampler_options,varargin{:});
-    if isempty(sampler_options.mode), % jumping 
-       return,
+    if isempty(sampler_options.mode) % jumping 
+       return
     else
         nevalR=sum(neval);
     end    
@@ -55,7 +55,7 @@ npar = length(theta);
 W1 = sampler_options.W1;
 neval = zeros(npar,1);
 
-for it=1:npar,
+for it=1:npar
     neval(it) = 0;
     W = W1(it); 
     xold  = theta(it);
@@ -85,7 +85,7 @@ for it=1:npar,
         fxl = -feval(objective_function,theta,varargin{:});
         neval(it) = neval(it) + 1;
         if (fxl <= Z)
-            break;
+            break
         end
         L = max(XLB,L-W);
     end
@@ -95,7 +95,7 @@ for it=1:npar,
         fxr = -feval(objective_function,theta,varargin{:});
         neval(it) = neval(it) + 1;
         if (fxr <= Z)
-            break;
+            break
         end
         R = min(XUB,R+W);
     end
@@ -118,6 +118,6 @@ for it=1:npar,
     
 end
 
-if sampler_options.rotated && ~isempty(sampler_options.mode), % jumping
+if sampler_options.rotated && ~isempty(sampler_options.mode) % jumping
     neval=sum(neval)+nevalR;
 end

@@ -76,7 +76,7 @@ linee = 0;
 check_coverage = 1;
 increase = 1;
 while check_coverage
-    for p = 0.1:0.1:0.9;
+    for p = 0.1:0.1:0.9
         critval = chi2inv(p,npar);
         ifil = FirstLine;
         tmp = 0;

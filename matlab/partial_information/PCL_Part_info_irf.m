@@ -132,7 +132,7 @@ stderr=diag(M_.Sigma_e^0.5);
 irfmat=zeros(size(dr.PI_TT1 ,1),irfpers+1);
 irfst=zeros(size(GG,1),irfpers+1); 
 irfst(:,1)=stderr(ii)*imp(:,ii);
-for jj=2:irfpers+1;
+for jj=2:irfpers+1
     irfst(:,jj)=GG*irfst(:,jj-1);
     irfmat(:,jj-1)=VV*irfst(NX+1:ss-FL_RANK,jj);
 end   

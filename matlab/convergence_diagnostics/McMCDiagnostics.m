@@ -101,7 +101,7 @@ end
 my_title='MCMC Inefficiency factors per block';
 IFAC_header='Parameter';
 IFAC_header_tex='Parameter';
-for j=1:nblck,
+for j=1:nblck
     IFAC_header = char(IFAC_header,['Block ' int2str(j)]);
     IFAC_header_tex = char(IFAC_header_tex,['Block~' int2str(j)]);
 end
@@ -220,7 +220,7 @@ if nblck == 1 % Brooks and Gelman tests need more than one block
         end      
     end
        
-    return;
+    return
 end
 
 Origin = 1000;
@@ -262,7 +262,7 @@ localVars.M_ = M_;
 
 
 % Like sequential execution!
-if isnumeric(options_.parallel),
+if isnumeric(options_.parallel)
     fout = McMCDiagnostics_core(localVars,1,npar,0);
     UDIAG = fout.UDIAG;
     clear fout
@@ -276,7 +276,7 @@ else
     
     [fout, nBlockPerCPU, totCPU] = masterParallel(options_.parallel, 1, npar,NamFileInput,'McMCDiagnostics_core', localVars, [], options_.parallel_info);
     UDIAG = fout(1).UDIAG;
-    for j=2:totCPU,
+    for j=2:totCPU
         UDIAG = cat(3,UDIAG ,fout(j).UDIAG);
     end
 end
@@ -346,7 +346,7 @@ if reste
     if reste == 1
         nr = 3;
         nc = 1;
-    elseif reste == 2;
+    elseif reste == 2
         nr = 2;
         nc = 3;
     end
@@ -391,7 +391,7 @@ if reste
     dyn_saveas(h,[ OutputFolder '/' ModelName '_udiag' int2str(pages+1)],options_.nodisplay,options_.graph_format);
     if TeX && any(strcmp('eps',cellstr(options_.graph_format)))
         fprintf(fidTeX,'\\begin{figure}[H]\n');
-        for jj = 1:size(NAMES,1);
+        for jj = 1:size(NAMES,1)
             fprintf(fidTeX,'\\psfrag{%s}[1][][0.5][0]{%s}\n',deblank(NAMES(jj,:)),deblank(TEXNAMES(jj,:)));
         end    
         fprintf(fidTeX,'\\centering \n');

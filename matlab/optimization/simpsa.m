@@ -77,11 +77,11 @@ function [X,FVAL,EXITFLAG,OUTPUT] = simpsa(FUN,X0,LB,UB,OPTIONS,varargin)
 
 % handle variable input arguments
 
-if nargin < 5,
+if nargin < 5
     OPTIONS = [];
-    if nargin < 4,
+    if nargin < 4
         UB = 1e5;
-        if nargin < 3,
+        if nargin < 3
             LB = -1e5;
         end
     end
@@ -89,22 +89,22 @@ end
 
 % check input arguments
 
-if ~ischar(FUN),
+if ~ischar(FUN)
     error('''FUN'' incorrectly specified in ''SIMPSA''');
 end
-if ~isfloat(X0),
+if ~isfloat(X0)
     error('''X0'' incorrectly specified in ''SIMPSA''');
 end
-if ~isfloat(LB),
+if ~isfloat(LB)
     error('''LB'' incorrectly specified in ''SIMPSA''');
 end
-if ~isfloat(UB),
+if ~isfloat(UB)
     error('''UB'' incorrectly specified in ''SIMPSA''');
 end
-if length(X0) ~= length(LB),
+if length(X0) ~= length(LB)
     error('''LB'' and ''X0'' have incompatible dimensions in ''SIMPSA''');
 end
-if length(X0) ~= length(UB),
+if length(X0) ~= length(UB)
     error('''UB'' and ''X0'' have incompatible dimensions in ''SIMPSA''');
 end
 
@@ -167,7 +167,7 @@ TEMP_LOOP_NUMBER = 1;
 % loop as described by Cardoso et al., 1996 (recommended)
 
 % therefore, the temperature is set to YBEST*1e5 in the first loop
-if isempty(OPTIONS.TEMP_START),
+if isempty(OPTIONS.TEMP_START)
     TEMP = abs(YBEST)*1e5;
 else
     TEMP = OPTIONS.TEMP_START;
@@ -195,7 +195,7 @@ nITERATIONS = 0;
 % temperature loop: run SIMPSA till stopping criterion is met
 % -----------------------------------------------------------
 
-while 1,
+while 1
     
     % detect if termination criterium was met
     % ---------------------------------------
@@ -203,23 +203,23 @@ while 1,
     % if a termination criterium was met, the value of EXITFLAG should have changed
     % from its default value of -2 to -1, 0, 1 or 2
     
-    if EXITFLAG ~= -2,
+    if EXITFLAG ~= -2
         break
     end
     
     % set MAXITERTEMP: maximum number of iterations at current temperature
     % --------------------------------------------------------------------
     
-    if TEMP_LOOP_NUMBER == 1,
+    if TEMP_LOOP_NUMBER == 1
         MAXITERTEMP = OPTIONS.MAX_ITER_TEMP_FIRST*NDIM;
         % The initial temperature is estimated (is requested) as described in 
         % Cardoso et al. (1996). Therefore, we need to store the number of 
         % successful and unsuccessful moves, as well as the increase in cost 
         % for the unsuccessful moves.
-        if isempty(OPTIONS.TEMP_START),
+        if isempty(OPTIONS.TEMP_START)
             [SUCCESSFUL_MOVES,UNSUCCESSFUL_MOVES,UNSUCCESSFUL_COSTS] = deal(0);
         end
-    elseif TEMP < OPTIONS.TEMP_END,
+    elseif TEMP < OPTIONS.TEMP_END
         TEMP = 0;
         MAXITERTEMP = OPTIONS.MAX_ITER_TEMP_LAST*NDIM;
     else
@@ -234,12 +234,12 @@ while 1,
     Y(1) = CALCULATE_COST(FUN,P(1,:),LB,UB,varargin{:});
     
     % if output function given then run output function to plot intermediate result
-    if ~isempty(OPTIONS.OUTPUT_FCN),
+    if ~isempty(OPTIONS.OUTPUT_FCN)
         feval(OPTIONS.OUTPUT_FCN,transpose(P(1,:)),Y(1));
     end
     
     % remaining vertices of simplex
-    for k = 1:NDIM,
+    for k = 1:NDIM
         % copy first vertex in new vertex
         P(k+1,:) = P(1,:);
         % alter new vertex
@@ -259,8 +259,8 @@ while 1,
     %  dimensions of vector Y: (NDIM+1) x 1
     
     % give user feedback if requested
-    if strcmp(OPTIONS.DISPLAY,'iter'),
-        if nITERATIONS == 0,
+    if strcmp(OPTIONS.DISPLAY,'iter')
+        if nITERATIONS == 0
             disp(' Nr Iter  Nr Fun Eval    Min function       Best function        TEMP           Algorithm Step');
         else
             disp(sprintf('%5.0f      %5.0f       %12.6g     %15.6g      %12.6g       %s',nITERATIONS,nFUN_EVALS,Y(1),YBEST,TEMP,'best point'));
@@ -280,7 +280,7 @@ while 1,
     
     % start
 
-    for ITERTEMP = 1:MAXITERTEMP,
+    for ITERTEMP = 1:MAXITERTEMP
         
         % add one to number of iterations
         nITERATIONS = nITERATIONS + 1;
@@ -315,12 +315,12 @@ while 1,
         OUTPUT.COSTS(nITERATIONS,:) = Y;
         OUTPUT.COST_BEST(nITERATIONS) = YBEST;
         
-        if strcmp(OPTIONS.DISPLAY,'iter'),
+        if strcmp(OPTIONS.DISPLAY,'iter')
             disp(sprintf('%5.0f      %5.0f       %12.6g     %15.6g      %12.6g       %s',nITERATIONS,nFUN_EVALS,Y(1),YBEST,TEMP,ALGOSTEP));
         end
         
         % if output function given then run output function to plot intermediate result
-        if ~isempty(OPTIONS.OUTPUT_FCN),
+        if ~isempty(OPTIONS.OUTPUT_FCN)
             feval(OPTIONS.OUTPUT_FCN,transpose(P(1,:)),Y(1));
         end
         
@@ -330,36 +330,36 @@ while 1,
         %% 3. no convergence,but maximum number of iterations has been reached
         %% 4. no convergence,but maximum time has been reached
             
-        if (abs(max(Y)-min(Y)) < OPTIONS.TOLFUN) && (TEMP_LOOP_NUMBER ~= 1),
-            if strcmp(OPTIONS.DISPLAY,'iter'),
+        if (abs(max(Y)-min(Y)) < OPTIONS.TOLFUN) && (TEMP_LOOP_NUMBER ~= 1)
+            if strcmp(OPTIONS.DISPLAY,'iter')
                 disp('Change in the objective function value less than the specified tolerance (TOLFUN).')
             end
             EXITFLAG = 1;
-            break;
+            break
         end
         
-        if (max(max(abs(P(2:NDIM+1,:)-P(1:NDIM,:)))) < OPTIONS.TOLX) && (TEMP_LOOP_NUMBER ~= 1),
-            if strcmp(OPTIONS.DISPLAY,'iter'),
+        if (max(max(abs(P(2:NDIM+1,:)-P(1:NDIM,:)))) < OPTIONS.TOLX) && (TEMP_LOOP_NUMBER ~= 1)
+            if strcmp(OPTIONS.DISPLAY,'iter')
                 disp('Change in X less than the specified tolerance (TOLX).')
             end
             EXITFLAG = 2;
-            break;
+            break
         end
         
-        if (nITERATIONS >= OPTIONS.MAX_ITER_TOTAL*NDIM) || (nFUN_EVALS >= OPTIONS.MAX_FUN_EVALS*NDIM*(NDIM+1)),
-            if strcmp(OPTIONS.DISPLAY,'iter'),
+        if (nITERATIONS >= OPTIONS.MAX_ITER_TOTAL*NDIM) || (nFUN_EVALS >= OPTIONS.MAX_FUN_EVALS*NDIM*(NDIM+1))
+            if strcmp(OPTIONS.DISPLAY,'iter')
                 disp('Maximum number of function evaluations or iterations reached.');
             end
             EXITFLAG = 0;
-            break;
+            break
         end
         
-        if toc/60 > OPTIONS.MAX_TIME,
-            if strcmp(OPTIONS.DISPLAY,'iter'),
+        if toc/60 > OPTIONS.MAX_TIME
+            if strcmp(OPTIONS.DISPLAY,'iter')
                 disp('Exceeded maximum time.');
             end
             EXITFLAG = -1;
-            break;
+            break
         end
         
         % begin a new iteration
@@ -369,11 +369,11 @@ while 1,
         [YFTRY,YTRY,PTRY] = AMOTRY(FUN,P,-1,LB,UB,varargin{:});
         
         %% check the result
-        if YFTRY <= YFLUCT(1),
+        if YFTRY <= YFLUCT(1)
             %% gives a result better than the best point,so try an additional
             %% extrapolation by a factor 2
             [YFTRYEXP,YTRYEXP,PTRYEXP] = AMOTRY(FUN,P,-2,LB,UB,varargin{:});
-            if YFTRYEXP < YFTRY,
+            if YFTRYEXP < YFTRY
                 P(end,:) = PTRYEXP;
                 Y(end) = YTRYEXP;
                 ALGOSTEP = 'reflection and expansion';
@@ -382,12 +382,12 @@ while 1,
                 Y(end) = YTRY;
                 ALGOSTEP = 'reflection';
             end
-        elseif YFTRY >= YFLUCT(NDIM),
+        elseif YFTRY >= YFLUCT(NDIM)
             %% the reflected point is worse than the second-highest, so look
             %% for an intermediate lower point, i.e., do a one-dimensional
             %% contraction
             [YFTRYCONTR,YTRYCONTR,PTRYCONTR] = AMOTRY(FUN,P,-0.5,LB,UB,varargin{:});
-            if YFTRYCONTR < YFLUCT(end),
+            if YFTRYCONTR < YFLUCT(end)
                 P(end,:) = PTRYCONTR;
                 Y(end) = YTRYCONTR;
                 ALGOSTEP = 'one dimensional contraction';
@@ -396,7 +396,7 @@ while 1,
                 %% around the lowest (best) point
                 X = ones(NDIM,NDIM)*diag(P(1,:));
                 P(2:end,:) = 0.5*(P(2:end,:)+X);
-                for k=2:NDIM,
+                for k=2:NDIM
                     Y(k) = CALCULATE_COST(FUN,P(k,:),LB,UB,varargin{:});
                 end
                 ALGOSTEP = 'multiple contraction';
@@ -412,10 +412,10 @@ while 1,
         % the number of successfull and unsuccesfull moves, and the average 
         % increase in cost associated with the unsuccessful moves
         
-        if TEMP_LOOP_NUMBER == 1 && isempty(OPTIONS.TEMP_START),
-            if Y(1) > Y(end),
+        if TEMP_LOOP_NUMBER == 1 && isempty(OPTIONS.TEMP_START)
+            if Y(1) > Y(end)
                 SUCCESSFUL_MOVES = SUCCESSFUL_MOVES+1;
-            elseif Y(1) <= Y(end),
+            elseif Y(1) <= Y(end)
                 UNSUCCESSFUL_MOVES = UNSUCCESSFUL_MOVES+1;
                 UNSUCCESSFUL_COSTS = UNSUCCESSFUL_COSTS+(Y(end)-Y(1));
             end
@@ -424,8 +424,8 @@ while 1,
     end
 
     % stop if previous for loop was broken due to some stop criterion
-    if ITERTEMP < MAXITERTEMP,
-        break;
+    if ITERTEMP < MAXITERTEMP
+        break
     end
     
     % store cost function values in COSTS vector
@@ -435,9 +435,9 @@ while 1,
     % using cooling schedule as proposed by Cardoso et al. (1996)
     % -----------------------------------------------------------
     
-    if TEMP_LOOP_NUMBER == 1 && isempty(OPTIONS.TEMP_START),
+    if TEMP_LOOP_NUMBER == 1 && isempty(OPTIONS.TEMP_START)
         TEMP = -(UNSUCCESSFUL_COSTS/(SUCCESSFUL_MOVES+UNSUCCESSFUL_MOVES))/log(((SUCCESSFUL_MOVES+UNSUCCESSFUL_MOVES)*OPTIONS.INITIAL_ACCEPTANCE_RATIO-SUCCESSFUL_MOVES)/UNSUCCESSFUL_MOVES);
-    elseif TEMP_LOOP_NUMBER ~= 0,
+    elseif TEMP_LOOP_NUMBER ~= 0
         STDEV_Y = std(COSTS);
         COOLING_FACTOR = 1/(1+TEMP*log(1+OPTIONS.COOL_RATE)/(3*STDEV_Y));
         TEMP = TEMP*min(OPTIONS.MIN_COOLING_FACTOR,COOLING_FACTOR);
@@ -502,14 +502,14 @@ function [YTRY] = CALCULATE_COST(FUN,PTRY,LB,UB,varargin)
 
 global YBEST PBEST NDIM nFUN_EVALS
 
-for i = 1:NDIM,
+for i = 1:NDIM
     % check lower bounds
-    if PTRY(i) < LB(i),
+    if PTRY(i) < LB(i)
         YTRY = 1e12+(LB(i)-PTRY(i))*1e6;
         return
     end
     % check upper bounds
-    if PTRY(i) > UB(i),
+    if PTRY(i) > UB(i)
         YTRY = 1e12+(PTRY(i)-UB(i))*1e6;
         return
     end
@@ -522,7 +522,7 @@ YTRY = feval(FUN,PTRY(:),varargin{:});
 nFUN_EVALS = nFUN_EVALS + 1;
 
 % save the best point ever
-if YTRY < YBEST,
+if YTRY < YBEST
     YBEST = YTRY;
     PBEST = PTRY;
 end

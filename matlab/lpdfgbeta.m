@@ -1,4 +1,4 @@
-function [ldens,Dldens,D2ldens] = lpdfgbeta(x,a,b,aa,bb);
+function [ldens,Dldens,D2ldens] = lpdfgbeta(x,a,b,aa,bb)
 % Evaluates the logged BETA PDF at x. 
 %
 % INPUTS 

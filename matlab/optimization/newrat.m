@@ -86,7 +86,7 @@ fval=fval0;
 outer_product_gradient=1;
 if isempty(hh)
     [dum, gg, htol0, igg, hhg, h1, hess_info]=mr_hessian(x,func0,penalty,flagit,htol,hess_info,varargin{:});
-    if isempty(dum),
+    if isempty(dum)
         outer_product_gradient=0;
         igg = 1e-4*eye(nx);
     else
@@ -154,7 +154,7 @@ while norm(gg)>gtol && check==0 && jit<nit
     if length(find(ig))<nx
         ggx=ggx*0;
         ggx(find(ig))=gg(find(ig));
-        if analytic_derivation,
+        if analytic_derivation
             hhx=hh;
         else
             hhx = reshape(dum,nx,nx);
@@ -195,7 +195,7 @@ while norm(gg)>gtol && check==0 && jit<nit
     if (fval0(icount)-fval)<ftol
         disp_verbose('No further improvement is possible!',Verbose)
         check=1;
-        if analytic_derivation,
+        if analytic_derivation
             [fvalx,exit_flag,gg,hh]=penalty_objective_function(xparam1,func0,penalty,varargin{:});
             hhg=hh;
             H = inv(hh);
@@ -233,7 +233,7 @@ while norm(gg)>gtol && check==0 && jit<nit
         disp_verbose(['Ftol          ',num2str(ftol)],Verbose)
         disp_verbose(['Htol          ',num2str(max(htol0))],Verbose)
         htol=htol_base;
-        if norm(x(:,icount)-xparam1)>1.e-12 && analytic_derivation==0,
+        if norm(x(:,icount)-xparam1)>1.e-12 && analytic_derivation==0
             try
                 if Save_files
                     save('m1.mat','x','fval0','nig','-append')
@@ -244,7 +244,7 @@ while norm(gg)>gtol && check==0 && jit<nit
                 end
             end
             [dum, gg, htol0, igg, hhg, h1, hess_info]=mr_hessian(xparam1,func0,penalty,flagit,htol,hess_info,varargin{:});
-            if isempty(dum),
+            if isempty(dum)
                 outer_product_gradient=0;
             end
             if max(htol0)>htol
@@ -253,7 +253,7 @@ while norm(gg)>gtol && check==0 && jit<nit
                 disp_verbose('Tolerance has to be relaxed',Verbose)
                 skipline()
             end
-            if ~outer_product_gradient,
+            if ~outer_product_gradient
                 H = bfgsi1(H,gg-g(:,icount),xparam1-x(:,icount),Verbose,Save_files);
                 hh=inv(H);
                 hhg=hh;
@@ -270,7 +270,7 @@ while norm(gg)>gtol && check==0 && jit<nit
                 end
                 H = igg;
             end
-        elseif analytic_derivation,
+        elseif analytic_derivation
             [fvalx,exit_flag,gg,hh]=penalty_objective_function(xparam1,func0,penalty,varargin{:});
             hhg=hh;
             H = inv(hh);
@@ -311,7 +311,7 @@ if norm(gg)<=gtol
     disp_verbose(['Estimation ended:'],Verbose)
     disp_verbose(['Gradient norm < ', num2str(gtol)],Verbose)
 end
-if check==1,
+if check==1
     disp_verbose(['Estimation successful.'],Verbose)
 end
 
@@ -321,11 +321,11 @@ return
 function x = check_bounds(x,bounds)
 
 inx = find(x>=bounds(:,2));
-if ~isempty(inx),
+if ~isempty(inx)
     x(inx) = bounds(inx,2)-eps;
 end
 
 inx = find(x<=bounds(:,1));
-if ~isempty(inx),
+if ~isempty(inx)
     x(inx) = bounds(inx,1)+eps;
 end

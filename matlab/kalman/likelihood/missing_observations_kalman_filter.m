@@ -123,7 +123,7 @@ while notsteady && t<=last
             end
         else
             F_singular = false;
-            if rescale_prediction_error_covariance,
+            if rescale_prediction_error_covariance
                 log_dF = log(det(F./(sig*sig')))+2*sum(log(sig));
                 iF = inv(F./(sig*sig'))./(sig*sig');
             else

@@ -33,8 +33,8 @@ function [PRCDirSnapshot]=dynareParallelSnapshot(PRCDir,Parallel)
 
 PRCDirSnapshot={};
 
-for indPC=1:length(Parallel),
-    if Parallel(indPC).Local==0;
+for indPC=1:length(Parallel)
+    if Parallel(indPC).Local==0
                                                        % The first call ...
         PRCDirSnapshot{indPC}=dynareParallelListAllFiles('Root',PRCDir,Parallel(indPC));
         

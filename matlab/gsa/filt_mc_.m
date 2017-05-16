@@ -57,11 +57,11 @@ skipline(2)
 disp('Starting sensitivity analysis')
 disp('for the fit of EACH observed series ...')
 skipline()
-if ~options_.nograph,
+if ~options_.nograph
 disp('Deleting old SA figures...')
 a=dir([OutDir,filesep,'*.*']);
 tmp1='0';
-if options_.opt_gsa.ppost,
+if options_.opt_gsa.ppost
     tmp=['_rmse_post'];
 else
     if options_.opt_gsa.pprior
@@ -69,40 +69,40 @@ else
     else
         tmp=['_rmse_mc'];
     end
-    if options_gsa_.lik_only,
+    if options_gsa_.lik_only
         tmp1 = [tmp,'_post_SA'];
         tmp = [tmp,'_lik_SA'];
     end
 end
-for j=1:length(a),
-    if strmatch([fname_,tmp],a(j).name),
+for j=1:length(a)
+    if strmatch([fname_,tmp],a(j).name)
         disp(a(j).name)
         delete([OutDir,filesep,a(j).name])
-    end,
-    if strmatch([fname_,tmp1],a(j).name),
+    end
+    if strmatch([fname_,tmp1],a(j).name)
         disp(a(j).name)
         delete([OutDir,filesep,a(j).name])
-    end,
+    end
 end
 disp('done !')
 end
 
 nshock=estim_params_.nvx + estim_params_.nvn + estim_params_.ncx + estim_params_.ncn;
 npar=estim_params_.np;
-if ~isempty(options_.mode_file),
-    load(options_.mode_file,'xparam1'),
+if ~isempty(options_.mode_file)
+    load(options_.mode_file,'xparam1')
 end
-if options_.opt_gsa.ppost,
+if options_.opt_gsa.ppost
     c=load([fname_,'_mean.mat'],'xparam1');
     xparam1_mean=c.xparam1;
     clear c
-elseif ~isempty(options_.mode_file) && exist([fname_,'_mean.mat'])==2,
+elseif ~isempty(options_.mode_file) && exist([fname_,'_mean.mat'])==2
     c=load([fname_,'_mean.mat'],'xparam1');
     xparam1_mean=c.xparam1;
     clear c
 end
 
-if options_.opt_gsa.ppost,
+if options_.opt_gsa.ppost
     fnamtmp=[fname_,'_post'];
     DirectoryName = CheckPath('metropolis',M_.dname);
 else
@@ -114,9 +114,9 @@ else
         DirectoryName = CheckPath(['gsa' filesep 'mc'],M_.dname);
     end
 end
-if loadSA,
+if loadSA
     tmplist =load([OutDir,filesep,fnamtmp, '.mat'],'vvarvecm');
-    if isempty(fieldnames(tmplist)),
+    if isempty(fieldnames(tmplist))
         disp('WARNING: cannot load results since the list of variables used is not present in the mat file')
         loadSA=0;
     elseif ~isequal(tmplist.vvarvecm,vvarvecm)
@@ -124,7 +124,7 @@ if loadSA,
         loadSA=0;
     end
 end
-if ~loadSA,
+if ~loadSA
     if exist('xparam1','var')
         M_ = set_all_parameters(xparam1,estim_params_,M_);
         ys_mode=steady_(M_,options_,oo_);
@@ -147,7 +147,7 @@ if ~loadSA,
     filfilt = dir([DirectoryName filesep M_.fname '_filter_step_ahead*.mat']);
     temp_smooth_file_list = dir([DirectoryName filesep M_.fname '_smooth*.mat']);
     jfile=0;
-    for j=1:length(temp_smooth_file_list),
+    for j=1:length(temp_smooth_file_list)
         if isempty(strfind(temp_smooth_file_list(j).name,'smoothed')),
             jfile=jfile+1;
             filsmooth(jfile)=temp_smooth_file_list(j);
@@ -158,7 +158,7 @@ if ~loadSA,
     x=[];
     logpo2=[];
     sto_ys=[];
-    for j=1:length(filparam),
+    for j=1:length(filparam)
         %load([DirectoryName filesep M_.fname '_param',int2str(j),'.mat']);
         if isempty(strmatch([M_.fname '_param_irf'],filparam(j).name))
             load([DirectoryName filesep filparam(j).name]);
@@ -173,7 +173,7 @@ if ~loadSA,
     if options_.opt_gsa.ppost || (options_.opt_gsa.ppost==0 && options_.opt_gsa.lik_only==0)
         skipline()
         disp('Computing RMSE''s...')
-        for i=1:size(vvarvecm,1),
+        for i=1:size(vvarvecm,1)
             vj=deblank(vvarvecm(i,:));
             
             jxj(i) = strmatch(vj,lgy_(dr_.order_var,:),'exact');
@@ -189,7 +189,7 @@ if ~loadSA,
         end
         y0=-yss;
         nbb=0;
-        for j=1:length(filfilt),
+        for j=1:length(filfilt)
             load([DirectoryName filesep M_.fname '_filter_step_ahead',num2str(j),'.mat']);
             nb = size(stock,4);
             y0(:,:,nbb+1:nbb+nb)=y0(:,:,nbb+1:nbb+nb)+reshape(stock(1,js,1:gend,:),[length(js) gend nb]);
@@ -198,7 +198,7 @@ if ~loadSA,
         end
         yobs=-yss;
         nbb=0;
-        for j=1:length(filupdate),
+        for j=1:length(filupdate)
             load([DirectoryName filesep M_.fname '_update',num2str(j),'.mat']);
             nb = size(stock,3);
             yobs(:,:,nbb+1:nbb+nb)=yobs(:,:,nbb+1:nbb+nb)+reshape(stock(js,1:gend,:),[length(js) gend nb]);
@@ -208,7 +208,7 @@ if ~loadSA,
         y0M=mean(y0,2);
         rmse_MC=zeros(nruns,length(js));
         r2_MC=zeros(nruns,length(js));
-        for j=1:nruns,
+        for j=1:nruns
             rmse_MC(j,:) = sqrt(mean((yobs(:,istart:end,j)'-y0(:,istart:end,j)').^2));
             r2_MC(j,:) = 1-mean((yobs(:,istart:end,j)'-y0(:,istart:end,j)').^2)./mean((yobs(:,istart:end,j)').^2);
         end
@@ -222,7 +222,7 @@ if ~loadSA,
         end
         clear stock_filter;
     end
-    for j=1:nruns,
+    for j=1:nruns
         lnprior(j,1) = priordens(x(j,:)',bayestopt_.pshape,bayestopt_.p6,bayestopt_.p7,bayestopt_.p3,bayestopt_.p4);
     end
     likelihood=logpo2(:)-lnprior(:);
@@ -338,12 +338,12 @@ if ~options_.opt_gsa.ppost && options_.opt_gsa.lik_only
     mcf_analysis(x, ilik(1:nfilt), ilik(nfilt+1:end), options_mcf, options_);
     
 else
-    if options_.opt_gsa.ppost,
+    if options_.opt_gsa.ppost
         rmse_txt=rmse_pmean;
         r2_txt=r2_pmean;
     else
-        if options_.opt_gsa.pprior || ~exist('rmse_pmean'),
-            if exist('rmse_mode'),
+        if options_.opt_gsa.pprior || ~exist('rmse_pmean')
+            if exist('rmse_mode')
                 rmse_txt=rmse_mode;
                 r2_txt=r2_mode;
             else
@@ -356,28 +356,28 @@ else
             r2_txt=r2_pmean;
         end
     end
-    for i=1:size(vvarvecm,1),
+    for i=1:size(vvarvecm,1)
         [dum, ixx(:,i)]=sort(rmse_MC(:,i));
     end
     PP=ones(npar+nshock,size(vvarvecm,1));
     PPV=ones(size(vvarvecm,1),size(vvarvecm,1),npar+nshock);
     SS=zeros(npar+nshock,size(vvarvecm,1));
-    for j=1:npar+nshock,
-        for i=1:size(vvarvecm,1),
+    for j=1:npar+nshock
+        for i=1:size(vvarvecm,1)
             [H,P,KSSTAT] = smirnov(x(ixx(nfilt0(i)+1:end,i),j),x(ixx(1:nfilt0(i),i),j), alpha);
             [H1,P1,KSSTAT1] = smirnov(x(ixx(nfilt0(i)+1:end,i),j),x(ixx(1:nfilt0(i),i),j),alpha,1);
             [H2,P2,KSSTAT2] = smirnov(x(ixx(nfilt0(i)+1:end,i),j),x(ixx(1:nfilt0(i),i),j),alpha,-1);
-            if H1 & H2==0,
+            if H1 & H2==0
                 SS(j,i)=1;
-            elseif H1==0,
+            elseif H1==0
                 SS(j,i)=-1;
             else
                 SS(j,i)=0;
             end
             PP(j,i)=P;
         end
-        for i=1:size(vvarvecm,1),
-            for l=1:size(vvarvecm,1),
+        for i=1:size(vvarvecm,1)
+            for l=1:size(vvarvecm,1)
                 if l~=i && PP(j,i)<alpha && PP(j,l)<alpha
                     [H,P,KSSTAT] = smirnov(x(ixx(1:nfilt0(i),i),j),x(ixx(1:nfilt0(l),l),j), alpha);
                     %[H1,P1,KSSTAT1] = smirnov(x(ixx(1:nfilt0(i),i),j),x(:,j), alpha);
@@ -393,9 +393,9 @@ else
             end
         end
     end
-    if ~options_.nograph,
+    if ~options_.nograph
         ifig=0;
-        for i=1:size(vvarvecm,1),
+        for i=1:size(vvarvecm,1)
             if options_.opt_gsa.ppost
                 temp_name='RMSE Posterior: Log Prior';
             else
@@ -405,7 +405,7 @@ else
                     temp_name='RMSE MC: Log Prior';
                 end
             end
-            if mod(i,9)==1,
+            if mod(i,9)==1
                 ifig=ifig+1;
                 hh=dyn_figure(options_.nodisplay,'name',[temp_name,' ',int2str(ifig)]);
             end
@@ -443,7 +443,7 @@ else
             end
         end
         ifig=0;
-        for i=1:size(vvarvecm,1),
+        for i=1:size(vvarvecm,1)
             if options_.opt_gsa.ppost
                 temp_name='RMSE Posterior: Log Likelihood';
             else
@@ -453,7 +453,7 @@ else
                     temp_name='RMSE MC: Log Likelihood';
                 end
             end
-            if mod(i,9)==1,
+            if mod(i,9)==1
                 ifig=ifig+1;
                 hh = dyn_figure(options_.nodisplay,'Name',[temp_name,' ',int2str(ifig)]);
             end
@@ -465,7 +465,7 @@ else
             h=cumplot(likelihood(ixx(nfilt0(i)+1:end,i)));
             set(h,'color','red','linewidth',2)
             title(vvarvecm(i,:),'interpreter','none')
-            if options_.opt_gsa.ppost==0,
+            if options_.opt_gsa.ppost==0
                 set(gca,'xlim',[min( likelihood(ixx(1:nfilt0(i),i)) ) max( likelihood(ixx(1:nfilt0(i),i)) )])
             end
             if mod(i,9)==0 || i==size(vvarvecm,1)
@@ -494,7 +494,7 @@ else
             end
         end
         ifig=0;
-        for i=1:size(vvarvecm,1),
+        for i=1:size(vvarvecm,1)
             if options_.opt_gsa.ppost
                 temp_name='RMSE Posterior: Log Posterior';
             else
@@ -504,7 +504,7 @@ else
                     temp_name='RMSE MC: Log Posterior';
                 end
             end
-            if mod(i,9)==1,
+            if mod(i,9)==1
                 ifig=ifig+1;
                 hh = dyn_figure(options_.nodisplay,'Name',[temp_name,' ',int2str(ifig)]);
             end
@@ -516,7 +516,7 @@ else
             h=cumplot(logpo2(ixx(nfilt0(i)+1:end,i)));
             set(h,'color','red','linewidth',2)
             title(vvarvecm(i,:),'interpreter','none')
-            if options_.opt_gsa.ppost==0,
+            if options_.opt_gsa.ppost==0
                 set(gca,'xlim',[min( logpo2(ixx(1:nfilt0(i),i)) ) max( logpo2(ixx(1:nfilt0(i),i)) )])
             end
             if mod(i,9)==0 || i==size(vvarvecm,1)
@@ -594,7 +594,7 @@ else
     skipline(2)
     disp('RMSE ranges after filtering:')
     title_string='RMSE ranges after filtering:';
-    if options_.opt_gsa.ppost==0 && options_.opt_gsa.pprior,
+    if options_.opt_gsa.ppost==0 && options_.opt_gsa.pprior
         headers=strvcat('Variable','min','max','min','max','posterior mode');
         headers_tex=strvcat('\text{Variable}','\text{min}','\text{max}','\text{min}','\text{max}','\text{posterior mode}');
     else
@@ -602,7 +602,7 @@ else
         headers_tex=strvcat('\text{Variable}','\text{min}','\text{max}','\text{min}','\text{max}','\text{posterior mean}');
     end
     data_mat=NaN(size(vvarvecm,1),5);
-    for j=1:size(vvarvecm,1),
+    for j=1:size(vvarvecm,1)
         data_mat(j,:)=[min(rmse_MC(ixx(1:nfilt0(j),j),j)) ...
             max(rmse_MC(ixx(1:nfilt0(j),j),j))  ...
             min(rmse_MC(ixx(nfilt0(j)+1:end,j),j)) ...
@@ -632,14 +632,14 @@ else
     value_format  = sprintf('%%%d.%df',val_width,val_precis);
     header_string_format  = sprintf('%%%ds',val_width);
     
-    if options_.opt_gsa.ppost==0 && options_.opt_gsa.pprior,
+    if options_.opt_gsa.ppost==0 && options_.opt_gsa.pprior
         optional_header=sprintf([label_format_leftbound,header_string_format,header_string_format,header_string_format,header_string_format],'','',['best ',num2str(pfilt*100),'% filtered'],'','remaining 90%');
     else
         optional_header=sprintf([label_format_leftbound,header_string_format,header_string_format,header_string_format,header_string_format],'','','best  filtered','','remaining');
     end
     dyntable(options_,title_string,headers,vvarvecm,data_mat, 0, val_width, val_precis,optional_header);
     if options_.TeX
-        if options_.opt_gsa.ppost==0 && options_.opt_gsa.pprior,
+        if options_.opt_gsa.ppost==0 && options_.opt_gsa.pprior
             optional_header={[' & \multicolumn{2}{c}{best ',num2str(pfilt*100),' filtered} & \multicolumn{2}{c}{remaining 90\%}\\']};
         else
             optional_header={[' & \multicolumn{2}{c}{best filtered} & \multicolumn{2}{c}{remaining}\\']};
@@ -668,7 +668,7 @@ else
     skipline()
     disp('R2 ranges after filtering:')
     title_string='R2 ranges after filtering:';
-    if options_.opt_gsa.ppost==0 && options_.opt_gsa.pprior,
+    if options_.opt_gsa.ppost==0 && options_.opt_gsa.pprior
         headers=strvcat('Variable','min','max','min','max','posterior mode');
         headers_tex=strvcat('\text{Variable}','\text{min}','\text{max}','\text{min}','\text{max}','\text{posterior mode}');
     else
@@ -676,7 +676,7 @@ else
         headers_tex=strvcat('\text{Variable}','\text{min}','\text{max}','\text{min}','\text{max}','\text{posterior mean}');
     end
     data_mat=NaN(size(vvarvecm,1),5);
-    for j=1:size(vvarvecm,1),
+    for j=1:size(vvarvecm,1)
         data_mat(j,:)=[min(r2_MC(ixx(1:nfilt0(j),j),j)) ...
             max(r2_MC(ixx(1:nfilt0(j),j),j))  ...
             min(r2_MC(ixx(nfilt0(j)+1:end,j),j)) ...
@@ -706,14 +706,14 @@ else
     value_format  = sprintf('%%%d.%df',val_width,val_precis);
     header_string_format  = sprintf('%%%ds',val_width);
     
-    if options_.opt_gsa.ppost==0 && options_.opt_gsa.pprior,
+    if options_.opt_gsa.ppost==0 && options_.opt_gsa.pprior
         optional_header=sprintf([label_format_leftbound,header_string_format,header_string_format,header_string_format,header_string_format],'','',['best ',num2str(pfilt*100),'% filtered'],'','remaining 90%');
     else
         optional_header=sprintf([label_format_leftbound,header_string_format,header_string_format,header_string_format,header_string_format],'','','best  filtered','','remaining');
     end
     dyntable(options_,title_string,headers,vvarvecm,data_mat, 0, val_width, val_precis,optional_header);
     if options_.TeX
-        if options_.opt_gsa.ppost==0 && options_.opt_gsa.pprior,
+        if options_.opt_gsa.ppost==0 && options_.opt_gsa.pprior
             optional_header={[' & \multicolumn{2}{c}{best ',num2str(pfilt*100),' filtered} & \multicolumn{2}{c}{remaining 90\%}\\']};
         else
             optional_header={[' & \multicolumn{2}{c}{best filtered} & \multicolumn{2}{c}{remaining}\\']};
@@ -724,13 +724,13 @@ else
     
     %%%%  R2 table
     SP=zeros(npar+nshock,size(vvarvecm,1));
-    for j=1:size(vvarvecm,1),
+    for j=1:size(vvarvecm,1)
         ns=find(PP(:,j)<alpha);
         SP(ns,j)=ones(size(ns));
         SS(:,j)=SS(:,j).*SP(:,j);
     end
     
-    for j=1:npar+nshock, %estim_params_.np,
+    for j=1:npar+nshock %estim_params_.np,
         nsp(j)=length(find(SP(j,:)));
     end
     snam0=param_names(find(nsp==0),:);
@@ -783,7 +783,7 @@ else
         options_mcf.param_names_tex = param_names_tex;
         options_mcf.fname_ = fname_;
         options_mcf.OutputDirectoryName = OutDir;
-        for iy=1:size(vvarvecm,1),
+        for iy=1:size(vvarvecm,1)
             options_mcf.amcf_name = [asname '_' deblank(vvarvecm(iy,:)) '_map' ];
             options_mcf.amcf_title = [atitle ' ' deblank(vvarvecm(iy,:))];
             options_mcf.beha_title = ['better fit of ' deblank(vvarvecm(iy,:))];
@@ -791,21 +791,21 @@ else
             options_mcf.title = ['the fit of ' deblank(vvarvecm(iy,:))];
             mcf_analysis(x, ixx(1:nfilt0(iy),iy), ixx(nfilt0(iy)+1:end,iy), options_mcf, options_);
         end
-        for iy=1:size(vvarvecm,1),
+        for iy=1:size(vvarvecm,1)
             ipar = find(any(squeeze(PPV(iy,:,:))<alpha));
-            for ix=1:ceil(length(ipar)/5),
+            for ix=1:ceil(length(ipar)/5)
                 hh = dyn_figure(options_.nodisplay,'name',[temp_name,' observed variable ',deblank(vvarvecm(iy,:))]);
-                for j=1+5*(ix-1):min(length(ipar),5*ix),
+                for j=1+5*(ix-1):min(length(ipar),5*ix)
                     subplot(2,3,j-5*(ix-1))
                     %h0=cumplot(x(:,nsnam(j)+nshock));
                     h0=cumplot(x(:,ipar(j)));
                     set(h0,'color',[0 0 0])
                     hold on,
                     iobs=find(squeeze(PPV(iy,:,ipar(j)))<alpha);
-                    for i=1:size(vvarvecm,1),
+                    for i=1:size(vvarvecm,1)
                         %h0=cumplot(x(ixx(1:nfilt,np(i)),nsnam(j)+nshock));
                         %                 h0=cumplot(x(ixx(1:nfilt0(np(i)),np(i)),nsnam(j)));
-                        if any(iobs==i) || i==iy,
+                        if any(iobs==i) || i==iy
                             h0=cumplot(x(ixx(1:nfilt0(i),i),ipar(j)));
                             if ~isoctave
                                 hcmenu = uicontextmenu;
@@ -858,9 +858,9 @@ else
         end
         
         % now I plot by individual parameters
-        for ix=1:ceil(length(nsnam)/5),
+        for ix=1:ceil(length(nsnam)/5)
             hh = dyn_figure(options_.nodisplay,'name',[temp_name,' estimated params and shocks ',int2str(ix)]);
-            for j=1+5*(ix-1):min(size(snam2,1),5*ix),
+            for j=1+5*(ix-1):min(size(snam2,1),5*ix)
                 subplot(2,3,j-5*(ix-1))
                 %h0=cumplot(x(:,nsnam(j)+nshock));
                 h0=cumplot(x(:,nsnam(j)));
@@ -869,10 +869,10 @@ else
                 npx=find(SP(nsnam(j),:)==0);
                 %a0=jet(nsp(nsnam(j)));
                 %             a0=a00(np,:);
-                for i=1:size(vvarvecm,1),
+                for i=1:size(vvarvecm,1)
                     %h0=cumplot(x(ixx(1:nfilt,np(i)),nsnam(j)+nshock));
                     %                 h0=cumplot(x(ixx(1:nfilt0(np(i)),np(i)),nsnam(j)));
-                    if any(npx==i),
+                    if any(npx==i)
                         h0=cumplot(x(ixx(1:nfilt0(i),i),nsnam(j))*NaN);
                     else
                         h0=cumplot(x(ixx(1:nfilt0(i),i),nsnam(j)));

@@ -58,13 +58,13 @@ function mode_check(fun,x,hessian_mat,DynareDataset,DatasetInfo,DynareOptions,Mo
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 TeX = DynareOptions.TeX;
-if ~isempty(hessian_mat);
+if ~isempty(hessian_mat)
     [ s_min, k ] = min(diag(hessian_mat));
 end
 
 fval = feval(fun,x,DynareDataset,DatasetInfo,DynareOptions,Model,EstimatedParameters,BayesInfo,BoundsInfo,DynareResults);
 
-if ~isempty(hessian_mat);
+if ~isempty(hessian_mat)
     skipline()
     disp('MODE CHECK')
     skipline()
@@ -85,13 +85,13 @@ if TeX && any(strcmp('eps',cellstr(DynareOptions.graph_format)))
 end
 
 ll = DynareOptions.mode_check.neighbourhood_size;
-if isinf(ll),
+if isinf(ll)
     DynareOptions.mode_check.symmetric_plots = 0;
 end
 
 mcheck = struct('cross',struct(),'emode',struct());
 
-for plt = 1:nbplt,
+for plt = 1:nbplt
     if TeX
         NAMES = [];
         TeXNAMES = [];
@@ -134,7 +134,7 @@ for plt = 1:nbplt,
         z1 = l1:((x(kk)-l1)/(DynareOptions.mode_check.number_of_points/2)):x(kk);
         z2 = x(kk):((l2-x(kk))/(DynareOptions.mode_check.number_of_points/2)):l2;
         z  = union(z1,z2);
-        if DynareOptions.mode_check.nolik==0,
+        if DynareOptions.mode_check.nolik==0
             y = zeros(length(z),2);
             dy = priordens(xx,BayesInfo.pshape,BayesInfo.p6,BayesInfo.p7,BayesInfo.p3,BayesInfo.p4);
         end
@@ -174,7 +174,7 @@ for plt = 1:nbplt,
         hold off
         drawnow
     end
-    if DynareOptions.mode_check.nolik==0,
+    if DynareOptions.mode_check.nolik==0
         if isoctave
             axes('outerposition',[0.3 0.93 0.42 0.07],'box','on'),
         else

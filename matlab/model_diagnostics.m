@@ -67,7 +67,7 @@ end
 info=test_for_deep_parameters_calibration(M);
 if info
     problem_dummy=1;
-end;
+end
 
 % check if ys is steady state
 options.debug=1; %locally set debug option to 1
@@ -83,7 +83,7 @@ if check1(1)
     if any(isinf(dr.ys))
         disp(['MODEL_DIAGNOSTICS: Steady state contains Inf'])
     end
-    return;
+    return
 end
 
 if ~isreal(dr.ys)
@@ -210,7 +210,7 @@ if ~options.block
         else
             [junk,jacobia_] = feval([M.fname '_dynamic'],z(iyr0),exo_simul, ...
                 M.params, dr.ys, it_);
-        end;
+        end
     elseif options.order >= 2
         if (options.bytecode)
             [chck, junk, loc_dr] = bytecode('dynamic','evaluate', z,exo_simul, ...
@@ -220,7 +220,7 @@ if ~options.block
             [junk,jacobia_,hessian1] = feval([M.fname '_dynamic'],z(iyr0),...
                 exo_simul, ...
                 M.params, dr.ys, it_);
-        end;
+        end
         if options.use_dll
             % In USE_DLL mode, the hessian is in the 3-column sparse representation
             hessian1 = sparse(hessian1(:,1), hessian1(:,2), hessian1(:,3), ...

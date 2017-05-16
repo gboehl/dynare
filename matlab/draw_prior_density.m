@@ -1,4 +1,4 @@
-function [x,f,abscissa,dens,binf,bsup] = draw_prior_density(indx,bayestopt_);
+function [x,f,abscissa,dens,binf,bsup] = draw_prior_density(indx,bayestopt_)
 % Computes values of prior densities at many points (before plotting)
 %
 % INPUTS

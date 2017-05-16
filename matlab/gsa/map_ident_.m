@@ -31,21 +31,21 @@ ntra   = opt_gsa.morris_ntra;
 itrans = opt_gsa.trans_ident;
 
 np = estim_params_.np;
-if opt_gsa.load_ident_files,
+if opt_gsa.load_ident_files
   gsa_flag=0;
 else
   gsa_flag=-2;
 end
 
 pnames = M_.param_names(estim_params_.param_vals(:,1),:);
-    if opt_gsa.pprior,
+    if opt_gsa.pprior
 
 filetoload=[OutputDirectoryName '/' fname_ '_prior'];
     else
 filetoload=[OutputDirectoryName '/' fname_ '_mc'];
     end
 load(filetoload,'lpmat','lpmat0','istable','T','yys','nspred','nboth','nfwrd')
-if ~isempty(lpmat0),
+if ~isempty(lpmat0)
   lpmatx=lpmat0(istable,:);
 else
   lpmatx=[];
@@ -56,24 +56,24 @@ npT = np+nshock;
 
 fname_ = M_.fname;
 
-if opt_gsa.load_ident_files==0,
+if opt_gsa.load_ident_files==0
   % th moments
 %     options_.ar = min(3,options_.ar);
 
   mss = yys(bayestopt_.mfys,:);
   mss = teff(mss(:,istable),Nsam,istable);
   yys = teff(yys(oo_.dr.order_var,istable),Nsam,istable);
-  if exist('T'),
+  if exist('T')
       [vdec, cc, ac] = mc_moments(T, lpmatx, oo_.dr);
   else
-      return,
+      return
   end
 
 
-  if opt_gsa.morris==2,
+  if opt_gsa.morris==2
    pdraws = dynare_identification(options_.options_ident,[lpmatx lpmat(istable,:)]);
 %    [pdraws, TAU, GAM] = dynare_identification(options_.options_ident,[lpmatx lpmat(istable,:)]);
-    if ~isempty(pdraws) && max(max(abs(pdraws-[lpmatx lpmat(istable,:)])))==0,
+    if ~isempty(pdraws) && max(max(abs(pdraws-[lpmatx lpmat(istable,:)])))==0
       disp(['Sample check OK ', num2str(max(max(abs(pdraws-[lpmatx lpmat(istable,:)]))))]),
       clear pdraws;
     end
@@ -86,9 +86,9 @@ if opt_gsa.load_ident_files==0,
       clear GAM gas
 %     end
   end
-  if opt_gsa.morris~=1 & M_.exo_nbr>1,
+  if opt_gsa.morris~=1 & M_.exo_nbr>1
     ifig=0;
-    for j=1:M_.exo_nbr,
+    for j=1:M_.exo_nbr
       if mod(j,6)==1
         hh=dyn_figure(options_.nodisplay,'name',['Variance decomposition shocks']);
         ifig=ifig+1;
@@ -101,13 +101,13 @@ if opt_gsa.load_ident_files==0,
       set(gca,'xticklabel',' ','fontsize',10,'xtick',[1:size(options_.varobs,1)])
       set(gca,'xlim',[0.5 size(options_.varobs,1)+0.5])
       set(gca,'ylim',[-2 102])
-      for ip=1:size(options_.varobs,1),
+      for ip=1:size(options_.varobs,1)
         text(ip,-4,deblank(options_.varobs(ip,:)),'rotation',90,'HorizontalAlignment','right','interpreter','none')
       end
       xlabel(' ')
       ylabel(' ')
       title(M_.exo_names(j,:),'interpreter','none')
-      if mod(j,6)==0 | j==M_.exo_nbr,
+      if mod(j,6)==0 | j==M_.exo_nbr
         dyn_saveas(hh,[OutputDirectoryName,'/',fname_,'_vdec_exo_',int2str(ifig)],options_.nodisplay,options_.graph_format);
         create_TeX_loader(options_,[OutputDirectoryName,'/',fname_,'_vdec_exo_',int2str(ifig)],ifig,['Variance decomposition shocks'],'vdec_exo',options_.figures.textwidth*min(iplo/3,1))
       end
@@ -135,24 +135,24 @@ if opt_gsa.load_ident_files==0,
 %     bayestopt_.restrict_aux, M_.exo_nbr);
   A = zeros(size(Aa,1),size(Aa,2)+size(Aa,1),length(istable));
   % Sig(estim_params_.var_exo(:,1))=lpmatx(1,:).^2;
-  if ~isempty(lpmatx),
+  if ~isempty(lpmatx)
       set_shocks_param(lpmatx(1,:));
   end
   A(:,:,1)=[Aa, triu(Bb*M_.Sigma_e*Bb')];
-  for j=2:length(istable),
+  for j=2:length(istable)
     dr.ghx = T(:, [1:(nc1-M_.exo_nbr)],j);
     dr.ghu = T(:, [(nc1-M_.exo_nbr+1):end], j);
     [Aa,Bb] = kalman_transition_matrix(dr, iv, ic, M_.exo_nbr);
 %       bayestopt_.restrict_var_list, ...
 %       bayestopt_.restrict_columns, ...
 %       bayestopt_.restrict_aux, M_.exo_nbr);
-    if ~isempty(lpmatx),
+    if ~isempty(lpmatx)
         set_shocks_param(lpmatx(j,:));
     end
     A(:,:,j)=[Aa, triu(Bb*M_.Sigma_e*Bb')];
   end
-  clear T;
-  clear lpmatx;
+  clear T
+  clear lpmatx
 
   [nr,nc,nn]=size(A);
   io=bayestopt_.mf2;
@@ -167,7 +167,7 @@ if opt_gsa.load_ident_files==0,
 
   [yt, j0]=teff(A,Nsam,istable);
   yt = [yys yt];
-  if opt_gsa.morris==2,
+  if opt_gsa.morris==2
 %     iii=find(std(yt(istable,:))>1.e-8);
 %     if max(max(abs(TAU-yt(istable,iii)')))<= 1.e-8,
 %       err = max(max(abs(TAU-yt(istable,iii)')));
@@ -175,7 +175,7 @@ if opt_gsa.load_ident_files==0,
       clear TAU A
 %     end
   else
-    clear A,
+    clear A
   end
   % [yt1, j01]=teff(T1,Nsam,istable);
   % [yt2, j02]=teff(T2,Nsam,istable);
@@ -184,7 +184,7 @@ if opt_gsa.load_ident_files==0,
   % yt=[yt1 yt2 ytr];
   save([OutputDirectoryName,'/',fname_,'_main_eff.mat'],'ac','cc','vdec','yt','mss')
 else
-  if opt_gsa.morris==2,
+  if opt_gsa.morris==2
 %    [pdraws, TAU, GAM] = dynare_identification([1:npT]); %,[lpmatx lpmat(istable,:)]);
 %    [pdraws, TAU, GAM] = dynare_identification(options_.options_ident);
    pdraws = dynare_identification(options_.options_ident);
@@ -205,12 +205,12 @@ end
 %   end
 %   yt = yt(:,j0);
 
-if opt_gsa.morris==1,
+if opt_gsa.morris==1
   %OutputDir = CheckPath('gsa/screen');
-  if ~isempty(vdec),
-  if opt_gsa.load_ident_files==0,
+  if ~isempty(vdec)
+  if opt_gsa.load_ident_files==0
   SAMorris = [];
-  for i=1:size(vdec,2),
+  for i=1:size(vdec,2)
     [SAmeas, SAMorris(:,:,i)] = Morris_Measure_Groups(npT, [lpmat0 lpmat], vdec(:,i),nliv);
   end
   SAvdec = squeeze(SAMorris(:,1,:))';
@@ -227,7 +227,7 @@ if opt_gsa.morris==1,
   ydum = get(gca,'ylim');
   set(gca,'ylim',[0 ydum(2)])
   set(gca,'position',[0.13 0.2 0.775 0.7])
-  for ip=1:npT,
+  for ip=1:npT
     text(ip,-2,bayestopt_.name{ip},'rotation',90,'HorizontalAlignment','right','interpreter','none')
   end
   xlabel(' ')
@@ -310,10 +310,10 @@ if opt_gsa.morris==1,
 %   end
 
 
-  if opt_gsa.load_ident_files==0,
+  if opt_gsa.load_ident_files==0
   SAMorris = [];
   ccac = [mss cc ac];
-  for i=1:size(ccac,2),
+  for i=1:size(ccac,2)
     [SAmeas, SAMorris(:,:,i)] = Morris_Measure_Groups(npT, [lpmat0 lpmat], [ccac(:,i)],nliv);
   end
   SAcc = squeeze(SAMorris(:,1,:))';
@@ -333,7 +333,7 @@ if opt_gsa.morris==1,
   ydum = get(gca,'ylim');
   set(gca,'ylim',[0 1])
   set(gca,'position',[0.13 0.2 0.775 0.7])
-  for ip=1:npT,
+  for ip=1:npT
     text(ip,-0.02,bayestopt_.name{ip},'rotation',90,'HorizontalAlignment','right','interpreter','none')
   end
   xlabel(' ')
@@ -694,9 +694,9 @@ if opt_gsa.morris==1,
 %   end
 
 
-  if opt_gsa.load_ident_files==0,
+  if opt_gsa.load_ident_files==0
   SAMorris = [];
-  for j=1:j0,
+  for j=1:j0
     [SAmeas, SAMorris(:,:,j)] = Morris_Measure_Groups(npT, [lpmat0 lpmat], yt(:,j),nliv);
   end
 
@@ -730,7 +730,7 @@ if opt_gsa.morris==1,
   set(gca,'ylim',[0 1])
   set(gca,'position',[0.13 0.2 0.775 0.7])
   xlabel(' ')
-  for ip=1:npT,
+  for ip=1:npT
 %     text(ip,-0.02,deblank(pnames(ip,:)),'rotation',90,'HorizontalAlignment','right','interpreter','none')
     text(ip,-0.02,bayestopt_.name{ip},'rotation',90,'HorizontalAlignment','right','interpreter','none')
   end
@@ -777,12 +777,12 @@ if opt_gsa.morris==1,
   %     eval(['print -depsc2 ' OutputDirectoryName '/' fname_ '_morris_redform']);
   %     eval(['print -dpdf ' OutputDirectoryName '/' fname_ '_morris_redform']);
 
-elseif opt_gsa.morris==3,
+elseif opt_gsa.morris==3
     return
     
   np=estim_params_.np;
   na=(4*np+1)*opt_gsa.Nsam;
-  for j=1:j0,
+  for j=1:j0
     [idex(j,:), yd(j,:)] = spop_ide(lpmat, yt(:,j), opt_gsa.Nsam, 5-1);
   end
   iok=find(~isnan(yt(1:opt_gsa.Nsam,1)));
@@ -793,10 +793,9 @@ elseif opt_gsa.morris==3,
     yr(iok(is),j)=[1:length(iok)]'./length(iok);
     yr(istable(length(iok)+1:end),j) = interp1(yt(iok,j),yr(iok,j),yt(istable(length(iok)+1:end),j),'','extrap');
     ineg=find(yr(:,j)<0);
-    if any(ineg),
+    if any(ineg)
       [dum, is]=sort(yr(ineg,j));
       yr(ineg(is),j)=-[length(ineg):-1:1]./length(iok);
-
     end
     [idex_r(j,:), yd_r(j,:)] = spop_ide(lpmat, yr(:,j), opt_gsa.Nsam, 5-1);
     ys_r(j,:)=yd_r(j,:)./max(yd_r(j,:));
@@ -811,10 +810,10 @@ elseif opt_gsa.morris==3,
   ee=ee([end:-1:1])./j0;
   i0=length(find(ee>0.01));
   v0=v0(:,[end:-1:1]);
-  for j=1:i0,
+  for j=1:i0
     [idex_pc(j,:), yd_pc(j,:)] = spop_ide(lpmat, yt*v0(:,j), opt_gsa.Nsam, 5-1);
   end
-  for j=1:i0,
+  for j=1:i0
     ys_pc(j,:)=yd_pc(j,:)./max(yd_pc(j,:));
   end,
   figure, bar((idex_pc.*ys_pc)./opt_gsa.Nsam), title('Relationships PCA')
@@ -825,24 +824,24 @@ elseif opt_gsa.morris==3,
   er=er([end:-1:1])./j0;
   ir0=length(find(er>0.01));
   vr=vr(:,[end:-1:1]);
-  for j=1:ir0,
+  for j=1:ir0
     [idex_pcr(j,:), yd_pcr(j,:)] = spop_ide(lpmat, yr*vr(:,j), opt_gsa.Nsam, 5-1);
   end
-  for j=1:ir0,
+  for j=1:ir0
     ys_pcr(j,:)=yd_pcr(j,:)./max(yd_pcr(j,:));
-  end,
+  end
   figure, bar((idex_pcr.*ys_pcr)./opt_gsa.Nsam), title('Relationships rank PCA')
   figure, bar((idex_pcr.*ys_pcr)'./opt_gsa.Nsam), title('Parameters rank PCA')
   
-elseif opt_gsa.morris==2,   % ISKREV staff
-  return,
+elseif opt_gsa.morris==2   % ISKREV staff
+  return
 
   
-else,  % main effects analysis
+else  % main effects analysis
   
-  if itrans==0,
+  if itrans==0
     fsuffix = '';
-  elseif itrans==1,
+  elseif itrans==1
     fsuffix = '_log';
   else
     fsuffix = '_rank';
@@ -850,7 +849,7 @@ else,  % main effects analysis
   
   imap=[1:npT];
 
-  if isempty(lpmat0),
+  if isempty(lpmat0)
       x0=lpmat(istable,:);
   else
       
@@ -989,7 +988,7 @@ else,  % main effects analysis
 %     end
 %   end
 
-  if opt_gsa.load_ident_files==0,
+  if opt_gsa.load_ident_files==0
   try 
     EET=load([OutputDirectoryName,'/SCREEN/',fname_,'_morris_IDE'],'SAcc','ir_cc','ic_cc');
   catch
@@ -1011,15 +1010,15 @@ else,  % main effects analysis
 %   siPCA = sum(siPCA,1);
 %   siPCA = siPCA./max(siPCA);
   SAcc=zeros(size(ccac,2),npT);
-  for j=1:npca, %size(ccac,2),
-    if itrans==0,
+  for j=1:npca %size(ccac,2),
+    if itrans==0
       y0 = ccac(istable,j);
-    elseif itrans==1,
+    elseif itrans==1
       y0 = log_trans_(ccac(istable,j));
     else
       y0 = trank(ccac(istable,j));
     end
-    if ~isempty(EET),
+    if ~isempty(EET)
 %       imap=find(EET.SAvdec(j,:));
 %       [dum, isort]=sort(-EET.SAvdec(j,:));
       imap=find(siPCA(j,:) >= (0.1.*max(siPCA(j,:))) );
@@ -1523,13 +1522,13 @@ else,  % main effects analysis
 
 %   figure, bar(latent'*SAcc),
   hh=dyn_figure(options_.nodisplay,'Name',['Identifiability indices in the ',fsuffix,' moments.']);
-  bar(sum(SAcc)),
+  bar(sum(SAcc))
   set(gca,'xticklabel',' ','fontsize',10,'xtick',[1:npT])
   set(gca,'xlim',[0.5 npT+0.5])
   ydum = get(gca,'ylim');
   set(gca,'ylim',[0 ydum(2)])
   set(gca,'position',[0.13 0.2 0.775 0.7])
-  for ip=1:npT,
+  for ip=1:npT
     text(ip,-0.02*(ydum(2)),bayestopt_.name{ip},'rotation',90,'HorizontalAlignment','right','interpreter','none')
     %     text(ip,-0.02,bayestopt_.name{ip},'rotation',90,'HorizontalAlignment','right','interpreter','none')
   end

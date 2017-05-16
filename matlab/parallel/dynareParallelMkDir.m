@@ -29,24 +29,22 @@ function dynareParallelMkDir(PRCDir,Parallel)
 
 
 
-if nargin ==0,
+if nargin ==0
     disp('dynareParallelMkDir(dirname,Parallel)')
     return
 end
 
 for indPC=1:length(Parallel)
-    if Parallel(indPC).Local==0,
-        if ~ispc || strcmpi('unix',Parallel(indPC).OperatingSystem),
-            if ~isempty(Parallel(indPC).Port),
+    if Parallel(indPC).Local==0
+        if ~ispc || strcmpi('unix',Parallel(indPC).OperatingSystem)
+            if ~isempty(Parallel(indPC).Port)
                 ssh_token = ['-p ',Parallel(indPC).Port];
             else
                 ssh_token = '';
             end
-            [NonServeS NonServeD]=system(['ssh ',ssh_token,' ',Parallel(indPC).UserName,'@',Parallel(indPC).ComputerName,' mkdir -p ',Parallel(indPC).RemoteDirectory,'/',PRCDir]);
+            [NonServeS, NonServeD]=system(['ssh ',ssh_token,' ',Parallel(indPC).UserName,'@',Parallel(indPC).ComputerName,' mkdir -p ',Parallel(indPC).RemoteDirectory,'/',PRCDir]);
         else
-            [NonServeS NonServeD]=mkdir(['\\',Parallel(indPC).ComputerName,'\',Parallel(indPC).RemoteDrive,'$\',Parallel(indPC).RemoteDirectory,'\',PRCDir]);
+            [NonServeS, NonServeD]=mkdir(['\\',Parallel(indPC).ComputerName,'\',Parallel(indPC).RemoteDrive,'$\',Parallel(indPC).RemoteDirectory,'\',PRCDir]);
         end
     end
 end
-
-return

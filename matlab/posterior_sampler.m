@@ -107,7 +107,7 @@ localVars =   struct('TargetFun', TargetFun, ...
                      'oo_', oo_,...
                      'varargin',[]);
 
-if strcmp(sampler_options.posterior_sampling_method,'tailored_random_block_metropolis_hastings');
+if strcmp(sampler_options.posterior_sampling_method,'tailored_random_block_metropolis_hastings')
     localVars.options_.silent_optimizer=1; %locally set optimizer to silent mode
     if ~isempty(sampler_options.optim_opt)
         localVars.options_.optim_opt=sampler_options.optim_opt; %locally set options for optimizer
@@ -117,7 +117,7 @@ end
 % User doesn't want to use parallel computing, or wants to compute a
 % single chain compute sequentially.
 
-if isnumeric(options_.parallel) || (nblck-fblck)==0,
+if isnumeric(options_.parallel) || (nblck-fblck)==0
     fout = posterior_sampler_core(localVars, fblck, nblck, 0);
     record = fout.record;
     % Parallel in Local or remote machine.   
@@ -128,20 +128,20 @@ else
     NamFileInput(1,:) = {'',[ModelName '_static.m']};
     NamFileInput(2,:) = {'',[ModelName '_dynamic.m']};
     NamFileInput(3,:) = {'',[M_.fname '_set_auxiliary_variables.m']};
-    if options_.steadystate_flag,
-        if options_.steadystate_flag == 1,
+    if options_.steadystate_flag
+        if options_.steadystate_flag == 1
             NamFileInput(length(NamFileInput)+1,:)={'',[M_.fname '_steadystate.m']};
         else
             NamFileInput(length(NamFileInput)+1,:)={'',[M_.fname '_steadystate2.m']};
         end
     end
-    if (options_.load_mh_file~=0)  && any(fline>1) ,
+    if (options_.load_mh_file~=0)  && any(fline>1)
         NamFileInput(length(NamFileInput)+1,:)={[M_.dname '/metropolis/'],[ModelName '_mh' int2str(NewFile(1)) '_blck*.mat']};
     end
     % from where to get back results
     %     NamFileOutput(1,:) = {[M_.dname,'/metropolis/'],'*.*'};
     [fout, nBlockPerCPU, totCPU] = masterParallel(options_.parallel, fblck, nblck,NamFileInput,'posterior_sampler_core', localVars, globalVars, options_.parallel_info);
-    for j=1:totCPU,
+    for j=1:totCPU
         offset = sum(nBlockPerCPU(1:j-1))+fblck-1;
         record.LastLogPost(offset+1:sum(nBlockPerCPU(1:j)))=fout(j).record.LastLogPost(offset+1:sum(nBlockPerCPU(1:j)));
         record.LastParameters(offset+1:sum(nBlockPerCPU(1:j)),:)=fout(j).record.LastParameters(offset+1:sum(nBlockPerCPU(1:j)),:);

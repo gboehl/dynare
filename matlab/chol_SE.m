@@ -293,16 +293,16 @@ function  g=gersh_nested(A,j,n)
 
 g=zeros(n,1);
 for ii = j:n
-    if ii == 1;
+    if ii == 1
         sum_up_to_i = 0;
     else
         sum_up_to_i = sum(abs(A(ii,j:(ii-1))));
-    end;
-    if ii == n;
+    end
+    if ii == n
         sum_after_i = 0;
     else
         sum_after_i = sum(abs(A((ii+1):n,ii)));
-    end;
+    end
     g(ii) = sum_up_to_i + sum_after_i- A(ii,ii);
 end
 end

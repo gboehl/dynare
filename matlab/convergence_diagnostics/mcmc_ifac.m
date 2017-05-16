@@ -54,7 +54,7 @@ function Ifac = mcmc_ifac(X, Nc)
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 Nc = floor(min(Nc, length(X)/2));
-if mod(Nc,2),
+if mod(Nc,2)
     Nc=Nc-1;
 end
 AcorrXSIM = dyn_autocorr(X(:), Nc);

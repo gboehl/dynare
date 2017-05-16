@@ -202,7 +202,7 @@ if ~isequal(options_.mode_compute,0) && ~options_.mh_posterior_mode_estimation
                 end
             end
         end
-        if options_.analytic_derivation,
+        if options_.analytic_derivation
             options_analytic_derivation_old = options_.analytic_derivation;
             options_.analytic_derivation = -1;
             if ~isempty(newratflag) && newratflag~=0 %numerical hessian explicitly specified
@@ -229,13 +229,13 @@ if ~isequal(options_.mode_compute,0) && ~options_.mh_posterior_mode_estimation
     end       
     if ~isnumeric(options_.mode_compute) || ~isequal(options_.mode_compute,6) %always already computes covariance matrix
         if options_.cova_compute == 1 %user did not request covariance not to be computed
-            if options_.analytic_derivation && strcmp(func2str(objective_function),'dsge_likelihood'),
+            if options_.analytic_derivation && strcmp(func2str(objective_function),'dsge_likelihood')
                 ana_deriv_old = options_.analytic_derivation;
                 options_.analytic_derivation = 2;
                 [junk1, junk2,junk3, junk4, hh] = feval(objective_function,xparam1, ...
                     dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,bounds,oo_);
                 options_.analytic_derivation = ana_deriv_old;
-            elseif ~isnumeric(options_.mode_compute) || ~(isequal(options_.mode_compute,5) && newratflag~=1), 
+            elseif ~isnumeric(options_.mode_compute) || ~(isequal(options_.mode_compute,5) && newratflag~=1)
                 % with flag==0, we force to use the hessian from outer product gradient of optimizer 5
                 if options_.hessian.use_penalized_objective
                     penalized_objective_function = str2func('penalty_objective_function');
@@ -258,15 +258,15 @@ if ~isequal(options_.mode_compute,0) && ~options_.mh_posterior_mode_estimation
                 % densitities for outer product gradient
                 kalman_algo0 = options_.kalman_algo;
                 compute_hessian = 1;
-                if ~((options_.kalman_algo == 2) || (options_.kalman_algo == 4)),
+                if ~((options_.kalman_algo == 2) || (options_.kalman_algo == 4))
                     options_.kalman_algo=2;
-                    if options_.lik_init == 3,
+                    if options_.lik_init == 3
                         options_.kalman_algo=4;
                     end
-                elseif newratflag==0, % hh already contains outer product gradient with univariate filter
+                elseif newratflag==0 % hh already contains outer product gradient with univariate filter
                     compute_hessian = 0;                                            
                 end
-                if compute_hessian,
+                if compute_hessian
                     crit = options_.newrat.tolerance.f;
                     newratflag = newratflag>0;
                     hh = reshape(mr_hessian(xparam1,objective_function,fval,newratflag,crit,new_rat_hess_info,dataset_, dataset_info, options_,M_,estim_params_,bayestopt_,bounds,oo_), nx, nx);
@@ -530,14 +530,13 @@ if options_.particle.status
     return
 end
 
-if (~((any(bayestopt_.pshape > 0) && options_.mh_replic) || (any(bayestopt_.pshape ...
-                                                      > 0) && options_.load_mh_file)) ...
+if (~((any(bayestopt_.pshape > 0) && options_.mh_replic) || (any(bayestopt_.pshape> 0) && options_.load_mh_file)) ...
     || ~options_.smoother ) && options_.partial_information == 0  % to be fixed
     %% ML estimation, or posterior mode without Metropolis-Hastings or Metropolis without Bayesian smoothes variables
     [atT,innov,measurement_error,updated_variables,ys,trend_coeff,aK,T,R,P,PK,decomp,Trend,state_uncertainty,M_,oo_,options_,bayestopt_] = DsgeSmoother(xparam1,dataset_.nobs,transpose(dataset_.data),dataset_info.missing.aindex,dataset_info.missing.state,M_,oo_,options_,bayestopt_,estim_params_);
     [oo_,yf]=store_smoother_results(M_,oo_,options_,bayestopt_,dataset_,dataset_info,atT,innov,measurement_error,updated_variables,ys,trend_coeff,aK,P,PK,decomp,Trend,state_uncertainty);
 
-    if ~options_.nograph,
+    if ~options_.nograph
         [nbplt,nr,nc,lr,lc,nstar] = pltorg(M_.exo_nbr);
         if options_.TeX && any(strcmp('eps',cellstr(options_.graph_format)))
             fidTeX = fopen([M_.fname '_SmoothedShocks.tex'],'w');
@@ -545,7 +544,7 @@ if (~((any(bayestopt_.pshape > 0) && options_.mh_replic) || (any(bayestopt_.psha
             fprintf(fidTeX,['%% ' datestr(now,0) '\n']);
             fprintf(fidTeX,' \n');
         end
-        for plt = 1:nbplt,
+        for plt = 1:nbplt
             fh = dyn_figure(options_.nodisplay,'Name','Smoothed shocks');
             NAMES = [];
             if options_.TeX, TeXNAMES = []; end
@@ -557,7 +556,7 @@ if (~((any(bayestopt_.pshape > 0) && options_.mh_replic) || (any(bayestopt_.psha
                 marker_string{1,1}='-r';
                 marker_string{2,1}='-k';
             end
-            for i=1:nstar0,
+            for i=1:nstar0
                 k = (plt-1)*nstar+i;
                 subplot(nr,nc,i);
                 plot([1 gend],[0 0],marker_string{1,1},'linewidth',.5)
@@ -699,7 +698,7 @@ if (~((any(bayestopt_.pshape > 0) && options_.mh_replic) || (any(bayestopt_.psha
         fprintf(fidTeX,['%% ' datestr(now,0) '\n']);
         fprintf(fidTeX,' \n');
     end
-    for plt = 1:nbplt,
+    for plt = 1:nbplt
         fh = dyn_figure(options_.nodisplay,'Name','Historical and smoothed variables');
         NAMES = [];
         if options_.TeX, TeXNAMES = []; end
@@ -711,7 +710,7 @@ if (~((any(bayestopt_.pshape > 0) && options_.mh_replic) || (any(bayestopt_.psha
            marker_string{1,1}='-r';
            marker_string{2,1}='--k';
         end
-        for i=1:nstar0,
+        for i=1:nstar0
             k = (plt-1)*nstar+i;
             subplot(nr,nc,i);
             plot(1:gend,yf(k,:),marker_string{1,1},'linewidth',1)
@@ -745,7 +744,7 @@ if (~((any(bayestopt_.pshape > 0) && options_.mh_replic) || (any(bayestopt_.psha
         dyn_saveas(fh,[M_.fname '_HistoricalAndSmoothedVariables' int2str(plt)],options_.nodisplay,options_.graph_format);
         if options_.TeX && any(strcmp('eps',cellstr(options_.graph_format)))
             fprintf(fidTeX,'\\begin{figure}[H]\n');
-            for jj = 1:nstar0,
+            for jj = 1:nstar0
                 fprintf(fidTeX,'\\psfrag{%s}[1][][0.5][0]{%s}\n',deblank(NAMES(jj,:)),deblank(TeXNAMES(jj,:)));
             end
             fprintf(fidTeX,'\\centering \n');

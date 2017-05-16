@@ -239,11 +239,11 @@ function v= SylvesterDoubling (d,g,h,tol,maxit)
 %   to solve the  Sylvester equation v  = d + g v h
 
 v = d;
-for i =1:maxit,
+for i =1:maxit
     vadd = g*v*h;
     v = v+vadd;
     if norm (vadd,1) <= (tol*norm(v,1))
-        break;
+        break
     end
     g = g*g;
     h = h*h;
@@ -295,8 +295,8 @@ temp = [];
 
 %First handle the i = 1 case outside the loop
 
-if i< n,
-    if abs(h(i+1,i)) < tol,
+if i< n
+    if abs(h(i+1,i)) < tol
         v(:,i)= (w - g*h(i,i))\d(:,i);
         i = i+1;
     else
@@ -312,10 +312,10 @@ end
 
 %Handle the rest of the matrix with the possible exception of i=n
 
-while i<n,
+while i<n
     b= i-1;
     temp = [temp g*v(:,size(temp,2)+1:b)]; %#ok<AGROW>
-    if abs(h(i+1,i)) < tol,
+    if abs(h(i+1,i)) < tol
         v(:,i) = (w - g*h(i,i))\(d(:,i) + temp*h(1:b,i));
         i = i+1;
     else
@@ -332,7 +332,7 @@ end
 
 %Handle the i = n case if i=n was not in a 2-2 block
 
-if i==n,
+if i==n
     b = i-1;
     temp = [temp g*v(:,size(temp,2)+1:b)];
     v(:,i) = (w-g*h(i,i))\(d(:,i) + temp*h(1:b,i));

@@ -30,7 +30,7 @@ function myoutput=pm3_core(myinputs,fpar,nvar,whoiam, ThisMatlab)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-if nargin<4,
+if nargin<4
     whoiam=0;
 end
 
@@ -66,7 +66,7 @@ figunumber = 0;
 subplotnum = 0;
 hh = dyn_figure(options_.nodisplay,'Name',[tit1 ' ' int2str(figunumber+1)]);
 RemoteFlag = 0;
-if whoiam,
+if whoiam
     if Parallel(ThisMatlab).Local ==0
         RemoteFlag=1;
     end
@@ -101,7 +101,7 @@ for i=fpar:nvar
         end
     end
     
-    if whoiam,
+    if whoiam
         if Parallel(ThisMatlab).Local==0
             DirectoryName = CheckPath('Output',M_.dname);
         end
@@ -109,7 +109,7 @@ for i=fpar:nvar
     
     if subplotnum == MaxNumberOfPlotsPerFigure || i == nvar
         dyn_saveas(hh,[M_.dname '/Output/'  M_.fname '_' name3 '_' deblank(tit3(i,:))],options_.nodisplay,options_.graph_format);
-        if RemoteFlag==1,
+        if RemoteFlag==1
             OutputFileName = [OutputFileName; {[M_.dname, filesep, 'Output',filesep], [M_.fname '_' name3 '_' deblank(tit3(i,:)) '.*']}];
         end
         subplotnum = 0;
@@ -119,7 +119,7 @@ for i=fpar:nvar
         end
     end
     
-    if whoiam,
+    if whoiam
 %         waitbarString = [ 'Variable ' int2str(i) '/' int2str(nvar) ' done.'];
 %         fMessageStatus((i-fpar+1)/(nvar-fpar+1),whoiam,waitbarString, waitbarTitle, Parallel(ThisMatlab));
         dyn_waitbar((i-fpar+1)/(nvar-fpar+1),h);
@@ -128,7 +128,7 @@ for i=fpar:nvar
     
 end
 
-if whoiam,
+if whoiam
     dyn_waitbar_close(h);
 end
 myoutput.OutputFileName=OutputFileName;

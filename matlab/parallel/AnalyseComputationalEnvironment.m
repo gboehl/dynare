@@ -31,7 +31,7 @@ function [ErrorCode] = AnalyseComputationalEnvironment(DataInput, DataInputAdd)
 %   field RemoteTmpFolder (the temporary directory created/destroyed on remote
 %   computer) is used.
 
-if ispc, 
+if ispc
     [tempo, MasterName]=system('hostname');
     MasterName=deblank(MasterName);
 end
@@ -114,11 +114,11 @@ for Node=1:length(DataInput) % To obtain a recoursive function remove the 'for'
     OScallerUnix=~ispc;
     OScallerWindows=ispc;
     OStargetUnix=strcmpi('unix',DataInput(Node).OperatingSystem);
-    if isempty(DataInput(Node).OperatingSystem),
+    if isempty(DataInput(Node).OperatingSystem)
         OStargetUnix=OScallerUnix;
     end
     OStargetWindows=strcmpi('windows',DataInput(Node).OperatingSystem);
-    if isempty(DataInput(Node).OperatingSystem),
+    if isempty(DataInput(Node).OperatingSystem)
         OStargetWindows=OScallerWindows;
     end
     
@@ -279,7 +279,7 @@ for Node=1:length(DataInput) % To obtain a recoursive function remove the 'for'
             
             si2=[];
             de2=[];
-            if ~isempty(DataInput(Node).Port),
+            if ~isempty(DataInput(Node).Port)
                 ssh_token = ['-p ',DataInput(Node).Port];
             else
                 ssh_token = '';
@@ -347,11 +347,11 @@ for Node=1:length(DataInput) % To obtain a recoursive function remove the 'for'
         s2='fclose(fT);\n';
         SBS=strfind(DataInput(Node).DynarePath,'\');
         DPStr=DataInput(Node).DynarePath;
-        if isempty(SBS),
+        if isempty(SBS)
             DPStrNew=DPStr;
         else
             DPStrNew=[DPStr(1:SBS(1)),'\'];
-            for j=2:length(SBS),
+            for j=2:length(SBS)
                 DPStrNew=[DPStrNew,DPStr(SBS(j-1)+1:SBS(j)),'\'];
             end
             DPStrNew=[DPStrNew,DPStr(SBS(end)+1:end)];
@@ -401,8 +401,8 @@ for Node=1:length(DataInput) % To obtain a recoursive function remove the 'for'
         % machine when the user is .UserName with password .Password and
         % the path is MatlabOctavePath.
         
-        if Environment,
-            if ~isempty(DataInput(Node).Port),
+        if Environment
+            if ~isempty(DataInput(Node).Port)
                 ssh_token = ['-p ',DataInput(Node).Port];
             else
                 ssh_token = '';
@@ -413,7 +413,7 @@ for Node=1:length(DataInput) % To obtain a recoursive function remove the 'for'
                 system(['ssh ',ssh_token,' ',DataInput(Node).UserName,'@',DataInput(Node).ComputerName,' "cd ',DataInput(Node).RemoteDirectory,'/',RemoteTmpFolder,  '; ', DataInput(Node).MatlabOctavePath, ' -nosplash -nodesktop -minimize -r Tracing;" &']);
             end
         else
-            if ~strcmp(DataInput(Node).ComputerName,MasterName), % run on remote machine
+            if ~strcmp(DataInput(Node).ComputerName,MasterName) % run on remote machine
                 if  strfind([DataInput(Node).MatlabOctavePath], 'octave') % Hybrid computing Matlab(Master)->Octave(Slaves) and Vice Versa!
                     [NonServeS NenServeD]=system(['start /B psexec \\',DataInput(Node).ComputerName,' -e -u ',DataInput(Node).UserName,' -p ',DataInput(Node).Password,' -W ',DataInput(Node).RemoteDrive,':\',DataInput(Node).RemoteDirectory,'\',RemoteTmpFolder ' -low   ',DataInput(Node).MatlabOctavePath,' Tracing.m']);
                 else
@@ -433,14 +433,15 @@ for Node=1:length(DataInput) % To obtain a recoursive function remove the 'for'
         
         t1=fix(clock);
         
-        if t1(5)+1>60;
+        if t1(5)+1>60
             t2=2;
-        else t2=t1(5)+1;
+        else
+            t2=t1(5)+1;
         end
         
         Flag=0;
         
-        while (1);
+        while (1)
             if Flag==0
                 disp('Try to run matlab/octave on remote machine ... ')
                 skipline()
@@ -556,7 +557,7 @@ for Node=1:length(DataInput) % To obtain a recoursive function remove the 'for'
     Environment1=Environment;
     disp('Checking Hardware please wait ...');
     if (DataInput(Node).Local == 1)
-        if Environment,
+        if Environment
             if ~ismac
                 [si0 de0]=system('grep processor /proc/cpuinfo');
             else
@@ -567,14 +568,14 @@ for Node=1:length(DataInput) % To obtain a recoursive function remove the 'for'
             [si0 de0]=system(['psinfo \\']);
         end
     else
-        if Environment,
-            if ~isempty(DataInput(Node).Port),
+        if Environment
+            if ~isempty(DataInput(Node).Port)
                 ssh_token = ['-p ',DataInput(Node).Port];
             else
                 ssh_token = '';
             end
-            if OStargetUnix,
-                if RemoteEnvironment ==1 , 
+            if OStargetUnix
+                if RemoteEnvironment ==1
                     [si0 de0]=system(['ssh ',ssh_token,' ',DataInput(Node).UserName,'@',DataInput(Node).ComputerName,' grep processor /proc/cpuinfo']);
                 else % it is MAC
                     [si0 de0]=system(['ssh ',ssh_token,' ',DataInput(Node).UserName,'@',DataInput(Node).ComputerName,' sysctl -n hw.ncpu']);
@@ -594,7 +595,7 @@ for Node=1:length(DataInput) % To obtain a recoursive function remove the 'for'
     RealCPUnbr=GiveCPUnumber(de0,Environment1);
     
     % Questo controllo penso che si possa MIGLIORARE!!!!!
-    if  isempty (RealCPUnbr) && Environment1==0,
+    if  isempty (RealCPUnbr) && Environment1==0
         [si0 de0]=system(['psinfo \\',DataInput(Node).ComputerName]);
     end        
     RealCPUnbr=GiveCPUnumber(de0,Environment1);
@@ -626,7 +627,7 @@ for Node=1:length(DataInput) % To obtain a recoursive function remove the 'for'
     
     disp(['Hardware has ', num2str(RealCPUnbr),' Cpu/Cores!'])
     disp(['User requires ',num2str(CPUnbrUser),' Cpu/Cores!'])
-    if  CPUnbrUser==RealCPUnbr,
+    if  CPUnbrUser==RealCPUnbr
         % It is Ok!
         disp('Check on CPUnbr Variable ..... Ok!')
         skipline(3)

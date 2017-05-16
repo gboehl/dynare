@@ -35,7 +35,7 @@ if notched==1, notched=0.25; end
 a=1-notched;
 
 % ## figure out how many data sets we have
-if iscell(data), 
+if iscell(data)
   nc = length(data);
 else
 %   if isvector(data), data = data(:); end
@@ -172,7 +172,7 @@ else
 % % % % %     outliers2_y, outliers2_x, [symbol(2),"r;;"]);
 end
 
-if nargout,
+if nargout
   sout=s;
 end
 % % % endfunction
