@@ -271,8 +271,8 @@ Types of analysis and output files
 
 Vector Autoregression
 
-* Estimation::
-* Forecasting::
+* VAR Estimation::
+* VAR Forecasts::
 
 Macro-processing language
 
@@ -10260,11 +10260,11 @@ The number of lags in the VAR. Default: @code{1}
 @end deffn
 
 @menu
-* Estimation::
-* Forecasting::
+* VAR Estimation::
+* VAR Forecasts::
 @end menu
 
-@node Estimation
+@node VAR Estimation
 @subsection VAR Estimation
 
 To estimate a VAR it must first be declared via the @ref{var_model}
@@ -10380,8 +10380,7 @@ which says that the covariance between the two pairs of variables is equal.
 
 @end deffn
 
-
-@node Forecasting
+@node VAR Forecasts
 @subsection VAR Forecasts
 
 To use a forecast from a VAR in the @code{model} block, it must first be
@@ -10402,7 +10401,6 @@ Plots the simulated path of one or several variables, as stored in
 plotted in levels.
 
 @end deffn
-
 
 @deffn Command dynatype (@var{FILENAME}) [@var{VARIABLE_NAME}@dots{}];
 This command prints the listed variables in a text file named
