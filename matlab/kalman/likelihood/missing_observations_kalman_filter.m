@@ -5,32 +5,32 @@ function  [LIK, lik, a, P] = missing_observations_kalman_filter(data_index,numbe
 %    data_index                   [cell]      1*smpl cell of column vectors of indices.
 %    number_of_observations       [integer]   scalar.
 %    no_more_missing_observations [integer]   scalar.
-%    Y                            [double]    pp*smpl matrix of data.    
+%    Y                            [double]    pp*smpl matrix of data.
 %    start                        [integer]   scalar, index of the first observation.
 %    last                         [integer]   scalar, index of the last observation.
 %    a                            [double]    pp*1 vector, initial level of the state vector.
 %    P                            [double]    pp*pp matrix, covariance matrix of the initial state vector.
 %    kalman_tol                   [double]    scalar, tolerance parameter (rcond).
-%    riccati_tol                  [double]    scalar, tolerance parameter (riccati iteration).    
+%    riccati_tol                  [double]    scalar, tolerance parameter (riccati iteration).
 %    presample                    [integer]   scalar, presampling if strictly positive.
 %    T                            [double]    mm*mm transition matrix of the state equation.
-%    Q                            [double]    rr*rr covariance matrix of the structural innovations.    
+%    Q                            [double]    rr*rr covariance matrix of the structural innovations.
 %    R                            [double]    mm*rr matrix, mapping structural innovations to state variables.
-%    H                            [double]    pp*pp (or 1*1 =0 if no measurement error) covariance matrix of the measurement errors. 
-%    Z                            [integer]   pp*1 vector of indices for the observed variables.    
+%    H                            [double]    pp*pp (or 1*1 =0 if no measurement error) covariance matrix of the measurement errors.
+%    Z                            [integer]   pp*1 vector of indices for the observed variables.
 %    mm                           [integer]   scalar, dimension of the state vector.
 %    pp                           [integer]   scalar, number of observed variables.
-%    rr                           [integer]   scalar, number of structural innovations.    
-%    
-% OUTPUTS 
+%    rr                           [integer]   scalar, number of structural innovations.
+%
+% OUTPUTS
 %    LIK        [double]    scalar, MINUS loglikelihood
 %    lik        [double]    vector, density of observations in each period.
 %    a          [double]    mm*1 vector, estimated level of the states.
-%    P          [double]    mm*mm matrix, covariance matrix of the states.        
-%        
+%    P          [double]    mm*mm matrix, covariance matrix of the states.
+%
 %
 % NOTES
-%   The vector "lik" is used to evaluate the jacobian of the likelihood.   
+%   The vector "lik" is used to evaluate the jacobian of the likelihood.
 
 % Copyright (C) 2004-2017 Dynare Team
 %

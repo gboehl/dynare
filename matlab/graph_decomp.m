@@ -1,7 +1,7 @@
 function []=graph_decomp(z,shock_names,endo_names,i_var,initial_date,DynareModel,DynareOptions)
 %function []=graph_decomp(z,shock_names,endo_names,i_var,initial_date,DynareModel,DynareOptions)
 % Plots the results from the shock_decomposition command
-% 
+%
 % Inputs
 %   z               [n_var*(nshock+2)*nperiods]     shock decomposition array, see shock_decomposition.m for details
 %   shock_names     [endo_nbr*string length]        shock names from M_.exo_names
@@ -131,8 +131,8 @@ for j=1:nvar
     fhandle = dyn_figure(DynareOptions.plot_shock_decomp.nodisplay,'Name',[preamble_txt fig_name_long strrep(fig_mode1, '_', ' ') ': ' deblank(endo_names(i_var(j),:)) '.'], 'PaperPositionMode', 'auto','PaperOrientation','landscape','renderermode','auto');
     set(fhandle,'position' ,[50 50 1500 750])
     ax=axes('Position',[0.1 0.1 0.6 0.8],'box','on');
-%     plot(ax,x(2:end),z1(end,:),'k-','LineWidth',2)
-%     axis(ax,[xmin xmax ymin ymax]);
+    %     plot(ax,x(2:end),z1(end,:),'k-','LineWidth',2)
+    %     axis(ax,[xmin xmax ymin ymax]);
     hold on;
     for i=1:gend
         i_1 = i-1;
@@ -175,7 +175,7 @@ for j=1:nvar
     end
     set(ax,'xlim',[xmin xmax]);
     hold off;
-    
+
     axes('Position',[0.75 0.1 0.2 0.8]);
     axis([0 1 0 1]);
     axis off;
@@ -184,7 +184,7 @@ for j=1:nvar
     height = 1/comp_nbr;
 
     for i=comp_nbr:-1:1
-%     for i=1:comp_nbr
+        %     for i=1:comp_nbr
         hl = fill([0 0 0.2 0.2],[y1 y1+0.7*height y1+0.7*height y1],i);
         hold on
         ht = text(0.3,y1+0.3*height,labels(i,:),'Interpreter','none');
@@ -222,7 +222,7 @@ for j=1:nvar
         fprintf(fidTeX,['\\caption{' preamble_txt fig_name_long strrep(fig_mode1, '_',  ' ') ': $ %s $.}\n'],deblank(DynareModel.endo_names_tex(i_var(j),:)));
         fprintf(fidTeX,'\\end{figure}\n');
         fprintf(fidTeX,' \n');
-    end    
+    end
 end
 
 %% write LaTeX-Footer

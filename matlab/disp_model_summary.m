@@ -4,7 +4,7 @@ function disp_model_summary(M,dr,options)
 %     displays the model summary
 %
 % INPUTS
-%   M         [matlab structure] Definition of the model.           
+%   M         [matlab structure] Definition of the model.
 %   dr        [matlab structure] Decision rules
 %   options   [matlab structure] Options
 %
@@ -40,4 +40,3 @@ labels = deblank(M.exo_names);
 headers = char('Variables',labels);
 lh = size(labels,2)+2;
 dyntable(options,my_title,headers,labels,M.Sigma_e,lh,10,6);
-

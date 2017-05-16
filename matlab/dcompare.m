@@ -52,5 +52,3 @@ z = mean(mean(abs(x(j,i)-y(j,i)))) ;
 disp (['The mean absolute difference between set ' s1(1,:) 'and set ' s1(2,:)]) ;
 disp (['is : ' num2str(z)]) ;
 return ;
-
-

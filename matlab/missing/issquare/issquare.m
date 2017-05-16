@@ -46,7 +46,7 @@ function i = issquare(A)
 
 d = size(A);
 if (length(d)==2) && (d(1)==d(2))
-  i = d(1);
+    i = d(1);
 else
-  i = 0;
+    i = 0;
 end

@@ -1,7 +1,7 @@
 function dynare(fname, varargin)
 %       This command runs dynare with specified model file in argument
 %       Filename.
-%       The name of model file begins with an alphabetic character, 
+%       The name of model file begins with an alphabetic character,
 %       and has a filename extension of .mod or .dyn.
 %       When extension is omitted, a model file with .mod extension
 %       is processed.
@@ -9,10 +9,10 @@ function dynare(fname, varargin)
 % INPUTS
 %   fname:      file name
 %   varargin:   list of arguments following fname
-%             
+%
 % OUTPUTS
 %   none
-%        
+%
 % SPECIAL REQUIREMENTS
 %   none
 
@@ -64,7 +64,7 @@ dynareroot = dynare_config;
 
 warning_config()
 
-if isoctave 
+if isoctave
     if octave_ver_less_than('3.6.0')
         warning('This version of Dynare has only been tested on Octave 3.6.0 and above. Since your Octave version is older than that, Dynare may fail to run, or give unexpected results. Consider upgrading your Octave installation.');
     end
@@ -111,7 +111,7 @@ if isempty(strfind(fname,'.'))
     % Checking file extension
 else
     if dot_location~=length(fname)-3 ... %if the file name has fewer than 4 characters and there is a period
-        || ~strcmp(upper(fname(size(fname,2)-3:size(fname,2))),'.MOD') ...
+            || ~strcmp(upper(fname(size(fname,2)-3:size(fname,2))),'.MOD') ...
             && ~strcmp(upper(fname(size(fname,2)-3:size(fname,2))),'.DYN')
         error('DYNARE: argument must be a filename with .mod or .dyn extension and must not include any other periods')
     end
@@ -176,11 +176,11 @@ else
 end
 
 if isempty(strfind(arch, '64'))
-  arch_ext = '32';
-  disp('Using 32-bit preprocessor');
+    arch_ext = '32';
+    disp('Using 32-bit preprocessor');
 else
-  arch_ext = '64';
-  disp('Using 64-bit preprocessor');
+    arch_ext = '64';
+    disp('Using 64-bit preprocessor');
 end
 
 command = ['"' dynareroot 'preprocessor' arch_ext filesep 'dynare_m" ' fname] ;

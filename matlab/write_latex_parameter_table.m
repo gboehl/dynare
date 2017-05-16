@@ -75,20 +75,20 @@ fprintf(fid, '\\endhead\n');
 tex = M_.param_names_tex;
 long = M_.param_names_long;
 for j=1:size(tex,1)
-if Long_names_present==1
-    % replace underscores
-    long_names_temp=regexprep(strtrim(long(j,:)), '_', '\\_');
-    % replace percent
-    long_names_temp=regexprep(long_names_temp, '%', '\\%');
-    fprintf(fid, '$%s$ \t & \t %4.3f \t & \t %s\\\\\n', ...
-        strtrim(tex(j,:)), ...
-        M_.params(j,:),...
-        long_names_temp);
-else
-    fprintf(fid, '$%s$ \t & \t %4.3f \\\\\n', ...
-        strtrim(tex(j,:)), ...
-        M_.params(j,:));
-end
+    if Long_names_present==1
+        % replace underscores
+        long_names_temp=regexprep(strtrim(long(j,:)), '_', '\\_');
+        % replace percent
+        long_names_temp=regexprep(long_names_temp, '%', '\\%');
+        fprintf(fid, '$%s$ \t & \t %4.3f \t & \t %s\\\\\n', ...
+                strtrim(tex(j,:)), ...
+                M_.params(j,:),...
+                long_names_temp);
+    else
+        fprintf(fid, '$%s$ \t & \t %4.3f \\\\\n', ...
+                strtrim(tex(j,:)), ...
+                M_.params(j,:));
+    end
 end
 fprintf(fid, '\\bottomrule%%\n');
 fprintf(fid, '\\end{longtable}\n');

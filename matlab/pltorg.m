@@ -48,11 +48,11 @@ elseif number == 5
 elseif number == 6
     nbplt = 1;
     nr    = 3;
-    nc    = 2;    
+    nc    = 2;
 elseif number == 7
     nbplt = 1;
     nr    = 3;
-    nc    = 3;    
+    nc    = 3;
 elseif number == 8
     nbplt = 1;
     nr    = 3;
@@ -67,7 +67,7 @@ else
         nr    = nrstar;
         nc    = ncstar;
         lr    = nr;
-        lc    = nc; 
+        lc    = nc;
     else
         nbplt = ceil(number/nstar);
         nr    = nrstar;
@@ -90,10 +90,10 @@ else
             lc    = 2;
         elseif reste == 6
             lr    = 3;
-            lc    = 2;    
+            lc    = 2;
         elseif reste == 7
             lr    = 3;
-            lc    = 3;    
+            lc    = 3;
         elseif reste == 8
             lr    = 3;
             lc    = 3;

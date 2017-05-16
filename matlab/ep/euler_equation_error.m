@@ -18,7 +18,7 @@ i_fwrd = find(M.lead_lag_incidence(3,:));
 x1 = [x(2:end,:); zeros(1,M.exo_nbr)];
 for i=1:length(nodes)
     x2 = x1;
-    x2(2,:) = x2(2,:) + nodes(i,:); 
+    x2(2,:) = x2(2,:) + nodes(i,:);
     [y2, info_convergence, endogenousvariablespaths] = ...
         extended_path_core(ep.periods, M.endo_nbr, M.exo_nbr, ...
                            innovations.positive_var_indx, x2, ep.init, ...
@@ -26,7 +26,7 @@ for i=1:length(nodes)
                            ep.stochastic.order, M, pfm, ep.stochastic.algo, ...
                            ep.solve_algo, ep.stack_solve_algo, options.lmmcp, ...
                            options, oo, []);
-    
+
     z = [y0(i_pred); y1; y2(i_fwrd)];
     res(:,i) = dynamic_model(z,x,M.params,oo.steady_state,2);
 end

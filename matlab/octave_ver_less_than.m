@@ -8,7 +8,7 @@ function r = octave_ver_less_than(verstr)
 %
 % INPUTS
 %    verstr: a string of the format 'x.y' or 'x.y.z'
-%    
+%
 % OUTPUTS
 %    r: 0 or 1
 %

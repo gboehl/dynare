@@ -1,16 +1,16 @@
 function xlag = lagged(x, n)
 % xlag = lagged(x, n);
 % applies n-lags backward shift operator to x
-% 
+%
 % INPUTS
-% x    = time series 
+% x    = time series
 % n    = number of backward shifts [DEFAULT=1]
-% 
+%
 % OUTPUT
 % xlag = backward shifted series
 
 % Copyright (C) 2017 Dynare Team
-%    
+%
 % This file is part of Dynare.
 %
 % Dynare is free software: you can redistribute it and/or modify

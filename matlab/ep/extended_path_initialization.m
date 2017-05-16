@@ -2,15 +2,15 @@ function [initial_conditions, innovations, pfm, ep, verbosity, DynareOptions, Dy
 
 % Initialization of the extended path routines.
 %
-% INPUTS 
+% INPUTS
 %  o initial_conditions     [double]    m*1 array, where m is the number of endogenous variables in the model.
 %  o sample_size            [integer]   scalar, size of the sample to be simulated.
 %  o exogenousvariables     [double]    T*n array, values for the structural innovations.
-%  o DynareOptions          [struct]    options_ 
+%  o DynareOptions          [struct]    options_
 %  o DynareModel            [struct]    M_
 %  o DynareResults          [struct]    oo_
 %
-% OUTPUTS 
+% OUTPUTS
 %
 % ALGORITHM
 %
@@ -118,7 +118,7 @@ pfm.nnzA = DynareModel.NNZDerivatives(1);
 if ep.stochastic.order > 0
     [nodes,weights,nnodes] = setup_integration_nodes(DynareOptions.ep,pfm);
     pfm.nodes = nodes;
-    pfm.weights = weights; 
+    pfm.weights = weights;
     pfm.nnodes = nnodes;
     % compute number of blocks
     [block_nbr,pfm.world_nbr] = get_block_world_nbr(ep.stochastic.algo,nnodes,ep.stochastic.order,ep.periods);
@@ -136,4 +136,3 @@ elseif DynareOptions.ep.solve_algo == 11
     DynareOptions.mcppath.ub = repmat(ub,block_nbr,1);
 end
 pfm.block_nbr = block_nbr;
-

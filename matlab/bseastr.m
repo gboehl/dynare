@@ -33,16 +33,15 @@ for im = 1:m
             for i = 1:min(length(key),length(temp))
                 if temp(i) > key(i)
                     h = mid - 1 ;
-                    break 
+                    break
                 else
                     l = mid + 1 ;
-                    break 
+                    break
                 end
             end
         else
             x(im) = mid ;
-            break 
+            break
         end
     end
 end
-

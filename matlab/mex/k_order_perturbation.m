@@ -37,7 +37,7 @@
 %                         The Taylor coefficient (1/6) is
 %                         included. Inside the tensor, the variables are in
 %                         dr.order_var order of state endogenous variables
-%                         and shocks 
+%                         and shocks
 % derivs        struct    contains the original derivatives of the
 %                         decision function (ghx, ghu, ghxx, ghxu, ghuu,
 %                         ghs2, ghxxx, ghxxu, ghxuu,ghuuu, ghxss, ghuss),

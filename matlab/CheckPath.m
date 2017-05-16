@@ -2,7 +2,7 @@ function [DirectoryName, info] = CheckPath(type,dname)
 % Creates the subfolder "./M_.dname/type" if it does not exist yet.
 %
 % INPUTS
-%    type   [string]    Name of the subfolder. 
+%    type   [string]    Name of the subfolder.
 %    dname  [string]    Name of the directory
 %
 % OUTPUTS

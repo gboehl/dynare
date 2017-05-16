@@ -4,7 +4,7 @@ function [i_var,nvar,index_uniques] = varlist_indices(sublist,list)
 %
 % INPUT
 %   sublist:    sublist of variables
-%   list:       list of variables 
+%   list:       list of variables
 %
 % OUTPUT
 %   i_var:      variable indices in M_.endo_names

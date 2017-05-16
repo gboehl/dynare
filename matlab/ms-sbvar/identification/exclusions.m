@@ -47,25 +47,25 @@ np = zeros(nvar,1);
 k = nlags*nvar+1;
 
 for n=1:nvar
- Qi{n} = zeros(nvar,nvar);
- sQ = size(Qi1{n});
- if all(sQ) > 0
-     Qi{n}(1:sQ(1),1:sQ(2)) = Qi1{n};
- end
- Ri{n} = zeros(k,k);
- sR = size(Ri1{n});
- if all(sR) > 0
-     Ri{n}(1:sR(1),1:sR(2)) = Ri1{n};
- end
+    Qi{n} = zeros(nvar,nvar);
+    sQ = size(Qi1{n});
+    if all(sQ) > 0
+        Qi{n}(1:sQ(1),1:sQ(2)) = Qi1{n};
+    end
+    Ri{n} = zeros(k,k);
+    sR = size(Ri1{n});
+    if all(sR) > 0
+        Ri{n}(1:sR(1),1:sR(2)) = Ri1{n};
+    end
 
- if options_ms.constants_exclusion
+    if options_ms.constants_exclusion
         Ri{n}(sR(1)+1,k) = 1;
- end
+    end
 
- Ui{n} = null(Qi{n});
- Vi{n} = null(Ri{n});
- n0(n) = size(Ui{n},2);
- np(n) = size(Vi{n},2);
+    Ui{n} = null(Qi{n});
+    Vi{n} = null(Ri{n});
+    n0(n) = size(Ui{n},2);
+    np(n) = size(Vi{n},2);
 end
 
 ixmC0Pres = NaN;

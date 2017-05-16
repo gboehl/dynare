@@ -13,7 +13,7 @@ function y = log_variable(ivar,x,M)
 %
 
 % Copyright (C) 2011-2016 Dynare Team
-%    
+%
 % This file is part of Dynare.
 %
 % Dynare is free software: you can redistribute it and/or modify

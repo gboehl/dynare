@@ -83,7 +83,7 @@ end
 % and so on until size ny x nnodes^order
 world_nbr = pfm.world_nbr;
 Y = endo_simul(:,2:end-1);
-Y = repmat(Y,1,world_nbr); 
+Y = repmat(Y,1,world_nbr);
 pfm.y0 = endo_simul(:,1);
 
 % The columns of A map the elements of Y such that

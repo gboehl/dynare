@@ -3,7 +3,7 @@ function h = cumplot(x)
 
 % Written by Marco Ratto
 % Joint Research Centre, The European Commission,
-% marco.ratto@ec.europa.eu 
+% marco.ratto@ec.europa.eu
 
 % Copyright (C) 2012 European Commission
 % Copyright (C) 2012 Dynare Team

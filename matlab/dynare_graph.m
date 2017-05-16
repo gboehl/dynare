@@ -1,5 +1,5 @@
 function dyn_graph=dynare_graph(dyn_graph,y,tit,x)
-% function dynare_graph(y,tit,x) 
+% function dynare_graph(y,tit,x)
 % graphs
 %
 % INPUT
@@ -32,7 +32,7 @@ function dyn_graph=dynare_graph(dyn_graph,y,tit,x)
 if nargin < 4
     x = (1:size(y,1))';
 end
-nplot = dyn_graph.plot_nbr + 1; 
+nplot = dyn_graph.plot_nbr + 1;
 if nplot > dyn_graph.max_nplot
     figure('Name',dyn_graph.figure_name);
     nplot = 1;
@@ -46,7 +46,7 @@ for i=1:size(y,2)
     if length(line_types) > 1
         line_type = line_types{i};
     end
-    
+
     plot(x,y(:,i),line_type);
     hold on
 end

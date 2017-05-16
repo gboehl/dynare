@@ -4,13 +4,13 @@ function set_parameters(xparam1)
 % Sets parameters value (except measurement errors)
 % This is called for computations such as IRF and forecast
 % when measurement errors aren't taken into account
-% 
+%
 % INPUTS
 %    xparam1:   vector of parameters to be estimated (initial values)
-%    
+%
 % OUTPUTS
 %    none
-%        
+%
 % SPECIAL REQUIREMENTS
 %    none
 
@@ -66,7 +66,7 @@ if ncx
 end
 %build covariance matrix from correlation matrix and variances already on
 %diagonal
-Sigma_e = diag(sqrt(diag(Sigma_e)))*Correlation_matrix*diag(sqrt(diag(Sigma_e))); 
+Sigma_e = diag(sqrt(diag(Sigma_e)))*Correlation_matrix*diag(sqrt(diag(Sigma_e)));
 if isfield(estim_params_,'calibrated_covariances')
     Sigma_e(estim_params_.calibrated_covariances.position)=estim_params_.calibrated_covariances.cov_value;
 end

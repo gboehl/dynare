@@ -124,7 +124,7 @@ end
 
 %@test:3
 %$ [n,w] = gauss_legendre_weights_and_nodes(9,pi,2*pi);
-%$ % Check that the 
+%$ % Check that the
 %$ t(1) = all(n>pi);
 %$ t(2) = all(n<2*pi);
 %$ t(3) = dassert(sum(w),pi,1e-12);

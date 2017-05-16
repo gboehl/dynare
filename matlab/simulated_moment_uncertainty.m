@@ -11,7 +11,7 @@ function [cmm, mm] = simulated_moment_uncertainty(indx, periods, replic,options_
 % Outputs:
 %   - cmm:      [n_moments by n_moments] covariance matrix of simulated moments
 %   - mm:       [n_moments by replic] matrix of moments
-%  
+%
 % Copyright (C) 2009-2017 Dynare Team
 %
 % This file is part of Dynare.
@@ -67,7 +67,7 @@ if options_.logged_steady_state %if steady state was previously logged, undo thi
     options_.logged_steady_state=0;
     logged_steady_state_indicator=1;
     evalin('base','options_.logged_steady_state=0;')
-else 
+else
     logged_steady_state_indicator=0;
 end
 

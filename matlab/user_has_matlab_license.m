@@ -38,14 +38,14 @@ if ~hasLicense
 end
 switch toolbox
     %use function unique to toolbox
-    case 'statistics_toolbox'
-        n = 'gppdf';
-    case 'optimization_toolbox'
-        n='fsolve';
-    case 'GADS_Toolbox'
-        n='simulannealbnd';
-    case 'control_toolbox'
-        n='dlyap';
+  case 'statistics_toolbox'
+    n = 'gppdf';
+  case 'optimization_toolbox'
+    n='fsolve';
+  case 'GADS_Toolbox'
+    n='simulannealbnd';
+  case 'control_toolbox'
+    n='dlyap';
 end
 hasInstallation=check_toolbox_installation(n);
 if ~hasInstallation
@@ -64,7 +64,7 @@ else
     a=ver(ver_string);
     if isempty(a)
         hasInstallation=0;
-    else 
+    else
         hasInstallation=1;
     end
 end

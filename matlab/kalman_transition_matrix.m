@@ -1,17 +1,17 @@
 function [A,B] = kalman_transition_matrix(dr,iv,ic,exo_nbr)
 %function [A,B] = kalman_transition_matrix(dr,iv,ic,exo_nbr)
 % Builds the transition equation of the state space representation out of ghx and ghu for Kalman filter
-% 
+%
 % INPUTS
 %    dr:      structure of decisions rules for stochastic simulations
 %    iv:      selected variables
 %    ic:      state variables position in the transition matrix columns
 %    exo_nbr: number of exogenous variables
-%    
+%
 % OUTPUTS
 %    A:       matrix of predetermined variables effects in linear solution (ghx)
 %    B:       matrix of shocks effects in linear solution (ghu)
-%        
+%
 % SPECIAL REQUIREMENTS
 %    none
 
@@ -41,4 +41,3 @@ A(:,ic) = dr.ghx(iv,:);
 if nargout>1
     B = dr.ghu(iv,:);
 end
-

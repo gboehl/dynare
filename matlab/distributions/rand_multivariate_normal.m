@@ -2,16 +2,16 @@ function draw = rand_multivariate_normal(Mean,Sigma_upper_chol,n)
 % Pseudo random draws from a multivariate normal distribution,
 % \mathcal N_n(Mean,Sigma), with expectation Mean and variance Sigma.
 %
-% INPUTS 
+% INPUTS
 %
 %    Mean               [double]    1*n vector, expectation of the multivariate random variable.
 %    Sigma_upper_chol   [double]    n*n matrix, upper triangular Cholesky decomposition of Sigma (the covariance matrix).
 %    n                  [integer]   dimension.
-%    
-% OUTPUTS 
+%
+% OUTPUTS
 %    draw               [double]    1*n vector drawn from a multivariate normal distribution with expectation Mean and
-%                                   covariance Sigma 
-%        
+%                                   covariance Sigma
+%
 % SPECIAL REQUIREMENTS
 
 % Copyright (C) 2003-2009 Dynare Team

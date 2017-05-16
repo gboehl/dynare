@@ -16,7 +16,7 @@ function [PostMode, HessianMatrix, Scale, ModeValue] = gmhmaxlik(fun, xinit, Hin
 %
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
-    
+
 % Set default options
 
 if ~isempty(Hinit)

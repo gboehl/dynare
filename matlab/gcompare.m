@@ -1,5 +1,5 @@
 function gcompare(s1,s2)
-% GCOMPARE :    GCOMPARE ( [ 'file1' ; 'file2' ] , [ 'var1' ; 'var2' ...] )     
+% GCOMPARE :    GCOMPARE ( [ 'file1' ; 'file2' ] , [ 'var1' ; 'var2' ...] )
 %               This optional command plots the trajectories of a list of
 %               variables in two different simulations. One plot is drawn
 %               for each variable. The trajectories must have been previously
@@ -50,6 +50,3 @@ end
 
 % 06/18/01 MJ corrected treatment of options_.smpl
 % 06/24/01 MJ removed color specification
-
-
-

@@ -3,7 +3,7 @@ function [y] = SPShiftright(x,n)
 % [y] = shiftright(x,n)
 %
 %  Shift the rows of x to the right by n columns, leaving zeros in the
-%  first n columns. 
+%  first n columns.
 
 % Original author: Gary Anderson
 % Original file downloaded from:

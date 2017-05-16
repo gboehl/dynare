@@ -122,7 +122,7 @@ if ~stop
     end
     info.status = 0;% more iterations are needed.
     info.error = err;
-    info.errors = c/abs(err);    
+    info.errors = c/abs(err);
     info.iterations = options.simul.maxit;
 end
 

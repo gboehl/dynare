@@ -6,7 +6,7 @@ function struct2local(S)
 %
 % INPUTS
 %  o S [struc]   This structure possibly containing several fields ...
-%  
+%
 %  OUTPUTS
 %  None
 %

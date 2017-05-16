@@ -141,19 +141,19 @@ if options.solve_algo == 0
         if max(abs(fvec)) >= tolf
             info = 1;
         else
-            info = 0;        
+            info = 0;
         end
     else
         info = 1;
     end
 elseif options.solve_algo == 1
-        [x,info]=solve1(func,x,1:nn,1:nn,jacobian_flag,options.gstep, ...
+    [x,info]=solve1(func,x,1:nn,1:nn,jacobian_flag,options.gstep, ...
                     tolf,options.solve_tolx, ...
                     maxit,options.debug,varargin{:});
 elseif options.solve_algo == 9
-        [x,info]=trust_region(func,x,1:nn,1:nn,jacobian_flag,options.gstep, ...
-                    tolf,options.solve_tolx, ...
-                    maxit,options.debug,varargin{:});
+    [x,info]=trust_region(func,x,1:nn,1:nn,jacobian_flag,options.gstep, ...
+                          tolf,options.solve_tolx, ...
+                          maxit,options.debug,varargin{:});
 elseif options.solve_algo == 2 || options.solve_algo == 4
 
     if options.solve_algo == 2
@@ -233,4 +233,3 @@ elseif options.solve_algo == 11
 else
     error('DYNARE_SOLVE: option solve_algo must be one of [0,1,2,3,4,9,10,11]')
 end
-

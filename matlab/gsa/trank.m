@@ -29,6 +29,6 @@ function yr = trank(y)
 
 [nr, nc] = size(y);
 for j=1:nc
-  [dum, is]=sort(y(:,j));
-  yr(is,j)=[1:nr]'./nr;
+    [dum, is]=sort(y(:,j));
+    yr(is,j)=[1:nr]'./nr;
 end

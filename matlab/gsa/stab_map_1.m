@@ -8,7 +8,7 @@ function [proba, dproba] = stab_map_1(lpmat, ibehaviour, inonbehaviour, aname, i
 % iplot = 1 plot cumulative distributions (default)
 % iplot = 0 no plots
 % ipar = index array of parameters to plot
-% dirname = (OPTIONAL) path of the directory where to save 
+% dirname = (OPTIONAL) path of the directory where to save
 %            (default: current directory)
 % pcrit = (OPTIONAL) critical value of the pvalue below which show the plots
 %
@@ -18,7 +18,7 @@ function [proba, dproba] = stab_map_1(lpmat, ibehaviour, inonbehaviour, aname, i
 %
 % Written by Marco Ratto
 % Joint Research Centre, The European Commission,
-% marco.ratto@ec.europa.eu 
+% marco.ratto@ec.europa.eu
 
 % Copyright (C) 2012-2016 European Commission
 % Copyright (C) 2012-2017 Dynare Team
@@ -41,14 +41,14 @@ function [proba, dproba] = stab_map_1(lpmat, ibehaviour, inonbehaviour, aname, i
 global estim_params_ bayestopt_ M_ options_
 
 if nargin<5
-  iplot=1;
+    iplot=1;
 end
 fname_ = M_.fname;
 if nargin<7
-  dirname='';
+    dirname='';
 end
 if nargin<9,
-  atitle=aname;
+    atitle=aname;
 end
 
 nshock = estim_params_.nvx;
@@ -60,27 +60,27 @@ npar=size(lpmat,2);
 ishock= npar>estim_params_.np;
 
 if nargin<6
-  ipar=[];
+    ipar=[];
 end
 if nargin<8 || isempty(pcrit)
-  pcrit=1;
+    pcrit=1;
 end
 
-% Smirnov test for Blanchard; 
+% Smirnov test for Blanchard;
 for j=1:npar
-  [H,P,KSSTAT] = smirnov(lpmat(ibehaviour,j),lpmat(inonbehaviour,j));
-  proba(j)=P;
-  dproba(j)=KSSTAT;
+    [H,P,KSSTAT] = smirnov(lpmat(ibehaviour,j),lpmat(inonbehaviour,j));
+    proba(j)=P;
+    dproba(j)=KSSTAT;
 end
 if isempty(ipar)
-%     ipar=find(dproba>dcrit);
+    %     ipar=find(dproba>dcrit);
     ipar=find(proba<pcrit);
 end
 nparplot=length(ipar);
 if iplot && ~options_.nograph
     lpmat=lpmat(:,ipar);
     ftit=bayestopt_.name(ipar+nshock*(1-ishock));
-    
+
     for i=1:ceil(nparplot/12)
         hh=dyn_figure(options_.nodisplay,'name',atitle);
         for j=1+12*(i-1):min(nparplot,12*i)

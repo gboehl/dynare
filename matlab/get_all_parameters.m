@@ -4,14 +4,14 @@ function xparam1=get_all_parameters(estim_params_,M_)
 % gets parameters values from M_.params into xparam1 (inverse mapping to set_all_parameters)
 % This is called if a model was calibrated before estimation to back out
 % parameter values
-% 
+%
 % INPUTS
-%	 estim_params_:  Dynare structure describing the estimated parameters.
-%    M_:             Dynare structure describing the model. 
+%        estim_params_:  Dynare structure describing the estimated parameters.
+%    M_:             Dynare structure describing the model.
 %
 % OUTPUTS
 %    xparam1:       N*1 double vector of parameters from calibrated model that are to be estimated
-%        
+%
 % SPECIAL REQUIREMENTS
 %    none
 
@@ -100,5 +100,5 @@ offset = nvx+ncx+nvn+ncn;
 
 % structural parameters
 if np
-     xparam1(offset+1:end)=M_.params(estim_params_.param_vals(:,1));
+    xparam1(offset+1:end)=M_.params(estim_params_.param_vals(:,1));
 end

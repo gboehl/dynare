@@ -12,7 +12,7 @@ function [pars, cosnJ] = ident_bruteforce(J,n,TeX, pnames_TeX,tittxt)
 %  pnames_TeX         [char] list of tex names
 %  tittxt             [string]  string indicating the title text for
 %                               graphs and figures
-% 
+%
 % OUTPUTS
 %  pars  : cell array with groupf of params for each column of J for 1 to n
 %  cosnJ : the cosn of each column with the selected group of columns
@@ -85,7 +85,7 @@ for ll = 1:n
         fprintf(fidTeX,['%% ' datestr(now,0)]);
         fprintf(fidTeX,' \n');
         fprintf(fidTeX,' \n');
-        
+
         fprintf(fidTeX,'{\\tiny \n');
         fprintf(fidTeX,'\\begin{longtable}{llc} \n');
         fprintf(fidTeX,['\\caption{Collinearity patterns with ',int2str(ll),' parameter(s): ',tittxt,'}\n ']);
@@ -111,9 +111,9 @@ for ll = 1:n
                 end
             end
             fprintf(fidTeX,'$%s$ & [%s] & %7.3f \\\\ \n',...
-                pnames_TeX(i,:),...
-                plist,...
-                cosnJ(i,ll));
+                    pnames_TeX(i,:),...
+                    plist,...
+                    cosnJ(i,ll));
         end
         fprintf(fidTeX,'\\bottomrule \n');
         fprintf(fidTeX,'\\end{longtable}\n');

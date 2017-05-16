@@ -84,7 +84,7 @@ else
     [oo_.dr,info,M_,options_,oo_] = resol(0,M_,options_,oo_);
 end
 
-if options_.loglinear && isfield(oo_.dr,'ys') && options_.logged_steady_state==0 %log steady state for correct display of decision rule    
+if options_.loglinear && isfield(oo_.dr,'ys') && options_.logged_steady_state==0 %log steady state for correct display of decision rule
     oo_.dr.ys=log_variable(1:M_.endo_nbr,oo_.dr.ys,M_);
     oo_.steady_state=log_variable(1:M_.endo_nbr,oo_.steady_state,M_);
     options_old.logged_steady_state = 1; %make sure option is preserved outside of stoch_simul
@@ -160,7 +160,7 @@ if options_.periods > 0 && ~PI_PCL_solver
     [ys, oo_] = simult(y0,oo_.dr,M_,options_,oo_);
     oo_.endo_simul = ys;
     if ~options_.minimal_workspace
-      dyn2vec;
+        dyn2vec;
     end
 end
 
@@ -201,7 +201,7 @@ if options_.irf
             else
                 if options_.order>1 && options_.relative_irf % normalize shock to 0.01 before IRF generation for GIRFs; multiply with 100 later
                     y=irf(oo_.dr,cs(M_.exo_names_orig_ord,i)./cs(i,i)/100, options_.irf, options_.drop, ...
-                          options_.replic, options_.order);                
+                          options_.replic, options_.order);
                 else %for linear model, rescaling is done later
                     y=irf(oo_.dr,cs(M_.exo_names_orig_ord,i), options_.irf, options_.drop, ...
                           options_.replic, options_.order);

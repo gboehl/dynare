@@ -2,11 +2,11 @@ function cellofchar2mfile(fname, c, cname)
 
 % Write a cell of char in a matlab script.
 %
-% INPUTS 
+% INPUTS
 % - fname [string] name of the file where c is to be saved.
 % - c     [cell]   a two dimensional cell of char.
 %
-% OUTPUTS 
+% OUTPUTS
 % None.
 
 % Copyright (C) 2015 Dynare Team

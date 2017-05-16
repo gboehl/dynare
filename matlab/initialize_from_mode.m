@@ -1,13 +1,13 @@
 function estim_params_ = initialize_from_mode(fname,M_,estim_params_)
 % function estim_params_ = initialize_from_mode(fname,M_,estim_params_)
 % initialize parameters and initial value of estimated parameters
-% from a *_mode.mat file    
-%  
+% from a *_mode.mat file
+%
 % INPUTS
 %   fname:  mode file name (*.mat file)
 %   M_:     sructure of model characteristics
 %   estim_params_: structure of estimated parameters
-%  
+%
 % OUTPUTS
 %   estim_params:  modified structure of estimated parameters
 %
@@ -99,4 +99,3 @@ for i=1:length(parameter_names)
     end
     error([name 'doesn''t exist in this model'])
 end
-

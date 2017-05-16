@@ -1,9 +1,9 @@
 function mh_autocorrelation_function(options_,M_,estim_params_,type,blck,name1,name2)
 % This function plots the autocorrelation of the sampled draws in the
 % posterior distribution.
-% 
 %
-% INPUTS 
+%
+% INPUTS
 %
 %   options_        [structure]    Dynare structure.
 %   M_              [structure]    Dynare structure (related to model definition).
@@ -11,11 +11,11 @@ function mh_autocorrelation_function(options_,M_,estim_params_,type,blck,name1,n
 %   type            [string]       'DeepParameter', 'MeasurementError' (for measurement equation error) or 'StructuralShock' (for structural shock).
 %   blck            [integer]      Number of the mh chain.
 %   name1           [string]       Object name.
-%   name2           [string]       Object name. 
-%    
-% OUTPUTS 
+%   name2           [string]       Object name.
+%
+% OUTPUTS
 %   None
-%        
+%
 % SPECIAL REQUIREMENTS
 
 % Copyright (C) 2003-2017 Dynare Team
@@ -36,7 +36,7 @@ function mh_autocorrelation_function(options_,M_,estim_params_,type,blck,name1,n
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 % Cet the column index:
-if nargin<7    
+if nargin<7
     column = name2index(options_, M_, estim_params_, type, name1);
 else
     column = name2index(options_, M_, estim_params_, type, name1, name2);
@@ -88,7 +88,7 @@ else
 end
 
 if options_.mh_nblck>1
-    FigureName = [ FigureName , ' (block number' int2str(blck)  ').']; 
+    FigureName = [ FigureName , ' (block number' int2str(blck)  ').'];
 end
 
 hh=dyn_figure(options_.nodisplay,'Name',FigureName);

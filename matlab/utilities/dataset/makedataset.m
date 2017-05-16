@@ -37,7 +37,7 @@ if isempty(DynareOptions.datafile) && isempty(DynareOptions.dataset.file) && ise
     if gsa_flag
         DynareDataset = dseries();
         DatasetInfo = struct('missing', struct('state', 0, 'aindex', [], 'vindex', [], 'number_of_observations', NaN, 'no_more_missing_observations', NaN), ...
-                     'descriptive', struct('mean', [], 'covariance', [], 'correlation', [], 'autocovariance', []));
+                             'descriptive', struct('mean', [], 'covariance', [], 'correlation', [], 'autocovariance', []));
         newdatainterface=0;
         return
     else
@@ -107,7 +107,7 @@ if ~isempty(datafile)
             DynareDataset = load_m_file_data_legacy(datafile, DynareOptions.varobs);
         elseif strcmp(datafile(end-3:end),'.mat')
             % Load a mat file with the old interface.
-            DynareDataset = load_mat_file_data_legacy(datafile, DynareOptions.varobs);            
+            DynareDataset = load_mat_file_data_legacy(datafile, DynareOptions.varobs);
         end
     end
 else

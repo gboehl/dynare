@@ -1,9 +1,9 @@
 function [C1,C2,C3,C4, C5, F1, F2, F3, F4, F5, M1, M2, UAVinv, FL_RANK, V01, V02]=PI_gensys_singularC(C1in, C2in, C3in, C4in, C5in, F1, F2, F3, F4, F5, V01, V02, level)
 % [C1,C2,C3,C4, C5, F1, F2, F3, F4, F5, M1, M2, UAVinv,FL_RANK, V01, V02]...
 %         =PI_gensys_singularC(C1in, C2in, C3in, C4in, C5in, F1, F2, F3, F4, F5, V01, V02, level)
-% 
+%
 % Recursive extension for PI_gensys function PCL general DSGE solver
-% devised by Prof. Joseph Pearlman 
+% devised by Prof. Joseph Pearlman
 % developed by George Perendia
 % December 2010
 

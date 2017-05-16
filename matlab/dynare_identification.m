@@ -3,8 +3,8 @@ function [pdraws, TAU, GAM, LRE, gp, H, JJ] = dynare_identification(options_iden
 %
 % INPUTS
 %    o options_ident    [structure] identification options
-%    o pdraws0          [matrix] optional: matrix of MC sample of model params. 
-%    
+%    o pdraws0          [matrix] optional: matrix of MC sample of model params.
+%
 % OUTPUTS
 %    o pdraws           [matrix] matrix of MC sample of model params used
 %    o TAU,             [matrix] MC sample of entries in the model solution (stacked vertically)
@@ -13,11 +13,11 @@ function [pdraws, TAU, GAM, LRE, gp, H, JJ] = dynare_identification(options_iden
 %    o gp,              [matrix] derivatives of the Jacobian (LRE model)
 %    o H,               [matrix] derivatives of the model solution
 %    o JJ               [matrix] derivatives of the  moments
-%    
+%
 % SPECIAL REQUIREMENTS
 %    None
 
-% main 
+% main
 %
 % Copyright (C) 2010-2017 Dynare Team
 %
@@ -67,7 +67,7 @@ else
     if options_.diffuse_filter==1 %warning if estimation with diffuse filter was done, but not passed
         warning('IDENTIFICATION:: Previously the diffuse_filter option was used, but it was not passed to the identification command. This may result in problems if your model contains unit roots.')
     end
-    if isfield(options_ident,'lik_init') 
+    if isfield(options_ident,'lik_init')
         options_.lik_init=options_ident.lik_init; %make options_ inherit lik_init
         if options_ident.lik_init==3 %user specified diffuse filter using the lik_init option
             options_ident.analytic_derivation=0; %diffuse filter not compatible with analytic derivation
@@ -195,7 +195,7 @@ if prior_exist
     end
     name=cell(nparam,1);
     name_tex=cell(nparam,1);
-    for jj=1:nparam        
+    for jj=1:nparam
         if options_.TeX
             [param_name_temp, param_name_tex_temp]= get_the_name(jj,options_.TeX,M_,estim_params_,options_);
             name_tex{jj,1} = strrep(param_name_tex_temp,'$','');
@@ -245,18 +245,18 @@ store_options_ident = options_ident;
 if iload <=0
     [I,J]=find(M_.lead_lag_incidence');
     if prior_exist
-%         if exist([fname_,'_mean.mat'],'file'),
-% %             disp('Testing posterior mean')
-%             load([fname_,'_mean'],'xparam1')
-%             pmean = xparam1';
-%             clear xparam1
-%         end
-%         if exist([fname_,'_mode.mat'],'file'),
-% %             disp('Testing posterior mode')
-%             load([fname_,'_mode'],'xparam1')
-%             pmode = xparam1';
-%             clear xparam1
-%         end
+        %         if exist([fname_,'_mean.mat'],'file'),
+        % %             disp('Testing posterior mean')
+        %             load([fname_,'_mean'],'xparam1')
+        %             pmean = xparam1';
+        %             clear xparam1
+        %         end
+        %         if exist([fname_,'_mode.mat'],'file'),
+        % %             disp('Testing posterior mode')
+        %             load([fname_,'_mode'],'xparam1')
+        %             pmode = xparam1';
+        %             clear xparam1
+        %         end
         params = set_prior(estim_params_,M_,options_)';
         if all(bayestopt_.pshape == 0)
             parameters = 'ML_Starting_value';
@@ -264,38 +264,38 @@ if iload <=0
             disp('Testing ML Starting value')
         else
             switch parameters
-                case 'calibration'
-                    parameters_TeX = 'Calibration';
-                    disp('Testing calibration')
-                    params(1,:) = get_all_parameters(estim_params_,M_);
-                case 'posterior_mode'
-                    parameters_TeX = 'Posterior mode';
-                    disp('Testing posterior mode')
-                    params(1,:) = get_posterior_parameters('mode');
-                case 'posterior_mean'
-                    parameters_TeX = 'Posterior mean';
-                    disp('Testing posterior mean')
-                    params(1,:) = get_posterior_parameters('mean');
-                case 'posterior_median'
-                    parameters_TeX = 'Posterior median';
-                    disp('Testing posterior median')
-                    params(1,:) = get_posterior_parameters('median');
-                case 'prior_mode'
-                    parameters_TeX = 'Prior mode';
-                    disp('Testing prior mode')
-                    params(1,:) = bayestopt_.p5(:);
-                case 'prior_mean'
-                    parameters_TeX = 'Prior mean';                    
-                    disp('Testing prior mean')
-                    params(1,:) = bayestopt_.p1;
-                otherwise
-                    disp('The option parameter_set has to be equal to:')
-                    disp('                   ''posterior_mode'', ')
-                    disp('                   ''posterior_mean'', ')
-                    disp('                   ''posterior_median'', ')
-                    disp('                   ''prior_mode'' or')
-                    disp('                   ''prior_mean''.')
-                    error;
+              case 'calibration'
+                parameters_TeX = 'Calibration';
+                disp('Testing calibration')
+                params(1,:) = get_all_parameters(estim_params_,M_);
+              case 'posterior_mode'
+                parameters_TeX = 'Posterior mode';
+                disp('Testing posterior mode')
+                params(1,:) = get_posterior_parameters('mode');
+              case 'posterior_mean'
+                parameters_TeX = 'Posterior mean';
+                disp('Testing posterior mean')
+                params(1,:) = get_posterior_parameters('mean');
+              case 'posterior_median'
+                parameters_TeX = 'Posterior median';
+                disp('Testing posterior median')
+                params(1,:) = get_posterior_parameters('median');
+              case 'prior_mode'
+                parameters_TeX = 'Prior mode';
+                disp('Testing prior mode')
+                params(1,:) = bayestopt_.p5(:);
+              case 'prior_mean'
+                parameters_TeX = 'Prior mean';
+                disp('Testing prior mean')
+                params(1,:) = bayestopt_.p1;
+              otherwise
+                disp('The option parameter_set has to be equal to:')
+                disp('                   ''posterior_mode'', ')
+                disp('                   ''posterior_mean'', ')
+                disp('                   ''posterior_median'', ')
+                disp('                   ''prior_mode'' or')
+                disp('                   ''prior_mean''.')
+                error;
             end
         end
     else
@@ -313,31 +313,31 @@ if iload <=0
         disp(['The model does not solve for ', parameters, ' with error code info = ', int2str(info(1))]),
         skipline()
         if info(1)==1
-        disp('info==1 %! The model doesn''t determine the current variables uniquely.')
+            disp('info==1 %! The model doesn''t determine the current variables uniquely.')
         elseif info(1)==2
-        disp('info==2 %! MJDGGES returned an error code.')
+            disp('info==2 %! MJDGGES returned an error code.')
         elseif info(1)==3
-        disp('info==3 %! Blanchard & Kahn conditions are not satisfied: no stable equilibrium. ')
+            disp('info==3 %! Blanchard & Kahn conditions are not satisfied: no stable equilibrium. ')
         elseif info(1)==4
-        disp('info==4 %! Blanchard & Kahn conditions are not satisfied: indeterminacy. ')
+            disp('info==4 %! Blanchard & Kahn conditions are not satisfied: indeterminacy. ')
         elseif info(1)==5
-        disp('info==5 %! Blanchard & Kahn conditions are not satisfied: indeterminacy due to rank failure. ')
+            disp('info==5 %! Blanchard & Kahn conditions are not satisfied: indeterminacy due to rank failure. ')
         elseif info(1)==6
-        disp('info==6 %! The jacobian evaluated at the deterministic steady state is complex.')
+            disp('info==6 %! The jacobian evaluated at the deterministic steady state is complex.')
         elseif info(1)==19
-        disp('info==19 %! The steadystate routine thrown an exception (inconsistent deep parameters). ')
+            disp('info==19 %! The steadystate routine thrown an exception (inconsistent deep parameters). ')
         elseif info(1)==20
-        disp('info==20 %! Cannot find the steady state, info(2) contains the sum of square residuals (of the static equations). ')
+            disp('info==20 %! Cannot find the steady state, info(2) contains the sum of square residuals (of the static equations). ')
         elseif info(1)==21
-        disp('info==21 %! The steady state is complex, info(2) contains the sum of square of imaginary parts of the steady state.')
+            disp('info==21 %! The steady state is complex, info(2) contains the sum of square of imaginary parts of the steady state.')
         elseif info(1)==22
-        disp('info==22 %! The steady has NaNs. ')
+            disp('info==22 %! The steady has NaNs. ')
         elseif info(1)==23
-        disp('info==23 %! M_.params has been updated in the steadystate routine and has complex valued scalars. ')
+            disp('info==23 %! M_.params has been updated in the steadystate routine and has complex valued scalars. ')
         elseif info(1)==24
-        disp('info==24 %! M_.params has been updated in the steadystate routine and has some NaNs. ')
+            disp('info==24 %! M_.params has been updated in the steadystate routine and has some NaNs. ')
         elseif info(1)==30
-        disp('info==30 %! Ergodic variance can''t be computed. ')
+            disp('info==30 %! Ergodic variance can''t be computed. ')
         end
         disp('----------- ')
         skipline()
@@ -367,12 +367,12 @@ if iload <=0
         end
     end
     idehess_point.params=params;
-%     siH = idemodel_point.siH;
-%     siJ = idemoments_point.siJ;
-%     siLRE = idelre_point.siLRE;
-%     normH = max(abs(siH)')';
-%     normJ = max(abs(siJ)')';
-%     normLRE = max(abs(siLRE)')';
+    %     siH = idemodel_point.siH;
+    %     siJ = idemoments_point.siJ;
+    %     siLRE = idelre_point.siLRE;
+    %     normH = max(abs(siH)')';
+    %     normJ = max(abs(siJ)')';
+    %     normLRE = max(abs(siLRE)')';
     save([IdentifDirectoryName '/' M_.fname '_identif.mat'], 'idehess_point', 'idemoments_point','idemodel_point', 'idelre_point','store_options_ident')
     save([IdentifDirectoryName '/' M_.fname '_' parameters '_identif.mat'], 'idehess_point', 'idemoments_point','idemodel_point', 'idelre_point','store_options_ident')
     disp_identification(params, idemodel_point, idemoments_point, name, advanced);
@@ -476,21 +476,21 @@ if iload <=0
                 stoH = zeros(size(stoH));
                 stoJJ = zeros(size(stoJJ));
                 stoLRE = zeros(size(stoLRE));
-                
+
             end
-            
+
             if SampleSize > 1
-%                 if isoctave || options_.console_mode,
-%                     console_waitbar(0,iteration/SampleSize);
-%                 else
-                    dyn_waitbar(iteration/SampleSize,h,['MC identification checks ',int2str(iteration),'/',int2str(SampleSize)])
-%                 end
+                %                 if isoctave || options_.console_mode,
+                %                     console_waitbar(0,iteration/SampleSize);
+                %                 else
+                dyn_waitbar(iteration/SampleSize,h,['MC identification checks ',int2str(iteration),'/',int2str(SampleSize)])
+                %                 end
             end
         end
-        
+
     end
-    
-    
+
+
     if SampleSize > 1
         if isoctave || options_.console_mode
             fprintf('\n');
@@ -511,28 +511,28 @@ if iload <=0
                 siHnorm(iter,:) = vnorm(stoH(:,:,irun)./repmat(normTAU,1,nparam)).*normaliz1;
                 siLREnorm(iter,:) = vnorm(stoLRE(:,:,irun)./repmat(normLRE,1,nparam-offset)).*normaliz1(offset+1:end);
             end
-            
+
         end
         idemoments.siJnorm = siJnorm;
         idemodel.siHnorm = siHnorm;
         idelre.siLREnorm = siLREnorm;
         save([IdentifDirectoryName '/' M_.fname '_identif.mat'], 'pdraws', 'idemodel', 'idemoments', 'idelre', ... %'indJJ', 'indH', 'indLRE', ...
-            'TAU', 'GAM', 'LRE','-append')
+             'TAU', 'GAM', 'LRE','-append')
     else
         siJnorm = idemoments_point.siJnorm;
         siHnorm = idemodel_point.siHnorm;
         siLREnorm = idelre_point.siLREnorm;
     end
-    
+
 else
     load([IdentifDirectoryName '/' M_.fname '_identif'])
-%     identFiles = dir([IdentifDirectoryName '/' M_.fname '_identif_*']);
+    %     identFiles = dir([IdentifDirectoryName '/' M_.fname '_identif_*']);
     parameters = store_options_ident.parameter_set;
     options_ident.parameter_set = parameters;
     options_ident.prior_mc=size(pdraws,1);
     SampleSize = options_ident.prior_mc;
     options_.options_ident = options_ident;
-end  
+end
 
 if nargout>3 && iload
     filnam = dir([IdentifDirectoryName '/' M_.fname '_identif_*.mat']);
@@ -544,7 +544,7 @@ if nargout>3 && iload
         H = cat(3,H, stoH(:,abs(iload),:));
         JJ = cat(3,JJ, stoJJ(:,abs(iload),:));
         gp = cat(3,gp, stoLRE(:,abs(iload),:));
-        
+
     end
 end
 

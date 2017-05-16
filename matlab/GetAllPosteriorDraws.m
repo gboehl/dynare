@@ -5,14 +5,14 @@ function Draws = GetAllPosteriorDraws(column, FirstMhFile, FirstLine, TotalNumbe
 %
 % INPUTS
 %    column:               column
-%    FirstMhFile:          first mh file 
+%    FirstMhFile:          first mh file
 %    FirstLine:            first line
-%    TotalNumberOfMhFile:  total number of mh file 
+%    TotalNumberOfMhFile:  total number of mh file
 %    NumberOfDraws:        number of draws
 
 % OUTPUTS
 %    Draws:                draws from posterior distribution
-%        
+%
 % SPECIAL REQUIREMENTS
 %    none
 
@@ -55,7 +55,7 @@ if nblck>1 && nargin<6
                 iline = 1;
             end
         end
-    else 
+    else
         for blck = 1:nblck
             iline=iline0;
             for file = FirstMhFile:TotalNumberOfMhFile

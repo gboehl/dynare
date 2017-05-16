@@ -132,7 +132,7 @@ else
     DLIK  = zeros(k,1);                             % Initialization of the score.
     Da    = zeros(mm,k);                            % Derivative State vector.
     dlikk = zeros(smpl,k);
-    
+
     if Zflag==0
         C = zeros(pp,mm);
         for ii=1:pp, C(ii,Z(ii))=1; end         % SELECTION MATRIX IN MEASUREMENT EQ. (FOR WHEN IT IS NOT CONSTANT)
@@ -237,7 +237,7 @@ if analytic_derivation
     dlikk = dlikk/2;
     if analytic_derivation==2 || asy_hess
         if asy_hess==0
-        Hess = Hess + tril(Hess,-1)';
+            Hess = Hess + tril(Hess,-1)';
         end
         Hess = -Hess/2;
     end

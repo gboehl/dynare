@@ -5,7 +5,7 @@ function update_last_mh_history_file(MetropolisFolder, ModelName, record)
 %   MetropolisFolder    [char]      Name of the metropolis subfolder
 %   ModelName           [char]      Name of the mod-file
 %   record              [structure] structure storing the MH history
-% Outputs:  none 
+% Outputs:  none
 
 % Copyright (C) 2013-2015 Dynare Team
 %

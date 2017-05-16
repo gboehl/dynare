@@ -1,6 +1,6 @@
 function [zdata, oobase_, Mbase_ ] = ...
     solve_no_constraint_noclear(modnam,...
-    shockssequence,irfshock,nperiods)
+                                shockssequence,irfshock,nperiods)
 
 global M_ oo_
 
@@ -14,11 +14,11 @@ Mbase_ = M_;
 ys_ = oobase_.dr.ys;
 
 for i=1:Mbase_.endo_nbr
-  eval([deblank(Mbase_.endo_names(i,:)) '_ss = oo_.dr.ys(i); ']);
+    eval([deblank(Mbase_.endo_names(i,:)) '_ss = oo_.dr.ys(i); ']);
 end
 
 for i = 1:size(Mbase_.param_names)
-  eval([Mbase_.param_names(i,:),'= M_.params(i);']);
+    eval([Mbase_.param_names(i,:),'= M_.params(i);']);
 end
 
 setss
@@ -45,4 +45,3 @@ nwishes = size(wishlist,1);
 
 
 zdata = mkdata(nperiods,decrulea,decruleb,endog_,exog_,wishlist,irfshock,shockssequence);
-

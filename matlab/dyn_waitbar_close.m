@@ -1,6 +1,6 @@
 function dyn_waitbar_close(h)
 % h = dyn_waitbar_close(h)
-% adaptive close waitbar, compatible with 
+% adaptive close waitbar, compatible with
 % octave and when console_mode=1
 
 %
@@ -31,5 +31,3 @@ else
 end
 
 clear dyn_waitbar;
-
-

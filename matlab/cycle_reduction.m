@@ -76,7 +76,7 @@ id0 = 1:n;
 id2 = id0+n;
 
 cont = 1;
-while cont 
+while cont
     tmp = ([A0; A2]/A1)*[A0 A2];
     A1 = A1 - tmp(id0,id2) - tmp(id2,id0);
     A0 = -tmp(id0,id0);
@@ -97,7 +97,7 @@ while cont
             info(2) = log(norm(A1,1));
         end
         return
-    end        
+    end
     it = it + 1;
 end
 

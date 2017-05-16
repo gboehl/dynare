@@ -2,14 +2,14 @@ function [ldens,parameters] = evaluate_prior(parameters)
 % Evaluate the prior density at parameters.
 %
 % INPUTS
-%    o parameters  a string ('posterior mode','posterior mean','posterior median','prior mode','prior mean') or a vector of values for 
+%    o parameters  a string ('posterior mode','posterior mean','posterior median','prior mode','prior mean') or a vector of values for
 %                  the (estimated) parameters of the model.
-%    
-%    
+%
+%
 % OUTPUTS
 %    o ldens       [double]  value of the logged prior density.
 %    o parameters  [double]  vector of values for the estimated parameters.
-%    
+%
 % SPECIAL REQUIREMENTS
 %    None
 %

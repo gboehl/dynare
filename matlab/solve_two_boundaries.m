@@ -1,6 +1,6 @@
 function [y, oo]= solve_two_boundaries(fname, y, x, params, steady_state, y_index, nze, periods, y_kmin_l, y_kmax_l, is_linear, Block_Num, y_kmin, maxit_, solve_tolf, lambda, cutoff, stack_solve_algo,options,M, oo)
 % Computes the deterministic simulation of a block of equation containing
-% both lead and lag variables using relaxation methods 
+% both lead and lag variables using relaxation methods
 %
 % INPUTS
 %   fname               [string]        name of the file containing the block
@@ -27,7 +27,7 @@ function [y, oo]= solve_two_boundaries(fname, y, x, params, steady_state, y_inde
 %   cutoff              [double]        cutoff to correct the direction in Newton in case
 %                                       of singular jacobian matrix
 %   stack_solve_algo    [integer]       linear solver method used in the
-%                                       Newton algorithm : 
+%                                       Newton algorithm :
 %                                            - 1 sprse LU
 %                                            - 2 GMRES
 %                                            - 3 BicGStab
@@ -36,15 +36,15 @@ function [y, oo]= solve_two_boundaries(fname, y, x, params, steady_state, y_inde
 %   oo                  [structure]     Results
 %
 % OUTPUTS
-%   y                   [matrix]        All endogenous variables of the model      
+%   y                   [matrix]        All endogenous variables of the model
 %   oo                  [structure]     Results
 %
 % ALGORITHM
 %   Newton with LU or GMRES or BicGstab
-%    
+%
 % SPECIAL REQUIREMENTS
 %   none.
-%  
+%
 
 % Copyright (C) 1996-2017 Dynare Team
 %

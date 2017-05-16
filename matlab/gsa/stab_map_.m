@@ -32,7 +32,7 @@ function x0 = stab_map_(OutputDirectoryName,opt_gsa)
 %
 % Written by Marco Ratto
 % Joint Research Centre, The European Commission,
-% marco.ratto@ec.europa.eu 
+% marco.ratto@ec.europa.eu
 
 % Copyright (C) 2012-2016 European Commission
 % Copyright (C) 2012-2016 Dynare Team
@@ -99,8 +99,8 @@ if ~isempty(bayestopt_) && any(bayestopt_.pshape > 0)
     bounds.lb = max(bounds.lb,lb);
     bounds.ub = min(bounds.ub,ub);
 else  % estimated parameters but no declared priors
-    % No priors are declared so Dynare will estimate the model by
-    % maximum likelihood with inequality constraints for the parameters.
+      % No priors are declared so Dynare will estimate the model by
+      % maximum likelihood with inequality constraints for the parameters.
     bounds.lb = lb;
     bounds.ub = ub;
     if opt_gsa.prior_range==0
@@ -119,7 +119,7 @@ options_mcf.alpha2 = alpha2;
 
 name=cell(np,1);
 name_tex=cell(np,1);
-for jj=1:np        
+for jj=1:np
     if options_.TeX
         [param_name_temp, param_name_tex_temp]= get_the_name(nshock+jj,options_.TeX,M_,estim_params_,options_);
         name_tex{jj,1} = strrep(param_name_tex_temp,'$','');
@@ -159,9 +159,9 @@ if fload==0
         Nsam=size(lpmat,1);
         lpmat0 = lpmat(:,1:nshock);
         lpmat = lpmat(:,nshock+1:end);
-%     elseif opt_gsa.morris==3,
-%         lpmat = prep_ide(Nsam,np,5);
-%         Nsam=size(lpmat,1);
+        %     elseif opt_gsa.morris==3,
+        %         lpmat = prep_ide(Nsam,np,5);
+        %         Nsam=size(lpmat,1);
     else
         if np<52 && ilptau>0
             [lpmat] = qmc_sequence(np, int64(1), 0, Nsam)';
@@ -180,14 +180,14 @@ if fload==0
     end
     %   try
     dummy=prior_draw_gsa(1); %initialize persistent variables
-    %   catch
-    %     if pprior,
-    %       if opt_gsa.prior_range==0;
-    %         error('Some unknown prior is specified or ML estimation,: use prior_range=1 option!!');
-    %       end
-    %     end
-    %
-    %   end
+                             %   catch
+                             %     if pprior,
+                             %       if opt_gsa.prior_range==0;
+                             %         error('Some unknown prior is specified or ML estimation,: use prior_range=1 option!!');
+                             %       end
+                             %     end
+                             %
+                             %   end
     if pprior
         for j=1:nshock
             if opt_gsa.morris~=1
@@ -257,12 +257,12 @@ if fload==0
         if neighborhood_width>0 && isempty(options_.mode_file)
             xparam1 = get_all_parameters(estim_params_,M_);
         else
-        eval(['load ' options_.mode_file '.mat;']);
+            eval(['load ' options_.mode_file '.mat;']);
         end
         if neighborhood_width>0
             for j=1:nshock
                 if opt_gsa.morris ~= 1
-                   lpmat0(:,j) = randperm(Nsam)'./(Nsam+1); %latin hypercube
+                    lpmat0(:,j) = randperm(Nsam)'./(Nsam+1); %latin hypercube
                 end
                 ub=min([bounds.ub(j) xparam1(j)*(1+neighborhood_width)]);
                 lb=max([bounds.lb(j) xparam1(j)*(1-neighborhood_width)]);
@@ -335,7 +335,7 @@ if fload==0
                 egg=zeros(length(dr_.eigval),Nsam);
             end
             if infox(j,1)
-%                 disp('no solution'),
+                %                 disp('no solution'),
                 if isfield(oo_.dr,'ghx')
                     oo_.dr=rmfield(oo_.dr,'ghx');
                 end
@@ -457,23 +457,23 @@ if fload==0
     if pprior
         if ~prepSA
             save([OutputDirectoryName filesep fname_ '_prior.mat'], ...
-                'bkpprior','lpmat','lpmat0','irestriction','iunstable','istable','iindeterm','iwrong','ixun', ...
-                'egg','yys','nspred','nboth','nfwrd','infox')
+                 'bkpprior','lpmat','lpmat0','irestriction','iunstable','istable','iindeterm','iwrong','ixun', ...
+                 'egg','yys','nspred','nboth','nfwrd','infox')
         else
             save([OutputDirectoryName filesep fname_ '_prior.mat'], ...
-                'bkpprior','lpmat','lpmat0','irestriction','iunstable','istable','iindeterm','iwrong','ixun', ...
-                'egg','yys','T','nspred','nboth','nfwrd','infox')
+                 'bkpprior','lpmat','lpmat0','irestriction','iunstable','istable','iindeterm','iwrong','ixun', ...
+                 'egg','yys','T','nspred','nboth','nfwrd','infox')
         end
 
     else
         if ~prepSA
             save([OutputDirectoryName filesep fname_ '_mc.mat'], ...
-                'lpmat','lpmat0','irestriction','iunstable','istable','iindeterm','iwrong','ixun', ...
-                'egg','yys','nspred','nboth','nfwrd','infox')
+                 'lpmat','lpmat0','irestriction','iunstable','istable','iindeterm','iwrong','ixun', ...
+                 'egg','yys','nspred','nboth','nfwrd','infox')
         else
             save([OutputDirectoryName filesep fname_ '_mc.mat'], ...
-                'lpmat','lpmat0','irestriction','iunstable','istable','iindeterm','iwrong','ixun', ...
-                'egg','yys','T','nspred','nboth','nfwrd','infox')
+                 'lpmat','lpmat0','irestriction','iunstable','istable','iindeterm','iwrong','ixun', ...
+                 'egg','yys','T','nspred','nboth','nfwrd','infox')
         end
     end
 else
@@ -601,7 +601,7 @@ if length(iunstable)>0 || length(iwrong)>0
     if length(iunstable)<Nsam || length(istable)>1
         itot = [1:Nsam];
         isolve = itot(find(~ismember(itot,iwrong))); % dynare could find a solution
-        % Blanchard Kahn
+                                                     % Blanchard Kahn
         if neighborhood_width
             options_mcf.xparam1 = xparam1(nshock+1:end);
         end
@@ -622,7 +622,7 @@ if length(iunstable)>0 || length(iwrong)>0
             options_mcf.title = 'indeterminacy';
             mcf_analysis(lpmat, itmp, iindeterm, options_mcf, options_);
         end
-        
+
         if ~isempty(ixun)
             itmp = isolve(find(~ismember(isolve,ixun)));
             options_mcf.amcf_name = aunstname;
@@ -632,7 +632,7 @@ if length(iunstable)>0 || length(iwrong)>0
             options_mcf.title = 'instability';
             mcf_analysis(lpmat, itmp, ixun, options_mcf, options_);
         end
-        
+
         inorestriction = istable(find(~ismember(istable,irestriction))); % violation of prior restrictions
         iwrong = iwrong(find(~ismember(iwrong,inorestriction))); % what went wrong beyond prior restrictions
         if ~isempty(iwrong)
@@ -644,7 +644,7 @@ if length(iunstable)>0 || length(iwrong)>0
             options_mcf.title = 'inability to find a solution';
             mcf_analysis(lpmat, itmp, iwrong, options_mcf, options_);
         end
-        
+
         if ~isempty(irestriction)
             if neighborhood_width
                 options_mcf.xparam1 = xparam1;
@@ -679,7 +679,7 @@ if length(iunstable)>0 || length(iwrong)>0
             x0=0.5.*(bounds.ub(1:nshock)-bounds.lb(1:nshock))+bounds.lb(1:nshock);
             x0 = [x0; lpmat(iok,:)'];
         end
-        
+
         M_ = set_all_parameters(x0,estim_params_,M_);
         [oo_.dr,info,M_,options_,oo_] = resol(0,M_,options_,oo_);
         %     stoch_simul([]);
@@ -704,7 +704,3 @@ if isfield(opt,'nomoments')
 end
 options_.irf=opt.irf;
 options_.noprint=opt.noprint;
-
-
-
-

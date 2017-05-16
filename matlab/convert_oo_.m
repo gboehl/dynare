@@ -81,5 +81,5 @@ else
 end
 
 eval(['oo_ = convert_dyn_' strrep(new_from_ver, '.', '') '_to_' ...
-                           strrep(to_ver, '.', '') '(M_, options_, oo_);']);
+      strrep(to_ver, '.', '') '(M_, options_, oo_);']);
 end

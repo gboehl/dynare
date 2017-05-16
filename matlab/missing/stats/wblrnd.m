@@ -1,11 +1,11 @@
 function rnd = wblrnd(a, b)
 % This function produces independent random variates from the Weibull distribution.
 %
-%  INPUTS 
+%  INPUTS
 %    a       [double]    m*n matrix of positive parameters (scale).
 %    b       [double]    m*n matrix of positive parameters (shape).
 %
-%  OUTPUT 
+%  OUTPUT
 %    rnd     [double]    m*n matrix of independent variates from the beta(a,b) distribution.
 
 % Copyright (C) 2015 Dynare Team

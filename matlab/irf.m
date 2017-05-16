@@ -2,7 +2,7 @@ function y = irf(dr, e1, long, drop, replic, iorder)
 
 % function y = irf(dr, e1, long, drop, replic, iorder)
 % Computes impulse response functions
-% 
+%
 % INPUTS
 %    dr:     structure of decisions rules for stochastic simulations
 %    e1:     exogenous variables value in time 1 after one shock
@@ -13,7 +13,7 @@ function y = irf(dr, e1, long, drop, replic, iorder)
 %
 % OUTPUTS
 %    y:      impulse response matrix
-%        
+%
 % SPECIAL REQUIREMENTS
 %    none
 
@@ -60,7 +60,7 @@ else
     for j = 1: replic
         ex1(:,i_exo_var) = randn(long+drop,nxs)*chol_S;
         ex2 = ex1;
-        ex2(drop+1,:) = ex2(drop+1,:)+e1';   
+        ex2(drop+1,:) = ex2(drop+1,:)+e1';
         y1 = simult_(temps,dr,ex1,iorder);
         y2 = simult_(temps,dr,ex2,iorder);
         y = y+(y2(:,M_.maximum_lag+drop+1:end)-y1(:,M_.maximum_lag+drop+1:end));

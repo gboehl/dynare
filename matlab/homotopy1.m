@@ -90,7 +90,7 @@ for i=1:step_nbr+1
         % if homotopy step is not successful, current values of steady
         % state are not modified
         oo.steady_state = steady_state;
-    else 
+    else
         M.params = old_params;
         oo.exo_steady_state = old_exo;
         oo.exo_det_steady_state = old_exo_det;

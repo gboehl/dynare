@@ -11,7 +11,7 @@ function [y, meany, stdy] = stand_(x)
 %
 % Written by Marco Ratto
 % Joint Research Centre, The European Commission,
-% marco.ratto@ec.europa.eu 
+% marco.ratto@ec.europa.eu
 
 % Copyright (C) 2012 European Commission
 % Copyright (C) 2012 Dynare Team%
@@ -35,8 +35,8 @@ if nargin==0
 end
 
 for j=1:size(x,2)
-meany(j)=mean(x(find(~isnan(x(:,j))),j));
-stdy(j)=std(x(find(~isnan(x(:,j))),j));
+    meany(j)=mean(x(find(~isnan(x(:,j))),j));
+    stdy(j)=std(x(find(~isnan(x(:,j))),j));
     y(:,j)=(x(:,j)-meany(j))./stdy(j);
 end
 % end of m-file

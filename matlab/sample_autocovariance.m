@@ -1,14 +1,14 @@
 function [autocov,autocor] = sample_autocovariance(data,q)
 % Computes the autocovariance function associated to a time series.
-% 
 %
-% INPUTS 
+%
+% INPUTS
 %
 %   data            [double]       T*1 vector of data.
-%   q               [integer]      Order of the autocovariance function. 
-%    
-% OUTPUTS 
-%   autocov         [double]       (q+1)*1 vector, autocovariance function (first scalar is the variance).  
+%   q               [integer]      Order of the autocovariance function.
+%
+% OUTPUTS
+%   autocov         [double]       (q+1)*1 vector, autocovariance function (first scalar is the variance).
 %   autocor         [double]       (q+1)*1 vector, autocorrelation function (first scalar is equal to one).
 %
 % SPECIAL REQUIREMENTS

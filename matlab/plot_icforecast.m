@@ -1,12 +1,12 @@
 function plot_icforecast(Variables,periods,options_)
 % Build plots for the conditional forecasts.
 %
-% INPUTS 
-%  o Variables     [char]        m*x array holding the names of the endogenous variables to be plotted. 
+% INPUTS
+%  o Variables     [char]        m*x array holding the names of the endogenous variables to be plotted.
 %
 % OUTPUTS
 %  None.
-% 
+%
 % SPECIAL REQUIREMENTS
 %  This routine has to be called after imcforecast.m.
 

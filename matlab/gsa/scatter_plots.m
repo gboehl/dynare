@@ -56,25 +56,25 @@ if nargin<5 || isempty(fnam)
     fnam='scatter_plot';
 end
 if nargin<6 || isempty(dirname)
-  dirname='';
-  nograph=1;
-  DynareOptions.nodisplay=0;
+    dirname='';
+    nograph=1;
+    DynareOptions.nodisplay=0;
 else
-  nograph=0;    
+    nograph=0;
 end
 if nargin<7 || isempty(figtitle)
-  figtitle=fnam;
+    figtitle=fnam;
 end
 if nargin<8
-  xparam1=[];
+    xparam1=[];
 end
 
 figtitle_tex=strrep(figtitle,'_','\_');
 
 fig_nam_=[fnam];
 
-    hh=dyn_figure(DynareOptions.nodisplay,'name',figtitle);
-    set(hh,'userdata',{X,xp})
+hh=dyn_figure(DynareOptions.nodisplay,'name',figtitle);
+set(hh,'userdata',{X,xp})
 
 bf = 0.1;
 ffs = 0.05/(p-1);
@@ -111,7 +111,7 @@ for i = 1:p
 
             %%
             if ~isoctave
-            % Define a context menu; it is not attached to anything
+                % Define a context menu; it is not attached to anything
                 hcmenu = uicontextmenu('Callback','pick','Tag','Run viewer');
                 % Define callbacks for context menu
                 % items that change linestyle
@@ -150,7 +150,7 @@ for i = 1:p
         if i==1
             if nflag == 1
                 ylabel(vnames(j,:),'Rotation',45,'interpreter','none', ...
-                    'HorizontalAlignment','right','VerticalAlignment','middle');
+                       'HorizontalAlignment','right','VerticalAlignment','middle');
             else
                 ylabel([num2str(j),' '],'Rotation',90)
             end
@@ -158,7 +158,7 @@ for i = 1:p
         if j==1
             if nflag == 1
                 title(vnames(i,:),'interpreter','none','Rotation',45, ...
-                    'HorizontalAlignment','left','VerticalAlignment','bottom')
+                      'HorizontalAlignment','left','VerticalAlignment','bottom')
             else
                 title(num2str(i))
             end

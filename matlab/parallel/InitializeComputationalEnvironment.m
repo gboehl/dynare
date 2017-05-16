@@ -37,7 +37,7 @@ function InitializeComputationalEnvironment()
 % Comment the line 'warning('off');' in order to view the warning message
 % in Octave!
 
-if isoctave 
+if isoctave
     warning('off');
 end
 

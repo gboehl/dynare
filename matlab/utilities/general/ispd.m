@@ -44,7 +44,7 @@ function [test, penalty] = ispd(A)
 if ~isquare(A)
     error(['ispd:: Input argument ' inputname(1) ' has to be a square matrix!'])
 end
-    
+
 [cholA, info] = chol(A);
 test = ~info;
 

@@ -1,5 +1,5 @@
 function mexpath = add_path_to_mex_files(dynareroot, modifypath)
-    
+
 % Copyright (C) 2015-2017 Dynare Team
 %
 % This file is part of Dynare.
@@ -20,7 +20,7 @@ function mexpath = add_path_to_mex_files(dynareroot, modifypath)
 if nargin<2
     modifypath = true;
 end
-    
+
 if exist('OCTAVE_VERSION')
     if ispc() && strcmpi(computer(), 'i686-w64-mingw32')
         mexpath = {[dynareroot '../mex/octave32/']};

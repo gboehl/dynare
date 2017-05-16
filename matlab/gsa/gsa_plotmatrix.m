@@ -1,10 +1,10 @@
 function gsa_plotmatrix(type,varargin)
 % function gsa_plotmatrix(type,varargin)
-% extended version of the standard MATLAB plotmatrix 
+% extended version of the standard MATLAB plotmatrix
 %
 % Written by Marco Ratto
 % Joint Research Centre, The European Commission,
-% marco.ratto@ec.europa.eu 
+% marco.ratto@ec.europa.eu
 
 % Copyright (C) 2011-2012 European Commission
 % Copyright (C) 2011-2012 Dynare Team
@@ -38,31 +38,31 @@ end
 iexplosive = iunstable(~ismember(iunstable,[iindeterm;iwrong]));
 
 switch type
-    case 'all'
-        x=[lpmat0 lpmat];
-        NumberOfDraws=size(x,1);
-        B=NumberOfDraws;
-    case 'stable'
-        x=[lpmat0(istable,:) lpmat(istable,:)];
-        NumberOfDraws=size(x,1);
-        B=NumberOfDraws;
-    case 'nosolution'
-        x=[lpmat0(iunstable,:) lpmat(iunstable,:)];
-        NumberOfDraws=size(x,1);
-        B=NumberOfDraws;
-    case 'unstable'
-        x=[lpmat0(iexplosive,:) lpmat(iexplosive,:)];
-        NumberOfDraws=size(x,1);
-        B=NumberOfDraws;
-    case 'indeterm'
-        x=[lpmat0(iindeterm,:) lpmat(iindeterm,:)];
-        NumberOfDraws=size(x,1);
-        B=NumberOfDraws;
-    case 'wrong'
-        x=[lpmat0(iwrong,:) lpmat(iwrong,:)];
-        NumberOfDraws=size(x,1);
-        B=NumberOfDraws;
-        
+  case 'all'
+    x=[lpmat0 lpmat];
+    NumberOfDraws=size(x,1);
+    B=NumberOfDraws;
+  case 'stable'
+    x=[lpmat0(istable,:) lpmat(istable,:)];
+    NumberOfDraws=size(x,1);
+    B=NumberOfDraws;
+  case 'nosolution'
+    x=[lpmat0(iunstable,:) lpmat(iunstable,:)];
+    NumberOfDraws=size(x,1);
+    B=NumberOfDraws;
+  case 'unstable'
+    x=[lpmat0(iexplosive,:) lpmat(iexplosive,:)];
+    NumberOfDraws=size(x,1);
+    B=NumberOfDraws;
+  case 'indeterm'
+    x=[lpmat0(iindeterm,:) lpmat(iindeterm,:)];
+    NumberOfDraws=size(x,1);
+    B=NumberOfDraws;
+  case 'wrong'
+    x=[lpmat0(iwrong,:) lpmat(iwrong,:)];
+    NumberOfDraws=size(x,1);
+    B=NumberOfDraws;
+
 end
 
 if isempty(x)

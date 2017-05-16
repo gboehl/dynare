@@ -10,7 +10,7 @@ function closeSlave(Parallel,TmpFolder,partial)
 %                               This directory is named using current date
 %                               and is used only one time and then deleted.
 %                               If islocal==1, TmpFolder=''.
-% 
+%
 %
 % OUTPUTS
 %   None
@@ -45,7 +45,7 @@ if partial==1
             dynareParallelSendFiles('slaveParallel_break.mat',TmpFolder,Parallel(indPC));
         end
     end
-%     delete('slaveParallel_break')
+    %     delete('slaveParallel_break')
     return
 end
 if partial==-1
@@ -55,7 +55,7 @@ if partial==-1
             dynareParallelDelete( 'slaveParallel_break.mat',TmpFolder,Parallel(indPC));
         end
     end
-%     delete('slaveParallel_break')
+    %     delete('slaveParallel_break')
     return
 end
 
@@ -63,14 +63,14 @@ for indPC=1:length(Parallel)
     if (Parallel(indPC).Local==0)
         dynareParallelDelete( 'slaveParallel_input*.mat',TmpFolder,Parallel(indPC));
     end
-    
-   
+
+
     delete( 'slaveParallel_input*.mat');
     delete( 'slaveJob*.mat');
     pause(1)
     delete(['slaveParallel_*.log']);
     delete ConcurrentCommand1.bat;
-    
+
 end
 
 while(1)
@@ -81,7 +81,7 @@ while(1)
             end
         end
         break
-        
+
     end
 end
 

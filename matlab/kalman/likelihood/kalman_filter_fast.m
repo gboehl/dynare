@@ -152,7 +152,7 @@ while notsteady && t<=last
     end
     if rcond(F) < kalman_tol
         if ~all(abs(F(:))<kalman_tol)
-            % The univariate diffuse kalman filter should be used.            
+            % The univariate diffuse kalman filter should be used.
             return
         else
             %pathological case, discard draw
@@ -199,7 +199,7 @@ if analytic_derivation
     dlikk = dlikk/2;
     if analytic_derivation==2 || asy_hess
         if asy_hess==0
-        Hess = Hess + tril(Hess,-1)';
+            Hess = Hess + tril(Hess,-1)';
         end
         Hess = -Hess/2;
     end
@@ -210,10 +210,10 @@ if t <= last
     if analytic_derivation
         if analytic_derivation==2
             [tmp, tmp2] = kalman_filter_ss(Y,t,last,a,T,K,iF,dF,Z,pp,Zflag, ...
-                analytic_derivation,Da,DT,DYss,D2a,D2T,D2Yss);
+                                           analytic_derivation,Da,DT,DYss,D2a,D2T,D2Yss);
         else
             [tmp, tmp2] = kalman_filter_ss(Y,t,last,a,T,K,iF,dF,Z,pp,Zflag, ...
-                analytic_derivation,Da,DT,DYss,asy_hess);
+                                           analytic_derivation,Da,DT,DYss,asy_hess);
         end
         likk(s+1:end)=tmp2{1};
         dlikk(s+1:end,:)=tmp2{2};

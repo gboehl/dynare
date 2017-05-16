@@ -37,6 +37,3 @@ if rank(yhat)
 else
     co=0;
 end
-
-
-

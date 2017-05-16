@@ -1,6 +1,6 @@
 function storeGlobalVars(fname,append)
 % PARALLEL CONTEXT
-% In a parallel context, this function stores all global vars in structure 
+% In a parallel context, this function stores all global vars in structure
 % fGlobalVar and saves it in the file fname.mat
 %
 % INPUTS

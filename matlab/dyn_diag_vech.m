@@ -1,11 +1,11 @@
 function d = dyn_diag_vech(Vector)
 % This function returns the diagonal elements of a symmetric matrix
 % stored in vech form
-% 
-% INPUTS 
+%
+% INPUTS
 %   Vector             [double]   a m*1 vector.
-%    
-% OUTPUTS 
+%
+% OUTPUTS
 %   d                  [double]   a n*1 vector, where n solves n*(n+1)/2=m.
 
 % Copyright (C) 2010 Dynare Team

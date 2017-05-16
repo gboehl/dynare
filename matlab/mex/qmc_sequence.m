@@ -16,7 +16,7 @@
 %!  @sp 1
 %!  @table @ @samp
 %!  @item @var{t}=0
-%!  Uniform numbers in a n-dimensional (unit by default) hypercube 
+%!  Uniform numbers in a n-dimensional (unit by default) hypercube
 %!  @item @var{t}=1
 %!  Gaussian numbers
 %!  @item @var{t}=2
@@ -125,7 +125,7 @@
 %$
 %$ [draws1, S] = qmc_sequence(d,s,0,n,[0 , 2; -1, 2]);
 %$ [draws2, Q] = qmc_sequence(d,s,0,n);
-%$ 
+%$
 %$ draws3 = draws2;
 %$ draws3(1,:) = 2*draws2(1,:);
 %$ draws3(2,:) = 3*draws2(2,:)-1;

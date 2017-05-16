@@ -23,4 +23,3 @@ Files_info = dir(fname);
 if length(Files_info)>0
     delete(fname)
 end
-

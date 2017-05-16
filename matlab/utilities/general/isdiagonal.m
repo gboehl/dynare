@@ -60,5 +60,3 @@ end
 %$ t = isdiagonal(A);
 %$ T = all(t);
 %@eof:5
-
-

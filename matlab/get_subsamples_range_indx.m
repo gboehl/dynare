@@ -39,5 +39,5 @@ range_indx = find(strcmp(range_label, estimation_info.subsamples(subsamples_indx
 
 if size(range_indx,2) ~= 1
     error(['Error: Index not found in estimation_info.subsamples(' ...
-        num2str(subsamples_indx) ').range_index for label ' range_label]);
+           num2str(subsamples_indx) ').range_index for label ' range_label]);
 end

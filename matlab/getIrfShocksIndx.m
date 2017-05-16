@@ -34,7 +34,7 @@ else
     for i=1:size(options_.irf_shocks,1)
         irf_shocks_indx(i) = find(strcmp(deblank(options_.irf_shocks(i,:)), cellstr(M_.exo_names)));
     end
-    irf_shocks_indx_unique=unique(irf_shocks_indx);    
+    irf_shocks_indx_unique=unique(irf_shocks_indx);
     if options_.debug && (length(irf_shocks_indx_unique) ~= length(irf_shocks_indx))
         fprintf('\nSTOCH_SIMUL: Warning: The IRFs for some shocks have been requested twice.\n')
         fprintf('STOCH_SIMUL: The redundant entries will be ignored.\n')

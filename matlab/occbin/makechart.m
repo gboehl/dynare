@@ -22,7 +22,7 @@ nobs = size(zdata1,1);
 xvalues = (1:nobs)';
 
 nvars = size(titlelist,1);
-if nvars==1 
+if nvars==1
     nrows=1;
     ncols = 1;
 elseif nvars==2
@@ -40,7 +40,7 @@ elseif (nvars==7 | nvars==8)
 elseif (nvars==9 | nvars==10)
     nrows = 5;
     ncols = 2;
-else 
+else
     error('too many variables (makechart)')
 end
 
@@ -57,22 +57,22 @@ for i = 1:nvars
     if y0==y1
         y1=y0+1;
     end
-    
+
     axis([x0 x1 y0 y1])
     set(h1);
 
     if i==1 && isempty(legendlist)==0
         legend(legendlist)
         text('String',figlabel,'Units','normalized','Position',[1.2 1.24],...
-       'FontSize',14,'FontWeight','bold','HorizontalAlignment','center');
+             'FontSize',14,'FontWeight','bold','HorizontalAlignment','center');
     end
- 
+
     if i==nvars | i==nvars-1
         xlabel('Time');
     end
-%     set(gca,'XTick',xtick)
-%     set(gca,'XTickLabel',xticklabel)
-    
+    %     set(gca,'XTick',xtick)
+    %     set(gca,'XTickLabel',xticklabel)
+
     title([num2str(i),'. ',titlelist(i,:)]);
     ylabel(ylabels(i,:))
 end

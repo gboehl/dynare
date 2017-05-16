@@ -1,6 +1,6 @@
 function writedata_text(fname)
 % function writedata(fname)
-% store endogenous and exogenous variables in a text file 
+% store endogenous and exogenous variables in a text file
 % INPUT
 %   fname: name of the text file
 % OUTPUT

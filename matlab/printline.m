@@ -1,13 +1,13 @@
 function varargout = printline(n, s, fid)
 % This function print a line formed by replicating a symbol s.
 %
-% INPUTS 
+% INPUTS
 %
 %   n  [integer]    Length of the printed line
 %   s  [char]       Symbol used to draw the line (+, -, =, ...)
 %   f  [integer]    file id returned by fopen
-%    
-% OUTPUTS 
+%
+% OUTPUTS
 %   None
 
 % Copyright (C) 2015 Dynare Team
@@ -25,7 +25,7 @@ function varargout = printline(n, s, fid)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.    
+% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 if nargin<3
     f = 1;

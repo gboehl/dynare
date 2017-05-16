@@ -1,13 +1,13 @@
 function [results_vec, results_struct] = geweke_moments(draws,Dynareoptions)
 %[results_vec, results_struct] = geweke_moments(draws,Dynareoptions)
-% PURPOSE: computes Gewke's convergence diagnostics NSE and RNE 
+% PURPOSE: computes Gewke's convergence diagnostics NSE and RNE
 %          (numerical std error and relative numerical efficiencies)
 
-% INPUTS 
-%   draws            [ndraws by 1 vector] 
+% INPUTS
+%   draws            [ndraws by 1 vector]
 %   Dynareoptions    [structure]
-%  
-% OUTPUTS 
+%
+% OUTPUTS
 %   results_vec
 %   results_struct   [structure]  containing the following fields:
 %          posteriormean= posterior parameter mean
@@ -44,16 +44,16 @@ function [results_vec, results_struct] = geweke_moments(draws,Dynareoptions)
 % J.M. Bernardo, A.P. Dawid, and A.F.M. Smith (eds.) Proceedings of
 % the Fourth Valencia International Meeting on Bayesian Statistics,
 % pp. 169-194, Oxford University Press
-% Geweke (1999): `Using simulation methods for Bayesian econometric models: 
+% Geweke (1999): `Using simulation methods for Bayesian econometric models:
 % Inference, development and communication', Econometric Reviews, 18(1),
 % 1-73
 % -----------------------------------------------------------------
 
-% written by: Johannes Pfeifer, 
-% based on code by James P. LeSage, who in turn 
-% drew on MATLAB programs written by Siddartha Chib 
+% written by: Johannes Pfeifer,
+% based on code by James P. LeSage, who in turn
+% drew on MATLAB programs written by Siddartha Chib
 
-  
+
 ndraw = size(draws,1);
 n_groups=100;
 taper_steps=Dynareoptions.convergence.geweke.taper_steps;
@@ -66,7 +66,7 @@ window_means= zeros(n_groups,1);
 window_uncentered_variances= zeros(n_groups,1);
 for ig=1:n_groups
     window_means(ig,1)=sum(draws((ig-1)*ns+1:ig*ns,1))/ns;
-    window_uncentered_variances(ig,1)=sum(draws((ig-1)*ns+1:ig*ns,1).^2)/ns;        
+    window_uncentered_variances(ig,1)=sum(draws((ig-1)*ns+1:ig*ns,1).^2)/ns;
 end %for ig
 total_mean=mean(window_means);
 total_variance=mean(window_uncentered_variances)-total_mean^2;
@@ -106,4 +106,3 @@ for taper_index=1:length(taper_steps)
     eval(['results_struct.nse_taper_',num2str(taper),'= NSE_taper;']);
     eval(['results_struct.rne_taper_',num2str(taper),'= total_variance/(n_draws_used*NSE_taper^2);']);
 end % end of for mm loop
-

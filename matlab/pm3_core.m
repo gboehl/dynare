@@ -3,7 +3,7 @@ function myoutput=pm3_core(myinputs,fpar,nvar,whoiam, ThisMatlab)
 % PARALLEL CONTEXT
 % Core functionality for pm3.m function, which can be parallelized.
 
-% INPUTS 
+% INPUTS
 % See the comment in posterior_sampler_core.m funtion.
 
 % OUTPUTS
@@ -100,13 +100,13 @@ for i=fpar:nvar
             set(gca,'yticklabel',yticklabels_new)
         end
     end
-    
+
     if whoiam
         if Parallel(ThisMatlab).Local==0
             DirectoryName = CheckPath('Output',M_.dname);
         end
     end
-    
+
     if subplotnum == MaxNumberOfPlotsPerFigure || i == nvar
         dyn_saveas(hh,[M_.dname '/Output/'  M_.fname '_' name3 '_' deblank(tit3(i,:))],options_.nodisplay,options_.graph_format);
         if RemoteFlag==1
@@ -118,14 +118,14 @@ for i=fpar:nvar
             hh = dyn_figure(options_.nodisplay,'Name',[name3 ' ' int2str(figunumber+1)]);
         end
     end
-    
+
     if whoiam
-%         waitbarString = [ 'Variable ' int2str(i) '/' int2str(nvar) ' done.'];
-%         fMessageStatus((i-fpar+1)/(nvar-fpar+1),whoiam,waitbarString, waitbarTitle, Parallel(ThisMatlab));
+        %         waitbarString = [ 'Variable ' int2str(i) '/' int2str(nvar) ' done.'];
+        %         fMessageStatus((i-fpar+1)/(nvar-fpar+1),whoiam,waitbarString, waitbarTitle, Parallel(ThisMatlab));
         dyn_waitbar((i-fpar+1)/(nvar-fpar+1),h);
     end
-    
-    
+
+
 end
 
 if whoiam

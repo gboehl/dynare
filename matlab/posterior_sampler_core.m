@@ -31,7 +31,7 @@ function myoutput = posterior_sampler_core(myinputs,fblck,nblck,whoiam, ThisMatl
 %
 % SPECIAL REQUIREMENTS.
 %   None.
-% 
+%
 % PARALLEL CONTEXT
 % See the comments in the posterior_sampler.m funtion.
 
@@ -132,9 +132,9 @@ for curr_block = fblck:nblck
             set_dynare_seed(options_.DynareRandomStreams.seed+curr_block);
         end
         % Set the state of the RNG
-        set_dynare_random_generator_state(record.InitialSeeds(curr_block).Unifor, record.InitialSeeds(curr_block).Normal);            
+        set_dynare_random_generator_state(record.InitialSeeds(curr_block).Unifor, record.InitialSeeds(curr_block).Normal);
     catch
-        % If the state set by master is incompatible with the slave, we only reseed 
+        % If the state set by master is incompatible with the slave, we only reseed
         set_dynare_seed(options_.DynareRandomStreams.seed+curr_block);
     end
     if (options_.load_mh_file~=0) && (fline(curr_block)>1) && OpenOldFile(curr_block) %load previous draws and likelihood
@@ -164,9 +164,9 @@ for curr_block = fblck:nblck
     feval_this_file = 0;
     draw_index_current_file = fline(curr_block); %get location of first draw in current block
     draw_iter = 1;
-    
+
     while draw_iter <= nruns(curr_block)
-        
+
         [par, logpost, accepted, neval] = posterior_sampler_iteration(TargetFun, last_draw(curr_block,:), last_posterior(curr_block), sampler_options,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,mh_bounds,oo_);
 
         x2(draw_index_current_file,:) = par;

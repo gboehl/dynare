@@ -1,15 +1,15 @@
 function [oo_] = UnivariateSpectralDensity(M_,oo_,options_,var_list)
 % This function computes the theoretical spectral density of each
-% endogenous variable declared in var_list. Results are stored in 
-% oo_.SpectralDensity and may be plotted. Plots are saved into the 
-% graphs-folder. 
-% 
+% endogenous variable declared in var_list. Results are stored in
+% oo_.SpectralDensity and may be plotted. Plots are saved into the
+% graphs-folder.
+%
 % INPUTS
 %   M_                  [structure]    Dynare's model structure
 %   oo_                 [structure]    Dynare's results structure
 %   options_            [structure]    Dynare's options structure
 %   var_list            [integer]      Vector of indices for a subset of variables.
-%    
+%
 % OUTPUTS
 %   oo_                 [structure]    Dynare's results structure,
 %                                       containing the subfield
@@ -17,7 +17,7 @@ function [oo_] = UnivariateSpectralDensity(M_,oo_,options_,var_list)
 %                                       and density, which are of size nvar*ngrid.
 %
 
-% Adapted from th_autocovariances.m.  
+% Adapted from th_autocovariances.m.
 
 % Copyright (C) 2006-2017 Dynare Team
 %
@@ -38,7 +38,7 @@ function [oo_] = UnivariateSpectralDensity(M_,oo_,options_,var_list)
 
 
 if options_.order > 1
-    disp('UnivariateSpectralDensity :: I Cannot compute the theoretical spectral density') 
+    disp('UnivariateSpectralDensity :: I Cannot compute the theoretical spectral density')
     disp('with a second order approximation of the DSGE model!')
     disp('Please set order = 1. I abort')
     return
@@ -102,7 +102,7 @@ if ~isempty(u)
     ivar = oo_.dr.order_var(iky);
 end
 
-iky = iv(ivar);  
+iky = iv(ivar);
 aa = ghx(iky,:);
 bb = ghu(iky,:);
 ngrid = options_.hp_ngrid; %number of grid points
@@ -112,7 +112,7 @@ tneg  = exp(-sqrt(-1)*freqs); %negative frequencies
 if options_.one_sided_hp_filter
     error('UnivariateSpectralDensity:: spectral density estimate not available with one-sided HP filter')
 elseif options_.hp_filter == 0 && ~options_.bandpass.indicator %do not filter
-   filter_gain=ones(ngrid,1);
+    filter_gain=ones(ngrid,1);
 elseif ~(options_.hp_filter == 0 && ~options_.bandpass.indicator) && options_.bandpass.indicator %filter with bandpass
     filter_gain = zeros(1,ngrid);
     lowest_periodicity=options_.bandpass.passband(2);
@@ -122,7 +122,7 @@ elseif ~(options_.hp_filter == 0 && ~options_.bandpass.indicator) && options_.ba
     filter_gain(freqs<=-2*pi/lowest_periodicity+2*pi & freqs>=-2*pi/highest_periodicity+2*pi)=1;
 elseif ~(options_.hp_filter == 0 && ~options_.bandpass.indicator) && ~options_.bandpass.indicator %filter with HP-filter
     lambda = options_.hp_filter;
-    filter_gain = 4*lambda*(1 - cos(freqs)).^2 ./ (1 + 4*lambda*(1 - cos(freqs)).^2);    
+    filter_gain = 4*lambda*(1 - cos(freqs)).^2 ./ (1 + 4*lambda*(1 - cos(freqs)).^2);
 end
 
 mathp_col = NaN(ngrid,length(ivar)^2);
@@ -139,7 +139,7 @@ end
 f = zeros(nvar,ngrid);
 for i=1:nvar
     f(i,:) = real(mathp_col(:,(i-1)*nvar+i)); %read out spectral density
-end  
+end
 
 oo_.SpectralDensity.freqs=freqs;
 oo_.SpectralDensity.density=f;
@@ -164,7 +164,7 @@ if options_.nograph == 0
         xlabel('0 \leq \omega \leq \pi')
         ylabel('f(\omega)')
         box on
-        axis tight        
+        axis tight
         dyn_saveas(hh,[M_.fname ,filesep,'graphs', filesep, 'SpectralDensity_' deblank(M_.endo_names(ivar(i),:))],options_.nodisplay,options_.graph_format)
     end
 end

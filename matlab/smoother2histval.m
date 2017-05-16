@@ -1,10 +1,10 @@
 function smoother2histval(opts)
 % This function takes values from oo_.SmoothedVariables (and possibly
 % oo_.SmoothedShocks) and copies them into M_.histval.
-% 
+%
 % Optional fields in 'opts' structure:
 %    infile:      An optional *_results MAT file created by Dynare.
-%                 If present, oo_.Smoothed{Variables,Shocks} are read from 
+%                 If present, oo_.Smoothed{Variables,Shocks} are read from
 %                 there. Otherwise, they are read from the global workspace.
 %    invars:      An optional char or cell array listing variables to read in
 %                 oo_.SmoothedVariables. If absent, all the endogenous
@@ -68,7 +68,7 @@ if isstruct(getfield(smoothedvars, tmp{1}))
         % point and metropolis results are simultaneously present
         post_metropolis = 2;
     end
-    
+
 elseif isstruct(getfield(smoothedvars, tmp{end}))
     % point and metropolis results are simultaneously present
     post_metropolis = 2;

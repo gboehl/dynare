@@ -1,18 +1,18 @@
 function [Q,R] = qr2(varargin)
 % This routine performs a qr decomposition of matrix X such that the
-% diagonal scalars of the upper-triangular matrix R are positive. If X 
+% diagonal scalars of the upper-triangular matrix R are positive. If X
 % is a full (column) rank matrix, then R is also the cholesky
-% factorization of X'X. This property is needed for the Del Negro 
+% factorization of X'X. This property is needed for the Del Negro
 % & Schorfheides's identification scheme.
-% 
-% INPUTS 
+%
+% INPUTS
 %   See matlab's documentation for QR decomposition.
-%     
-% OUTPUTS 
+%
+% OUTPUTS
 %   See matlab's documentation for QR decomposition.
 %
 % ALGORITHM
-%   None.       
+%   None.
 %
 % SPECIAL REQUIREMENTS
 %   None.

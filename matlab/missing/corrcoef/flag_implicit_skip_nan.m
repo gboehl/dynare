@@ -1,6 +1,6 @@
 function FLAG = flag_implicit_skip_nan(i)
 % FLAG_IMPLICIT_SKIP_NAN sets and gets default mode for handling NaNs
-%	1 skips NaN's (the default mode if no mode is set)
+%       1 skips NaN's (the default mode if no mode is set)
 %   0 NaNs are propagated; input NaN's give NaN's at the output
 %
 % FLAG = flag_implicit_skip_nan()
@@ -9,15 +9,15 @@ function FLAG = flag_implicit_skip_nan(i)
 % flag_implicit_skip_nan(FLAG)    % sets mode
 %
 % prevFLAG = flag_implicit_skip_nan(nextFLAG)
-%	gets previous set FLAG and sets FLAG for the future
+%       gets previous set FLAG and sets FLAG for the future
 % flag_implicit_skip_nan(prevFLAG)
-%	resets FLAG to previous mode
+%       resets FLAG to previous mode
 %
 % It is used in:
-%	SUMSKIPNAN, MEDIAN, QUANTILES, TRIMEAN
+%       SUMSKIPNAN, MEDIAN, QUANTILES, TRIMEAN
 % and affects many other functions like:
-%	CENTER, KURTOSIS, MAD, MEAN, MOMENT, RMS, SEM, SKEWNESS,
-%	STATISTIC, STD, VAR, ZSCORE etc.
+%       CENTER, KURTOSIS, MAD, MEAN, MOMENT, RMS, SEM, SKEWNESS,
+%       STATISTIC, STD, VAR, ZSCORE etc.
 %
 % The mode is stored in the global variable FLAG_implicit_skip_nan
 % It is recommended to use flag_implicit_skip_nan(1) as default and
@@ -40,7 +40,7 @@ function FLAG = flag_implicit_skip_nan(i)
 %    along with this program; if not, write to the Free Software
 %    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 
-%	$Id: flag_implicit_skip_nan.m 8351 2011-06-24 17:35:07Z carandraug $
+%       $Id: flag_implicit_skip_nan.m 8351 2011-06-24 17:35:07Z carandraug $
 %   Copyright (C) 2001-2003,2009 by Alois Schloegl <alois.schloegl@gmail.com>
 %   Copyright (C) 2014 Dynare Team
 %       This function is part of the NaN-toolbox
@@ -49,7 +49,7 @@ function FLAG = flag_implicit_skip_nan(i)
 
 persistent FLAG_implicit_skip_nan;
 
-%% if strcmp(version,'3.6'), FLAG_implicit_skip_nan=(1==1); end;	%% hack for the use with Freemat3.6
+%% if strcmp(version,'3.6'), FLAG_implicit_skip_nan=(1==1); end;        %% hack for the use with Freemat3.6
 
 %%% set DEFAULT value of FLAG
 if isempty(FLAG_implicit_skip_nan)
@@ -63,4 +63,3 @@ if nargin>0
         warning('flag_implicit_skipnan(0): You are warned!!! You have turned off skipping NaN in sumskipnan. This is not recommended. Make sure you really know what you do.')
     end
 end
-

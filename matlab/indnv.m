@@ -40,6 +40,3 @@ for i = 1:size(x,1)
         a(i) = j;
     end
 end
-
-
-

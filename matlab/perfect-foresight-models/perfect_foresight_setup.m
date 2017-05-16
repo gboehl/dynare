@@ -1,14 +1,14 @@
 function perfect_foresight_setup()
 % Prepares a deterministic simulation, by filling oo_.exo_simul and oo_.endo_simul
-%  
+%
 % INPUTS
 %   None
-%  
+%
 % OUTPUTS
 %   none
-%    
+%
 % ALGORITHM
-%   
+%
 % SPECIAL REQUIREMENTS
 %   none
 
@@ -35,14 +35,14 @@ test_for_deep_parameters_calibration(M_);
 
 if size(M_.lead_lag_incidence,2)-nnz(M_.lead_lag_incidence(M_.maximum_endo_lag+1,:)) > 0
     mess = ['PERFECT_FORESIGHT_SETUP: error in model specification : the variable(s) '];
-        var_list=M_.endo_names(find(M_.lead_lag_incidence(M_.maximum_lag+1,:)==0),:);
-        for i=1:size(var_list,1)
-            if i<size(var_list,1)
-                mess = [mess, deblank(var_list(i,:)) ', '];
-            else
-                mess = [mess, deblank(var_list(i,:)) ];
-            end
+    var_list=M_.endo_names(find(M_.lead_lag_incidence(M_.maximum_lag+1,:)==0),:);
+    for i=1:size(var_list,1)
+        if i<size(var_list,1)
+            mess = [mess, deblank(var_list(i,:)) ', '];
+        else
+            mess = [mess, deblank(var_list(i,:)) ];
         end
+    end
     mess = [mess ' don''t appear as current period variables.'];
     error(mess)
 end

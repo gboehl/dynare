@@ -43,18 +43,18 @@ function [alphahat,epsilonhat,etahat,a,P,aK,PK,decomp,V] = missing_DiffuseKalman
 %   variables_declaration_order(dr.order_var,:) = alphahat
 %
 % Algorithm:
-% 
+%
 %   Uses the univariate filter as described in Durbin/Koopman (2012): "Time
 %   Series Analysis by State Space Methods", Oxford University Press,
 %   Second Edition, Ch. 6.4 + 7.2.5
-%   and 
+%   and
 %   Koopman/Durbin (2000): "Fast Filtering and Smoothing for Multivariatze State Space
 %   Models", in Journal of Time Series Analysis, vol. 21(3), pp. 281-296.
 %
 % SPECIAL REQUIREMENTS
 %   See "Filtering and Smoothing of State Vector for Diffuse State Space
-%   Models", S.J. Koopman and J. Durbin (2003), in Journal of Time Series 
-%   Analysis, vol. 24(1), pp. 85-98. 
+%   Models", S.J. Koopman and J. Durbin (2003), in Journal of Time Series
+%   Analysis, vol. 24(1), pp. 85-98.
 
 % Copyright (C) 2004-2017 Dynare Team
 %
@@ -78,10 +78,10 @@ function [alphahat,epsilonhat,etahat,a,P,aK,PK,decomp,V] = missing_DiffuseKalman
 % New input argument nk: max order of predictions in aK
 
 
-if size(H,2)>1 
+if size(H,2)>1
     error('missing_DiffuseKalmanSmootherH3_Z:: H is not a vector. This must not happens')
 end
-    
+
 d = 0;
 decomp = [];
 spinf           = size(Pinf1);
@@ -100,9 +100,9 @@ Kinf            = zeros(spstar(1),pp,smpl);
 P               = zeros(mm,mm,smpl+1);
 P1              = P;
 PK              = zeros(nk,mm,mm,smpl+nk);
-Pstar           = zeros(spstar(1),spstar(2),smpl); 
+Pstar           = zeros(spstar(1),spstar(2),smpl);
 Pstar(:,:,1)    = Pstar1;
-Pinf            = zeros(spinf(1),spinf(2),smpl); 
+Pinf            = zeros(spinf(1),spinf(2),smpl);
 Pinf(:,:,1)     = Pinf1;
 Pstar1          = Pstar;
 Pinf1           = Pinf;
@@ -135,13 +135,13 @@ while newRank && t < smpl
     di = data_index{t}';
     for i=di
         Zi = Z(i,:);
-        v(i,t)      = Y(i,t)-Zi*a(:,t);                                     % nu_{t,i} in 6.13 in DK (2012) 
+        v(i,t)      = Y(i,t)-Zi*a(:,t);                                     % nu_{t,i} in 6.13 in DK (2012)
         Fstar(i,t)  = Zi*Pstar(:,:,t)*Zi' +H(i);                            % F_{*,t} in 5.7 in DK (2012), relies on H being diagonal
         Finf(i,t)   = Zi*Pinf(:,:,t)*Zi';                                   % F_{\infty,t} in 5.7 in DK (2012)
         Kstar(:,i,t) = Pstar(:,:,t)*Zi';                                    % KD (2000), eq. (15)
         if Finf(i,t) > diffuse_kalman_tol && newRank                        % F_{\infty,t,i} = 0, use upper part of bracket on p. 175 DK (2012) for w_{t,i}
             icc=icc+1;
-            Kinf(:,i,t)       = Pinf(:,:,t)*Zi';                            % KD (2000), eq. (15)                         
+            Kinf(:,i,t)       = Pinf(:,:,t)*Zi';                            % KD (2000), eq. (15)
             Kinf_Finf         = Kinf(:,i,t)/Finf(i,t);
             a(:,t)            = a(:,t) + Kinf_Finf*v(i,t);                  % KD (2000), eq. (16)
             Pstar(:,:,t)      = Pstar(:,:,t) + ...
@@ -149,14 +149,14 @@ while newRank && t < smpl
                 Kstar(:,i,t)*Kinf_Finf' - ...
                 Kinf_Finf*Kstar(:,i,t)';                                    % KD (2000), eq. (16)
             Pinf(:,:,t)       = Pinf(:,:,t) - Kinf(:,i,t)*Kinf(:,i,t)'/Finf(i,t); % KD (2000), eq. (16)
-        elseif Fstar(i,t) > kalman_tol 
+        elseif Fstar(i,t) > kalman_tol
             a(:,t)            = a(:,t) + Kstar(:,i,t)*v(i,t)/Fstar(i,t);    % KD (2000), eq. (17)
             Pstar(:,:,t)      = Pstar(:,:,t) - Kstar(:,i,t)*Kstar(:,i,t)'/Fstar(i,t);   % KD (2000), eq. (17)
-            % Pinf is passed through unaltered, see eq. (17) of
-            % Koopman/Durbin (2000)
+                                                                                        % Pinf is passed through unaltered, see eq. (17) of
+                                                                                        % Koopman/Durbin (2000)
         else
             % do nothing as a_{t,i+1}=a_{t,i} and P_{t,i+1}=P_{t,i}, see
-            % p. 157, DK (2012)        
+            % p. 157, DK (2012)
         end
     end
     if newRank
@@ -164,12 +164,12 @@ while newRank && t < smpl
             oldRank = rank(Z*Pinf(:,:,t)*Z',diffuse_kalman_tol);
         else
             oldRank = rank(Pinf(:,:,t),diffuse_kalman_tol);
-        end        
+        end
     else
         oldRank = 0;
     end
     a1(:,t+1) = T*a(:,t);
-    aK(1,:,t+1) = a1(:,t+1); 
+    aK(1,:,t+1) = a1(:,t+1);
     for jnk=2:nk
         aK(jnk,:,t+jnk) = T*dynare_squeeze(aK(jnk-1,:,t+jnk-1));
     end
@@ -183,7 +183,7 @@ while newRank && t < smpl
         end
     end
     if oldRank ~= newRank
-        disp('univariate_diffuse_kalman_filter:: T does influence the rank of Pinf!')   
+        disp('univariate_diffuse_kalman_filter:: T does influence the rank of Pinf!')
     end
 end
 
@@ -206,7 +206,7 @@ while notsteady && t<smpl
     for i=di
         Zi = Z(i,:);
         v(i,t)  = Y(i,t) - Zi*a(:,t);                                       % nu_{t,i} in 6.13 in DK (2012)
-        Fi(i,t) = Zi*P(:,:,t)*Zi' + H(i);                                   % F_{t,i} in 6.13 in DK (2012), relies on H being diagonal 
+        Fi(i,t) = Zi*P(:,:,t)*Zi' + H(i);                                   % F_{t,i} in 6.13 in DK (2012), relies on H being diagonal
         Ki(:,i,t) = P(:,:,t)*Zi';                                           % K_{t,i}*F_(i,t) in 6.13 in DK (2012)
         if Fi(i,t) > kalman_tol
             a(:,t) = a(:,t) + Ki(:,i,t)*v(i,t)/Fi(i,t);                     %filtering according to (6.13) in DK (2012)
@@ -216,18 +216,18 @@ while notsteady && t<smpl
             % p. 157, DK (2012)
         end
     end
-    a1(:,t+1) = T*a(:,t);                                                   %transition according to (6.14) in DK (2012) 
+    a1(:,t+1) = T*a(:,t);                                                   %transition according to (6.14) in DK (2012)
     Pf          = P(:,:,t);
-    aK(1,:,t+1) = a1(:,t+1); 
+    aK(1,:,t+1) = a1(:,t+1);
     for jnk=1:nk
         Pf = T*Pf*T' + QQ;
         PK(jnk,:,:,t+jnk) = Pf;
         if jnk>1
-            aK(jnk,:,t+jnk) = T*dynare_squeeze(aK(jnk-1,:,t+jnk-1));    
+            aK(jnk,:,t+jnk) = T*dynare_squeeze(aK(jnk-1,:,t+jnk-1));
         end
     end
-    P(:,:,t+1) = T*P(:,:,t)*T' + QQ;                                        %transition according to (6.14) in DK (2012) 
-    %  notsteady   = ~(max(max(abs(P(:,:,t+1)-P(:,:,t))))<kalman_tol);
+    P(:,:,t+1) = T*P(:,:,t)*T' + QQ;                                        %transition according to (6.14) in DK (2012)
+                                                                            %  notsteady   = ~(max(max(abs(P(:,:,t+1)-P(:,:,t))))<kalman_tol);
 end
 % $$$ P_s=tril(P(:,:,t))+tril(P(:,:,t),-1)';
 % $$$ P1_s=tril(P1(:,:,t))+tril(P1(:,:,t),-1)';
@@ -279,18 +279,18 @@ while t > d+1
             end
         end
     end
-    r(:,t) = ri;                                                            % DK (2012), below 6.15, r_{t-1}=r_{t,0} 
+    r(:,t) = ri;                                                            % DK (2012), below 6.15, r_{t-1}=r_{t,0}
     alphahat(:,t) = a1(:,t) + P1(:,:,t)*r(:,t);
     etahat(:,t) = QRt*r(:,t);
-    ri = T'*ri;                                                             % KD (2003), eq. (23), equation for r_{t-1,p_{t-1}} 
+    ri = T'*ri;                                                             % KD (2003), eq. (23), equation for r_{t-1,p_{t-1}}
     if state_uncertainty_flag
-        N(:,:,t) = Ni;                                                          % DK (2012), below 6.15, N_{t-1}=N_{t,0} 
+        N(:,:,t) = Ni;                                                          % DK (2012), below 6.15, N_{t-1}=N_{t,0}
         V(:,:,t) = P1(:,:,t)-P1(:,:,t)*N(:,:,t)*P1(:,:,t);                      % KD (2000), eq. (7) with N_{t-1} stored in N(:,:,t)
-        Ni = T'*Ni*T;                                                           % KD (2000), eq. (23), equation for N_{t-1,p_{t-1}} 
+        Ni = T'*Ni*T;                                                           % KD (2000), eq. (23), equation for N_{t-1,p_{t-1}}
     end
 end
 if d
-    r0 = zeros(mm,d); 
+    r0 = zeros(mm,d);
     r0(:,d) = ri;
     r1 = zeros(mm,d);
     if state_uncertainty_flag
@@ -304,10 +304,10 @@ if d
         di = flipud(data_index{t})';
         for i = di
             if Finf(i,t) > diffuse_kalman_tol
-                % recursions need to be from highest to lowest term in order to not 
+                % recursions need to be from highest to lowest term in order to not
                 % overwrite lower terms still needed in this step
                 Linf    = eye(mm) - Kinf(:,i,t)*Z(i,:)/Finf(i,t);
-                L0      = (Kinf(:,i,t)*(Fstar(i,t)/Finf(i,t))-Kstar(:,i,t))*Z(i,:)/Finf(i,t);            
+                L0      = (Kinf(:,i,t)*(Fstar(i,t)/Finf(i,t))-Kstar(:,i,t))*Z(i,:)/Finf(i,t);
                 r1(:,t) = Z(i,:)'*v(i,t)/Finf(i,t) + ...
                           L0'*r0(:,t) + ...
                           Linf'*r1(:,t);   % KD (2000), eq. (25) for r_1
@@ -335,9 +335,9 @@ if d
         etahat(:,t)   = QRt*r(:,t);                                         % KD (2000), eq. (27)
         if state_uncertainty_flag
             V(:,:,t)=Pstar(:,:,t)-Pstar(:,:,t)*N_0(:,:,t)*Pstar(:,:,t)...
-                -(Pinf(:,:,t)*N_1(:,:,t)*Pstar(:,:,t))'...
-                - Pinf(:,:,t)*N_1(:,:,t)*Pstar(:,:,t)...
-                - Pinf(:,:,t)*N_2(:,:,t)*Pinf(:,:,t);                       % DK (2012), eq. 5.30
+                     -(Pinf(:,:,t)*N_1(:,:,t)*Pstar(:,:,t))'...
+                     - Pinf(:,:,t)*N_1(:,:,t)*Pstar(:,:,t)...
+                     - Pinf(:,:,t)*N_2(:,:,t)*Pinf(:,:,t);                       % DK (2012), eq. 5.30
         end
         if t > 1
             r0(:,t-1) = T'*r0(:,t);                                         % KD (2000), below eq. (25) r_{t-1,p_{t-1}}=T'*r_{t,0}
@@ -362,11 +362,11 @@ if decomp_flag
                 ri_d = Z(i,:)'/Fi(i,t)*v(i,t)+ri_d-Ki(:,i,t)'*ri_d/Fi(i,t)*Z(i,:)';
             end
         end
-        
+
         % calculate eta_tm1t
         eta_tm1t = QRt*ri_d;
         % calculate decomposition
-        Ttok = eye(mm,mm); 
+        Ttok = eye(mm,mm);
         AAA = P1(:,:,t)*Z'*ZRQinv*Z*R;
         for h = 1:nk
             BBB = Ttok*AAA;
@@ -382,6 +382,6 @@ epsilonhat = Y - Z*alphahat;
 
 
 if (d==smpl)
-    warning(['missing_DiffuseKalmanSmootherH3_Z:: There isn''t enough information to estimate the initial conditions of the nonstationary variables']);    
+    warning(['missing_DiffuseKalmanSmootherH3_Z:: There isn''t enough information to estimate the initial conditions of the nonstationary variables']);
     return
 end

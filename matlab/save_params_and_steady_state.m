@@ -12,10 +12,10 @@ function save_params_and_steady_state(filename)
 % Note that no variable type is stored in the file, so that the values
 % can be reloaded (with load_params_and_steady_state) in a setup where
 % the variable types are different.
-%  
+%
 % INPUTS
 %   filename:   where to store the saved values
-%  
+%
 % OUTPUTS
 %   none
 %

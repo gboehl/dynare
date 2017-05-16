@@ -3,21 +3,21 @@ function [err, E] = gensylv(kron_prod,A,B,C0,D)
 % Solves a Sylvester equation.
 %
 % INPUTS
-%   kron_prod     
+%   kron_prod
 %   A
 %   B
 %   C
 %   D
-%    
+%
 % OUTPUTS
 %   err      [double] scalar: 1 indicates failure, 0 indicates success
 %   E
-%    
+%
 % ALGORITHM
 %   none.
 %
 % SPECIAL REQUIREMENTS
-%   none.  
+%   none.
 
 % Copyright (C) 1996-2017 Dynare Team
 %
@@ -37,7 +37,7 @@ function [err, E] = gensylv(kron_prod,A,B,C0,D)
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 C = C0;
 for i=1:(kron_prod-1)
-    C  = kron(C0,C); 
+    C  = kron(C0,C);
 end
 
 x0 = sylvester3(A,B,C,D);

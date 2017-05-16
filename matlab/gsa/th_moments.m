@@ -79,5 +79,3 @@ if options_.ar > 0
         zz(:,i) = diag(gamma_y{i+1}(i1,i1));
     end
 end
-
-

@@ -229,4 +229,3 @@ if (xn > delta)
     x = alpha * x + ((1-alpha) * min (snm, delta)) * s;
 end
 end
-

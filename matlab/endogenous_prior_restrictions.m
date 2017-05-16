@@ -13,7 +13,7 @@ function [info, info_irf, info_moment, data_irf, data_moment] = endogenous_prior
 %                       model and related info
 %    info_irf [double] array of test checks for all individual irf restrictions
 %    info_moment [double] array of test checks for all individual moment restrictions
-%    
+%
 
 % Copyright (C) 2013-2017 Dynare Team
 %
@@ -42,7 +42,7 @@ endo_prior_restrictions.irf= DynareOptions.endogenous_prior_restrictions.irf;
 endo_prior_restrictions.moment= DynareOptions.endogenous_prior_restrictions.moment;
 
 if ~isempty(endo_prior_restrictions.irf)
-   data_irf=cell(size(endo_prior_restrictions.irf,1),1);    
+    data_irf=cell(size(endo_prior_restrictions.irf,1),1);
     if DynareOptions.order>1
         error('The algorithm for prior (sign) restrictions on irf''s is currently restricted to first-order decision rules')
         return
@@ -52,7 +52,7 @@ if ~isempty(endo_prior_restrictions.irf)
         [T,R,SteadyState,infox,Model,DynareOptions,DynareResults] = dynare_resolve(Model,DynareOptions,DynareResults);
     else % check if T and R are given in the restricted form!!!
         if size(T,1)<size(varlist,1)
-            varlist=varlist(DynareResults.dr.restrict_var_list,:); 
+            varlist=varlist(DynareResults.dr.restrict_var_list,:);
         end
         % check if endo_prior_restrictions.irf{:,1} variables are in varlist
         varlistok=1;
@@ -99,7 +99,7 @@ if ~isempty(endo_prior_restrictions.irf)
     if any(info_irf)
         info=[49,sum(info_irf(:,2))];
     end
-    
+
 end
 
 if ~isempty(endo_prior_restrictions.moment)
@@ -139,9 +139,9 @@ if ~isempty(endo_prior_restrictions.moment)
     DynareOptions.ar = max(abs(NTmin),NTmax);
     [gamma_y,stationary_vars] = th_autocovariances(DynareResults.dr, ivar, Model, DynareOptions,1);
     for t=NTmin:NTmax
-        RR = gamma_y{abs(t)+1};     
+        RR = gamma_y{abs(t)+1};
         if t==0
-            RR = RR./(sqrt(diag(RR))*sqrt(diag(RR))')-eye(nvar)+diag(diag(gamma_y{t+1})); % becomes correlation            
+            RR = RR./(sqrt(diag(RR))*sqrt(diag(RR))')-eye(nvar)+diag(diag(gamma_y{t+1})); % becomes correlation
         end
         for j=1:size(endo_prior_restrictions.moment,1)
             if endo_prior_restrictions.moment{j,3}~=t

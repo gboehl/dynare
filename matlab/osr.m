@@ -9,18 +9,18 @@ function osr_res = osr(var_list,params,i_var,W)
 %                                           optimal simple rule
 %   i_var       [n_osr_vars by 1 double]    indices of osr-variable in
 %                                           specified in optim_weights in declaration order
-%   W           [M_.endo_nbr by M_.endo_nbr sparse matrix] Weighting matrix for variance of endogenous variables             
-%    
+%   W           [M_.endo_nbr by M_.endo_nbr sparse matrix] Weighting matrix for variance of endogenous variables
+%
 % OUTPUTS
 %   osr_res:    [structure] results structure containing:
 %    - objective_function [scalar double]   value of the objective
 %                                               function at the optimum
-%    - optim_params       [structure]       parameter values at the optimum 
-% 
-%       
+%    - optim_params       [structure]       parameter values at the optimum
+%
+%
 % SPECIAL REQUIREMENTS
 %   none.
-%  
+%
 % Copyright (C) 2001-2016 Dynare Team
 %
 % This file is part of Dynare.
@@ -38,7 +38,7 @@ function osr_res = osr(var_list,params,i_var,W)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-global M_ options_ oo_  
+global M_ options_ oo_
 
 options_.order = 1;
 

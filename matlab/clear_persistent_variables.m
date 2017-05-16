@@ -58,5 +58,5 @@ if writelistofroutinestobecleared
     return
 end
 
-list_of_functions_to_be_cleared;    
+list_of_functions_to_be_cleared;
 clear(list_of_functions{:});

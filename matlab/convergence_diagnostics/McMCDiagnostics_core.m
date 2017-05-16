@@ -2,12 +2,12 @@ function myoutput = McMCDiagnostics_core(myinputs,fpar,npar,whoiam, ThisMatlab)
 % function myoutput = McMCDiagnostics_core(myinputs,fpar,npar,whoiam, ThisMatlab)
 % Computes the Brooks/Gelman (1998) convergence diagnostics, both the
 % parameteric and the non-parameteric versions
-% 
+%
 % PARALLEL CONTEXT
 % Core functionality for MCMC Diagnostics, which can be parallelized.
 % See also the comment in posterior_sampler_core.m funtion.
-% 
-% 
+%
+%
 % INPUTS
 %   See See the comment in posterior_sampler_core.m funtion.
 
@@ -25,10 +25,10 @@ function myoutput = McMCDiagnostics_core(myinputs,fpar,npar,whoiam, ThisMatlab)
 %
 % ALGORITHM
 %   Computes part of the convergence diagnostics, the rest is computed in McMCDiagnostics.m .
-%   The methodology and terminology is based on: Brooks/Gelman (1998): General 
-%   Methods for Monitoring Convergence of Iterative Simulations, Journal of Computational 
+%   The methodology and terminology is based on: Brooks/Gelman (1998): General
+%   Methods for Monitoring Convergence of Iterative Simulations, Journal of Computational
 %   and Graphical Statistics, Volume 7, Number 4, Pages 434-455
-% 
+%
 %
 % SPECIAL REQUIREMENTS.
 %   None.

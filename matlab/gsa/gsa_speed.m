@@ -3,7 +3,7 @@ function [tadj, iff] = gsa_speed(A,B,mf,p)
 %
 % Written by Marco Ratto
 % Joint Research Centre, The European Commission,
-% marco.ratto@ec.europa.eu 
+% marco.ratto@ec.europa.eu
 
 % Copyright (C) 2012 European Commission
 % Copyright (C) 2012 Dynare Team
@@ -34,24 +34,24 @@ disp('Computing speed of adjustement ...')
 h = dyn_waitbar(0,'Speed of adjustement...');
 
 for i=1:nrun
-  irf=zeros(nvar,nshock);
-  a=squeeze(A(:,:,i));
-  b=squeeze(B(:,:,i));
-  IFF=inv(eye(nstate)-a)*b;
-  iff(:,:,i)=IFF(mf,:);
-  IF=IFF-b;
-  
-  t=0;
-  while any(any(irf<0.5))
-    t=t+1;
-    IFT=((eye(nstate)-a^(t+1))*inv(eye(nstate)-a))*b-b;
-    irf=IFT(mf,:)./(IF(mf,:)+eps);
-    irf = irf.*(abs(IF(mf,:))>1.e-7)+(abs(IF(mf,:))<=1.e-7);
-    %irf=ft(mf,:);
-    tt=(irf>0.5).*t;
-    tadj(:,:,i)=((tt-tadj(:,:,i))==tt).*tt+tadj(:,:,i);
-  end
-  dyn_waitbar(i/nrun,h)
+    irf=zeros(nvar,nshock);
+    a=squeeze(A(:,:,i));
+    b=squeeze(B(:,:,i));
+    IFF=inv(eye(nstate)-a)*b;
+    iff(:,:,i)=IFF(mf,:);
+    IF=IFF-b;
+
+    t=0;
+    while any(any(irf<0.5))
+        t=t+1;
+        IFT=((eye(nstate)-a^(t+1))*inv(eye(nstate)-a))*b-b;
+        irf=IFT(mf,:)./(IF(mf,:)+eps);
+        irf = irf.*(abs(IF(mf,:))>1.e-7)+(abs(IF(mf,:))<=1.e-7);
+        %irf=ft(mf,:);
+        tt=(irf>0.5).*t;
+        tadj(:,:,i)=((tt-tadj(:,:,i))==tt).*tt+tadj(:,:,i);
+    end
+    dyn_waitbar(i/nrun,h)
 end
 skipline()
 disp('.. done !')

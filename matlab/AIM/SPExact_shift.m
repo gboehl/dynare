@@ -36,12 +36,11 @@ right  = qcols+1:qcols+neq;
 zerorows = find( sum(abs( hs(:,right)' ))==0 );
 
 while( any(zerorows) && iq <= qrows )
-   nz = length(zerorows);
-   q(iq+1:iq+nz,:) = hs(zerorows,left);
-   hs(zerorows,:)   = SPShiftright(hs(zerorows,:),neq);
-   iq     = iq + nz;
-   nexact = nexact + nz;
-   zerorows = find( sum(abs( hs(:,right)' ))==0 );
+    nz = length(zerorows);
+    q(iq+1:iq+nz,:) = hs(zerorows,left);
+    hs(zerorows,:)   = SPShiftright(hs(zerorows,:),neq);
+    iq     = iq + nz;
+    nexact = nexact + nz;
+    zerorows = find( sum(abs( hs(:,right)' ))==0 );
 end
 h=full(hs);
-

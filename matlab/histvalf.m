@@ -86,4 +86,3 @@ for i = 1:length(outvars)
     end
     M_.endo_histval(j, :) = getfield(S, ov_);
 end
-

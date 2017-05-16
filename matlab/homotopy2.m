@@ -99,7 +99,7 @@ for i = 1:nv
         end
 
         disp([ 'HOMOTOPY mode 2: lauching solver with ' deblank(varname) ' = ' num2str(v) ' ...'])
-        
+
         oo_.steady_state = steady_(M_,options_,oo_);
     end
 end

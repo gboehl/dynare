@@ -1,8 +1,8 @@
 function posterior_sampler(TargetFun,ProposalFun,xparam1,sampler_options,mh_bounds,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,oo_)
 % function posterior_sampler(TargetFun,ProposalFun,xparam1,sampler_options,mh_bounds,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,oo_)
-% Random Walk Metropolis-Hastings algorithm. 
-% 
-% INPUTS 
+% Random Walk Metropolis-Hastings algorithm.
+%
+% INPUTS
 %   o TargetFun  [char]     string specifying the name of the objective
 %                           function (posterior kernel).
 %   o ProposalFun  [char]   string specifying the name of the proposal
@@ -10,7 +10,7 @@ function posterior_sampler(TargetFun,ProposalFun,xparam1,sampler_options,mh_boun
 %   o xparam1    [double]   (p*1) vector of parameters to be estimated (initial values).
 %   o sampler_options       structure
 %            .invhess       [double]   (p*p) matrix, posterior covariance matrix (at the mode).
-%   o mh_bounds  [double]   (p*2) matrix defining lower and upper bounds for the parameters. 
+%   o mh_bounds  [double]   (p*2) matrix defining lower and upper bounds for the parameters.
 %   o dataset_              data structure
 %   o dataset_info          dataset info structure
 %   o options_              options structure
@@ -27,7 +27,7 @@ function posterior_sampler(TargetFun,ProposalFun,xparam1,sampler_options,mh_boun
 % in parallel. The code suitable to be executed in
 % parallel on multi core or cluster machine (in general a 'for' cycle)
 % has been removed from this function and been placed in the posterior_sampler_core.m funtion.
-% 
+%
 % The DYNARE parallel packages comprise a i) set of pairs of Matlab functions that can be executed in
 % parallel and called name_function.m and name_function_core.m and ii) a second set of functions used
 % to manage the parallel computations.
@@ -120,8 +120,8 @@ end
 if isnumeric(options_.parallel) || (nblck-fblck)==0
     fout = posterior_sampler_core(localVars, fblck, nblck, 0);
     record = fout.record;
-    % Parallel in Local or remote machine.   
-else 
+    % Parallel in Local or remote machine.
+else
     % Global variables for parallel routines.
     globalVars = struct();
     % which files have to be copied to run remotely

@@ -119,17 +119,17 @@ for file = 1:NumberOfDrawsFiles
         if file==1 && linee==1
             [tmp, stationary_vars] = th_autocovariances(dr,ivar,M_,options_,nodecomposition);
             if isempty(stationary_vars)
-              fprintf('\ndsge_simulated_theoretical_variance_decomposition:: All requested endogenous variables have a unit root and thus infinite variance.\n')
-              fprintf('dsge_simulated_theoretical_variance_decomposition:: No decomposition is performed.\n')
-              only_non_stationary_vars=1; 
+                fprintf('\ndsge_simulated_theoretical_variance_decomposition:: All requested endogenous variables have a unit root and thus infinite variance.\n')
+                fprintf('dsge_simulated_theoretical_variance_decomposition:: No decomposition is performed.\n')
+                only_non_stationary_vars=1;
             end
         end
         if only_non_stationary_vars
-           for i=1:nvar
+            for i=1:nvar
                 for j=1:nexo
                     Decomposition_array(linea,(i-1)*nexo+j) = NaN;
                 end
-           end            
+            end
         else
             tmp = th_autocovariances(dr,ivar,M_,options_,nodecomposition);
             for i=1:nvar

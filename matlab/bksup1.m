@@ -5,7 +5,7 @@ function d = bksup1(c,ny,jcf,iyf,periods)
 % INPUTS
 %    ny:             number of endogenous variables
 %    jcf:            variables index forward
-%    
+%
 % OUTPUTS
 %    d:              vector of backsubstitution results
 %
@@ -40,4 +40,3 @@ for i = 2:periods
 end
 
 d = c(:,jcf) ;
-

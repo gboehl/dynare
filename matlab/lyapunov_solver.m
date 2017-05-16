@@ -1,14 +1,14 @@
 function P=lyapunov_solver(T,R,Q,DynareOptions) % --*-- Unitary tests --*--
 % function P=lyapunov_solver(T,R,Q,DynareOptions)
 % Solves the Lyapunov equation P-T*P*T' = R*Q*R' arising in a state-space
-% system, where P is the variance of the states 
+% system, where P is the variance of the states
 %
 % Inputs
 %   T               [double]    n*n matrix.
 %   R               [double]    n*m matrix.
 %   Q               [double]    m*m matrix.
 %   DynareOptions   [structure] Dynare options
-% 
+%
 % Outputs
 %   P               [double]    n*n matrix.
 %
@@ -20,7 +20,7 @@ function P=lyapunov_solver(T,R,Q,DynareOptions) % --*-- Unitary tests --*--
 %   DynareOptions.lyapunov_db == 1
 %       doubling algorithm
 %   DynareOptions.lyapunov_srs == 1
-%       Square-root solver for discrete-time Lyapunov equations (requires Matlab System Control toolbox 
+%       Square-root solver for discrete-time Lyapunov equations (requires Matlab System Control toolbox
 %       or Octave control package)
 
 % Copyright (C) 2016-2017 Dynare Team
@@ -60,7 +60,7 @@ elseif DynareOptions.lyapunov_srs == 1
     end
     chol_Q = R*chol(Q,'lower');
     R_P = dlyapchol(T,chol_Q);
-    P = R_P' * R_P;    
+    P = R_P' * R_P;
 else
     P = lyapunov_symm(T,R*Q*R',DynareOptions.lyapunov_fixed_point_tol,DynareOptions.qz_criterium,DynareOptions.lyapunov_complex_threshold, [], DynareOptions.debug);
 end
@@ -81,7 +81,7 @@ end
 %$ tmp2=randn(m_small,m_small);
 %$ Q_small=tmp2*tmp2';
 %$ R_small=randn(n_small,m_small);
-%$ 
+%$
 %$ n_large=9;
 %$ m_large=11;
 %$ T_large=randn(n_large,n_large);
@@ -89,7 +89,7 @@ end
 %$ tmp2=randn(m_large,m_large);
 %$ Q_large=tmp2*tmp2';
 %$ R_large=randn(n_large,m_large);
-%$ 
+%$
 %$ % DynareOptions.lyapunov_fp == 1
 %$ options_.lyapunov_fp = 1;
 %$ try

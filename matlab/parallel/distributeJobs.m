@@ -40,7 +40,7 @@ function [nCPU, totCPU, nBlockPerCPU, totSLAVES] = distributeJobs(Parallel, fBlo
 
 
 % The Parallel vector has already been sorted
-% (in accord with the CPUWeight values) in DESCENDING order in 
+% (in accord with the CPUWeight values) in DESCENDING order in
 % InitializeComputationalEnvironment!
 
 totCPU=0;
@@ -57,7 +57,7 @@ for j=1:lP
         error(['PARALLEL_ERROR:: NumberOfThreadsPerJob is not an exact divisor of CPUnbr'])
     end
     nCPU(j)=length(Parallel(j).CPUnbr)/Parallel(j).NumberOfThreadsPerJob;
-    totCPU=totCPU+nCPU(j);    
+    totCPU=totCPU+nCPU(j);
     CPUWeight(j)=str2num(Parallel(j).NodeWeight);
 end
 
@@ -85,15 +85,15 @@ CPUWeight=CPUWeight./sum(CPUWeight);
 % Redistributing the jobs among the cluster nodes according to the
 % CPUWeight.
 for i=1:nC
-    
+
     JobsForNode(i)=CPUWeight(i)*NumbersOfJobs;
-    
+
     % Many choices are possible:
-    
+
     % JobsForNode(i)=round(JobsForNode(i));
     % JobsForNode(i)=floor(JobsForNode(i));
-      JobsForNode(i)=ceil(JobsForNode(i));
-    
+    JobsForNode(i)=ceil(JobsForNode(i));
+
 end
 
 % Check if there are more (fewer) jobs.
@@ -101,19 +101,19 @@ end
 SumOfJobs=sum(JobsForNode);
 
 if SumOfJobs~=NumbersOfJobs
-    
+
     if SumOfJobs>NumbersOfJobs
-        
+
         % Many choices are possible:
-        
+
         % - Remove the excess works at the node that has the greatest
         %   number of jobs.
         % - Remove the excess works at the node slower.
-        
+
         VerySlow=nC;
-        
+
         while SumOfJobs>NumbersOfJobs
-            
+
             if JobsForNode(VerySlow)==0
                 VerySlow=VerySlow-1;
                 continue
@@ -121,21 +121,21 @@ if SumOfJobs~=NumbersOfJobs
             JobsForNode(VerySlow)=JobsForNode(VerySlow)-1;
             SumOfJobs=SumOfJobs-1;
         end
-        
+
     end
-    
+
     if SumOfJobs<NumbersOfJobs
-        
+
         % Many choices are possible:
         % - ... (see above).
-        
+
         [NonServe VeryFast]= min(CPUWeight);
-        
+
         while SumOfJobs<NumbersOfJobs
             JobsForNode(VeryFast)=JobsForNode(VeryFast)+1;
             SumOfJobs=SumOfJobs+1;
         end
-        
+
     end
 end
 
@@ -148,36 +148,36 @@ JobAssignedCpu=0;
 RelativePosition=1;
 
 for i=1:nC
-    
+
     % Many choices are possible:
     % - ... (see above).
-     
+
     JobAssignedCpu=max(1,floor(JobsForNode(i)/nCPUoriginal(i)));
-    
+
     ChekOverFlow=0;
-    
+
     for j=RelativePosition:nCPU(i)
         JobsForCpu(j)=JobAssignedCpu;
         ChekOverFlow=ChekOverFlow+JobAssignedCpu;
-        
+
         if ChekOverFlow>=JobsForNode(i)
             break
         end
-        
+
     end
-    
+
     % Check if there are more (fewer) jobs.
     % This can happen when we use ceil, round, ... functions.
-    
+
     if ChekOverFlow ~=(JobsForNode(i))
-        
+
         if ChekOverFlow >(JobsForNode(i))
             while ChekOverFlow>JobsForNode(i)
                 JobsForCpu(nCPU(i))=JobsForCpu(nCPU(i))-1;
                 ChekOverFlow=ChekOverFlow-1;
             end
         end
-        
+
         if ChekOverFlow <(JobsForNode(i))
             while ChekOverFlow<JobsForNode(i)
                 JobsForCpu(nCPU(i))=JobsForCpu(nCPU(i))+1;
@@ -185,9 +185,9 @@ for i=1:nC
             end
         end
     end
-    
+
     RelativePosition=nCPU(i)+1;
-    
+
 end
 
 % Reshape the variables totCPU,totSLAVES and nBlockPerCPU in accord with
@@ -216,5 +216,3 @@ for i=1:nCPU(nC)
         RelativeCounter=RelativeCounter+1;
     end
 end
-
-

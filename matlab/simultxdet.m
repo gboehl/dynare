@@ -88,7 +88,7 @@ if iorder == 1
         for j=1:min(ykmin+M_.exo_det_length+1-i,M_.exo_det_length)
             y_(dr.order_var,i) = y_(dr.order_var,i) + dr.ghud{j}*(ex_det(i+j-1,:)'-exo_det_steady_state);
         end
-        
+
         k1 = k1+1;
     end
 elseif iorder == 2
@@ -153,7 +153,7 @@ end
 int_width = zeros(iter,nvar);
 for i=1:nvar
     int_width(:,i) = fact*sqrt(var_yf(:,i));
-        if nargout==3
+    if nargout==3
         int_width_ME(:,i) = -fact*sqrt(var_yf_ME(:,i));
-        end
+    end
 end

@@ -34,12 +34,12 @@ if ~strcmp(tagtouse, options_.ms.output_file_tag)
 end
 
 switch type
-    case 'irf'
-        clean_ms_irf_files(tagtouse);
-    case 'forecast'
-        clean_ms_forecast_files(tagtouse);
-    case 'variance_decomposition'
-        clean_ms_variance_decomposition_files(tagtouse);
-    otherwise
-        error('clean_files_for_second_type_of_mex: should not arrive here');
+  case 'irf'
+    clean_ms_irf_files(tagtouse);
+  case 'forecast'
+    clean_ms_forecast_files(tagtouse);
+  case 'variance_decomposition'
+    clean_ms_variance_decomposition_files(tagtouse);
+  otherwise
+    error('clean_files_for_second_type_of_mex: should not arrive here');
 end

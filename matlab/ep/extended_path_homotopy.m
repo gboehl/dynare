@@ -17,7 +17,7 @@ function [info_convergence, endo_simul] = extended_path_homotopy(endo_simul, exo
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-    
+
 endo_simul0 = endo_simul;
 if ismember(method, [1, 2])
     noconvergence = true;

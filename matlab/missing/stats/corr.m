@@ -25,7 +25,7 @@ function retval = corr(x, y) % --*-- Unitary tests --*--
 %! the correlation between the columns of @var{x}.
 %! @end deftypefn
 %@eod:
-% 
+%
 % Notes:    - the original Octave code has been rewritten to avoid calling cov, since
 %               there is a long-standing incompatiblity between Matlab's cov and Octave's cov
 %               (see https://savannah.gnu.org/bugs/?40751)
@@ -63,12 +63,12 @@ end
 
 % Input validation
 if (nargin==1 && ~(isnumeric (x) || islogical (x))) || ...
-    (nargin==2 && ~(isnumeric (x) || islogical (x) || isnumeric (y) || islogical (y)))
+           (nargin==2 && ~(isnumeric (x) || islogical (x) || isnumeric (y) || islogical (y)))
     error ('corr: X and Y must be numeric matrices or vectors');
 end
 
 if (nargin==1 && ~ismatrix(x)) || (nargin==2 && (~ismatrix(y) || ~ismatrix(x)))
-error ('corr: X and Y must be 2-D matrices or vectors');
+    error ('corr: X and Y must be 2-D matrices or vectors');
 end
 
 if (nargin == 2)
@@ -82,13 +82,13 @@ if isscalar(x)
     if nargin==1
         retval = NaN;
     else
-        retval = NaN(size(y));    
+        retval = NaN(size(y));
     end
     return
 end
 
 if nargin==2 && isscalar(y)
-    retval = NaN(size(x'));    
+    retval = NaN(size(x'));
     return
 end
 

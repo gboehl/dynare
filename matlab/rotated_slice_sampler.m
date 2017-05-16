@@ -4,7 +4,7 @@ function [theta, fxsim, neval] = rotated_slice_sampler(objective_function,theta,
 % extension of the orthogonal univarite sampler (slice_sampler.m)
 % copyright M. Ratto (European Commission)
 %
-% objective_function(theta,varargin): -log of any unnormalized pdf 
+% objective_function(theta,varargin): -log of any unnormalized pdf
 % with varargin (optional) a vector of auxiliaty parameters
 % to be passed to f( ).
 % ----------------------------------------------------------
@@ -55,7 +55,7 @@ if ~isempty(sampler_options.mode)
         distance(j)=sqrt(sum((theta-mm(j).m).^2));
     end
     [m, im] = min(distance);
-    
+
     r=im;
     V1 = mm(r).m;
     jj=0;
@@ -71,57 +71,57 @@ if ~isempty(sampler_options.mode)
     V1 = V1(:,resul);
 
     %V1 = V1(:, randperm(n-1));
-%     %d = chol(mm(r).invhess);
-%     %V1 = transpose(feval(sampler_options.proposal_distribution, transpose(mm(r).m), d, npar));
-% 
-%     V1=eye(npar);
-%     V1=V1(:,randperm(npar));
-%     for j=1:2,
-%         V1(:,j)=mm(r(j)).m-theta;
-%         V1(:,j)=V1(:,j)/norm(V1(:,j));
-%     end
-%     % Gram-Schmidt
-%     for j=2:npar,
-%         for k=1:j-1,
-%             V1(:,j)=V1(:,j)-V1(:,k)'*V1(:,j)*V1(:,k);
-%         end
-%         V1(:,j)=V1(:,j)/norm(V1(:,j));
-%     end    
-%     for j=1:n,
-%         distance(j)=sqrt(sum((theta-mm(j).m).^2));
-%     end
-%     [m, im] = min(distance);
-%     if im==r, 
-%         fxsim=[];
-%         return,
-%     else
-%         theta1=theta;
-%     end
+    %     %d = chol(mm(r).invhess);
+    %     %V1 = transpose(feval(sampler_options.proposal_distribution, transpose(mm(r).m), d, npar));
+    %
+    %     V1=eye(npar);
+    %     V1=V1(:,randperm(npar));
+    %     for j=1:2,
+    %         V1(:,j)=mm(r(j)).m-theta;
+    %         V1(:,j)=V1(:,j)/norm(V1(:,j));
+    %     end
+    %     % Gram-Schmidt
+    %     for j=2:npar,
+    %         for k=1:j-1,
+    %             V1(:,j)=V1(:,j)-V1(:,k)'*V1(:,j)*V1(:,k);
+    %         end
+    %         V1(:,j)=V1(:,j)/norm(V1(:,j));
+    %     end
+    %     for j=1:n,
+    %         distance(j)=sqrt(sum((theta-mm(j).m).^2));
+    %     end
+    %     [m, im] = min(distance);
+    %     if im==r,
+    %         fxsim=[];
+    %         return,
+    %     else
+    %         theta1=theta;
+    %     end
 else
-    V1 = sampler_options.V1;    
+    V1 = sampler_options.V1;
 end
 npar=size(V1,2);
-    
+
 for it=1:npar
     theta0 = theta;
     neval(it) = 0;
     xold  = 0;
-   % XLB   = thetaprior(3);
-   % XUB   = thetaprior(4);
+    % XLB   = thetaprior(3);
+    % XUB   = thetaprior(4);
     tb=sort([(thetaprior(:,1)-theta)./V1(:,it) (thetaprior(:,2)-theta)./V1(:,it)],2);
     XLB=max(tb(:,1));
-    XUB=min(tb(:,2));  
+    XUB=min(tb(:,2));
     if isempty(W1)
-        W = (XUB-XLB); %*0.8; 
+        W = (XUB-XLB); %*0.8;
     else
         W = W1(it);
     end
-        
+
     % -------------------------------------------------------
     % 1. DRAW Z = ln[f(X0)] - EXP(1) where EXP(1)=-ln(U(0,1))
     %    THIS DEFINES THE SLICE S={x: z < ln(f(x))}
     % -------------------------------------------------------
-    
+
     fxold = -feval(objective_function,theta,varargin{:});
     %I have to be sure that the rotation is for L,R or for Fxold, theta(it)
     neval(it) = neval(it) + 1;
@@ -133,7 +133,7 @@ for it=1:npar
     u = rand(1,1);
     L = max(XLB,xold-W*u);
     R = min(XUB,L+W);
-    
+
     %[L R]=slice_rotation(L, R, alpha);
     while(L > XLB)
         xsim = L;
@@ -181,4 +181,3 @@ end
 %     end
 % end
 end
-

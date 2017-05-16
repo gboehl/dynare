@@ -37,7 +37,7 @@ function [LIK, lik,a,P] = univariate_kalman_filter(data_index,number_of_observat
 %! @item Q
 %! Matrix (@var{rr}*@var{rr}) of doubles, covariance matrix of the structural innovations (noise in the state equation).
 %! @item R
-%! Matrix (@var{mm}*@var{rr}) of doubles, 
+%! Matrix (@var{mm}*@var{rr}) of doubles,
 %! @item H
 %! Vector (@var{pp}) of doubles, diagonal of covariance matrix of the measurement errors (corelation among measurement errors is handled by a model transformation).
 %! @item Z
@@ -76,9 +76,9 @@ function [LIK, lik,a,P] = univariate_kalman_filter(data_index,number_of_observat
 %! @ref{univariate_kalman_filter_ss}
 %! @end deftypefn
 %@eod:
-% 
+%
 % Algorithm:
-% 
+%
 %   Uses the univariate filter as described in Durbin/Koopman (2012): "Time
 %   Series Analysis by State Space Methods", Oxford University Press,
 %   Second Edition, Ch. 6.4 + 7.2.5
@@ -136,7 +136,7 @@ else
     DLIK  = zeros(k,1);                             % Initialization of the score.
     Da    = zeros(mm,k);                            % Derivative State vector.
     dlik  = zeros(smpl,k);
-    
+
     if Zflag==0
         C = zeros(pp,mm);
         for ii=1:pp, C(ii,Z(ii))=1; end         % SELECTION MATRIX IN MEASUREMENT EQ. (FOR WHEN IT IS NOT CONSTANT)
@@ -172,13 +172,13 @@ while notsteady && t<=last %loop over t
     oldP = P(:);
     for i=1:rows(z) %loop over i
         if Zflag
-            prediction_error = Y(d_index(i),t) - z(i,:)*a;  % nu_{t,i} in 6.13 in DK (2012) 
+            prediction_error = Y(d_index(i),t) - z(i,:)*a;  % nu_{t,i} in 6.13 in DK (2012)
             PZ = P*z(i,:)';                                 % Z_{t,i}*P_{t,i}*Z_{t,i}'
-            Fi = z(i,:)*PZ + H(d_index(i));                 % F_{t,i} in 6.13 in DK (2012), relies on H being diagonal 
+            Fi = z(i,:)*PZ + H(d_index(i));                 % F_{t,i} in 6.13 in DK (2012), relies on H being diagonal
         else
-            prediction_error = Y(d_index(i),t) - a(z(i));   % nu_{t,i} in 6.13 in DK (2012) 
+            prediction_error = Y(d_index(i),t) - a(z(i));   % nu_{t,i} in 6.13 in DK (2012)
             PZ = P(:,z(i));                                 % Z_{t,i}*P_{t,i}*Z_{t,i}'
-            Fi = PZ(z(i)) + H(d_index(i));                  % F_{t,i} in 6.13 in DK (2012), relies on H being diagonal 
+            Fi = PZ(z(i)) + H(d_index(i));                  % F_{t,i} in 6.13 in DK (2012), relies on H being diagonal
         end
         if Fi>kalman_tol
             Ki =  PZ/Fi; %K_{t,i} in 6.13 in DK (2012)
@@ -214,7 +214,7 @@ while notsteady && t<=last %loop over t
             [Da,DP] = univariate_computeDstate(k,a,P,T,Da,DP,DT,DOm,notsteady);
         end
     end
-    a = T*a;            %transition according to (6.14) in DK (2012) 
+    a = T*a;            %transition according to (6.14) in DK (2012)
     P = T*P*T' + QQ;    %transition according to (6.14) in DK (2012)
     if t>=no_more_missing_observations
         notsteady = max(abs(K(:)-oldK))>riccati_tol;
@@ -229,7 +229,7 @@ if analytic_derivation
     DLIK = DLIK/2;
     dlik = dlik/2;
     if analytic_derivation==2 || asy_hess
-%         Hess = (Hess + Hess')/2;
+        %         Hess = (Hess + Hess')/2;
         Hess = -Hess/2;
     end
 end
@@ -239,10 +239,10 @@ if t <= last
     if analytic_derivation
         if analytic_derivation==2
             [tmp, tmp2] = univariate_kalman_filter_ss(Y,t,last,a,P,kalman_tol,T,H,Z,pp,Zflag, ...
-                analytic_derivation,Da,DT,DYss,DP,DH,D2a,D2T,D2Yss,D2P);
+                                                      analytic_derivation,Da,DT,DYss,DP,DH,D2a,D2T,D2Yss,D2P);
         else
             [tmp, tmp2] = univariate_kalman_filter_ss(Y,t,last,a,P,kalman_tol,T,H,Z,pp,Zflag, ...
-                analytic_derivation,Da,DT,DYss,DP,DH,asy_hess);
+                                                      analytic_derivation,Da,DT,DYss,DP,DH,asy_hess);
         end
         lik(s+1:end,:)=tmp2{1};
         dlik(s+1:end,:)=tmp2{2};

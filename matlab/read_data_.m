@@ -1,6 +1,6 @@
 function read_data_()
 % function read_data_
-% reads endogenous and exogenous variables from a text file 
+% reads endogenous and exogenous variables from a text file
 % Used by datafile option in simulate
 %
 % INPUT

@@ -3,10 +3,10 @@ function warning_config()
 %
 % INPUTS
 %   none
-%             
+%
 % OUTPUTS
 %   none
-%        
+%
 % SPECIAL REQUIREMENTS
 %   none
 

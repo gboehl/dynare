@@ -33,7 +33,7 @@ global options_ oo_ M_ dataset_ dataset_info
 
 oo_recursive_={};
 mode_file0 = options_.mode_file; % store mode_file set by the user
-% Test if the order of approximation is nonzero (the preprocessor tests if order is non negative).
+                                 % Test if the order of approximation is nonzero (the preprocessor tests if order is non negative).
 if isequal(options_.order,0)
     error('Estimation:: The order of the Taylor approximation cannot be 0!')
 end
@@ -46,8 +46,8 @@ end
 var_list = check_list_of_variables(options_, M_, var_list);
 options_.varlist = var_list;
 
-nobs = sort(options_.nobs); 
-first_obs = sort(options_.first_obs); 
+nobs = sort(options_.nobs);
+first_obs = sort(options_.first_obs);
 
 nnobs = length(nobs);
 nfirstobs = length(first_obs);
@@ -55,7 +55,7 @@ nfirstobs = length(first_obs);
 if nnobs~=1 && nfirstobs~=1
     error('You cannot simultaneously do rolling window and recursive estimation')
 end
-    
+
 horizon = options_.forecast;
 
 if nargin<2 || ~exist('dname','var') || isempty(dname)
@@ -83,7 +83,7 @@ if nnobs>1 || nfirstobs > 1
             options_.nobs = nobs(i);
             M_.dname = [dname '_' int2str(nobs(i))];
         elseif nfirstobs>1
-            options_.first_obs=first_obs(i);            
+            options_.first_obs=first_obs(i);
             M_.dname = [dname '_' int2str(first_obs(i))];
         end
         dynare_estimation_1(var_list,M_.dname);
@@ -138,11 +138,11 @@ if nnobs > 1 && horizon > 0
             IdObs(j,1) = iobs;
         end
     end
-    
+
     gend = dataset_.nobs;
     time_offset=min(3,gend-1); %for observables, plot 3 previous periods unless data is shorter
     k = time_offset+min(nobs(end)-nobs(1)+horizon, ...
-              size(dataset_.data,1)-nobs(1));
+                        size(dataset_.data,1)-nobs(1));
     data2 = dataset_info.rawdata(end-k+1:end,:);
     [nbplt,nr,nc,lr,lc,nstar] = pltorg(nvar);
     m = 1;
@@ -167,23 +167,23 @@ if nnobs > 1 && horizon > 0
         for j=1:nnobs
             if mh_replic > 0
                 oo_.RecursiveForecast.Mean.(vname)(j,:) = ...
-                      oo_recursive_{nobs(j)}.MeanForecast.Mean.(vname);
+                    oo_recursive_{nobs(j)}.MeanForecast.Mean.(vname);
                 oo_.RecursiveForecast.HPDinf.(vname)(j,:) = ...
-                      oo_recursive_{nobs(j)}.MeanForecast.HPDinf.(vname);
+                    oo_recursive_{nobs(j)}.MeanForecast.HPDinf.(vname);
                 oo_.RecursiveForecast.HPDsup.(vname)(j,:) = ...
-                      oo_recursive_{nobs(j)}.MeanForecast.HPDsup.(vname);
+                    oo_recursive_{nobs(j)}.MeanForecast.HPDsup.(vname);
                 oo_.RecursiveForecast.HPDTotalinf.(vname)(j,:) = ...
-                      oo_recursive_{nobs(j)}.PointForecast.HPDinf.(vname);
+                    oo_recursive_{nobs(j)}.PointForecast.HPDinf.(vname);
                 oo_.RecursiveForecast.HPDTotalsup.(vname)(j,:) = ...
-                      oo_recursive_{nobs(j)}.PointForecast.HPDsup.(vname);
+                    oo_recursive_{nobs(j)}.PointForecast.HPDsup.(vname);
             else
                 oo_.RecursiveForecast.Mean.(vname)(j,:) =...
-                      oo_recursive_{nobs(j)}.forecast.Mean.(vname);
+                    oo_recursive_{nobs(j)}.forecast.Mean.(vname);
                 oo_.RecursiveForecast.HPDinf.(vname)(j,:) =...
-                      oo_recursive_{nobs(j)}.forecast.HPDinf.(vname);
+                    oo_recursive_{nobs(j)}.forecast.HPDinf.(vname);
                 oo_.RecursiveForecast.HPDsup.(vname)(j,:) =...
-                      oo_recursive_{nobs(j)}.forecast.HPDsup.(vname);
-              end
+                    oo_recursive_{nobs(j)}.forecast.HPDsup.(vname);
+            end
             x = nobs(1)+nobs(j)-nobs(1)+(1:horizon);
 
             y = oo_.RecursiveForecast.Mean.(vname)(j,:);
@@ -212,5 +212,5 @@ if nnobs > 1 && horizon > 0
         end
     end
 end
-options_.mode_file = mode_file0; 
+options_.mode_file = mode_file0;
 %reset stored mode-file to user defined one (and in case it was only set by the recursive estimation)

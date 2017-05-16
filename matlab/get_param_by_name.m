@@ -1,7 +1,7 @@
 function x = get_param_by_name(pname)
 % function x = get_param_by_name(pname)
 % returns the value of a parameter identified by its name
-%  
+%
 % INPUTS:
 %   pname:  parameter name
 %

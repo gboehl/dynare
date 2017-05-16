@@ -2,7 +2,7 @@ function [endogenousvariables, info] = sim1_linear(endogenousvariables, exogenou
 
 % Solves a linear approximation of a perfect foresight model using sparse matrix.
 %
-% INPUTS 
+% INPUTS
 % - endogenousvariables [double] N*T array, paths for the endogenous variables (initial guess).
 % - exogenousvariables  [double] T*M array, paths for the exogenous variables.
 % - steadystate_y       [double] N*1 array, steady state for the endogenous variables.
@@ -10,16 +10,16 @@ function [endogenousvariables, info] = sim1_linear(endogenousvariables, exogenou
 % - M                   [struct] contains a description of the model.
 % - options             [struct] contains various options.
 %
-% OUTPUTS 
+% OUTPUTS
 % - endogenousvariables [double] N*T array, paths for the endogenous variables (solution of the perfect foresight model).
 % - info                [struct] contains informations about the results.
 %
-% NOTATIONS 
+% NOTATIONS
 % - N is the number of endogenous variables.
 % - M is the number of innovations.
 % - T is the number of periods (including initial and/or terminal conditions).
 %
-% REMARKS 
+% REMARKS
 % - The structure `M` describing the structure of the model, must contain the
 % following informations:
 %  + lead_lag_incidence, incidence matrix (given by the preprocessor).

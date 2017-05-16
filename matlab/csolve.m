@@ -12,7 +12,7 @@ function [x,rc] = csolve(FUN,x,gradfun,crit,itmax,varargin)
 %           the equation is solved.
 % itmax:    the solver stops when this number of iterations is reached, with rc=4
 % varargin: in this position the user can place any number of additional arguments, all
-%           of which are passed on to FUN and gradfun (when it is non-empty) as a list of 
+%           of which are passed on to FUN and gradfun (when it is non-empty) as a list of
 %           arguments following x.
 % rc:       0 means normal solution, 1 and 3 mean no solution despite extremely fine adjustments
 %           in step length (very likely a numerical problem, or a discontinuity). 4 means itmax
@@ -60,7 +60,7 @@ if isempty(varargin)
     f0=feval(FUN,x);
 else
     f0=feval(FUN,x,varargin{:});
-end   
+end
 af0=sum(abs(f0));
 af00=af0;
 itct=0;

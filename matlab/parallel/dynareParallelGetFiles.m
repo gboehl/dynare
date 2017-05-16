@@ -55,10 +55,10 @@ for indPC=1:length(Parallel)
             for jfil=1:size(NamFileInput,1)
 
                 if isoctave % Patch for peculiar behaviour of ls under Linux.
-                    % It is necessary to manage the jolly char '*'!
+                            % It is necessary to manage the jolly char '*'!
 
                     FindAst=strfind(NamFileInput{jfil,2},'comp_status_posterior_sampler_core*');
-                    
+
                     if isempty (FindAst)
 
                         [NonServeL NonServeR]= system(['scp ',scp_token,' ',Parallel(indPC).UserName,'@',Parallel(indPC).ComputerName,':',Parallel(indPC).RemoteDirectory,'/',PRCDir,'/',NamFileInput{jfil,1},NamFileInput{jfil,2},' ',NamFileInput{jfil,1}]);
@@ -66,9 +66,9 @@ for indPC=1:length(Parallel)
                     else
 
                         filenameTemp=NamFileInput{jfil,2};
-                        
+
                         [NotUsed FlI]=system(['ssh ',ssh_token,' ',Parallel(indPC).UserName,'@',Parallel(indPC).ComputerName,' ls ',Parallel(indPC).RemoteDirectory,'/',PRCDir,'/',filenameTemp, ' 2> OctaveStandardOutputMessage.txt']);
-                        
+
                         if isempty (FlI)
                             return
                         end

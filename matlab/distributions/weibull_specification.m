@@ -2,12 +2,12 @@ function [shape, scale] = weibull_specification(mu, sigma2, lb, name)   % --*-- 
 
 % Returns the hyperparameters of the Weibull distribution given the expectation and variance.
 %
-% INPUTS 
+% INPUTS
 %
 %
-% OUTPUTS 
+% OUTPUTS
 %
-% 
+%
 
 % Copyright (C) 2015-2016 Dynare Team
 %
@@ -49,8 +49,8 @@ end
 scale = NaN;
 shape = NaN;
 
-mu = mu-lb; 
-mu2 = mu*mu;   
+mu = mu-lb;
+mu2 = mu*mu;
 
 eqn = @(k) gammaln(1+2./k) - 2*gammaln(1+1./k) - log(1+sigma2/mu2);
 eqn2 = @(k) eqn(k).*eqn(k);
@@ -140,4 +140,3 @@ scale = mu/gamma(1+1/shape);
 %$ end
 %$ T = all(t);
 %@eof:1
-

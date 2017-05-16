@@ -18,16 +18,16 @@ function [ya, yass, gya, gyass] = quarterly2annual(y,yss,GYTREND0,type,islog,aux
 %          1 log-level
 %          2 growth rate Q frequency
 % aux      optional input used when type>4
-% 
+%
 %
 % OUTPUTS
 % ya       annual (log-)level
-% yass     annual steadystate (log-)level  
+% yass     annual steadystate (log-)level
 % gya      annual growth rate
 % gyass    annual growth rate steadystate
 
 % Copyright (C) 2017 Dynare Team
-%    
+%
 % This file is part of Dynare.
 %
 % Dynare is free software: you can redistribute it and/or modify
@@ -59,7 +59,7 @@ if isstruct(aux)
     yauxss=aux.yss;
     islogaux=aux.islog;
     GYTREND0aux=aux.GYTREND0;
-    typeaux=aux.type;    
+    typeaux=aux.type;
     if islogaux
         yaux=exp(yaux+yauxss);
         yauxss=exp(yauxss);
@@ -80,48 +80,48 @@ if islog == 1
     y=y-yss;
 end
 switch type
-    case 1
-        yass = yss*(exp(-GYTREND0*3)+exp(-GYTREND0*2)+exp(-GYTREND0)+1);
-        tmp = lagged(y,3)*exp(-GYTREND0*3)+lagged(y,2)*exp(-GYTREND0*2)+lagged(y,1)*exp(-GYTREND0)+y; % annualized level
-        ya = tmp(4:4:end);
-    case 2
-        yass = yss*(exp(-GYTREND0*3)+exp(-GYTREND0*2)+exp(-GYTREND0)+1)/4;
-        tmp = (lagged(y,3)*exp(-GYTREND0*3)+lagged(y,2)*exp(-GYTREND0*2)+lagged(y,1)*exp(-GYTREND0)+y)/4; % annualized level
-        ya = tmp(4:4:end);
-    case 3
-        yass=yss;
-        tmp = y;
-        ya = tmp(4:4:end);
-    case 4
-        yass = yss*(exp(-GYTREND0*3/2));
-        tmp = (lagged(y+yss,3)*exp(-GYTREND0*3).*lagged(y+yss,2)*exp(-GYTREND0*2).*lagged(y+yss,1)*exp(-GYTREND0).*(y+yss)).^(1/4); % annualized level        
-        tmp = tmp - yass;
-        ya = tmp(4:4:end);
-    case 5
-        % nominal series
-        yn = (y+yss).*(yaux+yauxss) - yss.*yauxss;
-        [yna, ynass] = quarterly2annual(yn,yss.*yauxss,GYTREND0+GYTREND0aux,typeaux,0,0);
-        % real series
-        [yra, yrass] = quarterly2annual(yaux,yauxss,GYTREND0aux,typeaux,0,0);
-        % deflator
-        yass = ynass/yrass;
-        ya = (yna+ynass)./(yr+yrass)-yass;        
-    case 6
-        % nominal series
-        yn = (y+yss).*(yaux+yauxss) - yss.*yauxss;
-        [yna, ynass] = quarterly2annual(yn,yss.*yauxss,GYTREND0+GYTREND0aux,typeaux,0,0);
-        % deflator
-        [pa, pass] = quarterly2annual(yaux,yauxss,GYTREND0aux,2,0,0);
-        % real series
-        yass = ynass/pass;
-        ya = (yna+ynass)./(pa+pass)-yass;        
-    case 7
-        % nominal series
-        yn = (y+yss).*(yaux+yauxss) - yss.*yauxss;
-        [ya, yass] = quarterly2annual(yn,yss.*yauxss,GYTREND0+GYTREND0aux,typeaux,0,0);
-        GYTREND0=GYTREND0+GYTREND0aux;
-    otherwise
-        error('Wrong type input')
+  case 1
+    yass = yss*(exp(-GYTREND0*3)+exp(-GYTREND0*2)+exp(-GYTREND0)+1);
+    tmp = lagged(y,3)*exp(-GYTREND0*3)+lagged(y,2)*exp(-GYTREND0*2)+lagged(y,1)*exp(-GYTREND0)+y; % annualized level
+    ya = tmp(4:4:end);
+  case 2
+    yass = yss*(exp(-GYTREND0*3)+exp(-GYTREND0*2)+exp(-GYTREND0)+1)/4;
+    tmp = (lagged(y,3)*exp(-GYTREND0*3)+lagged(y,2)*exp(-GYTREND0*2)+lagged(y,1)*exp(-GYTREND0)+y)/4; % annualized level
+    ya = tmp(4:4:end);
+  case 3
+    yass=yss;
+    tmp = y;
+    ya = tmp(4:4:end);
+  case 4
+    yass = yss*(exp(-GYTREND0*3/2));
+    tmp = (lagged(y+yss,3)*exp(-GYTREND0*3).*lagged(y+yss,2)*exp(-GYTREND0*2).*lagged(y+yss,1)*exp(-GYTREND0).*(y+yss)).^(1/4); % annualized level
+    tmp = tmp - yass;
+    ya = tmp(4:4:end);
+  case 5
+    % nominal series
+    yn = (y+yss).*(yaux+yauxss) - yss.*yauxss;
+    [yna, ynass] = quarterly2annual(yn,yss.*yauxss,GYTREND0+GYTREND0aux,typeaux,0,0);
+    % real series
+    [yra, yrass] = quarterly2annual(yaux,yauxss,GYTREND0aux,typeaux,0,0);
+    % deflator
+    yass = ynass/yrass;
+    ya = (yna+ynass)./(yr+yrass)-yass;
+  case 6
+    % nominal series
+    yn = (y+yss).*(yaux+yauxss) - yss.*yauxss;
+    [yna, ynass] = quarterly2annual(yn,yss.*yauxss,GYTREND0+GYTREND0aux,typeaux,0,0);
+    % deflator
+    [pa, pass] = quarterly2annual(yaux,yauxss,GYTREND0aux,2,0,0);
+    % real series
+    yass = ynass/pass;
+    ya = (yna+ynass)./(pa+pass)-yass;
+  case 7
+    % nominal series
+    yn = (y+yss).*(yaux+yauxss) - yss.*yauxss;
+    [ya, yass] = quarterly2annual(yn,yss.*yauxss,GYTREND0+GYTREND0aux,typeaux,0,0);
+    GYTREND0=GYTREND0+GYTREND0aux;
+  otherwise
+    error('Wrong type input')
 end
 
 % annual growth rate
@@ -133,4 +133,3 @@ if islog
     yass=log(yass);
     ya=ya-yass;
 end
-

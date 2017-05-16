@@ -24,7 +24,7 @@ iyf = find(M.lead_lag_incidence(2,:)>0); % Indices of variables at next period
 if ny0 ~= M.endo_nbr
     error('All endogenous variables must appear at the current period!')
 end
-    
+
 dynamicmodel = str2func([M.fname,'_dynamic']);
 
 info.status = 1;

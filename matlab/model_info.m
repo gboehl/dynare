@@ -30,14 +30,14 @@ else
     incidence = 0;
 end
 if static_
-        fprintf('                                          Informations about %s (static model)\n',M_.fname);
-        block_structre_str = 'block_structure_stat';
-        nb_leadlag = 1;
-    else
-        fprintf('                                          Informations about %s (dynamic model)\n',M_.fname);
-        block_structre_str = 'block_structure';
-        nb_leadlag = 3;
-    end
+    fprintf('                                          Informations about %s (static model)\n',M_.fname);
+    block_structre_str = 'block_structure_stat';
+    nb_leadlag = 1;
+else
+    fprintf('                                          Informations about %s (dynamic model)\n',M_.fname);
+    block_structre_str = 'block_structure';
+    nb_leadlag = 3;
+end
 if(isfield(M_,block_structre_str))
     if static_
         block_structure = M_.block_structure_stat;
@@ -108,7 +108,7 @@ if(isfield(M_,block_structre_str))
             fprintf('\n\n');
         end
     end
-    
+
     %printing the gross incidence matrix
     IM_star = char([kron(ones(M_.endo_nbr, M_.endo_nbr-1), double(blanks(3))) double(blanks(M_.endo_nbr)')]);
     for i = 1:nb_leadlag
@@ -136,7 +136,7 @@ if(isfield(M_,block_structre_str))
         fprintf('\n                                          Gross incidence matrix\n');
         fprintf('                                          =======================\n');
         disp([topp; bott]);
-    
+
         %printing the reordered incidence matrix
         IM_star_reordered = char([kron(ones(M_.endo_nbr, M_.endo_nbr-1), double(blanks(3))) double(blanks(M_.endo_nbr)')]);
         eq(block_structure.equation_reordered) = seq;
@@ -179,7 +179,7 @@ if(isfield(M_,block_structre_str))
             end
         end
         fprintf('1: non nul element, X: non nul element related to a state variable\n');
-        
+
         cur_block = 1;
         i_last = 0;
         block = {};
@@ -201,17 +201,17 @@ if(isfield(M_,block_structre_str))
             end
             if past_block ~= cur_block
                 for j = 1:i-1
-                   IM_star_reordered(j, 3 * (i - 1) - 1) = '|';
+                    IM_star_reordered(j, 3 * (i - 1) - 1) = '|';
                 end
             end
         end
-        
+
         bott = [int2str(block_structure.equation_reordered') blanks(M_.endo_nbr)' blanks(M_.endo_nbr)' IM_star_reordered];
         fprintf('\n                                          Reordered incidence matrix\n');
         fprintf('                                          ==========================\n');
         disp([topp; bott]);
         fprintf('1: non nul element, X: non nul element related to a state variable\n');
-     end
+    end
 else
     fprintf('There is no block decomposition of the model.\nUse ''block'' model''s option.\n');
 end
@@ -256,6 +256,3 @@ for i=1:n
     s = [s '|'];
 end
 ret = s;
-
-
-

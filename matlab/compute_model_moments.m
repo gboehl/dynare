@@ -4,10 +4,10 @@ function moments=compute_model_moments(dr,M_,options_)
 %    dr:        structure describing model solution
 %    M_:   structure of Dynare options
 %     options_
-%    
+%
 % OUTPUTS
 %    moments: a cell array containing requested moments
-%        
+%
 % SPECIAL REQUIREMENTS
 %    none
 

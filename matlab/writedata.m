@@ -1,6 +1,6 @@
 function writedata(fname)
 % function writedata(fname)
-% store endogenous and exogenous variables in a XLS spreadsheet file 
+% store endogenous and exogenous variables in a XLS spreadsheet file
 % INPUT
 %   fname: name of the XLS file
 % OUTPUT

@@ -157,22 +157,22 @@ end
 
 %initialize arrays
 if run_smoother
-  stock_smooth=NaN(endo_nbr,gend,MAX_nsmoo);
-  stock_update=NaN(endo_nbr,gend,MAX_nsmoo);
-  stock_innov=NaN(M_.exo_nbr,gend,MAX_ninno);
-  stock_smoothed_constant=NaN(endo_nbr,gend,MAX_n_smoothed_constant);
-  stock_smoothed_trend=NaN(endo_nbr,gend,MAX_n_smoothed_trend);
-  stock_trend_coeff = zeros(endo_nbr,MAX_n_trend_coeff);
-  if horizon
-      stock_forcst_mean= NaN(endo_nbr,horizon,MAX_nforc1);
-      stock_forcst_point = NaN(endo_nbr,horizon,MAX_nforc2);
-      if ~isequal(M_.H,0)
-          stock_forcst_point_ME = NaN(length(varobs),horizon,MAX_nforc_ME);
-      end
-  end
+    stock_smooth=NaN(endo_nbr,gend,MAX_nsmoo);
+    stock_update=NaN(endo_nbr,gend,MAX_nsmoo);
+    stock_innov=NaN(M_.exo_nbr,gend,MAX_ninno);
+    stock_smoothed_constant=NaN(endo_nbr,gend,MAX_n_smoothed_constant);
+    stock_smoothed_trend=NaN(endo_nbr,gend,MAX_n_smoothed_trend);
+    stock_trend_coeff = zeros(endo_nbr,MAX_n_trend_coeff);
+    if horizon
+        stock_forcst_mean= NaN(endo_nbr,horizon,MAX_nforc1);
+        stock_forcst_point = NaN(endo_nbr,horizon,MAX_nforc2);
+        if ~isequal(M_.H,0)
+            stock_forcst_point_ME = NaN(length(varobs),horizon,MAX_nforc_ME);
+        end
+    end
 end
 if nvn
-  stock_error = NaN(length(varobs),gend,MAX_nerro);
+    stock_error = NaN(length(varobs),gend,MAX_nerro);
 end
 if naK
     stock_filter_step_ahead =NaN(length(options_.filter_step_ahead),endo_nbr,gend+max(options_.filter_step_ahead),MAX_naK);
@@ -206,7 +206,7 @@ for b=fpar:B
         [dr,info,M_,options_,oo_] = resol(0,M_,options_,oo_);
         [alphahat,etahat,epsilonhat,alphatilde,SteadyState,trend_coeff,aK,junk1,junk2,P,junk4,junk5,trend_addition,state_uncertainty,M_,oo_,options_,bayestopt_] = ...
             DsgeSmoother(deep,gend,Y,data_index,missing_value,M_,oo_,options_,bayestopt_,estim_params_);
-        
+
         stock_trend_coeff(options_.varobs_id,irun(9))=trend_coeff;
         stock_smoothed_trend(IdObs,:,irun(11))=trend_addition;
         if options_.loglinear %reads values from smoother results, which are in dr-order and put them into declaration order
@@ -221,7 +221,7 @@ for b=fpar:B
                 constant_part;
             stock_update(dr.order_var,:,irun(1)) = alphatilde(1:endo_nbr,:)+ ...
                 constant_part;
-        end       
+        end
         stock_smoothed_constant(dr.order_var,:,irun(10))=constant_part;
         %% Compute constant for observables
         if options_.prefilter == 1 %as mean is taken after log transformation, no distinction is needed here
@@ -243,10 +243,10 @@ for b=fpar:B
             %smoothed variables are E_T(y_t) so no trend shift is required
             stock_smooth(IdObs,:,irun(1))=stock_smooth(IdObs,:,irun(1))+trend_addition+mean_correction;
             %updated variables are E_t(y_t) so no trend shift is required
-            stock_update(IdObs,:,irun(1))=stock_update(IdObs,:,irun(1))+trend_addition+mean_correction;         
+            stock_update(IdObs,:,irun(1))=stock_update(IdObs,:,irun(1))+trend_addition+mean_correction;
         else
             stock_smooth(IdObs,:,irun(1))=stock_smooth(IdObs,:,irun(1))+trend_addition;
-            stock_update(IdObs,:,irun(1))=stock_update(IdObs,:,irun(1))+trend_addition; 
+            stock_update(IdObs,:,irun(1))=stock_update(IdObs,:,irun(1))+trend_addition;
         end
         stock_innov(:,:,irun(2))  = etahat;
         if nvn
@@ -259,11 +259,11 @@ for b=fpar:B
                 constant_part=repmat(log(SteadyState(dr.order_var))',[length(options_.filter_step_ahead),1,gend+max(options_.filter_step_ahead)]);
             else
                 constant_part=repmat(SteadyState(dr.order_var)',[length(options_.filter_step_ahead),1,gend+max(options_.filter_step_ahead)]);
-            end       
+            end
 
             stock_filter_step_ahead(:,dr.order_var,:,irun(4)) = aK(options_.filter_step_ahead,1:endo_nbr,:) + ...
                 constant_part;
-            
+
             %now add trend to observables
             for ii=1:length(options_.filter_step_ahead)
                 if options_.prefilter
@@ -280,16 +280,16 @@ for b=fpar:B
         if horizon
             yyyy = alphahat(iendo,i_last_obs);
             yf = forcst2a(yyyy,dr,zeros(horizon,exo_nbr));
-            if options_.prefilter 
+            if options_.prefilter
                 % add mean
                 yf(:,IdObs) = yf(:,IdObs)+repmat(mean_varobs, ...
                                                  horizon+maxlag,1);
                 % add trend, taking into account that last point of sample is still included in forecasts and only cut off later
                 yf(:,IdObs) = yf(:,IdObs)+((options_.first_obs-1)+gend+[1-maxlag:horizon]')*trend_coeff'-...
-                             repmat(mean(trend_coeff*[options_.first_obs:options_.first_obs+gend-1],2)',length(1-maxlag:horizon),1); %center trend
+                    repmat(mean(trend_coeff*[options_.first_obs:options_.first_obs+gend-1],2)',length(1-maxlag:horizon),1); %center trend
             else
                 % add trend, taking into account that last point of sample is still included in forecasts and only cut off later
-                    yf(:,IdObs) = yf(:,IdObs)+((options_.first_obs-1)+gend+[1-maxlag:horizon]')*trend_coeff';                
+                yf(:,IdObs) = yf(:,IdObs)+((options_.first_obs-1)+gend+[1-maxlag:horizon]')*trend_coeff';
             end
             if options_.loglinear
                 yf = yf+repmat(log(SteadyState'),horizon+maxlag,1);
@@ -303,10 +303,10 @@ for b=fpar:B
                     repmat(mean_varobs,[horizon+maxlag,1,1]);
                 % add trend, taking into account that last point of sample is still included in forecasts and only cut off later
                 yf1(:,IdObs) = yf1(:,IdObs)+((options_.first_obs-1)+gend+[1-maxlag:horizon]')*trend_coeff'-...
-                             repmat(mean(trend_coeff*[options_.first_obs:options_.first_obs+gend-1],2)',length(1-maxlag:horizon),1); %center trend
+                    repmat(mean(trend_coeff*[options_.first_obs:options_.first_obs+gend-1],2)',length(1-maxlag:horizon),1); %center trend
             else
-               % add trend, taking into account that last point of sample is still included in forecasts and only cut off later
-               yf1(:,IdObs,:) = yf1(:,IdObs,:)+repmat(((options_.first_obs-1)+gend+[1-maxlag:horizon]')* ...
+                % add trend, taking into account that last point of sample is still included in forecasts and only cut off later
+                yf1(:,IdObs,:) = yf1(:,IdObs,:)+repmat(((options_.first_obs-1)+gend+[1-maxlag:horizon]')* ...
                                                        trend_coeff',[1,1,1]);
             end
             if options_.loglinear
@@ -420,7 +420,7 @@ for b=fpar:B
         end
         irun(7) = 1;
     end
-    
+
     if run_smoother && filter_covariance && (irun(8) > MAX_filter_covariance || b == B)
         stock = stock_filter_covariance(:,:,:,1:irun(8)-1);
         ifil(8) = ifil(8) + 1;
@@ -430,7 +430,7 @@ for b=fpar:B
         end
         irun(8) = 1;
     end
-    
+
     irun_index=9;
     if run_smoother && (irun(irun_index) > MAX_n_trend_coeff || b == B)
         stock = stock_trend_coeff(:,1:irun(irun_index)-1);
@@ -441,7 +441,7 @@ for b=fpar:B
         end
         irun(irun_index) = 1;
     end
-    
+
     irun_index=10;
     if run_smoother && (irun(irun_index) > MAX_n_smoothed_constant || b == B)
         stock = stock_smoothed_constant(:,:,1:irun(irun_index)-1);
@@ -463,7 +463,7 @@ for b=fpar:B
         end
         irun(irun_index) = 1;
     end
-    
+
     irun_index=12;
     if run_smoother && horizon && ~isequal(M_.H,0) && (irun(irun_index) > MAX_nforc_ME ||  b == B)
         stock = stock_forcst_point_ME(:,:,1:irun(irun_index)-1);
@@ -474,7 +474,7 @@ for b=fpar:B
         end
         irun(irun_index) = 1;
     end
-    
+
     irun_index=13;
     if run_smoother && smoothed_state_uncertainty && (irun(irun_index) > MAX_n_smoothed_state_uncertainty || b == B)
         stock = stock_smoothed_uncert(:,:,:,1:irun(irun_index)-1);
@@ -508,4 +508,3 @@ if RemoteFlag==1
 end
 
 dyn_waitbar_close(h);
-

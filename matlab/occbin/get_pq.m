@@ -21,8 +21,8 @@ p_reordered = zeros(nvars);
 q = zeros(nvars,nshocks);
 for i=1:nvars
     for j=1:nvars
-        p_reordered(i,j)=p(inverse_order(i),inverse_order(j)); 
+        p_reordered(i,j)=p(inverse_order(i),inverse_order(j));
     end
-    q(i,:)=dr_.ghu(inverse_order(i),:); 
+    q(i,:)=dr_.ghu(inverse_order(i),:);
 end
 p=p_reordered;

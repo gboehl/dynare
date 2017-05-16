@@ -40,10 +40,10 @@ function bounds = prior_bounds(bayestopt, prior_trunc)
 %
 % INPUTS
 %    bayestopt  [structure]  characterizing priors (shape, mean, p1..p4)
-%    
+%
 % OUTPUTS
 %    bounds     [double]      structure specifying prior bounds (lb and ub fields)
-%    
+%
 % SPECIAL REQUIREMENTS
 %    none
 

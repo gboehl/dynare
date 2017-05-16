@@ -6,13 +6,13 @@ function A = catstruct(varargin)
 %
 %     A.name = 'Me' ;
 %     B.income = 99999 ;
-%     X = catstruct(A,B) 
+%     X = catstruct(A,B)
 %     % -> X.name = 'Me' ;
 %     %    X.income = 99999 ;
 %
 %   If a fieldname is not unique among structures (i.e., a fieldname is
 %   present in more than one structure), only the value from the last
-%   structure with this field is used. In this case, the fields are 
+%   structure with this field is used. In this case, the fields are
 %   alphabetically sorted. A warning is issued as well. An axample:
 %
 %     S1.name = 'Me' ;
@@ -28,7 +28,7 @@ function A = catstruct(varargin)
 %     CD = catstruct(C,D) % CD is a 1x2 structure array with fields bb and aa
 %
 %   The last input can be the string 'sorted'. In this case,
-%   CATSTRUCT(S1,S2, ..., 'sorted') will sort the fieldnames alphabetically. 
+%   CATSTRUCT(S1,S2, ..., 'sorted') will sort the fieldnames alphabetically.
 %   To sort the fieldnames of a structure A, you could use
 %   CATSTRUCT(A,'sorted') but I recommend ORDERFIELDS for doing that.
 %
@@ -36,7 +36,7 @@ function A = catstruct(varargin)
 %   struct (0x0 struct array with no fields).
 %
 %   NOTE: To concatenate similar arrays of structs, you can use simple
-%   concatenation: 
+%   concatenation:
 %     A = dir('*.mat') ; B = dir('*.m') ; C = [A ; B] ;
 %
 %   See also CAT, STRUCT, FIELDNAMES, STRUCT2CELL, ORDERFIELDS
@@ -53,13 +53,13 @@ function A = catstruct(varargin)
 % Redistribution and use in source and binary forms, with or without
 % modification, are permitted provided that the following conditions are
 % met:
-% 
+%
 %     * Redistributions of source code must retain the above copyright
 %       notice, this list of conditions and the following disclaimer.
 %     * Redistributions in binary form must reproduce the above copyright
 %       notice, this list of conditions and the following disclaimer in
 %       the documentation and/or other materials provided with the distribution
-% 
+%
 % THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 % AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
 % IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -104,7 +104,7 @@ end
 sz0 = [] ; % used to check that all inputs have the same size
 
 % used to check for a few trivial cases
-NonEmptyInputs = false(N,1) ; 
+NonEmptyInputs = false(N,1) ;
 NonEmptyInputsN = 0 ;
 
 % used to collect the fieldnames and the inputs
@@ -117,7 +117,7 @@ for ii=1:N
     if ~isstruct(X)
         error('catstruct:InvalidArgument',['Argument #' num2str(ii) ' is not a structure.']) ;
     end
-    
+
     if ~isempty(X)
         % empty structs are ignored
         if ii > 1 && ~isempty(sz0)
@@ -145,30 +145,27 @@ elseif NonEmptyInputsN == 1
     end
 else
     % there is actually something to concatenate
-    FN = cat(1,FN{:}) ;    
-    VAL = cat(1,VAL{:}) ;    
+    FN = cat(1,FN{:}) ;
+    VAL = cat(1,VAL{:}) ;
     FN = squeeze(FN) ;
     VAL = squeeze(VAL) ;
     MatlabVersion = version;
     if isoctave || str2double(MatlabVersion(end-5:end-2))<2013 % Equivalent to, but faster than if verLessThan('matlab','8.1')
-      [UFN,ind] = unique(FN) ;          
+        [UFN,ind] = unique(FN) ;
     else
-      [UFN,ind] = unique(FN,'legacy') ;
+        [UFN,ind] = unique(FN,'legacy') ;
     end
-    
+
     if numel(UFN) ~= numel(FN)
         warning('catstruct:DuplicatesFound','Fieldnames are not unique between structures.') ;
         sorted = 1 ;
     end
-    
+
     if sorted
         VAL = VAL(ind,:) ;
         FN = FN(ind,:) ;
     end
-    
+
     A = cell2struct(VAL, FN);
     A = reshape(A, sz0) ; % reshape into original format
 end
-
-
-

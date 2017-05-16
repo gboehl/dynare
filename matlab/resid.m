@@ -2,13 +2,13 @@ function z = resid(junk)
 % function z = resid(junk)
 %
 % Computes static residuals associated with the guess values.
-% 
+%
 % INPUTS
 %    junk:   dummy value for backward compatibility
-%    
+%
 % OUTPUTS
 %    z:      residuals
-%        
+%
 % SPECIAL REQUIREMENTS
 %    none
 
@@ -58,9 +58,9 @@ if any(imag(oo_.steady_state))
         for iter=1:length(imagrow)
             fprintf('%s\n',M_.endo_names(imagrow(iter),:));
         end
-    end   
+    end
 end
-    
+
 if options_.steadystate_flag
     [oo_.steady_state,M_.params,info] = ...
         evaluate_steady_state(oo_.steady_state,M_,options_,oo_,0);

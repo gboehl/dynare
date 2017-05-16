@@ -4,7 +4,7 @@ function [H,prob,d] = smirnov(x1 , x2 , alpha, iflag )
 %
 % Written by Marco Ratto
 % Joint Research Centre, The European Commission,
-% marco.ratto@ec.europa.eu 
+% marco.ratto@ec.europa.eu
 
 % Copyright (C) 2012 European Commission
 % Copyright (C) 2012 Dynare Team
@@ -64,10 +64,10 @@ end
 %
 
 lam =  max((sqrt(n) + 0.12 + 0.11/sqrt(n)) * d , 0);
-if iflag == 0        
+if iflag == 0
     j       =  [1:101]';
     prob  =  2 * sum((-1).^(j-1).*exp(-2*lam*lam*j.^2));
-    
+
     prob=max(prob,0);
     prob=min(1,prob);
 else

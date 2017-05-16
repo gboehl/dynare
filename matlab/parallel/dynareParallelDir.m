@@ -37,10 +37,10 @@ for indPC=1:length(Parallel)
                 ssh_token = '';
             end
             if isoctave % Patch for peculiar behaviour of ssh-ls under Linux.
-                % It is necessary to capture the ls warning message.
-                % To do it under the ssh protocol it is necessary to redirect the ls message in a text file.
-                % The file is 'OctaveStandardOutputMessage.txt' and it is
-                % saved in the Model directory.
+                        % It is necessary to capture the ls warning message.
+                        % To do it under the ssh protocol it is necessary to redirect the ls message in a text file.
+                        % The file is 'OctaveStandardOutputMessage.txt' and it is
+                        % saved in the Model directory.
                 [check, ax]=system(['ssh ',ssh_token,' ',Parallel(indPC).UserName,'@',Parallel(indPC).ComputerName,' ls ',Parallel(indPC).RemoteDirectory,'/',PRCDir,'/',filename, ' 2> OctaveStandardOutputMessage.txt']);
             else
                 [check, ax]=system(['ssh ',ssh_token,' ',Parallel(indPC).UserName,'@',Parallel(indPC).ComputerName,' ls ',Parallel(indPC).RemoteDirectory,'/',PRCDir,'/',filename]);
@@ -57,10 +57,10 @@ for indPC=1:length(Parallel)
         else
 
             if isoctave % Patch for peculiar behaviour of ls under Linux.
-                
+
                 % It is necessary to capture the ls warning message and properly manage the jolly char '*'!
                 [check ax]=system(['ls ' ,filename, ' 2> OctaveStandardOutputMessage.txt']);
-                
+
                 if check ~= 0 || ~isempty(strfind(ax,'No such file or directory'))
                     ax=[];
                 end

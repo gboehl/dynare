@@ -137,7 +137,7 @@ end
 
 function oo_ = fill_output_structure(var1,var2,type,oo_,moment,lag,result)
 switch moment
-  case {'Mean','Median','Variance','HPDinf','HPDsup'} 
+  case {'Mean','Median','Variance','HPDinf','HPDsup'}
     oo_.([type,  'TheoreticalMoments']).dsge.correlation.(moment).(var1).(var2)(lag,1) = result;
   case {'deciles','density'}
     oo_.([type, 'TheoreticalMoments']).dsge.correlation.(moment).(var1).(var2)(lag,1) = {result};

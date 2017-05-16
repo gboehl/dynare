@@ -5,7 +5,7 @@ function i = write_mh_history_file(MetropolisFolder, ModelName, record)
 %   MetropolisFolder    [char]      Name of the metropolis subfolder
 %   ModelName           [char]      Name of the mod-file
 %   record              [structure] structure storing the MH history
-% Outputs:  
+% Outputs:
 %   i                   [scalar]    number of the mh_history file
 
 % Copyright (C) 2013-2015 Dynare Team

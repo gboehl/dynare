@@ -28,12 +28,12 @@ else
     nyb = 0;
     iyb = [];
 end
-        
+
 
 if ny0 ~= M.endo_nbr
     error('All endogenous variables must appear at the current period!')
 end
-    
+
 dynamicmodel = str2func([M.fname,'_dynamic']);
 
 info.status = 1;

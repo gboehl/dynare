@@ -69,7 +69,7 @@ fInputVar.Parallel = Parallel;
 % Launch the routine to be run in parallel.
 try
     tic
-    
+
     fOutputVar = feval(fname, fInputVar ,fblck, nblck, whoiam, ThisMatlab);
     toc
     if isfield(fOutputVar,'OutputFileName')
@@ -87,7 +87,7 @@ try
         save([ fname,'_output_',int2str(whoiam),'.mat'],'fOutputVar' )
         save(['comp_status_',funcName,int2str(whoiam),'.mat'],'CloseAllSlaves');
     end
-    
+
     disp(['fParallel ',int2str(whoiam),' completed.'])
 catch
     theerror = lasterror;
@@ -108,7 +108,7 @@ catch
         end
         fMessageStatus(NaN,whoiam,waitbarString, waitbarTitle, Parallel(ThisMatlab));
     end
-    
+
 end
 diary off;
 delete(['P_',fname,'_',int2str(whoiam),'End.txt']);

@@ -54,7 +54,7 @@ function [LIK,likk,a] = univariate_kalman_filter_ss(Y,start,last,a,P,kalman_tol,
 %! @sp 1
 %! @end deftypefn
 %@eod:
-% 
+%
 % Algorithm: See univariate_kalman_filter.m
 
 % Copyright (C) 2011-2017 Dynare Team
@@ -171,7 +171,7 @@ if analytic_derivation
     likk = {likk, dlikk};
 end
 if analytic_derivation==2 || asy_hess
-%     Hess = (Hess + Hess')/2;
+    %     Hess = (Hess + Hess')/2;
     Hess = -Hess/2;
     LIK={LIK,DLIK,Hess};
 elseif analytic_derivation==1

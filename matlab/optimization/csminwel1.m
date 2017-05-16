@@ -14,13 +14,13 @@ function [fh,xh,gh,H,itct,fcount,retcodeh] = csminwel1(fcn,x0,H0,grad,crit,nit,m
 %   epsilon: [scalar]       scalar double, numerical differentiation increment
 %   varargin:               Optional additional inputs that get handed off to fcn each
 %                           time it is called.
-% 
+%
 %        Note that if the program ends abnormally, it is possible to retrieve the current x,
 %        f, and H from the files g1.mat and H.mat that are written at each iteration and at each
 %        hessian update, respectively.  (When the routine hits certain kinds of difficulty, it
 %        writes g2.mat and g3.mat as well. If all were written at about the same time, any of them
 %        may be a decent starting point. One can also start from the one with best function value.)
-% 
+%
 % Outputs:
 %   fh:     [scalar]        function value at minimum
 %   xh:     [npar by 1]     parameter vector at minimum
@@ -30,17 +30,17 @@ function [fh,xh,gh,H,itct,fcount,retcodeh] = csminwel1(fcn,x0,H0,grad,crit,nit,m
 %   fcount  [scalar]        function iteration count upon termination
 %   retcodeh [scalar]       return code:
 %                               0: normal step
-%                               1: zero gradient 
+%                               1: zero gradient
 %                               2: back and forth on step length never finished
 %                               3: smallest step still improving too slow
 %                               4: back and forth on step length never finished
 %                               5: largest step still improving too fast
 %                               6: smallest step still improving too slow, reversed gradient
 %                               7: warning: possible inaccuracy in H matrix
-% 
+%
 % Original file downloaded from:
 % http://sims.princeton.edu/yftp/optimize/mfiles/csminwel.m
-% 
+%
 % Copyright (C) 1993-2007 Christopher Sims
 % Copyright (C) 2006-2015 Dynare Team
 %
@@ -59,7 +59,7 @@ function [fh,xh,gh,H,itct,fcount,retcodeh] = csminwel1(fcn,x0,H0,grad,crit,nit,m
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-% initialize variable penalty    
+% initialize variable penalty
 penalty = 1e8;
 fh = [];
 xh = [];
@@ -193,7 +193,7 @@ while ~done
                         [f3, x3, fc, retcode3] = csminit1(fcn,x,penalty,f,gcliff,0,eye(nx),Verbose,varargin{:});
                         fcount = fcount+fc; % put by Jinill
                         if retcode3==2 || retcode3==4
-                            wall3=1; 
+                            wall3=1;
                             badg3=1;
                         else
                             if NumGrad
@@ -302,7 +302,7 @@ while ~done
             error('Unaccounted Case, please contact the developers',Verbose)
         end
     end
-     
+
     f=fh;
     x=xh;
     g=gh;
@@ -312,18 +312,18 @@ end
 end
 
 function [g, badg]=get_num_grad(method,fcn,penalty,f0,x0,epsilon,varargin)
-    switch method
-      case 2
-        [g,badg] = numgrad2(fcn, f0, x0, penalty, epsilon, varargin{:});
-      case 3
-        [g,badg] = numgrad3(fcn, f0, x0, penalty, epsilon, varargin{:});
-      case 5
-        [g,badg] = numgrad5(fcn, f0, x0, penalty, epsilon, varargin{:});
-      case 13
-        [g,badg] = numgrad3_(fcn, f0, x0, penalty, epsilon, varargin{:});
-      case 15
-        [g,badg] = numgrad5_(fcn, f0, x0, penalty, epsilon, varargin{:});
-      otherwise
-        error('csminwel1: Unknown method for gradient evaluation!')
-    end
+switch method
+  case 2
+    [g,badg] = numgrad2(fcn, f0, x0, penalty, epsilon, varargin{:});
+  case 3
+    [g,badg] = numgrad3(fcn, f0, x0, penalty, epsilon, varargin{:});
+  case 5
+    [g,badg] = numgrad5(fcn, f0, x0, penalty, epsilon, varargin{:});
+  case 13
+    [g,badg] = numgrad3_(fcn, f0, x0, penalty, epsilon, varargin{:});
+  case 15
+    [g,badg] = numgrad5_(fcn, f0, x0, penalty, epsilon, varargin{:});
+  otherwise
+    error('csminwel1: Unknown method for gradient evaluation!')
+end
 end

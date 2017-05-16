@@ -62,15 +62,15 @@ for indPC=1:length(Parallel)
             for jfil=1:size(NamFileInput,1)
                 if ~isempty(NamFileInput{jfil,1})
                     if isempty(dynareParallelDir(NamFileInput{jfil,1},PRCDir,Parallel(indPC)))
-                        
+
                         if isoctave % Patch for peculiar behaviour of mkdir under Windows.
-                            
+
                             % It is Necessary because Octave is not able to
                             % create two nested directory at the same time.
-                            
-                           % Remove (if present) the '/' chars. Can be easily transformed
-                           % in a function.
-                           
+
+                            % Remove (if present) the '/' chars. Can be easily transformed
+                            % in a function.
+
                             NamFileInputTemp=NamFileInput{jfil,1};
                             while(1)
                                 Bs=strfind(NamFileInputTemp,'/');
@@ -80,7 +80,7 @@ for indPC=1:length(Parallel)
                                     NamFileInputTemp(1,Bs)='\';
                                 end
                             end
-                            
+
                             [NonServeL, NonServeR]=system(['mkdir \\',Parallel(indPC).ComputerName,'\',Parallel(indPC).RemoteDrive,'$\',Parallel(indPC).RemoteDirectory,'\',PRCDir,'\',NamFileInputTemp]);
 
                         else
@@ -88,15 +88,15 @@ for indPC=1:length(Parallel)
                         end
                     end
                 end
-                
+
                 if isoctave % Patch for peculiar behaviour copyfile ls under Windows.
-                    
+
                     % It is Necessary because Octave is not able to
                     % use the jolly char '*' with copyfile.
-                    
-                      % Remove (if present) the '/' chars. Can be easily transformed
-                      % in a function.
-                    
+
+                    % Remove (if present) the '/' chars. Can be easily transformed
+                    % in a function.
+
                     NamFileInputTemp=NamFileInput{jfil,1};
                     while(1)
                         Bs=strfind(NamFileInputTemp,'/');
@@ -106,9 +106,9 @@ for indPC=1:length(Parallel)
                             NamFileInputTemp(1,Bs)='\';
                         end
                     end
-                    
+
                     [NonServeS, NonServeD]=system(['copy ',NamFileInputTemp, NamFileInput{jfil,2},' \\',Parallel(indPC).ComputerName,'\',Parallel(indPC).RemoteDrive,'$\',Parallel(indPC).RemoteDirectory,'\',PRCDir,'\',NamFileInputTemp]);
-                    
+
                 else
                     copyfile([NamFileInput{jfil,1},NamFileInput{jfil,2}],['\\',Parallel(indPC).ComputerName,'\',Parallel(indPC).RemoteDrive,'$\',Parallel(indPC).RemoteDirectory,'\',PRCDir,'\',NamFileInput{jfil,1}]);
                 end

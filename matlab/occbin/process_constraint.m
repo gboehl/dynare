@@ -22,7 +22,7 @@ for i=1:ntokens
         % suffix
         tokens(i) = cellstr([char(tokens(i)),suffix]);
     end
-    
+
     % if the invert_switch is true
     % reverse the direction of the inequality
     if invert_switch

@@ -2,7 +2,7 @@ function [s,nu] = inverse_gamma_specification(mu, sigma2, lb, type, use_fzero_fl
 
 % Computes the inverse Gamma hyperparameters from the prior mean and standard deviation.
 %
-% INPUTS 
+% INPUTS
 % - mu               [double]   scalar, prior mean.
 % - sigma2           [double]   positive scalar, prior variance.
 % - type             [integer]  scalar equal to 1 or 2, type of the inverse gamma distribution
@@ -10,11 +10,11 @@ function [s,nu] = inverse_gamma_specification(mu, sigma2, lb, type, use_fzero_fl
 %                               dynare's implementation of the secant method otherwise.
 % - name             [string]   name of the parameter or random variable.
 %
-% OUTPUS 
+% OUTPUS
 % - s                [double]    scalar, first hyperparameter.
 % - nu               [double]    scalar, second hyperparameter.
 %
-% REMARK 
+% REMARK
 % The call to the matlab's implementation of the secant method is here for testing purpose and should not be used. This routine fails
 % more often in finding an interval for nu containing a signe change because it expands the interval on both sides and eventually
 % violates  the condition nu>2.

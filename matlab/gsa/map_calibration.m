@@ -2,7 +2,7 @@ function map_calibration(OutputDirectoryName, Model, DynareOptions, DynareResult
 
 % Written by Marco Ratto
 % Joint Research Centre, The European Commission,
-% marco.ratto@ec.europa.eu 
+% marco.ratto@ec.europa.eu
 
 % Copyright (C) 2014-2016 European Commission
 % Copyright (C) 2014-2017 Dynare Team
@@ -28,7 +28,7 @@ np = EstimatedParameters.np;
 nshock = EstimatedParameters.nvx + EstimatedParameters.nvn + EstimatedParameters.ncx + EstimatedParameters.ncn;
 pnames=cell(np,1);
 pnames_tex=cell(np,1);
-for jj=1:np        
+for jj=1:np
     if DynareOptions.TeX
         [param_name_temp, param_name_tex_temp]= get_the_name(nshock+jj, DynareOptions.TeX, Model, EstimatedParameters, DynareOptions);
         pnames_tex{jj,1} = strrep(param_name_tex_temp,'$','');
@@ -92,12 +92,12 @@ if init
     for ij=1:nbr_irf_restrictions
         mat_irf{ij}=NaN(Nsam,length(DynareOptions.endogenous_prior_restrictions.irf{ij,3}));
     end
-    
+
     mat_moment=cell(nbr_moment_restrictions,1);
     for ij=1:nbr_moment_restrictions
         mat_moment{ij}=NaN(Nsam,length(DynareOptions.endogenous_prior_restrictions.moment{ij,3}));
     end
-    
+
     irestrictions = [1:Nsam];
     h = dyn_waitbar(0,'Please wait...');
     for j=1:Nsam
@@ -127,7 +127,7 @@ if init
         dyn_waitbar(j/Nsam,h,['MC iteration ',int2str(j),'/',int2str(Nsam)])
     end
     dyn_waitbar_close(h);
-    
+
     irestrictions=irestrictions(find(irestrictions));
     xmat=lpmat(irestrictions,:);
     skipline()
@@ -165,7 +165,7 @@ if ~isempty(indx_irf)
     end
     disp('done !')
     skipline()
-  
+
     % For single legend search which has maximum nbr of restrictions
     all_irf_couples = cellstr([char(endo_prior_restrictions.irf(:,1)) char(endo_prior_restrictions.irf(:,2))]);
     irf_couples = unique(all_irf_couples);
@@ -188,7 +188,7 @@ if ~isempty(indx_irf)
         time_matrix{plot_indx(ij)} = [time_matrix{plot_indx(ij)} endo_prior_restrictions.irf{ij,3}];
     end
     iplot_indx = ones(size(plot_indx));
-    
+
     indx_irf = indx_irf(irestrictions,:);
     if ~DynareOptions.nograph
         h1=dyn_figure(DynareOptions.nodisplay,'name',[type ' evaluation of irf restrictions']);
@@ -260,7 +260,7 @@ if ~isempty(indx_irf)
         if ~isempty(indx1) && ~isempty(indx2)
             mcf_analysis(xmat(:,nshock+1:end), indx1, indx2, options_mcf, DynareOptions);
         end
-        
+
         %         [proba, dproba] = stab_map_1(xmat, indx1, indx2, aname, 0);
         %         indplot=find(proba<pvalue_ks);
         %         if ~isempty(indplot)
@@ -360,7 +360,7 @@ if ~isempty(indx_moment)
     end
     disp('done !')
     skipline()
-    
+
     %get parameter names including standard deviations
     np=size(BayesInfo.name,1);
     name=cell(np,1);
@@ -402,7 +402,7 @@ if ~isempty(indx_moment)
         time_matrix{plot_indx(ij)} = [time_matrix{plot_indx(ij)} endo_prior_restrictions.moment{ij,3}];
     end
     iplot_indx = ones(size(plot_indx));
-    
+
     indx_moment = indx_moment(irestrictions,:);
     if ~DynareOptions.nograph
         h2=dyn_figure(DynareOptions.nodisplay,'name',[type ' evaluation of moment restrictions']);
@@ -412,7 +412,7 @@ if ~isempty(indx_moment)
             ncol=nrow-1;
         end
     end
-    
+
     for ij=1:nbr_moment_restrictions
         mat_moment{ij}=mat_moment{ij}(irestrictions,:);
         moment_matrix{plot_indx(ij)} = [moment_matrix{plot_indx(ij)} mat_moment{ij}];
@@ -470,7 +470,7 @@ if ~isempty(indx_moment)
         if ~isempty(indx1) && ~isempty(indx2)
             mcf_analysis(xmat, indx1, indx2, options_mcf, DynareOptions);
         end
-        
+
         %         [proba, dproba] = stab_map_1(xmat, indx1, indx2, aname, 0);
         %         indplot=find(proba<pvalue_ks);
         %         if ~isempty(indplot)
@@ -538,7 +538,7 @@ if ~isempty(indx_moment)
         dyn_saveas(h2,[OutputDirectoryName,filesep,fname_,'_',type,'_moment_restrictions'],DynareOptions.nodisplay,DynareOptions.graph_format);
         create_TeX_loader(DynareOptions,[OutputDirectoryName,filesep,fname_,'_',type,'_moment_restrictions'],[type ' evaluation of moment restrictions'],'moment_restrictions',type,DynareOptions.figures.textwidth*min(ij/ncol,1))
     end
-    
+
     skipline()
 end
 return

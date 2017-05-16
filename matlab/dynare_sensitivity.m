@@ -24,7 +24,7 @@ function x0=dynare_sensitivity(options_gsa)
 global M_ options_ oo_ bayestopt_ estim_params_
 
 if options_.dsge_var
-   error('Identification does not support DSGE-VARs at the current stage') 
+    error('Identification does not support DSGE-VARs at the current stage')
 end
 
 fname_ = M_.fname;
@@ -43,7 +43,7 @@ end
 
 if isfield(options_gsa,'morris') && options_gsa.morris==1
     if isfield(options_gsa,'identification') && options_gsa.identification==0
-%         options_gsa.redform=1;
+        %         options_gsa.redform=1;
     end
     if isfield(options_gsa,'ppost') && options_gsa.ppost
         error('sensitivity:: Morris is incompatible with posterior sampling')
@@ -144,7 +144,7 @@ if options_gsa.identification
         if isfield(options_,'options_ident')
             options_.options_ident.load_ident_files = options_gsa.load_ident_files;
             options_.options_ident.useautocorr = options_gsa.useautocorr;
-            options_.options_ident.ar = options_gsa.ar;            
+            options_.options_ident.ar = options_gsa.ar;
             options_ident=options_.options_ident;
         else
             options_ident=[];
@@ -213,7 +213,7 @@ if options_gsa.morris>2
     disp('the option is reset at morris = 1 .')
     options_gsa.morris=1;
 end
-   
+
 if options_gsa.morris==1
     if ~options_gsa.identification
         options_gsa.redform=1;
@@ -231,12 +231,12 @@ if options_gsa.morris==1
     options_gsa.alpha2_stab=1;
     options_gsa.pvalue_ks=0;
     options_gsa.pvalue_corr=0;
-%     if options_gsa.morris==3,
-%         options_gsa = set_default_option(options_gsa,'Nsam',256);
-%         OutputDirectoryName = CheckPath('gsa/identif',M_.dname);
-%     else
-        OutputDirectoryName = CheckPath('gsa/screen',M_.dname);
-%     end
+    %     if options_gsa.morris==3,
+    %         options_gsa = set_default_option(options_gsa,'Nsam',256);
+    %         OutputDirectoryName = CheckPath('gsa/identif',M_.dname);
+    %     else
+    OutputDirectoryName = CheckPath('gsa/screen',M_.dname);
+    %     end
 else
     OutputDirectoryName = CheckPath('gsa',M_.dname);
 end
@@ -252,8 +252,8 @@ if (options_gsa.load_stab || options_gsa.load_rmse || options_gsa.load_redform) 
         return
     else
         if isempty(strmatch('bkpprior',who('-file', filetoload),'exact'))
-            disp('Warning! Missing prior info for saved sample') % trap for files previous 
-            disp('The saved files are generated with previous version of GSA package') % trap for files previous 
+            disp('Warning! Missing prior info for saved sample') % trap for files previous
+            disp('The saved files are generated with previous version of GSA package') % trap for files previous
         else
             load(filetoload,'bkpprior')
             if any(bayestopt_.pshape~=bkpprior.pshape) || ...
@@ -305,7 +305,7 @@ if options_gsa.redform && ~isempty(options_gsa.namendo)
         nshock = nshock + estim_params_.nvn;
         nshock = nshock + estim_params_.ncx;
         nshock = nshock + estim_params_.ncn;
-        
+
         lpmat0=lpmat(:,1:nshock);
         lpmat=lpmat(:,nshock+1:end);
         istable=(1:size(lpmat,1));
@@ -314,7 +314,7 @@ if options_gsa.redform && ~isempty(options_gsa.namendo)
         iindeterm=[];
         save([OutputDirectoryName filesep M_.fname '_mc.mat'],'lpmat','lpmat0','istable','iunstable','iwrong','iindeterm')
         options_gsa.load_stab=1;
-        
+
         x0 = stab_map_(OutputDirectoryName,options_gsa);
     end
     if strmatch(':',options_gsa.namendo,'exact')
@@ -326,7 +326,7 @@ if options_gsa.redform && ~isempty(options_gsa.namendo)
     if strmatch(':',options_gsa.namlagendo,'exact')
         options_gsa.namlagendo=M_.endo_names(1:M_.orig_endo_nbr,:);
     end
-%     options_.opt_gsa = options_gsa;
+    %     options_.opt_gsa = options_gsa;
     if options_gsa.morris==1
         redform_screen(OutputDirectoryName,options_gsa);
     else
@@ -365,54 +365,54 @@ if options_gsa.rmse
             end
         end
         if isempty(a)
-           if options_gsa.lik_only
-               options_.smoother=0;
-               options_.filter_step_ahead=[];
-               options_.forecast=0;
-               options_.filtered_vars=0;               
-           end
-%             dynare_MC([],OutputDirectoryName,data,rawdata,data_info);
-        if options_gsa.pprior
-            TmpDirectoryName = ([M_.dname filesep 'gsa' filesep 'prior']);
-        else
-            TmpDirectoryName = ([M_.dname filesep 'gsa' filesep 'mc']);
-        end
-        if exist(TmpDirectoryName,'dir')
-            mydelete([M_.fname '_filter_step_ahead*.mat'],[TmpDirectoryName filesep]);
-            mydelete([M_.fname '_inno*.mat'],[TmpDirectoryName filesep]);
-            mydelete([M_.fname '_smooth*.mat'],[TmpDirectoryName filesep]);
-            mydelete([M_.fname '_update*.mat'],[TmpDirectoryName filesep]);
-            filparam = dir([TmpDirectoryName filesep M_.fname '_param*.mat']);
-            for j=1:length(filparam)
-                if isempty(strmatch([M_.fname '_param_irf'],filparam(j).name))
-                    delete([TmpDirectoryName filesep filparam(j).name]);
-                end
+            if options_gsa.lik_only
+                options_.smoother=0;
+                options_.filter_step_ahead=[];
+                options_.forecast=0;
+                options_.filtered_vars=0;
             end
-            
-        end
-        prior_posterior_statistics('gsa',dataset_, dataset_info);
-        if options_.bayesian_irf
-            PosteriorIRF('gsa');
-        end
-        options_gsa.load_rmse=0;
-        %   else
-        %     if options_gsa.load_rmse==0,
-        %       disp('You already saved a MC filter/smoother analysis ')
-        %       disp('Do you want to overwrite ?')
-        %       pause;
-        %       if options_gsa.pprior
-        %         delete([OutputDirectoryName,'/',fname_,'_prior_*.mat'])
-        %       else
-        %         delete([OutputDirectoryName,'/',fname_,'_mc_*.mat'])
-        %       end
-        %       dynare_MC([],OutputDirectoryName);
-        %       options_gsa.load_rmse=0;
-        %     end
-            
+            %             dynare_MC([],OutputDirectoryName,data,rawdata,data_info);
+            if options_gsa.pprior
+                TmpDirectoryName = ([M_.dname filesep 'gsa' filesep 'prior']);
+            else
+                TmpDirectoryName = ([M_.dname filesep 'gsa' filesep 'mc']);
+            end
+            if exist(TmpDirectoryName,'dir')
+                mydelete([M_.fname '_filter_step_ahead*.mat'],[TmpDirectoryName filesep]);
+                mydelete([M_.fname '_inno*.mat'],[TmpDirectoryName filesep]);
+                mydelete([M_.fname '_smooth*.mat'],[TmpDirectoryName filesep]);
+                mydelete([M_.fname '_update*.mat'],[TmpDirectoryName filesep]);
+                filparam = dir([TmpDirectoryName filesep M_.fname '_param*.mat']);
+                for j=1:length(filparam)
+                    if isempty(strmatch([M_.fname '_param_irf'],filparam(j).name))
+                        delete([TmpDirectoryName filesep filparam(j).name]);
+                    end
+                end
+
+            end
+            prior_posterior_statistics('gsa',dataset_, dataset_info);
+            if options_.bayesian_irf
+                PosteriorIRF('gsa');
+            end
+            options_gsa.load_rmse=0;
+            %   else
+            %     if options_gsa.load_rmse==0,
+            %       disp('You already saved a MC filter/smoother analysis ')
+            %       disp('Do you want to overwrite ?')
+            %       pause;
+            %       if options_gsa.pprior
+            %         delete([OutputDirectoryName,'/',fname_,'_prior_*.mat'])
+            %       else
+            %         delete([OutputDirectoryName,'/',fname_,'_mc_*.mat'])
+            %       end
+            %       dynare_MC([],OutputDirectoryName);
+            %       options_gsa.load_rmse=0;
+            %     end
+
         end
     end
     clear a;
-%     filt_mc_(OutputDirectoryName,data_info);
+    %     filt_mc_(OutputDirectoryName,data_info);
     filt_mc_(OutputDirectoryName,options_gsa,dataset_,dataset_info);
 end
 options_.opt_gsa = options_gsa;
@@ -448,14 +448,14 @@ if options_gsa.glue
     else
         data = transpose(rawdata);
     end
-    
+
     Obs.data = data;
     Obs.time = [1:gend];
     Obs.num  = gend;
     for j=1:length(options_.varobs)
         Obs.name{j} = options_.varobs{j};
         vj = options_.varobs{j};
-        
+
         jxj = strmatch(vj,lgy_(dr_.order_var,:),'exact');
         js = strmatch(vj,lgy_,'exact');
         if ~options_gsa.ppost
@@ -477,7 +477,7 @@ if options_gsa.glue
         Lik(j).ini  = 'yes';
         Lik(j).isam = 1;
         Lik(j).data = rmse_MC(:,j)';
-        
+
         if ~options_gsa.ppost
             %       y0 = squeeze(stock_smooth(:,jxj,:)) + ...
             %         kron(stock_ys(js,:),ones(size(stock_smooth,1),1));
@@ -490,14 +490,14 @@ if options_gsa.glue
             Out1=Out;
         end
         ismoo(j)=jxj;
-        
+
     end
     jsmoo = length(options_.varobs);
     for j=1:M_.endo_nbr
         if ~ismember(j,ismoo)
             jsmoo=jsmoo+1;
             vj=deblank(M_.endo_names(dr_.order_var(j),:));
-            if ~options_gsa.ppost        
+            if ~options_gsa.ppost
                 %         y0 = squeeze(stock_smooth(:,j,:)) + ...
                 %           kron(stock_ys(j,:),ones(size(stock_smooth,1),1));
                 %         Out1(jsmoo).time = [1:size(y0,1)];
@@ -514,7 +514,7 @@ if options_gsa.glue
     end
     tit(M_.exo_names_orig_ord,:) = M_.exo_names;
     for j=1:M_.exo_nbr
-        Exo(j).name = deblank(tit(j,:));    
+        Exo(j).name = deblank(tit(j,:));
     end
     if ~options_gsa.ppost
         Lik(length(options_.varobs)+1).name = 'logpo';
@@ -525,10 +525,10 @@ if options_gsa.glue
     Sam.name = bayestopt_.name;
     Sam.dim  = [size(x) 0];
     Sam.data = [x];
-    
+
     Rem.id = 'Original';
     Rem.ind= [1:size(x,1)];
-    
+
     Info.dynare=M_.fname;
     Info.order_var=dr_.order_var;
     Out=Out1;
@@ -539,7 +539,7 @@ if options_gsa.glue
         Info.TypeofSample='post';
         save([OutputDirectoryName,'/',fname_,'_glue_post.mat'], 'Out', 'Sam', 'Lik', 'Obs', 'Rem','Info', 'Exo')
         %save([fname_,'_post_glue_smooth'], 'Out', 'Sam', 'Lik', 'Obs', 'Rem','Info')
-        
+
     else
         if options_gsa.pprior
             Info.TypeofSample='prior';
@@ -555,5 +555,5 @@ if options_gsa.glue
             %       save([OutputDirectoryName,'/',fname_,'_mc_glue_smooth'], 'Out', 'Sam', 'Lik', 'Obs', 'Rem')
         end
     end
-    
+
 end

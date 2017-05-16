@@ -5,10 +5,10 @@ function [alphahat,epsilonhat,etahat,atilde,P,aK,PK,decomp,V] = missing_DiffuseK
 %
 % INPUTS
 %    T:        mm*mm matrix
-%    Z:        pp*mm matrix  
+%    Z:        pp*mm matrix
 %    R:        mm*rr matrix
 %    Q:        rr*rr matrix
-%    H:        pp*pp matrix variance of measurement errors    
+%    H:        pp*pp matrix variance of measurement errors
 %    Pinf1:    mm*mm diagonal matrix with with q ones and m-q zeros
 %    Pstar1:   mm*mm variance-covariance matrix with stationary variables
 %    Y:        pp*1 vector
@@ -22,7 +22,7 @@ function [alphahat,epsilonhat,etahat,atilde,P,aK,PK,decomp,V] = missing_DiffuseK
 %    decomp_flag  if true, compute filter decomposition
 %    state_uncertainty_flag     if true, compute uncertainty about smoothed
 %                               state estimate
-%             
+%
 % OUTPUTS
 %    alphahat: smoothed variables (a_{t|T})
 %    epsilonhat:smoothed measurement errors
@@ -36,16 +36,16 @@ function [alphahat,epsilonhat,etahat,atilde,P,aK,PK,decomp,V] = missing_DiffuseK
 %              matrices (meaningless for periods 1:d)
 %    decomp:   decomposition of the effect of shocks on filtered values
 %    V:        3D array of state uncertainty matrices
-%  
+%
 % Notes:
 %   Outputs are stored in decision-rule order, i.e. to get variables in order of declaration
 %   as in M_.endo_names, ones needs code along the lines of:
 %   variables_declaration_order(dr.order_var,:) = alphahat
-% 
+%
 % SPECIAL REQUIREMENTS
 %   See "Filtering and Smoothing of State Vector for Diffuse State Space
-%   Models", S.J. Koopman and J. Durbin (2003, in Journal of Time Series 
-%   Analysis, vol. 24(1), pp. 85-98). 
+%   Models", S.J. Koopman and J. Durbin (2003, in Journal of Time Series
+%   Analysis, vol. 24(1), pp. 85-98).
 %   Durbin/Koopman (2012): "Time Series Analysis by State Space Methods", Oxford University Press,
 %   Second Edition, Ch. 5
 
@@ -70,7 +70,7 @@ function [alphahat,epsilonhat,etahat,atilde,P,aK,PK,decomp,V] = missing_DiffuseK
 % new output argument aK (1-step to k-step predictions)
 % new options_.nk: the max step ahed prediction in aK (default is 4)
 % new crit1 value for rank of Pinf
-% it is assured that P is symmetric 
+% it is assured that P is symmetric
 
 d = 0;
 decomp = [];
@@ -92,9 +92,9 @@ Lstar           = zeros(mm,mm,smpl);
 Kstar           = zeros(mm,pp,smpl);
 Kinf            = zeros(mm,pp,smpl);
 P               = zeros(mm,mm,smpl+1);
-Pstar           = zeros(spstar(1),spstar(2),smpl+1); 
+Pstar           = zeros(spstar(1),spstar(2),smpl+1);
 Pstar(:,:,1)    = Pstar1;
-Pinf            = zeros(spinf(1),spinf(2),smpl+1); 
+Pinf            = zeros(spinf(1),spinf(2),smpl+1);
 Pinf(:,:,1)     = Pinf1;
 rr              = size(Q,1);
 QQ              = R*Q*transpose(R);
@@ -127,9 +127,9 @@ while rank(Pinf(:,:,t+1),diffuse_kalman_tol) && t<smpl
         ZZ = Z(di,:);                                                       %span selector matrix
         v(di,t)= Y(di,t) - ZZ*a(:,t);                                       %get prediction error v^(0) in (5.13) DK (2012)
         Finf = ZZ*Pinf(:,:,t)*ZZ';                                          % (5.7) in DK (2012)
-        if rcond(Finf) < diffuse_kalman_tol                                 %F_{\infty,t} = 0 
+        if rcond(Finf) < diffuse_kalman_tol                                 %F_{\infty,t} = 0
             if ~all(abs(Finf(:)) < diffuse_kalman_tol)                      %rank-deficient but not rank 0
-                % The univariate diffuse kalman filter should be used.
+                                                                            % The univariate diffuse kalman filter should be used.
                 alphahat = Inf;
                 return
             else                                                            %rank of F_{\infty,t} is 0
@@ -200,13 +200,13 @@ while notsteady && t<smpl
         if any(diag(F)<kalman_tol) || rcond(F./(sig*sig')) < kalman_tol
             alphahat = Inf;
             return
-        end    
+        end
         iF(di,di,t)   = inv(F./(sig*sig'))./(sig*sig');
         PZI         = P(:,:,t)*ZZ'*iF(di,di,t);
         atilde(:,t) = a(:,t) + PZI*v(di,t);
         K(:,di,t)    = T*PZI;
         L(:,:,t)    = T-K(:,di,t)*ZZ;
-		P(:,:,t+1)  = T*P(:,:,t)*L(:,:,t)' + QQ;
+        P(:,:,t+1)  = T*P(:,:,t)*L(:,:,t)' + QQ;
     end
     a(:,t+1)    = T*atilde(:,t);
     Pf          = P(:,:,t);
@@ -267,8 +267,8 @@ while t>d+1
     end
 end
 if d %diffuse periods
-    % initialize r_d^(0) and r_d^(1) as below DK (2012), eq. 5.23
-    r0 = zeros(mm,d+1); 
+     % initialize r_d^(0) and r_d^(1) as below DK (2012), eq. 5.23
+    r0 = zeros(mm,d+1);
     r0(:,d+1) = r(:,d+1);   %set r0_{d}, i.e. shifted by one period
     r1 = zeros(mm,d+1);     %set r1_{d}, i.e. shifted by one period
     if state_uncertainty_flag
@@ -284,7 +284,7 @@ if d %diffuse periods
             if ~Finf_singular(1,t)
                 r0(:,t) = Linf(:,:,t)'*r0(:,t+1);                                   % DK (2012), eq. 5.21 where L^(0) is named Linf
                 r1(:,t) = Z(di,:)'*(iFinf(di,di,t)*v(di,t)-Kstar(:,di,t)'*T'*r0(:,t+1)) ...
-                    + Linf(:,:,t)'*r1(:,t+1);                                       % DK (2012), eq. 5.21, noting that i) F^(1)=(F^Inf)^(-1)(see 5.10), ii) where L^(0) is named Linf, and iii) Kstar=T^{-1}*K^(1)
+                          + Linf(:,:,t)'*r1(:,t+1);                                       % DK (2012), eq. 5.21, noting that i) F^(1)=(F^Inf)^(-1)(see 5.10), ii) where L^(0) is named Linf, and iii) Kstar=T^{-1}*K^(1)
                 if state_uncertainty_flag
                     L_1=(-T*Kstar(:,di,t)*Z(di,:));                                     % noting that Kstar=T^{-1}*K^(1)
                     N(:,:,t)=Linf(:,:,t)'*N(:,:,t+1)*Linf(:,:,t);                       % DK (2012), eq. 5.19, noting that L^(0) is named Linf
@@ -301,7 +301,7 @@ if d %diffuse periods
                 r1(:,t) = T'*r1(:,t+1);                                             % DK (2003), eq. (14)
                 if state_uncertainty_flag
                     N(:,:,t)=Z(di,:)'*iFstar(di,di,t)*Z(di,:)...
-                        +Lstar(:,:,t)'*N(:,:,t+1)*Lstar(:,:,t);                     % DK (2003), eq. (14)
+                             +Lstar(:,:,t)'*N(:,:,t+1)*Lstar(:,:,t);                     % DK (2003), eq. (14)
                     N_1(:,:,t)=T'*N_1(:,:,t+1)*Lstar(:,:,t);                            % DK (2003), eq. (14)
                     N_2(:,:,t)=T'*N_2(:,:,t+1)*T';                                      % DK (2003), eq. (14)
                 end
@@ -311,9 +311,9 @@ if d %diffuse periods
         etahat(:,t)     = QRt*r0(:,t);                                              % DK (2012), p. 135
         if state_uncertainty_flag
             V(:,:,t)=Pstar(:,:,t)-Pstar(:,:,t)*N(:,:,t)*Pstar(:,:,t)...
-                -(Pinf(:,:,t)*N_1(:,:,t)*Pstar(:,:,t))'...
-                - Pinf(:,:,t)*N_1(:,:,t)*Pstar(:,:,t)...
-                - Pinf(:,:,t)*N_2(:,:,t)*Pinf(:,:,t);                                   % DK (2012), eq. 5.30
+                     -(Pinf(:,:,t)*N_1(:,:,t)*Pstar(:,:,t))'...
+                     - Pinf(:,:,t)*N_1(:,:,t)*Pstar(:,:,t)...
+                     - Pinf(:,:,t)*N_2(:,:,t)*Pinf(:,:,t);                                   % DK (2012), eq. 5.30
         end
     end
 end

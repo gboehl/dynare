@@ -103,5 +103,3 @@ inx = find(x<=bounds(:,1));
 if ~isempty(inx)
     x(inx) = bounds(inx,1)+eps;
 end
-
-

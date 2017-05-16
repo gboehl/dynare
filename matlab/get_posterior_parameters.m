@@ -2,13 +2,13 @@ function xparam = get_posterior_parameters(type,field1)
 
 % function xparam = get_posterior_parameters(type)
 % Selects (estimated) parameters (posterior mode or posterior mean).
-% 
-% INPUTS 
+%
+% INPUTS
 %   o type       [char]     = 'mode' or 'mean'.
 %   o field_1    [char]     optional field like 'mle_'.
-%  
-% OUTPUTS 
-%   o xparam     vector of estimated parameters  
+%
+% OUTPUTS
+%   o xparam     vector of estimated parameters
 %
 % SPECIAL REQUIREMENTS
 %   None.
@@ -30,7 +30,7 @@ function xparam = get_posterior_parameters(type,field1)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-global estim_params_ oo_ options_ M_ 
+global estim_params_ oo_ options_ M_
 
 if nargin<2
     field1='posterior_';

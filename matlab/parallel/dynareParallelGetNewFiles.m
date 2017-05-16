@@ -37,7 +37,7 @@ NewFilesFromSlaves={};
 
 % try
 for indPC=1:length(Parallel)
-    
+
     if Parallel(indPC).Local==0
         [NewFilesFromSlaves, PRCDirSnapshot{indPC}]=dynareParallelFindNewFiles(PRCDirSnapshot{indPC},Parallel(indPC), PRCDir);
         if ~ispc || strcmpi('unix',Parallel(indPC).OperatingSystem)
@@ -71,6 +71,3 @@ for indPC=1:length(Parallel)
 
     end
 end
-
-
-

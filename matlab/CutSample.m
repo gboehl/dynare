@@ -66,7 +66,7 @@ if (TotalNumberOfMhFiles-1)-(FirstMhFile+1)+1 > 0
 elseif TotalNumberOfMhFiles == 1
     record.KeepedDraws.Distribution = [];
 elseif TotalNumberOfMhFiles == 2 && FirstMhFile > 1
-    record.KeepedDraws.Distribution = [MAX_nruns-FirstLine+1 ; record.MhDraws(end,3)];  
+    record.KeepedDraws.Distribution = [MAX_nruns-FirstLine+1 ; record.MhDraws(end,3)];
 end
 
 % Save updated mh-history file.

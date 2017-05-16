@@ -1,11 +1,11 @@
 function disp_steady_state(M,oo)
 % function disp_steady_state(M,oo)
 % computes and prints the steady state calculations
-%  
+%
 % INPUTS
 %   M      structure of parameters
 %   oo     structure of results
-%  
+%
 % OUTPUTS
 %   none
 %

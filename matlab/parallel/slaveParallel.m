@@ -2,7 +2,7 @@ function slaveParallel(whoiam,ThisMatlab)
 % PARALLEL CONTEXT
 % In a parallelization context, this function is launched on slave
 % machines, to initialize MATLAB and DYNARE environment and waits for
-% instructions sent by the Master. 
+% instructions sent by the Master.
 % This function is invoked by masterParallel only when the strategy (1),
 % i.e. always open, is actived.
 %
@@ -12,8 +12,8 @@ function slaveParallel(whoiam,ThisMatlab)
 %                       cluster.
 %  o ThisMatlab [int]   index number of this slave machine in the cluster.
 %
-% OUTPUTS 
-%   None  
+% OUTPUTS
+%   None
 
 % Copyright (C) 2006-2017 Dynare Team
 %
@@ -72,36 +72,36 @@ while (etime(clock,t0)<1200 && ~isempty(fslave)) || ~isempty(dir(['stayalive',in
     end
     % I wait for 20 min or while mater asks to exit (i.e. it cancels fslave file)
     pause(1)
-    
+
     fjob = dir(['slaveJob',int2str(whoiam),'.mat']);
-    
+
     if ~isempty(fjob)
         clear fGlobalVar fInputVar fblck nblck fname
-        
+
         while(1)
             Go=0;
-            
+
             Go=fopen(['slaveJob',int2str(whoiam),'.mat']);
-            
-            if Go>0    
+
+            if Go>0
                 fclose(Go);
                 pause(1)
                 load(['slaveJob',int2str(whoiam),'.mat']);
                 break
             else
                 % Only for testing, will be remouved!
-                
+
                 %                if isunix
                 %                  E1=fopen('/home/ivano/Works/Errore-slaveParallel.txt','w+');
                 %                  fclose(E1);
-                %                else            
+                %                else
                 %                  E1=fopen('c:\dynare_calcs\Errore-slaveParallel.txt','w+');
                 %                  fclose(E1);
                 %                end
-                
+
             end
         end
-        
+
         funcName=fname;  % Update global job name.
 
         if exist('fGlobalVar') && ~isempty (fGlobalVar)
@@ -120,7 +120,7 @@ while (etime(clock,t0)<1200 && ~isempty(fslave)) || ~isempty(dir(['stayalive',in
         end
         delete(['slaveJob',int2str(whoiam),'.mat']);
         fInputVar.Parallel = Parallel;
-        
+
         % Launch the routine to be run in parallel.
         try
             tic
@@ -136,7 +136,7 @@ while (etime(clock,t0)<1200 && ~isempty(fslave)) || ~isempty(dir(['stayalive',in
 
                 % Save the output result.
                 save([ fname,'_output_',int2str(whoiam),'.mat'],'fOutputVar' );
-%                 keyboard,
+                %                 keyboard,
                 if isfield(fOutputVar,'CloseAllSlaves')
                     CloseAllSlaves = 1;
                     fOutputVar = rmfield(fOutputVar,'CloseAllSlaves');
@@ -171,7 +171,7 @@ while (etime(clock,t0)<1200 && ~isempty(fslave)) || ~isempty(dir(['stayalive',in
                 delete(['P_',fname,'_',int2str(whoiam),'End.txt']);
                 break
             end
-            
+
         end
     end
     fslave = dir( ['slaveParallel_input',int2str(whoiam),'.mat']); % Check if Master asks to exit

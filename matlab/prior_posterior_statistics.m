@@ -14,11 +14,11 @@ function prior_posterior_statistics(type,dataset,dataset_info)
 %
 % SPECIAL REQUIREMENTS
 %    none
-% 
+%
 % PARALLEL CONTEXT
 % See the comments in the posterior_sampler.m funtion.
-% 
-% 
+%
+%
 % Copyright (C) 2005-2017 Dynare Team
 %
 % This file is part of Dynare.
@@ -117,7 +117,7 @@ if options_.filter_covariance
     MAX_filter_covariance = min(B,ceil(MaxNumberOfBytes/(endo_nbr^2*(gend+1))/8));
 end
 
-if options_.smoothed_state_uncertainty 
+if options_.smoothed_state_uncertainty
     MAX_n_smoothed_state_uncertainty = min(B,ceil(MaxNumberOfBytes/((endo_nbr*endo_nbr)*gend)/8));
 end
 
@@ -196,7 +196,7 @@ end
 if options_.filter_covariance
     localVars.MAX_filter_covariance = MAX_filter_covariance;
 end
-if options_.smoothed_state_uncertainty 
+if options_.smoothed_state_uncertainty
     localVars.MAX_n_smoothed_state_uncertainty = MAX_n_smoothed_state_uncertainty ;
 end
 localVars.MAX_n_smoothed_constant=MAX_n_smoothed_constant;
@@ -211,9 +211,9 @@ if strcmpi(type,'posterior')
     BaseName = [DirectoryName filesep M_.fname];
     load_last_mh_history_file(DirectoryName, M_.fname);
     FirstMhFile = record.KeepedDraws.FirstMhFile;
-    FirstLine = record.KeepedDraws.FirstLine; 
-    TotalNumberOfMhFiles = sum(record.MhDraws(:,2)); 
-    LastMhFile = TotalNumberOfMhFiles; 
+    FirstLine = record.KeepedDraws.FirstLine;
+    TotalNumberOfMhFiles = sum(record.MhDraws(:,2));
+    LastMhFile = TotalNumberOfMhFiles;
     TotalNumberOfMhDraws = sum(record.MhDraws(:,1));
     NumberOfDraws = TotalNumberOfMhDraws-floor(options_.mh_drop*TotalNumberOfMhDraws);
     mh_nblck = options_.mh_nblck;
@@ -274,14 +274,14 @@ else
         end
         if run_smoother
             nfiles = ceil(nBlockPerCPU(j)/MAX_n_trend_coeff);
-            ifil(9,j+1) =ifil(9,j)+nfiles;  
+            ifil(9,j+1) =ifil(9,j)+nfiles;
             nfiles = ceil(nBlockPerCPU(j)/MAX_n_smoothed_constant);
-            ifil(10,j+1) =ifil(10,j)+nfiles;  
+            ifil(10,j+1) =ifil(10,j)+nfiles;
             nfiles = ceil(nBlockPerCPU(j)/MAX_n_smoothed_trend);
-            ifil(11,j+1) =ifil(11,j)+nfiles;  
+            ifil(11,j+1) =ifil(11,j)+nfiles;
             if smoothed_state_uncertainty
                 nfiles = ceil(nBlockPerCPU(j)/MAX_n_smoothed_state_uncertainty);
-                ifil(13,j+1) =ifil(13,j)+nfiles;           
+                ifil(13,j+1) =ifil(13,j)+nfiles;
             end
         end
     end
@@ -331,7 +331,7 @@ if options_.smoother
         '',M_.exo_names,M_.exo_names_tex,M_.exo_names,...
         M_.exo_names,'SmoothedShocks',DirectoryName,'_inno');
     pm3(endo_nbr,1,ifil(9),B,'Trend_coefficients',...
-    '',varlist,M_.endo_names_tex,M_.endo_names,...
+        '',varlist,M_.endo_names_tex,M_.endo_names,...
         varlist,'TrendCoeff',DirectoryName,'_trend_coeff');
     pm3(endo_nbr,gend,ifil(10),B,'Smoothed constant',...
         '',varlist,M_.endo_names_tex,M_.endo_names,...
@@ -348,17 +348,17 @@ if options_.smoother
             '',varlist,M_.endo_names_tex,M_.endo_names,...
             varlist,'StateUncertainty',DirectoryName,'_state_uncert');
     end
-    
+
     if nvn
-        for obs_iter=1:length(options_.varobs)        
+        for obs_iter=1:length(options_.varobs)
             meas_error_names{obs_iter,1}=['SE_EOBS_' M_.endo_names(strmatch(options_.varobs{obs_iter},M_.endo_names,'exact'),:)];
             texnames{obs_iter,1}=['SE_EOBS_' M_.endo_names_tex(strmatch(options_.varobs{obs_iter},M_.endo_names,'exact'),:)];
         end
         meas_error_names=char(meas_error_names);
         texnames=char(texnames);
         pm3(meas_err_nbr,gend,ifil(3),B,'Smoothed measurement errors',...
-           '',meas_error_names,texnames,meas_error_names,...
-           meas_error_names,'SmoothedMeasurementErrors',DirectoryName,'_error')
+            '',meas_error_names,texnames,meas_error_names,...
+            meas_error_names,'SmoothedMeasurementErrors',DirectoryName,'_error')
     end
 end
 
@@ -377,7 +377,7 @@ if options_.forecast
         varlist,'PointForecast',DirectoryName,'_forc_point');
     if ~isequal(M_.H,0) && ~isempty(intersect(options_.varobs,varlist))
         texnames=[];
-        for obs_iter=1:length(options_.varobs)        
+        for obs_iter=1:length(options_.varobs)
             obs_names{obs_iter,1}=M_.endo_names(strmatch(options_.varobs{obs_iter},M_.endo_names,'exact'),:);
             texnames{obs_iter,1}=M_.endo_names_tex(strmatch(options_.varobs{obs_iter},M_.endo_names,'exact'),:);
         end
@@ -385,8 +385,8 @@ if options_.forecast
         texnames=char(texnames);
         varlist_forecast_ME=intersect(options_.varobs,varlist);
         pm3(meas_err_nbr,horizon,ifil(12),B,'Forecasted variables (point) with ME',...
-           '',char(varlist_forecast_ME),texnames,obs_names,...
-           char(varlist_forecast_ME),'PointForecastME',DirectoryName,'_forc_point_ME')    
+            '',char(varlist_forecast_ME),texnames,obs_names,...
+            char(varlist_forecast_ME),'PointForecastME',DirectoryName,'_forc_point_ME')
     end
 end
 

@@ -1,6 +1,6 @@
 function aa = isconst(y)
 % Returns 1 if vector y is constant, 0 otherwise.
-%  
+%
 % INPUTS:
 %   yy        [double]    n*1 vector.
 %

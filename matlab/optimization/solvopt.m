@@ -1,10 +1,10 @@
 function [x,f,exitflag,n_f_evals,n_grad_evals,n_constraint_evals,n_constraint_gradient_evals]=solvopt(x,fun,grad,func,gradc,optim,varargin)
 % [x,f,options]=solvopt(x,fun,grad,func,gradc,options,varargin)
-% 
-% The function SOLVOPT, developed by Alexei Kuntsevich and Franz Kappe,  
+%
+% The function SOLVOPT, developed by Alexei Kuntsevich and Franz Kappe,
 % performs a modified version of Shor's r-algorithm in
 % order to find a local minimum resp. maximum of a nonlinear function
-% defined on the n-dimensional Euclidean space or % a solution of a nonlinear 
+% defined on the n-dimensional Euclidean space or % a solution of a nonlinear
 % constrained problem:
 % min { f(x): g(x) (<)= 0, g(x) in R(m), x in R(n) }
 %
@@ -41,7 +41,7 @@ function [x,f,exitflag,n_f_evals,n_grad_evals,n_constraint_evals,n_constraint_gr
 %   *optim.LBGradientStep= lower bound for the stepsize used for the difference
 %        approximation of gradients (1e-12 by default, see more in the manual).
 %  (* ... changes should be done with care)
-% 
+%
 % Outputs:
 % x                     optimal parameter vector (row resp. column),
 % f                     optimum function value
@@ -51,13 +51,13 @@ function [x,f,exitflag,n_f_evals,n_grad_evals,n_constraint_evals,n_constraint_gr
 % n_grad_evals:         number of gradient evaluations,
 % n_constraint_evals:   number of constraint function evaluations,
 % n_constraint_gradient_evals   number of constraint gradient evaluations.
-% 
-% 
-% Algorithm: Kuntsevich, A.V., Kappel, F., SolvOpt - The solver for local nonlinear optimization problems 
-% (version 1.1, Matlab, C, FORTRAN). University of Graz, Graz, 1997. 
-% 
-% 
-% Copyright (C) 1997-2008, Alexei Kuntsevich and Franz Kappel 
+%
+%
+% Algorithm: Kuntsevich, A.V., Kappel, F., SolvOpt - The solver for local nonlinear optimization problems
+% (version 1.1, Matlab, C, FORTRAN). University of Graz, Graz, 1997.
+%
+%
+% Copyright (C) 1997-2008, Alexei Kuntsevich and Franz Kappel
 % Copyright (C) 2008-2015 Giovanni Lombardo
 % Copyright (C) 2015 Dynare Team
 %
@@ -217,7 +217,7 @@ ajp=20;
 ajpp=ajp;                        % Start value for the power
 ajs=1.15;                        % Base II
 knorms=0; gnorms=zeros(1,10);    % Gradient norms stored
-%---}
+                                 %---}
 
 %Display control ---{
 if optim.verbosity<=0, dispdata=0
@@ -243,7 +243,7 @@ else
     des=3.3;
 end
 mxtc=3;                          % Number of trial cycles (steep wall detect)
-%---}
+                                 %---}
 termx=0; limxterm=50;              % Counter and limit for x-criterion
 
 ddx   =max(1e-11,optim.LBGradientStep);      % stepsize for gradient approximation
@@ -253,7 +253,7 @@ low_bound=-1+1e-4;                 % Lower bound cosine used to detect a ravine
 ZeroGrad=n*1.e-16;                 % Lower bound for a gradient norm
 
 nzero=0;                           % Zero-gradient events counter
-% Lower bound for values of variables taking into account
+                                   % Lower bound for values of variables taking into account
 lowxbound=max([optim.TolX,1e-3]);
 % Lower bound for function values to be considered as making difference
 lowfbound=optim.TolFun^2;
@@ -282,7 +282,7 @@ if isempty(f)
         disp(error30)
     end
     exitflag=-3;
-    if trx 
+    if trx
         x=x';
     end
     return
@@ -310,7 +310,7 @@ elseif abs(f)==Inf
     return
 end
 xrec=x; frec=f;     % record point and function value
-% Constrained problem
+                    % Constrained problem
 if constr,  fp=f; kless=0
     if trx
         fc=feval(func,x');
@@ -367,13 +367,13 @@ if app
         if trx
             g=apprgrdn(x',fp,fun,deltax',1,varargin{:});
         else
-            g=apprgrdn(x ,fp,fun,deltax,1,varargin{:}); 
+            g=apprgrdn(x ,fp,fun,deltax,1,varargin{:});
         end
     else
         if trx
             g=apprgrdn(x',f,fun,deltax',1,varargin{:});
         else
-            g=apprgrdn(x ,f,fun,deltax,1,varargin{:}); 
+            g=apprgrdn(x ,f,fun,deltax,1,varargin{:});
         end
     end
     n_f_evals=n_f_evals+n;
@@ -381,7 +381,7 @@ else
     if trx
         g=feval(grad,x',varargin{:});
     else
-        g=feval(grad,x,varargin{:});   
+        g=feval(grad,x,varargin{:});
     end
     n_grad_evals=n_grad_evals+1;
 end
@@ -395,7 +395,7 @@ if size(g,2)~=n
     exitflag=-4;
     if trx
         x=x';
-    end 
+    end
     return
 elseif isnan(ng)
     if dispwarn
@@ -435,24 +435,24 @@ if constr
     if ~FP
         if appconstr
             deltax=sign(x); idx=find(deltax==0);
-            deltax(idx)=ones(size(idx));  
+            deltax(idx)=ones(size(idx));
             deltax=ddx*deltax;
             if trx
                 gc=apprgrdn(x',fc,func,deltax',0);
             else
-                gc=apprgrdn(x ,fc,func,deltax ,0); 
+                gc=apprgrdn(x ,fc,func,deltax ,0);
             end
             n_constraint_evals=n_constraint_evals+n;
         else
             if trx
                 gc=feval(gradc,x');
             else
-                gc=feval(gradc,x); 
+                gc=feval(gradc,x);
             end
             n_constraint_gradient_evals=n_constraint_gradient_evals+1;
         end
         if size(gc,2)==1
-            gc=gc'; 
+            gc=gc';
         end
         ngc=norm(gc);
         if size(gc,2)~=n
@@ -460,7 +460,7 @@ if constr
                 disp(errmes)
                 disp(error60)
             end
-            exitflag=-6; 
+            exitflag=-6;
             if trx
                 x=x';
             end
@@ -482,7 +482,7 @@ if constr
                 disp(error62)
                 disp(error6)
             end
-            exitflag=-6; 
+            exitflag=-6;
             if trx
                 x=x';
             end
@@ -492,7 +492,7 @@ if constr
                 disp(errmes)
                 disp(error63)
             end
-            exitflag=-6; 
+            exitflag=-6;
             if trx
                 x=x';
             end
@@ -519,13 +519,13 @@ while 1
     B=eye(n);                        % re-set transf. matrix to identity
     fst=f; g1=g;  dx=0;
     % ----}
-    
+
     % MAIN ITERATIONS ----{
-    
+
     while 1
         k=k+1;kcheck=kcheck+1;
         laststep=dx;
-        
+
         % ADJUST GAMMA --{
         gamma=1+max([ajb^((ajp-kcheck)*n),2*optim.TolFun]);
         gamma=min([gamma,ajs^max([1,log10(nng+1)])]);
@@ -534,8 +534,8 @@ while 1
         % JUMPING OVER A RAVINE ----{
         if (gt/norm(gt))*(g1'/norm(g1))<low_bound
             if kj==2
-                xx=x;    
-            end 
+                xx=x;
+            end
             if kj==0
                 kd=4
             end
@@ -561,8 +561,8 @@ while 1
             z=z/nrmz;
             g1=gt+w*(z*gt')*z;  B=B+w*(B*z')*z;
         else
-            z=zeros(1,n); 
-            nrmz=0; 
+            z=zeros(1,n);
+            nrmz=0;
             g1=gt;
         end
         d1=norm(g1);  g0=(g1/d1)*B';
@@ -579,9 +579,9 @@ while 1
                     if abs(fst-f)<abs(f)*.01
                         ajp=ajp-10*n;
                     else
-                        ajp=ajpp; 
+                        ajp=ajpp;
                     end
-                    h=h1*dx/3; 
+                    h=h1*dx/3;
                     k=k-1;
                     break
                 end
@@ -603,15 +603,15 @@ while 1
             if trx
                 f=feval(fun,x',varargin{:});
             else
-                f=feval(fun,x,varargin{:});  
+                f=feval(fun,x,varargin{:});
             end
             n_f_evals=n_f_evals+1;
             if h1*f==Inf
                 if dispwarn
                     disp(errmes)
-                    disp(error5) 
+                    disp(error5)
                 end
-                exitflag=-7; 
+                exitflag=-7;
                 if trx
                     x=x';
                 end
@@ -648,7 +648,7 @@ while 1
                     return
                 end
                 if fc<=cnteps
-                    FP=1; 
+                    FP=1;
                     fc=0;
                 else
                     FP=0;
@@ -669,7 +669,7 @@ while 1
                     if isnan(f)
                         disp(error31)
                     else
-                        disp(error32) 
+                        disp(error32)
                     end
                 end
                 if ksm || kc>=mxtc
@@ -681,13 +681,13 @@ while 1
                 else
                     k2=k2+1;
                     k1=0;
-                    hp=hp/dq; 
+                    hp=hp/dq;
                     x=x1;
-                    f=f1; 
+                    f=f1;
                     knan=1;
                     if constr
-                        FP=FP1; 
-                        fp=fp1; 
+                        FP=FP1;
+                        fp=fp1;
                     end
                 end
                 % STEP SIZE IS ZERO TO THE EXTENT OF EPSNORM
@@ -704,20 +704,20 @@ while 1
                     end
                     return
                 else
-                    x=x1; 
-                    f=f1; 
-                    hp=hp*10; 
+                    x=x1;
+                    f=f1;
+                    hp=hp*10;
                     ksm=1;
                     if constr
-                        FP=FP1; 
-                        fp=fp1; 
+                        FP=FP1;
+                        fp=fp1;
                     end
                 end
                 % USE SMALLER STEP
             elseif h1*f<h1*gamma^sign(f1)*f1
                 if ksm
                     break
-                end 
+                end
                 k2=k2+1;k1=0; hp=hp/dq; x=x1;f=f1;
                 if constr
                     FP=FP1;
@@ -725,12 +725,12 @@ while 1
                 end
                 if kc>=mxtc, break, end
                 % 1-D OPTIMIZER IS LEFT BEHIND
-            else 
+            else
                 if h1*f<=h1*f1
                     break
                 end
                 % USE LARGER STEP
-                k1=k1+1; 
+                k1=k1+1;
                 if k2>0
                     kc=kc+1;
                 end
@@ -759,12 +759,12 @@ while 1
             if kg==1
                 h=h*(kk-des+1);
             else
-                h=h*sqrt(kk-des+1); 
+                h=h*sqrt(kk-des+1);
             end
         elseif kk<des
             h=h*sqrt(kk/des);
         end
-        
+
         stepvanish=stepvanish+ksm;
         % ----}
         % COMPUTE THE GRADIENT ----{
@@ -775,13 +775,13 @@ while 1
                 if trx
                     g=apprgrdn(x',fp,fun,deltax',1,varargin{:});
                 else
-                    g=apprgrdn(x ,fp,fun,deltax,1,varargin{:});    
+                    g=apprgrdn(x ,fp,fun,deltax,1,varargin{:});
                 end
             else
                 if trx
                     g=apprgrdn(x',f,fun,deltax',1,varargin{:});
                 else
-                    g=apprgrdn(x ,f,fun,deltax ,1,varargin{:});    
+                    g=apprgrdn(x ,f,fun,deltax ,1,varargin{:});
                 end
             end
             n_f_evals=n_f_evals+n;
@@ -789,7 +789,7 @@ while 1
             if trx
                 g=feval(grad,x',varargin{:});
             else
-                g=feval(grad,x,varargin{:}); 
+                g=feval(grad,x,varargin{:});
             end
             n_grad_evals=n_grad_evals+1;
         end
@@ -843,14 +843,14 @@ while 1
                     if trx
                         gc=apprgrdn(x',fc,func,deltax',0);
                     else
-                        gc=apprgrdn(x ,fc,func,deltax ,0); 
+                        gc=apprgrdn(x ,fc,func,deltax ,0);
                     end
                     n_constraint_evals=n_constraint_evals+n;
                 else
                     if trx
                         gc=feval(gradc,x');
                     else
-                        gc=feval(gradc,x ); 
+                        gc=feval(gradc,x );
                     end
                     n_constraint_gradient_evals=n_constraint_gradient_evals+1;
                 end
@@ -891,7 +891,7 @@ while 1
                 end
                 g=g+PenCoef*gc; ng=norm(g);
                 if Reset
-                    if dispwarn 
+                    if dispwarn
                         disp(wrnmes)
                         disp(warn21)
                     end
@@ -915,7 +915,7 @@ while 1
             gnorms(1)=ng;
             nng=(prod(gnorms(1:knorms)))^(1/knorms);
         end
-        
+
         % DISPLAY THE CURRENT VALUES ----{
         if k==ld
             disp('Iter.# ..... Function ... Step Value ... Gradient Norm ');
@@ -954,20 +954,20 @@ while 1
                             disp(wrnmes)
                             disp(warn09)
                         end
-                        x=xrec; 
-                        f=frec; 
-                        g=grec; 
-                        ng=norm(g); 
+                        x=xrec;
+                        f=frec;
+                        g=grec;
+                        ng=norm(g);
                         krerun=krerun+1;
                         h=h1*max([dx,detxr*norm(x)])/krerun;
-                        warnno=2; 
+                        warnno=2;
                         break
                     else
                         h=h*10;
                     end
                 elseif  abs(f-frec)> optim.TolFun*abs(f)    && ...
                         norm(x-xrec)<optim.TolX*norm(x) && constr
-                    
+
                 elseif  abs(f-fopt)<=optim.TolFun*abs(f)  || ...
                         abs(f)<=lowfbound               || ...
                         (abs(f-fopt)<=optim.TolFun && termx>=limxterm )
@@ -992,7 +992,7 @@ while 1
                             else
                                 exitflag=k;
                                 if dispwarn
-                                    disp(termwarn0); 
+                                    disp(termwarn0);
                                 end
                             end
                             if trx
@@ -1024,9 +1024,9 @@ while 1
         end
         % ITERATIONS LIMIT
         if(k==optim.MaxIter)
-            exitflag=-9; 
+            exitflag=-9;
             if trx
-                x=x'; 
+                x=x';
             end
             if dispwarn
                 disp(wrnmes)
@@ -1042,7 +1042,7 @@ while 1
                     disp(termwarn1)
                     disp(warn1)
                 end
-                exitflag=-8; 
+                exitflag=-8;
                 if trx
                     x=x';
                 end
@@ -1056,7 +1056,7 @@ while 1
                     disp(warn1)
                 end
                 if nzero>=3
-                    exitflag=-8; 
+                    exitflag=-8;
                     if trx
                         x=x';
                     end
@@ -1068,13 +1068,13 @@ while 1
                     if trx
                         f=feval(fun,x',varargin{:});
                     else
-                        f=feval(fun,x,varargin{:}); 
+                        f=feval(fun,x,varargin{:});
                     end
                     n_f_evals=n_f_evals+1;
                     if abs(f)==Inf
                         if dispwarn
                             disp(errmes)
-                            disp(error32)  
+                            disp(error32)
                         end
                         exitflag=-3;
                         if trx
@@ -1083,8 +1083,8 @@ while 1
                         return
                     elseif isnan(f)
                         if dispwarn
-                            disp(errmes)  
-                            disp(error32)  
+                            disp(errmes)
+                            disp(error32)
                         end
                         exitflag=-3;
                         if trx
@@ -1093,46 +1093,46 @@ while 1
                         return
                     end
                     if app
-                        deltax=sign(g0); 
+                        deltax=sign(g0);
                         idx=find(deltax==0);
-                        deltax(idx)=ones(size(idx));  
+                        deltax(idx)=ones(size(idx));
                         deltax=h1*ddx*deltax;
-                        if trx  
+                        if trx
                             g=apprgrdn(x',f,fun,deltax',1,varargin{:});
                         else
                             g=apprgrdn(x,f,fun,deltax,1,varargin{:});
                         end
                         n_f_evals=n_f_evals+n;
                     else
-                        if trx  
+                        if trx
                             g=feval(grad,x',varargin{:});
                         else
-                            g=feval(grad,x,varargin{:});   
+                            g=feval(grad,x,varargin{:});
                         end
                         n_grad_evals=n_grad_evals+1;
                     end
                     if size(g,2)==1
-                        g=g'; 
+                        g=g';
                     end
                     ng=norm(g);
                     if ng==Inf
                         if dispwarn
                             disp(errmes)
-                            disp(error42) 
+                            disp(error42)
                         end
-                        exitflag=-4; 
+                        exitflag=-4;
                         if trx
-                            x=x'; 
+                            x=x';
                         end
                         return
                     elseif isnan(ng)
                         if dispwarn
-                            disp(errmes)  
-                            disp(error41) 
+                            disp(errmes)
+                            disp(error41)
                         end
-                        exitflag=-4; 
+                        exitflag=-4;
                         if trx
-                            x=x'; 
+                            x=x';
                         end
                         return
                     end
@@ -1142,23 +1142,23 @@ while 1
                 end
                 if ng<=ZeroGrad
                     if dispwarn
-                        disp(termwarn1) 
+                        disp(termwarn1)
                         disp(warn1)
                     end
-                    exitflag=-8; 
+                    exitflag=-8;
                     if trx
                         x=x';
                     end
                     return
                 end
-                h=h1*dx; 
+                h=h1*dx;
                 break
             end
         end
         % ----}
         % FUNCTION IS FLAT AT THE POINT ----{
         if ~constr && abs(f-fopt)<abs(fopt)*optim.TolFun && kcheck>5 && ng<1
-            idx=find(abs(g)<=epsnorm2); 
+            idx=find(abs(g)<=epsnorm2);
             ni=size(idx,2);
             if ni>=1 && ni<=n/2 && kflat<=3
                 kflat=kflat+1;
@@ -1174,7 +1174,7 @@ while 1
                         x1(j)=1;
                     elseif abs(y)<1
                         x1(j)=sign(y);
-                    else 
+                    else
                         x1(j)=y;
                     end
                     for i=1:20
@@ -1182,12 +1182,12 @@ while 1
                         if trx
                             f1=feval(fun,x1',varargin{:});
                         else
-                            f1=feval(fun,x1,varargin{:}); 
+                            f1=feval(fun,x1,varargin{:});
                         end
                         n_f_evals=n_f_evals+1;
                         if abs(f1)~=Inf && ~isnan(f1)
                             if h1*f1>h1*fm
-                                y=x1(j); 
+                                y=x1(j);
                                 fm=f1;
                             elseif h1*f2>h1*f1
                                 break
@@ -1205,19 +1205,19 @@ while 1
                         if trx
                             gt=apprgrdn(x1',fm,fun,deltax',1,varargin{:});
                         else
-                            gt=apprgrdn(x1 ,fm,fun,deltax ,1,varargin{:});    
+                            gt=apprgrdn(x1 ,fm,fun,deltax ,1,varargin{:});
                         end
                         n_f_evals=n_f_evals+n;
                     else
                         if trx
                             gt=feval(grad,x1',varargin{:});
                         else
-                            gt=feval(grad,x1,varargin{:}); 
+                            gt=feval(grad,x1,varargin{:});
                         end
                         n_grad_evals=n_grad_evals+1;
                     end
                     if size(gt,2)==1
-                        gt=gt'; 
+                        gt=gt';
                     end
                     ngt=norm(gt);
                     if ~isnan(ngt) && ngt>epsnorm2
@@ -1225,11 +1225,11 @@ while 1
                             disp(warn32)
                         end
                         optim.TolFun=optim.TolFun/5;
-                        x=x1; 
-                        g=gt; 
-                        ng=ngt; 
-                        f=fm; 
-                        h=h1*dx/3; 
+                        x=x1;
+                        g=gt;
+                        ng=ngt;
+                        f=fm;
+                        h=h1*dx/3;
                         break
                     end
                 end
@@ -1238,6 +1238,6 @@ while 1
         % ----}
     end % iterations
 end % restart
-% end of the function
-%
-end
+    % end of the function
+    %
+    end

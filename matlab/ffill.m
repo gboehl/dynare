@@ -7,11 +7,11 @@ function [a,b] = ffill(x,ixc,y)
 %    x:         matrix
 %    ixc:       vector of indices
 %    y:         matrix
-%        
+%
 % OUTPUTS
 %    a:         concatenation results
 %    b:         vector
-%        
+%
 % SPECIAL REQUIREMENTS
 %    none
 

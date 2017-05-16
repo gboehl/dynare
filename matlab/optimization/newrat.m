@@ -11,14 +11,14 @@ function [xparam1, hh, gg, fval, igg, hess_info] = newrat(func0, x, bounds, anal
 %  - analytic_derivation    1 if analytic derivatives, 0 otherwise
 %  - ftol0                  termination criterion for function change
 %  - nit                    maximum number of iterations
-%  - flagg                  Indicator how to compute final Hessian (In each iteration, Hessian is computed with outer product gradient)  
+%  - flagg                  Indicator how to compute final Hessian (In each iteration, Hessian is computed with outer product gradient)
 %                           0: final Hessian computed with outer product gradient
-%                           1: final 'mixed' Hessian: diagonal elements computed with 
-%                               numerical second order derivatives with correlation structure 
+%                           1: final 'mixed' Hessian: diagonal elements computed with
+%                               numerical second order derivatives with correlation structure
 %                               as from outer product gradient
 %                           2: full numerical Hessian
 %  - Verbose                1 if explicit output is requested
-%  - Save_files             1 if intermediate output is to be saved 
+%  - Save_files             1 if intermediate output is to be saved
 %  - hess_info              structure storing the step sizes for
 %                           computation of Hessian
 %  - varargin               other inputs:
@@ -30,7 +30,7 @@ function [xparam1, hh, gg, fval, igg, hess_info] = newrat(func0, x, bounds, anal
 %                           varargin{6} --> BayesInfo
 %                           varargin{7} --> Bounds
 %                           varargin{8} --> DynareResults
-% 
+%
 % Outputs
 % - xparam1                 parameter vector at optimum
 % - hh                      hessian
@@ -56,7 +56,7 @@ function [xparam1, hh, gg, fval, igg, hess_info] = newrat(func0, x, bounds, anal
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-% initialize variable penalty    
+% initialize variable penalty
 penalty = 1e8;
 
 icount=0;
@@ -200,20 +200,20 @@ while norm(gg)>gtol && check==0 && jit<nit
             hhg=hh;
             H = inv(hh);
         else
-        if flagit==2
-            hh=hh0;
-        elseif flagg>0
-            [dum, gg, htol0, igg, hhg, h1, hess_info]=mr_hessian(xparam1,func0,penalty,flagg,ftol0,hess_info,varargin{:});
-            if flagg==2
-                hh = reshape(dum,nx,nx);
-                ee=eig(hh);
-                if min(ee)<0
+            if flagit==2
+                hh=hh0;
+            elseif flagg>0
+                [dum, gg, htol0, igg, hhg, h1, hess_info]=mr_hessian(xparam1,func0,penalty,flagg,ftol0,hess_info,varargin{:});
+                if flagg==2
+                    hh = reshape(dum,nx,nx);
+                    ee=eig(hh);
+                    if min(ee)<0
+                        hh=hhg;
+                    end
+                else
                     hh=hhg;
                 end
-            else
-                hh=hhg;
             end
-        end
         end
         disp_verbose(['Actual dxnorm ',num2str(norm(x(:,end)-x(:,end-1)))],Verbose)
         disp_verbose(['FVAL          ',num2str(fval)],Verbose)

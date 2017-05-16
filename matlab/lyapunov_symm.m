@@ -1,22 +1,22 @@
 function [x,u] = lyapunov_symm(a,b,lyapunov_fixed_point_tol,qz_criterium,lyapunov_complex_threshold,method,debug)  % --*-- Unitary tests --*--
 % Solves the Lyapunov equation x-a*x*a' = b, for b and x symmetric matrices.
 % If a has some unit roots, the function computes only the solution of the stable subsystem.
-%  
+%
 % INPUTS:
 %   a                           [double]    n*n matrix.
 %   b                           [double]    n*n matrix.
 %   qz_criterium                [double]    unit root threshold for eigenvalues
 %   lyapunov_fixed_point_tol    [double]    convergence criteria for fixed_point algorithm.
 %   lyapunov_complex_threshold  [double]    scalar, complex block threshold for the upper triangular matrix T.
-%   method                      [integer]   Scalar, if method=0 [default] then U, T, n and k are not persistent.  
-%                                                      method=1 then U, T, n and k are declared as persistent 
-%                                                               variables and the Schur decomposition is triggered.    
-%                                                      method=2 then U, T, n and k are declared as persistent 
+%   method                      [integer]   Scalar, if method=0 [default] then U, T, n and k are not persistent.
+%                                                      method=1 then U, T, n and k are declared as persistent
+%                                                               variables and the Schur decomposition is triggered.
+%                                                      method=2 then U, T, n and k are declared as persistent
 %                                                               variables and the Schur decomposition is not performed.
 %                                                      method=3 fixed point method
 % OUTPUTS
 %   x:      [double]    m*m solution matrix of the lyapunov equation, where m is the dimension of the stable subsystem.
-%   u:      [double]    Schur vectors associated with unit roots  
+%   u:      [double]    Schur vectors associated with unit roots
 %
 % ALGORITHM
 %   Uses reordered Schur decomposition (Bartels-Stewart algorithm)
@@ -74,7 +74,7 @@ if method == 3
             X_old = X;
             X = a * X * at + b;
             evol = max(sum(abs(X - X_old))); %norm_1
-            %evol = max(sum(abs(X - X_old)')); %norm_inf
+                                             %evol = max(sum(abs(X - X_old)')); %norm_inf
             it_fp = it_fp + 1;
         end
         if debug
@@ -110,7 +110,7 @@ end
 if method<2
     [U,T] = schur(a);
     e1 = abs(ordeig(T)) > 2-qz_criterium;
-    k = sum(e1);       % Number of unit roots. 
+    k = sum(e1);       % Number of unit roots.
     n = length(e1)-k;  % Number of stationary variables.
     if k > 0
         % Selects stable roots

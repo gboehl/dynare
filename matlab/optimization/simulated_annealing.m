@@ -5,7 +5,7 @@ function [xopt, fopt,exitflag, n_accepted_draws, n_total_draws, n_out_of_bounds_
 %
 % Implements the continuous simulated annealing global optimization
 % algorithm described in Corana et al. (1987)
-% 
+%
 %  A very quick (perhaps too quick) overview of SA:
 %     SA tries to find the global optimum of an N dimensional function.
 %  It moves both up and downhill and as the optimization process
@@ -49,17 +49,17 @@ function [xopt, fopt,exitflag, n_accepted_draws, n_total_draws, n_out_of_bounds_
 %    Note: The suggested values generally come from Corana et al. To
 %          drastically reduce runtime, see Goffe et al., pp. 90-1 for
 %          suggestions on choosing the appropriate RT and NT.
-% 
+%
 %    fcn - function to be optimized.
 %    x - The starting values for the variables of the function to be
 %        optimized. (N)
 %    optim:     Options structure with fields
-% 
+%
 %       optim.maximizer_indicator - Denotes whether the function should be maximized or
 %           minimized. A value =1 denotes maximization while a
 %           value =0 denotes minimization. Intermediate output (see verbosity)
 %           takes this into account.
-%       optim.RT - The temperature reduction factor 
+%       optim.RT - The temperature reduction factor
 %       optim.TolFun - Error tolerance for termination. If the final function
 %           values from the last neps temperatures differ from the
 %           corresponding value at the current temperature by less than
@@ -104,11 +104,11 @@ function [xopt, fopt,exitflag, n_accepted_draws, n_total_draws, n_out_of_bounds_
 %                               of all points are accepted, the input value is not very
 %                               important (i.e. is the value is off, SA adjusts VM to the
 %                               correct value)
-% 
-%    lb - The lower bound for the allowable solution variables. 
-%    ub - The upper bound for the allowable solution variables. 
+%
+%    lb - The lower bound for the allowable solution variables.
+%    ub - The upper bound for the allowable solution variables.
 %         If the algorithm chooses X(I) < LB(I) or X(I) > UB(I),
-%         I = 1, N, a point is from inside is randomly selected. 
+%         I = 1, N, a point is from inside is randomly selected.
 %         This focuses the algorithm on the region inside UB and LB.
 %         Unless the user wishes to concentrate the search to a par-
 %         ticular region, UB and LB should be set to very large positive
@@ -116,8 +116,8 @@ function [xopt, fopt,exitflag, n_accepted_draws, n_total_draws, n_out_of_bounds_
 %         vector X should be inside this region. Also note that LB and
 %         UB are fixed in position, while VM is centered on the last
 %         accepted trial set of variables that optimizes the function.
-% 
-% 
+%
+%
 % Input/Output Parameters:
 %
 %  Output Parameters:
@@ -142,26 +142,26 @@ function [xopt, fopt,exitflag, n_accepted_draws, n_total_draws, n_out_of_bounds_
 %    t:     On output, the final temperature.
 %    vm:    Final step length vector
 %
-% Algorithm: 
+% Algorithm:
 %  This routine implements the continuous simulated annealing global
 %  optimization algorithm described in Corana et al.'s article
 %  "Minimizing Multimodal Functions of Continuous Variables with the
 %  "Simulated Annealing" Algorithm" in the September 1987 (vol. 13,
 %  no. 3, pp. 262-280) issue of the ACM Transactions on Mathematical
 %  Software.
-% 
+%
 % For modifications to the algorithm and many details on its use,
 %  (particularly for econometric applications) see Goffe, Ferrier
 %  and Rogers, "Global Optimization of Statistical Functions with
 %  Simulated Annealing," Journal of Econometrics, vol. 60, no. 1/2,
 %  Jan./Feb. 1994, pp. 65-100.
-% 
+%
 %  Based on the Matlab code written by Thomas Werner (Bundesbank December
-%  2002), which in turn is based on the GAUSS version of Bill Goffe's simulated annealing 
+%  2002), which in turn is based on the GAUSS version of Bill Goffe's simulated annealing
 %  program for global optimization, written by E.G.Tsionas (9/4/95).
-% 
-% Copyright (C) 1995 E.G.Tsionas 
-% Copyright (C) 1995-2002 Thomas Werner 
+%
+% Copyright (C) 1995 E.G.Tsionas
+% Copyright (C) 1995-2002 Thomas Werner
 % Copyright (C) 2002-2015 Giovanni Lombardo
 % Copyright (C) 2015 Dynare Team
 %
@@ -314,9 +314,9 @@ while (1>0)
                     if(pp<p)
                         if(optim.verbosity >=3)
                             if(optim.maximizer_indicator)
-                             fprintf('though lower, point accepted\n');
+                                fprintf('though lower, point accepted\n');
                             else
-                             fprintf('though higher, point accepted\n');
+                                fprintf('though higher, point accepted\n');
                             end
                         end
                         x=xp;
@@ -383,7 +383,7 @@ while (1>0)
         if(optim.verbosity >=1)
             fprintf('SA achieved termination criteria.exitflag=0\n');
         end
-        return        
+        return
     end
     %*  If termination criteria are not met, prepare for another loop. *
     t=optim.rt*t;
@@ -401,7 +401,7 @@ end
 
 function  print_current_invalid_try(max,xp,x,fp,f)
 fprintf('\n');
-    disp(['Current x    ' num2str(x(:)')]);
+disp(['Current x    ' num2str(x(:)')]);
 if(max)
     disp(['Current f    ' num2str(f)]);
 else

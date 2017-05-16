@@ -2,7 +2,7 @@ function  scatter_mcf(X,Y,vnames,plotsymbol, fnam, dirname, figtitle, xparam1, D
 %
 % Written by Marco Ratto
 % Joint Research Centre, The European Commission,
-% marco.ratto@ec.europa.eu 
+% marco.ratto@ec.europa.eu
 
 % Copyright (C) 2014-2016 European Commission
 % Copyright (C) 2014-2017 Dynare Team
@@ -61,23 +61,23 @@ if nargin<5
     fnam='';
 end
 if nargin<6
-  dirname='';
-  nograph=1;
+    dirname='';
+    nograph=1;
 else
-  nograph=0;    
+    nograph=0;
 end
 if nargin<7
-  figtitle=fnam;
+    figtitle=fnam;
 end
 if nargin<8
-  xparam1=[];
+    xparam1=[];
 end
 if nargin<10
-  beha_name = 'BEHAVIOUR';
-  non_beha_name = 'NON-BEHAVIOUR';
+    beha_name = 'BEHAVIOUR';
+    non_beha_name = 'NON-BEHAVIOUR';
 end
 if nargin==10
-  non_beha_name = ['NON-' beha_name];
+    non_beha_name = ['NON-' beha_name];
 end
 
 figtitle_tex=strrep(figtitle,'_','\_');
@@ -144,7 +144,7 @@ for i = 1:p
         if i==1
             if nflag == 1
                 ylabel(vnames(j,:),'Rotation',45,'interpreter','none', ...
-                    'HorizontalAlignment','right','VerticalAlignment','middle');
+                       'HorizontalAlignment','right','VerticalAlignment','middle');
             else
                 ylabel([num2str(j),' '],'Rotation',90)
             end
@@ -152,7 +152,7 @@ for i = 1:p
         if j==1
             if nflag == 1
                 title(vnames(i,:),'interpreter','none','Rotation',45, ...
-                    'HorizontalAlignment','left','VerticalAlignment','bottom')
+                      'HorizontalAlignment','left','VerticalAlignment','bottom')
             else
                 title(num2str(i))
             end

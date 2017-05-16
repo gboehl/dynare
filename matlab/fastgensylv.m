@@ -95,19 +95,19 @@ end
 %   B
 %   C
 %   D
-%   block : block number (for storage purpose) 
+%   block : block number (for storage purpose)
 %   tol : convergence criteria
 % OUTPUTS
 %   X solution
-%    
+%
 % ALGORITHM
 %   fixed point method
 %   MARLLINY MONSALVE (2008): "Block linear method for large scale
-%   Sylvester equations", Computational & Applied Mathematics, Vol 27, n°1,
+%   Sylvester equations", Computational & Applied Mathematics, Vol 27, nÂ°1,
 %   p47-59
 %   ||A^-1||.||B||.||C|| < 1 is a suffisant condition:
 %    - to get a unique solution for the Sylvester equation
 %    - to get a convergent fixed-point algorithm
 %
 % SPECIAL REQUIREMENTS
-%   none.  
+%   none.

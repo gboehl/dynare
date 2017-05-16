@@ -149,7 +149,7 @@ xparam1 = xparam1(:);
 if DynareOptions.estimation_dll
     [fval,exit_flag,SteadyState,trend_coeff,info,params,H,Q] ...
         = logposterior(xparam1,DynareDataset, DynareOptions,Model, ...
-                          EstimatedParameters,BayesInfo,DynareResults);
+                       EstimatedParameters,BayesInfo,DynareResults);
     mexErrCheck('logposterior', exit_flag);
     Model.params = params;
     if ~isequal(Model.H,0)
@@ -268,8 +268,8 @@ end
 % Return, with endogenous penalty when possible, if dynare_resolve issues an error code (defined in resol).
 if info(1)
     if info(1) == 3 || info(1) == 4 || info(1) == 5 || info(1)==6 ||info(1) == 19 ||...
-            info(1) == 20 || info(1) == 21 || info(1) == 23 || info(1) == 26 || ...
-            info(1) == 81 || info(1) == 84 ||  info(1) == 85 ||  info(1) == 86
+                info(1) == 20 || info(1) == 21 || info(1) == 23 || info(1) == 26 || ...
+                info(1) == 81 || info(1) == 84 ||  info(1) == 85 ||  info(1) == 86
         %meaningful second entry of output that can be used
         fval = Inf;
         info(4) = info(2);
@@ -320,8 +320,8 @@ if BayesInfo.with_trend
     [trend_addition, trend_coeff]=compute_trend_coefficients(Model,DynareOptions,DynareDataset.vobs,DynareDataset.nobs);
     trend = repmat(constant,1,DynareDataset.nobs)+trend_addition;
 else
-   trend_coeff = zeros(DynareDataset.vobs,1);
-   trend = repmat(constant,1,DynareDataset.nobs);
+    trend_coeff = zeros(DynareDataset.vobs,1);
+    trend = repmat(constant,1,DynareDataset.nobs);
 end
 
 % Get needed informations for kalman filter routines.
@@ -369,8 +369,8 @@ switch DynareOptions.lik_init
     if kalman_algo == 0
         kalman_algo = 3;
     elseif ~((kalman_algo == 3) || (kalman_algo == 4))
-            error(['The model requires Diffuse filter, but you specified a different Kalman filter. You must set options_.kalman_algo ' ...
-                   'to 0 (default), 3 or 4'])
+        error(['The model requires Diffuse filter, but you specified a different Kalman filter. You must set options_.kalman_algo ' ...
+               'to 0 (default), 3 or 4'])
     end
     [Pstar,Pinf] = compute_Pinf_Pstar(Z,T,R,Q,DynareOptions.qz_criterium,[1:length(T)]);
     Z =zeros(length(BayesInfo.mf),size(T,1));
@@ -384,9 +384,9 @@ switch DynareOptions.lik_init
         Pstar0 = Pstar; % store Pstar
         if no_missing_data_flag
             [dLIK,dlik,a,Pstar] = kalman_filter_d(Y, 1, size(Y,2), ...
-                                                       zeros(mm,1), Pinf, Pstar, ...
-                                                       kalman_tol, diffuse_kalman_tol, riccati_tol, DynareOptions.presample, ...
-                                                       T,R,Q,H,Z,mm,pp,rr);
+                                                  zeros(mm,1), Pinf, Pstar, ...
+                                                  kalman_tol, diffuse_kalman_tol, riccati_tol, DynareOptions.presample, ...
+                                                  T,R,Q,H,Z,mm,pp,rr);
         else
             [dLIK,dlik,a,Pstar] = missing_observations_kalman_filter_d(DatasetInfo.missing.aindex,DatasetInfo.missing.number_of_observations,DatasetInfo.missing.no_more_missing_observations, ...
                                                               Y, 1, size(Y,2), ...
@@ -430,17 +430,17 @@ switch DynareOptions.lik_init
                 Pinf  = blkdiag(Pinf,zeros(pp));
                 H1 = zeros(pp,1);
                 mmm   = mm+pp;
-                
+
             end
         end
 
         [dLIK,dlik,a,Pstar] = univariate_kalman_filter_d(DatasetInfo.missing.aindex,...
-                                                        DatasetInfo.missing.number_of_observations,...
-                                                        DatasetInfo.missing.no_more_missing_observations, ...
-                                                        Y, 1, size(Y,2), ...
-                                                        zeros(mmm,1), Pinf, Pstar, ...
-                                                        kalman_tol, diffuse_kalman_tol, riccati_tol, DynareOptions.presample, ...
-                                                        T,R,Q,H1,Z,mmm,pp,rr);
+                                                         DatasetInfo.missing.number_of_observations,...
+                                                         DatasetInfo.missing.no_more_missing_observations, ...
+                                                         Y, 1, size(Y,2), ...
+                                                         zeros(mmm,1), Pinf, Pstar, ...
+                                                         kalman_tol, diffuse_kalman_tol, riccati_tol, DynareOptions.presample, ...
+                                                         T,R,Q,H1,Z,mmm,pp,rr);
         diffuse_periods = size(dlik,1);
     end
     if isnan(dLIK)
@@ -450,7 +450,7 @@ switch DynareOptions.lik_init
         exit_flag = 0;
         return
     end
-    
+
   case 4% Start from the solution of the Riccati equation.
     if kalman_algo ~= 2
         kalman_algo = 1;
@@ -536,9 +536,9 @@ if analytic_derivation
             full_Hess = derivatives_info.full_Hess;
         end
         if full_Hess
-        D2T = derivatives_info.D2T;
-        D2Om = derivatives_info.D2Om;
-        D2Yss = derivatives_info.D2Yss;
+            D2T = derivatives_info.D2T;
+            D2Om = derivatives_info.D2Om;
+            D2Yss = derivatives_info.D2Yss;
         end
         if isfield(derivatives_info,'no_DLIK')
             no_DLIK = derivatives_info.no_DLIK;
@@ -551,7 +551,7 @@ if analytic_derivation
     DP=zeros([size(T),length(xparam1)]);
     if full_Hess
         for j=1:size(D2Yss,1)
-        tmp(j,:,:) = blkdiag(zeros(offset,offset), squeeze(D2Yss(j,:,:)));
+            tmp(j,:,:) = blkdiag(zeros(offset,offset), squeeze(D2Yss(j,:,:)));
         end
         D2Yss = tmp;
         D2H=sparse(size(D2Om,1),size(D2Om,2)); %zeros([size(H),length(xparam1),length(xparam1)]);
@@ -559,57 +559,57 @@ if analytic_derivation
         jcount=0;
     end
     if DynareOptions.lik_init==1
-    for i=1:EstimatedParameters.nvx
-        k =EstimatedParameters.var_exo(i,1);
-        DQ(k,k,i) = 2*sqrt(Q(k,k));
-        dum =  lyapunov_symm(T,DOm(:,:,i),DynareOptions.lyapunov_fixed_point_tol,DynareOptions.qz_criterium,DynareOptions.lyapunov_complex_threshold,[],DynareOptions.debug);
-%         kk = find(abs(dum) < 1e-12);
-%         dum(kk) = 0;
-        DP(:,:,i)=dum;
-        if full_Hess
-        for j=1:i
-            jcount=jcount+1;
-            dum =  lyapunov_symm(T,dyn_unvech(D2Om(:,jcount)),DynareOptions.lyapunov_fixed_point_tol,DynareOptions.qz_criterium,DynareOptions.lyapunov_complex_threshold,[],DynareOptions.debug);
-%             kk = (abs(dum) < 1e-12);
-%             dum(kk) = 0;
-            D2P(:,jcount)=dyn_vech(dum);
-%             D2P(:,:,j,i)=dum;
+        for i=1:EstimatedParameters.nvx
+            k =EstimatedParameters.var_exo(i,1);
+            DQ(k,k,i) = 2*sqrt(Q(k,k));
+            dum =  lyapunov_symm(T,DOm(:,:,i),DynareOptions.lyapunov_fixed_point_tol,DynareOptions.qz_criterium,DynareOptions.lyapunov_complex_threshold,[],DynareOptions.debug);
+            %         kk = find(abs(dum) < 1e-12);
+            %         dum(kk) = 0;
+            DP(:,:,i)=dum;
+            if full_Hess
+                for j=1:i
+                    jcount=jcount+1;
+                    dum =  lyapunov_symm(T,dyn_unvech(D2Om(:,jcount)),DynareOptions.lyapunov_fixed_point_tol,DynareOptions.qz_criterium,DynareOptions.lyapunov_complex_threshold,[],DynareOptions.debug);
+                    %             kk = (abs(dum) < 1e-12);
+                    %             dum(kk) = 0;
+                    D2P(:,jcount)=dyn_vech(dum);
+                    %             D2P(:,:,j,i)=dum;
+                end
+            end
         end
-        end
-    end
     end
     offset = EstimatedParameters.nvx;
     for i=1:EstimatedParameters.nvn
         k = EstimatedParameters.var_endo(i,1);
         DH(k,k,i+offset) = 2*sqrt(H(k,k));
         if full_Hess
-        D2H(k,k,i+offset,i+offset) = 2;
+            D2H(k,k,i+offset,i+offset) = 2;
         end
     end
     offset = offset + EstimatedParameters.nvn;
     if DynareOptions.lik_init==1
-    for j=1:EstimatedParameters.np
-        dum =  lyapunov_symm(T,DT(:,:,j+offset)*Pstar*T'+T*Pstar*DT(:,:,j+offset)'+DOm(:,:,j+offset),DynareOptions.lyapunov_fixed_point_tol,DynareOptions.qz_criterium,DynareOptions.lyapunov_complex_threshold,[],DynareOptions.debug);
-%         kk = find(abs(dum) < 1e-12);
-%         dum(kk) = 0;
-        DP(:,:,j+offset)=dum;
-        if full_Hess
-        DTj = DT(:,:,j+offset);
-        DPj = dum;
-        for i=1:j+offset
-            jcount=jcount+1;
-            DTi = DT(:,:,i);
-            DPi = DP(:,:,i);
-            D2Tij = reshape(D2T(:,jcount),size(T));
-            D2Omij = dyn_unvech(D2Om(:,jcount));
-            tmp = D2Tij*Pstar*T' + T*Pstar*D2Tij' + DTi*DPj*T' + DTj*DPi*T' + T*DPj*DTi' + T*DPi*DTj' + DTi*Pstar*DTj' + DTj*Pstar*DTi' + D2Omij;
-            dum = lyapunov_symm(T,tmp,DynareOptions.lyapunov_fixed_point_tol,DynareOptions.qz_criterium,DynareOptions.lyapunov_complex_threshold,[],DynareOptions.debug);
-%             dum(abs(dum)<1.e-12) = 0;
-            D2P(:,jcount) = dyn_vech(dum);
-%             D2P(:,:,j+offset,i) = dum;
+        for j=1:EstimatedParameters.np
+            dum =  lyapunov_symm(T,DT(:,:,j+offset)*Pstar*T'+T*Pstar*DT(:,:,j+offset)'+DOm(:,:,j+offset),DynareOptions.lyapunov_fixed_point_tol,DynareOptions.qz_criterium,DynareOptions.lyapunov_complex_threshold,[],DynareOptions.debug);
+            %         kk = find(abs(dum) < 1e-12);
+            %         dum(kk) = 0;
+            DP(:,:,j+offset)=dum;
+            if full_Hess
+                DTj = DT(:,:,j+offset);
+                DPj = dum;
+                for i=1:j+offset
+                    jcount=jcount+1;
+                    DTi = DT(:,:,i);
+                    DPi = DP(:,:,i);
+                    D2Tij = reshape(D2T(:,jcount),size(T));
+                    D2Omij = dyn_unvech(D2Om(:,jcount));
+                    tmp = D2Tij*Pstar*T' + T*Pstar*D2Tij' + DTi*DPj*T' + DTj*DPi*T' + T*DPj*DTi' + T*DPi*DTj' + DTi*Pstar*DTj' + DTj*Pstar*DTi' + D2Omij;
+                    dum = lyapunov_symm(T,tmp,DynareOptions.lyapunov_fixed_point_tol,DynareOptions.qz_criterium,DynareOptions.lyapunov_complex_threshold,[],DynareOptions.debug);
+                    %             dum(abs(dum)<1.e-12) = 0;
+                    D2P(:,jcount) = dyn_vech(dum);
+                    %             D2P(:,:,j+offset,i) = dum;
+                end
+            end
         end
-        end
-    end
     end
     if analytic_derivation==1
         analytic_deriv_info={analytic_derivation,DT,DYss,DOm,DH,DP,asy_Hess};
@@ -640,7 +640,7 @@ if ((kalman_algo==1) || (kalman_algo==3))% Multivariate Kalman Filter
                 fval = Inf;
                 info(1) = 55;
                 info(4) = 0.1;
-                exit_flag = 0; 
+                exit_flag = 0;
                 return
             end
             [LIK,lik] = kalman_filter_fast(Y,diffuse_periods+1,size(Y,2), ...
@@ -746,7 +746,7 @@ if (kalman_algo==2) || (kalman_algo==4)
             if singularity_has_been_detected
                 a = zeros(mmm,1);
             elseif ~expanded_state_vector_for_univariate_filter
-                a = [a; zeros(pp,1)];                
+                a = [a; zeros(pp,1)];
             end
         end
     end
@@ -841,14 +841,14 @@ else
 end
 
 if DynareOptions.endogenous_prior==1
-  if DynareOptions.lik_init==2 || DynareOptions.lik_init==3
-    error('Endogenous prior not supported with non-stationary models')
-  else
-    [lnpriormom]  = endogenous_prior(Y,Pstar,BayesInfo,H);
-    fval    = (likelihood-lnprior-lnpriormom);
-  end
+    if DynareOptions.lik_init==2 || DynareOptions.lik_init==3
+        error('Endogenous prior not supported with non-stationary models')
+    else
+        [lnpriormom]  = endogenous_prior(Y,Pstar,BayesInfo,H);
+        fval    = (likelihood-lnprior-lnpriormom);
+    end
 else
-  fval    = (likelihood-lnprior);
+    fval    = (likelihood-lnprior);
 end
 
 if DynareOptions.prior_restrictions.status

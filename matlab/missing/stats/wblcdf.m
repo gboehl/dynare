@@ -2,13 +2,13 @@ function p = wblcdf(x, scale, shape)   % --*-- Unitary tests --*--
 
 % Cumulative distribution function for the Weibull distribution.
 %
-% INPUTS 
+% INPUTS
 % - x     [double] Positive real scalar.
 % - scale [double] Positive hyperparameter.
 % - shape [double] Positive hyperparameter.
 %
-% OUTPUTS 
-% - p     [double] Positive scalar between 
+% OUTPUTS
+% - p     [double] Positive scalar between
 
 % Copyright (C) 2015 Dynare Team
 %
@@ -58,7 +58,7 @@ if isinf(x)
     return
 end
 
-% Evaluate the CDF. 
+% Evaluate the CDF.
 
 p = 1-exp(-(x/scale)^shape);
 
@@ -146,4 +146,3 @@ p = 1-exp(-(x/scale)^shape);
 %$ end
 %$ T = all(t);
 %@eof:4
-

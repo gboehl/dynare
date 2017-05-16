@@ -4,8 +4,8 @@ function dynareParallelDelete(fname,pname,Parallel)
 %
 % INPUTS
 %  o fname      []   ...
-%  o pname      []   ... 
-%  o Parallel   []   ...  
+%  o pname      []   ...
+%  o Parallel   []   ...
 %
 %  OUTPUTS
 %  None
@@ -53,5 +53,5 @@ for indPC=1:length(Parallel)
             delete(fname_temp);
         end
     end
-    
+
 end

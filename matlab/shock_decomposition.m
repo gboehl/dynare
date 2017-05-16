@@ -4,7 +4,7 @@ function [oo_,M_] = shock_decomposition(M_,oo_,options_,varlist,bayestopt_,estim
 % oo_.shock_decomposition. It is a n_var by nshock+2 by nperiods array. The
 % first nshock columns store the respective shock contributions, column n+1
 % stores the role of the initial conditions, while column n+2 stores the
-% value of the smoothed variables.  Both the variables and shocks are stored 
+% value of the smoothed variables.  Both the variables and shocks are stored
 % in the order of declaration, i.e. M_.endo_names and M_.exo_names, respectively.
 %
 % INPUTS
@@ -59,9 +59,9 @@ parameter_set = options_.parameter_set;
 if isempty(parameter_set)
     if isfield(oo_,'posterior_mean')
         parameter_set = 'posterior_mean';
-    elseif isfield(oo_,'mle_mode') 
+    elseif isfield(oo_,'mle_mode')
         parameter_set = 'mle_mode';
-    elseif isfield(oo_,'posterior') 
+    elseif isfield(oo_,'posterior')
         parameter_set = 'posterior_mode';
     else
         error(['shock_decomposition: option parameter_set is not specified ' ...
@@ -105,7 +105,7 @@ for i=1:gend
     if i > 1 && i <= maximum_lag+1
         lags = min(i-1,maximum_lag):-1:1;
     end
-    
+
     if i > 1
         tempx = permute(z(:,1:nshocks,lags),[1 3 2]);
         m = min(i-1,maximum_lag);
@@ -115,7 +115,7 @@ for i=1:gend
     end
 
     if i > options_.shock_decomp.init_state
-       z(:,1:nshocks,i) = z(:,1:nshocks,i) + B(inv_order_var,:).*repmat(epsilon(:,i)',endo_nbr,1);
+        z(:,1:nshocks,i) = z(:,1:nshocks,i) + B(inv_order_var,:).*repmat(epsilon(:,i)',endo_nbr,1);
     end
     z(:,nshocks+1,i) = z(:,nshocks+2,i) - sum(z(:,1:nshocks,i),2);
 end

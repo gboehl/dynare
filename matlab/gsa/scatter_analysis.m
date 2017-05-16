@@ -39,7 +39,7 @@ fname_ = options_scatter.fname_;
 xparam1=[];
 if isfield(options_scatter,'xparam1')
     xparam1=options_scatter.xparam1;
-end    
+end
 OutputDirectoryName = options_scatter.OutputDirectoryName;
 
 if ~DynareOptions.nograph

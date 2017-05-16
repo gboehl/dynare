@@ -121,7 +121,7 @@ for plt = 1:nbplt
         elseif isequal(x(kk),BoundsInfo.ub(kk))
             binding_upper_bound=1;
             bound_value=BoundsInfo.ub(kk);
-        end      
+        end
         if DynareOptions.mode_check.symmetric_plots && ~binding_lower_bound && ~binding_upper_bound
             if l2<(1+ll)*x(kk) %test whether upper bound is too small due to prior binding
                 l1 = x(kk) - (l2-x(kk)); %adjust lower bound to become closer
@@ -203,7 +203,7 @@ for plt = 1:nbplt
     end
 end
 if TeX && any(strcmp('eps',cellstr(DynareOptions.graph_format)))
-        fclose(fidTeX);
+    fclose(fidTeX);
 end
 
 OutputDirectoryName = CheckPath('modecheck',Model.dname);
