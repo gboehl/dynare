@@ -115,7 +115,7 @@ function [fval,info,exit_flag,DLIK,Hess,SteadyState,trend_coeff,Model,DynareOpti
 %! @end deftypefn
 %@eod:
 
-% Copyright (C) 2004-2016 Dynare Team
+% Copyright (C) 2004-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

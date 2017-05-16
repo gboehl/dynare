@@ -13,7 +13,7 @@ function vx1 = get_variance_of_endogenous_variables(dr,i_var)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2003-2012 Dynare Team
+% Copyright (C) 2003-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

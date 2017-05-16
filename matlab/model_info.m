@@ -1,7 +1,7 @@
 function model_info(varargin)
 %function model_info;
 
-% Copyright (C) 2008-2012 Dynare Team
+% Copyright (C) 2008-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

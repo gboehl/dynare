@@ -12,7 +12,7 @@ function dyn_graph=dynare_graph(dyn_graph,y,tit,x)
 % SPECIAL REQUIREMENT
 %   none
 
-% Copyright (C) 2006-2013 Dynare Team
+% Copyright (C) 2006-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

@@ -16,7 +16,7 @@ function PosteriorIRF(type)
 % functions associated with it(the _core1 and _core2).
 % See also the comments posterior_sampler.m funtion.
 
-% Copyright (C) 2006-2016 Dynare Team
+% Copyright (C) 2006-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

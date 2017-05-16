@@ -24,7 +24,7 @@ function smoother2histval(opts)
 %
 % The function also uses the value of option_.parameter_set
 
-% Copyright (C) 2014 Dynare Team
+% Copyright (C) 2014-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

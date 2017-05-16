@@ -6,7 +6,7 @@ function [state_u,state_n] = set_dynare_random_generator_state(state_u,state_n)
 % For backward compatibility, we return two vectors, but, in recent
 % versions of Matlab and in Octave, we return two identical vectors.
 %    
-% Copyright (C) 2010-2012 Dynare Team
+% Copyright (C) 2010-2013 Dynare Team
 %
 % This file is part of Dynare.
 %

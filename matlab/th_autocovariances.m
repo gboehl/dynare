@@ -42,7 +42,7 @@ function [Gamma_y,stationary_vars] = th_autocovariances(dr,ivar,M_,options_,node
 %   E(x_t) = (I - {g_x}\right)^{- 1} 0.5\left( g_{\sigma\sigma} \sigma^2 + g_{xx} Var(\hat x_t) + g_{uu} Var(u_t) \right)
 %   \]
 % 
-% Copyright (C) 2001-2014 Dynare Team
+% Copyright (C) 2001-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

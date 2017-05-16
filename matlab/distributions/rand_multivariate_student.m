@@ -23,7 +23,7 @@ function draw = rand_multivariate_student(Mean,Sigma_upper_chol,df)
 %       U~\Chi^2_{\nu}
 %   The latter is constructed as the sum of \nu standard normals.
 
-% Copyright (C) 2003-2009 Dynare Team
+% Copyright (C) 2003-2015 Dynare Team
 %
 % This file is part of Dynare.
 %

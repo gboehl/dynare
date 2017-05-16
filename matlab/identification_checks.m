@@ -21,7 +21,7 @@ function [condJ, ind0, indnoJ, ixnoJ, McoJ, PcoJ, jweak, jweak_pair] = identific
 % SPECIAL REQUIREMENTS
 %    None
 
-% Copyright (C) 2008-2011 Dynare Team
+% Copyright (C) 2008-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

@@ -1,6 +1,6 @@
 function [Da1,DP1,D2a,D2P] = univariate_computeDstate(k,a,P,T,Da,DP,DT,DOm,notsteady,D2a,D2P,D2T,D2Om)
 
-% Copyright (C) 2012 Dynare Team
+% Copyright (C) 2012-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

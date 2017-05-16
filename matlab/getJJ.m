@@ -37,7 +37,7 @@ function [JJ, H, gam, gp, dA, dOm, dYss] = getJJ(A, B, estim_params_, M_,oo_,opt
 %   dOm:            Jacobian of Omega = (B*Sigma*B')
 %   dYss            Jacobian of steady state with respect to estimated structural parameters only (indx)
 
-% Copyright (C) 2010-2016 Dynare Team
+% Copyright (C) 2010-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

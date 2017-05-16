@@ -15,7 +15,7 @@ function [info, info_irf, info_moment, data_irf, data_moment] = endogenous_prior
 %    info_moment [double] array of test checks for all individual moment restrictions
 %    
 
-% Copyright (C) 2013 Dynare Team
+% Copyright (C) 2013-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

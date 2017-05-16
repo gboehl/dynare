@@ -1,5 +1,5 @@
 function [indices] = select_from_table(table,key,value)
-% Copyright (C) 2010-2011 Dynare Team
+% Copyright (C) 2010-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

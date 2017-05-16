@@ -15,7 +15,7 @@ function oo_ = convert_oo_(M_, options_, oo_, from_ver, to_ver)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2015 Dynare Team
+% Copyright (C) 2015-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

@@ -16,7 +16,7 @@ function [ivar,vartan,options_] = get_variables_list(options_,M_)
 % SPECIAL REQUIREMENTS
 %   None.
 
-% Copyright (C) 2007-2012 Dynare Team
+% Copyright (C) 2007-2013 Dynare Team
 %
 % This file is part of Dynare.
 %

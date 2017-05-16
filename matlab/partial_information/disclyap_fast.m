@@ -19,7 +19,7 @@ function [X,exitflag]=disclyap_fast(G,V,tol,check_flag)
 % Joe Pearlman and Alejandro Justiniano 
 % 3/5/2005 
 
-% Copyright (C) 2010-2016 Dynare Team
+% Copyright (C) 2010-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

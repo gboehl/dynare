@@ -39,7 +39,7 @@ function [xparam1, hh, gg, fval, igg, hess_info] = newrat(func0, x, bounds, anal
 % - igg                     inverted outer product hessian
 % - hess_info               structure with updated step length
 
-% Copyright (C) 2004-2016 Dynare Team
+% Copyright (C) 2004-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

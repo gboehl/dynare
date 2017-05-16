@@ -54,7 +54,7 @@ function [LIK, likk, a] = kalman_filter_ss(Y,start,last,a,T,K,iF,log_dF,Z,pp,Zfl
 %! @end deftypefn
 %@eod:
 
-% Copyright (C) 2011-2012 Dynare Team
+% Copyright (C) 2011-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

@@ -49,7 +49,7 @@ function [A,B,ys,info,Model,DynareOptions,DynareResults] = dynare_resolve(Model,
 %! @end deftypefn
 %@eod:
 
-% Copyright (C) 2001-2016 Dynare Team
+% Copyright (C) 2001-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

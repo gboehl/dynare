@@ -24,7 +24,7 @@ function [theta, fxsim, neval] = slice_sampler(objective_function,theta,thetapri
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2015 Dynare Team
+% Copyright (C) 2015-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

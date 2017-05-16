@@ -26,7 +26,7 @@ function pdraw = prior_draw(BayesInfo, prior_trunc, uniform) % --*-- Unitary tes
 % NOTE 3. This code relies on bayestopt_ as created in the base workspace
 %           by the preprocessor (or as updated in subsequent pieces of code and handed to the base workspace)
 % 
-% Copyright (C) 2006-2016 Dynare Team
+% Copyright (C) 2006-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

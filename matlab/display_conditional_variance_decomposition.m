@@ -13,7 +13,7 @@ function display_conditional_variance_decomposition(conditional_decomposition_ar
 % OUTPUTS 
 %   none
 %
-% Copyright (C) 2010-2014 Dynare Team
+% Copyright (C) 2010-2016 Dynare Team
 %
 % This file is part of Dynare.
 %

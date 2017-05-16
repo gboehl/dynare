@@ -11,7 +11,7 @@ function dyntable(options_,title,headers,labels,values,label_width,val_width,val
 %   val_precis  [integer]           precision of displayed values
 % 
 % 
-% Copyright (C) 2002-2015 Dynare Team
+% Copyright (C) 2002-2016 Dynare Team
 %
 % This file is part of Dynare.
 %

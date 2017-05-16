@@ -30,7 +30,7 @@ function [Pstar,Pinf] = compute_Pinf_Pstar(mf,T,R,Q,qz_criterium, restrict_colum
 % SPECIAL REQUIREMENTS
 %   None
 
-% Copyright (C) 2006-2011 Dynare Team
+% Copyright (C) 2006-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

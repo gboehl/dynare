@@ -33,7 +33,7 @@ function myoutput = McMCDiagnostics_core(myinputs,fpar,npar,whoiam, ThisMatlab)
 % SPECIAL REQUIREMENTS.
 %   None.
 
-% Copyright (C) 2006-2016 Dynare Team
+% Copyright (C) 2006-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

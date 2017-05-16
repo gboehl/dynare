@@ -34,7 +34,7 @@ function dr=set_state_space(dr,DynareModel,DynareOptions)
 %! @end deftypefn
 %@eod:
 
-% Copyright (C) 1996-2013 Dynare Team
+% Copyright (C) 1996-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

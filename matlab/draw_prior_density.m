@@ -14,7 +14,7 @@ function [x,f,abscissa,dens,binf,bsup] = draw_prior_density(indx,bayestopt_)
 %    bsup:         [double]     Scalar, last element of x
 
 
-% Copyright (C) 2004-2011 Dynare Team
+% Copyright (C) 2004-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

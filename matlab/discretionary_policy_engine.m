@@ -48,7 +48,7 @@ function [H,G,retcode]=discretionary_policy_engine(AAlag,AA0,AAlead,BB,bigw,inst
 %  Dennis, Richard (2007): Optimal policy in rational expectations models: new solution algorithms,
 %       Macroeconomic Dynamics, 11, 31–55.
 
-% Copyright (C) 2007-2015 Dynare Team
+% Copyright (C) 2007-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

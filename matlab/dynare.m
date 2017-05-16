@@ -16,7 +16,7 @@ function dynare(fname, varargin)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2001-2015 Dynare Team
+% Copyright (C) 2001-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

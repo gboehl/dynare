@@ -12,7 +12,7 @@ function dynasave(s,var_list)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2001-2010 Dynare Team
+% Copyright (C) 2001-2015 Dynare Team
 %
 % This file is part of Dynare.
 %

@@ -26,7 +26,7 @@ function [opt_par_values,fval,exitflag,hessian_mat,options_,Scale,new_rat_hess_i
 %   none.
 %  
 % 
-% Copyright (C) 2014-2016 Dynare Team
+% Copyright (C) 2014-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

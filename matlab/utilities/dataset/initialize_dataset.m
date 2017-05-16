@@ -1,7 +1,7 @@
 function dataset_ = initialize_dataset(datafile,varobs,first,nobs,logged_data_flag,prefilter,xls)
 % Initializes a structure describing the dataset.
 
-% Copyright (C) 2011-2013 Dynare Team
+% Copyright (C) 2011-2014 Dynare Team
 %
 % This file is part of Dynare.
 %

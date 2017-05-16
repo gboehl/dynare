@@ -57,7 +57,7 @@ function [LIK,likk,a] = univariate_kalman_filter_ss(Y,start,last,a,P,kalman_tol,
 % 
 % Algorithm: See univariate_kalman_filter.m
 
-% Copyright (C) 2011-2016 Dynare Team
+% Copyright (C) 2011-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

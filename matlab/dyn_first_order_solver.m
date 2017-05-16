@@ -47,7 +47,7 @@ function [dr,info] = dyn_first_order_solver(jacobia,DynareModel,dr,DynareOptions
 %! @end deftypefn
 %@eod:
 
-% Copyright (C) 2001-2012 Dynare Team
+% Copyright (C) 2001-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

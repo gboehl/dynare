@@ -9,7 +9,7 @@ function yf=forcst2a(y0,dr,e)
 % Outputs:
 %   - yf        [horizon+maximum_endo_lag,endo_nbr]               matrix of forecasts
 %
-% Copyright (C) 2008-2015 Dynare Team
+% Copyright (C) 2008-2016 Dynare Team
 %
 % This file is part of Dynare.
 %

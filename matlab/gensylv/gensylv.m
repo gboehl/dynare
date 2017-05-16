@@ -19,7 +19,7 @@ function [err, E] = gensylv(kron_prod,A,B,C0,D)
 % SPECIAL REQUIREMENTS
 %   none.  
 
-% Copyright (C) 1996-2011 Dynare Team
+% Copyright (C) 1996-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

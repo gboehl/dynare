@@ -1,6 +1,6 @@
 function [Da,DP1,DLIK,D2a,D2P,Hesst] = univariate_computeDLIK(k,indx,Z,Zflag,v,K,PZ,F,Da,DYss,DP,DH,notsteady,D2a,D2Yss,D2P)
 
-% Copyright (C) 2012 Dynare Team
+% Copyright (C) 2012-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

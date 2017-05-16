@@ -11,7 +11,7 @@ function [f0, x, ig] = mr_gstep(h1,x,bounds,func0,penalty,htol0,Verbose,Save_fil
 % varargin{6} --> BayesInfo
 % varargin{1} --> DynareResults
 
-% Copyright (C) 2006-2016 Dynare Team
+% Copyright (C) 2006-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

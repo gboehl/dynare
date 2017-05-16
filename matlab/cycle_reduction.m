@@ -43,7 +43,7 @@ function [X, info] = cycle_reduction(A0, A1, A2, cvg_tol, ch) % --*-- Unitary te
 %! @end deftypefn
 %@eod:
 
-% Copyright (C) 2013 Dynare Team
+% Copyright (C) 2013-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

@@ -10,7 +10,7 @@ function skipline(n, fid)
 %   None
 %
 
-% Copyright (C) 2013-2014 Dynare Team
+% Copyright (C) 2013-2015 Dynare Team
 %
 % This file is part of Dynare.
 %

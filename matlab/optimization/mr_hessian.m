@@ -44,7 +44,7 @@ function [hessian_mat, gg, htol1, ihh, hh_mat0, hh1, hess_info] = mr_hessian(x,f
 %  - hh1                updated hess_info.h1
 %  - hess_info          structure with updated step length
 
-% Copyright (C) 2004-2016 Dynare Team
+% Copyright (C) 2004-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

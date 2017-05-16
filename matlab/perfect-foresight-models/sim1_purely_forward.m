@@ -1,7 +1,7 @@
 function [endogenousvariables, info] = sim1_purely_forward(endogenousvariables, exogenousvariables, steadystate, M, options)
 % Performs deterministic simulation of a purely forward model
 
-% Copyright (C) 2012-2015 Dynare Team
+% Copyright (C) 2012-2016 Dynare Team
 %
 % This file is part of Dynare.
 %

@@ -1,7 +1,7 @@
 function B = dynare_squeeze(A)
 % Same as matlab's squeeze function except that it also affects 2D arrays.
 
-% Copyright (C) 2009 Dynare Team
+% Copyright (C) 2009-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

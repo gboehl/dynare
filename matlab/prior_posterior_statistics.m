@@ -19,7 +19,7 @@ function prior_posterior_statistics(type,dataset,dataset_info)
 % See the comments in the posterior_sampler.m funtion.
 % 
 % 
-% Copyright (C) 2005-2016 Dynare Team
+% Copyright (C) 2005-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

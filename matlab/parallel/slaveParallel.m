@@ -15,7 +15,7 @@ function slaveParallel(whoiam,ThisMatlab)
 % OUTPUTS 
 %   None  
 
-% Copyright (C) 2006-2012 Dynare Team
+% Copyright (C) 2006-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

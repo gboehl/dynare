@@ -7,7 +7,7 @@ function [C1,C2,C3,C4, C5, F1, F2, F3, F4, F5, M1, M2, UAVinv, FL_RANK, V01, V02
 % developed by George Perendia
 % December 2010
 
-% Copyright (C) 1996-2011 Dynare Team
+% Copyright (C) 1996-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

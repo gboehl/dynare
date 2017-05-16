@@ -13,7 +13,7 @@ function C = compare_vectors(f, A, B)  % --*-- Unitary tests --*--
 % REMARKS 
 %  o It is assumed that vectors A and B have the same number of elements.
     
-% Copyright (C) 2013 Dynare Team
+% Copyright (C) 2013-2014 Dynare Team
 %
 % This file is part of Dynare.
 %

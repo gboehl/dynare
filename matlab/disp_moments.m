@@ -11,7 +11,7 @@ function oo_=disp_moments(y,var_list,M_,options_,oo_)
 % OUTPUTS
 %   oo_                 [structure]    Dynare's results structure,
 
-% Copyright (C) 2001-2016 Dynare Team
+% Copyright (C) 2001-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

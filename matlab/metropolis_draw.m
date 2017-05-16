@@ -24,7 +24,7 @@ function [xparams, logpost, options_]=metropolis_draw(init,options_,estim_params
 %
 %   Requires CutSample to be run before in order to set up mh_history-file
 
-% Copyright (C) 2003-2015 Dynare Team
+% Copyright (C) 2003-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

@@ -10,7 +10,7 @@ function t = wblinv(proba, scale, shape)   % --*-- Unitary tests --*--
 % OUTPUTS 
 % - t     [double] scalar such that P(X<=t)=proba
 
-% Copyright (C) 2015 Dynare Team
+% Copyright (C) 2015-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

@@ -51,7 +51,7 @@ function [dr,info]=AIM_first_order_solver(jacobia,M,dr,qz_criterium)
 %! @end deftypefn
 %@eod:
 
-% Copyright (C) 2001-2016 Dynare Team
+% Copyright (C) 2001-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

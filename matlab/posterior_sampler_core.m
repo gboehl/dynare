@@ -36,7 +36,7 @@ function myoutput = posterior_sampler_core(myinputs,fblck,nblck,whoiam, ThisMatl
 % See the comments in the posterior_sampler.m funtion.
 
 
-% Copyright (C) 2006-2016 Dynare Team
+% Copyright (C) 2006-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

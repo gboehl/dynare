@@ -10,7 +10,7 @@ function [Hess] = get_Hessian(T,R,Q,H,P,Y,DT,DYss,DOm,DH,DP,D2T,D2Yss,D2Om,D2H,D
 % NOTE: the derivative matrices (D2T,D2Om ...) are 4-dim. arrays with last
 % two dimensions equal to the number of structural parameters
 
-% Copyright (C) 2011 Dynare Team
+% Copyright (C) 2011-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

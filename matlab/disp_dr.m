@@ -8,7 +8,7 @@ function disp_dr(dr,order,var_list)
 %    var_list [char array]:  list of endogenous variables for which the
 %                            decision rules should be printed
 % 
-% Copyright (C) 2001-2015 Dynare Team
+% Copyright (C) 2001-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

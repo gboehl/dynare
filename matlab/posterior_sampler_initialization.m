@@ -38,7 +38,7 @@ function [ ix2, ilogpo2, ModelName, MetropolisFolder, FirstBlock, FirstLine, npa
 % SPECIAL REQUIREMENTS
 %   None.
 
-% Copyright (C) 2006-2015 Dynare Team
+% Copyright (C) 2006-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
