@@ -16,7 +16,7 @@ function CutSample(M_, options_, estim_params_)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2005-2015 Dynare Team
+% Copyright (C) 2005-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

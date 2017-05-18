@@ -1,7 +1,8 @@
 function pick
 %
 % Copyright (C) 2001-2017 European Commission
-%
+% Copyright (C) 2017 DynareTeam
+    
 % This file is part of GLUEWIN
 % GLUEWIN is a MATLAB code designed for analysing the output
 % of Monte Carlo runs when empirical observations of the model output are available

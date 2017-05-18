@@ -16,7 +16,7 @@ function oo_ = compute_moments_varendo(type,options_,M_,oo_,var_list_)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2008-2016 Dynare Team
+% Copyright (C) 2008-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

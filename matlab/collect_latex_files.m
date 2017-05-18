@@ -8,7 +8,7 @@ function collect_latex_files
 %   - The packages loaded enable pdflatex to run
 %   - The _dynamic and _static TeX-model files are not included as they are standalone TeX-files
 
-% Copyright (C) 2015-16 Dynare Team
+% Copyright (C) 2015-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

@@ -41,8 +41,10 @@ function FLAG = flag_implicit_skip_nan(i)
 %    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 
 %       $Id: flag_implicit_skip_nan.m 8351 2011-06-24 17:35:07Z carandraug $
+
 %   Copyright (C) 2001-2003,2009 by Alois Schloegl <alois.schloegl@gmail.com>
-%   Copyright (C) 2014 Dynare Team
+%   Copyright (C) 2014-2017 Dynare Team
+%
 %       This function is part of the NaN-toolbox
 %       http://pub.ist.ac.at/~schloegl/matlab/NaN/
 

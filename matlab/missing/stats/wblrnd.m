@@ -8,7 +8,7 @@ function rnd = wblrnd(a, b)
 %  OUTPUT
 %    rnd     [double]    m*n matrix of independent variates from the beta(a,b) distribution.
 
-% Copyright (C) 2015 Dynare Team
+% Copyright (C) 2015-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

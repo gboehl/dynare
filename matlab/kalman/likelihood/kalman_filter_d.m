@@ -36,7 +36,7 @@ function [dLIK,dlik,a,Pstar] = kalman_filter_d(Y, start, last, a, Pinf, Pstar, k
 %   Durbin/Koopman (2012): "Time Series Analysis by State Space Methods", Oxford University Press,
 %   Second Edition, Ch. 5 and 7.2
 
-% Copyright (C) 2004-2016 Dynare Team
+% Copyright (C) 2004-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

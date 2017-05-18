@@ -14,7 +14,7 @@ function m = moments(X,order)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2009-2010 Dynare Team
+% Copyright (C) 2009-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

@@ -11,7 +11,7 @@ function varargout = prior(varargin)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2015-2016 Dynare Team
+% Copyright (C) 2015-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

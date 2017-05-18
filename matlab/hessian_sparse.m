@@ -18,7 +18,7 @@ function hessian_mat = hessian_sparse(func,x,gstep,varargin)
 %    none
 %
 
-% Copyright (C) 2001-2012 Dynare Team
+% Copyright (C) 2001-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

@@ -1,6 +1,6 @@
 function b = isdiagonal(A) % --*-- Unitary tests --*--
 
-% Copyright (C) 2014 Dynare Team
+% Copyright (C) 2014-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

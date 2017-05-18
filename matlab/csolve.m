@@ -22,7 +22,7 @@ function [x,rc] = csolve(FUN,x,gradfun,crit,itmax,varargin)
 % http://sims.princeton.edu/yftp/optimize/mfiles/csolve.m
 
 % Copyright (C) 1993-2007 Christopher Sims
-% Copyright (C) 2007-2011 Dynare Team
+% Copyright (C) 2007-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

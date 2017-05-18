@@ -17,7 +17,7 @@ function r = ep_residuals(x, y, ix, iy, steadystate, dr, maximum_lag, endo_nbr)
 %
 % SPECIAL REQUIREMENTS
 
-% Copyright (C) 2010-2014 Dynare Team.
+% Copyright (C) 2010-2017 Dynare Team.
 %
 % This file is part of Dynare.
 %

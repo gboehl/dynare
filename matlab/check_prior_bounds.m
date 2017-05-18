@@ -10,7 +10,7 @@ function check_prior_bounds(xparam1,bounds,M_,estim_params_,options_,bayestopt_)
 %   -options_       [structure] characterizing the options
 %   -bayestopt_     [structure] characterizing priors
 
-% Copyright (C) 2013-2014 Dynare Team
+% Copyright (C) 2013-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

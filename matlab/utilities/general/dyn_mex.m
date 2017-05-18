@@ -15,7 +15,7 @@ function dyn_mex(win_compiler,basename,force)
 %
 
 
-% Copyright (C) 2015-2016 Dynare Team
+% Copyright (C) 2015-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

@@ -36,7 +36,7 @@ function Ifac = mcmc_ifac(X, Nc)
 % consistent covariance matrix estimation", Econometrica, 59(3), p. 817-858
 
 
-% Copyright (C) 2015-16 Dynare Team
+% Copyright (C) 2015-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

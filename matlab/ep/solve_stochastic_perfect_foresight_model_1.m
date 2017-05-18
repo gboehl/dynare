@@ -1,6 +1,6 @@
 function [flag,endo_simul,err,y] = solve_stochastic_perfect_foresight_model_1(endo_simul,exo_simul,Options,pfm,order,varargin)
 
-% Copyright (C) 2012-2016 Dynare Team
+% Copyright (C) 2012-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

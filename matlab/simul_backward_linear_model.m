@@ -34,7 +34,7 @@ function DynareOutput = simul_backward_linear_model(initial_conditions, sample_s
 %! @end deftypefn
 %@eod:
 
-% Copyright (C) 2012-2016 Dynare Team
+% Copyright (C) 2012-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

@@ -59,7 +59,7 @@ function [x,f,exitflag,n_f_evals,n_grad_evals,n_constraint_evals,n_constraint_gr
 %
 % Copyright (C) 1997-2008, Alexei Kuntsevich and Franz Kappel
 % Copyright (C) 2008-2015 Giovanni Lombardo
-% Copyright (C) 2015 Dynare Team
+% Copyright (C) 2015-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

@@ -11,7 +11,7 @@ function [res,fjac,domer] = mcp_func(x,jacflag)
 %  - fjac               [double] (N*T)*(N*T) array, Jacobian of the stacked problem
 %  - domer              [scalar] errorflag that is 1 if solution is not real
 
-% Copyright (C) 2016 Dynare Team
+% Copyright (C) 2016-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

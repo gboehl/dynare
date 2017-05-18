@@ -19,7 +19,7 @@ function oo_ = covariance_mc_analysis(NumberOfSimulations,type,dname,fname,varta
 % OUTPUTS
 %   oo_                     [structure]        Dynare structure where the results are saved.
 
-% Copyright (C) 2008-2015 Dynare Team
+% Copyright (C) 2008-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

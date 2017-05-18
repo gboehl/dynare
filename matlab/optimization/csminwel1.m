@@ -42,7 +42,7 @@ function [fh,xh,gh,H,itct,fcount,retcodeh] = csminwel1(fcn,x0,H0,grad,crit,nit,m
 % http://sims.princeton.edu/yftp/optimize/mfiles/csminwel.m
 %
 % Copyright (C) 1993-2007 Christopher Sims
-% Copyright (C) 2006-2015 Dynare Team
+% Copyright (C) 2006-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

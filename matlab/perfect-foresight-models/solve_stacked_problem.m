@@ -13,7 +13,7 @@ function [endogenousvariables, info] = solve_stacked_problem(endogenousvariables
 % - endogenousvariables [double] N*T array, paths for the endogenous variables (solution of the perfect foresight model).
 % - info                [struct] contains informations about the results.
 
-% Copyright (C) 2015-16 Dynare Team
+% Copyright (C) 2015-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

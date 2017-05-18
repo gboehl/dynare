@@ -12,7 +12,7 @@ function [lb,ub,eq_index] = get_complementarity_conditions(M,ramsey_policy)
 %                                from complementarity setup used in
 %                                perfect_foresight_mcp_problem.m
 
-% Copyright (C) 2014-16 Dynare Team
+% Copyright (C) 2014-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

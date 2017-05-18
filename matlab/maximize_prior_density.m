@@ -15,7 +15,7 @@ function [xparams,lpd,hessian_mat] = ...
 %   lpd           [double]  scalar, value of the logged prior density at the mode.
 %   hessian_mat   [double]  matrix, Hessian matrix at the prior mode.
 
-% Copyright (C) 2009-2015 Dynare Team
+% Copyright (C) 2009-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

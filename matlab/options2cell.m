@@ -8,7 +8,7 @@ function c = options2cell(o)
 % OUTPUTS
 %  o c       matlab's cell row array of the form {NAME1, VALUE1, NAME2, VALUE2, NAME3, VALUE3, ...}.
 
-% Copyright (C) 2013 Dynare Team.
+% Copyright (C) 2013-2017 Dynare Team.
 %
 % This file is part of Dynare.
 %

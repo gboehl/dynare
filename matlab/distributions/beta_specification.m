@@ -12,7 +12,7 @@ function [a, b] = beta_specification(mu, sigma2, lb, ub, name)   % --*-- Unitary
 % - a      [double]   First hyperparameter of the Beta density.
 % - b      [double]   Second hyperparameter of the Beta density.
 
-% Copyright (C) 2015 Dynare Team
+% Copyright (C) 2015-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

@@ -19,7 +19,7 @@ function [ts, DynareResults] = extended_path(initialconditions, samplesize, exog
 %
 % SPECIAL REQUIREMENTS
 
-% Copyright (C) 2009-2016 Dynare Team
+% Copyright (C) 2009-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

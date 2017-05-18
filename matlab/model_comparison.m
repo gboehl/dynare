@@ -20,7 +20,7 @@ function oo = model_comparison(ModelNames,ModelPriors,oo,options_,fname)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2007-2016 Dynare Team
+% Copyright (C) 2007-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

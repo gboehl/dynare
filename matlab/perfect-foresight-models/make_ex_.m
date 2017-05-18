@@ -14,7 +14,7 @@ function oo_=make_ex_(M_,options_,oo_)
 % SPECIAL REQUIREMENTS
 %
 
-% Copyright (C) 1996-2016 Dynare Team
+% Copyright (C) 1996-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

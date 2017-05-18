@@ -2,7 +2,7 @@ function set_shocks_param(xparam1)
 % function set_shocks_param(xparam1)
 % Set the structural and measurement error variances and covariances
 
-% Copyright (C) 2012-2015 Dynare Team
+% Copyright (C) 2012-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

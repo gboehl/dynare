@@ -4,7 +4,7 @@ function c = read_key_value_string(s)
 % estimation command) into a cell (first column for the option name ans second column for the
 % option value).
 
-% Copyright (C) 2011-2016 Dynare Team
+% Copyright (C) 2011-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

@@ -11,7 +11,7 @@ function d = bksup0(c,ny,jcf,iyf,icf,periods)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2003-2009 Dynare Team
+% Copyright (C) 2003-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

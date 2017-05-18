@@ -13,7 +13,7 @@ function [fval,info,exit_flag,fake_1,fake_2] = minus_logged_prior_density(xparam
 %   f          [double]  value of minus the logged prior density.
 %   info       [double]  vector: second entry stores penalty, first entry the error code.
 %
-% Copyright (C) 2009-2016 Dynare Team
+% Copyright (C) 2009-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

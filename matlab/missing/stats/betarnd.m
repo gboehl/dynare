@@ -13,7 +13,7 @@ function rnd = betarnd(a, b)
 %  ALGORITHMS
 %    Described and Devroye (1986, chapter 9).
 
-% Copyright (C) 2008-2009 Dynare Team
+% Copyright (C) 2008-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

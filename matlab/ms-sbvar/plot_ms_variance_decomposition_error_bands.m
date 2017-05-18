@@ -15,7 +15,7 @@ function plot_ms_variance_decomposition_error_bands(M_, options_, vddata, figure
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2011-2012 Dynare Team
+% Copyright (C) 2011-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

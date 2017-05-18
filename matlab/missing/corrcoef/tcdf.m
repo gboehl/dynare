@@ -12,8 +12,10 @@ function p = tcdf(x,n)
 % Reference(s):
 
 %       $Id: tcdf.m 9033 2011-11-08 20:58:07Z schloegl $
-%       Copyright (C) 2000-2003,2009 by Alois Schloegl <alois.schloegl@gmail.com>
-%   Copyright (C) 2014 Dynare Team
+
+%   Copyright (C) 2000-2003,2009 by Alois Schloegl <alois.schloegl@gmail.com>
+%   Copyright (C) 2014-2017 Dynare Team
+%
 %       This is part of the NaN-toolbox. For more details see
 %       http://pub.ist.ac.at/~schloegl/matlab/NaN/
 

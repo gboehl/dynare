@@ -7,7 +7,7 @@ function Vector = vec(Matrix)
 % OUTPUTS
 %   Vector             [double]   a n*n vector.
 
-% Copyright (C) 2009 Dynare Team
+% Copyright (C) 2009-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

@@ -25,7 +25,7 @@ function [x,check,info] = trust_region(fcn,x0,j1,j2,jacobian_flag,gstep,tolf,tol
 %    none
 
 % Copyright (C) 2008-2012 VZLU Prague, a.s.
-% Copyright (C) 2014-2016 Dynare Team
+% Copyright (C) 2014-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

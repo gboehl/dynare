@@ -3,7 +3,7 @@ function check_input_arguments(DynareOptions, DynareModel, DynareResults)
 %Conducts checks for inconsistent/missing inputs to deterministic
 %simulations
 
-% Copyright (C) 2015 Dynare Team
+% Copyright (C) 2015-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

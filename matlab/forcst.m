@@ -22,7 +22,7 @@ function [yf,int_width,int_width_ME]=forcst(dr,y0,horizon,var_list,M_,oo_,option
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2003-2016 Dynare Team
+% Copyright (C) 2003-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

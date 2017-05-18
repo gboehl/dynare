@@ -48,8 +48,9 @@ function [o,count,SSQ] = sumskipnan(x, DIM, W)
 %    along with this program; If not, see <http://www.gnu.org/licenses/>.
 
 %       $Id: sumskipnan.m 9033 2011-11-08 20:58:07Z schloegl $
+%
 %       Copyright (C) 2000-2005,2009,2011 by Alois Schloegl <alois.schloegl@gmail.com>
-%       Copyright (C) 2014 Dynare Team
+%       Copyright (C) 2014-2017 Dynare Team
 %       This function is part of the NaN-toolbox
 %       http://pub.ist.ac.at/~schloegl/matlab/NaN/
 

@@ -47,7 +47,7 @@ function bounds = prior_bounds(bayestopt, prior_trunc)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2003-2015 Dynare Team
+% Copyright (C) 2003-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

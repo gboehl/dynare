@@ -28,16 +28,16 @@ function [R,indef, E, P]=chol_SE(A,pivoting)
 %       the cost of introduding a permutation.
 %
 %
-% Inputs
-%   A           [n*n]     Matrix to be factorized
-%   pivoting    [scalar]  dummy whether pivoting is used
+% INPUTS
+%  - A           [n*n]     Matrix to be factorized
+%  - pivoting    [scalar]  dummy whether pivoting is used
 %
-% Outputs
-%   R           [n*n]     originally stored in lower triangular portion of A, including the main diagonal
+% OUTPUTS
+%  - R           [n*n]     originally stored in lower triangular portion of A, including the main diagonal
 %
-%   E           [n*1]     Elements added to the diagonal of A
-%   P           [n*1]     record of how the rows and columns of the matrix were permuted while
-%                         performing the decomposition
+%  - E           [n*1]     Elements added to the diagonal of A
+%  - P           [n*1]     record of how the rows and columns of the matrix were permuted while
+%                          performing the decomposition
 %
 % REFERENCES:
 %   This implementation is based on
@@ -51,9 +51,10 @@ function [R,indef, E, P]=chol_SE(A,pivoting)
 %
 %
 % Author: Johannes Pfeifer based on Eskow/Schnabel (1991)
-%
+
 % Copyright (C) 2015 Johannes Pfeifer
-% Copyright (C) 2015 Dynare Team
+% Copyright (C) 2015-2017 Dynare Team
+%
 % This file is part of Dynare.
 %
 % Dynare is free software: you can redistribute it and/or modify

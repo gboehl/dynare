@@ -1,6 +1,6 @@
 function [dr,ys,info]=discretionary_policy_1(oo_,Instruments)
 
-% Copyright (C) 2007-2016 Dynare Team
+% Copyright (C) 2007-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

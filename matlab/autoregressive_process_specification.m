@@ -43,7 +43,7 @@ function [InnovationVariance,AutoregressiveParameters] = autoregressive_process_
 %
 %           \sigma^2 = \gamma(0)*(1-PHI'*v)
 
-% Copyright (C) 2009 Dynare Team
+% Copyright (C) 2009-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

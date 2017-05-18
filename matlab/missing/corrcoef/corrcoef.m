@@ -91,7 +91,7 @@ function [R,sig,ci1,ci2,nan_sig] = corrcoef(X,Y,varargin)
 
 %       $Id: corrcoef.m 9387 2011-12-15 10:42:14Z schloegl $
 %       Copyright (C) 2000-2004,2008,2009,2011 by Alois Schloegl <alois.schloegl@gmail.com>
-%       Copyright (C) 2014 Dynare Team
+%       Copyright (C) 2014-2017 Dynare Team
 %       This function is part of the NaN-toolbox
 %       http://pub.ist.ac.at/~schloegl/matlab/NaN/
 

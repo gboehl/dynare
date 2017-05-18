@@ -21,7 +21,8 @@ function [fval,info,exit_flag,DLIK,Hess,SteadyState,trend_coeff]  = TaRB_optimiz
 %   o SteadyState [double]  Vector of doubles, steady state level for the endogenous variables.
 %   o trend_coeff [double]  Matrix of doubles, coefficients of the deterministic trend in the measurement equation
 %
-% Copyright (C) 2015-16 Dynare Team
+
+% Copyright (C) 2015-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

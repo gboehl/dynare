@@ -1,7 +1,7 @@
 /*
 ** Computes Quasi Monte-Carlo sequence.
 **
-** Copyright (C) 2010-2014 Dynare Team
+** Copyright (C) 2010-2017 Dynare Team
 **
 ** This file is part of Dynare (can be used outside Dynare).
 **
@@ -17,8 +17,6 @@
 **
 ** You should have received a copy of the GNU General Public License
 ** along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
-**
-** AUTHOR(S): stephane DOT adjemian AT univ DASH lemans DOT fr
 **/
 
 #include <sstream>

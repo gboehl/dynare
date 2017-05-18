@@ -58,7 +58,7 @@ function [X,FVAL,EXITFLAG,OUTPUT] = simpsa(FUN,X0,LB,UB,OPTIONS,varargin)
 
 % Copyright (C) 2005 Henning Schmidt, FCC, henning@fcc.chalmers.se
 % Copyright (C) 2006 Brecht Donckels, BIOMATH, brecht.donckels@ugent.be
-% Copyright (C) 2013 Dynare Team.
+% Copyright (C) 2013-2017 Dynare Team.
 %
 % This file is part of Dynare.
 %

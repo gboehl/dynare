@@ -13,7 +13,7 @@ function rnd = gamrnd(a,b,method)
 %  ALGORITHMS
 %    Described in Bauwens, Lubrano and Richard (1999, page 316) and Devroye (1986, chapter 9).
 
-% Copyright (C) 2006-2011 Dynare Team
+% Copyright (C) 2006-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

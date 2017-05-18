@@ -1,6 +1,6 @@
 function jndx = subset()
 
-% Copyright (C) 2006-2013 Dynare Team
+% Copyright (C) 2006-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

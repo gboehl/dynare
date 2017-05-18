@@ -56,7 +56,7 @@ function [PostMod,PostVar,Scale,PostMean] = gmhmaxlik_core(ObjFun,xparam1,mh_bou
 % SPECIAL REQUIREMENTS
 %   None.
 
-% Copyright (C) 2006-2015 Dynare Team
+% Copyright (C) 2006-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

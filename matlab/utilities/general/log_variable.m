@@ -12,7 +12,7 @@ function y = log_variable(ivar,x,M)
 %       for lagged/leaded exogenous variables
 %
 
-% Copyright (C) 2011-2016 Dynare Team
+% Copyright (C) 2011-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

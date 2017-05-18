@@ -49,7 +49,7 @@ function [q,N] = quantile(X, p, dim, method, weights) % --*-- Unitary tests --*-
 % http://fr.mathworks.com/matlabcentral/fileexchange/46555-quantile-calculation
 %
 % Copyright (C) 2014-2016 University of Surrey (Christopher Hummersone)
-% Copyright (C) 2016 Dynare Team
+% Copyright (C) 2016-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

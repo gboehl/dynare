@@ -16,7 +16,7 @@ function H = bfgsi1(H0,dg,dx,Verbose,Save_files)
 % http://sims.princeton.edu/yftp/optimize/mfiles/bfgsi.m
 %
 % Copyright (C) 1993-2009 Christopher Sims
-% Copyright (C) 2009-2015 Dynare Team
+% Copyright (C) 2009-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

@@ -6,7 +6,7 @@ function indmcf = mcf_analysis(lpmat, ibeha, inobeha, options_mcf, DynareOptions
 %
 
 % Copyright (C) 2014 European Commission
-% Copyright (C) 2016 Dynare Team
+% Copyright (C) 2016-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

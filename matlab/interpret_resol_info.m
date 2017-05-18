@@ -9,7 +9,7 @@ function message = interpret_resol_info(info)
 % OUTPUTS
 % - message    [string]  Description of the issue preventing model's resolution.
 
-% Copyright (C) 2001-2016 Dynare Team
+% Copyright (C) 2001-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

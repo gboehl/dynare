@@ -31,7 +31,7 @@ function [forcs, e]= mcforecast3(cL,H,mcValue,shocks,forcs,T,R,mv,mu)
 %       y_t=T*y_{t-1}+R*shocks(:,t)
 %   is used for forecasting
 %
-% Copyright (C) 2006-2015 Dynare Team
+% Copyright (C) 2006-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

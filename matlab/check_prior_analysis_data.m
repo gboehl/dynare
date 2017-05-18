@@ -18,7 +18,7 @@ function [info,description] = check_prior_analysis_data(type,M_)
 %   description [string]        Message corresponding to info
 
 
-% Copyright (C) 2009-2015 Dynare Team
+% Copyright (C) 2009-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

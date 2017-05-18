@@ -11,7 +11,7 @@ function clean_files_for_second_type_of_mex(M_, options_, type)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2011 Dynare Team
+% Copyright (C) 2011-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

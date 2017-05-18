@@ -8,7 +8,7 @@ function d = dyn_diag_vech(Vector)
 % OUTPUTS
 %   d                  [double]   a n*1 vector, where n solves n*(n+1)/2=m.
 
-% Copyright (C) 2010 Dynare Team
+% Copyright (C) 2010-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

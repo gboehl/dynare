@@ -16,7 +16,7 @@ function indent = svar_global_identification_check(options_)
 %   Autoregressions: Theory of Identification and Algorithms for
 %   Inference" in Review of Economic Studies, 77, 665-696.
 
-% Copyright (C) 2015 Dynare Team
+% Copyright (C) 2015-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

@@ -12,7 +12,7 @@ function estim_params=check_for_calibrated_covariances(xparam1,estim_params,M)
 % Notes: M is local to this function and not updated when calling
 % set_all_parameters
 
-% Copyright (C) 2013 Dynare Team
+% Copyright (C) 2013-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

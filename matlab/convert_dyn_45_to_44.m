@@ -13,7 +13,7 @@ function oo_ = convert_dyn_45_to_44(M_, options_, oo_,bayestopt_)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2015-2016 Dynare Team
+% Copyright (C) 2015-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

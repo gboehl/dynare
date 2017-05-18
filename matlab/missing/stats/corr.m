@@ -39,7 +39,7 @@ function retval = corr(x, y) % --*-- Unitary tests --*--
 % Copyright (C) 1993-1996 Kurt Hornik
 % Copyright (C) 1996-2015 John W. Eaton
 % Copyright (C) 2013-2015 Julien Bect
-% Copyright (C) 2016 Dynare Team
+% Copyright (C) 2016-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

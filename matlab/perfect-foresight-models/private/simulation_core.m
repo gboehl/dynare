@@ -1,7 +1,7 @@
 function [oo_, maxerror] = simulation_core(options_, M_, oo_)
 %function [oo_, maxerror] = simulation_core(options_, M_, oo_)
 
-% Copyright (C) 2015-2016 Dynare Team
+% Copyright (C) 2015-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

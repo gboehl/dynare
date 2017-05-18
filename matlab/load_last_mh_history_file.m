@@ -10,7 +10,7 @@ function info = load_last_mh_history_file(MetropolisFolder, ModelName)
 % Notes: The record structure is written to the caller workspace via an
 % assignin statement.
 
-% Copyright (C) 2013-2016 Dynare Team
+% Copyright (C) 2013-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

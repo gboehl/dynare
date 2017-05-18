@@ -13,7 +13,7 @@ function xparam = get_posterior_parameters(type,field1)
 % SPECIAL REQUIREMENTS
 %   None.
 
-% Copyright (C) 2006-2016 Dynare Team
+% Copyright (C) 2006-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

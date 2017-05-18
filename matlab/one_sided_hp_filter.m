@@ -38,7 +38,7 @@ function [ytrend,ycycle]=one_sided_hp_filter(y,lambda,x_user,P_user,discard)
 
 
 % Copyright (C) 200?-2015 Alexander Meyer-Gohde
-% Copyright (C) 2015 Dynare Team
+% Copyright (C) 2015-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

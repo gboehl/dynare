@@ -158,7 +158,7 @@ function [xmin, ...      % minimum search point of last iteration
                             %
 
 % Copyright (C) 2001-2012 Nikolaus Hansen,
-% Copyright (C) 2012 Dynare Team
+% Copyright (C) 2012-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

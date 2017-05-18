@@ -32,7 +32,7 @@ function dr = dyn_second_order_solver(jacobia,hessian_mat,dr,M_,threads_ABC,thre
 %! @end deftypefn
 %@eod:
 
-% Copyright (C) 2001-2015 Dynare Team
+% Copyright (C) 2001-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

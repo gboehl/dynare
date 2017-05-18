@@ -4,7 +4,7 @@ function [gend, data] = read_data()
 % marco.ratto@ec.europa.eu
 
 % Copyright (C) 2012-2015 European Commission
-% Copyright (C) 2012-2015 Dynare Team
+% Copyright (C) 2012-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

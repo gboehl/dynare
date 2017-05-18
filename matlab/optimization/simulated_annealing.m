@@ -163,7 +163,7 @@ function [xopt, fopt,exitflag, n_accepted_draws, n_total_draws, n_out_of_bounds_
 % Copyright (C) 1995 E.G.Tsionas
 % Copyright (C) 1995-2002 Thomas Werner
 % Copyright (C) 2002-2015 Giovanni Lombardo
-% Copyright (C) 2015 Dynare Team
+% Copyright (C) 2015-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

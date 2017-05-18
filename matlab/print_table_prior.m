@@ -2,7 +2,7 @@ function print_table_prior(lb, ub, DynareOptions, ModelInfo, BayesInfo, Estimati
 
 % This routine prints in the command window some descriptive statistics about the prior distribution.
 
-% Copyright (C) 2015 Dynare Team
+% Copyright (C) 2015-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

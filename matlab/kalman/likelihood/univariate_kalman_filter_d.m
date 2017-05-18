@@ -87,7 +87,7 @@ function [dLIK, dlikk, a, Pstar, llik] = univariate_kalman_filter_d(data_index, 
 %   Series Analysis by State Space Methods", Oxford University Press,
 %   Second Edition, Ch. 5, 6.4 + 7.2.5
 
-% Copyright (C) 2004-2016 Dynare Team
+% Copyright (C) 2004-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

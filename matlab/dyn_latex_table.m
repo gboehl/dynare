@@ -1,7 +1,7 @@
 function dyn_latex_table(M_,options_,title,LaTeXtitle,headers,labels,values,label_width,val_width,val_precis,optional_header)
 %function dyn_latex_table(M_,options_,title,LaTeXtitle,headers,labels,values,label_width,val_width,val_precis,optional_header)
 
-% Copyright (C) 2015-2016 Dynare Team
+% Copyright (C) 2015-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

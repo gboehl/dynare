@@ -25,7 +25,7 @@ function oo_ = variance_decomposition_mc_analysis(NumberOfSimulations,type,dname
 
 
 
-% Copyright (C) 2008-2015 Dynare Team
+% Copyright (C) 2008-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

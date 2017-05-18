@@ -10,7 +10,7 @@ function err = linear_approximation_accuracy(options_, M_, oo_)
 % OUTPUTS
 % - err      [double] n*1 vector, evaluation of the accuracy (n is the number of equations).
 
-% Copyright (C) 2015 Dynare Team
+% Copyright (C) 2015-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

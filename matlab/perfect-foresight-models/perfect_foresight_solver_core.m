@@ -11,7 +11,7 @@ function [oo_, maxerror] = perfect_foresight_solver_core(M_, options_, oo_)
 % - oo_                 [struct] contains results
 % - maxerror            [double] contains the maximum absolute error
 
-% Copyright (C) 2015-2016 Dynare Team
+% Copyright (C) 2015-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

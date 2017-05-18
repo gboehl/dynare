@@ -9,7 +9,7 @@ function cellofchar2mfile(fname, c, cname)
 % OUTPUTS
 % None.
 
-% Copyright (C) 2015 Dynare Team
+% Copyright (C) 2015-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

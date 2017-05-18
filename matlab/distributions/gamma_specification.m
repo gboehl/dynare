@@ -12,7 +12,7 @@ function [a, b] = gamma_specification(mu, sigma2, lb, name)   % --*-- Unitary te
 % - a      [double]   First hyperparameter of the Gamma density (shape).
 % - b      [double]   Second hyperparameter of the Gamma density (scale).
 
-% Copyright (C) 2015-2016 Dynare Team
+% Copyright (C) 2015-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
