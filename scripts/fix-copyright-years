@@ -14,7 +14,7 @@
 # Note that the script does not understand some unusual copyright notices: it
 # will display a message in that case.
 
-LAST_UPDATE_COMMIT=a53636e24ecbb9d521598a0c76a86a25a11f2a95
+LAST_UPDATE_COMMIT=1bf81c9f5a79757c23356f16fe015ae4f10bebde
 
 if [ -z "$1" ]; then
     echo "Give a filename in argument"
