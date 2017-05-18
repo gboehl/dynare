@@ -67,7 +67,7 @@ if isempty(opts.compiler)
     if ismac
         % Add most likely places for pdflatex to exist outside of default $PATH
         [status, opts.compiler] = ...
-               system('PATH=$PATH:/usr/texbin:/usr/local/bin:/usr/local/sbin;which pdflatex');
+            system('PATH=$PATH:/usr/texbin:/usr/local/bin:/usr/local/sbin;which pdflatex');
     elseif ispc
         [status, opts.compiler] = system('findtexmf --file-type=exe pdflatex');
         if status == 1
@@ -105,7 +105,7 @@ end
 
 if status ~= 0
     error(['@report.compile: There was an error in compiling ' rfn '.pdf.' ...
-          '  ' opts.compiler ' returned the error code: ' num2str(status)]);
+           '  ' opts.compiler ' returned the error code: ' num2str(status)]);
 end
 if o.showOutput || opts.showOutput
     disp('Done.');

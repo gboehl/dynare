@@ -29,22 +29,22 @@ if length(S) > 1
 end
 
 switch S.type
-    case '()'
-        index = S.subs{:};
-        assert(isnumeric(index));
-        B.elements{index} = V;
-    case '{}'
-        index = S.subs{:};
-        assert(isnumeric(index));
-        B{index} = V;
-    case '.'
-        switch S.subs
-            case fieldnames(A)
-                B.(S.subs) = V;
-            otherwise
-                error(['@paragraph.subsasgn: field ' S.subs 'does not exist']);
-        end
-    otherwise
-        error('@paragraph.subsasgn: syntax error');
+  case '()'
+    index = S.subs{:};
+    assert(isnumeric(index));
+    B.elements{index} = V;
+  case '{}'
+    index = S.subs{:};
+    assert(isnumeric(index));
+    B{index} = V;
+  case '.'
+    switch S.subs
+      case fieldnames(A)
+        B.(S.subs) = V;
+      otherwise
+        error(['@paragraph.subsasgn: field ' S.subs 'does not exist']);
+    end
+  otherwise
+    error('@paragraph.subsasgn: syntax error');
 end
 end

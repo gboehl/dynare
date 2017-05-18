@@ -19,26 +19,26 @@ function A = subsref(A, S)
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 switch S(1).type
-    case '.'
-        switch S(1).subs
-            case fieldnames(A)
-                A = A.(S(1).subs);
-            case methods(A)
-                if areParensNext(S)
-                    A = feval(S(1).subs, A, S(2).subs{:});
-                    S = shiftS(S,1);
-                else
-                    A = feval(S(1).subs, A);
-                end
-            otherwise
-                error(['@report.subsasgn: unknown field or method: ' S(1).subs]);
-        end
-    case '()'
-        A = A.pages{S(1).subs{:}};
-    case '{}'
-        error(['@report.subsasgn: ' S(1).type ' indexing not supported.']);
-    otherwise
-        error('@report.subsasgn: impossible case');
+  case '.'
+    switch S(1).subs
+      case fieldnames(A)
+        A = A.(S(1).subs);
+      case methods(A)
+            if areParensNext(S)
+                A = feval(S(1).subs, A, S(2).subs{:});
+                S = shiftS(S,1);
+            else
+                A = feval(S(1).subs, A);
+            end
+      otherwise
+        error(['@report.subsasgn: unknown field or method: ' S(1).subs]);
+    end
+  case '()'
+    A = A.pages{S(1).subs{:}};
+  case '{}'
+    error(['@report.subsasgn: ' S(1).type ' indexing not supported.']);
+  otherwise
+    error('@report.subsasgn: impossible case');
 end
 
 S = shiftS(S,1);

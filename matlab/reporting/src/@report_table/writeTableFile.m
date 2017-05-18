@@ -137,14 +137,14 @@ else
     end
     fprintf(fid, '\\\\\n');
     switch dates.freq
-        case 4
-            sep = 'Q';
-        case 12
-            sep = 'M';
-        case 52
-            sep = 'W';
-        otherwise
-            error('@report_table.writeTableFile: Invalid frequency.');
+      case 4
+        sep = 'Q';
+      case 12
+        sep = 'M';
+      case 52
+        sep = 'W';
+      otherwise
+        error('@report_table.writeTableFile: Invalid frequency.');
     end
     for i=1:size(thdr, 1)
         period = thdr{i, 2};
@@ -179,9 +179,9 @@ for i=1:ne
     if o.writeCSV
         if isempty(o.series{i}.tableSubSectionHeader)
             csvseries = [csvseries ...
-                o.series{i}.data(dates).set_names([...
-                num2str(i) '_' ...
-                o.series{i}.data.name{:}])];
+                         o.series{i}.data(dates).set_names([...
+                             num2str(i) '_' ...
+                             o.series{i}.data.name{:}])];
         end
     end
     if o.showHlines

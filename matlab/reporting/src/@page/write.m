@@ -66,7 +66,7 @@ else
         end
         fprintf(fid,'\\multicolumn{1}{c}{%s %s}\\\\\n', o.titleFormat{i}, o.title{i});
     end
-    
+
     nps = length(o.sections);
     for i=1:nps
         o.sections{i}.write(fid, pg, i);

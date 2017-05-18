@@ -74,7 +74,7 @@ for i=1:length(fields)
                 fprintf('<dates: empty>');
             else
                 fprintf('<dates: %s, ..., %s>', ...
-                    date2string(val(1)), date2string(val(end)));
+                        date2string(val(1)), date2string(val(end)));
             end
         elseif isdseries(val)
             if numel(val) == 1

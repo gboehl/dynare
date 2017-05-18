@@ -19,31 +19,31 @@ function A = subsref(A, S)
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 switch S(1).type
-    case '.'
-        switch S(1).subs
-            case fieldnames(A)
-                A = A.(S(1).subs);
-            case methods(A)
-                if areParensNext(S)
-                    A = feval(S(1).subs, A, S(2).subs{:});
-                    S = shiftS(S,1);
-                else
-                    A = feval(S(1).subs, A);
-                end
-            otherwise
-                error(['@graph.subsref: unknown field or method: ' S(1).subs]);
-        end
-    case '()'
-        if isempty(S(1).subs{:})
-            A = A.series;
-        else
-            assert(isnumeric(S(1).subs{:}));
-            A = A.series{S(1).subs{:}};
-        end
-    case '{}'
+  case '.'
+    switch S(1).subs
+      case fieldnames(A)
+        A = A.(S(1).subs);
+      case methods(A)
+            if areParensNext(S)
+                A = feval(S(1).subs, A, S(2).subs{:});
+                S = shiftS(S,1);
+            else
+                A = feval(S(1).subs, A);
+            end
+      otherwise
+        error(['@graph.subsref: unknown field or method: ' S(1).subs]);
+    end
+  case '()'
+    if isempty(S(1).subs{:})
+        A = A.series;
+    else
+        assert(isnumeric(S(1).subs{:}));
         A = A.series{S(1).subs{:}};
-    otherwise
-        error('@graph.subsref: impossible case')
+    end
+  case '{}'
+    A = A.series{S(1).subs{:}};
+  otherwise
+    error('@graph.subsref: impossible case')
 end
 
 S = shiftS(S,1);

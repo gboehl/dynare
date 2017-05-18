@@ -45,14 +45,14 @@ assert(islogical(o.graphShowInLegend), ['@report_series.writeSeriesForGraph: ' .
 assert(ischar(o.graphLineColor), '@report_series.writeSeriesForGraph: graphLineColor must be a string');
 assert(ischar(o.graphLineStyle), '@report_series.writeSeriesForGraph: graphLineStyle must be a string');
 assert(isfloat(o.graphLineWidth) && o.graphLineWidth > 0, ...
-                    '@report_series.writeSeriesForGraph: graphLineWidth must be a positive number');
+       '@report_series.writeSeriesForGraph: graphLineWidth must be a positive number');
 
 % Bar
 assert(islogical(o.graphBar), '@report_series.writeSeriesForGraph: graphBar must be either true or false');
 assert(ischar(o.graphBarColor), '@report_series.writeSeriesForGraph: graphBarColor must be a string');
 assert(ischar(o.graphBarFillColor), '@report_series.writeSeriesForGraph: graphBarFillColor must be a string');
 assert(isfloat(o.graphBarWidth) && o.graphBarWidth > 0, ...
-                    '@report_series.writeSeriesForGraph: graphbarWidth must be a positive number');
+       '@report_series.writeSeriesForGraph: graphbarWidth must be a positive number');
 
 % GraphMarker
 valid_graphMarker = {'x', '+', '-', '|', 'o', 'asterisk', 'star', '10-pointed star', 'oplus', ...
@@ -66,7 +66,7 @@ assert(isempty(o.graphMarker) || any(strcmp(o.graphMarker, valid_graphMarker)), 
 assert(ischar(o.graphMarkerEdgeColor), '@report_series.writeSeriesForGraph: graphMarkerEdgeColor must be a string');
 assert(ischar(o.graphMarkerFaceColor), '@report_series.writeSeriesForGraph: graphMarkerFaceColor must be a string');
 assert(isfloat(o.graphMarkerSize) && o.graphMarkerSize > 0, ...
-                    '@report_series.writeSeriesForGraph: graphMarkerSize must be a positive number');
+       '@report_series.writeSeriesForGraph: graphMarkerSize must be a positive number');
 
 % Marker & Line
 assert(~(strcmp(o.graphLineStyle, 'none') && isempty(o.graphMarker)), ['@report_series.writeSeriesForGraph: ' ...
@@ -74,9 +74,9 @@ assert(~(strcmp(o.graphLineStyle, 'none') && isempty(o.graphMarker)), ['@report_
 
 % Validate graphVline
 assert(isempty(o.graphVline) || (isdates(o.graphVline) && o.graphVline.ndat == 1), ...
-    '@report_series.writeSeriesForGraph: graphVline must be a dates of size one');
+       '@report_series.writeSeriesForGraph: graphVline must be a dates of size one');
 assert(isempty(o.graphHline) || isnumeric(o.graphHline), ...
-    '@report_series.writeSeriesForGraph: graphHline must a single numeric value');
+       '@report_series.writeSeriesForGraph: graphHline must a single numeric value');
 
 % Zero tolerance
 assert(isfloat(o.zeroTol), '@report_series.write: zeroTol must be a float');
@@ -92,8 +92,8 @@ if ~isempty(o.graphVline)
     stringsdd = strings(xrange);
     x = find(strcmpi(date2string(o.graphVline), stringsdd));
     fprintf(fid, ['(axis cs:%d,\\pgfkeysvalueof{/pgfplots/ymin}) -- (axis ' ...
-        'cs:%d,\\pgfkeysvalueof{/pgfplots/ymax});\n\\end{pgfonlayer}\n'], ...
-        x, x);
+                  'cs:%d,\\pgfkeysvalueof{/pgfplots/ymax});\n\\end{pgfonlayer}\n'], ...
+            x, x);
 end
 if ~isempty(o.graphHline)
     fprintf(fid, '%%Horizontal Line\n\\begin{pgfonlayer}{axis lines}\n\\addplot');
@@ -127,13 +127,13 @@ fprintf(fid,'};\n');
 
 % For Fan charts
 if ispc || ismac
-  if ~isempty(o.graphFanShadeColor)
-      assert(isint(series_num) && series_num > 1, ['@report_series.writeSeriesForGraph: can only add '...
-                                                   'graphFanShadeColor and graphFanShadeOpacity starting from the ' ...
-                                                   'second series in the graph']);
-      fprintf(fid, '\\addplot[%s!%d, forget plot] fill between[of=%d and %d];\n', ...
-              o.graphFanShadeColor, o.graphFanShadeOpacity, series_num, series_num - 1);
-  end
+    if ~isempty(o.graphFanShadeColor)
+        assert(isint(series_num) && series_num > 1, ['@report_series.writeSeriesForGraph: can only add '...
+                            'graphFanShadeColor and graphFanShadeOpacity starting from the ' ...
+                            'second series in the graph']);
+        fprintf(fid, '\\addplot[%s!%d, forget plot] fill between[of=%d and %d];\n', ...
+                o.graphFanShadeColor, o.graphFanShadeOpacity, series_num, series_num - 1);
+    end
 end
 end
 
@@ -160,8 +160,8 @@ if ~isempty(o.graphMiscTikzAddPlotOptions)
     fprintf(fid, ',%s', o.graphMiscTikzAddPlotOptions);
 end
 if isunix && ~ismac
-  fprintf(fid,']');
+    fprintf(fid,']');
 else
-  fprintf(fid,',name path=%d]', series_num);
+    fprintf(fid,',name path=%d]', series_num);
 end
 end

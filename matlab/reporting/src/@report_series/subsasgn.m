@@ -29,14 +29,14 @@ if length(S) > 1
 end
 
 switch S.type
-    case '.'
-        switch S.subs
-            case fieldnames(A)
-                B.(S.subs) = V;
-            otherwise
-                error(['@report_series.subsasgn: field ' S.subs 'does not exist']);
-        end
-    otherwise
-        error('@report_series.subsasgn: syntax error');
+  case '.'
+    switch S.subs
+      case fieldnames(A)
+        B.(S.subs) = V;
+      otherwise
+        error(['@report_series.subsasgn: field ' S.subs 'does not exist']);
+    end
+  otherwise
+    error('@report_series.subsasgn: syntax error');
 end
 end

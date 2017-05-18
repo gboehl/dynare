@@ -35,7 +35,7 @@ assert(fid ~= -1);
 fprintf(fid, '%% Section Object\n');
 if isempty(o.elements)
     warning(['reporting:section.write(): trying to print a section ' ...
-        'with no elements. Perhaps you forgot to overwrite the report object.']);
+             'with no elements. Perhaps you forgot to overwrite the report object.']);
     return
 end
 
