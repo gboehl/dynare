@@ -2,7 +2,7 @@ function o = paragraph(varargin)
 %function o = paragraph(varargin)
 % Instantiates a paragraph object
 
-% Copyright (C) 2014 Dynare Team
+% Copyright (C) 2014-2015 Dynare Team
 %
 % This file is part of Dynare.
 %

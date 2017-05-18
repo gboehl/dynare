@@ -1,7 +1,7 @@
 function B = subsasgn(A, S, V)
 % function B = subsasgn(A, S, V)
 
-% Copyright (C) 2014 Dynare Team
+% Copyright (C) 2014-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

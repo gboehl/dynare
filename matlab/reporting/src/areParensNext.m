@@ -1,7 +1,7 @@
 function tf = areParensNext(S)
 %function tf = areParensNext(S)
 
-% Copyright (C) 2013 Dynare Team
+% Copyright (C) 2013-2015 Dynare Team
 %
 % This file is part of Dynare.
 %

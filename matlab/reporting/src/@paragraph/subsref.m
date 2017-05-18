@@ -1,7 +1,7 @@
 function A = subsref(A, S)
 %function A = subsref(A, S)
 
-% Copyright (C) 2014 Dynare Team
+% Copyright (C) 2014-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

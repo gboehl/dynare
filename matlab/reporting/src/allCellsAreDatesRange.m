@@ -11,7 +11,7 @@ function tf = allCellsAreDatesRange(dcell)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2014 Dynare Team
+% Copyright (C) 2014-2015 Dynare Team
 %
 % This file is part of Dynare.
 %
