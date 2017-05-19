@@ -1067,7 +1067,6 @@ perfect_foresight_solver_options : o_stack_solve_algo
                                  | o_solve_algo
                                  | o_robust_lin_solve
 				 | o_lmmcp
-				 | o_occbin
                                  | o_pf_tolf
                                  | o_pf_tolx
                                  ;
@@ -2700,7 +2699,6 @@ extended_path_option : o_periods
                      | o_extended_path_order
                      | o_hybrid
 		     | o_lmmcp
-		     | o_occbin
                      ;
 
 model_diagnostics : MODEL_DIAGNOSTICS ';'
@@ -3372,7 +3370,6 @@ o_period : PERIOD EQUAL INT_NUMBER { driver.option_num("period", $3); };
 o_outfile : OUTFILE EQUAL filename { driver.option_str("outfile", $3); };
 o_outvars : OUTVARS EQUAL '(' symbol_list ')' { driver.option_symbol_list("outvars"); };
 o_lmmcp : LMMCP {driver.option_num("lmmcp.status", "1"); };
-o_occbin : OCCBIN {driver.option_num("occbin", "1"); };
 o_function : FUNCTION EQUAL filename { driver.option_str("function", $3); };
 o_sampling_draws : SAMPLING_DRAWS EQUAL INT_NUMBER { driver.option_num("sampling_draws",$3); };
 o_use_shock_groups : USE_SHOCK_GROUPS { driver.option_str("use_shock_groups","default"); }

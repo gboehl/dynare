@@ -57,7 +57,6 @@ ModFileStructure::ModFileStructure() :
   std_options_statement_present(false),
   corr_options_statement_present(false),
   ms_dsge_present(false),
-  occbin_option(false),
   orig_eq_nbr(0),
   ramsey_eq_nbr(0)
 {

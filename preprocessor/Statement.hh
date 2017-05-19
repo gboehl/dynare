@@ -113,8 +113,6 @@ public:
   bool corr_options_statement_present;
   //! Whether a Markov Switching DSGE is present
   bool ms_dsge_present;
-  //! Whether occbin is present
-  bool occbin_option;
   //! Stores the original number of equations in the model_block
   int orig_eq_nbr;
   //! Stores the number of equations added to the Ramsey model
