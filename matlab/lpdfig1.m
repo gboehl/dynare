@@ -1,15 +1,15 @@
 function [ldens,Dldens,D2ldens] = lpdfig1(x,s,nu)
 % Evaluates the logged INVERSE-GAMMA-1 PDF at x.
 %
-% X ~ IG1(s,nu) if X = sqrt(Y) where Y ~ IG2(s,nu) and Y = inv(Z) with Z ~ G(nu/2,2/s) (Gamma distribution) 
+% X ~ IG1(s,nu) if X = sqrt(Y) where Y ~ IG2(s,nu) and Y = inv(Z) with Z ~ G(nu/2,2/s) (Gamma distribution)
 %
 % See L. Bauwens, M. Lubrano and J-F. Richard [1999, appendix A] for more details.
 %
 %
-% INPUTS     
+% INPUTS
 %    x     [double]  m*n matrix of locations,
-%    s     [double]  m*n matrix or scalar, First INVERSE-GAMMA-1 distribution parameters, 
-%    nu    [double]  m*n matrix or scalar, Second INVERSE-GAMMA-1 distribution parameters. 
+%    s     [double]  m*n matrix or scalar, First INVERSE-GAMMA-1 distribution parameters,
+%    nu    [double]  m*n matrix or scalar, Second INVERSE-GAMMA-1 distribution parameters.
 %
 % OUTPUTS
 %    ldens [double]  m*n matrix of logged INVERSE-GAMMA-1 densities evaluated at x.
@@ -17,7 +17,7 @@ function [ldens,Dldens,D2ldens] = lpdfig1(x,s,nu)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2004-2011 Dynare Team
+% Copyright (C) 2004-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -35,7 +35,7 @@ function [ldens,Dldens,D2ldens] = lpdfig1(x,s,nu)
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 ldens = -Inf( size(x) ) ;
-idx = find( x>0 ) ;    
+idx = find( x>0 ) ;
 
 if length(s)==1
     ldens(idx) = log(2) - gammaln(.5*nu) - .5*nu*(log(2)-log(s)) - (nu+1)*log(x(idx)) - .5*s./(x(idx).*x(idx)) ;
@@ -43,7 +43,7 @@ else
     ldens(idx) = log(2) - gammaln(.5*nu(idx)) - .5*nu(idx).*(log(2)-log(s(idx))) - (nu(idx)+1).*log(x(idx)) - .5*s(idx)./(x(idx).*x(idx)) ;
 end
 
-if nargout >1 
+if nargout >1
     if length(s)==1
         Dldens(idx) = - (nu+1)./(x(idx)) + s./(x(idx).^3) ;
     else
@@ -51,11 +51,10 @@ if nargout >1
     end
 end
 
-if nargout == 3 
+if nargout == 3
     if length(s)==1
         D2ldens(idx) =  (nu+1)./(x(idx).^2) - 3*s(idx)./(x(idx).^4) ;
     else
         D2ldens(idx) =  (nu(idx)+1)./(x(idx).^2) - 3*s(idx)./(x(idx).^4) ;
     end
 end
-

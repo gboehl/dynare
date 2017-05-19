@@ -15,7 +15,7 @@ function [NewFilesFrom, NewFileList]=dynareParallelFindNewFiles(FileList,Paralle
 %  o NewFilesFrom          []   ...
 %  o NewFileList           []   ...
 %
-% Copyright (C) 2009-2011 Dynare Team
+% Copyright (C) 2009-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -36,7 +36,7 @@ function [NewFilesFrom, NewFileList]=dynareParallelFindNewFiles(FileList,Paralle
 NewFilesFrom={};
 
 LfL=length(FileList);
-                                        % The first call ...
+% The first call ...
 NewFileList = dynareParallelListAllFiles('Root',PRCDir,Parallel);
 
 
@@ -45,35 +45,34 @@ LnFl=length(NewFileList);
 RelativePosition=1;
 
 for i=1:LnFl
-    
+
     % Exception Handling
-    
+
     % If you comment the code below all new file will be copied!
-    
+
     % 1. The comp_status* files are managed separately.
-    
+
     FiCoS=strfind(NewFileList{i},'comp_status_');
     if ~isempty(FiCoS)
         continue
     end
-    
+
     % 2. For the time being is not necessary to always copy *.log
     %    and *.txt files.
-    
+
     nC1 = strfind(NewFileList{i}, '.log');
     nC2 = strfind(NewFileList{i}, '.txt');
-    
+
     if (~isempty(nC1) || ~isempty(nC2))
         continue
     end
-    
+
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    
-    
+
+
     N=strmatch(NewFileList{i},FileList,'exact');
     if isempty(N)
         NewFilesFrom{RelativePosition}=NewFileList{i};
         RelativePosition=RelativePosition+1;
     end
 end
-

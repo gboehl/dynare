@@ -1,11 +1,11 @@
 function  y=PCL_Part_info_irf( H, varobs, ivar, M_, dr, irfpers,ii)
 % sets up parameters and calls part-info kalman filter
-% developed by G Perendia, July 2006 for implementation from notes by Prof. Joe Pearlman to 
-% suit partial information RE solution in accordance with, and based on, the 
+% developed by G Perendia, July 2006 for implementation from notes by Prof. Joe Pearlman to
+% suit partial information RE solution in accordance with, and based on, the
 % Pearlman, Currie and Levine 1986 solution.
-% 22/10/06 - Version 2 for new Riccati with 4 params instead 5 
+% 22/10/06 - Version 2 for new Riccati with 4 params instead 5
 
-% Copyright (C) 2006-2011 Dynare Team
+% Copyright (C) 2006-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -23,8 +23,8 @@ function  y=PCL_Part_info_irf( H, varobs, ivar, M_, dr, irfpers,ii)
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 
-% Recall that the state space is given by the 
-% predetermined variables s(t-1), x(t-1) 
+% Recall that the state space is given by the
+% predetermined variables s(t-1), x(t-1)
 % and the jump variables x(t).
 % The jump variables have dimension NETA
 
@@ -66,7 +66,7 @@ U22=0;
 % determine K1 and K2 observation mapping matrices
 % This uses the fact that measurements are given by L1*s(t)+L2*x(t)
 % and s(t) is expressed in the dynamics as
-% H1*eps(t)+G11*s(t-1)+G12*x(t-1)+G13*x(t).  
+% H1*eps(t)+G11*s(t-1)+G12*x(t-1)+G13*x(t).
 % Thus the observations o(t) can be written in the form
 % o(t)=K1*[eps(t)' s(t-1)' x(t-1)']' + K2*x(t) where
 % K1=[L1*H1 L1*G11 L1*G12] K2=L1*G13+L2
@@ -84,18 +84,18 @@ A21=G1(pd+1:end,1:pd);
 Lambda= nmat*A12+A22;
 I_L=inv(Lambda);
 BB=A12*inv(A22);
-FF=K2*inv(A22);       
-QQ=BB*U22*BB' + U11;        
+FF=K2*inv(A22);
+QQ=BB*U22*BB' + U11;
 UFT=U22*FF';
 AA=A11-BB*A21;
 CCCC=A11-A12*nmat; % F in new notation
 DD=K1-FF*A21; % H in new notation
 EE=K1-K2*nmat;
 RR=FF*UFT+VV;
-if ~any(RR) 
-    % if zero add some dummy measurement err. variance-covariances 
+if ~any(RR)
+    % if zero add some dummy measurement err. variance-covariances
     % with diagonals 0.000001. This would not be needed if we used
-    % the slow solver, or the generalised eigenvalue approach, 
+    % the slow solver, or the generalised eigenvalue approach,
     % but these are both slower.
     RR=eye(size(RR,1))*1.0e-6;
 end
@@ -128,14 +128,14 @@ imp=[impact(1:ss-FL_RANK,:); impact(1:ss-FL_RANK,:)];
 I_PD=(eye(ss-FL_RANK)-PDIDPDRD);
 LL0=[ EE (DD-EE)*I_PD];
 VV = [  dr.PI_TT1 dr.PI_TT2];
-stderr=diag(M_.Sigma_e^0.5);        
+stderr=diag(M_.Sigma_e^0.5);
 irfmat=zeros(size(dr.PI_TT1 ,1),irfpers+1);
-irfst=zeros(size(GG,1),irfpers+1); 
+irfst=zeros(size(GG,1),irfpers+1);
 irfst(:,1)=stderr(ii)*imp(:,ii);
-for jj=2:irfpers+1;
+for jj=2:irfpers+1
     irfst(:,jj)=GG*irfst(:,jj-1);
     irfmat(:,jj-1)=VV*irfst(NX+1:ss-FL_RANK,jj);
-end   
+end
 y = irfmat(:,1:irfpers);
 
 save ([M_.fname '_PCL_PtInfoIRFs_' num2str(ii) '_' deblank(exo_names(ii,:))], 'irfmat','irfst');

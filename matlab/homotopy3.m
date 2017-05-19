@@ -33,7 +33,7 @@ function [M,oo,info,ip,ix,ixd]=homotopy3(values, step_nbr, M, options, oo)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2008-2012 Dynare Team
+% Copyright (C) 2008-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -91,11 +91,11 @@ disp('HOMOTOPY mode 3: launching solver at initial point...')
 
 iter = 1;
 while iter <= step_nbr
-    
+
     M.params(values(ip,2)) = curvalues(ip);
     oo.exo_steady_state(values(ix,2)) = curvalues(ix);
     oo.exo_det_steady_state(values(ixd,2)) = curvalues(ixd);
-    
+
     old_ss = oo.steady_state;
 
     [steady_state,params,info] = steady_(M,options,oo);
@@ -121,8 +121,8 @@ while iter <= step_nbr
         disp('HOMOTOPY mode 3: failed step, now dividing increment by 2...')
         inc = inc/2;
         oo.steady_state = old_ss;
-    end      
-    
+    end
+
     curvalues = last_values + inc;
     kplus = find(curvalues(iplus) >= targetvalues(iplus));
     curvalues(iplus(kplus)) = targetvalues(iplus(kplus));
@@ -136,7 +136,7 @@ while iter <= step_nbr
         oo.exo_det_steady_state = old_exo_det_steady_state;
         return
     end
-    
+
     iter = iter + 1;
 end
 disp('HOMOTOPY mode 3: failed, maximum iterations reached')

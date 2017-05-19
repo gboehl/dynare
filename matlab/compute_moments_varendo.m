@@ -2,21 +2,21 @@ function oo_ = compute_moments_varendo(type,options_,M_,oo_,var_list_)
 % Computes the second order moments (autocorrelation function, covariance
 % matrix and variance decomposition) distributions for all the endogenous variables selected in
 % var_list_. The results are saved in oo_
-%  
+%
 % INPUTS:
 %   type            [string]       'posterior' or 'prior'
 %   options_        [structure]    Dynare structure.
 %   M_              [structure]    Dynare structure (related to model definition).
 %   oo_             [structure]    Dynare structure (results).
 %   var_list_       [string]       Array of string with endogenous variable names.
-%    
+%
 % OUTPUTS
 %   oo_             [structure]    Dynare structure (results).
 %
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2008-2010 Dynare Team
+% Copyright (C) 2008-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -31,7 +31,7 @@ function oo_ = compute_moments_varendo(type,options_,M_,oo_,var_list_)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.    
+% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 
 fprintf('Estimation::compute_moments_varendo: I''m computing endogenous moments (this may take a while)... ');
@@ -129,7 +129,7 @@ if M_.exo_nbr > 1
         headers = char(' ',headers);
         lh = size(deblank(var_list_),2)+2;
         dyntable(options_,title,headers,deblank(var_list_),100* ...
-            temp,lh,8,2);
+                 temp,lh,8,2);
         if options_.TeX
             headers=M_.exo_names_tex;
             headers = char(' ',headers);
@@ -166,7 +166,7 @@ if M_.exo_nbr > 1
             headers = char(' ',headers);
             lh = size(deblank(var_list_),2)+2;
             dyntable(options_,title_print,headers,deblank(var_list_),100* ...
-                temp(:,:,step_iter),lh,8,2);
+                     temp(:,:,step_iter),lh,8,2);
             if options_.TeX
                 headers=M_.exo_names_tex;
                 headers = char(' ',headers);

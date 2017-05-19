@@ -43,7 +43,7 @@ function [X, info] = cycle_reduction(A0, A1, A2, cvg_tol, ch) % --*-- Unitary te
 %! @end deftypefn
 %@eod:
 
-% Copyright (C) 2013 Dynare Team
+% Copyright (C) 2013-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -76,7 +76,7 @@ id0 = 1:n;
 id2 = id0+n;
 
 cont = 1;
-while cont 
+while cont
     tmp = ([A0; A2]/A1)*[A0 A2];
     A1 = A1 - tmp(id0,id2) - tmp(id2,id0);
     A0 = -tmp(id0,id0);
@@ -97,7 +97,7 @@ while cont
             info(2) = log(norm(A1,1));
         end
         return
-    end        
+    end
     it = it + 1;
 end
 

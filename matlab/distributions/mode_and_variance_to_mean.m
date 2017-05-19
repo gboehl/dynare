@@ -1,23 +1,23 @@
 function [mu, parameters] = mode_and_variance_to_mean(m,s2,distribution,lower_bound,upper_bound)
 % This function computes the mean of a distribution given the mode and variance of this distribution.
 %
-%  INPUTS 
+%  INPUTS
 %    m                [double]    scalar, mode of the distribution.
 %    s2               [double]    scalar, variance of the distribution.
-%    distribution     [integer]   scalar for the distribution shape 
+%    distribution     [integer]   scalar for the distribution shape
 %                                    1 gamma
 %                                    2 inv-gamma-2
 %                                    3 inv-gamma-1
-%                                    4 beta    
+%                                    4 beta
 %    lower_bound      [double]    scalar, lower bound of the random variable support (optional).
 %    upper_bound      [double]    scalar, upper bound of the random variable support (optional).
-%    
-%  OUTPUT 
+%
+%  OUTPUT
 %    mu               [double]    scalar, mean of the distribution.
 %    parameters       [double]    2*1 vector, parameters of the distribution.
-%    
+%
 
-% Copyright (C) 2009 Dynare Team
+% Copyright (C) 2009-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -34,7 +34,7 @@ function [mu, parameters] = mode_and_variance_to_mean(m,s2,distribution,lower_bo
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-% Check input aruments. 
+% Check input aruments.
 if ~(nargin==3 || nargin==5 || nargin==4 )
     error('mode_and_variance_to mean:: 3 or 5 input arguments are needed!')
 end
@@ -80,7 +80,7 @@ if (distribution==1)% Gamma distribution
     end
     if (m-lower_bound)<1e-12
         error('The gamma distribution should be specified with the mean and variance.')
-    end        
+    end
     m = m - lower_bound ;
     beta  = -.5*m*(1-sqrt(1+4*s2/(m*m))) ;
     alpha = (m+beta)/beta ;

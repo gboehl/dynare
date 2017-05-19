@@ -135,7 +135,7 @@ dyn_saveas(hh,[M_.fname, filesep, 'graphs', filesep, 'TracePlot_' plot_name],opt
 
 if options_.TeX
     fid=fopen([M_.fname,'/graphs/',M_.fname,'_TracePlot_' plot_name,'.tex'],'w+');
-    
+
     if strcmpi(type,'DeepParameter')
         tex_names=M_.param_names_tex;
         base_names=M_.param_names;
@@ -146,7 +146,7 @@ if options_.TeX
         tex_names=M_.endo_names_tex;
         base_names=M_.endo_names;
     end
-    
+
     if strcmpi(type,'PosteriorDensity')
         FigureName = ['Trace plot for ' TYPE name1];
     else
@@ -159,7 +159,7 @@ if options_.TeX
     if options_.mh_nblck>1
         FigureName = [ FigureName , ' (block number ' int2str(blck)  ').'];
     end
-    
+
     fprintf(fid,'%-s\n','\begin{figure}[H]');
     fprintf(fid,'%-s\n','\centering');
     fprintf(fid,'%-s\n',['  \includegraphics[width=0.8\textwidth]{',[M_.fname, '/graphs/TracePlot_' plot_name],'}\\']);
@@ -167,4 +167,3 @@ if options_.TeX
     fprintf(fid,'%-s\n','\end{figure}');
     fclose(fid);
 end
-

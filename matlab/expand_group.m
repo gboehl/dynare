@@ -42,10 +42,8 @@ options.use_shock_groups = strrep(label,' ','_'); %[use_shock_groups_old int2str
 for j=1:length(shocks)
     M.shock_groups.(options.use_shock_groups).(['group' int2str(j)]).label=shocks{j};
     M.shock_groups.(options.use_shock_groups).(['group' int2str(j)]).shocks=shocks(j);
-end 
+end
 
 options.shock_decomp.interactive=0;
 options.shock_decomp.expand=1;
 plot_shock_decomposition(M,oo,options,var_list_);
-
-

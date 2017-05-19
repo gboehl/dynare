@@ -1,6 +1,6 @@
 function [flag,endo_simul,err,y] = solve_stochastic_perfect_foresight_model_1(endo_simul,exo_simul,Options,pfm,order,varargin)
 
-% Copyright (C) 2012-2013 Dynare Team
+% Copyright (C) 2012-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -83,7 +83,7 @@ end
 % and so on until size ny x nnodes^order
 world_nbr = pfm.world_nbr;
 Y = endo_simul(:,2:end-1);
-Y = repmat(Y,1,world_nbr); 
+Y = repmat(Y,1,world_nbr);
 pfm.y0 = endo_simul(:,1);
 
 % The columns of A map the elements of Y such that

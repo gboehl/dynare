@@ -1,6 +1,6 @@
 function check_matlab_path(change_path_flag)
-    
-% Copyright (C) 2015-2016 Dynare Team
+
+% Copyright (C) 2015-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -82,7 +82,7 @@ else
                     warning(msg);
                     skipline()
                     rmpath(DYNARE_PATH)
-                    addpath(DYNARE_PATH)    
+                    addpath(DYNARE_PATH)
                 end
                 warning on backtrace
             end
@@ -90,7 +90,7 @@ else
     else
         % Check that the user did not put all the subfolders in the path.
         % => If DYNARE_PATH/qz is in the path while mjdgges dll is available
-        % it most likely means that user wrongly put all subfolders in the 
+        % it most likely means that user wrongly put all subfolders in the
         % matlab's path!
         mexpath = add_path_to_mex_files([DYNARE_PATH filesep], false);
         MATLAB_PATH = path2cell(MATLAB_PATH);
@@ -107,40 +107,40 @@ else
 end
 
 function q = path2cell(p)
-    % Converts the output of path() to a cell 
-    s = strfind(p,pathsep);
-    n = length(s)+1;
-    q = cell(n,1);
-    q(1) = {p(1:s(1)-1)};
-    q(n) = {p(s(end)+1:end)};
-    for i=2:n-1
-        q(i) = {p(s(i-1)+1:s(i)-1)}; 
-    end
-    
+% Converts the output of path() to a cell
+s = strfind(p,pathsep);
+n = length(s)+1;
+q = cell(n,1);
+q(1) = {p(1:s(1)-1)};
+q(n) = {p(s(end)+1:end)};
+for i=2:n-1
+    q(i) = {p(s(i-1)+1:s(i)-1)};
+end
+
 function flist = getallroutinenames(p, excludedsubfolders)
-    if nargin<2
-        excludedsubfolders = {};
-    end
-    flist={};
-    %get m-files in this directory
-    dd = dir([p,filesep '*.m']);
-    temp=struct2cell(dd);
-    flist=[flist temp(1,:)];
-    %deal with subdirectories
-    dlist=getalldirectories(p,excludedsubfolders); %first call with excluded directories
-    for ii=1:length(dlist)
-        flist=[flist getallroutinenames([ p filesep dlist{ii}])]; %recursive calls without subfolders
-    end
-    
+if nargin<2
+    excludedsubfolders = {};
+end
+flist={};
+%get m-files in this directory
+dd = dir([p,filesep '*.m']);
+temp=struct2cell(dd);
+flist=[flist temp(1,:)];
+%deal with subdirectories
+dlist=getalldirectories(p,excludedsubfolders); %first call with excluded directories
+for ii=1:length(dlist)
+    flist=[flist getallroutinenames([ p filesep dlist{ii}])]; %recursive calls without subfolders
+end
+
 
 function dlist = getalldirectories(p,excluded_directories)
-    if nargin<2
-        excluded_directories = {};
-    end
-    dd = dir(p);
-    dir_result=struct2cell(dd);
-    directory_indicator=cell2mat(dir_result(4,:));
-    dlist = dir_result(1,directory_indicator==1 & ~strcmp('.',dir_result(1,:)) & ~strcmp('..',dir_result(1,:)) & ~ismember(dir_result(1,:),excluded_directories));
+if nargin<2
+    excluded_directories = {};
+end
+dd = dir(p);
+dir_result=struct2cell(dd);
+directory_indicator=cell2mat(dir_result(4,:));
+dlist = dir_result(1,directory_indicator==1 & ~strcmp('.',dir_result(1,:)) & ~strcmp('..',dir_result(1,:)) & ~ismember(dir_result(1,:),excluded_directories));
 
 function n = position(i, currentpath)
-    n = length(strfind(currentpath(1:i), pathsep));
+n = length(strfind(currentpath(1:i), pathsep));

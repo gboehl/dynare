@@ -4,7 +4,7 @@ function c = read_key_value_string(s)
 % estimation command) into a cell (first column for the option name ans second column for the
 % option value).
 
-% Copyright (C) 2011-2016 Dynare Team
+% Copyright (C) 2011-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -40,7 +40,7 @@ iComma = strfind(s,',');
 
 %delete commata in sublists from further checks
 for sublist_iter=length(i_begin_sublist):-1:1
-   iComma(iComma>=i_begin_sublist(sublist_iter) & iComma<=i_end_sublist(sublist_iter))=[];
+    iComma(iComma>=i_begin_sublist(sublist_iter) & iComma<=i_end_sublist(sublist_iter))=[];
 end
 
 nComma = length(iComma);
@@ -85,10 +85,10 @@ end
 
 
 function j = comma2opt(i)
-    if isodd(i)
-        % The comma is a separator between a Key and a Value (returned j is minus the option number).
-        j = - (i+1)/2;
-    else
-        % The comma is a separator between two options (returned j is the option number).
-        j = i/2;
-    end
+if isodd(i)
+    % The comma is a separator between a Key and a Value (returned j is minus the option number).
+    j = - (i+1)/2;
+else
+    % The comma is a separator between two options (returned j is the option number).
+    j = i/2;
+end

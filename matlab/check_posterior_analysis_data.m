@@ -1,13 +1,13 @@
 function [info,description] = check_posterior_analysis_data(type,M_)
 % function [info,description] = check_posterior_analysis_data(type,M_)
-% Checks the status of posterior analysis and in particular if files need to be 
+% Checks the status of posterior analysis and in particular if files need to be
 % created or updated; called by posterior_analysis.m
-% 
+%
 % Inputs:
 %   type        [string]        name of the posterior moment considered
 %   M_          [structure]     Dynare model structure
-% 
-% Outputs: 
+%
+% Outputs:
 %   info        [scalar]        return code
 %                                   info = 1; % select_posterior_draws has to be called first.
 %                                   info = 2; % _posterior_draws files have to be updated.
@@ -17,7 +17,7 @@ function [info,description] = check_posterior_analysis_data(type,M_)
 %                                   info = 6; % Ok (nothing to do ;-)
 %   description [string]        Message corresponding to info
 
-% Copyright (C) 2008-2015 Dynare Team
+% Copyright (C) 2008-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -99,7 +99,7 @@ else
     number_of_the_last_post_data_file = length(pdfinfo);
     name_of_the_last_post_data_file = ...
         [ pwd filesep MetropolisFolder filesep ...
-          M_.fname '_' ... 
+          M_.fname '_' ...
           generic_post_data_file_name ...
           int2str(number_of_the_last_post_data_file) ...
           '.mat' ];
@@ -108,7 +108,7 @@ else
         info = 5; % posterior data files have to be updated.
         if nargout>1
             description = 'posterior data files have to be updated.';
-        end            
+        end
     else
         info = 6; % Ok (nothing to do ;-)
         if nargout>1

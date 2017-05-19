@@ -1,6 +1,6 @@
 function [PostMode, HessianMatrix, Scale, ModeValue] = gmhmaxlik(fun, xinit, Hinit, iscale, bounds, priorstd, gmhmaxlikOptions, OptimizationOptions, varargin)
 
-% Copyright (C) 2006-2015 Dynare Team
+% Copyright (C) 2006-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -16,10 +16,10 @@ function [PostMode, HessianMatrix, Scale, ModeValue] = gmhmaxlik(fun, xinit, Hin
 %
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
-    
+
 % Set default options
 
-if ~isempty(Hinit);
+if ~isempty(Hinit)
     gmhmaxlikOptions.varinit = 'previous';
 else
     gmhmaxlikOptions.varinit = 'prior';

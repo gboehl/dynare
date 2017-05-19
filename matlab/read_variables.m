@@ -6,7 +6,7 @@ function dyn_data_01=read_variables(file_name_01,var_names_01,dyn_data_01,xls_sh
 % INPUTS
 %    file_name_01:    file name
 %    var_names_01:    variables name
-%    dyn_data_01:     
+%    dyn_data_01:
 %    xls_sheet:       Excel sheet name
 %    xls_range:       Excel range specification
 %
@@ -17,7 +17,7 @@ function dyn_data_01=read_variables(file_name_01,var_names_01,dyn_data_01,xls_sh
 % all local variables have complicated names in order to avoid name
 % conflicts with possible user variable names
 
-% Copyright (C) 2005-2013 Dynare Team
+% Copyright (C) 2005-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -65,64 +65,64 @@ fullname = [basename extension];
 
 if ~exist(fullname)
     error(['Can''t find datafile: ' fullname ]);
-end 
+end
 
 switch (extension)
-    case '.m'
-        eval(basename);
-        for dyn_i_01=1:var_size_01
-            dyn_tmp_01 = eval(var_names_01{dyn_i_01});
+  case '.m'
+    eval(basename);
+    for dyn_i_01=1:var_size_01
+        dyn_tmp_01 = eval(var_names_01{dyn_i_01});
+        if length(dyn_tmp_01) > dyn_size_01 && dyn_size_01 > 0
+            cd(old_pwd)
+            error('data size is too large')
+        end
+        dyn_data_01(:,dyn_i_01) = dyn_tmp_01;
+    end
+  case '.mat'
+    s = load(basename);
+    for dyn_i_01=1:var_size_01
+        dyn_tmp_01 = s.(var_names_01{dyn_i_01});
+        if length(dyn_tmp_01) > dyn_size_01 && dyn_size_01 > 0
+            cd(old_pwd)
+            error('data size is too large')
+        end
+        dyn_data_01(:,dyn_i_01) = dyn_tmp_01;
+    end
+  case { '.xls', '.xlsx' }
+    [freq,init,data,varlist] = load_xls_file_data(fullname,xls_sheet,xls_range);
+    for dyn_i_01=1:var_size_01
+        iv = strmatch(strtrim(var_names_01(dyn_i_01,:)),varlist,'exact');
+        if ~isempty(iv)
+            dyn_tmp_01 = [data(:,iv)]';
             if length(dyn_tmp_01) > dyn_size_01 && dyn_size_01 > 0
                 cd(old_pwd)
                 error('data size is too large')
             end
             dyn_data_01(:,dyn_i_01) = dyn_tmp_01;
+        else
+            cd(old_pwd)
+            error([strtrim(var_names_01(dyn_i_01,:)) ' not found in ' fullname])
         end
-    case '.mat'
-        s = load(basename);
-        for dyn_i_01=1:var_size_01
-            dyn_tmp_01 = s.(var_names_01{dyn_i_01});
+    end
+  case '.csv'
+    [freq,init,data,varlist] = load_csv_file_data(fullname);
+    for dyn_i_01=1:var_size_01
+        iv = strmatch(var_names_01{dyn_i_01},varlist,'exact');
+        if ~isempty(iv)
+            dyn_tmp_01 = [data(:,iv)]';
             if length(dyn_tmp_01) > dyn_size_01 && dyn_size_01 > 0
                 cd(old_pwd)
                 error('data size is too large')
             end
             dyn_data_01(:,dyn_i_01) = dyn_tmp_01;
+        else
+            cd(old_pwd)
+            error([var_names_01{dyn_i_01} ' not found in ' fullname])
         end
-    case { '.xls', '.xlsx' }
-        [freq,init,data,varlist] = load_xls_file_data(fullname,xls_sheet,xls_range);
-        for dyn_i_01=1:var_size_01
-            iv = strmatch(strtrim(var_names_01(dyn_i_01,:)),varlist,'exact');
-            if ~isempty(iv)
-                dyn_tmp_01 = [data(:,iv)]';
-                if length(dyn_tmp_01) > dyn_size_01 && dyn_size_01 > 0
-                    cd(old_pwd)
-                    error('data size is too large')
-                end
-                dyn_data_01(:,dyn_i_01) = dyn_tmp_01;
-            else
-                cd(old_pwd)
-                error([strtrim(var_names_01(dyn_i_01,:)) ' not found in ' fullname])
-            end
-        end
-    case '.csv'
-        [freq,init,data,varlist] = load_csv_file_data(fullname);
-        for dyn_i_01=1:var_size_01
-            iv = strmatch(var_names_01{dyn_i_01},varlist,'exact');
-            if ~isempty(iv)
-                dyn_tmp_01 = [data(:,iv)]';
-                if length(dyn_tmp_01) > dyn_size_01 && dyn_size_01 > 0
-                    cd(old_pwd)
-                    error('data size is too large')
-                end
-                dyn_data_01(:,dyn_i_01) = dyn_tmp_01;
-            else
-                cd(old_pwd)
-                error([var_names_01{dyn_i_01} ' not found in ' fullname])
-            end
-        end
-    otherwise
-        cd(old_pwd)
-        error(['Unsupported extension for datafile: ' extension])
+    end
+  otherwise
+    cd(old_pwd)
+    error(['Unsupported extension for datafile: ' extension])
 end
 
 cd(old_pwd)

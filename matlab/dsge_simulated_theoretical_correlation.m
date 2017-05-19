@@ -16,8 +16,8 @@ function [nvar,vartan,CorrFileNumber] = dsge_simulated_theoretical_correlation(S
 %   nvar           [integer]        nvar is the number of stationary variables.
 %   vartan         [char]           array of characters (with nvar rows).
 %   CorrFileNumber [integer]        scalar, number of prior or posterior data files (for correlation).
- 
-% Copyright (C) 2007-2015 Dynare Team
+
+% Copyright (C) 2007-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -126,7 +126,7 @@ for file = 1:NumberOfDrawsFiles
                 Correlation_array = zeros(NumberOfLinesInTheLastCorrFile,nvar,nvar,nar);
                 NumberOfCorrLines = NumberOfLinesInTheLastCorrFile;
                 CorrFileNumber = CorrFileNumber - 1;
-            elseif test<0;
+            elseif test<0
                 Correlation_array = zeros(MaXNumberOfCorrLines,nvar,nvar,nar);
             else
                 clear('Correlation_array');

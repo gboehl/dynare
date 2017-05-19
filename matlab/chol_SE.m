@@ -1,17 +1,17 @@
 function [R,indef, E, P]=chol_SE(A,pivoting)
 % [R,indef, E, P]=chol_SE(A,pivoting)
-% Performs a (modified) Cholesky factorization of the form 
-% 
+% Performs a (modified) Cholesky factorization of the form
+%
 %     P'*A*P  + E = R'*R
-% 
+%
 % As detailed in Schnabel/Eskow (1990), the factorization has 2 phases:
 %   Phase 1: While A can still be positive definite, pivot on the maximum diagonal element.
 %            Check that the standard Cholesky update would result in a positive diagonal
-%            at the current iteration. If so, continue with the normal Cholesky update. 
-%            Otherwise switch to phase 2. 
-%            If A is safely positive definite, stage 1 is never left, resulting in 
-%            the standard Cholesky decomposition. 
-%            
+%            at the current iteration. If so, continue with the normal Cholesky update.
+%            Otherwise switch to phase 2.
+%            If A is safely positive definite, stage 1 is never left, resulting in
+%            the standard Cholesky decomposition.
+%
 %    Phase 2: Pivot on the minimum of the negatives of the lower Gershgorin bound
 %            estimates. To prevent negative diagonals, compute the amount to add to the
 %            pivot element and add this. Then, do the Cholesky update and update the estimates of the
@@ -21,39 +21,40 @@ function [R,indef, E, P]=chol_SE(A,pivoting)
 %   -   During factorization, L=R' is stored in the lower triangle of the original matrix A,
 %       miminizing the memory requirements
 %   -   Conforming with the original Schnabel/Eskow (1990) algorithm:
-%            - at each iteration the updated Gershgorin bounds are estimated instead of recomputed, 
+%            - at each iteration the updated Gershgorin bounds are estimated instead of recomputed,
 %              reducing the computational requirements from o(n^3) to o (n^2)
 %           -  For the last 2 by 2 submatrix, an eigenvalue-based decomposition is used
-%   -   While pivoting is not necessary, it improves the size of E, the add-on on to the diagonal. But this comes at 
+%   -   While pivoting is not necessary, it improves the size of E, the add-on on to the diagonal. But this comes at
 %       the cost of introduding a permutation.
-% 
 %
-% Inputs  
-%   A           [n*n]     Matrix to be factorized
-%   pivoting    [scalar]  dummy whether pivoting is used
-% 
-% Outputs  
-%   R           [n*n]     originally stored in lower triangular portion of A, including the main diagonal
 %
-%   E           [n*1]     Elements added to the diagonal of A
-%   P           [n*1]     record of how the rows and columns of the matrix were permuted while
-%                         performing the decomposition
+% INPUTS
+%  - A           [n*n]     Matrix to be factorized
+%  - pivoting    [scalar]  dummy whether pivoting is used
+%
+% OUTPUTS
+%  - R           [n*n]     originally stored in lower triangular portion of A, including the main diagonal
+%
+%  - E           [n*1]     Elements added to the diagonal of A
+%  - P           [n*1]     record of how the rows and columns of the matrix were permuted while
+%                          performing the decomposition
 %
 % REFERENCES:
-%   This implementation is based on 
+%   This implementation is based on
 %
 %       Robert B. Schnabel and Elizabeth Eskow. 1990. "A New Modified Cholesky
 %       Factorization," SIAM Journal of Scientific Statistical Computating,
 %       11, 6: 1136-58.
-% 
+%
 %       Elizabeth Eskow and Robert B. Schnabel 1991. "Algorithm 695 - Software for a New Modified Cholesky
 %       Factorization," ACM Transactions on Mathematical Software, Vol 17, No 3: 306-312
-% 
-% 
+%
+%
 % Author: Johannes Pfeifer based on Eskow/Schnabel (1991)
-% 
+
 % Copyright (C) 2015 Johannes Pfeifer
-% Copyright (C) 2015 Dynare Team
+% Copyright (C) 2015-2017 Dynare Team
+%
 % This file is part of Dynare.
 %
 % Dynare is free software: you can redistribute it and/or modify
@@ -148,7 +149,7 @@ for j = 1:n-1
                 % Swap elements of the permutation vector
                 itemp = P(j);
                 P(j) = P(imaxd);
-                P(imaxd) = itemp;          
+                P(imaxd) = itemp;
             end
         end
         % check to see whether the normal Cholesky update for this
@@ -183,13 +184,13 @@ for j = 1:n-1
             g=gersh_nested(A,j,n);
         end
     end
-    
+
     % PHASE 2
     if ~phase1
         if j ~= n-1
             if pivoting
                 % Find the minimum negative Gershgorin bound
-                [tmp,iming] = min(g(j:n)); 
+                [tmp,iming] = min(g(j:n));
                 iming=iming+j-1;
                 % Pivot to the top the row and column with the
                 % minimum negative Gershgorin bound
@@ -229,9 +230,9 @@ for j = 1:n-1
             end
             % Calculate delta and add to the diagonal. delta=max{0,-A(j,j) + max{normj,taugam},delta_previous}
             % where normj=sum of |A(i,j)|,for i=1,n, delta_previous is the delta computed at the previous iter and taugam is tau1*gamma.
-                       
+
             normj=sum(abs(A(j+1:n,j)));
-            
+
             delta = max([0;delta;-A(j,j)+normj;-A(j,j)+taugam]); % get adjustment based on formula on bottom of p. 309 of Eskow/Schnabel (1991)
 
             E(j) =  delta;
@@ -259,9 +260,9 @@ for j = 1:n-1
             % Find eigenvalues of final 2 by 2 submatrix
             % Find delta such that:
             % 1.  the l2 condition number of the final 2X2 submatrix + delta*I <= tau2
-            % 2. delta >= previous delta, 
+            % 2. delta >= previous delta,
             % 3. min(eigvals) + delta >= tau2 * gamma, where min(eigvals) is the smallest eigenvalue of the final 2X2 submatrix
-            
+
             A(n-1,n)=A(n,n-1); %set value above diagonal for computation of eigenvalues
             eigvals  = eig(A(n-1:n,n-1:n));
             delta    = max([ 0 ; delta ; -min(eigvals)+tau2*max((max(eigvals)-min(eigvals))/(1-tau1),gammma) ]); %Formula 5.3.2 of Schnabel/Eskow (1990)
@@ -272,7 +273,7 @@ for j = 1:n-1
                 E(n-1) = delta;
                 E(n) = delta;
             end
-            
+
             % Final update
             A(n-1,n-1) = sqrt(A(n-1,n-1));
             A(n,n-1) = A(n,n-1)/A(n-1,n-1);
@@ -293,17 +294,16 @@ function  g=gersh_nested(A,j,n)
 
 g=zeros(n,1);
 for ii = j:n
-    if ii == 1;
+    if ii == 1
         sum_up_to_i = 0;
     else
         sum_up_to_i = sum(abs(A(ii,j:(ii-1))));
-    end;
-    if ii == n;
+    end
+    if ii == n
         sum_after_i = 0;
     else
         sum_after_i = sum(abs(A((ii+1):n,ii)));
-    end;
+    end
     g(ii) = sum_up_to_i + sum_after_i- A(ii,ii);
 end
 end
-

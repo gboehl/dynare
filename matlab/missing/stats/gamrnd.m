@@ -1,19 +1,19 @@
 function rnd = gamrnd(a,b,method)
 % This function produces independent random variates from the Gamma distribution.
 %
-%  INPUTS 
+%  INPUTS
 %    a       [double]    n*1 vector of positive parameters.
-%    b       [double]    n*1 vector of positive parameters.    
+%    b       [double]    n*1 vector of positive parameters.
 %    method  [string]    'BawensLubranoRichard' or anything else (see below).
 %
-%  OUTPUT 
+%  OUTPUT
 %    rnd     [double]    n*1 vector of independent variates from the gamma(a,b) distribution.
 %                        rnd(i) is gamma distributed with mean a(i)b(i) and variance a(i)b(i)^2.
-%  
-%  ALGORITHMS     
+%
+%  ALGORITHMS
 %    Described in Bauwens, Lubrano and Richard (1999, page 316) and Devroye (1986, chapter 9).
 
-% Copyright (C) 2006-2011 Dynare Team
+% Copyright (C) 2006-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -39,13 +39,13 @@ if nargin==2
     if any(a<1)
         method = 'Devroye';
         Devroye.small = 'Best'; % 'Weibull' , 'Johnk' , 'Berman' , 'GS' , 'Best'
-                                % REMARK: The first algorithm (Weibull) is producing too much extreme values. 
+                                % REMARK: The first algorithm (Weibull) is producing too much extreme values.
     end
     if ~strcmpi(method,'BauwensLubranoRichard')
-        Devroye.big = 'Best'; % 'Cheng' , 'Best' 
+        Devroye.big = 'Best'; % 'Cheng' , 'Best'
                               % REMARK 1: The first algorithm (Cheng) is still producing obviously wrong simulations.
-                              % REMARK 2: The second algorithm seems slightly slower than the algorithm advocated by Bauwens, 
-                              %           Lubrano and Richard, but the comparison depends on the value of a (this should be 
+                              % REMARK 2: The second algorithm seems slightly slower than the algorithm advocated by Bauwens,
+                              %           Lubrano and Richard, but the comparison depends on the value of a (this should be
                               %           investigated further).
     end
 else
@@ -96,7 +96,7 @@ if number_of_double_a
     if strcmpi(method,'BauwensLubranoRichard')
         % Algorithm given in Bauwens, Lubrano & Richard (1999) page 316.
         rnd(double_idx) = knuth_algorithm(a(double_idx),b(double_idx));
-    else% Algorithm given in  Devroye (1986, chapter 9) 
+    else% Algorithm given in  Devroye (1986, chapter 9)
         small_idx = find(a(double_idx)<1);
         big_idx = find(a(double_idx)>1);
         number_of_small_a = length(small_idx);
@@ -180,7 +180,7 @@ end
 gamma_variates = exprnd(ones(nn,1)).*X./(X+Y);
 
 
-function gamma_variates = berman_algorithm(a,b)    
+function gamma_variates = berman_algorithm(a,b)
 nn = length(a);
 mm = nn;
 aa = 1./a ;
@@ -206,7 +206,7 @@ Z = gamrnd(2*ones(nn,1),ones(nn,1));
 gamma_variates = Z.*X.*b ;
 
 
-function gamma_variates = ahrens_dieter_algorithm(a,b)    
+function gamma_variates = ahrens_dieter_algorithm(a,b)
 nn = length(a);
 mm = nn;
 bb = (exp(1)+a)/exp(1);
@@ -246,7 +246,7 @@ end
 gamma_variates = X.*b ;
 
 
-function gamma_variates = best_1983_algorithm(a,b)    
+function gamma_variates = best_1983_algorithm(a,b)
 nn = length(a);
 mm = nn;
 tt = .07 + .75*sqrt(1-a);

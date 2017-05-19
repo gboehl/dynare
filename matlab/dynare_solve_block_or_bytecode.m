@@ -1,5 +1,5 @@
 function [x,info] = dynare_solve_block_or_bytecode(y, exo, params, options, M)
-% Copyright (C) 2010-2015 Dynare Team
+% Copyright (C) 2010-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -22,7 +22,7 @@ if options.block && ~options.bytecode
     for b = 1:length(M.block_structure_stat.block)
         ss = x;
         if M.block_structure_stat.block(b).Simulation_Type ~= 1 && ...
-           M.block_structure_stat.block(b).Simulation_Type ~= 2
+                M.block_structure_stat.block(b).Simulation_Type ~= 2
             if options.solve_algo <= 4
                 [y, check] = dynare_solve('block_mfs_steadystate', ...
                                           ss(M.block_structure_stat.block(b).variable), ...
@@ -60,7 +60,7 @@ elseif options.bytecode
     elseif options.block
         for b = 1:length(M.block_structure_stat.block)
             if M.block_structure_stat.block(b).Simulation_Type ~= 1 && ...
-               M.block_structure_stat.block(b).Simulation_Type ~= 2
+                    M.block_structure_stat.block(b).Simulation_Type ~= 2
                 [y, check] = dynare_solve('block_bytecode_mfs_steadystate', ...
                                           x(M.block_structure_stat ...
                                             .block(b).variable), ...
@@ -80,7 +80,7 @@ elseif options.bytecode
                     info = 1;
                     return
                 end
-            end;
+            end
         end
     else
         [x, check] = dynare_solve('bytecode_steadystate', y, ...

@@ -1,17 +1,17 @@
 function print_bytecode_dynamic_model()
 % function print_bytecode_dynamic_model()
 % print the model and jacobian from the bytecode format for the dynamic model
-%  
+%
 % INPUTS
 %   none
-%  
+%
 % OUTPUTS
 %   none
 %
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2001-2011 Dynare Team
+% Copyright (C) 2001-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

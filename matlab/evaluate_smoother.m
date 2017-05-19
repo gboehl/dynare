@@ -23,7 +23,7 @@ function [oo_,M_,options_,bayestopt_,Smoothed_variables_declaration_order_deviat
 %                              - FilteredVariablesKStepAheadVariances
 %    o M_          [structure]  Definition of the model
 %    o options_    [structure]  Options; returns options_.first_obs
-%    o bayestopt_  [structure]  describing the priors; returns fields like bayestopt_.smoother_var_list from the smoother 
+%    o bayestopt_  [structure]  describing the priors; returns fields like bayestopt_.smoother_var_list from the smoother
 %    o Smoothed_variables_declaration_order_deviation_form
 %                           Smoothed variables from the Kalman smoother in
 %                           order of declaration of variables (M_.endo_names)
@@ -106,7 +106,7 @@ end
 [oo_]=store_smoother_results(M_,oo_,options_,bayestopt_,dataset_,dataset_info,atT,innov,measurement_error,updated_variables,ys,trend_coeff,aK,P,PK,decomp,Trend,state_uncertainty);
 
 if nargout>4
-   Smoothed_variables_declaration_order_deviation_form=atT(oo_.dr.inv_order_var(bayestopt_.smoother_var_list),:);
+    Smoothed_variables_declaration_order_deviation_form=atT(oo_.dr.inv_order_var(bayestopt_.smoother_var_list),:);
 end
 
 %reset qz_criterium

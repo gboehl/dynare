@@ -1,7 +1,7 @@
 function m = moments(X,order)
 % Returns the central sample moment of X specified by the positive integer order.
 %
-% Note that the cross moments are only computed if order=2, in this case the 
+% Note that the cross moments are only computed if order=2, in this case the
 % output is a matrix.
 %
 % INPUTS
@@ -14,7 +14,7 @@ function m = moments(X,order)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2009-2010 Dynare Team
+% Copyright (C) 2009-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

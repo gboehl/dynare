@@ -7,11 +7,11 @@ function dyntable(options_,title,headers,labels,values,label_width,val_width,val
 %   labels      [n by nchar]        character array of labels for label column
 %   values      [matrix]            matrix of values to display
 %   label_width [scalar]            Width of the label
-%   val_width   [scalar]            Width of value column    
+%   val_width   [scalar]            Width of value column
 %   val_precis  [integer]           precision of displayed values
-% 
-% 
-% Copyright (C) 2002-2015 Dynare Team
+%
+%
+% Copyright (C) 2002-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -33,9 +33,9 @@ if options_.noprint
 end
 
 %% get width of label column
-if ~isempty(label_width) 
+if ~isempty(label_width)
     label_width = max(size(deblank(char(headers(1,:),labels)),2)+2, ...
-                     label_width);
+                      label_width);
 else %use default length
     label_width = max(size(deblank(char(headers(1,:),labels)),2))+2;
 end
@@ -51,7 +51,7 @@ if any(values) < 0 %add one character for minus sign
     values_length = values_length+1;
 end
 
-%% get width of header strings 
+%% get width of header strings
 headers_length = max(size(deblank(headers(2:end,:)),2));
 if ~isempty(val_width)
     val_width = max(max(headers_length,values_length)+2,val_width);

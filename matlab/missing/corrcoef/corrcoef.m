@@ -25,28 +25,28 @@ function [R,sig,ci1,ci2,nan_sig] = corrcoef(X,Y,varargin)
 %               This replaces RANKCORR.M
 %
 % [...] = CORRCOEF(..., param1, value1, param2, value2, ... );
-%	param       value
-%	'Mode'		type of correlation
-%		'Pearson','parametric'
-%		'Spearman'
-%		'rank'
-%	'rows'		how do deal with missing values encoded as NaN's.
-%		'complete': remove all rows with at least one NaN
-%		'pairwise': [default]
-%	'alpha'		0.01	: significance level to compute confidence interval
+%       param       value
+%       'Mode'          type of correlation
+%               'Pearson','parametric'
+%               'Spearman'
+%               'rank'
+%       'rows'          how do deal with missing values encoded as NaN's.
+%               'complete': remove all rows with at least one NaN
+%               'pairwise': [default]
+%       'alpha'         0.01    : significance level to compute confidence interval
 %
 % [R,p,ci1,ci2,nansig] = CORRCOEF(...);
 %   R is the correlation matrix
-%	R(i,j) is the correlation coefficient r between X(:,i) and Y(:,j)
+%       R(i,j) is the correlation coefficient r between X(:,i) and Y(:,j)
 %  p    gives the significance of R
-%	It tests the null hypothesis that the product moment correlation coefficient is zero
+%       It tests the null hypothesis that the product moment correlation coefficient is zero
 %       using Student's t-test on the statistic t = r*sqrt(N-2)/sqrt(1-r^2)
 %       where N is the number of samples (Statistics, M. Spiegel, Schaum series).
 %  p > alpha: do not reject the Null hypothesis: 'R is zero'.
 %  p < alpha: The alternative hypothesis 'R is larger than zero' is true with probability (1-alpha).
-%  ci1	lower (1-alpha) confidence interval
-%  ci2	upper (1-alpha) confidence interval
-%	If no alpha is provided, the default alpha is 0.01. This can be changed with function flag_implicit_significance.
+%  ci1  lower (1-alpha) confidence interval
+%  ci2  upper (1-alpha) confidence interval
+%       If no alpha is provided, the default alpha is 0.01. This can be changed with function flag_implicit_significance.
 %  nan_sig  p-value whether H0: 'NaN''s are not correlated' could be correct
 %       if nan_sig < alpha, H1 ('NaNs are correlated') is very likely.
 %
@@ -65,7 +65,7 @@ function [R,sig,ci1,ci2,nan_sig] = corrcoef(X,Y,varargin)
 % Further recommandation related to the correlation coefficient:
 % + LOOK AT THE SCATTERPLOTS to make sure that the relationship is linear
 % + Correlation is not causation because
-%	it is not clear which parameter is 'cause' and which is 'effect' and
+%       it is not clear which parameter is 'cause' and which is 'effect' and
 %       the observed correlation between two variables might be due to the action of other, unobserved variables.
 %
 % see also: SUMSKIPNAN, COVM, COV, COR, SPEARMAN, RANKCORR, RANKS,
@@ -91,7 +91,7 @@ function [R,sig,ci1,ci2,nan_sig] = corrcoef(X,Y,varargin)
 
 %       $Id: corrcoef.m 9387 2011-12-15 10:42:14Z schloegl $
 %       Copyright (C) 2000-2004,2008,2009,2011 by Alois Schloegl <alois.schloegl@gmail.com>
-%       Copyright (C) 2014 Dynare Team
+%       Copyright (C) 2014-2017 Dynare Team
 %       This function is part of the NaN-toolbox
 %       http://pub.ist.ac.at/~schloegl/matlab/NaN/
 
@@ -124,59 +124,59 @@ function [R,sig,ci1,ci2,nan_sig] = corrcoef(X,Y,varargin)
 
 global FLAG_NANS_OCCURED;
 
-NARG = nargout;	% needed because nargout is not reentrant in Octave, and corrcoef is recursive
+NARG = nargout; % needed because nargout is not reentrant in Octave, and corrcoef is recursive
 mode = [];
 
 if nargin==1
-        Y = [];
-        Mode='Pearson';
+    Y = [];
+    Mode='Pearson';
 elseif nargin==0
-        fprintf(2,'Error CORRCOEF: Missing argument(s)\n');
+    fprintf(2,'Error CORRCOEF: Missing argument(s)\n');
 elseif nargin>1
-        if ischar(Y)
-                varg = [Y,varargin];
-                Y=[];
-        else
-                varg = varargin;
-        end;
+    if ischar(Y)
+        varg = [Y,varargin];
+        Y=[];
+    else
+        varg = varargin;
+    end
 
-        if length(varg)<1,
-                Mode = 'Pearson';
-        elseif length(varg)==1,
-                Mode = varg{1};
-        else
-                for k = 2:2:length(varg),
-                        mode = setfield(mode,lower(varg{k-1}),varg{k});
-                end;
-                if isfield(mode,'mode')
-                        Mode = mode.mode;
-                end;
-        end;
-end;
-if isempty(Mode) Mode='pearson'; end;
+    if length(varg)<1
+        Mode = 'Pearson';
+    elseif length(varg)==1
+        Mode = varg{1};
+    else
+        for k = 2:2:length(varg)
+            mode = setfield(mode,lower(varg{k-1}),varg{k});
+        end
+        if isfield(mode,'mode')
+            Mode = mode.mode;
+        end
+    end
+end
+if isempty(Mode), Mode='pearson'; end
 Mode=[Mode,'        '];
 
 
 
-FLAG_WARNING = warning;		% save warning status
+FLAG_WARNING = warning;         % save warning status
 warning('off');
 
 [r1,c1]=size(X);
 if ~isempty(Y)
-        [r2,c2]=size(Y);
-        if r1~=r2,
-                fprintf(2,'Error CORRCOEF: X and Y must have the same number of observations (rows).\n');
-                return;
-        end;
-        NN = real(~isnan(X)')*real(~isnan(Y));
+    [r2,c2]=size(Y);
+    if r1~=r2
+        fprintf(2,'Error CORRCOEF: X and Y must have the same number of observations (rows).\n');
+        return
+    end
+    NN = real(~isnan(X)')*real(~isnan(Y));
 else
-        [r2,c2]=size(X);
-        NN = real(~isnan(X)')*real(~isnan(X));
-end;
+    [r2,c2]=size(X);
+    NN = real(~isnan(X)')*real(~isnan(X));
+end
 
 %%%%% generate combinations using indices for pairwise calculation of the correlation
 YESNAN = any(isnan(X(:))) | any(isnan(Y(:)));
-if YESNAN,
+if YESNAN
     FLAG_NANS_OCCURED=(1==1);
     if isfield(mode,'rows')
         if strcmp(mode.rows,'complete')
@@ -184,7 +184,7 @@ if YESNAN,
             X = X(ix,:);
             if ~isempty(Y)
                 Y = Y(ix,:);
-            end;
+            end
             YESNAN = 0;
             NN = size(X,1);
         elseif strcmp(mode.rows,'all')
@@ -192,175 +192,175 @@ if YESNAN,
             %%NN(NN < size(X,1)) = NaN;
         elseif strcmp(mode.rows,'pairwise')
             %%% default
-        end;
-    end;
-end;
-if isempty(Y),
-        IX = ones(c1)-diag(ones(c1,1));
-        [jx, jy ] = find(IX);
-        [jxo,jyo] = find(IX);
+        end
+    end
+end
+if isempty(Y)
+    IX = ones(c1)-diag(ones(c1,1));
+    [jx, jy ] = find(IX);
+    [jxo,jyo] = find(IX);
     R = eye(c1);
 else
-        IX = sparse([],[],[],c1+c2,c1+c2,c1*c2);
-        IX(1:c1,c1+(1:c2)) = 1;
-        [jx,jy] = find(IX);
+    IX = sparse([],[],[],c1+c2,c1+c2,c1*c2);
+    IX(1:c1,c1+(1:c2)) = 1;
+    [jx,jy] = find(IX);
 
-        IX = ones(c1,c2);
-        [jxo,jyo] = find(IX);
+    IX = ones(c1,c2);
+    [jxo,jyo] = find(IX);
     R = zeros(c1,c2);
-end;
+end
 
-if strcmp(lower(Mode(1:7)),'pearson');
-        % see http://mathworld.wolfram.com/CorrelationCoefficient.html
-    if ~YESNAN,
-                [S,N,SSQ] = sumskipnan(X,1);
-                if ~isempty(Y),
-                    [S2,N2,SSQ2] = sumskipnan(Y,1);
-                        CC = X'*Y;
-                        M1 = S./N;
-                        M2 = S2./N2;
-                        cc = CC./NN - M1'*M2;
-                        R  = cc./sqrt((SSQ./N-M1.*M1)'*(SSQ2./N2-M2.*M2));
-                else
-                        CC = X'*X;
-                        M  = S./N;
-                        cc = CC./NN - M'*M;
-                        v  = SSQ./N - M.*M; %max(N-1,0);
-                        R  = cc./sqrt(v'*v);
-                end;
+if strcmp(lower(Mode(1:7)),'pearson')
+    % see http://mathworld.wolfram.com/CorrelationCoefficient.html
+    if ~YESNAN
+        [S,N,SSQ] = sumskipnan(X,1);
+        if ~isempty(Y)
+            [S2,N2,SSQ2] = sumskipnan(Y,1);
+            CC = X'*Y;
+            M1 = S./N;
+            M2 = S2./N2;
+            cc = CC./NN - M1'*M2;
+            R  = cc./sqrt((SSQ./N-M1.*M1)'*(SSQ2./N2-M2.*M2));
         else
-                if ~isempty(Y),
-                        X  = [X,Y];
-                end;
-                for k = 1:length(jx),
-                        %ik = ~any(isnan(X(:,[jx(k),jy(k)])),2);
-                        ik = ~isnan(X(:,jx(k))) & ~isnan(X(:,jy(k)));
-                        [s,n,s2] = sumskipnan(X(ik,[jx(k),jy(k)]),1);
-                        v  = (s2-s.*s./n)./n;
-                        cc = X(ik,jx(k))'*X(ik,jy(k));
-                        cc = cc/n(1) - prod(s./n);
-                        %r(k) = cc./sqrt(prod(v));
-                        R(jxo(k),jyo(k)) = cc./sqrt(prod(v));
-                end;
+            CC = X'*X;
+            M  = S./N;
+            cc = CC./NN - M'*M;
+            v  = SSQ./N - M.*M; %max(N-1,0);
+            R  = cc./sqrt(v'*v);
+        end
+    else
+        if ~isempty(Y)
+            X  = [X,Y];
+        end
+        for k = 1:length(jx)
+            %ik = ~any(isnan(X(:,[jx(k),jy(k)])),2);
+            ik = ~isnan(X(:,jx(k))) & ~isnan(X(:,jy(k)));
+            [s,n,s2] = sumskipnan(X(ik,[jx(k),jy(k)]),1);
+            v  = (s2-s.*s./n)./n;
+            cc = X(ik,jx(k))'*X(ik,jy(k));
+            cc = cc/n(1) - prod(s./n);
+            %r(k) = cc./sqrt(prod(v));
+            R(jxo(k),jyo(k)) = cc./sqrt(prod(v));
+        end
     end
 
-elseif strcmp(lower(Mode(1:4)),'rank');
-        % see [ 6] http://mathworld.wolfram.com/SpearmanRankCorrelationCoefficient.html
-    if ~YESNAN,
-                if isempty(Y)
-                    R = corrcoef(ranks(X));
-                else
-                        R = corrcoef(ranks(X),ranks(Y));
-                end;
+elseif strcmp(lower(Mode(1:4)),'rank')
+    % see [ 6] http://mathworld.wolfram.com/SpearmanRankCorrelationCoefficient.html
+    if ~YESNAN
+        if isempty(Y)
+            R = corrcoef(ranks(X));
         else
-                if ~isempty(Y),
-                        X = [X,Y];
-                end;
-                for k = 1:length(jx),
-                        %ik = ~any(isnan(X(:,[jx(k),jy(k)])),2);
-                        ik = ~isnan(X(:,jx(k))) & ~isnan(X(:,jy(k)));
-                        il = ranks(X(ik,[jx(k),jy(k)]));
-                        R(jxo(k),jyo(k)) = corrcoef(il(:,1),il(:,2));
-                end;
+            R = corrcoef(ranks(X),ranks(Y));
+        end
+    else
+        if ~isempty(Y)
+            X = [X,Y];
+        end
+        for k = 1:length(jx)
+            %ik = ~any(isnan(X(:,[jx(k),jy(k)])),2);
+            ik = ~isnan(X(:,jx(k))) & ~isnan(X(:,jy(k)));
+            il = ranks(X(ik,[jx(k),jy(k)]));
+            R(jxo(k),jyo(k)) = corrcoef(il(:,1),il(:,2));
+        end
         X = ranks(X);
-    end;
+    end
 
-elseif strcmp(lower(Mode(1:8)),'spearman');
-        % see [ 6] http://mathworld.wolfram.com/SpearmanRankCorrelationCoefficient.html
-        if ~isempty(Y),
-                X = [X,Y];
-        end;
+elseif strcmp(lower(Mode(1:8)),'spearman')
+    % see [ 6] http://mathworld.wolfram.com/SpearmanRankCorrelationCoefficient.html
+    if ~isempty(Y)
+        X = [X,Y];
+    end
 
-        n = repmat(nan,c1,c2);
+    n = repmat(nan,c1,c2);
 
-        if ~YESNAN,
-                iy = ranks(X);	%  calculates ranks;
+    if ~YESNAN
+        iy = ranks(X);  %  calculates ranks;
 
-                for k = 1:length(jx),
-                        [R(jxo(k),jyo(k)),n(jxo(k),jyo(k))] = sumskipnan((iy(:,jx(k)) - iy(:,jy(k))).^2);	% NN is the number of non-missing values
-                end;
-        else
-                for k = 1:length(jx),
-                        %ik = ~any(isnan(X(:,[jx(k),jy(k)])),2);
-                        ik = ~isnan(X(:,jx(k))) & ~isnan(X(:,jy(k)));
-                        il = ranks(X(ik,[jx(k),jy(k)]));
-                        % NN is the number of non-missing values
-                        [R(jxo(k),jyo(k)),n(jxo(k),jyo(k))] = sumskipnan((il(:,1) - il(:,2)).^2);
-                end;
+        for k = 1:length(jx)
+            [R(jxo(k),jyo(k)),n(jxo(k),jyo(k))] = sumskipnan((iy(:,jx(k)) - iy(:,jy(k))).^2);       % NN is the number of non-missing values
+        end
+    else
+        for k = 1:length(jx)
+            %ik = ~any(isnan(X(:,[jx(k),jy(k)])),2);
+            ik = ~isnan(X(:,jx(k))) & ~isnan(X(:,jy(k)));
+            il = ranks(X(ik,[jx(k),jy(k)]));
+            % NN is the number of non-missing values
+            [R(jxo(k),jyo(k)),n(jxo(k),jyo(k))] = sumskipnan((il(:,1) - il(:,2)).^2);
+        end
         X = ranks(X);
-        end;
-        R = 1 - 6 * R ./ (n.*(n.*n-1));
+    end
+    R = 1 - 6 * R ./ (n.*(n.*n-1));
 
-elseif strcmp(lower(Mode(1:7)),'partial');
-        fprintf(2,'Error CORRCOEF: use PARTCORRCOEF \n',Mode);
+elseif strcmp(lower(Mode(1:7)),'partial')
+    fprintf(2,'Error CORRCOEF: use PARTCORRCOEF \n',Mode);
 
-        return;
+    return
 
-elseif strcmp(lower(Mode(1:7)),'kendall');
-        fprintf(2,'Error CORRCOEF: mode ''%s'' not implemented yet.\n',Mode);
+elseif strcmp(lower(Mode(1:7)),'kendall')
+    fprintf(2,'Error CORRCOEF: mode ''%s'' not implemented yet.\n',Mode);
 
-        return;
+    return
 else
-        fprintf(2,'Error CORRCOEF: unknown mode ''%s''\n',Mode);
-end;
+    fprintf(2,'Error CORRCOEF: unknown mode ''%s''\n',Mode);
+end
 
-if (NARG<2),
-        warning(FLAG_WARNING);  % restore warning status
-        return;
-end;
+if (NARG<2)
+    warning(FLAG_WARNING);  % restore warning status
+    return
+end
 
 
 % CONFIDENCE INTERVAL
 if isfield(mode,'alpha')
     alpha = mode.alpha;
-elseif exist('flag_implicit_significance','file'),
-        alpha = flag_implicit_significance;
+elseif exist('flag_implicit_significance','file')
+    alpha = flag_implicit_significance;
 else
     alpha = 0.01;
-end;
+end
 % fprintf(1,'CORRCOEF: confidence interval is based on alpha=%f\n',alpha);
 
 
 % SIGNIFICANCE TEST
 R(isnan(R))=0;
 tmp = 1 - R.*R;
-tmp(tmp<0) = 0;		% prevent tmp<0 i.e. imag(t)~=0
+tmp(tmp<0) = 0;         % prevent tmp<0 i.e. imag(t)~=0
 t   = R.*sqrt(max(NN-2,0)./tmp);
 
-if exist('t_cdf','file');
-        sig = t_cdf(t,NN-2);
-elseif exist('tcdf','file')>1;
-        sig = tcdf(t,NN-2);
+if exist('t_cdf','file')
+    sig = t_cdf(t,NN-2);
+elseif exist('tcdf','file')>1
+    sig = tcdf(t,NN-2);
 else
-        fprintf('CORRCOEF: significance test not completed because of missing TCDF-function\n')
-        sig = repmat(nan,size(R));
-end;
+    fprintf('CORRCOEF: significance test not completed because of missing TCDF-function\n')
+    sig = repmat(nan,size(R));
+end
 sig  = 2 * min(sig,1 - sig);
 
 
-if NARG<3,
+if NARG<3
     warning(FLAG_WARNING);  % restore warning status
-        return;
-end;
+    return
+end
 
 
 tmp = R;
-%tmp(ix1 | ix2) = nan;		% avoid division-by-zero warning
+%tmp(ix1 | ix2) = nan;          % avoid division-by-zero warning
 z   = log((1+tmp)./(1-tmp))/2;  % Fisher transformation [21]
-%sz = 1./sqrt(NN-3);		% standard error of z
-sz  = sqrt(2)*erfinv(1-alpha)./sqrt(NN-3);	% confidence interval for alpha of z
+                                %sz = 1./sqrt(NN-3);            % standard error of z
+sz  = sqrt(2)*erfinv(1-alpha)./sqrt(NN-3);      % confidence interval for alpha of z
 
 ci1 = tanh(z-sz);
 ci2 = tanh(z+sz);
 
-%ci1(isnan(ci1))=R(isnan(ci1));	% in case of isnan(ci), the interval limits are exactly the R value
+%ci1(isnan(ci1))=R(isnan(ci1)); % in case of isnan(ci), the interval limits are exactly the R value
 %ci2(isnan(ci2))=R(isnan(ci2));
 
-if (NARG<5) || ~YESNAN,
+if (NARG<5) || ~YESNAN
     nan_sig = repmat(NaN,size(R));
     warning(FLAG_WARNING);  % restore warning status
-    return;
-end;
+    return
+end
 
 %%%%% ----- check independence of NaNs (missing values) -----
 [nan_R, nan_sig] = corrcoef(X,double(isnan(X)));
@@ -370,18 +370,16 @@ nan_sig(isnan(nan_R)) = nan;
 % remove diagonal elements, because these have not any meaning %
 nan_R(isnan(nan_R)) = 0;
 
-if 0, any(nan_sig(:) < alpha),
-        tmp = nan_sig(:);			% Hack to skip NaN's in MIN(X)
-        min_sig = min(tmp(~isnan(tmp)));    % Necessary, because Octave returns NaN rather than min(X) for min(NaN,X)
-        fprintf(1,'CORRCOFF Warning: Missing Values (i.e. NaNs) are not independent of data (p-value=%f)\n', min_sig);
-        fprintf(1,'   Its recommended to remove all samples (i.e. rows) with any missing value (NaN).\n');
-        fprintf(1,'   The null-hypotheses (NaNs are uncorrelated) is rejected for the following parameter pair(s).\n');
-        [ix,iy] = find(nan_sig < alpha);
-        disp([ix,iy])
-end;
+if 0, any(nan_sig(:) < alpha)
+    tmp = nan_sig(:);                       % Hack to skip NaN's in MIN(X)
+    min_sig = min(tmp(~isnan(tmp)));    % Necessary, because Octave returns NaN rather than min(X) for min(NaN,X)
+    fprintf(1,'CORRCOFF Warning: Missing Values (i.e. NaNs) are not independent of data (p-value=%f)\n', min_sig);
+    fprintf(1,'   Its recommended to remove all samples (i.e. rows) with any missing value (NaN).\n');
+    fprintf(1,'   The null-hypotheses (NaNs are uncorrelated) is rejected for the following parameter pair(s).\n');
+    [ix,iy] = find(nan_sig < alpha);
+    disp([ix,iy])
+end
 
 %%%%% ----- end of independence check ------
 
 warning(FLAG_WARNING);  % restore warning status
-return;
-

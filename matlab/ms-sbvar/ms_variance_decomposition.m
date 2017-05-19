@@ -14,7 +14,7 @@ function [options_, oo_]=ms_variance_decomposition(M_, options_, oo_)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2011-2016 Dynare Team
+% Copyright (C) 2011-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -85,7 +85,7 @@ if options_.ms.regime || options_.ms.regimes
     outfile = [outfile 'regime_'];
     if options_.ms.regime
         outfile = [outfile num2str(options_.ms.regime-1) ...
-            '_' options_.ms.output_file_tag '.out'];
+                   '_' options_.ms.output_file_tag '.out'];
     end
 elseif options_.ms.filtered_probabilities
     outfile = [outfile 'filtered_' options_.ms.output_file_tag '.out'];
@@ -103,7 +103,7 @@ if options_.ms.regimes
     for regime_i=1:n_regimes
         vd_title = ['Variance Decomposition, Regime ' num2str(regime_i)];
         vd_data = load([outfile num2str(regime_i-1) '_' ...
-            options_.ms.output_file_tag '.out'], '-ascii');
+                        options_.ms.output_file_tag '.out'], '-ascii');
         vd_data = reshape_ascii_variance_decomposition_data( ...
             M_.endo_nbr, percentiles_size, options_.ms.horizon, vd_data);
         save([vddir filesep 'variance_decomposition_regime_' num2str(regime_i-1) '.mat'], 'vd_data');

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010-2011 Dynare Team
+ * Copyright (C) 2010-2017 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -37,7 +37,8 @@ private:
   const static int nrhs_dynamic = 5;
 public:
   DynamicModelMFile(const string &modName) throw (DynareException);
-  virtual ~DynamicModelMFile();
+  virtual
+  ~DynamicModelMFile();
   void eval(const Vector &y, const Vector &x, const Vector &params, const Vector &ySteady,
             Vector &residual, TwoDMatrix *g1, TwoDMatrix *g2, TwoDMatrix *g3) throw (DynareException);
 };

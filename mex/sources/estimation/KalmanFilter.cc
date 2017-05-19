@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009-2013 Dynare Team
+ * Copyright (C) 2009-2017 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -74,7 +74,6 @@ KalmanFilter::compute_zeta_varobs_back_mixed(const std::vector<size_t> &zeta_bac
   return zeta_varobs_back_mixed;
 }
 
-
 /**
  * Multi-variate standard Kalman Filter
  */
@@ -86,7 +85,7 @@ KalmanFilter::filter(const MatrixView &detrendedDataView,  const Matrix &H, Vect
   bool nonstationary = true;
   a_init.setAll(0.0);
   int info;
-  
+
   for (size_t t = 0; t < detrendedDataView.getCols(); ++t)
     {
       if (nonstationary)
@@ -192,4 +191,3 @@ KalmanFilter::filter(const MatrixView &detrendedDataView,  const Matrix &H, Vect
 
   return loglik;
 }
-

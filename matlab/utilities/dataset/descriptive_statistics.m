@@ -3,7 +3,7 @@ function dataset_ = descriptive_statistics(dataset_,statistic,varagin)
 
 %@info:
 %! @deftypefn {Function File} {@var{dataset_} =} descriptive_statistics(@var{dataset_},@var{statistic})
-%! @deftypefn {Function File} {@var{dataset_} =} descriptive_statistics(@var{dataset_},@var{statistic},nlags)    
+%! @deftypefn {Function File} {@var{dataset_} =} descriptive_statistics(@var{dataset_},@var{statistic},nlags)
 %! @anchor{compute_corr}
 %! This function computes various descriptive statistics on the sample (possibly with missing observations).
 %!
@@ -14,15 +14,15 @@ function dataset_ = descriptive_statistics(dataset_,statistic,varagin)
 %! @item statistic
 %! String. The name of the statistic to be computed. Admissible values are:
 %!   @table @var
-%!   @item 'stdv'    
+%!   @item 'stdv'
 %!   Computes the standard deviation of each observed variable.
-%!   @item 'cova'    
-%!   Computes the covariance matrix of the sample.    
+%!   @item 'cova'
+%!   Computes the covariance matrix of the sample.
 %!   @item 'corr'
 %!   Computes the correlation matrix of the sample.
 %!   @item 'acov'
 %!   Computes the (multivariate) auto-covariance function of the sample. In this case a third argument (@code{nlags}) defining the
-%!   maximum number of lags is mandatory.    
+%!   maximum number of lags is mandatory.
 %!   @end table
 %! @item nlags
 %! Integer scalar. The maximum number of lags when computing the autocovariance function.
@@ -33,20 +33,20 @@ function dataset_ = descriptive_statistics(dataset_,statistic,varagin)
 %! @item dataset_
 %! Dynare structure describing the dataset, built by @ref{initialize_dataset}
 %! @end table
-%! 
-%! @strong{This function is called by:} 
+%!
+%! @strong{This function is called by:}
 %! none.
-%! 
+%!
 %! @strong{This function calls:}
 %! @ref{compute_stdv}, @ref{compute_cova}, @ref{compute_corr}, @ref{compute_acov}.
-%!    
+%!
 %! @strong{Remark 1.} On exit, a new field containing the computed statistics is appended to the structure.
-%!    
+%!
 %! @end deftypefn
 %@eod:
 
-% Copyright (C) 2011-2012 Dynare Team
-%    
+% Copyright (C) 2011-2017 Dynare Team
+%
 % This file is part of Dynare.
 %
 % Dynare is free software: you can redistribute it and/or modify

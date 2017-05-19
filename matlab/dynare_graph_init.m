@@ -1,5 +1,5 @@
 function dyn_graph=dynare_graph_init(figure_name,nplot,line_types,line_width)
-% function dynare_graph_init(figure_name,colors) 
+% function dynare_graph_init(figure_name,colors)
 % initializes set of graphs
 %
 % INPUTS:

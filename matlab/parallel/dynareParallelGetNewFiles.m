@@ -15,7 +15,7 @@ function [PRCDirSnapshot]=dynareParallelGetNewFiles(PRCDir,Parallel,PRCDirSnapsh
 %
 %
 %
-% Copyright (C) 2009-2013 Dynare Team
+% Copyright (C) 2009-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -36,11 +36,11 @@ function [PRCDirSnapshot]=dynareParallelGetNewFiles(PRCDir,Parallel,PRCDirSnapsh
 NewFilesFromSlaves={};
 
 % try
-for indPC=1:length(Parallel),
-    
-    if Parallel(indPC).Local==0;
+for indPC=1:length(Parallel)
+
+    if Parallel(indPC).Local==0
         [NewFilesFromSlaves, PRCDirSnapshot{indPC}]=dynareParallelFindNewFiles(PRCDirSnapshot{indPC},Parallel(indPC), PRCDir);
-        if ~ispc || strcmpi('unix',Parallel(indPC).OperatingSystem),
+        if ~ispc || strcmpi('unix',Parallel(indPC).OperatingSystem)
             fS='/';
         else
             fS='\';
@@ -71,6 +71,3 @@ for indPC=1:length(Parallel),
 
     end
 end
-
-
-

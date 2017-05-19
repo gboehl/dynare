@@ -2,20 +2,20 @@ function [r,flag] = smm_objective(xparams,sample_moments,weighting_matrix,option
 % Evaluates the objective of the Simulated Moments Method.
 %
 % INPUTS:
-%  xparams          [double]  p*1 vector of estimated parameters. 
+%  xparams          [double]  p*1 vector of estimated parameters.
 %  sample_moments   [double]  n*1 vector of sample moments (n>=p).
 %  weighting_matrix [double]  n*n symetric, positive definite matrix.
 %  options          [      ]  Structure defining options for SMM.
 %  parallel         [      ]  Structure defining the parallel mode settings (optional).
 %
-% OUTPUTS: 
+% OUTPUTS:
 %  r                [double]  scalar, the value of the objective function.
 %  junk             [      ]  empty matrix.
 %
 % SPECIAL REQUIREMENTS
 %  The user has to provide a file where the moment conditions are defined.
 
-% Copyright (C) 2010-2013 Dynare Team
+% Copyright (C) 2010-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -30,7 +30,7 @@ function [r,flag] = smm_objective(xparams,sample_moments,weighting_matrix,option
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.    
+% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 global M_ options_ oo_
 persistent mainStream mainState
@@ -67,8 +67,8 @@ end
 
 if penalty>0
     flag = 0;
-    r = priorObjectiveValue + penalty; 
-    return;
+    r = priorObjectiveValue + penalty;
+    return
 end
 
 save('estimated_parameters.mat','xparams');
@@ -114,7 +114,7 @@ else% parallel mode.
             end
         end
         for j=1:parallel(i).number_of_jobs
-            if (strcmpi(hostname,machine) && j>1) || ~strcmpi(hostname,machine)  
+            if (strcmpi(hostname,machine) && j>1) || ~strcmpi(hostname,machine)
                 job_number = job_number + 1;
                 unix(['ssh -A ' parallel(i).login '@' machine ' ./call_matlab_session.sh job' int2str(job_number) '.m &']);
             end
@@ -125,7 +125,7 @@ else% parallel mode.
     eval('job1;')
     tElapsedMasterJob = etime(clock, tStartMasterJob);
     TimeLimit = tElapsedMasterJob*1.2;
-    % Master waits for the  slaves' output... 
+    % Master waits for the  slaves' output...
     tStart = clock;
     tElapsed = 0;
     while tElapsed<TimeLimit
@@ -140,7 +140,7 @@ else% parallel mode.
             simulated_moments = load(['./intermediary_results_from_master_and_slaves/simulated_moments_slave_' int2str(i) '.dat'],'-ascii');
             tmp = tmp + simulated_moments;
         end
-        simulated_moments = tmp / job_number;        
+        simulated_moments = tmp / job_number;
     catch
         r = priorObjectiveValue*1.1;
         flag = 0;

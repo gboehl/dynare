@@ -54,10 +54,10 @@ function [LIK,likk,a] = univariate_kalman_filter_ss(Y,start,last,a,P,kalman_tol,
 %! @sp 1
 %! @end deftypefn
 %@eod:
-% 
+%
 % Algorithm: See univariate_kalman_filter.m
 
-% Copyright (C) 2011-2016 Dynare Team
+% Copyright (C) 2011-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -90,18 +90,18 @@ if nargin<12
     analytic_derivation = 0;
 end
 
-if  analytic_derivation == 0,
+if  analytic_derivation == 0
     DLIK=[];
     Hess=[];
 else
     k = size(DT,3);                                 % number of structural parameters
     DLIK  = zeros(k,1);                             % Initialization of the score.
     dlikk = zeros(smpl,k);
-    if analytic_derivation==2,
+    if analytic_derivation==2
         Hess  = zeros(k,k);                             % Initialization of the Hessian
     else
         asy_hess=D2a;
-        if asy_hess,
+        if asy_hess
             Hess  = zeros(k,k);                             % Initialization of the Hessian
         else
             Hess=[];
@@ -113,9 +113,9 @@ end
 while t<=last
     s  = t-start+1;
     PP = P;
-    if analytic_derivation,
+    if analytic_derivation
         DPP = DP;
-        if analytic_derivation==2,
+        if analytic_derivation==2
             D2PP = D2P;
         end
     end
@@ -134,14 +134,14 @@ while t<=last
             a  = a + Ki*prediction_error;
             PP = PP - PPZ*Ki';
             likk(s,i) = log(Fi) + prediction_error*prediction_error/Fi + l2pi;
-            if analytic_derivation,
-                if analytic_derivation==2,
+            if analytic_derivation
+                if analytic_derivation==2
                     [Da,DPP,DLIKt,D2a,D2PP, Hesst] = univariate_computeDLIK(k,i,Z(i,:),Zflag,prediction_error,Ki,PPZ,Fi,Da,DYss,DPP,DH(i,:),0,D2a,D2Yss,D2PP);
                 else
                     [Da,DPP,DLIKt,Hesst] = univariate_computeDLIK(k,i,Z(i,:),Zflag,prediction_error,Ki,PPZ,Fi,Da,DYss,DPP,DH(i,:),0);
                 end
                 DLIK = DLIK + DLIKt;
-                if analytic_derivation==2 || asy_hess,
+                if analytic_derivation==2 || asy_hess
                     Hess = Hess + Hesst;
                 end
                 dlikk(s,:)=dlikk(s,:)+DLIKt';
@@ -151,8 +151,8 @@ while t<=last
             % p. 157, DK (2012)
         end
     end
-    if analytic_derivation,        
-        if analytic_derivation==2,
+    if analytic_derivation
+        if analytic_derivation==2
             [Da,junk,D2a] = univariate_computeDstate(k,a,P,T,Da,DP,DT,[],0,D2a,D2P,D2T);
         else
             Da = univariate_computeDstate(k,a,P,T,Da,DP,DT,[],0);
@@ -165,15 +165,15 @@ end
 likk = .5*likk;
 
 LIK = sum(sum(likk));
-if analytic_derivation,
+if analytic_derivation
     dlikk = dlikk/2;
     DLIK = DLIK/2;
     likk = {likk, dlikk};
 end
-if analytic_derivation==2 || asy_hess,
-%     Hess = (Hess + Hess')/2;
+if analytic_derivation==2 || asy_hess
+    %     Hess = (Hess + Hess')/2;
     Hess = -Hess/2;
     LIK={LIK,DLIK,Hess};
-elseif analytic_derivation==1,
+elseif analytic_derivation==1
     LIK={LIK,DLIK};
 end

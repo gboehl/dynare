@@ -1,14 +1,14 @@
 function [ldens,Dldens,D2ldens] = lpdfgweibull(x,a,b,c)  % --*-- Unitary tests --*--
 
-% Evaluates the logged Weibull PDF at x. 
+% Evaluates the logged Weibull PDF at x.
 %
-% INPUTS 
+% INPUTS
 % - x       [double]  m*n matrix of points where the (logged) density will be evaluated,
 % - a       [double]  m*n matrix of First Weibull distribution parameters (shape parameter, k),
 % - b       [double]  m*n matrix of Second Weibull distribution parameters (scale parameter, λ),
 % - c       [double]  m*n matrix of Third Weibull distribution parameters (location parameter, default is 0).
 %
-% OUTPUTS 
+% OUTPUTS
 % - ldens   [double]  m*n matrix of logged (generalized) Weibull densities.
 % - Dldens  [double]  m*n matrix (first order derivatives w.r.t. x)
 % - D2ldens [double]  m*n matrix (second order derivatives w.r.t. x)
@@ -16,7 +16,7 @@ function [ldens,Dldens,D2ldens] = lpdfgweibull(x,a,b,c)  % --*-- Unitary tests -
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2015-2016 Dynare Team
+% Copyright (C) 2015-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -54,11 +54,11 @@ end
 if ~isscalar(x)
     if isscalar(a)
         a = repmat(a, size(x));
-    end 
+    end
     if isscalar(b)
         b = repmat(b, size(x));
     end
-    if isscalar(c) 
+    if isscalar(c)
         c = repmat(c, size(x));
     end
 end
@@ -77,7 +77,7 @@ if isempty(idx), return, end
 
 jdx = find( abs(a-1)<1e-12 & x>=c & (x-c)<1e-12) ;
 ldens(jdx) = 1.0;
-    
+
 if ~isempty(idx)
     x0 = x(idx)-c(idx);
     x1 = x0./b(idx);
@@ -136,7 +136,7 @@ end
 %$ catch
 %$    t(1) = false;
 %$ end
-%$ 
+%$
 %$ if t(1)
 %$    t(2) = isinf(a);
 %$ end
@@ -179,7 +179,7 @@ end
 %$ scale = 1;
 %$ shape = 2;
 %$ mode  = scale*((shape-1)/shape)^(1/shape);
-%$ 
+%$
 %$ try
 %$    [a, b, c] = lpdfgweibull(mode, shape, scale);
 %$    p = rand(1000,1)*4;
@@ -203,7 +203,7 @@ end
 %$ scale = 1;
 %$ shape = 2;
 %$ density  = @(x) exp(lpdfgweibull(x,shape,scale));
-%$ 
+%$
 %$ try
 %$    if isoctave
 %$        s = quadv(density, .0000000001, 100000,1e-10);
@@ -226,7 +226,7 @@ end
 %$ scale = 1;
 %$ shape = 1;
 %$ density  = @(x) exp(lpdfgweibull(x,shape,scale));
-%$ 
+%$
 %$ try
 %$    if isoctave
 %$        s = quadv(density, .0000000001, 100000,1e-10);
@@ -249,7 +249,7 @@ end
 %$ scale = 1;
 %$ shape = .5;
 %$ density  = @(x) exp(lpdfgweibull(x,shape,scale));
-%$ 
+%$
 %$ try
 %$    if isoctave
 %$        s = quadv(density, .0000000001, 100000,1e-10)
@@ -276,7 +276,7 @@ end
 %$ scale = 1;
 %$ shape = 2;
 %$ xdens = @(x) x.*exp(lpdfgweibull(x,shape,scale));
-%$ 
+%$
 %$ try
 %$    if isoctave
 %$        s = quadv(xdens, .0000000001, 20,1e-10)
@@ -299,7 +299,7 @@ end
 %$ scale = 1;
 %$ shape = 1;
 %$ xdens = @(x) x.*exp(lpdfgweibull(x,shape,scale));
-%$ 
+%$
 %$ try
 %$    if isoctave
 %$        s = quadv(xdens, .0000000001, 100000,1e-10)
@@ -322,7 +322,7 @@ end
 %$ scale = 1;
 %$ shape = .5;
 %$ xdens = @(x) x.*exp(lpdfgweibull(x,shape,scale));
-%$ 
+%$
 %$ try
 %$    if isoctave
 %$        s = quadv(xdens, .0000000001, 100000,1e-10)

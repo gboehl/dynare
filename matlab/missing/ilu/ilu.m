@@ -1,7 +1,7 @@
 function [L, U, P] = ilu(A, setup)
 % Partially implement function ilu using the (now deprecated) luinc
 
-% Copyright (C) 2013 Dynare Team
+% Copyright (C) 2013-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -18,20 +18,20 @@ function [L, U, P] = ilu(A, setup)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-  if nargout ~= 2
-      error('Only two output arguments supported')
-  end
-  if nargin ~= 2
-      error('Only two input arguments supported')
-  end
+if nargout ~= 2
+    error('Only two output arguments supported')
+end
+if nargin ~= 2
+    error('Only two input arguments supported')
+end
 
-  if isfield(setup, 'milu')
-      if setup.milu == 'off'
-          setup.milu = 0;
-      else
-          error(['Unsupported milu: ' setup.milu ])
-      end
-  end
-  
-  [L, U] = luinc(A, setup);
+if isfield(setup, 'milu')
+    if setup.milu == 'off'
+        setup.milu = 0;
+    else
+        error(['Unsupported milu: ' setup.milu ])
+    end
+end
+
+[L, U] = luinc(A, setup);
 end

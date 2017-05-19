@@ -1,6 +1,6 @@
 function yf=forcst2a(y0,dr,e)
 % function yf=forcst2a(y0,dr,e)
-% computes forecasts based on first order model solution, assuming the absence of shocks 
+% computes forecasts based on first order model solution, assuming the absence of shocks
 % Inputs:
 %   - y0        [endo_nbr by maximum_endo_lag]          matrix of starting values
 %   - dr        [structure]                             structure with Dynare decision rules
@@ -9,7 +9,7 @@ function yf=forcst2a(y0,dr,e)
 % Outputs:
 %   - yf        [horizon+maximum_endo_lag,endo_nbr]               matrix of forecasts
 %
-% Copyright (C) 2008-2015 Dynare Team
+% Copyright (C) 2008-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -48,4 +48,3 @@ for i=ykmin_+(1:horizon)
 end
 
 yf(:,dr.order_var) = yf;
-

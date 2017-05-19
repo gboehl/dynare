@@ -5,12 +5,12 @@ function check_prior_bounds(xparam1,bounds,M_,estim_params_,options_,bayestopt_)
 %   -xparam1        [double]    vector of parameters to be estimated (initial values)
 %   -bounds         [vector]    vector containing the lower and upper
 %   bounds
-%   -M_             [structure] characterizing the model. 
+%   -M_             [structure] characterizing the model.
 %   -estim_params_  [structure] characterizing parameters to be estimated
 %   -options_       [structure] characterizing the options
 %   -bayestopt_     [structure] characterizing priors
 
-% Copyright (C) 2013 Dynare Team
+% Copyright (C) 2013-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

@@ -11,14 +11,14 @@ function [xparam1, hh, gg, fval, igg, hess_info] = newrat(func0, x, bounds, anal
 %  - analytic_derivation    1 if analytic derivatives, 0 otherwise
 %  - ftol0                  termination criterion for function change
 %  - nit                    maximum number of iterations
-%  - flagg                  Indicator how to compute final Hessian (In each iteration, Hessian is computed with outer product gradient)  
+%  - flagg                  Indicator how to compute final Hessian (In each iteration, Hessian is computed with outer product gradient)
 %                           0: final Hessian computed with outer product gradient
-%                           1: final 'mixed' Hessian: diagonal elements computed with 
-%                               numerical second order derivatives with correlation structure 
+%                           1: final 'mixed' Hessian: diagonal elements computed with
+%                               numerical second order derivatives with correlation structure
 %                               as from outer product gradient
 %                           2: full numerical Hessian
 %  - Verbose                1 if explicit output is requested
-%  - Save_files             1 if intermediate output is to be saved 
+%  - Save_files             1 if intermediate output is to be saved
 %  - hess_info              structure storing the step sizes for
 %                           computation of Hessian
 %  - varargin               other inputs:
@@ -30,7 +30,7 @@ function [xparam1, hh, gg, fval, igg, hess_info] = newrat(func0, x, bounds, anal
 %                           varargin{6} --> BayesInfo
 %                           varargin{7} --> Bounds
 %                           varargin{8} --> DynareResults
-% 
+%
 % Outputs
 % - xparam1                 parameter vector at optimum
 % - hh                      hessian
@@ -39,7 +39,7 @@ function [xparam1, hh, gg, fval, igg, hess_info] = newrat(func0, x, bounds, anal
 % - igg                     inverted outer product hessian
 % - hess_info               structure with updated step length
 
-% Copyright (C) 2004-2016 Dynare Team
+% Copyright (C) 2004-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -56,7 +56,7 @@ function [xparam1, hh, gg, fval, igg, hess_info] = newrat(func0, x, bounds, anal
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-% initialize variable penalty    
+% initialize variable penalty
 penalty = 1e8;
 
 icount=0;
@@ -86,7 +86,7 @@ fval=fval0;
 outer_product_gradient=1;
 if isempty(hh)
     [dum, gg, htol0, igg, hhg, h1, hess_info]=mr_hessian(x,func0,penalty,flagit,htol,hess_info,varargin{:});
-    if isempty(dum),
+    if isempty(dum)
         outer_product_gradient=0;
         igg = 1e-4*eye(nx);
     else
@@ -154,7 +154,7 @@ while norm(gg)>gtol && check==0 && jit<nit
     if length(find(ig))<nx
         ggx=ggx*0;
         ggx(find(ig))=gg(find(ig));
-        if analytic_derivation,
+        if analytic_derivation
             hhx=hh;
         else
             hhx = reshape(dum,nx,nx);
@@ -195,25 +195,25 @@ while norm(gg)>gtol && check==0 && jit<nit
     if (fval0(icount)-fval)<ftol
         disp_verbose('No further improvement is possible!',Verbose)
         check=1;
-        if analytic_derivation,
+        if analytic_derivation
             [fvalx,exit_flag,gg,hh]=penalty_objective_function(xparam1,func0,penalty,varargin{:});
             hhg=hh;
             H = inv(hh);
         else
-        if flagit==2
-            hh=hh0;
-        elseif flagg>0
-            [dum, gg, htol0, igg, hhg, h1, hess_info]=mr_hessian(xparam1,func0,penalty,flagg,ftol0,hess_info,varargin{:});
-            if flagg==2
-                hh = reshape(dum,nx,nx);
-                ee=eig(hh);
-                if min(ee)<0
+            if flagit==2
+                hh=hh0;
+            elseif flagg>0
+                [dum, gg, htol0, igg, hhg, h1, hess_info]=mr_hessian(xparam1,func0,penalty,flagg,ftol0,hess_info,varargin{:});
+                if flagg==2
+                    hh = reshape(dum,nx,nx);
+                    ee=eig(hh);
+                    if min(ee)<0
+                        hh=hhg;
+                    end
+                else
                     hh=hhg;
                 end
-            else
-                hh=hhg;
             end
-        end
         end
         disp_verbose(['Actual dxnorm ',num2str(norm(x(:,end)-x(:,end-1)))],Verbose)
         disp_verbose(['FVAL          ',num2str(fval)],Verbose)
@@ -233,7 +233,7 @@ while norm(gg)>gtol && check==0 && jit<nit
         disp_verbose(['Ftol          ',num2str(ftol)],Verbose)
         disp_verbose(['Htol          ',num2str(max(htol0))],Verbose)
         htol=htol_base;
-        if norm(x(:,icount)-xparam1)>1.e-12 && analytic_derivation==0,
+        if norm(x(:,icount)-xparam1)>1.e-12 && analytic_derivation==0
             try
                 if Save_files
                     save('m1.mat','x','fval0','nig','-append')
@@ -244,7 +244,7 @@ while norm(gg)>gtol && check==0 && jit<nit
                 end
             end
             [dum, gg, htol0, igg, hhg, h1, hess_info]=mr_hessian(xparam1,func0,penalty,flagit,htol,hess_info,varargin{:});
-            if isempty(dum),
+            if isempty(dum)
                 outer_product_gradient=0;
             end
             if max(htol0)>htol
@@ -253,7 +253,7 @@ while norm(gg)>gtol && check==0 && jit<nit
                 disp_verbose('Tolerance has to be relaxed',Verbose)
                 skipline()
             end
-            if ~outer_product_gradient,
+            if ~outer_product_gradient
                 H = bfgsi1(H,gg-g(:,icount),xparam1-x(:,icount),Verbose,Save_files);
                 hh=inv(H);
                 hhg=hh;
@@ -270,7 +270,7 @@ while norm(gg)>gtol && check==0 && jit<nit
                 end
                 H = igg;
             end
-        elseif analytic_derivation,
+        elseif analytic_derivation
             [fvalx,exit_flag,gg,hh]=penalty_objective_function(xparam1,func0,penalty,varargin{:});
             hhg=hh;
             H = inv(hh);
@@ -311,7 +311,7 @@ if norm(gg)<=gtol
     disp_verbose(['Estimation ended:'],Verbose)
     disp_verbose(['Gradient norm < ', num2str(gtol)],Verbose)
 end
-if check==1,
+if check==1
     disp_verbose(['Estimation successful.'],Verbose)
 end
 
@@ -321,11 +321,11 @@ return
 function x = check_bounds(x,bounds)
 
 inx = find(x>=bounds(:,2));
-if ~isempty(inx),
+if ~isempty(inx)
     x(inx) = bounds(inx,2)-eps;
 end
 
 inx = find(x<=bounds(:,1));
-if ~isempty(inx),
+if ~isempty(inx)
     x(inx) = bounds(inx,1)+eps;
 end

@@ -17,7 +17,7 @@ function indx = get_new_or_existing_ei_index(substructure_name, name1, name2)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2012 Dynare Team
+% Copyright (C) 2012-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -38,7 +38,7 @@ global estimation_info
 
 if eval(['isempty(estimation_info.' substructure_name ')'])
     indx = 1;
-    return;
+    return
 end
 
 if isempty(name2) % parameter or std() statement

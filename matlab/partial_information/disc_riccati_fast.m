@@ -1,17 +1,17 @@
 function Z=disc_riccati_fast(F,D,R,H,ch)
 % function Z=disc_riccati_fast(F,D,R,H,ch)
-% 
-% Solves discrete Riccati Equation: 
-% Z=FZF' - FZD'inv(DZD'+R)DZF' + H
-% Using the Doubling Algorithm 
 %
-% George Perendia: based on the doubling algorithm for Riccati   
-% and the disclyap_fast function provided by Prof. Joe Pearlman 
+% Solves discrete Riccati Equation:
+% Z=FZF' - FZD'inv(DZD'+R)DZF' + H
+% Using the Doubling Algorithm
+%
+% George Perendia: based on the doubling algorithm for Riccati
+% and the disclyap_fast function provided by Prof. Joe Pearlman
 % V.1 19/5/2006
 % V.2 22/10/06
 % =================================================================
 
-% Copyright (C) 2006-2011 Dynare Team
+% Copyright (C) 2006-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -28,16 +28,16 @@ function Z=disc_riccati_fast(F,D,R,H,ch)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-if nargin == 4 || isempty( ch ) == 1 
-    flag_ch = 0; 
-else 
-    flag_ch = 1; 
-end 
+if nargin == 4 || isempty( ch ) == 1
+    flag_ch = 0;
+else
+    flag_ch = 1;
+end
 
 
 % intialisation
 tol = 1e-10; % iteration convergence threshold
-P0=H; 
+P0=H;
 X0=F;
 if ~any(R) % i.e. ==0
     warning('Dangerously evading inversion of zero matrix!');
@@ -50,21 +50,21 @@ I=eye(size(POYO));
 clear POYO;
 
 % iterate Riccati equation solution
-matd=1; 
+matd=1;
 count=0;
 while matd > tol && count < 100
     INVPY=inv(I+P0*Y0);
-    P1=X0*INVPY*P0*X0'+ P0; 
-    Y1=X0'*Y0*INVPY*X0+ Y0; 
-    X1=X0*INVPY*X0; 
-    matd=sum( sum(abs( P1 - P0 ))); 
+    P1=X0*INVPY*P0*X0'+ P0;
+    Y1=X0'*Y0*INVPY*X0+ Y0;
+    X1=X0*INVPY*X0;
+    matd=sum( sum(abs( P1 - P0 )));
     %    P0=(P1+P1')/2
-    P0=P1; 
+    P0=P1;
     X0=X1;
     Y0=Y1;
     count=count+1;
     %    matd;
-end 
+end
 
 Z=(P0+P0')/2;
 %Z=P0
@@ -75,17 +75,17 @@ if count==100
     %    error.identifier='Riccati not converged!'
     %    error
 end
-%if count >5 
+%if count >5
 %    disp('Riccati count= ');
 %    count
 %end
 
-clear X0 X1 Y0 Y1 P1 I INVPY; 
+clear X0 X1 Y0 Y1 P1 I INVPY;
 
-% Check that X is positive definite 
-if flag_ch==1 
-    [C,p]=chol(Z); 
-    if p ~= 0 
+% Check that X is positive definite
+if flag_ch==1
+    [C,p]=chol(Z);
+    if p ~= 0
         error('Z is not positive definite')
-    end 
-end 
+    end
+end

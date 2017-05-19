@@ -10,23 +10,29 @@
 #include "QuasiTriangular.h"
 #include "SimilarityDecomp.h"
 
-class IterativeSylvester : public SylvesterSolver {
+class IterativeSylvester : public SylvesterSolver
+{
 public:
-	IterativeSylvester(const QuasiTriangular& k, const QuasiTriangular& f)
-		: SylvesterSolver(k, f) {}
-	IterativeSylvester(const SchurDecompZero& kdecomp, const SchurDecomp& fdecomp)
-		: SylvesterSolver(kdecomp, fdecomp) {}
-	IterativeSylvester(const SchurDecompZero& kdecomp, const SimilarityDecomp& fdecomp)
-		: SylvesterSolver(kdecomp, fdecomp) {}
-	void solve(SylvParams& pars, KronVector& x) const;
+  IterativeSylvester(const QuasiTriangular &k, const QuasiTriangular &f)
+    : SylvesterSolver(k, f)
+  {
+  }
+  IterativeSylvester(const SchurDecompZero &kdecomp, const SchurDecomp &fdecomp)
+    : SylvesterSolver(kdecomp, fdecomp)
+  {
+  }
+  IterativeSylvester(const SchurDecompZero &kdecomp, const SimilarityDecomp &fdecomp)
+    : SylvesterSolver(kdecomp, fdecomp)
+  {
+  }
+  void solve(SylvParams &pars, KronVector &x) const;
 private:
-	double performFirstStep(KronVector& x) const;
-	static double performStep(const QuasiTriangular& k, const QuasiTriangular& f,
-							  KronVector& x);
+  double performFirstStep(KronVector &x) const;
+  static double performStep(const QuasiTriangular &k, const QuasiTriangular &f,
+                            KronVector &x);
 };
 
 #endif /* ITERATIVE_SYLVESTER_H */
-
 
 // Local Variables:
 // mode:C++

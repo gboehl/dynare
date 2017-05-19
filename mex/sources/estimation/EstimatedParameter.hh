@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009-2011 Dynare Team
+ * Copyright (C) 2009-2017 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -33,19 +33,20 @@ struct EstimatedParameter
 public:
   // parameter types
   enum pType
-  {
-    shock_SD = 1, // standard deviation of a structural shock
-    measureErr_SD = 2, // standard deviation of a measurement error
-    shock_Corr = 3, // correlation betwwen two structural shocks
-    measureErr_Corr = 4, // correlation between two measurement errors
-    deepPar = 5 // deep parameter
-  };
+    {
+      shock_SD = 1, // standard deviation of a structural shock
+      measureErr_SD = 2, // standard deviation of a measurement error
+      shock_Corr = 3, // correlation betwwen two structural shocks
+      measureErr_Corr = 4, // correlation between two measurement errors
+      deepPar = 5 // deep parameter
+    };
 
   EstimatedParameter(const EstimatedParameter::pType type,
                      size_t ID1, size_t ID2, const std::vector<size_t> &subSampleIDs,
                      double lower_bound, double upper_bound, Prior *prior
                      );
-  virtual ~EstimatedParameter();
+  virtual
+  ~EstimatedParameter();
 
   enum pType ptype;
   size_t ID1;

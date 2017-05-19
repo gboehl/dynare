@@ -20,11 +20,11 @@ function [x,f,fvec,check]=lnsrch1(xold, fold, g, p, stpmax, func, j1, j2, tolx, 
 %   fvec:     residuals vector
 %   check=1:  problem of the looping which continues indefinitely
 %
-% 
+%
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2001-2016 Dynare Team
+% Copyright (C) 2001-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -48,7 +48,7 @@ x = xold;
 nn = length(j2);
 summ = sqrt(p'*p);
 
-if ~isfinite(summ) 
+if ~isfinite(summ)
     if ~isequal(func,@perfect_foresight_problem)
         eq_number_string=[];
         for ii=1:length(j1)-1
@@ -61,13 +61,13 @@ if ~isfinite(summ)
             var_string=[var_string, deblank(Model.endo_names(j2(ii),:)), ', '];
         end
         var_string=[var_string, deblank(Model.endo_names(j2(end),:))];
-        fprintf('\nAn infinite element was encountered when trying to solve equation(s) %s \n',eq_number_string) 
+        fprintf('\nAn infinite element was encountered when trying to solve equation(s) %s \n',eq_number_string)
         fprintf('with respect to the variable(s): %s.\n',var_string)
         fprintf('The values of the endogenous variables when the problem was encountered were:\n')
         for ii=1:length(xold)
             fprintf('%-s % 8.4g \n',Model.endo_names(ii,:),xold(ii));
         end
-        skipline();    
+        skipline();
     end
     error(['Some element of Newton direction isn''t finite. Jacobian maybe' ...
            ' singular or there is a problem with initial values'])
@@ -103,7 +103,7 @@ while 1
     else
         if f <= fold+alf*alam*slope
             check = 0;
-            break ;
+            break
         else
             if alam == 1
                 tmplam = -slope/(2*(f-fold-slope)) ;

@@ -2,13 +2,13 @@ function [fval, exit_flag, arg1, arg2] = penalty_objective_function(x, fcn, base
 
 % Encapsulates an objective function to be minimized, adding a penalty if necessary.
 %
-% INPUTS 
+% INPUTS
 % - x             [double]    n*1 vector of instrument values.
 % - fcn           [fhandle]   objective function.
 % - base_penalty  [double]    scalar, base of the penality (typically the value of the objective at the previous iteration).
 % - varagin       [cell]      additional parameters for fcn.
 %
-% OUTPUTS 
+% OUTPUTS
 % - fval          [double]    scalar, value of the objective function at x.
 % - exit_flag     [integer]   scalar, flag returned by fcn (third output).
 % - arg1, arg2                fourth and fifth output arguments of the objective function.

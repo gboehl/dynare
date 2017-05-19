@@ -16,7 +16,7 @@ function [G1pi,C,impact,nmat,TT1,TT2,gev,eu, DD, E2, E5, GAMMA, FL_RANK ]=PI_gen
 % Corrected 10/28/96 by CAS
 
 % Copyright (C) 1996-2009 Christopher Sims
-% Copyright (C) 2010-2011 Dynare Team
+% Copyright (C) 2010-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -83,12 +83,12 @@ try
     end
     if singular == 1 || strcmp('MATLAB:nearlySingularMatrix',LastWarningID) == 1 || ...
                  strcmp('MATLAB:illConditionedMatrix',LastWarningID)==1 || ...
-                 strcmp('MATLAB:singularMatrix',LastWarningID)==1 
+                 strcmp('MATLAB:singularMatrix',LastWarningID)==1
         [C1,C2,C3,C4, C5, F1, F2, F3, F4, F5, M1, M2, UAVinv, FL_RANK, V01, V02] = PI_gensys_singularC(C1,C2,C3,C4, C5, F1, F2, F3, F4, F5, V01, V02, 0);
     end
     warning('on','MATLAB:singularMatrix');
     warning('on','MATLAB:nearlySingularMatrix');
-    if (any(any(isinf(UAVinv))) || any(any(isnan(UAVinv)))) 
+    if (any(any(isinf(UAVinv))) || any(any(isnan(UAVinv))))
         if(options_.ACES_solver==1)
             disp('ERROR! saving PI_gensys_data_dump');
             save PI_gensys_data_dump
@@ -96,7 +96,7 @@ try
         else
             warning('PI_gensys: Evading inversion of zero matrix UAVinv=inv(U02''*a1*V02)!');
             eu=[0,0];
-            return;
+            return
         end
     end
 catch
@@ -131,8 +131,8 @@ G23=eye(FL_RANK);
 num_inst=0;
 
 % New Definitions
-Ze11=zeros(NX,NX); 
-Ze12=zeros(NX,(n-FL_RANK)); 
+Ze11=zeros(NX,NX);
+Ze12=zeros(NX,(n-FL_RANK));
 Ze134=zeros(NX,FL_RANK);
 Ze31=zeros(FL_RANK,NX);
 
@@ -149,7 +149,7 @@ impact=[eye(NX,NX); zeros(n+FL_RANK,NX)];
 if(options_.ACES_solver==1)
     if isfield(lq_instruments,'names')
         num_inst=size(lq_instruments.names,1);
-        if num_inst>0 
+        if num_inst>0
             i_var=lq_instruments.inst_var_indices;
             N1=UAVinv*U02'*lq_instruments.B1;
             N3=-FF*N1+Sinv*U01'*lq_instruments.B1;
@@ -171,14 +171,14 @@ if(options_.ACES_solver==1)
             zeros(num_inst,size(E3,2)), II;
           ];
     eu =[1; 1], nmat=[], gev=[];
-    return; % do not check B&K compliancy
+    return % do not check B&K compliancy
 end
 
 G0pi=eye(n+FL_RANK+NX);
 try
-    % In Matlab: [aa bb q z v w] = qz(a,b) s.t. qaz = aa, qbz = bb % 
+    % In Matlab: [aa bb q z v w] = qz(a,b) s.t. qaz = aa, qbz = bb %
     % In Octave: [aa bb q z v w] = qz(a,b) s.t. q'az = aa, q'bz=bb %
-    % and qzcomplex() extension based on lapack zgges produces same 
+    % and qzcomplex() extension based on lapack zgges produces same
     % qz output for Octave as Matlab qz() does for Matlab thus:
     if isoctave
         [a b q z]=qzcomplex(G0pi,G1pi);
@@ -192,12 +192,12 @@ catch
         disp(['PI_Gensys: ' lerror.message]);
         if 0==strcmp('MATLAB:qz:matrixWithNaNInf',lerror.identifier)
             disp '** Unexpected Error PI_Gensys:qz: ** :';
-            button=questdlg('Continue Y/N?','Unexpected Error in qz','No','Yes','Yes'); 
-            switch button 
-              case 'No' 
+            button=questdlg('Continue Y/N?','Unexpected Error in qz','No','Yes','Yes');
+            switch button
+              case 'No'
                 error ('Terminated')
                 %case 'Yes'
-                
+
             end
         end
         G1pi=[];impact=[];nmat=[]; gev=[];
@@ -206,11 +206,11 @@ catch
     catch
         disp '** Unexpected Error in qz ** :';
         disp lerror.message;
-        button=questdlg('Continue Y/N?','Unexpected Error in qz','No','Yes','Yes'); 
-        switch button 
-          case 'No' 
-            error ('Terminated') 
-          case 'Yes' 
+        button=questdlg('Continue Y/N?','Unexpected Error in qz','No','Yes','Yes');
+        switch button
+          case 'No'
+            error ('Terminated')
+          case 'Yes'
             G1pi=[];impact=[];nmat=[]; gev=[];
             eu=[-2;-2];
             return
@@ -257,7 +257,7 @@ if zxz
 end
 if (FL_RANK ~= nunstab && options_.ACES_solver~=1)
     disp(['Number of unstable variables ' num2str(nunstab)]);
-    disp( ['does not match number of expectational equations ' num2str(FL_RANK)]); 
+    disp( ['does not match number of expectational equations ' num2str(FL_RANK)]);
     nmat=[];% gev=[];
     eu=[-2;-2];
     return

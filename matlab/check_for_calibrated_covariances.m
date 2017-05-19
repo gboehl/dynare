@@ -12,7 +12,7 @@ function estim_params=check_for_calibrated_covariances(xparam1,estim_params,M)
 % Notes: M is local to this function and not updated when calling
 % set_all_parameters
 
-% Copyright (C) 2013 Dynare Team
+% Copyright (C) 2013-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -42,7 +42,7 @@ calibrated_covariance_pos=covariance_pos(~ismember(covariance_pos,correlation_po
 if any(calibrated_covariance_pos)
     [rows, columns]=ind2sub(size(M.Sigma_e),calibrated_covariance_pos); %find linear indices of lower triangular covariance entries
     estim_params.calibrated_covariances.position=[calibrated_covariance_pos;sub2ind(size(M.Sigma_e),columns,rows)]; %get linear entries of upper triangular parts
-    estim_params.calibrated_covariances.cov_value=Sigma_e_calibrated(estim_params.calibrated_covariances.position);  
+    estim_params.calibrated_covariances.cov_value=Sigma_e_calibrated(estim_params.calibrated_covariances.position);
 end
 
 correlation_pos_ME=find(tril(M.Correlation_matrix_ME,-1)); %off-diagonal elements set by correlations after accounting for estimation
@@ -50,6 +50,5 @@ calibrated_covariance_pos_ME=covariance_pos_ME(~ismember(covariance_pos_ME,corre
 if any(calibrated_covariance_pos_ME)
     [rows, columns]=ind2sub(size(M.H),calibrated_covariance_pos_ME); %find linear indices of lower triangular covariance entries
     estim_params.calibrated_covariances_ME.position=[calibrated_covariance_pos_ME;sub2ind(size(M.H),columns,rows)]; %get linear entries of upper triangular parts
-    estim_params.calibrated_covariances_ME.cov_value=H_calibrated(estim_params.calibrated_covariances_ME.position);  
+    estim_params.calibrated_covariances_ME.cov_value=H_calibrated(estim_params.calibrated_covariances_ME.position);
 end
-

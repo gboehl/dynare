@@ -1,5 +1,5 @@
 % [zdatalinear zdatapiecewise zdatass oo 00 M 00] = solve two constraints(modnam 00,modnam 10,modnam 01,modnam 11,... constraint1, constraint2,... constraint relax1, constraint relax2,... shockssequence,irfshock,nperiods,curb retrench,maxiter,init);
-% 
+%
 % Inputs:
 % modnam 00: name of the .mod file for reference regime (excludes the .mod extension). modnam10: name of the .mod file for the alternative regime governed by the first
 % constraint.
@@ -12,15 +12,15 @@
 % model
 % irfshock: label for innovation for IRFs, from Dynare .mod file (one or more of the ?varexo?)
 % nperiods: simulation horizon (can be longer than the sequence of shocks defined in shockssequence; must be long enough to ensure convergence back to the reference model at the end of the simulation horizon and may need to be varied depending on the sequence of shocks).
-% curb retrench:	a scalar equal to 0 or 1. Default is 0. When set to 0, it updates the guess based of regimes based on the previous iteration. When set to 1, it updates in a manner similar to a Gauss-Jacobi scheme, slowing the iterations down by updating the guess of regimes only one period at a time.
+% curb retrench:        a scalar equal to 0 or 1. Default is 0. When set to 0, it updates the guess based of regimes based on the previous iteration. When set to 1, it updates in a manner similar to a Gauss-Jacobi scheme, slowing the iterations down by updating the guess of regimes only one period at a time.
 % maxiter: maximum number of iterations allowed for the solution algorithm (20 if not specified).
-% init:	the initial position for the vector of state variables, in deviation from steady state (if not specified, the default is a vector of zero implying that the initial conditions coincide with the steady state). The ordering follows the definition order in the .mod files.
+% init: the initial position for the vector of state variables, in deviation from steady state (if not specified, the default is a vector of zero implying that the initial conditions coincide with the steady state). The ordering follows the definition order in the .mod files.
 %
 % Outputs:
 % zdatalinear: an array containing paths for all endogenous variables ignoring the occasionally binding constraint (the linear solution), in deviation from steady state. Each column is a variable, the order is the definition order in the .mod files.
 % zdatapiecewise: an array containing paths for all endogenous variables satisfying the occasionally binding constraint (the occbin/piecewise solution), in deviation from steady state. Each column is a variable, the order is the definition order in the .mod files.
 % zdatass: a vector that holds the steady state values of the endogenous variables ( following the definition order in the .mod file).
-% oo00 , M00 :	structures produced by Dynare for the reference model ? see Dynare User Guide.
+% oo00 , M00 :  structures produced by Dynare for the reference model ? see Dynare User Guide.
 
 
 % Log of changes
@@ -29,11 +29,11 @@
 % to be processed.
 % 6/17/2013 -- Luca replaced external .m file setss.m
 
-function [ zdatalinear_ zdatapiecewise_ zdatass_ oo00_  M00_ ] = ...
-  solve_two_constraints(modnam_00_,modnam_10_,modnam_01_,modnam_11_,...
-    constrain1_, constrain2_,...
-    constraint_relax1_, constraint_relax2_,...
-    shockssequence_,irfshock_,nperiods_,curb_retrench_,maxiter_,init_)
+function [ zdatalinear_, zdatapiecewise_, zdatass_, oo00_ , M00_ ] = ...
+    solve_two_constraints(modnam_00_,modnam_10_,modnam_01_,modnam_11_,...
+                          constrain1_, constrain2_,...
+                          constraint_relax1_, constraint_relax2_,...
+                          shockssequence_,irfshock_,nperiods_,curb_retrench_,maxiter_,init_)
 
 global M_ oo_
 
@@ -46,11 +46,11 @@ M00_ = M_;
 
 
 for i=1:M00_.endo_nbr
-   eval([deblank(M00_.endo_names(i,:)) '_ss = oo00_.dr.ys(i); ']);
+    eval([deblank(M00_.endo_names(i,:)) '_ss = oo00_.dr.ys(i); ']);
 end
 
 for i_indx_ = 1:M00_.param_nbr
-  eval([M00_.param_names(i_indx_,:),'= M00_.params(i_indx_);']);
+    eval([M00_.param_names(i_indx_,:),'= M00_.params(i_indx_);']);
 end
 
 
@@ -138,9 +138,9 @@ Dbarmat11_ = resid_;
 
 
 if isfield(M00_,'nfwrd')  % needed for bakward compatibility with older Dynare releases
-[decrulea,decruleb]=get_pq(oo00_.dr,M00_.nstatic,M00_.nfwrd);
+    [decrulea,decruleb]=get_pq(oo00_.dr,M00_.nstatic,M00_.nfwrd);
 else
-[decrulea,decruleb]=get_pq(oo00_.dr,oo00_.dr.nstatic,oo00_.dr.nfwrd);    
+    [decrulea,decruleb]=get_pq(oo00_.dr,oo00_.dr.nstatic,oo00_.dr.nfwrd);
 end
 endog_ = M00_.endo_names;
 exog_ =  M00_.exo_names;
@@ -193,78 +193,78 @@ zdatapiecewise_ = zeros(nperiods_,nvars_);
 
 
 violvecbool_ = zeros(nperiods_+1,2);  % This sets the first guess for when
-% the constraints are going to hold.
-% The variable is a boolean with two
-% columns. The first column refers to
-% constrain1_; the second to
-% constrain2_.
-% Each row is a period in time.
-% If the boolean is true it indicates
-% the relevant constraint is expected
-% to evaluate to true.
-% The default initial guess is
-% consistent with the base model always
-% holding -- equivalent to the linear
-% solution.
+                                      % the constraints are going to hold.
+                                      % The variable is a boolean with two
+                                      % columns. The first column refers to
+                                      % constrain1_; the second to
+                                      % constrain2_.
+                                      % Each row is a period in time.
+                                      % If the boolean is true it indicates
+                                      % the relevant constraint is expected
+                                      % to evaluate to true.
+                                      % The default initial guess is
+                                      % consistent with the base model always
+                                      % holding -- equivalent to the linear
+                                      % solution.
 
 wishlist_ = endog_;
 nwishes_ = size(wishlist_,1);
 for ishock_ = 1:nshocks
-    
-    
+
+
     changes_=1;
     iter_ = 0;
-    
+
     while (changes_ & iter_<maxiter_)
         iter_ = iter_ +1;
-        
+
         % analyse violvec and isolate contiguous periods in the other
         % regime.
-        [regime1 regimestart1]=map_regime(violvecbool_(:,1));
-        [regime2 regimestart2]=map_regime(violvecbool_(:,2));
-        
-        
+        [regime1, regimestart1]=map_regime(violvecbool_(:,1));
+        [regime2, regimestart2]=map_regime(violvecbool_(:,2));
+
+
         [zdatalinear_]=mkdatap_anticipated_2constraints(nperiods_,decrulea,decruleb,...
-            cof_,Jbarmat_,...
-            cof10_,Jbarmat10_,Dbarmat10_,...
-            cof01_,Jbarmat01_,Dbarmat01_,...
-            cof11_,Jbarmat11_,Dbarmat11_,...
-            regime1,regimestart1,...
-            regime2,regimestart2,...
-            violvecbool_,endog_,exog_,...
-            irfshock_,shockssequence_(ishock_,:),init_);
-        
+                                                        cof_,Jbarmat_,...
+                                                        cof10_,Jbarmat10_,Dbarmat10_,...
+                                                        cof01_,Jbarmat01_,Dbarmat01_,...
+                                                        cof11_,Jbarmat11_,Dbarmat11_,...
+                                                        regime1,regimestart1,...
+                                                        regime2,regimestart2,...
+                                                        violvecbool_,endog_,exog_,...
+                                                        irfshock_,shockssequence_(ishock_,:),init_);
+
         for i_indx_=1:nwishes_
             eval([deblank(wishlist_(i_indx_,:)),'_difference=zdatalinear_(:,i_indx_);']);
         end
-        
-        
-        
-        
+
+
+
+
         newviolvecbool1_ = eval(constraint1_difference_);
         relaxconstraint1_ = eval(constraint_relax1_difference_);
-        
+
         newviolvecbool2_ = eval(constraint2_difference_);
         relaxconstraint2_ = eval(constraint_relax2_difference_);
-        
-        
-        
+
+
+
         newviolvecbool_ = [newviolvecbool1_;newviolvecbool2_];
         relaxconstraint_ = [relaxconstraint1_;relaxconstraint2_];
-        
-        
-        
+
+
+
         % check if changes_
         if (max(newviolvecbool_(:)-violvecbool_(:)>0)) | sum(relaxconstraint_(find(violvecbool_==1))>0)
             changes_ = 1;
         else
             changes_ = 0;
         end
-        
+
         if curb_retrench_   % apply Gauss-Sidel idea of slowing down the change in the guess
-            % for the constraint -- only relax one
-            % period at a time starting from the last
-            % one when each of the constraints is true.
+                            % for the constraint -- only relax one
+                            % period at a time starting from the last
+                            % one when each of the constraints is true.
             retrench = 0*violvecbool_(:);
             if ~isempty(find(relaxconstraint1_ & violvecbool_(:,1)))
                 retrenchpos = max(find(relaxconstraint1_ & violvecbool_(:,1)));
@@ -278,28 +278,27 @@ for ishock_ = 1:nshocks
         else
             violvecbool_ = (violvecbool_(:) | newviolvecbool_(:))-(relaxconstraint_(:) & violvecbool_(:));
         end
-        
+
         violvecbool_ = reshape(violvecbool_,nperiods_+1,2);
-        
-        
-        
+
+
+
     end
     if changes_ ==1
         display('Did not converge -- increase maxiter')
     end
-    
+
     init_ = zdatalinear_(1,:);
     zdatapiecewise_(ishock_,:)=init_;
     init_= init_';
-    
+
     % update the guess for constraint violations for next period
     % update is consistent with expecting no additional shocks next period
     violvecbool_=[violvecbool_(2:end,:);zeros(1,2)];
-    
+
 end
 
 
 zdatapiecewise_(ishock_+1:end,:)=zdatalinear_(2:nperiods_-ishock_+1,:);
 
 zdatalinear_ = mkdata(nperiods_,decrulea,decruleb,endog_,exog_,wishlist_,irfshock_,shockssequence_,init_orig_);
-

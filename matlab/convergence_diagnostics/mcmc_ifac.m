@@ -14,12 +14,12 @@ function Ifac = mcmc_ifac(X, Nc)
 % ALGORITHM:
 %   Inefficiency factors are computed as
 %   \[
-%       Ifac = 1 + 2\sum\limits_{i=1}^{Nc} {\hat \rho(i)} 
+%       Ifac = 1 + 2\sum\limits_{i=1}^{Nc} {\hat \rho(i)}
 %   \]
 %   where $\hat \rho(i)$ denotes the autocorrelation at lag i and the terms
 %   of the sum are truncated using a Parzen window.
-%   
-%   For inefficiency factors, see Section 6.1 of Paolo Giordani, Michael Pitt, and Robert Kohn (2011): 
+%
+%   For inefficiency factors, see Section 6.1 of Paolo Giordani, Michael Pitt, and Robert Kohn (2011):
 %   "Bayesian Inference for Time Series State Space Models" in : John Geweke, Gary Koop,
 %   Herman van Dijk (editors): "The Oxford Handbook of Bayesian
 %   Econometrics", Oxford University Press
@@ -36,7 +36,7 @@ function Ifac = mcmc_ifac(X, Nc)
 % consistent covariance matrix estimation", Econometrica, 59(3), p. 817-858
 
 
-% Copyright (C) 2015-16 Dynare Team
+% Copyright (C) 2015-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -54,7 +54,7 @@ function Ifac = mcmc_ifac(X, Nc)
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 Nc = floor(min(Nc, length(X)/2));
-if mod(Nc,2),
+if mod(Nc,2)
     Nc=Nc-1;
 end
 AcorrXSIM = dyn_autocorr(X(:), Nc);

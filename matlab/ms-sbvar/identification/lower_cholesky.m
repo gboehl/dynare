@@ -16,7 +16,7 @@ function [Ui,Vi,n0,np,ixmC0Pres] = lower_cholesky(nvar,nexo,options_ms)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2011 Dynare Team
+% Copyright (C) 2011-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -41,11 +41,11 @@ Vi = cell(nvar,1);
 n0 = zeros(nvar,1);
 np = zeros(nvar,1);
 if (nargin==2)
-   nexo = 1; 
+    nexo = 1;
 elseif (nargin==3)
-   indxC0Pres = 0;
+    indxC0Pres = 0;
 end
-k = lags*nvar+nexo; 
+k = lags*nvar+nexo;
 Qi = zeros(nvar,nvar,nvar);
 Ri = zeros(k,k,nvar);
 
@@ -61,11 +61,11 @@ if options_ms.constants_exclusion
     end
 end
 
-for n=1:nvar 
-   Ui{n} = null(Qi(:,:,n));
-   Vi{n} = null(Ri(:,:,n));
-   n0(n) = size(Ui{n},2);
-   np(n) = size(Vi{n},2);
+for n=1:nvar
+    Ui{n} = null(Qi(:,:,n));
+    Vi{n} = null(Ri(:,:,n));
+    n0(n) = size(Ui{n},2);
+    np(n) = size(Vi{n},2);
 end
 
 ixmC0Pres = NaN;

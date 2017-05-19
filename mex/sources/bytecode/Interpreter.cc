@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2013 Dynare Team
+ * Copyright (C) 2007-2017 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -40,11 +40,11 @@ Interpreter::Interpreter(double *params_arg, double *y_arg, double *ya_arg, doub
                          , const int CUDA_device_arg, cublasHandle_t cublas_handle_arg, cusparseHandle_t cusparse_handle_arg, cusparseMatDescr_t descr_arg
 #endif
                          )
-                         : dynSparseMatrix(y_size_arg, y_kmin_arg, y_kmax_arg, print_it_arg, steady_state_arg, periods_arg, minimal_solving_periods_arg, slowc_arg
+: dynSparseMatrix(y_size_arg, y_kmin_arg, y_kmax_arg, print_it_arg, steady_state_arg, periods_arg, minimal_solving_periods_arg, slowc_arg
 #ifdef CUDA
-                                        , CUDA_device_arg, cublas_handle_arg, cusparse_handle_arg, descr_arg
+                  , CUDA_device_arg, cublas_handle_arg, cusparse_handle_arg, descr_arg
 #endif
-                                        )
+                  )
 {
   params = params_arg;
   y = y_arg;
@@ -92,7 +92,7 @@ Interpreter::evaluate_a_block(bool initialization)
     case EVALUATE_FORWARD:
       if (steady_state)
         {
-          compute_block_time(0, true, /*block_num, size, steady_state, */false);
+          compute_block_time(0, true, /*block_num, size, steady_state, */ false);
           if (block >= 0)
             for (int j = 0; j < size; j++)
               residual[j] = y[Block_Contain[j].Variable] - ya[Block_Contain[j].Variable];
@@ -107,7 +107,7 @@ Interpreter::evaluate_a_block(bool initialization)
             {
               it_code = begining;
               Per_y_ = it_*y_size;
-              compute_block_time(0, true, /*block_num, size, steady_state, */false);
+              compute_block_time(0, true, /*block_num, size, steady_state, */ false);
               if (block >= 0)
                 for (int j = 0; j < size; j++)
                   residual[it_*size+j] = y[it_*y_size+Block_Contain[j].Variable] - ya[it_*y_size+Block_Contain[j].Variable];
@@ -153,10 +153,10 @@ Interpreter::evaluate_a_block(bool initialization)
       break;
     case SOLVE_FORWARD_COMPLETE:
       if (initialization)
-         {
-           fixe_u(&u, u_count_int, u_count_int);
-           Read_SparseMatrix(bin_base_name, size, 1, 0, 0, false, stack_solve_algo, solve_algo);
-         }
+        {
+          fixe_u(&u, u_count_int, u_count_int);
+          Read_SparseMatrix(bin_base_name, size, 1, 0, 0, false, stack_solve_algo, solve_algo);
+        }
 #ifdef DEBUG
       mexPrintf("in SOLVE_FORWARD_COMPLETE r = mxMalloc(%d*sizeof(double))\n", size);
 #endif
@@ -277,7 +277,7 @@ Interpreter::evaluate_a_block(bool initialization)
             {
               it_code = begining;
               Per_y_ = it_*y_size;
-              compute_block_time(0, true, /*block_num, size, steady_state, */false);
+              compute_block_time(0, true, /*block_num, size, steady_state, */ false);
               if (block < 0)
                 for (int j = 0; j < size; j++)
                   residual[Per_y_+Block_Contain[j].Equation] = r[j];
@@ -317,8 +317,6 @@ Interpreter::evaluate_a_block(bool initialization)
     }
 }
 
-
-
 int
 Interpreter::simulate_a_block(vector_table_conditional_local_type vector_table_conditional_local)
 {
@@ -338,14 +336,14 @@ Interpreter::simulate_a_block(vector_table_conditional_local_type vector_table_c
       mexPrintf("EVALUATE_FORWARD\n");
       mexEvalString("drawnow;");
 #endif
-        evaluate_over_periods(true);
+      evaluate_over_periods(true);
       break;
     case EVALUATE_BACKWARD:
 #ifdef DEBUG
       mexPrintf("EVALUATE_BACKWARD\n");
       mexEvalString("drawnow;");
 #endif
-        evaluate_over_periods(false);
+      evaluate_over_periods(false);
       break;
     case SOLVE_FORWARD_SIMPLE:
 #ifdef DEBUG
@@ -461,7 +459,7 @@ Interpreter::simulate_a_block(vector_table_conditional_local_type vector_table_c
               memcpy(y_save, y, y_size*sizeof(double)*(periods+y_kmax+y_kmin));
               if (vector_table_conditional_local.size())
                 {
-                  for (vector_table_conditional_local_type::iterator it1 = vector_table_conditional_local.begin(); it1 != vector_table_conditional_local.end() ; it1++)
+                  for (vector_table_conditional_local_type::iterator it1 = vector_table_conditional_local.begin(); it1 != vector_table_conditional_local.end(); it1++)
                     {
                       if (it1->is_cond)
                         {
@@ -476,7 +474,7 @@ Interpreter::simulate_a_block(vector_table_conditional_local_type vector_table_c
               if (!(isnan(res1) || isinf(res1)))
                 cvg = (max_res < solve_tolf);
               if (isnan(res1) || isinf(res1) || (stack_solve_algo == 4 && iter > 0))
-                  memcpy(y, y_save, y_size*sizeof(double)*(periods+y_kmax+y_kmin));
+                memcpy(y, y_save, y_size*sizeof(double)*(periods+y_kmax+y_kmin));
               u_count = u_count_saved;
               int prev_iter = iter;
               Simulate_Newton_Two_Boundaries(block_num, symbol_table_endo_nbr, y_kmin, y_kmax, size, periods, cvg, minimal_solving_periods, stack_solve_algo, endo_name_length, P_endo_names, vector_table_conditional_local);
@@ -601,9 +599,8 @@ Interpreter::ReadCodeFile(string file_name, CodeLoad &code)
 
 }
 
-
 void
-Interpreter::check_for_controlled_exo_validity(FBEGINBLOCK_ *fb,vector<s_plan> sconstrained_extended_path)
+Interpreter::check_for_controlled_exo_validity(FBEGINBLOCK_ *fb, vector<s_plan> sconstrained_extended_path)
 {
   vector<unsigned int> exogenous = fb->get_exogenous();
   vector<int> endogenous = fb->get_endogenous();
@@ -631,8 +628,6 @@ Interpreter::check_for_controlled_exo_validity(FBEGINBLOCK_ *fb,vector<s_plan> s
   for (vector<unsigned int>::iterator it = exogenous.begin(); it != exogenous.end(); it++)
     previous_block_exogenous.push_back(*it);
 }
-
-
 
 bool
 Interpreter::MainLoop(string bin_basename, CodeLoad code, bool evaluate, int block, bool last_call, bool constrained, vector<s_plan> sconstrained_extended_path, vector_table_conditional_local_type vector_table_conditional_local)
@@ -670,7 +665,7 @@ Interpreter::MainLoop(string bin_basename, CodeLoad code, bool evaluate, int blo
             Block_Contain = fb->get_Block_Contain();
             it_code++;
             if (constrained)
-              check_for_controlled_exo_validity(fb,sconstrained_extended_path);
+              check_for_controlled_exo_validity(fb, sconstrained_extended_path);
             set_block(fb->get_size(), fb->get_type(), file_name, bin_basename, Block_Count, fb->get_is_linear(), fb->get_endo_nbr(), fb->get_Max_Lag(), fb->get_Max_Lead(), fb->get_u_count_int(), block);
             if (print)
               print_a_block();
@@ -794,7 +789,6 @@ Interpreter::MainLoop(string bin_basename, CodeLoad code, bool evaluate, int blo
               test_mxMalloc(T, __LINE__, __FILE__, __func__, var*sizeof(double));
             }
 
-
           if (block >= 0)
             it_code = code_liste.begin() + code.get_begin_block(block);
           else
@@ -806,7 +800,7 @@ Interpreter::MainLoop(string bin_basename, CodeLoad code, bool evaluate, int blo
           throw FatalExceptionHandling(tmp.str());
         }
     }
-  max_res = max_res_local ;
+  max_res = max_res_local;
   max_res_idx = max_res_idx_local;
   Close_SaveCode();
   return true;
@@ -825,13 +819,13 @@ Interpreter::elastic(string str, unsigned int len, bool left)
           if (left)
             {
               //mexPrintf("(1) diff=%d\n",diff);
-              str.insert(str.end(),diff-1,' ');
-              str.insert(str.begin(),1,' ');
+              str.insert(str.end(), diff-1, ' ');
+              str.insert(str.begin(), 1, ' ');
             }
           else
             {
-              str.insert(str.end(),diff/2,' ');
-              str.insert(str.begin(),diff/2,' ');
+              str.insert(str.end(), diff/2, ' ');
+              str.insert(str.begin(), diff/2, ' ');
             }
         }
       else
@@ -839,13 +833,13 @@ Interpreter::elastic(string str, unsigned int len, bool left)
           if (left)
             {
               //mexPrintf("(2) diff=%d\n",diff);
-              str.insert(str.end(),diff-1,' ');
-              str.insert(str.begin(),1,' ');
+              str.insert(str.end(), diff-1, ' ');
+              str.insert(str.begin(), 1, ' ');
             }
           else
             {
-              str.insert(str.end(),ceil(diff/2),' ');
-              str.insert(str.begin(),ceil(diff/2+1),' ');
+              str.insert(str.end(), ceil(diff/2), ' ');
+              str.insert(str.begin(), ceil(diff/2+1), ' ');
             }
         }
       return str;
@@ -861,8 +855,8 @@ Interpreter::extended_path(string file_name, string bin_basename, bool evaluate,
   it_code = code_liste.begin();
   it_code_type Init_Code = code_liste.begin();
   /*size_t size_of_direction = y_size*(periods + y_kmax + y_kmin)*sizeof(double);
-  double *y_save = (double *) mxMalloc(size_of_direction);
-  double *x_save = (double *) mxMalloc((periods + y_kmax + y_kmin) * col_x *sizeof(double));*/
+    double *y_save = (double *) mxMalloc(size_of_direction);
+    double *x_save = (double *) mxMalloc((periods + y_kmax + y_kmin) * col_x *sizeof(double));*/
   size_t size_of_direction = y_size*col_y*sizeof(double);
   double *y_save = (double *) mxMalloc(size_of_direction);
   test_mxMalloc(y_save, __LINE__, __FILE__, __func__, size_of_direction);
@@ -892,16 +886,16 @@ Interpreter::extended_path(string file_name, string bin_basename, bool evaluate,
   int date_length = dates[0].length();
   int table_length = 2 + date_length + 3 + endo_name_length_l + 3 + real_max_length + 3 + 3 + 2 + 6 + 2;
   string line;
-  line.insert(line.begin(),table_length,'-');
-  line.insert(line.length(),"\n");
+  line.insert(line.begin(), table_length, '-');
+  line.insert(line.length(), "\n");
   if (old_print_it)
     {
-       mexPrintf("\nExtended Path simulation:\n");
-       mexPrintf("-------------------------\n");
-       mexPrintf(line.c_str());
-       string title = "|" + elastic("date",date_length+2, false) + "|" + elastic("variable",endo_name_length_l+2, false) + "|" + elastic("max. value",real_max_length+2, false) + "| iter. |" + elastic("cvg",5, false) + "|\n";
-       mexPrintf(title.c_str());
-       mexPrintf(line.c_str());
+      mexPrintf("\nExtended Path simulation:\n");
+      mexPrintf("-------------------------\n");
+      mexPrintf(line.c_str());
+      string title = "|" + elastic("date", date_length+2, false) + "|" + elastic("variable", endo_name_length_l+2, false) + "|" + elastic("max. value", real_max_length+2, false) + "| iter. |" + elastic("cvg", 5, false) + "|\n";
+      mexPrintf(title.c_str());
+      mexPrintf(line.c_str());
     }
   for (int t = 0; t < nb_periods; t++)
     {
@@ -909,7 +903,7 @@ Interpreter::extended_path(string file_name, string bin_basename, bool evaluate,
       previous_block_exogenous.clear();
       if (old_print_it)
         {
-          mexPrintf("|%s|",elastic(dates[t], date_length+2, false).c_str());
+          mexPrintf("|%s|", elastic(dates[t], date_length+2, false).c_str());
           mexEvalString("drawnow;");
         }
       for (vector<s_plan>::const_iterator it = sextended_path.begin(); it != sextended_path.end(); it++)
@@ -945,7 +939,7 @@ Interpreter::extended_path(string file_name, string bin_basename, bool evaluate,
             if (P_endo_names[CHAR_LENGTH*(max_res_idx+i*y_size)] != ' ')
               res << P_endo_names[CHAR_LENGTH*(max_res_idx+i*y_size)];
           res1 << std::scientific << max_res;
-          mexPrintf("%s|%s| %4d  |  x  |\n",elastic(res.str(),endo_name_length_l+2, true).c_str(), elastic(res1.str(), real_max_length+2, false).c_str(), iter);
+          mexPrintf("%s|%s| %4d  |  x  |\n", elastic(res.str(), endo_name_length_l+2, true).c_str(), elastic(res1.str(), real_max_length+2, false).c_str(), iter);
           mexPrintf(line.c_str());
           mexEvalString("drawnow;");
         }
@@ -953,10 +947,10 @@ Interpreter::extended_path(string file_name, string bin_basename, bool evaluate,
   print_it = old_print_it;
   /*for (int j = 0; j < y_size; j++)
     {
-      for(int k = nb_periods; k < periods; k++)
-        y_save[j + (k + y_kmin) * y_size] = y[ j +  ( k - (nb_periods-1) + y_kmin) * y_size];
+    for(int k = nb_periods; k < periods; k++)
+    y_save[j + (k + y_kmin) * y_size] = y[ j +  ( k - (nb_periods-1) + y_kmin) * y_size];
     }*/
-    for (int i = 0; i < y_size * col_y; i++)
+  for (int i = 0; i < y_size * col_y; i++)
     y[i]  = y_save[i];
   for (int j = 0; j < col_x * nb_row_x; j++)
     x[j] = x_save[j];
@@ -985,7 +979,6 @@ Interpreter::compute_blocks(string file_name, string bin_basename, bool evaluate
   vector_table_conditional_local_type vector_table_conditional_local_junk;
 
   MainLoop(bin_basename, code, evaluate, block, true, false, s_plan_junk, vector_table_conditional_local_junk);
-
 
   mxFree(Init_Code->second);
   nb_blocks = Block_Count+1;

@@ -1,19 +1,19 @@
 function list = list_of_parameters_calibrated_as_NaN(M_)
 % The name of the function is explicit enough...
-%  
+%
 % INPUTS
 %   M_    [structure]   Description of the (simulated or estimated) model.
-%  
+%
 % OUTPUTS
 %   list  [char]        n*p array of characters, each line is the name of parameter without value.
-%    
+%
 % ALGORITHM
 %   none
-%    
+%
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2010-2011 Dynare Team
+% Copyright (C) 2010-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

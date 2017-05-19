@@ -1,7 +1,7 @@
 function [endogenousvariables, info] = sim1_purely_forward(endogenousvariables, exogenousvariables, steadystate, M, options)
 % Performs deterministic simulation of a purely forward model
 
-% Copyright (C) 2012-2015 Dynare Team
+% Copyright (C) 2012-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -24,7 +24,7 @@ iyf = find(M.lead_lag_incidence(2,:)>0); % Indices of variables at next period
 if ny0 ~= M.endo_nbr
     error('All endogenous variables must appear at the current period!')
 end
-    
+
 dynamicmodel = str2func([M.fname,'_dynamic']);
 
 info.status = 1;

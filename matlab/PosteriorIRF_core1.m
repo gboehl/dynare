@@ -23,7 +23,7 @@ function myoutput=PosteriorIRF_core1(myinputs,fpar,B,whoiam, ThisMatlab)
 % SPECIAL REQUIREMENTS.
 %   None.
 %
-% Copyright (C) 2006-2016 Dynare Team
+% Copyright (C) 2006-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -43,7 +43,7 @@ function myoutput=PosteriorIRF_core1(myinputs,fpar,B,whoiam, ThisMatlab)
 
 global options_ estim_params_ oo_ M_ bayestopt_ dataset_ dataset_info
 
-if nargin<4,
+if nargin<4
     whoiam=0;
 end
 
@@ -55,7 +55,7 @@ irun =myinputs.irun;
 irun2=myinputs.irun2;
 npar=myinputs.npar;
 type=myinputs.type;
-if ~strcmpi(type,'prior'),
+if ~strcmpi(type,'prior')
     x=myinputs.x;
 end
 
@@ -102,7 +102,7 @@ end
 RemoteFlag = 0;
 
 if whoiam
-    if Parallel(ThisMatlab).Local==0,
+    if Parallel(ThisMatlab).Local==0
         RemoteFlag =1;
     end
     prct0={0,whoiam,Parallel(ThisMatlab)};
@@ -165,7 +165,7 @@ while fpar<B
         elseif info(1) == 5
             errordef = 'Rank condition  is not satisfied';
         end
-        if strcmpi(type,'prior'),
+        if strcmpi(type,'prior')
             disp(['PosteriorIRF :: Dynare is unable to solve the model (' errordef ')'])
             continue
         else
@@ -240,9 +240,9 @@ while fpar<B
         else
             stock_irf_bvardsge(:,:,:,IRUN) = reshape(tmp_dsgevar,options_.irf,dataset_.vobs,M_.exo_nbr);
             instr = [MhDirectoryName '/' M_.fname '_irf_bvardsge' ...
-                     int2str(NumberOfIRFfiles_dsgevar) '.mat stock_irf_bvardsge;'];,
+                     int2str(NumberOfIRFfiles_dsgevar) '.mat stock_irf_bvardsge;'];
             eval(['save ' instr]);
-            if RemoteFlag==1,
+            if RemoteFlag==1
                 OutputFileName_bvardsge = [OutputFileName_bvardsge; {[MhDirectoryName filesep], [M_.fname '_irf_bvardsge' int2str(NumberOfIRFfiles_dsgevar) '.mat']}];
             end
             NumberOfIRFfiles_dsgevar = NumberOfIRFfiles_dsgevar+1;
@@ -259,14 +259,14 @@ while fpar<B
                          int2str(NumberOfIRFfiles_dsgevar) '.mat stock_irf_bvardsge;'];
                 eval(['save ' instr]);
                 NumberOfIRFfiles_dsgevar = NumberOfIRFfiles_dsgevar+1;
-                if RemoteFlag==1,
+                if RemoteFlag==1
                     OutputFileName_bvardsge = [OutputFileName_bvardsge; {[MhDirectoryName filesep], [M_.fname '_irf_bvardsge' int2str(NumberOfIRFfiles_dsgevar) '.mat']}];
                 end
                 irun = 0;
             end
         end
         save([MhDirectoryName '/' M_.fname '_irf_dsge' int2str(NumberOfIRFfiles_dsge) '.mat'],'stock_irf_dsge');
-        if RemoteFlag==1,
+        if RemoteFlag==1
             OutputFileName_dsge = [OutputFileName_dsge; {[MhDirectoryName filesep], [M_.fname '_irf_dsge' int2str(NumberOfIRFfiles_dsge) '.mat']}];
         end
         NumberOfIRFfiles_dsge = NumberOfIRFfiles_dsge+1;
@@ -278,7 +278,7 @@ while fpar<B
         end
         stock = stock_param;
         save([MhDirectoryName '/' M_.fname '_param_irf' int2str(ifil2) '.mat'],'stock');
-        if RemoteFlag==1,
+        if RemoteFlag==1
             OutputFileName_param = [OutputFileName_param; {[MhDirectoryName filesep], [M_.fname '_param_irf' int2str(ifil2) '.mat']}];
         end
         ifil2 = ifil2 + 1;

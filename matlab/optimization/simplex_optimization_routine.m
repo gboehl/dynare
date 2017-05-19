@@ -7,7 +7,7 @@ function [x,fval,exitflag] = simplex_optimization_routine(objective_function,x,o
 %
 % The routine automatically restarts from the current solution while amelioration is possible.
 %
-% INPUTS 
+% INPUTS
 %  o objective_function     [string]                  Name of the objective function to be minimized.
 %  o x                      [double]                  n*1 vector, starting guess of the optimization routine.
 %  o options                [structure]               Options of this implementation of the simplex algorithm.
@@ -23,13 +23,13 @@ function [x,fval,exitflag] = simplex_optimization_routine(objective_function,x,o
 %     varargin{6} --> BayesInfo
 %     varargin{1} --> DynareResults
 %
-% OUTPUTS 
+% OUTPUTS
 %  o x                      [double]                  n*1 vector, estimate of the optimal inputs.
 %  o fval                   [double]                  scalar, value of the objective at the optimum.
 %  o exitflag               [integer]                 scalar equal to 0 or 1 (0 if the algorithm did not converge to
 %                                                     a minimum).
 
-% Copyright (C) 2010-2013 Dynare Team
+% Copyright (C) 2010-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -251,7 +251,7 @@ while (func_count < max_func_calls) && (iter_count < max_iterations) && (simplex
     fxr = feval(objective_function,x,varargin{:});
     func_count = func_count+1;
     if fxr < fv(1)% xr is better than previous best point v(:,1).
-        % Calculate the expansion point
+                  % Calculate the expansion point
         xe = xbar + rho*chi*(xbar-v(:,end));
         x  = xe;
         fxe = feval(objective_function,x,varargin{:});
@@ -396,7 +396,7 @@ while (func_count < max_func_calls) && (iter_count < max_iterations) && (simplex
         disp(['Crit. x:                  ' num2str(critX)])
         skipline()
     end
-    if verbose && max(abs(best_point-v(:,1)))>x_tolerance;
+    if verbose && max(abs(best_point-v(:,1)))>x_tolerance
         if verbose<2
             disp(['Simplex iteration number: ' int2str(simplex_iterations) '-' int2str(simplex_init) '-' int2str(simplex_algo_iterations)])
             disp(['Objective function value: ' num2str(fv(1))])
@@ -499,7 +499,7 @@ while (func_count < max_func_calls) && (iter_count < max_iterations) && (simplex
         else
             break
         end
-   end
+    end
 end% while loop.
 
 x(:) = v(:,1);
@@ -520,43 +520,43 @@ end
 
 
 function [v,fv,delta] = simplex_initialization(objective_function,point,point_score,delta,zero_delta,check_delta,varargin)
-    n = length(point);
-    v  = zeros(n,n+1);
-    v(:,1) = point;
-    fv = zeros(n+1,1);
-    fv(1) = point_score;
-    if length(delta)==1
-        delta = repmat(delta,n,1);
+n = length(point);
+v  = zeros(n,n+1);
+v(:,1) = point;
+fv = zeros(n+1,1);
+fv(1) = point_score;
+if length(delta)==1
+    delta = repmat(delta,n,1);
+end
+for j = 1:n
+    y = point;
+    if y(j) ~= 0
+        y(j) = (1 + delta(j))*y(j);
+    else
+        y(j) = zero_delta;
     end
-    for j = 1:n
-        y = point;
-        if y(j) ~= 0
-            y(j) = (1 + delta(j))*y(j);
-        else
-            y(j) = zero_delta;
-        end
-        v(:,j+1) = y;
-        x = y;
-        [fv(j+1),junk1,junk2,nopenalty_flag] = feval(objective_function,x,varargin{:});
-        if check_delta
-            while ~nopenalty_flag
-                if y(j)~=0
-                    delta(j) = delta(j)/1.1;
-                else
-                    zero_delta = zero_delta/1.1;
-                end
-                y = point;
-                if y(j) ~= 0
-                    y(j) = (1 + delta(j))*y(j);
-                else
-                    y(j) = zero_delta;
-                end
-                v(:,j+1) = y;
-                x = y;
-                [fv(j+1),junk1,junk2,nopenalty_flag] = feval(objective_function,x,varargin{:});
+    v(:,j+1) = y;
+    x = y;
+    [fv(j+1),junk1,junk2,nopenalty_flag] = feval(objective_function,x,varargin{:});
+    if check_delta
+        while ~nopenalty_flag
+            if y(j)~=0
+                delta(j) = delta(j)/1.1;
+            else
+                zero_delta = zero_delta/1.1;
             end
+            y = point;
+            if y(j) ~= 0
+                y(j) = (1 + delta(j))*y(j);
+            else
+                y(j) = zero_delta;
+            end
+            v(:,j+1) = y;
+            x = y;
+            [fv(j+1),junk1,junk2,nopenalty_flag] = feval(objective_function,x,varargin{:});
         end
     end
-    % Sort by increasing order of the objective function values.
-    [fv,sort_idx] = sort(fv);
-    v = v(:,sort_idx);
+end
+% Sort by increasing order of the objective function values.
+[fv,sort_idx] = sort(fv);
+v = v(:,sort_idx);

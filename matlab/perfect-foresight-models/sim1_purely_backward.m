@@ -2,7 +2,7 @@ function [endogenousvariables, info] = sim1_purely_backward(endogenousvariables,
 
 % Performs deterministic simulation of a purely backward model
 
-% Copyright (C) 2012-2015 Dynare Team
+% Copyright (C) 2012-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -28,12 +28,12 @@ else
     nyb = 0;
     iyb = [];
 end
-        
+
 
 if ny0 ~= M.endo_nbr
     error('All endogenous variables must appear at the current period!')
 end
-    
+
 dynamicmodel = str2func([M.fname,'_dynamic']);
 
 info.status = 1;

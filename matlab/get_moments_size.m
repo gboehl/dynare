@@ -4,14 +4,14 @@ function s=get_moments_size(options)
 %
 % INPUTS
 %    options: structure of Dynare options
-%    
+%
 % OUTPUTS
 %    s: size of moments for a given model and options
-%        
+%
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2008-2011 Dynare Team
+% Copyright (C) 2008-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

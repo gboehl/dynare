@@ -12,19 +12,19 @@ function hessian_mat = hessian(func,x, gstep, varargin) % --*-- Unitary tests --
 %    hessian_mat [double]   Hessian matrix
 %
 % ALGORITHM
-%    Uses Abramowitz and Stegun (1965) formulas 25.3.23 
+%    Uses Abramowitz and Stegun (1965) formulas 25.3.23
 % \[
 %     \frac{\partial^2 f_{0,0}}{\partial {x^2}} = \frac{1}{h^2}\left( f_{1,0} - 2f_{0,0} + f_{ - 1,0} \right)
 % \]
 % and 25.3.27 p. 884
-% 
+%
 % \[
 %     \frac{\partial ^2f_{0,0}}{\partial x\partial y} = \frac{-1}{2h^2}\left(f_{1,0} + f_{-1,0} + f_{0,1} + f_{0,-1} - 2f_{0,0} - f_{1,1} - f_{-1,-1} \right)
 % \]
 %
 % SPECIAL REQUIREMENTS
 %    none
-%  
+%
 
 % Copyright (C) 2001-2017 Dynare Team
 %
@@ -43,7 +43,7 @@ function hessian_mat = hessian(func,x, gstep, varargin) % --*-- Unitary tests --
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-if ~isa(func, 'function_handle') 
+if ~isa(func, 'function_handle')
     func = str2func(func);
 end
 
@@ -67,7 +67,7 @@ for i=1:n
     xh1(i)   = x(i)-h_1(i);
     f_1(:,i) = feval(func, xh1, varargin{:});
     %reset parameter
-    xh1(i)   = x(i); 
+    xh1(i)   = x(i);
 end
 
 xh_1 = xh1;
@@ -75,14 +75,14 @@ temp = f1+f_1-f0*ones(1, n); %term f_(1,0)+f_(-1,0)-f_(0,0) used later
 
 hessian_mat = zeros(size(f0,1), n*n);
 
-for i=1:n    
-    if i > 1  
-        %fill symmetric part of Hessian based on previously computed results      
+for i=1:n
+    if i > 1
+        %fill symmetric part of Hessian based on previously computed results
         k = [i:n:n*(i-1)];
         hessian_mat(:,(i-1)*n+1:(i-1)*n+i-1) = hessian_mat(:,k);
-    end     
+    end
     hessian_mat(:,(i-1)*n+i) = (f1(:,i)+f_1(:,i)-2*f0)./(h1(i)*h_1(i)); %formula 25.3.23
-    for j=i+1:n        
+    for j=i+1:n
         %step in up direction
         xh1(i) = x(i)+h1(i);
         xh1(j) = x(j)+h_1(j);
@@ -90,12 +90,12 @@ for i=1:n
         xh_1(i) = x(i)-h1(i);
         xh_1(j) = x(j)-h_1(j);
         hessian_mat(:,(i-1)*n+j) =-(-feval(func, xh1, varargin{:})-feval(func, xh_1, varargin{:})+temp(:,i)+temp(:,j))./(2*h1(i)*h_1(j)); %formula 25.3.27
-        %reset grid points
+                                                                                                                                          %reset grid points
         xh1(i)  = x(i);
         xh1(j)  = x(j);
         xh_1(i) = x(i);
         xh_1(j) = x(j);
-    end    
+    end
 end
 
 

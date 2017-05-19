@@ -11,17 +11,17 @@ function [post_mean, post_median, post_var, hpd_interval, post_deciles, density]
 %    post_mean     [double]    Scalar, posterior mean.
 %    post_median   [double]    Scalar, posterior median.
 %    post_var      [double]    Scalar, posterior variance.
-%    hpd_interval  [double]    Vector (1*2), Highest Probability Density interval 
+%    hpd_interval  [double]    Vector (1*2), Highest Probability Density interval
 %    post_deciles  [double]    Vector (9*1), deciles of the posterior distribution.
-%    density       [double]    Matrix (n*2), non parametric estimate of the posterior density. First and second 
-%                              columns are respectively abscissa and ordinate coordinates.  
-%    
+%    density       [double]    Matrix (n*2), non parametric estimate of the posterior density. First and second
+%                              columns are respectively abscissa and ordinate coordinates.
+%
 % SPECIAL REQUIREMENTS
-%    Other matlab routines distributed with Dynare: mh_optimal_bandwidth.m 
+%    Other matlab routines distributed with Dynare: mh_optimal_bandwidth.m
 %                                                   kernel_density_estimate.m.
 %
 
-% Copyright (C) 2005-2011 Dynare Team
+% Copyright (C) 2005-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -41,7 +41,7 @@ function [post_mean, post_median, post_var, hpd_interval, post_deciles, density]
 if nargin<4
     number_of_grid_points = 2^9;      % 2^9 = 512 !... Must be a power of two.
     bandwidth = 0;                    % Rule of thumb optimal bandwidth parameter.
-    kernel_function = 'gaussian';     % Gaussian kernel for Fast Fourrier Transform approximaton.  
+    kernel_function = 'gaussian';     % Gaussian kernel for Fast Fourrier Transform approximaton.
 else
     number_of_grid_points = kernel_options.gridpoints;
     bandwidth = kernel_options.bandwidth;
@@ -69,7 +69,7 @@ if hpd_draws>2
     [kmin,idx] = min(kk);
     hpd_interval = [xx(idx) xx(idx)+kmin];
 else
-    hpd_interval=NaN(1,2);    
+    hpd_interval=NaN(1,2);
 end
 if length(xx)>9
     post_deciles = xx([round(0.1*number_of_draws) ...

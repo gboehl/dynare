@@ -2,7 +2,7 @@ function g = apprgrdn(x,f,fun,deltax,obj,varargin)
 % g = apprgrdn(x,f,fun,deltax,obj,varargin)
 % Performs the finite difference approximation of the gradient <g> at a
 % point <x> used in solveopt
-% 
+%
 % Inputs:
 % x:        point at which to evaluate gradient
 % f:        calculated function value at a point x;
@@ -14,10 +14,10 @@ function g = apprgrdn(x,f,fun,deltax,obj,varargin)
 % Modified by Giovanni Lombardo and Johannes Pfeifer to accomodate Dynare
 % structure
 %
-% 
-% Copyright (C) 1997-2008, Alexei Kuntsevich and Franz Kappel 
+%
+% Copyright (C) 1997-2008, Alexei Kuntsevich and Franz Kappel
 % Copyright (C) 2008-2015 Giovanni Lombardo
-% Copyright (C) 2015 Dynare Team
+% Copyright (C) 2015-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -38,10 +38,10 @@ n=max(size(x)); ee=ones(size(x));
 di=abs(x); idx=find(di<5e-15); di(idx)=5e-15*ee(idx);
 di=deltax.*di;
 if obj
-    idx=find(abs(di)<2e-10); 
+    idx=find(abs(di)<2e-10);
     di(idx)=2e-10*sign(di(idx));
 else
-    idx=find(abs(di)<5e-15); 
+    idx=find(abs(di)<5e-15);
     di(idx)=5e-15*sign(di(idx));
 end
 y=x;
@@ -51,7 +51,7 @@ for i=1:n
     y(i)=x(i)+di(i);
     fi=feval(fun,y,varargin{:});
     if obj
-        if fi==f,
+        if fi==f
             for j=1:3
                 di(i)=di(i)*10;  y(i)=x(i)+di(i);
                 fi=feval(fun,y,varargin{:});

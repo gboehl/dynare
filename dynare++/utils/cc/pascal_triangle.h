@@ -7,42 +7,53 @@
 
 #include <vector>
 
-namespace ogu {
+namespace ogu
+{
 
-	using std::vector;
+  using std::vector;
 
-	class PascalRow : public vector<int> {
-		int k;
-	public:
-		PascalRow()
-			: vector<int>(), k(1)
-			{ push_back(2); }
-		void setFromPrevious(const PascalRow& prev);
-		void prolong(const PascalRow& prev);
-		void prolongFirst(int n);
-		void print() const;
-	};
+  class PascalRow : public vector<int>
+  {
+    int k;
+  public:
+    PascalRow()
+      : vector<int>(), k(1)
+    {
+      push_back(2);
+    }
+    void setFromPrevious(const PascalRow &prev);
+    void prolong(const PascalRow &prev);
+    void prolongFirst(int n);
+    void print() const;
+  };
 
-	class PascalTriangle {
-		vector<PascalRow> tr;
-	public:
-		PascalTriangle()
-			{tr.push_back(PascalRow());}
-		PascalTriangle(const PascalTriangle& triang)
-			: tr(triang.tr) {}
-		const PascalTriangle& operator=(const PascalTriangle& triang)
-			{ tr = triang.tr; return *this;}
-		int noverk(int n, int k);
-		void print() const;
-	protected:
-		void ensure(int n, int k);
-		int max_n() const;
-		int max_k() const;
-	};
+  class PascalTriangle
+  {
+    vector<PascalRow> tr;
+  public:
+    PascalTriangle()
+    {
+      tr.push_back(PascalRow());
+    }
+    PascalTriangle(const PascalTriangle &triang)
+      : tr(triang.tr)
+    {
+    }
+    const PascalTriangle &
+    operator=(const PascalTriangle &triang)
+    {
+      tr = triang.tr; return *this;
+    }
+    int noverk(int n, int k);
+    void print() const;
+  protected:
+    void ensure(int n, int k);
+    int max_n() const;
+    int max_k() const;
+  };
 };
 
 extern ogu::PascalTriangle ptriang;
-
 
 #endif
 

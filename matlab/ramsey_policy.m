@@ -1,6 +1,6 @@
 function info = ramsey_policy(var_list)
 
-% Copyright (C) 2007-2012 Dynare Team
+% Copyright (C) 2007-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -38,7 +38,7 @@ else
         error('You have specified a steady state file, but not provided an instrument. Either delete the steady state file or provide an instrument')
     end
 end
-        
+
 info = stoch_simul(var_list);
 
 oo_.steady_state = oo_.dr.ys;

@@ -1,19 +1,19 @@
 function dynatype (s,var_list)
 % function dynatype (s,var_list)
-% This optional command saves the simulation results in a text file. The name of each 
+% This optional command saves the simulation results in a text file. The name of each
 % variable preceeds the corresponding results. This command must follow SIMUL.
-%  
+%
 % INPUTS
 %   s:         filename
 %   var_list:  vector of selected endogenous variables
-%  
+%
 % OUTPUTS
 %   none
 %
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2001-2009 Dynare Team
+% Copyright (C) 2001-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

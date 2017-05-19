@@ -1,19 +1,19 @@
 function w=row_header_width(M_,estim_params_,bayestopt_)
 % This function computes the width of the row headers for
 % the estimation results
-% 
-% INPUTS 
-%   estim_params_    [structure] 
+%
+% INPUTS
+%   estim_params_    [structure]
 %   M_               [structure]
 %   bayestopt_       [structure]
-%  
-% OUTPUTS 
+%
+% OUTPUTS
 %   w                integer
 %
 % SPECIAL REQUIREMENTS
 %   None.
 
-% Copyright (C) 2006-2013 Dynare Team
+% Copyright (C) 2006-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -44,13 +44,13 @@ if np
 end
 if nvx
     for i=1:nvx
-        k = estim_params_.var_exo(i,1); 
+        k = estim_params_.var_exo(i,1);
         w = max(w,length(deblank(M_.exo_names(k,:))));
     end
 end
 if nvn
     for i=1:nvn
-        k = estim_params_.var_endo(i,1); 
+        k = estim_params_.var_endo(i,1);
         w = max(w,length(deblank(M_.endo_names(k,:))));
     end
 end
@@ -72,4 +72,3 @@ if ncn
 
     end
 end
-

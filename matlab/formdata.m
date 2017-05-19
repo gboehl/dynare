@@ -11,7 +11,7 @@ function formdata(fname,date)
 % SPECIAL REQUIREMENT
 %   none
 
-% Copyright (C) 2007-2010 Dynare Team
+% Copyright (C) 2007-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -29,6 +29,7 @@ function formdata(fname,date)
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 global M_ oo_
+
 fid = fopen([fname '_endo.frm'],'w');
 n=size(oo_.endo_simul,1);
 t=size(oo_.endo_simul,2);
@@ -46,11 +47,10 @@ for i=1:n
             fprintf(fid,'%10.5f %10.5f\n',oo_.endo_simul(i,floor(t/4)*4+1:t));
           case 3
             fprintf(fid,'%10.5f %10.5f %10.5f\n',oo_.endo_simul(i,floor(t/4)*4+1:t));
-        end;
-        %else
-        %    fprintf(fid,'\n');
-    end;
-end;
+        end
+    end
+end
+
 fclose(fid);
 
 fid = fopen([fname '_exo.frm'],'w');
@@ -70,10 +70,8 @@ for i=1:n
             fprintf(fid,'%10.5f %10.5f\n',oo_.exo_simul(floor(t/4)*4+1:t,i)');
           case 3
             fprintf(fid,'%10.5f %10.5f %10.5f\n',oo_.exo_simul(floor(t/4)*4+1:t,i)');
-        end;
-        %else
-        %    fprintf(fid,'\n');
-    end;
-end;
+        end
+    end
+end
+
 fclose(fid);
-return;

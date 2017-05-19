@@ -1,20 +1,20 @@
-function density = multivariate_student_pdf(X,Mean,Sigma_upper_chol,df);
+function density = multivariate_student_pdf(X,Mean,Sigma_upper_chol,df)
 % Evaluates the density of a multivariate student, with expectation Mean,
 % variance Sigma_upper_chol'*Sigma_upper_chol and degrees of freedom df, at X.
 %
-% INPUTS 
+% INPUTS
 %
-%    X                  [double]    1*n vector        
+%    X                  [double]    1*n vector
 %    Mean               [double]    1*n vector, expectation of the multivariate random variable.
 %    Sigma_upper_chol   [double]    n*n matrix, upper triangular Cholesky decomposition of Sigma (the "covariance matrix").
 %    df                 [integer]   degrees of freedom.
-%    
-% OUTPUTS 
-%    density            [double]    density. 
-%        
+%
+% OUTPUTS
+%    density            [double]    density.
+%
 % SPECIAL REQUIREMENTS
 
-% Copyright (C) 2003-2009 Dynare Team
+% Copyright (C) 2003-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

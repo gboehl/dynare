@@ -2,12 +2,12 @@ function myoutput = McMCDiagnostics_core(myinputs,fpar,npar,whoiam, ThisMatlab)
 % function myoutput = McMCDiagnostics_core(myinputs,fpar,npar,whoiam, ThisMatlab)
 % Computes the Brooks/Gelman (1998) convergence diagnostics, both the
 % parameteric and the non-parameteric versions
-% 
+%
 % PARALLEL CONTEXT
 % Core functionality for MCMC Diagnostics, which can be parallelized.
 % See also the comment in posterior_sampler_core.m funtion.
-% 
-% 
+%
+%
 % INPUTS
 %   See See the comment in posterior_sampler_core.m funtion.
 
@@ -25,15 +25,15 @@ function myoutput = McMCDiagnostics_core(myinputs,fpar,npar,whoiam, ThisMatlab)
 %
 % ALGORITHM
 %   Computes part of the convergence diagnostics, the rest is computed in McMCDiagnostics.m .
-%   The methodology and terminology is based on: Brooks/Gelman (1998): General 
-%   Methods for Monitoring Convergence of Iterative Simulations, Journal of Computational 
+%   The methodology and terminology is based on: Brooks/Gelman (1998): General
+%   Methods for Monitoring Convergence of Iterative Simulations, Journal of Computational
 %   and Graphical Statistics, Volume 7, Number 4, Pages 434-455
-% 
+%
 %
 % SPECIAL REQUIREMENTS.
 %   None.
 
-% Copyright (C) 2006-2016 Dynare Team
+% Copyright (C) 2006-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -50,7 +50,7 @@ function myoutput = McMCDiagnostics_core(myinputs,fpar,npar,whoiam, ThisMatlab)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-if nargin<4,
+if nargin<4
     whoiam=0;
 end
 
@@ -71,7 +71,7 @@ M_=myinputs.M_;
 if whoiam
     Parallel=myinputs.Parallel;
 end
-if ~exist('MetropolisFolder'),
+if ~exist('MetropolisFolder')
     MetropolisFolder = CheckPath('metropolis',M_.dname);
 end
 
@@ -81,16 +81,16 @@ UDIAG = zeros(NumberOfLines,6,npar-fpar+1);
 
 if whoiam
     waitbarString = ['Please wait... McMCDiagnostics (' int2str(fpar) 'of' int2str(npar) ')...'];
-    if Parallel(ThisMatlab).Local,
+    if Parallel(ThisMatlab).Local
         waitbarTitle=['Local '];
     else
         waitbarTitle=[Parallel(ThisMatlab).ComputerName];
     end
     fMessageStatus(0,whoiam,waitbarString, waitbarTitle, Parallel(ThisMatlab));
 end
-for j=fpar:npar,
+for j=fpar:npar
     if isoctave
-        if (whoiam==0),
+        if (whoiam==0)
             printf('    Parameter %d...  ',j);
         end
     else
@@ -131,13 +131,13 @@ for j=fpar:npar,
         end
     end
     if isoctave
-        if (whoiam==0),
+        if (whoiam==0)
             printf('Done! \n');
         end
     else
         fprintf('Done! \n');
     end
-    if whoiam,
+    if whoiam
         waitbarString = [ 'Parameter ' int2str(j) '/' int2str(npar) ' done.'];
         fMessageStatus((j-fpar+1)/(npar-fpar+1),whoiam,waitbarString, waitbarTitle, Parallel(ThisMatlab))
     end

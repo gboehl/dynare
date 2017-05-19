@@ -1,20 +1,20 @@
 function [dr,aimcode,rts]=dynAIMsolver1(jacobia_,M_,dr)
 % function [dr,aimcode]=dynAIMsolver1(jacobia_,M_,dr)
-% Maps Dynare jacobia to AIM 1st order model solver designed and developed by Gary ANderson 
+% Maps Dynare jacobia to AIM 1st order model solver designed and developed by Gary ANderson
 % and derives the solution for gy=dr.hgx and gu=dr.hgu from the AIM outputs
-% AIM System is given as a sum: 
-% i.e. for i=-$...+&   SUM(Hi*xt+i)= £*zt, t = 0, . . . ,?
+% AIM System is given as a sum:
+% i.e. for i=-$...+&   SUM(Hi*xt+i)= Â£*zt, t = 0, . . . ,?
 % and its input as single array of matrices: [H-$...  Hi ... H+&]
-% and its solution as xt=SUM( Bi*xt+i) + @*£*zt for i=-$...-1 
-% with the output in form bb=[B-$...  Bi ... B-1] and @=inv(Ho+H1*B-1) 
-% Dynare jacobian = [fy'-$...  fy'i ... fy'+&  fu'] 
-% where [fy'-$...  fy'i ... fy'+&]=[H-$...  Hi ... H+&] and fu'= £
+% and its solution as xt=SUM( Bi*xt+i) + @*Â£*zt for i=-$...-1
+% with the output in form bb=[B-$...  Bi ... B-1] and @=inv(Ho+H1*B-1)
+% Dynare jacobian = [fy'-$...  fy'i ... fy'+&  fu']
+% where [fy'-$...  fy'i ... fy'+&]=[H-$...  Hi ... H+&] and fu'= Â£
 %
 % INPUTS
-%   jacobia_   [matrix]           1st order derivative of the model 
+%   jacobia_   [matrix]           1st order derivative of the model
 %   dr         [matlab structure] Decision rules for stochastic simulations.
-%   M_         [matlab structure] Definition of the model.           
-%    
+%   M_         [matlab structure] Definition of the model.
+%
 % OUTPUTS
 %   dr         [matlab structure] Decision rules for stochastic simulations.
 %   aimcode    [integer]          1: the model defines variables uniquely
@@ -31,22 +31,22 @@ function [dr,aimcode,rts]=dynAIMsolver1(jacobia_,M_,dr)
 %      (c==63) e='Aim: A is NAN or INF.';
 %      (c==64) e='Aim: Problem in SPEIG.';
 %      else    e='Aimerr: return code not properly specified';
-%    
+%
 % SPECIAL REQUIREMENTS
-% Dynare use: 
+% Dynare use:
 %       1) the lognormal block in DR1 is being invoked for some models and changing
 %       values of ghx and ghy. We need to return the AIM output
 %       values before that block and run the block with the current returned values
-%       of gy (i.e. dr.ghx) and gu (dr.ghu) if it is needed even when the AIM is used  
+%       of gy (i.e. dr.ghx) and gu (dr.ghu) if it is needed even when the AIM is used
 %       (it does not depend on mjdgges output).
-%       
-%       2) passing in aa={Q'|1}*jacobia_ can produce ~ one order closer  
-%       results to the Dynare solutiion then when if plain jacobia_ is passed, 
-%       i.e. diff < e-14 for aa and diff < *e-13 for jacobia_ if Q' is used.  
 %
-% GP July 2008 
+%       2) passing in aa={Q'|1}*jacobia_ can produce ~ one order closer
+%       results to the Dynare solutiion then when if plain jacobia_ is passed,
+%       i.e. diff < e-14 for aa and diff < *e-13 for jacobia_ if Q' is used.
+%
+% GP July 2008
 
-% Copyright (C) 2008-2012 Dynare Team
+% Copyright (C) 2008-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -69,8 +69,8 @@ lags=M_.maximum_endo_lag; % no of lags and leads
 leads=M_.maximum_endo_lead;
 klen=(leads+lags+1);  % total lenght
 theAIM_H=zeros(neq, neq*klen); % alloc space
-lli=M_.lead_lag_incidence';  
-% "sparse" the compact jacobia into AIM H aray of matrices 
+lli=M_.lead_lag_incidence';
+% "sparse" the compact jacobia into AIM H aray of matrices
 % without exogenous shoc
 theAIM_H(:,find(lli(:)))=jacobia_(:,nonzeros(lli(:)));
 condn  = 1.e-10;%SPAmalg uses this in zero tests
@@ -102,7 +102,7 @@ if aimcode==1 %if OK
         col_order=[((i-1)*neq)+dr.order_var' col_order];
     end
     bb_ord= bb(dr.order_var,col_order); % derive ordered gy
-    
+
     % variables are present in the state space at the lag at which they
     % appear and at all smaller lags. The are ordered from smaller to
     % higher lag (reversed order of M_.lead_lag_incidence rows for lagged
@@ -117,7 +117,7 @@ if aimcode==1 %if OK
                   %theH0= theAIM_H (:,lags*neq+1: (lags+1)*neq);
                   %    theHP= theAIM_H (:,(M_.maximum_endo_lag+1)*neq+1: (M_.maximum_endo_lag+2)*neq);
                   %theHP= theAIM_H (:,(lags+1)*neq+1: (lags+2)*neq);
-        theAIM_Psi= - jacobia_(:, size(nonzeros(lli(:)))+1:end);% 
+        theAIM_Psi= - jacobia_(:, size(nonzeros(lli(:)))+1:end);%
                                                                 %? = inv(H0 + H1B1)
                                                                 %phi= (theH0+theHP*sparse(bb(:,(lags-1)*neq+1:end)))\eye( neq);
                                                                 %AIM_ghu=phi*theAIM_Psi;
@@ -137,8 +137,8 @@ else
     if aimcode < 1 || aimcode > 5  % too big exception, use mjdgges
         error('Error in AIM: aimcode=%d ; %s', aimcode, err);
     end
-    %    if aimcode > 5 
+    %    if aimcode > 5
     %        disp(['Error in AIM: aimcode=' sprintf('%d : %s',aimcode, err)]);
     %        aimcode=5;
-    %    end  
+    %    end
 end

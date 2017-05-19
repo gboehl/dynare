@@ -4,14 +4,14 @@ function d = bksup0(c,ny,jcf,iyf,icf,periods)
 % INPUTS
 %    ny:             number of endogenous variables
 %    jcf:            variables index forward
-%    
+%
 % OUTPUTS
 %    d:              vector of backsubstitution results
 %
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2003-2009 Dynare Team
+% Copyright (C) 2003-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

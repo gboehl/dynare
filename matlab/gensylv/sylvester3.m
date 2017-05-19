@@ -1,7 +1,7 @@
 function x=sylvester3(a,b,c,d)
 % solves a*x+b*x*c=d where d is [n x m x p]
 
-% Copyright (C) 2005-2012 Dynare Team
+% Copyright (C) 2005-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -23,21 +23,21 @@ m = size(c,1);
 p = size(d,3);
 x=zeros(n,m,p);
 if n == 1
-    for j=1:p,
+    for j=1:p
         x(:,:,j)=d(:,:,j)./(a*ones(1,m)+b*c);
     end
     return
 end
 if m == 1
-    for j=1:p,
+    for j=1:p
         x(:,:,j) = (a+c*b)\d(:,:,j);
     end
-    return;
+    return
 end
 [u,t]=schur(c);
 if isoctave
     [aa,bb,qq,zz]=qz(full(a),full(b));
-    for j=1:p,
+    for j=1:p
         if octave_ver_less_than('3.4.0')
             d(:,:,j)=qq'*d(:,:,j)*u;
         else
@@ -46,7 +46,7 @@ if isoctave
     end
 else
     [aa,bb,qq,zz]=qz(full(a),full(b),'real'); % available in Matlab version 6.0
-    for j=1:p,
+    for j=1:p
         d(:,:,j)=qq*d(:,:,j)*u;
     end
 end
@@ -58,7 +58,7 @@ while i < m
         if i == 1
             c = zeros(n,1,p);
         else
-            for j=1:p,
+            for j=1:p
                 c(:,:,j) = bb*(x(:,1:i-1,j)*t(1:i-1,i));
             end
         end
@@ -69,7 +69,7 @@ while i < m
             c = zeros(n,1,p);
             c1 = zeros(n,1,p);
         else
-            for j=1:p,
+            for j=1:p
                 c(:,:,j) = bb*(x(:,1:i-1,j)*t(1:i-1,i));
                 c1(:,:,j) = bb*(x(:,1:i-1,j)*t(1:i-1,i+1));
             end
@@ -82,13 +82,13 @@ while i < m
     end
 end
 if i == m
-    for j=1:p,
+    for j=1:p
         c(:,:,j) = bb*(x(:,1:m-1,j)*t(1:m-1,m));
     end
     aabbt = (aa+bb*t(m,m));
     x(:,m,:)=aabbt\squeeze(d(:,m,:)-c);
 end
-for j=1:p,
+for j=1:p
     x(:,:,j)=zz*x(:,:,j)*u';
 end
 

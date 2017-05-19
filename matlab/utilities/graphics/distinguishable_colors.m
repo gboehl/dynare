@@ -53,32 +53,24 @@ function colors = distinguishable_colors(n_colors,bg,func)
 % Example using the file exchange's 'colorspace':
 %   func = @(x) colorspace('RGB->Lab',x);
 %   c = distinguishable_colors(25,'w',func);
-
-% Copyright 2010-2011 by Timothy E. Holy
-% All rights reserved.
+    
+% Copyright (C) 2005-2010 2010-2011 by Timothy E. Holy
+% Copyright (C) 2017 Dynare Team
 %
-% Redistribution and use in source and binary forms, with or without
-% modification, are permitted provided that the following conditions are
-% met:
+% This file is part of Dynare.
 %
-    % * Redistributions of source code must retain the above copyright
-      % notice, this list of conditions and the following disclaimer.
-    % * Redistributions in binary form must reproduce the above copyright
-      % notice, this list of conditions and the following disclaimer in
-      % the documentation and/or other materials provided with the distribution
+% Dynare is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
 %
-% THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-% AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-% IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-% ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
-% LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
-% CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-% SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
-% INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
-% CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-% ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-% POSSIBILITY OF SUCH DAMAGE.
-
+% Dynare is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 % Parse the inputs
 if (nargin < 2)
@@ -162,9 +154,9 @@ k = find(cspec==c(1));
 if isempty(k)
     error('MATLAB:InvalidColorString','Unknown color string.');
 end
-if k~=3 || length(c)==1,
+if k~=3 || length(c)==1
     c = rgbspec(k,:);
-elseif length(c)>2,
+elseif length(c)>2
     if strcmpi(c(1:3),'bla')
         c = [0 0 0];
     elseif strcmpi(c(1:3),'blu')

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2011 Dynare Team
+ * Copyright (C) 2007-2017 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -142,7 +142,7 @@ mxCreateStructArray(unsigned int rows, mwSize *cols, int nfields, const string &
   return mxCreateStructMatrix(rows, *cols, nfields, fieldnames);
 };
 mxArray *mxCreatNULLMatrix();
-void mexCallMATLAB(unsigned int n_lhs, mxArray* lhs[], unsigned int n_rhs, mxArray* rhs[], const char *function);
+void mexCallMATLAB(unsigned int n_lhs, mxArray *lhs[], unsigned int n_rhs, mxArray *rhs[], const char *function);
 void mxDestroyArray(mxArray *A_m);
 mxArray *read_struct(FILE *fid);
 mxArray *read_Array(FILE *fid);

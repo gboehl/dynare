@@ -1,7 +1,7 @@
 function oo_ = covariance_mc_analysis(NumberOfSimulations,type,dname,fname,vartan,nvar,var1,var2,mh_conf_sig,oo_,options_)
 % This function analyses the (posterior or prior) distribution of the
 % endogenous variables' covariance matrix.
-% 
+%
 % INPUTS
 %   NumberOfSimulations     [integer]           scalar, number of simulations.
 %   type                    [string]            'prior' or 'posterior'
@@ -14,12 +14,12 @@ function oo_ = covariance_mc_analysis(NumberOfSimulations,type,dname,fname,varta
 %   mh_conf_sig             [double]            2 by 1 vector with upper
 %                                               and lower bound of HPD intervals
 %   oo_                     [structure]         Dynare structure where the results are saved.
-%   options_                [structure]         Dynare options structure 
+%   options_                [structure]         Dynare options structure
 %
 % OUTPUTS
 %   oo_                     [structure]        Dynare structure where the results are saved.
 
-% Copyright (C) 2008-2015 Dynare Team
+% Copyright (C) 2008-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -64,7 +64,7 @@ var1=deblank(var1);
 var2=deblank(var2);
 
 if isfield(oo_,[ TYPE 'TheoreticalMoments'])
-    temporary_structure = oo_.([TYPE, 'TheoreticalMoments']); 
+    temporary_structure = oo_.([TYPE, 'TheoreticalMoments']);
     if isfield(temporary_structure,'dsge')
         temporary_structure = oo_.([TYPE, 'TheoreticalMoments']).dsge;
         if isfield(temporary_structure,'covariance')
@@ -104,17 +104,17 @@ for file = 1:length(ListOfFiles)
         temp=Covariance_matrix(:,cov_pos)./(sqrt(Covariance_matrix(:,var_pos_1)).*sqrt(Covariance_matrix(:,var_pos_2)));
         temp(Covariance_matrix(:,cov_pos)==0)=0; %filter out 0 correlations that would result in 0/0
         tmp_corr_mat(i1:i2)=temp;
-    end    
+    end
     i1 = i2+1;
 end
 
 if options_.estimation.moments_posterior_density.indicator
     [p_mean, p_median, p_var, hpd_interval, p_deciles, density] = ...
-            posterior_moments(tmp,1,mh_conf_sig);
+        posterior_moments(tmp,1,mh_conf_sig);
     oo_.([TYPE, 'TheoreticalMoments']).dsge.covariance.density.(var1).(var2) = density;
 else
     [p_mean, p_median, p_var, hpd_interval, p_deciles] = ...
-                    posterior_moments(tmp,0,mh_conf_sig);
+        posterior_moments(tmp,0,mh_conf_sig);
 end
 oo_.([TYPE, 'TheoreticalMoments']).dsge.covariance.Mean.(var1).(var2) = p_mean;
 oo_.([TYPE, 'TheoreticalMoments']).dsge.covariance.Median.(var1).(var2) = p_median;

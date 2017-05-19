@@ -1,7 +1,7 @@
 function [logged_prior_density, dlprior, d2lprior, info] = priordens(x, pshape, p6, p7, p3, p4, initialization) % --*-- Unitary tests --*--
 % Computes a prior density for the structural parameters of DSGE models
 %
-% INPUTS 
+% INPUTS
 %    x              [double]      vector with n elements.
 %    pshape         [integer]     vector with n elements (bayestopt_.pshape).
 %    p6:            [double]      vector with n elements, first  parameter of the prior distribution (bayestopt_.p6).
@@ -9,13 +9,13 @@ function [logged_prior_density, dlprior, d2lprior, info] = priordens(x, pshape, 
 %    p3:            [double]      vector with n elements, lower bounds of the untruncated standard or generalized distribution
 %    p4:            [double]      vector with n elements, upper bound of the untruncated standard or generalized distribution
 %    initialization [integer]     if 1: initialize persistent variables
-%    
-% OUTPUTS 
+%
+% OUTPUTS
 %    logged_prior_density  [double]  scalar, log of the prior density evaluated at x.
 %    info                  [double]  error code for index of Inf-prior parameter
 %
 
-% Copyright (C) 2003-2015 Dynare Team
+% Copyright (C) 2003-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -89,12 +89,12 @@ d2lprior = 0.0;
 if tt1
     logged_prior_density = logged_prior_density + sum(lpdfgbeta(x(id1),p6(id1),p7(id1),p3(id1),p4(id1))) ;
     if isinf(logged_prior_density)
-        if nargout ==4 
+        if nargout ==4
             info=id1(isinf(lpdfgbeta(x(id1),p6(id1),p7(id1),p3(id1),p4(id1))));
         end
         return
     end
-    if nargout == 2,
+    if nargout == 2
         [tmp, dlprior(id1)]=lpdfgbeta(x(id1),p6(id1),p7(id1),p3(id1),p4(id1));
     elseif nargout == 3
         [tmp, dlprior(id1), d2lprior(id1)]=lpdfgbeta(x(id1),p6(id1),p7(id1),p3(id1),p4(id1));
@@ -104,12 +104,12 @@ end
 if tt2
     logged_prior_density = logged_prior_density + sum(lpdfgam(x(id2)-p3(id2),p6(id2),p7(id2))) ;
     if isinf(logged_prior_density)
-        if nargout ==4 
+        if nargout ==4
             info=id2(isinf(lpdfgam(x(id2)-p3(id2),p6(id2),p7(id2))));
         end
         return
     end
-    if nargout == 2,
+    if nargout == 2
         [tmp, dlprior(id2)]=lpdfgam(x(id2)-p3(id2),p6(id2),p7(id2));
     elseif nargout == 3
         [tmp, dlprior(id2), d2lprior(id2)]=lpdfgam(x(id2)-p3(id2),p6(id2),p7(id2));
@@ -118,7 +118,7 @@ end
 
 if tt3
     logged_prior_density = logged_prior_density + sum(lpdfnorm(x(id3),p6(id3),p7(id3))) ;
-    if nargout == 2,
+    if nargout == 2
         [tmp, dlprior(id3)]=lpdfnorm(x(id3),p6(id3),p7(id3));
     elseif nargout == 3
         [tmp, dlprior(id3), d2lprior(id3)]=lpdfnorm(x(id3),p6(id3),p7(id3));
@@ -128,12 +128,12 @@ end
 if tt4
     logged_prior_density = logged_prior_density + sum(lpdfig1(x(id4)-p3(id4),p6(id4),p7(id4))) ;
     if isinf(logged_prior_density)
-        if nargout ==4 
+        if nargout ==4
             info=id4(isinf(lpdfig1(x(id4)-p3(id4),p6(id4),p7(id4))));
         end
         return
     end
-    if nargout == 2,
+    if nargout == 2
         [tmp, dlprior(id4)]=lpdfig1(x(id4)-p3(id4),p6(id4),p7(id4));
     elseif nargout == 3
         [tmp, dlprior(id4), d2lprior(id4)]=lpdfig1(x(id4)-p3(id4),p6(id4),p7(id4));
@@ -143,13 +143,13 @@ end
 if tt5
     if any(x(id5)-p3(id5)<0) || any(x(id5)-p4(id5)>0)
         logged_prior_density = -Inf ;
-        if nargout ==4 
+        if nargout ==4
             info=id5((x(id5)-p3(id5)<0) || (x(id5)-p4(id5)>0));
         end
         return
     end
     logged_prior_density = logged_prior_density + sum(log(1./(p4(id5)-p3(id5)))) ;
-    if nargout >1,
+    if nargout >1
         dlprior(id5)=zeros(length(id5),1);
     end
     if nargout == 3
@@ -160,12 +160,12 @@ end
 if tt6
     logged_prior_density = logged_prior_density + sum(lpdfig2(x(id6)-p3(id6),p6(id6),p7(id6))) ;
     if isinf(logged_prior_density)
-        if nargout ==4 
+        if nargout ==4
             info=id6(isinf(lpdfig2(x(id6)-p3(id6),p6(id6),p7(id6))));
         end
         return
     end
-    if nargout == 2,
+    if nargout == 2
         [tmp, dlprior(id6)]=lpdfig2(x(id6)-p3(id6),p6(id6),p7(id6));
     elseif nargout == 3
         [tmp, dlprior(id6), d2lprior(id6)]=lpdfig2(x(id6)-p3(id6),p6(id6),p7(id6));
@@ -175,7 +175,7 @@ end
 if tt8
     logged_prior_density = logged_prior_density + sum(lpdfgweibull(x(id8),p6(id8),p7(id8)));
     if isinf(logged_prior_density)
-        if nargout ==4 
+        if nargout ==4
             info=id8(isinf(log(lpdfgweibull(x(id8),p6(id8),p7(id8)))));
         end
         return
@@ -187,7 +187,7 @@ if tt8
     end
 end
 
-if nargout==3,
+if nargout==3
     d2lprior = diag(d2lprior);
 end
 

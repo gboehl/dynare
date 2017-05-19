@@ -1,6 +1,6 @@
 function [endogenousvariables, exogenousvariables] = backward_model_inversion(constraints, exogenousvariables, initialconditions, endo_names, exo_names, freeinnovations, DynareModel, DynareOptions, DynareOutput)
 
-% INPUTS 
+% INPUTS
 % - constraints         [dseries]        with N constrained endogenous variables from t1 to t2.
 % - exogenousvariables  [dseries]        with Q exogenous variables.
 % - initialconditions   [dseries]        with M endogenous variables starting before t1 (M initialcond must contain at least the state variables).
@@ -8,11 +8,11 @@ function [endogenousvariables, exogenousvariables] = backward_model_inversion(co
 % - exo_names           [cell]           list of exogenous variable names.
 % - freeinstruments     [cell]           list of exogenous variable names used to control the constrained endogenous variables.
 %
-% OUTPUTS 
+% OUTPUTS
 % - endogenous          [dseries]
 % - exogenous           [dseries]
 %
-% REMARKS 
+% REMARKS
 
 % Copyright (C) 2017 Dynare Team
 %

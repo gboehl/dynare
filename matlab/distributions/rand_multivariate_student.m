@@ -3,27 +3,27 @@ function draw = rand_multivariate_student(Mean,Sigma_upper_chol,df)
 % Pseudo random draws from a multivariate student distribution,
 % with expectation Mean, variance Sigma*df/(df-2) and degrees of freedom df>0.
 %
-% INPUTS 
+% INPUTS
 %
 %    Mean               [double]    1*n vector, expectation of the multivariate random variable.
-%    Sigma_upper_chol   [double]    n*n matrix, upper triangular Cholesky decomposition of Sigma 
+%    Sigma_upper_chol   [double]    n*n matrix, upper triangular Cholesky decomposition of Sigma
 %                                   (the covariance matrix up to a factor df/(df-2)).
 %    df                 [integer]   degrees of freedom.
-%    
-% OUTPUTS 
+%
+% OUTPUTS
 %    draw               [double]    1*n vector drawn from a multivariate normal distribution with expectation Mean and
 %                                   covariance Sigma.
-%        
 %
-% NOTE See Zellner (appendix B.2, 1971) for a definition.     
-%    Computes the t-distributed random numbers from 
+%
+% NOTE See Zellner (appendix B.2, 1971) for a definition.
+%    Computes the t-distributed random numbers from
 %       X = \mu + Y\sqrt{\frac{\nu}{U}}
-%   where 
+%   where
 %       Y~N(0,Sigma) with Sigma=Sigma_upper_chol'*Sigma_upper_chol
 %       U~\Chi^2_{\nu}
 %   The latter is constructed as the sum of \nu standard normals.
 
-% Copyright (C) 2003-2009 Dynare Team
+% Copyright (C) 2003-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

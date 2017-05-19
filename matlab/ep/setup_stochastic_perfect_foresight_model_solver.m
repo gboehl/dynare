@@ -1,6 +1,6 @@
 function pfm = setup_stochastic_perfect_foresight_model_solver(DynareModel,DynareOptions,DynareOutput)
 
-% Copyright (C) 2013 Dynare Team
+% Copyright (C) 2013-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -16,7 +16,7 @@ function pfm = setup_stochastic_perfect_foresight_model_solver(DynareModel,Dynar
 %
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
-    
+
 pfm.lead_lag_incidence = DynareModel.lead_lag_incidence;
 pfm.ny = DynareModel.endo_nbr;
 pfm.Sigma = DynareModel.Sigma_e;
@@ -71,4 +71,3 @@ pfm.verbose = DynareOptions.ep.verbosity;
 pfm.maxit_ = DynareOptions.simul.maxit;
 pfm.tolerance = DynareOptions.dynatol.f;
 pfm.use_bytecode = DynareOptions.ep.use_bytecode ;
-

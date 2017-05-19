@@ -15,29 +15,32 @@
 // in EVERY action consuming material (this can be done with #define
 // YY_USER_ACTION) and in bison you must use option %locations.
 
-
 #ifndef OG_LOCATION_H
 #define OG_LOCATION_H
 
-namespace ogp {
+namespace ogp
+{
 
-	struct location_type {
-		int off; // offset of the token
-		int ll; // length ot the token
-		location_type() : off(0), ll(0) {}
-	};
+  struct location_type
+  {
+    int off; // offset of the token
+    int ll; // length ot the token
+    location_type() : off(0), ll(0)
+    {
+    }
+  };
 
 };
 
 #define YYLTYPE ogp::location_type
 
 // set current off to the first off and add all lengths
-#define YYLLOC_DEFAULT(Current, Rhs, N) \
-  {(Current).off    =  (Rhs)[1].off;    \
-   (Current).ll     =  0;               \
-   for (int i = 1; i <= N; i++) (Current).ll += (Rhs)[i].ll;}
+#define YYLLOC_DEFAULT(Current, Rhs, N)                         \
+  {(Current).off    =  (Rhs)[1].off;                            \
+    (Current).ll     =  0;                                      \
+    for (int i = 1; i <= N; i++) (Current).ll += (Rhs)[i].ll; }
 
-#define SET_LLOC(prefix) (prefix##lloc.off += prefix##lloc.ll, prefix##lloc.ll = prefix##leng)
+#define SET_LLOC(prefix) (prefix ## lloc.off += prefix ## lloc.ll, prefix ## lloc.ll = prefix ## leng)
 
 #endif
 

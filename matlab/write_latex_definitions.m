@@ -12,7 +12,7 @@ function write_latex_definitions
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2013 Dynare Team
+% Copyright (C) 2013-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -65,9 +65,9 @@ for i=1:length(tables)
     long = eval([M_var_root{i} '_names_long']);
     for j=1:size(names,1)
         fprintf(fid, '\\texttt{%s} & $%s$ & %s\\\\\n', ...
-            regexprep(strtrim(names(j,:)), '_', '\\_'), ...
-            strtrim(tex(j,:)), ...
-            regexprep(strtrim(long(j,:)), '_', '\\_'));
+                regexprep(strtrim(names(j,:)), '_', '\\_'), ...
+                strtrim(tex(j,:)), ...
+                regexprep(strtrim(long(j,:)), '_', '\\_'));
     end
     fprintf(fid, '\\hline%%\n');
     fprintf(fid, '\\end{longtable}\n');

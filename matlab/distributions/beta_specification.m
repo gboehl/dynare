@@ -2,17 +2,17 @@ function [a, b] = beta_specification(mu, sigma2, lb, ub, name)   % --*-- Unitary
 
 % Returns the hyperparameters of the beta distribution given the expectation and variance.
 %
-% INPUTS 
+% INPUTS
 % - mu     [double]   Expectation of the Gamma random variable.
 % - sigma2 [double]   Variance of the Gamma random variable.
 % - lb     [double]   Lower bound of the domain (default is zero).
 % - ub     [double]   Upper bound of the domain (default is one).
 %
-% OUTPUTS 
+% OUTPUTS
 % - a      [double]   First hyperparameter of the Beta density.
 % - b      [double]   Second hyperparameter of the Beta density.
 
-% Copyright (C) 2015 Dynare Team
+% Copyright (C) 2015-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -63,7 +63,7 @@ if sigma2>(1-mu)*mu
     error('Beta prior%s. Given the declared prior expectation, prior lower and upper bounds, the prior std. has to be smaller than %f.',name2,sqrt((1-mu)*mu))
 end
 
-a = (1-mu)*mu*mu/sigma2-mu; 
+a = (1-mu)*mu*mu/sigma2-mu;
 b = a*(1/mu-1);
 
 %@test:1

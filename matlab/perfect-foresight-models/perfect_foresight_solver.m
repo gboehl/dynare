@@ -12,7 +12,7 @@ function perfect_foresight_solver()
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 1996-2016 Dynare Team
+% Copyright (C) 1996-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -184,20 +184,20 @@ if ~isreal(oo_.endo_simul(:)) %can only happen without bytecode
     [i_cols_J1,junk,i_cols_1] = find(illi(:));
     i_cols_T = nonzeros(M_.lead_lag_incidence(1:2,:)');
     residuals = perfect_foresight_problem(yy(:),str2func([M_.fname '_dynamic']), y0, yT, ...
-                                      oo_.exo_simul,M_.params,oo_.steady_state, ...
-                                      M_.maximum_lag,options_.periods,M_.endo_nbr,i_cols, ...
-                                      i_cols_J1, i_cols_1, i_cols_T, i_cols_j, ...
-                                      M_.NNZDerivatives(1));
+                                          oo_.exo_simul,M_.params,oo_.steady_state, ...
+                                          M_.maximum_lag,options_.periods,M_.endo_nbr,i_cols, ...
+                                          i_cols_J1, i_cols_1, i_cols_T, i_cols_j, ...
+                                          M_.NNZDerivatives(1));
     if max(abs(residuals))< options_.dynatol.f
         oo_.deterministic_simulation.status = 1;
         oo_.endo_simul=real(oo_.endo_simul);
     else
-        oo_.deterministic_simulation.status = 0; 
+        oo_.deterministic_simulation.status = 0;
         disp('Simulation terminated with imaginary parts in the residuals or endogenous variables.')
-    end            
+    end
 end
 
-if oo_.deterministic_simulation.status == 1 
+if oo_.deterministic_simulation.status == 1
     disp('Perfect foresight solution found.')
 else
     disp('Failed to solve perfect foresight model')

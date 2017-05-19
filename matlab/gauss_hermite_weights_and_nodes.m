@@ -31,7 +31,7 @@ function [nodes,weights] = gauss_hermite_weights_and_nodes(n)
 %! @end deftypefn
 %@eod:
 
-% Copyright (C) 2011-2012 Dynare Team
+% Copyright (C) 2011-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -66,7 +66,7 @@ nodes = sqrt(2)*nodes;
 %$ sum_of_weights = sum(weights);
 %$
 %$ % Expected nodes (taken from Judd (1998, table 7.4).
-%$ enodes = [-2.020182870; -0.9585724646; 0; 0.9585724646;   2.020182870]; 
+%$ enodes = [-2.020182870; -0.9585724646; 0; 0.9585724646;   2.020182870];
 %$
 %$ % Check the results.
 %$ t(1) = dassert(1.0,sum_of_weights,1e-12);
@@ -79,7 +79,7 @@ nodes = sqrt(2)*nodes;
 %$ [nodes,weights] = gauss_hermite_weights_and_nodes(n);
 %$
 %$ sum_of_weights = sum(weights);
-%$ expectation = sum(weights.*nodes); 
+%$ expectation = sum(weights.*nodes);
 %$ variance = sum(weights.*(nodes.^2));
 %$
 %$ % Check the results.
@@ -113,7 +113,7 @@ nodes = sqrt(2)*nodes;
 %$ [nodes,weights] = gauss_hermite_weights_and_nodes(n);
 %$
 %$ sum_of_weights = sum(weights);
-%$ expectation = sum(weights.*nodes*.1); 
+%$ expectation = sum(weights.*nodes*.1);
 %$ variance = sum(weights.*((nodes*.1).^2));
 %$
 %$ % Check the results.

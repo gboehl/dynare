@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009-2013 Dynare Team
+ * Copyright (C) 2009-2017 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -41,7 +41,6 @@ LogPosteriorDensity::LogPosteriorDensity(const std::string &modName, EstimatedPa
 
 }
 
-
 /**
  * vector of log likelihoods for each Kalman step
  */
@@ -50,4 +49,3 @@ LogPosteriorDensity::getLikVector()
 {
   return logLikelihoodMain.getVll();
 }
-

@@ -24,7 +24,7 @@ function [test, penalty] = ispd(A)
 %! @end deftypefn
 %@eod:
 
-% Copyright (C) 2007-2009, 2013 Dynare Team
+% Copyright (C) 2007-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -44,7 +44,7 @@ function [test, penalty] = ispd(A)
 if ~isquare(A)
     error(['ispd:: Input argument ' inputname(1) ' has to be a square matrix!'])
 end
-    
+
 [cholA, info] = chol(A);
 test = ~info;
 

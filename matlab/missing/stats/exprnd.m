@@ -2,22 +2,22 @@ function rnd = exprnd(a)
 %  Random samples from the exponential distribution with expectation a
 %  and variance a^2.
 %
-%  INPUTS 
+%  INPUTS
 %    a       [double]    m*n matrix of positive parameters
 %
-%  OUTPUT 
+%  OUTPUT
 %    rnd     [double]    m*n matrix, independent draws from the exponential
-%                        distribution rnd(j,j) has expectation a(i,j) and     
-%                        variance a(i,j)^2.   
+%                        distribution rnd(j,j) has expectation a(i,j) and
+%                        variance a(i,j)^2.
 %
-%  ALGORITHM  
+%  ALGORITHM
 %    Inverse transform sampling.
 %
 %  SPECIAL REQUIREMENTS
 %    None.
-%    
+%
 
-% Copyright (C) 2009 Dynare Team
+% Copyright (C) 2009-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

@@ -22,7 +22,7 @@ function [y_,int_width,int_width_ME]=simultxdet(y0,ex,ex_det, iorder,var_list,M_
 % The condition size(ex,1)+M_.maximum_lag=size(ex_det,1) must be verified
 %  for consistency.
 
-% Copyright (C) 2008-2016 Dynare Team
+% Copyright (C) 2008-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -88,7 +88,7 @@ if iorder == 1
         for j=1:min(ykmin+M_.exo_det_length+1-i,M_.exo_det_length)
             y_(dr.order_var,i) = y_(dr.order_var,i) + dr.ghud{j}*(ex_det(i+j-1,:)'-exo_det_steady_state);
         end
-        
+
         k1 = k1+1;
     end
 elseif iorder == 2
@@ -153,7 +153,7 @@ end
 int_width = zeros(iter,nvar);
 for i=1:nvar
     int_width(:,i) = fact*sqrt(var_yf(:,i));
-        if nargout==3
+    if nargout==3
         int_width_ME(:,i) = -fact*sqrt(var_yf_ME(:,i));
-        end
+    end
 end

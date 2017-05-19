@@ -2,7 +2,7 @@ function Z = build_selection_matrix(mf,m,p)
 % Builds the selection matrix of the measurement equation from the vector
 % of indices mf.
 
-% Copyright (C) 2004-2009 Dynare Team
+% Copyright (C) 2004-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -17,7 +17,7 @@ function Z = build_selection_matrix(mf,m,p)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.    
+% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 Z = zeros(p,m);
 for i=1:p
     Z(i,mf(i)) = 1;

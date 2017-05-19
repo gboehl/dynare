@@ -10,7 +10,7 @@ function dirlist = dynareParallelDir(filename,PRCDir,Parallel)
 %  OUTPUTS
 %  o dirlist    []   ...
 %
-% Copyright (C) 2009-2013 Dynare Team
+% Copyright (C) 2009-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -28,24 +28,24 @@ function dirlist = dynareParallelDir(filename,PRCDir,Parallel)
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 dirlist=[];
-for indPC=1:length(Parallel),
-    if ~ispc || strcmpi('unix',Parallel(indPC).OperatingSystem),
-        if Parallel(indPC).Local==0,
-            if ~isempty(Parallel(indPC).Port),
+for indPC=1:length(Parallel)
+    if ~ispc || strcmpi('unix',Parallel(indPC).OperatingSystem)
+        if Parallel(indPC).Local==0
+            if ~isempty(Parallel(indPC).Port)
                 ssh_token = ['-p ',Parallel(indPC).Port];
             else
                 ssh_token = '';
             end
             if isoctave % Patch for peculiar behaviour of ssh-ls under Linux.
-                % It is necessary to capture the ls warning message.
-                % To do it under the ssh protocol it is necessary to redirect the ls message in a text file.
-                % The file is 'OctaveStandardOutputMessage.txt' and it is
-                % saved in the Model directory.
+                        % It is necessary to capture the ls warning message.
+                        % To do it under the ssh protocol it is necessary to redirect the ls message in a text file.
+                        % The file is 'OctaveStandardOutputMessage.txt' and it is
+                        % saved in the Model directory.
                 [check, ax]=system(['ssh ',ssh_token,' ',Parallel(indPC).UserName,'@',Parallel(indPC).ComputerName,' ls ',Parallel(indPC).RemoteDirectory,'/',PRCDir,'/',filename, ' 2> OctaveStandardOutputMessage.txt']);
             else
                 [check, ax]=system(['ssh ',ssh_token,' ',Parallel(indPC).UserName,'@',Parallel(indPC).ComputerName,' ls ',Parallel(indPC).RemoteDirectory,'/',PRCDir,'/',filename]);
             end
-            if check ~= 0 || ~isempty(strfind(ax,'No such file or directory'));
+            if check ~= 0 || ~isempty(strfind(ax,'No such file or directory'))
                 ax=[];
             else
                 indax=regexp(ax,'\n');
@@ -57,11 +57,11 @@ for indPC=1:length(Parallel),
         else
 
             if isoctave % Patch for peculiar behaviour of ls under Linux.
-                
+
                 % It is necessary to capture the ls warning message and properly manage the jolly char '*'!
                 [check ax]=system(['ls ' ,filename, ' 2> OctaveStandardOutputMessage.txt']);
-                
-                if check ~= 0 || ~isempty(strfind(ax,'No such file or directory'));
+
+                if check ~= 0 || ~isempty(strfind(ax,'No such file or directory'))
                     ax=[];
                 end
             else
@@ -75,32 +75,32 @@ for indPC=1:length(Parallel),
         end
     else
         if isoctave     % Patch for peculiar behaviour of ls under Windows.
-            if Parallel(indPC).Local==0,
+            if Parallel(indPC).Local==0
                 ax0=dir(['\\',Parallel(indPC).ComputerName,'\',Parallel(indPC).RemoteDrive,'$\',Parallel(indPC).RemoteDirectory,'\',PRCDir,'\',filename]);
             else
                 ax0=dir(filename);
             end
-            if isempty(ax0),
+            if isempty(ax0)
                 ax='';
             else
                 clear ax1;
-                for jax=1:length(ax0);
+                for jax=1:length(ax0)
                     ax1{jax}=ax0(jax).name;
                 end
                 ax=char(ax1{:});
             end
 
         else
-            if Parallel(indPC).Local==0,
+            if Parallel(indPC).Local==0
                 ax=ls(['\\',Parallel(indPC).ComputerName,'\',Parallel(indPC).RemoteDrive,'$\',Parallel(indPC).RemoteDirectory,'\',PRCDir,'\',filename]);
             else
                 ax=ls(filename);
             end
         end
     end
-    if isempty(dirlist),
+    if isempty(dirlist)
         dirlist=ax;
-    elseif ~isempty(ax),
+    elseif ~isempty(ax)
         dirlist = char(dirlist, ax);
     end
 end

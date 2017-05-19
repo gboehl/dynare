@@ -3,7 +3,7 @@ function y_=simult_(y0,dr,ex_,iorder)
 % decision rules.
 %
 % INPUTS
-%    y0       [double]   n*1 vector, initial value (n is the number of declared endogenous variables plus the number 
+%    y0       [double]   n*1 vector, initial value (n is the number of declared endogenous variables plus the number
 %                        of auxilliary variables for lags and leads); must be in declaration order, i.e. as in M_.endo_names
 %    dr       [struct]   matlab's structure where the reduced form solution of the model is stored.
 %    ex_      [double]   T*q matrix of innovations.
@@ -15,7 +15,7 @@ function y_=simult_(y0,dr,ex_,iorder)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2001-2015 Dynare Team
+% Copyright (C) 2001-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -77,15 +77,15 @@ else
             k2 = dr.state_var;
         else
             k2 = [];
-        end;
+        end
         order_var = 1:endo_nbr;
         dr.order_var = order_var;
     else
         k2 = dr.kstate(find(dr.kstate(:,2) <= M_.maximum_lag+1),[1 2]);
         k2 = k2(:,1)+(M_.maximum_lag+1-k2(:,2))*endo_nbr;
         order_var = dr.order_var;
-    end;
-    
+    end
+
     switch iorder
       case 1
         if isempty(dr.ghu)% For (linearized) deterministic models.
@@ -134,7 +134,7 @@ else
                 y_(dr.order_var,i) = constant + dr.ghx*yhat + dr.ghu*epsilon ...
                     + abcOut1 + abcOut2 + abcOut3;
             end
-         end
+        end
       case 3
         % only with pruning
         % the third moments of the shocks are assumed null. We don't have
@@ -176,7 +176,7 @@ else
             mexErrCheck('A_times_B_kronecker_C', err);
             [gy2u, err] = A_times_B_kronecker_C(ghxu,yhat2,u,threads);
             mexErrCheck('A_times_B_kronecker_C', err);
-            %construct terms of order 3, all based on first order component yhat1              
+            %construct terms of order 3, all based on first order component yhat1
             y2a = kron(yhat1,yhat1);
             [gyyy, err] = A_times_B_kronecker_C(ghxxx,y2a,yhat1,threads);
             mexErrCheck('A_times_B_kronecker_C', err);
@@ -199,6 +199,6 @@ else
             yhat1 = yhat1(ipred);
             yhat2 = yhat2(ipred);
             yhat3 = yhat3(ipred);
-        end   
+        end
     end
 end

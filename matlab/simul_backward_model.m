@@ -1,4 +1,4 @@
-function DynareOutput = simul_backward_linear_model(initial_conditions, sample_size, DynareOptions, DynareModel, DynareOutput, innovations)
+function DynareOutput = simul_backward_model(initial_conditions, sample_size, DynareOptions, DynareModel, DynareOutput, innovations)
 
 %@info:
 %! @deftypefn {Function File} {@var{DynareOutput} =} simul_backward_nonlinear_model (@var{sample_size},@var{DynareOptions}, @var{DynareModel}, @var{DynareOutput})
@@ -34,7 +34,7 @@ function DynareOutput = simul_backward_linear_model(initial_conditions, sample_s
 %! @end deftypefn
 %@eod:
 
-% Copyright (C) 2012-2016 Dynare Team
+% Copyright (C) 2012-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -87,9 +87,8 @@ end
 
 if DynareOptions.linear
     DynareOutput = simul_backward_linear_model(initial_conditions, sample_size, DynareOptions, ...
-                                DynareModel, DynareOutput, innovations);
+                                               DynareModel, DynareOutput, innovations);
 else
     DynareOutput = simul_backward_nonlinear_model(initial_conditions, sample_size, DynareOptions, ...
-                                DynareModel, DynareOutput, innovations);
-end    
-    
+                                                  DynareModel, DynareOutput, innovations);
+end

@@ -51,7 +51,7 @@ function [dr,info]=AIM_first_order_solver(jacobia,M,dr,qz_criterium)
 %! @end deftypefn
 %@eod:
 
-% Copyright (C) 2001-2016 Dynare Team
+% Copyright (C) 2001-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -67,35 +67,34 @@ function [dr,info]=AIM_first_order_solver(jacobia,M,dr,qz_criterium)
 %
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
-    
-    info = 0;
-    
-    [dr,aimcode]=dynAIMsolver1(jacobia,M,dr);
 
-    if aimcode ~=1
-        info(1) = convertAimCodeToInfo(aimCode); %convert to be in the 100 range
-        info(2) = 1.0e+8;
-        return
+info = 0;
+
+[dr,aimcode]=dynAIMsolver1(jacobia,M,dr);
+
+if aimcode ~=1
+    info(1) = convertAimCodeToInfo(aimCode); %convert to be in the 100 range
+    info(2) = 1.0e+8;
+    return
+end
+A = kalman_transition_matrix(dr,M.nstatic+(1:M.nspred), 1:M.nspred,...
+                             M.exo_nbr);
+dr.eigval = eig(A);
+disp(dr.eigval)
+nd = size(dr.kstate,1);
+nba = nd-sum( abs(dr.eigval) < qz_criterium );
+
+nsfwrd = M.nsfwrd;
+
+if nba ~= nsfwrd
+    temp = sort(abs(dr.eigval));
+    if nba > nsfwrd
+        temp = temp(nd-nba+1:nd-nsfwrd)-1-qz_criterium;
+        info(1) = 3;
+    elseif nba < nsfwrd
+        temp = temp(nd-nsfwrd+1:nd-nba)-1-qz_criterium;
+        info(1) = 4;
     end
-    A = kalman_transition_matrix(dr,M.nstatic+(1:M.nspred), 1:M.nspred,...
-                                 M.exo_nbr);
-    dr.eigval = eig(A);
-    disp(dr.eigval)
-    nd = size(dr.kstate,1);
-    nba = nd-sum( abs(dr.eigval) < qz_criterium );
-
-    nsfwrd = M.nsfwrd;
-
-    if nba ~= nsfwrd
-        temp = sort(abs(dr.eigval));
-        if nba > nsfwrd
-            temp = temp(nd-nba+1:nd-nsfwrd)-1-qz_criterium;
-            info(1) = 3;
-        elseif nba < nsfwrd;
-            temp = temp(nd-nsfwrd+1:nd-nba)-1-qz_criterium;
-            info(1) = 4;
-        end
-        info(2) = temp'*temp;
-        return
-    end
-
+    info(2) = temp'*temp;
+    return
+end

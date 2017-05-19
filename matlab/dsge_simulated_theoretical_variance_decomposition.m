@@ -18,7 +18,7 @@ function [nvar,vartan,NumberOfDecompFiles] = ...
 %   vartan            [char]     array of characters (with nvar rows).
 %   CovarFileNumber   [integer]  scalar, number of prior or posterior data files (for covariance).
 
-% Copyright (C) 2007-2015 Dynare Team
+% Copyright (C) 2007-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -119,17 +119,17 @@ for file = 1:NumberOfDrawsFiles
         if file==1 && linee==1
             [tmp, stationary_vars] = th_autocovariances(dr,ivar,M_,options_,nodecomposition);
             if isempty(stationary_vars)
-              fprintf('\ndsge_simulated_theoretical_variance_decomposition:: All requested endogenous variables have a unit root and thus infinite variance.\n')
-              fprintf('dsge_simulated_theoretical_variance_decomposition:: No decomposition is performed.\n')
-              only_non_stationary_vars=1; 
+                fprintf('\ndsge_simulated_theoretical_variance_decomposition:: All requested endogenous variables have a unit root and thus infinite variance.\n')
+                fprintf('dsge_simulated_theoretical_variance_decomposition:: No decomposition is performed.\n')
+                only_non_stationary_vars=1;
             end
         end
         if only_non_stationary_vars
-           for i=1:nvar
+            for i=1:nvar
                 for j=1:nexo
                     Decomposition_array(linea,(i-1)*nexo+j) = NaN;
                 end
-           end            
+            end
         else
             tmp = th_autocovariances(dr,ivar,M_,options_,nodecomposition);
             for i=1:nvar
@@ -150,7 +150,7 @@ for file = 1:NumberOfDrawsFiles
             if ~test% Prepare the last round...
                 Decomposition_array = zeros(NumberOfLinesInTheLastDecompFile,nvar*nexo);
                 NumberOfDecompLines = NumberOfLinesInTheLastDecompFile;
-            elseif test<0;
+            elseif test<0
                 Decomposition_array = zeros(MaXNumberOfDecompLines,nvar*nexo);
             else
                 clear('Decomposition_array');

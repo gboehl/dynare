@@ -13,7 +13,7 @@ function a=indnv(x,y)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2001-2009 Dynare Team
+% Copyright (C) 2001-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -40,6 +40,3 @@ for i = 1:size(x,1)
         a(i) = j;
     end
 end
-
-
-

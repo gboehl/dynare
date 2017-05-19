@@ -3,20 +3,20 @@ function [m,s,p6,p7] = uniform_specification(m,s,p3,p4)
 %
 % INPUTS
 %    m:      mean
-%    s:      standard deviation 
-%    p3:     lower bound 
-%    p4:     upper bound 
+%    s:      standard deviation
+%    p3:     lower bound
+%    p4:     upper bound
 
 % OUTPUTS
 %    m:      mean
-%    s:      standard deviation 
-%    p1:     lower bound 
-%    p2:     upper bound 
-%        
+%    s:      standard deviation
+%    p1:     lower bound
+%    p2:     upper bound
+%
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2004-2011 Dynare Team
+% Copyright (C) 2004-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

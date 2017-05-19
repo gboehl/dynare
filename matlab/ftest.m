@@ -1,6 +1,6 @@
 function ftest (s1,s2)
 
-% Copyright (C) 2001-2010 Dynare Team
+% Copyright (C) 2001-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -20,7 +20,7 @@ function ftest (s1,s2)
 global nvx nvy x y lag1
 
 if size(s1,1) ~= 2
-    error ('Spécifiez deux fichiers pour la comparaison.') ;
+    error ('SpÃ©cifiez deux fichiers pour la comparaison.') ;
 end
 
 for i = 1:2
@@ -59,7 +59,7 @@ end
 
 for i = 1:size(x,1)
     if ~ strcmp(nvx(i,:),nvy(i,:))
-        error ('FTEST: The two files don''t have the same  variables.') ;       
+        error ('FTEST: The two files don''t have the same  variables.') ;
     end
 end
 

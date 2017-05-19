@@ -2,17 +2,17 @@ function [lnpriormom] = endogenous_prior(data,Pstar,BayesInfo,H)
 % Computes the endogenous log prior addition to the initial prior
 %
 % INPUTS
-%    data           [double]     n*T vector of data observations 
+%    data           [double]     n*T vector of data observations
 %    Pstar          [double]     k*k matrix of
-%    BayesInfo      [structure]   
+%    BayesInfo      [structure]
 %
 % OUTPUTS
 %    lnpriormom     [double]     scalar of log endogenous prior value
 
 % Code to implement notes on endogenous priors by Lawrence Christiano,
 % specified in the appendix of:
-% ’Introducing Financial Frictions and Unemployment into a Small Open Economy Model’
-% by Lawrence J. Christiano, Mathias Trabandt and Karl Walentin (2011), Journal of Economic Dynamics and Control      
+% Â’Introducing Financial Frictions and Unemployment into a Small Open Economy ModelÂ’
+% by Lawrence J. Christiano, Mathias Trabandt and Karl Walentin (2011), Journal of Economic Dynamics and Control
 % this is the 'mother' of the priors on the model parameters.
 % the priors include a metric across some choosen moments of the (supposedly
 % pre-sample) data.
@@ -23,8 +23,8 @@ function [lnpriormom] = endogenous_prior(data,Pstar,BayesInfo,H)
 % appropriate adjustment to the following code.
 
 
-% Copyright (C) 2011 Lawrence J. Christiano, Mathias Trabandt and Karl Walentin 
-% Copyright (C) 2013 Dynare Team
+% Copyright (C) 2011 Lawrence J. Christiano, Mathias Trabandt and Karl Walentin
+% Copyright (C) 2013-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -75,7 +75,7 @@ end
 
 % Finally, we have the sampling uncertainty measure Shat:
 Shat=C0 +(1-1/(2+1))*(C1+C1')...
-    +(1-2/(2+1))*(C2+C2');
+     +(1-2/(2+1))*(C2+C2');
 
 % Model variances below:
 mf=BayesInfo.mf1;
@@ -86,4 +86,3 @@ Ftheta=diag(Z*Pstar(:,mf)+H);
 % below commented out line is for Del Negro Schorfheide style priors:
 %     lnpriormom=-.5*n*TT*log(2*pi)-.5*TT*log(det(sigma))-.5*TT*trace(inv(sigma)*(gamyy-2*phi'*gamxy+phi'*gamxx*phi));
 lnpriormom=.5*n*log(Tsamp/(2*pi))-.5*log(det(Shat))-.5*Tsamp*(Fhat-Ftheta)'/Shat*(Fhat-Ftheta);
-

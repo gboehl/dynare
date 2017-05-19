@@ -1,13 +1,13 @@
 function Vector = vec(Matrix)
 % This function implements the vec operator.
-% 
-% INPUTS 
+%
+% INPUTS
 %   Matrix             [double]   a squared n*n matrix.
-%    
-% OUTPUTS 
+%
+% OUTPUTS
 %   Vector             [double]   a n*n vector.
 
-% Copyright (C) 2009 Dynare Team
+% Copyright (C) 2009-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

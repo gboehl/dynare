@@ -1,7 +1,7 @@
 function [forecast,info] = dyn_forecast(var_list,M,options,oo,task,dataset_info)
 % function dyn_forecast(var_list,M,options,oo,task,dataset_info)
 %   computes mean forecast for a given value of the parameters
-%   compues also confidence band for the forecast    
+%   compues also confidence band for the forecast
 %
 % INPUTS
 %   var_list:    list of variables (character matrix)
@@ -21,7 +21,7 @@ function [forecast,info] = dyn_forecast(var_list,M,options,oo,task,dataset_info)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2003-2016 Dynare Team
+% Copyright (C) 2003-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -43,7 +43,7 @@ if nargin<6 && options.prefilter
 elseif nargin==6
     mean_varobs=dataset_info.descriptive.mean';
 end
-    
+
 info = 0;
 
 oo=make_ex_(M,options,oo);
@@ -92,7 +92,7 @@ switch task
     for i = 1:M.endo_nbr
         v_name = deblank(M.endo_names(i,:));
         y0(i,:) = y_smoothed.(v_name)(end-maximum_lag+1:end); %includes steady state or mean, but simult_ will subtract only steady state
-        % 2. Subtract mean/steady state and add steady state; takes care of prefiltering        
+                                                              % 2. Subtract mean/steady state and add steady state; takes care of prefiltering
         if isfield(oo.Smoother,'Constant') && isfield(oo.Smoother.Constant,v_name)
             y0(i,:)=y0(i,:)-oo.Smoother.Constant.(v_name)(end-maximum_lag+1:end); %subtract mean or steady state
             if options.loglinear
@@ -100,7 +100,7 @@ switch task
             else
                 y0(i,:)=y0(i,:)+oo.dr.ys(strmatch(v_name,deblank(M.endo_names),'exact'));
             end
-        end                
+        end
         % 2. Subtract trend
         if isfield(oo.Smoother,'Trend') && isfield(oo.Smoother.Trend,v_name)
             y0(i,:)=y0(i,:)-oo.Smoother.Trend.(v_name)(end-maximum_lag+1:end); %subtract trend, which is not subtracted by simult_
@@ -121,8 +121,8 @@ switch task
                 trend_coeffs = [trend_coeffs; oo.Smoother.TrendCoeffs(trend_var_index)];
             end
         end
-        if ~isempty(trend_coeffs) 
-            trend = trend_coeffs*(options.first_obs+gend-1+(1-M.maximum_lag:horizon)); 
+        if ~isempty(trend_coeffs)
+            trend = trend_coeffs*(options.first_obs+gend-1+(1-M.maximum_lag:horizon));
             if options.prefilter
                 trend = trend - repmat(mean(trend_coeffs*[options.first_obs:options.first_obs+gend-1],2),1,horizon+1); %subtract mean trend
             end
@@ -132,13 +132,13 @@ switch task
     end
   otherwise
     error('Wrong flag value')
-end 
+end
 
 if M.exo_det_nbr == 0
     if isequal(M.H,0)
         [yf,int_width] = forcst(oo.dr,y0,horizon,var_list,M,oo,options);
     else
-        [yf,int_width,int_width_ME] = forcst(oo.dr,y0,horizon,var_list,M,oo,options);        
+        [yf,int_width,int_width_ME] = forcst(oo.dr,y0,horizon,var_list,M,oo,options);
     end
 else
     exo_det_length = size(oo.exo_det_simul,1)-M.maximum_lag;
@@ -146,17 +146,17 @@ else
         ex = zeros(horizon,M.exo_nbr);
         oo.exo_det_simul = [ oo.exo_det_simul;...
                             repmat(oo.exo_det_steady_state',...
-                                   horizon- ... 
+                                   horizon- ...
                                    exo_det_length,1)];
-    elseif horizon <= exo_det_length 
-        ex = zeros(exo_det_length,M.exo_nbr); 
+    elseif horizon <= exo_det_length
+        ex = zeros(exo_det_length,M.exo_nbr);
     end
     if isequal(M.H,0)
         [yf,int_width] = simultxdet(y0,ex,oo.exo_det_simul,...
-                                options.order,var_list,M,oo,options);
+                                    options.order,var_list,M,oo,options);
     else
         [yf,int_width,int_width_ME] = simultxdet(y0,ex,oo.exo_det_simul,...
-                                options.order,var_list,M,oo,options);
+                                                 options.order,var_list,M,oo,options);
     end
 end
 
@@ -171,7 +171,7 @@ if options.loglinear == 1
 else
     if options.prefilter == 1 %subtract steady state and add mean for observables
         yf(i_var_obs,:)=yf(i_var_obs,:)-repmat(oo.dr.ys(i_var_obs),1,horizon+M.maximum_lag)+ repmat(mean_varobs,1,horizon+M.maximum_lag);
-    end    
+    end
 end
 
 for i=1:n_var

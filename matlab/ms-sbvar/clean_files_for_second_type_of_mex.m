@@ -11,7 +11,7 @@ function clean_files_for_second_type_of_mex(M_, options_, type)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2011 Dynare Team
+% Copyright (C) 2011-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -34,12 +34,12 @@ if ~strcmp(tagtouse, options_.ms.output_file_tag)
 end
 
 switch type
-    case 'irf'
-        clean_ms_irf_files(tagtouse);
-    case 'forecast'
-        clean_ms_forecast_files(tagtouse);
-    case 'variance_decomposition'
-        clean_ms_variance_decomposition_files(tagtouse);
-    otherwise
-        error('clean_files_for_second_type_of_mex: should not arrive here');
+  case 'irf'
+    clean_ms_irf_files(tagtouse);
+  case 'forecast'
+    clean_ms_forecast_files(tagtouse);
+  case 'variance_decomposition'
+    clean_ms_variance_decomposition_files(tagtouse);
+  otherwise
+    error('clean_files_for_second_type_of_mex: should not arrive here');
 end

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2013 Dynare Team
+ * Copyright (C) 2007-2017 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -41,11 +41,10 @@
 
 using namespace std;
 
-
 class Interpreter : public dynSparseMatrix
 {
 private:
-vector<int> previous_block_exogenous;
+  vector<int> previous_block_exogenous;
 protected:
   void evaluate_a_block(bool initialization);
   int simulate_a_block(vector_table_conditional_local_type vector_table_conditional_local);
@@ -66,7 +65,7 @@ public:
               );
   bool extended_path(string file_name, string bin_basename, bool evaluate, int block, int &nb_blocks, int nb_periods, vector<s_plan> sextended_path, vector<s_plan> sconstrained_extended_path, vector<string> dates, table_conditional_global_type table_conditional_global);
   bool compute_blocks(string file_name, string bin_basename, bool evaluate, int block, int &nb_blocks);
-  void check_for_controlled_exo_validity(FBEGINBLOCK_ *fb,vector<s_plan> sconstrained_extended_path);
+  void check_for_controlled_exo_validity(FBEGINBLOCK_ *fb, vector<s_plan> sconstrained_extended_path);
   bool MainLoop(string bin_basename, CodeLoad code, bool evaluate, int block, bool last_call, bool constrained, vector<s_plan> sconstrained_extended_path, vector_table_conditional_local_type vector_table_conditional_local);
   void ReadCodeFile(string file_name, CodeLoad &code);
 

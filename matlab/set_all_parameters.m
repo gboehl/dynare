@@ -33,7 +33,7 @@ function M = set_all_parameters(xparam1,estim_params,M)
 %! @end deftypefn
 %@eod:
 
-% Copyright (C) 2003-2016 Dynare Team
+% Copyright (C) 2003-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -95,7 +95,7 @@ if ncx
 end
 %build covariance matrix from correlation matrix and variances already on
 %diagonal
-Sigma_e = diag(sqrt(diag(Sigma_e)))*Correlation_matrix*diag(sqrt(diag(Sigma_e))); 
+Sigma_e = diag(sqrt(diag(Sigma_e)))*Correlation_matrix*diag(sqrt(diag(Sigma_e)));
 %if calibrated covariances, set them now to their stored value
 if isfield(estim_params,'calibrated_covariances')
     Sigma_e(estim_params.calibrated_covariances.position)=estim_params.calibrated_covariances.cov_value;
@@ -136,5 +136,5 @@ if nvx || ncx
 end
 if nvn || ncn
     M.H = H;
-    M.Correlation_matrix_ME=Correlation_matrix_ME;    
+    M.Correlation_matrix_ME=Correlation_matrix_ME;
 end

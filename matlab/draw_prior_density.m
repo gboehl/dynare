@@ -1,20 +1,20 @@
-function [x,f,abscissa,dens,binf,bsup] = draw_prior_density(indx,bayestopt_);
+function [x,f,abscissa,dens,binf,bsup] = draw_prior_density(indx,bayestopt_)
 % Computes values of prior densities at many points (before plotting)
 %
 % INPUTS
 %    indx          [integer]    Parameter number.
 %    bayestopt_    [structure]  Describes the prior beliefs.
-%    
+%
 % OUTPUTS
 %    x             [double]     Row vector, subset of 'abscissa' such as the density is less than 10
 %    f             [double]     Row vector, subset of 'dens' such as the density is less than 10
-%    abscissa      [double]     Row vector, abscissa 
+%    abscissa      [double]     Row vector, abscissa
 %    dens          [double]     Row vector, density
 %    binf:         [double]     Scalar, first element of x
 %    bsup:         [double]     Scalar, last element of x
 
 
-% Copyright (C) 2004-2011 Dynare Team
+% Copyright (C) 2004-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -63,10 +63,10 @@ switch pshape(indx)
     abscissa = linspace(infbound,supbound,steps);
     dens = density(abscissa,p6(indx),p7(indx),p3(indx));
   case 3% Gaussian prior
-    infbound = norminv(truncprior,p6(indx),p7(indx)); 
+    infbound = norminv(truncprior,p6(indx),p7(indx));
     supbound = norminv(1-truncprior,p6(indx),p7(indx));
     abscissa = linspace(infbound,supbound,steps);
-    dens = normpdf(abscissa,p6(indx),p7(indx));  
+    dens = normpdf(abscissa,p6(indx),p7(indx));
   case 4% Inverse-gamma of type 1 prior
     try
         infbound = 1/sqrt(gaminv(1-10*truncprior, p7(indx)/2, 2/p6(indx)))+p3(indx);
@@ -80,7 +80,7 @@ switch pshape(indx)
         end
     end
     abscissa = linspace(infbound,supbound,steps);
-    dens = exp(lpdfig1(abscissa-p3(indx),p6(indx),p7(indx)));  
+    dens = exp(lpdfig1(abscissa-p3(indx),p6(indx),p7(indx)));
   case 5% Uniform prior
     infbound = p6(indx);
     supbound = p7(indx);
@@ -108,9 +108,9 @@ switch pshape(indx)
     dens = density(abscissa,p6(indx),p7(indx),p3(indx));
   otherwise
     error(sprintf('draw_prior_density: unknown distribution shape (index %d, type %d)', indx, pshape(indx)));
-end 
+end
 
-if pshape(indx) ~= 5 
+if pshape(indx) ~= 5
     [junk,k1] = max(dens);
     if k1 == 1 || k1 == length(dens)
         k = find(dens > 10);

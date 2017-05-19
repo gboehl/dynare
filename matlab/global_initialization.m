@@ -165,9 +165,9 @@ options_.nocorr = 0;
 options_.periods = 0;
 options_.noprint = 0;
 options_.SpectralDensity.trigger = 0;
-options_.SpectralDensity.plot  = 1; 
-options_.SpectralDensity.cutoff  = 150; 
-options_.SpectralDensity.sdl = 0.01; 
+options_.SpectralDensity.plot  = 1;
+options_.SpectralDensity.cutoff  = 150;
+options_.SpectralDensity.sdl = 0.01;
 options_.nofunctions = false;
 
 options_.bandpass.indicator = 0;
@@ -282,7 +282,7 @@ particle.resampling.number_of_partitions = 200;
 particle.mixture_state_variables = 5 ;
 particle.mixture_structural_shocks = 1 ;
 particle.mixture_measurement_shocks = 1 ;
-% Online approach 
+% Online approach
 particle.liu_west_delta = 0.99 ;
 particle.liu_west_chol_sigma_bar = .01 ;
 % Options for setting the weights in conditional particle filters.
@@ -471,7 +471,7 @@ options_.sub_draws = [];
 options_.gradient_method = 2; %used by csminwel and newrat
 options_.gradient_epsilon = 1e-6; %used by csminwel and newrat
 options_.posterior_sampler_options.sampling_opt = []; %extended set of options for individual posterior samplers
-% Random Walk Metropolis-Hastings
+                                                      % Random Walk Metropolis-Hastings
 options_.posterior_sampler_options.posterior_sampling_method = 'random_walk_metropolis_hastings';
 options_.posterior_sampler_options.rwmh.proposal_distribution = 'rand_multivariate_normal';
 options_.posterior_sampler_options.rwmh.student_degrees_of_freedom = 3;
@@ -525,8 +525,8 @@ options_.estimation.moments_posterior_density.indicator = 1;
 options_.estimation.moments_posterior_density.gridpoints = 2^9;
 options_.estimation.moments_posterior_density.bandwidth = 0; % Rule of thumb optimal bandwidth parameter.
 options_.estimation.moments_posterior_density.kernel_function = 'gaussian'; % Gaussian kernel for Fast Fourrier Transform approximaton.
-% Misc
-% options_.conf_sig = 0.6;
+                                                                            % Misc
+                                                                            % options_.conf_sig = 0.6;
 oo_.exo_simul = [];
 oo_.endo_simul = [];
 ys0_ = [];
@@ -632,7 +632,7 @@ options_.simpsa = simpsa;
 %solveopt optimizer
 solveopt.minimizer_indicator=-1; %use minimizer
 solveopt.TolX=1e-6; %accuracy of argument
-solveopt.TolFun=1e-6; %accuracy of function 
+solveopt.TolFun=1e-6; %accuracy of function
 solveopt.MaxIter=15000;
 solveopt.verbosity=1;
 solveopt.TolXConstraint=1.e-8;
@@ -841,4 +841,3 @@ set_dynare_seed('default');
 if isfield(options_, 'global_init_file')
     run(options_.global_init_file);
 end
-

@@ -14,7 +14,7 @@ function fileList = dynareParallelListAllFiles(dirName,PRCDir,Parallel)
 %  OUTPUTS
 %  o fileList          []   ...
 %
-% Copyright (C) 2009-2013 Dynare Team
+% Copyright (C) 2009-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -34,33 +34,33 @@ function fileList = dynareParallelListAllFiles(dirName,PRCDir,Parallel)
 
 
 if (~ispc || strcmpi('unix',Parallel.OperatingSystem))
-   
+
     fileList={};
     currentPath=[];
-    if ~isempty(Parallel.Port),
+    if ~isempty(Parallel.Port)
         ssh_token = ['-p ',Parallel.Port];
     else
         ssh_token = '';
     end
 
-     % Get the data for the current remote directory.
-    [Flag fL]=system(['ssh ',ssh_token,' ',' ',Parallel.UserName,'@',Parallel.ComputerName,' ls ',Parallel.RemoteDirectory,'/',PRCDir, ' -R -p -1']);
+    % Get the data for the current remote directory.
+    [Flag, fL]=system(['ssh ',ssh_token,' ',' ',Parallel.UserName,'@',Parallel.ComputerName,' ls ',Parallel.RemoteDirectory,'/',PRCDir, ' -R -p -1']);
 
     % Format the return value fL.
-    
+
     nL=regexp(fL,'\n');
     start=1;
     j=1;
 
     for (i=1:length(nL))
-        
+
         stringProcessed=fL(start:nL(i)-1);
-        
+
         if isempty(stringProcessed)
             start=nL(i)+1;
             continue
         end
-            
+
         if strfind(stringProcessed,'/')
             if strfind(stringProcessed,PRCDir)
                 DD=strfind(stringProcessed,':');
@@ -70,11 +70,11 @@ if (~ispc || strcmpi('unix',Parallel.OperatingSystem))
             start=nL(i)+1;
             continue
         end
-        
+
         fileList{j,1}=[currentPath stringProcessed];
         start=nL(i)+1;
         j=j+1;
-    end 
+    end
 
 
 else
@@ -92,7 +92,7 @@ else
     % Build the path files:
     if ~isempty(fileList)
         fileList = cellfun(@(x) fullfile(dirName,x),...
-            fileList,'UniformOutput',false);
+                           fileList,'UniformOutput',false);
     end
 
     % Get a list of the subdirectories:
@@ -112,5 +112,3 @@ else
         fileList = [fileList; dynareParallelListAllFiles(nextDir,PRCDir,Parallel)];
     end
 end
-
-
