@@ -356,8 +356,7 @@ if ~options_.nograph && ~options_.no_graph.posterior
         nvar0=cumsum(nvar0);
 
         i=0;
-        for j=1:length(
-
+        for j=1:length(nvar0)
             NAMES = [];
             TEXNAMES = [];
             nvar=nvar0(j);
