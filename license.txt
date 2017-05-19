@@ -402,33 +402,6 @@ Files: contrib/ms-sbvar/TZcode/MatlabFiles/qplot2.m
 Copyright: 1997-2012 Clark A. Burdick
 License: GPL-3+
 
-Files: contrib/dmm/*
-Copyright: 2010-2014 European Commission
-           2006-2012 Dynare Team
-License: GPL-3+
-
-Files: contrib/dmm/randlib/*
-Copyright: none
-License: public-domain
- We place the Randlib code that we have written in the public domain.  
- .
-                                 NO WARRANTY
- .    
-     WE PROVIDE ABSOLUTELY  NO WARRANTY  OF ANY  KIND  EITHER  EXPRESSED OR
-     IMPLIED,  INCLUDING BUT   NOT LIMITED TO,  THE  IMPLIED  WARRANTIES OF
-     MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.  THE ENTIRE RISK
-     AS TO THE QUALITY AND PERFORMANCE OF THE PROGRAM IS  WITH YOU.  SHOULD
-     THIS PROGRAM PROVE  DEFECTIVE, YOU ASSUME  THE COST  OF  ALL NECESSARY
-     SERVICING, REPAIR OR CORRECTION.
- .    
-     IN NO  EVENT  SHALL THE UNIVERSITY  OF TEXAS OR  ANY  OF ITS COMPONENT
-     INSTITUTIONS INCLUDING M. D.   ANDERSON HOSPITAL BE LIABLE  TO YOU FOR
-     DAMAGES, INCLUDING ANY  LOST PROFITS, LOST MONIES,   OR OTHER SPECIAL,
-     INCIDENTAL   OR  CONSEQUENTIAL DAMAGES   ARISING   OUT  OF  THE USE OR
-     INABILITY TO USE (INCLUDING BUT NOT LIMITED TO LOSS OF DATA OR DATA OR
-     ITS ANALYSIS BEING  RENDERED INACCURATE OR  LOSSES SUSTAINED  BY THIRD
-     PARTIES) THE PROGRAM.
-
 License: GFDL-NIV-1.3+
  Permission is granted to copy, distribute and/or modify this document
  under the terms of the GNU Free Documentation License, Version 1.3 or
