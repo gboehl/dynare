@@ -72,15 +72,6 @@ case ${host_os} in
 esac
 AX_PTHREAD
 
-# Check for boost libraries used in estimation DLL
-AC_LANG_PUSH([C++])
-AX_BOOST_BASE([1.36], [], [AC_MSG_ERROR([Can't find Boost >= 1.36])])
-CPPFLAGS_SAVED="$CPPFLAGS"
-CPPFLAGS="$CPPFLAGS $BOOST_CPPFLAGS"
-AC_CHECK_HEADER([boost/random/linear_congruential.hpp], [], [AC_MSG_ERROR([Can't find Boost Random Library])])
-AC_CHECK_HEADER([boost/math/distributions/beta.hpp], [], [AC_MSG_ERROR([Can't find Boost Math Library])])
-CPPFLAGS="$CPPFLAGS_SAVED"
-AC_LANG_POP([C++])
 # Check for dlopen(), needed by k_order_perturbation DLL
 AC_CHECK_LIB([dl], [dlopen], [LIBADD_DLOPEN="-ldl"], [])
 AC_SUBST([LIBADD_DLOPEN])
@@ -165,7 +156,6 @@ AC_CONFIG_FILES([Makefile
                  gensylv/Makefile
                  k_order_perturbation/Makefile
                  dynare_simul_/Makefile
-                 estimation/Makefile
                  kalman_steady_state/Makefile
                  ms_sbvar/Makefile
                  block_kalman_filter/Makefile

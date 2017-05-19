@@ -10,7 +10,7 @@ SUBDIRS += k_order_perturbation dynare_simul_
 endif
 
 if HAVE_GSL
-SUBDIRS += ms_sbvar estimation
+SUBDIRS += ms_sbvar
 endif
 
 if HAVE_SLICOT
