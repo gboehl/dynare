@@ -53,15 +53,15 @@ T = 5*floor(log(precision)/log(max(rho_x, rho_n)));
 oo_ = simul_backward_model(M_.endo_histval, T, options_, M_, oo_, zeros(T+1,2));
 
 if abs(oo_.endo_simul(1,end)-LongRunEfficiency)>1e-10
-    error('Wrong long run level!')
+   error('Wrong long run level!')
 end
 
 if abs(oo_.endo_simul(3,end)-LongRunPopulation)>1e-10
-    error('Wrong long run level!')
+   error('Wrong long run level!')
 end
 
 IntensiveCapitalStock = oo_.endo_simul(6,1:end)./(oo_.endo_simul(1,1:end).*oo_.endo_simul(3,1:end));
 
-if abs(IntensiveCapitalStock-LongRunIntensiveCapitalStock)>1e-6
-    error('Wrong long run level!')
+if abs(IntensiveCapitalStock(end)-LongRunIntensiveCapitalStock>1e-10)
+   error('Wrong long run level!')
 end
