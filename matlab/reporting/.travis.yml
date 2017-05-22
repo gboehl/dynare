@@ -1,15 +1,27 @@
-language: python
+language: cpp
+sudo: required
+os: osx
+osx_image: xcode7.3
+cache: ccache
 
-git:
-  depth: 1
+cache:
+  directories:
+  - /usr/local
 
-dist: trusty
+before_install:
+  - wget http://ctan.math.utah.edu/ctan/tex-archive/systems/mac/mactex/BasicTeX.pkg -O "/tmp/BasicTeX.pkg"
+  - echo "Installing OS X binary package for MacTeX"
+  - sudo installer -pkg "/tmp/BasicTeX.pkg" -target / -dumplog -verbose
+  - rm "/tmp/BasicTeX.pkg"
+  - export PATH=/usr/texbin:/Library/TeX/texbin/pdflatex:$PATH
+  - sudo /Library/TeX/texbin/tlmgr update --self
+  - sudo /Library/TeX/texbin/tlmgr install pgfplots adjustbox collectbox datetime fmtcount
+  - brew update
+  - brew tap homebrew/science
+  - brew install ccache
+  - brew install octave
 
 install:
-  - export
-  - sudo add-apt-repository ppa:octave/stable -y
-  - sudo apt-get update -qq
-  - sudo apt-get install -qq octave liboctave-dev texlive texlive-latex-recommended  texlive-latex-extra
   - git clone --depth=1 --recursive --branch=master https://github.com/DynareTeam/dynare.git ~/builds/dynare
 
 script:
