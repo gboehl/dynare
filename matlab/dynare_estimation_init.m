@@ -310,6 +310,9 @@ if options_.use_calibration_initialization %set calibration as starting values
         [xparam1,estim_params_]=do_parameter_initialization(estim_params_,xparam1_calib,xparam1); %get explicitly initialized parameters that have precedence to calibrated values
     end
 end
+if all(bayestopt_.pshape==0) && any(isnan(xparam1))
+    error('ML estimation requires all estimated parameters to be initialized, either in an estimated_params or estimated_params_init-block ')
+end
 
 if ~isempty(estim_params_) && ~(all(strcmp(fieldnames(estim_params_),'full_calibration_detected'))  || (isfield(estim_params_,'nvx') && sum(estim_params_.nvx+estim_params_.nvn+estim_params_.ncx+estim_params_.ncn+estim_params_.np)==0))
     if ~isempty(bayestopt_) && any(bayestopt_.pshape > 0)
