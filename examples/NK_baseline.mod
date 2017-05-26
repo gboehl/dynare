@@ -155,18 +155,18 @@ sigma_m  =-5.85;
 Lambdamu=3.4e-3;
 LambdaA = 2.8e-3;
 
-LambdaYd= (LambdaA+alppha*Lambdamu)/(1-alppha);
 
 /*
 The following parameters are set in the steady state file as they depend on other 
-deep parameters that were estimated in the original study. Setting them in the
+deep parameters (some were estimated in the original study). Setting them in the
 steady state file means they are updated for every parameter draw in the MCMC
 algorithm, while the parameters initialized here are only set once for the initial
 values of the parameters they depend on:
 
-gammma1 as it depends on LambdaA, alppha, Lambdamu, betta, and delta
-Rbar =0 as it depends on PI, LambdaA, alppha, Lambdamu, and betta
-Lambdax
+gammma1=mu_z*mu_I/betta-(1-delta);
+R=1+(PIbar*mu_z/betta-1);
+Lambdax=exp(LambdaYd);
+LambdaYd= (LambdaA+alppha*Lambdamu)/(1-alppha);
 */
 
 

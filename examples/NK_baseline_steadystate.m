@@ -36,6 +36,7 @@ d=1;
 phi=1;
 m=0;
 zeta=1;
+LambdaYd= (LambdaA+alppha*Lambdamu)/(1-alppha);
 mu_z=exp(LambdaYd);
 mu_I=exp(Lambdamu);
 mu_A=exp(LambdaA);
