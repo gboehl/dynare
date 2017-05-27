@@ -303,7 +303,7 @@ After this, prepare the source and configure the build tree as described for Lin
 - **NB**: If not compiling Dynare mex files for Octave, add ```--without-octave``` to the installation command
 - **NB**: To compile the latest stable version of dynare, follow the same instructions as above, omitting the ```--HEAD``` argument
 - **NB**: To update a ```--HEAD``` install of dynare you need to uninstall it then install it again: ```brew uninstall dynare; brew install dynare --HEAD```.
-- **NB**: If you want to maintain a separate git directory of dynare, you can do a ```--HEAD``` install of dynare, then uninstall it. This will have the effect of bringing in all the dependencies you will need to then compile dynare from your git directory. Then, change to the git directory and type:
+- **NB**: If you want to maintain a separate git directory of dynare, you can do a ```--HEAD``` install of dynare, then uninstall it. This will have the effect of bringing in all the dependencies you will need to then compile dynare from your git directory. (For `flex` and `bison` it may be necessary to symlink them via `brew link bison --force` and `brew link flex --force` as they are keg-only). Then, change to the git directory and type:
     - ```autoreconf -si; ./configure --with-matlab=/Applications/MATLAB_R2015a.app MATLAB_VERSION=R2015a```, adjusting the Matlab path and version to accord with your version
 - Once compilation is done, open Matlab and type the last line shown when you type ```brew info dynare``` in the Terminal window. With the typical Homebrew setup, this is:
     - ```addpath /usr/local/opt/dynare/lib/dynare/matlab```
