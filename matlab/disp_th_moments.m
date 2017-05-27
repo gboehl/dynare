@@ -44,7 +44,7 @@ m(non_stationary_vars) = NaN;
 i1 = find(abs(diag(oo_.gamma_y{1})) > 1e-12);
 s2 = diag(oo_.gamma_y{1});
 sd = sqrt(s2);
-if options_.order == 2
+if options_.order == 2 && ~M_.hessian_eq_zero
     m = m+oo_.gamma_y{options_.ar+3};
 end
 

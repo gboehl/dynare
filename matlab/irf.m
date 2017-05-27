@@ -44,11 +44,16 @@ else
 end
 y       = 0;
 
-if iorder == 1
+local_order = iorder;
+if M_.hessian_eq_zero && local_order~=1
+    local_order = 1;
+end
+
+if local_order == 1
     y1 = repmat(dr.ys,1,long);
     ex2 = zeros(long,M_.exo_nbr);
     ex2(1,:) = e1';
-    y2 = simult_(temps,dr,ex2,iorder);
+    y2 = simult_(temps,dr,ex2,local_order);
     y = y2(:,M_.maximum_lag+1:end)-y1;
 else
     % eliminate shocks with 0 variance
@@ -61,8 +66,8 @@ else
         ex1(:,i_exo_var) = randn(long+drop,nxs)*chol_S;
         ex2 = ex1;
         ex2(drop+1,:) = ex2(drop+1,:)+e1';
-        y1 = simult_(temps,dr,ex1,iorder);
-        y2 = simult_(temps,dr,ex2,iorder);
+        y1 = simult_(temps,dr,ex1,local_order);
+        y2 = simult_(temps,dr,ex2,local_order);
         y = y+(y2(:,M_.maximum_lag+drop+1:end)-y1(:,M_.maximum_lag+drop+1:end));
     end
     y=y/replic;
