@@ -6072,7 +6072,7 @@ singularity is encountered, Dynare by default automatically switches to the univ
 recursions as described by @cite{Herbst, 2015}. This setting is only used with
 @code{kalman_algo=1} or @code{kalman_algo=3}. In case of using the diffuse Kalman 
 filter (@code{kalman_algo=3/lik_init=3}), the observables must be stationary. This option 
-is not yet compatible with @code{analytical_derivation}.
+is not yet compatible with @ref{analytic_derivation}.
 
 @item kalman_tol = @var{DOUBLE}
 @anchor{kalman_tol} Numerical tolerance for determining the singularity of the covariance matrix of the prediction errors during the Kalman filter (minimum allowed reciprocal of the matrix condition number). Default value is @code{1e-10}
@@ -6218,9 +6218,10 @@ where the model is ill-behaved. By default the original objective function is
 used.
 
 @item analytic_derivation
+@anchor{analytic_derivation}
 Triggers estimation with analytic gradient. The final hessian is also
 computed analytically. Only works for stationary models without
-missing observations.
+missing observations, i.e. for @code{kalman_algo<3}.
 
 @item ar = @var{INTEGER}
 @xref{ar}. Only useful in conjunction with option @code{moments_varendo}.
