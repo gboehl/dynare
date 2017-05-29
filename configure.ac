@@ -172,6 +172,7 @@ esac
 AX_PTHREAD
 
 AC_CONFIG_FILES([Makefile
+                 VERSION
                  preprocessor/macro/Makefile
                  preprocessor/Makefile
                  doc/Makefile

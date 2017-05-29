@@ -54,7 +54,7 @@ Section "Dynare core (preprocessor and M-files)"
  SectionIn RO
 !insertmacro DETERMINE_CONTEXT
  SetOutPath $INSTDIR
- File README.txt ..\NEWS mexopts-win32.bat mexopts-win64.bat ..\license.txt
+ File README.txt ..\NEWS mexopts-win32.bat mexopts-win64.bat ..\license.txt ..\VERSION
 
  SetOutPath $INSTDIR\matlab
  File /r ..\matlab\*.m
