@@ -213,3 +213,6 @@ tests/julia/rbc/rbc*.jl
 
 # Octave variables saved when Octave crashes
 octave-workspace
+
+# VERSION generated file
+VERSION
