@@ -79,11 +79,27 @@ if withuncertainty
     sigma = transpose(chol(Sigma));
 end
 
+% Set initial condition.
+if isdates(initialcondition)
+    if isempty(M_.endo_histval)
+        error('backward_model_irf: histval block for setting initial condition is missing!')
+    end
+    initialcondition = dseries(transpose(M_.endo_histval), initialcondition, endo_names, cellstr(M_.endo_names_tex));
+end
+
 % Put initial conditions in a vector of doubles
 initialconditions = transpose(initialcondition{endo_names{:}}.data);
 
 % Compute forecast without shock 
-innovations = zeros(periods+1, M_.exo_nbr);
+innovations = zeros(periods+max(M_.maximum_exo_lag, 1), M_.exo_nbr);
+if M_.maximum_exo_lag
+    if isempty(M_.exo_histval)
+        error('You need to set the past values for the exogenous variables!')
+    else
+        innovations(1:M_.maximum_exo_lag, :) = M_.exo_histval;
+    end
+end
+
 oo__0 = simul_backward_model(initialconditions, periods, options_, M_, oo_, innovations);
 forecasts.pointforecast = dseries(transpose(oo__0.endo_simul(idy,:)), initialcondition.init, listofvariables);
 
@@ -91,7 +107,7 @@ if withuncertainty
     % Preallocate an array gathering the simulations.
     ArrayOfForectasts = zeros(n, periods+1, B);
     for i=1:B
-        innovations(2:end,:) = transpose(sigma*randn(M_.exo_nbr, periods));
+        innovations(max(M_.maximum_exo_lag, 1)+1:end,:) = transpose(sigma*randn(M_.exo_nbr, periods));
         oo__ = simul_backward_model(initialconditions, periods, options_, M_, oo_, innovations);     
         ArrayOfForecasts(:,:,i) = oo__.endo_simul(idy,:); 
     end

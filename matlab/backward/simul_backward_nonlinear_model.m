@@ -64,7 +64,11 @@ if nargin<6
     % Put the simulated innovations in DynareOutput.exo_simul.
     DynareOutput.exo_simul = zeros(sample_size,number_of_shocks);
     DynareOutput.exo_simul(:,positive_var_indx) = DynareOutput.bnlms.shocks;
-    DynareOutput.exo_simul = [zeros(1,number_of_shocks); DynareOutput.exo_simul];
+    if isfield(DynareModel,'exo_histval') && ~ isempty(DynareModel.exo_histval)
+        DynareOutput.exo_simul = [M_.exo_histval; DynareOutput.exo_simul];
+    else
+        DynareOutput.exo_simul = [zeros(1,number_of_shocks); DynareOutput.exo_simul];
+    end
 else
     DynareOutput.exo_simul = innovations;
 end
@@ -86,7 +90,7 @@ y = NaN(length(idx)+ny1,1);
 % initialization of the returned simulations.
 DynareOutput.endo_simul = NaN(DynareModel.endo_nbr,sample_size+1);
 if isempty(initial_conditions)
-    if isfield(DynareModel,'endo_histval')
+    if isfield(DynareModel,'endo_histval') && ~isempty(DynareModel.endo_histval)
         DynareOutput.endo_simul(:,1:DynareModel.maximum_lag) = DynareModel.endo_histval;
     else
         warning('simul_backward_nonlinear_model:: Initial condition is zero for all variables! If the model is nonlinear, the model simulation may fail with the default initialization')
@@ -97,11 +101,12 @@ else
 end
 Y = DynareOutput.endo_simul;
 
+
 % Simulations (call a Newton-like algorithm for each period).
 for it = 2:sample_size+1
     ylag = Y(iy1,it-1);                   % Set lagged variables.
     y = Y(:,it-1);                        % A good guess for the initial conditions is the previous values for the endogenous variables.
-    Y(:,it) = dynare_solve(model_dynamic_s, y, DynareOptions, model_dynamic, ylag, DynareOutput.exo_simul, DynareModel.params, DynareOutput.steady_state, it);
+    Y(:,it) = dynare_solve(model_dynamic_s, y, DynareOptions, model_dynamic, ylag, DynareOutput.exo_simul, DynareModel.params, DynareOutput.steady_state, it+(DynareModel.maximum_exo_lag-1));
 end
 
 DynareOutput.endo_simul = Y;
