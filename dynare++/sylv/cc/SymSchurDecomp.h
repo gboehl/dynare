@@ -7,34 +7,44 @@
 
 #include "SylvMatrix.h"
 
-class SymSchurDecomp {
+class SymSchurDecomp
+{
 protected:
-	Vector lambda;
-	SqSylvMatrix q;
+  Vector lambda;
+  SqSylvMatrix q;
 public:
-	/** Calculates A = Q*Lambda*Q^T, where A is assummed to be
-	 * symmetric and Lambda real diagonal, hence a vector. */
-	SymSchurDecomp(const GeneralMatrix& a);
-	SymSchurDecomp(const SymSchurDecomp& ssd)
-		: lambda(ssd.lambda), q(ssd.q) {}
-	virtual ~SymSchurDecomp() {}
-	const Vector& getLambda() const
-		{return lambda;}
-	const SqSylvMatrix& getQ() const
-		{return q;}
-	/** Return factor F*F^T = A, raises and exception if A is not
-	 * positive semidefinite, F must be square. */
-	void getFactor(GeneralMatrix& f) const;
-	/** Returns true if A is positive semidefinite. */
-	bool isPositiveSemidefinite() const;
-	/** Correct definitness. This sets all eigenvalues between minus
-	 * tolerance and zero to zero. */
-	void correctDefinitness(double tol);
+  /** Calculates A = Q*Lambda*Q^T, where A is assummed to be
+   * symmetric and Lambda real diagonal, hence a vector. */
+  SymSchurDecomp(const GeneralMatrix &a);
+  SymSchurDecomp(const SymSchurDecomp &ssd)
+    : lambda(ssd.lambda), q(ssd.q)
+  {
+  }
+  virtual ~SymSchurDecomp()
+  {
+  }
+  const Vector &
+  getLambda() const
+  {
+    return lambda;
+  }
+  const SqSylvMatrix &
+  getQ() const
+  {
+    return q;
+  }
+  /** Return factor F*F^T = A, raises and exception if A is not
+   * positive semidefinite, F must be square. */
+  void getFactor(GeneralMatrix &f) const;
+  /** Returns true if A is positive semidefinite. */
+  bool isPositiveSemidefinite() const;
+  /** Correct definitness. This sets all eigenvalues between minus
+   * tolerance and zero to zero. */
+  void correctDefinitness(double tol);
 
 };
 
 #endif
-
 
 // Local Variables:
 // mode:C++

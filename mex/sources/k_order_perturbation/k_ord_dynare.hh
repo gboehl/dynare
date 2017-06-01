@@ -135,7 +135,8 @@ public:
               const vector<int> &varOrder, const TwoDMatrix &ll_Incidence,
               double qz_criterium, TwoDMatrix *g1_arg, TwoDMatrix *g2_arg, TwoDMatrix *g3_arg) throw (TLException);
 
-  virtual ~KordpDynare();
+  virtual
+  ~KordpDynare();
   int
   nstat() const
   {

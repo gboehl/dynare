@@ -31,11 +31,11 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 #ifndef M_PI
-#define M_PI (3.14159265358979323846)
+# define M_PI (3.14159265358979323846)
 #endif
 
 #ifndef M_SQRT2
-#define M_SQRT2 1.41421356237309504880
+# define M_SQRT2 1.41421356237309504880
 #endif
 
 #ifdef DEBUG_EX
@@ -50,114 +50,114 @@
 #endif
 
 #ifdef _MSC_VER
-#include <limits>
-#define M_E 2.71828182845904523536
-#define M_LOG2E 1.44269504088896340736
-#define M_LOG10E 0.434294481903251827651
-#define M_LN2 0.693147180559945309417
-#define M_LN10 2.30258509299404568402
-#define M_PI 3.14159265358979323846
-#define M_PI_2 1.57079632679489661923
-#define M_PI_4 0.785398163397448309616
-#define M_1_PI 0.318309886183790671538
-#define M_2_PI 0.636619772367581343076
-#define M_1_SQRTPI 0.564189583547756286948
-#define M_2_SQRTPI 1.12837916709551257390
-#define M_SQRT2 1.41421356237309504880
-#define M_SQRT_2 0.707106781186547524401
-#define NAN numeric_limits<double>::quiet_NaN()
+# include <limits>
+# define M_E 2.71828182845904523536
+# define M_LOG2E 1.44269504088896340736
+# define M_LOG10E 0.434294481903251827651
+# define M_LN2 0.693147180559945309417
+# define M_LN10 2.30258509299404568402
+# define M_PI 3.14159265358979323846
+# define M_PI_2 1.57079632679489661923
+# define M_PI_4 0.785398163397448309616
+# define M_1_PI 0.318309886183790671538
+# define M_2_PI 0.636619772367581343076
+# define M_1_SQRTPI 0.564189583547756286948
+# define M_2_SQRTPI 1.12837916709551257390
+# define M_SQRT2 1.41421356237309504880
+# define M_SQRT_2 0.707106781186547524401
+# define NAN numeric_limits<double>::quiet_NaN()
 
-#define isnan(x) _isnan(x)
-#define isinf(x) (!_finite(x))
-#define fpu_error(x) (isinf(x) || isnan(x))
+# define isnan(x) _isnan(x)
+# define isinf(x) (!_finite(x))
+# define fpu_error(x) (isinf(x) || isnan(x))
 
-#define finite(x) _finite(x)
+# define finite(x) _finite(x)
 
 class MSVCpp_missings
 {
-  public:
+public:
   inline double
   asinh(double x) const
-    {
-      if(x==0.0)
-        return 0.0;
-      double ax = abs(x);
-      return log(x+ax*sqrt(1.+1./(ax*ax)));
-    }
+  {
+    if (x == 0.0)
+      return 0.0;
+    double ax = abs(x);
+    return log(x+ax*sqrt(1.+1./(ax*ax)));
+  }
 
   inline double
   acosh(double x) const
-    {
-      if(x==0.0)
-        return 0.0;
-      double ax = abs(x);
-      return log(x+ax*sqrt(1.-1./(ax*ax)));
-    }
+  {
+    if (x == 0.0)
+      return 0.0;
+    double ax = abs(x);
+    return log(x+ax*sqrt(1.-1./(ax*ax)));
+  }
 
   inline double
   atanh(double x) const
-    {
-      return log((1+x)/(1-x))/2;
-    }
+  {
+    return log((1+x)/(1-x))/2;
+  }
 
   inline double
   erf(double x) const
-    {
-      const double a1 = -1.26551223,   a2 = 1.00002368,
-                   a3 =  0.37409196,   a4 = 0.09678418,
-                   a5 = -0.18628806,   a6 = 0.27886807,
-                   a7 = -1.13520398,   a8 = 1.48851587,
-                   a9 = -0.82215223,  a10 = 0.17087277;
-     double v = 1;
-     double z = abs(x);
-     if (z <= 0)
-       return v;
-     double t = 1 / (1 + 0.5 * z);
-     v = t*exp((-z*z) +a1+t*(a2+t*(a3+t*(a4+t*(a5+t*(a6+t*(a7+t*(a8+t*(a9+t*a10)))))))));
-     if (x < 0)
-       v = 2 - v;
-     return 1 - v;
-    }
+  {
+    const double a1 = -1.26551223,   a2 = 1.00002368,
+      a3 =  0.37409196,   a4 = 0.09678418,
+      a5 = -0.18628806,   a6 = 0.27886807,
+      a7 = -1.13520398,   a8 = 1.48851587,
+      a9 = -0.82215223,  a10 = 0.17087277;
+    double v = 1;
+    double z = abs(x);
+    if (z <= 0)
+      return v;
+    double t = 1 / (1 + 0.5 * z);
+    v = t*exp((-z*z) +a1+t*(a2+t*(a3+t*(a4+t*(a5+t*(a6+t*(a7+t*(a8+t*(a9+t*a10)))))))));
+    if (x < 0)
+      v = 2 - v;
+    return 1 - v;
+  }
 
   inline double
   nearbyint(double x) const
-    {
-      return floor(x + 0.5);
-    }
+  {
+    return floor(x + 0.5);
+  }
 
   inline double
   fmax(double x, double y) const
-    {
-      if (x > y)
-        return x;
-      else
-        return y;
-   }
+  {
+    if (x > y)
+      return x;
+    else
+      return y;
+  }
 
   inline double
   fmin(double x, double y) const
-    {
-      if (x < y)
-        return x;
-      else
-        return y;
-    }
+  {
+    if (x < y)
+      return x;
+    else
+      return y;
+  }
 
 };
 #endif
 
 #ifdef __MINGW32__
-#define __CROSS_COMPILATION__
+# define __CROSS_COMPILATION__
 #endif
 
 #ifdef __MINGW64__
-#define __CROSS_COMPILATION__
+# define __CROSS_COMPILATION__
 #endif
 
 #ifdef __CROSS_COMPILATION__
-#define M_PI 3.14159265358979323846
-#define M_SQRT2 1.41421356237309504880
-#define finite(x) !std::isfinite(x)
+# define M_PI 3.14159265358979323846
+# define M_SQRT2 1.41421356237309504880
+# define finite(x) !std::isfinite(x)
 #endif
 
 //#define DEBUG
@@ -166,10 +166,8 @@ using namespace std;
 const int NO_ERROR_ON_EXIT = 0;
 const int ERROR_ON_EXIT = 1;
 
-
 typedef vector<pair<Tags, void * > > code_liste_type;
 typedef code_liste_type::const_iterator it_code_type;
-
 
 class GeneralExceptionHandling
 {
@@ -253,7 +251,7 @@ public:
                                                                value2(value2_arg)
   {
     ostringstream tmp;
-    if (fabs(value1) > 1e-10 )
+    if (fabs(value1) > 1e-10)
       tmp << " with X=" << value1 << "\n";
     else
       tmp << " with X=" << value1 << " and a=" << value2 << "\n";
@@ -292,11 +290,11 @@ struct s_plan
 };
 
 struct table_conditional_local_type
-        {
-          bool is_cond;
-          int var_exo, var_endo;
-          double constrained_value;
-        };
+{
+  bool is_cond;
+  int var_exo, var_endo;
+  double constrained_value;
+};
 typedef vector<table_conditional_local_type> vector_table_conditional_local_type;
 typedef map< int, vector_table_conditional_local_type > table_conditional_global_type;
 #ifdef MATLAB_MEX_FILE
@@ -330,9 +328,9 @@ public:
 
   ExpressionType EQN_type;
   it_code_type it_code_expr;
-  /*unsigned int*/size_t nb_endo, nb_exo, nb_param;
+  /*unsigned int*/ size_t nb_endo, nb_exo, nb_param;
   char *P_endo_names, *P_exo_names, *P_param_names;
-  size_t/*unsigned int*/ endo_name_length, exo_name_length, param_name_length;
+  size_t /*unsigned int*/ endo_name_length, exo_name_length, param_name_length;
   unsigned int EQN_equation, EQN_block, EQN_block_number;
   unsigned int EQN_dvar1, EQN_dvar2, EQN_dvar3;
   vector<pair<string, pair<SymbolType, unsigned int> > > Variable_list;
@@ -397,9 +395,9 @@ public:
         else
           {
             if (dollar.compare(&str[i]) == 0)
-              pos1 = int(temp.length());
+              pos1 = int (temp.length());
             else
-              pos2 = int(temp.length());
+              pos2 = int (temp.length());
             if (pos1 >= 0 && pos2 >= 0)
               {
                 tmp_n.erase(pos1, pos2-pos1+1);
@@ -416,14 +414,14 @@ public:
   load_variable_list()
   {
     ostringstream res;
-    for (unsigned int variable_num = 0; variable_num < (unsigned int)nb_endo; variable_num++)
+    for (unsigned int variable_num = 0; variable_num < (unsigned int) nb_endo; variable_num++)
       {
         for (unsigned int i = 0; i < endo_name_length; i++)
           if (P_endo_names[CHAR_LENGTH*(variable_num+i*nb_endo)] != ' ')
             res << P_endo_names[CHAR_LENGTH*(variable_num+i*nb_endo)];
         Variable_list.push_back(make_pair(res.str(), make_pair(eEndogenous, variable_num)));
       }
-    for (unsigned int variable_num = 0; variable_num < (unsigned int)nb_exo; variable_num++)
+    for (unsigned int variable_num = 0; variable_num < (unsigned int) nb_exo; variable_num++)
       {
         for (unsigned int i = 0; i < exo_name_length; i++)
           if (P_exo_names[CHAR_LENGTH*(variable_num+i*nb_exo)] != ' ')
@@ -453,7 +451,7 @@ public:
           }
         i++;
       }
-    return(-1);
+    return (-1);
   }
 
   inline string
@@ -634,8 +632,8 @@ public:
     while (go_on)
       {
 #ifdef MATLAB_MEX_FILE
-	      if ( utIsInterruptPending() )
-		      throw UserExceptionHandling();
+        if (utIsInterruptPending())
+          throw UserExceptionHandling();
 #endif
         switch (it_code->first)
           {
@@ -701,7 +699,7 @@ public:
                 var = ((FLDV_ *) it_code->second)->get_pos();
 #ifdef DEBUG
                 mexPrintf("FLDV_ Param var=%d\n", var);
-                mexPrintf("get_variable(eParameter, var)=%s\n",get_variable(eParameter, var).c_str());
+                mexPrintf("get_variable(eParameter, var)=%s\n", get_variable(eParameter, var).c_str());
                 mexEvalString("drawnow;");
 #endif
                 Stack.push(get_variable(eParameter, var));
@@ -713,7 +711,7 @@ public:
                 lag = ((FLDV_ *) it_code->second)->get_lead_lag();
 #ifdef DEBUG
                 mexPrintf("FLDV_ endo var=%d, lag=%d\n", var, lag);
-                mexPrintf("get_variable(eEndogenous, var)=%s, compute=%d\n",get_variable(eEndogenous, var).c_str(), compute);
+                mexPrintf("get_variable(eEndogenous, var)=%s, compute=%d\n", get_variable(eEndogenous, var).c_str(), compute);
                 mexPrintf("it_=%d, lag=%d, y_size=%d, var=%d, y=%x\n", it_, lag, y_size, var, y);
                 mexEvalString("drawnow;");
 #endif
@@ -1514,7 +1512,7 @@ public:
                   Stack.pop();
                   if (compute)
                     {
-                      int derivOrder = int(nearbyint(Stackf.top()));
+                      int derivOrder = int (nearbyint(Stackf.top()));
                       Stackf.pop();
                       if (fabs(v1f) < NEAR_ZERO && v2f > 0
                           && derivOrder > v2f
@@ -2236,15 +2234,16 @@ public:
   }
   void
 
-inline test_mxMalloc(void* z, int line, string file, string func, int amount)
-{
-  if (!z && (amount > 0))
-    {
-      ostringstream tmp;
-      tmp << " mxMalloc: out of memory " << amount << " bytes required at line " << line << " in function " << func << " (file " << file;
-      throw FatalExceptionHandling(tmp.str());
-    }
-}
+  inline
+  test_mxMalloc(void *z, int line, string file, string func, int amount)
+  {
+    if (!z && (amount > 0))
+      {
+        ostringstream tmp;
+        tmp << " mxMalloc: out of memory " << amount << " bytes required at line " << line << " in function " << func << " (file " << file;
+        throw FatalExceptionHandling(tmp.str());
+      }
+  }
 
 };
 

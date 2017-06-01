@@ -25,14 +25,14 @@ Mem_Mngr::Mem_Mngr()
   swp_f_b = 0;
 }
 /*void
-Mem_Mngr::Print_heap()
-{
+  Mem_Mngr::Print_heap()
+  {
   unsigned int i;
   mexPrintf("i   :");
   for (i = 0; i < CHUNK_SIZE; i++)
-    mexPrintf("%3d ", i);
+  mexPrintf("%3d ", i);
   mexPrintf("\n");
-}
+  }
 */
 
 void
@@ -86,12 +86,12 @@ Mem_Mngr::mxMalloc_NZE()
       if (NZE_Mem_add)
         {
           NZE_Mem_add = (NonZeroElem **) mxRealloc(NZE_Mem_add, CHUNK_SIZE*sizeof(NonZeroElem *));                                                                                                     /*We have to redefine the size of pointer on the memory*/
-          error_msg.test_mxMalloc(NZE_Mem_add , __LINE__, __FILE__, __func__, CHUNK_SIZE*sizeof(NonZeroElem *));
+          error_msg.test_mxMalloc(NZE_Mem_add, __LINE__, __FILE__, __func__, CHUNK_SIZE*sizeof(NonZeroElem *));
         }
       else
         {
           NZE_Mem_add = (NonZeroElem **) mxMalloc(CHUNK_SIZE*sizeof(NonZeroElem *));                                                                                       /*We have to define the size of pointer on the memory*/
-          error_msg.test_mxMalloc(NZE_Mem_add , __LINE__, __FILE__, __func__, CHUNK_SIZE*sizeof(NonZeroElem *));
+          error_msg.test_mxMalloc(NZE_Mem_add, __LINE__, __FILE__, __func__, CHUNK_SIZE*sizeof(NonZeroElem *));
         }
 
       if (!NZE_Mem_add)

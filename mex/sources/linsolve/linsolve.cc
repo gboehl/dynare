@@ -28,7 +28,6 @@
  * along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 #include <octave/oct.h>
 #include <octave/ov-struct.h>
 
@@ -81,10 +80,9 @@ If requested, @var{r} will contain the reciprocal condition number.\n\
       return retval;
     }
 
-  
   MatrixType typA;
   typA.mark_as_full();
-  
+
   bool transa = false;
   if (nargin == 3)
     {

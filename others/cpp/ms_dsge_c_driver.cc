@@ -50,27 +50,27 @@ MsDsgeInfo::MsDsgeInfo(map<string, int > exo_names_arg,
 MsDsgeInfo::~MsDsgeInfo()
 {
   for (vector<MarkovSwitching *>::iterator it = markov_switching_vector.begin();
-       it < markov_switching_vector.end(); it++ )
+       it < markov_switching_vector.end(); it++)
     delete *it;
 
   for (vector<ModFilePrior *>::iterator it = prior_vector.begin();
-       it < prior_vector.end(); it++ )
+       it < prior_vector.end(); it++)
     delete *it;
 
   for (vector<ModFileStructuralInnovationPrior *>::iterator it = structural_innovation_prior_vector.begin();
-       it < structural_innovation_prior_vector.end(); it++ )
+       it < structural_innovation_prior_vector.end(); it++)
     delete *it;
 
   for (vector<ModFileMeasurementErrorPrior *>::iterator it = measurement_error_prior_vector.begin();
-       it < measurement_error_prior_vector.end(); it++ )
+       it < measurement_error_prior_vector.end(); it++)
     delete *it;
 
   for (vector<ModFileStructuralInnovationCorrPrior *>::iterator it = structural_innovation_corr_prior_vector.begin();
-       it < structural_innovation_corr_prior_vector.end(); it++ )
+       it < structural_innovation_corr_prior_vector.end(); it++)
     delete *it;
 
   for (vector<ModFileMeasurementErrorCorrPrior *>::iterator it = measurement_error_corr_prior_vector.begin();
-       it < measurement_error_corr_prior_vector.end(); it++ )
+       it < measurement_error_corr_prior_vector.end(); it++)
     delete *it;
 
   markov_switching_vector.clear();
