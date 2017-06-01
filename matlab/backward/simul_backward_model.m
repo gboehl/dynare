@@ -76,10 +76,14 @@ if nargin<6
       otherwise
         error(['simul_backward_nonlinear_model:: ' DynareOption.bnlms.innovation_distribution ' distribution for the structural innovations is not (yet) implemented!'])
     end
-
     % Put the simulated innovations in DynareOutput.exo_simul.
-    DynareOutput.exo_simul = zeros(sample_size+1,number_of_shocks);
+    DynareOutput.exo_simul = zeros(sample_size, number_of_shocks);
     DynareOutput.exo_simul(2:end,positive_var_indx) = DynareOutput.bnlms.shocks;
+    if isfield(DynareModel,'exo_histval') && ~isempty(DynareModel.exo_histval)
+        DynareOutput.exo_simul = [M_.exo_histval; DynareOutput.exo_simul];
+    else
+        DynareOutput.exo_simul = [zeros(1,number_of_shocks); DynareOutput.exo_simul];
+    end
 else
     number_of_shocks = size(innovations,2);
     DynareOutput.exo_simul = innovations;
@@ -91,5 +95,4 @@ if DynareOptions.linear
 else
     DynareOutput = simul_backward_nonlinear_model(initial_conditions, sample_size, DynareOptions, ...
                                 DynareModel, DynareOutput, innovations);
-end    
-    
+end
