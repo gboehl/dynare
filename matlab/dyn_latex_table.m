@@ -27,7 +27,7 @@ OutputDirectoryName = CheckPath('Output',M_.dname);
 %% get width of label column
 if ~isempty(label_width)
     label_width = max(size(deblank(char(headers(1,:),labels)),2)+2, ...
-        label_width);
+                      label_width);
 else %use default length
     label_width = max(size(deblank(char(headers(1,:),labels)),2))+2;
 end

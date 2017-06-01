@@ -75,7 +75,7 @@ end
 
 % Finally, we have the sampling uncertainty measure Shat:
 Shat=C0 +(1-1/(2+1))*(C1+C1')...
-    +(1-2/(2+1))*(C2+C2');
+     +(1-2/(2+1))*(C2+C2');
 
 % Model variances below:
 mf=BayesInfo.mf1;

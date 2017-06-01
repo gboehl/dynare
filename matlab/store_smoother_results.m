@@ -167,7 +167,7 @@ for i_endo_in_bayestopt_smoother_varlist=bayestopt_.smoother_saved_var_list'
     end
     oo_.UpdatedVariables.(deblank(M_.endo_names(i_endo_declaration_order,:)))=updated_variables(i_endo_in_dr,:)'+constant_current_variable;
 end
-    
+
 %% Add trend and constant for observed variables
 for pos_iter=1:length(bayestopt_.mf)
     oo_.Smoother.Constant.(deblank(M_.endo_names(bayestopt_.mfys(pos_iter),:)))=constant_part(pos_iter,:)';
@@ -229,8 +229,8 @@ end
 
 %%  Smoothed measurement errors
 if ~isequal(M_.H,0)
-%     measurement_error_indices=find(diag(M_.H)~=0);
+    %     measurement_error_indices=find(diag(M_.H)~=0);
     for meas_error_iter=1:length(options_.varobs)
-       oo_.SmoothedMeasurementErrors.(options_.varobs{meas_error_iter})= measurement_error(meas_error_iter,:)';
+        oo_.SmoothedMeasurementErrors.(options_.varobs{meas_error_iter})= measurement_error(meas_error_iter,:)';
     end
 end

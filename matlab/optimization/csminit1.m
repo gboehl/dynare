@@ -122,7 +122,7 @@ else
             disp_verbose(sprintf('Correct for low angle: %g',a),Verbose)
         end
     end
-        disp_verbose(sprintf('Predicted improvement: %18.9f',-dfhat/2),Verbose)
+    disp_verbose(sprintf('Predicted improvement: %18.9f',-dfhat/2),Verbose)
     %
     % Have OK dx, now adjust length of step (lambda) until min and
     % max improvement rate criteria are met.
@@ -145,7 +145,7 @@ else
         %ARGLIST
         %f = feval(fcn,dxtest,P1,P2,P3,P4,P5,P6,P7,P8,P9,P10,P11,P12,P13);
         % f = feval(fcn,x0+dx*lambda,P1,P2,P3,P4,P5,P6,P7,P8);
-            disp_verbose(sprintf('lambda = %10.5g; f = %20.7f',lambda,f ),Verbose)
+        disp_verbose(sprintf('lambda = %10.5g; f = %20.7f',lambda,f ),Verbose)
         %debug
         %disp(sprintf('Improvement too great? f0-f: %g, criterion: %g',f0-f,-(1-THETA)*dfhat*lambda))
         if f<fhat

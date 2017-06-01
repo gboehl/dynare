@@ -41,9 +41,9 @@ hs(:,left) = -hs(:,right)\hs(:,left);
 a = zeros(qcols,qcols);
 
 if(qcols > neq)
-  eyerows = 1:qcols-neq;
-  eyecols = neq+1:qcols;
-  a(eyerows,eyecols) = eye(qcols-neq);
+    eyerows = 1:qcols-neq;
+    eyecols = neq+1:qcols;
+    a(eyerows,eyecols) = eye(qcols-neq);
 end
 hrows      = qcols-neq+1:qcols;
 a(hrows,:) = hs(:,left);
@@ -56,9 +56,9 @@ a(hrows,:) = hs(:,left);
 js       = 1:qcols;
 zerocols = sum(abs(a)) == 0;
 while( any(zerocols) )
-  a(:,zerocols) = [];
-  a(zerocols,:) = [];
-  js(zerocols)  = [];
-  zerocols = sum(abs(a)) == 0;
+    a(:,zerocols) = [];
+    a(zerocols,:) = [];
+    js(zerocols)  = [];
+    zerocols = sum(abs(a)) == 0;
 end
 ia = length(js);

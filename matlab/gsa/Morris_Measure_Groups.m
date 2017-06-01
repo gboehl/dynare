@@ -45,9 +45,9 @@ function [SAmeas, OutMatrix] = Morris_Measure_Groups(NumFact, Sample, Output, p,
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 if nargin==0,
-  skipline()
-  disp('[SAmeas, OutMatrix] = Morris_Measure_Groups(NumFact, Sample, Output, p, Group);')
-  return
+    skipline()
+    disp('[SAmeas, OutMatrix] = Morris_Measure_Groups(NumFact, Sample, Output, p, Group);')
+    return
 end
 
 OutMatrix=[];
@@ -72,10 +72,10 @@ r=size(Sample,1)/(sizea+1);     % Number of trajectories
 for k=1:size(Output,2)
     
     OutValues=Output(:,k);
-  
+    
     % For each r trajectory
     for i=1:r
-    
+        
         % For each step j in the trajectory
         % Read the orientation matrix fact for the r-th sampling
         % Read the corresponding output values
@@ -87,12 +87,12 @@ for k=1:size(Output,2)
         % For each point of the fixed trajectory compute the values of the Morris function. The function
         % is partitioned in four parts, from order zero to order 4th.
         for j=1:sizea   % For each point in the trajectory i.e for each factor   
-            % matrix of factor which changes
+                        % matrix of factor which changes
             if NumGroups ~ 0;
                 AuxFind (:,1) = A(:,j);
-%                 AuxFind(find(A(:,j)),1)=1;
-%                 Pippo = sum((Group - repmat(AuxFind,1,NumGroups)),1);
-%                 Change_factor(j,i) = find(Pippo==0);   
+                %                 AuxFind(find(A(:,j)),1)=1;
+                %                 Pippo = sum((Group - repmat(AuxFind,1,NumGroups)),1);
+                %                 Change_factor(j,i) = find(Pippo==0);   
                 Change_factor = find(abs(AuxFind)>1e-010); 
                 % If we deal with groups we can only estimate the new mu*
                 % measure since factors in the same groups can move in
@@ -113,31 +113,31 @@ for k=1:size(Output,2)
                 end 
             end
         end   %for j=1:sizea
-    
+        
     end     %for i=1:r
-   
+    
     if NumGroups ~ 0
         SAmeas = SAmeas';
     end
 
     % Compute Mu AbsMu and StDev
     if any(any(isnan(SAmeas)))
-      for j=1:NumFact,
-        SAm = SAmeas(j,:);
-        SAm = SAm(find(~isnan(SAm)));
-        rr=length(SAm);
-        AbsMu(j,1) = sum(abs(SAm),2)/rr;
-      if NumGroups == 0
-        Mu(j,1) = sum(SAm,2)/rr;
-        StDev(j,1) = sum((SAm - repmat(Mu(j),1,rr)).^2/(rr*(rr-1)),2).^0.5;
-      end
-      end
+        for j=1:NumFact,
+            SAm = SAmeas(j,:);
+            SAm = SAm(find(~isnan(SAm)));
+            rr=length(SAm);
+            AbsMu(j,1) = sum(abs(SAm),2)/rr;
+            if NumGroups == 0
+                Mu(j,1) = sum(SAm,2)/rr;
+                StDev(j,1) = sum((SAm - repmat(Mu(j),1,rr)).^2/(rr*(rr-1)),2).^0.5;
+            end
+        end
     else
-      AbsMu = sum(abs(SAmeas),2)/r;
-      if NumGroups == 0
-        Mu = sum(SAmeas,2)/r;
-        StDev = sum((SAmeas - repmat(Mu,1,r)).^2/(r*(r-1)),2).^0.5;
-      end
+        AbsMu = sum(abs(SAmeas),2)/r;
+        if NumGroups == 0
+            Mu = sum(SAmeas,2)/r;
+            StDev = sum((SAmeas - repmat(Mu,1,r)).^2/(r*(r-1)),2).^0.5;
+        end
     end
 
     % Define the output Matrix - if we have groups we cannot define the old

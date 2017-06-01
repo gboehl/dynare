@@ -130,7 +130,7 @@ end
 if nblck == 1 % Brooks and Gelman tests need more than one block
     convergence_diagnostics_geweke=zeros(npar,4+2*length(options_.convergence.geweke.taper_steps));
     if any(options_.convergence.geweke.geweke_interval<0) || any(options_.convergence.geweke.geweke_interval>1) || length(options_.convergence.geweke.geweke_interval)~=2 ...
-        || (options_.convergence.geweke.geweke_interval(2)-options_.convergence.geweke.geweke_interval(1)<0)
+            || (options_.convergence.geweke.geweke_interval(2)-options_.convergence.geweke.geweke_interval(1)<0)
         fprintf('\nCONVERGENCE DIAGNOSTICS: Invalid option for geweke_interval. Using the default of [0.2 0.5].\n')
         options_.convergence.geweke.geweke_interval=[0.2 0.5];
     end
@@ -168,7 +168,7 @@ if nblck == 1 % Brooks and Gelman tests need more than one block
         end
         [results_vec, results_struct] = geweke_moments(param_draws,options_);
         convergence_diagnostics_geweke(jj,:)=results_vec;
-    
+        
         param_draws1 = param_draws(first_obs_begin_sample:last_obs_begin_sample,:);
         param_draws2 = param_draws(first_obs_end_sample:end,:);
         [results_vec1] = geweke_moments(param_draws1,options_);
@@ -183,7 +183,7 @@ if nblck == 1 % Brooks and Gelman tests need more than one block
     if options_.TeX
         Geweke_tex_header=char('Parameter', 'Mean', 'Std', 'No\ Taper');
         additional_header={[' & \multicolumn{2}{c}{Posterior} & \multicolumn{',num2str(1+length(options_.convergence.geweke.taper_steps)),'}{c}{p-values} \\'],
-            ['\cmidrule(r{.75em}){2-3} \cmidrule(r{.75em}){4-',num2str(4+length(options_.convergence.geweke.taper_steps)),'}']};
+                           ['\cmidrule(r{.75em}){2-3} \cmidrule(r{.75em}){4-',num2str(4+length(options_.convergence.geweke.taper_steps)),'}']};
         for ii=1:length(options_.convergence.geweke.taper_steps)
             Geweke_tex_header=char(Geweke_tex_header,[num2str(options_.convergence.geweke.taper_steps(ii)),'\%%\ Taper']);
         end
@@ -196,7 +196,7 @@ if nblck == 1 % Brooks and Gelman tests need more than one block
     
     if options_.convergence.rafterylewis.indicator
         if any(options_.convergence.rafterylewis.qrs<0) || any(options_.convergence.rafterylewis.qrs>1) || length(options_.convergence.rafterylewis.qrs)~=3 ...
-            || (options_.convergence.rafterylewis.qrs(1)-options_.convergence.rafterylewis.qrs(2)<=0)
+                || (options_.convergence.rafterylewis.qrs(1)-options_.convergence.rafterylewis.qrs(2)<=0)
             fprintf('\nCONVERGENCE DIAGNOSTICS: Invalid option for raftery_lewis_qrs. Using the default of [0.025 0.005 0.95].\n')
             options_.convergence.rafterylewis.qrs=[0.025 0.005 0.95];
         end        
@@ -219,7 +219,7 @@ if nblck == 1 % Brooks and Gelman tests need more than one block
             dyn_latex_table(M_,options_,my_title,'raftery_lewis',headers,labels_Raftery_Lewis_tex,raftery_data_mat,lh,10,0);
         end      
     end
-       
+    
     return;
 end
 

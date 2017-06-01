@@ -225,7 +225,7 @@ jdx = [];
 
 for i = 1:n1
     idx = [idx ; constrained_vars(i,:)];
-%     idx = [idx ; oo_.dr.inv_order_var(constrained_vars(i,:))];
+    %     idx = [idx ; oo_.dr.inv_order_var(constrained_vars(i,:))];
     jdx = [jdx ; strmatch(deblank(options_cond_fcst.controlled_varexo(i,:)),M_.exo_names,'exact')];
 end
 mv = zeros(n1,NumberOfStates);

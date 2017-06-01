@@ -34,7 +34,7 @@ function fileList = dynareParallelListAllFiles(dirName,PRCDir,Parallel)
 
 
 if (~ispc || strcmpi('unix',Parallel.OperatingSystem))
-   
+    
     fileList={};
     currentPath=[];
     if ~isempty(Parallel.Port),
@@ -43,7 +43,7 @@ if (~ispc || strcmpi('unix',Parallel.OperatingSystem))
         ssh_token = '';
     end
 
-     % Get the data for the current remote directory.
+    % Get the data for the current remote directory.
     [Flag fL]=system(['ssh ',ssh_token,' ',' ',Parallel.UserName,'@',Parallel.ComputerName,' ls ',Parallel.RemoteDirectory,'/',PRCDir, ' -R -p -1']);
 
     % Format the return value fL.
@@ -60,7 +60,7 @@ if (~ispc || strcmpi('unix',Parallel.OperatingSystem))
             start=nL(i)+1;
             continue
         end
-            
+        
         if strfind(stringProcessed,'/')
             if strfind(stringProcessed,PRCDir)
                 DD=strfind(stringProcessed,':');
@@ -92,7 +92,7 @@ else
     % Build the path files:
     if ~isempty(fileList)
         fileList = cellfun(@(x) fullfile(dirName,x),...
-            fileList,'UniformOutput',false);
+                           fileList,'UniformOutput',false);
     end
 
     % Get a list of the subdirectories:

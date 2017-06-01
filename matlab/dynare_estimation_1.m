@@ -221,7 +221,7 @@ if ~isequal(options_.mode_compute,0) && ~options_.mh_posterior_mode_estimation
     fprintf('\nFinal value of minus the log posterior (or likelihood):%f \n', fval);
 
     if isnumeric(options_.mode_compute) && options_.mode_compute==5 && options_.analytic_derivation==-1 %reset options changed by newrat
-            options_.analytic_derivation = options_analytic_derivation_old; %reset      
+        options_.analytic_derivation = options_analytic_derivation_old; %reset      
     elseif isnumeric(options_.mode_compute) && options_.mode_compute==6 %save scaling factor
         save([M_.fname '_optimal_mh_scale_parameter.mat'],'Scale');
         options_.mh_jscale = Scale;
@@ -233,7 +233,7 @@ if ~isequal(options_.mode_compute,0) && ~options_.mh_posterior_mode_estimation
                 ana_deriv_old = options_.analytic_derivation;
                 options_.analytic_derivation = 2;
                 [junk1, junk2,junk3, junk4, hh] = feval(objective_function,xparam1, ...
-                    dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,bounds,oo_);
+                                                        dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,bounds,oo_);
                 options_.analytic_derivation = ana_deriv_old;
             elseif ~isnumeric(options_.mode_compute) || ~(isequal(options_.mode_compute,5) && newratflag~=1), 
                 % with flag==0, we force to use the hessian from outer product gradient of optimizer 5
@@ -296,7 +296,7 @@ if ~options_.mh_posterior_mode_estimation && options_.cova_compute
         params_at_bound=find(abs(xparam1-bounds.ub)<1.e-10 | abs(xparam1-bounds.lb)<1.e-10);
         if ~isempty(params_at_bound)
             for ii=1:length(params_at_bound)
-            params_at_bound_name{ii,1}=get_the_name(params_at_bound(ii),0,M_,estim_params_,options_);
+                params_at_bound_name{ii,1}=get_the_name(params_at_bound(ii),0,M_,estim_params_,options_);
             end
             disp_string=[params_at_bound_name{1,:}];
             for ii=2:size(params_at_bound_name,1)
@@ -385,36 +385,36 @@ if np > 0
 end
 
 switch options_.MCMC_jumping_covariance
-    case 'hessian' %Baseline
-        %do nothing and use hessian from mode_compute
-    case 'prior_variance' %Use prior variance
-        if any(isinf(bayestopt_.p2))
-            error('Infinite prior variances detected. You cannot use the prior variances as the proposal density, if some variances are Inf.')
-        else
-            hh = diag(1./(bayestopt_.p2.^2));
-        end
+  case 'hessian' %Baseline
+                 %do nothing and use hessian from mode_compute
+  case 'prior_variance' %Use prior variance
+    if any(isinf(bayestopt_.p2))
+        error('Infinite prior variances detected. You cannot use the prior variances as the proposal density, if some variances are Inf.')
+    else
+        hh = diag(1./(bayestopt_.p2.^2));
+    end
+    hsd = sqrt(diag(hh));
+    invhess = inv(hh./(hsd*hsd'))./(hsd*hsd');
+  case 'identity_matrix' %Use identity
+    invhess = eye(nx);
+  otherwise %user specified matrix in file
+    try
+        load(options_.MCMC_jumping_covariance,'jumping_covariance')
+        hh=jumping_covariance;
+    catch
+        error(['No matrix named ''jumping_covariance'' could be found in ',options_.MCMC_jumping_covariance,'.mat'])
+    end
+    [nrow, ncol]=size(hh);
+    if ~isequal(nrow,ncol) && ~isequal(nrow,nx) %check if square and right size
+        error(['jumping_covariance matrix must be square and have ',num2str(nx),' rows and columns'])
+    end
+    try %check for positive definiteness
+        chol(hh);
         hsd = sqrt(diag(hh));
         invhess = inv(hh./(hsd*hsd'))./(hsd*hsd');
-    case 'identity_matrix' %Use identity
-        invhess = eye(nx);
-    otherwise %user specified matrix in file
-        try
-            load(options_.MCMC_jumping_covariance,'jumping_covariance')
-            hh=jumping_covariance;
-        catch
-            error(['No matrix named ''jumping_covariance'' could be found in ',options_.MCMC_jumping_covariance,'.mat'])
-        end
-        [nrow, ncol]=size(hh);
-        if ~isequal(nrow,ncol) && ~isequal(nrow,nx) %check if square and right size
-            error(['jumping_covariance matrix must be square and have ',num2str(nx),' rows and columns'])
-        end
-        try %check for positive definiteness
-            chol(hh);
-            hsd = sqrt(diag(hh));
-            invhess = inv(hh./(hsd*hsd'))./(hsd*hsd');
-        catch
-            error(['Specified jumping_covariance is not positive definite'])
-        end
+    catch
+        error(['Specified jumping_covariance is not positive definite'])
+    end
 end
 
 if (any(bayestopt_.pshape  >0 ) && options_.mh_replic) || ...
@@ -483,9 +483,9 @@ if (any(bayestopt_.pshape  >0 ) && options_.mh_replic) || ...
         elseif options_.load_mh_file && options_.load_results_after_load_mh
             %% load fields from previous MCMC run stored in results-file            
             field_names={'posterior_mode','posterior_std_at_mode',...% fields set by marginal_density
-                'posterior_mean','posterior_hpdinf','posterior_hpdsup','posterior_median','posterior_variance','posterior_std','posterior_deciles','posterior_density',...% fields set by GetPosteriorParametersStatistics
-                'prior_density',...%fields set by PlotPosteriorDistributions
-                };
+                         'posterior_mean','posterior_hpdinf','posterior_hpdsup','posterior_median','posterior_variance','posterior_std','posterior_deciles','posterior_density',...% fields set by GetPosteriorParametersStatistics
+                         'prior_density',...%fields set by PlotPosteriorDistributions
+                        };
             for field_iter=1:size(field_names,2)
                 if isfield(oo_load_mh.oo_,field_names{1,field_iter})
                     oo_.(field_names{1,field_iter})=oo_load_mh.oo_.(field_names{1,field_iter});
@@ -692,75 +692,75 @@ if (~((any(bayestopt_.pshape > 0) && options_.mh_replic) || (any(bayestopt_.psha
     %%  Historical and smoothed variabes
     %%
     if ~options_.nograph
-    [nbplt,nr,nc,lr,lc,nstar] = pltorg(n_varobs);
-    if options_.TeX && any(strcmp('eps',cellstr(options_.graph_format)))
-        fidTeX = fopen([M_.fname '_HistoricalAndSmoothedVariables.tex'],'w');
-        fprintf(fidTeX,'%% TeX eps-loader file generated by dynare_estimation_1.m (Dynare).\n');
-        fprintf(fidTeX,['%% ' datestr(now,0) '\n']);
-        fprintf(fidTeX,' \n');
-    end
-    for plt = 1:nbplt,
-        fh = dyn_figure(options_.nodisplay,'Name','Historical and smoothed variables');
-        NAMES = [];
-        if options_.TeX, TeXNAMES = []; end
-        nstar0=min(nstar,n_varobs-(plt-1)*nstar);
-        if gend==1
-           marker_string{1,1}='-ro';
-           marker_string{2,1}='--ko';
-        else
-           marker_string{1,1}='-r';
-           marker_string{2,1}='--k';
-        end
-        for i=1:nstar0,
-            k = (plt-1)*nstar+i;
-            subplot(nr,nc,i);
-            plot(1:gend,yf(k,:),marker_string{1,1},'linewidth',1)
-            hold on
-            plot(1:gend,rawdata(:,k),marker_string{2,1},'linewidth',1)
-            hold off
-            name = options_.varobs{k};
-            if isempty(NAMES)
-                NAMES = name;
-            else
-                NAMES = char(NAMES,name);
-            end
-            if ~isempty(options_.XTick)
-                set(gca,'XTick',options_.XTick)
-                set(gca,'XTickLabel',options_.XTickLabel)
-            end
-            if gend>1
-                xlim([1 gend])
-            end
-            if options_.TeX
-                idx = strmatch(options_.varobs{k},M_.endo_names,'exact');
-                texname = M_.endo_names_tex(idx,:);
-                if isempty(TeXNAMES)
-                    TeXNAMES = ['$ ' deblank(texname) ' $'];
-                else
-                    TeXNAMES = char(TeXNAMES,['$ ' deblank(texname) ' $']);
-                end
-            end
-            title(name,'Interpreter','none')
-        end
-        dyn_saveas(fh,[M_.fname '_HistoricalAndSmoothedVariables' int2str(plt)],options_.nodisplay,options_.graph_format);
+        [nbplt,nr,nc,lr,lc,nstar] = pltorg(n_varobs);
         if options_.TeX && any(strcmp('eps',cellstr(options_.graph_format)))
-            fprintf(fidTeX,'\\begin{figure}[H]\n');
-            for jj = 1:nstar0,
-                fprintf(fidTeX,'\\psfrag{%s}[1][][0.5][0]{%s}\n',deblank(NAMES(jj,:)),deblank(TeXNAMES(jj,:)));
-            end
-            fprintf(fidTeX,'\\centering \n');
-            fprintf(fidTeX,'\\includegraphics[width=%2.2f\\textwidth]{%s_HistoricalAndSmoothedVariables%s}\n',options_.figures.textwidth*min(i/nc,1),M_.fname,int2str(plt));
-            fprintf(fidTeX,'\\caption{Historical and smoothed variables.}');
-            fprintf(fidTeX,'\\label{Fig:HistoricalAndSmoothedVariables:%s}\n',int2str(plt));
-            fprintf(fidTeX,'\\end{figure}\n');
-            fprintf(fidTeX,'\n');
+            fidTeX = fopen([M_.fname '_HistoricalAndSmoothedVariables.tex'],'w');
+            fprintf(fidTeX,'%% TeX eps-loader file generated by dynare_estimation_1.m (Dynare).\n');
+            fprintf(fidTeX,['%% ' datestr(now,0) '\n']);
+            fprintf(fidTeX,' \n');
         end
-    end
-    if options_.TeX && any(strcmp('eps',cellstr(options_.graph_format)))
-        fprintf(fidTeX,'\n');
-        fprintf(fidTeX,'%% End of TeX file.\n');
-        fclose(fidTeX);
-    end
+        for plt = 1:nbplt,
+            fh = dyn_figure(options_.nodisplay,'Name','Historical and smoothed variables');
+            NAMES = [];
+            if options_.TeX, TeXNAMES = []; end
+            nstar0=min(nstar,n_varobs-(plt-1)*nstar);
+            if gend==1
+                marker_string{1,1}='-ro';
+                marker_string{2,1}='--ko';
+            else
+                marker_string{1,1}='-r';
+                marker_string{2,1}='--k';
+            end
+            for i=1:nstar0,
+                k = (plt-1)*nstar+i;
+                subplot(nr,nc,i);
+                plot(1:gend,yf(k,:),marker_string{1,1},'linewidth',1)
+                hold on
+                plot(1:gend,rawdata(:,k),marker_string{2,1},'linewidth',1)
+                hold off
+                name = options_.varobs{k};
+                if isempty(NAMES)
+                    NAMES = name;
+                else
+                    NAMES = char(NAMES,name);
+                end
+                if ~isempty(options_.XTick)
+                    set(gca,'XTick',options_.XTick)
+                    set(gca,'XTickLabel',options_.XTickLabel)
+                end
+                if gend>1
+                    xlim([1 gend])
+                end
+                if options_.TeX
+                    idx = strmatch(options_.varobs{k},M_.endo_names,'exact');
+                    texname = M_.endo_names_tex(idx,:);
+                    if isempty(TeXNAMES)
+                        TeXNAMES = ['$ ' deblank(texname) ' $'];
+                    else
+                        TeXNAMES = char(TeXNAMES,['$ ' deblank(texname) ' $']);
+                    end
+                end
+                title(name,'Interpreter','none')
+            end
+            dyn_saveas(fh,[M_.fname '_HistoricalAndSmoothedVariables' int2str(plt)],options_.nodisplay,options_.graph_format);
+            if options_.TeX && any(strcmp('eps',cellstr(options_.graph_format)))
+                fprintf(fidTeX,'\\begin{figure}[H]\n');
+                for jj = 1:nstar0,
+                    fprintf(fidTeX,'\\psfrag{%s}[1][][0.5][0]{%s}\n',deblank(NAMES(jj,:)),deblank(TeXNAMES(jj,:)));
+                end
+                fprintf(fidTeX,'\\centering \n');
+                fprintf(fidTeX,'\\includegraphics[width=%2.2f\\textwidth]{%s_HistoricalAndSmoothedVariables%s}\n',options_.figures.textwidth*min(i/nc,1),M_.fname,int2str(plt));
+                fprintf(fidTeX,'\\caption{Historical and smoothed variables.}');
+                fprintf(fidTeX,'\\label{Fig:HistoricalAndSmoothedVariables:%s}\n',int2str(plt));
+                fprintf(fidTeX,'\\end{figure}\n');
+                fprintf(fidTeX,'\n');
+            end
+        end
+        if options_.TeX && any(strcmp('eps',cellstr(options_.graph_format)))
+            fprintf(fidTeX,'\n');
+            fprintf(fidTeX,'%% End of TeX file.\n');
+            fclose(fidTeX);
+        end
     end
 end
 

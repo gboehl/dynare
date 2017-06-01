@@ -237,7 +237,7 @@ if analytic_derivation,
     dlikk = dlikk/2;
     if analytic_derivation==2 || asy_hess,
         if asy_hess==0,
-        Hess = Hess + tril(Hess,-1)';
+            Hess = Hess + tril(Hess,-1)';
         end
         Hess = -Hess/2;
     end

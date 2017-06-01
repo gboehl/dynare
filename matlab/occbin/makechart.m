@@ -64,14 +64,14 @@ for i = 1:nvars
     if i==1 && isempty(legendlist)==0
         legend(legendlist)
         text('String',figlabel,'Units','normalized','Position',[1.2 1.24],...
-       'FontSize',14,'FontWeight','bold','HorizontalAlignment','center');
+             'FontSize',14,'FontWeight','bold','HorizontalAlignment','center');
     end
- 
+    
     if i==nvars | i==nvars-1
         xlabel('Time');
     end
-%     set(gca,'XTick',xtick)
-%     set(gca,'XTickLabel',xticklabel)
+    %     set(gca,'XTick',xtick)
+    %     set(gca,'XTickLabel',xticklabel)
     
     title([num2str(i),'. ',titlelist(i,:)]);
     ylabel(ylabels(i,:))

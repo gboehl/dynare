@@ -67,7 +67,7 @@ if notsteady,
                     D2K(:,i,j) = D2K(:,i,j) -PZ*D2F(j,i)/F^2 - squeeze(DP(:,Z,i))*DF(j)/F^2 - ...
                         squeeze(DP(:,Z,j))*DF(i)'/F^2 + 2/F^3*PZ*DF(i)'*DF(j);
                     D2K(:,j,i) = D2K(:,i,j);
-%                     D2K = squeeze(D2P(:,Z,:,:))/F;
+                    %                     D2K = squeeze(D2P(:,Z,:,:))/F;
                 end
             end
         end
@@ -104,12 +104,12 @@ end
 DLIK = DF/F + 2*Dv'/F*v - v^2/F^2*DF;
 if nargout==6
     Hesst = D2F/F-1/F^2*(DF*DF') + 2*D2v/F*v + 2*(Dv'*Dv)/F - 2*(DF*Dv)*v/F^2 ...
-        - v^2/F^2*D2F - 2*v/F^2*(Dv'*DF') + 2*v^2/F^3*(DF*DF');
+            - v^2/F^2*D2F - 2*v/F^2*(Dv'*DF') + 2*v^2/F^3*(DF*DF');
 elseif nargout==4,
     D2a = 1/F^2*(DF*DF') + 2*(Dv'*Dv)/F ;
-%     D2a = -1/F^2*(DF*DF') + 2*(Dv'*Dv)/F  + 2*v^2/F^3*(DF*DF') ...
-%         - 2*(DF*Dv)*v/F^2 - 2*v/F^2*(Dv'*DF');
-%     D2a = +2*(Dv'*Dv)/F + (DF' * DF)/F^2;
+    %     D2a = -1/F^2*(DF*DF') + 2*(Dv'*Dv)/F  + 2*v^2/F^3*(DF*DF') ...
+    %         - 2*(DF*Dv)*v/F^2 - 2*v/F^2*(Dv'*DF');
+    %     D2a = +2*(Dv'*Dv)/F + (DF' * DF)/F^2;
 end
 
 Da = Da + DK*v+K*Dv;
@@ -145,9 +145,9 @@ if notsteady,
                     jcount = jcount+1;
                     tmp = dyn_unvech(D2P(:,jcount));
                     tmp = tmp - (tmp*Z')*K' - (DP(:,:,j)*Z')*DK(:,i)' ...
-                        - (DP(:,:,i)*Z')*DK(:,j)' -PZ*D2K(:,j,i)';
+                          - (DP(:,:,i)*Z')*DK(:,j)' -PZ*D2K(:,j,i)';
                     D2P(:,jcount) = dyn_vech(tmp);
-%                     D2P(:,:,i,j) = D2P(:,:,j,i);
+                    %                     D2P(:,:,i,j) = D2P(:,:,j,i);
                 end
             end
         else
@@ -160,7 +160,7 @@ if notsteady,
                     D2PZ = tmp(:,Z);
                     tmp = tmp - D2PZ*K' - DPZ(:,j)*DK(:,i)'- DPZ(:,i)*DK(:,j)' - PZ*squeeze(D2K(:,j,i))';
                     D2P(:,jcount) = dyn_vech(tmp);
-%                     D2P(:,:,i,j) = D2P(:,:,j,i);
+                    %                     D2P(:,:,i,j) = D2P(:,:,j,i);
                 end
             end
             

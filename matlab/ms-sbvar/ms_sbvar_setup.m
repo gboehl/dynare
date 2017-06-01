@@ -29,7 +29,7 @@ function ms_sbvar_setup(options_)
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 options_.data = read_variables(options_.datafile, ...
-    options_.varobs, [], options_.xls_sheet, options_.xls_range);
+                               options_.varobs, [], options_.xls_sheet, options_.xls_range);
 [options_.ms.final_year,options_.ms.final_subperiod] = check_datafile_years_assigned(options_);
 
 if options_.ms.upper_cholesky
@@ -277,10 +277,10 @@ else
     if indxC0Pres
         Fhatur0P = Fhat;  % ur: unrestriced across A0 and A+
         for ki = 1:size(ixmC0Pres,1)   % loop through the number of equations in which
-            % cross-A0-A+ restrictions occur. See St. Louis Note p.5.
+                                       % cross-A0-A+ restrictions occur. See St. Louis Note p.5.
             ixeq = ixmC0Pres{ki}(1,1);   % index for the jth equation in consideration.
             Lit = Vi{ixeq}(ixmC0Pres{ki}(:,2),:);  % transposed restriction matrix Li
-            % V_j(i,:) in f_j(i) = V_j(i,:)*g_j
+                                                   % V_j(i,:) in f_j(i) = V_j(i,:)*g_j
             ci = ixmC0Pres{ki}(:,4) .* A0hat(ixmC0Pres{ki}(:,3),ixeq);
             % s * a_j(h) in the restriction f_j(i) = s * a_j(h).
             LtH = Lit/Hpinv{ixeq};

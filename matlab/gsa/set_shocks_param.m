@@ -93,7 +93,7 @@ if isfield(estim_params_,'calibrated_covariances_ME')
     H(estim_params_.calibrated_covariances_ME.position)=estim_params_.calibrated_covariances_ME.cov_value;
 end
 
-  
+
 % updating matrices in M
 if nvx || ncx
     M_.Sigma_e = Sigma_e;

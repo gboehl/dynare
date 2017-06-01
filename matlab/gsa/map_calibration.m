@@ -165,7 +165,7 @@ if ~isempty(indx_irf),
     end
     disp('done !')
     skipline()
-  
+    
     % For single legend search which has maximum nbr of restrictions
     all_irf_couples = cellstr([char(endo_prior_restrictions.irf(:,1)) char(endo_prior_restrictions.irf(:,2))]);
     irf_couples = unique(all_irf_couples);

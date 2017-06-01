@@ -151,9 +151,9 @@ else
     VAL = squeeze(VAL) ;
     MatlabVersion = version;
     if isoctave || str2double(MatlabVersion(end-5:end-2))<2013 % Equivalent to, but faster than if verLessThan('matlab','8.1')
-      [UFN,ind] = unique(FN) ;          
+        [UFN,ind] = unique(FN) ;          
     else
-      [UFN,ind] = unique(FN,'legacy') ;
+        [UFN,ind] = unique(FN,'legacy') ;
     end
     
     if numel(UFN) ~= numel(FN),

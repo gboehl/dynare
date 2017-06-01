@@ -28,26 +28,26 @@ exo_nbr = M.exo_nbr;
 nspred = M.nspred;
 
 if order>1 && options.loglinear 
-   error('The loglinear-option currently only works at order 1') 
+    error('The loglinear-option currently only works at order 1') 
 end
 if M.maximum_endo_lead == 0 && order>1
-  error(['2nd and 3rd order approximation not implemented for purely ' ...
-       'backward models'])
+    error(['2nd and 3rd order approximation not implemented for purely ' ...
+           'backward models'])
 end
 
 switch(order)
   case 1
     [err, g_1] = k_order_perturbation(dr,M,options);
     if err
-      info(1)=9;
-      return;
+        info(1)=9;
+        return;
     end
     dr.g_1 = g_1;
   case 2
     [err, g_0, g_1, g_2] = k_order_perturbation(dr,M,options);
     if err
-      info(1)=9;
-      return;
+        info(1)=9;
+        return;
     end
     dr.g_0 = g_0;
     dr.g_1 = g_1;
@@ -57,15 +57,15 @@ switch(order)
         [err, g_0, g_1, g_2, g_3, derivs] = k_order_perturbation(dr, ...
                                                           M,options);
         if err
-          info(1)=9;
-          return;
+            info(1)=9;
+            return;
         end
     else
         [err, g_0, g_1, g_2, g_3] = k_order_perturbation(dr, ...
                                                          M,options);
         if err
-          info(1)=9;
-          return;
+            info(1)=9;
+            return;
         end
     end
     dr.g_0 = g_0;
@@ -205,5 +205,5 @@ for i=1:n1
 end
 
 
-            
-            
+
+

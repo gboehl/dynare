@@ -52,16 +52,16 @@ qs(1:rc,1:cc) = sparse(cofb);
 qcols = neq*(nlag+nlead);
 
 if( nlead > 1 ) 
-   for i = 1:nlead-1
-      rows = i*neq + (1:neq);
-      qs(rows,:) = SPShiftright( qs((rows-neq),:), neq );
-   end
+    for i = 1:nlead-1
+        rows = i*neq + (1:neq);
+        qs(rows,:) = SPShiftright( qs((rows-neq),:), neq );
+    end
 end
 
 l = (1: neq*nlag);
 r = (neq*nlag+1: neq*(nlag+nlead));
 
- qs(:,l) = - qs(:,r) \ qs(:,l);
+qs(:,l) = - qs(:,r) \ qs(:,l);
 
 minus =              1:       neq*(nlag+1);
 plus  = neq*(nlag+1)+1: neq*(nlag+1+nlead);

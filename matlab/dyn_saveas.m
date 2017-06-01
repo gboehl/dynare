@@ -53,19 +53,19 @@ if any(strcmp('fig',cellstr(graph_format)))
         error('Octave cannot create fig files!')
     else
         if nodisplay
-%  THE FOLLOWING LINES COULD BE USED IF BUGS/PROBLEMS ARE REPORTED USING LINE 60		
-%             set(h,'Units','Normalized')
-%             mypos=get(h,'Position');
-%             set(h,'Position',[-1 -1 mypos(3:4)])
-%             set(h, 'Visible','on');
+            %  THE FOLLOWING LINES COULD BE USED IF BUGS/PROBLEMS ARE REPORTED USING LINE 60                
+            %             set(h,'Units','Normalized')
+            %             mypos=get(h,'Position');
+            %             set(h,'Position',[-1 -1 mypos(3:4)])
+            %             set(h, 'Visible','on');
             set(h,'CreateFcn','set(gcf, ''Visible'',''on'')') ;
         end
         saveas(h,[fname '.fig']);
     end
 end
 if any(strcmp('none',cellstr(graph_format)))
-% don't save
-% check here as a reminder that none is an option to graph_format
+    % don't save
+    % check here as a reminder that none is an option to graph_format
 end
 if nodisplay
     close(h);

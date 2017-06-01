@@ -60,7 +60,7 @@ if nargin==8 ,
     end
     if isfield(opts_decomp,'fig_name')
         fig_name = opts_decomp.fig_name;
-%         fig_name = ['_' fig_name];
+        %         fig_name = ['_' fig_name];
         fig_name1 = [fig_name];        
         fig_name = [fig_name '_'];    
     end

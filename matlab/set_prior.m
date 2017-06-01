@@ -158,7 +158,7 @@ bayestopt_.p7 = bayestopt_.p6 ;
 %% check for point priors and disallow them as they do not work with MCMC
 if any(bayestopt_.p2 ==0)
     error(sprintf(['Error in prior for %s: you cannot use a point prior in estimation. Either increase the prior standard deviation',...
-        ' or fix the parameter completely.'], bayestopt_.name{bayestopt_.p2 ==0}))
+                   ' or fix the parameter completely.'], bayestopt_.name{bayestopt_.p2 ==0}))
 end
 
 % generalized location parameters by default for beta distribution

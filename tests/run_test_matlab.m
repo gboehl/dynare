@@ -21,7 +21,7 @@ addpath([top_test_dir filesep '..' filesep 'matlab']);
 
 % Test Dynare Version
 if ~strcmp(dynare_version(), getenv('DYNARE_VERSION'))
-  error('Incorrect version of Dynare is being tested')
+    error('Incorrect version of Dynare is being tested')
 end
 
 % Test MOD files listed in Makefile.am
@@ -35,11 +35,11 @@ disp(['***  TESTING: ' modfile ' ***']);
 tic;
 save(['wsMat' testfile '.mat']);
 try
-  dynare([testfile ext], 'console')
-  testFailed = false;
+    dynare([testfile ext], 'console')
+    testFailed = false;
 catch exception
-  printMakeCheckMatlabErrMsg(strtok(getenv('FILESTEM')), exception);
-  testFailed = true;
+    printMakeCheckMatlabErrMsg(strtok(getenv('FILESTEM')), exception);
+    testFailed = true;
 end
 top_test_dir = getenv('TOP_TEST_DIR');
 [modfile, name] = strtok(getenv('FILESTEM'));
@@ -52,20 +52,20 @@ cd(top_test_dir);
 name = strtok(getenv('FILESTEM'));
 fid = fopen([name '.m.trs'], 'w');
 if fid < 0
-  wd = pwd
-  filestep = getenv('FILESTEM')
-  error(['ERROR: problem opening file ' name '.m.trs for writing....']);
+    wd = pwd
+    filestep = getenv('FILESTEM')
+    error(['ERROR: problem opening file ' name '.m.trs for writing....']);
 end
 if testFailed
-  fprintf(fid,':test-result: FAIL\n');
-  fprintf(fid,':number-tests: 1\n');
-  fprintf(fid,':number-failed-tests: 1\n');
-  fprintf(fid,':list-of-failed-tests: %s\n', [name '.mod']);
+    fprintf(fid,':test-result: FAIL\n');
+    fprintf(fid,':number-tests: 1\n');
+    fprintf(fid,':number-failed-tests: 1\n');
+    fprintf(fid,':list-of-failed-tests: %s\n', [name '.mod']);
 else
-  fprintf(fid,':test-result: PASS\n');
-  fprintf(fid,':number-tests: 1\n');
-  fprintf(fid,':number-failed-tests: 0\n');
-  fprintf(fid,':list-of-passed-tests: %s\n', [name '.mod']);
+    fprintf(fid,':test-result: PASS\n');
+    fprintf(fid,':number-tests: 1\n');
+    fprintf(fid,':number-failed-tests: 0\n');
+    fprintf(fid,':list-of-passed-tests: %s\n', [name '.mod']);
 end
 fprintf(fid,':elapsed-time: %f\n', ecput);
 fclose(fid);

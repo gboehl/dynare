@@ -73,14 +73,14 @@ else
     fid = fopen('run_all_unitary_tests.m.trs', 'w+');
 end
 if length(failedtests) > 0
-  fprintf(fid,':test-result: FAIL\n');
-  fprintf(fid,':number-tests: %d\n', counter);
-  fprintf(fid,':number-failed-tests: %d\n', length(failedtests));
-  fprintf(fid,':list-of-failed-tests: %s\n', failedtests{:});
+    fprintf(fid,':test-result: FAIL\n');
+    fprintf(fid,':number-tests: %d\n', counter);
+    fprintf(fid,':number-failed-tests: %d\n', length(failedtests));
+    fprintf(fid,':list-of-failed-tests: %s\n', failedtests{:});
 else
-  fprintf(fid,':test-result: PASS\n');
-  fprintf(fid,':number-tests: %d\n', counter);
-  fprintf(fid,':number-failed-tests: 0\n');
+    fprintf(fid,':test-result: PASS\n');
+    fprintf(fid,':number-tests: %d\n', counter);
+    fprintf(fid,':number-failed-tests: 0\n');
 end
 fprintf(fid,':elapsed-time: %f\n',0.0);
 fclose(fid);

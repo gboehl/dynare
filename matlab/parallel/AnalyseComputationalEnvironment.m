@@ -105,12 +105,12 @@ ErrorCode=0;
 
 
 for Node=1:length(DataInput) % To obtain a recoursive function remove the 'for'
-    % and use AnalyseComputationalEnvironment with differents input!
+                             % and use AnalyseComputationalEnvironment with differents input!
     
     
     % Determine the operating system or software version when necessary
     % for different command types.
-   
+    
     OScallerUnix=~ispc;
     OScallerWindows=ispc;
     OStargetUnix=strcmpi('unix',DataInput(Node).OperatingSystem);
@@ -216,18 +216,18 @@ for Node=1:length(DataInput) % To obtain a recoursive function remove the 'for'
             
             % This check can be removed ... according to the dynare parser
             % strategy.           
-                if (~isempty(DataInput(Node).Password))
-                    disp('[WARNING] The field Password should be empty under unix or mac!');
-                    skipline()
-                    disp(['Remove the string ',DataInput(Node).Password,' from this field!'])
-                    skipline()
-                    disp('ErrorCode 4.')
-                    skipline(2)
-                    ErrorCode=4;
-                else
-                    disp('Check on Password Variable ..... Ok!')
-                    skipline(2)
-                end
+            if (~isempty(DataInput(Node).Password))
+                disp('[WARNING] The field Password should be empty under unix or mac!');
+                skipline()
+                disp(['Remove the string ',DataInput(Node).Password,' from this field!'])
+                skipline()
+                disp('ErrorCode 4.')
+                skipline(2)
+                ErrorCode=4;
+            else
+                disp('Check on Password Variable ..... Ok!')
+                skipline(2)
+            end
         else
             
             % This check can be removed ... according to the dynare parser
@@ -267,15 +267,15 @@ for Node=1:length(DataInput) % To obtain a recoursive function remove the 'for'
             % This check can be removed ... according to the dynare parser
             % strategy.
             
-                if (~isempty(DataInput(Node).RemoteDrive))
-                    disp('[WARNING] The fields RemoteDrive should be empty under unix or mac!')
-                    skipline()
-                    disp(['remove the string ',DataInput(Node).RemoteDrive,' from this field!'])
-                    skipline()
-                    disp('ErrorCode 5.')
-                    skipline(2)
-                    ErrorCode=5;
-                end
+            if (~isempty(DataInput(Node).RemoteDrive))
+                disp('[WARNING] The fields RemoteDrive should be empty under unix or mac!')
+                skipline()
+                disp(['remove the string ',DataInput(Node).RemoteDrive,' from this field!'])
+                skipline()
+                disp('ErrorCode 5.')
+                skipline(2)
+                ErrorCode=5;
+            end
             
             si2=[];
             de2=[];
@@ -426,7 +426,7 @@ for Node=1:length(DataInput) % To obtain a recoursive function remove the 'for'
                     [NonServeS NenServeD]=system(['start /B psexec \\',DataInput(Node).ComputerName,' -e ',' -W ',DataInput(Node).RemoteDrive,':\',DataInput(Node).RemoteDirectory,'\',RemoteTmpFolder ' -low   ',DataInput(Node).MatlabOctavePath,' -nosplash -nodesktop -minimize -r Tracing']);
                 end
             end
-                
+            
         end
         
         % Timer da fissare, nei valori di attesa!
@@ -494,11 +494,11 @@ for Node=1:length(DataInput) % To obtain a recoursive function remove the 'for'
                 return
             else
                 disp('Check on Dynare Path remote machine ..... Ok!')
-            if isempty(dynareParallelDir('IsMac.txt',RemoteTmpFolder,DataInput(Node)))
-                RemoteEnvironment=Environment;
-            else
-                RemoteEnvironment=2;                
-            end
+                if isempty(dynareParallelDir('IsMac.txt',RemoteTmpFolder,DataInput(Node)))
+                    RemoteEnvironment=Environment;
+                else
+                    RemoteEnvironment=2;                
+                end
                 skipline(2)
             end
         end
@@ -590,7 +590,7 @@ for Node=1:length(DataInput) % To obtain a recoursive function remove the 'for'
     
     
     RealCPUnbr='';
-%    keyboard;
+    %    keyboard;
     RealCPUnbr=GiveCPUnumber(de0,Environment1);
     
     % Questo controllo penso che si possa MIGLIORARE!!!!!

@@ -60,11 +60,11 @@ xh_1=xh1;
 hessian_mat = sparse(size(f0,1),n*n);
 
 for i=1:n    
-%     if i > 1        
-%         k=[i:n:n*(i-1)];
-%         hessian_mat(:,(i-1)*n+1:(i-1)*n+i-1)=hessian_mat(:,k);
-%         hessian_mat(:,k)=0;
-%     end     
+    %     if i > 1        
+    %         k=[i:n:n*(i-1)];
+    %         hessian_mat(:,(i-1)*n+1:(i-1)*n+i-1)=hessian_mat(:,k);
+    %         hessian_mat(:,k)=0;
+    %     end     
     hessian_mat(:,(i-1)*n+i)=(f1(:,i)+f_1(:,i)-2*f0)./(h1(i)*h_1(i));
     temp=f1+f_1-f0*ones(1,n);
     for j=1:i-1        

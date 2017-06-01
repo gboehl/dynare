@@ -4,7 +4,7 @@ function B = subsref(A,S) % --*-- Unitary tests --*--
 %
 % Overloads the subsref method for dynTimeIndex class. This method only allows to get
 % the value of the field `index`.
-    
+
 % Copyright (C) 2013 Dynare Team
 %
 % This file is part of Dynare.

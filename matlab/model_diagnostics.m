@@ -108,7 +108,7 @@ for b=1:nb
     if options.bytecode
         if nb == 1
             [chk, res, jacob] = bytecode(dr.ys, exo, M.params, dr.ys, 1, exo, ...
-                                    'evaluate', 'static');
+                                         'evaluate', 'static');
         else
             [chk, res, jacob] = bytecode(dr.ys, exo, M.params, dr.ys, 1, exo, ...
                                          'evaluate', 'static',['block=' ...
@@ -173,7 +173,7 @@ for b=1:nb
         end
     end
 end
-    
+
 if singularity_problem 
     try
         options_check=options;
@@ -205,26 +205,26 @@ if ~options.block
     if options.order == 1
         if (options.bytecode)
             [chck, junk, loc_dr] = bytecode('dynamic','evaluate', z,exo_simul, ...
-                M.params, dr.ys, 1);
+                                            M.params, dr.ys, 1);
             jacobia_ = [loc_dr.g1 loc_dr.g1_x loc_dr.g1_xd];
         else
             [junk,jacobia_] = feval([M.fname '_dynamic'],z(iyr0),exo_simul, ...
-                M.params, dr.ys, it_);
+                                    M.params, dr.ys, it_);
         end;
     elseif options.order >= 2
         if (options.bytecode)
             [chck, junk, loc_dr] = bytecode('dynamic','evaluate', z,exo_simul, ...
-                M.params, dr.ys, 1);
+                                            M.params, dr.ys, 1);
             jacobia_ = [loc_dr.g1 loc_dr.g1_x];
         else
             [junk,jacobia_,hessian1] = feval([M.fname '_dynamic'],z(iyr0),...
-                exo_simul, ...
-                M.params, dr.ys, it_);
+                                             exo_simul, ...
+                                             M.params, dr.ys, it_);
         end;
         if options.use_dll
             % In USE_DLL mode, the hessian is in the 3-column sparse representation
             hessian1 = sparse(hessian1(:,1), hessian1(:,2), hessian1(:,3), ...
-                size(jacobia_, 1), size(jacobia_, 2)*size(jacobia_, 2));
+                              size(jacobia_, 1), size(jacobia_, 2)*size(jacobia_, 2));
         end
     end
     

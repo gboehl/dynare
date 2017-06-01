@@ -59,11 +59,11 @@ aux0 = aux;
 cumfix      = q2a.cumfix;
 % usual shock decomp 
 if isstruct(oo_)
-%     z = oo_.shock_decomposition;
-        myopts=options_;
-        myopts.plot_shock_decomp.type='qoq';
-        myopts.plot_shock_decomp.realtime=0;
-        [z, junk] = plot_shock_decomposition(M_,oo_,myopts,[]);
+    %     z = oo_.shock_decomposition;
+    myopts=options_;
+    myopts.plot_shock_decomp.type='qoq';
+    myopts.plot_shock_decomp.realtime=0;
+    [z, junk] = plot_shock_decomposition(M_,oo_,myopts,[]);
 else
     z = oo_;
 end
@@ -177,147 +177,147 @@ end
 
 % realtime
 if realtime_ && isstruct(oo_) && isfield(oo_, 'realtime_shock_decomposition'),
-init=1;
-for i=t0:4:t1,
-    yr=floor(i/4);
-    za=[];
-    gza=[];
+    init=1;
+    for i=t0:4:t1,
+        yr=floor(i/4);
+        za=[];
+        gza=[];
         myopts=options_;
         myopts.plot_shock_decomp.type='qoq';
         myopts.plot_shock_decomp.realtime=1;
         myopts.plot_shock_decomp.vintage=i;
         [z, steady_state_aux] = plot_shock_decomposition(M_,oo_,myopts,[]);
         z = z(i_var,:,:);
-if isstruct(aux)
-    if ischar(aux0.y)
-        [y_aux, steady_state_aux] = plot_shock_decomposition(M_,oo_,myopts,aux0.y);
-        aux.y=y_aux;
-        aux.yss=steady_state_aux;
-    end
-    yaux=aux.y;
-end
-        nterms = size(z,2);
-  
-%     z = oo_.realtime_shock_decomposition.(['time_' int2str(i)]);
-%     z = z(i_var,:,:);
-           
-    for j=1:nvar
-        for k =nterms:-1:1,
-%             if k<nterms
-%                 ztmp = squeeze(sum(z(j,[1:k-1,k+1:end-1],t0-4:end)));
-%             else
-                ztmp = squeeze(z(j,k,min((t0-3):-4:1):end));
-%             end
-            if isstruct(aux),
-                aux.y = squeeze(yaux(j,k,min((t0-3):-4:1):end));
+        if isstruct(aux)
+            if ischar(aux0.y)
+                [y_aux, steady_state_aux] = plot_shock_decomposition(M_,oo_,myopts,aux0.y);
+                aux.y=y_aux;
+                aux.yss=steady_state_aux;
             end
-            [za(j,k,:), steady_state_a(j,1), gza(j,k,:), steady_state_ga(j,1)] = ...
-                quarterly2annual(ztmp,steady_state(j),GYTREND0,var_type,islog,aux);
-%             if k<nterms
-%                 za(j,k,:) = za(j,end,:) - za(j,k,:);
-%                 gza(j,k,:) = gza(j,end,:) - gza(j,k,:);
-%             end
+            yaux=aux.y;
+        end
+        nterms = size(z,2);
+        
+        %     z = oo_.realtime_shock_decomposition.(['time_' int2str(i)]);
+        %     z = z(i_var,:,:);
+        
+        for j=1:nvar
+            for k =nterms:-1:1,
+                %             if k<nterms
+                %                 ztmp = squeeze(sum(z(j,[1:k-1,k+1:end-1],t0-4:end)));
+                %             else
+                ztmp = squeeze(z(j,k,min((t0-3):-4:1):end));
+                %             end
+                if isstruct(aux),
+                    aux.y = squeeze(yaux(j,k,min((t0-3):-4:1):end));
+                end
+                [za(j,k,:), steady_state_a(j,1), gza(j,k,:), steady_state_ga(j,1)] = ...
+                    quarterly2annual(ztmp,steady_state(j),GYTREND0,var_type,islog,aux);
+                %             if k<nterms
+                %                 za(j,k,:) = za(j,end,:) - za(j,k,:);
+                %                 gza(j,k,:) = gza(j,end,:) - gza(j,k,:);
+                %             end
+                
+            end
             
-        end
-        
-        ztmp=squeeze(za(j,:,:));
+            ztmp=squeeze(za(j,:,:));
 
-        if cumfix==0,
-            zscale = sum(ztmp(1:end-1,:))./ztmp(end,:);
-            ztmp(1:end-1,:) = ztmp(1:end-1,:)./repmat(zscale,[nterms-1,1]);
-        else
-            zres = ztmp(end,:)-sum(ztmp(1:end-1,:));
-            ztmp(end-1,:) = ztmp(end-1,:) + zres;
+            if cumfix==0,
+                zscale = sum(ztmp(1:end-1,:))./ztmp(end,:);
+                ztmp(1:end-1,:) = ztmp(1:end-1,:)./repmat(zscale,[nterms-1,1]);
+            else
+                zres = ztmp(end,:)-sum(ztmp(1:end-1,:));
+                ztmp(end-1,:) = ztmp(end-1,:) + zres;
+            end
+            
+            gztmp=squeeze(gza(j,:,:));
+            if cumfix==0,
+                gscale = sum(gztmp(1:end-1,:))./ gztmp(end,:);
+                gztmp(1:end-1,:) = gztmp(1:end-1,:)./repmat(gscale,[nterms-1,1]);
+            else
+                gres = gztmp(end,:) - sum(gztmp(1:end-1,:));
+                gztmp(end-1,:) = gztmp(end-1,:)+gres;
+            end
+            
+            za(j,:,:) = ztmp;
+            gza(j,:,:) = gztmp;
         end
         
-        gztmp=squeeze(gza(j,:,:));
-        if cumfix==0,
-            gscale = sum(gztmp(1:end-1,:))./ gztmp(end,:);
-            gztmp(1:end-1,:) = gztmp(1:end-1,:)./repmat(gscale,[nterms-1,1]);
+        if q2a.plot ==1,
+            z=gza;
+        elseif q2a.plot == 2
+            z=za;
         else
-            gres = gztmp(end,:) - sum(gztmp(1:end-1,:));
-            gztmp(end-1,:) = gztmp(end-1,:)+gres;
+            z=cat(1,za,gza);
         end
         
-        za(j,:,:) = ztmp;
-        gza(j,:,:) = gztmp;
-    end
-    
-    if q2a.plot ==1,
-        z=gza;
-    elseif q2a.plot == 2
-        z=za;
-    else
-        z=cat(1,za,gza);
-    end
-    
-    if init==1,
-        oo_.annualized_realtime_shock_decomposition.pool = z;
-    else
-        oo_.annualized_realtime_shock_decomposition.pool(:,:,yr) = z(:,:,end-nfrcst);
-    end        
-    oo_.annualized_realtime_shock_decomposition.(['yr_' int2str(yr)]) = z;
+        if init==1,
+            oo_.annualized_realtime_shock_decomposition.pool = z;
+        else
+            oo_.annualized_realtime_shock_decomposition.pool(:,:,yr) = z(:,:,end-nfrcst);
+        end        
+        oo_.annualized_realtime_shock_decomposition.(['yr_' int2str(yr)]) = z;
         
-    if opts.forecast
-        oo_.annualized_realtime_forecast_shock_decomposition.(['yr_' int2str(yr)]) = z(:,:,end-nfrcst:end);
-        if init>nfrcst
-            oo_.annualized_realtime_conditional_shock_decomposition.(['yr_' int2str(yr-nfrcst)]) = ...
-                oo_.annualized_realtime_shock_decomposition.pool(:,:,yr-nfrcst:end) - ...
-                oo_.annualized_realtime_forecast_shock_decomposition.(['yr_' int2str(yr-nfrcst)]);
-            % fix others
-            oo_.annualized_realtime_conditional_shock_decomposition.(['yr_' int2str(yr-nfrcst)])(:,end-1,:) = ...
-                oo_.annualized_realtime_conditional_shock_decomposition.(['yr_' int2str(yr-nfrcst)])(:,end-1,:) + ...
-                oo_.annualized_realtime_forecast_shock_decomposition.(['yr_' int2str(yr-nfrcst)])(:,end,:);
-            % fix total
-            oo_.annualized_realtime_conditional_shock_decomposition.(['yr_' int2str(yr-nfrcst)])(:,end,:) = ...
-                oo_.annualized_realtime_shock_decomposition.pool(:,end,yr-nfrcst:end);
-            if i==t1
-                for my_forecast_=(nfrcst-1):-1:1,
-                    oo_.annualized_realtime_conditional_shock_decomposition.(['yr_' int2str(yr-my_forecast_)]) = ...
-                        oo_.annualized_realtime_shock_decomposition.pool(:,:,yr-my_forecast_:yr) - ...
-                        oo_.annualized_realtime_forecast_shock_decomposition.(['yr_' int2str(yr-my_forecast_)])(:,:,1:my_forecast_+1);
-                    oo_.annualized_realtime_conditional_shock_decomposition.(['yr_' int2str(yr-my_forecast_)])(:,end-1,:) = ...
-                        oo_.annualized_realtime_forecast_shock_decomposition.(['yr_' int2str(yr-my_forecast_)])(:,end,1:my_forecast_+1);
-                    oo_.annualized_realtime_conditional_shock_decomposition.(['yr_' int2str(yr-my_forecast_)])(:,end,:) = ...
-                        oo_.annualized_realtime_shock_decomposition.pool(:,end,yr-my_forecast_:yr);
+        if opts.forecast
+            oo_.annualized_realtime_forecast_shock_decomposition.(['yr_' int2str(yr)]) = z(:,:,end-nfrcst:end);
+            if init>nfrcst
+                oo_.annualized_realtime_conditional_shock_decomposition.(['yr_' int2str(yr-nfrcst)]) = ...
+                    oo_.annualized_realtime_shock_decomposition.pool(:,:,yr-nfrcst:end) - ...
+                    oo_.annualized_realtime_forecast_shock_decomposition.(['yr_' int2str(yr-nfrcst)]);
+                % fix others
+                oo_.annualized_realtime_conditional_shock_decomposition.(['yr_' int2str(yr-nfrcst)])(:,end-1,:) = ...
+                    oo_.annualized_realtime_conditional_shock_decomposition.(['yr_' int2str(yr-nfrcst)])(:,end-1,:) + ...
+                    oo_.annualized_realtime_forecast_shock_decomposition.(['yr_' int2str(yr-nfrcst)])(:,end,:);
+                % fix total
+                oo_.annualized_realtime_conditional_shock_decomposition.(['yr_' int2str(yr-nfrcst)])(:,end,:) = ...
+                    oo_.annualized_realtime_shock_decomposition.pool(:,end,yr-nfrcst:end);
+                if i==t1
+                    for my_forecast_=(nfrcst-1):-1:1,
+                        oo_.annualized_realtime_conditional_shock_decomposition.(['yr_' int2str(yr-my_forecast_)]) = ...
+                            oo_.annualized_realtime_shock_decomposition.pool(:,:,yr-my_forecast_:yr) - ...
+                            oo_.annualized_realtime_forecast_shock_decomposition.(['yr_' int2str(yr-my_forecast_)])(:,:,1:my_forecast_+1);
+                        oo_.annualized_realtime_conditional_shock_decomposition.(['yr_' int2str(yr-my_forecast_)])(:,end-1,:) = ...
+                            oo_.annualized_realtime_forecast_shock_decomposition.(['yr_' int2str(yr-my_forecast_)])(:,end,1:my_forecast_+1);
+                        oo_.annualized_realtime_conditional_shock_decomposition.(['yr_' int2str(yr-my_forecast_)])(:,end,:) = ...
+                            oo_.annualized_realtime_shock_decomposition.pool(:,end,yr-my_forecast_:yr);
+                    end
                 end
             end
         end
+        % ztmp=oo_.realtime_shock_decomposition.pool(:,:,21:29)-oo_.realtime_forecast_shock_decomposition.time_21;
+
+
+
+        init=init+1;
     end
-% ztmp=oo_.realtime_shock_decomposition.pool(:,:,21:29)-oo_.realtime_forecast_shock_decomposition.time_21;
 
 
-
-    init=init+1;
-end
-
-
-switch realtime_
-    
-    case 0
+    switch realtime_
+        
+      case 0
         z = oo_.annualized_shock_decomposition;
-    
-    case 1 % realtime
+        
+      case 1 % realtime
         if vintage_
             z = oo_.annualized_realtime_shock_decomposition.(['yr_' int2str(floor(vintage_/4))]);
         else
             z = oo_.annualized_realtime_shock_decomposition.pool;
         end
-    
-    case 2 % conditional
+        
+      case 2 % conditional
         if vintage_
             z = oo_.annualized_realtime_conditional_shock_decomposition.(['yr_' int2str(floor(vintage_/4))]);
         else
             error();
         end
         
-    case 3 % forecast
+      case 3 % forecast
         if vintage_
             z = oo_.annualized_realtime_forecast_shock_decomposition.(['yr_' int2str(floor(vintage_/4))]);
         else
             error()
         end
-end
+    end
 end
 
 if q2a.plot ==0,

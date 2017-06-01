@@ -60,7 +60,7 @@ if any(imag(oo_.steady_state))
         end
     end   
 end
-    
+
 if options_.steadystate_flag
     [oo_.steady_state,M_.params,info] = ...
         evaluate_steady_state(oo_.steady_state,M_,options_,oo_,0);

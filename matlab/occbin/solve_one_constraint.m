@@ -9,7 +9,7 @@
 % irfshock: label for innovation for IRFs, from Dynare .mod file (one or more of the ?varexo?).
 % nperiods: simulation horizon (can be longer than the sequence of shocks defined in shockssequence; must be long enough to ensure convergence back to the reference model at the end of the simulation horizon and may need to be varied depending on the sequence of shocks).
 % maxiter: maximum number of iterations allowed for the solution algorithm (20 if not specified).
-% init:	the initial position for the vector of state variables, in deviation from steady state (if not specified, the default is steady state). The ordering follows the definition order in the .mod files.
+% init: the initial position for the vector of state variables, in deviation from steady state (if not specified, the default is steady state). The ordering follows the definition order in the .mod files.
 %
 % Outputs:
 % zdatalinear: an array containing paths for all endogenous variables ignoring the occasionally binding constraint (the linear solution), in deviation from steady state. Each column is a variable, the order is the definition order in the .mod files.
@@ -26,8 +26,8 @@
 
 function [zdatalinear_ zdatapiecewise_ zdatass_ oobase_ Mbase_  ] = ...
     solve_one_constraint(modnam_,modnamstar_,...
-    constraint_, constraint_relax_,...
-    shockssequence_,irfshock_,nperiods_,maxiter_,init_)
+                         constraint_, constraint_relax_,...
+                         shockssequence_,irfshock_,nperiods_,maxiter_,init_)
 
 global M_ oo_
 
@@ -41,12 +41,12 @@ Mbase_ = M_;
 % import locally the values of parameters assigned in the reference .mod
 % file
 for i_indx_ = 1:Mbase_.param_nbr
-  eval([Mbase_.param_names(i_indx_,:),'= M_.params(i_indx_);']);
+    eval([Mbase_.param_names(i_indx_,:),'= M_.params(i_indx_);']);
 end
 
 % Create steady state values of the variables if needed for processing the constraint
 for i=1:Mbase_.endo_nbr
-   eval([deblank(Mbase_.endo_names(i,:)) '_ss = oobase_.dr.ys(i); ']);
+    eval([deblank(Mbase_.endo_names(i,:)) '_ss = oobase_.dr.ys(i); ']);
 end
 
 
@@ -146,9 +146,9 @@ for ishock_ = 1:nshocks_
         
         % get the hypothesized piece wise linear solution
         [zdatalinear_]=mkdatap_anticipated(nperiods_,decrulea_,decruleb_,...
-            cof_,Jbarmat_,cofstar_,Jstarbarmat_,Dstartbarmat_,...
-            regime,regimestart,violvecbool_,...
-            endog_,exog_,irfshock_,shockssequence_(ishock_,:),init_);
+                                           cof_,Jbarmat_,cofstar_,Jstarbarmat_,Dstartbarmat_,...
+                                           regime,regimestart,violvecbool_,...
+                                           endog_,exog_,irfshock_,shockssequence_(ishock_,:),init_);
         
         for i_indx_=1:nwishes_
             eval([deblank(wishlist_(i_indx_,:)),'_difference=zdatalinear_(:,i_indx_);']);
@@ -172,7 +172,7 @@ for ishock_ = 1:nshocks_
         
         
         violvecbool_ = (violvecbool_|newviolvecbool_)-(relaxconstraint_ & violvecbool_);
-                
+        
         
     end
     
@@ -192,8 +192,8 @@ zdatapiecewise_(ishock_+1:end,:)=zdatalinear_(2:nperiods_-ishock_+1,:);
 
 % get the linear responses
 zdatalinear_ = mkdata(max(nperiods_,size(shockssequence_,1)),...
-                  decrulea_,decruleb_,endog_,exog_,...
-                  wishlist_,irfshock_,shockssequence_,init_orig_);
+                      decrulea_,decruleb_,endog_,exog_,...
+                      wishlist_,irfshock_,shockssequence_,init_orig_);
 
 if changes_ ==1
     display('Did not converge -- increase maxiter_')

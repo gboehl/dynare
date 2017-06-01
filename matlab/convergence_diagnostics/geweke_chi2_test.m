@@ -58,17 +58,17 @@ function results_struct = geweke_chi2_test(results1,results2,results_struct,opti
 % drew on MATLAB programs written by Siddartha Chib 
 
 for k=1:length(options.convergence.geweke.taper_steps)+1;
-  NSE=[results1(:,3+(k-1)*2) results2(:,3+(k-1)*2)];
-  means=[results1(:,1) results2(:,1)];
-  diff_Means=means(:,1)-means(:,2);
-  sum_of_weights=sum(1./(NSE.^2),2);
-  pooled_mean=sum(means./(NSE.^2),2)./sum_of_weights;
-  pooled_NSE=1./sqrt(sum_of_weights);
+    NSE=[results1(:,3+(k-1)*2) results2(:,3+(k-1)*2)];
+    means=[results1(:,1) results2(:,1)];
+    diff_Means=means(:,1)-means(:,2);
+    sum_of_weights=sum(1./(NSE.^2),2);
+    pooled_mean=sum(means./(NSE.^2),2)./sum_of_weights;
+    pooled_NSE=1./sqrt(sum_of_weights);
 
-  test_stat=diff_Means.^2./sum(NSE.^2,2); 
-  p = 1-chi2cdf(test_stat,1);
-  results_struct.pooled_mean(:,k) = pooled_mean;
-  results_struct.pooled_nse(:,k) = pooled_NSE;
-  results_struct.prob_chi2_test(:,k) = p;
+    test_stat=diff_Means.^2./sum(NSE.^2,2); 
+    p = 1-chi2cdf(test_stat,1);
+    results_struct.pooled_mean(:,k) = pooled_mean;
+    results_struct.pooled_nse(:,k) = pooled_NSE;
+    results_struct.prob_chi2_test(:,k) = p;
 end;
 

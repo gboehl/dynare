@@ -38,7 +38,7 @@ function pdraw = prior_draw_gsa(init,rdraw)
 
 global bayestopt_ options_ estim_params_ M_
 persistent npar pshape p6 p7 p3 p4 lbcum ubcum
-  
+
 if init
     pshape = bayestopt_.pshape;
     p6 = bayestopt_.p6;
@@ -56,40 +56,40 @@ if init
         bounds.lb = max(bounds.lb,lb);
         bounds.ub = min(bounds.ub,ub);
     else  % estimated parameters but no declared priors
-        % No priors are declared so Dynare will estimate the model by
-        % maximum likelihood with inequality constraints for the parameters.
+          % No priors are declared so Dynare will estimate the model by
+          % maximum likelihood with inequality constraints for the parameters.
         bounds.lb = lb;
         bounds.ub = ub;
     end
     % set bounds for cumulative probabilities
     for i = 1:npar
-      switch pshape(i)
-        case 5% Uniform prior.
-          p4(i) = min(p4(i),bounds.ub(i));
-          p3(i) = max(p3(i),bounds.lb(i));
-        case 3% Gaussian prior.
-          lbcum(i) = 0.5 * erfc(-(bounds.lb(i)-p6(i))/p7(i) ./ sqrt(2));
-          ubcum(i) = 0.5 * erfc(-(bounds.ub(i)-p6(i))/p7(i) ./ sqrt(2));
-        case 2% Gamma prior.
-          lbcum(i) = gamcdf(bounds.lb(i)-p3(i),p6(i),p7(i));
-          ubcum(i) = gamcdf(bounds.ub(i)-p3(i),p6(i),p7(i));
-        case 1% Beta distribution (TODO: generalized beta distribution)
-          lbcum(i) = betainc((bounds.lb(i)-p3(i))./(p4(i)-p3(i)),p6(i),p7(i));
-          ubcum(i) = betainc((bounds.ub(i)-p3(i))./(p4(i)-p3(i)),p6(i),p7(i));
-        case 4% INV-GAMMA1 distribution
-          % TO BE CHECKED
-          lbcum(i) = gamcdf(1/(bounds.ub(i)-p3(i))^2,p7(i)/2,2/p6(i));
-          ubcum(i) = gamcdf(1/(bounds.lb(i)-p3(i))^2,p7(i)/2,2/p6(i));
-        case 6% INV-GAMMA2 distribution
-          % TO BE CHECKED
-          lbcum(i) = gamcdf(1/(bounds.ub(i)-p3(i)),p7(i)/2,2/p6(i));
-          ubcum(i) = gamcdf(1/(bounds.lb(i)-p3(i)),p7(i)/2,2/p6(i));
-        case 8
-          lbcum(i) = weibcdf(bounds.lb(i)-p3(i),p6(i),p7(i));
-          ubcum(i) = weibcdf(bounds.ub(i)-p3(i),p6(i),p7(i));
-        otherwise
-          % Nothing to do here.
-      end
+        switch pshape(i)
+          case 5% Uniform prior.
+            p4(i) = min(p4(i),bounds.ub(i));
+            p3(i) = max(p3(i),bounds.lb(i));
+          case 3% Gaussian prior.
+            lbcum(i) = 0.5 * erfc(-(bounds.lb(i)-p6(i))/p7(i) ./ sqrt(2));
+            ubcum(i) = 0.5 * erfc(-(bounds.ub(i)-p6(i))/p7(i) ./ sqrt(2));
+          case 2% Gamma prior.
+            lbcum(i) = gamcdf(bounds.lb(i)-p3(i),p6(i),p7(i));
+            ubcum(i) = gamcdf(bounds.ub(i)-p3(i),p6(i),p7(i));
+          case 1% Beta distribution (TODO: generalized beta distribution)
+            lbcum(i) = betainc((bounds.lb(i)-p3(i))./(p4(i)-p3(i)),p6(i),p7(i));
+            ubcum(i) = betainc((bounds.ub(i)-p3(i))./(p4(i)-p3(i)),p6(i),p7(i));
+          case 4% INV-GAMMA1 distribution
+                % TO BE CHECKED
+            lbcum(i) = gamcdf(1/(bounds.ub(i)-p3(i))^2,p7(i)/2,2/p6(i));
+            ubcum(i) = gamcdf(1/(bounds.lb(i)-p3(i))^2,p7(i)/2,2/p6(i));
+          case 6% INV-GAMMA2 distribution
+                % TO BE CHECKED
+            lbcum(i) = gamcdf(1/(bounds.ub(i)-p3(i)),p7(i)/2,2/p6(i));
+            ubcum(i) = gamcdf(1/(bounds.lb(i)-p3(i)),p7(i)/2,2/p6(i));
+          case 8
+            lbcum(i) = weibcdf(bounds.lb(i)-p3(i),p6(i),p7(i));
+            ubcum(i) = weibcdf(bounds.ub(i)-p3(i),p6(i),p7(i));
+          otherwise
+            % Nothing to do here.
+        end
     end
     return
 end
@@ -107,10 +107,10 @@ for i = 1:npar
       case 1% Beta distribution (TODO: generalized beta distribution)
         pdraw(:,i) = betainv(rdraw(:,i),p6(i),p7(i))*(p4(i)-p3(i))+p3(i);
       case 4% INV-GAMMA1 distribution 
-        % TO BE CHECKED
+            % TO BE CHECKED
         pdraw(:,i) =  sqrt(1./gaminv(rdraw(:,i),p7(i)/2,2/p6(i)))+p3(i);
       case 6% INV-GAMMA2 distribution  
-        % TO BE CHECKED
+            % TO BE CHECKED
         pdraw(:,i) =  1./gaminv(rdraw(:,i),p7(i)/2,2/p6(i))+p3(i);
       case 8
         pdraw(:,i) =  wblinv(rdraw(:,i),p6(i),p7(i))+p3(i);
@@ -119,4 +119,4 @@ for i = 1:npar
     end
 end
 
-  
+

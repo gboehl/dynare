@@ -41,9 +41,9 @@ Vi = cell(nvar,1);
 n0 = zeros(nvar,1);
 np = zeros(nvar,1);
 if (nargin==2)
-   nexo = 1; 
+    nexo = 1; 
 elseif (nargin==3)
-   indxC0Pres = 0;
+    indxC0Pres = 0;
 end
 k = lags*nvar+nexo; 
 Qi = zeros(nvar,nvar,nvar);
@@ -62,10 +62,10 @@ if options_ms.constants_exclusion
 end
 
 for n=1:nvar 
-   Ui{n} = null(Qi(:,:,n));
-   Vi{n} = null(Ri(:,:,n));
-   n0(n) = size(Ui{n},2);
-   np(n) = size(Vi{n},2);
+    Ui{n} = null(Qi(:,:,n));
+    Vi{n} = null(Ri(:,:,n));
+    n0(n) = size(Ui{n},2);
+    np(n) = size(Vi{n},2);
 end
 
 ixmC0Pres = NaN;

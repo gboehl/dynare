@@ -55,7 +55,7 @@ function [JJ, H, gam, gp, dA, dOm, dYss] = getJJ(A, B, estim_params_, M_,oo_,opt
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 if nargin<8 || isempty(indx)
-%     indx = [1:M_.param_nbr];
+    %     indx = [1:M_.param_nbr];
 end,
 if nargin<9 || isempty(indexo)
     indexo = [];

@@ -64,13 +64,13 @@ if np
         name = bayestopt_.name{ip};
         if strcmp(field_name,'posterior')
             fprintf('%-*s %7.3f %8.4f %7.4f %4s %6.4f \n', ...
-                     header_width,name, ...
-                     bayestopt_.p1(ip),xparam1(ip),stdh(ip), ...
-                     pnames(bayestopt_.pshape(ip)+1,:), ...
-                     bayestopt_.p2(ip));
+                    header_width,name, ...
+                    bayestopt_.p1(ip),xparam1(ip),stdh(ip), ...
+                    pnames(bayestopt_.pshape(ip)+1,:), ...
+                    bayestopt_.p2(ip));
         else
             fprintf('%-*s %8.4f %7.4f %7.4f \n', ...
-                 header_width,name,xparam1(ip),stdh(ip),tstath(ip));
+                    header_width,name,xparam1(ip),stdh(ip),tstath(ip));
         end
         eval(['oo_.' field_name '_mode.parameters.' name ' = xparam1(ip);']);
         eval(['oo_.' field_name '_std_at_mode.parameters.' name ' = stdh(ip);']);
@@ -87,9 +87,9 @@ if nvx
         name = deblank(M_.exo_names(k,:));
         if strcmp(field_name,'posterior')
             fprintf('%-*s %7.3f %8.4f %7.4f %4s %6.4f \n', ...
-                     header_width,name,bayestopt_.p1(ip),xparam1(ip), ...
-                     stdh(ip),pnames(bayestopt_.pshape(ip)+1,:), ...
-                     bayestopt_.p2(ip));
+                    header_width,name,bayestopt_.p1(ip),xparam1(ip), ...
+                    stdh(ip),pnames(bayestopt_.pshape(ip)+1,:), ...
+                    bayestopt_.p2(ip));
         else
             fprintf('%-*s %8.4f %7.4f %7.4f \n',header_width,name,xparam1(ip),stdh(ip),tstath(ip));
         end
@@ -99,8 +99,8 @@ if nvx
         ip = ip+1;
     end
     skipline()
- end
- if nvn
+end
+if nvn
     disp('standard deviation of measurement errors')
     disp(tit1)
     ip = nvx+1;
@@ -108,10 +108,10 @@ if nvx
         name = options_.varobs{estim_params_.nvn_observable_correspondence(i,1)};
         if strcmp(field_name,'posterior')           
             fprintf('%-*s %7.3f %8.4f %7.4f %4s %6.4f \n', ...
-                     header_width,name,bayestopt_.p1(ip), ...
-                     xparam1(ip),stdh(ip), ...
-                     pnames(bayestopt_.pshape(ip)+1,:), ...
-                     bayestopt_.p2(ip));
+                    header_width,name,bayestopt_.p1(ip), ...
+                    xparam1(ip),stdh(ip), ...
+                    pnames(bayestopt_.pshape(ip)+1,:), ...
+                    bayestopt_.p2(ip));
         else
             fprintf('%-*s %8.4f %7.4f %7.4f \n',header_width,name,xparam1(ip),stdh(ip),tstath(ip))            
         end
@@ -120,7 +120,7 @@ if nvx
         ip = ip+1;
     end
     skipline()
- end
+end
 
 if ncx
     disp('correlation of shocks')
@@ -133,8 +133,8 @@ if ncx
         NAME = [deblank(M_.exo_names(k1,:)) '_' deblank(M_.exo_names(k2,:))];
         if strcmp(field_name,'posterior')           
             fprintf('%-*s %7.3f %8.4f %7.4f %4s %6.4f \n', ...
-                     header_width,name,bayestopt_.p1(ip),xparam1(ip),stdh(ip),  ...
-                     pnames(bayestopt_.pshape(ip)+1,:), bayestopt_.p2(ip));
+                    header_width,name,bayestopt_.p1(ip),xparam1(ip),stdh(ip),  ...
+                    pnames(bayestopt_.pshape(ip)+1,:), bayestopt_.p2(ip));
         else
             fprintf('%-*s %8.4f %7.4f %7.4f \n', header_width,name,xparam1(ip),stdh(ip),tstath(ip));            
         end
@@ -158,8 +158,8 @@ if ncn
         NAME = [deblank(M_.endo_names(k1,:)) '_' deblank(M_.endo_names(k2,:))];
         if strcmp(field_name,'posterior')                 
             fprintf('%-*s %7.3f %8.4f %7.4f %4s %6.4f \n', ...
-                     header_width,name,bayestopt_.p1(ip),xparam1(ip),stdh(ip), ...
-                     pnames(bayestopt_.pshape(ip)+1,:), bayestopt_.p2(ip));
+                    header_width,name,bayestopt_.p1(ip),xparam1(ip),stdh(ip), ...
+                    pnames(bayestopt_.pshape(ip)+1,:), bayestopt_.p2(ip));
         else
             fprintf('%-*s %8.4f %7.4f %7.4f \n',header_width,name,xparam1(ip),stdh(ip),tstath(ip));            
         end
@@ -305,8 +305,8 @@ elseif all(bayestopt_.pshape == 0) && options_.TeX %% MLE and GMM Latex output
         TeXBegin_ML(fidTeX,3,'standard deviation of measurement errors',table_title,LaTeXtitle)   
         ip = nvx+1;
         for i=1:nvn
-           idx = strmatch(options_.varobs{estim_params_.nvn_observable_correspondence(i,1)},M_.endo_names);
-           fprintf(fidTeX,'$%s$ & %8.4f & %7.4f & %7.4f \\\\ \n',...
+            idx = strmatch(options_.varobs{estim_params_.nvn_observable_correspondence(i,1)},M_.endo_names);
+            fprintf(fidTeX,'$%s$ & %8.4f & %7.4f & %7.4f \\\\ \n',...
                     deblank(M_.endo_names_tex(idx,:)), ...
                     xparam1(ip),...
                     stdh(ip),...
@@ -347,7 +347,7 @@ elseif all(bayestopt_.pshape == 0) && options_.TeX %% MLE and GMM Latex output
                     tstath(ip));
             ip = ip+1;
         end
-    TeXEnd(fidTeX)
+        TeXEnd(fidTeX)
     end
 end
 
@@ -356,49 +356,49 @@ end
 %% subfunctions:
 %
 function TeXBegin_Bayesian(fid,fnum,title)
-    fprintf(fid,'%% TeX-table generated by dynare_estimation (Dynare).\n');
-    fprintf(fid,['%% RESULTS FROM POSTERIOR MAXIMIZATION (' title ')\n']);
-    fprintf(fid,['%% ' datestr(now,0)]);
-    fprintf(fid,' \n');
-    fprintf(fid,' \n');
-    fprintf(fid,'\\begin{center}\n');
-    fprintf(fid,'\\begin{longtable}{llcccc} \n');
-    fprintf(fid,['\\caption{Results from posterior maximization (' title ')}\\\\\n ']);
-    fprintf(fid,['\\label{Table:Posterior:' int2str(fnum)  '}\\\\\n']);
-    fprintf(fid,'\\toprule \n');
-    fprintf(fid,'  & \\multicolumn{3}{c}{Prior}  &  \\multicolumn{2}{c}{Posterior} \\\\\n');
-    fprintf(fid,'  \\cmidrule(r{.75em}){2-4} \\cmidrule(r{.75em}){5-6}\n');
-    fprintf(fid,'  & Dist. & Mean  & Stdev & Mode & Stdev \\\\ \n');
-    fprintf(fid,'\\midrule \\endfirsthead \n');
-    fprintf(fid,'\\caption{(continued)}\\\\\n ');
-    fprintf(fid,'\\bottomrule \n');
-    fprintf(fid,'  & \\multicolumn{3}{c}{Prior}  &  \\multicolumn{2}{c}{Posterior} \\\\\n');
-    fprintf(fid,'  \\cmidrule(r{.75em}){2-4} \\cmidrule(r{.75em}){5-6}\n');
-    fprintf(fid,'  & Dist. & Mean  & Stdev & Mode & Stdev \\\\ \n');
-    fprintf(fid,'\\midrule \\endhead \n');
-    fprintf(fid,'\\bottomrule \\multicolumn{6}{r}{(Continued on next page)}\\endfoot \n');
-    fprintf(fid,'\\bottomrule\\endlastfoot \n');
+fprintf(fid,'%% TeX-table generated by dynare_estimation (Dynare).\n');
+fprintf(fid,['%% RESULTS FROM POSTERIOR MAXIMIZATION (' title ')\n']);
+fprintf(fid,['%% ' datestr(now,0)]);
+fprintf(fid,' \n');
+fprintf(fid,' \n');
+fprintf(fid,'\\begin{center}\n');
+fprintf(fid,'\\begin{longtable}{llcccc} \n');
+fprintf(fid,['\\caption{Results from posterior maximization (' title ')}\\\\\n ']);
+fprintf(fid,['\\label{Table:Posterior:' int2str(fnum)  '}\\\\\n']);
+fprintf(fid,'\\toprule \n');
+fprintf(fid,'  & \\multicolumn{3}{c}{Prior}  &  \\multicolumn{2}{c}{Posterior} \\\\\n');
+fprintf(fid,'  \\cmidrule(r{.75em}){2-4} \\cmidrule(r{.75em}){5-6}\n');
+fprintf(fid,'  & Dist. & Mean  & Stdev & Mode & Stdev \\\\ \n');
+fprintf(fid,'\\midrule \\endfirsthead \n');
+fprintf(fid,'\\caption{(continued)}\\\\\n ');
+fprintf(fid,'\\bottomrule \n');
+fprintf(fid,'  & \\multicolumn{3}{c}{Prior}  &  \\multicolumn{2}{c}{Posterior} \\\\\n');
+fprintf(fid,'  \\cmidrule(r{.75em}){2-4} \\cmidrule(r{.75em}){5-6}\n');
+fprintf(fid,'  & Dist. & Mean  & Stdev & Mode & Stdev \\\\ \n');
+fprintf(fid,'\\midrule \\endhead \n');
+fprintf(fid,'\\bottomrule \\multicolumn{6}{r}{(Continued on next page)}\\endfoot \n');
+fprintf(fid,'\\bottomrule\\endlastfoot \n');
 
- function TeXBegin_ML(fid,fnum,title,table_title,LaTeXtitle)   
-        fprintf(fid,'%% TeX-table generated by dynare_estimation (Dynare).\n');
-        fprintf(fid,['%% RESULTS FROM ' table_title ' MAXIMIZATION (' title ')\n']);
-        fprintf(fid,['%% ' datestr(now,0)]);
-        fprintf(fid,' \n');
-        fprintf(fid,' \n');
-        fprintf(fid,'\\begin{center}\n');
-        fprintf(fid,'\\begin{longtable}{llcc} \n');
-        fprintf(fid,['\\caption{Results from ' table_title ' maximization (' title ')}\\\\\n ']);
-        fprintf(fid,['\\label{Table:' LaTeXtitle ':' int2str(fnum) '}\\\\\n']);
-        fprintf(fid,'\\toprule \n');
-        fprintf(fid,'  & Mode & s.d. & t-stat\\\\ \n');
-        fprintf(fid,'\\midrule \\endfirsthead \n');
-        fprintf(fid,'\\caption{(continued)}\\\\\n ');
-        fprintf(fid,'\\toprule \n');
-        fprintf(fid,'  & Mode & s.d. & t-stat\\\\ \n');
-        fprintf(fid,'\\midrule \\endhead \n');
-        fprintf(fid,'\\bottomrule  \\multicolumn{4}{r}{(Continued on next page)} \\endfoot \n');
-        fprintf(fid,'\\bottomrule \\endlastfoot \n');
-   
+function TeXBegin_ML(fid,fnum,title,table_title,LaTeXtitle)   
+fprintf(fid,'%% TeX-table generated by dynare_estimation (Dynare).\n');
+fprintf(fid,['%% RESULTS FROM ' table_title ' MAXIMIZATION (' title ')\n']);
+fprintf(fid,['%% ' datestr(now,0)]);
+fprintf(fid,' \n');
+fprintf(fid,' \n');
+fprintf(fid,'\\begin{center}\n');
+fprintf(fid,'\\begin{longtable}{llcc} \n');
+fprintf(fid,['\\caption{Results from ' table_title ' maximization (' title ')}\\\\\n ']);
+fprintf(fid,['\\label{Table:' LaTeXtitle ':' int2str(fnum) '}\\\\\n']);
+fprintf(fid,'\\toprule \n');
+fprintf(fid,'  & Mode & s.d. & t-stat\\\\ \n');
+fprintf(fid,'\\midrule \\endfirsthead \n');
+fprintf(fid,'\\caption{(continued)}\\\\\n ');
+fprintf(fid,'\\toprule \n');
+fprintf(fid,'  & Mode & s.d. & t-stat\\\\ \n');
+fprintf(fid,'\\midrule \\endhead \n');
+fprintf(fid,'\\bottomrule  \\multicolumn{4}{r}{(Continued on next page)} \\endfoot \n');
+fprintf(fid,'\\bottomrule \\endlastfoot \n');
+
 function TeXEnd(fid)
 fprintf(fid,'\\end{longtable}\n ');    
 fprintf(fid,'\\end{center}\n');

@@ -229,7 +229,7 @@ if analytic_derivation,
     DLIK = DLIK/2;
     dlik = dlik/2;
     if analytic_derivation==2 || asy_hess,
-%         Hess = (Hess + Hess')/2;
+        %         Hess = (Hess + Hess')/2;
         Hess = -Hess/2;
     end
 end
@@ -239,10 +239,10 @@ if t <= last
     if analytic_derivation,
         if analytic_derivation==2,
             [tmp, tmp2] = univariate_kalman_filter_ss(Y,t,last,a,P,kalman_tol,T,H,Z,pp,Zflag, ...
-                analytic_derivation,Da,DT,DYss,DP,DH,D2a,D2T,D2Yss,D2P);
+                                                      analytic_derivation,Da,DT,DYss,DP,DH,D2a,D2T,D2Yss,D2P);
         else
             [tmp, tmp2] = univariate_kalman_filter_ss(Y,t,last,a,P,kalman_tol,T,H,Z,pp,Zflag, ...
-                analytic_derivation,Da,DT,DYss,DP,DH,asy_hess);
+                                                      analytic_derivation,Da,DT,DYss,DP,DH,asy_hess);
         end
         lik(s+1:end,:)=tmp2{1};
         dlik(s+1:end,:)=tmp2{2};

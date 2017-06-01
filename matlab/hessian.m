@@ -90,7 +90,7 @@ for i=1:n
         xh_1(i) = x(i)-h1(i);
         xh_1(j) = x(j)-h_1(j);
         hessian_mat(:,(i-1)*n+j) =-(-feval(func, xh1, varargin{:})-feval(func, xh_1, varargin{:})+temp(:,i)+temp(:,j))./(2*h1(i)*h_1(j)); %formula 25.3.27
-        %reset grid points
+                                                                                                                                          %reset grid points
         xh1(i)  = x(i);
         xh1(j)  = x(j);
         xh_1(i) = x(i);

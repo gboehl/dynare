@@ -49,7 +49,7 @@ n0 = zeros(nvar,1); % ith element represents the number of free A0 parameters in
 np = zeros(nvar,1); % ith element represents the number of free D+ parameters in ith equation in all states.
 
 if (nargin==3)
-   nexo = 1;  % 1: constant as default where nexo must be a nonnegative integer
+    nexo = 1;  % 1: constant as default where nexo must be a nonnegative integer
 end
 
 
@@ -59,10 +59,10 @@ k = kvar*nStates;  % Maximum number of lagged and exogenous variables in each eq
 
 Qi = zeros(n,n,nvar);   % 3rd dim: nvar contemporaneous equations.
 Ri = zeros(k,k,nvar);    % 1st and 2nd dims: lagged and exogenous equations.
-   % Row corresponds to equation with nvar variables for state 1, ..., nvar variables for state nState.
-   %        0 means no restriction.
-   %        1 and -1 or any other number means the linear combination of the corresponding parameters is restricted to 0.
-   %        1 (only 1) means that the corresponding parameter is restricted to 0.
+                         % Row corresponds to equation with nvar variables for state 1, ..., nvar variables for state nState.
+                         %        0 means no restriction.
+                         %        1 and -1 or any other number means the linear combination of the corresponding parameters is restricted to 0.
+                         %        1 (only 1) means that the corresponding parameter is restricted to 0.
 
 %nfvar = 6;   % number of foreign (Granger causing) variables
 %nhvar = nvar-nfvar;  % number of home (affected) variables.
@@ -77,59 +77,59 @@ Ri = zeros(k,k,nvar);    % 1st and 2nd dims: lagged and exogenous equations.
 eqninx = 1;
 nreseqn = 5;  % Number of linear restrictions for A0(:,eqninx) for each state.
 if (indxEqnTv_m(eqninx, 2)<=2)
-   %**** For constant A0_s.    In the order of [a0j(1),...,a0j(nStates)] for the 2nd dim of Qi.
-   Qi(1:(nStates-1)*nvar+nreseqn,:,eqninx) = [
-      1  0  0  0  0  0     -1  0  0  0  0  0
-      0  1  0  0  0  0      0 -1  0  0  0  0
-      0  0  1  0  0  0      0  0 -1  0  0  0
-      0  0  0  1  0  0      0  0  0 -1  0  0
-      0  0  0  0  1  0      0  0  0  0 -1  0
-      0  0  0  0  0  1      0  0  0  0  0 -1
+    %**** For constant A0_s.    In the order of [a0j(1),...,a0j(nStates)] for the 2nd dim of Qi.
+    Qi(1:(nStates-1)*nvar+nreseqn,:,eqninx) = [
+        1  0  0  0  0  0     -1  0  0  0  0  0
+        0  1  0  0  0  0      0 -1  0  0  0  0
+        0  0  1  0  0  0      0  0 -1  0  0  0
+        0  0  0  1  0  0      0  0  0 -1  0  0
+        0  0  0  0  1  0      0  0  0  0 -1  0
+        0  0  0  0  0  1      0  0  0  0  0 -1
 
-      0 0 0 0 0 0     0 1 0 0 0 0
-      0 0 0 0 0 0     0 0 1 0 0 0
-      0 0 0 0 0 0     0 0 0 1 0 0
-      0 0 0 0 0 0     0 0 0 0 1 0
-      0 0 0 0 0 0     0 0 0 0 0 1
-                         ];
-   %**** For constant D+_s.  In the order of [aj+(1),...,aj+(nStates)] for the 2nd dim of Ri.
-   for si=1:nStates-1
-      for ki=1:kvar
-         Ri(kvar*(si-1)+ki,[kvar*(si-1)+ki si*kvar+ki],eqninx) = [1 -1];
-      end
-   end
+        0 0 0 0 0 0     0 1 0 0 0 0
+        0 0 0 0 0 0     0 0 1 0 0 0
+        0 0 0 0 0 0     0 0 0 1 0 0
+        0 0 0 0 0 0     0 0 0 0 1 0
+        0 0 0 0 0 0     0 0 0 0 0 1
+                   ];
+    %**** For constant D+_s.  In the order of [aj+(1),...,aj+(nStates)] for the 2nd dim of Ri.
+    for si=1:nStates-1
+        for ki=1:kvar
+            Ri(kvar*(si-1)+ki,[kvar*(si-1)+ki si*kvar+ki],eqninx) = [1 -1];
+        end
+    end
 else    % Time-varying equations at least for A0_s.  For D+_s, constant-parameter equations in general.
-   %**** For time-varying A0_s.    In the order of [a0j(1),...,a0j(nStates)] for the 2nd dim of Qi.
-   Qi(1:nreseqn*nStates,:,eqninx) = [
-      0 1 0 0 0 0     0 0 0 0 0 0
-      0 0 1 0 0 0     0 0 0 0 0 0
-      0 0 0 1 0 0     0 0 0 0 0 0
-      0 0 0 0 1 0     0 0 0 0 0 0
-      0 0 0 0 0 1     0 0 0 0 0 0
+        %**** For time-varying A0_s.    In the order of [a0j(1),...,a0j(nStates)] for the 2nd dim of Qi.
+    Qi(1:nreseqn*nStates,:,eqninx) = [
+        0 1 0 0 0 0     0 0 0 0 0 0
+        0 0 1 0 0 0     0 0 0 0 0 0
+        0 0 0 1 0 0     0 0 0 0 0 0
+        0 0 0 0 1 0     0 0 0 0 0 0
+        0 0 0 0 0 1     0 0 0 0 0 0
 
-      0 0 0 0 0 0     0 1 0 0 0 0
-      0 0 0 0 0 0     0 0 1 0 0 0
-      0 0 0 0 0 0     0 0 0 1 0 0
-      0 0 0 0 0 0     0 0 0 0 1 0
-      0 0 0 0 0 0     0 0 0 0 0 1
-                         ];
+        0 0 0 0 0 0     0 1 0 0 0 0
+        0 0 0 0 0 0     0 0 1 0 0 0
+        0 0 0 0 0 0     0 0 0 1 0 0
+        0 0 0 0 0 0     0 0 0 0 1 0
+        0 0 0 0 0 0     0 0 0 0 0 1
+                   ];
 
-   %**** For D+_s.  In the order of [aj+(1),...,aj+(nStates)] for the 2nd dim of Ri.
-   if (indxEqnTv_m(eqninx, 2)==3)    % For constant D+** except the constant term.  In the order of [dj**(1),...,dj**(nStates)] for the 2nd dim of Ri.
-      for si=1:nStates-1
-         for ki=1:kvar-1   % -1: no restrictions on the constant term, which is freely time-varying.
-            Ri(kvar*(si-1)+ki,[kvar*(si-1)+ki si*kvar+ki],eqninx) = [1 -1];
-         end
-      end
-   elseif (indxEqnTv_m(eqninx, 2)==4)    % For constant D+**.  In the order of [dj**(1),...,dj**(nStates)] for the 2nd dim of Ri.
-      for si=1:nStates-1
-         for ki=1:kvar
-            Ri(kvar*(si-1)+ki,[kvar*(si-1)+ki si*kvar+ki],eqninx) = [1 -1];
-         end
-      end
-   else
-      error('.../ftd_2s_caseall_simszha5v.m:  Have not got time to deal with the simple case indxEqnTv_m(eqninx, 2)=5.')
-   end
+    %**** For D+_s.  In the order of [aj+(1),...,aj+(nStates)] for the 2nd dim of Ri.
+    if (indxEqnTv_m(eqninx, 2)==3)    % For constant D+** except the constant term.  In the order of [dj**(1),...,dj**(nStates)] for the 2nd dim of Ri.
+        for si=1:nStates-1
+            for ki=1:kvar-1   % -1: no restrictions on the constant term, which is freely time-varying.
+                Ri(kvar*(si-1)+ki,[kvar*(si-1)+ki si*kvar+ki],eqninx) = [1 -1];
+            end
+        end
+    elseif (indxEqnTv_m(eqninx, 2)==4)    % For constant D+**.  In the order of [dj**(1),...,dj**(nStates)] for the 2nd dim of Ri.
+        for si=1:nStates-1
+            for ki=1:kvar
+                Ri(kvar*(si-1)+ki,[kvar*(si-1)+ki si*kvar+ki],eqninx) = [1 -1];
+            end
+        end
+    else
+        error('.../ftd_2s_caseall_simszha5v.m:  Have not got time to deal with the simple case indxEqnTv_m(eqninx, 2)=5.')
+    end
 end
 
 
@@ -138,56 +138,56 @@ end
 eqninx = 2;
 nreseqn = 4;  % Number of linear restrictions for A0(:,eqninx) for each state.
 if (indxEqnTv_m(eqninx, 2)<=2)
-   %**** For constant A0_s.    In the order of [a0j(1),...,a0j(nStates)] for the 2nd dim of Qi.
-   Qi(1:(nStates-1)*nvar+nreseqn,:,eqninx) = [
-      1  0  0  0  0  0     -1  0  0  0  0  0
-      0  1  0  0  0  0      0 -1  0  0  0  0
-      0  0  1  0  0  0      0  0 -1  0  0  0
-      0  0  0  1  0  0      0  0  0 -1  0  0
-      0  0  0  0  1  0      0  0  0  0 -1  0
-      0  0  0  0  0  1      0  0  0  0  0 -1
+    %**** For constant A0_s.    In the order of [a0j(1),...,a0j(nStates)] for the 2nd dim of Qi.
+    Qi(1:(nStates-1)*nvar+nreseqn,:,eqninx) = [
+        1  0  0  0  0  0     -1  0  0  0  0  0
+        0  1  0  0  0  0      0 -1  0  0  0  0
+        0  0  1  0  0  0      0  0 -1  0  0  0
+        0  0  0  1  0  0      0  0  0 -1  0  0
+        0  0  0  0  1  0      0  0  0  0 -1  0
+        0  0  0  0  0  1      0  0  0  0  0 -1
 
-      0 0 0 0 0 0     0 0 1 0 0 0
-      0 0 0 0 0 0     0 0 0 1 0 0
-      0 0 0 0 0 0     0 0 0 0 1 0
-      0 0 0 0 0 0     0 0 0 0 0 1
-                         ];
-   %**** For constant D+_s.  In the order of [aj+(1),...,aj+(nStates)] for the 2nd dim of Ri.
-   for si=1:nStates-1
-      for ki=1:kvar
-         Ri(kvar*(si-1)+ki,[kvar*(si-1)+ki si*kvar+ki],eqninx) = [1 -1];
-      end
-   end
+        0 0 0 0 0 0     0 0 1 0 0 0
+        0 0 0 0 0 0     0 0 0 1 0 0
+        0 0 0 0 0 0     0 0 0 0 1 0
+        0 0 0 0 0 0     0 0 0 0 0 1
+                   ];
+    %**** For constant D+_s.  In the order of [aj+(1),...,aj+(nStates)] for the 2nd dim of Ri.
+    for si=1:nStates-1
+        for ki=1:kvar
+            Ri(kvar*(si-1)+ki,[kvar*(si-1)+ki si*kvar+ki],eqninx) = [1 -1];
+        end
+    end
 else    % Time-varying equations at least for A0_s.  For D+_s, constant-parameter equations in general.
-   %**** For time-varying A0_s.    In the order of [a0j(1),...,a0j(nStates)] for the 2nd dim of Qi.
-   Qi(1:nreseqn*nStates,:,eqninx) = [
-      0 0 1 0 0 0     0 0 0 0 0 0
-      0 0 0 1 0 0     0 0 0 0 0 0
-      0 0 0 0 1 0     0 0 0 0 0 0
-      0 0 0 0 0 1     0 0 0 0 0 0
+        %**** For time-varying A0_s.    In the order of [a0j(1),...,a0j(nStates)] for the 2nd dim of Qi.
+    Qi(1:nreseqn*nStates,:,eqninx) = [
+        0 0 1 0 0 0     0 0 0 0 0 0
+        0 0 0 1 0 0     0 0 0 0 0 0
+        0 0 0 0 1 0     0 0 0 0 0 0
+        0 0 0 0 0 1     0 0 0 0 0 0
 
-      0 0 0 0 0 0     0 0 1 0 0 0
-      0 0 0 0 0 0     0 0 0 1 0 0
-      0 0 0 0 0 0     0 0 0 0 1 0
-      0 0 0 0 0 0     0 0 0 0 0 1
-                         ];
+        0 0 0 0 0 0     0 0 1 0 0 0
+        0 0 0 0 0 0     0 0 0 1 0 0
+        0 0 0 0 0 0     0 0 0 0 1 0
+        0 0 0 0 0 0     0 0 0 0 0 1
+                   ];
 
-   %**** For D+_s.  In the order of [aj+(1),...,aj+(nStates)] for the 2nd dim of Ri.
-   if (indxEqnTv_m(eqninx, 2)==3)    % For constant D+** except the constant term.  In the order of [dj**(1),...,dj**(nStates)] for the 2nd dim of Ri.
-      for si=1:nStates-1
-         for ki=1:kvar-1   % -1: no restrictions on the constant term, which is freely time-varying.
-            Ri(kvar*(si-1)+ki,[kvar*(si-1)+ki si*kvar+ki],eqninx) = [1 -1];
-         end
-      end
-   elseif (indxEqnTv_m(eqninx, 2)==4)    % For constant D+**.  In the order of [dj**(1),...,dj**(nStates)] for the 2nd dim of Ri.
-      for si=1:nStates-1
-         for ki=1:kvar
-            Ri(kvar*(si-1)+ki,[kvar*(si-1)+ki si*kvar+ki],eqninx) = [1 -1];
-         end
-      end
-   else
-      error('.../ftd_2s_caseall_simszha5v.m:  Have not got time to deal with the simple case indxEqnTv_m(eqninx, 2)=5.')
-   end
+    %**** For D+_s.  In the order of [aj+(1),...,aj+(nStates)] for the 2nd dim of Ri.
+    if (indxEqnTv_m(eqninx, 2)==3)    % For constant D+** except the constant term.  In the order of [dj**(1),...,dj**(nStates)] for the 2nd dim of Ri.
+        for si=1:nStates-1
+            for ki=1:kvar-1   % -1: no restrictions on the constant term, which is freely time-varying.
+                Ri(kvar*(si-1)+ki,[kvar*(si-1)+ki si*kvar+ki],eqninx) = [1 -1];
+            end
+        end
+    elseif (indxEqnTv_m(eqninx, 2)==4)    % For constant D+**.  In the order of [dj**(1),...,dj**(nStates)] for the 2nd dim of Ri.
+        for si=1:nStates-1
+            for ki=1:kvar
+                Ri(kvar*(si-1)+ki,[kvar*(si-1)+ki si*kvar+ki],eqninx) = [1 -1];
+            end
+        end
+    else
+        error('.../ftd_2s_caseall_simszha5v.m:  Have not got time to deal with the simple case indxEqnTv_m(eqninx, 2)=5.')
+    end
 end
 
 
@@ -195,70 +195,70 @@ end
 eqninx = 3;
 nreseqn = 3;  % Number of linear restrictions for A0(:,eqninx) for each state.
 if (indxEqnTv_m(eqninx, 2)<=2)
-   %**** For constant A0_s.    In the order of [a0j(1),...,a0j(nStates)] for the 2nd dim of Qi.
-   Qi(1:(nStates-1)*nvar+nreseqn,:,eqninx) = [
-      1  0  0  0  0  0     -1  0  0  0  0  0
-      0  1  0  0  0  0      0 -1  0  0  0  0
-      0  0  1  0  0  0      0  0 -1  0  0  0
-      0  0  0  1  0  0      0  0  0 -1  0  0
-      0  0  0  0  1  0      0  0  0  0 -1  0
-      0  0  0  0  0  1      0  0  0  0  0 -1
+    %**** For constant A0_s.    In the order of [a0j(1),...,a0j(nStates)] for the 2nd dim of Qi.
+    Qi(1:(nStates-1)*nvar+nreseqn,:,eqninx) = [
+        1  0  0  0  0  0     -1  0  0  0  0  0
+        0  1  0  0  0  0      0 -1  0  0  0  0
+        0  0  1  0  0  0      0  0 -1  0  0  0
+        0  0  0  1  0  0      0  0  0 -1  0  0
+        0  0  0  0  1  0      0  0  0  0 -1  0
+        0  0  0  0  0  1      0  0  0  0  0 -1
 
-      0 0 0 0 0 0     0 0 0 1 0 0
-      0 0 0 0 0 0     0 0 0 0 1 0
-      0 0 0 0 0 0     0 0 0 0 0 1
-                         ];
-   %**** For constant D+_s.  In the order of [aj+(1),...,aj+(nStates)] for the 2nd dim of Ri.
-   for si=1:nStates-1
-      for ki=1:kvar
-         Ri(kvar*(si-1)+ki,[kvar*(si-1)+ki si*kvar+ki],eqninx) = [1 -1];
-      end
-   end
+        0 0 0 0 0 0     0 0 0 1 0 0
+        0 0 0 0 0 0     0 0 0 0 1 0
+        0 0 0 0 0 0     0 0 0 0 0 1
+                   ];
+    %**** For constant D+_s.  In the order of [aj+(1),...,aj+(nStates)] for the 2nd dim of Ri.
+    for si=1:nStates-1
+        for ki=1:kvar
+            Ri(kvar*(si-1)+ki,[kvar*(si-1)+ki si*kvar+ki],eqninx) = [1 -1];
+        end
+    end
 else    % Time-varying equations at least for A0_s.  For D+_s, constant-parameter equations in general.
-   %**** For time-varying A0_s.    In the order of [a0j(1),...,a0j(nStates)] for the 2nd dim of Qi.
-   Qi(1:nreseqn*nStates,:,eqninx) = [
-      0 0 0 1 0 0     0 0 0 0 0 0
-      0 0 0 0 1 0     0 0 0 0 0 0
-      0 0 0 0 0 1     0 0 0 0 0 0
+        %**** For time-varying A0_s.    In the order of [a0j(1),...,a0j(nStates)] for the 2nd dim of Qi.
+    Qi(1:nreseqn*nStates,:,eqninx) = [
+        0 0 0 1 0 0     0 0 0 0 0 0
+        0 0 0 0 1 0     0 0 0 0 0 0
+        0 0 0 0 0 1     0 0 0 0 0 0
 
-      0 0 0 0 0 0     0 0 0 1 0 0
-      0 0 0 0 0 0     0 0 0 0 1 0
-      0 0 0 0 0 0     0 0 0 0 0 1
-                         ];
+        0 0 0 0 0 0     0 0 0 1 0 0
+        0 0 0 0 0 0     0 0 0 0 1 0
+        0 0 0 0 0 0     0 0 0 0 0 1
+                   ];
 
-   %**** For D+_s.  In the order of [aj+(1),...,aj+(nStates)] for the 2nd dim of Ri.
-   if (indxEqnTv_m(eqninx, 2)==3)    % For constant D+** except the constant term.  In the order of [dj**(1),...,dj**(nStates)] for the 2nd dim of Ri.
-      for si=1:nStates-1
-         for ki=1:kvar-1   % -1: no restrictions on the constant term, which is freely time-varying.
-            Ri(kvar*(si-1)+ki,[kvar*(si-1)+ki si*kvar+ki],eqninx) = [1 -1];
-         end
-      end
-   elseif (indxEqnTv_m(eqninx, 2)==4)    % For constant D+**.  In the order of [dj**(1),...,dj**(nStates)] for the 2nd dim of Ri.
-      for si=1:nStates-1
-         for ki=1:kvar
-            Ri(kvar*(si-1)+ki,[kvar*(si-1)+ki si*kvar+ki],eqninx) = [1 -1];
-         end
-      end
-   else
-      error('.../ftd_3s_case3a.m:  Have not got time to deal with the simple case indxEqnTv_m(eqninx, 2)=5.')
-   end
+    %**** For D+_s.  In the order of [aj+(1),...,aj+(nStates)] for the 2nd dim of Ri.
+    if (indxEqnTv_m(eqninx, 2)==3)    % For constant D+** except the constant term.  In the order of [dj**(1),...,dj**(nStates)] for the 2nd dim of Ri.
+        for si=1:nStates-1
+            for ki=1:kvar-1   % -1: no restrictions on the constant term, which is freely time-varying.
+                Ri(kvar*(si-1)+ki,[kvar*(si-1)+ki si*kvar+ki],eqninx) = [1 -1];
+            end
+        end
+    elseif (indxEqnTv_m(eqninx, 2)==4)    % For constant D+**.  In the order of [dj**(1),...,dj**(nStates)] for the 2nd dim of Ri.
+        for si=1:nStates-1
+            for ki=1:kvar
+                Ri(kvar*(si-1)+ki,[kvar*(si-1)+ki si*kvar+ki],eqninx) = [1 -1];
+            end
+        end
+    else
+        error('.../ftd_3s_case3a.m:  Have not got time to deal with the simple case indxEqnTv_m(eqninx, 2)=5.')
+    end
 
-   %==== For freely time-varying A+ for only the first 6 lags.
-   %====       Lagged restrictions: zeros on all lags except the first 6 lags in the MS equation.
-   %  nlagsno0 = 6;   % Number of lags to be nonzero.
-   %  for si=1:nStates
-   %     for ki = 1:lags-nlagsno0
-   %        for kj=1:nvar
-   %           Ri(kvar*(si-1)+nlagsno0*nvar+nvar*(ki-1)+kj,kvar*(si-1)+nlagsno0*nvar+nvar*(ki-1)+kj,2) = 1;
-   %        end
-   %     end
-   %  end
-   %**** For constant D+_s except the first two lags and the constant term.  In the order of [aj+(1),...,aj+(nStates)] for the 2nd dim of Ri.
-   %  for si=1:nStates-1
-   %     for ki=[2*nvar+1:kvar-1]
-   %        Ri(kvar*(si-1)+ki,[kvar*(si-1)+ki si*kvar+ki],eqninx) = [1 -1];
-   %     end
-   %  end
+    %==== For freely time-varying A+ for only the first 6 lags.
+    %====       Lagged restrictions: zeros on all lags except the first 6 lags in the MS equation.
+    %  nlagsno0 = 6;   % Number of lags to be nonzero.
+    %  for si=1:nStates
+    %     for ki = 1:lags-nlagsno0
+    %        for kj=1:nvar
+    %           Ri(kvar*(si-1)+nlagsno0*nvar+nvar*(ki-1)+kj,kvar*(si-1)+nlagsno0*nvar+nvar*(ki-1)+kj,2) = 1;
+    %        end
+    %     end
+    %  end
+    %**** For constant D+_s except the first two lags and the constant term.  In the order of [aj+(1),...,aj+(nStates)] for the 2nd dim of Ri.
+    %  for si=1:nStates-1
+    %     for ki=[2*nvar+1:kvar-1]
+    %        Ri(kvar*(si-1)+ki,[kvar*(si-1)+ki si*kvar+ki],eqninx) = [1 -1];
+    %     end
+    %  end
 end
 
 
@@ -266,49 +266,49 @@ end
 eqninx = 4;
 nreseqn = 2;  % Number of linear restrictions for the equation for each state.
 if (indxEqnTv_m(eqninx, 2)<=2)
-   %**** For constant A0_s.    In the order of [a0j(1),...,a0j(nStates)] for the 2nd dim of Qi.
-   Qi(1:(nStates-1)*nvar+nreseqn,:,eqninx) = [
-      1  0  0  0  0  0     -1  0  0  0  0  0
-      0  1  0  0  0  0      0 -1  0  0  0  0
-      0  0  1  0  0  0      0  0 -1  0  0  0
-      0  0  0  1  0  0      0  0  0 -1  0  0
-      0  0  0  0  1  0      0  0  0  0 -1  0
-      0  0  0  0  0  1      0  0  0  0  0 -1
+    %**** For constant A0_s.    In the order of [a0j(1),...,a0j(nStates)] for the 2nd dim of Qi.
+    Qi(1:(nStates-1)*nvar+nreseqn,:,eqninx) = [
+        1  0  0  0  0  0     -1  0  0  0  0  0
+        0  1  0  0  0  0      0 -1  0  0  0  0
+        0  0  1  0  0  0      0  0 -1  0  0  0
+        0  0  0  1  0  0      0  0  0 -1  0  0
+        0  0  0  0  1  0      0  0  0  0 -1  0
+        0  0  0  0  0  1      0  0  0  0  0 -1
 
-      0 0 0 0 0 0     0 0 0 0 1 0
-      0 0 0 0 0 0     0 0 0 0 0 1
-                         ];
-   %**** For constant D+_s.  In the order of [aj+(1),...,aj+(nStates)] for the 2nd dim of Ri.
-   for si=1:nStates-1
-      for ki=1:kvar
-         Ri(kvar*(si-1)+ki,[kvar*(si-1)+ki si*kvar+ki],eqninx) = [1 -1];
-      end
-   end
+        0 0 0 0 0 0     0 0 0 0 1 0
+        0 0 0 0 0 0     0 0 0 0 0 1
+                   ];
+    %**** For constant D+_s.  In the order of [aj+(1),...,aj+(nStates)] for the 2nd dim of Ri.
+    for si=1:nStates-1
+        for ki=1:kvar
+            Ri(kvar*(si-1)+ki,[kvar*(si-1)+ki si*kvar+ki],eqninx) = [1 -1];
+        end
+    end
 else    % Time-varying equations at least for A0_s.  For D+_s, constant-parameter equations in general.
-   %**** For time-varying A0_s.    In the order of [a0j(1),...,a0j(nStates)] for the 2nd dim of Qi.
-   Qi(1:nreseqn*nStates,:,eqninx) = [
-      0 0 0 0 1 0     0 0 0 0 0 0
-      0 0 0 0 0 1     0 0 0 0 0 0
+        %**** For time-varying A0_s.    In the order of [a0j(1),...,a0j(nStates)] for the 2nd dim of Qi.
+    Qi(1:nreseqn*nStates,:,eqninx) = [
+        0 0 0 0 1 0     0 0 0 0 0 0
+        0 0 0 0 0 1     0 0 0 0 0 0
 
-      0 0 0 0 0 0     0 0 0 0 1 0
-      0 0 0 0 0 0     0 0 0 0 0 1
-                         ];
-   %**** For D+_s.  In the order of [aj+(1),...,aj+(nStates)] for the 2nd dim of Ri.
-   if (indxEqnTv_m(eqninx, 2)==3)    % For constant D+** except the constant term.  In the order of [dj**(1),...,dj**(nStates)] for the 2nd dim of Ri.
-      for si=1:nStates-1
-         for ki=1:kvar-1   % -1: no restrictions on the constant term, which is freely time-varying.
-            Ri(kvar*(si-1)+ki,[kvar*(si-1)+ki si*kvar+ki],eqninx) = [1 -1];
-         end
-      end
-   elseif (indxEqnTv_m(eqninx, 2)==4)    % For constant D+**.  In the order of [dj**(1),...,dj**(nStates)] for the 2nd dim of Ri.
-      for si=1:nStates-1
-         for ki=1:kvar
-            Ri(kvar*(si-1)+ki,[kvar*(si-1)+ki si*kvar+ki],eqninx) = [1 -1];
-         end
-      end
-   else
-      error('.../ftd_2s_caseall_simszha5v.m:  Have not got time to deal with the simple case indxEqnTv_m(eqninx, 2)=5.')
-   end
+        0 0 0 0 0 0     0 0 0 0 1 0
+        0 0 0 0 0 0     0 0 0 0 0 1
+                   ];
+    %**** For D+_s.  In the order of [aj+(1),...,aj+(nStates)] for the 2nd dim of Ri.
+    if (indxEqnTv_m(eqninx, 2)==3)    % For constant D+** except the constant term.  In the order of [dj**(1),...,dj**(nStates)] for the 2nd dim of Ri.
+        for si=1:nStates-1
+            for ki=1:kvar-1   % -1: no restrictions on the constant term, which is freely time-varying.
+                Ri(kvar*(si-1)+ki,[kvar*(si-1)+ki si*kvar+ki],eqninx) = [1 -1];
+            end
+        end
+    elseif (indxEqnTv_m(eqninx, 2)==4)    % For constant D+**.  In the order of [dj**(1),...,dj**(nStates)] for the 2nd dim of Ri.
+        for si=1:nStates-1
+            for ki=1:kvar
+                Ri(kvar*(si-1)+ki,[kvar*(si-1)+ki si*kvar+ki],eqninx) = [1 -1];
+            end
+        end
+    else
+        error('.../ftd_2s_caseall_simszha5v.m:  Have not got time to deal with the simple case indxEqnTv_m(eqninx, 2)=5.')
+    end
 end
 
 
@@ -316,46 +316,46 @@ end
 eqninx = 5;
 nreseqn = 1;  % Number of linear restrictions for the equation for each state.
 if (indxEqnTv_m(eqninx, 2)<=2)
-   %**** For constant A0_s.    In the order of [a0j(1),...,a0j(nStates)] for the 2nd dim of Qi.
-   Qi(1:(nStates-1)*nvar+nreseqn,:,eqninx) = [
-      1  0  0  0  0  0     -1  0  0  0  0  0
-      0  1  0  0  0  0      0 -1  0  0  0  0
-      0  0  1  0  0  0      0  0 -1  0  0  0
-      0  0  0  1  0  0      0  0  0 -1  0  0
-      0  0  0  0  1  0      0  0  0  0 -1  0
-      0  0  0  0  0  1      0  0  0  0  0 -1
+    %**** For constant A0_s.    In the order of [a0j(1),...,a0j(nStates)] for the 2nd dim of Qi.
+    Qi(1:(nStates-1)*nvar+nreseqn,:,eqninx) = [
+        1  0  0  0  0  0     -1  0  0  0  0  0
+        0  1  0  0  0  0      0 -1  0  0  0  0
+        0  0  1  0  0  0      0  0 -1  0  0  0
+        0  0  0  1  0  0      0  0  0 -1  0  0
+        0  0  0  0  1  0      0  0  0  0 -1  0
+        0  0  0  0  0  1      0  0  0  0  0 -1
 
-      0 0 0 0 0 0     0 0 0 0 0 1
-                         ];
-   %**** For constant D+_s.  In the order of [aj+(1),...,aj+(nStates)] for the 2nd dim of Ri.
-   for si=1:nStates-1
-      for ki=1:kvar
-         Ri(kvar*(si-1)+ki,[kvar*(si-1)+ki si*kvar+ki],eqninx) = [1 -1];
-      end
-   end
+        0 0 0 0 0 0     0 0 0 0 0 1
+                   ];
+    %**** For constant D+_s.  In the order of [aj+(1),...,aj+(nStates)] for the 2nd dim of Ri.
+    for si=1:nStates-1
+        for ki=1:kvar
+            Ri(kvar*(si-1)+ki,[kvar*(si-1)+ki si*kvar+ki],eqninx) = [1 -1];
+        end
+    end
 else    % Time-varying equations at least for A0_s.  For D+_s, constant-parameter equations in general.
-   %**** For time-varying A0_s.    In the order of [a0j(1),...,a0j(nStates)] for the 2nd dim of Qi.
-   Qi(1:nreseqn*nStates,:,eqninx) = [
-      0 0 0 0 0 1     0 0 0 0 0 0
+        %**** For time-varying A0_s.    In the order of [a0j(1),...,a0j(nStates)] for the 2nd dim of Qi.
+    Qi(1:nreseqn*nStates,:,eqninx) = [
+        0 0 0 0 0 1     0 0 0 0 0 0
 
-      0 0 0 0 0 0     0 0 0 0 0 1
-                         ];
-   %**** For D+_s.  In the order of [aj+(1),...,aj+(nStates)] for the 2nd dim of Ri.
-   if (indxEqnTv_m(eqninx, 2)==3)    % For constant D+** except the constant term.  In the order of [dj**(1),...,dj**(nStates)] for the 2nd dim of Ri.
-      for si=1:nStates-1
-         for ki=1:kvar-1   % -1: no restrictions on the constant term, which is freely time-varying.
-            Ri(kvar*(si-1)+ki,[kvar*(si-1)+ki si*kvar+ki],eqninx) = [1 -1];
-         end
-      end
-   elseif (indxEqnTv_m(eqninx, 2)==4)    % For constant D+**.  In the order of [dj**(1),...,dj**(nStates)] for the 2nd dim of Ri.
-      for si=1:nStates-1
-         for ki=1:kvar
-            Ri(kvar*(si-1)+ki,[kvar*(si-1)+ki si*kvar+ki],eqninx) = [1 -1];
-         end
-      end
-   else
-      error('.../ftd_2s_caseall_simszha5v.m:  Have not got time to deal with the simple case indxEqnTv_m(eqninx, 2)=5.')
-   end
+        0 0 0 0 0 0     0 0 0 0 0 1
+                   ];
+    %**** For D+_s.  In the order of [aj+(1),...,aj+(nStates)] for the 2nd dim of Ri.
+    if (indxEqnTv_m(eqninx, 2)==3)    % For constant D+** except the constant term.  In the order of [dj**(1),...,dj**(nStates)] for the 2nd dim of Ri.
+        for si=1:nStates-1
+            for ki=1:kvar-1   % -1: no restrictions on the constant term, which is freely time-varying.
+                Ri(kvar*(si-1)+ki,[kvar*(si-1)+ki si*kvar+ki],eqninx) = [1 -1];
+            end
+        end
+    elseif (indxEqnTv_m(eqninx, 2)==4)    % For constant D+**.  In the order of [dj**(1),...,dj**(nStates)] for the 2nd dim of Ri.
+        for si=1:nStates-1
+            for ki=1:kvar
+                Ri(kvar*(si-1)+ki,[kvar*(si-1)+ki si*kvar+ki],eqninx) = [1 -1];
+            end
+        end
+    else
+        error('.../ftd_2s_caseall_simszha5v.m:  Have not got time to deal with the simple case indxEqnTv_m(eqninx, 2)=5.')
+    end
 end
 
 
@@ -363,38 +363,38 @@ end
 eqninx = 6;
 nreseqn = 0;  % Number of linear restrictions for the equation for each state.
 if (indxEqnTv_m(eqninx, 2)<=2)
-   %**** For constant A0_s.    In the order of [a0j(1),...,a0j(nStates)] for the 2nd dim of Qi.
-   Qi(1:(nStates-1)*nvar+nreseqn,:,eqninx) = [
-      1  0  0  0  0  0     -1  0  0  0  0  0
-      0  1  0  0  0  0      0 -1  0  0  0  0
-      0  0  1  0  0  0      0  0 -1  0  0  0
-      0  0  0  1  0  0      0  0  0 -1  0  0
-      0  0  0  0  1  0      0  0  0  0 -1  0
-      0  0  0  0  0  1      0  0  0  0  0 -1
-                         ];
-   %**** For constant D+_s.  In the order of [aj+(1),...,aj+(nStates)] for the 2nd dim of Ri.
-   for si=1:nStates-1
-      for ki=1:kvar
-         Ri(kvar*(si-1)+ki,[kvar*(si-1)+ki si*kvar+ki],eqninx) = [1 -1];
-      end
-   end
+    %**** For constant A0_s.    In the order of [a0j(1),...,a0j(nStates)] for the 2nd dim of Qi.
+    Qi(1:(nStates-1)*nvar+nreseqn,:,eqninx) = [
+        1  0  0  0  0  0     -1  0  0  0  0  0
+        0  1  0  0  0  0      0 -1  0  0  0  0
+        0  0  1  0  0  0      0  0 -1  0  0  0
+        0  0  0  1  0  0      0  0  0 -1  0  0
+        0  0  0  0  1  0      0  0  0  0 -1  0
+        0  0  0  0  0  1      0  0  0  0  0 -1
+                   ];
+    %**** For constant D+_s.  In the order of [aj+(1),...,aj+(nStates)] for the 2nd dim of Ri.
+    for si=1:nStates-1
+        for ki=1:kvar
+            Ri(kvar*(si-1)+ki,[kvar*(si-1)+ki si*kvar+ki],eqninx) = [1 -1];
+        end
+    end
 else    % Time-varying equations at least for A0_s.  For D+_s, constant-parameter equations in general.
-   %**** For D+_s.  In the order of [aj+(1),...,aj+(nStates)] for the 2nd dim of Ri.
-   if (indxEqnTv_m(eqninx, 2)==3)    % For constant D+** except the constant term.  In the order of [dj**(1),...,dj**(nStates)] for the 2nd dim of Ri.
-      for si=1:nStates-1
-         for ki=1:kvar-1   % -1: no restrictions on the constant term, which is freely time-varying.
-            Ri(kvar*(si-1)+ki,[kvar*(si-1)+ki si*kvar+ki],eqninx) = [1 -1];
-         end
-      end
-   elseif (indxEqnTv_m(eqninx, 2)==4)    % For constant D+**.  In the order of [dj**(1),...,dj**(nStates)] for the 2nd dim of Ri.
-      for si=1:nStates-1
-         for ki=1:kvar
-            Ri(kvar*(si-1)+ki,[kvar*(si-1)+ki si*kvar+ki],eqninx) = [1 -1];
-         end
-      end
-   else
-      error('.../ftd_2s_caseall_simszha5v.m:  Have not got time to deal with the simple case indxEqnTv_m(eqninx, 2)=5.')
-   end
+        %**** For D+_s.  In the order of [aj+(1),...,aj+(nStates)] for the 2nd dim of Ri.
+    if (indxEqnTv_m(eqninx, 2)==3)    % For constant D+** except the constant term.  In the order of [dj**(1),...,dj**(nStates)] for the 2nd dim of Ri.
+        for si=1:nStates-1
+            for ki=1:kvar-1   % -1: no restrictions on the constant term, which is freely time-varying.
+                Ri(kvar*(si-1)+ki,[kvar*(si-1)+ki si*kvar+ki],eqninx) = [1 -1];
+            end
+        end
+    elseif (indxEqnTv_m(eqninx, 2)==4)    % For constant D+**.  In the order of [dj**(1),...,dj**(nStates)] for the 2nd dim of Ri.
+        for si=1:nStates-1
+            for ki=1:kvar
+                Ri(kvar*(si-1)+ki,[kvar*(si-1)+ki si*kvar+ki],eqninx) = [1 -1];
+            end
+        end
+    else
+        error('.../ftd_2s_caseall_simszha5v.m:  Have not got time to deal with the simple case indxEqnTv_m(eqninx, 2)=5.')
+    end
 end
 
 
@@ -448,8 +448,8 @@ end
 
 
 for ki=1:nvar   %  initializing loop for each equation
-   Ui{ki} = null(Qi(:,:,ki));
-   Vi{ki} = null(Ri(:,:,ki));
-   n0(ki) = size(Ui{ki},2);
-   np(ki) = size(Vi{ki},2);
+    Ui{ki} = null(Qi(:,:,ki));
+    Vi{ki} = null(Ri(:,:,ki));
+    n0(ki) = size(Ui{ki},2);
+    np(ki) = size(Vi{ki},2);
 end

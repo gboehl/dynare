@@ -59,7 +59,7 @@ fig_name_long = opts_decomp.fig_name;
 %         fig_name = ['_' fig_name];
 
 if screen_shocks
-%     fig_name1 = [fig_name1 '_screen'];
+    %     fig_name1 = [fig_name1 '_screen'];
     fig_name_long = [fig_name_long ' SCREEN'];
 end
 
@@ -151,89 +151,89 @@ for j=1:nvar
         continue
     end
     for jf = 1:nfigs
-    fhandle = dyn_figure(DynareOptions.plot_shock_decomp.nodisplay,'Name',[preamble_txt fig_name_long strrep(fig_mode1, '_', ' ') ': ' deblank(endo_names(i_var(j),:)) ' (detail).'],'position',[200 100 650 850], 'PaperPositionMode', 'auto','PaperOrientation','portrait','renderermode','auto');
-    a0=zeros(1,4);
-    a0(3)=inf;
-    a0(4)=-inf;
-    for ic=1+nrow*ncol*(jf-1):min(nrow*ncol*jf,comp_nbr),
-        i = ic-nrow*ncol*(jf-1);
-        zz = z1(ic,:);        
-        zz(2,:)=z1(end,:)-zz;
-        ipos=zz>0;
-        ineg=zz<0;
-        hax = subplot(nrow,ncol,i); set(gca,'box','on')
-        hbar = bar(x(2:end),(zz.*ipos)','stacked');
-        colormap([0.15 0.15 0.15;0.85 0.85 0.85]),
-        set(hbar,'edgecolor','flat');
-        hold on,
-        hbar = bar(x(2:end),(zz.*ineg)','stacked');
-        colormap([0.15 0.15 0.15;0.85 0.85 0.85]),
-        set(hbar,'edgecolor','flat');
-        title(deblank(labels(ic,:)),'Interpreter','none'),
-        axis tight;
-        a=axis;
-        set(gca,'Xtick',xind_tick)
-        set(gca,'xlim',[xmin xmax])
-        a0(3)=min(a(3),a0(3));
-        a0(4)=max(a(4),a0(4));
-        set(gca,'ylim',a0(3:4))
-        hold on, h1=plot(x(2:end),z1(end,:),'k-','LineWidth',2);
-        if interactive & (~isoctave & use_shock_groups)
-            mydata.fig_name = DynareOptions.plot_shock_decomp.fig_name(2:end);
-            mydata.use_shock_groups = DynareOptions.plot_shock_decomp.use_shock_groups;
-            mydata.shock_group = shock_groups.(shock_ind{ic});
-            mydata.shock_decomp = DynareOptions.plot_shock_decomp;
-            if ~isempty(mydata.shock_group.shocks{1})
-                c = uicontextmenu;
-                hax.UIContextMenu=c;
-                browse_menu = uimenu(c,'Label','Browse group');
-                expand_menu = uimenu(c,'Label','Expand group','Callback',['expand_group(''' mydata.use_shock_groups ''',''' deblank(mydata.shock_decomp.orig_varlist(j,:)) ''',' int2str(ic) ')']);
-                set(expand_menu,'UserData',mydata,'Tag',['group' int2str(ic)]);
-                for jmember = mydata.shock_group.shocks
-                    uimenu('parent',browse_menu,'Label',char(jmember))
+        fhandle = dyn_figure(DynareOptions.plot_shock_decomp.nodisplay,'Name',[preamble_txt fig_name_long strrep(fig_mode1, '_', ' ') ': ' deblank(endo_names(i_var(j),:)) ' (detail).'],'position',[200 100 650 850], 'PaperPositionMode', 'auto','PaperOrientation','portrait','renderermode','auto');
+        a0=zeros(1,4);
+        a0(3)=inf;
+        a0(4)=-inf;
+        for ic=1+nrow*ncol*(jf-1):min(nrow*ncol*jf,comp_nbr),
+            i = ic-nrow*ncol*(jf-1);
+            zz = z1(ic,:);        
+            zz(2,:)=z1(end,:)-zz;
+            ipos=zz>0;
+            ineg=zz<0;
+            hax = subplot(nrow,ncol,i); set(gca,'box','on')
+            hbar = bar(x(2:end),(zz.*ipos)','stacked');
+            colormap([0.15 0.15 0.15;0.85 0.85 0.85]),
+            set(hbar,'edgecolor','flat');
+            hold on,
+            hbar = bar(x(2:end),(zz.*ineg)','stacked');
+            colormap([0.15 0.15 0.15;0.85 0.85 0.85]),
+            set(hbar,'edgecolor','flat');
+            title(deblank(labels(ic,:)),'Interpreter','none'),
+            axis tight;
+            a=axis;
+            set(gca,'Xtick',xind_tick)
+            set(gca,'xlim',[xmin xmax])
+            a0(3)=min(a(3),a0(3));
+            a0(4)=max(a(4),a0(4));
+            set(gca,'ylim',a0(3:4))
+            hold on, h1=plot(x(2:end),z1(end,:),'k-','LineWidth',2);
+            if interactive & (~isoctave & use_shock_groups)
+                mydata.fig_name = DynareOptions.plot_shock_decomp.fig_name(2:end);
+                mydata.use_shock_groups = DynareOptions.plot_shock_decomp.use_shock_groups;
+                mydata.shock_group = shock_groups.(shock_ind{ic});
+                mydata.shock_decomp = DynareOptions.plot_shock_decomp;
+                if ~isempty(mydata.shock_group.shocks{1})
+                    c = uicontextmenu;
+                    hax.UIContextMenu=c;
+                    browse_menu = uimenu(c,'Label','Browse group');
+                    expand_menu = uimenu(c,'Label','Expand group','Callback',['expand_group(''' mydata.use_shock_groups ''',''' deblank(mydata.shock_decomp.orig_varlist(j,:)) ''',' int2str(ic) ')']);
+                    set(expand_menu,'UserData',mydata,'Tag',['group' int2str(ic)]);
+                    for jmember = mydata.shock_group.shocks
+                        uimenu('parent',browse_menu,'Label',char(jmember))
+                    end
                 end
             end
         end
-    end
-    for isub=1:i,
-        subplot(nrow,ncol,isub),
-        set(gca,'ylim',a0(3:4))
-    end
-    
-% make legend
-    axes('Position',[0.1 0.01 0.8 0.02],'units','normalized');
-    axis([0 1 0 1]);
-    axis off;
-    hold on;
-    x1 = 0;
-    width = 1/2;
-    mylabels = {'Individual contrib.','Residual contrib.'};
+        for isub=1:i,
+            subplot(nrow,ncol,isub),
+            set(gca,'ylim',a0(3:4))
+        end
+        
+        % make legend
+        axes('Position',[0.1 0.01 0.8 0.02],'units','normalized');
+        axis([0 1 0 1]);
+        axis off;
+        hold on;
+        x1 = 0;
+        width = 1/2;
+        mylabels = {'Individual contrib.','Residual contrib.'};
 
-    for i=1:2
-%     for i=1:comp_nbr
-        hl = fill([x1 x1 x1+0.3*width x1+0.3*width],[0 1 1 0],i);
-        hold on
-        ht = text(x1+0.4*width,0.3,mylabels{i},'Interpreter','none');
-        hold on
-        x1 = x1 + width;
-    end
-    
-    
-    if nfigs>1,
-        suffix = ['_detail_' int2str(jf)];
-    else
-        suffix = ['_detail'];
-    end
-    dyn_saveas(fhandle,[GraphDirectoryName, filesep, DynareModel.fname,'_shock_decomposition_',deblank(endo_names(i_var(j),:)),fig_mode1,fig_name suffix],DynareOptions.plot_shock_decomp.nodisplay,DynareOptions.plot_shock_decomp.graph_format);
-    if DynareOptions.TeX && any(strcmp('eps',cellstr(DynareOptions.plot_shock_decomp.graph_format)))
-        fprintf(fidTeX,'\\begin{figure}[H]\n');
-        fprintf(fidTeX,'\\centering \n');
-        fprintf(fidTeX,'\\includegraphics[width=0.8\\textwidth]{%s/graphs/%s_shock_decomposition_%s}\n',DynareModel.fname,DynareModel.fname,[deblank(endo_names(i_var(j),:)) fig_mode1 fig_name suffix]);
-        fprintf(fidTeX,'\\label{Fig:shock_decomp_detail:%s}\n',[fig_mode deblank(endo_names(i_var(j),:)) fig_name suffix]);
-        fprintf(fidTeX,['\\caption{' preamble_txt fig_name_long strrep(fig_mode1, '_',  ' ') ': $ %s $ (detail).}\n'],deblank(DynareModel.endo_names_tex(i_var(j),:)));
-        fprintf(fidTeX,'\\end{figure}\n');
-        fprintf(fidTeX,' \n');
-    end    
+        for i=1:2
+            %     for i=1:comp_nbr
+            hl = fill([x1 x1 x1+0.3*width x1+0.3*width],[0 1 1 0],i);
+            hold on
+            ht = text(x1+0.4*width,0.3,mylabels{i},'Interpreter','none');
+            hold on
+            x1 = x1 + width;
+        end
+        
+        
+        if nfigs>1,
+            suffix = ['_detail_' int2str(jf)];
+        else
+            suffix = ['_detail'];
+        end
+        dyn_saveas(fhandle,[GraphDirectoryName, filesep, DynareModel.fname,'_shock_decomposition_',deblank(endo_names(i_var(j),:)),fig_mode1,fig_name suffix],DynareOptions.plot_shock_decomp.nodisplay,DynareOptions.plot_shock_decomp.graph_format);
+        if DynareOptions.TeX && any(strcmp('eps',cellstr(DynareOptions.plot_shock_decomp.graph_format)))
+            fprintf(fidTeX,'\\begin{figure}[H]\n');
+            fprintf(fidTeX,'\\centering \n');
+            fprintf(fidTeX,'\\includegraphics[width=0.8\\textwidth]{%s/graphs/%s_shock_decomposition_%s}\n',DynareModel.fname,DynareModel.fname,[deblank(endo_names(i_var(j),:)) fig_mode1 fig_name suffix]);
+            fprintf(fidTeX,'\\label{Fig:shock_decomp_detail:%s}\n',[fig_mode deblank(endo_names(i_var(j),:)) fig_name suffix]);
+            fprintf(fidTeX,['\\caption{' preamble_txt fig_name_long strrep(fig_mode1, '_',  ' ') ': $ %s $ (detail).}\n'],deblank(DynareModel.endo_names_tex(i_var(j),:)));
+            fprintf(fidTeX,'\\end{figure}\n');
+            fprintf(fidTeX,' \n');
+        end    
     end
 end
 

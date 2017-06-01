@@ -110,11 +110,11 @@ end
 
 if options_.estimation.moments_posterior_density.indicator
     [p_mean, p_median, p_var, hpd_interval, p_deciles, density] = ...
-            posterior_moments(tmp,1,mh_conf_sig);
+        posterior_moments(tmp,1,mh_conf_sig);
     oo_.([TYPE, 'TheoreticalMoments']).dsge.covariance.density.(var1).(var2) = density;
 else
     [p_mean, p_median, p_var, hpd_interval, p_deciles] = ...
-                    posterior_moments(tmp,0,mh_conf_sig);
+        posterior_moments(tmp,0,mh_conf_sig);
 end
 oo_.([TYPE, 'TheoreticalMoments']).dsge.covariance.Mean.(var1).(var2) = p_mean;
 oo_.([TYPE, 'TheoreticalMoments']).dsge.covariance.Median.(var1).(var2) = p_median;

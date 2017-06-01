@@ -1,4 +1,4 @@
-function [Ui,Vi,n0,np,ixmC0Pres] = ftd_reac_function_4v(lags,nvar,nexo,indxC0Pres)
+function [Ui,Vi,n0,np,ixmC0Pres] = ftd_RSvensson_4v(lags,nvar,nexo,indxC0Pres)
 %  vlist = [ff+ch fh dpgdp ffr)
 %
 %    Exporting orthonormal matrices for the deterministic linear restrictions (equation by equation)
@@ -50,17 +50,17 @@ n0 = zeros(nvar,1); % ith element represents the number of free A0 parameters in
 np = zeros(nvar,1); % ith element represents the number of free A+ parameters in ith equation
 
 if (nargin==2)
-   nexo = 1;  % 1: constant as default where nexo must be a nonnegative integer
+    nexo = 1;  % 1: constant as default where nexo must be a nonnegative integer
 elseif (nargin==3)
-   indxC0Pres = 0;  % default is no cross-A0-and-A+ restrictions.
+    indxC0Pres = 0;  % default is no cross-A0-and-A+ restrictions.
 end
 
 k = lags*nvar+nexo;  % maximum number of lagged and exogenous variables in each equation
 
 Qi = zeros(nvar,nvar,nvar);   % for nvar contemporaneous equations
 Ri = zeros(k,k,nvar);    % for nvar lagged and exogenous equations
-  % Row corresponds to equation. 0 means no restriction.
-  %                              1 means exclusion restriction such that the corresponding parameter is restricted to 0.
+                         % Row corresponds to equation. 0 means no restriction.
+                         %                              1 means exclusion restriction such that the corresponding parameter is restricted to 0.
 
 %nfvar = 6;   % number of foreign (Granger causing) variables
 %nhvar = nvar-nfvar;  % number of home (affected) variables.
@@ -75,13 +75,13 @@ Qi(1:3,:,1) = [
     0 1 0 0
     0 0 1 0
     0 0 0 1
-        ];
+              ];
 
 %======== The second equation ===========
 Qi(1:2,:,2) = [
     0 0 1 0
     0 0 0 1
-        ];
+              ];
 
 %======== The third equation =========== NOTE THAT WE FORBID A
 %CONTEMPORANEOUS IMPACT OF OUTPUTON PRICES TO AVOID A CONSTRAINT THAT
@@ -90,7 +90,7 @@ Qi(1:3,:,3) = [
     1 0 0 0
     0 1 0 0
     0 0 0 1
-        ];
+              ];
 
 %======== The fourth equation ===========
 
@@ -98,34 +98,34 @@ Qi(1:3,:,3) = [
 % Restrictions on the A+ in order to focus strictly on the reaction fucntion
 
 % indicates free parameterers X i
-%	Ap = [
+%       Ap = [
 %      X  X    X  X
-%	   X  X    X  X
+%          X  X    X  X
 %     -a1 -b1  X  X
 %      a1 b1   0  X  (1st lag)
 %      X  X    X  X
-%	   X  X    X  X
+%          X  X    X  X
 %     -a2 -b2  X  X
 %      b2  b2  0  X  (2nd lag)
 %      X   0   X  X
-%	   X  X    X  X
+%          X  X    X  X
 %     -a3 -b3  X  X
 %      a3  a3  0  X  (3rd lag)
 %      X  X    X  X
-%	   X  X    X  X
+%          X  X    X  X
 %     -a4 -b4  X  X
 %      a4  b4  0  X  (4th lag)
 %      X  X    X  X  (constant terms)
-%			  ];
+%                         ];
 
 k=nvar*lags+nexo;
 Ri = zeros(k,k,nvar);
 % constraints on IS curve /conso+corporate investment
 for nv=1:2
-for ll=1:lags
-Ri(ll,3+lags*(ll-1),nv)=1;
-Ri(ll,4+lags*(ll-1),nv)=1;
-end
+    for ll=1:lags
+        Ri(ll,3+lags*(ll-1),nv)=1;
+        Ri(ll,4+lags*(ll-1),nv)=1;
+    end
 end
 
 % constraints on IS curve /conso+corporate investment only on the long run
@@ -140,15 +140,15 @@ end
 
 % constraints on Ph curve / inflation does not react to interest rates
 for ll=1:lags
-Ri(ll,4+lags*(ll-1),3)=1;
+    Ri(ll,4+lags*(ll-1),3)=1;
 end
 
 
 for n=1:nvar   %  initializing loop for each equation
-   Ui{n} = null(Qi(:,:,n));
-   Vi{n} = null(Ri(:,:,n));
-   n0(n) = size(Ui{n},2);
-   np(n) = size(Vi{n},2);
+    Ui{n} = null(Qi(:,:,n));
+    Vi{n} = null(Ri(:,:,n));
+    n0(n) = size(Ui{n},2);
+    np(n) = size(Vi{n},2);
 end
 
 
@@ -159,30 +159,30 @@ end
 %(2)-------------------------------------------------------------
 %
 if indxC0Pres
-   neq_cres = 3;   % the number of equations in which cross-A0-A+ restrictions occur.
-   ixmC0Pres = cell(neq_cres,1);  % in each cell representing equation, we have 4 columns:
-           % 1st: the jth column (equation) of A+ or A0: f_j or a_j
-           % 2nd: the ith element f_j(i) -- the ith element in the jth column of A+
-           % 3rd: the hth element a_j(h) -- the hth element in the jth column of A0
-           % 4th: the number s such that f_j(i) = s * a_j(h) holds.
-   %** 1st equation
-   ixmC0Pres{1} = [1 2 2 1
-                   1 7 1 1];
-   %** 2nd equation
-   ixmC0Pres{2} = [2 2 2 2];
-   %** 3rd equation
-   ixmC0Pres{3} = [3 7 1 1
-                   3 2 2 1];
+    neq_cres = 3;   % the number of equations in which cross-A0-A+ restrictions occur.
+    ixmC0Pres = cell(neq_cres,1);  % in each cell representing equation, we have 4 columns:
+                                   % 1st: the jth column (equation) of A+ or A0: f_j or a_j
+                                   % 2nd: the ith element f_j(i) -- the ith element in the jth column of A+
+                                   % 3rd: the hth element a_j(h) -- the hth element in the jth column of A0
+                                   % 4th: the number s such that f_j(i) = s * a_j(h) holds.
+                                   %** 1st equation
+    ixmC0Pres{1} = [1 2 2 1
+                    1 7 1 1];
+    %** 2nd equation
+    ixmC0Pres{2} = [2 2 2 2];
+    %** 3rd equation
+    ixmC0Pres{3} = [3 7 1 1
+                    3 2 2 1];
 
 
-%         % 4 columns.
-%   ncres = 5;  % manually key in the number of cross-A0-A+ restrictions
+    %         % 4 columns.
+    %   ncres = 5;  % manually key in the number of cross-A0-A+ restrictions
 
-%           % 1st: the jth column (equation) of A+ or A0: f_j or a_j
-%           % 2nd: the ith element f_j(i) -- the ith element in the jth column of A+
-%           % 3rd: the hth element a_j(h) -- the hth element in the jth column of A0
-%           % 4th: the number s such that f_j(i) = s * a_j(h) holds.
+    %           % 1st: the jth column (equation) of A+ or A0: f_j or a_j
+    %           % 2nd: the ith element f_j(i) -- the ith element in the jth column of A+
+    %           % 3rd: the hth element a_j(h) -- the hth element in the jth column of A0
+    %           % 4th: the number s such that f_j(i) = s * a_j(h) holds.
 else
-   ixmC0Pres = NaN;
+    ixmC0Pres = NaN;
 end
 

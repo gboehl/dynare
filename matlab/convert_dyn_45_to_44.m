@@ -147,11 +147,11 @@ end
 if ~isempty(options_.nk) && options_.nk ~= 0 && ~isempty(bayestopt_)
     if ~((any(bayestopt_.pshape > 0) && options_.mh_replic) || (any(bayestopt_.pshape> 0) && options_.load_mh_file)) %no Bayesian estimation
         positions_in_decision_order=oo_.dr.inv_order_var(bayestopt_.smoother_var_list(bayestopt_.smoother_saved_var_list));
-            if  options_.loglinear == 1 %logged steady state must be used
-                constant_all_variables=log(oo_.dr.ys(bayestopt_.smoother_var_list(bayestopt_.smoother_saved_var_list)));
-            elseif options_.loglinear == 0 %unlogged steady state must be used
-                constant_all_variables=oo_.dr.ys(bayestopt_.smoother_var_list(bayestopt_.smoother_saved_var_list));
-            end
+        if  options_.loglinear == 1 %logged steady state must be used
+            constant_all_variables=log(oo_.dr.ys(bayestopt_.smoother_var_list(bayestopt_.smoother_saved_var_list)));
+        elseif options_.loglinear == 0 %unlogged steady state must be used
+            constant_all_variables=oo_.dr.ys(bayestopt_.smoother_var_list(bayestopt_.smoother_saved_var_list));
+        end
         if ~(options_.selected_variables_only && ~(options_.forecast > 0)) %happens only when selected_variables_only is not used
             oo_.FilteredVariablesKStepAhead(:,positions_in_decision_order,:)=oo_.FilteredVariablesKStepAhead-constant_all_variables;
             if ~isempty(PK) %get K-step ahead variances
@@ -182,11 +182,11 @@ end
 
 %Deal with OSR
 if ~isempty(M_.osr.variable_weights)
-   evalin('base','optim_weights_=M_.osr.variable_weights')
+    evalin('base','optim_weights_=M_.osr.variable_weights')
 end
 if ~isempty(M_.osr.variable_indices)
-   evalin('base','obj_var_=M_.osr.variable_indices')
+    evalin('base','obj_var_=M_.osr.variable_indices')
 end
 if ~isempty(M_.osr.param_names)
-   evalin('base','osr_params_=char(M_.osr.param_names)')
+    evalin('base','osr_params_=char(M_.osr.param_names)')
 end

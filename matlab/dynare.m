@@ -111,7 +111,7 @@ if isempty(strfind(fname,'.'))
     % Checking file extension
 else
     if dot_location~=length(fname)-3 ... %if the file name has fewer than 4 characters and there is a period
-        || ~strcmp(upper(fname(size(fname,2)-3:size(fname,2))),'.MOD') ...
+            || ~strcmp(upper(fname(size(fname,2)-3:size(fname,2))),'.MOD') ...
             && ~strcmp(upper(fname(size(fname,2)-3:size(fname,2))),'.DYN')
         error('DYNARE: argument must be a filename with .mod or .dyn extension and must not include any other periods')
     end;
@@ -176,11 +176,11 @@ else
 end
 
 if isempty(strfind(arch, '64'))
-  arch_ext = '32';
-  disp('Using 32-bit preprocessor');
+    arch_ext = '32';
+    disp('Using 32-bit preprocessor');
 else
-  arch_ext = '64';
-  disp('Using 64-bit preprocessor');
+    arch_ext = '64';
+    disp('Using 64-bit preprocessor');
 end
 
 command = ['"' dynareroot 'preprocessor' arch_ext filesep 'dynare_m" ' fname] ;

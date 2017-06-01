@@ -35,7 +35,7 @@ PRCDirSnapshot={};
 
 for indPC=1:length(Parallel),
     if Parallel(indPC).Local==0;
-                                                       % The first call ...
+        % The first call ...
         PRCDirSnapshot{indPC}=dynareParallelListAllFiles('Root',PRCDir,Parallel(indPC));
         
     end

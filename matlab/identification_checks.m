@@ -70,13 +70,13 @@ if npar>0 && (rankJ<npar),
 end
 
 if icheck,
-JJ1 = JJ(:,ind1);
-[eu,ee2,ee1] = svd( JJ1, 0 );
-condJ= cond(JJ1);
-rankJ = rank(JJ);
-rankJJ = rankJ;
+    JJ1 = JJ(:,ind1);
+    [eu,ee2,ee1] = svd( JJ1, 0 );
+    condJ= cond(JJ1);
+    rankJ = rank(JJ);
+    rankJJ = rankJ;
 end    
-    
+
 
 % if hess_flag==0,
 %     rankJJ = rank(JJ'*JJ);
@@ -96,7 +96,7 @@ else
     tildaJ = JJ(ind1,ind1)./((deltaJ)*(deltaJ'));
     McoJ(ind1,1)=(1-1./diag(inv(tildaJ)));
     rhoM=sqrt(1-McoJ);
-%     PcoJ=inv(tildaJ);
+    %     PcoJ=inv(tildaJ);
     PcoJ=NaN(npar,npar);
     PcoJ(ind1,ind1)=inv(JJ(ind1,ind1));
     sd=sqrt(diag(PcoJ));
@@ -132,26 +132,26 @@ jweak=zeros(1,npar);
 jweak_pair=zeros(npar,npar);
 
 if hess_flag==0,
-PcoJ = NaN(npar,npar);
+    PcoJ = NaN(npar,npar);
 
-for ii = 1:size(JJ1,2);
-    PcoJ(ind1(ii),ind1(ii)) = 1;
-    for jj = ii+1:size(JJ1,2);
-        PcoJ(ind1(ii),ind1(jj)) = cosn([JJ1(:,ii),JJ1(:,jj)]);
-        PcoJ(ind1(jj),ind1(ii)) = PcoJ(ind1(ii),ind1(jj));
-    end
-end
-
-for j=1:npar,
-    if McoJ(j)>(1-1.e-10), 
-        jweak(j)=1;
-        [ipair, jpair] = find(PcoJ(j,j+1:end)>(1-1.e-10));
-        for jx=1:length(jpair),
-            jweak_pair(j, jpair(jx)+j)=1;
-            jweak_pair(jpair(jx)+j, j)=1;
+    for ii = 1:size(JJ1,2);
+        PcoJ(ind1(ii),ind1(ii)) = 1;
+        for jj = ii+1:size(JJ1,2);
+            PcoJ(ind1(ii),ind1(jj)) = cosn([JJ1(:,ii),JJ1(:,jj)]);
+            PcoJ(ind1(jj),ind1(ii)) = PcoJ(ind1(ii),ind1(jj));
         end
     end
-end
+
+    for j=1:npar,
+        if McoJ(j)>(1-1.e-10), 
+            jweak(j)=1;
+            [ipair, jpair] = find(PcoJ(j,j+1:end)>(1-1.e-10));
+            for jx=1:length(jpair),
+                jweak_pair(j, jpair(jx)+j)=1;
+                jweak_pair(jpair(jx)+j, j)=1;
+            end
+        end
+    end
 end
 
 jweak_pair=dyn_vech(jweak_pair)';

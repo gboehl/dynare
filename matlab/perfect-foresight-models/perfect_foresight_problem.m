@@ -1,8 +1,8 @@
 function [residuals,JJacobian] = perfect_foresight_problem(y, dynamic_function, Y0, YT, ...
-                                           exo_simul, params, steady_state, ...
-                                           maximum_lag, T, ny, i_cols, ...
-                                           i_cols_J1, i_cols_1, i_cols_T, ...
-                                           i_cols_j,nnzJ)
+                                                  exo_simul, params, steady_state, ...
+                                                  maximum_lag, T, ny, i_cols, ...
+                                                  i_cols_J1, i_cols_1, i_cols_T, ...
+                                                  i_cols_j,nnzJ)
 % function [residuals,JJacobian] = perfect_foresight_problem(y, dynamic_function, Y0, YT, ...
 %                                            exo_simul, params, steady_state, ...
 %                                            maximum_lag, T, ny, i_cols, ...
@@ -60,44 +60,44 @@ function [residuals,JJacobian] = perfect_foresight_problem(y, dynamic_function, 
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 
-    YY = [Y0; y; YT];
-    
-    residuals = zeros(T*ny,1);
-    if nargout == 2
-        iJacobian = cell(T,1);
-    end
+YY = [Y0; y; YT];
 
-    i_rows = 1:ny;
-    i_cols_J = i_cols;
-    offset = 0;
-    
-    for it = 2:(T+1)
-        if nargout == 1
-             residuals(i_rows) = dynamic_function(YY(i_cols),exo_simul, params, ...
-                                                         steady_state,it);
-        elseif nargout == 2
-            [residuals(i_rows),jacobian] = dynamic_function(YY(i_cols),exo_simul, params, ...
-                                                         steady_state,it);
-            if it == 2
-                [rows,cols,vals] = find(jacobian(:,i_cols_1));
-                iJacobian{1} = [offset+rows, i_cols_J1(cols), vals];
-            elseif it == T + 1
-                [rows,cols,vals] = find(jacobian(:,i_cols_T));
-                iJacobian{T} = [offset+rows, i_cols_J(i_cols_T(cols)), vals];
-            else
-                [rows,cols,vals] = find(jacobian(:,i_cols_j));
-                iJacobian{it-1} = [offset+rows, i_cols_J(cols), vals];
-                i_cols_J = i_cols_J + ny;
-            end
-            offset = offset + ny;
+residuals = zeros(T*ny,1);
+if nargout == 2
+    iJacobian = cell(T,1);
+end
+
+i_rows = 1:ny;
+i_cols_J = i_cols;
+offset = 0;
+
+for it = 2:(T+1)
+    if nargout == 1
+        residuals(i_rows) = dynamic_function(YY(i_cols),exo_simul, params, ...
+                                             steady_state,it);
+    elseif nargout == 2
+        [residuals(i_rows),jacobian] = dynamic_function(YY(i_cols),exo_simul, params, ...
+                                                        steady_state,it);
+        if it == 2
+            [rows,cols,vals] = find(jacobian(:,i_cols_1));
+            iJacobian{1} = [offset+rows, i_cols_J1(cols), vals];
+        elseif it == T + 1
+            [rows,cols,vals] = find(jacobian(:,i_cols_T));
+            iJacobian{T} = [offset+rows, i_cols_J(i_cols_T(cols)), vals];
+        else
+            [rows,cols,vals] = find(jacobian(:,i_cols_j));
+            iJacobian{it-1} = [offset+rows, i_cols_J(cols), vals];
+            i_cols_J = i_cols_J + ny;
         end
-
-        i_rows = i_rows + ny;
-        i_cols = i_cols + ny;
+        offset = offset + ny;
     end
 
-    if nargout == 2
-        iJacobian = cat(1,iJacobian{:});
-        JJacobian = sparse(iJacobian(:,1),iJacobian(:,2),iJacobian(:,3),T* ...
-                           ny,T*ny);
-    end
+    i_rows = i_rows + ny;
+    i_cols = i_cols + ny;
+end
+
+if nargout == 2
+    iJacobian = cat(1,iJacobian{:});
+    JJacobian = sparse(iJacobian(:,1),iJacobian(:,2),iJacobian(:,3),T* ...
+                       ny,T*ny);
+end

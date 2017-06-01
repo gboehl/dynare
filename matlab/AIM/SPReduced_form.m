@@ -38,7 +38,7 @@ if(nonsing)
     b = qs(1:neq,1:bcols);
     b = full(b);
 else  %rescale by dividing row by maximal qr element
-    %'inverse condition number small, rescaling '
+      %'inverse condition number small, rescaling '
     themax=max(abs(qs(:,right)),[],2);
     oneover = diag(1 ./ themax);
     nonsing = rcond(full(oneover *qs(:,right))) > condn;

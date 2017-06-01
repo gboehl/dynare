@@ -77,7 +77,7 @@ if isempty(idx), return, end
 
 jdx = find( abs(a-1)<1e-12 & x>=c & (x-c)<1e-12) ;
 ldens(jdx) = 1.0;
-    
+
 if ~isempty(idx)
     x0 = x(idx)-c(idx);
     x1 = x0./b(idx);

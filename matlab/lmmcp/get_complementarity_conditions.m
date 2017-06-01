@@ -55,14 +55,14 @@ for i=1:size(etags,1)
         str = etags{i,3};
         kop = strfind(etags{i,3},'<');
         if ~isempty(kop)
-                k = find(strcmp(strtrim(str(1:kop-1)),cellstr(M.endo_names))); %get variable index with restriction
-                if isempty(k)
-                    error(sprintf(['Complementarity condition %s: variable %s is ' ...
-                                   'not recognized'],etags{i,3},strtrim(str(1:kop-1))))
-                end
-                ub(k) = str2num(str(kop+1:end));
-                eq_index(etags{i,1}) = k;
-                eq_index(k) = etags{i,1};
+            k = find(strcmp(strtrim(str(1:kop-1)),cellstr(M.endo_names))); %get variable index with restriction
+            if isempty(k)
+                error(sprintf(['Complementarity condition %s: variable %s is ' ...
+                               'not recognized'],etags{i,3},strtrim(str(1:kop-1))))
+            end
+            ub(k) = str2num(str(kop+1:end));
+            eq_index(etags{i,1}) = k;
+            eq_index(k) = etags{i,1};
         else
             kop = strfind(etags{i,3},'>');
             if ~isempty(kop)

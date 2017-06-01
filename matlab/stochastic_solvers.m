@@ -59,16 +59,16 @@ if M_.hessian_eq_zero && local_order~=1
 end
 
 if (options_.aim_solver == 1) && (local_order > 1)
-        error('Option "aim_solver" is incompatible with order >= 2')
+    error('Option "aim_solver" is incompatible with order >= 2')
 end
 
 if M_.maximum_endo_lag == 0 
     if local_order >= 2
-    fprintf('\nSTOCHASTIC_SOLVER: Dynare does not solve purely forward models at higher order.\n')
-    fprintf('STOCHASTIC_SOLVER: To circumvent this restriction, you can add a backward-looking dummy equation of the form:\n')
-    fprintf('STOCHASTIC_SOLVER: junk=0.9*junk(-1);\n')
-    error(['2nd and 3rd order approximation not implemented for purely ' ...
-           'forward models'])
+        fprintf('\nSTOCHASTIC_SOLVER: Dynare does not solve purely forward models at higher order.\n')
+        fprintf('STOCHASTIC_SOLVER: To circumvent this restriction, you can add a backward-looking dummy equation of the form:\n')
+        fprintf('STOCHASTIC_SOLVER: junk=0.9*junk(-1);\n')
+        error(['2nd and 3rd order approximation not implemented for purely ' ...
+               'forward models'])
     end
     if M_.exo_det_nbr~=0
         fprintf('\nSTOCHASTIC_SOLVER: Dynare does not solve purely forward models with var_exo_det.\n')
@@ -88,7 +88,7 @@ end
 if options_.k_order_solver;
     if options_.risky_steadystate
         [dr,info] = dyn_risky_steadystate_solver(oo_.steady_state,M_,dr, ...
-                                             options_,oo_);
+                                                 options_,oo_);
     else
         orig_order = options_.order;
         options_.order = local_order;
@@ -119,12 +119,12 @@ if local_order == 1
         jacobia_ = [loc_dr.g1 loc_dr.g1_x loc_dr.g1_xd];
     else
         [junk,jacobia_] = feval([M_.fname '_dynamic'],z(iyr0),exo_simul, ...
-                            M_.params, dr.ys, it_);
+                                M_.params, dr.ys, it_);
     end;
 elseif local_order == 2
     if (options_.bytecode)
         [chck, junk, loc_dr] = bytecode('dynamic','evaluate', z,exo_simul, ...
-                            M_.params, dr.ys, 1);
+                                        M_.params, dr.ys, 1);
         jacobia_ = [loc_dr.g1 loc_dr.g1_x];
     else
         [junk,jacobia_,hessian1] = feval([M_.fname '_dynamic'],z(iyr0),...
@@ -139,9 +139,9 @@ elseif local_order == 2
     [infrow,infcol]=find(isinf(hessian1));
     if options_.debug
         if ~isempty(infrow)     
-        fprintf('\nSTOCHASTIC_SOLVER: The Hessian of the dynamic model contains Inf.\n')
-        fprintf('STOCHASTIC_SOLVER: Try running model_diagnostics to find the source of the problem.\n')
-        save([M_.fname '_debug.mat'],'hessian1')
+            fprintf('\nSTOCHASTIC_SOLVER: The Hessian of the dynamic model contains Inf.\n')
+            fprintf('STOCHASTIC_SOLVER: Try running model_diagnostics to find the source of the problem.\n')
+            save([M_.fname '_debug.mat'],'hessian1')
         end
     end
     if ~isempty(infrow)
@@ -163,12 +163,12 @@ elseif local_order == 2
 end
 
 [infrow,infcol]=find(isinf(jacobia_));
-    
+
 if options_.debug
     if ~isempty(infrow)     
-    fprintf('\nSTOCHASTIC_SOLVER: The Jacobian of the dynamic model contains Inf. The problem is associated with:\n\n')    
-    display_problematic_vars_Jacobian(infrow,infcol,M_,dr.ys,'dynamic','STOCHASTIC_SOLVER: ')
-    save([M_.fname '_debug.mat'],'jacobia_')
+        fprintf('\nSTOCHASTIC_SOLVER: The Jacobian of the dynamic model contains Inf. The problem is associated with:\n\n')    
+        display_problematic_vars_Jacobian(infrow,infcol,M_,dr.ys,'dynamic','STOCHASTIC_SOLVER: ')
+        save([M_.fname '_debug.mat'],'jacobia_')
     end
 end
 
@@ -195,17 +195,17 @@ end
 [nanrow,nancol]=find(isnan(jacobia_));
 if options_.debug
     if ~isempty(nanrow)     
-    fprintf('\nSTOCHASTIC_SOLVER: The Jacobian of the dynamic model contains NaN. The problem is associated with:\n\n')    
-    display_problematic_vars_Jacobian(nanrow,nancol,M_,dr.ys,'dynamic','STOCHASTIC_SOLVER: ')
-    save([M_.fname '_debug.mat'],'jacobia_')
+        fprintf('\nSTOCHASTIC_SOLVER: The Jacobian of the dynamic model contains NaN. The problem is associated with:\n\n')    
+        display_problematic_vars_Jacobian(nanrow,nancol,M_,dr.ys,'dynamic','STOCHASTIC_SOLVER: ')
+        save([M_.fname '_debug.mat'],'jacobia_')
     end
 end
 
 if ~isempty(nanrow)
-   info(1) = 8;
-   NaN_params=find(isnan(M_.params));
-   info(2:length(NaN_params)+1) =  NaN_params;
-   return
+    info(1) = 8;
+    NaN_params=find(isnan(M_.params));
+    info(2:length(NaN_params)+1) =  NaN_params;
+    return
 end
 
 kstate = dr.kstate;
@@ -272,7 +272,7 @@ else
         dr = dyn_second_order_solver(jacobia_,hessian1,dr,M_,...
                                      options_.threads.kronecker.A_times_B_kronecker_C,...
                                      options_.threads.kronecker.sparse_hessian_times_B_kronecker_C);
-                                 
+        
         % reordering second order derivatives, used for deterministic
         % variables below
         k1 = nonzeros(M_.lead_lag_incidence(:,order_var)');
@@ -306,7 +306,7 @@ if M_.exo_det_nbr > 0
         hu = dr.ghu(nstatic+[1:nspred],:);
         hud = dr.ghud{1}(nstatic+1:nstatic+nspred,:);
         zx = [eye(nspred);dr.ghx(k0,:);gx*dr.Gy;zeros(M_.exo_nbr+M_.exo_det_nbr, ...
-                                               nspred)];
+                                                      nspred)];
         zu = [zeros(nspred,M_.exo_nbr); dr.ghu(k0,:); gx*hu; zeros(M_.exo_nbr+M_.exo_det_nbr, ...
                                                           M_.exo_nbr)];
         zud=[zeros(nspred,M_.exo_det_nbr);dr.ghud{1};gx(:,1:nspred)*hud;zeros(M_.exo_nbr,M_.exo_det_nbr);eye(M_.exo_det_nbr)];
@@ -377,7 +377,7 @@ if options_.loglinear
                                                     length(il),1);
     end
     if local_order > 1
-       error('Loglinear options currently only works at order 1')
+        error('Loglinear options currently only works at order 1')
     end
 end
 end

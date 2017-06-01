@@ -86,7 +86,7 @@ if size(stationary_vars, 1) > 0
             headers = char(' ',headers);
             lh = size(deblank(M_.endo_names(ivar(stationary_vars),:)),2)+2;
             dyntable(options_,title,headers,deblank(M_.endo_names(ivar(stationary_vars), ...
-                                                         :)),100* ...
+                                                              :)),100* ...
                      oo_.gamma_y{options_.ar+2}(stationary_vars,:),lh,8,2);
             if options_.TeX
                 headers=M_.exo_names_tex;
@@ -110,7 +110,7 @@ if size(stationary_vars, 1) > 0
         
         if options_.noprint == 0
             display_conditional_variance_decomposition(oo_.conditional_variance_decomposition,conditional_variance_steps,...
-                                                         ivar,M_,options_);
+                                                       ivar,M_,options_);
         end
     end
 end

@@ -1,7 +1,7 @@
 function [zdata]=mkdatap_anticipated(nperiods,decrulea,decruleb,...
-    cof,Jbarmat,cofstar,Jstarbarmat,Dstarbarmat,...
-    regime,regimestart,violvecbool,...
-    endog_,exog_,irfshock,scalefactormod,init)
+                                     cof,Jbarmat,cofstar,Jstarbarmat,Dstarbarmat,...
+                                     regime,regimestart,violvecbool,...
+                                     endog_,exog_,irfshock,scalefactormod,init)
 
 
 
@@ -43,7 +43,7 @@ Astarbarmat = cofstar(:,2*nvars+1:3*nvars);
 % get the time-dependent decision rules
 
 Tmax = regimestart(nregimes)-1;  % Tmax is the position of the last period
-% when the constraint binds
+                                 % when the constraint binds
 
 if Tmax > 0
     P = zeros(nvars,nvars,Tmax);
@@ -60,7 +60,7 @@ if Tmax > 0
     %P(:,:,Tmax) = -(Astarbarmat*decrulea+Bstarbarmat)\Cstarbarmat;
     %D(:,Tmax) = -(Astarbarmat*decrulea+Bstarbarmat)\Dstarbarmat;
     
- 
+    
     for i = Tmax-1:-1:1
         
         if violvecbool(i)
@@ -74,17 +74,17 @@ if Tmax > 0
         end
     end
 
-if Tmax > 1    
-if violvecbool(1)
-    E = -invmat*Jstarbarmat;
-else
-    E = -invmat*Jbarmat;
-end
-else
-    invmat = inv(Astarbarmat*decrulea+Bstarbarmat);
-    E = -invmat*Jstarbarmat;
+    if Tmax > 1    
+        if violvecbool(1)
+            E = -invmat*Jstarbarmat;
+        else
+            E = -invmat*Jbarmat;
+        end
+    else
+        invmat = inv(Astarbarmat*decrulea+Bstarbarmat);
+        E = -invmat*Jstarbarmat;
 
-end
+    end
 
     
 end

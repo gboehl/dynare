@@ -43,7 +43,7 @@ if nargin<6 && options.prefilter
 elseif nargin==6
     mean_varobs=dataset_info.descriptive.mean';
 end
-    
+
 info = 0;
 
 oo=make_ex_(M,options,oo);
@@ -92,7 +92,7 @@ switch task
     for i = 1:M.endo_nbr
         v_name = deblank(M.endo_names(i,:));
         y0(i,:) = y_smoothed.(v_name)(end-maximum_lag+1:end); %includes steady state or mean, but simult_ will subtract only steady state
-        % 2. Subtract mean/steady state and add steady state; takes care of prefiltering        
+                                                              % 2. Subtract mean/steady state and add steady state; takes care of prefiltering        
         if isfield(oo.Smoother,'Constant') && isfield(oo.Smoother.Constant,v_name)
             y0(i,:)=y0(i,:)-oo.Smoother.Constant.(v_name)(end-maximum_lag+1:end); %subtract mean or steady state
             if options.loglinear
@@ -153,10 +153,10 @@ else
     end
     if isequal(M.H,0)
         [yf,int_width] = simultxdet(y0,ex,oo.exo_det_simul,...
-                                options.order,var_list,M,oo,options);
+                                    options.order,var_list,M,oo,options);
     else
         [yf,int_width,int_width_ME] = simultxdet(y0,ex,oo.exo_det_simul,...
-                                options.order,var_list,M,oo,options);
+                                                 options.order,var_list,M,oo,options);
     end
 end
 

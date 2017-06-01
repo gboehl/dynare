@@ -41,14 +41,14 @@ function [proba, dproba] = stab_map_1(lpmat, ibehaviour, inonbehaviour, aname, i
 global estim_params_ bayestopt_ M_ options_
 
 if nargin<5,
-  iplot=1;
+    iplot=1;
 end
 fname_ = M_.fname;
 if nargin<7,
-  dirname='';
+    dirname='';
 end
 if nargin<9,
-  atitle=aname;
+    atitle=aname;
 end
 
 nshock = estim_params_.nvx;
@@ -60,20 +60,20 @@ npar=size(lpmat,2);
 ishock= npar>estim_params_.np;
 
 if nargin<6,
-  ipar=[];
+    ipar=[];
 end
 if nargin<8 || isempty(pcrit),
-  pcrit=1;
+    pcrit=1;
 end
 
 % Smirnov test for Blanchard; 
 for j=1:npar,
-  [H,P,KSSTAT] = smirnov(lpmat(ibehaviour,j),lpmat(inonbehaviour,j));
-  proba(j)=P;
-  dproba(j)=KSSTAT;
+    [H,P,KSSTAT] = smirnov(lpmat(ibehaviour,j),lpmat(inonbehaviour,j));
+    proba(j)=P;
+    dproba(j)=KSSTAT;
 end
 if isempty(ipar),
-%     ipar=find(dproba>dcrit);
+    %     ipar=find(dproba>dcrit);
     ipar=find(proba<pcrit);
 end
 nparplot=length(ipar);

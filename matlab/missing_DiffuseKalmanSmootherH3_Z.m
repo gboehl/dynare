@@ -81,7 +81,7 @@ function [alphahat,epsilonhat,etahat,a,P,aK,PK,decomp,V] = missing_DiffuseKalman
 if size(H,2)>1 
     error('missing_DiffuseKalmanSmootherH3_Z:: H is not a vector. This must not happens')
 end
-    
+
 d = 0;
 decomp = [];
 spinf           = size(Pinf1);
@@ -152,8 +152,8 @@ while newRank && t < smpl
         elseif Fstar(i,t) > kalman_tol 
             a(:,t)            = a(:,t) + Kstar(:,i,t)*v(i,t)/Fstar(i,t);    % KD (2000), eq. (17)
             Pstar(:,:,t)      = Pstar(:,:,t) - Kstar(:,i,t)*Kstar(:,i,t)'/Fstar(i,t);   % KD (2000), eq. (17)
-            % Pinf is passed through unaltered, see eq. (17) of
-            % Koopman/Durbin (2000)
+                                                                                        % Pinf is passed through unaltered, see eq. (17) of
+                                                                                        % Koopman/Durbin (2000)
         else
             % do nothing as a_{t,i+1}=a_{t,i} and P_{t,i+1}=P_{t,i}, see
             % p. 157, DK (2012)        
@@ -227,7 +227,7 @@ while notsteady && t<smpl
         end
     end
     P(:,:,t+1) = T*P(:,:,t)*T' + QQ;                                        %transition according to (6.14) in DK (2012) 
-    %  notsteady   = ~(max(max(abs(P(:,:,t+1)-P(:,:,t))))<kalman_tol);
+                                                                            %  notsteady   = ~(max(max(abs(P(:,:,t+1)-P(:,:,t))))<kalman_tol);
 end
 % $$$ P_s=tril(P(:,:,t))+tril(P(:,:,t),-1)';
 % $$$ P1_s=tril(P1(:,:,t))+tril(P1(:,:,t),-1)';
@@ -335,9 +335,9 @@ if d
         etahat(:,t)   = QRt*r(:,t);                                         % KD (2000), eq. (27)
         if state_uncertainty_flag
             V(:,:,t)=Pstar(:,:,t)-Pstar(:,:,t)*N_0(:,:,t)*Pstar(:,:,t)...
-                -(Pinf(:,:,t)*N_1(:,:,t)*Pstar(:,:,t))'...
-                - Pinf(:,:,t)*N_1(:,:,t)*Pstar(:,:,t)...
-                - Pinf(:,:,t)*N_2(:,:,t)*Pinf(:,:,t);                       % DK (2012), eq. 5.30
+                     -(Pinf(:,:,t)*N_1(:,:,t)*Pstar(:,:,t))'...
+                     - Pinf(:,:,t)*N_1(:,:,t)*Pstar(:,:,t)...
+                     - Pinf(:,:,t)*N_2(:,:,t)*Pinf(:,:,t);                       % DK (2012), eq. 5.30
         end
         if t > 1
             r0(:,t-1) = T'*r0(:,t);                                         % KD (2000), below eq. (25) r_{t-1,p_{t-1}}=T'*r_{t,0}

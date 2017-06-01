@@ -52,7 +52,7 @@ function T = reduced_rank_cholesky(X)
 %
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.    
-    
+
 [T,X_is_not_positive_definite] = chol(X);
 
 if X_is_not_positive_definite

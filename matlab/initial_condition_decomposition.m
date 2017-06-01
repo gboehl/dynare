@@ -71,61 +71,61 @@ if isempty(parameter_set)
 end
 
 if ~isfield(oo_,'initval_decomposition')
-options_.selected_variables_only = 0; %make sure all variables are stored
-options_.plot_priors=0;
-[oo,junk1,junk2,Smoothed_Variables_deviation_from_mean] = evaluate_smoother(parameter_set,varlist,M_,oo_,options_,bayestopt_,estim_params_);
+    options_.selected_variables_only = 0; %make sure all variables are stored
+    options_.plot_priors=0;
+    [oo,junk1,junk2,Smoothed_Variables_deviation_from_mean] = evaluate_smoother(parameter_set,varlist,M_,oo_,options_,bayestopt_,estim_params_);
 
-% reduced form
-dr = oo.dr;
+    % reduced form
+    dr = oo.dr;
 
-% data reordering
-order_var = dr.order_var;
-inv_order_var = dr.inv_order_var;
+    % data reordering
+    order_var = dr.order_var;
+    inv_order_var = dr.inv_order_var;
 
 
-% coefficients
-A = dr.ghx;
-B = dr.ghu;
+    % coefficients
+    A = dr.ghx;
+    B = dr.ghu;
 
-% initialization
-gend = size(oo.SmoothedShocks.(deblank(M_.exo_names(1,:))),1); %+options_.forecast;
-z = zeros(endo_nbr,endo_nbr+2,gend);
-z(:,end,:) = Smoothed_Variables_deviation_from_mean;
+    % initialization
+    gend = size(oo.SmoothedShocks.(deblank(M_.exo_names(1,:))),1); %+options_.forecast;
+    z = zeros(endo_nbr,endo_nbr+2,gend);
+    z(:,end,:) = Smoothed_Variables_deviation_from_mean;
 
-for i=1:endo_nbr,
-    z(i,i,1) = Smoothed_Variables_deviation_from_mean(i,1);
-end
-
-maximum_lag = M_.maximum_lag;
-
-k2 = dr.kstate(find(dr.kstate(:,2) <= maximum_lag+1),[1 2]);
-i_state = order_var(k2(:,1))+(min(i,maximum_lag)+1-k2(:,2))*M_.endo_nbr;
-for i=1:gend
-    if i > 1 && i <= maximum_lag+1
-        lags = min(i-1,maximum_lag):-1:1;
+    for i=1:endo_nbr,
+        z(i,i,1) = Smoothed_Variables_deviation_from_mean(i,1);
     end
-    
-    if i > 1
-        tempx = permute(z(:,1:endo_nbr,lags),[1 3 2]);
-        m = min(i-1,maximum_lag);
-        tempx = [reshape(tempx,endo_nbr*m,endo_nbr); zeros(endo_nbr*(maximum_lag-i+1),endo_nbr)];
-        z(:,1:endo_nbr,i) = A(inv_order_var,:)*tempx(i_state,:);
-        lags = lags+1;
+
+    maximum_lag = M_.maximum_lag;
+
+    k2 = dr.kstate(find(dr.kstate(:,2) <= maximum_lag+1),[1 2]);
+    i_state = order_var(k2(:,1))+(min(i,maximum_lag)+1-k2(:,2))*M_.endo_nbr;
+    for i=1:gend
+        if i > 1 && i <= maximum_lag+1
+            lags = min(i-1,maximum_lag):-1:1;
+        end
+        
+        if i > 1
+            tempx = permute(z(:,1:endo_nbr,lags),[1 3 2]);
+            m = min(i-1,maximum_lag);
+            tempx = [reshape(tempx,endo_nbr*m,endo_nbr); zeros(endo_nbr*(maximum_lag-i+1),endo_nbr)];
+            z(:,1:endo_nbr,i) = A(inv_order_var,:)*tempx(i_state,:);
+            lags = lags+1;
+        end
+        z(:,endo_nbr+1,i) = z(:,endo_nbr+2,i) - sum(z(:,1:endo_nbr,i),2);
+
     end
-    z(:,endo_nbr+1,i) = z(:,endo_nbr+2,i) - sum(z(:,1:endo_nbr,i),2);
-
-end
 
 
-oo_.initval_decomposition = z;
+    oo_.initval_decomposition = z;
 end
 % if ~options_.no_graph.shock_decomposition
-    oo=oo_;
-    oo.shock_decomposition = oo_.initval_decomposition;
-    M_.exo_names = M_.endo_names;
-    M_.exo_nbr = M_.endo_nbr;
-    options_.plot_shock_decomp.screen_shocks=1;
-    options_.plot_shock_decomp.use_shock_groups = '';
-    options_.plot_shock_decomp.fig_names='initval';
-    plot_shock_decomposition(M_,oo,options_,varlist);
+oo=oo_;
+oo.shock_decomposition = oo_.initval_decomposition;
+M_.exo_names = M_.endo_names;
+M_.exo_nbr = M_.endo_nbr;
+options_.plot_shock_decomp.screen_shocks=1;
+options_.plot_shock_decomp.use_shock_groups = '';
+options_.plot_shock_decomp.fig_names='initval';
+plot_shock_decomposition(M_,oo,options_,varlist);
 % end

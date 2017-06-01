@@ -28,7 +28,7 @@ function c = options2cell(o)
 s = fieldnames(o);
 c = {};
 j = 1; 
- 
+
 for i=1:length(s)
     c(j) = {s{i}}; 
     c(j+1) = {o.(s{i})}; 

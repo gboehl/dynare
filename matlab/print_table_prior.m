@@ -134,25 +134,25 @@ skipline(2)
 
 
 function format_string = build_format_string(PriorMode,PriorStandardDeviation,LowerBound,UpperBound)
-    format_string = ['%s \t %6.4f \t'];
-    if isnan(PriorMode)
-        format_string = [ format_string , ' %s \t'];
-    else
-        format_string = [ format_string , ' %6.4f \t'];
-    end
-    if ~isnumeric(PriorStandardDeviation)
-        format_string = [ format_string , ' %s \t'];
-    else
-        format_string = [ format_string , ' %6.4f \t'];
-    end
-    if ~isnumeric(LowerBound)
-        format_string = [ format_string , ' %s \t'];
-    else
-        format_string = [ format_string , ' %6.4f \t'];
-    end
-    if ~isnumeric(UpperBound)
-        format_string = [ format_string , ' %s \t'];
-    else
-        format_string = [ format_string , ' %6.4f \t'];
-    end
-    format_string = [ format_string , ' %6.4f \t %6.4f'];
+format_string = ['%s \t %6.4f \t'];
+if isnan(PriorMode)
+    format_string = [ format_string , ' %s \t'];
+else
+    format_string = [ format_string , ' %6.4f \t'];
+end
+if ~isnumeric(PriorStandardDeviation)
+    format_string = [ format_string , ' %s \t'];
+else
+    format_string = [ format_string , ' %6.4f \t'];
+end
+if ~isnumeric(LowerBound)
+    format_string = [ format_string , ' %s \t'];
+else
+    format_string = [ format_string , ' %6.4f \t'];
+end
+if ~isnumeric(UpperBound)
+    format_string = [ format_string , ' %s \t'];
+else
+    format_string = [ format_string , ' %6.4f \t'];
+end
+format_string = [ format_string , ' %6.4f \t %6.4f'];

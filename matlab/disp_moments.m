@@ -98,7 +98,7 @@ if options_.nocorr == 0
 end
 
 if options_.noprint == 0 && length(options_.conditional_variance_decomposition)
-   fprintf('\nSTOCH_SIMUL: conditional_variance_decomposition requires theoretical moments, i.e. periods=0.\n') 
+    fprintf('\nSTOCH_SIMUL: conditional_variance_decomposition requires theoretical moments, i.e. periods=0.\n') 
 end
 
 ar = options_.ar;
@@ -156,7 +156,7 @@ if ~options_.nodecomposition
         if ~options_.noprint %options_.nomoments == 0
             skipline()
             title='VARIANCE DECOMPOSITION SIMULATING ONE SHOCK AT A TIME (in percent)';
-        
+            
             title=add_filter_subtitle(title,options_);
             
             headers = M_.exo_names;
@@ -181,12 +181,12 @@ if ~options_.nodecomposition
 
     end
 end
-        
+
 warning(warning_old_state);
 end
 
 function y=get_filtered_time_series(y,m,options_)
-        
+
 if options_.hp_filter && ~options_.one_sided_hp_filter  && ~options_.bandpass.indicator
     [hptrend,y] = sample_hp_filter(y,options_.hp_filter);
 elseif ~options_.hp_filter && options_.one_sided_hp_filter && ~options_.bandpass.indicator
@@ -200,5 +200,5 @@ elseif ~options_.hp_filter && ~options_.one_sided_hp_filter  && ~options_.bandpa
 else 
     error('disp_moments:: You cannot use more than one filter at the same time')
 end
-        
+
 end

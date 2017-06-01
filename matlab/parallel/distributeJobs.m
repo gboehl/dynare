@@ -92,7 +92,7 @@ for i=1:nC
     
     % JobsForNode(i)=round(JobsForNode(i));
     % JobsForNode(i)=floor(JobsForNode(i));
-      JobsForNode(i)=ceil(JobsForNode(i));
+    JobsForNode(i)=ceil(JobsForNode(i));
     
 end
 
@@ -151,7 +151,7 @@ for i=1:nC
     
     % Many choices are possible:
     % - ... (see above).
-     
+    
     JobAssignedCpu=max(1,floor(JobsForNode(i)/nCPUoriginal(i)));
     
     ChekOverFlow=0;

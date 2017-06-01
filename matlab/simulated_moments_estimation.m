@@ -270,9 +270,9 @@ fprintf(fid,'M_.Sigma_e = diag(tmp);')
 
 fprintf(fid,['stream=RandStream(''mt19937ar'',''Seed'',' int2str(slave_number) ');\n']);
 if matlab_ver_less_than('7.12')
-      fprintf(fid,['RandStream.setDefaultStream(stream);\n\n']);
+    fprintf(fid,['RandStream.setDefaultStream(stream);\n\n']);
 else
-      fprintf(fid,['RandStream.setGlobalStream(stream);\n\n']);
+    fprintf(fid,['RandStream.setGlobalStream(stream);\n\n']);
 end
 
 fprintf(fid,['maxNumCompThreads(' int2str(threads_per_job) ');\n\n']);

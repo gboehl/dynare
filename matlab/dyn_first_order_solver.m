@@ -179,7 +179,7 @@ if task ~= 1 && (DynareOptions.dr_cycle_reduction || DynareOptions.dr_logarithmi
     if n_current < DynareModel.endo_nbr
         if DynareOptions.dr_cycle_reduction
             error(['The cycle reduction algorithme can''t be used when the ' ...
-               'coefficient matrix for current variables isn''t invertible'])
+                   'coefficient matrix for current variables isn''t invertible'])
         elseif DynareOptions.dr_logarithmic_reduction
             error(['The logarithmic reduction algorithme can''t be used when the ' ...
                    'coefficient matrix for current variables isn''t invertible'])

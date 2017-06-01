@@ -44,12 +44,12 @@ function [theta, fxsim, neval] = slice_sampler(objective_function,theta,thetapri
 if sampler_options.rotated %&& ~isempty(sampler_options.V1),
     [theta, fxsim, neval] = rotated_slice_sampler(objective_function,theta,thetaprior,sampler_options,varargin{:});
     if isempty(sampler_options.mode), % jumping 
-       return,
+        return,
     else
         nevalR=sum(neval);
     end    
 end
-    
+
 theta=theta(:);
 npar = length(theta);
 W1 = sampler_options.W1;
@@ -59,11 +59,11 @@ for it=1:npar,
     neval(it) = 0;
     W = W1(it); 
     xold  = theta(it);
-   % XLB   = thetaprior(3);
-   % XUB   = thetaprior(4);
+    % XLB   = thetaprior(3);
+    % XUB   = thetaprior(4);
     XLB   = thetaprior(it,1);
     XUB   = thetaprior(it,2);
-   
+    
     
     % -------------------------------------------------------
     % 1. DRAW Z = ln[f(X0)] - EXP(1) where EXP(1)=-ln(U(0,1))

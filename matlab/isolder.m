@@ -29,9 +29,9 @@ function b = isolder(f, F) % --*-- Unitary tests --*--
 if nargin<2 || isempty(F)
     F = pwd();
 end
- 
+
 b = true;
-    
+
 files = dir(F);
 tfile = dir(f);
 tdate = tfile.datenum;

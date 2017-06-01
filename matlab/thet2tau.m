@@ -51,7 +51,7 @@ elseif flagmoments==-1
     [I,J]=find(M_.lead_lag_incidence');
     yy0=oo_.dr.ys(I);
     [residual, g1] = feval([M_.fname,'_dynamic'],yy0, oo_.exo_steady_state', ...
-        M_.params, oo_.dr.ys, 1);
+                           M_.params, oo_.dr.ys, 1);
     tau=[oo_.dr.ys(oo_.dr.order_var); g1(:)];
 
 else

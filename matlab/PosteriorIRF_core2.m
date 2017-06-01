@@ -135,7 +135,7 @@ for i=fpar:npar,
                     plot(1:options_.irf,HPDIRFdsgevar(:,1,j,i),'--k','linewidth',1)
                     plot(1:options_.irf,HPDIRFdsgevar(:,2,j,i),'--k','linewidth',1)
                 end
-                 % plot([1 options_.irf],[0 0],'-r','linewidth',0.5);
+                % plot([1 options_.irf],[0 0],'-r','linewidth',0.5);
                 box on
                 axis tight
                 xlim([1 options_.irf]);
@@ -162,7 +162,7 @@ for i=fpar:npar,
     if whoiam,
         fprintf('Done! \n');
         waitbarString = [ 'Exog. shocks ' int2str(i) '/' int2str(npar) ' done.'];
-%         fMessageStatus((i-fpar+1)/(npar-fpar+1),whoiam,waitbarString, waitbarTitle, Parallel(ThisMatlab));
+        %         fMessageStatus((i-fpar+1)/(npar-fpar+1),whoiam,waitbarString, waitbarTitle, Parallel(ThisMatlab));
         dyn_waitbar((i-fpar+1)/(npar-fpar+1),[],waitbarString);
     end
 end% loop over exo_var

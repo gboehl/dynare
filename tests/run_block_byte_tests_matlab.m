@@ -29,7 +29,7 @@ addpath([top_test_dir filesep '..' filesep 'matlab']);
 
 % Test Dynare Version
 if ~strcmp(dynare_version(), getenv('DYNARE_VERSION'))
-  error('Incorrect version of Dynare is being tested')
+    error('Incorrect version of Dynare is being tested')
 end
 
 % Test block_bytecode/ls2003.mod with various combinations of
@@ -134,14 +134,14 @@ delete('wsMat.mat')
 cd(getenv('TOP_TEST_DIR'));
 fid = fopen('run_block_byte_tests_matlab.m.trs', 'w+');
 if size(failedBlock,2) > 0
-  fprintf(fid,':test-result: FAIL\n');
-  fprintf(fid,':number-tests: %d\n', num_block_tests);
-  fprintf(fid,':number-failed-tests: %d\n', size(failedBlock,2));
-  fprintf(fid,':list-of-failed-tests: %s\n', failedBlock{:});
+    fprintf(fid,':test-result: FAIL\n');
+    fprintf(fid,':number-tests: %d\n', num_block_tests);
+    fprintf(fid,':number-failed-tests: %d\n', size(failedBlock,2));
+    fprintf(fid,':list-of-failed-tests: %s\n', failedBlock{:});
 else
-  fprintf(fid,':test-result: PASS\n');
-  fprintf(fid,':number-tests: %d\n', num_block_tests);
-  fprintf(fid,':number-failed-tests: 0\n');
+    fprintf(fid,':test-result: PASS\n');
+    fprintf(fid,':number-tests: %d\n', num_block_tests);
+    fprintf(fid,':number-failed-tests: 0\n');
 end
 fprintf(fid,':elapsed-time: %f\n', ecput);
 fclose(fid);

@@ -1,8 +1,8 @@
 function [dLIK,dlik,a,Pstar] = missing_observations_kalman_filter_d(data_index,number_of_observations,no_more_missing_observations, ...
-                                                      Y, start, last, ...
-                                                      a, Pinf, Pstar, ...
-                                                      kalman_tol, diffuse_kalman_tol, riccati_tol, presample, ...
-                                                      T, R, Q, H, Z, mm, pp, rr)
+                                                  Y, start, last, ...
+                                                  a, Pinf, Pstar, ...
+                                                  kalman_tol, diffuse_kalman_tol, riccati_tol, presample, ...
+                                                  T, R, Q, H, Z, mm, pp, rr)
 % Computes the diffuse likelihood of a state space model when some observations are missing.
 %
 % INPUTS 
@@ -91,7 +91,7 @@ while rank(Pinf,diffuse_kalman_tol) && (t<=last)
         Finf  = ZZ*Pinf*ZZ';                                                % (5.7) in DK (2012)
         if rcond(Finf) < diffuse_kalman_tol                                 %F_{\infty,t} = 0 
             if ~all(abs(Finf(:)) < diffuse_kalman_tol)                      %rank-deficient but not rank 0
-                % The univariate diffuse kalman filter should be used.
+                                                                            % The univariate diffuse kalman filter should be used.
                 return
             else                                                            %rank of F_{\infty,t} is 0
                 Fstar = ZZ*Pstar*ZZ' + H(d_index,d_index);                  % (5.7) in DK (2012)
@@ -100,7 +100,7 @@ while rank(Pinf,diffuse_kalman_tol) && (t<=last)
                         % The univariate diffuse kalman filter should be used.
                         return
                     else %rank 0
-                        %pathological case, discard draw
+                         %pathological case, discard draw
                         return
                     end
                 else

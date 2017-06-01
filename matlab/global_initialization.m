@@ -471,7 +471,7 @@ options_.sub_draws = [];
 options_.gradient_method = 2; %used by csminwel and newrat
 options_.gradient_epsilon = 1e-6; %used by csminwel and newrat
 options_.posterior_sampler_options.sampling_opt = []; %extended set of options for individual posterior samplers
-% Random Walk Metropolis-Hastings
+                                                      % Random Walk Metropolis-Hastings
 options_.posterior_sampler_options.posterior_sampling_method = 'random_walk_metropolis_hastings';
 options_.posterior_sampler_options.rwmh.proposal_distribution = 'rand_multivariate_normal';
 options_.posterior_sampler_options.rwmh.student_degrees_of_freedom = 3;
@@ -525,8 +525,8 @@ options_.estimation.moments_posterior_density.indicator = 1;
 options_.estimation.moments_posterior_density.gridpoints = 2^9;
 options_.estimation.moments_posterior_density.bandwidth = 0; % Rule of thumb optimal bandwidth parameter.
 options_.estimation.moments_posterior_density.kernel_function = 'gaussian'; % Gaussian kernel for Fast Fourrier Transform approximaton.
-% Misc
-% options_.conf_sig = 0.6;
+                                                                            % Misc
+                                                                            % options_.conf_sig = 0.6;
 oo_.exo_simul = [];
 oo_.endo_simul = [];
 ys0_ = [];

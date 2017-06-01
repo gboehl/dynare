@@ -77,7 +77,7 @@ if info(1)
         error('Homotopy step failed')
     end
 end
-    
+
 [steady_state,M_.params,info] = steady_(M_,options_,oo_);
 oo_.steady_state = steady_state;
 

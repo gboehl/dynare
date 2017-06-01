@@ -142,17 +142,17 @@ for ind_1 = 1:2
         for ind_3 = 1:2
             if tran(ind_1,ind_2,ind_3) ~= 0
                 fitted = (tran(ind_1,ind_2,1) + tran(ind_1,ind_2,2))*(tran(1,ind_2,ind_3) + tran(2,ind_2,ind_3))/...
-                    (tran(1,ind_2,1) + tran(1,ind_2,2) + tran(2,ind_2,1) + tran(2,ind_2,2));
+                         (tran(1,ind_2,1) + tran(1,ind_2,2) + tran(2,ind_2,1) + tran(2,ind_2,2));
                 focus = tran(ind_1,ind_2,ind_3);
                 g2 = g2 + log(focus/fitted)*focus;
             end
         end;       % end of for i3
     end;        % end of for i2
 end;         % end of for i1
-g2 = g2*2;
-bic = g2 - log(n_obs-2)*2;
+    g2 = g2*2;
+    bic = g2 - log(n_obs-2)*2;
 
-end
+    end
 
 
 function [g2, bic] = independence_chain_test(d)

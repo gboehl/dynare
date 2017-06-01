@@ -129,7 +129,7 @@ while rank(Pinf(:,:,t+1),diffuse_kalman_tol) && t<smpl
         Finf = ZZ*Pinf(:,:,t)*ZZ';                                          % (5.7) in DK (2012)
         if rcond(Finf) < diffuse_kalman_tol                                 %F_{\infty,t} = 0 
             if ~all(abs(Finf(:)) < diffuse_kalman_tol)                      %rank-deficient but not rank 0
-                % The univariate diffuse kalman filter should be used.
+                                                                            % The univariate diffuse kalman filter should be used.
                 alphahat = Inf;
                 return
             else                                                            %rank of F_{\infty,t} is 0
@@ -206,7 +206,7 @@ while notsteady && t<smpl
         atilde(:,t) = a(:,t) + PZI*v(di,t);
         K(:,di,t)    = T*PZI;
         L(:,:,t)    = T-K(:,di,t)*ZZ;
-		P(:,:,t+1)  = T*P(:,:,t)*L(:,:,t)' + QQ;
+        P(:,:,t+1)  = T*P(:,:,t)*L(:,:,t)' + QQ;
     end
     a(:,t+1)    = T*atilde(:,t);
     Pf          = P(:,:,t);
@@ -267,7 +267,7 @@ while t>d+1
     end
 end
 if d %diffuse periods
-    % initialize r_d^(0) and r_d^(1) as below DK (2012), eq. 5.23
+     % initialize r_d^(0) and r_d^(1) as below DK (2012), eq. 5.23
     r0 = zeros(mm,d+1); 
     r0(:,d+1) = r(:,d+1);   %set r0_{d}, i.e. shifted by one period
     r1 = zeros(mm,d+1);     %set r1_{d}, i.e. shifted by one period
@@ -284,7 +284,7 @@ if d %diffuse periods
             if ~Finf_singular(1,t)
                 r0(:,t) = Linf(:,:,t)'*r0(:,t+1);                                   % DK (2012), eq. 5.21 where L^(0) is named Linf
                 r1(:,t) = Z(di,:)'*(iFinf(di,di,t)*v(di,t)-Kstar(:,di,t)'*T'*r0(:,t+1)) ...
-                    + Linf(:,:,t)'*r1(:,t+1);                                       % DK (2012), eq. 5.21, noting that i) F^(1)=(F^Inf)^(-1)(see 5.10), ii) where L^(0) is named Linf, and iii) Kstar=T^{-1}*K^(1)
+                          + Linf(:,:,t)'*r1(:,t+1);                                       % DK (2012), eq. 5.21, noting that i) F^(1)=(F^Inf)^(-1)(see 5.10), ii) where L^(0) is named Linf, and iii) Kstar=T^{-1}*K^(1)
                 if state_uncertainty_flag
                     L_1=(-T*Kstar(:,di,t)*Z(di,:));                                     % noting that Kstar=T^{-1}*K^(1)
                     N(:,:,t)=Linf(:,:,t)'*N(:,:,t+1)*Linf(:,:,t);                       % DK (2012), eq. 5.19, noting that L^(0) is named Linf
@@ -301,7 +301,7 @@ if d %diffuse periods
                 r1(:,t) = T'*r1(:,t+1);                                             % DK (2003), eq. (14)
                 if state_uncertainty_flag
                     N(:,:,t)=Z(di,:)'*iFstar(di,di,t)*Z(di,:)...
-                        +Lstar(:,:,t)'*N(:,:,t+1)*Lstar(:,:,t);                     % DK (2003), eq. (14)
+                             +Lstar(:,:,t)'*N(:,:,t+1)*Lstar(:,:,t);                     % DK (2003), eq. (14)
                     N_1(:,:,t)=T'*N_1(:,:,t+1)*Lstar(:,:,t);                            % DK (2003), eq. (14)
                     N_2(:,:,t)=T'*N_2(:,:,t+1)*T';                                      % DK (2003), eq. (14)
                 end
@@ -311,9 +311,9 @@ if d %diffuse periods
         etahat(:,t)     = QRt*r0(:,t);                                              % DK (2012), p. 135
         if state_uncertainty_flag
             V(:,:,t)=Pstar(:,:,t)-Pstar(:,:,t)*N(:,:,t)*Pstar(:,:,t)...
-                -(Pinf(:,:,t)*N_1(:,:,t)*Pstar(:,:,t))'...
-                - Pinf(:,:,t)*N_1(:,:,t)*Pstar(:,:,t)...
-                - Pinf(:,:,t)*N_2(:,:,t)*Pinf(:,:,t);                                   % DK (2012), eq. 5.30
+                     -(Pinf(:,:,t)*N_1(:,:,t)*Pstar(:,:,t))'...
+                     - Pinf(:,:,t)*N_1(:,:,t)*Pstar(:,:,t)...
+                     - Pinf(:,:,t)*N_2(:,:,t)*Pinf(:,:,t);                                   % DK (2012), eq. 5.30
         end
     end
 end

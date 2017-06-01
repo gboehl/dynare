@@ -228,108 +228,107 @@ if verbose
 end
 
 function x = lin_solve( A, b,verbose)
-    if norm( b ) < sqrt( eps ) % then x = 0 is a solution
-        x = 0;
-        return
-    end
-    
-    x = A\b;
-    x( ~isfinite( x ) ) = 0;
-    relres = norm( b - A * x ) / norm( b );
-    if relres > 1e-6 && verbose
-        fprintf( 'WARNING : Failed to find a solution to the linear system.\n' );
-    end
-    
+if norm( b ) < sqrt( eps ) % then x = 0 is a solution
+    x = 0;
+    return
+end
+
+x = A\b;
+x( ~isfinite( x ) ) = 0;
+relres = norm( b - A * x ) / norm( b );
+if relres > 1e-6 && verbose
+    fprintf( 'WARNING : Failed to find a solution to the linear system.\n' );
+end
+
 function [ x, flag, relres ] = lin_solve_robust( A, b , verbose)
-    if norm( b ) < sqrt( eps ) % then x = 0 is a solution
-        x = 0;
-        flag = 0;
-        relres = 0;
-        return
-    end
-    
-    x = A\b;
-    x( ~isfinite( x ) ) = 0;
-    [ x, flag, relres ] = bicgstab( A, b, [], [], [], [], x ); % returns immediately if x is a solution
-    if flag == 0
-        return
-    end
+if norm( b ) < sqrt( eps ) % then x = 0 is a solution
+    x = 0;
+    flag = 0;
+    relres = 0;
+    return
+end
 
-    disp( relres );
+x = A\b;
+x( ~isfinite( x ) ) = 0;
+[ x, flag, relres ] = bicgstab( A, b, [], [], [], [], x ); % returns immediately if x is a solution
+if flag == 0
+    return
+end
 
-    if verbose
-        fprintf( 'Initial bicgstab failed, trying alternative start point.\n' );
-    end
-    old_x = x;
-    old_relres = relres;
-    [ x, flag, relres ] = bicgstab( A, b );
-    if flag == 0
-        return
-    end
+disp( relres );
 
-    if verbose
-        fprintf( 'Alternative start point also failed with bicgstab, trying gmres.\n' );
-    end
-    if old_relres < relres
-        x = old_x;
-    end
-    [ x, flag, relres ] = gmres( A, b, [], [], [], [], [], x );
-    if flag == 0
-        return
-    end
+if verbose
+    fprintf( 'Initial bicgstab failed, trying alternative start point.\n' );
+end
+old_x = x;
+old_relres = relres;
+[ x, flag, relres ] = bicgstab( A, b );
+if flag == 0
+    return
+end
 
-    if verbose
-        fprintf( 'Initial gmres failed, trying alternative start point.\n' );
-    end
-    old_x = x;
-    old_relres = relres;
-    [ x, flag, relres ] = gmres( A, b );
-    if flag == 0
-        return
-    end
+if verbose
+    fprintf( 'Alternative start point also failed with bicgstab, trying gmres.\n' );
+end
+if old_relres < relres
+    x = old_x;
+end
+[ x, flag, relres ] = gmres( A, b, [], [], [], [], [], x );
+if flag == 0
+    return
+end
 
-    if verbose
-        fprintf( 'Alternative start point also failed with gmres, using the (SLOW) Moore-Penrose Pseudo-Inverse.\n' );
-    end
-    if old_relres < relres
-        x = old_x;
-        relres = old_relres;
-    end
-    old_x = x;
-    old_relres = relres;
-    x = pinv( full( A ) ) * b;
-    relres = norm( b - A * x ) / norm( b );
-    if old_relres < relres
-        x = old_x;
-        relres = old_relres;
-    end
-    flag = relres > 1e-6;
-    if flag ~= 0 && verbose
-        fprintf( 'WARNING : Failed to find a solution to the linear system\n' );
-    end
-    
+if verbose
+    fprintf( 'Initial gmres failed, trying alternative start point.\n' );
+end
+old_x = x;
+old_relres = relres;
+[ x, flag, relres ] = gmres( A, b );
+if flag == 0
+    return
+end
+
+if verbose
+    fprintf( 'Alternative start point also failed with gmres, using the (SLOW) Moore-Penrose Pseudo-Inverse.\n' );
+end
+if old_relres < relres
+    x = old_x;
+    relres = old_relres;
+end
+old_x = x;
+old_relres = relres;
+x = pinv( full( A ) ) * b;
+relres = norm( b - A * x ) / norm( b );
+if old_relres < relres
+    x = old_x;
+    relres = old_relres;
+end
+flag = relres > 1e-6;
+if flag ~= 0 && verbose
+    fprintf( 'WARNING : Failed to find a solution to the linear system\n' );
+end
+
 function display_critical_variables(dyy, M)
 
-            if any(isnan(dyy))
-                indx = find(any(isnan(dyy)));
-                endo_names=cellstr(M.endo_names(indx,:));
-                disp('Last iteration provided NaN for the following variables:')
-                fprintf('%s, ',endo_names{:}),
-                fprintf('\n'),
-            end
-            if any(isinf(dyy))
-                indx = find(any(isinf(dyy)));
-                endo_names=cellstr(M.endo_names(indx,:));
-                disp('Last iteration diverged (Inf) for the following variables:')
-                fprintf('%s, ',endo_names{:}),
-                fprintf('\n'),
-            end
-            if any(~isreal(dyy))
-                indx = find(any(~isreal(dyy)));
-                endo_names=cellstr(M.endo_names(indx,:));
-                disp('Last iteration provided complex number for the following variables:')
-                fprintf('%s, ',endo_names{:}),
-                fprintf('\n'),                
-            end
+if any(isnan(dyy))
+    indx = find(any(isnan(dyy)));
+    endo_names=cellstr(M.endo_names(indx,:));
+    disp('Last iteration provided NaN for the following variables:')
+    fprintf('%s, ',endo_names{:}),
+    fprintf('\n'),
+end
+if any(isinf(dyy))
+    indx = find(any(isinf(dyy)));
+    endo_names=cellstr(M.endo_names(indx,:));
+    disp('Last iteration diverged (Inf) for the following variables:')
+    fprintf('%s, ',endo_names{:}),
+    fprintf('\n'),
+end
+if any(~isreal(dyy))
+    indx = find(any(~isreal(dyy)));
+    endo_names=cellstr(M.endo_names(indx,:));
+    disp('Last iteration provided complex number for the following variables:')
+    fprintf('%s, ',endo_names{:}),
+    fprintf('\n'),                
+end
 
-        

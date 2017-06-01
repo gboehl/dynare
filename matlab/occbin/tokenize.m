@@ -30,24 +30,24 @@ else
     delims = zeros(ndelims+1,2);
     for i=1:ndelims+1;
         if i==1
-                if posdelims(1) == 1
-                   tokens = cellstr(source(1));
-                else
-                   delims(i,:) = [1,posdelims(i)-1];
-                   tokens = cellstr(source([delims(i,1):delims(i,2)]));
-                   tokens = [tokens, source(posdelims(i))];
-                end
-        elseif  i==ndelims+1
-                if (posdelims(i-1) < length(source))
-                    delims(i,:) = [posdelims(i-1)+1,length(source)];
-                    tokens = [tokens, cellstr(source([delims(i,1):delims(i,2)]))];
-                end
-        else
-                if posdelims(i)>posdelims(i-1)+1
-                    delims(i,:) = [posdelims(i-1)+1,posdelims(i)-1];
-                    tokens = [tokens, cellstr(source([delims(i,1):delims(i,2)]))];
-                end
+            if posdelims(1) == 1
+                tokens = cellstr(source(1));
+            else
+                delims(i,:) = [1,posdelims(i)-1];
+                tokens = cellstr(source([delims(i,1):delims(i,2)]));
                 tokens = [tokens, source(posdelims(i))];
+            end
+        elseif  i==ndelims+1
+            if (posdelims(i-1) < length(source))
+                delims(i,:) = [posdelims(i-1)+1,length(source)];
+                tokens = [tokens, cellstr(source([delims(i,1):delims(i,2)]))];
+            end
+        else
+            if posdelims(i)>posdelims(i-1)+1
+                delims(i,:) = [posdelims(i-1)+1,posdelims(i)-1];
+                tokens = [tokens, cellstr(source([delims(i,1):delims(i,2)]))];
+            end
+            tokens = [tokens, source(posdelims(i))];
         end
     end
 

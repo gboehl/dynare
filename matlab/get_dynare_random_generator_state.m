@@ -23,22 +23,22 @@ function [state_u,state_n] = get_dynare_random_generator_state()
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-    matlab_random_streams = ~(isoctave || matlab_ver_less_than('7.7'));
+matlab_random_streams = ~(isoctave || matlab_ver_less_than('7.7'));
 
-    if matlab_random_streams% Use new matlab interface.
-        if matlab_ver_less_than('7.12')
-            s = RandStream.getDefaultStream();
-        else
-            s = RandStream.getGlobalStream();
-        end
-        if isequal(s.Type,'legacy')
-            state_u = rand('state');
-            state_n = randn('state');
-        else            
-            state_u = s.State;
-            state_n = state_u;
-        end
-    else% Use old matlab interface.
+if matlab_random_streams% Use new matlab interface.
+    if matlab_ver_less_than('7.12')
+        s = RandStream.getDefaultStream();
+    else
+        s = RandStream.getGlobalStream();
+    end
+    if isequal(s.Type,'legacy')
         state_u = rand('state');
         state_n = randn('state');
+    else            
+        state_u = s.State;
+        state_n = state_u;
     end
+else% Use old matlab interface.
+    state_u = rand('state');
+    state_n = randn('state');
+end

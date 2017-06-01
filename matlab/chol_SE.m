@@ -229,7 +229,7 @@ for j = 1:n-1
             end
             % Calculate delta and add to the diagonal. delta=max{0,-A(j,j) + max{normj,taugam},delta_previous}
             % where normj=sum of |A(i,j)|,for i=1,n, delta_previous is the delta computed at the previous iter and taugam is tau1*gamma.
-                       
+            
             normj=sum(abs(A(j+1:n,j)));
             
             delta = max([0;delta;-A(j,j)+normj;-A(j,j)+taugam]); % get adjustment based on formula on bottom of p. 309 of Eskow/Schnabel (1991)

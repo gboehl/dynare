@@ -29,7 +29,7 @@ function [endogenousvariables, info] = solve_stacked_problem(endogenousvariables
 %
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
-    
+
 [options, y0, yT, z, i_cols, i_cols_J1, i_cols_T, i_cols_j, i_cols_1, dynamicmodel] = ...
     initialize_stacked_problem(endogenousvariables, options, M, steadystate);
 

@@ -39,22 +39,22 @@ opts.disp=0;
 %    [mag,k] = sort(-mag);
 %    rts     = rts(k);
 %catch
-    %disp('Catch in SPE');
-    %pause(0.5);
-    %aStr=datestr(clock);
-    %eval(['save ' regexprep(aStr,' ','')  ' a']);
-    try
-        [w,d]=eig(a');
-    catch
-        lasterr
-        w=[];rts=[];lgroots=[];
-        flag_trouble=1;
-        return
-    end
-    rts     = diag(d);
-    mag     = abs(rts);
-    [mag,k] = sort(-mag);
-    rts     = rts(k);
+%disp('Catch in SPE');
+%pause(0.5);
+%aStr=datestr(clock);
+%eval(['save ' regexprep(aStr,' ','')  ' a']);
+try
+    [w,d]=eig(a');
+catch
+    lasterr
+    w=[];rts=[];lgroots=[];
+    flag_trouble=1;
+    return
+end
+rts     = diag(d);
+mag     = abs(rts);
+[mag,k] = sort(-mag);
+rts     = rts(k);
 %end
 flag_trouble=0; 
 

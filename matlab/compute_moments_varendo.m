@@ -129,7 +129,7 @@ if M_.exo_nbr > 1
         headers = char(' ',headers);
         lh = size(deblank(var_list_),2)+2;
         dyntable(options_,title,headers,deblank(var_list_),100* ...
-            temp,lh,8,2);
+                 temp,lh,8,2);
         if options_.TeX
             headers=M_.exo_names_tex;
             headers = char(' ',headers);
@@ -166,7 +166,7 @@ if M_.exo_nbr > 1
             headers = char(' ',headers);
             lh = size(deblank(var_list_),2)+2;
             dyntable(options_,title_print,headers,deblank(var_list_),100* ...
-                temp(:,:,step_iter),lh,8,2);
+                     temp(:,:,step_iter),lh,8,2);
             if options_.TeX
                 headers=M_.exo_names_tex;
                 headers = char(' ',headers);

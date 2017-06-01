@@ -115,7 +115,7 @@ end
 % nanmean is in Octave Forge Statistics package and in MATLAB Statistics
 % toolbox
 if (isoctave && ~user_has_octave_forge_package('statistics')) ...
-    || (~isoctave && ~user_has_matlab_license('statistics_toolbox'))
+        || (~isoctave && ~user_has_matlab_license('statistics_toolbox'))
     p{end+1} = '/missing/nanmean';
 end
 

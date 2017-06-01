@@ -30,7 +30,7 @@ function  q = SPCopy_w(q,w,js,iq,qrows)
 
 
 if(iq < qrows)
-   lastrows = iq+1:qrows;
-   wrows    = 1:length(lastrows);
-   q(lastrows,js) = w(:,wrows)';
+    lastrows = iq+1:qrows;
+    wrows    = 1:length(lastrows);
+    q(lastrows,js) = w(:,wrows)';
 end

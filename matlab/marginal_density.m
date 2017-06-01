@@ -172,8 +172,8 @@ if nvx
         eval(['oo_.' field_name '_std_at_mode.shocks_std.' name ' = stdh(ip);']);
         ip = ip+1;
     end
- end
- if nvn
+end
+if nvn
     ip = nvx+1;
     for i=1:nvn
         name = options_.varobs{estim_params_.nvn_observable_correspondence(i,1)};
@@ -181,7 +181,7 @@ if nvx
         eval(['oo_.' field_name '_std_at_mode.measurement_errors_std.' name ' = stdh(ip);']);
         ip = ip+1;
     end
- end
+end
 
 if ncx
     ip = nvx+nvn+1;

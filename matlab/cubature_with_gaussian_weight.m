@@ -52,7 +52,7 @@ function [nodes, weights] = cubature_with_gaussian_weight(d,n,method)
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 % AUTHOR(S) stephane DOT adjemian AT univ DASH lemans DOT fr
-    
+
 % Set default.
 if nargin<3 || isempty(method)
     method = 'Stroud';
@@ -117,16 +117,16 @@ end
 
 
 function v = e(n,i)
-    v = zeros(n,1);
-    v(i) = 1;
-    
+v = zeros(n,1);
+v(i) = 1;
+
 function m = ee(n,i,j)
-    m = zeros(n,4);
-    m(:,1) =  e(n,i)+e(n,j);
-    m(:,2) =  e(n,i)-e(n,j);
-    m(:,3) = -m(:,2);
-    m(:,4) = -m(:,1);
-    
+m = zeros(n,4);
+m(:,1) =  e(n,i)+e(n,j);
+m(:,2) =  e(n,i)-e(n,j);
+m(:,3) = -m(:,2);
+m(:,4) = -m(:,1);
+
 %@test:1
 %$ % Set problem
 %$ d = 4;

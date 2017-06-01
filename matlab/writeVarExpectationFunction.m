@@ -176,8 +176,8 @@ else
     spaces = '    ';
 end
 fprintf(fid, '%sy = ...\n%s[ ... %% intercept\n%s', fs, spaces, ns);
-fprintf(fid, [repmat('% f ', 1, size(mu, 2)) '; ...\n' ns], mu');
+    fprintf(fid, [repmat('% f ', 1, size(mu, 2)) '; ...\n' ns], mu');
 fprintf(fid, ' ] + ...\n%s[ ... %% autoregressive matrices\n%s', spaces, ns);
-fprintf(fid, [repmat('% f ', 1, size(A, 2)) '; ...\n' ns], A');
+    fprintf(fid, [repmat('% f ', 1, size(A, 2)) '; ...\n' ns], A');
 fprintf(fid, ' ] * y;\n');
 end

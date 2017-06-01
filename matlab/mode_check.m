@@ -203,7 +203,7 @@ for plt = 1:nbplt,
     end
 end
 if TeX && any(strcmp('eps',cellstr(DynareOptions.graph_format)))
-        fclose(fidTeX);
+    fclose(fidTeX);
 end
 
 OutputDirectoryName = CheckPath('modecheck',Model.dname);

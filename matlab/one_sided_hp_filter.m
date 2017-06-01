@@ -63,7 +63,7 @@ end
 %Set up state space
 q=1/lambda;     % the signal-to-noise ration: i.e. var eta_t / var epsilon_t
 F=[2,-1;
-    1,0];       % state transition matrix
+   1,0];       % state transition matrix
 H=[1,0];        % observation matrix
 Q=[q,0;
    0,0];        % covariance matrix state equation errors 

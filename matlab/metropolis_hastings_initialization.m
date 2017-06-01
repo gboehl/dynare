@@ -335,9 +335,9 @@ elseif options_.mh_recover
     if OldMhExists
         LastLineNumberInThePreviousMh = record.MhDraws(end-1,3);% Number of lines in the last mh files of the previous session.
         LastFileNumberInThePreviousMh = sum(record.MhDraws(1:end-1,2),1);% Number of mh files in the the previous sessions.
-        %Test if the last mh files of the previous session were not full yet 
+                                                                         %Test if the last mh files of the previous session were not full yet 
         if LastLineNumberInThePreviousMh < MAX_nruns%not full 
-            %store starting point if whole chain needs to be redone
+                                                    %store starting point if whole chain needs to be redone
             NewFile = ones(NumberOfBlocks,1)*LastFileNumberInThePreviousMh;
             FirstLine = ones(NumberOfBlocks,1)*(LastLineNumberInThePreviousMh+1);
             LastFileFullIndicator=0;
@@ -394,7 +394,7 @@ elseif options_.mh_recover
     % How many mh-files are saved in this block?
     NumberOfSavedMhFilesInTheCrashedBlck = NumberOfMhFilesPerBlock(FirstBlock);
     ExistingDrawsInLastMCFile=0; %initialize: no MCMC draws of current MCMC are in file from last run
-    % Check whether last present file is a file included in the last MCMC run
+                                 % Check whether last present file is a file included in the last MCMC run
     if ~LastFileFullIndicator 
         if NumberOfSavedMhFilesInTheCrashedBlck==NewFile(FirstBlock) %only that last file exists, but no files from current MCMC
             loaded_results=load([BaseName '_mh' int2str(NewFile(FirstBlock)) '_blck' int2str(FirstBlock) '.mat']);    
@@ -413,13 +413,13 @@ elseif options_.mh_recover
             NewFile(FirstBlock)=NewFile(FirstBlock)+1; %set first file to be created to next one
         end
     end
-%     % Correct the number of saved mh files if the crashed Metropolis was not the first session (so
-%     % that NumberOfSavedMhFilesInTheCrashedBlck is the number of saved mh files in the crashed chain 
-%     % of the current session).  
-%     if OldMhExists
-%         NumberOfSavedMhFilesInTheCrashedBlck = NumberOfSavedMhFilesInTheCrashedBlck - LastFileNumberInThePreviousMh;
-%     end
-%     NumberOfSavedMhFiles = NumberOfSavedMhFilesInTheCrashedBlck+LastFileNumberInThePreviousMh;
+    %     % Correct the number of saved mh files if the crashed Metropolis was not the first session (so
+    %     % that NumberOfSavedMhFilesInTheCrashedBlck is the number of saved mh files in the crashed chain 
+    %     % of the current session).  
+    %     if OldMhExists
+    %         NumberOfSavedMhFilesInTheCrashedBlck = NumberOfSavedMhFilesInTheCrashedBlck - LastFileNumberInThePreviousMh;
+    %     end
+    %     NumberOfSavedMhFiles = NumberOfSavedMhFilesInTheCrashedBlck+LastFileNumberInThePreviousMh;
     
     % Correct initial conditions.
     if NumberOfSavedMhFilesInTheCrashedBlck<ExpectedNumberOfMhFilesPerBlock

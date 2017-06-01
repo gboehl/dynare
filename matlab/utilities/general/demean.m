@@ -1,6 +1,6 @@
 function c = demean(x)
 % Removes the mean of each column of a matrix.
- 
+
 %@info:
 %! @deftypefn {Function File} {@var{c} =} demean (@var{x})
 %! @anchor{demean}
@@ -45,7 +45,7 @@ function c = demean(x)
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 % Original author: stephane DOT adjemian AT univ DASH lemans DOT fr
-   
+
 if ndim(x)==1
     c = x-mean(x);
 elseif ndim(x)==2

@@ -205,34 +205,34 @@ if numel(p)==numel(q)
 end
 
 function cumweights = accumulateWeights(weights, ind, n, N)
-   % ACCUMULATEWEIGHTS accumulate the weights
-    wSorted = weights(ind,n); % sort weights
-    wSorted = wSorted*N/sum(wSorted); % normalize weights to sum to N
-    cumweights = cumsum(wSorted); % cumulative weights
+% ACCUMULATEWEIGHTS accumulate the weights
+wSorted = weights(ind,n); % sort weights
+wSorted = wSorted*N/sum(wSorted); % normalize weights to sum to N
+cumweights = cumsum(wSorted); % cumulative weights
 
 function hw = weightedIndex(huw, cumweights)
-    % WEIGHTEDINDEX calculate index from cumulative weights
-    ii = find(sign(cumweights-huw)<0,1,'last');
-    jj = find(sign(cumweights-huw)>0,1,'first');
-    if isempty(ii) || isempty(jj)
-        hw = huw;
-    else
-        hw = ii + (huw-cumweights(ii))/(cumweights(jj)-cumweights(ii)); % weighted index
-    end
+% WEIGHTEDINDEX calculate index from cumulative weights
+ii = find(sign(cumweights-huw)<0,1,'last');
+jj = find(sign(cumweights-huw)>0,1,'first');
+if isempty(ii) || isempty(jj)
+    hw = huw;
+else
+    hw = ii + (huw-cumweights(ii))/(cumweights(jj)-cumweights(ii)); % weighted index
+end
 
 function y = isint(x)
-    % ISINT check if input is whole number
-    y = x==round(x);
+% ISINT check if input is whole number
+y = x==round(x);
 
 function y = rearrange(x,order,shape)
-    %REARRANGE reshape and permute to make target dim column
-    y = permute(x,order);
-    y = reshape(y,shape);
+%REARRANGE reshape and permute to make target dim column
+y = permute(x,order);
+y = reshape(y,shape);
 
 function y = irearrange(x,order,shape)
-    %IREARRANGE reshape and permute to original size
-    y = reshape(x,shape);
-    y = ipermute(y,order);
+%IREARRANGE reshape and permute to original size
+y = reshape(x,shape);
+y = ipermute(y,order);
 
 
 %@test:1

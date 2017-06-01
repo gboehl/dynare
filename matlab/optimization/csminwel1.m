@@ -302,7 +302,7 @@ while ~done
             error('Unaccounted Case, please contact the developers',Verbose)
         end
     end
-     
+    
     f=fh;
     x=xh;
     g=gh;
@@ -312,18 +312,18 @@ end
 end
 
 function [g, badg]=get_num_grad(method,fcn,penalty,f0,x0,epsilon,varargin)
-    switch method
-      case 2
-        [g,badg] = numgrad2(fcn, f0, x0, penalty, epsilon, varargin{:});
-      case 3
-        [g,badg] = numgrad3(fcn, f0, x0, penalty, epsilon, varargin{:});
-      case 5
-        [g,badg] = numgrad5(fcn, f0, x0, penalty, epsilon, varargin{:});
-      case 13
-        [g,badg] = numgrad3_(fcn, f0, x0, penalty, epsilon, varargin{:});
-      case 15
-        [g,badg] = numgrad5_(fcn, f0, x0, penalty, epsilon, varargin{:});
-      otherwise
-        error('csminwel1: Unknown method for gradient evaluation!')
-    end
+switch method
+  case 2
+    [g,badg] = numgrad2(fcn, f0, x0, penalty, epsilon, varargin{:});
+  case 3
+    [g,badg] = numgrad3(fcn, f0, x0, penalty, epsilon, varargin{:});
+  case 5
+    [g,badg] = numgrad5(fcn, f0, x0, penalty, epsilon, varargin{:});
+  case 13
+    [g,badg] = numgrad3_(fcn, f0, x0, penalty, epsilon, varargin{:});
+  case 15
+    [g,badg] = numgrad5_(fcn, f0, x0, penalty, epsilon, varargin{:});
+  otherwise
+    error('csminwel1: Unknown method for gradient evaluation!')
+end
 end

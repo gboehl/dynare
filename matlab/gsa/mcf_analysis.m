@@ -65,7 +65,7 @@ if ~isempty(indmcf)
         dyn_latex_table(M_temp,options_temp,['Smirnov statistics in driving ', strrep(title,'_','\\_')],amcf_name,headers,labels_TeX,data_mat,size(labels,2)+2,16,6);
     end
 end
-    
+
 
 if length(ibeha)>10 && length(inobeha)>10,
     indcorr1 = stab_map_2(lpmat(ibeha,:),alpha2, pvalue_corr, beha_title);
@@ -79,6 +79,6 @@ if ~isempty(indmcf) && ~DynareOptions.nograph,
     xx=[];
     if ~ isempty(xparam1), xx=xparam1(indmcf); end
     scatter_mcf(lpmat(ibeha,indmcf),lpmat(inobeha,indmcf), param_names(indmcf,:), ...
-        '.', [fname_,'_',amcf_name], OutputDirectoryName, amcf_title,xx, DynareOptions, ...
-        beha_title, nobeha_title)
+                '.', [fname_,'_',amcf_name], OutputDirectoryName, amcf_title,xx, DynareOptions, ...
+                beha_title, nobeha_title)
 end

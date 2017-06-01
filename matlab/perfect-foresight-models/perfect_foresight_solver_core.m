@@ -81,8 +81,8 @@ else
             [oo_.endo_simul, oo_.deterministic_simulation] = ...
                 sim1_purely_backward(oo_.endo_simul, oo_.exo_simul, oo_.steady_state, M_, options_);
         elseif M_.maximum_endo_lag == 0 % Purely forward model
-            [oo_.endo_simul, oo_.deterministic_simulation] = ...
-                sim1_purely_forward(oo_.endo_simul, oo_.exo_simul, oo_.steady_state, M_, options_);
+        [oo_.endo_simul, oo_.deterministic_simulation] = ...
+            sim1_purely_forward(oo_.endo_simul, oo_.exo_simul, oo_.steady_state, M_, options_);
         else % General case
             switch options_.stack_solve_algo
               case 0

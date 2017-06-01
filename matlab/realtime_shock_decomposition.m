@@ -63,7 +63,7 @@ if isempty(parameter_set)
         parameter_set = 'posterior_mode';
     else
         error(['realtime_shock_decomposition: option parameter_set is not specified ' ...
-            'and posterior mode is not available'])
+               'and posterior mode is not available'])
     end
 end
 
@@ -103,7 +103,7 @@ if forecast_ && any(forecast_params),
 end
 
 for j=presample+1:nobs,
-%    evalin('base',['options_.nobs=' int2str(j) ';'])
+    %    evalin('base',['options_.nobs=' int2str(j) ';'])
     options_.nobs=j;
     [oo, M_, junk2, junk3, Smoothed_Variables_deviation_from_mean] = evaluate_smoother(parameter_set,varlist,M_,oo_,options_,bayestopt_,estim_params_);
     
@@ -165,7 +165,7 @@ for j=presample+1:nobs,
             z(:,1:nshocks,i) = z(:,1:nshocks,i) + B(inv_order_var,:).*repmat(epsilon(:,i)',endo_nbr,1);
         end
         
-%         z(:,1:nshocks,i) = z(:,1:nshocks,i) + B(inv_order_var,:).*repmat(epsilon(:,i)',endo_nbr,1);
+        %         z(:,1:nshocks,i) = z(:,1:nshocks,i) + B(inv_order_var,:).*repmat(epsilon(:,i)',endo_nbr,1);
         z(:,nshocks+1,i) = z(:,nshocks+2,i) - sum(z(:,1:nshocks,i),2);
     end
     
@@ -197,13 +197,13 @@ for j=presample+1:nobs,
                 zn(:,1:nshocks,i) = zn(:,1:nshocks,i) + B(inv_order_var,:).*repmat(epsilon(:,i+gend-forecast_-1)',endo_nbr,1);
             end
             
-%             zn(:,1:nshocks,i) = zn(:,1:nshocks,i) + B(inv_order_var,:).*repmat(epsilon(:,i+gend-forecast_-1)',endo_nbr,1);
+            %             zn(:,1:nshocks,i) = zn(:,1:nshocks,i) + B(inv_order_var,:).*repmat(epsilon(:,i+gend-forecast_-1)',endo_nbr,1);
             zn(:,nshocks+1,i) = zn(:,nshocks+2,i) - sum(zn(:,1:nshocks,i),2);
         end
         oo_.conditional_shock_decomposition.(['time_' int2str(j-forecast_)])=zn;
     end
     %%
-       
+    
     if init,
         zreal(:,:,1:j) = z(:,:,1:j);
     else
@@ -218,7 +218,7 @@ for j=presample+1:nobs,
         zfrcst(:,:,j+1) = z(:,:,gend+1);
         oo_.realtime_forecast_shock_decomposition.(['time_' int2str(j)])=z(:,:,gend:end);
         if j>forecast_+presample
-    %% realtime conditional shock decomp k step ahead
+            %% realtime conditional shock decomp k step ahead
             oo_.realtime_conditional_shock_decomposition.(['time_' int2str(j-forecast_)]) = ...
                 zreal(:,:,j-forecast_:j) - ...
                 oo_.realtime_forecast_shock_decomposition.(['time_' int2str(j-forecast_)]);
@@ -226,7 +226,7 @@ for j=presample+1:nobs,
                 oo_.realtime_forecast_shock_decomposition.(['time_' int2str(j-forecast_)])(:,end,:);
             oo_.realtime_conditional_shock_decomposition.(['time_' int2str(j-forecast_)])(:,end,:) = ...
                 zreal(:,end,j-forecast_:j);
-    
+            
             if j==nobs
                 for my_forecast_=(forecast_-1):-1:1,
                     oo_.realtime_conditional_shock_decomposition.(['time_' int2str(j-my_forecast_)]) = ...

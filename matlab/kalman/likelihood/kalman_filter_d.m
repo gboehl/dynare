@@ -69,10 +69,10 @@ while rank(Pinf,diffuse_kalman_tol) && (t<=last)
     s = t-start+1;
     v = Y(:,t)-Z*a;                                                     %get prediction error v^(0) in (5.13) DK (2012)
     Finf  = Z*Pinf*Z';                                                  % (5.7) in DK (2012)
-    %do case distinction based on whether F_{\infty,t} has full rank or 0 rank
+                                                                        %do case distinction based on whether F_{\infty,t} has full rank or 0 rank
     if rcond(Finf) < diffuse_kalman_tol                                 %F_{\infty,t} = 0 
         if ~all(abs(Finf(:)) < diffuse_kalman_tol)                      %rank-deficient but not rank 0
-            % The univariate diffuse kalman filter should be used instead.
+                                                                        % The univariate diffuse kalman filter should be used instead.
             return
         else                                                            %rank of F_{\infty,t} is 0
             Fstar  = Z*Pstar*Z' + H;                                    % (5.7) in DK (2012)
@@ -81,8 +81,8 @@ while rank(Pinf,diffuse_kalman_tol) && (t<=last)
                     % The univariate diffuse kalman filter should be used.
                     return
                 else                                                    %rank 0
-                   %pathological case, discard draw
-                   return
+                                                                        %pathological case, discard draw
+                    return
                 end
             else
                 iFstar = inv(Fstar);
@@ -95,15 +95,15 @@ while rank(Pinf,diffuse_kalman_tol) && (t<=last)
             end
         end
     else                                                                %F_{\infty,t} positive definite
-        %To compare to DK (2012), this block makes use of the following transformation
-        %Kstar=T^{-1}*K^{(1)}=M_{*}*F^{(1)}+M_{\infty}*F^{(2)}
-        %     =P_{*}*Z'*F^{(1)}+P_{\infty}*Z'*((-1)*(-F_{\infty}^{-1})*F_{*}*(F_{\infty}^{-1}))
-        %     =[P_{*}*Z'-Kinf*F_{*})]*F^{(1)}
-        %Make use of L^{0}'=(T-K^{(0)}*Z)'=(T-T*M_{\infty}*F^{(1)}*Z)'
-        %                  =(T-T*P_{\infty*Z'*F^{(1)}*Z)'=(T-T*Kinf*Z)'
-        %                  = (T*(I-*Kinf*Z))'=(I-Z'*Kinf')*T'
-        %P_{*}=T*P_{\infty}*L^{(1)}+T*P_{*}*L^{(0)}+RQR
-        %     =T*[(P_{\infty}*(-K^{(1)*Z}))+P_{*}*(I-Z'*Kinf')*T'+RQR]
+                                                                        %To compare to DK (2012), this block makes use of the following transformation
+                                                                        %Kstar=T^{-1}*K^{(1)}=M_{*}*F^{(1)}+M_{\infty}*F^{(2)}
+                                                                        %     =P_{*}*Z'*F^{(1)}+P_{\infty}*Z'*((-1)*(-F_{\infty}^{-1})*F_{*}*(F_{\infty}^{-1}))
+                                                                        %     =[P_{*}*Z'-Kinf*F_{*})]*F^{(1)}
+                                                                        %Make use of L^{0}'=(T-K^{(0)}*Z)'=(T-T*M_{\infty}*F^{(1)}*Z)'
+                                                                        %                  =(T-T*P_{\infty*Z'*F^{(1)}*Z)'=(T-T*Kinf*Z)'
+                                                                        %                  = (T*(I-*Kinf*Z))'=(I-Z'*Kinf')*T'
+                                                                        %P_{*}=T*P_{\infty}*L^{(1)}+T*P_{*}*L^{(0)}+RQR
+                                                                        %     =T*[(P_{\infty}*(-K^{(1)*Z}))+P_{*}*(I-Z'*Kinf')*T'+RQR]
         dlik(s)= log(det(Finf));                                        %set w_t to top case in bottom equation page 172, DK (2012)
         iFinf  = inv(Finf);
         Kinf   = Pinf*Z'*iFinf;                                         %define Kinf=T^{-1}*K_0 with M_{\infty}=Pinf*Z'

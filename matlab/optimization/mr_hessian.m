@@ -223,7 +223,7 @@ if outer_product_gradient,
     hh_mat=gga'*gga;  % rescaled outer product hessian
     hh_mat0=ggh'*ggh;  % outer product hessian
     A=diag(2.*hess_info.h1);  % rescaling matrix
-    % igg=inv(hh_mat);  % inverted rescaled outer product hessian
+                              % igg=inv(hh_mat);  % inverted rescaled outer product hessian
     ihh=A'*(hh_mat\A);  % inverted outer product hessian
     if hflag>0 && min(eig(reshape(hessian_mat,n,n)))>0
         hh0 = A*reshape(hessian_mat,n,n)*A';  %rescaled second order derivatives
@@ -244,12 +244,12 @@ if outer_product_gradient,
         igg=inv(A)'*ihh*inv(A);  % inverted rescaled outer product hessian with modified std's
         hh_mat=inv(igg);   % outer product rescaled hessian with modified std's
         hh_mat0=inv(A)'*hh_mat*inv(A);  % outer product hessian with modified std's
-        %     sd0=sqrt(1./diag(hh0));   %rescaled 'standard errors' using second order derivatives
-        %     sd=sqrt(diag(igg));  %rescaled 'standard errors' using outer product
-        %     igg=igg./(sd*sd').*(sd0*sd0');  %rescaled inverse outer product with 'true' std's
-        %     hh_mat=inv(igg);   % rescaled outer product hessian with 'true' std's
-        %     ihh=A'*igg*A;  % inverted outer product hessian
-        %     hh_mat0=inv(A)'*hh_mat*inv(A);  % outer product hessian with 'true' std's
+                                        %     sd0=sqrt(1./diag(hh0));   %rescaled 'standard errors' using second order derivatives
+                                        %     sd=sqrt(diag(igg));  %rescaled 'standard errors' using outer product
+                                        %     igg=igg./(sd*sd').*(sd0*sd0');  %rescaled inverse outer product with 'true' std's
+                                        %     hh_mat=inv(igg);   % rescaled outer product hessian with 'true' std's
+                                        %     ihh=A'*igg*A;  % inverted outer product hessian
+                                        %     hh_mat0=inv(A)'*hh_mat*inv(A);  % outer product hessian with 'true' std's
     end
     if hflag<2
         hessian_mat=hh_mat0(:);

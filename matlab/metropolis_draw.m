@@ -82,7 +82,7 @@ if init
     end
     return
 else %not initialization, return one draw
-    %get random draw from random chain
+     %get random draw from random chain
     ChainNumber = ceil(rand*mh_nblck);
     DrawNumber  = ceil(rand*NumberOfDraws);
 

@@ -134,7 +134,7 @@ else
                 y_(dr.order_var,i) = constant + dr.ghx*yhat + dr.ghu*epsilon ...
                     + abcOut1 + abcOut2 + abcOut3;
             end
-         end
+        end
       case 3
         % only with pruning
         % the third moments of the shocks are assumed null. We don't have

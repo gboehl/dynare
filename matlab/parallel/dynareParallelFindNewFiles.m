@@ -36,7 +36,7 @@ function [NewFilesFrom, NewFileList]=dynareParallelFindNewFiles(FileList,Paralle
 NewFilesFrom={};
 
 LfL=length(FileList);
-                                        % The first call ...
+% The first call ...
 NewFileList = dynareParallelListAllFiles('Root',PRCDir,Parallel);
 
 

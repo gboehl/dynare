@@ -339,14 +339,14 @@ switch minimizer_algorithm
                 end
               case 'SaveFiles'
                 if options_list{i,2}==0
-                  cmaesOptions.SaveVariables='off';
-                  cmaesOptions.LogModulo = '0';    % [0:Inf] if >1 record data less frequently after gen=100';
-                  cmaesOptions.LogTime   = '0';    % [0:100] max. percentage of time for recording data';
+                    cmaesOptions.SaveVariables='off';
+                    cmaesOptions.LogModulo = '0';    % [0:Inf] if >1 record data less frequently after gen=100';
+                    cmaesOptions.LogTime   = '0';    % [0:100] max. percentage of time for recording data';
                 end
               case 'CMAESResume'
-                  if options_list{i,2}==1
+                if options_list{i,2}==1
                     cmaesOptions.Resume = 'yes';
-                  end
+                end
               otherwise
                 warning(['cmaes: Unknown option (' options_list{i,1}  ')!'])
             end
@@ -386,11 +386,11 @@ switch minimizer_algorithm
               case 'MaxFunEvals'
                 simpsaOptions.MAX_FUN_EVALS = options_list{i,2};
               case 'verbosity'
-                  if options_list{i,2} == 0
+                if options_list{i,2} == 0
                     simpsaOptions.DISPLAY = 'none';
-                  else
+                else
                     simpsaOptions.DISPLAY = 'iter';
-                  end                      
+                end                      
               otherwise
                 warning(['simpsa: Unknown option (' options_list{i,1}  ')!'])
             end
@@ -414,10 +414,10 @@ switch minimizer_algorithm
     if ~isempty(options_.optim_opt)
         options_list = read_key_value_string(options_.optim_opt);
         SupportedListOfOptions = {'CreationFcn', 'Display', 'DisplayInterval', 'FunctionTolerance', ...
-                                    'FunValCheck', 'HybridFcn', 'InertiaRange', 'InitialSwarmMatrix', 'InitialSwarmSpan', ...
-                                    'MaxIterations', 'MaxStallIterations', 'MaxStallTime', 'MaxTime', ...
-                                    'MinNeighborsFraction', 'ObjectiveLimit', 'OutputFcn', 'PlotFcn', 'SelfAdjustmentWeight', ...
-                                    'SocialAdjustmentWeight', 'SwarmSize', 'UseParallel', 'UseVectorized'};
+                            'FunValCheck', 'HybridFcn', 'InertiaRange', 'InitialSwarmMatrix', 'InitialSwarmSpan', ...
+                            'MaxIterations', 'MaxStallIterations', 'MaxStallTime', 'MaxTime', ...
+                            'MinNeighborsFraction', 'ObjectiveLimit', 'OutputFcn', 'PlotFcn', 'SelfAdjustmentWeight', ...
+                            'SocialAdjustmentWeight', 'SwarmSize', 'UseParallel', 'UseVectorized'};
         for i=1:rows(options_list)
             if ismember(options_list{i,1}, SupportedListOfOptions)
                 particleswarmOptions = optimoptions(particleswarmOptions, options_list{i,1}, options_list{i,2});
@@ -514,8 +514,8 @@ end
 end
 
 function [LB, UB]=set_bounds_to_finite_values(bounds, huge_number)
-    LB=bounds(:,1);
-    LB(isinf(LB))=-huge_number;
-    UB=bounds(:,2);
-    UB(isinf(UB))=huge_number;
+LB=bounds(:,1);
+LB(isinf(LB))=-huge_number;
+UB=bounds(:,2);
+UB(isinf(UB))=huge_number;
 end

@@ -1,4 +1,4 @@
-function [ys,check,penlt] = mze_steadystate(ys,exe)
+function [ys,check,penlt] = dsge_base2_steadystate(ys,exe)
 global M_
 
 persistent idx NumberOfParameters NumberOfEndogenousVariables

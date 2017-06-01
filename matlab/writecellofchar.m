@@ -37,27 +37,27 @@ function str = writecellofchar(c)
 %
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
-    
+
 str = '{';
 for i=1:size(c, 1)
-    for j=1:size(c, 2)
-        if iscell(c{i,j})
-            str = sprintf('%s%s', str, writecellofchar(c{i, j}));
-        elseif ischar(c{i, j})
-            if size(c{i, j}, 1)>1
-                str = sprintf('%s''%s''', str, writematrixofchar(c{i, j}));
-            else
-                str = sprintf('%s''%s''', str, c{i, j});
-            end
-        else
-            error('Type not implemenented!')
-        end
-        if j<size(c, 2)
-            str = sprintf('%s, ', str);
-        end
-    end
-    if i<size(c, 1)
-        str = sprintf('%s; ', str);
-    end
+for j=1:size(c, 2)
+if iscell(c{i,j})
+str = sprintf('%s%s', str, writecellofchar(c{i, j}));
+elseif ischar(c{i, j})
+if size(c{i, j}, 1)>1
+str = sprintf('%s''%s''', str, writematrixofchar(c{i, j}));
+else
+str = sprintf('%s''%s''', str, c{i, j});
+end
+else
+error('Type not implemenented!')
+end
+if j<size(c, 2)
+str = sprintf('%s, ', str);
+end
+end
+if i<size(c, 1)
+str = sprintf('%s; ', str);
+end
 end
 str = sprintf('%s}', str);

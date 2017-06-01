@@ -27,10 +27,10 @@ xx = sort(x);
 
 if m==1 | n==1
     m = max(m,n);
-	if m == 1,
-	   y = x*ones(length(p),1);
-	   return;
-	end
+    if m == 1,
+        y = x*ones(length(p),1);
+        return;
+    end
     n = 1;
     q = 100*(0.5:m - 0.5)./m;
     xx = [min(x); xx(:); max(x)];

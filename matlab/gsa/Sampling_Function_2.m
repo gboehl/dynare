@@ -1,10 +1,10 @@
 function [Outmatrix, OutFact] = Sampling_Function_2(p, k, r, UB, LB, GroupMat)
 %[Outmatrix, OutFact] = Sampling_Function_2(p, k, r, UB, LB, GroupMat)
-%	Inputs: k (1,1)                      := number of factors examined or number of groups examined.
+%       Inputs: k (1,1)                      := number of factors examined or number of groups examined.
 %                                           In case the groups are chosen the number of factors is stores in NumFact and
 %                                           sizea becomes the number of created groups. 
 %           NumFact (1,1)                := number of factors examined in the case when groups are chosen
-%	    	r (1,1)                      := sample size  
+%               r (1,1)                      := sample size  
 %           p (1,1)                      := number of intervals considered in [0, 1]
 %           UB(sizea,1)                  := Upper Bound for each factor 
 %           LB(sizea,1)                  := Lower Bound for each factor 
@@ -13,18 +13,18 @@ function [Outmatrix, OutFact] = Sampling_Function_2(p, k, r, UB, LB, GroupMat)
 %                                           are set to 1 in correspondence of the factors that belong to the fixed group. All
 %                                           the other elements are zero.
 %   Local Variables:  
-%	    	sizeb (1,1)         := sizea+1
+%               sizeb (1,1)         := sizea+1
 %           sizec (1,1)         := 1
 %           randmult (sizea,1)  := vector of random +1 and -1  
 %           perm_e(1,sizea)     := vector of sizea random permutated indeces    
 %           fact(sizea)         := vector containing the factor varied within each traj
-% 	        DDo(sizea,sizea)    := D*       in Morris, 1991   
-%	        A(sizeb,sizea)      := Jk+1,k   in Morris, 1991
-%	        B(sizeb,sizea)      := B        in Morris, 1991
-%	        Po(sizea,sizea)     := P*       in Morris, 1991
+%               DDo(sizea,sizea)    := D*       in Morris, 1991   
+%               A(sizeb,sizea)      := Jk+1,k   in Morris, 1991
+%               B(sizeb,sizea)      := B        in Morris, 1991
+%               Po(sizea,sizea)     := P*       in Morris, 1991
 %           Bo(sizeb,sizea)     := B*       in Morris, 1991
-%	        Ao(sizeb,sizec)     := Jk+1,1   in Morris, 1991
-%	        xo(sizec,sizea)     := x*       in Morris, 1991 (starting point for the trajectory)
+%               Ao(sizeb,sizec)     := Jk+1,1   in Morris, 1991
+%               xo(sizec,sizea)     := x*       in Morris, 1991 (starting point for the trajectory)
 %           In(sizeb,sizea)     := for each loop orientation matrix. It corresponds to a trajectory
 %                                  of k step in the parameter space and it provides a single elementary
 %                                  effect per factor 
@@ -34,7 +34,7 @@ function [Outmatrix, OutFact] = Sampling_Function_2(p, k, r, UB, LB, GroupMat)
 %           AuxMat(sizeb,sizea) := Delta*0.5*((2*B - A) * DD0 + A) in Morris, 1991. The AuxMat is used as in Morris design
 %                                  for single factor analysis, while it constitutes an intermediate step for the group analysis.
 %
-%	Output: Outmatrix(sizeb*r, sizea) := for the entire sample size computed In(i,j) matrices
+%       Output: Outmatrix(sizeb*r, sizea) := for the entire sample size computed In(i,j) matrices
 %           OutFact(sizea*r,1)        := for the entire sample size computed Fact(i,1) vectors
 %           
 %   Note: B0 is constructed as in Morris design when groups are not considered. When groups are considered the routine
@@ -110,7 +110,7 @@ for i=1:r
     % Construct B (lower triangular)
     B = ones(sizeb,sizea);
     for j = 1:sizea
-       B(1:j,j)=0;    
+        B(1:j,j)=0;    
     end
     
     % Construct A0, A

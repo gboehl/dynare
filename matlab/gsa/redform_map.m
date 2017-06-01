@@ -429,7 +429,7 @@ end
 if isempty(threshold) && ~options_.nograph,
     if ilog==0,
         hfig=dyn_figure(options_.nodisplay,'name','Reduced Form GSA'); %bar(si)
-        % boxplot(si','whis',10,'symbol','r.')
+                                                                       % boxplot(si','whis',10,'symbol','r.')
         myboxplot(si',[],'.',[],10)
         xlabel(' ')
         set(gca,'xticklabel',' ','fontsize',10,'xtick',[1:np])
@@ -445,7 +445,7 @@ if isempty(threshold) && ~options_.nograph,
 
     else
         hfig=dyn_figure(options_.nodisplay,'name','Reduced Form GSA'); %bar(silog)
-        % boxplot(silog','whis',10,'symbol','r.')
+                                                                       % boxplot(silog','whis',10,'symbol','r.')
         myboxplot(silog',[],'.',[],10)
         set(gca,'xticklabel',' ','fontsize',10,'xtick',[1:np])
         xlabel(' ')
@@ -494,15 +494,15 @@ if iload==0,
     nest=min(250,nest);
     nfit=min(1000,nrun);
     %   dotheplots = (nfit<=nest);
-%     gsa_ = gsa_sdp(y0(1:nest), x0(1:nest,:), 2, [],[-1 -1 -1 -1 -1 0],[],0,[fname,'_est'], pnames);
+    %     gsa_ = gsa_sdp(y0(1:nest), x0(1:nest,:), 2, [],[-1 -1 -1 -1 -1 0],[],0,[fname,'_est'], pnames);
     [ys,is] = sort(y0);
     istep = ceil(nrun/nest);
     if istep>1,
-    iest = is(floor(istep/2):istep:end);
-    nest = length(iest);
-    irest = is(setdiff([1:nrun],[floor(istep/2):istep:nrun]));
-    istep = ceil(length(irest)/(nfit-nest));
-    ifit = union(iest, irest(1:istep:end));
+        iest = is(floor(istep/2):istep:end);
+        nest = length(iest);
+        irest = is(setdiff([1:nrun],[floor(istep/2):istep:nrun]));
+        istep = ceil(length(irest)/(nfit-nest));
+        ifit = union(iest, irest(1:istep:end));
     else
         warning('the number of samples is too small for ANOVA estimation')
         si=nan(np,1);
@@ -512,9 +512,9 @@ if iload==0,
         ifit = union(ifit, irest(end));
     end
     nfit=length(ifit);
-%     ifit = union(iest, irest(randperm(nrun-nest,nfit-nest)));
-%     ifit = iest;
-%     nfit=nest;
+    %     ifit = union(iest, irest(randperm(nrun-nest,nfit-nest)));
+    %     ifit = iest;
+    %     nfit=nest;
     ipred = setdiff([1:nrun],ifit);
 
     if ilog,
@@ -544,61 +544,61 @@ if iload==0,
     if ilog,
         [gsa22, gsa1, gsax] = ss_anova_log(y1(iest), x0(iest,:), isig, lam, gsa0);
     end
-%     if (gsa1.out.bic-gsa0.out.bic) < 10,
-%         y00=y0;
-%         gsa00=gsa0;
-%         gsa0=gsa1;
-%         y0=y1;
-%         ilog=1;
-%     end
-if nfit>nest,
-    %         gsa_ = gsa_sdp(y0(1:nfit), x0(1:nfit,:), -2, gsa_.nvr*nest^3/nfit^3,[-1 -1 -1 -1 -1 0],[],0,fname, pnames);
-    nvr =  gsa0.nvr*nest^3/nfit^3;
-    nvr(gsa0.stat<2) = gsa0.nvr(gsa0.stat<2)*nest^5/nfit^5;
-    gsa_ = ss_anova(y0(ifit), x0(ifit,:), 1, 0, 2, nvr);
-    if ilog
-        gsa0 = gsa_;
-        nvr1 =  gsa1.nvr*nest^3/nfit^3;
-        nvr1(gsa1.stat<2) = gsa1.nvr(gsa1.stat<2)*nest^5/nfit^5;
-        nvrx =  gsax.nvr*nest^3/nfit^3;
-        nvrx(gsax.stat<2) = gsax.nvr(gsax.stat<2)*nest^5/nfit^5;
-        [gsa22, gsa1, gsax] = ss_anova_log(y1(ifit), x0(ifit,:), isig, lam, gsa0, [nvr1' nvrx']);
-%         gsa1 = ss_anova(y1(ifit), x0(ifit,:), 1, 0, 2, nvr);
-%         gsa2=gsa1;
-%         gsa2.y = gsa0.y;
-%         gsa2.fit = (exp(gsa1.fit)-lam)*isig;
-%         gsa2.f0 = mean(gsa2.fit);
-%         gsa2.out.SSE = sum((gsa2.fit-gsa2.y).^2);
-%         gsa2.out.bic = gsa2.out.bic-nest*log(gsa1.out.SSE)+nest*log(gsa2.out.SSE);
-%         gsa2.r2 = 1-cov(gsa2.fit-gsa2.y)/cov(gsa2.y);
-%         for j=1:np,
-%             gsa2.fs(:,j) = exp(gsa1.fs(:,j)).*mean(exp(gsa1.fit-gsa1.f(:,j)))*isig-lam*isig-gsa2.f0;
-%             gsa2.f(:,j) = exp(gsa1.f(:,j)).*mean(exp(gsa1.fit-gsa1.f(:,j)))*isig-lam*isig-gsa2.f0;
-%             gsa2.si(j) = var(gsa2.f(:,j))/var(gsa2.y);
-%         end
-%         nvr =  gsax.nvr*nest^3/nfit^3;
-%         nvr(gsax.stat<2) = gsax.nvr(gsax.stat<2)*nest^5/nfit^5;
-%         gsax = ss_anova([gsa2.y-gsa2.fit], x0(ifit,:), 1, 0, 2, nvr);
-%         gsa22=gsa2;
-%         gsa22.fit = gsa2.fit+gsax.fit;
-%         gsa22.f0 = mean(gsa22.fit);
-%         gsa22.out.SSE = sum((gsa22.fit-gsa22.y).^2);
-%         gsa22.out.bic = nest*log(gsa22.out.SSE/nest) + (gsax.out.df+gsa2.out.df-1)*log(nest);
-%         gsa22.r2 = 1-sum((gsa22.fit-gsa22.y).^2)/sum((gsa22.y-mean(gsa22.y)).^2);
-%         for j=1:np,
-%             gsa22.fs(:,j) = gsa2.fs(:,j)+gsax.fs(:,j);
-%             gsa22.f(:,j) = gsa2.f(:,j)+gsax.f(:,j);
-%             gsa22.si(j) = var(gsa22.f(:,j))/var(gsa22.y);
-%         end
-        gsa_ = gsa22;
-    end
-else
-    if ilog
-        gsa_ = gsa22;
+    %     if (gsa1.out.bic-gsa0.out.bic) < 10,
+    %         y00=y0;
+    %         gsa00=gsa0;
+    %         gsa0=gsa1;
+    %         y0=y1;
+    %         ilog=1;
+    %     end
+    if nfit>nest,
+        %         gsa_ = gsa_sdp(y0(1:nfit), x0(1:nfit,:), -2, gsa_.nvr*nest^3/nfit^3,[-1 -1 -1 -1 -1 0],[],0,fname, pnames);
+        nvr =  gsa0.nvr*nest^3/nfit^3;
+        nvr(gsa0.stat<2) = gsa0.nvr(gsa0.stat<2)*nest^5/nfit^5;
+        gsa_ = ss_anova(y0(ifit), x0(ifit,:), 1, 0, 2, nvr);
+        if ilog
+            gsa0 = gsa_;
+            nvr1 =  gsa1.nvr*nest^3/nfit^3;
+            nvr1(gsa1.stat<2) = gsa1.nvr(gsa1.stat<2)*nest^5/nfit^5;
+            nvrx =  gsax.nvr*nest^3/nfit^3;
+            nvrx(gsax.stat<2) = gsax.nvr(gsax.stat<2)*nest^5/nfit^5;
+            [gsa22, gsa1, gsax] = ss_anova_log(y1(ifit), x0(ifit,:), isig, lam, gsa0, [nvr1' nvrx']);
+            %         gsa1 = ss_anova(y1(ifit), x0(ifit,:), 1, 0, 2, nvr);
+            %         gsa2=gsa1;
+            %         gsa2.y = gsa0.y;
+            %         gsa2.fit = (exp(gsa1.fit)-lam)*isig;
+            %         gsa2.f0 = mean(gsa2.fit);
+            %         gsa2.out.SSE = sum((gsa2.fit-gsa2.y).^2);
+            %         gsa2.out.bic = gsa2.out.bic-nest*log(gsa1.out.SSE)+nest*log(gsa2.out.SSE);
+            %         gsa2.r2 = 1-cov(gsa2.fit-gsa2.y)/cov(gsa2.y);
+            %         for j=1:np,
+            %             gsa2.fs(:,j) = exp(gsa1.fs(:,j)).*mean(exp(gsa1.fit-gsa1.f(:,j)))*isig-lam*isig-gsa2.f0;
+            %             gsa2.f(:,j) = exp(gsa1.f(:,j)).*mean(exp(gsa1.fit-gsa1.f(:,j)))*isig-lam*isig-gsa2.f0;
+            %             gsa2.si(j) = var(gsa2.f(:,j))/var(gsa2.y);
+            %         end
+            %         nvr =  gsax.nvr*nest^3/nfit^3;
+            %         nvr(gsax.stat<2) = gsax.nvr(gsax.stat<2)*nest^5/nfit^5;
+            %         gsax = ss_anova([gsa2.y-gsa2.fit], x0(ifit,:), 1, 0, 2, nvr);
+            %         gsa22=gsa2;
+            %         gsa22.fit = gsa2.fit+gsax.fit;
+            %         gsa22.f0 = mean(gsa22.fit);
+            %         gsa22.out.SSE = sum((gsa22.fit-gsa22.y).^2);
+            %         gsa22.out.bic = nest*log(gsa22.out.SSE/nest) + (gsax.out.df+gsa2.out.df-1)*log(nest);
+            %         gsa22.r2 = 1-sum((gsa22.fit-gsa22.y).^2)/sum((gsa22.y-mean(gsa22.y)).^2);
+            %         for j=1:np,
+            %             gsa22.fs(:,j) = gsa2.fs(:,j)+gsax.fs(:,j);
+            %             gsa22.f(:,j) = gsa2.f(:,j)+gsax.f(:,j);
+            %             gsa22.si(j) = var(gsa22.f(:,j))/var(gsa22.y);
+            %         end
+            gsa_ = gsa22;
+        end
     else
-        gsa_ = gsa0;
+        if ilog
+            gsa_ = gsa22;
+        else
+            gsa_ = gsa0;
+        end
     end
-end
     save([fname,'_map.mat'],'gsa_')
     [sidum, iii]=sort(-gsa_.si);
     gsa_.x0=x00(ifit,:);
@@ -613,13 +613,13 @@ end
         subplot(223),
         plot(y0(ifit),[gsa_.fit y0(ifit)],'.'),
         r2 = gsa_.r2;
-%         if ilog,
-%             plot(y00(ifit),[log_trans_(gsa_.fit,'',isig,lam) y00(ifit)],'.'),
-%             r2 = 1 - cov(log_trans_(gsa_.fit,'',isig,lam)-y00(ifit))/cov(y00(ifit));
-%         else               
-%             plot(y0(ifit),[gsa_.fit y0(ifit)],'.'),
-%             r2 = gsa_.r2;
-%         end
+        %         if ilog,
+        %             plot(y00(ifit),[log_trans_(gsa_.fit,'',isig,lam) y00(ifit)],'.'),
+        %             r2 = 1 - cov(log_trans_(gsa_.fit,'',isig,lam)-y00(ifit))/cov(y00(ifit));
+        %         else               
+        %             plot(y0(ifit),[gsa_.fit y0(ifit)],'.'),
+        %             r2 = gsa_.r2;
+        %         end
         title(['Learning sample fit - R2=' num2str(r2,2)],'interpreter','none')
         if nfit<nrun,
             if ilog,
@@ -643,7 +643,7 @@ end
     end
 else
     %   gsa_ = gsa_sdp_dyn(y0, x0, 0, [],[],[],0,fname, pnames);
-%     gsa_ = gsa_sdp(y0, x0, 0, [],[],[],0,fname, pnames);
+    %     gsa_ = gsa_sdp(y0, x0, 0, [],[],[],0,fname, pnames);
     load([fname,'_map.mat'],'gsa_')
     if ~options_.nograph,
         yf = ss_anova_fcast(x0, gsa_);
@@ -727,7 +727,7 @@ function indmcf = redform_mcf(y0, x0, options_mcf, options_)
 hfig=dyn_figure(options_.nodisplay,'name',options_mcf.amcf_title);
 
 [post_mean, post_median, post_var, hpd_interval, post_deciles, ...
-    density] = posterior_moments(y0,1,0.9);
+ density] = posterior_moments(y0,1,0.9);
 post_deciles = [-inf; post_deciles; inf];
 
 for jt=1:10,
@@ -763,16 +763,16 @@ aa(2)=0.02;
 set(hleg,'Position',aa);
 if ~isoctave
     annotation('textbox', [0.25,0.01,0.5,0.05], ...
-        'String', options_mcf.title, ...
-        'Color','black',...
-        'FontWeight','bold',...
-        'interpreter','none',...
-        'horizontalalignment','center');
+               'String', options_mcf.title, ...
+               'Color','black',...
+               'FontWeight','bold',...
+               'interpreter','none',...
+               'horizontalalignment','center');
 end
 
 dyn_saveas(hfig,[options_mcf.OutputDirectoryName filesep options_mcf.fname_,'_',options_mcf.amcf_name],options_.nodisplay,options_.graph_format);
 create_TeX_loader(options_,[options_mcf.OutputDirectoryName filesep options_mcf.fname_,'_',options_mcf.amcf_name],strrep(options_mcf.amcf_title,'_','\_'),[options_mcf.fname_,'_',options_mcf.amcf_name])
-        
+
 return
 
 function []=create_TeX_loader(options_,figpath,caption,label_name,scale_factor)

@@ -314,9 +314,9 @@ while (1>0);
                     if(pp<p);
                         if(optim.verbosity >=3);
                             if(optim.maximizer_indicator);
-                             fprintf('though lower, point accepted\n');
+                                fprintf('though lower, point accepted\n');
                             else
-                             fprintf('though higher, point accepted\n');
+                                fprintf('though higher, point accepted\n');
                             end;
                         end;
                         x=xp;
@@ -401,7 +401,7 @@ end
 
 function  print_current_invalid_try(max,xp,x,fp,f)
 fprintf('\n');
-    disp(['Current x    ' num2str(x(:)')]);
+disp(['Current x    ' num2str(x(:)')]);
 if(max);
     disp(['Current f    ' num2str(f)]);
 else

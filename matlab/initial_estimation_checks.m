@@ -69,7 +69,7 @@ if isfield(EstimatedParameters,'param_vals') && ~isempty(EstimatedParameters.par
     [junk, new_steady_params_2] = evaluate_steady_state(DynareResults.steady_state,Model_par_varied,DynareOptions,DynareResults,DynareOptions.diffuse_filter==0);
 
     changed_par_indices=find((old_steady_params(EstimatedParameters.param_vals(:,1))-new_steady_params(EstimatedParameters.param_vals(:,1))) ...
-            | (Model_par_varied.params(EstimatedParameters.param_vals(:,1))-new_steady_params_2(EstimatedParameters.param_vals(:,1))));
+                             | (Model_par_varied.params(EstimatedParameters.param_vals(:,1))-new_steady_params_2(EstimatedParameters.param_vals(:,1))));
 
     if ~isempty(changed_par_indices)
         fprintf('\nThe steady state file internally changed the values of the following estimated parameters:\n')
@@ -171,8 +171,8 @@ if info(1) > 0
             error('Your model has at least one unit root and you are using a nonlinear filter. Please set nonlinear_filter_initialization=3.')
         end
     else
-    disp('Error in computing likelihood for initial parameter values')
-    print_info(info, DynareOptions.noprint, DynareOptions)
+        disp('Error in computing likelihood for initial parameter values')
+        print_info(info, DynareOptions.noprint, DynareOptions)
     end
 end
 

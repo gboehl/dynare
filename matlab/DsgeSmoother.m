@@ -169,7 +169,7 @@ elseif options_.lik_init == 3           % Diffuse Kalman filter
         kalman_algo = 3;
     else
         if ~all(all(abs(H-diag(diag(H)))<1e-14))% ie, the covariance matrix is diagonal...
-            %Augment state vector (follows Section 6.4.3 of DK (2012))
+                                                %Augment state vector (follows Section 6.4.3 of DK (2012))
             expanded_state_vector_for_univariate_filter=1;
             T  = blkdiag(T,zeros(vobs));
             np    = size(T,1);
@@ -240,32 +240,32 @@ if kalman_algo == 1 || kalman_algo == 3
 end
 
 if kalman_algo == 2 || kalman_algo == 4
-        if ~all(all(abs(H-diag(diag(H)))<1e-14))% ie, the covariance matrix is diagonal...
-            if ~expanded_state_vector_for_univariate_filter
-                %Augment state vector (follows Section 6.4.3 of DK (2012))
-                expanded_state_vector_for_univariate_filter=1;
-                Z   = [Z, eye(vobs)];
-                ST  = blkdiag(ST,zeros(vobs));
-                np  = size(ST,1);
-                Q   = blkdiag(Q,H);
-                R1  = blkdiag(R,eye(vobs));
-                if kalman_algo == 4
-                    %recompute Schur state space transformation with
-                    %expanded state space
-                    [Pstar,Pinf] = compute_Pinf_Pstar(mf,ST,R1,Q,options_.qz_criterium);
-                else
-                    Pstar = blkdiag(Pstar,H);
-                    if ~isempty(Pinf)
-                        Pinf  = blkdiag(Pinf,zeros(vobs));                    
-                    end
-                end
-                %now reset H to 0
-                H   = zeros(vobs,vobs);
+    if ~all(all(abs(H-diag(diag(H)))<1e-14))% ie, the covariance matrix is diagonal...
+        if ~expanded_state_vector_for_univariate_filter
+            %Augment state vector (follows Section 6.4.3 of DK (2012))
+            expanded_state_vector_for_univariate_filter=1;
+            Z   = [Z, eye(vobs)];
+            ST  = blkdiag(ST,zeros(vobs));
+            np  = size(ST,1);
+            Q   = blkdiag(Q,H);
+            R1  = blkdiag(R,eye(vobs));
+            if kalman_algo == 4
+                %recompute Schur state space transformation with
+                %expanded state space
+                [Pstar,Pinf] = compute_Pinf_Pstar(mf,ST,R1,Q,options_.qz_criterium);
             else
-                %do nothing, state vector was already expanded
+                Pstar = blkdiag(Pstar,H);
+                if ~isempty(Pinf)
+                    Pinf  = blkdiag(Pinf,zeros(vobs));                    
+                end
             end
+            %now reset H to 0
+            H   = zeros(vobs,vobs);
+        else
+            %do nothing, state vector was already expanded
         end
-        
+    end
+    
     [alphahat,epsilonhat,etahat,ahat,P,aK,PK,decomp,state_uncertainty] = missing_DiffuseKalmanSmootherH3_Z(ST, ...
                                                       Z,R1,Q,diag(H), ...
                                                       Pinf,Pstar,data1,vobs,np,smpl,data_index, ...

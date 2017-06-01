@@ -53,11 +53,11 @@ end
 
 if (size(estim_params_.var_endo,1) || size(estim_params_.corrn,1))
     % Prior over measurement errors are defined...
-   if ((isfield(options_,'varobs') && isempty(options_.varobs)) || ~isfield(options_,'varobs'))
-       % ... But the list of observed variabled is not yet defined.
-       warning('Prior detected on measurement erros, but no list of observed variables (varobs is missing)!')
-       return
-   end
+    if ((isfield(options_,'varobs') && isempty(options_.varobs)) || ~isfield(options_,'varobs'))
+        % ... But the list of observed variabled is not yet defined.
+        warning('Prior detected on measurement erros, but no list of observed variables (varobs is missing)!')
+        return
+    end
 end
 
 % Fill or update bayestopt_ structure
@@ -114,7 +114,7 @@ if ismember('optimize', varargin) % Prior optimization.
 end
 
 if ismember('moments', varargin) % Prior simulations (2nd order moments).
-    % Set estimated parameters to the prior mode...
+                                 % Set estimated parameters to the prior mode...
     xparam1 = BayesOptions.p5;
     % ... Except for uniform priors (use the prior mean)!
     k = find(isnan(xparam1));

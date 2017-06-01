@@ -80,71 +80,71 @@ eval(['load ' fname]);
 
 % set prefix, shocks, ystart
 if ischar(varargin{2})
-  prefix = varargin{2};
-  if length(varargin) == 3
-    shocks = varargin{3};
-    ystart = NaN;
-  elseif length(varargin) == 4
-    shocks = varargin{3};
-    ystart = varargin{4};
-  else
-    error('Wrong number of parameters.');
-  end
+    prefix = varargin{2};
+    if length(varargin) == 3
+        shocks = varargin{3};
+        ystart = NaN;
+    elseif length(varargin) == 4
+        shocks = varargin{3};
+        ystart = varargin{4};
+    else
+        error('Wrong number of parameters.');
+    end
 else
-  prefix = 'dyn';
-  if length(varargin) == 2
-    shocks = varargin{2};
-    ystart = NaN;
-  elseif length(varargin) == 3
-    shocks = varargin{2};
-    ystart = varargin{3};
-  else
-    error('Wrong number of parameters.');
-  end
+    prefix = 'dyn';
+    if length(varargin) == 2
+        shocks = varargin{2};
+        ystart = NaN;
+    elseif length(varargin) == 3
+        shocks = varargin{2};
+        ystart = varargin{3};
+    else
+        error('Wrong number of parameters.');
+    end
 end
 
 % load all needed variables but prefix_g_*
 if (exist([prefix '_nstat']))
-  nstat = eval([prefix '_nstat']);
+    nstat = eval([prefix '_nstat']);
 else
-  error(['Could not find variable ' prefix '_nstat in workspace']);
+    error(['Could not find variable ' prefix '_nstat in workspace']);
 end
 if (exist([prefix '_npred']))
-  npred = eval([prefix '_npred']);
+    npred = eval([prefix '_npred']);
 else
-  error(['Could not find variable ' prefix '_npred in workspace']);
+    error(['Could not find variable ' prefix '_npred in workspace']);
 end
 if (exist([prefix '_nboth']))
-  nboth = eval([prefix '_nboth']);
+    nboth = eval([prefix '_nboth']);
 else
-  error(['Could not find variable ' prefix '_nboth in workspace']);
+    error(['Could not find variable ' prefix '_nboth in workspace']);
 end
 if (exist([prefix '_nforw']))
-  nforw = eval([prefix '_nforw']);
+    nforw = eval([prefix '_nforw']);
 else
-  error(['Could not find variable ' prefix '_nforw in workspace']);
+    error(['Could not find variable ' prefix '_nforw in workspace']);
 end
 if (exist([prefix '_ss']))
-  ss = eval([prefix '_ss']);
+    ss = eval([prefix '_ss']);
 else
-  error(['Could not find variable ' prefix '_ss in workspace']);
+    error(['Could not find variable ' prefix '_ss in workspace']);
 end
 if (exist([prefix '_vcov_exo']))
-  vcov_exo = eval([prefix '_vcov_exo']);
+    vcov_exo = eval([prefix '_vcov_exo']);
 else
-  error(['Could not find variable ' prefix '_vcov_exo in workspace']);
+    error(['Could not find variable ' prefix '_vcov_exo in workspace']);
 end
 nexog = size(vcov_exo,1);
 
 if isnan(ystart)
-  ystart = ss;
+    ystart = ss;
 end
 
 % newer version of dynare++ doesn't return prefix_g_0, we make it here if
 % it does not exist in workspace
 g_zero = [prefix '_g_0'];
 if (~ exist(g_zero))
-  eval([ g_zero '= zeros(nstat+npred+nboth+nforw,1);']);
+    eval([ g_zero '= zeros(nstat+npred+nboth+nforw,1);']);
 end
 
 % make derstr a string of comma seperated existing prefix_g_*
@@ -152,13 +152,13 @@ derstr = [',' g_zero];
 order = 1;
 cont = 1;
 while cont == 1
-  g_ord = [prefix '_g_' num2str(order)];
-  if (exist(g_ord))
-    derstr = [derstr ',' g_ord];
-    order = order + 1;
-  else
-    cont = 0;
-  end
+    g_ord = [prefix '_g_' num2str(order)];
+    if (exist(g_ord))
+        derstr = [derstr ',' g_ord];
+        order = order + 1;
+    else
+        cont = 0;
+    end
 end
 
 % set seed

@@ -1,8 +1,8 @@
 %read in the FV et al. policy functions derived from Mathematica
 if ~isoctave() && ~matlab_ver_less_than('8.4')
-   websave('FV_2011_policyfunctions.mat','http://www.dynare.org/Datasets/FV_2011_policyfunctions.mat', weboptions('Timeout', 30))
+    websave('FV_2011_policyfunctions.mat','http://www.dynare.org/Datasets/FV_2011_policyfunctions.mat', weboptions('Timeout', 30))
 else
-   urlwrite('http://www.dynare.org/Datasets/FV_2011_policyfunctions.mat','FV_2011_policyfunctions.mat')
+    urlwrite('http://www.dynare.org/Datasets/FV_2011_policyfunctions.mat','FV_2011_policyfunctions.mat')
 end
 
 load FV_2011_policyfunctions
@@ -79,9 +79,9 @@ end
 gxxx_dyn=zeros(size(gxxx));
 for endo_iter_1=1:nx
     for endo_iter_2=1:nx
-         for endo_iter_3=1:nx
+        for endo_iter_3=1:nx
             gxxx_dyn(nu+endo_iter_1,nu+endo_iter_2,nu+endo_iter_3,:)=dr.ghxxx(FV_endo_order,(FV_endo_state_order(endo_iter_1)-1)*nx*nx+(FV_endo_state_order(endo_iter_2)-1)*nx+FV_endo_state_order(endo_iter_3));
-         end
+        end
     end
 end
 
@@ -95,21 +95,21 @@ end
 
 for endo_iter_1=1:nx
     for endo_iter_2=1:nx
-         for exo_iter=1:nu
+        for exo_iter=1:nu
             gxxx_dyn(nu+endo_iter_1,nu+endo_iter_2,exo_iter,:)=dr.ghxxu(FV_endo_order,(FV_endo_state_order(endo_iter_1)-1)*nx*nu+(FV_endo_state_order(endo_iter_2)-1)*nu+FV_exo_order(exo_iter));
             gxxx_dyn(exo_iter,nu+endo_iter_2,nu+endo_iter_1,:)=dr.ghxxu(FV_endo_order,(FV_endo_state_order(endo_iter_1)-1)*nx*nu+(FV_endo_state_order(endo_iter_2)-1)*nu+FV_exo_order(exo_iter));
             gxxx_dyn(nu+endo_iter_1,exo_iter,nu+endo_iter_2,:)=dr.ghxxu(FV_endo_order,(FV_endo_state_order(endo_iter_1)-1)*nx*nu+(FV_endo_state_order(endo_iter_2)-1)*nu+FV_exo_order(exo_iter));      
-         end
+        end
     end
 end
 
 for endo_iter_1=1:nx
     for exo_iter_1=1:nu
-         for exo_iter_2=1:nu
+        for exo_iter_2=1:nu
             gxxx_dyn(nu+endo_iter_1,exo_iter_1,exo_iter_2,:)=dr.ghxuu(FV_endo_order,(FV_endo_state_order(endo_iter_1)-1)*nu*nu+(FV_exo_order(exo_iter_1)-1)*nu+FV_exo_order(exo_iter_2));
             gxxx_dyn(exo_iter_1,nu+endo_iter_1,exo_iter_2,:)=dr.ghxuu(FV_endo_order,(FV_endo_state_order(endo_iter_1)-1)*nu*nu+(FV_exo_order(exo_iter_1)-1)*nu+FV_exo_order(exo_iter_2));
             gxxx_dyn(exo_iter_1,exo_iter_2,nu+endo_iter_1,:)=dr.ghxuu(FV_endo_order,(FV_endo_state_order(endo_iter_1)-1)*nu*nu+(FV_exo_order(exo_iter_1)-1)*nu+FV_exo_order(exo_iter_2));
-         end
+        end
     end
 end
 

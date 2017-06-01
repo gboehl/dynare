@@ -39,7 +39,7 @@ function [steady_state,params,check] = dyn_ramsey_static(ys_init,M,options_,oo)
 params = M.params;
 check = 0;
 options_.steadystate.nocheck = 1; %locally disable checking because Lagrange multipliers are not accounted for in evaluate_steady_state_file
-% dyn_ramsey_static_1 is a subfunction
+                                  % dyn_ramsey_static_1 is a subfunction
 nl_func = @(x) dyn_ramsey_static_1(x,M,options_,oo);
 
 % check_static_model is a subfunction
@@ -120,7 +120,7 @@ if options_.steadystate_flag
     ys_init(k_inst) = x; %set instrument, the only value required for steady state computation, to current value
     [x,params,check] = evaluate_steady_state_file(ys_init,... %returned x now has size endo_nbr as opposed to input size of n_instruments
                                                   [oo.exo_steady_state; ...
-                                                  oo.exo_det_steady_state], ...
+                        oo.exo_det_steady_state], ...
                                                   M,options_,~options_.steadystate.nocheck);
     if any(imag(x(1:M.orig_endo_nbr))) %return with penalty
         resids=1+sum(abs(imag(x(1:M.orig_endo_nbr)))); %return with penalty
@@ -154,12 +154,12 @@ Uyy = reshape(Uyy,endo_nbr,endo_nbr);
 % set multipliers and auxiliary variables that
 % depends on multipliers to 0 to compute residuals
 if (options_.bytecode)
-   [chck, res, junk] = bytecode('static',xx,[oo.exo_steady_state oo.exo_det_steady_state], ...
-               params, 'evaluate');
-   fJ = junk.g1;
+    [chck, res, junk] = bytecode('static',xx,[oo.exo_steady_state oo.exo_det_steady_state], ...
+                                 params, 'evaluate');
+    fJ = junk.g1;
 else
-   [res,fJ] = feval([fname '_static'],xx,[oo.exo_steady_state oo.exo_det_steady_state], ...
-               params);
+    [res,fJ] = feval([fname '_static'],xx,[oo.exo_steady_state oo.exo_det_steady_state], ...
+                     params);
 end
 % index of multipliers and corresponding equations
 % the auxiliary variables before the Lagrange multipliers are treated

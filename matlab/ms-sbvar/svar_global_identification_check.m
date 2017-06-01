@@ -47,7 +47,7 @@ if isequal(options_.ms.restriction_fname, 'upper_cholesky') || ...
 end
 nvar = length(options_.varobs);   % number of endogenous variables
 nexo = 1;
-   
+
 [Uiconst,Viconst,n0,np,ixmC0Pres,Qi,Ri] = exclusions(nvar,nexo,options_.ms );
 
 % order column constraints by rank

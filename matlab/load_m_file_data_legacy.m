@@ -81,82 +81,82 @@ o2WysrOISH = dseries(eval(sprintf(VbO4y7zOlh, U7ORsJ0vy3{:})), [], U7ORsJ0vy3);
 return
 
 %@test:1
- % Write a data file
- fid = fopen('example.m','w');
- fwriten(fid, 'a = randn(100,1);');
- fwriten(fid, 'b = randn(100,1);');
- fwriten(fid, 'c = transpose(randn(100,1));');
- fwriten(fid, 'd = randn(100,1);');
- fwriten(fid, 'e = randn(100,2);');
- fwriten(fid, ' ');
- fwriten(fid, 'f = NaN(100,1);');
- fwriten(fid, 'for i=1:100');
- fwriten(fid, '  f(i) = log(rand());')
- fwriten(fid, 'end');
- fclose(fid);
- % Define a set of variables to be loaded.
- listofvariablestobeloaded = {'b', 'a'};
- % Test if we can load the data.
- try
-     data = load_m_file_data_legacy('example.m', listofvariablestobeloaded);
-     delete example.m
-     t(1) = 1;
- catch
-     t(1) = 0;
- end
- T = all(t);
+% Write a data file
+fid = fopen('example.m','w');
+fwriten(fid, 'a = randn(100,1);');
+fwriten(fid, 'b = randn(100,1);');
+fwriten(fid, 'c = transpose(randn(100,1));');
+fwriten(fid, 'd = randn(100,1);');
+fwriten(fid, 'e = randn(100,2);');
+fwriten(fid, ' ');
+fwriten(fid, 'f = NaN(100,1);');
+fwriten(fid, 'for i=1:100');
+fwriten(fid, '  f(i) = log(rand());')
+fwriten(fid, 'end');
+fclose(fid);
+% Define a set of variables to be loaded.
+listofvariablestobeloaded = {'b', 'a'};
+% Test if we can load the data.
+try
+    data = load_m_file_data_legacy('example.m', listofvariablestobeloaded);
+    delete example.m
+    t(1) = 1;
+catch
+    t(1) = 0;
+end
+T = all(t);
 %@eof:1
 
 %@test:2
- % Write a data file
- fid = fopen('example.m','w');
- fwriten(fid, 'a = randn(100,1);');
- fwriten(fid, 'b = randn(100,1);');
- fwriten(fid, 'c = transpose(randn(100,1));');
- fwriten(fid, 'd = randn(100,1);');
- fwriten(fid, 'e = randn(100,2);');
- fwriten(fid, ' ');
- fwriten(fid, 'f = NaN(100,1);');
- fwriten(fid, 'for i=1:100');
- fwriten(fid, '  f(i) = log(rand());')
- fwriten(fid, 'end');
- fclose(fid);
- % Define a set of variables to be loaded.
- listofvariablestobeloaded = {'e', 'a'};
- % Test if we can load the data.
- try
-     data = load_m_file_data_legacy('example.m', listofvariablestobeloaded);
-     delete example.m
-     t(1) = 0;
- catch
-     t(1) = 1;
- end
- T = all(t);
+% Write a data file
+fid = fopen('example.m','w');
+fwriten(fid, 'a = randn(100,1);');
+fwriten(fid, 'b = randn(100,1);');
+fwriten(fid, 'c = transpose(randn(100,1));');
+fwriten(fid, 'd = randn(100,1);');
+fwriten(fid, 'e = randn(100,2);');
+fwriten(fid, ' ');
+fwriten(fid, 'f = NaN(100,1);');
+fwriten(fid, 'for i=1:100');
+fwriten(fid, '  f(i) = log(rand());')
+fwriten(fid, 'end');
+fclose(fid);
+% Define a set of variables to be loaded.
+listofvariablestobeloaded = {'e', 'a'};
+% Test if we can load the data.
+try
+    data = load_m_file_data_legacy('example.m', listofvariablestobeloaded);
+    delete example.m
+    t(1) = 0;
+catch
+    t(1) = 1;
+end
+T = all(t);
 %@eof:2
 
 %@test:3
- % Write a data file
- fid = fopen('example.m','w');
- fwriten(fid, 'a = randn(100,1);');
- fwriten(fid, 'b = randn(100,1);');
- fwriten(fid, 'c = transpose(randn(100,1));');
- fwriten(fid, 'd = randn(100,1);');
- fwriten(fid, 'e = randn(100,2);');
- fwriten(fid, ' ');
- fwriten(fid, 'f = NaN(100,1);');
- fwriten(fid, 'for i=1:100');
- fwriten(fid, '  f(i) = log(rand());')
- fwriten(fid, 'end');
- fclose(fid);
- % Define a set of variables to be loaded.
- listofvariablestobeloaded = {'c', 'a'};
- % Test if we can load the data.
- try
-     data = load_m_file_data_legacy('example.m', listofvariablestobeloaded);
-     delete example.m
-     t(1) = 1;
- catch
-     t(1) = 0;
- end
- T = all(t);
+% Write a data file
+fid = fopen('example.m','w');
+fwriten(fid, 'a = randn(100,1);');
+fwriten(fid, 'b = randn(100,1);');
+fwriten(fid, 'c = transpose(randn(100,1));');
+fwriten(fid, 'd = randn(100,1);');
+fwriten(fid, 'e = randn(100,2);');
+fwriten(fid, ' ');
+fwriten(fid, 'f = NaN(100,1);');
+fwriten(fid, 'for i=1:100');
+fwriten(fid, '  f(i) = log(rand());')
+fwriten(fid, 'end');
+fclose(fid);
+% Define a set of variables to be loaded.
+listofvariablestobeloaded = {'c', 'a'};
+% Test if we can load the data.
+try
+    data = load_m_file_data_legacy('example.m', listofvariablestobeloaded);
+    delete example.m
+    t(1) = 1;
+catch
+    t(1) = 0;
+end
+T = all(t);
 %@eof:3

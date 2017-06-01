@@ -58,19 +58,18 @@ function [err, X, varargout] = gensylv(order, A, B, C, D)
 % in Windows, ensure that aa_gensylv.dll is loaded, this prevents
 % clearing the function and a successive Matlab crash
 if strcmp('PCWIN', computer)
-  if ~ libisloaded('aa_gensylv') 
-    loadlibrary('aa_gensylv', 'dummy');
-  end
+    if ~ libisloaded('aa_gensylv') 
+        loadlibrary('aa_gensylv', 'dummy');
+    end
 end
 
 % launch aa_gensylv
 if nargout == 2
-  X = aa_gensylv(order, A, B, C, D);
+    X = aa_gensylv(order, A, B, C, D);
 elseif nargout == 3
-  [X, par] = aa_gensylv(order, A, B, C, D);
-  varargout(1) = {par};
+    [X, par] = aa_gensylv(order, A, B, C, D);
+    varargout(1) = {par};
 else
-  error('Must have 2 or 3 output arguments.');
+    error('Must have 2 or 3 output arguments.');
 end
 err = 0;
-  

@@ -120,8 +120,8 @@ for i=fpar:nvar
     end
     
     if whoiam,
-%         waitbarString = [ 'Variable ' int2str(i) '/' int2str(nvar) ' done.'];
-%         fMessageStatus((i-fpar+1)/(nvar-fpar+1),whoiam,waitbarString, waitbarTitle, Parallel(ThisMatlab));
+        %         waitbarString = [ 'Variable ' int2str(i) '/' int2str(nvar) ' done.'];
+        %         fMessageStatus((i-fpar+1)/(nvar-fpar+1),whoiam,waitbarString, waitbarTitle, Parallel(ThisMatlab));
         dyn_waitbar((i-fpar+1)/(nvar-fpar+1),h);
     end
     

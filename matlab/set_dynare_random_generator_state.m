@@ -23,37 +23,37 @@ function [state_u,state_n] = set_dynare_random_generator_state(state_u,state_n)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-    matlab_random_streams = ~(isoctave || matlab_ver_less_than('7.7'));
+matlab_random_streams = ~(isoctave || matlab_ver_less_than('7.7'));
 
-    if matlab_random_streams% Use new matlab interface.
-        if matlab_ver_less_than('7.12')
-            s = RandStream.getDefaultStream();
-        else
-            s = RandStream.getGlobalStream();
-        end
-        if isequal(s.Type,'legacy')
-            rand('state',state_u);
-            randn('state',state_n);
-        else            
-            if ~isequal(state_u,state_n)
-                error(['You are using the new Matlab RandStream mechanism ' ...
-                       'with a single random generator, but the values ' ...
-                       'of the state of the uniformly ' ...
-                       'distributed numbers and of the state of the ' ...
-                       'normally distributed numbers are different. Something must be ' ...
-                       'wrong, such as reloading old Metropolis runs, ' ...
-                       'computed on a different version of Matlab. If you ' ...
-                       'don''t understand the origin of the problem, ' ...
-                       'please, contact Dynare''s development team.'])
-            end
-            s.State = state_u;
-            if matlab_ver_less_than('7.12')
-                RandStream.setDefaultStream(s);
-            else
-                RandStream.setGlobalStream(s);
-            end
-        end
-    else% Use old matlab interface.
+if matlab_random_streams% Use new matlab interface.
+    if matlab_ver_less_than('7.12')
+        s = RandStream.getDefaultStream();
+    else
+        s = RandStream.getGlobalStream();
+    end
+    if isequal(s.Type,'legacy')
         rand('state',state_u);
         randn('state',state_n);
+    else            
+        if ~isequal(state_u,state_n)
+            error(['You are using the new Matlab RandStream mechanism ' ...
+                   'with a single random generator, but the values ' ...
+                   'of the state of the uniformly ' ...
+                   'distributed numbers and of the state of the ' ...
+                   'normally distributed numbers are different. Something must be ' ...
+                   'wrong, such as reloading old Metropolis runs, ' ...
+                   'computed on a different version of Matlab. If you ' ...
+                   'don''t understand the origin of the problem, ' ...
+                   'please, contact Dynare''s development team.'])
+        end
+        s.State = state_u;
+        if matlab_ver_less_than('7.12')
+            RandStream.setDefaultStream(s);
+        else
+            RandStream.setGlobalStream(s);
+        end
     end
+else% Use old matlab interface.
+    rand('state',state_u);
+    randn('state',state_n);
+end

@@ -38,7 +38,7 @@ else
         error('You have specified a steady state file, but not provided an instrument. Either delete the steady state file or provide an instrument')
     end
 end
-        
+
 info = stoch_simul(var_list);
 
 oo_.steady_state = oo_.dr.ys;

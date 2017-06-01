@@ -157,22 +157,22 @@ end
 
 %initialize arrays
 if run_smoother
-  stock_smooth=NaN(endo_nbr,gend,MAX_nsmoo);
-  stock_update=NaN(endo_nbr,gend,MAX_nsmoo);
-  stock_innov=NaN(M_.exo_nbr,gend,MAX_ninno);
-  stock_smoothed_constant=NaN(endo_nbr,gend,MAX_n_smoothed_constant);
-  stock_smoothed_trend=NaN(endo_nbr,gend,MAX_n_smoothed_trend);
-  stock_trend_coeff = zeros(endo_nbr,MAX_n_trend_coeff);
-  if horizon
-      stock_forcst_mean= NaN(endo_nbr,horizon,MAX_nforc1);
-      stock_forcst_point = NaN(endo_nbr,horizon,MAX_nforc2);
-      if ~isequal(M_.H,0)
-          stock_forcst_point_ME = NaN(length(varobs),horizon,MAX_nforc_ME);
-      end
-  end
+    stock_smooth=NaN(endo_nbr,gend,MAX_nsmoo);
+    stock_update=NaN(endo_nbr,gend,MAX_nsmoo);
+    stock_innov=NaN(M_.exo_nbr,gend,MAX_ninno);
+    stock_smoothed_constant=NaN(endo_nbr,gend,MAX_n_smoothed_constant);
+    stock_smoothed_trend=NaN(endo_nbr,gend,MAX_n_smoothed_trend);
+    stock_trend_coeff = zeros(endo_nbr,MAX_n_trend_coeff);
+    if horizon
+        stock_forcst_mean= NaN(endo_nbr,horizon,MAX_nforc1);
+        stock_forcst_point = NaN(endo_nbr,horizon,MAX_nforc2);
+        if ~isequal(M_.H,0)
+            stock_forcst_point_ME = NaN(length(varobs),horizon,MAX_nforc_ME);
+        end
+    end
 end
 if nvn
-  stock_error = NaN(length(varobs),gend,MAX_nerro);
+    stock_error = NaN(length(varobs),gend,MAX_nerro);
 end
 if naK
     stock_filter_step_ahead =NaN(length(options_.filter_step_ahead),endo_nbr,gend+max(options_.filter_step_ahead),MAX_naK);
@@ -286,10 +286,10 @@ for b=fpar:B
                                                  horizon+maxlag,1);
                 % add trend, taking into account that last point of sample is still included in forecasts and only cut off later
                 yf(:,IdObs) = yf(:,IdObs)+((options_.first_obs-1)+gend+[1-maxlag:horizon]')*trend_coeff'-...
-                             repmat(mean(trend_coeff*[options_.first_obs:options_.first_obs+gend-1],2)',length(1-maxlag:horizon),1); %center trend
+                    repmat(mean(trend_coeff*[options_.first_obs:options_.first_obs+gend-1],2)',length(1-maxlag:horizon),1); %center trend
             else
                 % add trend, taking into account that last point of sample is still included in forecasts and only cut off later
-                    yf(:,IdObs) = yf(:,IdObs)+((options_.first_obs-1)+gend+[1-maxlag:horizon]')*trend_coeff';                
+                yf(:,IdObs) = yf(:,IdObs)+((options_.first_obs-1)+gend+[1-maxlag:horizon]')*trend_coeff';                
             end
             if options_.loglinear
                 yf = yf+repmat(log(SteadyState'),horizon+maxlag,1);
@@ -303,10 +303,10 @@ for b=fpar:B
                     repmat(mean_varobs,[horizon+maxlag,1,1]);
                 % add trend, taking into account that last point of sample is still included in forecasts and only cut off later
                 yf1(:,IdObs) = yf1(:,IdObs)+((options_.first_obs-1)+gend+[1-maxlag:horizon]')*trend_coeff'-...
-                             repmat(mean(trend_coeff*[options_.first_obs:options_.first_obs+gend-1],2)',length(1-maxlag:horizon),1); %center trend
+                    repmat(mean(trend_coeff*[options_.first_obs:options_.first_obs+gend-1],2)',length(1-maxlag:horizon),1); %center trend
             else
-               % add trend, taking into account that last point of sample is still included in forecasts and only cut off later
-               yf1(:,IdObs,:) = yf1(:,IdObs,:)+repmat(((options_.first_obs-1)+gend+[1-maxlag:horizon]')* ...
+                % add trend, taking into account that last point of sample is still included in forecasts and only cut off later
+                yf1(:,IdObs,:) = yf1(:,IdObs,:)+repmat(((options_.first_obs-1)+gend+[1-maxlag:horizon]')* ...
                                                        trend_coeff',[1,1,1]);
             end
             if options_.loglinear

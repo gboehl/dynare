@@ -58,33 +58,33 @@ disp('Starting sensitivity analysis')
 disp('for the fit of EACH observed series ...')
 skipline()
 if ~options_.nograph,
-disp('Deleting old SA figures...')
-a=dir([OutDir,filesep,'*.*']);
-tmp1='0';
-if options_.opt_gsa.ppost,
-    tmp=['_rmse_post'];
-else
-    if options_.opt_gsa.pprior
-        tmp=['_rmse_prior'];
+    disp('Deleting old SA figures...')
+    a=dir([OutDir,filesep,'*.*']);
+    tmp1='0';
+    if options_.opt_gsa.ppost,
+        tmp=['_rmse_post'];
     else
-        tmp=['_rmse_mc'];
+        if options_.opt_gsa.pprior
+            tmp=['_rmse_prior'];
+        else
+            tmp=['_rmse_mc'];
+        end
+        if options_gsa_.lik_only,
+            tmp1 = [tmp,'_post_SA'];
+            tmp = [tmp,'_lik_SA'];
+        end
     end
-    if options_gsa_.lik_only,
-        tmp1 = [tmp,'_post_SA'];
-        tmp = [tmp,'_lik_SA'];
+    for j=1:length(a),
+        if strmatch([fname_,tmp],a(j).name),
+            disp(a(j).name)
+            delete([OutDir,filesep,a(j).name])
+        end,
+        if strmatch([fname_,tmp1],a(j).name),
+            disp(a(j).name)
+            delete([OutDir,filesep,a(j).name])
+        end,
     end
-end
-for j=1:length(a),
-    if strmatch([fname_,tmp],a(j).name),
-        disp(a(j).name)
-        delete([OutDir,filesep,a(j).name])
-    end,
-    if strmatch([fname_,tmp1],a(j).name),
-        disp(a(j).name)
-        delete([OutDir,filesep,a(j).name])
-    end,
-end
-disp('done !')
+    disp('done !')
 end
 
 nshock=estim_params_.nvx + estim_params_.nvn + estim_params_.ncx + estim_params_.ncn;
@@ -425,19 +425,19 @@ else
                 if options_.opt_gsa.ppost
                     dyn_saveas(hh,[OutDir filesep fname_ '_rmse_post_lnprior',int2str(ifig)],options_.nodisplay,options_.graph_format);
                     if options_.TeX
-                    create_TeX_loader(options_,[OutDir '/' fname_ '_rmse_post_lnprior',int2str(ifig)],ifig,[temp_name,' ',int2str(ifig)],'rmse_post_lnprior',options_.figures.textwidth*min((i-9*(ifig-1))/3,1))
+                        create_TeX_loader(options_,[OutDir '/' fname_ '_rmse_post_lnprior',int2str(ifig)],ifig,[temp_name,' ',int2str(ifig)],'rmse_post_lnprior',options_.figures.textwidth*min((i-9*(ifig-1))/3,1))
                     end
                 else
                     if options_.opt_gsa.pprior
                         dyn_saveas(hh,[OutDir filesep fname_ '_rmse_prior_lnprior',int2str(ifig) ],options_.nodisplay,options_.graph_format);
-                    if options_.TeX
-                        create_TeX_loader(options_,[OutDir '/' fname_ '_rmse_prior_lnprior',int2str(ifig)],ifig,[temp_name,' ',int2str(ifig)],'rmse_prior_lnprior',options_.figures.textwidth*min((i-9*(ifig-1))/3,1))
-                    end
+                        if options_.TeX
+                            create_TeX_loader(options_,[OutDir '/' fname_ '_rmse_prior_lnprior',int2str(ifig)],ifig,[temp_name,' ',int2str(ifig)],'rmse_prior_lnprior',options_.figures.textwidth*min((i-9*(ifig-1))/3,1))
+                        end
                     else
                         dyn_saveas(hh,[OutDir filesep fname_ '_rmse_mc_lnprior',int2str(ifig) ],options_.nodisplay,options_.graph_format);
-                    if options_.TeX
-                        create_TeX_loader(options_,[OutDir '/' fname_ '_rmse_mc_lnprior',int2str(ifig)],ifig,[temp_name,' ',int2str(ifig)],'rmse_mc_lnprior',options_.figures.textwidth*min((i-9*(ifig-1))/3,1))
-                    end
+                        if options_.TeX
+                            create_TeX_loader(options_,[OutDir '/' fname_ '_rmse_mc_lnprior',int2str(ifig)],ifig,[temp_name,' ',int2str(ifig)],'rmse_mc_lnprior',options_.figures.textwidth*min((i-9*(ifig-1))/3,1))
+                        end
                     end
                 end
             end
@@ -604,10 +604,10 @@ else
     data_mat=NaN(size(vvarvecm,1),5);
     for j=1:size(vvarvecm,1),
         data_mat(j,:)=[min(rmse_MC(ixx(1:nfilt0(j),j),j)) ...
-            max(rmse_MC(ixx(1:nfilt0(j),j),j))  ...
-            min(rmse_MC(ixx(nfilt0(j)+1:end,j),j)) ...
-            max(rmse_MC(ixx(nfilt0(j)+1:end,j),j)) ...
-            rmse_txt(j)];
+                       max(rmse_MC(ixx(1:nfilt0(j),j),j))  ...
+                       min(rmse_MC(ixx(nfilt0(j)+1:end,j),j)) ...
+                       max(rmse_MC(ixx(nfilt0(j)+1:end,j),j)) ...
+                       rmse_txt(j)];
     end
     %get formatting for additional header line
     val_width=15;
@@ -678,10 +678,10 @@ else
     data_mat=NaN(size(vvarvecm,1),5);
     for j=1:size(vvarvecm,1),
         data_mat(j,:)=[min(r2_MC(ixx(1:nfilt0(j),j),j)) ...
-            max(r2_MC(ixx(1:nfilt0(j),j),j))  ...
-            min(r2_MC(ixx(nfilt0(j)+1:end,j),j)) ...
-            max(r2_MC(ixx(nfilt0(j)+1:end,j),j)) ...
-            r2_txt(j)];
+                       max(r2_MC(ixx(1:nfilt0(j),j),j))  ...
+                       min(r2_MC(ixx(nfilt0(j)+1:end,j),j)) ...
+                       max(r2_MC(ixx(nfilt0(j)+1:end,j),j)) ...
+                       r2_txt(j)];
     end
     %get formatting for additional header line
     val_width=15;
@@ -924,64 +924,64 @@ else
         end
     end
     
-%     for j=1:size(SP,2),
-%         nsx(j)=length(find(SP(:,j)));
-%     end
+    %     for j=1:size(SP,2),
+    %         nsx(j)=length(find(SP(:,j)));
+    %     end
     
-%     skipline(2)
-%     disp('Sensitivity table (significance and direction):')
-%     vav=char(zeros(1, size(param_names,2)+3 ));
-%     ibl = 12-size(vvarvecm,2);
-%     for j=1:size(vvarvecm,1),
-%         vav = [vav, char(zeros(1,ibl)),vvarvecm(j,:)];
-%     end
-%     disp(vav)
-%     for j=1:npar+nshock, %estim_params_.np,
-%         %disp([param_names(j,:), sprintf('%8.5g',SP(j,:))])
-%         disp([param_names(j,:),'   ', sprintf('%12.3g',PP(j,:))])
-%         disp([char(zeros(1, size(param_names,2)+3 )),sprintf('    (%6g)',SS(j,:))])
-%     end
+    %     skipline(2)
+    %     disp('Sensitivity table (significance and direction):')
+    %     vav=char(zeros(1, size(param_names,2)+3 ));
+    %     ibl = 12-size(vvarvecm,2);
+    %     for j=1:size(vvarvecm,1),
+    %         vav = [vav, char(zeros(1,ibl)),vvarvecm(j,:)];
+    %     end
+    %     disp(vav)
+    %     for j=1:npar+nshock, %estim_params_.np,
+    %         %disp([param_names(j,:), sprintf('%8.5g',SP(j,:))])
+    %         disp([param_names(j,:),'   ', sprintf('%12.3g',PP(j,:))])
+    %         disp([char(zeros(1, size(param_names,2)+3 )),sprintf('    (%6g)',SS(j,:))])
+    %     end
     
     
-%     skipline()
-%     disp('Starting bivariate analysis:')
-%     
-%     for i=1:size(vvarvecm,1)
-%         if options_.opt_gsa.ppost
-%             fnam = ['rmse_post_',deblank(vvarvecm(i,:))];
-%         else
-%             if options_.opt_gsa.pprior
-%                 fnam = ['rmse_prior_',deblank(vvarvecm(i,:))];
-%             else
-%                 fnam = ['rmse_mc_',deblank(vvarvecm(i,:))];
-%             end
-%         end
-%         stab_map_2(x(ixx(1:nfilt0(i),i),:),alpha2,pvalue,fnam, OutDir,[],[temp_name ' observed variable ' deblank(vvarvecm(i,:))]);
-%         
-%         %     [pc,latent,explained] = pcacov(c0);
-%         %     %figure, bar([explained cumsum(explained)])
-%         %     ifig=0;
-%         %     j2=0;
-%         %     for j=1:npar+nshock,
-%         %         i2=find(abs(pc(:,j))>alphaPC);
-%         %         if ~isempty(i2),
-%         %             j2=j2+1;
-%         %             if mod(j2,12)==1,
-%         %                 ifig=ifig+1;
-%         %                 figure('name',['PCA of the filtered sample ',deblank(vvarvecm(i,:)),' ',num2str(ifig)]),
-%         %             end
-%         %             subplot(3,4,j2-(ifig-1)*12)
-%         %             bar(pc(i2,j)),
-%         %             set(gca,'xticklabel',bayestopt_.name(i2)),
-%         %             set(gca,'xtick',[1:length(i2)])
-%         %             title(['PC ',num2str(j),'. Explained ',num2str(explained(j)),'%'])
-%         %         end
-%         %         if (mod(j2,12)==0 | j==(npar+nshock)) & j2,
-%         %             saveas(gcf,[fname_,'_SA_PCA_',deblank(vvarvecm(i,:)),'_',int2str(ifig)])
-%         %         end
-%         %     end
-%         %     close all
-%     end
+    %     skipline()
+    %     disp('Starting bivariate analysis:')
+    %     
+    %     for i=1:size(vvarvecm,1)
+    %         if options_.opt_gsa.ppost
+    %             fnam = ['rmse_post_',deblank(vvarvecm(i,:))];
+    %         else
+    %             if options_.opt_gsa.pprior
+    %                 fnam = ['rmse_prior_',deblank(vvarvecm(i,:))];
+    %             else
+    %                 fnam = ['rmse_mc_',deblank(vvarvecm(i,:))];
+    %             end
+    %         end
+    %         stab_map_2(x(ixx(1:nfilt0(i),i),:),alpha2,pvalue,fnam, OutDir,[],[temp_name ' observed variable ' deblank(vvarvecm(i,:))]);
+    %         
+    %         %     [pc,latent,explained] = pcacov(c0);
+    %         %     %figure, bar([explained cumsum(explained)])
+    %         %     ifig=0;
+    %         %     j2=0;
+    %         %     for j=1:npar+nshock,
+    %         %         i2=find(abs(pc(:,j))>alphaPC);
+    %         %         if ~isempty(i2),
+    %         %             j2=j2+1;
+    %         %             if mod(j2,12)==1,
+    %         %                 ifig=ifig+1;
+    %         %                 figure('name',['PCA of the filtered sample ',deblank(vvarvecm(i,:)),' ',num2str(ifig)]),
+    %         %             end
+    %         %             subplot(3,4,j2-(ifig-1)*12)
+    %         %             bar(pc(i2,j)),
+    %         %             set(gca,'xticklabel',bayestopt_.name(i2)),
+    %         %             set(gca,'xtick',[1:length(i2)])
+    %         %             title(['PC ',num2str(j),'. Explained ',num2str(explained(j)),'%'])
+    %         %         end
+    %         %         if (mod(j2,12)==0 | j==(npar+nshock)) & j2,
+    %         %             saveas(gcf,[fname_,'_SA_PCA_',deblank(vvarvecm(i,:)),'_',int2str(ifig)])
+    %         %         end
+    %         %     end
+    %         %     close all
+    %     end
     
 end
 

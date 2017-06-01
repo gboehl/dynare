@@ -24,7 +24,7 @@ function x0=dynare_sensitivity(options_gsa)
 global M_ options_ oo_ bayestopt_ estim_params_
 
 if options_.dsge_var
-   error('Identification does not support DSGE-VARs at the current stage') 
+    error('Identification does not support DSGE-VARs at the current stage') 
 end
 
 fname_ = M_.fname;
@@ -43,7 +43,7 @@ end
 
 if isfield(options_gsa,'morris') && options_gsa.morris==1,
     if isfield(options_gsa,'identification') && options_gsa.identification==0,
-%         options_gsa.redform=1;
+        %         options_gsa.redform=1;
     end
     if isfield(options_gsa,'ppost') && options_gsa.ppost,
         error('sensitivity:: Morris is incompatible with posterior sampling')
@@ -214,7 +214,7 @@ if options_gsa.morris>2,
     disp('the option is reset at morris = 1 .')
     options_gsa.morris=1;
 end
-   
+
 if options_gsa.morris==1,
     if ~options_gsa.identification,
         options_gsa.redform=1;
@@ -232,12 +232,12 @@ if options_gsa.morris==1,
     options_gsa.alpha2_stab=1;
     options_gsa.pvalue_ks=0;
     options_gsa.pvalue_corr=0;
-%     if options_gsa.morris==3,
-%         options_gsa = set_default_option(options_gsa,'Nsam',256);
-%         OutputDirectoryName = CheckPath('gsa/identif',M_.dname);
-%     else
-        OutputDirectoryName = CheckPath('gsa/screen',M_.dname);
-%     end
+    %     if options_gsa.morris==3,
+    %         options_gsa = set_default_option(options_gsa,'Nsam',256);
+    %         OutputDirectoryName = CheckPath('gsa/identif',M_.dname);
+    %     else
+    OutputDirectoryName = CheckPath('gsa/screen',M_.dname);
+    %     end
 else
     OutputDirectoryName = CheckPath('gsa',M_.dname);
 end
@@ -295,7 +295,7 @@ if options_gsa.identification,
 end
 
 if options_gsa.redform && ~isempty(options_gsa.namendo),% ...
-    %         && ~options_gsa.ppost,
+                                                        %         && ~options_gsa.ppost,
     if options_gsa.ppost,
         filnam = dir([M_.dname filesep 'metropolis' filesep '*param_irf*.mat']);
         lpmat=[];
@@ -329,13 +329,13 @@ if options_gsa.redform && ~isempty(options_gsa.namendo),% ...
     if strmatch(':',options_gsa.namlagendo,'exact'),
         options_gsa.namlagendo=M_.endo_names(1:M_.orig_endo_nbr,:);
     end
-%     options_.opt_gsa = options_gsa;
+    %     options_.opt_gsa = options_gsa;
     if options_gsa.morris==1,
         redform_screen(OutputDirectoryName,options_gsa);
     else
         % check existence of the SS_ANOVA toolbox
         if isempty(options_gsa.threshold_redform) && ...
-         ~(exist('gsa_sdp','file')==6 || exist('gsa_sdp','file')==2),
+                ~(exist('gsa_sdp','file')==6 || exist('gsa_sdp','file')==2),
             fprintf('\nThe "SS-ANOVA-R: MATLAB Toolbox for the estimation of Smoothing Spline ANOVA models with Recursive algorithms" is missing.\n')
             fprintf('To obtain it, go to:\n\n')
             fprintf('http://ipsc.jrc.ec.europa.eu/?id=790 \n\n')
@@ -369,54 +369,54 @@ if options_gsa.rmse,
             end
         end
         if isempty(a),
-           if options_gsa.lik_only,
-               options_.smoother=0;
-               options_.filter_step_ahead=[];
-               options_.forecast=0;
-               options_.filtered_vars=0;               
-           end
-%             dynare_MC([],OutputDirectoryName,data,rawdata,data_info);
-        if options_gsa.pprior
-            TmpDirectoryName = ([M_.dname filesep 'gsa' filesep 'prior']);
-        else
-            TmpDirectoryName = ([M_.dname filesep 'gsa' filesep 'mc']);
-        end
-        if exist(TmpDirectoryName,'dir');
-            mydelete([M_.fname '_filter_step_ahead*.mat'],[TmpDirectoryName filesep]);
-            mydelete([M_.fname '_inno*.mat'],[TmpDirectoryName filesep]);
-            mydelete([M_.fname '_smooth*.mat'],[TmpDirectoryName filesep]);
-            mydelete([M_.fname '_update*.mat'],[TmpDirectoryName filesep]);
-            filparam = dir([TmpDirectoryName filesep M_.fname '_param*.mat']);
-            for j=1:length(filparam),
-                if isempty(strmatch([M_.fname '_param_irf'],filparam(j).name))
-                    delete([TmpDirectoryName filesep filparam(j).name]);
-                end
+            if options_gsa.lik_only,
+                options_.smoother=0;
+                options_.filter_step_ahead=[];
+                options_.forecast=0;
+                options_.filtered_vars=0;               
             end
-            
-        end
-        prior_posterior_statistics('gsa',dataset_, dataset_info);
-        if options_.bayesian_irf
-            PosteriorIRF('gsa');
-        end
-        options_gsa.load_rmse=0;
-        %   else
-        %     if options_gsa.load_rmse==0,
-        %       disp('You already saved a MC filter/smoother analysis ')
-        %       disp('Do you want to overwrite ?')
-        %       pause;
-        %       if options_gsa.pprior
-        %         delete([OutputDirectoryName,'/',fname_,'_prior_*.mat'])
-        %       else
-        %         delete([OutputDirectoryName,'/',fname_,'_mc_*.mat'])
-        %       end
-        %       dynare_MC([],OutputDirectoryName);
-        %       options_gsa.load_rmse=0;
-        %     end
+            %             dynare_MC([],OutputDirectoryName,data,rawdata,data_info);
+            if options_gsa.pprior
+                TmpDirectoryName = ([M_.dname filesep 'gsa' filesep 'prior']);
+            else
+                TmpDirectoryName = ([M_.dname filesep 'gsa' filesep 'mc']);
+            end
+            if exist(TmpDirectoryName,'dir');
+                mydelete([M_.fname '_filter_step_ahead*.mat'],[TmpDirectoryName filesep]);
+                mydelete([M_.fname '_inno*.mat'],[TmpDirectoryName filesep]);
+                mydelete([M_.fname '_smooth*.mat'],[TmpDirectoryName filesep]);
+                mydelete([M_.fname '_update*.mat'],[TmpDirectoryName filesep]);
+                filparam = dir([TmpDirectoryName filesep M_.fname '_param*.mat']);
+                for j=1:length(filparam),
+                    if isempty(strmatch([M_.fname '_param_irf'],filparam(j).name))
+                        delete([TmpDirectoryName filesep filparam(j).name]);
+                    end
+                end
+                
+            end
+            prior_posterior_statistics('gsa',dataset_, dataset_info);
+            if options_.bayesian_irf
+                PosteriorIRF('gsa');
+            end
+            options_gsa.load_rmse=0;
+            %   else
+            %     if options_gsa.load_rmse==0,
+            %       disp('You already saved a MC filter/smoother analysis ')
+            %       disp('Do you want to overwrite ?')
+            %       pause;
+            %       if options_gsa.pprior
+            %         delete([OutputDirectoryName,'/',fname_,'_prior_*.mat'])
+            %       else
+            %         delete([OutputDirectoryName,'/',fname_,'_mc_*.mat'])
+            %       end
+            %       dynare_MC([],OutputDirectoryName);
+            %       options_gsa.load_rmse=0;
+            %     end
             
         end
     end
     clear a;
-%     filt_mc_(OutputDirectoryName,data_info);
+    %     filt_mc_(OutputDirectoryName,data_info);
     filt_mc_(OutputDirectoryName,options_gsa,dataset_,dataset_info);
 end
 options_.opt_gsa = options_gsa;

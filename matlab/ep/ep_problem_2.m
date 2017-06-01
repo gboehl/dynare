@@ -180,7 +180,7 @@ for j=1:world_nbr
             nzA{i,j} = [offset_r+ir,offset_c+icA(ic), v]';
         else
             d1 = dynamic_model(Y(i_rows_y,j),x,params, ...
-                                          steady_state,i+1);
+                               steady_state,i+1);
         end
         res(:,i,j) = d1(eq_index);
         i_rows_y = i_rows_y + ny;

@@ -136,7 +136,7 @@ while (etime(clock,t0)<1200 && ~isempty(fslave)) || ~isempty(dir(['stayalive',in
 
                 % Save the output result.
                 save([ fname,'_output_',int2str(whoiam),'.mat'],'fOutputVar' );
-%                 keyboard,
+                %                 keyboard,
                 if isfield(fOutputVar,'CloseAllSlaves'),
                     CloseAllSlaves = 1;
                     fOutputVar = rmfield(fOutputVar,'CloseAllSlaves');

@@ -32,11 +32,11 @@ x=x{2};
 xparam1=x(K,:)';
 
 switch type
-    case 'save'
-        save(['my_params_' int2str(K)],'xparam1')
-        
-    case 'eval'
-        disp('Evaluating smoother ...')
-        [oo_, M_]=evaluate_smoother(xparam1,M_.endo_names,M_,oo_,options_,bayestopt_,estim_params_);
-        % [rmse, lnam, r2,vv] = plot_fit(obsname{:});
+  case 'save'
+    save(['my_params_' int2str(K)],'xparam1')
+    
+  case 'eval'
+    disp('Evaluating smoother ...')
+    [oo_, M_]=evaluate_smoother(xparam1,M_.endo_names,M_,oo_,options_,bayestopt_,estim_params_);
+    % [rmse, lnam, r2,vv] = plot_fit(obsname{:});
 end

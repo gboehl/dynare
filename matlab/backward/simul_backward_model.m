@@ -91,8 +91,8 @@ end
 
 if DynareOptions.linear
     DynareOutput = simul_backward_linear_model(initial_conditions, sample_size, DynareOptions, ...
-                                DynareModel, DynareOutput, innovations);
+                                               DynareModel, DynareOutput, innovations);
 else
     DynareOutput = simul_backward_nonlinear_model(initial_conditions, sample_size, DynareOptions, ...
-                                DynareModel, DynareOutput, innovations);
+                                                  DynareModel, DynareOutput, innovations);
 end

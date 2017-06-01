@@ -63,12 +63,12 @@ end
 
 % Input validation
 if (nargin==1 && ~(isnumeric (x) || islogical (x))) || ...
-    (nargin==2 && ~(isnumeric (x) || islogical (x) || isnumeric (y) || islogical (y)))
+           (nargin==2 && ~(isnumeric (x) || islogical (x) || isnumeric (y) || islogical (y)))
     error ('corr: X and Y must be numeric matrices or vectors');
 end
 
 if (nargin==1 && ~ismatrix(x)) || (nargin==2 && (~ismatrix(y) || ~ismatrix(x)))
-error ('corr: X and Y must be 2-D matrices or vectors');
+    error ('corr: X and Y must be 2-D matrices or vectors');
 end
 
 if (nargin == 2)

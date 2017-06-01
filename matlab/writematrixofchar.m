@@ -16,7 +16,7 @@ function str = writematrixofchar(m)
 % ['a'; 'b']
 %
 % where the returned argument is a string which can be evaluated or printed.
-    
+
 % Copyright (C) 2015 Dynare Team
 %
 % This file is part of Dynare.

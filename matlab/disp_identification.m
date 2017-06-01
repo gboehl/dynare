@@ -133,23 +133,23 @@ if any(idemodel.ino),
             end
         end
     end
-%         if npar>(j+1),
-%             [ipair, jpair] = find(squeeze(idemodel.Pco(j,j+1:end,:))'>(1-1.e-10));
-%         else
-%             [ipair, jpair] = find(squeeze(idemodel.Pco(j,j+1:end,:))>(1-1.e-10));
-%         end
-%         if ~isempty(jpair),
-%             for jx=j+1:npar,
-%                 ixp = find(jx==(jpair+j));
-%                 if ~isempty(ixp)
-%                     if SampleSize > 1,
-%                         disp(['    [',name{j},',',name{jx},'] are PAIRWISE collinear (with tol = 1.e-10) for ',num2str(length(ixp)/SampleSize*100),'% of MC runs!' ])
-%                     else
-%                         disp(['    [',name{j},',',name{jx},'] are PAIRWISE collinear (with tol = 1.e-10)!' ])
-%                     end
-%                 end
-%             end
-%         end
+    %         if npar>(j+1),
+    %             [ipair, jpair] = find(squeeze(idemodel.Pco(j,j+1:end,:))'>(1-1.e-10));
+    %         else
+    %             [ipair, jpair] = find(squeeze(idemodel.Pco(j,j+1:end,:))>(1-1.e-10));
+    %         end
+    %         if ~isempty(jpair),
+    %             for jx=j+1:npar,
+    %                 ixp = find(jx==(jpair+j));
+    %                 if ~isempty(ixp)
+    %                     if SampleSize > 1,
+    %                         disp(['    [',name{j},',',name{jx},'] are PAIRWISE collinear (with tol = 1.e-10) for ',num2str(length(ixp)/SampleSize*100),'% of MC runs!' ])
+    %                     else
+    %                         disp(['    [',name{j},',',name{jx},'] are PAIRWISE collinear (with tol = 1.e-10)!' ])
+    %                     end
+    %                 end
+    %             end
+    %         end
 end
 
 if ~any(idemodel.ino) && ~any(any(idemodel.ind0==0))
@@ -167,10 +167,10 @@ if any(idemoments.ino),
     end
     %     disp('WARNING !!!')
     %     disp(['The rank of J (moments) is deficient for ', num2str(length(find(idemoments.ino))/SampleSize*100),'% of MC runs!'  ]),
-%     indno=[];
-%     for j=1:SampleSize, indno=[indno;idemoments.indno{j}]; end
-%     freqno = mean(indno)*100;
-%     ifreq=find(freqno);
+    %     indno=[];
+    %     for j=1:SampleSize, indno=[indno;idemoments.indno{j}]; end
+    %     freqno = mean(indno)*100;
+    %     ifreq=find(freqno);
     %     disp('MOMENT RANK FAILURE DUE TO COLLINEARITY OF PARAMETERS:');
     skipline()
     for j=1:npar,
@@ -214,25 +214,25 @@ if any(idemoments.ino),
             end
         end
     end
-%             if npar>(j+1),
-%                 [ipair, jpair] = find(squeeze(idemoments.Pco(j,j+1:end,:))'>(1-1.e-10));
-%             else
-%                 [ipair, jpair] = find(squeeze(idemoments.Pco(j,j+1:end,:))>(1-1.e-10));
-%             end
-%             if ~isempty(jpair),
-%                 for jx=j+1:npar,
-%                     ixp = find(jx==(jpair+j));
-%                     if ~isempty(ixp)
-%                         if SampleSize > 1
-%                             disp(['    [',name{j},',',name{jx},'] are PAIRWISE collinear (with tol = 1.e-10) for ',num2str(length(ixp)/SampleSize*100),'% of MC runs!' ])
-%                         else
-%                             disp(['    [',name{j},',',name{jx},'] are PAIRWISE collinear (with tol = 1.e-10) !' ])
-%                         end
-%                     end
-%                 end
-%             end
-%         end
-%     end
+    %             if npar>(j+1),
+    %                 [ipair, jpair] = find(squeeze(idemoments.Pco(j,j+1:end,:))'>(1-1.e-10));
+    %             else
+    %                 [ipair, jpair] = find(squeeze(idemoments.Pco(j,j+1:end,:))>(1-1.e-10));
+    %             end
+    %             if ~isempty(jpair),
+    %                 for jx=j+1:npar,
+    %                     ixp = find(jx==(jpair+j));
+    %                     if ~isempty(ixp)
+    %                         if SampleSize > 1
+    %                             disp(['    [',name{j},',',name{jx},'] are PAIRWISE collinear (with tol = 1.e-10) for ',num2str(length(ixp)/SampleSize*100),'% of MC runs!' ])
+    %                         else
+    %                             disp(['    [',name{j},',',name{jx},'] are PAIRWISE collinear (with tol = 1.e-10) !' ])
+    %                         end
+    %                     end
+    %                 end
+    %             end
+    %         end
+    %     end
 end
 if ~any(idemoments.ino) && ~any(any(idemoments.ind0==0))
     skipline()

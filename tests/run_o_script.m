@@ -11,42 +11,42 @@
 ## but WITHOUT ANY WARRANTY; without even the implied warranty of
 ## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ## GNU General Public License for more details.
-##
-## You should have received a copy of the GNU General Public License
-## along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+    ##
+    ## You should have received a copy of the GNU General Public License
+    ## along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-load_octave_packages
+    load_octave_packages
 
-top_test_dir = getenv('TOP_TEST_DIR');
-[mfile, name] = strtok(getenv('FILESTEM'));
+    top_test_dir = getenv('TOP_TEST_DIR');
+    [mfile, name] = strtok(getenv('FILESTEM'));
 
-[directory, mscript, ext] = fileparts([top_test_dir '/' mfile]);
-cd(directory);
+    [directory, mscript, ext] = fileparts([top_test_dir '/' mfile]);
+    cd(directory);
 
-try
-  mscript;
-  testFailed = false;
-catch
-  printMakeCheckOctaveErrMsg(getenv('FILESTEM'), lasterror);
-  testFailed = true;
-end_try_catch
+    try
+        mscript;
+        testFailed = false;
+    catch
+        printMakeCheckOctaveErrMsg(getenv('FILESTEM'), lasterror);
+        testFailed = true;
+        end_try_catch
 
-cd(top_test_dir);
-name = strtok(getenv('FILESTEM'));
-fid = fopen([name '.o.tls'], 'w+');
-if testFailed
-  fprintf(fid,':test-result: FAIL\n');
-  fprintf(fid,':number-tests: 1\n');
-  fprintf(fid,':number-failed-tests: 1\n');
-  fprintf(fid,':list-of-failed-tests: %s\n', [name '.m']);
-else
-  fprintf(fid,':test-result: PASS\n');
-  fprintf(fid,':number-tests: 1\n');
-  fprintf(fid,':number-failed-tests: 0\n');
-  fprintf(fid,':list-of-passed-tests: %s\n', [name '.m']);
-end
-fclose(fid);
+        cd(top_test_dir);
+        name = strtok(getenv('FILESTEM'));
+        fid = fopen([name '.o.tls'], 'w+');
+        if testFailed
+            fprintf(fid,':test-result: FAIL\n');
+            fprintf(fid,':number-tests: 1\n');
+            fprintf(fid,':number-failed-tests: 1\n');
+            fprintf(fid,':list-of-failed-tests: %s\n', [name '.m']);
+        else
+            fprintf(fid,':test-result: PASS\n');
+            fprintf(fid,':number-tests: 1\n');
+            fprintf(fid,':number-failed-tests: 0\n');
+            fprintf(fid,':list-of-passed-tests: %s\n', [name '.m']);
+        end
+        fclose(fid);
 
-## Local variables:
-## mode: Octave
-## End:
+        ## Local variables:
+        ## mode: Octave
+        ## End:

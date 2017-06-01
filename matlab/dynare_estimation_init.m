@@ -14,7 +14,7 @@ function [dataset_, dataset_info, xparam1, hh, M_, options_, oo_, estim_params_,
 %   estim_params_:  structure storing information about estimated
 %                   parameters
 %   bayestopt_:     structure storing information about priors
-    
+
 % OUTPUTS
 %   dataset_:       the dataset after required transformation
 %   dataset_info:   Various informations about the dataset (descriptive statistics and missing observations).
@@ -107,10 +107,10 @@ end
 if options_.fast_kalman_filter 
     if ~ismember(options_.kalman_algo, [0,1,3])
         error(['estimation option conflict: fast_kalman_filter is only available ' ...
-            'with kalman_algo = 0, 1 or 3'])
+               'with kalman_algo = 0, 1 or 3'])
     elseif options_.block
         error(['estimation option conflict: fast_kalman_filter is not available ' ...
-            'with block'])
+               'with block'])
     end
 end
 
@@ -322,8 +322,8 @@ if ~isempty(estim_params_) && ~(all(strcmp(fieldnames(estim_params_),'full_calib
         bounds.lb = max(bounds.lb,lb);
         bounds.ub = min(bounds.ub,ub);
     else  % estimated parameters but no declared priors
-        % No priors are declared so Dynare will estimate the model by
-        % maximum likelihood with inequality constraints for the parameters.
+          % No priors are declared so Dynare will estimate the model by
+          % maximum likelihood with inequality constraints for the parameters.
         options_.mh_replic = 0;% No metropolis.
         bounds.lb = lb;
         bounds.ub = ub;
@@ -551,7 +551,7 @@ ncx = estim_params_.ncx;
 nvn = estim_params_.nvn;
 ncn = estim_params_.ncn;
 if estim_params_.np
-  M.params(estim_params_.param_vals(:,1)) = xparam1(nvx+ncx+nvn+ncn+1:end);
+    M.params(estim_params_.param_vals(:,1)) = xparam1(nvx+ncx+nvn+ncn+1:end);
 end
 [oo_.steady_state, params,info] = evaluate_steady_state(oo_.steady_state,M,options_,oo_,steadystate_check_flag);
 

@@ -42,7 +42,7 @@ endo_prior_restrictions.irf= DynareOptions.endogenous_prior_restrictions.irf;
 endo_prior_restrictions.moment= DynareOptions.endogenous_prior_restrictions.moment;
 
 if ~isempty(endo_prior_restrictions.irf),
-   data_irf=cell(size(endo_prior_restrictions.irf,1),1);    
+    data_irf=cell(size(endo_prior_restrictions.irf,1),1);    
     if DynareOptions.order>1,
         error('The algorithm for prior (sign) restrictions on irf''s is currently restricted to first-order decision rules')
         return

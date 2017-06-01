@@ -68,9 +68,9 @@ for indPC=1:length(Parallel),
                             % It is Necessary because Octave is not able to
                             % create two nested directory at the same time.
                             
-                           % Remove (if present) the '/' chars. Can be easily transformed
-                           % in a function.
-                           
+                            % Remove (if present) the '/' chars. Can be easily transformed
+                            % in a function.
+                            
                             NamFileInputTemp=NamFileInput{jfil,1};
                             while(1)
                                 Bs=strfind(NamFileInputTemp,'/');
@@ -94,8 +94,8 @@ for indPC=1:length(Parallel),
                     % It is Necessary because Octave is not able to
                     % use the jolly char '*' with copyfile.
                     
-                      % Remove (if present) the '/' chars. Can be easily transformed
-                      % in a function.
+                    % Remove (if present) the '/' chars. Can be easily transformed
+                    % in a function.
                     
                     NamFileInputTemp=NamFileInput{jfil,1};
                     while(1)

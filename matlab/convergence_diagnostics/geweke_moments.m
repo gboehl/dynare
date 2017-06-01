@@ -53,7 +53,7 @@ function [results_vec, results_struct] = geweke_moments(draws,Dynareoptions)
 % based on code by James P. LeSage, who in turn 
 % drew on MATLAB programs written by Siddartha Chib 
 
-  
+
 ndraw = size(draws,1);
 n_groups=100;
 taper_steps=Dynareoptions.convergence.geweke.taper_steps;

@@ -253,7 +253,7 @@ end
 
 function v = SylvesterHessenbergSchur(d,g,h)
 %
-% DSYLHS  Solves a discrete time sylvester equation	using the
+% DSYLHS  Solves a discrete time sylvester equation     using the
 % Hessenberg-Schur algorithm
 %
 % v = DSYLHS(g,d,h) computes the matrix v that satisfies the
@@ -301,7 +301,7 @@ if i< n,
         i = i+1;
     else
         A = [w-g*h(i,i)     (-g*h(i+1,i));...
-            -g*h(i,i+1)    w-g*h(i+1,i+1)];
+             -g*h(i,i+1)    w-g*h(i+1,i+1)];
         C = [d(:,i); d(:,i+1)];
         X = A\C;
         v(:,i) = X(1:m,:);
@@ -320,9 +320,9 @@ while i<n,
         i = i+1;
     else
         A = [w - g*h(i,i)    (-g*h(i+1,i));   ...
-            -g*h(i,i+1)    w - g*h(i+1,i+1)];
+             -g*h(i,i+1)    w - g*h(i+1,i+1)];
         C = [d(:,i) + temp*h(1:b,i);         ...
-            d(:,i+1) + temp*h(1:b,i+1)];
+             d(:,i+1) + temp*h(1:b,i+1)];
         X = A\C;
         v(:,i) = X(1:m,:);
         v(:,i+1) = X(m+1:2*m, :);

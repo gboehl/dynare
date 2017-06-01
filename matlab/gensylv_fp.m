@@ -62,7 +62,7 @@ while it_fp < maxit_fp && evol > tol;
     Z_old = Z;
     Z = - (B * X * C + D);
     evol = max(sum(abs(Z - Z_old))); %norm_1
-    %evol = max(sum(abs(Z - Z_old)')); %norm_inf
+                                     %evol = max(sum(abs(Z - Z_old)')); %norm_inf
     it_fp = it_fp + 1;
 end;
 %fprintf('sylvester it_fp=%d evol=%g | ',it_fp,evol);

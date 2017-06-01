@@ -58,15 +58,15 @@ if ~exist(fullname)
 end
 
 switch (extension)
-    case '.m'
-        eval(basename);
-    case '.mat'
-        load(basename);
-    case { '.xls', '.xlsx' }
-        [data_,names_v_]=xlsread(fullname); % Octave needs the extension explicitly
-        series_=0;
-    otherwise
-        error(['Unsupported extension for datafile: ' extension])
+  case '.m'
+    eval(basename);
+  case '.mat'
+    load(basename);
+  case { '.xls', '.xlsx' }
+    [data_,names_v_]=xlsread(fullname); % Octave needs the extension explicitly
+    series_=0;
+  otherwise
+    error(['Unsupported extension for datafile: ' extension])
 end
 
 options_.initval_file = 1;

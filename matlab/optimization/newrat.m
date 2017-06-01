@@ -200,20 +200,20 @@ while norm(gg)>gtol && check==0 && jit<nit
             hhg=hh;
             H = inv(hh);
         else
-        if flagit==2
-            hh=hh0;
-        elseif flagg>0
-            [dum, gg, htol0, igg, hhg, h1, hess_info]=mr_hessian(xparam1,func0,penalty,flagg,ftol0,hess_info,varargin{:});
-            if flagg==2
-                hh = reshape(dum,nx,nx);
-                ee=eig(hh);
-                if min(ee)<0
+            if flagit==2
+                hh=hh0;
+            elseif flagg>0
+                [dum, gg, htol0, igg, hhg, h1, hess_info]=mr_hessian(xparam1,func0,penalty,flagg,ftol0,hess_info,varargin{:});
+                if flagg==2
+                    hh = reshape(dum,nx,nx);
+                    ee=eig(hh);
+                    if min(ee)<0
+                        hh=hhg;
+                    end
+                else
                     hh=hhg;
                 end
-            else
-                hh=hhg;
             end
-        end
         end
         disp_verbose(['Actual dxnorm ',num2str(norm(x(:,end)-x(:,end-1)))],Verbose)
         disp_verbose(['FVAL          ',num2str(fval)],Verbose)

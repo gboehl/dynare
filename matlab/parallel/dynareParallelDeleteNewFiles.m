@@ -60,11 +60,11 @@ for indPC=1:length(Parallel),
                     exception_flag=exception_flag+(~isempty(strfind(fileaddress{2},varargin{indexc})));
                 end
                 if exception_flag==0,
-                dynareParallelDelete(fileaddress{2},[PRCDir,fS,fileaddress{1}],Parallel(indPC));
+                    dynareParallelDelete(fileaddress{2},[PRCDir,fS,fileaddress{1}],Parallel(indPC));
 
-                disp('New file deleted in remote -->');
-                disp(fileaddress{2});
-                disp('<--');
+                    disp('New file deleted in remote -->');
+                    disp(fileaddress{2});
+                    disp('<--');
                 end
 
             end

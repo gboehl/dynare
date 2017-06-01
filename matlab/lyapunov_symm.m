@@ -74,7 +74,7 @@ if method == 3
             X_old = X;
             X = a * X * at + b;
             evol = max(sum(abs(X - X_old))); %norm_1
-            %evol = max(sum(abs(X - X_old)')); %norm_inf
+                                             %evol = max(sum(abs(X - X_old)')); %norm_inf
             it_fp = it_fp + 1;
         end;
         if debug

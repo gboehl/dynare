@@ -45,7 +45,7 @@ end
 if ~whoiam
     
     if isoctave || options_.console_mode
-                
+        
         if init,
             diary off;
             running_text = varargin{1};

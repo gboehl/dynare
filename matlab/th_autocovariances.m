@@ -237,7 +237,7 @@ else% ==> Theoretical filters.
             f_hp = zeros(length(ivar),length(ivar));
         else
             f_omega  =(1/(2*pi))*([(IA-A*tneg(ig))\ghu1;IE]...
-                                   *M_.Sigma_e*[ghu1'/(IA-A'*tpos(ig)) IE]); % spectral density of state variables; top formula Uhlig (2001), p. 20 with N=0
+                                  *M_.Sigma_e*[ghu1'/(IA-A'*tpos(ig)) IE]); % spectral density of state variables; top formula Uhlig (2001), p. 20 with N=0
             g_omega = [aa*tneg(ig) bb]*f_omega*[aa'*tpos(ig); bb']; % spectral density of selected variables; middle formula Uhlig (2001), p. 20; only middle block, i.e. y_t' 
             f_hp = filter_gain(ig)^2*g_omega; % spectral density of selected filtered series; top formula Uhlig (2001), p. 21;
         end
