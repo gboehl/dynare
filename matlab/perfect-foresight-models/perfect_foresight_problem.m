@@ -16,7 +16,7 @@ function [residuals,JJacobian] = perfect_foresight_problem(y, dynamic_function, 
 %   Y0                  [double] N*1 array, initial conditions for the endogenous variables
 %   YT                  [double] N*1 array, terminal conditions for the endogenous variables
 %   exo_simul           [double] nperiods*M_.exo_nbr matrix of exogenous variables (in declaration order)
-%                                for all simulation periods           
+%                                for all simulation periods
 %   params              [double] nparams*1 array, parameter values
 %   steady_state        [double] endo_nbr*1 vector of steady state values
 %   maximum_lag         [scalar] maximum lag present in the model
@@ -24,7 +24,7 @@ function [residuals,JJacobian] = perfect_foresight_problem(y, dynamic_function, 
 %   ny                  [scalar] number of endogenous variables
 %   i_cols              [double] indices of variables appearing in M.lead_lag_incidence
 %                                and that need to be passed to _dynamic-file
-%   i_cols_J1           [double] indices of contemporaneous and forward looking variables 
+%   i_cols_J1           [double] indices of contemporaneous and forward looking variables
 %                                appearing in M.lead_lag_incidence
 %   i_cols_1            [double] indices of contemporaneous and forward looking variables in
 %                                M.lead_lag_incidence in dynamic Jacobian (relevant in first period)
@@ -32,7 +32,7 @@ function [residuals,JJacobian] = perfect_foresight_problem(y, dynamic_function, 
 %                                variables (relevant in last period)
 %   i_cols_j            [double] indices of variables in M.lead_lag_incidence
 %                                in dynamic Jacobian (relevant in intermediate periods)
-%   nnzJ                [scalar] number of non-zero elements in Jacobian                                
+%   nnzJ                [scalar] number of non-zero elements in Jacobian
 % OUTPUTS
 %   residuals           [double] (N*T)*1 array, residuals of the stacked problem
 %   JJacobian           [double] (N*T)*(N*T) array, Jacobian of the stacked problem
@@ -42,7 +42,7 @@ function [residuals,JJacobian] = perfect_foresight_problem(y, dynamic_function, 
 % SPECIAL REQUIREMENTS
 %   None.
 
-% Copyright (C) 1996-2016 Dynare Team
+% Copyright (C) 1996-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

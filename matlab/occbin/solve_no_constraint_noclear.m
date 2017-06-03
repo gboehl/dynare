@@ -1,6 +1,6 @@
-function [zdata oobase_ Mbase_ ] = ...
+function [zdata, oobase_, Mbase_ ] = ...
     solve_no_constraint_noclear(modnam,...
-                                shockssequence,irfshock,nperiods);
+                                shockssequence,irfshock,nperiods)
 
 global M_ oo_
 
@@ -45,4 +45,3 @@ nwishes = size(wishlist,1);
 
 
 zdata = mkdata(nperiods,decrulea,decruleb,endog_,exog_,wishlist,irfshock,shockssequence);
-

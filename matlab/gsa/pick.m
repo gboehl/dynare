@@ -1,7 +1,8 @@
 function pick
 %
 % Copyright (C) 2001-2017 European Commission
-% 
+% Copyright (C) 2017 DynareTeam
+%
 % This file is part of GLUEWIN
 % GLUEWIN is a MATLAB code designed for analysing the output
 % of Monte Carlo runs when empirical observations of the model output are available
@@ -10,7 +11,7 @@ function pick
 % Global Sensitivity Analysis) [3].']
 % The program has been developed by M. Ratto, European Commission, Joint Research Centre,
 % Institute for the Protection and Security of The Citizen, Technological and Economic Risk Management,
-% Applied Statistics, as a deliverable of the IMPACT project 
+% Applied Statistics, as a deliverable of the IMPACT project
 % (EC Fifth Framework Programme, SCA Project, IST-1999-11313, DG-INFSO).
 %
 % The graphical layout of the code is inspired by the freeware GLUE package by K. Beven,
@@ -20,7 +21,7 @@ function pick
 % Thanks are due to R. Girardi, A. Rossi, A. Saltelli, S. Tarantola and U. Callies for numerous
 % comments and suggestions.
 % For more information, please contact marco.ratto@ec.europa.eu
-% 
+%
 % Disclaimer: This software has been developed at the Joint Research Centre of European Commission
 % by officers in the course of their official duties. This software is not subject to copyright
 % protection and is in the public domain. It is an experimental system. The Joint Research Centre
@@ -34,7 +35,7 @@ function pick
 %                'Prediction, Hydrological Processes, 6, 279-298, 1992
 % [3] Saltelli, A., K. Chan, M. Scott, Editors, (2000), Sensitivity analysis, John Wiley & Sons
 %                'publishers, Probability and Statistics series.
-% [4] Beven K., GLUE for Windows User manual, 1998.      
+% [4] Beven K., GLUE for Windows User manual, 1998.
 
 
 
@@ -55,7 +56,7 @@ dy=get(gca,'ylim');
 pos=get(gca,'position');
 scalex=dx(2)-dx(1);
 scaley=dy(2)-dy(1);
-if length(X)>1,
+if length(X)>1
     K = dsearchn([(Y./scaley)' (X./scalex)'],[y/scaley x/scalex]);
 else
     az=get(gca,'children');
@@ -68,15 +69,15 @@ KK=K;
 set(button1,'Label',['Save ',num2str(K)],'Callback',['scatter_callback(',num2str(KK),',''save'')']);
 set(button2,'Label',['Eval ',num2str(K)],'Callback',['scatter_callback(',num2str(KK),',''eval'')']);
 hh=findobj(gcf,'type','axes','Tag','scatter');
-for k=1:length(hh),
+for k=1:length(hh)
     axes(hh(k));
     dum=get(gca,'children');
     dumx=get(dum(end),'xdata');
     dumy=get(dum(end),'ydata');
     xmid=min(dumx) + 0.5*(max(dumx)-min(dumx));
     hold on
-    plot(dumx(KK),dumy(KK),'or');     
-    if dumx(KK) < xmid,
+    plot(dumx(KK),dumy(KK),'or');
+    if dumx(KK) < xmid
         text(dumx(KK),dumy(KK),['  ',num2str(K)], ...
              'FontWeight','Bold',...
              'Color','r');

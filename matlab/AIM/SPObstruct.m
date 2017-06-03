@@ -2,7 +2,7 @@ function scof = SPObstruct(cof,cofb,neq,nlag,nlead)
 % scof = SPObstruct(cof,cofb,neq,nlag,nlead)
 %
 % Construct the coefficients in the observable structure.
-%    
+%
 %   Input arguments:
 %
 %            cof    structural coefficients
@@ -51,7 +51,7 @@ qs=sparse(q);
 qs(1:rc,1:cc) = sparse(cofb);
 qcols = neq*(nlag+nlead);
 
-if( nlead > 1 ) 
+if( nlead > 1 )
     for i = 1:nlead-1
         rows = i*neq + (1:neq);
         qs(rows,:) = SPShiftright( qs((rows-neq),:), neq );

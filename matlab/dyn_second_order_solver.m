@@ -32,7 +32,7 @@ function dr = dyn_second_order_solver(jacobia,hessian_mat,dr,M_,threads_ABC,thre
 %! @end deftypefn
 %@eod:
 
-% Copyright (C) 2001-2012 Dynare Team
+% Copyright (C) 2001-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -154,8 +154,8 @@ O2 = zeros(M_.endo_nbr,M_.endo_nbr-nstatic-nspred);
 LHS = zeros(M_.endo_nbr,M_.endo_nbr);
 LHS(:,k0) = jacobia(:,nonzeros(lead_lag_incidence(M_.maximum_endo_lag+1,order_var)));
 RHS = zeros(M_.endo_nbr,M_.exo_nbr^2);
-gu = dr.ghu; 
-guu = dr.ghuu; 
+gu = dr.ghu;
+guu = dr.ghuu;
 E = eye(M_.endo_nbr);
 kh = reshape([1:nk^2],nk,nk);
 kp = sum(kstate(:,2) <= M_.maximum_endo_lag+1);

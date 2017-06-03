@@ -1,6 +1,6 @@
 function y=dy_date(year,period)
 
-% Copyright (C) 2005-2009 Dynare Team
+% Copyright (C) 2005-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -20,4 +20,3 @@ function y=dy_date(year,period)
 global M_
 
 y = M_.freq*(year-M_.start_date(1))+period-M_.start_date(2)+1;
-

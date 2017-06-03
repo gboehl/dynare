@@ -11,4 +11,3 @@ nparams = size(Mbase_.param_names);
 for i = 1:nparams
     eval([Mbase_.param_names(i,:),'= M_.params(i);']);
 end
-

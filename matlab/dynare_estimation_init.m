@@ -28,11 +28,11 @@ function [dataset_, dataset_info, xparam1, hh, M_, options_, oo_, estim_params_,
 %                   parameters
 %   bayestopt_:     structure storing information about priors
 %   bounds:         structure containing prior bounds
-% 
+%
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2003-2016 Dynare Team
+% Copyright (C) 2003-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -104,7 +104,7 @@ if options_.analytic_derivation && options_.fast_kalman_filter
 end
 
 % fast kalman filter is only available with kalman_algo == 0,1,3
-if options_.fast_kalman_filter 
+if options_.fast_kalman_filter
     if ~ismember(options_.kalman_algo, [0,1,3])
         error(['estimation option conflict: fast_kalman_filter is only available ' ...
                'with kalman_algo = 0, 1 or 3'])
@@ -189,7 +189,7 @@ if ~isempty(estim_params_) && ~(isfield(estim_params_,'nvx') && sum(estim_params
             % The posterior mode is not estimated.
             error('Please change the mode_file option, the list of estimated parameters or set mode_compute>0.')
         else
-            % The posterior mode is estimated, the Hessian evaluated at the mode is not needed so we set values for the parameters missing in the mode file using the prior mean. 
+            % The posterior mode is estimated, the Hessian evaluated at the mode is not needed so we set values for the parameters missing in the mode file using the prior mean.
             if ~isempty(xd)
                 xparam1(xd) = mode_file.xparam1(md);
             else
@@ -229,7 +229,7 @@ if ~isempty(estim_params_) && ~(isfield(estim_params_,'nvx') && sum(estim_params
                 error('Please change the mode_file option, the list of estimated parameters or set mode_compute>0.')
             end
         else
-            % The posterior mode is estimated, the Hessian evaluated at the mode is not needed so we set values for the parameters missing in the mode file using the prior mean. 
+            % The posterior mode is estimated, the Hessian evaluated at the mode is not needed so we set values for the parameters missing in the mode file using the prior mean.
             if ~isempty(xd)
                 xparam1(xd) = mode_file.xparam1(md);
             else
@@ -238,7 +238,7 @@ if ~isempty(estim_params_) && ~(isfield(estim_params_,'nvx') && sum(estim_params
             end
         end
     else
-        % The number of declared estimated parameters match the number of parameters in the mode file. 
+        % The number of declared estimated parameters match the number of parameters in the mode file.
         % Check that the parameters in the mode file and according to the current mod file are identical.
         if ~isfield(mode_file,'parameter_names')
             disp(['The posterior mode file ' options_.mode_file ' has been generated using an older version of Dynare. It cannot be verified if it matches the present model. Proceed at your own risk.'])
@@ -275,7 +275,7 @@ if ~isempty(estim_params_) && ~(isfield(estim_params_,'nvx') && sum(estim_params
                     error('Please change the mode_file option, the list of estimated parameters or set mode_compute>0.')
                 end
             else
-                % The posterior mode is estimated, the Hessian evaluated at the mode is not needed so we set values for the parameters missing in the mode file using the prior mean. 
+                % The posterior mode is estimated, the Hessian evaluated at the mode is not needed so we set values for the parameters missing in the mode file using the prior mean.
                 if ~isempty(xd)
                     xparam1(xd) = mode_file.xparam1(md);
                     if isfield(mode_file,'hh')
@@ -339,7 +339,7 @@ if ~isempty(estim_params_) && ~(all(strcmp(fieldnames(estim_params_),'full_calib
         end
     else
         check_prior_bounds(xparam1,bounds,M_,estim_params_,options_,bayestopt_)
-    end        
+    end
 end
 
 if isempty(estim_params_) || all(strcmp(fieldnames(estim_params_),'full_calibration_detected')) || (isfield(estim_params_,'nvx') && sum(estim_params_.nvx+estim_params_.nvn+estim_params_.ncx+estim_params_.ncn+estim_params_.np)==0) % If estim_params_ is empty (e.g. when running the smoother on a calibrated model)
@@ -423,7 +423,7 @@ if options_.selected_variables_only
     if options_.forecast > 0 && options_.mh_replic == 0 && ~options_.load_mh_file
         fprintf('\nEstimation: The selected_variables_only option is incompatible with classical forecasts. It will be ignored.\n')
         k3 = (1:M_.endo_nbr)';
-        k3p = (1:M_.endo_nbr)';    
+        k3p = (1:M_.endo_nbr)';
     else
         for i=1:size(var_list_,1)
             k3 = [k3; strmatch(var_list_(i,:),M_.endo_names(dr.order_var,:), 'exact')];
@@ -474,18 +474,18 @@ else
     [junk,ic] = intersect(bayestopt_.smoother_var_list,nstatic+(1:npred)');
     bayestopt_.smoother_restrict_columns = ic;
     [junk,bayestopt_.smoother_mf] = ismember(var_obs_index_dr, bayestopt_.smoother_var_list);
-end;
+end
 
-if options_.analytic_derivation,
-    if options_.lik_init == 3,
+if options_.analytic_derivation
+    if options_.lik_init == 3
         error('analytic derivation is incompatible with diffuse filter')
     end
     options_.analytic_derivation = 1;
-    if ~(exist('sylvester3','file')==2),
+    if ~(exist('sylvester3','file')==2)
         dynareroot = strrep(which('dynare'),'dynare.m','');
         addpath([dynareroot 'gensylv'])
     end
-    if estim_params_.np,
+    if estim_params_.np
         % check if steady state changes param values
         M=M_;
         M.params(estim_params_.param_vals(:,1)) = xparam1(estim_params_.nvx+estim_params_.ncx+estim_params_.nvn+estim_params_.ncn+1:end); %set parameters
@@ -497,8 +497,8 @@ if options_.analytic_derivation,
         end
         [tmp1, params] = evaluate_steady_state(oo_.steady_state,M,options_,oo_,steadystate_check_flag);
         change_flag=any(find(params-M.params));
-        if change_flag,
-            skipline();
+        if change_flag
+            skipline()
             if any(isnan(params))
                 disp('After computing the steadystate, the following parameters are still NaN: '),
                 disp(M.param_names(isnan(params),:))
@@ -609,7 +609,7 @@ if options_.load_results_after_load_mh
     end
 end
 
-if options_.mh_replic || options_.load_mh_file,
+if options_.mh_replic || options_.load_mh_file
     [current_options, options_] = check_posterior_sampler_options([], options_, bounds);
     options_.posterior_sampler_options.current_options = current_options;
 end

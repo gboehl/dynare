@@ -1,8 +1,8 @@
 function print_table_prior(lb, ub, DynareOptions, ModelInfo, BayesInfo, EstimationInfo)
 
-% This routine prints in the command window some descriptive statistics about the prior distribution. 
+% This routine prints in the command window some descriptive statistics about the prior distribution.
 
-% Copyright (C) 2015 Dynare Team
+% Copyright (C) 2015-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -111,7 +111,7 @@ for i=1:size(BayesInfo.name,1)
                   UpperBound, ...
                   PriorIntervals.lb(i), ...
                   PriorIntervals.ub(i) );
-    T2 = strvcat(T2, str);    
+    T2 = strvcat(T2, str);
 end
 
 T1 = strvcat(T1, l1);

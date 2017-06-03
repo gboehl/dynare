@@ -1,9 +1,9 @@
 function a = struct2array(s)
 
-% INPUTS 
+% INPUTS
 % - s  [struct]  with N fields, field i contains a n_i*m_i array of doubles.
 %
-% OUPUTS 
+% OUPUTS
 % - a  [double]  column vector with sum(n_i*m_i, i=1,...,N) elements.
 
 % Copyright (C) 2017 Dynare Team

@@ -2,14 +2,14 @@ function b = isolder(f, F) % --*-- Unitary tests --*--
 
 % Returns true if f is older than any file in folder (and subfolders) F.
 %
-% INPUTS 
+% INPUTS
 % - f   [string]  file name
 % - F   [string]  folder name
 %
-% OUTPUT 
-% - b   [logical] 
+% OUTPUT
+% - b   [logical]
 
-% Copyright (C) 2015 Dynare Team
+% Copyright (C) 2015-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

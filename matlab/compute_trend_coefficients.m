@@ -18,7 +18,7 @@ function [trend_addition, trend_coeff]=compute_trend_coefficients(M_,DynareOptio
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2014 Dynare Team
+% Copyright (C) 2014-2016 Dynare Team
 %
 % This file is part of Dynare.
 %

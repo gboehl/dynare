@@ -1,17 +1,17 @@
 function planner_objective_value = evaluate_planner_objective(M,options,oo)
 
 %function oo1 = evaluate_planner_objective(dr,M,oo,options)
-%  computes value of planner objective function     
-% 
+%  computes value of planner objective function
+%
 % INPUTS
 %   M:        (structure) model description
 %   options:  (structure) options
 %   oo:       (structure) output results
-%    
+%
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2007-2015 Dynare Team
+% Copyright (C) 2007-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

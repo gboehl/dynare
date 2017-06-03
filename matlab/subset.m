@@ -1,6 +1,6 @@
 function jndx = subset()
 
-% Copyright (C) 2006-2011 Dynare Team
+% Copyright (C) 2006-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -63,7 +63,7 @@ else
                 error
             end
             tt = [tt;tmp];
-        elseif isempty(tmp) && nvn 
+        elseif isempty(tmp) && nvn
             tmp = strmatch(ExcludedParamNames{i},options_.varobs);
             if ~isempty(tmp) && ( strcmpi(info,'All') || strcmpi(info,'MeasurementErrors') || ...
                                   strcmpi(info,'MeasurementErrorsWithoutCorrelations') )

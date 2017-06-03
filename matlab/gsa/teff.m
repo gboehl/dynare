@@ -3,13 +3,13 @@ function [yt, j0, ir, ic]=teff(T,Nsam,istable)
 %
 % Written by Marco Ratto
 % Joint Research Centre, The European Commission,
-% marco.ratto@ec.europa.eu 
+% marco.ratto@ec.europa.eu
 %
 % Reference:
 % M. Ratto, Global Sensitivity Analysis for Macroeconomic models, MIMEO, 2006.
 
 % Copyright (C) 2012 European Commission
-% Copyright (C) 2012 Dynare Team
+% Copyright (C) 2012-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -27,8 +27,8 @@ function [yt, j0, ir, ic]=teff(T,Nsam,istable)
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 ndim = (length(size(T)));
-if ndim==3,
-    if nargin==1,
+if ndim==3
+    if nargin==1
         Nsam=size(T,3);
         istable = [1:Nsam]';
     end
@@ -38,7 +38,7 @@ if ndim==3,
     j0 = length(ir);
     yt=zeros(Nsam, j0);
 
-    for j=1:j0,
+    for j=1:j0
         y0=squeeze(T(ir(j),ic(j),:));
         %y1=ones(size(lpmat,1),1)*NaN;
         y1=ones(Nsam,1)*NaN;
@@ -54,6 +54,6 @@ else
     yt=NaN(Nsam, j0);
     yt(istable,:)=T(ir,:)';
 
-    
+
 end
 %clear y0 y1;

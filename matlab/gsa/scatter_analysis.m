@@ -37,12 +37,12 @@ amcf_title = options_scatter.amcf_title;
 title = options_scatter.title;
 fname_ = options_scatter.fname_;
 xparam1=[];
-if isfield(options_scatter,'xparam1'),
+if isfield(options_scatter,'xparam1')
     xparam1=options_scatter.xparam1;
-end    
+end
 OutputDirectoryName = options_scatter.OutputDirectoryName;
 
-if ~DynareOptions.nograph,
+if ~DynareOptions.nograph
     skipline()
     xx=[];
     if ~isempty(xparam1)

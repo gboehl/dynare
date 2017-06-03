@@ -12,7 +12,7 @@ if nargin<16
     init=zeros(nvars,1);
 end
 
-if nargin<15;
+if nargin<15
     scalefactormod=1;
 end
 
@@ -48,21 +48,21 @@ Tmax = regimestart(nregimes)-1;  % Tmax is the position of the last period
 if Tmax > 0
     P = zeros(nvars,nvars,Tmax);
     D = zeros(nvars,Tmax);
-    
-    
+
+
     invmat = inv((Astarbarmat*decrulea+Bstarbarmat));
     P(:,:,Tmax) = -invmat*Cstarbarmat;
     D(:,Tmax) = -invmat*Dstarbarmat;
-    
-    
+
+
     % equivalent to pre-multiplying by the inverse above if the target
     % matrix is invertible. Otherwise it yields the minimum state solution
     %P(:,:,Tmax) = -(Astarbarmat*decrulea+Bstarbarmat)\Cstarbarmat;
     %D(:,Tmax) = -(Astarbarmat*decrulea+Bstarbarmat)\Dstarbarmat;
-    
-    
+
+
     for i = Tmax-1:-1:1
-        
+
         if violvecbool(i)
             invmat = inv(Bstarbarmat+Astarbarmat*P(:,:,i+1));
             P(:,:,i)=-invmat*Cstarbarmat;
@@ -74,7 +74,7 @@ if Tmax > 0
         end
     end
 
-    if Tmax > 1    
+    if Tmax > 1
         if violvecbool(1)
             E = -invmat*Jstarbarmat;
         else
@@ -86,7 +86,7 @@ if Tmax > 0
 
     end
 
-    
+
 end
 
 % generate data

@@ -15,7 +15,7 @@ function plot_ms_irf(M_, options_, irf, figure_name, varlist)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2011-2012 Dynare Team
+% Copyright (C) 2011-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

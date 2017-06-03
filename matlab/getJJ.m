@@ -2,7 +2,7 @@ function [JJ, H, gam, gp, dA, dOm, dYss] = getJJ(A, B, estim_params_, M_,oo_,opt
 % function [JJ, H, gam, gp, dA, dOm, dYss] = getJJ(A, B, estim_params_, M_,oo_,options_,kronflag,indx,indexo,mf,nlags,useautocorr)
 % computes derivatives of 1st and 2nd order moments of observables with
 % respect to estimated parameters
-% 
+%
 % Inputs:
 %   A:              Transition matrix of lagged states from Kalman filter
 %   B:              Matrix in state transition equation mapping shocks today to
@@ -19,25 +19,25 @@ function [JJ, H, gam, gp, dA, dOm, dYss] = getJJ(A, B, estim_params_, M_,oo_,opt
 %                   correlations
 %   useautocorr:    Indicator on whether to use correlations (1) instead of
 %                   covariances (0)
-% 
+%
 % Outputs:
-%   JJ:             Jacobian of 1st and 2nd order moments of observables, i.e.  dgam/dTHETA 
+%   JJ:             Jacobian of 1st and 2nd order moments of observables, i.e.  dgam/dTHETA
 %                   (see below for definition of gam)
 %   H:              dTAU/dTHETA: Jacobian of TAU, vectorized form of
 %                   linearized reduced form state space model, given ys [steady state],
 %                   A [transition matrix], B [matrix of shocks], Sigma [covariance of shocks]
 %                   TAU = [ys; vec(A); dyn_vech(B*Sigma*B')].
-%   gam:            vector of theoretical moments of observed variables mf [JJ is the Jacobian of gam]. 
-%                   gam = [ys(mf); dyn_vech(GAM{1}); vec(GAM{j+1})]; for j=1:ar and where 
+%   gam:            vector of theoretical moments of observed variables mf [JJ is the Jacobian of gam].
+%                   gam = [ys(mf); dyn_vech(GAM{1}); vec(GAM{j+1})]; for j=1:ar and where
 %                   GAM is the first output of th_autocovariances
 %   gp:             Jacobian of linear rational expectation matrices [i.e.
 %                   Jacobian of dynamic model] with respect to estimated
 %                   structural parameters only (indx)
-%   dA:             [endo_nbr by endo_nbr by (indx+indexo)] Jacobian of transition matrix A           
+%   dA:             [endo_nbr by endo_nbr by (indx+indexo)] Jacobian of transition matrix A
 %   dOm:            Jacobian of Omega = (B*Sigma*B')
 %   dYss            Jacobian of steady state with respect to estimated structural parameters only (indx)
 
-% Copyright (C) 2010-2016 Dynare Team
+% Copyright (C) 2010-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -56,21 +56,21 @@ function [JJ, H, gam, gp, dA, dOm, dYss] = getJJ(A, B, estim_params_, M_,oo_,opt
 
 if nargin<8 || isempty(indx)
     %     indx = [1:M_.param_nbr];
-end,
+end
 if nargin<9 || isempty(indexo)
     indexo = [];
-end,
+end
 if nargin<11 || isempty(nlags)
-    nlags=3; 
+    nlags=3;
 end
 if nargin<12 || isempty(useautocorr)
-    useautocorr=0; 
+    useautocorr=0;
 end
 
 %   if useautocorr,
 warning('off','MATLAB:divideByZero')
 %   end
-if kronflag == -1,
+if kronflag == -1
     fun = 'thet2tau';
     params0 = M_.params;
     para0 = get_all_parameters(estim_params_, M_);
@@ -87,7 +87,7 @@ if kronflag == -1,
     dYss = H(1:M_.endo_nbr,offset+1:end);
     dA = reshape(H(M_.orig_endo_nbr+[1:numel(A)],:),[size(A),size(H,2)]);
     dOm = dA*0;
-    for j=1:size(H,2),
+    for j=1:size(H,2)
         dOm(:,:,j) = dyn_unvech(H(M_.endo_nbr+numel(A)+1:end,j));
     end
     assignin('base','M_', M_);
@@ -109,13 +109,13 @@ else
     sdy = sqrt(diag(GAM));
     sy = sdy*sdy';
     %   end
-    
+
     %   BB = dOm*0;
     %   for j=1:length(indx),
     %     BB(:,:,j)= dA(:,:,j)*GAM*A'+A*GAM*dA(:,:,j)'+dOm(:,:,j);
     %   end
     %   XX =  lyapunov_symm_mr(A,BB,options_.qz_criterium,options_.lyapunov_complex_threshold,0);
-    for j=1:length(indexo),
+    for j=1:length(indexo)
         dum =  lyapunov_symm(A,dOm(:,:,j),options_.lyapunov_fixed_point_tol,options_.qz_criterium,options_.lyapunov_complex_threshold,2,options_.debug);
         %     dum =  XX(:,:,j);
         k = find(abs(dum) < 1e-12);
@@ -130,7 +130,7 @@ else
         else
             dumm = dyn_vech(dum(mf,mf));
         end
-        for i=1:nlags,
+        for i=1:nlags
             dum1 = A^i*dum;
             if useautocorr
                 dum1 = (dum1.*sy-dsy.*(A^i*GAM))./(sy.*sy);
@@ -140,7 +140,7 @@ else
         JJ(:,j) = dumm;
     end
     nexo = length(indexo);
-    for j=1:length(indx),
+    for j=1:length(indx)
         dum =  lyapunov_symm(A,dA(:,:,j+nexo)*GAM*A'+A*GAM*dA(:,:,j+nexo)'+dOm(:,:,j+nexo),options_.lyapunov_fixed_point_tol,options_.qz_criterium,options_.lyapunov_complex_threshold,2,options_.debug);
         %     dum =  XX(:,:,j);
         k = find(abs(dum) < 1e-12);
@@ -155,9 +155,9 @@ else
         else
             dumm = dyn_vech(dum(mf,mf));
         end
-        for i=1:nlags,
+        for i=1:nlags
             dum1 = A^i*dum;
-            for ii=1:i,
+            for ii=1:i
                 dum1 = dum1 + A^(ii-1)*dA(:,:,j+nexo)*A^(i-ii)*GAM;
             end
             if useautocorr
@@ -167,27 +167,27 @@ else
         end
         JJ(:,j+nexo) = dumm;
     end
-    
+
     JJ = [ [zeros(length(mf),nexo) dYss(mf,:)]; JJ];
-    
+
 end
-if nargout >2,
+if nargout >2
     %     sy=sy(mf,mf);
     options_.ar=nlags;
     nodecomposition = 1;
     [GAM,stationary_vars] = th_autocovariances(oo_.dr,oo_.dr.order_var(mf),M_,options_,nodecomposition);
     sy=sqrt(diag(GAM{1}));
     sy=sy*sy';
-    if useautocorr,
+    if useautocorr
         sy=sy-diag(diag(sy))+eye(length(mf));
         GAM{1}=GAM{1}./sy;
     else
-        for j=1:nlags,
+        for j=1:nlags
             GAM{j+1}=GAM{j+1}.*sy;
         end
     end
     gam = dyn_vech(GAM{1});
-    for j=1:nlags,
+    for j=1:nlags
         gam = [gam; vec(GAM{j+1})];
     end
 end

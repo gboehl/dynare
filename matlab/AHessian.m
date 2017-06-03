@@ -8,7 +8,7 @@ function [AHess, DLIK, LIK] = AHessian(T,R,Q,H,P,Y,DT,DYss,DOm,DH,DP,start,mf,ka
 % NOTE: the derivative matrices (DT,DR ...) are 3-dim. arrays with last
 % dimension equal to the number of structural parameters
 
-% Copyright (C) 2011-2016 Dynare Team
+% Copyright (C) 2011-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -39,7 +39,7 @@ F_singular  = 1;
 
 lik  = zeros(smpl,1);                           % Initialization of the vector gathering the densities.
 LIK  = Inf;                                     % Default value of the log likelihood.
-if nargout > 1,
+if nargout > 1
     DLIK  = zeros(k,1);                             % Initialization of the score.
 end
 AHess  = zeros(k,k);                             % Initialization of the Hessian
@@ -47,7 +47,7 @@ Da    = zeros(mm,k);                             % State vector.
 Dv = zeros(length(mf),k);
 
 %     for ii = 1:k
-%         DOm = DR(:,:,ii)*Q*transpose(R) + R*DQ(:,:,ii)*transpose(R) + R*Q*transpose(DR(:,:,ii)); 
+%         DOm = DR(:,:,ii)*Q*transpose(R) + R*DQ(:,:,ii)*transpose(R) + R*Q*transpose(DR(:,:,ii));
 %     end
 
 while notsteady && t<smpl
@@ -66,9 +66,7 @@ while notsteady && t<smpl
         iF     = inv(F);
         K      = P(:,mf)*iF;
         lik(t) = log(det(F))+transpose(v)*iF*v;
-
         [DK,DF,DP1] = computeDKalman(T,DT,DOm,P,DP,DH,mf,iF,K);
-        
         for ii = 1:k
             Dv(:,ii)   = -Da(mf,ii) - DYss(mf,ii);
             Da(:,ii)   = DT(:,:,ii)*(a+K*v) + T*(Da(:,ii)+DK(:,:,ii)*v + K*Dv(:,ii));
@@ -81,7 +79,7 @@ while notsteady && t<smpl
         if t>=start
             AHess = AHess + Dv'*iF*Dv + .5*(vecDPmf' * kron(iF,iF) * vecDPmf);
         end
-        a      = T*(a+K*v);                   
+        a      = T*(a+K*v);
         P      = T*(P-K*P(mf,:))*transpose(T)+Om;
         DP     = DP1;
     end
@@ -107,8 +105,8 @@ if t < smpl
             end
         end
         if t>=start
-            AHess = AHess + Dv'*iF*Dv; 
-        end   
+            AHess = AHess + Dv'*iF*Dv;
+        end
         a = T*(a+K*v);
         lik(t) = transpose(v)*iF*v;
     end
@@ -124,17 +122,17 @@ if t < smpl
     %              H(ii,jj) = trace(iPmf*(.5*DP(mf,mf,ii)*iPmf*DP(mf,mf,jj) + Dv(:,ii)*Dv(:,jj)'));
     %             end
     %         end
-end    
+end
 
-AHess = -AHess;  
-if nargout > 1,
+AHess = -AHess;
+if nargout > 1
     DLIK = DLIK/2;
 end
 % adding log-likelihhod constants
 lik = (lik + pp*log(2*pi))/2;
 
 LIK = sum(lik(start:end)); % Minus the log-likelihood.
-                           % end of main function    
+                           % end of main function
 
 function [DK,DF,DP1] = computeDKalman(T,DT,DOm,P,DP,DH,mf,iF,K)
 
@@ -142,7 +140,7 @@ k      = size(DT,3);
 tmp    = P-K*P(mf,:);
 
 for ii = 1:k
-    DF(:,:,ii)  = DP(mf,mf,ii) + DH(:,:,ii); 
+    DF(:,:,ii)  = DP(mf,mf,ii) + DH(:,:,ii);
     DiF(:,:,ii) = -iF*DF(:,:,ii)*iF;
     DK(:,:,ii)  = DP(:,mf,ii)*iF + P(:,mf)*DiF(:,:,ii);
     Dtmp        = DP(:,:,ii) - DK(:,:,ii)*P(mf,:) - K*DP(mf,:,ii);
@@ -150,5 +148,3 @@ for ii = 1:k
 end
 
 % end of computeDKalman
-
-

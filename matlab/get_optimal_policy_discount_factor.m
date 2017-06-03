@@ -2,18 +2,18 @@ function discount_factor=get_optimal_policy_discount_factor(params,param_names)
 
 %function discount_factor=get_optimal_policy_discount_factor(M)
 %  get the value of Ramsey policy discount factor
-% 
+%
 % INPUTS
-%   params:             (vector) value of parameters    
+%   params:             (vector) value of parameters
 %   param_names:        (char array) list of parameter names
-%    
+%
 % OUTPUTS
 %   discount_factor     (double) discount factor
 %
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2007-2011 Dynare Team
+% Copyright (C) 2007-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

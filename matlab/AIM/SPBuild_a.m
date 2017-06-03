@@ -51,7 +51,7 @@ a(hrows,:) = hs(:,left);
 %  Delete inessential lags and build index array js.  js indexes the
 %  columns in the big transition matrix that correspond to the
 %  essential lags in the model.  They are the columns of q that will
-%  get the unstable left eigenvectors. 
+%  get the unstable left eigenvectors.
 
 js       = 1:qcols;
 zerocols = sum(abs(a)) == 0;

@@ -9,14 +9,14 @@ function osr_res = osr1(i_params,i_var,weights)
 %   osr_res:    [structure] results structure containing:
 %    - objective_function [scalar double]   value of the objective
 %                                               function at the optimum
-%    - optim_params       [structure]       parameter values at the optimum 
-% 
+%    - optim_params       [structure]       parameter values at the optimum
+%
 % Algorithm:
-% 
+%
 %   Uses Newton-type optimizer csminwel to directly solve quadratic
 %   osr-problem
-% 
-% Copyright (C) 2005-2014 Dynare Team
+%
+% Copyright (C) 2005-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -80,7 +80,7 @@ if isfield(options_.osr,'maxit') || isfield(options_.osr,'tolf')
                 options_.optim_opt=[options_.optim_opt,','];
             end
             options_.optim_opt=[options_.optim_opt,'''TolFun'',',num2str(options_.osr.tolf),''];
-        end  
+        end
     end
 end
 
@@ -102,12 +102,12 @@ i_var=unique(i_var);
 [loss,info,exit_flag,vx]=osr_obj(t0,i_params,inv_order_var(i_var),weights(i_var,i_var));
 if info~=0
     print_info(info, options_.noprint, options_);
-else 
+else
     if ~options_.noprint
         fprintf('\nOSR: Initial value of the objective function: %g \n\n',loss);
     end
 end
-if ~options_.noprint && isinf(loss) 
+if ~options_.noprint && isinf(loss)
     fprintf('\nOSR: The initial value of the objective function is infinite.\n');
     fprintf('\nOSR: Check whether the unconditional variance of a target variable is infinite\n');
     fprintf('\nOSR: due to the presence of a unit root.\n');
@@ -120,13 +120,13 @@ if isequal(options_.osr.opt_algo,5)
 elseif isequal(options_.osr.opt_algo,6)
     error('OSR: OSR does not support opt_algo=6.')
 elseif isequal(options_.osr.opt_algo,10)
-    error('OSR: OSR does not support opt_algo=10.')    
+    error('OSR: OSR does not support opt_algo=10.')
 elseif isequal(options_.osr.opt_algo,11)
-    error('OSR: OSR does not support opt_algo=11.')    
+    error('OSR: OSR does not support opt_algo=11.')
 else
-    
+
     if ~isempty(M_.osr.param_bounds) && ~(ismember(options_.osr.opt_algo,[1,2,5,9]) || ischar(options_.osr.opt_algo))
-        error('OSR: OSR with bounds on parameters requires a constrained optimizer, i.e. 1,2,5, or 9.')    
+        error('OSR: OSR with bounds on parameters requires a constrained optimizer, i.e. 1,2,5, or 9.')
     end
     %%do actual optimization
     [p, f, exitflag] = dynare_minimize_objective(str2func('osr_obj'),t0,options_.osr.opt_algo,options_,M_.osr.param_bounds,cellstr(M_.param_names(i_params,:)),[],[], i_params,...

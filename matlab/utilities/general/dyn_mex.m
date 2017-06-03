@@ -1,21 +1,21 @@
 function dyn_mex(win_compiler,basename,force)
 
 % Compile Dynare model dlls when model option use_dll is used
-% if C file is fresher than mex file 
+% if C file is fresher than mex file
 %
 % INPUTS
-%  o win_compiler  str  compiler used under Windows (unused under Linux or OSX): 
+%  o win_compiler  str  compiler used under Windows (unused under Linux or OSX):
 %                       'msvc' (MS Visual C)
 %                        'cygwin'
 %  o basename      str  filenames base
-%  o force         bool recompile if 1 
-%  
-% OUTPUTS 
+%  o force         bool recompile if 1
+%
+% OUTPUTS
 %  none
 %
 
 
-% Copyright (C) 2015-2016 Dynare Team
+% Copyright (C) 2015-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

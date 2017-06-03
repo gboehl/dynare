@@ -15,7 +15,7 @@ function plan = flip_plan(plan, exogenous, endogenous, expectation_type, date, v
 %  plan                   [structure]        Returns a structure containing the updated forecast scenario.
 %
 %
-% Copyright (C) 2013-2014 Dynare Team
+% Copyright (C) 2013-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -38,12 +38,12 @@ exogenous = strtrim(exogenous);
 ix = find(strcmp(exogenous, plan.endo_names));
 if  isempty(ix)
     error(['in flip_plan the second argument ' exogenous ' is not an endogenous variable']);
-end;
+end
 endogenous = strtrim(endogenous);
 iy = find(strcmp(endogenous, plan.exo_names));
 if  isempty(iy)
     error(['in flip_plan the third argument ' endogenous ' is not an exogenous variable']);
-end;
+end
 sdate = length(date);
 if sdate > 1
     if date(1) < plan.date(1) || date(end) > plan.date(end)
@@ -98,4 +98,4 @@ plan.constrained_int_date_{i_ix} = [date(i1) - plan.date(1) + 1; plan.constraine
 plan.constrained_paths_{i_ix} = [value(i1)'; plan.constrained_paths_{i_ix}(i2)];
 else
     error(['impossible case you have two conditional forecasts:\n - one involving ' plan.endo_names{plan.options_cond_fcst_.controlled_varexo(i_ix),:} ' as control and ' plan_exo_names{plan.constrained_vars_(ix_)} ' as constrined endogenous\n - the other involving  ' plan.endo_names{plan.options_cond_fcst_.controlled_varexo(iy),:} ' as control and ' plan_exo_names{plan.constrained_vars_(ix)} ' as constrined endogenous\n']);
-end 
+end

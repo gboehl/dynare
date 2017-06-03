@@ -36,7 +36,7 @@ mh_bounds = sampler_options.bounds;
 
 switch posterior_sampling_method
   case 'slice'
-    
+
     [par, logpost, neval] = slice_sampler(TargetFun,last_draw, [mh_bounds.lb mh_bounds.ub], sampler_options,varargin{:});
     accepted = 1;
   case 'random_walk_metropolis_hastings'
@@ -80,24 +80,24 @@ switch posterior_sampling_method
         par_start_current_block=current_draw(indices(blocks==block_iter,1));
         [xopt_current_block, fval, exitflag, hess_mat_optimizer, options_, Scale] = dynare_minimize_objective(@TaRB_optimizer_wrapper,par_start_current_block,sampler_options.mode_compute,options_,[mh_bounds.lb(indices(blocks==block_iter,1),1) mh_bounds.ub(indices(blocks==block_iter,1),1)],bayestopt_.name,bayestopt_,[],...
                                                           current_draw,indices(blocks==block_iter,1),TargetFun,...% inputs for wrapper
-                                                          varargin{:}); %inputs for objective           
+                                                          varargin{:}); %inputs for objective
         %% covariance for proposal density
         hessian_mat = reshape(hessian('TaRB_optimizer_wrapper',xopt_current_block, ...
                                       options_.gstep,...
                                       current_draw,indices(blocks==block_iter,1),TargetFun,...% inputs for wrapper
                                       varargin{:}),nxopt,nxopt);
-        
+
         if any(any(isnan(hessian_mat))) || any(any(isinf(hessian_mat)))
             inverse_hessian_mat=eye(nxopt)*1e-4; %use diagonal
         else
             inverse_hessian_mat=inv(hessian_mat); %get inverse Hessian
             if any(any((isnan(inverse_hessian_mat)))) || any(any((isinf(inverse_hessian_mat))))
                 inverse_hessian_mat=eye(nxopt)*1e-4; %use diagonal
-            end               
+            end
         end
-        [proposal_covariance_Cholesky_decomposition_upper,negeigenvalues]=chol(inverse_hessian_mat);            
+        [proposal_covariance_Cholesky_decomposition_upper,negeigenvalues]=chol(inverse_hessian_mat);
         %if not positive definite, use generalized Cholesky of Eskow/Schnabel
-        if negeigenvalues~=0 
+        if negeigenvalues~=0
             proposal_covariance_Cholesky_decomposition_upper=chol_SE(inverse_hessian_mat,0);
         end
         proposal_covariance_Cholesky_decomposition_upper=proposal_covariance_Cholesky_decomposition_upper*diag(bayestopt_.jscale(indices(blocks==block_iter,1),:));
@@ -107,7 +107,7 @@ switch posterior_sampling_method
         elseif strcmpi(sampler_options.proposal_distribution,'rand_multivariate_student')
             n = options_.student_degrees_of_freedom;
         end
-        
+
         proposed_par = feval(sampler_options.proposal_distribution, xopt_current_block', proposal_covariance_Cholesky_decomposition_upper, n);
         % check whether draw is valid and compute posterior
         if all( proposed_par(:) > mh_bounds.lb(indices(blocks==block_iter,1),:) ) && all( proposed_par(:) < mh_bounds.ub(indices(blocks==block_iter,1),:) )
@@ -136,7 +136,7 @@ switch posterior_sampling_method
             current_draw(indices(blocks==block_iter,1))=proposed_par;
             last_posterior=logpost;
             accepted_draws_counter =accepted_draws_counter +1;
-        else %no updating 
+        else %no updating
              %do nothing, keep old value
         end
     end

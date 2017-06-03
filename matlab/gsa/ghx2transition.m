@@ -3,10 +3,10 @@ function [A,B] = ghx2transition(mm,iv,ic,aux)
 %
 % Adapted by M. Ratto (from kalman_transition_matrix.m)
 % Joint Research Centre, The European Commission,
-% marco.ratto@ec.europa.eu 
+% marco.ratto@ec.europa.eu
 %
 
-% Copyright (C) 2012 Dynare Team
+% Copyright (C) 2012-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

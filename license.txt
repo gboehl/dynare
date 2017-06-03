@@ -1,16 +1,15 @@
 ﻿Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: Dynare
-Upstream-Contact: Dynare Team, whose members in 2016 are:
+Upstream-Contact: Dynare Team, whose members in 2017 are:
                   Stéphane Adjemian <stephane.adjemian@univ-lemans.fr>
                   Houtan Bastani <houtan@dynare.org>
                   Michel Juillard <michel.juillard@mjui.fr>
                   Frédéric Karamé <frederic.karame@univ-lemans.fr>
                   Junior Maih <junior.maih@gmail.com>
                   Ferhat Mihoubi <fmihoubi@univ-evry.fr>
-                  George Perendia <george@perendia.orangehome.co.uk>
                   Johannes Pfeifer <jpfeifer@gmx.de>
-                  Marco Ratto <marco.ratto@jrc.ec.europa.eu>
-                  Sébastien Villemot <sebastien@dynare.org>
+                  Marco Ratto <marco.ratto@ec.europa.eu>
+                  Sébastien Villemot <sebastien.villemot@sciencespo.fr>
 Source: http://www.dynare.org
 
 Files: *
@@ -205,7 +204,7 @@ License: permissive
  Unlimited permission is granted to everyone to use, copy, modify or
  distribute this software.
 
-Files: matlab/utilities\graphics\distinguishable_colors.m
+Files: matlab/utilities/graphics/distinguishable_colors.m
 Copyright 2010-2011 by Timothy E. Holy
 All rights reserved.
 Redistribution and use in source and binary forms, with or without
@@ -228,7 +227,7 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 
-Files: matlab/utilities\graphics\colorspace.m
+Files: matlab/utilities/graphics/colorspace.m
 Pascal Getreuer 2005-2010
 All rights reserved.
 Redistribution and use in source and binary forms, with or without

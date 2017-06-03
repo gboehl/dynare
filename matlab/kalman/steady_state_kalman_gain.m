@@ -1,23 +1,23 @@
 function [K,iF,P] = steady_state_kalman_gain(T,R,Q,H,mf)
 % Given the invariant state space representation of a model, this
 % function computes the gain matrix and the covariance matrix of the
-% state vector at the steady state of the kalman filter. 
-% 
-% INPUTS 
-%   T   [double]    m*m transition matrix of the state vector.  
+% state vector at the steady state of the kalman filter.
+%
+% INPUTS
+%   T   [double]    m*m transition matrix of the state vector.
 %   R   [double]    m*q matrix (q is the number of structural innovations).
 %   Q   [double]    q*q covariance matrix of the structural innovations.
 %   H   [double]    p*p covariance matrix of the measurement error.
 %   mf  [integer]   p*1 vector, indices for the observed variables
-%    
-% OUTPUTS 
+%
+% OUTPUTS
 %   K   [double]    kalman gain matrix.
 %   P   [double]    covariance matrix of the state vector.
-%               
+%
 % SPECIAL REQUIREMENTS
 %   Needs a solver for Riccati equations (dare.m)
 
-% Copyright (C) 2004-2009 Dynare Team
+% Copyright (C) 2004-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

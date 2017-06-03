@@ -17,7 +17,7 @@ function [x,info,fvec,fjac] = dynare_solve(func,x,options,varargin)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2001-2016 Dynare Team
+% Copyright (C) 2001-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -187,7 +187,7 @@ if options.solve_algo == 0
             [x,fval,exitval,output] = fsolve(func,x,options4fsolve);
         else
             exitval = 3;
-        end;
+        end
     end
 
     if exitval == 1
@@ -203,7 +203,7 @@ if options.solve_algo == 0
         if max(abs(fvec)) >= tolf
             info = 1;
         else
-            info = 0;        
+            info = 0;
         end
     else
         info = 1;
@@ -295,4 +295,3 @@ elseif options.solve_algo == 11
 else
     error('DYNARE_SOLVE: option solve_algo must be one of [0,1,2,3,4,9,10,11]')
 end
-

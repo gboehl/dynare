@@ -8,18 +8,18 @@ function [q,N] = quantile(X, p, dim, method, weights) % --*-- Unitary tests --*-
 %   a matrix, the i-th row of Q contains the P(i)-th quantiles of each
 %   column of X.  For N-D arrays, QUANTILE2 operates along the first
 %   non-singleton dimension.
-% 
+%
 %   Q = QUANTILE2(X,P,DIM) calculates quantiles along dimension DIM.  The
 %   DIM'th dimension of Q has length LENGTH(P).
-% 
+%
 %   Q = QUANTILE2(X,P,DIM,METHOD) calculates quantiles using one of the
 %   methods described in http://en.wikipedia.org/wiki/Quantile. The method
 %   are designated 'R-1'...'R-9'; the default is R-8 as described in
 %   http://bit.ly/1kX4NcT, whereas Matlab uses 'R-5'.
-%   
+%
 %   Q = QUANTILE2(X,P,[],METHOD) uses the specified METHOD, but calculates
 %   quantiles along the first non-singleton dimension.
-% 
+%
 %   Q = QUANTILE2(X,P,[],METHOD,WEIGHTS) and QUANTILE2(X,P,[],[],WEIGHTS)
 %   uses the array WEIGHTS to weight the values in X when calculating
 %   quantiles. If no weighting is specified, the method determines the
@@ -33,12 +33,12 @@ function [q,N] = quantile(X, p, dim, method, weights) % --*-- Unitary tests --*-
 %   equal, then the weighted and unweighted index (and correpsonding
 %   quantile) are identical. The default method R-8 is used if METHOD is
 %   specified as an empty array ([]).
-% 
+%
 %   [Q,N] = QUANTILE2(...) returns an array that is the same size as Q such
 %   that N(i) is the number of points used to calculate Q(i).
-% 
+%
 %   Further reading
-%   
+%
 %   Hyndman, R.J.; Fan, Y. (November 1996). "Sample Quantiles in
 %     Statistical Packages". The American Statistician 50 (4): 361-365.
 %   Frigge, Michael; Hoaglin, David C.; Iglewicz, Boris (February 1989).
@@ -47,9 +47,9 @@ function [q,N] = quantile(X, p, dim, method, weights) % --*-- Unitary tests --*-
 
 % Original file downloaded from:
 % http://fr.mathworks.com/matlabcentral/fileexchange/46555-quantile-calculation
-% 
-% Copyright (C) 2014-2016 University of Surrey (Christopher Hummersone) 
-% Copyright (C) 2016 Dynare Team
+%
+% Copyright (C) 2014-2016 University of Surrey (Christopher Hummersone)
+% Copyright (C) 2016-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

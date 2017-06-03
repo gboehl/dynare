@@ -376,4 +376,3 @@ if isinf(LIK)~=0
     exit_flag = 0;
     return
 end
-

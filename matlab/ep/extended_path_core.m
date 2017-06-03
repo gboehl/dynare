@@ -4,7 +4,7 @@ function [y, info_convergence, endogenousvariablespaths] = extended_path_core(pe
                                                   debug,bytecode_flag,order,M,pfm,algo,solve_algo,stack_solve_algo,...
                                                   olmmcp,options,oo,initialguess)
 
-% Copyright (C) 2016 Dynare Team
+% Copyright (C) 2016-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -58,7 +58,7 @@ if flag
         options.solve_algo = solve_algo;
         options.stack_solve_algo = stack_solve_algo;
         tmp = perfect_foresight_solver_core(M, options, oo);
-        if ~tmp.deterministic_simulation.status 
+        if ~tmp.deterministic_simulation.status
             info_convergence = false;
         else
             info_convergence = true;

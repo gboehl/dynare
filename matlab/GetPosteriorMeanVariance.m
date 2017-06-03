@@ -1,6 +1,6 @@
 function [mean,variance] = GetPosteriorMeanVariance(M,drop)
 
-% Copyright (C) 2012-2016 Dynare Team
+% Copyright (C) 2012-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

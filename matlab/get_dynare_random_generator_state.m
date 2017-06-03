@@ -1,12 +1,12 @@
 function [state_u,state_n] = get_dynare_random_generator_state()
 % Get state of Matlab/Octave random generator depending on matlab
-% (octave) version. 
+% (octave) version.
 % In older versions, Matlab kept one generator for uniformly distributed numbers and
-% one for normally distributed numbers. 
+% one for normally distributed numbers.
 % For backward compatibility, we return two vectors, but, in recent
 % versions of Matlab and in Octave, we return two identical vectors.
 
-% Copyright (C) 2010-2013 Dynare Team
+% Copyright (C) 2010-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -34,7 +34,7 @@ if matlab_random_streams% Use new matlab interface.
     if isequal(s.Type,'legacy')
         state_u = rand('state');
         state_n = randn('state');
-    else            
+    else
         state_u = s.State;
         state_n = state_u;
     end

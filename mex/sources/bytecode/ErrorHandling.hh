@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2015 Dynare Team
+ * Copyright (C) 2007-2017 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -386,7 +386,7 @@ public:
     string tmp_n(str.length(), ' ');
     string dollar, pound, tilde;
     dollar = "$";
-    pound = "£";
+    pound = "Â£";
     tilde = "~";
     for (unsigned int i = 0; i < str.length(); i++)
       {
@@ -1329,7 +1329,7 @@ public:
                       tmp_out << "$";
                     tmp_out << " / ";
                     if (isinf(r))
-                      tmp_out << "£";
+                      tmp_out << "Â£";
                   }
                 else
                   tmp_out << " / ";
@@ -1492,7 +1492,7 @@ public:
                 if (compute)
                   {
                     if (isnan(r))
-                      tmp_out << "$ ^ " << "£";
+                      tmp_out << "$ ^ " << "Â£";
                     else
                       tmp_out << " ^ ";
                   }
@@ -1534,7 +1534,7 @@ public:
                   if (compute)
                     {
                       if (isnan(r))
-                        tmp_out << "$ PowerDeriv " << "£";
+                        tmp_out << "$ PowerDeriv " << "Â£";
                       else
                         tmp_out << "PowerDeriv";
                     }
@@ -1608,7 +1608,7 @@ public:
                 if (compute)
                   {
                     if (isnan(r))
-                      tmp_out << "$log" << "£" << "(" << v1 << ")";
+                      tmp_out << "$log" << "Â£" << "(" << v1 << ")";
                     else
                       tmp_out << "log(" << v1 << ")";
                   }
@@ -1626,7 +1626,7 @@ public:
                 if (compute)
                   {
                     if (isnan(r))
-                      tmp_out << "$log10" << "£" << "(" << v1 << ")";
+                      tmp_out << "$log10" << "Â£" << "(" << v1 << ")";
                     else
                       tmp_out << "log10(" << v1 << ")";
                   }

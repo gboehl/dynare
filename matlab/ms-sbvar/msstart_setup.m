@@ -1,6 +1,6 @@
 %function []= msstart_setup(options_)
 
-% Copyright (C) 2011-2012 Dynare Team
+% Copyright (C) 2011-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -154,8 +154,3 @@ ndraws2=10*ndraws1;        % 2nd part of Monte Carlo draws
                            %  nstarts=1         % number of starting points
                            %  imndraws = nstarts*ndraws2;   % total draws for impulse responses or forecasts
                            %<<<<<<<<<<<<<<<<<<<
-
-
-
-
-

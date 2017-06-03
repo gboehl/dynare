@@ -17,7 +17,7 @@ function [loss,info,exit_flag,vx,junk]=osr_obj(x,i_params,i_var,weights)
 %
 % SPECIAL REQUIREMENTS
 %   none
-% Copyright (C) 2005-2016 Dynare Team
+% Copyright (C) 2005-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -58,7 +58,7 @@ if info(1)
         return
     else
         loss = 1e8;
-        info(4)=0.1;        
+        info(4)=0.1;
         return
     end
 end

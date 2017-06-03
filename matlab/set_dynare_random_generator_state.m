@@ -1,12 +1,12 @@
 function [state_u,state_n] = set_dynare_random_generator_state(state_u,state_n)
 % Wet state of Matlab/Octave random generator depending on matlab
-% (octave) version. 
+% (octave) version.
 % In older versions, Matlab kept one generator for uniformly distributed numbers and
-% one for normally distributed numbers. 
+% one for normally distributed numbers.
 % For backward compatibility, we return two vectors, but, in recent
 % versions of Matlab and in Octave, we return two identical vectors.
-%    
-% Copyright (C) 2010-2012 Dynare Team
+%
+% Copyright (C) 2010-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -34,7 +34,7 @@ if matlab_random_streams% Use new matlab interface.
     if isequal(s.Type,'legacy')
         rand('state',state_u);
         randn('state',state_n);
-    else            
+    else
         if ~isequal(state_u,state_n)
             error(['You are using the new Matlab RandStream mechanism ' ...
                    'with a single random generator, but the values ' ...

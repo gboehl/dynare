@@ -40,7 +40,7 @@ function [eigenvalues_,result,info] = check(M, options, oo)
 %! @end deftypefn
 %@eod:
 
-% Copyright (C) 2001-2013 Dynare Team
+% Copyright (C) 2001-2014 Dynare Team
 %
 % This file is part of Dynare.
 %

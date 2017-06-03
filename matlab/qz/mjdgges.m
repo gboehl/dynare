@@ -6,16 +6,16 @@ function [err,ss,tt,w,sdim,eigval,info] = mjdgges(e,d,qz_criterium, fake)
 %   e            [double] real square (n*n) matrix.
 %   d            [double] real square (n*n) matrix.
 %   qz_criterium [double] scalar (1+epsilon).
-%    
+%
 % OUTPUTS
 %   err          [double]  scalar: 1 indicates failure, 0 indicates success
 %   ss           [complex] (n*n) matrix.
 %   tt           [complex] (n*n) matrix.
 %   w            [complex] (n*n) matrix.
-%   sdim         [integer] scalar.    
-%   eigval       [complex] (n*1) vector. 
+%   sdim         [integer] scalar.
+%   eigval       [complex] (n*1) vector.
 %   info         [integer] scalar.
-%    
+%
 % ALGORITHM
 %   Sims's qzdiv routine is used.
 %
@@ -54,7 +54,7 @@ end
 
 % Set default value of qz_criterium.
 if nargin <3
-    qz_criterium = 1 + 1e-6; 
+    qz_criterium = 1 + 1e-6;
 end
 
 info = 0;

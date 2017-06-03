@@ -9,14 +9,14 @@ function [ide_hess, ide_moments, ide_model, ide_lre, derivatives_info, info, opt
 %    o options_ident      [structure] identification options
 %    o dataset_           [structure] the dataset after required transformation
 %    o dataset_info       [structure] Various informations about the dataset (descriptive statistics and missing observations) info for Kalman Filter
-%    o prior_exist        [integer] 
+%    o prior_exist        [integer]
 %                           =1 when prior exists and indentification is checked only for estimated params and shocks
 %                           =0 when prior is not defined and indentification is checked for all params and shocks
 %    o name_tex           [char] list of tex names
 %    o init               [integer] flag  for initialization of persistent vars
 %    o tittxt             [string]  string indicating the title text for
 %                                   graphs and figures
-%    
+%
 % OUTPUTS
 %    o ide_hess           [structure] identification results using Asymptotic Hessian
 %    o ide_moments        [structure] identification results using theoretical moments
@@ -24,11 +24,11 @@ function [ide_hess, ide_moments, ide_model, ide_lre, derivatives_info, info, opt
 %    o ide_lre            [structure] identification results using LRE model
 %    o derivatives_info   [structure] info about analytic derivs
 %    o info               output from dynare resolve
-%    
+%
 % SPECIAL REQUIREMENTS
 %    None
 
-% Copyright (C) 2008-2016 Dynare Team
+% Copyright (C) 2008-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -42,7 +42,7 @@ function [ide_hess, ide_moments, ide_model, ide_lre, derivatives_info, info, opt
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU General Public License for more details.
 %
-% You should have received a copy of the GNU General Public License 
+% You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 global oo_ M_ options_ bayestopt_ estim_params_
@@ -51,7 +51,7 @@ persistent indH indJJ indLRE
 nparam=length(params);
 np=length(indx);
 offset=nparam-np;
-if ~isempty(estim_params_),
+if ~isempty(estim_params_)
     M_ = set_all_parameters(params,estim_params_,M_);
 end
 
@@ -73,7 +73,7 @@ ide_lre = struct();
 derivatives_info = struct();
 
 [A,B,ys,info,M_,options_,oo_] = dynare_resolve(M_,options_,oo_);
-if info(1)==0,
+if info(1)==0
     oo0=oo_;
     tau=[oo_.dr.ys(oo_.dr.order_var); vec(A); dyn_vech(B*M_.Sigma_e*B')];
     yy0=oo_.dr.ys(I);
@@ -86,16 +86,16 @@ if info(1)==0,
     derivatives_info.DT=dA;
     derivatives_info.DOm=dOm;
     derivatives_info.DYss=dYss;
-    if init,
+    if init
         indJJ = (find(max(abs(JJ'),[],1)>1.e-8));
         if isempty(indJJ) && any(any(isnan(JJ)))
             error('There are NaN in the JJ matrix. Please check whether your model has units roots and you forgot to set diffuse_filter=1.' )
         elseif any(any(isnan(gam)))
             error('There are NaN''s in the theoretical moments: make sure that for non-stationary models stationary transformations of non-stationary observables are used for checking identification. [TIP: use first differences].')
         end
-        while length(indJJ)<nparam && nlags<10,
+        while length(indJJ)<nparam && nlags<10
             disp('The number of moments with non-zero derivative is smaller than the number of parameters')
-            disp(['Try increasing ar = ', int2str(nlags+1)])           
+            disp(['Try increasing ar = ', int2str(nlags+1)])
             nlags=nlags+1;
             [JJ, H, gam, gp, dA, dOm, dYss] = getJJ(A, B, estim_params_, M_,oo0,options_,kron_flag,indx,indexo,bayestopt_.mf2,nlags,useautocorr);
             derivatives_info.DT=dA;
@@ -104,10 +104,10 @@ if info(1)==0,
             options_.ar=nlags;
             indJJ = (find(max(abs(JJ'),[],1)>1.e-8));
         end
-        if length(indJJ)<nparam,
+        if length(indJJ)<nparam
             disp('The number of moments with non-zero derivative is smaller than the number of parameters')
-            disp('up to 10 lags: check your model')           
-            disp('Either further increase ar or reduce the list of estimated parameters')           
+            disp('up to 10 lags: check your model')
+            disp('Either further increase ar or reduce the list of estimated parameters')
             error('identification_analysis: there are not enough moments and too many parameters'),
         end
         indH = (find(max(abs(H'),[],1)>1.e-8));
@@ -117,50 +117,50 @@ if info(1)==0,
     LRE(:,1)=vg1(indLRE);
     GAM(:,1)=gam(indJJ);
     siJ = (JJ(indJJ,:));
-    siH = (H(indH,:));   
+    siH = (H(indH,:));
     siLRE = (gp(indLRE,:));
     ide_strength_J=NaN(1,nparam);
     ide_strength_J_prior=NaN(1,nparam);
-    if init, %~isempty(indok),
+    if init
         normaliz = NaN(1,nparam);
-        if prior_exist,
-            if ~isempty(estim_params_.var_exo),
+        if prior_exist
+            if ~isempty(estim_params_.var_exo)
                 normaliz1 = estim_params_.var_exo(:,7)'; % normalize with prior standard deviation
             else
                 normaliz1=[];
             end
-            if ~isempty(estim_params_.corrx),
+            if ~isempty(estim_params_.corrx)
                 normaliz1 = [normaliz1 estim_params_.corrx(:,8)']; % normalize with prior standard deviation
             end
-            if ~isempty(estim_params_.param_vals),
+            if ~isempty(estim_params_.param_vals)
                 normaliz1 = [normaliz1 estim_params_.param_vals(:,7)']; % normalize with prior standard deviation
             end
             %                         normaliz = max([normaliz; normaliz1]);
             normaliz1(isinf(normaliz1)) = 1;
-            
+
         else
             normaliz1 = NaN(1,nparam);
         end
-        try,
+        try
             options_.irf = 0;
             options_.noprint = 1;
             options_.order = 1;
             options_.SpectralDensity.trigger = 0;
             options_.periods = periods+100;
-            if options_.kalman_algo > 2,
+            if options_.kalman_algo > 2
                 options_.kalman_algo = 1;
             end
             analytic_derivation = options_.analytic_derivation;
             options_.analytic_derivation = -2;
             info = stoch_simul(char(options_.varobs));
-            dataset_ = dseries(oo_.endo_simul(options_.varobs_id,100+1:end)',dates('1Q1'), options_.varobs);            
+            dataset_ = dseries(oo_.endo_simul(options_.varobs_id,100+1:end)',dates('1Q1'), options_.varobs);
             derivatives_info.no_DLIK=1;
             %bounds = prior_bounds(bayestopt_, options_.prior_trunc);
-            [fval,info,cost_flag,DLIK,AHess,ys,trend_coeff,M_,options_,bayestopt_,oo_] = dsge_likelihood(params',dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,bounds,oo_,derivatives_info);             
+            [fval,info,cost_flag,DLIK,AHess,ys,trend_coeff,M_,options_,bayestopt_,oo_] = dsge_likelihood(params',dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,bounds,oo_,derivatives_info);
             %                 fval = DsgeLikelihood(xparam1,data_info,options_,M_,estim_params_,bayestopt_,oo_);
             options_.analytic_derivation = analytic_derivation;
             AHess=-AHess;
-            if min(eig(AHess))<-1.e-10,
+            if min(eig(AHess))<-1.e-10
                 error('identification_analysis: Analytic Hessian is not positive semi-definite!')
             end
             %             chol(AHess);
@@ -168,7 +168,7 @@ if info(1)==0,
             deltaM = sqrt(diag(AHess));
             iflag=any((deltaM.*deltaM)==0);
             tildaM = AHess./((deltaM)*(deltaM'));
-            if iflag || rank(AHess)>rank(tildaM),
+            if iflag || rank(AHess)>rank(tildaM)
                 [ide_hess.cond, ide_hess.ind0, ide_hess.indno, ide_hess.ino, ide_hess.Mco, ide_hess.Pco] = identification_checks(AHess, 1);
             else
                 [ide_hess.cond, ide_hess.ind0, ide_hess.indno, ide_hess.ino, ide_hess.Mco, ide_hess.Pco] = identification_checks(tildaM, 1);
@@ -187,7 +187,7 @@ if info(1)==0,
             rhoM=sqrt(1./diag(inv(tildaM(indok,indok))));
             %             deltaM = deltaM.*abs(params');
             flag_score=1;
-        catch,
+        catch
             %             replic = max([replic, nparam*(nparam+1)/2*10]);
             replic = max([replic, length(indJJ)*3]);
             cmm = simulated_moment_uncertainty(indJJ, periods, replic,options_,M_,oo_);
@@ -197,7 +197,7 @@ if info(1)==0,
             if isoctave || matlab_ver_less_than('8.3')
                 [V,D]=eig(cc);
                 %fix for older Matlab versions that do not support computing left eigenvalues, see http://mathworks.com/help/releases/R2012b/matlab/ref/eig.html
-                [W,junk] = eig(cc.'); 
+                [W,junk] = eig(cc.');
                 W = conj(W);
             else
                 [V,D,W]=eig(cc);
@@ -225,7 +225,7 @@ if info(1)==0,
             deltaM = sqrt(diag(MIM));
             iflag=any((deltaM.*deltaM)==0);
             tildaM = MIM./((deltaM)*(deltaM'));
-            if iflag || rank(MIM)>rank(tildaM),
+            if iflag || rank(MIM)>rank(tildaM)
                 [ide_hess.cond, ide_hess.ind0, ide_hess.indno, ide_hess.ino, ide_hess.Mco, ide_hess.Pco] = identification_checks(MIM, 1);
             else
                 [ide_hess.cond, ide_hess.ind0, ide_hess.indno, ide_hess.ino, ide_hess.Mco, ide_hess.Pco] = identification_checks(tildaM, 1);
@@ -239,7 +239,7 @@ if info(1)==0,
             %             chh = siH(:,ind1)*((MIM(ind1,ind1))\siH(:,ind1)');
             ind1=ind1(ind1>offset);
             clre = siLRE(:,ind1-offset)*((MIM(ind1,ind1))\siLRE(:,ind1-offset)');
-            if ~isempty(indok),
+            if ~isempty(indok)
                 rhoM(indok)=sqrt(1./diag(inv(tildaM(indok,indok))));
                 normaliz(indok) = (sqrt(diag(inv(tildaM(indok,indok))))./deltaM(indok))'; %sqrt(diag(inv(MIM(indok,indok))))';
             end
@@ -253,7 +253,7 @@ if info(1)==0,
         deltaM = deltaM.*abs(params');
         deltaM(params==0)=deltaM_prior(params==0);
         quant = siJ./repmat(sqrt(diag(cmm)),1,nparam);
-        if size(quant,1)==1,
+        if size(quant,1)==1
             siJnorm = abs(quant).*normaliz1;
         else
             siJnorm = vnorm(quant).*normaliz1;
@@ -268,9 +268,9 @@ if info(1)==0,
         iy = find(diag_chh);
         indH=indH(iy);
         siH=siH(iy,:);
-        if ~isempty(iy),
+        if ~isempty(iy)
             quant = siH./repmat(sqrt(diag_chh(iy)),1,nparam);
-            if size(quant,1)==1,
+            if size(quant,1)==1
                 siHnorm = abs(quant).*normaliz1;
             else
                 siHnorm = vnorm(quant).*normaliz1;
@@ -288,9 +288,9 @@ if info(1)==0,
         iy = find(diag_clre);
         indLRE=indLRE(iy);
         siLRE=siLRE(iy,:);
-        if ~isempty(iy),
+        if ~isempty(iy)
             quant = siLRE./repmat(sqrt(diag_clre(iy)),1,np);
-            if size(quant,1)==1,
+            if size(quant,1)==1
                 siLREnorm = abs(quant).*normaliz1(offset+1:end);
             else
                 siLREnorm = vnorm(quant).*normaliz1(offset+1:end);
@@ -299,16 +299,16 @@ if info(1)==0,
             siLREnorm=[];
         end
         %                 siLREnorm = vnorm(siLRE./repmat(LRE,1,nparam-offset)).*normaliz(offset+1:end);
-        ide_hess.ide_strength_J=ide_strength_J; 
-        ide_hess.ide_strength_J_prior=ide_strength_J_prior; 
-        ide_hess.deltaM=deltaM; 
-        ide_hess.deltaM_prior=deltaM_prior; 
-        ide_moments.siJnorm=siJnorm; 
-        ide_model.siHnorm=siHnorm; 
-        ide_lre.siLREnorm=siLREnorm; 
-        ide_hess.flag_score=flag_score; 
-    end,
-    if normalize_jacobians,
+        ide_hess.ide_strength_J=ide_strength_J;
+        ide_hess.ide_strength_J_prior=ide_strength_J_prior;
+        ide_hess.deltaM=deltaM;
+        ide_hess.deltaM_prior=deltaM_prior;
+        ide_moments.siJnorm=siJnorm;
+        ide_model.siHnorm=siHnorm;
+        ide_lre.siLREnorm=siLREnorm;
+        ide_hess.flag_score=flag_score;
+    end
+    if normalize_jacobians
         normH = max(abs(siH)')';
         normH = normH(:,ones(nparam,1));
         normJ = max(abs(siJ)')';
@@ -354,9 +354,8 @@ if info(1)==0,
         ide_moments.S = S;
         ide_moments.V = V;
     end
-    
     indok = find(max(ide_moments.indno,[],1)==0);
-    if advanced,
+    if advanced
         [ide_moments.pars, ide_moments.cosnJ] = ident_bruteforce(JJ(indJJ,:)./normJ,max_dim_cova_group,options_.TeX,name_tex,tittxt);
     end
-end    
+end

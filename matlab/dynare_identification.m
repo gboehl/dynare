@@ -3,8 +3,8 @@ function [pdraws, TAU, GAM, LRE, gp, H, JJ] = dynare_identification(options_iden
 %
 % INPUTS
 %    o options_ident    [structure] identification options
-%    o pdraws0          [matrix] optional: matrix of MC sample of model params. 
-%    
+%    o pdraws0          [matrix] optional: matrix of MC sample of model params.
+%
 % OUTPUTS
 %    o pdraws           [matrix] matrix of MC sample of model params used
 %    o TAU,             [matrix] MC sample of entries in the model solution (stacked vertically)
@@ -13,13 +13,13 @@ function [pdraws, TAU, GAM, LRE, gp, H, JJ] = dynare_identification(options_iden
 %    o gp,              [matrix] derivatives of the Jacobian (LRE model)
 %    o H,               [matrix] derivatives of the model solution
 %    o JJ               [matrix] derivatives of the  moments
-%    
+%
 % SPECIAL REQUIREMENTS
 %    None
 
-% main 
+% main
 %
-% Copyright (C) 2010-2016 Dynare Team
+% Copyright (C) 2010-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -67,7 +67,7 @@ else
     if options_.diffuse_filter==1 %warning if estimation with diffuse filter was done, but not passed
         warning('IDENTIFICATION:: Previously the diffuse_filter option was used, but it was not passed to the identification command. This may result in problems if your model contains unit roots.')
     end
-    if isfield(options_ident,'lik_init') 
+    if isfield(options_ident,'lik_init')
         options_.lik_init=options_ident.lik_init; %make options_ inherit lik_init
         if options_ident.lik_init==3 %user specified diffuse filter using the lik_init option
             options_ident.analytic_derivation=0; %diffuse filter not compatible with analytic derivation
@@ -78,48 +78,48 @@ end
 options_ident = set_default_option(options_ident,'lik_init',1);
 options_ident = set_default_option(options_ident,'analytic_derivation',1);
 
-if isfield(options_ident,'nograph'),
+if isfield(options_ident,'nograph')
     options_.nograph=options_ident.nograph;
 end
-if isfield(options_ident,'nodisplay'),
+if isfield(options_ident,'nodisplay')
     options_.nodisplay=options_ident.nodisplay;
 end
-if isfield(options_ident,'graph_format'),
+if isfield(options_ident,'graph_format')
     options_.graph_format=options_ident.graph_format;
 end
-if isfield(options_ident,'prior_trunc'),
+if isfield(options_ident,'prior_trunc')
     options_.prior_trunc=options_ident.prior_trunc;
 end
 
-if options_ident.gsa_sample_file,
+if options_ident.gsa_sample_file
     GSAFolder = checkpath('gsa',M_.dname);
-    if options_ident.gsa_sample_file==1,
+    if options_ident.gsa_sample_file==1
         load([GSAFolder,filesep,fname_,'_prior'],'lpmat','lpmat0','istable');
-    elseif options_ident.gsa_sample_file==2,
+    elseif options_ident.gsa_sample_file==2
         load([GSAFolder,filesep,fname_,'_mc'],'lpmat','lpmat0','istable');
     else
         load([GSAFolder,filesep,options_ident.gsa_sample_file],'lpmat','lpmat0','istable');
     end
-    if isempty(istable),
+    if isempty(istable)
         istable=1:size(lpmat,1);
     end
-    if ~isempty(lpmat0),
+    if ~isempty(lpmat0)
         lpmatx=lpmat0(istable,:);
     else
         lpmatx=[];
     end
     pdraws0 = [lpmatx lpmat(istable,:)];
     clear lpmat lpmat0 istable;
-elseif nargin==1,
+elseif nargin==1
     pdraws0=[];
 end
 external_sample=0;
-if nargin==2 || ~isempty(pdraws0),
+if nargin==2 || ~isempty(pdraws0)
     options_ident.prior_mc=size(pdraws0,1);
     options_ident.load_ident_files = 0;
     external_sample=1;
 end
-if isempty(estim_params_),
+if isempty(estim_params_)
     options_ident.prior_mc=1;
     options_ident.prior_range=0;
     prior_exist=0;
@@ -164,28 +164,24 @@ end
 
 SampleSize = options_ident.prior_mc;
 
-if ~(exist('sylvester3','file')==2),
-
+if ~(exist('sylvester3','file')==2)
     dynareroot = strrep(which('dynare'),'dynare.m','');
     addpath([dynareroot 'gensylv'])
 end
 
 IdentifDirectoryName = CheckPath('identification',M_.dname);
-if prior_exist,
-
+if prior_exist
     indx = [];
-    if ~isempty(estim_params_.param_vals),
+    if ~isempty(estim_params_.param_vals)
         indx = estim_params_.param_vals(:,1);
     end
     indexo=[];
     if ~isempty(estim_params_.var_exo)
         indexo = estim_params_.var_exo(:,1);
     end
-
     nparam = length(bayestopt_.name);
     np = estim_params_.np;
-
-    if estim_params_.nvn || estim_params_.ncn,
+    if estim_params_.nvn || estim_params_.ncn
         error('Identification does not support measurement errors. Instead, define them explicitly in measurement equations in model definition.')
     else
         offset = estim_params_.nvx;
@@ -199,7 +195,7 @@ if prior_exist,
     end
     name=cell(nparam,1);
     name_tex=cell(nparam,1);
-    for jj=1:nparam        
+    for jj=1:nparam
         if options_.TeX
             [param_name_temp, param_name_tex_temp]= get_the_name(jj,options_.TeX,M_,estim_params_,options_);
             name_tex{jj,1} = strrep(param_name_tex_temp,'$','');
@@ -229,9 +225,9 @@ else
 end
 
 skipline()
-disp(['==== Identification analysis ====' ]),
+disp(['==== Identification analysis ====' ])
 skipline()
-if nparam<2,
+if nparam<2
     options_ident.advanced=0;
     advanced = options_ident.advanced;
     disp('There is only one parameter to study for identitification.')
@@ -246,10 +242,9 @@ options_ident.max_dim_cova_group = min([options_ident.max_dim_cova_group,nparam-
 MaxNumberOfBytes=options_.MaxNumberOfBytes;
 store_options_ident = options_ident;
 
-if iload <=0,
-    
+if iload <=0
     [I,J]=find(M_.lead_lag_incidence');
-    if prior_exist,
+    if prior_exist
         %         if exist([fname_,'_mean.mat'],'file'),
         % %             disp('Testing posterior mean')
         %             load([fname_,'_mean'],'xparam1')
@@ -272,7 +267,7 @@ if iload <=0,
               case 'calibration'
                 parameters_TeX = 'Calibration';
                 disp('Testing calibration')
-                params(1,:) = get_all_parameters(estim_params_,M_);;
+                params(1,:) = get_all_parameters(estim_params_,M_);
               case 'posterior_mode'
                 parameters_TeX = 'Posterior mode';
                 disp('Testing posterior mode')
@@ -290,7 +285,7 @@ if iload <=0,
                 disp('Testing prior mode')
                 params(1,:) = bayestopt_.p5(:);
               case 'prior_mean'
-                parameters_TeX = 'Prior mean';                    
+                parameters_TeX = 'Prior mean';
                 disp('Testing prior mean')
                 params(1,:) = bayestopt_.p1;
               otherwise
@@ -311,37 +306,37 @@ if iload <=0,
     end
     [idehess_point, idemoments_point, idemodel_point, idelre_point, derivatives_info_point, info, options_ident] = ...
         identification_analysis(params,indx,indexo,options_ident,dataset_, dataset_info, prior_exist, name_tex,1,parameters,bounds);
-    if info(1)~=0,
+    if info(1)~=0
         skipline()
         disp('----------- ')
         disp('Parameter error:')
         disp(['The model does not solve for ', parameters, ' with error code info = ', int2str(info(1))]),
         skipline()
-        if info(1)==1,
+        if info(1)==1
             disp('info==1 %! The model doesn''t determine the current variables uniquely.')
-        elseif info(1)==2,
+        elseif info(1)==2
             disp('info==2 %! MJDGGES returned an error code.')
-        elseif info(1)==3,
+        elseif info(1)==3
             disp('info==3 %! Blanchard & Kahn conditions are not satisfied: no stable equilibrium. ')
-        elseif info(1)==4,
+        elseif info(1)==4
             disp('info==4 %! Blanchard & Kahn conditions are not satisfied: indeterminacy. ')
-        elseif info(1)==5,
+        elseif info(1)==5
             disp('info==5 %! Blanchard & Kahn conditions are not satisfied: indeterminacy due to rank failure. ')
-        elseif info(1)==6,
+        elseif info(1)==6
             disp('info==6 %! The jacobian evaluated at the deterministic steady state is complex.')
-        elseif info(1)==19,
+        elseif info(1)==19
             disp('info==19 %! The steadystate routine thrown an exception (inconsistent deep parameters). ')
-        elseif info(1)==20,
+        elseif info(1)==20
             disp('info==20 %! Cannot find the steady state, info(2) contains the sum of square residuals (of the static equations). ')
-        elseif info(1)==21,
+        elseif info(1)==21
             disp('info==21 %! The steady state is complex, info(2) contains the sum of square of imaginary parts of the steady state.')
-        elseif info(1)==22,
+        elseif info(1)==22
             disp('info==22 %! The steady has NaNs. ')
-        elseif info(1)==23,
+        elseif info(1)==23
             disp('info==23 %! M_.params has been updated in the steadystate routine and has complex valued scalars. ')
-        elseif info(1)==24,
+        elseif info(1)==24
             disp('info==24 %! M_.params has been updated in the steadystate routine and has some NaNs. ')
-        elseif info(1)==30,
+        elseif info(1)==30
             disp('info==30 %! Ergodic variance can''t be computed. ')
         end
         disp('----------- ')
@@ -349,7 +344,7 @@ if iload <=0,
         if any(bayestopt_.pshape)
             disp('Try sampling up to 50 parameter sets from the prior.')
             kk=0;
-            while kk<50 && info(1),
+            while kk<50 && info(1)
                 kk=kk+1;
                 params = prior_draw();
                 [idehess_point, idemoments_point, idemodel_point, idelre_point, derivatives_info_point, info, options_ident] = ...
@@ -381,11 +376,11 @@ if iload <=0,
     save([IdentifDirectoryName '/' M_.fname '_identif.mat'], 'idehess_point', 'idemoments_point','idemodel_point', 'idelre_point','store_options_ident')
     save([IdentifDirectoryName '/' M_.fname '_' parameters '_identif.mat'], 'idehess_point', 'idemoments_point','idemodel_point', 'idelre_point','store_options_ident')
     disp_identification(params, idemodel_point, idemoments_point, name, advanced);
-    if ~options_.nograph,
+    if ~options_.nograph
         plot_identification(params,idemoments_point,idehess_point,idemodel_point,idelre_point,advanced,parameters,name,IdentifDirectoryName,parameters_TeX,name_tex);
     end
 
-    if SampleSize > 1,
+    if SampleSize > 1
         skipline()
         disp('Monte Carlo Testing')
         h = dyn_waitbar(0,'Monte Carlo identification checks ...');
@@ -399,16 +394,16 @@ if iload <=0,
         iteration = 1;
         pdraws = [];
     end
-    while iteration < SampleSize,
+    while iteration < SampleSize
         loop_indx = loop_indx+1;
-        if external_sample,
+        if external_sample
             params = pdraws0(iteration+1,:);
         else
             params = prior_draw();
         end
         [dum1, ideJ, ideH, ideGP, dum2 , info, options_MC] = ...
             identification_analysis(params,indx,indexo,options_MC,dataset_, dataset_info, prior_exist, name_tex,0,[],bounds);
-        if iteration==0 && info(1)==0,
+        if iteration==0 && info(1)==0
             MAX_tau   = min(SampleSize,ceil(MaxNumberOfBytes/(size(ideH.siH,1)*nparam)/8));
             stoH = zeros([size(ideH.siH,1),nparam,MAX_tau]);
             stoJJ = zeros([size(ideJ.siJ,1),nparam,MAX_tau]);
@@ -439,7 +434,7 @@ if iload <=0,
             idemoments.V = zeros(SampleSize,nparam,min(8,nparam));
             delete([IdentifDirectoryName '/' M_.fname '_identif_*.mat'])
         end
-        if info(1)==0,
+        if info(1)==0
             iteration = iteration + 1;
             run_index = run_index + 1;
             TAU(:,iteration)=ideH.TAU;
@@ -469,9 +464,9 @@ if iload <=0,
             stoH(:,:,run_index) = ideH.siH;
             stoJJ(:,:,run_index) = ideJ.siJ;
             pdraws(iteration,:) = params;
-            if run_index==MAX_tau || iteration==SampleSize,
+            if run_index==MAX_tau || iteration==SampleSize
                 file_index = file_index + 1;
-                if run_index<MAX_tau,
+                if run_index<MAX_tau
                     stoH = stoH(:,:,1:run_index);
                     stoJJ = stoJJ(:,:,1:run_index);
                     stoLRE = stoLRE(:,:,1:run_index);
@@ -481,10 +476,10 @@ if iload <=0,
                 stoH = zeros(size(stoH));
                 stoJJ = zeros(size(stoJJ));
                 stoLRE = zeros(size(stoLRE));
-                
+
             end
-            
-            if SampleSize > 1,
+
+            if SampleSize > 1
                 %                 if isoctave || options_.console_mode,
                 %                     console_waitbar(0,iteration/SampleSize);
                 %                 else
@@ -492,31 +487,31 @@ if iload <=0,
                 %                 end
             end
         end
-        
+
     end
-    
-    
-    if SampleSize > 1,
-        if isoctave || options_.console_mode,
+
+
+    if SampleSize > 1
+        if isoctave || options_.console_mode
             fprintf('\n');
             diary on;
         else
-            close(h),
+            close(h)
         end
         normTAU=std(TAU')';
         normLRE=std(LRE')';
         normGAM=std(GAM')';
         normaliz1=std(pdraws);
         iter=0;
-        for ifile_index = 1:file_index,
+        for ifile_index = 1:file_index
             load([IdentifDirectoryName '/' M_.fname '_identif_' int2str(ifile_index) '.mat'], 'stoH', 'stoJJ', 'stoLRE')
-            for irun=1:size(stoH,3),
+            for irun=1:size(stoH,3)
                 iter=iter+1;
                 siJnorm(iter,:) = vnorm(stoJJ(:,:,irun)./repmat(normGAM,1,nparam)).*normaliz1;
                 siHnorm(iter,:) = vnorm(stoH(:,:,irun)./repmat(normTAU,1,nparam)).*normaliz1;
                 siLREnorm(iter,:) = vnorm(stoLRE(:,:,irun)./repmat(normLRE,1,nparam-offset)).*normaliz1(offset+1:end);
             end
-            
+
         end
         idemoments.siJnorm = siJnorm;
         idemodel.siHnorm = siHnorm;
@@ -528,7 +523,7 @@ if iload <=0,
         siHnorm = idemodel_point.siHnorm;
         siLREnorm = idelre_point.siLREnorm;
     end
-    
+
 else
     load([IdentifDirectoryName '/' M_.fname '_identif'])
     %     identFiles = dir([IdentifDirectoryName '/' M_.fname '_identif_*']);
@@ -537,86 +532,86 @@ else
     options_ident.prior_mc=size(pdraws,1);
     SampleSize = options_ident.prior_mc;
     options_.options_ident = options_ident;
-end  
+end
 
-if nargout>3 && iload,
+if nargout>3 && iload
     filnam = dir([IdentifDirectoryName '/' M_.fname '_identif_*.mat']);
     H=[];
     JJ = [];
     gp = [];
-    for j=1:length(filnam),
+    for j=1:length(filnam)
         load([IdentifDirectoryName '/' M_.fname '_identif_',int2str(j),'.mat']);
         H = cat(3,H, stoH(:,abs(iload),:));
         JJ = cat(3,JJ, stoJJ(:,abs(iload),:));
         gp = cat(3,gp, stoLRE(:,abs(iload),:));
-        
+
     end
 end
 
-if iload,
+if iload
     disp(['Testing ',parameters])
     disp_identification(idehess_point.params, idemodel_point, idemoments_point, name,advanced);
-    if ~options_.nograph,
+    if ~options_.nograph
         plot_identification(idehess_point.params,idemoments_point,idehess_point,idemodel_point,idelre_point,advanced,parameters,name,IdentifDirectoryName,[],name_tex);
     end
 end
-if SampleSize > 1,
+if SampleSize > 1
     fprintf('\n')
     disp('Testing MC sample')
     disp_identification(pdraws, idemodel, idemoments, name);
-    if ~options_.nograph,
+    if ~options_.nograph
         plot_identification(pdraws,idemoments,idehess_point,idemodel,idelre,advanced,'MC sample ',name, IdentifDirectoryName,[],name_tex);
     end
-    if advanced,
+    if advanced
         jcrit=find(idemoments.ino);
-        if length(jcrit)<SampleSize,
-            if isempty(jcrit),
+        if length(jcrit)<SampleSize
+            if isempty(jcrit)
                 [dum,jmax]=max(idemoments.cond);
                 fprintf('\n')
                 tittxt = 'Draw with HIGHEST condition number';
                 fprintf('\n')
                 disp(['Testing ',tittxt, '. Press ENTER']), pause(5),
-                if ~iload,
+                if ~iload
                     [idehess_max, idemoments_max, idemodel_max, idelre_max, derivatives_info_max, info_max, options_ident] = ...
                         identification_analysis(pdraws(jmax,:),indx,indexo,options_ident,dataset_,dataset_info, prior_exist, name_tex,1,tittxt);
                     save([IdentifDirectoryName '/' M_.fname '_identif.mat'], 'idehess_max', 'idemoments_max','idemodel_max', 'idelre_max', 'jmax', '-append');
                 end
                 disp_identification(pdraws(jmax,:), idemodel_max, idemoments_max, name,1);
                 close all,
-                if ~options_.nograph,
+                if ~options_.nograph
                     plot_identification(pdraws(jmax,:),idemoments_max,idehess_max,idemodel_max,idelre_max,1,tittxt,name,IdentifDirectoryName,tittxt,name_tex);
                 end
                 [dum,jmin]=min(idemoments.cond);
                 fprintf('\n')
                 tittxt = 'Draw with SMALLEST condition number';
                 fprintf('\n')
-                disp(['Testing ',tittxt, '. Press ENTER']), pause(5),
-                if ~iload,
+                disp(['Testing ',tittxt, '. Press ENTER']), pause(5)
+                if ~iload
                     [idehess_min, idemoments_min, idemodel_min, idelre_min, derivatives_info_min, info_min, options_ident] = ...
                         identification_analysis(pdraws(jmin,:),indx,indexo,options_ident,dataset_, dataset_info, prior_exist, name_tex,1,tittxt);
                     save([IdentifDirectoryName '/' M_.fname '_identif.mat'], 'idehess_min', 'idemoments_min','idemodel_min', 'idelre_min', 'jmin', '-append');
                 end
                 disp_identification(pdraws(jmin,:), idemodel_min, idemoments_min, name,1);
                 close all,
-                if ~options_.nograph,
+                if ~options_.nograph
                     plot_identification(pdraws(jmin,:),idemoments_min,idehess_min,idemodel_min,idelre_min,1,tittxt,name,IdentifDirectoryName,tittxt,name_tex);
                 end
             else
-                for j=1:length(jcrit),
+                for j=1:length(jcrit)
                     tittxt = ['Rank deficient draw n. ',int2str(j)];
                     fprintf('\n')
                     disp(['Testing ',tittxt, '. Press ENTER']), pause(5),
-                    if ~iload,
+                    if ~iload
                         [idehess_(j), idemoments_(j), idemodel_(j), idelre_(j), derivatives_info_(j), info_resolve, options_ident] = ...
                             identification_analysis(pdraws(jcrit(j),:),indx,indexo,options_ident,dataset_, dataset_info, prior_exist, name_tex,1,tittxt);
                     end
                     disp_identification(pdraws(jcrit(j),:), idemodel_(j), idemoments_(j), name,1);
-                    close all,
-                    if ~options_.nograph,
+                    close all
+                    if ~options_.nograph
                         plot_identification(pdraws(jcrit(j),:),idemoments_(j),idehess_(j),idemodel_(j),idelre_(j),1,tittxt,name,IdentifDirectoryName,tittxt,name_tex);
                     end
                 end
-                if ~iload,
+                if ~iload
                     save([IdentifDirectoryName '/' M_.fname '_identif.mat'], 'idehess_', 'idemoments_','idemodel_', 'idelre_', 'jcrit', '-append');
                 end
             end
@@ -625,13 +620,13 @@ if SampleSize > 1,
 end
 
 if isoctave
-    warning('on'),
+    warning('on')
 else
-    warning on,
+    warning on
 end
 
 skipline()
-disp(['==== Identification analysis completed ====' ]),
+disp(['==== Identification analysis completed ====' ])
 skipline(2)
 
 options_ = options0_;

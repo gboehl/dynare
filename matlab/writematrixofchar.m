@@ -2,13 +2,13 @@ function str = writematrixofchar(m)
 
 % Writes a matrix of char in a string.
 %
-% INPUTS 
+% INPUTS
 % - m   [char] matrix of char.
 %
-% OUTPUTS 
+% OUTPUTS
 % - str [char]
 %
-% EXAMPLE 
+% EXAMPLE
 % >> writematrixofchar(['a'; 'b'])
 %
 % ans =
@@ -17,7 +17,7 @@ function str = writematrixofchar(m)
 %
 % where the returned argument is a string which can be evaluated or printed.
 
-% Copyright (C) 2015 Dynare Team
+% Copyright (C) 2015-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

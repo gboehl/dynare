@@ -1,4 +1,4 @@
-function plan = init_plan(date) 
+function plan = init_plan(date)
 % Creates and initializes a new forecast scenario
 %
 % INPUTS
@@ -9,7 +9,7 @@ function plan = init_plan(date)
 %  plan                   [structure]       Returns a structure containing a new forecast scenario
 %
 %
-% Copyright (C) 2013-2014 Dynare Team
+% Copyright (C) 2013-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -36,17 +36,16 @@ plan.exo_names = deblank(mat2cell(M_.exo_names(1:M_.exo_nbr,:),ones(1,M_.exo_nbr
 plan.constrained_vars_ = [];
 plan.constrained_paths_ = [];
 plan.constrained_date_ = [];
-plan.constrained_int_date_ = []; 
+plan.constrained_int_date_ = [];
 plan.constrained_str_date_ = [];
 plan.constrained_perfect_foresight_ = [];
 plan.shock_vars_ = [];
 plan.shock_paths_ = [];
 plan.shock_date_ = [];
-plan.shock_int_date_ = []; 
+plan.shock_int_date_ = [];
 plan.shock_str_date_ = [];
 plan.shock_perfect_foresight_ = [];
 plan.options_cond_fcst_ = struct();
 plan.options_cond_fcst_.parameter_set = 'calibration';
 plan.options_cond_fcst_.simulation_type = 'deterministic';
 plan.options_cond_fcst_.controlled_varexo = [];
-

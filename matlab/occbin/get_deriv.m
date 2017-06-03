@@ -13,11 +13,11 @@ if size(iy_,1)==3
     con_cols = find(iy_(2,:));
     % find non-zero columns of hl1
     lea_cols = find(iy_(3,:));
-    
-    % If models either lacks leads or lags, iy_ will have two rows   
+
+    % If models either lacks leads or lags, iy_ will have two rows
     % In this case, we guess that the row with more nonzeros is the row with current variables
 elseif size(iy_,1)==2
-    % if first row has more nonzero entries than the second, assume model lacks lagged variables 
+    % if first row has more nonzero entries than the second, assume model lacks lagged variables
     if length(find(iy_(1,:)))>length(find(iy_(2,:)))
         warning('Model does not have lagged endogenous variables')
         con_cols = find(iy_(1,:));
@@ -29,7 +29,7 @@ elseif size(iy_,1)==2
         con_cols = find(iy_(2,:));
         lea_cols = [];
     end
-    
+
 end
 
 
@@ -45,7 +45,7 @@ y = [y;ys_(lea_cols)];
 
 if ismac
     eval(['[resid,g1]=',M_.fname,'_dynamic(y,x, M_.params, ys_, it_);']);
-    % Older versions of DYNARE for Mac did not include ys_ in the call structure    
+    % Older versions of DYNARE for Mac did not include ys_ in the call structure
     %eval(['[resid,g1]=',M_.fname,'_dynamic(y,x, M_.params, it_);']);
 else
     eval(['[resid,g1]=',M_.fname,'_dynamic(y,x, M_.params, ys_, it_);']);
@@ -77,7 +77,6 @@ for i=1:nlea_cols
 end
 
 
-for i = 1:M_.exo_nbr;
+for i = 1:M_.exo_nbr
     j(:,i) =g1(:,i+ny);
 end
-

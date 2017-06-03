@@ -1,5 +1,5 @@
 function dynare_graph_close()
-% function dynare_graph_close() 
+% function dynare_graph_close()
 % close a figure
 %
 % INPUT
@@ -11,7 +11,7 @@ function dynare_graph_close()
 % SPECIAL REQUIREMENT
 %   none
 
-% Copyright (C) 2006-2009 Dynare Team
+% Copyright (C) 2006-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -27,4 +27,3 @@ function dynare_graph_close()
 %
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
-

@@ -13,7 +13,7 @@ function redform_map(dirname,options_gsa_)
 %
 % Written by Marco Ratto
 % Joint Research Centre, The European Commission,
-% marco.ratto@ec.europa.eu 
+% marco.ratto@ec.europa.eu
 
 % Copyright (C) 2012-2016 European Commission
 % Copyright (C) 2012-2017 Dynare Team
@@ -55,7 +55,7 @@ np = estim_params_.np;
 nshock = estim_params_.nvx + estim_params_.nvn + estim_params_.ncx + estim_params_.ncn;
 pnames=cell(np,1);
 pnames_tex=cell(np,1);
-for jj=1:np        
+for jj=1:np
     if options_.TeX
         [param_name_temp, param_name_tex_temp]= get_the_name(nshock+jj,options_.TeX,M_,estim_params_,options_);
         pnames_tex{jj,1} = strrep(param_name_tex_temp,'$','');
@@ -70,7 +70,7 @@ fname_ = M_.fname;
 
 bounds = prior_bounds(bayestopt_, options_.prior_trunc);
 
-if nargin==0,
+if nargin==0
     dirname='';
 end
 
@@ -100,7 +100,7 @@ if ~exist('T')
     else
         load([dirname,filesep,M_.fname,'_mc'],'T');
     end
-    if ~exist('T'),
+    if ~exist('T')
         disp('The model is too large!')
         disp('Reduced form mapping stopped!')
         return
@@ -114,7 +114,7 @@ adir0=pwd;
 
 nspred=size(T,2)-M_.exo_nbr;
 x0=lpmat(istable,:);
-if isempty(lpmat0),
+if isempty(lpmat0)
     xx0=[];
     nshocks=0;
 else
@@ -123,7 +123,7 @@ else
 end
 [kn, np]=size(x0);
 offset = length(bayestopt_.pshape)-np;
-if options_gsa_.prior_range,
+if options_gsa_.prior_range
     pshape=5*(ones(np,1));
     pd =  [NaN(np,1) NaN(np,1) bounds.lb(offset+1:end) bounds.ub(offset+1:end)];
 else
@@ -158,12 +158,12 @@ for j=1:size(anamendo,1)
         skipline()
         disp(['[', namendo,' vs ',namexo,']'])
 
-        
-        if ~isempty(iexo),
+
+        if ~isempty(iexo)
             %y0=squeeze(T(iendo,iexo+nspred,istable));
             y0=squeeze(T(iendo,iexo+nspred,:));
-            if (max(y0)-min(y0))>1.e-10,
-                if mod(iplo,9)==0 && isempty(threshold) && ~options_.nograph,
+            if (max(y0)-min(y0))>1.e-10
+                if mod(iplo,9)==0 && isempty(threshold) && ~options_.nograph
                     ifig=ifig+1;
                     hfig = dyn_figure(options_.nodisplay,'name',['Reduced Form Mapping: ', namendo,' vs shocks ',int2str(ifig)]);
                     iplo=0;
@@ -171,7 +171,7 @@ for j=1:size(anamendo,1)
                 iplo=iplo+1;
                 js=js+1;
                 xdir0 = [adir,filesep,namendo,'_vs_', namexo];
-                if ilog==0 || ~isempty(threshold),
+                if ilog==0 || ~isempty(threshold)
                     if isempty(threshold)
                         if isempty(dir(xdir0))
                             mkdir(xdir0)
@@ -192,8 +192,8 @@ for j=1:size(anamendo,1)
                         if isempty(dir(xdir))
                             mkdir(xdir)
                         end
-                        if ~options_.nograph,
-                            hf=dyn_figure(options_.nodisplay,'name',['Reduced Form Mapping (Monte Carlo Filtering): ',namendo,' vs ', namexo]); 
+                        if ~options_.nograph
+                            hf=dyn_figure(options_.nodisplay,'name',['Reduced Form Mapping (Monte Carlo Filtering): ',namendo,' vs ', namexo]);
                             hc = cumplot(y0);
                             a=axis; delete(hc);
                             %     hist(mat_moment{ij}),
@@ -211,7 +211,7 @@ for j=1:size(anamendo,1)
                         end
                         si(:,js) = NaN(np,1);
                         delete([xdir, '/*threshold*.*'])
-                        
+
                         atitle0=['Reduced Form Mapping (Monte Carlo Filtering) for ',namendo,' vs ', namexo];
                         aname=[type '_' namendo '_vs_' namexo '_threshold'];
                         atitle=[type ' Reduced Form Mapping (Monte Carlo Filtering): Parameter(s) driving ',namendo,' vs ',namexo];
@@ -224,9 +224,9 @@ for j=1:size(anamendo,1)
                         if ~isempty(iy) && ~isempty(iyc)
                             fprintf(['%4.1f%% of the ',type,' support matches ',atitle0,'\n'],length(iy)/length(y0)*100)
                             icheck = mcf_analysis(x0, iy, iyc, options_mcf, options_);
-                            
+
                             lpmat=x0(iy,:);
-                            if nshocks,
+                            if nshocks
                                 lpmat0=xx0(iy,:);
                             end
                             istable=[1:length(iy)];
@@ -235,11 +235,11 @@ for j=1:size(anamendo,1)
                         else
                             icheck=[];
                         end
-                        if isempty(icheck),
+                        if isempty(icheck)
                             atitle0=['Monte Carlo Filtering for ',namendo,' vs ', namexo];
                             options_mcf.title = atitle0;
                             indmcf = redform_mcf(y0, x0, options_mcf, options_);
-                            
+
                         end
                     end
                 else
@@ -254,11 +254,11 @@ for j=1:size(anamendo,1)
                     options_map.OutputDirectoryName = xdir0;
                     silog(:,js) = redform_private(x0, y0, options_map, options_);
                 end
-                
-                if isempty(threshold) && ~options_.nograph,
+
+                if isempty(threshold) && ~options_.nograph
                     figure(hfig)
                     subplot(3,3,iplo),
-                    if ilog,
+                    if ilog
                         [saso, iso] = sort(-silog(:,js));
                         bar([silog(iso(1:min(np,10)),js)])
                         logflag='log';
@@ -270,20 +270,20 @@ for j=1:size(anamendo,1)
                     %set(gca,'xticklabel',pnames(iso(1:min(np,10)),:),'fontsize',8)
                     set(gca,'xticklabel',' ','fontsize',10)
                     set(gca,'xlim',[0.5 10.5])
-                    for ip=1:min(np,10),
+                    for ip=1:min(np,10)
                         text(ip,-0.02,deblank(pnames(iso(ip),:)),'rotation',90,'HorizontalAlignment','right','interpreter','none')
                     end
                     title([logflag,' ',namendo,' vs ',namexo],'interpreter','none')
-                    if iplo==9 
+                    if iplo==9
                         dyn_saveas(hfig,[dirname,filesep,M_.fname,'_redform_', namendo,'_vs_shocks_',logflag,num2str(ifig)],options_.nodisplay,options_.graph_format);
                         create_TeX_loader(options_,[dirname,filesep,M_.fname,'_redform_', namendo,'_vs_shocks_',logflag,num2str(ifig)],[logflag,' ',strrep(namendo,'_','\_'),' vs ',strrep(namexo,'_','\_')],['redform_', namendo,'_vs_shocks_',logflag,num2str(ifig)],1)
                     end
                 end
-                
+
             end
         end
     end
-    if iplo<9 && iplo>0 && ifig && ~options_.nograph,
+    if iplo<9 && iplo>0 && ifig && ~options_.nograph
         dyn_saveas(hfig,[dirname,filesep,M_.fname,'_redform_', namendo,'_vs_shocks_',logflag,num2str(ifig)],options_.nodisplay,options_.graph_format);
         create_TeX_loader(options_,[dirname,filesep,M_.fname,'_redform_', namendo,'_vs_shocks_',logflag,num2str(ifig)],[logflag,' ',strrep(namendo,'_','\_'),' vs ',strrep(namexo,'_','\_')],['redform_', namendo,'_vs_shocks_',logflag,num2str(ifig)],options_.figures.textwidth*min(iplo/3,1))
     end
@@ -294,12 +294,12 @@ for j=1:size(anamendo,1)
         ilagendo=strmatch(namlagendo,M_.endo_names(oo_.dr.order_var(M_.nstatic+1:M_.nstatic+nsok),:),'exact');
         skipline()
         disp(['[', namendo,' vs lagged ',namlagendo,']'])
-        
-        if ~isempty(ilagendo),
+
+        if ~isempty(ilagendo)
             %y0=squeeze(T(iendo,ilagendo,istable));
             y0=squeeze(T(iendo,ilagendo,:));
-            if (max(y0)-min(y0))>1.e-10,
-                if mod(iplo,9)==0 && isempty(threshold) && ~options_.nograph,
+            if (max(y0)-min(y0))>1.e-10
+                if mod(iplo,9)==0 && isempty(threshold) && ~options_.nograph
                     ifig=ifig+1;
                     hfig = dyn_figure(options_.nodisplay,'name',['Reduced Form Mapping: ' namendo,' vs lags ',int2str(ifig)]);
                     iplo=0;
@@ -307,7 +307,7 @@ for j=1:size(anamendo,1)
                 iplo=iplo+1;
                 js=js+1;
                 xdir0 = [adir,filesep,namendo,'_vs_', namlagendo];
-                if ilog==0 || ~isempty(threshold),
+                if ilog==0 || ~isempty(threshold)
                     if isempty(threshold)
                         if isempty(dir(xdir0))
                             mkdir(xdir0)
@@ -328,8 +328,8 @@ for j=1:size(anamendo,1)
                         if isempty(dir(xdir))
                             mkdir(xdir)
                         end
-                        if ~options_.nograph,
-                            hf=dyn_figure(options_.nodisplay,'name',['Reduced Form Mapping (Monte Carlo Filtering): ',namendo,' vs lagged ', namlagendo]); 
+                        if ~options_.nograph
+                            hf=dyn_figure(options_.nodisplay,'name',['Reduced Form Mapping (Monte Carlo Filtering): ',namendo,' vs lagged ', namlagendo]);
                             hc = cumplot(y0);
                             a=axis; delete(hc);
                             %     hist(mat_moment{ij}),
@@ -345,9 +345,9 @@ for j=1:size(anamendo,1)
                             dyn_saveas(hf,[xdir,filesep, fname_ '_' type '_' namendo,'_vs_', namlagendo],options_.nodisplay,options_.graph_format);
                             create_TeX_loader(options_,[xdir,filesep, fname_ '_' type '_' namendo,'_vs_', namlagendo],['Reduced Form Mapping (Monte Carlo Filtering): ',strrep(namendo,'_','\_'),' vs lagged ', strrep(namlagendo,'_','\_')],[type '_' namendo,'_vs_', namlagendo],1)
                         end
-                        
+
                         delete([xdir, '/*threshold*.*'])
-                        
+
                         atitle0=['Reduced Form Mapping (Monte Carlo Filtering) for ',namendo,' vs ', namlagendo];
                         aname=[type '_' namendo '_vs_' namlagendo '_threshold'];
                         atitle=[type ' Reduced Form Mapping (Monte Carlo Filtering): Parameter(s) driving ',namendo,' vs ',namlagendo];
@@ -361,19 +361,19 @@ for j=1:size(anamendo,1)
 
                             fprintf(['%4.1f%% of the ',type,' support matches ',atitle0,'\n'],length(iy)/length(y0)*100)
                             icheck = mcf_analysis(x0, iy, iyc, options_mcf, options_);
-                            
+
                             lpmat=x0(iy,:);
-                            if nshocks,
+                            if nshocks
                                 lpmat0=xx0(iy,:);
                             end
                             istable=[1:length(iy)];
                             save([xdir,filesep, fname_ '_' type '_' namendo,'_vs_', namlagendo '_threshold' ],'lpmat','lpmat0','istable','y0','x0','xx0','iy','iyc')
                             lpmat=[]; lpmat0=[]; istable=[];
-                            
+
                         else
                             icheck = [];
                         end
-                        if isempty(icheck),
+                        if isempty(icheck)
                             atitle0=['Monte Carlo Filtering for ',namendo,' vs ', namlagendo];
                             options_mcf.title = atitle0;
                             indmcf = redform_mcf(y0, x0, options_mcf, options_);
@@ -391,11 +391,11 @@ for j=1:size(anamendo,1)
                     options_map.OutputDirectoryName = xdir0;
                     silog(:,js) = redform_private(x0, y0, options_map, options_);
                 end
-                
+
                 if isempty(threshold) && ~options_.nograph
                     figure(hfig),
                     subplot(3,3,iplo),
-                    if ilog,
+                    if ilog
                         [saso, iso] = sort(-silog(:,js));
                         bar([silog(iso(1:min(np,10)),js)])
                         logflag='log';
@@ -407,27 +407,27 @@ for j=1:size(anamendo,1)
                     %set(gca,'xticklabel',pnames(iso(1:min(np,10)),:),'fontsize',8)
                     set(gca,'xticklabel',' ','fontsize',10)
                     set(gca,'xlim',[0.5 10.5])
-                    for ip=1:min(np,10),
+                    for ip=1:min(np,10)
                         text(ip,-0.02,deblank(pnames(iso(ip),:)),'rotation',90,'HorizontalAlignment','right','interpreter','none')
                     end
                     title([logflag,' ',namendo,' vs ',namlagendo,'(-1)'],'interpreter','none')
-                    if iplo==9,
+                    if iplo==9
                         dyn_saveas(hfig,[dirname,filesep,M_.fname,'_redform_', namendo,'_vs_lags_',logflag,num2str(ifig)],options_.nodisplay,options_.graph_format);
                         create_TeX_loader(options_,[dirname,filesep,M_.fname,'_redform_', namendo,'_vs_lags_',logflag,num2str(ifig)],[logflag,' ',strrep(namendo,'_','\_'),' vs ',strrep(namlagendo,'_','\_'),'(-1)'],['redform_', namendo,'_vs_lags_',logflag,':',num2str(ifig)],1)
                     end
                 end
-                
+
             end
         end
     end
-    if iplo<9 && iplo>0 && ifig && ~options_.nograph,
+    if iplo<9 && iplo>0 && ifig && ~options_.nograph
         dyn_saveas(hfig,[dirname,filesep,M_.fname,'_redform_', namendo,'_vs_lags_',logflag,num2str(ifig)],options_.nodisplay,options_.graph_format);
         create_TeX_loader(options_,[dirname,filesep,M_.fname,'_redform_', namendo,'_vs_lags_',logflag,num2str(ifig)],[logflag,' ',strrep(namendo,'_','\_'),' vs ',strrep(namlagendo,'_','\_'),'(-1)'],['redform_', namendo,'_vs_lags_',logflag,':',num2str(ifig)],options_.figures.textwidth*min(iplo/3,1));
     end
 end
 
-if isempty(threshold) && ~options_.nograph,
-    if ilog==0,
+if isempty(threshold) && ~options_.nograph
+    if ilog==0
         hfig=dyn_figure(options_.nodisplay,'name','Reduced Form GSA'); %bar(si)
                                                                        % boxplot(si','whis',10,'symbol','r.')
         myboxplot(si',[],'.',[],10)
@@ -436,7 +436,7 @@ if isempty(threshold) && ~options_.nograph,
         set(gca,'xlim',[0.5 np+0.5])
         set(gca,'ylim',[0 1])
         set(gca,'position',[0.13 0.2 0.775 0.7])
-        for ip=1:np,
+        for ip=1:np
             text(ip,-0.02,deblank(pnames(ip,:)),'rotation',90,'HorizontalAlignment','right','interpreter','none')
         end
         title('Reduced form GSA')
@@ -452,13 +452,13 @@ if isempty(threshold) && ~options_.nograph,
         set(gca,'xlim',[0.5 np+0.5])
         set(gca,'ylim',[0 1])
         set(gca,'position',[0.13 0.2 0.775 0.7])
-        for ip=1:np,
+        for ip=1:np
             text(ip,-0.02,deblank(pnames(ip,:)),'rotation',90,'HorizontalAlignment','right','interpreter','none')
         end
         title('Reduced form GSA - Log-transformed elements')
         dyn_saveas(hfig,[dirname,filesep,M_.fname,'_redform_gsa_log'],options_.nodisplay,options_.graph_format);
         create_TeX_loader(options_,[dirname,filesep,M_.fname,'_redform_gsa_log'],'Reduced form GSA - Log-transformed elements','redform_gsa_log')
-        
+
     end
 end
 
@@ -472,20 +472,20 @@ pnames = options_map.param_names;
 pd = options_map.pd;
 pshape = options_map.pshape;
 xdir = options_map.OutputDirectoryName;
-if options_map.prior_range,
-    for j=1:np,
+if options_map.prior_range
+    for j=1:np
         x0(:,j)=(x0(:,j)-pd(j,3))./(pd(j,4)-pd(j,3));
     end
 else
     x0=priorcdf(x0,pshape, pd(:,1), pd(:,2), pd(:,3), pd(:,4));
 end
 
-if ilog,
+if ilog
     fname=[xdir filesep options_map.fname_ '_' options_map.amap_name '_log'];
 else
     fname=[xdir filesep options_map.fname_ '_' options_map.amap_name];
 end
-if iload==0,
+if iload==0
     if isempty(dir(xdir))
         mkdir(xdir)
     end
@@ -497,7 +497,7 @@ if iload==0,
     %     gsa_ = gsa_sdp(y0(1:nest), x0(1:nest,:), 2, [],[-1 -1 -1 -1 -1 0],[],0,[fname,'_est'], pnames);
     [ys,is] = sort(y0);
     istep = ceil(nrun/nest);
-    if istep>1,
+    if istep>1
         iest = is(floor(istep/2):istep:end);
         nest = length(iest);
         irest = is(setdiff([1:nrun],[floor(istep/2):istep:nrun]));
@@ -508,7 +508,7 @@ if iload==0,
         si=nan(np,1);
         return
     end
-    if ~ismember(irest(end),ifit),
+    if ~ismember(irest(end),ifit)
         ifit = union(ifit, irest(end));
     end
     nfit=length(ifit);
@@ -517,21 +517,21 @@ if iload==0,
     %     nfit=nest;
     ipred = setdiff([1:nrun],ifit);
 
-    if ilog,
+    if ilog
         [y1, tmp, isig, lam] = log_trans_(y0(iest));
         y1 = log(y0*isig+lam);
     end
-    if ~options_.nograph,
-        hfig=dyn_figure(options_.nodisplay,'name',options_map.figtitle); 
+    if ~options_.nograph
+        hfig=dyn_figure(options_.nodisplay,'name',options_map.figtitle);
         subplot(221)
-        if ilog,
-            hist(y1,30),
+        if ilog
+            hist(y1,30)
         else
-            hist(y0,30),
+            hist(y0,30)
         end
         title(options_map.title,'interpreter','none')
         subplot(222)
-        if ilog,
+        if ilog
             hc = cumplot(y1);
         else
             hc = cumplot(y0);
@@ -541,7 +541,7 @@ if iload==0,
     end
 
     gsa0 = ss_anova(y0(iest), x0(iest,:), 1);
-    if ilog,
+    if ilog
         [gsa22, gsa1, gsax] = ss_anova_log(y1(iest), x0(iest,:), isig, lam, gsa0);
     end
     %     if (gsa1.out.bic-gsa0.out.bic) < 10,
@@ -551,7 +551,7 @@ if iload==0,
     %         y0=y1;
     %         ilog=1;
     %     end
-    if nfit>nest,
+    if nfit>nest
         %         gsa_ = gsa_sdp(y0(1:nfit), x0(1:nfit,:), -2, gsa_.nvr*nest^3/nfit^3,[-1 -1 -1 -1 -1 0],[],0,fname, pnames);
         nvr =  gsa0.nvr*nest^3/nfit^3;
         nvr(gsa0.stat<2) = gsa0.nvr(gsa0.stat<2)*nest^5/nfit^5;
@@ -602,13 +602,13 @@ if iload==0,
     save([fname,'_map.mat'],'gsa_')
     [sidum, iii]=sort(-gsa_.si);
     gsa_.x0=x00(ifit,:);
-    if ~options_.nograph,
+    if ~options_.nograph
         hmap=gsa_sdp_plot(gsa_,[fname '_map'],pnames,iii(1:min(12,np)));
         set(hmap,'name',options_map.amap_title);
     end
     gsa_.x0=x0(ifit,:);
     %   copyfile([fname,'_est.mat'],[fname,'.mat'])
-    if ~options_.nograph,
+    if ~options_.nograph
         figure(hfig);
         subplot(223),
         plot(y0(ifit),[gsa_.fit y0(ifit)],'.'),
@@ -616,13 +616,13 @@ if iload==0,
         %         if ilog,
         %             plot(y00(ifit),[log_trans_(gsa_.fit,'',isig,lam) y00(ifit)],'.'),
         %             r2 = 1 - cov(log_trans_(gsa_.fit,'',isig,lam)-y00(ifit))/cov(y00(ifit));
-        %         else               
+        %         else
         %             plot(y0(ifit),[gsa_.fit y0(ifit)],'.'),
         %             r2 = gsa_.r2;
         %         end
         title(['Learning sample fit - R2=' num2str(r2,2)],'interpreter','none')
-        if nfit<nrun,
-            if ilog,
+        if nfit<nrun
+            if ilog
                 yf = ss_anova_fcast(x0(ipred,:), gsa1);
                 yf = log_trans_(yf,'',isig,lam)+ss_anova_fcast(x0(ipred,:), gsax);
             else
@@ -645,7 +645,7 @@ else
     %   gsa_ = gsa_sdp_dyn(y0, x0, 0, [],[],[],0,fname, pnames);
     %     gsa_ = gsa_sdp(y0, x0, 0, [],[],[],0,fname, pnames);
     load([fname,'_map.mat'],'gsa_')
-    if ~options_.nograph,
+    if ~options_.nograph
         yf = ss_anova_fcast(x0, gsa_);
         hfig=dyn_figure(options_.nodisplay,'name',options_map.title);
         plot(y0,[yf y0],'.'),
@@ -671,7 +671,7 @@ gsa2.f0 = mean(gsa2.fit);
 gsa2.out.SSE = sum((gsa2.fit-gsa2.y).^2);
 gsa2.out.bic = gsa2.out.bic-nest*log(gsa1.out.SSE)+nest*log(gsa2.out.SSE);
 gsa2.r2 = 1-cov(gsa2.fit-gsa2.y)/cov(gsa2.y);
-for j=1:np,
+for j=1:np
     gsa2.fs(:,j) = exp(gsa1.fs(:,j)).*mean(exp(gsa1.fit-gsa1.f(:,j)))*isig-lam*isig-gsa2.f0;
     gsa2.fses(:,j) = exp(gsa1.fs(:,j)+gsa1.fses(:,j)).*mean(exp(gsa1.fit-gsa1.f(:,j)))*isig-lam*isig-gsa2.f0-gsa2.fs(:,j);
     gsa2.f(:,j) = exp(gsa1.f(:,j)).*mean(exp(gsa1.fit-gsa1.f(:,j)))*isig-lam*isig-gsa2.f0;
@@ -685,14 +685,14 @@ function [gsa22, gsa1, gsax] = ss_anova_log(y,x,isig,lam,gsa0,nvrs)
 
 [nest, np]=size(x);
 
-if nargin==6,
+if nargin==6
     gsa1 = ss_anova(y, x, 1, 0, 2, nvrs(:,1));
 else
     gsa1 = ss_anova(y, x, 1);
 end
 gsa2 = log2level_map(gsa1, isig, lam);
-if nargin >=5 && ~isempty(gsa0),
-    for j=1:np,
+if nargin >=5 && ~isempty(gsa0)
+    for j=1:np
         nvr2(j) = var(diff(gsa2.fs(:,j),2));
         nvr0(j) = var(diff(gsa0.fs(:,j),2));
     end
@@ -702,7 +702,7 @@ if nargin >=5 && ~isempty(gsa0),
     gsa1 = ss_anova(y, x, 1, 0, 2, gsa1.nvr);
     gsa2 = log2level_map(gsa1, isig, lam);
 end
-if nargin==6,
+if nargin==6
     gsax = ss_anova(gsa2.y-gsa2.fit, x, 1, 0, 2, nvrs(:,2));
 else
     gsax = ss_anova(gsa2.y-gsa2.fit, x, 1);
@@ -713,7 +713,7 @@ gsa22.f0 = mean(gsa22.fit);
 gsa22.out.SSE = sum((gsa22.fit-gsa22.y).^2);
 gsa22.out.bic = nest*log(gsa22.out.SSE/nest) + (gsax.out.df+gsa2.out.df-1)*log(nest);
 gsa22.r2 = 1-sum((gsa22.fit-gsa22.y).^2)/sum((gsa22.y-mean(gsa22.y)).^2);
-for j=1:np,
+for j=1:np
     gsa22.fs(:,j) = gsa2.fs(:,j)+gsax.fs(:,j);
     gsa22.fses(:,j) = gsax.fses(:,j);
     gsa22.f(:,j) = gsa2.f(:,j)+gsax.f(:,j);
@@ -730,7 +730,7 @@ hfig=dyn_figure(options_.nodisplay,'name',options_mcf.amcf_title);
  density] = posterior_moments(y0,1,0.9);
 post_deciles = [-inf; post_deciles; inf];
 
-for jt=1:10,
+for jt=1:10
     indy{jt}=find( (y0>post_deciles(jt)) & (y0<=post_deciles(jt+1)));
     leg{jt}=[int2str(jt) '-dec'];
 end
@@ -741,18 +741,18 @@ indmcf = indmcf(jtmp);
 nbr_par = length(indmcf);
 nrow=ceil(sqrt(nbr_par+1));
 ncol=nrow;
-if nrow*(nrow-1)>nbr_par,
+if nrow*(nrow-1)>nbr_par
     ncol=nrow-1;
 end
 
 cmap = colormap(jet(10));
-for jx=1:nbr_par,
+for jx=1:nbr_par
     subplot(nrow,ncol,jx)
     hold off
-    for jt=1:10,
+    for jt=1:10
         h=cumplot(x0(indy{jt},indmcf(jx)));
         set(h,'color', cmap(jt,:), 'linewidth', 2)
-        hold all,
+        hold all
     end
     title(options_mcf.param_names(indmcf(jx),:),'interpreter','none')
 end

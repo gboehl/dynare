@@ -1,7 +1,7 @@
 function oo_=disp_th_moments(dr,var_list,M_,options_,oo_)
 % Display theoretical moments of variables
 
-% Copyright (C) 2001-2015 Dynare Team
+% Copyright (C) 2001-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -76,7 +76,7 @@ if size(stationary_vars, 1) > 0
         if M_.exo_nbr > 1 && ~nodecomposition
             skipline()
             if options_.order == 2
-                title='APPROXIMATED VARIANCE DECOMPOSITION (in percent)';            
+                title='APPROXIMATED VARIANCE DECOMPOSITION (in percent)';
             else
                 title='VARIANCE DECOMPOSITION (in percent)';
             end
@@ -97,7 +97,7 @@ if size(stationary_vars, 1) > 0
             end
         end
     end
-    
+
     conditional_variance_steps = options_.conditional_variance_decomposition;
     if length(conditional_variance_steps)
         StateSpaceModel.number_of_state_equations = M_.endo_nbr;
@@ -107,7 +107,7 @@ if size(stationary_vars, 1) > 0
         StateSpaceModel.state_innovations_covariance_matrix = M_.Sigma_e;
         StateSpaceModel.order_var = dr.order_var;
         oo_.conditional_variance_decomposition = conditional_variance_decomposition(StateSpaceModel,conditional_variance_steps,ivar);
-        
+
         if options_.noprint == 0
             display_conditional_variance_decomposition(oo_.conditional_variance_decomposition,conditional_variance_steps,...
                                                        ivar,M_,options_);
@@ -124,13 +124,13 @@ end
 
 if options_.nocorr == 0 && size(stationary_vars, 1) > 0
     corr = oo_.gamma_y{1}(i1,i1)./(sd(i1)*sd(i1)');
-    if options_.contemporaneous_correlation 
+    if options_.contemporaneous_correlation
         oo_.contemporaneous_correlation = corr;
     end
-    if ~options_.noprint,
+    if ~options_.noprint
         skipline()
         if options_.order == 2
-            title='APPROXIMATED MATRIX OF CORRELATIONS';            
+            title='APPROXIMATED MATRIX OF CORRELATIONS';
         else
             title='MATRIX OF CORRELATIONS';
         end
@@ -153,23 +153,23 @@ if options_.ar > 0 && size(stationary_vars, 1) > 0
         oo_.autocorr{i} = oo_.gamma_y{i+1};
         z(:,i) = diag(oo_.gamma_y{i+1}(i1,i1));
     end
-    if ~options_.noprint,      
-        skipline()    
+    if ~options_.noprint
+        skipline()
         if options_.order == 2
-            title='APPROXIMATED COEFFICIENTS OF AUTOCORRELATION';            
+            title='APPROXIMATED COEFFICIENTS OF AUTOCORRELATION';
         else
             title='COEFFICIENTS OF AUTOCORRELATION';
         end
         title=add_filter_subtitle(title,options_);
-        labels = deblank(M_.endo_names(ivar(i1),:));      
+        labels = deblank(M_.endo_names(ivar(i1),:));
         headers = char('Order ',int2str([1:options_.ar]'));
         lh = size(labels,2)+2;
         dyntable(options_,title,headers,labels,z,lh,8,4);
         if options_.TeX
-            labels = deblank(M_.endo_names_tex(ivar(i1),:)); 
+            labels = deblank(M_.endo_names_tex(ivar(i1),:));
             headers=char('Order ',int2str([1:options_.ar]'));
             lh = size(labels,2)+2;
             dyn_latex_table(M_,options_,title,'th_autocorr_matrix',headers,labels,z,lh,8,4);
         end
-    end  
+    end
 end

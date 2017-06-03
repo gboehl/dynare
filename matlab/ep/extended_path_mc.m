@@ -3,7 +3,7 @@ function Simulations = extended_path_mc(initialconditions, samplesize, replic, e
 % Stochastic simulation of a non linear DSGE model using the Extended Path method (Fair and Taylor 1983). A time
 % series of size T  is obtained by solving T perfect foresight models.
 %
-% INPUTS 
+% INPUTS
 %  o initialconditions      [double]    m*1 array, where m is the number of endogenous variables in the model.
 %  o samplesize            [integer]   scalar, size of the sample to be simulated.
 %  o exogenousvariables     [double]    T*n array, values for the structural innovations.
@@ -11,7 +11,7 @@ function Simulations = extended_path_mc(initialconditions, samplesize, replic, e
 %  o DynareModel            [struct]    M_
 %  o DynareResults          [struct]    oo_
 %
-% OUTPUTS 
+% OUTPUTS
 %  o ts                     [dseries]   m*samplesize array, the simulations.
 %  o results                [cell]
 %
@@ -19,7 +19,7 @@ function Simulations = extended_path_mc(initialconditions, samplesize, replic, e
 %
 % SPECIAL REQUIREMENTS
 
-% Copyright (C) 2016 Dynare Team
+% Copyright (C) 2016-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -65,7 +65,7 @@ vexo = NaN(innovations.effective_number_of_shocks, samplesize+1, replic);
 info = NaN(replic, 1);
 
 if ep.parallel
-    % Use the Parallel toolbox.    
+    % Use the Parallel toolbox.
     parfor i=1:replic
         innovations_ = innovations;
         DynareResults_ = DynareResults;

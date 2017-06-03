@@ -17,14 +17,14 @@ function G = rand_inverse_wishart(m, v, H_inv_upper_chol)
 % OUTPUTS:
 %     G:          G ~ IW(m, v, H) where H = inv(H_inv_upper_chol'*H_inv_upper_chol)
 %                 or, equivalently, using the correspondence between Wishart and
-%                 inverse-Wishart: inv(G) ~ W(m, v, S) where 
+%                 inverse-Wishart: inv(G) ~ W(m, v, S) where
 %                 S = H_inv_upper_chol'*H_inv_upper_chol = inv(H)
-%  
+%
 % SPECIAL REQUIREMENT
 %     none
-%    
+%
 
-% Copyright (C) 2003-2009 Dynare Team
+% Copyright (C) 2003-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -41,7 +41,7 @@ function G = rand_inverse_wishart(m, v, H_inv_upper_chol)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-X = randn(v, m) * H_inv_upper_chol; 
+X = randn(v, m) * H_inv_upper_chol;
 
 
 % At this point, X'*X is Wishart distributed

@@ -3,7 +3,7 @@
 ** Original files downloaded from http://people.sc.fsu.edu/~burkardt/cpp_src/sobol/ (version 17-Feb-2009 09:46)
 **
 ** Copyright (C) 2009 John Burkardt
-** Copyright (C) 2010-2011 Dynare Team
+** Copyright (C) 2010-2017 Dynare Team
 **
 ** This program is free software: you can redistribute it and/or modify
 ** it under the terms of the GNU Lesser General Public License as published by
@@ -17,8 +17,6 @@
 **
 ** You should have received a copy of the GNU Lesser General Public License
 ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
-**
-** AUTHOR(S): stephane DOT adjemian AT univ DASH lemans DOT fr
 */
 
 #include <cstdlib>

@@ -44,4 +44,3 @@ while( any(zerorows) && iq <= qrows )
     zerorows = find( sum(abs( hs(:,right)' ))==0 );
 end
 h=full(hs);
-

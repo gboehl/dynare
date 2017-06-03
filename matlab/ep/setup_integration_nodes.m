@@ -5,7 +5,7 @@ if EpOptions.stochastic.order
       case 'Tensor-Gaussian-Quadrature'
         % Get the nodes and weights from a univariate Gauss-Hermite quadrature.
         [nodes0,weights0] = gauss_hermite_weights_and_nodes(EpOptions.stochastic.quadrature.nodes);
-        % Replicate the univariate nodes for each innovation and dates, and, if needed, correlate them. 
+        % Replicate the univariate nodes for each innovation and dates, and, if needed, correlate them.
         nodes0 = repmat(nodes0,1,pfm.number_of_shocks*pfm.stochastic_order)*kron(eye(pfm.stochastic_order),pfm.Omega);
         % Put the nodes and weights in cells
         for i=1:pfm.number_of_shocks

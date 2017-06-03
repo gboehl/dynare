@@ -1,7 +1,7 @@
 function mcompare(s1,s2)
-% MCOMPARE :    MCOMPARE ( [ 'file1' ; 'file2' ] , [ 'var1' ; 'var2' ...] )     
+% MCOMPARE :    MCOMPARE ( [ 'file1' ; 'file2' ] , [ 'var1' ; 'var2' ...] )
 %               This optional command plots the relative differences between
-%               two different simulations for a list of variables. One plot 
+%               two different simulations for a list of variables. One plot
 %               is drawn for each variable. The trajectories must have been
 %               previously saved by the instruction DYNASAVE. The simulation
 %               in file1 serves as the base simulation and the ploted quantity
@@ -10,7 +10,7 @@ function mcompare(s1,s2)
 %               value of the base simulation, the absolute difference is ploted
 %               instead of the relative one.
 
-% Copyright (C) 2001-2011 Dynare Team
+% Copyright (C) 2001-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

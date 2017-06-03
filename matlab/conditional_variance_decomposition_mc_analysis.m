@@ -9,7 +9,7 @@ function oo_ = ...
 %   dname                   [string]            directory name where to save
 %   fname                   [string]            name of the mod-file
 %   Steps                   [integers]          horizons at which to conduct decomposition
-%   exonames                [string]            (n_exo*char_length) character array with names of exogenous variables        
+%   exonames                [string]            (n_exo*char_length) character array with names of exogenous variables
 %   exo                     [string]            name of current exogenous
 %                                               variable
 %   var_list                [string]            (n_endo*char_length) character array with name
@@ -23,7 +23,7 @@ function oo_ = ...
 % OUTPUTS
 %   oo_          [structure]        Dynare structure where the results are saved.
 
-% Copyright (C) 2009-2015 Dynare Team
+% Copyright (C) 2009-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -106,7 +106,7 @@ for i=1:length(Steps)
         p_density(:,:,i) = pp_density;
     else
         [pp_mean, pp_median, pp_var, hpd_interval, pp_deciles] = ...
-            posterior_moments(tmp(:,i),0,mh_conf_sig);        
+            posterior_moments(tmp(:,i),0,mh_conf_sig);
     end
     p_mean(i) = pp_mean;
     p_median(i) = pp_median;

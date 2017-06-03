@@ -2,18 +2,18 @@ function [endogenousvariables, exogenousvariables] = model_inversion(constraints
                                                   exogenousvariables, ...
                                                   initialconditions, DynareModel, DynareOptions, DynareOutput)
 
-% INPUTS 
+% INPUTS
 % - constraints         [dseries]        with N constrained endogenous variables from t1 to t2.
 % - exogenousvariables  [dseries]        with Q exogenous variables.
 % - initialconditions   [dseries]        with M endogenous variables starting before t1 (M initialcond must contain at least the state variables).
 % - DynareModel         [struct]         M_, Dynare global structure containing informations related to the model.
 % - DynareOptions       [struct]         options_, Dynare global structure containing all the options.
 %
-% OUTPUTS 
-% - endogenous          [dseries]       
+% OUTPUTS
+% - endogenous          [dseries]
 % - exogenous           [dseries]
 %
-% REMARKS 
+% REMARKS
 
 % Copyright (C) 2017 Dynare Team
 %
@@ -52,7 +52,7 @@ if ~isstruct(DynareModel)
     error('model_inversion: Last input argument must be structures (M_)!')
 end
 
-% Set range where the endogenous variables are constrained.  
+% Set range where the endogenous variables are constrained.
 crange = constraints.dates;
 
 % Check that the number of instruments match the number of constrained endogenous variables.

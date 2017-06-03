@@ -40,7 +40,7 @@ function [nodes,weights] = gauss_legendre_weights_and_nodes(n,a,b)
 %! @end deftypefn
 %@eod:
 
-% Copyright (C) 2012 Dynare Team
+% Copyright (C) 2012-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -124,7 +124,7 @@ end
 
 %@test:3
 %$ [n,w] = gauss_legendre_weights_and_nodes(9,pi,2*pi);
-%$ % Check that the 
+%$ % Check that the
 %$ t(1) = all(n>pi);
 %$ t(2) = all(n<2*pi);
 %$ t(3) = dassert(sum(w),pi,1e-12);

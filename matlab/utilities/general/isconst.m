@@ -1,6 +1,6 @@
 function aa = isconst(y)
 % Returns 1 if vector y is constant, 0 otherwise.
-%  
+%
 % INPUTS:
 %   yy        [double]    n*1 vector.
 %
@@ -10,7 +10,7 @@ function aa = isconst(y)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2008-2009 Dynare Team
+% Copyright (C) 2008-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

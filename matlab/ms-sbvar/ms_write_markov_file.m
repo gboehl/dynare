@@ -10,7 +10,7 @@ function ms_write_markov_file(fname, options)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2011-2012 Dynare Team
+% Copyright (C) 2011-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -69,7 +69,7 @@ for i_chain = 1:n_chains
         fprintf(fh,'%22.16f',Alpha(i_state,:));
         fprintf(fh,'\n');
     end
-    
+
     fprintf(fh,['\n//== Dirichlet dimensions for state_variable[%d] ' ...
                 '==//\n'],i_chain);
     %        fprintf(fh,'%d ',repmat(n_states,1,n_states));
@@ -127,7 +127,7 @@ for i_var = 1:nvars
             i_equations = 0;
         else
             i_equations = ...
-                options.ms.ms_chain(i_chain).svar_coefficients.equations; 
+                options.ms.ms_chain(i_chain).svar_coefficients.equations;
         end
         if strcmp(i_equations,'ALL') || any(i_equations == i_var)
             fprintf(fh,'%d ',1);
@@ -148,7 +148,7 @@ for i_var = 1:nvars
             i_equations = 0;
         else
             i_equations = ...
-                options.ms.ms_chain(i_chain).svar_variances.equations; 
+                options.ms.ms_chain(i_chain).svar_variances.equations;
         end
         if strcmp(i_equations,'ALL') || any(i_equations == i_var)
             fprintf(fh,'%d ',1);

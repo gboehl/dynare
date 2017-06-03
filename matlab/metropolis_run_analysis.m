@@ -1,19 +1,19 @@
 function metropolis_run_analysis(M,basetopt,j)
 %function metropolis_run_analysis(M)
 % analizes Metropolis runs
-%  
+%
 % INPUTS
 %   M:         (struct)  Model structure
 %   basetopt:  (struct)  Estimated parameters structure
 %   j:         (int)     Index of estimated paramter
-%  
+%
 % OUTPUTS
 %   none
 %
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2003-2011 Dynare Team
+% Copyright (C) 2003-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

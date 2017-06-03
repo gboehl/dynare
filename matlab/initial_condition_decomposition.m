@@ -4,7 +4,7 @@ function oo_ = initial_condition_decomposition(M_,oo_,options_,varlist,bayestopt
 % oo_.initval_decomposition. It is a n_var by n_var+2 by nperiods array. The
 % first n_var columns store the respective endogenous initval contribution, column n+1
 % stores the role of the shocks, while column n+2 stores the
-% value of the smoothed variables.  Variables are stored 
+% value of the smoothed variables.  Variables are stored
 % in the order of declaration, i.e. M_.endo_names.
 %
 % INPUTS
@@ -50,7 +50,8 @@ if size(varlist,1) == 0
     varlist = M_.endo_names(1:M_.orig_endo_nbr,:);
 end
 
-[i_var,nvar] = varlist_indices(varlist,M_.endo_names);
+[i_var,nvar,index_uniques] = varlist_indices(varlist,M_.endo_names);
+varlist=varlist(index_uniques,:);
 
 % number of variables
 endo_nbr = M_.endo_nbr;
@@ -60,9 +61,9 @@ parameter_set = options_.parameter_set;
 if isempty(parameter_set)
     if isfield(oo_,'posterior_mean')
         parameter_set = 'posterior_mean';
-    elseif isfield(oo_,'mle_mode') 
+    elseif isfield(oo_,'mle_mode')
         parameter_set = 'mle_mode';
-    elseif isfield(oo_,'posterior') 
+    elseif isfield(oo_,'posterior')
         parameter_set = 'posterior_mode';
     else
         error(['shock_decomposition: option parameter_set is not specified ' ...
@@ -92,7 +93,7 @@ if ~isfield(oo_,'initval_decomposition')
     z = zeros(endo_nbr,endo_nbr+2,gend);
     z(:,end,:) = Smoothed_Variables_deviation_from_mean;
 
-    for i=1:endo_nbr,
+    for i=1:endo_nbr
         z(i,i,1) = Smoothed_Variables_deviation_from_mean(i,1);
     end
 
@@ -104,7 +105,7 @@ if ~isfield(oo_,'initval_decomposition')
         if i > 1 && i <= maximum_lag+1
             lags = min(i-1,maximum_lag):-1:1;
         end
-        
+
         if i > 1
             tempx = permute(z(:,1:endo_nbr,lags),[1 3 2]);
             m = min(i-1,maximum_lag);

@@ -1,6 +1,6 @@
 function [flag,endo_simul,err] = solve_perfect_foresight_model(endo_simul,exo_simul,pfm)
 
-% Copyright (C) 2012 Dynare Team
+% Copyright (C) 2012-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -34,7 +34,7 @@ end
 
 if pfm.use_bytecode
     [flag, endo_simul]=bytecode(Y, exo_simul, pfm.params);
-    return;
+    return
 end
 
 z = Y(find(pfm.lead_lag_incidence'));
@@ -72,7 +72,7 @@ for iter = 1:pfm.maxit_
         end
     end
     % Stop if Newton residuals are zero.
-    err = max(abs(res)); 
+    err = max(abs(res));
     if err < pfm.tolerance
         stop = 1 ;
         if pfm.verbose
@@ -86,7 +86,7 @@ for iter = 1:pfm.maxit_
         endo_simul = reshape(Y,pfm.ny,pfm.periods+2);
         break
     end
-    % Compute the Newton step. 
+    % Compute the Newton step.
     dy = -A\res;
     if any(isnan(dy))
         nan_flag = 1;

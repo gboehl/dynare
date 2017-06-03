@@ -12,7 +12,7 @@ function [x,rc] = csolve(FUN,x,gradfun,crit,itmax,varargin)
 %           the equation is solved.
 % itmax:    the solver stops when this number of iterations is reached, with rc=4
 % varargin: in this position the user can place any number of additional arguments, all
-%           of which are passed on to FUN and gradfun (when it is non-empty) as a list of 
+%           of which are passed on to FUN and gradfun (when it is non-empty) as a list of
 %           arguments following x.
 % rc:       0 means normal solution, 1 and 3 mean no solution despite extremely fine adjustments
 %           in step length (very likely a numerical problem, or a discontinuity). 4 means itmax
@@ -22,7 +22,7 @@ function [x,rc] = csolve(FUN,x,gradfun,crit,itmax,varargin)
 % http://sims.princeton.edu/yftp/optimize/mfiles/csolve.m
 
 % Copyright (C) 1993-2007 Christopher Sims
-% Copyright (C) 2007-2011 Dynare Team
+% Copyright (C) 2007-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -60,7 +60,7 @@ if isempty(varargin)
     f0=feval(FUN,x);
 else
     f0=feval(FUN,x,varargin{:});
-end   
+end
 af0=sum(abs(f0));
 af00=af0;
 itct=0;
@@ -122,7 +122,7 @@ while ~done
                 factor=factor^.6;
                 shrink=1;
             end
-            if abs(lambda*(1-factor))*dxSize > .1*delta;
+            if abs(lambda*(1-factor))*dxSize > .1*delta
                 lambda = factor*lambda;
             elseif (lambda > 0) && (factor==.6) %i.e., we've only been shrinking
                 lambda=-.3;
@@ -162,7 +162,7 @@ while ~done
     if itct >= itmax
         done=1;
         rc=4;
-    elseif af0<crit;
+    elseif af0<crit
         done=1;
         rc=0;
     end

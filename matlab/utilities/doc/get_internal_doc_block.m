@@ -1,8 +1,8 @@
 function block = get_internal_doc_block(fname,fpath)
 % Extract doc sections from matlab's routine.
 
-% Copyright (C) 2011-2012 Dynare Team
-%    
+% Copyright (C) 2011-2017 Dynare Team
+%
 % This file is part of Dynare.
 %
 % Dynare is free software: you can redistribute it and/or modify
@@ -50,7 +50,7 @@ else
          (~isempty(b1) && ~isempty(b2) && isempty(b)) )
         error('get_internal_doc_block:: There is a problem with the internal block definition!')
     end
-    if ( b2~=b(end) || b1~=b(1) || any(b-transpose(b1:1:b2)) ) 
+    if ( b2~=b(end) || b1~=b(1) || any(b-transpose(b1:1:b2)) )
         error('get_internal_doc_block:: There is a problem with the internal block definition!')
     end
 end

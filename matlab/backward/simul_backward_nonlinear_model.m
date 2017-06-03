@@ -2,7 +2,7 @@ function DynareOutput = simul_backward_nonlinear_model(initial_conditions, sampl
 
 % Simulates a stochastic non linear backward looking model with arbitrary precision (a deterministic solver is used).
 %
-% INPUTS 
+% INPUTS
 % - initial_conditions  [double]      n*1 vector, initial conditions for the endogenous variables.
 % - sample_size         [integer]     scalar, number of periods for the simulation.
 % - DynareOptions       [struct]      Dynare's options_ global structure.
@@ -10,10 +10,10 @@ function DynareOutput = simul_backward_nonlinear_model(initial_conditions, sampl
 % - DynareOutput        [struct]      Dynare's oo_ global structure.
 % - innovations         [double]      T*q matrix, innovations to be used for the simulation.
 %
-% OUTPUTS 
+% OUTPUTS
 % - DynareOutput        [struct]      Dynare's oo_ global structure.
 %
-% REMARKS 
+% REMARKS
 % [1] The innovations used for the simulation are saved in DynareOutput.exo_simul, and the resulting paths for the endogenous
 %     variables are saved in DynareOutput.endo_simul.
 % [2] The last input argument is not mandatory. If absent we use random draws and rescale them with the informations provided

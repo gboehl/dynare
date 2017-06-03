@@ -7,7 +7,7 @@ function pm3(n1,n2,ifil,B,tit1,tit2,tit3,tit_tex,names1,names2,name3,DirectoryNa
 %  n2           [scalar] size of second dimension of moment matrix
 %  ifil         [scalar] number of moment files to load
 %  B            [scalar] number of subdraws
-%  tit1         [string] Figure title 
+%  tit1         [string] Figure title
 %  tit2         [string] not used
 %  tit3         [string] Save name for figure
 %  tit_tex      [cell array] TeX-Names for Variables
@@ -24,7 +24,7 @@ function pm3(n1,n2,ifil,B,tit1,tit2,tit3,tit_tex,names1,names2,name3,DirectoryNa
 % See also the comment in posterior_sampler.m funtion.
 
 
-% Copyright (C) 2007-2016 Dynare Team
+% Copyright (C) 2007-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -60,10 +60,10 @@ else
     end
 end
 if options_.TeX
-    if isempty(tit_tex),
+    if isempty(tit_tex)
         tit_tex=names1;
     end
-    
+
     varlist_TeX = [];
     for i=1:nvar
         if i==1
@@ -92,7 +92,7 @@ for file = 1:ifil
     stock=loaded_file.stock;
     if strcmp(var_type,'_filter_step_ahead')
         if file==1 %on first run, initialize variable for storing filter_step_ahead
-            stock1_filter_step_ahead=NaN(n1,n2,B,length(options_.filter_step_ahead)); 
+            stock1_filter_step_ahead=NaN(n1,n2,B,length(options_.filter_step_ahead));
             stock1 = zeros(n1,n2,B);
         end
         filter_step_ahead_indicator=1;
@@ -321,13 +321,13 @@ if ~options_.nograph && ~options_.no_graph.posterior
 
     if ~isoctave
         % Commenting for testing!
-        if isnumeric(options_.parallel) || ceil(size(varlist,1)/MaxNumberOfPlotsPerFigure)<4,
+        if isnumeric(options_.parallel) || ceil(size(varlist,1)/MaxNumberOfPlotsPerFigure)<4
             fout = pm3_core(localVars,1,nvar,0);
-            
+
             % Parallel execution!
         else
             isRemoteOctave = 0;
-            for indPC=1:length(options_.parallel),
+            for indPC=1:length(options_.parallel)
                 isRemoteOctave = isRemoteOctave + (findstr(options_.parallel(indPC).MatlabOctavePath, 'octave'));
             end
             if isRemoteOctave
@@ -342,7 +342,7 @@ if ~options_.nograph && ~options_.no_graph.posterior
     else
         % For the time being in Octave enviroment the pm3.m is executed only in
         % serial modality, to avoid problem with the plots.
-        
+
         fout = pm3_core(localVars,1,nvar,0);
     end
 
@@ -355,13 +355,12 @@ if ~options_.nograph && ~options_.no_graph.posterior
         fprintf(fidTeX,' \n');
         nvar0=cumsum(nvar0);
 
-        i=0;    
-        for j=1:length(nvar0),
-            
+        i=0;
+        for j=1:length(nvar0)
             NAMES = [];
             TEXNAMES = [];
             nvar=nvar0(j);
-            while i<nvar,
+            while i<nvar
                 i=i+1;
                 if max(abs(Mean(:,i))) > 10^(-6)
                     subplotnum = subplotnum+1;

@@ -18,16 +18,16 @@ function [ya, yass, gya, gyass] = quarterly2annual(y,yss,GYTREND0,type,islog,aux
 %          1 log-level
 %          2 growth rate Q frequency
 % aux      optional input used when type>4
-% 
+%
 %
 % OUTPUTS
 % ya       annual (log-)level
-% yass     annual steadystate (log-)level  
+% yass     annual steadystate (log-)level
 % gya      annual growth rate
 % gyass    annual growth rate steadystate
 
 % Copyright (C) 2017 Dynare Team
-%    
+%
 % This file is part of Dynare.
 %
 % Dynare is free software: you can redistribute it and/or modify
@@ -43,32 +43,32 @@ function [ya, yass, gya, gyass] = quarterly2annual(y,yss,GYTREND0,type,islog,aux
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-if nargin ==0,
+if nargin ==0
     disp('[ya, yass, gya, gyass] = quarterly2annual(y,yss,GYTREND0,type,islog);')
     return
 end
 
-if nargin<4 || isempty(type),
+if nargin<4 || isempty(type)
     type=1;
 end
-if nargin<5 || isempty(islog),
+if nargin<5 || isempty(islog)
     islog=0;
 end
-if isstruct(aux),
+if isstruct(aux)
     yaux=aux.y;
     yauxss=aux.yss;
     islogaux=aux.islog;
     GYTREND0aux=aux.GYTREND0;
-    typeaux=aux.type;    
+    typeaux=aux.type;
     if islogaux
         yaux=exp(yaux+yauxss);
         yauxss=exp(yauxss);
         yaux=yaux-yauxss;
     end
-elseif type > 4,
+elseif type > 4
     error('TYPE>4 requires auxiliary variable!')
 end
-if islog == 2,
+if islog == 2
     % construct loglevel out of growth rate
     y = cumsum(y);
     yss=0;
@@ -80,28 +80,23 @@ if islog == 1
     y=y-yss;
 end
 switch type
-
   case 1
     yass = yss*(exp(-GYTREND0*3)+exp(-GYTREND0*2)+exp(-GYTREND0)+1);
     tmp = lagged(y,3)*exp(-GYTREND0*3)+lagged(y,2)*exp(-GYTREND0*2)+lagged(y,1)*exp(-GYTREND0)+y; % annualized level
     ya = tmp(4:4:end);
-
   case 2
     yass = yss*(exp(-GYTREND0*3)+exp(-GYTREND0*2)+exp(-GYTREND0)+1)/4;
     tmp = (lagged(y,3)*exp(-GYTREND0*3)+lagged(y,2)*exp(-GYTREND0*2)+lagged(y,1)*exp(-GYTREND0)+y)/4; % annualized level
     ya = tmp(4:4:end);
-
   case 3
     yass=yss;
     tmp = y;
     ya = tmp(4:4:end);
-    
   case 4
     yass = yss*(exp(-GYTREND0*3/2));
-    tmp = (lagged(y+yss,3)*exp(-GYTREND0*3).*lagged(y+yss,2)*exp(-GYTREND0*2).*lagged(y+yss,1)*exp(-GYTREND0).*(y+yss)).^(1/4); % annualized level        
+    tmp = (lagged(y+yss,3)*exp(-GYTREND0*3).*lagged(y+yss,2)*exp(-GYTREND0*2).*lagged(y+yss,1)*exp(-GYTREND0).*(y+yss)).^(1/4); % annualized level
     tmp = tmp - yass;
     ya = tmp(4:4:end);
-
   case 5
     % nominal series
     yn = (y+yss).*(yaux+yauxss) - yss.*yauxss;
@@ -110,8 +105,7 @@ switch type
     [yra, yrass] = quarterly2annual(yaux,yauxss,GYTREND0aux,typeaux,0,0);
     % deflator
     yass = ynass/yrass;
-    ya = (yna+ynass)./(yr+yrass)-yass;        
-    
+    ya = (yna+ynass)./(yr+yrass)-yass;
   case 6
     % nominal series
     yn = (y+yss).*(yaux+yauxss) - yss.*yauxss;
@@ -120,14 +114,12 @@ switch type
     [pa, pass] = quarterly2annual(yaux,yauxss,GYTREND0aux,2,0,0);
     % real series
     yass = ynass/pass;
-    ya = (yna+ynass)./(pa+pass)-yass;        
-
+    ya = (yna+ynass)./(pa+pass)-yass;
   case 7
     % nominal series
     yn = (y+yss).*(yaux+yauxss) - yss.*yauxss;
     [ya, yass] = quarterly2annual(yn,yss.*yauxss,GYTREND0+GYTREND0aux,typeaux,0,0);
     GYTREND0=GYTREND0+GYTREND0aux;
-
   otherwise
     error('Wrong type input')
 end
@@ -141,4 +133,3 @@ if islog
     yass=log(yass);
     ya=ya-yass;
 end
-

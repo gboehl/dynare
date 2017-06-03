@@ -13,14 +13,14 @@ function [H, dA, dOm, Hss, gp, d2A, d2Om, H2ss] = getH(A, B, estim_params_,M_,oo
 %                   not (-1 or -2)
 %   indx:           Index of estimated parameters in M_.params
 %   indexo:         Index of estimated standard deviations in M_.exo_names
-%   iv:             Index of considered variables           
-% 
+%   iv:             Index of considered variables
+%
 % Outputs:
 %   H:              dTAU/dTHETA: Jacobian of TAU, vectorized form of
 %                   linearized reduced form state space model, given ys [steady state],
 %                   A [transition matrix], B [matrix of shocks], Sigma [covariance of shocks]
-%                   TAU = [ys; vec(A); dyn_vech(B*Sigma*B')]. 
-%   dA:             [endo_nbr by endo_nbr by (indx+indexo)] Jacobian of transition matrix A            
+%                   TAU = [ys; vec(A); dyn_vech(B*Sigma*B')].
+%   dA:             [endo_nbr by endo_nbr by (indx+indexo)] Jacobian of transition matrix A
 %   dOm:            [endo_nbr by endo_nbr by (indx+indexo)] Jacobian of Omega = (B*Sigma*B')
 %   Hss:            [endo_nbr by (indx)] Jacobian of steady state with respect to estimated
 %                   structural parameters only (indx)
@@ -32,7 +32,7 @@ function [H, dA, dOm, Hss, gp, d2A, d2Om, H2ss] = getH(A, B, estim_params_,M_,oo
 %   H2s:            Hessian of steady state with respect to estimated
 %                   structural parameters only (indx)
 
-% Copyright (C) 2010-2016 Dynare Team
+% Copyright (C) 2010-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -50,23 +50,23 @@ function [H, dA, dOm, Hss, gp, d2A, d2Om, H2ss] = getH(A, B, estim_params_,M_,oo
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 if nargin<7 || isempty(kronflag)
-    kronflag = 0; 
+    kronflag = 0;
 end
 if nargin<8 || isempty(indx)
-    indx = []; 
+    indx = [];
 end
 if nargin<9 || isempty(indexo)
-    indexo = []; 
+    indexo = [];
 end
 if nargin<10 || isempty(iv)
-    iv = (1:length(A))'; 
+    iv = (1:length(A))';
 end
 
 [I,J]=find(M_.lead_lag_incidence');
 yy0=oo_.dr.ys(I);
 param_nbr = length(indx);
 tot_param_nbr = param_nbr + length(indexo);
-if nargout>5,
+if nargout>5
     param_nbr_2 = param_nbr*(param_nbr+1)/2;
     tot_param_nbr_2 = tot_param_nbr*(tot_param_nbr+1)/2;
 end
@@ -75,18 +75,18 @@ m = size(A,1);
 m1=length(iv);
 n = size(B,2);
 
-if kronflag==-1, % perturbation
+if kronflag==-1 % perturbation
     gp=0;
     fun = 'thet2tau';
     params0 = M_.params;
     H = fjaco(fun,[sqrt(diag(M_.Sigma_e(indexo,indexo))); M_.params(indx)], M_, oo_, indx, indexo,0);
-    if nargout>1,
+    if nargout>1
         dOm = zeros(m1,m1,tot_param_nbr);
         dA=zeros(m1,m1,tot_param_nbr);
         Hss=H(iv,length(indexo)+1:end);
         da = H(m+1:m+m*m,:);
         dom = H(m+m*m+1:end,:);
-        for j=1:tot_param_nbr,
+        for j=1:tot_param_nbr
             tmp = dyn_unvech(dom(:,j));
             dOm(:,:,j) = tmp(iv,iv);
             tmp = reshape(da(:,j),m,m);
@@ -94,13 +94,13 @@ if kronflag==-1, % perturbation
         end
         clear da dom tmp
     end
-    if nargout>5,
+    if nargout>5
         H2 = hessian_sparse('thet2tau',[sqrt(diag(M_.Sigma_e(indexo,indexo))); M_.params(indx)], ...
                             options_.gstep,estim_params_,M_, oo_, indx,indexo,0,[],[],[],iv);
         H2ss = zeros(m1,tot_param_nbr,tot_param_nbr);
         iax=find(triu(rand(tot_param_nbr,tot_param_nbr)));
         H2 = H2(:,iax);
-        for j=1:m1,
+        for j=1:m1
             H2ss(j,:,:)=dyn_unvech(full(H2(j,:)));
         end
         H2ss=H2ss(:,length(indexo)+1:end,length(indexo)+1:end);
@@ -122,20 +122,20 @@ if kronflag==-1, % perturbation
     return
 end
 
-if kronflag==-2,
-    if nargout>5,
+if kronflag==-2
+    if nargout>5
         [residual, g1, g2 ] = feval([M_.fname,'_dynamic'],yy0, oo_.exo_steady_state', ...
                                     M_.params, oo_.dr.ys, 1);
         g22 = hessian_sparse('thet2tau',[M_.params(indx)],options_.gstep,estim_params_,M_, oo_, indx,[],-1);
         H2ss=full(g22(1:M_.endo_nbr,:));
         H2ss = reshape(H2ss,[M_.endo_nbr param_nbr param_nbr]);
-        for j=1:M_.endo_nbr,
+        for j=1:M_.endo_nbr
             H2ss(j,:,:)=dyn_unvech(dyn_vech(H2ss(j,:,:)));
         end
         g22=g22(M_.endo_nbr+1:end,:);
         inx=find(g22);
         gx22=zeros(length(inx),5);
-        for j=1:length(inx),
+        for j=1:length(inx)
             [i1, i2] = ind2sub(size(g22),inx(j));
             [ig1, ig2] = ind2sub(size(g1),i1);
             [ip1, ip2] = ind2sub([param_nbr param_nbr],i2);
@@ -145,25 +145,20 @@ if kronflag==-2,
         clear gx22;
     else
         [residual, g1 ] = feval([M_.fname,'_dynamic'],yy0, oo_.exo_steady_state', ...
-                                M_.params, oo_.dr.ys, 1);        
+                                M_.params, oo_.dr.ys, 1);
     end
     gp = fjaco('thet2tau',[M_.params(indx)],estim_params_,M_, oo_, indx,[],-1);
     Hss=gp(1:M_.endo_nbr,:);
     gp=gp(M_.endo_nbr+1:end,:);
     gp = reshape(gp,[size(g1) param_nbr]);
 else
-
-    % yy0=[];
-    % for j=1:size(M_.lead_lag_incidence,1);
-    %     yy0 = [ yy0; oo_.dr.ys(find(M_.lead_lag_incidence(j,:)))];
-    % end
     dyssdtheta=zeros(length(oo_.dr.ys),M_.param_nbr);
     d2yssdtheta=zeros(length(oo_.dr.ys),M_.param_nbr,M_.param_nbr);
     [residual, gg1] = feval([M_.fname,'_static'],oo_.dr.ys, oo_.exo_steady_state', M_.params);
     df = feval([M_.fname,'_static_params_derivs'],oo_.dr.ys, repmat(oo_.exo_steady_state',[M_.maximum_exo_lag+M_.maximum_exo_lead+1]), ...
                M_.params);
     dyssdtheta = -gg1\df;
-    if nargout>5,
+    if nargout>5
         [residual, gg1, gg2] = feval([M_.fname,'_static'],oo_.dr.ys, oo_.exo_steady_state', M_.params);
         [residual, g1, g2, g3] = feval([M_.fname,'_dynamic'],yy0, oo_.exo_steady_state', ...
                                        M_.params, oo_.dr.ys, 1);
@@ -172,27 +167,25 @@ else
         [df, gpx, d2f] = feval([M_.fname,'_static_params_derivs'],oo_.dr.ys, oo_.exo_steady_state', ...
                                M_.params);%, oo_.dr.ys, 1, dyssdtheta*0, d2yssdtheta);
         d2f = get_all_resid_2nd_derivs(d2f,length(oo_.dr.ys),M_.param_nbr);
-
-        if isempty(find(gg2)),
-            for j=1:M_.param_nbr,
+        if isempty(find(gg2))
+            for j=1:M_.param_nbr
                 d2yssdtheta(:,:,j) = -gg1\d2f(:,:,j);
             end
         else
             gam = d2f*0;
-            for j=1:nr,
+            for j=1:nr
                 tmp1 = (squeeze(gpx(j,:,:))'*dyssdtheta);
                 gam(j,:,:)=transpose(reshape(gg2(j,:),[nr nr])*dyssdtheta)*dyssdtheta ...
                     + tmp1 + tmp1';
             end
-            for j=1:M_.param_nbr,
+            for j=1:M_.param_nbr
                 d2yssdtheta(:,:,j) = -gg1\(d2f(:,:,j)+gam(:,:,j));
-                %         d2yssdtheta(:,:,j) = -gg1\(d2f(:,:,j)+gam(:,:,j)+ squeeze(gpx(:,:,j))*dyssdtheta);
             end
-            clear tmp1 gpx gam,
+            clear tmp1 gpx gam
         end
     end
 
-    if any(any(isnan(dyssdtheta))),    
+    if any(any(isnan(dyssdtheta)))
         [U,T] = schur(gg1);
         qz_criterium=options_.qz_criterium;
         e1 = abs(ordeig(T)) < qz_criterium-1;
@@ -207,13 +200,10 @@ else
             end
         end
     end
-    if nargout>5,
+    if nargout>5
         [df, gp, d2f, gpp, hp] = feval([M_.fname,'_params_derivs'],yy0, oo_.exo_steady_state', ...
                                        M_.params, oo_.dr.ys, 1, dyssdtheta, d2yssdtheta);
         H2ss = d2yssdtheta(oo_.dr.order_var,indx,indx);
-        %     nelem=size(g1,2);
-        %     g22 = get_all_2nd_derivs(gpp,m,nelem,M_.param_nbr);
-        %     g22 = g22(:,:,indx,indx);
     else
         [df, gp] = feval([M_.fname,'_params_derivs'],yy0, repmat(oo_.exo_steady_state',[M_.maximum_exo_lag+M_.maximum_exo_lead+1,1]), ...
                          M_.params, oo_.dr.ys, 1, dyssdtheta,d2yssdtheta);
@@ -227,12 +217,12 @@ else
     dyssdtheta = dyssdtheta(I,:);
     ns = max(max(M_.lead_lag_incidence)); % retrieve the number of states excluding columns for shocks
     gp2 = gp*0;
-    for j=1:nr,
+    for j=1:nr
         [II JJ]=ind2sub([nc nc],find(g2(j,:)));
-        for i=1:nc,
+        for i=1:nc
             is = find(II==i);
             is = is(find(JJ(is)<=ns));
-            if ~isempty(is),
+            if ~isempty(is)
                 g20=full(g2(j,find(g2(j,:))));
                 gp2(j,i,:)=g20(is)*dyssdtheta(JJ(is),:);
             end
@@ -242,7 +232,7 @@ else
     gp = gp+gp2;
     gp = gp(:,:,indx);
 
-    if nargout>5,
+    if nargout>5
         %     h22 = get_all_hess_derivs(hp,nr,nc,M_.param_nbr);
         g22 = gpp;
         gp22 = sparse(nr*nc,param_nbr*param_nbr);
@@ -251,16 +241,16 @@ else
         %     tmp2=tmp1*[dyssdtheta; zeros(nc-ns,M_.param_nbr)];
         tmpa=[dyssdtheta; zeros(nc-ns,M_.param_nbr)];
         tmpa=sparse(tmpa);
-        for j=1:M_.param_nbr,
+        for j=1:M_.param_nbr
             tmp2(:,j)=tmp1*tmpa(:,j);
         end
         %     tmp2=sparse(tmp2);
         %     [i1 i2]=ind2sub([nc M_.param_nbr],[1:nc*M_.param_nbr]');
 
-        for j=1:nr,
-            tmp0=reshape(g2(j,:),[nc nc]);   
+        for j=1:nr
+            tmp0=reshape(g2(j,:),[nc nc]);
             tmp0 = tmp0(:,1:ns)*reshape(d2yssdtheta(I,:,:),[ns,M_.param_nbr*M_.param_nbr]);
-            for i=1:nc,
+            for i=1:nc
                 indo = sub2ind([nr nc nc], ones(nc,1)*j ,ones(nc,1)*i, (1:nc)');
                 tmpx = (tmp2(indo,:))'*[dyssdtheta; zeros(nc-ns,M_.param_nbr)];
                 %             gp22(j,i,:,:)=squeeze(tmp1(j,i,:,:))'*[dyssdtheta; zeros(nc-ns,M_.param_nbr)];
@@ -268,7 +258,7 @@ else
                 tmpy = tmpx+tmpu+tmpu'+reshape(tmp0(i,:,:),[M_.param_nbr M_.param_nbr]);
                 tmpy = tmpy + get_2nd_deriv_mat(gpp,j,i,M_.param_nbr);
                 tmpy = tmpy(indx,indx);
-                if any(any(tmpy)),
+                if any(any(tmpy))
                     ina = find(triu(tmpy));
                     gp22(sub2ind([nr nc],j,i),ina)=transpose(tmpy(ina));
                     %             gp22(j,i,:,:)= reshape(tmpy,[1 1 M_.param_nbr M_.param_nbr]);
@@ -280,10 +270,10 @@ else
 
         %     g22 = g22+gp22;
         %     g22 = g22(:,:,indx,indx);
-        clear tmp0 tmp1 tmp2 tmpu tmpx tmpy,
+        clear tmp0 tmp1 tmp2 tmpu tmpx tmpy
         inx=find(gp22);
         gx22=zeros(length(inx),5);
-        for j=1:length(inx),
+        for j=1:length(inx)
             [i1, i2] = ind2sub(size(gp22),inx(j));
             [ig1, ig2] = ind2sub(size(g1),i1);
             [ip1, ip2] = ind2sub([param_nbr param_nbr],i2);
@@ -301,15 +291,14 @@ klen = M_.maximum_endo_lag + M_.maximum_endo_lead + 1;
 k11 = M_.lead_lag_incidence(find([1:klen] ~= M_.maximum_endo_lag+1),:);
 a = g1(:,nonzeros(k11'));
 da = gp(:,nonzeros(k11'),:);
-if nargout > 5,
+if nargout > 5
     indind = ismember(g22(:,2),nonzeros(k11'));
     tmp = g22(indind,:);
     d2a=tmp;
-    for j=1:size(tmp,1),
+    for j=1:size(tmp,1)
         inxinx = find(nonzeros(k11')==tmp(j,2));
         d2a(j,2) = inxinx;
     end
-    %     d2a = g22(:,nonzeros(k11'),:,:);
 end
 kstate = oo_.dr.kstate;
 
@@ -319,12 +308,12 @@ Dg1 = zeros(M_.endo_nbr,M_.endo_nbr,param_nbr);
 k1 = find(kstate(:,2) == M_.maximum_endo_lag+2 & kstate(:,3));
 GAM1(:, kstate(k1,1)) = -a(:,kstate(k1,3));
 Dg1(:, kstate(k1,1), :) = -da(:,kstate(k1,3),:);
-if nargout > 5,
+if nargout > 5
     indind = ismember(d2a(:,2),kstate(k1,3));
     tmp = d2a(indind,:);
     tmp(:,end)=-tmp(:,end);
     D2g1 = tmp;
-    for j=1:size(tmp,1),
+    for j=1:size(tmp,1)
         inxinx = (kstate(k1,3)==tmp(j,2));
         D2g1(j,2) = kstate(k1(inxinx),1);
     end
@@ -336,11 +325,11 @@ GAM0 = zeros(M_.endo_nbr,M_.endo_nbr);
 Dg0 = zeros(M_.endo_nbr,M_.endo_nbr,param_nbr);
 GAM0(:,cols_b) = g1(:,cols_j);
 Dg0(:,cols_b,:) = gp(:,cols_j,:);
-if nargout > 5,
+if nargout > 5
     indind = ismember(g22(:,2),cols_j);
     tmp = g22(indind,:);
     D2g0=tmp;
-    for j=1:size(tmp,1),
+    for j=1:size(tmp,1)
         inxinx = (cols_j==tmp(j,2));
         D2g0(j,2) = cols_b(inxinx);
     end
@@ -352,12 +341,12 @@ GAM2 = zeros(M_.endo_nbr,M_.endo_nbr);
 Dg2 = zeros(M_.endo_nbr,M_.endo_nbr,param_nbr);
 GAM2(:, kstate(k2,1)) = -a(:,kstate(k2,4));
 Dg2(:, kstate(k2,1), :) = -da(:,kstate(k2,4),:);
-if nargout > 5,
+if nargout > 5
     indind = ismember(d2a(:,2),kstate(k2,4));
     tmp = d2a(indind,:);
     tmp(:,end)=-tmp(:,end);
     D2g2 = tmp;
-    for j=1:size(tmp,1),
+    for j=1:size(tmp,1)
         inxinx = (kstate(k2,4)==tmp(j,2));
         D2g2(j,2) = kstate(k2(inxinx),1);
     end
@@ -365,13 +354,13 @@ end
 
 GAM3 = -g1(:,length(yy0)+1:end);
 Dg3 = -gp(:,length(yy0)+1:end,:);
-if nargout>5,
+if nargout>5
     cols_ex = [length(yy0)+1:size(g1,2)];
     indind = ismember(g22(:,2),cols_ex);
     tmp = g22(indind,:);
     tmp(:,end)=-tmp(:,end);
     D2g3=tmp;
-    for j=1:size(tmp,1),
+    for j=1:size(tmp,1)
         inxinx = find(cols_ex==tmp(j,2));
         D2g3(j,2) = inxinx;
     end
@@ -380,11 +369,11 @@ end
 
 clear g1 g2 g3 df d2f gpp hp residual gg1 gg2 gp2 dyssdtheta d2yssdtheta
 
-if kronflag==1, % kronecker products
+if kronflag==1 % kronecker products
     Dg0=reshape(Dg0,m^2,param_nbr);
     Dg1=reshape(Dg1,m^2,param_nbr);
     Dg2=reshape(Dg2,m^2,param_nbr);
-    for j=1:param_nbr,
+    for j=1:param_nbr
         Dg3(:,:,j)=Dg3(:,:,j)*M_.Sigma_e;
     end
     Dg3=reshape(Dg3,m*n,param_nbr);
@@ -427,7 +416,7 @@ if kronflag==1, % kronecker products
     H(m*m+1:end,:) = tmpH(Index,:);
 
     Hx = [];
-    if ~isempty(indexo),
+    if ~isempty(indexo)
         dSig = zeros(M_.exo_nbr,M_.exo_nbr);
         dOm = cat(3,zeros(size(dOm,1),size(dOm,1),length(indexo)),dOm);
         for j=1:length(indexo)
@@ -435,7 +424,7 @@ if kronflag==1, % kronecker products
             y = B*dSig*B';
             y = y(nauxe+1:end,nauxe+1:end);
             Hx(:,j) = [zeros((m-nauxe)^2,1); dyn_vech(y)];
-            if nargout>1,
+            if nargout>1
                 dOm(:,:,j) = y;
             end
             dSig(indexo(j),indexo(j)) = 0;
@@ -452,24 +441,24 @@ else % generalized sylvester equation
     c = A;
     elem = zeros(m,m,param_nbr);
     d = elem;
-    for j=1:param_nbr,
+    for j=1:param_nbr
         elem(:,:,j) = (Dg0(:,:,j)-Dg1(:,:,j)*A);
         d(:,:,j) = Dg2(:,:,j)-elem(:,:,j)*A;
     end
     xx=sylvester3(a,b,c,d);
     flag=1;
     icount=0;
-    while flag && icount<4,
+    while flag && icount<4
         [xx, flag]=sylvester3a(xx,a,b,c,d);
         icount=icount+1;
     end
     H=zeros(m1*m1+m1*(m1+1)/2,param_nbr+length(indexo));
-    if nargout>1,
+    if nargout>1
         dOm = zeros(m1,m1,param_nbr+length(indexo));
         dA=zeros(m1,m1,param_nbr+length(indexo));
         dB=zeros(m,n,param_nbr);
     end
-    if ~isempty(indexo),
+    if ~isempty(indexo)
         dSig = zeros(M_.exo_nbr,M_.exo_nbr,length(indexo));
         for j=1:length(indexo)
             dSig(indexo(j),indexo(j),j) = 2*sqrt(M_.Sigma_e(indexo(j),indexo(j)));
@@ -477,22 +466,22 @@ else % generalized sylvester equation
             %             y = y(nauxe+1:end,nauxe+1:end);
             %             H(:,j) = [zeros((m-nauxe)^2,1); dyn_vech(y)];
             H(:,j) = [zeros(m1^2,1); dyn_vech(y(iv,iv))];
-            if nargout>1,
+            if nargout>1
                 dOm(:,:,j) = y(iv,iv);
             end
             %             dSig(indexo(j),indexo(j)) = 0;
         end
     end
-    for j=1:param_nbr,
+    for j=1:param_nbr
         x = xx(:,:,j);
         y = inva * (Dg3(:,:,j)-(elem(:,:,j)-GAM1*x)*B);
-        if nargout>1,
+        if nargout>1
             dB(:,:,j) = y;
         end
         y = y*M_.Sigma_e*B'+B*M_.Sigma_e*y';
         %         x = x(nauxe+1:end,nauxe+1:end);
         %         y = y(nauxe+1:end,nauxe+1:end);
-        if nargout>1,
+        if nargout>1
             dA(:,:,j+length(indexo)) = x(iv,iv);
             dOm(:,:,j+length(indexo)) = y(iv,iv);
         end
@@ -515,7 +504,7 @@ else % generalized sylvester equation
 
 end
 
-if nargout > 5,
+if nargout > 5
     H2ss = H2ss(iv,:,:);
     d = zeros(m,m,floor(sqrt(param_nbr_2)));
     %     d2A = zeros(m,m,tot_param_nbr,tot_param_nbr);
@@ -533,8 +522,8 @@ if nargout > 5,
     jinx = [];
     x2x=sparse(m*m,param_nbr_2);
     %     x2x=[];
-    for i=1:param_nbr,
-        for j=1:i,
+    for i=1:param_nbr
+        for j=1:i
             elem1 = (get_2nd_deriv(D2g0,m,m,j,i)-get_2nd_deriv(D2g1,m,m,j,i)*A);
             elem1 = get_2nd_deriv(D2g2,m,m,j,i)-elem1*A;
             elemj0 = Dg0(:,:,j)-Dg1(:,:,j)*A;
@@ -545,15 +534,15 @@ if nargout > 5,
             jcount=jcount+1;
             jinx = [jinx; [j i]];
             d(:,:,jcount) = elem1+elem2;
-            if jcount==floor(sqrt(param_nbr_2)) || (j*i)==param_nbr^2,
-                if (j*i)==param_nbr^2,
+            if jcount==floor(sqrt(param_nbr_2)) || (j*i)==param_nbr^2
+                if (j*i)==param_nbr^2
                     d = d(:,:,1:jcount);
                 end
                 %                 d(find(abs(d)<1.e-12))=0;
                 xx2=sylvester3(a,b,c,d);
                 flag=1;
                 icount=0;
-                while flag && icount<4,
+                while flag && icount<4
                     [xx2, flag]=sylvester3a(xx2,a,b,c,d);
                     icount = icount + 1;
                 end
@@ -583,11 +572,11 @@ if nargout > 5,
     offset = length(indexo);
     %     d2B = zeros(m,n,tot_param_nbr,tot_param_nbr);
     d2Sig = zeros(M_.exo_nbr,M_.exo_nbr,length(indexo));
-    for j=1:tot_param_nbr,
-        for i=1:j,
+    for j=1:tot_param_nbr
+        for i=1:j
             jcount=jcount+1;
-            if j<=offset,
-                if i==j,
+            if j<=offset
+                if i==j
                     d2Sig(indexo(j),indexo(j),j) = 2;
                     y = B*d2Sig(:,:,j)*B';
                     %                     y(abs(y)<1.e-8)=0;
@@ -596,7 +585,7 @@ if nargout > 5,
             else
                 jind = j-offset;
                 iind = i-offset;
-                if i<=offset,
+                if i<=offset
                     y = dB(:,:,jind)*dSig(:,:,i)*B'+B*dSig(:,:,i)*dB(:,:,jind)';
                     %                     y(abs(y)<1.e-8)=0;
                     d2Om_tmp(:,jcount) = dyn_vech(y(iv,iv));
@@ -620,7 +609,7 @@ if nargout > 5,
                     d2Om_tmp(:,jcount) = dyn_vech(y(iv,iv));
                 end
             end
-            if jcount==ncol || i*j==tot_param_nbr^2,
+            if jcount==ncol || i*j==tot_param_nbr^2
                 d2A(:,cumjcount+1:cumjcount+jcount) = d2A_tmp(:,1:jcount);
                 %         d2A(:,:,j+length(indexo),i+length(indexo)) = x;
                 %         d2A(:,:,i+length(indexo),j+length(indexo)) = x;
@@ -635,7 +624,7 @@ if nargout > 5,
                 %         d2Om = sparse(m1*(m1+1)/2,tot_param_nbr*(tot_param_nbr+1)/2);
                 d2A_tmp = zeros(m1*m1,ncol);
                 d2Om_tmp = zeros(m1*(m1+1)/2,ncol);
-                
+
             end
         end
     end
@@ -643,35 +632,35 @@ end
 
 return
 
-function g22 = get_2nd_deriv(gpp,m,n,i,j),
+function g22 = get_2nd_deriv(gpp,m,n,i,j)
 
 g22=zeros(m,n);
 is=find(gpp(:,3)==i);
 is=is(find(gpp(is,4)==j));
 
-if ~isempty(is),
+if ~isempty(is)
     g22(sub2ind([m,n],gpp(is,1),gpp(is,2)))=gpp(is,5)';
 end
 return
 
-function g22 = get_2nd_deriv_mat(gpp,i,j,n),
+function g22 = get_2nd_deriv_mat(gpp,i,j,n)
 
 g22=zeros(n,n);
 is=find(gpp(:,1)==i);
 is=is(find(gpp(is,2)==j));
 
-if ~isempty(is),
+if ~isempty(is)
     g22(sub2ind([n,n],gpp(is,3),gpp(is,4)))=gpp(is,5)';
     g22(sub2ind([n,n],gpp(is,4),gpp(is,3)))=gpp(is,5)';
 end
 return
 
-function g22 = get_all_2nd_derivs(gpp,m,n,npar,fsparse),
+function g22 = get_all_2nd_derivs(gpp,m,n,npar,fsparse)
 
-if nargin==4 || isempty(fsparse),
+if nargin==4 || isempty(fsparse)
     fsparse=0;
 end
-if fsparse,
+if fsparse
     g22=sparse(m*n,npar*npar);
 else
     g22=zeros(m,n,npar,npar);
@@ -680,11 +669,11 @@ end
 % c=triu(c);
 % ic=find(c);
 
-for is=1:length(gpp),
+for is=1:length(gpp)
     %     d=zeros(npar,npar);
     %     d(gpp(is,3),gpp(is,4))=1;
     %     indx = find(ic==find(d));
-    if fsparse,
+    if fsparse
         g22(sub2ind([m,n],gpp(is,1),gpp(is,2)),sub2ind([npar,npar],gpp(is,3),gpp(is,4)))=gpp(is,5);
         g22(sub2ind([m,n],gpp(is,1),gpp(is,2)),sub2ind([npar,npar],gpp(is,4),gpp(is,3)))=gpp(is,5);
     else
@@ -695,14 +684,14 @@ end
 
 return
 
-function r22 = get_all_resid_2nd_derivs(rpp,m,npar),
+function r22 = get_all_resid_2nd_derivs(rpp,m,npar)
 
 r22=zeros(m,npar,npar);
 % c=ones(npar,npar);
 % c=triu(c);
 % ic=find(c);
 
-for is=1:length(rpp),
+for is=1:length(rpp)
     %     d=zeros(npar,npar);
     %     d(rpp(is,2),rpp(is,3))=1;
     %     indx = find(ic==find(d));
@@ -712,30 +701,30 @@ end
 
 return
 
-function h2 = get_all_hess_derivs(hp,r,m,npar),
+function h2 = get_all_hess_derivs(hp,r,m,npar)
 
 h2=zeros(r,m,m,npar);
 
-for is=1:length(hp),
+for is=1:length(hp)
     h2(hp(is,1),hp(is,2),hp(is,3),hp(is,4))=hp(is,5);
     h2(hp(is,1),hp(is,3),hp(is,2),hp(is,4))=hp(is,5);
 end
 
 return
 
-function h2 = get_hess_deriv(hp,i,j,m,npar),
+function h2 = get_hess_deriv(hp,i,j,m,npar)
 
 h2=zeros(m,npar);
 is1=find(hp(:,1)==i);
 is=is1(find(hp(is1,2)==j));
 
-if ~isempty(is),
+if ~isempty(is)
     h2(sub2ind([m,npar],hp(is,3),hp(is,4)))=hp(is,5)';
 end
 
 is=is1(find(hp(is1,3)==j));
 
-if ~isempty(is),
+if ~isempty(is)
     h2(sub2ind([m,npar],hp(is,2),hp(is,4)))=hp(is,5)';
 end
 

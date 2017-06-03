@@ -1,5 +1,5 @@
 function oo_ = prior_analysis(type,arg1,arg2,arg3,options_,M_,oo_,estim_params_)
-% Copyright (C) 2009-2012 Dynare Team
+% Copyright (C) 2009-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -56,7 +56,7 @@ switch type
             dsge_simulated_theoretical_covariance(SampleSize,M_,options_,oo_,'prior');
     end
     oo_ = covariance_mc_analysis(SampleSize,'prior',M_.dname,M_.fname,...
-                                 vartan,nvar,arg1,arg2,options_.mh_conf_sig,oo_,options_);          
+                                 vartan,nvar,arg1,arg2,options_.mh_conf_sig,oo_,options_);
   case 'decomposition'
     if nargin==narg1
         [nvar,vartan,NumberOfFiles] = ...

@@ -2,7 +2,7 @@ function B = rand_matrix_normal(n, p, M, Omega_lower_chol, Sigma_lower_chol)
 
 % function B = rand_matrix_normal(n, p, M, Omega_lower_chol, Sigma_lower_chol)
 % Pseudo random matrices drawn from a matrix-normal distribution
-% B ~ MN_n*p(M, Omega, Sigma) 
+% B ~ MN_n*p(M, Omega, Sigma)
 % Equivalent to vec(B) ~ N(vec(Mu), kron(Omega, Sigma))
 %
 % INPUTS
@@ -13,14 +13,14 @@ function B = rand_matrix_normal(n, p, M, Omega_lower_chol, Sigma_lower_chol)
 %                       (Omega_lower_chol = chol(Omega, 'lower'))
 %    Sigma_lower_chol:  (n*n), lower Cholesky decomposition of Sigma,
 %                       (Sigma_lower_chol = chol(Sigma, 'lower'))
-%    
+%
 % OUTPUTS
 %    B:                 (n*p) matrix drawn from a Matrix-normal distribution
-%        
+%
 % SPECIAL REQUIREMENTS
 %    Same notations than: http://en.wikipedia.org/wiki/Matrix_normal_distribution
 
-% Copyright (C) 2003-2009 Dynare Team
+% Copyright (C) 2003-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

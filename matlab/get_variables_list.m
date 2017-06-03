@@ -1,22 +1,22 @@
 function [ivar,vartan,options_] = get_variables_list(options_,M_)
 % This function builds a vector of indices in varlist or varobs.
-% 
-% INPUTS 
-%   o options_   [structure]  Describes global options. 
+%
+% INPUTS
+%   o options_   [structure]  Describes global options.
 %   o M_         [structure]  Describes the model.
-% OUTPUTS 
+% OUTPUTS
 %   o ivar       [integer]    nvar*1 vector of indices (nvar is the number
 %                             of variables).
 %   o vartan     [char]       array of characters (with nvar rows).
 %   o options_   [structure]  Describes global options.
-% 
-% ALGORITHM 
-%   None.       
+%
+% ALGORITHM
+%   None.
 %
 % SPECIAL REQUIREMENTS
 %   None.
 
-% Copyright (C) 2007-2012 Dynare Team
+% Copyright (C) 2007-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

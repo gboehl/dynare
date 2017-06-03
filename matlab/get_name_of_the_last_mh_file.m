@@ -1,17 +1,17 @@
 function [mhname,info] = get_name_of_the_last_mh_file(M_)
 % This function returns the name of the last mh file and test if the metropolis was completed.
 %
-% INPUTS 
-%   M_       [structure]   Dynare structure specifying the model.     
+% INPUTS
+%   M_       [structure]   Dynare structure specifying the model.
 %
-% OUTPUTS 
-%  mhname    [string]      Name of the last mh file (with complete path).  
+% OUTPUTS
+%  mhname    [string]      Name of the last mh file (with complete path).
 %  info      [integer]     Scalar. If info is equal to 1 then the predicted name of the last
-%                          metropolis hastings matches the name of the name of the last mh 
-%                          file. Otherwise info is equal to zero (a likely reason for this is 
+%                          metropolis hastings matches the name of the name of the last mh
+%                          file. Otherwise info is equal to zero (a likely reason for this is
 %                          that the mcmc simulations were not completed).
 
-% Copyright (C) 2008-2013 Dynare Team
+% Copyright (C) 2008-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

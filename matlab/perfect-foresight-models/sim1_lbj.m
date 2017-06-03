@@ -15,7 +15,7 @@ function [endogenousvariables, info] = sim1_lbj(endogenousvariables, exogenousva
 % SPECIAL REQUIREMENTS
 %   None.
 
-% Copyright (C) 1996-2015 Dynare Team
+% Copyright (C) 1996-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -122,7 +122,7 @@ if ~stop
     end
     info.status = 0;% more iterations are needed.
     info.error = err;
-    info.errors = c/abs(err);    
+    info.errors = c/abs(err);
     info.iterations = options.simul.maxit;
 end
 

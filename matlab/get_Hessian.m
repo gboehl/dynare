@@ -10,7 +10,7 @@ function [Hess] = get_Hessian(T,R,Q,H,P,Y,DT,DYss,DOm,DH,DP,D2T,D2Yss,D2Om,D2H,D
 % NOTE: the derivative matrices (D2T,D2Om ...) are 4-dim. arrays with last
 % two dimensions equal to the number of structural parameters
 
-% Copyright (C) 2011 Dynare Team
+% Copyright (C) 2011-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -55,7 +55,7 @@ ds  = zeros(pp,1,k);
 d2s = zeros(pp,1,k,k);
 
 %     for ii = 1:k
-%         DOm = DR(:,:,ii)*Q*transpose(R) + R*DQ(:,:,ii)*transpose(R) + R*Q*transpose(DR(:,:,ii)); 
+%         DOm = DR(:,:,ii)*Q*transpose(R) + R*DQ(:,:,ii)*transpose(R) + R*Q*transpose(DR(:,:,ii));
 %     end
 
 while notsteady & t<smpl
@@ -84,8 +84,8 @@ while notsteady & t<smpl
             dKi  = DK(:,:,ii);
             diFi = -iF*DF(:,:,ii)*iF;
             dtmpi = Da(:,ii)+dKi*v+K*Dv(:,ii);
-            
-            
+
+
             for jj = 1:ii
                 dFj    = DF(:,:,jj);
                 diFj   = -iF*DF(:,:,jj)*iF;
@@ -95,9 +95,9 @@ while notsteady & t<smpl
                 d2iFij = -diFi*dFj*iF -iF*d2Fij*iF -iF*dFj*diFi;
                 dtmpj = Da(:,jj)+dKj*v+K*Dv(:,jj);
 
-                d2vij  = -D2Yss(mf,jj,ii)  - D2a(mf,jj,ii); 
+                d2vij  = -D2Yss(mf,jj,ii)  - D2a(mf,jj,ii);
                 d2tmpij = D2a(:,jj,ii) + d2Kij*v + dKj*Dv(:,ii) + dKi*Dv(:,jj) + K*d2vij;
-                D2a(:,jj,ii) = D2T(:,:,jj,ii)*tmp + DT(:,:,jj)*dtmpi + DT(:,:,ii)*dtmpj + T*d2tmpij;            
+                D2a(:,jj,ii) = D2T(:,:,jj,ii)*tmp + DT(:,:,jj)*dtmpi + DT(:,:,ii)*dtmpj + T*d2tmpij;
 
                 Hesst(ii,jj) = getHesst_ij(v,Dv(:,ii),Dv(:,jj),d2vij,iF,diFi,diFj,d2iFij,dFj,d2Fij);
             end
@@ -108,7 +108,7 @@ while notsteady & t<smpl
         if t>=start
             Hess = Hess + Hesst;
         end
-        a      = T*(a+K*v);                   
+        a      = T*(a+K*v);
         P      = T*(P-K*P(mf,:))*transpose(T)+Om;
         DP     = DP1;
         D2P     = D2P1;
@@ -128,13 +128,13 @@ if t < smpl
         t = t+1;
         v = Y(:,t)-a(mf);
         tmp = (a+K*v);
-        for ii = 1:k,
+        for ii = 1:k
             Dv(:,ii)   = -Da(mf,ii)-DYss(mf,ii);
             dKi  = DK(:,:,ii);
             diFi = -iF*DF(:,:,ii)*iF;
             dtmpi = Da(:,ii)+dKi*v+K*Dv(:,ii);
-            
-            for jj = 1:ii,
+
+            for jj = 1:ii
                 dFj    = DF(:,:,jj);
                 diFj   = -iF*DF(:,:,jj)*iF;
                 dKj  = DK(:,:,jj);
@@ -142,11 +142,11 @@ if t < smpl
                 d2Fij  = D2F(:,:,jj,ii);
                 d2iFij = -diFi*dFj*iF -iF*d2Fij*iF -iF*dFj*diFi;
                 dtmpj = Da(:,jj)+dKj*v+K*Dv(:,jj);
-                
+
                 d2vij  = -D2Yss(mf,jj,ii)  - D2a(mf,jj,ii);
                 d2tmpij = D2a(:,jj,ii) + d2Kij*v + dKj*Dv(:,ii) + dKi*Dv(:,jj) + K*d2vij;
-                D2a(:,jj,ii) = D2T(:,:,jj,ii)*tmp + DT(:,:,jj)*dtmpi + DT(:,:,ii)*dtmpj + T*d2tmpij;            
-                
+                D2a(:,jj,ii) = D2T(:,:,jj,ii)*tmp + DT(:,:,jj)*dtmpi + DT(:,:,ii)*dtmpj + T*d2tmpij;
+
                 Hesst(ii,jj) = getHesst_ij(v,Dv(:,ii),Dv(:,jj),d2vij,iF,diFi,diFj,d2iFij,dFj,d2Fij);
             end
             Da(:,ii)   = DT(:,:,ii)*tmp + T*dtmpi;
@@ -166,8 +166,8 @@ end
 
 Hess = Hess + tril(Hess,-1)';
 
-Hess = -Hess/2;  
-% end of main function    
+Hess = -Hess/2;
+% end of main function
 
 function Hesst_ij = getHesst_ij(e,dei,dej,d2eij,iS,diSi,diSj,d2iSij,dSj,d2Sij);
 % computes (i,j) term in the Hessian
@@ -182,7 +182,7 @@ k      = size(DT,3);
 tmp    = P-K*P(mf,:);
 
 for ii = 1:k
-    DF(:,:,ii)  = DP(mf,mf,ii) + DH(:,:,ii); 
+    DF(:,:,ii)  = DP(mf,mf,ii) + DH(:,:,ii);
     DiF(:,:,ii) = -iF*DF(:,:,ii)*iF;
     DK(:,:,ii)  = DP(:,mf,ii)*iF + P(:,mf)*DiF(:,:,ii);
     Dtmp        = DP(:,:,ii) - DK(:,:,ii)*P(mf,:) - K*DP(mf,:,ii);
@@ -191,7 +191,7 @@ end
 
 % end of computeDKalman
 
-function [d2K,d2S,d2P1] = computeD2Kalman(A,dA,d2A,d2Om,P0,dP0,d2P0,DH,mf,iF,K0,dK0);
+function [d2K,d2S,d2P1] = computeD2Kalman(A,dA,d2A,d2Om,P0,dP0,d2P0,DH,mf,iF,K0,dK0)
 % computes the second derivatives of the Kalman matrices
 % note: A=T in main func.
 
@@ -225,20 +225,20 @@ for ii = 1:k
         d2Aij = d2A(:,:,jj,ii);
         d2Pij = d2P0(:,:,jj,ii);
         d2Omij = d2Om(:,:,jj,ii);
-        
+
         % second order
-        
+
         d2Fij = d2Pij(mf,mf) ;
-        
+
         %     d2APC = d2Aij*P0*C' + A*d2Pij*C' + A*P0*d2Cij' + dAi*dPj*C' + dAj*dPi*C' + A*dPj*dCi' + A*dPi*dCj' + dAi*P0*dCj' + dAj*P0*dCi';
         d2APC = d2Pij(:,mf);
-        
+
         d2iF = -diFi*dFj*iF -iF*d2Fij*iF -iF*dFj*diFi;
-        
+
         d2Kij= d2Pij(:,mf)*iF + P0(:,mf)*d2iF + dP0(:,mf,jj)*diFi + dP0(:,mf,ii)*diFj;
-        
+
         d2KCP = d2Kij*P0(mf,:) + K0*d2Pij(mf,:) + dKi*dP0(mf,:,jj) + dKj*dP0(mf,:,ii) ;
-        
+
         dtmpi        = dP0(:,:,ii) - dK0(:,:,ii)*P0(mf,:) - K0*dP0(mf,:,ii);
         dtmpj        = dP0(:,:,jj) - dK0(:,:,jj)*P0(mf,:) - K0*dP0(mf,:,jj);
         d2tmp = d2Pij - d2KCP;
@@ -253,5 +253,3 @@ for ii = 1:k
 end
 
 % end of computeD2Kalman
-
-

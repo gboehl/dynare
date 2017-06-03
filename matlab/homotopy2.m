@@ -25,7 +25,7 @@ function homotopy2(values, step_nbr)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2008-2012 Dynare Team
+% Copyright (C) 2008-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -99,7 +99,7 @@ for i = 1:nv
         end
 
         disp([ 'HOMOTOPY mode 2: lauching solver with ' deblank(varname) ' = ' num2str(v) ' ...'])
-        
+
         oo_.steady_state = steady_(M_,options_,oo_);
     end
 end

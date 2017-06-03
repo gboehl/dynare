@@ -4,13 +4,13 @@ function info = load_last_mh_history_file(MetropolisFolder, ModelName)
 % Inputs:
 %   MetropolisFolder    [char]      Name of the metropolis subfolder
 %   ModelName           [char]      Name of the mod-file
-% Outputs:  
+% Outputs:
 %   info                [struct]    structure storing the MH history
-% 
+%
 % Notes: The record structure is written to the caller workspace via an
 % assignin statement.
 
-% Copyright (C) 2013-2016 Dynare Team
+% Copyright (C) 2013-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -37,7 +37,7 @@ mh_history_files = dir([BaseName '_mh_history_*.mat']);
 % Consistency with older versions of Dynare.
 if isequal(length(mh_history_files),0)
     if exist([BaseName '_mh_history.mat'])
-        format_mh_history_file = 1; % old Dynare format 
+        format_mh_history_file = 1; % old Dynare format
     else
         error(['Estimation::load_mh_file: I cannot find any mh-history file in ' MetropolisFolder '!'])
     end
@@ -63,7 +63,7 @@ else
     load([BaseName '_mh_history_' num2str(length(mh_history_files)-1) '.mat']);
     % add fields that have later been introduced
     if ~isfield(record,'MCMCConcludedSuccessfully')
-        record.MCMCConcludedSuccessfully = NaN; % This information is forever lost...    
+        record.MCMCConcludedSuccessfully = NaN; % This information is forever lost...
     end
     if ~isfield(record,'MAX_nruns')
         record.MAX_nruns=NaN(size(record.MhDraws,1),1); % This information is forever lost...

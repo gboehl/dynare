@@ -1,7 +1,7 @@
 function [vdec, corr, autocorr, z, zz] = th_moments(dr,var_list)
 % [vdec, corr, autocorr, z, zz] = th_moments(dr,var_list)
 
-% Copyright (C) 2012-2016 Dynare Team
+% Copyright (C) 2012-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -56,13 +56,13 @@ var = gamma_y{1};
 z;
 
 %'VARIANCE DECOMPOSITION (in percent)';
-if M_.exo_nbr>1,
+if M_.exo_nbr>1
     vdec = 100*gamma_y{options_.ar+2}(i1,:);
 else
     vdec = 100*ones(size(gamma_y{1}(i1,1)));
 end
 %'MATRIX OF CORRELATIONS';
-if options_.opt_gsa.useautocorr,
+if options_.opt_gsa.useautocorr
     corr = gamma_y{1}(i1,i1)./(sd(i1)*sd(i1)');
     corr = corr-diag(diag(corr))+diag(diag(gamma_y{1}(i1,i1)));
 else
@@ -71,7 +71,7 @@ end
 if options_.ar > 0
     %'COEFFICIENTS OF AUTOCORRELATION';
     for i=1:options_.ar
-        if options_.opt_gsa.useautocorr,
+        if options_.opt_gsa.useautocorr
             autocorr{i} = gamma_y{i+1}(i1,i1);
         else
             autocorr{i} = gamma_y{i+1}(i1,i1).*(sd(i1)*sd(i1)');
@@ -79,5 +79,3 @@ if options_.ar > 0
         zz(:,i) = diag(gamma_y{i+1}(i1,i1));
     end
 end
-
-

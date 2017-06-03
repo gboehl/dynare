@@ -3,15 +3,15 @@ function dynareParallelRmDir(PRCDir,Parallel)
 % In a parallel context, this is a specialized version of rmdir() function.
 %
 % INPUTS
-%  o PRCDir         []   ... 
-%  o Parallel       []   ...  
+%  o PRCDir         []   ...
+%  o Parallel       []   ...
 %
 %  OUTPUTS
 %  None
 %
 %
 %
-% Copyright (C) 2009-2013 Dynare Team
+% Copyright (C) 2009-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -30,7 +30,7 @@ function dynareParallelRmDir(PRCDir,Parallel)
 
 
 
-if nargin ==0,
+if nargin ==0
     disp('dynareParallelRmDir(fname)')
     return
 end
@@ -45,7 +45,7 @@ ok(5)=~isempty(strfind(PRCDir,'m'));
 ok(6)=~isempty(strfind(PRCDir,'s'));
 ok(7)=~isempty(PRCDir);
 
-if sum(ok)<7,
+if sum(ok)<7
     error('The name of the remote tmp folder does not comply the security standards!'),
 end
 
@@ -53,28 +53,28 @@ if isoctave
     confirm_recursive_rmdir(false, 'local');
 end
 
-for indPC=1:length(Parallel),
+for indPC=1:length(Parallel)
     ok(1)=isempty(strfind(Parallel(indPC).RemoteDirectory,'..'));
-    if sum(ok)<7,
+    if sum(ok)<7
         error('The remote folder path structure does not comply the security standards!'),
     end
     while (1)
-        if ~ispc || strcmpi('unix',Parallel(indPC).OperatingSystem),
-            if ~isempty(Parallel(indPC).Port),
+        if ~ispc || strcmpi('unix',Parallel(indPC).OperatingSystem)
+            if ~isempty(Parallel(indPC).Port)
                 ssh_token = ['-p ',Parallel(indPC).Port];
             else
                 ssh_token = '';
             end
-            [stat NonServe] = system(['ssh ',ssh_token,' ',Parallel(indPC).UserName,'@',Parallel(indPC).ComputerName,' rm -fr ',Parallel(indPC).RemoteDirectory,'/',PRCDir,]);
-            break;
+            [stat, NonServe] = system(['ssh ',ssh_token,' ',Parallel(indPC).UserName,'@',Parallel(indPC).ComputerName,' rm -fr ',Parallel(indPC).RemoteDirectory,'/',PRCDir,]);
+            break
         else
             [stat, mess, id] = rmdir(['\\',Parallel(indPC).ComputerName,'\',Parallel(indPC).RemoteDrive,'$\',Parallel(indPC).RemoteDirectory,'\',PRCDir],'s');
 
-            if stat==1,
-                break,
+            if stat==1
+                break
             else
-                if isempty(dynareParallelDir(PRCDir,'',Parallel));
-                    break,
+                if isempty(dynareParallelDir(PRCDir,'',Parallel))
+                    break
                 else
                     pause(1);
                 end
@@ -82,5 +82,3 @@ for indPC=1:length(Parallel),
         end
     end
 end
-
-return

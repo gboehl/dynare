@@ -23,6 +23,24 @@ function [DynareDataset, DatasetInfo, newdatainterface] = makedataset(DynareOpti
 %
 % See also dynare_estimation_init
 
+% Copyright (C) 2014-2017 Dynare Team
+%
+% This file is part of Dynare.
+%
+% Dynare is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% Dynare is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+    
+
 if nargin<3
     gsa_flag = 0;
 end
@@ -107,7 +125,7 @@ if ~isempty(datafile)
             DynareDataset = load_m_file_data_legacy(datafile, DynareOptions.varobs);
         elseif strcmp(datafile(end-3:end),'.mat')
             % Load a mat file with the old interface.
-            DynareDataset = load_mat_file_data_legacy(datafile, DynareOptions.varobs);            
+            DynareDataset = load_mat_file_data_legacy(datafile, DynareOptions.varobs);
         end
     end
 else

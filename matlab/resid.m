@@ -2,17 +2,17 @@ function z = resid(junk)
 % function z = resid(junk)
 %
 % Computes static residuals associated with the guess values.
-% 
+%
 % INPUTS
 %    junk:   dummy value for backward compatibility
-%    
+%
 % OUTPUTS
 %    z:      residuals
-%        
+%
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2001-2012 Dynare Team
+% Copyright (C) 2001-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -58,7 +58,7 @@ if any(imag(oo_.steady_state))
         for iter=1:length(imagrow)
             fprintf('%s\n',M_.endo_names(imagrow(iter),:));
         end
-    end   
+    end
 end
 
 if options_.steadystate_flag

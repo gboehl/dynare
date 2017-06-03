@@ -2,7 +2,7 @@ function optimize_prior(DynareOptions, ModelInfo, DynareResults, BayesInfo, Esti
 
 % This routine computes the mode of the prior density using an optimization algorithm.
 
-% Copyright (C) 2015 Dynare Team
+% Copyright (C) 2015-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -34,7 +34,7 @@ while look_for_admissible_initial_condition
             look_for_admissible_initial_condition = 0;
         end
     else
-        if iter == 2000;
+        if iter == 2000
             scale = scale/1.1;
             iter  = 0;
         else

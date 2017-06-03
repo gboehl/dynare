@@ -23,7 +23,7 @@ function [oo_,M_,options_,bayestopt_,Smoothed_variables_declaration_order_deviat
 %                              - FilteredVariablesKStepAheadVariances
 %    o M_          [structure]  Definition of the model
 %    o options_    [structure]  Options; returns options_.first_obs
-%    o bayestopt_  [structure]  describing the priors; returns fields like bayestopt_.smoother_var_list from the smoother 
+%    o bayestopt_  [structure]  describing the priors; returns fields like bayestopt_.smoother_var_list from the smoother
 %    o Smoothed_variables_declaration_order_deviation_form
 %                           Smoothed variables from the Kalman smoother in
 %                           order of declaration of variables (M_.endo_names)

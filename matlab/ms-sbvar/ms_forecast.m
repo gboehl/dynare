@@ -14,7 +14,7 @@ function [options_, oo_]=ms_forecast(M_, options_, oo_)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2011-2016 Dynare Team
+% Copyright (C) 2011-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

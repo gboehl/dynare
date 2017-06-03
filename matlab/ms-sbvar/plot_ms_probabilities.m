@@ -3,7 +3,7 @@ function plot_ms_probabilities(computed_probabilities, options_)
 % Plots the regime probablities for each graph
 %
 % INPUTS
-%    computed_probabilities:      Txnstates 
+%    computed_probabilities:      Txnstates
 %
 % OUTPUTS
 %    none
@@ -11,7 +11,7 @@ function plot_ms_probabilities(computed_probabilities, options_)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2011 Dynare Team
+% Copyright (C) 2011-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

@@ -13,7 +13,7 @@ function oo_ = convert_dyn_45_to_44(M_, options_, oo_,bayestopt_)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2015-2016 Dynare Team
+% Copyright (C) 2015-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -40,7 +40,7 @@ if isfield(oo_,'PointForecast')
                 oo_.MeanForecast.(moment_names{moment_iter}).(var_names{var_iter})=...
                     [oo_.SmoothedVariables.(moment_names{moment_iter}).(var_names{var_iter})(:,end)*ones(M_.maximum_endo_lag,1)  oo_.MeanForecast.(moment_names{moment_iter}).(var_names{var_iter})];
                 oo_.PointForecast.(moment_names{moment_iter}).(var_names{var_iter})=...
-                    [oo_.SmoothedVariables.(moment_names{moment_iter}).(var_names{var_iter})(:,end)*ones(M_.maximum_endo_lag,1) oo_.PointForecast.(moment_names{moment_iter}).(var_names{var_iter})];                
+                    [oo_.SmoothedVariables.(moment_names{moment_iter}).(var_names{var_iter})(:,end)*ones(M_.maximum_endo_lag,1) oo_.PointForecast.(moment_names{moment_iter}).(var_names{var_iter})];
             else
                 oo_.MeanForecast.(moment_names{moment_iter}).(var_names{var_iter})=...
                     [oo_.SmoothedVariables.(moment_names{moment_iter}).(var_names{var_iter})(end)*ones(M_.maximum_endo_lag,1); oo_.MeanForecast.(moment_names{moment_iter}).(var_names{var_iter})];
@@ -106,7 +106,7 @@ if isfield(oo_,'UpdatedVariables')
     for ii=1:length(names)
         %make sure Bayesian fields are not affected
         if ~strcmp(names{ii},'Mean') && ~strcmp(names{ii},'Median') && ~strcmp(names{ii},'deciles') ...
-                && ~strcmp(names{ii},'Var') && ~strcmp(names{ii},'HPDinf') && ~strcmp(names{ii},'HPDsup') 
+                && ~strcmp(names{ii},'Var') && ~strcmp(names{ii},'HPDinf') && ~strcmp(names{ii},'HPDsup')
             current_var_index=find(strmatch(names{ii},deblank(M_.endo_names),'exact'));
             if  options_.loglinear == 1 %logged steady state must be used
                 constant_current_variable=log(oo_.dr.ys(current_var_index));
@@ -127,7 +127,7 @@ if isfield(oo_,'FilteredVariables')
     for ii=1:length(names)
         %make sure Bayesian fields are not affected
         if ~strcmp(names{ii},'Mean') && ~strcmp(names{ii},'Median') && ~strcmp(names{ii},'deciles') ...
-                && ~strcmp(names{ii},'Var') && ~strcmp(names{ii},'HPDinf') && ~strcmp(names{ii},'HPDsup') 
+                && ~strcmp(names{ii},'Var') && ~strcmp(names{ii},'HPDinf') && ~strcmp(names{ii},'HPDsup')
             current_var_index=find(strmatch(names{ii},deblank(M_.endo_names),'exact'));
             if  options_.loglinear == 1 %logged steady state must be used
                 constant_current_variable=log(oo_.dr.ys(current_var_index));

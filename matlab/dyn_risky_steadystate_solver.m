@@ -62,7 +62,7 @@ function [dr,info] = dyn_risky_steadystate_solver(ys0,M, ...
 %! @end deftypefn
 %@eod:
 
-% Copyright (C) 2001-2012 Dynare Team
+% Copyright (C) 2001-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -106,7 +106,7 @@ end
 
 if isfield(options,'portfolio') && options.portfolio == 1
     pm = portfolio_model_structure(M,options);
-    
+
     x0 = ys0(pm.v_p);
     n = length(x0);
     [x, info] = solve1(@risky_residuals_ds,x0,1:n,1:n,0,options.gstep, ...
@@ -118,7 +118,7 @@ if isfield(options,'portfolio') && options.portfolio == 1
     end
     %[x, info] = csolve(@risky_residuals_ds,x0,[],1e-10,100,M,dr,options,oo);
     %        ys0(l_var) = x;
-    [resids,dr1] = risky_residuals_ds(x,pm,M,dr,options,oo); 
+    [resids,dr1] = risky_residuals_ds(x,pm,M,dr,options,oo);
     ys1 = dr1.ys;
 else
     pm = model_structure(M,options);
@@ -201,7 +201,7 @@ v_p = pm.v_p;
 v_np = pm.v_np;
 
 % computing steady state of non-portfolio variables  consistent with
-% assumed portfolio 
+% assumed portfolio
 dr.ys(v_p) = x;
 ys0 = dr.ys(v_np);
 f_h =str2func([M.fname '_static']);
@@ -300,19 +300,19 @@ z = z(iyr0) ;
 
 if isfield(options,'portfolio') && options.portfolio == 1
     eq_np = pm.eq_np;
-    
+
     d1_np = d1(eq_np,pm.i_d1_np);
     d2_np = d2(eq_np,pm.i_d2_np);
 
     M_np = pm.M_np;
     dr_np = pm.dr_np;
-    
+
     [dr_np,info] = dyn_first_order_solver(d1_np,pm.M_np,pm.dr_np,options,0);
     if info
         print_info(info, 0, options);
         return
     end
-    
+
     dr_np = dyn_second_order_solver(d1_np,d2_np,dr_np,pm.M_np,...
                                     options.threads.kronecker.A_times_B_kronecker_C,...
                                     options.threads.kronecker.sparse_hessian_times_B_kronecker_C);
@@ -333,13 +333,13 @@ if nargout > 1
                               [oo.exo_simul ...
                         oo.exo_det_simul], M.params, dr.ys, 2);
 
-    
+
     [a,b,c] = find(d2(eq_np,pm.i_d2_np));
     d2_np = [a b c];
-    
+
     [a,b,c] = find(d3(eq_np,pm.i_d3_np));
     d3_np = [a b c];
-    
+
     options.order = 3;
     % space holder, unused by k_order_pertrubation
     dr_np.ys = dr.ys(pm.v_np);
@@ -389,9 +389,9 @@ if nargout > 1
         print_info(info, 0, options);
         return
     end
-    
+
     disp_dr(dr,dr.order_var,[]);
-    
+
 end
 end
 
@@ -421,7 +421,7 @@ for i=1:n
             y(:,(j-1)*n*n+(m-1)*n+i) = x(:,k);
             y(:,(m-1)*n*n+(i-1)*n+j) = x(:,k);
             y(:,(m-1)*n*n+(j-1)*n+i) = x(:,k);
-            
+
             k = k+1;
         end
     end
@@ -435,7 +435,7 @@ lead_index = M.maximum_endo_lag+2;
 lead_lag_incidence = M.lead_lag_incidence;
 dr = struct();
 dr = set_state_space(dr,M,options);
-pm.i_fwrd_g = find(lead_lag_incidence(lead_index,dr.order_var)');    
+pm.i_fwrd_g = find(lead_lag_incidence(lead_index,dr.order_var)');
 
 i_fwrd_f1 = nonzeros(lead_lag_incidence(lead_index,dr.order_var));
 pm.i_fwrd_f1 = i_fwrd_f1;
@@ -506,7 +506,7 @@ dr_np = set_state_space(dr_np,M_np,options);
 pm.dr_np = dr_np;
 M_np.var_order_endo_names = M_np.endo_names(dr_np.order_var,:);
 pm.M_np = M_np;
-pm.i_fwrd_g = find(lead_lag_incidence_np(lead_index,dr_np.order_var)');    
+pm.i_fwrd_g = find(lead_lag_incidence_np(lead_index,dr_np.order_var)');
 
 i_fwrd_f1 = nonzeros(lead_lag_incidence(lead_index,:));
 pm.i_fwrd_f1 = i_fwrd_f1;

@@ -5,15 +5,15 @@ function [xparams, logpost] = GetOneDraw(type)
 % INPUTS
 %    type:      [string]       'posterior': draw from MCMC draws
 %                              'prior': draw from prior
-%        
+%
 % OUTPUTS
 %    xparams:   vector of estimated parameters (drawn from posterior or prior distribution)
 %    logpost:   log of the posterior density of this parameter vector
-%        
+%
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2005-2015 Dynare Team
+% Copyright (C) 2005-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

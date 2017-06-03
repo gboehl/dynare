@@ -49,7 +49,7 @@ function [A,B,ys,info,Model,DynareOptions,DynareResults] = dynare_resolve(Model,
 %! @end deftypefn
 %@eod:
 
-% Copyright (C) 2001-2016 Dynare Team
+% Copyright (C) 2001-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -90,7 +90,7 @@ switch nargin
         ic = [ nstatic+(1:nspred) endo_nbr+(1:size(DynareResults.dr.ghx,2)-nspred) ]';
     else
         ic = DynareResults.dr.restrict_columns;
-    end;
+    end
   case 4
     iv = DynareResults.dr.restrict_var_list;
     ic = DynareResults.dr.restrict_columns;

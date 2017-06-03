@@ -1,4 +1,4 @@
-function [regime regimestart]=map_regime(violvecbool)
+function [regime, regimestart]=map_regime(violvecbool)
 
 nperiods = length(violvecbool)-1;
 
@@ -21,5 +21,4 @@ end
 
 if (regime(end)==1)
     warning('Increase nperiods');
-end
-
+endx

@@ -28,7 +28,7 @@ function options = simpsaset(varargin)
 
 % Copyright (C) 2005 Henning Schmidt, FCC, henning@fcc.chalmers.se
 % Copyright (C) 2006 Brecht Donckels, BIOMATH, brecht.donckels@ugent.be
-% Copyright (C) 2013 Dynare Team.
+% Copyright (C) 2013-2017 Dynare Team.
 %
 % This file is part of Dynare.
 %
@@ -64,7 +64,7 @@ if (nargin == 0) && (nargout == 0)
     fprintf('                      DISPLAY: [ ''iter'' or ''none'' {''iter''} ]\n');
     fprintf('                   OUTPUT_FCN: [ function_handle ]\n');
     fprintf('\n');
-    return;
+    return
 end
 
 Names = [
@@ -97,7 +97,7 @@ i = 1;
 while i <= nargin
     arg = varargin{i};
     if ischar(arg)                         % arg is an option name
-        break;
+        break
     end
     if ~isempty(arg)                      % [] is a valid options argument
         if ~isa(arg,'struct')
@@ -127,13 +127,13 @@ end
 expectval = 0;                          % start expecting a name, not a value
 while i <= nargin
     arg = varargin{i};
-    
+
     if ~expectval
         if ~ischar(arg)
             error('MATLAB:odeset:NoPropName',...
                   'Expected argument %d to be a string property name.', i);
         end
-        
+
         lowArg = lower(arg);
         j = strmatch(lowArg,names);
         if isempty(j)                       % if no matches
@@ -155,11 +155,11 @@ while i <= nargin
             end
         end
         expectval = 1;                      % we expect a value next
-        
+
     else
         options.(deblank(Names(j,:))) = arg;
         expectval = 0;
-        
+
     end
     i = i + 1;
 end

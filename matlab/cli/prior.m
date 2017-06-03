@@ -11,7 +11,7 @@ function varargout = prior(varargin)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2015-2016 Dynare Team
+% Copyright (C) 2015-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -42,7 +42,7 @@ if isempty(varargin) || ( isequal(length(varargin), 1) && isequal(varargin{1},'h
     return
 end
 
-global options_ M_ estim_params_ bayestopt_ oo_ 
+global options_ M_ estim_params_ bayestopt_ oo_
 
 donesomething = false;
 

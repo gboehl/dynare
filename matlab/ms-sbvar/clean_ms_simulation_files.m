@@ -11,7 +11,7 @@ function clean_ms_simulation_files(file_tag)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2011 Dynare Team
+% Copyright (C) 2011-2013 Dynare Team
 %
 % This file is part of Dynare.
 %

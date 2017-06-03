@@ -46,8 +46,8 @@ end
 var_list = check_list_of_variables(options_, M_, var_list);
 options_.varlist = var_list;
 
-nobs = sort(options_.nobs); 
-first_obs = sort(options_.first_obs); 
+nobs = sort(options_.nobs);
+first_obs = sort(options_.first_obs);
 
 nnobs = length(nobs);
 nfirstobs = length(first_obs);
@@ -82,8 +82,8 @@ if nnobs>1 || nfirstobs > 1
         if nnobs>1
             options_.nobs = nobs(i);
             M_.dname = [dname '_' int2str(nobs(i))];
-        elseif nfirstobs>1;
-            options_.first_obs=first_obs(i);            
+        elseif nfirstobs>1
+            options_.first_obs=first_obs(i);
             M_.dname = [dname '_' int2str(first_obs(i))];
         end
         dynare_estimation_1(var_list,M_.dname);
@@ -97,7 +97,7 @@ if nnobs>1 || nfirstobs > 1
         end
         if nnobs>1
             oo_recursive_{nobs(i)} = oo_;
-        elseif nfirstobs>1;
+        elseif nfirstobs>1
             oo_recursive_{first_obs(i)} = oo_;
         end
     end
@@ -105,7 +105,7 @@ else
     dynare_estimation_1(var_list,dname);
 end
 
-if isnumeric(options_.mode_compute) && options_.mode_compute && options_.analytic_derivation,
+if isnumeric(options_.mode_compute) && options_.mode_compute && options_.analytic_derivation
     options_.analytic_derivation=analytic_derivation0;
 end
 
@@ -138,7 +138,7 @@ if nnobs > 1 && horizon > 0
             IdObs(j,1) = iobs;
         end
     end
-    
+
     gend = dataset_.nobs;
     time_offset=min(3,gend-1); %for observables, plot 3 previous periods unless data is shorter
     k = time_offset+min(nobs(end)-nobs(1)+horizon, ...
@@ -212,5 +212,5 @@ if nnobs > 1 && horizon > 0
         end
     end
 end
-options_.mode_file = mode_file0; 
+options_.mode_file = mode_file0;
 %reset stored mode-file to user defined one (and in case it was only set by the recursive estimation)

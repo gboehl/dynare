@@ -2,7 +2,7 @@ function [residuals,check1,jacob] = evaluate_static_model(ys,exo_ss,params,M,opt
 
 % function [residuals,check1,jacob] = evaluate_static_model(ys,exo_ss,params,M,options)
 % Evaluates the static model
-%  
+%
 % INPUTS
 %   ys                        vector           initial values used to compute the steady
 %                                                 state
@@ -10,7 +10,7 @@ function [residuals,check1,jacob] = evaluate_static_model(ys,exo_ss,params,M,opt
 %   params                    vector           parameters
 %   M                         struct           model structure
 %   options                   struct           options
-%  
+%
 % OUTPUTS
 %   residuals                 vector           residuals when ys is not
 %                                              the steady state
@@ -20,7 +20,7 @@ function [residuals,check1,jacob] = evaluate_static_model(ys,exo_ss,params,M,opt
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2001-2016 Dynare Team
+% Copyright (C) 2001-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

@@ -1,11 +1,11 @@
 function  AutoCOR_YRk=PCL_Part_info_moments( H, varobs, dr,ivar)
 % sets up parameters and calls part-info kalman filter
-% developed by G Perendia, July 2006 for implementation from notes by Prof. Joe Pearlman to 
-% suit partial information RE solution in accordance with, and based on, the 
+% developed by G Perendia, July 2006 for implementation from notes by Prof. Joe Pearlman to
+% suit partial information RE solution in accordance with, and based on, the
 % Pearlman, Currie and Levine 1986 solution.
-% 22/10/06 - Version 2 for new Riccati with 4 params instead 5 
+% 22/10/06 - Version 2 for new Riccati with 4 params instead 5
 
-% Copyright (C) 2006-2012 Dynare Team
+% Copyright (C) 2006-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -22,8 +22,8 @@ function  AutoCOR_YRk=PCL_Part_info_moments( H, varobs, dr,ivar)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-% Recall that the state space is given by the 
-% predetermined variables s(t-1), x(t-1) 
+% Recall that the state space is given by the
+% predetermined variables s(t-1), x(t-1)
 % and the jump variables x(t).
 % The jump variables have dimension NETA
 
@@ -48,13 +48,13 @@ LL = sparse(1:NOBS,OBS,ones(NOBS,1),NY,NY);
 
 if exist( 'irfpers')==1
     if ~isempty(irfpers)
-        if irfpers<=0, irfpers=20, end;
+        if irfpers<=0, irfpers=20, end
     else
         irfpers=20;
     end
 else
     irfpers=20;
-end      
+end
 
 ss=size(G1,1);
 
@@ -78,7 +78,7 @@ U22=0;
 % determine K1 and K2 observation mapping matrices
 % This uses the fact that measurements are given by L1*s(t)+L2*x(t)
 % and s(t) is expressed in the dynamics as
-% H1*eps(t)+G11*s(t-1)+G12*x(t-1)+G13*x(t).  
+% H1*eps(t)+G11*s(t-1)+G12*x(t-1)+G13*x(t).
 % Thus the observations o(t) can be written in the form
 % o(t)=K1*[eps(t)' s(t-1)' x(t-1)']' + K2*x(t) where
 % K1=[L1*H1 L1*G11 L1*G12] K2=L1*G13+L2
@@ -96,8 +96,8 @@ A21=G1(pd+1:end,1:pd);
 Lambda= nmat*A12+A22;
 I_L=inv(Lambda);
 BB=A12*inv(A22);
-FF=K2*inv(A22);       
-QQ=BB*U22*BB' + U11;        
+FF=K2*inv(A22);
+QQ=BB*U22*BB' + U11;
 UFT=U22*FF';
 % kf_param structure:
 AA=A11-BB*A21;
@@ -105,10 +105,10 @@ CCCC=A11-A12*nmat; % F in new notation
 DD=K1-FF*A21; % H in new notation
 EE=K1-K2*nmat;
 RR=FF*UFT+VV;
-if ~any(RR) 
-    % if zero add some dummy measurement err. variance-covariances 
+if ~any(RR)
+    % if zero add some dummy measurement err. variance-covariances
     % with diagonals 0.000001. This would not be needed if we used
-    % the slow solver, or the generalised eigenvalue approach, 
+    % the slow solver, or the generalised eigenvalue approach,
     % but these are both slower.
     RR=eye(size(RR,1))*1.0e-6;
 end
@@ -150,7 +150,7 @@ diagCovYR0=diag(COV_YR0);
 labels = deblank(M_.endo_names(ivar,:));
 
 if options_.nomoments == 0
-    z = [ sqrt(diagCovYR0(ivar)) diagCovYR0(ivar) ]; 
+    z = [ sqrt(diagCovYR0(ivar)) diagCovYR0(ivar) ];
     title='THEORETICAL MOMENTS';
     headers=char('VARIABLE','STD. DEV.','VARIANCE');
     dyntable(options_,title,headers,labels,z,size(labels,2)+2,16,10);
@@ -168,9 +168,9 @@ end
 
 ar = options_.ar;
 if ar > 0
-    COV_YRk= zeros(nn,ar); 
-    AutoCOR_YRk= zeros(nn,ar); 
-    for k=1:ar;
+    COV_YRk= zeros(nn,ar);
+    AutoCOR_YRk= zeros(nn,ar);
+    for k=1:ar
         COV_P=GAM*COV_P;
         COV_OMEGA= COV_P( end-nn+1:end, end-nn+1:end);
         COV_YRk = VV*COV_OMEGA*VV';

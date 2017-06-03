@@ -1,25 +1,25 @@
 function pdraw = prior_draw_gsa(init,rdraw)
 % Draws from the prior distributions for use with Sensitivity Toolbox for DYNARE
-% 
+%
 % INPUTS
 %   o init           [integer]  scalar equal to 1 (first call) or 0.
-%   o rdraw          
-%    
-% OUTPUTS 
-%   o pdraw          [double]   draw from the joint prior density. 
+%   o rdraw
 %
-% ALGORITHM 
-%   ...       
+% OUTPUTS
+%   o pdraw          [double]   draw from the joint prior density.
+%
+% ALGORITHM
+%   ...
 %
 % SPECIAL REQUIREMENTS
 %   MATLAB Statistics Toolbox
-%  
+%
 % Written by Marco Ratto
 % Joint Research Centre, The European Commission,
-% marco.ratto@ec.europa.eu 
+% marco.ratto@ec.europa.eu
 
 % Copyright (C) 2012-2015 European Commission
-% Copyright (C) 2012-2015 Dynare Team
+% Copyright (C) 2012-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -106,10 +106,10 @@ for i = 1:npar
         pdraw(:,i) = gaminv(rdraw(:,i),p6(i),p7(i))+p3(i);
       case 1% Beta distribution (TODO: generalized beta distribution)
         pdraw(:,i) = betainv(rdraw(:,i),p6(i),p7(i))*(p4(i)-p3(i))+p3(i);
-      case 4% INV-GAMMA1 distribution 
+      case 4% INV-GAMMA1 distribution
             % TO BE CHECKED
         pdraw(:,i) =  sqrt(1./gaminv(rdraw(:,i),p7(i)/2,2/p6(i)))+p3(i);
-      case 6% INV-GAMMA2 distribution  
+      case 6% INV-GAMMA2 distribution
             % TO BE CHECKED
         pdraw(:,i) =  1./gaminv(rdraw(:,i),p7(i)/2,2/p6(i))+p3(i);
       case 8
@@ -118,5 +118,3 @@ for i = 1:npar
         % Nothing to do here.
     end
 end
-
-

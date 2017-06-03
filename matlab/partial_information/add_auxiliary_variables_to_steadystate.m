@@ -2,7 +2,7 @@ function ys1 = add_auxiliary_variables_to_steadystate(ys,aux_vars,fname, ...
                                                   exo_steady_state, exo_det_steady_state,params, byte_code)
 % Add auxiliary variables to the steady state vector
 
-% Copyright (C) 2009-2011 Dynare Team
+% Copyright (C) 2009-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -21,7 +21,7 @@ function ys1 = add_auxiliary_variables_to_steadystate(ys,aux_vars,fname, ...
 n = length(aux_vars);
 ys1 = [ys;zeros(n,1)];
 
-for i=1:n+1;
+for i=1:n+1
     if byte_code
         [info, res] = bytecode('static','evaluate',ys1,...
                                [exo_steady_state; ...
@@ -30,7 +30,7 @@ for i=1:n+1;
         res = feval([fname '_static'],ys1,...
                     [exo_steady_state; ...
                      exo_det_steady_state],params);
-    end;
+    end
     for j=1:n
         el = aux_vars(j).endo_index;
         ys1(el) = ys1(el)-res(el);

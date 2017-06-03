@@ -2,17 +2,17 @@ function [lb,ub,eq_index] = get_complementarity_conditions(M,ramsey_policy)
 % [lb,ub,eq_index] = get_complementarity_conditions(M,ramsey_policy)
 % INPUTS
 %   - M                   [struct] contains a description of the model.
-%   - ramsey_policy       [boolean] indicator whether a Ramsey problem is considered 
+%   - ramsey_policy       [boolean] indicator whether a Ramsey problem is considered
 % OUTPUTS
 %   - lb                  [double] endo_nbr*1 array of lower bounds for
 %                                   endogenous variables
 %   - ub                  [double] endo_nbr*1 array of upper bounds for
 %                                   endogenous variables
-%   - eq_index            [struct] endo_nbr*1 index vector describing residual mapping resulting 
+%   - eq_index            [struct] endo_nbr*1 index vector describing residual mapping resulting
 %                                from complementarity setup used in
 %                                perfect_foresight_mcp_problem.m
 
-% Copyright (C) 2014-16 Dynare Team
+% Copyright (C) 2014-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -81,4 +81,3 @@ for i=1:size(etags,1)
         end
     end
 end
-

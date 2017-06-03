@@ -52,11 +52,11 @@ ix = [1 - M_.maximum_lag:size(oo_.endo_simul,2)-M_.maximum_lag]' ;
 
 y = [];
 for k=1:size(s1,1)
-    if isempty(strmatch(deblank(s1(k,:)),M_.endo_names,'exact')) 
-        if isempty(strmatch(deblank(s1(k,:)),M_.exo_names,'exact')) 
+    if isempty(strmatch(deblank(s1(k,:)),M_.endo_names,'exact'))
+        if isempty(strmatch(deblank(s1(k,:)),M_.exo_names,'exact'))
             error (['rplot: One of the variables specified does not exist']) ;
         else
-            y = [y; oo_.exo_simul(:,strmatch(deblank(s1(k,:)),M_.exo_names,'exact'))'] ;        
+            y = [y; oo_.exo_simul(:,strmatch(deblank(s1(k,:)),M_.exo_names,'exact'))'] ;
         end
     else
         y = [y; oo_.endo_simul(strmatch(deblank(s1(k,:)),M_.endo_names,'exact'),:)] ;
@@ -143,7 +143,7 @@ function []=create_TeX_loader(fidTeX,options,figpath,caption,label_name,label_ty
 if nargin<6
     scale_factor=1;
 end
-fprintf(fidTeX,' \n'); 
+fprintf(fidTeX,' \n');
 fprintf(fidTeX,'\\begin{figure}[H]\n');
 fprintf(fidTeX,'\\centering \n');
 fprintf(fidTeX,'\\includegraphics[width=%2.2f\\textwidth]{%s}\n',0.8*scale_factor,strrep(figpath,'\','/'));

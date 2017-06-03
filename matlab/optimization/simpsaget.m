@@ -18,7 +18,7 @@ function o = simpsaget(options,name,default,flag)
 %   See also SIMPSASET, SIMPSA
 
 % Copyright (C) 2006 Brecht Donckels, BIOMATH, brecht.donckels@ugent.be
-% Copyright (C) 2013-2016 Dynare Team.
+% Copyright (C) 2013-2017 Dynare Team.
 %
 % This file is part of Dynare.
 %
@@ -56,7 +56,7 @@ end
 
 if isempty(options)
     o = default;
-    return;
+    return
 end
 
 Names = [
@@ -122,4 +122,3 @@ if isfield(s,f)   % s could be empty.
 else
     v = d;
 end
-

@@ -1,18 +1,18 @@
 function perfect_foresight_setup()
 % Prepares a deterministic simulation, by filling oo_.exo_simul and oo_.endo_simul
-%  
+%
 % INPUTS
 %   None
-%  
+%
 % OUTPUTS
 %   none
-%    
+%
 % ALGORITHM
-%   
+%
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 1996-2016 Dynare Team
+% Copyright (C) 1996-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

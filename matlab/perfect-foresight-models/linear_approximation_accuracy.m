@@ -2,15 +2,15 @@ function err = linear_approximation_accuracy(options_, M_, oo_)
 % Evaluates the accuracy of the linear approximation when solving perfect foresight models, by
 % reporting the max absolute value of the dynamic residuals.
 %
-% INPUTS 
+% INPUTS
 % - options_ [struct] contains various options.
 % - M_       [struct] contains a description of the model.
 % - oo_      [struct] contains results.
 %
-% OUTPUTS 
+% OUTPUTS
 % - err      [double] n*1 vector, evaluation of the accuracy (n is the number of equations).
 
-% Copyright (C) 2015 Dynare Team
+% Copyright (C) 2015-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

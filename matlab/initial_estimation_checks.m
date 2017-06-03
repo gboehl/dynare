@@ -20,7 +20,7 @@ function DynareResults = initial_estimation_checks(objective_function,xparam1,Dy
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2003-2016 Dynare Team
+% Copyright (C) 2003-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -54,7 +54,7 @@ if maximum_number_non_missing_observations>length(find(diag(Model.Sigma_e)))+Est
 end
 
 if (any(BayesInfo.pshape  >0 ) && DynareOptions.mh_replic) && DynareOptions.mh_nblck<1
-    error(['initial_estimation_checks:: Bayesian estimation cannot be conducted with mh_nblocks=0.'])    
+    error(['initial_estimation_checks:: Bayesian estimation cannot be conducted with mh_nblocks=0.'])
 end
 
 old_steady_params=Model.params; %save initial parameters for check if steady state changes param values
@@ -75,29 +75,29 @@ if isfield(EstimatedParameters,'param_vals') && ~isempty(EstimatedParameters.par
         fprintf('\nThe steady state file internally changed the values of the following estimated parameters:\n')
         disp(Model.param_names(EstimatedParameters.param_vals(changed_par_indices,1),:));
         fprintf('This will override the parameter values drawn from the proposal density and may lead to wrong results.\n')
-        fprintf('Check whether this is really intended.\n')    
+        fprintf('Check whether this is really intended.\n')
         warning('The steady state file internally changes the values of the estimated parameters.')
     end
 end
 
 if any(BayesInfo.pshape) % if Bayesian estimation
     nvx=EstimatedParameters.nvx;
-    if nvx && any(BayesInfo.p3(1:nvx)<0) 
+    if nvx && any(BayesInfo.p3(1:nvx)<0)
         warning('Your prior allows for negative standard deviations for structural shocks. Due to working with variances, Dynare will be able to continue, but it is recommended to change your prior.')
     end
     offset=nvx;
     nvn=EstimatedParameters.nvn;
-    if nvn && any(BayesInfo.p3(1+offset:offset+nvn)<0) 
+    if nvn && any(BayesInfo.p3(1+offset:offset+nvn)<0)
         warning('Your prior allows for negative standard deviations for measurement error. Due to working with variances, Dynare will be able to continue, but it is recommended to change your prior.')
     end
     offset = nvx+nvn;
-    ncx=EstimatedParameters.ncx; 
-    if ncx && (any(BayesInfo.p3(1+offset:offset+ncx)<-1) || any(BayesInfo.p4(1+offset:offset+ncx)>1)) 
+    ncx=EstimatedParameters.ncx;
+    if ncx && (any(BayesInfo.p3(1+offset:offset+ncx)<-1) || any(BayesInfo.p4(1+offset:offset+ncx)>1))
         warning('Your prior allows for correlations between structural shocks larger than +-1 and will not integrate to 1 due to truncation. Please change your prior')
     end
     offset = nvx+nvn+ncx;
-    ncn=EstimatedParameters.ncn; 
-    if ncn && (any(BayesInfo.p3(1+offset:offset+ncn)<-1) || any(BayesInfo.p4(1+offset:offset+ncn)>1)) 
+    ncn=EstimatedParameters.ncn;
+    if ncn && (any(BayesInfo.p3(1+offset:offset+ncn)<-1) || any(BayesInfo.p4(1+offset:offset+ncn)>1))
         warning('Your prior allows for correlations between measurement errors larger than +-1 and will not integrate to 1 due to truncation. Please change your prior')
     end
 end
@@ -142,9 +142,9 @@ if ~isequal(DynareOptions.mode_compute,11) || ...
         fprintf('initial_estimation_checks:: If you think the latter is the case, you should try with different initial values for the estimated parameters.\n')
         error('initial_estimation_checks:: The forecast error variance in the multivariate Kalman filter became singular.')
     end
-    %reset options 
+    %reset options
     DynareOptions.use_univariate_filters_if_singularity_is_detected=use_univariate_filters_if_singularity_is_detected_old;
-else 
+else
     info=0;
     fval = 0;
 end

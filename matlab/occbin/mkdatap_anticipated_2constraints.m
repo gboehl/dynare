@@ -16,7 +16,7 @@ if nargin<16
     init=zeros(nvars,1);
 end
 
-if nargin<15;
+if nargin<15
     scalefactormod=1;
 end
 
@@ -63,17 +63,17 @@ Tmax = max([regimestart1(nregimes1) regimestart2(nregimes2)])-1;  % Tmax is the 
 if Tmax > 0
     P = zeros(nvars,nvars,Tmax);
     D = zeros(nvars,Tmax);
-    
+
     %     invmat = inv((Astarbarmat*decrulea+Bstarbarmat));
     %     P(:,:,Tmax) = -invmat*Cstarbarmat;
     %     D(:,Tmax) = -invmat*Dstarbarmat;
-    
-    
+
+
     if (violvecbool(Tmax,1) & ~violvecbool(Tmax,2))
         %XXX fix next three lines
         invmat = inv((Abarmat10*decrulea+Bbarmat10));
         P(:,:,Tmax) = -invmat*Cbarmat10;
-        D(:,Tmax) = -invmat*Dbarmat10;  
+        D(:,Tmax) = -invmat*Dbarmat10;
     elseif (violvecbool(Tmax,1) & violvecbool(Tmax,2))
         invmat = inv((Abarmat11*decrulea+Bbarmat11));
         P(:,:,Tmax) = -invmat*Cbarmat11;
@@ -81,14 +81,14 @@ if Tmax > 0
     else
         invmat = inv((Abarmat01*decrulea+Bbarmat01));
         P(:,:,Tmax) = -invmat*Cbarmat01;
-        D(:,Tmax) = -invmat*Dbarmat01;  
+        D(:,Tmax) = -invmat*Dbarmat01;
     end
-    
-    
-    
-    
-    for i = Tmax-1:-1:1        
-        
+
+
+
+
+    for i = Tmax-1:-1:1
+
         if (violvecbool(i,1) & ~violvecbool(i,2))
             invmat = inv(Bbarmat10+Abarmat10*P(:,:,i+1));
             P(:,:,i)=-invmat*Cbarmat10;
@@ -106,14 +106,14 @@ if Tmax > 0
             P(:,:,i)=-invmat*Cbarmat;
             D(:,i) = -invmat*(Abarmat*D(:,i+1));
         end
-        
+
     end
 
-    
+
     % Double check the appropriate invmat in each case
     % right now -- inherited from previous loop
     if Tmax > 1
-        
+
         if ( ~violvecbool(1,1) & violvecbool(1,2) )
             E = -invmat*Jbarmat01;
         elseif ( violvecbool(1,1) & ~violvecbool(1,2) )
@@ -123,26 +123,26 @@ if Tmax > 0
         else
             E = -invmat*Jbarmat;
         end
-        
-    else  % Tmax is equal to 1    
+
+    else  % Tmax is equal to 1
           %     invmat = inv((Astarbarmat*decrulea+Bstarbarmat));
           %     E = -invmat*Jstarbarmat;
-        
+
         if ( ~violvecbool(1,1) & violvecbool(1,2) )
             invmat = inv((Abarmat01*decrulea+Bbarmat01));
-            E = -invmat*Jbarmat01;  
+            E = -invmat*Jbarmat01;
         elseif ( violvecbool(1,1) & violvecbool(1,2) )
             invmat = inv((Abarmat11*decrulea+Bbarmat11));
-            E = -invmat*Jbarmat11;     
+            E = -invmat*Jbarmat11;
         else
             invmat = inv((Abarmat10*decrulea+Bbarmat10));
             E = -invmat*Jbarmat10;
-            
+
         end
-        
+
     end
 
-    
+
 end
 
 % generate data

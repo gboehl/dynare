@@ -1,6 +1,6 @@
 function x = bseastr(s1,s2)
 
-% Copyright (C) 2001-2009 Dynare Team
+% Copyright (C) 2001-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -33,16 +33,15 @@ for im = 1:m
             for i = 1:min(length(key),length(temp))
                 if temp(i) > key(i)
                     h = mid - 1 ;
-                    break 
+                    break
                 else
                     l = mid + 1 ;
-                    break 
+                    break
                 end
             end
         else
             x(im) = mid ;
-            break 
+            break
         end
     end
 end
-

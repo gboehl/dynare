@@ -47,4 +47,3 @@ nwishes = size(wishlist,1);
 
 
 zdata_ = mkdata(nperiods,decrulea,decruleb,endog_,exog_,wishlist,irfshock,shockssequence);
-

@@ -1,35 +1,35 @@
 function [dr,info] = stochastic_solvers(dr,task,M_,options_,oo_)
 % function [dr,info,M_,options_,oo_] = stochastic_solvers(dr,task,M_,options_,oo_)
-% computes the reduced form solution of a rational expectations model (first, second or third 
-% order approximation of the stochastic model around the deterministic steady state). 
+% computes the reduced form solution of a rational expectations model (first, second or third
+% order approximation of the stochastic model around the deterministic steady state).
 %
 % INPUTS
 %   dr         [matlab structure] Decision rules for stochastic simulations.
 %   task       [integer]          if task = 0 then dr1 computes decision rules.
 %                                 if task = 1 then dr1 computes eigenvalues.
-%   M_         [matlab structure] Definition of the model.           
+%   M_         [matlab structure] Definition of the model.
 %   options_   [matlab structure] Global options.
-%   oo_        [matlab structure] Results 
-%    
+%   oo_        [matlab structure] Results
+%
 % OUTPUTS
 %   dr         [matlab structure] Decision rules for stochastic simulations.
 %   info       [integer]          info=1: the model doesn't define current variables uniquely
-%                                 info=2: problem in mjdgges.dll info(2) contains error code. 
+%                                 info=2: problem in mjdgges.dll info(2) contains error code.
 %                                 info=3: BK order condition not satisfied info(2) contains "distance"
 %                                         absence of stable trajectory.
 %                                 info=4: BK order condition not satisfied info(2) contains "distance"
 %                                         indeterminacy.
 %                                 info=5: BK rank condition not satisfied.
-%                                 info=6: The jacobian matrix evaluated at the steady state is complex.        
-%                                 info=9: k_order_pert was unable to compute the solution    
+%                                 info=6: The jacobian matrix evaluated at the steady state is complex.
+%                                 info=9: k_order_pert was unable to compute the solution
 % ALGORITHM
 %   ...
-%    
+%
 % SPECIAL REQUIREMENTS
 %   none.
-%  
+%
 
-% Copyright (C) 1996-2016 Dynare Team
+% Copyright (C) 1996-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -62,7 +62,7 @@ if (options_.aim_solver == 1) && (local_order > 1)
     error('Option "aim_solver" is incompatible with order >= 2')
 end
 
-if M_.maximum_endo_lag == 0 
+if M_.maximum_endo_lag == 0
     if local_order >= 2
         fprintf('\nSTOCHASTIC_SOLVER: Dynare does not solve purely forward models at higher order.\n')
         fprintf('STOCHASTIC_SOLVER: To circumvent this restriction, you can add a backward-looking dummy equation of the form:\n')
@@ -85,7 +85,7 @@ if M_.maximum_endo_lead==0 && M_.exo_det_nbr~=0
     error(['var_exo_det not implemented for purely backwards models'])
 end
 
-if options_.k_order_solver;
+if options_.k_order_solver
     if options_.risky_steadystate
         [dr,info] = dyn_risky_steadystate_solver(oo_.steady_state,M_,dr, ...
                                                  options_,oo_);
@@ -96,7 +96,7 @@ if options_.k_order_solver;
         [dr,info] = k_order_pert(dr,M_,options_);
         options_.order = orig_order;
     end
-    return;
+    return
 end
 
 klen = M_.maximum_lag + M_.maximum_lead + 1;
@@ -120,7 +120,7 @@ if local_order == 1
     else
         [junk,jacobia_] = feval([M_.fname '_dynamic'],z(iyr0),exo_simul, ...
                                 M_.params, dr.ys, it_);
-    end;
+    end
 elseif local_order == 2
     if (options_.bytecode)
         [chck, junk, loc_dr] = bytecode('dynamic','evaluate', z,exo_simul, ...
@@ -130,7 +130,7 @@ elseif local_order == 2
         [junk,jacobia_,hessian1] = feval([M_.fname '_dynamic'],z(iyr0),...
                                          exo_simul, ...
                                          M_.params, dr.ys, it_);
-    end;
+    end
     if options_.use_dll
         % In USE_DLL mode, the hessian is in the 3-column sparse representation
         hessian1 = sparse(hessian1(:,1), hessian1(:,2), hessian1(:,3), ...
@@ -138,7 +138,7 @@ elseif local_order == 2
     end
     [infrow,infcol]=find(isinf(hessian1));
     if options_.debug
-        if ~isempty(infrow)     
+        if ~isempty(infrow)
             fprintf('\nSTOCHASTIC_SOLVER: The Hessian of the dynamic model contains Inf.\n')
             fprintf('STOCHASTIC_SOLVER: Try running model_diagnostics to find the source of the problem.\n')
             save([M_.fname '_debug.mat'],'hessian1')
@@ -150,7 +150,7 @@ elseif local_order == 2
     end
     [nanrow,nancol]=find(isnan(hessian1));
     if options_.debug
-        if ~isempty(nanrow)     
+        if ~isempty(nanrow)
             fprintf('\nSTOCHASTIC_SOLVER: The Hessian of the dynamic model contains NaN.\n')
             fprintf('STOCHASTIC_SOLVER: Try running model_diagnostics to find the source of the problem.\n')
             save([M_.fname '_debug.mat'],'hessian1')
@@ -159,14 +159,14 @@ elseif local_order == 2
     if ~isempty(nanrow)
         info(1)=12;
         return
-    end    
+    end
 end
 
 [infrow,infcol]=find(isinf(jacobia_));
 
 if options_.debug
-    if ~isempty(infrow)     
-        fprintf('\nSTOCHASTIC_SOLVER: The Jacobian of the dynamic model contains Inf. The problem is associated with:\n\n')    
+    if ~isempty(infrow)
+        fprintf('\nSTOCHASTIC_SOLVER: The Jacobian of the dynamic model contains Inf. The problem is associated with:\n\n')
         display_problematic_vars_Jacobian(infrow,infcol,M_,dr.ys,'dynamic','STOCHASTIC_SOLVER: ')
         save([M_.fname '_debug.mat'],'jacobia_')
     end
@@ -194,8 +194,8 @@ end
 
 [nanrow,nancol]=find(isnan(jacobia_));
 if options_.debug
-    if ~isempty(nanrow)     
-        fprintf('\nSTOCHASTIC_SOLVER: The Jacobian of the dynamic model contains NaN. The problem is associated with:\n\n')    
+    if ~isempty(nanrow)
+        fprintf('\nSTOCHASTIC_SOLVER: The Jacobian of the dynamic model contains NaN. The problem is associated with:\n\n')
         display_problematic_vars_Jacobian(nanrow,nancol,M_,dr.ys,'dynamic','STOCHASTIC_SOLVER: ')
         save([M_.fname '_debug.mat'],'jacobia_')
     end
@@ -229,9 +229,9 @@ if M_.maximum_endo_lead == 0
     % backward models: simplified code exist only at order == 1
     if local_order == 1
         [k1,junk,k2] = find(kstate(:,4));
-        dr.ghx(:,k1) = -b\jacobia_(:,k2); 
+        dr.ghx(:,k1) = -b\jacobia_(:,k2);
         if M_.exo_nbr
-            dr.ghu =  -b\jacobia_(:,nz+1:end); 
+            dr.ghu =  -b\jacobia_(:,nz+1:end);
         end
         dr.eigval = eig(kalman_transition_matrix(dr,nstatic+(1:nspred),1:nspred,M_.exo_nbr));
         dr.full_rank = 1;
@@ -263,7 +263,7 @@ else
     else  % use original Dynare solver
         [dr,info] = dyn_first_order_solver(jacobia_,M_,dr,options_,task);
         if info(1) || task
-            return;
+            return
         end
     end
 
@@ -272,7 +272,7 @@ else
         dr = dyn_second_order_solver(jacobia_,hessian1,dr,M_,...
                                      options_.threads.kronecker.A_times_B_kronecker_C,...
                                      options_.threads.kronecker.sparse_hessian_times_B_kronecker_C);
-        
+
         % reordering second order derivatives, used for deterministic
         % variables below
         k1 = nonzeros(M_.lead_lag_incidence(:,order_var)');
@@ -381,4 +381,3 @@ if options_.loglinear
     end
 end
 end
-

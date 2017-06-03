@@ -41,8 +41,10 @@ function FLAG = flag_implicit_skip_nan(i)
 %    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 
 %       $Id: flag_implicit_skip_nan.m 8351 2011-06-24 17:35:07Z carandraug $
+
 %   Copyright (C) 2001-2003,2009 by Alois Schloegl <alois.schloegl@gmail.com>
-%   Copyright (C) 2014 Dynare Team
+%   Copyright (C) 2014-2017 Dynare Team
+%
 %       This function is part of the NaN-toolbox
 %       http://pub.ist.ac.at/~schloegl/matlab/NaN/
 
@@ -52,15 +54,14 @@ persistent FLAG_implicit_skip_nan;
 %% if strcmp(version,'3.6'), FLAG_implicit_skip_nan=(1==1); end;        %% hack for the use with Freemat3.6
 
 %%% set DEFAULT value of FLAG
-if isempty(FLAG_implicit_skip_nan),
+if isempty(FLAG_implicit_skip_nan)
     FLAG_implicit_skip_nan = (1==1); %logical(1); % logical.m not available on 2.0.16
-end;
+end
 
 FLAG = FLAG_implicit_skip_nan;
-if nargin>0,
+if nargin>0
     FLAG_implicit_skip_nan = (i~=0); %logical(i); %logical.m not available in 2.0.16
     if (~i)
         warning('flag_implicit_skipnan(0): You are warned!!! You have turned off skipping NaN in sumskipnan. This is not recommended. Make sure you really know what you do.')
-    end;
-end;
-
+    end
+end

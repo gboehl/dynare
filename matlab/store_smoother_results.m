@@ -1,7 +1,7 @@
 function [oo_, yf]=store_smoother_results(M_,oo_,options_,bayestopt_,dataset_,dataset_info,atT,innov,measurement_error,updated_variables,ys,trend_coeff,aK,P,PK,decomp,Trend,state_uncertainty)
 % oo_=store_smoother_results(M_,oo_,options_,bayestopt_,dataset_,atT,innov,measurement_error,updated_variables,ys,trend_coeff,aK,P,PK,decomp,Trend)
 % Writes the smoother results into respective fields in oo_
-% 
+%
 % Inputs:
 %   M_              [structure]     storing the model information
 %   oo_             [structure]     storing the results
@@ -42,19 +42,19 @@ function [oo_, yf]=store_smoother_results(M_,oo_,options_,bayestopt_,dataset_,da
 %                   oo_.SmoothedMeasurementErrors: structure storing the smoothed measurement errors
 %                   oo_.Smoother.State_uncertainty: smoothed state uncertainty (declaration order)
 
-%   yf              [double]    (nvarobs*T) matrix storing the smoothed observed variables (order of options_.varobs)  
-% 
-% Notes: 
+%   yf              [double]    (nvarobs*T) matrix storing the smoothed observed variables (order of options_.varobs)
+%
+% Notes:
 %   m:  number of endogenous variables (M_.endo_nbr)
 %   T:  number of Time periods (options_.nobs)
 %   r:  number of strucural shocks (M_.exo_nbr)
 %   n:  number of observables (length(options_.varobs))
 %   K:  maximum forecast horizon (max(options_.nk))
-% 
+%
 %   First all smoothed variables are saved without trend and constant.
 %       Then trend and constant are added for the observed variables.
 %
-% Copyright (C) 2014-2016 Dynare Team
+% Copyright (C) 2014-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -113,7 +113,7 @@ trend_constant_observables=constant_part+Trend;
 yf = atT(bayestopt_.mf,:)+trend_constant_observables;
 
 if options_.nk > 0
-    %filtered variable E_t(y_t+k) requires to shift trend by k periods    
+    %filtered variable E_t(y_t+k) requires to shift trend by k periods
     filter_steps_required=union(1,options_.filter_step_ahead); % 1 is required for standard filtered variables
     for filter_iter=1:length(filter_steps_required)
         filter_step=filter_steps_required(filter_iter);
@@ -172,8 +172,8 @@ end
 for pos_iter=1:length(bayestopt_.mf)
     oo_.Smoother.Constant.(deblank(M_.endo_names(bayestopt_.mfys(pos_iter),:)))=constant_part(pos_iter,:)';
     if ismember(bayestopt_.mf(pos_iter),bayestopt_.smoother_var_list(bayestopt_.smoother_saved_var_list))
-        oo_.SmoothedVariables.(deblank(M_.endo_names(bayestopt_.mfys(pos_iter),:)))=yf(pos_iter,:)';   
-        if ~isempty(options_.nk) && options_.nk > 0 
+        oo_.SmoothedVariables.(deblank(M_.endo_names(bayestopt_.mfys(pos_iter),:)))=yf(pos_iter,:)';
+        if ~isempty(options_.nk) && options_.nk > 0
             %filtered variable E_t(y_t+1) requires to shift trend by 1 period
             oo_.FilteredVariables.(deblank(M_.endo_names(bayestopt_.mfys(pos_iter),:)))=...
                 squeeze(aK(1,bayestopt_.mf(pos_iter),2:end-(options_.nk-1)))...
@@ -182,7 +182,7 @@ for pos_iter=1:length(bayestopt_.mf)
                 filter_step=options_.filter_step_ahead(filter_iter);
                 oo_.FilteredVariablesKStepAhead(filter_iter,find(i_endo_in_dr_matrices==bayestopt_.mf(pos_iter)),1+filter_step:end-(max(options_.filter_step_ahead)-filter_step)) = ...
                     squeeze(aK(filter_step,bayestopt_.mf(pos_iter),1+filter_step:end-(max(options_.filter_step_ahead)-filter_step)))...
-                    +trend_constant_observables_filtered.(['filter_ahead_' num2str(filter_step)])(pos_iter,:)';    
+                    +trend_constant_observables_filtered.(['filter_ahead_' num2str(filter_step)])(pos_iter,:)';
             end
         end
         %updated variables are E_t(y_t) so no trend shift is required

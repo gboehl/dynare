@@ -1,19 +1,19 @@
 function  [ldens,Dldens,D2ldens] = lpdfnorm(x,a,b)
 % Evaluates the logged UNIVARIATE GAUSSIAN PDF at x.
 %
-% INPUTS 
+% INPUTS
 %    x     [double]  m*n matrix of locations,
-%    a     [double]  m*n matrix or scalar, First GAUSSIAN distribution parameters (expectation) 
-%    b     [double]  m*n matrix or scalar, Second GAUSSIAN distribution parameters (standard deviation). 
+%    a     [double]  m*n matrix or scalar, First GAUSSIAN distribution parameters (expectation)
+%    b     [double]  m*n matrix or scalar, Second GAUSSIAN distribution parameters (standard deviation).
 %
-% OUTPUTS 
+% OUTPUTS
 %    ldens [double]  m*n matrix of logged GAUSSIAN densities evaluated at x.
-%     
-%        
+%
+%
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2003-2012 Dynare Team
+% Copyright (C) 2003-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -34,10 +34,10 @@ if nargin<3, b=1; end
 if nargin<2, a=0; end
 ldens = -log(b) -.5*log(2*pi) - .5*((x-a)./b).*((x-a)./b) ;
 
-if nargout >1 
+if nargout >1
     Dldens =  - (1./b).*((x-a)./b) ;
 end
 
-if nargout == 3 
+if nargout == 3
     D2ldens =  - (1./b).^2 ;
 end

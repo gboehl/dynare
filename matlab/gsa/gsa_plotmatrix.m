@@ -1,13 +1,13 @@
 function gsa_plotmatrix(type,varargin)
 % function gsa_plotmatrix(type,varargin)
-% extended version of the standard MATLAB plotmatrix 
+% extended version of the standard MATLAB plotmatrix
 %
 % Written by Marco Ratto
 % Joint Research Centre, The European Commission,
-% marco.ratto@ec.europa.eu 
+% marco.ratto@ec.europa.eu
 
 % Copyright (C) 2011-2012 European Commission
-% Copyright (C) 2011-2012 Dynare Team
+% Copyright (C) 2011-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -62,21 +62,21 @@ switch type
     x=[lpmat0(iwrong,:) lpmat(iwrong,:)];
     NumberOfDraws=size(x,1);
     B=NumberOfDraws;
-    
+
 end
 
-if isempty(x),
+if isempty(x)
     disp('Empty parameter set!')
     return
 end
 
-for j=1:length(varargin),
+for j=1:length(varargin)
     jcol(j)=strmatch(varargin{j},bayestopt_.name,'exact');
 end
 
 [H,AX,BigA,P,PAx]=plotmatrix(x(:,jcol));
 
-for j=1:length(varargin),
+for j=1:length(varargin)
     %      axes(AX(1,j)), title(varargin{j})
     %      axes(AX(j,1)), ylabel(varargin{j})
     %      set(AX(1,j),'title',varargin{j}),
@@ -84,15 +84,15 @@ for j=1:length(varargin),
     set(get(AX(end,j),'xlabel'),'string',varargin{j})
 end
 
-if options_.opt_gsa.pprior==0,
+if options_.opt_gsa.pprior==0
     xparam1=xparam1(jcol);
-    for j=1:length(varargin),
-        for i=1:j-1,
-            axes(AX(j,i)),
+    for j=1:length(varargin)
+        for i=1:j-1
+            axes(AX(j,i))
             hold on, plot(xparam1(i),xparam1(j),'*r')
         end
-        for i=j+1:length(varargin),
-            axes(AX(j,i)),
+        for i=j+1:length(varargin)
+            axes(AX(j,i))
             hold on, plot(xparam1(i),xparam1(j),'*r')
         end
     end

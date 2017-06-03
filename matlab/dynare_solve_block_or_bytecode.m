@@ -1,5 +1,5 @@
 function [x,info] = dynare_solve_block_or_bytecode(y, exo, params, options, M)
-% Copyright (C) 2010-2015 Dynare Team
+% Copyright (C) 2010-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -80,7 +80,7 @@ elseif options.bytecode
                     info = 1;
                     return
                 end
-            end;
+            end
         end
     else
         [x, check] = dynare_solve('bytecode_steadystate', y, ...

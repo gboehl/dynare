@@ -1,9 +1,9 @@
 function print_moments_implied_prior(ModelInfo, mm, vm, mv, vv)
 
 % This routine prints in the command window some descriptive statistics
-% about the endogenous variables implied prior moments. 
+% about the endogenous variables implied prior moments.
 
-% Copyright (C) 2016 Dynare Team
+% Copyright (C) 2016-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

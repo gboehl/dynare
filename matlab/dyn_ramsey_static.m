@@ -8,7 +8,7 @@ function [steady_state,params,check] = dyn_ramsey_static(ys_init,M,options_,oo)
 %    M:             Dynare model structure
 %    options:       Dynare options structure
 %    oo:            Dynare results structure
-% 
+%
 % OUTPUTS
 %    steady_state:  steady state value
 %    params:        parameters at steady state, potentially updated by
@@ -18,7 +18,7 @@ function [steady_state,params,check] = dyn_ramsey_static(ys_init,M,options_,oo)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2003-2016 Dynare Team
+% Copyright (C) 2003-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -61,7 +61,7 @@ elseif options_.steadystate_flag
         end
         if info1==4
             check=87;
-        end        
+        end
     else
         %solve for instrument, using multivariate solver, starting at
         %initial value for instrument
@@ -102,7 +102,7 @@ endo_nbr = M.endo_nbr;
 endo_names = M.endo_names;
 orig_endo_nbr = M.orig_endo_nbr;
 aux_vars_type = [M.aux_vars.type];
-orig_endo_aux_nbr = orig_endo_nbr + min(find(aux_vars_type == 6)) - 1; 
+orig_endo_aux_nbr = orig_endo_nbr + min(find(aux_vars_type == 6)) - 1;
 orig_eq_nbr = M.orig_eq_nbr;
 inst_nbr = orig_endo_aux_nbr - orig_eq_nbr;
 % indices of Lagrange multipliers
@@ -125,7 +125,7 @@ if options_.steadystate_flag
     if any(imag(x(1:M.orig_endo_nbr))) %return with penalty
         resids=1+sum(abs(imag(x(1:M.orig_endo_nbr)))); %return with penalty
         steady_state=NaN(endo_nbr,1);
-        return;
+        return
     end
 
 end
@@ -137,7 +137,7 @@ xx(1:M.orig_endo_nbr) = x(1:M.orig_endo_nbr); %set values of original endogenous
 if any([M.aux_vars.type] ~= 6) %auxiliary variables other than multipliers
     needs_set_auxiliary_variables = 1;
     fh = str2func([M.fname '_set_auxiliary_variables']);
-    s_a_v_func = @(z) fh(z,... 
+    s_a_v_func = @(z) fh(z,...
                          [oo.exo_steady_state,...
                         oo.exo_det_steady_state],...
                          params);
@@ -193,7 +193,7 @@ function result = check_static_model(ys,M,options_,oo)
 result = false;
 if (options_.bytecode)
     [chck, res, junk] = bytecode('static',ys,[oo.exo_steady_state oo.exo_det_steady_state], ...
-                                 M.params, 'evaluate'); 
+                                 M.params, 'evaluate');
 else
     res = feval([M.fname '_static'],ys,[oo.exo_steady_state oo.exo_det_steady_state], ...
                 M.params);
@@ -201,4 +201,3 @@ end
 if norm(res) < options_.solve_tolf
     result = true;
 end
-

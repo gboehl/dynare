@@ -1,7 +1,7 @@
 function [fhat,xhat,fcount,retcode] = csminit1(fcn,x0,penalty,f0,g0,badg,H0,Verbose,varargin)
 % [fhat,xhat,fcount,retcode] = csminit1(fcn,x0,penalty,f0,g0,badg,H0,Verbose,varargin)
-% 
-% Inputs: 
+%
+% Inputs:
 %   fcn:        [string]        string naming the objective function to be minimized
 %   x0:         [npar by 1]     initial value of the parameter vector
 %   penalty:    [scalar]        variable penalty in case of failure of objective function
@@ -20,7 +20,7 @@ function [fhat,xhat,fcount,retcode] = csminit1(fcn,x0,penalty,f0,g0,badg,H0,Verb
 %   retcode     [scalar]        0: normal step
 %                               1: zero gradient.
 %                               5: largest step still improves too fast.
-%                               2,4: back and forth adjustment of stepsize didn't finish.  
+%                               2,4: back and forth adjustment of stepsize didn't finish.
 %                               3: smallest stepsize still improves too slow
 %                               6: no improvement found
 %---------------------
@@ -33,12 +33,12 @@ function [fhat,xhat,fcount,retcode] = csminit1(fcn,x0,penalty,f0,g0,badg,H0,Verb
 %
 % Fixed 7/19/93 to flip eigenvalues of H to get better performance when
 % it's not psd.
-% 
+%
 % Original file downloaded from:
 % http://sims.princeton.edu/yftp/optimize/mfiles/csminit.m
-% 
+%
 % Copyright (C) 1993-2007 Christopher Sims
-% Copyright (C) 2008-2016 Dynare Team
+% Copyright (C) 2008-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -183,7 +183,7 @@ else
                     if Verbose
                         lambda = -lambda*factor^6
                     else
-                        lambda = -lambda*factor^6;                        
+                        lambda = -lambda*factor^6;
                     end
                 else
                     if lambda < 0
@@ -216,7 +216,7 @@ else
                 end
             end
             lambda=lambda*factor;
-            if abs(lambda) > 1e20;
+            if abs(lambda) > 1e20
                 retcode = 5;
                 done =1;
             end

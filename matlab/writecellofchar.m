@@ -2,13 +2,13 @@ function str = writecellofchar(c)
 
 % Writes a two dimensional cell of char in a string.
 %
-% INPUTS 
+% INPUTS
 % - c   [cell] cell of char.
 %
-% OUTPUTS 
+% OUTPUTS
 % - str [char]
 %
-% EXAMPLES 
+% EXAMPLES
 % >> writecellofchar({'a', {'b'; 'c'}})
 %
 % ans =
@@ -19,9 +19,9 @@ function str = writecellofchar(c)
 %
 % ans =
 %
-%{'a', '['b'; 'c']', 'd'}   
+%{'a', '['b'; 'c']', 'd'}
 
-% Copyright (C) 2015 Dynare Team
+% Copyright (C) 2015-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

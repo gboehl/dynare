@@ -1,7 +1,7 @@
 function [x0, flag]=sylvester3a(x0,a,b,c,dd)
 % solves iteratively ax+bxc=d
 
-% Copyright (C) 2005-2012 Dynare Team
+% Copyright (C) 2005-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -21,7 +21,7 @@ function [x0, flag]=sylvester3a(x0,a,b,c,dd)
 a_1 = inv(a);
 b = a_1*b;
 flag=0;
-for j=1:size(dd,3),
+for j=1:size(dd,3)
     d = a_1*dd(:,:,j);
     e = 1;
     iter = 1;

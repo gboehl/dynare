@@ -3,16 +3,16 @@ function datatomfile (s, var_list, names)
 % This command saves the simulation results in a text file. The name of each
 % variable preceeds the corresponding results. This command must follow SIMUL
 % or STOCH_SIMUL commands.
-% 
-% INPUTS 
+%
+% INPUTS
 %  - s:              data file name
 %  - var_list:       vector of selected endogenous variables
 %  - names:          vector of strings (alternative names for the endogenous variables in the data file)
 %
-% OUTPUTS 
+% OUTPUTS
 % none
 %
-% REMARKS 
+% REMARKS
 % Only the first argument is mandatory. If only one input argument is
 % provided, all the variables as defined in M_.endo_names will be saved in
 % the generated m file.
@@ -36,7 +36,7 @@ function datatomfile (s, var_list, names)
 
 global M_ oo_
 
-% Open the data file. 
+% Open the data file.
 sm=[s,'.m'];
 fid=fopen(sm,'w') ;
 
@@ -78,4 +78,3 @@ end
 
 % Close the data file.
 fclose(fid) ;
-

@@ -1,6 +1,6 @@
 function [y, oo]= solve_two_boundaries(fname, y, x, params, steady_state, y_index, nze, periods, y_kmin_l, y_kmax_l, is_linear, Block_Num, y_kmin, maxit_, solve_tolf, lambda, cutoff, stack_solve_algo,options,M, oo)
 % Computes the deterministic simulation of a block of equation containing
-% both lead and lag variables using relaxation methods 
+% both lead and lag variables using relaxation methods
 %
 % INPUTS
 %   fname               [string]        name of the file containing the block
@@ -27,7 +27,7 @@ function [y, oo]= solve_two_boundaries(fname, y, x, params, steady_state, y_inde
 %   cutoff              [double]        cutoff to correct the direction in Newton in case
 %                                       of singular jacobian matrix
 %   stack_solve_algo    [integer]       linear solver method used in the
-%                                       Newton algorithm : 
+%                                       Newton algorithm :
 %                                            - 1 sprse LU
 %                                            - 2 GMRES
 %                                            - 3 BicGStab
@@ -36,17 +36,17 @@ function [y, oo]= solve_two_boundaries(fname, y, x, params, steady_state, y_inde
 %   oo                  [structure]     Results
 %
 % OUTPUTS
-%   y                   [matrix]        All endogenous variables of the model      
+%   y                   [matrix]        All endogenous variables of the model
 %   oo                  [structure]     Results
 %
 % ALGORITHM
 %   Newton with LU or GMRES or BicGstab
-%    
+%
 % SPECIAL REQUIREMENTS
 %   none.
-%  
+%
 
-% Copyright (C) 1996-2016 Dynare Team
+% Copyright (C) 1996-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -92,7 +92,7 @@ while ~(cvg==1 || iter>maxit_)
     [max_res, max_indx]=max(max(abs(r')));
     if ~isreal(r)
         max_res = (-max_res^2)^0.5;
-    end;
+    end
     if ~isreal(max_res) || isnan(max_res)
         cvg = 0;
     elseif(is_linear && iter>0)
@@ -123,7 +123,7 @@ while ~(cvg==1 || iter>maxit_)
                             end
                             dx = (g1aa+correcting_factor*speye(periods*Blck_size))\ba- ya;
                             y(1+y_kmin:periods+y_kmin,y_index)=reshape((ya_save+lambda*dx)',length(y_index),periods)';
-                            continue;
+                            continue
                         else
                             disp('The singularity of the jacobian matrix could not be corrected');
                             return
@@ -178,7 +178,7 @@ while ~(cvg==1 || iter>maxit_)
                 B1_inv = inv(g1a(Elem, Elem));
                 if (t < periods)
                     S1 = B1_inv * g1a(Elem, Elem_1);
-                end;
+                end
                 g1a(Elem, Elem_1) = S1;
                 b(Elem) = B1_inv * b(Elem);
                 g1a(Elem, Elem) = ones(Blck_size, Blck_size);

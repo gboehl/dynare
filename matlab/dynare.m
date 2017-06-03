@@ -1,7 +1,7 @@
 function dynare(fname, varargin)
 %       This command runs dynare with specified model file in argument
 %       Filename.
-%       The name of model file begins with an alphabetic character, 
+%       The name of model file begins with an alphabetic character,
 %       and has a filename extension of .mod or .dyn.
 %       When extension is omitted, a model file with .mod extension
 %       is processed.
@@ -9,14 +9,14 @@ function dynare(fname, varargin)
 % INPUTS
 %   fname:      file name
 %   varargin:   list of arguments following fname
-%             
+%
 % OUTPUTS
 %   none
-%        
+%
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2001-2015 Dynare Team
+% Copyright (C) 2001-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -64,7 +64,7 @@ dynareroot = dynare_config;
 
 warning_config()
 
-if isoctave 
+if isoctave
     if octave_ver_less_than('3.6.0')
         warning('This version of Dynare has only been tested on Octave 3.6.0 and above. Since your Octave version is older than that, Dynare may fail to run, or give unexpected results. Consider upgrading your Octave installation.');
     end
@@ -114,9 +114,9 @@ else
             || ~strcmp(upper(fname(size(fname,2)-3:size(fname,2))),'.MOD') ...
             && ~strcmp(upper(fname(size(fname,2)-3:size(fname,2))),'.DYN')
         error('DYNARE: argument must be a filename with .mod or .dyn extension and must not include any other periods')
-    end;
+    end
     fnamelength = length(fname) - 4;
-end;
+end
 
 if fnamelength + length('_set_auxiliary_variables') > namelengthmax()
     error('The name of your MOD file is too long, please shorten it')
@@ -192,7 +192,7 @@ end
 disp(result)
 if ismember('onlymacro', varargin)
     disp('Preprocesser stopped after macroprocessing step because of ''onlymacro'' option.');
-    return;
+    return
 end
 
 % post-dynare-prerocessor-hook

@@ -1,20 +1,20 @@
 function varlist = check_list_of_variables(options_, M_, varlist)
 % This function defines, if necessary, the list of endogenous variables
-% for which the posterior statistics have to be computed. 
-% 
+% for which the posterior statistics have to be computed.
 %
-% INPUTS 
+%
+% INPUTS
 %
 %   options_        [structure]    Dynare structure.
 %   M_              [structure]    Dynare structure (related to model definition).
 %   varlist         [string]       Array of strings with name of the endogenous variables.
-%    
-% OUTPUTS 
-%   varlist         [string] 
-%        
+%
+% OUTPUTS
+%   varlist         [string]
+%
 % SPECIAL REQUIREMENTS
 
-% Copyright (C) 2003-2014 Dynare Team
+% Copyright (C) 2003-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -33,8 +33,8 @@ function varlist = check_list_of_variables(options_, M_, varlist)
 
 %get uniques
 
-[junk1,junk2,index_uniqes] = varlist_indices(varlist,M_.endo_names);
-varlist=varlist(index_uniqes,:);
+[junk1,junk2,index_uniques] = varlist_indices(varlist,M_.endo_names);
+varlist=varlist(index_uniques,:);
 
 msg = 0;
 if options_.dsge_var && options_.bayesian_irf
@@ -63,7 +63,7 @@ if ~isempty(varlist) && ~isempty(options_.endo_vars_for_moment_computations_in_e
     error('You cannot use the consider_all_endogenous or consider_all_observed options when listing variables after the estimation command')
 elseif isempty(varlist) && ~isempty(options_.endo_vars_for_moment_computations_in_estimation)
     if strcmp(options_.endo_vars_for_moment_computations_in_estimation,'all_endogenous_variables')
-        varlist = M_.endo_names(1:M_.orig_endo_nbr, :);    
+        varlist = M_.endo_names(1:M_.orig_endo_nbr, :);
     elseif strcmp(options_.endo_vars_for_moment_computations_in_estimation,'only_observed_variables')
         varlist = char(options_.varobs');
     else
@@ -106,7 +106,7 @@ elseif isempty(varlist) && isempty(options_.endo_vars_for_moment_computations_in
     end
     if ~isempty(cas)
         string = [ cas , ' will be computed for the ' num2str(M_.endo_nbr)  ' endogenous variables'];
-        string = [ string ' of your model, this can be very long....']; 
+        string = [ string ' of your model, this can be very long....'];
         format_text(string, 10)
         if options_.nointeractive
             % Default behaviour is to consider all the endogenous variables.

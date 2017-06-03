@@ -1,7 +1,7 @@
 function tau = thet2tau(params, estim_params_, M_, oo_, indx, indexo, flagmoments,mf,nlags,useautocorr,iv)
 
 %
-% Copyright (C) 2011-2012 Dynare Team
+% Copyright (C) 2011-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -20,22 +20,22 @@ function tau = thet2tau(params, estim_params_, M_, oo_, indx, indexo, flagmoment
 
 global options_
 
-if nargin==1,
+if nargin==1
     indx = [1:M_.param_nbr];
     indexo = [];
 end
 
-if nargin<7,
+if nargin<7
     flagmoments=0;
 end
-if nargin<10 || isempty(useautocorr),
+if nargin<10 || isempty(useautocorr)
     useautocorr=0;
 end
-if nargin<11 || isempty(iv),
+if nargin<11 || isempty(iv)
     iv=[1:M_.endo_nbr];
 end
 
-if length(params)>length(indx),
+if length(params)>length(indx)
     M_ = set_all_parameters(params,estim_params_,M_);
 else
     M_.params(indx) = params;
@@ -44,7 +44,7 @@ end
 %     M_.Sigma_e(indexo,indexo) = diag(params(1:length(indexo)).^2);
 % end
 [A,B,tele,tubbies,M_,options_,oo_] = dynare_resolve(M_,options_,oo_);
-if flagmoments==0,
+if flagmoments==0
     ys=oo_.dr.ys(oo_.dr.order_var);
     tau = [ys(iv); vec(A(iv,iv)); dyn_vech(B(iv,:)*M_.Sigma_e*B(iv,:)')];
 elseif flagmoments==-1
@@ -58,7 +58,7 @@ else
     GAM =  lyapunov_symm(A,B*M_.Sigma_e*B',options_.lyapunov_fixed_point_tol,options_.qz_criterium,options_.lyapunov_complex_threshold,[],options_.debug);
     k = find(abs(GAM) < 1e-12);
     GAM(k) = 0;
-    if useautocorr,
+    if useautocorr
         sy = sqrt(diag(GAM));
         sy = sy*sy';
         sy0 = sy-diag(diag(sy))+eye(length(sy));
@@ -69,7 +69,7 @@ else
     end
     for ii = 1:nlags
         dum = A^(ii)*GAM;
-        if useautocorr,
+        if useautocorr
             dum = dum./sy;
         end
         tau = [tau;vec(dum(mf,mf))];

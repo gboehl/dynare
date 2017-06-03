@@ -22,7 +22,7 @@ nobs = size(zdata1,1);
 xvalues = (1:nobs)';
 
 nvars = size(titlelist,1);
-if nvars==1 
+if nvars==1
     nrows=1;
     ncols = 1;
 elseif nvars==2
@@ -40,7 +40,7 @@ elseif (nvars==7 | nvars==8)
 elseif (nvars==9 | nvars==10)
     nrows = 5;
     ncols = 2;
-else 
+else
     error('too many variables (makechart)')
 end
 
@@ -49,15 +49,15 @@ for i = 1:nvars
     h1=plot(xvalues,zdata1(:,i),'b-','linewidth',2); hold on
     h1=plot(xvalues,zdata2(:,i),'r--','linewidth',2); hold on
     h2=plot(xvalues,zdata3(:,i),'b-','LineWidth',3);
-    [x0 x1 y10 y11] = pickaxes(xvalues,zdata1(:,i));
-    [x0 x1 y20 y21] = pickaxes(xvalues,zdata2(:,i));
-    [x0 x1 y30 y31] = pickaxes(xvalues,zdata3(:,i));
+    [x0, x1, y10, y11] = pickaxes(xvalues,zdata1(:,i));
+    [x0, x1, y20, y21] = pickaxes(xvalues,zdata2(:,i));
+    [x0, x1, y30, y31] = pickaxes(xvalues,zdata3(:,i));
     y0 = min([y10,y20,y30]);
     y1 = max([y11,y21,y31]);
     if y0==y1
         y1=y0+1;
     end
-    
+
     axis([x0 x1 y0 y1])
     set(h1);
 
@@ -66,13 +66,13 @@ for i = 1:nvars
         text('String',figlabel,'Units','normalized','Position',[1.2 1.24],...
              'FontSize',14,'FontWeight','bold','HorizontalAlignment','center');
     end
-    
+
     if i==nvars | i==nvars-1
         xlabel('Time');
     end
     %     set(gca,'XTick',xtick)
     %     set(gca,'XTickLabel',xticklabel)
-    
+
     title([num2str(i),'. ',titlelist(i,:)]);
     ylabel(ylabels(i,:))
 end

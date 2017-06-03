@@ -3,18 +3,18 @@ function fMessageStatus(prtfrc, njob, waitbarString, waitbarTitle, Parallel)
 % In parallel context, this function is launched on slave
 % machines, and acts as a message passing device for the master machine.
 
-% INPUTS 
+% INPUTS
 % o prtfrc          [double]     fraction of iteration performed
 % o njob            [int]        index number of this CPU among all CPUs in the
 %                                cluster
-% o waitbarString   [char]       running message string to be displayed in the monitor window on master machine 
+% o waitbarString   [char]       running message string to be displayed in the monitor window on master machine
 % o waitbarTitle    [char]       title to be displayed in the monitor window on master machine
 % o Parallel        [struct]     options_.parallel(ThisMatlab), i.e. the parallel settings for this slave machine in the cluster.
 %
-% OUTPUTS 
-% o None 
+% OUTPUTS
+% o None
 
-% Copyright (C) 2006-2012 Dynare Team
+% Copyright (C) 2006-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -33,18 +33,17 @@ function fMessageStatus(prtfrc, njob, waitbarString, waitbarTitle, Parallel)
 
 global funcName
 
-if nargin<5,
+if nargin<5
     Parallel.Local=1;
 end
 
 try
     save(['comp_status_',funcName,int2str(njob),'.mat'],'prtfrc','njob','waitbarString','waitbarTitle');
-catch  
+catch
 end
 
 fslave = dir( ['slaveParallel_input',int2str(njob),'.mat']);
 fbreak = dir( ['slaveParallel_break.mat']);
-if isempty(fslave) || ~isempty(fbreak),
+if isempty(fslave) || ~isempty(fbreak)
     error('Master asked to break the job');
 end
-

@@ -101,7 +101,11 @@ void SystemResources::getRUS(double& load_avg, long int& pg_avail,
 	majflt = -1;
 #endif
 
-#if !defined(__MINGW32__) && !defined(__CYGWIN32__) && !defined(__CYGWIN__) && !defined(__MINGW64__) && !defined(__CYGWIN64__)
+
+#define MINGCYGTMP (!defined(__MINGW32__) && !defined(__CYGWIN32__) && !defined(__CYGWIN__))
+#define MINGCYG (MINGCYGTMP && !defined(__MINGW64__) && !defined(__CYGWIN64__))
+
+#if MINGCYG
 	getloadavg(&load_avg, 1);
 #else
 	load_avg = -1.0;

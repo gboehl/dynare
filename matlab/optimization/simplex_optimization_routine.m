@@ -7,7 +7,7 @@ function [x,fval,exitflag] = simplex_optimization_routine(objective_function,x,o
 %
 % The routine automatically restarts from the current solution while amelioration is possible.
 %
-% INPUTS 
+% INPUTS
 %  o objective_function     [string]                  Name of the objective function to be minimized.
 %  o x                      [double]                  n*1 vector, starting guess of the optimization routine.
 %  o options                [structure]               Options of this implementation of the simplex algorithm.
@@ -23,13 +23,13 @@ function [x,fval,exitflag] = simplex_optimization_routine(objective_function,x,o
 %     varargin{6} --> BayesInfo
 %     varargin{1} --> DynareResults
 %
-% OUTPUTS 
+% OUTPUTS
 %  o x                      [double]                  n*1 vector, estimate of the optimal inputs.
 %  o fval                   [double]                  scalar, value of the objective at the optimum.
 %  o exitflag               [integer]                 scalar equal to 0 or 1 (0 if the algorithm did not converge to
 %                                                     a minimum).
 
-% Copyright (C) 2010-2013 Dynare Team
+% Copyright (C) 2010-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -396,7 +396,7 @@ while (func_count < max_func_calls) && (iter_count < max_iterations) && (simplex
         disp(['Crit. x:                  ' num2str(critX)])
         skipline()
     end
-    if verbose && max(abs(best_point-v(:,1)))>x_tolerance;
+    if verbose && max(abs(best_point-v(:,1)))>x_tolerance
         if verbose<2
             disp(['Simplex iteration number: ' int2str(simplex_iterations) '-' int2str(simplex_init) '-' int2str(simplex_algo_iterations)])
             disp(['Objective function value: ' num2str(fv(1))])

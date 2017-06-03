@@ -5,7 +5,7 @@ function [dLIK,dlik,a,Pstar] = missing_observations_kalman_filter_d(data_index,n
                                                   T, R, Q, H, Z, mm, pp, rr)
 % Computes the diffuse likelihood of a state space model when some observations are missing.
 %
-% INPUTS 
+% INPUTS
 %    data_index                   [cell]      1*smpl cell of column vectors of indices.
 %    number_of_observations       [integer]   scalar.
 %    no_more_missing_observations [integer]   scalar.
@@ -17,32 +17,32 @@ function [dLIK,dlik,a,Pstar] = missing_observations_kalman_filter_d(data_index,n
 %    Pstar                        [double]      mm*mm matrix used to initialize the covariance matrix of the state vector.
 %    kalman_tol                   [double]      scalar, tolerance parameter (rcond).
 %    riccati_tol                  [double]      scalar, tolerance parameter (riccati iteration).
-%    presample                    [integer]     scalar, presampling if strictly positive.    
+%    presample                    [integer]     scalar, presampling if strictly positive.
 %    T                            [double]      mm*mm matrix, transition matrix in  the state equations.
 %    R                            [double]      mm*rr matrix relating the structural innovations to the state vector.
 %    Q                            [double]      rr*rr covariance matrix of the structural innovations.
-%    H                            [double]      pp*pp covariance matrix of the measurement errors (if H is equal to zero (scalar) there is no measurement error). 
+%    H                            [double]      pp*pp covariance matrix of the measurement errors (if H is equal to zero (scalar) there is no measurement error).
 %    Z                            [double]      pp*mm matrix, selection matrix or pp linear independant combinations of the state vector.
 %    mm                           [integer]     scalar, number of state variables.
 %    pp                           [integer]     scalar, number of observed variables.
-%    rr                           [integer]     scalar, number of structural innovations.    
-%             
-% OUTPUTS 
+%    rr                           [integer]     scalar, number of structural innovations.
+%
+% OUTPUTS
 %    dLIK        [double]    scalar, MINUS loglikelihood
 %    dlik        [double]    vector, density of observations in each period.
 %    a           [double]    mm*1 vector, estimated level of the states.
-%    Pstar       [double]    mm*mm matrix, covariance matrix of the states.        
-%        
+%    Pstar       [double]    mm*mm matrix, covariance matrix of the states.
+%
 % REFERENCES
 %   See "Filtering and Smoothing of State Vector for Diffuse State Space
-%   Models", S.J. Koopman and J. Durbin (2003), in Journal of Time Series 
-%   Analysis, vol. 24(1), pp. 85-98. 
+%   Models", S.J. Koopman and J. Durbin (2003), in Journal of Time Series
+%   Analysis, vol. 24(1), pp. 85-98.
 %   and
 %   Durbin/Koopman (2012): "Time Series Analysis by State Space Methods", Oxford University Press,
 %   Second Edition, Ch. 5 and 7.2
 
-% 
-% Copyright (C) 2004-2016 Dynare Team
+%
+% Copyright (C) 2004-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -87,9 +87,9 @@ while rank(Pinf,diffuse_kalman_tol) && (t<=last)
         Pinf  = T*Pinf*transpose(T);
     else
         ZZ = Z(d_index,:);                                                  %span selector matrix
-        v  = Y(d_index,t)-ZZ*a;                                             %get prediction error v^(0) in (5.13) DK (2012)         
+        v  = Y(d_index,t)-ZZ*a;                                             %get prediction error v^(0) in (5.13) DK (2012)
         Finf  = ZZ*Pinf*ZZ';                                                % (5.7) in DK (2012)
-        if rcond(Finf) < diffuse_kalman_tol                                 %F_{\infty,t} = 0 
+        if rcond(Finf) < diffuse_kalman_tol                                 %F_{\infty,t} = 0
             if ~all(abs(Finf(:)) < diffuse_kalman_tol)                      %rank-deficient but not rank 0
                                                                             % The univariate diffuse kalman filter should be used.
                 return
@@ -129,7 +129,7 @@ while rank(Pinf,diffuse_kalman_tol) && (t<=last)
 end
 
 if t==(last+1)
-    warning(['kalman_filter_d: There isn''t enough information to estimate the initial conditions of the nonstationary variables. The diffuse Kalman filter never left the diffuse stage.']);                   
+    warning(['kalman_filter_d: There isn''t enough information to estimate the initial conditions of the nonstationary variables. The diffuse Kalman filter never left the diffuse stage.']);
     dLIK = NaN;
     return
 end

@@ -165,9 +165,9 @@ options_.nocorr = 0;
 options_.periods = 0;
 options_.noprint = 0;
 options_.SpectralDensity.trigger = 0;
-options_.SpectralDensity.plot  = 1; 
-options_.SpectralDensity.cutoff  = 150; 
-options_.SpectralDensity.sdl = 0.01; 
+options_.SpectralDensity.plot  = 1;
+options_.SpectralDensity.cutoff  = 150;
+options_.SpectralDensity.sdl = 0.01;
 options_.nofunctions = false;
 
 options_.bandpass.indicator = 0;
@@ -282,7 +282,7 @@ particle.resampling.number_of_partitions = 200;
 particle.mixture_state_variables = 5 ;
 particle.mixture_structural_shocks = 1 ;
 particle.mixture_measurement_shocks = 1 ;
-% Online approach 
+% Online approach
 particle.liu_west_delta = 0.99 ;
 particle.liu_west_chol_sigma_bar = .01 ;
 % Options for setting the weights in conditional particle filters.
@@ -632,7 +632,7 @@ options_.simpsa = simpsa;
 %solveopt optimizer
 solveopt.minimizer_indicator=-1; %use minimizer
 solveopt.TolX=1e-6; %accuracy of argument
-solveopt.TolFun=1e-6; %accuracy of function 
+solveopt.TolFun=1e-6; %accuracy of function
 solveopt.MaxIter=15000;
 solveopt.verbosity=1;
 solveopt.TolXConstraint=1.e-8;
@@ -841,4 +841,3 @@ set_dynare_seed('default');
 if isfield(options_, 'global_init_file')
     run(options_.global_init_file);
 end
-

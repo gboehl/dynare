@@ -14,7 +14,7 @@ function plan = basic_plan(plan, exogenous, expectation_type, date, value)
 %  plan                   [structure]        Returns a structure containing the updated forecast scenario.
 %
 %
-% Copyright (C) 2013-2014 Dynare Team
+% Copyright (C) 2013-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -38,7 +38,7 @@ exogenous = strtrim(exogenous);
 ix = find(strcmp(exogenous, plan.exo_names));
 if  isempty(ix)
     error(['in basic_plan the second argument ' exogenous ' is not an exogenous variable']);
-end;
+end
 sdate = length(date);
 if sdate > 1
     if date(1) < plan.date(1) || date(end) > plan.date(end)

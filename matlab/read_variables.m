@@ -6,7 +6,7 @@ function dyn_data_01=read_variables(file_name_01,var_names_01,dyn_data_01,xls_sh
 % INPUTS
 %    file_name_01:    file name
 %    var_names_01:    variables name
-%    dyn_data_01:     
+%    dyn_data_01:
 %    xls_sheet:       Excel sheet name
 %    xls_range:       Excel range specification
 %
@@ -17,7 +17,7 @@ function dyn_data_01=read_variables(file_name_01,var_names_01,dyn_data_01,xls_sh
 % all local variables have complicated names in order to avoid name
 % conflicts with possible user variable names
 
-% Copyright (C) 2005-2013 Dynare Team
+% Copyright (C) 2005-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -65,7 +65,7 @@ fullname = [basename extension];
 
 if ~exist(fullname)
     error(['Can''t find datafile: ' fullname ]);
-end 
+end
 
 switch (extension)
   case '.m'

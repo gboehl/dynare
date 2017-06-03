@@ -2,19 +2,19 @@ function [] = Tracing()
 % DESCRIPTION
 % This function is used to test the correct execution of a matlab section
 % on remote machine.
-% 
+%
 % If no error happen the function simply create a file.
 %
 % INPUTS
 % ...
-% 
+%
 % OUTPUTS
 % ...
-%        
+%
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2010 Dynare Team
+% Copyright (C) 2010-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

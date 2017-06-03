@@ -25,7 +25,7 @@ function retval = corr(x, y) % --*-- Unitary tests --*--
 %! the correlation between the columns of @var{x}.
 %! @end deftypefn
 %@eod:
-% 
+%
 % Notes:    - the original Octave code has been rewritten to avoid calling cov, since
 %               there is a long-standing incompatiblity between Matlab's cov and Octave's cov
 %               (see https://savannah.gnu.org/bugs/?40751)
@@ -39,7 +39,7 @@ function retval = corr(x, y) % --*-- Unitary tests --*--
 % Copyright (C) 1993-1996 Kurt Hornik
 % Copyright (C) 1996-2015 John W. Eaton
 % Copyright (C) 2013-2015 Julien Bect
-% Copyright (C) 2016 Dynare Team
+% Copyright (C) 2016-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -82,14 +82,14 @@ if isscalar(x)
     if nargin==1
         retval = NaN;
     else
-        retval = NaN(size(y));    
+        retval = NaN(size(y));
     end
-    return;
+    return
 end
 
 if nargin==2 && isscalar(y)
-    retval = NaN(size(x'));    
-    return;
+    retval = NaN(size(x'));
+    return
 end
 
 n = size (x, 1);

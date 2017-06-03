@@ -1,17 +1,17 @@
 function [res,fjac,domer] = mcp_func(x,jacflag)
 % function [res,fjac,domer] = mcp_func(x,jacflag)
 % wrapper function for mixed complementarity problem when using PATH
-% 
-% INPUTS 
+%
+% INPUTS
 % - x                   [double] N*T array, paths for the endogenous variables (initial guess).
 % - jacflag             [scalar] indicator whether Jacobian is requested
 %
-% OUTPUTS 
+% OUTPUTS
 %  - res                [double] (N*T)*1 array, residuals of the stacked problem
 %  - fjac               [double] (N*T)*(N*T) array, Jacobian of the stacked problem
 %  - domer              [scalar] errorflag that is 1 if solution is not real
 
-% Copyright (C) 2016 Dynare Team
+% Copyright (C) 2016-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

@@ -1,19 +1,19 @@
 function [fval,info,exit_flag,fake_1,fake_2] = minus_logged_prior_density(xparams,pshape,p6,p7,p3,p4,DynareOptions,DynareModel,EstimatedParams,DynareResults)
 % Evaluates minus the logged prior density.
-% 
-% INPUTS 
+%
+% INPUTS
 %   xparams    [double]   vector of parameters.
 %   pshape     [integer]  vector specifying prior densities shapes.
 %   p6         [double]   vector, first hyperparameter.
 %   p7         [double]   vector, second hyperparameter.
 %   p3         [double]   vector, prior's lower bound.
-%   p4         [double]   vector, prior's upper bound. 
+%   p4         [double]   vector, prior's upper bound.
 %
-% OUTPUTS 
+% OUTPUTS
 %   f          [double]  value of minus the logged prior density.
 %   info       [double]  vector: second entry stores penalty, first entry the error code.
 %
-% Copyright (C) 2009-2016 Dynare Team
+% Copyright (C) 2009-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -138,7 +138,7 @@ if info(1)
     else
         fval = Inf;
         info(4) = 0.1;
-        exit_flag = 0;        
+        exit_flag = 0;
         return
     end
 end

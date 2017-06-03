@@ -1,11 +1,11 @@
 % solve_one_constraint [zdatalinear zdatapiecewise zdatass oo base M base] = solve one constraint(modnam, modnamstar, constraint, constraint relax, shockssequence, irfshock, nperiods, maxiter, init);
-% 
-% Inputs: 
+%
+% Inputs:
 % modnam: name of .mod file for the reference regime (excludes the .mod extension).
 % modnamstar: name of .mod file for the alternative regime (excludes the .mod exten- sion).
 % constraint: the constraint (see notes 1 and 2 below). When the condition in constraint evaluates to true, the solution switches from the reference to the alternative regime.
 % constraint relax: when the condition in constraint relax evaluates to true, the solution returns to the reference regime.
-% shockssequence: a sequence of unforeseen shocks under which one wants to solve the model (size T×nshocks).
+% shockssequence: a sequence of unforeseen shocks under which one wants to solve the model (size TÃ—nshocks).
 % irfshock: label for innovation for IRFs, from Dynare .mod file (one or more of the ?varexo?).
 % nperiods: simulation horizon (can be longer than the sequence of shocks defined in shockssequence; must be long enough to ensure convergence back to the reference model at the end of the simulation horizon and may need to be varied depending on the sequence of shocks).
 % maxiter: maximum number of iterations allowed for the solution algorithm (20 if not specified).
@@ -24,7 +24,7 @@
 % 6/17/2013 -- Luca replaced external .m file setss.m
 
 
-function [zdatalinear_ zdatapiecewise_ zdatass_ oobase_ Mbase_  ] = ...
+function [zdatalinear_, zdatapiecewise_, zdatass_, oobase_, Mbase_  ] = ...
     solve_one_constraint(modnam_,modnamstar_,...
                          constraint_, constraint_relax_,...
                          shockssequence_,irfshock_,nperiods_,maxiter_,init_)
@@ -121,7 +121,7 @@ if ~exist('nperiods_')
 end
 
 
-% set some initial conditions and loop through the shocks 
+% set some initial conditions and loop through the shocks
 % period by period
 init_orig_ = init_;
 zdatapiecewise_ = zeros(nperiods_,nvars_);
@@ -131,36 +131,36 @@ violvecbool_ = zeros(nperiods_+1,1);
 
 
 for ishock_ = 1:nshocks_
-    
+
     changes_=1;
     iter_ = 0;
-    
-    
+
+
     while (changes_ & iter_<maxiter_)
         iter_ = iter_ +1;
-        
+
         % analyze when each regime starts based on current guess
-        [regime regimestart]=map_regime(violvecbool_);
-        
-        
-        
+        [regime, regimestart]=map_regime(violvecbool_);
+
+
+
         % get the hypothesized piece wise linear solution
         [zdatalinear_]=mkdatap_anticipated(nperiods_,decrulea_,decruleb_,...
                                            cof_,Jbarmat_,cofstar_,Jstarbarmat_,Dstartbarmat_,...
                                            regime,regimestart,violvecbool_,...
                                            endog_,exog_,irfshock_,shockssequence_(ishock_,:),init_);
-        
+
         for i_indx_=1:nwishes_
             eval([deblank(wishlist_(i_indx_,:)),'_difference=zdatalinear_(:,i_indx_);']);
         end
-        
-        
-        
+
+
+
         newviolvecbool_ = eval(constraint_difference_);
         relaxconstraint_ = eval(constraint_relax_difference_);
-        
-        
-        
+
+
+
         % check if changes to the hypothesis of the duration for each
         % regime
         if (max(newviolvecbool_-violvecbool_>0)) | sum(relaxconstraint_(find(violvecbool_==1))>0)
@@ -168,25 +168,25 @@ for ishock_ = 1:nshocks_
         else
             changes_ = 0;
         end
-        
-        
-        
+
+
+
         violvecbool_ = (violvecbool_|newviolvecbool_)-(relaxconstraint_ & violvecbool_);
-        
-        
+
+
     end
-    
+
     init_ = zdatalinear_(1,:);
     zdatapiecewise_(ishock_,:)=init_;
     init_= init_';
-    
-    % reset violvecbool_ for next period's shock -- this resetting is 
+
+    % reset violvecbool_ for next period's shock -- this resetting is
     % consistent with expecting no additional shocks
     violvecbool_=[violvecbool_(2:end);0];
-    
+
 end
 
-% if necessary, fill in the rest of the path with the remainder of the 
+% if necessary, fill in the rest of the path with the remainder of the
 % last IRF computed.
 zdatapiecewise_(ishock_+1:end,:)=zdatalinear_(2:nperiods_-ishock_+1,:);
 

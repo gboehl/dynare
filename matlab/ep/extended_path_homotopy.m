@@ -1,6 +1,6 @@
 function [info_convergence, endo_simul] = extended_path_homotopy(endo_simul, exo_simul, M, options, oo, pfm, ep, order, algo, method, debug)
 
-% Copyright (C) 2016 Dynare Team
+% Copyright (C) 2016-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

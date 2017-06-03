@@ -78,7 +78,7 @@ for i = 1:order+1
                 else
                     k1 = (nnodes-1)*(i-1)+k;
                 end
-                if hybrid_order == 2 && (k > 1 || i == order) 
+                if hybrid_order == 2 && (k > 1 || i == order)
                     z = [Y(i_cols_p,1);
                          Y(i_cols_s,1);
                          Y(i_cols_f,k1)+h_correction(i_hc)];
@@ -93,10 +93,10 @@ for i = 1:order+1
                         % in first period we don't keep track of
                         % predetermined variables
                         i_cols_A = [i_cols_As - ny; i_cols_Af];
-                        A1(i_rows,i_cols_A) = A1(i_rows,i_cols_A) + weights(k)*jacobian(eq_index,i_cols_1);  
+                        A1(i_rows,i_cols_A) = A1(i_rows,i_cols_A) + weights(k)*jacobian(eq_index,i_cols_1);
                     else
                         i_cols_A = [i_cols_Ap; i_cols_As; i_cols_Af];
-                        A1(i_rows,i_cols_A) = A1(i_rows,i_cols_A) + weights(k)*jacobian(eq_index,i_cols_j);  
+                        A1(i_rows,i_cols_A) = A1(i_rows,i_cols_A) + weights(k)*jacobian(eq_index,i_cols_j);
                     end
                 else
                     d1 = dynamic_model(z,innovation,params,steady_state,i+1);

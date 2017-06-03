@@ -33,7 +33,7 @@ function [hessian_mat, gg, htol1, ihh, hh_mat0, hh1, hess_info] = mr_hessian(x,f
 %                           varargin{6} --> BayesInfo
 %                           varargin{7} --> Bounds
 %                           varargin{8} --> DynareResults
-% 
+%
 % Outputs
 %  - hessian_mat        hessian
 %  - gg                 Jacobian
@@ -44,7 +44,7 @@ function [hessian_mat, gg, htol1, ihh, hh_mat0, hh1, hess_info] = mr_hessian(x,f
 %  - hh1                updated hess_info.h1
 %  - hess_info          structure with updated step length
 
-% Copyright (C) 2004-2016 Dynare Team
+% Copyright (C) 2004-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -67,7 +67,7 @@ n=size(x,1);
 h2=varargin{7}.ub-varargin{7}.lb;
 hmax=varargin{7}.ub-x;
 hmax=min(hmax,x-varargin{7}.lb);
-if isempty(ff0),
+if isempty(ff0)
     outer_product_gradient=0;
 else
     outer_product_gradient=1;
@@ -109,7 +109,7 @@ while i<n
     while (abs(dx(it))<0.5*hess_info.htol || abs(dx(it))>(3*hess_info.htol)) && icount<10 && ic==0
         icount=icount+1;
         if abs(dx(it))<0.5*hess_info.htol
-            if abs(dx(it)) ~= 0,
+            if abs(dx(it)) ~= 0
                 hess_info.h1(i)=min(max(1.e-10,0.3*abs(x(i))), 0.9*hess_info.htol/abs(dx(it))*hess_info.h1(i));
             else
                 hess_info.h1(i)=2.1*hess_info.h1(i);
@@ -147,8 +147,8 @@ while i<n
         end
     end
     f1(:,i)=fx;
-    if outer_product_gradient,
-        if any(isnan(ffx)) || isempty(ffx),
+    if outer_product_gradient
+        if any(isnan(ffx)) || isempty(ffx)
             ff1=ones(size(ff0)).*fx/length(ff0);
         else
             ff1=ffx;
@@ -157,8 +157,8 @@ while i<n
     xh1(i)=x(i)-hess_info.h1(i);
     [fx,exit_flag,ffx]=penalty_objective_function(xh1,func,penalty,varargin{:});
     f_1(:,i)=fx;
-    if outer_product_gradient,
-        if any(isnan(ffx)) || isempty(ffx),
+    if outer_product_gradient
+        if any(isnan(ffx)) || isempty(ffx)
             ff_1=ones(size(ff0)).*fx/length(ff0);
         else
             ff_1=ffx;
@@ -180,7 +180,7 @@ xh_1=xh1;
 
 gg=(f1'-f_1')./(2.*hess_info.h1);
 
-if outer_product_gradient,
+if outer_product_gradient
     if hflag==2
         gg=(f1'-f_1')./(2.*hess_info.h1);
         hessian_mat = zeros(size(f0,1),n*n);

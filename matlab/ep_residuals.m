@@ -1,23 +1,23 @@
 function r = ep_residuals(x, y, ix, iy, steadystate, dr, maximum_lag, endo_nbr)
 % Inversion of the extended path simulation approach. This routine computes the innovations needed to
-% reproduce the time path of a subset of endogenous variables.    
-%    
+% reproduce the time path of a subset of endogenous variables.
+%
 % INPUTS
-%  o x    [double]   n*1 vector, time t innovations.    
+%  o x    [double]   n*1 vector, time t innovations.
 %  o y    [double]   n*1 vector, time t restricted endogenous variables.
 %  o ix   [integer]  index of control innovations in the full vector of innovations.
-%  o iy   [integer]  index of controlled variables in the full vector of endogenous variables.    
-%  o s    [double]   m*1 vector, endogenous variables at time t-1. 
-%    
-% 
+%  o iy   [integer]  index of controlled variables in the full vector of endogenous variables.
+%  o s    [double]   m*1 vector, endogenous variables at time t-1.
+%
+%
 % OUTPUTS
 %  o r    [double]  n*1 vector of residuals.
-%    
+%
 % ALGORITHM
-%  
+%
 % SPECIAL REQUIREMENTS
 
-% Copyright (C) 2010 Dynare Team.
+% Copyright (C) 2010-2017 Dynare Team.
 %
 % This file is part of Dynare.
 %

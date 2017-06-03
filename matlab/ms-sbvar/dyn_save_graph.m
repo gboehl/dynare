@@ -9,11 +9,11 @@ function dyn_save_graph(dirname,graph_name,graph_formats,TeX,names,texnames,capt
 %
 % OUTPUTS
 %   none
-%    
+%
 % SPECIAL REQUIREMENTS
 %    none
 %
-% Copyright (C) 2011 Dynare Team
+% Copyright (C) 2011-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

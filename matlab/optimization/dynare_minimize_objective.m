@@ -8,12 +8,12 @@ function [opt_par_values,fval,exitflag,hessian_mat,options_,Scale,new_rat_hess_i
 %   minimizer_algorithm [scalar double, or string]          code of the optimizer algorithm, or string for the name of a user defined optimization routine (not shipped with dynare).
 %   options_            [matlab structure]                  Dynare options structure
 %   bounds              [n_params by 2] vector of doubles   2 row vectors containing lower and upper bound for parameters
-%   parameter_names     [n_params by 1] cell array          strings containing the parameters names   
+%   parameter_names     [n_params by 1] cell array          strings containing the parameters names
 %   prior_information   [matlab structure]                  Dynare prior information structure (bayestopt_) provided for algorithm 6
 %   Initial_Hessian     [n_params by n_params] matrix       initial hessian matrix provided for algorithm 6
 %   new_rat_hess_info   [matlab structure]                  step size info used by algorith 5
 %   varargin            [cell array]                        Input arguments for objective function
-%    
+%
 % OUTPUTS
 %   opt_par_values      [n_params by 1] vector of doubles   optimal parameter values minimizing the objective
 %   fval                [scalar double]                     value of the objective function at the minimum
@@ -21,12 +21,12 @@ function [opt_par_values,fval,exitflag,hessian_mat,options_,Scale,new_rat_hess_i
 %   hessian_mat         [n_params by n_params] matrix       hessian matrix at the mode returned by optimizer
 %   options_            [matlab structure]                  Dynare options structure (to return options set by algorithms 5)
 %   Scale               [scalar double]                     scaling parameter returned by algorith 6
-%    
+%
 % SPECIAL REQUIREMENTS
 %   none.
-%  
-% 
-% Copyright (C) 2014-2016 Dynare Team
+%
+%
+% Copyright (C) 2014-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -77,7 +77,7 @@ switch minimizer_algorithm
     if options_.silent_optimizer
         optim_options = optimset(optim_options,'display','off');
     end
-    if options_.analytic_derivation,
+    if options_.analytic_derivation
         optim_options = optimset(optim_options,'GradObj','on','TolX',1e-7);
     end
     [opt_par_values,fval,exitflag,output,lamdba,grad,hessian_mat] = ...
@@ -148,7 +148,7 @@ switch minimizer_algorithm
     if ~isempty(options_.optim_opt)
         eval(['optim_options = optimset(optim_options,' options_.optim_opt ');']);
     end
-    if options_.analytic_derivation,
+    if options_.analytic_derivation
         optim_options = optimset(optim_options,'GradObj','on');
     end
     if options_.silent_optimizer
@@ -188,16 +188,16 @@ switch minimizer_algorithm
               case 'verbosity'
                 Verbose = options_list{i,2};
               case 'SaveFiles'
-                Save_files = options_list{i,2};                
+                Save_files = options_list{i,2};
               otherwise
                 warning(['csminwel: Unknown option (' options_list{i,1} ')!'])
             end
         end
     end
     if options_.silent_optimizer
-        Save_files = 0; 
+        Save_files = 0;
         Verbose = 0;
-    end    
+    end
     % Set flag for analytical gradient.
     if options_.analytic_derivation
         analytic_grad=1;
@@ -232,23 +232,23 @@ switch minimizer_algorithm
                 if options_.analytic_derivation && flag~=0
                     error('newrat: analytic_derivation is incompatible with numerical Hessian. Using analytic Hessian')
                 else
-                    newratflag=flag; 
+                    newratflag=flag;
                 end
               case 'TolFun'
                 crit = options_list{i,2};
               case 'verbosity'
                 Verbose = options_list{i,2};
               case 'SaveFiles'
-                Save_files = options_list{i,2};                
+                Save_files = options_list{i,2};
               otherwise
                 warning(['newrat: Unknown option (' options_list{i,1} ')!'])
             end
         end
     end
     if options_.silent_optimizer
-        Save_files = 0; 
+        Save_files = 0;
         Verbose = 0;
-    end    
+    end
     hess_info.gstep=options_.gstep;
     hess_info.htol = 1.e-4;
     hess_info.h1=options_.gradient_epsilon*ones(n_params,1);
@@ -307,13 +307,13 @@ switch minimizer_algorithm
     end
     if options_.silent_optimizer
         simplexOptions.verbose = options_list{i,2};
-    end    
+    end
     [opt_par_values,fval,exitflag] = simplex_optimization_routine(objective_function,start_par_value,simplexOptions,parameter_names,varargin{:});
   case 9
     % Set defaults
     H0 = (bounds(:,2)-bounds(:,1))*0.2;
     H0(~isfinite(H0)) = 0.01;
-    while max(H0)/min(H0)>1e6 %make sure initial search volume (SIGMA) is not badly conditioned  
+    while max(H0)/min(H0)>1e6 %make sure initial search volume (SIGMA) is not badly conditioned
         H0(H0==max(H0))=0.9*H0(H0==max(H0));
     end
     cmaesOptions = options_.cmaes;
@@ -358,7 +358,7 @@ switch minimizer_algorithm
         cmaesOptions.SaveVariables='off';
         cmaesOptions.LogModulo = '0';    % [0:Inf] if >1 record data less frequently after gen=100';
         cmaesOptions.LogTime   = '0';    % [0:100] max. percentage of time for recording data';
-    end    
+    end
     warning('off','CMAES:NonfinitenessRange');
     warning('off','CMAES:InitialSigma');
     [x, fval, COUNTEVAL, STOPFLAG, OUT, BESTEVER] = cmaes(func2str(objective_function),start_par_value,H0,cmaesOptions,varargin{:});
@@ -390,7 +390,7 @@ switch minimizer_algorithm
                     simpsaOptions.DISPLAY = 'none';
                 else
                     simpsaOptions.DISPLAY = 'iter';
-                end                      
+                end
               otherwise
                 warning(['simpsa: Unknown option (' options_list{i,1}  ')!'])
             end

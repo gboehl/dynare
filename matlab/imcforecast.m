@@ -2,31 +2,31 @@ function imcforecast(constrained_paths, constrained_vars, options_cond_fcst)
 % Computes conditional forecasts.
 %
 % INPUTS
-%  o constrained_paths    [double]      m*p array, where m is the number of constrained endogenous variables and p is the number of constrained periods. 
-%  o constrained_vars     [char]        m*x array holding the names of the controlled endogenous variables. 
+%  o constrained_paths    [double]      m*p array, where m is the number of constrained endogenous variables and p is the number of constrained periods.
+%  o constrained_vars     [char]        m*x array holding the names of the controlled endogenous variables.
 %  o options_cond_fcst    [structure]   containing the options. The fields are:
 %                                                             + replic              [integer]   scalar, number of monte carlo simulations.
 %                                                             + parameter_set       [char]      values of the estimated parameters:
-%                                                                                               "posterior_mode", 
-%                                                                                               "posterior_mean", 
-%                                                                                               "posterior_median", 
-%                                                                                               "prior_mode" or 
-%                                                                                               "prior mean". 
+%                                                                                               "posterior_mode",
+%                                                                                               "posterior_mean",
+%                                                                                               "posterior_median",
+%                                                                                               "prior_mode" or
+%                                                                                               "prior mean".
 %                                                                                   [double]     np*1 array, values of the estimated parameters.
 %                                                             + controlled_varexo   [char]       m*x array, list of controlled exogenous variables.
-%                                                             + conf_sig            [double]     scalar in [0,1], probability mass covered by the confidence bands. 
+%                                                             + conf_sig            [double]     scalar in [0,1], probability mass covered by the confidence bands.
 %
 % OUTPUTS
 %  None.
-% 
+%
 % SPECIAL REQUIREMENTS
 %  This routine has to be called after an estimation statement or an estimated_params block.
 %
 % REMARKS
 %  [1] Results are stored in a structure which is saved in a mat file called conditional_forecasts.mat.
-%  [2] Use the function plot_icforecast to plot the results. 
+%  [2] Use the function plot_icforecast to plot the results.
 
-% Copyright (C) 2006-2016 Dynare Team
+% Copyright (C) 2006-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -119,7 +119,7 @@ if estimated_model
     data_index = dataset_info.missing.aindex;
     gend = dataset_.nobs;
     missing_value = dataset_info.missing.state;
-    
+
     %store qz_criterium
     qz_criterium_old=options_.qz_criterium;
     options_=select_qz_criterium_value(options_);
@@ -147,7 +147,7 @@ if estimated_model
     % add trend to constant
     for obs_iter=1:length(options_.varobs)
         j = strmatch(options_.varobs{obs_iter},M_.endo_names,'exact');
-        constant(j,:) = constant(j,:)+trend_addition(obs_iter,:);        
+        constant(j,:) = constant(j,:)+trend_addition(obs_iter,:);
     end
     trend = constant(oo_.dr.order_var,:);
     InitState(:,1) = atT(:,end);

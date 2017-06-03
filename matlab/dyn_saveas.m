@@ -39,13 +39,13 @@ if any(strcmp('eps',cellstr(graph_format)))
             set(h, 'Visible','on');
         end
     end
-    print(h,'-depsc2',[fname,'.eps']) 
+    print(h,'-depsc2',[fname,'.eps'])
 end
 if any(strcmp('pdf',cellstr(graph_format)))
     if isoctave
         error('Octave cannot create pdf files!')
     else
-        print(h,'-dpdf',[fname,'.pdf']) 
+        print(h,'-dpdf',[fname,'.pdf'])
     end
 end
 if any(strcmp('fig',cellstr(graph_format)))
@@ -53,7 +53,7 @@ if any(strcmp('fig',cellstr(graph_format)))
         error('Octave cannot create fig files!')
     else
         if nodisplay
-            %  THE FOLLOWING LINES COULD BE USED IF BUGS/PROBLEMS ARE REPORTED USING LINE 60                
+            %  THE FOLLOWING LINES COULD BE USED IF BUGS/PROBLEMS ARE REPORTED USING LINE 60
             %             set(h,'Units','Normalized')
             %             mypos=get(h,'Position');
             %             set(h,'Position',[-1 -1 mypos(3:4)])

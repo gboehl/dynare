@@ -1,6 +1,6 @@
 function [vdec, cc, ac] = mc_moments(mm, ss, dr)
 
-% Copyright (C) 2012 Dynare Team
+% Copyright (C) 2012-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -27,10 +27,10 @@ vdec = zeros(nobs,M_.exo_nbr,nsam);
 cc = zeros(nobs,nobs,nsam);
 ac = zeros(nobs,nobs*options_.ar,nsam);
 
-for j=1:nsam,
+for j=1:nsam
     oo_.dr.ghx = mm(:, [1:(nc1-M_.exo_nbr)],j);
     oo_.dr.ghu = mm(:, [(nc1-M_.exo_nbr+1):end], j);
-    if ~isempty(ss),
+    if ~isempty(ss)
         set_shocks_param(ss(j,:));
     end
     [vdec(:,:,j), corr, autocorr, z, zz] = th_moments(oo_.dr,options_.varobs);

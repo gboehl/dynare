@@ -12,9 +12,9 @@ function [z,zss]=dyn2vec(s1,s2)
 %
 % SPECIAL REQUIREMENTS
 %   none
-%  
+%
 
-% Copyright (C) 2001-2009 Dynare Team
+% Copyright (C) 2001-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -50,7 +50,7 @@ if nargin == 0
     end
     return
 else
-    j = strmatch(s1,M_.endo_names,'exact'); 
+    j = strmatch(s1,M_.endo_names,'exact');
     if ~ isempty(j)
         z = oo_.endo_simul(j,k)';
     else
@@ -83,6 +83,3 @@ end
 % 08/24/01 MJ replaced globlize by internal assignin
 % 08/24/01 MJ added 'exact' to strmatch (thanks to David Vavra)
 % 01/31/03 MJ added provision for alternative name of variable
-
-
-

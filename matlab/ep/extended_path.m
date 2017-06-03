@@ -3,7 +3,7 @@ function [ts, DynareResults] = extended_path(initialconditions, samplesize, exog
 % Stochastic simulation of a non linear DSGE model using the Extended Path method (Fair and Taylor 1983). A time
 % series of size T  is obtained by solving T perfect foresight models.
 %
-% INPUTS 
+% INPUTS
 %  o initialconditions      [double]    m*1 array, where m is the number of endogenous variables in the model.
 %  o samplesize             [integer]   scalar, size of the sample to be simulated.
 %  o exogenousvariables     [double]    T*n array, values for the structural innovations.
@@ -11,7 +11,7 @@ function [ts, DynareResults] = extended_path(initialconditions, samplesize, exog
 %  o DynareModel            [struct]    M_
 %  o DynareResults          [struct]    oo_
 %
-% OUTPUTS 
+% OUTPUTS
 %  o ts                     [dseries]   m*samplesize array, the simulations.
 %  o results                [cell]
 %
@@ -19,7 +19,7 @@ function [ts, DynareResults] = extended_path(initialconditions, samplesize, exog
 %
 % SPECIAL REQUIREMENTS
 
-% Copyright (C) 2009-2016 Dynare Team
+% Copyright (C) 2009-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -96,7 +96,7 @@ end
 if any(isnan(endogenous_variables_paths(:)))
     sl = find(~isnan(endogenous_variables_paths));
     nn = size(endogenous_variables_paths, 1);
-    endogenous_variables_paths = reshape(endogenous_variables_paths(sl), nn, length(sl)/nn); 
+    endogenous_variables_paths = reshape(endogenous_variables_paths(sl), nn, length(sl)/nn);
 end
 ts = dseries(transpose(endogenous_variables_paths), initial_period, cellstr(DynareModel.endo_names));
 

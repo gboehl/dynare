@@ -13,7 +13,7 @@ function [nCPU]= GiveCPUnumber (ComputerInformations, Environment)
 % SPECIAL REQUIREMENTS
 % none
 
-% Copyright (C) 2010-2013 Dynare Team
+% Copyright (C) 2010-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -33,7 +33,7 @@ function [nCPU]= GiveCPUnumber (ComputerInformations, Environment)
 
 nCPU='';
 
-if nargin < 2,
+if nargin < 2
     % Determine a specific operating system or software version when necessary
     % for different command (sintax, name, ...).
     Environment=~ispc;
@@ -41,7 +41,7 @@ end
 
 switch Environment
   case 0          %WINDOWS OPERATING SYSTEM
-    
+
     OffSet=27;
 
     SringPosition=strfind(ComputerInformations, 'Processors:');
@@ -64,7 +64,7 @@ switch Environment
 
     return
   case 1            %LIKE UNIX OPERATING SYSTEM
-    
+
     % Da generalizzare a un numero di CPu maggiore di 9!!!
 
     nCPU=str2num(ComputerInformations(length(ComputerInformations)-1))+1;

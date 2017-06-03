@@ -51,7 +51,7 @@ function [dr,info]=AIM_first_order_solver(jacobia,M,dr,qz_criterium)
 %! @end deftypefn
 %@eod:
 
-% Copyright (C) 2001-2016 Dynare Team
+% Copyright (C) 2001-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -91,11 +91,10 @@ if nba ~= nsfwrd
     if nba > nsfwrd
         temp = temp(nd-nba+1:nd-nsfwrd)-1-qz_criterium;
         info(1) = 3;
-    elseif nba < nsfwrd;
+    elseif nba < nsfwrd
         temp = temp(nd-nsfwrd+1:nd-nba)-1-qz_criterium;
         info(1) = 4;
     end
     info(2) = temp'*temp;
     return
 end
-

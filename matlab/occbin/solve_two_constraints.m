@@ -1,5 +1,5 @@
 % [zdatalinear zdatapiecewise zdatass oo 00 M 00] = solve two constraints(modnam 00,modnam 10,modnam 01,modnam 11,... constraint1, constraint2,... constraint relax1, constraint relax2,... shockssequence,irfshock,nperiods,curb retrench,maxiter,init);
-% 
+%
 % Inputs:
 % modnam 00: name of the .mod file for reference regime (excludes the .mod extension). modnam10: name of the .mod file for the alternative regime governed by the first
 % constraint.
@@ -29,7 +29,7 @@
 % to be processed.
 % 6/17/2013 -- Luca replaced external .m file setss.m
 
-function [ zdatalinear_ zdatapiecewise_ zdatass_ oo00_  M00_ ] = ...
+function [ zdatalinear_, zdatapiecewise_, zdatass_, oo00_ , M00_ ] = ...
     solve_two_constraints(modnam_00_,modnam_10_,modnam_01_,modnam_11_,...
                           constrain1_, constrain2_,...
                           constraint_relax1_, constraint_relax2_,...
@@ -140,7 +140,7 @@ Dbarmat11_ = resid_;
 if isfield(M00_,'nfwrd')  % needed for bakward compatibility with older Dynare releases
     [decrulea,decruleb]=get_pq(oo00_.dr,M00_.nstatic,M00_.nfwrd);
 else
-    [decrulea,decruleb]=get_pq(oo00_.dr,oo00_.dr.nstatic,oo00_.dr.nfwrd);    
+    [decrulea,decruleb]=get_pq(oo00_.dr,oo00_.dr.nstatic,oo00_.dr.nfwrd);
 end
 endog_ = M00_.endo_names;
 exog_ =  M00_.exo_names;
@@ -210,20 +210,20 @@ violvecbool_ = zeros(nperiods_+1,2);  % This sets the first guess for when
 wishlist_ = endog_;
 nwishes_ = size(wishlist_,1);
 for ishock_ = 1:nshocks
-    
-    
+
+
     changes_=1;
     iter_ = 0;
-    
+
     while (changes_ & iter_<maxiter_)
         iter_ = iter_ +1;
-        
+
         % analyse violvec and isolate contiguous periods in the other
         % regime.
-        [regime1 regimestart1]=map_regime(violvecbool_(:,1));
-        [regime2 regimestart2]=map_regime(violvecbool_(:,2));
-        
-        
+        [regime1, regimestart1]=map_regime(violvecbool_(:,1));
+        [regime2, regimestart2]=map_regime(violvecbool_(:,2));
+
+
         [zdatalinear_]=mkdatap_anticipated_2constraints(nperiods_,decrulea,decruleb,...
                                                         cof_,Jbarmat_,...
                                                         cof10_,Jbarmat10_,Dbarmat10_,...
@@ -233,34 +233,34 @@ for ishock_ = 1:nshocks
                                                         regime2,regimestart2,...
                                                         violvecbool_,endog_,exog_,...
                                                         irfshock_,shockssequence_(ishock_,:),init_);
-        
+
         for i_indx_=1:nwishes_
             eval([deblank(wishlist_(i_indx_,:)),'_difference=zdatalinear_(:,i_indx_);']);
         end
-        
-        
-        
-        
+
+
+
+
         newviolvecbool1_ = eval(constraint1_difference_);
         relaxconstraint1_ = eval(constraint_relax1_difference_);
-        
+
         newviolvecbool2_ = eval(constraint2_difference_);
         relaxconstraint2_ = eval(constraint_relax2_difference_);
-        
-        
-        
+
+
+
         newviolvecbool_ = [newviolvecbool1_;newviolvecbool2_];
         relaxconstraint_ = [relaxconstraint1_;relaxconstraint2_];
-        
-        
-        
+
+
+
         % check if changes_
         if (max(newviolvecbool_(:)-violvecbool_(:)>0)) | sum(relaxconstraint_(find(violvecbool_==1))>0)
             changes_ = 1;
         else
             changes_ = 0;
         end
-        
+
         if curb_retrench_   % apply Gauss-Sidel idea of slowing down the change in the guess
                             % for the constraint -- only relax one
                             % period at a time starting from the last
@@ -278,28 +278,27 @@ for ishock_ = 1:nshocks
         else
             violvecbool_ = (violvecbool_(:) | newviolvecbool_(:))-(relaxconstraint_(:) & violvecbool_(:));
         end
-        
+
         violvecbool_ = reshape(violvecbool_,nperiods_+1,2);
-        
-        
-        
+
+
+
     end
     if changes_ ==1
         display('Did not converge -- increase maxiter')
     end
-    
+
     init_ = zdatalinear_(1,:);
     zdatapiecewise_(ishock_,:)=init_;
     init_= init_';
-    
+
     % update the guess for constraint violations for next period
     % update is consistent with expecting no additional shocks next period
     violvecbool_=[violvecbool_(2:end,:);zeros(1,2)];
-    
+
 end
 
 
 zdatapiecewise_(ishock_+1:end,:)=zdatalinear_(2:nperiods_-ishock_+1,:);
 
 zdatalinear_ = mkdata(nperiods_,decrulea,decruleb,endog_,exog_,wishlist_,irfshock_,shockssequence_,init_orig_);
-

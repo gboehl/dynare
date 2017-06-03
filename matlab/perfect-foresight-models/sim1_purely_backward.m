@@ -2,7 +2,7 @@ function [endogenousvariables, info] = sim1_purely_backward(endogenousvariables,
 
 % Performs deterministic simulation of a purely backward model
 
-% Copyright (C) 2012-2015 Dynare Team
+% Copyright (C) 2012-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

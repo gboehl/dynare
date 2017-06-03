@@ -1,7 +1,7 @@
 function []=graph_decomp(z,shock_names,endo_names,i_var,initial_date,DynareModel,DynareOptions)
 %function []=graph_decomp(z,shock_names,endo_names,i_var,initial_date,DynareModel,DynareOptions)
 % Plots the results from the shock_decomposition command
-% 
+%
 % Inputs
 %   z               [n_var*(nshock+2)*nperiods]     shock decomposition array, see shock_decomposition.m for details
 %   shock_names     [endo_nbr*string length]        shock names from M_.exo_names
@@ -52,7 +52,7 @@ fig_name_long = opts_decomp.fig_name;
 
 use_shock_groups = DynareOptions.plot_shock_decomp.use_shock_groups;
 screen_shocks = opts_decomp.screen_shocks;
-if use_shock_groups | comp_nbr<=18,
+if use_shock_groups | comp_nbr<=18
     screen_shocks=0;
 end
 if use_shock_groups
@@ -94,20 +94,20 @@ if DynareOptions.TeX && any(strcmp('eps',cellstr(DynareOptions.plot_shock_decomp
     fprintf(fidTeX,' \n');
 end
 
-if opts_decomp.vintage && opts_decomp.realtime>1,
+if opts_decomp.vintage && opts_decomp.realtime>1
     preamble_txt = 'Shock decomposition';
 else
     preamble_txt = 'Historical shock decomposition';
 end
 
-if ~(screen_shocks && comp_nbr>18),
+if ~(screen_shocks && comp_nbr>18)
     screen_shocks=0;
 end
 comp_nbr0=comp_nbr;
 %%plot decomposition
 for j=1:nvar
     z1 = squeeze(z(i_var(j),:,:));
-    if screen_shocks,
+    if screen_shocks
         [junk, isort] = sort(mean(abs(z1(1:end-2,:)')), 'descend');
         labels = char(char(shock_names(isort(1:16),:)),'Others', 'Initial values');
         zres = sum(z1(isort(17:end),:),1);
@@ -153,14 +153,14 @@ for j=1:nvar
     plot(ax,x(2:end),z1(end,:),'k-','LineWidth',2)
     if ~isempty(SteadyState)
         plot(ax,[xmin xmax],[0 0],'--','linewidth',1,'color',[0.7 0.7 0.7])
-        if ymin+SteadyState(i_var(j))<0 && ymax+SteadyState(i_var(j))>0,
+        if ymin+SteadyState(i_var(j))<0 && ymax+SteadyState(i_var(j))>0
             plot(ax,[xmin xmax],SteadyState(i_var(j))*[-1 -1],'k--','linewidth',1)
             ytick=get(ax,'ytick');
             ytick1=ytick-SteadyState(i_var(j));
             ind1=min(find(ytick1>=ymin));
             ind2=max(find(ytick1<=ymax));
             dytick=ytick(2)-ytick(1);
-            if ind1>1,
+            if ind1>1
                 ytick1  = [ytick1(ind1:end) ytick1(end)+dytick:dytick:ymax];
             elseif ind2<length(ytick)
                 ytick1= [sort(ytick1(1)-dytick:-dytick:ymin) ytick1(1:ind2)];
@@ -175,7 +175,7 @@ for j=1:nvar
     end
     set(ax,'xlim',[xmin xmax]);
     hold off;
-    
+
     axes('Position',[0.75 0.1 0.2 0.8]);
     axis([0 1 0 1]);
     axis off;
@@ -222,7 +222,7 @@ for j=1:nvar
         fprintf(fidTeX,['\\caption{' preamble_txt fig_name_long strrep(fig_mode1, '_',  ' ') ': $ %s $.}\n'],deblank(DynareModel.endo_names_tex(i_var(j),:)));
         fprintf(fidTeX,'\\end{figure}\n');
         fprintf(fidTeX,' \n');
-    end    
+    end
 end
 
 %% write LaTeX-Footer

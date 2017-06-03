@@ -1,36 +1,36 @@
 function [Pstar,Pinf] = compute_Pinf_Pstar(mf,T,R,Q,qz_criterium, restrict_columns)
 % function [Z,ST,QT,R1,Pstar,Pinf] = schur_statespace_transformation(mf,T,R,Q,qz_criterium, restrict_columns)
 % Kitagawa transformation of state space system with a quasi-triangular
-% transition matrix with unit roots at the top, but excluding zero columns of the transition matrix. 
+% transition matrix with unit roots at the top, but excluding zero columns of the transition matrix.
 % Computation of Pstar and Pinf for Durbin and Koopman Diffuse filter
 %
-% The transformed state space is 
+% The transformed state space is
 %     y = [ss; z; x];
 %     s = static variables (zero columns of T)
 %     z = unit roots
 %     x = stable roots
 %     ss = s - z = stationarized static variables
-% 
-% INPUTS 
+%
+% INPUTS
 %   mf           [integer]    vector of indices of observed variables in
 %                             state vector
 %   T            [double]     matrix of transition
 %   R            [double]     matrix of structural shock effects
 %   Q            [double]     matrix of covariance of structural shocks
-%   qz_criterium [double]     numerical criterium for unit roots   
-%  
-% OUTPUTS 
+%   qz_criterium [double]     numerical criterium for unit roots
+%
+% OUTPUTS
 %   Pstar        [double]     matrix of covariance of stationary part
 %   Pinf         [double]     matrix of covariance initialization for
-%                             nonstationary part    
-%    
-% ALGORITHM 
+%                             nonstationary part
+%
+% ALGORITHM
 %   Real Schur transformation of transition equation
 %
 % SPECIAL REQUIREMENTS
 %   None
 
-% Copyright (C) 2006-2011 Dynare Team
+% Copyright (C) 2006-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -49,7 +49,7 @@ function [Pstar,Pinf] = compute_Pinf_Pstar(mf,T,R,Q,qz_criterium, restrict_colum
 
 np = size(T,1);
 
-% perform Kitagawa transformation 
+% perform Kitagawa transformation
 [QT,ST] = schur(T);
 e1 = abs(ordeig(ST)) > 2-qz_criterium;
 [QT,ST] = ordschur(QT,ST,e1);
@@ -112,4 +112,3 @@ end
 
 Pinf = QT*Pinf*QT';
 Pstar = QT*Pstar*QT';
-

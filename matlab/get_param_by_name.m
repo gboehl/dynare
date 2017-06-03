@@ -1,7 +1,7 @@
 function x = get_param_by_name(pname)
 % function x = get_param_by_name(pname)
 % returns the value of a parameter identified by its name
-%  
+%
 % INPUTS:
 %   pname:  parameter name
 %
@@ -11,7 +11,7 @@ function x = get_param_by_name(pname)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2006-2009 Dynare Team
+% Copyright (C) 2006-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

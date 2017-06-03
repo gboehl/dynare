@@ -6,7 +6,7 @@ function [dr,info,M_,options_,oo_] = dr1_PI(dr,task,M_,options_,oo_)
 % Prepares System as
 %        A0*E_t[y(t+1])+A1*y(t)=A2*y(t-1)+c+psi*eps(t)
 % with z an exogenous variable process.
-% and calls PI_Gensys.m solver 
+% and calls PI_Gensys.m solver
 % based on Pearlman et al 1986 paper and derived from
 % C.Sims' gensys linear solver.
 % to return solution in format
@@ -16,31 +16,31 @@ function [dr,info,M_,options_,oo_] = dr1_PI(dr,task,M_,options_,oo_)
 %   dr         [matlab structure] Decision rules for stochastic simulations.
 %   task       [integer]          if task = 0 then dr1 computes decision rules.
 %                                 if task = 1 then dr1 computes eigenvalues.
-%   M_         [matlab structure] Definition of the model.           
+%   M_         [matlab structure] Definition of the model.
 %   options_   [matlab structure] Global options.
-%   oo_        [matlab structure] Results 
-%    
+%   oo_        [matlab structure] Results
+%
 % OUTPUTS
 %   dr         [matlab structure] Decision rules for stochastic simulations.
 %   info       [integer]          info=1: the model doesn't define current variables uniquely
-%                                 info=2: problem in mjdgges.dll info(2) contains error code. 
+%                                 info=2: problem in mjdgges.dll info(2) contains error code.
 %                                 info=3: BK order condition not satisfied info(2) contains "distance"
 %                                         absence of stable trajectory.
 %                                 info=4: BK order condition not satisfied info(2) contains "distance"
 %                                         indeterminacy.
 %                                 info=5: BK rank condition not satisfied.
-%   M_         [matlab structure]            
+%   M_         [matlab structure]
 %   options_   [matlab structure]
 %   oo_        [matlab structure]
-%  
+%
 % ALGORITHM
 %   ...
-%    
+%
 % SPECIAL REQUIREMENTS
 %   none.
-%  
+%
 
-% Copyright (C) 1996-2012 Dynare Team
+% Copyright (C) 1996-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -66,9 +66,9 @@ xlen = M_.maximum_endo_lead + M_.maximum_endo_lag + 1;
 
 if (options_.aim_solver == 1)
     options_.aim_solver == 0;
-    warning('You can not use AIM with Part Info solver. AIM ignored'); 
+    warning('You can not use AIM with Part Info solver. AIM ignored');
 end
-if (options_.order > 1) 
+if (options_.order > 1)
     warning('You can not use order higher than 1 with Part Info solver. Order 1 assumed');
     options_.order =1;
 end
@@ -101,11 +101,11 @@ else
     iyv = iyv(:);
     iyr0 = find(iyv) ;
     it_ = M_.maximum_lag + 1 ;
-    
+
     if M_.exo_nbr == 0
         oo_.exo_steady_state = [] ;
     end
-    
+
 
     if options_.ACES_solver == 1
         sim_ruleids=[];
@@ -172,15 +172,15 @@ sdyn = M_.endo_nbr - nstatic;
 k0 = M_.lead_lag_incidence(M_.maximum_endo_lag+1,order_var);
 k1 = M_.lead_lag_incidence(find([1:klen] ~= M_.maximum_endo_lag+1),:);
 
-if (options_.aim_solver == 1) 
+if (options_.aim_solver == 1)
     error('Anderson and Moore AIM solver is not compatible with Partial Information models');
 end % end if useAIM and...
 
     % If required, try PCL86 solver, that is, if not the check being
-    % performed only and if it is 1st order 
+    % performed only and if it is 1st order
     % create sparse, extended jacobia AA:
     nendo=M_.endo_nbr; % = size(aa,1)
-    
+
 
     if(options_.ACES_solver==1)
         %if ~isfield(lq_instruments,'names')
@@ -239,8 +239,8 @@ end % end if useAIM and...
     %     E_t z(t)
     %     E_t z(t+1)
     %     E_t z(t+2)
-    %     E_t z(t+3) 
-    
+    %     E_t z(t+3)
+
     % partition jacobian:
     jlen=M_.nspred+M_.nsfwrd+M_.endo_nbr+M_.exo_nbr; % length of jacobian
     PSI=-jacobia_(:, jlen-M_.exo_nbr+1:end); % exog
@@ -253,12 +253,12 @@ end % end if useAIM and...
         AA2=AA0; % empty A2 and A3
         AA3=AA0;
         if xlen==nendo % && M_.maximum_lag <=1 && M_.maximum_lead <=1 % apply a shortcut
-            AA1=jacobia_(:,nspred+1:nspred+nendo); 
+            AA1=jacobia_(:,nspred+1:nspred+nendo);
             if M_.maximum_lead ==1
                 fnd = find(lead_lag(:,M_.maximum_lag+2));
                 AA0(:, fnd)= jacobia_(:,nonzeros(lead_lag(:,M_.maximum_lag+2))); %forwd jacobian
             end
-            if nspred>0 && M_.maximum_lag ==1  
+            if nspred>0 && M_.maximum_lag ==1
                 fnd = find(lead_lag(:,1));
                 AA2(:, fnd)= jacobia_(:,nonzeros(lead_lag(:,1))); %backward
             end
@@ -266,7 +266,7 @@ end % end if useAIM and...
         if nendo-xlen==num_inst
             PSI=[PSI;zeros(num_inst, M_.exo_nbr)];
             % AA1 contemporary
-            AA_all=jacobia_(:,nspred+1:nspred+nendo); 
+            AA_all=jacobia_(:,nspred+1:nspred+nendo);
             AA1=AA_all(:,lq_instruments.m_var); % endo without instruments
             lq_instruments.ij1=AA_all(:,lq_instruments.inst_var_indices); %  instruments only
             lq_instruments.B1=-[lq_instruments.ij1; eye(num_inst)];
@@ -281,7 +281,7 @@ end % end if useAIM and...
                 lq_instruments.B0=[lq_instruments.ij0; eye(num_inst)];
                 AA0=[AA0, zeros(xlen,num_inst); zeros(num_inst,xlen+num_inst)];
             end
-            if nspred>0 && M_.maximum_lag ==1  
+            if nspred>0 && M_.maximum_lag ==1
                 AA_all(:,:)=0.0;
                 fnd = find(lead_lag(:,1));
                 AA_all(:, fnd)= jacobia_(:,nonzeros(lead_lag(:,1))); %backward
@@ -312,7 +312,7 @@ end % end if useAIM and...
     NX=M_.exo_nbr; % no of exogenous varexo shock variables.
     NETA=nfwrd+nboth; % total no of exp. errors  set to no of forward looking equations
     FL_RANK=rank(AA0); % nfwrd+nboth; % min total no of forward looking equations and vars
-    
+
     try
         % call [G1pi,C,impact,nmat,TT1,TT2,gev,eu]=PI_gensys(a0,a1,a2,c,PSI,NX,NETA,NO_FL_EQS)
         % System given as
@@ -348,13 +348,13 @@ end % end if useAIM and...
             [G1pi,CC,impact,nmat,TT1,TT2,gev,eu, DD, E2,E5, GAMMA, FL_RANK]=PI_gensys(AA0,AA1,-AA2,AA3,cc,PSI,NX,NETA,FL_RANK, M_, options_);
         end
 
-        % reuse some of the bypassed code and tests that may be needed 
+        % reuse some of the bypassed code and tests that may be needed
         if (eu(1) ~= 1 || eu(2) ~= 1) && options_.ACES_solver==0
             info(1) = abs(eu(1)+eu(2));
             info(2) = 1.0e+8;
             %     return
         end
-        
+
         dr.PI_ghx=G1pi;
         dr.PI_ghu=impact;
         dr.PI_TT1=TT1;
@@ -369,7 +369,7 @@ end % end if useAIM and...
         dr.ghu=impact;
         dr.eigval = eig(G1pi);
         dr.rank=FL_RANK;
-        
+
         if options_.ACES_solver==1
             betap=options_.planner_discount;
             sigma_cov=M_.Sigma_e;
@@ -390,8 +390,8 @@ end % end if useAIM and...
             ACES.Q=DYN_Q;
             ACES.W=W;
             NY=nendo-num_inst;
-            
-            % save the followings in a subdirectory - BY    
+
+            % save the followings in a subdirectory - BY
             save ([ACES_DirectoryName,'/',M_.fname '_ACESLQ_Matrices'], 'ACES');
             save ([ACES_DirectoryName,'/',M_.fname '_ACESLQ_GAMMA'], 'GAMMA');
             save ([ACES_DirectoryName,'/',M_.fname '_ACESLQ_A.txt'], 'G1pi', '-ascii', '-double', '-tabs');
@@ -449,8 +449,6 @@ end % end if useAIM and...
         end
     end
 
-    % TODO: 
+    % TODO:
     % if options_.loglinear == 1
     % if exogenous deterministic variables
-    
-    return;

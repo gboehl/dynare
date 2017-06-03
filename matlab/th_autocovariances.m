@@ -1,28 +1,28 @@
 function [Gamma_y,stationary_vars] = th_autocovariances(dr,ivar,M_,options_,nodecomposition)
-% Computes the theoretical auto-covariances, Gamma_y, for an AR(p) process 
+% Computes the theoretical auto-covariances, Gamma_y, for an AR(p) process
 % with coefficients dr.ghx and dr.ghu and shock variances Sigma_e
 % for a subset of variables ivar.
 % Theoretical HP-filtering and band-pass filtering is available as an option
-%    
+%
 % INPUTS
 %   dr:               [structure]    Reduced form solution of the DSGE model  (decisions rules)
 %   ivar:             [integer]      Vector of indices for a subset of variables.
 %   M_                [structure]    Global dynare's structure, description of the DSGE model.
 %   options_          [structure]    Global dynare's structure.
-%   nodecomposition   [integer]      Scalar, if different from zero the variance decomposition is not triggered.  
-%    
+%   nodecomposition   [integer]      Scalar, if different from zero the variance decomposition is not triggered.
+%
 % OUTPUTS
-%   Gamma_y           [cell]         Matlab cell of nar+3 (second order approximation) or nar+2 (first order approximation) arrays, 
+%   Gamma_y           [cell]         Matlab cell of nar+3 (second order approximation) or nar+2 (first order approximation) arrays,
 %                                    where nar is the order of the autocorrelation function.
 %                                      Gamma_y{1}       [double]  Covariance matrix.
 %                                      Gamma_y{i+1}     [double]  Autocorrelation function (for i=1,...,options_.nar).
-%                                      Gamma_y{nar+2}   [double]  Variance decomposition.  
-%                                      Gamma_y{nar+3}   [double]  Expectation of the endogenous variables associated with a second 
-%                                                                 order approximation.    
+%                                      Gamma_y{nar+2}   [double]  Variance decomposition.
+%                                      Gamma_y{nar+3}   [double]  Expectation of the endogenous variables associated with a second
+%                                                                 order approximation.
 %   stationary_vars   [integer]      Vector of indices of stationary variables (as a subset of 1:length(ivar))
 %
 % SPECIAL REQUIREMENTS
-%   
+%
 % Algorithms
 %   The means at order=2 are based on the pruned state space as
 %   in Kim, Kim, Schaumburg, Sims (2008): Calculating and using second-order accurate
@@ -34,15 +34,15 @@ function [Gamma_y,stationary_vars] = th_autocovariances(dr,ivar,M_,options_,node
 %   Taking expectations on both sides requires to compute E(x^2)=Var(x), which
 %   can be obtained up to second order from the first order solution
 %   \[
-%       \hat x_t = g_x \hat x_{t - 1} + g_u u_t   
+%       \hat x_t = g_x \hat x_{t - 1} + g_u u_t
 %   \]
-%   by solving the corresponding Lyapunov equation. 
+%   by solving the corresponding Lyapunov equation.
 %   Given Var(x), the above equation can be solved for E(x_t) as
 %   \[
 %   E(x_t) = (I - {g_x}\right)^{- 1} 0.5\left( g_{\sigma\sigma} \sigma^2 + g_{xx} Var(\hat x_t) + g_{uu} Var(u_t) \right)
 %   \]
-% 
-% Copyright (C) 2001-2014 Dynare Team
+%
+% Copyright (C) 2001-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -114,7 +114,7 @@ else
     trend = 1:M_.endo_nbr;
     inv_order_var = trend(M_.block_structure.variable_reordered);
     ghu1(1:length(dr.state_var),:) = ghu(dr.state_var,:);
-end;
+end
 b = ghu1*M_.Sigma_e*ghu1';
 
 
@@ -122,7 +122,7 @@ if options_.block == 0
     ipred = nstatic+(1:nspred)';
 else
     ipred = dr.state_var;
-end;
+end
 % state space representation for state variables only
 [A,B] = kalman_transition_matrix(dr,ipred,1:nx,M_.exo_nbr);
 % Compute stationary variables (before HP filtering),
@@ -134,7 +134,7 @@ if options_.order == 2 || options_.hp_filter == 0
         iky = inv_order_var(ivar);
     else
         iky = ivar;
-    end;
+    end
     stationary_vars = (1:length(ivar))';
     if ~isempty(u)
         x = abs(ghx*u);
@@ -144,7 +144,7 @@ if options_.order == 2 || options_.hp_filter == 0
     aa = ghx(iky,:);
     bb = ghu(iky,:);
     if options_.order == 2         % mean correction for 2nd order
-        if ~isempty(ikx) 
+        if ~isempty(ikx)
             Ex = (dr.ghs2(ikx)+dr.ghxx(ikx,:)*vx(:)+dr.ghuu(ikx,:)*M_.Sigma_e(:))/2;
             Ex = (eye(n0)-AS(ikx,:))\Ex;
             Gamma_y{nar+3} = NaN*ones(nvar, 1);
@@ -164,7 +164,7 @@ if options_.hp_filter == 0 && ~options_.bandpass.indicator
     Gamma_y{1} = v;
     % autocorrelations
     if nar > 0
-        vxy = (A*vx*aa'+ghu1*M_.Sigma_e*bb');    
+        vxy = (A*vx*aa'+ghu1*M_.Sigma_e*bb');
         sy = sqrt(diag(Gamma_y{1}));
         sy = sy(stationary_vars);
         sy = sy *sy';
@@ -209,7 +209,7 @@ if options_.hp_filter == 0 && ~options_.bandpass.indicator
     end
 else% ==> Theoretical filters.
     % By construction, all variables are stationary when HP filtered
-    iky = inv_order_var(ivar);  
+    iky = inv_order_var(ivar);
     stationary_vars = (1:length(ivar))';
     aa = ghx(iky,:); %R in Uhlig (2001)
     bb = ghu(iky,:); %S in Uhlig (2001)
@@ -227,22 +227,22 @@ else% ==> Theoretical filters.
         filter_gain(freqs>=2*pi/lowest_periodicity & freqs<=2*pi/highest_periodicity)=1;
         filter_gain(freqs<=-2*pi/lowest_periodicity+2*pi & freqs>=-2*pi/highest_periodicity+2*pi)=1;
     else
-        filter_gain = 4*lambda*(1 - cos(freqs)).^2 ./ (1 + 4*lambda*(1 - cos(freqs)).^2);   %HP transfer function  
+        filter_gain = 4*lambda*(1 - cos(freqs)).^2 ./ (1 + 4*lambda*(1 - cos(freqs)).^2);   %HP transfer function
     end
     mathp_col = NaN(ngrid,length(ivar)^2);
     IA = eye(size(A,1));
     IE = eye(M_.exo_nbr);
     for ig = 1:ngrid
-        if filter_gain(ig)==0,
+        if filter_gain(ig)==0
             f_hp = zeros(length(ivar),length(ivar));
         else
             f_omega  =(1/(2*pi))*([(IA-A*tneg(ig))\ghu1;IE]...
                                   *M_.Sigma_e*[ghu1'/(IA-A'*tpos(ig)) IE]); % spectral density of state variables; top formula Uhlig (2001), p. 20 with N=0
-            g_omega = [aa*tneg(ig) bb]*f_omega*[aa'*tpos(ig); bb']; % spectral density of selected variables; middle formula Uhlig (2001), p. 20; only middle block, i.e. y_t' 
+            g_omega = [aa*tneg(ig) bb]*f_omega*[aa'*tpos(ig); bb']; % spectral density of selected variables; middle formula Uhlig (2001), p. 20; only middle block, i.e. y_t'
             f_hp = filter_gain(ig)^2*g_omega; % spectral density of selected filtered series; top formula Uhlig (2001), p. 21;
         end
         mathp_col(ig,:) = (f_hp(:))';    % store as matrix row for ifft
-    end;
+    end
     % Covariance of filtered series
     imathp_col = real(ifft(mathp_col))*(2*pi); % Inverse Fast Fourier Transformation; middle formula Uhlig (2001), p. 21;
     Gamma_y{1} = reshape(imathp_col(1,:),nvar,nvar);
@@ -269,32 +269,32 @@ else% ==> Theoretical filters.
             IA = eye(size(A,1));
             IE = eye(M_.exo_nbr);
             for ig = 1:ngrid
-                if filter_gain(ig)==0,
+                if filter_gain(ig)==0
                     f_hp = zeros(length(ivar),length(ivar));
                 else
                     f_omega  =(1/(2*pi))*( [(IA-A*tneg(ig))\b1;IE]...
                                            *SS*[b1'/(IA-A'*tpos(ig)) IE]); % spectral density of state variables; top formula Uhlig (2001), p. 20 with N=0
-                    g_omega = [aa*tneg(ig) b2]*f_omega*[aa'*tpos(ig); b2']; % spectral density of selected variables; middle formula Uhlig (2001), p. 20; only middle block, i.e. y_t' 
+                    g_omega = [aa*tneg(ig) b2]*f_omega*[aa'*tpos(ig); b2']; % spectral density of selected variables; middle formula Uhlig (2001), p. 20; only middle block, i.e. y_t'
                     f_hp = filter_gain(ig)^2*g_omega;  % spectral density of selected filtered series; top formula Uhlig (2001), p. 21;
                 end
                 mathp_col(ig,:) = (f_hp(:))';    % store as matrix row for ifft
-            end;  
+            end
             imathp_col = real(ifft(mathp_col))*(2*pi);
             vv = diag(reshape(imathp_col(1,:),nvar,nvar));
             for i=1:M_.exo_nbr
                 mathp_col = NaN(ngrid,length(ivar)^2);
                 SSi = cs(:,i)*cs(:,i)';
                 for ig = 1:ngrid
-                    if filter_gain(ig)==0,
+                    if filter_gain(ig)==0
                         f_hp = zeros(length(ivar),length(ivar));
                     else
                         f_omega  =(1/(2*pi))*( [(IA-A*tneg(ig))\b1;IE]...
                                                *SSi*[b1'/(IA-A'*tpos(ig)) IE]); % spectral density of state variables; top formula Uhlig (2001), p. 20 with N=0
-                        g_omega = [aa*tneg(ig) b2]*f_omega*[aa'*tpos(ig); b2']; % spectral density of selected variables; middle formula Uhlig (2001), p. 20; only middle block, i.e. y_t' 
+                        g_omega = [aa*tneg(ig) b2]*f_omega*[aa'*tpos(ig); b2']; % spectral density of selected variables; middle formula Uhlig (2001), p. 20; only middle block, i.e. y_t'
                         f_hp = filter_gain(ig)^2*g_omega; % spectral density of selected filtered series; top formula Uhlig (2001), p. 21;
                     end
                     mathp_col(ig,:) = (f_hp(:))';    % store as matrix row for ifft
-                end;
+                end
                 imathp_col = real(ifft(mathp_col))*(2*pi);
                 Gamma_y{nar+2}(:,i) = abs(diag(reshape(imathp_col(1,:),nvar,nvar)))./vv;
             end

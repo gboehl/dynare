@@ -1,6 +1,6 @@
 function [dr,ys,info]=discretionary_policy_1(oo_,Instruments)
 
-% Copyright (C) 2007-2016 Dynare Team
+% Copyright (C) 2007-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -96,11 +96,11 @@ eq_nbr= size(jacobia_,1);
 instr_nbr=endo_nbr-eq_nbr;
 
 if instr_nbr==0
-    error('discretionary_policy:: There are no available instruments, because the model has as many equations as variables.') 
+    error('discretionary_policy:: There are no available instruments, because the model has as many equations as variables.')
 end
 if size(Instruments,1)~= instr_nbr
-    error('discretionary_policy:: There are more declared instruments than omitted equations.') 
-end 
+    error('discretionary_policy:: There are more declared instruments than omitted equations.')
+end
 
 instr_id=nan(instr_nbr,1);
 for j=1:instr_nbr

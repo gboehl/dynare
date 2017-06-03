@@ -1,11 +1,11 @@
-function s=gsa_skewness(y),
+function s=gsa_skewness(y)
 
 % Written by Marco Ratto
 % Joint Research Centre, The European Commission,
-% marco.ratto@ec.europa.eu 
+% marco.ratto@ec.europa.eu
 
 % Copyright (C) 2012 European Commission
-% Copyright (C) 2012 Dynare Team
+% Copyright (C) 2012-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

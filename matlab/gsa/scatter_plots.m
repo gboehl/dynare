@@ -44,7 +44,7 @@ function scatter_plots(X,xp,vnames,plotsymbol, fnam, dirname, figtitle, xparam1,
 nflag = 0;
 if nargin >=3
     nflag = 1;
-end;
+end
 
 if nargin<4 || isempty(plotsymbol)
     if n*p<100, plotsymbol = 'o';
@@ -55,17 +55,17 @@ end
 if nargin<5 || isempty(fnam)
     fnam='scatter_plot';
 end
-if nargin<6 || isempty(dirname),
+if nargin<6 || isempty(dirname)
     dirname='';
     nograph=1;
     DynareOptions.nodisplay=0;
 else
-    nograph=0;    
+    nograph=0;
 end
-if nargin<7 || isempty(figtitle),
+if nargin<7 || isempty(figtitle)
     figtitle=fnam;
 end
-if nargin<8,
+if nargin<8
     xparam1=[];
 end
 
@@ -79,7 +79,7 @@ set(hh,'userdata',{X,xp})
 bf = 0.1;
 ffs = 0.05/(p-1);
 ffl = (1-2*bf-0.05)/p;
-if p>1,
+if p>1
     fL = linspace(bf,1-bf+ffs,p+1);
 else
     fL = bf;
@@ -135,7 +135,7 @@ for i = 1:p
             end
             hold off;
             %             axis([-0.1 1.1 -0.1 1.1])
-            if i<p,
+            if i<p
                 set(gca,'YTickLabel',[],'YTick',[]);
             else
                 set(gca,'yaxislocation','right');
@@ -146,14 +146,14 @@ for i = 1:p
         end
         if nflag == 1
             set(gca,'fontsize',9);
-        end;
+        end
         if i==1
             if nflag == 1
                 ylabel(vnames(j,:),'Rotation',45,'interpreter','none', ...
                        'HorizontalAlignment','right','VerticalAlignment','middle');
             else
                 ylabel([num2str(j),' '],'Rotation',90)
-            end;
+            end
         end
         if j==1
             if nflag == 1
@@ -161,7 +161,7 @@ for i = 1:p
                       'HorizontalAlignment','left','VerticalAlignment','bottom')
             else
                 title(num2str(i))
-            end;
+            end
         end
         drawnow
     end
@@ -171,7 +171,7 @@ end
 %     annotation('textbox', [0.55,0,0.35,0.05],'String', non_beha_name,'Color','Red','horizontalalignment','center','interpreter','none');
 % end
 
-if ~nograph,
+if ~nograph
     dyn_saveas(hh,[dirname,filesep,fig_nam_],DynareOptions.nodisplay,DynareOptions.graph_format);
     if DynareOptions.TeX && any(strcmp('eps',cellstr(DynareOptions.graph_format)))
         fidTeX = fopen([dirname,'/',fig_nam_ '.tex'],'w');

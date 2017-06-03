@@ -12,7 +12,7 @@ function perfect_foresight_solver()
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 1996-2016 Dynare Team
+% Copyright (C) 1996-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -192,12 +192,12 @@ if ~isreal(oo_.endo_simul(:)) %can only happen without bytecode
         oo_.deterministic_simulation.status = 1;
         oo_.endo_simul=real(oo_.endo_simul);
     else
-        oo_.deterministic_simulation.status = 0; 
+        oo_.deterministic_simulation.status = 0;
         disp('Simulation terminated with imaginary parts in the residuals or endogenous variables.')
-    end            
+    end
 end
 
-if oo_.deterministic_simulation.status == 1 
+if oo_.deterministic_simulation.status == 1
     disp('Perfect foresight solution found.')
 else
     disp('Failed to solve perfect foresight model')

@@ -1,21 +1,21 @@
 function [xparams,lpd,hessian_mat] = ...
     maximize_prior_density(iparams, prior_shape, prior_hyperparameter_1, prior_hyperparameter_2, prior_inf_bound, prior_sup_bound,DynareOptions,DynareModel,BayesInfo,EstimatedParams,DynareResults)
 % Maximizes the logged prior density using Chris Sims' optimization routine.
-% 
-% INPUTS 
+%
+% INPUTS
 %   iparams                        [double]   vector of initial parameters.
 %   prior_shape                    [integer]  vector specifying prior densities shapes.
 %   prior_hyperparameter_1         [double]   vector, first hyperparameter.
 %   prior_hyperparameter_2         [double]   vector, second hyperparameter.
 %   prior_inf_bound                [double]   vector, prior's lower bound.
-%   prior_sup_bound                [double]   vector, prior's upper bound. 
+%   prior_sup_bound                [double]   vector, prior's upper bound.
 %
-% OUTPUTS 
+% OUTPUTS
 %   xparams       [double]  vector, prior mode.
 %   lpd           [double]  scalar, value of the logged prior density at the mode.
 %   hessian_mat   [double]  matrix, Hessian matrix at the prior mode.
 
-% Copyright (C) 2009-2015 Dynare Team
+% Copyright (C) 2009-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

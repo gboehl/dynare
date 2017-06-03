@@ -12,7 +12,7 @@
 %
 % February 2004
 
-% Copyright (C) 2011-2012 Dynare Team
+% Copyright (C) 2011-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -212,7 +212,7 @@ end
 yrF = options_.ms.final_year ; qmF = options_.ms.final_subperiod ;
 [Mdate,tmp] = fn_calyrqm(options_.ms.freq,[options_.ms.initial_year  options_.ms.initial_subperiod ],[options_.ms.final_year options_.ms.final_subperiod ]);
 xdatae=[Mdate options_.data(1:nData,options_.ms.vlist)];
-% beyond sample into forecast horizon until the end of the data options_.ms.final_year :options_.ms.final_subperiod 
+% beyond sample into forecast horizon until the end of the data options_.ms.final_year :options_.ms.final_subperiod
 % Note: may contain NaN data.  So must be careful about its use
 
 %=========== Obtain prior-period, period-to-last period, and annual growth rates
@@ -307,14 +307,14 @@ if options_.ms.indxestima
         pause
     end
 
-    if options_.ms.contemp_reduced_form 
+    if options_.ms.contemp_reduced_form
         Uiconst=cell(nvar,1); Viconst=cell(ncoef,1);
         for kj=1:nvar
             Uiconst{kj} = eye(nvar);  Viconst{kj} = eye(ncoef);
         end
     end
 
-    if options_.ms.bayesian_prior 
+    if options_.ms.bayesian_prior
         %*** Obtains asymmetric prior (with no linear restrictions) with dummy observations as part of an explicit prior (i.e,
         %      reflected in Hpmulti and Hpinvmulti).  See Forecast II, pp.69a-69b for details.
         if 1  % Liquidity effect prior on both MS and MD equations.
@@ -329,7 +329,7 @@ if options_.ms.indxestima
         %*** Obtains the posterior matrices for estimation and inference
         [Pmat,H0inv,Hpinv] = fn_rlrpostr(xtx,xty,yty,Ptld,H0invtld,Hpinvtld,Uiconst,Viconst);
 
-        if options_.ms.contemp_reduced_form 
+        if options_.ms.contemp_reduced_form
             %*** Obtain the ML estimate
             A0hatinv = chol(H0inv{1}/fss);   % upper triangular but lower triangular choleski
             A0hat=inv(A0hatinv);
@@ -359,7 +359,7 @@ if options_.ms.indxestima
         %*** Obtain the posterior matrices for estimation and inference
         [Pmat,H0inv,Hpinv] = fn_dlrpostr(xtx,xty,yty,Uiconst,Viconst);
 
-        if options_.ms.contemp_reduced_form 
+        if options_.ms.contemp_reduced_form
             %*** Obtain the ML estimate
             A0hatinv = chol(H0inv{1}/fss);   % upper triangular but lower triangular choleski
             A0hat=inv(A0hatinv);
@@ -389,7 +389,7 @@ if options_.ms.indxestima
 
     %**** impulse responses
     swish = A0hatinv;       % each column corresponds to an equation
-    if options_.ms.contemp_reduced_form 
+    if options_.ms.contemp_reduced_form
         xhat = A0hat(a0indx);
         Bhat=Pmat{1};
         Fhat = Bhat*A0hat
@@ -397,7 +397,7 @@ if options_.ms.indxestima
     else
         xhat = fn_tran_a2b(A0hat,Uiconst,nvar,n0);
         [Fhat,ghat] = fn_gfmean(xhat,Pmat,Viconst,nvar,ncoef,n0,np);
-        if options_.ms.cross_restrictions 
+        if options_.ms.cross_restrictions
             Fhatur0P = Fhat;  % ur: unrestriced across A0 and A+
             for ki = 1:size(ixmC0Pres,1)   % loop through the number of equations in which
                                            % cross-A0-A+ restrictions occur. See St. Louis Note p.5.
@@ -745,11 +745,11 @@ end
 %   from different idfile's.
 %----------------------------------------
 %
-%if ~options_.ms.contemp_reduced_form 
+%if ~options_.ms.contemp_reduced_form
 %   SpHR=A0in'*A0in;
 %end
 %%
-%if ~isnan(SpHR) && ~options_.ms.contemp_reduced_form 
+%if ~isnan(SpHR) && ~options_.ms.contemp_reduced_form
 %   warning(' ')
 %   disp('Make sure you run the program with options_.ms.contemp_reduced_form =1 first.')
 %   disp('Otherwise, the following test results such as Schwartz are incorrect.')

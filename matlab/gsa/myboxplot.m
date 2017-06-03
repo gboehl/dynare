@@ -3,10 +3,10 @@ function sout = myboxplot (data,notched,symbol,vertical,maxwhisker)
 
 % Written by Marco Ratto
 % Joint Research Centre, The European Commission,
-% marco.ratto@ec.europa.eu 
+% marco.ratto@ec.europa.eu
 
 % Copyright (C) 2012 European Commission
-% Copyright (C) 2012 Dynare Team
+% Copyright (C) 2012-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -35,7 +35,7 @@ if notched==1, notched=0.25; end
 a=1-notched;
 
 % ## figure out how many data sets we have
-if iscell(data), 
+if iscell(data)
     nc = length(data);
 else
     %   if isvector(data), data = data(:); end
@@ -135,7 +135,7 @@ whisker_x(:,[chop,chop+nc]) = [];
 whisker_y(:,[chop,chop+nc]) = [];
 median_x(:,chop) = [];
 median_y(:,chop) = [];
-% % % % 
+% % % %
 % ## Add caps to the remaining whiskers
 cap_x = whisker_x;
 cap_x(1,:) =cap_x(1,:)- 0.05;
@@ -146,7 +146,7 @@ cap_y = whisker_y([1,1],:);
 % #whisker_x,whisker_y
 % #median_x,median_y
 % #cap_x,cap_y
-% 
+%
 % ## Do the plot
 
 mm=min(min(data));
@@ -172,7 +172,7 @@ else
     % % % % %     outliers2_y, outliers2_x, [symbol(2),"r;;"]);
 end
 
-if nargout,
+if nargout
     sout=s;
 end
 % % % endfunction

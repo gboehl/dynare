@@ -16,7 +16,7 @@ function PosteriorIRF(type)
 % functions associated with it(the _core1 and _core2).
 % See also the comments posterior_sampler.m funtion.
 
-% Copyright (C) 2006-2016 Dynare Team
+% Copyright (C) 2006-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -178,7 +178,7 @@ if strcmpi(type,'posterior')
     end
 end
 
-if ~strcmpi(type,'prior'),
+if ~strcmpi(type,'prior')
     localVars.x=x;
 end
 
@@ -202,16 +202,16 @@ localVars.ifil2=ifil2;
 localVars.MhDirectoryName=MhDirectoryName;
 
 % Like sequential execution!
-if isnumeric(options_.parallel),
+if isnumeric(options_.parallel)
     [fout] = PosteriorIRF_core1(localVars,1,B,0);
     nosaddle = fout.nosaddle;
 else
     % Parallel execution!
     [nCPU, totCPU, nBlockPerCPU] = distributeJobs(options_.parallel, 1, B);
-    for j=1:totCPU-1,
+    for j=1:totCPU-1
         nfiles = ceil(nBlockPerCPU(j)/MAX_nirfs_dsge);
         NumberOfIRFfiles_dsge(j+1) =NumberOfIRFfiles_dsge(j)+nfiles;
-        if MAX_nirfs_dsgevar,
+        if MAX_nirfs_dsgevar
             nfiles = ceil(nBlockPerCPU(j)/MAX_nirfs_dsgevar);
         else
             nfiles=0;
@@ -236,8 +236,8 @@ else
     NamFileInput(1,:) = {'',[M_.fname '_static.m']};
     NamFileInput(2,:) = {'',[M_.fname '_dynamic.m']};
     NamFileInput(3,:) = {'',[M_.fname '_set_auxiliary_variables.m']};
-    if options_.steadystate_flag,
-        if options_.steadystate_flag == 1,
+    if options_.steadystate_flag
+        if options_.steadystate_flag == 1
             NamFileInput(length(NamFileInput)+1,:)={'',[M_.fname '_steadystate.m']};
         else
             NamFileInput(length(NamFileInput)+1,:)={'',[M_.fname '_steadystate2.m']};
@@ -245,7 +245,7 @@ else
     end
     [fout] = masterParallel(options_.parallel, 1, B,NamFileInput,'PosteriorIRF_core1', localVars, globalVars, options_.parallel_info);
     nosaddle=0;
-    for j=1:length(fout),
+    for j=1:length(fout)
         nosaddle = nosaddle + fout(j).nosaddle;
     end
 
@@ -408,9 +408,9 @@ if ~options_.nograph && ~options_.no_graph.posterior
             for jj=1:nvar
                 if max(abs(MeanIRF(:,jj,ii))) >= options_.impulse_responses.plot_threshold
                     subplotnum = subplotnum+1;
-                    
-                    if subplotnum == 1 
-                        fprintf(fidTeX,'\\begin{figure}[H]\n');    
+
+                    if subplotnum == 1
+                        fprintf(fidTeX,'\\begin{figure}[H]\n');
                     end
                     name = deblank(varlist(jj,:));
                     texname = deblank(varlist_TeX(jj,:));
@@ -418,7 +418,7 @@ if ~options_.nograph && ~options_.no_graph.posterior
                 end
                 if subplotnum == MaxNumberOfPlotPerFigure || (jj == nvar  && subplotnum> 0)
                     figunumber = figunumber+1;
-                    
+
                     fprintf(fidTeX,'\\centering \n');
                     fprintf(fidTeX,'\\includegraphics[width=%2.2f\\textwidth]{%s/%s_Bayesian_IRF_%s_%d}\n',options_.figures.textwidth*min(subplotnum/nn,1),DirectoryName,M_.fname,deblank(tit(ii,:)),figunumber);
                     if options_.relative_irf
@@ -429,9 +429,9 @@ if ~options_.nograph && ~options_.no_graph.posterior
                     fprintf(fidTeX,'\\label{Fig:BayesianIRF:%s:%d}\n',deblank(tit(ii,:)),figunumber);
                     fprintf(fidTeX,'\\end{figure}\n');
                     fprintf(fidTeX,' \n');
-                    
+
                     subplotnum = 0;
-                end        
+                end
             end
         end
         fprintf(fidTeX,'%% End of TeX file.\n');
@@ -443,11 +443,11 @@ if ~options_.nograph && ~options_.no_graph.posterior
 
     % Comment for testing!
     if ~isoctave
-        if isnumeric(options_.parallel)  || (M_.exo_nbr*ceil(size(varlist,1)/MaxNumberOfPlotPerFigure))<8,
+        if isnumeric(options_.parallel)  || (M_.exo_nbr*ceil(size(varlist,1)/MaxNumberOfPlotPerFigure))<8
             [fout] = PosteriorIRF_core2(localVars,1,M_.exo_nbr,0);
         else
             isRemoteOctave = 0;
-            for indPC=1:length(options_.parallel),
+            for indPC=1:length(options_.parallel)
                 isRemoteOctave = isRemoteOctave + (findstr(options_.parallel(indPC).MatlabOctavePath, 'octave'));
             end
             if isRemoteOctave

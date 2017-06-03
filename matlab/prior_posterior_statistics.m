@@ -14,12 +14,12 @@ function prior_posterior_statistics(type,dataset,dataset_info)
 %
 % SPECIAL REQUIREMENTS
 %    none
-% 
+%
 % PARALLEL CONTEXT
 % See the comments in the posterior_sampler.m funtion.
-% 
-% 
-% Copyright (C) 2005-2016 Dynare Team
+%
+%
+% Copyright (C) 2005-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -79,7 +79,7 @@ elseif strcmpi(type,'gsa')
         DirectoryName = CheckPath(['gsa',filesep,'mc'],M_.dname);
         load([ RootDirectoryName filesep  M_.fname '_mc.mat'],'lpmat0','lpmat','istable')
     end
-    if ~isempty(lpmat0),
+    if ~isempty(lpmat0)
         x=[lpmat0(istable,:) lpmat(istable,:)];
     else
         x=lpmat(istable,:);
@@ -117,7 +117,7 @@ if options_.filter_covariance
     MAX_filter_covariance = min(B,ceil(MaxNumberOfBytes/(endo_nbr^2*(gend+1))/8));
 end
 
-if options_.smoothed_state_uncertainty 
+if options_.smoothed_state_uncertainty
     MAX_n_smoothed_state_uncertainty = min(B,ceil(MaxNumberOfBytes/((endo_nbr*endo_nbr)*gend)/8));
 end
 
@@ -196,7 +196,7 @@ end
 if options_.filter_covariance
     localVars.MAX_filter_covariance = MAX_filter_covariance;
 end
-if options_.smoothed_state_uncertainty 
+if options_.smoothed_state_uncertainty
     localVars.MAX_n_smoothed_state_uncertainty = MAX_n_smoothed_state_uncertainty ;
 end
 localVars.MAX_n_smoothed_constant=MAX_n_smoothed_constant;
@@ -207,17 +207,17 @@ localVars.MAX_momentsno = MAX_momentsno;
 localVars.ifil=ifil;
 localVars.DirectoryName = DirectoryName;
 
-if strcmpi(type,'posterior'),
+if strcmpi(type,'posterior')
     BaseName = [DirectoryName filesep M_.fname];
     load_last_mh_history_file(DirectoryName, M_.fname);
     FirstMhFile = record.KeepedDraws.FirstMhFile;
-    FirstLine = record.KeepedDraws.FirstLine; 
-    TotalNumberOfMhFiles = sum(record.MhDraws(:,2)); 
-    LastMhFile = TotalNumberOfMhFiles; 
+    FirstLine = record.KeepedDraws.FirstLine;
+    TotalNumberOfMhFiles = sum(record.MhDraws(:,2));
+    LastMhFile = TotalNumberOfMhFiles;
     TotalNumberOfMhDraws = sum(record.MhDraws(:,1));
     NumberOfDraws = TotalNumberOfMhDraws-floor(options_.mh_drop*TotalNumberOfMhDraws);
     mh_nblck = options_.mh_nblck;
-    if B==NumberOfDraws*mh_nblck,
+    if B==NumberOfDraws*mh_nblck
         % we load all retained MH runs !
         logpost=GetAllPosteriorDraws(0, FirstMhFile, FirstLine, TotalNumberOfMhFiles, NumberOfDraws);
         for column=1:npar
@@ -232,18 +232,18 @@ if strcmpi(type,'posterior'),
     localVars.logpost=logpost;
 end
 
-if ~strcmpi(type,'prior'),
+if ~strcmpi(type,'prior')
     localVars.x=x;
 end
 
 % Like sequential execution!
-if isnumeric(options_.parallel),
+if isnumeric(options_.parallel)
     [fout] = prior_posterior_statistics_core(localVars,1,B,0);
     % Parallel execution!
 else
     [nCPU, totCPU, nBlockPerCPU] = distributeJobs(options_.parallel, 1, B);
     ifil=zeros(n_variables_to_fill,totCPU);
-    for j=1:totCPU-1,
+    for j=1:totCPU-1
         if run_smoother
             nfiles = ceil(nBlockPerCPU(j)/MAX_nsmoo);
             ifil(1,j+1) =ifil(1,j)+nfiles;
@@ -274,14 +274,14 @@ else
         end
         if run_smoother
             nfiles = ceil(nBlockPerCPU(j)/MAX_n_trend_coeff);
-            ifil(9,j+1) =ifil(9,j)+nfiles;  
+            ifil(9,j+1) =ifil(9,j)+nfiles;
             nfiles = ceil(nBlockPerCPU(j)/MAX_n_smoothed_constant);
-            ifil(10,j+1) =ifil(10,j)+nfiles;  
+            ifil(10,j+1) =ifil(10,j)+nfiles;
             nfiles = ceil(nBlockPerCPU(j)/MAX_n_smoothed_trend);
-            ifil(11,j+1) =ifil(11,j)+nfiles;  
+            ifil(11,j+1) =ifil(11,j)+nfiles;
             if smoothed_state_uncertainty
                 nfiles = ceil(nBlockPerCPU(j)/MAX_n_smoothed_state_uncertainty);
-                ifil(13,j+1) =ifil(13,j)+nfiles;           
+                ifil(13,j+1) =ifil(13,j)+nfiles;
             end
         end
     end
@@ -295,8 +295,8 @@ else
     NamFileInput(1,:) = {'',[M_.fname '_static.m']};
     NamFileInput(2,:) = {'',[M_.fname '_dynamic.m']};
     NamFileInput(3,:) = {'',[M_.fname '_set_auxiliary_variables.m']};
-    if options_.steadystate_flag,
-        if options_.steadystate_flag == 1,
+    if options_.steadystate_flag
+        if options_.steadystate_flag == 1
             NamFileInput(length(NamFileInput)+1,:)={'',[M_.fname '_steadystate.m']};
         else
             NamFileInput(length(NamFileInput)+1,:)={'',[M_.fname '_steadystate2.m']};
@@ -348,9 +348,9 @@ if options_.smoother
             '',varlist,M_.endo_names_tex,M_.endo_names,...
             varlist,'StateUncertainty',DirectoryName,'_state_uncert');
     end
-    
+
     if nvn
-        for obs_iter=1:length(options_.varobs)        
+        for obs_iter=1:length(options_.varobs)
             meas_error_names{obs_iter,1}=['SE_EOBS_' M_.endo_names(strmatch(options_.varobs{obs_iter},M_.endo_names,'exact'),:)];
             texnames{obs_iter,1}=['SE_EOBS_' M_.endo_names_tex(strmatch(options_.varobs{obs_iter},M_.endo_names,'exact'),:)];
         end
@@ -377,7 +377,7 @@ if options_.forecast
         varlist,'PointForecast',DirectoryName,'_forc_point');
     if ~isequal(M_.H,0) && ~isempty(intersect(options_.varobs,varlist))
         texnames=[];
-        for obs_iter=1:length(options_.varobs)        
+        for obs_iter=1:length(options_.varobs)
             obs_names{obs_iter,1}=M_.endo_names(strmatch(options_.varobs{obs_iter},M_.endo_names,'exact'),:);
             texnames{obs_iter,1}=M_.endo_names_tex(strmatch(options_.varobs{obs_iter},M_.endo_names,'exact'),:);
         end
@@ -386,7 +386,7 @@ if options_.forecast
         varlist_forecast_ME=intersect(options_.varobs,varlist);
         pm3(meas_err_nbr,horizon,ifil(12),B,'Forecasted variables (point) with ME',...
             '',char(varlist_forecast_ME),texnames,obs_names,...
-            char(varlist_forecast_ME),'PointForecastME',DirectoryName,'_forc_point_ME')    
+            char(varlist_forecast_ME),'PointForecastME',DirectoryName,'_forc_point_ME')
     end
 end
 
@@ -397,9 +397,9 @@ if options_.filter_covariance
 end
 
 
-if ~isnumeric(options_.parallel),
+if ~isnumeric(options_.parallel)
     options_.parallel_info.leaveSlaveOpen = leaveSlaveOpen;
-    if leaveSlaveOpen == 0,
+    if leaveSlaveOpen == 0
         closeSlave(options_.parallel,options_.parallel_info.RemoteTmpFolder),
     end
 end

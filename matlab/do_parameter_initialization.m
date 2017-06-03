@@ -6,24 +6,24 @@ function [xparam1,estim_params_,xparam1_explicitly_initialized,xparam1_properly_
 %    o estim_params_    [structure] characterizing parameters to be estimated.
 %    o xparam1_calib    [double]    vector of parameters to be estimated, with parameters
 %                                   initialized from calibration using get_all_parameters
-%     
+%
 %    o xparam1_NaN_set_to_prior_mean [double]    vector of parameters to be estimated, with parameters
 %                                                initialized using dynare_estimation_init; not explicitly initialized
 %                                                parameters are at prior mean
 % OUTPUTS
 %    o xparam1                           [double]    vector of initialized parameters; uses the hierarchy: 1) explicitly initialized parameters,
 %                                                    2) calibrated parameters, 3) prior mean
-%    o estim_params_    [structure] characterizing parameters to be estimated; it is 
+%    o estim_params_    [structure] characterizing parameters to be estimated; it is
 %                                   updated here to reflect calibrated parameters
 %    o xparam1_explicitly_initialized    [double]    vector of parameters to be estimated that
-%                                                    were explicitly initialized 
+%                                                    were explicitly initialized
 %    o xparam1_properly_calibrated       [double]    vector of parameters to be estimated that
-%                                                    were properly calibrated 
-%    
+%                                                    were properly calibrated
+%
 % SPECIAL REQUIREMENTS
 %    None
 
-% Copyright (C) 2013 Dynare Team
+% Copyright (C) 2013-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -59,7 +59,7 @@ offset=0;
 if nvx
     initialized_par_index=find(~isnan(estim_params_.var_exo(:,2)));
     calibrated_par_index=find(isnan(estim_params_.var_exo(:,2)) & ~isnan(xparam1_calib(offset+1:offset+nvx,1)));
-    uninitialized_par_index=find(isnan(estim_params_.var_exo(:,2)) & isnan(xparam1_calib(offset+1:offset+nvx,1)));    
+    uninitialized_par_index=find(isnan(estim_params_.var_exo(:,2)) & isnan(xparam1_calib(offset+1:offset+nvx,1)));
     xparam1_explicitly_initialized(offset+initialized_par_index,1) = estim_params_.var_exo(initialized_par_index,2);
     %update estim_params_ with calibrated starting values
     estim_params_.var_exo(calibrated_par_index,2)=xparam1_calib(offset+calibrated_par_index,1);
@@ -67,13 +67,13 @@ if nvx
     xparam1_properly_calibrated(offset+calibrated_par_index,1) = xparam1_calib(offset+calibrated_par_index,1);
     inv_gamma_violation=find(estim_params_.var_exo(calibrated_par_index,2)==0 & estim_params_.var_exo(calibrated_par_index,5)==4);
     if inv_gamma_violation
-        estim_params_.var_exo(calibrated_par_index(inv_gamma_violation),2)=NaN;        
-        xparam1_properly_calibrated(offset+calibrated_par_index(inv_gamma_violation),1)=NaN;        
-        fprintf('PARAMETER INITIALIZATION: Some standard deviations of shocks of the calibrated model are 0 and\n') 
-        fprintf('PARAMETER INITIALIZATION: violate the inverse gamma prior. They will instead be initialized with the prior mean.\n')    
+        estim_params_.var_exo(calibrated_par_index(inv_gamma_violation),2)=NaN;
+        xparam1_properly_calibrated(offset+calibrated_par_index(inv_gamma_violation),1)=NaN;
+        fprintf('PARAMETER INITIALIZATION: Some standard deviations of shocks of the calibrated model are 0 and\n')
+        fprintf('PARAMETER INITIALIZATION: violate the inverse gamma prior. They will instead be initialized with the prior mean.\n')
     end
     if uninitialized_par_index
-        fprintf('PARAMETER INITIALIZATION: Warning, some estimated standard deviations of shocks are not\n') 
+        fprintf('PARAMETER INITIALIZATION: Warning, some estimated standard deviations of shocks are not\n')
         fprintf('PARAMETER INITIALIZATION: initialized. They will be initialized with the prior mean.\n')
     end
 end
@@ -88,10 +88,10 @@ if nvn
     xparam1_properly_calibrated(offset+calibrated_par_index,1) = xparam1_calib(offset+calibrated_par_index,1);
     inv_gamma_violation=find(estim_params_.var_endo(calibrated_par_index,2)==0 & estim_params_.var_endo(calibrated_par_index,5)==4);
     if inv_gamma_violation
-        estim_params_.var_endo(calibrated_par_index(inv_gamma_violation),2)=NaN;        
-        xparam1_properly_calibrated(offset+calibrated_par_index(inv_gamma_violation),1)=NaN;        
+        estim_params_.var_endo(calibrated_par_index(inv_gamma_violation),2)=NaN;
+        xparam1_properly_calibrated(offset+calibrated_par_index(inv_gamma_violation),1)=NaN;
         fprintf('PARAMETER INITIALIZATION: Some measurement errors of the calibrated model are 0 and violate the\n')
-        fprintf('PARAMETER INITIALIZATION: inverse gamma prior. They will instead be initialized with the prior mean.\n')    
+        fprintf('PARAMETER INITIALIZATION: inverse gamma prior. They will instead be initialized with the prior mean.\n')
     end
     if uninitialized_par_index
         fprintf('PARAMETER INITIALIZATION: Warning, some measurement errors are not initialized. They will be initialized\n')
@@ -140,4 +140,3 @@ end
 xparam1=xparam1_explicitly_initialized;
 xparam1(isnan(xparam1))=xparam1_properly_calibrated(isnan(xparam1)); %set not explicitly initialized parameters that do not obviously violate prior distribution to calibrated parameter values
 xparam1(isnan(xparam1))=xparam1_NaN_set_to_prior_mean(isnan(xparam1)); %set not yet initialized parameters to prior mean coming from dynare_estimation_init
-

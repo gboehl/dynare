@@ -1,14 +1,14 @@
 function [ys,params,info] = evaluate_steady_state_file(ys_init,exo_ss,M,options,steady_state_checkflag)
 % function [ys,params1,info] = evaluate_steady_state_file(ys_init,exo_ss,M,options,steady_state_checkflag)
-% Evaluates steady state files 
-%  
+% Evaluates steady state files
+%
 % INPUTS
 %   ys_init                   vector           initial values used to compute the steady
 %                                                 state
 %   exo_ss                    vector           exogenous steady state
 %   M                         struct           model parameters
 %   options                   struct           options
-%   steady_state_checkflag    boolean          indicator whether to check steady state returned  
+%   steady_state_checkflag    boolean          indicator whether to check steady state returned
 % OUTPUTS
 %   ys                        vector           steady state
 %   params1                   vector           model parameters possibly
@@ -19,7 +19,7 @@ function [ys,params,info] = evaluate_steady_state_file(ys_init,exo_ss,M,options,
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2001-2016 Dynare Team
+% Copyright (C) 2001-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -48,14 +48,14 @@ if options.steadystate_flag == 1
     % old format
     assignin('base','tmp_00_',params);
     evalin('base','M_.params=tmp_00_; clear(''tmp_00_'')');
-    h_steadystate = str2func([fname '_steadystate']);                       
+    h_steadystate = str2func([fname '_steadystate']);
     [ys,check] = h_steadystate(ys_init, exo_ss);
     params1 = evalin('base','M_.params');
 else % steadystate_flag == 2
      % new format
-    h_steadystate = str2func([fname '_steadystate2']);                       
+    h_steadystate = str2func([fname '_steadystate2']);
     [ys,params1,check] = h_steadystate(ys_init, exo_ss, params);
-end            
+end
 
 if check
     info(1) = 19;
@@ -134,7 +134,7 @@ if steady_state_checkflag
     if check
         info(1) = 19;
         info(2) = check; % to be improved
-        return;
+        return
     end
     if max(abs(residuals)) > options.dynatol.f
         info(1) = 19;
@@ -156,5 +156,3 @@ elseif ~isempty(options.steadystate_partial)
                               ys(indv),...
                               options, exo_ss,indv);
 end
-
-

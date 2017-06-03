@@ -60,6 +60,7 @@ checksum
 /doc/dynare.info
 /doc/dynare.info-1
 /doc/dynare.info-2
+/doc/dynare.info-3
 /doc/dynare.cp
 /doc/dynare.fn
 /doc/dynare.fns
@@ -212,3 +213,6 @@ tests/julia/rbc/rbc*.jl
 
 # Octave variables saved when Octave crashes
 octave-workspace
+
+# VERSION generated file
+VERSION

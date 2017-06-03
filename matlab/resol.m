@@ -76,7 +76,7 @@ function [dr,info,M,options,oo] = resol(check_flag,M,options,oo)
 %! @end deftypefn
 %@eod:
 
-% Copyright (C) 2001-2016 Dynare Team
+% Copyright (C) 2001-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -93,7 +93,7 @@ function [dr,info,M,options,oo] = resol(check_flag,M,options,oo)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-if isfield(oo,'dr');
+if isfield(oo,'dr')
     dr = oo.dr;
 end
 

@@ -1,20 +1,20 @@
 function options=set_default_option(options,field,default)
 
 % function options=set_default_option(options,field,default)
-% Sets the option value 
-% 
+% Sets the option value
+%
 % INPUTS
 %    options
 %    field:   option name
 %    default: assigns a value
-%    
+%
 % OUTPUTS
 %    options
-%        
+%
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2003-2009 Dynare Team
+% Copyright (C) 2003-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

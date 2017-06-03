@@ -6,7 +6,7 @@ function indmcf = mcf_analysis(lpmat, ibeha, inobeha, options_mcf, DynareOptions
 %
 
 % Copyright (C) 2014 European Commission
-% Copyright (C) 2016 Dynare Team
+% Copyright (C) 2016-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -42,9 +42,9 @@ nobeha_title = options_mcf.nobeha_title;
 title = options_mcf.title;
 fname_ = options_mcf.fname_;
 xparam1=[];
-if isfield(options_mcf,'xparam1'),
+if isfield(options_mcf,'xparam1')
     xparam1=options_mcf.xparam1;
-end    
+end
 OutputDirectoryName = options_mcf.OutputDirectoryName;
 
 [proba, dproba] = stab_map_1(lpmat, ibeha, inobeha, [],0);
@@ -67,14 +67,14 @@ if ~isempty(indmcf)
 end
 
 
-if length(ibeha)>10 && length(inobeha)>10,
+if length(ibeha)>10 && length(inobeha)>10
     indcorr1 = stab_map_2(lpmat(ibeha,:),alpha2, pvalue_corr, beha_title);
     indcorr2 = stab_map_2(lpmat(inobeha,:),alpha2, pvalue_corr, nobeha_title);
     indcorr = union(indcorr1(:), indcorr2(:));
     indcorr = indcorr(~ismember(indcorr(:),indmcf));
     indmcf = [indmcf(:); indcorr(:)];
 end
-if ~isempty(indmcf) && ~DynareOptions.nograph,
+if ~isempty(indmcf) && ~DynareOptions.nograph
     skipline()
     xx=[];
     if ~ isempty(xparam1), xx=xparam1(indmcf); end

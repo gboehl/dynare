@@ -1,21 +1,21 @@
 function [posterior_mean,posterior_covariance,posterior_mode,posterior_kernel_at_the_mode] = compute_mh_covariance_matrix()
 % Estimation of the posterior covariance matrix, posterior mean, posterior mode and evaluation of the posterior kernel at the
 % estimated mode, using the draws from a metropolis-hastings. The estimated posterior mode and covariance matrix are saved in
-% a file <M_.fname>_mh_mode.mat. 
-% 
-% INPUTS 
+% a file <M_.fname>_mh_mode.mat.
+%
+% INPUTS
 %   None.
-%  
+%
 % OUTPUTS
 %   o  posterior_mean                [double]  (n*1) vector, posterior expectation of the parameters.
 %   o  posterior_covariance          [double]  (n*n) matrix, posterior covariance of the parameters (computed from previous metropolis hastings).
-%   o  posterior_mode                [double]  (n*1) vector, posterior mode of the parameters. 
+%   o  posterior_mode                [double]  (n*1) vector, posterior mode of the parameters.
 %   o  posterior_kernel_at_the_mode  [double]  scalar.
 %
 % SPECIAL REQUIREMENTS
 %   None.
 
-% Copyright (C) 2006-2011 Dynare Team
+% Copyright (C) 2006-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -62,7 +62,7 @@ offset = 0;
 for b=1:nblck
     first_line = FirstLine;
     for n = FirstMhFile:TotalNumberOfMhFiles
-        load([ BaseName '_mh' int2str(n) '_blck' int2str(b) '.mat'],'x2','logpo2'); 
+        load([ BaseName '_mh' int2str(n) '_blck' int2str(b) '.mat'],'x2','logpo2');
         [tmp,idx] = max(logpo2);
         if tmp>posterior_kernel_at_the_mode
             posterior_kernel_at_the_mode = tmp;

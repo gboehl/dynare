@@ -154,13 +154,13 @@ for iter = 1:options.simul.maxit
     if endogenous_terminal_period && iter>1
         dy = ZERO;
         if options.simul.robust_lin_solve
-            dy(1:i_rows(end)) = -lin_solve_robust( A(1:i_rows(end),1:i_rows(end)), res(1:i_rows(end)),verbose );            
+            dy(1:i_rows(end)) = -lin_solve_robust( A(1:i_rows(end),1:i_rows(end)), res(1:i_rows(end)),verbose );
         else
             dy(1:i_rows(end)) = -lin_solve( A(1:i_rows(end),1:i_rows(end)), res(1:i_rows(end)), verbose );
         end
     else
         if options.simul.robust_lin_solve
-            dy = -lin_solve_robust( A, res, verbose );            
+            dy = -lin_solve_robust( A, res, verbose );
         else
             dy = -lin_solve( A, res, verbose );
         end
@@ -329,6 +329,5 @@ if any(~isreal(dyy))
     endo_names=cellstr(M.endo_names(indx,:));
     disp('Last iteration provided complex number for the following variables:')
     fprintf('%s, ',endo_names{:}),
-    fprintf('\n'),                
+    fprintf('\n'),
 end
-
