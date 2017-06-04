@@ -31,7 +31,6 @@ function [z, steady_state] = plot_shock_decomposition(M_,oo_,options_,varlist)
 options_.nodisplay = options_.plot_shock_decomp.nodisplay;
 options_.graph_format = options_.plot_shock_decomp.graph_format;
 options_.use_shock_groups = options_.plot_shock_decomp.use_shock_groups;
-options_.colormap = options_.plot_shock_decomp.colormap;
 
 % indices of endogenous variables
 if size(varlist,1) == 0
