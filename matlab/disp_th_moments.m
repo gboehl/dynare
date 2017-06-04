@@ -123,8 +123,9 @@ if length(i1) == 0
 end
 
 if options_.nocorr == 0 && size(stationary_vars, 1) > 0
-    corr = oo_.gamma_y{1}(i1,i1)./(sd(i1)*sd(i1)');
-    if options_.contemporaneous_correlation
+    corr=NaN(size(oo_.gamma_y{1}));
+    corr(i1,i1) = oo_.gamma_y{1}(i1,i1)./(sd(i1)*sd(i1)');
+    if options_.contemporaneous_correlation 
         oo_.contemporaneous_correlation = corr;
     end
     if ~options_.noprint
@@ -138,12 +139,12 @@ if options_.nocorr == 0 && size(stationary_vars, 1) > 0
         labels = deblank(M_.endo_names(ivar(i1),:));
         headers = char('Variables',labels);
         lh = size(labels,2)+2;
-        dyntable(options_,title,headers,labels,corr,lh,8,4);
+        dyntable(options_,title,headers,labels,corr(i1,i1),lh,8,4);
         if options_.TeX
             labels = deblank(M_.endo_names_tex(ivar(i1),:));
             headers=char('Variables',labels);
             lh = size(labels,2)+2;
-            dyn_latex_table(M_,options_,title,'th_corr_matrix',headers,labels,corr,lh,8,4);
+            dyn_latex_table(M_,options_,title,'th_corr_matrix',headers,labels,corr(i1,i1),lh,8,4);
         end
     end
 end
