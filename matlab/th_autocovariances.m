@@ -67,6 +67,11 @@ if options_.order >= 3
     error('Theoretical moments not implemented above 2nd order')
 end
 
+local_order = options_.order;
+if M_.hessian_eq_zero && local_order~=1
+    local_order = 1;
+end
+
 endo_nbr = M_.endo_nbr;
 exo_names_orig_ord  = M_.exo_names_orig_ord;
 if isoctave
@@ -128,7 +133,7 @@ end
 % Compute stationary variables (before HP filtering),
 % and compute 2nd order mean correction on stationary variables (in case of
 % HP filtering, this mean correction is computed *before* filtering)
-if options_.order == 2 || options_.hp_filter == 0
+if local_order == 2 || options_.hp_filter == 0
     [vx, u] =  lyapunov_symm(A,B*M_.Sigma_e*B',options_.lyapunov_fixed_point_tol,options_.qz_criterium,options_.lyapunov_complex_threshold,[],options_.debug);
     if options_.block == 0
         iky = inv_order_var(ivar);
@@ -143,7 +148,7 @@ if options_.order == 2 || options_.hp_filter == 0
     end
     aa = ghx(iky,:);
     bb = ghu(iky,:);
-    if options_.order == 2         % mean correction for 2nd order
+    if local_order == 2         % mean correction for 2nd order
         if ~isempty(ikx)
             Ex = (dr.ghs2(ikx)+dr.ghxx(ikx,:)*vx(:)+dr.ghuu(ikx,:)*M_.Sigma_e(:))/2;
             Ex = (eye(n0)-AS(ikx,:))\Ex;
