@@ -50,6 +50,7 @@ function [dataset_, dataset_info, xparam1, hh, M_, options_, oo_, estim_params_,
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 hh = [];
+xparam1 = [];
 
 if isempty(gsa_flag)
     gsa_flag = 0;
@@ -310,7 +311,8 @@ if options_.use_calibration_initialization %set calibration as starting values
         [xparam1,estim_params_]=do_parameter_initialization(estim_params_,xparam1_calib,xparam1); %get explicitly initialized parameters that have precedence to calibrated values
     end
 end
-if all(bayestopt_.pshape==0) && any(isnan(xparam1))
+
+if ~isempty(bayestopt_) && all(bayestopt_.pshape==0) && any(isnan(xparam1))
     error('ML estimation requires all estimated parameters to be initialized, either in an estimated_params or estimated_params_init-block ')
 end
 
