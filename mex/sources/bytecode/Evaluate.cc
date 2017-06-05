@@ -1539,14 +1539,14 @@ Evaluate::solve_simple_one_periods()
       Per_y_ = it_*y_size;
       ya = y[Block_Contain[0].Variable + Per_y_];
       compute_block_time(0, false, false);
-      if (!finite(res1))
+      if (!isfinite(res1))
         {
           res1 = NAN;
           while ((isinf(res1) || isnan(res1)) && (slowc > 1e-9))
             {
               it_code = start_code;
               compute_block_time(0, false, false);
-              if (!finite(res1))
+              if (!isfinite(res1))
                 {
                   slowc /= 1.5;
                   mexPrintf("Reducing the path length in Newton step slowc=%f\n", slowc);
