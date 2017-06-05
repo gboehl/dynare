@@ -663,9 +663,9 @@ dynSparseMatrix::Simple_Init(int Size, map<pair<pair<int, int>, int>, int> &IM, 
   FNZE_C = (NonZeroElem **) mxMalloc(i);
   test_mxMalloc(FNZE_C, __LINE__, __FILE__, __func__, i);
   NonZeroElem **temp_NZE_R = (NonZeroElem **) mxMalloc(i);
-  test_mxMalloc(*temp_NZE_R, __LINE__, __FILE__, __func__, i);
+  test_mxMalloc(temp_NZE_R, __LINE__, __FILE__, __func__, i);
   NonZeroElem **temp_NZE_C = (NonZeroElem **) mxMalloc(i);
-  test_mxMalloc(*temp_NZE_C, __LINE__, __FILE__, __func__, i);
+  test_mxMalloc(temp_NZE_C, __LINE__, __FILE__, __func__, i);
   i = Size*sizeof(int);
   NbNZRow = (int *) mxMalloc(i);
   test_mxMalloc(NbNZRow, __LINE__, __FILE__, __func__, i);
@@ -1900,9 +1900,9 @@ dynSparseMatrix::Init_GE(int periods, int y_kmin, int y_kmax, int Size, map<pair
   FNZE_C = (NonZeroElem **) mxMalloc(i);
   test_mxMalloc(FNZE_C, __LINE__, __FILE__, __func__, i);
   NonZeroElem **temp_NZE_R = (NonZeroElem **) mxMalloc(i);
-  test_mxMalloc(*temp_NZE_R, __LINE__, __FILE__, __func__, i);
+  test_mxMalloc(temp_NZE_R, __LINE__, __FILE__, __func__, i);
   NonZeroElem **temp_NZE_C = (NonZeroElem **) mxMalloc(i);
-  test_mxMalloc(*temp_NZE_C, __LINE__, __FILE__, __func__, i);
+  test_mxMalloc(temp_NZE_C, __LINE__, __FILE__, __func__, i);
   i = (periods+y_kmax+1)*Size*sizeof(int);
   NbNZRow = (int *) mxMalloc(i);
   test_mxMalloc(NbNZRow, __LINE__, __FILE__, __func__, i);

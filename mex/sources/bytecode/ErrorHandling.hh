@@ -2237,7 +2237,7 @@ public:
   inline
   test_mxMalloc(void *z, int line, string file, string func, int amount)
   {
-    if (!z && (amount > 0))
+    if (z == NULL && (amount > 0))
       {
         ostringstream tmp;
         tmp << " mxMalloc: out of memory " << amount << " bytes required at line " << line << " in function " << func << " (file " << file;
