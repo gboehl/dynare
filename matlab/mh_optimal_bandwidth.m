@@ -41,7 +41,7 @@ function optimal_bandwidth = mh_optimal_bandwidth(data,number_of_draws,bandwidth
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-%% Kernel specifications.
+% Kernel specifications.
 if strcmpi(kernel_function,'gaussian')
     % Kernel definition
     k    = @(x)inv(sqrt(2*pi))*exp(-0.5*x.^2);
@@ -89,15 +89,17 @@ else
 end
 
 
-%% Get the Skold and Roberts' correction.
+% Get the Skold and Roberts' correction.
 if bandwidth==0 || bandwidth==-1
     correction = correction_for_repeated_draws(data,number_of_draws);
 else
     correction = 0;
 end
-%% Compute the standard deviation of the draws.
+
+% Compute the standard deviation of the draws.
 sigma = std(data);
-%% Optimal bandwidth parameter.
+
+% Optimal bandwidth parameter.
 if bandwidth == 0  % Rule of thumb bandwidth parameter (Silverman [1986].
     h = 2*sigma*(sqrt(pi)*mu02/(12*(mu21^2)*number_of_draws))^(1/5);
     h = h*correction^(1/5);
@@ -132,10 +134,10 @@ elseif bandwidth == -2     % Bump killing... I compute local bandwith parameters
         error(['I can''t compute the optimal bandwidth with this kernel...' ...
                'Try the gaussian, triweight or cosinus kernels.']);
     end
-    T = zeros(n,1);
-    for i=1:n
+    T = zeros(number_of_draws, 1);
+    for i=1:number_of_draws
         j = i;
-        while j<= n && (data(j,1)-data(i,1))<2*eps
+        while j<=number_of_draws && (data(j,1)-data(i,1))<2*eps
             j = j+1;
         end
         T(i) = (j-i);
@@ -143,13 +145,13 @@ elseif bandwidth == -2     % Bump killing... I compute local bandwith parameters
     end
     correction = correction/number_of_draws;
     Itilda4 = 8*7*6*5/(((2*sigma)^9)*sqrt(pi));
-    g3      = abs(2*correction*k6(0)/(mu21*Itilda4*correction))^(1/9);
+    g3      = abs(2*correction*k6(0)/(mu21*Itilda4*number_of_draws))^(1/9);
     Ihat3   = 0;
     for i=1:number_of_draws
         Ihat3 = Ihat3 + sum(k6((data(i,1)-data)/g3));
     end
     Ihat3 = -Ihat3/((n^2)*g3^7);
-    g2    = abs(2*correction*k4(0)/(mu21*Ihat3*n))^(1/7);
+    g2    = abs(2*correction*k4(0)/(mu21*Ihat3*number_of_draws))^(1/7);
     Ihat2 = 0;
     for i=1:number_of_draws
         Ihat2 = Ihat2 + sum(k4((data(i)-data)/g2));
