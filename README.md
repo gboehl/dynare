@@ -91,7 +91,7 @@ If you have downloaded the sources from an official source archive or the source
 
 If you want to use Git, do the following from a terminal:
 
-    git clone --recursive http://github.com/DynareTeam/dynare.git
+    git clone --recursive https://github.com/DynareTeam/dynare.git
     cd dynare
     autoreconf -si
 
