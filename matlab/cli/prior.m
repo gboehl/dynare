@@ -103,6 +103,9 @@ if ismember('simulate', varargin) % Prior simulations (BK).
     disp(['mjdgges crash share                   = ' num2str(results.dll.problem_share)])
     disp(['Steady state problem share            = ' num2str(results.ss.problem_share)])
     disp(['Complex steady state  share           = ' num2str(results.ss.complex_share)])
+    if options_.loglinear
+        disp(['Nonpositive steady state share        = ' num2str(results.ss.nonpositive_share)])
+    end
     disp(['Analytical steady state problem share = ' num2str(results.ass.problem_share)])
     skipline(2)
     donesomething = true;
