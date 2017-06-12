@@ -561,7 +561,7 @@ end
 [oo_.steady_state, params,info] = evaluate_steady_state(oo_.steady_state,M,options_,oo_,steadystate_check_flag);
 
 if info(1)
-    fprintf('\ndynare_estimation_init:: The steady state at the initial parameters cannot be computed.')
+    fprintf('\ndynare_estimation_init:: The steady state at the initial parameters cannot be computed.\n')
     print_info(info, 0, options_);
 end
 
