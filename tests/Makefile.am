@@ -725,6 +725,7 @@ EXTRA_DIST = \
 	read_trs_files.sh \
 	run_test_matlab.m \
 	run_test_octave.m \
+	load_octave_packages.m \
 	$(MODFILES) \
 	$(XFAIL_MODFILES) \
 	$(MFILES) \
