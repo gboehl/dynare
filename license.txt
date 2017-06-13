@@ -85,38 +85,38 @@ Copyright: 2016 Benjamin Born and Johannes Pfeifer
            2016 Dynare Team
 License: GPL-3+
 
-Files: matlab\gsa\Morris_Measure_Groups.m
-       matlab\gsa\Sampling_Function_2.m
+Files: matlab/gsa/Morris_Measure_Groups.m
+       matlab/gsa/Sampling_Function_2.m
 Copyright: 2005 European Commission
            2012 Dynare Team
 License: GPL-3+
 Comment: Written by Jessica Cariboni and Francesca Campolongo
  Joint Research Centre, The European Commission,
 
-Files: matlab\gsa\cumplot.m
-       matlab\gsa\filt_mc_.m
-       matlab\gsa\gsa_plotmatrix.m
-       matlab\gsa\gsa_skewness.m
-       matlab\gsa\gsa_speed.m
-       matlab\gsa\log_trans_.m
-       matlab\gsa\map_calibration.m
-       matlab\gsa\map_ident_.m
-       matlab\gsa\mcf_analysis.m
-       matlab\gsa\myboxplot.m
-       matlab\gsa\myprctilecol.m
-       matlab\gsa\prior_draw_gsa.m
-       matlab\gsa\read_data.m
-       matlab\gsa\redform_map.m
-       matlab\gsa\redform_screen.m
-       matlab\gsa\scatter_mcf.m
-       matlab\gsa\smirnov.m
-       matlab\gsa\stab_map_.m
-       matlab\gsa\stab_map_1.m
-       matlab\gsa\stab_map_2.m
-       matlab\gsa\stand_.m
-       matlab\gsa\tcrit.m
-       matlab\gsa\teff.m
-       matlab\gsa\trank.m
+Files: matlab/gsa/cumplot.m
+       matlab/gsa/filt_mc_.m
+       matlab/gsa/gsa_plotmatrix.m
+       matlab/gsa/gsa_skewness.m
+       matlab/gsa/gsa_speed.m
+       matlab/gsa/log_trans_.m
+       matlab/gsa/map_calibration.m
+       matlab/gsa/map_ident_.m
+       matlab/gsa/mcf_analysis.m
+       matlab/gsa/myboxplot.m
+       matlab/gsa/myprctilecol.m
+       matlab/gsa/prior_draw_gsa.m
+       matlab/gsa/read_data.m
+       matlab/gsa/redform_map.m
+       matlab/gsa/redform_screen.m
+       matlab/gsa/scatter_mcf.m
+       matlab/gsa/smirnov.m
+       matlab/gsa/stab_map_.m
+       matlab/gsa/stab_map_1.m
+       matlab/gsa/stab_map_2.m
+       matlab/gsa/stand_.m
+       matlab/gsa/tcrit.m
+       matlab/gsa/teff.m
+       matlab/gsa/trank.m
 Copyright: 2011-2017 European Commission
            2011-2017 Dynare Team
 License: GPL-3+
