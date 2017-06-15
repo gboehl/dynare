@@ -171,14 +171,14 @@ Installation of Dynare
 
 * On Windows::
 * On Debian GNU/Linux and Ubuntu::
-* On Mac OS X::
+* On macOS::
 * For other systems::
 
 Compiler installation
 
 * Prerequisites on Windows::
 * Prerequisites on Debian GNU/Linux and Ubuntu::
-* Prerequisites on Mac OS X::
+* Prerequisites on macOS::
 
 Configuration
 
@@ -350,23 +350,21 @@ as a support tool for forecasting exercises. In the academic world,
 Dynare is used for research and teaching purposes in postgraduate
 macroeconomics courses.
 
-Dynare is a free software, which means that it can be downloaded free
-of charge, that its source code is freely available, and that it can
-be used for both non-profit and for-profit purposes. Most of the
-source files are covered by the GNU General Public Licence (GPL)
-version 3 or later (there are some exceptions to this, see the file
-@file{license.txt} in Dynare distribution). It is available for the
-Windows, Mac and Linux platforms and is fully documented through a
-user guide and a reference manual. Part of Dynare is programmed in
-C++, while the rest is written using the
-@uref{http://www.mathworks.com/products/matlab/, MATLAB} programming
-language.  The latter implies that commercially-available MATLAB
-software is required in order to run Dynare. However, as an
-alternative to MATLAB, Dynare is also able to run on top of
-@uref{http://www.octave.org, GNU Octave} (basically a free clone of
-MATLAB): this possibility is particularly interesting for students or
-institutions who cannot afford, or do not want to pay for, MATLAB and
-are willing to bear the concomitant performance loss.
+Dynare is a free software, which means that it can be downloaded free of
+charge, that its source code is freely available, and that it can be used for
+both non-profit and for-profit purposes. Most of the source files are covered
+by the GNU General Public Licence (GPL) version 3 or later (there are some
+exceptions to this, see the file @file{license.txt} in Dynare distribution). It
+is available for the Windows, macOS, and Linux platforms and is fully
+documented through a user guide and a reference manual. Part of Dynare is
+programmed in C++, while the rest is written using the
+@uref{http://www.mathworks.com/products/matlab/, MATLAB} programming language.
+The latter implies that commercially-available MATLAB software is required in
+order to run Dynare. However, as an alternative to MATLAB, Dynare is also able
+to run on top of @uref{http://www.octave.org, GNU Octave} (basically a free
+clone of MATLAB): this possibility is particularly interesting for students or
+institutions who cannot afford, or do not want to pay for, MATLAB and are
+willing to bear the concomitant performance loss.
 
 The development of Dynare is mainly done at
 @uref{http://www.cepremap.fr, Cepremap} by a core team of
@@ -444,7 +442,7 @@ If you want to give a URL, use the address of the Dynare website:
 
 Packaged versions of Dynare are available for Windows XP/Vista/7/8,
 @uref{http://www.debian.org,Debian GNU/Linux},
-@uref{http://www.ubuntu.com/,Ubuntu} and Mac OS X 10.8 or later.  Dynare should
+@uref{http://www.ubuntu.com/,Ubuntu} and macOS 10.8 or later.  Dynare should
 work on other systems, but some compilation steps are necessary in that case.
 
 In order to run Dynare, you need one of the following:
@@ -452,7 +450,7 @@ In order to run Dynare, you need one of the following:
 @itemize
 
 @item
-MATLAB version 7.5 (R2007b) or above (MATLAB R2009b 64-bit for Mac OS X);
+MATLAB version 7.5 (R2007b) or above (MATLAB R2009b 64-bit for macOS);
 
 @item
 GNU Octave version 3.6 or above.
@@ -475,10 +473,6 @@ If under GNU Octave, the following
 @uref{http://octave.sourceforge.net/,Octave-Forge} packages: optim,
 io, statistics, control.
 
-@item 
-Mac OS X Octave users will also need to install
-gnuplot if they want graphing capabilities.
-
 @end itemize
 
 
@@ -495,7 +489,7 @@ about your own files.
 @menu
 * On Windows::
 * On Debian GNU/Linux and Ubuntu::
-* On Mac OS X::
+* On macOS::
 * For other systems::
 @end menu
 
@@ -526,25 +520,29 @@ Wiki} for detailed instructions.
 Dynare will be installed under @file{/usr/lib/dynare}. Documentation will be
 under @file{/usr/share/doc/dynare-doc}.
 
-@node On Mac OS X
-@subsection On Mac OS X
+@node On macOS
+@subsection On macOS
 
-Execute the automated installer called
-@file{dynare-4.@var{x}.@var{y}.pkg} (where
-4.@var{x}.@var{y} is the version number), and follow the
-instructions. The default installation directory is
-@file{/Applications/Dynare/4.@var{x}.@var{y}}.
-
-Please refer to the
+To install Dynare for use with Matlab, execute the automated installer called
+@file{dynare-4.@var{x}.@var{y}.pkg} (where 4.@var{x}.@var{y} is the version
+number), and follow the instructions. The default installation directory is
+@file{/Applications/Dynare/4.@var{x}.@var{y}} (please refer to the
 @uref{http://www.dynare.org/DynareWiki/InstallOnMacOSX,Dynare Wiki} for
-detailed instructions.
+detailed instructions).
 
 After installation, this directory will contain several sub-directories,
 among which are @file{matlab}, @file{mex} and @file{doc}.
 
-Note that you can have several versions of Dynare coexisting (for
-example in @file{/Applications/Dynare}), as long as you correctly
-adjust your path settings (@pxref{Some words of warning}).
+Note that several versions of Dynare can coexist (by default in
+@file{/Applications/Dynare}), as long as you correctly adjust your path
+settings (@pxref{Some words of warning}).
+
+To install Dynare for Octave, first install Homebrew following the instructions
+on their site: @uref{https://brew.sh/}. Then install Octave, issuing the
+command @code{brew install octave} at the Terminal prompt. You can then install
+the latest stable version of Dynare by typing @code{brew install dynare} at the
+Terminal prompt. You can also pass options to the installation command. These
+options can be viewed by typing @code{brew info dynare} at the Terminal prompt.
 
 @node For other systems
 @subsection For other systems
@@ -573,7 +571,7 @@ Octave comes with built-in functionality for compiling mex-files.
 @menu
 * Prerequisites on Windows::
 * Prerequisites on Debian GNU/Linux and Ubuntu::
-* Prerequisites on Mac OS X::
+* Prerequisites on macOS::
 @end menu
 
 @node Prerequisites on Windows
@@ -601,9 +599,9 @@ it can be installed via @code{apt-get install build-essential}.
 Users of Octave under Linux should install the package for MEX file compilation 
 (under Debian or Ubuntu, it is called @file{liboctave-dev}).
 
-@node Prerequisites on Mac OS X
-@subsection Prerequisites on Mac OS X
-If you are using MATLAB under Mac OS X, you should install the latest
+@node Prerequisites on macOS
+@subsection Prerequisites on macOS
+If you are using MATLAB under macOS, you should install the latest
 version of XCode: see
 @uref{http://www.dynare.org/DynareWiki/InstallOnMacOSX,instructions on
 the Dynare wiki}.
@@ -643,7 +641,7 @@ Under Debian GNU/Linux or Ubuntu, type:
 addpath /usr/lib/dynare/matlab
 @end example
 
-Under Mac OS X, assuming that you have installed Dynare in the standard
+Under macOS, assuming that you have installed Dynare in the standard
 location, and replacing @code{4.@var{x}.@var{y}} with the correct version
 number, type:
 
@@ -658,7 +656,7 @@ will have to do it again.
 Via the menu entries:
 
 Select the ``Set Path'' entry in the ``File'' menu, then click on
-``Add Folder@dots{}'', and select the @file{matlab} subdirectory of your
+``Add Folder@dots{}'', and select the @file{matlab} subdirectory of `your
 Dynare installation. Note that you @emph{should not} use ``Add with
 Subfolders@dots{}''. Apply the settings by clicking on ``Save''. Note that
 MATLAB will remember this setting next time you run it.
@@ -682,18 +680,16 @@ addpath c:\dynare\4.@var{x}.@var{y}\matlab
 Under Debian GNU/Linux or Ubuntu, there is no need to use the
 @code{addpath} command; the packaging does it for you.
 
-Under Mac OS X, assuming that you have installed Dynare in the
-standard location, and replacing ``4.@var{x}.@var{y}'' with the correct
-version number, type:
+Under macOS, assuming that you have installed Dynare and Octave via Homebrew, type:
 
 @example
-addpath /Applications/Dynare/4.@var{x}.@var{y}/matlab
+addpath /usr/local/opt/dynare/lib/dynare/matlab
 @end example
 
 If you don't want to type this command every time you run Octave, you
 can put it in a file called @file{.octaverc} in your home directory
 (under Windows this will generally be @file{c:\Documents and
-Settings\USERNAME\} while under Mac OS X it is @file{/Users/USERNAME/}).
+Settings\USERNAME\} while under macOS it is @file{/Users/USERNAME/}).
 This file is run by Octave at every startup.
 
 @node Some words of warning
@@ -10924,7 +10920,7 @@ related to the model (and hence not placed in the model file). At the
 moment, it is only used when using Dynare to run parallel
 computations.
 
-On Linux and Mac OS X, the default location of the configuration file
+On Linux and macOS, the default location of the configuration file
 is @file{$HOME/.dynare}, while on Windows it is
 @file{%APPDATA%\dynare.ini} (typically @file{C:\Documents and
 Settings\@var{USERNAME}\Application Data\dynare.ini} under Windows XP,
@@ -11185,7 +11181,7 @@ If just one integer is passed, the number of processors to use. If a
 range of integers is passed, the specific processors to use (processor
 counting is defined to begin at one as opposed to zero). Note that
 using specific processors is only possible under Windows; under Linux
-and Mac OS X, if a range is passed the same number of processors will
+and macOS, if a range is passed the same number of processors will
 be used but the range will be adjusted to begin at one.
 
 @item ComputerName = @var{COMPUTER_NAME}
@@ -13607,7 +13603,7 @@ Instantiates a @code{Report} object.
 The full path to the @LaTeX{} compiler on your system. If this option
 is not provided, Dynare will try to find the appropriate program to
 compile @LaTeX{} on your system. Default is system dependent: Windows:
-the result of @code{findtexmf --file-type=exe pdflatex}, Mac OS X and
+the result of @code{findtexmf --file-type=exe pdflatex}, macOS and
 Linux: the result of @code{which pdflatex}
 
 @item showDate, @code{BOOLEAN}
@@ -14176,7 +14172,7 @@ Print the compiler output to the screen. Useful for debugging your code as the
 @ref{showOutput}
 
 @item showReport, @code{BOOLEAN}
-Open the compiled report (works on Windows and OS X on Matlab). Default:
+Open the compiled report (works on Windows and macOS on Matlab). Default:
 @code{true}
 
 @end table
