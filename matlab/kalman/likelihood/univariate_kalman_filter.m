@@ -37,7 +37,7 @@ function [LIK, lik,a,P] = univariate_kalman_filter(data_index,number_of_observat
 %! @item Q
 %! Matrix (@var{rr}*@var{rr}) of doubles, covariance matrix of the structural innovations (noise in the state equation).
 %! @item R
-%! Matrix (@var{mm}*@var{rr}) of doubles, 
+%! Matrix (@var{mm}*@var{rr}) of doubles,
 %! @item H
 %! Vector (@var{pp}) of doubles, diagonal of covariance matrix of the measurement errors (corelation among measurement errors is handled by a model transformation).
 %! @item Z
@@ -76,15 +76,15 @@ function [LIK, lik,a,P] = univariate_kalman_filter(data_index,number_of_observat
 %! @ref{univariate_kalman_filter_ss}
 %! @end deftypefn
 %@eod:
-% 
+%
 % Algorithm:
-% 
+%
 %   Uses the univariate filter as described in Durbin/Koopman (2012): "Time
 %   Series Analysis by State Space Methods", Oxford University Press,
 %   Second Edition, Ch. 6.4 + 7.2.5
 
 
-% Copyright (C) 2004-2016 Dynare Team
+% Copyright (C) 2004-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -128,7 +128,7 @@ oldK = Inf;
 K = NaN(mm,pp);
 asy_hess=0;
 
-if  analytic_derivation == 0,
+if  analytic_derivation == 0
     DLIK=[];
     Hess=[];
 else
@@ -136,15 +136,15 @@ else
     DLIK  = zeros(k,1);                             % Initialization of the score.
     Da    = zeros(mm,k);                            % Derivative State vector.
     dlik  = zeros(smpl,k);
-    
-    if Zflag==0,
+
+    if Zflag==0
         C = zeros(pp,mm);
-        for ii=1:pp; C(ii,Z(ii))=1;end         % SELECTION MATRIX IN MEASUREMENT EQ. (FOR WHEN IT IS NOT CONSTANT)
+        for ii=1:pp, C(ii,Z(ii))=1; end         % SELECTION MATRIX IN MEASUREMENT EQ. (FOR WHEN IT IS NOT CONSTANT)
     else
         C=Z;
     end
     dC = zeros(pp,mm,k);   % either selection matrix or schur have zero derivatives
-    if analytic_derivation==2,
+    if analytic_derivation==2
         Hess  = zeros(k,k);                             % Initialization of the Hessian
         D2a    = zeros(mm,k,k);                             % State vector.
         d2C = zeros(pp,mm,k,k);
@@ -155,7 +155,7 @@ else
         D2T=[];
         D2Yss=[];
     end
-    if asy_hess,
+    if asy_hess
         Hess  = zeros(k,k);                             % Initialization of the Hessian
     end
     LIK={inf,DLIK,Hess};
@@ -172,13 +172,13 @@ while notsteady && t<=last %loop over t
     oldP = P(:);
     for i=1:rows(z) %loop over i
         if Zflag
-            prediction_error = Y(d_index(i),t) - z(i,:)*a;  % nu_{t,i} in 6.13 in DK (2012) 
+            prediction_error = Y(d_index(i),t) - z(i,:)*a;  % nu_{t,i} in 6.13 in DK (2012)
             PZ = P*z(i,:)';                                 % Z_{t,i}*P_{t,i}*Z_{t,i}'
-            Fi = z(i,:)*PZ + H(d_index(i));                 % F_{t,i} in 6.13 in DK (2012), relies on H being diagonal 
+            Fi = z(i,:)*PZ + H(d_index(i));                 % F_{t,i} in 6.13 in DK (2012), relies on H being diagonal
         else
-            prediction_error = Y(d_index(i),t) - a(z(i));   % nu_{t,i} in 6.13 in DK (2012) 
+            prediction_error = Y(d_index(i),t) - a(z(i));   % nu_{t,i} in 6.13 in DK (2012)
             PZ = P(:,z(i));                                 % Z_{t,i}*P_{t,i}*Z_{t,i}'
-            Fi = PZ(z(i)) + H(d_index(i));                  % F_{t,i} in 6.13 in DK (2012), relies on H being diagonal 
+            Fi = PZ(z(i)) + H(d_index(i));                  % F_{t,i} in 6.13 in DK (2012), relies on H being diagonal
         end
         if Fi>kalman_tol
             Ki =  PZ/Fi; %K_{t,i} in 6.13 in DK (2012)
@@ -186,15 +186,15 @@ while notsteady && t<=last %loop over t
                 K(:,i) = Ki;
             end
             lik(s,i) = log(Fi) + (prediction_error*prediction_error)/Fi + l2pi; %Top equation p. 175 in DK (2012)
-            if analytic_derivation,
-                if analytic_derivation==2,
+            if analytic_derivation
+                if analytic_derivation==2
                     [Da,DP,DLIKt,D2a,D2P, Hesst] = univariate_computeDLIK(k,i,z(i,:),Zflag,prediction_error,Ki,PZ,Fi,Da,DYss,DP,DH(d_index(i),:),notsteady,D2a,D2Yss,D2P);
                 else
                     [Da,DP,DLIKt,Hesst] = univariate_computeDLIK(k,i,z(i,:),Zflag,prediction_error,Ki,PZ,Fi,Da,DYss,DP,DH(d_index(i),:),notsteady);
                 end
                 if t>presample
                     DLIK = DLIK + DLIKt;
-                    if analytic_derivation==2 || asy_hess,
+                    if analytic_derivation==2 || asy_hess
                         Hess = Hess + Hesst;
                     end
                 end
@@ -207,14 +207,14 @@ while notsteady && t<=last %loop over t
             % p. 157, DK (2012)
         end
     end
-    if analytic_derivation,        
-        if analytic_derivation==2,
+    if analytic_derivation
+        if analytic_derivation==2
             [Da,DP,D2a,D2P] = univariate_computeDstate(k,a,P,T,Da,DP,DT,DOm,notsteady,D2a,D2P,D2T,D2Om);
         else
             [Da,DP] = univariate_computeDstate(k,a,P,T,Da,DP,DT,DOm,notsteady);
         end
     end
-    a = T*a;            %transition according to (6.14) in DK (2012) 
+    a = T*a;            %transition according to (6.14) in DK (2012)
     P = T*P*T' + QQ;    %transition according to (6.14) in DK (2012)
     if t>=no_more_missing_observations
         notsteady = max(abs(K(:)-oldK))>riccati_tol;
@@ -225,29 +225,29 @@ end
 
 % Divide by two.
 lik(1:s,:) = .5*lik(1:s,:);
-if analytic_derivation,
+if analytic_derivation
     DLIK = DLIK/2;
     dlik = dlik/2;
-    if analytic_derivation==2 || asy_hess,
-%         Hess = (Hess + Hess')/2;
+    if analytic_derivation==2 || asy_hess
+        %         Hess = (Hess + Hess')/2;
         Hess = -Hess/2;
     end
 end
 
 % Call steady state univariate kalman filter if needed.
 if t <= last
-    if analytic_derivation,
-        if analytic_derivation==2,
+    if analytic_derivation
+        if analytic_derivation==2
             [tmp, tmp2] = univariate_kalman_filter_ss(Y,t,last,a,P,kalman_tol,T,H,Z,pp,Zflag, ...
-                analytic_derivation,Da,DT,DYss,DP,DH,D2a,D2T,D2Yss,D2P);
+                                                      analytic_derivation,Da,DT,DYss,DP,DH,D2a,D2T,D2Yss,D2P);
         else
             [tmp, tmp2] = univariate_kalman_filter_ss(Y,t,last,a,P,kalman_tol,T,H,Z,pp,Zflag, ...
-                analytic_derivation,Da,DT,DYss,DP,DH,asy_hess);
+                                                      analytic_derivation,Da,DT,DYss,DP,DH,asy_hess);
         end
         lik(s+1:end,:)=tmp2{1};
         dlik(s+1:end,:)=tmp2{2};
         DLIK = DLIK + tmp{2};
-        if analytic_derivation==2 || asy_hess,
+        if analytic_derivation==2 || asy_hess
             Hess = Hess + tmp{3};
         end
     else
@@ -262,8 +262,8 @@ else
     LIK = sum(sum(lik));
 end
 
-if analytic_derivation,
-    if analytic_derivation==2 || asy_hess,
+if analytic_derivation
+    if analytic_derivation==2 || asy_hess
         LIK={LIK, DLIK, Hess};
     else
         LIK={LIK, DLIK};

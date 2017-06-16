@@ -1,10 +1,10 @@
 function dyn_waitbar_close(h)
 % h = dyn_waitbar_close(h)
-% adaptive close waitbar, compatible with 
+% adaptive close waitbar, compatible with
 % octave and when console_mode=1
 
 %
-% Copyright (C) 2011 Dynare Team
+% Copyright (C) 2011-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -22,14 +22,12 @@ function dyn_waitbar_close(h)
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 global options_
 
-if isoctave || options_.console_mode,
+if isoctave || options_.console_mode
     clear dyn_waitbar;
-    diary on,
+    diary on
     fprintf('\n');
 else
-    close(h),
+    close(h)
 end
 
 clear dyn_waitbar;
-
-

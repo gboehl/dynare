@@ -5,16 +5,16 @@ function oo_=make_ex_(M_,options_,oo_)
 %   M_:           Dynare model structure
 %   options_:     Dynare options structure
 %   oo_:          Dynare results structure
-%    
+%
 % OUTPUTS
 %   oo_:          Dynare results structure
 %
 % ALGORITHM
-%   
+%
 % SPECIAL REQUIREMENTS
-%  
+%
 
-% Copyright (C) 1996-2016 Dynare Team
+% Copyright (C) 1996-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -53,7 +53,7 @@ else
     else
         error('histval and endval cannot be used simultaneously')
     end
-end    
+end
 
 % Initialize oo_.exo_det_simul
 if M_.exo_det_nbr > 0

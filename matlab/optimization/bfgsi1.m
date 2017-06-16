@@ -1,22 +1,22 @@
 function H = bfgsi1(H0,dg,dx,Verbose,Save_files)
 % H = bfgsi1(H0,dg,dx,Verbose,Save_files)
 % Update Inverse Hessian matrix
-% 
+%
 % Inputs:
 %   H0  [npar by npar]  initial inverse Hessian matrix
 %   dg  [npar by 1]     previous change in gradient
 %   dx  [npar by 1]     previous change in x;
 %   Verbose [scalar]    Indicator for silent mode
-%   Save_files [scalar] Indicator whether to save files  
-% 
+%   Save_files [scalar] Indicator whether to save files
+%
 % 6/8/93 version that updates inverse Hessian instead of Hessian
 % itself.
-% 
+%
 % Original file downloaded from:
 % http://sims.princeton.edu/yftp/optimize/mfiles/bfgsi.m
-% 
+%
 % Copyright (C) 1993-2009 Christopher Sims
-% Copyright (C) 2009-2015 Dynare Team
+% Copyright (C) 2009-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

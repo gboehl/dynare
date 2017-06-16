@@ -1,7 +1,7 @@
 function [yf,int_width,int_width_ME]=forcst(dr,y0,horizon,var_list,M_,oo_,options_)
 % function [yf,int_width,int_width_ME]=forecst(dr,y0,horizon,var_list,M_,oo_,options_)
 %   computes mean forecast for a given value of the parameters
-%   computes also confidence band for the forecast    
+%   computes also confidence band for the forecast
 %
 % INPUTS:
 %   dr:          structure containing decision rules
@@ -22,7 +22,7 @@ function [yf,int_width,int_width_ME]=forcst(dr,y0,horizon,var_list,M_,oo_,option
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2003-2016 Dynare Team
+% Copyright (C) 2003-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -67,7 +67,7 @@ ghx1 = dr.ghx(inv_order_var(ivar),:);
 ghu1 = dr.ghu(inv_order_var(ivar),:);
 
 %initialize recursion
-sigma_u = B*M_.Sigma_e*B'; 
+sigma_u = B*M_.Sigma_e*B';
 sigma_u1 = ghu1*M_.Sigma_e*ghu1';
 sigma_y = 0; %no uncertainty about the states
 

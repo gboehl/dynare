@@ -1,17 +1,17 @@
 function steady()
 % function steady()
 % computes and prints the steady state calculations
-%  
+%
 % INPUTS
 %   none
-%  
+%
 % OUTPUTS
 %   none
 %
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2001-2012 Dynare Team
+% Copyright (C) 2001-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -28,7 +28,7 @@ function steady()
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-global M_ oo_ options_ ys0_ 
+global M_ oo_ options_ ys0_
 
 test_for_deep_parameters_calibration(M_);
 
@@ -70,14 +70,14 @@ if info(1)
         disp(sprintf('%12s %12.6f',M_.exo_det_names(hv(ixd(i),2),:), ...
                      oo_.exo_det_steady_state(hv(ixd(i),2))))
     end
-    
+
     if options_.homotopy_force_continue
         disp('Option homotopy_continue is set, so I continue ...')
     else
         error('Homotopy step failed')
     end
 end
-    
+
 [steady_state,M_.params,info] = steady_(M_,options_,oo_);
 oo_.steady_state = steady_state;
 
@@ -99,7 +99,7 @@ else
         fprintf('\nThe steady state computation failed. It terminated with the following values:\n')
         for i=1:M_.orig_endo_nbr
             fprintf('%s \t\t %g\n',M_.endo_names(i,:),steady_state(i));
-        end        
+        end
     end
     print_info(info,options_.noprint, options_);
 end

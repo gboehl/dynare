@@ -2,21 +2,21 @@ function i = name2index(options_, M_, estim_params_, type, name1, name2 )
 % Returns the index associated to an estimated object (deep parameter,
 % variance of a structural shock or measurement error, covariance between
 % two structural shocks, covariance between two measurement errors).
-%  
+%
 % INPUTS:
 %   options_        [structure]    Dynare structure.
 %   M_              [structure]    Dynare structure (related to model definition).
 %   estim_params_   [structure]    Dynare structure (related to estimation).
 %   type            [string]       'DeepParameter', 'MeasurementError' (for measurement equation error) or 'StructuralShock' (for structural shock).
-%   name1           [string]       
-%   name2           [string]    
+%   name1           [string]
+%   name2           [string]
 % OUTPUTS
 %   i               [integer]      column index (in x2, an array of mh draws) associated to name1[,name2].
 %
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2008-2013 Dynare Team
+% Copyright (C) 2008-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -63,7 +63,7 @@ if strcmpi(type,'StructuralShock')
         end
     else% Covariance matrix off-diagonal term
         offset = nvx+nvn;
-        try 
+        try
             list_of_structural_shocks = { M_.exo_names(estim_params_.corrx(:,1),:) , M_.exo_names(estim_params_.corrx(:,2),:) };
             k1 = strmatch(name1,list_of_structural_shocks(:,1),'exact');
             k2 = strmatch(name2,list_of_structural_shocks(:,2),'exact');

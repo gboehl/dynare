@@ -1,9 +1,9 @@
 function k = symmetric_matrix_index(i,j,n)
 % function k = symmetric_matrix_index(i,j,n)
-% Returns index number of variable combination (i,j) in vech(A) where A is 
+% Returns index number of variable combination (i,j) in vech(A) where A is
 % an symmetric n by n matrix and vech creates row vector by stacking rows
 % of A on and above the diagonal
-% 
+%
 % Inputs:
 %   i   [scalar]    index of first variable
 %   j   [scalar]    index of second variable
@@ -11,7 +11,7 @@ function k = symmetric_matrix_index(i,j,n)
 % Outputs:
 %   k   [scalar]    index of variable combination in vech(A)
 
-% Copyright (C) 2007-2015 Dynare Team
+% Copyright (C) 2007-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

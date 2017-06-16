@@ -6,11 +6,11 @@ function struct2local(S)
 %
 % INPUTS
 %  o S [struc]   This structure possibly containing several fields ...
-%  
+%
 %  OUTPUTS
 %  None
 %
-% Copyright (C) 2009-2010 Dynare Team
+% Copyright (C) 2009-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -30,6 +30,6 @@ function struct2local(S)
 
 vnam = fieldnames(S);
 
-for j=1:length(vnam),
+for j=1:length(vnam)
     assignin('caller',vnam{j},getfield(S,vnam{j}));
 end

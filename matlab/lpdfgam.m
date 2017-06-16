@@ -1,19 +1,19 @@
-function  [ldens,Dldens,D2ldens] = lpdfgam(x,a,b);
+function  [ldens,Dldens,D2ldens] = lpdfgam(x,a,b)
 % Evaluates the logged GAMMA PDF at x.
 %
-% INPUTS     
+% INPUTS
 %    x     [double]  m*n matrix of locations,
 %    a     [double]  m*n matrix or scalar, First GAMMA distribution parameters (shape),
 %    b     [double]  m*n matrix or scalar, Second GAMMA distribution parameters (scale),
 %
 % OUTPUTS
 %    ldens [double]  m*n matrix of logged GAMMA densities evaluated at x.
-%     
-%        
+%
+%
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2003-2016 Dynare Team
+% Copyright (C) 2003-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -41,7 +41,7 @@ end
 
 
 
-if nargout >1 
+if nargout >1
     if length(a)==1
         Dldens(idx) = (a-1)./(x(idx)) - ones(length(idx),1)/b ;
     else

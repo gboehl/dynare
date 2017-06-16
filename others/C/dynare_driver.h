@@ -17,8 +17,9 @@
 #ifndef _DYNARE_C_DRIVER_H
 #define _DYNARE_C_DRIVER_H
 
-struct aux_vars_t {
+struct aux_vars_t
+{
   int endo_index, type, orig_index, orig_lead_lag;
-} ;
+};
 
 #endif // ! _DYNARE_C_DRIVER_H

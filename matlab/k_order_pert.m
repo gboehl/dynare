@@ -1,7 +1,7 @@
 function [dr,info] = k_order_pert(dr,M,options)
 % Compute decision rules using the k-order DLL from Dynare++
 
-% Copyright (C) 2009-2013 Dynare Team
+% Copyright (C) 2009-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -27,45 +27,45 @@ endo_nbr = M.endo_nbr;
 exo_nbr = M.exo_nbr;
 nspred = M.nspred;
 
-if order>1 && options.loglinear 
-   error('The loglinear-option currently only works at order 1') 
+if order>1 && options.loglinear
+    error('The loglinear-option currently only works at order 1')
 end
 if M.maximum_endo_lead == 0 && order>1
-  error(['2nd and 3rd order approximation not implemented for purely ' ...
-       'backward models'])
+    error(['2nd and 3rd order approximation not implemented for purely ' ...
+           'backward models'])
 end
 
 switch(order)
   case 1
     [err, g_1] = k_order_perturbation(dr,M,options);
     if err
-      info(1)=9;
-      return;
+        info(1)=9;
+        return
     end
     dr.g_1 = g_1;
   case 2
     [err, g_0, g_1, g_2] = k_order_perturbation(dr,M,options);
     if err
-      info(1)=9;
-      return;
+        info(1)=9;
+        return
     end
     dr.g_0 = g_0;
     dr.g_1 = g_1;
     dr.g_2 = g_2;
   case 3
-    if options.pruning 
+    if options.pruning
         [err, g_0, g_1, g_2, g_3, derivs] = k_order_perturbation(dr, ...
                                                           M,options);
         if err
-          info(1)=9;
-          return;
+            info(1)=9;
+            return
         end
     else
         [err, g_0, g_1, g_2, g_3] = k_order_perturbation(dr, ...
                                                          M,options);
         if err
-          info(1)=9;
-          return;
+            info(1)=9;
+            return
         end
     end
     dr.g_0 = g_0;
@@ -119,7 +119,7 @@ else
                 if s1 > s0
                     ghxx(:,s1*nspred+s0+1) = 2*g_2(:,i);
                 end
-            elseif s0 < nspred && s1 < nspred+exo_nbr 
+            elseif s0 < nspred && s1 < nspred+exo_nbr
                 ghxu(:,(s0*exo_nbr+s1-nspred+1)) = 2*g_2(:,i);
             elseif s0 < nspred+exo_nbr && s1 < nspred+exo_nbr
                 ghuu(:,(s0-nspred)*exo_nbr+s1-nspred +1) = 2*g_2(:,i);
@@ -132,7 +132,7 @@ else
             s1 = s1+1;
             if s1 == nspred+exo_nbr
                 s0 = s0+1;
-                s1 = s0; 
+                s1 = s0;
             end
         end % for loop
         dr.ghxx = ghxx;
@@ -186,7 +186,7 @@ for i=1:n1
             m = m + 1;
         end
     end
-end 
+end
 
 function y = unfold12(x,n1,n2)
 y = zeros(size(x,1),n1*n2*n2);
@@ -203,7 +203,3 @@ for i=1:n1
         end
     end
 end
-
-
-            
-            

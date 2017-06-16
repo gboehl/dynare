@@ -53,6 +53,10 @@ end;
 
 simul(periods=200);
 
+if ~oo_.deterministic_simulation.status
+   error('Perfect foresight simulation failed')
+end
+
 plot(Simulated_time_series.Capital(1Q1:25Q4));
 
 if max(abs(oo_.endo_simul(:,1)-M_.endo_histval))>1e-6

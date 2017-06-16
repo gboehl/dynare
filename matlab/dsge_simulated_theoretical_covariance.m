@@ -16,7 +16,7 @@ function [nvar,vartan,CovarFileNumber] = dsge_simulated_theoretical_covariance(S
 %   vartan            [char]     array of characters (with nvar rows).
 %   CovarFileNumber   [integer]  scalar, number of prior or posterior data files (for covariance).
 
-% Copyright (C) 2007-2015 Dynare Team
+% Copyright (C) 2007-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -126,7 +126,6 @@ for file = 1:NumberOfDrawsFiles
             if ~test% Prepare the last round...
                 Covariance_matrix = zeros(NumberOfLinesInTheLastCovarFile,nvar*(nvar+1)/2);
                 NumberOfCovarLines = NumberOfLinesInTheLastCovarFile;
-                CovarFileNumber = CovarFileNumber - 1;
             elseif test<0
                 Covariance_matrix = zeros(MaXNumberOfCovarLines,nvar*(nvar+1)/2);
             else

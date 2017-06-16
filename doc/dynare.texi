@@ -2,6 +2,8 @@
 @c %**start of header
 @setfilename dynare.info
 @documentencoding UTF-8
+@set txicodequoteundirected
+
 @settitle Dynare Reference Manual
 @afourwide
 @dircategory Math
@@ -112,8 +114,8 @@ A copy of the license can be found at @uref{http://www.gnu.org/licenses/fdl.txt}
 @subtitle Reference Manual, version @value{VERSION}
 @author Stéphane Adjemian
 @author Houtan Bastani
-@author Frédéric Karamé
 @author Michel Juillard
+@author Frédéric Karamé
 @author Junior Maih
 @author Ferhat Mihoubi
 @author George Perendia
@@ -169,14 +171,14 @@ Installation of Dynare
 
 * On Windows::
 * On Debian GNU/Linux and Ubuntu::
-* On Mac OS X::
+* On macOS::
 * For other systems::
 
 Compiler installation
 
 * Prerequisites on Windows::
 * Prerequisites on Debian GNU/Linux and Ubuntu::
-* Prerequisites on Mac OS X::
+* Prerequisites on macOS::
 
 Configuration
 
@@ -206,6 +208,9 @@ The Model file
 * Deterministic simulation::
 * Stochastic solution and simulation::
 * Estimation::
+* Model Comparison::
+* Shock Decomposition::
+* Calibrated Smoother::
 * Forecasting::
 * Optimal policy::
 * Sensitivity and identification analysis::
@@ -345,23 +350,21 @@ as a support tool for forecasting exercises. In the academic world,
 Dynare is used for research and teaching purposes in postgraduate
 macroeconomics courses.
 
-Dynare is a free software, which means that it can be downloaded free
-of charge, that its source code is freely available, and that it can
-be used for both non-profit and for-profit purposes. Most of the
-source files are covered by the GNU General Public Licence (GPL)
-version 3 or later (there are some exceptions to this, see the file
-@file{license.txt} in Dynare distribution). It is available for the
-Windows, Mac and Linux platforms and is fully documented through a
-user guide and a reference manual. Part of Dynare is programmed in
-C++, while the rest is written using the
-@uref{http://www.mathworks.com/products/matlab/, MATLAB} programming
-language.  The latter implies that commercially-available MATLAB
-software is required in order to run Dynare. However, as an
-alternative to MATLAB, Dynare is also able to run on top of
-@uref{http://www.octave.org, GNU Octave} (basically a free clone of
-MATLAB): this possibility is particularly interesting for students or
-institutions who cannot afford, or do not want to pay for, MATLAB and
-are willing to bear the concomitant performance loss.
+Dynare is a free software, which means that it can be downloaded free of
+charge, that its source code is freely available, and that it can be used for
+both non-profit and for-profit purposes. Most of the source files are covered
+by the GNU General Public Licence (GPL) version 3 or later (there are some
+exceptions to this, see the file @file{license.txt} in Dynare distribution). It
+is available for the Windows, macOS, and Linux platforms and is fully
+documented through a user guide and a reference manual. Part of Dynare is
+programmed in C++, while the rest is written using the
+@uref{http://www.mathworks.com/products/matlab/, MATLAB} programming language.
+The latter implies that commercially-available MATLAB software is required in
+order to run Dynare. However, as an alternative to MATLAB, Dynare is also able
+to run on top of @uref{http://www.octave.org, GNU Octave} (basically a free
+clone of MATLAB): this possibility is particularly interesting for students or
+institutions who cannot afford, or do not want to pay for, MATLAB and are
+willing to bear the concomitant performance loss.
 
 The development of Dynare is mainly done at
 @uref{http://www.cepremap.fr, Cepremap} by a core team of
@@ -371,7 +374,7 @@ Adjemian (Université du Maine, Gains and Cepremap), Houtan Bastani
 (Cepremap), Michel Juillard (Banque de France), Frédéric Karamé
 (Université du Maine, Gains and Cepremap), Junior Maih (Norges Bank),
 Ferhat Mihoubi (Université Paris-Est Créteil, Epee and Cepremap), George
-Perendia, Johannes Pfeifer (University of Mannheim), Marco Ratto (European Commission, Joint Research Centre - JRC)
+Perendia, Johannes Pfeifer (University of Cologne), Marco Ratto (European Commission, Joint Research Centre - JRC)
 and Sébastien Villemot (OFCE – Sciences Po).
 Increasingly, the developer base is expanding, as tools developed by
 researchers outside of Cepremap are integrated into Dynare. Financial
@@ -439,7 +442,7 @@ If you want to give a URL, use the address of the Dynare website:
 
 Packaged versions of Dynare are available for Windows XP/Vista/7/8,
 @uref{http://www.debian.org,Debian GNU/Linux},
-@uref{http://www.ubuntu.com/,Ubuntu} and Mac OS X 10.8 or later.  Dynare should
+@uref{http://www.ubuntu.com/,Ubuntu} and macOS 10.8 or later.  Dynare should
 work on other systems, but some compilation steps are necessary in that case.
 
 In order to run Dynare, you need one of the following:
@@ -447,7 +450,7 @@ In order to run Dynare, you need one of the following:
 @itemize
 
 @item
-MATLAB version 7.5 (R2007b) or above (MATLAB R2009b 64-bit for Mac OS X);
+MATLAB version 7.5 (R2007b) or above (MATLAB R2009b 64-bit for macOS);
 
 @item
 GNU Octave version 3.6 or above.
@@ -470,10 +473,6 @@ If under GNU Octave, the following
 @uref{http://octave.sourceforge.net/,Octave-Forge} packages: optim,
 io, statistics, control.
 
-@item 
-Mac OS X Octave users will also need to install
-gnuplot if they want graphing capabilities.
-
 @end itemize
 
 
@@ -490,7 +489,7 @@ about your own files.
 @menu
 * On Windows::
 * On Debian GNU/Linux and Ubuntu::
-* On Mac OS X::
+* On macOS::
 * For other systems::
 @end menu
 
@@ -521,25 +520,29 @@ Wiki} for detailed instructions.
 Dynare will be installed under @file{/usr/lib/dynare}. Documentation will be
 under @file{/usr/share/doc/dynare-doc}.
 
-@node On Mac OS X
-@subsection On Mac OS X
+@node On macOS
+@subsection On macOS
 
-Execute the automated installer called
-@file{dynare-4.@var{x}.@var{y}.pkg} (where
-4.@var{x}.@var{y} is the version number), and follow the
-instructions. The default installation directory is
-@file{/Applications/Dynare/4.@var{x}.@var{y}}.
-
-Please refer to the
+To install Dynare for use with Matlab, execute the automated installer called
+@file{dynare-4.@var{x}.@var{y}.pkg} (where 4.@var{x}.@var{y} is the version
+number), and follow the instructions. The default installation directory is
+@file{/Applications/Dynare/4.@var{x}.@var{y}} (please refer to the
 @uref{http://www.dynare.org/DynareWiki/InstallOnMacOSX,Dynare Wiki} for
-detailed instructions.
+detailed instructions).
 
 After installation, this directory will contain several sub-directories,
 among which are @file{matlab}, @file{mex} and @file{doc}.
 
-Note that you can have several versions of Dynare coexisting (for
-example in @file{/Applications/Dynare}), as long as you correctly
-adjust your path settings (@pxref{Some words of warning}).
+Note that several versions of Dynare can coexist (by default in
+@file{/Applications/Dynare}), as long as you correctly adjust your path
+settings (@pxref{Some words of warning}).
+
+To install Dynare for Octave, first install Homebrew following the instructions
+on their site: @uref{https://brew.sh/}. Then install Octave, issuing the
+command @code{brew install octave} at the Terminal prompt. You can then install
+the latest stable version of Dynare by typing @code{brew install dynare} at the
+Terminal prompt. You can also pass options to the installation command. These
+options can be viewed by typing @code{brew info dynare} at the Terminal prompt.
 
 @node For other systems
 @subsection For other systems
@@ -568,7 +571,7 @@ Octave comes with built-in functionality for compiling mex-files.
 @menu
 * Prerequisites on Windows::
 * Prerequisites on Debian GNU/Linux and Ubuntu::
-* Prerequisites on Mac OS X::
+* Prerequisites on macOS::
 @end menu
 
 @node Prerequisites on Windows
@@ -596,9 +599,9 @@ it can be installed via @code{apt-get install build-essential}.
 Users of Octave under Linux should install the package for MEX file compilation 
 (under Debian or Ubuntu, it is called @file{liboctave-dev}).
 
-@node Prerequisites on Mac OS X
-@subsection Prerequisites on Mac OS X
-If you are using MATLAB under Mac OS X, you should install the latest
+@node Prerequisites on macOS
+@subsection Prerequisites on macOS
+If you are using MATLAB under macOS, you should install the latest
 version of XCode: see
 @uref{http://www.dynare.org/DynareWiki/InstallOnMacOSX,instructions on
 the Dynare wiki}.
@@ -638,7 +641,7 @@ Under Debian GNU/Linux or Ubuntu, type:
 addpath /usr/lib/dynare/matlab
 @end example
 
-Under Mac OS X, assuming that you have installed Dynare in the standard
+Under macOS, assuming that you have installed Dynare in the standard
 location, and replacing @code{4.@var{x}.@var{y}} with the correct version
 number, type:
 
@@ -653,7 +656,7 @@ will have to do it again.
 Via the menu entries:
 
 Select the ``Set Path'' entry in the ``File'' menu, then click on
-``Add Folder@dots{}'', and select the @file{matlab} subdirectory of your
+``Add Folder@dots{}'', and select the @file{matlab} subdirectory of `your
 Dynare installation. Note that you @emph{should not} use ``Add with
 Subfolders@dots{}''. Apply the settings by clicking on ``Save''. Note that
 MATLAB will remember this setting next time you run it.
@@ -677,18 +680,16 @@ addpath c:\dynare\4.@var{x}.@var{y}\matlab
 Under Debian GNU/Linux or Ubuntu, there is no need to use the
 @code{addpath} command; the packaging does it for you.
 
-Under Mac OS X, assuming that you have installed Dynare in the
-standard location, and replacing ``4.@var{x}.@var{y}'' with the correct
-version number, type:
+Under macOS, assuming that you have installed Dynare and Octave via Homebrew, type:
 
 @example
-addpath /Applications/Dynare/4.@var{x}.@var{y}/matlab
+addpath /usr/local/opt/dynare/lib/dynare/matlab
 @end example
 
 If you don't want to type this command every time you run Octave, you
 can put it in a file called @file{.octaverc} in your home directory
 (under Windows this will generally be @file{c:\Documents and
-Settings\USERNAME\} while under Mac OS X it is @file{/Users/USERNAME/}).
+Settings\USERNAME\} while under macOS it is @file{/Users/USERNAME/}).
 This file is run by Octave at every startup.
 
 @node Some words of warning
@@ -1065,6 +1066,9 @@ end of line one and the parser would continue processing.
 * Deterministic simulation::
 * Stochastic solution and simulation::
 * Estimation::
+* Model Comparison::
+* Shock Decomposition::
+* Calibrated Smoother::
 * Forecasting::
 * Optimal policy::
 * Sensitivity and identification analysis::
@@ -1103,6 +1107,10 @@ mutually exclusive arguments are separated by vertical bars: @samp{|};
 
 @item
 @var{INTEGER} indicates an integer number;
+
+@item
+@var{INTEGER_VECTOR} indicates a vector of integer numbers separated by spaces,
+enclosed by square brackets;
 
 @item
 @var{DOUBLE} indicates a double precision number. The following syntaxes
@@ -2085,6 +2093,7 @@ Compiling the @TeX{} file requires the following @LaTeX{} packages:
 @anchor{write_latex_dynamic_model}
 
 @deffn Command write_latex_dynamic_model ;
+@deffnx Command write_latex_dynamic_model (@var{OPTIONS}) ;
 
 @descriptionhead
 
@@ -2130,6 +2139,16 @@ also have been replaced by new auxiliary variables and equations.
 @end itemize
 
 For the required @LaTeX{} packages, @pxref{write_latex_original_model}.
+
+@optionshead
+
+@table @code
+
+@item write_equation_tags
+Write the equation tags in the @LaTeX{} output. NB: the equation tags will be
+interpreted with @LaTeX{} markups.
+
+@end table
 
 @end deffn
 
@@ -2303,7 +2322,7 @@ necessary for lagged/leaded variables, while feasible starting values are requir
 It is important to be aware that if some variables, endogenous or exogenous, are not mentioned in the
 @code{initval} block, a zero value is assumed. It is particularly important to keep 
 this in mind when specifying exogenous variables using @code{varexo} that are not allowed 
-to take on the value of zero, like e.g. TFP. 
+to take on the value of zero, like @i{e.g.} TFP.
 
 Note that if the @code{initval} block is immediately followed by a
 @code{steady} command, its semantics are slightly changed. 
@@ -2549,7 +2568,7 @@ equilibrium values.
 The fact that @code{c} at @math{t=0} and @code{k} at @math{t=201} specified in
 @code{initval} and @code{endval} are taken as given has an important
 implication for plotting the simulated vector for the endogenous
-variables, i.e. the rows of @code{oo_.endo_simul}: this vector will 
+variables, @i{i.e.} the rows of @code{oo_.endo_simul}: this vector will
 also contain the initial and terminal
 conditions and thus is 202 periods long in the example. When you specify
 arbitrary values for the initial and terminal conditions for forward- and
@@ -2626,13 +2645,18 @@ Moreover, as only states enter the recursive policy functions, all values specif
 @itemize
 
 @item
-in @ref{stoch_simul}, if the @code{periods} option is specified. Note that this only affects the starting point for the simulation, but not for the impulse response functions.
+in @ref{stoch_simul}, if the @code{periods} option is specified. Note that this
+only affects the starting point for the simulation, but not for the impulse
+response functions. When using the @ref{loglinear} option, the
+@code{histval}-block nevertheless takes the unlogged starting values.
 
 @item
-in @ref{forecast} as the initial point at which the forecasts are computed
+in @ref{forecast} as the initial point at which the forecasts are computed. When using the @ref{loglinear} option, 
+the @code{histval}-block nevertheless takes the unlogged starting values.
 
 @item
-in @ref{conditional_forecast} for a calibrated model as the initial point at which the conditional forecasts are computed
+in @ref{conditional_forecast} for a calibrated model as the initial point at which the conditional forecasts are computed.
+When using the @ref{loglinear} option, the @code{histval}-block nevertheless takes the unlogged starting values.
 
 @item 
 in @ref{Ramsey} policy, where it also specifies the values of the endogenous states at 
@@ -3463,6 +3487,7 @@ end;
 
 @deffn Command check ;
 @deffnx Command check (solve_algo = @var{INTEGER}) ;
+@anchor{check}
 
 @descriptionhead
 
@@ -3983,6 +4008,12 @@ moments. If theoretical moments are requested, the spectrum of the model solutio
 following the approach outlined in @cite{Uhlig (2001)}.
 Default: no filter.
 
+@item one_sided_hp_filter = @var{DOUBLE}
+Uses the one-sided HP filter with @math{\lambda} = @var{DOUBLE} described in @cite{Stock and Watson (1999)}
+before computing moments. This option is only available with simulated moments.
+Default: no filter.
+
+
 @item hp_ngrid = @var{INTEGER}
 Number of points in the grid for the discrete Inverse Fast Fourier
 Transform used in the HP filter computation. It may be necessary to
@@ -3997,7 +4028,7 @@ Default: no filter.
 
 @item bandpass_filter = @var{[HIGHEST_PERIODICITY LOWEST_PERIODICITY]}
 Uses a bandpass filter before computing moments. The passband is set to a periodicity of @code{HIGHEST_PERIODICITY} 
-to @code{LOWEST_PERIODICITY}, e.g. 6 to 32 quarters if the model frequency is quarterly.
+to @code{LOWEST_PERIODICITY}, @i{e.g.} @math{6} to @math{32} quarters if the model frequency is quarterly.
 Default: @code{[6,32]}.
 
 @item irf = @var{INTEGER}
@@ -4139,7 +4170,7 @@ period(s). The periods must be strictly positive. Conditional variances are give
 decomposition provides the decomposition of the effects of shocks upon
 impact. The results are stored in
 @code{oo_.conditional_variance_decomposition}
-(@pxref{oo_.conditional_variance_decomposition}). The variance decomposition is only conducted, if theoretical moments are requested, i.e. using the @code{periods=0}-option. In case of @code{order=2}, Dynare provides a second-order accurate approximation to the true second moments based on the linear terms of the second-order solution (see @cite{Kim, Kim, Schaumburg and Sims (2008)}). Note that the unconditional variance decomposition (i.e. at horizon infinity) is automatically conducted if theoretical moments are requested and if @code{nodecomposition} is not set (@pxref{oo_.variance_decomposition})
+(@pxref{oo_.conditional_variance_decomposition}). The variance decomposition is only conducted, if theoretical moments are requested, @i{i.e.} using the @code{periods=0}-option. In case of @code{order=2}, Dynare provides a second-order accurate approximation to the true second moments based on the linear terms of the second-order solution (see @cite{Kim, Kim, Schaumburg and Sims (2008)}). Note that the unconditional variance decomposition (@i{i.e.} at horizon infinity) is automatically conducted if theoretical moments are requested and if @code{nodecomposition} is not set (@pxref{oo_.variance_decomposition})
 
 @item pruning
 Discard higher order terms when iteratively computing simulations of
@@ -4367,7 +4398,7 @@ accurate approximation of the true second moments, see @code{conditional_varianc
 @anchor{oo_.variance_decomposition}
 @defvr {MATLAB/Octave variable} oo_.variance_decomposition
 After a run of @code{stoch_simul} when requesting theoretical moments (@code{periods=0}), 
-contains a matrix with the result of the unconditional variance decomposition (i.e. at horizon infinity). 
+contains a matrix with the result of the unconditional variance decomposition (@i{i.e.} at horizon infinity).
 The first dimension corresponds to the endogenous variables (in the order of declaration) and 
 the second dimension corresponds to exogenous variables (in the order of declaration). 
 Numbers are in percent and sum up to 100 across columns.
@@ -4755,7 +4786,7 @@ varobs
 
 This block specifies @emph{linear} trends for observed variables as
 functions of model parameters. In case the @code{loglinear}-option is used,
-this corresponds to a linear trend in the logged observables, i.e. an exponential
+this corresponds to a linear trend in the logged observables, @i{i.e.} an exponential
 trend in the level of the observables.
 
 Each line inside of the block should be of the form:
@@ -5091,7 +5122,7 @@ convergence is  then checked using  the @cite{Brooks and  Gelman (1998)}
 univariate convergence diagnostic.
 
 The inefficiency factors are computed as in @cite{Giordano et al. (2011)} based on 
-Parzen windows as in e.g. @cite{Andrews (1991)}.
+Parzen windows as in @i{e.g.} @cite{Andrews (1991)}.
 
 @optionshead
 
@@ -5154,9 +5185,10 @@ first observation of the rolling window.
 
 
 @item prefilter = @var{INTEGER}
-@anchor{prefilter}
-A value of @code{1} means that the estimation procedure will demean
-each data series by its empirical mean. If the (@ref{loglinear}) option without the (@ref{logdata}) option is requested, the data will first be logged and then demeaned. Default: @code{0}, @i{i.e.} no prefiltering
+@anchor{prefilter} A value of @code{1} means that the estimation procedure will
+demean each data series by its empirical mean. If the @ref{loglinear} option
+without the @ref{logdata} option is requested, the data will first be logged
+and then demeaned. Default: @code{0}, @i{i.e.} no prefiltering
 
 @item presample = @var{INTEGER}
 @anchor{presample}
@@ -5265,8 +5297,8 @@ smoothed shocks,  forecast, moments,  IRF).  The  draws used  to compute
 these posterior moments are sampled uniformly in the estimated empirical
 posterior  distribution (@i{ie}  draws of  the MCMC).   @code{sub_draws}
 should  be  smaller than  the  total  number  of MCMC  draws  available.
-Default:  @code{min(posterior_max_subsample_draws,0.25*Total  number  of
-draws)}
+Default:  @code{min(posterior_max_subsample_draws,(Total  number  of
+draws)*(number of chains))}
 
 @item posterior_max_subsample_draws = @var{INTEGER}
 @anchor{posterior_max_subsample_draws} maximum number  of draws from the
@@ -5305,11 +5337,11 @@ The scale to be used for drawing the initial value of the
 Metropolis-Hastings chain. Generally, the starting points should be overdispersed
 for the @cite{Brooks and Gelman (1998)}-convergence diagnostics to be meaningful. Default: 2*@code{mh_jscale}. 
 It is important to keep in mind that @code{mh_init_scale} is set at the beginning of 
-Dynare execution, i.e. the default will not take into account potential changes in
+Dynare execution, @i{i.e.} the default will not take into account potential changes in
 @ref{mh_jscale} introduced by either @code{mode_compute=6} or the 
 @code{posterior_sampler_options}-option @ref{scale_file}. 
 If @code{mh_init_scale} is too wide during initalization of the posterior sampler so that 100 tested draws 
-are inadmissible (e.g. Blanchard-Kahn conditions are always violated), Dynare will request user input 
+are inadmissible (@i{e.g.} Blanchard-Kahn conditions are always violated), Dynare will request user input 
 of a new @code{mh_init_scale} value with which the next 100 draws will be drawn and tested. 
 If the @ref{nointeractive}-option has been invoked, the program will instead automatically decrease 
 @code{mh_init_scale} by 10 percent after 100 futile draws and try another 100 draws. This iterative 
@@ -5507,7 +5539,7 @@ generator state of the already present draws is currently not supported.
 
 @item load_results_after_load_mh
 @anchor{load_results_after_load_mh} This option is available when loading a previous MCMC run without
-adding additional draws, i.e. when @code{load_mh_file} is specified with @code{mh_replic=0}. It tells Dynare 
+adding additional draws, @i{i.e.} when @code{load_mh_file} is specified with @code{mh_replic=0}. It tells Dynare 
 to load the previously computed convergence diagnostics, marginal data density, and posterior statistics from an
 existing @code{_results}-file instead of recomputing them.
 
@@ -5834,7 +5866,7 @@ Note that @code{'slice'} is incompatible with
 @anchor{posterior_sampler_options}
 A list of @var{NAME} and @var{VALUE} pairs. Can be used to set options for the posterior sampling methods.
 The set of available options depends on the selected posterior sampling routine 
-(i.e. on the value of option @ref{posterior_sampling_method}):
+(@i{i.e.} on the value of option @ref{posterior_sampling_method}):
 
 @table @code
 
@@ -5904,7 +5936,7 @@ mode to perform rotated slice iterations. Default: 0
 
 @item 'initial_step_size'
 Sets the initial size of the interval in the stepping-out procedure as fraction of the prior support
-i.e. the size will be initial_step_size*(UB-LB). @code{initial_step_size} must be a real number in the interval [0, 1]. 
+@i{i.e.} the size will be initial_step_size*(UB-LB). @code{initial_step_size} must be a real number in the interval [0, 1]. 
 Default: 0.8
 
 @item 'use_mh_covariance_matrix'
@@ -5976,13 +6008,13 @@ option @code{moments_varendo} to be specified.
 
 @item filtered_vars
 @anchor{filtered_vars} Triggers the computation of the posterior
-distribution of filtered endogenous variables/one-step ahead forecasts, i.e. @math{E_{t}{y_{t+1}}}. Results are
+distribution of filtered endogenous variables/one-step ahead forecasts, @i{i.e.} @math{E_{t}{y_{t+1}}}. Results are
 stored in @code{oo_.FilteredVariables} (see below for a description of
 this variable)
 
 @item smoother
 @anchor{smoother} Triggers the computation of the posterior distribution
-of smoothed endogenous variables and shocks, i.e. the expected value of variables and shocks given the information available in all observations up to the @emph{final} date (@math{E_{T}{y_t}}). Results are stored in
+of smoothed endogenous variables and shocks, @i{i.e.} the expected value of variables and shocks given the information available in all observations up to the @emph{final} date (@math{E_{T}{y_t}}). Results are stored in
 @code{oo_.SmoothedVariables}, @code{oo_.SmoothedShocks} and
 @code{oo_.SmoothedMeasurementErrors}.  Also triggers the computation of
 @code{oo_.UpdatedVariables}, which contains the estimation of the expected value of variables given the information available at the @emph{current} date (@math{E_{t}{y_t}}).  See below for a description of all these
@@ -6024,9 +6056,9 @@ Use the Univariate Diffuse Kalman Filter
 
 @end table
 @noindent
-Default value is @code{0}. In case of missing observations of single or all series, Dynare treats those missing values as unobserved states and uses the Kalman filter to infer their value (see e.g. @cite{Durbin and Koopman (2012), Ch. 4.10})
+Default value is @code{0}. In case of missing observations of single or all series, Dynare treats those missing values as unobserved states and uses the Kalman filter to infer their value (see @i{e.g.} @cite{Durbin and Koopman (2012), Ch. 4.10})
 This procedure has the advantage of being capable of dealing with observations where the forecast error variance matrix becomes singular for some variable(s).
-If this happens, the respective observation enters with a weight of zero in the log-likelihood, i.e. this observation for the respective variable(s) is dropped
+If this happens, the respective observation enters with a weight of zero in the log-likelihood, @i{i.e.} this observation for the respective variable(s) is dropped
 from the likelihood computations (for details see @cite{Durbin and Koopman (2012), Ch. 6.4 and 7.2.5} and @cite{Koopman and Durbin (2000)}). If the use of a multivariate Kalman filter is specified and a
 singularity is encountered, Dynare by default automatically switches to the univariate Kalman filter for this parameter draw. This behavior can be changed via the
 @ref{use_univariate_filters_if_singularity_is_detected} option.
@@ -6036,7 +6068,7 @@ singularity is encountered, Dynare by default automatically switches to the univ
 recursions as described by @cite{Herbst, 2015}. This setting is only used with
 @code{kalman_algo=1} or @code{kalman_algo=3}. In case of using the diffuse Kalman 
 filter (@code{kalman_algo=3/lik_init=3}), the observables must be stationary. This option 
-is not yet compatible with @code{analytical_derivation}.
+is not yet compatible with @ref{analytic_derivation}.
 
 @item kalman_tol = @var{DOUBLE}
 @anchor{kalman_tol} Numerical tolerance for determining the singularity of the covariance matrix of the prediction errors during the Kalman filter (minimum allowed reciprocal of the matrix condition number). Default value is @code{1e-10}
@@ -6047,23 +6079,25 @@ is not yet compatible with @code{analytical_derivation}.
 @item filter_covariance
 @anchor{filter_covariance} Saves the series of one step ahead error of
 forecast covariance matrices. With Metropolis, they are saved in @ref{oo_.FilterCovariance},
-otherwise in @ref{oo_.Smoother.Variance}.
+otherwise in @ref{oo_.Smoother.Variance}. Saves also k-step ahead error of
+forecast covariance matrices if @code{filter_step_ahead} is set.
 
 @item filter_step_ahead = [@var{INTEGER1}:@var{INTEGER2}]
 See below.
 
 @item filter_step_ahead = [@var{INTEGER1} @var{INTEGER2}  @dots{}]
 @anchor{filter_step_ahead}
-Triggers the computation k-step ahead filtered values, i.e. @math{E_{t}{y_{t+k}}}. Stores results in
-@code{oo_.FilteredVariablesKStepAhead} and
-@code{oo_.FilteredVariablesKStepAheadVariances}.
+Triggers the computation k-step ahead filtered values, @i{i.e.} @math{E_{t}{y_{t+k}}}. Stores results in
+@code{oo_.FilteredVariablesKStepAhead}. Also stores 1-step ahead values in @code{oo_.FilteredVariables}. 
+@code{oo_.FilteredVariablesKStepAheadVariances} is stored if @code{filter_covariance}.
+ 
 
 @item filter_decomposition
 @anchor{filter_decomposition} Triggers the computation of the shock
 decomposition of the above k-step ahead filtered values. Stores results in @code{oo_.FilteredVariablesShockDecomposition}.
 
 @item smoothed_state_uncertainty
-@anchor{smoothed_state_uncertainty} Triggers the computation of the variance of smoothed estimates, i.e.
+@anchor{smoothed_state_uncertainty} Triggers the computation of the variance of smoothed estimates, @i{i.e.}
 @code{Var_T(y_t)}. Stores results in @code{oo_.Smoother.State_uncertainty}.
 
 @item diffuse_filter
@@ -6180,9 +6214,10 @@ where the model is ill-behaved. By default the original objective function is
 used.
 
 @item analytic_derivation
+@anchor{analytic_derivation}
 Triggers estimation with analytic gradient. The final hessian is also
 computed analytically. Only works for stationary models without
-missing observations.
+missing observations, i.e. for @code{kalman_algo<3}.
 
 @item ar = @var{INTEGER}
 @xref{ar}. Only useful in conjunction with option @code{moments_varendo}.
@@ -6213,9 +6248,13 @@ such a singularity is encountered. Default: @code{1}.
 With the default @ref{use_univariate_filters_if_singularity_is_detected}=1, Dynare will switch 
 to the univariate Kalman filter when it encounters a singular forecast error variance
 matrix during Kalman filtering. Upon encountering such a singularity for the first time, all subsequent
-parameter draws and computations will automatically rely on univariate filter, i.e. Dynare will never try 
+parameter draws and computations will automatically rely on univariate filter, @i{i.e.} Dynare will never try 
 the multivariate filter again. Use the @code{keep_kalman_algo_if_singularity_is_detected} option to have the 
 @code{use_univariate_filters_if_singularity_is_detected} only affect the behavior for the current draw/computation.
+
+@item rescale_prediction_error_covariance
+@anchor{rescale_prediction_error_covariance}
+Rescales the prediction error covariance in the Kalman filter to avoid badly scaled matrix and reduce the probability of a switch to univariate Kalman filters (which are slower). By default no rescaling is done.
 
 @item qz_zero_threshold = @var{DOUBLE}
 @xref{qz_zero_threshold}.
@@ -6325,6 +6364,22 @@ Sets the method for approximating the particle distribution. Possible values for
 @item cpf_weights = @var{OPTION}
 @anchor{cpf_weights} Controls the method used to update the weights in conditional particle filter, possible values are @code{amisanotristani} (@cite{Amisano et al (2010)}) or @code{murrayjonesparslow} (@cite{Murray et al. (2013)}). Default value is @code{amisanotristani}.
 
+@item nonlinear_filter_initialization = @var{INTEGER}
+@anchor{nonlinear_filter_initialization} Sets the initial condition of the
+nonlinear filters. By default the nonlinear filters are initialized with the
+unconditional covariance matrix of the state variables, computed with the
+reduced form solution of the first order approximation of the model. If
+@code{nonlinear_filter_initialization=2}, the nonlinear filter is instead
+initialized with a covariance matrix estimated with a stochastic simulation of
+the reduced form solution of the second order approximation of the model. Both
+these initializations assume that the model is stationary, and cannot be used
+if the model has unit roots (which can be seen with the @ref{check} command
+prior to estimation). If the model has stochastic trends, user must use
+@code{nonlinear_filter_initialization=3}, the filters are then initialized with
+an identity matrix for the covariance matrix of the state variables. Default
+value is @code{nonlinear_filter_initialization=1} (initialization based on the
+first order approximation of the model).
+
 @end table
 
 
@@ -6343,7 +6398,7 @@ It is also possible to impose implicit ``endogenous'' priors about IRFs and mome
 estimation. For example, one can specify that all valid parameter draws for the model must generate fiscal multipliers that are
 bigger than 1 by specifying how the IRF to a government spending shock must look like. The prior restrictions can be imposed
 via @code{irf_calibration} and @code{moment_calibration} blocks (@pxref{IRF/Moment calibration}). The way it works internally is that 
-any parameter draw that is inconsistent with the ``calibration'' provided in these blocks is discarded, i.e. assigned a prior density of 0. 
+any parameter draw that is inconsistent with the ``calibration'' provided in these blocks is discarded, @i{i.e.} assigned a prior density of 0. 
 When specifying these blocks, it is important to keep in mind that one won't be able to easily do @code{model_comparison} in this case, 
 because the prior density will not integrate to 1.
 
@@ -6387,7 +6442,7 @@ Upper bound of a 90% HPD interval
 @item HPDinf_ME
 Lower bound of a 90% HPD interval@footnote{See option @ref{conf_sig}
 to change the size of the HPD interval} for observables when taking 
-measurement error into account (see e.g. @cite{Christoffel et al. (2010), p.17}).
+measurement error into account (see @i{e.g.} @cite{Christoffel et al. (2010), p.17}).
 
 @item HPDsup_ME
 Upper bound of a 90% HPD interval for observables when taking 
@@ -6520,7 +6575,7 @@ indicate the respective variables. The third dimension of the array provides the
 observation for which the forecast has been made. For example, if @code{filter_step_ahead=[1 2 4]} 
 and @code{nobs=200}, the element (3,5,204) stores the four period ahead filtered 
 value of variable 5 computed at time t=200 for time t=204. The periods at the beginning 
-and end of the sample for which no forecasts can be made, e.g. entries (1,5,1) and 
+and end of the sample for which no forecasts can be made, @i{e.g.} entries (1,5,1) and 
 (1,5,204) in the example, are set to zero. Note that in case of Bayesian estimation 
 the variables will be ordered in the order of declaration after the estimation 
 command (or in general declaration order if no variables are specified here). In case 
@@ -6556,7 +6611,7 @@ The fourth dimension of the array provides the
 observation for which the forecast has been made. For example, if @code{filter_step_ahead=[1 2 4]} 
 and @code{nobs=200}, the element (3,5,2,204) stores the contribution of the second shock to the 
 four period ahead filtered value of variable 5 (in deviations from the mean) computed at time t=200 for time t=204. The periods at the beginning 
-and end of the sample for which no forecasts can be made, e.g. entries (1,5,1) and 
+and end of the sample for which no forecasts can be made, @i{e.g.} entries (1,5,1) and 
 (1,5,204) in the example, are set to zero. Padding with zeros and variable ordering is analogous to 
 @code{oo_.FilteredVariablesKStepAhead}. 
 @end defvr
@@ -6706,13 +6761,18 @@ Fields are of the form:
 Variable set by the @code{estimation} command (if used with the
 @code{smoother} option), or by the @code{calib_smoother} command.
 Contains the constant part of the endogenous variables used in the
-smoother, accounting e.g. for the data mean when using the @code{prefilter}
+smoother, accounting @i{e.g.} for the data mean when using the @code{prefilter}
 option.
 
 Fields are of the form:
 @example
 @code{oo_.Smoother.Constant.@var{VARIABLE_NAME}}
 @end example
+@end defvr
+
+@defvr {MATLAB/Octave variable} oo_.Smoother.loglinear
+Indicator keeping track of whether the smoother was run with the @ref{loglinear} option 
+and thus whether stored smoothed objects are in logs.
 @end defvr
 
 @defvr {MATLAB/Octave variable} oo_.PosteriorTheoreticalMoments
@@ -6737,7 +6797,7 @@ Auto- and cross-correlation of endogenous variables. Fields are vectors with cor
 
 
 @item VarianceDecomposition
-Decomposition of variance (unconditional variance, i.e. at horizon infinity)@footnote{When the shocks are correlated, it
+Decomposition of variance (unconditional variance, @i{i.e.} at horizon infinity)@footnote{When the shocks are correlated, it
 is the decomposition of orthogonalized shocks via Cholesky
 decomposition according to the order of declaration of shocks
 (@pxref{Variable declarations})}
@@ -6903,7 +6963,7 @@ Upper/lower bound of the 90% HPD interval taking into account both parameter and
 
 @end table
 
-@var{VARIABLE_NAME} contains a matrix of the following size: number of time periods for which forecasts are requested using the nobs = [@var{INTEGER1}:@var{INTEGER2}] option times the number of forecast horizons requested by the @code{forecast} option. I.e., the row indicates the period at which the forecast is performed and the column the respective k-step ahead forecast. The starting periods are sorted in ascending order, not in declaration order.
+@var{VARIABLE_NAME} contains a matrix of the following size: number of time periods for which forecasts are requested using the nobs = [@var{INTEGER1}:@var{INTEGER2}] option times the number of forecast horizons requested by the @code{forecast} option. @i{i.e.}, the row indicates the period at which the forecast is performed and the column the respective k-step ahead forecast. The starting periods are sorted in ascending order, not in declaration order.
 
 @end defvr
 
@@ -6957,13 +7017,31 @@ estimates using a higher tapering are usually more reliable.
 @end table
 @end defvr
 
+@deffn Command unit_root_vars @var{VARIABLE_NAME}@dots{};
+
+This command is deprecated. Use @code{estimation} option @code{diffuse_filter} instead for estimating a model with non-stationary observed variables or @code{steady} option @code{nocheck} to prevent @code{steady} to check the steady state returned by your steady state file.
+@end deffn
+
+Dynare also has the ability to estimate Bayesian VARs:
+
+@deffn Command bvar_density ;
+Computes the marginal density of an estimated BVAR model, using
+Minnesota priors.
+
+See @file{bvar-a-la-sims.pdf}, which comes with Dynare distribution,
+for more information on this command.
+@end deffn
+
+@node Model Comparison
+@section Model Comparison
+
 @deffn Command model_comparison @var{FILENAME}[(@var{DOUBLE})]@dots{};
 @deffnx Command model_comparison (marginal_density = laplace | modifiedharmonicmean) @var{FILENAME}[(@var{DOUBLE})]@dots{};
 @anchor{model_comparison}
 @descriptionhead
 
 This command computes odds ratios and estimate a posterior density over a
-collection of models (see e.g. @cite{Koop (2003), Ch. 1}). The priors over
+collection of models (see @i{e.g.} @cite{Koop (2003), Ch. 1}). The priors over
 models can be specified as the @var{DOUBLE} values, otherwise a uniform prior
 over all models is assumed.  In contrast to frequentist econometrics, the
 models to be compared do not need to be nested.  However, as the computation of
@@ -7032,14 +7110,17 @@ Posterior probability of the respective model
 
 @end defvr
 
+@node Shock Decomposition
+@section Shock Decomposition
 
 @deffn Command shock_decomposition [@var{VARIABLE_NAME}]@dots{};
 @deffnx Command shock_decomposition (@var{OPTIONS}@dots{}) [@var{VARIABLE_NAME}]@dots{};
+@anchor{shock_decomposition}
 
 @descriptionhead
 
 This command computes the historical shock decomposition for a given sample based on 
-the Kalman smoother, i.e. it decomposes the historical deviations of the endogenous 
+the Kalman smoother, @i{i.e.} it decomposes the historical deviations of the endogenous 
 variables from their respective steady state values into the contribution coming 
 from the various shocks. The @code{variable_names} provided govern for which 
 variables the decomposition is plotted.
@@ -7052,16 +7133,14 @@ model).
 
 @table @code
 
-@item parameter_set = @var{PARAMETER_SET}
-Specify the parameter set to use for running the smoother. The
-@var{PARAMETER_SET} can take one of the following seven values:
-@code{calibration}, @code{prior_mode}, @code{prior_mean},
-@code{posterior_mode}, @code{posterior_mean},
-@code{posterior_median}, @code{mle_mode}. Default value: @code{posterior_mean} if
+@item parameter_set = @code{calibration} | @code{prior_mode} | @code{prior_mean} | @code{posterior_mode} | @code{posterior_mean} | @code{posterior_median} | @code{mle_mode}
+@anchor{parameter_set} Specify the parameter set to use for running the smoother. Note that the
+parameter set used in subsequent commands like @code{stoch_simul} will be set
+to the specified @code{parameter_set}. Default value: @code{posterior_mean} if
 Metropolis has been run, @code{mle_mode} if MLE has been run.
 
 @item datafile = @var{FILENAME}
-@xref{datafile}. Useful when computing the shock decomposition on a
+@anchor{datafile_shock_decomp} @xref{datafile}. Useful when computing the shock decomposition on a
 calibrated model.
 
 @item first_obs = @var{INTEGER}
@@ -7070,31 +7149,43 @@ calibrated model.
 @item nobs = @var{INTEGER}
 @xref{nobs}.
 
-@item use_shock_groups [= @var{SHOCK_GROUPS_NAME}]
-@anchor{use_shock_groups}. Uses groups of shocks instead of individual shocks in
-the decomposition. Groups of shocks are defined in @xref{shock_groups} block.
+@item use_shock_groups [= @var{STRING}]
+@anchor{use_shock_groups} Uses shock grouping defined by the string instead of individual shocks in
+the decomposition. The groups of shocks are defined in the @ref{shock_groups} block.
 
-@item colormap = @var{COLORMAP_NAME}
-@anchor{colormap}. Controls the colormap used for the shocks decomposition
-graphs. See @code{colormap} in Matlab/Octave manual.
+@item colormap = @var{STRING}
+@anchor{colormap} Controls the colormap used for the shocks decomposition
+graphs. See @code{colormap} in Matlab/Octave manual for valid arguments.
 
 @item nograph
-@xref{nograph}. Suppresses the display and creation only within the @code{shock_decomposition}-command
-but does not affect other commands.
+@xref{nograph}. Suppresses the display and creation only within the
+@code{shock_decomposition}-command, but does not affect other commands.
+@xref{plot_shock_decomposition} for plotting graphs.
 
+@item init_state = @var{BOOLEAN}
+@anchor{init_state} If equal to @math{0}, the shock decomposition is computed conditional on the smoothed state
+variables in period @math{0}, @i{i.e.} the smoothed shocks starting in period
+@math{1} are used.  If equal to @math{1}, the shock decomposition is computed
+conditional on the smoothed state variables in period @math{1}. Default:
+@math{0}
 @end table
 
+@outputhead
+
+@defvr {MATLAB/Octave variable} oo_.shock_decomposition
 @vindex oo_.shock_decomposition
+@anchor{oo_.shock_decomposition}
 The results are stored in the field @code{oo_.shock_decomposition}, which is a three
 dimensional array. The first dimension contains the @code{M_.endo_nbr} endogenous variables. 
-The second dimension stores
+The second dimension stores 
 in the first @code{M_.exo_nbr} columns the contribution of the respective shocks.
 Column @code{M_.exo_nbr+1} stores the contribution of the initial conditions,
 while column @code{M_.exo_nbr+2} stores the smoothed value of the respective
-endogenous variable in deviations from their steady state, i.e. the mean and trends are
+endogenous variable in deviations from their steady state, @i{i.e.} the mean and trends are
 subtracted. The third dimension stores the time periods. Both the variables 
-and shocks are stored in the order of declaration, i.e. @code{M_.endo_names} and 
+and shocks are stored in the order of declaration, @i{i.e.} @code{M_.endo_names} and 
 @code{M_.exo_names}, respectively.
+@end defvr
 
 @end deffn
 
@@ -7105,11 +7196,11 @@ and shocks are stored in the order of declaration, i.e. @code{M_.endo_names} and
 of the shock groups is written in a block delimited by @code{shock_groups} and
 @code{end}.
 
-Each line defines a group of shock as a list of exogenous variables:
+Each line defines a group of shocks as a list of exogenous variables:
 
 @example
 SHOCK_GROUP_NAME   = VARIABLE_1 [[,] VARIABLE_2 [,]@dots{}];
-`SHOCK GROUP NAME' = VARIABLE_1 [[,] VARIABLE_2 [,]@dots{}];
+'SHOCK GROUP NAME' = VARIABLE_1 [[,] VARIABLE_2 [,]@dots{}];
 @end example
 
 @optionshead
@@ -7120,7 +7211,7 @@ SHOCK_GROUP_NAME   = VARIABLE_1 [[,] VARIABLE_2 [,]@dots{}];
 Specifies a name for the following definition of shock groups. It is possible
 to use several @code{shock_groups} blocks in a model file, each grouping being
 identified by a different name. This name must in turn be used in the
-@code{shocks_decomposition} command.
+@code{shock_decomposition} command.
 
 @end table
 
@@ -7133,28 +7224,275 @@ varexo e_a, e_b, e_c, e_d;
 
 shock_groups(name=group1);
 supply = e_a, e_b;
-`aggregate demand' = e_c, e_d;
+'aggregate demand' = e_c, e_d;
 end;
 
-shocks_decomposition(use_shock_groups=group1);
+shock_decomposition(use_shock_groups=group1);
 @end example
+This example defines a shock grouping with the name @code{group1}, containing a set of supply and demand shocks 
+and conducts the shock decomposition for these two groups.
+@end deffn
+
+@deffn Command realtime_shock_decomposition [@var{VARIABLE_NAME}]@dots{};
+@deffnx Command realtime_shock_decomposition (@var{OPTIONS}@dots{}) [@var{VARIABLE_NAME}]@dots{};
+@anchor{realtime_shock_decomposition}
+
+@descriptionhead
+
+This command computes the realtime historical shock decomposition for a given
+sample based on the Kalman smoother. For each period
+@math{T=[@code{presample},@dots{},@code{nobs}]}, it recursively computes three objects:
+@itemize @bullet
+@item
+realtime historical shock decomposition @math{Y(t|T)} for @math{t=[1,@dots{},T]},
+@i{i.e.} without observing data in @math{[T+1,@dots{},@code{nobs}]}. This results in a standard 
+shock decomposition being computed for each additional datapoint becoming available after @code{presample}.
+@item
+forecast shock decomposition @math{Y(T+k|T)} for @math{k=[1,@dots{},forecast]}, @i{i.e.} the @math{k}-step 
+ahead forecast made for every @math{T} is decomposed in its shock contributions.
+@item
+realtime conditional shock decomposition of the difference between the realtime historical shock decomposition and the 
+forecast shock decomposition. If @ref{vintage} is equal to @math{0}, it computes the effect of shocks realizing in period 
+@math{T}, @i{i.e.} decomposes @math{Y(T|T)-Y(T|T-1)}. Put differently it conducts a @math{1}-period ahead shock decomposition from 
+@math{T-1} to @math{T}, by decomposing the update step of the Kalman filter. If @code{vintage>0} and smaller than @code{nobs},
+the decomposition is conducted of the forecast revision @math{Y(T+k|T+k)-Y(T+k|T)}.
+
+@end itemize
+
+Like @ref{shock_decomposition} it decomposes the historical deviations of the endogenous 
+variables from their respective steady state values into the contribution coming 
+from the various shocks. The @code{variable_names} provided govern for which 
+variables the decomposition is plotted.
+
+Note that this command must come after either @code{estimation} (in case
+of an estimated model) or @code{stoch_simul} (in case of a calibrated
+model).
+
+@optionshead
+
+@table @code
+
+@item parameter_set = @code{calibration} | @code{prior_mode} | @code{prior_mean} | @code{posterior_mode} | @code{posterior_mean} | @code{posterior_median} | @code{mle_mode}
+@xref{parameter_set}.
+
+@item datafile = @var{FILENAME}
+@xref{datafile_shock_decomp}.
+
+@item first_obs = @var{INTEGER}
+@xref{first_obs}.
+
+@item nobs = @var{INTEGER}
+@xref{nobs}.
+
+@item use_shock_groups [= @var{STRING}]
+@xref{use_shock_groups}.
+
+@item colormap = @var{STRING}
+@xref{colormap}.
+
+@item nograph
+@xref{nograph}. Only shock decompositions are computed and stored in @code{oo_.realtime_shock_decomposition},
+@code{oo_.conditional_shock_decomposition} and @code{oo_.realtime_forecast_shock_decomposition} but no plot is made 
+(@xref{plot_shock_decomposition}).
+
+@item presample = @var{INTEGER}
+@anchor{presample_shock_decomposition} First data point from which recursive
+realtime shock decompositions are computed, @i{i.e.} for
+@math{T=[@code{presample}@dots{}@code{nobs}]}.
+
+@item forecast = @var{INTEGER}
+@anchor{forecast_shock_decomposition} Compute shock decompositions up to
+@math{T+k} periods, @i{i.e.} get shock contributions to k-step ahead forecasts.
+
+@item save_realtime = @var{INTEGER_VECTOR}
+@anchor{save_realtime} Choose for which vintages to save the full realtime
+shock decomposition. Default: @math{0}.
+@end table
+
+@outputhead
+
+@defvr {MATLAB/Octave variable} oo_.realtime_shock_decomposition
+@vindex oo_.realtime_shock_decomposition
+Structure storing the results of realtime historical decompositions. Fields are three-dimensional arrays with 
+the first two dimension equal to the ones of @ref{oo_.shock_decomposition}. The third dimension stores the time 
+periods and is therefore of size @code{T+forecast}. Fields are of the form:
+@example
+@code{oo_.realtime_shock_decomposition.@var{OBJECT}}
+@end example
+where @var{OBJECT} is one of the following:
+
+@table @code
+
+@item pool
+Stores the pooled decomposition, @i{i.e.} for every realtime shock decomposition terminal period
+@math{T=[@code{presample},@dots{},@code{nobs}]} it collects the last period's decomposition @math{Y(T|T)}
+(see also @ref{plot_shock_decomposition}). The third dimension of the array will have size 
+@code{nobs+forecast}.
+
+@item time_*
+Stores the vintages of realtime historical shock decompositions if @code{save_realtime} is used. For example, if
+@code{save_realtime=[5]} and @code{forecast=8}, the third dimension will be of size 13.
+
+@end table
+@end defvr
+
+@defvr {MATLAB/Octave variable} oo_.realtime_conditional_shock_decomposition
+@vindex oo_.realtime_conditional_shock_decomposition
+Structure storing the results of realtime conditional decompositions. Fields are of the form:
+@example
+@code{oo_.realtime_conditional_shock_decomposition.@var{OBJECT}}
+@end example
+where @var{OBJECT} is one of the following:
+
+@table @code
+
+@item pool
+Stores the pooled realtime conditional shock decomposition, @i{i.e.} collects the decompositions of 
+@math{Y(T|T)-Y(T|T-1)} for the terminal periods @math{T=[@code{presample},@dots{},@code{nobs}]}. 
+The third dimension is of size @code{nobs}.
+
+@item time_*
+Store the vintages of @math{k}-step conditional forecast shock decompositions @math{Y(t|T+k)}, for
+@math{t=[T@dots{}T+k]}. @xref{vintage}. The third dimension is of size @code{1+forecast}.
+
+@end table
+@end defvr
+
+@defvr {MATLAB/Octave variable} oo_.realtime_forecast_shock_decomposition
+@vindex oo_.realtime_forecast_shock_decomposition
+Structure storing the results of realtime forecast decompositions. Fields are of the form:
+@example
+@code{oo_.realtime_forecast_shock_decomposition.@var{OBJECT}}
+@end example
+where @var{OBJECT} is one of the following:
+
+@table @code
+
+@item pool
+Stores the pooled realtime forecast decomposition of the @math{1}-step ahead effect of shocks
+on the @math{1}-step ahead prediction, @i{i.e.} @math{Y(T|T-1)}. 
+
+@item time_*
+Stores the vintages of @math{k}-step out-of-sample forecast shock
+decompositions, @i{i.e.} @math{Y(t|T)}, for @math{t=[T@dots{}T+k]}. @xref{vintage}.
+@end table
+@end defvr
 
 @end deffn
 
-@deffn Command unit_root_vars @var{VARIABLE_NAME}@dots{};
+@deffn Command plot_shock_decomposition [@var{VARIABLE_NAME}]@dots{};
+@deffnx Command plot_shock_decomposition (@var{OPTIONS}@dots{}) [@var{VARIABLE_NAME}]@dots{};
+@anchor{plot_shock_decomposition}
 
-This command is deprecated. Use @code{estimation} option @code{diffuse_filter} instead for estimating a model with non-stationary observed variables or @code{steady} option @code{nocheck} to prevent @code{steady} to check the steady state returned by your steady state file.
+@descriptionhead
+
+This command plots the historical shock decomposition already computed by
+@code{shock_decomposition} or @code{realtime_shock_decomposition}. For that reason,
+it must come after one of these commands. The @code{variable_names} provided govern which
+variables the decomposition is plotted for.
+
+Further note that, unlike the majority of Dynare commands, the options
+specified below are overwritten with their defaults before every call to
+@code{plot_shock_decomposition}. Hence, if you want to reuse an option in a
+subsequent call to @code{plot_shock_decomposition}, you must pass it to the
+command again.
+
+@optionshead
+
+@table @code
+
+@item use_shock_groups [= @var{STRING}]
+@xref{use_shock_groups}.
+
+@item colormap = @var{STRING}
+@xref{colormap}.
+
+@item nodisplay
+@xref{nodisplay}.
+
+@item graph_format = @var{FORMAT}
+@itemx graph_format = ( @var{FORMAT}, @var{FORMAT}@dots{} )
+@xref{graph_format}.
+
+@item detail_plot
+Plots shock contributions using subplots, one per shock (or group of
+shocks). Default: not activated
+
+@item interactive
+Under MATLAB, add uimenus for detailed group plots. Default: not activated
+
+@item screen_shocks
+@anchor{screen_shcoks} For large models (@i{i.e.} for models with more than @math{16}
+shocks), plots only the shocks that have the largest historical contribution
+for chosen selected @code{variable_names}.  Historical contribution is ranked
+by the mean absolute value of all historical contributions.
+
+@item steadystate
+@anchor{steadystate} If passed, the the @math{y}-axis value of the zero line in
+the shock decomposition plot is translated to the steady state level. Default:
+not activated
+
+@item type = @code{qoq} | @code{yoy} | @code{aoa}
+@anchor{type} For quarterly data, valid arguments are: @code{qoq} for
+quarter-on-quarter plots, @code{yoy} for year-on-year plots of growth rates,
+@code{aoa} for annualized variables, @i{i.e.} the value in the last quarter for
+each year is plotted.  Default value: @code{empty}, @i{i.e.} standard
+period-on-period plots (@code{qoq} for quarterly data).
+
+@item fig_name = @var{STRING}
+@anchor{fig_name} Specifies a user-defined keyword to be appended to the
+default figure name set by @code{plot_shock_decomposition}.  This can avoid to
+overwrite plots in case of sequential calls to @code{plot_shock_decomposition}.
+
+@item write_xls 
+@anchor{write_xls} Saves shock decompositions to Excel-file in the main directory, named 
+@code{FILENAME_shock_decomposition_TYPE_FIG_NAME.xls}. This option requires your system to be
+configured to be able to write Excel files.@footnote{In case of Excel not being installed, 
+@url{https://mathworks.com/matlabcentral/fileexchange/38591-xlwrite--generate-xls-x--files-without-excel-on-mac-linux-win} may be helpful.}
+
+@item realtime = @var{INTEGER}
+@anchor{realtime} Which kind of shock decomposition to plot. @var{INTEGER} can take following values:
+@itemize @bullet
+@item
+@code{0}: standard historical shock decomposition. @xref{shock_decomposition}.
+@item
+@code{1}: realtime historical shock decomposition. @xref{realtime_shock_decomposition}.
+@item
+@code{2}: conditional realtime shock decomposition. @xref{realtime_shock_decomposition}.
+@item
+@code{3}: realtime forecast shock decomposition. @xref{realtime_shock_decomposition}.
+@end itemize
+If no @ref{vintage} is requested, @i{i.e.} @code{vintage=0} then the pooled objects from @ref{realtime_shock_decomposition}
+will be plotted and the respective vintage otherwise.
+Default: @math{0}
+
+@item vintage = @var{INTEGER}
+@anchor{vintage} Selects a particular data vintage in @math{[presample,@dots{},nobs]} for which to plot the results from
+@ref{realtime_shock_decomposition} selected via the @ref{realtime} option. If the standard 
+historical shock decomposition is selected (@code{realtime=0}), @code{vintage} will have no effect. If @code{vintage=0}
+the pooled objects from @ref{realtime_shock_decomposition} will be plotted. If @code{vintage>0}, it plots the shock
+decompositions for vintage @math{T=@code{vintage}} under the following scenarios:
+@itemize @bullet
+@item
+@code{realtime=1}: the full vintage shock decomposition @math{Y(t|T)} for
+@math{t=[1,@dots{},T]}
+@item
+@code{realtime=2}: the conditional forecast shock decomposition from @math{T},
+@i{i.e.} plots @math{Y(T+j|T+j)} and the shock contributions needed to get to
+the data @math{Y(T+j)} conditional on @math{T=}@code{vintage}, with
+@math{j=[0,@dots{},@code{forecast}]}.
+@item
+@code{realtime=3}: plots unconditional forecast shock decomposition from
+@math{T}, @i{i.e.} @math{Y(T+j|T)}, where @math{T=@code{vintage}} and
+@math{j=[0,@dots{},@code{forecast}]}.
+@end itemize
+Default: @math{0}
+@end table
+
 @end deffn
 
-Dynare also has the ability to estimate Bayesian VARs:
-
-@deffn Command bvar_density ;
-Computes the marginal density of an estimated BVAR model, using
-Minnesota priors.
-
-See @file{bvar-a-la-sims.pdf}, which comes with Dynare distribution,
-for more information on this command.
-@end deffn
+@node Calibrated Smoother
+@section Calibrated Smoother
 
 Dynare can also run the smoother on a calibrated model:
 
@@ -7552,8 +7890,8 @@ is not specified, a value of 0 is assumed. That is, if you specify only
 values for periods 1 and 3, the values for period 2 will be 0. Currently, it is not 
 possible to have uncontrolled intermediate periods.
 In case of the presence of @code{observation_trends}, the specified controlled path for 
-these variables needs to include the trend component.
-
+these variables needs to include the trend component. When using the @ref{loglinear} option, 
+it is necessary to specify the logarithm of the controlled variables.
 
 @end deffn
 
@@ -7753,7 +8091,7 @@ where:
 
 @item
 @math{\gamma} are parameters to be optimized. They must be elements
-of the matrices @math{A_1}, @math{A_2}, @math{A_3}, i.e. be specified as
+of the matrices @math{A_1}, @math{A_2}, @math{A_3}, @i{i.e.} be specified as
 parameters in the @code{params}-command and be entered in the
 @code{model}-block;
 
@@ -7775,7 +8113,7 @@ parameters to minimize the weighted (co)-variance of a specified subset
 of endogenous variables, subject to a linear law of motion implied by the
 first order conditions of the model. A few things are worth mentioning.
 First, @math{y} denotes the selected endogenous variables' deviations
-from their steady state, i.e. in case they are not already mean 0 the
+from their steady state, @i{i.e.} in case they are not already mean 0 the
 variables entering the loss function are automatically demeaned so that
 the centered second moments are minimized. Second, @code{osr} only solves
 linear quadratic problems of the type resulting from combining the
@@ -7812,7 +8150,7 @@ by listing them after the command, as @code{stoch_simul}
 Specifies the optimizer for minimizing the objective function. The same solvers as for @code{mode_compute} (@pxref{mode_compute}) are available, except for 5,6, and 10. 
 
 @item optim = (@var{NAME}, @var{VALUE}, ...)
-A list of @var{NAME} and @var{VALUE} pairs. Can be used to set options for the optimization routines. The set of available options depends on the selected optimization routine (i.e. on the value of option @ref{opt_algo}). @xref{optim}.
+A list of @var{NAME} and @var{VALUE} pairs. Can be used to set options for the optimization routines. The set of available options depends on the selected optimization routine (@i{i.e.} on the value of option @ref{opt_algo}). @xref{optim}.
 
 @item maxit = @var{INTEGER} 
 Determines the maximum number of iterations used in @code{opt_algo=4}.  This option is now deprecated and will be 
@@ -7924,7 +8262,7 @@ Each line has the following syntax:
 PARAMETER_NAME, LOWER_BOUND, UPPER_BOUND;
 @end example
 
-Note that the use of this block requires the use of a constrained optimizer, i.e. setting @ref{opt_algo} to 
+Note that the use of this block requires the use of a constrained optimizer, @i{i.e.} setting @ref{opt_algo} to 
 1,2,5, or 9.
 
 @examplehead
@@ -8069,7 +8407,7 @@ maximizes the policy maker's objective function subject to the
 constraints provided by the equilibrium path of the private economy and under 
 commitment to this optimal policy. The Ramsey policy is computed
 by approximating the equilibrium system around the perturbation point where the 
-Lagrange multipliers are at their steady state, i.e. where the Ramsey planner acts 
+Lagrange multipliers are at their steady state, @i{i.e.} where the Ramsey planner acts 
 as if the initial multipliers had 
 been set to 0 in the distant past, giving them time to converge to their steady 
 state value. Consequently, the optimal decision rules are computed around this steady state 
@@ -8132,7 +8470,7 @@ multipliers associated with the planner's problem are set to their steady state
 values (@pxref{ramsey_policy}).
 
 In contrast, the second entry stores the value of the planner objective with 
-initial Lagrange multipliers of the planner's problem set to 0, i.e. it is assumed 
+initial Lagrange multipliers of the planner's problem set to 0, @i{i.e.} it is assumed 
 that the planner exploits its ability to surprise private agents in the first
 period of implementing Ramsey policy. This is the value of implementating
 optimal policy for the first time and committing not to re-optimize in the future.
@@ -8251,7 +8589,7 @@ This command triggers sensitivity analysis on a DSGE model.
 @anchor{Sampling Options}
 @table @code
 
-@item nsam = @var{INTEGER}
+@item Nsam = @var{INTEGER}
 Size of the Monte-Carlo sample. Default: @code{2048}
 
 @item ilptau = @var{INTEGER}
@@ -8308,11 +8646,7 @@ If equal to @code{0}, generate a new sample. Default: @code{0}
 @item alpha2_stab = @var{DOUBLE}
 Critical value for correlations @math{\rho} in filtered samples:
 plot couples of parmaters with @math{\left|\rho\right|>} @code{alpha2_stab}.
-Default: @code{0.3}
-
-@item ksstat = @var{DOUBLE}
-Critical value for Smirnov statistics @math{d}: plot parameters with
-@math{d>} @code{ksstat}. Default: @code{0.1}
+Default: @code{0}
 
 @item pvalue_ks = @var{DOUBLE}
 The threshold @math{pvalue} for significant Kolmogorov-Smirnov test (@i{i.e.} plot parameters with
@@ -8345,7 +8679,7 @@ An empty vector indicates that these entries will not be filtered. Default: @cod
 
 @item ksstat_redform = @var{DOUBLE}
 Critical value for Smirnov statistics @math{d} when reduced form entries
-are filtered. Default: @code{0.1}
+are filtered. Default: @code{0.001}
 
 @item alpha2_redform = @var{DOUBLE}
 Critical value for correlations @math{\rho}  when reduced form entries
@@ -8392,7 +8726,7 @@ error). Default: @code{presample+1}
 
 @item alpha_rmse = @var{DOUBLE}
 Critical value for Smirnov statistics @math{d}: plot parameters with
-@math{d>} @code{alpha_rmse}. Default: @code{0.002}
+@math{d>} @code{alpha_rmse}. Default: @code{0.001}
 
 @item alpha2_rmse = @var{DOUBLE}
 Critical value for correlation @math{\rho}: plot couples of parmaters with
@@ -8475,7 +8809,7 @@ Maximum number of lags for moments in identification analysis. Default: @code{1}
 
 The @code{irf_calibration} and @code{moment_calibration} blocks allow imposing implicit ``endogenous'' priors 
 about IRFs and moments on the model. The way it works internally is that 
-any parameter draw that is inconsistent with the ``calibration'' provided in these blocks is discarded, i.e. assigned a prior density of 0. 
+any parameter draw that is inconsistent with the ``calibration'' provided in these blocks is discarded, @i{i.e.} assigned a prior density of @math{0}. 
 In the context of @code{dynare_sensitivity}, these restrictions allow tracing out which parameters are driving the model to
 satisfy or violate the given restrictions.
 
@@ -10586,7 +10920,7 @@ related to the model (and hence not placed in the model file). At the
 moment, it is only used when using Dynare to run parallel
 computations.
 
-On Linux and Mac OS X, the default location of the configuration file
+On Linux and macOS, the default location of the configuration file
 is @file{$HOME/.dynare}, while on Windows it is
 @file{%APPDATA%\dynare.ini} (typically @file{C:\Documents and
 Settings\@var{USERNAME}\Application Data\dynare.ini} under Windows XP,
@@ -10847,7 +11181,7 @@ If just one integer is passed, the number of processors to use. If a
 range of integers is passed, the specific processors to use (processor
 counting is defined to begin at one as opposed to zero). Note that
 using specific processors is only possible under Windows; under Linux
-and Mac OS X, if a range is passed the same number of processors will
+and macOS, if a range is passed the same number of processors will
 be used but the range will be adjusted to begin at one.
 
 @item ComputerName = @var{COMPUTER_NAME}
@@ -10934,7 +11268,7 @@ This section outlines the steps necessary on most Windows systems to set up Dyna
 
 @enumerate
 @item Write a configuration file containing the options you want. A mimimum working 
-    example setting up a cluster consisting of two local CPU cores that allows for e.g. running
+    example setting up a cluster consisting of two local CPU cores that allows for @i{e.g.} running
     two Monte Carlo Markov Chains in parallel is shown below.
 @item Save the configuration file somwhere. The name and file ending do not matter 
     if you are providing it with the @code{conffile} command line option. The only restrictions are that the 
@@ -10942,8 +11276,8 @@ This section outlines the steps necessary on most Windows systems to set up Dyna
     For the configuration file to be accessible without providing an explicit path at the command line, you must save it 
     under the name @file{dynare.ini} into your user account's @code{Application Data} folder.
 @item Install the @file{PSTools} from @uref{https://technet.microsoft.com/sysinternals/pstools.aspx} 
-    to your system, e.g. into @file{C:\PSTools}.
-@item Set the Windows System Path to the @file{PSTools}-folder (e.g. using something along the line of pressing Windows Key+Pause to 
+    to your system, @i{e.g.} into @file{C:\PSTools}.
+@item Set the Windows System Path to the @file{PSTools}-folder (@i{e.g.} using something along the line of pressing Windows Key+Pause to 
     open the System Configuration, then go to Advanced -> Environment Variables -> Path, see also @uref{https://technet.microsoft.com/sysinternals/pstools.aspx}).
 @item Restart your computer to make the path change effective.
 @item Open Matlab and type into the command window 
@@ -11905,7 +12239,7 @@ plot(ts2.data,'--r');           % Plot of the filtered y.
 hold off
 axis tight
 id = get(gca,'XTick');
-set(gca,'XTickLabel',strings(ts.dates(id)));
+set(gca,'XTickLabel',strings(ts1.dates(id)));
 @end example
 
 @iftex
@@ -13269,7 +13603,7 @@ Instantiates a @code{Report} object.
 The full path to the @LaTeX{} compiler on your system. If this option
 is not provided, Dynare will try to find the appropriate program to
 compile @LaTeX{} on your system. Default is system dependent: Windows:
-the result of @code{findtexmf --file-type=exe pdflatex}, Mac OS X and
+the result of @code{findtexmf --file-type=exe pdflatex}, macOS and
 Linux: the result of @code{which pdflatex}
 
 @item showDate, @code{BOOLEAN}
@@ -13838,7 +14172,7 @@ Print the compiler output to the screen. Useful for debugging your code as the
 @ref{showOutput}
 
 @item showReport, @code{BOOLEAN}
-Open the compiled report (works on Windows and OS X on Matlab). Default:
+Open the compiled report (works on Windows and macOS on Matlab). Default:
 @code{true}
 
 @end table
@@ -14401,6 +14735,10 @@ Metropolis-Hastings Algorithm,'' @i{Scandinavian Journal of Statistics}, 30, 699
 Smets, Frank and Rafael Wouters (2003): ``An Estimated Dynamic
 Stochastic General Equilibrium Model of the Euro Area,'' @i{Journal of
 the European Economic Association}, 1(5), 1123--1175
+
+@item
+Stock, James H. and Mark W. Watson (1999). ``Forecasting Inflation,'', @i{Journal of Monetary
+Economics}, 44(2), 293--335.
 
 @item
 Uhlig, Harald (2001): ``A Toolkit for Analysing Nonlinear Dynamic Stochastic Models Easily,''

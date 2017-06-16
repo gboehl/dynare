@@ -2,11 +2,11 @@ function [zdata]=mkdata(nperiods,decrulea,decruleb,endog_,exog_,wishlist,irfshoc
 
 %[nsim, ksim, ysim, isim, csim] = mkdata(nperiods,cofb,endog_)
 
-% given decision rule 
+% given decision rule
 neqs = size(endog_,1);
 
 if  nargin<9
-   init = zeros(neqs,1);
+    init = zeros(neqs,1);
 end
 
 if  nargin<8
@@ -19,15 +19,15 @@ end
 
 history = zeros(neqs,nperiods+1);
 
-    nshocks = size(irfshock,1);
-    for i = 1:nshocks
-        shockpos = strmatch(irfshock(i,:),exog_,'exact');
-        if ~isempty(shockpos)
-            irfshockpos(i) = shockpos;
-        else
-            error(['Shock ',irfshock(i,:),' is not in the model']);
-        end
+nshocks = size(irfshock,1);
+for i = 1:nshocks
+    shockpos = strmatch(irfshock(i,:),exog_,'exact');
+    if ~isempty(shockpos)
+        irfshockpos(i) = shockpos;
+    else
+        error(['Shock ',irfshock(i,:),' is not in the model']);
     end
+end
 
 
 % generate data
@@ -47,8 +47,8 @@ for i = 2:nperiods+1
         end
         history(:,i) = decrulea * history(:,i-1)+decruleb*errvec;
     else
-    % update endogenous variables
-    history(:,i) = decrulea * history(:,i-1);
+        % update endogenous variables
+        history(:,i) = decrulea * history(:,i-1);
     end
 end
 

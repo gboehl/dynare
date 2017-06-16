@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010-2013 Dynare Team
+ * Copyright (C) 2010-2017 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -60,7 +60,9 @@ public:
   {
     mat::set_identity(I);
   };
-  virtual ~DiscLyapFast() {};
+  virtual ~DiscLyapFast()
+  {
+  };
   template <class MatG, class MatV, class MatX >
   void solve_lyap(const MatG &G, const MatV &V, MatX &X, double tol = 1e-16, size_t flag_ch = 0) throw (DLPException);
 

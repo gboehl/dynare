@@ -20,7 +20,7 @@ function SampleAddress = selec_posterior_draws(SampleSize,drsize)
 %   None.
 %
 
-% Copyright (C) 2006-2011 Dynare Team
+% Copyright (C) 2006-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -100,6 +100,8 @@ SampleAddress = sortrows(SampleAddress,[3 2]);
 % Selected draws in the posterior distribution, and if drsize>0
 % reduced form solutions, are saved on disk.
 if info
+    %delete old stale files before creating new ones
+    delete_stale_file([BaseName '_posterior_draws*.mat'])
     if  SampleSize*drawsize <= MAX_mega_bytes% The posterior draws are saved in one file.
         pdraws = cell(SampleSize,info);
         old_mhfile = 0;

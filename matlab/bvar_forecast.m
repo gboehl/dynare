@@ -11,7 +11,7 @@ function bvar_forecast(nlags)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2007-2013 Dynare Team
+% Copyright (C) 2007-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -54,7 +54,7 @@ p = 0;
 % Loop counter initialization
 d = 0;
 while d <= options_.bvar_replic
-    
+
     Sigma = rand_inverse_wishart(ny, posterior.df, S_inv_upper_chol);
 
     % Option 'lower' of chol() not available in old versions of
@@ -62,15 +62,15 @@ while d <= options_.bvar_replic
     Sigma_lower_chol = chol(Sigma)';
 
     Phi = rand_matrix_normal(k, ny, posterior.PhiHat, Sigma_lower_chol, XXi_lower_chol);
-    
+
     % All the eigenvalues of the companion matrix have to be on or inside the unit circle
-    Companion_matrix(1:ny,:) = Phi(1:ny*nlags,:)'; 
+    Companion_matrix(1:ny,:) = Phi(1:ny*nlags,:)';
     test = (abs(eig(Companion_matrix)));
     if any(test>1.0000000000001)
         p = p+1;
     end
     d = d+1;
-    
+
     % Without shocks
     lags_data = forecast_data.initval;
     for t = 1:options_.forecast
@@ -80,7 +80,7 @@ while d <= options_.bvar_replic
         lags_data(end,:) = y;
         sims_no_shock(t, :, d) = y;
     end
-    
+
     % With shocks
     lags_data = forecast_data.initval;
     for t = 1:options_.forecast
@@ -120,19 +120,19 @@ dyn_graph=dynare_graph_init(sprintf('BVAR forecasts (nlags = %d)', nlags), ny, {
 
 for i = 1:ny
     dyn_graph=dynare_graph(dyn_graph,[ sims_no_shock_median(:, i) ...
-                   sims_no_shock_up_conf(:, i) sims_no_shock_down_conf(:, i) ...
-                   sims_with_shocks_up_conf(:, i) sims_with_shocks_down_conf(:, i) ], ...
-                 options_.varobs{i});
+                        sims_no_shock_up_conf(:, i) sims_no_shock_down_conf(:, i) ...
+                        sims_with_shocks_up_conf(:, i) sims_with_shocks_down_conf(:, i) ], ...
+                           options_.varobs{i});
 end
 
-dyn_saveas(dyn_graph.fh,[OutputDirectoryName '/' M_.fname '_BVAR_forecast_',num2str(nlags)],options_)
+dyn_saveas(dyn_graph.fh,[OutputDirectoryName '/' M_.fname '_BVAR_forecast_',num2str(nlags)],options_.nodisplay,options_.graph_format)
 
 % Compute RMSE
 
 if ~isempty(forecast_data.realized_val)
-    
+
     sq_err_cumul = zeros(1, ny);
-    
+
     lags_data = forecast_data.initval;
     for t = 1:size(forecast_data.realized_val, 1)
         X = [ reshape(flipdim(lags_data, 1)', 1, ny*nlags) forecast_data.realized_xdata(t, :) ];
@@ -141,14 +141,14 @@ if ~isempty(forecast_data.realized_val)
         lags_data(end,:) = y;
         sq_err_cumul = sq_err_cumul + (y - forecast_data.realized_val(t, :)) .^ 2;
     end
-    
+
     rmse = sqrt(sq_err_cumul / size(forecast_data.realized_val, 1));
-    
+
     fprintf('RMSE of BVAR(%d):\n', nlags);
-    
+
     for i = 1:length(options_.varobs)
         fprintf('%s: %10.4f\n', options_.varobs{i}, rmse(i));
-    end 
+    end
 end
 
 % Store results

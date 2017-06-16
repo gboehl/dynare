@@ -2,7 +2,7 @@ function print_info(info, noprint, DynareOptions)
 % Prints error messages
 %
 % INPUTS
-%   info              [double]     vector returned by resol.m 
+%   info              [double]     vector returned by resol.m
 %   noprint           [integer]    equal to 0 if the error message has to be printed.
 %   DynareOptions     [structure]  --> options_
 % OUTPUTS
@@ -11,7 +11,7 @@ function print_info(info, noprint, DynareOptions)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2005-2013 Dynare Team
+% Copyright (C) 2005-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -54,15 +54,15 @@ if ~noprint
         error('One of the eigenvalues is close to 0/0 (the absolute value of numerator and denominator is smaller than %s!\n If you believe that the model has a unique solution you can try to reduce the value of qz_zero_threshold.',num2str(DynareOptions.qz_zero_threshold))
       case 8
         if size(info,2)>=2
-          global M_;
+            global M_;
             disp_string=deblank(M_.param_names(info(2),:));
-          for ii=1:length(info)-2
-            disp_string=[disp_string,', ',deblank(M_.param_names(info(2+ii),:))];
-          end
-          error(['The Jacobian contains NaNs because the following parameters are NaN: '...
-              disp_string])
+            for ii=1:length(info)-2
+                disp_string=[disp_string,', ',deblank(M_.param_names(info(2+ii),:))];
+            end
+            error(['The Jacobian contains NaNs because the following parameters are NaN: '...
+                   disp_string])
         else
-          error(['The Jacobian contains NaNs. For more information, use options_.debug.'])
+            error(['The Jacobian contains NaNs. For more information, use options_.debug.'])
         end
       case 9
         error(['k_order_pert was unable to compute the solution'])
@@ -78,7 +78,7 @@ if ~noprint
         if DynareOptions.linear
             error(['Impossible to find the steady state. Either the model' ...
                    ' doesn''t have a steady state or there are an infinity of steady states.' ...
-                   ' Check whether your model is truly linear or whether there is a mistake in linearization.'])        
+                   ' Check whether your model is truly linear or whether there is a mistake in linearization.'])
         else
             error(['Impossible to find the steady state. Either the model' ...
                    ' doesn''t have a steady state, there are an infinity of steady states,' ...
@@ -117,12 +117,14 @@ if ~noprint
       case 49
         error('The model violates one (many) endogenous prior restriction(s)')
       case 50
-        error('Likelihood is Inf')        
+        error('Likelihood is Inf')
       case 51
         fprintf('\n The dsge_prior_weight is dsge_var=%5.4f, but must be at least %5.4f for the prior to be proper.\n',info(2),info(3));
         error('You are estimating a DSGE-VAR model, but the value of the dsge prior weight is too low!')
       case 52 %dsge_var_likelihood
-        error('You are estimating a DSGE-VAR model, but the implied covariance matrix of the VAR''s innovations is not positive definite!');
+        error('You are estimating a DSGE-VAR model, but the implied covariance matrix of the VAR''s innovations, based on artificial and actual sample is not positive definite!');
+      case 53 %dsge_var_likelihood
+        error('You are estimating a DSGE-VAR model, but the implied covariance matrix of the VAR''s innovations, based on the artificial sample, is not positive definite!');
       case 55
         error('Fast Kalman filter only works with stationary models [lik_init=1] or stationary observables for non-stationary models [lik_init=3]')
       case 61 %Discretionary policy

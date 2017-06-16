@@ -1,6 +1,6 @@
 function [info_convergence, endo_simul] = extended_path_homotopy(endo_simul, exo_simul, M, options, oo, pfm, ep, order, algo, method, debug)
 
-% Copyright (C) 2016 Dynare Team
+% Copyright (C) 2016-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -17,7 +17,7 @@ function [info_convergence, endo_simul] = extended_path_homotopy(endo_simul, exo
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-    
+
 endo_simul0 = endo_simul;
 if ismember(method, [1, 2])
     noconvergence = true;

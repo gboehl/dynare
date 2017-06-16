@@ -2,7 +2,7 @@ function delete_stale_file(fname)
 % function delete_old_files(fname)
 % Checks for presence of files and deletes them if necessary
 
-% Copyright (C) 2015 Dynare Team
+% Copyright (C) 2015-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -23,4 +23,3 @@ Files_info = dir(fname);
 if length(Files_info)>0
     delete(fname)
 end
-

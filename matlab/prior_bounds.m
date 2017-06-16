@@ -40,14 +40,14 @@ function bounds = prior_bounds(bayestopt, prior_trunc)
 %
 % INPUTS
 %    bayestopt  [structure]  characterizing priors (shape, mean, p1..p4)
-%    
+%
 % OUTPUTS
 %    bounds     [double]      structure specifying prior bounds (lb and ub fields)
-%    
+%
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2003-2012 Dynare Team
+% Copyright (C) 2003-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

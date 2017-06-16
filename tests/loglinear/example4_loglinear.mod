@@ -64,6 +64,18 @@ var e, u = phi*0.009*0.009;
 end;
 
 stoch_simul(loglinear,order=1);
+forecast;
+
+conditional_forecast_paths;
+var a;
+periods  1  2  ;
+values   0.01 -0.02;
+var b;
+periods 1 2;
+values  0.05 0;
+end;
+
+conditional_forecast(parameter_set=calibration, controlled_varexo=(u,e));
 
 load results_exp;
 if max(max(abs(oo_.dr.ghx-oo_exp.dr.ghx)))>1e-10
@@ -99,6 +111,22 @@ for ii=1:length(oo_.autocorr)
     error('Option loglinear wrong, moments not equal')
     end
 end
+
+if max(max(abs(struct2array(oo_.forecast.Mean)-struct2array(oo_exp.forecast.Mean))))>1e-10 || ...
+    max(max(abs(struct2array(oo_.forecast.HPDinf)-struct2array(oo_exp.forecast.HPDinf))))>1e-10 || ...
+    max(max(abs(struct2array(oo_.forecast.HPDsup)-struct2array(oo_exp.forecast.HPDsup))))>1e-10
+    error('Option loglinear wrong, forecast not equal')
+end
+
+load('conditional_forecasts.mat')
+
+if max(max(abs(struct2array(forecasts.cond.Mean)-struct2array(conditional_forecasts_exp.cond.Mean))))>1e-10 || ...
+    max(max(abs(struct2array(forecasts.cond.ci)-struct2array(conditional_forecasts_exp.cond.ci))))>1e-10 || ...
+    max(max(abs(struct2array(forecasts.uncond.Mean)-struct2array(conditional_forecasts_exp.uncond.Mean))))>1e-10 || ...
+    max(max(abs(struct2array(forecasts.uncond.ci)-struct2array(conditional_forecasts_exp.uncond.ci))))>1e-10 
+    error('Option loglinear wrong, conditional forecast not equal')
+end
+
 stoch_simul(loglinear,order=1,periods=100000);
 if abs(mean(y)-0.0776)>0.02
     error('Simulations are wrong')

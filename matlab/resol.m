@@ -76,7 +76,7 @@ function [dr,info,M,options,oo] = resol(check_flag,M,options,oo)
 %! @end deftypefn
 %@eod:
 
-% Copyright (C) 2001-2016 Dynare Team
+% Copyright (C) 2001-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -93,7 +93,7 @@ function [dr,info,M,options,oo] = resol(check_flag,M,options,oo)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-if isfield(oo,'dr');
+if isfield(oo,'dr')
     dr = oo.dr;
 end
 
@@ -101,7 +101,7 @@ if M.exo_nbr == 0
     oo.exo_steady_state = [] ;
 end
 
-[dr.ys,M.params,info] = evaluate_steady_state(oo.steady_state,M,options,oo,0);
+[dr.ys,M.params,info] = evaluate_steady_state(oo.steady_state,M,options,oo,~options.steadystate.nocheck);
 
 if info(1)
     oo.dr = dr;
@@ -122,7 +122,7 @@ if options.loglinear
             for var_iter=1:length(idx)
                 fprintf(' - %s (%s)\n',deblank(variables_with_non_positive_steady_state(var_iter,:)), num2str(dr.ys(idx(var_iter))))
             end
-            if isestimation()
+            if isinestimationobjective()
                 fprintf('You should check that the priors and/or bounds over the deep parameters are such\n')
                 fprintf('that the steady state levels of all the variables are strictly positive, or consider\n')
                 fprintf('a linearization of the model instead of a log linearization.\n')

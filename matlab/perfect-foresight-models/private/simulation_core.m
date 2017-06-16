@@ -1,7 +1,7 @@
 function [oo_, maxerror] = simulation_core(options_, M_, oo_)
 %function [oo_, maxerror] = simulation_core(options_, M_, oo_)
 
-% Copyright (C) 2015 Dynare Team
+% Copyright (C) 2015-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -66,8 +66,8 @@ else
             [oo_.endo_simul, oo_.deterministic_simulation] = ...
                 sim1_purely_backward(oo_.endo_simul, oo_.exo_simul, oo_.steady_state, M_, options_);
         elseif M_.maximum_endo_lag == 0 % Purely forward model
-            [oo_.endo_simul, oo_.deterministic_simulation] = ...
-                sim1_purely_forward(oo_.endo_simul, oo_.exo_simul, oo_.steady_state, M_, options_);
+        [oo_.endo_simul, oo_.deterministic_simulation] = ...
+            sim1_purely_forward(oo_.endo_simul, oo_.exo_simul, oo_.steady_state, M_, options_);
         else % General case
             if options_.stack_solve_algo == 0
                 if options_.linear_approximation

@@ -5,7 +5,7 @@ function [xopt, fopt,exitflag, n_accepted_draws, n_total_draws, n_out_of_bounds_
 %
 % Implements the continuous simulated annealing global optimization
 % algorithm described in Corana et al. (1987)
-% 
+%
 %  A very quick (perhaps too quick) overview of SA:
 %     SA tries to find the global optimum of an N dimensional function.
 %  It moves both up and downhill and as the optimization process
@@ -49,17 +49,17 @@ function [xopt, fopt,exitflag, n_accepted_draws, n_total_draws, n_out_of_bounds_
 %    Note: The suggested values generally come from Corana et al. To
 %          drastically reduce runtime, see Goffe et al., pp. 90-1 for
 %          suggestions on choosing the appropriate RT and NT.
-% 
+%
 %    fcn - function to be optimized.
 %    x - The starting values for the variables of the function to be
 %        optimized. (N)
 %    optim:     Options structure with fields
-% 
+%
 %       optim.maximizer_indicator - Denotes whether the function should be maximized or
 %           minimized. A value =1 denotes maximization while a
 %           value =0 denotes minimization. Intermediate output (see verbosity)
 %           takes this into account.
-%       optim.RT - The temperature reduction factor 
+%       optim.RT - The temperature reduction factor
 %       optim.TolFun - Error tolerance for termination. If the final function
 %           values from the last neps temperatures differ from the
 %           corresponding value at the current temperature by less than
@@ -104,11 +104,11 @@ function [xopt, fopt,exitflag, n_accepted_draws, n_total_draws, n_out_of_bounds_
 %                               of all points are accepted, the input value is not very
 %                               important (i.e. is the value is off, SA adjusts VM to the
 %                               correct value)
-% 
-%    lb - The lower bound for the allowable solution variables. 
-%    ub - The upper bound for the allowable solution variables. 
+%
+%    lb - The lower bound for the allowable solution variables.
+%    ub - The upper bound for the allowable solution variables.
 %         If the algorithm chooses X(I) < LB(I) or X(I) > UB(I),
-%         I = 1, N, a point is from inside is randomly selected. 
+%         I = 1, N, a point is from inside is randomly selected.
 %         This focuses the algorithm on the region inside UB and LB.
 %         Unless the user wishes to concentrate the search to a par-
 %         ticular region, UB and LB should be set to very large positive
@@ -116,8 +116,8 @@ function [xopt, fopt,exitflag, n_accepted_draws, n_total_draws, n_out_of_bounds_
 %         vector X should be inside this region. Also note that LB and
 %         UB are fixed in position, while VM is centered on the last
 %         accepted trial set of variables that optimizes the function.
-% 
-% 
+%
+%
 % Input/Output Parameters:
 %
 %  Output Parameters:
@@ -142,28 +142,28 @@ function [xopt, fopt,exitflag, n_accepted_draws, n_total_draws, n_out_of_bounds_
 %    t:     On output, the final temperature.
 %    vm:    Final step length vector
 %
-% Algorithm: 
+% Algorithm:
 %  This routine implements the continuous simulated annealing global
 %  optimization algorithm described in Corana et al.'s article
 %  "Minimizing Multimodal Functions of Continuous Variables with the
 %  "Simulated Annealing" Algorithm" in the September 1987 (vol. 13,
 %  no. 3, pp. 262-280) issue of the ACM Transactions on Mathematical
 %  Software.
-% 
+%
 % For modifications to the algorithm and many details on its use,
 %  (particularly for econometric applications) see Goffe, Ferrier
 %  and Rogers, "Global Optimization of Statistical Functions with
 %  Simulated Annealing," Journal of Econometrics, vol. 60, no. 1/2,
 %  Jan./Feb. 1994, pp. 65-100.
-% 
+%
 %  Based on the Matlab code written by Thomas Werner (Bundesbank December
-%  2002), which in turn is based on the GAUSS version of Bill Goffe's simulated annealing 
+%  2002), which in turn is based on the GAUSS version of Bill Goffe's simulated annealing
 %  program for global optimization, written by E.G.Tsionas (9/4/95).
-% 
-% Copyright (C) 1995 E.G.Tsionas 
-% Copyright (C) 1995-2002 Thomas Werner 
+%
+% Copyright (C) 1995 E.G.Tsionas
+% Copyright (C) 1995-2002 Thomas Werner
 % Copyright (C) 2002-2015 Giovanni Lombardo
-% Copyright (C) 2015 Dynare Team
+% Copyright (C) 2015-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -194,17 +194,17 @@ xopt=x;
 nacp=zeros(n,1);
 fstar=1e20*ones(optim.neps,1);
 %* If the initial temperature is not positive, notify the user and abort. *
-if(t<=0.0);
+if(t<=0.0)
     fprintf('\nThe initial temperature is not positive. Reset the variable t\n');
     exitflag=3;
-    return;
-end;
+    return
+end
 %*  If the initial value is out of bounds, notify the user and abort. *
-if(sum(x>ub)+sum(x<lb)>0);
+if(sum(x>ub)+sum(x<lb)>0)
     fprintf('\nInitial condition out of bounds\n');
     exitflag=2;
-    return;
-end;
+    return
+end
 %*  Evaluate the function with input x and return value as f. *
 f=feval(fcn,x,varargin{:});
 %*
@@ -212,98 +212,98 @@ f=feval(fcn,x,varargin{:});
 %  Note that all intermediate and final output switches the sign back
 %  to eliminate any possible confusion for the user.
 %*
-if(optim.maximizer_indicator==0);
+if(optim.maximizer_indicator==0)
     f=-f;
-end;
+end
 n_total_draws=n_total_draws+1;
 fopt=f;
 fstar(1)=f;
-if(optim.verbosity >1);
+if(optim.verbosity >1)
     disp '  ';
     disp(['initial x    ' num2str(x(:)')]);
-    if(optim.maximizer_indicator);
+    if(optim.maximizer_indicator)
         disp(['initial f    ' num2str(f)]);
     else
         disp(['initial f    ' num2str(-f)]);
-    end;
-end;
+    end
+end
 %  Start the main loop. Note that it terminates if (i) the algorithm
 %  succesfully optimizes the function or (ii) there are too many
 %  function evaluations (more than optim.MaxIter).
 
-while (1>0);
+while (1>0)
     nup=0;
     nrej=0;
     nnew=0;
     ndown=0;
     lnobds=0;
     m=1;
-    while m<=optim.nt;
+    while m<=optim.nt
         j=1;
-        while j<=optim.ns;
+        while j<=optim.ns
             h=1;
-            while h<=n;
+            while h<=n
                 %*  Generate xp, the trial value of x. Note use of vm to choose xp. *
                 i=1;
-                while i<=n;
-                    if(i==h);
+                while i<=n
+                    if(i==h)
                         xp(i)=x(i)+(rand(1,1)*2.0-1.0)*vm(i);
                     else
                         xp(i)=x(i);
-                    end;
+                    end
                     %*  If xp is out of bounds, select a point in bounds for the trial. *
-                    if((xp(i)<lb(i) || xp(i)>ub(i)));
+                    if((xp(i)<lb(i) || xp(i)>ub(i)))
                         xp(i)=lb(i)+(ub(i)-lb(i))*rand(1,1);
                         lnobds=lnobds+1;
                         n_out_of_bounds_draws=n_out_of_bounds_draws+1;
-                        if(optim.verbosity >=3);
+                        if(optim.verbosity >=3)
                             if exist('fp','var')
                                 print_current_invalid_try(optim.maximizer_indicator,xp,x,fp,f);
                             end
-                        end;
-                    end;
+                        end
+                    end
                     i=i+1;
-                end;
+                end
                 %*  Evaluate the function with the trial point xp and return as fp. *
                 % fp=feval(fcn,xp,listarg);
                 fp=feval(fcn,xp,varargin{:});
-                if(optim.maximizer_indicator==0);
+                if(optim.maximizer_indicator==0)
                     fp=-fp;
-                end;
+                end
                 n_total_draws=n_total_draws+1;
-                if(optim.verbosity >=3);
+                if(optim.verbosity >=3)
                     print_current_valid_try(optim.maximizer_indicator,xp,x,fp,f);
-                end;
+                end
                 %*  If too many function evaluations occur, terminate the algorithm. *
-                if(n_total_draws>=optim.MaxIter);
+                if(n_total_draws>=optim.MaxIter)
                     fprintf('Too many function evaluations; consider\n');
                     fprintf('increasing optim.MaxIter or optim.TolFun or decreasing\n');
                     fprintf('optim.nt or optim.rt. These results are likely to be poor\n');
-                    if(optim.maximizer_indicator==0);
+                    if(optim.maximizer_indicator==0)
                         fopt=-fopt;
-                    end;
+                    end
                     exitflag=1;
-                    return;
-                end;
+                    return
+                end
                 %*  Accept the new point if the function value increases. *
-                if(fp>=f);
-                    if(optim.verbosity >=3);
+                if(fp>=f)
+                    if(optim.verbosity >=3)
                         fprintf('point accepted\n');
-                    end;
+                    end
                     x=xp;
                     f=fp;
                     n_accepted_draws=n_accepted_draws+1;
                     nacp(h)=nacp(h)+1;
                     nup=nup+1;
                     %*  If greater than any other point, record as new optimum. *
-                    if(fp>fopt);
-                        if(optim.verbosity >=3);
+                    if(fp>fopt)
+                        if(optim.verbosity >=3)
                             fprintf('new optimum\n');
-                        end;
+                        end
                         xopt=xp;
                         fopt=fp;
                         nnew=nnew+1;
-                    end;
+                    end
                     %*
                     % If the point is lower, use the Metropolis criteria to decide on
                     % acceptance or rejection.
@@ -311,14 +311,14 @@ while (1>0);
                 else
                     p=exp((fp-f)/t);
                     pp=rand(1,1);
-                    if(pp<p);
-                        if(optim.verbosity >=3);
-                            if(optim.maximizer_indicator);
-                             fprintf('though lower, point accepted\n');
+                    if(pp<p)
+                        if(optim.verbosity >=3)
+                            if(optim.maximizer_indicator)
+                                fprintf('though lower, point accepted\n');
                             else
-                             fprintf('though higher, point accepted\n');
-                            end;
-                        end;
+                                fprintf('though higher, point accepted\n');
+                            end
+                        end
                         x=xp;
                         f=fp;
                         n_accepted_draws=n_accepted_draws+1;
@@ -326,87 +326,87 @@ while (1>0);
                         ndown=ndown+1;
                     else
                         nrej=nrej+1;
-                        if(optim.verbosity >=3);
-                            if(optim.maximizer_indicator);
+                        if(optim.verbosity >=3)
+                            if(optim.maximizer_indicator)
                                 fprintf('lower point rejected\n');
                             else
                                 fprintf('higher point rejected\n');
-                            end;
-                        end;
-                    end;
-                end;
+                            end
+                        end
+                    end
+                end
                 h=h+1;
-            end;
+            end
             j=j+1;
-        end;
+        end
         %*  Adjust vm so that approximately half of all evaluations are accepted. *
         i=1;
-        while i<=n;
+        while i<=n
             ratio=nacp(i)/optim.ns;
-            if(ratio>.6);
+            if(ratio>.6)
                 vm(i)=vm(i)*(1.+c(i)*(ratio-.6)/.4);
-            elseif(ratio<.4);
+            elseif(ratio<.4)
                 vm(i)=vm(i)/(1.+c(i)*((.4-ratio)/.4));
-            end;
-            if(vm(i)>(ub(i)-lb(i)));
+            end
+            if(vm(i)>(ub(i)-lb(i)))
                 vm(i)=ub(i)-lb(i);
-            end;
+            end
             i=i+1;
-        end;
-        if(optim.verbosity >=2);
+        end
+        if(optim.verbosity >=2)
             fprintf('intermediate results after step length adjustment\n');
             fprintf('new step length(vm)  %4.3f', vm(:)');
             fprintf('current optimal x    %4.3f', xopt(:)');
             fprintf('current x            %4.3f', x(:)');
-        end;
+        end
         nacp=zeros(n,1);
         m=m+1;
-    end;
-    if(optim.verbosity >=1);
+    end
+    if(optim.verbosity >=1)
         print_intermediate_statistics(optim.maximizer_indicator,t,xopt,vm,fopt,nup,ndown,nrej,lnobds,nnew);
-    end;
+    end
     %*  Check termination criteria. *
     quit=0;
     fstar(1)=f;
-    if((fopt-fstar(1))<=optim.TolFun);
+    if((fopt-fstar(1))<=optim.TolFun)
         quit=1;
-    end;
-    if(sum(abs(f-fstar)>optim.TolFun)>0);
+    end
+    if(sum(abs(f-fstar)>optim.TolFun)>0)
         quit=0;
-    end;
+    end
     %*  Terminate SA if appropriate. *
-    if(quit);
+    if(quit)
         exitflag=0;
-        if(optim.maximizer_indicator==0);
+        if(optim.maximizer_indicator==0)
             fopt=-fopt;
-        end;
-        if(optim.verbosity >=1);
+        end
+        if(optim.verbosity >=1)
             fprintf('SA achieved termination criteria.exitflag=0\n');
-        end;
-        return;        
-    end;
+        end
+        return
+    end
     %*  If termination criteria are not met, prepare for another loop. *
     t=optim.rt*t;
     i=optim.neps;
-    while i>=2;
+    while i>=2
         fstar(i)=fstar(i-1);
         i=i-1;
-    end;
+    end
     f=fopt;
     x=xopt;
     %*  Loop again. *
-end;
+end
 
 end
 
 function  print_current_invalid_try(max,xp,x,fp,f)
 fprintf('\n');
-    disp(['Current x    ' num2str(x(:)')]);
-if(max);
+disp(['Current x    ' num2str(x(:)')]);
+if(max)
     disp(['Current f    ' num2str(f)]);
 else
     disp(['Current f    ' num2str(-f)]);
-end;
+end
 disp(['Trial x      ' num2str(xp(:)')]);
 disp 'Point rejected since out of bounds';
 end
@@ -414,7 +414,7 @@ end
 function print_current_valid_try(max,xp,x,fp,f)
 
 disp(['Current x    ' num2str(x(:)')]);
-if(max);
+if(max)
     disp(['Current f   ' num2str(f)]);
     disp(['Trial x     ' num2str(xp(:)')]);
     disp(['Resulting f ' num2str(fp)]);
@@ -422,7 +422,7 @@ else
     disp(['Current f   ' num2str(-f)]);
     disp(['Trial x     ' num2str(xp(:)')]);
     disp(['Resulting f ' num2str(-fp)]);
-end;
+end
 end
 
 

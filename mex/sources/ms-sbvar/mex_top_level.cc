@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010-2011 Dynare Team
+ * Copyright (C) 2010-2017 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -48,16 +48,16 @@ mexFunction(int nlhs, mxArray *plhs[],
   /*
    * Allocate memory
    */
-  maxnargs = (int)(mxGetN(prhs[0])/2+1);
-  argument = (char *)mxCalloc(mxGetN(prhs[0])+1, sizeof(char));
-  args = (char **)mxCalloc(maxnargs, sizeof(char *));
-  if (argument==NULL || args==NULL)
+  maxnargs = (int) (mxGetN(prhs[0])/2+1);
+  argument = (char *) mxCalloc(mxGetN(prhs[0])+1, sizeof(char));
+  args = (char **) mxCalloc(maxnargs, sizeof(char *));
+  if (argument == NULL || args == NULL)
     DYN_MEX_FUNC_ERR_MSG_TXT("Error in MS-SBVAR MEX file: could not allocate memory. (1)");
 
   /*
    * Create argument string from prhs and parse to create args / nargs
    */
-  if (!(args[nargs] = (char *)mxCalloc(strlen(mainarg)+1, sizeof(char))))
+  if (!(args[nargs] = (char *) mxCalloc(strlen(mainarg)+1, sizeof(char))))
     DYN_MEX_FUNC_ERR_MSG_TXT("Error in MS-SBVAR MEX file: could not allocate memory. (2)");
 
   strncpy(args[nargs++], mainarg, strlen(mainarg));
@@ -66,9 +66,9 @@ mexFunction(int nlhs, mxArray *plhs[],
     DYN_MEX_FUNC_ERR_MSG_TXT("Error in MS-SBVAR MEX file: error using mxGetString.\n");
 
   beginarg = &argument[0];
-  while((n=strcspn(beginarg, " ")))
+  while ((n = strcspn(beginarg, " ")))
     {
-      if (!(args[nargs] = (char *)mxCalloc(n+1, sizeof(char))))
+      if (!(args[nargs] = (char *) mxCalloc(n+1, sizeof(char))))
         DYN_MEX_FUNC_ERR_MSG_TXT("Error in MS-SBVAR MEX file: could not allocate memory. (3)");
 
       strncpy(args[nargs++], beginarg, n);
@@ -91,7 +91,7 @@ mexFunction(int nlhs, mxArray *plhs[],
   /*
    * free memory
    */
-  for (n=0; n<nargs; n++)
+  for (n = 0; n < nargs; n++)
     mxFree(args[n]);
   mxFree(args);
 

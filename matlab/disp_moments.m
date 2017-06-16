@@ -7,11 +7,11 @@ function oo_=disp_moments(y,var_list,M_,options_,oo_)
 %   M_                  [structure]    Dynare's model structure
 %   oo_                 [structure]    Dynare's results structure
 %   options_            [structure]    Dynare's options structure
-%    
+%
 % OUTPUTS
 %   oo_                 [structure]    Dynare's results structure,
 
-% Copyright (C) 2001-2016 Dynare Team
+% Copyright (C) 2001-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -57,18 +57,18 @@ s2 = mean(y.*y);
 s = sqrt(s2);
 oo_.mean = transpose(m);
 oo_.var = y'*y/size(y,1);
-oo_.skewness = (mean(y.^3)./s2.^1.5)'; 
+oo_.skewness = (mean(y.^3)./s2.^1.5)';
 oo_.kurtosis = (mean(y.^4)./(s2.*s2)-3)';
 
 labels = deblank(M_.endo_names(ivar,:));
 labels_TeX = deblank(M_.endo_names_tex(ivar,:));
 
 if options_.nomoments == 0
-    z = [ m' s' s2' (mean(y.^3)./s2.^1.5)' (mean(y.^4)./(s2.*s2)-3)' ];    
+    z = [ m' s' s2' (mean(y.^3)./s2.^1.5)' (mean(y.^4)./(s2.*s2)-3)' ];
     title='MOMENTS OF SIMULATED VARIABLES';
-    
+
     title=add_filter_subtitle(title,options_);
-    
+
     headers=char('VARIABLE','MEAN','STD. DEV.','VARIANCE','SKEWNESS', ...
                  'KURTOSIS');
     dyntable(options_,title,headers,labels,z,size(labels,2)+2,16,6);
@@ -79,7 +79,7 @@ end
 
 if options_.nocorr == 0
     corr = (y'*y/size(y,1))./(s'*s);
-    if options_.contemporaneous_correlation 
+    if options_.contemporaneous_correlation
         oo_.contemporaneous_correlation = corr;
     end
     if options_.noprint == 0
@@ -98,7 +98,7 @@ if options_.nocorr == 0
 end
 
 if options_.noprint == 0 && length(options_.conditional_variance_decomposition)
-   fprintf('\nSTOCH_SIMUL: conditional_variance_decomposition requires theoretical moments, i.e. periods=0.\n') 
+    fprintf('\nSTOCH_SIMUL: conditional_variance_decomposition requires theoretical moments, i.e. periods=0.\n')
 end
 
 ar = options_.ar;
@@ -119,7 +119,7 @@ if ar > 0
             dyn_latex_table(M_,options_,title,'sim_autocorr_matrix',headers,labels_TeX,autocorr,size(labels_TeX,2)+2,8,4);
         end
     end
-    
+
 end
 
 
@@ -132,14 +132,18 @@ if ~options_.nodecomposition
         if isempty(M_.endo_histval)
             y0 = oo_.dr.ys;
         else
-            y0 = M_.endo_histval;
+            if options_.loglinear
+                y0 = log_variable(1:M_.endo_nbr,M_.endo_histval,M_);
+            else
+                y0 = M_.endo_histval;
+            end
         end
         %back out shock matrix used for generating y
         i_exo_var = setdiff([1:M_.exo_nbr],find(diag(M_.Sigma_e) == 0)); % find shocks with 0 variance
         chol_S = chol(M_.Sigma_e(i_exo_var,i_exo_var)); %decompose rest
         shock_mat=zeros(options_.periods,M_.exo_nbr); %initialize
         shock_mat(:,i_exo_var)=oo_.exo_simul(:,i_exo_var)/chol_S; %invert construction of oo_.exo_simul from simult.m
-        
+
         for shock_iter=1:length(i_exo_var)
             temp_shock_mat=zeros(size(shock_mat));
             temp_shock_mat(:,i_exo_var(shock_iter))=shock_mat(:,i_exo_var(shock_iter));
@@ -152,9 +156,9 @@ if ~options_.nodecomposition
         if ~options_.noprint %options_.nomoments == 0
             skipline()
             title='VARIANCE DECOMPOSITION SIMULATING ONE SHOCK AT A TIME (in percent)';
-        
+
             title=add_filter_subtitle(title,options_);
-            
+
             headers = M_.exo_names;
             headers(M_.exo_names_orig_ord,:) = headers;
             headers = char(' ',headers);
@@ -177,12 +181,12 @@ if ~options_.nodecomposition
 
     end
 end
-        
+
 warning(warning_old_state);
 end
 
 function y=get_filtered_time_series(y,m,options_)
-        
+
 if options_.hp_filter && ~options_.one_sided_hp_filter  && ~options_.bandpass.indicator
     [hptrend,y] = sample_hp_filter(y,options_.hp_filter);
 elseif ~options_.hp_filter && options_.one_sided_hp_filter && ~options_.bandpass.indicator
@@ -193,8 +197,8 @@ elseif ~options_.hp_filter && ~options_.one_sided_hp_filter && options_.bandpass
     y=data_temp.data;
 elseif ~options_.hp_filter && ~options_.one_sided_hp_filter  && ~options_.bandpass.indicator
     y = bsxfun(@minus, y, m);
-else 
+else
     error('disp_moments:: You cannot use more than one filter at the same time')
 end
-        
+
 end

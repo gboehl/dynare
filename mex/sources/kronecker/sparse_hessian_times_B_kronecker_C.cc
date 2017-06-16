@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2011 Dynare Team
+ * Copyright (C) 2007-2017 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -143,7 +143,7 @@ void
 mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
   // Check input and output:
-  if ((nrhs > 4) || (nrhs < 3) )
+  if ((nrhs > 4) || (nrhs < 3))
     DYN_MEX_FUNC_ERR_MSG_TXT("sparse_hessian_times_B_kronecker_C takes 3 or 4 input arguments and provides 2 output arguments.");
 
   if (!mxIsSparse(prhs[0]))

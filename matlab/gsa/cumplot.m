@@ -1,7 +1,12 @@
-function h = cumplot(x);
+function h = cumplot(x)
 %function h =cumplot(x)
 
-% Copyright (C) 2012 Dynare Team
+% Written by Marco Ratto
+% Joint Research Centre, The European Commission,
+% marco.ratto@ec.europa.eu
+
+% Copyright (C) 2012 European Commission
+% Copyright (C) 2012-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -24,6 +29,6 @@ y=[0:n n]./n;
 h0 = stairs(x,y);
 grid on,
 
-if nargout,
+if nargout
     h=h0;
 end

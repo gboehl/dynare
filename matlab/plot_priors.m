@@ -13,7 +13,7 @@ function plot_priors(bayestopt_,M_,estim_params_,options_)
 % SPECIAL REQUIREMENTS
 %    None
 
-% Copyright (C) 2004-2016 Dynare Team
+% Copyright (C) 2004-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -42,8 +42,8 @@ if TeX && any(strcmp('eps',cellstr(options_.graph_format)))
     fprintf(fidTeX,['%% ' datestr(now,0) '\n']);
     fprintf(fidTeX,' \n');
 end
-for plt = 1:nbplt,
-    hplt = dyn_figure(options_,'Name',figurename);
+for plt = 1:nbplt
+    hplt = dyn_figure(options_.nodisplay,'Name',figurename);
     if TeX
         TeXNAMES = [];
         NAMES    = [];
@@ -70,10 +70,10 @@ for plt = 1:nbplt,
         title(nam,'Interpreter','none')
         drawnow
     end
-    dyn_saveas(hplt,[M_.fname '_Priors' int2str(plt)],options_);
+    dyn_saveas(hplt,[M_.fname '_Priors' int2str(plt)],options_.nodisplay,options_.graph_format);
     if TeX && any(strcmp('eps',cellstr(options_.graph_format)))
         fprintf(fidTeX,'\\begin{figure}[H]\n');
-        for jj = 1:nstar0,
+        for jj = 1:nstar0
             fprintf(fidTeX,'\\psfrag{%s}[1][][0.5][0]{%s}\n',deblank(NAMES(jj,:)),deblank(TeXNAMES(jj,:)));
         end
         fprintf(fidTeX,'\\centering\n');

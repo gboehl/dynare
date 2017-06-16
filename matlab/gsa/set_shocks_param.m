@@ -2,7 +2,7 @@ function set_shocks_param(xparam1)
 % function set_shocks_param(xparam1)
 % Set the structural and measurement error variances and covariances
 
-% Copyright (C) 2012-2015 Dynare Team
+% Copyright (C) 2012-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -67,7 +67,7 @@ if ncx
 end
 %build covariance matrix from correlation matrix and variances already on
 %diagonal
-Sigma_e = diag(sqrt(diag(Sigma_e)))*Correlation_matrix*diag(sqrt(diag(Sigma_e))); 
+Sigma_e = diag(sqrt(diag(Sigma_e)))*Correlation_matrix*diag(sqrt(diag(Sigma_e)));
 %if calibrated covariances, set them now to their stored value
 if isfield(estim_params_,'calibrated_covariances')
     Sigma_e(estim_params_.calibrated_covariances.position)=estim_params_.calibrated_covariances.cov_value;
@@ -93,7 +93,7 @@ if isfield(estim_params_,'calibrated_covariances_ME')
     H(estim_params_.calibrated_covariances_ME.position)=estim_params_.calibrated_covariances_ME.cov_value;
 end
 
-  
+
 % updating matrices in M
 if nvx || ncx
     M_.Sigma_e = Sigma_e;
@@ -101,5 +101,5 @@ if nvx || ncx
 end
 if nvn || ncn
     M_.H = H;
-    M_.Correlation_matrix_ME=Correlation_matrix_ME;    
-end 
+    M_.Correlation_matrix_ME=Correlation_matrix_ME;
+end

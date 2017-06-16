@@ -9,15 +9,15 @@ function [fval,info,exit_flag,grad,hess,SteadyState,trend_coeff,PHI_tilde,SIGMA_
 %   o fval          [double]     Value of the posterior kernel at xparam1.
 %   o info          [integer]    Vector of informations about the penalty.
 %   o exit_flag     [integer]    Zero if the function returns a penalty, one otherwise.
-%   o grad          [double]     place holder for gradient of the likelihood 
+%   o grad          [double]     place holder for gradient of the likelihood
 %                                currently not supported by dsge_var
-%   o hess          [double]     place holder for hessian matrix of the likelihood 
+%   o hess          [double]     place holder for hessian matrix of the likelihood
 %                                currently not supported by dsge_var
 %   o SteadyState   [double]     Steady state vector possibly recomputed
 %                                by call to dynare_resolve()
 %   o trend_coeff   [double]     place holder for trend coefficients,
 %                                currently not supported by dsge_var
-%   o PHI_tilde     [double]     Stacked BVAR-DSGE autoregressive matrices (at the mode associated to xparam1); 
+%   o PHI_tilde     [double]     Stacked BVAR-DSGE autoregressive matrices (at the mode associated to xparam1);
 %                                formula (28), DS (2004)
 %   o SIGMA_u_tilde [double]     Covariance matrix of the BVAR-DSGE (at the mode associated to xparam1),
 %                                formula (29), DS (2004)
@@ -32,8 +32,8 @@ function [fval,info,exit_flag,grad,hess,SteadyState,trend_coeff,PHI_tilde,SIGMA_
 % ALGORITHMS
 %   Follows the computations outlined in Del Negro/Schorfheide (2004):
 %   Priors from general equilibrium models for VARs, International Economic
-%   Review, 45(2), pp. 643-673 
-% 
+%   Review, 45(2), pp. 643-673
+%
 % SPECIAL REQUIREMENTS
 %   None.
 
@@ -102,23 +102,23 @@ mXY = evalin('base', 'mXY');
 mXX = evalin('base', 'mXX');
 
 % Return, with endogenous penalty, if some dsge-parameters are smaller than the lower bound of the prior domain.
-if DynareOptions.mode_compute ~= 1 && any(xparam1 < BoundsInfo.lb)
+if isestimation(DynareOptions) && DynareOptions.mode_compute ~= 1 && any(xparam1 < BoundsInfo.lb)
     k = find(xparam1 < BoundsInfo.lb);
     fval = Inf;
     exit_flag = 0;
     info(1) = 41;
     info(4)= sum((BoundsInfo.lb(k)-xparam1(k)).^2);
-    return;
+    return
 end
 
 % Return, with endogenous penalty, if some dsge-parameters are greater than the upper bound of the prior domain.
-if DynareOptions.mode_compute ~= 1 && any(xparam1 > BoundsInfo.ub)
+if isestimation(DynareOptions) && DynareOptions.mode_compute ~= 1 && any(xparam1 > BoundsInfo.ub)
     k = find(xparam1 > BoundsInfo.ub);
     fval = Inf;
     exit_flag = 0;
     info(1) = 42;
     info(4) = sum((xparam1(k)-BoundsInfo.ub(k)).^2);
-    return;
+    return
 end
 
 % Get the variance of each structural innovation.
@@ -137,7 +137,7 @@ Model.Sigma_e = Q;
 dsge_prior_weight = Model.params(dsge_prior_weight_idx);
 
 % Is the dsge prior proper?
-if dsge_prior_weight<(NumberOfParameters+NumberOfObservedVariables)/NumberOfObservations;
+if dsge_prior_weight<(NumberOfParameters+NumberOfObservedVariables)/NumberOfObservations
     fval = Inf;
     exit_flag = 0;
     info(1) = 51;
@@ -158,8 +158,8 @@ end
 % Return, with endogenous penalty when possible, if dynare_resolve issues an error code (defined in resol).
 if info(1)
     if info(1) == 3 || info(1) == 4 || info(1) == 5 || info(1)==6 ||info(1) == 19 ||...
-            info(1) == 20 || info(1) == 21 || info(1) == 23 || info(1) == 26 || ...
-            info(1) == 81 || info(1) == 84 ||  info(1) == 85
+                info(1) == 20 || info(1) == 21 || info(1) == 23 || info(1) == 26 || ...
+                info(1) == 81 || info(1) == 84 ||  info(1) == 85
         %meaningful second entry of output that can be used
         fval = Inf;
         info(4) = info(2);
@@ -233,11 +233,20 @@ assignin('base','GYX',GYX);
 iGXX = inv(GXX);
 PHI_star = iGXX*transpose(GYX); %formula (22), DS (2004)
 SIGMA_u_star=GYY - GYX*PHI_star; %formula (23), DS (2004)
+[SIGMA_u_star_is_positive_definite, penalty] = ispd(SIGMA_u_star);
+if ~SIGMA_u_star_is_positive_definite
+    fval = Inf;
+    info(1) = 53;
+    info(4) = penalty;
+    exit_flag = 0;
+    return
+end
+
 if ~isinf(dsge_prior_weight)% Evaluation of the likelihood of the dsge-var model when the dsge prior weight is finite.
     tmp0 = dsge_prior_weight*NumberOfObservations*TheoreticalAutoCovarianceOfTheObservedVariables(:,:,1) + mYY ;  %first term of square bracket in formula (29), DS (2004)
     tmp1 = dsge_prior_weight*NumberOfObservations*GYX + mYX;        %first element of second term of square bracket in formula (29), DS (2004)
     tmp2 = inv(dsge_prior_weight*NumberOfObservations*GXX+mXX);     %middle element of second term of square bracket in formula (29), DS (2004)
-    SIGMA_u_tilde = tmp0 - tmp1*tmp2*tmp1';                               %square bracket term in formula (29), DS (2004) 
+    SIGMA_u_tilde = tmp0 - tmp1*tmp2*tmp1';                               %square bracket term in formula (29), DS (2004)
     clear('tmp0');
     [SIGMAu_is_positive_definite, penalty] = ispd(SIGMA_u_tilde);
     if ~SIGMAu_is_positive_definite
@@ -245,7 +254,7 @@ if ~isinf(dsge_prior_weight)% Evaluation of the likelihood of the dsge-var model
         info(1) = 52;
         info(4) = penalty;
         exit_flag = 0;
-        return;
+        return
     end
     SIGMA_u_tilde = SIGMA_u_tilde / (NumberOfObservations*(1+dsge_prior_weight));   %prefactor of formula (29), DS (2004)
     PHI_tilde = tmp2*tmp1';                                                   %formula (28), DS (2004)
@@ -256,7 +265,7 @@ if ~isinf(dsge_prior_weight)% Evaluation of the likelihood of the dsge-var model
     prodlng2 = sum(gammaln(.5*(dsge_prior_weight*NumberOfObservations- ...
                                NumberOfParameters ...
                                +1-(1:NumberOfObservedVariables)')));    %last term in denominator of third line of (A.2), DS (2004)
-    %Compute minus log likelihood according to (A.2), DS (2004)
+                                                                        %Compute minus log likelihood according to (A.2), DS (2004)
     lik = .5*NumberOfObservedVariables*log(det(dsge_prior_weight*NumberOfObservations*GXX+mXX)) ... %first term in numerator of second line of (A.2), DS (2004)
           + .5*((dsge_prior_weight+1)*NumberOfObservations-NumberOfParameters)*log(det((dsge_prior_weight+1)*NumberOfObservations*SIGMA_u_tilde)) ... %second term in numerator of second line of (A.2), DS (2004)
           - .5*NumberOfObservedVariables*log(det(dsge_prior_weight*NumberOfObservations*GXX)) ... %first term in denominator of second line of (A.2), DS (2004)
@@ -269,7 +278,7 @@ else% Evaluation of the likelihood of the dsge-var model when the dsge prior wei
     PHI_star = iGXX*transpose(GYX);
     %Compute minus log likelihood according to (33), DS (2004) (where the last term in the trace operator has been multiplied out)
     lik = NumberOfObservations * ( log(det(SIGMA_u_star)) + NumberOfObservedVariables*log(2*pi) +  ...
-                   trace(inv(SIGMA_u_star)*(mYY - transpose(mYX*PHI_star) - mYX*PHI_star + transpose(PHI_star)*mXX*PHI_star)/NumberOfObservations));
+                                   trace(inv(SIGMA_u_star)*(mYY - transpose(mYX*PHI_star) - mYX*PHI_star + transpose(PHI_star)*mXX*PHI_star)/NumberOfObservations));
     lik = .5*lik;% Minus likelihood
     SIGMA_u_tilde=SIGMA_u_star;
     PHI_tilde=PHI_star;
@@ -328,8 +337,8 @@ if (nargout >= 10)
 end
 
 if (nargout==11)
-    prior.SIGMA_u_star = SIGMA_u_star; 
-    prior.PHI_star = PHI_star; 
+    prior.SIGMA_u_star = SIGMA_u_star;
+    prior.PHI_star = PHI_star;
     prior.ArtificialSampleSize = fix(dsge_prior_weight*NumberOfObservations);
     prior.DF = prior.ArtificialSampleSize - NumberOfParameters - NumberOfObservedVariables;
     prior.iGXX_star = iGXX;

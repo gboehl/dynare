@@ -1,13 +1,10 @@
 function [gend, data] = read_data()
 % Written by Marco Ratto
 % Joint Research Centre, The European Commission,
-% (http://eemc.jrc.ec.europa.eu/),
-% marco.ratto@jrc.it 
-%
-% Reference:
-% M. Ratto, Global Sensitivity Analysis for Macroeconomic models, MIMEO, 2006.
+% marco.ratto@ec.europa.eu
 
-% Copyright (C) 2012-2015 Dynare Team
+% Copyright (C) 2012-2015 European Commission
+% Copyright (C) 2012-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -33,15 +30,15 @@ gend = options_.nobs;
 
 rawdata = rawdata(options_.first_obs:options_.first_obs+gend-1,:);
 if options_.loglinear == 1 & ~options_.logdata
-  rawdata = log(rawdata);
+    rawdata = log(rawdata);
 end
 if options_.prefilter == 1
-  data = transpose(rawdata-ones(gend,1)* mean(rawdata,1));
+    data = transpose(rawdata-ones(gend,1)* mean(rawdata,1));
 else
-  data = transpose(rawdata);
+    data = transpose(rawdata);
 end
 
 if ~isreal(rawdata)
-  error(['There are complex values in the data. Probably  a wrong' ...
-	 ' transformation'])
+    error(['There are complex values in the data. Probably  a wrong' ...
+           ' transformation'])
 end

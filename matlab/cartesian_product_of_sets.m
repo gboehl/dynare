@@ -5,7 +5,7 @@ function cprod = cartesian_product_of_sets(varargin)
 %! @deftypefn {Function File} {@var{cprod} =} cartesian_product_of_sets (@var{a},@var{b}, ...)
 %! @anchor{cartesian_product_of_sets}
 %! @sp 1
-%! Computes A_1 * A_2 * .... * A_n with a generic set A_i = {e_1,e_2,e_3,...} where e_i is a string 
+%! Computes A_1 * A_2 * .... * A_n with a generic set A_i = {e_1,e_2,e_3,...} where e_i is a string
 %! or a number. It is assumed that each element e_i is unique in set A_i.
 %! @sp 2
 %! @strong{Inputs}
@@ -31,7 +31,7 @@ function cprod = cartesian_product_of_sets(varargin)
 %! @end deftypefn
 %@eod:
 
-% Copyright (C) 2011-2012 Dynare Team
+% Copyright (C) 2011-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

@@ -74,6 +74,10 @@ perfect_foresight_setup(periods=200);
 
 perfect_foresight_solver(stack_solve_algo=7,solve_algo=1);
 
+if ~oo_.deterministic_simulation.status
+   error('Perfect foresight simulation failed')
+end
+
 rplot Consumption;
 rplot Capital;
 
@@ -90,6 +94,10 @@ options_.dynatol.f=1e-10;
 
 perfect_foresight_setup(periods=200);
 perfect_foresight_solver(stack_solve_algo=7,solve_algo=@{solve_algo_iter});
+
+if ~oo_.deterministic_simulation.status
+   error('Perfect foresight simulation failed')
+end
 
 rplot Consumption;
 rplot Capital;

@@ -29,12 +29,12 @@ function [nodes, weights] = cubature_with_gaussian_weight(d,n,method)
 %! The routine returns nodes and associated weights to compute a multivariate integral of the form:
 %!
 %! \int_D f(x)*\exp(-<x,x>) dx
-%! 
-%! 
+%!
+%!
 %! @end deftypefn
 %@eod:
 
-% Copyright (C) 2012-2013 Dynare Team
+% Copyright (C) 2012-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -52,7 +52,7 @@ function [nodes, weights] = cubature_with_gaussian_weight(d,n,method)
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 % AUTHOR(S) stephane DOT adjemian AT univ DASH lemans DOT fr
-    
+
 % Set default.
 if nargin<3 || isempty(method)
     method = 'Stroud';
@@ -90,7 +90,7 @@ if strcmp(method,'Stroud') &&  isequal(n,5)
     nodes = zeros(d,m);
     weights = zeros(m,1);
     % Set the weight for the first node (0)
-    weights(1) = A; 
+    weights(1) = A;
     skip = 1;
     % Set the remaining nodes and associated weights.
     nodes(:,skip+(1:d)) = r*eye(d);
@@ -117,20 +117,20 @@ end
 
 
 function v = e(n,i)
-    v = zeros(n,1);
-    v(i) = 1;
-    
+v = zeros(n,1);
+v(i) = 1;
+
 function m = ee(n,i,j)
-    m = zeros(n,4);
-    m(:,1) =  e(n,i)+e(n,j);
-    m(:,2) =  e(n,i)-e(n,j);
-    m(:,3) = -m(:,2);
-    m(:,4) = -m(:,1);
-    
+m = zeros(n,4);
+m(:,1) =  e(n,i)+e(n,j);
+m(:,2) =  e(n,i)-e(n,j);
+m(:,3) = -m(:,2);
+m(:,4) = -m(:,1);
+
 %@test:1
 %$ % Set problem
 %$ d = 4;
-%$ 
+%$
 %$ t = zeros(5,1);
 %$
 %$ % Call the tested routine
@@ -289,7 +289,7 @@ function m = ee(n,i,j)
 %@test:5
 %$ % Set problem
 %$ d = 5;
-%$ 
+%$
 %$ t = zeros(6,1);
 %$
 %$ % Call the tested routine
@@ -333,7 +333,7 @@ function m = ee(n,i,j)
 %@test:6
 %$ % Set problem
 %$ d = 3;
-%$ 
+%$
 %$ t = zeros(4,1);
 %$
 %$ % Call the tested routine

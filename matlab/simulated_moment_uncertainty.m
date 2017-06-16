@@ -11,8 +11,8 @@ function [cmm, mm] = simulated_moment_uncertainty(indx, periods, replic,options_
 % Outputs:
 %   - cmm:      [n_moments by n_moments] covariance matrix of simulated moments
 %   - mm:       [n_moments by replic] matrix of moments
-%  
-% Copyright (C) 2009-2016 Dynare Team
+%
+% Copyright (C) 2009-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -67,7 +67,7 @@ if options_.logged_steady_state %if steady state was previously logged, undo thi
     options_.logged_steady_state=0;
     logged_steady_state_indicator=1;
     evalin('base','options_.logged_steady_state=0;')
-else 
+else
     logged_steady_state_indicator=0;
 end
 
@@ -80,23 +80,31 @@ end
 
 %set starting point of simulations
 if isempty(M_.endo_histval)
-    y0 = oo_.dr.ys;
+    if options_.loglinear
+        y0 = log(oo_.dr.ys);
+    else
+        y0 = oo_.dr.ys;
+    end
 else
-    y0 = M_.endo_histval;
+    if options_.loglinear
+        y0 = log_variable(1:M_.endo_nbr,M_.endo_histval,M_);
+    else
+        y0 = M_.endo_histval;
+    end
 end
 
 
-for j=1:replic;
+for j=1:replic
     [ys, oo_] = simult(y0,oo_.dr,M_,options_,oo_);%do simulation
     oo_=disp_moments(ys,char(options_.varobs),M_,options_,oo_); %get moments
     dum=[oo_.mean; dyn_vech(oo_.var)];
     sd = sqrt(diag(oo_.var));
-    for i=1:options_.ar;
+    for i=1:options_.ar
         dum=[dum; vec(oo_.autocorr{i}.*(sd*sd'))];
     end
     mm(:,j)=dum(indx);
     dyn_waitbar(j/replic,h,['Simulated moment uncertainty. Replic  ',int2str(j),'/',int2str(replic)])
-end;
+end
 dyn_waitbar_close(h);
 
 if logged_steady_state_indicator

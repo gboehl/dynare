@@ -9,10 +9,12 @@ function [y, meany, stdy] = stand_(x)
 % my: Vector of mean values for each column of y
 % sy: Vector of standard deviations for each column of y
 %
-% Author : Marco Ratto
+% Written by Marco Ratto
+% Joint Research Centre, The European Commission,
+% marco.ratto@ec.europa.eu
 
-% Copyright (C) 2012 Dynare Team
-%
+% Copyright (C) 2012 European Commission
+% Copyright (C) 2012-2017 Dynare Team%
 % This file is part of Dynare.
 %
 % Dynare is free software: you can redistribute it and/or modify
@@ -28,13 +30,13 @@ function [y, meany, stdy] = stand_(x)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-if nargin==0,
-    return;
+if nargin==0
+    return
 end
 
-for j=1:size(x,2);
-meany(j)=mean(x(find(~isnan(x(:,j))),j));
-stdy(j)=std(x(find(~isnan(x(:,j))),j));
+for j=1:size(x,2)
+    meany(j)=mean(x(find(~isnan(x(:,j))),j));
+    stdy(j)=std(x(find(~isnan(x(:,j))),j));
     y(:,j)=(x(:,j)-meany(j))./stdy(j);
 end
 % end of m-file

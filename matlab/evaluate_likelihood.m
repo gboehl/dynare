@@ -18,7 +18,7 @@ function [llik,parameters] = evaluate_likelihood(parameters)
 % [2] This function use persistent variables for the dataset and the description of the missing observations. Consequently, if this function
 %     is called more than once (by changing the value of parameters) the sample *must not* change.
 
-% Copyright (C) 2009-2012 Dynare Team
+% Copyright (C) 2009-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -69,6 +69,7 @@ end
 if isempty(dataset)
     [dataset, dataset_info] = makedataset(options_);
 end
+options_=select_qz_criterium_value(options_);
 
 llik = -dsge_likelihood(parameters,dataset,dataset_info,options_,M_,estim_params_,bayestopt_,prior_bounds(bayestopt_,options_.prior_trunc),oo_);
 ldens = evaluate_prior(parameters);

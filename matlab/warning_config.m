@@ -3,14 +3,14 @@ function warning_config()
 %
 % INPUTS
 %   none
-%             
+%
 % OUTPUTS
 %   none
-%        
+%
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2008-2015 Dynare Team
+% Copyright (C) 2008-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

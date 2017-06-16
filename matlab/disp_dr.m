@@ -7,8 +7,8 @@ function disp_dr(dr,order,var_list)
 %    order [int]:            order of approximation
 %    var_list [char array]:  list of endogenous variables for which the
 %                            decision rules should be printed
-% 
-% Copyright (C) 2001-2015 Dynare Team
+%
+% Copyright (C) 2001-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -27,6 +27,11 @@ function disp_dr(dr,order,var_list)
 
 global M_ options_
 
+if M_.hessian_eq_zero && order~=1
+    order = 1;
+    warning('disp_dr: using order = 1 because Hessian is equal to zero');
+end
+    
 nx =size(dr.ghx,2);
 nu =size(dr.ghu,2);
 if options_.block
@@ -36,7 +41,7 @@ else
     k = find(dr.kstate(:,2) <= M_.maximum_lag+1);
     klag = dr.kstate(k,[1 2]);
     k1 = dr.order_var;
-end;
+end
 
 if size(var_list,1) == 0
     var_list = M_.endo_names(1:M_.orig_endo_nbr, :);
@@ -80,7 +85,7 @@ var_name_width=max([max(size(deblank(M_.endo_names(k1(ivar),:)),2)),max(size(deb
 
 %deal with covariances
 if order > 1
-    var_name_width=max(2*(var_name_width+aux_var_additional_characters)+2,20); %account for covariances, separated by comma    
+    var_name_width=max(2*(var_name_width+aux_var_additional_characters)+2,20); %account for covariances, separated by comma
 else
     var_name_width=max(var_name_width+aux_var_additional_characters,20);
 end
@@ -90,7 +95,7 @@ label_format  = sprintf('%%-%ds',var_name_width);
 %% start displayimg
 disp('POLICY AND TRANSITION FUNCTIONS')
 % variable names
-str = char(32*ones(1,var_name_width)); 
+str = char(32*ones(1,var_name_width));
 for i=1:nvar
     str = [str sprintf(header_label_format,deblank(M_.endo_names(k1(ivar(i)),:)))];
 end
@@ -232,7 +237,7 @@ for i = 1:length(M_.aux_vars)
     if M_.aux_vars(i).endo_index == aux_index
         switch M_.aux_vars(i).type
           case 0
-            str = sprintf('%s(%d)',deblank(M_.endo_names(aux_index,:)),aux_lead_lag);                
+            str = sprintf('%s(%d)',deblank(M_.endo_names(aux_index,:)),aux_lead_lag);
             return
           case 1
             orig_name = deblank(M_.endo_names(M_.aux_vars(i).orig_index, :));
@@ -256,10 +261,10 @@ error(sprintf('Could not find aux var: %s', M_.endo_names(aux_index, :)))
 end
 
 function [str,flag]=get_print_string(str,x,value_format_zero,value_format_float,flag,options_)
-    if abs(x) >= options_.dr_display_tol
-        flag = 1;
-        str = [str sprintf(value_format_float,x)];
-    else
-        str = [str sprintf(value_format_zero,0)];
-    end
+if abs(x) >= options_.dr_display_tol
+    flag = 1;
+    str = [str sprintf(value_format_float,x)];
+else
+    str = [str sprintf(value_format_zero,0)];
+end
 end

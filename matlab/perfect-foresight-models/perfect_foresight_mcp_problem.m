@@ -1,8 +1,8 @@
 function [residuals,JJacobian] = perfect_foresight_mcp_problem(y, dynamic_function, Y0, YT, ...
-                                           exo_simul, params, steady_state, ...
-                                           maximum_lag, T, ny, i_cols, ...
-                                           i_cols_J1, i_cols_1, i_cols_T, ...
-                                           i_cols_j,nnzJ,eq_index)
+                                                  exo_simul, params, steady_state, ...
+                                                  maximum_lag, T, ny, i_cols, ...
+                                                  i_cols_J1, i_cols_1, i_cols_T, ...
+                                                  i_cols_j,nnzJ,eq_index)
 % function [residuals,JJacobian] = perfect_foresight_mcp_problem(y, dynamic_function, Y0, YT, ...
 %                                            exo_simul, params, steady_state, ...
 %                                            maximum_lag, T, ny, i_cols, ...
@@ -17,7 +17,7 @@ function [residuals,JJacobian] = perfect_foresight_mcp_problem(y, dynamic_functi
 %   Y0                  [double] N*1 array, initial conditions for the endogenous variables
 %   YT                  [double] N*1 array, terminal conditions for the endogenous variables
 %   exo_simul           [double] nperiods*M_.exo_nbr matrix of exogenous variables (in declaration order)
-%                                for all simulation periods           
+%                                for all simulation periods
 %   params              [double] nparams*1 array, parameter values
 %   steady_state        [double] endo_nbr*1 vector of steady state values
 %   maximum_lag         [scalar] maximum lag present in the model
@@ -25,7 +25,7 @@ function [residuals,JJacobian] = perfect_foresight_mcp_problem(y, dynamic_functi
 %   ny                  [scalar] number of endogenous variables
 %   i_cols              [double] indices of variables appearing in M.lead_lag_incidence
 %                                and that need to be passed to _dynamic-file
-%   i_cols_J1           [double] indices of contemporaneous and forward looking variables 
+%   i_cols_J1           [double] indices of contemporaneous and forward looking variables
 %                                appearing in M.lead_lag_incidence
 %   i_cols_1            [double] indices of contemporaneous and forward looking variables in
 %                                M.lead_lag_incidence in dynamic Jacobian (relevant in first period)
@@ -33,8 +33,8 @@ function [residuals,JJacobian] = perfect_foresight_mcp_problem(y, dynamic_functi
 %                                variables (relevant in last period)
 %   i_cols_j            [double] indices of variables in M.lead_lag_incidence
 %                                in dynamic Jacobian (relevant in intermediate periods)
-%   nnzJ                [scalar] number of non-zero elements in Jacobian                                
-%   eq_index            [double] N*1 array, index vector describing residual mapping resulting 
+%   nnzJ                [scalar] number of non-zero elements in Jacobian
+%   eq_index            [double] N*1 array, index vector describing residual mapping resulting
 %                                from complementarity setup
 % OUTPUTS
 %   residuals           [double] (N*T)*1 array, residuals of the stacked problem
@@ -45,7 +45,7 @@ function [residuals,JJacobian] = perfect_foresight_mcp_problem(y, dynamic_functi
 % SPECIAL REQUIREMENTS
 %   None.
 
-% Copyright (C) 1996-2016 Dynare Team
+% Copyright (C) 1996-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -77,11 +77,11 @@ i_cols_J = i_cols;
 for it = 2:(T+1)
     if nargout == 1
         res = dynamic_function(YY(i_cols),exo_simul, params, ...
-            steady_state,it);
+                               steady_state,it);
         residuals(i_rows) = res(eq_index);
     elseif nargout == 2
         [res,jacobian] = dynamic_function(YY(i_cols),exo_simul, params, ...
-            steady_state,it);
+                                          steady_state,it);
         residuals(i_rows) = res(eq_index);
         if it == 2
             [rows,cols,vals] = find(jacobian(eq_index,i_cols_1));
@@ -96,7 +96,7 @@ for it = 2:(T+1)
         end
         offset = offset + ny;
     end
-    
+
     i_rows = i_rows + ny;
     i_cols = i_cols + ny;
 end
@@ -104,5 +104,5 @@ end
 if nargout == 2
     iJacobian = cat(1,iJacobian{:});
     JJacobian = sparse(iJacobian(:,1),iJacobian(:,2),iJacobian(:,3),T* ...
-        ny,T*ny);
+                       ny,T*ny);
 end

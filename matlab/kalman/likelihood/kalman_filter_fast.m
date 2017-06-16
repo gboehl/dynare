@@ -74,7 +74,7 @@ function [LIK, LIKK, a, P] = kalman_filter_fast(Y,start,last,a,P,kalman_tol,ricc
 %! @end deftypefn
 %@eod:
 
-% Copyright (C) 2004-2013 Dynare Team
+% Copyright (C) 2004-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -152,7 +152,7 @@ while notsteady && t<=last
     end
     if rcond(F) < kalman_tol
         if ~all(abs(F(:))<kalman_tol)
-            % The univariate diffuse kalman filter should be used.            
+            % The univariate diffuse kalman filter should be used.
             return
         else
             %pathological case, discard draw
@@ -194,12 +194,12 @@ end
 
 % Add observation's densities constants and divide by two.
 likk(1:s) = .5*(likk(1:s) + pp*log(2*pi));
-if analytic_derivation,
+if analytic_derivation
     DLIK = DLIK/2;
     dlikk = dlikk/2;
-    if analytic_derivation==2 || asy_hess,
-        if asy_hess==0,
-        Hess = Hess + tril(Hess,-1)';
+    if analytic_derivation==2 || asy_hess
+        if asy_hess==0
+            Hess = Hess + tril(Hess,-1)';
         end
         Hess = -Hess/2;
     end
@@ -207,34 +207,34 @@ end
 
 % Call steady state Kalman filter if needed.
 if t <= last
-    if analytic_derivation,
-        if analytic_derivation==2,
+    if analytic_derivation
+        if analytic_derivation==2
             [tmp, tmp2] = kalman_filter_ss(Y,t,last,a,T,K,iF,dF,Z,pp,Zflag, ...
-                analytic_derivation,Da,DT,DYss,D2a,D2T,D2Yss);
+                                           analytic_derivation,Da,DT,DYss,D2a,D2T,D2Yss);
         else
             [tmp, tmp2] = kalman_filter_ss(Y,t,last,a,T,K,iF,dF,Z,pp,Zflag, ...
-                analytic_derivation,Da,DT,DYss,asy_hess);
+                                           analytic_derivation,Da,DT,DYss,asy_hess);
         end
         likk(s+1:end)=tmp2{1};
         dlikk(s+1:end,:)=tmp2{2};
         DLIK = DLIK + tmp{2};
-        if analytic_derivation==2 || asy_hess,
+        if analytic_derivation==2 || asy_hess
             Hess = Hess + tmp{3};
         end
     else
-        [tmp, likk(s+1:end)] = kalman_filter_ss(Y,t,last,a,T,K,iF,log(dF),Z,pp,Zflag);
+        [tmp, likk(s+1:end)] = kalman_filter_ss(Y, t, last, a, T, K, iF, log(dF), Z, pp, Zflag);
     end
 end
 
 % Compute minus the log-likelihood.
-if presample>diffuse_periods,
+if presample>diffuse_periods
     LIK = sum(likk(1+(presample-diffuse_periods):end));
 else
     LIK = sum(likk);
 end
 
-if analytic_derivation,
-    if analytic_derivation==2 || asy_hess,
+if analytic_derivation
+    if analytic_derivation==2 || asy_hess
         LIK={LIK, DLIK, Hess};
     else
         LIK={LIK, DLIK};

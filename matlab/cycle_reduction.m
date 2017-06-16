@@ -43,7 +43,7 @@ function [X, info] = cycle_reduction(A0, A1, A2, cvg_tol, ch) % --*-- Unitary te
 %! @end deftypefn
 %@eod:
 
-% Copyright (C) 2013 Dynare Team
+% Copyright (C) 2013-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -76,7 +76,7 @@ id0 = 1:n;
 id2 = id0+n;
 
 cont = 1;
-while cont 
+while cont
     tmp = ([A0; A2]/A1)*[A0 A2];
     A1 = A1 - tmp(id0,id2) - tmp(id2,id0);
     A0 = -tmp(id0,id0);
@@ -97,7 +97,7 @@ while cont
             info(2) = log(norm(A1,1));
         end
         return
-    end        
+    end
     it = it + 1;
 end
 
@@ -125,8 +125,8 @@ end
 %$
 %$ % Solve the equation with the cycle reduction algorithm
 %$ try
-%$     t=cputime; X1 = cycle_reduction(C,B,A,1e-7); elapsedtime = cputime-t;
-%$     disp(['cputime for cycle reduction algorithm is: ' num2str(elapsedtime) ' (n=' int2str(n) ').'])
+%$     tic; X1 = cycle_reduction(C,B,A,1e-7); elapsedtime = toc;
+%$     disp(['Elapsed time for cycle reduction algorithm is: ' num2str(elapsedtime) ' (n=' int2str(n) ').'])
 %$     t(1) = 1;
 %$ catch
 %$     % nothing to do here.
@@ -134,8 +134,8 @@ end
 %$
 %$ % Solve the equation with the logarithmic reduction algorithm
 %$ try
-%$     t=cputime; X2 = logarithmic_reduction(A,B,C,1e-16,100); elapsedtime = cputime-t;
-%$     disp(['cputime for logarithmic reduction algorithm is: ' num2str(elapsedtime) ' (n=' int2str(n) ').'])
+%$     tic; X2 = logarithmic_reduction(A,B,C,1e-16,100); elapsedtime = toc;
+%$     disp(['Elapsed time for logarithmic reduction algorithm is: ' num2str(elapsedtime) ' (n=' int2str(n) ').'])
 %$     t(2) = 1;
 %$ catch
 %$     % nothing to do here.

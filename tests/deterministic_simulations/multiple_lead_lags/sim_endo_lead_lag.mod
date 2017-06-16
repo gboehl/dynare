@@ -39,6 +39,11 @@ values 0.9;
 end;
 
 simul(periods=200,maxit=100);
+
+if ~oo_.deterministic_simulation.status
+   error('Perfect foresight simulation failed')
+end
+
 base_results=load('sim_base_results.mat');
 if max(abs(base_results.oo_.endo_simul(strmatch('c',base_results.M_.endo_names,'exact'),1+base_results.M_.maximum_endo_lag:end-base_results.M_.maximum_endo_lead) -...
     oo_.endo_simul(strmatch('c',M_.endo_names,'exact'),1+M_.maximum_endo_lag:end-M_.maximum_endo_lead)))>1e-8 || ...

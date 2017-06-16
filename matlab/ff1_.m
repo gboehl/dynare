@@ -5,14 +5,14 @@ function y=ff1_(x)
 %
 % INPUTS
 %    x:          argument splitted between endogenous and exogenous
-%        
+%
 % OUTPUTS
 %    y:         'static' function residuals
-%        
+%
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2001-2008 Dynare Team
+% Copyright (C) 2001-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -35,6 +35,3 @@ n1 = size(x,1) - M_.exo_nbr;
 oo_.exo_simul(it_+M_.maximum_lag-M_.maximum_lag,:) = x(n1+1:end)';
 fh = str2func([M_.fname '_static']);
 y=feval(fh,x(1:n1),oo_.exo_simul, M_.params);
-
-
-

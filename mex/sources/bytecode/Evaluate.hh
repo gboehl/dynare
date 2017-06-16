@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2013 Dynare Team
+ * Copyright (C) 2007-2017 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -87,7 +87,7 @@ public:
   Evaluate(const int y_size_arg, const int y_kmin_arg, const int y_kmax_arg, const bool print_it_arg, const bool steady_state_arg, const int periods_arg, const int minimal_solving_periods_arg, const double slowc);
   //typedef  void (Interpreter::*InterfpreterMemFn)(const int block_num, const int size, const bool steady_state, int it);
   void set_block(const int size_arg, const int type_arg, string file_name_arg, string bin_base_name_arg, const int block_num_arg,
-          const bool is_linear_arg, const int symbol_table_endo_nbr_arg, const int Block_List_Max_Lag_arg, const int Block_List_Max_Lead_arg, const int u_count_int_arg, const int block_arg);
+                 const bool is_linear_arg, const int symbol_table_endo_nbr_arg, const int Block_List_Max_Lag_arg, const int Block_List_Max_Lead_arg, const int u_count_int_arg, const int block_arg);
   void evaluate_complete(const bool no_derivatives);
   bool compute_complete(const bool no_derivatives, double &res1, double &res2, double &max_res, int &max_res_idx);
   void compute_complete_2b(const bool no_derivatives, double *_res1, double *_res2, double *_max_res, int *_max_res_idx);

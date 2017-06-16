@@ -2,7 +2,7 @@ function [DirectoryName, info] = CheckPath(type,dname)
 % Creates the subfolder "./M_.dname/type" if it does not exist yet.
 %
 % INPUTS
-%    type   [string]    Name of the subfolder. 
+%    type   [string]    Name of the subfolder.
 %    dname  [string]    Name of the directory
 %
 % OUTPUTS
@@ -12,7 +12,7 @@ function [DirectoryName, info] = CheckPath(type,dname)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2005-2013 Dynare Team
+% Copyright (C) 2005-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

@@ -47,7 +47,7 @@ function [dr,info] = dyn_first_order_solver(jacobia,DynareModel,dr,DynareOptions
 %! @end deftypefn
 %@eod:
 
-% Copyright (C) 2001-2012 Dynare Team
+% Copyright (C) 2001-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -66,8 +66,8 @@ function [dr,info] = dyn_first_order_solver(jacobia,DynareModel,dr,DynareOptions
 
 persistent reorder_jacobian_columns innovations_idx index_s index_m index_c
 persistent index_p row_indx index_0m index_0p k1 k2 state_var
-persistent ndynamic nstatic nfwrd npred nboth nd nsfwrd n_current index_d 
-persistent index_e index_d1 index_d2 index_e1 index_e2 row_indx_de_1 
+persistent ndynamic nstatic nfwrd npred nboth nd nsfwrd n_current index_d
+persistent index_e index_d1 index_d2 index_e1 index_e2 row_indx_de_1
 persistent row_indx_de_2 cols_b
 
 
@@ -82,7 +82,7 @@ end
 exo_nbr = DynareModel.exo_nbr;
 
 if isempty(reorder_jacobian_columns)
-    
+
     maximum_lag = DynareModel.maximum_endo_lag;
     kstate   = dr.kstate;
     nfwrd    = DynareModel.nfwrd;
@@ -149,7 +149,7 @@ if isempty(reorder_jacobian_columns)
     index_e1 = [1:npred+nboth, npred+nboth+find(llx(maximum_lag+1,nstatic+npred+(1: ...
                                                       nsfwrd)))];
     index_e2 = npred+nboth+(1:nboth);
-    
+
     [junk,cols_b] = find(lead_lag_incidence(maximum_lag+1, order_var));
 
     reorder_jacobian_columns = [nonzeros(lead_lag_incidence(:,order_var)'); ...
@@ -179,12 +179,12 @@ if task ~= 1 && (DynareOptions.dr_cycle_reduction || DynareOptions.dr_logarithmi
     if n_current < DynareModel.endo_nbr
         if DynareOptions.dr_cycle_reduction
             error(['The cycle reduction algorithme can''t be used when the ' ...
-               'coefficient matrix for current variables isn''t invertible'])
+                   'coefficient matrix for current variables isn''t invertible'])
         elseif DynareOptions.dr_logarithmic_reduction
             error(['The logarithmic reduction algorithme can''t be used when the ' ...
                    'coefficient matrix for current variables isn''t invertible'])
         end
-    end  
+    end
     if DynareOptions.gpu
         gpuArray(A1);
         gpuArray(B1);
@@ -212,7 +212,7 @@ else
     D(row_indx_de_2,index_d2) = eye(nboth);
     E(row_indx_de_1,index_e1) = -aa(row_indx,index_e);
     E(row_indx_de_2,index_e2) = eye(nboth);
-    
+
     [err, ss, tt, w, sdim, dr.eigval, info1] = mjdgges(E, D, DynareOptions.qz_criterium, DynareOptions.qz_zero_threshold);
     mexErrCheck('mjdgges', err);
 
@@ -235,7 +235,7 @@ else
             dr.full_rank = 0;
         else
             dr.full_rank = 1;
-        end            
+        end
         return
     end
 
@@ -244,14 +244,13 @@ else
         if nba > nsfwrd
             temp = temp(nd-nba+1:nd-nsfwrd)-1-DynareOptions.qz_criterium;
             info(1) = 3;
-        elseif nba < nsfwrd;
+        elseif nba < nsfwrd
             temp = temp(nd-nsfwrd+1:nd-nba)-1-DynareOptions.qz_criterium;
             info(1) = 4;
         end
         info(2) = temp'*temp;
         return
     end
-
     %First order approximation
     indx_stable_root = 1: (nd - nsfwrd);     %=> index of stable roots
     indx_explosive_root = npred + nboth + 1:nd;  %=> index of explosive roots
@@ -267,7 +266,7 @@ else
         % Z22 is near singular
         info(1) = 5;
         info(2) = -log(rc);
-        return;
+        return
     end
     gx  = -minus_gx;
     % predetermined variables
@@ -285,7 +284,7 @@ if nstatic > 0
     B_static = B(:,1:nstatic);  % submatrix containing the derivatives w.r. to static variables
 else
     B_static = [];
-end;
+end
 %static variables, backward variable, mixed variables and forward variables
 B_pred = B(:,nstatic+1:nstatic+npred+nboth);
 B_fyd = B(:,nstatic+npred+nboth+1:end);
@@ -309,12 +308,12 @@ if exo_nbr
         fu = Q' * jacobia(:,innovations_idx);
     else
         fu = jacobia(:,innovations_idx);
-    end;
+    end
 
     ghu = - A_ \ fu;
 else
     ghu = [];
-end;
+end
 
 dr.ghx = ghx;
 dr.ghu = ghu;

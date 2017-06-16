@@ -1,22 +1,22 @@
 function oo_ = GetPosteriorParametersStatistics(estim_params_, M_, options_, bayestopt_, oo_, pnames)
 % This function prints and saves posterior estimates after the mcmc
-% (+updates of oo_ & TeX output). 
-% 
-% INPUTS 
-%   estim_params_    [structure] 
+% (+updates of oo_ & TeX output).
+%
+% INPUTS
+%   estim_params_    [structure]
 %   M_               [structure]
 %   options_         [structure]
 %   bayestopt_       [structure]
 %   oo_              [structure]
 %   pnames           [char]        Array of char, names of the prior shapes available
-%  
-% OUTPUTS 
-%   oo_              [structure]  
+%
+% OUTPUTS
+%   oo_              [structure]
 %
 % SPECIAL REQUIREMENTS
 %   None.
 
-% Copyright (C) 2006-2016 Dynare Team
+% Copyright (C) 2006-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -34,7 +34,7 @@ function oo_ = GetPosteriorParametersStatistics(estim_params_, M_, options_, bay
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 %if ~options_.mh_replic && options_.load_mh_file
-%   load([M_.fname '_results.mat'],'oo_'); 
+%   load([M_.fname '_results.mat'],'oo_');
 %end
 
 TeX     = options_.TeX;
@@ -48,7 +48,7 @@ nx      = nvx+nvn+ncx+ncn+np;
 
 MetropolisFolder = CheckPath('metropolis',M_.dname);
 OutputFolder = CheckPath('Output',M_.dname);
-FileName = M_.fname;  
+FileName = M_.fname;
 
 load_last_mh_history_file(MetropolisFolder,FileName);
 
@@ -108,14 +108,14 @@ if np
                 [post_mean, post_median, post_var, hpd_interval, post_deciles, ...
                  density] = posterior_moments(Draws,1,options_.mh_conf_sig);
                 name = bayestopt_.name{ip};
-                oo_ = Filloo(oo_,name,type,post_mean,hpd_interval,post_median,post_var,post_deciles,density);                
+                oo_ = Filloo(oo_,name,type,post_mean,hpd_interval,post_median,post_var,post_deciles,density);
             end
         end
         disp(sprintf(pformat,header_width,name,bayestopt_.p1(ip),...
                      post_mean, ...
                      hpd_interval, ...
                      pnames(bayestopt_.pshape(ip)+1,:), ...
-                     bayestopt_.p2(ip)));    
+                     bayestopt_.p2(ip)));
         if TeX
             k = estim_params_.param_vals(i,1);
             name = deblank(M_.param_names_tex(k,:));
@@ -163,7 +163,7 @@ if nvx
         end
         disp(sprintf(pformat,header_width,name,bayestopt_.p1(ip),post_mean,hpd_interval,...
                      pnames(bayestopt_.pshape(ip)+1,:),bayestopt_.p2(ip)));
-        if TeX,
+        if TeX
             name = deblank(M_.exo_names_tex(k,:));
             TeXCore(fid,name,deblank(pnames(bayestopt_.pshape(ip)+1,:)),bayestopt_.p1(ip),...
                     bayestopt_.p2(ip),post_mean,sqrt(post_var),hpd_interval);
@@ -171,7 +171,7 @@ if nvx
         ip = ip+1;
     end
     if TeX
-        TeXEnd(fid,2,'standard deviation of structural shocks');        
+        TeXEnd(fid,2,'standard deviation of structural shocks');
     end
 end
 if nvn
@@ -213,7 +213,7 @@ if nvn
         ip = ip+1;
     end
     if TeX
-        TeXEnd(fid,3,'standard deviation of measurement errors');        
+        TeXEnd(fid,3,'standard deviation of measurement errors');
     end
 end
 if ncx
@@ -311,15 +311,15 @@ if ncn
         end
         disp(sprintf(pformat, header_width,name,bayestopt_.p1(ip),post_mean,hpd_interval, ...
                      pnames(bayestopt_.pshape(ip)+1,:),bayestopt_.p2(ip)));
-        if TeX,
+        if TeX
             name = ['(',deblank(M_.endo_names_tex(k1,:)) ',' deblank(M_.endo_names_tex(k2,:)),')'];
             TeXCore(fid,name,deblank(pnames(bayestopt_.pshape(ip)+1,:)),bayestopt_.p1(ip),...
-                    bayestopt_.p2(ip),post_mean,sqrt(post_var),hpd_interval);            
+                    bayestopt_.p2(ip),post_mean,sqrt(post_var),hpd_interval);
         end
         ip = ip+1;
     end
     if TeX
-        TeXEnd(fid,5,'correlation of measurement errors');        
+        TeXEnd(fid,5,'correlation of measurement errors');
     end
 end
 
@@ -359,7 +359,7 @@ fid = fidTeX;
 
 
 function TeXCore(fid,name,shape,priormean,priorstd,postmean,poststd,hpd)
-fprintf(fid,['$%s$ & %s & %7.3f & %6.4f & %7.3f& %6.4f & %7.4f & %7.4f \\\\ \n'],... 
+fprintf(fid,['$%s$ & %s & %7.3f & %6.4f & %7.3f& %6.4f & %7.4f & %7.4f \\\\ \n'],...
         name,...
         shape,...
         priormean,...
@@ -371,7 +371,7 @@ fprintf(fid,['$%s$ & %s & %7.3f & %6.4f & %7.3f& %6.4f & %7.4f & %7.4f \\\\ \n']
 
 
 function TeXEnd(fid,fnum,title)
-fprintf(fid,'\\end{longtable}\n ');    
+fprintf(fid,'\\end{longtable}\n ');
 fprintf(fid,'\\end{center}\n');
 fprintf(fid,'%% End of TeX file.\n');
 fclose(fid);

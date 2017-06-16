@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Dynare Team
+ * Copyright (C) 2013-2017 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -35,8 +35,8 @@ Evaluate::Evaluate()
   block = -1;
 }
 
-Evaluate::Evaluate(const int y_size_arg, const int y_kmin_arg, const int y_kmax_arg, const bool print_it_arg, const bool steady_state_arg, const int periods_arg, const int minimal_solving_periods_arg, const double slowc_arg):
-print_it(print_it_arg),  minimal_solving_periods(minimal_solving_periods_arg)
+Evaluate::Evaluate(const int y_size_arg, const int y_kmin_arg, const int y_kmax_arg, const bool print_it_arg, const bool steady_state_arg, const int periods_arg, const int minimal_solving_periods_arg, const double slowc_arg) :
+  print_it(print_it_arg),  minimal_solving_periods(minimal_solving_periods_arg)
 {
   symbol_table_endo_nbr = 0;
   Block_List_Max_Lag = 0;
@@ -107,7 +107,6 @@ Evaluate::log10_1(double a)
   return r;
 }
 
-
 void
 Evaluate::compute_block_time(const int Per_u_, const bool evaluate, /*const int block_num, const int size, const bool steady_state,*/ const bool no_derivative)
 {
@@ -137,14 +136,14 @@ Evaluate::compute_block_time(const int Per_u_, const bool evaluate, /*const int 
         }
     }
 #ifdef MATLAB_MEX_FILE
-	if ( utIsInterruptPending() )
-		throw UserExceptionHandling();
+  if (utIsInterruptPending())
+    throw UserExceptionHandling();
 #endif
-  
+
   while (go_on)
     {
 #ifdef DEBUG
-      mexPrintf("it_code->first=%d\n",it_code->first);
+      mexPrintf("it_code->first=%d\n", it_code->first);
 #endif
       switch (it_code->first)
         {
@@ -738,7 +737,7 @@ Evaluate::compute_block_time(const int Per_u_, const bool evaluate, /*const int 
               pos_col = ((FSTPG3_ *) it_code->second)->get_col_pos();
 #ifdef DEBUG
               mexPrintf("Endo eq=%d, pos_col=%d, size=%d, jacob=%x\n", eq, pos_col, size, jacob);
-              mexPrintf("jacob=%x\n",jacob);
+              mexPrintf("jacob=%x\n", jacob);
 #endif
               jacob[eq + size*pos_col] = rr;
               break;
@@ -843,7 +842,7 @@ Evaluate::compute_block_time(const int Per_u_, const bool evaluate, /*const int 
             case oLess:
               Stack.push(double (v1 < v2));
 #ifdef DEBUG
-              mexPrintf("v1=%f v2=%f v1 < v2 = %f\n",v1,v2,double(v1 < v2));
+              mexPrintf("v1=%f v2=%f v1 < v2 = %f\n", v1, v2, double (v1 < v2));
 #endif
               break;
             case oGreater:
@@ -897,7 +896,7 @@ Evaluate::compute_block_time(const int Per_u_, const bool evaluate, /*const int 
               break;
             case oPowerDeriv:
               {
-                int derivOrder = int(nearbyint(Stack.top()));
+                int derivOrder = int (nearbyint(Stack.top()));
                 Stack.pop();
                 try
                   {
@@ -1172,6 +1171,7 @@ Evaluate::compute_block_time(const int Per_u_, const bool evaluate, /*const int 
               case ExternalFunctionWithFirstandSecondDerivative:
                 {
                   input_arguments = (mxArray **) mxMalloc(nb_input_arguments * sizeof(mxArray *));
+                  test_mxMalloc(input_arguments, __LINE__, __FILE__, __func__, nb_input_arguments * sizeof(mxArray *));
 #ifdef DEBUG
                   mexPrintf("Stack.size()=%d\n", Stack.size());
                   mexEvalString("drawnow;");
@@ -1188,7 +1188,7 @@ Evaluate::compute_block_time(const int Per_u_, const bool evaluate, /*const int 
                       tmp << " external function: " << function_name << " not found";
                       throw FatalExceptionHandling(tmp.str());
                     }
- 
+
                   double *rr = mxGetPr(output_arguments[0]);
                   Stack.push(*rr);
                   if (function_type == ExternalFunctionWithFirstDerivative || function_type == ExternalFunctionWithFirstandSecondDerivative)
@@ -1215,6 +1215,7 @@ Evaluate::compute_block_time(const int Per_u_, const bool evaluate, /*const int 
               case ExternalFunctionNumericalFirstDerivative:
                 {
                   input_arguments = (mxArray **) mxMalloc((nb_input_arguments+1+nb_add_input_arguments) * sizeof(mxArray *));
+                  test_mxMalloc(input_arguments, __LINE__, __FILE__, __func__, (nb_input_arguments+1+nb_add_input_arguments) * sizeof(mxArray *));
                   mxArray *vv = mxCreateString(arg_func_name.c_str());
                   input_arguments[0] = vv;
                   vv = mxCreateDoubleScalar(fc->get_row());
@@ -1254,6 +1255,7 @@ Evaluate::compute_block_time(const int Per_u_, const bool evaluate, /*const int 
               case ExternalFunctionFirstDerivative:
                 {
                   input_arguments = (mxArray **) mxMalloc(nb_input_arguments * sizeof(mxArray *));
+                  test_mxMalloc(input_arguments, __LINE__, __FILE__, __func__, nb_input_arguments * sizeof(mxArray *));
                   for (unsigned int i = 0; i < nb_input_arguments; i++)
                     {
                       mxArray *vv = mxCreateDoubleScalar(Stack.top());
@@ -1277,6 +1279,7 @@ Evaluate::compute_block_time(const int Per_u_, const bool evaluate, /*const int 
               case ExternalFunctionNumericalSecondDerivative:
                 {
                   input_arguments = (mxArray **) mxMalloc((nb_input_arguments+1+nb_add_input_arguments) * sizeof(mxArray *));
+                  test_mxMalloc(input_arguments, __LINE__, __FILE__, __func__, (nb_input_arguments+1+nb_add_input_arguments) * sizeof(mxArray *));
                   mxArray *vv = mxCreateString(arg_func_name.c_str());
                   input_arguments[0] = vv;
                   vv = mxCreateDoubleScalar(fc->get_row());
@@ -1315,6 +1318,7 @@ Evaluate::compute_block_time(const int Per_u_, const bool evaluate, /*const int 
               case ExternalFunctionSecondDerivative:
                 {
                   input_arguments = (mxArray **) mxMalloc(nb_input_arguments * sizeof(mxArray *));
+                  test_mxMalloc(input_arguments, __LINE__, __FILE__, __func__, nb_input_arguments * sizeof(mxArray *));
                   for (unsigned int i = 0; i < nb_input_arguments; i++)
                     {
                       mxArray *vv = mxCreateDoubleScalar(Stack.top());
@@ -1484,7 +1488,7 @@ Evaluate::compute_block_time(const int Per_u_, const bool evaluate, /*const int 
           throw FatalExceptionHandling(tmp.str());
         }
 #ifdef DEBUG
-      mexPrintf("it_code++=%d\n",it_code);
+      mexPrintf("it_code++=%d\n", it_code);
 #endif
       it_code++;
     }
@@ -1493,8 +1497,6 @@ Evaluate::compute_block_time(const int Per_u_, const bool evaluate, /*const int 
   mexEvalString("drawnow;");
 #endif
 }
-
-
 
 void
 Evaluate::evaluate_over_periods(const bool forward)
@@ -1528,7 +1530,7 @@ Evaluate::solve_simple_one_periods()
 {
   bool cvg = false;
   int iter = 0;
-  double ya ;
+  double ya;
   double slowc_save = slowc;
   res1 = 0;
   while (!(cvg || (iter > maxit_)))
@@ -1537,14 +1539,14 @@ Evaluate::solve_simple_one_periods()
       Per_y_ = it_*y_size;
       ya = y[Block_Contain[0].Variable + Per_y_];
       compute_block_time(0, false, false);
-      if (!finite(res1))
+      if (!isfinite(res1))
         {
           res1 = NAN;
-          while ((isinf(res1) || isnan(res1)) && (slowc > 1e-9) )
+          while ((isinf(res1) || isnan(res1)) && (slowc > 1e-9))
             {
               it_code = start_code;
               compute_block_time(0, false, false);
-              if (!finite(res1))
+              if (!isfinite(res1))
                 {
                   slowc /= 1.5;
                   mexPrintf("Reducing the path length in Newton step slowc=%f\n", slowc);
@@ -1560,7 +1562,7 @@ Evaluate::solve_simple_one_periods()
         continue;
       try
         {
-          y[Block_Contain[0].Variable + Per_y_] += - slowc * divide(rr, g1[0]);
+          y[Block_Contain[0].Variable + Per_y_] += -slowc *divide(rr, g1[0]);
         }
       catch (FloatingPointExceptionHandling &fpeh)
         {
@@ -1578,12 +1580,13 @@ Evaluate::solve_simple_one_periods()
     }
 }
 
-
 void
 Evaluate::solve_simple_over_periods(const bool forward)
 {
   g1 = (double *) mxMalloc(sizeof(double));
+  test_mxMalloc(g1, __LINE__, __FILE__, __func__, sizeof(double));
   r = (double *) mxMalloc(sizeof(double));
+  test_mxMalloc(r, __LINE__, __FILE__, __func__, sizeof(double));
   start_code = it_code;
   if (steady_state)
     {
@@ -1605,7 +1608,7 @@ Evaluate::solve_simple_over_periods(const bool forward)
 
 void
 Evaluate::set_block(const int size_arg, const int type_arg, string file_name_arg, string bin_base_name_arg, const int block_num_arg,
-          const bool is_linear_arg, const int symbol_table_endo_nbr_arg, const int Block_List_Max_Lag_arg, const int Block_List_Max_Lead_arg, const int u_count_int_arg, const int block_arg)
+                    const bool is_linear_arg, const int symbol_table_endo_nbr_arg, const int Block_List_Max_Lag_arg, const int Block_List_Max_Lead_arg, const int u_count_int_arg, const int block_arg)
 {
   size = size_arg;
   type = type_arg;
@@ -1627,7 +1630,6 @@ Evaluate::evaluate_complete(const bool no_derivatives)
   compute_block_time(0, false, no_derivatives);
 }
 
-
 void
 Evaluate::compute_complete_2b(const bool no_derivatives, double *_res1, double *_res2, double *_max_res, int *_max_res_idx)
 {
@@ -1644,28 +1646,27 @@ Evaluate::compute_complete_2b(const bool no_derivatives, double *_res1, double *
       compute_block_time(Per_u_, false, no_derivatives);
       if (!(isnan(res1) || isinf(res1)))
         {
-            {
-              for (int i = 0; i < size; i++)
-                {
-                  double rr;
-                  rr = r[i];
-                  res[i+shift] = rr;
-                  if (max_res < fabs(rr))
-                    {
-                      *_max_res = fabs(rr);
-                      *_max_res_idx = i;
-                    }
-                  *_res2 += rr*rr;
-                  *_res1 += fabs(rr);
-                }
-            }
+          {
+            for (int i = 0; i < size; i++)
+              {
+                double rr;
+                rr = r[i];
+                res[i+shift] = rr;
+                if (max_res < fabs(rr))
+                  {
+                    *_max_res = fabs(rr);
+                    *_max_res_idx = i;
+                  }
+                *_res2 += rr*rr;
+                *_res1 += fabs(rr);
+              }
+          }
         }
       else
         return;
     }
   return;
 }
-
 
 bool
 Evaluate::compute_complete(const bool no_derivatives, double &_res1, double &_res2, double &_max_res, int &_max_res_idx)
@@ -1676,30 +1677,29 @@ Evaluate::compute_complete(const bool no_derivatives, double &_res1, double &_re
   compute_block_time(0, false, no_derivatives);
   if (!(isnan(res1) || isinf(res1)))
     {
-        {
-          _res1 = 0;
-          _res2 = 0;
-          _max_res = 0;
-          for (int i = 0; i < size; i++)
-            {
-              double rr;
-              rr = r[i];
-              if (max_res < fabs(rr))
-                {
-                  _max_res = fabs(rr);
-                  _max_res_idx = i;
-                }
-              _res2 += rr*rr;
-              _res1 += fabs(rr);
-            }
-        }
+      {
+        _res1 = 0;
+        _res2 = 0;
+        _max_res = 0;
+        for (int i = 0; i < size; i++)
+          {
+            double rr;
+            rr = r[i];
+            if (max_res < fabs(rr))
+              {
+                _max_res = fabs(rr);
+                _max_res_idx = i;
+              }
+            _res2 += rr*rr;
+            _res1 += fabs(rr);
+          }
+      }
       result = true;
     }
   else
     result = false;
   return result;
 }
-
 
 bool
 Evaluate::compute_complete(double lambda, double *crit)
@@ -1721,10 +1721,10 @@ Evaluate::compute_complete(double lambda, double *crit)
         {
           res2_ = res2;
           /*res1_ = res1;
-          if (max_res > max_res_)
+            if (max_res > max_res_)
             {
-              max_res = max_res_;
-              max_res_idx = max_res_idx_;
+            max_res = max_res_;
+            max_res_idx = max_res_idx_;
             }*/
         }
       else
@@ -1758,7 +1758,7 @@ Evaluate::compute_complete(double lambda, double *crit)
             return false;
         }
     }
-    mexPrintf("  lambda=%e, res2=%e\n", lambda, res2_);
+  mexPrintf("  lambda=%e, res2=%e\n", lambda, res2_);
   *crit = res2_/2;
   return true;
 }

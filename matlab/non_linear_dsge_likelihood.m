@@ -150,7 +150,7 @@ end
 %------------------------------------------------------------------------------
 
 % Return, with endogenous penalty, if some parameters are smaller than the lower bound of the prior domain.
-if (DynareOptions.mode_compute~=1) && any(xparam1<BoundsInfo.lb)
+if isestimation(DynareOptions) && (DynareOptions.mode_compute~=1) && any(xparam1<BoundsInfo.lb)
     k = find(xparam1(:) < BoundsInfo.lb);
     fval = Inf;
     exit_flag = 0;
@@ -160,7 +160,7 @@ if (DynareOptions.mode_compute~=1) && any(xparam1<BoundsInfo.lb)
 end
 
 % Return, with endogenous penalty, if some parameters are greater than the upper bound of the prior domain.
-if (DynareOptions.mode_compute~=1) && any(xparam1>BoundsInfo.ub)
+if isestimation(DynareOptions) && (DynareOptions.mode_compute~=1) && any(xparam1>BoundsInfo.ub)
     k = find(xparam1(:)>BoundsInfo.ub);
     fval = Inf;
     exit_flag = 0;
@@ -229,8 +229,8 @@ end
 
 if info(1)
     if info(1) == 3 || info(1) == 4 || info(1) == 5 || info(1)==6 ||info(1) == 19 || ...
-            info(1) == 20 || info(1) == 21 || info(1) == 23 || info(1) == 26 || ...
-            info(1) == 81 || info(1) == 84 ||  info(1) == 85
+                info(1) == 20 || info(1) == 21 || info(1) == 23 || info(1) == 26 || ...
+                info(1) == 81 || info(1) == 84 ||  info(1) == 85
         %meaningful second entry of output that can be used
         fval = Inf;
         info(4) = info(2);
@@ -316,7 +316,8 @@ switch DynareOptions.particle.initialization
     StateVectorVariance = cov(y_');
     DynareOptions.periods = old_DynareOptionsperiods;
     clear('old_DynareOptionsperiods','y_');
-  case 3% Initial state vector covariance is a diagonal matrix.
+  case 3% Initial state vector covariance is a diagonal matrix (to be used
+        % if model has stochastic trends).
     StateVectorMean = ReducedForm.constant(mf0);
     StateVectorVariance = DynareOptions.particle.initial_state_prior_std*eye(number_of_state_variables);
   otherwise
@@ -375,4 +376,3 @@ if isinf(LIK)~=0
     exit_flag = 0;
     return
 end
-

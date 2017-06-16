@@ -15,7 +15,7 @@ function d1 = bksupk(ny,fid,jcf,icc1)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2003-2011 Dynare Team
+% Copyright (C) 2003-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -68,7 +68,7 @@ while i <= options_.periods
     c = fread(fid,[jcf,ny],'float64')' ;
 
     d1(ir) = c(:,jcf)-c(:,icf)*d1(irf) ;
-    ir = ir-ny ;                        
+    ir = ir-ny ;
     irf = irf-ny ;
     i = i+1;
 end

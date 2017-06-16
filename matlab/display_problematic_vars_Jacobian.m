@@ -1,22 +1,22 @@
 function []=display_problematic_vars_Jacobian(problemrow,problemcol,M_,x,type,caller_string)
 % []=display_problematic_vars_Jacobian(problemrow,problemcol,M_,ys,caller_string)
-% print the equation numbers and variables associated with problematic entries 
-% of the Jacobian 
+% print the equation numbers and variables associated with problematic entries
+% of the Jacobian
 %
 % INPUTS
 %   problemrow      [vector] rows associated with problematic entries
 %   problemcol      [vector] columns associated with problematic entries
-%   M_              [matlab structure] Definition of the model.           
+%   M_              [matlab structure] Definition of the model.
 %   x               [vector] point at which the Jacobian was evaluated
 %   type            [string] 'static' or 'dynamic' depending on the type of
 %                               Jacobian
-%   caller_string   [string] contains name of calling function for printing 
-%    
+%   caller_string   [string] contains name of calling function for printing
+%
 % OUTPUTS
 %   none.
-%  
+%
 
-% Copyright (C) 2014-16 Dynare Team
+% Copyright (C) 2014-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -50,7 +50,7 @@ if strcmp(type,'dynamic')
             type_string='';
         elseif var_row==1
             type_string='lag of';
-        elseif var_row==3;
+        elseif var_row==3
             type_string='lead of';
         end
         if problemcol(ii)<=max(max(M_.lead_lag_incidence)) && var_index<=M_.orig_endo_nbr
@@ -62,25 +62,25 @@ if strcmp(type,'dynamic')
                 fprintf('Derivative of Equation %d with respect to %s Variable %s  (initial value of %s: %g) \n',eq_nbr,type_string,deblank(M_.endo_names(var_index,:)),deblank(M_.endo_names(var_index,:)),x(var_index))
             end
         elseif problemcol(ii)<=max(max(M_.lead_lag_incidence)) && var_index>M_.orig_endo_nbr %auxiliary vars
-            if M_.aux_vars(1,problemcol(ii)-M_.orig_endo_nbr).type ==6 %Ramsey Lagrange Multiplier 
-                if problemrow(ii)<=aux_eq_nbr
-                    eq_nbr=problemrow(ii);
-                    fprintf('Derivative of Auxiliary Equation %d with respect to %s of Langrange multiplier of equation %s (initial value: %g) \n',eq_nbr,type_string,M_.aux_vars(1,problemcol(ii)-M_.orig_endo_nbr).eq_nbr,x(problemcol(ii)))            
-                else
-                    eq_nbr=problemrow(ii)-aux_eq_nbr;
-                    fprintf('Derivative of Equation %d with respect to %s of Langrange multiplier of equation %s (initial value: %g) \n',eq_nbr,type_string,M_.aux_vars(1,problemcol(ii)-M_.orig_endo_nbr).eq_nbr,x(problemcol(ii)))            
-                end
+        if M_.aux_vars(1,problemcol(ii)-M_.orig_endo_nbr).type ==6 %Ramsey Lagrange Multiplier
+            if problemrow(ii)<=aux_eq_nbr
+                eq_nbr=problemrow(ii);
+                fprintf('Derivative of Auxiliary Equation %d with respect to %s of Langrange multiplier of equation %s (initial value: %g) \n',eq_nbr,type_string,M_.aux_vars(1,problemcol(ii)-M_.orig_endo_nbr).eq_nbr,x(problemcol(ii)))
             else
-                if problemrow(ii)<=aux_eq_nbr
-                    eq_nbr=problemrow(ii);
-                    orig_var_index=M_.aux_vars(1,var_index-M_.orig_endo_nbr).orig_index;
-                    fprintf('Derivative of Auxiliary Equation %d with respect to %s Variable %s  (initial value of %s: %g) \n',eq_nbr,type_string,deblank(M_.endo_names(orig_var_index,:)),deblank(M_.endo_names(orig_var_index,:)),x(orig_var_index))            
-                else
-                    eq_nbr=problemrow(ii)-aux_eq_nbr;
-                    orig_var_index=M_.aux_vars(1,var_index-M_.orig_endo_nbr).orig_index;
-                    fprintf('Derivative of Equation %d with respect to %s Variable %s  (initial value of %s: %g) \n',eq_nbr,type_string,deblank(M_.endo_names(orig_var_index,:)),deblank(M_.endo_names(orig_var_index,:)),x(orig_var_index))            
-                end
+                eq_nbr=problemrow(ii)-aux_eq_nbr;
+                fprintf('Derivative of Equation %d with respect to %s of Langrange multiplier of equation %s (initial value: %g) \n',eq_nbr,type_string,M_.aux_vars(1,problemcol(ii)-M_.orig_endo_nbr).eq_nbr,x(problemcol(ii)))
             end
+        else
+            if problemrow(ii)<=aux_eq_nbr
+                eq_nbr=problemrow(ii);
+                orig_var_index=M_.aux_vars(1,var_index-M_.orig_endo_nbr).orig_index;
+                fprintf('Derivative of Auxiliary Equation %d with respect to %s Variable %s  (initial value of %s: %g) \n',eq_nbr,type_string,deblank(M_.endo_names(orig_var_index,:)),deblank(M_.endo_names(orig_var_index,:)),x(orig_var_index))
+            else
+                eq_nbr=problemrow(ii)-aux_eq_nbr;
+                orig_var_index=M_.aux_vars(1,var_index-M_.orig_endo_nbr).orig_index;
+                fprintf('Derivative of Equation %d with respect to %s Variable %s  (initial value of %s: %g) \n',eq_nbr,type_string,deblank(M_.endo_names(orig_var_index,:)),deblank(M_.endo_names(orig_var_index,:)),x(orig_var_index))
+            end
+        end
         elseif problemcol(ii)>max(max(M_.lead_lag_incidence)) && var_index<=M_.exo_nbr
             if problemrow(ii)<=aux_eq_nbr
                 eq_nbr=problemrow(ii);
@@ -88,7 +88,7 @@ if strcmp(type,'dynamic')
             else
                 eq_nbr=problemrow(ii)-aux_eq_nbr;
                 fprintf('Derivative of Equation %d with respect to %s shock %s \n',eq_nbr,type_string,deblank(M_.exo_names(var_index,:)));
-            end            
+            end
         else
             error('display_problematic_vars_Jacobian:: The error should not happen. Please contact the developers')
         end
@@ -108,24 +108,24 @@ elseif strcmp(type,'static')
                 fprintf('Derivative of Equation %d with respect to Variable %s  (initial value of %s: %g) \n',eq_nbr,deblank(M_.endo_names(problemcol(ii),:)),deblank(M_.endo_names(problemcol(ii),:)),x(problemcol(ii)))
             end
         else %auxiliary vars
-            if M_.aux_vars(1,problemcol(ii)-M_.orig_endo_nbr).type ==6 %Ramsey Lagrange Multiplier 
+            if M_.aux_vars(1,problemcol(ii)-M_.orig_endo_nbr).type ==6 %Ramsey Lagrange Multiplier
                 if problemrow(ii)<=aux_eq_nbr
                     eq_nbr=problemrow(ii);
-                    fprintf('Derivative of Auxiliary Equation %d with respect to Lagrange multiplier of equation %d (initial value: %g) \n',eq_nbr,M_.aux_vars(1,problemcol(ii)-M_.orig_endo_nbr).eq_nbr,x(problemcol(ii)))            
+                    fprintf('Derivative of Auxiliary Equation %d with respect to Lagrange multiplier of equation %d (initial value: %g) \n',eq_nbr,M_.aux_vars(1,problemcol(ii)-M_.orig_endo_nbr).eq_nbr,x(problemcol(ii)))
                 else
                     eq_nbr=problemrow(ii)-aux_eq_nbr;
-                    fprintf('Derivative of Equation %d with respect to Lagrange multiplier of equation %d (initial value: %g) \n',eq_nbr,M_.aux_vars(1,problemcol(ii)-M_.orig_endo_nbr).eq_nbr,x(problemcol(ii)))            
+                    fprintf('Derivative of Equation %d with respect to Lagrange multiplier of equation %d (initial value: %g) \n',eq_nbr,M_.aux_vars(1,problemcol(ii)-M_.orig_endo_nbr).eq_nbr,x(problemcol(ii)))
                 end
             else
-            if problemrow(ii)<=aux_eq_nbr
-                eq_nbr=problemrow(ii);
-                orig_var_index=M_.aux_vars(1,problemcol(ii)-M_.orig_endo_nbr).orig_index;
-                fprintf('Derivative of Auxiliary Equation %d with respect to Variable %s  (initial value of %s: %g) \n',eq_nbr,deblank(M_.endo_names(orig_var_index,:)),deblank(M_.endo_names(orig_var_index,:)),x(problemcol(ii)))            
-            else
-                eq_nbr=problemrow(ii)-aux_eq_nbr;
-                orig_var_index=M_.aux_vars(1,problemcol(ii)-M_.orig_endo_nbr).orig_index;
-                fprintf('Derivative of Equation %d with respect to Variable %s  (initial value of %s: %g) \n',eq_nbr,deblank(M_.endo_names(orig_var_index,:)),deblank(M_.endo_names(orig_var_index,:)),x(problemcol(ii)))            
-            end
+                if problemrow(ii)<=aux_eq_nbr
+                    eq_nbr=problemrow(ii);
+                    orig_var_index=M_.aux_vars(1,problemcol(ii)-M_.orig_endo_nbr).orig_index;
+                    fprintf('Derivative of Auxiliary Equation %d with respect to Variable %s  (initial value of %s: %g) \n',eq_nbr,deblank(M_.endo_names(orig_var_index,:)),deblank(M_.endo_names(orig_var_index,:)),x(problemcol(ii)))
+                else
+                    eq_nbr=problemrow(ii)-aux_eq_nbr;
+                    orig_var_index=M_.aux_vars(1,problemcol(ii)-M_.orig_endo_nbr).orig_index;
+                    fprintf('Derivative of Equation %d with respect to Variable %s  (initial value of %s: %g) \n',eq_nbr,deblank(M_.endo_names(orig_var_index,:)),deblank(M_.endo_names(orig_var_index,:)),x(problemcol(ii)))
+                end
             end
         end
     end
@@ -134,5 +134,5 @@ elseif strcmp(type,'static')
     fprintf('%s  and evaluating it at the steady state then results in a division by 0.\n',caller_string)
     fprintf('%s  If you are using model-local variables (# operator), check their values as well.\n',caller_string)
 else
-    error('Unknown Type')    
+    error('Unknown Type')
 end

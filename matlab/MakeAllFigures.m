@@ -1,6 +1,6 @@
 function MakeAllFigures(NumberOfPlots,Caption,FigureProperties,Info)
 
-% Copyright (C) 2005-2009 Dynare Team
+% Copyright (C) 2005-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -19,11 +19,11 @@ function MakeAllFigures(NumberOfPlots,Caption,FigureProperties,Info)
 
 global M_ options_
 
-FigHandle = figure('Name',FigureProperties.Name);  
+FigHandle = figure('Name',FigureProperties.Name);
 
 NAMES = cell(NumberOfPlots,1);
 if options_.TeX
-    TeXNAMES = cell(NumberOfPlots,1); 
+    TeXNAMES = cell(NumberOfPlots,1);
 end
 
 if NumberOfPlots == 9
@@ -53,7 +53,7 @@ elseif NumberOfPlots == 2
 elseif NumberOfPlots == 1
     nr = 1;
     nc = 1;
-end  
+end
 
 for plt = 1:NumberOfPlots
     eval(['NumberOfCurves = Info.Box' int2str(plt) '.Number;'])
@@ -138,7 +138,7 @@ for plt = 1:NumberOfPlots
             set(hh,'Color','r','LineStyle','-','LineWidth',2)
             %
             %
-        end  
+        end
     end
     axis([xmin xmax ymin ymax])
     title(NAMES{plt})
@@ -150,14 +150,14 @@ if Info.SaveFormat.Eps
     if isempty(Info.SaveFormat.Name)
         eval(['print -depsc2 ' M_.fname Info.SaveFormat.GenericName int2str(Info.SaveFormat.Number) '.eps']);
     else
-        eval(['print -depsc2 ' M_.fname Info.SaveFormat.GenericName Info.SaveFormat.Name '.eps']);  
+        eval(['print -depsc2 ' M_.fname Info.SaveFormat.GenericName Info.SaveFormat.Name '.eps']);
     end
 end
 if Info.SaveFormat.Pdf && ~isoctave
     if isempty(Info.SaveFormat.Name)
         eval(['print -dpdf ' M_.fname Info.SaveFormat.GenericName int2str(Info.SaveFormat.Number)]);
     else
-        eval(['print -dpdf ' M_.fname Info.SaveFormat.GenericName Info.SaveFormat.Name]);  
+        eval(['print -dpdf ' M_.fname Info.SaveFormat.GenericName Info.SaveFormat.Name]);
     end
 end
 if Info.SaveFormat.Fig && ~isoctave

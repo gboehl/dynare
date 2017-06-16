@@ -1,16 +1,16 @@
-function yr = trank(y);
+function yr = trank(y)
 % yr = trank(y);
 % yr is the rank transformation of y
 %
 % Written by Marco Ratto
 % Joint Research Centre, The European Commission,
-% (http://eemc.jrc.ec.europa.eu/),
-% marco.ratto@jrc.it 
+% marco.ratto@ec.europa.eu
 %
 % Reference:
 % M. Ratto, Global Sensitivity Analysis for Macroeconomic models, MIMEO, 2006.
 
-% Copyright (C) 2012 Dynare Team
+% Copyright (C) 2012 European Commission
+% Copyright (C) 2012-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -28,7 +28,7 @@ function yr = trank(y);
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 [nr, nc] = size(y);
-for j=1:nc,
-  [dum, is]=sort(y(:,j));
-  yr(is,j)=[1:nr]'./nr;
+for j=1:nc
+    [dum, is]=sort(y(:,j));
+    yr(is,j)=[1:nr]'./nr;
 end

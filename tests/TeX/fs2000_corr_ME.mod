@@ -71,7 +71,9 @@ del = 0.02;
 options_.TeX=1;
 
 model;
+[name='technology growth: $\Delta A_{t}$', eq='\#1']
 dA = exp(gam+e_a);
+[name='money supply rule']
 log(m) = (1-rho)*log(mst) + rho*log(m(-1))+e_m;
 -P/(c(+1)*P(+1)*m)+bet*P(+1)*(alp*exp(-alp*(gam+log(e(+1))))*k^(alp-1)*n(+1)^(1-alp)+(1-del)*exp(-(gam+log(e(+1)))))/(c(+2)*P(+2)*m(+1))=0;
 W = l/n;
@@ -82,8 +84,11 @@ c+k = exp(-alp*(gam+e_a))*k(-1)^alp*n^(1-alp)+(1-del)*exp(-(gam+e_a))*k(-1);
 P*c = m;
 m-1+d = l;
 e = exp(e_a);
+[name='Production function']
 y = k(-1)^alp*n^(1-alp)*exp(-alp*(gam+e_a));
+[name='observed output growth']
 gy_obs = dA*y/y(-1);
+[name='observed inflation']
 gp_obs = (P/P(-1))*m(-1)/dA;
 end;
 
@@ -134,7 +139,7 @@ stoch_simul(order=1,irf=20,graph_format=eps,periods=0,contemporaneous_correlatio
 
 write_latex_original_model;
 write_latex_static_model;
-write_latex_dynamic_model;
+write_latex_dynamic_model(write_equation_tags);
 write_latex_parameter_table;
 write_latex_definitions;
 

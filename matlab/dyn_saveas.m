@@ -1,11 +1,12 @@
-function dyn_saveas(h,fname,DynareOptions)
-%function dyn_saveas(h,fname,DynareOptions)
+function dyn_saveas(h, fname, nodisplay, graph_format)
+%function dyn_saveas(h, fname, nodisplay, graph_format)
 % save figures for DYNARE
 %
 % INPUTS
 %    h     : figure handle
 %    fname : name of the saved figure
-%    DynareOptions: dynare options
+%    nodisplay: the value of the command-specific nodisplay argument or options_.nodisplay
+%    graph_format: the value of the command-specific graph_format argument or options_.graph_format
 %
 % OUTPUTS
 %    none
@@ -13,7 +14,7 @@ function dyn_saveas(h,fname,DynareOptions)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2012-2013 Dynare Team
+% Copyright (C) 2012-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -30,42 +31,42 @@ function dyn_saveas(h,fname,DynareOptions)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-if any(strcmp('eps',cellstr(DynareOptions.graph_format)))
+if any(strcmp('eps',cellstr(graph_format)))
     if isoctave
         fname = strrep(fname,'/',filesep);
         fname = strrep(fname,'\',filesep);
-        if DynareOptions.nodisplay && ispc,
+        if nodisplay && ispc
             set(h, 'Visible','on');
         end
     end
-    print(h,'-depsc2',[fname,'.eps']) 
+    print(h,'-depsc2',[fname,'.eps'])
 end
-if any(strcmp('pdf',cellstr(DynareOptions.graph_format)))
+if any(strcmp('pdf',cellstr(graph_format)))
     if isoctave
         error('Octave cannot create pdf files!')
     else
-        print(h,'-dpdf',[fname,'.pdf']) 
+        print(h,'-dpdf',[fname,'.pdf'])
     end
 end
-if any(strcmp('fig',cellstr(DynareOptions.graph_format)))
+if any(strcmp('fig',cellstr(graph_format)))
     if isoctave
         error('Octave cannot create fig files!')
     else
-        if DynareOptions.nodisplay
-%  THE FOLLOWING LINES COULD BE USED IF BUGS/PROBLEMS ARE REPORTED USING LINE 60		
-%             set(h,'Units','Normalized')
-%             mypos=get(h,'Position');
-%             set(h,'Position',[-1 -1 mypos(3:4)])
-%             set(h, 'Visible','on');
+        if nodisplay
+            %  THE FOLLOWING LINES COULD BE USED IF BUGS/PROBLEMS ARE REPORTED USING LINE 60
+            %             set(h,'Units','Normalized')
+            %             mypos=get(h,'Position');
+            %             set(h,'Position',[-1 -1 mypos(3:4)])
+            %             set(h, 'Visible','on');
             set(h,'CreateFcn','set(gcf, ''Visible'',''on'')') ;
         end
         saveas(h,[fname '.fig']);
     end
 end
-if any(strcmp('none',cellstr(DynareOptions.graph_format)))
-% don't save
-% check here as a reminder that none is an option to graph_format
+if any(strcmp('none',cellstr(graph_format)))
+    % don't save
+    % check here as a reminder that none is an option to graph_format
 end
-if DynareOptions.nodisplay
+if nodisplay
     close(h);
 end

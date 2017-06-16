@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010-2011 Dynare Team
+ * Copyright (C) 2010-2017 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -22,29 +22,29 @@
 
 #if defined(MATLAB_MEX_FILE) || defined(OCTAVE_MEX_FILE)
 
-#include <dynmex.h>
-#include <dynblas.h>
-#include <dynlapack.h>
+# include <dynmex.h>
+# include <dynblas.h>
+# include <dynlapack.h>
 
-#define dw_malloc mxMalloc
-#define dw_calloc mxCalloc
-#define dw_realloc mxRealloc
-#define dw_free mxFree
-#define dw_exit msExit
+# define dw_malloc mxMalloc
+# define dw_calloc mxCalloc
+# define dw_realloc mxRealloc
+# define dw_free mxFree
+# define dw_exit msExit
 
 /* Handle Ctrl-C in Matlab/Octave */
-#ifdef MATLAB_MEX_FILE
+# ifdef MATLAB_MEX_FILE
 extern bool utIsInterruptPending();
-#else
-#include <octave/config.h>
-#include <octave/quit.h>
-#endif
+# else
+#  include <octave/config.h>
+#  include <octave/quit.h>
+# endif
 
 void msExit(int status);
 extern int constant_seed;
 
-/* Write Matlab Output 
-mxArray *globalMatlabStruct;*/
+/* Write Matlab Output
+   mxArray *globalMatlabStruct;*/
 void mex_write_to_matlab_matfile(double *, int, int, const char *, const char *);
 void mex_write_to_matlab_global_struct(double *, int, int, const char *);
 mxArray *getMxArray(double *, int, int);

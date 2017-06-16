@@ -1,10 +1,10 @@
 function smoother2histval(opts)
 % This function takes values from oo_.SmoothedVariables (and possibly
 % oo_.SmoothedShocks) and copies them into M_.histval.
-% 
+%
 % Optional fields in 'opts' structure:
 %    infile:      An optional *_results MAT file created by Dynare.
-%                 If present, oo_.Smoothed{Variables,Shocks} are read from 
+%                 If present, oo_.Smoothed{Variables,Shocks} are read from
 %                 there. Otherwise, they are read from the global workspace.
 %    invars:      An optional char or cell array listing variables to read in
 %                 oo_.SmoothedVariables. If absent, all the endogenous
@@ -24,7 +24,7 @@ function smoother2histval(opts)
 %
 % The function also uses the value of option_.parameter_set
 
-% Copyright (C) 2014 Dynare Team
+% Copyright (C) 2014-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -64,8 +64,24 @@ end
 tmp = fieldnames(smoothedvars);
 if isstruct(getfield(smoothedvars, tmp{1}))
     post_metropolis = 1;
+    if ~ isstruct(getfield(smoothedvars, tmp{end}))
+        % point and metropolis results are simultaneously present
+        post_metropolis = 2;
+    end
+
+elseif isstruct(getfield(smoothedvars, tmp{end}))
+    % point and metropolis results are simultaneously present
+    post_metropolis = 2;
 else
     post_metropolis = 0;
+end
+
+if post_metropolis
+    tmp = fieldnames(smoothedvars.Mean);
+    tmpexo = fieldnames(smoothedshocks.Mean);
+else
+    tmp = fieldnames(smoothedvars);
+    tmpexo = fieldnames(smoothedshocks);
 end
 
 % If post-Metropolis, select the parameter set
@@ -78,11 +94,11 @@ if isempty(options_.parameter_set)
 else
     switch options_.parameter_set
       case 'calibration'
-        if post_metropolis
+        if post_metropolis == 1
             error('Option parameter_set=calibration is not consistent with computed smoothed values.')
         end
       case 'posterior_mode'
-        if post_metropolis
+        if post_metropolis == 1
             error('Option parameter_set=posterior_mode is not consistent with computed smoothed values.')
         end
       case 'posterior_mean'
@@ -105,7 +121,6 @@ else
 end
 
 % Determine number of periods
-tmp = fieldnames(smoothedvars);
 n = size(getfield(smoothedvars, tmp{1}));
 
 if n < M_.maximum_endo_lag
@@ -118,7 +133,7 @@ if isfield(opts, 'invars')
         invars = cellstr(invars);
     end
 else
-    invars = [fieldnames(smoothedvars); fieldnames(smoothedshocks)];
+    invars = [tmp; tmpexo];
 end
 
 if isfield(opts, 'period')

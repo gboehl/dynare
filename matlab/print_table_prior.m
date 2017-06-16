@@ -1,8 +1,8 @@
 function print_table_prior(lb, ub, DynareOptions, ModelInfo, BayesInfo, EstimationInfo)
 
-% This routine prints in the command window some descriptive statistics about the prior distribution. 
+% This routine prints in the command window some descriptive statistics about the prior distribution.
 
-% Copyright (C) 2015 Dynare Team
+% Copyright (C) 2015-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -25,6 +25,8 @@ PriorNames = strvcat(PriorNames,'Gaussian');
 PriorNames = strvcat(PriorNames,'Inverted Gamma');
 PriorNames = strvcat(PriorNames,'Uniform');
 PriorNames = strvcat(PriorNames,'Inverted Gamma -- 2');
+PriorNames = strvcat(PriorNames,'Dirichlet');
+PriorNames = strvcat(PriorNames,'Weibull');
 
 n = size(BayesInfo.name,1); % Numbe rof estimated parameters.
 
@@ -71,7 +73,7 @@ for i=1:size(BayesInfo.name,1)
         if ~isinf(ub(i))
             UpperBound=min(UpperBound,ub(i));
         end
-      case { 2 , 4 , 6 }
+      case { 2 , 4 , 6 , 8}
         LowerBound = BayesInfo.p3(i);
         if ~isinf(lb(i))
             LowerBound=max(LowerBound,lb(i));
@@ -111,7 +113,7 @@ for i=1:size(BayesInfo.name,1)
                   UpperBound, ...
                   PriorIntervals.lb(i), ...
                   PriorIntervals.ub(i) );
-    T2 = strvcat(T2, str);    
+    T2 = strvcat(T2, str);
 end
 
 T1 = strvcat(T1, l1);
@@ -134,25 +136,25 @@ skipline(2)
 
 
 function format_string = build_format_string(PriorMode,PriorStandardDeviation,LowerBound,UpperBound)
-    format_string = ['%s \t %6.4f \t'];
-    if isnan(PriorMode)
-        format_string = [ format_string , ' %s \t'];
-    else
-        format_string = [ format_string , ' %6.4f \t'];
-    end
-    if ~isnumeric(PriorStandardDeviation)
-        format_string = [ format_string , ' %s \t'];
-    else
-        format_string = [ format_string , ' %6.4f \t'];
-    end
-    if ~isnumeric(LowerBound)
-        format_string = [ format_string , ' %s \t'];
-    else
-        format_string = [ format_string , ' %6.4f \t'];
-    end
-    if ~isnumeric(UpperBound)
-        format_string = [ format_string , ' %s \t'];
-    else
-        format_string = [ format_string , ' %6.4f \t'];
-    end
-    format_string = [ format_string , ' %6.4f \t %6.4f'];
+format_string = ['%s \t %6.4f \t'];
+if isnan(PriorMode)
+    format_string = [ format_string , ' %s \t'];
+else
+    format_string = [ format_string , ' %6.4f \t'];
+end
+if ~isnumeric(PriorStandardDeviation)
+    format_string = [ format_string , ' %s \t'];
+else
+    format_string = [ format_string , ' %6.4f \t'];
+end
+if ~isnumeric(LowerBound)
+    format_string = [ format_string , ' %s \t'];
+else
+    format_string = [ format_string , ' %6.4f \t'];
+end
+if ~isnumeric(UpperBound)
+    format_string = [ format_string , ' %s \t'];
+else
+    format_string = [ format_string , ' %6.4f \t'];
+end
+format_string = [ format_string , ' %6.4f \t %6.4f'];

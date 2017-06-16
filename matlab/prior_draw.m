@@ -2,10 +2,10 @@ function pdraw = prior_draw(BayesInfo, prior_trunc, uniform) % --*-- Unitary tes
 
 % This function generate one draw from the joint prior distribution and
 % allows sampling uniformly from the prior support (uniform==1 when called with init==1)
-% 
-% INPUTS 
-%   o init             [integer]    scalar equal to: 
-%                                       1: first call to set up persistent variables 
+%
+% INPUTS
+%   o init             [integer]    scalar equal to:
+%                                       1: first call to set up persistent variables
 %                                             describing the prior
 %                                       0: subsequent call to get prior
 %                                               draw
@@ -13,8 +13,8 @@ function pdraw = prior_draw(BayesInfo, prior_trunc, uniform) % --*-- Unitary tes
 %                                       1: sample uniformly from prior
 %                                           support (overwrites prior shape used for sampling within this function)
 %                                       0: sample from joint prior distribution
-%    
-% OUTPUTS 
+%
+% OUTPUTS
 %   o pdraw            [double]     1*npar vector, draws from the joint prior density.
 %
 %
@@ -25,8 +25,8 @@ function pdraw = prior_draw(BayesInfo, prior_trunc, uniform) % --*-- Unitary tes
 % NOTE 2. A given draw from the joint prior distribution does not satisfy BK conditions a priori.
 % NOTE 3. This code relies on bayestopt_ as created in the base workspace
 %           by the preprocessor (or as updated in subsequent pieces of code and handed to the base workspace)
-% 
-% Copyright (C) 2006-2016 Dynare Team
+%
+% Copyright (C) 2006-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -108,9 +108,9 @@ if nargin>0
 end
 
 if uniform_draws
-    pdraw(uniform_index) = rand(length(uniform_index),1).*(p4(uniform_index)-p3(uniform_index)) + p3(uniform_index);  
+    pdraw(uniform_index) = rand(length(uniform_index),1).*(p4(uniform_index)-p3(uniform_index)) + p3(uniform_index);
     out_of_bound = find( (pdraw(uniform_index)'>ub(uniform_index)) | (pdraw(uniform_index)'<lb(uniform_index)));
-    while ~isempty(out_of_bound),
+    while ~isempty(out_of_bound)
         pdraw(uniform_index) = rand(length(uniform_index),1).*(p4(uniform_index)-p3(uniform_index)) + p3(uniform_index);
         out_of_bound = find( (pdraw(uniform_index)'>ub(uniform_index)) | (pdraw(uniform_index)'<lb(uniform_index)));
     end
@@ -119,7 +119,7 @@ end
 if gaussian_draws
     pdraw(gaussian_index) = randn(length(gaussian_index),1).*p7(gaussian_index) + p6(gaussian_index);
     out_of_bound = find( (pdraw(gaussian_index)'>ub(gaussian_index)) | (pdraw(gaussian_index)'<lb(gaussian_index)));
-    while ~isempty(out_of_bound),
+    while ~isempty(out_of_bound)
         pdraw(gaussian_index(out_of_bound)) = randn(length(gaussian_index(out_of_bound)),1).*p7(gaussian_index(out_of_bound)) + p6(gaussian_index(out_of_bound));
         out_of_bound = find( (pdraw(gaussian_index)'>ub(gaussian_index)) | (pdraw(gaussian_index)'<lb(gaussian_index)));
     end
@@ -128,7 +128,7 @@ end
 if gamma_draws
     pdraw(gamma_index) = gamrnd(p6(gamma_index),p7(gamma_index))+p3(gamma_index);
     out_of_bound = find( (pdraw(gamma_index)'>ub(gamma_index)) | (pdraw(gamma_index)'<lb(gamma_index)));
-    while ~isempty(out_of_bound),
+    while ~isempty(out_of_bound)
         pdraw(gamma_index(out_of_bound)) = gamrnd(p6(gamma_index(out_of_bound)),p7(gamma_index(out_of_bound)))+p3(gamma_index(out_of_bound));
         out_of_bound = find( (pdraw(gamma_index)'>ub(gamma_index)) | (pdraw(gamma_index)'<lb(gamma_index)));
     end
@@ -137,7 +137,7 @@ end
 if beta_draws
     pdraw(beta_index) = (p4(beta_index)-p3(beta_index)).*betarnd(p6(beta_index),p7(beta_index))+p3(beta_index);
     out_of_bound = find( (pdraw(beta_index)'>ub(beta_index)) | (pdraw(beta_index)'<lb(beta_index)));
-    while ~isempty(out_of_bound),
+    while ~isempty(out_of_bound)
         pdraw(beta_index(out_of_bound)) = (p4(beta_index(out_of_bound))-p3(beta_index(out_of_bound))).*betarnd(p6(beta_index(out_of_bound)),p7(beta_index(out_of_bound)))+p3(beta_index(out_of_bound));
         out_of_bound = find( (pdraw(beta_index)'>ub(beta_index)) | (pdraw(beta_index)'<lb(beta_index)));
     end
@@ -147,7 +147,7 @@ if inverse_gamma_1_draws
     pdraw(inverse_gamma_1_index) = ...
         sqrt(1./gamrnd(p7(inverse_gamma_1_index)/2,2./p6(inverse_gamma_1_index)))+p3(inverse_gamma_1_index);
     out_of_bound = find( (pdraw(inverse_gamma_1_index)'>ub(inverse_gamma_1_index)) | (pdraw(inverse_gamma_1_index)'<lb(inverse_gamma_1_index)));
-    while ~isempty(out_of_bound),
+    while ~isempty(out_of_bound)
         pdraw(inverse_gamma_1_index(out_of_bound)) = ...
             sqrt(1./gamrnd(p7(inverse_gamma_1_index(out_of_bound))/2,2./p6(inverse_gamma_1_index(out_of_bound))))+p3(inverse_gamma_1_index(out_of_bound));
         out_of_bound = find( (pdraw(inverse_gamma_1_index)'>ub(inverse_gamma_1_index)) | (pdraw(inverse_gamma_1_index)'<lb(inverse_gamma_1_index)));
@@ -158,7 +158,7 @@ if inverse_gamma_2_draws
     pdraw(inverse_gamma_2_index) = ...
         1./gamrnd(p7(inverse_gamma_2_index)/2,2./p6(inverse_gamma_2_index))+p3(inverse_gamma_2_index);
     out_of_bound = find( (pdraw(inverse_gamma_2_index)'>ub(inverse_gamma_2_index)) | (pdraw(inverse_gamma_2_index)'<lb(inverse_gamma_2_index)));
-    while ~isempty(out_of_bound),
+    while ~isempty(out_of_bound)
         pdraw(inverse_gamma_2_index(out_of_bound)) = ...
             1./gamrnd(p7(inverse_gamma_2_index(out_of_bound))/2,2./p6(inverse_gamma_2_index(out_of_bound)))+p3(inverse_gamma_2_index(out_of_bound));
         out_of_bound = find( (pdraw(inverse_gamma_2_index)'>ub(inverse_gamma_2_index)) | (pdraw(inverse_gamma_2_index)'<lb(inverse_gamma_2_index)));
@@ -168,7 +168,7 @@ end
 if weibull_draws
     pdraw(weibull_index) = wblrnd(p7(weibull_index), p6(weibull_index)) + p3(weibull_index);
     out_of_bound = find( (pdraw(weibull_index)'>ub(weibull_index)) | (pdraw(weibull_index)'<lb(weibull_index)));
-    while ~isempty(out_of_bound),
+    while ~isempty(out_of_bound)
         pdraw(weibull_index(out_of_bound)) = wblrnd(p7(weibull_index(out_of_bound)),p6(weibull_index(out_of_bound)))+p3(weibull_index(out_of_bound));
         out_of_bound = find( (pdraw(weibull_index)'>ub(weibull_index)) | (pdraw(weibull_index)'<lb(weibull_index)));
     end

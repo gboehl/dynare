@@ -1,6 +1,17 @@
-function val = subsasgn(val, idx, rhs)
+function options = set_default_initial_condition_decomposition_options(options)
+%function options = set_default_initial_condition_decomposition_options(options)
+% sets the default options for prior_shock_decomposition
+%
+% INPUTS
+%    options
+%
+% OUTPUTS
+%    options
+%
+% SPECIAL REQUIREMENTS
+%    none
 
-% Copyright (C) 2013 Dynare Team
+% Copyright (C) 2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -17,4 +28,10 @@ function val = subsasgn(val, idx, rhs)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-error('dynTimeIndex::subsasgn: Members of dynTimeIndex class are private!')
+options.initial_condition_decomp.detail_plot = 0;
+options.initial_condition_decomp.steadystate = 0;
+options.initial_condition_decomp.write_xls = 0;
+options.initial_condition_decomp.type = '';
+options.initial_condition_decomp.plot_init_date = [];
+options.initial_condition_decomp.plot_end_date = [];
+end

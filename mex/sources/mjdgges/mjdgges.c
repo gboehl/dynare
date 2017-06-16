@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006-2016 Dynare Team
+ * Copyright (C) 2006-2017 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -28,7 +28,7 @@ double criterium;
 lapack_int
 my_criteria(const double *alphar, const double *alphai, const double *beta)
 {
-  return ((*alphar * *alphar + *alphai * *alphai) < criterium * *beta * *beta);
+  return ((*alphar **alphar + *alphai **alphai) < criterium **beta **beta);
 }
 
 void
@@ -60,15 +60,15 @@ mjdgges(double *a, double *b, double *z, double *n, double *sdim, double *eval_r
   pei = eval_i;
   for (per = eval_r; per <= &eval_r[i_n-1]; ++per)
     {
-      if ((fabs(*par) > zhreshold) || (fabs(*pb) > zhreshold)) 
-	*per = *par / *pb;
+      if ((fabs(*par) > zhreshold) || (fabs(*pb) > zhreshold))
+        *per = *par / *pb;
       else
-	{
-	  /* the ratio is too close to 0/0;
-	     returns specific error number only if no other error */
-	  if (i_info == 0)
-	    *info = -30;
-	}
+        {
+          /* the ratio is too close to 0/0;
+             returns specific error number only if no other error */
+          if (i_info == 0)
+            *info = -30;
+        }
       if (*pai == 0.0 && *pb == 0.0)
         *pei = 0.0;
       else
@@ -146,7 +146,6 @@ mexFunction(int nlhs, mxArray *plhs[],
     {
       zhreshold = 1e-6;
     }
-
 
   /* keep a and b intact */
   memcpy(s, a, sizeof(double)*n1*n1);

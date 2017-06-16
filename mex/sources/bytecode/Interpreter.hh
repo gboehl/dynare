@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2013 Dynare Team
+ * Copyright (C) 2007-2017 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -41,11 +41,10 @@
 
 using namespace std;
 
-
 class Interpreter : public dynSparseMatrix
 {
 private:
-vector<int> previous_block_exogenous;
+  vector<int> previous_block_exogenous;
 protected:
   void evaluate_a_block(bool initialization);
   int simulate_a_block(vector_table_conditional_local_type vector_table_conditional_local);
@@ -59,14 +58,14 @@ public:
               int maxit_arg_, double solve_tolf_arg, size_t size_of_direction_arg, double slowc_arg, int y_decal_arg, double markowitz_c_arg,
               string &filename_arg, int minimal_solving_periods_arg, int stack_solve_algo_arg, int solve_algo_arg,
               bool global_temporary_terms_arg, bool print_arg, bool print_error_arg, mxArray *GlobalTemporaryTerms_arg,
-              bool steady_state_arg, bool print_it_arg, int col_x_arg
+              bool steady_state_arg, bool print_it_arg, int col_x_arg, int col_y_arg
 #ifdef CUDA
               , const int CUDA_device, cublasHandle_t cublas_handle_arg, cusparseHandle_t cusparse_handle_arg, cusparseMatDescr_t descr_arg
 #endif
               );
   bool extended_path(string file_name, string bin_basename, bool evaluate, int block, int &nb_blocks, int nb_periods, vector<s_plan> sextended_path, vector<s_plan> sconstrained_extended_path, vector<string> dates, table_conditional_global_type table_conditional_global);
   bool compute_blocks(string file_name, string bin_basename, bool evaluate, int block, int &nb_blocks);
-  void check_for_controlled_exo_validity(FBEGINBLOCK_ *fb,vector<s_plan> sconstrained_extended_path);
+  void check_for_controlled_exo_validity(FBEGINBLOCK_ *fb, vector<s_plan> sconstrained_extended_path);
   bool MainLoop(string bin_basename, CodeLoad code, bool evaluate, int block, bool last_call, bool constrained, vector<s_plan> sconstrained_extended_path, vector_table_conditional_local_type vector_table_conditional_local);
   void ReadCodeFile(string file_name, CodeLoad &code);
 

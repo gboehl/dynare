@@ -1,8 +1,8 @@
 function set_dynare_seed(a,b)
-% Set seeds depending on matlab (octave) version. This routine is called in dynare_config and can be called by the 
+% Set seeds depending on matlab (octave) version. This routine is called in dynare_config and can be called by the
 % user in the mod file.
-%    
-% Copyright (C) 2010-2014 Dynare Team
+%
+% Copyright (C) 2010-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

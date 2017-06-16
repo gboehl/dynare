@@ -1,4 +1,4 @@
-function [oo_,options_,bayestopt_,Smoothed_variables_declaration_order_deviation_form]=evaluate_smoother(parameters,var_list,M_,oo_,options_,bayestopt_,estim_params_)
+function [oo_,M_,options_,bayestopt_,Smoothed_variables_declaration_order_deviation_form]=evaluate_smoother(parameters,var_list,M_,oo_,options_,bayestopt_,estim_params_)
 % Evaluate the smoother at parameters.
 %
 % INPUTS
@@ -21,13 +21,14 @@ function [oo_,options_,bayestopt_,Smoothed_variables_declaration_order_deviation
 %                              - SmoothedMeasurementErrors
 %                              - FilteredVariablesKStepAhead
 %                              - FilteredVariablesKStepAheadVariances
+%    o M_          [structure]  Definition of the model
+%    o options_    [structure]  Options; returns options_.first_obs
+%    o bayestopt_  [structure]  describing the priors; returns fields like bayestopt_.smoother_var_list from the smoother
 %    o Smoothed_variables_declaration_order_deviation_form
 %                           Smoothed variables from the Kalman smoother in
 %                           order of declaration of variables (M_.endo_names)
 %                           in deviations from their respective mean, i.e.
 %                           without trend and constant part (used for shock_decomposition)
-%    o options_    [structure]  Options; returns options_.first_obs
-%    o bayestopt_  [structure]  describing the priors; returns fields like bayestopt_.smoother_var_list from the smoother 
 %
 % SPECIAL REQUIREMENTS
 %    None
@@ -36,7 +37,7 @@ function [oo_,options_,bayestopt_,Smoothed_variables_declaration_order_deviation
 % [1] This function use persistent variables for the dataset and the description of the missing observations. Consequently, if this function
 %     is called more than once (by changing the value of parameters) the sample *must not* change.
 
-% Copyright (C) 2010-2016 Dynare Team
+% Copyright (C) 2010-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -53,18 +54,17 @@ function [oo_,options_,bayestopt_,Smoothed_variables_declaration_order_deviation
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-persistent dataset_ dataset_info
-
-%store qz_criterium
+% store qz_criterium
 qz_criterium_old=options_.qz_criterium;
 
 if ischar(parameters) && strcmp(parameters,'calibration')
     options_.smoother=1;
 end
 
-if isempty(dataset_) || isempty(bayestopt_)
-    [dataset_,dataset_info,xparam1, hh, M_, options_, oo_, estim_params_,bayestopt_] = dynare_estimation_init(var_list, M_.fname, [], M_, options_, oo_, estim_params_, bayestopt_);
-end
+[dataset_,dataset_info,xparam1, hh, M_, options_, oo_, estim_params_,bayestopt_] = dynare_estimation_init(var_list, M_.fname, [], M_, options_, oo_, estim_params_, bayestopt_);
+
+% set the qz_criterium
+options_=select_qz_criterium_value(options_);
 
 if nargin==0
     parameters = 'posterior_mode';
@@ -105,8 +105,8 @@ end
     DsgeSmoother(parameters,dataset_.nobs,transpose(dataset_.data),dataset_info.missing.aindex,dataset_info.missing.state,M_,oo_,options_,bayestopt_,estim_params_);
 [oo_]=store_smoother_results(M_,oo_,options_,bayestopt_,dataset_,dataset_info,atT,innov,measurement_error,updated_variables,ys,trend_coeff,aK,P,PK,decomp,Trend,state_uncertainty);
 
-if nargout==4
-   Smoothed_variables_declaration_order_deviation_form=atT(oo_.dr.inv_order_var(bayestopt_.smoother_var_list),:);
+if nargout>4
+    Smoothed_variables_declaration_order_deviation_form=atT(oo_.dr.inv_order_var(bayestopt_.smoother_var_list),:);
 end
 
 %reset qz_criterium

@@ -2,17 +2,17 @@ function [a, b] = gamma_specification(mu, sigma2, lb, name)   % --*-- Unitary te
 
 % Returns the hyperparameters of the gamma distribution given the expectation and variance.
 %
-% INPUTS 
+% INPUTS
 % - mu     [double]   Expectation of the Gamma random variable.
 % - sigma2 [double]   Variance of the Gamma random variable.
 % - lb     [double]   Lower bound of the domain (default is zero).
 % - name   [string]   Name of the parameter (or random variable).
 %
-% OUTPUTS 
+% OUTPUTS
 % - a      [double]   First hyperparameter of the Gamma density (shape).
 % - b      [double]   Second hyperparameter of the Gamma density (scale).
 
-% Copyright (C) 2015-2016 Dynare Team
+% Copyright (C) 2015-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

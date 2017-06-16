@@ -12,12 +12,12 @@ function [pars, cosnJ] = ident_bruteforce(J,n,TeX, pnames_TeX,tittxt)
 %  pnames_TeX         [char] list of tex names
 %  tittxt             [string]  string indicating the title text for
 %                               graphs and figures
-% 
+%
 % OUTPUTS
 %  pars  : cell array with groupf of params for each column of J for 1 to n
 %  cosnJ : the cosn of each column with the selected group of columns
 
-% Copyright (C) 2009-2016 Dynare Team
+% Copyright (C) 2009-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -52,7 +52,7 @@ tittxt1=strrep(tittxt1, '.', '');
 
 cosnJ=zeros(k,n);
 pars{k,n}=[];
-for ll = 1:n,
+for ll = 1:n
     h = dyn_waitbar(0,['Brute force collinearity for ' int2str(ll) ' parameters.']);
     for ii = 1:k
         tmp = find([1:k]~=ii);
@@ -63,8 +63,8 @@ for ll = 1:n,
             [cosnJ2(jj,1), b(:,jj)] = cosn([J(:,ii),J(:,tmp2(jj,:))]);
         end
         cosnJ(ii,ll) = max(cosnJ2(:,1));
-        if cosnJ(ii,ll)>1.e-8,
-            if ll>1 && ((cosnJ(ii,ll)-cosnJ(ii,ll-1))<1.e-8),
+        if cosnJ(ii,ll)>1.e-8
+            if ll>1 && ((cosnJ(ii,ll)-cosnJ(ii,ll-1))<1.e-8)
                 pars{ii,ll} = [pars{ii,ll-1} NaN];
                 cosnJ(ii,ll) = cosnJ(ii,ll-1);
             else
@@ -85,7 +85,7 @@ for ll = 1:n,
         fprintf(fidTeX,['%% ' datestr(now,0)]);
         fprintf(fidTeX,' \n');
         fprintf(fidTeX,' \n');
-        
+
         fprintf(fidTeX,'{\\tiny \n');
         fprintf(fidTeX,'\\begin{longtable}{llc} \n');
         fprintf(fidTeX,['\\caption{Collinearity patterns with ',int2str(ll),' parameter(s): ',tittxt,'}\n ']);
@@ -101,19 +101,19 @@ for ll = 1:n,
         fprintf(fidTeX,'\\midrule \\endhead \n');
         fprintf(fidTeX,'\\bottomrule \\multicolumn{3}{r}{(Continued on next page)}\\endfoot \n');
         fprintf(fidTeX,'\\bottomrule\\endlastfoot \n');
-        for i=1:k,
+        for i=1:k
             plist='';
-            for ii=1:ll,
-                if ~isnan(pars{i,ll}(ii)),
+            for ii=1:ll
+                if ~isnan(pars{i,ll}(ii))
                     plist = [plist ' $' pnames_TeX(pars{i,ll}(ii),:) '\;\; $ '];
                 else
                     plist = [plist ' ---- '];
                 end
             end
             fprintf(fidTeX,'$%s$ & [%s] & %7.3f \\\\ \n',...
-                pnames_TeX(i,:),...
-                plist,...
-                cosnJ(i,ll));
+                    pnames_TeX(i,:),...
+                    plist,...
+                    cosnJ(i,ll));
         end
         fprintf(fidTeX,'\\bottomrule \n');
         fprintf(fidTeX,'\\end{longtable}\n');

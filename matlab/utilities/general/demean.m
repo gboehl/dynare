@@ -1,6 +1,6 @@
 function c = demean(x)
 % Removes the mean of each column of a matrix.
- 
+
 %@info:
 %! @deftypefn {Function File} {@var{c} =} demean (@var{x})
 %! @anchor{demean}
@@ -17,18 +17,18 @@ function c = demean(x)
 %! @item c
 %! Matlab matrix (T-by-N). The demeaned x matrix.
 %! @end table
-%! 
-%! @strong{This function is called by:} 
+%!
+%! @strong{This function is called by:}
 %! @ref{compute_cova}, @ref{compute_acov}, @ref{compute_std}.
-%! 
-%! @strong{This function calls:} 
+%!
+%! @strong{This function calls:}
 %! @ref{ndim},
-%!    
+%!
 %! @end deftypefn
 %@eod:
 
-% Copyright (C) 2011-2012 Dynare Team
-%    
+% Copyright (C) 2011-2017 Dynare Team
+%
 % This file is part of Dynare.
 %
 % Dynare is free software: you can redistribute it and/or modify
@@ -45,7 +45,7 @@ function c = demean(x)
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 % Original author: stephane DOT adjemian AT univ DASH lemans DOT fr
-   
+
 if ndim(x)==1
     c = x-mean(x);
 elseif ndim(x)==2

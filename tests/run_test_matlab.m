@@ -1,4 +1,4 @@
-% Copyright (C) 2011-2012 Dynare Team
+% Copyright (C) 2011-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -32,7 +32,7 @@ cd(directory);
 disp('');
 disp(['***  TESTING: ' modfile ' ***']);
 
-cput = cputime;
+tic;
 save(['wsMat' testfile '.mat']);
 try
   dynare([testfile ext], 'console')
@@ -45,7 +45,7 @@ top_test_dir = getenv('TOP_TEST_DIR');
 [modfile, name] = strtok(getenv('FILESTEM'));
 [directory, testfile, ext] = fileparts([top_test_dir '/' modfile]);
 load(['wsMat' testfile '.mat']);
-ecput = cputime - cput;
+ecput = toc;
 delete(['wsMat' testfile '.mat']);
 
 cd(top_test_dir);
@@ -67,7 +67,7 @@ else
   fprintf(fid,':number-failed-tests: 0\n');
   fprintf(fid,':list-of-passed-tests: %s\n', [name '.mod']);
 end
-fprintf(fid,':cputime: %f\n', ecput);
+fprintf(fid,':elapsed-time: %f\n', ecput);
 fclose(fid);
 warning off
 exit

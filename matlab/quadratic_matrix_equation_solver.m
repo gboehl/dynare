@@ -47,7 +47,7 @@ function [X,info] = quadratic_matrix_equation_solver(A,B,C,tol,maxit,line_search
 %! @end deftypefn
 %@eod:
 
-% Copyright (C) 2012 Dynare Team
+% Copyright (C) 2012-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -106,34 +106,34 @@ end
 
 
 function f = eval_quadratic_matrix_equation(A,B,C,X)
-    f = C + (B + A*X)*X;
+f = C + (B + A*X)*X;
 
 function [p0,p1] = merit_polynomial(A,H,F)
-    AHH = A*H*H;
-    gamma = norm(AHH,'fro')^2;
-    alpha = norm(F,'fro')^2;
-    beta  = trace(F*AHH*AHH*F);
-    p0 = [gamma, -beta, alpha+beta, -2*alpha, alpha];
-    p1 = [4*gamma, -3*beta, 2*(alpha+beta), -2*alpha];
+AHH = A*H*H;
+gamma = norm(AHH,'fro')^2;
+alpha = norm(F,'fro')^2;
+beta  = trace(F*AHH*AHH*F);
+p0 = [gamma, -beta, alpha+beta, -2*alpha, alpha];
+p1 = [4*gamma, -3*beta, 2*(alpha+beta), -2*alpha];
 
 function t = line_search(A,H,F)
-    [p0,p1] = merit_polynomial(A,H,F);
-    if any(isnan(p0)) || any(isinf(p0))
-        t = 1.0;
-        return
+[p0,p1] = merit_polynomial(A,H,F);
+if any(isnan(p0)) || any(isinf(p0))
+    t = 1.0;
+    return
+end
+r = roots(p1);
+s = [Inf(3,1),r];
+for i = 1:3
+    if isreal(r(i))
+        s(i,1) = p0(1)*r(i)^4 + p0(2)*r(i)^3 + p0(3)*r(i)^2 + p0(4)*r(i) + p0(5);
     end
-    r = roots(p1);
-    s = [Inf(3,1),r];
-    for i = 1:3
-        if isreal(r(i))
-            s(i,1) = p0(1)*r(i)^4 + p0(2)*r(i)^3 + p0(3)*r(i)^2 + p0(4)*r(i) + p0(5);
-        end
-    end
-    s = sortrows(s,1);
-    t = s(1,2);
-    if t<=1e-12 || t>=2
-        t = 1;
-    end
+end
+s = sortrows(s,1);
+t = s(1,2);
+if t<=1e-12 || t>=2
+    t = 1;
+end
 
 %@test:1
 %$ addpath ../matlab

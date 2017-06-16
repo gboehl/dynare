@@ -17,7 +17,7 @@ function [x,info,fvec,fjac] = dynare_solve(func,x,options,varargin)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2001-2016 Dynare Team
+% Copyright (C) 2001-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -58,29 +58,91 @@ else
     maxit = options.steady.maxit;
 end
 
-
 info = 0;
 nn = size(x,1);
 
+% Get status of the initial guess (default values?)
+if any(x)
+    % The current initial guess is not the default for all the variables.
+    idx = find(x);      % Indices of the variables with default initial guess values. 
+    in0 = length(idx);
+else
+    % The current initial guess is the default for all the variables.
+    idx = transpose(1:nn);
+    in0 = nn;
+end
+
 % checking initial values
 if jacobian_flag
-    [fvec,fjac] = feval(func,x,varargin{:});
-    if any(any(isinf(fjac) | isnan(fjac)))
-        info=1;
-        x = NaN(size(fvec));
-        return
+    [fvec, fjac] = feval(func, x, varargin{:});
+    wrong_initial_guess_flag = false;
+    if ~all(isfinite(fvec)) || any(isinf(fjac(:))) || any(isnan((fjac(:))))
+        % Let's try random numbers for the variables initialized with the default value.
+        wrong_initial_guess_flag = true;
+        % First try with positive numbers.
+        tentative_number = 0;
+        while wrong_initial_guess_flag && tentative_number<=in0*10
+            tentative_number = tentative_number+1;
+            x(idx) = rand(in0, 1)*10;
+            [fvec, fjac] = feval(func, x, varargin{:});
+            wrong_initial_guess_flag = ~all(isfinite(fvec)) || any(isinf(fjac(:))) || any(isnan((fjac(:))));
+        end
+        % If all previous attempts failed, try with real numbers.
+        tentative_number = 0;
+        while wrong_initial_guess_flag && tentative_number<=in0*10
+            tentative_number = tentative_number+1;
+            x(idx) = randn(in0, 1)*10;
+            [fvec, fjac] = feval(func, x, varargin{:});
+            wrong_initial_guess_flag = ~all(isfinite(fvec)) || any(isinf(fjac(:))) || any(isnan((fjac(:))));
+        end
+        % Last tentative, ff all previous attempts failed, try with negative numbers.
+        tentative_number = 0;
+        while wrong_initial_guess_flag && tentative_number<=in0*10
+            tentative_number = tentative_number+1;
+            x(idx) = -rand(in0, 1)*10;
+            [fvec, fjac] = feval(func, x, varargin{:});
+            wrong_initial_guess_flag = ~all(isfinite(fvec)) || any(isinf(fjac(:))) || any(isnan((fjac(:))));
+        end
     end
 else
     fvec = feval(func,x,varargin{:});
-    fjac = zeros(nn,nn) ;
+    fjac = zeros(nn,nn);
+    wrong_initial_guess_flag = false;
+    if ~all(isfinite(fvec))
+        % Let's try random numbers for the variables initialized with the default value.
+        wrong_initial_guess_flag = true;
+        % First try with positive numbers.
+        tentative_number = 0;
+        while wrong_initial_guess_flag && tentative_number<=in0*10
+            tentative_number = tentative_number+1;
+            x(idx) = rand(in0, 1)*10;
+            fvec = feval(func, x, varargin{:});
+            wrong_initial_guess_flag = ~all(isfinite(fvec));
+        end
+        % If all previous attempts failed, try with real numbers.
+        tentative_number = 0;
+        while wrong_initial_guess_flag && tentative_number<=in0*10
+            tentative_number = tentative_number+1;
+            x(idx) = randn(in0, 1)*10;
+            fvec = feval(func, x, varargin{:});
+            wrong_initial_guess_flag = ~all(isfinite(fvec));
+        end
+        % Last tentative, ff all previous attempts failed, try with negative numbers.
+        tentative_number = 0;
+        while wrong_initial_guess_flag && tentative_number<=in0*10
+            tentative_number = tentative_number+1;
+            x(idx) = -rand(in0, 1)*10;
+            fvec = feval(func, x, varargin{:});
+            wrong_initial_guess_flag = ~all(isfinite(fvec));
+        end
+    end
 end
 
-i = find(~isfinite(fvec));
-
-if ~isempty(i)
-    info = 1;
+% Exit with error if no initial guess has been found.
+if wrong_initial_guess_flag
+    info=1;
     x = NaN(size(fvec));
-    return;
+    return
 end
 
 % this test doesn't check complementarity conditions and is not used for
@@ -125,7 +187,7 @@ if options.solve_algo == 0
             [x,fval,exitval,output] = fsolve(func,x,options4fsolve);
         else
             exitval = 3;
-        end;
+        end
     end
 
     if exitval == 1
@@ -141,19 +203,19 @@ if options.solve_algo == 0
         if max(abs(fvec)) >= tolf
             info = 1;
         else
-            info = 0;        
+            info = 0;
         end
     else
         info = 1;
     end
 elseif options.solve_algo == 1
-        [x,info]=solve1(func,x,1:nn,1:nn,jacobian_flag,options.gstep, ...
+    [x,info]=solve1(func,x,1:nn,1:nn,jacobian_flag,options.gstep, ...
                     tolf,options.solve_tolx, ...
                     maxit,options.debug,varargin{:});
 elseif options.solve_algo == 9
-        [x,info]=trust_region(func,x,1:nn,1:nn,jacobian_flag,options.gstep, ...
-                    tolf,options.solve_tolx, ...
-                    maxit,options.debug,varargin{:});
+    [x,info]=trust_region(func,x,1:nn,1:nn,jacobian_flag,options.gstep, ...
+                          tolf,options.solve_tolx, ...
+                          maxit,options.debug,varargin{:});
 elseif options.solve_algo == 2 || options.solve_algo == 4
 
     if options.solve_algo == 2
@@ -233,4 +295,3 @@ elseif options.solve_algo == 11
 else
     error('DYNARE_SOLVE: option solve_algo must be one of [0,1,2,3,4,9,10,11]')
 end
-

@@ -1,6 +1,6 @@
 function c = step_length_correction(x,scale,i)
 
-% Copyright (C) 2013 Dynare Team
+% Copyright (C) 2013-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -17,8 +17,8 @@ function c = step_length_correction(x,scale,i)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-    if isempty(scale)
-        c = 10^round(log10(abs(x)));
-    else
-        c = scale(i);
-    end
+if isempty(scale)
+    c = 10^round(log10(abs(x)));
+else
+    c = scale(i);
+end

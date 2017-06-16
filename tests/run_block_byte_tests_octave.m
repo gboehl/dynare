@@ -1,4 +1,4 @@
-## Copyright (C) 2009-2013 Dynare Team
+## Copyright (C) 2009-2017 Dynare Team
 ##
 ## This file is part of Dynare.
 ##
@@ -40,7 +40,7 @@ putenv("GNUTERM", "dumb")
 failedBlock = {};
 num_block_tests = 0;
 cd([top_test_dir filesep 'block_bytecode']);
-cput = cputime;
+tic;
 for blockFlag = 0:1
     for bytecodeFlag = 0:1
         ## Recall that solve_algo=7 and stack_solve_algo=2 are not supported
@@ -131,7 +131,7 @@ for blockFlag = 0:1
         endfor
     endfor
 endfor
-ecput = cputime - cput;
+ecput = toc;
 delete('wsOct');
 cd(getenv('TOP_TEST_DIR'));
 fid = fopen('run_block_byte_tests_octave.o.trs', 'w+');
@@ -145,7 +145,7 @@ else
   fprintf(fid,':number-tests: %d\n', num_block_tests);
   fprintf(fid,':number-failed-tests: 0\n');
 end
-fprintf(fid,':cputime: %f\n', ecput);
+fprintf(fid,':elapsed-time: %f\n', ecput);
 fclose(fid);
 ## Local variables:
 ## mode: Octave

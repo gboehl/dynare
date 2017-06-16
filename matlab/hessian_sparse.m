@@ -16,9 +16,9 @@ function hessian_mat = hessian_sparse(func,x,gstep,varargin)
 %
 % SPECIAL REQUIREMENTS
 %    none
-%  
+%
 
-% Copyright (C) 2001-2012 Dynare Team
+% Copyright (C) 2001-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -35,7 +35,7 @@ function hessian_mat = hessian_sparse(func,x,gstep,varargin)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-if ~isa(func, 'function_handle') 
+if ~isa(func, 'function_handle')
     func = str2func(func);
 end
 n=size(x,1);
@@ -49,7 +49,7 @@ xh1=x;
 f0=feval(func,x,varargin{:});
 f1=zeros(size(f0,1),n);
 f_1=f1;
-for i=1:n    
+for i=1:n
     xh1(i)=x(i)+h1(i);
     f1(:,i)=feval(func,xh1,varargin{:});
     xh1(i)=x(i)-h_1(i);
@@ -59,15 +59,15 @@ end
 xh_1=xh1;
 hessian_mat = sparse(size(f0,1),n*n);
 
-for i=1:n    
-%     if i > 1        
-%         k=[i:n:n*(i-1)];
-%         hessian_mat(:,(i-1)*n+1:(i-1)*n+i-1)=hessian_mat(:,k);
-%         hessian_mat(:,k)=0;
-%     end     
+for i=1:n
+    %     if i > 1
+    %         k=[i:n:n*(i-1)];
+    %         hessian_mat(:,(i-1)*n+1:(i-1)*n+i-1)=hessian_mat(:,k);
+    %         hessian_mat(:,k)=0;
+    %     end
     hessian_mat(:,(i-1)*n+i)=(f1(:,i)+f_1(:,i)-2*f0)./(h1(i)*h_1(i));
     temp=f1+f_1-f0*ones(1,n);
-    for j=1:i-1        
+    for j=1:i-1
         xh1(i)=x(i)+h1(i);
         xh1(j)=x(j)+h_1(j);
         xh_1(i)=x(i)-h1(i);
@@ -77,5 +77,5 @@ for i=1:n
         xh1(j)=x(j);
         xh_1(i)=x(i);
         xh_1(j)=x(j);
-    end    
+    end
 end

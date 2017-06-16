@@ -1,6 +1,11 @@
-function y = myprctilecol(x,p);
+function y = myprctilecol(x,p)
 
-% Copyright (C) 2012 Dynare Team
+% Written by Marco Ratto
+% Joint Research Centre, The European Commission,
+% marco.ratto@ec.europa.eu
+
+% Copyright (C) 2012 European Commission
+% Copyright (C) 2012-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -22,10 +27,10 @@ xx = sort(x);
 
 if m==1 | n==1
     m = max(m,n);
-	if m == 1,
-	   y = x*ones(length(p),1);
-	   return;
-	end
+    if m == 1
+        y = x*ones(length(p),1);
+        return
+    end
     n = 1;
     q = 100*(0.5:m - 0.5)./m;
     xx = [min(x); xx(:); max(x)];

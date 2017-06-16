@@ -1,3 +1,800 @@
+Announcement for Dynare 4.5.0 (on 2013-12-16)
+=============================================
+
+We are pleased to announce the release of Dynare 4.5.0.
+
+This major release adds new features and fixes various bugs.
+
+The Windows packages are already available for download at:
+
+ http://www.dynare.org/download/dynare-stable
+
+The Mac and Debian/Ubuntu packages should follow soon.
+
+All users are strongly encouraged to upgrade.
+
+This release is compatible with MATLAB versions ranging from 7.3 (R2006b) to
+9.2 (R2017a) and with GNU Octave version 4.2.
+
+Here is the list of major user-visible changes:
+
+
+
+Dynare 4.5
+==========
+
+
+ - Ramsey policy
+
+   + Added command `ramsey_model` that builds the expanded model with
+     FOC conditions for the planner's problem but doesn't perform any
+     computation. Usefull to compute Ramsey policy in a perfect
+     foresight model,
+
+   + `ramsey_policy` accepts multipliers in its variable list and
+     displays results for them.
+
+
+ - Perfect foresight models
+
+   + New commands `perfect_foresight_setup` (for preparing the
+     simulation) and `perfect_foresight_solver` (for computing it). The
+     old `simul` command still exist and is now an alias for
+     `perfect_foresight_setup` + `perfect_foresight_solver`. It is no
+     longer possible to manipulate by hand the contents of
+     `oo_.exo_simul` when using `simul`. People who want to do
+     it must first call `perfect_foresight_setup`, then do the
+     manipulations, then call `perfect_foresight_solver`,
+
+   + By default, the perfect foresight solver will try a homotopy
+     method if it fails to converge at the first try. The old behavior
+     can be restored with the `no_homotopy` option,
+
+   + New option `stack_solve_algo=7` that allows specifying a
+     `solve_algo` solver for solving the model,
+
+   + New option `solve_algo` that allows specifying a solver for
+     solving the model when using `stack_solve_algo=7`,
+
+   + New option `lmmcp` that solves the model via a Levenberg-Marquardt
+     mixed complementarity problem (LMMCP) solver,
+
+   + New option `robust_lin_solve` that triggers the use of a robust
+     linear solver for the default `solve_algo=4`,
+
+   + New options `tolf` and `tolx` to control termination criteria of
+     solvers,
+
+   + New option `endogenous_terminal_period` to `simul`,
+
+   + Added the possibility to set the initial condition of the
+     (stochastic) extended path simulations with the histval block.
+
+
+ - Optimal simple rules
+
+   + Saves the optimal value of parameters to `oo_.osr.optim_params`,
+
+   + New block `osr_params_bounds` allows specifying bounds for the
+     estimated parameters,
+
+   + New option `opt_algo` allows selecting different optimizers while
+     the new option `optim` allows specifying the optimizer options,
+
+   + The `osr` command now saves the names, bounds, and indices for the
+     estimated parameters as well as the indices and weights of the
+     variables entering the objective function into `M_.osr`.
+
+
+ - Forecasts and Smoothing
+
+   + The smoother and forecasts take uncertainty about trends and means
+     into account,
+
+   + Forecasts accounting for measurement error are now saved in fields
+     of the form `HPDinf_ME` and `HPDsup_ME`,
+
+   + New fields `oo_.Smoother.Trend` and `oo_.Smoother.Constant` that
+     save the trend and constant parts of the smoothed variables,
+
+   + new field `oo_.Smoother.TrendCoeffs` that stores the trend
+     coefficients.
+
+   + Rolling window forecasts allowed in `estimation` command by
+     passing a vector to `first_obs`,
+
+   + The `calib_smoother` command now accepts the `loglinear`,
+     `prefilter`, `first_obs` and `filter_decomposition` options.
+
+
+ - Estimation
+
+   + New options: `logdata`, `consider_all_endogenous`,
+     `consider_only_observed`, `posterior_max_subsample_draws`,
+     `mh_conf_sig`, `diffuse_kalman_tol`, `dirname`, `nodecomposition`
+
+   + `load_mh_file` and `mh_recover` now try to load chain's proposal density,
+
+   + New option `load_results_after_load_mh` that allows loading some
+     posterior results from a previous run if no new MCMC draws are
+     added,
+
+   + New option `posterior_nograph` that suppresses the generation of
+     graphs associated with Bayesian IRFs, posterior smoothed objects,
+     and posterior forecasts,
+
+   + Saves the posterior density at the mode in
+     `oo_.posterior.optimization.log_density`,
+
+   + The `filter_covariance` option now also works with posterior
+     sampling like Metropolis-Hastings,
+
+   + New option `no_posterior_kernel_density` to suppress computation
+     of kernel density of posterior objects,
+
+   + Recursive estimation and forecasting now provides the individual
+     `oo_` structures for each sample in `oo_recursive_`,
+
+   + The `trace_plot` command can now plot the posterior density,
+
+   + New command `generate_trace_plots` allows generating all trace
+     plots for one chain,
+
+   + New commands `prior_function` and `posterior_function` that
+     execute a user-defined function on parameter draws from the
+     prior/posterior distribution,
+
+   + New option `huge_number` for replacement of infinite bounds with
+     large number during `mode_compute`,
+
+   + New option `posterior_sampling_method` allows selecting the new
+     posterior sampling options:
+     `tailored_random_block_metropolis_hastings` (Tailored randomized
+     block (TaRB) Metropolis-Hastings), `slice` (Slice sampler),
+     `independent_metropolis_hastings` (Independent
+     Metropolis-Hastings),
+
+   + New option `posterior_sampler_options` that allow controlling the
+     options of the `posterior_sampling_method`, its `scale_file`-option
+     pair allows loading the `_mh_scale.mat`-file storing the tuned
+     scale factor from a previous run of `mode_compute=6`,
+
+   + New option `raftery_lewis_diagnostics` that computes Raftery/Lewis
+     (1992) convergence diagnostics,
+
+   + New option `fast_kalman_filter` that provides fast Kalman filter
+     using Chandrasekhar recursions as described in Ed Herbst (2015),
+
+   + The `dsge_var` option now saves results at the posterior mode into
+     `oo_.dsge_var`,
+
+   + New option `smoothed_state_uncertainty` to provide the uncertainty
+     estimate for the smoothed state estimate from the Kalman smoother,
+
+   + New prior density: generalized Weibull distribution,
+
+   + Option `mh_recover` now allows continuing a crashed chain at the
+     last save mh-file,
+
+   + New option `nonlinear_filter_initialization` for the
+     `estimation` command. Controls the initial covariance matrix
+     of the state variables in nonlinear filters.
+
+   + The `conditional_variance_decomposition` option now displays
+     output and stores it as a LaTeX-table when the `TeX` option is
+     invoked,
+
+   + The `use_calibration` to `estimated_params_init` now also works
+     with ML,
+
+   + Improved initial estimation checks.
+
+
+ - Steady state
+
+   + The default solver for finding the steady state is now a
+     trust-region solver (can be triggered explicitly with option
+     `solve_algo=4`),
+
+   + New options `tolf` and `tolx` to control termination criteria of
+     solver,
+
+   + The debugging mode now provides the termination values in steady
+     state finding.
+
+
+ - Stochastic simulations
+
+   + New options `nodecomposition`,
+
+   + New option `bandpass_filter` to compute bandpass-filtered
+     theoretical and simulated moments,
+
+   + New option `one_sided_hp_filter` to compute one-sided HP-filtered
+     simulated moments,
+
+   + `stoch_simul` displays a simulated variance decomposition when
+     simulated moments are requested,
+
+   + `stoch_simul` saves skewness and kurtosis into respective fields
+     of `oo_` when simulated moments have been requested,
+
+   + `stoch_simul` saves the unconditional variance decomposition in
+     `oo_.variance_decomposition`,
+
+   + New option `dr_display_tol` that governs omission of small terms
+     in display of decision rules,
+
+   + The `stoch_simul` command now prints the displayed tables as LaTeX
+     code when the new `TeX` option is enabled,
+
+   + The `loglinear` option now works with lagged and leaded exogenous
+     variables like news shocks,
+
+   + New option `spectral_density` that allows displaying the spectral
+     density of (filtered) endogenous variables,
+
+   + New option `contemporaneous_correlation` that allows saving
+     contemporaneous correlations in addition to the covariances.
+
+
+ - Identification
+
+   + New options `diffuse_filter` and `prior_trunc`,
+
+   + The `identification` command now supports correlations via
+     simulated moments,
+
+
+ - Sensitivity analysis
+
+   + New blocks `irf_calibration` and `moment_calibration`,
+
+   + Outputs LaTeX tables if the new `TeX` option is used,
+
+   + New option `relative_irf` to `irf_calibration` block.
+
+
+ - Conditional forecast
+
+   + Command `conditional_forecast` now takes into account `histval`
+     block if present.
+
+
+ - Shock decomposition
+
+   + New option `colormap` to `shocks_decomposition` for controlling
+     the color map used in the shocks decomposition graphs,
+
+   + `shocks_decomposition` now accepts the `nograph` option,
+
+   + New command `realtime_shock_decomposition` that for each period `T= [presample,...,nobs]`
+     allows computing the:
+
+     * realtime historical shock decomposition `Y(t|T)`, i.e. without observing data in `[T+1,...,nobs]`
+
+     * forecast shock decomposition `Y(T+k|T)`
+
+     * realtime conditional shock decomposition `Y(T+k|T+k)-Y(T+k|T)`
+
+   + New block `shock_groups` that allows grouping shocks for the
+     `shock_decomposition` and `realtime_shock_decomposition` commands,
+
+   + New command `plot_shock_decomposition` that allows plotting the
+     results from `shock_decomposition` and
+     `realtime_shock_decomposition` for different vintages and shock
+     groupings.
+
+
+ - Macroprocessor
+
+   + Can now pass a macro-variable to the `@#include` macro directive,
+
+   + New preprocessor flag `-I`, macro directive `@#includepath`, and
+     dynare config file block `[paths]` to pass a search path to the
+     macroprocessor to be used for file inclusion via `@#include`.
+
+
+ - Command line
+
+   + New option `onlyclearglobals` (do not clear JIT compiled functions
+     with recent versions of Matlab),
+
+   + New option `minimal_workspace` to use fewer variables in the
+     current workspace,
+
+   + New option `params_derivs_order` allows limiting the order of the
+     derivatives with respect to the parameters that are calculated by
+     the preprocessor,
+
+   + New command line option `mingw` to support the MinGW-w64 C/C++
+     Compiler from TDM-GCC for `use_dll`.
+
+
+ - dates/dseries/reporting classes
+
+   + New methods `abs`, `cumprod` and `chain`,
+
+   + New option `tableRowIndent` to `addTable`,
+
+   + Reporting system revamped and made more efficient, dependency on
+     matlab2tikz has been dropped.
+
+
+ - Optimization algorithms
+
+   + `mode_compute=2` Uses the simulated annealing as described by
+     Corana et al. (1987),
+
+   + `mode_compute=101` Uses SOLVEOPT as described by Kuntsevich and
+     Kappel (1997),
+
+   + `mode_compute=102` Uses `simulannealbnd` from Matlab's Global
+     Optimization Toolbox (if available),
+
+   + New option `silent_optimizer` to shut off output from mode
+     computing/optimization,
+
+   + New options `verbosity` and `SaveFiles` to control output and
+     saving of files during mode computing/optimization.
+
+
+ - LaTeX output
+
+   + New command `write_latex_original_model`,
+
+   + New option `write_equation_tags` to `write_latex_dynamic_model`
+     that allows printing the specified equation tags to the generate
+     LaTeX code,
+
+   + New command `write_latex_parameter_table` that writes the names and
+     values of model parameters to a LaTeX table,
+
+   + New command `write_latex_prior_table` that writes the descriptive
+     statistics about the prior distribution to a LaTeX table,
+
+   + New command `collect_latex_files` that creates one compilable LaTeX
+     file containing all TeX-output.
+
+
+ - Misc.
+
+   + Provides 64bit preprocessor,
+
+   + Introduces new path management to avoid conflicts with other
+     toolboxes,
+
+   + Full compatibility with Matlab 2014b's new graphic interface,
+
+   + When using `model(linear)`, Dynare automatically checks
+     whether the model is truly linear,
+
+   + `usedll`, the `msvc` option now supports `normcdf`, `acosh`,
+     `asinh`, and `atanh`,
+
+   + New parallel option `NumberOfThreadsPerJob` for Windows nodes that
+     sets the number of threads assigned to each remote MATLAB/Octave
+     run,
+
+   + Improved numerical performance of
+     `schur_statespace_transformation` for very large models,
+
+   + The `all_values_required` option now also works with `histval`,
+
+   + Add missing `horizon` option to `ms_forecast`,
+
+   + BVAR now saves the marginal data density in
+     `oo_.bvar.log_marginal_data_density` and stores prior and
+     posterior information in `oo_.bvar.prior` and
+     `oo_.bvar.posterior`.
+
+
+
+* Bugs and problems identified in version 4.4.3 and that have been fixed in version 4.5.0:
+
+
+ - BVAR models
+
+   + `bvar_irf` could display IRFs in an unreadable way when they moved from
+     negative to positive values,
+
+   + In contrast to what is stated in the documentation, the confidence interval
+     size `conf_sig` was 0.6 by default instead of 0.9.
+
+
+ - Conditional forecasts
+
+   + The `conditional_forecast` command produced wrong results in calibrated
+     models when used at initial values outside of the steady state (given with
+     `initval`),
+
+   + The `plot_conditional_forecast` option could produce unreadable figures if
+     the areas overlap,
+
+   + The `conditional_forecast` command after MLE crashed,
+
+   + In contrast to what is stated in the manual, the confidence interval size
+     `conf_sig` was 0.6 by default instead of 0.8.
+
+   + Conditional forecasts were wrong when the declaration of endogenous
+     variables was not preceeding the declaration of the exogenous
+     variables and parameters.
+
+
+ - Discretionary policy
+
+   + Dynare allowed running models where the number of instruments did not match
+     the number of omitted equations,
+
+   + Dynare could crash in some cases when trying to display the solution,
+
+   + Parameter dependence embedded via a `steady_state` was not taken into
+     account, typically resulting in crashes.
+
+ - dseries class
+
+   + When subtracting a dseries object from a number, the number was instead
+     subtracted from the dseries object.
+
+
+ - DSGE-VAR models
+
+   + Dynare crashed when estimation encountered non-finite values in the Jacobian
+     at the steady state,
+
+   + The presence of a constant was not considered for degrees of freedom
+     computation of the Gamma function used during the posterior computation; due
+     to only affecting the constant term, results should be be unaffected, except
+     for model_comparison when comparing models with and without.
+
+
+ - Estimation command
+
+   + In contrast to what was stated in the manual, the confidence interval size
+     `conf_sig` for `forecast` without MCMC was 0.6 by default instead of 0.9,
+
+   + Calling estimation after identification could lead to crashes,
+
+   + When using recursive estimation/forecasting and setting some elements of
+     `nobs` to be larger than the number of observations T in the data,
+     `oo_recursive_` contained additional cell entries that simply repeated the
+     results obtained for `oo_recursive_T`,
+
+   + Computation of Bayesian smoother could crash for larger models when
+     requesting `forecast` or `filtered_variables`,
+
+   + Geweke convergence diagnostics were not computed on the full MCMC chain when
+     the `load_mh_file` option was used,
+
+   + The Geweke convergence diagnostics always used the default `taper_steps` and
+   `geweke_interval`,
+
+   + Bayesian IRFs (`bayesian_irfs` option) could be displayed in an unreadable
+     way when they move from negative to positive values,
+
+   + If `bayesian_irfs` was requested when `mh_replic` was too low to compute
+     HPDIs, plotting was crashing,
+
+   + The x-axis value in `oo_.prior_density` for the standard deviation and
+     correlation of measurement errors was written into a field
+     `mearsurement_errors_*` instead of `measurement_errors_*`,
+
+   + Using a user-defined `mode_compute` crashed estimation,
+
+   + Option `mode_compute=10` did not work with infinite prior bounds,
+
+   + The posterior variances and covariances computed by `moments_varendo` were
+     wrong for very large models due to a matrix erroneously being filled up with
+     zeros,
+
+   + Using the `forecast` option with `loglinear` erroneously added the unlogged
+     steady state,
+
+   + When using the `loglinear` option the check for the presence of a constant
+     was erroneously based on the unlogged steady state,
+
+   + Estimation of `observation_trends` was broken as the trends specified as a
+     function of deep parameters were not correctly updated during estimation,
+
+   + When using `analytic_derivation`, the parameter values were not set before
+     testing whether the steady state file changes parameter values, leading to
+     subsequent crashes,
+
+   + If the steady state of an initial parameterization did not solve, the
+     observation equation could erroneously feature no constant when the
+     `use_calibration` option was used,
+
+   + When computing posterior moments, Dynare falsely displayed that moment
+     computations are skipped, although the computation was performed correctly,
+
+   + If `conditional_variance_decomposition` was requested, although all
+     variables contain unit roots, Dynare crashed instead of providing an error
+     message,
+
+   + Computation of the posterior parameter distribution was erroneously based
+     on more draws than specified (there was one additional draw for every Markov
+     chain),
+
+   + The estimation option `lyapunov=fixed_point` was broken,
+
+   + Computation of `filtered_vars` with only one requested step crashed Dynare,
+
+   + Option `kalman_algo=3` was broken with non-diagonal measurement error,
+
+   + When using the diffuse Kalman filter with missing observations, an additive
+     factor log(2*pi) was missing in the last iteration step,
+
+   + Passing of the `MaxFunEvals` and `InitialSimplexSize` options to
+     `mode_compute=8` was broken,
+
+   + Bayesian forecasts contained initial conditions and had the wrong length in
+     both plots and stored variables,
+
+   + Filtered variables obtained with `mh_replic=0`, ML, or
+     `calibrated_smoother` were padded with zeros at the beginning and end and
+     had the wrong length in stored variables,
+
+   + Computation of smoothed measurement errors in Bayesian estimation was broken,
+
+   + The `selected_variables_only` option (`mh_replic=0`, ML, or
+     `calibrated_smoother`) returned wrong results for smoothed, updated, and
+     filtered variables,
+
+   + Combining the `selected_variables_only` option with forecasts obtained
+     using `mh_replic=0`, ML, or `calibrated_smoother` leaded to crashes,
+
+   + `oo_.UpdatedVariables` was only filled when the `filtered_vars` option was specified,
+
+   + When using Bayesian estimation with `filtered_vars`, but without
+     `smoother`, then `oo_.FilteredVariables` erroneously also contained filtered
+     variables at the posterior mean as with `mh_replic=0`,
+
+   + Running an MCMC a second time in the same folder with a different number of
+     iterations could result in crashes due to the loading of stale files,
+
+   + Results displayed after Bayesian estimation when not specifying
+     the `smoother` option were based on the parameters at the mode
+     from mode finding instead of the mean parameters from the
+     posterior draws. This affected the smoother results displayed, but
+     also calls to subsequent command relying on the parameters stored
+     in `M_.params` like `stoch_simul`,
+
+   + The content of `oo_.posterior_std` after Bayesian estimation was based on
+     the standard deviation at the posterior mode, not the one from the MCMC, this
+     was not consistent with the reference manual,
+
+   + When the initialization of an MCMC run failed, the metropolis.log file was
+     locked, requiring a restart of Matlab to restart estimation,
+
+   + If the posterior mode was right at the corner of the prior bounds, the
+     initialization of the MCMC erroneously crashed,
+
+   + If the number of dropped draws via `mh_drop` coincided with the number of
+     draws in a `_mh'-file`, `oo_.posterior.metropolis.mean` and
+     `oo_.posterior.metropolis.Variance` were NaN.
+
+
+ - Estimation and calibrated smoother
+
+   + When using `observation_trends` with the `prefilter` option, the mean shift
+     due to the trend was not accounted for,
+
+   + When using `first_obs`>1, the higher trend starting point of
+     `observation_trends` was not taken into account, leading, among other things,
+     to problems in recursive forecasting,
+
+   + The diffuse Kalman smoother was crashing if the forecast error variance
+     matrix becomes singular,
+
+   + The multivariate Kalman smoother provided incorrect state estimates when
+     all data for one observation are missing,
+
+   + The multivariate diffuse Kalman smoother provided incorrect state estimates
+     when the `Finf` matrix becomes singular,
+
+   + The univariate diffuse Kalman filter was crashing if the initial covariance
+     matrix of the nonstationary state vector is singular,
+
+
+ - Forecats
+
+   + In contrast to what is stated in the manual, the confidence interval size
+     `conf_sig` was 0.6 by default instead of 0.9.
+
+   + Forecasting with exogenous deterministic variables provided wrong decision
+     rules, yielding wrong forecasts.
+
+   + Forecasting with exogenous deterministic variables crashed when the
+     `periods` option was not explicitly specified,
+
+   + Option `forecast` when used with `initval` was using the initial values in
+     the `initval` block and not the steady state computed from these initial
+     values as the starting point of forecasts.
+
+
+ - Global Sensitivity Analysis
+
+   + Sensitivity with ML estimation could result in crashes,
+
+   + Option `mc` must be forced if `neighborhood_width` is used,
+
+   + Fixed dimension of `stock_logpo` and `stock_ys`,
+
+   + Incomplete variable initialization could lead to crashes with `prior_range=1`.
+
+
+ - Indentification
+
+   + Identification did not correctly pass the `lik_init` option,
+     requiring the manual setting of `options_.diffuse_filter=1` in
+     case of unit roots,
+
+   + Testing identification of standard deviations as the only
+     parameters to be estimated with ML leaded to crashes,
+
+   + Automatic increase of the lag number for autocovariances when the
+     number of parameters is bigger than the number of non-zero moments
+     was broken,
+
+   + When using ML, the asymptotic Hessian was not computed,
+
+   + Checking for singular values when the eigenvectors contained only
+     one column did not work correctly,
+
+
+ - Model comparison
+
+   + Selection of the `modifiedharmonicmean` estimator was broken,
+
+
+ - Optimal Simple Rules
+
+   + When covariances were specified, variables that only entered with
+     their variance and no covariance term obtained a wrong weight,
+     resulting in wrong results,
+
+   + Results reported for stochastic simulations after `osr` were based
+     on the last parameter vector encountered during optimization,
+     which does not necessarily coincide with the optimal parameter
+     vector,
+
+   + Using only one (co)variance in the objective function resulted in crashes,
+
+   + For models with non-stationary variables the objective function was computed wrongly.
+
+
+ - Ramsey policy
+
+   + If a Lagrange multiplier appeared in the model with a lead or a lag
+     of more than one period, the steady state could be wrong.
+
+   + When using an external steady state file, incorrect steady states
+     could be accepted,
+
+   + When using an external steady state file with more than one
+     instrument, Dynare crashed,
+
+   + When using an external steady state file and running `stoch_simul`
+     after `ramsey_planner`, an incorrect steady state was used,
+
+   + When the number of instruments was not equal to the number of
+     omitted equations, Dynare crashed with a cryptic message,
+
+   + The `planner_objective` accepted `varexo`, but ignored them for computations,
+
+
+ - Shock decomposition
+
+   + Did not work with the `parameter_set=calibration` option if an
+     `estimated_params` block is present,
+
+   + Crashed after MLE.
+
+
+ - Perfect foresight models
+
+   + The perfect foresight solver could accept a complex solution
+     instead of continuing to look for a real-valued one,
+
+   + The `initval_file` command only accepted column and not row vectors,
+
+   + The `initval_file` command did not work with Excel files,
+
+   + Deterministic simulations with one boundary condition crashed in
+     `solve_one_boundary` due to a missing underscore when passing
+     `options_.simul.maxit`,
+
+   + Deterministic simulation with exogenous variables lagged by more
+     than one period crashed,
+
+   + Termination criterion `maxit` was hard-coded for `solve_algo=0`
+     and could no be changed,
+
+   + When using `block`/`bytecode`, relational operators could not be enforced,
+
+   + When using `block` some exceptions were not properly handled,
+     leading to code crashes,
+
+   + Using `periods=1` crashed the solver (bug only partially fixed).
+
+
+ - Smoothing
+
+   + The univariate Kalman smoother returned wrong results when used
+     with correlated measurement error,
+
+   + The diffuse smoother sometimes returned linear combinations of the
+     smoothed stochastic trend estimates instead of the original trend
+     estimates.
+
+ - Perturbation reduced form
+
+   + In contrast to what is stated in the manual, the results of the
+     unconditional variance decomposition were only stored in
+     `oo_.gamma_y(nar+2)`, not in `oo_.variance_decomposition`,
+
+   + Dynare could crash when the steady state could not be computed
+     when using the `loglinear` option,
+
+   + Using `bytcode` when declared exogenous variables were not
+     used in the model leaded to crashes in stochastic simulations,
+
+   + Displaying decision rules involving lags of auxiliary variables of
+     type 0 (leads>1) crashed.
+
+   + The `relative_irf` option resulted in wrong output at `order>1` as
+     it implicitly relies on linearity.
+
+
+ - Displaying of the MH-history with the `internals` command crashed
+   if parameter names did not have same length.
+
+ - Dynare crashed when the user-defined steady state file returned an
+   error code, but not an conformable-sized steady state vector.
+
+ - Due to a bug in `mjdgges.mex` unstable parameter draws with
+   eigenvalues up to 1+1e-6 could be accepted as stable for the
+   purpose of the Blanchard-Kahn conditions, even if `qz_criterium<1`.
+
+ - The `use_dll` option on Octave for Windows required to pass a
+   compiler flag at the command line, despite the manual stating this
+   was not necessary.
+
+ - Dynare crashed for models with `block` option if the Blanchard-Kahn
+   conditions were not satisfied instead of generating an error
+   message.
+
+ - The `verbose` option did not work with `model(block)`.
+
+ - When falsely specifying the `model(linear)` for nonlinear models,
+   incorrect steady states were accepted instead of aborting.
+
+ - The `STEADY_STATE` operator called on model local variables
+   (so-called pound variables) did not work as expected.
+
+ - The substring operator in macro-processor was broken. The
+   characters of the substring could be mixed with random characters
+   from the memory space.
+
+ - Block decomposition could sometimes cause the preprocessor to crash.
+
+ - A bug when external functions were used in model local variables
+   that were contained in equations that required auxiliary
+   variable/equations led to crashes of Matlab.
+
+ - Sampling from the prior distribution for an inverse gamma II
+   distribution when `prior_trunc>0` could result in incorrect
+   sampling.
+
+ - Sampling from the prior distribution for a uniform distribution
+   when `prior_trunc>0` was ignoring the prior truncation.
+
+ - Conditional forecasts were wrong when the declaration of endogenous
+   variables was not preceeding the declaration of the exogenous
+   variables and parameters.
+
+
+
 Announcement for Dynare 4.4.3 (on 2014-07-31)
 =============================================
 
@@ -988,7 +1785,7 @@ Here is a list of the main bugfixes since version 4.2.0:
 
  * Option `conditional_variance_decomposition' of `stoch_simul' and
    `estimation' has been fixed
- 
+
  * Automatic detrending now works in conjunction with the `EXPECTATION'
    operator
 
@@ -1029,7 +1826,7 @@ This release is compatible with MATLAB versions ranging from 6.5 (R13) to 7.11
 
 Here is the list of major user-visible changes:
 
-* New solution algorithms: 
+* New solution algorithms:
 
   - Pruning for second order simulations has been added, as described in Kim,
     Kim, Schaumburg and Sims (2008) [1,2]
@@ -1066,7 +1863,7 @@ Here is the list of major user-visible changes:
 
   - Syntax of deterministic shocks has changed: after the values keyword,
     arbitrary expressions must be enclosed within parentheses (but numeric
-    constants are still accepted as is) 
+    constants are still accepted as is)
 
 * Various improvements:
 
@@ -1095,7 +1892,7 @@ Here is the list of major user-visible changes:
     from the console, it will replace graphical waitbars by text waitbars for
     long computations
 
-  - Steady option "solve_algo=0" (uses fsolve()) now works under Octave 
+  - Steady option "solve_algo=0" (uses fsolve()) now works under Octave
 
 * For Emacs users:
 

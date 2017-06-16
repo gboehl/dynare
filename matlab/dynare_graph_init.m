@@ -1,5 +1,5 @@
 function dyn_graph=dynare_graph_init(figure_name,nplot,line_types,line_width)
-% function dynare_graph_init(figure_name,colors) 
+% function dynare_graph_init(figure_name,colors)
 % initializes set of graphs
 %
 % INPUTS:
@@ -12,7 +12,7 @@ function dyn_graph=dynare_graph_init(figure_name,nplot,line_types,line_width)
 % SPECIAL REQUIREMENT
 %   none
 
-% Copyright (C) 2006-2013 Dynare Team
+% Copyright (C) 2006-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -31,7 +31,7 @@ function dyn_graph=dynare_graph_init(figure_name,nplot,line_types,line_width)
 
 global options_
 
-dyn_graph.fh = dyn_figure(options_,'Name',figure_name);
+dyn_graph.fh = dyn_figure(options_.nodisplay,'Name',figure_name);
 dyn_graph.figure_name = figure_name;
 if nargin > 2
     dyn_graph.line_types = line_types;

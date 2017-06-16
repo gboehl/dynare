@@ -4,7 +4,7 @@ function [theta, fxsim, neval] = slice_sampler(objective_function,theta,thetapri
 % UNIVARIATE SLICE SAMPLER - stepping out (Neal, 2003)
 % W: optimal value in the range (3,10)*std(x)
 %    - see C.Planas and A.Rossi (2014)
-% objective_function(theta,varargin): -log of any unnormalized pdf 
+% objective_function(theta,varargin): -log of any unnormalized pdf
 % with varargin (optional) a vector of auxiliaty parameters
 % to be passed to f( ).
 % ----------------------------------------------------------
@@ -24,7 +24,7 @@ function [theta, fxsim, neval] = slice_sampler(objective_function,theta,thetapri
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2015 Dynare Team
+% Copyright (C) 2015-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -43,28 +43,28 @@ function [theta, fxsim, neval] = slice_sampler(objective_function,theta,thetapri
 
 if sampler_options.rotated %&& ~isempty(sampler_options.V1),
     [theta, fxsim, neval] = rotated_slice_sampler(objective_function,theta,thetaprior,sampler_options,varargin{:});
-    if isempty(sampler_options.mode), % jumping 
-       return,
+    if isempty(sampler_options.mode) % jumping
+        return
     else
         nevalR=sum(neval);
-    end    
+    end
 end
-    
+
 theta=theta(:);
 npar = length(theta);
 W1 = sampler_options.W1;
 neval = zeros(npar,1);
 
-for it=1:npar,
+for it=1:npar
     neval(it) = 0;
-    W = W1(it); 
+    W = W1(it);
     xold  = theta(it);
-   % XLB   = thetaprior(3);
-   % XUB   = thetaprior(4);
+    % XLB   = thetaprior(3);
+    % XUB   = thetaprior(4);
     XLB   = thetaprior(it,1);
     XUB   = thetaprior(it,2);
-   
-    
+
+
     % -------------------------------------------------------
     % 1. DRAW Z = ln[f(X0)] - EXP(1) where EXP(1)=-ln(U(0,1))
     %    THIS DEFINES THE SLICE S={x: z < ln(f(x))}
@@ -85,7 +85,7 @@ for it=1:npar,
         fxl = -feval(objective_function,theta,varargin{:});
         neval(it) = neval(it) + 1;
         if (fxl <= Z)
-            break;
+            break
         end
         L = max(XLB,L-W);
     end
@@ -95,7 +95,7 @@ for it=1:npar,
         fxr = -feval(objective_function,theta,varargin{:});
         neval(it) = neval(it) + 1;
         if (fxr <= Z)
-            break;
+            break
         end
         R = min(XUB,R+W);
     end
@@ -115,9 +115,9 @@ for it=1:npar,
             L = xsim;
         end
     end
-    
+
 end
 
-if sampler_options.rotated && ~isempty(sampler_options.mode), % jumping
+if sampler_options.rotated && ~isempty(sampler_options.mode) % jumping
     neval=sum(neval)+nevalR;
 end

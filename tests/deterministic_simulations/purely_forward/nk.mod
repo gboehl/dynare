@@ -37,6 +37,10 @@ end;
 
 simul(periods=5);
 
+if ~oo_.deterministic_simulation.status
+   error('Perfect foresight simulation failed')
+end
+
 % Initialize the analytical solution for the endogenous variables.
 expected_y = zeros(1, 6);
 expected_pi = zeros(1, 6);

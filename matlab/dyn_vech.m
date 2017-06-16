@@ -1,13 +1,13 @@
 function Vector = dyn_vech(Matrix)
 % This function implements the vech operator.
-% 
-% INPUTS 
+%
+% INPUTS
 %   Matrix             [double]   a squared n*n symetric matrix.
-%    
-% OUTPUTS 
+%
+% OUTPUTS
 %   Vector             [double]   a n*(n+1)/2 vector.
 
-% Copyright (C) 2010 Dynare Team
+% Copyright (C) 2010-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

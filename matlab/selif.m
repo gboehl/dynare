@@ -1,6 +1,6 @@
 function x = selif(a,b)
 
-% Copyright (C) 2001-2009 Dynare Team
+% Copyright (C) 2001-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -18,10 +18,9 @@ function x = selif(a,b)
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 if size(b,2) ~= 1
-    error ('The second argument in SELIF must be à column vector') ;
+    error ('The second argument in SELIF must be Ã  column vector') ;
 end
 
 x = a(find(b == 1),:) ;
 
 return ;
-

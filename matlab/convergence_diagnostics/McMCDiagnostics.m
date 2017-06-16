@@ -1,14 +1,14 @@
 function oo_ = McMCDiagnostics(options_, estim_params_, M_, oo_)
 % function McMCDiagnostics
-% Computes convergence tests 
-% 
-% INPUTS 
+% Computes convergence tests
+%
+% INPUTS
 %   options_         [structure]
 %   estim_params_    [structure]
 %   M_               [structure]
 %
-% OUTPUTS 
-%   oo_              [structure] 
+% OUTPUTS
+%   oo_              [structure]
 %
 % SPECIAL REQUIREMENTS
 %   none
@@ -16,7 +16,7 @@ function oo_ = McMCDiagnostics(options_, estim_params_, M_, oo_)
 % PARALLEL CONTEXT
 % See the comment in posterior_sampler.m funtion.
 
-% Copyright (C) 2005-2016 Dynare Team
+% Copyright (C) 2005-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -82,12 +82,12 @@ param_name_tex=[];
 for jj=1:npar
     if options_.TeX
         [par_name_temp,par_name_tex_temp]=get_the_name(jj,options_.TeX,M_,estim_params_,options_);
-        param_name = strvcat(param_name,par_name_temp);        
+        param_name = strvcat(param_name,par_name_temp);
         par_name_tex_temp = strrep(par_name_tex_temp,'$','');
         param_name_tex = strvcat(param_name_tex,par_name_tex_temp);
     else
         [par_name_temp]=get_the_name(jj,options_.TeX,M_,estim_params_,options_);
-        param_name = strvcat(param_name,par_name_temp);            
+        param_name = strvcat(param_name,par_name_temp);
     end
     Draws = GetAllPosteriorDraws(jj,FirstMhFile,FirstLine,TotalNumberOfMhFiles,NumberOfDraws);
     Draws = reshape(Draws,[NumberOfDraws nblck]);
@@ -101,7 +101,7 @@ end
 my_title='MCMC Inefficiency factors per block';
 IFAC_header='Parameter';
 IFAC_header_tex='Parameter';
-for j=1:nblck,
+for j=1:nblck
     IFAC_header = char(IFAC_header,['Block ' int2str(j)]);
     IFAC_header_tex = char(IFAC_header_tex,['Block~' int2str(j)]);
 end
@@ -130,7 +130,7 @@ end
 if nblck == 1 % Brooks and Gelman tests need more than one block
     convergence_diagnostics_geweke=zeros(npar,4+2*length(options_.convergence.geweke.taper_steps));
     if any(options_.convergence.geweke.geweke_interval<0) || any(options_.convergence.geweke.geweke_interval>1) || length(options_.convergence.geweke.geweke_interval)~=2 ...
-        || (options_.convergence.geweke.geweke_interval(2)-options_.convergence.geweke.geweke_interval(1)<0)
+            || (options_.convergence.geweke.geweke_interval(2)-options_.convergence.geweke.geweke_interval(1)<0)
         fprintf('\nCONVERGENCE DIAGNOSTICS: Invalid option for geweke_interval. Using the default of [0.2 0.5].\n')
         options_.convergence.geweke.geweke_interval=[0.2 0.5];
     end
@@ -139,9 +139,9 @@ if nblck == 1 % Brooks and Gelman tests need more than one block
     first_obs_end_sample = first_obs_begin_sample+round(options_.convergence.geweke.geweke_interval(2)*NumberOfDraws*(1-options_.mh_drop));
     param_name=[];
     if options_.TeX
-        param_name_tex=[];    
+        param_name_tex=[];
     end
-    for jj=1:npar        
+    for jj=1:npar
         if options_.TeX
             [param_name_temp, param_name_tex_temp]= get_the_name(jj,options_.TeX,M_,estim_params_,options_);
             param_name_tex = strvcat(param_name_tex,strrep(param_name_tex_temp,'$',''));
@@ -152,7 +152,7 @@ if nblck == 1 % Brooks and Gelman tests need more than one block
         end
     end
     fprintf('\nGeweke (1992) Convergence Tests, based on means of draws %d to %d vs %d to %d.\n',first_obs_begin_sample,last_obs_begin_sample,first_obs_end_sample,NumberOfDraws);
-    fprintf('p-values are for Chi2-test for equality of means.\n');    
+    fprintf('p-values are for Chi2-test for equality of means.\n');
     Geweke_header=char('Parameter', 'Post. Mean', 'Post. Std', 'p-val No Taper');
     for ii=1:length(options_.convergence.geweke.taper_steps)
         Geweke_header=char(Geweke_header,['p-val ' num2str(options_.convergence.geweke.taper_steps(ii)),'% Taper']);
@@ -168,12 +168,12 @@ if nblck == 1 % Brooks and Gelman tests need more than one block
         end
         [results_vec, results_struct] = geweke_moments(param_draws,options_);
         convergence_diagnostics_geweke(jj,:)=results_vec;
-    
+
         param_draws1 = param_draws(first_obs_begin_sample:last_obs_begin_sample,:);
         param_draws2 = param_draws(first_obs_end_sample:end,:);
         [results_vec1] = geweke_moments(param_draws1,options_);
         [results_vec2] = geweke_moments(param_draws2,options_);
-        
+
         results_struct = geweke_chi2_test(results_vec1,results_vec2,results_struct,options_);
         eval(['oo_.convergence.geweke.',param_name(jj,:),'=results_struct;'])
         datamat(jj,:)=[results_struct.posteriormean,results_struct.posteriorstd,results_struct.prob_chi2_test];
@@ -183,29 +183,29 @@ if nblck == 1 % Brooks and Gelman tests need more than one block
     if options_.TeX
         Geweke_tex_header=char('Parameter', 'Mean', 'Std', 'No\ Taper');
         additional_header={[' & \multicolumn{2}{c}{Posterior} & \multicolumn{',num2str(1+length(options_.convergence.geweke.taper_steps)),'}{c}{p-values} \\'],
-            ['\cmidrule(r{.75em}){2-3} \cmidrule(r{.75em}){4-',num2str(4+length(options_.convergence.geweke.taper_steps)),'}']};
+                           ['\cmidrule(r{.75em}){2-3} \cmidrule(r{.75em}){4-',num2str(4+length(options_.convergence.geweke.taper_steps)),'}']};
         for ii=1:length(options_.convergence.geweke.taper_steps)
             Geweke_tex_header=char(Geweke_tex_header,[num2str(options_.convergence.geweke.taper_steps(ii)),'\%%\ Taper']);
         end
         headers = char(Geweke_tex_header);
         lh = size(param_name_tex,2)+2;
         my_title=sprintf('Geweke (1992) Convergence Tests, based on means of draws %d to %d vs %d to %d. p-values are for $\\\\chi^2$-test for equality of means.',first_obs_begin_sample,last_obs_begin_sample,first_obs_end_sample,NumberOfDraws);
-        dyn_latex_table(M_,options_,my_title,'geweke',headers,param_name_tex,datamat,lh,12,4,additional_header);    
+        dyn_latex_table(M_,options_,my_title,'geweke',headers,param_name_tex,datamat,lh,12,4,additional_header);
     end
     skipline(2);
-    
+
     if options_.convergence.rafterylewis.indicator
         if any(options_.convergence.rafterylewis.qrs<0) || any(options_.convergence.rafterylewis.qrs>1) || length(options_.convergence.rafterylewis.qrs)~=3 ...
-            || (options_.convergence.rafterylewis.qrs(1)-options_.convergence.rafterylewis.qrs(2)<=0)
+                || (options_.convergence.rafterylewis.qrs(1)-options_.convergence.rafterylewis.qrs(2)<=0)
             fprintf('\nCONVERGENCE DIAGNOSTICS: Invalid option for raftery_lewis_qrs. Using the default of [0.025 0.005 0.95].\n')
             options_.convergence.rafterylewis.qrs=[0.025 0.005 0.95];
-        end        
+        end
         Raftery_Lewis_q=options_.convergence.rafterylewis.qrs(1);
         Raftery_Lewis_r=options_.convergence.rafterylewis.qrs(2);
         Raftery_Lewis_s=options_.convergence.rafterylewis.qrs(3);
         oo_.Raftery_Lewis = raftery_lewis(x2,Raftery_Lewis_q,Raftery_Lewis_r,Raftery_Lewis_s);
         oo_.Raftery_Lewis.parameter_names=param_name;
-        my_title=sprintf('Raftery/Lewis (1992) Convergence Diagnostics, based on quantile q=%4.3f with precision r=%4.3f with probability s=%4.3f.',Raftery_Lewis_q,Raftery_Lewis_r,Raftery_Lewis_s);     
+        my_title=sprintf('Raftery/Lewis (1992) Convergence Diagnostics, based on quantile q=%4.3f with precision r=%4.3f with probability s=%4.3f.',Raftery_Lewis_q,Raftery_Lewis_r,Raftery_Lewis_s);
         headers = char('Variables','M (burn-in)','N (req. draws)','N+M (total draws)','k (thinning)');
 
         raftery_data_mat=[oo_.Raftery_Lewis.M_burn,oo_.Raftery_Lewis.N_prec,oo_.Raftery_Lewis.N_total,oo_.Raftery_Lewis.k_thin];
@@ -217,15 +217,15 @@ if nblck == 1 % Brooks and Gelman tests need more than one block
             labels_Raftery_Lewis_tex=char(param_name_tex,'Maximum');
             lh = size(labels_Raftery_Lewis_tex,2)+2;
             dyn_latex_table(M_,options_,my_title,'raftery_lewis',headers,labels_Raftery_Lewis_tex,raftery_data_mat,lh,10,0);
-        end      
+        end
     end
-       
-    return;
+
+    return
 end
 
 Origin = 1000;
-StepSize = ceil((NumberOfDraws-Origin)/100);% So that the computational time does not 
-ALPHA = 0.2;                                % increase too much with the number of simulations. 
+StepSize = ceil((NumberOfDraws-Origin)/100);% So that the computational time does not
+ALPHA = 0.2;                                % increase too much with the number of simulations.
 time = 1:NumberOfDraws;
 xx = Origin:StepSize:NumberOfDraws;
 NumberOfLines = length(xx);
@@ -262,7 +262,7 @@ localVars.M_ = M_;
 
 
 % Like sequential execution!
-if isnumeric(options_.parallel),
+if isnumeric(options_.parallel)
     fout = McMCDiagnostics_core(localVars,1,npar,0);
     UDIAG = fout.UDIAG;
     clear fout
@@ -273,21 +273,21 @@ else
         ModelName = [ModelName '_bvar'];
     end
     NamFileInput={[M_.dname '/metropolis/'],[ModelName '_mh*_blck*.mat']};
-    
+
     [fout, nBlockPerCPU, totCPU] = masterParallel(options_.parallel, 1, npar,NamFileInput,'McMCDiagnostics_core', localVars, [], options_.parallel_info);
     UDIAG = fout(1).UDIAG;
-    for j=2:totCPU,
+    for j=2:totCPU
         UDIAG = cat(3,UDIAG ,fout(j).UDIAG);
     end
 end
 
 UDIAG(:,[2 4 6],:) = UDIAG(:,[2 4 6],:)/nblck;
 skipline()
-clear pmet temp moyenne CSUP CINF csup cinf n linea iter tmp;    
+clear pmet temp moyenne CSUP CINF csup cinf n linea iter tmp;
 pages = floor(npar/3);
-k = 0;  
+k = 0;
 for i = 1:pages
-    h=dyn_figure(options_,'Name','MCMC univariate convergence diagnostic (Brooks and Gelman,1998)');
+    h=dyn_figure(options_.nodisplay,'Name','MCMC univariate convergence diagnostic (Brooks and Gelman,1998)');
     boxplot = 1;
     for j = 1:3 % Loop over parameters
         k = k+1;
@@ -296,12 +296,12 @@ for i = 1:pages
             if crit == 1
                 plt1 = UDIAG(:,1,k);
                 plt2 = UDIAG(:,2,k);
-                namnam  = [nam , ' (Interval)']; 
+                namnam  = [nam , ' (Interval)'];
             elseif crit == 2
                 plt1 = UDIAG(:,3,k);
                 plt2 = UDIAG(:,4,k);
                 namnam  = [nam , ' (m2)'];
-            elseif crit == 3    
+            elseif crit == 3
                 plt1 = UDIAG(:,5,k);
                 plt2 = UDIAG(:,6,k);
                 namnam  = [nam , ' (m3)'];
@@ -325,12 +325,12 @@ for i = 1:pages
             boxplot = boxplot + 1;
         end
     end
-    dyn_saveas(h,[OutputFolder '/' ModelName '_udiag' int2str(i)],options_);
+    dyn_saveas(h,[OutputFolder '/' ModelName '_udiag' int2str(i)],options_.nodisplay,options_.graph_format);
     if TeX && any(strcmp('eps',cellstr(options_.graph_format)))
         fprintf(fidTeX,'\\begin{figure}[H]\n');
         for jj = 1:size(NAMES,1)
             fprintf(fidTeX,'\\psfrag{%s}[1][][0.5][0]{%s}\n',deblank(NAMES(jj,:)),deblank(TEXNAMES(jj,:)));
-        end    
+        end
         fprintf(fidTeX,'\\centering \n');
         fprintf(fidTeX,'\\includegraphics[width=%2.2f\\textwidth]{%s_udiag%s}\n',options_.figures.textwidth*min((boxplot-1)/3,1),[OutputFolder '/' ModelName],int2str(i));
         fprintf(fidTeX,'\\caption{Univariate convergence diagnostics for the Metropolis-Hastings.\n');
@@ -346,11 +346,11 @@ if reste
     if reste == 1
         nr = 3;
         nc = 1;
-    elseif reste == 2;
+    elseif reste == 2
         nr = 2;
         nc = 3;
     end
-    h = dyn_figure(options_,'Name','MCMC univariate convergence diagnostic (Brooks and Gelman, 1998)');
+    h = dyn_figure(options_.nodisplay,'Name','MCMC univariate convergence diagnostic (Brooks and Gelman, 1998)');
     boxplot = 1;
     for j = 1:reste
         k = k+1;
@@ -359,12 +359,12 @@ if reste
             if crit == 1
                 plt1 = UDIAG(:,1,k);
                 plt2 = UDIAG(:,2,k);
-                namnam  = [nam , ' (Interval)']; 
+                namnam  = [nam , ' (Interval)'];
             elseif crit == 2
                 plt1 = UDIAG(:,3,k);
                 plt2 = UDIAG(:,4,k);
                 namnam  = [nam , ' (m2)'];
-            elseif crit == 3    
+            elseif crit == 3
                 plt1 = UDIAG(:,5,k);
                 plt2 = UDIAG(:,6,k);
                 namnam  = [nam , ' (m3)'];
@@ -388,12 +388,12 @@ if reste
             boxplot = boxplot + 1;
         end
     end
-    dyn_saveas(h,[ OutputFolder '/' ModelName '_udiag' int2str(pages+1)],options_);
+    dyn_saveas(h,[ OutputFolder '/' ModelName '_udiag' int2str(pages+1)],options_.nodisplay,options_.graph_format);
     if TeX && any(strcmp('eps',cellstr(options_.graph_format)))
         fprintf(fidTeX,'\\begin{figure}[H]\n');
-        for jj = 1:size(NAMES,1);
+        for jj = 1:size(NAMES,1)
             fprintf(fidTeX,'\\psfrag{%s}[1][][0.5][0]{%s}\n',deblank(NAMES(jj,:)),deblank(TEXNAMES(jj,:)));
-        end    
+        end
         fprintf(fidTeX,'\\centering \n');
         fprintf(fidTeX,'\\includegraphics[width=%2.2f\\textwidth]{%s_udiag%s}\n',options_.figures.textwidth*min((boxplot-1)/nc,1),[OutputFolder '/' ModelName],int2str(pages+1));
         if reste == 2
@@ -435,7 +435,7 @@ for b = 1:nblck
 end
 clear logpo2;
 tmp(:,2) = kron(transpose(1:nblck),ones(NumberOfDraws,1));
-tmp(:,3) = kron(ones(nblck,1),time'); 
+tmp(:,3) = kron(ones(nblck,1),time');
 tmp = sortrows(tmp,1);
 ligne   = 0;
 for iter  = Origin:StepSize:NumberOfDraws
@@ -454,25 +454,25 @@ for iter  = Origin:StepSize:NumberOfDraws
     for i=1:nblck
         pmet = temp(find(temp(:,2)==i));
         MDIAG(ligne,2) = MDIAG(ligne,2) + pmet(csup,1)-pmet(cinf,1);
-        moyenne = mean(pmet,1); %% Within mean. 
+        moyenne = mean(pmet,1); %% Within mean.
         MDIAG(ligne,4) = MDIAG(ligne,4) + sum((pmet(:,1)-moyenne).^2)/(n-1);
         MDIAG(ligne,6) = MDIAG(ligne,6) + sum(abs(pmet(:,1)-moyenne).^3)/(n-1);
     end
 end
-MDIAG(:,[2 4 6],:) = MDIAG(:,[2 4 6],:)/nblck;  
+MDIAG(:,[2 4 6],:) = MDIAG(:,[2 4 6],:)/nblck;
 
-h = dyn_figure(options_,'Name','Multivariate convergence diagnostic');
+h = dyn_figure(options_.nodisplay,'Name','Multivariate convergence diagnostic');
 boxplot = 1;
 for crit = 1:3
     if crit == 1
         plt1 = MDIAG(:,1);
         plt2 = MDIAG(:,2);
-        namnam  = 'Interval'; 
+        namnam  = 'Interval';
     elseif crit == 2
         plt1 = MDIAG(:,3);
         plt2 = MDIAG(:,4);
         namnam  = 'm2';
-    elseif crit == 3    
+    elseif crit == 3
         plt1 = MDIAG(:,5);
         plt2 = MDIAG(:,6);
         namnam  = 'm3';
@@ -493,13 +493,13 @@ for crit = 1:3
     title(namnam,'Interpreter','none');
     boxplot = boxplot + 1;
 end
-dyn_saveas(h,[ OutputFolder '/' ModelName '_mdiag'],options_);
+dyn_saveas(h,[ OutputFolder '/' ModelName '_mdiag'],options_.nodisplay,options_.graph_format);
 
 if TeX && any(strcmp('eps',cellstr(options_.graph_format)))
     fprintf(fidTeX,'\\begin{figure}[H]\n');
     for jj = 1:3
         fprintf(fidTeX,'\\psfrag{%s}[1][][0.5][0]{%s}\n',deblank(NAMES(jj,:)),' ');
-    end    
+    end
     fprintf(fidTeX,'\\centering \n');
     fprintf(fidTeX,'\\includegraphics[width=0.8\\textwidth]{%s_mdiag}\n',[OutputFolder '/' ModelName]);
     fprintf(fidTeX,'\\caption{Multivariate convergence diagnostics for the Metropolis-Hastings.\n');
@@ -512,4 +512,3 @@ if TeX && any(strcmp('eps',cellstr(options_.graph_format)))
     fprintf(fidTeX,'%% End Of TeX file.');
     fclose(fidTeX);
 end
-

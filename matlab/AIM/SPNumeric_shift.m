@@ -37,14 +37,14 @@ right    = qcols+1:qcols+neq;
 zerorows = find( abs(diag(R)) <= condn );
 
 while( any(zerorows) && iq <= qrows )
-   h=sparse(h);
-   Q=sparse(Q);
-   h = Q'*h;
-   nz = length(zerorows);
-   q(iq+1:iq+nz,:) = h(zerorows,left);
-   h(zerorows,:)   = SPShiftright( h(zerorows,:), neq );
-   iq       = iq + nz;
-   nnumeric = nnumeric + nz;
-   [Q,R,E] = qr( full(h(:,right)) );
-   zerorows = find( abs(diag(R)) <= condn );
+    h=sparse(h);
+    Q=sparse(Q);
+    h = Q'*h;
+    nz = length(zerorows);
+    q(iq+1:iq+nz,:) = h(zerorows,left);
+    h(zerorows,:)   = SPShiftright( h(zerorows,:), neq );
+    iq       = iq + nz;
+    nnumeric = nnumeric + nz;
+    [Q,R,E] = qr( full(h(:,right)) );
+    zerorows = find( abs(diag(R)) <= condn );
 end

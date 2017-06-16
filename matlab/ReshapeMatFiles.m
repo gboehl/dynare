@@ -18,14 +18,14 @@ function ReshapeMatFiles(type, type2)
 %                      posterior
 %                      gsa
 %                      prior
-%    
+%
 % OUTPUTS:
-%    none              
+%    none
 %
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2003-2011 Dynare Team
+% Copyright (C) 2003-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -44,15 +44,15 @@ function ReshapeMatFiles(type, type2)
 
 global M_ options_
 
-if nargin==1, 
+if nargin==1
     MhDirectoryName = [ CheckPath('metropolis',M_.dname) filesep ];
 else
     if strcmpi(type2,'posterior')
         MhDirectoryName = [CheckPath('metropolis',M_.dname) filesep ];
     elseif strcmpi(type2,'gsa')
-        if options_.opt_gsa.morris==1,
+        if options_.opt_gsa.morris==1
             MhDirectoryName = [CheckPath('gsa/screen',M_.dname) filesep ];
-        elseif options_.opt_gsa.morris==2,
+        elseif options_.opt_gsa.morris==2
             MhDirectoryName = [CheckPath('gsa/identif',M_.dname) filesep ];
         elseif options_.opt_gsa.pprior
             MhDirectoryName = [CheckPath(['gsa' filesep 'prior'],M_.dname) filesep ];
@@ -61,17 +61,17 @@ else
         end
     else
         MhDirectoryName = [CheckPath('prior',M_.dname) filesep ];
-    end  
+    end
 end
 switch type
   case 'irf_dsge'
     CAPtype  = 'IRF_DSGE';
     TYPEsize = [ options_.irf , size(options_.varlist,1) , M_.exo_nbr ];
-    TYPEarray = 4;    
+    TYPEarray = 4;
   case 'irf_bvardsge'
     CAPtype  = 'IRF_BVARDSGE';
     TYPEsize = [ options_.irf , length(options_.varobs) , M_.exo_nbr ];
-    TYPEarray = 4;      
+    TYPEarray = 4;
   case 'smooth'
     CAPtype  = 'SMOOTH';
     TYPEsize = [ M_.endo_nbr , options_.nobs ];
@@ -134,7 +134,7 @@ switch TYPEarray
                 eval(['idx = idx + size(stock_' type ',4);'])
             end
             %eval(['STOCK_' CAPtype ' = sort(STOCK_' CAPtype ',4);'])
-            save([MhDirectoryName M_.fname '_' CAPtype 's' int2str(NumberOfTYPEfiles-foffset+1) '.mat'],['STOCK_' CAPtype]);  
+            save([MhDirectoryName M_.fname '_' CAPtype 's' int2str(NumberOfTYPEfiles-foffset+1) '.mat'],['STOCK_' CAPtype]);
         end
     else
         load([MhDirectoryName M_.fname '_' type '1.mat']);
@@ -176,7 +176,7 @@ switch TYPEarray
         load([MhDirectoryName M_.fname '_' type '1.mat']);
         %eval(['STOCK_' CAPtype ' = sort(stock_' type ',3);'])
         eval(['STOCK_' CAPtype ' = stock_' type ';'])
-        save([MhDirectoryName M_.fname '_' CAPtype 's' int2str(1) '.mat'],['STOCK_' CAPtype ]);      
+        save([MhDirectoryName M_.fname '_' CAPtype 's' int2str(1) '.mat'],['STOCK_' CAPtype ]);
     end
     % Original file format may be useful in some cases...
     % for file = 1:NumberOfTYPEfiles

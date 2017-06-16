@@ -14,7 +14,7 @@ function [options_, oo_]=ms_estimation(M_, options_, oo_)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2011-2012 Dynare Team
+% Copyright (C) 2011-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -45,7 +45,7 @@ else
             exist(['matlab_' options_.ms.file_tag '.prn'],'file') ~= 2 || ...
             exist([options_.ms.file_tag '_markov_file.dat'],'file') ~= 2
         error(['You must run ms_estimation without no_create_init as '...
-            'you are missing an initialization file it needs.']);
+               'you are missing an initialization file it needs.']);
     end
     if ~strcmp(options_.ms.file_tag, options_.ms.output_file_tag)
         clean_ms_estimation_files(options_.ms.output_file_tag);

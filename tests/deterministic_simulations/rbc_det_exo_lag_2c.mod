@@ -72,6 +72,10 @@ end;
 
 simul(periods=300);
 
+if ~oo_.deterministic_simulation.status
+   error('Perfect foresight simulation failed')
+end
+
 rplot Consumption;
 rplot Capital;
 

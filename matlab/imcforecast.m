@@ -2,31 +2,31 @@ function imcforecast(constrained_paths, constrained_vars, options_cond_fcst)
 % Computes conditional forecasts.
 %
 % INPUTS
-%  o constrained_paths    [double]      m*p array, where m is the number of constrained endogenous variables and p is the number of constrained periods. 
-%  o constrained_vars     [char]        m*x array holding the names of the controlled endogenous variables. 
+%  o constrained_paths    [double]      m*p array, where m is the number of constrained endogenous variables and p is the number of constrained periods.
+%  o constrained_vars     [char]        m*x array holding the names of the controlled endogenous variables.
 %  o options_cond_fcst    [structure]   containing the options. The fields are:
 %                                                             + replic              [integer]   scalar, number of monte carlo simulations.
 %                                                             + parameter_set       [char]      values of the estimated parameters:
-%                                                                                               "posterior_mode", 
-%                                                                                               "posterior_mean", 
-%                                                                                               "posterior_median", 
-%                                                                                               "prior_mode" or 
-%                                                                                               "prior mean". 
+%                                                                                               "posterior_mode",
+%                                                                                               "posterior_mean",
+%                                                                                               "posterior_median",
+%                                                                                               "prior_mode" or
+%                                                                                               "prior mean".
 %                                                                                   [double]     np*1 array, values of the estimated parameters.
 %                                                             + controlled_varexo   [char]       m*x array, list of controlled exogenous variables.
-%                                                             + conf_sig            [double]     scalar in [0,1], probability mass covered by the confidence bands. 
+%                                                             + conf_sig            [double]     scalar in [0,1], probability mass covered by the confidence bands.
 %
 % OUTPUTS
 %  None.
-% 
+%
 % SPECIAL REQUIREMENTS
 %  This routine has to be called after an estimation statement or an estimated_params block.
 %
 % REMARKS
 %  [1] Results are stored in a structure which is saved in a mat file called conditional_forecasts.mat.
-%  [2] Use the function plot_icforecast to plot the results. 
+%  [2] Use the function plot_icforecast to plot the results.
 
-% Copyright (C) 2006-2016 Dynare Team
+% Copyright (C) 2006-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -119,7 +119,7 @@ if estimated_model
     data_index = dataset_info.missing.aindex;
     gend = dataset_.nobs;
     missing_value = dataset_info.missing.state;
-    
+
     %store qz_criterium
     qz_criterium_old=options_.qz_criterium;
     options_=select_qz_criterium_value(options_);
@@ -147,7 +147,7 @@ if estimated_model
     % add trend to constant
     for obs_iter=1:length(options_.varobs)
         j = strmatch(options_.varobs{obs_iter},M_.endo_names,'exact');
-        constant(j,:) = constant(j,:)+trend_addition(obs_iter,:);        
+        constant(j,:) = constant(j,:)+trend_addition(obs_iter,:);
     end
     trend = constant(oo_.dr.order_var,:);
     InitState(:,1) = atT(:,end);
@@ -162,7 +162,20 @@ else
     end
 end
 
+if options_.logged_steady_state %if steady state was previously logged, undo this
+    oo_.dr.ys=exp(oo_.dr.ys);
+    oo_.steady_state=exp(oo_.steady_state);
+    options_.logged_steady_state=0;
+end
+
 [T,R,ys,info,M_,options_,oo_] = dynare_resolve(M_,options_,oo_);
+
+if options_.loglinear && isfield(oo_.dr,'ys') && options_.logged_steady_state==0 %log steady state
+    oo_.dr.ys=log_variable(1:M_.endo_nbr,oo_.dr.ys,M_);
+    ys=oo_.dr.ys;
+    oo_.steady_state=log_variable(1:M_.endo_nbr,oo_.steady_state,M_);
+    options_.logged_steady_state=1; %set option for use in stoch_simul
+end
 
 if ~isdiagonal(M_.Sigma_e)
     warning(sprintf('The innovations are correlated (the covariance matrix has non zero off diagonal elements), the results of the conditional forecasts will\ndepend on the ordering of the innovations (as declared after varexo) because a Cholesky decomposition is used to factorize the covariance matrix.\n\n=> It is preferable to declare the correlations in the model block (explicitly imposing the identification restrictions), unless you are satisfied\nwith the implicit identification restrictions implied by the Cholesky decomposition.'))
@@ -175,7 +188,14 @@ if ~estimated_model
     if isempty(M_.endo_histval)
         y0 = ys;
     else
-        y0 = M_.endo_histval;
+        if options_.loglinear
+            %make sure that only states are updated (controls have value of 0 in vector)
+            y0=zeros(size(ys));
+            y0_logged = log_variable(1:M_.endo_nbr,M_.endo_histval,M_);
+            y0(M_.endo_histval~=0)=y0_logged(M_.endo_histval~=0);
+        else
+            y0 = M_.endo_histval;
+        end
     end
     InitState(:,1) = y0(oo_.dr.order_var)-ys(oo_.dr.order_var,:); %initial state in deviations from steady state
     trend = repmat(ys(oo_.dr.order_var,:),1,options_cond_fcst.periods+1); %trend needs to contain correct steady state
@@ -205,7 +225,7 @@ jdx = [];
 
 for i = 1:n1
     idx = [idx ; constrained_vars(i,:)];
-%     idx = [idx ; oo_.dr.inv_order_var(constrained_vars(i,:))];
+    %     idx = [idx ; oo_.dr.inv_order_var(constrained_vars(i,:))];
     jdx = [jdx ; strmatch(deblank(options_cond_fcst.controlled_varexo(i,:)),M_.exo_names,'exact')];
 end
 mv = zeros(n1,NumberOfStates);

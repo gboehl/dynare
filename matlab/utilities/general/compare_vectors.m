@@ -1,5 +1,5 @@
 function C = compare_vectors(f, A, B)  % --*-- Unitary tests --*--
- 
+
 % Performs lexicographical comparison of vectors.
 %
 % INPUTS
@@ -7,13 +7,13 @@ function C = compare_vectors(f, A, B)  % --*-- Unitary tests --*--
 %  o A    vector of real numbers.
 %  o B    vector of real numbers.
 %
-% OUTPUTS 
+% OUTPUTS
 %  o C    integer scalar, 1 or 0.
 %
-% REMARKS 
+% REMARKS
 %  o It is assumed that vectors A and B have the same number of elements.
-    
-% Copyright (C) 2013 Dynare Team
+
+% Copyright (C) 2013-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

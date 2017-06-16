@@ -4,15 +4,15 @@ function [F,G] = dynare_gradient(fcn,x,epsilon,varargin)
 % INPUTS:
 %  fcn      [string]  name of the matlab's function.
 %  x        [double]  m*1 vector (where the gradient is evaluated).
-%  epsilon  [double]  scalar or m*1 vector of steps. 
+%  epsilon  [double]  scalar or m*1 vector of steps.
 %
-% OUTPUTS: 
+% OUTPUTS:
 %  F        [double]  n*1 vector, evaluation of the function at x.
 %  G        [double]  n*m matrix, evaluation of the gradient at x.
 %
 % OUTPUTS
-% 
-% Copyright (C) 2010-2012 Dynare Team
+%
+% Copyright (C) 2010-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -51,7 +51,7 @@ for i=1:m
         h = H(i,:);
     else
         h = H(:,i);
-    end   
+    end
     [Fh,junk1,junk2,flag] = feval(fcn, x+transpose(h), varargin{:});
     if flag
         G(:,i) = (Fh-F)/epsilon;

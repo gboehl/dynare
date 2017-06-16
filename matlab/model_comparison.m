@@ -5,9 +5,9 @@ function oo = model_comparison(ModelNames,ModelPriors,oo,options_,fname)
 %
 % INPUTS
 %    ModelNames       [string]     m*1 cell array of string.
-%    ModelPriors      [double]     m*1 vector of prior probabilities 
+%    ModelPriors      [double]     m*1 vector of prior probabilities
 %    oo               [struct]     Dynare results structure
-%    options_         [struct]     Dynare options structure 
+%    options_         [struct]     Dynare options structure
 %    fname            [string]     name of the current mod-file
 %
 % OUTPUTS
@@ -20,7 +20,7 @@ function oo = model_comparison(ModelNames,ModelPriors,oo,options_,fname)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2007-2015 Dynare Team
+% Copyright (C) 2007-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -61,14 +61,14 @@ if isfield(options_,'mc_marginal_density')
     type = options_.mc_marginal_density;
     if strcmp(type,'laplace') || strcmp(type,'Laplace')
         type = 'LaplaceApproximation';
-        title = 'Model Comparison (based on Laplace approximation)'; 
-    elseif strcmp(type,'modifiedharmonicmean') || strcmp(type,'ModifiedHarmonicMean') 
+        title = 'Model Comparison (based on Laplace approximation)';
+    elseif strcmp(type,'modifiedharmonicmean') || strcmp(type,'ModifiedHarmonicMean')
         type = 'ModifiedHarmonicMean';
-        title = 'Model Comparison (based on Modified Harmonic Mean Estimator)'; 
+        title = 'Model Comparison (based on Modified Harmonic Mean Estimator)';
     end
 else
     type = 'LaplaceApproximation';
-    title = 'Model Comparison (based on Laplace approximation)'; 
+    title = 'Model Comparison (based on Laplace approximation)';
 end
 
 % Get the estimated logged marginal densities.
@@ -87,7 +87,7 @@ for i=1:NumberOfModels
         end
     end
     try
-        eval(['MarginalLogDensity(i) = mstruct.oo_.MarginalDensity.' type ';']) 
+        eval(['MarginalLogDensity(i) = mstruct.oo_.MarginalDensity.' type ';'])
     catch
         if strcmpi(type,'LaplaceApproximation')
             if isfield(mstruct.oo_,'mle_mode')
@@ -119,13 +119,13 @@ if prior_flag
     labels = char('Priors','Log Marginal Density','Bayes Ratio', ...
                   'Posterior Model Probability');
     field_labels={'Prior','Log_Marginal_Density','Bayes_Ratio', ...
-                  'Posterior_Model_Probability'};          
+                  'Posterior_Model_Probability'};
     values = [ModelPriors';MarginalLogDensity';exp(lmpd-lmpd(1))'; ...
               elmpd'/sum(elmpd)];
 else
     labels = char('Priors','Log Marginal Density','Bayes Ratio','Posterior Odds Ratio', ...
                   'Posterior Model Probability');
-    field_labels={'Prior','Log_Marginal_Density','Bayes_Ratio','Posterior_Odds_Ratio','Posterior_Model_Probability'};          
+    field_labels={'Prior','Log_Marginal_Density','Bayes_Ratio','Posterior_Odds_Ratio','Posterior_Model_Probability'};
     values = [ModelPriors';MarginalLogDensity'; exp(MarginalLogDensity-MarginalLogDensity(1))'; ...
               exp(lmpd-lmpd(1))'; elmpd'/sum(elmpd)];
 end
@@ -148,7 +148,7 @@ if options_.TeX
     for ii=1:size(labels,1)
         labels_tex=strvcat(labels_tex,strrep(labels(ii,:),' ', '\ '));
     end
-    
+
     dyn_latex_table(M_temp,options_,title,['model_comparison',type],headers_tex,labels_tex,values,0,16,6);
 end
 

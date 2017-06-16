@@ -17,7 +17,7 @@ function [dr,info]=PCL_resol(ys,check_flag)
 %    info=6:         The jacobian evaluated at the steady state is complex.
 %    info=19:        The steadystate file did not compute the steady state (inconsistent deep parameters).
 %    info=20:        can't find steady state info(2) contains sum of sqare residuals
-%    info=21:        steady state is complex 
+%    info=21:        steady state is complex
 %                               info(2) contains sum of sqare of
 %                               imaginary part of steady state
 %    info=30:        Variance can't be computed
@@ -25,7 +25,7 @@ function [dr,info]=PCL_resol(ys,check_flag)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2001-2012 Dynare Team
+% Copyright (C) 2001-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -45,7 +45,7 @@ function [dr,info]=PCL_resol(ys,check_flag)
 global M_ options_ oo_
 global it_
 
-jacobian_flag = 0; 
+jacobian_flag = 0;
 
 info = 0;
 
@@ -58,7 +58,7 @@ end
 % check if ys is steady state
 tempex = oo_.exo_simul;
 oo_.exo_simul = repmat(oo_.exo_steady_state',M_.maximum_lag+M_.maximum_lead+1,1);
-if M_.exo_det_nbr > 0 
+if M_.exo_det_nbr > 0
     tempexdet = oo_.exo_det_simul;
     oo_.exo_det_simul = repmat(oo_.exo_det_steady_state',M_.maximum_lag+M_.maximum_lead+1,1);
 end
@@ -70,7 +70,7 @@ if options_.steadystate_flag
     [dr.ys,check1] = feval([M_.fname '_steadystate'],dr.ys,...
                            [oo_.exo_steady_state; ...
                         oo_.exo_det_steady_state]);
-    if size(dr.ys,1) < M_.endo_nbr 
+    if size(dr.ys,1) < M_.endo_nbr
         if length(M_.aux_vars) > 0
             dr.ys = add_auxiliary_variables_to_steadystate(dr.ys,M_.aux_vars,...
                                                            M_.fname,...
@@ -143,5 +143,5 @@ tempex = [];
 
 % 01/01/2003 MJ added dr_algo == 1
 % 08/24/2001 MJ uses Schmitt-Grohe and Uribe (2001) constant correction
-%               in dr.ghs2 
+%               in dr.ghs2
 % 05/26/2003 MJ added temporary values for oo_.exo_simul

@@ -1,5 +1,5 @@
 function [b,rts,ia,nexact,nnumeric,lgroots,aimcode] = ...
-                        SPAmalg(h,neq,nlag,nlead,condn,uprbnd)
+    SPAmalg(h,neq,nlag,nlead,condn,uprbnd)
 %  [b,rts,ia,nexact,nnumeric,lgroots,aimcode] = ...
 %                       SPAmalg(h,neq,nlag,nlead,condn,uprbnd)
 %
@@ -8,9 +8,9 @@ function [b,rts,ia,nexact,nnumeric,lgroots,aimcode] = ...
 %  roots.  This procedure will fail if the companion matrix is
 %  defective and does not have a linearly independent set of
 %  eigenvectors associated with the big roots.
-% 
+%
 %  Input arguments:
-% 
+%
 %    h         Structural coefficient matrix (neq,neq*(nlag+1+nlead)).
 %    neq       Number of equations.
 %    nlag      Number of lags.
@@ -19,9 +19,9 @@ function [b,rts,ia,nexact,nnumeric,lgroots,aimcode] = ...
 %              by numeric_shift and reduced_form.
 %    uprbnd    Inclusive upper bound for the modulus of roots
 %              allowed in the reduced form.
-% 
+%
 %  Output arguments:
-% 
+%
 %    b         Reduced form coefficient matrix (neq,neq*nlag).
 %    rts       Roots returned by eig.
 %    ia        Dimension of companion matrix (number of non-trivial
@@ -57,7 +57,7 @@ function [b,rts,ia,nexact,nnumeric,lgroots,aimcode] = ...
 % pages 472-489
 
 b=[];rts=[];ia=[];nexact=[];nnumeric=[];lgroots=[];aimcode=[];
-if(nlag<1 || nlead<1) 
+if(nlag<1 || nlead<1)
     error('Aim_eig: model must have at least one lag and one lead');
 end
 % Initialization.
@@ -66,26 +66,26 @@ bcols=neq*nlag;q=zeros(qrows,qcols);rts=zeros(qcols,1);
 [h,q,iq,nexact]=SPExact_shift(h,q,iq,qrows,qcols,neq);
 if (iq>qrows)
     aimcode = 61;
-    return;
+    return
 end
 [h,q,iq,nnumeric]=SPNumeric_shift(h,q,iq,qrows,qcols,neq,condn);
 if (iq>qrows)
     aimcode = 62;
-    return;
+    return
 end
 [a,ia,js] = SPBuild_a(h,qcols,neq);
 if (ia ~= 0)
-    if any(any(isnan(a))) || any(any(isinf(a))) 
+    if any(any(isnan(a))) || any(any(isinf(a)))
         disp('A is NAN or INF')
-        aimcode=63; 
-        return 
-    end 
+        aimcode=63;
+        return
+    end
     [w,rts,lgroots,flag_trouble]=SPEigensystem(a,uprbnd,min(length(js),qrows-iq+1));
-    if flag_trouble==1; 
-        disp('Problem in SPEIG'); 
+    if flag_trouble==1
+        disp('Problem in SPEIG');
         aimcode=64;
         return
-    end 
+    end
     q = SPCopy_w(q,w,js,iq,qrows);
 end
 test=nexact+nnumeric+lgroots;

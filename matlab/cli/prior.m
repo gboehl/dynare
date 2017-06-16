@@ -11,7 +11,7 @@ function varargout = prior(varargin)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2015-2016 Dynare Team
+% Copyright (C) 2015-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -42,7 +42,7 @@ if isempty(varargin) || ( isequal(length(varargin), 1) && isequal(varargin{1},'h
     return
 end
 
-global options_ M_ estim_params_ bayestopt_ oo_ 
+global options_ M_ estim_params_ bayestopt_ oo_
 
 donesomething = false;
 
@@ -53,11 +53,11 @@ end
 
 if (size(estim_params_.var_endo,1) || size(estim_params_.corrn,1))
     % Prior over measurement errors are defined...
-   if ((isfield(options_,'varobs') && isempty(options_.varobs)) || ~isfield(options_,'varobs'))
-       % ... But the list of observed variabled is not yet defined.
-       warning('Prior detected on measurement erros, but no list of observed variables (varobs is missing)!')
-       return
-   end
+    if ((isfield(options_,'varobs') && isempty(options_.varobs)) || ~isfield(options_,'varobs'))
+        % ... But the list of observed variabled is not yet defined.
+        warning('Prior detected on measurement erros, but no list of observed variables (varobs is missing)!')
+        return
+    end
 end
 
 % Fill or update bayestopt_ structure
@@ -103,6 +103,9 @@ if ismember('simulate', varargin) % Prior simulations (BK).
     disp(['mjdgges crash share                   = ' num2str(results.dll.problem_share)])
     disp(['Steady state problem share            = ' num2str(results.ss.problem_share)])
     disp(['Complex steady state  share           = ' num2str(results.ss.complex_share)])
+    if options_.loglinear
+        disp(['Nonpositive steady state share        = ' num2str(results.ss.nonpositive_share)])
+    end
     disp(['Analytical steady state problem share = ' num2str(results.ass.problem_share)])
     skipline(2)
     donesomething = true;
@@ -114,7 +117,7 @@ if ismember('optimize', varargin) % Prior optimization.
 end
 
 if ismember('moments', varargin) % Prior simulations (2nd order moments).
-    % Set estimated parameters to the prior mode...
+                                 % Set estimated parameters to the prior mode...
     xparam1 = BayesOptions.p5;
     % ... Except for uniform priors (use the prior mean)!
     k = find(isnan(xparam1));

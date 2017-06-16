@@ -1,9 +1,9 @@
 function mh_autocorrelation_function(options_,M_,estim_params_,type,blck,name1,name2)
 % This function plots the autocorrelation of the sampled draws in the
 % posterior distribution.
-% 
 %
-% INPUTS 
+%
+% INPUTS
 %
 %   options_        [structure]    Dynare structure.
 %   M_              [structure]    Dynare structure (related to model definition).
@@ -11,14 +11,14 @@ function mh_autocorrelation_function(options_,M_,estim_params_,type,blck,name1,n
 %   type            [string]       'DeepParameter', 'MeasurementError' (for measurement equation error) or 'StructuralShock' (for structural shock).
 %   blck            [integer]      Number of the mh chain.
 %   name1           [string]       Object name.
-%   name2           [string]       Object name. 
-%    
-% OUTPUTS 
+%   name2           [string]       Object name.
+%
+% OUTPUTS
 %   None
-%        
+%
 % SPECIAL REQUIREMENTS
 
-% Copyright (C) 2003-2013 Dynare Team
+% Copyright (C) 2003-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -36,7 +36,7 @@ function mh_autocorrelation_function(options_,M_,estim_params_,type,blck,name1,n
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 % Cet the column index:
-if nargin<7    
+if nargin<7
     column = name2index(options_, M_, estim_params_, type, name1);
 else
     column = name2index(options_, M_, estim_params_, type, name1, name2);
@@ -88,10 +88,10 @@ else
 end
 
 if options_.mh_nblck>1
-    FigureName = [ FigureName , ' (block number' int2str(blck)  ').']; 
+    FigureName = [ FigureName , ' (block number' int2str(blck)  ').'];
 end
 
-hh=dyn_figure(options_,'Name',FigureName);
+hh=dyn_figure(options_.nodisplay,'Name',FigureName);
 
 bar(0:options_.mh_autocorrelation_function_size,autocor,'k');
 axis tight
@@ -104,4 +104,4 @@ if ~exist([M_.fname filesep 'graphs'])
 end
 
 plot_name=get_the_name(column,0,M_,estim_params_,options_);
-dyn_saveas(hh,[M_.fname, filesep, 'graphs', filesep, 'MH_Autocorrelation_' plot_name],options_)
+dyn_saveas(hh,[M_.fname, filesep, 'graphs', filesep, 'MH_Autocorrelation_' plot_name],options_.nodisplay,options_.graph_format)

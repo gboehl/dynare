@@ -1,7 +1,7 @@
 function info = isaletter(str)
 % Returns 1 if the string str has at least one letter, 0 otherwise.
 
-% Copyright (C) 2013 Dynare Team
+% Copyright (C) 2013-2014 Dynare Team
 %
 % This file is part of Dynare.
 %

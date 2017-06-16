@@ -4,21 +4,21 @@ function [xparam1, estim_params_, bayestopt_, lb, ub, M_]=set_prior(estim_params
 %
 % INPUTS
 %    o estim_params_    [structure] characterizing parameters to be estimated.
-%    o M_               [structure] characterizing the model. 
-%    o options_         [structure] 
-%    
+%    o M_               [structure] characterizing the model.
+%    o options_         [structure]
+%
 % OUTPUTS
 %    o xparam1          [double]    vector of parameters to be estimated (initial values)
 %    o estim_params_    [structure] characterizing parameters to be estimated
 %    o bayestopt_       [structure] characterizing priors
-%    o lb               [double]    vector of lower bounds for the estimated parameters. 
+%    o lb               [double]    vector of lower bounds for the estimated parameters.
 %    o ub               [double]    vector of upper bounds for the estimated parameters.
 %    o M_               [structure] characterizing the model.
-%    
+%
 % SPECIAL REQUIREMENTS
 %    None
 
-% Copyright (C) 2003-2013 Dynare Team
+% Copyright (C) 2003-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -64,7 +64,7 @@ bayestopt_.name = {};
 if nvx
     xparam1 = estim_params_.var_exo(:,2);
     ub = estim_params_.var_exo(:,4);
-    lb = estim_params_.var_exo(:,3); 
+    lb = estim_params_.var_exo(:,3);
     bayestopt_.pshape =  estim_params_.var_exo(:,5);
     bayestopt_.p1 =  estim_params_.var_exo(:,6);
     bayestopt_.p2 =  estim_params_.var_exo(:,7);
@@ -88,8 +88,8 @@ if nvn
         estim_params_.nvn_observable_correspondence(i,1)=obsi_;
     end
     xparam1 = [xparam1; estim_params_.var_endo(:,2)];
-    ub = [ub; estim_params_.var_endo(:,4)]; 
-    lb = [lb; estim_params_.var_endo(:,3)]; 
+    ub = [ub; estim_params_.var_endo(:,4)];
+    lb = [lb; estim_params_.var_endo(:,3)];
     bayestopt_.pshape = [ bayestopt_.pshape; estim_params_.var_endo(:,5)];
     bayestopt_.p1 = [ bayestopt_.p1; estim_params_.var_endo(:,6)];
     bayestopt_.p2 = [ bayestopt_.p2; estim_params_.var_endo(:,7)];
@@ -158,7 +158,7 @@ bayestopt_.p7 = bayestopt_.p6 ;
 %% check for point priors and disallow them as they do not work with MCMC
 if any(bayestopt_.p2 ==0)
     error(sprintf(['Error in prior for %s: you cannot use a point prior in estimation. Either increase the prior standard deviation',...
-        ' or fix the parameter completely.'], bayestopt_.name{bayestopt_.p2 ==0}))
+                   ' or fix the parameter completely.'], bayestopt_.name{bayestopt_.p2 ==0}))
 end
 
 % generalized location parameters by default for beta distribution
@@ -169,12 +169,15 @@ k1 = find(isnan(bayestopt_.p4(k)));
 bayestopt_.p4(k(k1)) = ones(length(k1),1);
 for i=1:length(k)
     [bayestopt_.p6(k(i)), bayestopt_.p7(k(i))] = beta_specification(bayestopt_.p1(k(i)), bayestopt_.p2(k(i))^2, bayestopt_.p3(k(i)), bayestopt_.p4(k(i)), bayestopt_.name{k(i)});
+    if bayestopt_.p6(k(i))<1 || bayestopt_.p7(k(i))<1
+        fprintf('Prior distribution for parameter %s has unbounded density!\n',bayestopt_.name{k(i)})
+    end
     m = compute_prior_mode([ bayestopt_.p6(k(i)) , bayestopt_.p7(k(i)) , bayestopt_.p3(k(i)) , bayestopt_.p4(k(i)) ],1);
     if length(m)==1
         bayestopt_.p5(k(i)) = m;
     else
         disp(['Prior distribution for parameter ' bayestopt_.name{k(i)}  ' has two modes!'])
-        bayestopt_.p5(k(i)) = m(1); 
+        bayestopt_.p5(k(i)) = m(1);
     end
 end
 
@@ -186,6 +189,9 @@ bayestopt_.p3(k(k1)) = zeros(length(k1),1);
 bayestopt_.p4(k(k2)) = Inf(length(k2),1);
 for i=1:length(k)
     [bayestopt_.p6(k(i)), bayestopt_.p7(k(i))] = gamma_specification(bayestopt_.p1(k(i)), bayestopt_.p2(k(i))^2, bayestopt_.p3(k(i)), bayestopt_.name{k(i)});
+    if bayestopt_.p6(k(i))<1
+        fprintf('Prior distribution for parameter %s has unbounded density!\n',bayestopt_.name{k(i)})
+    end
     bayestopt_.p5(k(i)) = compute_prior_mode([ bayestopt_.p6(k(i)) , bayestopt_.p7(k(i)) , bayestopt_.p3(k(i)) ], 2) ;
 end
 

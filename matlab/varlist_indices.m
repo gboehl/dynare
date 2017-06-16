@@ -1,10 +1,10 @@
 function [i_var,nvar,index_uniques] = varlist_indices(sublist,list)
-% function [i_var,nvar] = varlist_indices(sublist,list)
+% function [i_var,nvar,index_uniques] = varlist_indices(sublist,list)
 % returns the indices of a list of endogenous variables
 %
 % INPUT
 %   sublist:    sublist of variables
-%   list:       list of variables 
+%   list:       list of variables
 %
 % OUTPUT
 %   i_var:      variable indices in M_.endo_names
@@ -14,7 +14,7 @@ function [i_var,nvar,index_uniques] = varlist_indices(sublist,list)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2010-2014 Dynare Team
+% Copyright (C) 2010-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

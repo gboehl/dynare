@@ -12,7 +12,7 @@ function bvar_density(maxnlags)
 %    none
 
 % Copyright (C) 2003-2007 Christopher Sims
-% Copyright (C) 2007-2016 Dynare Team
+% Copyright (C) 2007-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -37,16 +37,16 @@ for nlags = 1:maxnlags
     [ny, nx, posterior, prior] = bvar_toolbox(nlags);
     oo_.bvar.posterior{nlags}=posterior;
     oo_.bvar.prior{nlags}=prior;
-    
+
     posterior_int = matrictint(posterior.S, posterior.df, posterior.XXi);
     prior_int = matrictint(prior.S, prior.df, prior.XXi);
-    
+
     lik_nobs = posterior.df - prior.df;
-    
+
     log_dnsty = posterior_int - prior_int - 0.5*ny*lik_nobs*log(2*pi);
-    
+
     oo_.bvar.log_marginal_data_density(nlags)=log_dnsty;
-    
+
     skipline()
     fprintf('The marginal log density of the BVAR(%g) model is equal to %10.4f\n', ...
             nlags, log_dnsty);
@@ -61,7 +61,7 @@ function w = matrictint(S, df, XXi)
 % S:   parameter of inverse-Wishart distribution
 % df:  number of degrees of freedom of inverse-Wishart distribution
 % XXi: first component of VCV matrix of matrix-normal distribution
-% 
+%
 % Computes the integral over (Phi, Sigma) of:
 %
 % det(Sigma)^(-k/2)*exp(-0.5*Tr((Phi-PhiHat)'*(XXi)^(-1)*(Phi-PhiHat)*Sigma^(-1)))*

@@ -1,18 +1,18 @@
 function [hptrend,hpcycle] = sample_hp_filter(y,s)
 % HP filters a collection of time series.
-% 
-% INPUTS 
+%
+% INPUTS
 %   y                        [double]   T*n matrix of data (n is the number of variables)
 %   s                        [double]   scalar, smoothing parameter.
-% 
-% OUTPUTS 
+%
+% OUTPUTS
 %   hptrend                  [double]   T*n matrix, trend component of y.
-%   hpcycle                  [double]   T*n matrix, cycle component of y.  
-%               
+%   hpcycle                  [double]   T*n matrix, cycle component of y.
+%
 % SPECIAL REQUIREMENTS
-%    
+%
 
-% Copyright (C) 2010-2011 Dynare Team
+% Copyright (C) 2010-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

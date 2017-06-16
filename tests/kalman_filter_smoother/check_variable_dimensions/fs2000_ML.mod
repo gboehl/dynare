@@ -116,7 +116,7 @@ corr e_m, e_a, 0;
 stderr gp_obs, 0.01;
 end;
 options_.prior_trunc=0;
-estimation(order=1,datafile='../fsdat_simul', nobs=192, loglinear, forecast=8,smoother,filtered_vars,filter_step_ahead=[1,2,4],filter_decomposition,selected_variables_only)  m P c e W R k d y gy_obs;
+estimation(order=1,datafile='../fsdat_simul', nobs=192, loglinear, forecast=8,smoother,filter_covariance,filtered_vars,filter_step_ahead=[1,2,4],filter_decomposition,selected_variables_only)  m P c e W R k d y gy_obs;
 
 
 if size(oo_.FilteredVariablesKStepAhead,3)~=(options_.nobs+max(options_.filter_step_ahead)) || ...
@@ -124,8 +124,8 @@ if size(oo_.FilteredVariablesKStepAhead,3)~=(options_.nobs+max(options_.filter_s
     error('FilteredVariablesKStepAhead has the wrong length')    
 end
 
-if size(oo_.FilteredVariablesKStepAheadVariances,4)~=(options_.nobs+max(options_.filter_step_ahead)) || ...
-        size(oo_.FilteredVariablesKStepAheadVariances,1)~=(length(options_.filter_step_ahead))
+if options_.filter_covariance && (size(oo_.FilteredVariablesKStepAheadVariances,4)~=(options_.nobs+max(options_.filter_step_ahead)) || ...
+        size(oo_.FilteredVariablesKStepAheadVariances,1)~=(length(options_.filter_step_ahead)))
     error('FilteredVariablesKStepAhead has the wrong length')    
 end
 

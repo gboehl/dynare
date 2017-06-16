@@ -12,16 +12,16 @@ function r = lnsrch1_wrapper_one_boundary(ya, y_index, fname, y, x, params, stea
 %   x                   [matrix]        All the exogenous variables of the model
 %   params              [vector]        All the parameters of the model
 % OUTPUTS
-%   r                   [vector]        The residuals of the current block      
-%  
+%   r                   [vector]        The residuals of the current block
+%
 % ALGORITHM
 %   none.
-%    
+%
 % SPECIAL REQUIREMENTS
 %   none.
-%  
+%
 
-% Copyright (C) 2009-2011 Dynare Team
+% Copyright (C) 2009-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

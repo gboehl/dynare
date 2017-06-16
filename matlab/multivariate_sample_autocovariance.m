@@ -1,17 +1,17 @@
 function autocov = multivariate_sample_autocovariance(data,q)
 % Computes the autocovariance function of multivariate time series.
-% 
 %
-% INPUTS 
+%
+% INPUTS
 %   data            [double]       T*m matrix of data.
-%   q               [integer]      Order of the autocovariance function. 
-%    
-% OUTPUTS 
+%   q               [integer]      Order of the autocovariance function.
+%
+% OUTPUTS
 %   autocov         [double]       m*m*(q+1) array, autocovariance function.
 %
 % SPECIAL REQUIREMENTS
 
-% Copyright (C) 2009 Dynare Team
+% Copyright (C) 2009-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

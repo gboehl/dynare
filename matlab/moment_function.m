@@ -3,19 +3,19 @@ function [g,grad,hess,flag] = moment_function(xparams,sample_moments,dataset,opt
 % ).
 %
 % INPUTS:
-%  xparams          [double]  p*1 vector of estimated parameters. 
+%  xparams          [double]  p*1 vector of estimated parameters.
 %  sample_moments   [double]  n*1 vector of sample moments (n>=p).
 %  options          [      ]  Structure defining options for SMM.
 %  parallel         [      ]  Structure defining the parallel mode settings (optional).
 %
-% OUTPUTS: 
+% OUTPUTS:
 %  g                [double]  n*1 vector, the gap between simulated and sample moments.
 %  flag             [intger]  empty matrix.
 %
 % SPECIAL REQUIREMENTS
 %  The user has to provide a file where the moment conditions are defined.
 
-% Copyright (C) 2010-2012 Dynare Team
+% Copyright (C) 2010-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -30,7 +30,7 @@ function [g,grad,hess,flag] = moment_function(xparams,sample_moments,dataset,opt
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.    
+% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 global M_ options_
 persistent mainStream mainState
@@ -61,7 +61,7 @@ end
 
 if penalty>0
     flag = 0;
-    return;
+    return
 end
 
 save('estimated_parameters.mat','xparams');
@@ -106,7 +106,7 @@ else% parallel mode.
             end
         end
         for j=1:parallel(i).number_of_jobs
-            if (strcmpi(hostname,machine) && j>1) || ~strcmpi(hostname,machine)  
+            if (strcmpi(hostname,machine) && j>1) || ~strcmpi(hostname,machine)
                 job_number = job_number + 1;
                 unix(['ssh -A ' parallel(i).login '@' machine ' ./call_matlab_session.sh job' int2str(job_number) '.m &']);
             end
@@ -117,7 +117,7 @@ else% parallel mode.
     eval('job1;')
     tElapsedMasterJob = etime(clock, tStartMasterJob);
     TimeLimit = tElapsedMasterJob*1.2;
-    % Master waits for the  slaves' output... 
+    % Master waits for the  slaves' output...
     tStart = clock;
     tElapsed = 0;
     while tElapsed<TimeLimit
@@ -132,7 +132,7 @@ else% parallel mode.
             simulated_moments = load(['./intermediary_results_from_master_and_slaves/simulated_moments_slave_' int2str(i) '.dat'],'-ascii');
             tmp = tmp + simulated_moments;
         end
-        simulated_moments = tmp / job_number;        
+        simulated_moments = tmp / job_number;
     catch
         flag = 0;
         return

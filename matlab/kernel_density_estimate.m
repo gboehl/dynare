@@ -1,30 +1,30 @@
-function [abscissa,f] = kernel_density_estimate(data,number_of_grid_points,number_of_draws,bandwidth,kernel_function) 
-% Estimates a continuous density. 
-% 
+function [abscissa,f] = kernel_density_estimate(data,number_of_grid_points,number_of_draws,bandwidth,kernel_function)
+% Estimates a continuous density.
+%
 % INPUTS
 %   data                  [double]  Vector (number_of_draws*1) of draws.
 %   number_of_grid_points [integer] Scalar, number of points where the density is estimated.
-%                                   This (positive) integer must be a power of two.  
+%                                   This (positive) integer must be a power of two.
 %   number_of_draws       [integer] Scalar, number of draws.
-%   bandwidth             [double]  Real positive scalar.                                  
+%   bandwidth             [double]  Real positive scalar.
 %   kernel_function       [string]  Name of the kernel function: 'gaussian', 'triweight',
-%                                   'uniform', 'triangle', 'epanechnikov', 'quartic', 
+%                                   'uniform', 'triangle', 'epanechnikov', 'quartic',
 %                                   'triweight' and 'cosinus'
 %
 % OUTPUTS
 %    abscissa             [double] Vector (number_of_grid_points*1) of values on the abscissa axis.
-%    f:                   [double] Vector (number_of_grid_points*1) of values on the ordinate axis, 
+%    f:                   [double] Vector (number_of_grid_points*1) of values on the ordinate axis,
 %                                  (density estimates).
-%        
+%
 % SPECIAL REQUIREMENTS
 %    none.
 %
 % REFERENCES
 %    A kernel density estimator is used (see Silverman [1986], "Density estimation for statistics and data analysis")
-%    The code is adapted from Anders Holtsberg's matlab toolbox (stixbox). 
+%    The code is adapted from Anders Holtsberg's matlab toolbox (stixbox).
 %
 
-% Copyright (C) 2004-2008 Dynare Team
+% Copyright (C) 2004-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -53,19 +53,19 @@ if (abs(test-round(test)) > 1e-12)
 end
 
 %% Kernel specification.
-if strcmpi(kernel_function,'gaussian') 
+if strcmpi(kernel_function,'gaussian')
     kernel = @(x) inv(sqrt(2*pi))*exp(-0.5*x.^2);
-elseif strcmpi(kernel_function,'uniform') 
-    kernel = @(x) 0.5*(abs(x) <= 1); 
-elseif strcmpi(kernel_function,'triangle') 
+elseif strcmpi(kernel_function,'uniform')
+    kernel = @(x) 0.5*(abs(x) <= 1);
+elseif strcmpi(kernel_function,'triangle')
     kernel = @(x) (1-abs(x)).*(abs(x) <= 1);
-elseif strcmpi(kernel_function,'epanechnikov') 
+elseif strcmpi(kernel_function,'epanechnikov')
     kernel = @(x) 0.75*(1-x.^2).*(abs(x) <= 1);
-elseif strcmpi(kernel_function,'quartic') 
+elseif strcmpi(kernel_function,'quartic')
     kernel = @(x) 0.9375*((1-x.^2).^2).*(abs(x) <= 1);
-elseif strcmpi(kernel_function,'triweight') 
+elseif strcmpi(kernel_function,'triweight')
     kernel = @(x) 1.09375*((1-x.^2).^3).*(abs(x) <= 1);
-elseif strcmpi(kernel_function,'cosinus') 
+elseif strcmpi(kernel_function,'cosinus')
     kernel = @(x) (pi/4)*cos((pi/2)*x).*(abs(x) <= 1);
 end
 
@@ -73,9 +73,9 @@ end
 lower_bound  = min(data) - (max(data)-min(data))/3;
 upper_bound  = max(data) + (max(data)-min(data))/3;
 abscissa = linspace(lower_bound,upper_bound,number_of_grid_points)';
-inc = abscissa(2)-abscissa(1); 
+inc = abscissa(2)-abscissa(1);
 xi  = zeros(number_of_grid_points,1);
-xa  = (data-lower_bound)/(upper_bound-lower_bound)*number_of_grid_points; 
+xa  = (data-lower_bound)/(upper_bound-lower_bound)*number_of_grid_points;
 for i = 1:number_of_draws
     indx = floor(xa(i));
     temp = xa(i)-indx;

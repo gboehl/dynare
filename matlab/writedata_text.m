@@ -1,6 +1,6 @@
 function writedata_text(fname)
 % function writedata(fname)
-% store endogenous and exogenous variables in a text file 
+% store endogenous and exogenous variables in a text file
 % INPUT
 %   fname: name of the text file
 % OUTPUT
@@ -10,7 +10,7 @@ function writedata_text(fname)
 % SPECIAL REQUIREMENT
 %   none
 
-% Copyright (C) 2007-2009 Dynare Team
+% Copyright (C) 2007-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -32,7 +32,7 @@ S=[fname '_endo.dat'];
 fid = fopen(S,'w');
 for i = 1:size(M_.endo_names,1)
     fprintf(fid,'%s ',M_.endo_names(i,:)');
-end;
+end
 fprintf(fid,'\n');
 for i = 1:size(oo_.endo_simul,2)
     fprintf(fid,'%15.7f ',oo_.endo_simul(:,i));
@@ -44,11 +44,10 @@ S=[fname '_exo.dat'];
 fid = fopen(S,'w');
 for i = 1:size(M_.exo_names,1)
     fprintf(fid,'%s ',M_.exo_names(i,:));
-end;
+end
 fprintf(fid,'\n');
 for i = 1:size(oo_.exo_simul,1)
     fprintf(fid,'%15.7f ',oo_.exo_simul(i,:));
     fprintf(fid,'\n');
 end
 fclose(fid);
-return;

@@ -72,4 +72,4 @@ end;
 
 steady(nocheck);
 
-Simulations = extended_path_mc([], 10, 5, [], options_, M_, oo_);
+Simulations = extended_path_mc([], 2, 2, [], options_, M_, oo_);

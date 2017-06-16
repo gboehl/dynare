@@ -1,23 +1,23 @@
 function [H,G,retcode]=discretionary_policy_engine(AAlag,AA0,AAlead,BB,bigw,instr_id,beta,solve_maxit,discretion_tol,qz_criterium,H00,verbose)
 
 % Solves the discretionary problem for a model of the form:
-% 
+%
 %   Loss=E_0 sum_{t=0}^{\infty} beta^t [y_t'*W*y+x_t'*Q*x_t]
 %   subject to
 %   AAlag*yy_{t-1}+AA0*yy_t+AAlead*yy_{t+1}+BB*e=0
-% 
+%
 % with W the weight on the variables in vector y_t.
-% 
+%
 % The solution takes the form
 %   y_t=H*y_{t-1}+G*e_t
 % where H=[H1;F1] and G=[H2;F2].
-% 
+%
 % We use the Dennis (2007, Macroeconomic Dynamics) algorithm and so we need
 % to re-write the model in the form
 %  A0*y_t=A1*y_{t-1}+A2*y_{t+1}+A3*x_t+A4*x_{t+1}+A5*e_t, with W the
 % weight on the y_t vector and Q the weight on the x_t vector of
 % instruments.
-% 
+%
 % Inputs:
 %   AAlag               [double]    matrix of coefficients on lagged
 %                                   variables
@@ -28,7 +28,7 @@ function [H,G,retcode]=discretionary_policy_engine(AAlag,AA0,AAlead,BB,bigw,inst
 %   BB                  [double]    matrix of coefficients on
 %                                   shocks
 %   bigw                [double]    matrix of coefficients on variables in
-%                                   loss/objective function; stacks [W and Q]                                   
+%                                   loss/objective function; stacks [W and Q]
 %   instr_id            [double]    location vector of the instruments in the yy_t vector.
 %   beta                [scalar]    planner discount factor
 %   solve_maxit         [scalar]    maximum number of iterations
@@ -41,14 +41,14 @@ function [H,G,retcode]=discretionary_policy_engine(AAlag,AA0,AAlead,BB,bigw,inst
 %   H                   [double]    (endo_nbr*endo_nbr) solution matrix for endogenous
 %                                   variables, stacks [H1 and H1]
 %   G                   [double]    (endo_nbr*exo_nbr) solution matrix for shocks, stacks [H2 and F2]
-%                                   
+%
 %   retcode             [scalar]    return code
 %
 % Algorithm:
 %  Dennis, Richard (2007): Optimal policy in rational expectations models: new solution algorithms,
-%       Macroeconomic Dynamics, 11, 31–55.
+%       Macroeconomic Dynamics, 11, 31Â–55.
 
-% Copyright (C) 2007-2015 Dynare Team
+% Copyright (C) 2007-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -121,10 +121,10 @@ while 1
     end
     D=A0-A2*H1-A4*F1; %equation (20)
     Dinv=inv(D);
-    A3DPD=A3'*Dinv'*P*Dinv; 
+    A3DPD=A3'*Dinv'*P*Dinv;
     F1=-(Q+A3DPD*A3)\(A3DPD*A1); %component of (26)
     H1=Dinv*(A1+A3*F1); %component of (27)
-    
+
     [rcode,NQ]=CheckConvergence([H1;F1]-[H10;F10],iter,solve_maxit,discretion_tol);
     if rcode
         break
@@ -174,7 +174,7 @@ else
     H(instr_id,endo_augm_id)=F1;
     G(endo_augm_id,:)=H2;
     G(instr_id,:)=F2;
-    
+
     % Account for auxilliary variables
     H(:,instr_id(aux))=H(:,end-(AuxiliaryVariables_nbr-1:-1:0));
     H=H(1:endo_nbr,1:endo_nbr);
@@ -239,11 +239,11 @@ function v= SylvesterDoubling (d,g,h,tol,maxit)
 %   to solve the  Sylvester equation v  = d + g v h
 
 v = d;
-for i =1:maxit,
+for i =1:maxit
     vadd = g*v*h;
     v = v+vadd;
     if norm (vadd,1) <= (tol*norm(v,1))
-        break;
+        break
     end
     g = g*g;
     h = h*h;
@@ -253,7 +253,7 @@ end
 
 function v = SylvesterHessenbergSchur(d,g,h)
 %
-% DSYLHS  Solves a discrete time sylvester equation	using the
+% DSYLHS  Solves a discrete time sylvester equation     using the
 % Hessenberg-Schur algorithm
 %
 % v = DSYLHS(g,d,h) computes the matrix v that satisfies the
@@ -295,13 +295,13 @@ temp = [];
 
 %First handle the i = 1 case outside the loop
 
-if i< n,
-    if abs(h(i+1,i)) < tol,
+if i< n
+    if abs(h(i+1,i)) < tol
         v(:,i)= (w - g*h(i,i))\d(:,i);
         i = i+1;
     else
         A = [w-g*h(i,i)     (-g*h(i+1,i));...
-            -g*h(i,i+1)    w-g*h(i+1,i+1)];
+             -g*h(i,i+1)    w-g*h(i+1,i+1)];
         C = [d(:,i); d(:,i+1)];
         X = A\C;
         v(:,i) = X(1:m,:);
@@ -312,17 +312,17 @@ end
 
 %Handle the rest of the matrix with the possible exception of i=n
 
-while i<n,
+while i<n
     b= i-1;
     temp = [temp g*v(:,size(temp,2)+1:b)]; %#ok<AGROW>
-    if abs(h(i+1,i)) < tol,
+    if abs(h(i+1,i)) < tol
         v(:,i) = (w - g*h(i,i))\(d(:,i) + temp*h(1:b,i));
         i = i+1;
     else
         A = [w - g*h(i,i)    (-g*h(i+1,i));   ...
-            -g*h(i,i+1)    w - g*h(i+1,i+1)];
+             -g*h(i,i+1)    w - g*h(i+1,i+1)];
         C = [d(:,i) + temp*h(1:b,i);         ...
-            d(:,i+1) + temp*h(1:b,i+1)];
+             d(:,i+1) + temp*h(1:b,i+1)];
         X = A\C;
         v(:,i) = X(1:m,:);
         v(:,i+1) = X(m+1:2*m, :);
@@ -332,7 +332,7 @@ end
 
 %Handle the i = n case if i=n was not in a 2-2 block
 
-if i==n,
+if i==n
     b = i-1;
     temp = [temp g*v(:,size(temp,2)+1:b)];
     v(:,i) = (w-g*h(i,i))\(d(:,i) + temp*h(1:b,i));

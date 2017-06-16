@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010-2013 Dynare Team
+ * Copyright (C) 2010-2017 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -51,5 +51,3 @@ ModelSolution::ModelSolution(const std::string &basename,  size_t n_endo_arg, si
             zeta_mixed_arg.begin(), zeta_mixed_arg.end(),
             back_inserter(zeta_back_mixed));
 }
-
-

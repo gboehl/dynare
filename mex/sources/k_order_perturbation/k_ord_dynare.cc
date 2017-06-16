@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2014 Dynare Team
+ * Copyright (C) 2008-2017 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -63,7 +63,7 @@ KordpDynare::KordpDynare(const vector<string> &endo, int num_endo,
                          const int nsteps, int norder,
                          Journal &jr, DynamicModelAC *dynamicModelFile_arg, double sstol,
                          const vector<int> &var_order, const TwoDMatrix &llincidence, double criterium,
-			 TwoDMatrix *g1_arg, TwoDMatrix *g2_arg, TwoDMatrix *g3_arg) throw (TLException) :
+                         TwoDMatrix *g1_arg, TwoDMatrix *g2_arg, TwoDMatrix *g3_arg) throw (TLException) :
   nStat(nstat), nBoth(nboth), nPred(npred), nForw(nforw), nExog(nexog), nPar(npar),
   nYs(npred + nboth), nYss(nboth + nforw), nY(num_endo), nJcols(jcols), NNZD(nnzd), nSteps(nsteps),
   nOrder(norder), journal(jr), ySteady(ysteady), params(inParams), vCov(vcov),
@@ -116,30 +116,30 @@ KordpDynare::calcDerivativesAtSteady()
     {
       g1p = new TwoDMatrix(nY, nJcols);
       g1p->zeros();
-      
+
       if (nOrder > 1)
-	{
-	  // allocate space for sparse Hessian
-	  g2p = new TwoDMatrix((int) NNZD[1], 3);
-	  g2p->zeros();
-	}
-      
+        {
+          // allocate space for sparse Hessian
+          g2p = new TwoDMatrix((int) NNZD[1], 3);
+          g2p->zeros();
+        }
+
       if (nOrder > 2)
-	{
-	  g3p = new TwoDMatrix((int) NNZD[2], 3);
-	  g3p->zeros();
-	}
+        {
+          g3p = new TwoDMatrix((int) NNZD[2], 3);
+          g3p->zeros();
+        }
 
       Vector xx(nexog());
       xx.zeros();
-      
+
       Vector out(nY);
       out.zeros();
       Vector llxSteady(nJcols-nExog);
       LLxSteady(ySteady, llxSteady);
-      
+
       dynamicModelFile->eval(llxSteady, xx, params, ySteady, out, g1p, g2p, g3p);
-                
+
     }
 
   populateDerivativesContainer(*g1p, 1, JacobianIndices);

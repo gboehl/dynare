@@ -2,7 +2,7 @@ function y = irf(dr, e1, long, drop, replic, iorder)
 
 % function y = irf(dr, e1, long, drop, replic, iorder)
 % Computes impulse response functions
-% 
+%
 % INPUTS
 %    dr:     structure of decisions rules for stochastic simulations
 %    e1:     exogenous variables value in time 1 after one shock
@@ -13,11 +13,11 @@ function y = irf(dr, e1, long, drop, replic, iorder)
 %
 % OUTPUTS
 %    y:      impulse response matrix
-%        
+%
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2003-2010 Dynare Team
+% Copyright (C) 2003-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -44,11 +44,16 @@ else
 end
 y       = 0;
 
-if iorder == 1
+local_order = iorder;
+if M_.hessian_eq_zero && local_order~=1
+    local_order = 1;
+end
+
+if local_order == 1
     y1 = repmat(dr.ys,1,long);
     ex2 = zeros(long,M_.exo_nbr);
     ex2(1,:) = e1';
-    y2 = simult_(temps,dr,ex2,iorder);
+    y2 = simult_(temps,dr,ex2,local_order);
     y = y2(:,M_.maximum_lag+1:end)-y1;
 else
     % eliminate shocks with 0 variance
@@ -60,9 +65,9 @@ else
     for j = 1: replic
         ex1(:,i_exo_var) = randn(long+drop,nxs)*chol_S;
         ex2 = ex1;
-        ex2(drop+1,:) = ex2(drop+1,:)+e1';   
-        y1 = simult_(temps,dr,ex1,iorder);
-        y2 = simult_(temps,dr,ex2,iorder);
+        ex2(drop+1,:) = ex2(drop+1,:)+e1';
+        y1 = simult_(temps,dr,ex1,local_order);
+        y2 = simult_(temps,dr,ex2,local_order);
         y = y+(y2(:,M_.maximum_lag+drop+1:end)-y1(:,M_.maximum_lag+drop+1:end));
     end
     y=y/replic;

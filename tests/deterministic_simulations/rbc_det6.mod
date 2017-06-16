@@ -72,12 +72,20 @@ end;
 simul(periods=500);
 fff = oo_.endo_simul;
 
+if ~oo_.deterministic_simulation.status
+   error('Perfect foresight simulation failed')
+end
+
 simul(periods=500, endogenous_terminal_period);
 ggg = oo_.endo_simul;
+
+if ~oo_.deterministic_simulation.status
+   error('Perfect foresight simulation failed')
+end
 
 t1 = abs(fff-ggg);
 t2 = max(max(t1));
 
 if t2>1e-5
-    error('sim1::endogenous_terminal_period: round off error is greater than 1e-5!')
+    error('Perfect foresight simulation with endogenous terminal period failed! Round off error is greater than 1e-5')
 end

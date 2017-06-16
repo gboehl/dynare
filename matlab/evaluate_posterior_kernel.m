@@ -2,22 +2,22 @@ function lpkern = evaluate_posterior_kernel(parameters,llik)
 % Evaluate the prior density at parameters.
 %
 % INPUTS
-%    o parameters  a string ('posterior mode','posterior mean','posterior median','prior mode','prior mean') or a vector of values for 
+%    o parameters  a string ('posterior mode','posterior mean','posterior median','prior mode','prior mean') or a vector of values for
 %                  the (estimated) parameters of the model.
-%    
-%    
+%
+%
 % OUTPUTS
 %    o lpkern      [double]  value of the logged posterior kernel.
-%    
+%
 % SPECIAL REQUIREMENTS
 %    None
 %
 % REMARKS
 % [1] This function cannot evaluate the prior density of a dsge-var model...
-% [2] This function use persistent variables for the dataset and the description of the missing observations. Consequently, if this function 
-%     is called more than once (by changing the value of parameters) the sample *must not* change.    
+% [2] This function use persistent variables for the dataset and the description of the missing observations. Consequently, if this function
+%     is called more than once (by changing the value of parameters) the sample *must not* change.
 
-% Copyright (C) 2009 Dynare Team
+% Copyright (C) 2009-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

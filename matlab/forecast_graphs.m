@@ -1,14 +1,14 @@
 function forecast_graphs(var_list,M_, oo_,options_)
 % function forecast_graphs(var_list,M_, oo_,options_)
 % Plots the classical forecasts created by dyn_forecast.m
-% 
+%
 % Inputs:
 %   o var_list              character array with variable names
 %   o M_                    model structure
 %   o oo_                   outputs structure
 %   o options_              options structure
 
-% Copyright (C) 2008-2016 Dynare Team
+% Copyright (C) 2008-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -61,10 +61,10 @@ end
 
 m = 1;
 n_fig = 1;
-hh=dyn_figure(options_,'Name','Forecasts (I)');
+hh=dyn_figure(options_.nodisplay,'Name','Forecasts (I)');
 for j= 1:nvar
-    if m > nc*nr; 
-        dyn_saveas(hh,[ dname '/graphs/forcst' int2str(n_fig)],options_);
+    if m > nc*nr
+        dyn_saveas(hh,[ dname '/graphs/forcst' int2str(n_fig)],options_.nodisplay,options_.graph_format);
         if options_.TeX && any(strcmp('eps',cellstr(options_.graph_format)))
             fprintf(fidTeX,'\\begin{figure}[H]\n');
             fprintf(fidTeX,'\\centering \n');
@@ -73,15 +73,15 @@ for j= 1:nvar
             fprintf(fidTeX,'\\caption{Mean forecasts and %2.0f\\%% confidence intervals}\n',options_.forecasts.conf_sig*100);
             fprintf(fidTeX,'\\end{figure}\n');
             fprintf(fidTeX,' \n');
-        end       
+        end
         n_fig =n_fig+1;
-        eval(['hh=dyn_figure(options_,''Name'',''Forecasts (' int2str(n_fig) ')'');']);
+        eval(['hh=dyn_figure(options_.nodisplay,''Name'',''Forecasts (' int2str(n_fig) ')'');']);
         m = 1;
     end
     subplot(nr,nc,m);
     vn = deblank(endo_names(i_var(j),:));
     obs = 0;
-% $$$         k = strmatch(vn,varobs,'exact'); 
+% $$$         k = strmatch(vn,varobs,'exact');
 % $$$   if ~isempty(k)
 % $$$       yy = y.(vn)(end-9:end) + repmat(ys(i_var(j)),10,1)+trend(k,:)';
 % $$$       plot(yy);
@@ -100,7 +100,7 @@ for j= 1:nvar
 end
 
 if m > 1
-    dyn_saveas(hh,[dname '/graphs/forcst' int2str(n_fig)],options_);
+    dyn_saveas(hh,[dname '/graphs/forcst' int2str(n_fig)],options_.nodisplay,options_.graph_format);
     if options_.TeX && any(strcmp('eps',cellstr(options_.graph_format)))
         fprintf(fidTeX,'\\begin{figure}[H]\n');
         fprintf(fidTeX,'\\centering \n');
@@ -118,17 +118,17 @@ end
 
 if isfield(oo_.forecast,'HPDinf_ME')
     var_names=fieldnames(oo_.forecast.HPDinf_ME);
-    
+
     if options_.TeX && any(strcmp('eps',cellstr(options_.graph_format)))
         fidTeX=write_LaTeX_header([M_.dname '/graphs/',fname,'_forcst_ME.tex']);
     end
-    
+
     m = 1;
     n_fig = 1;
-    hh=dyn_figure(options_,'Name','Forecasts including ME (I)');
+    hh=dyn_figure(options_.nodisplay,'Name','Forecasts including ME (I)');
     for j= 1:length(var_names)
-        if m > nc*nr;
-            dyn_saveas(hh,[ dname '/graphs/forcst_ME' int2str(n_fig)],options_);
+        if m > nc*nr
+            dyn_saveas(hh,[ dname '/graphs/forcst_ME' int2str(n_fig)],options_.nodisplay,options_.graph_format);
             if options_.TeX && any(strcmp('eps',cellstr(options_.graph_format)))
                 fprintf(fidTeX,'\\begin{figure}[H]\n');
                 fprintf(fidTeX,'\\centering \n');
@@ -139,7 +139,7 @@ if isfield(oo_.forecast,'HPDinf_ME')
                 fprintf(fidTeX,' \n');
             end
             n_fig =n_fig+1;
-            eval(['hh=dyn_figure(options_,''Name'',''Forecasts (' int2str(n_fig) ')'');']);
+            eval(['hh=dyn_figure(options_.nodisplay,''Name'',''Forecasts (' int2str(n_fig) ')'');']);
             m = 1;
         end
         subplot(nr,nc,m);
@@ -156,12 +156,12 @@ if isfield(oo_.forecast,'HPDinf_ME')
         hold off
         m = m + 1;
     end
-    
+
     if m > 1
-        dyn_saveas(hh,[dname '/graphs/forcst_ME' int2str(n_fig)],options_);
+        dyn_saveas(hh,[dname '/graphs/forcst_ME' int2str(n_fig)],options_.nodisplay,options_.graph_format);
         if options_.TeX && any(strcmp('eps',cellstr(options_.graph_format)))
             fprintf(fidTeX,'\\begin{figure}[H]\n');
-            fprintf(fidTeX,'\\centering \n');          
+            fprintf(fidTeX,'\\centering \n');
             fprintf(fidTeX,'\\includegraphics[width=%2.2f\\textwidth]{%s/graphs/forcst_ME%d}\n',options_.figures.textwidth*min((m-1)/nc,1),dname,n_fig);
             fprintf(fidTeX,'\\label{Fig:forcst_ME:%d}\n',n_fig);
             fprintf(fidTeX,'\\caption{Mean forecasts and %2.0f\\%% confidence intervals accounting for measurement error}\n',options_.forecasts.conf_sig*100);
@@ -169,10 +169,10 @@ if isfield(oo_.forecast,'HPDinf_ME')
             fprintf(fidTeX,' \n');
         end
     end
-    
+
     if options_.TeX && any(strcmp('eps',cellstr(options_.graph_format)))
         write_LaTeX_footer(fidTeX);
-    end   
+    end
 end
 
 

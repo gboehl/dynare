@@ -1,6 +1,6 @@
 function err = evaluate_max_dynamic_residual(model_dynamic, Y, exogenous_variables, params, steady_state, periods, ny, max_lag, lead_lag_incidence)
 
-% Copyright (C) 2013 Dynare Team
+% Copyright (C) 2013-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -16,7 +16,7 @@ function err = evaluate_max_dynamic_residual(model_dynamic, Y, exogenous_variabl
 %
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
-    
+
 i_rows = 1:ny;
 i_cols = find(lead_lag_incidence');
 

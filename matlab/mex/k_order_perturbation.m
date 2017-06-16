@@ -37,7 +37,7 @@
 %                         The Taylor coefficient (1/6) is
 %                         included. Inside the tensor, the variables are in
 %                         dr.order_var order of state endogenous variables
-%                         and shocks 
+%                         and shocks
 % derivs        struct    contains the original derivatives of the
 %                         decision function (ghx, ghu, ghxx, ghxu, ghuu,
 %                         ghs2, ghxxx, ghxxu, ghxuu,ghuuu, ghxss, ghuss),
@@ -52,7 +52,7 @@
 % dynare/mex/sources/k_order_perturbation.cc and it uses code provided by
 % dynare++
 
-% Copyright (C) 2013 Dynare Team
+% Copyright (C) 2013-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

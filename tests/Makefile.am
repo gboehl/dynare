@@ -12,6 +12,8 @@ MODFILES = \
 	observation_trends_and_prefiltering/MCMC/Trend_loglin_prefilt_first_obs_MC.mod \
 	observation_trends_and_prefiltering/MCMC/Trend_prefilter_MC.mod \
 	observation_trends_and_prefiltering/MCMC/Trend_prefilter_first_obs_MC.mod \
+	dates/dseries_interact.mod \
+	dates/fs2000.mod \
 	estimation/slice/fs2000_slice.mod \
 	optimizers/fs2000_9.mod \
 	optimizers/fs2000_10.mod \
@@ -26,6 +28,7 @@ MODFILES = \
 	estimation/fs2000_MCMC_jumping_covariance.mod \
 	ms-sbvar/test_ms_variances_repeated_runs.mod \
 	fs2000/fs2000.mod \
+	ls2003/ls2003_hessian_zero.mod \
 	ep/rbc.mod \
 	estimation/fs2000_with_weibull_prior.mod \
 	estimation/fs2000_initialize_from_calib.mod	\
@@ -247,7 +250,7 @@ MODFILES = \
 	stochastic-backward-models/solow_cd_with_steadystate.mod \
 	stochastic-backward-models/backward_linear.mod \
 	deterministic_simulations/purely_forward/ar1.mod \
-        deterministic_simulations/purely_forward/nk.mod \
+	deterministic_simulations/purely_forward/nk.mod \
 	deterministic_simulations/purely_backward/ar1.mod \
 	deterministic_simulations/rbc_det1.mod \
 	deterministic_simulations/rbc_det2.mod \
@@ -272,9 +275,9 @@ MODFILES = \
 	deterministic_simulations/multiple_lead_lags/AR2.mod \
 	deterministic_simulations/multiple_lead_lags/AR2_forward.mod \
 	deterministic_simulations/multiple_lead_lags/ramst_augmented_histval.mod \
-        deterministic_simulations/rbc_det.mod \
-        deterministic_simulations/rbc_det_stack_solve_algo_7.mod \
-        lmmcp/rbc.mod \
+	deterministic_simulations/rbc_det.mod \
+	deterministic_simulations/rbc_det_stack_solve_algo_7.mod \
+	lmmcp/rbc.mod \
 	lmmcp/sw_lmmcp.mod \
 	lmmcp/sw_newton.mod \
 	trend_var/fs2000_nonstationary.mod \
@@ -286,6 +289,7 @@ MODFILES = \
 	shock_decomposition/fs2000_est.mod \
 	shock_decomposition/fs2000_est_varlist.mod \
 	shock_decomposition/fs2000_cal_groups.mod \
+	shock_decomposition/ls2003_plot.mod \
 	stochastic_purely_forward/stochastic_purely_forward.mod \
 	stochastic_purely_forward/stochastic_purely_forward_with_static.mod \
 	forecast/Hansen_exo_det_forecast.mod \
@@ -297,9 +301,12 @@ MODFILES = \
 	gradient/fs2000_numgrad_5.mod \
 	filter_step_ahead/fs2000_filter_step_ahead_bayesian.mod \
 	filter_step_ahead/fs2000_filter_step_ahead_ML.mod \
+	loglinear/example4_exp.mod \
 	loglinear/example4_loglinear.mod \
 	loglinear/example4_loglinear_lagged_exogenous.mod \
 	loglinear/example4_loglinear_lagged_exogenous_a.mod \
+	loglinear/example4_exp_histval.mod \
+	loglinear/example4_loglinear_histval.mod \
 	smoother2histval/fs2000_simul.mod \
 	smoother2histval/fs2000_smooth.mod \
 	smoother2histval/fs2000_smooth_stoch_simul.mod \
@@ -333,6 +340,10 @@ MODFILES = \
 	observation_trends_and_prefiltering/calib_smoother/Tr_prefilter_loglin_calib_smoother.mod \
 	observation_trends_and_prefiltering/calib_smoother/Tr_prefil_f_obs_loglin_cal_smoother.mod \
 	observation_trends_and_prefiltering/ML/Trend_no_prefilter_selected_var.mod
+
+PARTICLEFILES = \
+	particle/dsge_base2.mod \
+	particle/dsge_unit_root.mod
 
 
 XFAIL_MODFILES = ramst_xfail.mod \
@@ -462,8 +473,13 @@ deterministic_simulations/multiple_lead_lags/sim_lead_lag.o.trs: deterministic_s
 deterministic_simulations/multiple_lead_lags/ramst_augmented_histval.m.trs: ramst.m.trs 
 deterministic_simulations/multiple_lead_lags/ramst_augmented_histval.o.trs: ramst.o.trs
 
+loglinear/example4_loglinear.m.trs: loglinear/example4_exp.m.trs
+loglinear/example4_loglinear.o.trs: loglinear/example4_exp.o.trs
 loglinear/example4_loglinear_lagged_exogenous_a.m.trs: loglinear/example4_loglinear_lagged_exogenous.m.trs 
 loglinear/example4_loglinear_lagged_exogenous_a.o.trs: loglinear/example4_loglinear_lagged_exogenous.o.trs 
+
+loglinear/example4_loglinear_histval.m.trs: loglinear/example4_exp_histval.m.trs
+loglinear/example4_loglinear_histval.o.trs: loglinear/example4_exp_histval.o.trs
 
 observation_trends_and_prefiltering/ML/Trend_loglinear_no_prefilter_first_obs.m.trs: observation_trends_and_prefiltering/ML/Trend_loglinear_no_prefilter.m.trs
 observation_trends_and_prefiltering/ML/Trend_loglinear_no_prefilter_first_obs.o.trs: observation_trends_and_prefiltering/ML/Trend_loglinear_no_prefilter.o.trs
@@ -625,6 +641,10 @@ lmmcp: m/lmmcp o/lmmcp
 m/lmmcp: $(patsubst %.mod, %.m.trs, $(filter lmmcp/%.mod, $(MODFILES)))
 o/lmmcp: $(patsubst %.mod, %.o.trs, $(filter lmmcp/%.mod, $(MODFILES)))
 
+loglinear: m/loglinear o/loglinear
+m/loglinear: $(patsubst %.mod, %.m.trs, $(filter loglinear/%.mod, $(MODFILES)))
+o/loglinear: $(patsubst %.mod, %.o.trs, $(filter loglinear/%.mod, $(MODFILES)))
+
 gsa: m/gsa o/gsa
 m/gsa: $(patsubst %.mod, %.m.trs, $(filter gsa/%.mod, $(MODFILES)))
 o/gsa: $(patsubst %.mod, %.o.trs, $(filter gsa/%.mod, $(MODFILES)))
@@ -681,6 +701,10 @@ gradient: m/gradient o/gradient
 m/gradient: $(patsubst %.mod, %.m.trs, $(filter gradient/%.mod, $(MODFILES)))
 o/gradient: $(patsubst %.mod, %.o.trs, $(filter gradient/%.mod, $(MODFILES)))
 
+particle: m/particle o/particle
+m/particle: $(patsubst %.mod, %.m.trs, $(PARTICLEFILES))
+o/particle: $(patsubst %.mod, %.o.trs, $(PARTICLEFILES))
+
 # Matlab TRS Files
 M_TRS_FILES = $(patsubst %.mod, %.m.trs, $(MODFILES))
 M_TRS_FILES += run_block_byte_tests_matlab.m.trs run_reporting_test_matlab.m.trs run_all_unitary_tests.m.trs
@@ -697,12 +721,11 @@ M_TLS_FILES = $(patsubst %.m, %.m.tls, $(MFILES))
 # Octave TLS Files
 O_TLS_FILES = $(patsubst %.m, %.o.tls, $(MFILES))
 
-
-
 EXTRA_DIST = \
 	read_trs_files.sh \
 	run_test_matlab.m \
 	run_test_octave.m \
+	load_octave_packages.m \
 	$(MODFILES) \
 	$(XFAIL_MODFILES) \
 	$(MFILES) \
@@ -731,6 +754,7 @@ EXTRA_DIST = \
 	AIM/fsdat.m \
 	block_bytecode/run_ls2003.m \
 	bvar_a_la_sims/bvar_sample.m \
+	dates/fsdat_simul.m \
 	external_function/extFunDeriv.m \
 	external_function/extFunNoDerivs.m \
 	external_function/extFunWithFirstAndSecondDerivs.m \
@@ -779,7 +803,6 @@ EXTRA_DIST = \
 	decision_rules/third_order/comparison_policy_functions_dynare_mathematica.m \
 	shock_decomposition/example1_calib_shock_decomp_data.mat \
 	shock_decomposition/fsdat_simul.m \
-	loglinear/results_exp.mat \
 	smoother2histval/fsdat_simul.m \
 	optimal_policy/Ramsey/find_c.m \
 	optimal_policy/Ramsey/oo_ramsey_policy_initval.mat \
@@ -833,7 +856,7 @@ check-octave: $(O_XFAIL_TRS_FILES) $(O_TRS_FILES)
 	@echo "`tput bold``tput setaf 8`MATLAB: $(PWD)/$*... `tput sgr0`"
 	@DYNARE_VERSION="$(PACKAGE_VERSION)" TOP_TEST_DIR="$(PWD)" FILESTEM="$*" \
 		$(MATLAB)/bin/matlab -nosplash -nodisplay -r run_test_matlab > $*.m.log  2> /dev/null || \
-	printf ":test-result: FAIL\n:number-tests: 1\n:number-failed-tests: 1\n:list-of-failed-tests: $*.mod\n:cputime: 0.0\n" > $*.m.trs
+	printf ":test-result: FAIL\n:number-tests: 1\n:number-failed-tests: 1\n:list-of-failed-tests: $*.mod\n:elapsed-time: 0.0\n" > $*.m.trs
 	@if grep -q ":test-result: PASS" $*.m.trs; then \
 	echo "`tput bold``tput setaf 2`MATLAB: $(PWD)/$* PASSED!`tput sgr0`" ; \
 	else \
@@ -853,7 +876,7 @@ check-octave: $(O_XFAIL_TRS_FILES) $(O_TRS_FILES)
 	@echo "`tput bold``tput setaf 8`OCTAVE: $(PWD)/$*... `tput sgr0`"
 	@DYNARE_VERSION="$(PACKAGE_VERSION)" TOP_TEST_DIR="$(PWD)" FILESTEM="$*" \
 		$(OCTAVE) --no-init-file --silent --no-history --path "$*.mod" run_test_octave.m > $*.o.log 2>&1 || \
-	printf ":test-result: FAIL\n:number-tests: 1\n:number-failed-tests: 1\n:list-of-failed-tests: $*.mod\n:cputime: 0.0\n" > $*.o.trs
+	printf ":test-result: FAIL\n:number-tests: 1\n:number-failed-tests: 1\n:list-of-failed-tests: $*.mod\n:elapsed-time: 0.0\n" > $*.o.trs
 	@if grep -q ":test-result: PASS" $*.o.trs; then \
 	echo "`tput bold``tput setaf 2`OCTAVE: $(PWD)/$* PASSED!`tput sgr0`" ; \
 	else \
@@ -938,6 +961,8 @@ clean-local:
 
 	rm -rf ramsey_objective
 
+	rm -f ep/*.c
+
 	rm -f fs2000_ssfile_steadystate.m
 
 	rm -f $(shell find -name '*~')
@@ -966,6 +991,8 @@ clean-local:
 	rm -f estimation/test_matrix.mat
 
 	rm -f initval_file/ramst_initval_file_data_col_vec_mat.mat initval_file/ramst_initval_file_data_row_vec_mat.mat initval_file/ramst_initval_file_excel.xls
+
+	rm -f loglinear/results_exp_histval.mat loglinear/results_exp.mat
 
 	find . -name "*.tex" -type f -delete
 	find . -name "*.aux" -type f -delete

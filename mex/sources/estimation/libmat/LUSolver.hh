@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010 Dynare Team
+ * Copyright (C) 2010-2017 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -32,10 +32,13 @@ public:
   {
   public:
     const lapack_int info;
-    LUException(lapack_int info_arg) : info(info_arg) {};
+    LUException(lapack_int info_arg) : info(info_arg)
+    {
+    };
   };
   LUSolver(size_t dim_arg);
-  virtual ~LUSolver();
+  virtual
+  ~LUSolver();
   /*!
     Computes A^(-1)*B (possibly transposing A).
     The output is stored in B.

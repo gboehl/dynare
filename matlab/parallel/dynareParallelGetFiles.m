@@ -14,7 +14,7 @@ function dynareParallelGetFiles(NamFileInput,PRCDir,Parallel)
 %
 %
 %
-% Copyright (C) 2009-2013 Dynare Team
+% Copyright (C) 2009-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -33,32 +33,32 @@ function dynareParallelGetFiles(NamFileInput,PRCDir,Parallel)
 
 NamFileInput0=NamFileInput;
 
-for indPC=1:length(Parallel),
-    if Parallel(indPC).Local==0,
-        if ~ispc || strcmpi('unix',Parallel(indPC).OperatingSystem),
-            if ~isempty(Parallel(indPC).Port),
+for indPC=1:length(Parallel)
+    if Parallel(indPC).Local==0
+        if ~ispc || strcmpi('unix',Parallel(indPC).OperatingSystem)
+            if ~isempty(Parallel(indPC).Port)
                 ssh_token = ['-p ',Parallel(indPC).Port];
             else
                 ssh_token = '';
             end
-            if ~isempty(Parallel(indPC).Port),
+            if ~isempty(Parallel(indPC).Port)
                 scp_token = ['-P ',Parallel(indPC).Port];
             else
                 scp_token = '';
             end
-            if ischar(NamFileInput0),
-                for j=1:size(NamFileInput0,1),
+            if ischar(NamFileInput0)
+                for j=1:size(NamFileInput0,1)
                     NamFile(j,:)={['./'],deblank(NamFileInput0(j,:))};
                 end
                 NamFileInput = NamFile;
             end
-            for jfil=1:size(NamFileInput,1),
+            for jfil=1:size(NamFileInput,1)
 
                 if isoctave % Patch for peculiar behaviour of ls under Linux.
-                    % It is necessary to manage the jolly char '*'!
+                            % It is necessary to manage the jolly char '*'!
 
                     FindAst=strfind(NamFileInput{jfil,2},'comp_status_posterior_sampler_core*');
-                    
+
                     if isempty (FindAst)
 
                         [NonServeL NonServeR]= system(['scp ',scp_token,' ',Parallel(indPC).UserName,'@',Parallel(indPC).ComputerName,':',Parallel(indPC).RemoteDirectory,'/',PRCDir,'/',NamFileInput{jfil,1},NamFileInput{jfil,2},' ',NamFileInput{jfil,1}]);
@@ -66,9 +66,9 @@ for indPC=1:length(Parallel),
                     else
 
                         filenameTemp=NamFileInput{jfil,2};
-                        
+
                         [NotUsed FlI]=system(['ssh ',ssh_token,' ',Parallel(indPC).UserName,'@',Parallel(indPC).ComputerName,' ls ',Parallel(indPC).RemoteDirectory,'/',PRCDir,'/',filenameTemp, ' 2> OctaveStandardOutputMessage.txt']);
-                        
+
                         if isempty (FlI)
                             return
                         end
@@ -92,14 +92,14 @@ for indPC=1:length(Parallel),
 
             end
         else
-            if ischar(NamFileInput0),
-                for j=1:size(NamFileInput0,1),
+            if ischar(NamFileInput0)
+                for j=1:size(NamFileInput0,1)
                     NamFile(j,:)={['.\'],deblank(NamFileInput0(j,:))};
                 end
                 NamFileInput = NamFile;
             end
-            for jfil=1:size(NamFileInput,1),
-                if ~isempty(dynareParallelDir(NamFileInput{jfil,2},[PRCDir,filesep,NamFileInput{jfil,1}],Parallel(indPC))),
+            for jfil=1:size(NamFileInput,1)
+                if ~isempty(dynareParallelDir(NamFileInput{jfil,2},[PRCDir,filesep,NamFileInput{jfil,1}],Parallel(indPC)))
                     copyfile(['\\',Parallel(indPC).ComputerName,'\',Parallel(indPC).RemoteDrive,'$\',Parallel(indPC).RemoteDirectory,'\',PRCDir,'\',NamFileInput{jfil,1},NamFileInput{jfil,2}],NamFileInput{jfil,1});
                 end
             end

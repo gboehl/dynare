@@ -36,7 +36,7 @@ function T = reduced_rank_cholesky(X)
 %! @end deftypefn
 %@eod:
 
-% Copyright (C) 2009-2011 Dynare Team
+% Copyright (C) 2009-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -51,8 +51,8 @@ function T = reduced_rank_cholesky(X)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.    
-    
+% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+
 [T,X_is_not_positive_definite] = chol(X);
 
 if X_is_not_positive_definite
@@ -87,7 +87,7 @@ end
 %$ catch
 %$    t(1) = 0;
 %$    T = all(t);
-%$    return;
+%$    return
 %$ end
 %$
 %$

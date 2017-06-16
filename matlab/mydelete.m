@@ -1,7 +1,7 @@
 function mydelete(fname,pname)
 % Specialized version of delete() function
 
-% Copyright (C) 2009 Dynare Team
+% Copyright (C) 2009-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -18,16 +18,16 @@ function mydelete(fname,pname)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-if nargin ==0,
+if nargin ==0
     disp('mydelete(fname)')
     return
 end
 
-if nargin ==1,
+if nargin ==1
     pname='';
 end
 
 file_to_delete = dir([pname,fname]);
-for j=1:length(file_to_delete),
+for j=1:length(file_to_delete)
     delete([pname,file_to_delete(j).name]);
 end

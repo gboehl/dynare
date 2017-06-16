@@ -14,7 +14,7 @@ function [PRCDirSnapshot]=dynareParallelSnapshot(PRCDir,Parallel)
 %
 %
 %
-% Copyright (C) 2009-2011 Dynare Team
+% Copyright (C) 2009-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -33,10 +33,10 @@ function [PRCDirSnapshot]=dynareParallelSnapshot(PRCDir,Parallel)
 
 PRCDirSnapshot={};
 
-for indPC=1:length(Parallel),
-    if Parallel(indPC).Local==0;
-                                                       % The first call ...
+for indPC=1:length(Parallel)
+    if Parallel(indPC).Local==0
+        % The first call ...
         PRCDirSnapshot{indPC}=dynareParallelListAllFiles('Root',PRCDir,Parallel(indPC));
-        
+
     end
 end

@@ -6,23 +6,23 @@ function [err,ss,tt,w,sdim,eigval,info] = mjdgges(e,d,qz_criterium, fake)
 %   e            [double] real square (n*n) matrix.
 %   d            [double] real square (n*n) matrix.
 %   qz_criterium [double] scalar (1+epsilon).
-%    
+%
 % OUTPUTS
 %   err          [double]  scalar: 1 indicates failure, 0 indicates success
 %   ss           [complex] (n*n) matrix.
 %   tt           [complex] (n*n) matrix.
 %   w            [complex] (n*n) matrix.
-%   sdim         [integer] scalar.    
-%   eigval       [complex] (n*1) vector. 
+%   sdim         [integer] scalar.
+%   eigval       [complex] (n*1) vector.
 %   info         [integer] scalar.
-%    
+%
 % ALGORITHM
 %   Sims's qzdiv routine is used.
 %
 % SPECIAL REQUIREMENTS
 %   none.
 
-% Copyright (C) 1996-2010 Dynare Team
+% Copyright (C) 1996-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -43,6 +43,7 @@ function [err,ss,tt,w,sdim,eigval,info] = mjdgges(e,d,qz_criterium, fake)
 if nargin>4 || nargin<2 || nargout>7 || nargout==0
     error('MJDGGES: takes 2 or 3 input arguments and between 1 and 7 output arguments.')
 end
+
 % Check the first two inputs.
 [me,ne] = size(e);
 [md,nd] = size(d);
@@ -53,40 +54,34 @@ end
 
 % Set default value of qz_criterium.
 if nargin <3
-    qz_criterium = 1 + 1e-6; 
+    qz_criterium = 1 + 1e-6;
 end
 
 info = 0;
 
-% qz() function doesn't behave the same way under Octave and MATLAB:
-% - under MATLAB, complex decomposition by default, real is also available
-%   as an option
-% - under Octave, only real decomposition available, but grouping of
-%   eigenvalues <= 1 is implemented as an option (criterium can't be changed)
-if isoctave
-    [ss,tt,w,eigval] = qz(e,d,'S');
-    sdim = sum(abs(eigval) <= 1.0);
-    if any(abs(eigval) > 1.0 & abs(eigval) <= qz_criterium)
-        warning('Some eigenvalues are > 1.0 but <= qz_criterium in modulus. They have nevertheless been considered as explosive, because of a limitation of Octave. To solve this, you should compile the MEX files for Octave.')
+% Initialization of the output arguments.
+ss = zeros(ne,ne);
+tt = zeros(ne,ne);
+w  = zeros(ne,ne);
+sdim   = 0;
+eigval = zeros(ne,1);
+
+% Computational part.
+try
+    if isoctave()
+        % Force complex QZ factorization.
+        e = complex(e);
+        d = complex(d);
     end
-else
-    % Initialization of the output arguments.
-    ss = zeros(ne,ne);
-    tt = zeros(ne,ne);
-    w  = zeros(ne,ne);
-    sdim   = 0;
-    eigval = zeros(ne,1);
-    % Computational part.
-    try
-        [ss,tt,qq,w] = qz(e,d);
-        [tt,ss,qq,w] = qzdiv(qz_criterium,tt,ss,qq,w);
-        warning_old_state = warning;
-        warning off;
-        eigval = diag(ss)./diag(tt);
-        warning(warning_old_state);
-        sdim = sum(abs(eigval) < qz_criterium);
-    catch
-        info = 1;% Not as precise as lapack's info!
-    end
+    [ss,tt,qq,w,a,b,c] = qz(e, d);
+    warning_old_state = warning;
+    warning off;
+    [tt,ss,qq,w] = qzdiv(qz_criterium, tt, ss, qq, w);
+    eigval = diag(ss)./diag(tt);
+    warning(warning_old_state);
+    sdim = sum(abs(eigval) < qz_criterium);
+catch
+    info = 1;% Not as precise as lapack's info!
 end
+
 err = 0;

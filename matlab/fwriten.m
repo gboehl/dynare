@@ -1,6 +1,8 @@
-function display(t)
+function fwriten(fid, str)
 
-% Copyright (C) 2013 Dynare Team
+% Writes a line in a file, with newline character at the end of the line.
+
+% Copyright (C) 2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -17,4 +19,4 @@ function display(t)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-fprintf('%s = <dynTimeIndex: %s>\n', inputname(1), int2str(t.index));
+fwrite(fid, sprintf('%s\n', str));

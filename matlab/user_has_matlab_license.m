@@ -11,7 +11,7 @@ function [hasLicense] = user_has_matlab_license(toolbox)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2012 Dynare Team
+% Copyright (C) 2012-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -31,26 +31,26 @@ function [hasLicense] = user_has_matlab_license(toolbox)
 if matlab_ver_less_than('7.12')
     hasLicense = license('test', toolbox);
 else
-    [hasLicense junk] = license('checkout',toolbox);
+    [hasLicense, junk] = license('checkout',toolbox);
 end
 if ~hasLicense
     return
 end
 switch toolbox
     %use function unique to toolbox
-    case 'statistics_toolbox'
-        n = 'gppdf';
-    case 'optimization_toolbox'
-        n='fsolve';
-    case 'GADS_Toolbox'
-        n='simulannealbnd';
-    case 'control_toolbox'
-        n='dlyap';
+  case 'statistics_toolbox'
+    n = 'gppdf';
+  case 'optimization_toolbox'
+    n='fsolve';
+  case 'GADS_Toolbox'
+    n='simulannealbnd';
+  case 'control_toolbox'
+    n='dlyap';
 end
 hasInstallation=check_toolbox_installation(n);
 if ~hasInstallation
     hasLicense=0;
-    return;
+    return
 end
 end
 
@@ -64,7 +64,7 @@ else
     a=ver(ver_string);
     if isempty(a)
         hasInstallation=0;
-    else 
+    else
         hasInstallation=1;
     end
 end

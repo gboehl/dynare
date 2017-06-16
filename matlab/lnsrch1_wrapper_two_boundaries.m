@@ -17,16 +17,16 @@ function ra = lnsrch1_wrapper_two_boundaries(ya, fname, y, y_index, x, ...
 %   y_size              [int]           The number of endogenous variables
 %                                       in the current block
 % OUTPUTS
-%   ra                  [vector]        The residuals of the current block      
-%  
+%   ra                  [vector]        The residuals of the current block
+%
 % ALGORITHM
 %   none.
-%    
+%
 % SPECIAL REQUIREMENTS
 %   none.
-%  
+%
 
-% Copyright (C) 2009-2015 Dynare Team
+% Copyright (C) 2009-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

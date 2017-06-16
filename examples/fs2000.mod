@@ -6,22 +6,26 @@
  * The data are in file "fsdat_simul.m", and have been artificially generated.
  * They are therefore different from the original dataset used by Schorfheide.
  *
- * The prior distribution follows the one originally specified in Schorfheide's paper.
- * Note that the beta prior for rho implies an asymptote and corresponding prior mode 
- * for rho at 0. It is generally recommended to avoid this extreme type of prior.  
+ * The prior distribution follows the one originally specified in Schorfheide's
+ * paper, except for parameter rho. In the paper, the elicited beta prior for rho
+ * implies an asymptote and corresponding prior mode at 0. It is generally
+ * recommended to avoid this extreme type of prior. Some optimizers, for instance
+ * mode_compute=12 (Mathworks' particleswarm algorithm) may find a posterior mode
+ * with rho equal to zero. We lowered the value of the prior standard deviation
+ * (changing .223 to .100) to remove the asymptote.
  *
  * The equations are taken from J. Nason and T. Cogley (1994): "Testing the
  * implications of long-run neutrality for monetary business cycle models",
  * Journal of Applied Econometrics, 9, S37-S70.
  * Note that there is an initial minus sign missing in equation (A1), p. S63.
  *
- * This implementation was written by Michel Juillard. Please note that the
+ * This implementation was originally written by Michel Juillard. Please note that the
  * following copyright notice only applies to this Dynare implementation of the
  * model.
  */
 
 /*
- * Copyright (C) 2004-2015 Dynare Team
+ * Copyright (C) 2004-2017 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -109,7 +113,7 @@ alp, beta_pdf, 0.356, 0.02;
 bet, beta_pdf, 0.993, 0.002;
 gam, normal_pdf, 0.0085, 0.003;
 mst, normal_pdf, 1.0002, 0.007;
-rho, beta_pdf, 0.129, 0.223;
+rho, beta_pdf, 0.129, 0.100;
 psi, beta_pdf, 0.65, 0.05;
 del, beta_pdf, 0.01, 0.005;
 stderr e_a, inv_gamma_pdf, 0.035449, inf;

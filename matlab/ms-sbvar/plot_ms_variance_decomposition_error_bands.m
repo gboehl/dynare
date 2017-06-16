@@ -15,7 +15,7 @@ function plot_ms_variance_decomposition_error_bands(M_, options_, vddata, figure
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2011-2012 Dynare Team
+% Copyright (C) 2011-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -79,14 +79,14 @@ for s=1:nvars
         end
     end
     plot_banded_vddata_for_shock(shock, nvars, endo_names, ...
-        deblank(endo_names(s,:)), figure_name, ...
-        [options_.ms.output_file_tag filesep 'Output' filesep 'Variance_Decomposition'], ...
-        options_, names, tex_names);
+                                 deblank(endo_names(s,:)), figure_name, ...
+                                 [options_.ms.output_file_tag filesep 'Output' filesep 'Variance_Decomposition'], ...
+                                 options_, names, tex_names);
 end
 end
 
 function [fig] = plot_banded_vddata_for_shock(vddata, nvars, endo_names, ...
-    shock_name, figure_name, dirname, options_, names, tex_names)
+                                              shock_name, figure_name, dirname, options_, names, tex_names)
 fig = figure('Name', figure_name);
 npercentiles = size(vddata,3);
 for k=1:nvars
@@ -100,6 +100,6 @@ for k=1:nvars
     title([endo_names(k,:) ' contribution to ' shock_name]);
 end
 dyn_save_graph(dirname, [figure_name ' ' shock_name], ...
-    options_.graph_save_formats, options_.TeX, names, tex_names, ...
-    [figure_name ' ' shock_name]);
+               options_.graph_save_formats, options_.TeX, names, tex_names, ...
+               [figure_name ' ' shock_name]);
 end

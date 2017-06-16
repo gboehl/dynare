@@ -1,6 +1,6 @@
 function [dr,ys,info]=discretionary_policy_1(oo_,Instruments)
 
-% Copyright (C) 2007-2016 Dynare Team
+% Copyright (C) 2007-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -39,7 +39,7 @@ if isfield(M_,'orig_model')
     M_.maximum_lag = orig_model.maximum_lag;
     M_.maximum_endo_lag = orig_model.maximum_endo_lag;
 else
-	M_.orig_model = M_;
+    M_.orig_model = M_;
 end
 
 beta = get_optimal_policy_discount_factor(M_.params,M_.param_names);
@@ -53,10 +53,10 @@ if isfield(M_,'orig_model')
     MaxLead = orig_model.maximum_lead;
     MaxLag = orig_model.maximum_lag;
 else
-	endo_names = M_.endo_names;
-	endo_nbr = M_.endo_nbr;
-	MaxLag=M_.maximum_lag;
-	MaxLead=M_.maximum_lead;
+    endo_names = M_.endo_names;
+    endo_nbr = M_.endo_nbr;
+    MaxLag=M_.maximum_lag;
+    MaxLead=M_.maximum_lead;
     lead_lag_incidence = M_.lead_lag_incidence;
 end
 
@@ -64,7 +64,7 @@ end
 if options_.steadystate_flag
     % explicit steady state file
     [junk,M_.params,info] = evaluate_steady_state_file(oo_.steady_state,[oo_.exo_steady_state; oo_.exo_det_steady_state],M_, ...
-                                                   options_,0);
+                                                      options_,0);
 end
 [U,Uy,W] = feval([M_.fname,'_objective_static'],zeros(endo_nbr,1),[], M_.params);
 if any(any(Uy~=0))
@@ -96,32 +96,34 @@ eq_nbr= size(jacobia_,1);
 instr_nbr=endo_nbr-eq_nbr;
 
 if instr_nbr==0
-    error('discretionary_policy:: There are no available instruments, because the model has as many equations as variables.') 
+    error('discretionary_policy:: There are no available instruments, because the model has as many equations as variables.')
 end
-if size(Instruments,1)~= instr_nbr
-   error('discretionary_policy:: There are more declared instruments than omitted equations.') 
-end 
+if size(Instruments,1)< instr_nbr
+    error('discretionary_policy:: There are fewer declared instruments than omitted equations.')
+elseif size(Instruments,1)> instr_nbr
+    error('discretionary_policy:: There are more declared instruments than omitted equations.')    
+end
 
 instr_id=nan(instr_nbr,1);
 for j=1:instr_nbr
-	vj=deblank(Instruments(j,:));
-	vj_id=strmatch(vj,endo_names,'exact');
-	if ~isempty(vj_id)
-		instr_id(j)=vj_id;
-	else
-		error([mfilename,':: instrument ',vj,' not found'])
-	end
+    vj=deblank(Instruments(j,:));
+    vj_id=strmatch(vj,endo_names,'exact');
+    if ~isempty(vj_id)
+        instr_id(j)=vj_id;
+    else
+        error([mfilename,':: instrument ',vj,' not found'])
+    end
 end
 
 Indices={'lag','0','lead'};
 iter=1;
 for j=1:numel(Indices)
     eval(['A',Indices{j},'=zeros(eq_nbr,endo_nbr);'])
-	if strcmp(Indices{j},'0')||(strcmp(Indices{j},'lag') && MaxLag)||(strcmp(Indices{j},'lead') && MaxLead)
-	    [junk,row,col]=find(lead_lag_incidence(iter,:));
-	    eval(['A',Indices{j},'(:,row)=jacobia_(:,col);'])
-		iter=iter+1;
-	end
+    if strcmp(Indices{j},'0')||(strcmp(Indices{j},'lag') && MaxLag)||(strcmp(Indices{j},'lead') && MaxLead)
+        [junk,row,col]=find(lead_lag_incidence(iter,:));
+        eval(['A',Indices{j},'(:,row)=jacobia_(:,col);'])
+        iter=iter+1;
+    end
 end
 B=jacobia_(:,nnz(iyv)+1:end);
 
@@ -131,17 +133,17 @@ solve_maxit = options_.dp.maxit;
 discretion_tol = options_.discretionary_tol;
 
 if ~isempty(Hold)
-	[H,G,info]=discretionary_policy_engine(Alag,A0,Alead,B,W,instr_id,beta,solve_maxit,discretion_tol,qz_criterium,Hold);
+    [H,G,info]=discretionary_policy_engine(Alag,A0,Alead,B,W,instr_id,beta,solve_maxit,discretion_tol,qz_criterium,Hold);
 else
-	[H,G,info]=discretionary_policy_engine(Alag,A0,Alead,B,W,instr_id,beta,solve_maxit,discretion_tol,qz_criterium);
+    [H,G,info]=discretionary_policy_engine(Alag,A0,Alead,B,W,instr_id,beta,solve_maxit,discretion_tol,qz_criterium);
 end
 
 if info
     dr=[];
     return
 else
-	Hold=H; %save previous solution
-	% Hold=[]; use this line if persistent command is not used.
+    Hold=H; %save previous solution
+            % Hold=[]; use this line if persistent command is not used.
 end
 % set the state
 dr=oo_.dr;
@@ -159,7 +161,7 @@ dr.ys=ys; % <--- dr.ys =zeros(NewEndo_nbr,1);
 
 function ys=NondistortionarySteadyState(M_)
 if exist([M_.fname,'_steadystate.m'],'file')
-	eval(['ys=',M_.fname,'_steadystate.m;'])
+    eval(['ys=',M_.fname,'_steadystate.m;'])
 else
-	ys=zeros(M_.endo_nbr,1);
+    ys=zeros(M_.endo_nbr,1);
 end

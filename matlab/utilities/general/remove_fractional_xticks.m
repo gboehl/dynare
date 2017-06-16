@@ -2,7 +2,7 @@ function remove_fractional_xticks
 % function remove_fractional_xticks
 % removes non-integer xtick-labels
 
-% Copyright (C) 2001-2016 Dynare Team
+% Copyright (C) 2001-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -17,7 +17,7 @@ function remove_fractional_xticks
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.    
+% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 xticks=get(gca,'xtick');
 fractional_periods=find(rem(xticks,1)~=0);

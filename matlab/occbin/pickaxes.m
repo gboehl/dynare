@@ -9,7 +9,7 @@ miny = min(yvalues);
 
 
 y0 = miny - .05*abs(miny);
-if (miny>0 & y0<0) 
+if (miny>0 & y0<0)
     y0 = 0;
 end
 

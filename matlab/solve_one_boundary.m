@@ -1,7 +1,7 @@
 function [y, info] = solve_one_boundary(fname, y, x, params, steady_state, ...
                                         y_index_eq, nze, periods, is_linear, Block_Num, y_kmin, maxit_, solve_tolf, lambda, cutoff, stack_solve_algo, forward_backward, is_dynamic, verbose, M, options, oo)
 % Computes the deterministic simulation of a block of equation containing
-% lead or lag variables 
+% lead or lag variables
 %
 % INPUTS
 %   fname               [string]        name of the file containing the block
@@ -26,7 +26,7 @@ function [y, info] = solve_one_boundary(fname, y, x, params, steady_state, ...
 %   cutoff              [double]        cutoff to correct the direction in Newton in case
 %                                       of singular jacobian matrix
 %   stack_solve_algo    [integer]       linear solver method used in the
-%                                       Newton algorithm : 
+%                                       Newton algorithm :
 %                                            - 1 sparse LU
 %                                            - 2 GMRES
 %                                            - 3 BicGStab
@@ -43,19 +43,19 @@ function [y, info] = solve_one_boundary(fname, y, x, params, steady_state, ...
 %   indirect_call      [integer]        (0) direct call to the fname
 %                                       (1) indirect call via the
 %                                       local_fname wrapper
-% OUTPUTS                                    
-%   y                  [matrix]         All endogenous variables of the model      
+% OUTPUTS
+%   y                  [matrix]         All endogenous variables of the model
 %   info               [integer]        >=0 no error
 %                                       <0 error
-%  
+%
 % ALGORITHM
 %   Newton with LU or GMRES or BicGstab for dynamic block
-%    
+%
 % SPECIAL REQUIREMENTS
 %   none.
-%  
+%
 
-% Copyright (C) 1996-2016 Dynare Team
+% Copyright (C) 1996-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -387,7 +387,7 @@ for it_=start:incr:finish
             oo_.deterministic_simulation.block(Block_Num).status = 0;% Convergency failed.
             oo_.deterministic_simulation.block(Block_Num).error = max_res;
             oo_.deterministic_simulation.block(Block_Num).iterations = iter;
-        end;
+        end
         info = -Block_Num*10;
         return
     end

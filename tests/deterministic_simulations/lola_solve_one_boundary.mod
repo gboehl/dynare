@@ -980,4 +980,8 @@ end;
 
 simul(periods=125,maxit=100);
 
+if ~oo_.deterministic_simulation.status
+   error('Perfect foresight simulation failed')
+end
+
 delete('lola_data.mat')

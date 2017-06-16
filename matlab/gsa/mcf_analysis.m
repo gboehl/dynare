@@ -2,11 +2,11 @@ function indmcf = mcf_analysis(lpmat, ibeha, inobeha, options_mcf, DynareOptions
 %
 % Written by Marco Ratto
 % Joint Research Centre, The European Commission,
-% marco.ratto@jrc.ec.europa.eu
+% marco.ratto@ec.europa.eu
 %
 
 % Copyright (C) 2014 European Commission
-% Copyright (C) 2016 Dynare Team
+% Copyright (C) 2016-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -42,13 +42,12 @@ nobeha_title = options_mcf.nobeha_title;
 title = options_mcf.title;
 fname_ = options_mcf.fname_;
 xparam1=[];
-if isfield(options_mcf,'xparam1'),
+if isfield(options_mcf,'xparam1')
     xparam1=options_mcf.xparam1;
-end    
+end
 OutputDirectoryName = options_mcf.OutputDirectoryName;
 
 [proba, dproba] = stab_map_1(lpmat, ibeha, inobeha, [],0);
-%         indindet=find(dproba>ksstat);
 indmcf=find(proba<pvalue_ks);
 [tmp,jtmp] = sort(proba(indmcf),2,'ascend');
 indmcf = indmcf(jtmp);
@@ -66,20 +65,20 @@ if ~isempty(indmcf)
         dyn_latex_table(M_temp,options_temp,['Smirnov statistics in driving ', strrep(title,'_','\\_')],amcf_name,headers,labels_TeX,data_mat,size(labels,2)+2,16,6);
     end
 end
-    
 
-if length(ibeha)>10 && length(inobeha)>10,
+
+if length(ibeha)>10 && length(inobeha)>10
     indcorr1 = stab_map_2(lpmat(ibeha,:),alpha2, pvalue_corr, beha_title);
     indcorr2 = stab_map_2(lpmat(inobeha,:),alpha2, pvalue_corr, nobeha_title);
     indcorr = union(indcorr1(:), indcorr2(:));
     indcorr = indcorr(~ismember(indcorr(:),indmcf));
     indmcf = [indmcf(:); indcorr(:)];
 end
-if ~isempty(indmcf) && ~DynareOptions.nograph,
+if ~isempty(indmcf) && ~DynareOptions.nograph
     skipline()
     xx=[];
     if ~ isempty(xparam1), xx=xparam1(indmcf); end
     scatter_mcf(lpmat(ibeha,indmcf),lpmat(inobeha,indmcf), param_names(indmcf,:), ...
-        '.', [fname_,'_',amcf_name], OutputDirectoryName, amcf_title,xx, DynareOptions, ...
-        beha_title, nobeha_title)
+                '.', [fname_,'_',amcf_name], OutputDirectoryName, amcf_title,xx, DynareOptions, ...
+                beha_title, nobeha_title)
 end

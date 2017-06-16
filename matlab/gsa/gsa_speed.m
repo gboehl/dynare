@@ -1,15 +1,12 @@
-function [tadj, iff] = gsa_speed(A,B,mf,p),
+function [tadj, iff] = gsa_speed(A,B,mf,p)
 % [tadj, iff] = gsa_speed(A,B,mf,p),
 %
 % Written by Marco Ratto
 % Joint Research Centre, The European Commission,
-% (http://eemc.jrc.ec.europa.eu/),
-% marco.ratto@jrc.it 
-%
-% Reference:
-% M. Ratto, Global Sensitivity Analysis for Macroeconomic models, MIMEO, 2006.
+% marco.ratto@ec.europa.eu
 
-% Copyright (C) 2012 Dynare Team
+% Copyright (C) 2012 European Commission
+% Copyright (C) 2012-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -36,25 +33,25 @@ tadj=iff;
 disp('Computing speed of adjustement ...')
 h = dyn_waitbar(0,'Speed of adjustement...');
 
-for i=1:nrun,
-  irf=zeros(nvar,nshock);
-  a=squeeze(A(:,:,i));
-  b=squeeze(B(:,:,i));
-  IFF=inv(eye(nstate)-a)*b;
-  iff(:,:,i)=IFF(mf,:);
-  IF=IFF-b;
-  
-  t=0;
-  while any(any(irf<0.5))
-    t=t+1;
-    IFT=((eye(nstate)-a^(t+1))*inv(eye(nstate)-a))*b-b;
-    irf=IFT(mf,:)./(IF(mf,:)+eps);
-    irf = irf.*(abs(IF(mf,:))>1.e-7)+(abs(IF(mf,:))<=1.e-7);
-    %irf=ft(mf,:);
-    tt=(irf>0.5).*t;
-    tadj(:,:,i)=((tt-tadj(:,:,i))==tt).*tt+tadj(:,:,i);
-  end
-  dyn_waitbar(i/nrun,h)
+for i=1:nrun
+    irf=zeros(nvar,nshock);
+    a=squeeze(A(:,:,i));
+    b=squeeze(B(:,:,i));
+    IFF=inv(eye(nstate)-a)*b;
+    iff(:,:,i)=IFF(mf,:);
+    IF=IFF-b;
+
+    t=0;
+    while any(any(irf<0.5))
+        t=t+1;
+        IFT=((eye(nstate)-a^(t+1))*inv(eye(nstate)-a))*b-b;
+        irf=IFT(mf,:)./(IF(mf,:)+eps);
+        irf = irf.*(abs(IF(mf,:))>1.e-7)+(abs(IF(mf,:))<=1.e-7);
+        %irf=ft(mf,:);
+        tt=(irf>0.5).*t;
+        tadj(:,:,i)=((tt-tadj(:,:,i))==tt).*tt+tadj(:,:,i);
+    end
+    dyn_waitbar(i/nrun,h)
 end
 skipline()
 disp('.. done !')

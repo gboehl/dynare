@@ -11,7 +11,7 @@ function bvar_irf(nlags,identification)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2007-2012 Dynare Team
+% Copyright (C) 2007-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -54,7 +54,7 @@ p = 0;
 sampled_irfs = NaN(ny, ny, options_.irf, options_.bvar_replic);
 
 for draw=1:options_.bvar_replic
-    
+
     % Get a covariance matrix from an inverted Wishart distribution.
     Sigma = rand_inverse_wishart(ny, posterior.df, S_inv_upper_chol);
     Sigma_upper_chol = chol(Sigma);
@@ -62,10 +62,10 @@ for draw=1:options_.bvar_replic
 
     % Get the Autoregressive matrices from a matrix variate distribution.
     Phi = rand_matrix_normal(k, ny, posterior.PhiHat, Sigma_lower_chol, XXi_lower_chol);
-    
+
     % Form the companion matrix.
-    Companion_matrix(1:ny,:) = transpose(Phi(1:ny*nlags,:)); 
-    
+    Companion_matrix(1:ny,:) = transpose(Phi(1:ny*nlags,:));
+
     % All the eigenvalues of the companion matrix have to be on or
     % inside the unit circle to rule out explosive time series.
     test = (abs(eig(Companion_matrix)));
@@ -78,7 +78,7 @@ for draw=1:options_.bvar_replic
     elseif strcmpi(identification,'SquareRoot')
         StructuralMat = sqrtm(Sigma);
     end
-    
+
     % Build the IRFs...
     lags_data = zeros(ny,ny*nlags) ;
     sampled_irfs(:,:,1,draw) = Sigma_lower_chol ;
@@ -88,7 +88,7 @@ for draw=1:options_.bvar_replic
         lags_data(:,ny+1:end) = lags_data(:,1:end-ny) ;
         lags_data(:,1:ny) = sampled_irfs(:,:,t,draw) ;
     end
-    
+
 end
 
 if p > 0
@@ -106,7 +106,7 @@ sort_idx = round((0.5 + [-options_.bvar.conf_sig, options_.bvar.conf_sig, .0]/2)
 
 posterior_down_conf_irfs = sorted_irfs(:,:,:,sort_idx(1));
 posterior_up_conf_irfs = sorted_irfs(:,:,:,sort_idx(2));
-posterior_median_irfs = sorted_irfs(:,:,:,sort_idx(3));   
+posterior_median_irfs = sorted_irfs(:,:,:,sort_idx(3));
 
 number_of_columns = fix(sqrt(ny));
 number_of_rows = ceil(ny / number_of_columns) ;

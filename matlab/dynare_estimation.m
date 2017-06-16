@@ -12,7 +12,7 @@ function oo_recursive_=dynare_estimation(var_list,dname)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2003-2015 Dynare Team
+% Copyright (C) 2003-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -32,8 +32,8 @@ function oo_recursive_=dynare_estimation(var_list,dname)
 global options_ oo_ M_ dataset_ dataset_info
 
 oo_recursive_={};
-
-% Test if the order of approximation is nonzero (the preprocessor tests if order is non negative).
+mode_file0 = options_.mode_file; % store mode_file set by the user
+                                 % Test if the order of approximation is nonzero (the preprocessor tests if order is non negative).
 if isequal(options_.order,0)
     error('Estimation:: The order of the Taylor approximation cannot be 0!')
 end
@@ -46,8 +46,8 @@ end
 var_list = check_list_of_variables(options_, M_, var_list);
 options_.varlist = var_list;
 
-nobs = sort(options_.nobs); 
-first_obs = sort(options_.first_obs); 
+nobs = sort(options_.nobs);
+first_obs = sort(options_.first_obs);
 
 nnobs = length(nobs);
 nfirstobs = length(first_obs);
@@ -55,7 +55,7 @@ nfirstobs = length(first_obs);
 if nnobs~=1 && nfirstobs~=1
     error('You cannot simultaneously do rolling window and recursive estimation')
 end
-    
+
 horizon = options_.forecast;
 
 if nargin<2 || ~exist('dname','var') || isempty(dname)
@@ -82,8 +82,8 @@ if nnobs>1 || nfirstobs > 1
         if nnobs>1
             options_.nobs = nobs(i);
             M_.dname = [dname '_' int2str(nobs(i))];
-        elseif nfirstobs>1;
-            options_.first_obs=first_obs(i);            
+        elseif nfirstobs>1
+            options_.first_obs=first_obs(i);
             M_.dname = [dname '_' int2str(first_obs(i))];
         end
         dynare_estimation_1(var_list,M_.dname);
@@ -97,7 +97,7 @@ if nnobs>1 || nfirstobs > 1
         end
         if nnobs>1
             oo_recursive_{nobs(i)} = oo_;
-        elseif nfirstobs>1;
+        elseif nfirstobs>1
             oo_recursive_{first_obs(i)} = oo_;
         end
     end
@@ -105,7 +105,7 @@ else
     dynare_estimation_1(var_list,dname);
 end
 
-if isnumeric(options_.mode_compute) && options_.mode_compute && options_.analytic_derivation,
+if isnumeric(options_.mode_compute) && options_.mode_compute && options_.analytic_derivation
     options_.analytic_derivation=analytic_derivation0;
 end
 
@@ -138,11 +138,11 @@ if nnobs > 1 && horizon > 0
             IdObs(j,1) = iobs;
         end
     end
-    
+
     gend = dataset_.nobs;
     time_offset=min(3,gend-1); %for observables, plot 3 previous periods unless data is shorter
     k = time_offset+min(nobs(end)-nobs(1)+horizon, ...
-              size(dataset_.data,1)-nobs(1));
+                        size(dataset_.data,1)-nobs(1));
     data2 = dataset_info.rawdata(end-k+1:end,:);
     [nbplt,nr,nc,lr,lc,nstar] = pltorg(nvar);
     m = 1;
@@ -151,7 +151,7 @@ if nnobs > 1 && horizon > 0
     for i = 1:size(var_list,1)
         if mod(i,nstar) == 1
             plot_index=plot_index+1;
-            hfig = dyn_figure(options_,'Name',['Out of sample forecasts (',num2str(plot_index),')']);
+            hfig = dyn_figure(options_.nodisplay,'Name',['Out of sample forecasts (',num2str(plot_index),')']);
             m = 1;
         end
         subplot(nr,nc,m)
@@ -167,23 +167,23 @@ if nnobs > 1 && horizon > 0
         for j=1:nnobs
             if mh_replic > 0
                 oo_.RecursiveForecast.Mean.(vname)(j,:) = ...
-                      oo_recursive_{nobs(j)}.MeanForecast.Mean.(vname);
+                    oo_recursive_{nobs(j)}.MeanForecast.Mean.(vname);
                 oo_.RecursiveForecast.HPDinf.(vname)(j,:) = ...
-                      oo_recursive_{nobs(j)}.MeanForecast.HPDinf.(vname);
+                    oo_recursive_{nobs(j)}.MeanForecast.HPDinf.(vname);
                 oo_.RecursiveForecast.HPDsup.(vname)(j,:) = ...
-                      oo_recursive_{nobs(j)}.MeanForecast.HPDsup.(vname);
+                    oo_recursive_{nobs(j)}.MeanForecast.HPDsup.(vname);
                 oo_.RecursiveForecast.HPDTotalinf.(vname)(j,:) = ...
-                      oo_recursive_{nobs(j)}.PointForecast.HPDinf.(vname);
+                    oo_recursive_{nobs(j)}.PointForecast.HPDinf.(vname);
                 oo_.RecursiveForecast.HPDTotalsup.(vname)(j,:) = ...
-                      oo_recursive_{nobs(j)}.PointForecast.HPDsup.(vname);
+                    oo_recursive_{nobs(j)}.PointForecast.HPDsup.(vname);
             else
                 oo_.RecursiveForecast.Mean.(vname)(j,:) =...
-                      oo_recursive_{nobs(j)}.forecast.Mean.(vname);
+                    oo_recursive_{nobs(j)}.forecast.Mean.(vname);
                 oo_.RecursiveForecast.HPDinf.(vname)(j,:) =...
-                      oo_recursive_{nobs(j)}.forecast.HPDinf.(vname);
+                    oo_recursive_{nobs(j)}.forecast.HPDinf.(vname);
                 oo_.RecursiveForecast.HPDsup.(vname)(j,:) =...
-                      oo_recursive_{nobs(j)}.forecast.HPDsup.(vname);
-              end
+                    oo_recursive_{nobs(j)}.forecast.HPDsup.(vname);
+            end
             x = nobs(1)+nobs(j)-nobs(1)+(1:horizon);
 
             y = oo_.RecursiveForecast.Mean.(vname)(j,:);
@@ -208,8 +208,9 @@ if nnobs > 1 && horizon > 0
         xlim([nobs(1)-offsetx nobs(end)+horizon])
         m = m + 1;
         if mod(i+1,nstar) == 1 || i ==size(var_list,1)
-            dyn_saveas(hfig,[M_.fname,filesep,'graphs',filesep M_.fname '_RecursiveForecasts_' int2str(plot_index)],options_);
+            dyn_saveas(hfig,[M_.fname,filesep,'graphs',filesep M_.fname '_RecursiveForecasts_' int2str(plot_index)],options_.nodisplay,options_.graph_format);
         end
     end
 end
-options_.mode_file = ''; %delete stored mode-file so that it is not reaccessed in later calls (and in case it was only set by the recursive estimation)
+options_.mode_file = mode_file0;
+%reset stored mode-file to user defined one (and in case it was only set by the recursive estimation)

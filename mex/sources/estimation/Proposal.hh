@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009-2011 Dynare Team
+ * Copyright (C) 2009-2017 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -63,7 +63,9 @@ public:
 
 public:
   Proposal(const VectorConstView &vJscale, const MatrixConstView &covariance);
-  virtual ~Proposal() {};
+  virtual ~Proposal()
+  {
+  };
   virtual void draw(Vector &mean, Vector &draw);
   virtual Matrix&getVar();
   virtual int seed();

@@ -15,7 +15,7 @@ function oo_ = convert_oo_(M_, options_, oo_, from_ver, to_ver)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2015 Dynare Team
+% Copyright (C) 2015-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -63,7 +63,7 @@ else
 end
 
 if strcmp(from_ver, to_ver)
-    return;
+    return
 end
 
 if ver_greater_than(to_ver, from_ver)
@@ -81,5 +81,5 @@ else
 end
 
 eval(['oo_ = convert_dyn_' strrep(new_from_ver, '.', '') '_to_' ...
-                           strrep(to_ver, '.', '') '(M_, options_, oo_);']);
+      strrep(to_ver, '.', '') '(M_, options_, oo_);']);
 end

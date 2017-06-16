@@ -11,7 +11,7 @@ function ms_sbvar_setup(options_)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2003-2012 Dynare Team
+% Copyright (C) 2003-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -29,7 +29,7 @@ function ms_sbvar_setup(options_)
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 options_.data = read_variables(options_.datafile, ...
-    options_.varobs, [], options_.xls_sheet, options_.xls_range);
+                               options_.varobs, [], options_.xls_sheet, options_.xls_range);
 [options_.ms.final_year,options_.ms.final_subperiod] = check_datafile_years_assigned(options_);
 
 if options_.ms.upper_cholesky
@@ -243,10 +243,10 @@ if indxPrior
     else
         [Pi,H0multi,Hpmulti,H0invmulti,Hpinvmulti] = fn_rnrprior(nvar,q_m,options_.ms.nlags,xdgel,mu);
     end
-    
+
     %*** Combines asymmetric prior with linear restrictions
     [Ptld,H0invtld,Hpinvtld] = fn_rlrprior(Ui,Vi,Pi,H0multi,Hpmulti,nvar);
-    
+
     %*** Obtains the posterior matrices for estimation and inference
     [Pmat,H0inv,Hpinv] = fn_rlrpostr(xtx,xty,yty,Ptld,H0invtld,Hpinvtld,Ui,Vi);
 else
@@ -258,7 +258,7 @@ if Rform
     %*** Obtain the ML estimate
     A0hatinv = chol(H0inv{1}/fss);   % upper triangular but lower triangular choleski
     A0hat=inv(A0hatinv);
-    
+
     Aphat = Pmat{1}*A0hat;
 else
     %*** Obtain the ML estimate
@@ -271,16 +271,16 @@ else
     [fhat,xhat,grad,Hhat,itct,fcount,retcodehat] = csminwel('fn_a0freefun',x,H0,'fn_a0freegrad',crit,nit,Ui,nvar,n0,fss,H0inv);
 
     A0hat = fn_tran_b2a(xhat,Ui,nvar,n0);
-    
+
     xhat = fn_tran_a2b(A0hat,Ui,nvar,n0);
     [Aphat,ghat] = fn_gfmean(xhat,Pmat,Vi,nvar,ncoef,n0,np);
     if indxC0Pres
         Fhatur0P = Fhat;  % ur: unrestriced across A0 and A+
         for ki = 1:size(ixmC0Pres,1)   % loop through the number of equations in which
-            % cross-A0-A+ restrictions occur. See St. Louis Note p.5.
+                                       % cross-A0-A+ restrictions occur. See St. Louis Note p.5.
             ixeq = ixmC0Pres{ki}(1,1);   % index for the jth equation in consideration.
             Lit = Vi{ixeq}(ixmC0Pres{ki}(:,2),:);  % transposed restriction matrix Li
-            % V_j(i,:) in f_j(i) = V_j(i,:)*g_j
+                                                   % V_j(i,:) in f_j(i) = V_j(i,:)*g_j
             ci = ixmC0Pres{ki}(:,4) .* A0hat(ixmC0Pres{ki}(:,3),ixeq);
             % s * a_j(h) in the restriction f_j(i) = s * a_j(h).
             LtH = Lit/Hpinv{ixeq};

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011 Dynare Team
+ * Copyright (C) 2011-2017 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -31,9 +31,9 @@ mex_write_to_matlab_matfile(double *data, int rows, int cols, const char *varnam
   if (matfile == NULL)
     mexErrMsgTxt("Error encountered in mex when opening a .mat file");
 
-  if (matPutVariable(matfile, varname, toWrite) != 0 ||
-      ferror(matGetFp(matfile)) > 0 ||
-      feof(matGetFp(matfile)) > 0)
+  if (matPutVariable(matfile, varname, toWrite) != 0
+      || ferror(matGetFp(matfile)) > 0
+      || feof(matGetFp(matfile)) > 0)
     mexErrMsgTxt("Error encountered in mex when writing a .mat file");
 
   if (matClose(matfile) != 0)

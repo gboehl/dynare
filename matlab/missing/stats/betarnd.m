@@ -1,19 +1,19 @@
 function rnd = betarnd(a, b)
 % This function produces independent random variates from the Beta distribution.
 %
-%  INPUTS 
+%  INPUTS
 %    a       [double]    n*1 vector of positive parameters.
 %    b       [double]    n*1 vector of positive parameters.
 %
-%  OUTPUT 
+%  OUTPUT
 %    rnd     [double]    n*1 vector of independent variates from the beta(a,b) distribution.
-%                        rnd(i) is beta distributed with variance a(i)/(a(i)+b(i)) and 
-%                        variance a(i)b(i)/(a(i)+b(i))^2/(a(i)+b(i)+1).    
-%  
-%  ALGORITHMS     
+%                        rnd(i) is beta distributed with variance a(i)/(a(i)+b(i)) and
+%                        variance a(i)b(i)/(a(i)+b(i))^2/(a(i)+b(i)+1).
+%
+%  ALGORITHMS
 %    Described and Devroye (1986, chapter 9).
 
-% Copyright (C) 2008-2009 Dynare Team
+% Copyright (C) 2008-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

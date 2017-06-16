@@ -6,7 +6,7 @@
  */
 
 /*
- * Copyright (C) 2010-2016 Dynare Team
+ * Copyright (C) 2010-2017 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -25,15 +25,15 @@
  */
 
 #ifdef __MINGW32__
-#define __CROSS_COMPILATION__
+# define __CROSS_COMPILATION__
 #endif
 
 #ifdef __MINGW64__
-#define __CROSS_COMPILATION__
+# define __CROSS_COMPILATION__
 #endif
 
 #ifdef __CROSS_COMPILATION__
-#define M_PI 3.14159265358979323846
+# define M_PI 3.14159265358979323846
 #endif
 
 #include <octave/oct.h>

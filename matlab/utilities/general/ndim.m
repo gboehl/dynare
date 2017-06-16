@@ -3,7 +3,7 @@ function n = ndim(x)
 
 %@info:
 %! @deftypefn {Function File} {@var{n} =} ndim (@var{x})
-%! @anchor{ndim}    
+%! @anchor{ndim}
 %! This function reports the number of non singleton dimensions of a matlab array.
 %!
 %! @strong{Inputs}
@@ -17,18 +17,18 @@ function n = ndim(x)
 %! @item n
 %! Integer scalar. The number of non singleton dimensions of a matlab array.
 %! @end table
-%!    
-%! @strong{This function is called by:} 
+%!
+%! @strong{This function is called by:}
 %! @ref{demean}, @ref{nandemean}.
-%!    
+%!
 %! @strong{This function calls:}
 %! none.
-%!    
+%!
 %! @end deftypefn
 %@eod:
 
-% Copyright (C) 2011-2012 Dynare Team
-%    
+% Copyright (C) 2011-2017 Dynare Team
+%
 % This file is part of Dynare.
 %
 % Dynare is free software: you can redistribute it and/or modify

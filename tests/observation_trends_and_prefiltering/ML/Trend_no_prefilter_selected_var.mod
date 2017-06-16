@@ -68,7 +68,7 @@ generate_trend_stationary_AR1;
 estimation(order=1,datafile='AR1_trend_data_with_constant',mh_replic=0,
         mode_compute=4,first_obs=1,nobs=1000,
         filtered_vars, filter_step_ahead = [1,2,4],        
-        diffuse_filter,smoother,forecast=0,prefilter=0,filter_decomposition) P_obs Y_obs junk2;
+        diffuse_filter,filter_covariance,smoother,forecast=0,prefilter=0,filter_decomposition) P_obs Y_obs junk2;
 
 %Test selected_variables_only option
 oo_all_variables=oo_;
@@ -85,7 +85,7 @@ set_dynare_seed('default');
 estimation(order=1,datafile='AR1_trend_data_with_constant',mh_replic=0,
         mode_compute=4,first_obs=1,nobs=1000,
         filtered_vars, filter_step_ahead = [1,2,4],        
-        diffuse_filter,smoother,forecast=0,prefilter=0,filter_decomposition,selected_variables_only) P_obs Y_obs junk2;
+        diffuse_filter,smoother,forecast=0,filter_covariance,prefilter=0,filter_decomposition,selected_variables_only) P_obs Y_obs junk2;
 
 % do checks
         
@@ -118,7 +118,7 @@ if max(max(max(abs(oo_.FilteredVariablesKStepAhead-oo_all_variables.FilteredVari
     error('FilteredVariablesKStepAhead is wrong')
 end
 
-if max(max(max(max(abs(oo_.FilteredVariablesKStepAheadVariances-oo_all_variables.FilteredVariablesKStepAheadVariances(:,[Y_pos;P_pos;junk2_pos],[Y_pos;P_pos;junk2_pos],:))))))>1e-8
+if options_.filter_covariance && max(max(max(max(abs(oo_.FilteredVariablesKStepAheadVariances-oo_all_variables.FilteredVariablesKStepAheadVariances(:,[Y_pos;P_pos;junk2_pos],[Y_pos;P_pos;junk2_pos],:))))))>1e-8
     error('FilteredVariablesKStepAheadVariances is wrong')
 end
 

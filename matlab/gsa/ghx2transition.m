@@ -3,13 +3,10 @@ function [A,B] = ghx2transition(mm,iv,ic,aux)
 %
 % Adapted by M. Ratto (from kalman_transition_matrix.m)
 % Joint Research Centre, The European Commission,
-% (http://eemc.jrc.ec.europa.eu/),
-% marco.ratto@jrc.it 
+% marco.ratto@ec.europa.eu
 %
-% Reference:
-% M. Ratto, Global Sensitivity Analysis for Macroeconomic models, MIMEO, 2006.
 
-% Copyright (C) 2012 Dynare Team
+% Copyright (C) 2012-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -28,10 +25,10 @@ function [A,B] = ghx2transition(mm,iv,ic,aux)
 
 global oo_ M_
 
-  [nr1, nc1] = size(mm);
-  ghx = mm(:, [1:(nc1-M_.exo_nbr)]);
-  ghu = mm(:, [(nc1-M_.exo_nbr+1):end] );
-  if nargin == 1
+[nr1, nc1] = size(mm);
+ghx = mm(:, [1:(nc1-M_.exo_nbr)]);
+ghu = mm(:, [(nc1-M_.exo_nbr+1):end] );
+if nargin == 1
     oo_.dr.ghx = ghx;
     oo_.dr.ghu = ghu;
     endo_nbr = M_.endo_nbr;
@@ -43,18 +40,18 @@ global oo_ M_
     k = find(aux(:,2) > nspred);
     aux(:,2) = aux(:,2) + nstatic;
     aux(k,2) = aux(k,2) + M_.nfwrd;
-  end
-  n_iv = length(iv);
-  n_ir1 = size(aux,1);
-  nr = n_iv + n_ir1;
-  
-  A = zeros(nr,nr);
-  B = zeros(nr,M_.exo_nbr);
-  
-  i_n_iv = 1:n_iv;
-  A(i_n_iv,ic) = ghx(iv,:);
-  if n_ir1 > 0
+end
+n_iv = length(iv);
+n_ir1 = size(aux,1);
+nr = n_iv + n_ir1;
+
+A = zeros(nr,nr);
+B = zeros(nr,M_.exo_nbr);
+
+i_n_iv = 1:n_iv;
+A(i_n_iv,ic) = ghx(iv,:);
+if n_ir1 > 0
     A(n_iv+1:end,:) = sparse(aux(:,1),aux(:,2),ones(n_ir1,1),n_ir1,nr);
-  end
-  
-  B(i_n_iv,:) = ghu(iv,:);
+end
+
+B(i_n_iv,:) = ghu(iv,:);

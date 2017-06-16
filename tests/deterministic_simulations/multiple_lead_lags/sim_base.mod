@@ -28,3 +28,7 @@ values 0.9;
 end;
 
 simul(periods=200,maxit=100);
+
+if ~oo_.deterministic_simulation.status
+   error('Perfect foresight simulation failed')
+end

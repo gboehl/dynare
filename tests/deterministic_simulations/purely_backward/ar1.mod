@@ -27,6 +27,10 @@ end;
 
 simul(periods=10);
 
+if ~oo_.deterministic_simulation.status
+   error('Perfect foresight simulation failed')
+end
+
 if max(abs(y-[1; exp(cumprod([1; rho*ones(9, 1)]))]))>options_.dynatol.x
     error('Wrong solution!')
 end

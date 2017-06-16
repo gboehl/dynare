@@ -1,13 +1,13 @@
 function Matrix = dyn_unvech(Vector)
 % This function implements the unvech operator.
-% 
-% INPUTS 
+%
+% INPUTS
 %   Vector             [double]   a m*1 vector.
-%    
-% OUTPUTS 
+%
+% OUTPUTS
 %   Matrix             [double]   a n*n symetric matrix, where n solves n*(n+1)/2=m.
 
-% Copyright (C) 2010 Dynare Team
+% Copyright (C) 2010-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

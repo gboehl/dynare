@@ -31,12 +31,12 @@ function myoutput = posterior_sampler_core(myinputs,fblck,nblck,whoiam, ThisMatl
 %
 % SPECIAL REQUIREMENTS.
 %   None.
-% 
+%
 % PARALLEL CONTEXT
 % See the comments in the posterior_sampler.m funtion.
 
 
-% Copyright (C) 2006-2016 Dynare Team
+% Copyright (C) 2006-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -53,7 +53,7 @@ function myoutput = posterior_sampler_core(myinputs,fblck,nblck,whoiam, ThisMatl
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-if nargin<4,
+if nargin<4
     whoiam=0;
 end
 
@@ -108,7 +108,7 @@ end
 %
 
 sampler_options.xparam1 = xparam1;
-if ~isempty(d),
+if ~isempty(d)
     sampler_options.proposal_covariance_Cholesky_decomposition = d*diag(bayestopt_.jscale);
     %store information for load_mh_file
     record.ProposalCovariance=d;
@@ -117,7 +117,7 @@ end
 
 block_iter=0;
 
-for curr_block = fblck:nblck,
+for curr_block = fblck:nblck
     LastSeeds=[];
     block_iter=block_iter+1;
     try
@@ -132,9 +132,9 @@ for curr_block = fblck:nblck,
             set_dynare_seed(options_.DynareRandomStreams.seed+curr_block);
         end
         % Set the state of the RNG
-        set_dynare_random_generator_state(record.InitialSeeds(curr_block).Unifor, record.InitialSeeds(curr_block).Normal);            
+        set_dynare_random_generator_state(record.InitialSeeds(curr_block).Unifor, record.InitialSeeds(curr_block).Normal);
     catch
-        % If the state set by master is incompatible with the slave, we only reseed 
+        % If the state set by master is incompatible with the slave, we only reseed
         set_dynare_seed(options_.DynareRandomStreams.seed+curr_block);
     end
     if (options_.load_mh_file~=0) && (fline(curr_block)>1) && OpenOldFile(curr_block) %load previous draws and likelihood
@@ -164,9 +164,9 @@ for curr_block = fblck:nblck,
     feval_this_file = 0;
     draw_index_current_file = fline(curr_block); %get location of first draw in current block
     draw_iter = 1;
-    
+
     while draw_iter <= nruns(curr_block)
-        
+
         [par, logpost, accepted, neval] = posterior_sampler_iteration(TargetFun, last_draw(curr_block,:), last_posterior(curr_block), sampler_options,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,mh_bounds,oo_);
 
         x2(draw_index_current_file,:) = par;
@@ -192,7 +192,7 @@ for curr_block = fblck:nblck,
         end
         if (draw_index_current_file == InitSizeArray(curr_block)) || (draw_iter == nruns(curr_block)) % Now I save the simulations, either because the current file is full or the chain is done
             [LastSeeds.(['file' int2str(NewFile(curr_block))]).Unifor, LastSeeds.(['file' int2str(NewFile(curr_block))]).Normal] = get_dynare_random_generator_state();
-            if save_tmp_file,
+            if save_tmp_file
                 delete([BaseName '_mh_tmp_blck' int2str(curr_block) '.mat']);
             end
             save([BaseName '_mh' int2str(NewFile(curr_block)) '_blck' int2str(curr_block) '.mat'],'x2','logpo2','LastSeeds');

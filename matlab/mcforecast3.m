@@ -2,7 +2,7 @@ function [forcs, e]= mcforecast3(cL,H,mcValue,shocks,forcs,T,R,mv,mu)
 % forcs = mcforecast3(cL,H,mcValue,shocks,forcs,T,R,mv,mu)
 % Computes the shock values for constrained forecasts necessary to keep
 % endogenous variables at their constrained paths
-% 
+%
 % INPUTS
 %  o cL             [scalar]                            number of controlled periods
 %  o H              [scalar]                            number of forecast periods
@@ -14,7 +14,7 @@ function [forcs, e]= mcforecast3(cL,H,mcValue,shocks,forcs,T,R,mv,mu)
 %  o mv             [n_controlled_exo by n_endovars boolean]        indicator vector  selecting constrained endogenous variables
 %  o mu             [n_controlled_vars by nexo boolean]             indicator vector
 %                                                   selecting controlled exogenous variables
-% 
+%
 % Algorithm:
 %   Relies on state-space form:
 %       y_t=T*y_{t-1}+R*shocks(:,t)
@@ -30,8 +30,8 @@ function [forcs, e]= mcforecast3(cL,H,mcValue,shocks,forcs,T,R,mv,mu)
 %   After obtaining the shocks, and for uncontrolled periods, the state-space representation
 %       y_t=T*y_{t-1}+R*shocks(:,t)
 %   is used for forecasting
-%  
-% Copyright (C) 2006-2013 Dynare Team
+%
+% Copyright (C) 2006-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

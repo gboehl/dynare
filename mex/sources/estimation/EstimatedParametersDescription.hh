@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009-2010 Dynare Team
+ * Copyright (C) 2009-2017 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -45,7 +45,8 @@
 class EstimatedParametersDescription
 {
 public:
-  virtual ~EstimatedParametersDescription();
+  virtual
+  ~EstimatedParametersDescription();
   EstimatedParametersDescription(std::vector<EstimationSubsample> &estSubsamples, std::vector<EstimatedParameter> &estParams);
   std::vector<EstimationSubsample> estSubsamples;
   std::vector<EstimatedParameter> estParams;

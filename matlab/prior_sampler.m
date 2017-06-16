@@ -13,7 +13,7 @@ function results = prior_sampler(drsave,M_,bayestopt_,options_,oo_,estim_params_
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2009-2012 Dynare Team
+% Copyright (C) 2009-2016 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -49,6 +49,7 @@ count_complex_steadystate = 0;
 count_nan_steadystate = 0;
 count_nan_params = 0;
 count_complex_params = 0;
+count_nonpositive_steadystate = 0;
 count_unknown_problem = 0;
 NumberOfSimulations = options_.prior_mc;
 NumberOfParameters = length(bayestopt_.p1);
@@ -135,6 +136,8 @@ while iteration < NumberOfSimulations
         count_complex_params = count_complex_params + 1 ;
       case 24
         count_nan_params = count_nan_params + 1 ;
+      case 26
+        count_nonpositive_steadystate = count_nonpositive_steadystate + 1;
       otherwise
         count_unknown_problem = count_unknown_problem + 1 ;
     end
@@ -162,6 +165,7 @@ results.dll.problem_share = count_dll_problem/loop_indx;
 results.ss.problem_share = count_no_steadystate/loop_indx;
 results.ss.complex_share = count_complex_steadystate/loop_indx;
 results.ass.problem_share = count_steadystate_file_exit/loop_indx;
+results.ss.nonpositive_share = count_nonpositive_steadystate/loop_indx;
 results.jacobian.problem_share = count_complex_jacobian/loop_indx;
 results.garbage_share = ...
     results.bk.indeterminacy_share + ...
@@ -170,6 +174,8 @@ results.garbage_share = ...
     results.dll.problem_share + ...
     results.ss.problem_share + ...
     results.ass.problem_share + ...
+    results.ss.complex_share + ...
+    results.ss.nonpositive_share + ...
     results.jacobian.problem_share + ...
     count_unknown_problem/loop_indx ;
 results.prior.mean = sampled_prior_expectation;

@@ -11,7 +11,7 @@ function eigs = ordeig(t)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2003-2009 Dynare Team
+% Copyright (C) 2003-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -34,7 +34,7 @@ i = 1;
 while i <= n
     if i == n
         eigs(n) = t(n,n);
-        break;
+        break
     elseif t(i+1,i) == 0
         eigs(i) = t(i,i);
         i = i+1;

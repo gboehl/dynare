@@ -32,13 +32,13 @@ function [ytrend,ycycle]=one_sided_hp_filter(y,lambda,x_user,P_user,discard)
 %
 %       y_t=tau_t+epsilon_t
 %       (1-L)^2 tau_t=eta_t"
-% 
-%  The Kalman filter notation follows Chapter 13 of Hamilton, J.D. (1994). 
+%
+%  The Kalman filter notation follows Chapter 13 of Hamilton, J.D. (1994).
 %   Time Series Analysis, with the exception of H, which is equivalent to his H'.
 
 
 % Copyright (C) 200?-2015 Alexander Meyer-Gohde
-% Copyright (C) 2015 Dynare Team
+% Copyright (C) 2015-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -63,26 +63,26 @@ end
 %Set up state space
 q=1/lambda;     % the signal-to-noise ration: i.e. var eta_t / var epsilon_t
 F=[2,-1;
-    1,0];       % state transition matrix
+   1,0];       % state transition matrix
 H=[1,0];        % observation matrix
 Q=[q,0;
-   0,0];        % covariance matrix state equation errors 
+   0,0];        % covariance matrix state equation errors
 R=1;            % variance observation equation error
 
 for k=1:n %Run the Kalman filter for each variable
     if nargin < 4 || isempty(x_user) %no intial value for state, extrapolate back two periods from the observations
-        x=[2*y(1,k)-y(2,k); 
-           3*y(1,k)-2*y(2,k)]; 
+        x=[2*y(1,k)-y(2,k);
+           3*y(1,k)-2*y(2,k)];
     else
         x=x_user(:,k);
-    end 
+    end
     if nargin < 4 || isempty(P_user) %no initial value for the MSE, set a rather high one
         P= [1e5 0;
-            0 1e5]; 
+            0 1e5];
     else
         P=P_user{k};
-    end 
-    
+    end
+
     for j=1:T %Get the estimates for each period
         [x,P]=kalman_update(F,H,Q,R,y(j,k),x,P); %get new state estimate and update recursion
         ytrend(j,k)=x(2);%second state is trend estimate
@@ -103,9 +103,9 @@ end
 
 function   [x,P]=kalman_update(F,H,Q,R,obs,x,P)
 % Updates the Kalman filter estimation of the state and MSE
-S=H*P*H'+R; 
-K=F*P*H';     
-K=K/S; 
+S=H*P*H'+R;
+K=F*P*H';
+K=K/S;
 x=F*x+K*(obs -H*x); %State estimate
 Temp=F-K*H;
 P=Temp*P*Temp';

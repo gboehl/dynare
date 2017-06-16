@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009-2013 Dynare Team
+ * Copyright (C) 2009-2017 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -38,4 +38,3 @@ LogLikelihoodSubSample::LogLikelihoodSubSample(const std::string &basename, Esti
                varobs, riccati_tol, lyapunov_tol, noconstant_arg), eigQ(n_exo), eigH(varobs.size())
 {
 };
-

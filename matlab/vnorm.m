@@ -35,7 +35,7 @@ function y = vnorm(A,varargin)
 %       vnorm(A,[],inf)     % Correct
 %
 %
-% Copyright (C) 2009-2011 Dynare Team
+% Copyright (C) 2009-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -71,7 +71,7 @@ if isempty(dim)
     idx = find(size(A)~=1);
     dim = idx(1);
 end
-    
+
 if isempty(ntype)
     y = sqrt(sum( abs(A).^2 , dim) );
 elseif ntype==1
@@ -88,4 +88,3 @@ elseif ntype~=floor(ntype) || ntype<1
 else
     y = (sum( abs(A).^ntype , dim) ).^(1/ntype);
 end
-

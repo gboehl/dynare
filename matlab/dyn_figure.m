@@ -1,9 +1,9 @@
-function h=dyn_figure(DynareOptions,varargin)
-%function h=dyn_figure(DynareOptions,varargin)
+function h = dyn_figure(nodisplay, varargin)
+%function h = dyn_figure(nodisplay, varargin)
 % initializes figures for DYNARE
 %
 % INPUTS
-%    DynareOptions: dynare options
+%    nodisplay: the value of the command-specific nodisplay argument or options_.nodisplay
 %    varargin: the same list of possible inputs of the MATLAB function figure
 %
 % OUTPUTS
@@ -12,7 +12,7 @@ function h=dyn_figure(DynareOptions,varargin)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2012 Dynare Team
+% Copyright (C) 2012-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -29,7 +29,7 @@ function h=dyn_figure(DynareOptions,varargin)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-if DynareOptions.nodisplay,
+if nodisplay
     h = figure(varargin{:},'visible','off');
 else
     h = figure(varargin{:});

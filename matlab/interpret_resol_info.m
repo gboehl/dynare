@@ -1,15 +1,15 @@
 function message = interpret_resol_info(info)
-    
+
 % Returns a message describing problem encountered during the resolution of
 % a model.
 %
-% INPUTS 
+% INPUTS
 % - info       [struct]  Second output argument return by the resol routine
 %
-% OUTPUTS 
+% OUTPUTS
 % - message    [string]  Description of the issue preventing model's resolution.
- 
-% Copyright (C) 2001-2016 Dynare Team
+
+% Copyright (C) 2001-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

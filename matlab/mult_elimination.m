@@ -4,7 +4,7 @@ function dr=mult_elimination(varlist,M_, options_, oo_)
 % and shock variables
 %
 % INPUT
-%   none  
+%   none
 %
 % OUTPUT
 %   dr: a structure with the new decision rule
@@ -12,7 +12,7 @@ function dr=mult_elimination(varlist,M_, options_, oo_)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2003-2012 Dynare Team
+% Copyright (C) 2003-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -107,13 +107,13 @@ if nvar > 0 && options_.noprint == 0
     for i=1:length(varlist)
         k = strmatch(varlist{i},M_.endo_names(dr.order_var,:),'exact');
         headers = char(headers,varlist{i});
-        
+
         res_table(1:nm_nbr,i) = M1(k,:)';
         res_table(nm_nbr+(1:nm_nbr),i) = M2(k,:)';
         res_table(2*nm_nbr+(1:M_.exo_nbr),i) = M3(k,:)';
         res_table(2*nm_nbr+M_.exo_nbr+(1:M_.exo_nbr),i) = M4(k,:)';
     end
-    
+
     my_title='ELIMINATION OF THE MULTIPLIERS';
     lab = nstates(nil,:);
     labels = strcat(deblank(lab(i,:)),'(-1)');

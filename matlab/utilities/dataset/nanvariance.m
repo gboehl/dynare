@@ -1,4 +1,4 @@
-function variances = nanvariance(data) 
+function variances = nanvariance(data)
 % Compute the standard deviation for each observed variable (possibly with missing observations).
 
 %@info:
@@ -17,21 +17,21 @@ function variances = nanvariance(data)
 %! @item variances
 %! A N*1 vector of real numbers
 %! @end table
-%! 
-%! @strong{This function is called by:} 
+%!
+%! @strong{This function is called by:}
 %! @ref{descriptive_statistics}.
-%! 
+%!
 %! @strong{This function calls:}
 %! @ref{ndim}, @ref{demean}, @ref{nandemean}.
-%!    
-%! @strong{Remark 1.} On exit, a new field is appended to the structure: @code{dataset_.descriptive.stdv} is a 
+%!
+%! @strong{Remark 1.} On exit, a new field is appended to the structure: @code{dataset_.descriptive.stdv} is a
 %! @tex{n\times 1} vector (where @tex{n} is the number of observed variables as defined by @code{dataset_.info.nvobs}).
-%!    
+%!
 %! @end deftypefn
 %@eod:
 
-% Copyright (C) 2011-2014 Dynare Team
-%    
+% Copyright (C) 2011-2017 Dynare Team
+%
 % This file is part of Dynare.
 %
 % Dynare is free software: you can redistribute it and/or modify

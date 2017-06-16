@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009-2013 Dynare Team
+ * Copyright (C) 2009-2017 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -42,7 +42,8 @@ private:
   LogLikelihoodMain logLikelihoodMain;
 
 public:
-  virtual ~LogPosteriorDensity();
+  virtual
+  ~LogPosteriorDensity();
 
   LogPosteriorDensity(const std::string &modName, EstimatedParametersDescription &estParamsDesc, size_t n_endo, size_t n_exo,
                       const std::vector<size_t> &zeta_fwrd_arg, const std::vector<size_t> &zeta_back_arg, const std::vector<size_t> &zeta_mixed_arg,

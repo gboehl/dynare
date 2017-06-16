@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2013 Dynare Team
+ * Copyright (C) 2007-2017 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -27,14 +27,14 @@
 #include <ctime>
 #include "dynblas.h"
 #if !(defined _MSC_VER)
-#include "dynumfpack.h"
+# include "dynumfpack.h"
 #endif
 
 #ifdef CUDA
-#include "cuda.h"
-#include "cuda_runtime_api.h"
-#include "cublas_v2.h"
-#include "cusparse_v2.h"
+# include "cuda.h"
+# include "cuda_runtime_api.h"
+# include "cublas_v2.h"
+# include "cusparse_v2.h"
 #endif
 
 #include "Mem_Mngr.hh"
@@ -42,38 +42,38 @@
 //#include "Interpreter.hh"
 #include "Evaluate.hh"
 
-#define cudaChk(x, y) \
-        { \
-          cudaError_t cuda_error = x; \
-          if (cuda_error != cudaSuccess) \
-            { \
-              ostringstream tmp; \
-              tmp << y; \
-              throw FatalExceptionHandling(tmp.str()); \
-            } \
-        };
+#define cudaChk(x, y)                                   \
+  {                                                     \
+    cudaError_t cuda_error = x;                         \
+    if (cuda_error != cudaSuccess)                      \
+      {                                                 \
+        ostringstream tmp;                              \
+        tmp << y;                                       \
+        throw FatalExceptionHandling(tmp.str());        \
+      }                                                 \
+  };
 
-#define cusparseChk(x, y) \
-        { \
-          cusparseStatus_t cusparse_status = x; \
-          if (cusparse_status != CUSPARSE_STATUS_SUCCESS) \
-            { \
-              ostringstream tmp; \
-              tmp << y; \
-              throw FatalExceptionHandling(tmp.str()); \
-            } \
-        };
+#define cusparseChk(x, y)                               \
+  {                                                     \
+    cusparseStatus_t cusparse_status = x;               \
+    if (cusparse_status != CUSPARSE_STATUS_SUCCESS)     \
+      {                                                 \
+        ostringstream tmp;                              \
+        tmp << y;                                       \
+        throw FatalExceptionHandling(tmp.str());        \
+      }                                                 \
+  };
 
-#define cublasChk(x, y) \
-        { \
-          cublasStatus_t cublas_status = x; \
-          if (cublas_status != CUBLAS_STATUS_SUCCESS) \
-            { \
-              ostringstream tmp; \
-              tmp << y; \
-              throw FatalExceptionHandling(tmp.str()); \
-            } \
-        };
+#define cublasChk(x, y)                                 \
+  {                                                     \
+    cublasStatus_t cublas_status = x;                   \
+    if (cublas_status != CUBLAS_STATUS_SUCCESS)         \
+      {                                                 \
+        ostringstream tmp;                              \
+        tmp << y;                                       \
+        throw FatalExceptionHandling(tmp.str());        \
+      }                                                 \
+  };
 
 #define NEW_ALLOC
 #define MARKOVITZ
@@ -99,20 +99,18 @@ const double very_big = 1e24;
 const int alt_symbolic_count_max = 1;
 const double mem_increasing_factor = 1.1;
 
-
-
 class dynSparseMatrix : public Evaluate
 {
 public:
-  #if (defined _MSC_VER)
+#if (defined _MSC_VER)
   typedef int64_t SuiteSparse_long;
-  #endif
+#endif
   dynSparseMatrix();
   dynSparseMatrix(const int y_size_arg, const int y_kmin_arg, const int y_kmax_arg, const bool print_it_arg, const bool steady_state_arg, const int periods_arg, const int minimal_solving_periods_arg, const double slowc_arg
 #ifdef CUDA
-               ,const int CUDA_device_arg, cublasHandle_t cublas_handle_arg, cusparseHandle_t cusparse_handle_arg, cusparseMatDescr_t descr_arg
+                  , const int CUDA_device_arg, cublasHandle_t cublas_handle_arg, cusparseHandle_t cusparse_handle_arg, cusparseMatDescr_t descr_arg
 #endif
-               );
+                  );
   void Simulate_Newton_Two_Boundaries(int blck, int y_size, int y_kmin, int y_kmax, int Size, int periods, bool cvg, int minimal_solving_periods, int stack_solve_algo, unsigned int endo_name_length, char *P_endo_names, vector_table_conditional_local_type vector_table_conditional_local);
   void Simulate_Newton_One_Boundary(bool forward);
   void fixe_u(double **u, int u_count_int, int max_lag_plus_max_lead_plus_1);
@@ -146,17 +144,17 @@ private:
   void Solve_Matlab_LU_UMFPack(mxArray *A_m, mxArray *b_m, int Size, double slowc_l, bool is_two_boundaries, int it_);
   void Print_UMFPack(SuiteSparse_long *Ap, SuiteSparse_long *Ai, double *Ax, int n);
   void Printfull_UMFPack(SuiteSparse_long *Ap, SuiteSparse_long *Ai, double *Ax, double *b, int n);
-
+  void PrintM(int n, double *Ax, mwIndex *Ap, mwIndex *Ai);
   void Solve_LU_UMFPack(mxArray *A_m, mxArray *b_m, int Size, double slowc_l, bool is_two_boundaries, int  it_);
   void Solve_LU_UMFPack(SuiteSparse_long *Ap, SuiteSparse_long *Ai, double *Ax, double *b, int n, int Size, double slowc_l, bool is_two_boundaries, int  it_, vector_table_conditional_local_type vector_table_conditional_local);
   void Solve_LU_UMFPack(SuiteSparse_long *Ap, SuiteSparse_long *Ai, double *Ax, double *b, int n, int Size, double slowc_l, bool is_two_boundaries, int  it_);
 
   void End_Matlab_LU_UMFPack();
 #ifdef CUDA
-  void Solve_CUDA_BiCGStab_Free(double* tmp_vect_host, double* p, double* r, double* v, double* s, double* t, double* y_, double* z, double* tmp_,
-                                       int* Ai, double* Ax, int* Ap, double* x0, double* b, double* A_tild, int* A_tild_i, int* A_tild_p,
-                                       cusparseSolveAnalysisInfo_t infoL, cusparseSolveAnalysisInfo_t infoU,
-                                       cusparseMatDescr_t descrL, cusparseMatDescr_t descrU, int preconditioner);
+  void Solve_CUDA_BiCGStab_Free(double *tmp_vect_host, double *p, double *r, double *v, double *s, double *t, double *y_, double *z, double *tmp_,
+                                int *Ai, double *Ax, int *Ap, double *x0, double *b, double *A_tild, int *A_tild_i, int *A_tild_p,
+                                cusparseSolveAnalysisInfo_t infoL, cusparseSolveAnalysisInfo_t infoU,
+                                cusparseMatDescr_t descrL, cusparseMatDescr_t descrU, int preconditioner);
   int Solve_CUDA_BiCGStab(int *Ap, int *Ai, double *Ax, int *Ap_tild, int *Ai_tild, double *A_tild, double *b, double *x0, int n, int Size, double slowc_l, bool is_two_boundaries, int  it_, int nnz, int nnz_tild, int preconditioner, int max_iterations, int block);
 #endif
   void Solve_Matlab_GMRES(mxArray *A_m, mxArray *b_m, int Size, double slowc, int block, bool is_two_boundaries, int it_, mxArray *x0_m);
@@ -171,7 +169,7 @@ private:
                , long int *ndiv, long int *nsub
 #endif
                );
-  void Grad_f_product(int n, mxArray *b_m, double* vectr, mxArray *A_m, SuiteSparse_long *Ap, SuiteSparse_long *Ai, double* Ax, double *b);
+  void Grad_f_product(int n, mxArray *b_m, double *vectr, mxArray *A_m, SuiteSparse_long *Ap, SuiteSparse_long *Ai, double *Ax, double *b);
   void Insert(const int r, const int c, const int u_index, const int lag_index);
   void Delete(const int r, const int c);
   int At_Row(int r, NonZeroElem **first);
@@ -186,15 +184,15 @@ private:
   void Delete_u(int pos);
   void Clear_u();
   void Print_u();
-  void *Symbolic, *Numeric ;
+  void *Symbolic, *Numeric;
   void CheckIt(int y_size, int y_kmin, int y_kmax, int Size, int periods);
   void Check_the_Solution(int periods, int y_kmin, int y_kmax, int Size, double *u, int *pivot, int *b);
   int complete(int beg_t, int Size, int periods, int *b);
   void bksub(int tbreak, int last_period, int Size, double slowc_l
 #ifdef PROFILER
-               , long int *nmul
+             , long int *nmul
 #endif
-               );
+             );
   void simple_bksub(int it_, int Size, double slowc_l);
   mxArray *Sparse_transpose(mxArray *A_m);
   mxArray *Sparse_mult_SAT_SB(mxArray *A_m, mxArray *B_m);
@@ -254,7 +252,7 @@ protected:
   int restart;
   double g_lambda1, g_lambda2, gp_0;
   double lu_inc_tol;
-//private:
+  //private:
   SuiteSparse_long *Ap_save, *Ai_save;
   double *Ax_save, *b_save;
   mxArray *A_m_save, *b_m_save;

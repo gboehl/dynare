@@ -8,14 +8,14 @@ function r = octave_ver_less_than(verstr)
 %
 % INPUTS
 %    verstr: a string of the format 'x.y' or 'x.y.z'
-%    
+%
 % OUTPUTS
 %    r: 0 or 1
 %
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2008-2011 Dynare Team
+% Copyright (C) 2008-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

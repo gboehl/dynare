@@ -11,7 +11,7 @@ function write_latex_prior_table
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2015-16 Dynare Team
+% Copyright (C) 2015-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -37,11 +37,11 @@ end
 
 if (size(estim_params_.var_endo,1) || size(estim_params_.corrn,1))
     % Prior over measurement errors are defined...
-   if ((isfield(options_,'varobs') && isempty(options_.varobs)) || ~isfield(options_,'varobs'))
-       % ... But the list of observed variabled is not yet defined.
-       fprintf(['\nwrite_latex_prior_table:: varobs should be declared before. Skipping table creation.\n'])
-       return
-   end
+    if ((isfield(options_,'varobs') && isempty(options_.varobs)) || ~isfield(options_,'varobs'))
+        % ... But the list of observed variabled is not yet defined.
+        fprintf(['\nwrite_latex_prior_table:: varobs should be declared before. Skipping table creation.\n'])
+        return
+    end
 end
 
 % Fill or update bayestopt_ structure
@@ -115,56 +115,56 @@ for i=1:size(BayesOptions.name,1)
     PriorMode = BayesOptions.p5(i);
     PriorStandardDeviation = BayesOptions.p2(i);
     switch BayesOptions.pshape(i)
-        case { 1 , 5 }
+      case { 1 , 5 }
+        LowerBound = BayesOptions.p3(i);
+        UpperBound = BayesOptions.p4(i);
+        if ~isinf(lb(i))
+            LowerBound=max(LowerBound,lb(i));
+        end
+        if ~isinf(ub(i))
+            UpperBound=min(UpperBound,ub(i));
+        end
+      case { 2 , 4 , 6, 8 }
+        LowerBound = BayesOptions.p3(i);
+        if ~isinf(lb(i))
+            LowerBound=max(LowerBound,lb(i));
+        end
+        if ~isinf(ub(i))
+            UpperBound=ub(i);
+        else
+            UpperBound = '$\infty$';
+        end
+      case 3
+        if isinf(BayesOptions.p3(i)) && isinf(lb(i))
+            LowerBound = '$-\infty$';
+        else
             LowerBound = BayesOptions.p3(i);
-            UpperBound = BayesOptions.p4(i);
             if ~isinf(lb(i))
                 LowerBound=max(LowerBound,lb(i));
             end
+        end
+        if isinf(BayesOptions.p4(i)) && isinf(ub(i))
+            UpperBound = '$\infty$';
+        else
+            UpperBound = BayesOptions.p4(i);
             if ~isinf(ub(i))
                 UpperBound=min(UpperBound,ub(i));
             end
-        case { 2 , 4 , 6, 8 }
-            LowerBound = BayesOptions.p3(i);
-            if ~isinf(lb(i))
-                LowerBound=max(LowerBound,lb(i));
-            end
-            if ~isinf(ub(i))
-                UpperBound=ub(i);
-            else
-                UpperBound = '$\infty$';
-            end
-        case 3
-            if isinf(BayesOptions.p3(i)) && isinf(lb(i))
-                LowerBound = '$-\infty$';
-            else
-                LowerBound = BayesOptions.p3(i);
-                if ~isinf(lb(i))
-                    LowerBound=max(LowerBound,lb(i));
-                end
-            end
-            if isinf(BayesOptions.p4(i)) && isinf(ub(i))
-                UpperBound = '$\infty$';
-            else
-                UpperBound = BayesOptions.p4(i);
-                if ~isinf(ub(i))
-                    UpperBound=min(UpperBound,ub(i));
-                end
-            end
-        otherwise
-            error('write_latex_prior_table:: Dynare bug!')
+        end
+      otherwise
+        error('write_latex_prior_table:: Dynare bug!')
     end
     format_string = build_format_string(PriorMode, PriorStandardDeviation,LowerBound,UpperBound);
     fprintf(fidTeX,format_string, ...
-        TexName, ...
-        PriorShape, ...
-        PriorMean, ...
-        PriorMode, ...
-        PriorStandardDeviation, ...
-        LowerBound, ...
-        UpperBound, ...
-        PriorIntervals.lb(i), ...
-        PriorIntervals.ub(i) );
+            TexName, ...
+            PriorShape, ...
+            PriorMean, ...
+            PriorMode, ...
+            PriorStandardDeviation, ...
+            LowerBound, ...
+            UpperBound, ...
+            PriorIntervals.lb(i), ...
+            PriorIntervals.ub(i) );
 end
 fprintf(fidTeX,'\\end{longtable}\n ');
 fprintf(fidTeX,'\\end{center}\n');

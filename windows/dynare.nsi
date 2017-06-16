@@ -54,7 +54,7 @@ Section "Dynare core (preprocessor and M-files)"
  SectionIn RO
 !insertmacro DETERMINE_CONTEXT
  SetOutPath $INSTDIR
- File README.txt ..\NEWS mexopts-win32.bat mexopts-win64.bat ..\license.txt
+ File README.txt ..\NEWS mexopts-win32.bat mexopts-win64.bat ..\license.txt ..\VERSION
 
  SetOutPath $INSTDIR\matlab
  File /r ..\matlab\*.m
@@ -98,21 +98,30 @@ Section "MEX files for MATLAB 64-bit, version 7.5 to 7.7 (R2007b to R2008b)"
  File ..\mex\matlab\win64-7.5-7.7\*.mexw64
 SectionEnd
 
-Section "MEX files for MATLAB 64-bit, version 7.8 to 9.1 (R2009a to R2016b)"
- SetOutPath $INSTDIR\mex\matlab\win64-7.8-9.1
- File ..\mex\matlab\win64-7.8-9.1\*.mexw64
+Section "MEX files for MATLAB 64-bit, version 7.8 to 9.2 (R2009a to R2017a)"
+ SetOutPath $INSTDIR\mex\matlab\win64-7.8-9.2
+ File ..\mex\matlab\win64-7.8-9.2\*.mexw64
 SectionEnd
 
 SectionGroupEnd
 
-Section "MEX files for Octave 3.6 (MinGW)"
+SectionGroup "MEX files for OCTAVE"
+
+Section "MEX files for Octave 4.2.1 (MinGW, 64bit)"
  SetOutPath $INSTDIR\mex\octave
  File ..\mex\octave\*.mex ..\mex\octave\*.oct
 SectionEnd
 
+Section "MEX files for Octave 4.2.1 (MinGW, 32bit)"
+ SetOutPath $INSTDIR\mex\octave32
+ File ..\mex\octave32\*.mex ..\mex\octave32\*.oct
+SectionEnd
+
+SectionGroupEnd
+
 Section "Dynare++ (standalone executable)"
  SetOutPath $INSTDIR\dynare++
- File ..\dynare++\src\dynare++.exe ..\dynare++\extern\matlab\dynare_simul.m
+ File ..\dynare++\src\dynare++.exe ..\dynare++\extern\matlab\dynare_simul.m ..\dynare++\*.dll
 SectionEnd
 
 Section "Documentation and examples (Dynare and Dynare++)"

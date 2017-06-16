@@ -3,15 +3,15 @@ function [fval,info,exit_flag,DLIK,Hess,SteadyState,trend_coeff]  = TaRB_optimiz
 % Wrapper function for target function used in TaRB algorithm; reassembles
 % full parameter vector before calling target function
 %
-% INPUTS 
-%   o optpar            [double]   (p_opt*1) vector of subset of parameters to be considered 
-%   o par_vector        [double]   (p*1) full vector of parameters 
+% INPUTS
+%   o optpar            [double]   (p_opt*1) vector of subset of parameters to be considered
+%   o par_vector        [double]   (p*1) full vector of parameters
 %   o parameterindices  [double]   (p_opt*1) index of optpar entries in
 %                                   par_vector
 %   o TargetFun         [char]      string specifying the name of the objective
 %                                   function (posterior kernel).
 %   o varargin          [structure] other inputs of target function
-% 
+%
 % OUTPUTS
 %   o fval       [scalar]   value of (minus) the likelihood.
 %   o info       [double]  (p*2) error code vector
@@ -20,8 +20,9 @@ function [fval,info,exit_flag,DLIK,Hess,SteadyState,trend_coeff]  = TaRB_optimiz
 %   o Hess       [double]  (p*p) asymptotic Hessian matrix.
 %   o SteadyState [double]  Vector of doubles, steady state level for the endogenous variables.
 %   o trend_coeff [double]  Matrix of doubles, coefficients of the deterministic trend in the measurement equation
-% 
-% Copyright (C) 2015-16 Dynare Team
+%
+
+% Copyright (C) 2015-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -40,4 +41,3 @@ function [fval,info,exit_flag,DLIK,Hess,SteadyState,trend_coeff]  = TaRB_optimiz
 
 par_vector(parameterindices,:)=optpar; %reassemble parameter
 [fval,info,exit_flag,DLIK,Hess,SteadyState,trend_coeff] = feval(TargetFun,par_vector,varargin{:}); %call target function
-

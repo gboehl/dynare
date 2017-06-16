@@ -15,7 +15,7 @@ function [x,check] = solve1(func,x,j1,j2,jacobian_flag,gstep,tolf,tolx,maxit,deb
 %    maxit            maximum number of iterations
 %    debug            debug flag
 %    varargin:        list of extra arguments to the function
-%    
+%
 % OUTPUTS
 %    x:               results
 %    check=1:         the model can not be solved
@@ -23,7 +23,7 @@ function [x,check] = solve1(func,x,j1,j2,jacobian_flag,gstep,tolf,tolx,maxit,deb
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2001-2016 Dynare Team
+% Copyright (C) 2001-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -59,7 +59,7 @@ if ~isempty(i)
           'equation(s) resulted in a non-finite number:'])
     disp(j1(i)')
     check = 1;
-    return;
+    return
 end
 
 f = 0.5*(fvec'*fvec) ;
@@ -80,7 +80,7 @@ for its = 1:maxit
         fjac = fjac(j1,j2);
     else
         dh = max(abs(x(j2)),gstep(1)*ones(nn,1))*eps^(1/3);
-        
+
         for j = 1:nn
             xdh = x ;
             xdh(j2(j)) = xdh(j2(j))+dh(j) ;
@@ -114,7 +114,7 @@ for its = 1:maxit
         disp([its f])
         disp([xold x])
     end
-    
+
     if check > 0
         den = max([f;0.5*nn]) ;
         if max(abs(g).*max([abs(x(j2)') ones(1,nn)])')/den < tolmin
@@ -147,13 +147,3 @@ disp('SOLVE: maxit has been reached')
 % 04/13/01 MJ added test  f < tolf !!
 % 05/11/01 MJ changed tests for 'check' so as to remove 'continue' which is
 %             an instruction which appears only in version 6
-
-
-
-
-
-
-
-
-
-

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010-2013 Dynare Team
+ * Copyright (C) 2010-2017 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -147,4 +147,3 @@ main(int argc, char **argv)
   std::cout << "Matrix Pinf: " << std::endl << Pinf << std::endl;
 
 }
-

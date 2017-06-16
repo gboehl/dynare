@@ -30,6 +30,10 @@ check;
 options_.solve_tolf=1e-12;
 simul(periods=100);
 
+if ~oo_.deterministic_simulation.status
+   error('Perfect foresight simulation failed')
+end
+
 // Display the path of consumption and capital
 rplot y_backward;
 

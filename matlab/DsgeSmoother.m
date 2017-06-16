@@ -1,8 +1,8 @@
 function [alphahat,etahat,epsilonhat,ahat,SteadyState,trend_coeff,aK,T,R,P,PK,decomp,trend_addition,state_uncertainty,M_,oo_,options_,bayestopt_] = DsgeSmoother(xparam1,gend,Y,data_index,missing_value,M_,oo_,options_,bayestopt_,estim_params_)
-% Estimation of the smoothed variables and innovations. 
-% 
-% INPUTS 
-%   o xparam1       [double]   (p*1) vector of (estimated) parameters. 
+% Estimation of the smoothed variables and innovations.
+%
+% INPUTS
+%   o xparam1       [double]   (p*1) vector of (estimated) parameters.
 %   o gend          [integer]  scalar specifying the number of observations ==> varargin{1}.
 %   o data          [double]   (n*T) matrix of data.
 %   o data_index    [cell]      1*smpl cell of column vectors of indices.
@@ -12,7 +12,7 @@ function [alphahat,etahat,epsilonhat,ahat,SteadyState,trend_coeff,aK,T,R,P,PK,de
 %   o options_      [structure] describing the options
 %   o bayestopt_    [structure] describing the priors
 %   o estim_params_ [structure] characterizing parameters to be estimated
-%  
+%
 % OUTPUTS
 %   o alphahat      [double]  (m*T) matrix, smoothed endogenous variables (a_{t|T})  (decision-rule order)
 %   o etahat        [double]  (r*T) matrix, smoothed structural shocks (r>=n is the number of shocks).
@@ -29,36 +29,36 @@ function [alphahat,etahat,epsilonhat,ahat,SteadyState,trend_coeff,aK,T,R,P,PK,de
 %                       matrices (meaningless for periods 1:d) (decision-rule order)
 %   o decomp        (K*m*r*(T+K)) 4D array of shock decomposition of k-step ahead
 %                       filtered variables (decision-rule order)
-%   o trend_addition [double] (n*T) pure trend component; stored in options_.varobs order         
+%   o trend_addition [double] (n*T) pure trend component; stored in options_.varobs order
 %   o state_uncertainty [double] (K,K,T) array, storing the uncertainty
 %                                   about the smoothed state (decision-rule order)
 %   o M_            [structure] decribing the model
 %   o oo_           [structure] storing the results
 %   o options_      [structure] describing the options
 %   o bayestopt_    [structure] describing the priors
-%  
+%
 % Notes:
 %   m:  number of endogenous variables (M_.endo_nbr)
 %   T:  number of Time periods (options_.nobs)
 %   r:  number of strucural shocks (M_.exo_nbr)
 %   n:  number of observables (length(options_.varobs))
 %   K:  maximum forecast horizon (max(options_.nk))
-% 
+%
 %   To get variables that are stored in decision rule order in order of declaration
 %   as in M_.endo_names, ones needs code along the lines of:
 %   variables_declaration_order(dr.order_var,:) = alphahat
-% 
-%   Defines bayestopt_.mf = bayestopt_.smoother_mf (positions of observed variables 
-%   and requested smoothed variables in decision rules (decision rule order)) and 
+%
+%   Defines bayestopt_.mf = bayestopt_.smoother_mf (positions of observed variables
+%   and requested smoothed variables in decision rules (decision rule order)) and
 %   passes it back via global variable
-% 
-% ALGORITHM 
-%   Diffuse Kalman filter (Durbin and Koopman)       
+%
+% ALGORITHM
+%   Diffuse Kalman filter (Durbin and Koopman)
 %
 % SPECIAL REQUIREMENTS
 %   None
 
-% Copyright (C) 2006-2016 Dynare Team
+% Copyright (C) 2006-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -97,7 +97,7 @@ end
 %------------------------------------------------------------------------------
 % 2. call model setup & reduction program
 %------------------------------------------------------------------------------
-oldoo.restrict_var_list = oo_.dr.restrict_var_list; 
+oldoo.restrict_var_list = oo_.dr.restrict_var_list;
 oldoo.restrict_columns = oo_.dr.restrict_columns;
 oo_.dr.restrict_var_list = bayestopt_.smoother_var_list;
 oo_.dr.restrict_columns = bayestopt_.smoother_restrict_columns;
@@ -133,8 +133,8 @@ mf    = bayestopt_.mf;
 % ------------------------------------------------------------------------------
 %  3. Initial condition of the Kalman filter
 % ------------------------------------------------------------------------------
-% 
-%  Here, Pinf and Pstar are determined. If the model is stationary, determine 
+%
+%  Here, Pinf and Pstar are determined. If the model is stationary, determine
 %  Pstar as the solution of the Lyapunov equation and set Pinf=[] (Notation follows
 %  Koopman/Durbin (2003), Journal of Time Series Analysis 24(1))
 %
@@ -169,7 +169,7 @@ elseif options_.lik_init == 3           % Diffuse Kalman filter
         kalman_algo = 3;
     else
         if ~all(all(abs(H-diag(diag(H)))<1e-14))% ie, the covariance matrix is diagonal...
-            %Augment state vector (follows Section 6.4.3 of DK (2012))
+                                                %Augment state vector (follows Section 6.4.3 of DK (2012))
             expanded_state_vector_for_univariate_filter=1;
             T  = blkdiag(T,zeros(vobs));
             np    = size(T,1);
@@ -240,30 +240,32 @@ if kalman_algo == 1 || kalman_algo == 3
 end
 
 if kalman_algo == 2 || kalman_algo == 4
-        if ~all(all(abs(H-diag(diag(H)))<1e-14))% ie, the covariance matrix is diagonal...
-            if ~expanded_state_vector_for_univariate_filter
-                %Augment state vector (follows Section 6.4.3 of DK (2012))
-                expanded_state_vector_for_univariate_filter=1;
-                Z   = [Z, eye(vobs)];
-                ST  = blkdiag(ST,zeros(vobs));
-                np  = size(ST,1);
-                Q   = blkdiag(Q,H);
-                R1  = blkdiag(R,eye(vobs));
-                if kalman_algo == 4
-                    %recompute Schur state space transformation with
-                    %expanded state space
-                    [Pstar,Pinf] = compute_Pinf_Pstar(mf,ST,R1,Q,options_.qz_criterium);
-                else
-                    Pstar = blkdiag(Pstar,H);
-                    Pinf  = blkdiag(Pinf,zeros(vobs));                    
-                end
-                %now reset H to 0
-                H   = zeros(vobs,vobs);
+    if ~all(all(abs(H-diag(diag(H)))<1e-14))% ie, the covariance matrix is diagonal...
+        if ~expanded_state_vector_for_univariate_filter
+            %Augment state vector (follows Section 6.4.3 of DK (2012))
+            expanded_state_vector_for_univariate_filter=1;
+            Z   = [Z, eye(vobs)];
+            ST  = blkdiag(ST,zeros(vobs));
+            np  = size(ST,1);
+            Q   = blkdiag(Q,H);
+            R1  = blkdiag(R,eye(vobs));
+            if kalman_algo == 4
+                %recompute Schur state space transformation with
+                %expanded state space
+                [Pstar,Pinf] = compute_Pinf_Pstar(mf,ST,R1,Q,options_.qz_criterium);
             else
-                %do nothing, state vector was already expanded
+                Pstar = blkdiag(Pstar,H);
+                if ~isempty(Pinf)
+                    Pinf  = blkdiag(Pinf,zeros(vobs));
+                end
             end
+            %now reset H to 0
+            H   = zeros(vobs,vobs);
+        else
+            %do nothing, state vector was already expanded
         end
-        
+    end
+
     [alphahat,epsilonhat,etahat,ahat,P,aK,PK,decomp,state_uncertainty] = missing_DiffuseKalmanSmootherH3_Z(ST, ...
                                                       Z,R1,Q,diag(H), ...
                                                       Pinf,Pstar,data1,vobs,np,smpl,data_index, ...
@@ -280,7 +282,7 @@ if expanded_state_vector_for_univariate_filter && (kalman_algo == 2 || kalman_al
     ahat = ahat(k,:);
     aK = aK(:,k,:,:);
     epsilonhat=etahat(end-vobs+1:end,:);
-    etahat=etahat(1:end-vobs,:);    
+    etahat=etahat(1:end-vobs,:);
     if ~isempty(PK)
         PK = PK(:,k,k,:);
     end
