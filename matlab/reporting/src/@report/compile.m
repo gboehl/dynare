@@ -67,7 +67,7 @@ if isempty(opts.compiler)
     if ismac
         % Add most likely places for pdflatex to exist outside of default $PATH
         [status, opts.compiler] = ...
-            system('PATH=$PATH:/usr/texbin:/usr/local/bin:/usr/local/sbin;which pdflatex');
+            system('PATH=$PATH:/usr/texbin:/usr/local/bin:/usr/local/sbin:/Library/TeX/texbin;which pdflatex');
     elseif ispc
         [status, opts.compiler] = system('findtexmf --file-type=exe pdflatex');
         if status == 1
