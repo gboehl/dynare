@@ -65,7 +65,7 @@ if nargin<6
     DynareOutput.exo_simul = zeros(sample_size,number_of_shocks);
     DynareOutput.exo_simul(:,positive_var_indx) = DynareOutput.bnlms.shocks;
     if isfield(DynareModel,'exo_histval') && ~ isempty(DynareModel.exo_histval)
-        DynareOutput.exo_simul = [M_.exo_histval; DynareOutput.exo_simul];
+        DynareOutput.exo_simul = [DynareModel.exo_histval; DynareOutput.exo_simul];
     else
         DynareOutput.exo_simul = [zeros(1,number_of_shocks); DynareOutput.exo_simul];
     end
