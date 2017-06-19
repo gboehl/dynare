@@ -195,6 +195,11 @@ if ismember('onlymacro', varargin)
     return
 end
 
+if ismember('onlyjson', varargin)
+    disp('Preprocesser stopped after preprocessing step because of ''onlyjson'' option.');
+    return;
+end
+
 % post-dynare-prerocessor-hook
 if exist(fname(1:end-4),'dir') && exist([fname(1:end-4) filesep 'hooks'],'dir') && exist([fname(1:end-4) filesep 'hooks/postprocessing.m'],'file')
     run([fname(1:end-4) filesep 'hooks/postprocessing'])

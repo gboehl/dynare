@@ -50,6 +50,7 @@ function [dataset_, dataset_info, xparam1, hh, M_, options_, oo_, estim_params_,
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 hh = [];
+xparam1 = [];
 
 if isempty(gsa_flag)
     gsa_flag = 0;
@@ -311,6 +312,10 @@ if options_.use_calibration_initialization %set calibration as starting values
     end
 end
 
+if ~isempty(bayestopt_) && all(bayestopt_.pshape==0) && any(isnan(xparam1))
+    error('ML estimation requires all estimated parameters to be initialized, either in an estimated_params or estimated_params_init-block ')
+end
+
 if ~isempty(estim_params_) && ~(all(strcmp(fieldnames(estim_params_),'full_calibration_detected'))  || (isfield(estim_params_,'nvx') && sum(estim_params_.nvx+estim_params_.nvn+estim_params_.ncx+estim_params_.ncn+estim_params_.np)==0))
     if ~isempty(bayestopt_) && any(bayestopt_.pshape > 0)
         % Plot prior densities.
@@ -556,7 +561,7 @@ end
 [oo_.steady_state, params,info] = evaluate_steady_state(oo_.steady_state,M,options_,oo_,steadystate_check_flag);
 
 if info(1)
-    fprintf('\ndynare_estimation_init:: The steady state at the initial parameters cannot be computed.')
+    fprintf('\ndynare_estimation_init:: The steady state at the initial parameters cannot be computed.\n')
     print_info(info, 0, options_);
 end
 

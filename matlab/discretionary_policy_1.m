@@ -98,8 +98,10 @@ instr_nbr=endo_nbr-eq_nbr;
 if instr_nbr==0
     error('discretionary_policy:: There are no available instruments, because the model has as many equations as variables.')
 end
-if size(Instruments,1)~= instr_nbr
-    error('discretionary_policy:: There are more declared instruments than omitted equations.')
+if size(Instruments,1)< instr_nbr
+    error('discretionary_policy:: There are fewer declared instruments than omitted equations.')
+elseif size(Instruments,1)> instr_nbr
+    error('discretionary_policy:: There are more declared instruments than omitted equations.')    
 end
 
 instr_id=nan(instr_nbr,1);

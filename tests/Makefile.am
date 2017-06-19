@@ -28,6 +28,7 @@ MODFILES = \
 	estimation/fs2000_MCMC_jumping_covariance.mod \
 	ms-sbvar/test_ms_variances_repeated_runs.mod \
 	fs2000/fs2000.mod \
+	ls2003/ls2003_hessian_zero.mod \
 	ep/rbc.mod \
 	exogenous-observed-variables/preprocessor.mod \
 	estimation/fs2000_with_weibull_prior.mod \
@@ -725,6 +726,7 @@ EXTRA_DIST = \
 	read_trs_files.sh \
 	run_test_matlab.m \
 	run_test_octave.m \
+	load_octave_packages.m \
 	$(MODFILES) \
 	$(XFAIL_MODFILES) \
 	$(MFILES) \
@@ -915,7 +917,11 @@ clean-local:
 		$(patsubst %.trs, %.log, $(M_TRS_FILES)) \
 		$(patsubst %.trs, %.log, $(M_XFAIL_TRS_FILES)) \
 		$(patsubst %.trs, %.log, $(O_TRS_FILES)) \
-		$(patsubst %.trs, %.log, $(O_XFAIL_TRS_FILES))
+		$(patsubst %.trs, %.log, $(O_XFAIL_TRS_FILES)) \
+		$(patsubst %.trs, %.json, $(M_TRS_FILES)) \
+		$(patsubst %.trs, %.json, $(M_XFAIL_TRS_FILES)) \
+		$(patsubst %.trs, %.json, $(O_TRS_FILES)) \
+		$(patsubst %.trs, %.json, $(O_XFAIL_TRS_FILES))
 
 	rm -f $(patsubst %.mod, %.m, $(MODFILES)) \
 		$(patsubst %.mod, %_static.*, $(MODFILES)) \

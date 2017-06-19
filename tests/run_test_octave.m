@@ -25,7 +25,6 @@
 
     top_test_dir = getenv('TOP_TEST_DIR');
     addpath(top_test_dir);
-    addpath('.'); % workaround for bug in Octave 4.2.0-rc2: https://savannah.gnu.org/bugs/?49334
     addpath([top_test_dir filesep '..' filesep 'matlab']);
 
     ## Test Dynare Version

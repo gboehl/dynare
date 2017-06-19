@@ -25,6 +25,8 @@ PriorNames = strvcat(PriorNames,'Gaussian');
 PriorNames = strvcat(PriorNames,'Inverted Gamma');
 PriorNames = strvcat(PriorNames,'Uniform');
 PriorNames = strvcat(PriorNames,'Inverted Gamma -- 2');
+PriorNames = strvcat(PriorNames,'Dirichlet');
+PriorNames = strvcat(PriorNames,'Weibull');
 
 n = size(BayesInfo.name,1); % Numbe rof estimated parameters.
 
@@ -71,7 +73,7 @@ for i=1:size(BayesInfo.name,1)
         if ~isinf(ub(i))
             UpperBound=min(UpperBound,ub(i));
         end
-      case { 2 , 4 , 6 }
+      case { 2 , 4 , 6 , 8}
         LowerBound = BayesInfo.p3(i);
         if ~isinf(lb(i))
             LowerBound=max(LowerBound,lb(i));

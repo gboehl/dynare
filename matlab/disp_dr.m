@@ -27,6 +27,11 @@ function disp_dr(dr,order,var_list)
 
 global M_ options_
 
+if M_.hessian_eq_zero && order~=1
+    order = 1;
+    warning('disp_dr: using order = 1 because Hessian is equal to zero');
+end
+    
 nx =size(dr.ghx,2);
 nu =size(dr.ghu,2);
 if options_.block
