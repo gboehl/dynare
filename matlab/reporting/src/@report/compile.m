@@ -91,13 +91,13 @@ if isempty(opts.compiler)
 end
 
 options = '-synctex=1 -halt-on-error';
-if isoctave
-    echo = 1;
-else
-    echo = '-echo';
-end
 if opts.showOutput
-    status = system([opts.compiler ' ' options middle o.fileName], echo);
+    if isoctave
+        system([opts.compiler ' ' options middle o.fileName]);
+        status = 0;
+    else
+        status = system([opts.compiler ' ' options middle o.fileName], '-echo');
+    end
 else
     [status, junk] = system([opts.compiler ' -interaction=batchmode ' options middle o.fileName]);
 end
