@@ -27,3 +27,6 @@
 [submodule "matlab/modules/reporting"]
 	path = matlab/modules/reporting
 	url = https://github.com/DynareTeam/reporting.git
+[submodule "contrib/jsonlab"]
+	path = contrib/jsonlab
+	url = https://github.com/fangq/jsonlab.git
