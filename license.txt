@@ -263,6 +263,10 @@ Copyright: 2009 John Burkardt
            2010-2011 Dynare Team
 License: LGPL-3+
 
+Files: contrib/jsonlab
+Copyright: 2011-2017 Qianqian Fang <q.fang at neu.edu>
+License: BSD or GPL-3+
+
 Files: contrib/ms-sbvar/utilities_dw/*
 Copyright: 1996-2011 Daniel Waggoner
 License: GPL-3+

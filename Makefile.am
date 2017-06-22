@@ -44,6 +44,8 @@ dist-hook:
 install-exec-local:
 	$(MKDIR_P) $(DESTDIR)$(pkglibdir)/contrib/ms-sbvar/TZcode
 	cp -r contrib/ms-sbvar/TZcode/MatlabFiles $(DESTDIR)$(pkglibdir)/contrib/ms-sbvar/TZcode
+	$(MKDIR_P) $(DESTDIR)$(pkglibdir)/contrib/jsonlab
+	cp -r contrib/jsonlab $(DESTDIR)$(pkglibdir)/contrib/jsonlab
 	cp -r examples $(DESTDIR)$(pkglibdir)
 	cp -r matlab $(DESTDIR)$(pkglibdir)
 	rm -rf $(DESTDIR)$(pkglibdir)/matlab/preprocessor*
