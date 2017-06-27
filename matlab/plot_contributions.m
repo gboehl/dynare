@@ -31,7 +31,7 @@ function plot_contributions(tagn, tagv, dseriesdata, params)
 %
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
-tic
+
 global M_;
 
 jsonfile = [M_.fname '_original.json'];
@@ -75,5 +75,5 @@ figure('Name', lhs);
 plot(1:dseriesdata.nobs, contribution)
 seriesnames = dseriesdata.name;
 legend('All Endogenous',seriesnames{:})
-toc
+
 end
