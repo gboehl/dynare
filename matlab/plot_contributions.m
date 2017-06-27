@@ -46,12 +46,12 @@ jsonmodel = jsonmodel.model;
 
 % replace variables with dseriesdata.variablename
 for i = 1:length(dseriesdata.name)
-    rhs = regexprep(rhs, ['([\s\+\-\*\/]{1}|^)(' dseriesdata{i}.name{:} ')([\s\(\+\-\*\/|$]{1})'], '$1dseriesdata.$2$3');
+    rhs = regexprep(rhs, ['([\s\+\-\*\/\^]{1}|^)(' dseriesdata{i}.name{:} ')([\s\(\+\-\*\/\^|$]{1})'], '$1dseriesdata.$2$3');
 end
 fields = fieldnames(params);
 
 for i = 1:length(fields)
-    rhs = regexprep(rhs, ['([\s\+\-\\/]{1}|^)(' fields{i} ')([\s\+\-\*\/]{1}|$)'], '$1params.$2$3');
+    rhs = regexprep(rhs, ['([\s\+\-\*\/\^]{1}|^)(' fields{i} ')([\s\+\-\*\/\^]{1}|$)'], '$1params.$2$3');
 end
 
 % call function with all variable values
