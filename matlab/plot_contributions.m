@@ -55,16 +55,15 @@ for i = 1:length(fields)
 end
 
 % call function with all variable values
-nvars = length(dseriesdata.name);
-contribution = zeros(dseriesdata.nobs, nvars+1);
+contribution = zeros(dseriesdata.nobs, dseriesdata.vobs + 1);
 rhseval = eval(rhs);
 contribution(:, 1) = rhseval.data;
 
 dseriesdatabak = dseriesdata;
-dseriesdatazero = dseries(zeros(dseriesdata.nobs, nvars), ...
+dseriesdatazero = dseries(zeros(dseriesdata.nobs, dseriesdata.vobs), ...
     dseriesdata.firstdate, ...
     dseriesdata.name);
-for i = 1:nvars
+for i = 1:dseriesdata.vobs
     dseriesdata = dseriesdatazero;
     dseriesdata{dseriesdatabak.name{i}} = dseriesdatabak{dseriesdatabak.name{i}};
     rhseval = eval(rhs);
@@ -72,8 +71,8 @@ for i = 1:nvars
 end
 
 figure('Name', lhs);
-plot(1:dseriesdata.nobs, contribution)
+plot(1:dseriesdata.nobs, contribution);
 seriesnames = dseriesdata.name;
-legend('All Endogenous',seriesnames{:})
+legend('All Endogenous', seriesnames{:});
 
 end
