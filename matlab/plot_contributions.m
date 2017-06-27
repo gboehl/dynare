@@ -31,7 +31,7 @@ function plot_contributions(tagn, tagv, dseriesdata, params)
 %
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
-
+tic
 global M_;
 
 jsonfile = [M_.fname '_original.json'];
@@ -44,41 +44,36 @@ jsonmodel = loadjson(jsonfile);
 jsonmodel = jsonmodel.model;
 [lhs, rhs, ~] = getEquationByTag(jsonmodel, tagn, tagv);
 
-w% replace variables with dseriesdata.variablename
+% replace variables with dseriesdata.variablename
 for i = 1:length(dseriesdata.name)
-    rhs = strrep(rhs, [dseriesdata{i}.name{:} '('], ['dseriesdata.' dseriesdata{i}.name{:} '(']);
+    rhs = regexprep(rhs, ['([\s\+\-\*\/]{1}|^)(' dseriesdata{i}.name{:} ')([\s\(\+\-\*\/|$]{1})'], '$1dseriesdata.$2$3');
+end
+fields = fieldnames(params);
+
+for i = 1:length(fields)
+    rhs = regexprep(rhs, ['([\s\+\-\\/]{1}|^)(' fields{i} ')([\s\+\-\*\/]{1}|$)'], '$1params.$2$3');
 end
 
-% create inline function for rhs
-rhsfunc = inline(rhs);
-
-% construct call
-rhsfuncargs = argnames(rhsfunc);
-nargs = length(rhsfuncargs);
-parameters = cell(nargs-1, 1);
-for i = 2:nargs
-    parameters{i-1} = params.(rhsfuncargs{i});
-end
-
-contribution = zeros(dseriesdata.nobs, nargs+1);
-funceval = rhsfunc(dseriesdata, parameters{:});
-contribution(:, 1) = funceval.data;
-
+% call function with all variable values
 nvars = length(dseriesdata.name);
+contribution = zeros(dseriesdata.nobs, nvars+1);
+rhseval = eval(rhs);
+contribution(:, 1) = rhseval.data;
+
 dseriesdatabak = dseriesdata;
 dseriesdatazero = dseries(zeros(dseriesdata.nobs, nvars), ...
     dseriesdata.firstdate, ...
     dseriesdata.name);
 for i = 1:nvars
     dseriesdata = dseriesdatazero;
-    dseriesdata{dseriesdatabak.name{i}} = dseriesdatabak{i};
-    funceval = rhsfunc(dseriesdata, parameters{:});
-    contribution(:, i+1) = funceval.data;
+    dseriesdata{dseriesdatabak.name{i}} = dseriesdatabak{dseriesdatabak.name{i}};
+    rhseval = eval(rhs);
+    contribution(:, i+1) = rhseval.data;
 end
 
 figure('Name', lhs);
 plot(1:dseriesdata.nobs, contribution)
 seriesnames = dseriesdata.name;
 legend('All Endogenous',seriesnames{:})
-
+toc
 end
