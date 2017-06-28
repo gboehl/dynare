@@ -10,7 +10,7 @@ to download Dynare in its entirety.
 # License
 
 Dynare Reporting is covered by the GNU General Public Licence version 3 or later
-(see [license.txt](license.txt) in the Dynare Reporting distribution for
+(see [LICENSE.md](LICENSE.md) in the Dynare Reporting distribution for
 specifics).
 
 # Obtain the code that Dynare Reporting depends on
