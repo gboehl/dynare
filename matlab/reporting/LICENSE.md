@@ -1,4 +1,4 @@
-> Copyright (C) 2013-2015 Dynare Team
+> Copyright (C) 2013-2017 Dynare Team
 >
 > License: GPL-3+
 >  Dynare Reporting is free software: you can redistribute it and/or modify
