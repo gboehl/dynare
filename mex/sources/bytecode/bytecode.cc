@@ -773,7 +773,7 @@ main(int nrhs, const char *prhs[])
       for (vector<s_plan>::iterator it = splan.begin(); it != splan.end(); it++)
         {
           mexPrintf("----------------------------------------------------------------------------------------------------\n");
-          mexPrintf("suprise #%d\n", i+1);
+          mexPrintf("surprise #%d\n", i+1);
           if (it->exo.length())
             mexPrintf(" plan fliping var=%s (%d) exo=%s (%d) for the following periods and with the following values:\n", it->var.c_str(), it->var_num, it->exo.c_str(), it->exo_num);
           else
