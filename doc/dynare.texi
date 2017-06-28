@@ -839,6 +839,9 @@ derivatives with respect to the parameters that are calculated by the
 preprocessor. @code{0} means no derivatives, @code{1} means first derivatives,
 and @code{2} means second derivatives. Default: @code{2}
 
+@item nowarn
+Suppresses all warnings.
+
 @anchor{json}
 @item json=parse|transform|compute
 Causes the preprocessor to output a version of the @file{.mod} file in JSON
