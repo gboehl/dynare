@@ -35,7 +35,7 @@ global M_
 
 jsonfile = [M_.fname '_original.json'];
 if exist(jsonfile, 'file') ~= 2
-    error(['Could not find ' jsonfile]);
+    error('Could not find %s! Please use the json option (See the Dynare invocation section in the reference manual).', jsonfile);
 end
 
 % Get equation
