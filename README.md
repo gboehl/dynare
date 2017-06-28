@@ -219,9 +219,9 @@ Alternatively, if you want to build everything, manually install the following p
 
 - `build-essential` (for gcc, g++ and make)
 - `gfortran`
-- `liboctave-dev` or `octave3.2-headers` (will install ATLAS)
+- `liboctave-dev` (or `octave3.2-headers` on older systems)
 - `libboost-graph-dev`
-- `libgsl0-dev`
+- `libgsl-dev` (or `libgsl0-dev` on older systems)
 - `libmatio-dev`
 - `libslicot-dev` and `libslicot-pic`
 - `libsuitesparse-dev`
@@ -235,7 +235,8 @@ Alternatively, if you want to build everything, manually install the following p
 - `texlive-formats-extra` (for Eplain)
 - `texlive-latex-extra` (for fullpage.sty)
 - `texlive-fonts-extra` (for ccicons)
-- `latex-beamer`
+- `texlive-latex-recommended` (or `latex-beamer` on older systems)
+- `texlive-science` (or `texlive-math-extra` on older systems) (for amstex)
 - `texinfo`
 - `latex2html`
 - `doxygen`
