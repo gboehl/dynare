@@ -2,15 +2,12 @@ SUBDIRS = preprocessor macroprocessor userguide parallel internals gsa dseries-a
 
 info_TEXINFOS = dynare.texi
 
-if HAVE_TEXI2HTML
 if HAVE_LATEX2HTML
 html-local: dynare.html
 
 dynare.html: dynare.texi
 	rm -rf dynare.html
-	mkdir -p dynare.html
-	cd dynare.html && $(TEXI2HTML) --l2h --split section --prefix index ../dynare.texi
-endif
+	texi2any --html --split=section -c L2H=1 -c PREFIX=dynare.html dynare.texi
 endif
 
 PDF_TARGETS =
