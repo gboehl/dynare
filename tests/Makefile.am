@@ -998,3 +998,4 @@ clean-local:
 	find . -name "*.aux" -type f -delete
 	find . -name "*.log" -type f -delete
 	find . -name "*.eps" -type f -delete
+	find . -name "*.json" -type f -delete
