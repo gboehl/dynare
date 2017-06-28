@@ -845,18 +845,22 @@ derivatives with respect to the parameters that are calculated by the
 preprocessor. @code{0} means no derivatives, @code{1} means first derivatives,
 and @code{2} means second derivatives. Default: @code{2}
 
+@item nowarn
+Suppresses all warnings.
+
 @anchor{json}
 @item json=parse|transform|compute
 Causes the preprocessor to output a version of the @file{.mod} file in JSON
-format. If @code{parse} is passed, then the output will be written after the
-parsing step in a file called @file{@var{FILENAME}.mod}. If @code{transform} is
-passed, the JSON output of the transformed model (maximum lead of 1, minimum
-lag of -1, expectation operators substituted, etc.) will be written after the
-transform pass in a file called @file{@var{FILENAME}.mod}. And if
-@code{compute} is passed, the output is written after the computing pass. Here,
-the transformed model is written to @file{@var{FILENAME}.mod}, the original
-model is written to @file{@var{FILENAME}_original.mod}, and the dynamic and
-static files are written to @file{@var{FILENAME}_dynamic.mod} and
+format. If @code{parse} is passed, the output will be written after the parsing
+of the @file{.mod} file to a file called @file{@var{FILENAME}.mod}. If
+@code{transform} is passed, the JSON output of the transformed model (maximum
+lead of 1, minimum lag of -1, expectation operators substituted, etc.) will be
+written to a file called @file{@var{FILENAME}.mod} and the original,
+untransformed model will be written in @file{@var{FILENAME}_original.mod}. And
+if @code{compute} is passed, the output is written after the computing pass. In
+this case, the transformed model is written to @file{@var{FILENAME}.mod}, the
+original model is written to @file{@var{FILENAME}_original.mod}, and the
+dynamic and static files are written to @file{@var{FILENAME}_dynamic.mod} and
 @file{@var{FILENAME}_static.mod}.
 
 @item jsonstdout
