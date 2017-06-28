@@ -48,6 +48,7 @@ install-exec-local:
 	cp -r contrib/jsonlab $(DESTDIR)$(pkglibdir)/contrib/jsonlab
 	cp -r examples $(DESTDIR)$(pkglibdir)
 	cp -r matlab $(DESTDIR)$(pkglibdir)
+	find $(DESTDIR)$(pkglibdir) -name LICENSE.md -delete
 	rm -rf $(DESTDIR)$(pkglibdir)/matlab/preprocessor*
 	{ \
 	if [ -z "`file preprocessor/dynare_m | grep x86.64`" ]; then \
