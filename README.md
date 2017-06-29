@@ -238,6 +238,7 @@ Alternatively, if you want to build everything, manually install the following p
 - `texlive-latex-recommended` (or `latex-beamer` on older systems)
 - `texlive-science` (or `texlive-math-extra` on older systems) (for amstex)
 - `texinfo`
+- `lmodern` (for macroprocessor PDF)
 - `latex2html`
 - `doxygen`
 
