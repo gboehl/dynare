@@ -74,9 +74,11 @@ for i = 1:length(vnames)
     end
 end
 
+% Initialize an array for the contributions.
+contribution = zeros(ds1.nobs, ds1.vobs + 1);
+
 % Evaluate RHS with all the actual paths.
 ds = ds1;
-contribution = zeros(ds.nobs, ds.vobs + 1);
 rhseval = eval(rhs);
 contribution(:, 1) = rhseval.data;
 
@@ -96,6 +98,13 @@ end
 
 % Create the contributions plot.
 figure('Name', lhs);
-plot(1:ds.nobs, contribution);
-seriesnames = ds.name;
-legend('All Endogenous', seriesnames{:});
+hold on
+cc = contribution(:,2:end);
+ccneg = cc; ccneg(cc>=0) = nan;
+ccpos = cc; ccpos(cc<0) = nan;
+bar(1:ds.nobs, ccneg,'stack');
+bar(1:ds.nobs, ccpos,'stack');
+plot(1:ds.nobs, contribution(:,1), '-k', 'linewidth', 3);
+hold off
+title(sprintf('Decomposition of %s', lhs))
+legend('Total (LHS variable)', vnames{:});
