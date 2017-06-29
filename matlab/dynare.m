@@ -97,6 +97,10 @@ if length(dot_location)>1
     error('DYNARE: Periods in filenames are only allowed for .mod or .dyn extensions')
 end
 
+if dot_location==length(fname)
+    error('DYNARE: Periods in filenames are only allowed for .mod or .dyn extensions')
+end
+
 % Add dyn or mod extension to the file name if not already provided.
 if isempty(strfind(fname,'.'))
     fnamelength = length(fname);
