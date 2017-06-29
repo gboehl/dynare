@@ -1,12 +1,12 @@
-function plot_contributions(tagn, tagv, ds, params)
+function plot_contributions(tagn, tagv, ds1, ds0)
 
 % Plots the contribution to the lhs variable of the rhs variables in an equation.
 %
 % INPUTS
 %  - tagn      [string]                 Equation tag name
 %  - tagv      [string]                 Equation tag value
-%  - ds        [dseries]                Object containing all the variables (exogenous and endogenous) appearing in the equation.
-%  - params    [struct]                 parameter values
+%  - ds1       [dseries]                Object containing all the variables (exogenous and endogenous) appearing in the equation.
+%  - ds0       [dseries]                parameter values
 %
 % OUTPUTS
 %   None
@@ -38,41 +38,63 @@ if exist(jsonfile, 'file') ~= 2
     error('Could not find %s! Please use the json option (See the Dynare invocation section in the reference manual).', jsonfile);
 end
 
-% Get equation
+% Get equation.
 jsonmodel = loadjson(jsonfile);
 jsonmodel = jsonmodel.model;
 [lhs, rhs, ~] = getEquationByTag(jsonmodel, tagn, tagv);
 
-% replace variables with ds.variablename
-for i = 1:length(ds.name)
-    rhs = regexprep(rhs, ['([\s\+\-\*\/\^]{1}|^)(' ds{i}.name{:} ')([\s\(\+\-\*\/\^|$]{1})'], '$1ds.$2$3');
-end
-fields = fieldnames(params);
+% Get variable and parameter names in the equation.
+rhs_ = strsplit(rhs,{'+','-','*','/','^','log(','exp(','(',')'});
+rhs_(find(cellfun(@(x) all(isstrprop(x, 'digit')), rhs_))) = []; % Remove numbers
+pnames = cellstr(M_.param_names);
+vnames = setdiff(rhs_, pnames);
+pnames = setdiff(rhs_, vnames);
 
-for i = 1:length(fields)
-    rhs = regexprep(rhs, ['([\s\+\-\*\/\^]{1}|^)(' fields{i} ')([\s\+\-\*\/\^]{1}|$)'], '$1params.$2$3');
+% Get values for the parameters
+idp = strmatch(pnames{1}, M_.param_names, 'exact');
+str = sprintf('%s = M_.params(%d);', pnames{1}, idp);
+for i=2:length(pnames)
+    idp = strmatch(pnames{i}, M_.param_names, 'exact');
+    str = sprintf('%s %s = M_.params(%d);', str, pnames{i}, idp);
+end
+eval(str)
+
+rhs
+
+% Replace variables with ds.variablename
+for i = 1:length(vnames)
+    if ismember(vnames{i}, ds1.name) && ismember(vnames{i}, ds0.name)
+        regularexpression = ['(([\s\+\-\*\/\^\)])|^)(' vnames{i} ')(([\s\(\+\-\*\/\^])|$)'];
+        newstring = ['$1ds.' vnames{i} '$3'];
+        rhs = regexprep(rhs, regularexpression, newstring);
+    else
+        if ismember(vnames{i}, ds1.name)
+            error('Variable %s is not available in the second dseries (baseline paths)!', vnames{i})
+        else
+            error('Variable %s is not available in the first dseries (actual paths)!', vnames{i})
+        end
+    end
 end
 
-% call function with all variable values
+%  Evaluate RHS with actual paths for the endogenous variables (this should
+%  be equal to LHS member of the equation).
+ds = ds1;
 contribution = zeros(ds.nobs, ds.vobs + 1);
 rhseval = eval(rhs);
 contribution(:, 1) = rhseval.data;
 
-dsbak = ds;
-dszero = dseries(zeros(ds.nobs, ds.vobs), ...
-                          ds.firstdate, ...
-                          ds.name);
-
-for i = 1:ds.vobs
-    ds = dszero;
-    ds{dsbak.name{i}} = dsbak{dsbak.name{i}};
+% Compute the marginal effect of each variable on the RHS, by evaluating the
+% RHS with all variables at the Baseline paths except one for which the
+% actual path is used.
+for i = 1:length(vnames)
+    ds = ds0; % Set all variable to Baseline paths.
+    ds{vnames{i}} = ds1{vnames{i}};
     rhseval = eval(rhs);
     contribution(:, i+1) = rhseval.data;
 end
 
+% Create the contributions plot.
 figure('Name', lhs);
 plot(1:ds.nobs, contribution);
 seriesnames = ds.name;
 legend('All Endogenous', seriesnames{:});
-
-end

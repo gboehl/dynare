@@ -17,11 +17,20 @@ model;
 
 end;
 
-mydata = dseries(rand(30, 3), 1, {'ffr', 'unrate', 'cpi'});
+// Actual paths for the variables.
+ds1 = dseries(rand(30, 3), 1, {'ffr', 'unrate', 'cpi'});
 
-params.p_ffr_ffr_lag_1 = 1;
-params.p_ffr_ffr_lag_2 = 2;
-params.p_ffr_unrate_lag_1 = 3;
-params.p_ffr_cpi_lag_1 = 4;
+// Baseline paths for the variables.
+ds0 = dseries(zeros(30, 3), 1, {'ffr', 'unrate', 'cpi'});
 
-plot_contributions('eqnum', 'ffr', mydata, params);
+// Calibration of some ADL parameters, we need to fix the preprocessor in oder to allow the usual syntax.
+idp = strmatch('p_ffr_ffr_lag_1', M_.param_names, 'exact');
+M_.params(idp) = 1;
+idp = strmatch('p_ffr_ffr_lag_2', M_.param_names, 'exact');
+M_.params(idp) = 2;
+idp = strmatch('p_ffr_unrate_lag_1', M_.param_names, 'exact');
+M_.params(idp) = 3;
+idp = strmatch('p_ffr_cpi_lag_1', M_.param_names, 'exact');
+M_.params(idp) = 4;
+
+plot_contributions('eqnum', 'ffr', ds1, ds0);
