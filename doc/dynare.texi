@@ -864,13 +864,10 @@ out.
 @item onlyjson
 Quit processing once the output requested by @ref{json} has been written.
 
-@item jsonprintderivdetail
-In addition to the output provided when @code{compute} is passed to @ref{json},
-create two files, @file{@var{FILENAME}_dynamic_details.json} and
-@file{@var{FILENAME}_static_details.json}. The difference between these files
-and their @file{_dynamic.json} and @file{_static.json} counterparts is that these
-files provide information about which variable(s) and equation the derivative
-corresponds to.
+@item jsonderivsimple
+Print a simplified version of the static and dynamic files in
+@file{@var{FILENAME}_static_simple.json} and
+@file{@var{FILENAME}_dynamic_simple.json}.
 
 @item warn_uninit
 Display a warning for each variable or parameter which is not
