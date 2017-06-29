@@ -59,8 +59,6 @@ for i=2:length(pnames)
 end
 eval(str)
 
-rhs
-
 % Replace variables with ds.variablename
 for i = 1:length(vnames)
     if ismember(vnames{i}, ds1.name) && ismember(vnames{i}, ds0.name)
