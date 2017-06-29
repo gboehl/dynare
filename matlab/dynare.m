@@ -33,7 +33,7 @@ function dynare(fname, varargin)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-if strcmpi(fname,'help')
+if ~nargin || strcmpi(fname,'help')
     skipline()
     disp(['This is dynare version ' dynare_version() '.'])
     skipline()
@@ -41,6 +41,7 @@ if strcmpi(fname,'help')
     skipline()
     disp('dynare executes instruction included in FILENAME.mod.')
     disp('See the reference manual for the available options.')
+    skipline()
     return
 end
 
