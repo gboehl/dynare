@@ -64,7 +64,7 @@ public:@;
 	@<|IntegDerivs| constructor code@>;
 };
 
-@ This constuctor integrates a rule (namely its $g^{**}$ part) with
+@ This constructor integrates a rule (namely its $g^{**}$ part) with
 respect to $u=\tilde\sigma\eta$, and stores to the object the
 derivatives of this integral $h$ at $(y^*,u,\sigma)=(\tilde
 y^*,0,\tilde\sigma)$. The original container of $g^{**}$, the moments of

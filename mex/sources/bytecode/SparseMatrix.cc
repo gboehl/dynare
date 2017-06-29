@@ -6708,7 +6708,7 @@ dynSparseMatrix::Simulate_Newton_Two_Boundaries(int blck, int y_size, int y_kmin
         {
           if (restart > 2)
             {
-              mexPrintf("Divergence or slowdown occured during simulation.\nIn the next iteration, pivoting method will be applied to all periods.\n");
+              mexPrintf("Divergence or slowdown occurred during simulation.\nIn the next iteration, pivoting method will be applied to all periods.\n");
               symbolic = false;
               alt_symbolic = true;
               markowitz_c_s = markowitz_c;
@@ -6716,7 +6716,7 @@ dynSparseMatrix::Simulate_Newton_Two_Boundaries(int blck, int y_size, int y_kmin
             }
           else
             {
-              mexPrintf("Divergence or slowdown occured during simulation.\nIn the next iteration, pivoting method will be applied for a longer period.\n");
+              mexPrintf("Divergence or slowdown occurred during simulation.\nIn the next iteration, pivoting method will be applied for a longer period.\n");
               start_compare = min(tbreak_g, periods);
               restart++;
             }

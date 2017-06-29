@@ -117,9 +117,6 @@ AM_CONDITIONAL([HAVE_PDFLATEX], [test "x$PDFLATEX" != "x"])
 AC_CHECK_PROG([BIBTEX], [bibtex], [bibtex])
 AM_CONDITIONAL([HAVE_BIBTEX], [test "x$BIBTEX" != "x"])
 
-AC_CHECK_PROG([TEXI2HTML], [texi2html], [texi2html])
-AM_CONDITIONAL([HAVE_TEXI2HTML], [test "x$TEXI2HTML" != "x"])
-
 AC_CHECK_PROG([LATEX2HTML], [latex2html], [latex2html])
 AM_CONDITIONAL([HAVE_LATEX2HTML], [test "x$LATEX2HTML" != "x"])
 
@@ -282,10 +279,10 @@ fi
 
 if test "x$MAKEINFO" != "x"; then
   BUILD_DYNARE_INFO="yes"
-  if test "x$TEXI2HTML" != "x" -a "x$LATEX2HTML" != "x"; then
+  if test "x$LATEX2HTML" != "x"; then
     BUILD_DYNARE_HTML_MANUAL="yes"
   else
-    BUILD_DYNARE_HTML_MANUAL="yes (but with ugly math formulas, missing texi2html or latex2html)"
+    BUILD_DYNARE_HTML_MANUAL="yes (but with ugly math formulas, missing latex2html)"
   fi
   BUILD_DYNARE_PDF_MANUAL="yes"
 else

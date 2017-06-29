@@ -159,9 +159,9 @@ KOrder::KOrder(int num_stat, int num_pred, int num_both, int num_forw,
 	KORD_RAISE_IF(gy.nrows() != ypart.ny(),
 				  "Wrong number of rows in gy in KOrder constructor");
 	KORD_RAISE_IF(gu.nrows() != ypart.ny(),
-				  "Wrong number of rows in gu in KOrder constuctor");
+				  "Wrong number of rows in gu in KOrder constructor");
 	KORD_RAISE_IF(gu.ncols() != nu,
-				  "Wrong number of columns in gu in KOrder constuctor");
+				  "Wrong number of columns in gu in KOrder constructor");
 
 	// set nvs:
 	nvs[0] = ypart.nys(); nvs[1] = nu; nvs[2] = nu; nvs[3] = 1;

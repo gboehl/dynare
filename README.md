@@ -81,7 +81,7 @@ A number of tools and libraries are needed in order to recompile everything. You
   - [Beamer](http://latex-beamer.sourceforge.net/) (for some PDF presentations)
 - For building the reference manual:
   - [GNU Texinfo](http://www.gnu.org/software/texinfo/)
-  - [Texi2HTML](http://www.nongnu.org/texi2html) and [Latex2HTML](http://www.latex2html.org), if you want nice mathematical formulas in HTML output
+  - [Latex2HTML](http://www.latex2html.org), if you want nice mathematical formulas in HTML output
   - [Doxygen](http://www.stack.nl/%7Edimitri/doxygen/) (if you want to build Dynare preprocessor source documentation)
 - For Octave, the development libraries corresponding to the UMFPACK packaged with Octave
 
@@ -219,9 +219,9 @@ Alternatively, if you want to build everything, manually install the following p
 
 - `build-essential` (for gcc, g++ and make)
 - `gfortran`
-- `liboctave-dev` or `octave3.2-headers` (will install ATLAS)
+- `liboctave-dev` (or `octave3.2-headers` on older systems)
 - `libboost-graph-dev`
-- `libgsl0-dev`
+- `libgsl-dev` (or `libgsl0-dev` on older systems)
 - `libmatio-dev`
 - `libslicot-dev` and `libslicot-pic`
 - `libsuitesparse-dev`
@@ -235,9 +235,11 @@ Alternatively, if you want to build everything, manually install the following p
 - `texlive-formats-extra` (for Eplain)
 - `texlive-latex-extra` (for fullpage.sty)
 - `texlive-fonts-extra` (for ccicons)
-- `latex-beamer`
+- `texlive-latex-recommended` (or `latex-beamer` on older systems)
+- `texlive-science` (or `texlive-math-extra` on older systems) (for amstex)
 - `texinfo`
-- `texi2html`, `latex2html`
+- `lmodern` (for macroprocessor PDF)
+- `latex2html`
 - `doxygen`
 
 ## Fedora
@@ -253,7 +255,7 @@ Alternatively, if you want to build everything, manually install the following p
 - `automake`
 - `texlive`
 - `texinfo`
-- `texi2html`, `latex2html`
+- `latex2html`
 - `doxygen`
 
 ## Windows

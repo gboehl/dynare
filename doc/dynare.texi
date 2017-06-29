@@ -852,16 +852,16 @@ Suppresses all warnings.
 @item json=parse|transform|compute
 Causes the preprocessor to output a version of the @file{.mod} file in JSON
 format. If @code{parse} is passed, the output will be written after the parsing
-of the @file{.mod} file to a file called @file{@var{FILENAME}.mod}. If
+of the @file{.mod} file to a file called @file{@var{FILENAME}.json}. If
 @code{transform} is passed, the JSON output of the transformed model (maximum
 lead of 1, minimum lag of -1, expectation operators substituted, etc.) will be
-written to a file called @file{@var{FILENAME}.mod} and the original,
-untransformed model will be written in @file{@var{FILENAME}_original.mod}. And
+written to a file called @file{@var{FILENAME}.json} and the original,
+untransformed model will be written in @file{@var{FILENAME}_original.json}. And
 if @code{compute} is passed, the output is written after the computing pass. In
-this case, the transformed model is written to @file{@var{FILENAME}.mod}, the
-original model is written to @file{@var{FILENAME}_original.mod}, and the
-dynamic and static files are written to @file{@var{FILENAME}_dynamic.mod} and
-@file{@var{FILENAME}_static.mod}.
+this case, the transformed model is written to @file{@var{FILENAME}.json}, the
+original model is written to @file{@var{FILENAME}_original.json}, and the
+dynamic and static files are written to @file{@var{FILENAME}_dynamic.json} and
+@file{@var{FILENAME}_static.json}.
 
 @item jsonstdout
 Instead of writing output requested by @ref{json} to files, write to standard
@@ -870,13 +870,10 @@ out.
 @item onlyjson
 Quit processing once the output requested by @ref{json} has been written.
 
-@item jsonprintderivdetail
-In addition to the output provided when @code{compute} is passed to @ref{json},
-create two files, @file{@var{FILENAME}_dynamic_details.mod} and
-@file{@var{FILENAME}_static_details.mod}. The difference between these files
-and their @file{_dynamic.mod} and @file{_static.mod} counterparts is that these
-files provide information about which variable(s) and equation the derivative
-corresponds to.
+@item jsonderivsimple
+Print a simplified version of the static and dynamic files in
+@file{@var{FILENAME}_static_simple.json} and
+@file{@var{FILENAME}_dynamic_simple.json}.
 
 @item warn_uninit
 Display a warning for each variable or parameter which is not
