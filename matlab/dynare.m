@@ -112,10 +112,8 @@ if isempty(strfind(fname,'.'))
     fname = fname1;
 else
     % Check provided file extension.
-    if dot_location~=length(fname)-3 ... %if the file name has fewer than 4 characters and there is a period
-            || ~strcmp(upper(fname(size(fname,2)-3:size(fname,2))),'.MOD') ...
-            && ~strcmp(upper(fname(size(fname,2)-3:size(fname,2))),'.DYN')
-        error('DYNARE: argument must be a filename with .mod or .dyn extension and must not include any other periods')
+    if ~strcmpi(fname(dot_location+1:end), 'mod') && ~strcmpi(fname(dot_location+1:end), 'dyn')
+        error('DYNARE: argument must be a filename with .mod or .dyn extensions')
     end
     fnamelength = length(fname) - 4;
 end
