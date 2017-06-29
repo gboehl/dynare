@@ -74,12 +74,15 @@ for i = 1:length(vnames)
     end
 end
 
-%  Evaluate RHS with actual paths for the endogenous variables (this should
-%  be equal to LHS member of the equation).
+% Evaluate RHS with all the actual paths.
 ds = ds1;
 contribution = zeros(ds.nobs, ds.vobs + 1);
 rhseval = eval(rhs);
 contribution(:, 1) = rhseval.data;
+
+% Evaluate RHS with the baseline paths.
+ds = ds0;
+rhs0 = eval(rhs);
 
 % Compute the marginal effect of each variable on the RHS, by evaluating the
 % RHS with all variables at the Baseline paths except one for which the
@@ -87,8 +90,8 @@ contribution(:, 1) = rhseval.data;
 for i = 1:length(vnames)
     ds = ds0; % Set all variable to Baseline paths.
     ds{vnames{i}} = ds1{vnames{i}};
-    rhseval = eval(rhs);
-    contribution(:, i+1) = rhseval.data;
+    rhsval = eval(rhs)-rhs0;
+    contribution(:, i+1) = rhsval.data;
 end
 
 % Create the contributions plot.
