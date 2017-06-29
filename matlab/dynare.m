@@ -65,11 +65,7 @@ dynareroot = dynare_config;
 
 warning_config()
 
-if isoctave
-    if octave_ver_less_than('3.6.0')
-        warning('This version of Dynare has only been tested on Octave 3.6.0 and above. Since your Octave version is older than that, Dynare may fail to run, or give unexpected results. Consider upgrading your Octave installation.');
-    end
-else
+if ~isoctave
     if matlab_ver_less_than('7.5')
         warning('This version of Dynare has only been tested on MATLAB 7.5 (R2007b) and above. Since your MATLAB version is older than that, Dynare may fail to run, or give unexpected results. Consider upgrading your MATLAB installation, or switch to Octave.');
     end
