@@ -91,12 +91,13 @@ if ~ischar(fname)
     error('DYNARE: argument of dynare must be a text string')
 end
 
-% Testing if file have extension
-% If no extension default .mod is added
+% Testing if filename has more than one period (not allowed).
 dot_location=(strfind(fname,'.'));
 if length(dot_location)>1
     error('DYNARE: Periods in filenames are only allowed for .mod or .dyn extensions')
 end
+
+% Add dyn or mod extension to the file name if not already provided.
 if isempty(strfind(fname,'.'))
     fnamelength = length(fname);
     fname1 = [fname '.dyn'];
@@ -105,8 +106,8 @@ if isempty(strfind(fname,'.'))
         fname1 = [fname '.mod'];
     end
     fname = fname1;
-    % Checking file extension
 else
+    % Check provided file extension.
     if dot_location~=length(fname)-3 ... %if the file name has fewer than 4 characters and there is a period
             || ~strcmp(upper(fname(size(fname,2)-3:size(fname,2))),'.MOD') ...
             && ~strcmp(upper(fname(size(fname,2)-3:size(fname,2))),'.DYN')
