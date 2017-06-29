@@ -865,9 +865,9 @@ out.
 Quit processing once the output requested by @ref{json} has been written.
 
 @item jsonderivsimple
-Print a simplified version of the static and dynamic files in
-@file{@var{FILENAME}_static_simple.json} and
-@file{@var{FILENAME}_dynamic_simple.json}.
+Print a simplified version (excluding variable name(s) and lag information) of the
+static and dynamic files in @file{@var{FILENAME}_static.json} and
+@file{@var{FILENAME}_dynamic.json}.
 
 @item warn_uninit
 Display a warning for each variable or parameter which is not
