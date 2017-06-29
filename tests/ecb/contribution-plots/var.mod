@@ -18,7 +18,7 @@ model;
 end;
 
 // Actual paths for the variables.
-ds1 = dseries(rand(30, 3), 1, {'ffr', 'unrate', 'cpi'});
+ds1 = dseries(randn(30, 3), 1, {'ffr', 'unrate', 'cpi'});
 
 // Baseline paths for the variables.
 ds0 = dseries(zeros(30, 3), 1, {'ffr', 'unrate', 'cpi'});
