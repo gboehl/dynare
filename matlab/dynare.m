@@ -183,6 +183,27 @@ else
     disp('Using 64-bit preprocessor');
 end
 
+% Read options from the first line in mod/dyn file.
+fid = fopen(fname, 'r');
+firstline = fgetl(fid);
+fclose(fid);
+if isequal(regexp(firstline, '\s*\/\/'), 1)
+    % First line is commented.
+    firstline = regexprep(firstline, '\s*\/\/', '');
+    if ~isempty(regexp(firstline, '(^\s+\-\-\+\s+options:)'))       % Commented line begins with --+ options:
+        if ~isempty(regexp(firstline, '(\s+\+\-\-\s*$)'))           % Commented line ends with +--
+            dynoption = strsplit(firstline, {'--+', '+--', 'options:', ' ', ','});
+            dynoption(find(cellfun( @(x) isempty(x), dynoption))) = [];
+            if isequal(nargin, 1)
+                varargin = dynoption;
+            else
+                varargin = union(varargin, dynoption);
+            end
+            varargin
+        end
+    end
+end
+
 command = ['"' dynareroot 'preprocessor' arch_ext filesep 'dynare_m" ' fname] ;
 for i=1:length(varargin)
     command = [command ' ' varargin{i}];

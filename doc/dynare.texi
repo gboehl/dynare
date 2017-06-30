@@ -744,8 +744,10 @@ by the @code{dynare} command.
 @descriptionhead
 
 This command launches Dynare and executes the instructions included in
-@file{@var{FILENAME}.mod}.  This user-supplied file contains the model
-and the processing instructions, as described in @ref{The Model file}.
+@file{@var{FILENAME}.mod}.  This user-supplied file contains the model and the
+processing instructions, as described in @ref{The Model file}. The options,
+listed below, can be passed on the command line, following the name of the
+@file{.mod} file or in the first line of the @file{.mod} file itself (see below).
 
 @code{dynare} begins by launching the preprocessor on the @file{.mod}
 file.  By default (unless @code{use_dll} option has been given to
@@ -978,6 +980,16 @@ Tells Dynare to compute the equation cross references, writing them to the
 output @file{.m} file.
 @end table
 
+These options can be passed to the preprocessor by listing them after the name
+of the @code{.mod} file. They can alternatively be defined in the first line of
+the @file{.mod} file, this avoids typing them on the command line each time a
+@file{.mod} file is to be run. This line must be a Dynare comment (@emph{ie}
+must begin with @code{//}) and the options must be comma separated between
+@code{--+ options:} and @code{+--}. As in the command line, if an option admits
+a value the equal symbol must not be surrounded by spaces. For instance
+@code{json = compute} is not correct, and should be written
+@code{json=compute}.
+
 @outputhead
 
 Depending on the computing tasks requested in the @file{.mod} file,
@@ -996,6 +1008,13 @@ a file called @file{@var{FILENAME}_results.mat}. If they exist,
 dynare ramst
 dynare ramst.mod savemacro
 @end example
+
+Alternatively the options can be specified in the first line of @file{ramst.mod}:
+
+@example
+// --+ options: savemacro, json=compute +--
+@end example
+
 
 @end deffn
 
