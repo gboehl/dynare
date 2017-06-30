@@ -340,7 +340,8 @@ MODFILES = \
 	observation_trends_and_prefiltering/calib_smoother/Tr_no_prefil_f_obs_loglin_cal_smoother.mod \
 	observation_trends_and_prefiltering/calib_smoother/Tr_prefilter_loglin_calib_smoother.mod \
 	observation_trends_and_prefiltering/calib_smoother/Tr_prefil_f_obs_loglin_cal_smoother.mod \
-	observation_trends_and_prefiltering/ML/Trend_no_prefilter_selected_var.mod
+	observation_trends_and_prefiltering/ML/Trend_no_prefilter_selected_var.mod \
+	dynare-command-options/ramst.mod
 
 PARTICLEFILES = \
 	particle/dsge_base2.mod \

@@ -33,7 +33,7 @@ function dynare(fname, varargin)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-if strcmpi(fname,'help')
+if ~nargin || strcmpi(fname,'help')
     skipline()
     disp(['This is dynare version ' dynare_version() '.'])
     skipline()
@@ -41,6 +41,7 @@ if strcmpi(fname,'help')
     skipline()
     disp('dynare executes instruction included in FILENAME.mod.')
     disp('See the reference manual for the available options.')
+    skipline()
     return
 end
 
@@ -64,11 +65,7 @@ dynareroot = dynare_config;
 
 warning_config()
 
-if isoctave
-    if octave_ver_less_than('3.6.0')
-        warning('This version of Dynare has only been tested on Octave 3.6.0 and above. Since your Octave version is older than that, Dynare may fail to run, or give unexpected results. Consider upgrading your Octave installation.');
-    end
-else
+if ~isoctave
     if matlab_ver_less_than('7.5')
         warning('This version of Dynare has only been tested on MATLAB 7.5 (R2007b) and above. Since your MATLAB version is older than that, Dynare may fail to run, or give unexpected results. Consider upgrading your MATLAB installation, or switch to Octave.');
     end
@@ -94,12 +91,17 @@ if ~ischar(fname)
     error('DYNARE: argument of dynare must be a text string')
 end
 
-% Testing if file have extension
-% If no extension default .mod is added
+% Testing if filename has more than one period (not allowed).
 dot_location=(strfind(fname,'.'));
 if length(dot_location)>1
     error('DYNARE: Periods in filenames are only allowed for .mod or .dyn extensions')
 end
+
+if dot_location==length(fname)
+    error('DYNARE: Periods in filenames are only allowed for .mod or .dyn extensions')
+end
+
+% Add dyn or mod extension to the file name if not already provided.
 if isempty(strfind(fname,'.'))
     fnamelength = length(fname);
     fname1 = [fname '.dyn'];
@@ -108,12 +110,10 @@ if isempty(strfind(fname,'.'))
         fname1 = [fname '.mod'];
     end
     fname = fname1;
-    % Checking file extension
 else
-    if dot_location~=length(fname)-3 ... %if the file name has fewer than 4 characters and there is a period
-            || ~strcmp(upper(fname(size(fname,2)-3:size(fname,2))),'.MOD') ...
-            && ~strcmp(upper(fname(size(fname,2)-3:size(fname,2))),'.DYN')
-        error('DYNARE: argument must be a filename with .mod or .dyn extension and must not include any other periods')
+    % Check provided file extension.
+    if ~strcmpi(fname(dot_location+1:end), 'mod') && ~strcmpi(fname(dot_location+1:end), 'dyn')
+        error('DYNARE: argument must be a filename with .mod or .dyn extensions')
     end
     fnamelength = length(fname) - 4;
 end
@@ -181,6 +181,27 @@ if isempty(strfind(arch, '64'))
 else
     arch_ext = '64';
     disp('Using 64-bit preprocessor');
+end
+
+% Read options from the first line in mod/dyn file.
+fid = fopen(fname, 'r');
+firstline = fgetl(fid);
+fclose(fid);
+if isequal(regexp(firstline, '\s*\/\/'), 1)
+    % First line is commented.
+    firstline = regexprep(firstline, '\s*\/\/', '');
+    if ~isempty(regexp(firstline, '(^\s+\-\-\+\s+options:)'))       % Commented line begins with --+ options:
+        if ~isempty(regexp(firstline, '(\s+\+\-\-\s*$)'))           % Commented line ends with +--
+            dynoption = strsplit(firstline, {'--+', '+--', 'options:', ' ', ','});
+            dynoption(find(cellfun( @(x) isempty(x), dynoption))) = [];
+            if isequal(nargin, 1)
+                varargin = dynoption;
+            else
+                varargin = union(varargin, dynoption);
+            end
+            varargin
+        end
+    end
 end
 
 command = ['"' dynareroot 'preprocessor' arch_ext filesep 'dynare_m" ' fname] ;
