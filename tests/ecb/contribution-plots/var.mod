@@ -1,6 +1,4 @@
-%
-% Run using command: dynare var json=compute
-%
+// --+ options: json=compute +--
 var ffr, unrate, cpi;
 varexo e_ffr, e_unrate, e_cpi;
 
