@@ -5685,14 +5685,14 @@ A real number between zero and one. The scale parameter of the jumping distribut
 @item 'InitialCovarianceMatrix'
 Initial covariance matrix of the jumping distribution. Default is @code{'previous'} if option @code{mode_file} is used, @code{'prior'} otherwise.
 
-@item 'nclimb'
-Number of iterations in the last MCMC (climbing mode).
+@item 'nclimb-mh'
+Number of iterations in the last MCMC (climbing mode). Default: @code{200000}
 
 @item 'ncov-mh'
 Number of iterations used for updating the covariance matrix of the jumping distribution. Default: @code{20000}
 
 @item 'nscale-mh'
-Maximum number of iterations used for adjusting the scale parameter of the jumping distribution.  @code{200000}
+Maximum number of iterations used for adjusting the scale parameter of the jumping distribution. Default: @code{200000}
 
 @item 'NumberOfMh'
 Number of MCMC run sequentially. Default: @code{3}
