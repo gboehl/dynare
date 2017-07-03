@@ -199,7 +199,6 @@ if isequal(regexp(firstline, '\s*\/\/'), 1)
             else
                 varargin = union(varargin, dynoption);
             end
-            varargin
         end
     end
 end
@@ -208,6 +207,9 @@ command = ['"' dynareroot 'preprocessor' arch_ext filesep 'dynare_m" ' fname] ;
 for i=1:length(varargin)
     command = [command ' ' varargin{i}];
 end
+
+fprintf('Calling Dynare with arguments: ');
+disp(varargin);
 
 [status, result] = system(command);
 disp(result)
