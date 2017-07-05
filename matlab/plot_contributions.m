@@ -38,10 +38,14 @@ if exist(jsonfile, 'file') ~= 2
     error('Could not find %s! Please use the json option (See the Dynare invocation section in the reference manual).', jsonfile);
 end
 
+% Check inputs. To be removed if we decide to make multiple
+% plot-contributions in one go
+assert(ischar(tagn) && ischar(tagv));
+
 % Get equation.
 jsonmodel = loadjson(jsonfile);
 jsonmodel = jsonmodel.model;
-[lhs, rhs, ~] = getEquationByTag(jsonmodel, tagn, tagv);
+[lhs, rhs, ~] = getEquationsByTags(jsonmodel, tagn, tagv);
 
 % Get variable and parameter names in the equation.
 rhs_ = strsplit(rhs,{'+','-','*','/','^','log(','exp(','(',')'});
