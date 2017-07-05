@@ -1,17 +1,17 @@
-function [lhs, rhs, linenum] = getEquationsByTags(jsonmodel, tagname, tagvalue)
-%function [lhs, rhs] = getEquationByTag(jsonmodel, tag)
+function [lhs, rhs, linenum] = getEquationsByTags(jsonmodel, varargin)
+%function [lhs, rhs] = getEquationByTag(jsonmodel, varargin)
 % Return the lhs, rhs of an equation and the line it was defined
 % on given its tag
 %
 % INPUTS
-%   jsonmodel
-%   tagname
-%   tagvalue
+%   jsonmodel        [string] JSON representation of model block
+%   varargin         [string or cellstring arrays] tagname and tagvalue for
+%                                                  eqs to get
 %
 % OUTPUTS
-%   lhs
-%   rhs
-%   linenum
+%   lhs:             [string or cellstring array] left hand side of eq
+%   rhs:             [string or cellstring array] right hand side of eq
+%   linenum:         [string or cellstring array] eq line in .mod file
 %
 % SPECIAL REQUIREMENTS
 %   none
@@ -33,14 +33,34 @@ function [lhs, rhs, linenum] = getEquationsByTags(jsonmodel, tagname, tagvalue)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-if ~iscell(tagname)
+assert(nargin == 1 || nargin == 3, 'Incorrect number of arguments passed to getEquationsByTags');
+
+if nargin == 1
+    lhs = cell(1, length(jsonmodel));
+    rhs = cell(1, length(jsonmodel));
+    linenum = cell(1, length(jsonmodel));
+    for i=1:length(jsonmodel)
+        lhs{i} = jsonmodel{i}.lhs;
+        rhs{i} = jsonmodel{i}.rhs;
+        linenum{i} = jsonmodel{i}.line;
+    end
+    return
+end
+
+tagname = varargin{1};
+tagvalue = varargin{2};
+
+assert(ischar(tagname) || iscell(tagname), 'Tag name must be a string or a cell string array');
+assert(ischar(tagvalue) || iscell(tagvalue), 'Tag value must be a string or a cell string array');
+
+if ischar(tagname)
     tagname = {tagname};
 end
-if ~iscell(tagvalue)
+if ischar(tagvalue)
     tagvalue = {tagvalue};
 end
 
-assert(length(tagname) == length(tagvalue));
+assert(length(tagname) == length(tagvalue), 'You must pass as many tag names as tag values');
 
 if length(tagname) == 1
     lhs = '';
