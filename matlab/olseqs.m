@@ -39,13 +39,17 @@ end
 
 jsonmodel = loadjson(jsonfile);
 jsonmodel = jsonmodel.model;
-[lhs, rhs, ~] = getEquationsByTags(jsonmodel, varargin{:});
+[lhs, rhs, lineno] = getEquationsByTags(jsonmodel, varargin{:});
 
 Y = ds{lhs}.data;
 
 rhs_ = strsplit(rhs, {'+','-','*','/','^','log(','exp(','(',')'});
 rhs_(cellfun(@(x) all(isstrprop(x, 'digit')), rhs_)) = [];
 vnames = setdiff(rhs_, cellstr(M_.param_names));
+regexprnoleads = cell2mat(strcat('(', vnames, {'\(\d+\))|'}));
+if ~isempty(regexp(rhs, regexprnoleads(1:end-1), 'match'))
+    error(['olseqs: you cannot have leads in equation on line ' lineno ': ' lhs ' = ' rhs]);
+end
 regexpr = cell2mat(strcat('(', vnames, {'\(-\d+\))|'}));
 vwlags = regexp(rhs, regexpr(1:end-1), 'match');
 X = cell2mat(cellfun(@eval, strcat('ds.', vwlags, '.data'), 'UniformOutput', false));

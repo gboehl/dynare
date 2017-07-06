@@ -54,6 +54,11 @@ pnames = cellstr(M_.param_names);
 vnames = setdiff(rhs_, pnames);
 pnames = setdiff(rhs_, vnames);
 
+regexprnoleads = cell2mat(strcat('(', vnames, {'\(\d+\))|'}));
+if ~isempty(regexp(rhs, regexprnoleads(1:end-1), 'match'))
+    error(['plot_contributions: you cannot have leads in equation on line ' lineno ': ' lhs ' = ' rhs]);
+end
+
 % Get values for the parameters
 idp = strmatch(pnames{1}, M_.param_names, 'exact');
 str = sprintf('%s = M_.params(%d);', pnames{1}, idp);
