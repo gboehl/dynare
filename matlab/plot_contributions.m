@@ -51,7 +51,7 @@ rhs = rhs{:};
 
 % Get variable and parameter names in the equation.
 rhs_ = strsplit(rhs,{'+','-','*','/','^','log(','exp(','(',')'});
-rhs_(find(cellfun(@(x) all(isstrprop(x, 'digit')), rhs_))) = []; % Remove numbers
+rhs_(cellfun(@(x) all(isstrprop(x, 'digit')), rhs_)) = []; % Remove numbers
 pnames = cellstr(M_.param_names);
 vnames = setdiff(rhs_, pnames);
 pnames = setdiff(rhs_, vnames);
