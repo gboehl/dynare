@@ -9,9 +9,9 @@ function [lhs, rhs, linenum] = getEquationsByTags(jsonmodel, varargin)
 %                                                  eqs to get
 %
 % OUTPUTS
-%   lhs:             [string or cellstring array] left hand side of eq
-%   rhs:             [string or cellstring array] right hand side of eq
-%   linenum:         [string or cellstring array] eq line in .mod file
+%   lhs:             [cellstring array] left hand side of eq
+%   rhs:             [cellstring array] right hand side of eq
+%   linenum:         [cellstring array] eq line in .mod file
 %
 % SPECIAL REQUIREMENTS
 %   none
@@ -50,47 +50,29 @@ end
 tagname = varargin{1};
 tagvalue = varargin{2};
 
-assert(ischar(tagname) || iscell(tagname), 'Tag name must be a string or a cell string array');
+assert(ischar(tagname), 'Tag name must be a string');
 assert(ischar(tagvalue) || iscell(tagvalue), 'Tag value must be a string or a cell string array');
 
-if ischar(tagname)
-    tagname = {tagname};
-end
 if ischar(tagvalue)
     tagvalue = {tagvalue};
 end
 
-assert(length(tagname) == length(tagvalue), 'You must pass as many tag names as tag values');
-
-if length(tagname) == 1
-    lhs = '';
-    rhs = '';
-    linenum = -1;
-else
-    lhs = cell(1, length(tagname));
-    rhs = cell(1, length(tagname));
-    linenum = cell(1, length(tagname));
-end
+lhs = cell(1, length(tagvalue));
+rhs = cell(1, length(tagvalue));
+linenum = cell(1, length(tagvalue));
 
 for i=1:length(jsonmodel)
-    for j = 1:length(tagname)
+    for j = 1:length(tagvalue)
         if isfield(jsonmodel{i}, 'tags') && ...
-                isfield(jsonmodel{i}.tags, tagname{j}) && ...
-                strcmp(jsonmodel{i}.tags.(tagname{j}), tagvalue{j})
-            if length(tagname) == 1
-                lhs = jsonmodel{i}.lhs;
-                rhs = jsonmodel{i}.rhs;
-                linenum = jsonmodel{i}.line;
+                isfield(jsonmodel{i}.tags, tagname) && ...
+                strcmp(jsonmodel{i}.tags.(tagname), tagvalue{j})
+            lhs{j} = jsonmodel{i}.lhs;
+            rhs{j} = jsonmodel{i}.rhs;
+            linenum{j} = jsonmodel{i}.line;
+            if ~any(cellfun(@isempty, lhs))
                 return
-            else
-                lhs{j} = jsonmodel{i}.lhs;
-                rhs{j} = jsonmodel{i}.rhs;
-                linenum{j} = jsonmodel{i}.line;
-                if ~any(cellfun(@isempty, lhs))
-                    return
-                end
-                break
             end
+            break
         end
     end
 end

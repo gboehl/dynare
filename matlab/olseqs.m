@@ -42,6 +42,9 @@ end
 jsonmodel = loadjson(jsonfile);
 jsonmodel = jsonmodel.model;
 [lhs, rhs, lineno] = getEquationsByTags(jsonmodel, varargin{:});
+lhs = lhs{:};
+rhs = rhs{:};
+lineno = lineno{:};
 
 %% Construct regression matrices
 Y = ds{lhs}.data;

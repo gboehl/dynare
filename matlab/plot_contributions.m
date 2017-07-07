@@ -46,6 +46,8 @@ assert(ischar(tagn) && ischar(tagv));
 jsonmodel = loadjson(jsonfile);
 jsonmodel = jsonmodel.model;
 [lhs, rhs, ~] = getEquationsByTags(jsonmodel, tagn, tagv);
+lhs = lhs{:};
+rhs = rhs{:};
 
 % Get variable and parameter names in the equation.
 rhs_ = strsplit(rhs,{'+','-','*','/','^','log(','exp(','(',')'});
