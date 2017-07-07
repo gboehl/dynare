@@ -127,8 +127,11 @@ for i = 1:nols
     oo_.ols.(tagv).tstat = oo_.ols.(tagv).beta./oo_.ols.(tagv).stderr;
     
     %% Print Output
-    fprintf('OLS Estimation of equation on line %d of %s\n', lineno{i}, [M_.fname '.mod']);
-    fprintf('Dependent Variable: %s\n', lhs{i});
+    fprintf('OLS Estimation of equation on line %d', lineno{i});
+    if nargin == 3
+        fprintf(' [%s = %s]', varargin{1}, tagv);
+    end
+    fprintf('\nDependent Variable: %s\n', lhs{i});
     fprintf('No. Independent Variables: %d\n', nvars);
     fprintf('Observations: %d\n', nobs);
     maxstrlen = 0;
