@@ -49,13 +49,21 @@ Y = ds{lhs}.data;
 rhs_ = strsplit(rhs, {'+','-','*','/','^','log(','exp(','(',')'});
 rhs_(cellfun(@(x) all(isstrprop(x, 'digit')), rhs_)) = [];
 vnames = setdiff(rhs_, cellstr(M_.param_names));
-pnames = setdiff(rhs_, vnames);
 regexprnoleads = cell2mat(strcat('(', vnames, {'\(\d+\))|'}));
 if ~isempty(regexp(rhs, regexprnoleads(1:end-1), 'match'))
     error(['olseqs: you cannot have leads in equation on line ' lineno ': ' lhs ' = ' rhs]);
 end
 regexpr = cell2mat(strcat('(', vnames, {'\(-\d+\))|'}));
 vwlags = regexp(rhs, regexpr(1:end-1), 'match');
+
+% Find parameters
+pnames = cell(1, length(vwlags));
+for i = 1:length(vwlags)
+    regexmatch = regexp(rhs, ['\w*\*?' strrep(strrep(vwlags{i}, '(', '\('), ')', '\)')], 'match');
+    regexmatch = strsplit(regexmatch{:}, '*');
+    pnames{i} = regexmatch{1};
+end
+
 X = cell2mat(cellfun(@eval, strcat('ds.', vwlags, '.data'), 'UniformOutput', false));
 
 % Remove all rows that have a NaN
@@ -76,6 +84,9 @@ oo_.ols.(tagv).dof = nobs - nvars;
 [q, r] = qr(X, 0);
 xpxi = (r'*r)\eye(nvars);
 oo_.ols.(tagv).beta = r\(q'*Y);
+for i = 1:length(pnames)
+    M_.params(strmatch(pnames{i}, M_.param_names, 'exact')) = oo_.ols.(tagv).beta(i);
+end
 
 % Yhat
 oo_.ols.(tagv).Yhat = X*oo_.ols.(tagv).beta;
