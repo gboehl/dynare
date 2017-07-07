@@ -42,109 +42,112 @@ end
 jsonmodel = loadjson(jsonfile);
 jsonmodel = jsonmodel.model;
 [lhs, rhs, lineno] = getEquationsByTags(jsonmodel, varargin{:});
-lhs = lhs{:};
-rhs = rhs{:};
-lineno = lineno{:};
+nols = length(lhs);
 
-%% Construct regression matrices
-Y = ds{lhs}.data;
+for i = 1:nols
+    %% Construct regression matrices
+    Y = ds{lhs{i}}.data;
 
-rhs_ = strsplit(rhs, {'+','-','*','/','^','log(','exp(','(',')'});
-rhs_(cellfun(@(x) all(isstrprop(x, 'digit')), rhs_)) = [];
-vnames = setdiff(rhs_, cellstr(M_.param_names));
-regexprnoleads = cell2mat(strcat('(', vnames, {'\(\d+\))|'}));
-if ~isempty(regexp(rhs, regexprnoleads(1:end-1), 'match'))
-    error(['olseqs: you cannot have leads in equation on line ' lineno ': ' lhs ' = ' rhs]);
-end
-regexpr = cell2mat(strcat('(', vnames, {'\(-\d+\))|'}));
-vwlags = regexp(rhs, regexpr(1:end-1), 'match');
-
-% Find parameters
-pnames = cell(1, length(vwlags));
-for i = 1:length(vwlags)
-    regexmatch = regexp(rhs, ['\w*\*?' strrep(strrep(vwlags{i}, '(', '\('), ')', '\)')], 'match');
-    regexmatch = strsplit(regexmatch{:}, '*');
-    pnames{i} = regexmatch{1};
-end
-
-X = cell2mat(cellfun(@eval, strcat('ds.', vwlags, '.data'), 'UniformOutput', false));
-
-% Remove all rows that have a NaN
-[row, ~] = find(isnan(X), 1, 'last');
-Y = Y(row+1:end, :);
-X = X(row+1:end, :);
-
-% Add intercept
-% X = [ones(size(X,1), 1), X];
-
-%% OLS Estimation
-% From LeSage, James P. "Applied Econometrics using MATLAB"
-tagv = varargin{2};
-[nobs, nvars] = size(X);
-oo_.ols.(tagv).dof = nobs - nvars;
-
-% Estimated Parameters
-[q, r] = qr(X, 0);
-xpxi = (r'*r)\eye(nvars);
-oo_.ols.(tagv).beta = r\(q'*Y);
-for i = 1:length(pnames)
-    M_.params(strmatch(pnames{i}, M_.param_names, 'exact')) = oo_.ols.(tagv).beta(i);
-end
-
-% Yhat
-oo_.ols.(tagv).Yhat = X*oo_.ols.(tagv).beta;
-
-% Residuals
-oo_.ols.(tagv).resid = Y - oo_.ols.(tagv).Yhat;
-
-% Estimate for sigma^2
-SS_res = oo_.ols.(tagv).resid'*oo_.ols.(tagv).resid;
-oo_.ols.(tagv).s2 = SS_res/oo_.ols.(tagv).dof;
-
-% R^2
-ym = Y - mean(Y);
-SS_tot = ym'*ym;
-oo_.ols.(tagv).R2 = 1 - SS_res/SS_tot;
-
-% Adjusted R^2
-oo_.ols.(tagv).adjR2 = oo_.ols.(tagv).R2 - (1 - oo_.ols.(tagv).R2)*nvars/(oo_.ols.(tagv).dof-1);
-
-% Durbin-Watson
-ediff = oo_.ols.(tagv).resid(2:nobs) - oo_.ols.(tagv).resid(1:nobs-1);
-oo_.ols.(tagv).dw = (ediff'*ediff)/SS_res;
-
-% Standard Error
-oo_.ols.(tagv).stderr = sqrt(oo_.ols.(tagv).s2*diag(xpxi));
-
-% T-Stat
-oo_.ols.(tagv).tstat = oo_.ols.(tagv).beta./oo_.ols.(tagv).stderr;
-
-%% Print Output
-fprintf('OLS Estimation of equation on line %d of %s\n', lineno, [M_.fname '.mod']);
-fprintf('Dependent Variable: %s\n', lhs);
-fprintf('No. Independent Variables: %d\n', nvars);
-fprintf('Observations: %d\n', nobs);
-maxstrlen = 0;
-for i=1:length(vwlags)
-    slen = length(vwlags{i});
-    if slen > maxstrlen
-        maxstrlen = slen;
+    rhs_ = strsplit(rhs{i}, {'+','-','*','/','^','log(','exp(','(',')'});
+    rhs_(cellfun(@(x) all(isstrprop(x, 'digit')), rhs_)) = [];
+    vnames = setdiff(rhs_, cellstr(M_.param_names));
+    regexprnoleads = cell2mat(strcat('(', vnames, {'\(\d+\))|'}));
+    if ~isempty(regexp(rhs{i}, regexprnoleads(1:end-1), 'match'))
+        error(['olseqs: you cannot have leads in equation on line ' ...
+            lineno{i} ': ' lhs{i} ' = ' rhs{i}]);
     end
+    regexpr = cell2mat(strcat('(', vnames, {'\(-\d+\))|'}));
+    vwlags = regexp(rhs{i}, regexpr(1:end-1), 'match');
+
+    % Find parameters
+    pnames = cell(1, length(vwlags));
+    for j = 1:length(vwlags)
+        regexmatch = regexp(rhs{i}, ['\w*\*?' strrep(strrep(vwlags{j}, '(', '\('), ')', '\)')], 'match');
+        regexmatch = strsplit(regexmatch{:}, '*');
+        pnames{j} = regexmatch{1};
+    end
+
+    X = cell2mat(cellfun(@eval, strcat('ds.', vwlags, '.data'), 'UniformOutput', false));
+
+    % Remove all rows that have a NaN
+    [row, ~] = find(isnan(X), 1, 'last');
+    Y = Y(row+1:end, :);
+    X = X(row+1:end, :);
+    
+    %% Estimation
+    % From LeSage, James P. "Applied Econometrics using MATLAB"
+    if iscell(varargin{2})
+        tagv = varargin{2}{i};
+    else
+        tagv = varargin{2};
+    end
+    [nobs, nvars] = size(X);
+    oo_.ols.(tagv).dof = nobs - nvars;
+
+    % Estimated Parameters
+    [q, r] = qr(X, 0);
+    xpxi = (r'*r)\eye(nvars);
+    oo_.ols.(tagv).beta = r\(q'*Y);
+    for j = 1:length(pnames)
+        M_.params(strmatch(pnames{j}, M_.param_names, 'exact')) = oo_.ols.(tagv).beta(j);
+    end
+    
+    % Yhat
+    oo_.ols.(tagv).Yhat = X*oo_.ols.(tagv).beta;
+
+    % Residuals
+    oo_.ols.(tagv).resid = Y - oo_.ols.(tagv).Yhat;
+
+    %% Calculate statistics
+    % Estimate for sigma^2
+    SS_res = oo_.ols.(tagv).resid'*oo_.ols.(tagv).resid;
+    oo_.ols.(tagv).s2 = SS_res/oo_.ols.(tagv).dof;
+
+    % R^2
+    ym = Y - mean(Y);
+    SS_tot = ym'*ym;
+    oo_.ols.(tagv).R2 = 1 - SS_res/SS_tot;
+
+    % Adjusted R^2
+    oo_.ols.(tagv).adjR2 = oo_.ols.(tagv).R2 - (1 - oo_.ols.(tagv).R2)*nvars/(oo_.ols.(tagv).dof-1);
+
+    % Durbin-Watson
+    ediff = oo_.ols.(tagv).resid(2:nobs) - oo_.ols.(tagv).resid(1:nobs-1);
+    oo_.ols.(tagv).dw = (ediff'*ediff)/SS_res;
+
+    % Standard Error
+    oo_.ols.(tagv).stderr = sqrt(oo_.ols.(tagv).s2*diag(xpxi));
+
+    % T-Stat
+    oo_.ols.(tagv).tstat = oo_.ols.(tagv).beta./oo_.ols.(tagv).stderr;
+    
+    %% Print Output
+    fprintf('OLS Estimation of equation on line %d of %s\n', lineno{i}, [M_.fname '.mod']);
+    fprintf('Dependent Variable: %s\n', lhs{i});
+    fprintf('No. Independent Variables: %d\n', nvars);
+    fprintf('Observations: %d\n', nobs);
+    maxstrlen = 0;
+    for i=1:length(vwlags)
+        slen = length(vwlags{i});
+        if slen > maxstrlen
+            maxstrlen = slen;
+        end
+    end
+    titlespacing = repmat(' ', 1, 4 + maxstrlen + 4) ;
+    fprintf('%sCoefficients    t-statistic      Std. Error\n', titlespacing);
+    fprintf('%s____________    ____________    ____________\n\n', titlespacing);
+    format = ['    %-' num2str(maxstrlen) 's'];
+    for i = 1:length(vwlags)
+        fprintf(format, vwlags{i});
+        fprintf('%12.5f    %12.5f    %12.5f\n', ...
+            oo_.ols.(tagv).beta(i), ...
+            oo_.ols.(tagv).tstat(i), ...
+            oo_.ols.(tagv).stderr(i));
+    end
+    fprintf('\nR^2: %f\n', oo_.ols.(tagv).R2);
+    fprintf('R^2 Adjusted: %f\n', oo_.ols.(tagv).adjR2);
+    fprintf('s^2: %f\n', oo_.ols.(tagv).s2);
+    fprintf('Durbin-Watson: %f\n', oo_.ols.(tagv).dw);
+    fprintf('%s\n', repmat('-', 1, 4 + maxstrlen + 4 + 44));
 end
-titlespacing = repmat(' ', 1, 4 + maxstrlen + 4) ;
-fprintf('%sCoefficients    t-statistic      Std. Error\n', titlespacing);
-fprintf('%s____________    ____________    ____________\n\n', titlespacing);
-format = ['    %-' num2str(maxstrlen) 's'];
-for i = 1:length(vwlags)
-    fprintf(format, vwlags{i});
-    fprintf('%12.5f    %12.5f    %12.5f\n', ...
-        oo_.ols.(tagv).beta(i), ...
-        oo_.ols.(tagv).tstat(i), ...
-        oo_.ols.(tagv).stderr(i));
-end
-fprintf('\nR^2: %f\n', oo_.ols.(tagv).R2);
-fprintf('R^2 Adjusted: %f\n', oo_.ols.(tagv).adjR2);
-fprintf('s^2: %f\n', oo_.ols.(tagv).s2);
-fprintf('Durbin-Watson: %f\n', oo_.ols.(tagv).dw);
-fprintf('%s\n', repmat('-', 1, 4 + maxstrlen + 4 + 44));
 end

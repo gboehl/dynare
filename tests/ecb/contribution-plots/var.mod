@@ -11,7 +11,7 @@ model;
      unrate = adl(unrate, 'p_ffr_unrate', [4 2 5]) + adl(cpi, 'p_unrate_cpi', 6);
 
 [eqnum='cpi']
-     cpi = adl(ffr, 'p_cpi_ffr', 6) + adl(cpi, 'p_cpi_cpi', 6);
+     cpi = adl(ffr, 'p_cpi_ffr', 2) + adl(cpi, 'p_cpi_cpi', [2]);
 
 end;
 
@@ -28,6 +28,6 @@ ds1 = dseries(randn(30, 3), 1, {'ffr', 'unrate', 'cpi'});
 // Baseline paths for the variables.
 ds0 = dseries(zeros(30, 3), 1, {'ffr', 'unrate', 'cpi'});
 
-olseqs(ds1, 'eqnum', 'ffr');
+olseqs(ds1, 'eqnum', {'ffr', 'cpi'});
 
 plot_contributions('eqnum', 'ffr', ds1, ds0);
