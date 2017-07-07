@@ -42,9 +42,8 @@ end
 jsonmodel = loadjson(jsonfile);
 jsonmodel = jsonmodel.model;
 [lhs, rhs, lineno] = getEquationsByTags(jsonmodel, varargin{:});
-nols = length(lhs);
 
-for i = 1:nols
+for i = 1:length(lhs)
     %% Construct regression matrices
     Y = ds{lhs{i}}.data;
 
@@ -81,10 +80,14 @@ for i = 1:nols
     
     %% Estimation
     % From LeSage, James P. "Applied Econometrics using MATLAB"
-    if iscell(varargin{2})
-        tagv = varargin{2}{i};
+    if nargin == 3
+        if iscell(varargin{2})
+            tagv = varargin{2}{i};
+        else
+            tagv = varargin{2};
+        end
     else
-        tagv = varargin{2};
+        tagv = ['eqlineno' num2str(lineno{i})];
     end
     [nobs, nvars] = size(X);
     oo_.ols.(tagv).dof = nobs - nvars;
