@@ -77,7 +77,7 @@ for i = 1:length(lhs)
     [row, ~] = find(isnan(X), 1, 'last');
     Y = Y(row+1:end, :);
     X = X(row+1:end, :);
-    
+
     %% Estimation
     % From LeSage, James P. "Applied Econometrics using MATLAB"
     if nargin == 3
@@ -99,7 +99,7 @@ for i = 1:length(lhs)
     for j = 1:length(pnames)
         M_.params(strmatch(pnames{j}, M_.param_names, 'exact')) = oo_.ols.(tagv).beta(j);
     end
-    
+
     % Yhat
     oo_.ols.(tagv).Yhat = X*oo_.ols.(tagv).beta;
 
@@ -128,7 +128,7 @@ for i = 1:length(lhs)
 
     % T-Stat
     oo_.ols.(tagv).tstat = oo_.ols.(tagv).beta./oo_.ols.(tagv).stderr;
-    
+
     %% Print Output
     fprintf('OLS Estimation of equation on line %d', lineno{i});
     if nargin == 3
