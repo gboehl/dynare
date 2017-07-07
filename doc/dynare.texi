@@ -1698,6 +1698,34 @@ associated @ref{var_model} command from whence we seek the forcest.
 @end deffn
 
 
+@anchor{adl}
+@deffn Operator ADL (@var{MODEL_EXPRESSION}, @var{STRING})
+@deffnx Operator ADL (@var{MODEL_EXPRESSION}, @var{STRING}, @var{INTEGER})
+@deffnx Operator ADL (@var{MODEL_EXPRESSION}, @var{STRING}, @var{INTEGER_VECTOR})
+
+This operator provides the autoregressive distributed lags of the
+@var{MODEL_EXPRESSION} passed. The @var{STRING} argument is the basename to be
+used for the parameters that multiply the lags. If no third argument is passed,
+then only one lag is created. If an @var{INTEGER} argument is passed, then lags
+are created from @math{1} to the passed @var{INTEGER} value. If an
+@var{INTEGER_VECTOR} is passed, then lags are created only for the values
+contained in the vector. So, for example, @code{adl(x, 'px', 2)} will be
+expanded to @code{px_lag_1*x(-1) + px_lag_2*x(-2)}. Another example:
+@code{adl(x, 'px', [2 4])} will be expanded to
+@code{px_lag_2*x(-2) + px_lag_4*x(-4)}.
+
+@end deffn
+
+@anchor{diff}
+@deffn Operator DIFF (@var{MODEL_EXPRESSION})
+
+The difference operator. Expands to be the difference of the given
+@var{MODEL_EXPRESSION} at time @math{t} and @math{t-1}. For example,
+@code{diff(x)} is expanded to @code{x-x(-1)}.
+
+@end deffn
+
+
 @node Functions
 @subsection Functions
 
