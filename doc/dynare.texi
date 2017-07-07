@@ -11199,6 +11199,20 @@ Requires the following @LaTeX{} packages: @code{breqn}, @code{psfrag},
 @code{float}, @code{amsmath}, @code{amsfonts}, and @code{morefloats}
 @end deffn
 
+@deffn {MATLAB/Octave command} olseqs (@var{dseries});
+@deffnx {MATLAB/Octave command} olseqs (@var{dseries}, @var{STRING}, @var{STRING});
+@deffnx {MATLAB/Octave command} olseqs (@var{dseries}, @var{STRING}, @var{CELL_STRING_ARRAY});
+
+Performs OLS on the equations of a model using the @var{dseries} provided. If
+only one argument is passed, OLS is performed on every equation in the
+model. Otherwise, the user can run OLS on a specified equation by passing two
+strings corresponding to the tag name and tag value associated with the
+equtaion they want to estimate. If the third argument is a cell string array,
+then OLS will be performed on every equation that has a tag value matching an
+entry in the cell string array.
+
+@end deffn
+
 
 @node The Configuration File
 @chapter The Configuration File
