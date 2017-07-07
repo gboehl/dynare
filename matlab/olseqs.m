@@ -132,8 +132,8 @@ for i = 1:nols
     fprintf('No. Independent Variables: %d\n', nvars);
     fprintf('Observations: %d\n', nobs);
     maxstrlen = 0;
-    for i=1:length(vwlags)
-        slen = length(vwlags{i});
+    for j=1:length(vwlags)
+        slen = length(vwlags{j});
         if slen > maxstrlen
             maxstrlen = slen;
         end
@@ -142,12 +142,12 @@ for i = 1:nols
     fprintf('%sCoefficients    t-statistic      Std. Error\n', titlespacing);
     fprintf('%s____________    ____________    ____________\n\n', titlespacing);
     format = ['    %-' num2str(maxstrlen) 's'];
-    for i = 1:length(vwlags)
-        fprintf(format, vwlags{i});
+    for j = 1:length(vwlags)
+        fprintf(format, vwlags{j});
         fprintf('%12.5f    %12.5f    %12.5f\n', ...
-            oo_.ols.(tagv).beta(i), ...
-            oo_.ols.(tagv).tstat(i), ...
-            oo_.ols.(tagv).stderr(i));
+            oo_.ols.(tagv).beta(j), ...
+            oo_.ols.(tagv).tstat(j), ...
+            oo_.ols.(tagv).stderr(j));
     end
     fprintf('\nR^2: %f\n', oo_.ols.(tagv).R2);
     fprintf('R^2 Adjusted: %f\n', oo_.ols.(tagv).adjR2);
