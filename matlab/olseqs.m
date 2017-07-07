@@ -62,9 +62,14 @@ for i = 1:nols
     % Find parameters
     pnames = cell(1, length(vwlags));
     for j = 1:length(vwlags)
-        regexmatch = regexp(rhs{i}, ['\w*\*?' strrep(strrep(vwlags{j}, '(', '\('), ')', '\)')], 'match');
+        regexmatch = regexp(rhs{i}, ['(\w*\*?)?' strrep(strrep(vwlags{j}, '(', '\('), ')', '\)') '(\*?\w*)?'], 'match');
         regexmatch = strsplit(regexmatch{:}, '*');
-        pnames{j} = regexmatch{1};
+        assert(length(regexmatch) == 2);
+        if strcmp(vwlags{j}, regexmatch{1})
+            pnames{j} = regexmatch{2};
+        else
+            pnames{j} = regexmatch{1};
+        end
     end
 
     X = cell2mat(cellfun(@eval, strcat('ds.', vwlags, '.data'), 'UniformOutput', false));
