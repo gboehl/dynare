@@ -189,28 +189,3 @@ fprintf('    s^2: %f\n', oo_.sur.s2);
 fprintf('    Durbin-Watson: %f\n', oo_.sur.dw);
 fprintf('%s\n\n', repmat('-', 1, 4 + maxstrlen + 4 + 44));
 end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
