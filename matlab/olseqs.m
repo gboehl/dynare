@@ -45,8 +45,6 @@ jsonmodel = jsonmodel.model;
 
 for i = 1:length(lhs)
     %% Construct regression matrices
-    Y = ds{lhs{i}}.data;
-
     rhs_ = strsplit(rhs{i}, {'+','-','*','/','^','log(','exp(','(',')'});
     rhs_(cellfun(@(x) all(isstrprop(x, 'digit')), rhs_)) = [];
     vnames = setdiff(rhs_, cellstr(M_.param_names));
@@ -71,12 +69,17 @@ for i = 1:length(lhs)
         end
     end
 
-    X = cell2mat(cellfun(@eval, strcat('ds.', vwlags, '.data'), 'UniformOutput', false));
+    Y = ds{lhs{i}};
+    Xt = cellfun(@eval, strcat('ds.', vwlags), 'UniformOutput', false);
+    X = dseries();
+    for j = 1:length(Xt)
+        X = [X Xt{j}];
+    end
+    fp = max(Y.firstobservedperiod, X.firstobservedperiod);
+    lp = min(Y.lastobservedperiod, X.lastobservedperiod);
 
-    % Remove all rows that have a NaN
-    [row, ~] = find(isnan(X), 1, 'last');
-    Y = Y(row+1:end, :);
-    X = X(row+1:end, :);
+    Y = Y(fp:lp).data;
+    X = X(fp:lp).data;
 
     %% Estimation
     % From LeSage, James P. "Applied Econometrics using MATLAB"
