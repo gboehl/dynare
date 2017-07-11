@@ -137,9 +137,9 @@ for i = 1:length(lhs)
     if nargin == 3
         fprintf(' [%s = %s]', varargin{1}, tagv);
     end
-    fprintf('\nDependent Variable: %s\n', lhs{i});
-    fprintf('No. Independent Variables: %d\n', nvars);
-    fprintf('Observations: %d\n', nobs);
+    fprintf('\n    Dependent Variable: %s\n', lhs{i});
+    fprintf('    No. Independent Variables: %d\n', nvars);
+    fprintf('    Observations: %d\n', nobs);
     maxstrlen = 0;
     for j=1:length(vwlags)
         slen = length(vwlags{j});
@@ -158,10 +158,10 @@ for i = 1:length(lhs)
             oo_.ols.(tagv).tstat(j), ...
             oo_.ols.(tagv).stderr(j));
     end
-    fprintf('\nR^2: %f\n', oo_.ols.(tagv).R2);
-    fprintf('R^2 Adjusted: %f\n', oo_.ols.(tagv).adjR2);
-    fprintf('s^2: %f\n', oo_.ols.(tagv).s2);
-    fprintf('Durbin-Watson: %f\n', oo_.ols.(tagv).dw);
-    fprintf('%s\n', repmat('-', 1, 4 + maxstrlen + 4 + 44));
+    fprintf('\n    R^2: %f\n', oo_.ols.(tagv).R2);
+    fprintf('    R^2 Adjusted: %f\n', oo_.ols.(tagv).adjR2);
+    fprintf('    s^2: %f\n', oo_.ols.(tagv).s2);
+    fprintf('    Durbin-Watson: %f\n', oo_.ols.(tagv).dw);
+    fprintf('%s\n\n', repmat('-', 1, 4 + maxstrlen + 4 + 44));
 end
 end
