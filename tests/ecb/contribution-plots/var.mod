@@ -30,4 +30,6 @@ ds0 = dseries(zeros(30, 3), 1, {'ffr', 'unrate', 'cpi'});
 
 olseqs(ds1, 'eqnum', {'ffr', 'cpi'});
 
+sur(ds1);
+
 plot_contributions('eqnum', 'ffr', ds1, ds0);
