@@ -132,3 +132,18 @@ for i = 1:ndraws
     beta = rand_multivariate_normal(betabar', Sigma_upper_chol, nvars)';
     oo_.surgibbs.betadraws(i, :) = beta';
 end
+
+% save parameter values
+oo_.surgibbs.beta = (sum(oo_.surgibbs.betadraws)/ndraws)';
+figure
+nrows = 5;
+ncols = floor(nvars/nrows);
+if mod(nvars, nrows) ~= 0
+    ncols = ncols + 1;
+end
+for j = 1:length(pnamesall)
+    M_.params(strmatch(pnamesall{j}, M_.param_names, 'exact')) = oo_.surgibbs.beta(j);
+    subplot(nrows, ncols, j)
+    histogram(oo_.surgibbs.betadraws(:, j))
+    title(pnamesall{j}, 'Interpreter', 'none')
+end
