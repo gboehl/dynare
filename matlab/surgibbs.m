@@ -145,5 +145,7 @@ for j = 1:length(pnamesall)
     M_.params(strmatch(pnamesall{j}, M_.param_names, 'exact')) = oo_.surgibbs.beta(j);
     subplot(nrows, ncols, j)
     histogram(oo_.surgibbs.betadraws(:, j))
+    hc = histcounts(oo_.surgibbs.betadraws(:, j));
+    line([oo_.surgibbs.beta(j) oo_.surgibbs.beta(j)], [min(hc) max(hc)], 'Color', 'red');
     title(pnamesall{j}, 'Interpreter', 'none')
 end
