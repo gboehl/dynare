@@ -32,4 +32,6 @@ olseqs(ds1, 'eqnum', {'ffr', 'cpi'});
 
 sur(ds1);
 
+surgibbs(ds1, randn(17,17), 1000);
+
 plot_contributions('eqnum', 'ffr', ds1, ds0);
