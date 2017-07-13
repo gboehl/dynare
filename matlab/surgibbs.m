@@ -127,7 +127,7 @@ for i = 1:ndraws
     tmp = kron(inv(Omega), eye(nobs));
     tmp1 = X'*tmp*X;
     Omegabar = inv(tmp1 + A);
-    betabar = Omegabar*(tmp1*(tmp1\X'*tmp*Y)+A*beta0);
+    betabar = Omegabar*(tmp1*(tmp1\X'*tmp*Y)+A\beta0);
     Sigma_upper_chol = chol(Omegabar, 'upper');
     beta = rand_multivariate_normal(betabar', Sigma_upper_chol, nvars)';
     oo_.surgibbs.betadraws(i, :) = beta';
@@ -135,6 +135,8 @@ end
 
 % save parameter values
 oo_.surgibbs.beta = (sum(oo_.surgibbs.betadraws)/ndraws)';
+
+% plot
 figure
 nrows = 5;
 ncols = floor(nvars/nrows);
