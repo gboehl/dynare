@@ -1,5 +1,5 @@
 function surgibbs(ds, A, ndraws, varargin)
-%function sur(ds)
+%function surgibbs(ds, A, ndraws, varargin)
 % Implements Gibbs Samipling for SUR
 %
 % INPUTS
@@ -33,89 +33,11 @@ function surgibbs(ds, A, ndraws, varargin)
 global M_ oo_
 
 %% Check input
-assert(nargin == 1 || nargin == 3, 'Incorrect number of arguments passed to sur');
-
-jsonfile = [M_.fname '_original.json'];
-if exist(jsonfile, 'file') ~= 2
-    error('Could not find %s! Please use the json option (See the Dynare invocation section in the reference manual).', jsonfile);
-end
-
-%% Get Equations
-jsonmodel = loadjson(jsonfile);
-jsonmodel = jsonmodel.model;
-[lhs, rhs, lineno] = getEquationsByTags(jsonmodel, varargin{:});
-
-m = length(lhs);
-if m <= 1
-    error('SUR estimation requires the selection of at least two equations')
-end
-
-%% Construct regression matrices
-Y = dseries();
-Xi =  cell(m, 1);
-pnamesall = [];
-vwlagsall = [];
-for i = 1:m
-    Y = [Y ds{lhs{i}}];
-
-    rhs_ = strsplit(rhs{i}, {'+','-','*','/','^','log(','exp(','(',')'});
-    rhs_(cellfun(@(x) all(isstrprop(x, 'digit')), rhs_)) = [];
-    vnames = setdiff(rhs_, cellstr(M_.param_names));
-    regexprnoleads = cell2mat(strcat('(', vnames, {'\(\d+\))|'}));
-    if ~isempty(regexp(rhs{i}, regexprnoleads(1:end-1), 'match'))
-        error(['olseqs: you cannot have leads in equation on line ' ...
-            lineno{i} ': ' lhs{i} ' = ' rhs{i}]);
-    end
-    regexpr = cell2mat(strcat('(', vnames, {'\(-\d+\))|'}));
-    vwlags = regexp(rhs{i}, regexpr(1:end-1), 'match');
-
-    % Find parameters
-    pnames = cell(1, length(vwlags));
-    for j = 1:length(vwlags)
-        regexmatch = regexp(rhs{i}, ['(\w*\*?)?' strrep(strrep(vwlags{j}, '(', '\('), ')', '\)') '(\*?\w*)?'], 'match');
-        regexmatch = strsplit(regexmatch{:}, '*');
-        assert(length(regexmatch) == 2);
-        if strcmp(vwlags{j}, regexmatch{1})
-            pnames{j} = regexmatch{2};
-        else
-            pnames{j} = regexmatch{1};
-        end
-    end
-    pnamesall = [pnamesall pnames];
-    vwlagsall = [vwlagsall vwlags];
-    Xi{i} = cellfun(@eval, strcat('ds.', vwlags), 'UniformOutput', false);
-end
-
-fp = Y.firstobservedperiod;
-lp = Y.lastobservedperiod;
-for i = 1:m
-    X = dseries();
-    for j = 1:length(Xi{i})
-        X = [X dseries(Xi{i}{j}.data, Xi{i}{j}.dates, ['V' num2str(i) num2str(j)])];
-    end
-    Xi{i} = X;
-    fp = max(fp, X.firstobservedperiod);
-    lp = min(lp, X.lastobservedperiod);
-end
-Y = Y(fp:lp).data(:);
-X = [];
-for i = 1:m
-    Xi{i} = Xi{i}(fp:lp).data;
-    ind = size(X);
-    X(ind(1)+1:ind(1)+size(Xi{i}, 1), ind(2)+1:ind(2)+size(Xi{i},2)) = Xi{i};
-end
+assert(nargin == 3 || nargin == 5, 'Incorrect number of arguments passed to surgibbs');
 
 %% Estimation
-nobs = length(fp:lp);
-nvars = size(X, 2);
-
-[q, r] = qr(X, 0);
-resid = Y - X * (r\(q'*Y));
-resid = reshape(resid, nobs, m);
-S = resid'*resid/nobs;
-tmp = kron(inv(S), eye(nobs));
-beta0 = (X'*tmp*X)\X'*tmp*Y;
-beta = beta0;
+[nobs, nvars, pnamesall, beta, X, Y, m] = sur(ds, varargin{:});
+beta0 = beta;
 
 oo_.surgibbs.betadraws = zeros(ndraws, nvars);
 for i = 1:ndraws

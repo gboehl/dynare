@@ -1,12 +1,13 @@
-function sur(ds, varargin)
-%function sur(ds)
+function varargout = sur(ds, varargin)
+%function varargout = sur(ds, varargin)
 % Run a Seemingly Unrelated Regression on the provided equations
 %
 % INPUTS
-%   ds      [dseries]    data
+%   ds        [dseries]     data
 %
 % OUTPUTS
-%   none
+%   varargout [cell array]  contains the common work between sur and
+%                           surgibbs
 %
 % SPECIAL REQUIREMENTS
 %   none
@@ -110,9 +111,26 @@ nvars = size(X, 2);
 xpxi = (r'*r)\eye(nvars);
 resid = Y - X * (r\(q'*Y));
 resid = reshape(resid, nobs, m);
-oo_.sur.s2 = resid'*resid/nobs;
-tmp = kron(inv(oo_.sur.s2), eye(nobs));
-oo_.sur.beta = (X'*tmp*X)\X'*tmp*Y;
+s2 = resid'*resid/nobs;
+tmp = kron(inv(s2), eye(nobs));
+beta = (X'*tmp*X)\X'*tmp*Y;
+
+% if called from surgibbs, return common work
+st = dbstack(1);
+if strcmp(st(1).name, 'surgibbs')
+    varargout{1} = nobs;
+    varargout{2} = nvars;
+    varargout{3} = pnamesall;
+    varargout{4} = beta;
+    varargout{5} = X;
+    varargout{6} = Y;
+    varargout{7} = m;
+    return
+end
+
+oo_.sur.s2 = s2;
+oo_.sur.beta = beta;
+
 for j = 1:length(pnamesall)
     M_.params(strmatch(pnamesall{j}, M_.param_names, 'exact')) = oo_.sur.beta(j);
 end
