@@ -88,5 +88,6 @@ fprintf('\n');
 for i = 1:length(afterward)
     fprintf('%s%s\n', spaces, afterward{i});
 end
-fprintf('%s\n\n', repmat('_', 1, length(colbegin) + sum(colstrlens) + length(colstrlens)*indent));
+
+fprintf('%s\n\n', repmat('_', 1, length(colrow2)));
 end
