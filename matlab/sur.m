@@ -167,43 +167,30 @@ oo_.sur.stderr = sqrt(oo_.sur.s2*diag(xpxi));
 oo_.sur.tstat = oo_.sur.beta./oo_.sur.stderr;
 
 %% Print Output
-fprintf('SUR Estimation');
+title = sprintf('SUR Estimation');
 if nargin == 1
-    fprintf(' of all equations')
+    title = [title sprintf(' of all equations')];
 else
-    fprintf(' [%s = {', varargin{1});
+    title = [title s(' [%s = {', varargin{1})];
     for i = 1:length(varargin{2})
         if i ~= 1
-            fprintf(', ');
+            title = [title sprintf(', ')];
         end
-        fprintf('%s', varargin{2}{i});
+        title = [title sprintf('%s', varargin{2}{i})];
     end
-    fprintf('}]');
+    title = [title sprintf('}]')];
 end
-fprintf('\n    Dependent Variable: %s\n', lhs{i});
-fprintf('    No. Independent Variables: %d\n', nvars);
-fprintf('    Observations: %d\n', nobs);
-maxstrlen = 0;
-for j=1:length(vwlagsall)
-    slen = length(vwlagsall{j});
-    if slen > maxstrlen
-        maxstrlen = slen;
-    end
-end
-titlespacing = repmat(' ', 1, 4 + maxstrlen + 4) ;
-fprintf('%sCoefficients    t-statistic      Std. Error\n', titlespacing);
-fprintf('%s____________    ____________    ____________\n\n', titlespacing);
-format = ['    %-' num2str(maxstrlen) 's'];
-for j = 1:length(vwlagsall)
-    fprintf(format, vwlagsall{j});
-    fprintf('%12.5f    %12.5f    %12.5f\n', ...
-        oo_.sur.beta(j), ...
-        oo_.sur.tstat(j), ...
-        oo_.sur.stderr(j));
-end
-fprintf('\n    R^2: %f\n', oo_.sur.R2);
-fprintf('    R^2 Adjusted: %f\n', oo_.sur.adjR2);
-fprintf('    s^2: %f\n', oo_.sur.s2);
-fprintf('    Durbin-Watson: %f\n', oo_.sur.dw);
-fprintf('%s\n\n', repmat('-', 1, 4 + maxstrlen + 4 + 44));
+
+preamble = {sprintf('Dependent Variable: %s', lhs{i}), ...
+    sprintf('No. Independent Variables: %d', nvars), ...
+    sprintf('Observations: %d', nobs)};
+
+afterward = {sprintf('R^2: %f', oo_.sur.R2), ...
+    sprintf('R^2 Adjusted: %f', oo_.sur.adjR2), ...
+    sprintf('s^2: %f', oo_.sur.s2), ...
+    sprintf('Durbin-Watson: %f', oo_.sur.dw)};
+
+dyn_table(title, preamble, afterward, vwlagsall, ...
+    {'Coefficients','t-statistic','Std. Error'}, 4, ...
+    [oo_.sur.beta oo_.sur.tstat oo_.sur.stderr]);
 end

@@ -133,35 +133,22 @@ for i = 1:length(lhs)
     oo_.ols.(tagv).tstat = oo_.ols.(tagv).beta./oo_.ols.(tagv).stderr;
 
     %% Print Output
-    fprintf('OLS Estimation of equation on line %d', lineno{i});
+    title = sprintf('OLS Estimation of equation on line %d', lineno{i});
     if nargin == 3
-        fprintf(' [%s = %s]', varargin{1}, tagv);
+        title = [title sprintf(' [%s = %s]', varargin{1}, tagv)];
     end
-    fprintf('\n    Dependent Variable: %s\n', lhs{i});
-    fprintf('    No. Independent Variables: %d\n', nvars);
-    fprintf('    Observations: %d\n', nobs);
-    maxstrlen = 0;
-    for j=1:length(vwlags)
-        slen = length(vwlags{j});
-        if slen > maxstrlen
-            maxstrlen = slen;
-        end
-    end
-    titlespacing = repmat(' ', 1, 4 + maxstrlen + 4) ;
-    fprintf('%sCoefficients    t-statistic      Std. Error\n', titlespacing);
-    fprintf('%s____________    ____________    ____________\n\n', titlespacing);
-    format = ['    %-' num2str(maxstrlen) 's'];
-    for j = 1:length(vwlags)
-        fprintf(format, vwlags{j});
-        fprintf('%12.5f    %12.5f    %12.5f\n', ...
-            oo_.ols.(tagv).beta(j), ...
-            oo_.ols.(tagv).tstat(j), ...
-            oo_.ols.(tagv).stderr(j));
-    end
-    fprintf('\n    R^2: %f\n', oo_.ols.(tagv).R2);
-    fprintf('    R^2 Adjusted: %f\n', oo_.ols.(tagv).adjR2);
-    fprintf('    s^2: %f\n', oo_.ols.(tagv).s2);
-    fprintf('    Durbin-Watson: %f\n', oo_.ols.(tagv).dw);
-    fprintf('%s\n\n', repmat('-', 1, 4 + maxstrlen + 4 + 44));
+
+    preamble = {sprintf('Dependent Variable: %s', lhs{i}), ...
+        sprintf('No. Independent Variables: %d', nvars), ...
+        sprintf('Observations: %d', nobs)};
+
+    afterward = {sprintf('R^2: %f', oo_.ols.(tagv).R2), ...
+        sprintf('R^2 Adjusted: %f', oo_.ols.(tagv).adjR2), ...
+        sprintf('s^2: %f', oo_.ols.(tagv).s2), ...
+        sprintf('Durbin-Watson: %f', oo_.ols.(tagv).dw)};
+
+    dyn_table(title, preamble, afterward, vwlags, ...
+        {'Coefficients','t-statistic','Std. Error'}, 4, ...
+        [oo_.ols.(tagv).beta oo_.ols.(tagv).tstat oo_.ols.(tagv).stderr]);
 end
 end
