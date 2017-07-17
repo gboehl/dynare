@@ -58,7 +58,11 @@ end
 % save parameter values
 oo_.surgibbs.beta = (sum(oo_.surgibbs.betadraws)/ndraws)';
 
-% plot
+%% Print Output
+dyn_table('Gibbs Sampling on SUR', {}, {}, pnamesall, ...
+    {'Parameter Value'}, 4, oo_.surgibbs.beta);
+
+%% Plot
 figure
 nrows = 5;
 ncols = floor(nvars/nrows);
@@ -73,3 +77,4 @@ for j = 1:length(pnamesall)
     line([oo_.surgibbs.beta(j) oo_.surgibbs.beta(j)], [min(hc) max(hc)], 'Color', 'red');
     title(pnamesall{j}, 'Interpreter', 'none')
 end
+
