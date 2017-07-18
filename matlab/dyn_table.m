@@ -51,18 +51,20 @@ colrow = sprintf('%s', colbegin);
 colrow2 = colrow;
 format = ['    %-' num2str(maxrowstrlen) 's'];
 for i = 1:length(cols)
-    if colstrlens(i) < 12
-        colrow = [colrow repmat(' ', 1, floor((12-mod(colstrlens(i), 12))/2)) cols{i} repmat(' ', 1, ceil((12-mod(colstrlens(i), 12))/2))];
-        colrow2 = [colrow2 repmat('_', 1, 12)];
+    precision = 12;
+    if colstrlens(i) < precision
+        colrow = [colrow repmat(' ', 1, floor((precision-mod(colstrlens(i), precision))/2)) cols{i} repmat(' ', 1, ceil((precision-mod(colstrlens(i), precision))/2))];
+        colrow2 = [colrow2 repmat('_', 1, precision)];
     else
         colrow = [colrow cols{i}];
         colrow2 = [colrow2 repmat('_', 1, colstrlens(i))];
+        precision = colstrlens(i);
     end
     if i ~= length(cols)
         colrow = [colrow repmat(' ', 1, indent)];
         colrow2 = [colrow2 repmat(' ', 1, indent)];
     end
-    format = [format repmat(' ', 1, indent) '%12.5f'];
+    format = [format repmat(' ', 1, indent) '%' sprintf('%d.5f', precision)];
 end
 
 % Center title
