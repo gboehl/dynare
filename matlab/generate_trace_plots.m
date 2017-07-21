@@ -50,6 +50,11 @@ for ii=1:size(estim_params_.var_exo,1)
     trace_plot(options_,M_,estim_params_,'StructuralShock',chain_number,parameter_name)
 end
 
+for ii=1:size(estim_params_.var_endo,1)
+    parameter_name=deblank(M_.endo_names(estim_params_.var_endo(ii,1),:));
+    trace_plot(options_,M_,estim_params_,'MeasurementError',chain_number,parameter_name)
+end
+
 for ii=1:size(estim_params_.corrn,1)
     parameter_name_1=deblank(M_.endo_names(estim_params_.corrn(ii,1),:));
     parameter_name_2=deblank(M_.endo_names(estim_params_.corrn(ii,2),:));
