@@ -260,23 +260,23 @@ for b=fpar:B
             else
                 constant_part=repmat(SteadyState(dr.order_var)',[length(options_.filter_step_ahead),1,gend+max(options_.filter_step_ahead)]);
             end
-
-            stock_filter_step_ahead(:,dr.order_var,:,irun(4)) = aK(options_.filter_step_ahead,1:endo_nbr,:) + ...
-                constant_part;
-
+            stock_filter_step_ahead(:,dr.order_var,:,irun(4)) = aK(options_.filter_step_ahead,1:endo_nbr,:) + constant_part;
             %now add trend to observables
             for ii=1:length(options_.filter_step_ahead)
                 if options_.prefilter
-                    stock_filter_step_ahead(ii,IdObs,:,irun(4)) = squeeze(stock_filter_step_ahead(ii,IdObs,:,irun(4)))...
-                        +repmat(mean_correction(:,1),1,gend+max(options_.filter_step_ahead))... %constant correction
+                    zdim = size(stock_filter_step_ahead(ii,IdObs,:,irun(4)));
+                    squeezed = reshape(stock_filter_step_ahead(ii,IdObs,:,irun(4)), [zdim(2:end) 1]);
+                    stock_filter_step_ahead(ii,IdObs,:,irun(4)) = squeezed ...
+                        +repmat(mean_correction(:,1),1,gend+max(options_.filter_step_ahead)) ... %constant correction
                         +[trend_addition repmat(trend_addition(:,end),1,max(options_.filter_step_ahead))+trend_coeff*[1:max(options_.filter_step_ahead)]]; %trend
                 else
-                    stock_filter_step_ahead(ii,IdObs,:,irun(4)) = squeeze(stock_filter_step_ahead(ii,IdObs,:,irun(4)))...
+                    zdim = size(stock_filter_step_ahead(ii,IdObs,:,irun(4)));
+                    squeezed = reshape(stock_filter_step_ahead(ii,IdObs,:,irun(4)), [zdim(2:end) 1]);
+                    stock_filter_step_ahead(ii,IdObs,:,irun(4)) = squeezed ...
                         +[trend_addition repmat(trend_addition(:,end),1,max(options_.filter_step_ahead))+trend_coeff*[1:max(options_.filter_step_ahead)]]; %trend
                 end
             end
         end
-
         if horizon
             yyyy = alphahat(iendo,i_last_obs);
             yf = forcst2a(yyyy,dr,zeros(horizon,exo_nbr));
