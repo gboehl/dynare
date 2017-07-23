@@ -301,6 +301,7 @@ MODFILES = \
 	gradient/fs2000_numgrad_5.mod \
 	filter_step_ahead/fs2000_filter_step_ahead_bayesian.mod \
 	filter_step_ahead/fs2000_filter_step_ahead_ML.mod \
+	filter_step_ahead/trend_cycle_decomposition.mod \
 	loglinear/example4_exp.mod \
 	loglinear/example4_loglinear.mod \
 	loglinear/example4_loglinear_lagged_exogenous.mod \
@@ -760,6 +761,7 @@ EXTRA_DIST = \
 	external_function/extFunNoDerivs.m \
 	external_function/extFunWithFirstAndSecondDerivs.m \
 	expectations/expectation_ss_old_steadystate.m \
+	filter_step_ahead/trend_cycle_decomposition_data.m \
 	steady_state/walsh1_old_ss_steadystate.m \
 	data/test.xlsx \
 	gsa/morris/nk_est_data.m \
