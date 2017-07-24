@@ -31,5 +31,4 @@ end;
 
 varobs y; 
 
-
-estimation(datafile=data_i,nobs=82, mh_replic=2000, mode_compute=4, mh_nblocks=2, mh_jscale=0.3, filtered_vars, smoother, diffuse_filter) yp z; 
+estimation(datafile=trend_cycle_decomposition_data,nobs=82, mh_replic=2000, mode_compute=4, mh_nblocks=1, mh_jscale=0.3, filtered_vars, smoother, diffuse_filter) yp z; 
