@@ -21,9 +21,6 @@ mu=0;
 end;
 
 steady(nocheck);
-//resid(1);
-
-//options_.steadystate.nocheck;
 
 estimated_params;
 stderr emu     , inv_gamma_pdf,  0.002  , inf;
