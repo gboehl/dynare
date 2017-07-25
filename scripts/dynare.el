@@ -28,8 +28,6 @@
 ;;   add this to your .emacs or site-init.el file:
 ;;
 ;;   (require 'dynare)
-;;   (autoload 'dynare-mode "dynare" "Enter dynare mode." t)
-;;   (setq auto-mode-alist (cons '("\\.mod\\'" . dynare-mode) auto-mode-alist))
 
 ;;; Commentary:
 ;;
@@ -107,7 +105,8 @@ For detail, see `comment-dwim'."
     ("(\\(+\\|-\\)[1-9])" . font-lock-constant-face)
     ))
 
-;; define the major mode
+;;; define the major mode
+;;;###autoload
 (define-derived-mode dynare-mode fundamental-mode
   "dynare mode"
   "dynare is a mode for editing mod files used by dynare."
@@ -148,6 +147,10 @@ For detail, see `comment-dwim'."
   (setq dynare-keywords-regexp nil)
   (setq dynare-functions-regexp nil)
   )
+
+;;; mode trigger
+;;;###autoload
+(add-to-list 'auto-mode-alist '("\\.mod$" . dynare-mode))
 
 (provide 'dynare)
 ;;; dynare.el ends here
