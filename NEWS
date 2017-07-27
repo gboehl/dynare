@@ -1,4 +1,48 @@
-Announcement for Dynare 4.5.0 (on 2013-12-16)
+Announcement for Dynare 4.5.1 (on 2017-08-24)
+=============================================
+
+We are pleased to announce the release of Dynare 4.5.1.
+
+This is a bugfix release.
+
+The Windows packages are already available for download at:
+
+ http://www.dynare.org/download/dynare-stable
+
+The Mac and GNU/Linux packages (for Debian and Ubuntu LTS) should follow soon.
+
+This release is compatible with MATLAB versions 7.3 (R2006b) to 9.2 (R2017a)
+and with GNU Octave versions 4.2.
+
+Here is a list of the problems identified in version 4.5.0 and that have been
+fixed in version 4.5.1:
+
+
+ - Fixed out of memory issue with simpsa optimization algorithm.
+
+ - Added missing plots for measurement errors with `generate_trace_plot`
+   command.
+
+ - Posterior moments after MCMC for very big models were not correctly computed
+   and their plotting might crash Dynare.
+
+ - Results of the posterior conditional variance decomposition after MCMC were
+   not correctly computed.
+
+ - Options `use_shock_groups` and `colormap` of the `shock_decomposition`
+   command were not working.
+
+ - Added a clean error message if sensitivity toolbox is used with recursive
+   estimation.
+
+ - Computation of posterior filtered variables was crashing in models with only
+   one variable.
+
+ - Fixed various typos and errors in the reference manual.
+
+
+
+Announcement for Dynare 4.5.0 (on 2017-06-11)
 =============================================
 
 We are pleased to announce the release of Dynare 4.5.0.
@@ -17,11 +61,6 @@ This release is compatible with MATLAB versions ranging from 7.3 (R2006b) to
 9.2 (R2017a) and with GNU Octave version 4.2.
 
 Here is the list of major user-visible changes:
-
-
-
-Dynare 4.5
-==========
 
 
  - Ramsey policy

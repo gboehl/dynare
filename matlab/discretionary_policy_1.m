@@ -68,6 +68,15 @@ if options_.steadystate_flag
 end
 [U,Uy,W] = feval([M_.fname,'_objective_static'],zeros(endo_nbr,1),[], M_.params);
 if any(any(Uy~=0))
+    non_zero_derivs=find(any(Uy~=0));
+    for ii=1:length(non_zero_derivs)
+        non_zero_deriv_names{ii,1}=deblank(M_.endo_names(non_zero_derivs(ii),:));
+    end
+    disp_string=[non_zero_deriv_names{1,:}];
+    for ii=2:size(non_zero_deriv_names,1)
+        disp_string=[disp_string,', ',non_zero_deriv_names{ii,:}];
+    end
+    fprintf('\nThe derivative of the objective function w.r.t. to variable(s) %s is not 0\n',disp_string)
     error(['discretionary_policy: the objective function must have zero ' ...
            'first order derivatives'])
 end

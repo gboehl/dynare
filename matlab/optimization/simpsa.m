@@ -142,8 +142,9 @@ DEFAULT_OPTIONS = simpsaset('TEMP_START',[],...  % starting temperature (if none
 OPTIONS = simpsaset(DEFAULT_OPTIONS,OPTIONS);
 
 % store options in OUTPUT
-
-OUTPUT.OPTIONS = OPTIONS;
+if nargout>3
+    OUTPUT.OPTIONS = OPTIONS;
+end
 
 % initialize simplex
 % ------------------
@@ -175,13 +176,13 @@ end
 
 % initialize OUTPUT structure
 % ---------------------------
-
-OUTPUT.TEMPERATURE = zeros(OPTIONS.MAX_ITER_TOTAL,1);
-OUTPUT.SIMPLEX = zeros(NDIM+1,NDIM,OPTIONS.MAX_ITER_TOTAL);
-OUTPUT.SIMPLEX_BEST = zeros(OPTIONS.MAX_ITER_TOTAL,NDIM);
-OUTPUT.COSTS = zeros(OPTIONS.MAX_ITER_TOTAL,NDIM+1);
-OUTPUT.COST_BEST = zeros(OPTIONS.MAX_ITER_TOTAL,1);
-
+if nargout>3
+    OUTPUT.TEMPERATURE = zeros(OPTIONS.MAX_ITER_TOTAL,1);
+    OUTPUT.SIMPLEX = zeros(NDIM+1,NDIM,OPTIONS.MAX_ITER_TOTAL);
+    OUTPUT.SIMPLEX_BEST = zeros(OPTIONS.MAX_ITER_TOTAL,NDIM);
+    OUTPUT.COSTS = zeros(OPTIONS.MAX_ITER_TOTAL,NDIM+1);
+    OUTPUT.COST_BEST = zeros(OPTIONS.MAX_ITER_TOTAL,1);
+end
 % initialize iteration data
 % -------------------------
 
@@ -304,17 +305,19 @@ while 1
         Y = help(:,2);
         P = help(:,3:end);
 
-        % store temperature at current iteration
-        OUTPUT.TEMPERATURE(nITERATIONS) = TEMP;
+        if nargout>3
+            % store temperature at current iteration
+            OUTPUT.TEMPERATURE(nITERATIONS) = TEMP;
 
-        % store information about simplex at the current iteration
-        OUTPUT.SIMPLEX(:,:,nITERATIONS) = P;
-        OUTPUT.SIMPLEX_BEST(nITERATIONS,:) = PBEST;
+            % store information about simplex at the current iteration
+            OUTPUT.SIMPLEX(:,:,nITERATIONS) = P;
+            OUTPUT.SIMPLEX_BEST(nITERATIONS,:) = PBEST;
 
-        % store cost function value of best vertex in current iteration
-        OUTPUT.COSTS(nITERATIONS,:) = Y;
-        OUTPUT.COST_BEST(nITERATIONS) = YBEST;
-
+            % store cost function value of best vertex in current iteration
+            OUTPUT.COSTS(nITERATIONS,:) = Y;
+            OUTPUT.COST_BEST(nITERATIONS) = YBEST;
+        end
+        
         if strcmp(OPTIONS.DISPLAY,'iter')
             disp(sprintf('%5.0f      %5.0f       %12.6g     %15.6g      %12.6g       %s',nITERATIONS,nFUN_EVALS,Y(1),YBEST,TEMP,ALGOSTEP));
         end
@@ -452,21 +455,23 @@ end
 X = transpose(PBEST);
 FVAL = YBEST;
 
-% store number of function evaluations
-OUTPUT.nFUN_EVALS = nFUN_EVALS;
-
-% store number of iterations
-OUTPUT.nITERATIONS = nITERATIONS;
-
-% trim OUTPUT data structure
-OUTPUT.TEMPERATURE(nITERATIONS+1:end) = [];
-OUTPUT.SIMPLEX(:,:,nITERATIONS+1:end) = [];
-OUTPUT.SIMPLEX_BEST(nITERATIONS+1:end,:) = [];
-OUTPUT.COSTS(nITERATIONS+1:end,:) = [];
-OUTPUT.COST_BEST(nITERATIONS+1:end) = [];
-
-% store the amount of time needed in OUTPUT data structure
-OUTPUT.TIME = toc;
+if nargout>3
+    % store number of function evaluations
+    OUTPUT.nFUN_EVALS = nFUN_EVALS;
+    
+    % store number of iterations
+    OUTPUT.nITERATIONS = nITERATIONS;
+    
+    % trim OUTPUT data structure
+    OUTPUT.TEMPERATURE(nITERATIONS+1:end) = [];
+    OUTPUT.SIMPLEX(:,:,nITERATIONS+1:end) = [];
+    OUTPUT.SIMPLEX_BEST(nITERATIONS+1:end,:) = [];
+    OUTPUT.COSTS(nITERATIONS+1:end,:) = [];
+    OUTPUT.COST_BEST(nITERATIONS+1:end) = [];
+    
+    % store the amount of time needed in OUTPUT data structure
+    OUTPUT.TIME = toc;
+end
 
 return
 

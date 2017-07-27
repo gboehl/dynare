@@ -1220,9 +1220,10 @@ or @var{Sigma_e} to name your variable. Not conforming to this rule might yield 
 error messages or crashes. Second, to minimize interference with MATLAB or Octave functions that
 may be called by Dynare or user-defined steady state files, it is recommended to avoid using the name
 of MATLAB functions. In particular when working with steady state files, do not use correctly-spelled greek 
-names like @var{alpha}, because there are Matlab functions of the same name. Rather go for @var{alppha} or so.
+names like @var{alpha}, because there are Matlab functions of the same name. Rather go for @var{alppha} or @var{alph}.
 Lastly, please do not name a variable or parameter @var{i}. This may interfere with the imaginary 
-number @var{i} and the index in many loops. Rather, name investment @var{invest}.
+number @var{i} and the index in many loops. Rather, name investment @var{invest}. Using @var{inv} is also not recommended
+as it alread denotes the inverse operator.
 
 Declarations of variables and parameters are made with the following commands:
 
@@ -1984,7 +1985,7 @@ different purposes by allowing the user to attach arbitrary informations to each
 equation and to recover them at runtime. For instance, it is possible to name the
 equations with a @code{name}-tag, using a syntax like:
 @example
-mode;
+model;
     ...
     [name = 'Budget constraint']
     c + k = k^theta*A;
@@ -1996,7 +1997,7 @@ of the model is tagged with a name, the @code{resid} command
 will display the name of the equations (which may be more informative than the
 equation numbers) in addition to the equation number. Several tags for one equation can be separated using a comma. 
 @example
-mode;
+model;
     ...
    [name='Taylor rule',mcp = 'r > -1.94478']
    r = rho*r(-1) + (1-rho)*(gpi*Infl+gy*YGap) + e;
@@ -2362,7 +2363,7 @@ static equilibria, but not necessarily.
 One typical application is to consider an economy at the equilibrium at time 0,
 trigger a shock in first period, and study the trajectory of return to
 the initial equilibrium. To do that, one needs @code{initval} and
-@code{shocks} (@pxref{Shocks on exogenous variables}.
+@code{shocks} (@pxref{Shocks on exogenous variables}).
 
 Another one is to study, how an economy, starting from arbitrary
 initial conditions at time 0 converges toward equilibrium. 
@@ -3233,7 +3234,7 @@ option, @pxref{Model declaration})
 Trust-region algorithm on the entire model.
 
 @item 10
-Levenberg-Marquardt mixed compleproblem (LMMCP) solver
+Levenberg-Marquardt mixed complementarity problem (LMMCP) solver
 (@cite{Kanzow and Petra 2004})
 
 @item 11
@@ -3680,7 +3681,7 @@ to the equation appears currently on the left hand side and where no
 backward looking endogenous variables appear. The block has the form:
 @math{y_{j,t} = f_j(y_t, y_{t+1}, \ldots, y_{t+k})}.
 
-@item SOLVE FORWARD @var{x}
+@item SOLVE BACKWARD @var{x}
 The block contains only equations where endogenous variable attributed
 to the equation does not appear currently on the left hand side and
 where no forward looking endogenous variables appear. The block has
@@ -4386,7 +4387,7 @@ If option @code{periods} is present, sets @code{oo_.skewness},
 MATLAB/Octave vectors of the global workspace with the same name as
 the endogenous variables.
 
-If options @code{irf} is different from zero, sets @code{oo_.irfs}
+If option @code{irf} is different from zero, sets @code{oo_.irfs}
 (see below) and also saves the IRFs in MATLAB/Octave vectors of
 the global workspace (this latter way of accessing the IRFs is
 deprecated and will disappear in a future version).
@@ -4812,7 +4813,7 @@ non-decreasing tuples are stored, @i{i.e.} those for which @math{i_1
 \leq i_2 \leq i_3}. The columns are arranged in the lexicographical
 order of non-decreasing tuples. Also note that for tuples that have
 three distinct indices (@i{i.e.} @math{i_1 \neq i_2} and @math{i_1
-\neq i_3} and @math{i_2 \neq i_3}, since these elements are stored
+\neq i_3} and @math{i_2 \neq i_3}), since these elements are stored
 only once but appears six times in the unfolded @math{G_3} matrix,
 they must be multiplied by 6 when computing the decision
 rules. Similarly, for those tuples that have two equal indices
@@ -4992,7 +4993,7 @@ likelihood estimation. In a Bayesian estimation context, sets a lower bound
 only effective while maximizing the posterior kernel. This lower bound does not
 modify the shape of the prior density, and is only aimed at helping the
 optimizer in identifying the posterior mode (no consequences for the MCMC). For
-some prior densities (namely inverse gamma, gamma, uniform, beta or weibull) it is
+some prior densities (namely inverse gamma, gamma, uniform, beta or Weibull) it is
 possible to shift the support of the prior distributions to the left or the right using
 @ref{prior_3rd_parameter}. In this case the prior density is effectively
 modified (note that the truncated Gaussian density is not implemented in
@@ -5020,7 +5021,7 @@ that @code{inv_gamma_pdf} is equivalent to
 @item @var{PRIOR_3RD_PARAMETER}
 @anchor{prior_3rd_parameter}
 A third parameter of the prior used for generalized beta distribution,
-generalized gamma, generalized weibull and for the uniform distribution. Default: @code{0}
+generalized gamma, generalized Weibull and for the uniform distribution. Default: @code{0}
 
 @item @var{PRIOR_4TH_PARAMETER}
 @anchor{prior_4th_parameter}
@@ -5921,7 +5922,7 @@ distribution of IRFs. The length of the IRFs are controlled by the
 weight of  the DSGE prior  of the VAR model  is calibrated to  the value
 passed (see @cite{Del  Negro and Schorfheide (2004)}). It represents ratio of dummy over actual observations. 
 To assure that the prior is proper, the value must be bigger than @math{(k+n)/T}, 
-where @math{k} is the number of estimated parameters, @math{n} is the number of observables, #
+where @math{k} is the number of estimated parameters, @math{n} is the number of observables,
 and @math{T} is the number of observations. NB:  The previous method
 of   declaring  @code{dsge_prior_weight} as a parameter and then
 calibrating it is now deprecated and will be removed in a future release
@@ -6833,8 +6834,8 @@ observation for which the forecast has been made.
 @defvr {MATLAB/Octave variable} oo_.Smoother.State_uncertainty
 @anchor{oo_.Smoother.State_uncertainty}
 Three-dimensional array set by the @code{estimation} command (if used with the
-@code{smoother}) without Metropolis, 
-or by the @code{calib_smoother} command, if the @code{o_smoothed_state_uncertainty} option
+@code{smoother} option) without Metropolis, 
+or by the @code{calib_smoother} command, if the @code{smoothed_state_uncertainty} option
 has been requested.
 Contains the series of covariance matrices for the state estimate given the full data
 from the Kalman smoother. The @code{M_.endo_nbr} times @code{M_.endo_nbr} times
@@ -7775,7 +7776,7 @@ uncertainty, but ignoring the effect of measurement error on
 observed variables
 
 @item HPDsup
-Lower bound of a 90% HPD interval due to parameter uncertainty, but 
+Upper bound of a 90% HPD forecast interval due to parameter uncertainty, but 
 ignoring the effect of measurement error on 
 observed variables
 
@@ -7785,7 +7786,7 @@ to change the size of the HPD interval} of forecast for observed variables
 due to parameter uncertainty and measurement error 
 
 @item HPDsup_ME
-Lower bound of a 90% HPD interval of forecast for observed variables 
+Upper bound of a 90% HPD interval of forecast for observed variables 
 due to parameter uncertainty and measurement error 
 
 @item Mean
@@ -8385,7 +8386,7 @@ Note that the use of this block requires the use of a constrained optimizer, @i{
 
 @example
 
-osr_param_bounds;
+osr_params_bounds;
 gamma_inf_, 0, 2.5;
 end;
 
@@ -9275,7 +9276,7 @@ named as:
 @code{<namendo>_vs_<namexo>}: for entries of the matrix of the shocks.
 @end itemize
 
-The following files are stored in each directory (we stick with prior sample but similar convetins are used for MC samples):
+The following files are stored in each directory (we stick with prior sample but similar conventions are used for MC samples):
 @itemize
 @item
 @code{<mod_file>_prior_<namendo>_vs_<namexo>.fig}: histogram and CDF plot of the MC sample of the individual entry
@@ -9551,7 +9552,7 @@ In case of estimating a MS-DSGE model,@footnote{An example can be found at @uref
 @table @code
 
 @item parameters = @var{[LIST OF PARAMETERS]}
-This option specifies which parameters are controlled by this Markov Chai
+This option specifies which parameters are controlled by this Markov Chain.
 
 @item number_of_lags = @var{DOUBLE}
 Provides the number of lags that each parameter can take within each regime in this chain. 
@@ -10970,8 +10971,8 @@ This file computes the steady state. It begins with:
 @@#include "modeqs.mod"
 @end example
 Then it initializes parameters (including @code{lab_rat}, excluding
-@math{\alpha}, computes the steady state (using guess values for
-endogenous, including @math{\alpha}, then saves values of parameters
+@math{\alpha}), computes the steady state (using guess values for
+endogenous, including @math{\alpha}), then saves values of parameters
 and endogenous at steady state in a file, using the
 @code{save_params_and_steady_state} command.
 
@@ -11028,7 +11029,7 @@ array (@code{rhos}).
 The advantage of this method is that it uses a shorter syntax, since
 list of values directly given in the loop construct. Note that values
 are given as character strings (the macro-processor does not know
-floating point values. The inconvenient is that you can not reuse an
+floating point values). The inconvenience is that you can not reuse an
 array stored in a MATLAB/Octave variable.
 
 @end table
@@ -11987,7 +11988,7 @@ ans =
 
 @deftypefn{dates} {@var{C} =} gt (@var{A}, @var{B})
 
-Overloads the Matlab/Octave @code{gt} (greater than, @code{>=}) operator. @dates objects @var{A} and @var{B} must have the  same number of elements (say, @code{n}). The returned argument is a @code{n} by @code{1} vector of zeros and ones. The i-th element of @var{C} is equal to @code{1} if and only if the date @code{A(i)} is posterior to the date @code{B(i)}.
+Overloads the Matlab/Octave @code{gt} (greater than, @code{>}) operator. @dates objects @var{A} and @var{B} must have the  same number of elements (say, @code{n}). The returned argument is a @code{n} by @code{1} vector of zeros and ones. The i-th element of @var{C} is equal to @code{1} if and only if the date @code{A(i)} is posterior to the date @code{B(i)}.
 
 @examplehead
 @example
@@ -12136,7 +12137,7 @@ ans =
 
 @deftypefn{dates} {@var{C} =} lt (@var{A}, @var{B})
 
-Overloads the Matlab/Octave @code{lt} (less than, @code{<=}) operator. @dates objects @var{A} and @var{B} must have the  same number of elements (say, @code{n}). The returned argument is a @code{n} by @code{1} vector of zeros and ones. The i-th element of @var{C} is equal to @code{1} if and only if the date @code{A(i)} preceeds the date @code{B(i)}.
+Overloads the Matlab/Octave @code{lt} (less than, @code{<}) operator. @dates objects @var{A} and @var{B} must have the  same number of elements (say, @code{n}). The returned argument is a @code{n} by @code{1} vector of zeros and ones. The i-th element of @var{C} is equal to @code{1} if and only if the date @code{A(i)} preceeds the date @code{B(i)}.
 
 @examplehead
 @example
@@ -14010,7 +14011,7 @@ command. Default: @code{`!'}
 @end defmethod
 
 @anchor{addGraph}
-@defmethod Report addGraph axisShape, data, graphDirName, graphName, graphSize, height, showGrid, showLegend, legendAt, showLegendBox, legendLocation, legendOrientation, legendFontSize, miscTikzAxisOptions, miscTikzPictureOptions, seriesToUse, shade, shadeColor, shadeOpacity, tickFontSize, title, titleFontSize, titleFormat, width, writeCSV, xlabel, ylabel, xAxisTight, xrange, xTicks, xTickLabels, xTickLabelAnchor, xTickLabelRotation, yAxisTight, yTickLabelFixed, yTickLabelPrecision, yTickLabelScaled, yTickLabelZeroFill, yrange, showZeroline, zeroLineColor
+@defmethod Report addGraph axisShape, data, graphDirName, graphName, graphSize, height, showGrid, showLegend, legendAt, showLegendBox, legendLocation, legendOrientation, legendFontSize, miscTikzAxisOptions, miscTikzPictureOptions, seriesToUse, shade, shadeColor, shadeOpacity, tickFontSize, title, titleFontSize, titleFormat, width, writeCSV, xlabel, ylabel, xAxisTight, xrange, xTicks, xTickLabels, xTickLabelAnchor, xTickLabelRotation, yAxisTight, yTickLabelFixed, yTickLabelPrecision, yTickLabelScaled, yTickLabelZeroFill, yrange, showZeroLine, zeroLineColor
 Adds a @code{Graph} to a @code{Section}.
 @optionshead
 @table @code
