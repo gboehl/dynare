@@ -41,6 +41,8 @@ assert(size(data, 1) == length(rows), 'must have the same number of rows')
 assert(size(data, 2) == length(cols), 'must have the same number of columns')
 assert(isint(indent), 'indent must be an integer')
 
+skipline(3)
+
 %% Print Output
 rowstrlens = cellfun(@length, rows);
 colstrlens = cellfun(@length, cols);
@@ -92,4 +94,3 @@ for i = 1:length(afterward)
 end
 
 fprintf('%s\n\n', repmat('_', 1, length(colrow2)));
-end
