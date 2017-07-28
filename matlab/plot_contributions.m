@@ -1,18 +1,26 @@
-function plot_contributions(tagn, tagv, ds1, ds0)
+function plot_contributions(equationname, ds1, ds0)
 
 % Plots the contribution to the lhs variable of the rhs variables in an equation.
 %
 % INPUTS
-%  - tagn      [string]                 Equation tag name
-%  - tagv      [string]                 Equation tag value
-%  - ds1       [dseries]                Object containing all the variables (exogenous and endogenous) appearing in the equation.
-%  - ds0       [dseries]                parameter values
+%  - equationname      [string]                 Name of an equation.
+%  - ds1               [string, dseries]        Object containing all the variables (exogenous and endogenous)
+%                                               appearing in the equation, or the name of the dseries object.
+%  - ds0               [string, dseries]        Object containing the baseline for all the variables (exogenous
+%                                               and endogenous) appearing in the equation, or the name of the
+%                                               dseries object.
 %
 % OUTPUTS
-%   None
+%  none
 %
 % SPECIAL REQUIREMENTS
-%   none
+%  The user must have attached names to the equations using equation
+%  tags. Each equation in the model block must be preceeded with a
+%  tag (see the reference manual). For instance, we should have
+%  something as:
+%
+%      [name='Phillips curve']
+%      pi = beta*pi(1) + slope*y + lam;
 
 % Copyright (C) 2017 Dynare Team
 %
@@ -38,14 +46,61 @@ if exist(jsonfile, 'file') ~= 2
     error('Could not find %s! Please use the json option (See the Dynare invocation section in the reference manual).', jsonfile);
 end
 
-% Check inputs. To be removed if we decide to make multiple
-% plot-contributions in one go
-assert(ischar(tagn) && ischar(tagv));
+% Check the number of input arguments.
+if nargin>3
+    error('plot_contributions:: Exactly three arguments are required!')
+end
+
+% Check the type of the first argument
+if ~ischar(equationname)
+    error('First argument must be a string.')
+end
+
+% Check that the equation name is actually the name of an equation in the model.
+if ~ismember(equationname, M_.equations_tags(strmatch('name', M_.equations_tags(:,2)),3))
+    error('plot_contributions:: There is no equation named as %s!', equationname);
+end
+
+% Check second argument
+if ischar(ds1)
+    if ismember(ds1, evalin('caller','who'))
+        ds = evalin('caller', ds1);
+        if isdseries(ds)
+            ds1 = copy(ds); clear ds;
+        else
+            error('plot_contributions:: %s is not a dseries object!', ds1)
+        end
+    else
+        error('plot_contributions:: %s is unknown!', ds1)
+    end
+else
+    if ~isdeseries(ds1)
+        error('plot_contributions:: Second input argument must be a dseries object!')
+    end
+end
+
+% Check third argument
+if ischar(ds0)
+    if ismember(ds0, evalin('caller','who'))
+        ds = evalin('caller', ds0);
+        if isdseries(ds)
+            ds0 = copy(ds); clear ds;
+        else
+            error('plot_contributions:: %s is not a dseries object!', ds0)
+        end
+    else
+        error('plot_contributions:: %s is unknown!', ds0)
+    end
+else
+    if ~isdeseries(ds0)
+        error('plot_contributions:: Third input argument must be a dseries object!')
+    end
+end
 
 % Get equation.
 jsonmodel = loadjson(jsonfile);
 jsonmodel = jsonmodel.model;
-[lhs, rhs, ~] = getEquationsByTags(jsonmodel, tagn, tagv);
+[lhs, rhs, ~] = getEquationsByTags(jsonmodel, 'name', equationname);
 lhs = lhs{:};
 rhs = rhs{:};
 
@@ -118,4 +173,5 @@ bar(1:ds.nobs, ccpos,'stack');
 plot(1:ds.nobs, contribution(:,1), '-k', 'linewidth', 3);
 hold off
 title(sprintf('Decomposition of %s', lhs))
-legend('Total (LHS variable)', vnames{:});
+vnames = strrep(vnames,'_','\_');
+legend(vnames{:});
