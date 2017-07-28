@@ -1,5 +1,5 @@
 function olseqs(ds, varargin)
-%function olseqs(ds, varargin)
+
 % Run OLS on chosen model equations
 %
 % INPUTS
@@ -30,9 +30,6 @@ function olseqs(ds, varargin)
 
 global M_ oo_
 
-%% Check input
-assert(nargin == 1 || nargin == 3, 'Incorrect number of arguments passed to olseqs');
-
 jsonfile = [M_.fname '_original.json'];
 if exist(jsonfile, 'file') ~= 2
     error('Could not find %s! Please use the json option (See the Dynare invocation section in the reference manual).', jsonfile);
@@ -41,7 +38,7 @@ end
 %% Get Equation(s)
 jsonmodel = loadjson(jsonfile);
 jsonmodel = jsonmodel.model;
-[lhs, rhs, lineno] = getEquationsByTags(jsonmodel, varargin{:});
+[lhs, rhs, lineno] = getEquationsByTags(jsonmodel, 'name', varargin{:});
 
 for i = 1:length(lhs)
     %% Construct regression matrices
@@ -83,11 +80,11 @@ for i = 1:length(lhs)
 
     %% Estimation
     % From LeSage, James P. "Applied Econometrics using MATLAB"
-    if nargin == 3
-        if iscell(varargin{2})
-            tagv = varargin{2}{i};
+    if nargin == 2
+        if iscell(varargin{1})
+            tagv = varargin{1}{i};
         else
-            tagv = varargin{2};
+            tagv = varargin{1};
         end
     else
         tagv = ['eqlineno' num2str(lineno{i})];
@@ -135,7 +132,7 @@ for i = 1:length(lhs)
     %% Print Output
     title = sprintf('OLS Estimation of equation on line %d', lineno{i});
     if nargin == 3
-        title = [title sprintf(' [%s = %s]', varargin{1}, tagv)];
+        title = [title sprintf(' [%s = %s]', 'name', tagv)];
     end
 
     preamble = {sprintf('Dependent Variable: %s', lhs{i}), ...
