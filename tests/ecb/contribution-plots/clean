@@ -1,0 +1,9 @@
+#!/bin/sh
+
+rm -rf contrib1
+rm -f contrib1.m contrib1_dynamic.m contrib1_set_auxiliary_variables.m contrib1.json contrib1_original.json
+rm -f contrib1_static.json contrib1.log contrib1_dynamic.json contrib1_results.mat contrib1_static.m
+
+rm -rf contrib2
+rm -f contrib2.m contrib2_dynamic.m contrib2_set_auxiliary_variables.m contrib2.json contrib2_original.json
+rm -f contrib2_static.json contrib2.log contrib2_dynamic.json contrib2_results.mat contrib2_static.m
