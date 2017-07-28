@@ -130,7 +130,7 @@ for i = 1:length(lhs)
     oo_.ols.(tagv).tstat = oo_.ols.(tagv).beta./oo_.ols.(tagv).stderr;
 
     %% Print Output
-    title = sprintf('OLS Estimation of equation on line %d', lineno{i});
+    title = sprintf('OLS Estimation of equation  `%s`', tagv);
     if nargin == 3
         title = [title sprintf(' [%s = %s]', 'name', tagv)];
     end
@@ -147,5 +147,4 @@ for i = 1:length(lhs)
     dyn_table(title, preamble, afterward, vwlags, ...
         {'Coefficients','t-statistic','Std. Error'}, 4, ...
         [oo_.ols.(tagv).beta oo_.ols.(tagv).tstat oo_.ols.(tagv).stderr]);
-end
 end
