@@ -1,0 +1,4 @@
+#!/bin/sh
+
+rm -rf estimation_of_a_single_equation
+rm -f *.json *.m *.mat *.log
