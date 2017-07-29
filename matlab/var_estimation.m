@@ -139,7 +139,6 @@ if isfield(M_.var.(model), 'restrictions')
     % Find linearly independent Columns of C
     [junk, beta1] = rref(C);
     if size(beta1,2) ~= N
-        keyboard
         error('You must have the same number of linear constraints as indpendent columns in the constraint matrix C.');
     end
     beta1 = beta1';
