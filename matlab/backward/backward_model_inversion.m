@@ -85,37 +85,45 @@ ModelInversion.J_id = [ModelInversion.y_free_id ; sum(DynareModel.lead_lag_incid
 model_dynamic = str2func([DynareModel.fname,'_dynamic']);
 model_dtransf = str2func('dynamic_backward_model_for_inversion');
 
-% Initialization of vector y (free endogenous variables and free innovations).
-y = NaN(nyfree+nxfree);
-
 % Initialization of the returned simulations (endogenous variables).
-Y = NaN(DynareModel.endo_nbr, nobs(constraints)+1);
-initialconditions
-constraints.dates(1)
-Y(:,1) = initialconditions(constraints.dates(1)-1).data(1:DynareModel.endo_nbr);
+Y = NaN(DynareModel.endo_nbr, nobs(constraints));
+
+Y = [transpose(initialconditions(constraints.dates(1)-1).data(1:DynareModel.endo_nbr)), Y];
 for i=1:nyctrl
     Y(controlledendogenousvariables_id(i),2:end) = transpose(constraints.data(:,i));
 end
 
-% Initialization of the returned simulations (exogenous variables).
-X = exogenousvariables{exo_names{:}}(constraints.dates(1)-max(1,DynareModel.maximum_exo_lag):constraints.dates(end)).data;
+% Exogenous variables.
+X = exogenousvariables.data; %{exo_names{:}}(constraints.dates(1)-max(1,DynareModel.max_exo_lag_orig):constraints.dates(end)).data;
 
 % Inversion of the model, solvers for the free endogenous and exogenous variables (call a Newton-like algorithm in each period).
-for it = 2:nobs(constraints)+1
+
+ity = 2;
+itx = find(exogenousvariables.dates==constraints.dates(1));
+DynareOptions.solve_algo=4;
+for t = 1:nobs(constraints)
     % Set the lagged values of the endogenous variables.
-    ylag = Y(iy1,it-1);
+    ylag = Y(iy1,ity-1);
     % Set the current values of the constrained endogenous variables.
-    ycur = Y(controlledendogenousvariables_id,it);
+    ycur = Y(controlledendogenousvariables_id,ity);
     % Vector z gather the free endogenous variables (initialized with lagged
     % values) and the free exogenous variables (initialized with 0).
-    z = [Y(freeendogenousvariables_id,it-1); zeros(nxfree, 1)];
+    z = [Y(freeendogenousvariables_id,ity-1); zeros(nxfree, 1)];
     % Solves for z.
-    z = dynare_solve(model_dtransf, z, DynareOptions, model_dynamic, ylag, ycur, X, DynareModel.params, DynareOutput.steady_state, it+DynareModel.maximum_exo_lag, ModelInversion);
+    [z, failed] = dynare_solve(model_dtransf, z, DynareOptions, model_dynamic, ylag, ycur, X, DynareModel.params, DynareOutput.steady_state, itx, ModelInversion);
+    if failed
+        error('Enable to solve the system of equations!')
+    end
     % Update the matrix of exogenous variables.
-    X(it,freeinnovations_id) = z(nyfree+1:end);
+    X(itx,freeinnovations_id) = z(nyfree+(1:nxfree));
     % Update the matrix of endogenous variables.
-    Y(freeendogenousvariables_id,it) = z(1:nyfree);
+    if nyfree
+        Y(freeendogenousvariables_id,ity) = z(1:nyfree);
+    end
+    % Increment counters
+    ity = ity+1;
+    itx = itx+1;
 end
 
-endogenousvariables = dseries(Y', constraints.dates(1)-1, endo_names);
-exogenousvariables = dseries(X(max(DynareModel.maximum_exo_lag,1)+1:end,:), constraints.dates(1), exo_names);
+endogenousvariables = dseries(Y(:,2:end)', constraints.dates(1), endo_names);
+exogenousvariables = dseries(X(find(exogenousvariables.dates==constraints.dates(1))+(0:(nobs(constraints)-1)),:), constraints.dates(1), exo_names);
