@@ -42,25 +42,39 @@ function DynareOutput = simul_backward_linear_model(varargin)
     simul_backward_model_init(varargin{:});
 
 % initialization of the returned simulations.
-DynareOutput.endo_simul = NaN(DynareModel.endo_nbr,samplesize+1);
+DynareOutput.endo_simul = NaN(DynareModel.endo_nbr,samplesize);
 if isempty(initialconditions)
-    DynareOutput.endo_simul(:,1) = DynareOutput.steady_state;
+    if isfield(DynareModel,'endo_histval') && ~isempty(DynareModel.endo_histval)
+        DynareOutput.endo_simul = [DynareModel.endo_histval, DynareOutput.endo_simul];
+    else
+        DynareOutput.endo_simul = [zeros(DynareModel.endo_nbr, DynareModel.max_lag_orig), DynareOutput.endo_simul];
+    end
 else
-    DynareOutput.endo_simul(:,1) = initialconditions;
+    if ~isequal(size(initialconditions, 2), DynareModel.max_lag_orig)
+        error(['simul_backward_linear_model:: First argument should have %s columns!'], DynareModel.max_lag_orig)
+    end
+    DynareOutput.endo_simul = [initialconditions, DynareOutput.endo_simul];
 end
 Y = DynareOutput.endo_simul;
 
-% get coefficients
-[cst,jacob] = model_dynamic(zeros(DynareModel.endo_nbr+ny1,1), ...
-                            zeros(2,DynareModel.exo_nbr), ...
+if ~DynareModel.max_exo_lag_orig
+    if DynareModel.max_endo_lag_orig>1
+        DynareOutput.exo_simul = [ zeros(DynareModel.max_endo_lag_orig-1, DynareModel.exo_nbr); DynareOutput.exo_simul];
+    end
+end
+
+% Get coefficients
+[cst, jacob] = model_dynamic(zeros(DynareModel.endo_nbr+ny1,1), ...
+                            zeros(DynareModel.max_lag_orig+1,DynareModel.exo_nbr), ...
                             DynareModel.params, ...
-                            DynareOutput.steady_state,1);
+                            DynareOutput.steady_state, DynareModel.max_lag_orig+1);
+
 A0inv = inv(jacob(:,jdx));
 A1 = jacob(:,nonzeros(DynareModel.lead_lag_incidence(1,:)));
 B = jacob(:,end-nx+1:end);
 
 % Simulations
-for it = 2:samplesize+1
+for it = DynareModel.max_lag_orig+(1:samplesize)
     Y(:,it) = -A0inv*(cst + A1*Y(iy1,it-1) + B*DynareOutput.exo_simul(it,:)');
 end
 

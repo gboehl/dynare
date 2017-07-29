@@ -44,25 +44,33 @@ function DynareOutput = simul_backward_nonlinear_model(varargin)
 model_dynamic_s = str2func('dynamic_backward_model_for_simulation');
 
 % initialization of the returned simulations.
-DynareOutput.endo_simul = NaN(DynareModel.endo_nbr,samplesize+1);
+DynareOutput.endo_simul = NaN(DynareModel.endo_nbr, samplesize);
 if isempty(initialconditions)
     if isfield(DynareModel,'endo_histval') && ~isempty(DynareModel.endo_histval)
-        DynareOutput.endo_simul(:,1:DynareModel.maximum_lag) = DynareModel.endo_histval;
+        DynareOutput.endo_simul = [DynareModel.endo_histval, DynareOutput.endo_simul];
     else
-        warning('simul_backward_nonlinear_model:: Initial condition is zero for all variables! If the model is nonlinear, the model simulation may fail with the default initialization')
-        DynareOutput.endo_simul(:,1) = 0;
+        warning('simul_backward_nonlinear_model:: Initial condition is zero for all variables! The model simulation may fail with the default initialization.')
+        DynareOutput.endo_simul = [zeros(DynareModel.endo_nbr, DynareModel.max_lag_orig), DynareOutput.endo_simul];
     end
 else
-    DynareOutput.endo_simul(:,1) = initialconditions;
+    if ~isequal(size(initialconditions, 2), DynareModel.max_lag_orig)
+        error(['simul_backward_nonlinear_model:: First argument should have %s columns!'], DynareModel.max_lag_orig)
+    end
+    DynareOutput.endo_simul = [initialconditions, DynareOutput.endo_simul];
 end
 Y = DynareOutput.endo_simul;
 
+if ~DynareModel.max_exo_lag_orig
+    if DynareModel.max_endo_lag_orig>1
+        DynareOutput.exo_simul = [ zeros(DynareModel.max_endo_lag_orig-1, DynareModel.exo_nbr); DynareOutput.exo_simul];
+    end
+end
 
 % Simulations (call a Newton-like algorithm for each period).
-for it = 2:samplesize+1
+for it = DynareModel.max_lag_orig+(1:samplesize)
     ylag = Y(iy1,it-1);                   % Set lagged variables.
     y = Y(:,it-1);                        % A good guess for the initial conditions is the previous values for the endogenous variables.
-    Y(:,it) = dynare_solve(model_dynamic_s, y, DynareOptions, model_dynamic, ylag, DynareOutput.exo_simul, DynareModel.params, DynareOutput.steady_state, it+(DynareModel.maximum_exo_lag-1));
+    Y(:,it) = dynare_solve(model_dynamic_s, y, DynareOptions, model_dynamic, ylag, DynareOutput.exo_simul, DynareModel.params, DynareOutput.steady_state, it);
 end
 
 DynareOutput.endo_simul = Y;
