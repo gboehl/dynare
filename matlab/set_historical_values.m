@@ -36,7 +36,7 @@ if ischar(initialperiod)
 end
 
 % Initialize endo_histval.
-M_.endo_histval = zeros(M_.endo_nbr, M_.maximum_endo_lag);
+M_.endo_histval = zeros(M_.endo_nbr, M_.max_endo_lag_orig);
 
 % Fill endo_histval.
 k = 1;
@@ -45,7 +45,7 @@ for i = 1:M_.endo_nbr
         if M_.lead_lag_incidence(1,i) > 0
             if any(strcmp(deblank(M_.endo_names(i,:)),ds.name))
                 M_.endo_histval(i,M_.maximum_endo_lag) = ...
-                    ds{deblank(M_.endo_names(i,:))}(initialperiod-1).data;
+                    ds{deblank(M_.endo_names(i,:))}(initialperiod).data;
             else
                 error(sprintf('Can''t find %s in dseries', deblank(M_.endo_names(i,:))))
             end
@@ -55,7 +55,7 @@ for i = 1:M_.endo_nbr
         if a.type == 1
             if any(strcmp(deblank(M_.endo_names(a.orig_index,:)), ds.name))
                 M_.endo_histval(i,M_.maximum_endo_lag) = ...
-                    ds{deblank(M_.endo_names(a.orig_index,:))}(initialperiod-1+a.orig_lead_lag).data;
+                    ds{deblank(M_.endo_names(a.orig_index,:))}(initialperiod+a.orig_lead_lag).data;
             else
                 error(sprintf('Can''t find %s in dseries', deblank(M_.endo_names(a.orig_index,:))))
             end
