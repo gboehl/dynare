@@ -1,0 +1,4 @@
+#!/bin/sh
+
+rm -rf solow_irf solow_forecast
+rm -f *.m *.mat *.log
