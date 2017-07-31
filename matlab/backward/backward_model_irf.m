@@ -86,24 +86,29 @@ irfs = struct();
 Sigma = M_.Sigma_e + 1e-14*eye(M_.exo_nbr);
 sigma = transpose(chol(Sigma));
 
-% Put initial conditions in a vector of doubles
-initialconditions = transpose(initialcondition{endo_names{:}}.data);
-
 % Compute the IRFs (loop over innovations).
 for i=1:length(listofshocks)
     % Get transition paths induced by the initial condition.
-    innovations = zeros(periods+M_.maximum_exo_lag, M_.exo_nbr);
+    innovations = zeros(periods, M_.exo_nbr);
     if ~isempty(M_.exo_histval)
-        innovations(1:M_.maximum_exo_lag,:) = M_.exo_histval;
+        innovations = [transpose(M_.exo_histval); innovations];
+        shift = size(M_.exo_histval, 2);
+    else
+        innovations = [zeros(1, M_.exo_nbr); innovations];
+        shift = 1;
     end
+    innovations
     oo__0 = simul_backward_model(initialconditions, periods, options_, M_, oo_, innovations);
     % Add the shock.
     j = strmatch(listofshocks{i}, exo_names);
     if isempty(j)
         error('backward_model_irf: Exogenous variable %s is unknown!', listofshocks{i})
     end
-    innovations(1+M_.maximum_exo_lag,:) = transpose(sigma(:,j));
-    oo__1 = simul_backward_model(initialconditions, periods, options_, M_, oo_, innovations);
+    innovations(shift+1,:) = transpose(sigma(:,j));
+    innovations
+    oo__1 = simul_backward_model(initialconditions, periods, options_, M_, ...
+                                 oo_, innovations);
+    oo__1.endo_simul-oo__0.endo_simul
     % Transform the endogenous variables
     if notransform
         endo_simul__0 = oo__0.endo_simul;
