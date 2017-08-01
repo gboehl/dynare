@@ -179,6 +179,7 @@ MODFILES = \
 	simul/simul_ZLB_purely_forward.mod \
 	simul/simul_ZLB_purely_forward_no_solution.mod \
 	simul/Irreversible_investment.mod \
+	simul/linear_state_space_ARMA.mod \
 	conditional_forecasts/2/fs2000_est.mod \
 	conditional_forecasts/3/fs2000_conditional_forecast_initval.mod \
 	conditional_forecasts/4/fs2000_conditional_forecast_histval.mod \
