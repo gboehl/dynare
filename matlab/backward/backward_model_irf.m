@@ -97,18 +97,14 @@ for i=1:length(listofshocks)
         innovations = [zeros(1, M_.exo_nbr); innovations];
         shift = 1;
     end
-    innovations
     oo__0 = simul_backward_model(initialconditions, periods, options_, M_, oo_, innovations);
     % Add the shock.
-    j = strmatch(listofshocks{i}, exo_names);
+    j = strmatch(listofshocks{i}, exo_names, 'exact');
     if isempty(j)
         error('backward_model_irf: Exogenous variable %s is unknown!', listofshocks{i})
     end
     innovations(shift+1,:) = transpose(sigma(:,j));
-    innovations
-    oo__1 = simul_backward_model(initialconditions, periods, options_, M_, ...
-                                 oo_, innovations);
-    oo__1.endo_simul-oo__0.endo_simul
+    oo__1 = simul_backward_model(initialconditions, periods, options_, M_, oo_, innovations);
     % Transform the endogenous variables
     if notransform
         endo_simul__0 = oo__0.endo_simul;
