@@ -35,7 +35,7 @@ function [endogenousvariables, exogenousvariables] = backward_model_inversion(co
 freeinnovations_id = zeros(length(freeinnovations), 1);
 if length(freeinnovations)<DynareModel.exo_nbr
     for i=1:length(freeinnovations)
-        freeinnovations_id(i) = strmatch(freeinnovations{i}, exo_names, 'exact');
+        freeinnovations_id(i) = find(strcmp(freeinnovations{i}, exo_names));
     end
     calibratedinnovations_id = setdiff(transpose(1:length(exo_names)), freeinnovations_id);
 else
@@ -50,7 +50,7 @@ nxcalb = length(calibratedinnovations_id);
 controlledendogenousvariables_id = zeros(length(freeinnovations), 1);
 if length(freeinnovations)<DynareModel.endo_nbr
     for i=1:length(freeinnovations)
-        controlledendogenousvariables_id(i) = strmatch(constraints.name{i}, endo_names, 'exact');
+        controlledendogenousvariables_id(i) = find(strcmp(constraints.name{i}, endo_names));
     end
     freeendogenousvariables_id = setdiff(transpose(1:length(endo_names)), controlledendogenousvariables_id);
 else

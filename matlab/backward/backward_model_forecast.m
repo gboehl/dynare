@@ -60,7 +60,7 @@ endo_names = cellstr(M_.endo_names);
 n = length(listofvariables);
 idy = zeros(n,1);
 for i=1:n
-    j = strmatch(listofvariables{i}, endo_names, 'exact');
+    j = find(strcmp(listofvariables{i}, endo_names));
     if isempty(j)
         error('backward_model_forecast:: Variable %s is unknown!', listofvariables{i})
     else

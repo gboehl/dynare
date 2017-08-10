@@ -99,7 +99,7 @@ for i=1:length(listofshocks)
     end
     oo__0 = simul_backward_model(initialconditions, periods, options_, M_, oo_, innovations);
     % Add the shock.
-    j = strmatch(listofshocks{i}, exo_names, 'exact');
+    j = find(strcmp(listofshocks{i}, exo_names));
     if isempty(j)
         error('backward_model_irf: Exogenous variable %s is unknown!', listofshocks{i})
     end
