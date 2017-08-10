@@ -105,7 +105,7 @@ forecasts.pointforecast = dseries(transpose(oo__0.endo_simul(idy,:)), initialcon
 
 if withuncertainty
     % Preallocate an array gathering the simulations.
-    ArrayOfForectasts = zeros(n, periods+1, B);
+    ArrayOfForecasts = zeros(n, periods+1, B);
     for i=1:B
         innovations(max(M_.maximum_exo_lag, 1)+1:end,:) = transpose(sigma*randn(M_.exo_nbr, periods));
         oo__ = simul_backward_model(initialconditions, periods, options_, M_, oo_, innovations);     
