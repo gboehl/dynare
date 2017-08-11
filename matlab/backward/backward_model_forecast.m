@@ -91,7 +91,7 @@ end
 initialconditions = transpose(initialcondition{endo_names{:}}.data);
 
 % Compute forecast without shock 
-innovations = zeros(periods+max(M_.maximum_exo_lag, 1), M_.exo_nbr);
+innovations = zeros(periods+M_.maximum_exo_lag, M_.exo_nbr);
 if M_.maximum_exo_lag
     if isempty(M_.exo_histval)
         error('You need to set the past values for the exogenous variables!')
@@ -105,9 +105,9 @@ forecasts.pointforecast = dseries(transpose(oo__0.endo_simul(idy,:)), initialcon
 
 if withuncertainty
     % Preallocate an array gathering the simulations.
-    ArrayOfForecasts = zeros(n, periods+1, B);
+    ArrayOfForecasts = zeros(n, periods+size(initialconditions, 2), B);
     for i=1:B
-        innovations(max(M_.maximum_exo_lag, 1)+1:end,:) = transpose(sigma*randn(M_.exo_nbr, periods));
+        innovations(M_.maximum_exo_lag+1:end,:) = transpose(sigma*randn(M_.exo_nbr, periods));
         oo__ = simul_backward_model(initialconditions, periods, options_, M_, oo_, innovations);     
         ArrayOfForecasts(:,:,i) = oo__.endo_simul(idy,:); 
     end
