@@ -51,7 +51,7 @@ if options_.periods == 0
     error('PERFECT_FORESIGHT_SETUP: number of periods for the simulation isn''t specified')
 end
 
-if options_.periods<max([M_.det_shocks.periods])
+if ~isempty(M_.det_shocks) && options_.periods<max([M_.det_shocks.periods])
     error('PERFECT_FORESIGHT_SETUP: number of periods for the simulation is specified to be smaller than the period of the last shock')
 end
 
