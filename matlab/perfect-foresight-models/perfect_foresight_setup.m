@@ -52,7 +52,16 @@ if options_.periods == 0
 end
 
 if ~isempty(M_.det_shocks) && options_.periods<max([M_.det_shocks.periods])
-    error('PERFECT_FORESIGHT_SETUP: number of periods for the simulation is specified to be smaller than the period of the last shock')
+    % Some expected shocks happen after the terminal period.
+    mess = sprintf('Problem with the declaration of the expected shocks:\n');
+    for i=1:length(M_.det_shocks)
+        if any(M_.det_shocks(i).periods>options_.periods);
+            mess = sprintf('%s\n   At least one expected value for %s has been declared after the terminal period.', mess, deblank(M_.exo_names(M_.det_shocks(i).exo_id,:)));
+        end
+    end
+    disp(mess)
+    skipline()
+    error('PERFECT_FORESIGHT_SETUP: Please check the declaration of the shocks or increase the value of the periods option.')
 end
 
 if ~options_.initval_file
