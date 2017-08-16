@@ -197,6 +197,9 @@ mex/build/matlab/run_m2html.m
 # MacOS stuff
 .DS_Store
 
+# Emacs stuff
+scripts/dynare.elc
+
 # MS-Sbvar
 /contrib/ms-sbvar/*.prn
 /contrib/ms-sbvar/*.dat
