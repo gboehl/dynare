@@ -2112,6 +2112,7 @@ equations using the @code{write_latex_static_model} command.
 @anchor{write_latex_original_model}
 
 @deffn Command write_latex_original_model ;
+@deffnx Command write_latex_original_model (@var{OPTIONS}) ;
 
 @descriptionhead
 
@@ -2134,6 +2135,17 @@ appended to the variable names, as @LaTeX{} subscripts.
 
 Compiling the @TeX{} file requires the following @LaTeX{} packages:
 @code{geometry}, @code{fullpage}, @code{breqn}.
+
+@optionshead
+
+@table @code
+
+@anchor{write_equation_tags}
+@item write_equation_tags
+Write the equation tags in the @LaTeX{} output. NB: the equation tags will be
+interpreted with @LaTeX{} markups.
+
+@end table
 
 @end deffn
 
@@ -2192,14 +2204,14 @@ For the required @LaTeX{} packages, @pxref{write_latex_original_model}.
 @table @code
 
 @item write_equation_tags
-Write the equation tags in the @LaTeX{} output. NB: the equation tags will be
-interpreted with @LaTeX{} markups.
+@xref{write_equation_tags}
 
 @end table
 
 @end deffn
 
 @deffn Command write_latex_static_model ;
+@deffnx Command write_latex_static_model (@var{OPTIONS}) ;
 
 @descriptionhead
 
@@ -2226,6 +2238,15 @@ it will rather output a static version (@i{i.e.} without leads and
 lags) of the dynamic model declared in the @code{model} block.
 
 For the required @LaTeX{} packages, @pxref{write_latex_original_model}.
+
+@optionshead
+
+@table @code
+
+@item write_equation_tags
+@xref{write_equation_tags}
+
+@end table
 
 @end deffn
 
