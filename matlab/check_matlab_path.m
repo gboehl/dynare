@@ -52,7 +52,7 @@ else
             % Dynare is on top of matlab's path! Nothing to do here...
             return
         else
-            str0 = sprintf('Dynare is not on top of matlab''s path!');
+            str0 = sprintf('Dynare is not on top of the Matlab/Octave path!');
             % Check that this will not create a problem
             MATLAB_PATH_ = path2cell(MATLAB_PATH);
             DYNARE_ROUTINES = getallroutinenames(DYNARE_PATH, getalldirectories(DYNARE_PATH));
@@ -66,19 +66,19 @@ else
                 warning off backtrace
                 skipline()
                 if length(COMMON_ROUTINES)==1
-                    warning(sprintf('%s This can cause problems because the Dynare version of %s will be overriden.', str0, COMMON_ROUTINES{1}));
+                    warning(sprintf('%s This can cause problems because the Dynare implementation of %s will be overriden.', str0, COMMON_ROUTINES{1}));
                 else
                     str1 = repmat('%s, ', 1, length(COMMON_ROUTINES)-1);
                     str2 = 'and %s ';
-                    str3 = sprintf(['%s This can cause problems because the Dynare versions of ' str1, str2, 'will be overriden.'], str0, COMMON_ROUTINES{:});
+                    str3 = sprintf(['%s This can cause problems because the Dynare implementations of ' str1, str2, 'will be overriden.'], str0, COMMON_ROUTINES{:});
                     warning(str3);
                 end
                 if change_path_flag
                     skipline()
-                    msg = sprintf('I put %s on top of your matlab''s path. Note that this is a', DYNARE_PATH);
-                    msg = sprintf(' %s a temporary change (ie will not affect future matlab''s session).', msg);
-                    msg = sprintf(' %s If the ordering was intentional, ie if you really want to override the routines distributed with Dynare,', msg);
-                    msg = sprintf(' %s you can change this behaviour using option nopathchange (see the reference manual).', msg);
+                    msg = sprintf(['I put %s on top of your Matlab/Ocatve path.' ...
+                                   '\nNote that this is a temporary change (i.e. it will not affect future Matlab/Octave sessions).\n' ...
+                                   '\nIf the ordering was intentional, i.e. if you really want to override the routines distributed with Dynare,' ...
+                                   ' you can change this behavior using the ''nopathchange'' option (see the reference manual).'], DYNARE_PATH);
                     warning(msg);
                     skipline()
                     rmpath(DYNARE_PATH)
@@ -96,9 +96,9 @@ else
         MATLAB_PATH = path2cell(MATLAB_PATH);
         for i=1:length(mexpath)
             if exist([mexpath{i} filesep 'mjdgges.' mexext],'file') && ismember([DYNARE_PATH filesep 'qz'],MATLAB_PATH)
-                msg = sprintf(['You  put all the dynare/matlab subfolders in matlab''s path! Only ' ...
-                               'the dynare/matlab folder (without subfolders)\nshould be in the ' ...
-                               'path, Dynare will automatically add any required subfolders in the ' ...
+                msg = sprintf(['You put all the subfolders of the Dynare matlab folder in the Matlab/Octave path! Only ' ...
+                               'the dynare ' filesep 'matlab folder (without subfolders)\nshould be in the ' ...
+                               'path. Dynare automatically adds any required subfolders to the ' ...
                                'path.']);
                 error(msg)
             end
