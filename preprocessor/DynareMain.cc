@@ -61,6 +61,7 @@ usage()
 #if defined(_WIN32) || defined(__CYGWIN32__) || defined(__MINGW32__)
        << " [cygwin] [msvc] [mingw]"
 #endif
+       << " [nopathchange]"
        << endl;
   exit(EXIT_FAILURE);
 }
