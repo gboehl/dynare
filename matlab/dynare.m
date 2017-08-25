@@ -50,9 +50,9 @@ change_path_flag = true;
 % Filter out some options.
 if nargin>1
     id = strfind(varargin,'nopathchange');
-    if ~isempty(id)
+    if ~all(cellfun(@isempty, id))
         change_path_flag = false;
-        varargin(id{1}) = [];
+        varargin(cellfun(@isempty, id) == 0) = [];
     end
 end
 
