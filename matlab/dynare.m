@@ -49,10 +49,16 @@ end
 change_path_flag = true;
 
 % Filter out some options.
+preprocessoroutput = true;
 if nargin>1
     id = strfind(varargin,'nopathchange');
     if ~all(cellfun(@isempty, id))
         change_path_flag = false;
+        varargin(cellfun(@isempty, id) == 0) = [];
+    end
+    id = strfind(varargin, 'nopreprocessoroutput');
+    if ~all(cellfun(@isempty, id))
+        preprocessoroutput = false;
         varargin(cellfun(@isempty, id) == 0) = [];
     end
 end
@@ -61,7 +67,7 @@ end
 check_matlab_path(change_path_flag);
 
 % Detect if MEX files are present; if not, use alternative M-files
-dynareroot = dynare_config;
+dynareroot = dynare_config('', preprocessoroutput);
 
 warning_config()
 
@@ -177,10 +183,14 @@ end
 
 if isempty(strfind(arch, '64'))
     arch_ext = '32';
-    disp('Using 32-bit preprocessor');
+    if preprocessoroutput
+        disp('Using 32-bit preprocessor');
+    end
 else
     arch_ext = '64';
-    disp('Using 64-bit preprocessor');
+    if preprocessoroutput
+        disp('Using 64-bit preprocessor');
+    end
 end
 
 % Read options from the first line in mod/dyn file.
@@ -208,18 +218,26 @@ for i=1:length(varargin)
     command = [command ' ' varargin{i}];
 end
 
-fprintf('Calling Dynare with arguments: ');
-disp(varargin);
+if preprocessoroutput
+    fprintf('Calling Dynare with arguments: ');
+    disp(varargin);
+end
 
 [status, result] = system(command);
-disp(result)
+if status ~= 0 || preprocessoroutput
+    disp(result)
+end
 if ismember('onlymacro', varargin)
-    disp('Preprocesser stopped after macroprocessing step because of ''onlymacro'' option.');
+    if preprocessoroutput
+        disp('Preprocesser stopped after macroprocessing step because of ''onlymacro'' option.');
+    end
     return
 end
 
 if ismember('onlyjson', varargin)
-    disp('Preprocesser stopped after preprocessing step because of ''onlyjson'' option.');
+    if preprocessoroutput
+        disp('Preprocesser stopped after preprocessing step because of ''onlyjson'' option.');
+    end
     return;
 end
 
