@@ -1539,6 +1539,24 @@ a variable with a multiplicative trend).
 
 @end deffn
 
+@anchor{model_local_variable}
+@deffn Command model_local_variable @var{VARIABLE_NAME} [$@var{LATEX_NAME}$] @dots{};
+
+@descriptionhead
+
+This optional command declares a model local variable.  @xref{Conventions}, for
+the syntax of @var{VARIABLE_NAME}. As you can create model local variables on
+the fly in the model block (@pxref{model_local_variables_in_model_block}), the
+interest of this command is primarily to assign a @var{LATEX_NAME} to the model
+local variable.
+
+@examplehead
+
+@example
+model_local_variable GDP_US $GDPUS$;
+@end example
+
+@end deffn
 
 @node Expressions
 @section Expressions
@@ -1918,16 +1936,19 @@ equation. A homogenous equation looks like:
 @var{MODEL_EXPRESSION};
 @end example
 
+@anchor{model_local_variables_in_model_block}
 Inside the model block, Dynare allows the creation of @emph{model-local
-variables}, which constitute a simple way to share a common expression
-between several equations. The syntax consists of a pound sign
-(@code{#}) followed by the name of the new model local variable (which
-must @strong{not} be declared as in @ref{Variable declarations}), an equal
-sign, and the expression for which this new variable will stand. Later
-on, every time this variable appears in the model, Dynare will
-substitute it by the expression assigned to the variable. Note that the
-scope of this variable is restricted to the model block; it cannot be
-used outside. A model local variable declaration looks like:
+variables}, which constitute a simple way to share a common expression between
+several equations. The syntax consists of a pound sign (@code{#}) followed by
+the name of the new model local variable (which must @strong{not} be declared
+as in @ref{Variable declarations}, but may have been declared by
+@ref{model_local_variable}), an equal sign, and the expression for which this
+new variable will stand. Later on, every time this variable appears in the
+model, Dynare will substitute it by the expression assigned to the
+variable. Note that the scope of this variable is restricted to the model
+block; it cannot be used outside. To assign a @LaTeX{} name to the model local
+variable, use the declaration syntax outlined by @ref{model_local_variable}. A
+model local variable declaration looks like:
 @example
 # @var{VARIABLE_NAME} = @var{MODEL_EXPRESSION};
 @end example
