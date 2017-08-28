@@ -2,7 +2,7 @@ function [oo_,M_,options_,bayestopt_,Smoothed_variables_declaration_order_deviat
 % Evaluate the smoother at parameters.
 %
 % INPUTS
-%    o parameters  a string ('posterior mode','posterior mean','posterior median','prior mode','prior mean','mle_mode') or a vector of values for
+%    o parameters  a string ('posterior mode','posterior mean','posterior median','prior mode','prior mean','mle_mode','calibration') or a vector of values for
 %                  the (estimated) parameters of the model.
 %    o var_list    subset of endogenous variables
 %    o M_          [structure]  Definition of the model
