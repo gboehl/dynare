@@ -7622,6 +7622,9 @@ more details.
 @item prefilter = @var{INTEGER}
 @xref{prefilter}.
 
+@item parameter_set = @code{calibration} | @code{prior_mode} | @code{prior_mean} | @code{posterior_mode} | @code{posterior_mean} | @code{posterior_median} | @code{mle_mode}
+@xref{parameter_set}.
+
 @item loglinear
 @xref{loglinear}.
 
