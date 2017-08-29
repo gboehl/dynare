@@ -39,5 +39,5 @@ rplot c;
 rplot k;
 
 if ~exist('./ramst.json', 'file') || exist('./ramst.log', 'file')
-   error('dynare command did not honour the options provided in the mod file!')
+   error('The dynare command did not honor the options provided in the mod file!')
 end
