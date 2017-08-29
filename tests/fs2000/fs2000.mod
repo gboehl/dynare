@@ -73,3 +73,4 @@ varobs gp_obs gy_obs;
 options_.solve_tolf = 1e-12;
 
 estimation(order=1,datafile=fsdat_simul,nobs=192,loglinear,mh_replic=2000,mh_nblocks=2,mh_jscale=0.8,moments_varendo,consider_only_observed);
+calib_smoother(parameter_set=posterior_mean) y;
