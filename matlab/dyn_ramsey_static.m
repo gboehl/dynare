@@ -136,11 +136,15 @@ xx(1:M.orig_endo_nbr) = x(1:M.orig_endo_nbr); %set values of original endogenous
 % setting steady state of auxiliary variables that depends on original endogenous variables
 if any([M.aux_vars.type] ~= 6) %auxiliary variables other than multipliers
     needs_set_auxiliary_variables = 1;
-    fh = str2func([M.fname '_set_auxiliary_variables']);
-    s_a_v_func = @(z) fh(z,...
-                         [oo.exo_steady_state,...
-                        oo.exo_det_steady_state],...
-                         params);
+    if M.set_auxiliary_variables
+        fh = str2func([M.fname '_set_auxiliary_variables']);
+        s_a_v_func = @(z) fh(z,...
+            [oo.exo_steady_state,...
+            oo.exo_det_steady_state],...
+            params);
+    else
+        s_a_v_func = z;
+    end
     xx = s_a_v_func(xx);
 else
     needs_set_auxiliary_variables = 0;
