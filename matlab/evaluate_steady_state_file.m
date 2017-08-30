@@ -74,14 +74,18 @@ h_set_auxiliary_variables = str2func([M.fname '_set_auxiliary_variables']);
 if  isnan(updated_params_flag) || (updated_params_flag  && any(isnan(params(~isnan(params))-params1(~isnan(params))))) %checks if new NaNs were added
     info(1) = 24;
     info(2) = NaN;
-    ys = h_set_auxiliary_variables(ys,exo_ss,params);
+    if M.set_auxiliary_variables
+        ys = h_set_auxiliary_variables(ys,exo_ss,params);
+    end
     return
 end
 
 if updated_params_flag && ~isreal(params1)
     info(1) = 23;
     info(2) = sum(imag(params).^2);
-    ys = h_set_auxiliary_variables(ys,exo_ss,params);
+    if M.set_auxiliary_variables
+        ys = h_set_auxiliary_variables(ys,exo_ss,params);
+    end
     return
 end
 
@@ -94,16 +98,22 @@ if length(M.aux_vars) > 0 && ~options.ramsey_policy
     if debug
         ys0 = ys;
     end
-    ys = h_set_auxiliary_variables(ys,exo_ss,params);
+    if M.set_auxiliary_variables
+        ys = h_set_auxiliary_variables(ys,exo_ss,params);
+    end
     if debug
         ys1 = ys;
     end
-    ys = h_set_auxiliary_variables(ys,exo_ss,params);
+    if M.set_auxiliary_variables
+        ys = h_set_auxiliary_variables(ys,exo_ss,params);
+    end
     if debug
         ys2 = ys;
     end
     if debug
-        ys = h_set_auxiliary_variables(ys,exo_ss,params);
+        if M.set_auxiliary_variables
+            ys = h_set_auxiliary_variables(ys,exo_ss,params);
+        end
         ys3 = ys;
         idx = find(abs(ys0-ys1)>0);
         if ~isempty(idx)

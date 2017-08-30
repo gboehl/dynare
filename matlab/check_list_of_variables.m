@@ -106,7 +106,7 @@ elseif isempty(varlist) && isempty(options_.endo_vars_for_moment_computations_in
     end
     if ~isempty(cas)
         string = [ cas , ' will be computed for the ' num2str(M_.endo_nbr)  ' endogenous variables'];
-        string = [ string ' of your model, this can be very long....'];
+        string = [ string ' of your model, this can take a long time ....'];
         format_text(string, 10)
         if options_.nointeractive
             % Default behaviour is to consider all the endogenous variables.

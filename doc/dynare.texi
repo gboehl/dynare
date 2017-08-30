@@ -907,6 +907,10 @@ used. Alternatively, the path can be temporarly modified by the user at
 the top of the @file{*.mod} file (using Matlab/Octave's @code{addpath}
 command).
 
+@item nopreprocessoroutput
+Prevent Dynare from printing the output of the steps leading up to the
+preprocessor as well as the preprocessor output itself.
+
 @item mingw
 Tells Dynare that your MATLAB is configured for compiling MEX files with the
 MinGW-compiler from TDM-GCC (@pxref{Compiler installation}). This option is
@@ -1542,6 +1546,24 @@ a variable with a multiplicative trend).
 
 @end deffn
 
+@anchor{model_local_variable}
+@deffn Command model_local_variable @var{VARIABLE_NAME} [$@var{LATEX_NAME}$] @dots{};
+
+@descriptionhead
+
+This optional command declares a model local variable.  @xref{Conventions}, for
+the syntax of @var{VARIABLE_NAME}. As you can create model local variables on
+the fly in the model block (@pxref{model_local_variables_in_model_block}), the
+interest of this command is primarily to assign a @var{LATEX_NAME} to the model
+local variable.
+
+@examplehead
+
+@example
+model_local_variable GDP_US $GDPUS$;
+@end example
+
+@end deffn
 
 @node Expressions
 @section Expressions
@@ -1966,16 +1988,19 @@ equation. A homogenous equation looks like:
 @var{MODEL_EXPRESSION};
 @end example
 
+@anchor{model_local_variables_in_model_block}
 Inside the model block, Dynare allows the creation of @emph{model-local
-variables}, which constitute a simple way to share a common expression
-between several equations. The syntax consists of a pound sign
-(@code{#}) followed by the name of the new model local variable (which
-must @strong{not} be declared as in @ref{Variable declarations}), an equal
-sign, and the expression for which this new variable will stand. Later
-on, every time this variable appears in the model, Dynare will
-substitute it by the expression assigned to the variable. Note that the
-scope of this variable is restricted to the model block; it cannot be
-used outside. A model local variable declaration looks like:
+variables}, which constitute a simple way to share a common expression between
+several equations. The syntax consists of a pound sign (@code{#}) followed by
+the name of the new model local variable (which must @strong{not} be declared
+as in @ref{Variable declarations}, but may have been declared by
+@ref{model_local_variable}), an equal sign, and the expression for which this
+new variable will stand. Later on, every time this variable appears in the
+model, Dynare will substitute it by the expression assigned to the
+variable. Note that the scope of this variable is restricted to the model
+block; it cannot be used outside. To assign a @LaTeX{} name to the model local
+variable, use the declaration syntax outlined by @ref{model_local_variable}. A
+model local variable declaration looks like:
 @example
 # @var{VARIABLE_NAME} = @var{MODEL_EXPRESSION};
 @end example
@@ -2164,6 +2189,7 @@ equations using the @code{write_latex_static_model} command.
 @anchor{write_latex_original_model}
 
 @deffn Command write_latex_original_model ;
+@deffnx Command write_latex_original_model (@var{OPTIONS}) ;
 
 @descriptionhead
 
@@ -2186,6 +2212,17 @@ appended to the variable names, as @LaTeX{} subscripts.
 
 Compiling the @TeX{} file requires the following @LaTeX{} packages:
 @code{geometry}, @code{fullpage}, @code{breqn}.
+
+@optionshead
+
+@table @code
+
+@anchor{write_equation_tags}
+@item write_equation_tags
+Write the equation tags in the @LaTeX{} output. NB: the equation tags will be
+interpreted with @LaTeX{} markups.
+
+@end table
 
 @end deffn
 
@@ -2244,14 +2281,14 @@ For the required @LaTeX{} packages, @pxref{write_latex_original_model}.
 @table @code
 
 @item write_equation_tags
-Write the equation tags in the @LaTeX{} output. NB: the equation tags will be
-interpreted with @LaTeX{} markups.
+@xref{write_equation_tags}
 
 @end table
 
 @end deffn
 
 @deffn Command write_latex_static_model ;
+@deffnx Command write_latex_static_model (@var{OPTIONS}) ;
 
 @descriptionhead
 
@@ -2278,6 +2315,15 @@ it will rather output a static version (@i{i.e.} without leads and
 lags) of the dynamic model declared in the @code{model} block.
 
 For the required @LaTeX{} packages, @pxref{write_latex_original_model}.
+
+@optionshead
+
+@table @code
+
+@item write_equation_tags
+@xref{write_equation_tags}
+
+@end table
 
 @end deffn
 
@@ -7646,6 +7692,9 @@ more details.
 @item prefilter = @var{INTEGER}
 @xref{prefilter}.
 
+@item parameter_set = @code{calibration} | @code{prior_mode} | @code{prior_mean} | @code{posterior_mode} | @code{posterior_mean} | @code{posterior_median} | @code{mle_mode}
+@xref{parameter_set}.
+
 @item loglinear
 @xref{loglinear}.
 
@@ -7834,7 +7883,7 @@ Fields are of the form:
 @end defvr
 
 
-@deffn Command conditional_forecast (@var{OPTIONS}@dots{}) [@var{VARIABLE_NAME}@dots{}];
+@deffn Command conditional_forecast (@var{OPTIONS}@dots{});
 @anchor{conditional_forecast}
 @descriptionhead
 
@@ -7889,7 +7938,7 @@ constrained endogenous, and their constrained future path.
 Option @code{controlled_varexo} is used to specify the structural shocks
 which will be matched to generate the constrained path.
 
-Use @code{plot_conditional_forecast} to graph the results.
+Use @ref{plot_conditional_forecast} to graph the results.
 
 @optionshead
 
@@ -7985,7 +8034,8 @@ periods 1:5;
 values 3;
 end;
 
-conditional_forecast(parameter_set = calibration, controlled_varexo = (e, u), replic = 3000);
+conditional_forecast(parameter_set = calibration, controlled_varexo = (e, u),
+replic = 3000);
 
 plot_conditional_forecast(periods = 10) a y;
 @end example
@@ -8014,7 +8064,7 @@ it is necessary to specify the logarithm of the controlled variables.
 
 @deffn Command plot_conditional_forecast [@var{VARIABLE_NAME}@dots{}];
 @deffnx Command plot_conditional_forecast (periods = @var{INTEGER}) [@var{VARIABLE_NAME}@dots{}];
-
+@anchor{plot_conditional_forecast}
 @descriptionhead
 
 Plots the conditional (plain lines) and unconditional (dashed lines) forecasts.

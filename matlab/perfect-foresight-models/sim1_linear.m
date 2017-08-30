@@ -108,10 +108,12 @@ if verbose
 end
 
 dynamicmodel = str2func([M.fname,'_dynamic']);
+
 z = steadystate_y([ip; ic; in]);
+x = repmat(transpose(steadystate_x), 1+M.maximum_exo_lag+M.maximum_exo_lead, 1);
 
 % Evaluate the Jacobian of the dynamic model at the deterministic steady state.
-[d1,jacobian] = dynamicmodel(z, transpose(steadystate_x), params, steadystate_y, 1);
+[d1, jacobian] = dynamicmodel(z, x, params, steadystate_y, M.maximum_exo_lag+1);
 
 % Check that the dynamic model was evaluated at the steady state.
 if max(abs(d1))>1e-12

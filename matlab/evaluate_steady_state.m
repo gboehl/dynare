@@ -46,9 +46,9 @@ steadystate_flag = options.steadystate_flag;
 params = M.params;
 exo_ss = [oo.exo_steady_state; oo.exo_det_steady_state];
 
-if length(M.aux_vars) > 0
+if length(M.aux_vars) > 0 && ~steadystate_flag
     h_set_auxiliary_variables = str2func([M.fname '_set_auxiliary_variables']);
-    if ~steadystate_flag
+    if M.set_auxiliary_variables
         ys_init = h_set_auxiliary_variables(ys_init,exo_ss,M.params);
     end
 end
@@ -290,7 +290,9 @@ if check
     info(1)= 20;
     %make sure ys contains auxiliary variables in case of problem with dynare_solve
     if length(M.aux_vars) > 0 && ~steadystate_flag
-        ys = h_set_auxiliary_variables(ys,exo_ss,M.params);
+        if M.set_auxiliary_variables
+            ys = h_set_auxiliary_variables(ys,exo_ss,M.params);
+        end
     end
     resid = evaluate_static_model(ys,exo_ss,params,M,options);
     info(2) = resid'*resid ;
