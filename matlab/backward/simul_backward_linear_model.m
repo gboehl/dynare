@@ -57,11 +57,7 @@ else
 end
 Y = DynareOutput.endo_simul;
 
-if ~DynareModel.max_exo_lag_orig
-    if DynareModel.max_endo_lag_orig>1
-        DynareOutput.exo_simul = [ zeros(DynareModel.max_endo_lag_orig-1, DynareModel.exo_nbr); DynareOutput.exo_simul];
-    end
-end
+DynareOutput.exo_simul = [ zeros(1, DynareModel.exo_nbr); DynareOutput.exo_simul];
 
 % Get coefficients
 [cst, jacob] = model_dynamic(zeros(DynareModel.endo_nbr+ny1,1), ...
