@@ -982,6 +982,10 @@ file that runs into workspace size limitations imposed by MATLAB.
 @item compute_xrefs
 Tells Dynare to compute the equation cross references, writing them to the
 output @file{.m} file.
+
+@item stochastic
+Tells Dynare that the model to be solved is stochastic. If no Dynare commands related to stochastic models (@code{stoch_simul}, @code{estimation}@dots{}) are present in the @code{.mod} file, Dynare understands by default that the model to be solved is deterministic.
+
 @end table
 
 These options can be passed to the preprocessor by listing them after the name
