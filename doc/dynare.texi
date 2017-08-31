@@ -988,6 +988,10 @@ file that runs into workspace size limitations imposed by MATLAB.
 @item compute_xrefs
 Tells Dynare to compute the equation cross references, writing them to the
 output @file{.m} file.
+
+@item stochastic
+Tells Dynare that the model to be solved is stochastic. If no Dynare commands related to stochastic models (@code{stoch_simul}, @code{estimation}@dots{}) are present in the @code{.mod} file, Dynare understands by default that the model to be solved is deterministic.
+
 @end table
 
 These options can be passed to the preprocessor by listing them after the name
@@ -2309,10 +2313,11 @@ Note that the model written in the @TeX{} file will differ from the
 model declared by the user in the some dimensions
 (@pxref{write_latex_dynamic_model} for details).
 
-Also note that this command will not output the contents of the
-optional @code{steady_state_model} block (@pxref{steady_state_model});
-it will rather output a static version (@i{i.e.} without leads and
-lags) of the dynamic model declared in the @code{model} block.
+Also note that this command will not output the contents of the optional
+@code{steady_state_model} block (@pxref{steady_state_model}); it will rather
+output a static version (@i{i.e.} without leads and lags) of the dynamic model
+declared in the @code{model} block. To write the @LaTeX{} contents of the
+@code{steady_state_model} @pxref{write_latex_steady_state_model}.
 
 For the required @LaTeX{} packages, @pxref{write_latex_original_model}.
 
@@ -2324,6 +2329,31 @@ For the required @LaTeX{} packages, @pxref{write_latex_original_model}.
 @xref{write_equation_tags}
 
 @end table
+
+@end deffn
+
+@anchor{write_latex_steady_state_model}
+@deffn Command write_latex_steady_state_model ;
+
+@descriptionhead
+
+This command creates two @LaTeX{} files: one containing the steady state model
+and one containing the @LaTeX{} document header information.
+
+If your @file{.mod} file is @file{@var{FILENAME}.mod}, then Dynare will create
+a file called @file{@var{FILENAME}_steady_state.tex}, which includes a file
+called @file{@var{FILENAME}_steady_state_content.tex} (also created by Dynare)
+containing the list of all the steady state model equations.
+
+If @LaTeX{} names were given for variables and parameters (@pxref{Variable
+declarations}), then those will be used; otherwise, the plain text names will
+be used.
+
+Note that the model written in the @TeX{} file will differ from the model
+declared by the user in the some dimensions (@pxref{write_latex_dynamic_model}
+for details).
+
+For the required @LaTeX{} packages, @pxref{write_latex_original_model}.
 
 @end deffn
 

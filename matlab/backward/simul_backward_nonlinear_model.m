@@ -67,7 +67,7 @@ if ~DynareModel.max_exo_lag_orig
 end
 
 % Simulations (call a Newton-like algorithm for each period).
-for it = DynareModel.max_lag_orig+(1:samplesize)
+for it = 1+(1:samplesize)
     ylag = Y(iy1,it-1);                   % Set lagged variables.
     y = Y(:,it-1);                        % A good guess for the initial conditions is the previous values for the endogenous variables.
     Y(:,it) = dynare_solve(model_dynamic_s, y, DynareOptions, model_dynamic, ylag, DynareOutput.exo_simul, DynareModel.params, DynareOutput.steady_state, it);
