@@ -74,7 +74,7 @@ A1 = jacob(:,nonzeros(DynareModel.lead_lag_incidence(1,:)));
 B = jacob(:,end-nx+1:end);
 
 % Simulations
-for it = DynareModel.max_lag_orig+(1:samplesize)
+for it = 1+(1:samplesize)
     Y(:,it) = -A0inv*(cst + A1*Y(iy1,it-1) + B*DynareOutput.exo_simul(it,:)');
 end
 
