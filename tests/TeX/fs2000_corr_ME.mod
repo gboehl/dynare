@@ -142,6 +142,7 @@ write_latex_static_model;
 write_latex_dynamic_model(write_equation_tags);
 write_latex_parameter_table;
 write_latex_definitions;
+write_latex_steady_state_model;
 
 estimated_params;
 alp, 0.356;
