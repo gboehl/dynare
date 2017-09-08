@@ -108,7 +108,7 @@ if dot_location==length(fname)
 end
 
 % Add dyn or mod extension to the file name if not already provided.
-if isempty(strfind(fname,'.'))
+if isempty(dot_location)
     fnamelength = length(fname);
     fname1 = [fname '.dyn'];
     d = dir(fname1);
