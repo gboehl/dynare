@@ -99,11 +99,7 @@ end
 
 % Testing if filename has more than one period (not allowed).
 dot_location=(strfind(fname,'.'));
-if length(dot_location)>1
-    error('DYNARE: Periods in filenames are only allowed for .mod or .dyn extensions')
-end
-
-if dot_location==length(fname)
+if length(dot_location) > 1 || dot_location == length(fname)
     error('DYNARE: Periods in filenames are only allowed for .mod or .dyn extensions')
 end
 
