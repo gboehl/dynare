@@ -78,7 +78,7 @@ if M_.maximum_exo_lag
     for t = 1:M_.maximum_exo_lag
         for i=1:M_.exo_nbr
             if available_exo_variables(i)
-                exo_histval(M_.maximum_exo_lag+1-t,i) = ds{exo_list{i}}(initialperiod-t).data;
+                M_.exo_histval(M_.maximum_exo_lag+1-t,i) = ds{exo_list{i}}(initialperiod-t).data;
             end
         end
     end
