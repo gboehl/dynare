@@ -98,7 +98,7 @@ if ~ischar(fname)
 end
 
 % Testing if filename has more than one period (not allowed).
-dot_location=(strfind(fname,'.'));
+dot_location=strfind(fname,'.');
 if length(dot_location)>1
     error('DYNARE: Periods in filenames are only allowed for .mod or .dyn extensions')
 end
@@ -108,7 +108,7 @@ if dot_location==length(fname)
 end
 
 % Add dyn or mod extension to the file name if not already provided.
-if isempty(strfind(fname,'.'))
+if isempty(dot_location)
     fnamelength = length(fname);
     fname1 = [fname '.dyn'];
     d = dir(fname1);

@@ -191,6 +191,7 @@ Running Dynare
 * Dynare invocation::
 * Dynare hooks::
 * Understanding Preprocessor Error Messages::
+* Invoking the Dynare Preprocessor from the GNU/Linux or macOS Command Line::
 
 The Model file
 
@@ -729,6 +730,7 @@ required by the user. Its contents are described in @ref{The Model file}.
 * Dynare invocation::
 * Dynare hooks::
 * Understanding Preprocessor Error Messages::
+* Invoking the Dynare Preprocessor from the GNU/Linux or macOS Command Line::
 @end menu
 
 @node Dynare invocation
@@ -1107,6 +1109,41 @@ it did not expect. Hence, it throws an error of the form: @code{ERROR:
 <<file.mod>>: line 2, cols 0-9: syntax error, unexpected
 PARAMETERS}. In this case, you would simply place a semicolon at the
 end of line one and the parser would continue processing.
+
+@node Invoking the Dynare Preprocessor from the GNU/Linux or macOS Command Line
+@section Invoking the Dynare Preprocessor from the GNU/Linux or macOS Command Line
+
+You can invoke the preprocessor directly from the command line. In this way,
+the preprocessor can be called a @file{.mod} file as explained above or on the
+text of a @file{.mod} file as explained herein.
+
+In certain circumstances, it may be useful to invoke the preprocessor on the
+text of a @file{.mod} file. To do so, simply invoke the preprocessor by passing
+it the text of your @file{.mod} file as the first argument. This argument
+requires special care. First, any native Matlab statements contained in the
+string representing your @file{.mod} file must be followed by a newline
+character (@code{\n}). Further, any single-line comments must also be followed
+by a newline character. Finally, any apostrophe's must be escaped with a
+backslash (@i{i.e.}, @code{\'} instead of @code{'}.
+
+Taking into account the considerations above, the file located in
+@code{examples/example1.mod} could be run by executing:
+@example
+./dynare_m $'/* * Example 1 from F. Collard (2001): "Stochastic simulations
+with DYNARE: * A practical guide" (see "guide.pdf" in the documentation
+directory). */var y, c, k, a, h, b;varexo e, u;parameters beta, rho, alpha,
+delta, theta, psi, tau;alpha = 0.36;rho = 0.95;tau = 0.025;beta = 0.99;delta =
+0.025;psi = 0;theta = 2.95;phi = 0.1;\nmodel;c*theta*h^(1+psi)=(1-alpha)*y;k =
+beta*(((exp(b)*c)/(exp(b(+1))*c(+1))) *(exp(b(+1))*alpha*y(+1)+(1-delta)*k));y
+= exp(a)*(k(-1)^alpha)*(h^(1-alpha));k = exp(b)*(y-c)+(1-delta)*k(-1);a =
+rho*a(-1)+tau*b(-1) + e;b = tau*a(-1)+rho*b(-1) + u;end;initval;y =
+1.08068253095672;c = 0.80359242014163;h = 0.29175631001732;k =
+11.08360443260358;a = 0;b = 0;e = 0;u = 0;end;shocks;var e; stderr 0.009;var u;
+stderr 0.009;var e, u = phi*0.009*0.009;end;stoch_simul;'
+@end example
+
+This produces the same output as when running dynare on a @file{.mod} file with
+the basename of the output files being set to @code{mod_file_passed_as_string_}.
 
 @node The Model file
 @chapter The Model file

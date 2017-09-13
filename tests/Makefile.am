@@ -85,6 +85,7 @@ MODFILES = \
 	optimal_policy/Ramsey/ramsey_ex.mod \
 	optimal_policy/Ramsey/ramsey_ex_initval_AR2.mod \
 	optimal_policy/Ramsey/ramsey_ex_aux.mod \
+	optimal_policy/Ramsey/ramsey_histval.mod \
 	optimal_policy/Ramsey/Gali_commitment.mod \
 	optimal_policy/RamseyConstraints/test1.mod \
 	discretionary_policy/dennis_1.mod \
@@ -357,6 +358,7 @@ XFAIL_MODFILES = ramst_xfail.mod \
 	estimation/fs2000_stochastic_singularity_xfail.mod \
 	identification/ident_unit_root/ident_unit_root_xfail.mod \
 	steady_state/Linear_steady_state_xfail.mod \
+	optimal_policy/Ramsey/ramsey_histval_xfail.mod \
 	example1_extra_exo_xfail.mod
 
 MFILES = initval_file/ramst_initval_file_data.m
