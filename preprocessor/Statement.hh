@@ -117,8 +117,6 @@ public:
   int orig_eq_nbr;
   //! Stores the number of equations added to the Ramsey model
   int ramsey_eq_nbr;
-  //! Set list of variables that become state variables when ramsey_policy is used
-  vector<string> ramsey_state_variables;
   //! Histval values that do not have the appropriate lag
   map<int, int> hist_vals_wrong_lag;
 };
