@@ -54,7 +54,7 @@ end
 if posterior
     delete_stale_file([M_.dname '/metropolis/' M_.fname '_PosteriorVarianceDecomposition*']);
 else
-    delete_stale_file([M_.dname '/prior/moments/' M_.fname '_PosteriorVarianceDecomposition*']);
+    delete_stale_file([M_.dname '/prior/moments/' M_.fname '_PriorVarianceDecomposition*']);
 end
 
 % Set varlist (vartan)
