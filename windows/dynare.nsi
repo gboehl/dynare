@@ -126,7 +126,7 @@ SectionEnd
 
 Section "Documentation and examples (Dynare and Dynare++)"
  SetOutPath $INSTDIR\doc
- File ..\doc\dynare.pdf ..\doc\guide.pdf ..\doc\userguide\UserGuide.pdf ..\doc\bvar-a-la-sims.pdf ..\doc\dr.pdf ..\doc\macroprocessor\macroprocessor.pdf ..\doc\preprocessor\preprocessor.pdf ..\doc\parallel\parallel.pdf ..\doc\gsa\gsa.pdf ..\doc\dseries-and-reporting\dseriesReporting.pdf
+ File ..\doc\dynare.pdf ..\doc\guide.pdf ..\doc\bvar-a-la-sims.pdf ..\doc\dr.pdf ..\doc\macroprocessor\macroprocessor.pdf ..\doc\preprocessor\preprocessor.pdf ..\doc\parallel\parallel.pdf ..\doc\gsa\gsa.pdf ..\doc\dseries-and-reporting\dseriesReporting.pdf
 
  SetOutPath $INSTDIR\doc\dynare.html
  File ..\doc\dynare.html\*.html ..\doc\dynare.html\*.png
