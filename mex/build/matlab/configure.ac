@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 
-dnl Copyright (C) 2009-2014 Dynare Team
+dnl Copyright (C) 2009-2017 Dynare Team
 dnl
 dnl This file is part of Dynare.
 dnl
@@ -72,15 +72,6 @@ case ${host_os} in
 esac
 AX_PTHREAD
 
-# Check for boost libraries used in estimation DLL
-AC_LANG_PUSH([C++])
-AX_BOOST_BASE([1.36], [], [AC_MSG_ERROR([Can't find Boost >= 1.36])])
-CPPFLAGS_SAVED="$CPPFLAGS"
-CPPFLAGS="$CPPFLAGS $BOOST_CPPFLAGS"
-AC_CHECK_HEADER([boost/random/linear_congruential.hpp], [], [AC_MSG_ERROR([Can't find Boost Random Library])])
-AC_CHECK_HEADER([boost/math/distributions/beta.hpp], [], [AC_MSG_ERROR([Can't find Boost Math Library])])
-CPPFLAGS="$CPPFLAGS_SAVED"
-AC_LANG_POP([C++])
 # Check for dlopen(), needed by k_order_perturbation DLL
 AC_CHECK_LIB([dl], [dlopen], [LIBADD_DLOPEN="-ldl"], [])
 AC_SUBST([LIBADD_DLOPEN])
@@ -150,7 +141,7 @@ Dynare is now configured for building the following components...
 
 Binaries (with "make"):
  MEX files for MATLAB (except those listed below):                   $BUILD_MEX_MATLAB
- k-order and dynare_simul MEX files for MATLAB:                      $BUILD_KORDER_DYNSIMUL_MEX_MATLAB
+ K-order and dynare_simul MEX files for MATLAB:                      $BUILD_KORDER_DYNSIMUL_MEX_MATLAB
  MS-SBVAR MEX files for MATLAB:                                      $BUILD_MS_SBVAR_MEX_MATLAB
  Kalman Steady State MEX file for MATLAB:                            $BUILD_KALMAN_STEADY_STATE_MATLAB
  M2HTML documentation:                                               $BUILD_M2HTML
@@ -165,7 +156,6 @@ AC_CONFIG_FILES([Makefile
                  gensylv/Makefile
                  k_order_perturbation/Makefile
                  dynare_simul_/Makefile
-                 estimation/Makefile
                  kalman_steady_state/Makefile
                  ms_sbvar/Makefile
                  block_kalman_filter/Makefile

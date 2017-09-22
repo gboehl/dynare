@@ -1,5 +1,3 @@
-SUBDIRS = estimation
-
 EXTRA_DIST = \
 	dynblas.h \
 	dynlapack.h \
