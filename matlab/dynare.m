@@ -59,7 +59,6 @@ if nargin>1
     id = strfind(varargin, 'nopreprocessoroutput');
     if ~all(cellfun(@isempty, id))
         preprocessoroutput = false;
-        varargin(cellfun(@isempty, id) == 0) = [];
     end
 end
 
