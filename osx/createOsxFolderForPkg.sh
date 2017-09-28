@@ -79,7 +79,6 @@ cp $TOP_DYN_DIR/doc/guide.pdf                                    $INSTALLDIR/doc
 cp $TOP_DYN_DIR/doc/macroprocessor/macroprocessor.pdf            $INSTALLDIR/doc
 cp $TOP_DYN_DIR/doc/parallel/parallel.pdf                        $INSTALLDIR/doc
 cp $TOP_DYN_DIR/doc/preprocessor/preprocessor.pdf                $INSTALLDIR/doc
-cp $TOP_DYN_DIR/doc/userguide/UserGuide.pdf                      $INSTALLDIR/doc
 cp $TOP_DYN_DIR/doc/gsa/gsa.pdf                                  $INSTALLDIR/doc
 
 # doc (dynare++)

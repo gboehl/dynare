@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 
-dnl Copyright (C) 2009-2016 Dynare Team
+dnl Copyright (C) 2009-2017 Dynare Team
 dnl
 dnl This file is part of Dynare.
 dnl
@@ -85,10 +85,6 @@ CPPFLAGS="$CPPFLAGS_SAVED"
 
 # Don't use deprecated hash structures
 AC_DEFINE([BOOST_NO_HASH], [], [Don't use deprecated STL hash structures])
-
-# Check for dlopen(), needed by tests for estimation DLL
-AC_CHECK_LIB([dl], [dlopen], [LIBADD_DLOPEN="-ldl"], [])
-AC_SUBST([LIBADD_DLOPEN])
 
 # Check for libmatio, needed by Dynare++
 AX_MATIO
@@ -175,7 +171,6 @@ AC_CONFIG_FILES([Makefile
                  doc/Makefile
                  doc/preprocessor/Makefile
                  doc/macroprocessor/Makefile
-                 doc/userguide/Makefile
                  doc/parallel/Makefile
                  doc/internals/Makefile
                  doc/gsa/Makefile
@@ -200,10 +195,6 @@ AC_CONFIG_FILES([Makefile
                  dynare++/kord/Makefile
                  dynare++/src/Makefile
                  mex/sources/Makefile
-                 mex/sources/estimation/Makefile
-                 mex/sources/estimation/tests/Makefile
-                 mex/sources/estimation/libmat/Makefile
-                 mex/sources/estimation/libmat/tests/Makefile
 ])
 
 AC_ARG_ENABLE([matlab], AS_HELP_STRING([--disable-matlab], [disable compilation of MEX files for MATLAB]), [], [enable_matlab=yes])
@@ -245,12 +236,6 @@ if test "x$CWEAVE" != "x" -a x"$PDFTEX" != "x" -a "x$ax_tex_have_eplain" = "xyes
   BUILD_DYNAREPLUSPLUS_SRCDOC="yes"
 else
   BUILD_DYNAREPLUSPLUS_SRCDOC="no (missing one of: cweave, pdftex, eplain)"
-fi
-
-if test "x$PDFLATEX" != "x" -a "x$BIBTEX" != "x"; then
-  BUILD_DYNARE_USERGUIDE="yes"
-else
-  BUILD_DYNARE_USERGUIDE="no (missing one of: pdflatex, bibtex)"
 fi
 
 if test "x$PDFLATEX" != "x" -a "x$ax_latex_have_beamer" = "xyes"; then
@@ -313,7 +298,6 @@ Binaries (with "make"):
 
 PDF documentation (with "make pdf"):
  Dynare reference manual:               $BUILD_DYNARE_PDF_MANUAL
- Dynare user guide:                     $BUILD_DYNARE_USERGUIDE
  Dynare++ developer documentation:      $BUILD_DYNAREPLUSPLUS_SRCDOC
  Beamer presentations:                  $BUILD_BEAMER_DOC
  Various other documents:               $BUILD_OTHER_PDF_DOC

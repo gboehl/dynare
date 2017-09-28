@@ -1,4 +1,4 @@
-function DynareOutput = simul_backward_model(varargin)
+function simulation = simul_backward_model(initialconditions, samplesize, DynareOptions, DynareModel, DynareOutput, innovations)
 
 % Simulates a stochastic backward looking model (with arbitrary precision).
 %
@@ -11,7 +11,7 @@ function DynareOutput = simul_backward_model(varargin)
 % - innovations         [double]      T*q matrix, innovations to be used for the simulation.
 %
 % OUTPUTS
-% - DynareOutput        [struct]      Dynare's oo_ global structure.
+% - simulation          [dseries]     Simulated endogenous and exogenous variables.
 %
 % REMARKS
 % [1] The innovations used for the simulation are saved in DynareOutput.exo_simul, and the resulting paths for the endogenous
@@ -38,10 +38,14 @@ function DynareOutput = simul_backward_model(varargin)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-[initialconditions, samplesize, innovations, DynareOptions, DynareModel, DynareOutput] = simul_backward_model_init(varargin{:});
+if nargin<6
+    innovations  =[];
+end
+
+%[initialconditions, samplesize, innovations, DynareOptions, DynareModel, DynareOutput] = simul_backward_model_init(varargin{:});
 
 if DynareOptions.linear
-    DynareOutput = simul_backward_linear_model(initialconditions, samplesize, DynareOptions, DynareModel, DynareOutput, innovations);
+    simulation = simul_backward_linear_model(initialconditions, samplesize, DynareOptions, DynareModel, DynareOutput, innovations);
 else
-    DynareOutput = simul_backward_nonlinear_model(initialconditions, samplesize, DynareOptions, DynareModel, DynareOutput, innovations);
+    simulation = simul_backward_nonlinear_model(initialconditions, samplesize, DynareOptions, DynareModel, DynareOutput, innovations);
 end

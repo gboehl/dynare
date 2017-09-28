@@ -58,63 +58,47 @@ else
     transform = varargin{2};
 end
 
-% Get list of all exogenous variables in a cell of strings
-exo_names = cellstr(M_.exo_names);
-
-% Get the list of all exogenous variables in a cell of strings
-endo_names = cellstr(M_.endo_names);
-
-% Set initial condition.
-if isdates(initialcondition)
-    if isempty(M_.endo_histval)
-        error('backward_model_irf: histval block for setting initial condition is missing!')
-    end
-    initialcondition = dseries(transpose(M_.endo_histval), initialcondition, endo_names, cellstr(M_.endo_names_tex));
-end
+% Set up initial conditions
+[initialcondition, periods, innovations, DynareOptions, DynareModel, DynareOutput, endonames, exonames, nx, ny1, iy1, jdx, model_dynamic, y] = ...
+    simul_backward_model_init(initialcondition, periods, options_, M_, oo_, zeros(periods, M_.exo_nbr));
 
 % Get the covariance matrix of the shocks.
 Sigma = M_.Sigma_e + 1e-14*eye(M_.exo_nbr);
 sigma = transpose(chol(Sigma));
-
-% Put initial conditions in a vector of doubles
-initialconditions = transpose(initialcondition{endo_names{:}}.data);
 
 % Initialization of the returned argument. Each will be a dseries object containing the IRFS for the endogenous variables listed in the third input argument.
 irfs = struct();
 
-% Get the covariance matrix of the shocks.
-Sigma = M_.Sigma_e + 1e-14*eye(M_.exo_nbr);
-sigma = transpose(chol(Sigma));
-
 % Compute the IRFs (loop over innovations).
 for i=1:length(listofshocks)
+    innovations = zeros(periods, DynareModel.exo_nbr);
     % Get transition paths induced by the initial condition.
-    innovations = zeros(periods, M_.exo_nbr);
-    if ~isempty(M_.exo_histval)
-        innovations = [transpose(M_.exo_histval); innovations];
-        shift = size(M_.exo_histval, 2);
+    if options_.linear
+        ysim__0 = simul_backward_linear_model_(initialcondition, periods, DynareOptions, DynareModel, DynareOutput, innovations, nx, ny1, iy1, jdx, model_dynamic);
     else
-        innovations = [zeros(1, M_.exo_nbr); innovations];
-        shift = 1;
+        ysim__0 = simul_backward_nonlinear_model_(initialcondition, periods, DynareOptions, DynareModel, DynareOutput, innovations, iy1, model_dynamic);
     end
-    oo__0 = simul_backward_model(initialconditions, periods, options_, M_, oo_, innovations);
     % Add the shock.
-    j = find(strcmp(listofshocks{i}, exo_names));
+    j = find(strcmp(listofshocks{i}, exonames));
     if isempty(j)
         error('backward_model_irf: Exogenous variable %s is unknown!', listofshocks{i})
     end
-    innovations(shift+1,:) = transpose(sigma(:,j));
-    oo__1 = simul_backward_model(initialconditions, periods, options_, M_, oo_, innovations);
+    innovations(1,:) = transpose(sigma(:,j));
+    if options_.linear
+        ysim__1 = simul_backward_linear_model_(initialcondition, periods, DynareOptions, DynareModel, DynareOutput, innovations, nx, ny1, iy1, jdx, model_dynamic);
+    else
+        ysim__1 = simul_backward_nonlinear_model_(initialcondition, periods, DynareOptions, DynareModel, DynareOutput, innovations, iy1, model_dynamic);
+    end
     % Transform the endogenous variables
     if notransform
-        endo_simul__0 = oo__0.endo_simul;
-        endo_simul__1 = oo__1.endo_simul;
+        endo_simul__0 = ysim__0;
+        endo_simul__1 = ysim__1;
     else
-        endo_simul__0 = feval(transform, oo__0.endo_simul);
-        endo_simul__1 = feval(transform, oo__1.endo_simul);
+        endo_simul__0 = feval(transform, ysim__0);
+        endo_simul__1 = feval(transform, ysim__1);
     end
     % Instantiate a dseries object (with all the endogenous variables)
-    allirfs = dseries(transpose(endo_simul__1-endo_simul__0), initialcondition.init, cellstr(M_.endo_names), cellstr(M_.endo_names_tex));
+    allirfs = dseries(transpose(endo_simul__1-endo_simul__0), initialcondition.init, endonames, cellstr(DynareModel.endo_names_tex));
     % Extract a sub-dseries object
     irfs.(listofshocks{i}) = allirfs{listofvariables{:}};
 end

@@ -1,4 +1,4 @@
-function simulations = simul_backward_linear_model(varargin)
+function [ysim, xsim] = simul_backward_linear_model_(initialconditions, samplesize, DynareOptions, DynareModel, DynareOutput, innovations, nx, ny1, iy1, jdx, model_dynamic)
 
 % Simulates a stochastic linear backward looking model.
 %
@@ -21,7 +21,7 @@ function simulations = simul_backward_linear_model(varargin)
 % [3] If the first input argument is empty, the endogenous variables are initialized with 0, or if available with the informations
 %     provided thrtough the histval block.
 
-% Copyright (C) 2012-2017 Dynare Team
+% Copyright (C) 2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -38,9 +38,24 @@ function simulations = simul_backward_linear_model(varargin)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-[initialconditions, samplesize, innovations, DynareOptions, DynareModel, DynareOutput, endonames, exonames, nx, ny1, iy1, jdx, model_dynamic, y] = ...
-    simul_backward_model_init(varargin{:});
+if ~isempty(innovations)
+    DynareOutput.exo_simul(initialconditions.nobs+(1:samplesize),:) = innovations;
+end
 
-[ysim, xsim] = simul_backward_linear_model_(initialconditions, samplesize, DynareOptions, DynareModel, DynareOutput, innovations, nx, ny1, iy1, jdx, model_dynamic);
+% Get coefficients
+[cst, jacob] = model_dynamic(zeros(DynareModel.endo_nbr+ny1,1), ...
+                            zeros(DynareModel.max_lag_orig+1,DynareModel.exo_nbr), ...
+                            DynareModel.params, ...
+                            DynareOutput.steady_state, DynareModel.max_lag_orig+1);
 
-simulations = [dseries(ysim', initialconditions.init, endonames(1:DynareModel.orig_endo_nbr)), dseries(xsim, initialconditions.init, exonames)];
+A0inv = inv(jacob(:,jdx));
+A1 = jacob(:,nonzeros(DynareModel.lead_lag_incidence(1,:)));
+B = jacob(:,end-nx+1:end);
+
+% Simulations
+for it = initialconditions.nobs+(1:samplesize)
+    DynareOutput.endo_simul(:,it) = -A0inv*(cst + A1*DynareOutput.endo_simul(iy1,it-1) + B*DynareOutput.exo_simul(it,:)');
+end
+
+ysim = DynareOutput.endo_simul(1:DynareModel.orig_endo_nbr,:);
+xsim = DynareOutput.exo_simul;
