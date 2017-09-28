@@ -31,7 +31,7 @@ global M_ options_ oo_
 
 % Check that the model is actually backward
 if M_.maximum_lead
-    error(['backward_model_irf:: The specified model is not backward looking!'])
+    error(['backward_model_forecast:: The specified model is not backward looking!'])
 end
 
 % Initialize returned argument.
@@ -53,14 +53,17 @@ if nargin<4
     withuncertainty = false;
 end
 
-% Get full list of endogenous variables
-endo_names = cellstr(M_.endo_names);
+start = initialcondition.dates(end)+1;
+
+% Set up initial conditions
+[initialcondition, periods, innovations, DynareOptions, DynareModel, DynareOutput, endonames, exonames, nx, ny1, iy1, jdx, model_dynamic, y] = ...
+    simul_backward_model_init(initialcondition, periods, options_, M_, oo_, zeros(periods, M_.exo_nbr));
 
 % Get vector of indices for the selected endogenous variables.
 n = length(listofvariables);
 idy = zeros(n,1);
 for i=1:n
-    j = find(strcmp(listofvariables{i}, endo_names));
+    j = find(strcmp(listofvariables{i}, endonames));
     if isempty(j)
         error('backward_model_forecast:: Variable %s is unknown!', listofvariables{i})
     else
@@ -79,37 +82,28 @@ if withuncertainty
     sigma = transpose(chol(Sigma));
 end
 
-% Set initial condition.
-if isdates(initialcondition)
-    if isempty(M_.endo_histval)
-        error('backward_model_irf: histval block for setting initial condition is missing!')
-    end
-    initialcondition = dseries(transpose(M_.endo_histval), initialcondition, endo_names, cellstr(M_.endo_names_tex));
+% Compute forecast without shock
+if options_.linear
+    ysim__0 = simul_backward_linear_model_(initialcondition, periods, DynareOptions, DynareModel, DynareOutput, innovations, nx, ny1, iy1, jdx, model_dynamic);
+else
+    ysim__0 = simul_backward_nonlinear_model_(initialcondition, periods, DynareOptions, DynareModel, DynareOutput, innovations, iy1, model_dynamic);
 end
+forecasts.pointforecast = dseries(transpose(ysim__0(idy,:)), initialcondition.init, listofvariables);
 
-% Put initial conditions in a vector of doubles
-initialconditions = transpose(initialcondition{endo_names{:}}.data);
-
-% Compute forecast without shock 
-innovations = zeros(periods+M_.maximum_exo_lag, M_.exo_nbr);
-if M_.maximum_exo_lag
-    if isempty(M_.exo_histval)
-        error('You need to set the past values for the exogenous variables!')
-    else
-        innovations(1:M_.maximum_exo_lag, :) = M_.exo_histval;
-    end
-end
-
-oo__0 = simul_backward_model(initialconditions, periods, options_, M_, oo_, innovations);
-forecasts.pointforecast = dseries(transpose(oo__0.endo_simul(idy,:)), initialcondition.init, listofvariables);
+% Set first period of forecast
+forecasts.start = start; 
 
 if withuncertainty
     % Preallocate an array gathering the simulations.
-    ArrayOfForecasts = zeros(n, periods+size(initialconditions, 2), B);
+    ArrayOfForecasts = zeros(n, periods+initialcondition.nobs, B);
     for i=1:B
-        innovations(M_.maximum_exo_lag+1:end,:) = transpose(sigma*randn(M_.exo_nbr, periods));
-        oo__ = simul_backward_model(initialconditions, periods, options_, M_, oo_, innovations);     
-        ArrayOfForecasts(:,:,i) = oo__.endo_simul(idy,:); 
+        innovations = transpose(sigma*randn(M_.exo_nbr, periods));
+        if options_.linear
+            [ysim__, xsim__] = simul_backward_linear_model_(initialcondition, periods, DynareOptions, DynareModel, DynareOutput, innovations, nx, ny1, iy1, jdx, model_dynamic);
+        else
+            [ysim__, xsim__] = simul_backward_nonlinear_model_(initialcondition, periods, DynareOptions, DynareModel, DynareOutput, innovations, iy1, model_dynamic);
+        end
+        ArrayOfForecasts(:,:,i) = ysim__(idy,:); 
     end
     % Compute mean (over future uncertainty) forecast.
     forecasts.meanforecast = dseries(transpose(mean(ArrayOfForecasts, 3)), initialcondition.init, listofvariables);

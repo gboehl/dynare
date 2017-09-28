@@ -1,4 +1,4 @@
-function DynareOutput = simul_backward_nonlinear_model(varargin)
+function simulations = simul_backward_nonlinear_model(varargin)
 
 % Simulates a stochastic non linear backward looking model with arbitrary precision (a deterministic solver is used).
 %
@@ -38,35 +38,9 @@ function DynareOutput = simul_backward_nonlinear_model(varargin)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-[initialconditions, samplesize, innovations, DynareOptions, DynareModel, DynareOutput, nx, ny1, iy1, jdx, model_dynamic, y] = ...
+[initialconditions, samplesize, innovations, DynareOptions, DynareModel, DynareOutput, endonames, exonames, nx, ny1, iy1, jdx, model_dynamic, y] = ...
     simul_backward_model_init(varargin{:});
 
-model_dynamic_s = str2func('dynamic_backward_model_for_simulation');
+[ysim, xsim] = simul_backward_nonlinear_model_(initialconditions, samplesize, DynareOptions, DynareModel, DynareOutput, innovations, iy1, model_dynamic);
 
-% initialization of the returned simulations.
-DynareOutput.endo_simul = NaN(DynareModel.endo_nbr, samplesize);
-if isempty(initialconditions)
-    if isfield(DynareModel,'endo_histval') && ~isempty(DynareModel.endo_histval)
-        DynareOutput.endo_simul = [DynareModel.endo_histval, DynareOutput.endo_simul];
-    else
-        warning('simul_backward_nonlinear_model:: Initial condition is zero for all variables! The model simulation may fail with the default initialization.')
-        DynareOutput.endo_simul = [zeros(DynareModel.endo_nbr, DynareModel.max_lag_orig), DynareOutput.endo_simul];
-    end
-else
-    if ~isequal(size(initialconditions, 2), DynareModel.max_lag_orig)
-        error(['simul_backward_nonlinear_model:: First argument should have %s columns!'], DynareModel.max_lag_orig)
-    end
-    DynareOutput.endo_simul = [initialconditions, DynareOutput.endo_simul];
-end
-Y = DynareOutput.endo_simul;
-
-DynareOutput.exo_simul = [ zeros(1, DynareModel.exo_nbr); DynareOutput.exo_simul];
-
-% Simulations (call a Newton-like algorithm for each period).
-for it = 1+(1:samplesize)
-    ylag = Y(iy1,it-1);                   % Set lagged variables.
-    y = Y(:,it-1);                        % A good guess for the initial conditions is the previous values for the endogenous variables.
-    Y(:,it) = dynare_solve(model_dynamic_s, y, DynareOptions, model_dynamic, ylag, DynareOutput.exo_simul, DynareModel.params, DynareOutput.steady_state, it);
-end
-
-DynareOutput.endo_simul = Y;
+simulations = [dseries(ysim', initialconditions.init, endonames(1:DynareModel.orig_endo_nbr)), dseries(xsim, initialconditions.init, exonames)];
