@@ -1,14 +1,11 @@
-function simulation = simul_backward_model(initialconditions, samplesize, DynareOptions, DynareModel, DynareOutput, innovations)
+function simulation = simul_backward_model(initialconditions, samplesize, innovations)
 
 % Simulates a stochastic backward looking model (with arbitrary precision).
 %
 % INPUTS
 % - initialconditions   [double]      n*1 vector, initial conditions for the endogenous variables.
 % - samplesize          [integer]     scalar, number of periods for the simulation.
-% - DynareOptions       [struct]      Dynare's options_ global structure.
-% - DynareModel         [struct]      Dynare's M_ global structure.
-% - DynareOutput        [struct]      Dynare's oo_ global structure.
-% - innovations         [double]      T*q matrix, innovations to be used for the simulation.
+% - innovations         [dseries]     innovations to be used for the simulation.
 %
 % OUTPUTS
 % - simulation          [dseries]     Simulated endogenous and exogenous variables.
@@ -38,14 +35,36 @@ function simulation = simul_backward_model(initialconditions, samplesize, Dynare
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-if nargin<6
-    innovations  =[];
+global options_ M_ oo_
+
+if nargin<3
+    Innovations  =[];
+else
+    if isdseries(innovations)
+        if isequal(innovations.dates(1)-1, initialconditions.dates(end))
+            if innovations.nobs<samplesize
+                error('Time span in third argument is too short (should not be less than %s, the value of the second argument)', num2str(samplesize))
+            end
+            % Set array holding innovations values.
+            Innovations = zeros(samplesize, M_.exo_nbr);
+            exonames = cellstr(M_.exo_names);
+            for i=1:M_.exo_nbr
+                if ismember(exonames{i}, innovations.name)
+                    Innovations(:,i) = innovations{exonames{i}}.data(1:samplesize);
+                else
+                    disp(sprintf('Exogenous variable %s is not available in third argument, default value is zero.', exonames{i}));
+                end
+            end
+        else
+            error('Time spans in first and third arguments should be contiguous!')
+        end
+    else
+        error('Third argument must be a dseries object!')
+    end
 end
 
-%[initialconditions, samplesize, innovations, DynareOptions, DynareModel, DynareOutput] = simul_backward_model_init(varargin{:});
-
-if DynareOptions.linear
-    simulation = simul_backward_linear_model(initialconditions, samplesize, DynareOptions, DynareModel, DynareOutput, innovations);
+if options_.linear
+    simulation = simul_backward_linear_model(initialconditions, samplesize, options_, M_, oo_, Innovations);
 else
-    simulation = simul_backward_nonlinear_model(initialconditions, samplesize, DynareOptions, DynareModel, DynareOutput, innovations);
+    simulation = simul_backward_nonlinear_model(initialconditions, samplesize, options_, M_, oo_, Innovations);
 end
