@@ -264,6 +264,7 @@ elseif options.solve_algo == 3
     else
         [x,info] = csolve(func,x,[],1e-6,500,varargin{:});
     end
+    [fvec, fjac] = feval(func, x, varargin{:});
 elseif options.solve_algo == 10
     % LMMCP
     olmmcp = options.lmmcp;
