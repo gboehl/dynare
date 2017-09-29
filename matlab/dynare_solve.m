@@ -76,7 +76,9 @@ end
 if jacobian_flag
     [fvec, fjac] = feval(func, x, varargin{:});
     wrong_initial_guess_flag = false;
-    if ~all(isfinite(fvec)) || any(isinf(fjac(:))) || any(isnan((fjac(:))))
+    if ~all(isfinite(fvec)) || any(isinf(fjac(:))) || any(isnan((fjac(:)))) ...
+            || any(~isreal(fvec)) || any(~isreal(fjac(:)))
+        disp('Randomize initial guess...')
         % Let's try random numbers for the variables initialized with the default value.
         wrong_initial_guess_flag = true;
         % First try with positive numbers.
