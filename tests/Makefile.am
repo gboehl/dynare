@@ -250,7 +250,6 @@ MODFILES = \
 	stochastic-backward-models/solow_cd.mod \
 	stochastic-backward-models/solow_ces.mod \
 	stochastic-backward-models/solow_cd_with_steadystate.mod \
-	stochastic-backward-models/backward_linear.mod \
 	deterministic_simulations/purely_forward/ar1.mod \
 	deterministic_simulations/purely_forward/nk.mod \
 	deterministic_simulations/purely_backward/ar1.mod \
