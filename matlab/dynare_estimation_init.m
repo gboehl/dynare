@@ -549,7 +549,7 @@ else
     steadystate_check_flag = 1;
 end
 
-% If the steady state of the observed variables is non zero, set noconstant equal 0 ()
+%check steady state at initial parameters
 M = M_;
 nvx = estim_params_.nvx;
 ncx = estim_params_.ncx;
@@ -565,6 +565,7 @@ if info(1)
     print_info(info, 0, options_);
 end
 
+% If the steady state of the observed variables is non zero, set noconstant equal 0 ()
 if (~options_.loglinear && all(abs(oo_.steady_state(bayestopt_.mfys))<1e-9)) || (options_.loglinear && all(abs(log(oo_.steady_state(bayestopt_.mfys)))<1e-9))
     options_.noconstant = 1;
 else
