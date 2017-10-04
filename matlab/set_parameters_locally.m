@@ -56,7 +56,7 @@ end
 % and update offset
 offset = offset + nvx + nvn;
 
-% correlations amonx shocks (ncx)
+% correlations among shocks (ncx)
 if ncx
     corrx = estim_params_.corrx;
     for i=1:ncx
