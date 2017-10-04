@@ -6,8 +6,9 @@ function [DynareDataset, DatasetInfo, newdatainterface] = makedataset(DynareOpti
 % INPUTS
 % ======
 %
-%     DynareOptions [struct] Structure of options built by Dynare's preprocessor.
-%
+%     DynareOptions         [struct]    Structure of options built by Dynare's preprocessor.
+%     initialconditions     [double]    number of lags for VAR and DSGE_VAR
+%     gsa_flag              [integer]   1: GSA, 0: other
 %
 % OUTPUTS
 % =======
