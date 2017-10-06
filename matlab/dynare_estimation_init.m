@@ -53,15 +53,22 @@ hh = [];
 xparam1 = [];
 
 if isempty(gsa_flag)
-    gsa_flag = 0;
+    gsa_flag = false;
 else
     % Decide if a DSGE or DSGE-VAR has to be estimated.
     if ~isempty(strmatch('dsge_prior_weight',M_.param_names))
         options_.dsge_var = 1;
     end
-    % Get the list of the endogenous variables for which posterior statistics wil be computed
-    var_list_ = check_list_of_variables(options_, M_, var_list_);
-    options_.varlist = var_list_;
+    if isempty(var_list_)
+        var_list_ = check_list_of_variables(options_, M_, var_list_);
+        options_.varlist = var_list_;
+    end
+    if gsa_flag
+        % Get the list of the endogenous variables for which posterior statistics wil be computed.
+        options_.varlist = var_list_;
+    else
+        % This was done in dynare_estimation_1
+    end
 end
 
 if options_.dsge_var && options_.presample~=0
