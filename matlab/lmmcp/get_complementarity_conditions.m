@@ -44,7 +44,6 @@ if ramsey_policy
               otherwise
                 error('Wrong operator in get_complementarity_conditions')
             end
-            eq_index(i) = 1;
         end
     end
 end
