@@ -52,6 +52,10 @@ end
 etags = M.equations_tags;
 for i=1:size(etags,1)
     if strcmp(etags{i,2},'mcp')
+        eq_nbr = etags{i,1};
+        if ramsey_policy
+            eq_nbr = eq_nbr + M.ramsey_eq_nbr;
+        end
         str = etags{i,3};
         kop = strfind(etags{i,3},'<');
         if ~isempty(kop)
@@ -61,8 +65,8 @@ for i=1:size(etags,1)
                                'not recognized'],etags{i,3},strtrim(str(1:kop-1))))
             end
             ub(k) = str2num(str(kop+1:end));
-            eq_index(etags{i,1}) = k;
-            eq_index(k) = etags{i,1};
+            eq_index(eq_nbr) = k;
+            eq_index(k) = eq_nbr;
         else
             kop = strfind(etags{i,3},'>');
             if ~isempty(kop)
@@ -72,8 +76,8 @@ for i=1:size(etags,1)
                                    'not recognized'],etags{i,3},strtrim(str(1:kop-1))))
                 end
                 lb(k) = str2num(str(kop+1:end));
-                eq_index(etags{i,1}) = k;
-                eq_index(k) = etags{i,1};
+                eq_index(eq_nbr) = k;
+                eq_index(k) = eq_nbr;
             else
                 error(sprintf(['Complementarity condition %s can''t be ' ...
                                'parsed'],etags{i,3}))
