@@ -123,6 +123,11 @@ if ~exist('struct2array')
     p{end+1} = '/missing/struct2array';
 end
 
+% isfile is missing in Octave and Matlab<R2017b
+if isoctave || matlab_ver_less_than('9.3')
+    p{end+1} = '/missing/isfile';
+end
+
 P = cellfun(@(c)[dynareroot(1:end-1) c], p, 'uni',false);
 
 % Get mex files folder(s)
