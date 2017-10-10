@@ -14,7 +14,7 @@ function innovation_paths = reversed_extended_path(controlled_variable_names, co
 %
 % SPECIAL REQUIREMENTS
 
-% Copyright (C) 2010-2016 Dynare Team.
+% Copyright (C) 2010-2018 Dynare Team.
 %
 % This file is part of Dynare.
 %
@@ -65,7 +65,7 @@ oo_=make_y_(M_,options_,oo_);
 n  = length(controlled_variable_names);
 iy = NaN(n,1);
 for k=1:n
-    iy(k) = strmatch(controlled_variable_names{k},M_.endo_names,'exact');
+    iy(k) = strmatch(controlled_variable_names{k}, M_.endo_names, 'exact');
 end
 
 % Get indices of the controlled endogenous variables in dataset.

@@ -16,7 +16,7 @@ function osr_res = osr1(i_params,i_var,weights)
 %   Uses Newton-type optimizer csminwel to directly solve quadratic
 %   osr-problem
 %
-% Copyright (C) 2005-2017 Dynare Team
+% Copyright (C) 2005-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -129,14 +129,14 @@ else
         error('OSR: OSR with bounds on parameters requires a constrained optimizer, i.e. opt_algo= 1,2,5, or 9.')
     end
     %%do actual optimization
-    [p, f, exitflag] = dynare_minimize_objective(str2func('osr_obj'),t0,options_.osr.opt_algo,options_,M_.osr.param_bounds,cellstr(M_.param_names(i_params,:)),[],[], i_params,...
+    [p, f, exitflag] = dynare_minimize_objective(str2func('osr_obj'),t0,options_.osr.opt_algo,options_,M_.osr.param_bounds,M_.param_names(i_params),[],[], i_params,...
                                                  inv_order_var(i_var),weights(i_var,i_var));
 end
 
 osr_res.objective_function = f;
 M_.params(i_params)=p; %make sure optimal parameters are set (and not the last draw used in csminwel)
 for i=1:length(i_params)
-    osr_res.optim_params.(deblank(M_.param_names(i_params(i),:))) = p(i);
+    osr_res.optim_params.(M_.param_names{i_params(i)}) = p(i);
 end
 
 if ~options_.noprint
@@ -144,7 +144,7 @@ if ~options_.noprint
     disp('OPTIMAL VALUE OF THE PARAMETERS:')
     skipline()
     for i=1:np
-        disp(sprintf('%16s %16.6g\n',M_.param_names(i_params(i),:),p(i)))
+        disp(sprintf('%16s %16.6g\n', M_.param_names{i_params(i)}, p(i)))
     end
     disp(sprintf('Objective function : %16.6g\n',f));
     skipline()

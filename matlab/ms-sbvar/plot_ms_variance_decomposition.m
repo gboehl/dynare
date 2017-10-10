@@ -22,7 +22,7 @@ function plot_ms_variance_decomposition(M_, options_, vd, figure_name, varargin)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2011-2017 Dynare Team
+% Copyright (C) 2011-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -51,9 +51,9 @@ names = {};
 tex_names = {};
 m = 1;
 for i=1:M_.orig_endo_nbr
-    tex_name = deblank(M_.endo_names_tex(i,:));
+    tex_name = M_.endo_names_tex{i};
     if ~isempty(tex_name)
-        names{m} = deblank(endo_names(i,:));
+        names{m} = endo_names{i};
         tex_names{m} = tex_name;
         m = m + 1;
     end
@@ -79,8 +79,8 @@ else
 end
 
 for i=1:nvars
-    shock_names{i} = endo_names(i,:);
-    series_names{i} = endo_names(i,:);
+    shock_names{i} = endo_names{i};
+    series_names{i} = endo_names{i};
 end
 
 x = [1:T];

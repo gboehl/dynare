@@ -62,7 +62,7 @@ function [dr,info] = dyn_risky_steadystate_solver(ys0,M, ...
 %! @end deftypefn
 %@eod:
 
-% Copyright (C) 2001-2017 Dynare Team
+% Copyright (C) 2001-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -86,7 +86,7 @@ order_var = dr.order_var;
 endo_nbr = M.endo_nbr;
 exo_nbr = M.exo_nbr;
 
-M.var_order_endo_names = M.endo_names(dr.order_var,:);
+M.var_order_endo_names = M.endo_names(dr.order_var);
 
 [junk,dr.i_fwrd_g,i_fwrd_f] = find(lead_lag_incidence(3,order_var));
 dr.i_fwrd_f = i_fwrd_f;
@@ -138,10 +138,10 @@ dr.ghs2 = zeros(M.endo_nbr,1);
 
 for i=1:M.endo_nbr
     if isfield(options,'portfolio') && options.portfolio == 1
-        disp(sprintf('%16s %12.6f %12.6f',M.endo_names(i,:),ys1(i), ...
+        disp(sprintf('%16s %12.6f %12.6f', M.endo_names{i}, ys1(i), ...
                      ys(i)))
     else
-        disp(sprintf('%16s %12.6f %12.6f',M.endo_names(i,:),ys(i)))
+        disp(sprintf('%16s %12.6f %12.6f', M.endo_names{i}, ys(i)))
     end
 end
 
@@ -500,11 +500,11 @@ M_np = M;
 M_np.lead_lag_incidence = lead_lag_incidence_np;
 M_np.lead_lag_incidence = lead_lag_incidence_np;
 M_np.endo_nbr = length(v_np);
-M_np.endo_names = M.endo_names(v_np,:);
+M_np.endo_names = M.endo_names(v_np);
 dr_np = struct();
 dr_np = set_state_space(dr_np,M_np,options);
 pm.dr_np = dr_np;
-M_np.var_order_endo_names = M_np.endo_names(dr_np.order_var,:);
+M_np.var_order_endo_names = M_np.endo_names(dr_np.order_var);
 pm.M_np = M_np;
 pm.i_fwrd_g = find(lead_lag_incidence_np(lead_index,dr_np.order_var)');
 

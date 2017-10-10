@@ -1,5 +1,6 @@
 function oo_ = posterior_analysis(type,arg1,arg2,arg3,options_,M_,oo_)
-% Copyright (C) 2008-2017 Dynare Team
+
+% Copyright (C) 2008-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -85,7 +86,7 @@ switch type
     oo_ = conditional_variance_decomposition_mc_analysis(SampleSize,'posterior',M_.dname,M_.fname,...
                                                       arg3,M_.exo_names,arg2,vartan,arg1,options_.mh_conf_sig,oo_,options_);
     if ~all(M_.H==0)
-        if strmatch(vartan(arg1,:),options_.varobs,'exact')
+        if strmatch(arg1,options_.varobs,'exact')
             oo_ = conditional_variance_decomposition_ME_mc_analysis(SampleSize,'posterior',M_.dname,M_.fname,...
                 arg3,M_.exo_names,arg2,vartan,arg1,options_.mh_conf_sig,oo_,options_);
         end

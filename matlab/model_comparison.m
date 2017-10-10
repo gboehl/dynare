@@ -20,7 +20,7 @@ function oo = model_comparison(ModelNames,ModelPriors,oo,options_,fname)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2007-2017 Dynare Team
+% Copyright (C) 2007-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -114,42 +114,36 @@ lmpd = log(ModelPriors)+MarginalLogDensity;
 elmpd = exp(lmpd-maxval);
 
 % Now I display the posterior probabilities.
-headers = char('Model',ShortModelNames{:});
+headers = vertcat('Model', ShortModelNames);
 if prior_flag
-    labels = char('Priors','Log Marginal Density','Bayes Ratio', ...
-                  'Posterior Model Probability');
-    field_labels={'Prior','Log_Marginal_Density','Bayes_Ratio', ...
-                  'Posterior_Model_Probability'};
-    values = [ModelPriors';MarginalLogDensity';exp(lmpd-lmpd(1))'; ...
-              elmpd'/sum(elmpd)];
+    labels = {'Priors'; 'Log Marginal Density'; 'Bayes Ratio'; 'Posterior Model Probability'};
+    field_labels={'Prior','Log_Marginal_Density','Bayes_Ratio', 'Posterior_Model_Probability'};
+    values = [ModelPriors';MarginalLogDensity';exp(lmpd-lmpd(1))'; elmpd'/sum(elmpd)];
 else
-    labels = char('Priors','Log Marginal Density','Bayes Ratio','Posterior Odds Ratio', ...
-                  'Posterior Model Probability');
+    labels = {'Priors'; 'Log Marginal Density'; 'Bayes Ratio'; 'Posterior Odds Ratio'; 'Posterior Model Probability'};
     field_labels={'Prior','Log_Marginal_Density','Bayes_Ratio','Posterior_Odds_Ratio','Posterior_Model_Probability'};
-    values = [ModelPriors';MarginalLogDensity'; exp(MarginalLogDensity-MarginalLogDensity(1))'; ...
-              exp(lmpd-lmpd(1))'; elmpd'/sum(elmpd)];
+    values = [ModelPriors';MarginalLogDensity'; exp(MarginalLogDensity-MarginalLogDensity(1))'; exp(lmpd-lmpd(1))'; elmpd'/sum(elmpd)];
 end
 
-for model_iter=1:NumberOfModels
-    for var_iter=1:size(labels,1)
-        oo.Model_Comparison.(deblank(headers(1+model_iter,:))).(field_labels{var_iter})=values(var_iter,model_iter);
+for model_iter = 1:NumberOfModels
+    for var_iter = 1:length(labels)
+        oo.Model_Comparison.(headers{1+model_iter}).(field_labels{var_iter}) = values(var_iter, model_iter);
     end
 end
 
-dyntable(options_,title,headers,labels,values, 0, 15, 6);
+dyntable(options_, title, headers, labels, values, 0, 15, 6);
 if options_.TeX
-    M_temp.fname=fname;
-    M_temp.dname=fname;
-    headers_tex='';
-    for ii=1:size(headers,1)
-        headers_tex=strvcat(headers_tex,strrep(headers(ii,:),'_', '\_'));
+    M_temp.fname = fname;
+    M_temp.dname = fname;
+    headers_tex = {};
+    for ii = 1:length(headers)
+        headers_tex = vertcat(headers_tex, strrep(headers{ii}, '_', '\_'));
     end
-    labels_tex='';
-    for ii=1:size(labels,1)
-        labels_tex=strvcat(labels_tex,strrep(labels(ii,:),' ', '\ '));
+    labels_tex = {};
+    for ii = 1:length(labels)
+        labels_tex = vertcat(labels_tex, strrep(labels{ii},' ', '\ '));
     end
-
-    dyn_latex_table(M_temp,options_,title,['model_comparison',type],headers_tex,labels_tex,values,0,16,6);
+    dyn_latex_table(M_temp, options_, title, ['model_comparison', type], headers_tex, labels_tex, values, 0, 16, 6);
 end
 
 function name = get_model_name_without_path(modelname)
@@ -178,9 +172,9 @@ name = modelname(1:end-4);
 
 function modellist = get_short_names(modelnames)
 n = length(modelnames);
-modellist = {};
+modellist = cell(n, 1);
 for i=1:n
     name = get_model_name_without_extension(modelnames{i});
     name = get_model_name_without_path(name);
-    modellist = {modellist{:} name};
+    modellist(i) = {name};
 end

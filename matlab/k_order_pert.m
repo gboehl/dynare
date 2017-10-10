@@ -1,7 +1,7 @@
 function [dr,info] = k_order_pert(dr,M,options)
 % Compute decision rules using the k-order DLL from Dynare++
 
-% Copyright (C) 2009-2017 Dynare Team
+% Copyright (C) 2009-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -20,7 +20,12 @@ function [dr,info] = k_order_pert(dr,M,options)
 
 info = 0;
 
-M.var_order_endo_names = M.endo_names(dr.order_var,:);
+M.var_order_endo_names = M.endo_names(dr.order_var);
+
+% k_order_perturbation expects char array for the names of endogenous and
+% exogenous variables (not cells). The mex needs to be fixed...
+M.var_order_endo_names = char(M.var_order_endo_names); 
+M.exo_names = char(M.exo_names);
 
 order = options.order;
 endo_nbr = M.endo_nbr;

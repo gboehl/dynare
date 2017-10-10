@@ -10,7 +10,7 @@ function forecasts = backward_model_forecast(initialcondition, listofvariables, 
 % OUTPUTS 
 % - forecast            [dseries]   
 
-% Copyright (C) 2017 Dynare Team
+% Copyright (C) 2017-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -39,7 +39,7 @@ forecasts = struct();
 
 % Set defaults.
 if nargin<2
-    listofvariables = cellstr(M_.endo_names);
+    listofvariables = M_.endo_names;
     periods = 8;
     withuncertainty = false;
 end

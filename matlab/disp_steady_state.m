@@ -12,7 +12,7 @@ function disp_steady_state(M,oo)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2001-2017 Dynare Team
+% Copyright (C) 2001-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -34,6 +34,7 @@ disp('STEADY-STATE RESULTS:')
 skipline()
 endo_names = M.endo_names;
 steady_state = oo.steady_state;
-for i=1:M.orig_endo_nbr
-    disp(sprintf('%s \t\t %g',endo_names(i,:),steady_state(i)));
+
+for i = 1:M.orig_endo_nbr
+    disp(sprintf('%s \t\t %g', endo_names{i}, steady_state(i)));
 end

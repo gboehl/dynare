@@ -1,6 +1,6 @@
 function [vdec, cc, ac] = mc_moments(mm, ss, dr)
 
-% Copyright (C) 2012-2017 Dynare Team
+% Copyright (C) 2012-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -20,7 +20,7 @@ function [vdec, cc, ac] = mc_moments(mm, ss, dr)
 global options_ M_ estim_params_ oo_
 
 [nr1, nc1, nsam] = size(mm);
-nobs=size(options_.varobs,2);
+nobs=length(options_.varobs);
 disp('Computing theoretical moments ...')
 h = dyn_waitbar(0,'Theoretical moments ...');
 vdec = zeros(nobs,M_.exo_nbr,nsam);

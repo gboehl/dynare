@@ -5,8 +5,7 @@ function [zdata]=mkdatap_anticipated(nperiods,decrulea,decruleb,...
 
 
 
-nvars = size(endog_,1);
-
+nvars = length(endog_);
 
 if nargin<16
     init=zeros(nvars,1);
@@ -19,11 +18,11 @@ end
 
 nshocks = size(irfshock,1);
 for i = 1:nshocks
-    shockpos = strmatch(irfshock(i,:),exog_,'exact');
+    shockpos = strmatch(irfshock(i,:), exog_, 'exact');
     if ~isempty(shockpos)
         irfshockpos(i) = shockpos;
     else
-        error(['Shock ',irfshock(i,:),' is not in the model']);
+        error(['Shock ', irfshock(i,:), ' is not in the model']);
     end
 end
 
@@ -94,7 +93,7 @@ end
 % be stored columnwise.
 history = zeros(nvars,nperiods+1);
 history(:,1) = init;
-errvec = zeros(size(exog_,1),1);
+errvec = zeros(length(exog_), 1);
 
 % deal with predetermined conditions
 for i = 1:nshocks

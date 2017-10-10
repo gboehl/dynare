@@ -2,7 +2,7 @@ function [initialconditions, samplesize, innovations, DynareOptions, DynareModel
 
 % Initialization of the routines simulating backward models.    
 
-% Copyright (C) 2017 Dynare Team
+% Copyright (C) 2017-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -41,7 +41,7 @@ if ~isdseries(initialconditions)
 end
 
 % Test if the first argument contains all the lagged endogenous variables
-endonames = cellstr(DynareModel.endo_names);
+endonames = DynareModel.endo_names;
 missingendogenousvariables = setdiff(endonames, initialconditions.name);
 endolags = get_lags_on_endogenous_variables(DynareModel);
 endolags_ = endolags(find(endolags));
@@ -84,7 +84,7 @@ if missinginitialcondition
 end
 
 % If the model has lags on the exogenous variables, test if we have corresponding initial conditions. 
-exonames = cellstr(DynareModel.exo_names);
+exonames = DynareModel.exo_names;
 missingexogenousvariables = setdiff(exonames, initialconditions.name);
 exolags = get_lags_on_exogenous_variables(DynareModel);
 exolags_ = exolags(find(exolags));
@@ -131,16 +131,16 @@ k = 0;
 for i = DynareModel.orig_endo_nbr+1:DynareModel.endo_nbr
     k = k+1;
     if DynareModel.aux_vars(k).type==1
-        if ismember(deblank(DynareModel.endo_names(DynareModel.aux_vars(k).orig_index,:)), initialconditions.name)
-            initialconditions{deblank(DynareModel.endo_names(DynareModel.aux_vars(k).endo_index, :))} = ...
-                initialconditions{deblank(DynareModel.endo_names(DynareModel.aux_vars(k).orig_index, :))}.lag(abs(DynareModel.aux_vars(k).orig_lead_lag));
+        if ismember(DynareModel.endo_names{DynareModel.aux_vars(k).orig_index}, initialconditions.name)
+            initialconditions{DynareModel.endo_names{DynareModel.aux_vars(k).endo_index}} = ...
+                initialconditions{DynareModel.endo_names{DynareModel.aux_vars(k).orig_index}}.lag(abs(DynareModel.aux_vars(k).orig_lead_lag));
         else
             error('This is a bug. Please contact Dynare Team!');
         end
     elseif DynareModel.aux_vars(k).type==3
-        if ismember(deblank(DynareModel.exo_names(DynareModel.aux_vars(k).orig_index, :)), initialconditions.name)
-            initialconditions{deblank(DynareModel.endo_names(DynareModel.aux_vars(k).endo_index,:))} = ...
-                initialconditions{deblank(DynareModel.exo_names(DynareModel.aux_vars(k).orig_index, :))}.lag(abs(DynareModel.aux_vars(k).orig_lead_lag));
+        if ismember(DynareModel.exo_names{DynareModel.aux_vars(k).orig_index}, initialconditions.name)
+            initialconditions{DynareModel.endo_names{DynareModel.aux_vars(k).endo_index}} = ...
+                initialconditions{DynareModel.exo_names{DynareModel.aux_vars(k).orig_index}}.lag(abs(DynareModel.aux_vars(k).orig_lead_lag));
         else
             error('This is a bug. Please contact Dynare Team!');
         end

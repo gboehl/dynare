@@ -25,7 +25,7 @@ function homotopy2(values, step_nbr)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2008-2017 Dynare Team
+% Copyright (C) 2008-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -82,11 +82,11 @@ end
 for i = 1:nv
     switch values(i,1)
       case 1
-        varname = M_.exo_names(values(i,2), :);
+        varname = M_.exo_names{values(i,2)};
       case 2
-        varname = M_.exo_det_names(values(i,2), :);
+        varname = M_.exo_det_names{values(i,2)};
       case 4
-        varname = M_.param_names(values(i,2), :);
+        varname = M_.param_names{values(i,2)};
     end
     for v = oldvalues(i):(values(i,4)-oldvalues(i))/step_nbr:values(i,4)
         switch values(i,1)
@@ -98,7 +98,7 @@ for i = 1:nv
             M_.params(values(i,2)) = v;
         end
 
-        disp([ 'HOMOTOPY mode 2: lauching solver with ' deblank(varname) ' = ' num2str(v) ' ...'])
+        disp([ 'HOMOTOPY mode 2: lauching solver with ' varname ' = ' num2str(v) ' ...'])
 
         oo_.steady_state = steady_(M_,options_,oo_);
     end

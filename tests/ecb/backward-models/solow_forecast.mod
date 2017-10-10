@@ -53,7 +53,7 @@ end;
 
 oo__ = simul_backward_nonlinear_model([], 10, options_, M_, oo_);
 
-initialcondition = dseries(transpose(oo__.endo_simul(:,10)), 2017Q1, cellstr(M_.endo_names));
+initialcondition = dseries(transpose(oo__.endo_simul(:,10)), 2017Q1, M_.endo_names);
 
 
 /* REMARKS

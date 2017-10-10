@@ -24,7 +24,7 @@ function smoother2histval(opts)
 %
 % The function also uses the value of option_.parameter_set
 
-% Copyright (C) 2014-2017 Dynare Team
+% Copyright (C) 2014-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -198,10 +198,10 @@ for i = 1:length(M_.aux_vars)
     end
     if M_.aux_vars(i).type == 1
         % Endogenous
-        orig_var = deblank(M_.endo_names(M_.aux_vars(i).orig_index, :));
+        orig_var = M_.endo_names{M_.aux_vars(i).orig_index};
     else
         % Exogenous
-        orig_var = deblank(M_.exo_names(M_.aux_vars(i).orig_index, :));
+        orig_var = M_.exo_names{M_.aux_vars(i).orig_index};
     end
     [m, k] = ismember(orig_var, outvars);
     if m

@@ -17,7 +17,7 @@ function [endogenousvariables, info] = sim1(endogenousvariables, exogenousvariab
 % SPECIAL REQUIREMENTS
 %   None.
 
-% Copyright (C) 1996-2017 Dynare Team
+% Copyright (C) 1996-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -312,22 +312,22 @@ function display_critical_variables(dyy, M)
 
 if any(isnan(dyy))
     indx = find(any(isnan(dyy)));
-    endo_names=cellstr(M.endo_names(indx,:));
+    endo_names= M.endo_names(indx);
     disp('Last iteration provided NaN for the following variables:')
-    fprintf('%s, ',endo_names{:}),
+    fprintf('%s, ', endo_names{:}),
     fprintf('\n'),
 end
 if any(isinf(dyy))
     indx = find(any(isinf(dyy)));
-    endo_names=cellstr(M.endo_names(indx,:));
+    endo_names = M.endo_names(indx);
     disp('Last iteration diverged (Inf) for the following variables:')
-    fprintf('%s, ',endo_names{:}),
+    fprintf('%s, ', endo_names{:}),
     fprintf('\n'),
 end
 if any(~isreal(dyy))
     indx = find(any(~isreal(dyy)));
-    endo_names=cellstr(M.endo_names(indx,:));
+    endo_names = M.endo_names(indx);
     disp('Last iteration provided complex number for the following variables:')
-    fprintf('%s, ',endo_names{:}),
+    fprintf('%s, ', endo_names{:}),
     fprintf('\n'),
 end

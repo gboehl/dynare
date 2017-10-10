@@ -12,7 +12,7 @@ function dr=mult_elimination(varlist,M_, options_, oo_)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2003-2017 Dynare Team
+% Copyright (C) 2003-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -34,7 +34,7 @@ dr = oo_.dr;
 nstatic = M_.nstatic;
 nspred = M_.nspred;
 order_var = dr.order_var;
-nstates = M_.endo_names(order_var(nstatic+(1:nspred)),:);
+nstates = M_.endo_names(order_var(nstatic+(1:nspred)));
 
 il = strmatch('MULT_',nstates);
 nil = setdiff(1:nspred,il);
@@ -103,10 +103,10 @@ nvar = length(varlist);
 
 if nvar > 0 && options_.noprint == 0
     res_table = zeros(2*(nm_nbr+M_.exo_nbr),nvar);
-    headers = 'Variables';
+    headers = {'Variables'};
     for i=1:length(varlist)
-        k = strmatch(varlist{i},M_.endo_names(dr.order_var,:),'exact');
-        headers = char(headers,varlist{i});
+        k = strmatch(varlist{i}, M_.endo_names(dr.order_var), 'exact');
+        headers = vertcat(headers, varlist{i});
 
         res_table(1:nm_nbr,i) = M1(k,:)';
         res_table(nm_nbr+(1:nm_nbr),i) = M2(k,:)';
@@ -115,19 +115,12 @@ if nvar > 0 && options_.noprint == 0
     end
 
     my_title='ELIMINATION OF THE MULTIPLIERS';
-    lab = nstates(nil,:);
-    labels = strcat(deblank(lab(i,:)),'(-1)');
-    for i = 2:size(lab,1)
-        labels = char(labels,strcat(deblank(lab(i,:)),'(-1)'));
-    end
-    for i = 1:size(lab,1)
-        labels = char(labels,strcat(deblank(lab(i,:)),'(-2)'));
-    end
-    labels = char(labels,M_.exo_names);
-    for i = 1:M_.exo_nbr
-        labels = char(labels,strcat(deblank(M_.exo_names(i,:)),'(-1)'));
-    end
+    lab = nstates(nil);
+    labels = cellfun(@(x) horzcat(x, '(-1)'), nstates(nil), 'UniformOutput', false);
+    labels = vertcat(labels, cellfun(@(x) horzcat(x, '(-2)'), nstates(nil), 'UniformOutput', false));
+    labels = vertcat(labels, M_.exo_names);
+    labels = vertcat(labels, cellfun(@(x) horzcat(x, '(-1)'), M_.exo_names, 'UniformOutput', false));
     lh = size(labels,2)+2;
-    dyntable(options_,my_title,headers,labels,res_table,lh,10,6);
+    dyntable(options_, my_title, headers, labels, res_table, lh, 10, 6);
     skipline()
 end

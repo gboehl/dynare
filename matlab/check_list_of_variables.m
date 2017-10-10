@@ -5,16 +5,16 @@ function varlist = check_list_of_variables(options_, M_, varlist)
 %
 % INPUTS
 %
-%   options_        [structure]    Dynare structure.
-%   M_              [structure]    Dynare structure (related to model definition).
-%   varlist         [string]       Array of strings with name of the endogenous variables.
+%   options_        [structure]                 Dynare structure.
+%   M_              [structure]                 Dynare structure (related to model definition).
+%   varlist         [cell of char arrays]       Array of strings with name of the endogenous variables.
 %
 % OUTPUTS
-%   varlist         [string]
+%   varlist         [cell of char arrays]
 %
 % SPECIAL REQUIREMENTS
 
-% Copyright (C) 2003-2017 Dynare Team
+% Copyright (C) 2003-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -33,21 +33,21 @@ function varlist = check_list_of_variables(options_, M_, varlist)
 
 %get uniques
 
-[junk1,junk2,index_uniques] = varlist_indices(varlist,M_.endo_names);
-varlist=varlist(index_uniques,:);
+[junk1, junk2, index_uniques] = varlist_indices(varlist, M_.endo_names);
+varlist = varlist(index_uniques);
 
-msg = 0;
+msg = false;
 if options_.dsge_var && options_.bayesian_irf
     if ~isempty(varlist)
         for i=1:size(varlist,1)
-            idx = strmatch(deblank(varlist(i,:)),options_.varobs,'exact');
+            idx = strmatch(varlist{i}, options_.varobs, 'exact');
             if isempty(idx)
-                disp([varlist(i,:) ' is not an observed variable!']);
-                msg = 1;
+                disp(sprintf('%s is not an observed variable!', varlist{i}))
+                msg = true;
             end
         end
-        if size(varlist,1)~=length(options_.varobs)
-            msg = 1;
+        if ~isequal(size(varlist), length(options_.varobs))
+            msg = true;
         end
         if msg
             skipline()
@@ -55,7 +55,7 @@ if options_.dsge_var && options_.bayesian_irf
             skipline()
         end
     end
-    varlist = char(options_.varobs);
+    varlist = options_.varobs;
     return
 end
 
@@ -63,16 +63,16 @@ if ~isempty(varlist) && ~isempty(options_.endo_vars_for_moment_computations_in_e
     error('You cannot use the consider_all_endogenous or consider_all_observed options when listing variables after the estimation command')
 elseif isempty(varlist) && ~isempty(options_.endo_vars_for_moment_computations_in_estimation)
     if strcmp(options_.endo_vars_for_moment_computations_in_estimation,'all_endogenous_variables')
-        varlist = M_.endo_names(1:M_.orig_endo_nbr, :);
+        varlist = M_.endo_names(1:M_.orig_endo_nbr);
     elseif strcmp(options_.endo_vars_for_moment_computations_in_estimation,'only_observed_variables')
-        varlist = char(options_.varobs');
+        varlist = options_.varobs;
     else
         error('Unknown option')
     end
 elseif isempty(varlist) && isempty(options_.endo_vars_for_moment_computations_in_estimation)
     skipline()
     disp(['You did not declare endogenous variables after the estimation/calib_smoother command.'])
-    cas = [];
+    cas = '';
     if options_.bayesian_irf
         cas = 'Posterior IRFs';
     end
@@ -80,37 +80,37 @@ elseif isempty(varlist) && isempty(options_.endo_vars_for_moment_computations_in
         if isempty(cas)
             cas = 'Posterior moments';
         else
-            cas = [ cas , ', posterior moments'];
+            cas = [cas, ', posterior moments'];
         end
     end
     if options_.smoother
         if isempty(cas)
             cas = 'Smoothed variables';
         else
-            cas = [ cas , ', smoothed variables'];
+            cas = [cas, ', smoothed variables'];
         end
     end
     if ~isempty(options_.filter_step_ahead)
         if isempty(cas)
             cas = 'k-step ahead filtered variables';
         else
-            cas = [ cas , ', k-step ahead filtered variables'];
+            cas = [cas, ', k-step ahead filtered variables'];
         end
     end
     if options_.forecast
         if isempty(cas)
             cas = 'Forecasts';
         else
-            cas = [ cas , ' and forecasts'];
+            cas = [cas, ' and forecasts'];
         end
     end
     if ~isempty(cas)
-        string = [ cas , ' will be computed for the ' num2str(M_.endo_nbr)  ' endogenous variables'];
-        string = [ string ' of your model, this can take a long time ....'];
-        format_text(string, 10)
+        str = sprintf('%s will be computed for the %s endogenous variables of your model', cas, num2str(M_.orig_endo_nbr));
+        str = sprintf('%s, this can take a long time ....', str);
+        format_text(str, 10)
         if options_.nointeractive
             % Default behaviour is to consider all the endogenous variables.
-            varlist = M_.endo_names(1:M_.orig_endo_nbr, :);
+            varlist = M_.endo_names(1:M_.orig_endo_nbr);
         else
             choice = [];
             while isempty(choice)
@@ -126,9 +126,9 @@ elseif isempty(varlist) && isempty(options_.endo_vars_for_moment_computations_in
                     choice=1;
                 end
                 if choice==1
-                    varlist = M_.endo_names(1:M_.orig_endo_nbr, :);
+                    varlist = M_.endo_names(1:M_.orig_endo_nbr);
                 elseif choice==2
-                    varlist = char(options_.varobs);
+                    varlist = options_.varobs;
                 elseif choice==3
                     varlist = NaN;
                 else

@@ -1,6 +1,6 @@
 function data  = load_mat_file_data_legacy(datafile, varobs)
 
-% Copyright (C) 2017 Dynare Team
+% Copyright (C) 2017-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -32,9 +32,9 @@ else
     data_mat=[];
     for var_iter=1:length(varobs)
         try
-            data_mat=[data_mat vec(data_file.(varobs{1,var_iter}))];
+            data_mat=[data_mat vec(data_file.(varobs{var_iter}))];
         catch
-            error('makedataset: The variable %s does not have dimensions conformable with the previous one',varobs{1,var_iter});
+            error(['makedataset: The variable %s does not have dimensions conformable with the previous one'], varobs{var_iter});
         end
     end
 end

@@ -1,20 +1,20 @@
-function [i_var,nvar,index_uniques] = varlist_indices(sublist,list)
-% function [i_var,nvar,index_uniques] = varlist_indices(sublist,list)
+function [i_var, nvar, index_uniques] = varlist_indices(sublist, list)
+
 % returns the indices of a list of endogenous variables
 %
 % INPUT
-%   sublist:    sublist of variables
-%   list:       list of variables
+%   sublist     [cell of char arrays] sublist of variables
+%   list        [cell of char arrays] list of variables
 %
 % OUTPUT
-%   i_var:      variable indices in M_.endo_names
-%   nvar:       number of variables in varlist
-%   index_uniqes: indices of unique elements in varlist
+%   i_var                             variable indices in M_.endo_names
+%   nvar                              number of variables in varlist
+%   index_uniques                     indices of unique elements in varlist
 %
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2010-2017 Dynare Team
+% Copyright (C) 2010-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -31,49 +31,34 @@ function [i_var,nvar,index_uniques] = varlist_indices(sublist,list)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-% In Octave, ismember() doesn't operate on character arrays
-if ~isoctave
-    if isempty(sublist)
-        check = [];
-        i_var = [];
-    else
-        [check,i_var] = ismember(sublist,list,'rows');
-    end
-else
+if isempty(sublist)
     check = [];
     i_var = [];
-    for i = 1:rows(sublist)
-        tmp = strmatch(deblank(sublist(i,:)), list, 'exact');
-        if isempty(tmp)
-            check = [ check; 0 ];
-        else
-            check = [ check; 1 ];
-            i_var = [ i_var; tmp ];
-        end
-    end
+else
+    [check, i_var] = ismember(sublist, list);
 end
 
 if ~all(check)
     k = find(~check);
-    tempstring = 'The following symbols are not endogenous variables: ';
+    str = 'The following symbols are not endogenous variables:';
     for ii = 1:length(k)
-        tempstring = [ tempstring, deblank(sublist(k(ii),:)), ' ' ];
+        str = sprintf('%s %s', str, sublist{k(ii)});
     end
-    error(tempstring)
+    error(str)
 end
 
 nvar = length(i_var);
-[i_var_unique,index_uniques,junk] = unique(i_var,'first');
-index_uniques =sort(index_uniques);
-i_var_unique =i_var(index_uniques);
+[i_var_unique, index_uniques, junk] = unique(i_var, 'first');
+index_uniques = sort(index_uniques);
+i_var_unique = i_var(index_uniques);
 
 if length(i_var_unique)~=nvar
     k = find(~ismember(1:nvar,index_uniques));
-    tempstring = 'The following symbols are specified twice in the variable list and are considered only once: ';
+    str = 'The following symbols are specified twice in the variable list and are considered only once:';
     for ii = 1:length(k)
-        tempstring = [ tempstring, deblank(sublist(k(ii),:)), ' ' ];
+        str = sprintf('%s %s', str, sublist{k(ii)});
     end
-    warning('%s\n',tempstring)
-    i_var=i_var_unique;
+    warning('%s\n', str)
+    i_var = i_var_unique;
     nvar = length(i_var);
 end

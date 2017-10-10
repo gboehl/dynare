@@ -1,6 +1,6 @@
-function M = set_local_param_value(pname,value,M)
-
-% Copyright (C) 2017-2018 Dynare Team
+function n = cellofchararraymaxlength(c)
+    
+% Copyright (C) 2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -17,11 +17,12 @@ function M = set_local_param_value(pname,value,M)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-
-i = strmatch(pname, M.param_names, 'exact');
-
-if isempty(i)
-    error(['Parameter name ' pname ' doesn''t exist'])
+if ~all(cellfun(@ischar, c))
+    error('Input has to be a cell of char arrays!')
 end
 
-M.params(i) = value;
+if ~all(cellfun(@isrow, c))
+    error('Input has to be a cell of one dimensional char arrays!')
+end
+
+n = max(cellfun(@length, c));

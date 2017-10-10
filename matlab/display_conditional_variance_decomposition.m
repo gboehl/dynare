@@ -13,7 +13,7 @@ function display_conditional_variance_decomposition(conditional_decomposition_ar
 % OUTPUTS
 %   none
 %
-% Copyright (C) 2010-2017 Dynare Team
+% Copyright (C) 2010-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -33,18 +33,19 @@ function display_conditional_variance_decomposition(conditional_decomposition_ar
 if size(conditional_decomposition_array,3)==M_.exo_nbr %no ME input
     shock_number=M_.exo_nbr;
     headers = M_.exo_names;
-    headers(M_.exo_names_orig_ord,:) = headers;
+    headers(M_.exo_names_orig_ord) = headers;
     if options_.TeX
-        headers_TeX=char('',deblank(M_.exo_names_tex));
+        headers_TeX = vertcat(' ', M_.exo_names_tex);
     end
     title_addon='';
 elseif size(conditional_decomposition_array,3)==M_.exo_nbr+1 %ME input
     shock_number=M_.exo_nbr+1;
     headers = M_.exo_names;
-    headers(M_.exo_names_orig_ord,:) = headers;
-    headers=char(headers,'ME');
+    headers(M_.exo_names_orig_ord) = headers;
+    headers = vertcat(headers, 'ME');
     if options_.TeX
-        headers_TeX=char('',deblank(strvcat(M_.exo_names_tex,'ME')));
+        headers_TeX = vertcat(M_.exo_names_tex, 'ME');
+        headers_TeX = vertcat(' ', headers_TeX);
     end
     title_addon=' - WITH MEASUREMENT ERROR';
 else
@@ -61,25 +62,22 @@ else
     disp(title)
 end
 
-headers = char(' ',headers);
-lh = size(deblank(M_.endo_names(SubsetOfVariables,:)),2)+2;
+headers = vertcat(' ', headers);
+lh = cellofchararraymaxlength(M_.endo_names(SubsetOfVariables))+2;
 if options_.TeX
-    labels_TeX = deblank(M_.endo_names_tex(SubsetOfVariables,:));
-    lh = size(labels_TeX,2)+2;
+    labels_TeX = M_.endo_names_tex(SubsetOfVariables);
+    lh = cellofchararraymaxlength(labels_TeX)+2;
 end
  
-vardec_i = zeros(length(SubsetOfVariables),shock_number);
+vardec_i = zeros(length(SubsetOfVariables), shock_number);
 
 for i=1:length(Steps)
     disp(['Period ' int2str(Steps(i)) ':'])
     for j=1:shock_number
-        vardec_i(:,j) = 100*conditional_decomposition_array(:, ...
-                                                          i,j);
+        vardec_i(:,j) = 100*conditional_decomposition_array(:,i,j);
     end
-    dyntable(options_,'',headers,...
-             deblank(M_.endo_names(SubsetOfVariables,:)),...
-             vardec_i,lh,8,2);
+    dyntable(options_, '', headers, M_.endo_names(SubsetOfVariables), vardec_i, lh, 8, 2);
     if options_.TeX
-        dyn_latex_table(M_,options_,[title,'; Period ' int2str(Steps(i))],['th_var_decomp_cond_h',int2str(Steps(i))],headers_TeX,labels_TeX,vardec_i,lh,8,2);
+        dyn_latex_table(M_, options_, [title, '; Period ' int2str(Steps(i))], ['th_var_decomp_cond_h', int2str(Steps(i))], headers_TeX, labels_TeX, vardec_i, lh, 8, 2);
     end
 end

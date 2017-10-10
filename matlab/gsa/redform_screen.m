@@ -11,7 +11,7 @@ function redform_screen(dirname, options_gsa_)
 % marco.ratto@ec.europa.eu
 
 % Copyright (C) 2012-2016 European Commission
-% Copyright (C) 2012-2017 Dynare Team
+% Copyright (C) 2012-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -38,7 +38,7 @@ anamexo = options_gsa_.namexo;
 iload = options_gsa_.load_redform;
 nliv = options_gsa_.morris_nliv;
 
-pnames = M_.param_names(estim_params_.param_vals(:,1),:);
+pnames = M_.param_names(estim_params_.param_vals(:,1));
 if nargin==0
     dirname='';
 end
@@ -54,36 +54,33 @@ nsok = length(find(M_.lead_lag_incidence(M_.maximum_lag,:)));
 
 js=0;
 for j=1:size(anamendo,1)
-    namendo=deblank(anamendo(j,:));
-    iendo=strmatch(namendo,M_.endo_names(oo_.dr.order_var,:),'exact');
-
+    namendo = deblank(anamendo(j,:));
+    iendo = strmatch(namendo, M_.endo_names(oo_.dr.order_var), 'exact');
     iplo=0;
     ifig=0;
     for jx=1:size(anamexo,1)
-        namexo=deblank(anamexo(jx,:));
-        iexo=strmatch(namexo,M_.exo_names,'exact');
-
+        namexo = deblank(anamexo(jx,:));
+        iexo = strmatch(namexo, M_.exo_names, 'exact');
         if ~isempty(iexo)
-            y0=teff(T(iendo,iexo+nspred,:),kn,istable);
+            y0=teff(T(iendo,iexo+nspred,:), kn, istable);
             if ~isempty(y0)
                 if mod(iplo,9)==0
-                    ifig=ifig+1;
-                    hh=dyn_figure(options_.nodisplay,'name',[namendo,' vs. shocks ',int2str(ifig)]);
-                    iplo=0;
+                    ifig = ifig+1;
+                    hh = dyn_figure(options_.nodisplay, 'name', [namendo,[' vs. shocks '], int2str(ifig)]);
+                    iplo = 0;
                 end
-                iplo=iplo+1;
-                js=js+1;
-                subplot(3,3,iplo),
-                [SAmeas, SAMorris] = Morris_Measure_Groups(np+nshock, [lpmat0 lpmat], y0,nliv);
+                iplo = iplo+1;
+                js = js+1;
+                subplot(3, 3, iplo)
+                [SAmeas, SAMorris] = Morris_Measure_Groups(np+nshock, [lpmat0 lpmat], y0, nliv);
                 SAM = squeeze(SAMorris(nshock+1:end,1));
-                SA(:,js)=SAM./(max(SAM)+eps);
+                SA(:,js) = SAM./(max(SAM)+eps);
                 [saso, iso] = sort(-SA(:,js));
                 bar(SA(iso(1:min(np,10)),js))
-                %set(gca,'xticklabel',pnames(iso(1:min(np,10)),:),'fontsize',8)
                 set(gca,'xticklabel',' ','fontsize',10)
                 set(gca,'xlim',[0.5 10.5])
                 for ip=1:min(np,10)
-                    text(ip,-0.02,deblank(pnames(iso(ip),:)),'rotation',90,'HorizontalAlignment','right','interpreter','none')
+                    text(ip,-0.02,pnames(iso(ip)),'rotation',90,'HorizontalAlignment','right','interpreter','none')
                 end
                 title([namendo,' vs. ',namexo],'interpreter','none')
                 if iplo==9
@@ -103,7 +100,7 @@ for j=1:size(anamendo,1)
     ifig=0;
     for je=1:size(anamlagendo,1)
         namlagendo=deblank(anamlagendo(je,:));
-        ilagendo=strmatch(namlagendo,M_.endo_names(oo_.dr.order_var(M_.nstatic+1:M_.nstatic+nsok),:),'exact');
+        ilagendo=strmatch(namlagendo, M_.endo_names(oo_.dr.order_var(M_.nstatic+1:M_.nstatic+nsok)), 'exact');
 
         if ~isempty(ilagendo)
             y0=teff(T(iendo,ilagendo,:),kn,istable);

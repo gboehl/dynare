@@ -6,7 +6,7 @@ function indcorr = stab_map_2(x,alpha2, pvalue_crit, fnam, dirname,xparam1,figti
 % marco.ratto@ec.europa.eu
 
 % Copyright (C) 2011-2016 European Commission
-% Copyright (C) 2011-2017 Dynare Team
+% Copyright (C) 2011-2018 Dynare Team
 % This file is part of Dynare.
 %
 % Dynare is free software: you can redistribute it and/or modify
@@ -183,10 +183,10 @@ end
 if j2==0
     disp(['No correlation term with pvalue <', num2str(pvalue_crit),' and |corr. coef.| >',num2str(alpha2),' found for ',fnam])
 else
-    headers=strvcat('Parameters','corrcoef');
-    dyntable(options_,title_string,headers,char(name),data_mat, 0, 7, 3);
+    headers={'Parameters'; 'corrcoef'};
+    dyntable(options_,title_string,headers, name, data_mat, 0, 7, 3);
     if options_.TeX
-        dyn_latex_table(M_,options_,title_string_tex,fig_nam_tex_table,headers,char(name_tex),data_mat,0,7,3);
+        dyn_latex_table(M_, options_, title_string_tex, fig_nam_tex_table, headers, name_tex, data_mat, 0, 7, 3);
     end
 end
 %close all

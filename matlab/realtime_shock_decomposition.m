@@ -22,7 +22,7 @@ function oo_ = realtime_shock_decomposition(M_,oo_,options_,varlist,bayestopt_,e
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2009-2017 Dynare Team
+% Copyright (C) 2009-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -40,12 +40,12 @@ function oo_ = realtime_shock_decomposition(M_,oo_,options_,varlist,bayestopt_,e
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 % indices of endogenous variables
-if size(varlist,1) == 0
-    varlist = M_.endo_names(1:M_.orig_endo_nbr,:);
+if isempty(varlist)
+    varlist = M_.endo_names(1:M_.orig_endo_nbr);
 end
 
-[i_var,nvar,index_uniques] = varlist_indices(varlist,M_.endo_names);
-varlist=varlist(index_uniques,:);
+[i_var, nvar, index_uniques] = varlist_indices(varlist,M_.endo_names);
+varlist = varlist(index_uniques);
 
 % number of variables
 endo_nbr = M_.endo_nbr;
@@ -131,10 +131,10 @@ for j=presample+1:nobs
     end
 
     % initialization
-    gend = size(oo.SmoothedShocks.(deblank(M_.exo_names(1,:))),1);
+    gend = length(oo.SmoothedShocks.(M_.exo_names{1}));
     epsilon=NaN(nshocks,gend);
     for i=1:nshocks
-        epsilon(i,:) = oo.SmoothedShocks.(deblank(M_.exo_names(i,:)));
+        epsilon(i,:) = oo.SmoothedShocks.(M_.exo_names{i});
     end
     epsilon=[epsilon zeros(nshocks,forecast_)];
 

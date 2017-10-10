@@ -22,7 +22,7 @@ function [y_,int_width,int_width_ME]=simultxdet(y0,ex,ex_det, iorder,var_list,M_
 % The condition size(ex,1)+M_.maximum_lag=size(ex_det,1) must be verified
 %  for consistency.
 
-% Copyright (C) 2008-2017 Dynare Team
+% Copyright (C) 2008-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -61,16 +61,16 @@ k3 = find(k3(:));
 k4 = dr.kstate(find(dr.kstate(:,2) < ykmin+1),[1 2]);
 k4 = k4(:,1)+(ykmin+1-k4(:,2))*endo_nbr;
 
-nvar = size(var_list,1);
+nvar = length(var_list);
 if nvar == 0
     nvar = endo_nbr;
     ivar = [1:nvar];
 else
     ivar=zeros(nvar,1);
     for i=1:nvar
-        i_tmp = strmatch(var_list(i,:),M_.endo_names,'exact');
+        i_tmp = strmatch(var_list{i}, M_.endo_names, 'exact');
         if isempty(i_tmp)
-            disp(var_list(i,:));
+            disp(var_list{i})
             error (['One of the variable specified does not exist']) ;
         else
             ivar(i) = i_tmp;
@@ -83,8 +83,7 @@ if iorder == 1
         tempx1 = y_(dr.order_var,k1);
         tempx2 = tempx1-repmat(dr.ys(dr.order_var),1,ykmin);
         tempx = tempx2(k2);
-        y_(dr.order_var,i) = dr.ys(dr.order_var)+dr.ghx*tempx+dr.ghu* ...
-            ex(i-ykmin,:)';
+        y_(dr.order_var,i) = dr.ys(dr.order_var)+dr.ghx*tempx+dr.ghu*ex(i-ykmin,:)';
         for j=1:min(ykmin+M_.exo_det_length+1-i,M_.exo_det_length)
             y_(dr.order_var,i) = y_(dr.order_var,i) + dr.ghud{j}*(ex_det(i+j-1,:)'-exo_det_steady_state);
         end

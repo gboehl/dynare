@@ -19,7 +19,7 @@ function [deviations, baseline, irfs] = backward_model_irf(initialcondition, inn
 %   argument.
 % - If second argument is not empty, periods must not be greater than innovationbaseline.nobs.
 
-% Copyright (C) 2017 Dynare Team
+% Copyright (C) 2017-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -72,7 +72,7 @@ else
     end
     if deterministicshockflag
         numberofexperiments = length(listofshocks);
-        exonames = cellstr(M_.exo_names);
+        exonames = M_.exo_names;
         initialconditionperiod = initialcondition.dates(end);
         for i=1:numberofexperiments
             shock = listofshocks{i};
@@ -108,7 +108,7 @@ if ~isempty(innovationbaseline)
         error('The second input argument must at least have %s observations or lower the number of periods.', periods)
     end
     % Fill innovations with provided paths for the innovations.
-    exonames = cellstr(M_.exo_names);
+    exonames = M_.exo_names;
     for i = 1:length(exonames)
         if ~isempty(strmatch(exonames{i}, innovationbaseline.name))
             Innovations(:,i) = innovationbaseline{exonames{i}}.data(1:periods);
@@ -183,9 +183,9 @@ for i=1:length(listofshocks)
         endo_simul__1 = feval(transform, ysim__1);
     end
     % Instantiate a dseries object (with all the endogenous variables)
-    alldeviations = dseries(transpose(endo_simul__1-endo_simul__0), initialcondition.init, endonames(1:M_.orig_endo_nbr), cellstr(DynareModel.endo_names_tex(1:M_.orig_endo_nbr,:)));
+    alldeviations = dseries(transpose(endo_simul__1-endo_simul__0), initialcondition.init, endonames(1:M_.orig_endo_nbr), DynareModel.endo_names_tex(1:M_.orig_endo_nbr));
     if nargout>2
-        allirfs = dseries(transpose(endo_simul__1), initialcondition.init, endonames(1:M_.orig_endo_nbr), cellstr(DynareModel.endo_names_tex(1:M_.orig_endo_nbr,:)));
+        allirfs = dseries(transpose(endo_simul__1), initialcondition.init, endonames(1:M_.orig_endo_nbr), DynareModel.endo_names_tex(1:M_.orig_endo_nbr));
     end
     % Extract a sub-dseries object
     if deterministicshockflag
@@ -201,6 +201,6 @@ for i=1:length(listofshocks)
 end
 
 if nargout>1
-    baseline = dseries(transpose(endo_simul__0), initialcondition.init, endonames(1:M_.orig_endo_nbr), cellstr(DynareModel.endo_names_tex(1:M_.orig_endo_nbr,:)));
+    baseline = dseries(transpose(endo_simul__0), initialcondition.init, endonames(1:M_.orig_endo_nbr), DynareModel.endo_names_tex(1:M_.orig_endo_nbr));
     baseline = [baseline, innovationbaseline];
 end

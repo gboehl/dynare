@@ -8,7 +8,7 @@ function disp_dr(dr,order,var_list)
 %    var_list [char array]:  list of endogenous variables for which the
 %                            decision rules should be printed
 %
-% Copyright (C) 2001-2017 Dynare Team
+% Copyright (C) 2001-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -43,17 +43,17 @@ else
     k1 = dr.order_var;
 end
 
-if size(var_list,1) == 0
-    var_list = M_.endo_names(1:M_.orig_endo_nbr, :);
+if isempty(var_list)
+    var_list = M_.endo_names(1:M_.orig_endo_nbr);
 end
 
-nvar = size(var_list,1);
+nvar = length(var_list);
 
 ivar=zeros(nvar,1);
 for i=1:nvar
-    i_tmp = strmatch(var_list(i,:),M_.endo_names(k1,:),'exact');
+    i_tmp = strmatch(var_list{i}, M_.endo_names(k1), 'exact');
     if isempty(i_tmp)
-        disp(var_list(i,:));
+        disp(var_list{i});
         error (['One of the variable specified does not exist']) ;
     else
         ivar(i) = i_tmp;
@@ -63,7 +63,7 @@ end
 % get length of display strings
 header_label_length=16; %default
 for ii=1:length(ivar)
-    header_label_length=max(header_label_length,length(deblank(M_.endo_names(k1(ivar(ii)),:)))+2);
+    header_label_length = max(header_label_length,length(M_.endo_names{k1(ivar(ii))})+2);
 end
 header_label_format  = sprintf('%%%ds',header_label_length);
 value_format_float  = sprintf('%%%d.6f',header_label_length);
@@ -81,7 +81,7 @@ else
     aux_var_additional_characters=0;
 end
 
-var_name_width=max([max(size(deblank(M_.endo_names(k1(ivar),:)),2)),max(size(deblank(M_.exo_names),2))]);
+var_name_width = max([cellofchararraymaxlength(M_.endo_names(k1(ivar))), cellofchararraymaxlength(M_.exo_names)]);
 
 %deal with covariances
 if order > 1
@@ -97,7 +97,7 @@ disp('POLICY AND TRANSITION FUNCTIONS')
 % variable names
 str = char(32*ones(1,var_name_width));
 for i=1:nvar
-    str = [str sprintf(header_label_format,deblank(M_.endo_names(k1(ivar(i)),:)))];
+    str = [str sprintf(header_label_format, M_.endo_names{k1(ivar(i))})];
 end
 disp(str);
 %
@@ -150,10 +150,10 @@ end
 %
 for k=1:nu
     flag = 0;
-    str = sprintf(label_format,M_.exo_names(k,:));
+    str = sprintf(label_format, M_.exo_names{k});
     for i=1:nvar
         x = dr.ghu(ivar(i),k);
-        [str,flag]=get_print_string(str,x,value_format_zero,value_format_float,flag,options_);
+        [str,flag] = get_print_string(str, x, value_format_zero, value_format_float, flag, options_);
     end
     if flag
         disp(str)
@@ -167,7 +167,7 @@ if order > 1
             flag = 0;
             str1 = sprintf('%s,%s',subst_auxvar(k1(klag(k,1)),klag(k,2)-M_.maximum_lag-2), ...
                            subst_auxvar(k1(klag(j,1)),klag(j,2)-M_.maximum_lag-2));
-            str = sprintf(label_format,str1);
+            str = sprintf(label_format, str1);
             for i=1:nvar
                 if k == j
                     x = dr.ghxx(ivar(i),(k-1)*nx+j)/2;
@@ -187,14 +187,14 @@ if order > 1
     for k = 1:nu
         for j = 1:k
             flag = 0;
-            str = sprintf(label_format,[deblank(M_.exo_names(k,:)) ',' deblank(M_.exo_names(j,:))] );
+            str = sprintf(label_format, [M_.exo_names{k} ',' M_.exo_names{j}]);
             for i=1:nvar
                 if k == j
                     x = dr.ghuu(ivar(i),(k-1)*nu+j)/2;
                 else
                     x = dr.ghuu(ivar(i),(k-1)*nu+j);
                 end
-                [str,flag]=get_print_string(str,x,value_format_zero,value_format_float,flag,options_);
+                [str,flag]=get_print_string(str, x, value_format_zero, value_format_float, flag, options_);
             end
             if flag
                 disp(str)
@@ -207,8 +207,7 @@ if order > 1
     for k = 1:nx
         for j = 1:nu
             flag = 0;
-            str1 = sprintf('%s,%s',subst_auxvar(k1(klag(k,1)),klag(k,2)-M_.maximum_lag-2), ...
-                           deblank(M_.exo_names(j,:)));
+            str1 = sprintf('%s,%s',subst_auxvar(k1(klag(k,1)),klag(k,2)-M_.maximum_lag-2), M_.exo_names{j});
             str = sprintf(label_format,str1);
             for i=1:nvar
                 x = dr.ghxu(ivar(i),(k-1)*nu+j);
@@ -230,41 +229,40 @@ function str = subst_auxvar(aux_index, aux_lead_lag)
 global M_
 
 if aux_index <= M_.orig_endo_nbr
-    str = sprintf('%s(%d)', deblank(M_.endo_names(aux_index,:)), aux_lead_lag);
+    str = sprintf('%s(%d)', M_.endo_names{aux_index}, aux_lead_lag);
     return
 end
 for i = 1:length(M_.aux_vars)
     if M_.aux_vars(i).endo_index == aux_index
         switch M_.aux_vars(i).type
           case 0
-            str = sprintf('%s(%d)',deblank(M_.endo_names(aux_index,:)),aux_lead_lag);
+            str = sprintf('%s(%d)', M_.endo_names{aux_index}, aux_lead_lag);
             return
           case 1
-            orig_name = deblank(M_.endo_names(M_.aux_vars(i).orig_index, :));
+            orig_name = M_.endo_names{M_.aux_vars(i).orig_index};
           case 3
-            orig_name = deblank(M_.exo_names(M_.aux_vars(i).orig_index, :));
+            orig_name = M_.exo_names{M_.aux_vars(i).orig_index};
           case 4
             str = sprintf('EXPECTATION(%d)(...)', aux_lead_lag);
             return
           case 6
-            str = sprintf('%s(%d)', ...
-                          deblank(M_.endo_names(M_.aux_vars(i).endo_index, :)),aux_lead_lag);
+            str = sprintf('%s(%d)', M_.endo_names{M_.aux_vars(i).endo_index}, aux_lead_lag);
             return
           otherwise
-            error(sprintf('Invalid auxiliary type: %s', M_.endo_names(aux_index, :)))
+            error(sprintf('Invalid auxiliary type: %s', M_.endo_names{aux_index}))
         end
         str = sprintf('%s(%d)', orig_name, M_.aux_vars(i).orig_lead_lag+aux_lead_lag);
         return
     end
 end
-error(sprintf('Could not find aux var: %s', M_.endo_names(aux_index, :)))
+error(sprintf('Could not find aux var: %s', M_.endo_names{aux_index}))
 end
 
-function [str,flag]=get_print_string(str,x,value_format_zero,value_format_float,flag,options_)
+function [str,flag]=get_print_string(str, x, value_format_zero, value_format_float, flag, options_)
 if abs(x) >= options_.dr_display_tol
     flag = 1;
-    str = [str sprintf(value_format_float,x)];
+    str = [str sprintf(value_format_float, x)];
 else
-    str = [str sprintf(value_format_zero,0)];
+    str = [str sprintf(value_format_zero, 0)];
 end
 end

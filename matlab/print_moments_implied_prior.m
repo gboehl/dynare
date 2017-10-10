@@ -3,7 +3,7 @@ function print_moments_implied_prior(ModelInfo, mm, vm, mv, vv)
 % This routine prints in the command window some descriptive statistics
 % about the endogenous variables implied prior moments.
 
-% Copyright (C) 2016-2017 Dynare Team
+% Copyright (C) 2016-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -29,7 +29,7 @@ T1 = 'VARIABLE ';
 T2 = sprintf('Prior mean \t Prior st. dev.');
 
 for i=1:ModelInfo.orig_endo_nbr
-    Name = deblank(ModelInfo.endo_names(i, :));
+    Name = ModelInfo.endo_names{i};
     T1 = strvcat(T1, Name);
     str = sprintf(' %6.4f \t %6.4f', mm(i), sqrt(vm(i)));
     T2 = strvcat(T2, str);
@@ -55,8 +55,8 @@ T2b = 'Prior st.dev.';
 
 for i=1:ModelInfo.orig_endo_nbr
     for j=i:ModelInfo.orig_endo_nbr
-        Name1 = deblank(ModelInfo.endo_names(i, :));
-        Name2 = deblank(ModelInfo.endo_names(j, :));
+        Name1 = ModelInfo.endo_names{i};
+        Name2 = ModelInfo.endo_names{j};
         T1a = strvcat(T1a, Name1);
         T1b = strvcat(T1b, Name2);
         sta = sprintf('%12.8f', mv(i,j));

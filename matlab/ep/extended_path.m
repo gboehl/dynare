@@ -19,7 +19,7 @@ function [ts, DynareResults] = extended_path(initialconditions, samplesize, exog
 %
 % SPECIAL REQUIREMENTS
 
-% Copyright (C) 2009-2017 Dynare Team
+% Copyright (C) 2009-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -98,7 +98,7 @@ if any(isnan(endogenous_variables_paths(:)))
     nn = size(endogenous_variables_paths, 1);
     endogenous_variables_paths = reshape(endogenous_variables_paths(sl), nn, length(sl)/nn);
 end
-ts = dseries(transpose(endogenous_variables_paths), initial_period, cellstr(DynareModel.endo_names));
+ts = dseries(transpose(endogenous_variables_paths), initial_period, DynareModel.endo_names);
 
 DynareResults.endo_simul = transpose(ts.data);
 assignin('base', 'Simulated_time_series', ts);

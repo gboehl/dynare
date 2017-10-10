@@ -23,7 +23,7 @@ function [oo_,M_] = shock_decomposition(M_,oo_,options_,varlist,bayestopt_,estim
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2009-2017 Dynare Team
+% Copyright (C) 2009-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -41,12 +41,12 @@ function [oo_,M_] = shock_decomposition(M_,oo_,options_,varlist,bayestopt_,estim
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 % indices of endogenous variables
-if size(varlist,1) == 0
-    varlist = M_.endo_names(1:M_.orig_endo_nbr,:);
+if isempty(varlist)
+    varlist = M_.endo_names(1:M_.orig_endo_nbr);
 end
 
-[i_var,nvar,index_uniques] = varlist_indices(varlist,M_.endo_names);
-varlist=varlist(index_uniques,:);
+[i_var,nvar,index_uniques] = varlist_indices(varlist, M_.endo_names);
+varlist = varlist(index_uniques);
 
 % number of variables
 endo_nbr = M_.endo_nbr;
@@ -87,10 +87,10 @@ A = dr.ghx;
 B = dr.ghu;
 
 % initialization
-gend = size(oo_.SmoothedShocks.(deblank(M_.exo_names(1,:))),1);
+gend = size(oo_.SmoothedShocks.(M_.exo_names{1}),1);
 epsilon=NaN(nshocks,gend);
 for i=1:nshocks
-    epsilon(i,:) = oo_.SmoothedShocks.(deblank(M_.exo_names(i,:)));
+    epsilon(i,:) = oo_.SmoothedShocks.(M_.exo_names{i});
 end
 
 z = zeros(endo_nbr,nshocks+2,gend);

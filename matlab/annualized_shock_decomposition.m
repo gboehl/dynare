@@ -32,7 +32,7 @@ function [z, endo_names, endo_names_tex, steady_state, i_var, oo_] = annualized_
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2017 Dynare Team
+% Copyright (C) 2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -109,17 +109,15 @@ elseif mytype
     gtex = 'g';
 end
 steady_state=steady_state(i_var);
-% endo_names = M_.endo_names(i_var,:);
-% endo_names_tex = M_.endo_names_tex(i_var,:);
 nterms = size(z,2);
 nfrcst = opts.forecast/4;
 
 for j=1:nvar
     if j>1
-        endo_names = char(endo_names,[deblank(M_.endo_names(i_var(j),:)) '_A']);
-        endo_names_tex = char(endo_names_tex,['{' deblank(M_.endo_names_tex(i_var(j),:)) '}^A']);
-        gendo_names = char(gendo_names,[gtxt endo_names(j,:)]);
-        gendo_names_tex = char(gendo_names_tex,[gtex '(' deblank(endo_names_tex(j,:)) ')']);
+        endo_names = char(endo_names, sprintf('%s_A', M_.endo_names{i_var(j)}));
+        endo_names_tex = char(endo_names_tex, sprintf('{%s}^A', M_.endo_names_tex{i_var(j)}));
+        gendo_names = char(gendo_names,[gtxt endo_names{j}]);
+        gendo_names_tex = char(gendo_names_tex,[gtex '(' endo_names_tex{j} ')']);
     else
         if nvar==1 && ~mytype
             endo_names = mytxt;
@@ -127,10 +125,10 @@ for j=1:nvar
             gendo_names = gtxt;
             gendo_names_tex = gtex;
         else
-            endo_names = [deblank(M_.endo_names(i_var(j),:)) '_A'];
-            endo_names_tex = ['{' deblank(M_.endo_names_tex(i_var(j),:)) '}^A'];
-            gendo_names = [gtxt endo_names(j,:)];
-            gendo_names_tex = [gtex '(' deblank(endo_names_tex(j,:)) ')'];
+            endo_names = sprintf('%s_A', M_.endo_names{i_var(j)});
+            endo_names_tex = sprintf('{%s}^A', M_.endo_names_tex{i_var(j)});
+            gendo_names = [gtxt endo_names{j}];
+            gendo_names_tex = [gtex '(' endo_names_tex{j} ')'];
         end
     end
     for k =1:nterms
@@ -331,3 +329,6 @@ else
         steady_state = steady_state_a;
     end
 end
+
+endo_names = cellstr(endo_names);
+endo_names_tex = cellstr(endo_names_tex);

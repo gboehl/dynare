@@ -11,7 +11,7 @@ function steady()
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2001-2017 Dynare Team
+% Copyright (C) 2001-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -59,15 +59,15 @@ if info(1)
     disp('WARNING: homotopy step was not completed')
     disp('The last values for which a solution was found are:')
     for i=1:length(ip)
-        disp(sprintf('%12s %12.6f',M_.param_names(hv(ip(i),2),:), ...
+        disp(sprintf('%12s %12.6f',char(M_.param_names(hv(ip(i),2))), ...
                      M_.params(hv(ip(i),2))))
     end
     for i=1:length(ix)
-        disp(sprintf('%12s %12.6f',M_.exo_names(hv(ix(i),2),:), ...
+        disp(sprintf('%12s %12.6f',char(M_.exo_names(hv(ix(i),2))), ...
                      oo_.exo_steady_state(hv(ix(i),2))))
     end
     for i=1:length(ixd)
-        disp(sprintf('%12s %12.6f',M_.exo_det_names(hv(ixd(i),2),:), ...
+        disp(sprintf('%12s %12.6f',char(M_.exo_det_names(hv(ixd(i),2))), ...
                      oo_.exo_det_steady_state(hv(ixd(i),2))))
     end
 
@@ -98,7 +98,7 @@ else
     if options_.debug
         fprintf('\nThe steady state computation failed. It terminated with the following values:\n')
         for i=1:M_.orig_endo_nbr
-            fprintf('%s \t\t %g\n',M_.endo_names(i,:),steady_state(i));
+            fprintf('%s \t\t %g\n', M_.endo_names{i}, steady_state(i));
         end
     end
     print_info(info,options_.noprint, options_);

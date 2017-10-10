@@ -1,4 +1,4 @@
-function [ys,check,penlt] = mze_steadystate(ys,exe)
+function [ys,check,penlt] = dsge_base2_steadystate(ys, exe)
 global M_
 
 persistent idx NumberOfParameters NumberOfEndogenousVariables
@@ -10,11 +10,11 @@ if isempty(idx)
     NumberOfEndogenousVariables = M_.orig_endo_nbr;
     load_parameters = [];
     for i = 1:NumberOfParameters
-        load_parameters = [ load_parameters deblank(M_.param_names(i,:)) ' = M_.params(' int2str(i) '); '];    
+        load_parameters = [ load_parameters M_.param_names{i} ' = M_.params(' int2str(i) '); '];    
     end
     fill_ys = [];
     for i = 1:NumberOfEndogenousVariables
-        fill_ys = [fill_ys 'ys(' int2str(i) ') = ' deblank(M_.endo_names(i,:)) '_ss' '; '];
+        fill_ys = [fill_ys 'ys(' int2str(i) ') = ' M_.endo_names{i} '_ss' '; '];
     end
     idx = 1;
 end

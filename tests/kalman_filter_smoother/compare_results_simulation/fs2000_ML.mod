@@ -17,7 +17,7 @@
  */
 
 /*
- * Copyright (C) 2004-2010 Dynare Team
+ * Copyright (C) 2004-2018 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -119,7 +119,7 @@ estimation(order=1,datafile='fsdat_simul_logged', nobs=192, forecast=8,smoother,
 % write shock matrix
 ex_=[];
 for shock_iter=1:M_.exo_nbr
-ex_=[ex_ oo_.SmoothedShocks.(deblank(M_.exo_names(shock_iter,:)))];
+ex_=[ex_ oo_.SmoothedShocks.(M_.exo_names{shock_iter})];
 end
 
 %select shocks happening after initial period
@@ -128,8 +128,7 @@ ex_ = ex_(2:end,:);
 %get state variables at t=0
 y0=[];
 for endo_iter=1:M_.endo_nbr
-y0 = [y0;
-oo_.SmoothedVariables.(deblank(M_.endo_names(endo_iter,:)))(1)];
+y0 = [y0; oo_.SmoothedVariables.(M_.endo_names{endo_iter})(1)];
 end;
 
 %make sure decision rules were updated

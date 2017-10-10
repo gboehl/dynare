@@ -1,6 +1,6 @@
 function info = ramsey_policy(var_list)
 
-% Copyright (C) 2007-2017 Dynare Team
+% Copyright (C) 2007-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -46,9 +46,8 @@ oo_.steady_state = oo_.dr.ys;
 if options_.noprint == 0
     disp_steady_state(M_,oo_)
     for i=M_.orig_endo_nbr:M_.endo_nbr
-        if strmatch('mult_',M_.endo_names(i,:))
-            disp(sprintf('%s \t\t %g',M_.endo_names(i,:), ...
-                         oo_.dr.ys(i)));
+        if strmatch('mult_', M_.endo_names{i})
+            disp(sprintf('%s \t\t %g', M_.endo_names{i}, oo_.dr.ys(i)));
         end
     end
 end

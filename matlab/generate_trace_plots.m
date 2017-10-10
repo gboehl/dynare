@@ -11,7 +11,7 @@ function generate_trace_plots(chain_number)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2016 Dynare Team
+% Copyright (C) 2016-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -32,37 +32,37 @@ global M_ options_ estim_params_
 
 
 % Get informations about the posterior draws:
-MetropolisFolder = CheckPath('metropolis',M_.dname);
+MetropolisFolder = CheckPath('metropolis', M_.dname);
 load_last_mh_history_file(MetropolisFolder, M_.fname);
 if chain_number>record.Nblck
     error('generate_trace_plots:: chain number is bigger than existing number of chains')
 end
 
-trace_plot(options_,M_,estim_params_,'PosteriorDensity',chain_number)
+trace_plot(options_, M_, estim_params_, 'PosteriorDensity', chain_number)
 
-for ii=1:size(estim_params_.param_vals,1)
-    parameter_name=deblank(M_.param_names(estim_params_.param_vals(ii,1),:));
-    trace_plot(options_,M_,estim_params_,'DeepParameter',chain_number,parameter_name)
+for ii=1:size(estim_params_.param_vals, 1)
+    parameter_name = M_.param_names{estim_params_.param_vals(ii,1)};
+    trace_plot(options_, M_, estim_params_, 'DeepParameter', chain_number, parameter_name)
 end
 
-for ii=1:size(estim_params_.var_exo,1)
-    parameter_name=deblank(M_.exo_names(estim_params_.var_exo(ii,1),:));
-    trace_plot(options_,M_,estim_params_,'StructuralShock',chain_number,parameter_name)
+for ii=1:size(estim_params_.var_exo, 1)
+    parameter_name = M_.exo_names{estim_params_.var_exo(ii,1)};
+    trace_plot(options_, M_, estim_params_, 'StructuralShock', chain_number, parameter_name)
 end
 
-for ii=1:size(estim_params_.var_endo,1)
-    parameter_name=deblank(M_.endo_names(estim_params_.var_endo(ii,1),:));
-    trace_plot(options_,M_,estim_params_,'MeasurementError',chain_number,parameter_name)
+for ii=1:size(estim_params_.var_endo, 1)
+    parameter_name = M_.endo_names{estim_params_.var_endo(ii,1)};
+    trace_plot(options_, M_, estim_params_, 'MeasurementError', chain_number, parameter_name)
 end
 
-for ii=1:size(estim_params_.corrn,1)
-    parameter_name_1=deblank(M_.endo_names(estim_params_.corrn(ii,1),:));
-    parameter_name_2=deblank(M_.endo_names(estim_params_.corrn(ii,2),:));
-    trace_plot(options_,M_,estim_params_,'MeasurementError',chain_number,parameter_name_1,parameter_name_2)
+for ii=1:size(estim_params_.corrn, 1)
+    parameter_name_1 = M_.endo_names{estim_params_.corrn(ii,1)};
+    parameter_name_2 = M_.endo_names{estim_params_.corrn(ii,2)};
+    trace_plot(options_, M_, estim_params_, 'MeasurementError', chain_number, parameter_name_1, parameter_name_2)
 end
 
-for ii=1:size(estim_params_.corrx,1)
-    parameter_name_1=deblank(M_.exo_names(estim_params_.corrx(ii,1),:));
-    parameter_name_2=deblank(M_.exo_names(estim_params_.corrx(ii,2),:));
-    trace_plot(options_,M_,estim_params_,'StructuralShock',chain_number,parameter_name_1,parameter_name_2)
+for ii=1:size(estim_params_.corrx, 1)
+    parameter_name_1 = M_.exo_names{estim_params_.corrx(ii,1)};
+    parameter_name_2 = M_.exo_names{estim_params_.corrx(ii,2)};
+    trace_plot(options_, M_, estim_params_, 'StructuralShock', chain_number, parameter_name_1, parameter_name_2)
 end

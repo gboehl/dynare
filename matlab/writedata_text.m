@@ -10,7 +10,7 @@ function writedata_text(fname)
 % SPECIAL REQUIREMENT
 %   none
 
-% Copyright (C) 2007-2017 Dynare Team
+% Copyright (C) 2007-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -30,8 +30,8 @@ function writedata_text(fname)
 global M_ oo_
 S=[fname '_endo.dat'];
 fid = fopen(S,'w');
-for i = 1:size(M_.endo_names,1)
-    fprintf(fid,'%s ',M_.endo_names(i,:)');
+for i = 1:M_.endo_nbr
+    fprintf(fid,'%s ', M_.endo_names{i});
 end
 fprintf(fid,'\n');
 for i = 1:size(oo_.endo_simul,2)
@@ -42,8 +42,8 @@ fclose(fid);
 
 S=[fname '_exo.dat'];
 fid = fopen(S,'w');
-for i = 1:size(M_.exo_names,1)
-    fprintf(fid,'%s ',M_.exo_names(i,:));
+for i = 1:M_.exo_nbr
+    fprintf(fid,'%s ',M_.exo_names{i});
 end
 fprintf(fid,'\n');
 for i = 1:size(oo_.exo_simul,1)

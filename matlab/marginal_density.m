@@ -15,7 +15,7 @@ function [marginal,oo_] = marginal_density(M_, options_, estim_params_, oo_, bay
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2005-2017 Dynare Team
+% Copyright (C) 2005-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -167,7 +167,7 @@ if nvx
     ip = 1;
     for i=1:nvx
         k = estim_params_.var_exo(i,1);
-        name = deblank(M_.exo_names(k,:));
+        name = M_.exo_names{k};
         eval(['oo_.' field_name '_mode.shocks_std.' name ' = xparam1(ip);']);
         eval(['oo_.' field_name '_std_at_mode.shocks_std.' name ' = stdh(ip);']);
         ip = ip+1;
@@ -188,7 +188,7 @@ if ncx
     for i=1:ncx
         k1 = estim_params_.corrx(i,1);
         k2 = estim_params_.corrx(i,2);
-        NAME = [deblank(M_.exo_names(k1,:)) '_' deblank(M_.exo_names(k2,:))];
+        NAME = [M_.exo_names{k1} '_' M_.exo_names{k2}];
         eval(['oo_.' field_name '_mode.shocks_corr.' NAME ' = xparam1(ip);']);
         eval(['oo_.' field_name '_std_at_mode.shocks_corr.' NAME ' = stdh(ip);']);
         ip = ip+1;
@@ -200,7 +200,7 @@ if ncn
     for i=1:ncn
         k1 = estim_params_.corrn(i,1);
         k2 = estim_params_.corrn(i,2);
-        NAME = [deblank(M_.endo_names(k1,:)) '_' deblank(M_.endo_names(k2,:))];
+        NAME = [M_.endo_names{k1} '_' M_.endo_names{k2}];
         eval(['oo_.' field_name '_mode.measurement_errors_corr.' NAME ' = xparam1(ip);']);
         eval(['oo_.' field_name '_std_at_mode.measurement_errors_corr.' NAME ' = stdh(ip);']);
         ip = ip+1;

@@ -19,7 +19,7 @@ function [ys,params,info] = evaluate_steady_state_file(ys_init,exo_ss,M,options,
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2001-2017 Dynare Team
+% Copyright (C) 2001-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -117,19 +117,19 @@ if length(M.aux_vars) > 0 && ~options.ramsey_policy
         ys3 = ys;
         idx = find(abs(ys0-ys1)>0);
         if ~isempty(idx)
-            M.endo_names(idx,:)
+            M.endo_names{idx}
         else
             disp('1-invariant')
         end
         idx = find(abs(ys2-ys1)>0);
         if ~isempty(idx)
-            M.endo_names(idx,:)
+            M.endo_names{idx}
         else
             disp('2-invariant')
         end
         idx = find(abs(ys3-ys3)>0);
         if ~isempty(idx)
-            M.endo_names(idx,:)
+            M.endo_names{idx}
         else
             disp('3-invariant')
         end
@@ -160,9 +160,7 @@ elseif ~isempty(options.steadystate_partial)
     nov   = length(ssvar);
     indv  = zeros(nov,1);
     for i = 1:nov
-        indv(i) = strmatch(ssvar(i),M.endo_names,'exact');
+        indv(i) = strmatch(ssvar(i), M.endo_names, 'exact');
     end
-    [ys,check] = dynare_solve('restricted_steadystate',...
-                              ys(indv),...
-                              options, exo_ss,indv);
+    [ys,check] = dynare_solve('restricted_steadystate', ys(indv), options, exo_ss,indv);
 end

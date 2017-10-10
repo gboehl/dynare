@@ -8,7 +8,7 @@ function irf_shocks_indx=getIrfShocksIndx()
 % Outputs:
 %   irf_shocks_indx: [1 by n_irf_shocks] vector storing the indices
 %
-% Copyright (C) 2011-2017 Dynare Team
+% Copyright (C) 2011-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -32,7 +32,7 @@ if (isfield(options_,'irf_shocks')==0)
 else
     irf_shocks_indx = zeros(1,size(options_.irf_shocks,1));
     for i=1:size(options_.irf_shocks,1)
-        irf_shocks_indx(i) = find(strcmp(deblank(options_.irf_shocks(i,:)), cellstr(M_.exo_names)));
+        irf_shocks_indx(i) = find(strcmp(deblank(options_.irf_shocks(i,:)), M_.exo_names));
     end
     irf_shocks_indx_unique=unique(irf_shocks_indx);
     if options_.debug && (length(irf_shocks_indx_unique) ~= length(irf_shocks_indx))

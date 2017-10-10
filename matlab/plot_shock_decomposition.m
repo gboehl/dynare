@@ -11,7 +11,7 @@ function [z, steady_state] = plot_shock_decomposition(M_,oo_,options_,varlist)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2016-2017 Dynare Team
+% Copyright (C) 2016-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -32,12 +32,12 @@ options_.nodisplay = options_.plot_shock_decomp.nodisplay;
 options_.graph_format = options_.plot_shock_decomp.graph_format;
 
 % indices of endogenous variables
-if size(varlist,1) == 0
-    varlist = M_.endo_names(1:M_.orig_endo_nbr,:);
+if isempty(varlist)
+    varlist = M_.endo_names(1:M_.orig_endo_nbr);
 end
 
-[i_var,nvar,index_uniques] = varlist_indices(varlist,M_.endo_names);
-varlist=varlist(index_uniques,:);
+[i_var, nvar, index_uniques] = varlist_indices(varlist, M_.endo_names);
+varlist = varlist(index_uniques);
 
 % number of variables
 endo_nbr = M_.endo_nbr;
@@ -194,7 +194,7 @@ if options_.plot_shock_decomp.use_shock_groups
     kcum=[];
     for i=1:ngroups
         for j = shock_groups.(shock_ind{i}).shocks
-            k = find(strcmp(j,cellstr(M_.exo_names)));
+            k = find(strcmp(j, M_.exo_names));
             zz(:,i,:) = zz(:,i,:) + z(:,k,:);
             z(:,k,:) = 0;
             kcum = [kcum k];
@@ -202,7 +202,7 @@ if options_.plot_shock_decomp.use_shock_groups
     end
     zothers = sum(z(:,1:nshocks,:),2);
     shock_groups.(['group' int2str(ngroups+1)]).label =  'Others';
-    shock_groups.(['group' int2str(ngroups+1)]).shocks =  cellstr(M_.exo_names(find(~ismember([1:M_.exo_nbr],kcum)),:))';
+    shock_groups.(['group' int2str(ngroups+1)]).shocks =  M_.exo_names(find(~ismember([1:M_.exo_nbr],kcum)));
     M_.shock_groups.(options_.plot_shock_decomp.use_shock_groups)=shock_groups;
     if any(any(zothers))
         shock_names = [shock_names; {'Others + Initial Values'}];
@@ -340,9 +340,9 @@ z = z(:,:,a:b);
 options_.plot_shock_decomp.fig_name=fig_name;
 options_.plot_shock_decomp.orig_varlist = varlist;
 if detail_plot
-    graph_decomp_detail(z,shock_names,M_.endo_names,i_var,my_initial_date,M_,options_)
+    graph_decomp_detail(z, shock_names, M_.endo_names, i_var, my_initial_date, M_, options_)
 else
-    graph_decomp(z,shock_names,M_.endo_names,i_var,my_initial_date,M_,options_);
+    graph_decomp(z, shock_names, M_.endo_names, i_var, my_initial_date, M_, options_);
 end
 
 if write_xls

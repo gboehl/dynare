@@ -11,7 +11,7 @@ function oo_=disp_moments(y,var_list,M_,options_,oo_)
 % OUTPUTS
 %   oo_                 [structure]    Dynare's results structure,
 
-% Copyright (C) 2001-2017 Dynare Team
+% Copyright (C) 2001-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -31,16 +31,16 @@ function oo_=disp_moments(y,var_list,M_,options_,oo_)
 warning_old_state = warning;
 warning off
 
-if size(var_list,1) == 0
-    var_list = M_.endo_names(1:M_.orig_endo_nbr, :);
+if isempty(var_list)
+    var_list = M_.endo_names(1:M_.orig_endo_nbr);
 end
 
-nvar = size(var_list,1);
+nvar = length(var_list);
 ivar=zeros(nvar,1);
 for i=1:nvar
-    i_tmp = strmatch(var_list(i,:),M_.endo_names,'exact');
+    i_tmp = strmatch(var_list{i}, M_.endo_names, 'exact');
     if isempty(i_tmp)
-        error (['One of the variable specified does not exist']) ;
+        error ('One of the variable specified does not exist') ;
     else
         ivar(i) = i_tmp;
     end
@@ -50,7 +50,7 @@ y = y(ivar,options_.drop+1:end)';
 
 ME_present=0;
 if ~all(M_.H==0)
-    [observable_pos_requested_vars,index_subset,index_observables]=intersect(ivar,options_.varobs_id,'stable');
+    [observable_pos_requested_vars, index_subset, index_observables] = intersect(ivar, options_.varobs_id, 'stable');
     if ~isempty(observable_pos_requested_vars)
         ME_present=1;
         i_ME = setdiff([1:size(M_.H,1)],find(diag(M_.H) == 0)); % find ME with 0 variance
@@ -79,20 +79,17 @@ oo_.var = y'*y/size(y,1);
 oo_.skewness = (mean(y.^3)./s2.^1.5)';
 oo_.kurtosis = (mean(y.^4)./(s2.*s2)-3)';
 
-labels = deblank(M_.endo_names(ivar,:));
-labels_TeX = deblank(M_.endo_names_tex(ivar,:));
+labels = M_.endo_names(ivar);
+labels_TeX = M_.endo_names_tex(ivar);
 
 if options_.nomoments == 0
     z = [ m' s' s2' (mean(y.^3)./s2.^1.5)' (mean(y.^4)./(s2.*s2)-3)' ];
     title='MOMENTS OF SIMULATED VARIABLES';
-
-    title=add_filter_subtitle(title,options_);
-
-    headers=char('VARIABLE','MEAN','STD. DEV.','VARIANCE','SKEWNESS', ...
-                 'KURTOSIS');
-    dyntable(options_,title,headers,labels,z,size(labels,2)+2,16,6);
+    title=add_filter_subtitle(title, options_);
+    headers = {'VARIABLE'; 'MEAN'; 'STD. DEV.'; 'VARIANCE'; 'SKEWNESS'; 'KURTOSIS'};
+    dyntable(options_, title, headers, labels, z, cellofchararraymaxlength(labels)+2, 16, 6);
     if options_.TeX
-        dyn_latex_table(M_,options_,title,'sim_moments',headers,labels_TeX,z,size(labels,2)+2,16,6);
+        dyn_latex_table(M_, options_, title, 'sim_moments', headers, labels_TeX, z, cellofchararraymaxlength(labels)+2, 16, 6);
     end
 end
 
@@ -103,15 +100,13 @@ if options_.nocorr == 0
     end
     if options_.noprint == 0
         title = 'CORRELATION OF SIMULATED VARIABLES';
-
         title=add_filter_subtitle(title,options_);
-
-        headers = char('VARIABLE',M_.endo_names(ivar,:));
-        dyntable(options_,title,headers,labels,corr,size(labels,2)+2,8,4);
+        headers = vertcat('VARIABLE', M_.endo_names(ivar));
+        dyntable(options_, title, headers, labels, corr, cellofchararraymaxlength(labels)+2, 8, 4);
         if options_.TeX
-            headers = char('VARIABLE',M_.endo_names_tex(ivar,:));
-            lh = size(labels,2)+2;
-            dyn_latex_table(M_,options_,title,'sim_corr_matrix',headers,labels_TeX,corr,size(labels,2)+2,8,4);
+            headers = vertcat('VARIABLE', M_.endo_names_tex(ivar));
+            lh = cellofchararraymaxlength(labels)+2;
+            dyn_latex_table(M_, options_, title, 'sim_corr_matrix', headers, labels_TeX, corr, lh, 8,4);
         end
     end
 end
@@ -130,12 +125,12 @@ if ar > 0
     if options_.noprint == 0
         title = 'AUTOCORRELATION OF SIMULATED VARIABLES';
         title=add_filter_subtitle(title,options_);
-        headers = char('VARIABLE',int2str([1:ar]'));
-        dyntable(options_,title,headers,labels,autocorr,size(labels,2)+2,8,4);
+        headers = vertcat('VARIABLE', cellstr(int2str([1:ar]')));
+        dyntable(options_, title, headers, labels, autocorr, cellofchararraymaxlength(labels)+2, 8, 4);
         if options_.TeX
-            headers = char('VARIABLE',int2str([1:ar]'));
-            lh = size(labels,2)+2;
-            dyn_latex_table(M_,options_,title,'sim_autocorr_matrix',headers,labels_TeX,autocorr,size(labels_TeX,2)+2,8,4);
+            headers = vertcat('VARIABLE', cellstr(int2str([1:ar]')));
+            lh = cellofchararraymaxlength(labels)+2;
+            dyn_latex_table(M_, options_, title, 'sim_autocorr_matrix', headers, labels_TeX, autocorr, cellofchararraymaxlength(labels_TeX)+2, 8, 4);
         end
     end
 
@@ -180,28 +175,31 @@ if ~options_.nodecomposition
         if ~options_.noprint %options_.nomoments == 0
             skipline()
             title='VARIANCE DECOMPOSITION SIMULATING ONE SHOCK AT A TIME (in percent)';
-
             title=add_filter_subtitle(title,options_);
-
             headers = M_.exo_names;
-            headers(M_.exo_names_orig_ord,:) = headers;
-            headers = char(' ',headers);
-            lh = size(deblank(M_.endo_names(ivar,:)),2)+2;
-            dyntable(options_,title,char(headers,'Tot. lin. contr.'),deblank(M_.endo_names(ivar,:)),[oo_.variance_decomposition sum(oo_.variance_decomposition,2)],lh,8,2);
+            headers(M_.exo_names_orig_ord) = headers;
+            headers = vertcat(' ', headers);
+            lh = cellofchararraymaxlength(M_.endo_names(ivar))+2;
+            dyntable(options_, title, vertcat(headers, 'Tot. lin. contr.'), ...
+                     M_.endo_names(ivar), [oo_.variance_decomposition sum(oo_.variance_decomposition,2)], lh, 8, 2);
             if ME_present
-                headers_ME=char(headers,'ME');
-                dyntable(options_,[title,' WITH MEASUREMENT ERROR'],char(headers_ME,'Tot. lin. contr.'),deblank(M_.endo_names(ivar(index_subset), ...
-                    :)),[oo_.variance_decomposition_ME sum(oo_.variance_decomposition_ME,2)],lh,8,2);
+                headers_ME = vertcat(headers, 'ME');
+                dyntable(options_, [title,' WITH MEASUREMENT ERROR'], vertcat(headers_ME, 'Tot. lin. contr.'), M_.endo_names(ivar(index_subset)), ...
+                         [oo_.variance_decomposition_ME sum(oo_.variance_decomposition_ME, 2)], lh, 8, 2);
             end
             if options_.TeX
-                headers=M_.exo_names_tex;
-                headers = char(' ',headers);
-                labels = deblank(M_.endo_names_tex(ivar,:));
-                lh = size(labels,2)+2;
-                dyn_latex_table(M_,options_,title,'sim_var_decomp',char(headers,'Tot. lin. contr.'),labels_TeX,[oo_.variance_decomposition sum(oo_.variance_decomposition,2)],lh,8,2);
+                headers = M_.exo_names_tex;
+                headers = vertcat(' ', headers);
+                labels = M_.endo_names_tex(ivar);
+                lh = cellofchararraymaxlength(labels)+2;
+                dyn_latex_table(M_, options_, title, 'sim_var_decomp', vertcat(headers, 'Tot. lin. contr.'), ...
+                                labels_TeX, [oo_.variance_decomposition sum(oo_.variance_decomposition, 2)], lh, 8, 2);
                 if ME_present
-                    headers_ME=char(headers,'ME');
-                    dyn_latex_table(M_,options_,[title,' WITH MEASUREMENT ERROR'],'sim_var_decomp_ME',char(headers_ME,'Tot. lin. contr.'),labels_TeX(ivar(index_subset),:),[oo_.variance_decomposition_ME sum(oo_.variance_decomposition_ME,2)],lh,8,2);
+                    headers_ME = vertcat(headers, 'ME');
+                    dyn_latex_table(M_, options_, [title, ' WITH MEASUREMENT ERROR'], 'sim_var_decomp_ME', ...
+                                        vertcat(headers_ME, 'Tot. lin. contr.'), ...
+                                        labels_TeX(ivar(index_subset)), ...
+                                        [oo_.variance_decomposition_ME sum(oo_.variance_decomposition_ME, 2)], lh, 8, 2);
                 end
             end
 
@@ -218,7 +216,7 @@ end
 warning(warning_old_state);
 end
 
-function y=get_filtered_time_series(y,m,options_)
+function y = get_filtered_time_series(y, m, options_)
 
 if options_.hp_filter && ~options_.one_sided_hp_filter  && ~options_.bandpass.indicator
     [hptrend,y] = sample_hp_filter(y,options_.hp_filter);

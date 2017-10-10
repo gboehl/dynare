@@ -17,9 +17,7 @@ function [pdraws, TAU, GAM, LRE, gp, H, JJ] = dynare_identification(options_iden
 % SPECIAL REQUIREMENTS
 %    None
 
-% main
-%
-% Copyright (C) 2010-2017 Dynare Team
+% Copyright (C) 2010-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -147,8 +145,9 @@ options_ = set_default_option(options_,'datafile','');
 options_.mode_compute = 0;
 options_.plot_priors = 0;
 options_.smoother=1;
-[dataset_,dataset_info,xparam1,hh, M_, options_, oo_, estim_params_,bayestopt_,bounds]=dynare_estimation_init(M_.endo_names,fname_,1, M_, options_, oo_, estim_params_, bayestopt_);
-options_ident = set_default_option(options_ident,'analytic_derivation_mode',options_.analytic_derivation_mode); % if not set by user, inherit default global one
+[dataset_, dataset_info, xparam1, hh, M_, options_, oo_, estim_params_, bayestopt_, bounds] = ...
+    dynare_estimation_init(M_.endo_names, fname_,1, M_, options_, oo_, estim_params_, bayestopt_);
+options_ident = set_default_option(options_ident,'analytic_derivation_mode', options_.analytic_derivation_mode); % if not set by user, inherit default global one
 
 if prior_exist
     if any(bayestopt_.pshape > 0)
@@ -206,7 +205,7 @@ if prior_exist
         end
     end
     if options_.TeX
-        name_tex=char(name_tex);
+        name_tex=name_tex;
     end
 else
     indx = [1:M_.param_nbr];
@@ -214,8 +213,10 @@ else
     offset = M_.exo_nbr;
     np = M_.param_nbr;
     nparam = np+offset;
-    name = [cellstr([repmat('SE_',size(M_.exo_names_tex)),M_.exo_names_tex]); cellstr(M_.param_names)];
-    name_tex = [cellstr([repmat('$ SE_',size(M_.exo_names_tex)),M_.exo_names_tex,repmat('}$',size(M_.exo_names_tex))]); cellstr(M_.param_names_tex)];
+    name = cellfun(@(x) horzcat('SE_', x), M_.exo_names, 'UniformOutput', false);
+    name = vertcat(name, M_.param_names);
+    name_tex = cellfun(@(x) horzcat('$ SE_{', x, '} $'), M_.exo_names, 'UniformOutput', false);
+    name_tex = vertcat(name_tex, M_.param_names_tex);
     if ~isequal(M_.H,0)
         fprintf('\ndynare_identification:: Identification does not support measurement errors and will ignore them in the following. To test their identifiability, instead define them explicitly in measurement equations in the model definition.\n')
     end

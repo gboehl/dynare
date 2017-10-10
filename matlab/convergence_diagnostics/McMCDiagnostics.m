@@ -16,7 +16,7 @@ function oo_ = McMCDiagnostics(options_, estim_params_, M_, oo_)
 % PARALLEL CONTEXT
 % See the comment in posterior_sampler.m funtion.
 
-% Copyright (C) 2005-2017 Dynare Team
+% Copyright (C) 2005-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -77,41 +77,42 @@ TotalNumberOfMhDraws = sum(record.MhDraws(:,1));
 FirstMhFile = record.KeepedDraws.FirstMhFile;
 NumberOfDraws = TotalNumberOfMhDraws-floor(options_.mh_drop*TotalNumberOfMhDraws);
 
-param_name=[];
-param_name_tex=[];
-for jj=1:npar
+param_name = {};
+param_name_tex = {};
+
+for jj = 1:npar
     if options_.TeX
-        [par_name_temp,par_name_tex_temp]=get_the_name(jj,options_.TeX,M_,estim_params_,options_);
-        param_name = strvcat(param_name,par_name_temp);
+        [par_name_temp, par_name_tex_temp] = get_the_name(jj, options_.TeX, M_,estim_params_, options_);
+        param_name = vertcat(param_name, par_name_temp);
         par_name_tex_temp = strrep(par_name_tex_temp,'$','');
-        param_name_tex = strvcat(param_name_tex,par_name_tex_temp);
+        param_name_tex = vertcat(param_name_tex, par_name_tex_temp);
     else
-        [par_name_temp]=get_the_name(jj,options_.TeX,M_,estim_params_,options_);
-        param_name = strvcat(param_name,par_name_temp);
+        par_name_temp = get_the_name(jj, options_.TeX, M_, estim_params_, options_);
+        param_name = vertcat(param_name, par_name_temp);
     end
-    Draws = GetAllPosteriorDraws(jj,FirstMhFile,FirstLine,TotalNumberOfMhFiles,NumberOfDraws);
-    Draws = reshape(Draws,[NumberOfDraws nblck]);
+    Draws = GetAllPosteriorDraws(jj, FirstMhFile, FirstLine, TotalNumberOfMhFiles, NumberOfDraws);
+    Draws = reshape(Draws, [NumberOfDraws nblck]);
     Nc = min(1000, NumberOfDraws/2);
-    for ll=1:nblck
+    for ll = 1:nblck
         Ifac(ll,jj) = mcmc_ifac(Draws(:,ll), Nc);
     end
     tmp = num2cell(Ifac(:,jj));
 end
 
 my_title='MCMC Inefficiency factors per block';
-IFAC_header='Parameter';
-IFAC_header_tex='Parameter';
-for j=1:nblck
-    IFAC_header = char(IFAC_header,['Block ' int2str(j)]);
-    IFAC_header_tex = char(IFAC_header_tex,['Block~' int2str(j)]);
+IFAC_header = {'Parameter'};
+IFAC_header_tex = {'Parameter'};
+for j = 1:nblck
+    IFAC_header = vertcat(IFAC_header, ['Block ' int2str(j)]);
+    IFAC_header_tex = vertcat(IFAC_header_tex, ['Block~' int2str(j)]);
 end
 
-lh = size(param_name,2)+2;
-dyntable(options_,my_title,IFAC_header,param_name,Ifac',lh,12,3);
+lh = cellofchararraymaxlength(param_name)+2;
+dyntable(options_, my_title, IFAC_header, param_name, Ifac', lh, 12, 3);
 skipline()
 
 if options_.TeX
-    dyn_latex_table(M_,options_,my_title,'MCMC_inefficiency_factors',IFAC_header_tex,param_name_tex,Ifac',lh,12,3);
+    dyn_latex_table(M_, options_, my_title, 'MCMC_inefficiency_factors', IFAC_header_tex, param_name_tex, Ifac', lh, 12, 3);
 end
 record.InefficiencyFactorsPerBlock = Ifac;
 update_last_mh_history_file(MetropolisFolder, ModelName, record);
@@ -137,25 +138,25 @@ if nblck == 1 % Brooks and Gelman tests need more than one block
     first_obs_begin_sample = max(1,ceil(options_.mh_drop*NumberOfDraws));
     last_obs_begin_sample = first_obs_begin_sample+round(options_.convergence.geweke.geweke_interval(1)*NumberOfDraws*(1-options_.mh_drop));
     first_obs_end_sample = first_obs_begin_sample+round(options_.convergence.geweke.geweke_interval(2)*NumberOfDraws*(1-options_.mh_drop));
-    param_name=[];
+    param_name = {};
     if options_.TeX
-        param_name_tex=[];
+        param_name_tex = {};
     end
     for jj=1:npar
         if options_.TeX
-            [param_name_temp, param_name_tex_temp]= get_the_name(jj,options_.TeX,M_,estim_params_,options_);
-            param_name_tex = strvcat(param_name_tex,strrep(param_name_tex_temp,'$',''));
-            param_name = strvcat(param_name,param_name_temp);
+            [param_name_temp, param_name_tex_temp] = get_the_name(jj, options_.TeX, M_, estim_params_, options_);
+            param_name_tex = vertcat(param_name_tex, strrep(param_name_tex_temp, '$',''));
+            param_name = vertcat(param_name, param_name_temp);
         else
-            param_name_temp = get_the_name(jj,options_.TeX,M_,estim_params_,options_);
-            param_name = strvcat(param_name,param_name_temp);
+            param_name_temp = get_the_name(jj, options_.TeX, M_,estim_params_, options_);
+            param_name = vertcat(param_name, param_name_temp);
         end
     end
     fprintf('\nGeweke (1992) Convergence Tests, based on means of draws %d to %d vs %d to %d.\n',first_obs_begin_sample,last_obs_begin_sample,first_obs_end_sample,NumberOfDraws);
     fprintf('p-values are for Chi2-test for equality of means.\n');
-    Geweke_header=char('Parameter', 'Post. Mean', 'Post. Std', 'p-val No Taper');
-    for ii=1:length(options_.convergence.geweke.taper_steps)
-        Geweke_header=char(Geweke_header,['p-val ' num2str(options_.convergence.geweke.taper_steps(ii)),'% Taper']);
+    Geweke_header = {'Parameter'; 'Post. Mean'; 'Post. Std'; 'p-val No Taper'};
+    for ii = 1:length(options_.convergence.geweke.taper_steps)
+        Geweke_header = vertcat(Geweke_header, ['p-val ' num2str(options_.convergence.geweke.taper_steps(ii)),'% Taper']);
     end
     datamat=NaN(npar,3+length(options_.convergence.geweke.taper_steps));
     for jj=1:npar
@@ -175,22 +176,22 @@ if nblck == 1 % Brooks and Gelman tests need more than one block
         [results_vec2] = geweke_moments(param_draws2,options_);
 
         results_struct = geweke_chi2_test(results_vec1,results_vec2,results_struct,options_);
-        eval(['oo_.convergence.geweke.',param_name(jj,:),'=results_struct;'])
+        oo_.convergence.geweke.(param_name{jj}) = results_struct;
         datamat(jj,:)=[results_struct.posteriormean,results_struct.posteriorstd,results_struct.prob_chi2_test];
     end
     lh = size(param_name,2)+2;
-    dyntable(options_,'',Geweke_header,param_name,datamat,lh,12,3);
+    dyntable(options_, '', Geweke_header, param_name, datamat, lh, 12, 3);
     if options_.TeX
-        Geweke_tex_header=char('Parameter', 'Mean', 'Std', 'No\ Taper');
-        additional_header={[' & \multicolumn{2}{c}{Posterior} & \multicolumn{',num2str(1+length(options_.convergence.geweke.taper_steps)),'}{c}{p-values} \\'],
+        Geweke_tex_header = {'Parameter'; 'Mean'; 'Std'; 'No\ Taper'};
+        additional_header = {[' & \multicolumn{2}{c}{Posterior} & \multicolumn{',num2str(1+length(options_.convergence.geweke.taper_steps)),'}{c}{p-values} \\'],
                            ['\cmidrule(r{.75em}){2-3} \cmidrule(r{.75em}){4-',num2str(4+length(options_.convergence.geweke.taper_steps)),'}']};
         for ii=1:length(options_.convergence.geweke.taper_steps)
-            Geweke_tex_header=char(Geweke_tex_header,[num2str(options_.convergence.geweke.taper_steps(ii)),'\%%\ Taper']);
+            Geweke_tex_header = vertcat(Geweke_tex_header, [num2str(options_.convergence.geweke.taper_steps(ii)),'\%%\ Taper']);
         end
-        headers = char(Geweke_tex_header);
-        lh = size(param_name_tex,2)+2;
+        headers = Geweke_tex_header;
+        lh = cellofchararraymaxlength(param_name_tex)+2;
         my_title=sprintf('Geweke (1992) Convergence Tests, based on means of draws %d to %d vs %d to %d. p-values are for $\\\\chi^2$-test for equality of means.',first_obs_begin_sample,last_obs_begin_sample,first_obs_end_sample,NumberOfDraws);
-        dyn_latex_table(M_,options_,my_title,'geweke',headers,param_name_tex,datamat,lh,12,4,additional_header);
+        dyn_latex_table(M_, options_, my_title, 'geweke', headers, param_name_tex, datamat, lh, 12, 4, additional_header);
     end
     skipline(2);
 
@@ -206,17 +207,16 @@ if nblck == 1 % Brooks and Gelman tests need more than one block
         oo_.Raftery_Lewis = raftery_lewis(x2,Raftery_Lewis_q,Raftery_Lewis_r,Raftery_Lewis_s);
         oo_.Raftery_Lewis.parameter_names=param_name;
         my_title=sprintf('Raftery/Lewis (1992) Convergence Diagnostics, based on quantile q=%4.3f with precision r=%4.3f with probability s=%4.3f.',Raftery_Lewis_q,Raftery_Lewis_r,Raftery_Lewis_s);
-        headers = char('Variables','M (burn-in)','N (req. draws)','N+M (total draws)','k (thinning)');
-
+        headers = {'Variables'; 'M (burn-in)'; 'N (req. draws)'; 'N+M (total draws)'; 'k (thinning)'};
         raftery_data_mat=[oo_.Raftery_Lewis.M_burn,oo_.Raftery_Lewis.N_prec,oo_.Raftery_Lewis.N_total,oo_.Raftery_Lewis.k_thin];
         raftery_data_mat=[raftery_data_mat;max(raftery_data_mat)];
-        labels_Raftery_Lewis=char(param_name,'Maximum');
-        lh = size(labels_Raftery_Lewis,2)+2;
-        dyntable(options_,my_title,headers,labels_Raftery_Lewis,raftery_data_mat,lh,10,0);
+        labels_Raftery_Lewis = vertcat(param_name, 'Maximum');
+        lh = cellofchararraymaxlength(labels_Raftery_Lewis)+2;
+        dyntable(options_, my_title, headers, labels_Raftery_Lewis, raftery_data_mat, lh, 10, 0);
         if options_.TeX
-            labels_Raftery_Lewis_tex=char(param_name_tex,'Maximum');
-            lh = size(labels_Raftery_Lewis_tex,2)+2;
-            dyn_latex_table(M_,options_,my_title,'raftery_lewis',headers,labels_Raftery_Lewis_tex,raftery_data_mat,lh,10,0);
+            labels_Raftery_Lewis_tex = vertcat(param_name_tex, 'Maximum');
+            lh = cellofchararraymaxlength(labels_Raftery_Lewis_tex)+2;
+            dyn_latex_table(M_, options_, my_title, 'raftery_lewis', headers, labels_Raftery_Lewis_tex, raftery_data_mat, lh, 10, 0);
         end
     end
 

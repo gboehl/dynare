@@ -5,7 +5,7 @@ function  AutoCOR_YRk=PCL_Part_info_moments( H, varobs, dr,ivar)
 % Pearlman, Currie and Levine 1986 solution.
 % 22/10/06 - Version 2 for new Riccati with 4 params instead 5
 
-% Copyright (C) 2006-2017 Dynare Team
+% Copyright (C) 2006-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -33,7 +33,7 @@ warning off
 
 OBS = [];
 for i=1:rows(varobs)
-    OBS = [OBS find(strcmp(deblank(varobs(i,:)), cellstr(M_.endo_names))) ];
+    OBS = [OBS find(strcmp(varobs{i}, M_.endo_names)) ];
 end
 NOBS = length(OBS);
 
@@ -129,7 +129,7 @@ rr=DD*QQ*DD'+RR;
 ZSIG0=disc_riccati_fast(ff,DD,rr,hh);
 PP=ZSIG0 +QQ;
 
-exo_names=M_.exo_names(M_.exo_names_orig_ord,:);
+exo_names = M_.exo_names(M_.exo_names_orig_ord);
 
 DPDR=DD*PP*DD'+RR;
 I_DPDR=inv(DPDR);
@@ -147,42 +147,42 @@ nn=size(VV,1);
 COV_OMEGA= COV_P( end-nn+1:end, end-nn+1:end);
 COV_YR0= VV*COV_OMEGA*VV';
 diagCovYR0=diag(COV_YR0);
-labels = deblank(M_.endo_names(ivar,:));
+labels = M_.endo_names(ivar);
 
-if options_.nomoments == 0
+if ~options_.nomoments
     z = [ sqrt(diagCovYR0(ivar)) diagCovYR0(ivar) ];
-    title='THEORETICAL MOMENTS';
-    headers=char('VARIABLE','STD. DEV.','VARIANCE');
-    dyntable(options_,title,headers,labels,z,size(labels,2)+2,16,10);
+    title = 'THEORETICAL MOMENTS';
+    headers = {'VARIABLE'; 'STD. DEV.'; 'VARIANCE'};
+    dyntable(options_, title, headers, labels, z, cellofchararraymaxlength(labels)+2, 16, 10);
 end
-if options_.nocorr == 0
-    diagSqrtCovYR0=sqrt(diagCovYR0);
-    DELTA=inv(diag(diagSqrtCovYR0));
-    COR_Y= DELTA*COV_YR0*DELTA;
+if ~options_.nocorr
+    diagSqrtCovYR0 = sqrt(diagCovYR0);
+    DELTA = inv(diag(diagSqrtCovYR0));
+    COR_Y = DELTA*COV_YR0*DELTA;
     title = 'MATRIX OF CORRELATION';
-    headers = char('VARIABLE',M_.endo_names(ivar,:));
-    dyntable(options_,title,headers,labels,COR_Y(ivar,ivar),size(labels,2)+2,8,4);
+    headers = vertcat('VARIABLE', M_.endo_names(ivar));
+    dyntable(options_, title, headers, labels, COR_Y(ivar,ivar), size(labels,2)+2, 8, 4);
 else
     COR_Y=[];
 end
 
 ar = options_.ar;
 if ar > 0
-    COV_YRk= zeros(nn,ar);
-    AutoCOR_YRk= zeros(nn,ar);
-    for k=1:ar
-        COV_P=GAM*COV_P;
-        COV_OMEGA= COV_P( end-nn+1:end, end-nn+1:end);
+    COV_YRk = zeros(nn, ar);
+    AutoCOR_YRk= zeros(nn, ar);
+    for k = 1:ar
+        COV_P = GAM*COV_P;
+        COV_OMEGA = COV_P( end-nn+1:end, end-nn+1:end);
         COV_YRk = VV*COV_OMEGA*VV';
-        AutoCOR_YRkMAT=DELTA*COV_YRk*DELTA;
-        oo_.autocorr{k}=AutoCOR_YRkMAT(ivar,ivar);
-        AutoCOR_YRk(:,k)= diag(COV_YRk)./diagCovYR0;
+        AutoCOR_YRkMAT = DELTA*COV_YRk*DELTA;
+        oo_.autocorr{k} = AutoCOR_YRkMAT(ivar,ivar);
+        AutoCOR_YRk(:,k) = diag(COV_YRk)./diagCovYR0;
     end
     title = 'COEFFICIENTS OF AUTOCORRELATION';
-    headers = char('VARIABLE',int2str([1:ar]'));
-    dyntable(options_,title,headers,labels,AutoCOR_YRk(ivar,:),size(labels,2)+2,8,4);
+    headers = vertcat('VARIABLE', cellstr(int2str([1:ar]')));
+    dyntable(options_, title, headers, labels, AutoCOR_YRk(ivar,:), size(labels,2)+2, 8, 4);
 else
-    AutoCOR_YRk=[];
+    AutoCOR_YRk = [];
 end
 save ([M_.fname '_PCL_moments'], 'COV_YR0','AutoCOR_YRk', 'COR_Y');
 warning(warning_old_state);

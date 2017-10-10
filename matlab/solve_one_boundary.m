@@ -55,7 +55,7 @@ function [y, info] = solve_one_boundary(fname, y, x, params, steady_state, ...
 %   none.
 %
 
-% Copyright (C) 1996-2017 Dynare Team
+% Copyright (C) 1996-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -108,9 +108,9 @@ for it_=start:incr:finish
         if verbose==1
             disp(['iteration : ' int2str(iter+1) ' => ' num2str(max_res) ' time = ' int2str(it_)])
             if is_dynamic
-                disp([M.endo_names(y_index_eq,:) num2str([y(it_,y_index_eq)' r g1])])
+                disp([M.endo_names{y_index_eq} num2str([y(it_,y_index_eq)' r g1])])
             else
-                disp([M.endo_names(y_index_eq,:) num2str([y(y_index_eq) r g1])])
+                disp([M.endo_names{y_index_eq} num2str([y(y_index_eq) r g1])])
             end
         end
         if ~isreal(max_res) || isnan(max_res)

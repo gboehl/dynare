@@ -1,5 +1,5 @@
 function oo_ = ...
-    conditional_variance_decomposition_ME_mc_analysis(NumberOfSimulations, type, dname, fname, Steps, exonames, exo, var_list, endogenous_variable_index, mh_conf_sig, oo_,options_)
+    conditional_variance_decomposition_ME_mc_analysis(NumberOfSimulations, type, dname, fname, Steps, exonames, exo, var_list, endo, mh_conf_sig, oo_,options_)
 % This function analyses the (posterior or prior) distribution of the
 % endogenous variables' conditional variance decomposition with measurement error.
 %
@@ -14,8 +14,7 @@ function oo_ = ...
 %                                               variable
 %   var_list                [string]            (n_endo*char_length) character array with name
 %                                               of endogenous variables
-%   endogenous_variable_index [integer]         index of the current
-%                                               endogenous variable
+%   endo                    [integer]           Current endogenous variable
 %   mh_conf_sig             [double]            2 by 1 vector with upper
 %                                               and lower bound of HPD intervals
 %   oo_                     [structure]         Dynare structure where the results are saved.
@@ -23,7 +22,7 @@ function oo_ = ...
 % OUTPUTS
 %   oo_          [structure]        Dynare structure where the results are saved.
 
-% Copyright (C) 2017 Dynare Team
+% Copyright (C) 2017-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -48,16 +47,16 @@ else
     PATH = [dname '/prior/moments/'];
 end
 
-% $$$ indx = check_name(vartan,var);
-% $$$ if isempty(indx)
-% $$$     disp([ type '_analysis:: ' var ' is not a stationary endogenous variable!'])
-% $$$     return
-% $$$ end
-% $$$ endogenous_variable_index = sum(1:indx);
+endogenous_variable_index = check_name(var_list, endo);
+if isempty(endogenous_variable_index)
+    disp([ type '_analysis:: Can''t find ' endo '!'])
+    return
+end
+
 exogenous_variable_index = check_name(exonames,exo);
 if isempty(exogenous_variable_index)
     if isequal(exo,'ME')
-       exogenous_variable_index=size(exonames,1)+1; 
+       exogenous_variable_index=length(exonames)+1; 
     else
         disp([ type '_analysis:: ' exo ' is not a declared exogenous variable!'])
     return
@@ -65,9 +64,9 @@ if isempty(exogenous_variable_index)
 end
 
 [observable_pos_requested_vars,index_subset,index_observables]=intersect(var_list,options_.varobs,'stable');
-matrix_pos=strmatch(var_list(endogenous_variable_index,:),var_list(index_subset,:),'exact');
-name_1 = deblank(var_list(endogenous_variable_index,:));
-name_2 = deblank(exo);
+matrix_pos=strmatch(endo, var_list(index_subset),'exact');
+name_1 = endo;
+name_2 = exo;
 name = [ name_1 '.' name_2 ];
 
 if isfield(oo_, [ TYPE 'TheoreticalMoments' ])

@@ -16,7 +16,7 @@ function model_diagnostics(M,options,oo)
 %   none.
 %
 
-% Copyright (C) 1996-2017 Dynare Team
+% Copyright (C) 1996-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -50,7 +50,7 @@ if ~isempty(k)
     disp(['MODEL_DIAGNOSTICS: The following endogenous variables aren''t present at ' ...
           'the current period in the model:'])
     for i=1:length(k)
-        disp(endo_names(k(i),:))
+        disp(endo_names{k(i)})
     end
 end
 
@@ -154,7 +154,7 @@ for b=1:nb
                     break
                 end
             end
-            disp(endo_names(k,:))
+            disp(endo_names{k})
         end
         neq = null(jacob');
         n_rel = size(neq,2);

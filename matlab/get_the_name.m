@@ -1,4 +1,4 @@
-function [nam,texnam] = get_the_name(k,TeX,M_,estim_params_,options_)
+function [nam, texnam] = get_the_name(k, TeX, M_, estim_params_, options_)
 
 %@info:
 %! @deftypefn {Function File} {[@var{nam},@var{texnam}] =} get_the_name (@var{k},@var{TeX},@var{M_},@var{estim_params_},@var{options_})
@@ -40,7 +40,7 @@ function [nam,texnam] = get_the_name(k,TeX,M_,estim_params_,options_)
 %! @end deftypefn
 %@eod:
 
-% Copyright (C) 2004-2013 Dynare Team
+% Copyright (C) 2004-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -66,44 +66,44 @@ ncx = estim_params_.ncx;
 ncn = estim_params_.ncn;
 
 if k <= nvx
-    vname = deblank(M_.exo_names(estim_params_.var_exo(k,1),:));
-    nam = ['SE_',vname];
+    vname = M_.exo_names{estim_params_.var_exo(k,1)};
+    nam = sprintf('SE_%s', vname);
     if TeX
-        tname  = deblank(M_.exo_names_tex(estim_params_.var_exo(k,1),:));
-        texnam = ['$ SE_{' tname '} $'];
+        tname  = M_.exo_names_tex{estim_params_.var_exo(k,1)};
+        texnam = sprintf('$ SE_{%s} $', tname);
     end
 elseif  k <= (nvx+nvn)
     vname = options_.varobs{estim_params_.nvn_observable_correspondence(k-estim_params_.nvx,1)};
-    nam=['SE_EOBS_',vname];
+    nam = sprintf('SE_EOBS_%s', vname);
     if TeX
-        tname  = deblank(M_.endo_names_tex(estim_params_.var_endo(k-estim_params_.nvx,1),:));
-        texnam = ['$ EOBS SE_{' tname '} $'];
+        tname  = M_.endo_names_tex{estim_params_.var_endo(k-estim_params_.nvx,1)};
+        texnam = sprintf('$ EOBS SE_{%s} $', tname);
     end
 elseif  k <= (nvx+nvn+ncx)
     jj = k - (nvx+nvn);
     k1 = estim_params_.corrx(jj,1);
     k2 = estim_params_.corrx(jj,2);
-    vname = [deblank(M_.exo_names(k1,:)) '_' deblank(M_.exo_names(k2,:))];
-    nam=['CC_',vname];
+    vname = sprintf('%s_%s', M_.exo_names{k1}, M_.exo_names{k2});
+    nam = sprintf('CC_%s', vname);
     if TeX
-        tname  = [deblank(M_.exo_names_tex(k1,:)) ',' deblank(M_.exo_names_tex(k2,:))];
-        texnam = ['$ CC_{' tname '} $'];
+        tname  = sprintf('%s,%s', M_.exo_names_tex{k1}, M_.exo_names_tex{k2});
+        texnam = sprintf('$ CC_{%s} $', tname);
     end
 elseif  k <= (nvx+nvn+ncx+ncn)
     jj = k - (nvx+nvn+ncx);
     k1 = estim_params_.corrn(jj,1);
     k2 = estim_params_.corrn(jj,2);
-    vname = [deblank(M_.endo_names(k1,:)) '_' deblank(M_.endo_names(k2,:))];
-    nam=['CC_EOBS_' vname];
+    vname = sprintf('%s_%s', M_.endo_names{k1}, M_.endo_names{k2});
+    nam = sprintf('CC_EOBS_%s', vname);
     if TeX
-        tname  = [deblank(M_.endo_names_tex(k1,:)) ',' deblank(M_.endo_names_tex(k2,:))];
-        texnam =['$ EOBS CC_{' tname '} $'];
+        tname  = sprintf('%s,%s', M_.endo_names_tex{k1}, M_.endo_names_tex{k2});
+        texnam = sprintf('$ EOBS CC_{%s} $', tname);
     end
 else
     jj = k - (nvx+nvn+ncx+ncn);
     jj1 = estim_params_.param_vals(jj,1);
-    nam = deblank(M_.param_names(jj1,:));
+    nam = M_.param_names{jj1};
     if TeX
-        texnam = ['$ '  deblank(M_.param_names_tex(jj1,:))  ' $'];
+        texnam = sprintf('$ %s $', M_.param_names_tex{jj1});
     end
 end

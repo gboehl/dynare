@@ -18,7 +18,7 @@ function simulation = simul_backward_model(initialconditions, samplesize, innova
 % [3] If the first input argument is empty, the endogenous variables are initialized with 0, or if available with the informations
 %     provided thrtough the histval block.
 
-% Copyright (C) 2012-2017 Dynare Team
+% Copyright (C) 2012-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -47,7 +47,7 @@ else
             end
             % Set array holding innovations values.
             Innovations = zeros(samplesize, M_.exo_nbr);
-            exonames = cellstr(M_.exo_names);
+            exonames = M_.exo_names;
             for i=1:M_.exo_nbr
                 if ismember(exonames{i}, innovations.name)
                     Innovations(:,i) = innovations{exonames{i}}.data(1:samplesize);

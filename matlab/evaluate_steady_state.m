@@ -22,7 +22,7 @@ function [ys,params,info] = evaluate_steady_state(ys_init,M,options,oo,steadysta
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2001-2017 Dynare Team
+% Copyright (C) 2001-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -124,14 +124,14 @@ if options.ramsey_policy
         if ~isempty(infrow)
             fprintf('\nevaluate_steady_state: The initial values for the steady state of the following variables are Inf:\n');
             for iter=1:length(infrow)
-                fprintf('%s\n',M.endo_names(infrow(iter),:));
+                fprintf('%s\n',M.endo_names{infrow(iter)});
             end
         end
         nanrow=find(isnan(ys_init));
         if ~isempty(nanrow)
             fprintf('\nevaluate_steady_state: The initial values for the steady state of the following variables are NaN:\n');
             for iter=1:length(nanrow)
-                fprintf('%s\n',M.endo_names(nanrow(iter),:));
+                fprintf('%s\n',M.endo_names{nanrow(iter)});
             end
         end
     end

@@ -58,7 +58,7 @@ end;
 
 steady;
 
-f = dseries(kron([oo_.steady_state; oo_.exo_steady_state],ones(1,34))',2012Q3:2020Q4,[cellstr(M_.endo_names) ; cellstr(M_.exo_names)]);
+f = dseries(kron([oo_.steady_state; oo_.exo_steady_state],ones(1,34))',2012Q3:2020Q4,[M_.endo_names ; M_.exo_names]);
 
 f_r = f;
 

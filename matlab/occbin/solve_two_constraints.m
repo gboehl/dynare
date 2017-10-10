@@ -46,11 +46,11 @@ M00_ = M_;
 
 
 for i=1:M00_.endo_nbr
-    eval([deblank(M00_.endo_names(i,:)) '_ss = oo00_.dr.ys(i); ']);
+    eval([M00_.endo_names{i} '_ss = oo00_.dr.ys(i); ']);
 end
 
 for i_indx_ = 1:M00_.param_nbr
-    eval([M00_.param_names(i_indx_,:),'= M00_.params(i_indx_);']);
+    eval([M00_.param_names{i_indx_},'= M00_.params(i_indx_);']);
 end
 
 
@@ -208,7 +208,7 @@ violvecbool_ = zeros(nperiods_+1,2);  % This sets the first guess for when
                                       % solution.
 
 wishlist_ = endog_;
-nwishes_ = size(wishlist_,1);
+nwishes_ = length(wishlist_);
 for ishock_ = 1:nshocks
 
 
@@ -235,7 +235,7 @@ for ishock_ = 1:nshocks
                                                         irfshock_,shockssequence_(ishock_,:),init_);
 
         for i_indx_=1:nwishes_
-            eval([deblank(wishlist_(i_indx_,:)),'_difference=zdatalinear_(:,i_indx_);']);
+            eval([wishlist_{i_indx_}, '_difference=zdatalinear_(:,i_indx_);']);
         end
 
 

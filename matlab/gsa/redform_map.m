@@ -16,7 +16,7 @@ function redform_map(dirname,options_gsa_)
 % marco.ratto@ec.europa.eu
 
 % Copyright (C) 2012-2016 European Commission
-% Copyright (C) 2012-2017 Dynare Team
+% Copyright (C) 2012-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -86,9 +86,9 @@ end
 options_mcf.pvalue_ks = options_gsa_.ksstat_redform;
 options_mcf.pvalue_corr = options_gsa_.alpha2_redform;
 options_mcf.alpha2 = options_gsa_.alpha2_redform;
-options_mcf.param_names = char(pnames);
+options_mcf.param_names = pnames;
 if options_.TeX
-    options_mcf.param_names_tex=char(pnames_tex);
+    options_mcf.param_names_tex = pnames_tex;
 end
 options_mcf.fname_ = M_.fname;
 options_mcf.OutputDirectoryName = adir;
@@ -147,14 +147,14 @@ nsok = length(find(M_.lead_lag_incidence(M_.maximum_lag,:)));
 lpmat=[];
 lpmat0=[];
 js=0;
-for j=1:size(anamendo,1)
-    namendo=deblank(anamendo(j,:));
-    iendo=strmatch(namendo,M_.endo_names(oo_.dr.order_var,:),'exact');
-    ifig=0;
-    iplo=0;
-    for jx=1:size(anamexo,1)
-        namexo=deblank(anamexo(jx,:));
-        iexo=strmatch(namexo,M_.exo_names,'exact');
+for j = 1:length(anamendo)
+    namendo = anamendo{j};
+    iendo = strmatch(namendo, M_.endo_names(oo_.dr.order_var), 'exact');
+    ifig = 0;
+    iplo = 0;
+    for jx = 1:length(anamexo)
+        namexo = anamexo{jx};
+        iexo=strmatch(namexo, M_.exo_names, 'exact');
         skipline()
         disp(['[', namendo,' vs ',namexo,']'])
 
@@ -289,9 +289,9 @@ for j=1:size(anamendo,1)
     end
     ifig=0;
     iplo=0;
-    for je=1:size(anamlagendo,1)
-        namlagendo=deblank(anamlagendo(je,:));
-        ilagendo=strmatch(namlagendo,M_.endo_names(oo_.dr.order_var(M_.nstatic+1:M_.nstatic+nsok),:),'exact');
+    for je=1:length(anamlagendo)
+        namlagendo = anamlagendo{je};
+        ilagendo=strmatch(namlagendo, M_.endo_names(oo_.dr.order_var(M_.nstatic+1:M_.nstatic+nsok)), 'exact');
         skipline()
         disp(['[', namendo,' vs lagged ',namlagendo,']'])
 

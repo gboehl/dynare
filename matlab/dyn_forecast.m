@@ -21,7 +21,7 @@ function [forecast,info] = dyn_forecast(var_list,M,options,oo,task,dataset_info)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2003-2017 Dynare Team
+% Copyright (C) 2003-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -52,13 +52,13 @@ maximum_lag = M.maximum_lag;
 
 endo_names = M.endo_names;
 if isempty(var_list)
-    var_list = endo_names(1:M.orig_endo_nbr, :);
+    var_list = endo_names(1:M.orig_endo_nbr);
 end
 i_var = [];
-for i = 1:size(var_list)
-    tmp = strmatch(var_list(i,:),endo_names,'exact');
+for i = 1:length(var_list)
+    tmp = strmatch(var_list{i}, endo_names, 'exact');
     if isempty(tmp)
-        error([var_list(i,:) ' isn''t an endogenous variable'])
+        error([var_list{i} ' isn''t an endogenous variable'])
     end
     i_var = [i_var; tmp];
 end
@@ -90,7 +90,7 @@ switch task
     y_smoothed = oo.SmoothedVariables;
     y0 = zeros(M.endo_nbr,maximum_lag);
     for i = 1:M.endo_nbr
-        v_name = deblank(M.endo_names(i,:));
+        v_name = M.endo_names{i};
         y0(i,:) = y_smoothed.(v_name)(end-maximum_lag+1:end); %includes steady state or mean, but simult_ will subtract only steady state
                                                               % 2. Subtract mean/steady state and add steady state; takes care of prefiltering
         if isfield(oo.Smoother,'Constant') && isfield(oo.Smoother.Constant,v_name)
@@ -98,7 +98,7 @@ switch task
             if options.loglinear
                 y0(i,:)=y0(i,:)+log_variable(i,oo.dr.ys,M);
             else
-                y0(i,:)=y0(i,:)+oo.dr.ys(strmatch(v_name,deblank(M.endo_names),'exact'));
+                y0(i,:)=y0(i,:)+oo.dr.ys(strmatch(v_name, M.endo_names, 'exact'));
             end
         end
         % 2. Subtract trend
@@ -114,8 +114,8 @@ switch task
         i_var_obs = [];
         trend_coeffs = [];
         for i=1:length(var_obs)
-            tmp = strmatch(var_obs{i},endo_names(i_var,:),'exact');
-            trend_var_index=strmatch(var_obs{i},M.endo_names,'exact');
+            tmp = strmatch(var_obs{i}, endo_names(i_var), 'exact');
+            trend_var_index = strmatch(var_obs{i}, M.endo_names, 'exact');
             if ~isempty(tmp)
                 i_var_obs = [ i_var_obs; tmp];
                 trend_coeffs = [trend_coeffs; oo.Smoother.TrendCoeffs(trend_var_index)];
@@ -175,21 +175,21 @@ else
 end
 
 for i=1:n_var
-    vname = deblank(var_list(i,:));
+    vname = var_list{i};
     forecast.Mean.(vname) = yf(i,maximum_lag+(1:horizon))';
     forecast.HPDinf.(vname)= yf(i,maximum_lag+(1:horizon))' - int_width(1:horizon,i);
     forecast.HPDsup.(vname) = yf(i,maximum_lag+(1:horizon))' + int_width(1:horizon,i);
-    if ~isequal(M.H,0) && ismember(var_list(i,:),options.varobs)
+    if ~isequal(M.H,0) && ismember(var_list{i},options.varobs)
         forecast.HPDinf_ME.(vname)= yf(i,maximum_lag+(1:horizon))' - int_width_ME(1:horizon,i);
         forecast.HPDsup_ME.(vname) = yf(i,maximum_lag+(1:horizon))' + int_width_ME(1:horizon,i);
     end
 end
 
 for i=1:M.exo_det_nbr
-    forecast.Exogenous.(deblank(M.exo_det_names(i,:))) = oo.exo_det_simul(maximum_lag+(1:horizon),i);
+    forecast.Exogenous.(M.exo_det_names{i}) = oo.exo_det_simul(maximum_lag+(1:horizon),i);
 end
 
 if options.nograph == 0
     oo.forecast = forecast;
-    forecast_graphs(var_list,M, oo,options)
+    forecast_graphs(var_list, M, oo, options)
 end

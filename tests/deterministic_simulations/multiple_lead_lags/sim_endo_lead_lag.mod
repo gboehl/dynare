@@ -52,8 +52,8 @@ if max(abs(base_results.oo_.endo_simul(strmatch('c',base_results.M_.endo_names,'
     error('Autonomous system part is wrong')
 end
 
-if max(abs(base_results.oo_.exo_simul(1:end-base_results.M_.maximum_lead-base_results.M_.maximum_lag,strmatch('x',base_results.M_.exo_names,'exact')) -...
-    oo_.exo_simul(1:end-M_.maximum_lead-M_.maximum_lag,strmatch('x',M_.exo_names,'exact'))))>1e-8 
+if max(abs(base_results.oo_.exo_simul(1:end-base_results.M_.maximum_lead-base_results.M_.maximum_lag,strmatch('x', base_results.M_.exo_names, 'exact')) -...
+    oo_.exo_simul(1:end-M_.maximum_lead-M_.maximum_lag,strmatch('x', M_.exo_names, 'exact'))))>1e-8 
     error('Translation of exogenous variables is wrong')
 end
 

@@ -76,7 +76,7 @@ function [dr,info,M,options,oo] = resol(check_flag,M,options,oo)
 %! @end deftypefn
 %@eod:
 
-% Copyright (C) 2001-2017 Dynare Team
+% Copyright (C) 2001-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -115,7 +115,7 @@ if options.loglinear
     idx = find(dr.ys(get_all_variables_but_lagged_leaded_exogenous(M))<threshold);
     if length(idx)
         if options.debug
-            variables_with_non_positive_steady_state = M.endo_names(idx,:);
+            variables_with_non_positive_steady_state = M.endo_names{idx};
             skipline()
             fprintf('You are attempting to simulate/estimate a loglinear approximation of a model, but\n')
             fprintf('the steady state level of the following variables is not strictly positive:\n')

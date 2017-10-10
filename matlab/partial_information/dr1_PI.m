@@ -40,7 +40,7 @@ function [dr,info,M_,options_,oo_] = dr1_PI(dr,task,M_,options_,oo_)
 %   none.
 %
 
-% Copyright (C) 1996-2017 Dynare Team
+% Copyright (C) 1996-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -192,7 +192,7 @@ end % end if useAIM and...
             num_inst=size(lq_instruments.names,1);
             if ~isfield(lq_instruments,'inst_var_indices') && num_inst>0
                 for i=1:num_inst
-                    i_tmp = strmatch(deblank(lq_instruments.names(i,:)),M_.endo_names,'exact');
+                    i_tmp = strmatch(deblank(lq_instruments.names(i,:)), M_.endo_names,'exact');
                     if isempty(i_tmp)
                         error (['One of the specified instrument variables does not exist']) ;
                     else
@@ -406,7 +406,7 @@ end % end if useAIM and...
             %save ([M_.fname '_ACESLQ_NI.txt'], 'num_inst', '-ascii', '-tabs');
             %save ([M_.fname '_ACESLQ_ND.txt'], 'NX', '-ascii', '-tabs');
             %save ([M_.fname '_ACESLQ_NY.txt'], 'NY', '-ascii', '-tabs');
-            ACES_VARS=M_.endo_names;
+            ACES_VARS=char(M_.endo_names);
             save ([ACES_DirectoryName,'/',M_.fname '_ACESLQ_VARS.txt'], 'ACES_VARS', '-ascii', '-tabs');
             % added by BY
             % save the char array ACES_VARS into .txt as it is

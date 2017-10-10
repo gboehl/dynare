@@ -12,7 +12,7 @@ function oo_recursive_=dynare_estimation(var_list,dname)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2003-2017 Dynare Team
+% Copyright (C) 2003-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -117,16 +117,16 @@ if nnobs > 1 && horizon > 0
 
     if isempty(var_list)
         var_list = endo_names;
-        nvar    = size(endo_names,1);
+        nvar = length(endo_names);
         SelecVariables = transpose(1:nvar);
     else
-        nvar = size(var_list,1);
+        nvar = length(var_list);
         SelecVariables = [];
         for i=1:nvar
-            if ~isempty(strmatch(var_list(i,:),endo_names,'exact'))
-                SelecVariables = [SelecVariables;strmatch(var_list(i,:),endo_names, 'exact')];
+            if ~isempty(strmatch(var_list{i}, endo_names, 'exact'))
+                SelecVariables = [SelecVariables; strmatch(var_list{i}, endo_names, 'exact')];
             else
-                error(['Estimation:: ' var_list(i,:) ' isn''t an endogenous variable'])
+                error(['Estimation:: ' var_list{i} ' isn''t an endogenous variable'])
             end
         end
     end
@@ -148,7 +148,7 @@ if nnobs > 1 && horizon > 0
     m = 1;
     plot_index=0;
     OutputDirectoryName = CheckPath('graphs',M_.fname);
-    for i = 1:size(var_list,1)
+    for i = 1:length(var_list)
         if mod(i,nstar) == 1
             plot_index=plot_index+1;
             hfig = dyn_figure(options_.nodisplay,'Name',['Out of sample forecasts (',num2str(plot_index),')']);
@@ -163,7 +163,7 @@ if nnobs > 1 && horizon > 0
         else
             offsetx = 0;
         end
-        vname = deblank(var_list(i,:));
+        vname = var_list{i};
         for j=1:nnobs
             if mh_replic > 0
                 oo_.RecursiveForecast.Mean.(vname)(j,:) = ...
@@ -207,7 +207,7 @@ if nnobs > 1 && horizon > 0
         hold off
         xlim([nobs(1)-offsetx nobs(end)+horizon])
         m = m + 1;
-        if mod(i+1,nstar) == 1 || i ==size(var_list,1)
+        if mod(i+1,nstar) == 1 || i==length(var_list)
             dyn_saveas(hfig,[M_.fname,filesep,'graphs',filesep M_.fname '_RecursiveForecasts_' int2str(plot_index)],options_.nodisplay,options_.graph_format);
         end
     end

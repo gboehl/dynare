@@ -46,7 +46,7 @@ end;
 */
 
 // Define a dseries object.
-ds = dseries(repmat([1, .5, 1, .5, 0, 1], 10, 1), 1990Q1, cellstr(M_.endo_names), cellstr(M_.endo_names_tex));
+ds = dseries(repmat([1, .5, 1, .5, 0, 1], 10, 1), 1990Q1, M_.endo_names, M_.endo_names_tex);
 
 // Alternatively we could build this object with a stochastic simulation of the model.
 //oo_ = simul_backward_model(rand(6,1), 10, options_, M_, oo_);

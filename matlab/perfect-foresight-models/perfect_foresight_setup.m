@@ -12,7 +12,7 @@ function perfect_foresight_setup()
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 1996-2017 Dynare Team
+% Copyright (C) 1996-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -35,12 +35,12 @@ test_for_deep_parameters_calibration(M_);
 
 if size(M_.lead_lag_incidence,2)-nnz(M_.lead_lag_incidence(M_.maximum_endo_lag+1,:)) > 0
     mess = ['PERFECT_FORESIGHT_SETUP: error in model specification : the variable(s) '];
-    var_list=M_.endo_names(find(M_.lead_lag_incidence(M_.maximum_lag+1,:)==0),:);
-    for i=1:size(var_list,1)
-        if i<size(var_list,1)
-            mess = [mess, deblank(var_list(i,:)) ', '];
+    var_list = M_.endo_names(find(M_.lead_lag_incidence(M_.maximum_lag+1,:)==0));
+    for i=1:length(var_list)
+        if i<length(var_list)
+            mess = [mess, var_list{i} ', '];
         else
-            mess = [mess, deblank(var_list(i,:)) ];
+            mess = [mess, var_list{i} ];
         end
     end
     mess = [mess ' don''t appear as current period variables.'];
@@ -56,7 +56,7 @@ if ~isempty(M_.det_shocks) && options_.periods<max([M_.det_shocks.periods])
     mess = sprintf('Problem with the declaration of the expected shocks:\n');
     for i=1:length(M_.det_shocks)
         if any(M_.det_shocks(i).periods>options_.periods);
-            mess = sprintf('%s\n   At least one expected value for %s has been declared after the terminal period.', mess, deblank(M_.exo_names(M_.det_shocks(i).exo_id,:)));
+            mess = sprintf('%s\n   At least one expected value for %s has been declared after the terminal period.', mess, M_.exo_names{M_.det_shocks(i).exo_id});
         end
     end
     disp(mess)

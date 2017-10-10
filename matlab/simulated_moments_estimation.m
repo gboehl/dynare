@@ -14,7 +14,7 @@ function [param,sigma] = simulated_moments_estimation(dataset,options,parallel)
 % SPECIAL REQUIREMENTS
 %  The user has to provide a file where the moment conditions are defined.
 
-% Copyright (C) 2010-2017 Dynare Team
+% Copyright (C) 2010-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -54,17 +54,17 @@ options.estimated_parameters.list = [];
 xparam = [];
 if ~isempty(estim_params_.var_exo)
     options.estimated_variances.idx = estim_params_.var_exo(:,1);
-    options.estimated_parameters.list = char(M_.exo_names(options.estimated_variances.idx,:));
+    options.estimated_parameters.list = char(M_.exo_names(options.estimated_variances.idx));
     options.estimated_parameters.nv = rows(estim_params_.var_exo);
     xparam = [xparam; estim_params_.var_exo(:,2)];
 end
 if ~isempty(estim_params_.param_vals)
     options.estimated_parameters.idx = estim_params_.param_vals(:,1);
     if isempty(options.estimated_parameters.list)
-        options.estimated_parameters.list = char(M_.param_names(options.estimated_parameters.idx,:));
+        options.estimated_parameters.list = char(M_.param_names(options.estimated_parameters.idx));
     else
         options.estimated_parameters.list = char(options.estimated_parameters.list,...
-                                                 M_.param_names(options.estimated_parameters.idx,:));
+                                                 M_.param_names(options.estimated_parameters.idx));
     end
     options.estimated_parameters.np = rows(estim_params_.param_vals);
     xparam = [xparam; estim_params_.param_vals(:,2)];

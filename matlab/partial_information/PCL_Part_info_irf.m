@@ -5,7 +5,7 @@ function  y=PCL_Part_info_irf( H, varobs, ivar, M_, dr, irfpers,ii)
 % Pearlman, Currie and Levine 1986 solution.
 % 22/10/06 - Version 2 for new Riccati with 4 params instead 5
 
-% Copyright (C) 2006-2017 Dynare Team
+% Copyright (C) 2006-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -31,7 +31,7 @@ function  y=PCL_Part_info_irf( H, varobs, ivar, M_, dr, irfpers,ii)
 
 OBS = [];
 for i=1:rows(varobs)
-    OBS = [OBS find(strcmp(deblank(varobs(i,:)), cellstr(M_.endo_names))) ];
+    OBS = [OBS find(strcmp(varobs{i}, M_.endo_names)) ];
 end
 NOBS = length(OBS);
 
@@ -116,7 +116,7 @@ rr=DD*QQ*DD'+RR;
 ZSIG0=disc_riccati_fast(ff,DD,rr,hh);
 PP=ZSIG0 +QQ;
 
-exo_names=M_.exo_names(M_.exo_names_orig_ord,:);
+exo_names=M_.exo_names(M_.exo_names_orig_ord);
 
 DPDR=DD*PP*DD'+RR;
 I_DPDR=inv(DPDR);
@@ -138,4 +138,4 @@ for jj=2:irfpers+1
 end
 y = irfmat(:,1:irfpers);
 
-save ([M_.fname '_PCL_PtInfoIRFs_' num2str(ii) '_' deblank(exo_names(ii,:))], 'irfmat','irfst');
+save ([M_.fname '_PCL_PtInfoIRFs_' num2str(ii) '_' exo_names{ii}], 'irfmat','irfst');

@@ -11,7 +11,7 @@ function []=graph_decomp_detail(z,shock_names,endo_names,i_var,initial_date,Dyna
 %   DynareModel     [structure]                     Dynare model structure
 %   DynareOptions   [structure]                     Dynare options structure
 
-% Copyright (C) 2010-2017 Dynare Team
+% Copyright (C) 2010-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -133,7 +133,7 @@ for j=1:nvar
     z1 = squeeze(z(i_var(j),:,:));
     if screen_shocks,
         [junk, isort] = sort(mean(abs(z1(1:end-2,:)')), 'descend');
-        labels = char(char(shock_names(isort(1:16),:)),'Others', 'Initial values');
+        labels = char(char(shock_names(isort(1:16))),'Others', 'Initial values');
         zres = sum(z1(isort(17:end),:),1);
         z1 = [z1(isort(1:16),:); zres; z1(comp_nbr0:end,:)];
         comp_nbr=18;
@@ -151,7 +151,7 @@ for j=1:nvar
         continue
     end
     for jf = 1:nfigs
-        fhandle = dyn_figure(DynareOptions.plot_shock_decomp.nodisplay,'Name',[preamble_txt fig_name_long strrep(fig_mode1, '_', ' ') ': ' deblank(endo_names(i_var(j),:)) ' (detail).'],'position',[200 100 650 850], 'PaperPositionMode', 'auto','PaperOrientation','portrait','renderermode','auto');
+        fhandle = dyn_figure(DynareOptions.plot_shock_decomp.nodisplay,'Name',[preamble_txt fig_name_long strrep(fig_mode1, '_', ' ') ': ' endo_names{i_var(j)} ' (detail).'],'position',[200 100 650 850], 'PaperPositionMode', 'auto','PaperOrientation','portrait','renderermode','auto');
         a0=zeros(1,4);
         a0(3)=inf;
         a0(4)=-inf;
@@ -183,7 +183,7 @@ for j=1:nvar
                 mydata.use_shock_groups = DynareOptions.plot_shock_decomp.use_shock_groups;
                 mydata.shock_group = shock_groups.(shock_ind{ic});
                 mydata.shock_decomp = DynareOptions.plot_shock_decomp;
-                if ~isempty(mydata.shock_group.shocks{1})
+                if ~isempty(mydata.shock_group.shocks)
                     c = uicontextmenu;
                     hax.UIContextMenu=c;
                     browse_menu = uimenu(c,'Label','Browse group');
@@ -224,13 +224,14 @@ for j=1:nvar
         else
             suffix = ['_detail'];
         end
-        dyn_saveas(fhandle,[GraphDirectoryName, filesep, DynareModel.fname,'_shock_decomposition_',deblank(endo_names(i_var(j),:)),fig_mode1,fig_name suffix],DynareOptions.plot_shock_decomp.nodisplay,DynareOptions.plot_shock_decomp.graph_format);
+        dyn_saveas(fhandle,[GraphDirectoryName, filesep, DynareModel.fname, ...
+                            '_shock_decomposition_', endo_names{i_var(j)}, fig_mode1,fig_name suffix],DynareOptions.plot_shock_decomp.nodisplay,DynareOptions.plot_shock_decomp.graph_format);
         if DynareOptions.TeX && any(strcmp('eps',cellstr(DynareOptions.plot_shock_decomp.graph_format)))
             fprintf(fidTeX,'\\begin{figure}[H]\n');
             fprintf(fidTeX,'\\centering \n');
-            fprintf(fidTeX,'\\includegraphics[width=0.8\\textwidth]{%s/graphs/%s_shock_decomposition_%s}\n',DynareModel.fname,DynareModel.fname,[deblank(endo_names(i_var(j),:)) fig_mode1 fig_name suffix]);
-            fprintf(fidTeX,'\\label{Fig:shock_decomp_detail:%s}\n',[fig_mode deblank(endo_names(i_var(j),:)) fig_name suffix]);
-            fprintf(fidTeX,['\\caption{' preamble_txt fig_name_long strrep(fig_mode1, '_',  ' ') ': $ %s $ (detail).}\n'],deblank(DynareModel.endo_names_tex(i_var(j),:)));
+            fprintf(fidTeX,'\\includegraphics[width=0.8\\textwidth]{%s/graphs/%s_shock_decomposition_%s}\n',DynareModel.fname,DynareModel.fname,[endo_names{i_var(j)} fig_mode1 fig_name suffix]);
+            fprintf(fidTeX,'\\label{Fig:shock_decomp_detail:%s}\n',[fig_mode endo_names{i_var(j)} fig_name suffix]);
+            fprintf(fidTeX,['\\caption{' preamble_txt fig_name_long strrep(fig_mode1, '_',  ' ') ': $ %s $ (detail).}\n'], DynareModel.endo_names_tex{i_var(j)});
             fprintf(fidTeX,'\\end{figure}\n');
             fprintf(fidTeX,' \n');
         end
