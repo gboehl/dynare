@@ -27,7 +27,7 @@ function a = isfile(b)
 %! @end deftypefn
 %@eod:
 
-% Copyright (C) 2012 Dynare Team
+% Copyright (C) 2012-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -44,18 +44,45 @@ function a = isfile(b)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-% Original author: stephane DOT adjemian AT univ DASH lemans DOT fr
+stringarrayflag = false;
+cellofstringflag = false;
+n = 1;
+a = false;
 
-[base,ext] = strtok(b,'.');
+if isstring(b) && length(b)>1 && isvector(b)
+    n = length(b);
+    stringarrayflag = true;
+    a = false(size(b));
+end
 
-if isempty(ext)
-    % File has no extension.
-    [status, c] = fileattrib(b);
-    if status
-        a = ~c.directory;
+if iscell(b) && length(b)>1 && isvector(b)
+    if all(cellfun(@ischar, b))
+        n = length(b);
+        cellofstringflag = true;
+        a = false(size(b));
     else
-        a = 0;
+        error('Wrong input argument type!')
     end
-else
-    a = isequal(exist(b,'file'),2);
+end
+
+for i=1:n
+    if stringarrayflag
+        d = b(i);
+    elseif cellofstringflag
+        d = b{i};
+    elseif ischar(b) && size(b, 1)==1 
+        d = b;
+    else
+        error('Wrong input argument type!')
+    end
+    [base, ext] = strtok(d, '.');
+    if isempty(ext)
+        % File has no extension.
+        [status, c] = fileattrib(d);
+        if status
+            a(i) = ~c.directory;
+        end
+    else
+        a(i) = isequal(exist(d, 'file'), 2);
+    end
 end
