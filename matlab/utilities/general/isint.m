@@ -33,7 +33,7 @@ function [b,c,d] = isint(a)
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 if ~isnumeric(a)
-    b = 0;
+    b = false;
     if nargout>1
         c = [];
         d = [];
