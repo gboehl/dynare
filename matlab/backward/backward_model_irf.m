@@ -3,11 +3,11 @@ function [deviations, baseline, irfs] = backward_model_irf(initialcondition, inn
 % Returns impulse response functions.
 %
 % INPUTS
-% - initialcondition    [dseries]             Initial conditions for the endogenous variables, or period 0.
-% - innovationbaseline  [dseries]             Baseline for the future innovations. If empty the baseline scenario is zero for future shocks.
-% - listofshocks        [cell of strings]     The innovations for which the IRFs need to be computed.
-% - listofvariables     [cell of strings]     The endogenous variables which will be returned.
-% - periods             [integer]             scalar, the number of periods.
+% - initialcondition    [dseries]                      Initial conditions for the endogenous variables, or period 0.
+% - innovationbaseline  [dseries]                      Baseline for the future innovations. If empty the baseline scenario is zero for future shocks.
+% - listofshocks        [cell of strings or dseries]   The innovations for which the IRFs need to be computed.
+% - listofvariables     [cell of strings]              The endogenous variables which will be returned.
+% - periods             [integer]                      scalar, the number of periods.
 %
 % OUTPUTS
 % - irfs                [struct of dseries]
@@ -57,6 +57,39 @@ if nargin<6
 else
     notransform = false;
     transform = varargin{2};
+end
+
+% Check third argument.
+if ~iscell(listofshocks)
+    error('Third input argument has to be a cell of string or dseries objects!')
+else
+    if all(cellfun(@ischar, listofshocks))
+        deterministicshockflag = false;
+    elseif all(cellfun(@isdseries, listofshocks))
+        deterministicshockflag = true;
+    else
+        error('Elements of third input argument must all be char arrays or dseries objects!')
+    end
+    if deterministicshockflag
+        numberofexperiments = length(listofshocks);
+        exonames = cellstr(M_.exo_names);
+        initialconditionperiod = initialcondition.dates(end);
+        for i=1:numberofexperiments
+            shock = listofshocks{i};
+            impulsenames = shock.name;
+            listofunknownexo = setdiff(impulsenames, exonames);
+            if ~isempty(listofunknownexo)
+                disp(listofunknownexo)
+                error('In experiment n°%s, some of the declared shocks are unknown!', int2str(i))
+            end
+            if initialconditionperiod>=shock.dates(1)
+                error('In experiment n°%s, the shock period must follow %s!', string(initialconditionperiod))
+            end
+            if shock.nobs>1
+                error('Shocks over multiple periods not implemented yet!')
+            end
+        end
+    end
 end
 
 baselineflag = false;
@@ -119,11 +152,20 @@ end
 for i=1:length(listofshocks)
     innovations = Innovations;
     % Add the shock.
-    j = find(strcmp(listofshocks{i}, exonames));
-    if isempty(j)
-        error('backward_model_irf: Exogenous variable %s is unknown!', listofshocks{i})
+    if deterministicshockflag
+        shock = listofshocks{i};
+        timid = shock.dates(1)-initialconditionperiod;
+        for j=1:shock.vobs
+            k = find(strcmp(shock.name{i}, exonames));
+            innovations(timid,:) = innovations(timid,:) + shock.data(1,j);
+        end
+    else
+        j = find(strcmp(listofshocks{i}, exonames));
+        if isempty(j)
+            error('backward_model_irf: Exogenous variable %s is unknown!', listofshocks{i})
+        end
+        innovations(1,:) = innovations(1,:) + transpose(sigma(:,j));
     end
-    innovations(1,:) = innovations(1,:) + transpose(sigma(:,j));
     if options_.linear
         ysim__1 = simul_backward_linear_model_(initialcondition, periods, DynareOptions, DynareModel, DynareOutput, innovations, nx, ny1, iy1, jdx, model_dynamic);
     else
@@ -141,9 +183,14 @@ for i=1:length(listofshocks)
         allirfs = dseries(transpose(endo_simul__1), initialcondition.init, endonames(1:M_.orig_endo_nbr), cellstr(DynareModel.endo_names_tex(1:M_.orig_endo_nbr,:)));
     end
     % Extract a sub-dseries object
-    deviations.(listofshocks{i}) = alldeviations{listofvariables{:}};
+    if deterministicshockflag
+        name = sprintf('experiment_%s', int2str(i));
+    else
+        name = listofshocks{i};
+    end
+    deviations.(name) = alldeviations{listofvariables{:}};
     if nargout>2
-        irfs.(listofshocks{i}) = allirfs{listofvariables{:}};
+        irfs.(name) = allirfs{listofvariables{:}};
     end
 end
 
