@@ -410,8 +410,8 @@ website} and the @uref{https://forum.dynare.org/,Dynare forum}.
 @node Citing Dynare in your research
 @section Citing Dynare in your research
 
-If you would like to refer to Dynare in a research article, the
-recommended way is to cite the present manual, as follows:
+You should cite Dynare if you use it in your research. The recommended way to
+do this is to cite the present manual as:
 
 @quotation
 Stéphane Adjemian, Houtan Bastani, Michel Juillard, Frédéric Karamé,
@@ -420,10 +420,7 @@ Sébastien Villemot (2011), ``Dynare: Reference Manual, Version 4,''
 @i{Dynare Working Papers}, 1, CEPREMAP
 @end quotation
 
-Note that citing the Dynare Reference Manual in your research is a
-good way to help the Dynare project.
-
-If you want to give a URL, use the address of the Dynare website:
+@noindent If you want to give a URL, use the address of the Dynare website:
 @uref{http://www.dynare.org}.
 
 @node Installation and configuration
