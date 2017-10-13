@@ -402,8 +402,10 @@ The present document is the reference manual for Dynare. It documents
 all commands and features in a systematic fashion.
 
 Other useful sources of information include the
-@uref{http://www.dynare.org,Dynare wiki} and the
-@uref{http://www.dynare.org/phpBB3, Dynare forums}.
+@uref{http://www.dynare.org/DynareWiki,old Dynare wiki}, the
+@uref{https://github.com/DynareTeam/dynare/wiki,new Dynare wiki}, the documentation
+section of the @uref{http://www.dynare.org/documentation-and-support,Dynare
+website} and the @uref{https://forum.dynare.org/,Dynare forum}.
 
 @node Citing Dynare in your research
 @section Citing Dynare in your research
