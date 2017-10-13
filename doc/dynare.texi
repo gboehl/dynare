@@ -357,7 +357,7 @@ both non-profit and for-profit purposes. Most of the source files are covered
 by the GNU General Public Licence (GPL) version 3 or later (there are some
 exceptions to this, see the file @file{license.txt} in Dynare distribution). It
 is available for the Windows, macOS, and Linux platforms and is fully
-documented through a user guide and a reference manual. Part of Dynare is
+documented in this reference manual. Part of Dynare is
 programmed in C++, while the rest is written using the
 @uref{http://www.mathworks.com/products/matlab/, MATLAB} programming language.
 The latter implies that commercially-available MATLAB software is required in
@@ -400,10 +400,6 @@ providing financial support.
 
 The present document is the reference manual for Dynare. It documents
 all commands and features in a systematic fashion.
-
-New users should rather begin with Dynare User Guide (@cite{Mancini
-(2007)}), distributed with Dynare and also available from the
-@uref{http://www.dynare.org,official Dynare web site}.
 
 Other useful sources of information include the
 @uref{http://www.dynare.org,Dynare wiki} and the
@@ -14896,10 +14892,6 @@ Liu, Jane and Mike West (2001): ``Combined parameter and state estimation in sim
 Lubik, Thomas and Frank Schorfheide (2007): ``Do Central Banks Respond
 to Exchange Rate Movements? A Structural Investigation,'' @i{Journal
 of Monetary Economics}, 54(4), 1069--1087
-
-@item
-Mancini-Griffoli, Tommaso (2007): ``Dynare User Guide: An introduction
-to the solution and estimation of DSGE models''
 
 @item
 Murray, Lawrence M., Emlyn M. Jones and John Parslow (2013): ``On Disturbance State-Space Models and the Particle Marginal
