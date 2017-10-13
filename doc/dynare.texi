@@ -420,6 +420,22 @@ Sébastien Villemot (2011), ``Dynare: Reference Manual, Version 4,'' @i{Dynare
 Working Papers}, 1, CEPREMAP
 @end quotation
 
+@noindent For convenience, you can copy and paste the following into your BibTeX file:
+
+@verbatim
+@TechReport{Adjemianetal2011,
+  author      = {Adjemian, St\'ephane and Bastani, Houtan and Juillard, Michel and
+                 Karam\'e, Fr\'ederic and Maih, Junior and Mihoubi, Ferhat and
+                 Perendia, George and Pfeifer, Johannes and Ratto, Marco and
+                 Villemot, S\'ebastien},
+  title       = {Dynare: Reference Manual Version 4},
+  year        = {2011},
+  institution = {CEPREMAP},
+  type        = {Dynare Working Papers},
+  number      = {1},
+}
+@end verbatim
+
 @noindent If you want to give a URL, use the address of the Dynare website:
 @uref{http://www.dynare.org}.
 
