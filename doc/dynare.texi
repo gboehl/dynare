@@ -414,10 +414,10 @@ You should cite Dynare if you use it in your research. The recommended way to
 do this is to cite the present manual as:
 
 @quotation
-Stéphane Adjemian, Houtan Bastani, Michel Juillard, Frédéric Karamé,
-Ferhat Mihoubi, George Perendia, Johannes Pfeifer, Marco Ratto and
-Sébastien Villemot (2011), ``Dynare: Reference Manual, Version 4,''
-@i{Dynare Working Papers}, 1, CEPREMAP
+Stéphane Adjemian, Houtan Bastani, Michel Juillard, Frédéric Karamé, Junior
+Maih, Ferhat Mihoubi, George Perendia, Johannes Pfeifer, Marco Ratto and
+Sébastien Villemot (2011), ``Dynare: Reference Manual, Version 4,'' @i{Dynare
+Working Papers}, 1, CEPREMAP
 @end quotation
 
 @noindent If you want to give a URL, use the address of the Dynare website:
