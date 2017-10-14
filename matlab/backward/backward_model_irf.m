@@ -157,7 +157,7 @@ for i=1:length(listofshocks)
         timid = shock.dates(1)-initialconditionperiod;
         for j=1:shock.vobs
             k = find(strcmp(shock.name{i}, exonames));
-            innovations(timid,:) = innovations(timid,:) + shock.data(1,j);
+            innovations(timid,k) = innovations(timid,k) + shock.data(1,j);
         end
     else
         j = find(strcmp(listofshocks{i}, exonames));
