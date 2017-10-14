@@ -125,8 +125,14 @@ end
     simul_backward_model_init(initialcondition, periods, options_, M_, oo_, Innovations);
 
 % Get the covariance matrix of the shocks.
-Sigma = M_.Sigma_e + 1e-14*eye(M_.exo_nbr);
-sigma = transpose(chol(Sigma));
+if ~deterministicshockflag
+    if ~nnz(M_.Sigma_e)
+        Sigma = M_.Sigma_e + 1e-14*eye(M_.exo_nbr);
+        sigma = transpose(chol(Sigma));
+    else
+        error('You did not specify the size of the shocks!')
+    end
+end
 
 % Initialization of the returned argument. Each will be a dseries object containing the IRFS for the endogenous variables listed in the third input argument.
 deviations = struct();
