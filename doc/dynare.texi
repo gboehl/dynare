@@ -363,7 +363,7 @@ both non-profit and for-profit purposes. Most of the source files are covered
 by the GNU General Public Licence (GPL) version 3 or later (there are some
 exceptions to this, see the file @file{license.txt} in Dynare distribution). It
 is available for the Windows, macOS, and Linux platforms and is fully
-documented through a user guide and a reference manual. Part of Dynare is
+documented in this reference manual. Part of Dynare is
 programmed in C++, while the rest is written using the
 @uref{http://www.mathworks.com/products/matlab/, MATLAB} programming language.
 The latter implies that commercially-available MATLAB software is required in
@@ -407,31 +407,42 @@ providing financial support.
 The present document is the reference manual for Dynare. It documents
 all commands and features in a systematic fashion.
 
-New users should rather begin with Dynare User Guide (@cite{Mancini
-(2007)}), distributed with Dynare and also available from the
-@uref{http://www.dynare.org,official Dynare web site}.
-
 Other useful sources of information include the
-@uref{http://www.dynare.org,Dynare wiki} and the
-@uref{http://www.dynare.org/phpBB3, Dynare forums}.
+@uref{http://www.dynare.org/DynareWiki,old Dynare wiki}, the
+@uref{https://github.com/DynareTeam/dynare/wiki,new Dynare wiki}, the documentation
+section of the @uref{http://www.dynare.org/documentation-and-support,Dynare
+website} and the @uref{https://forum.dynare.org/,Dynare forum}.
 
 @node Citing Dynare in your research
 @section Citing Dynare in your research
 
-If you would like to refer to Dynare in a research article, the
-recommended way is to cite the present manual, as follows:
+You should cite Dynare if you use it in your research. The recommended way to
+do this is to cite the present manual as:
 
 @quotation
-Stéphane Adjemian, Houtan Bastani, Michel Juillard, Frédéric Karamé,
-Ferhat Mihoubi, George Perendia, Johannes Pfeifer, Marco Ratto and
-Sébastien Villemot (2011), ``Dynare: Reference Manual, Version 4,''
-@i{Dynare Working Papers}, 1, CEPREMAP
+Stéphane Adjemian, Houtan Bastani, Michel Juillard, Frédéric Karamé, Junior
+Maih, Ferhat Mihoubi, George Perendia, Johannes Pfeifer, Marco Ratto and
+Sébastien Villemot (2011), ``Dynare: Reference Manual, Version 4,'' @i{Dynare
+Working Papers}, 1, CEPREMAP
 @end quotation
 
-Note that citing the Dynare Reference Manual in your research is a
-good way to help the Dynare project.
+@noindent For convenience, you can copy and paste the following into your BibTeX file:
 
-If you want to give a URL, use the address of the Dynare website:
+@verbatim
+@TechReport{Adjemianetal2011,
+  author      = {Adjemian, St\'ephane and Bastani, Houtan and Juillard, Michel and
+                 Karam\'e, Fr\'ederic and Maih, Junior and Mihoubi, Ferhat and
+                 Perendia, George and Pfeifer, Johannes and Ratto, Marco and
+                 Villemot, S\'ebastien},
+  title       = {Dynare: Reference Manual Version 4},
+  year        = {2011},
+  institution = {CEPREMAP},
+  type        = {Dynare Working Papers},
+  number      = {1},
+}
+@end verbatim
+
+@noindent If you want to give a URL, use the address of the Dynare website:
 @uref{http://www.dynare.org}.
 
 @node Installation and configuration
@@ -447,7 +458,7 @@ If you want to give a URL, use the address of the Dynare website:
 @node Software requirements
 @section Software requirements
 
-Packaged versions of Dynare are available for Windows XP/Vista/7/8,
+Packaged versions of Dynare are available for Windows XP/Vista/7/8/10,
 @uref{http://www.debian.org,Debian GNU/Linux},
 @uref{http://www.ubuntu.com/,Ubuntu} and macOS 10.8 or later.  Dynare should
 work on other systems, but some compilation steps are necessary in that case.
@@ -460,7 +471,7 @@ In order to run Dynare, you need one of the following:
 MATLAB version 7.5 (R2007b) or above (MATLAB R2009b 64-bit for macOS);
 
 @item
-GNU Octave version 3.6 or above.
+GNU Octave version 4.2.1 or above.
 @end itemize
 
 Packages of GNU Octave can be downloaded on the
@@ -4382,7 +4393,17 @@ period(s). The periods must be strictly positive. Conditional variances are give
 decomposition provides the decomposition of the effects of shocks upon
 impact. The results are stored in
 @code{oo_.conditional_variance_decomposition}
-(@pxref{oo_.conditional_variance_decomposition}). The variance decomposition is only conducted, if theoretical moments are requested, @i{i.e.} using the @code{periods=0}-option. In case of @code{order=2}, Dynare provides a second-order accurate approximation to the true second moments based on the linear terms of the second-order solution (see @cite{Kim, Kim, Schaumburg and Sims (2008)}). Note that the unconditional variance decomposition (@i{i.e.} at horizon infinity) is automatically conducted if theoretical moments are requested and if @code{nodecomposition} is not set (@pxref{oo_.variance_decomposition})
+(@pxref{oo_.conditional_variance_decomposition}).
+In the presence of measurement error, the @code{oo_.conditional_variance_decomposition} field will contain
+the variance contribution after measurement error has been taken out, i.e. the decomposition will 
+be conducted of the actual as opposed to the measured variables. The variance decomposition of the 
+measured variables will be stored in @code{oo_.conditional_variance_decomposition_ME} (@pxref{oo_.conditional_variance_decomposition_ME}). 
+The variance decomposition is only conducted, if theoretical moments are requested, @i{i.e.} using the @code{periods=0}-option. 
+In case of @code{order=2}, Dynare provides a second-order accurate approximation to the true 
+second moments based on the linear terms of the second-order solution (see @cite{Kim, Kim, 
+Schaumburg and Sims (2008)}). Note that the unconditional variance decomposition (@i{i.e.} at horizon infinity) 
+is automatically conducted if theoretical moments are requested and if @code{nodecomposition} 
+is not set (@pxref{oo_.variance_decomposition})
 
 @item pruning
 Discard higher order terms when iteratively computing simulations of
@@ -4611,9 +4632,25 @@ accurate approximation of the true second moments, see @code{conditional_varianc
 @defvr {MATLAB/Octave variable} oo_.variance_decomposition
 After a run of @code{stoch_simul} when requesting theoretical moments (@code{periods=0}), 
 contains a matrix with the result of the unconditional variance decomposition (@i{i.e.} at horizon infinity).
-The first dimension corresponds to the endogenous variables (in the order of declaration) and 
+The first dimension corresponds to the endogenous variables (in the order of declaration after the command or in
+@code{M_.endo_names} if not specified) and 
 the second dimension corresponds to exogenous variables (in the order of declaration). 
-Numbers are in percent and sum up to 100 across columns.
+Numbers are in percent and sum up to 100 across columns. In the presence of measurement error, the
+field will contain the variance contribution after measurement error has been taken out, i.e. the decomposition will 
+be conducted of the actual as opposed to the measured variables.
+@end defvr
+
+@anchor{oo_.variance_decomposition_ME}
+@defvr {MATLAB/Octave variable} oo_.variance_decomposition_ME
+Field set after a run of @code{stoch_simul} when requesting theoretical moments (@code{periods=0}) if 
+measurement error is present.  
+It is similar to @ref{oo_.variance_decomposition}, but the decomposition will 
+be conducted of the measured variables. The field contains a matrix with the result 
+of the unconditional variance decomposition (@i{i.e.} at horizon infinity).
+The first dimension corresponds to the observed endogenous variables (in the order of declaration after the command)
+and the second dimension corresponds to exogenous variables (in the order of declaration), with the last column
+corresponding to the contribution of the measurement error. 
+Numbers are in percent and sum up to 100 across columns. 
 @end defvr
 
 @anchor{oo_.conditional_variance_decomposition}
@@ -4622,9 +4659,25 @@ After a run of @code{stoch_simul} with the
 @code{conditional_variance_decomposition} option, contains a
 three-dimensional array with the result of the decomposition. The
 first dimension corresponds to forecast horizons (as declared with the
-option), the second dimension corresponds to endogenous variables (in
+option), the second dimension corresponds to endogenous variables (in the order 
+of declaration after the command or in @code{M_.endo_names} if not specified)), 
+the third dimension corresponds to
+exogenous variables (in the order of declaration). In the presence of measurement error, the
+field will contain the variance contribution after measurement error has been taken out, 
+i.e. the decomposition will be conducted of the actual as opposed to the measured variables.
+@end defvr
+
+@anchor{oo_.conditional_variance_decomposition_ME}
+@defvr {MATLAB/Octave variable} oo_.conditional_variance_decomposition_ME
+Field set after a run of @code{stoch_simul} with the @code{conditional_variance_decomposition} 
+option if measurement error is present. It is similar to @ref{oo_.conditional_variance_decomposition}, but 
+the decomposition will be conducted of the measured variables. 
+It contains a three-dimensional array with the result of the decomposition. The
+first dimension corresponds to forecast horizons (as declared with the
+option), the second dimension corresponds to observed endogenous variables (in
 the order of declaration), the third dimension corresponds to
-exogenous variables (in the order of declaration).
+exogenous variables (in the order of declaration), with the last column
+corresponding to the contribution of the measurement error. 
 @end defvr
 
 @anchor{oo_.contemporaneous_correlation}
@@ -6232,9 +6285,13 @@ positive. Conditional variances are given by @math{var(y_{t+k}|t)}. For
 period 1, the conditional variance decomposition provides the
 decomposition of the effects of shocks upon impact. The results are
 stored in
-@code{oo_.PosteriorTheoreticalMoments.dsge.ConditionalVarianceDecomposition},
-but currently there is no displayed output. Note that this option requires the
-option @code{moments_varendo} to be specified.
+@code{oo_.PosteriorTheoreticalMoments.dsge.ConditionalVarianceDecomposition}. 
+Note that this option requires the
+option @code{moments_varendo} to be specified. In the presence of measurement error, the
+field will contain the variance contribution after measurement error has been taken out, 
+i.e. the decomposition will be conducted of the actual as opposed to the measured variables. 
+The variance decomposition of the measured variables will be stored in 
+@code{oo_.PosteriorTheoreticalMoments.dsge.ConditionalVarianceDecompositionME}. 
 
 @item filtered_vars
 @anchor{filtered_vars} Triggers the computation of the posterior
@@ -7027,14 +7084,29 @@ Auto- and cross-correlation of endogenous variables. Fields are vectors with cor
 
 
 @item VarianceDecomposition
+@anchor{VarianceDecomposition}
 Decomposition of variance (unconditional variance, @i{i.e.} at horizon infinity)@footnote{When the shocks are correlated, it
 is the decomposition of orthogonalized shocks via Cholesky
 decomposition according to the order of declaration of shocks
 (@pxref{Variable declarations})}
 
+@item VarianceDecompositionME
+Same as @ref{VarianceDecomposition}, but contains the decomposition of the
+measured as opposed to the actual variable. The joint contribution of the measurement error
+will be saved in a field named @code{ME}.
+
 @item ConditionalVarianceDecomposition
+@anchor{ConditionalVarianceDecomposition}
 Only if the @code{conditional_variance_decomposition} option has been
-specified
+specified. In the presence of measurement error, the field will contain
+the variance contribution after measurement error has been taken out, i.e. the decomposition will 
+be conducted of the actual as opposed to the measured variables. 
+
+@item ConditionalVarianceDecompositionME
+Only if the @code{conditional_variance_decomposition} option has been
+specified. Same as @ref{ConditionalVarianceDecomposition}, but contains the decomposition of the
+measured as opposed to the actual variable. The joint contribution of the measurement error
+will be saved in a field named @code{ME}.
 
 @end table
 
@@ -15091,10 +15163,6 @@ Liu, Jane and Mike West (2001): ``Combined parameter and state estimation in sim
 Lubik, Thomas and Frank Schorfheide (2007): ``Do Central Banks Respond
 to Exchange Rate Movements? A Structural Investigation,'' @i{Journal
 of Monetary Economics}, 54(4), 1069--1087
-
-@item
-Mancini-Griffoli, Tommaso (2007): ``Dynare User Guide: An introduction
-to the solution and estimation of DSGE models''
 
 @item
 Murray, Lawrence M., Emlyn M. Jones and John Parslow (2013): ``On Disturbance State-Space Models and the Particle Marginal

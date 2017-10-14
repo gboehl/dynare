@@ -62,17 +62,24 @@ if strcmpi(type,'posterior')
     n_draws=options_.sub_draws;
     prior = false;
 elseif strcmpi(type,'prior')
+    if isempty(bayestopt_)
+        if ~isempty(estim_params_) && ~(isfield(estim_params_,'nvx') && (size(estim_params_.var_exo,1)+size(estim_params_.var_endo,1)+size(estim_params_.corrx,1)+size(estim_params_.corrn,1)+size(estim_params_.param_vals,1))==0)
+            [xparam1,estim_params_,bayestopt_,lb,ub,M_] = set_prior(estim_params_,M_,options_);
+        else
+            error('The prior distributions are not properly set up.')
+        end
+    end
     prior_draw(bayestopt_, options_.prior_trunc);
 else
     error('EXECUTE_POSTERIOR_FUNCTION: Unknown type!')
 end
 
 %get draws for later use
-first_draw=GetOneDraw(type);
+first_draw=GetOneDraw(type,M_,estim_params_,oo_,options_,bayestopt_);
 parameter_mat=NaN(n_draws,length(first_draw));
 parameter_mat(1,:)=first_draw;
 for draw_iter=2:n_draws
-    parameter_mat(draw_iter,:) = GetOneDraw(type);
+    parameter_mat(draw_iter,:) = GetOneDraw(type,M_,estim_params_,oo_,options_,bayestopt_);
 end
 
 % get output size

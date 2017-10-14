@@ -14,8 +14,10 @@ function [s,nu] = inverse_gamma_specification(mu, sigma2, lb, type, use_fzero_fl
 % - s                [double]    scalar, first hyperparameter.
 % - nu               [double]    scalar, second hyperparameter.
 %
-% REMARK
-% The call to the matlab's implementation of the secant method is here for testing purpose and should not be used. This routine fails
+% REMARKS
+% 1. In the Inverse Gamma parameterization with alpha and beta, we have alpha=nu/2 and beta=2/s, where
+%       if X is IG(alpha,beta) then 1/X is Gamma(alpha,1/beta)
+% 2. The call to the matlab's implementation of the secant method is here for testing purpose and should not be used. This routine fails
 % more often in finding an interval for nu containing a signe change because it expands the interval on both sides and eventually
 % violates  the condition nu>2.
 
@@ -60,7 +62,7 @@ if nargin==4 || isempty(use_fzero_flag)
     use_fzero_flag = false;
 else
     if ~isscalar(use_fzero_flag) || ~islogical(use_fzero_flag)
-        error('Fourth input argument must be a scalar logical!')
+        error('Fifth input argument must be a scalar logical!')
     end
 end
 

@@ -54,4 +54,6 @@ shocks;
     var e_n = 0.001;
 end;
 
-oo_ = simul_backward_nonlinear_model([], 5000, options_, M_, oo_);
+initialconditions = dseries([1 1.02 1 1.02 1], 2000Q1, {'Efficiency'; 'EfficiencyGrowth'; 'Population'; 'PopulationGrowth'; 'PhysicalCapitalStock'});
+
+simulations = simul_backward_model(initialconditions, 5000);

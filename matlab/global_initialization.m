@@ -174,6 +174,11 @@ options_.bandpass.indicator = 0;
 options_.bandpass.passband = [6; 32];
 options_.bandpass.K=12;
 
+options_.irf_opt.diagonal_only = 0;
+options_.irf_opt.stderr_multiples = 0;
+options_.irf_opt.irf_shock_graphtitles = {};
+options_.irf_opt.irf_shocks = [];
+
 % Extended path options
 %
 % Set debug flag
@@ -824,6 +829,8 @@ options_.mcppath.mu0 = [];
 
 %Figure options
 options_.figures.textwidth=0.8;
+
+options_.varobs_id=[]; %initialize field
 
 % initialize persistent variables in priordens()
 priordens([],[],[],[],[],[],1);

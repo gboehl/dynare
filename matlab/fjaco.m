@@ -1,14 +1,14 @@
 function fjac = fjaco(f,x,varargin)
 
-% FDJAC Computes two-sided finite difference Jacobian
+% FJACO Computes two-sided finite difference Jacobian
 % USAGE
-%   fjac = fdjac(f,x,P1,P2,...)
+%   fjac = fjaco(f,x,P1,P2,...)
 % INPUTS
 %   f         : name of function of form fval = f(x)
 %   x         : evaluation point
 %   P1,P2,... : additional arguments for f (optional)
 % OUTPUT
-%   fjac      : finite differnce Jacobian
+%   fjac      : finite difference Jacobian
 %
 % Copyright (C) 2010-2017 Dynare Team
 %

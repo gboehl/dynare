@@ -41,7 +41,7 @@ function P=lyapunov_solver(T,R,Q,DynareOptions) % --*-- Unitary tests --*--
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 if DynareOptions.lyapunov_fp == 1
-    P = lyapunov_symm(T,R*Q'*R',DynareOptions.lyapunov_fixed_point_tol,DynareOptions.qz_criterium,DynareOptions.lyapunov_complex_threshold, 3, DynareOptions.debug);
+    P = lyapunov_symm(T,R*Q*R',DynareOptions.lyapunov_fixed_point_tol,DynareOptions.qz_criterium,DynareOptions.lyapunov_complex_threshold, 3, DynareOptions.debug);
 elseif DynareOptions.lyapunov_db == 1
     [P, errorflag] = disclyap_fast(T,R*Q*R',DynareOptions.lyapunov_doubling_tol);
     if errorflag %use Schur-based method

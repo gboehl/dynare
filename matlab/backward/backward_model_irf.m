@@ -85,9 +85,6 @@ else
             if initialconditionperiod>=shock.dates(1)
                 error('In experiment n°%s, the shock period must follow %s!', string(initialconditionperiod))
             end
-            if shock.nobs>1
-                error('Shocks over multiple periods not implemented yet!')
-            end
         end
     end
 end
@@ -125,8 +122,14 @@ end
     simul_backward_model_init(initialcondition, periods, options_, M_, oo_, Innovations);
 
 % Get the covariance matrix of the shocks.
-Sigma = M_.Sigma_e + 1e-14*eye(M_.exo_nbr);
-sigma = transpose(chol(Sigma));
+if ~deterministicshockflag
+    if ~nnz(M_.Sigma_e)
+        Sigma = M_.Sigma_e + 1e-14*eye(M_.exo_nbr);
+        sigma = transpose(chol(Sigma));
+    else
+        error('You did not specify the size of the shocks!')
+    end
+end
 
 % Initialization of the returned argument. Each will be a dseries object containing the IRFS for the endogenous variables listed in the third input argument.
 deviations = struct();
@@ -154,10 +157,12 @@ for i=1:length(listofshocks)
     % Add the shock.
     if deterministicshockflag
         shock = listofshocks{i};
-        timid = shock.dates(1)-initialconditionperiod;
+        timid = shock.dates-initialconditionperiod;
         for j=1:shock.vobs
             k = find(strcmp(shock.name{i}, exonames));
-            innovations(timid,:) = innovations(timid,:) + shock.data(1,j);
+            for l=1:length(timid)
+                innovations(timid(l),k) = innovations(timid(l),k) + shock.data(l,j);
+            end
         end
     else
         j = find(strcmp(listofshocks{i}, exonames));

@@ -33,35 +33,31 @@ model;
     PhysicalCapitalStock = (1-delta)*PhysicalCapitalStock(-1) + s*Output;
 end;
 
-histval;
-    Efficiency(0) = .5;
-    EfficiencyGrowth(0) = 1.00;
-    Population(0) = 1;
-    PopulationGrowth(0) = 1.04;
-    PhysicalCapitalStock(0) = 15;
-end;
+d = dseries([.5 1 1 1.04 15], 2000Q1, {'Efficiency'; 'EfficiencyGrowth'; 'Population'; 'PopulationGrowth'; 'PhysicalCapitalStock'});
 
-LongRunEfficiency = M_.endo_histval(1)*M_.endo_histval(2)^(rho_x/(1-rho_x));
-LongRunPopulation = M_.endo_histval(3)*M_.endo_histval(4)^(rho_n/(1-rho_n));
+LongRunEfficiency = d.Efficiency*d.EfficiencyGrowth^(rho_x/(1-rho_x));
+LongRunPopulation = d.Population*d.PopulationGrowth^(rho_n/(1-rho_n));
 LongRunEfficiencyGrowth = EfficiencyGrowth_ss; 
 LongRunPopulationGrowth = PopulationGrowth_ss;
-LongRunIntensiveCapitalStock = LongRunEfficiencyGrowth*LongRunPopulationGrowth*(s/(LongRunEfficiencyGrowth*LongRunPopulationGrowth-1+delta))^(1/(1-alpha));
+LongRunIntensiveCapitalStock = (s/(LongRunEfficiencyGrowth*LongRunPopulationGrowth-1+delta))^(1/(1-alpha)); //LongRunEfficiencyGrowth*LongRunPopulationGrowth*
 
 precision = 1e-6;
 T = 5*floor(log(precision)/log(max(rho_x, rho_n)));
 
-oo_ = simul_backward_model(M_.endo_histval, T, options_, M_, oo_, zeros(T+1,2));
+e = dseries(zeros(T, 2), 2000Q2, {'e_x'; 'e_n'});
 
-if abs(oo_.endo_simul(1,end)-LongRunEfficiency)>1e-10
+simulations = simul_backward_model(d, T, e);
+
+if abs(simulations.Efficiency.data(end)-LongRunEfficiency.data)>1e-10
    error('Wrong long run level!')
 end
 
-if abs(oo_.endo_simul(3,end)-LongRunPopulation)>1e-10
+if abs(simulations.Population.data(end)-LongRunPopulation.data)>1e-10
    error('Wrong long run level!')
 end
 
-IntensiveCapitalStock = oo_.endo_simul(6,1:end)./(oo_.endo_simul(1,1:end).*oo_.endo_simul(3,1:end));
+IntensiveCapitalStock = simulations.PhysicalCapitalStock/(simulations.Efficiency*simulations.Population);
 
-if abs(IntensiveCapitalStock(end)-LongRunIntensiveCapitalStock>1e-10)
-   error('Wrong long run level!')
+if abs(IntensiveCapitalStock.data(end)-LongRunIntensiveCapitalStock)>1e-3
+    error('Wrong long run level!')
 end
