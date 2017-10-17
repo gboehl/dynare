@@ -52,7 +52,7 @@ else
                 end
             end
         else
-            tmp = [dynareroot '../mex/matlab/win64-7.8-9.2/'];
+            tmp = [dynareroot '../mex/matlab/win64-7.8-9.3/'];
             if exist(tmp, 'dir')
                 mexpath = tmp;
                 if modifypath

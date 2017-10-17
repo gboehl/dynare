@@ -98,9 +98,9 @@ Section "MEX files for MATLAB 64-bit, version 7.5 to 7.7 (R2007b to R2008b)"
  File ..\mex\matlab\win64-7.5-7.7\*.mexw64
 SectionEnd
 
-Section "MEX files for MATLAB 64-bit, version 7.8 to 9.2 (R2009a to R2017a)"
- SetOutPath $INSTDIR\mex\matlab\win64-7.8-9.2
- File ..\mex\matlab\win64-7.8-9.2\*.mexw64
+Section "MEX files for MATLAB 64-bit, version 7.8 to 9.3 (R2009a to R2017b)"
+ SetOutPath $INSTDIR\mex\matlab\win64-7.8-9.3
+ File ..\mex\matlab\win64-7.8-9.3\*.mexw64
 SectionEnd
 
 SectionGroupEnd
