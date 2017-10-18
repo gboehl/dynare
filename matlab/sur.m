@@ -62,7 +62,7 @@ for i = 1:m
     vnames = setdiff(rhs_, cellstr(M_.param_names));
     regexprnoleads = cell2mat(strcat('(', vnames, {'\(\d+\))|'}));
     if ~isempty(regexp(rhs{i}, regexprnoleads(1:end-1), 'match'))
-        error(['olseqs: you cannot have leads in equation on line ' ...
+        error(['sur: you cannot have leads in equation on line ' ...
             lineno{i} ': ' lhs{i} ' = ' rhs{i}]);
     end
     regexpr = cell2mat(strcat('(', vnames, {'\(-\d+\))|'}));
