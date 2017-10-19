@@ -1,3 +1,29 @@
+Announcement for Dynare 4.5.3 (on 2017-10-19)
+=============================================
+
+We are pleased to announce the release of Dynare 4.5.3.
+
+This is a bugfix release. It comes less than 24 hours after the previous release,
+because version 4.5.2 was affected by a critical bug for MATLAB older than R2016b.
+
+The Windows packages are already available for download at:
+
+ http://www.dynare.org/download/dynare-stable
+
+The Mac and GNU/Linux packages (for Debian and Ubuntu LTS) should follow soon.
+
+This release is compatible with MATLAB versions 7.3 (R2006b) to 9.3 (R2017b)
+and with GNU Octave versions 4.2.
+
+Here is a list of the problems identified in version 4.5.1 and that have been
+fixed in version 4.5.2:
+
+
+ - `isfile` routine was failing with matlab older than R2016b. This bug did not
+   affect Octave.
+
+
+
 Announcement for Dynare 4.5.2 (on 2017-10-19)
 =============================================
 
