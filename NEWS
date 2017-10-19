@@ -15,8 +15,8 @@ The Mac and GNU/Linux packages (for Debian and Ubuntu LTS) should follow soon.
 This release is compatible with MATLAB versions 7.3 (R2006b) to 9.3 (R2017b)
 and with GNU Octave versions 4.2.
 
-Here is a list of the problems identified in version 4.5.1 and that have been
-fixed in version 4.5.2:
+Here is a list of the problems identified in version 4.5.2 and that have been
+fixed in version 4.5.3:
 
 
  - `isfile` routine was failing with matlab older than R2016b. This bug did not
