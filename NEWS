@@ -59,7 +59,7 @@ fixed in version 4.5.2:
  - If the mode for a parameter was at exactly 0, `mode_check` was crashing.
 
  - Fixed `get_posterior_parameters`-routine which should not do more than
-   getting parameters. As a consequecence, the `shock_decomposition`-command
+   getting parameters. As a consequense, the `shock_decomposition`-command
    did not correctly set the `parameter_set` for use in subsequent function
    calls if shocks are correlated or measurement error is present.
 
