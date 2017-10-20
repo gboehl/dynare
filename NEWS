@@ -1,3 +1,108 @@
+Announcement for Dynare 4.5.3 (on 2017-10-19)
+=============================================
+
+We are pleased to announce the release of Dynare 4.5.3.
+
+This is a bugfix release. It comes less than 24 hours after the previous release,
+because version 4.5.2 was affected by a critical bug for MATLAB older than R2016b.
+
+The Windows packages are already available for download at:
+
+ http://www.dynare.org/download/dynare-stable
+
+The Mac and GNU/Linux packages (for Debian and Ubuntu LTS) should follow soon.
+
+This release is compatible with MATLAB versions 7.3 (R2006b) to 9.3 (R2017b)
+and with GNU Octave versions 4.2.
+
+Here is a list of the problems identified in version 4.5.2 and that have been
+fixed in version 4.5.3:
+
+
+ - `isfile` routine was failing with matlab older than R2016b. This bug did not
+   affect Octave.
+
+
+
+Announcement for Dynare 4.5.2 (on 2017-10-19)
+=============================================
+
+We are pleased to announce the release of Dynare 4.5.2.
+
+This is a bugfix release.
+
+The Windows packages are already available for download at:
+
+ http://www.dynare.org/download/dynare-stable
+
+The Mac and GNU/Linux packages (for Debian and Ubuntu LTS) should follow soon.
+
+This release is compatible with MATLAB versions 7.3 (R2006b) to 9.3 (R2017b)
+and with GNU Octave versions 4.2.
+
+Here is a list of the problems identified in version 4.5.1 and that have been
+fixed in version 4.5.2:
+
+
+ - Fixed bug in perfect foresight solver:
+
+   + If expected shocks were declared after the terminal period, as specified
+   by the `periods` option, Dynare was crashing.
+
+   + Models declared with the `linear` option were crashing if exogenous
+   variables were present with a lead or lag.
+
+ - After ML or Bayesian estimation when the smoother option or `mh_replic=0`
+   were not specified, not all smoothed measurement errors were displayed.
+
+ - Fixed error in reference manual about the `conditional_forecasts` command.
+
+ - Fixed smoother behaviour, provide informative error instead of crashing when
+   model cannot be solved.
+
+ - The `nopathchange` preprocessor option was always triggered, regardless of
+   whether it was passed or not.
+
+ - When `ramsey_policy` is used, allow state variables to be set in `histval`
+   block.
+
+ - `histval` erroneously accepted leads, leading to cryptic crashes.
+
+ - The prior MC draws from previous runs were not deleted, potentially
+   resulting in loading stale files.
+
+ - `estim_params_` was being declared `global` more than once.
+
+ - Fixed crashes happening when simulating linear models with order>1.
+
+ - Make empirical moments independent of `simul_replic`, as stated in the
+   reference manual, by outputting moments computed with the first simulated
+   sample.
+
+ - The `prior_function` required a preceding `estimation`-command to properly
+   set up the prior.
+
+ - If the mode for a parameter was at exactly 0, `mode_check` was crashing.
+
+ - Fixed `get_posterior_parameters`-routine which should not do more than
+   getting parameters. As a consequense, the `shock_decomposition`-command
+   did not correctly set the `parameter_set` for use in subsequent function
+   calls if shocks are correlated or measurement error is present.
+
+ - Fixed bug in Ramsey problem with constraints both on a policy instrument and
+   another variable. Note that the constraint on a variable that is not an
+   instrument of the Ramsey problem must be written with an equation tag in the
+   model block.
+ 
+ - Fixed bug in Ramsey problem with constraints on policy instrument.
+
+ - Fixed crash with optimizer 5 when not used with DSGE model at order 1.
+
+ - Fixed mex file used for third order approximation (was crashing on
+   Matlab/Windows 7).
+
+
+
 Announcement for Dynare 4.5.1 (on 2017-08-24)
 =============================================
 

@@ -49,7 +49,7 @@ cellofstringflag = false;
 n = 1;
 a = false;
 
-if isstring(b) && length(b)>1 && isvector(b)
+if ~isoctave() && ~matlab_ver_less_than('9.1') && isstring(b) && length(b)>1 && isvector(b)
     n = length(b);
     stringarrayflag = true;
     a = false(size(b));
