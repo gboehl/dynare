@@ -70,6 +70,7 @@ for i = 1:length(lhs)
     Xt = cellfun(@eval, strcat('ds.', vwlags), 'UniformOutput', false);
     X = dseries();
     for j = 1:length(Xt)
+        Xt{j}.rename_(vwlags{j});
         X = [X Xt{j}];
     end
     fp = max(Y.firstobservedperiod, X.firstobservedperiod);
