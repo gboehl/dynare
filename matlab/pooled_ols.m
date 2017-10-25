@@ -79,7 +79,6 @@ vars = cell(length(rhs),1);
 pbeta = {};
 Y = [];
 X = [];
-Xinfo = {};
 for i = 1:length(lhs)
     rhs_ = strsplit(rhs{i}, {'+','-','*','/','^','log(','ln(','log10(','exp(','(',')','diff('});
     rhs_(cellfun(@(x) all(isstrprop(x, 'digit')), rhs_)) = [];
@@ -119,7 +118,6 @@ for i = 1:length(lhs)
         else
             error('pooled_ols: Shouldn''t arrive here');
         end
-        Xinfo(i, pidxs(j)) = vnames{j};
         xjdatatmp = getdata(ds, regex, vnames{j}{:});
         xjdatatmp.rename_(num2str(j));
         xjdata = [xjdata xjdatatmp];
