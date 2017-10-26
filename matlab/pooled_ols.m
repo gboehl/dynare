@@ -83,8 +83,9 @@ for i = 1:length(lhs)
     rhs_ = strsplit(rhs{i}, {'+','-','*','/','^','log(','ln(','log10(','exp(','(',')','diff('});
     rhs_(cellfun(@(x) all(isstrprop(x, 'digit')), rhs_)) = [];
     vnames = setdiff(rhs_, cellstr(M_.param_names));
-    regexprnoleads = cell2mat(strcat('(', vnames, {'\(\d+\))|'}));
-    if ~isempty(regexp(rhs{i}, regexprnoleads(1:end-1), 'match'))
+    if ~isempty(regexp(rhs{i}, ...
+            ['(' strjoin(vnames, '\\(\\d+\\)|') '\\(\\d+\\))'], ...
+            'once'))
         error(['olseqs: you cannot have leads in equation on line ' ...
             lineno{i} ': ' lhs{i} ' = ' rhs{i}]);
     end
