@@ -89,6 +89,7 @@ for i = 1:length(lhs)
         error(['olseqs: you cannot have leads in equation on line ' ...
             lineno{i} ': ' lhs{i} ' = ' rhs{i}]);
     end
+    assert(numel(intersect(rhs_, cellstr(M_.exo_names))) == 1);
 
     % Find parameters
     pnames = {};
