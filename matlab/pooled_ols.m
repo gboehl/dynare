@@ -91,9 +91,11 @@ for i = 1:length(lhs)
     end
     assert(numel(intersect(rhs_, cellstr(M_.exo_names))) == 1);
 
-    % Find parameters
+    % Find parameters and associated variables
     pnames = intersect(rhs_, cellstr(M_.param_names));
     pidxs = zeros(length(pnames), 1);
+    vnames = cell(1, length(pnames));
+    xjdata = dseries;
     for j = 1:length(pnames)
         idx = find(strcmp(pbeta, pnames(j,:)));
         if isempty(idx)
@@ -102,12 +104,7 @@ for i = 1:length(lhs)
         else
             pidxs(j) = idx;
         end
-    end
 
-    % Find associated variables
-    vnames = cell(1, length(pnames));
-    xjdata = dseries;
-    for j = 1:length(pnames)
         rhs_split = strsplit(rhs{i}, pnames{j});
         assert(length(rhs_split) == 2);
         if ~isempty(rhs_split{1}) && rhs_split{1}(end) == '*'
