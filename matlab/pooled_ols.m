@@ -36,6 +36,9 @@ function pooled_ols(ds, param_common, param_regex)
 
 global M_ oo_
 
+% Check input
+assert(~isempty(param_common) && ~isempty(param_regex));
+
 jsonfile = [M_.fname '.json'];
 if exist(jsonfile, 'file') ~= 2
     error('Could not find %s! Please use the json=parse option (See the Dynare invocation section in the reference manual).', jsonfile);
