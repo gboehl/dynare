@@ -92,18 +92,15 @@ for i = 1:length(lhs)
     assert(numel(intersect(rhs_, cellstr(M_.exo_names))) == 1);
 
     % Find parameters
-    pnames = {};
-    pidxs = [];
-    for j = 1:length(M_.param_names)
-        if any(strcmp(rhs_, strtrim(M_.param_names(j,:))))
-            pnames = [pnames {strtrim(M_.param_names(j,:))}];
-            idx = find(strcmp(pbeta, strtrim(M_.param_names(j,:))));
-            if isempty(idx)
-                pbeta = [pbeta; {strtrim(M_.param_names(j,:))}];
-                pidxs = [pidxs; length(pbeta)];
-            else
-                pidxs = [pidxs; idx];
-            end
+    pnames = intersect(rhs_, cellstr(M_.param_names));
+    pidxs = zeros(length(pnames), 1);
+    for j = 1:length(pnames)
+        idx = find(strcmp(pbeta, pnames(j,:)));
+        if isempty(idx)
+            pbeta = [pbeta; pnames(j,:)];
+            pidxs(j) = length(pbeta);
+        else
+            pidxs(j) = idx;
         end
     end
 
