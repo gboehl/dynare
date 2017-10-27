@@ -36,7 +36,8 @@ function pooled_ols(ds, param_common, param_regex)
 
 global M_ oo_
 
-% Check input
+% Check input arguments
+assert(isdseries(ds));
 assert(~isempty(param_common) && ~isempty(param_regex));
 
 jsonfile = [M_.fname '.json'];
