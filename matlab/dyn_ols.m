@@ -54,10 +54,9 @@ regexpr2 = ...
     '|' '^\*(\w+(\(\W?\w+\))?)'
     ];
 
-M_endo_names_trim = cellfun(@strtrim, num2cell(M_.endo_names(:,:),2),  'Uniform', 0);
-regex = ['(?<chb>^|(\-|\(|+|\*|\/|\^))(?<var>' ...
-    strjoin(M_endo_names_trim, '|') ...
-    ')(?<cha>$|(\)\-|\(|+|\*|\/|\^))'];
+M_endo_names_trim = cellfun(@strtrim, num2cell(M_.endo_names(:,:),2), 'Uniform', 0);
+idxs = sortrows([(1:length(M_endo_names_trim))' cellfun(@length, M_endo_names_trim)], 2, 'descend');
+regex = strjoin(M_endo_names_trim(idxs(:,1)), '|');
 for i = 1:length(lhs)
     %% Construct regression matrices
     rhs_ = strsplit(rhs{i}, {'+','-','*','/','^','log(','exp(','(',')'});
@@ -88,8 +87,7 @@ for i = 1:length(lhs)
         Xtmp.rename_(vnames{j});
         X = [X Xtmp];
     end
-
-    Y = ds{lhs{i}};
+    Y = getdata(ds, regex, lhs{i}) ;
 
     fp = max(Y.firstobservedperiod, X.firstobservedperiod);
     lp = min(Y.lastobservedperiod, X.lastobservedperiod);
@@ -182,6 +180,6 @@ if strncmp(ser, 'diff', 4)
         retval = ds{ser}(lag) - ds{ser}(lag-1);
     end
 else
-    retval = eval(regexprep(ser, regex, '$<chb>ds.$<var>$<cha>'));
+    retval = eval(regexprep(ser, regex, 'ds.$&'));
 end
 end
