@@ -46,7 +46,6 @@ end
 % Set default value for the fourth input argument.
 if nargin<5
     periods = 40;
-    notransform = true;
 else
     periods = varargin{1};
 end
@@ -89,7 +88,6 @@ else
     end
 end
 
-baselineflag = false;
 % Set default values for the baseline paths.
 %
 % TODO zero for all variables is probably a poor choice. It should be
@@ -114,7 +112,6 @@ if ~isempty(innovationbaseline)
             Innovations(:,i) = innovationbaseline{exonames{i}}.data(1:periods);
         end
     end
-    baselineflag = true;
 end
 
 % Set up initial conditions
