@@ -40,7 +40,7 @@ global M_ options_ oo_
 
 % Check that the model is actually backward
 if M_.maximum_lead
-    error(['simul_model_irf:: The specified model is not backward looking!'])
+    error('backward_model_irf:: The specified model is not backward looking!')
 end
 
 % Set default value for the fourth input argument.
