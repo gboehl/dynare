@@ -42,21 +42,11 @@ jsonmodel = jsonmodel.model;
 [lhs, rhs, lineno] = getEquationsByTags(jsonmodel, 'name', varargin{:});
 
 %% Estimation
-regexpr1 = ...
-    ['(diff\(\w+(\(\W?\w+\))?\))\*$' ...
-    '|' '\((\w+(\(\W?\w+\))?(\W?\w+(\(\W?\w+\))?)*)\)\*$' ...
-    '|' '(\w+(\(\W?\w+\))?)\*$' ...
-    ];
-
-regexpr2 = ...
-    ['^\*(diff\(\w+(\(\W?\w+\))?\))' ...
-    '|' '^\*\((\w+(\(\W?\w+\))?(\W?\w+(\(\W?\w+\))?)*)' ...
-    '|' '^\*(\w+(\(\W?\w+\))?)'
-    ];
-
-M_endo_names_trim = cellfun(@strtrim, num2cell(M_.endo_names(:,:),2), 'Uniform', 0);
-idxs = sortrows([(1:length(M_endo_names_trim))' cellfun(@length, M_endo_names_trim)], 2, 'descend');
-regex = strjoin(M_endo_names_trim(idxs(:,1)), '|');
+M_endo_exo_names_trim = cellfun(@strtrim, ...
+    [num2cell(M_.endo_names(:,:),2) ; num2cell(M_.exo_names(:,:),2)], ...
+    'Uniform', 0);
+regex = strjoin(M_endo_exo_names_trim(:,1), '|');
+mathops = '[\+\*\^\-\/]';
 for i = 1:length(lhs)
     %% Construct regression matrices
     rhs_ = strsplit(rhs{i}, {'+','-','*','/','^','log(','exp(','(',')'});
@@ -73,21 +63,43 @@ for i = 1:length(lhs)
     vnames = cell(1, length(pnames));
     X = dseries();
     for j = 1:length(pnames)
-        rhs_split = strsplit(rhs{i}, pnames{j});
-        assert(length(rhs_split) == 2);
-        if ~isempty(rhs_split{1}) && rhs_split{1}(end) == '*'
-            tmp = regexp(rhs_split{1}, regexpr1, 'tokens');
-        elseif ~isempty(rhs_split{2}) && rhs_split{2}(1) == '*'
-            tmp = regexp(rhs_split{2}, regexpr2, 'tokens');
+        createdvar = false;
+        pregex = [...
+            mathops pnames{j} mathops ...
+            '|^' pnames{j} mathops ...
+            '|' mathops pnames{j} '$' ...
+            ];
+        [startidx, endidx] = regexp(rhs{i}, pregex, 'start', 'end');
+        assert(length(startidx) == 1);
+        if rhs{i}(startidx) == '*'
+            vnames{j} = getStrMoveLeft(rhs{i}(1:startidx-1));
+        elseif rhs{i}(endidx) == '*'
+            vnames{j} = getStrMoveRight(rhs{i}(endidx+1:end));
+        elseif rhs{i}(startidx) == '+' ...
+                || rhs{i}(startidx) == '-' ...
+                || rhs{i}(endidx) == '+' ...
+                || rhs{i}(endidx) == '-'
+            % intercept
+            createdvar = true;
+            if any(strcmp(M_endo_exo_names_trim, 'intercept'))
+                [~, vnames{j}] = fileparts(tempname);
+                vnames{j} = ['intercept_' vnames{j}];
+                assert(~any(strcmp(M_endo_exo_names_trim, vnames{j})));
+            else
+                vnames{j} = 'intercept';
+            end
         else
             error('dyn_ols: Shouldn''t arrive here');
         end
-        vnames{j} = tmp{1}{:};
-        Xtmp = getdata(ds, regex, vnames{j});
-        Xtmp.rename_(vnames{j});
+        if createdvar
+            Xtmp = dseries(ones(ds.nobs, 1), ds.firstdate, vnames{j});
+        else
+            Xtmp = eval(regexprep(vnames{j}, regex, 'ds.$&'));
+            Xtmp.rename_(vnames{j});
+        end
         X = [X Xtmp];
     end
-    Y = getdata(ds, regex, lhs{i}) ;
+    Y = eval(regexprep(lhs{i}, regex, 'ds.$&'));
 
     fp = max(Y.firstobservedperiod, X.firstobservedperiod);
     lp = min(Y.lastobservedperiod, X.lastobservedperiod);
@@ -167,19 +179,43 @@ for i = 1:length(lhs)
 end
 end
 
-function retval = getdata(ds, regex, ser)
-if strncmp(ser, 'diff', 4)
-    ser = ser(6:end-1);
-    lagidx = strfind(ser, '(');
-    if isempty(lagidx)
-        retval = ds{ser} - ds{ser}(-1);
-    else
-        lag = str2double(ser(lagidx+1:strfind(ser, ')')-1));
-        assert(lag < 0);
-        ser = ser(1:lagidx-1);
-        retval = ds{ser}(lag) - ds{ser}(lag-1);
-    end
+function retval = getStrMoveLeft(str)
+mathops = '[\+\*\^\-\/]';
+if str(end) ~= ')'
+    retval = str(max(regexp(str, mathops))+1:end);
 else
-    retval = eval(regexprep(ser, regex, 'ds.$&'));
+    closedidxs = strfind(str, ')');
+    closedidxs = [(length(closedidxs):-1:1)' closedidxs'];
+    openidxs = strfind(str, '(');
+    openidxs = [(length(openidxs):-1:1)' openidxs'];
+    assert(rows(closedidxs) == rows(openidxs));
+    for i = rows(openidxs):-1:1
+        openparenidx = find(openidxs(i, 2) < closedidxs(:, 2), 1, 'first');
+        if openidxs(i, 1) == closedidxs(openparenidx, 1)
+            break;
+        end
+    end
+    retval = str(max(regexp(str(1:openidxs(openparenidx,2)), mathops))+1:closedidxs(end));
+end
+end
+
+function retval = getStrMoveRight(str)
+mathops = '[\+\*\^\-\/]';
+mathidxs = regexp(str, mathops);
+openidxs = strfind(str, '(');
+openidxs = [(1:length(openidxs))' openidxs'];
+if min(mathidxs) < min(openidxs(:, 2))
+    retval = str(1:min(regexp(str, mathops))-1);
+else
+    closedidxs = strfind(str, ')');
+    closedidxs = [(1:length(closedidxs))' closedidxs'];
+    assert(length(openidxs) == length(closedidxs));
+    for i = 1:length(closedidxs)
+        closedparenidx = sum(openidxs(:, 2) < closedidxs(i, 2));
+        if openidxs(closedparenidx, 1) == closedidxs(i, 1)
+            break;
+        end
+    end
+    retval = str(1:closedidxs(closedparenidx, 2));
 end
 end
