@@ -204,16 +204,16 @@ function retval = getStrMoveRight(str)
 mathops = '[\+\*\^\-\/]';
 mathidxs = regexp(str, mathops);
 openidxs = strfind(str, '(');
-openidxs = [(1:length(openidxs))' openidxs'];
 if isempty(openidxs) ...
         || (~isempty(mathidxs) ...
-        && min(mathidxs) < min(openidxs(:, 2)))
+        && min(mathidxs) < min(openidxs))
     if isempty(mathidxs)
         retval = str;
     else
         retval = str(1:min(regexp(str, mathops))-1);
     end
 else
+    openidxs = [(1:length(openidxs))' openidxs'];
     closedidxs = strfind(str, ')');
     closedidxs = [(1:length(closedidxs))' closedidxs'];
     assert(length(openidxs) == length(closedidxs));
