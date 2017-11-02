@@ -31,15 +31,10 @@ function retval = getStrMoveLeft(str)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-mathops = '[\+\*\^\-\/]';
+arithops = '[\+\-]';
 
 if str(end) ~= ')'
-    mathidxs = regexp(str, mathops);
-    if isempty(mathidxs)
-        retval = str;
-    else
-        retval = str(max(mathidxs)+1:end);
-    end
+    arithidxs = regexp(str, arithops);
 else
     closedidxs = strfind(str, ')');
     closedidxs = [(length(closedidxs):-1:1)' closedidxs'];
@@ -52,5 +47,11 @@ else
             break;
         end
     end
-    retval = str(max(regexp(str(1:openidxs(openparenidx,2)), mathops))+1:closedidxs(end));
+    arithidxs = regexp(str(1:openidxs(openparenidx,2)), arithops);
+end
+
+if isempty(arithidxs)
+    retval = str;
+else
+    retval = str(max(arithidxs)+1:end);
 end
