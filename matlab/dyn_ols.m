@@ -205,8 +205,14 @@ mathops = '[\+\*\^\-\/]';
 mathidxs = regexp(str, mathops);
 openidxs = strfind(str, '(');
 openidxs = [(1:length(openidxs))' openidxs'];
-if min(mathidxs) < min(openidxs(:, 2))
-    retval = str(1:min(regexp(str, mathops))-1);
+if isempty(openidxs) ...
+        || (~isempty(mathidxs) ...
+        && min(mathidxs) < min(openidxs(:, 2)))
+    if isempty(mathidxs)
+        retval = str;
+    else
+        retval = str(1:min(regexp(str, mathops))-1);
+    end
 else
     closedidxs = strfind(str, ')');
     closedidxs = [(1:length(closedidxs))' closedidxs'];
