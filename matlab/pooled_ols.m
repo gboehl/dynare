@@ -37,8 +37,9 @@ function pooled_ols(ds, param_common, param_regex)
 global M_ oo_
 
 % Check input arguments
-assert(isdseries(ds));
-assert(~isempty(param_common) && ~isempty(param_regex));
+assert(~isempty(ds) && isdseries(ds), 'The first argument must be a dseries');
+assert(~isempty(param_common) && iscellstr(param_common), 'The second argument must be a cellstr');
+assert(~isempty(param_regex) && iscellstr(param_regex), 'The third argument must be a cellstr');
 
 jsonfile = [M_.fname '.json'];
 if exist(jsonfile, 'file') ~= 2
