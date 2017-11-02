@@ -38,6 +38,11 @@ global M_ oo_
 
 % Check input arguments
 assert(~isempty(ds) && isdseries(ds), 'The first argument must be a dseries');
+if isempty(param_common) && isempty(param_regex)
+    disp('Performing OLS instead of Pooled OLS...')
+    dyn_ols(ds);
+    return;
+end
 assert(~isempty(param_common) && iscellstr(param_common), 'The second argument must be a cellstr');
 assert(~isempty(param_regex) && iscellstr(param_regex), 'The third argument must be a cellstr');
 
