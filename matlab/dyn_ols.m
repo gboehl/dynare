@@ -4,7 +4,9 @@ function dyn_ols(ds, varargin)
 % endogenous variables on LHS
 %
 % INPUTS
-%   ds      [dseries]    data
+%   ds       [dseries]    data
+%   varargin [cellstr]    names of equation tags to estimate. If empty,
+%                         estimate all equations
 %
 % OUTPUTS
 %   none
@@ -31,6 +33,8 @@ function dyn_ols(ds, varargin)
 
 global M_ oo_
 
+assert(nargin <= 2, 'Incorrect number of arguments.');
+
 jsonfile = [M_.fname '_original.json'];
 if exist(jsonfile, 'file') ~= 2
     error('Could not find %s! Please use the json option (See the Dynare invocation section in the reference manual).', jsonfile);
@@ -39,7 +43,15 @@ end
 %% Get Equation(s)
 jsonmodel = loadjson(jsonfile);
 jsonmodel = jsonmodel.model;
-[lhs, rhs, lineno] = getEquationsByTags(jsonmodel, 'name', varargin{:});
+if nargin == 1
+    [lhs, rhs, lineno] = getEquationsByTags(jsonmodel);
+else
+    [lhs, rhs, lineno] = getEquationsByTags(jsonmodel, 'name', varargin{:});
+    if isempty(lhs)
+        disp('dyn_ols: Nothing to estimate')
+        return
+    end
+end
 
 %% Estimation
 M_endo_exo_names_trim = cellfun(@strtrim, ...
