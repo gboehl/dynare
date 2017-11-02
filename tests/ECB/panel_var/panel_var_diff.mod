@@ -1,4 +1,4 @@
-// --+ options: json=parse +--
+// --+ options: json=compute +--
 
 /* REMARK
 ** ------
