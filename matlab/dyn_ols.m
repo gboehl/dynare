@@ -129,7 +129,7 @@ for i = 1:length(lhs)
             tagv = varargin{1};
         end
     else
-        tagv = ['eqlineno' num2str(lineno{i})];
+        tagv = ['eq_line_no_' num2str(lineno{i})];
     end
     [nobs, nvars] = size(X);
     oo_.ols.(tagv).dof = nobs - nvars;
