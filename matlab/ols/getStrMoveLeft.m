@@ -53,5 +53,9 @@ end
 if isempty(arithidxs)
     retval = str;
 else
-    retval = str(max(arithidxs)+1:end);
+    if str(max(arithidxs)) == '-'
+        retval = str(max(arithidxs):end);
+    else
+        retval = str(max(arithidxs)+1:end);
+    end
 end

@@ -58,7 +58,7 @@ M_endo_exo_names_trim = cellfun(@strtrim, ...
     [num2cell(M_.endo_names(:,:),2) ; num2cell(M_.exo_names(:,:),2)], ...
     'Uniform', 0);
 regex = strjoin(M_endo_exo_names_trim(:,1), '|');
-mathops = '[\+\*\^\-\/]';
+mathops = '[\+\*\^\-\/\(\)]';
 M_param_names_trim = cellfun(@strtrim, num2cell(M_.param_names,2), 'UniformOutput', false);
 for i = 1:length(lhs)
     %% Construct regression matrices
@@ -88,6 +88,9 @@ for i = 1:length(lhs)
             vnames{j} = getStrMoveLeft(rhs{i}(1:startidx-1));
         elseif rhs{i}(endidx) == '*'
             vnames{j} = getStrMoveRight(rhs{i}(endidx+1:end));
+            if rhs{i}(startidx) == '-'
+                vnames{j} = ['-' vnames{j}];
+            end
         elseif rhs{i}(startidx) == '+' ...
                 || rhs{i}(startidx) == '-' ...
                 || rhs{i}(endidx) == '+' ...
@@ -104,8 +107,13 @@ for i = 1:length(lhs)
         else
             error('dyn_ols: Shouldn''t arrive here');
         end
+        
         if createdvar
-            Xtmp = dseries(ones(ds.nobs, 1), ds.firstdate, vnames{j});
+            if rhs{i}(startidx) == '-'
+                Xtmp = dseries(-ones(ds.nobs, 1), ds.firstdate, vnames{j});
+            else
+                Xtmp = dseries(ones(ds.nobs, 1), ds.firstdate, vnames{j});
+            end
         else
             Xtmp = eval(regexprep(vnames{j}, regex, 'ds.$&'));
             Xtmp.rename_(vnames{j});
