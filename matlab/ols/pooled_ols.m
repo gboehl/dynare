@@ -68,9 +68,8 @@ for i = 1:length(param_regex)
 end
 
 %% Find parameters and variable names in every equation & Setup estimation matrices
-M_endo_exo_names_trim = cellfun(@strtrim, ...
-    [num2cell(M_.endo_names(:,:),2) ; num2cell(M_.exo_names(:,:),2)], ...
-    'Uniform', 0);
+M_exo_names_trim = cellfun(@strtrim, num2cell(M_.exo_names(:,:),2), 'Uniform', 0);
+M_endo_exo_names_trim = [cellfun(@strtrim, num2cell(M_.endo_names(:,:),2), 'Uniform', 0); M_exo_names_trim];
 regex = strjoin(M_endo_exo_names_trim(:,1), '|');
 mathops = '[\+\*\^\-\/]';
 params = cell(length(rhs),1);
@@ -78,6 +77,8 @@ vars = cell(length(rhs),1);
 pbeta = {};
 Y = [];
 X = [];
+startidxs = zeros(length(lhs), 1);
+residnames = cell(length(lhs), 1);
 for i = 1:length(lhs)
     rhs_ = strsplit(rhs{i}, {'+','-','*','/','^','log(','ln(','log10(','exp(','(',')','diff('});
     rhs_(cellfun(@(x) all(isstrprop(x, 'digit')), rhs_)) = [];
@@ -140,6 +141,17 @@ for i = 1:length(lhs)
         xjdatatmp.rename_(num2str(j));
         xjdata = [xjdata xjdatatmp];
     end
+
+    residuals = intersect(rhs_, cellstr(M_.exo_names));
+    for j = 1:length(residuals)
+        if any(strcmp(residuals{j}, vnames))
+            residuals{j} = [];
+        end
+    end
+    idx = ~cellfun(@isempty, residuals);
+    assert(sum(idx) == 1, ['More than one residual in equation ' num2str(i)]);
+    residnames{i} = residuals{idx};
+
     params{i} = pnames;
     vars{i} = [vnames{:}];
 
@@ -148,15 +160,15 @@ for i = 1:length(lhs)
     fp = max(ydata.firstobservedperiod, xjdata.firstobservedperiod);
     lp = min(ydata.lastobservedperiod, xjdata.lastobservedperiod);
 
-    Y(length(Y)+1:length(Y)+1+lp-fp, 1) = ydata(fp:lp).data;
-    X(size(X,1)+1:size(X,1)+1+lp-fp, pidxs) = xjdata(fp:lp).data;
+    startidxs(i) = length(Y) + 1;
+    Y(startidxs(i):startidxs(i)+lp-fp, 1) = ydata(fp:lp).data;
+    X(startidxs(i):startidxs(i)+lp-fp, pidxs) = xjdata(fp:lp).data;
 end
 
 %% Estimation
 % Estimated Parameters
 [q, r] = qr(X, 0);
 oo_.pooled_ols.beta = r\(q'*Y);
-oo_.pooled_ols.param_names = pbeta;
 
 % Assign parameter values back to parameters using param_regex & param_common
 param_names_trim = cellfun(@strtrim, num2cell(M_.param_names(:,:),2),  'Uniform', 0);
@@ -176,5 +188,17 @@ names = pbeta(idxs);
 assert(length(values) == length(names));
 for i = 1:length(idxs)
     M_.params(strcmp(param_names_trim, names{i})) = values(i);
+end
+
+residuals = Y - X * oo_.pooled_ols.beta;
+for i = 1:length(lhs)
+    if i == length(lhs)
+        oo_.pooled_ols.resid.(residnames{i}) = residuals(startidxs(i):end);
+    else
+        oo_.pooled_ols.resid.(residnames{i}) = residuals(startidxs(i):startidxs(i+1)-1);
+    end
+    oo_.pooled_ols.varcovar.(['eq' num2str(i)]) = oo_.pooled_ols.resid.(residnames{i})*oo_.pooled_ols.resid.(residnames{i})';
+    idx = find(strcmp(residnames{i}, M_exo_names_trim));
+    M_.Sigma_e(idx, idx) = var(oo_.pooled_ols.resid.(residnames{i}));
 end
 end
