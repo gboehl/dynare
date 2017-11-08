@@ -54,11 +54,12 @@ else
 end
 
 %% Estimation
-M_endo_exo_names_trim = cellfun(@strtrim, ...
-    [num2cell(M_.endo_names(:,:),2) ; num2cell(M_.exo_names(:,:),2)], ...
-    'Uniform', 0);
+M_endo_trim = cellstr(M_.endo_names);
+M_exo_trim = cellstr(M_.exo_names);
+M_endo_exo_names_trim = [M_endo_trim; M_exo_trim];
 regex = strjoin(M_endo_exo_names_trim(:,1), '|');
 mathops = '[\+\*\^\-\/\(\)]';
+mathopsd = '[\+\*\^\-\/\(\)](\d+\*)?';
 M_param_names_trim = cellfun(@strtrim, num2cell(M_.param_names,2), 'UniformOutput', false);
 for i = 1:length(lhs)
     %% Construct regression matrices
@@ -74,6 +75,7 @@ for i = 1:length(lhs)
 
     pnames = intersect(rhs_, cellstr(M_.param_names));
     vnames = cell(1, length(pnames));
+    splitstrings = cell(length(pnames), 1);
     X = dseries();
     for j = 1:length(pnames)
         createdvar = false;
@@ -86,10 +88,13 @@ for i = 1:length(lhs)
         assert(length(startidx) == 1);
         if rhs{i}(startidx) == '*'
             vnames{j} = getStrMoveLeft(rhs{i}(1:startidx-1));
+            splitstrings{j} = [vnames{j} '*' pnames{j}];
         elseif rhs{i}(endidx) == '*'
             vnames{j} = getStrMoveRight(rhs{i}(endidx+1:end));
+            splitstrings{j} = [pnames{j} '*' vnames{j}];
             if rhs{i}(startidx) == '-'
                 vnames{j} = ['-' vnames{j}];
+                splitstrings{j} = ['-' splitstrings{j}];
             end
         elseif rhs{i}(startidx) == '+' ...
                 || rhs{i}(startidx) == '-' ...
@@ -104,10 +109,10 @@ for i = 1:length(lhs)
             else
                 vnames{j} = 'intercept';
             end
+            splitstrings{j} = vnames{j};
         else
             error('dyn_ols: Shouldn''t arrive here');
         end
-        
         if createdvar
             if rhs{i}(startidx) == '-'
                 Xtmp = dseries(-ones(ds.nobs, 1), ds.firstdate, vnames{j});
@@ -120,12 +125,53 @@ for i = 1:length(lhs)
         end
         X = [X Xtmp];
     end
+
+    lhssub = dseries();
+    rhs_ = strsplit(rhs{i}, [splitstrings; pnames]);
+    for j = 1:length(rhs_)
+        if isempty(rhs_{j})
+            continue
+        end
+        str = '';
+        for k = 1:length(M_endo_exo_names_trim)
+            pregex = [...
+                mathopsd M_endo_exo_names_trim{k} mathopsd ...
+                '|^' M_endo_exo_names_trim{k} mathopsd ...
+                '|' mathopsd M_endo_exo_names_trim{k} '$' ...
+                ];
+            startidx = regexp(rhs_{j}, pregex);
+            if ~isempty(startidx)
+                if startidx > 1 && rhs_{j}(startidx) == '-'
+                    str = ['-' getStrMoveRight(rhs_{j}(startidx+1:end))];
+                else
+                    str = getStrMoveRight(rhs_{j}(startidx:end));
+                end
+                break;
+            end
+        end
+
+        if ~isempty(str)
+            try
+                lhssub = [lhssub eval(regexprep(str, regex, 'ds.$&'))];
+                lhssub = lhssub(numel(lhssub)).rename_(str);
+            catch
+            end
+        end
+    end
+
     Y = eval(regexprep(lhs{i}, regex, 'ds.$&'));
+    if ~isempty(lhssub)
+        % REMOVE if statement when dseries issue has been resolved:
+        % https://github.com/DynareTeam/dseries/issues/35
+        for j = 1:length(lhssub)
+            Y = Y - lhssub{j};
+        end
+    end
 
     fp = max(Y.firstobservedperiod, X.firstobservedperiod);
     lp = min(Y.lastobservedperiod, X.lastobservedperiod);
 
-    Y = Y(fp:lp).data;
+    Y = Y(fp:lp);
     X = X(fp:lp).data;
 
     %% Estimation
@@ -145,24 +191,31 @@ for i = 1:length(lhs)
     % Estimated Parameters
     [q, r] = qr(X, 0);
     xpxi = (r'*r)\eye(nvars);
-    oo_.ols.(tagv).beta = r\(q'*Y);
+    oo_.ols.(tagv).beta = r\(q'*Y.data);
     for j = 1:length(pnames)
         M_.params(strcmp(M_param_names_trim, pnames{j})) = oo_.ols.(tagv).beta(j);
     end
 
     % Yhat
-    oo_.ols.(tagv).Yhat = X*oo_.ols.(tagv).beta;
+    oo_.ols.(tagv).Yhat = dseries(X*oo_.ols.(tagv).beta, fp, [lhs{i} '_hat']);
+    if ~isempty(lhssub)
+        % REMOVE if statement when dseries issue has been resolved:
+        % https://github.com/DynareTeam/dseries/issues/35
+        for j = 1:length(lhssub)
+            oo_.ols.(tagv).Yhat = oo_.ols.(tagv).Yhat + lhssub{j}(fp:lp);
+        end
+    end
 
     % Residuals
     oo_.ols.(tagv).resid = Y - oo_.ols.(tagv).Yhat;
 
     %% Calculate statistics
     % Estimate for sigma^2
-    SS_res = oo_.ols.(tagv).resid'*oo_.ols.(tagv).resid;
+    SS_res = oo_.ols.(tagv).resid.data'*oo_.ols.(tagv).resid.data;
     oo_.ols.(tagv).s2 = SS_res/oo_.ols.(tagv).dof;
 
     % R^2
-    ym = Y - mean(Y);
+    ym = Y.data - mean(Y);
     SS_tot = ym'*ym;
     oo_.ols.(tagv).R2 = 1 - SS_res/SS_tot;
 
@@ -170,7 +223,7 @@ for i = 1:length(lhs)
     oo_.ols.(tagv).adjR2 = oo_.ols.(tagv).R2 - (1 - oo_.ols.(tagv).R2)*nvars/(oo_.ols.(tagv).dof-1);
 
     % Durbin-Watson
-    ediff = oo_.ols.(tagv).resid(2:nobs) - oo_.ols.(tagv).resid(1:nobs-1);
+    ediff = oo_.ols.(tagv).resid.data(2:nobs) - oo_.ols.(tagv).resid.data(1:nobs-1);
     oo_.ols.(tagv).dw = (ediff'*ediff)/SS_res;
 
     % Standard Error
