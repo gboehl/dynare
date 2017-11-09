@@ -143,6 +143,8 @@ for i = 1:length(lhs)
             if ~isempty(startidx)
                 if startidx > 1 && rhs_{j}(startidx) == '-'
                     str = ['-' getStrMoveRight(rhs_{j}(startidx+1:end))];
+                elseif startidx > 1 &&  rhs_{j}(startidx) == '+'
+                    str = getStrMoveRight(rhs_{j}(startidx+1:end));
                 else
                     str = getStrMoveRight(rhs_{j}(startidx:end));
                 end
@@ -194,12 +196,14 @@ for i = 1:length(lhs)
 
     % Yhat
     oo_.ols.(tagv).Yhat = dseries(X*oo_.ols.(tagv).beta, fp, [lhs{i} '_hat']);
-    for j = 1:lhssub.vobs
-        oo_.ols.(tagv).Yhat = oo_.ols.(tagv).Yhat + lhssub{j}(fp:lp);
-    end
 
     % Residuals
     oo_.ols.(tagv).resid = Y - oo_.ols.(tagv).Yhat;
+
+    % Correct Yhat reported back to user for given
+    for j = 1:lhssub.vobs
+        oo_.ols.(tagv).Yhat = oo_.ols.(tagv).Yhat + lhssub{j}(fp:lp);
+    end
 
     %% Calculate statistics
     % Estimate for sigma^2
