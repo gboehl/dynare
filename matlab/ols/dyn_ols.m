@@ -153,7 +153,7 @@ for i = 1:length(lhs)
         if ~isempty(str)
             try
                 lhssub = [lhssub eval(regexprep(str, regex, 'ds.$&'))];
-                lhssub = lhssub(numel(lhssub)).rename_(str);
+                lhssub{numel(lhssub)}.rename_(str);
             catch
             end
         end
