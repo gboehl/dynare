@@ -143,7 +143,7 @@ for i = 1:length(lhs)
             if ~isempty(startidx)
                 if startidx > 1 && rhs_{j}(startidx) == '-'
                     str = ['-' getStrMoveRight(rhs_{j}(startidx+1:end))];
-                elseif startidx > 1 &&  rhs_{j}(startidx) == '+'
+                elseif startidx > 1 && rhs_{j}(startidx) == '+'
                     str = getStrMoveRight(rhs_{j}(startidx+1:end));
                 else
                     str = getStrMoveRight(rhs_{j}(startidx:end));
