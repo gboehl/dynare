@@ -160,12 +160,8 @@ for i = 1:length(lhs)
     end
 
     Y = eval(regexprep(lhs{i}, regex, 'ds.$&'));
-    if ~isempty(lhssub)
-        % REMOVE if statement when dseries issue has been resolved:
-        % https://github.com/DynareTeam/dseries/issues/35
-        for j = 1:length(lhssub)
-            Y = Y - lhssub{j};
-        end
+    for j = 1:lhssub.vobs
+        Y = Y - lhssub{j};
     end
 
     fp = max(Y.firstobservedperiod, X.firstobservedperiod);
@@ -198,12 +194,8 @@ for i = 1:length(lhs)
 
     % Yhat
     oo_.ols.(tagv).Yhat = dseries(X*oo_.ols.(tagv).beta, fp, [lhs{i} '_hat']);
-    if ~isempty(lhssub)
-        % REMOVE if statement when dseries issue has been resolved:
-        % https://github.com/DynareTeam/dseries/issues/35
-        for j = 1:length(lhssub)
-            oo_.ols.(tagv).Yhat = oo_.ols.(tagv).Yhat + lhssub{j}(fp:lp);
-        end
+    for j = 1:lhssub.vobs
+        oo_.ols.(tagv).Yhat = oo_.ols.(tagv).Yhat + lhssub{j}(fp:lp);
     end
 
     % Residuals
