@@ -68,8 +68,8 @@ for i = 1:length(param_regex)
 end
 
 %% Find parameters and variable names in every equation & Setup estimation matrices
-M_exo_names_trim = cellfun(@strtrim, num2cell(M_.exo_names(:,:),2), 'Uniform', 0);
-M_endo_exo_names_trim = [cellfun(@strtrim, num2cell(M_.endo_names(:,:),2), 'Uniform', 0); M_exo_names_trim];
+M_exo_trim = cellstr(M_.exo_names);
+M_endo_exo_names_trim = [cellstr(M_.endo_names); M_exo_trim];
 regex = strjoin(M_endo_exo_names_trim(:,1), '|');
 mathops = '[\+\*\^\-\/]';
 params = cell(length(rhs),1);
