@@ -74,7 +74,7 @@ if ischar(ds1)
         error('plot_contributions:: %s is unknown!', ds1)
     end
 else
-    if ~isdeseries(ds1)
+    if ~isdseries(ds1)
         error('plot_contributions:: Second input argument must be a dseries object!')
     end
 end
@@ -92,7 +92,7 @@ if ischar(ds0)
         error('plot_contributions:: %s is unknown!', ds0)
     end
 else
-    if ~isdeseries(ds0)
+    if ~isdseries(ds0)
         error('plot_contributions:: Third input argument must be a dseries object!')
     end
 end
