@@ -141,9 +141,9 @@ for i = 1:length(lhs)
                 ];
             startidx = regexp(rhs_{j}, pregex);
             if ~isempty(startidx)
-                if startidx > 1 && rhs_{j}(startidx) == '-'
+                if rhs_{j}(startidx) == '-'
                     str = ['-' getStrMoveRight(rhs_{j}(startidx+1:end))];
-                elseif startidx > 1 && rhs_{j}(startidx) == '+'
+                elseif rhs_{j}(startidx) == '+'
                     str = getStrMoveRight(rhs_{j}(startidx+1:end));
                 else
                     str = getStrMoveRight(rhs_{j}(startidx:end));
