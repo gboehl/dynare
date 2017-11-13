@@ -59,8 +59,6 @@ M_exo_trim = cellstr(M_.exo_names);
 M_endo_exo_names_trim = [M_endo_trim; M_exo_trim];
 regex = strjoin(M_endo_exo_names_trim(:,1), '|');
 mathops = '[\+\*\^\-\/\(\)]';
-soleendoregexpre = '[\+\-](\d+\*)?';
-soleendoregexpost = '[\+\-\(]';
 M_param_names_trim = cellfun(@strtrim, num2cell(M_.param_names,2), 'UniformOutput', false);
 for i = 1:length(lhs)
     %% Construct regression matrices
@@ -130,38 +128,30 @@ for i = 1:length(lhs)
     lhssub = dseries();
     rhs_ = strsplit(rhs{i}, [splitstrings; pnames]);
     for j = 1:length(rhs_)
-        if isempty(rhs_{j})
-            continue
-        end
-        str = '';
-        for k = 1:length(M_endo_exo_names_trim)
-            pregex = [...
-                '(' soleendoregexpre M_endo_exo_names_trim{k} soleendoregexpost ')' ...
-                '|(^\-?(\d+\*)?' M_endo_exo_names_trim{k} soleendoregexpost ')' ...
-                '|(' soleendoregexpre M_endo_exo_names_trim{k} '$)' ...
-                ];
-            startidx = regexp(rhs_{j}, pregex);
-            if ~isempty(startidx)
-                if rhs_{j}(startidx) == '-'
-                    str = ['-' getStrMoveRight(rhs_{j}(startidx+1:end))];
-                elseif rhs_{j}(startidx) == '+'
-                    str = getStrMoveRight(rhs_{j}(startidx+1:end));
-                else
-                    str = getStrMoveRight(rhs_{j}(startidx:end));
+        rhsj = rhs_{j};
+        while ~isempty(rhsj)
+            minus = '';
+            if strcmp(rhsj(1), '-') || strcmp(rhsj(1), '+')
+                if length(rhsj) == 1
+                    break
                 end
-                break;
+                if strcmp(rhsj(1), '-')
+                    minus = '-';
+                end
+                rhsj = rhsj(2:end);
             end
-        end
-
-        if ~isempty(str)
-            try
-                lhssub = [lhssub eval(regexprep(str, regex, 'ds.$&'))];
-                lhssub{numel(lhssub)}.rename_(str);
-            catch
+            str = getStrMoveRight(rhsj);
+            if ~isempty(str)
+                try
+                    lhssub = [lhssub eval(regexprep([minus str], regex, 'ds.$&'))];
+                    lhssub.rename_(lhssub{lhssub.vobs}.name{:}, [minus str]);
+                catch
+                end
+                rhsj = rhsj(length(str)+1:end);
             end
         end
     end
-
+ 
     Y = eval(regexprep(lhs{i}, regex, 'ds.$&'));
     for j = 1:lhssub.vobs
         Y = Y - lhssub{j};
