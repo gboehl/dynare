@@ -146,6 +146,9 @@ for i = 1:length(lhs)
                     lhssub = [lhssub eval(regexprep([minus str], regex, 'ds.$&'))];
                     lhssub.rename_(lhssub{lhssub.vobs}.name{:}, [minus str]);
                 catch
+                    if ~any(strcmp(M_exo_trim, str))
+                        error(['dyn_ols: problem evaluating ' minus str]);
+                    end
                 end
                 rhsj = rhsj(length(str)+1:end);
             end
