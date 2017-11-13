@@ -1,15 +1,19 @@
-function dyn_ols(ds, varargin)
+function ds = dyn_ols(ds, varargin)
 % function dyn_ols(ds, varargin)
 % Run OLS on chosen model equations; unlike olseqs, allow for time t
 % endogenous variables on LHS
 %
 % INPUTS
-%   ds       [dseries]    data
-%   varargin [cellstr]    names of equation tags to estimate. If empty,
-%                         estimate all equations
+%   ds              [dseries]    data
+%   varargin{1}     [cell]       Nx2 cell array to be used in naming fitted
+%                                values; first column is the var name,
+%                                second column is the name of the
+%                                associated fitted value.
+%   varargin{2}     [cellstr]    names of equation tags to estimate. If empty,
+%                                estimate all equations
 %
 % OUTPUTS
-%   none
+%   ds              [dseries]    data updated with fitted values
 %
 % SPECIAL REQUIREMENTS
 %   none
@@ -33,7 +37,7 @@ function dyn_ols(ds, varargin)
 
 global M_ oo_
 
-assert(nargin <= 2, 'Incorrect number of arguments.');
+assert(isdseries(ds), 'dyn_ols: the first argument must be a dseries');
 
 jsonfile = [M_.fname '_original.json'];
 if exist(jsonfile, 'file') ~= 2
@@ -43,10 +47,18 @@ end
 %% Get Equation(s)
 jsonmodel = loadjson(jsonfile);
 jsonmodel = jsonmodel.model;
+fitted_names_dict = {};
 if nargin == 1
     [lhs, rhs, lineno] = getEquationsByTags(jsonmodel);
 else
-    [lhs, rhs, lineno] = getEquationsByTags(jsonmodel, 'name', varargin{:});
+    fitted_names_dict = varargin{1};
+    assert(iscell(fitted_names_dict) && columns(fitted_names_dict) == 2, ...
+        'dyn_ols: the second argument must be an Nx2 cell array');
+    if nargin == 2
+        [lhs, rhs, lineno] = getEquationsByTags(jsonmodel);
+    else
+        [lhs, rhs, lineno] = getEquationsByTags(jsonmodel, 'name', varargin{2:end});
+    end
     if isempty(lhs)
         disp('dyn_ols: Nothing to estimate')
         return
@@ -168,11 +180,11 @@ for i = 1:length(lhs)
 
     %% Estimation
     % From LeSage, James P. "Applied Econometrics using MATLAB"
-    if nargin == 2
-        if iscell(varargin{1})
-            tagv = varargin{1}{i};
+    if nargin == 3
+        if iscell(varargin{2})
+            tagv = varargin{2}{i};
         else
-            tagv = varargin{1};
+            tagv = varargin{2};
         end
     else
         tagv = ['eq_line_no_' num2str(lineno{i})];
@@ -189,7 +201,15 @@ for i = 1:length(lhs)
     end
 
     % Yhat
-    oo_.ols.(tagv).Yhat = dseries(X*oo_.ols.(tagv).beta, fp, [lhs{i} '_hat']);
+    lhsrep = regexprep(lhs{i}, '[\(\)\-+\*/]', '_');
+    yhatname = [lhsrep '_FIT'];
+    if ~isempty(fitted_names_dict)
+        idx = strcmp(fitted_names_dict(:,1), lhsrep);
+        if any(idx)
+            yhatname = fitted_names_dict{idx, 2};
+        end
+    end
+    oo_.ols.(tagv).Yhat = dseries(X*oo_.ols.(tagv).beta, fp, yhatname);
 
     % Residuals
     oo_.ols.(tagv).resid = Y - oo_.ols.(tagv).Yhat;
@@ -198,6 +218,7 @@ for i = 1:length(lhs)
     for j = 1:lhssub.vobs
         oo_.ols.(tagv).Yhat = oo_.ols.(tagv).Yhat + lhssub{j}(fp:lp);
     end
+    ds = [ds oo_.ols.(tagv).Yhat];
 
     %% Calculate statistics
     % Estimate for sigma^2
