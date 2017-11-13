@@ -218,7 +218,7 @@ for i = 1:length(lhs)
     for j = 1:lhssub.vobs
         oo_.ols.(tagv).Yhat = oo_.ols.(tagv).Yhat + lhssub{j}(fp:lp);
     end
-    ds = [ds oo_.ols.(tagv).Yhat];
+    ds = [ds copy(oo_.ols.(tagv).Yhat)];
 
     %% Calculate statistics
     % Estimate for sigma^2
