@@ -142,24 +142,24 @@ for i = 1:length(lhs)
     for j = 1:length(rhs_)
         rhsj = rhs_{j};
         while ~isempty(rhsj)
-            minus = '';
+            minusstr = '';
             if strcmp(rhsj(1), '-') || strcmp(rhsj(1), '+')
                 if length(rhsj) == 1
                     break
                 end
                 if strcmp(rhsj(1), '-')
-                    minus = '-';
+                    minusstr = '-';
                 end
                 rhsj = rhsj(2:end);
             end
             str = getStrMoveRight(rhsj);
             if ~isempty(str)
                 try
-                    lhssub = [lhssub eval(regexprep([minus str], regex, 'ds.$&'))];
-                    lhssub.rename_(lhssub{lhssub.vobs}.name{:}, [minus str]);
+                    lhssub = [lhssub eval(regexprep([minusstr str], regex, 'ds.$&'))];
+                    lhssub.rename_(lhssub{lhssub.vobs}.name{:}, [minusstr str]);
                 catch
                     if ~any(strcmp(M_exo_trim, str))
-                        error(['dyn_ols: problem evaluating ' minus str]);
+                        error(['dyn_ols: problem evaluating ' minusstr str]);
                     end
                 end
                 rhsj = rhsj(length(str)+1:end);
