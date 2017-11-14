@@ -196,18 +196,17 @@ end
 fid = fopen(fname, 'r');
 firstline = fgetl(fid);
 fclose(fid);
-if isequal(regexp(firstline, '\s*\/\/'), 1)
-    % First line is commented.
+if regexp(firstline, '\s*\/\/', 'once') == 1
     firstline = regexprep(firstline, '\s*\/\/', '');
-    if ~isempty(regexp(firstline, '(^\s+\-\-\+\s+options:)'))       % Commented line begins with --+ options:
-        if ~isempty(regexp(firstline, '(\s+\+\-\-\s*$)'))           % Commented line ends with +--
-            dynoption = strsplit(firstline, {'--+', '+--', 'options:', ' ', ','});
-            dynoption(find(cellfun( @(x) isempty(x), dynoption))) = [];
-            if isequal(nargin, 1)
-                varargin = dynoption;
-            else
-                varargin = union(varargin, dynoption);
-            end
+    if ~isempty(regexp(firstline, '(^\s*\-\-\+\s*options:\s*)', 'once')) ...
+        && ~isempty(regexp(firstline, '(\s*\+\-\-(\s*\w*\s*)*$)', 'once'))
+        firstline = regexprep(firstline, '(^\s*\-\-\+\s*options:\s*)', '');
+        firstline = regexprep(firstline, '(\s*\+\-\-(\s*\w*\s*)*$)', '');
+        dynoption = strsplit(firstline, {' ', ','});
+        if isequal(nargin, 1)
+            varargin = dynoption;
+        else
+            varargin = union(varargin, dynoption);
         end
     end
 end

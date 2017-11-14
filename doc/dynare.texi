@@ -1006,10 +1006,10 @@ of the @code{.mod} file. They can alternatively be defined in the first line of
 the @file{.mod} file, this avoids typing them on the command line each time a
 @file{.mod} file is to be run. This line must be a Dynare comment (@emph{ie}
 must begin with @code{//}) and the options must be comma separated between
-@code{--+ options:} and @code{+--}. As in the command line, if an option admits
-a value the equal symbol must not be surrounded by spaces. For instance
-@code{json = compute} is not correct, and should be written
-@code{json=compute}.
+@code{--+ options:} and @code{+--}. Note that any text after the @code{+--}
+will be discarded. As with the command line, if an option admits a value the
+equal symbol must not be surrounded by spaces. For instance @code{json =
+compute} is not correct, and should be written @code{json=compute}.
 
 @outputhead
 
