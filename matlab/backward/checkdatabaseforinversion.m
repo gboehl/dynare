@@ -39,7 +39,7 @@ for i = DynareModel.orig_endo_nbr+1:DynareModel.endo_nbr
         else
             error('%s not available in dbase!', deblank(DynareModel.endo_names(DynareModel.aux_vars(k).orig_index, :)));
         end
-    elseif DynareModel.aux_vars(k).type==3 && DynareModel.aux_vars(k).orig_lead_lag==0
+    elseif DynareModel.aux_vars(k).type==3
         dbase{deblank(DynareModel.endo_names(DynareModel.aux_vars(k).endo_index,:))} = dbase{deblank(DynareModel.exo_names(DynareModel.aux_vars(k).orig_index, :))}.lag(abs(DynareModel.aux_vars(k).orig_lead_lag));
         listoflaggedexogenousvariables = vertcat(listoflaggedexogenousvariables, deblank(DynareModel.exo_names(DynareModel.aux_vars(k).orig_index, :)));
     else
