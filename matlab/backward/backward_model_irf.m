@@ -123,7 +123,7 @@ end
 
 % Get the covariance matrix of the shocks.
 if ~deterministicshockflag
-    if ~nnz(M_.Sigma_e)
+    if nnz(M_.Sigma_e)
         Sigma = M_.Sigma_e + 1e-14*eye(M_.exo_nbr);
         sigma = transpose(chol(Sigma));
     else
