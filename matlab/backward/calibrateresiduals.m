@@ -53,7 +53,7 @@ n = size(ydata, 2);
 c = find(DynareModel.lead_lag_incidence');
 y = [ydata(1,:)'; ydata(2,:)'];
 y = y(c);
-r = model_dynamic(y, xdata, DynareModel.params, zeros(n, 1), 2)
+r = model_dynamic(y, xdata, DynareModel.params, zeros(n, 1), 2);
 
 % Check that the number of equations evaluating to NaN matches the number of residuals
 idr = find(isnan(r));
@@ -94,7 +94,7 @@ for i = 1:residuals.vobs
     info.residualindex(i) = {strmatch(residualname, allexogenousvariables.name, 'exact')};
     tmpxdata = xdata;
     tmpxdata(2, info.residualindex{i}) = 0;
-    r = model_dynamic(y, tmpxdata, DynareModel.params, zeros(n, 1), 2)
+    r = model_dynamic(y, tmpxdata, DynareModel.params, zeros(n, 1), 2);
     info.equations(i) = { idr(find(~isnan(r(idr))))};
 end
 c1 = 'Residual';
@@ -119,7 +119,7 @@ xdata(:,cell2mat(info.residualindex)) = 0;
 rdata = NaN(residuals.nobs, residuals.vobs);
 for t=2:size(xdata, 1)
     y = transpose([ydata(t-1,:); ydata(t,:)]);
-    r = model_dynamic(y(c), xdata, DynareModel.params, zeros(n, 1), t)
+    r = model_dynamic(y(c), xdata, DynareModel.params, zeros(n, 1), t);
     rdata(t,:) = transpose(r(cell2mat(info.equations)));
 end
 residuals = dseries(rdata, dbase.init, info.residuals);
