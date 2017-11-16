@@ -196,9 +196,11 @@ for i=1:length(listofshocks)
     deviations.(name) = alldeviations{listofvariables{:}};
     if nargout>2
         irfs.(name) = allirfs{listofvariables{:}};
+        irfs.(name) = [irfs.(name) dseries(innovations, initialcondition.last+1, exonames)];
     end
 end
 
 if nargout>1
     baseline = dseries(transpose(endo_simul__0), initialcondition.init, endonames(1:M_.orig_endo_nbr), cellstr(DynareModel.endo_names_tex(1:M_.orig_endo_nbr,:)));
+    baseline = [baseline, innovationbaseline];
 end
