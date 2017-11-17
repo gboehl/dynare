@@ -38,18 +38,12 @@ global M_ oo_
 
 pooled_ols(ds, param_common, param_regex, true, 'pooled_fgls');
 
-neq = length(fieldnames(oo_.pooled_fgls.resid));
-nobs = length(oo_.pooled_fgls.sample_range);
-for i = 1:neq
-    ui = oo_.pooled_fgls.resid.(oo_.pooled_fgls.residnames{i});
-    for j = i:neq
-        uj = oo_.pooled_fgls.resid.(oo_.pooled_fgls.residnames{j});
-        M_.Sigma_e(i, j) = (ui'*uj)/nobs;
-        M_.Sigma_e(j, i) = M_.Sigma_e(i, j);
-    end
-end
+oo_.sur.dof = length(oo_.pooled_fgls.sample_range);
+resid = oo_.pooled_fgls.Y - oo_.pooled_fgls.X * oo_.pooled_fgls.beta;
+resid = reshape(resid, oo_.sur.dof, length(oo_.pooled_fgls.residnames));
+M_.Sigma_e = resid'*resid/oo_.sur.dof;
 
-kLeye = kron(chol(inv(M_.Sigma_e)), eye(nobs));
+kLeye = kron(chol(inv(M_.Sigma_e)), eye(oo_.sur.dof));
 [q, r] = qr(kLeye*oo_.pooled_fgls.X, 0);
 oo_.pooled_fgls.beta = r\(q'*kLeye*oo_.pooled_fgls.Y);
 
