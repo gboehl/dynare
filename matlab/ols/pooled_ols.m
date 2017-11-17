@@ -87,6 +87,7 @@ end
 %% Find parameters and variable names in every equation & Setup estimation matrices
 M_exo_names_trim = cellstr(M_.exo_names);
 M_endo_exo_names_trim = [cellstr(M_.endo_names); M_exo_names_trim];
+M_param_names_trim = cellstr(M_.param_names);
 regex = strjoin(M_endo_exo_names_trim(:,1), '|');
 mathops = '[\+\*\^\-\/]';
 params = cell(length(rhs),1);
@@ -101,7 +102,7 @@ residnames = cell(length(lhs), 1);
 for i = 1:length(lhs)
     rhs_ = strsplit(rhs{i}, {'+','-','*','/','^','log(','ln(','log10(','exp(','(',')','diff('});
     rhs_(cellfun(@(x) all(isstrprop(x, 'digit')), rhs_)) = [];
-    vnames = setdiff(rhs_, cellstr(M_.param_names));
+    vnames = setdiff(rhs_, M_param_names_trim);
     if ~isempty(regexp(rhs{i}, ...
             ['(' strjoin(vnames, '\\(\\d+\\)|') '\\(\\d+\\))'], ...
             'once'))
@@ -110,7 +111,7 @@ for i = 1:length(lhs)
     end
 
     % Find parameters and associated variables
-    pnames = intersect(rhs_, cellstr(M_.param_names));
+    pnames = intersect(rhs_, M_param_names_trim);
     pidxs = zeros(length(pnames), 1);
     vnames = cell(1, length(pnames));
     xjdata = dseries;
@@ -225,7 +226,6 @@ end
 oo_.(save_structure_name).beta = r\(q'*Y);
 
 % Assign parameter values back to parameters using param_regex & param_common
-param_names_trim = cellfun(@strtrim, num2cell(M_.param_names(:,:),2),  'Uniform', 0);
 regexcountries = ['(' strjoin(param_common(1:end),'|') ')'];
 assigned_idxs = false(size(pbeta));
 for i = 1:length(param_regex)
@@ -233,7 +233,7 @@ for i = 1:length(param_regex)
     assigned_idxs = assigned_idxs | beta_idx;
     value = oo_.(save_structure_name).beta(beta_idx);
     assert(~isempty(value));
-    M_.params(~cellfun(@isempty, regexp(param_names_trim, ...
+    M_.params(~cellfun(@isempty, regexp(M_param_names_trim, ...
         strrep(param_regex{i}, '*', regexcountries)))) = value;
 end
 idxs = find(assigned_idxs == 0);
@@ -241,7 +241,7 @@ values = oo_.(save_structure_name).beta(idxs);
 names = pbeta(idxs);
 assert(length(values) == length(names));
 for i = 1:length(idxs)
-    M_.params(strcmp(param_names_trim, names{i})) = values(i);
+    M_.params(strcmp(M_param_names_trim, names{i})) = values(i);
 end
 
 residuals = Y - X * oo_.(save_structure_name).beta;
