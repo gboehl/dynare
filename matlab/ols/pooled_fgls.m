@@ -44,12 +44,12 @@ for i = 1:neq
     ui = oo_.pooled_fgls.resid.(oo_.pooled_fgls.residnames{i});
     for j = i:neq
         uj = oo_.pooled_fgls.resid.(oo_.pooled_fgls.residnames{j});
-        M_.Sigma(i, j) = (ui'*uj)/nobs;
-        M_.Sigma(j, i) = M_.Sigma(i, j);
+        M_.Sigma_e(i, j) = (ui'*uj)/nobs;
+        M_.Sigma_e(j, i) = M_.Sigma_e(i, j);
     end
 end
 
-kLeye = kron(chol(inv(M_.Sigma)), eye(nobs));
+kLeye = kron(chol(inv(M_.Sigma_e)), eye(nobs));
 [q, r] = qr(kLeye*oo_.pooled_fgls.X, 0);
 oo_.pooled_fgls.beta = r\(q'*kLeye*oo_.pooled_fgls.Y);
 
