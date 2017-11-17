@@ -1,5 +1,5 @@
 function pooled_ols(ds, param_common, param_regex, overlapping_dates, save_structure_name)
-% pooled_ols(ds, param_common, param_regex, overlapping_dates, save_structure_name)
+% function pooled_ols(ds, param_common, param_regex, overlapping_dates, save_structure_name)
 % Run Pooled OLS
 % Apply parameter values found to corresponding parameter values in the
 % other blocks of the model
