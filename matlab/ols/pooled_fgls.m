@@ -1,8 +1,6 @@
 function pooled_fgls(ds, param_common, param_regex)
 % function pooled_fgls(ds, param_common, param_regex)
 % Run Pooled FGLS
-% Apply parameter values found to corresponding parameter values in the
-% other blocks of the model
 %
 % INPUTS
 %   ds            [dseries]      data to use in estimation
