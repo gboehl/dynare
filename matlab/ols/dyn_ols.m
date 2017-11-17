@@ -35,7 +35,7 @@ function ds = dyn_ols(ds, varargin)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-global M_ oo_
+global M_ oo_ options_
 
 assert(isdseries(ds), 'dyn_ols: the first argument must be a dseries');
 
@@ -244,22 +244,24 @@ for i = 1:length(lhs)
     oo_.ols.(tagv).tstat = oo_.ols.(tagv).beta./oo_.ols.(tagv).stderr;
 
     %% Print Output
-    title = sprintf('OLS Estimation of equation  `%s`', tagv);
-    if nargin == 3
-        title = [title sprintf(' [%s = %s]', 'name', tagv)];
+    if ~options_.noprint
+        title = sprintf('OLS Estimation of equation  `%s`', tagv);
+        if nargin == 3
+            title = [title sprintf(' [%s = %s]', 'name', tagv)];
+        end
+
+        preamble = {sprintf('Dependent Variable: %s', lhs{i}), ...
+            sprintf('No. Independent Variables: %d', nvars), ...
+            sprintf('Observations: %d from %s to %s\n', nobs, fp.char, lp.char)};
+
+        afterward = {sprintf('R^2: %f', oo_.ols.(tagv).R2), ...
+            sprintf('R^2 Adjusted: %f', oo_.ols.(tagv).adjR2), ...
+            sprintf('s^2: %f', oo_.ols.(tagv).s2), ...
+            sprintf('Durbin-Watson: %f', oo_.ols.(tagv).dw)};
+
+        dyn_table(title, preamble, afterward, vnames, ...
+            {'Coefficients','t-statistic','Std. Error'}, 4, ...
+            [oo_.ols.(tagv).beta oo_.ols.(tagv).tstat oo_.ols.(tagv).stderr]);
     end
-
-    preamble = {sprintf('Dependent Variable: %s', lhs{i}), ...
-        sprintf('No. Independent Variables: %d', nvars), ...
-        sprintf('Observations: %d from %s to %s\n', nobs, fp.char, lp.char)};
-
-    afterward = {sprintf('R^2: %f', oo_.ols.(tagv).R2), ...
-        sprintf('R^2 Adjusted: %f', oo_.ols.(tagv).adjR2), ...
-        sprintf('s^2: %f', oo_.ols.(tagv).s2), ...
-        sprintf('Durbin-Watson: %f', oo_.ols.(tagv).dw)};
-
-    dyn_table(title, preamble, afterward, vnames, ...
-        {'Coefficients','t-statistic','Std. Error'}, 4, ...
-        [oo_.ols.(tagv).beta oo_.ols.(tagv).tstat oo_.ols.(tagv).stderr]);
 end
 end
