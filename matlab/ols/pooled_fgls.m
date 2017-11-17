@@ -49,7 +49,7 @@ for i = 1:neq
     end
 end
 
-kLeye = kron(chol(M_.Sigma), eye(nobs));
+kLeye = kron(chol(inv(M_.Sigma)), eye(nobs));
 [q, r] = qr(kLeye*oo_.pooled_fgls.X, 0);
 oo_.pooled_fgls.beta = r\(q'*kLeye*oo_.pooled_fgls.Y);
 
