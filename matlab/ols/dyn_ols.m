@@ -1,19 +1,19 @@
-function ds = dyn_ols(ds, varargin)
-% function dyn_ols(ds, varargin)
+function ds = dyn_ols(ds, fitted_names_dict, eqtags)
+% function ds = dyn_ols(ds, fitted_names_dict, eqtags)
 % Run OLS on chosen model equations; unlike olseqs, allow for time t
 % endogenous variables on LHS
 %
 % INPUTS
-%   ds              [dseries]    data
-%   varargin{1}     [cell]       Nx2 cell array to be used in naming fitted
-%                                values; first column is the var name,
-%                                second column is the name of the
-%                                associated fitted value.
-%   varargin{2}     [cellstr]    names of equation tags to estimate. If empty,
-%                                estimate all equations
+%   ds                [dseries]    data
+%   fitted_names_dict [cell]       Nx2 cell array to be used in naming fitted
+%                                  values; first column is the var name,
+%                                  second column is the name of the
+%                                  associated fitted value.
+%   eqtags            [cellstr]    names of equation tags to estimate. If empty,
+%                                  estimate all equations
 %
 % OUTPUTS
-%   ds              [dseries]    data updated with fitted values
+%   ds                [dseries]    data updated with fitted values
 %
 % SPECIAL REQUIREMENTS
 %   none
@@ -47,17 +47,18 @@ end
 %% Get Equation(s)
 jsonmodel = loadjson(jsonfile);
 jsonmodel = jsonmodel.model;
-fitted_names_dict = {};
+
 if nargin == 1
     [lhs, rhs, lineno] = getEquationsByTags(jsonmodel);
+    fitted_names_dict = {};
 else
-    fitted_names_dict = varargin{1};
-    assert(iscell(fitted_names_dict) && columns(fitted_names_dict) == 2, ...
+    assert(isempty(fitted_names_dict) || ...
+        (iscell(fitted_names_dict) && columns(fitted_names_dict) == 2), ...
         'dyn_ols: the second argument must be an Nx2 cell array');
     if nargin == 2
         [lhs, rhs, lineno] = getEquationsByTags(jsonmodel);
     else
-        [lhs, rhs, lineno] = getEquationsByTags(jsonmodel, 'name', varargin{2:end});
+        [lhs, rhs, lineno] = getEquationsByTags(jsonmodel, 'name', eqtags);
     end
     if isempty(lhs)
         disp('dyn_ols: Nothing to estimate')
@@ -181,10 +182,10 @@ for i = 1:length(lhs)
     %% Estimation
     % From LeSage, James P. "Applied Econometrics using MATLAB"
     if nargin == 3
-        if iscell(varargin{2})
-            tagv = varargin{2}{i};
+        if iscell(eqtags)
+            tagv = eqtags{i};
         else
-            tagv = varargin{2};
+            tagv = eqtags;
         end
     else
         tagv = ['eq_line_no_' num2str(lineno{i})];
