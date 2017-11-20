@@ -1,5 +1,5 @@
-function [lhs, rhs, linenum] = getEquationsByTags(jsonmodel, varargin)
-%function [lhs, rhs] = getEquationByTag(jsonmodel, varargin)
+function [lhs, rhs, linenum, sample] = getEquationsByTags(jsonmodel, varargin)
+%function [lhs, rhs, linenum, sample] = getEquationByTag(jsonmodel, varargin)
 % Return the lhs, rhs of an equation and the line it was defined
 % on given its tag
 %
@@ -9,9 +9,10 @@ function [lhs, rhs, linenum] = getEquationsByTags(jsonmodel, varargin)
 %                                                  eqs to get
 %
 % OUTPUTS
-%   lhs:             [cellstring array] left hand side of eq
-%   rhs:             [cellstring array] right hand side of eq
-%   linenum:         [cellstring array] eq line in .mod file
+%   lhs             [cellstring array]     left hand side of eq
+%   rhs             [cellstring array]     right hand side of eq
+%   linenum         [cellstring array]     eq line in .mod file
+%   sample          [cell array of dates]  sample range
 %
 % SPECIAL REQUIREMENTS
 %   none
@@ -39,10 +40,16 @@ if nargin == 1
     lhs = cell(1, length(jsonmodel));
     rhs = cell(1, length(jsonmodel));
     linenum = cell(1, length(jsonmodel));
+    sample = cell(1, length(jsonmodel));
     for i=1:length(jsonmodel)
         lhs{i} = jsonmodel{i}.lhs;
         rhs{i} = jsonmodel{i}.rhs;
         linenum{i} = jsonmodel{i}.line;
+        if isfield(jsonmodel{i}, 'tags') && ...
+                isfield(jsonmodel{i}.tags, 'sample')
+            tmp = strsplit(jsonmodel{i}.tags.sample, ':');
+            sample{i} = dates(tmp{1}):dates(tmp{2});
+        end
     end
     return
 end
@@ -60,6 +67,7 @@ end
 lhs = cell(1, length(tagvalue));
 rhs = cell(1, length(tagvalue));
 linenum = cell(1, length(tagvalue));
+sample = cell(1, length(tagvalue));
 
 for i=1:length(jsonmodel)
     for j = 1:length(tagvalue)
@@ -69,6 +77,10 @@ for i=1:length(jsonmodel)
             lhs{j} = jsonmodel{i}.lhs;
             rhs{j} = jsonmodel{i}.rhs;
             linenum{j} = jsonmodel{i}.line;
+            if isfield(jsonmodel{i}.tags, 'sample')
+                tmp = strsplit(jsonmodel{i}.tags.sample, ':');
+                sample{j} = dates(tmp{1}):dates(tmp{2});
+            end
             if ~any(cellfun(@isempty, lhs))
                 return
             end

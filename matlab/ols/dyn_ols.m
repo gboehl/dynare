@@ -49,16 +49,16 @@ jsonmodel = loadjson(jsonfile);
 jsonmodel = jsonmodel.model;
 
 if nargin == 1
-    [lhs, rhs, lineno] = getEquationsByTags(jsonmodel);
+    [lhs, rhs, lineno, sample] = getEquationsByTags(jsonmodel);
     fitted_names_dict = {};
 else
     assert(isempty(fitted_names_dict) || ...
         (iscell(fitted_names_dict) && columns(fitted_names_dict) == 2), ...
         'dyn_ols: the second argument must be an Nx2 cell array');
     if nargin == 2
-        [lhs, rhs, lineno] = getEquationsByTags(jsonmodel);
+        [lhs, rhs, lineno, sample] = getEquationsByTags(jsonmodel);
     else
-        [lhs, rhs, lineno] = getEquationsByTags(jsonmodel, 'name', eqtags);
+        [lhs, rhs, lineno, sample] = getEquationsByTags(jsonmodel, 'name', eqtags);
     end
     if isempty(lhs)
         disp('dyn_ols: Nothing to estimate')
@@ -175,6 +175,15 @@ for i = 1:length(lhs)
 
     fp = max(Y.firstobservedperiod, X.firstobservedperiod);
     lp = min(Y.lastobservedperiod, X.lastobservedperiod);
+    if ~isempty(sample{i})
+        if fp > sample{i}(1) || lp < sample{i}(end)
+            warning(['The sample over which you want to estimate contains NaNs. '...
+                'Adjusting estimation range to be: ' fp.char ' to ' lp.char])
+        else
+            fp = sample{i}(1);
+            lp = sample{i}(end);
+        end
+    end
 
     Y = Y(fp:lp);
     X = X(fp:lp).data;
