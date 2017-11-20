@@ -1,5 +1,5 @@
-function sur(ds)
-% function sur(ds)
+function varargout = sur(ds)
+% function varargout = sur(ds)
 % Seemingly Unrelated Regressions
 %
 % INPUTS
@@ -186,6 +186,19 @@ oo_.sur.Yhat = X * oo_.sur.beta;
 
 % Residuals
 oo_.sur.resid = Y - oo_.sur.Yhat;
+
+%% Return to surgibbs if called from there
+st = dbstack(1);
+if strcmp(st(1).name, 'surgibbs')
+    varargout{1} = oo_.sur.dof;
+    varargout{2} = size(X, 2);
+    varargout{3} = M_.param_names(pidxs, :);
+    varargout{4} = oo_.sur.beta;
+    varargout{5} = X;
+    varargout{6} = Y;
+    varargout{7} = length(lhs);
+    return
+end
 
 %% Calculate statistics
 % Estimate for sigma^2
