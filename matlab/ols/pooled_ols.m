@@ -163,12 +163,16 @@ for i = 1:length(lhs)
     end
 
     residuals = intersect(rhs_, cellstr(M_.exo_names));
+    justvnames = regexprep(vnames, '\(-\d\)|log|exp|log10|[\(\)]', '');
+    justvnames = regexp(justvnames, '[-+]', 'split');
+    justvnames = [justvnames{:}];
     for j = 1:length(residuals)
-        if any(strcmp(residuals{j}, vnames))
+        if any(strcmp(residuals{j}, justvnames))
             residuals{j} = [];
         end
     end
     idx = ~cellfun(@isempty, residuals);
+    assert(~isempty(idx), ['No residuals in equation ' num2str(i)]);
     assert(sum(idx) == 1, ['More than one residual in equation ' num2str(i)]);
     residnames{i} = residuals{idx};
 
