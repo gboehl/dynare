@@ -66,7 +66,6 @@ end
 
 oo_.pooled_fgls = rmfield(oo_.pooled_fgls, 'X');
 oo_.pooled_fgls = rmfield(oo_.pooled_fgls, 'Y');
-oo_.pooled_fgls = rmfield(oo_.pooled_fgls, 'varcovar');
 oo_.pooled_fgls = rmfield(oo_.pooled_fgls, 'residnames');
 oo_.pooled_fgls = rmfield(oo_.pooled_fgls, 'pbeta');
 oo_.pooled_fgls = rmfield(oo_.pooled_fgls, 'country_name');
