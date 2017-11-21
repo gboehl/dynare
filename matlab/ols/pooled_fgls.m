@@ -60,7 +60,6 @@ end
 idxs = find(assigned_idxs == 0);
 values = oo_.pooled_fgls.beta(idxs);
 names = pbeta(idxs);
-assert(length(values) == length(names));
 for i = 1:length(idxs)
     M_.params(strcmp(param_names_trim, names{i})) = values(i);
 end
