@@ -29,7 +29,7 @@ function [dr,info] = stochastic_solvers(dr,task,M_,options_,oo_)
 %   none.
 %
 
-% Copyright (C) 1996-2017 Dynare Team
+% Copyright (C) 1996-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -56,6 +56,9 @@ local_order = options_.order;
 if M_.hessian_eq_zero && local_order~=1
     local_order = 1;
     warning('stochastic_solvers: using order = 1 because Hessian is equal to zero');
+end
+if options_.order>2 && ~options_.k_order_solver
+    error('You need to set k_order_solver for order>2')
 end
 
 if (options_.aim_solver == 1) && (local_order > 1)
