@@ -115,6 +115,9 @@ if ~isempty(options_gsa.datafile) || isempty(bayestopt_) || options_gsa.rmse
     if isfield(options_gsa,'lik_init')
         options_.lik_init=options_gsa.lik_init;
     end
+    if isfield(options_gsa,'diffuse_filter')
+        options_.diffuse_filter=options_gsa.diffuse_filter;
+    end
     if isfield(options_gsa,'kalman_algo')
         options_.kalman_algo=options_gsa.kalman_algo;
     end
