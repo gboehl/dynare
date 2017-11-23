@@ -128,7 +128,7 @@ eval(str)
 % Replace variables with ds.variablename
 for i = 1:length(vnames)
     if ismember(vnames{i}, ds1.name) && ismember(vnames{i}, ds0.name)
-        regularexpression = ['(([\s\+\-\*\/\^\)])|^)(' vnames{i} ')(([\s\(\+\-\*\/\^])|$)'];
+        regularexpression = ['(([\s\+\-\*/\\^\(])|^)(' vnames{i} ')(([\s\)\+\-\*\/\^])|$)'];
         newstring = ['$1ds.' vnames{i} '$3'];
         rhs = regexprep(rhs, regularexpression, newstring);
     else
