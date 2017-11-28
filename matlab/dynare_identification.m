@@ -325,7 +325,7 @@ if iload <=0
         elseif info(1)==6
             disp('info==6 %! The jacobian evaluated at the deterministic steady state is complex.')
         elseif info(1)==19
-            disp('info==19 %! The steadystate routine thrown an exception (inconsistent deep parameters). ')
+            disp('info==19 %! The steadystate routine has thrown an exception (inconsistent deep parameters). ')
         elseif info(1)==20
             disp('info==20 %! Cannot find the steady state, info(2) contains the sum of square residuals (of the static equations). ')
         elseif info(1)==21

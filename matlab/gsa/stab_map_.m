@@ -575,7 +575,7 @@ if length(iunstable)>0 || length(iwrong)>0
             disp(['    For ',num2str(length(find(infox==6))/Nsam*100,'%4.1f'),'% The jacobian evaluated at the deterministic steady state is complex.'])
         end
         if any(infox==19)
-            disp(['    For ',num2str(length(find(infox==19))/Nsam*100,'%4.1f'),'% The steadystate routine thrown an exception (inconsistent deep parameters).'])
+            disp(['    For ',num2str(length(find(infox==19))/Nsam*100,'%4.1f'),'% The steadystate routine has thrown an exception (inconsistent deep parameters).'])
         end
         if any(infox==20)
             disp(['    For ',num2str(length(find(infox==20))/Nsam*100,'%4.1f'),'% Cannot find the steady state.'])
