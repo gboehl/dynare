@@ -43,7 +43,7 @@ function [dr,info,M,options,oo] = resol(check_flag,M,options,oo)
 %! @item info==6
 %! The jacobian evaluated at the deterministic steady state is complex.
 %! @item info==19
-%! The steadystate routine thrown an exception (inconsistent deep parameters).
+%! The steadystate routine has thrown an exception (inconsistent deep parameters).
 %! @item info==20
 %! Cannot find the steady state, info(2) contains the sum of square residuals (of the static equations).
 %! @item info==21
