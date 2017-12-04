@@ -10763,6 +10763,13 @@ Asks the preprocessor to display some error message on standard output
 and to abort. The argument must evaluate to a string.
 @end deffn
 
+@deffn {Macro directive} @@#echomacrovars @var{MACRO_EXPRESSION}
+@deffnx {Macro directive} @@#echomacrovars(save) @var{MACRO_EXPRESSION}
+Asks the preprocessor to display the value of all macro variables up until this
+point. If the @code{save} option is passed, the values of the macro variables
+are saved to @code{options_.macrovars}.
+@end deffn
+
 @node Typical usages
 @subsection Typical usages
 
