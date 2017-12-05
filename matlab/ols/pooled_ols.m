@@ -114,6 +114,7 @@ for i = 1:length(lhs)
     pnames = intersect(rhs_, M_param_names_trim);
     pidxs = zeros(length(pnames), 1);
     vnames = cell(1, length(pnames));
+    splitstrings = cell(length(pnames), 1);
     xjdata = dseries;
     for j = 1:length(pnames)
         createdvar = false;
@@ -137,8 +138,14 @@ for i = 1:length(lhs)
                 getStrMoveRight(rhs{i}(endidx+1:end))];
         elseif rhs{i}(startidx) == '*'
             vnames{j} = getStrMoveLeft(rhs{i}(1:startidx-1));
+            splitstrings{j} = [vnames{j} '*' pnames{j}];
         elseif rhs{i}(endidx) == '*'
             vnames{j} = getStrMoveRight(rhs{i}(endidx+1:end));
+            splitstrings{j} = [pnames{j} '*' vnames{j}];
+            if rhs{i}(startidx) == '-'
+                vnames{j} = ['-' vnames{j}];
+                splitstrings{j} = ['-' splitstrings{j}];
+            end
         elseif rhs{i}(startidx) == '+' ...
                 || rhs{i}(startidx) == '-' ...
                 || rhs{i}(endidx) == '+' ...
@@ -152,6 +159,7 @@ for i = 1:length(lhs)
             else
                 vnames{j} = 'intercept';
             end
+            splitstrings{j} = vnames{j};
         else
             error('pooled_ols: Shouldn''t arrive here');
         end
@@ -165,6 +173,8 @@ for i = 1:length(lhs)
         xjdata = [xjdata xjdatatmp];
     end
 
+    lhssub = getRhsToSubFromLhs(ds, rhs{i}, regex, [splitstrings; pnames]);
+    
     residuals = intersect(rhs_, cellstr(M_.exo_names));
     justvnames = regexprep(vnames, '\(-\d\)|log|exp|log10|[\(\)]', '');
     justvnames = regexp(justvnames, '[-+]', 'split');
@@ -183,15 +193,29 @@ for i = 1:length(lhs)
     vars{i} = [vnames{:}];
 
     ydata = eval(regexprep(lhs{i}, regex, 'ds.$&'));
+    for j = 1:lhssub.vobs
+        ydata = ydata - lhssub{j};
+    end
 
-    fp = max(ydata.firstobservedperiod, xjdata.firstobservedperiod);
-    lp = min(ydata.lastobservedperiod, xjdata.lastobservedperiod);
-
-    startidxs(i) = length(Y) + 1;
-    startdates{i} = fp;
-    enddates{i} = lp;
-    Y(startidxs(i):startidxs(i)+lp-fp, 1) = ydata(fp:lp).data;
-    X(startidxs(i):startidxs(i)+lp-fp, pidxs) = xjdata(fp:lp).data;
+    if isempty(xjdata)
+        % AR(1) case
+        fp = ydata.firstobservedperiod;
+        lp = ydata.lastobservedperiod;
+        startidxs(i) = length(Y) + 1;
+        startdates{i} = fp;
+        enddates{i} = lp;
+        Y(startidxs(i):startidxs(i)+lp-fp, 1) = ydata(fp:lp).data;
+        X(startidxs(i):startidxs(i)+lp-fp, :) = zeros(ydata(fp:lp).nobs, columns(X));
+    else
+        fp = max(ydata.firstobservedperiod, xjdata.firstobservedperiod);
+        lp = min(ydata.lastobservedperiod, xjdata.lastobservedperiod);
+        
+        startidxs(i) = length(Y) + 1;
+        startdates{i} = fp;
+        enddates{i} = lp;
+        Y(startidxs(i):startidxs(i)+lp-fp, 1) = ydata(fp:lp).data;
+        X(startidxs(i):startidxs(i)+lp-fp, pidxs) = xjdata(fp:lp).data;
+    end
 end
 
 if overlapping_dates

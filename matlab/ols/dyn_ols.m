@@ -143,36 +143,8 @@ for i = 1:length(lhs)
         X = [X Xtmp];
     end
 
-    lhssub = dseries();
-    rhs_ = strsplit(rhs{i}, [splitstrings; pnames]);
-    for j = 1:length(rhs_)
-        rhsj = rhs_{j};
-        while ~isempty(rhsj)
-            minusstr = '';
-            if strcmp(rhsj(1), '-') || strcmp(rhsj(1), '+')
-                if length(rhsj) == 1
-                    break
-                end
-                if strcmp(rhsj(1), '-')
-                    minusstr = '-';
-                end
-                rhsj = rhsj(2:end);
-            end
-            str = getStrMoveRight(rhsj);
-            if ~isempty(str)
-                try
-                    lhssub = [lhssub eval(regexprep([minusstr str], regex, 'ds.$&'))];
-                    lhssub.rename_(lhssub{lhssub.vobs}.name{:}, [minusstr str]);
-                catch
-                    if ~any(strcmp(M_exo_trim, str))
-                        error(['dyn_ols: problem evaluating ' minusstr str]);
-                    end
-                end
-                rhsj = rhsj(length(str)+1:end);
-            end
-        end
-    end
- 
+    lhssub = getRhsToSubFromLhs(ds, rhs{i}, regex, [splitstrings; pnames]);
+
     Y = eval(regexprep(lhs{i}, regex, 'ds.$&'));
     for j = 1:lhssub.vobs
         Y = Y - lhssub{j};

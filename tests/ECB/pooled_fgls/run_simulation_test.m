@@ -19,6 +19,14 @@ for i=1:NSIMS
     M_.Sigma_e = Sigma_e; 
     simdata = simul_backward_model(dseries(firstobs, dates('1995Q1'), M_endo_names_trim), 10000);
     simdata = simdata(simdata.dates(5001:6000));
+    names=regexp(simdata.name, 'res\w*');
+    idxs = [];
+    for i=1:length(names)
+        if isempty(names{i})
+            idxs = [idxs i];
+        end
+    end
+    simdata = simdata{idxs};
     pooled_fgls(simdata, ...
         {'de','u2'}, ...
         {'*_q_yed_ecm_*_q_yed_L1', ...
