@@ -31,12 +31,22 @@ function retval = getStrMoveLeft(str)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-arithops = '[\+\-]';
+if isempty(str)
+    retval = '';
+    return
+end
 
-if str(end) ~= ')'
-    arithidxs = regexp(str, arithops);
+mathidxs = regexp(str, '[\+\-]');
+closedidxs = strfind(str, ')');
+if isempty(closedidxs) ...
+        || (~isempty(mathidxs) ...
+        && max(mathidxs) > max(closedidxs))
+    if isempty(mathidxs)
+        retval = str;
+    else
+        retval = str(max(mathidxs)+1:end);
+    end
 else
-    closedidxs = strfind(str, ')');
     closedidxs = [(length(closedidxs):-1:1)' closedidxs'];
     openidxs = strfind(str, '(');
     openidxs = [(length(openidxs):-1:1)' openidxs'];
@@ -44,18 +54,15 @@ else
     for i = rows(openidxs):-1:1
         openparenidx = find(openidxs(i, 2) < closedidxs(:, 2), 1, 'first');
         if openidxs(i, 1) == closedidxs(openparenidx, 1)
-            break;
+            break
         end
     end
-    arithidxs = regexp(str(1:openidxs(openparenidx,2)), arithops);
-end
-
-if isempty(arithidxs)
-    retval = str;
-else
-    if str(max(arithidxs)) == '-'
-        retval = str(max(arithidxs):end);
-    else
-        retval = str(max(arithidxs)+1:end);
+    retval = str(openidxs(openparenidx, 2):end);
+    if openidxs(openparenidx, 2) ~= 1
+        if isempty(regexp(str(openidxs(openparenidx, 2) - 1), '[\+\-]', 'once'))
+            retval = [getStrMoveLeft(str(1:openidxs(openparenidx, 2) - 2)) ...
+                str(openidxs(openparenidx, 2) - 1) ...
+                retval];
+        end
     end
 end

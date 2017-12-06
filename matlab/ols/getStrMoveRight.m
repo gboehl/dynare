@@ -51,8 +51,8 @@ else
     openidxs = [(1:length(openidxs))' openidxs'];
     closedidxs = strfind(str, ')');
     closedidxs = [(1:length(closedidxs))' closedidxs'];
-    assert(length(openidxs) == length(closedidxs));
-    for i = 1:length(closedidxs)
+    assert(rows(openidxs) == rows(closedidxs));
+    for i = 1:rows(closedidxs)
         closedparenidx = sum(openidxs(:, 2) < closedidxs(i, 2));
         if openidxs(closedparenidx, 1) == closedidxs(i, 1)
             break;
