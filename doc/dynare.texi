@@ -843,6 +843,10 @@ step. Useful in conjunction with @code{savemacro} when one wants that to
 reuse the intermediary @file{.mod} file, without having it cluttered by
 line numbering directives.
 
+@item noemptylinemacro
+Passing this option removes all empty from the macro expanded mod file created
+when the @code{savemacro} option is used.
+
 @item nolog
 Instructs Dynare to no create a logfile of this run in
 @file{@var{FILENAME}.log}. The default is to create the logfile.
