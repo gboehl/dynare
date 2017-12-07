@@ -49,16 +49,16 @@ jsonmodel = loadjson(jsonfile);
 jsonmodel = jsonmodel.model;
 
 if nargin == 1
-    [lhs, rhs, lineno, sample] = getEquationsByTags(jsonmodel);
+    [lhs, rhs, lineno, sample, tags] = getEquationsByTags(jsonmodel);
     fitted_names_dict = {};
 else
     assert(isempty(fitted_names_dict) || ...
         (iscell(fitted_names_dict) && columns(fitted_names_dict) == 2), ...
         'dyn_ols: the second argument must be an Nx2 cell array');
     if nargin == 2
-        [lhs, rhs, lineno, sample] = getEquationsByTags(jsonmodel);
+        [lhs, rhs, lineno, sample, tags] = getEquationsByTags(jsonmodel);
     else
-        [lhs, rhs, lineno, sample] = getEquationsByTags(jsonmodel, 'name', eqtags);
+        [lhs, rhs, lineno, sample, tags] = getEquationsByTags(jsonmodel, 'name', eqtags);
     end
     if isempty(lhs)
         disp('dyn_ols: Nothing to estimate')
@@ -195,24 +195,15 @@ for i = 1:length(lhs)
 
     %% Estimation
     % From LeSage, James P. "Applied Econometrics using MATLAB"
-    if nargin == 3
-        if iscell(eqtags)
-            tagv = eqtags{i};
-        else
-            tagv = eqtags;
-        end
-    else
-        tagv = ['eq_line_no_' num2str(lineno{i})];
-    end
     [nobs, nvars] = size(X);
-    oo_.ols.(tagv).dof = nobs - nvars;
+    oo_.ols.(tags{i}).dof = nobs - nvars;
 
     % Estimated Parameters
     [q, r] = qr(X, 0);
     xpxi = (r'*r)\eye(nvars);
-    oo_.ols.(tagv).beta = r\(q'*Y.data);
+    oo_.ols.(tags{i}).beta = r\(q'*Y.data);
     for j = 1:length(pnames)
-        M_.params(strcmp(M_param_names_trim, pnames{j})) = oo_.ols.(tagv).beta(j);
+        M_.params(strcmp(M_param_names_trim, pnames{j})) = oo_.ols.(tags{i}).beta(j);
     end
 
     % Yhat
@@ -224,59 +215,60 @@ for i = 1:length(lhs)
             yhatname = fitted_names_dict{idx, 2};
         end
     end
-    oo_.ols.(tagv).Yhat = dseries(X*oo_.ols.(tagv).beta, fp, yhatname);
+    oo_.ols.(tags{i}).Yhat = dseries(X*oo_.ols.(tags{i}).beta, fp, yhatname);
 
     % Residuals
-    oo_.ols.(tagv).resid = Y - oo_.ols.(tagv).Yhat;
+    oo_.ols.(tags{i}).resid = Y - oo_.ols.(tags{i}).Yhat;
 
     % Correct Yhat reported back to user for given
     for j = 1:lhssub.vobs
-        oo_.ols.(tagv).Yhat = oo_.ols.(tagv).Yhat + lhssub{j}(fp:lp);
+        oo_.ols.(tags{i}).Yhat = oo_.ols.(tags{i}).Yhat + lhssub{j}(fp:lp);
     end
-    ds = [ds oo_.ols.(tagv).Yhat];
+    ds = [ds oo_.ols.(tags{i}).Yhat];
 
     %% Calculate statistics
     % Estimate for sigma^2
-    SS_res = oo_.ols.(tagv).resid.data'*oo_.ols.(tagv).resid.data;
-    oo_.ols.(tagv).s2 = SS_res/oo_.ols.(tagv).dof;
+    SS_res = oo_.ols.(tags{i}).resid.data'*oo_.ols.(tags{i}).resid.data;
+    oo_.ols.(tags{i}).s2 = SS_res/oo_.ols.(tags{i}).dof;
 
     % R^2
     ym = Y.data - mean(Y);
     SS_tot = ym'*ym;
-    oo_.ols.(tagv).R2 = 1 - SS_res/SS_tot;
+    oo_.ols.(tags{i}).R2 = 1 - SS_res/SS_tot;
 
     % Adjusted R^2
-    oo_.ols.(tagv).adjR2 = oo_.ols.(tagv).R2 - (1 - oo_.ols.(tagv).R2)*nvars/(oo_.ols.(tagv).dof-1);
+    oo_.ols.(tags{i}).adjR2 = oo_.ols.(tags{i}).R2 - (1 - oo_.ols.(tags{i}).R2)*nvars/(oo_.ols.(tags{i}).dof-1);
 
     % Durbin-Watson
-    ediff = oo_.ols.(tagv).resid.data(2:nobs) - oo_.ols.(tagv).resid.data(1:nobs-1);
-    oo_.ols.(tagv).dw = (ediff'*ediff)/SS_res;
+    ediff = oo_.ols.(tags{i}).resid.data(2:nobs) - oo_.ols.(tags{i}).resid.data(1:nobs-1);
+    oo_.ols.(tags{i}).dw = (ediff'*ediff)/SS_res;
 
     % Standard Error
-    oo_.ols.(tagv).stderr = sqrt(oo_.ols.(tagv).s2*diag(xpxi));
+    oo_.ols.(tags{i}).stderr = sqrt(oo_.ols.(tags{i}).s2*diag(xpxi));
 
     % T-Stat
-    oo_.ols.(tagv).tstat = oo_.ols.(tagv).beta./oo_.ols.(tagv).stderr;
+    oo_.ols.(tags{i}).tstat = oo_.ols.(tags{i}).beta./oo_.ols.(tags{i}).stderr;
 
     %% Print Output
     if ~options_.noprint
-        title = sprintf('OLS Estimation of equation  `%s`', tagv);
         if nargin == 3
-            title = [title sprintf(' [%s = %s]', 'name', tagv)];
+            title = ['OLS Estimation of equation ''' tags{i} ''' [name = ''' tags{i} ''']'];
+        else
+            title = ['OLS Estimation of equation ''' tags{i} ''''];
         end
 
         preamble = {sprintf('Dependent Variable: %s', lhs{i}), ...
             sprintf('No. Independent Variables: %d', nvars), ...
             sprintf('Observations: %d from %s to %s\n', nobs, fp.char, lp.char)};
 
-        afterward = {sprintf('R^2: %f', oo_.ols.(tagv).R2), ...
-            sprintf('R^2 Adjusted: %f', oo_.ols.(tagv).adjR2), ...
-            sprintf('s^2: %f', oo_.ols.(tagv).s2), ...
-            sprintf('Durbin-Watson: %f', oo_.ols.(tagv).dw)};
+        afterward = {sprintf('R^2: %f', oo_.ols.(tags{i}).R2), ...
+            sprintf('R^2 Adjusted: %f', oo_.ols.(tags{i}).adjR2), ...
+            sprintf('s^2: %f', oo_.ols.(tags{i}).s2), ...
+            sprintf('Durbin-Watson: %f', oo_.ols.(tags{i}).dw)};
 
         dyn_table(title, preamble, afterward, vnames, ...
             {'Coefficients','t-statistic','Std. Error'}, 4, ...
-            [oo_.ols.(tagv).beta oo_.ols.(tagv).tstat oo_.ols.(tagv).stderr]);
+            [oo_.ols.(tags{i}).beta oo_.ols.(tags{i}).tstat oo_.ols.(tags{i}).stderr]);
     end
 end
 end

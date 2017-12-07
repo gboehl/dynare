@@ -1,4 +1,4 @@
-function [lhs, rhs, linenum, sample] = getEquationsByTags(jsonmodel, varargin)
+function [lhs, rhs, linenum, sample, tagvalue] = getEquationsByTags(jsonmodel, varargin)
 %function [lhs, rhs, linenum, sample] = getEquationByTag(jsonmodel, varargin)
 % Return the lhs, rhs of an equation and the line it was defined
 % on given its tag
@@ -13,6 +13,7 @@ function [lhs, rhs, linenum, sample] = getEquationsByTags(jsonmodel, varargin)
 %   rhs             [cellstring array]     right hand side of eq
 %   linenum         [cellstring array]     eq line in .mod file
 %   sample          [cell array of dates]  sample range
+%   tagvalue        [cellstring array]     tags associated with equations
 %
 % SPECIAL REQUIREMENTS
 %   none
@@ -41,14 +42,24 @@ if nargin == 1
     rhs = cell(1, length(jsonmodel));
     linenum = cell(1, length(jsonmodel));
     sample = cell(1, length(jsonmodel));
+    tagvalue = cell(1, length(jsonmodel));
     for i=1:length(jsonmodel)
         lhs{i} = jsonmodel{i}.lhs;
         rhs{i} = jsonmodel{i}.rhs;
         linenum{i} = jsonmodel{i}.line;
         if isfield(jsonmodel{i}, 'tags') && ...
-                isfield(jsonmodel{i}.tags, 'sample')
-            tmp = strsplit(jsonmodel{i}.tags.sample, ':');
-            sample{i} = dates(tmp{1}):dates(tmp{2});
+                isfield(jsonmodel{i}.tags, 'name')
+            tagvalue{i} = jsonmodel{i}.tags.('name');
+        else
+            tagvalue{i} = ['eq_line_no_' num2str(linenum{i})];
+        end
+        if isfield(jsonmodel{i}, 'tags')
+            if isfield(jsonmodel{i}.tags, 'sample')
+                tmp = strsplit(jsonmodel{i}.tags.sample, ':');
+                sample{i} = dates(tmp{1}):dates(tmp{2});
+            end
+        else
+            tagvalue{i} = ['eq_line_no_' num2str(linenum{i})];
         end
     end
     return
