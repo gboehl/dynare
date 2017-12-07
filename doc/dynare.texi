@@ -10767,7 +10767,7 @@ and to abort. The argument must evaluate to a string.
 @deffnx {Macro directive} @@#echomacrovars(save) @var{MACRO_EXPRESSION}
 Asks the preprocessor to display the value of all macro variables up until this
 point. If the @code{save} option is passed, the values of the macro variables
-are saved to @code{options_.macrovars}.
+are saved to @code{options_.macrovars_line_<<line_number>>}.
 @end deffn
 
 @node Typical usages
