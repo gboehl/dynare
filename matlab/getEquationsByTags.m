@@ -79,9 +79,9 @@ lhs = cell(1, length(tagvalue));
 rhs = cell(1, length(tagvalue));
 linenum = cell(1, length(tagvalue));
 sample = cell(1, length(tagvalue));
-
-for i=1:length(jsonmodel)
-    for j = 1:length(tagvalue)
+idx2rm = [];
+for j = 1:length(tagvalue)
+    for i=1:length(jsonmodel)
         if isfield(jsonmodel{i}, 'tags') && ...
                 isfield(jsonmodel{i}.tags, tagname) && ...
                 strcmp(jsonmodel{i}.tags.(tagname), tagvalue{j})
@@ -98,5 +98,16 @@ for i=1:length(jsonmodel)
             break
         end
     end
+    if isempty(rhs{j})
+        warning(['getEquationsByTags: No equation tag found by the name of ''' tagvalue{j} ''''])
+        idx2rm = [idx2rm j];
+    end
+end
+if ~isempty(idx2rm)
+    lhs(:,idx2rm) = [];
+    rhs(:,idx2rm) = [];
+    linenum(:,idx2rm) = [];
+    sample(:,idx2rm) = [];
+    tagvalue(:,idx2rm) = [];
 end
 end
