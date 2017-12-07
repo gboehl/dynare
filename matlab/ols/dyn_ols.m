@@ -98,7 +98,12 @@ for i = 1:length(lhs)
             ];
         [startidx, endidx] = regexp(rhs{i}, pregex, 'start', 'end');
         assert(length(startidx) == 1);
-        if rhs{i}(startidx) == '*'
+        if rhs{i}(startidx) == '*' && rhs{i}(endidx) == '*'
+            vnamesl = getStrMoveLeft(rhs{i}(1:startidx-1));
+            vnamesr = getStrMoveRight(rhs{i}(endidx+1:end));
+            vnames{j} = [vnamesl '*' vnamesr];
+            splitstrings{j} = [vnamesl '*' pnames{j} '*' vnamesr];
+        elseif rhs{i}(startidx) == '*'
             vnames{j} = getStrMoveLeft(rhs{i}(1:startidx-1));
             splitstrings{j} = [vnames{j} '*' pnames{j}];
         elseif rhs{i}(endidx) == '*'
