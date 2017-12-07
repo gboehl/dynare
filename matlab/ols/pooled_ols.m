@@ -132,7 +132,10 @@ for i = 1:length(lhs)
             ];
         [startidx, endidx] = regexp(rhs{i}, pregex, 'start', 'end');
         assert(length(startidx) == 1);
-        if rhs{i}(startidx) == '*'
+        if rhs{i}(startidx) == '*' && rhs{i}(endidx) == '*'
+            vnames{j} = [getStrMoveLeft(rhs{i}(1:startidx-1)) '*' ...
+                getStrMoveRight(rhs{i}(endidx+1:end))];
+        elseif rhs{i}(startidx) == '*'
             vnames{j} = getStrMoveLeft(rhs{i}(1:startidx-1));
         elseif rhs{i}(endidx) == '*'
             vnames{j} = getStrMoveRight(rhs{i}(endidx+1:end));
