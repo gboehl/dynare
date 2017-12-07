@@ -44,7 +44,11 @@ if isempty(closedidxs) ...
     if isempty(mathidxs)
         retval = str;
     else
-        retval = str(max(mathidxs)+1:end);
+        if str(max(mathidxs)) == '-'
+            retval = str(max(mathidxs):end);
+        else
+            retval = str(max(mathidxs)+1:end);
+        end
     end
 else
     closedidxs = [(length(closedidxs):-1:1)' closedidxs'];
@@ -64,5 +68,8 @@ else
                 str(openidxs(openparenidx, 2) - 1) ...
                 retval];
         end
+    end
+    if strfind(str, ['-' retval])
+        retval = ['-' retval];
     end
 end
