@@ -175,7 +175,7 @@ for i = 1:length(lhs)
 
     lhssub = getRhsToSubFromLhs(ds, rhs{i}, regex, [splitstrings; pnames]);
     
-    residuals = intersect(rhs_, cellstr(M_.exo_names));
+    residuals = intersect(rhs_, M_exo_names_trim);
     justvnames = regexprep(vnames, '\(-\d\)|log|exp|log10|[\(\)]', '');
     justvnames = regexp(justvnames, '[-+]', 'split');
     justvnames = [justvnames{:}];
