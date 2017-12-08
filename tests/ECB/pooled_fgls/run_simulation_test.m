@@ -21,9 +21,9 @@ for i=1:NSIMS
     simdata = simdata(simdata.dates(5001:6000));
     names=regexp(simdata.name, 'res\w*');
     idxs = [];
-    for i=1:length(names)
-        if isempty(names{i})
-            idxs = [idxs i];
+    for j=1:length(names)
+        if isempty(names{j})
+            idxs = [idxs j];
         end
     end
     simdata = simdata{idxs};
