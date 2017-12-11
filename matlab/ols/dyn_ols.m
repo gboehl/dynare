@@ -144,6 +144,9 @@ for i = 1:length(lhs)
     end
 
     lhssub = getRhsToSubFromLhs(ds, rhs{i}, regex, [splitstrings; pnames]);
+    residuals = setdiff(intersect(rhs_, M_exo_trim), ds.name);
+    assert(~isempty(residuals), ['No residuals in equation ' num2str(i)]);
+    assert(length(residuals) == 1, ['More than one residual in equation ' num2str(i)]);
 
     Y = eval(regexprep(lhs{i}, regex, 'ds.$&'));
     for j = 1:lhssub.vobs

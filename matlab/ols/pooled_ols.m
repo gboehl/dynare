@@ -174,20 +174,10 @@ for i = 1:length(lhs)
     end
 
     lhssub = getRhsToSubFromLhs(ds, rhs{i}, regex, [splitstrings; pnames]);
-    
-    residuals = intersect(rhs_, M_exo_names_trim);
-    justvnames = regexprep(vnames, '\(-\d\)|log|exp|log10|[\(\)]', '');
-    justvnames = regexp(justvnames, '[-+]', 'split');
-    justvnames = [justvnames{:}];
-    for j = 1:length(residuals)
-        if any(strcmp(residuals{j}, justvnames))
-            residuals{j} = [];
-        end
-    end
-    idx = ~cellfun(@isempty, residuals);
-    assert(~isempty(idx), ['No residuals in equation ' num2str(i)]);
-    assert(sum(idx) == 1, ['More than one residual in equation ' num2str(i)]);
-    residnames{i} = residuals{idx};
+
+    residnames{i} = setdiff(intersect(rhs_, M_exo_names_trim), ds.name);
+    assert(~isempty(residnames{i}), ['No residuals in equation ' num2str(i)]);
+    assert(length(residnames{i}) == 1, ['More than one residual in equation ' num2str(i)]);
 
     params{i} = pnames;
     vars{i} = [vnames{:}];
@@ -283,12 +273,12 @@ end
 residuals = Y - X * oo_.(save_structure_name).beta;
 for i = 1:length(lhs)
     if i == length(lhs)
-        oo_.(save_structure_name).resid.(residnames{i}) = residuals(startidxs(i):end);
+        oo_.(save_structure_name).resid.(residnames{i}{:}) = residuals(startidxs(i):end);
     else
-        oo_.(save_structure_name).resid.(residnames{i}) = residuals(startidxs(i):startidxs(i+1)-1);
+        oo_.(save_structure_name).resid.(residnames{i}{:}) = residuals(startidxs(i):startidxs(i+1)-1);
     end
-    oo_.(save_structure_name).varcovar.(['eq' num2str(i)]) = oo_.(save_structure_name).resid.(residnames{i})*oo_.(save_structure_name).resid.(residnames{i})';
-    idx = find(strcmp(residnames{i}, M_exo_names_trim));
-    M_.Sigma_e(idx, idx) = var(oo_.(save_structure_name).resid.(residnames{i}));
+    oo_.(save_structure_name).varcovar.(['eq' num2str(i)]) = oo_.(save_structure_name).resid.(residnames{i}{:})*oo_.(save_structure_name).resid.(residnames{i}{:})';
+    idx = find(strcmp(residnames{i}{:}, M_exo_names_trim));
+    M_.Sigma_e(idx, idx) = var(oo_.(save_structure_name).resid.(residnames{i}{:}));
 end
 end
