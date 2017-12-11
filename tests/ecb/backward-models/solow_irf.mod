@@ -49,7 +49,17 @@ end;
 ds = dseries(repmat([1, .5, 1, .5, 0, 1], 10, 1), 1990Q1, cellstr(M_.endo_names), cellstr(M_.endo_names_tex));
 
 // Alternatively we could build this object with a stochastic simulation of the model.
-//oo_ = simul_backward_model(rand(6,1), 10, options_, M_, oo_);
+/*
+ds = simul_backward_model(dseries([1, .5, 1, .5, 0, 1], 1990Q1, cellstr(M_.endo_names)), 10);
+names=regexp(ds.name, 'e_\w*');
+idxs = [];
+for j=1:length(names)
+    if isempty(names{j})
+        idxs = [idxs j];
+    end
+end
+ds = ds{idxs};
+*/
 
 // Set the initial condition for the IRFs using observation 1991Q1 in ds.
 set_historical_values ds 1991Q1;
@@ -61,7 +71,7 @@ listofshocks = {'e_x', 'e_n'};
 listofvariables = {'Efficiency', 'Population', 'Output'};
 
 // Compute the IRFs
-irfs = backward_model_irf(1991Q1, listofshocks, listofvariables, 50);  // 10 is the number of periods (default value is 40).
+irfs = backward_model_irf(ds, dseries(), listofshocks, listofvariables, 50);  // 10 is the number of periods (default value is 40).
 
 // Plot an IRF (shock on technology)
 figure(1)
@@ -91,7 +101,8 @@ listofshocks = {'e_x', 'e_n'};
 listofvariables = {'Efficiency', 'Population', 'Output'};
 
 // Compute the IRFs
-irfs = backward_model_irf(1991Q1, listofshocks, listofvariables, 50);  // 10 is the number of periods (default value is 40).
+ds = dseries(repmat(M_.endo_histval', 10, 1), 1990Q1, cellstr(M_.endo_names), cellstr(M_.endo_names_tex));
+irfs = backward_model_irf(ds, dseries(), listofshocks, listofvariables, 50);  // 10 is the number of periods (default value is 40).
 
 // Plot an IRF (shock on technology)
 figure(2)
