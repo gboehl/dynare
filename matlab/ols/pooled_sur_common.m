@@ -1,4 +1,4 @@
-function [X, Y, startdates, enddates, startidxs, residnames, pbeta, vars, surpidxs] = pooled_sur_common(ds, lhs, rhs, lineno, M_exo_names_trim, M_param_names_trim);
+function [X, Y, startdates, enddates, startidxs, residnames, pbeta, vars, surpidxs, surconstrainedparams] = pooled_sur_common(ds, lhs, rhs, lineno, M_exo_names_trim, M_param_names_trim);
 
 %
 % Code common to sur.m and pooled_ols.m
@@ -45,6 +45,7 @@ enddates = cell(length(lhs), 1);
 residnames = cell(length(lhs), 1);
 surpidxs = zeros(M_.param_nbr, 1); 
 surpidx = 0; 
+surconstrainedparams = [];
 for i = 1:length(lhs)
     rhs_ = strsplit(rhs{i}, {'+','-','*','/','^','log(','ln(','log10(','exp(','(',')','diff('});
     rhs_(cellfun(@(x) all(isstrprop(x, 'digit')), rhs_)) = [];
@@ -61,17 +62,20 @@ for i = 1:length(lhs)
     vnames = cell(1, length(pnames));
     splitstrings = cell(length(pnames), 1);
     xjdata = dseries;
+    dropvname = true(1,length(pnames));
     for j = 1:length(pnames)
         createdvar = false;
         idx = find(strcmp(pbeta, pnames{j}));
         if isempty(idx)
             pbeta = [pbeta; pnames{j}];
             pidxs(j) = length(pbeta);
+            surpidx = surpidx + 1;
+            surpidxs(surpidx, 1) = find(strcmp(pnames{j}, M_param_names_trim));
         else
             pidxs(j) = idx;
+            surconstrainedparams = [surconstrainedparams idx];
+            dropvname(j) = false;
         end
-        surpidx = surpidx + 1;
-        surpidxs(surpidx, 1) = find(strcmp(pnames{j}, M_param_names_trim));
 
         pregex = [...
             mathops pnames{j} mathops ...
@@ -119,6 +123,9 @@ for i = 1:length(lhs)
         xjdatatmp.rename_(num2str(j));
         xjdata = [xjdata xjdatatmp];
     end
+    if ~all(dropvname)
+        vnames = vnames(dropvname);
+    end
 
     lhssub = getRhsToSubFromLhs(ds, rhs{i}, regex, [splitstrings; pnames]);
 
@@ -154,4 +161,5 @@ for i = 1:length(lhs)
         X(startidxs(i):startidxs(i)+lp-fp, pidxs) = xjdata(fp:lp).data;
     end
 end
+surpidxs = surpidxs(1:surpidx);
 end

@@ -87,7 +87,7 @@ end
 %% Find parameters and variable names in every equation & Setup estimation matrices
 M_exo_names_trim = cellstr(M_.exo_names);
 M_param_names_trim = cellstr(M_.param_names);
-[X, Y, startdates, enddates, startidxs, residnames, pbeta, vars, pidxs] = ...
+[X, Y, startdates, enddates, startidxs, residnames, pbeta, vars, surpidxs, surconstrainedparams] = ...
     pooled_sur_common(ds, lhs, rhs, lineno, M_exo_names_trim, M_param_names_trim);
 
 if overlapping_dates

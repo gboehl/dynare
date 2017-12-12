@@ -46,7 +46,7 @@ jsonmodel = jsonmodel.model;
 %% Find parameters and variable names in equations and setup estimation matrices
 M_exo_names_trim = cellstr(M_.exo_names);
 M_param_names_trim = cellstr(M_.param_names);
-[X, Y, startdates, enddates, startidxs, residnames, pbeta, vars, pidxs] = ...
+[X, Y, startdates, enddates, startidxs, residnames, pbeta, vars, pidxs, surconstrainedparams] = ...
     pooled_sur_common(ds, lhs, rhs, lineno, M_exo_names_trim, M_param_names_trim);
 
 if size(X, 2) ~= M_.param_nbr
@@ -82,7 +82,7 @@ X = newX;
 % Estimated Parameters
 oo_.sur.dof = length(maxfp:minlp);
 [q, r] = qr(X, 0);
-xpxi = (r'*r)\eye(M_.param_nbr);
+xpxi = (r'*r)\eye(size(X, 2));
 resid = Y - X * (r\(q'*Y));
 resid = reshape(resid, oo_.sur.dof, length(lhs));
 
@@ -144,6 +144,12 @@ if ~options_.noprint
         sprintf('R^2 Adjusted: %f', oo_.sur.adjR2), ...
         sprintf('s^2: %f', oo_.sur.s2), ...
         sprintf('Durbin-Watson: %f', oo_.sur.dw)};
+
+    if ~isempty(surconstrainedparams)
+        afterward = [afterward, ...
+            sprintf('Constrained parameters: %s', ...
+            strjoin(pbeta(surconstrainedparams), ', '))];
+    end
 
     dyn_table('SUR Estimation', preamble, afterward, [vars{:}], ...
         {'Coefficients','t-statistic','Std. Error'}, 4, ...
