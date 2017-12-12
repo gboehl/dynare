@@ -9,7 +9,7 @@ function varargout = sur(ds)
 %   none
 %
 % SPECIAL REQUIREMENTS
-%   dynare must be run with the option: json=parse
+%   dynare must be run with the option: json=compute
 
 % Copyright (C) 2017 Dynare Team
 %
@@ -36,7 +36,7 @@ assert(~isempty(ds) && isdseries(ds), 'The first argument must be a dseries');
 %% Read JSON
 jsonfile = [M_.fname '_original.json'];
 if exist(jsonfile, 'file') ~= 2
-    error('Could not find %s! Please use the json=parse option (See the Dynare invocation section in the reference manual).', jsonfile);
+    error('Could not find %s! Please use the json=compute option (See the Dynare invocation section in the reference manual).', jsonfile);
 end
 
 jsonmodel = loadjson(jsonfile);
@@ -45,103 +45,14 @@ jsonmodel = jsonmodel.model;
 
 %% Find parameters and variable names in equations and setup estimation matrices
 M_exo_names_trim = cellstr(M_.exo_names);
-M_endo_exo_names_trim = [cellstr(M_.endo_names); M_exo_names_trim];
 M_param_names_trim = cellstr(M_.param_names);
-regex = strjoin(M_endo_exo_names_trim(:,1), '|');
-mathops = '[\+\*\^\-\/]';
-params = cell(length(rhs),1);
-vars = cell(length(rhs),1);
-Y = [];
-X = [];
-startidxs = zeros(length(lhs), 1);
-startdates = cell(length(lhs), 1);
-enddates = cell(length(lhs), 1);
-residnames = cell(length(lhs), 1);
-pidxs = zeros(M_.param_nbr, 1);
-pidx = 0;
-vnamesall = {};
-for i = 1:length(lhs)
-    rhs_ = strsplit(rhs{i}, {'+','-','*','/','^','log(','ln(','log10(','exp(','(',')','diff('});
-    rhs_(cellfun(@(x) all(isstrprop(x, 'digit')), rhs_)) = [];
-    vnames = setdiff(rhs_, M_param_names_trim);
-    if ~isempty(regexp(rhs{i}, ...
-            ['(' strjoin(vnames, '\\(\\d+\\)|') '\\(\\d+\\))'], ...
-            'once'))
-        error(['sur1: you cannot have leads in equation on line ' ...
-            lineno{i} ': ' lhs{i} ' = ' rhs{i}]);
-    end
+[X, Y, startdates, enddates, startidxs, residnames, pbeta, vars, pidxs] = ...
+    pooled_sur_common(ds, lhs, rhs, lineno, M_exo_names_trim, M_param_names_trim);
 
-    % Find parameters and associated variables
-    pnames = intersect(rhs_, M_param_names_trim);
-    vnames = cell(1, length(pnames));
-    xjdata = dseries;
-    for j = 1:length(pnames)
-        pidx = pidx + 1;
-        pidxs(pidx, 1) = find(strcmp(pnames{j}, M_param_names_trim));
-        createdvar = false;
-        pregex = [...
-            mathops pnames{j} mathops ...
-            '|^' pnames{j} mathops ...
-            '|' mathops pnames{j} '$' ...
-            ];
-        [startidx, endidx] = regexp(rhs{i}, pregex, 'start', 'end');
-        assert(length(startidx) == 1);
-        if rhs{i}(startidx) == '*'
-            vnames{j} = getStrMoveLeft(rhs{i}(1:startidx-1));
-        elseif rhs{i}(endidx) == '*'
-            vnames{j} = getStrMoveRight(rhs{i}(endidx+1:end));
-        elseif rhs{i}(startidx) == '+' ...
-                || rhs{i}(startidx) == '-' ...
-                || rhs{i}(endidx) == '+' ...
-                || rhs{i}(endidx) == '-'
-            % intercept
-            createdvar = true;
-            if any(strcmp(M_endo_exo_names_trim, 'intercept'))
-                [~, vnames{j}] = fileparts(tempname);
-                vnames{j} = ['intercept_' vnames{j}];
-                assert(~any(strcmp(M_endo_exo_names_trim, vnames{j})));
-            else
-                vnames{j} = 'intercept';
-            end
-        else
-            error('sur1: Shouldn''t arrive here');
-        end
-        if createdvar
-            xjdatatmp = dseries(ones(ds.nobs, 1), ds.firstdate, vnames{j});
-        else
-            xjdatatmp = eval(regexprep(vnames{j}, regex, 'ds.$&'));
-            xjdatatmp.rename_(vnames{j});
-        end
-        xjdatatmp.rename_(num2str(j));
-        xjdata = [xjdata xjdatatmp];
-    end
-
-    residuals = intersect(rhs_, cellstr(M_.exo_names));
-    for j = 1:length(residuals)
-        if any(strcmp(residuals{j}, vnames))
-            residuals{j} = [];
-        end
-    end
-    idx = ~cellfun(@isempty, residuals);
-    assert(sum(idx) == 1, ['More than one residual in equation ' num2str(i)]);
-    residnames{i} = residuals{idx};
-
-    params{i} = pnames;
-    vars{i} = vnames;
-
-    ydata = eval(regexprep(lhs{i}, regex, 'ds.$&'));
-
-    fp = max(ydata.firstobservedperiod, xjdata.firstobservedperiod);
-    lp = min(ydata.lastobservedperiod, xjdata.lastobservedperiod);
-
-    startidxs(i) = length(Y) + 1;
-    startdates{i} = fp;
-    enddates{i} = lp;
-    Y(startidxs(i):startidxs(i)+lp-fp, 1) = ydata(fp:lp).data;
-    X(startidxs(i):startidxs(i)+lp-fp, end+1:end+size(xjdata(fp:lp).data,2)) = xjdata(fp:lp).data;
+if size(X, 2) ~= M_.param_nbr
+    warning(['Not all parameters were used in model: ' ...
+        sprintf('%s', strjoin(setdiff(M_param_names_trim, pbeta), ', '))]);
 end
-
-assert(size(X, 2) == M_.param_nbr, 'Not all parameters were used in model');
 
 %% Force equations to have the same sample range
 maxfp = max([startdates{:}]);

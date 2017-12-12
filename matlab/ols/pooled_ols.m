@@ -19,7 +19,7 @@ function pooled_ols(ds, param_common, param_regex, overlapping_dates, save_struc
 %   none
 %
 % SPECIAL REQUIREMENTS
-%   dynare must be run with the option: json=parse
+%   dynare must be run with the option: json=compute
 
 % Copyright (C) 2017 Dynare Team
 %
@@ -40,7 +40,7 @@ function pooled_ols(ds, param_common, param_regex, overlapping_dates, save_struc
 
 global M_ oo_
 
-% Check input arguments
+%% Check input arguments
 assert(~isempty(ds) && isdseries(ds), 'The first argument must be a dseries');
 
 if isempty(param_common) && isempty(param_regex)
@@ -66,7 +66,7 @@ end
 %% Read JSON
 jsonfile = [M_.fname '_original.json'];
 if exist(jsonfile, 'file') ~= 2
-    error('Could not find %s! Please use the json=parse option (See the Dynare invocation section in the reference manual).', jsonfile);
+    error('Could not find %s! Please use the json=compute option (See the Dynare invocation section in the reference manual).', jsonfile);
 end
 
 jsonmodel = loadjson(jsonfile);
@@ -86,127 +86,9 @@ end
 
 %% Find parameters and variable names in every equation & Setup estimation matrices
 M_exo_names_trim = cellstr(M_.exo_names);
-M_endo_exo_names_trim = [cellstr(M_.endo_names); M_exo_names_trim];
 M_param_names_trim = cellstr(M_.param_names);
-regex = strjoin(M_endo_exo_names_trim(:,1), '|');
-mathops = '[\+\*\^\-\/]';
-params = cell(length(rhs),1);
-vars = cell(length(rhs),1);
-pbeta = {};
-Y = [];
-X = [];
-startidxs = zeros(length(lhs), 1);
-startdates = cell(length(lhs), 1);
-enddates = cell(length(lhs), 1);
-residnames = cell(length(lhs), 1);
-for i = 1:length(lhs)
-    rhs_ = strsplit(rhs{i}, {'+','-','*','/','^','log(','ln(','log10(','exp(','(',')','diff('});
-    rhs_(cellfun(@(x) all(isstrprop(x, 'digit')), rhs_)) = [];
-    vnames = setdiff(rhs_, M_param_names_trim);
-    if ~isempty(regexp(rhs{i}, ...
-            ['(' strjoin(vnames, '\\(\\d+\\)|') '\\(\\d+\\))'], ...
-            'once'))
-        error(['pooled_ols: you cannot have leads in equation on line ' ...
-            lineno{i} ': ' lhs{i} ' = ' rhs{i}]);
-    end
-
-    % Find parameters and associated variables
-    pnames = intersect(rhs_, M_param_names_trim);
-    pidxs = zeros(length(pnames), 1);
-    vnames = cell(1, length(pnames));
-    splitstrings = cell(length(pnames), 1);
-    xjdata = dseries;
-    for j = 1:length(pnames)
-        createdvar = false;
-        idx = find(strcmp(pbeta, pnames{j}));
-        if isempty(idx)
-            pbeta = [pbeta; pnames{j}];
-            pidxs(j) = length(pbeta);
-        else
-            pidxs(j) = idx;
-        end
-
-        pregex = [...
-            mathops pnames{j} mathops ...
-            '|^' pnames{j} mathops ...
-            '|' mathops pnames{j} '$' ...
-            ];
-        [startidx, endidx] = regexp(rhs{i}, pregex, 'start', 'end');
-        assert(length(startidx) == 1);
-        if rhs{i}(startidx) == '*' && rhs{i}(endidx) == '*'
-            vnames{j} = [getStrMoveLeft(rhs{i}(1:startidx-1)) '*' ...
-                getStrMoveRight(rhs{i}(endidx+1:end))];
-        elseif rhs{i}(startidx) == '*'
-            vnames{j} = getStrMoveLeft(rhs{i}(1:startidx-1));
-            splitstrings{j} = [vnames{j} '*' pnames{j}];
-        elseif rhs{i}(endidx) == '*'
-            vnames{j} = getStrMoveRight(rhs{i}(endidx+1:end));
-            splitstrings{j} = [pnames{j} '*' vnames{j}];
-            if rhs{i}(startidx) == '-'
-                vnames{j} = ['-' vnames{j}];
-                splitstrings{j} = ['-' splitstrings{j}];
-            end
-        elseif rhs{i}(startidx) == '+' ...
-                || rhs{i}(startidx) == '-' ...
-                || rhs{i}(endidx) == '+' ...
-                || rhs{i}(endidx) == '-'
-            % intercept
-            createdvar = true;
-            if any(strcmp(M_endo_exo_names_trim, 'intercept'))
-                [~, vnames{j}] = fileparts(tempname);
-                vnames{j} = ['intercept_' vnames{j}];
-                assert(~any(strcmp(M_endo_exo_names_trim, vnames{j})));
-            else
-                vnames{j} = 'intercept';
-            end
-            splitstrings{j} = vnames{j};
-        else
-            error('pooled_ols: Shouldn''t arrive here');
-        end
-        if createdvar
-            xjdatatmp = dseries(ones(ds.nobs, 1), ds.firstdate, vnames{j});
-        else
-            xjdatatmp = eval(regexprep(vnames{j}, regex, 'ds.$&'));
-            xjdatatmp.rename_(vnames{j});
-        end
-        xjdatatmp.rename_(num2str(j));
-        xjdata = [xjdata xjdatatmp];
-    end
-
-    lhssub = getRhsToSubFromLhs(ds, rhs{i}, regex, [splitstrings; pnames]);
-
-    residnames{i} = setdiff(intersect(rhs_, M_exo_names_trim), ds.name);
-    assert(~isempty(residnames{i}), ['No residuals in equation ' num2str(i)]);
-    assert(length(residnames{i}) == 1, ['More than one residual in equation ' num2str(i)]);
-
-    params{i} = pnames;
-    vars{i} = [vnames{:}];
-
-    ydata = eval(regexprep(lhs{i}, regex, 'ds.$&'));
-    for j = 1:lhssub.vobs
-        ydata = ydata - lhssub{j};
-    end
-
-    if isempty(xjdata)
-        % AR(1) case
-        fp = ydata.firstobservedperiod;
-        lp = ydata.lastobservedperiod;
-        startidxs(i) = length(Y) + 1;
-        startdates{i} = fp;
-        enddates{i} = lp;
-        Y(startidxs(i):startidxs(i)+lp-fp, 1) = ydata(fp:lp).data;
-        X(startidxs(i):startidxs(i)+lp-fp, :) = zeros(ydata(fp:lp).nobs, columns(X));
-    else
-        fp = max(ydata.firstobservedperiod, xjdata.firstobservedperiod);
-        lp = min(ydata.lastobservedperiod, xjdata.lastobservedperiod);
-        
-        startidxs(i) = length(Y) + 1;
-        startdates{i} = fp;
-        enddates{i} = lp;
-        Y(startidxs(i):startidxs(i)+lp-fp, 1) = ydata(fp:lp).data;
-        X(startidxs(i):startidxs(i)+lp-fp, pidxs) = xjdata(fp:lp).data;
-    end
-end
+[X, Y, startdates, enddates, startidxs, residnames, pbeta, vars, pidxs] = ...
+    pooled_sur_common(ds, lhs, rhs, lineno, M_exo_names_trim, M_param_names_trim);
 
 if overlapping_dates
     maxfp = max([startdates{:}]);

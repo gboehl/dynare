@@ -20,7 +20,14 @@ for i=1:NSIMS
     M_.Sigma_e = Sigma_e; 
     simdata = simul_backward_model(dseries(firstobs, dates('1995Q1'), M_endo_names_trim), 10000);
     simdata = simdata(simdata.dates(5001:6000));
-    sur(simdata);
+    names=regexp(simdata.name, 'res\w*');
+    idxs = [];
+    for j=1:length(names)
+        if isempty(names{j})
+            idxs = [idxs j];
+        end
+    end
+    sur(simdata{idxs});
     BETA(i, :) = M_.params';
 end
 

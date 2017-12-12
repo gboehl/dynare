@@ -41,7 +41,7 @@ assert(isdseries(ds), 'dyn_ols: the first argument must be a dseries');
 
 jsonfile = [M_.fname '_original.json'];
 if exist(jsonfile, 'file') ~= 2
-    error('Could not find %s! Please use the json option (See the Dynare invocation section in the reference manual).', jsonfile);
+    error('Could not find %s! Please use the json=compute option (See the Dynare invocation section in the reference manual).', jsonfile);
 end
 
 %% Get Equation(s)
