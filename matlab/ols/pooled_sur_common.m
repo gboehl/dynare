@@ -1,13 +1,34 @@
-function [X, Y, startdates, enddates, startidxs, residnames, pbeta, vars, surpidxs, surconstrainedparams] = pooled_sur_common(ds, lhs, rhs, lineno, M_exo_names_trim, M_param_names_trim);
-
+function [X, Y, startdates, enddates, startidxs, residnames, pbeta, vars, surpidxs, surconstrainedparams] = pooled_sur_common(ds, lhs, rhs, lineno, M_exo_names_trim, M_param_names_trim)
+%function [X, Y, startdates, enddates, startidxs, residnames, pbeta, vars, surpidxs, surconstrainedparams] = pooled_sur_common(ds, lhs, rhs, lineno, M_exo_names_trim, M_param_names_trim)
 %
 % Code common to sur.m and pooled_ols.m
 %
 % INPUTS
-%   none
+%   ds                   [dseries]     dataset
+%   lhs                  [cellstr]     LHS of equations
+%   rhs                  [cellstr]     RHS of equations
+%   lineno               [cellstr]     line number of equations
+%   M_exo_names_trim     [cellarr]     cellstr(M_.exo_names)
+%   M_param_names_trim   [cellarr]     cellstr(M_.param_names)
 %
 % OUTPUTS
-%   none
+%   X                    [matrix]      regressors
+%   Y                    [vector]      dependent variables
+%   startdates           [cellarr]     first observed period for each
+%                                      equation
+%   enddates             [cellarr]     last observed period for each
+%                                      equation
+%   startidxs            [vector]      rows corresponding to each
+%                                      equation's observations
+%   residnames           [cellarr]     name of residual in each equation
+%   pbeta                [cellarr]     parameter names corresponding to
+%                                      columns of X
+%   vars                 [cellarr]     variable names corresponding to
+%                                      parameters
+%   surpidxs             [vector]      indexes in M_.params associated with
+%                                      columns of X
+%   surconstrainedparams [vector]      indexes of parameters that were
+%                                      constrained
 %
 % SPECIAL REQUIREMENTS
 %   none
