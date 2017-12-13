@@ -149,7 +149,11 @@ for i = 1:length(lhs)
         startdates{i} = fp;
         enddates{i} = lp;
         Y(startidxs(i):startidxs(i)+lp-fp, 1) = ydata(fp:lp).data;
-        X(startidxs(i):startidxs(i)+lp-fp, :) = zeros(ydata(fp:lp).nobs, columns(X));
+        if columns(X) == 0
+            X(startidxs(i):startidxs(i)+lp-fp, :) = zeros(ydata(fp:lp).nobs, 1);
+        else
+            X(startidxs(i):startidxs(i)+lp-fp, :) = zeros(ydata(fp:lp).nobs, columns(X));
+        end
     else
         fp = max(ydata.firstobservedperiod, xjdata.firstobservedperiod);
         lp = min(ydata.lastobservedperiod, xjdata.lastobservedperiod);
