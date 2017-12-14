@@ -128,9 +128,24 @@ eval(str)
 % Replace variables with ds.variablename
 for i = 1:length(vnames)
     if ismember(vnames{i}, ds1.name) && ismember(vnames{i}, ds0.name)
-        regularexpression = ['(([\s\+\-\*/\\^\(])|^)(' vnames{i} ')(([\s\)\+\-\*\/\^])|$)'];
-        newstring = ['$1ds.' vnames{i} '$3'];
-        rhs = regexprep(rhs, regularexpression, newstring);
+        % Match all words with vnames{i}
+        [b, e] = regexp(rhs, sprintf('\\w*%s\\w*', vnames{i}));
+        % Filter out non exact matches (words longer than vnames{i})
+        rid = find(~(e-b>length(vnames{i})));
+        if ~isempty(rid)
+            b = b(rid);
+            e = e(rid);
+        end
+        % Substitute vnames{i} exact matches by ds.vnames{i}
+        for j=length(rid):-1:1
+            if b(j)>1 && e(j)<length(rhs)
+                rhs = sprintf('%sds.%s%s', rhs(1:b(j)-1), vnames{i}, rhs(e(j)+1:end));
+            elseif isequal(b(j), 1)
+                rhs = sprintf('ds.%s%s', vnames{i}, rhs(e(j)+1:end));
+            elseif isequal(e(j), length(rhs))
+                rhs = sprintf('%sds.%s', rhs(1:b(j)-1, vnames{i}));
+            end
+        end
     else
         if ismember(vnames{i}, ds1.name)
             error('Variable %s is not available in the second dseries (baseline paths)!', vnames{i})
