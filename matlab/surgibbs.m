@@ -1,5 +1,5 @@
-function surgibbs(ds, A, ndraws, varargin)
-%function surgibbs(ds, A, ndraws, varargin)
+function surgibbs(ds, A, ndraws)
+%function surgibbs(ds, A, ndraws)
 % Implements Gibbs Samipling for SUR
 %
 % INPUTS
@@ -36,7 +36,7 @@ global M_ oo_
 assert(nargin == 3 || nargin == 5, 'Incorrect number of arguments passed to surgibbs');
 
 %% Estimation
-[nobs, nvars, pnamesall, beta, X, Y, m] = sur(ds, varargin{:});
+[nobs, nvars, pnamesall, beta, X, Y, m] = sur(ds);
 beta0 = beta;
 
 oo_.surgibbs.betadraws = zeros(ndraws, nvars);
