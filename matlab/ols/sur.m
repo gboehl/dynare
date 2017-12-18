@@ -87,7 +87,7 @@ resid = Y - X * (r\(q'*Y));
 resid = reshape(resid, oo_.sur.dof, length(lhs));
 
 M_.Sigma_e = resid'*resid/oo_.sur.dof;
-kLeye = kron(inv(M_.Sigma_e), eye(oo_.sur.dof));
+kLeye = kron(chol(inv(M_.Sigma_e)), eye(oo_.sur.dof));
 [q, r] = qr(kLeye*X, 0);
 oo_.sur.beta = r\(q'*kLeye*Y);
 M_.params(pidxs, 1) = oo_.sur.beta;
