@@ -103,7 +103,7 @@ st = dbstack(1);
 if strcmp(st(1).name, 'surgibbs')
     varargout{1} = oo_.sur.dof;
     varargout{2} = size(X, 2);
-    varargout{3} = M_.param_names(pidxs, :);
+    varargout{3} = cellstr(M_.param_names(pidxs, :));
     varargout{4} = oo_.sur.beta;
     varargout{5} = X;
     varargout{6} = Y;
