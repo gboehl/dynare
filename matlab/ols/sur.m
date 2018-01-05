@@ -11,7 +11,7 @@ function varargout = sur(ds)
 % SPECIAL REQUIREMENTS
 %   dynare must be run with the option: json=compute
 
-% Copyright (C) 2017 Dynare Team
+% Copyright (C) 2017-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -77,10 +77,10 @@ for i = 1:length(lhs)
 end
 Y = newY;
 X = newX;
+oo_.sur.dof = length(maxfp:minlp);
 
 %% Estimation
 % Estimated Parameters
-oo_.sur.dof = length(maxfp:minlp);
 [q, r] = qr(X, 0);
 xpxi = (r'*r)\eye(size(X, 2));
 resid = Y - X * (r\(q'*Y));
@@ -90,6 +90,20 @@ M_.Sigma_e = resid'*resid/oo_.sur.dof;
 kLeye = kron(chol(inv(M_.Sigma_e)), eye(oo_.sur.dof));
 [q, r] = qr(kLeye*X, 0);
 oo_.sur.beta = r\(q'*kLeye*Y);
+
+%% Return to surgibbs if called from there
+st = dbstack(1);
+if strcmp(st(1).name, 'surgibbs')
+    varargout{1} = oo_.sur.dof;
+    varargout{2} = size(X, 2);
+    varargout{3} = pidxs;
+    varargout{4} = oo_.sur.beta;
+    varargout{5} = X;
+    varargout{6} = Y;
+    varargout{7} = length(lhs);
+    return
+end
+
 M_.params(pidxs, 1) = oo_.sur.beta;
 
 % Yhat
@@ -97,19 +111,6 @@ oo_.sur.Yhat = X * oo_.sur.beta;
 
 % Residuals
 oo_.sur.resid = Y - oo_.sur.Yhat;
-
-%% Return to surgibbs if called from there
-st = dbstack(1);
-if strcmp(st(1).name, 'surgibbs')
-    varargout{1} = oo_.sur.dof;
-    varargout{2} = size(X, 2);
-    varargout{3} = cellstr(M_.param_names(pidxs, :));
-    varargout{4} = oo_.sur.beta;
-    varargout{5} = X;
-    varargout{6} = Y;
-    varargout{7} = length(lhs);
-    return
-end
 
 %% Calculate statistics
 % Estimate for sigma^2
