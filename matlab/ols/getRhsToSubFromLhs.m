@@ -15,7 +15,7 @@ function lhssub = getRhsToSubFromLhs(ds, rhs, regex, splits)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2017 Dynare Team
+% Copyright (C) 2017-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -62,7 +62,7 @@ for j = 1:length(rhs_)
                 lhssub.rename_(lhssub{lhssub.vobs}.name{:}, [minusstr str]);
             catch
                 if ~any(strcmp(M_exo_trim, str))
-                    error(['pooled_ols: problem evaluating ' minusstr str]);
+                    error(['getRhsToSubFromLhs: problem evaluating ' minusstr str]);
                 end
             end
             rhsj = rhsj(length(str)+1:end);
