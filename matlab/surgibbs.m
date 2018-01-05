@@ -35,7 +35,7 @@ function surgibbs(ds, A, ndraws, discarddraws)
 % Ando, Tomohiro and Zellner, Arnold. 2010. Hierarchical Bayesian Analysis of the
 % Seemingly Unrelated Regression and Simultaneous Equations Models Using a
 % Combination of Direct Monte Carlo and Importance Sampling Techniques.
-% Bayesian Analysis Volume 5, Number 1, pp. 65?96.
+% Bayesian Analysis Volume 5, Number 1, pp. 65-96.
 
 global M_ oo_
 
