@@ -13,7 +13,7 @@ function make_report_irfs(M, oo, ticks_every, showOutput)
 % SPECIAL REQUIREMENTS
 %   None
 
-% Copyright (C) 2015-2017 Dynare Team
+% Copyright (C) 2015-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -69,12 +69,11 @@ r = report('filename', [M.fname '_canned_irf_report.tex'], 'showOutput', showOut
 for i = 1:length(M.exo_names)
     newexo = 1;
     for j = 1:length(M.endo_names)
-        idx = ismember(fields,[strtrim(M.endo_names(j,:)) '_' ...
-                            strtrim(M.exo_names(i,:))]);
+        idx = ismember(fields, [M.endo_names{j} '_' M.exo_names{i}]);
         if (mod(n6 - 1, 6) == 0 && ~justAddedPage) || ...
                 (newexo && any(idx))
             r = r.addPage('title', {'Canned Irf Report'; ['shock ' ...
-                                strrep(strtrim(M.exo_names(i,:)),'_','\_')]});
+                                strrep(M.exo_names{i},'_','\_')]});
             r = r.addSection('cols', 2);
             n6 = 1;
             justAddedPage = 1;
@@ -88,7 +87,7 @@ for i = 1:length(M.exo_names)
                 calcxticks = true;
             end
             r = r.addGraph('data', dseries(oo.irfs.(fields{idx})'), ...
-                           'title', strrep(M.endo_names(j,:), '_', '\_'), ...
+                           'title', M.endo_names{j}, '_', '\_'), ...
                            'titleFormat', '\Huge', ...
                            'showGrid', false, ...
                            'yTickLabelZeroFill', false, ...
