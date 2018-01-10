@@ -33,8 +33,8 @@ plist = list_of_parameters_calibrated_as_NaN(M_);
 if ~isempty(plist)
     info=1;
     message = ['Some of the parameters have no value (' ];
-    for i=1:size(plist,1)
-        if i<size(plist,1)
+    for i=1:length(plist)
+        if i<length(plist)
             message = [message, plist{i} ', '];
         else
             message = [message, plist{i} ')'];

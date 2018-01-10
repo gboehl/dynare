@@ -574,11 +574,11 @@ if info(1)
         plist = list_of_parameters_calibrated_as_NaN(M);
         if ~isempty(plist)
             message = ['dynare_estimation_init:: Some of the parameters are NaN (' ];
-            for i=1:size(plist,1)
-                if i<size(plist,1)
-                    message = [message, deblank(plist(i,:)) ', '];
+            for i=1:length(plist)
+                if i<length(plist)
+                    message = [message, plist{i} ', '];
                 else
-                    message = [message, deblank(plist(i,:)) ')'];
+                    message = [message, plist{i} ')'];
                 end
             end
         end
@@ -586,11 +586,11 @@ if info(1)
         plist = list_of_parameters_calibrated_as_Inf(M);
         if ~isempty(plist)
             message = ['dynare_estimation_init:: Some of the parameters are Inf (' ];
-            for i=1:size(plist,1)
-                if i<size(plist,1)
-                    message = [message, deblank(plist(i,:)) ', '];
+            for i=1:length(plist)
+                if i<size(plist)
+                    message = [message, plist{i} ', '];
                 else
-                    message = [message, deblank(plist(i,:)) ')'];
+                    message = [message, plist{i} ')'];
                 end
             end
         end        

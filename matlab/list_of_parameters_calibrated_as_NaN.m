@@ -1,11 +1,12 @@
 function list = list_of_parameters_calibrated_as_NaN(M_)
+
 % The name of the function is explicit enough...
 %
 % INPUTS
 %   M_    [structure]   Description of the (simulated or estimated) model.
 %
 % OUTPUTS
-%   list  [char]        n*p array of characters, each line is the name of parameter without value.
+%   list  [cell]        Each element is the name (row char array) of parameter without value.
 %
 % ALGORITHM
 %   none
@@ -13,7 +14,7 @@ function list = list_of_parameters_calibrated_as_NaN(M_)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2010-2017 Dynare Team
+% Copyright (C) 2010-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -29,9 +30,12 @@ function list = list_of_parameters_calibrated_as_NaN(M_)
 %
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+
 idx  = find(isnan(M_.params));
 nnn  = length(idx);
-list = [];
+
 if nnn
-    list = M_.param_names(idx,:);
+    list = M_.param_names(idx);
+else
+    list = {};
 end
