@@ -23,8 +23,8 @@ function [z, endo_names, endo_names_tex, steady_state, i_var, oo_] = annualized_
 %
 % OUTPUTS
 %    z:              [matrix] shock decomp to plot
-%    endo_names:     [char] updated var names
-%    endo_names_tex: [char] updated TeX var names
+%    endo_names:     [cell] updated var names
+%    endo_names_tex: [cell] updated TeX var names
 %    steady_state:   [array] updated stady state of vars
 %    i_var:          [integer array] updated var indices to plot
 %    oo_:            [structure]  Storage of results
@@ -92,21 +92,21 @@ end
 
 for j=1:nvar
     if j>1
-        endo_names = char(endo_names, sprintf('%s_A', M_.endo_names{i_var(j)}));
-        endo_names_tex = char(endo_names_tex, sprintf('{%s}^A', M_.endo_names_tex{i_var(j)}));
-        gendo_names = char(gendo_names,[gtxt endo_names{j}]);
-        gendo_names_tex = char(gendo_names_tex,[gtex '(' endo_names_tex{j} ')']);
+        endo_names = vertcat(endo_names, sprintf('%s_A', M_.endo_names{i_var(j)}));
+        endo_names_tex = vertcat(endo_names_tex, sprintf('{%s}^A', M_.endo_names_tex{i_var(j)}));
+        gendo_names = vertcat(gendo_names,[gtxt endo_names{j}]);
+        gendo_names_tex = vertcat(gendo_names_tex,[gtex '(' endo_names_tex{j} ')']);
     else
         if nvar==1 && ~mytype
-            endo_names = mytxt;
-            endo_names_tex = mytex;
-            gendo_names = gtxt;
-            gendo_names_tex = gtex;
+            endo_names = {mytxt};
+            endo_names_tex = {mytex};
+            gendo_names = {gtxt};
+            gendo_names_tex = {gtex};
         else
-            endo_names = sprintf('%s_A', M_.endo_names{i_var(j)});
-            endo_names_tex = sprintf('{%s}^A', M_.endo_names_tex{i_var(j)});
-            gendo_names = [gtxt endo_names{j}];
-            gendo_names_tex = [gtex '(' endo_names_tex{j} ')'];
+            endo_names = {sprintf('%s_A', M_.endo_names{i_var(j)})};
+            endo_names_tex = {sprintf('{%s}^A', M_.endo_names_tex{i_var(j)})};
+            gendo_names = {[gtxt endo_names{j}]};
+            gendo_names_tex = {[gtex '(' endo_names_tex{j} ')']};
         end
     end
 end
@@ -115,8 +115,8 @@ if q2a.plot ==1
     endo_names = gendo_names;
     endo_names_tex = gendo_names_tex;
 elseif q2a.plot ~= 2
-    endo_names = char(endo_names,gendo_names);
-    endo_names_tex = char(endo_names_tex,gendo_names_tex);
+    endo_names = vertcat(endo_names,gendo_names);
+    endo_names_tex = vertcat(endo_names_tex,gendo_names_tex);
 end
 
 % end initialize names
@@ -133,26 +133,20 @@ if realtime_==0
         z = oo_;
     end
     z = z(i_var,:,:);
-if isstruct(aux)
-    if ischar(aux.y)
-        myopts=options_;
-        myopts.plot_shock_decomp.type='qoq';
-        myopts.plot_shock_decomp.realtime=0;
-        [y_aux, steady_state_aux] = plot_shock_decomposition(M_,oo_,myopts,aux.y);
-        aux.y=y_aux;
-        aux.yss=steady_state_aux;
+    if isstruct(aux)
+        if ischar(aux.y)
+            myopts=options_;
+            myopts.plot_shock_decomp.type='qoq';
+            myopts.plot_shock_decomp.realtime=0;
+            [y_aux, steady_state_aux] = plot_shock_decomposition(M_,oo_,myopts,aux.y);
+            aux.y=y_aux;
+            aux.yss=steady_state_aux;
+        end
     end
-end
-steady_state=steady_state(i_var);
-% endo_names = M_.endo_names(i_var,:);
-% endo_names_tex = M_.endo_names_tex(i_var,:);
-
+    steady_state=steady_state(i_var);
     % make annualized shock decomp
     [z, steady_state_a, steady_state_ga] = annualiz(z,t0,q2a,aux,steady_state);
 end
-% if isstruct(oo_)
-%     oo_.annualized_shock_decomposition=z;
-% end
 
 % realtime
 if realtime_ && isstruct(oo_) && isfield(oo_, 'realtime_shock_decomposition')
@@ -163,7 +157,6 @@ if realtime_ && isstruct(oo_) && isfield(oo_, 'realtime_shock_decomposition')
         myopts.plot_shock_decomp.type='qoq';
         myopts.plot_shock_decomp.realtime=1;
         myopts.plot_shock_decomp.vintage=i;
-        
         % retrieve quarterly shock decomp
         z = plot_shock_decomposition(M_,oo_,myopts,[]);
         zdim = size(z);
@@ -176,7 +169,7 @@ if realtime_ && isstruct(oo_) && isfield(oo_, 'realtime_shock_decomposition')
                 aux.yss=steady_state_aux;
             end
         end
-		
+
         % make annualized shock decomp
         [z, steady_state_a, steady_state_ga] = annualiz(z,t0,q2a,aux,steady_state);
 
@@ -203,10 +196,10 @@ if realtime_ && isstruct(oo_) && isfield(oo_, 'realtime_shock_decomposition')
                         aux.yss=steady_state_aux;
                     end
                 end
-				
+
                 % make annualized shock decomp
                 z = annualiz(z,t0,q2a,aux,steady_state);
-                
+
             end
             oo_.annualized_realtime_forecast_shock_decomposition.(['yr_' int2str(yr)]) = z(:,:,end-nfrcst:end);
             if init>nfrcst

@@ -110,7 +110,7 @@ if fast_realtime
     fprintf(['%s'],newString);
     options_.nobs=fast_realtime;
     [oo0,M_,junk1,junk2,Smoothed_Variables_deviation_from_mean0] = evaluate_smoother(parameter_set,varlist,M_,oo_,options_,bayestopt_,estim_params_);
-    gend0 = size(oo0.SmoothedShocks.(deblank(M_.exo_names(1,:))),1);
+    gend0 = size(oo0.SmoothedShocks.(M_.exo_names{1}),1);
     prctdone=0.5;
     if isoctave
         printf([running_text,' %3.f%% done\r'], prctdone*100);
@@ -121,7 +121,7 @@ if fast_realtime
     end
     options_.nobs=nobs;
     [oo2,M_,junk1,junk2,Smoothed_Variables_deviation_from_mean2] = evaluate_smoother(parameter_set,varlist,M_,oo_,options_,bayestopt_,estim_params_);
-    gend2 = size(oo2.SmoothedShocks.(deblank(M_.exo_names(1,:))),1);
+    gend2 = size(oo2.SmoothedShocks.(M_.exo_names{1}),1);
     prctdone=1;
     if isoctave
         printf([running_text,' %3.f%% done\r'], prctdone*100);
@@ -143,7 +143,7 @@ for j=presample+1:nobs
     options_.nobs=j;
     if ~fast_realtime
         [oo,M_,junk1,junk2,Smoothed_Variables_deviation_from_mean] = evaluate_smoother(parameter_set,varlist,M_,oo_,options_,bayestopt_,estim_params_);
-        gend = size(oo.SmoothedShocks.(deblank(M_.exo_names(1,:))),1);
+        gend = size(oo.SmoothedShocks.(M_.exo_names{1}),1);
     else
         gend = gend0+j-fast_realtime;
         if j>fast_realtime

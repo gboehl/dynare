@@ -44,14 +44,7 @@ endo_nbr = M_.endo_nbr;
 
 % number of shocks
 nshocks = M_.exo_nbr;
-% type = '';
 fig_name='';
-% detail_plot=0;
-% realtime_=0; % 0 is standard; 1 is realtime (pool/vintage); 2 is conditional (pool/vintage); 3 is forecast (pool/vintage)
-% vintage_=0; % 0 pool realtime/conditional; int: forecast/conditional shock decompositions
-% forecast_=0;
-% steadystate=0;
-% write_xls=0;
 
 if isfield(options_.plot_shock_decomp,'expand') % private trap for uimenu calls
     expand=options_.plot_shock_decomp.expand;
@@ -134,9 +127,9 @@ steady_state = oo_.steady_state;
 
 if isequal(type,'aoa') && isstruct(q2a) && realtime_
     % take all dates where realtime is saved
-    qqq=options_.initial_date+options_.shock_decomp.save_realtime(:)-1; 
+    qqq=options_.initial_date+options_.shock_decomp.save_realtime(:)-1;
     % take the first Q4 of saved realtime
-    t0=min(options_.shock_decomp.save_realtime(qqq.time(:,2)==4)); 
+    t0=min(options_.shock_decomp.save_realtime(qqq.time(:,2)==4));
     if isempty(t0)
         error('the realtime decompositions are not stored in Q4! Please check your dates and settings.')
     end
@@ -158,24 +151,9 @@ if isequal(type,'aoa') && isstruct(q2a) && realtime_
     if ~isfield(q2a,'plot') % private trap for aoa calls
         q2a.plot=1; % growth rate
     end
-
-    %     if isstruct(q2a.aux) && ischar(q2a.aux.y)
-    %         opts=options_;
-    %         opts.plot_shock_decomp.type='qoq';
-    %         [y_aux, steady_state_aux] = plot_shock_decomposition(M_,oo_,opts,q2a.aux.y);
-    %         q2a.aux.y=y_aux;
-    %         q2a.aux.yss=steady_state_aux;
-    %     end
     [za, endo_names, endo_names_tex, steady_state, i_var, oo_] = ...
         annualized_shock_decomposition(oo_,M_, options_, i_var, t0, options_.nobs, realtime_, vintage_, steady_state,q2a);
-    %     if realtime_<2
-    %         initial_date = initial_date1;
-    %     else
-    %         initial_date = initial_date0;
-    %     end
 end
-
-
 
 if ~expand
     fig_name = fig_name1;
@@ -301,7 +279,7 @@ switch type
             initial_date = initial_date0;
         end
     else
-	    % this is for quarterly-annualized variables already defined in model, so we can just take Q4
+        % this is for quarterly-annualized variables already defined in model, so we can just take Q4
         t0=4-initial_date.time(2)+1;
         initial_date = initial_date0;
         z=z(:,:,t0:4:end);
