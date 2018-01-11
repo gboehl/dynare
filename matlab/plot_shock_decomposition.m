@@ -11,7 +11,7 @@ function [z, steady_state] = plot_shock_decomposition(M_,oo_,options_,varlist)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2016-2017 Dynare Team
+% Copyright (C) 2016-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -32,26 +32,19 @@ options_.nodisplay = options_.plot_shock_decomp.nodisplay;
 options_.graph_format = options_.plot_shock_decomp.graph_format;
 
 % indices of endogenous variables
-if size(varlist,1) == 0
-    varlist = M_.endo_names(1:M_.orig_endo_nbr,:);
+if isempty(varlist)
+    varlist = M_.endo_names(1:M_.orig_endo_nbr);
 end
 
-[i_var,nvar,index_uniques] = varlist_indices(varlist,M_.endo_names);
-varlist=varlist(index_uniques,:);
+[i_var, nvar, index_uniques] = varlist_indices(varlist, M_.endo_names);
+varlist = varlist(index_uniques);
 
 % number of variables
 endo_nbr = M_.endo_nbr;
 
 % number of shocks
 nshocks = M_.exo_nbr;
-% type = '';
 fig_name='';
-% detail_plot=0;
-% realtime_=0; % 0 is standard; 1 is realtime (pool/vintage); 2 is conditional (pool/vintage); 3 is forecast (pool/vintage)
-% vintage_=0; % 0 pool realtime/conditional; int: forecast/conditional shock decompositions
-% forecast_=0;
-% steadystate=0;
-% write_xls=0;
 
 if isfield(options_.plot_shock_decomp,'expand') % private trap for uimenu calls
     expand=options_.plot_shock_decomp.expand;
@@ -75,6 +68,15 @@ if vintage_
 end
 
 initial_date = options_.initial_date;
+if isempty(initial_date)
+    if isempty(type)
+        % we assume annual model
+        initial_date = dates('1Y');
+    else
+        % we assume the sample starts in Q1
+        initial_date = dates('1Q1');
+    end
+end
 
 if isfield(options_.plot_shock_decomp,'q2a') % private trap for aoa calls
     q2a=options_.plot_shock_decomp.q2a;
@@ -103,7 +105,7 @@ switch realtime_
   case 2 % conditional
     if vintage_
         z = oo_.realtime_conditional_shock_decomposition.(['time_' int2str(vintage_)]);
-        initial_date = options_.initial_date+vintage_-1;
+        initial_date = initial_date+vintage_-1;
         fig_name1=[fig_name ' ' int2str(forecast_) '-step ahead conditional forecast (given ' char(initial_date) ')'];
     else
         z = oo_.conditional_shock_decomposition.pool;
@@ -113,7 +115,7 @@ switch realtime_
   case 3 % forecast
     if vintage_
         z = oo_.realtime_forecast_shock_decomposition.(['time_' int2str(vintage_)]);
-        initial_date = options_.initial_date+vintage_-1;
+        initial_date = initial_date+vintage_-1;
         fig_name1=[fig_name ' ' int2str(forecast_) '-step ahead forecast (given ' char(initial_date) ')'];
     else
         z = oo_.realtime_forecast_shock_decomposition.pool;
@@ -124,22 +126,13 @@ end
 steady_state = oo_.steady_state;
 
 if isequal(type,'aoa') && isstruct(q2a) && realtime_
-    if isempty(initial_date)
-        t0=1;
-        initial_date = dates('1Y');
-    else
-        initial_date0 = dates([int2str(initial_date.time(1)) 'Y']);
-        if initial_date.time(2)==1
-            t0=1;
-            initial_date1=initial_date0;
-        else
-            t0=(4-initial_date.time(2)+2);
-            initial_date1=initial_date0+1;
-        end
+    % take all dates where realtime is saved
+    qqq=options_.initial_date+options_.shock_decomp.save_realtime(:)-1;
+    % take the first Q4 of saved realtime
+    t0=min(options_.shock_decomp.save_realtime(qqq.time(:,2)==4));
+    if isempty(t0)
+        error('the realtime decompositions are not stored in Q4! Please check your dates and settings.')
     end
-    t0=min(options_.plot_shock_decomp.save_realtime);
-    ini1 = initial_date+t0-1;
-    t0=t0+(4-ini1.time(2));
     if ~isfield(q2a,'var_type') % private trap for aoa calls
         q2a.var_type=1;
     end
@@ -158,24 +151,9 @@ if isequal(type,'aoa') && isstruct(q2a) && realtime_
     if ~isfield(q2a,'plot') % private trap for aoa calls
         q2a.plot=1; % growth rate
     end
-
-    %     if isstruct(q2a.aux) && ischar(q2a.aux.y)
-    %         opts=options_;
-    %         opts.plot_shock_decomp.type='qoq';
-    %         [y_aux, steady_state_aux] = plot_shock_decomposition(M_,oo_,opts,q2a.aux.y);
-    %         q2a.aux.y=y_aux;
-    %         q2a.aux.yss=steady_state_aux;
-    %     end
     [za, endo_names, endo_names_tex, steady_state, i_var, oo_] = ...
         annualized_shock_decomposition(oo_,M_, options_, i_var, t0, options_.nobs, realtime_, vintage_, steady_state,q2a);
-    %     if realtime_<2
-    %         initial_date = initial_date1;
-    %     else
-    %         initial_date = initial_date0;
-    %     end
 end
-
-
 
 if ~expand
     fig_name = fig_name1;
@@ -194,7 +172,7 @@ if options_.plot_shock_decomp.use_shock_groups
     kcum=[];
     for i=1:ngroups
         for j = shock_groups.(shock_ind{i}).shocks
-            k = find(strcmp(j,cellstr(M_.exo_names)));
+            k = find(strcmp(j, M_.exo_names));
             zz(:,i,:) = zz(:,i,:) + z(:,k,:);
             z(:,k,:) = 0;
             kcum = [kcum k];
@@ -202,7 +180,7 @@ if options_.plot_shock_decomp.use_shock_groups
     end
     zothers = sum(z(:,1:nshocks,:),2);
     shock_groups.(['group' int2str(ngroups+1)]).label =  'Others';
-    shock_groups.(['group' int2str(ngroups+1)]).shocks =  cellstr(M_.exo_names(find(~ismember([1:M_.exo_nbr],kcum)),:))';
+    shock_groups.(['group' int2str(ngroups+1)]).shocks =  M_.exo_names(find(~ismember([1:M_.exo_nbr],kcum)));
     M_.shock_groups.(options_.plot_shock_decomp.use_shock_groups)=shock_groups;
     if any(any(zothers))
         shock_names = [shock_names; {'Others + Initial Values'}];
@@ -232,7 +210,7 @@ switch type
 
   case 'yoy'
     z=z(:,:,1:end-3)+z(:,:,2:end-2)+z(:,:,3:end-1)+z(:,:,4:end);
-    if ~isempty(initial_date),
+    if ~isempty(initial_date)
         initial_date = initial_date+3;
     else
         initial_date = dates('1Q4');
@@ -242,17 +220,23 @@ switch type
   case 'aoa'
 
     if isempty(initial_date)
-        t0=4;
+        t0=1; % we assume the sample starts Q1 of 1st year
         initial_date = dates('1Y');
     else
         initial_date0 = dates([int2str(initial_date.time(1)) 'Y']);
-        if initial_date.time(2)==1
+        if initial_date.time(2)==1  % the first year is full
             t0=1;
             initial_date1=initial_date0;
         else
-            t0=(4-initial_date.time(2)+2);
+            t0=(4-initial_date.time(2)+2); % 1st period of the 1st full year in sample
             initial_date1=initial_date0+1;
         end
+    end
+    if realtime_ == 0
+        t0=t0+4-1; % we start in Q4 of the first full year
+        end
+    if isempty(options_.plot_shock_decomp.plot_init_date) && realtime_ == 0
+        options_.plot_shock_decomp.plot_init_date=initial_date+t0;
     end
     if isstruct(q2a)
         if realtime_ == 0
@@ -295,6 +279,7 @@ switch type
             initial_date = initial_date0;
         end
     else
+        % this is for quarterly-annualized variables already defined in model, so we can just take Q4
         t0=4-initial_date.time(2)+1;
         initial_date = initial_date0;
         z=z(:,:,t0:4:end);
@@ -340,9 +325,9 @@ z = z(:,:,a:b);
 options_.plot_shock_decomp.fig_name=fig_name;
 options_.plot_shock_decomp.orig_varlist = varlist;
 if detail_plot
-    graph_decomp_detail(z,shock_names,M_.endo_names,i_var,my_initial_date,M_,options_)
+    graph_decomp_detail(z, shock_names, M_.endo_names, i_var, my_initial_date, M_, options_)
 else
-    graph_decomp(z,shock_names,M_.endo_names,i_var,my_initial_date,M_,options_);
+    graph_decomp(z, shock_names, M_.endo_names, i_var, my_initial_date, M_, options_);
 end
 
 if write_xls

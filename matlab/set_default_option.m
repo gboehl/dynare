@@ -14,7 +14,7 @@ function options=set_default_option(options,field,default)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2003-2017 Dynare Team
+% Copyright (C) 2003-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -41,9 +41,11 @@ if isempty(options.(field))
     return
 end
 
-if isnan(options.(field))
-    options.(field) = default;
-    return
+if ~iscell(options.(field))
+    if isnan(options.(field))
+        options.(field) = default;
+        return
+    end
 end
 
 % 06/07/03 MJ added ; to eval expression

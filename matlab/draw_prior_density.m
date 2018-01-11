@@ -53,9 +53,9 @@ switch pshape(indx)
         infbound = gaminv(truncprior,p6(indx),p7(indx))+p3(indx);
         supbound = gaminv(1-truncprior,p6(indx),p7(indx))+p3(indx);
     catch
-        % Workaround for ticket #161
+        % Workaround for ticket #161, see http://savannah.gnu.org/bugs/?52569
         if isoctave
-            error(['Due to a bug in Octave, you must choose other values for mean and/or variance of your prior on ' bayestopt_.name{indx} ', or use another shape'])
+            error(['Due to a computational limitation in Octave, the prior cannot be plotted. You must either use plot_priors=0 or choose other values for mean and/or variance of your prior on ' bayestopt_.name{indx} ', or use another shape'])
         else
             rethrow(lasterror)
         end
@@ -72,9 +72,9 @@ switch pshape(indx)
         infbound = 1/sqrt(gaminv(1-10*truncprior, p7(indx)/2, 2/p6(indx)))+p3(indx);
         supbound = 1/sqrt(gaminv(10*truncprior, p7(indx)/2, 2/p6(indx)))+p3(indx);
     catch
-        % Workaround for ticket #161
+        % Workaround for ticket #161, see http://savannah.gnu.org/bugs/?52569
         if isoctave
-            error(['Due to a bug in Octave, you must choose other values for mean and/or variance of your prior on ' bayestopt_.name{indx} ', or use another shape'])
+            error(['Due to a computational limitation in Octave, the prior cannot be plotted. You must either use plot_priors=0 or choose other values for mean and/or variance of your prior on ' bayestopt_.name{indx} ', or use another shape'])
         else
             rethrow(lasterror)
         end
@@ -91,9 +91,9 @@ switch pshape(indx)
         infbound = 1/(gaminv(1-10*truncprior, p7(indx)/2, 2/p6(indx)))+p3(indx);
         supbound = 1/(gaminv(10*truncprior, p7(indx)/2, 2/p6(indx)))+p3(indx);
     catch
-        % Workaround for ticket #161
+        % Workaround for ticket #161, see http://savannah.gnu.org/bugs/?52569
         if isoctave
-            error(['Due to a bug in Octave, you must choose other values for mean and/or variance of your prior on ' bayestopt_.name{indx} ', or use another shape'])
+            error(['Due to a computational limitation in Octave, the prior cannot be plotted. You must either use plot_priors=0 or choose other values for mean and/or variance of your prior on ' bayestopt_.name{indx} ', or use another shape'])
         else
             rethrow(lasterror)
         end

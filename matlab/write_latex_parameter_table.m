@@ -12,7 +12,7 @@ function write_latex_parameter_table
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2015-2017 Dynare Team
+% Copyright (C) 2015-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -31,11 +31,12 @@ function write_latex_parameter_table
 
 global M_
 
-if ~isequal(M_.param_names,M_.param_names_long)
-    Long_names_present=1;
-else
-    Long_names_present=0;
+Long_names_present = false;
+
+if ~isequal(M_.param_names, M_.param_names_long)
+    Long_names_present = true;
 end
+
 fid = fopen([M_.fname '_latex_parameters.tex'], 'w');
 fprintf(fid, '\\begin{center}\n');
 if Long_names_present==1
@@ -74,20 +75,18 @@ fprintf(fid, '\\endhead\n');
 
 tex = M_.param_names_tex;
 long = M_.param_names_long;
-for j=1:size(tex,1)
-    if Long_names_present==1
+
+for j=1:length(tex)
+    if Long_names_present
         % replace underscores
-        long_names_temp=regexprep(strtrim(long(j,:)), '_', '\\_');
+        long_names_temp = regexprep(long{j}, '_', '\\_');
         % replace percent
-        long_names_temp=regexprep(long_names_temp, '%', '\\%');
+        long_names_temp = regexprep(long_names_temp, '%', '\\%');
         fprintf(fid, '$%s$ \t & \t %4.3f \t & \t %s\\\\\n', ...
-                strtrim(tex(j,:)), ...
-                M_.params(j,:),...
-                long_names_temp);
+                tex{j}, M_.params(j), long_names_temp);
     else
         fprintf(fid, '$%s$ \t & \t %4.3f \\\\\n', ...
-                strtrim(tex(j,:)), ...
-                M_.params(j,:));
+                tex{j}, M_.params(j));
     end
 end
 fprintf(fid, '\\bottomrule%%\n');

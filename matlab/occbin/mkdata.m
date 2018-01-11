@@ -3,7 +3,7 @@ function [zdata]=mkdata(nperiods,decrulea,decruleb,endog_,exog_,wishlist,irfshoc
 %[nsim, ksim, ysim, isim, csim] = mkdata(nperiods,cofb,endog_)
 
 % given decision rule
-neqs = size(endog_,1);
+neqs = length(endog_);
 
 if  nargin<9
     init = zeros(neqs,1);
@@ -21,7 +21,7 @@ history = zeros(neqs,nperiods+1);
 
 nshocks = size(irfshock,1);
 for i = 1:nshocks
-    shockpos = strmatch(irfshock(i,:),exog_,'exact');
+    shockpos = strmatch(irfshock(i,:), exog_,'exact');
     if ~isempty(shockpos)
         irfshockpos(i) = shockpos;
     else
@@ -38,7 +38,7 @@ history(:,1)= init;
 
 lengthshock = size(scalefactormod,1);
 
-errvec = zeros(size(exog_,1),1);
+errvec = zeros(length(exog_), 1);
 
 for i = 2:nperiods+1
     if i<=(lengthshock+1)
@@ -58,6 +58,6 @@ wishpos = zeros(nwish,1);
 
 history=history';
 for i=1:nwish
-    wishpos(i) = strmatch(wishlist(i,:),endog_,'exact');
+    wishpos(i) = strmatch(wishlist(i,:), endog_, 'exact');
 end
 zdata = history(2:end,wishpos);

@@ -9,7 +9,7 @@ function plan = init_plan(date)
 %  plan                   [structure]       Returns a structure containing a new forecast scenario
 %
 %
-% Copyright (C) 2013-2017 Dynare Team
+% Copyright (C) 2013-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -29,10 +29,8 @@ global M_
 plan = struct();
 plan.date = date;
 plan.date_str = strings(date);
-endo_names_length = size(M_.endo_names,2);
-plan.endo_names = deblank(mat2cell(M_.endo_names(1:M_.orig_endo_nbr,:),ones(1,M_.orig_endo_nbr),endo_names_length));
-exo_names_length = size(M_.exo_names,2);
-plan.exo_names = deblank(mat2cell(M_.exo_names(1:M_.exo_nbr,:),ones(1,M_.exo_nbr),exo_names_length));
+plan.endo_names = M_.endo_names(1:M_.orig_endo_nbr);
+plan.exo_names = M_.exo_names(1:M_.exo_nbr);
 plan.constrained_vars_ = [];
 plan.constrained_paths_ = [];
 plan.constrained_date_ = [];

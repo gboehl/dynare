@@ -23,7 +23,7 @@ function myoutput=PosteriorIRF_core1(myinputs,fpar,B,whoiam, ThisMatlab)
 % SPECIAL REQUIREMENTS.
 %   None.
 %
-% Copyright (C) 2006-2017 Dynare Team
+% Copyright (C) 2006-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -195,7 +195,7 @@ while fpar<B
     if MAX_nirfs_dsgevar
         IRUN = IRUN+1;
         [fval,info,junk1,junk2,junk3,junk3,junk4,PHI,SIGMAu,iXX] =  dsge_var_likelihood(deep',dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,bounds,oo_);
-        dsge_prior_weight = M_.params(strmatch('dsge_prior_weight',M_.param_names));
+        dsge_prior_weight = M_.params(strmatch('dsge_prior_weight', M_.param_names));
         DSGE_PRIOR_WEIGHT = floor(dataset_.nobs*(1+dsge_prior_weight));
         SIGMA_inv_upper_chol = chol(inv(SIGMAu*dataset_.nobs*(dsge_prior_weight+1)));
         explosive_var  = 1;

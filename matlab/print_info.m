@@ -11,7 +11,7 @@ function print_info(info, noprint, DynareOptions)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2005-2017 Dynare Team
+% Copyright (C) 2005-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -55,12 +55,11 @@ if ~noprint
       case 8
         if size(info,2)>=2
             global M_;
-            disp_string=deblank(M_.param_names(info(2),:));
+            disp_string = M_.param_names{info(2)};
             for ii=1:length(info)-2
-                disp_string=[disp_string,', ',deblank(M_.param_names(info(2+ii),:))];
+                disp_string = [disp_string, ', ', M_.param_names{info(2+ii)}];
             end
-            error(['The Jacobian contains NaNs because the following parameters are NaN: '...
-                   disp_string])
+            error(['The Jacobian contains NaNs because the following parameters are NaN: ' disp_string])
         else
             error(['The Jacobian contains NaNs. For more information, use options_.debug.'])
         end

@@ -35,7 +35,7 @@ function x0 = stab_map_(OutputDirectoryName,opt_gsa)
 % marco.ratto@ec.europa.eu
 
 % Copyright (C) 2012-2016 European Commission
-% Copyright (C) 2012-2017 Dynare Team
+% Copyright (C) 2012-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -130,9 +130,9 @@ for jj=1:np
     end
 end
 if options_.TeX
-    options_mcf.param_names_tex=char(name_tex);
+    options_mcf.param_names_tex = name_tex;
 end
-options_mcf.param_names = char(name);
+options_mcf.param_names = name;
 
 options_mcf.fname_ = fname_;
 options_mcf.OutputDirectoryName = OutputDirectoryName;
@@ -575,7 +575,7 @@ if length(iunstable)>0 || length(iwrong)>0
             disp(['    For ',num2str(length(find(infox==6))/Nsam*100,'%4.1f'),'% The jacobian evaluated at the deterministic steady state is complex.'])
         end
         if any(infox==19)
-            disp(['    For ',num2str(length(find(infox==19))/Nsam*100,'%4.1f'),'% The steadystate routine thrown an exception (inconsistent deep parameters).'])
+            disp(['    For ',num2str(length(find(infox==19))/Nsam*100,'%4.1f'),'% The steadystate routine has thrown an exception (inconsistent deep parameters).'])
         end
         if any(infox==20)
             disp(['    For ',num2str(length(find(infox==20))/Nsam*100,'%4.1f'),'% Cannot find the steady state.'])
@@ -663,9 +663,9 @@ if length(iunstable)>0 || length(iwrong)>0
                 end
             end
             if options_.TeX
-                options_mcf.param_names_tex = char(name_tex);
+                options_mcf.param_names_tex = name_tex;
             end
-            options_mcf.param_names = char(name);
+            options_mcf.param_names = name;
             options_mcf.amcf_name = acalibname;
             options_mcf.amcf_title = acalibtitle;
             options_mcf.beha_title = 'prior IRF/moment calibration';

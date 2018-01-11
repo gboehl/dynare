@@ -13,7 +13,7 @@ function dynatype (s,var_list)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2001-2017 Dynare Team
+% Copyright (C) 2001-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -34,23 +34,24 @@ global M_ oo_
 
 fid=fopen(s,'w') ;
 
-if size(var_list,1) == 0
-    var_list = M_.endo_names(1:M_.orig_endo_nbr,:);
+if isempty(var_list)
+    var_list = M_.endo_names(1:M_.orig_endo_nbr);
 end
 
-n = size(var_list,1);
-ivar=zeros(n,1);
+n = length(var_list);
+ivar = zeros(n,1);
+
 for i=1:n
-    i_tmp = strmatch(var_list(i,:),M_.endo_names,'exact');
+    i_tmp = strmatch(var_list{i}, M_.endo_names, 'exact');
     if isempty(i_tmp)
-        error (['One of the specified variables does not exist']) ;
+        error ('One of the specified variables does not exist') ;
     else
         ivar(i) = i_tmp;
     end
 end
 
 for i = 1:n
-    fprintf(fid,M_.endo_names(ivar(i),:),'\n') ;
+    fprintf(fid,M_.endo_names{ivar(i)},'\n') ;
     fprintf(fid,'\n') ;
     fprintf(fid,'%15.8g\n',oo_.endo_simul(ivar(i),:)') ;
 end

@@ -1,17 +1,21 @@
-function dyntable(options_,title,headers,labels,values,label_width,val_width,val_precis,optional_header)
-% function dyntable(title,headers,labels,values,label_width,val_width,val_precis)
-% Inputs:
-%   options_    [structure]         Dynare options structure
-%   title       [string]            Table title
-%   headers     [n by nchar]        character array of labels for header row
-%   labels      [n by nchar]        character array of labels for label column
-%   values      [matrix]            matrix of values to display
-%   label_width [scalar]            Width of the label
-%   val_width   [scalar]            Width of value column
-%   val_precis  [integer]           precision of displayed values
+function dyntable(options_, title, headers, labels, values, label_width, val_width, val_precis, optional_header)
+
+% Prints a table of results in main command window.
 %
+% INPUTS 
+% - options_    [structure]         Dynare options structure
+% - title       [string]            Table title
+% - headers     [cell]              labels for header row (each element is a row characater array)
+% - labels      [cell]              labels for label column  (each element is a row characater array)
+% - values      [double]            matrix of values to display
+% - label_width [integer]           scalar, width of the label
+% - val_width   [integer]           scalar, width of value column
+% - val_precis  [integer]           scalar, precision of displayed values
 %
-% Copyright (C) 2002-2017 Dynare Team
+% OUTPUTS 
+% none
+
+% Copyright (C) 2002-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -32,16 +36,16 @@ if options_.noprint
     return
 end
 
-%% get width of label column
-if ~isempty(label_width)
-    label_width = max(size(deblank(char(headers(1,:),labels)),2)+2, ...
-                      label_width);
-else %use default length
-    label_width = max(size(deblank(char(headers(1,:),labels)),2))+2;
+% Set width of label column
+if isempty(label_width)
+    label_width = cellofchararraymaxlength(vertcat(headers{1}, labels))+2;
+else
+    label_width = max(cellofchararraymaxlength(vertcat(headers{1}, labels))+2, label_width);
 end
-label_format_leftbound  = sprintf('%%-%ds',label_width);
+label_format_leftbound  = sprintf('%%-%ds', label_width);
 
-%% get width of label column
+
+% Set width of other columns
 if all(~isfinite(values))
     values_length = 4;
 else
@@ -50,32 +54,32 @@ end
 if any(values) < 0 %add one character for minus sign
     values_length = values_length+1;
 end
-
-%% get width of header strings
-headers_length = max(size(deblank(headers(2:end,:)),2));
-if ~isempty(val_width)
-    val_width = max(max(headers_length,values_length)+2,val_width);
+headers_length = cellofchararraymaxlength(headers(2:end));
+if isempty(val_width)
+    val_width = max(headers_length, values_length)+2;
 else
-    val_width = max(headers_length,values_length)+2;
+    val_width = max(max(headers_length, values_length)+2, val_width);
 end
-value_format  = sprintf('%%%d.%df',val_width,val_precis);
-header_string_format  = sprintf('%%%ds',val_width);
+value_format  = sprintf('%%%d.%df', val_width, val_precis);
+header_string_format  = sprintf('%%%ds', val_width);
 
 if length(title) > 0
     fprintf('\n\n%s\n',title);
 end
-%Create and print header string
+
+% Create and print header string
 if nargin==9
     disp(optional_header)
 end
+
 if length(headers) > 0
-    hh = sprintf(label_format_leftbound ,deblank(headers(1,:)));
-    for i=2:size(headers,1)
-        hh  = [hh sprintf(header_string_format,deblank(headers(i,:)))];
+    hh = sprintf(label_format_leftbound , headers{1});
+    for i=2:length(headers)
+        hh  = [hh sprintf(header_string_format, headers{i})];
     end
-    disp(hh);
+    disp(hh)
 end
 
 for i=1:size(values,1)
-    disp([sprintf(label_format_leftbound ,deblank(labels(i,:))) sprintf(value_format ,values(i,:))]);
+    disp([sprintf(label_format_leftbound, labels{i}) sprintf(value_format, values(i,:))])
 end

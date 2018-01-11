@@ -18,7 +18,7 @@ function trace_plot(options_,M_,estim_params_,type,blck,name1,name2)
 %
 % SPECIAL REQUIREMENTS
 
-% Copyright (C) 2003-2017 Dynare Team
+% Copyright (C) 2003-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -151,9 +151,9 @@ if options_.TeX
         FigureName = ['Trace plot for ' TYPE name1];
     else
         if nargin<7
-            FigureName = ['Trace plot for ' TYPE '$' deblank(tex_names(strmatch(name1,base_names,'exact'),:)) '$'];
+            FigureName = ['Trace plot for ' TYPE '$' tex_names{strmatch(name1,base_names,'exact')} '$'];
         else
-            FigureName = ['Trace plot for ' TYPE '$' deblank(tex_names(strmatch(name1,base_names,'exact'),:)) '$ and $' deblank(tex_names(strmatch(name2,base_names,'exact'),:)) '$'];
+            FigureName = ['Trace plot for ' TYPE '$' tex_names{strmatch(name1,base_names,'exact')} '$ and $' tex_names{strmatch(name2,base_names,'exact')} '$'];
         end
     end
     if options_.mh_nblck>1

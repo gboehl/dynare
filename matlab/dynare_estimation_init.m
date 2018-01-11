@@ -32,7 +32,7 @@ function [dataset_, dataset_info, xparam1, hh, M_, options_, oo_, estim_params_,
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2003-2017 Dynare Team
+% Copyright (C) 2003-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -56,7 +56,7 @@ if isempty(gsa_flag)
     gsa_flag = false;
 else
     % Decide if a DSGE or DSGE-VAR has to be estimated.
-    if ~isempty(strmatch('dsge_prior_weight',M_.param_names))
+    if ~isempty(strmatch('dsge_prior_weight', M_.param_names))
         options_.dsge_var = 1;
     end
     if isempty(var_list_)
@@ -425,8 +425,8 @@ nspred = M_.nspred;            % Number of predetermined variables in the state 
 var_obs_index_dr = [];
 k1 = [];
 for i=1:options_.number_of_observed_variables
-    var_obs_index_dr = [var_obs_index_dr; strmatch(options_.varobs{i},M_.endo_names(dr.order_var,:),'exact')];
-    k1 = [k1; strmatch(options_.varobs{i},M_.endo_names, 'exact')];
+    var_obs_index_dr = [var_obs_index_dr; strmatch(options_.varobs{i}, M_.endo_names(dr.order_var), 'exact')];
+    k1 = [k1; strmatch(options_.varobs{i}, M_.endo_names, 'exact')];
 end
 
 k3 = [];
@@ -437,9 +437,9 @@ if options_.selected_variables_only
         k3 = (1:M_.endo_nbr)';
         k3p = (1:M_.endo_nbr)';
     else
-        for i=1:size(var_list_,1)
-            k3 = [k3; strmatch(var_list_(i,:),M_.endo_names(dr.order_var,:), 'exact')];
-            k3p = [k3; strmatch(var_list_(i,:),M_.endo_names, 'exact')];
+        for i=1:length(var_list_)
+            k3 = [k3; strmatch(var_list_{i}, M_.endo_names(dr.order_var), 'exact')];
+            k3p = [k3; strmatch(var_list_{i}, M_.endo_names, 'exact')];
         end
     end
 else
@@ -513,11 +513,11 @@ if options_.analytic_derivation
             skipline()
             if any(isnan(params))
                 disp('After computing the steadystate, the following parameters are still NaN: '),
-                disp(M.param_names(isnan(params),:))
+                disp(char(M.param_names(isnan(params))))
             end
             if any(find(params(~isnan(params))-M.params(~isnan(params))))
                 disp('The steadystate file changed the values for the following parameters: '),
-                disp(M.param_names(find(params(~isnan(params))-M.params(~isnan(params))),:))
+                disp(char(M.param_names(find(params(~isnan(params))-M.params(~isnan(params))))))
             end
             disp('The derivatives of jacobian and steady-state will be computed numerically'),
             disp('(re-set options_.analytic_derivation_mode= -2)'),
@@ -569,6 +569,33 @@ end
 
 if info(1)
     fprintf('\ndynare_estimation_init:: The steady state at the initial parameters cannot be computed.\n')
+    if options_.debug
+        M.params=params;       
+        plist = list_of_parameters_calibrated_as_NaN(M);
+        if ~isempty(plist)
+            message = ['dynare_estimation_init:: Some of the parameters are NaN (' ];
+            for i=1:length(plist)
+                if i<length(plist)
+                    message = [message, plist{i} ', '];
+                else
+                    message = [message, plist{i} ')'];
+                end
+            end
+        end
+        fprintf('%s\n',message)
+        plist = list_of_parameters_calibrated_as_Inf(M);
+        if ~isempty(plist)
+            message = ['dynare_estimation_init:: Some of the parameters are Inf (' ];
+            for i=1:length(plist)
+                if i<size(plist)
+                    message = [message, plist{i} ', '];
+                else
+                    message = [message, plist{i} ')'];
+                end
+            end
+        end        
+        fprintf('%s\n',message)
+    end
     print_info(info, 0, options_);
 end
 

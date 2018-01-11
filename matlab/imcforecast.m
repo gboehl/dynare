@@ -26,7 +26,7 @@ function imcforecast(constrained_paths, constrained_vars, options_cond_fcst)
 %  [1] Results are stored in a structure which is saved in a mat file called conditional_forecasts.mat.
 %  [2] Use the function plot_icforecast to plot the results.
 
-% Copyright (C) 2006-2017 Dynare Team
+% Copyright (C) 2006-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -146,8 +146,8 @@ if estimated_model
     end
     % add trend to constant
     for obs_iter=1:length(options_.varobs)
-        j = strmatch(options_.varobs{obs_iter},M_.endo_names,'exact');
-        constant(j,:) = constant(j,:)+trend_addition(obs_iter,:);
+        j = strmatch(options_.varobs{obs_iter}, M_.endo_names, 'exact');
+        constant(j,:) = constant(j,:) + trend_addition(obs_iter,:);
     end
     trend = constant(oo_.dr.order_var,:);
     InitState(:,1) = atT(:,end);
@@ -226,7 +226,7 @@ jdx = [];
 for i = 1:n1
     idx = [idx ; constrained_vars(i,:)];
     %     idx = [idx ; oo_.dr.inv_order_var(constrained_vars(i,:))];
-    jdx = [jdx ; strmatch(deblank(options_cond_fcst.controlled_varexo(i,:)),M_.exo_names,'exact')];
+    jdx = [jdx ; strmatch(options_cond_fcst.controlled_varexo{i},M_.exo_names,'exact')];
 end
 mv = zeros(n1,NumberOfStates);
 mu = zeros(ExoSize,n2);
@@ -265,15 +265,15 @@ forecasts.controlled_variables = constrained_vars;
 forecasts.instruments = options_cond_fcst.controlled_varexo;
 
 for i = 1:EndoSize
-    forecasts.cond.Mean.(deblank(M_.endo_names(oo_.dr.order_var(i),:)))= mFORCS1(i,:)';
+    forecasts.cond.Mean.(M_.endo_names{oo_.dr.order_var(i)}) = mFORCS1(i,:)';
     tmp = sort(squeeze(FORCS1(i,:,:))');
-    forecasts.cond.ci.(deblank(M_.endo_names(oo_.dr.order_var(i),:))) = [tmp(t1,:)' ,tmp(t2,:)' ]';
+    forecasts.cond.ci.(M_.endo_names{oo_.dr.order_var(i)}) = [tmp(t1,:)' ,tmp(t2,:)' ]';
 end
 
 for i = 1:n1
-    forecasts.controlled_exo_variables.Mean.(deblank(options_cond_fcst.controlled_varexo(i,:))) = mFORCS1_shocks(i,:)';
+    forecasts.controlled_exo_variables.Mean.(options_cond_fcst.controlled_varexo{i}) = mFORCS1_shocks(i,:)';
     tmp = sort(squeeze(FORCS1_shocks(i,:,:))');
-    forecasts.controlled_exo_variables.ci.(deblank(options_cond_fcst.controlled_varexo(i,:))) = [tmp(t1,:)' ,tmp(t2,:)' ]';
+    forecasts.controlled_exo_variables.ci.(options_cond_fcst.controlled_varexo{i}) = [tmp(t1,:)' ,tmp(t2,:)' ]';
 end
 
 clear FORCS1 mFORCS1_shocks;
@@ -292,9 +292,9 @@ end
 mFORCS2 = mean(FORCS2,3);
 
 for i = 1:EndoSize
-    forecasts.uncond.Mean.(deblank(M_.endo_names(oo_.dr.order_var(i),:)))= mFORCS2(i,:)';
+    forecasts.uncond.Mean.(M_.endo_names{oo_.dr.order_var(i)})= mFORCS2(i,:)';
     tmp = sort(squeeze(FORCS2(i,:,:))');
-    forecasts.uncond.ci.(deblank(M_.endo_names(oo_.dr.order_var(i),:))) = [tmp(t1,:)' ,tmp(t2,:)' ]';
+    forecasts.uncond.ci.(M_.endo_names{oo_.dr.order_var(i)}) = [tmp(t1,:)' ,tmp(t2,:)' ]';
 end
 forecasts.graph.title=graph_title;
 forecasts.graph.fname=M_.fname;

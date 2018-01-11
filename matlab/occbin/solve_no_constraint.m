@@ -16,11 +16,11 @@ nvars = numel(ys_);
 zdatass_ = ys_ ;
 
 for i=1:Mbase_.endo_nbr
-    eval([deblank(Mbase_.endo_names(i,:)) '_ss = oo_.dr.ys(i); ']);
+    eval([Mbase_.endo_names{i} '_ss = oo_.dr.ys(i); ']);
 end
 
-for i = 1:size(Mbase_.param_names)
-    eval([Mbase_.param_names(i,:),'= M_.params(i);']);
+for i = 1:length(Mbase_.param_names)
+    eval([Mbase_.param_names{i}, '= M_.params(i);']);
 end
 
 
@@ -43,7 +43,7 @@ nshocks = size(shockssequence,1);
 init = zeros(nvars,1);
 
 wishlist = endog_;
-nwishes = size(wishlist,1);
+nwishes = length(wishlist);
 
 
 zdata_ = mkdata(nperiods,decrulea,decruleb,endog_,exog_,wishlist,irfshock,shockssequence);

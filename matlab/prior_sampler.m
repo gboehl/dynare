@@ -13,7 +13,7 @@ function results = prior_sampler(drsave,M_,bayestopt_,options_,oo_,estim_params_
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2009-2016 Dynare Team
+% Copyright (C) 2009-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -53,7 +53,7 @@ count_nonpositive_steadystate = 0;
 count_unknown_problem = 0;
 NumberOfSimulations = options_.prior_mc;
 NumberOfParameters = length(bayestopt_.p1);
-NumberOfEndogenousVariables = size(M_.endo_names,1);
+NumberOfEndogenousVariables = M_.endo_nbr;
 NumberOfElementsPerFile = ceil(options_.MaxNumberOfBytes/NumberOfParameters/NumberOfEndogenousVariables/8) ;
 
 if NumberOfSimulations <= NumberOfElementsPerFile

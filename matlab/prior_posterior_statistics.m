@@ -17,9 +17,9 @@ function prior_posterior_statistics(type,dataset,dataset_info)
 %
 % PARALLEL CONTEXT
 % See the comments in the posterior_sampler.m funtion.
-%
-%
-% Copyright (C) 2005-2017 Dynare Team
+
+
+% Copyright (C) 2005-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -123,13 +123,13 @@ end
 
 varlist = options_.varlist;
 if isempty(varlist)
-    varlist = char(sort(cellstr(M_.endo_names(1:M_.orig_endo_nbr,:))));
+    varlist = sort(M_.endo_names(1:M_.orig_endo_nbr));
 end
-nvar = size(varlist,1);
+nvar = length(varlist);
 SelecVariables = [];
 for i=1:nvar
-    if ~isempty(strmatch(varlist(i,:),M_.endo_names,'exact'))
-        SelecVariables = [SelecVariables;strmatch(varlist(i,:),M_.endo_names,'exact')];
+    if ~isempty(strmatch(varlist{i}, M_.endo_names, 'exact'))
+        SelecVariables = [SelecVariables; strmatch(varlist{i}, M_.endo_names, 'exact')];
     end
 end
 
@@ -327,7 +327,7 @@ end
 
 if options_.smoother
     pm3(endo_nbr,gend,ifil(1),B,'Smoothed variables',...
-        '',varlist,M_.endo_names_tex,M_.endo_names,...
+        '',varlist, M_.endo_names_tex,M_.endo_names,...
         varlist,'SmoothedVariables',DirectoryName,'_smooth');
     pm3(exo_nbr,gend,ifil(2),B,'Smoothed shocks',...
         '',M_.exo_names,M_.exo_names_tex,M_.exo_names,...
@@ -353,11 +353,9 @@ if options_.smoother
 
     if nvn
         for obs_iter=1:length(options_.varobs)
-            meas_error_names{obs_iter,1}=['SE_EOBS_' M_.endo_names(strmatch(options_.varobs{obs_iter},M_.endo_names,'exact'),:)];
-            texnames{obs_iter,1}=['SE_EOBS_' M_.endo_names_tex(strmatch(options_.varobs{obs_iter},M_.endo_names,'exact'),:)];
+            meas_error_names{obs_iter,1}=['SE_EOBS_' M_.endo_names{strmatch(options_.varobs{obs_iter},M_.endo_names,'exact')}];
+            texnames{obs_iter,1}=['SE_EOBS_' M_.endo_names_tex{strmatch(options_.varobs{obs_iter},M_.endo_names,'exact')}];
         end
-        meas_error_names=char(meas_error_names);
-        texnames=char(texnames);
         pm3(meas_err_nbr,gend,ifil(3),B,'Smoothed measurement errors',...
             '',meas_error_names,texnames,meas_error_names,...
             meas_error_names,'SmoothedMeasurementErrors',DirectoryName,'_error')
@@ -378,17 +376,16 @@ if options_.forecast
         '',varlist,M_.endo_names_tex,M_.endo_names,...
         varlist,'PointForecast',DirectoryName,'_forc_point');
     if ~isequal(M_.H,0) && ~isempty(intersect(options_.varobs,varlist))
-        texnames=[];
+        texnames = cell(length(options_.varobs), 1);
+        obs_names = cell(length(options_.varobs), 1);
         for obs_iter=1:length(options_.varobs)
-            obs_names{obs_iter,1}=M_.endo_names(strmatch(options_.varobs{obs_iter},M_.endo_names,'exact'),:);
-            texnames{obs_iter,1}=M_.endo_names_tex(strmatch(options_.varobs{obs_iter},M_.endo_names,'exact'),:);
+            obs_names{obs_iter}=M_.endo_names{strmatch(options_.varobs{obs_iter},M_.endo_names,'exact')};
+            texnames{obs_iter}=M_.endo_names_tex{strmatch(options_.varobs{obs_iter},M_.endo_names,'exact')};
         end
-        obs_names=char(obs_names);
-        texnames=char(texnames);
         varlist_forecast_ME=intersect(options_.varobs,varlist);
         pm3(meas_err_nbr,horizon,ifil(12),B,'Forecasted variables (point) with ME',...
-            '',char(varlist_forecast_ME),texnames,obs_names,...
-            char(varlist_forecast_ME),'PointForecastME',DirectoryName,'_forc_point_ME')
+            '',varlist_forecast_ME,texnames,obs_names,...
+            varlist_forecast_ME,'PointForecastME',DirectoryName,'_forc_point_ME')
     end
 end
 

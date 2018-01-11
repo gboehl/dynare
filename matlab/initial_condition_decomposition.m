@@ -8,20 +8,20 @@ function oo_ = initial_condition_decomposition(M_,oo_,options_,varlist,bayestopt
 % in the order of declaration, i.e. M_.endo_names.
 %
 % INPUTS
-%    M_:          [structure]  Definition of the model
-%    oo_:         [structure]  Storage of results
-%    options_:    [structure]  Options
-%    varlist:     [char]       List of variables
-%    bayestopt_:  [structure]  describing the priors
-%    estim_params_: [structure] characterizing parameters to be estimated
+%    M_:            [structure]                Definition of the model
+%    oo_:           [structure]                Storage of results
+%    options_:      [structure]                Options
+%    varlist:       [cell of char array]       List of variables
+%    bayestopt_:    [structure]                Description of the priors
+%    estim_params_: [structure]                Estimated parameters
 %
 % OUTPUTS
-%    oo_:         [structure]  Storage of results
+%    oo_:           [structure]                Storage of results
 %
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2017 Dynare Team
+% Copyright (C) 2017-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -46,12 +46,12 @@ options_.plot_shock_decomp.plot_init_date = options_.initial_condition_decomp.pl
 options_.plot_shock_decomp.plot_end_date = options_.initial_condition_decomp.plot_end_date;
 
 % indices of endogenous variables
-if size(varlist,1) == 0
-    varlist = M_.endo_names(1:M_.orig_endo_nbr,:);
+if isempty(varlist)
+    varlist = M_.endo_names(1:M_.orig_endo_nbr);
 end
 
-[i_var,nvar,index_uniques] = varlist_indices(varlist,M_.endo_names);
-varlist=varlist(index_uniques,:);
+[i_var, nvar, index_uniques] = varlist_indices(varlist, M_.endo_names);
+varlist = varlist(index_uniques);
 
 % number of variables
 endo_nbr = M_.endo_nbr;
@@ -74,7 +74,7 @@ end
 if ~isfield(oo_,'initval_decomposition')
     options_.selected_variables_only = 0; %make sure all variables are stored
     options_.plot_priors=0;
-    [oo,junk1,junk2,Smoothed_Variables_deviation_from_mean] = evaluate_smoother(parameter_set,varlist,M_,oo_,options_,bayestopt_,estim_params_);
+    [oo,M,junk1,junk2,Smoothed_Variables_deviation_from_mean] = evaluate_smoother(parameter_set,varlist,M_,oo_,options_,bayestopt_,estim_params_);
 
     % reduced form
     dr = oo.dr;
@@ -89,7 +89,7 @@ if ~isfield(oo_,'initval_decomposition')
     B = dr.ghu;
 
     % initialization
-    gend = size(oo.SmoothedShocks.(deblank(M_.exo_names(1,:))),1); %+options_.forecast;
+    gend = length(oo.SmoothedShocks.(M_.exo_names{1})); %+options_.forecast;
     z = zeros(endo_nbr,endo_nbr+2,gend);
     z(:,end,:) = Smoothed_Variables_deviation_from_mean;
 
@@ -125,8 +125,9 @@ oo=oo_;
 oo.shock_decomposition = oo_.initval_decomposition;
 M_.exo_names = M_.endo_names;
 M_.exo_nbr = M_.endo_nbr;
+options_.plot_shock_decomp.realtime=0;
 options_.plot_shock_decomp.screen_shocks=1;
 options_.plot_shock_decomp.use_shock_groups = '';
 options_.plot_shock_decomp.fig_names='initval';
-plot_shock_decomposition(M_,oo,options_,varlist);
+plot_shock_decomposition(M_, oo, options_, varlist);
 % end

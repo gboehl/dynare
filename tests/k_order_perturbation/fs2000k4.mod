@@ -73,7 +73,7 @@ oo1 = load('fs2000k++');
 
 kk=[];
 for i=1:M_.orig_endo_nbr;
-    kk(i) = strmatch(deblank(M_.endo_names(oo_.dr.order_var(i),:)),oo1.dyn_vars,'exact');
+    kk(i) = strmatch(M_.endo_names{oo_.dr.order_var(i)},oo1.dyn_vars,'exact');
 end
 kk(17) = 17;
 

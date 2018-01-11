@@ -17,7 +17,7 @@ function [pars, cosnJ] = ident_bruteforce(J,n,TeX, pnames_TeX,tittxt)
 %  pars  : cell array with groupf of params for each column of J for 1 to n
 %  cosnJ : the cosn of each column with the selected group of columns
 
-% Copyright (C) 2009-2017 Dynare Team
+% Copyright (C) 2009-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -105,13 +105,13 @@ for ll = 1:n
             plist='';
             for ii=1:ll
                 if ~isnan(pars{i,ll}(ii))
-                    plist = [plist ' $' pnames_TeX(pars{i,ll}(ii),:) '\;\; $ '];
+                    plist = [plist ' $' pnames_TeX{pars{i,ll}(ii)} '\;\; $ '];
                 else
                     plist = [plist ' ---- '];
                 end
             end
             fprintf(fidTeX,'$%s$ & [%s] & %7.3f \\\\ \n',...
-                    pnames_TeX(i,:),...
+                    pnames_TeX{i},...
                     plist,...
                     cosnJ(i,ll));
         end

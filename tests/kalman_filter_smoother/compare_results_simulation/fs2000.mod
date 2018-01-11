@@ -17,7 +17,7 @@
  */
 
 /*
- * Copyright (C) 2004-2010 Dynare Team
+ * Copyright (C) 2004-2018 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -118,15 +118,14 @@ estimation(order=1,datafile=fsdat_simul_logged,consider_all_endogenous,nobs=192,
 
 ex_=[];
 for shock_iter=1:M_.exo_nbr
-ex_=[ex_ oo_.SmoothedShocks.Mean.(deblank(M_.exo_names(shock_iter,:)))];
+ex_=[ex_ oo_.SmoothedShocks.Mean.(M_.exo_names{shock_iter})];
 end
 
 ex_ = ex_(2:end,:);
 % ex_ = zeros(size(ex_));
 y0=[];
 for endo_iter=1:M_.endo_nbr
-y0 = [y0;
-oo_.SmoothedVariables.Mean.(deblank(M_.endo_names(endo_iter,:)))(1)];
+y0 = [y0; oo_.SmoothedVariables.Mean.(M_.endo_names{endo_iter})(1)];
 end;
 
 %make sure decision rules were updated

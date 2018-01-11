@@ -42,7 +42,7 @@ switch info(1)
   case 6
     message = 'The jacobian evaluated at the deterministic steady state is complex.';
   case 19
-    message = 'The steadystate routine thrown an exception (inconsistent deep parameters).';
+    message = 'The steadystate routine has thrown an exception (inconsistent deep parameters).';
   case 20
     message = sprintf('Cannot find the steady state (the sum of square residuals of the static equations is %s)', num2str(info(2)));
   case 21

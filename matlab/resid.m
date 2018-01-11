@@ -12,7 +12,7 @@ function z = resid(junk)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2001-2017 Dynare Team
+% Copyright (C) 2001-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -56,7 +56,7 @@ if any(imag(oo_.steady_state))
     if ~isempty(imagrow)
         fprintf('\nresid: The initial values for the steady state of the following variables are complex:\n');
         for iter=1:length(imagrow)
-            fprintf('%s\n',M_.endo_names(imagrow(iter),:));
+            fprintf('%s\n', M_.endo_names{imagrow(iter)});
         end
     end
 end

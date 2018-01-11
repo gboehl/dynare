@@ -11,7 +11,7 @@ function WriteShockDecomp2Excel(z,shock_names,endo_names,i_var,initial_date,Dyna
 %   DynareModel     [structure]                     Dynare model structure
 %   DynareOptions   [structure]                     Dynare options structure
 
-% Copyright (C) 2016-2017 Dynare Team
+% Copyright (C) 2016-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -94,7 +94,7 @@ for j=1:nvar
     z1 = squeeze(z(i_var(j),:,:));
     if screen_shocks
         [junk, isort] = sort(mean(abs(z1(1:end-2,:)')), 'descend');
-        labels = char(char(shock_names(isort(1:16),:)),'Others', 'Initial values');
+        labels = char(char(shock_names(isort(1:16))),'Others', 'Initial values');
         zres = sum(z1(isort(17:end),:),1);
         z1 = [z1(isort(1:16),:); zres; z1(comp_nbr0:end,:)];
         comp_nbr=18;
@@ -115,9 +115,9 @@ for j=1:nvar
 
     warning off
     if ~ismac
-        [STATUS,MESSAGE] = xlswrite([DynareModel.fname,'_shock_decomposition',fig_mode,fig_name1],d0,deblank(endo_names(i_var(j),:)));
+        [STATUS,MESSAGE] = xlswrite([DynareModel.fname,'_shock_decomposition',fig_mode,fig_name1],d0,endo_names{i_var(j)});
     else
-        [STATUS] = xlwrite([DynareModel.fname,'_shock_decomposition',fig_mode,fig_name1],d0,deblank(endo_names(i_var(j),:)));
+        [STATUS] = xlwrite([DynareModel.fname,'_shock_decomposition',fig_mode,fig_name1],d0,endo_names{i_var(j)});
     end
     warning on
 

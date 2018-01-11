@@ -22,7 +22,7 @@ function save_params_and_steady_state(filename)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2008-2017 Dynare Team
+% Copyright (C) 2008-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -47,19 +47,19 @@ if fid < 0
 end
 
 for i = 1:M_.param_nbr
-    fprintf(fid, '%s %.16g\n', M_.param_names(i,:), M_.params(i));
+    fprintf(fid, '%s %.16g\n', M_.param_names{i}, M_.params(i));
 end
 
 for i = 1:M_.endo_nbr
-    fprintf(fid, '%s %.16g\n', M_.endo_names(i,:), oo_.steady_state(i));
+    fprintf(fid, '%s %.16g\n', M_.endo_names{i}, oo_.steady_state(i));
 end
 
 for i = 1:M_.exo_nbr
-    fprintf(fid, '%s %.16g\n', M_.exo_names(i,:), oo_.exo_steady_state(i));
+    fprintf(fid, '%s %.16g\n', M_.exo_names{i}, oo_.exo_steady_state(i));
 end
 
 for i = 1:M_.exo_det_nbr
-    fprintf(fid, '%s %.16g\n', M_.exo_det_names(i,:), oo_.exo_det_steady_state(i));
+    fprintf(fid, '%s %.16g\n', M_.exo_det_names{i}, oo_.exo_det_steady_state(i));
 end
 
 fclose(fid);

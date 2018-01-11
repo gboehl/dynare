@@ -8,7 +8,7 @@ function forecast_graphs(var_list,M_, oo_,options_)
 %   o oo_                   outputs structure
 %   o options_              options structure
 
-% Copyright (C) 2008-2017 Dynare Team
+% Copyright (C) 2008-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -35,13 +35,13 @@ yf = oo_.forecast.Mean;
 hpdinf = oo_.forecast.HPDinf;
 hpdsup = oo_.forecast.HPDsup;
 if isempty(var_list)
-    var_list = endo_names(1:M_.orig_endo_nbr,:);
+    var_list = endo_names(1:M_.orig_endo_nbr);
 end
 i_var = [];
-for i = 1:size(var_list)
-    tmp = strmatch(var_list(i,:),endo_names,'exact');
+for i = 1:length(var_list)
+    tmp = strmatch(var_list{i}, endo_names, 'exact');
     if isempty(tmp)
-        error([var_list(i,:) ' isn''t an endogenous variable'])
+        error([var_list{i} ' isn''t an endogenous variable'])
     end
     i_var = [i_var; tmp];
 end
@@ -55,17 +55,18 @@ if ~exist([dname '/graphs'],'dir')
     mkdir(dname,'graphs');
 end
 
-if options_.TeX && any(strcmp('eps',cellstr(options_.graph_format)))
-    fidTeX=write_LaTeX_header([M_.dname '/graphs/',fname,'_forcst.tex']);
+if options_.TeX && any(strcmp('eps', cellstr(options_.graph_format)))
+    fidTeX = write_LaTeX_header([M_.dname '/graphs/', fname, '_forcst.tex']);
 end
 
 m = 1;
 n_fig = 1;
-hh=dyn_figure(options_.nodisplay,'Name','Forecasts (I)');
+hh = dyn_figure(options_.nodisplay, 'Name', 'Forecasts (I)');
+
 for j= 1:nvar
     if m > nc*nr
-        dyn_saveas(hh,[ dname '/graphs/forcst' int2str(n_fig)],options_.nodisplay,options_.graph_format);
-        if options_.TeX && any(strcmp('eps',cellstr(options_.graph_format)))
+        dyn_saveas(hh,[ dname '/graphs/forcst' int2str(n_fig)], options_.nodisplay, options_.graph_format);
+        if options_.TeX && any(strcmp('eps', cellstr(options_.graph_format)))
             fprintf(fidTeX,'\\begin{figure}[H]\n');
             fprintf(fidTeX,'\\centering \n');
             fprintf(fidTeX,'\\includegraphics[width=0.8\\textwidth]{%s/graphs/forcst%d}\n',dname,n_fig);
@@ -78,16 +79,9 @@ for j= 1:nvar
         eval(['hh=dyn_figure(options_.nodisplay,''Name'',''Forecasts (' int2str(n_fig) ')'');']);
         m = 1;
     end
-    subplot(nr,nc,m);
-    vn = deblank(endo_names(i_var(j),:));
+    subplot(nr, nc, m);
+    vn = endo_names{i_var(j)};
     obs = 0;
-% $$$         k = strmatch(vn,varobs,'exact');
-% $$$   if ~isempty(k)
-% $$$       yy = y.(vn)(end-9:end) + repmat(ys(i_var(j)),10,1)+trend(k,:)';
-% $$$       plot(yy);
-% $$$       hold on
-% $$$       obs = 10;
-% $$$   end
     plot([NaN(obs,1); yf.(vn)],'b-');
     hold on
     plot([NaN(obs,1); hpdinf.(vn)],'b-');

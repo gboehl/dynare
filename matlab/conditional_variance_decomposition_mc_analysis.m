@@ -1,5 +1,5 @@
 function oo_ = ...
-    conditional_variance_decomposition_mc_analysis(NumberOfSimulations, type, dname, fname, Steps, exonames, exo, var_list, endogenous_variable_index, mh_conf_sig, oo_,options_)
+    conditional_variance_decomposition_mc_analysis(NumberOfSimulations, type, dname, fname, Steps, exonames, exo, var_list, endo, mh_conf_sig, oo_,options_)
 % This function analyses the (posterior or prior) distribution of the
 % endogenous variables' conditional variance decomposition.
 %
@@ -23,7 +23,7 @@ function oo_ = ...
 % OUTPUTS
 %   oo_          [structure]        Dynare structure where the results are saved.
 
-% Copyright (C) 2009-2017 Dynare Team
+% Copyright (C) 2009-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -48,12 +48,6 @@ else
     PATH = [dname '/prior/moments/'];
 end
 
-% $$$ indx = check_name(vartan,var);
-% $$$ if isempty(indx)
-% $$$     disp([ type '_analysis:: ' var ' is not a stationary endogenous variable!'])
-% $$$     return
-% $$$ end
-% $$$ endogenous_variable_index = sum(1:indx);
 exogenous_variable_index = check_name(exonames,exo);
 if isempty(exogenous_variable_index)
     if ~isequal(exo,'ME')
@@ -62,8 +56,14 @@ if isempty(exogenous_variable_index)
     return
 end
 
-name_1 = deblank(var_list(endogenous_variable_index,:));
-name_2 = deblank(exo);
+endogenous_variable_index = check_name(var_list, endo);
+if isempty(endogenous_variable_index)
+    disp([ type '_analysis:: Can''t find ' endo '!'])
+    return
+end
+
+name_1 = endo;
+name_2 = exo;
 name = [ name_1 '.' name_2 ];
 
 if isfield(oo_, [ TYPE 'TheoreticalMoments' ])

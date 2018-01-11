@@ -15,7 +15,7 @@ function xparam = get_posterior_parameters(type,M_,estim_params_,oo_,options_,fi
 % SPECIAL REQUIREMENTS
 %   None.
 
-% Copyright (C) 2006-2017 Dynare Team
+% Copyright (C) 2006-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -46,7 +46,7 @@ xparam = zeros(nvx+nvn+ncx+ncn+np,1);
 m = 1;
 for i=1:nvx
     k1 = estim_params_.var_exo(i,1);
-    name1 = deblank(M_.exo_names(k1,:));
+    name1 = M_.exo_names{k1};
     xparam(m) = oo_.([field1 type]).shocks_std.(name1);
     m = m+1;
 end
@@ -61,8 +61,8 @@ end
 for i=1:ncx
     k1 = estim_params_.corrx(i,1);
     k2 = estim_params_.corrx(i,2);
-    name1 = deblank(M_.exo_names(k1,:));
-    name2 = deblank(M_.exo_names(k2,:));
+    name1 = M_.exo_names{k1};
+    name2 = M_.exo_names{k2};
     xparam(m) = oo_.([field1 type]).shocks_corr.([name1 '_' name2]);
     m = m+1;
 end
@@ -79,7 +79,7 @@ end
 FirstDeep = m;
 
 for i=1:np
-    name1 = deblank(M_.param_names(estim_params_.param_vals(i,1),:));
+    name1 = M_.param_names{estim_params_.param_vals(i,1)};
     xparam(m) = oo_.([field1 type]).parameters.(name1);
     m = m+1;
 end

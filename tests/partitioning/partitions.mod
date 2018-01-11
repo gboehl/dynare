@@ -42,7 +42,7 @@ if isfield(M_.endo_partitions, 'long_name')
     error('long_name should not be a member of endo_partitions!')
 end
 
-tmp = strvcat('United States', 'Euro Area', 'March');
+tmp = {'United States'; 'Euro Area'; 'March'};
 
 if ~isequal(M_.endo_names_long, tmp)
     error('M_.endo_names_long is wrong!')

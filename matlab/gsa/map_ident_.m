@@ -5,7 +5,7 @@ function map_ident_(OutputDirectoryName,opt_gsa)
 % marco.ratto@ec.europa.eu
 
 % Copyright (C) 2012-2016 European Commission
-% Copyright (C) 2012-2017 Dynare Team
+% Copyright (C) 2012-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -37,7 +37,7 @@ else
     gsa_flag=-2;
 end
 
-pnames = M_.param_names(estim_params_.param_vals(:,1),:);
+pnames = M_.param_names(estim_params_.param_vals(:,1));
 if opt_gsa.pprior
 
     filetoload=[OutputDirectoryName '/' fname_ '_prior'];
@@ -106,7 +106,7 @@ if opt_gsa.load_ident_files==0
             end
             xlabel(' ')
             ylabel(' ')
-            title(M_.exo_names(j,:),'interpreter','none')
+            title(M_.exo_names{j},'interpreter','none')
             if mod(j,6)==0 | j==M_.exo_nbr
                 dyn_saveas(hh,[OutputDirectoryName,'/',fname_,'_vdec_exo_',int2str(ifig)],options_.nodisplay,options_.graph_format);
                 create_TeX_loader(options_,[OutputDirectoryName,'/',fname_,'_vdec_exo_',int2str(ifig)],ifig,['Variance decomposition shocks'],'vdec_exo',options_.figures.textwidth*min(iplo/3,1))

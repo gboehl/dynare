@@ -16,7 +16,7 @@ function i = name2index(options_, M_, estim_params_, type, name1, name2 )
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2008-2017 Dynare Team
+% Copyright (C) 2008-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -44,7 +44,7 @@ i = [];
 
 if strcmpi(type,'DeepParameter')
     i = nvx + nvn + ncx + ncn + ...
-        strmatch(name1,M_.param_names(estim_params_.param_vals(:,1),:),'exact');
+        strmatch(name1, M_.param_names(estim_params_.param_vals(:,1)), 'exact');
     if nargin>5
         disp('The last input argument is useless!')
     end
@@ -56,7 +56,7 @@ end
 
 if strcmpi(type,'StructuralShock')
     if nargin<6% Covariance matrix diagonal term.
-        i = strmatch(name1,M_.exo_names(estim_params_.var_exo(:,1),:),'exact');
+        i = strmatch(name1, M_.exo_names(estim_params_.var_exo(:,1)), 'exact');
         if isempty(i)
             disp(['The standard deviation of ' name1  ' is not an estimated parameter!'])
             return
@@ -64,14 +64,14 @@ if strcmpi(type,'StructuralShock')
     else% Covariance matrix off-diagonal term
         offset = nvx+nvn;
         try
-            list_of_structural_shocks = { M_.exo_names(estim_params_.corrx(:,1),:) , M_.exo_names(estim_params_.corrx(:,2),:) };
-            k1 = strmatch(name1,list_of_structural_shocks(:,1),'exact');
-            k2 = strmatch(name2,list_of_structural_shocks(:,2),'exact');
+            list_of_structural_shocks = [ M_.exo_names(estim_params_.corrx(:,1)) , M_.exo_names(estim_params_.corrx(:,2)) ];
+            k1 = strmatch(name1, list_of_structural_shocks(:,1), 'exact');
+            k2 = strmatch(name2, list_of_structural_shocks(:,2), 'exact');
             i = offset+intersect(k1,k2);
             if isempty(i)
-                k1 = strmatch(name1,list_of_structural_shocks(:,2),'exact');
-                k2 = strmatch(name2,list_of_structural_shocks(:,1),'exact');
-                i = offset+intersect(k1,k2);
+                k1 = strmatch(name1, list_of_structural_shocks(:,2), 'exact');
+                k2 = strmatch(name2, list_of_structural_shocks(:,1), 'exact');
+                i = offset+intersect(k1, k2);
             end
             if isempty(i)
                 if isempty(i)
@@ -87,7 +87,7 @@ end
 
 if strcmpi(type,'MeasurementError')
     if nargin<6% Covariance matrix diagonal term
-        i = nvx + strmatch(name1,M_.endo_names(estim_params_.var_endo(:,1),:),'exact');
+        i = nvx + strmatch(name1, M_.endo_names{estim_params_.var_endo(:,1)}, 'exact');
         if isempty(i)
             disp(['The standard deviation of the measurement error on ' name1  ' is not an estimated parameter!'])
             return
@@ -95,7 +95,7 @@ if strcmpi(type,'MeasurementError')
     else% Covariance matrix off-diagonal term
         offset = nvx+nvn+ncx;
         try
-            list_of_measurement_errors = { M_.endo_names(estim_params_.corrn(:,1),:) , M_.endo_names(estim_params_.corrn(:,2),:) };
+            list_of_measurement_errors = { M_.endo_names{estim_params_.corrn(:,1)} , M_.endo_names{estim_params_.corrn(:,2)} };
             k1 = strmatch(name1,list_of_measurement_errors(:,1),'exact');
             k2 = strmatch(name2,list_of_measurement_errors(:,2),'exact');
             i = offset+intersect(k1,k2);

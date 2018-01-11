@@ -5,17 +5,17 @@ temp=oo_.endo_simul;
 %add measurement error
 oo_.endo_simul(strmatch('Y_obs',M_.endo_names,'exact'),:)=oo_.endo_simul(strmatch('Y_obs',M_.endo_names,'exact'),:)+0.05*randn(1,size(oo_.endo_simul,2));
 oo_.endo_simul(strmatch('P_obs',M_.endo_names,'exact'),:)=oo_.endo_simul(strmatch('P_obs',M_.endo_names,'exact'),:)+0.05*randn(1,size(oo_.endo_simul,2));
-datatomfile('fs_ns_dat_simul_uncorr_ME', char('Y_obs', 'P_obs'));
+datatomfile('fs_ns_dat_simul_uncorr_ME', {'Y_obs'; 'P_obs'});
 oo_.endo_simul(strmatch('Y_obs',M_.endo_names,'exact'),[7,199])=NaN;
 oo_.endo_simul(strmatch('P_obs',M_.endo_names,'exact'),[151,199])=NaN;
-datatomfile('fs_ns_dat_simul_uncorr_ME_missing', char('Y_obs', 'P_obs'));
+datatomfile('fs_ns_dat_simul_uncorr_ME_missing', {'Y_obs'; 'P_obs'});
 shock_mat=chol([1 0.5; 0.5 1])*0.05*randn(2,size(oo_.endo_simul,2));
 oo_.endo_simul(strmatch('Y_obs',M_.endo_names,'exact'),:)=oo_.endo_simul(strmatch('Y_obs',M_.endo_names,'exact'),:)+shock_mat(1,:);
 oo_.endo_simul(strmatch('P_obs',M_.endo_names,'exact'),:)=oo_.endo_simul(strmatch('P_obs',M_.endo_names,'exact'),:)+shock_mat(2,:);
-datatomfile('fs_ns_dat_simul_corr_ME', char('Y_obs', 'P_obs'));
+datatomfile('fs_ns_dat_simul_corr_ME', {'Y_obs'; 'P_obs'});
 oo_.endo_simul(strmatch('Y_obs',M_.endo_names,'exact'),[7,199])=NaN;
 oo_.endo_simul(strmatch('P_obs',M_.endo_names,'exact'),[151,199])=NaN;
-datatomfile('fs_ns_dat_simul_corr_ME_missing', char('Y_obs', 'P_obs'));
+datatomfile('fs_ns_dat_simul_corr_ME_missing', {'Y_obs'; 'P_obs'});
 
 estimated_params;
 alp, 0.33;

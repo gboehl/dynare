@@ -18,7 +18,7 @@ function [steady_state,params,check] = dyn_ramsey_static(ys_init,M,options_,oo)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2003-2017 Dynare Team
+% Copyright (C) 2003-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -50,8 +50,7 @@ elseif options_.steadystate_flag
     k_inst = [];
     inst_nbr = size(options_.instruments,1);
     for i = 1:inst_nbr
-        k_inst = [k_inst; strmatch(options_.instruments(i,:), ...
-                                   M.endo_names,'exact')];
+        k_inst = [k_inst; strmatch(options_.instruments(i,:), M.endo_names, 'exact')];
     end
     if inst_nbr == 1
         %solve for instrument, using univariate solver, starting at initial value for instrument
@@ -113,8 +112,7 @@ if options_.steadystate_flag
     k_inst = [];
     instruments = options_.instruments;
     for i = 1:size(instruments,1)
-        k_inst = [k_inst; strmatch(instruments(i,:), ...
-                                   endo_names,'exact')];
+        k_inst = [k_inst; strmatch(instruments(i,:), endo_names, 'exact')];
     end
     ys_init=zeros(size(oo.steady_state)); %create starting vector for steady state computation as only instrument value is handed over
     ys_init(k_inst) = x; %set instrument, the only value required for steady state computation, to current value

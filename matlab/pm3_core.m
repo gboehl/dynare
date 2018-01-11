@@ -13,7 +13,7 @@ function myoutput=pm3_core(myinputs,fpar,nvar,whoiam, ThisMatlab)
 % SPECIAL REQUIREMENTS.
 %   None.
 
-% Copyright (C) 2007-2017 Dynare Team
+% Copyright (C) 2007-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -108,7 +108,7 @@ for i=fpar:nvar
     end
 
     if subplotnum == MaxNumberOfPlotsPerFigure || i == nvar
-        dyn_saveas(hh,[M_.dname '/Output/'  M_.fname '_' name3 '_' deblank(tit3(i,:))],options_.nodisplay,options_.graph_format);
+        dyn_saveas(hh,[M_.dname '/Output/'  M_.fname '_' name3 '_' tit3{i}],options_.nodisplay,options_.graph_format);
         if RemoteFlag==1
             OutputFileName = [OutputFileName; {[M_.dname, filesep, 'Output',filesep], [M_.fname '_' name3 '_' deblank(tit3(i,:)) '.*']}];
         end

@@ -15,7 +15,7 @@ function plot_ms_forecast(M_, options_, forecast, figure_name)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2011-2017 Dynare Team
+% Copyright (C) 2011-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -36,18 +36,18 @@ nc = 2;
 nr = 2;
 nvars = M_.endo_nbr;
 endo_names = M_.endo_names;
-var_list = endo_names(1:M_.orig_endo_nbr,:);
+var_list = endo_names(1:M_.orig_endo_nbr);
 names = {};
 tex_names = {};
 m = 1;
-for i = 1:size(var_list)
-    tmp = strmatch(var_list(i,:),endo_names,'exact');
+for i = 1:length(var_list)
+    tmp = strmatch(var_list{i}, endo_names, 'exact');
     if isempty(tmp)
-        error([var_list(i,:) ' isn''t and endogenous variable'])
+        error([var_list{i} ' isn''t and endogenous variable'])
     end
-    tex_name = deblank(M_.endo_names_tex(i,:));
+    tex_name = M_.endo_names_tex{i};
     if ~isempty(tex_name)
-        names{m} = deblank(var_list(i,:));
+        names{m} = var_list{i};
         tex_names{m} = tex_name;
         m = m + 1;
     end
@@ -98,7 +98,7 @@ for j=1:nvars
         m = 1;
     end
     subplot(nr,nc,m);
-    vn = deblank(endo_names(j,:));
+    vn = endo_names{j};
     plot(forecast(:,j))
     title(vn,'Interpreter','none');
     grid on;
@@ -130,7 +130,7 @@ for j=1:nvars
         m = 1;
     end
     subplot(nr,nc,m);
-    vn = deblank(endo_names(j,:));
+    vn = endo_names{j};
     for k=1:num_percentiles
         if ceil(num_percentiles/2) == k
             plot(forecast(k,:,j),'LineWidth',1.5)

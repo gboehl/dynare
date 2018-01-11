@@ -30,7 +30,7 @@ function myoutput=PosteriorIRF_core2(myinputs,fpar,npar,whoiam,ThisMatlab)
 % SPECIAL REQUIREMENTS.
 %   None.
 %
-% Copyright (C) 2006-2017 Dynare Team
+% Copyright (C) 2006-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -103,9 +103,9 @@ for i=fpar:npar
         if max(abs(MeanIRF(:,j,i))) >= options_.impulse_responses.plot_threshold
             subplotnum = subplotnum+1;
             if subplotnum == 1 && options_.relative_irf
-                hh = dyn_figure(options_.nodisplay,'Name',['Relative response to orthogonalized shock to ' tit(i,:)]);
+                hh = dyn_figure(options_.nodisplay,'Name',['Relative response to orthogonalized shock to ' tit{i}]);
             elseif subplotnum == 1 && ~options_.relative_irf
-                hh = dyn_figure(options_.nodisplay,'Name',['Orthogonalized shock to ' tit(i,:)]);
+                hh = dyn_figure(options_.nodisplay,'Name',['Orthogonalized shock to ' tit{i}]);
             end
 
             set(0,'CurrentFigure',hh)
@@ -142,17 +142,17 @@ for i=fpar:npar
                 remove_fractional_xticks;
                 hold off
             end
-            name = deblank(varlist(j,:));
+            name = varlist{j};
             title(name,'Interpreter','none')
         else
             if options_.debug
-                fprintf('POSTERIOR_IRF: The IRF of %s to %s is smaller than the irf_plot_threshold of %4.3f and will not be displayed.\n',deblank(varlist(j,:)),tit(i,:),options_.impulse_responses.plot_threshold)
+                fprintf('POSTERIOR_IRF: The IRF of %s to %s is smaller than the irf_plot_threshold of %4.3f and will not be displayed.\n',varlist{j},tit{i},options_.impulse_responses.plot_threshold)
             end
         end
 
         if subplotnum == MaxNumberOfPlotPerFigure || (j == nvar  && subplotnum> 0)
             figunumber = figunumber+1;
-            dyn_saveas(hh,[DirectoryName '/'  M_.fname '_Bayesian_IRF_' deblank(tit(i,:)) '_' int2str(figunumber)],options_.nodisplay,options_.graph_format);
+            dyn_saveas(hh,[DirectoryName '/'  M_.fname '_Bayesian_IRF_' tit{i} '_' int2str(figunumber)],options_.nodisplay,options_.graph_format);
             if RemoteFlag==1
                 OutputFileName = [OutputFileName; {[DirectoryName,filesep], [M_.fname '_Bayesian_IRF_' deblank(tit(i,:)) '_' int2str(figunumber) '.*']}];
             end

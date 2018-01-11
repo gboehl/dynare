@@ -6,16 +6,16 @@
 
 
 for i=1:Mbase_.endo_nbr
-    eval([deblank(Mbase_.endo_names(i,:)),'_uncdifference=zdatalinear(:,i);']);
-    eval([deblank(Mbase_.endo_names(i,:)),'_difference=zdatapiecewise(:,i);']);
-    eval([deblank(Mbase_.endo_names(i,:)),'_ss=zdatass(i);']);
+    eval([Mbase_.endo_names{i}, '_uncdifference=zdatalinear(:,i);']);
+    eval([Mbase_.endo_names{i}, '_difference=zdatapiecewise(:,i);']);
+    eval([Mbase_.endo_names{i}, '_ss=zdatass(i);']);
 end
 
-constraint1_difference = process_constraint(constraint1,'_difference',Mbase_.endo_names,0);
-constraint2_difference = process_constraint(constraint2,'_difference',Mbase_.endo_names,0);
+constraint1_difference = process_constraint(constraint1, '_difference', Mbase_.endo_names,0);
+constraint2_difference = process_constraint(constraint2, '_difference', Mbase_.endo_names,0);
 
-nparams = size(Mbase_.param_names,1);
+nparams = length(Mbase_.param_names);
 
 for i = 1:nparams
-    eval([Mbase_.param_names(i,:),'= Mbase_.params(i);']);
+    eval([Mbase_.param_names{i}, '= Mbase_.params(i);']);
 end

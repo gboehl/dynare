@@ -1,8 +1,8 @@
 function pm3(n1,n2,ifil,B,tit1,tit2,tit3,tit_tex,names1,names2,name3,DirectoryName,var_type)
-% pm3(n1,n2,ifil,B,tit1,tit2,tit3,tit_tex,names1,names2,name3,DirectoryName,var_type)
+
 % Computes, stores and plots the posterior moment statistics.
 %
-% Inputs:
+% INPUTS
 %  n1           [scalar] size of first dimension of moment matrix
 %  n2           [scalar] size of second dimension of moment matrix
 %  ifil         [scalar] number of moment files to load
@@ -24,7 +24,7 @@ function pm3(n1,n2,ifil,B,tit1,tit2,tit3,tit_tex,names1,names2,name3,DirectoryNa
 % See also the comment in posterior_sampler.m funtion.
 
 
-% Copyright (C) 2007-2017 Dynare Team
+% Copyright (C) 2007-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -51,11 +51,11 @@ if isempty(varlist)
     SelecVariables = (1:M_.endo_nbr)';
     nvar = M_.endo_nbr;
 else
-    nvar = size(varlist,1);
+    nvar = length(varlist);
     SelecVariables = [];
     for i=1:nvar
-        if ~isempty(strmatch(varlist(i,:),names1,'exact'))
-            SelecVariables = [SelecVariables;strmatch(varlist(i,:),names1,'exact')];
+        if ~isempty(strmatch(varlist{i}, names1, 'exact'))
+            SelecVariables = [SelecVariables; strmatch(varlist{i}, names1, 'exact')];
         end
     end
 end
@@ -63,14 +63,9 @@ if options_.TeX
     if isempty(tit_tex)
         tit_tex=names1;
     end
-
-    varlist_TeX = [];
+    varlist_TeX = cell(nvar, 1);
     for i=1:nvar
-        if i==1
-            varlist_TeX = tit_tex(SelecVariables(i),:);
-        else
-            varlist_TeX = char(varlist_TeX,tit_tex(SelecVariables(i),:));
-        end
+        varlist_TeX(i) = {tit_tex{SelecVariables(i)}};
     end
 end
 Mean = zeros(n2,nvar);
@@ -244,7 +239,7 @@ end
 
 if strcmp(var_type,'_trend_coeff') || strcmp(var_type,'_smoothed_trend') || strcmp(var_type,'_smoothed_trend')
     for i = 1:nvar
-        name = deblank(names1(SelecVariables(i),:));
+        name = deblank(names1{SelecVariables(i)});
         oo_.Smoother.(name3).Mean.(name) = Mean(:,i);
         oo_.Smoother.(name3).Median.(name) = Median(:,i);
         oo_.Smoother.(name3).Var.(name) = Var(:,i);
@@ -257,7 +252,7 @@ if strcmp(var_type,'_trend_coeff') || strcmp(var_type,'_smoothed_trend') || strc
     end
 else
     for i = 1:nvar
-        name = deblank(names1(SelecVariables(i),:));
+        name = deblank(names1{SelecVariables(i)});
         oo_.(name3).Mean.(name) = Mean(:,i);
         oo_.(name3).Median.(name) = Median(:,i);
         oo_.(name3).Var.(name) = Var(:,i);
@@ -364,8 +359,8 @@ if ~options_.nograph && ~options_.no_graph.posterior
                 i=i+1;
                 if max(abs(Mean(:,i))) > 10^(-6)
                     subplotnum = subplotnum+1;
-                    name = deblank(varlist(i,:));
-                    texname = deblank(varlist_TeX(i,:));
+                    name = varlist{i};
+                    texname = varlist_TeX{i};
                     if subplotnum==1
                         NAMES = name;
                         TEXNAMES = ['$' texname '$'];
@@ -380,8 +375,8 @@ if ~options_.nograph && ~options_.no_graph.posterior
                         fprintf(fidTeX,['\\psfrag{%s}[1][][0.5][0]{%s}\n'],deblank(NAMES(jj,:)),deblank(TEXNAMES(jj,:)));
                     end
                     fprintf(fidTeX,'\\centering \n');
-                    fprintf(fidTeX,['\\includegraphics[width=%2.2f\\textwidth]{%s/Output/%s_' name3 '_%s}\n'],options_.figures.textwidth*min(subplotnum/nn,1),M_.dname,M_.fname,deblank(tit3(i,:)));
-                    fprintf(fidTeX,'\\label{Fig:%s:%s}\n',name3,deblank(tit3(i,:)));
+                    fprintf(fidTeX,['\\includegraphics[width=%2.2f\\textwidth]{%s/Output/%s_' name3 '_%s}\n'],options_.figures.textwidth*min(subplotnum/nn,1),M_.dname,M_.fname, tit3{i});
+                    fprintf(fidTeX,'\\label{Fig:%s:%s}\n',name3,tit3{i});
                     fprintf(fidTeX,'\\caption{%s}\n',tit1);
                     fprintf(fidTeX,'\\end{figure}\n');
                     fprintf(fidTeX,' \n');

@@ -1,6 +1,6 @@
 function [dr,ys,info]=discretionary_policy_1(oo_,Instruments)
 
-% Copyright (C) 2007-2017 Dynare Team
+% Copyright (C) 2007-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -42,7 +42,7 @@ else
     M_.orig_model = M_;
 end
 
-beta = get_optimal_policy_discount_factor(M_.params,M_.param_names);
+beta = get_optimal_policy_discount_factor(M_.params, M_.param_names);
 
 exo_nbr = M_.exo_nbr;
 if isfield(M_,'orig_model')
@@ -70,7 +70,7 @@ end
 if any(any(Uy~=0))
     non_zero_derivs=find(any(Uy~=0));
     for ii=1:length(non_zero_derivs)
-        non_zero_deriv_names{ii,1}=deblank(M_.endo_names(non_zero_derivs(ii),:));
+        non_zero_deriv_names{ii,1} = M_.endo_names{non_zero_derivs(ii)};
     end
     disp_string=[non_zero_deriv_names{1,:}];
     for ii=2:size(non_zero_deriv_names,1)
@@ -116,7 +116,7 @@ end
 instr_id=nan(instr_nbr,1);
 for j=1:instr_nbr
     vj=deblank(Instruments(j,:));
-    vj_id=strmatch(vj,endo_names,'exact');
+    vj_id=strmatch(vj, endo_names, 'exact');
     if ~isempty(vj_id)
         instr_id(j)=vj_id;
     else

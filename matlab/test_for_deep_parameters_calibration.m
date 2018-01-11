@@ -13,7 +13,7 @@ function info=test_for_deep_parameters_calibration(M_)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2010-2017 Dynare Team
+% Copyright (C) 2010-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -33,11 +33,11 @@ plist = list_of_parameters_calibrated_as_NaN(M_);
 if ~isempty(plist)
     info=1;
     message = ['Some of the parameters have no value (' ];
-    for i=1:size(plist,1)
-        if i<size(plist,1)
-            message = [message, deblank(plist(i,:)) ', '];
+    for i=1:length(plist)
+        if i<length(plist)
+            message = [message, plist{i} ', '];
         else
-            message = [message, deblank(plist(i,:)) ')'];
+            message = [message, plist{i} ')'];
         end
     end
     tmp = dbstack;

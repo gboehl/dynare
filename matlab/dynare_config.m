@@ -1,5 +1,5 @@
-function dynareroot = dynare_config(path_to_dynare,verbose)
-%function dynareroot = dynare_config(path_to_dynare)
+function dynareroot = dynare_config(path_to_dynare, verbose)
+
 % This function tests the existence of valid mex files (for qz
 % decomposition, solution to sylvester equation and kronecker
 % products...) and, if needed, add paths to the matlab versions
@@ -15,7 +15,7 @@ function dynareroot = dynare_config(path_to_dynare,verbose)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2001-2017 Dynare Team
+% Copyright (C) 2001-2018 Dynare Team
 %
 % This file is part of Dynare.
 %

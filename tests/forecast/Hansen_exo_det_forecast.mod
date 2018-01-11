@@ -82,8 +82,8 @@ forecast(periods=40);
 figure
 for ii=1:M_.orig_endo_nbr
     subplot(3,3,ii)    
-    var_name=deblank(M_.endo_names(ii,:));
-    var_index=strmatch(var_name,deblank(M_.endo_names),'exact');
+    var_name=M_.endo_names{ii};
+    var_index=strmatch(var_name, M_.endo_names,'exact');
     plot(1:40,oo_.dr.ys(var_index)+oo_.irfs.([var_name,'_eps_a_antic']),'b',1:40,... %
             oo_.forecast.Mean.(var_name),'r--')
     title(var_name)

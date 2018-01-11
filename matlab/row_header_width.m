@@ -13,7 +13,7 @@ function w=row_header_width(M_,estim_params_,bayestopt_)
 % SPECIAL REQUIREMENTS
 %   None.
 
-% Copyright (C) 2006-2017 Dynare Team
+% Copyright (C) 2006-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -38,28 +38,19 @@ ncn = estim_params_.ncn;
 
 w = 0;
 if np
-    for i=1:np
-        w = max(w,length(bayestopt_.name{i}));
-    end
+    w = cellofchararraymaxlength(bayestopt_.name);
 end
 if nvx
-    for i=1:nvx
-        k = estim_params_.var_exo(i,1);
-        w = max(w,length(deblank(M_.exo_names(k,:))));
-    end
+    w = max(w, cellofchararraymaxlength(M_.endo_names(estim_params_.var_exo(1:nvx,1))));
 end
 if nvn
-    for i=1:nvn
-        k = estim_params_.var_endo(i,1);
-        w = max(w,length(deblank(M_.endo_names(k,:))));
-    end
+    w = max(w, cellofchararraymaxlength(M_.endo_names(estim_params_.var_endo(1:nvn,1))));
 end
 if ncx
     for i=1:ncx
         k1 = estim_params_.corrx(i,1);
         k2 = estim_params_.corrx(i,2);
-        w = max(w,length(deblank(M_.exo_names(k1,:)))...
-                +length(deblank(M_.exo_names(k2,:))));
+        w = max(w, length(M_.exo_names{k1})+length(M_.exo_names{k2}));
 
     end
 end
@@ -67,8 +58,6 @@ if ncn
     for i=1:ncn
         k1 = estim_params_.corrn(i,1);
         k2 = estim_params_.corrn(i,2);
-        w = max(w,length(deblank(M_.endo_names(k1,:)))...
-                +length(deblank(M_.endo_names(k2,:))));
-
+        w = max(w, length(M_.endo_names{k1})+length(M_.endo_names{k2}));
     end
 end

@@ -6,7 +6,7 @@ function  scatter_callback(K, type)
 %
 
 % Copyright (C) 2017 European Commission
-% Copyright (C) 2017 Dynare Team
+% Copyright (C) 2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -34,9 +34,7 @@ xparam1=x(K,:)';
 switch type
   case 'save'
     save(['my_params_' int2str(K)],'xparam1')
-
   case 'eval'
     disp('Evaluating smoother ...')
-    [oo_, M_]=evaluate_smoother(xparam1,M_.endo_names,M_,oo_,options_,bayestopt_,estim_params_);
-    % [rmse, lnam, r2,vv] = plot_fit(obsname{:});
+    [oo_, M_]=evaluate_smoother(xparam1, M_.endo_names, M_, oo_, options_, bayestopt_, estim_params_);
 end

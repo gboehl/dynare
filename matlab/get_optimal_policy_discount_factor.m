@@ -13,7 +13,7 @@ function discount_factor=get_optimal_policy_discount_factor(params,param_names)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2007-2017 Dynare Team
+% Copyright (C) 2007-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -30,4 +30,4 @@ function discount_factor=get_optimal_policy_discount_factor(params,param_names)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-discount_factor = params(find(strcmp('optimal_policy_discount_factor',cellstr(param_names))));
+discount_factor = params(find(strcmp('optimal_policy_discount_factor', param_names)));

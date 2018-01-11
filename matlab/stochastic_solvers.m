@@ -104,7 +104,6 @@ exo_simul = [repmat(oo_.exo_steady_state',klen,1) repmat(oo_.exo_det_steady_stat
 iyv = M_.lead_lag_incidence';
 iyv = iyv(:);
 iyr0 = find(iyv) ;
-it_ = M_.maximum_lag + 1 ;
 
 if M_.exo_nbr == 0
     oo_.exo_steady_state = [] ;

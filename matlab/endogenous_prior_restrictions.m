@@ -16,7 +16,7 @@ function [info, info_irf, info_moment, data_irf, data_moment] = endogenous_prior
 %    info_moment [double] array of test checks for all individual moment restrictions
 %
 
-% Copyright (C) 2013-2017 Dynare Team
+% Copyright (C) 2013-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -48,22 +48,22 @@ if ~isempty(endo_prior_restrictions.irf)
         error('The algorithm for prior (sign) restrictions on irf''s is currently restricted to first-order decision rules')
         return
     end
-    varlist=Model.endo_names(DynareResults.dr.order_var,:);
+    varlist = Model.endo_names(DynareResults.dr.order_var);
     if isempty(T)
         [T,R,SteadyState,infox,Model,DynareOptions,DynareResults] = dynare_resolve(Model,DynareOptions,DynareResults);
     else % check if T and R are given in the restricted form!!!
-        if size(T,1)<size(varlist,1)
-            varlist=varlist(DynareResults.dr.restrict_var_list,:);
+        if size(T,1)<length(varlist)
+            varlist = varlist(DynareResults.dr.restrict_var_list);
         end
         % check if endo_prior_restrictions.irf{:,1} variables are in varlist
         varlistok=1;
         for j=1:size(endo_prior_restrictions.irf,1)
-            if isempty(strmatch(endo_prior_restrictions.irf{j,1},varlist,'exact'))
+            if isempty(strmatch(endo_prior_restrictions.irf{j,1}, varlist, 'exact'))
                 varlistok=0;
             end
         end
         if ~varlistok
-            varlist=Model.endo_names(DynareResults.dr.order_var,:);
+            varlist = Model.endo_names(DynareResults.dr.order_var);
             [T,R,SteadyState,infox,Model,DynareOptions,DynareResults] = dynare_resolve(Model,DynareOptions,DynareResults);
         end
     end
@@ -82,8 +82,8 @@ if ~isempty(endo_prior_restrictions.irf)
             if endo_prior_restrictions.irf{j,3}~=t
                 continue
             end
-            iendo=strmatch(endo_prior_restrictions.irf{j,1},varlist,'exact');
-            iexo=strmatch(endo_prior_restrictions.irf{j,2},Model.exo_names,'exact');
+            iendo=strmatch(endo_prior_restrictions.irf{j,1}, varlist, 'exact');
+            iexo=strmatch(endo_prior_restrictions.irf{j,2}, Model.exo_names, 'exact');
             data_irf{j}=[data_irf{j}; [t RR(iendo,iexo)]];
             if (RR(iendo,iexo)>endo_prior_restrictions.irf{j,4}(1)) && (RR(iendo,iexo)<endo_prior_restrictions.irf{j,4}(2))
                 info_irf(j,:)=info_irf(j,:).*[0, 0];
@@ -109,7 +109,7 @@ if ~isempty(endo_prior_restrictions.moment)
         return
     end
     data_moment=cell(size(endo_prior_restrictions.moment,1),1);
-    var_list_=endo_prior_restrictions.moment{1,1};
+    var_list_ = endo_prior_restrictions.moment{1,1};
     for  j=1:size(endo_prior_restrictions.moment,1)
         tmp=endo_prior_restrictions.moment{j,1};
         if ~ismember(tmp,cellstr(var_list_))
@@ -130,7 +130,7 @@ if ~isempty(endo_prior_restrictions.moment)
     nvar = size(var_list_,1);
     ivar=zeros(nvar,1);
     for i=1:nvar
-        i_tmp = strmatch(var_list_(i,:),Model.endo_names,'exact');
+        i_tmp = strmatch(var_list_(i,:), Model.endo_names, 'exact');
         if isempty(i_tmp)
             error (['One of the variable specified does not exist'])
         else

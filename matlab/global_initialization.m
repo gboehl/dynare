@@ -11,7 +11,7 @@ function global_initialization()
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2003-2017 Dynare Team
+% Copyright (C) 2003-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -678,7 +678,7 @@ options_.particleswarm = particleswarm;
 
 % prior analysis
 options_.prior_mc = 20000;
-options_.prior_analysis_endo_var_list = [];
+options_.prior_analysis_endo_var_list = {};
 
 % did model undergo block decomposition + minimum feedback set computation ?
 options_.block = 0;

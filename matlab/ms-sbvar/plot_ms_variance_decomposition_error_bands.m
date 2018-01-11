@@ -15,7 +15,7 @@ function plot_ms_variance_decomposition_error_bands(M_, options_, vddata, figure
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2011-2017 Dynare Team
+% Copyright (C) 2011-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -34,28 +34,28 @@ function plot_ms_variance_decomposition_error_bands(M_, options_, vddata, figure
 
 nvars = M_.endo_nbr;
 endo_names = M_.endo_names;
-var_list = endo_names(1:M_.orig_endo_nbr,:);
+var_list = endo_names(1:M_.orig_endo_nbr);
 
 names = {};
 tex_names = {};
 m = 1;
-for i = 1:size(var_list)
-    tmp = strmatch(var_list(i,:), endo_names, 'exact');
+for i = 1:length(var_list)
+    tmp = strmatch(var_list{i}, endo_names, 'exact');
     if isempty(tmp)
-        error([var_list(i,:) ' isn''t an endogenous variable'])
+        error([var_list{i} ' isn''t an endogenous variable'])
     end
-    tex_name = deblank(M_.endo_names_tex(tmp,:));
+    tex_name = M_.endo_names_tex{tmp};
     if ~isempty(tex_name)
-        names{m} = deblank(var_list(i,:));
+        names{m} = var_list{i};
         tex_names{m} = tex_name;
         m = m + 1;
     end
 end
 
 for i=1:M_.exo_nbr
-    tex_name = deblank(M_.exo_names_tex(i,:));
+    tex_name = M_.exo_names_tex{i};
     if ~isempty(tex_name)
-        names{m} = deblank(M_.exo_names(i,:));
+        names{m} = M_.exo_names{i};
         tex_names{m} = tex_name;
         m = m + 1;
     end
@@ -67,7 +67,7 @@ if length(dims) ~= 3
 end
 num_percentiles = dims(1);
 
-if size(endo_names, 1) ~= nvars
+if length(endo_names) ~= nvars
     error('The names passed are not the same length as the number of variables')
 end
 
@@ -79,7 +79,7 @@ for s=1:nvars
         end
     end
     plot_banded_vddata_for_shock(shock, nvars, endo_names, ...
-                                 deblank(endo_names(s,:)), figure_name, ...
+                                 endo_names{s}, figure_name, ...
                                  [options_.ms.output_file_tag filesep 'Output' filesep 'Variance_Decomposition'], ...
                                  options_, names, tex_names);
 end
@@ -96,8 +96,8 @@ for k=1:nvars
         hold on
     end
     hold off
-    disp([endo_names(k,:) ' contribution to ' shock_name]);
-    title([endo_names(k,:) ' contribution to ' shock_name]);
+    disp([endo_names{k} ' contribution to ' shock_name]);
+    title([endo_names{k} ' contribution to ' shock_name]);
 end
 dyn_save_graph(dirname, [figure_name ' ' shock_name], ...
                options_.graph_save_formats, options_.TeX, names, tex_names, ...

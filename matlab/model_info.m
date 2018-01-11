@@ -1,7 +1,7 @@
 function model_info(varargin)
 %function model_info;
 
-% Copyright (C) 2008-2017 Dynare Team
+% Copyright (C) 2008-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -57,9 +57,9 @@ if(isfield(M_,block_structre_str))
         end
         for j=1:size_block
             if(j==1)
-                fprintf('| %10d | %10d | %30s | %14d | %-6d %24s |\n',i,size_block,Sym_type(block_structure.block(i).Simulation_Type),block_structure.block(i).equation(j),block_structure.block(i).variable(j),M_.endo_names(block_structure.block(i).variable(j),:));
+                fprintf('| %10d | %10d | %30s | %14d | %-6d %24s |\n',i,size_block,Sym_type(block_structure.block(i).Simulation_Type),block_structure.block(i).equation(j),block_structure.block(i).variable(j),M_.endo_names{block_structure.block(i).variable(j)});
             else
-                fprintf('| %10s | %10s | %30s | %14d | %-6d %24s |\n','','','',block_structure.block(i).equation(j),block_structure.block(i).variable(j),M_.endo_names(block_structure.block(i).variable(j),:));
+                fprintf('| %10s | %10s | %30s | %14d | %-6d %24s |\n','','','',block_structure.block(i).equation(j),block_structure.block(i).variable(j),M_.endo_names{block_structure.block(i).variable(j)});
             end
         end
     end
@@ -76,7 +76,7 @@ if(isfield(M_,block_structre_str))
         last=99999999;
         for i=1:size_IM
             if(last~=IM(i,2))
-                fprintf('\n%-30s',M_.endo_names(IM(i,2),:));
+                fprintf('\n%-30s',M_.endo_names{IM(i,2)});
             end
             fprintf(' %5d',IM(i,1));
             last=IM(i,2);
@@ -100,7 +100,7 @@ if(isfield(M_,block_structre_str))
             last=99999999;
             for i=1:size_IM
                 if(last~=IM(i,2))
-                    fprintf('\n%-30s',M_.endo_names(IM(i,2),:));
+                    fprintf('\n%-30s',M_.endo_names{IM(i,2)});
                 end
                 fprintf(' %5d',IM(i,1));
                 last=IM(i,2);
@@ -122,16 +122,16 @@ if(isfield(M_,block_structre_str))
         end
     end
     seq = 1: M_.endo_nbr;
-    blank = [ blanks(size(M_.endo_names,2)); blanks(size(M_.endo_names,2))];
+    blank = [ blanks(cellofchararraymaxlength(M_.endo_names)); blanks(cellofchararraymaxlength(M_.endo_names))];
     for i = 1:M_.endo_nbr
         if i == 1
-            var_names = [blank; M_.endo_names(i,:)];
+            var_names = char(blank, M_.endo_names{i});
         else
-            var_names = [var_names; blank; M_.endo_names(i,:)];
+            var_names = char(var_names, blank, M_.endo_names{i});
         end
     end
     if incidence
-        topp = [char(kron(double(blanks(ceil(log10(M_.endo_nbr)))),ones(size(M_.endo_names,2),1))) var_names' ];
+        topp = [char(kron(double(blanks(ceil(log10(M_.endo_nbr)))),ones(cellofchararraymaxlength(M_.endo_names),1))) var_names' ];
         bott = [int2str(seq') blanks(M_.endo_nbr)' blanks(M_.endo_nbr)' IM_star];
         fprintf('\n                                          Gross incidence matrix\n');
         fprintf('                                          =======================\n');
@@ -141,7 +141,7 @@ if(isfield(M_,block_structre_str))
         IM_star_reordered = char([kron(ones(M_.endo_nbr, M_.endo_nbr-1), double(blanks(3))) double(blanks(M_.endo_nbr)')]);
         eq(block_structure.equation_reordered) = seq;
         va(block_structure.variable_reordered) = seq;
-        barre_blank = [ barre(size(M_.endo_names,2)); blanks(size(M_.endo_names,2))];
+        barre_blank = [ barre(cellofchararraymaxlength(M_.endo_names)); blanks(cellofchararraymaxlength(M_.endo_names))];
         cur_block = 1;
         for i = 1:M_.endo_nbr
             past_block = cur_block;
@@ -149,16 +149,16 @@ if(isfield(M_,block_structre_str))
                 cur_block = cur_block + 1;
             end
             if i == 1
-                var_names = [blank; M_.endo_names(block_structure.variable_reordered(i),:)];
+                var_names = [blank; M_.endo_names{block_structure.variable_reordered(i)}];
             else
                 if past_block ~= cur_block
-                    var_names = [var_names; barre_blank; M_.endo_names(block_structure.variable_reordered(i),:)];
+                    var_names = [var_names; barre_blank; M_.endo_names{block_structure.variable_reordered(i)}];
                 else
-                    var_names = [var_names; blank; M_.endo_names(block_structure.variable_reordered(i),:)];
+                    var_names = [var_names; blank; M_.endo_names{block_structure.variable_reordered(i)}];
                 end
             end
         end
-        topp = [char(kron(double(blanks(ceil(log10(M_.endo_nbr)))),ones(size(M_.endo_names,2),1))) var_names' ];
+        topp = [char(kron(double(blanks(ceil(log10(M_.endo_nbr)))),ones(cellofchararraymaxlength(M_.endo_names),1))) var_names' ];
         n_state_var = length(M_.state_var);
         IM_state_var = zeros(n_state_var, n_state_var);
         inv_variable_reordered(block_structure.variable_reordered) = 1:M_.endo_nbr;

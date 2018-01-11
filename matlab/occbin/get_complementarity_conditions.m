@@ -1,6 +1,6 @@
 function [lb,ub,eq_index] = get_complementarity_conditions(M,ramsey_policy)
 
-% Copyright (C) 2014 Dynare Team
+% Copyright (C) 2014-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -43,7 +43,7 @@ for i=1:size(etags,1)
         str = etags{i,3};
         kop = strfind(etags{i,3},'<');
         if ~isempty(kop)
-                k = find(strcmp(strtrim(str(1:kop-1)),cellstr(M.endo_names)));
+                k = find(strcmp(strtrim(str(1:kop-1)), M.endo_names));
                 if isempty(k)
                     error(sprintf(['Complementarity condition %s: variable %s is ' ...
                                    'not recognized',etags{i,3},b{1}]))
@@ -54,7 +54,7 @@ for i=1:size(etags,1)
         else
             kop = strfind(etags{i,3},'>');
             if ~isempty(kop)
-                k = find(strcmp(strtrim(str(1:kop-1)),cellstr(M.endo_names)));
+                k = find(strcmp(strtrim(str(1:kop-1)), M.endo_names));
                 if isempty(k)
                     error(sprintf(['Complementarity condition %s: variable %s is ' ...
                                    'not recognized',etags{i},b{1}]))

@@ -11,8 +11,8 @@ function data_set = det_cond_forecast(varargin)
 % OUTPUTS
 %  dataset                [dseries]     Returns a dseries containing the forecasted endgenous variables and shocks
 %
-%
-% Copyright (C) 2013-2017 Dynare Team
+
+% Copyright (C) 2013-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -70,10 +70,7 @@ if length(varargin) > 3
     controlled_varexo = options_cond_fcst.controlled_varexo;
     nvarexo = size(controlled_varexo, 1);
     options_cond_fcst.controlled_varexo = zeros(nvarexo,1);
-    exo_names = cell(M_.exo_nbr,1);
-    for i = 1:M_.exo_nbr
-        exo_names{i} = deblank(M_.exo_names(i,:));
-    end
+    exo_names = M_.exo_names;
     for i = 1:nvarexo
         j = find(strcmp(controlled_varexo(i,:), exo_names));
         if ~isempty(j)
@@ -132,12 +129,12 @@ else
             end
             for i = 1:length(M_.aux_vars)
                 if M_.aux_vars(i).type == 1 %lag variable
-                    iy = find(strcmp(deblank(M_.endo_names(M_.aux_vars(i).orig_index,:)), sym_dset.name));
+                    iy = find(strcmp(M_.endo_names{M_.aux_vars(i).orig_index}, sym_dset.name));
                     if ~isempty(iy)
                         oo_.endo_simul(M_.aux_vars(i).endo_index, 1:sym_dset.nobs) = dset(dates(range(1) + (M_.aux_vars(i).orig_lead_lag - 1))).data(:,iy);
                         initial_conditions(M_.aux_vars(i).endo_index) = dset(dates(range(1) + (M_.aux_vars(i).orig_lead_lag - 1))).data(:,iy);
                     else
-                        warning(['The variable auxiliary ' M_.endo_names(M_.aux_vars(i).endo_index, :) ' associated to the variable ' M_.endo_names(M_.aux_vars(i).orig_index,:) ' do not appear in the dataset']);
+                        warning(['The variable auxiliary ' M_.endo_names{M_.aux_vars(i).endo_index} ' associated to the variable ' M_.endo_names{M_.aux_vars(i).orig_index} ' do not appear in the dataset']);
                     end
                 else
                     oo_.endo_simul(M_.aux_vars(i).endo_index, 1:sym_dset.nobs) = repmat(oo_.steady_state(M_.aux_vars(i).endo_index), 1, range.ndat + 1);
@@ -185,11 +182,11 @@ else
                 end
                 data_set = [dset(dset.dates(1):(plan.date(1)-1)) ; data_set];
                 for i=1:M_.exo_nbr
-                    pos = find(strcmp(strtrim(M_.exo_names(i,:)),dset.name));
+                    pos = find(strcmp(M_.exo_names{i}, dset.name));
                     if isempty(pos)
-                        data_set{strtrim(M_.exo_names(i,:))} = dseries(exo(1+M_.maximum_lag:end,i), plan.date(1), strtrim(M_.exo_names(i,:)));
+                        data_set{M_.exo_names{i}} = dseries(exo(1+M_.maximum_lag:end,i), plan.date(1), M_.exo_names{i});
                     else
-                        data_set{strtrim(M_.exo_names(i,:))}(plan.date(1):plan.date(1)+ (size(exo, 1) - M_.maximum_lag)) = exo(1+M_.maximum_lag:end,i);
+                        data_set{M_.exo_names{i}}(plan.date(1):plan.date(1)+ (size(exo, 1) - M_.maximum_lag)) = exo(1+M_.maximum_lag:end,i);
                     end
                 end
                 data_set = merge(dset(dset.dates(1):(plan.date(1)-1)), data_set);
@@ -359,7 +356,7 @@ else
     controlled_varexo = zeros(1,n_control_exo);
     for i = 1:nx
         for j=1:n_control_exo
-            if strcmp(deblank(exo_names(i,:)), deblank(options_cond_fcst.controlled_varexo(j,:)))
+            if strcmp(exo_names{i}, deblank(options_cond_fcst.controlled_varexo(j,:)))
                 controlled_varexo(j) = i;
             end
         end

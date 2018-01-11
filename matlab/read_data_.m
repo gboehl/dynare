@@ -12,7 +12,7 @@ function read_data_()
 % SPECIAL REQUIREMENT
 %   none
 
-% Copyright (C) 2007-2017 Dynare Team
+% Copyright (C) 2007-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -71,7 +71,5 @@ if size(oo_.exo_simul,1) < M_.maximum_lag+M_.maximum_lead+options_.periods
     oo_.exo_simul=(Values(positions,:))';
     fclose(fid);
 end
-%disp([allVariables M_.endo_names]);
-%disp(positions);
 
 end

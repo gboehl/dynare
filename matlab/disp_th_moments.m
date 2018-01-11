@@ -1,7 +1,8 @@
-function oo_=disp_th_moments(dr,var_list,M_,options_,oo_)
+function oo_ = disp_th_moments(dr, var_list, M_, options_, oo_)
+
 % Display theoretical moments of variables
 
-% Copyright (C) 2001-2017 Dynare Team
+% Copyright (C) 2001-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -22,21 +23,21 @@ nodecomposition = options_.nodecomposition;
 if options_.one_sided_hp_filter
     error(['disp_th_moments:: theoretical moments incompatible with one-sided HP filter. Use simulated moments instead'])
 end
-if size(var_list,1) == 0
-    var_list = M_.endo_names(1:M_.orig_endo_nbr, :);
+if isempty(var_list)
+    var_list = M_.endo_names(1:M_.orig_endo_nbr);
 end
-nvar = size(var_list,1);
+nvar = length(var_list);
 ivar=zeros(nvar,1);
 for i=1:nvar
-    i_tmp = strmatch(var_list(i,:),M_.endo_names,'exact');
+    i_tmp = strmatch(var_list{i}, M_.endo_names, 'exact');
     if isempty(i_tmp)
-        error (['One of the variable specified does not exist']) ;
+        error ('One of the variable specified does not exist');
     else
         ivar(i) = i_tmp;
     end
 end
 
-[oo_.gamma_y,stationary_vars] = th_autocovariances(dr,ivar,M_,options_, nodecomposition);
+[oo_.gamma_y,stationary_vars] = th_autocovariances(dr, ivar, M_, options_, nodecomposition);
 m = dr.ys(ivar);
 non_stationary_vars = setdiff(1:length(ivar),stationary_vars);
 m(non_stationary_vars) = NaN;
@@ -71,75 +72,73 @@ if size(stationary_vars, 1) > 0
     end
     if ~options_.noprint %options_.nomoments == 0
         if options_.order == 2
-            title='APPROXIMATED THEORETICAL MOMENTS';
+            title = 'APPROXIMATED THEORETICAL MOMENTS';
         else
-            title='THEORETICAL MOMENTS';
+            title = 'THEORETICAL MOMENTS';
         end
-        title=add_filter_subtitle(title,options_);
-        headers=char('VARIABLE','MEAN','STD. DEV.','VARIANCE');
-        labels = deblank(M_.endo_names(ivar,:));
-        lh = size(labels,2)+2;
-        dyntable(options_,title,headers,labels,z,lh,11,4);
+        title = add_filter_subtitle(title, options_);
+        headers = {'VARIABLE';'MEAN';'STD. DEV.';'VARIANCE'};
+        labels = M_.endo_names(ivar);
+        lh = cellofchararraymaxlength(labels)+2;
+        dyntable(options_, title, headers, labels, z, lh, 11, 4);
         if options_.TeX
-            labels = deblank(M_.endo_names_tex(ivar,:));
-            lh = size(labels,2)+2;
-            dyn_latex_table(M_,options_,title,'th_moments',headers,labels,z,lh,11,4);
+            labels = M_.endo_names_tex(ivar);
+            lh = cellofchararraymaxlength(labels)+2;
+            dyn_latex_table(M_, options_, title, 'th_moments', headers, labels, z, lh, 11, 4);
         end
 
         if M_.exo_nbr > 1 && ~nodecomposition
             skipline()
             if options_.order == 2
-                title='APPROXIMATED VARIANCE DECOMPOSITION (in percent)';
+                title = 'APPROXIMATED VARIANCE DECOMPOSITION (in percent)';
             else
-                title='VARIANCE DECOMPOSITION (in percent)';
+                title = 'VARIANCE DECOMPOSITION (in percent)';
             end
-            title=add_filter_subtitle(title,options_);
+            title = add_filter_subtitle(title, options_);
             headers = M_.exo_names;
-            headers(M_.exo_names_orig_ord,:) = headers;
-            headers = char(' ',headers);
-            lh = size(deblank(M_.endo_names(ivar(stationary_vars),:)),2)+2;
-            dyntable(options_,title,headers,deblank(M_.endo_names(ivar(stationary_vars), ...
-                                                              :)),100* ...
-                     oo_.gamma_y{options_.ar+2}(stationary_vars,:),lh,8,2);
+            headers(M_.exo_names_orig_ord) = headers;
+            headers = vertcat(' ', headers);
+            lh = cellofchararraymaxlength(M_.endo_names(ivar(stationary_vars)))+2;
+            dyntable(options_, title, headers, M_.endo_names(ivar(stationary_vars)), 100*oo_.gamma_y{options_.ar+2}(stationary_vars,:), lh, 8, 2);
             if ME_present
-                [stationary_observables,pos_index_subset]=intersect(index_subset,stationary_vars,'stable');
-                headers_ME=char(headers,'ME');
-                dyntable(options_,[title,' WITH MEASUREMENT ERROR'],headers_ME,deblank(M_.endo_names(ivar(stationary_observables), ...
-                                                  :)),oo_.variance_decomposition_ME(pos_index_subset,:),lh,8,2);
+                [stationary_observables, pos_index_subset] = intersect(index_subset, stationary_vars, 'stable');
+                headers_ME = vertcat(headers, 'ME');
+                dyntable(options_, [title,' WITH MEASUREMENT ERROR'], headers_ME, M_.endo_names(ivar(stationary_observables)), ...
+                         oo_.variance_decomposition_ME(pos_index_subset,:), lh, 8, 2);
             end
             if options_.TeX
-                headers=M_.exo_names_tex;
-                headers = char(' ',headers);
-                labels = deblank(M_.endo_names_tex(ivar(stationary_vars),:));
-                lh = size(labels,2)+2;
-                dyn_latex_table(M_,options_,title,'th_var_decomp_uncond',headers,labels,100*oo_.gamma_y{options_.ar+2}(stationary_vars,:),lh,8,2);
+                headers = M_.exo_names_tex;
+                headers = vertcat(' ', headers);
+                labels = M_.endo_names_tex(ivar(stationary_vars));
+                lh = cellofchararraymaxlength(labels)+2;
+                dyn_latex_table(M_, options_, title, 'th_var_decomp_uncond', headers, labels, 100*oo_.gamma_y{options_.ar+2}(stationary_vars,:), lh, 8, 2);
                 if ME_present
-                    headers_ME=char(headers,'ME');
-                    dyn_latex_table(M_,options_,[title,' WITH MEASUREMENT ERROR'],'th_var_decomp_uncond_ME',headers_ME,labels,oo_.variance_decomposition_ME(pos_index_subset,:),lh,8,2);
+                    headers_ME = vertcat(headers, 'ME');
+                    dyn_latex_table(M_, options_, [title,' WITH MEASUREMENT ERROR'], ...
+                                    'th_var_decomp_uncond_ME', headers_ME, labels, oo_.variance_decomposition_ME(pos_index_subset,:), lh, 8, 2);
                 end
             end
         end
     end
-
     conditional_variance_steps = options_.conditional_variance_decomposition;
     if length(conditional_variance_steps)
         StateSpaceModel.number_of_state_equations = M_.endo_nbr;
         StateSpaceModel.number_of_state_innovations = M_.exo_nbr;
         StateSpaceModel.sigma_e_is_diagonal = M_.sigma_e_is_diagonal;
-        [StateSpaceModel.transition_matrix,StateSpaceModel.impulse_matrix] = kalman_transition_matrix(dr,(1:M_.endo_nbr)',M_.nstatic+(1:M_.nspred)',M_.exo_nbr);
+        [StateSpaceModel.transition_matrix, StateSpaceModel.impulse_matrix] = ...
+            kalman_transition_matrix(dr,(1:M_.endo_nbr)',M_.nstatic+(1:M_.nspred)',M_.exo_nbr);
         StateSpaceModel.state_innovations_covariance_matrix = M_.Sigma_e;
         StateSpaceModel.order_var = dr.order_var;
-        StateSpaceModel.measurement_error=M_.H;
-        StateSpaceModel.observable_pos=options_.varobs_id;
-        [oo_.conditional_variance_decomposition, oo_.conditional_variance_decomposition_ME]= conditional_variance_decomposition(StateSpaceModel,conditional_variance_steps,ivar);
-
+        StateSpaceModel.measurement_error = M_.H;
+        StateSpaceModel.observable_pos = options_.varobs_id;
+        [oo_.conditional_variance_decomposition, oo_.conditional_variance_decomposition_ME] = ...
+            conditional_variance_decomposition(StateSpaceModel, conditional_variance_steps, ivar);
         if options_.noprint == 0
-            display_conditional_variance_decomposition(oo_.conditional_variance_decomposition,conditional_variance_steps,...
-                                                       ivar,M_,options_);
+            display_conditional_variance_decomposition(oo_.conditional_variance_decomposition, conditional_variance_steps, ivar, M_, options_);
             if ME_present
-                display_conditional_variance_decomposition(oo_.conditional_variance_decomposition_ME,conditional_variance_steps,...
-                                                       observable_pos_requested_vars,M_,options_);               
-            end                                                       
+                display_conditional_variance_decomposition(oo_.conditional_variance_decomposition_ME, conditional_variance_steps, ...
+                                                           observable_pos_requested_vars, M_, options_);               
+            end                                                    
         end
     end
 end
@@ -151,32 +150,33 @@ if length(i1) == 0
     return
 end
 
-if options_.nocorr == 0 && size(stationary_vars, 1) > 0
-    corr=NaN(size(oo_.gamma_y{1}));
+if options_.nocorr == 0 && size(stationary_vars, 1)>0
+    corr = NaN(size(oo_.gamma_y{1}));
     corr(i1,i1) = oo_.gamma_y{1}(i1,i1)./(sd(i1)*sd(i1)');
     if options_.contemporaneous_correlation 
         oo_.contemporaneous_correlation = corr;
     end
     if ~options_.noprint
         skipline()
-        if options_.order == 2
-            title='APPROXIMATED MATRIX OF CORRELATIONS';
+        if options_.order==2
+            title = 'APPROXIMATED MATRIX OF CORRELATIONS';
         else
-            title='MATRIX OF CORRELATIONS';
+            title = 'MATRIX OF CORRELATIONS';
         end
-        title=add_filter_subtitle(title,options_);
-        labels = deblank(M_.endo_names(ivar(i1),:));
-        headers = char('Variables',labels);
-        lh = size(labels,2)+2;
-        dyntable(options_,title,headers,labels,corr(i1,i1),lh,8,4);
+        title = add_filter_subtitle(title, options_);
+        labels = M_.endo_names(ivar(i1));
+        headers = vertcat('Variables', labels);
+        lh = cellofchararraymaxlength(labels)+2;
+        dyntable(options_, title, headers, labels, corr(i1,i1), lh, 8, 4);
         if options_.TeX
-            labels = deblank(M_.endo_names_tex(ivar(i1),:));
-            headers=char('Variables',labels);
-            lh = size(labels,2)+2;
-            dyn_latex_table(M_,options_,title,'th_corr_matrix',headers,labels,corr(i1,i1),lh,8,4);
+            labels = M_.endo_names_tex(ivar(i1));
+            headers = vertcat('Variables', labels);
+            lh = cellofchararraymaxlength(labels)+2;
+            dyn_latex_table(M_, options_, title, 'th_corr_matrix', headers, labels, corr(i1,i1), lh, 8, 4);
         end
     end
 end
+
 if options_.ar > 0 && size(stationary_vars, 1) > 0
     z=[];
     for i=1:options_.ar
@@ -186,20 +186,20 @@ if options_.ar > 0 && size(stationary_vars, 1) > 0
     if ~options_.noprint
         skipline()
         if options_.order == 2
-            title='APPROXIMATED COEFFICIENTS OF AUTOCORRELATION';
+            title = 'APPROXIMATED COEFFICIENTS OF AUTOCORRELATION';
         else
-            title='COEFFICIENTS OF AUTOCORRELATION';
+            title = 'COEFFICIENTS OF AUTOCORRELATION';
         end
-        title=add_filter_subtitle(title,options_);
-        labels = deblank(M_.endo_names(ivar(i1),:));
-        headers = char('Order ',int2str([1:options_.ar]'));
-        lh = size(labels,2)+2;
-        dyntable(options_,title,headers,labels,z,lh,8,4);
+        title = add_filter_subtitle(title, options_);
+        labels = M_.endo_names(ivar(i1));
+        headers = vertcat('Order ', cellstr(int2str([1:options_.ar]')));
+        lh = cellofchararraymaxlength(labels)+2;
+        dyntable(options_, title, headers, labels, z, lh, 8, 4);
         if options_.TeX
-            labels = deblank(M_.endo_names_tex(ivar(i1),:));
-            headers=char('Order ',int2str([1:options_.ar]'));
-            lh = size(labels,2)+2;
-            dyn_latex_table(M_,options_,title,'th_autocorr_matrix',headers,labels,z,lh,8,4);
+            labels = M_.endo_names_tex(ivar(i1));
+            headers = vertcat('Order ', cellstr(int2str([1:options_.ar]')));
+            lh = cellofchararraymaxlength(labels)+2;
+            dyn_latex_table(M_, options_, title, 'th_autocorr_matrix', headers, labels, z, lh, 8, 4);
         end
     end
 end

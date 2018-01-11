@@ -1,6 +1,6 @@
 function jndx = subset()
 
-% Copyright (C) 2006-2017 Dynare Team
+% Copyright (C) 2006-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -77,7 +77,7 @@ else
                 tt = [tt;tmp];
             end
         else% Excluded parameters are deep parameters...
-            tmp = strmatch(ExcludedParamNames{i},M_.param_names(estim_params_.param_vals(:,1),:),'exact');
+            tmp = strmatch(ExcludedParamNames{i}, M_.param_names(estim_params_.param_vals(:,1)),'exact');
             if ~isempty(tmp)
                 tt = [tt;nvx+nvn+ncx+ncn+tmp];
             else

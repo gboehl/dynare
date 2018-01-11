@@ -18,7 +18,7 @@ function [xparam1, estim_params_, bayestopt_, lb, ub, M_]=set_prior(estim_params
 % SPECIAL REQUIREMENTS
 %    None
 
-% Copyright (C) 2003-2017 Dynare Team
+% Copyright (C) 2003-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -71,7 +71,7 @@ if nvx
     bayestopt_.p3 =  estim_params_.var_exo(:,8); %take generalized distribution into account
     bayestopt_.p4 =  estim_params_.var_exo(:,9); %take generalized distribution into account
     bayestopt_.jscale =  estim_params_.var_exo(:,10);
-    bayestopt_.name = cellstr(M_.exo_names(estim_params_.var_exo(:,1),:));
+    bayestopt_.name = M_.exo_names(estim_params_.var_exo(:,1));
 end
 if nvn
     estim_params_.nvn_observable_correspondence=NaN(nvn,1); % stores number of corresponding observable
@@ -81,9 +81,9 @@ if nvn
         M_.Correlation_matrix_ME = eye(nvarobs);
     end
     for i=1:nvn
-        obsi_ = strmatch(deblank(M_.endo_names(estim_params_.var_endo(i,1),:)),options_.varobs,'exact');
+        obsi_ = strmatch(M_.endo_names{estim_params_.var_endo(i,1)}, options_.varobs, 'exact');
         if isempty(obsi_)
-            error(['The variable ' deblank(M_.endo_names(estim_params_.var_endo(i,1),:)) ' has to be declared as observable since you assume a measurement error on it.'])
+            error(['The variable ' M_.endo_names{estim_params_.var_endo(i,1)} ' has to be declared as observable since you assume a measurement error on it.'])
         end
         estim_params_.nvn_observable_correspondence(i,1)=obsi_;
     end
@@ -96,7 +96,7 @@ if nvn
     bayestopt_.p3 = [ bayestopt_.p3; estim_params_.var_endo(:,8)]; %take generalized distribution into account
     bayestopt_.p4 = [ bayestopt_.p4; estim_params_.var_endo(:,9)]; %take generalized distribution into account
     bayestopt_.jscale = [ bayestopt_.jscale; estim_params_.var_endo(:,10)];
-    bayestopt_.name = [ bayestopt_.name; transpose(options_.varobs(estim_params_.nvn_observable_correspondence))];
+    bayestopt_.name = [ bayestopt_.name; options_.varobs(estim_params_.nvn_observable_correspondence)];
 end
 if ncx
     xparam1 = [xparam1; estim_params_.corrx(:,3)];
@@ -108,9 +108,13 @@ if ncx
     bayestopt_.p3 = [ bayestopt_.p3; estim_params_.corrx(:,9)]; %take generalized distribution into account
     bayestopt_.p4 = [ bayestopt_.p4; estim_params_.corrx(:,10)]; %take generalized distribution into account
     bayestopt_.jscale = [ bayestopt_.jscale; estim_params_.corrx(:,11)];
-    bayestopt_.name = [bayestopt_.name; cellstr([repmat('corr ',ncx,1)...
-                        deblank(M_.exo_names(estim_params_.corrx(:,1),:)) ...
-                        repmat(', ',ncx,1) , deblank(M_.exo_names(estim_params_.corrx(:,2),:))])];
+    baseid = length(bayestopt_.name);
+    bayestopt_.name = [bayestopt_.name; cell(ncx, 1)];
+    for i = 1:ncx
+        bayestopt_.name(baseid+i) = {sprintf('corr %s, %s', ...
+                                      M_.exo_names{estim_params_.corrx(i,1)}, ...
+                                      M_.exo_names{estim_params_.corrx(i,2)})};
+    end
 end
 if ncn
     estim_params_.corrn_observable_correspondence=NaN(ncn,2);
@@ -128,15 +132,19 @@ if ncn
     bayestopt_.p3 = [ bayestopt_.p3; estim_params_.corrn(:,9)]; %take generalized distribution into account
     bayestopt_.p4 = [ bayestopt_.p4; estim_params_.corrn(:,10)]; %take generalized distribution into account
     bayestopt_.jscale = [ bayestopt_.jscale; estim_params_.corrn(:,11)];
-    bayestopt_.name = [bayestopt_.name; cellstr([repmat('corr ',ncn,1) ...
-                        deblank(M_.endo_names(estim_params_.corrn(:,1),:)) ...
-                        repmat(', ',ncn,1) , deblank(M_.endo_names(estim_params_.corrn(:,2),:))])];
+    baseid = length(bayestopt_.name);
+    bayestopt_.name = [bayestopt_.name; cell(ncn, 1)]; [bayestopt_.name; cellstr([repmat('corr ',ncn,1) ...
+                        M_.endo_names{estim_params_.corrn(:,1)} ...
+                        repmat(', ',ncn,1) , M_.endo_names{estim_params_.corrn(:,2)}])];
     for i=1:ncn
         k1 = estim_params_.corrn(i,1);
         k2 = estim_params_.corrn(i,2);
-        obsi1 = strmatch(deblank(M_.endo_names(k1,:)),options_.varobs,'exact'); %find correspondence to varobs to construct H in set_all_paramters
-        obsi2 = strmatch(deblank(M_.endo_names(k2,:)),options_.varobs,'exact');
-        estim_params_.corrn_observable_correspondence(i,:)=[obsi1,obsi2]; %save correspondence
+        bayestopt_.name(baseid+i) = {sprintf('corr %s, %s', M_.endo_names{k1}, M_.endo_names{k2})};
+        % find correspondence to varobs to construct H in set_all_paramters
+        obsi1 = strmatch(M_.endo_names{k1}, options_.varobs, 'exact');
+        obsi2 = strmatch(M_.endo_names{k2}, options_.varobs, 'exact');
+        % save correspondence
+        estim_params_.corrn_observable_correspondence(i,:)=[obsi1, obsi2];
     end
 end
 if np
@@ -149,7 +157,7 @@ if np
     bayestopt_.p3 = [ bayestopt_.p3; estim_params_.param_vals(:,8)]; %take generalized distribution into account
     bayestopt_.p4 = [ bayestopt_.p4; estim_params_.param_vals(:,9)]; %take generalized distribution into account
     bayestopt_.jscale = [ bayestopt_.jscale; estim_params_.param_vals(:,10)];
-    bayestopt_.name = [bayestopt_.name; cellstr(M_.param_names(estim_params_.param_vals(:,1),:))];
+    bayestopt_.name = [bayestopt_.name; M_.param_names(estim_params_.param_vals(:,1))];
 end
 
 bayestopt_.p6 = NaN(size(bayestopt_.p1)) ;

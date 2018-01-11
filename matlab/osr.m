@@ -1,4 +1,4 @@
-function osr_res = osr(var_list,params,i_var,W)
+function osr_res = osr(var_list, params, i_var,W)
 % osr_res = osr(var_list,params,i_var,W)
 %   Wrapper function computing the solution to the optimal simple
 %   rule-problem; calls osr1 for actual computation
@@ -20,8 +20,8 @@ function osr_res = osr(var_list,params,i_var,W)
 %
 % SPECIAL REQUIREMENTS
 %   none.
-%
-% Copyright (C) 2001-2017 Dynare Team
+
+% Copyright (C) 2001-2018 Dynare Team
 %
 % This file is part of Dynare.
 %

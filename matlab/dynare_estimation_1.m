@@ -12,7 +12,7 @@ function dynare_estimation_1(var_list_,dname)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2003-2017 Dynare Team
+% Copyright (C) 2003-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -141,8 +141,10 @@ missing_value = dataset_info.missing.state;
 
 % Set number of observations
 gend = dataset_.nobs;
+
 % Set the number of observed variables.
 n_varobs = length(options_.varobs);
+
 % Get the number of parameters to be estimated.
 nvx = estim_params_.nvx;  % Variance of the structural innovations (number of parameters).
 nvn = estim_params_.nvn;  % Variance of the measurement innovations (number of parameters).
@@ -150,8 +152,9 @@ ncx = estim_params_.ncx;  % Covariance of the structural innovations (number of 
 ncn = estim_params_.ncn;  % Covariance of the measurement innovations (number of parameters).
 np  = estim_params_.np ;  % Number of deep parameters.
 nx  = nvx+nvn+ncx+ncn+np; % Total number of parameters to be estimated.
-%% Set the names of the priors.
-pnames = ['     '; 'beta '; 'gamm '; 'norm '; 'invg '; 'unif '; 'invg2'; '     '; 'weibl'];
+
+% Set the names of the priors.
+pnames = {''; 'beta'; 'gamm'; 'norm'; 'invg'; 'unif'; 'invg2'; ''; 'weibl'};
 
 dr = oo_.dr;
 
@@ -358,7 +361,7 @@ end
 
 if any(bayestopt_.pshape > 0) && ~options_.mh_posterior_mode_estimation
     % display results table and store parameter estimates and standard errors in results
-    oo_=display_estimation_results_table(xparam1,stdh,M_,options_,estim_params_,bayestopt_,oo_,pnames,'Posterior','posterior');
+    oo_ = display_estimation_results_table(xparam1, stdh, M_, options_, estim_params_, bayestopt_, oo_, pnames, 'Posterior', 'posterior');
     % Laplace approximation to the marginal log density:
     if options_.cova_compute
         estim_params_nbr = size(xparam1,1);
@@ -376,7 +379,7 @@ if any(bayestopt_.pshape > 0) && ~options_.mh_posterior_mode_estimation
     end
 
 elseif ~any(bayestopt_.pshape > 0) && ~options_.mh_posterior_mode_estimation
-    oo_=display_estimation_results_table(xparam1,stdh,M_,options_,estim_params_,bayestopt_,oo_,pnames,'Maximum Likelihood','mle');
+    oo_=display_estimation_results_table(xparam1, stdh, M_, options_, estim_params_, bayestopt_, oo_, pnames, 'Maximum Likelihood', 'mle');
 end
 
 if np > 0
@@ -563,7 +566,7 @@ if (~((any(bayestopt_.pshape > 0) && options_.mh_replic) || (any(bayestopt_.psha
                 hold on
                 plot(1:gend,innov(k,:),marker_string{2,1},'linewidth',1)
                 hold off
-                name = deblank(M_.exo_names(k,:));
+                name = M_.exo_names{k};
                 if isempty(NAMES)
                     NAMES = name;
                 else
@@ -577,7 +580,7 @@ if (~((any(bayestopt_.pshape > 0) && options_.mh_replic) || (any(bayestopt_.psha
                     xlim([1 gend])
                 end
                 if options_.TeX
-                    texname = M_.exo_names_tex(k,:);
+                    texname = M_.exo_names_tex{k};
                     if isempty(TeXNAMES)
                         TeXNAMES = ['$ ' deblank(texname) ' $'];
                     else
@@ -656,12 +659,12 @@ if (~((any(bayestopt_.pshape > 0) && options_.mh_replic) || (any(bayestopt_.psha
                         set(gca,'XTickLabel',options_.XTickLabel)
                     end
                     if options_.TeX
-                        idx = strmatch(options_.varobs{index(k)},M_.endo_names,'exact');
-                        texname = M_.endo_names_tex(idx,:);
+                        idx = strmatch(options_.varobs{index(k)}, M_.endo_names, 'exact');
+                        texname = M_.endo_names_tex{idx};
                         if isempty(TeXNAMES)
-                            TeXNAMES = ['$ ' deblank(texname) ' $'];
+                            TeXNAMES = ['$ ' texname ' $'];
                         else
-                            TeXNAMES = char(TeXNAMES,['$ ' deblank(texname) ' $']);
+                            TeXNAMES = char(TeXNAMES,['$ ' texname ' $']);
                         end
                     end
                     title(name,'Interpreter','none')
@@ -731,12 +734,12 @@ if (~((any(bayestopt_.pshape > 0) && options_.mh_replic) || (any(bayestopt_.psha
                     xlim([1 gend])
                 end
                 if options_.TeX
-                    idx = strmatch(options_.varobs{k},M_.endo_names,'exact');
-                    texname = M_.endo_names_tex(idx,:);
+                    idx = strmatch(options_.varobs{k}, M_.endo_names,'exact');
+                    texname = M_.endo_names_tex{idx};
                     if isempty(TeXNAMES)
-                        TeXNAMES = ['$ ' deblank(texname) ' $'];
+                        TeXNAMES = ['$ ' texname ' $'];
                     else
-                        TeXNAMES = char(TeXNAMES,['$ ' deblank(texname) ' $']);
+                        TeXNAMES = char(TeXNAMES,['$ ' texname ' $']);
                     end
                 end
                 title(name,'Interpreter','none')

@@ -54,7 +54,7 @@ function [oo_, yf]=store_smoother_results(M_,oo_,options_,bayestopt_,dataset_,da
 %   First all smoothed variables are saved without trend and constant.
 %       Then trend and constant are added for the observed variables.
 %
-% Copyright (C) 2014-2017 Dynare Team
+% Copyright (C) 2014-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -91,12 +91,12 @@ oo_.Smoother.TrendCoeffs(options_.varobs_id)=trend_coeff; %are in order of optio
 
 if ~isempty(Trend)
     for var_iter=1:M_.endo_nbr
-        if isempty(strmatch(deblank(M_.endo_names(var_iter,:)),options_.varobs,'exact'))
-            oo_.Smoother.Trend.(deblank(M_.endo_names(var_iter,:))) = zeros(gend,1);
+        if isempty(strmatch(M_.endo_names{var_iter}, options_.varobs, 'exact'))
+            oo_.Smoother.Trend.(M_.endo_names{var_iter}) = zeros(gend,1);
         end
     end
-    for var_iter=1:size(options_.varobs,2)
-        oo_.Smoother.Trend.(deblank(options_.varobs{1,var_iter})) = Trend(var_iter,:)';
+    for var_iter=1:length(options_.varobs)
+        oo_.Smoother.Trend.(options_.varobs{var_iter}) = Trend(var_iter,:)';
     end
 end
 %% Compute constant for observables
@@ -160,22 +160,22 @@ for i_endo_in_bayestopt_smoother_varlist=bayestopt_.smoother_saved_var_list'
     elseif options_.loglinear == 0 %unlogged steady state must be used
         constant_current_variable=repmat((ys(i_endo_declaration_order)),gend,1);
     end
-    oo_.Smoother.Constant.(deblank(M_.endo_names(i_endo_declaration_order,:)))=constant_current_variable;
-    oo_.SmoothedVariables.(deblank(M_.endo_names(i_endo_declaration_order,:)))=atT(i_endo_in_dr,:)'+constant_current_variable;
+    oo_.Smoother.Constant.(M_.endo_names{i_endo_declaration_order})=constant_current_variable;
+    oo_.SmoothedVariables.(M_.endo_names{i_endo_declaration_order})=atT(i_endo_in_dr,:)'+constant_current_variable;
     if ~isempty(options_.nk) && options_.nk > 0 % && ~((any(bayestopt_.pshape > 0) && options_.mh_replic) || (any(bayestopt_.pshape> 0) && options_.load_mh_file))
-        oo_.FilteredVariables.(deblank(M_.endo_names(i_endo_declaration_order,:)))=squeeze(aK(1,i_endo_in_dr,2:end-(options_.nk-1)))+constant_current_variable;
+        oo_.FilteredVariables.(M_.endo_names{i_endo_declaration_order})=squeeze(aK(1,i_endo_in_dr,2:end-(options_.nk-1)))+constant_current_variable;
     end
-    oo_.UpdatedVariables.(deblank(M_.endo_names(i_endo_declaration_order,:)))=updated_variables(i_endo_in_dr,:)'+constant_current_variable;
+    oo_.UpdatedVariables.(M_.endo_names{i_endo_declaration_order})=updated_variables(i_endo_in_dr,:)'+constant_current_variable;
 end
 
 %% Add trend and constant for observed variables
 for pos_iter=1:length(bayestopt_.mf)
-    oo_.Smoother.Constant.(deblank(M_.endo_names(bayestopt_.mfys(pos_iter),:)))=constant_part(pos_iter,:)';
+    oo_.Smoother.Constant.(M_.endo_names{bayestopt_.mfys(pos_iter)})=constant_part(pos_iter,:)';
     if ismember(bayestopt_.mf(pos_iter),bayestopt_.smoother_var_list(bayestopt_.smoother_saved_var_list))
-        oo_.SmoothedVariables.(deblank(M_.endo_names(bayestopt_.mfys(pos_iter),:)))=yf(pos_iter,:)';
+        oo_.SmoothedVariables.(M_.endo_names{bayestopt_.mfys(pos_iter)})=yf(pos_iter,:)';
         if ~isempty(options_.nk) && options_.nk > 0
             %filtered variable E_t(y_t+1) requires to shift trend by 1 period
-            oo_.FilteredVariables.(deblank(M_.endo_names(bayestopt_.mfys(pos_iter),:)))=...
+            oo_.FilteredVariables.(M_.endo_names{bayestopt_.mfys(pos_iter)})=...
                 squeeze(aK(1,bayestopt_.mf(pos_iter),2:end-(options_.nk-1)))...
                 +trend_constant_observables_filtered.filter_ahead_1(pos_iter,:)';
             for filter_iter=1:length(options_.filter_step_ahead)
@@ -186,7 +186,7 @@ for pos_iter=1:length(bayestopt_.mf)
             end
         end
         %updated variables are E_t(y_t) so no trend shift is required
-        oo_.UpdatedVariables.(deblank(M_.endo_names(bayestopt_.mfys(pos_iter),:)))=...
+        oo_.UpdatedVariables.(M_.endo_names{bayestopt_.mfys(pos_iter)})=...
             updated_variables(bayestopt_.mf(pos_iter),:)'+trend_constant_observables(pos_iter,:)';
     end
 end
@@ -224,7 +224,7 @@ end
 
 %% get smoothed shocks
 for exo_iter=1:M_.exo_nbr
-    oo_.SmoothedShocks.(deblank(M_.exo_names(exo_iter,:)))=innov(exo_iter,:)';
+    oo_.SmoothedShocks.(M_.exo_names{exo_iter})=innov(exo_iter,:)';
 end
 
 %%  Smoothed measurement errors

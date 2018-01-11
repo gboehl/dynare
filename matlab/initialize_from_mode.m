@@ -14,7 +14,7 @@ function estim_params_ = initialize_from_mode(fname,M_,estim_params_)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2003-2017 Dynare Team
+% Copyright (C) 2003-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -44,7 +44,7 @@ corrx = estim_params_.corrx;
 corrn = estim_params_.corrn;
 for i=1:length(parameter_names)
     name = parameter_names{i};
-    k1 = strmatch(name,param_names,'exact');
+    k1 = strmatch(name, param_names, 'exact');
     if ~isempty(k1)
         k2 = find(param_vals(:,1) == k1);
         if ~isempty(k2)
@@ -64,7 +64,7 @@ for i=1:length(parameter_names)
             M_.Sigma_e(k1,k1) = xparam1(i)^2;
             continue
         end
-        k1 = strmatch(name,endo_names,'exact');
+        k1 = strmatch(name, endo_names, 'exact');
         if ~isempty(k1)
             k2 = find(var_endo(:,1) == k1);
             if ~isempty(k2)
@@ -85,8 +85,8 @@ for i=1:length(parameter_names)
             M_.Sigma_e(k1a,k1) = M_.Sigma_e(k1,k1a);
             continue
         end
-        k1 = strmatch(name(1:k3-1),endo_names,'exact');
-        k1a = strmatch(name(k3+1:end),endo_names,'exact');
+        k1 = strmatch(name(1:k3-1), endo_names, 'exact');
+        k1a = strmatch(name(k3+1:end), endo_names, 'exact');
         if ~isempty(k1) && ~isempty(k1a)
             k2 = find(corrn(:,1) == k1 & corrn(:,2) == k1a);
             if ~isempty(k2)

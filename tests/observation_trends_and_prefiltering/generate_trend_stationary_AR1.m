@@ -10,12 +10,12 @@ sigma_y=0.001;
 sigma_p=0.001;
 
 orig_params=[rho_y rho_p  g_y g_p sigma_y sigma_p]';
-param_names=char('rho_y','rho_p','g_y','g_p','sigma_y','sigma_p');
+param_names={'rho_y'; 'rho_p'; 'g_y'; 'g_p'; 'sigma_y'; 'sigma_p'};
 
 save orig_params_prefilter.mat orig_params param_names
 
-orig_params=[rho_y rho_p  g_y g_p const_y const_p sigma_y sigma_p]';
-param_names=char('rho_y','rho_p','g_y','g_p','const_y','const_p','sigma_y','sigma_p');
+orig_params = [rho_y rho_p  g_y g_p const_y const_p sigma_y sigma_p]';
+param_names = {'rho_y'; 'rho_p'; 'g_y'; 'g_p'; 'const_y'; 'const_p'; 'sigma_y'; 'sigma_p'};
 
 save orig_params.mat orig_params param_names
 

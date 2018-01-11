@@ -4,7 +4,7 @@ function x0=dynare_sensitivity(options_gsa)
 % Reference:
 % M. Ratto, Global Sensitivity Analysis for Macroeconomic models, MIMEO, 2006.
 
-% Copyright (C) 2008-2017 Dynare Team
+% Copyright (C) 2008-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -115,13 +115,17 @@ if ~isempty(options_gsa.datafile) || isempty(bayestopt_) || options_gsa.rmse
     if isfield(options_gsa,'lik_init')
         options_.lik_init=options_gsa.lik_init;
     end
+    if isfield(options_gsa,'diffuse_filter')
+        options_.diffuse_filter=options_gsa.diffuse_filter;
+    end
     if isfield(options_gsa,'kalman_algo')
         options_.kalman_algo=options_gsa.kalman_algo;
     end
     options_.mode_compute = 0;
     options_.filtered_vars = 1;
     options_.plot_priors = 0;
-    [dataset_,dataset_info,xparam1,hh, M_, options_, oo_, estim_params_,bayestopt_]=dynare_estimation_init(M_.endo_names,fname_,1, M_, options_, oo_, estim_params_, bayestopt_);
+    [dataset_,dataset_info,xparam1,hh, M_, options_, oo_, estim_params_, bayestopt_] = ...
+        dynare_estimation_init(M_.endo_names, fname_, 1, M_, options_, oo_, estim_params_, bayestopt_);
     % computes a first linear solution to set up various variables
 else
     if isempty(options_.qz_criterium)
@@ -183,23 +187,23 @@ options_gsa = set_default_option(options_gsa,'logtrans_redform',0);
 options_gsa = set_default_option(options_gsa,'threshold_redform',[]);
 options_gsa = set_default_option(options_gsa,'ksstat_redform',0.001);
 options_gsa = set_default_option(options_gsa,'alpha2_redform',1.e-5);
-options_gsa = set_default_option(options_gsa,'namendo',[]);
+options_gsa = set_default_option(options_gsa,'namendo',{});
 options_gsa = set_default_option(options_gsa,'namlagendo',[]);
-options_gsa = set_default_option(options_gsa,'namexo',[]);
+options_gsa = set_default_option(options_gsa,'namexo',{});
 % RMSE mapping
 options_gsa = set_default_option(options_gsa,'load_rmse',0);
 options_gsa = set_default_option(options_gsa,'lik_only',0);
-options_gsa = set_default_option(options_gsa,'var_rmse',char(options_.varobs));
+options_gsa = set_default_option(options_gsa,'var_rmse', options_.varobs);
 %get corresponding TeX-names;
-options_gsa.var_rmse_tex='';
-for ii=1:size(options_gsa.var_rmse,1)
-    temp_name=M_.endo_names_tex(strmatch(deblank(options_gsa.var_rmse(ii,:)),M_.endo_names,'exact'),:);
-    options_gsa.var_rmse_tex=strvcat(options_gsa.var_rmse_tex,temp_name);
+options_gsa.var_rmse_tex={};
+for ii=1:length(options_gsa.var_rmse)
+    temp_name = M_.endo_names_tex{strmatch(options_gsa.var_rmse{ii}, M_.endo_names, 'exact')};
+    options_gsa.var_rmse_tex = vertcat(options_gsa.var_rmse_tex, temp_name);
 end
-options_gsa = set_default_option(options_gsa,'pfilt_rmse',0.1);
-options_gsa = set_default_option(options_gsa,'istart_rmse',options_.presample+1);
-options_gsa = set_default_option(options_gsa,'alpha_rmse',0.001);
-options_gsa = set_default_option(options_gsa,'alpha2_rmse',1.e-5);
+options_gsa = set_default_option(options_gsa,'pfilt_rmse', 0.1);
+options_gsa = set_default_option(options_gsa,'istart_rmse', options_.presample+1);
+options_gsa = set_default_option(options_gsa,'alpha_rmse', 0.001);
+options_gsa = set_default_option(options_gsa,'alpha2_rmse', 1.e-5);
 
 if options_gsa.neighborhood_width
     options_gsa.pprior=0;
@@ -321,13 +325,13 @@ if options_gsa.redform && ~isempty(options_gsa.namendo)
         x0 = stab_map_(OutputDirectoryName,options_gsa);
     end
     if strmatch(':',options_gsa.namendo,'exact')
-        options_gsa.namendo=M_.endo_names(1:M_.orig_endo_nbr,:);
+        options_gsa.namendo = M_.endo_names(1:M_.orig_endo_nbr);
     end
     if strmatch(':',options_gsa.namexo,'exact')
-        options_gsa.namexo=M_.exo_names;
+        options_gsa.namexo = M_.exo_names;
     end
     if strmatch(':',options_gsa.namlagendo,'exact')
-        options_gsa.namlagendo=M_.endo_names(1:M_.orig_endo_nbr,:);
+        options_gsa.namlagendo = M_.endo_names(1:M_.orig_endo_nbr);
     end
     %     options_.opt_gsa = options_gsa;
     if options_gsa.morris==1
@@ -342,7 +346,6 @@ if options_gsa.redform && ~isempty(options_gsa.namendo)
             fprintf('After obtaining the files, you need to unpack them and set a Matlab Path to those files.\n')
             error('SS-ANOVA-R Toolbox missing!')
         end
-
         redform_map(OutputDirectoryName,options_gsa);
     end
 end
@@ -459,7 +462,7 @@ if options_gsa.glue
         Obs.name{j} = options_.varobs{j};
         vj = options_.varobs{j};
 
-        jxj = strmatch(vj,lgy_(dr_.order_var,:),'exact');
+        jxj = strmatch(vj,lgy_(dr_.order_var),'exact');
         js = strmatch(vj,lgy_,'exact');
         if ~options_gsa.ppost
             %       y0=zeros(gend+1,nruns);
@@ -499,7 +502,7 @@ if options_gsa.glue
     for j=1:M_.endo_nbr
         if ~ismember(j,ismoo)
             jsmoo=jsmoo+1;
-            vj=deblank(M_.endo_names(dr_.order_var(j),:));
+            vj = M_.endo_names{dr_.order_var(j)};
             if ~options_gsa.ppost
                 %         y0 = squeeze(stock_smooth(:,j,:)) + ...
                 %           kron(stock_ys(j,:),ones(size(stock_smooth,1),1));
@@ -515,9 +518,9 @@ if options_gsa.glue
             Out1(jsmoo).ini  = 'yes';
         end
     end
-    tit(M_.exo_names_orig_ord,:) = M_.exo_names;
+    tit(M_.exo_names_orig_ord) = M_.exo_names;
     for j=1:M_.exo_nbr
-        Exo(j).name = deblank(tit(j,:));
+        Exo(j).name = tit{j};
     end
     if ~options_gsa.ppost
         Lik(length(options_.varobs)+1).name = 'logpo';

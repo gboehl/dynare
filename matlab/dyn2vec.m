@@ -14,7 +14,7 @@ function [z,zss]=dyn2vec(s1,s2)
 %   none
 %
 
-% Copyright (C) 2001-2017 Dynare Team
+% Copyright (C) 2001-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -46,15 +46,15 @@ if nargin == 0
         error(t);
     end
     for i=1:size(oo_.endo_simul,1)
-        assignin('base',deblank(M_.endo_names(i,:)),oo_.endo_simul(i,k)');
+        assignin('base', M_.endo_names{i}, oo_.endo_simul(i,k)');
     end
     return
 else
-    j = strmatch(s1,M_.endo_names,'exact');
+    j = strmatch(s1, M_.endo_names, 'exact');
     if ~ isempty(j)
         z = oo_.endo_simul(j,k)';
     else
-        j = strmatch(s1,M_.exo_names,'exact');
+        j = strmatch(s1, M_.exo_names, 'exact');
         if ~ isempty(j)
             if options_.smpl == 0
                 z = oo_.exo_simul(:,j);

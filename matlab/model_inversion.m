@@ -15,7 +15,7 @@ function [endogenousvariables, exogenousvariables] = model_inversion(constraints
 %
 % REMARKS
 
-% Copyright (C) 2017 Dynare Team
+% Copyright (C) 2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -69,8 +69,8 @@ if exogenousvariables.vobs>constraints.vobs
 end
 
 % Get the list of endogenous and exogenous variables.
-endo_names = cellstr(DynareModel.endo_names);
-exo_names = cellstr(DynareModel.exo_names);
+endo_names = DynareModel.endo_names;
+exo_names = DynareModel.exo_names;
 
 % Use specidalized routine if the model is backward looking.
 if ~DynareModel.maximum_lead

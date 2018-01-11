@@ -12,7 +12,7 @@ function perfect_foresight_solver()
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 1996-2017 Dynare Team
+% Copyright (C) 1996-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -213,5 +213,5 @@ else
     initial_period = options_.initial_period;
 end
 
-ts = dseries(transpose(oo_.endo_simul),initial_period,cellstr(M_.endo_names));
+ts = dseries(transpose(oo_.endo_simul), initial_period, M_.endo_names);
 assignin('base', 'Simulated_time_series', ts);

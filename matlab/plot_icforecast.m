@@ -2,7 +2,7 @@ function plot_icforecast(Variables,periods,options_)
 % Build plots for the conditional forecasts.
 %
 % INPUTS
-%  o Variables     [char]        m*x array holding the names of the endogenous variables to be plotted.
+%  o Variables     [cell]        names of the endogenous variables to be plotted.
 %
 % OUTPUTS
 %  None.
@@ -10,7 +10,7 @@ function plot_icforecast(Variables,periods,options_)
 % SPECIAL REQUIREMENTS
 %  This routine has to be called after imcforecast.m.
 
-% Copyright (C) 2006-2017 Dynare Team
+% Copyright (C) 2006-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -34,7 +34,7 @@ end
 
 load conditional_forecasts;
 
-eval(['forecast_periods = length(forecasts.cond.Mean.' Variables(1,:) ');']);
+forecast_periods = length(forecasts.cond.Mean.(Variables{1}));
 if nargin==1 || isempty(periods) % Set default number of periods.
     periods=forecast_periods;
 else
@@ -48,12 +48,12 @@ end
 
 forecasts.graph.OutputDirectoryName = CheckPath('graphs',forecasts.graph.fname);
 
-for i=1:size(Variables,1)
-    eval(['ci1 = forecasts.cond.ci.' Variables(i,:) ';'])
-    eval(['m1 = forecasts.cond.Mean.' Variables(i,:) ';'])
-    eval(['ci2 = forecasts.uncond.ci.' Variables(i,:) ';'])
-    eval(['m2 = forecasts.uncond.Mean.' Variables(i,:) ';'])
-    build_figure(Variables(i,:),ci1(:,1:periods),ci2(:,1:periods),m1(1:periods),m2(1:periods),options_,forecasts.graph);
+for i=1:length(Variables)
+    ci1 = forecasts.cond.ci.(Variables{i});
+    m1 = forecasts.cond.Mean.(Variables{i});
+    ci2 = forecasts.uncond.ci.(Variables{i});
+    m2 = forecasts.uncond.Mean.(Variables{i});
+    build_figure(Variables{i},ci1(:,1:periods),ci2(:,1:periods),m1(1:periods),m2(1:periods),options_,forecasts.graph);
 end
 
 function build_figure(name,cci1,cci2,mm1,mm2,options_,graphoptions)
@@ -68,4 +68,4 @@ plot(1:H,cci2(1,:),'--k','linewidth',1)
 plot(1:H,cci2(2,:),'--k','linewidth',1)
 axis tight
 hold off
-dyn_saveas(hh,[graphoptions.OutputDirectoryName '/Conditional_forecast_',strrep(deblank(graphoptions.title),' ','_'),'_',deblank(name)],options_.nodisplay,options_.graph_format)
+dyn_saveas(hh,[graphoptions.OutputDirectoryName '/Conditional_forecast_',strrep(deblank(graphoptions.title),' ','_'),'_',name],options_.nodisplay,options_.graph_format)

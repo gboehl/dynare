@@ -37,7 +37,7 @@ function [fval,info,exit_flag,grad,hess,SteadyState,trend_coeff,PHI_tilde,SIGMA_
 % SPECIAL REQUIREMENTS
 %   None.
 
-% Copyright (C) 2006-2017 Dynare Team
+% Copyright (C) 2006-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -73,7 +73,7 @@ xparam1 = xparam1(:);
 
 % Initialization of of the index for parameter dsge_prior_weight in Model.params.
 if isempty(dsge_prior_weight_idx)
-    dsge_prior_weight_idx = strmatch('dsge_prior_weight',Model.param_names);
+    dsge_prior_weight_idx = strmatch('dsge_prior_weight', Model.param_names);
 end
 
 % Get the number of estimated (dsge) parameters.

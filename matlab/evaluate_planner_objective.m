@@ -11,7 +11,7 @@ function planner_objective_value = evaluate_planner_objective(M,options,oo)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2007-2017 Dynare Team
+% Copyright (C) 2007-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -39,7 +39,7 @@ if nspred > 180
     planner_objective_value = NaN;
     return
 end
-beta = get_optimal_policy_discount_factor(M.params,M.param_names);
+beta = get_optimal_policy_discount_factor(M.params, M.param_names);
 
 Gy = dr.ghx(nstatic+(1:nspred),:);
 Gu = dr.ghu(nstatic+(1:nspred),:);

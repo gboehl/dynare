@@ -1,4 +1,17 @@
-function M = set_local_param_value(pname,value,M)
+function list = list_of_parameters_calibrated_as_Inf(M_)
+% The name of the function is explicit enough...
+%
+% INPUTS
+%   M_    [structure]   Description of the (simulated or estimated) model.
+%
+% OUTPUTS
+%   list  [cell]        Each element is the name (row char array) of parameter without value.
+%
+% ALGORITHM
+%   none
+%
+% SPECIAL REQUIREMENTS
+%   none
 
 % Copyright (C) 2017-2018 Dynare Team
 %
@@ -17,11 +30,11 @@ function M = set_local_param_value(pname,value,M)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
+idx  = find(isinf(M_.params));
+nnn  = length(idx);
 
-i = strmatch(pname, M.param_names, 'exact');
-
-if isempty(i)
-    error(['Parameter name ' pname ' doesn''t exist'])
+if nnn
+    list = M_.param_names(idx);
+else
+    list = {};
 end
-
-M.params(i) = value;

@@ -5,7 +5,7 @@ function map_calibration(OutputDirectoryName, Model, DynareOptions, DynareResult
 % marco.ratto@ec.europa.eu
 
 % Copyright (C) 2014-2016 European Commission
-% Copyright (C) 2014-2017 Dynare Team
+% Copyright (C) 2014-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -48,9 +48,9 @@ init = ~DynareOptions.opt_gsa.load_stab;
 options_mcf.pvalue_ks = DynareOptions.opt_gsa.pvalue_ks;
 options_mcf.pvalue_corr = DynareOptions.opt_gsa.pvalue_corr;
 options_mcf.alpha2 = DynareOptions.opt_gsa.alpha2_stab;
-options_mcf.param_names = char(pnames);
+options_mcf.param_names = pnames;
 if DynareOptions.TeX
-    options_mcf.param_names_tex=char(pnames_tex);
+    options_mcf.param_names_tex = pnames_tex;
 end
 options_mcf.fname_ = fname_;
 options_mcf.OutputDirectoryName = OutputDirectoryName;
@@ -375,11 +375,11 @@ if ~isempty(indx_moment)
             name{jj,1} = param_name_temp;
         end
     end
-    options_mcf.param_names = char(name);
+    options_mcf.param_names = name;
     if DynareOptions.TeX
-        options_mcf.param_names_tex = char(name_tex);
+        options_mcf.param_names_tex = name_tex;
     end
-    options_mcf.param_names = char(BayesInfo.name);
+    options_mcf.param_names = BayesInfo.name;
     all_moment_couples = cellstr([char(endo_prior_restrictions.moment(:,1)) char(endo_prior_restrictions.moment(:,2))]);
     moment_couples = unique(all_moment_couples);
     nbr_moment_couples = size(moment_couples,1);

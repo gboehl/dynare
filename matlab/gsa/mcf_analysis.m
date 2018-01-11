@@ -6,7 +6,7 @@ function indmcf = mcf_analysis(lpmat, ibeha, inobeha, options_mcf, DynareOptions
 %
 
 % Copyright (C) 2014 European Commission
-% Copyright (C) 2016-2017 Dynare Team
+% Copyright (C) 2016-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -53,13 +53,13 @@ indmcf=find(proba<pvalue_ks);
 indmcf = indmcf(jtmp);
 if ~isempty(indmcf)
     skipline()
-    headers=char('Parameter','d-stat','p-value');
-    labels=char(param_names(indmcf,:));
+    headers = {'Parameter','d-stat','p-value'};
+    labels = param_names(indmcf);
     data_mat=[dproba(indmcf)' proba(indmcf)'];
     options_temp.noprint=0;
     dyntable(options_temp,['Smirnov statistics in driving ', title],headers,labels,data_mat,size(labels,2)+2,16,3);
     if DynareOptions.TeX
-        labels_TeX=param_names_tex(indmcf,:);
+        labels_TeX=param_names_tex(indmcf);
         M_temp.dname=OutputDirectoryName ;
         M_temp.fname=fname_;
         dyn_latex_table(M_temp,options_temp,['Smirnov statistics in driving ', strrep(title,'_','\\_')],amcf_name,headers,labels_TeX,data_mat,size(labels,2)+2,16,6);
@@ -78,7 +78,7 @@ if ~isempty(indmcf) && ~DynareOptions.nograph
     skipline()
     xx=[];
     if ~ isempty(xparam1), xx=xparam1(indmcf); end
-    scatter_mcf(lpmat(ibeha,indmcf),lpmat(inobeha,indmcf), param_names(indmcf,:), ...
+    scatter_mcf(lpmat(ibeha,indmcf),lpmat(inobeha,indmcf), param_names(indmcf), ...
                 '.', [fname_,'_',amcf_name], OutputDirectoryName, amcf_title,xx, DynareOptions, ...
                 beha_title, nobeha_title)
 end

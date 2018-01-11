@@ -46,7 +46,7 @@ function [y, oo]= solve_two_boundaries(fname, y, x, params, steady_state, y_inde
 %   none.
 %
 
-% Copyright (C) 1996-2017 Dynare Team
+% Copyright (C) 1996-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -104,7 +104,7 @@ while ~(cvg==1 || iter>maxit_)
         if iter>0
             if ~isreal(max_res) || isnan(max_res) || (max_resa<max_res && iter>1)
                 if verbose && ~isreal(max_res)
-                    disp(['Variable ' M.endo_names(max_indx,:) ' (' int2str(max_indx) ') returns an undefined value']);
+                    disp(['Variable ' M.endo_names{max_indx} ' (' int2str(max_indx) ') returns an undefined value']);
                 end
                 if isnan(max_res)
                     detJ=det(g1aa);

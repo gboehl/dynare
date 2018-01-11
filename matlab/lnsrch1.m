@@ -24,7 +24,7 @@ function [x,f,fvec,check]=lnsrch1(xold, fold, g, p, stpmax, func, j1, j2, tolx, 
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2001-2017 Dynare Team
+% Copyright (C) 2001-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -58,14 +58,14 @@ if ~isfinite(summ)
         var_string=[];
         Model=evalin('base','M_');
         for ii=1:length(j2)-1
-            var_string=[var_string, deblank(Model.endo_names(j2(ii),:)), ', '];
+            var_string=[var_string, Model.endo_names{j2(ii)}, ', '];
         end
-        var_string=[var_string, deblank(Model.endo_names(j2(end),:))];
+        var_string=[var_string, Model.endo_names{j2(end)}];
         fprintf('\nAn infinite element was encountered when trying to solve equation(s) %s \n',eq_number_string)
         fprintf('with respect to the variable(s): %s.\n',var_string)
         fprintf('The values of the endogenous variables when the problem was encountered were:\n')
         for ii=1:length(xold)
-            fprintf('%-s % 8.4g \n',Model.endo_names(ii,:),xold(ii));
+            fprintf('%-s % 8.4g \n', Model.endo_names{ii}, xold(ii));
         end
         skipline();
     end
