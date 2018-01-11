@@ -75,6 +75,18 @@ for i = 1:length(lhs)
         lastidx = lastidx + nobs + 1;
     end
 end
+
+%% Return to surgibbs if called from there
+st = dbstack(1);
+if strcmp(st(1).name, 'surgibbs')
+    varargout{1} = length(maxfp:minlp); %dof
+    varargout{2} = pidxs;
+    varargout{3} = newX;
+    varargout{4} = newY;
+    varargout{5} = length(lhs);
+    return
+end
+
 Y = newY;
 X = newX;
 oo_.sur.dof = length(maxfp:minlp);
@@ -90,19 +102,6 @@ M_.Sigma_e = resid'*resid/oo_.sur.dof;
 kLeye = kron(chol(inv(M_.Sigma_e)), eye(oo_.sur.dof));
 [q, r] = qr(kLeye*X, 0);
 oo_.sur.beta = r\(q'*kLeye*Y);
-
-%% Return to surgibbs if called from there
-st = dbstack(1);
-if strcmp(st(1).name, 'surgibbs')
-    varargout{1} = oo_.sur.dof;
-    varargout{2} = size(X, 2);
-    varargout{3} = pidxs;
-    varargout{4} = oo_.sur.beta;
-    varargout{5} = X;
-    varargout{6} = Y;
-    varargout{7} = length(lhs);
-    return
-end
 
 M_.params(pidxs, 1) = oo_.sur.beta;
 

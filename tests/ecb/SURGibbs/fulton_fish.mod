@@ -17,8 +17,17 @@ bq0 =  6.7523;
 bq1 = -0.7969;
 
 model(linear);
-    price = bp0 + bp1*stormy + bp2*mixed + res_v;
     qty = bq0 + bq1*price + res_u;
+    price = bp0 + bp1*stormy + bp2*mixed + res_v;
 end;
 
-surgibbs(dseries('fishdata.csv'), 0.0005.*eye(M_.param_nbr), 10000, 5000);
+% Estimate all parameters
+%estparams = cellstr(M_.param_names);
+%estparamsval = M_.params;
+
+% Estimate demand parameters
+estparams = {'bq1' 'bq0'};
+estparamsval = [bq1 bq0];
+
+A = 0.0005.*eye(length(estparams));
+surgibbs(dseries('fishdata.csv'), estparams, estparamsval, A, 10000, 5000);
