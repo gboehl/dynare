@@ -51,7 +51,7 @@ function CovarianceMatrix = nancovariance(data)
 CovarianceMatrix = zeros(size(data,2));
 
 if isanynan(data)
-    data = bsxfun(@minus,data,nanmean(data));
+    data = bsxfun(@minus,data,nanmean(data,1));
     for i=1:size(data,2)
         for j=i:size(data,2)
             CovarianceMatrix(i,j) = nanmean(data(:,i).*data(:,j));
@@ -61,7 +61,7 @@ if isanynan(data)
         end
     end
 else
-    data = bsxfun(@minus,data,mean(data));
+    data = bsxfun(@minus,data,mean(data,1));
     CovarianceMatrix = (transpose(data)*data)/size(data,1);
 end
 

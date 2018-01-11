@@ -267,7 +267,7 @@ else
 end
 
 % Compute the empirical mean of the observed variables.
-DatasetInfo.descriptive.mean = nanmean(DynareDataset.data);
+DatasetInfo.descriptive.mean = nanmean(DynareDataset.data,1);
 
 % Compute the empirical covariance matrix of the observed variables.
 DatasetInfo.descriptive.covariance = nancovariance(DynareDataset.data);
