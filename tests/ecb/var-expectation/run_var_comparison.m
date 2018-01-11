@@ -73,13 +73,13 @@ exo_names = nv.M_.exo_names;
 endo_names = nv.M_.endo_names;
 
 for i = 1:length(exo_names)
-    figure('Name', ['Shock to ' exo_names(i)]);
+    figure('Name', ['Shock to ' exo_names{i}]);
     for j = 1:length(endo_names)
         subplot(ridx, cidx, j);
         hold on
-        title(endo_names(j,:));
-        plot(nv.oo_.irfs.([deblank(endo_names(j,:)) '_' deblank(exo_names(i,:))]));
-        plot(wv.oo_.irfs.([deblank(endo_names(j,:)) '_' deblank(exo_names(i,:))]), '--');
+        title(endo_names{j});
+        plot(nv.oo_.irfs.([endo_names{j} '_' exo_names{i}]));
+        plot(wv.oo_.irfs.([endo_names{j} '_' exo_names{i}]), '--');
         hold off
     end
 end

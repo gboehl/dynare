@@ -5,7 +5,7 @@ function [dbase, info] = checkdatabaseforinversion(dbase, DynareModel)
 % adds auxiliary variables, for lags greater than 1 on endogebnous variables
 % or lags on the exogenous variables.
 
-% Copyright (C) 2017 Dynare Team
+% Copyright (C) 2017-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -34,21 +34,21 @@ k = 0;
 for i = DynareModel.orig_endo_nbr+1:DynareModel.endo_nbr
     k = k+1;
     if DynareModel.aux_vars(k).type==1
-        if ismember(deblank(DynareModel.endo_names(DynareModel.aux_vars(k).orig_index,:)), dbase.name)
-            dbase{deblank(DynareModel.endo_names(DynareModel.aux_vars(k).endo_index, :))} = dbase{deblank(DynareModel.endo_names(DynareModel.aux_vars(k).orig_index, :))}.lag(abs(DynareModel.aux_vars(k).orig_lead_lag));
+        if ismember(DynareModel.endo_names(DynareModel.aux_vars(k).orig_index,:), dbase.name)
+            dbase{DynareModel.endo_names(DynareModel.aux_vars(k).endo_index, :)} = dbase{DynareModel.endo_names(DynareModel.aux_vars(k).orig_index, :)}.lag(abs(DynareModel.aux_vars(k).orig_lead_lag));
         else
-            error('%s not available in dbase!', deblank(DynareModel.endo_names(DynareModel.aux_vars(k).orig_index, :)));
+            error('%s not available in dbase!', DynareModel.endo_names(DynareModel.aux_vars(k).orig_index, :));
         end
     elseif DynareModel.aux_vars(k).type==3
-        dbase{deblank(DynareModel.endo_names(DynareModel.aux_vars(k).endo_index,:))} = dbase{deblank(DynareModel.exo_names(DynareModel.aux_vars(k).orig_index, :))}.lag(abs(DynareModel.aux_vars(k).orig_lead_lag));
-        listoflaggedexogenousvariables = vertcat(listoflaggedexogenousvariables, deblank(DynareModel.exo_names(DynareModel.aux_vars(k).orig_index, :)));
+        dbase{DynareModel.endo_names(DynareModel.aux_vars(k).endo_index,:)} = dbase{DynareModel.exo_names(DynareModel.aux_vars(k).orig_index, :)}.lag(abs(DynareModel.aux_vars(k).orig_lead_lag));
+        listoflaggedexogenousvariables = vertcat(listoflaggedexogenousvariables, DynareModel.exo_names(DynareModel.aux_vars(k).orig_index, :));
     else
         warning('Please contact Dynare Team!')
     end
 end
 
-info.endonames = cellstr(DynareModel.endo_names);
-info.exonames = cellstr(DynareModel.exo_names);
+info.endonames = DynareModel.endo_names;
+info.exonames = DynareModel.exo_names;
 info.computeresiduals = false;
 
 % Check that all the endogenous variables are defined in dbase.

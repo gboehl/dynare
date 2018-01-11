@@ -15,7 +15,7 @@ function pooled_fgls(ds, param_common, param_regex)
 % SPECIAL REQUIREMENTS
 %   dynare must be run with the option: json=parse
 
-% Copyright (C) 2017 Dynare Team
+% Copyright (C) 2017-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -45,7 +45,6 @@ kLeye = kron(chol(inv(M_.Sigma_e)), eye(oo_.sur.dof));
 [q, r] = qr(kLeye*oo_.pooled_fgls.X, 0);
 oo_.pooled_fgls.beta = r\(q'*kLeye*oo_.pooled_fgls.Y);
 
-param_names_trim = cellstr(M_.param_names);
 regexcountries = ['(' strjoin(param_common(1:end),'|') ')'];
 pbeta = oo_.pooled_fgls.pbeta;
 assigned_idxs = false(size(pbeta));
@@ -54,14 +53,14 @@ for i = 1:length(param_regex)
     assigned_idxs = assigned_idxs | beta_idx;
     value = oo_.pooled_fgls.beta(beta_idx);
     assert(~isempty(value));
-    M_.params(~cellfun(@isempty, regexp(param_names_trim, ...
+    M_.params(~cellfun(@isempty, regexp(M_.param_names, ...
         strrep(param_regex{i}, '*', regexcountries)))) = value;
 end
 idxs = find(assigned_idxs == 0);
 values = oo_.pooled_fgls.beta(idxs);
 names = pbeta(idxs);
 for i = 1:length(idxs)
-    M_.params(strcmp(param_names_trim, names{i})) = values(i);
+    M_.params(strcmp(M_.param_names, names{i})) = values(i);
 end
 
 oo_.pooled_fgls = rmfield(oo_.pooled_fgls, 'X');

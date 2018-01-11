@@ -1,5 +1,5 @@
-function [X, Y, startdates, enddates, startidxs, residnames, pbeta, vars, surpidxs, surconstrainedparams] = pooled_sur_common(ds, lhs, rhs, lineno, M_exo_names_trim, M_param_names_trim)
-%function [X, Y, startdates, enddates, startidxs, residnames, pbeta, vars, surpidxs, surconstrainedparams] = pooled_sur_common(ds, lhs, rhs, lineno, M_exo_names_trim, M_param_names_trim)
+function [X, Y, startdates, enddates, startidxs, residnames, pbeta, vars, surpidxs, surconstrainedparams] = pooled_sur_common(ds, lhs, rhs, lineno)
+%function [X, Y, startdates, enddates, startidxs, residnames, pbeta, vars, surpidxs, surconstrainedparams] = pooled_sur_common(ds, lhs, rhs, lineno)
 %
 % Code common to sur.m and pooled_ols.m
 %
@@ -8,8 +8,6 @@ function [X, Y, startdates, enddates, startidxs, residnames, pbeta, vars, surpid
 %   lhs                  [cellstr]     LHS of equations
 %   rhs                  [cellstr]     RHS of equations
 %   lineno               [cellstr]     line number of equations
-%   M_exo_names_trim     [cellarr]     cellstr(M_.exo_names)
-%   M_param_names_trim   [cellarr]     cellstr(M_.param_names)
 %
 % OUTPUTS
 %   X                    [matrix]      regressors
@@ -33,7 +31,7 @@ function [X, Y, startdates, enddates, startidxs, residnames, pbeta, vars, surpid
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2017 Dynare Team
+% Copyright (C) 2017-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -52,7 +50,7 @@ function [X, Y, startdates, enddates, startidxs, residnames, pbeta, vars, surpid
 
 global M_
 
-M_endo_exo_names_trim = [cellstr(M_.endo_names); M_exo_names_trim];
+M_endo_exo_names_trim = [M_.endo_names; M_.exo_names];
 regex = strjoin(M_endo_exo_names_trim(:,1), '|');
 mathops = '[\+\*\^\-\/]';
 params = cell(length(rhs),1);
@@ -70,7 +68,7 @@ surconstrainedparams = [];
 for i = 1:length(lhs)
     rhs_ = strsplit(rhs{i}, {'+','-','*','/','^','log(','ln(','log10(','exp(','(',')','diff('});
     rhs_(cellfun(@(x) all(isstrprop(x, 'digit')), rhs_)) = [];
-    vnames = setdiff(rhs_, M_param_names_trim);
+    vnames = setdiff(rhs_, M_.param_names);
     if ~isempty(regexp(rhs{i}, ...
             ['(' strjoin(vnames, '\\(\\d+\\)|') '\\(\\d+\\))'], 'once'))
         error(['pooled_ols: you cannot have leads in equation on line ' ...
@@ -78,7 +76,7 @@ for i = 1:length(lhs)
     end
 
     % Find parameters and associated variables
-    pnames = intersect(rhs_, M_param_names_trim);
+    pnames = intersect(rhs_, M_.param_names);
     pidxs = zeros(length(pnames), 1);
     vnames = cell(1, length(pnames));
     splitstrings = cell(length(pnames), 1);
@@ -91,7 +89,7 @@ for i = 1:length(lhs)
             pbeta = [pbeta; pnames{j}];
             pidxs(j) = length(pbeta);
             surpidx = surpidx + 1;
-            surpidxs(surpidx, 1) = find(strcmp(pnames{j}, M_param_names_trim));
+            surpidxs(surpidx, 1) = find(strcmp(pnames{j}, M_.param_names));
         else
             pidxs(j) = idx;
             surconstrainedparams = [surconstrainedparams idx];
@@ -150,7 +148,7 @@ for i = 1:length(lhs)
 
     lhssub = getRhsToSubFromLhs(ds, rhs{i}, regex, [splitstrings; pnames]);
 
-    residnames{i} = setdiff(intersect(rhs_, M_exo_names_trim), ds.name);
+    residnames{i} = setdiff(intersect(rhs_, M_.exo_names), ds.name);
     assert(~isempty(residnames{i}), ['No residuals in equation ' num2str(i)]);
     assert(length(residnames{i}) == 1, ['More than one residual in equation ' num2str(i)]);
 

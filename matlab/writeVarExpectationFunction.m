@@ -12,7 +12,7 @@ function writeVarExpectationFunction(var_model_name, horizon)
 %
 %   NONE
 
-% Copyright (C) 2017 Dynare Team
+% Copyright (C) 2017-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -53,11 +53,10 @@ fprintf(fid, '%%\n%% Created automatically by Dynare on %s\n%%\n\n', datestr(now
 fprintf(fid, '%%%% Construct y\n');
 fprintf(fid, 'assert(length(y) == %d);\n', sum(sum(M_.lead_lag_incidence ~= 0)));
 
-endo_names = cellstr(M_.endo_names);
 nvars = size(M_.var.(var_model_name).var_list_,1);
 var_model_order = M_.var.(var_model_name).order;
 yidx = zeros(nvars, min(var_model_order, 2));
-% first for order <= 2, drawing variables directly from their endo_names
+% first for order <= 2, drawing variables directly from their M_.endo_names
 for i=1:min(var_model_order, 2)
     if mod(i, 2) == 0
         ridx = 1;
@@ -65,7 +64,7 @@ for i=1:min(var_model_order, 2)
         ridx = 2;
     end
     for j=1:nvars
-        cidx = strcmp(strtrim(M_.var.(var_model_name).var_list_(j,:)), endo_names)';
+        cidx = strcmp(strtrim(M_.var.(var_model_name).var_list_(j,:)), M_.endo_names)';
         if ~any(cidx)
             error([strtrim(M_.var.(var_model_name).var_list_(j,:)) ' not found in the list of endogenous variables']);
         end
@@ -79,7 +78,7 @@ if var_model_order > 2
     y1idx = zeros((var_model_order - 2)*nvars, var_model_order - 2);
     for i=3:var_model_order
         for j=1:nvars
-            idx = find(strcmp(strtrim(M_.var.(var_model_name).var_list_(j,:)), endo_names));
+            idx = find(strcmp(strtrim(M_.var.(var_model_name).var_list_(j,:)), M_.endo_names));
             if ~any(idx)
                 error([strtrim(M_.var.(var_model_name).var_list_(j,:)) ' not found in the list of endogenous variables']);
             end

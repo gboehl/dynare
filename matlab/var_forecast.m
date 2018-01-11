@@ -34,15 +34,14 @@ assert( ...
     length(y) == length(M_.endo_names) ||             ... % when called from static model
     length(y) == sum(sum(M_.lead_lag_incidence ~= 0)) ... % when called from dynamic model
     );
-endo_names = cellstr(M_.endo_names);
-yidx = zeros(size(endo_names));
+yidx = zeros(size(M_.endo_names));
 for i=1:size(M_.var.(name).var_list_,1)
-    yidx = yidx | strcmp(strtrim(M_.var.(name).var_list_(i,:)), endo_names);
+    yidx = yidx | strcmp(strtrim(M_.var.(name).var_list_(i,:)), M_.endo_names);
 end
 y = y(yidx,:);
 
 if nargin == 4
-    fvidx = strcmp(fcv, endo_names);
+    fvidx = strcmp(fcv, M_.endo_names);
 end
 
 %% load .mat file

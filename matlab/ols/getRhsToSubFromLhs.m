@@ -39,7 +39,6 @@ assert(ischar(rhs), 'The second argument must be a string');
 assert(ischar(regex), 'The third argument must be a string');
 assert(iscell(splits), 'The fourth argument must be a cell');
 
-M_exo_trim = cellstr(M_.exo_names);
 lhssub = dseries();
 rhs_ = strsplit(rhs, splits);
 for j = 1:length(rhs_)
@@ -61,7 +60,7 @@ for j = 1:length(rhs_)
                 lhssub = [lhssub eval(regexprep([minusstr str], regex, 'ds.$&'))];
                 lhssub.rename_(lhssub{lhssub.vobs}.name{:}, [minusstr str]);
             catch
-                if ~any(strcmp(M_exo_trim, str))
+                if ~any(strcmp(M_.exo_names, str))
                     error(['getRhsToSubFromLhs: problem evaluating ' minusstr str]);
                 end
             end

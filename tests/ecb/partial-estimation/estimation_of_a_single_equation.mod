@@ -34,7 +34,7 @@ end;
 oo_ = simul_backward_model([], 1000, options_, M_, oo_);
 
 // Put all the simulated data in a dseries object.
-ds1 = dseries(transpose(oo_.endo_simul), 1900Q1, cellstr(M_.endo_names));
+ds1 = dseries(transpose(oo_.endo_simul), 1900Q1, M_.endo_names);
 
 
 // Select a subsample for estimation

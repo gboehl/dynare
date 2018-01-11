@@ -10,15 +10,14 @@ Sigma_e = M_.Sigma_e;
 
 options_.bnlms.set_dynare_seed_to_default = false;
 
-M_endo_names_trim = cellstr(M_.endo_names);
 nparampool = length(M_.params);
 BETA = zeros(NSIMS, nparampool);
 for i=1:NSIMS
     i
-    firstobs = rand(3, length(M_endo_names_trim));
+    firstobs = rand(3, length(M_.endo_names));
     M_.params = calibrated_values;
     M_.Sigma_e = Sigma_e; 
-    simdata = simul_backward_model(dseries(firstobs, dates('1995Q1'), M_endo_names_trim), 10000);
+    simdata = simul_backward_model(dseries(firstobs, dates('1995Q1'), M_.endo_names), 10000);
     simdata = simdata(simdata.dates(5001:6000));
     names=regexp(simdata.name, 'res\w*');
     idxs = [];

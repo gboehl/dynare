@@ -22,7 +22,7 @@ model(linear);
 end;
 
 % Estimate all parameters
-%estparams = cellstr(M_.param_names);
+%estparams = M_.param_names;
 %estparamsval = M_.params;
 
 % Estimate demand parameters

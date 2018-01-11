@@ -22,7 +22,7 @@ function plot_contributions(equationname, ds1, ds0)
 %      [name='Phillips curve']
 %      pi = beta*pi(1) + slope*y + lam;
 
-% Copyright (C) 2017 Dynare Team
+% Copyright (C) 2017-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -107,7 +107,7 @@ rhs = rhs{:};
 % Get variable and parameter names in the equation.
 rhs_ = strsplit(rhs,{'+','-','*','/','^','log(','exp(','(',')'});
 rhs_(cellfun(@(x) all(isstrprop(x, 'digit')), rhs_)) = []; % Remove numbers
-pnames = cellstr(M_.param_names);
+pnames = M_.param_names;
 vnames = setdiff(rhs_, pnames);
 pnames = setdiff(rhs_, vnames);
 

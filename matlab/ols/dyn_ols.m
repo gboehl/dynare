@@ -18,7 +18,7 @@ function ds = dyn_ols(ds, fitted_names_dict, eqtags)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2017 Dynare Team
+% Copyright (C) 2017-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -67,9 +67,7 @@ else
 end
 
 %% Estimation
-M_endo_trim = cellstr(M_.endo_names);
-M_exo_trim = cellstr(M_.exo_names);
-M_endo_exo_names_trim = [M_endo_trim; M_exo_trim];
+M_endo_exo_names_trim = [M_.endo_names; M_.exo_names];
 regex = strjoin(M_endo_exo_names_trim(:,1), '|');
 mathops = '[\+\*\^\-\/\(\)]';
 M_param_names_trim = cellfun(@strtrim, num2cell(M_.param_names,2), 'UniformOutput', false);
@@ -77,7 +75,7 @@ for i = 1:length(lhs)
     %% Construct regression matrices
     rhs_ = strsplit(rhs{i}, {'+','-','*','/','^','log(','exp(','(',')'});
     rhs_(cellfun(@(x) all(isstrprop(x, 'digit')), rhs_)) = [];
-    vnames = setdiff(rhs_, cellstr(M_.param_names));
+    vnames = setdiff(rhs_, M_.param_names);
     if ~isempty(regexp(rhs{i}, ...
             ['(' strjoin(vnames, '\\(\\d+\\)|') '\\(\\d+\\))'], ...
             'once'))
@@ -85,7 +83,7 @@ for i = 1:length(lhs)
             lineno{i} ': ' lhs{i} ' = ' rhs{i}]);
     end
 
-    pnames = intersect(rhs_, cellstr(M_.param_names));
+    pnames = intersect(rhs_, M_.param_names);
     vnames = cell(1, length(pnames));
     splitstrings = cell(length(pnames), 1);
     X = dseries();
@@ -144,7 +142,7 @@ for i = 1:length(lhs)
     end
 
     lhssub = getRhsToSubFromLhs(ds, rhs{i}, regex, [splitstrings; pnames]);
-    residuals = setdiff(intersect(rhs_, M_exo_trim), ds.name);
+    residuals = setdiff(intersect(rhs_, M_.exo_names), ds.name);
     assert(~isempty(residuals), ['No residuals in equation ' num2str(i)]);
     assert(length(residuals) == 1, ['More than one residual in equation ' num2str(i)]);
 

@@ -44,14 +44,12 @@ jsonmodel = jsonmodel.model;
 [lhs, rhs, lineno] = getEquationsByTags(jsonmodel);
 
 %% Find parameters and variable names in equations and setup estimation matrices
-M_exo_names_trim = cellstr(M_.exo_names);
-M_param_names_trim = cellstr(M_.param_names);
 [X, Y, startdates, enddates, startidxs, residnames, pbeta, vars, pidxs, surconstrainedparams] = ...
-    pooled_sur_common(ds, lhs, rhs, lineno, M_exo_names_trim, M_param_names_trim);
+    pooled_sur_common(ds, lhs, rhs, lineno);
 
 if size(X, 2) ~= M_.param_nbr
     warning(['Not all parameters were used in model: ' ...
-        sprintf('%s', strjoin(setdiff(M_param_names_trim, pbeta), ', '))]);
+        sprintf('%s', strjoin(setdiff(M_.param_names, pbeta), ', '))]);
 end
 
 %% Force equations to have the same sample range

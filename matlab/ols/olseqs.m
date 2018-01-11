@@ -11,7 +11,7 @@ function olseqs(ds, varargin)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2017 Dynare Team
+% Copyright (C) 2017-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -44,7 +44,7 @@ for i = 1:length(lhs)
     %% Construct regression matrices
     rhs_ = strsplit(rhs{i}, {'+','-','*','/','^','log(','exp(','(',')'});
     rhs_(cellfun(@(x) all(isstrprop(x, 'digit')), rhs_)) = [];
-    vnames = setdiff(rhs_, cellstr(M_.param_names));
+    vnames = setdiff(rhs_, M_.param_names);
     regexprnoleads = cell2mat(strcat('(', vnames, {'\(\d+\))|'}));
     if ~isempty(regexp(rhs{i}, regexprnoleads(1:end-1), 'match'))
         error(['olseqs: you cannot have leads in equation on line ' ...

@@ -62,7 +62,7 @@ end
 
 %% Estimation
 [nobs, pidxs, X, Y, m] = sur(ds);
-pnamesall = cellstr(M_.param_names(pidxs, :));
+pnamesall = M_.param_names(pidxs);
 nparams = length(param_names);
 pidxs = zeros(nparams, 1);
 for i = 1:nparams

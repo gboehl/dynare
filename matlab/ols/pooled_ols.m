@@ -21,7 +21,7 @@ function pooled_ols(ds, param_common, param_regex, overlapping_dates, save_struc
 % SPECIAL REQUIREMENTS
 %   dynare must be run with the option: json=compute
 
-% Copyright (C) 2017 Dynare Team
+% Copyright (C) 2017-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -85,10 +85,8 @@ for i = 1:length(param_regex)
 end
 
 %% Find parameters and variable names in every equation & Setup estimation matrices
-M_exo_names_trim = cellstr(M_.exo_names);
-M_param_names_trim = cellstr(M_.param_names);
 [X, Y, startdates, enddates, startidxs, residnames, pbeta, vars, surpidxs, surconstrainedparams] = ...
-    pooled_sur_common(ds, lhs, rhs, lineno, M_exo_names_trim, M_param_names_trim);
+    pooled_sur_common(ds, lhs, rhs, lineno);
 
 if overlapping_dates
     maxfp = max([startdates{:}]);
@@ -141,7 +139,7 @@ for i = 1:length(param_regex)
     assigned_idxs = assigned_idxs | beta_idx;
     value = oo_.(save_structure_name).beta(beta_idx);
     assert(~isempty(value));
-    M_.params(~cellfun(@isempty, regexp(M_param_names_trim, ...
+    M_.params(~cellfun(@isempty, regexp(M_.param_names, ...
         strrep(param_regex{i}, '*', regexcountries)))) = value;
 end
 idxs = find(assigned_idxs == 0);
@@ -149,7 +147,7 @@ values = oo_.(save_structure_name).beta(idxs);
 names = pbeta(idxs);
 assert(length(values) == length(names));
 for i = 1:length(idxs)
-    M_.params(strcmp(M_param_names_trim, names{i})) = values(i);
+    M_.params(strcmp(M_.param_names, names{i})) = values(i);
 end
 
 residuals = Y - X * oo_.(save_structure_name).beta;
@@ -160,7 +158,7 @@ for i = 1:length(lhs)
         oo_.(save_structure_name).resid.(residnames{i}{:}) = residuals(startidxs(i):startidxs(i+1)-1);
     end
     oo_.(save_structure_name).varcovar.(['eq' num2str(i)]) = oo_.(save_structure_name).resid.(residnames{i}{:})*oo_.(save_structure_name).resid.(residnames{i}{:})';
-    idx = find(strcmp(residnames{i}{:}, M_exo_names_trim));
+    idx = find(strcmp(residnames{i}{:}, M_.exo_names));
     M_.Sigma_e(idx, idx) = var(oo_.(save_structure_name).resid.(residnames{i}{:}));
 end
 end
