@@ -1,36 +1,20 @@
-function y = nanmean(x)
-% Computes the mean of each column of a matrix with some NaNs.
+function y = nanmean(x, dim)
 
-%@info:
-%! @deftypefn {Function File} {@var{y} =} nanmean (@var{x})
-%! @anchor{nanmean}
-%! @sp 1
-%! Computes the mean of each column of a matrix with some NaNs.
-%! @sp 2
-%! @strong{Inputs}
-%! @table @ @var
-%! @item x
-%! Matlab matrix (T-by-N).
-%! @end table
-%! @sp 2
-%! @strong{Outputs}
-%! @table @ @var
-%! @item y
-%! Matlab vector (1-by-N), the mean.
-%! @end table
-%! @sp 2
-%! @strong{This function is called by:}
-%! @sp 1
-%! @ref{compute_cova}, @ref{compute_acov}, @ref{compute_std}, @ref{nandemean}
-%! @sp 2
-%! @strong{This function calls:}
-%! @sp 1
-%! @ref{ndim}
-%!
-%! @end deftypefn
-%@eod:
+% Returns the mean of a matrix with some NaNs.
+%
+% INPUTS
+% - x      [double]    m*n matrix
+% - dim    [integer]   scalar, dimension along which the mean has to be computed.
+%
+% OUTPUTS
+% - y      [double]    1*n vector (if dim=1) or m*1 vector (if dim=2).
+%
+% REMARKS
+% (1) Default value for dim is the first non singleton dimension.
+% (2) Works with vector and matrices, not implemented for arrays with more
+% than two dimensions.
 
-% Copyright (C) 2011 Dynare Team
+% Copyright (C) 2011-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -47,16 +31,39 @@ function y = nanmean(x)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-% AUTHOR(S) stephane DOT adjemian AT univ DASH lemans DOT fr
+if nargin<2
+    % By default dim is the first non singleton dimension
+    nonsingletondims = find(find(size(x)>1));
+    if ~isempty(nonsingletondims)
+        dim = nonsingletondims(1);
+    else
+        dim = NaN;
+    end
+end
 
-switch ndim(x)
+switch ndims(x)
   case 1
-    y = mean(x(find(~isnan(x))));
+    if isnan(dim)
+        y = x;
+    else
+        y = mean(x(find(~isnan(x))), dim);
+    end
   case 2
-    y = NaN(1,size(x,2));
-    for i = 1:size(x,2)
-        y(i) = mean(x(find(~isnan(x(:,i))),i));
+    if isnan(dim)
+        y = x;
+    else
+        if isequal(dim, 1)
+            y = NaN(1, size(x, 2));
+            for i = 1:size(x, 2)
+                y(i) = mean(x(find(~isnan(x(:,i))),i));
+            end
+        else
+            y = NaN(size(x, 1), 1);
+            for i = 1:size(x, 1)
+                y(i) = mean(x(i, find(~isnan(x(i,:)))));
+            end
+        end
     end
   otherwise
-    error('descriptive_statistics::nanmean:: This function is not implemented for arrays with dimension greater than two!')
+    error('This function is not implemented for arrays with dimension greater than two!')
 end
