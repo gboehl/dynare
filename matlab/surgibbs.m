@@ -1,5 +1,5 @@
-function surgibbs(ds, param_names, beta0, A, ndraws, discarddraws)
-%function surgibbs(ds, param_names, beta0, A, ndraws, discarddraws)
+function surgibbs(ds, param_names, beta0, A, ndraws, discarddraws, thin)
+%function surgibbs(ds, param_names, beta0, A, ndraws, discarddraws, thin)
 % Implements Gibbs Samipling for SUR
 %
 % INPUTS
@@ -10,6 +10,7 @@ function surgibbs(ds, param_names, beta0, A, ndraws, discarddraws)
 %                             param_names)
 %   ndraws       [int]        number of draws
 %   discarddraws [int]        number of draws to discard
+%   thin         [int]        if thin == N, save every Nth draw
 %
 % OUTPUTS
 %   none
@@ -43,7 +44,7 @@ function surgibbs(ds, param_names, beta0, A, ndraws, discarddraws)
 global M_ oo_
 
 %% Check input
-assert(nargin == 5 || nargin == 6, 'Incorrect number of arguments passed to surgibbs');
+assert(nargin == 5 || nargin == 6 || nargin == 7, 'Incorrect number of arguments passed to surgibbs');
 assert(isdseries(ds), 'The 1st argument must be a dseries');
 assert(iscellstr(param_names), 'The 2nd argument must be a cellstr');
 assert(isvector(beta0) && length(beta0) == length(param_names), ...
@@ -59,6 +60,11 @@ if nargin == 5
 else
     assert(isint(discarddraws), 'The 6th argument, if provided, must be an integer');
 end
+if nargin == 6
+    thin = 1;
+else
+    assert(isint(thin), 'The 7th argument, if provided, must be an integer');
+end
 
 %% Estimation
 [nobs, pidxs, X, Y, m] = sur(ds);
@@ -71,7 +77,9 @@ end
 X = X(:, pidxs);
 beta = beta0;
 A = inv(A);
-oo_.surgibbs.betadraws = zeros(ndraws-discarddraws, nparams);
+thinidx = 1;
+drawidx = 1;
+oo_.surgibbs.betadraws = zeros(floor((ndraws-discarddraws)/thin), nparams);
 for i = 1:ndraws
     % Draw Omega, given X, Y, Beta
     resid = reshape(Y - X*beta, nobs, m);
@@ -85,12 +93,18 @@ for i = 1:ndraws
     betabar = Omegabar*(tmp1*betahat+A*beta0);
     beta = rand_multivariate_normal(betabar', chol(Omegabar), nparams)';
     if i > discarddraws
-        oo_.surgibbs.betadraws(i-discarddraws, :) = beta';
+        if thinidx == thin
+            oo_.surgibbs.betadraws(drawidx, :) = beta';
+            thinidx = 1;
+            drawidx = drawidx + 1;
+        else
+            thinidx = thinidx + 1;
+        end
     end
 end
 
 % save parameter values
-oo_.surgibbs.beta = (sum(oo_.surgibbs.betadraws)/(ndraws-discarddraws))';
+oo_.surgibbs.beta = (sum(oo_.surgibbs.betadraws)/rows(oo_.surgibbs.betadraws))';
 M_.params(pidxs, 1) = oo_.surgibbs.beta;
 
 %% Print Output
