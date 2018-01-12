@@ -143,7 +143,7 @@ for i = 1:length(vnames)
             elseif isequal(b(j), 1)
                 rhs = sprintf('ds.%s%s', vnames{i}, rhs(e(j)+1:end));
             elseif isequal(e(j), length(rhs))
-                rhs = sprintf('%sds.%s', rhs(1:b(j)-1, vnames{i}));
+                rhs = sprintf('%sds.%s', rhs(1:b(j)-1), vnames{i});
             end
         end
     else
