@@ -37,6 +37,7 @@ function ds = dyn_ols(ds, fitted_names_dict, eqtags)
 
 global M_ oo_ options_
 
+assert(nargin >= 1 && nargin <= 3, 'dyn_ols: takes between 1 and 3 arguments');
 assert(isdseries(ds), 'dyn_ols: the first argument must be a dseries');
 
 jsonfile = [M_.fname '_original.json'];
