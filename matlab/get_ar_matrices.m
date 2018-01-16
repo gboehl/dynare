@@ -108,7 +108,7 @@ for i = 1:2
     for j = 1:size(M_.lead_lag_incidence, 2)
         if M_.lead_lag_incidence(i, j) ~= 0 && any(g1(:, M_.lead_lag_incidence(i, j)))
             if j > M_.orig_endo_nbr
-                av = findauxvar(j);
+                av = M_.aux_vars([M_.aux_vars.endo_index] == j);
                 assert(~isempty(av));
                 oo_.var.(var_model_name).ar{(av.orig_lead_lag * - 1) + baselag}(:, av.orig_index) = ...
                     g1(:, M_.lead_lag_incidence(i, j));
@@ -120,20 +120,7 @@ for i = 1:2
     end
 end
 
-sublhs = zeros(length(lhsidxs), M_.orig_endo_nbr);
 for i = 1:length(lhsidxs)
-    sublhs(i, lhsidxs(i)) = 1;
-end
-oo_.var.(var_model_name).ar{1} = oo_.var.(var_model_name).ar{1} + sublhs;
-end
-
-function out = findauxvar(endo_idx)
-global M_
-out = {};
-for i=1:length(M_.aux_vars)
-    if M_.aux_vars(i).endo_index == endo_idx
-        out = M_.aux_vars(i);
-        return
-    end
+    oo_.var.(var_model_name).ar{1}(i, lhsidxs(i)) = oo_.var.(var_model_name).ar{1}(i, lhsidxs(i)) + 1;
 end
 end
