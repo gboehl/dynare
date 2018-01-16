@@ -1,5 +1,5 @@
-function surgibbs(ds, param_names, beta0, A, ndraws, discarddraws, thin)
-%function surgibbs(ds, param_names, beta0, A, ndraws, discarddraws, thin)
+function surgibbs(ds, param_names, beta0, A, ndraws, discarddraws, thin, eqtags)
+%function surgibbs(ds, param_names, beta0, A, ndraws, discarddraws, thin, eqtags)
 % Implements Gibbs Samipling for SUR
 %
 % INPUTS
@@ -11,6 +11,8 @@ function surgibbs(ds, param_names, beta0, A, ndraws, discarddraws, thin)
 %   ndraws       [int]        number of draws
 %   discarddraws [int]        number of draws to discard
 %   thin         [int]        if thin == N, save every Nth draw
+%   eqtags       [cellstr]    names of equation tags to estimate. If empty,
+%                             estimate all equations
 %
 % OUTPUTS
 %   none
@@ -44,7 +46,7 @@ function surgibbs(ds, param_names, beta0, A, ndraws, discarddraws, thin)
 global M_ oo_
 
 %% Check input
-assert(nargin == 5 || nargin == 6 || nargin == 7, 'Incorrect number of arguments passed to surgibbs');
+assert(nargin >= 5 && nargin <= 8, 'Incorrect number of arguments passed to surgibbs');
 assert(isdseries(ds), 'The 1st argument must be a dseries');
 assert(iscellstr(param_names), 'The 2nd argument must be a cellstr');
 assert(isvector(beta0) && length(beta0) == length(param_names), ...
@@ -67,12 +69,24 @@ else
 end
 
 %% Estimation
-[nobs, pidxs, X, Y, m] = sur(ds);
+if nargin == 8
+    [nobs, pidxs, X, Y, m] = sur(ds, eqtags);
+else
+    [nobs, pidxs, X, Y, m] = sur(ds);
+end
 pnamesall = M_.param_names(pidxs);
 nparams = length(param_names);
 pidxs = zeros(nparams, 1);
 for i = 1:nparams
-    pidxs(i) = find(strcmp(param_names{i}, pnamesall));
+    idxs = find(strcmp(param_names{i}, pnamesall));
+    if isempty(idxs)
+        if ~isempty(eqtags)
+            error(['Could not find ' param_names{i} ...
+                ' in the provided equations specified by ' strjoin(eqtags, ',')]);
+        end
+        error('Unspecified error. Please report');
+    end
+    pidxs(i) = idxs;
 end
 X = X(:, pidxs);
 beta = beta0;

@@ -1,9 +1,11 @@
-function varargout = sur(ds)
-% function varargout = sur(ds)
+function varargout = sur(ds, eqtags)
+% function varargout = sur(ds, eqtags)
 % Seemingly Unrelated Regressions
 %
 % INPUTS
-%   ds                  [dseries]  data to use in estimation
+%   ds                [dseries]    data to use in estimation
+%   eqtags            [cellstr]    names of equation tags to estimate. If empty,
+%                                  estimate all equations
 %
 % OUTPUTS
 %   none
@@ -31,6 +33,7 @@ function varargout = sur(ds)
 global M_ oo_ options_
 
 %% Check input argument
+assert(nargin == 1 || nargin == 2, 'You must provide one or two arguments');
 assert(~isempty(ds) && isdseries(ds), 'The first argument must be a dseries');
 
 %% Read JSON
@@ -41,13 +44,17 @@ end
 
 jsonmodel = loadjson(jsonfile);
 jsonmodel = jsonmodel.model;
-[lhs, rhs, lineno] = getEquationsByTags(jsonmodel);
+if nargin == 1
+    [lhs, rhs, lineno] = getEquationsByTags(jsonmodel);
+else
+    [lhs, rhs, lineno] = getEquationsByTags(jsonmodel, 'name', eqtags);
+end
 
 %% Find parameters and variable names in equations and setup estimation matrices
 [X, Y, startdates, enddates, startidxs, residnames, pbeta, vars, pidxs, surconstrainedparams] = ...
     pooled_sur_common(ds, lhs, rhs, lineno);
 
-if size(X, 2) ~= M_.param_nbr
+if nargin == 1 && size(X, 2) ~= M_.param_nbr
     warning(['Not all parameters were used in model: ' ...
         sprintf('%s', strjoin(setdiff(M_.param_names, pbeta), ', '))]);
 end
