@@ -37,7 +37,8 @@ global M_ oo_
 
 %% Check inputs and initialize output
 assert(nargin == 1, 'This function requires one argument');
-assert(ischar(var_model_name), 'The sole argument must be a string');
+assert(~isempty(var_model_name) && ischar(var_model_name), ...
+    'The sole argument must be a non-empty string');
 if ~isfield(M_.var, var_model_name)
     error(['Could not find ' var_model_name ' in M_.var. ' ...
         'First declare it via the var_model statement.']);
