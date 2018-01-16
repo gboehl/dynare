@@ -181,7 +181,11 @@ for i = 1:length(lhs)
     end
 
     % Yhat
-    lhsrep = regexprep(lhs{i}, '[\(\)\-+\*/]', '_');
+    lhsrep = lhs{i};
+    if lhsrep(end) == ')'
+        lhsrep = lhsrep(1:end-1);
+    end
+    lhsrep = regexprep(lhsrep, '[\(\)\-+\*/]', '_');
     yhatname = [lhsrep '_FIT'];
     if ~isempty(fitted_names_dict)
         idx = strcmp(fitted_names_dict(:,1), lhsrep);
