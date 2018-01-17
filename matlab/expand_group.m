@@ -34,16 +34,19 @@ mydata=get(findobj(gcf,'tag',['group' int2str(ic)]),'userdata');
 if isfield(mydata,'shock_decomp')
     options.shock_decomp=mydata.shock_decomp;
 end
+options.plot_shock_decomp=mydata.plot_shock_decomp;
+options.first_obs=mydata.first_obs;
+options.nobs=mydata.nobs;
 % define expanded group
 label = mydata.shock_group.label;
 shocks = mydata.shock_group.shocks;
-options.shock_decomp.fig_name = [mydata.fig_name '. Expand'];
-options.use_shock_groups = strrep(label,' ','_'); %[use_shock_groups_old int2str(ic)];
+options.plot_shock_decomp.fig_name = [mydata.fig_name '. Expand'];
+options.plot_shock_decomp.use_shock_groups = strrep(label,' ','_'); %[use_shock_groups_old int2str(ic)];
 for j=1:length(shocks)
-    M.shock_groups.(options.use_shock_groups).(['group' int2str(j)]).label=shocks{j};
-    M.shock_groups.(options.use_shock_groups).(['group' int2str(j)]).shocks=shocks(j);
+    M.shock_groups.(options.plot_shock_decomp.use_shock_groups).(['group' int2str(j)]).label=shocks{j};
+    M.shock_groups.(options.plot_shock_decomp.use_shock_groups).(['group' int2str(j)]).shocks=shocks(j);
 end
 
-options.shock_decomp.interactive=0;
-options.shock_decomp.expand=1;
+options.plot_shock_decomp.interactive=0;
+options.plot_shock_decomp.expand=1;
 plot_shock_decomposition(M,oo,options,var_list_);
