@@ -5,10 +5,13 @@ function ds = dyn_ols(ds, fitted_names_dict, eqtags)
 %
 % INPUTS
 %   ds                [dseries]    data
-%   fitted_names_dict [cell]       Nx2 cell array to be used in naming fitted
-%                                  values; first column is the var name,
+%   fitted_names_dict [cell]       Nx2 or Nx3 cell array to be used in naming fitted
+%                                  values; first column is the equation tag,
 %                                  second column is the name of the
-%                                  associated fitted value.
+%                                  associated fitted value, third column
+%                                  (if it exists) is the function name of
+%                                  the transformation to perform on the
+%                                  fitted value.
 %   eqtags            [cellstr]    names of equation tags to estimate. If empty,
 %                                  estimate all equations
 %
@@ -54,8 +57,9 @@ if nargin == 1
     fitted_names_dict = {};
 else
     assert(isempty(fitted_names_dict) || ...
-        (iscell(fitted_names_dict) && columns(fitted_names_dict) == 2), ...
-        'dyn_ols: the second argument must be an Nx2 cell array');
+        (iscell(fitted_names_dict) && ...
+        (size(fitted_names_dict, 2) == 2 || size(fitted_names_dict, 2) == 3)), ...
+        'dyn_ols: the second argument must be an Nx2 or Nx3 cell array');
     if nargin == 2
         [lhs, rhs, lineno, sample, tags] = getEquationsByTags(jsonmodel);
     else
@@ -181,19 +185,21 @@ for i = 1:length(lhs)
     end
 
     % Yhat
-    lhsrep = lhs{i};
-    if lhsrep(end) == ')'
-        lhsrep = lhsrep(1:end-1);
-    end
-    lhsrep = regexprep(lhsrep, '[\(\)\-+\*/]', '_');
-    yhatname = [lhsrep '_FIT'];
+    idx = 0;
+    yhatname = [tags{i} '_FIT'];
     if ~isempty(fitted_names_dict)
-        idx = strcmp(fitted_names_dict(:,1), lhsrep);
+        idx = strcmp(fitted_names_dict(:,1), tags{i});
         if any(idx)
             yhatname = fitted_names_dict{idx, 2};
         end
     end
     oo_.ols.(tags{i}).Yhat = dseries(X*oo_.ols.(tags{i}).beta, fp, yhatname);
+    if any(idx) ...
+            && length(fitted_names_dict(idx, :)) == 3 ...
+            && ~isempty(fitted_names_dict{idx, 3})
+        oo_.ols.(tags{i}).Yhat = ...
+            eval([fitted_names_dict{idx, 3} '(oo_.ols.(tags{' num2str(i) '}).Yhat)']);
+    end
 
     % Residuals
     oo_.ols.(tags{i}).resid = Y - oo_.ols.(tags{i}).Yhat;
