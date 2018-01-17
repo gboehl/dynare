@@ -1,4 +1,4 @@
-function param_regex = pooled_ols(ds, param_common, param_regex, overlapping_dates, eqtags)
+function varargout = pooled_ols(ds, param_common, param_regex, overlapping_dates, eqtags)
 % function pooled_ols(ds, param_common, param_regex, overlapping_dates, eqtags)
 % Run Pooled OLS
 % Apply parameter values found to corresponding parameter values in the
@@ -95,6 +95,7 @@ param_regex = param_regex(param_regex_idx);
 st = dbstack(1);
 save_structure_name = 'pooled_ols';
 if strcmp(st(1).name, 'pooled_fgls')
+    varargout{1} = param_regex;
     save_structure_name = 'pooled_fgls';
 end
 
