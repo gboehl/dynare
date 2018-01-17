@@ -1,5 +1,5 @@
-function param_regex = pooled_ols(ds, param_common, param_regex, overlapping_dates, save_structure_name, eqtags)
-% function pooled_ols(ds, param_common, param_regex, overlapping_dates, save_structure_name, eqtags)
+function param_regex = pooled_ols(ds, param_common, param_regex, overlapping_dates, eqtags)
+% function pooled_ols(ds, param_common, param_regex, overlapping_dates, eqtags)
 % Run Pooled OLS
 % Apply parameter values found to corresponding parameter values in the
 % other blocks of the model
@@ -12,8 +12,6 @@ function param_regex = pooled_ols(ds, param_common, param_regex, overlapping_dat
 %                                  value in param_common
 %   overlapping_dates   [bool]     if the dates across the equations should
 %                                  overlap
-%   save_structure_name [string]   Name of structure in oo_ to save results in
-%                                  (pooled_ols by default)
 %   eqtags              [cellstr]  names of equation tags to estimate. If empty,
 %                                  estimate all equations
 %
@@ -63,12 +61,6 @@ else
     assert(islogical(overlapping_dates) && length(overlapping_dates) == 1, 'The fourth argument must be a bool');
 end
 
-if nargin < 5
-    save_structure_name = 'pooled_ols';
-else
-    assert(ischar(save_structure_name), 'The fifth argument must be a string');
-end
-
 %% Read JSON
 jsonfile = [M_.fname '_original.json'];
 if exist(jsonfile, 'file') ~= 2
@@ -77,7 +69,7 @@ end
 
 jsonmodel = loadjson(jsonfile);
 jsonmodel = jsonmodel.model;
-if nargin < 6
+if nargin < 5
     [lhs, rhs, lineno] = getEquationsByTags(jsonmodel);
 else
     [lhs, rhs, lineno] = getEquationsByTags(jsonmodel, 'name', eqtags);
@@ -99,6 +91,12 @@ for i = 1:length(param_regex)
     end
 end
 param_regex = param_regex(param_regex_idx);
+
+st = dbstack(1);
+save_structure_name = 'pooled_ols';
+if strcmp(st(1).name, 'pooled_fgls')
+    save_structure_name = 'pooled_fgls';
+end
 
 %% Find parameters and variable names in every equation & Setup estimation matrices
 [X, Y, startdates, enddates, startidxs, residnames, pbeta, vars, surpidxs, surconstrainedparams] = ...

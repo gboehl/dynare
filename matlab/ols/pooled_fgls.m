@@ -37,9 +37,9 @@ function pooled_fgls(ds, param_common, param_regex, eqtags)
 global M_ oo_
 
 if nargin < 4
-    pooled_ols(ds, param_common, param_regex, true, 'pooled_fgls');
+    pooled_ols(ds, param_common, param_regex, true);
 else
-    param_regex = pooled_ols(ds, param_common, param_regex, true, 'pooled_fgls', eqtags);
+    param_regex = pooled_ols(ds, param_common, param_regex, true, eqtags);
 end
 
 oo_.sur.dof = length(oo_.pooled_fgls.sample_range);
