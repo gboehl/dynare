@@ -14,6 +14,7 @@ function [ya, yass, gya, gyass] = quarterly2annual(y,yss,GYTREND0,type,islog,aux
 %          5 annual price as quantity weighted average
 %          6 annual quantity from average price
 %          7 annual nominal from Q real and deflator
+%          8 annual ratio [e.g. trade balance to GDP]
 % islog    0 level (default)
 %          1 log-level
 %          2 growth rate Q frequency
@@ -120,6 +121,19 @@ switch type
     yn = (y+yss).*(yaux+yauxss) - yss.*yauxss;
     [ya, yass] = quarterly2annual(yn,yss.*yauxss,GYTREND0+GYTREND0aux,typeaux,0,0);
     GYTREND0=GYTREND0+GYTREND0aux;
+
+    case 8
+        % numerator
+        yn = y;
+        [yna, ynass] = quarterly2annual(yn,yss,GYTREND0,typeaux(1),0,0);
+        % denominator
+        yd = yaux;
+        [yda, ydass] = quarterly2annual(yd,yauxss,GYTREND0aux,typeaux(2),0,0);
+        % ratio
+        yass = ynass/ydass;
+        ya = (yna+ynass)./(yda+ydass)-yass;    
+        GYTREND0 = GYTREND0 - GYTREND0aux;
+
   otherwise
     error('Wrong type input')
 end
