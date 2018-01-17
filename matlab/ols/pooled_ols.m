@@ -1,5 +1,5 @@
-function pooled_ols(ds, param_common, param_regex, overlapping_dates, save_structure_name)
-% function pooled_ols(ds, param_common, param_regex, overlapping_dates, save_structure_name)
+function param_regex = pooled_ols(ds, param_common, param_regex, overlapping_dates, save_structure_name, eqtags)
+% function pooled_ols(ds, param_common, param_regex, overlapping_dates, save_structure_name, eqtags)
 % Run Pooled OLS
 % Apply parameter values found to corresponding parameter values in the
 % other blocks of the model
@@ -14,6 +14,8 @@ function pooled_ols(ds, param_common, param_regex, overlapping_dates, save_struc
 %                                  overlap
 %   save_structure_name [string]   Name of structure in oo_ to save results in
 %                                  (pooled_ols by default)
+%   eqtags              [cellstr]  names of equation tags to estimate. If empty,
+%                                  estimate all equations
 %
 % OUTPUTS
 %   none
@@ -45,7 +47,11 @@ assert(~isempty(ds) && isdseries(ds), 'The first argument must be a dseries');
 
 if isempty(param_common) && isempty(param_regex)
     disp('Performing OLS instead of Pooled OLS...')
-    dyn_ols(ds);
+    if nargin < 6
+        dyn_ols(ds);
+    else
+        dyn_ols(ds, {}, eqtags);
+    end
     return;
 end
 assert(~isempty(param_common) && iscellstr(param_common), 'The second argument must be a cellstr');
@@ -71,18 +77,28 @@ end
 
 jsonmodel = loadjson(jsonfile);
 jsonmodel = jsonmodel.model;
-[lhs, rhs, lineno] = getEquationsByTags(jsonmodel);
+if nargin < 6
+    [lhs, rhs, lineno] = getEquationsByTags(jsonmodel);
+else
+    [lhs, rhs, lineno] = getEquationsByTags(jsonmodel, 'name', eqtags);
+end
 
 %% Replace parameter names in equations
 country_name = param_common{1};
 regexcountries = ['(' strjoin(param_common(2:end),'|') ')'];
+param_regex_idx = false(length(param_regex), 1);
 for i = 1:length(param_regex)
     splitp = strsplit(param_regex{i}, '*');
     assert(length(splitp) >= 2);
-    rhs = regexprep(rhs, ...
+    rhstmp = regexprep(rhs, ...
         strjoin(splitp, regexcountries), ...
         strjoin(splitp, country_name));
+    if length(intersect(rhs, rhstmp)) ~= length(rhs)
+        rhs = rhstmp;
+        param_regex_idx(i) = true;
+    end
 end
+param_regex = param_regex(param_regex_idx);
 
 %% Find parameters and variable names in every equation & Setup estimation matrices
 [X, Y, startdates, enddates, startidxs, residnames, pbeta, vars, surpidxs, surconstrainedparams] = ...

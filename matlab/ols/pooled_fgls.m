@@ -1,5 +1,5 @@
-function pooled_fgls(ds, param_common, param_regex)
-% function pooled_fgls(ds, param_common, param_regex)
+function pooled_fgls(ds, param_common, param_regex, eqtags)
+% function pooled_fgls(ds, param_common, param_regex, eqtags)
 % Run Pooled FGLS
 %
 % INPUTS
@@ -8,6 +8,8 @@ function pooled_fgls(ds, param_common, param_regex)
 %                                e.g. country codes {'FR', 'DE', 'IT'}
 %   param_regex   [cellstr]      Where '*' should be replaced by the first
 %                                value in param_common
+%   eqtags        [cellstr]      names of equation tags to estimate. If empty,
+%                                estimate all equations
 %
 % OUTPUTS
 %   none
@@ -34,7 +36,11 @@ function pooled_fgls(ds, param_common, param_regex)
 
 global M_ oo_
 
-pooled_ols(ds, param_common, param_regex, true, 'pooled_fgls');
+if nargin < 4
+    pooled_ols(ds, param_common, param_regex, true, 'pooled_fgls');
+else
+    param_regex = pooled_ols(ds, param_common, param_regex, true, 'pooled_fgls', eqtags);
+end
 
 oo_.sur.dof = length(oo_.pooled_fgls.sample_range);
 resid = oo_.pooled_fgls.Y - oo_.pooled_fgls.X * oo_.pooled_fgls.beta;
