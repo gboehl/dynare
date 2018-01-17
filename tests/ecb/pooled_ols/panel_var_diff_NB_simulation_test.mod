@@ -92,45 +92,45 @@ de_ehic_de_ehic_L1        =  1                  ;
 
 
 model(linear);
-
+[name = 'eq1']
 diff(U2_Q_YED) =   u2_q_yed_ecm_u2_q_yed_L1 * (U2_Q_YED(-1) - U2_EHIC(-1))
                  + u2_q_yed_ecm_u2_stn_L1   * (U2_STN(-1)   - U2_ESTN(-1))
                  + u2_q_yed_u2_g_yer_L1     * diff(U2_G_YER(-1))
                  + u2_q_yed_u2_stn_L1       * diff(U2_STN(-1))
                  + res_U2_Q_YED                                           ;
-
+[name = 'eq2']
 diff(U2_G_YER) =   u2_g_yer_ecm_u2_q_yed_L1 * (U2_Q_YED(-1) - U2_EHIC(-1))
                  + u2_g_yer_ecm_u2_stn_L1   * (U2_STN(-1)   - U2_ESTN(-1))
                  + u2_g_yer_u2_q_yed_L1     * diff(U2_Q_YED(-1))
                  + u2_g_yer_u2_g_yer_L1     * diff(U2_G_YER(-1))
                  + u2_g_yer_u2_stn_L1       * diff(U2_STN(-1))
                  + res_U2_G_YER                                           ;
-
+[name = 'eq3']
 diff(U2_STN)   =   u2_stn_ecm_u2_q_yed_L1   * (U2_Q_YED(-1) - U2_EHIC(-1))
                  + u2_stn_ecm_u2_stn_L1     * (U2_STN(-1)   - U2_ESTN(-1))
                  + u2_stn_u2_q_yed_L1       * diff(U2_Q_YED(-1))
                  + u2_stn_u2_g_yer_L1       * diff(U2_G_YER(-1))
                  + res_U2_STN                                             ;
-
+[name = 'eq4']
 U2_ESTN        =   u2_estn_u2_estn_L1       * U2_ESTN(-1)
                  + res_U2_ESTN                                            ;
-
+[name = 'eq5']
 U2_EHIC        =   u2_ehic_u2_ehic_L1       * U2_EHIC(-1)
                  + res_U2_EHIC                                            ;
-
+[name = 'eq6']
 diff(DE_Q_YED) =   de_q_yed_ecm_de_q_yed_L1 * (DE_Q_YED(-1) - DE_EHIC(-1))
                  + de_q_yed_ecm_u2_stn_L1   * (U2_STN(-1)   - U2_ESTN(-1))
                  + de_q_yed_de_g_yer_L1     * diff(DE_G_YER(-1))
                  + de_q_yed_u2_stn_L1       * diff(U2_STN(-1))
                  + res_DE_Q_YED                                           ;
-
+[name = 'eq7']
 diff(DE_G_YER) =   de_g_yer_ecm_de_q_yed_L1 * (DE_Q_YED(-1) - DE_EHIC(-1))
                  + de_g_yer_ecm_u2_stn_L1   * (U2_STN(-1)   - U2_ESTN(-1))
                  + de_g_yer_de_q_yed_L1     * diff(DE_Q_YED(-1))
                  + de_g_yer_de_g_yer_L1     * diff(DE_G_YER(-1))
                  + de_g_yer_u2_stn_L1       * diff(U2_STN(-1))
                  + res_DE_G_YER                                           ;
-
+[name = 'eq8']
 DE_EHIC        =   de_ehic_de_ehic_L1       * DE_EHIC(-1)
                  + res_DE_EHIC                                            ;
 
