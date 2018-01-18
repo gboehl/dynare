@@ -75,7 +75,6 @@ end
 M_endo_exo_names_trim = [M_.endo_names; M_.exo_names];
 regex = strjoin(M_endo_exo_names_trim(:,1), '|');
 mathops = '[\+\*\^\-\/\(\)]';
-M_param_names_trim = cellfun(@strtrim, num2cell(M_.param_names,2), 'UniformOutput', false);
 for i = 1:length(lhs)
     %% Construct regression matrices
     rhs_ = strsplit(rhs{i}, {'+','-','*','/','^','log(','exp(','(',')'});
@@ -181,7 +180,7 @@ for i = 1:length(lhs)
     xpxi = (r'*r)\eye(nvars);
     oo_.ols.(tags{i}).beta = r\(q'*Y.data);
     for j = 1:length(pnames)
-        M_.params(strcmp(M_param_names_trim, pnames{j})) = oo_.ols.(tags{i}).beta(j);
+        M_.params(strcmp(M_.param_names, pnames{j})) = oo_.ols.(tags{i}).beta(j);
     end
 
     % Yhat
