@@ -5,21 +5,21 @@ function [X, Y, startdates, enddates, startidxs, residnames, pbeta, vars, surpid
 %
 % INPUTS
 %   ds                   [dseries]     dataset
-%   jsonmodel            [string]      JSON representation of model block
+%   jsonmodel            [cell array]  JSON representation of model block
 %
 % OUTPUTS
 %   X                    [matrix]      regressors
 %   Y                    [vector]      dependent variables
-%   startdates           [cellarr]     first observed period for each
+%   startdates           [cell array]  first observed period for each
 %                                      equation
-%   enddates             [cellarr]     last observed period for each
+%   enddates             [cell array]  last observed period for each
 %                                      equation
 %   startidxs            [vector]      rows corresponding to each
 %                                      equation's observations
-%   residnames           [cellarr]     name of residual in each equation
-%   pbeta                [cellarr]     parameter names corresponding to
+%   residnames           [cell array]  name of residual in each equation
+%   pbeta                [cell array]  parameter names corresponding to
 %                                      columns of X
-%   vars                 [cellarr]     variable names corresponding to
+%   vars                 [cell array]  variable names corresponding to
 %                                      parameters
 %   surpidxs             [vector]      indexes in M_.params associated with
 %                                      columns of X

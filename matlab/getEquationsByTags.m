@@ -3,14 +3,14 @@ function [jsonmodel] = getEquationsByTags(jsonmodel, tagname, tagvalue)
 % Return the jsonmodel structure with the matching tags
 %
 % INPUTS
-%   jsonmodel       [string]        JSON representation of model block
+%   jsonmodel       [cell array]    JSON representation of model block
 %   tagname         [string]        The name of the tag whos values are to
 %                                   be selected
 %   tagvalue        [string]        The values to be selected for the
 %                                   provided tagname
 %
 % OUTPUTS
-%   jsonmodel        [string]       JSON representation of model block,
+%   jsonmodel       [cell array]    JSON representation of model block,
 %                                   with equations removed that don't match
 %                                   eqtags
 %
