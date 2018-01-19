@@ -53,38 +53,30 @@ jsonmodel = loadjson(jsonfile);
 jsonmodel = jsonmodel.model;
 
 if nargin == 1
-    [lhs, rhs, lineno, sample, tags] = getEquationsByTags(jsonmodel);
     fitted_names_dict = {};
-else
+elseif nargin == 2
     assert(isempty(fitted_names_dict) || ...
         (iscell(fitted_names_dict) && ...
         (size(fitted_names_dict, 2) == 2 || size(fitted_names_dict, 2) == 3)), ...
         'dyn_ols: the second argument must be an Nx2 or Nx3 cell array');
-    if nargin == 2
-        [lhs, rhs, lineno, sample, tags] = getEquationsByTags(jsonmodel);
-    else
-        [lhs, rhs, lineno, sample, tags] = getEquationsByTags(jsonmodel, 'name', eqtags);
-    end
-    if isempty(lhs)
-        disp('dyn_ols: Nothing to estimate')
-        return
-    end
+elseif nargin == 3
+    jsonmodel = getEquationsByTags(jsonmodel, 'name', eqtags);
 end
 
 %% Estimation
 M_endo_exo_names_trim = [M_.endo_names; M_.exo_names];
 regex = strjoin(M_endo_exo_names_trim(:,1), '|');
 mathops = '[\+\*\^\-\/\(\)]';
-for i = 1:length(lhs)
+for i = 1:length(jsonmodel)
     %% Construct regression matrices
-    rhs_ = strsplit(rhs{i}, {'+','-','*','/','^','log(','exp(','(',')'});
+    rhs_ = strsplit(jsonmodel{i}.rhs, {'+','-','*','/','^','log(','exp(','(',')'});
     rhs_(cellfun(@(x) all(isstrprop(x, 'digit')), rhs_)) = [];
     vnames = setdiff(rhs_, M_.param_names);
-    if ~isempty(regexp(rhs{i}, ...
+    if ~isempty(regexp(jsonmodel{i}.rhs, ...
             ['(' strjoin(vnames, '\\(\\d+\\)|') '\\(\\d+\\))'], ...
             'once'))
         error(['dyn_ols: you cannot have leads in equation on line ' ...
-            lineno{i} ': ' lhs{i} ' = ' rhs{i}]);
+            jsonmodel{i}.line ': ' jsonmodel{i}.lhs ' = ' jsonmodel{i}.rhs]);
     end
 
     pnames = intersect(rhs_, M_.param_names);
@@ -98,27 +90,27 @@ for i = 1:length(lhs)
             '|^' pnames{j} mathops ...
             '|' mathops pnames{j} '$' ...
             ];
-        [startidx, endidx] = regexp(rhs{i}, pregex, 'start', 'end');
+        [startidx, endidx] = regexp(jsonmodel{i}.rhs, pregex, 'start', 'end');
         assert(length(startidx) == 1);
-        if rhs{i}(startidx) == '*' && rhs{i}(endidx) == '*'
-            vnamesl = getStrMoveLeft(rhs{i}(1:startidx-1));
-            vnamesr = getStrMoveRight(rhs{i}(endidx+1:end));
+        if jsonmodel{i}.rhs(startidx) == '*' && jsonmodel{i}.rhs(endidx) == '*'
+            vnamesl = getStrMoveLeft(jsonmodel{i}.rhs(1:startidx-1));
+            vnamesr = getStrMoveRight(jsonmodel{i}.rhs(endidx+1:end));
             vnames{j} = [vnamesl '*' vnamesr];
             splitstrings{j} = [vnamesl '*' pnames{j} '*' vnamesr];
-        elseif rhs{i}(startidx) == '*'
-            vnames{j} = getStrMoveLeft(rhs{i}(1:startidx-1));
+        elseif jsonmodel{i}.rhs(startidx) == '*'
+            vnames{j} = getStrMoveLeft(jsonmodel{i}.rhs(1:startidx-1));
             splitstrings{j} = [vnames{j} '*' pnames{j}];
-        elseif rhs{i}(endidx) == '*'
-            vnames{j} = getStrMoveRight(rhs{i}(endidx+1:end));
+        elseif jsonmodel{i}.rhs(endidx) == '*'
+            vnames{j} = getStrMoveRight(jsonmodel{i}.rhs(endidx+1:end));
             splitstrings{j} = [pnames{j} '*' vnames{j}];
-            if rhs{i}(startidx) == '-'
+            if jsonmodel{i}.rhs(startidx) == '-'
                 vnames{j} = ['-' vnames{j}];
                 splitstrings{j} = ['-' splitstrings{j}];
             end
-        elseif rhs{i}(startidx) == '+' ...
-                || rhs{i}(startidx) == '-' ...
-                || rhs{i}(endidx) == '+' ...
-                || rhs{i}(endidx) == '-'
+        elseif jsonmodel{i}.rhs(startidx) == '+' ...
+                || jsonmodel{i}.rhs(startidx) == '-' ...
+                || jsonmodel{i}.rhs(endidx) == '+' ...
+                || jsonmodel{i}.rhs(endidx) == '-'
             % intercept
             createdvar = true;
             if any(strcmp(M_endo_exo_names_trim, 'intercept'))
@@ -133,7 +125,7 @@ for i = 1:length(lhs)
             error('dyn_ols: Shouldn''t arrive here');
         end
         if createdvar
-            if rhs{i}(startidx) == '-'
+            if jsonmodel{i}.rhs(startidx) == '-'
                 Xtmp = dseries(-ones(ds.nobs, 1), ds.firstdate, vnames{j});
             else
                 Xtmp = dseries(ones(ds.nobs, 1), ds.firstdate, vnames{j});
@@ -145,113 +137,120 @@ for i = 1:length(lhs)
         X = [X Xtmp];
     end
 
-    lhssub = getRhsToSubFromLhs(ds, rhs{i}, regex, [splitstrings; pnames]);
+    lhssub = getRhsToSubFromLhs(ds, jsonmodel{i}.rhs, regex, [splitstrings; pnames]);
     residuals = setdiff(intersect(rhs_, M_.exo_names), ds.name);
     assert(~isempty(residuals), ['No residuals in equation ' num2str(i)]);
     assert(length(residuals) == 1, ['More than one residual in equation ' num2str(i)]);
 
-    Y = eval(regexprep(lhs{i}, regex, 'ds.$&'));
+    Y = eval(regexprep(jsonmodel{i}.lhs, regex, 'ds.$&'));
     for j = 1:lhssub.vobs
         Y = Y - lhssub{j};
     end
 
     fp = max(Y.firstobservedperiod, X.firstobservedperiod);
     lp = min(Y.lastobservedperiod, X.lastobservedperiod);
-    if ~isempty(sample{i})
-        if fp > sample{i}(1) || lp < sample{i}(end)
+    if isfield(jsonmodel{i}, 'sample') && ~isempty(jsonmodel{i}.sample)
+        if fp > jsonmodel{i}.sample(1) || lp < jsonmodel{i}.sample(end)
             warning(['The sample over which you want to estimate contains NaNs. '...
                 'Adjusting estimation range to be: ' fp.char ' to ' lp.char])
         else
-            fp = sample{i}(1);
-            lp = sample{i}(end);
+            fp = jsonmodel{i}.sample(1);
+            lp = jsonmodel{i}.sample(end);
         end
     end
 
     Y = Y(fp:lp);
     X = X(fp:lp).data;
 
+    if isfield(jsonmodel{i}, 'tags') && ...
+            isfield(jsonmodel{i}.tags, 'name')
+        tag = jsonmodel{i}.tags.('name');
+    else
+        tag = ['eq_line_no_' num2str(jsonmodel{i}.line)];
+    end
+
     %% Estimation
     % From LeSage, James P. "Applied Econometrics using MATLAB"
     [nobs, nvars] = size(X);
-    oo_.ols.(tags{i}).dof = nobs - nvars;
+    oo_.ols.(tag).dof = nobs - nvars;
 
     % Estimated Parameters
     [q, r] = qr(X, 0);
     xpxi = (r'*r)\eye(nvars);
-    oo_.ols.(tags{i}).beta = r\(q'*Y.data);
+    oo_.ols.(tag).beta = r\(q'*Y.data);
     for j = 1:length(pnames)
-        M_.params(strcmp(M_.param_names, pnames{j})) = oo_.ols.(tags{i}).beta(j);
+        M_.params(strcmp(M_.param_names, pnames{j})) = oo_.ols.(tag).beta(j);
     end
 
     % Yhat
     idx = 0;
-    yhatname = [tags{i} '_FIT'];
+    yhatname = [tag '_FIT'];
     if ~isempty(fitted_names_dict)
-        idx = strcmp(fitted_names_dict(:,1), tags{i});
+        idx = strcmp(fitted_names_dict(:,1), tag);
         if any(idx)
             yhatname = fitted_names_dict{idx, 2};
         end
     end
-    oo_.ols.(tags{i}).Yhat = dseries(X*oo_.ols.(tags{i}).beta, fp, yhatname);
+    oo_.ols.(tag).Yhat = dseries(X*oo_.ols.(tag).beta, fp, yhatname);
     if any(idx) ...
             && length(fitted_names_dict(idx, :)) == 3 ...
             && ~isempty(fitted_names_dict{idx, 3})
-        oo_.ols.(tags{i}).Yhat = ...
-            eval([fitted_names_dict{idx, 3} '(oo_.ols.(tags{' num2str(i) '}).Yhat)']);
+        oo_.ols.(tag).Yhat = ...
+            feval(fitted_names_dict{idx, 3}, oo_.ols.(tag).Yhat);
     end
 
     % Residuals
-    oo_.ols.(tags{i}).resid = Y - oo_.ols.(tags{i}).Yhat;
+    oo_.ols.(tag).resid = Y - oo_.ols.(tag).Yhat;
 
     % Correct Yhat reported back to user for given
     for j = 1:lhssub.vobs
-        oo_.ols.(tags{i}).Yhat = oo_.ols.(tags{i}).Yhat + lhssub{j}(fp:lp);
+        oo_.ols.(tag).Yhat = oo_.ols.(tag).Yhat + lhssub{j}(fp:lp);
     end
-    ds = [ds oo_.ols.(tags{i}).Yhat];
+    ds = [ds oo_.ols.(tag).Yhat];
 
     %% Calculate statistics
     % Estimate for sigma^2
-    SS_res = oo_.ols.(tags{i}).resid.data'*oo_.ols.(tags{i}).resid.data;
-    oo_.ols.(tags{i}).s2 = SS_res/oo_.ols.(tags{i}).dof;
+    SS_res = oo_.ols.(tag).resid.data'*oo_.ols.(tag).resid.data;
+    oo_.ols.(tag).s2 = SS_res/oo_.ols.(tag).dof;
 
     % R^2
     ym = Y.data - mean(Y);
     SS_tot = ym'*ym;
-    oo_.ols.(tags{i}).R2 = 1 - SS_res/SS_tot;
+    oo_.ols.(tag).R2 = 1 - SS_res/SS_tot;
 
     % Adjusted R^2
-    oo_.ols.(tags{i}).adjR2 = oo_.ols.(tags{i}).R2 - (1 - oo_.ols.(tags{i}).R2)*nvars/(oo_.ols.(tags{i}).dof-1);
+    oo_.ols.(tag).adjR2 = oo_.ols.(tag).R2 - (1 - oo_.ols.(tag).R2)*nvars/(oo_.ols.(tag).dof-1);
 
     % Durbin-Watson
-    ediff = oo_.ols.(tags{i}).resid.data(2:nobs) - oo_.ols.(tags{i}).resid.data(1:nobs-1);
-    oo_.ols.(tags{i}).dw = (ediff'*ediff)/SS_res;
+    ediff = oo_.ols.(tag).resid.data(2:nobs) - oo_.ols.(tag).resid.data(1:nobs-1);
+    oo_.ols.(tag).dw = (ediff'*ediff)/SS_res;
 
     % Standard Error
-    oo_.ols.(tags{i}).stderr = sqrt(oo_.ols.(tags{i}).s2*diag(xpxi));
+    oo_.ols.(tag).stderr = sqrt(oo_.ols.(tag).s2*diag(xpxi));
 
     % T-Stat
-    oo_.ols.(tags{i}).tstat = oo_.ols.(tags{i}).beta./oo_.ols.(tags{i}).stderr;
+    oo_.ols.(tag).tstat = oo_.ols.(tag).beta./oo_.ols.(tag).stderr;
 
     %% Print Output
     if ~options_.noprint
         if nargin == 3
-            title = ['OLS Estimation of equation ''' tags{i} ''' [name = ''' tags{i} ''']'];
+            title = ['OLS Estimation of equation ''' tag ''' [name = ''' tag ''']'];
         else
-            title = ['OLS Estimation of equation ''' tags{i} ''''];
+            title = ['OLS Estimation of equation ''' tag ''''];
         end
 
-        preamble = {sprintf('Dependent Variable: %s', lhs{i}), ...
+        preamble = {sprintf('Dependent Variable: %s', jsonmodel{i}.lhs), ...
             sprintf('No. Independent Variables: %d', nvars), ...
             sprintf('Observations: %d from %s to %s\n', nobs, fp.char, lp.char)};
 
-        afterward = {sprintf('R^2: %f', oo_.ols.(tags{i}).R2), ...
-            sprintf('R^2 Adjusted: %f', oo_.ols.(tags{i}).adjR2), ...
-            sprintf('s^2: %f', oo_.ols.(tags{i}).s2), ...
-            sprintf('Durbin-Watson: %f', oo_.ols.(tags{i}).dw)};
+        afterward = {sprintf('R^2: %f', oo_.ols.(tag).R2), ...
+            sprintf('R^2 Adjusted: %f', oo_.ols.(tag).adjR2), ...
+            sprintf('s^2: %f', oo_.ols.(tag).s2), ...
+            sprintf('Durbin-Watson: %f', oo_.ols.(tag).dw)};
 
         dyn_table(title, preamble, afterward, vnames, ...
             {'Coefficients','t-statistic','Std. Error'}, 4, ...
-            [oo_.ols.(tags{i}).beta oo_.ols.(tags{i}).tstat oo_.ols.(tags{i}).stderr]);
+            [oo_.ols.(tag).beta oo_.ols.(tag).tstat oo_.ols.(tag).stderr]);
     end
 end
 end

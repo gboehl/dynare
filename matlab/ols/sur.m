@@ -44,15 +44,13 @@ end
 
 jsonmodel = loadjson(jsonfile);
 jsonmodel = jsonmodel.model;
-if nargin == 1
-    [lhs, rhs, lineno] = getEquationsByTags(jsonmodel);
-else
-    [lhs, rhs, lineno] = getEquationsByTags(jsonmodel, 'name', eqtags);
+if nargin == 2
+    jsonmodel = getEquationsByTags(jsonmodel, 'name', eqtags);
 end
 
 %% Find parameters and variable names in equations and setup estimation matrices
 [X, Y, startdates, enddates, startidxs, residnames, pbeta, vars, pidxs, surconstrainedparams] = ...
-    pooled_sur_common(ds, lhs, rhs, lineno);
+    pooled_sur_common(ds, jsonmodel);
 
 if nargin == 1 && size(X, 2) ~= M_.param_nbr
     warning(['Not all parameters were used in model: ' ...
@@ -63,11 +61,11 @@ end
 maxfp = max([startdates{:}]);
 minlp = min([enddates{:}]);
 nobs = minlp - maxfp;
-newY = zeros(nobs*length(lhs), 1);
-newX = zeros(nobs*length(lhs), columns(X));
+newY = zeros(nobs*length(jsonmodel), 1);
+newX = zeros(nobs*length(jsonmodel), columns(X));
 lastidx = 1;
-for i = 1:length(lhs)
-    if i == length(lhs)
+for i = 1:length(jsonmodel)
+    if i == length(jsonmodel)
         yds = dseries(Y(startidxs(i):end), startdates{i});
         xds = dseries(X(startidxs(i):end, :), startdates{i});
     else
@@ -76,7 +74,7 @@ for i = 1:length(lhs)
     end
     newY(lastidx:lastidx + nobs, 1) = yds(maxfp:minlp).data;
     newX(lastidx:lastidx + nobs, :) = xds(maxfp:minlp, :).data;
-    if i ~= length(lhs)
+    if i ~= length(jsonmodel)
         lastidx = lastidx + nobs + 1;
     end
 end
@@ -88,7 +86,7 @@ if strcmp(st(1).name, 'surgibbs')
     varargout{2} = pidxs;
     varargout{3} = newX;
     varargout{4} = newY;
-    varargout{5} = length(lhs);
+    varargout{5} = length(jsonmodel);
     return
 end
 
@@ -101,7 +99,7 @@ oo_.sur.dof = length(maxfp:minlp);
 [q, r] = qr(X, 0);
 xpxi = (r'*r)\eye(size(X, 2));
 resid = Y - X * (r\(q'*Y));
-resid = reshape(resid, oo_.sur.dof, length(lhs));
+resid = reshape(resid, oo_.sur.dof, length(jsonmodel));
 
 M_.Sigma_e = resid'*resid/oo_.sur.dof;
 kLeye = kron(chol(inv(M_.Sigma_e)), eye(oo_.sur.dof));
@@ -141,7 +139,7 @@ oo_.sur.tstat = oo_.sur.beta./oo_.sur.stderr;
 
 %% Print Output
 if ~options_.noprint
-    preamble = {sprintf('Dependent Variable: %s', lhs{i}), ...
+    preamble = {sprintf('Dependent Variable: %s', jsonmodel{i}.lhs), ...
         sprintf('No. Independent Variables: %d', M_.param_nbr), ...
         sprintf('Observations: %d', oo_.sur.dof)};
 

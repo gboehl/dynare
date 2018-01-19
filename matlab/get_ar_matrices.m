@@ -80,10 +80,10 @@ if exist(jsonfile, 'file') ~= 2
 end
 jsonmodel = loadjson(jsonfile);
 jsonmodel = jsonmodel.model;
-lhs = getEquationsByTags(jsonmodel, 'name', M_.var.(var_model_name).eqtags);
+jsonmodel = getEquationsByTags(jsonmodel, 'name', M_.var.(var_model_name).eqtags);
 lhsidxs = zeros(ntags, 1);
 for i = 1:ntags
-    idxs = strcmp(M_.endo_names, lhs{i});
+    idxs = strcmp(M_.endo_names, jsonmodel{i}.lhs);
     if any(idxs)
         lhsidxs(i) = find(idxs);
         continue

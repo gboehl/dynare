@@ -1,24 +1,23 @@
-function [lhs, rhs, linenum, sample, tagvalue] = getEquationsByTags(jsonmodel, varargin)
-%function [lhs, rhs, linenum, sample] = getEquationByTag(jsonmodel, varargin)
-% Return the lhs, rhs of an equation and the line it was defined
-% on given its tag
+function [jsonmodel] = getEquationsByTags(jsonmodel, tagname, tagvalue)
+%function [jsonmodel] = getEquationsByTags(jsonmodel, tagname, tagvalue)
+% Return the jsonmodel structure with the matching tags
 %
 % INPUTS
-%   jsonmodel        [string] JSON representation of model block
-%   varargin         [string or cellstring arrays] tagname and tagvalue for
-%                                                  eqs to get
+%   jsonmodel       [string]        JSON representation of model block
+%   tagname         [string]        The name of the tag whos values are to
+%                                   be selected
+%   tagvalue        [string]        The values to be selected for the
+%                                   provided tagname
 %
 % OUTPUTS
-%   lhs             [cellstring array]     left hand side of eq
-%   rhs             [cellstring array]     right hand side of eq
-%   linenum         [cellstring array]     eq line in .mod file
-%   sample          [cell array of dates]  sample range
-%   tagvalue        [cellstring array]     tags associated with equations
+%   jsonmodel        [string]       JSON representation of model block,
+%                                   with equations removed that don't match
+%                                   eqtags
 %
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2017 Dynare Team
+% Copyright (C) 2017-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -35,39 +34,9 @@ function [lhs, rhs, linenum, sample, tagvalue] = getEquationsByTags(jsonmodel, v
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-assert(nargin == 1 || nargin == 3, 'Incorrect number of arguments passed to getEquationsByTags');
-
-if nargin == 1
-    lhs = cell(1, length(jsonmodel));
-    rhs = cell(1, length(jsonmodel));
-    linenum = cell(1, length(jsonmodel));
-    sample = cell(1, length(jsonmodel));
-    tagvalue = cell(1, length(jsonmodel));
-    for i=1:length(jsonmodel)
-        lhs{i} = jsonmodel{i}.lhs;
-        rhs{i} = jsonmodel{i}.rhs;
-        linenum{i} = jsonmodel{i}.line;
-        if isfield(jsonmodel{i}, 'tags') && ...
-                isfield(jsonmodel{i}.tags, 'name')
-            tagvalue{i} = jsonmodel{i}.tags.('name');
-        else
-            tagvalue{i} = ['eq_line_no_' num2str(linenum{i})];
-        end
-        if isfield(jsonmodel{i}, 'tags')
-            if isfield(jsonmodel{i}.tags, 'sample')
-                tmp = strsplit(jsonmodel{i}.tags.sample, ':');
-                sample{i} = dates(tmp{1}):dates(tmp{2});
-            end
-        else
-            tagvalue{i} = ['eq_line_no_' num2str(linenum{i})];
-        end
-    end
-    return
-end
-
-tagname = varargin{1};
-tagvalue = varargin{2};
-
+assert(nargin == 3, 'Incorrect number of arguments passed to getEquationsByTags');
+assert(iscell(jsonmodel) && ~isempty(jsonmodel), ...
+    'the first argument must be a cell array of structs');
 assert(ischar(tagname), 'Tag name must be a string');
 assert(ischar(tagvalue) || iscell(tagvalue), 'Tag value must be a string or a cell string array');
 
@@ -75,39 +44,22 @@ if ischar(tagvalue)
     tagvalue = {tagvalue};
 end
 
-lhs = cell(1, length(tagvalue));
-rhs = cell(1, length(tagvalue));
-linenum = cell(1, length(tagvalue));
-sample = cell(1, length(tagvalue));
-idx2rm = [];
+idx2keep = [];
 for j = 1:length(tagvalue)
+    orig_len_idx2keep = length(idx2keep);
     for i=1:length(jsonmodel)
+        assert(isstruct(jsonmodel{i}), 'Every entry in jsonmodel must be a struct');
         if isfield(jsonmodel{i}, 'tags') && ...
                 isfield(jsonmodel{i}.tags, tagname) && ...
                 strcmp(jsonmodel{i}.tags.(tagname), tagvalue{j})
-            lhs{j} = jsonmodel{i}.lhs;
-            rhs{j} = jsonmodel{i}.rhs;
-            linenum{j} = jsonmodel{i}.line;
-            if isfield(jsonmodel{i}.tags, 'sample')
-                tmp = strsplit(jsonmodel{i}.tags.sample, ':');
-                sample{j} = dates(tmp{1}):dates(tmp{2});
-            end
-            if ~any(cellfun(@isempty, lhs))
-                return
-            end
+            idx2keep = [idx2keep; i];
             break
         end
     end
-    if isempty(rhs{j})
-        warning(['getEquationsByTags: No equation tag found by the name of ''' tagvalue{j} ''''])
-        idx2rm = [idx2rm j];
+    if length(idx2keep) == orig_len_idx2keep
+        warning(['getEquationsByTags: no equation tag found by the name of ''' tagvalue{j} ''''])
     end
 end
-if ~isempty(idx2rm)
-    lhs(:,idx2rm) = [];
-    rhs(:,idx2rm) = [];
-    linenum(:,idx2rm) = [];
-    sample(:,idx2rm) = [];
-    tagvalue(:,idx2rm) = [];
-end
+assert(~isempty(idx2keep), 'getEquationsByTags: no equations selected');
+jsonmodel = jsonmodel(unique(idx2keep, 'stable'));
 end

@@ -58,13 +58,18 @@ for i = 1:length(param_regex)
     beta_idx = strcmp(pbeta, strrep(param_regex{i}, '*', oo_.pooled_fgls.country_name));
     assigned_idxs = assigned_idxs | beta_idx;
     value = oo_.pooled_fgls.beta(beta_idx);
-    assert(~isempty(value));
-    M_.params(~cellfun(@isempty, regexp(M_.param_names, ...
-        strrep(param_regex{i}, '*', regexcountries)))) = value;
+    if isempty(eqtags)
+        assert(~isempty(value));
+    end
+    if ~isempty(value)
+        M_.params(~cellfun(@isempty, regexp(M_.param_names, ...
+            strrep(param_regex{i}, '*', regexcountries)))) = value;
+    end
 end
 idxs = find(assigned_idxs == 0);
 values = oo_.pooled_fgls.beta(idxs);
 names = pbeta(idxs);
+assert(length(values) == length(names));
 for i = 1:length(idxs)
     M_.params(strcmp(M_.param_names, names{i})) = values(i);
 end

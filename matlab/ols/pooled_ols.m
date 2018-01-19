@@ -70,9 +70,9 @@ end
 jsonmodel = loadjson(jsonfile);
 jsonmodel = jsonmodel.model;
 if nargin < 5
-    [lhs, rhs, lineno] = getEquationsByTags(jsonmodel);
+    eqtags ={};
 else
-    [lhs, rhs, lineno] = getEquationsByTags(jsonmodel, 'name', eqtags);
+    jsonmodel = getEquationsByTags(jsonmodel, 'name', eqtags);
 end
 
 %% Replace parameter names in equations
@@ -82,12 +82,14 @@ param_regex_idx = false(length(param_regex), 1);
 for i = 1:length(param_regex)
     splitp = strsplit(param_regex{i}, '*');
     assert(length(splitp) >= 2);
-    rhstmp = regexprep(rhs, ...
-        strjoin(splitp, regexcountries), ...
-        strjoin(splitp, country_name));
-    if length(intersect(rhs, rhstmp)) ~= length(rhs)
-        rhs = rhstmp;
-        param_regex_idx(i) = true;
+    for j = 1:length(jsonmodel)
+        rhstmp = regexprep(jsonmodel{j}.rhs, ...
+            strjoin(splitp, regexcountries), ...
+            strjoin(splitp, country_name));
+        if length(intersect(jsonmodel{j}.rhs, rhstmp)) ~= length(jsonmodel{j}.rhs)
+            jsonmodel{j}.rhs = rhstmp;
+            param_regex_idx(i) = true;
+        end
     end
 end
 param_regex = param_regex(param_regex_idx);
@@ -101,18 +103,18 @@ end
 
 %% Find parameters and variable names in every equation & Setup estimation matrices
 [X, Y, startdates, enddates, startidxs, residnames, pbeta, vars, surpidxs, surconstrainedparams] = ...
-    pooled_sur_common(ds, lhs, rhs, lineno);
+    pooled_sur_common(ds, jsonmodel);
 
 if overlapping_dates
     maxfp = max([startdates{:}]);
     minlp = min([enddates{:}]);
     nobs = minlp - maxfp;
-    newY = zeros(nobs*length(lhs), 1);
-    newX = zeros(nobs*length(lhs), columns(X));
+    newY = zeros(nobs*length(jsonmodel), 1);
+    newX = zeros(nobs*length(jsonmodel), columns(X));
     newstartidxs = zeros(size(startidxs));
     newstartidxs(1) = 1;
-    for i = 1:length(lhs)
-        if i == length(lhs)
+    for i = 1:length(jsonmodel)
+        if i == length(jsonmodel)
             yds = dseries(Y(startidxs(i):end), startdates{i});
             xds = dseries(X(startidxs(i):end, :), startdates{i});
         else
@@ -121,7 +123,7 @@ if overlapping_dates
         end
         newY(newstartidxs(i):newstartidxs(i) + nobs, 1) = yds(maxfp:minlp).data;
         newX(newstartidxs(i):newstartidxs(i) + nobs, :) = xds(maxfp:minlp, :).data;
-        if i ~= length(lhs)
+        if i ~= length(jsonmodel)
             newstartidxs(i+1) = newstartidxs(i) + nobs + 1;
         end
     end
@@ -152,9 +154,13 @@ for i = 1:length(param_regex)
     beta_idx = strcmp(pbeta, strrep(param_regex{i}, '*', country_name));
     assigned_idxs = assigned_idxs | beta_idx;
     value = oo_.(save_structure_name).beta(beta_idx);
-    assert(~isempty(value));
-    M_.params(~cellfun(@isempty, regexp(M_.param_names, ...
-        strrep(param_regex{i}, '*', regexcountries)))) = value;
+    if isempty(eqtags)
+        assert(~isempty(value));
+    end
+    if ~isempty(value)
+        M_.params(~cellfun(@isempty, regexp(M_.param_names, ...
+            strrep(param_regex{i}, '*', regexcountries)))) = value;
+    end
 end
 idxs = find(assigned_idxs == 0);
 values = oo_.(save_structure_name).beta(idxs);
@@ -165,8 +171,8 @@ for i = 1:length(idxs)
 end
 
 residuals = Y - X * oo_.(save_structure_name).beta;
-for i = 1:length(lhs)
-    if i == length(lhs)
+for i = 1:length(jsonmodel)
+    if i == length(jsonmodel)
         oo_.(save_structure_name).resid.(residnames{i}{:}) = residuals(startidxs(i):end);
     else
         oo_.(save_structure_name).resid.(residnames{i}{:}) = residuals(startidxs(i):startidxs(i+1)-1);
