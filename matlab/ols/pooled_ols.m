@@ -141,7 +141,6 @@ end
 [q, r] = qr(X, 0);
 oo_.(save_structure_name).beta = r\(q'*Y);
 
-st = dbstack(1);
 if strcmp(st(1).name, 'pooled_fgls')
     return
 end
