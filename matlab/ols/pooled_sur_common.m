@@ -69,7 +69,7 @@ for i = 1:length(jsonmodel)
     vnames = setdiff(rhs_, M_.param_names);
     if ~isempty(regexp(jsonmodel{i}.rhs, ...
             ['(' strjoin(vnames, '\\(\\d+\\)|') '\\(\\d+\\))'], 'once'))
-        error(['pooled_ols: you cannot have leads in equation on line ' ...
+        error(['you cannot have leads in equation on line ' ...
             jsonmodel{i}.line ': ' jsonmodel{i}.lhs ' = ' jsonmodel{i}.rhs]);
     end
 
@@ -129,7 +129,7 @@ for i = 1:length(jsonmodel)
             end
             splitstrings{j} = vnames{j};
         else
-            error('pooled_ols: Shouldn''t arrive here');
+            error('Shouldn''t arrive here');
         end
         if createdvar
             xjdatatmp = dseries(ones(ds.nobs, 1), ds.firstdate, vnames{j});
