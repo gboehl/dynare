@@ -47,9 +47,9 @@ function c = demean(x)
 % Original author: stephane DOT adjemian AT univ DASH lemans DOT fr
 
 if ndim(x)==1
-    c = x-mean(x);
+    c = x-nanmean(x);
 elseif ndim(x)==2
-    c = bsxfun(@minus,x,mean(x));
+    c = bsxfun(@minus,x,nanmean(x));
 else
     error('descriptive_statistics::demean:: This function is not implemented for arrays with dimension greater than two!')
 end
