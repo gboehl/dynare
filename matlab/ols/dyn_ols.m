@@ -149,13 +149,21 @@ for i = 1:length(jsonmodel)
 
     fp = max(Y.firstobservedperiod, X.firstobservedperiod);
     lp = min(Y.lastobservedperiod, X.lastobservedperiod);
-    if isfield(jsonmodel{i}, 'sample') && ~isempty(jsonmodel{i}.sample)
-        if fp > jsonmodel{i}.sample(1) || lp < jsonmodel{i}.sample(end)
+    if isfield(jsonmodel{i}.tags, 'sample') && ~isempty(jsonmodel{i}.tags.sample)
+        colon_idx = strfind(jsonmodel{i}.tags.sample, ':');
+        fsd = dates(jsonmodel{i}.tags.sample(1:colon_idx-1));
+        lsd = dates(jsonmodel{i}.tags.sample(colon_idx+1:end));
+        if fp > fsd
             warning(['The sample over which you want to estimate contains NaNs. '...
-                'Adjusting estimation range to be: ' fp.char ' to ' lp.char])
+                'Adjusting estimation range to begin on: ' fp.char])
         else
-            fp = jsonmodel{i}.sample(1);
-            lp = jsonmodel{i}.sample(end);
+            fp = fsd;
+        end
+        if lp < lsd
+             warning(['The sample over which you want to estimate contains NaNs. '...
+                'Adjusting estimation range to end on: ' lp.char])
+        else
+            lp = lsd;
         end
     end
 
