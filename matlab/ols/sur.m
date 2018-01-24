@@ -1,9 +1,10 @@
-function varargout = sur(ds, eqtags)
-% function varargout = sur(ds, eqtags)
+function varargout = sur(ds, param_names, eqtags)
+%function varargout = sur(ds, param_names, eqtags)
 % Seemingly Unrelated Regressions
 %
 % INPUTS
 %   ds                [dseries]    data to use in estimation
+%   param_names       [cellstr]    list of parameters to estimate
 %   eqtags            [cellstr]    names of equation tags to estimate. If empty,
 %                                  estimate all equations
 %
@@ -33,8 +34,13 @@ function varargout = sur(ds, eqtags)
 global M_ oo_ options_
 
 %% Check input argument
-assert(nargin == 1 || nargin == 2, 'You must provide one or two arguments');
+assert(nargin >= 1 && nargin <= 3, 'You must provide one, two, or three arguments');
 assert(~isempty(ds) && isdseries(ds), 'The first argument must be a dseries');
+if nargin >= 2
+    assert(iscellstr(param_names), 'The 2nd argument must be a cellstr');
+else
+    param_names = {};
+end
 
 %% Read JSON
 jsonfile = [M_.fname '_original.json'];
@@ -44,12 +50,12 @@ end
 
 jsonmodel = loadjson(jsonfile);
 jsonmodel = jsonmodel.model;
-if nargin == 2
+if nargin == 3
     jsonmodel = getEquationsByTags(jsonmodel, 'name', eqtags);
 end
 
 %% Find parameters and variable names in equations and setup estimation matrices
-[X, Y, startdates, enddates, startidxs, residnames, pbeta, vars, pidxs, surconstrainedparams] = ...
+[X, Y, startdates, enddates, startidxs, residnames, pbeta, vars, opidxs, surconstrainedparams] = ...
     pooled_sur_common(ds, jsonmodel);
 
 if nargin == 1 && size(X, 2) ~= M_.param_nbr
@@ -79,11 +85,32 @@ for i = 1:length(jsonmodel)
     end
 end
 
+if ~isempty(param_names)
+    pnamesall = M_.param_names(opidxs);
+    nparams = length(param_names);
+    pidxs = zeros(nparams, 1);
+    for i = 1:nparams
+        idxs = find(strcmp(param_names{i}, pnamesall));
+        if isempty(idxs)
+            if ~isempty(eqtags)
+                error(['Could not find ' param_names{i} ...
+                    ' in the provided equations specified by ' strjoin(eqtags, ',')]);
+            end
+            error('Unspecified error. Please report');
+        end
+        pidxs(i) = idxs;
+    end
+    vars = [vars{:}];
+    vars = {vars(pidxs)};
+    newY = newY - newX(:, setdiff(1:size(newX, 2), pidxs)) * M_.params(setdiff(opidxs, opidxs(pidxs), 'stable'));
+    newX = newX(:, pidxs);
+end
+
 %% Return to surgibbs if called from there
 st = dbstack(1);
 if strcmp(st(1).name, 'surgibbs')
     varargout{1} = length(maxfp:minlp); %dof
-    varargout{2} = pidxs;
+    varargout{2} = opidxs(pidxs);
     varargout{3} = newX;
     varargout{4} = newY;
     varargout{5} = length(jsonmodel);
@@ -106,7 +133,7 @@ kLeye = kron(chol(inv(M_.Sigma_e)), eye(oo_.sur.dof));
 [q, r] = qr(kLeye*X, 0);
 oo_.sur.beta = r\(q'*kLeye*Y);
 
-M_.params(pidxs, 1) = oo_.sur.beta;
+M_.params(opidxs(pidxs)) = oo_.sur.beta;
 
 % Yhat
 oo_.sur.Yhat = X * oo_.sur.beta;

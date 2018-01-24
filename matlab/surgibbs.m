@@ -70,29 +70,15 @@ end
 
 %% Estimation
 if nargin == 8
-    [nobs, pidxs, X, Y, m] = sur(ds, eqtags);
+    [nobs, pidxs, X, Y, m] = sur(ds, param_names, eqtags);
 else
-    [nobs, pidxs, X, Y, m] = sur(ds);
+    [nobs, pidxs, X, Y, m] = sur(ds, param_names);
 end
-pnamesall = M_.param_names(pidxs);
-nparams = length(param_names);
-pidxs = zeros(nparams, 1);
-for i = 1:nparams
-    idxs = find(strcmp(param_names{i}, pnamesall));
-    if isempty(idxs)
-        if ~isempty(eqtags)
-            error(['Could not find ' param_names{i} ...
-                ' in the provided equations specified by ' strjoin(eqtags, ',')]);
-        end
-        error('Unspecified error. Please report');
-    end
-    pidxs(i) = idxs;
-end
-X = X(:, pidxs);
 beta = beta0;
 A = inv(A);
 thinidx = 1;
 drawidx = 1;
+nparams = length(param_names);
 oo_.surgibbs.betadraws = zeros(floor((ndraws-discarddraws)/thin), nparams);
 for i = 1:ndraws
     % Draw Omega, given X, Y, Beta
@@ -119,7 +105,7 @@ end
 
 % save parameter values
 oo_.surgibbs.beta = (sum(oo_.surgibbs.betadraws)/rows(oo_.surgibbs.betadraws))';
-M_.params(pidxs, 1) = oo_.surgibbs.beta;
+M_.params(pidxs) = oo_.surgibbs.beta;
 
 %% Print Output
 dyn_table('Gibbs Sampling on SUR', {}, {}, param_names, ...
