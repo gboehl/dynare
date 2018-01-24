@@ -1,33 +1,14 @@
 function c = demean(x)
+
 % Removes the mean of each column of a matrix.
+%
+% INPUTS 
+% - x    [double]   T*N matrix of data.
+%
+% OUTPUTS 
+% - c    [double]   T*N matrix of demeaned data.
 
-%@info:
-%! @deftypefn {Function File} {@var{c} =} demean (@var{x})
-%! @anchor{demean}
-%! This function removes the mean of each column of a matrix.
-%!
-%! @strong{Inputs}
-%! @table @var
-%! @item x
-%! Matlab matrix (T-by-N).
-%! @end table
-%!
-%! @strong{Outputs}
-%! @table @var
-%! @item c
-%! Matlab matrix (T-by-N). The demeaned x matrix.
-%! @end table
-%!
-%! @strong{This function is called by:}
-%! @ref{compute_cova}, @ref{compute_acov}, @ref{compute_std}.
-%!
-%! @strong{This function calls:}
-%! @ref{ndim},
-%!
-%! @end deftypefn
-%@eod:
-
-% Copyright (C) 2011-2017 Dynare Team
+% Copyright (C) 2011-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
