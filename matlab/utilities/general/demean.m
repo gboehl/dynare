@@ -44,12 +44,8 @@ function c = demean(x)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-% Original author: stephane DOT adjemian AT univ DASH lemans DOT fr
-
-if ndim(x)==1
-    c = x-nanmean(x);
-elseif ndim(x)==2
-    c = bsxfun(@minus,x,nanmean(x));
-else
-    error('descriptive_statistics::demean:: This function is not implemented for arrays with dimension greater than two!')
+if ndim(x)>2
+    error('This function is not implemented for arrays with dimension greater than two!')
 end
+
+c = bsxfun(@minus, x, nanmean(x));
