@@ -45,19 +45,20 @@ if ischar(tagvalue)
 end
 
 idx2keep = [];
-for j = 1:length(tagvalue)
-    orig_len_idx2keep = length(idx2keep);
-    for i=1:length(jsonmodel)
-        assert(isstruct(jsonmodel{i}), 'Every entry in jsonmodel must be a struct');
-        if isfield(jsonmodel{i}, 'tags') && ...
-                isfield(jsonmodel{i}.tags, tagname) && ...
-                strcmp(jsonmodel{i}.tags.(tagname), tagvalue{j})
-            idx2keep = [idx2keep; i];
+for i=1:length(tagvalue)
+    found = false;
+    for j=1:length(jsonmodel)
+        assert(isstruct(jsonmodel{j}), 'Every entry in jsonmodel must be a struct');
+        if isfield(jsonmodel{j}, 'tags') && ...
+                isfield(jsonmodel{j}.tags, tagname) && ...
+                strcmp(jsonmodel{j}.tags.(tagname), tagvalue{i})
+            idx2keep = [idx2keep; j];
+            found = true;
             break
         end
     end
-    if length(idx2keep) == orig_len_idx2keep
-        warning(['getEquationsByTags: no equation tag found by the name of ''' tagvalue{j} ''''])
+    if found == false
+        warning(['getEquationsByTags: no equation tag found by the name of ''' tagvalue{i} ''''])
     end
 end
 assert(~isempty(idx2keep), 'getEquationsByTags: no equations selected');
