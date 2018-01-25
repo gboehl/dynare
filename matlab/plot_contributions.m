@@ -100,9 +100,9 @@ end
 % Get equation.
 jsonmodel = loadjson(jsonfile);
 jsonmodel = jsonmodel.model;
-[lhs, rhs, ~] = getEquationsByTags(jsonmodel, 'name', equationname);
-lhs = lhs{:};
-rhs = rhs{:};
+jsonmodel = getEquationsByTags(jsonmodel, 'name', equationname);
+lhs = jsonmodel{1}.lhs;
+rhs = jsonmodel{1}.rhs;
 
 % Get variable and parameter names in the equation.
 rhs_ = strsplit(rhs,{'+','-','*','/','^','log(','exp(','(',')'});
