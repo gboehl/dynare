@@ -1,5 +1,5 @@
 function plot_contributions(equationname, ds1, ds0)
-
+%function plot_contributions(equationname, ds1, ds0)
 % Plots the contribution to the lhs variable of the rhs variables in an equation.
 %
 % INPUTS
