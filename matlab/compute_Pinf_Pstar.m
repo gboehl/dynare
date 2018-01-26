@@ -30,7 +30,7 @@ function [Pstar,Pinf] = compute_Pinf_Pstar(mf,T,R,Q,qz_criterium, restrict_colum
 % SPECIAL REQUIREMENTS
 %   None
 
-% Copyright (C) 2006-2017 Dynare Team
+% Copyright (C) 2006-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -52,17 +52,15 @@ if nargin == 6
     indx = restrict_columns;
     indx0=find(~ismember([1:np],indx));
 else
-%     indx=(find(max(abs(T))>0));
-%     indx0=(find(max(abs(T))==0));
     indx=(find(max(abs(T))>=1.e-10));
     indx0=(find(max(abs(T))<1.e-10));
 end
 np0=length(indx0);
 Tbkp = T;
-T0=T(indx0,indx); %static variables vs. dynamic ones
-R0=R(indx0,:); % matrix of shocks for static variables
+T0=T(indx0,indx); % static variables vs. dynamic ones
+R0=R(indx0,:);    % matrix of shocks for static variables
 
-% perform Kitagawa transformation only for non-zero columns of T
+% Perform Kitagawa transformation only for non-zero columns of T
 T=T(indx,indx);
 R=R(indx,:);
 np = size(T,1);
@@ -117,40 +115,33 @@ end
 
 if np0
     ST1=ST;
-    
-    % now I recover stationarized static variables
-    % using 
-    % ss = s-A*z and
+    % Now I recover stationarized static variables using
+    % ss = s-A*z
+    % and
     % z-z(-1) (growth rates of unit roots) only depends on stationary variables
     Pstar = blkdiag(zeros(np0),Pstar);
     ST = [zeros(length(Pstar),length(indx0)) [T0*QT ;ST]];
     R1 = [R0; R1];
-    % build the matrix for stationarized variables
+    % Build the matrix for stationarized variables
     STinf = ST(np0+1:np0+nk,np0+1:np0+nk);
     iSTinf = inv(STinf);
     ST0=ST;
     ST0(:,1:np0+nk)=0;  % stationarized static + 1st difference only respond to lagged stationary states
     ST00 = ST(1:np0,np0+1:np0+nk);
     %     A\B is the matrix division of A into B, which is roughly the
-    %     same as INV(A)*B 
+    %     same as INV(A)*B
     ST0(1:np0,np0+nk+1:end) = ST(1:np0,np0+nk+1:end)-ST00*(iSTinf*ST(np0+1:np0+nk,np0+nk+1:end)); % snip non-stationary part
     R10 = R1;
     R10(1:np0,:) = R1(1:np0,:)-ST00*(iSTinf*R1(np0+1:np0+nk,:)); % snip non-stationary part
-    
-    % kill non-stationary part before projecting Pstar
-    ST0(np0+1:np0+nk,:)=0; 
+    % Kill non-stationary part before projecting Pstar
+    ST0(np0+1:np0+nk,:)=0;
     R10(np0+1:np0+nk,:)=0; % is this questionable???? IT HAS TO in order to match Michel's version!!!
-
     % project Pstar onto static x
-    Pstar = ...
-        ST0*Pstar*ST0'+ ...
-        R10*Q*R10';
-    
+    Pstar = ST0*Pstar*ST0'+R10*Q*R10';
     % QT(1:np0,np0+1:np0+nk) = QT(1:np0,np0+1:np0+nk)+ST(1:np0,np0+1:np0+nk);  %%% is this questionable ????
     % reorder QT entries
 else
     STinf = ST(np0+1:np0+nk,np0+1:np0+nk);
-
 end
 
 % stochastic trends with no influence on observed variables are
@@ -160,7 +151,7 @@ Pinf(1:nk,1:nk) = eye(nk);
 if np0
     STtriu = STinf-eye(nk);
 %     A\B is the matrix division of A into B, which is roughly the
-%     same as INV(A)*B 
+%     same as INV(A)*B
     STinf0 = ST00*(eye(nk)-iSTinf*STtriu);
     Pinf = blkdiag(zeros(np0),Pinf);
     QT = blkdiag(eye(np0),QT);
