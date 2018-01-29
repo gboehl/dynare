@@ -200,19 +200,21 @@ for i = 1:length(jsonmodel)
         end
     end
     oo_.ols.(tag).Yhat = dseries(X*oo_.ols.(tag).beta, fp, yhatname);
+
+    % Residuals
+    oo_.ols.(tag).resid = Y - oo_.ols.(tag).Yhat;
+
+    % Correct Yhat reported back to user
+    for j = 1:lhssub.vobs
+        oo_.ols.(tag).Yhat = oo_.ols.(tag).Yhat + lhssub{j}(fp:lp);
+    end
+ 
+    % Apply correcting function for Yhat if it was passed
     if any(idx) ...
             && length(fitted_names_dict(idx, :)) == 3 ...
             && ~isempty(fitted_names_dict{idx, 3})
         oo_.ols.(tag).Yhat = ...
             feval(fitted_names_dict{idx, 3}, oo_.ols.(tag).Yhat);
-    end
-
-    % Residuals
-    oo_.ols.(tag).resid = Y - oo_.ols.(tag).Yhat;
-
-    % Correct Yhat reported back to user for given
-    for j = 1:lhssub.vobs
-        oo_.ols.(tag).Yhat = oo_.ols.(tag).Yhat + lhssub{j}(fp:lp);
     end
     ds = [ds oo_.ols.(tag).Yhat];
 
