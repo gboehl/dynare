@@ -61,7 +61,7 @@ This version of Dynare is compiled for Octave 4.2.1 (MinGW, 32bit and 64bit), an
 with other versions of Octave. The recommended version of Octave can be
 downloaded at:
 
-  http://www.dynare.org/download/octave/windows
+  https://www.gnu.org/software/octave/download.html
 
 Every time you run Octave, you should type the two following commands (assuming
 that you have installed Dynare at the standard location, and replacing '4.x.y'
