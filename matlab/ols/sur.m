@@ -104,13 +104,14 @@ if ~isempty(param_names)
     vars = {vars(pidxs)};
     newY = newY - newX(:, setdiff(1:size(newX, 2), pidxs)) * M_.params(setdiff(opidxs, opidxs(pidxs), 'stable'));
     newX = newX(:, pidxs);
+    opidxs = opidxs(pidxs);
 end
 
 %% Return to surgibbs if called from there
 st = dbstack(1);
 if strcmp(st(1).name, 'surgibbs')
     varargout{1} = length(maxfp:minlp); %dof
-    varargout{2} = opidxs(pidxs);
+    varargout{2} = opidxs;
     varargout{3} = newX;
     varargout{4} = newY;
     varargout{5} = length(jsonmodel);
@@ -133,7 +134,7 @@ kLeye = kron(chol(inv(M_.Sigma_e)), eye(oo_.sur.dof));
 [q, r] = qr(kLeye*X, 0);
 oo_.sur.beta = r\(q'*kLeye*Y);
 
-M_.params(opidxs(pidxs)) = oo_.sur.beta;
+M_.params(opidxs) = oo_.sur.beta;
 
 % Yhat
 oo_.sur.Yhat = X * oo_.sur.beta;
