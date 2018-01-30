@@ -149,7 +149,9 @@ for i = 1:length(jsonmodel)
 
     fp = max(Y.firstobservedperiod, X.firstobservedperiod);
     lp = min(Y.lastobservedperiod, X.lastobservedperiod);
-    if isfield(jsonmodel{i}.tags, 'sample') && ~isempty(jsonmodel{i}.tags.sample)
+    if isfield(jsonmodel{i}, 'tags') ...
+            && isfield(jsonmodel{i}.tags, 'sample') ...
+            && ~isempty(jsonmodel{i}.tags.sample)
         colon_idx = strfind(jsonmodel{i}.tags.sample, ':');
         fsd = dates(jsonmodel{i}.tags.sample(1:colon_idx-1));
         lsd = dates(jsonmodel{i}.tags.sample(colon_idx+1:end));
