@@ -144,6 +144,10 @@ for i = DynareModel.orig_endo_nbr+1:DynareModel.endo_nbr
         else
             error('This is a bug. Please contact Dynare Team!');
         end
+    elseif DynareModel.aux_vars(k).type == 8
+        if ~ismember(DynareModel.endo_names{DynareModel.aux_vars(k).endo_index}, initialconditions.name)
+            error('This is a bug. Please contact Dynare Team!');
+        end
     else
         error('Cannot simulate the model with this type of auxiliary variables!')
     end
