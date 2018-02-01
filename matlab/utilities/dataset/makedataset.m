@@ -81,7 +81,7 @@ elseif isempty(DynareOptions.datafile) && ~isempty(DynareOptions.dataset.series)
 elseif ~isempty(DynareOptions.datafile) && isempty(DynareOptions.dataset.file)
     datafile = DynareOptions.datafile;
     newdatainterface = 0;
-elseif isempty(DynareOptions.datafile) && ~isempty(DynareOptions.dataset.file)
+elseif ~isempty(DynareOptions.datafile) && ~isempty(DynareOptions.dataset.file)
     error('makedataset: You cannot simultaneously use the data command and the datafile option (in the estimation command)!')
 else
     error('makedataset: You have to specify the datafile!')
