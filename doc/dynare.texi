@@ -7532,9 +7532,9 @@ model).
 (@xref{plot_shock_decomposition}).
 
 @item presample = @var{INTEGER}
-@anchor{presample_shock_decomposition} First data point from which recursive
+@anchor{presample_shock_decomposition} Data point above which recursive
 realtime shock decompositions are computed, @i{i.e.} for
-@math{T=[@code{presample}@dots{}@code{nobs}]}.
+@math{T=[@code{presample+1}@dots{}@code{nobs}]}.
 
 @item forecast = @var{INTEGER}
 @anchor{forecast_shock_decomposition} Compute shock decompositions up to
