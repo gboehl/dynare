@@ -24,7 +24,7 @@ function [DynareDataset, DatasetInfo, newdatainterface] = makedataset(DynareOpti
 %
 % See also dynare_estimation_init
 
-% Copyright (C) 2014-2017 Dynare Team
+% Copyright (C) 2014-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
