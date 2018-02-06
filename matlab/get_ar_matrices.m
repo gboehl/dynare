@@ -59,7 +59,6 @@ for i = 1:ntags
     idxs = strcmp(M_.equations_tags(:, 3), M_.var.(var_model_name).eqtags{i});
     if any(idxs)
         g1rows(i) = M_.equations_tags{idxs, 1};
-        continue
     end
 end
 g1 = -1 * g1(g1rows, :);
@@ -86,7 +85,6 @@ for i = 1:ntags
     idxs = strcmp(M_.endo_names, jsonmodel{i}.lhs);
     if any(idxs)
         lhsidxs(i) = find(idxs);
-        continue
     end
 end
 assert(length(lhsidxs) == rows(g1));
