@@ -91,7 +91,7 @@ assert(length(lhsidxs) == rows(g1));
 
 % Initialize AR matrices
 for i = 1:M_.max_endo_lag_orig+1
-    oo_.var.(var_model_name).ar{i} = zeros(length(lhsidxs), M_.orig_endo_nbr);
+    oo_.var.(var_model_name).ar{i} = zeros(length(lhsidxs), length(lhsidxs));
     oo_.var.(var_model_name).artime{i} = 't';
     if i > 1
         oo_.var.(var_model_name).artime{i} = [oo_.var.(var_model_name).artime{i} '-' num2str(i-1)];
