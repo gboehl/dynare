@@ -71,27 +71,11 @@ if rows(M_.lead_lag_incidence) == 3
 end
 
 %% Organize AR matrices
-% Get LHS info
-% NB: equations must have one endogenous variable on LHS
-jsonfile = [M_.fname '_original.json'];
-if exist(jsonfile, 'file') ~= 2
-    error('Could not find %s! Please use the json=compute option (See the Dynare invocation section in the reference manual).', jsonfile);
-end
-jsonmodel = loadjson(jsonfile);
-jsonmodel = jsonmodel.model;
-jsonmodel = getEquationsByTags(jsonmodel, 'name', M_.var.(var_model_name).eqtags);
-lhsidxs = zeros(ntags, 1);
-for i = 1:ntags
-    idxs = strcmp(M_.endo_names, jsonmodel{i}.lhs);
-    if any(idxs)
-        lhsidxs(i) = find(idxs);
-    end
-end
-assert(length(lhsidxs) == rows(g1));
+assert(length(M_.var.(var_model_name).lhs) == rows(g1));
 
 % Initialize AR matrices
 for i = 1:M_.max_endo_lag_orig+1
-    oo_.var.(var_model_name).ar{i} = zeros(length(lhsidxs), length(lhsidxs));
+    oo_.var.(var_model_name).ar{i} = zeros(length(M_.var.(var_model_name).lhs), length(M_.var.(var_model_name).lhs));
     oo_.var.(var_model_name).artime{i} = 't';
     if i > 1
         oo_.var.(var_model_name).artime{i} = [oo_.var.(var_model_name).artime{i} '-' num2str(i-1)];
@@ -119,7 +103,7 @@ for i = 1:2
     end
 end
 
-for i = 1:length(lhsidxs)
-    oo_.var.(var_model_name).ar{1}(i, lhsidxs(i)) = oo_.var.(var_model_name).ar{1}(i, lhsidxs(i)) + 1;
+for i = 1:length(M_.var.(var_model_name).lhs)
+    oo_.var.(var_model_name).ar{1}(i, M_.var.(var_model_name).lhs(i)) = oo_.var.(var_model_name).ar{1}(i, M_.var.(var_model_name).lhs(i)) + 1;
 end
 end
