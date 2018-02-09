@@ -1,6 +1,7 @@
 #!/bin/sh
 
-rm -rf m1 m2 m3
+rm -rf m1 m2 m3 m4
 rm -f m1_dynamic.m  m1.log  m1.m  m1_results.mat  m1_set_auxiliary_variables.m  m1_static.m
 rm -f m2_dynamic.m  m2.log  m2.m  m2_results.mat  m2_set_auxiliary_variables.m  m2_static.m
 rm -f m3_dynamic.m  m3.log  m3.m  m3_results.mat  m3_set_auxiliary_variables.m  m3_static.m
+rm -f m4_dynamic.m  m4.log  m4.m  m4_results.mat  m4_set_auxiliary_variables.m  m4_static.m
