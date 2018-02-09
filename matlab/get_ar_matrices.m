@@ -74,7 +74,7 @@ end
 assert(length(M_.var.(var_model_name).lhs) == rows(g1));
 
 % Initialize AR matrices
-for i = 1:M_.max_endo_lag_orig+1
+for i = 1:max(M_.var.(var_model_name).rhs.lag)+1
     oo_.var.(var_model_name).ar{i} = zeros(length(M_.var.(var_model_name).lhs), length(M_.var.(var_model_name).lhs));
 end
 
