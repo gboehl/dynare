@@ -1,12 +1,11 @@
 function get_ar_matrices(var_model_name)
-%function ar = get_ar_matrices(var_model_name)
+
 % Gets the autoregressive matrices associated with the var specified by
 % var_model_name. Output stored in cellarray oo_.var.(var_model_name).ar,
-% with oo_.var.(var_model_name).ar(1) being the AR matrix at time t, 
-% oo_.var.(var_model_name).ar(2) the AR matrix at time t-1, etc. Each
+% with oo_.var.(var_model_name).ar(i) being the AR matrix at time t-i. Each
 % AR matrix is stored with rows organized by the ordering of the equation
 % tags found in M_.var.(var_model_name).eqtags and columns organized by
-% M_.endo_names order
+% M_.endo_names order.
 %
 % INPUTS
 %
