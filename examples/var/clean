@@ -1,0 +1,4 @@
+#!/bin/sh
+
+rm -rf m1
+rm -f m1_dynamic.m  m1.log  m1.m  m1_results.mat  m1_set_auxiliary_variables.m  m1_static.m
