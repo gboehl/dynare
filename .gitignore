@@ -1,0 +1,9 @@
+*~
+*.mat
+*.eps
+*.fig
+*.pdf
+*.log
+*.tex
+*_dynamic.m
+*_static.m
