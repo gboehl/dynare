@@ -64,7 +64,7 @@ g1 = -1 * g1(g1rows, :);
 % Check for leads
 if rows(M_.lead_lag_incidence) == 3
     idxs = M_.lead_lag_incidence(3, M_.lead_lag_incidence(3, :) ~= 0);
-    assert(~any(g1(:, idxs)), ...
+    assert(~any(any(g1(g1rows, idxs))), ...
         ['You cannot have leads in the equations specified by ' strjoin(M_.var.(var_model_name).eqtags, ',')]);
 end
 
