@@ -6,7 +6,7 @@ varexo ex ey ez;
 
 parameters a_y_1 a_y_2 b_y_1 b_y_2 b_x_1 b_x_2 ; // VAR parameters
 
-parameters beta g e_c_m c_z_1 c_z_2;               // PAC equation parameters
+parameters beta g e_c_m c_z_1 c_z_2;             // PAC equation parameters
 
 a_y_1 =  .2;
 a_y_2 =  .3;
