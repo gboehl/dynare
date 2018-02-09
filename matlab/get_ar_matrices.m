@@ -88,7 +88,14 @@ for i = 1:2
             if j > M_.orig_endo_nbr
                 av = M_.aux_vars([M_.aux_vars.endo_index] == j);
                 assert(~isempty(av));
-                oo_.var.(var_model_name).ar{(av.orig_lead_lag * - 1) + baselag}(:, M_.var.(var_model_name).lhs == av.orig_index) = ...
+                if av.type == 8
+                    orig_diff_var_vec = M_.var.(var_model_name).orig_diff_var(M_.var.(var_model_name).diff);
+                    assert(any(orig_diff_var_vec == av.orig_index));
+                    col = M_.var.(var_model_name).orig_diff_var == av.orig_index;
+                else
+                    col = M_.var.(var_model_name).lhs == av.orig_index;
+                end
+                oo_.var.(var_model_name).ar{(av.orig_lead_lag * - 1) + baselag}(:, col) = ...
                     g1(:, M_.lead_lag_incidence(i, j));
             else
                 oo_.var.(var_model_name).ar{baselag}(:, M_.var.(var_model_name).lhs == j) = ...
