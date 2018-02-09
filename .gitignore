@@ -7,3 +7,8 @@
 *.tex
 *_dynamic.m
 *_static.m
+
+*.m
+*.json
+
+checksum
