@@ -3,3 +3,4 @@
 rm -rf example
 rm -f example_dynamic.json example.json example.m example_original.json example_static.json
 rm -f example_dynamic.m example.log example_set_auxiliary_variables.m example_static.m
+rm -f example_results.mat
