@@ -88,10 +88,10 @@ for i = 1:2
             if j > M_.orig_endo_nbr
                 av = M_.aux_vars([M_.aux_vars.endo_index] == j);
                 assert(~isempty(av));
-                oo_.var.(var_model_name).ar{(av.orig_lead_lag * - 1) + baselag}(:, av.orig_index) = ...
+                oo_.var.(var_model_name).ar{(av.orig_lead_lag * - 1) + baselag}(:, M_.var.(var_model_name).lhs == av.orig_index) = ...
                     g1(:, M_.lead_lag_incidence(i, j));
             else
-                oo_.var.(var_model_name).ar{baselag}(:, j) = ...
+                oo_.var.(var_model_name).ar{baselag}(:, M_.var.(var_model_name).lhs == j) = ...
                     g1(:, M_.lead_lag_incidence(i, j));
             end
         end
@@ -99,7 +99,8 @@ for i = 1:2
 end
 
 for i = 1:length(M_.var.(var_model_name).lhs)
-    oo_.var.(var_model_name).ar{1}(i, M_.var.(var_model_name).lhs(i)) = oo_.var.(var_model_name).ar{1}(i, M_.var.(var_model_name).lhs(i)) + 1;
+    oo_.var.(var_model_name).ar{1}(i, M_.var.(var_model_name).lhs == M_.var.(var_model_name).lhs(i)) = ...
+        oo_.var.(var_model_name).ar{1}(i, M_.var.(var_model_name).lhs == M_.var.(var_model_name).lhs(i)) + 1;
 end
 
 if any(oo_.var.(var_model_name).ar{1}(:))
