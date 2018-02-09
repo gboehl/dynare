@@ -4,8 +4,7 @@ function get_ar_matrices(var_model_name)
 % var_model_name. Output stored in cellarray oo_.var.(var_model_name).ar,
 % with oo_.var.(var_model_name).ar(i) being the AR matrix at time t-i. Each
 % AR matrix is stored with rows organized by the ordering of the equation
-% tags found in M_.var.(var_model_name).eqtags and columns organized by
-% M_.endo_names order.
+% tags found in M_.var.(var_model_name).eqtags and columns organized consistently.
 %
 % INPUTS
 %
