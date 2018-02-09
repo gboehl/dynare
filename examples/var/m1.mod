@@ -1,4 +1,4 @@
-var x y z;
+var y x z;
 
 varexo ex ey ez;
 
@@ -27,4 +27,4 @@ x = b_x_1*y(-2) + b_x_2*x(-2) + ez ;
 
 end;
 
-get_ar_matrices('toto');
+get_companion_matrix('toto');
