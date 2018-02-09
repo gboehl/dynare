@@ -76,10 +76,6 @@ assert(length(M_.var.(var_model_name).lhs) == rows(g1));
 % Initialize AR matrices
 for i = 1:M_.max_endo_lag_orig+1
     oo_.var.(var_model_name).ar{i} = zeros(length(M_.var.(var_model_name).lhs), length(M_.var.(var_model_name).lhs));
-    oo_.var.(var_model_name).artime{i} = 't';
-    if i > 1
-        oo_.var.(var_model_name).artime{i} = [oo_.var.(var_model_name).artime{i} '-' num2str(i-1)];
-    end
 end
 
 for i = 1:2
