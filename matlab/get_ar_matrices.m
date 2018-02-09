@@ -102,4 +102,10 @@ end
 for i = 1:length(M_.var.(var_model_name).lhs)
     oo_.var.(var_model_name).ar{1}(i, M_.var.(var_model_name).lhs(i)) = oo_.var.(var_model_name).ar{1}(i, M_.var.(var_model_name).lhs(i)) + 1;
 end
+
+if any(oo_.var.(var_model_name).ar{1}(:))
+    error('This is not a VAR model! Contemporaneous endogenous variables are not allowed.')
 end
+
+% Remove first matrix
+oo_.var.(var_model_name).ar = oo_.var.(var_model_name).ar(2:end);
