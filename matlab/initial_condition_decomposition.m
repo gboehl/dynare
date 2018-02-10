@@ -128,6 +128,11 @@ M_.exo_nbr = M_.endo_nbr;
 options_.plot_shock_decomp.realtime=0;
 options_.plot_shock_decomp.screen_shocks=1;
 options_.plot_shock_decomp.use_shock_groups = '';
-options_.plot_shock_decomp.fig_names='initval';
-plot_shock_decomposition(M_, oo, options_, varlist);
+fig_name = options_.plot_shock_decomp.fig_name;
+if ~isempty(fig_name)
+    options_.plot_shock_decomp.fig_name=[fig_name '_initval'];
+else
+options_.plot_shock_decomp.fig_name='initval';
+end   
+plot_shock_decomposition(M_,oo,options_,varlist);
 % end

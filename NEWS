@@ -1,3 +1,56 @@
+Announcement for Dynare 4.5.4 (on 2018-01-29)
+=============================================
+
+We are pleased to announce the release of Dynare 4.5.4.
+
+This is a bugfix release.
+
+The Windows packages are already available for download at:
+
+ http://www.dynare.org/download/dynare-stable
+
+The Mac and GNU/Linux packages (for Debian and Ubuntu LTS) should follow soon.
+
+This release is compatible with MATLAB versions 7.5 (R2007b) to 9.3 (R2017b)
+and with GNU Octave versions 4.2.
+
+Here is a list of the problems identified in version 4.5.3 and that have been
+fixed in version 4.5.4:
+
+ - The `type` option of `plot_shock_decomposition` was always set to `qoq` regardless of what is specified.
+
+ - Bug in GSA when no parameter was detected below pvalue threshold.
+
+ - Various bug fixes in shock decompositions.
+
+ - Bug in reading in macro arrays passed on `dynare` command line via the `-D` option.
+
+ - Estimation with missing values was crashing if the `prefilter` option was used.
+
+ - Added a workaround for a difference in behaviour between Octave and Matlab regarding the creation
+   of function handles for functions that do not exist in the path. With Octave 4.2.1, steady state
+   files did not work if no auxiliary variables were created.
+
+ - The `stoch_simul` command was crashing with a cryptic message if option `order=3` was used without
+   setting `k_order_solver`.
+
+ - In cases where the prior bounds are infinite and the mode is estimated at exactly 0, no `mode_check`
+   graphs were displayed.
+
+ - Parallel execution of MCMC was broken in models without auxiliary variables.
+
+ - Reading data with column names from Excel might crash.
+
+ - The multivariate Kalman smoother was crashing in case of missing data in the observations and
+   `Finf` became singular.
+
+ - The `plot_shock_decomposition` command ignored various user-defined options like `fig_name`,
+   `use_shock_groups` or `interactive` and instead used the default options.
+
+ - Nested `@#ifdef` and `@#ifndef` statements don't work in the macroprocessor.
+
+
+
 Announcement for Dynare 4.5.3 (on 2017-10-19)
 =============================================
 
@@ -12,7 +65,7 @@ The Windows packages are already available for download at:
 
 The Mac and GNU/Linux packages (for Debian and Ubuntu LTS) should follow soon.
 
-This release is compatible with MATLAB versions 7.3 (R2006b) to 9.3 (R2017b)
+This release is compatible with MATLAB versions 7.5 (R2007b) to 9.3 (R2017b)
 and with GNU Octave versions 4.2.
 
 Here is a list of the problems identified in version 4.5.2 and that have been
@@ -37,7 +90,7 @@ The Windows packages are already available for download at:
 
 The Mac and GNU/Linux packages (for Debian and Ubuntu LTS) should follow soon.
 
-This release is compatible with MATLAB versions 7.3 (R2006b) to 9.3 (R2017b)
+This release is compatible with MATLAB versions 7.5 (R2007b) to 9.3 (R2017b)
 and with GNU Octave versions 4.2.
 
 Here is a list of the problems identified in version 4.5.1 and that have been
@@ -116,7 +169,7 @@ The Windows packages are already available for download at:
 
 The Mac and GNU/Linux packages (for Debian and Ubuntu LTS) should follow soon.
 
-This release is compatible with MATLAB versions 7.3 (R2006b) to 9.2 (R2017a)
+This release is compatible with MATLAB versions 7.5 (R2007b) to 9.2 (R2017a)
 and with GNU Octave versions 4.2.
 
 Here is a list of the problems identified in version 4.5.0 and that have been
@@ -162,7 +215,7 @@ The Mac and Debian/Ubuntu packages should follow soon.
 
 All users are strongly encouraged to upgrade.
 
-This release is compatible with MATLAB versions ranging from 7.3 (R2006b) to
+This release is compatible with MATLAB versions ranging from 7.5 (R2007b) to
 9.2 (R2017a) and with GNU Octave version 4.2.
 
 Here is the list of major user-visible changes:

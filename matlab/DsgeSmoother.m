@@ -58,7 +58,7 @@ function [alphahat,etahat,epsilonhat,ahat,SteadyState,trend_coeff,aK,T,R,P,PK,de
 % SPECIAL REQUIREMENTS
 %   None
 
-% Copyright (C) 2006-2017 Dynare Team
+% Copyright (C) 2006-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -183,7 +183,7 @@ elseif options_.lik_init == 3           % Diffuse Kalman filter
             Z   = [Z, eye(vobs)];
         end
     end
-    [Pstar,Pinf] = compute_Pinf_Pstar(mf,T,R,Q,options_.qz_criterium,oo_.dr.restrict_var_list);
+    [Pstar,Pinf] = compute_Pinf_Pstar(mf,T,R,Q,options_.qz_criterium);
 elseif options_.lik_init == 4           % Start from the solution of the Riccati equation.
     [err, Pstar] = kalman_steady_state(transpose(T),R*Q*transpose(R),transpose(build_selection_matrix(mf,np,vobs)),H);
     mexErrCheck('kalman_steady_state',err);

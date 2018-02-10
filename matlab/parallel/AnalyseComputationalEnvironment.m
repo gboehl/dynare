@@ -251,10 +251,7 @@ for Node=1:length(DataInput) % To obtain a recoursive function remove the 'for'
         % computer!
 
         if Environment
-
-            % This check can be removed ... according to the dynare parser
-            % strategy.
-
+            % This check can be removed ... according to the dynare parser strategy.
             if  isempty(DataInput(Node).RemoteDirectory)
                 disp('The field RemoteDirectory is empty!')
                 skipline()
@@ -263,10 +260,7 @@ for Node=1:length(DataInput) % To obtain a recoursive function remove the 'for'
                 ErrorCode=5;
                 return
             end
-
-            % This check can be removed ... according to the dynare parser
-            % strategy.
-
+            % This check can be removed ... according to the dynare parser strategy.
             if (~isempty(DataInput(Node).RemoteDrive))
                 disp('[WARNING] The fields RemoteDrive should be empty under unix or mac!')
                 skipline()
@@ -276,35 +270,14 @@ for Node=1:length(DataInput) % To obtain a recoursive function remove the 'for'
                 skipline(2)
                 ErrorCode=5;
             end
-
-            si2=[];
-            de2=[];
             if ~isempty(DataInput(Node).Port)
                 ssh_token = ['-p ',DataInput(Node).Port];
             else
                 ssh_token = '';
             end
-
-            [si2 de2]=system(['ssh ',ssh_token,' ',DataInput(Node).UserName,'@',DataInput(Node).ComputerName,' ls ',DataInput(Node).RemoteDirectory,'/',RemoteTmpFolder,'/']);
-
-            if (si2)
-                disp ('Remote Directory does not exist or is not reachable!')
-                skipline()
-                disp('ErrorCode 5.')
-                skipline(2)
-                ErrorCode=5;
-                return
-            end
-
-            disp('Check on RemoteDirectory Variable ..... Ok!')
-            skipline(2)
-            disp('Check on RemoteDrive Variable ..... Ok!')
-            skipline(2)
-
+            command_string = ['ssh ',ssh_token,' ',DataInput(Node).UserName,'@',DataInput(Node).ComputerName,' ls ',DataInput(Node).RemoteDirectory,'/',RemoteTmpFolder,'/'];
         else
-            % This check can be removed ... according to the dynare parser
-            % strategy.
-
+            % This check can be removed ... according to the dynare parser strategy.
             if (isempty(DataInput(Node).RemoteDrive)||isempty(DataInput(Node).RemoteDirectory))
                 disp('Remote RemoteDrive and/or RemoteDirectory is/are empty!')
                 skipline()
@@ -313,32 +286,31 @@ for Node=1:length(DataInput) % To obtain a recoursive function remove the 'for'
                 ErrorCode=5;
                 return
             end
-
-
-            si2=[];
-            de2=[];
-            [si2 de2]=system(['dir \\',DataInput(Node).ComputerName,'\',DataInput(Node).RemoteDrive,'$\',DataInput(Node).RemoteDirectory,'\',RemoteTmpFolder]);
-
-            if (si2)
-                disp ('Remote Directory does not exist or it is not reachable!')
-                skipline()
-                disp('ErrorCode 5.')
-                skipline(2)
-                ErrorCode=5;
-                return
-            end
-
-            disp('Check on RemoteDirectory Variable ..... Ok!')
-            skipline(2)
-            disp('Check on RemoteDrive Variable ..... Ok!')
-            skipline(2)
-
+            command_string = ['dir \\',DataInput(Node).ComputerName,'\',DataInput(Node).RemoteDrive,'$\',DataInput(Node).RemoteDirectory,'\',RemoteTmpFolder];
         end
 
+        [si2, de2] = system(command_string);
 
-        % Now we verify if it possible to exchange data with the remote
-        % computer:
+        if (si2)
+            disp ('Remote Directory does not exist or is not reachable!')
+            skipline()
+            disp('ErrorCode 5.')
+            skipline(2)
+            disp('The command causing the error was:')
+            disp(command_string)
+            disp('The system returned:')
+            disp(de2)
+            skipline(2)
+            ErrorCode=5;
+            return
+        end
 
+        disp('Check on RemoteDirectory Variable ..... Ok!')
+        skipline(2)
+        disp('Check on RemoteDrive Variable ..... Ok!')
+        skipline(2)
+
+        % Now we verify if it possible to exchange data with the remote computer.
 
         % Build a command file to test the matlab execution and dynare path ...
 
@@ -506,13 +478,8 @@ for Node=1:length(DataInput) % To obtain a recoursive function remove the 'for'
 
 
         % Now we verify if it is possible delete remote computational traces!
-
         dynareParallelRmDir(RemoteTmpFolder,DataInput(Node));
-
-        si3=[];
-
-        si3=dynareParallelDir('Tracing.m', RemoteTmpFolder,DataInput(Node));
-
+        si3 = dynareParallelDir('Tracing.m', RemoteTmpFolder,DataInput(Node));
         if (isempty(si3))
             disp ('Check on Delete Remote Computational Traces ..... Ok!')
             skipline(2)
@@ -550,22 +517,18 @@ for Node=1:length(DataInput) % To obtain a recoursive function remove the 'for'
 
 
     % We look for the information on local computer hardware.
-
-    si0=[];
-    de0=[];
-
-    Environment1=Environment;
+    Environment1 = Environment;
     disp('Checking Hardware please wait ...');
     if (DataInput(Node).Local == 1)
         if Environment
             if ~ismac
-                [si0 de0]=system('grep processor /proc/cpuinfo');
+                [si0, de0] = system('grep processor /proc/cpuinfo');
             else
-                [si0 de0]=system('sysctl -n hw.ncpu');
-                Environment1=2;
+                [si0, de0] = system('sysctl -n hw.ncpu');
+                Environment1 = 2;
             end
         else
-            [si0 de0]=system(['psinfo \\']);
+            [si0, de0] = system(['psinfo \\']);
         end
     else
         if Environment
@@ -576,19 +539,27 @@ for Node=1:length(DataInput) % To obtain a recoursive function remove the 'for'
             end
             if OStargetUnix
                 if RemoteEnvironment ==1
-                    [si0 de0]=system(['ssh ',ssh_token,' ',DataInput(Node).UserName,'@',DataInput(Node).ComputerName,' grep processor /proc/cpuinfo']);
+                    command_string = ['ssh ',ssh_token,' ',DataInput(Node).UserName,'@',DataInput(Node).ComputerName,' grep processor /proc/cpuinfo'];
                 else % it is MAC
-                    [si0 de0]=system(['ssh ',ssh_token,' ',DataInput(Node).UserName,'@',DataInput(Node).ComputerName,' sysctl -n hw.ncpu']);
-                    Environment1=2;
+                    command_string = ['ssh ',ssh_token,' ',DataInput(Node).UserName,'@',DataInput(Node).ComputerName,' sysctl -n hw.ncpu'];
+                    Environment1 = 2;
                 end
             else
-                [si0 de0]=system(['ssh ',ssh_token,' ',DataInput(Node).UserName,'@',DataInput(Node).ComputerName,' psinfo']);
+                command_string = ['ssh ',ssh_token,' ',DataInput(Node).UserName,'@',DataInput(Node).ComputerName,' psinfo'];
             end
         else
-            [si0 de0]=system(['psinfo \\',DataInput(Node).ComputerName,' -u ',DataInput(Node).UserName,' -p ',DataInput(Node).Password]);
+            command_string = ['psinfo \\',DataInput(Node).ComputerName,' -u ',DataInput(Node).UserName,' -p ',DataInput(Node).Password];
         end
+        [si0, de0] = system(command_string);
     end
 
+    if (si0)
+        disp('The command causing the error was:')
+        disp(command_string)
+        disp('The system returned:')
+        disp(de0)        
+        skipline(2)
+    end
 
     RealCPUnbr='';
     %    keyboard;

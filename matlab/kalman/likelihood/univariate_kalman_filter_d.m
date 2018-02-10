@@ -87,7 +87,7 @@ function [dLIK, dlikk, a, Pstar, llik] = univariate_kalman_filter_d(data_index, 
 %   Series Analysis by State Space Methods", Oxford University Press,
 %   Second Edition, Ch. 5, 6.4 + 7.2.5
 
-% Copyright (C) 2004-2017 Dynare Team
+% Copyright (C) 2004-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -154,7 +154,7 @@ while newRank && (t<=last)
         end
     end
     if newRank
-        oldRank = rank(Pinf,diffuse_kalman_tol);
+        oldRank = rank(Z*Pinf*Z',diffuse_kalman_tol);
     else
         oldRank = 0;
     end
@@ -162,10 +162,11 @@ while newRank && (t<=last)
     Pstar = T*Pstar*T'+QQ;
     Pinf  = T*Pinf*T';
     if newRank
-        newRank = rank(Pinf,diffuse_kalman_tol);
+        newRank = rank(Z*Pinf*Z',diffuse_kalman_tol);
     end
     if oldRank ~= newRank
         disp('univariate_diffuse_kalman_filter:: T does influence the rank of Pinf!')
+        disp('This may happen for models with order of integration >1.')
     end
     t = t+1;
 end

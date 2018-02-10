@@ -195,12 +195,15 @@ for j=1:nvar
                 mydata.fig_name = DynareOptions.plot_shock_decomp.fig_name(2:end);
                 mydata.use_shock_groups = DynareOptions.plot_shock_decomp.use_shock_groups;
                 mydata.shock_group = shock_groups.(shock_ind{ic});
-                mydata.shock_decomp = DynareOptions.plot_shock_decomp;
+                mydata.shock_decomp = DynareOptions.shock_decomp;
+                mydata.plot_shock_decomp = DynareOptions.plot_shock_decomp;
+                mydata.first_obs = DynareOptions.first_obs;
+                mydata.nobs = DynareOptions.nobs;
                 if ~isempty(mydata.shock_group.shocks)
                     c = uicontextmenu;
                     hax.UIContextMenu=c;
                     browse_menu = uimenu(c,'Label','Browse group');
-                    expand_menu = uimenu(c,'Label','Expand group','Callback',['expand_group(''' mydata.use_shock_groups ''',''' deblank(mydata.shock_decomp.orig_varlist(j,:)) ''',' int2str(ic) ')']);
+                    expand_menu = uimenu(c,'Label','Expand group','Callback',['expand_group(''' mydata.plot_shock_decomp.use_shock_groups ''',''' deblank(mydata.plot_shock_decomp.orig_varlist{j}) ''',' int2str(ic) ')']);
                     set(expand_menu,'UserData',mydata,'Tag',['group' int2str(ic)]);
                     for jmember = mydata.shock_group.shocks
                         uimenu('parent',browse_menu,'Label',char(jmember))

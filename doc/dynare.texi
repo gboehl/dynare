@@ -7602,9 +7602,9 @@ model).
 (@xref{plot_shock_decomposition}).
 
 @item presample = @var{INTEGER}
-@anchor{presample_shock_decomposition} First data point from which recursive
+@anchor{presample_shock_decomposition} Data point above which recursive
 realtime shock decompositions are computed, @i{i.e.} for
-@math{T=[@code{presample}@dots{}@code{nobs}]}.
+@math{T=[@code{presample+1}@dots{}@code{nobs}]}.
 
 @item forecast = @var{INTEGER}
 @anchor{forecast_shock_decomposition} Compute shock decompositions up to
@@ -7613,6 +7613,13 @@ realtime shock decompositions are computed, @i{i.e.} for
 @item save_realtime = @var{INTEGER_VECTOR}
 @anchor{save_realtime} Choose for which vintages to save the full realtime
 shock decomposition. Default: @math{0}.
+
+@item fast_realtime = @var{INTEGER}
+@anchor{fast_realtime} Runs the smoother only twice: once for the last in-sample 
+and once for the last out-of-sample data point, where the provided integer defines the last observation 
+(equivalent to @ref{nobs}). 
+Default: not enabled.
+
 @end table
 
 @outputhead

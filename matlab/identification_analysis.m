@@ -28,7 +28,7 @@ function [ide_hess, ide_moments, ide_model, ide_lre, derivatives_info, info, opt
 % SPECIAL REQUIREMENTS
 %    None
 
-% Copyright (C) 2008-2017 Dynare Team
+% Copyright (C) 2008-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -152,10 +152,10 @@ if info(1)==0
             end
             analytic_derivation = options_.analytic_derivation;
             options_.analytic_derivation = -2;
-            info = stoch_simul(char(options_.varobs));
+            info = stoch_simul(options_.varobs);
             dataset_ = dseries(oo_.endo_simul(options_.varobs_id,100+1:end)',dates('1Q1'), options_.varobs);
             derivatives_info.no_DLIK=1;
-            %bounds = prior_bounds(bayestopt_, options_.prior_trunc);
+            bounds = prior_bounds(bayestopt_, options_.prior_trunc); %reset bounds as lb and ub must only be operational during mode-finding
             [fval,info,cost_flag,DLIK,AHess,ys,trend_coeff,M_,options_,bayestopt_,oo_] = dsge_likelihood(params',dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,bounds,oo_,derivatives_info);
             %                 fval = DsgeLikelihood(xparam1,data_info,options_,M_,estim_params_,bayestopt_,oo_);
             options_.analytic_derivation = analytic_derivation;

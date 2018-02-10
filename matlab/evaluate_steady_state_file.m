@@ -70,7 +70,14 @@ else
     updated_params_flag = 0;
 end
 
-h_set_auxiliary_variables = str2func([M.fname '_set_auxiliary_variables']);
+if M.set_auxiliary_variables
+    % Define function handle for the function setting the auxiliary
+    % variables only if the model has auxiliary variables. Otherwise
+    % Octave may crash (see https://savannah.gnu.org/bugs/?52568) because
+    % the function does not exist in the path.
+    h_set_auxiliary_variables = str2func([M.fname '_set_auxiliary_variables']);
+end
+
 if  isnan(updated_params_flag) || (updated_params_flag  && any(isnan(params(~isnan(params))-params1(~isnan(params))))) %checks if new NaNs were added
     info(1) = 24;
     info(2) = NaN;

@@ -115,7 +115,7 @@ function [fval,info,exit_flag,DLIK,Hess,SteadyState,trend_coeff,Model,DynareOpti
 %! @end deftypefn
 %@eod:
 
-% Copyright (C) 2004-2017 Dynare Team
+% Copyright (C) 2004-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -372,7 +372,7 @@ switch DynareOptions.lik_init
         error(['The model requires Diffuse filter, but you specified a different Kalman filter. You must set options_.kalman_algo ' ...
                'to 0 (default), 3 or 4'])
     end
-    [Pstar,Pinf] = compute_Pinf_Pstar(Z,T,R,Q,DynareOptions.qz_criterium,[1:length(T)]);
+    [Pstar,Pinf] = compute_Pinf_Pstar(Z,T,R,Q,DynareOptions.qz_criterium);
     Z =zeros(length(BayesInfo.mf),size(T,1));
     for i = 1:length(BayesInfo.mf)
         Z(i,BayesInfo.mf(i))=1;

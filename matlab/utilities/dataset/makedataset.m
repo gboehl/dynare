@@ -24,7 +24,7 @@ function [DynareDataset, DatasetInfo, newdatainterface] = makedataset(DynareOpti
 %
 % See also dynare_estimation_init
 
-% Copyright (C) 2014-2017 Dynare Team
+% Copyright (C) 2014-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -81,7 +81,7 @@ elseif isempty(DynareOptions.datafile) && ~isempty(DynareOptions.dataset.series)
 elseif ~isempty(DynareOptions.datafile) && isempty(DynareOptions.dataset.file)
     datafile = DynareOptions.datafile;
     newdatainterface = 0;
-elseif isempty(DynareOptions.datafile) && ~isempty(DynareOptions.dataset.file)
+elseif ~isempty(DynareOptions.datafile) && ~isempty(DynareOptions.dataset.file)
     error('makedataset: You cannot simultaneously use the data command and the datafile option (in the estimation command)!')
 else
     error('makedataset: You have to specify the datafile!')
@@ -267,7 +267,7 @@ else
 end
 
 % Compute the empirical mean of the observed variables.
-DatasetInfo.descriptive.mean = nanmean(DynareDataset.data);
+DatasetInfo.descriptive.mean = nanmean(DynareDataset.data,1);
 
 % Compute the empirical covariance matrix of the observed variables.
 DatasetInfo.descriptive.covariance = nancovariance(DynareDataset.data);

@@ -31,8 +31,7 @@ function varlist = check_list_of_variables(options_, M_, varlist)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-%get uniques
-
+% Get uniques
 [junk1, junk2, index_uniques] = varlist_indices(varlist, M_.endo_names);
 varlist = varlist(index_uniques);
 
@@ -130,7 +129,7 @@ elseif isempty(varlist) && isempty(options_.endo_vars_for_moment_computations_in
                 elseif choice==2
                     varlist = options_.varobs;
                 elseif choice==3
-                    varlist = NaN;
+                    varlist = cell(0);
                 else
                     skipline()
                     disp('YOU HAVE TO ANSWER 1, 2 or 3!')
@@ -138,7 +137,7 @@ elseif isempty(varlist) && isempty(options_.endo_vars_for_moment_computations_in
                 end
             end
         end
-        if isnan(varlist)
+        if isempty(varlist)
             edit([M_.fname '.mod'])
         end
         skipline()

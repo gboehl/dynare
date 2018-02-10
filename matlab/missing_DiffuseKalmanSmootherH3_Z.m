@@ -56,7 +56,7 @@ function [alphahat,epsilonhat,etahat,a,P,aK,PK,decomp,V] = missing_DiffuseKalman
 %   Models", S.J. Koopman and J. Durbin (2003), in Journal of Time Series
 %   Analysis, vol. 24(1), pp. 85-98.
 
-% Copyright (C) 2004-2017 Dynare Team
+% Copyright (C) 2004-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -184,6 +184,7 @@ while newRank && t < smpl
     end
     if oldRank ~= newRank
         disp('univariate_diffuse_kalman_filter:: T does influence the rank of Pinf!')
+        disp('This may happen for models with order of integration >1.')
     end
 end
 

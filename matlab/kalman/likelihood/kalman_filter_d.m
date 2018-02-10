@@ -36,7 +36,7 @@ function [dLIK,dlik,a,Pstar] = kalman_filter_d(Y, start, last, a, Pinf, Pstar, k
 %   Durbin/Koopman (2012): "Time Series Analysis by State Space Methods", Oxford University Press,
 %   Second Edition, Ch. 5 and 7.2
 
-% Copyright (C) 2004-2017 Dynare Team
+% Copyright (C) 2004-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -65,7 +65,7 @@ dLIK = Inf;                % Default value of the log likelihood.
 oldK = Inf;
 s    = 0;
 
-while rank(Pinf,diffuse_kalman_tol) && (t<=last)
+while rank(Z*Pinf*Z',diffuse_kalman_tol) && (t<=last)
     s = t-start+1;
     v = Y(:,t)-Z*a;                                                     %get prediction error v^(0) in (5.13) DK (2012)
     Finf  = Z*Pinf*Z';                                                  % (5.7) in DK (2012)
