@@ -287,27 +287,39 @@ After this, prepare the source and configure the build tree as described for Lin
  
 ## macOS
 
-To simply use a snapshot of Dynare, you can either use the [snapshot
-build](http://www.dynare.org/snapshot/macosx/) if you're using Dynare with
-Matlab. If you're using Dynare with Octave, you can simply install
-[Homebrew](https://brew.sh/) and run ```brew install dynare --HEAD```.
+To simply use a snapshot of Dynare, you have two choices. On Matlab, you can
+use the [snapshot build](http://www.dynare.org/snapshot/macosx/) provided by
+Dynare. On Octave, you can simply install [Homebrew](https://brew.sh/) and run
+```brew install dynare --HEAD``` (See the Install Dynare (unstable) section of
+[this webpage](http://www.dynare.org/DynareWiki/InstallOnMacOSX) for more
+details).
 
 If you do not wish to use the snapshots provided by Dynare or Homebrew, follow
-the directions below to build Dynare on your local machine
+the directions below to build Dynare on your local machine.
+
+Preparatory work:
 
 - Install the Xcode Command Line Tools:
-    - Download "Command Line Tools (OS X 10.X) for Xcode," where 10.X corresponds to your OS X version, from https://developer.apple.com/downloads/index.action
-- Install [Homebrew](https://brew.sh/) by following the instructions on the website
-- The following commands should be issued in Terminal.app
+    - Open Terminal.app and type `xcode-select --install`
+- Install [Homebrew](https://brew.sh/) by following the instructions on their website
+
+The following commands will install the programs that Dynare needs to
+compile. They should be entered at the command prompt in Terminal.app.
+
+- `brew install automake bison flex boost fftw gcc gsl hdf5 libmatio metis veclibfort`
 - **(Optional)** To compile Dynare mex files for use on Octave:
     - `brew install octave`
     - `brew install suite-sparse`
-- **(Optional)** Dynare++
+- **(Optional)** To compile Dynare++
     - `brew install cweb`
 - **(Optional)** To compile Dynare documentation
      - Install the latest version of [MacTeX](http://www.tug.org/mactex/), deselecting the option to install Ghostscript
      - `brew install doxygen latex2html`
-- `brew install automake bison flex boost fftw gcc gsl hdf5 libmatio metis veclibfort`
+
+The following commands will download the Dynare source code and compile
+it. They should be entered at the command prompt in Terminal.app from the
+folder where you want Dynare installed.
+
 - `git clone https://github.com/DynareTeam/dynare.git`
 - `cd dynare`
 - `PATH="/usr/local/opt/bison/bin:/usr/local/opt/flex/bin:$PATH"`
