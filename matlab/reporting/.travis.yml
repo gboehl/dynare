@@ -17,7 +17,6 @@ before_install:
   - sudo /Library/TeX/texbin/tlmgr update --self
   - sudo /Library/TeX/texbin/tlmgr install pgfplots adjustbox collectbox datetime fmtcount
   - brew update
-  - brew tap homebrew/science
   - brew install ccache
   - brew install octave
 
