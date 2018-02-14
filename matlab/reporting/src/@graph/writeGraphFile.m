@@ -277,6 +277,8 @@ if isunix && ~ismac
         for i=2:ne
             tmp = ds{i} - ds{i-1};
             idx = find(tmp.data ~= 0);
+            assert(~isempty(idx), ...
+                   'Problem creating fan area for data provided. Please check your data.');
             split = ds(ds.dates(idx));
         end
         idx = find(ds.dates == split.dates(1));
