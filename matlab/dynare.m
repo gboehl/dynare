@@ -217,6 +217,7 @@ for i=1:length(varargin)
 end
 
 if preprocessoroutput
+    fprintf(['Starting Dynare (version ' dynare_version() ').\n']);
     fprintf('Calling Dynare with arguments: ');
     disp(varargin);
 end
