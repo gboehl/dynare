@@ -101,24 +101,6 @@ doc/internals/*.html
 doc/internals/ltxpng
 mex/build/matlab/run_m2html.m
 
-# Preprocessor
-/preprocessor/dynare_m
-/preprocessor/dynare_m.exe
-/preprocessor/DynareBison.cc
-/preprocessor/DynareBison.hh
-/preprocessor/FlexLexer.h
-/preprocessor/DynareFlex.cc
-/preprocessor/location.hh
-/preprocessor/position.hh
-/preprocessor/stack.hh
-/preprocessor/macro/MacroBison.cc
-/preprocessor/macro/MacroBison.hh
-/preprocessor/macro/MacroFlex.cc
-/preprocessor/macro/location.hh
-/preprocessor/macro/position.hh
-/preprocessor/macro/stack.hh
-/preprocessor/doc/
-
 # MATLAB dir
 /matlab/preprocessor*
 /matlab/dynare_version.m
