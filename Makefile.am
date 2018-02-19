@@ -44,6 +44,8 @@ all-local: preprocessor/src/dynare_m
 	fi; \
 	mkdir -p $(abs_srcdir)/matlab/preprocessor$$ARCH; \
 	$(LN_S) -f $(abs_srcdir)/preprocessor/src/dynare_m $(abs_srcdir)/matlab/preprocessor$$ARCH; \
+	mkdir -p $(abs_srcdir)/julia/preprocessor$$ARCH ; \
+	$(LN_S) -f $(abs_srcdir)/preprocessor/src/dynare_m $(abs_srcdir)/julia/preprocessor$$ARCH; \
 	}
 
 dist-hook:
