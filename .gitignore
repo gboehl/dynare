@@ -75,8 +75,6 @@ checksum
 /doc/mdate-sh
 /doc/stamp-vti
 !/doc/guide.bbl
-!/doc/macroprocessor/new-design.pdf
-!/doc/macroprocessor/old-design.pdf
 !/doc/userguide/P_ModStruct3.pdf
 !/doc/userguide/P_MH2.pdf
 !/doc/userguide/P_flowest.pdf

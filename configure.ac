@@ -155,8 +155,6 @@ AX_PTHREAD
 AC_CONFIG_FILES([Makefile
                  VERSION
                  doc/Makefile
-                 doc/preprocessor/Makefile
-                 doc/macroprocessor/Makefile
                  doc/parallel/Makefile
                  doc/internals/Makefile
                  doc/gsa/Makefile
