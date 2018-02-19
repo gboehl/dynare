@@ -43,7 +43,7 @@ all-local: preprocessor/src/dynare_m
 	  ARCH="64"; \
 	fi; \
 	mkdir -p $(abs_srcdir)/matlab/preprocessor$$ARCH; \
-	cp preprocessor/src/dynare_m $(abs_srcdir)/matlab/preprocessor$$ARCH; \
+	$(LN_S) -f $(abs_srcdir)/preprocessor/src/dynare_m $(abs_srcdir)/matlab/preprocessor$$ARCH; \
 	}
 
 dist-hook:
