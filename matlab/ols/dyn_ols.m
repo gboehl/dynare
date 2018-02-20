@@ -171,6 +171,9 @@ for i = 1:length(jsonmodel)
 
     Y = Y(fp:lp);
     X = X(fp:lp).data;
+    if ~isempty(lhssub)
+        lhssub = lhssub(fp:lp);
+    end
 
     if isfield(jsonmodel{i}, 'tags') && ...
             isfield(jsonmodel{i}.tags, 'name')
@@ -208,7 +211,8 @@ for i = 1:length(jsonmodel)
 
     % Correct Yhat reported back to user
     if ~isempty(lhssub)
-        oo_.ols.(tag).Yhat = oo_.ols.(tag).Yhat + lhssub(fp:lp);
+        Y = Y + lhssub;
+        oo_.ols.(tag).Yhat = oo_.ols.(tag).Yhat + lhssub;
     end
  
     % Apply correcting function for Yhat if it was passed
