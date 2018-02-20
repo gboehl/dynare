@@ -154,8 +154,8 @@ for i = 1:length(jsonmodel)
     vars{i} = vnames;
 
     ydata = eval(regexprep(jsonmodel{i}.lhs, regex, 'ds.$&'));
-    for j = 1:lhssub.vobs
-        ydata = ydata - lhssub{j};
+    if ~isempty(lhssub)
+        ydata = ydata - lhssub;
     end
 
     if isempty(xjdata)

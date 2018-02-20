@@ -10,7 +10,7 @@ function lhssub = getRhsToSubFromLhs(ds, rhs, regex, splits)
 %   splits            [cell array] strings to split out of equation on RHS
 %
 % OUTPUTS
-%   lhssub            [dseries]    data to subtract from LHS
+%   lhssub            [dseries]    summed data to subtract from LHS
 %
 % SPECIAL REQUIREMENTS
 %   none
@@ -57,8 +57,7 @@ for j = 1:length(rhs_)
         str = getStrMoveRight(rhsj);
         if ~isempty(str)
             try
-                lhssub = [lhssub eval(regexprep([minusstr str], regex, 'ds.$&'))];
-                lhssub.rename_(lhssub{lhssub.vobs}.name{:}, [minusstr str]);
+                lhssub = lhssub + eval(regexprep([minusstr str], regex, 'ds.$&'));
             catch
                 if ~any(strcmp(M_.exo_names, str))
                     error(['getRhsToSubFromLhs: problem evaluating ' minusstr str]);
@@ -67,5 +66,9 @@ for j = 1:length(rhs_)
             rhsj = rhsj(length(str)+1:end);
         end
     end
+end
+if ~isempty(lhssub)
+    assert(lhssub.vobs == 1, 'error in getRhsToSubFromLhs');
+    lhssub.rename_(lhssub.name{:}, 'summed_rhs');
 end
 end

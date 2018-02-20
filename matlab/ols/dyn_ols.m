@@ -143,8 +143,8 @@ for i = 1:length(jsonmodel)
     assert(length(residuals) == 1, ['More than one residual in equation ' num2str(i)]);
 
     Y = eval(regexprep(jsonmodel{i}.lhs, regex, 'ds.$&'));
-    for j = 1:lhssub.vobs
-        Y = Y - lhssub{j};
+    if ~isempty(lhssub)
+        Y = Y - lhssub;
     end
 
     fp = max(Y.firstobservedperiod, X.firstobservedperiod);
@@ -207,8 +207,8 @@ for i = 1:length(jsonmodel)
     oo_.ols.(tag).resid = Y - oo_.ols.(tag).Yhat;
 
     % Correct Yhat reported back to user
-    for j = 1:lhssub.vobs
-        oo_.ols.(tag).Yhat = oo_.ols.(tag).Yhat + lhssub{j}(fp:lp);
+    if ~isempty(lhssub)
+        oo_.ols.(tag).Yhat = oo_.ols.(tag).Yhat + lhssub(fp:lp);
     end
  
     % Apply correcting function for Yhat if it was passed
