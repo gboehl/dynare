@@ -235,7 +235,7 @@ for i = 1:length(jsonmodel)
     oo_.ols.(tag).R2 = 1 - SS_res/SS_tot;
 
     % Adjusted R^2
-    oo_.ols.(tag).adjR2 = oo_.ols.(tag).R2 - (1 - oo_.ols.(tag).R2)*nvars/(oo_.ols.(tag).dof-1);
+    oo_.ols.(tag).adjR2 = oo_.ols.(tag).R2 - (1 - oo_.ols.(tag).R2)*(nvars-1)/(oo_.ols.(tag).dof);
 
     % Durbin-Watson
     ediff = oo_.ols.(tag).resid.data(2:nobs) - oo_.ols.(tag).resid.data(1:nobs-1);
