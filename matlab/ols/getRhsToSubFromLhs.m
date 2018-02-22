@@ -1,13 +1,14 @@
-function lhssub = getRhsToSubFromLhs(ds, rhs, regex, splits)
-%function lhssub = getRhsToSubFromLhs(ds, rhs, regex, splits)
+function lhssub = getRhsToSubFromLhs(ds, rhs, regex, splits, pnames)
+%function lhssub = getRhsToSubFromLhs(ds, rhs, regex, splits, pnames)
 % Helper function that identifies variables on RHS that need to be
 % subtracted from LHS of OLS-style equation
 %
 % INPUTS
-%   ds                [dseries]    data
-%   rhs               [string]     RHS as a string
-%   regex             [string]     regex expressing valid list of variables
-%   splits            [cell array] strings to split out of equation on RHS
+%   ds                [dseries]     data
+%   rhs               [string]      RHS as a string
+%   regex             [string]      regex expressing valid list of variables
+%   splits            [cell string] strings to split out of equation on RHS
+%   pnames            [cell string] parameter names
 %
 % OUTPUTS
 %   lhssub            [dseries]    summed data to subtract from LHS
@@ -37,7 +38,8 @@ global M_
 assert(isdseries(ds), 'The first argument must be a dseries');
 assert(ischar(rhs), 'The second argument must be a string');
 assert(ischar(regex), 'The third argument must be a string');
-assert(iscell(splits), 'The fourth argument must be a cell');
+assert(iscellstr(splits), 'The fourth argument must be a cell');
+assert(iscellstr(splits), 'The fourth argument must be a cell');
 
 lhssub = dseries();
 rhs_ = strsplit(rhs, splits);
@@ -59,7 +61,7 @@ for j = 1:length(rhs_)
             try
                 lhssub = lhssub + eval(regexprep([minusstr str], regex, 'ds.$&'));
             catch
-                if ~any(strcmp(M_.exo_names, str))
+                if ~any(strcmp(M_.exo_names, str)) && ~any(strcmp(pnames, str))
                     error(['getRhsToSubFromLhs: problem evaluating ' minusstr str]);
                 end
             end

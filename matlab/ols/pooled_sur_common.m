@@ -144,7 +144,7 @@ for i = 1:length(jsonmodel)
         vnames = vnames(dropvname);
     end
 
-    lhssub = getRhsToSubFromLhs(ds, jsonmodel{i}.rhs, regex, [splitstrings; pnames]);
+    lhssub = getRhsToSubFromLhs(ds, jsonmodel{i}.rhs, regex, splitstrings, pnames);
 
     residnames{i} = setdiff(intersect(rhs_, M_.exo_names), ds.name);
     assert(~isempty(residnames{i}), ['No residuals in equation ' num2str(i)]);
