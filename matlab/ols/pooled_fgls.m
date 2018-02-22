@@ -37,6 +37,7 @@ function pooled_fgls(ds, param_common, param_regex, eqtags)
 global M_ oo_
 
 if nargin < 4
+    eqtags ={};
     pooled_ols(ds, param_common, param_regex, true);
 else
     param_regex = pooled_ols(ds, param_common, param_regex, true, eqtags);
