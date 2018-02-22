@@ -38,7 +38,6 @@ for i=1:NSIMS
         '*_g_yer_u2_stn_L1', ...
         '*_ehic_*_ehic_L1'});
     BETA(i, :) = M_.params';
-    oldsim = simdata;
 end
 
 mean(BETA)' - calibrated_values
