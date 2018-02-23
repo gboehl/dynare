@@ -65,7 +65,8 @@ end
 
 %% Estimation
 M_endo_exo_names_trim = [M_.endo_names; M_.exo_names];
-regex = strjoin(M_endo_exo_names_trim(:,1), '|');
+[junk, idxs] = sort(cellfun(@length, M_endo_exo_names_trim), 'descend');
+regex = strjoin(M_endo_exo_names_trim(idxs), '|');
 mathops = '[\+\*\^\-\/\(\)]';
 for i = 1:length(jsonmodel)
     %% Construct regression matrices
