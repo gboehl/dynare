@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 
-dnl Copyright (C) 2009-2017 Dynare Team
+dnl Copyright (C) 2009-2018 Dynare Team
 dnl
 dnl This file is part of Dynare.
 dnl
@@ -19,8 +19,10 @@ dnl along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 AC_PREREQ([2.62])
 AC_INIT([dynare], [4.6-unstable])
-AC_CONFIG_SRCDIR([preprocessor/DynareMain.cc])
+AC_CONFIG_SRCDIR([preprocessor/src/DynareMain.cc])
 AM_INIT_AUTOMAKE([1.11 -Wall -Wno-portability foreign no-dist-gzip dist-xz tar-pax])
+
+AC_CONFIG_SUBDIRS([preprocessor])
 
 AC_PROG_CC
 AC_PROG_CXX
@@ -60,17 +62,6 @@ AM_PROG_AR
 AX_PROG_LN_S
 
 AC_PROG_MKDIR_P
-
-AM_PROG_LEX
-# Hack to get lex include dir, ticket #575
-AC_PATH_PROG([LEXPATH], [$LEX])
-AC_SUBST([LEXINC], [`eval "echo $LEXPATH | sed 's|\(.*\)$LEX$|\1../include|'"`])
-
-AC_CHECK_PROG([YACC], [bison], [bison])
-if test "x$YACC" = "x"; then
-  unset YACC # AM_MISSING_PROG needs an unset variable: an empty variable won't do
-  AM_MISSING_PROG([YACC], [bison])
-fi
 
 # We need 1.36 because of unordered_{set,hash} used by Dynare++
 AX_BOOST_BASE([1.36], [], [AC_MSG_ERROR([Can't find Boost >= 1.36])])
@@ -121,9 +112,6 @@ if test "x$PDFLATEX" != "x" -a "x$BIBTEX" != "x"; then
 fi
 AM_CONDITIONAL([HAVE_BEAMER], [test "x$ax_latex_have_beamer" = "xyes"])
 
-AC_CHECK_PROG([DOXYGEN], [doxygen], [doxygen])
-AM_CONDITIONAL([HAVE_DOXYGEN], [test "x$DOXYGEN" != "x"])
-
 AC_CHECK_PROG([CTANGLE], [ctangle], [ctangle])
 AM_CONDITIONAL([HAVE_CTANGLE], [test "x$CTANGLE" != "x"])
 if test "x$CTANGLE" = "x"; then
@@ -166,11 +154,7 @@ AX_PTHREAD
 
 AC_CONFIG_FILES([Makefile
                  VERSION
-                 preprocessor/macro/Makefile
-                 preprocessor/Makefile
                  doc/Makefile
-                 doc/preprocessor/Makefile
-                 doc/macroprocessor/Makefile
                  doc/parallel/Makefile
                  doc/internals/Makefile
                  doc/gsa/Makefile
@@ -220,8 +204,6 @@ AM_CONDITIONAL([ENABLE_ORG_EXPORT], [test "x$enable_org_export" != "x"])
 
 # Construct final output message
 
-BUILD_PREPROCESSOR="yes"
-
 if test "x$ax_blas_ok" = "xyes" -a "x$ax_lapack_ok" = "xyes" -a "x$has_matio" = "xyes"; then
   if test x"$ax_pthread_ok" = "xyes"; then
      BUILD_DYNAREPLUSPLUS="yes"
@@ -248,12 +230,6 @@ if test "x$PDFLATEX" != "x"; then
   BUILD_OTHER_PDF_DOC="yes"
 else
   BUILD_OTHER_PDF_DOC="no (missing pdflatex)"
-fi
-
-if test "x$DOXYGEN" != "x"; then
-  BUILD_DYNARE_PREPROC_DOC="yes"
-else
-  BUILD_DYNARE_PREPROC_DOC="no (missing doxygen)"
 fi
 
 if test "x$enable_org_export" != "x"; then
@@ -293,7 +269,6 @@ AC_MSG_NOTICE([
 Dynare is now configured for building the following components...
 
 Binaries (with "make"):
- Dynare preprocessor:                   $BUILD_PREPROCESSOR
  Dynare++:                              $BUILD_DYNAREPLUSPLUS
 
 PDF documentation (with "make pdf"):
@@ -304,7 +279,6 @@ PDF documentation (with "make pdf"):
 
 HTML documentation (with "make html"):
  Dynare reference manual:               $BUILD_DYNARE_HTML_MANUAL
- Dynare preprocessor developer doc:     $BUILD_DYNARE_PREPROC_DOC
  Dynare internal doc:                   $BUILD_DYNARE_INTERNAL_DOC
 
 Info documentation (with "make info"):  $BUILD_DYNARE_INFO

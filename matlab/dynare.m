@@ -16,7 +16,7 @@ function dynare(fname, varargin)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2001-2017 Dynare Team
+% Copyright (C) 2001-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -217,8 +217,12 @@ for i=1:length(varargin)
 end
 
 if preprocessoroutput
+    fprintf(['Starting Dynare (version ' dynare_version() ').\n']);
     fprintf('Calling Dynare with arguments: ');
     disp(varargin);
+    if isempty(varargin)
+        disp('none')
+    end
 end
 
 [status, result] = system(command);

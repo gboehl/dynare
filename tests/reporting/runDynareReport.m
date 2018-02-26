@@ -1,5 +1,5 @@
 function runDynareReport(dc_a, dc_q, db_a, db_q)
-% Copyright (C) 2013-2015 Dynare Team
+% Copyright (C) 2013-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -258,9 +258,9 @@ rep = rep.addSeries('graphHline', 460, ...
                     'graphLineWidth', 1.5);
 
 a=dseries([1:200]', '1984q1');
-b=a;
-c=a;
-d=a;
+b=copy(a);
+c=copy(a);
+d=copy(a);
 b(dates('2012q2'):dates('2015q2'))=b(dates('2012q2'):dates('2015q2'))+2;
 c(dates('2012q2'):dates('2015q2'))=c(dates('2012q2'):dates('2015q2'))+4;
 d(dates('2012q2'):dates('2015q2'))=d(dates('2012q2'):dates('2015q2'))+6;

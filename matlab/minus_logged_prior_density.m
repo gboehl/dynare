@@ -34,7 +34,7 @@ fake_1 = 1;
 fake_2 = 1;
 
 exit_flag = 1;
-info = 0;
+info = zeros(4,1);
 
 %------------------------------------------------------------------------------
 % 1. Get the structural parameters & define penalties
@@ -46,7 +46,7 @@ if ~isequal(DynareOptions.mode_compute,1) && any(xparams<p3)
     fval = Inf;
     exit_flag = 0;
     info(1) = 41;
-    info(2) = sum((p3(k)-xparams(k)).^2);
+    info(4) = sum((p3(k)-xparams(k)).^2);
     return
 end
 
@@ -56,7 +56,7 @@ if ~isequal(DynareOptions.mode_compute,1) && any(xparams>p4)
     fval = Inf;
     exit_flag = 0;
     info(1) = 42;
-    info(2) = sum((xparams(k)-p4(k)).^2);
+    info(4) = sum((xparams(k)-p4(k)).^2);
     return
 end
 
@@ -75,7 +75,7 @@ if ~issquare(Q) || EstimatedParams.ncx || isfield(EstimatedParams,'calibrated_co
         fval = Inf;
         exit_flag = 0;
         info(1) = 43;
-        info(2) = penalty;
+        info(4) = penalty;
         return
     end
     if isfield(EstimatedParams,'calibrated_covariances')
@@ -85,7 +85,7 @@ if ~issquare(Q) || EstimatedParams.ncx || isfield(EstimatedParams,'calibrated_co
             fval = Inf;
             exit_flag = 0;
             info(1) = 71;
-            info(2) = penalty;
+            info(4) = penalty;
             return
         end
     end
@@ -100,7 +100,7 @@ if ~issquare(H) || EstimatedParams.ncn || isfield(EstimatedParams,'calibrated_co
         fval = Inf;
         exit_flag = 0;
         info(1) = 44;
-        info(2) = penalty;
+        info(4) = penalty;
         return
     end
     if isfield(EstimatedParams,'calibrated_covariances_ME')
@@ -110,7 +110,7 @@ if ~issquare(H) || EstimatedParams.ncn || isfield(EstimatedParams,'calibrated_co
             fval = Inf;
             exit_flag = 0;
             info(1) = 72;
-            info(2) = penalty;
+            info(4) = penalty;
             return
         end
     end
@@ -124,7 +124,6 @@ end
 M_ = set_all_parameters(xparams,EstimatedParams,DynareModel);
 [dr,info,DynareModel,DynareOptions,DynareResults] = resol(0,DynareModel,DynareOptions,DynareResults);
 
-% Return, with endogenous penalty when possible, if dynare_resolve issues an error code (defined in resol).
 % Return, with endogenous penalty when possible, if dynare_resolve issues an error code (defined in resol).
 if info(1)
     if info(1) == 3 || info(1) == 4 || info(1) == 5 || info(1)==6 ||info(1) == 19 ...

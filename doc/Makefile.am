@@ -1,4 +1,4 @@
-SUBDIRS = preprocessor macroprocessor parallel internals gsa dseries-and-reporting
+SUBDIRS = parallel internals gsa dseries-and-reporting
 
 info_TEXINFOS = dynare.texi
 

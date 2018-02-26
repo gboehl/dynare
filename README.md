@@ -53,7 +53,7 @@ at the MATLAB prompt: if it returns `PCWIN`, then you have a 32-bit MATLAB; if i
 1. [**Fedora**](#fedora)
 1. [**Windows**](#windows)
 1. [**Windows Subsystem for Linux**](#windows-subsystem-for-linux)
-1. [**Mac OS X**](#mac-os-x)
+1. [**macOS**](#macos)
 
 ## General Instructions
 
@@ -285,27 +285,48 @@ NB: it might be necessary to preface your calls by ```sudo``` in case you do not
 
 After this, prepare the source and configure the build tree as described for Linux above.
  
-## Mac OS X
+## macOS
+
+To simply use a snapshot of Dynare, you have two choices. On Matlab, you can
+use the [snapshot build](http://www.dynare.org/snapshot/macosx/) provided by
+Dynare. On Octave, you can simply install [Homebrew](https://brew.sh/) and run
+```brew install dynare --HEAD``` (See the Install Dynare (unstable) section of
+[this webpage](http://www.dynare.org/DynareWiki/InstallOnMacOSX) for more
+details).
+
+If you do not wish to use the snapshots provided by Dynare or Homebrew, follow
+the directions below to build Dynare on your local machine.
+
+Preparatory work:
 
 - Install the Xcode Command Line Tools:
-    - Download "Command Line Tools (OS X 10.X) for Xcode," where 10.X corresponds to your OS X version, from https://developer.apple.com/downloads/index.action
-- Install the latest version of [MacTeX](http://www.tug.org/mactex/), deselecting the option to install Ghostscript
-- Install [Homebrew](http://mxcl.github.io/homebrew/) by following the instructions on the website
-- Tap [Homebrew Science](https://github.com/Homebrew/homebrew-science) by opening Terminal and typing:
-    - ```brew tap homebrew/science```
+    - Open Terminal.app and type `xcode-select --install`
+- Install [Homebrew](https://brew.sh/) by following the instructions on their website
+
+The following commands will install the programs that Dynare needs to
+compile. They should be entered at the command prompt in Terminal.app.
+
+- `brew install automake bison flex boost fftw gcc gsl hdf5 libmatio metis veclibfort`
 - **(Optional)** To compile Dynare mex files for use on Octave:
-    - ```brew install octave```
-    - ```brew install suite-sparse```
-- To see the available options for compiling Dynare, type:
-    - ```brew info dynare```
-- Install Dynare via a command of the form:
-    - (basic) ```brew install dynare --HEAD --without-check```
-    - (with Matlab mex) ```brew install dynare --HEAD --without-check --with-matlab=/Applications/MATLAB_R2015a.app --with-matlab-version=8.5```
-- **NB**: If compiling Dynare documentation, add ```--with-doc``` to the installation command
-- **NB**: If not compiling Dynare mex files for Octave, add ```--without-octave``` to the installation command
-- **NB**: To compile the latest stable version of dynare, follow the same instructions as above, omitting the ```--HEAD``` argument
-- **NB**: To update a ```--HEAD``` install of dynare you need to uninstall it then install it again: ```brew uninstall dynare; brew install dynare --HEAD```.
-- **NB**: If you want to maintain a separate git directory of dynare, you can do a ```--HEAD``` install of dynare, then uninstall it. This will have the effect of bringing in all the dependencies you will need to then compile dynare from your git directory. (For `flex` and `bison` it may be necessary to symlink them via `brew link bison --force` and `brew link flex --force` as they are keg-only). Then, change to the git directory and type:
-    - ```autoreconf -si; ./configure --with-matlab=/Applications/MATLAB_R2015a.app MATLAB_VERSION=R2015a```, adjusting the Matlab path and version to accord with your version
-- Once compilation is done, open Matlab and type the last line shown when you type ```brew info dynare``` in the Terminal window. With the typical Homebrew setup, this is:
-    - ```addpath /usr/local/opt/dynare/lib/dynare/matlab```
+    - `brew install octave`
+    - `brew install suite-sparse`
+- **(Optional)** To compile Dynare++
+    - `brew install cweb`
+- **(Optional)** To compile Dynare documentation
+     - Install the latest version of [MacTeX](http://www.tug.org/mactex/), deselecting the option to install Ghostscript
+     - `brew install doxygen latex2html`
+
+The following commands will download the Dynare source code and compile
+it. They should be entered at the command prompt in Terminal.app from the
+folder where you want Dynare installed.
+
+- `git clone https://github.com/DynareTeam/dynare.git`
+- `cd dynare`
+- `PATH="/usr/local/opt/bison/bin:/usr/local/opt/flex/bin:$PATH"`
+- `autoreconf -si`
+- `./configure --disable-octave --with-matlab=/Applications/MATLAB_R2017b.app MATLAB_VERSION=R2017b`, adjusting the Matlab path and version to accord with your local installation. If you don't have Matlab, simply type `./configure --disable-octave`
+- `make -j`
+- **(Optional)** To then build mex files for Octave, run
+     - `cd mex/build/octave`
+     - `./configure CXXFLAGS="-std=c++0x"`
+     - `make -j`

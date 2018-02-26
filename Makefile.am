@@ -35,6 +35,19 @@ EXTRA_DIST = \
 	scripts \
 	.dir-locals.el
 
+all-local: preprocessor/src/dynare_m
+	{ \
+	if [ -z "`file preprocessor/src/dynare_m | grep x86.64`" ]; then \
+	  ARCH="32"; \
+	else \
+	  ARCH="64"; \
+	fi; \
+	mkdir -p $(abs_srcdir)/matlab/preprocessor$$ARCH; \
+	$(LN_S) -f $(abs_srcdir)/preprocessor/src/dynare_m $(abs_srcdir)/matlab/preprocessor$$ARCH; \
+	mkdir -p $(abs_srcdir)/julia/preprocessor$$ARCH ; \
+	$(LN_S) -f $(abs_srcdir)/preprocessor/src/dynare_m $(abs_srcdir)/julia/preprocessor$$ARCH; \
+	}
+
 dist-hook:
 	rm -rf `find $(distdir)/matlab $(distdir)/examples -name *~`
 	rm -rf $(distdir)/matlab/preprocessor* $(distdir)/matlab/dynare_version.m
@@ -51,13 +64,13 @@ install-exec-local:
 	find $(DESTDIR)$(pkglibdir) -name LICENSE.md -delete
 	rm -rf $(DESTDIR)$(pkglibdir)/matlab/preprocessor*
 	{ \
-	if [ -z "`file preprocessor/dynare_m | grep x86.64`" ]; then \
+	if [ -z "`file preprocessor/src/dynare_m | grep x86.64`" ]; then \
 	  ARCH="32"; \
 	else \
 	  ARCH="64"; \
 	fi; \
 	mkdir -p $(DESTDIR)$(pkglibdir)/matlab/preprocessor$$ARCH; \
-	cp preprocessor/dynare_m $(DESTDIR)$(pkglibdir)/matlab/preprocessor$$ARCH; \
+	cp preprocessor/src/dynare_m $(DESTDIR)$(pkglibdir)/matlab/preprocessor$$ARCH; \
 	}
 
 uninstall-local:
