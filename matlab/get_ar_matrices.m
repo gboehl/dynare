@@ -1,10 +1,10 @@
 function get_ar_matrices(var_model_name)
 
-% Gets the autoregressive matrices associated with the var specified by
-% var_model_name. Output stored in cellarray oo_.var.(var_model_name).ar,
-% with oo_.var.(var_model_name).ar(i) being the AR matrix at time t-i. Each
-% AR matrix is stored with rows organized by the ordering of the equation
-% tags found in M_.var.(var_model_name).eqtags and columns organized consistently.
+% Gets the autoregressive matrices associated with the var specified by var_model_name.
+% Output stored in cellarray oo_.var.(var_model_name).AutoregressiveMatrices, with
+% oo_.var.(var_model_name).AutoregressiveMatrices{i} being the AR matrix at time t-i. Each
+% AR matrix is stored with rows organized by the ordering of the equation tags
+% found in M_.var.(var_model_name).eqtags and columns organized consistently.
 %
 % INPUTS
 %
@@ -120,7 +120,7 @@ oo_.var.(var_model_name).ecm_idx = Bvars;
 narvars = length(M_.var.(var_model_name).lhs);
 nothvars = length(Bvars);
 for i = 1:maxlag + 1
-    oo_.var.(var_model_name).ar{i} = zeros(narvars, narvars);
+    oo_.var.(var_model_name).AutoregressiveMatrices{i} = zeros(narvars, narvars);
     oo_.var.(var_model_name).ecm{i} = zeros(narvars, nothvars);
 end
 
@@ -140,7 +140,7 @@ for i = 1:2
                     col = M_.var.(var_model_name).orig_diff_var == av.orig_index;
                     if any(col)
                         assert(any(orig_diff_var_vec == av.orig_index));
-                        oo_.var.(var_model_name).ar{(av.orig_lead_lag * - 1) + baselag}(:, col) = ...
+                        oo_.var.(var_model_name).AutoregressiveMatrices{(av.orig_lead_lag * - 1) + baselag}(:, col) = ...
                             g1(:, M_.lead_lag_incidence(i, j));
                     else
                         col = Bvars_diff_index == av.orig_index;
@@ -151,7 +151,7 @@ for i = 1:2
                 else
                     col = M_.var.(var_model_name).lhs == av.orig_index;
                     if any(col)
-                        oo_.var.(var_model_name).ar{(av.orig_lead_lag * - 1) + baselag}(:, col) = ...
+                        oo_.var.(var_model_name).AutoregressiveMatrices{(av.orig_lead_lag * - 1) + baselag}(:, col) = ...
                             g1(:, M_.lead_lag_incidence(i, j));
                     else
                         col = Bvars == av.orig_index;
@@ -168,7 +168,7 @@ for i = 1:2
                     oo_.var.(var_model_name).ecm{baselag}(:, col) = ...
                         g1(:, M_.lead_lag_incidence(i, j));
                 else
-                    oo_.var.(var_model_name).ar{baselag}(:, col) = ...
+                    oo_.var.(var_model_name).AutoregressiveMatrices{baselag}(:, col) = ...
                         g1(:, M_.lead_lag_incidence(i, j));
                 end
             end
@@ -177,16 +177,16 @@ for i = 1:2
 end
 
 for i = 1:length(M_.var.(var_model_name).lhs)
-    oo_.var.(var_model_name).ar{1}(i, M_.var.(var_model_name).lhs == M_.var.(var_model_name).lhs(i)) = ...
-        oo_.var.(var_model_name).ar{1}(i, M_.var.(var_model_name).lhs == M_.var.(var_model_name).lhs(i)) + 1;
+    oo_.var.(var_model_name).AutoregressiveMatrices{1}(i, M_.var.(var_model_name).lhs == M_.var.(var_model_name).lhs(i)) = ...
+        oo_.var.(var_model_name).AutoregressiveMatrices{1}(i, M_.var.(var_model_name).lhs == M_.var.(var_model_name).lhs(i)) + 1;
 end
 
-if any(oo_.var.(var_model_name).ar{1}(:))
+if any(oo_.var.(var_model_name).AutoregressiveMatrices{1}(:))
     error('This is not a VAR model! Contemporaneous endogenous variables are not allowed.')
 end
 
 % Remove time t matrix for autoregressive part
-oo_.var.(var_model_name).ar = oo_.var.(var_model_name).ar(2:end);
+oo_.var.(var_model_name).AutoregressiveMatrices = oo_.var.(var_model_name).AutoregressiveMatrices(2:end);
 
 % Remove error correction matrices if never assigned
 if ~ecm_assigned

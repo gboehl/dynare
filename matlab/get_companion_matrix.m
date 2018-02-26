@@ -31,20 +31,20 @@ global oo_
 get_ar_matrices(var_model_name);
 
 % Get the number of lags
-p = length(oo_.var.(var_model_name).ar);
+p = length(oo_.var.(var_model_name).AutoregressiveMatrices);
 
 % Get the number of variables
-n = length(oo_.var.(var_model_name).ar{1});
+n = length(oo_.var.(var_model_name).AutoregressiveMatrices{1});
 
 % Initialise the companion matrix
-oo_.var.(var_model_name).H = zeros(n*p);
+oo_.var.(var_model_name).CompanionMatrix = zeros(n*p);
 
 % Fill the companion matrix
-oo_.var.(var_model_name).H(1:n,1:n) = oo_.var.(var_model_name).ar{1};
+oo_.var.(var_model_name).CompanionMatrix(1:n,1:n) = oo_.var.(var_model_name).AutoregressiveMatrices{1};
 
 if p>1
     for i=2:p
-        oo_.var.(var_model_name).H(1:n,(i-1)*n+(1:n)) = oo_.var.(var_model_name).ar{i};
-        oo_.var.(var_model_name).H((i-1)*n+(1:n),(i-2)*n+(1:n)) = eye(n); 
+        oo_.var.(var_model_name).CompanionMatrix(1:n,(i-1)*n+(1:n)) = oo_.var.(var_model_name).AutoregressiveMatrices{i};
+        oo_.var.(var_model_name).CompanionMatrix((i-1)*n+(1:n),(i-2)*n+(1:n)) = eye(n);
     end
 end
