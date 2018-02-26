@@ -20,11 +20,6 @@ function [initialconditions, samplesize, innovations, DynareOptions, DynareModel
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
     
 initialconditions = varargin{1};
-
-if ~isdseries(initialconditions)
-    error('First input argument must be a dseries object')
-end
-
 samplesize = varargin{2};
 DynareOptions = varargin{3};
 DynareModel = varargin{4};
