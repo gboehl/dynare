@@ -88,7 +88,7 @@ model_dtransf = str2func('dynamic_backward_model_for_inversion');
 % Initialization of the returned simulations (endogenous variables).
 Y = NaN(DynareModel.endo_nbr, nobs(constraints));
 
-Y = [transpose(initialconditions(constraints.dates(1)-1).data(1:DynareModel.endo_nbr)), Y];
+Y = [transpose(initialconditions{DynareModel.endo_names{:}}(constraints.dates(1)-1).data), Y];
 for i=1:nyctrl
     Y(controlledendogenousvariables_id(i),2:end) = transpose(constraints.data(:,i));
 end
