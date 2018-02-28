@@ -51,9 +51,9 @@ histval;
     PhysicalCapitalStock(0) = 1;
 end;
 
-oo__ = simul_backward_nonlinear_model([], 10, options_, M_, oo_);
+simulation__ = simul_backward_nonlinear_model([], 10, options_, M_, oo_);
 
-initialcondition = dseries(transpose(oo__.endo_simul(:,10)), 2017Q1, M_.endo_names);
+initialcondition = dseries(simulation__.data(10,1:M_.endo_nbr), 2017Q1, M_.endo_names);
 
 
 /* REMARKS
