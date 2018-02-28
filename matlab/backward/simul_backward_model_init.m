@@ -18,7 +18,7 @@ function [initialconditions, samplesize, innovations, DynareOptions, DynareModel
 %
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
-    
+
 initialconditions = varargin{1};
 samplesize = varargin{2};
 DynareOptions = varargin{3};
@@ -61,6 +61,8 @@ if isempty(initialconditions)
     initialconditions = dseries([transpose(yinitdata) transpose(xinitdata)], '1Y', ...
                                 vertcat(DynareModel.endo_names(1:DynareModel.orig_endo_nbr), DynareModel.exo_names));
 end
+
+[initialconditions, info] = checkdatabase(initialconditions, DynareModel);
 
 % Test if the first argument contains all the lagged endogenous variables
 endonames = DynareModel.endo_names;
