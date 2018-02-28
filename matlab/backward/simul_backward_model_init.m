@@ -31,8 +31,35 @@ if DynareModel.maximum_lead
 end
 
 % Test if the first argument is a dseries object.
-if ~isdseries(initialconditions)
-    error('First input argument must be a dseries object!')
+if ~(isdseries(initialconditions) || isempty(initialconditions))
+    error('First input argument must be a dseries object or an empty array!')
+end
+
+% If initialconditions is empty instantiates a dseries object with the informations available in DynareModel.endo_histval.
+if isempty(initialconditions)
+    yinitdata = zeros(DynareModel.orig_endo_nbr, DynareModel.max_lag_orig);
+    yinitdata(:,1) = DynareModel.endo_histval(1:DynareModel.orig_endo_nbr);
+    xinitdata = zeros(DynareModel.exo_nbr, DynareModel.max_lag_orig);
+    if DynareModel.max_endo_lag_orig>1
+        for i = 1:length(DynareModel.aux_vars)
+            if DynareModel.aux_vars(i).type==1
+                yinitdata(DynareModel.aux_vars(i).orig_index, abs(DynareModel.aux_vars(i).orig_lead_lag)+1) = ...
+                    DynareModel.endo_histval(DynareModel.orig_endo_nbr+i);
+            end
+        end
+        yinitdata = flip(yinitdata, 2);
+    end
+    if DynareModel.max_exo_lag_orig>0
+        for i = 1:length(DynareModel.aux_vars)
+            if DynareModel.aux_vars(i).type==3
+                xinitdata(DynareModel.aux_vars(i).orig_index, abs(DynareModel.aux_vars(i).orig_lead_lag)+1) = ...
+                    DynareModel.endo_histval(DynareModel.orig_endo_nbr+i);
+            end
+        end
+        xinitdata = flip(xinitdata, 2);
+    end
+    initialconditions = dseries([transpose(yinitdata) transpose(xinitdata)], '1Y', ...
+                                vertcat(DynareModel.endo_names(1:DynareModel.orig_endo_nbr), DynareModel.exo_names));
 end
 
 % Test if the first argument contains all the lagged endogenous variables
@@ -150,7 +177,7 @@ for i = DynareModel.orig_endo_nbr+1:DynareModel.endo_nbr
         error('Cannot simulate the model with this type of auxiliary variables!')
     end
 end
- 
+
 if nargin<6 || isempty(varargin{6}) 
     % Set the covariance matrix of the structural innovations.
     variances = diag(DynareModel.Sigma_e);
