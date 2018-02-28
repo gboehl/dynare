@@ -55,6 +55,13 @@ end
 
 start = initialcondition.dates(end)+1;
 
+% Set default initial conditions for the innovations.
+for i=1:M_.exo_nbr
+    if ~ismember(M_.exo_names{i}, initialcondition.name)
+        initialcondition{M_.exo_names{i}} = dseries(zeros(initialcondition.nobs, 1), initialcondition.dates(1), M_.exo_names{i});
+    end
+end
+
 % Set up initial conditions
 [initialcondition, periods, innovations, DynareOptions, DynareModel, DynareOutput, endonames, exonames, nx, ny1, iy1, jdx, model_dynamic, y] = ...
     simul_backward_model_init(initialcondition, periods, options_, M_, oo_, zeros(periods, M_.exo_nbr));

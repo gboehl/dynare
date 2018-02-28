@@ -88,6 +88,13 @@ else
     end
 end
 
+% Set default initial conditions for the innovations.
+for i=1:M_.exo_nbr
+    if ~ismember(M_.exo_names{i}, initialcondition.name)
+        initialcondition{M_.exo_names{i}} = dseries(zeros(initialcondition.nobs, 1), initialcondition.dates(1), M_.exo_names{i});
+    end
+end
+
 % Set default values for the baseline paths.
 %
 % TODO zero for all variables is probably a poor choice. It should be
