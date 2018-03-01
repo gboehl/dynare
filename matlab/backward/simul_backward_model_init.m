@@ -18,13 +18,8 @@ function [initialconditions, samplesize, innovations, DynareOptions, DynareModel
 %
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
-    
+
 initialconditions = varargin{1};
-
-if ~isdseries(initialconditions)
-    error('First input argument must be a dseries object')
-end
-
 samplesize = varargin{2};
 DynareOptions = varargin{3};
 DynareModel = varargin{4};
@@ -36,9 +31,38 @@ if DynareModel.maximum_lead
 end
 
 % Test if the first argument is a dseries object.
-if ~isdseries(initialconditions)
-    error('First input argument must be a dseries object!')
+if ~(isdseries(initialconditions) || isempty(initialconditions))
+    error('First input argument must be a dseries object or an empty array!')
 end
+
+% If initialconditions is empty instantiates a dseries object with the informations available in DynareModel.endo_histval.
+if isempty(initialconditions)
+    yinitdata = zeros(DynareModel.orig_endo_nbr, DynareModel.max_lag_orig);
+    yinitdata(:,1) = DynareModel.endo_histval(1:DynareModel.orig_endo_nbr);
+    xinitdata = zeros(DynareModel.exo_nbr, DynareModel.max_lag_orig);
+    if DynareModel.max_endo_lag_orig>1
+        for i = 1:length(DynareModel.aux_vars)
+            if DynareModel.aux_vars(i).type==1
+                yinitdata(DynareModel.aux_vars(i).orig_index, abs(DynareModel.aux_vars(i).orig_lead_lag)+1) = ...
+                    DynareModel.endo_histval(DynareModel.orig_endo_nbr+i);
+            end
+        end
+        yinitdata = flip(yinitdata, 2);
+    end
+    if DynareModel.max_exo_lag_orig>0
+        for i = 1:length(DynareModel.aux_vars)
+            if DynareModel.aux_vars(i).type==3
+                xinitdata(DynareModel.aux_vars(i).orig_index, abs(DynareModel.aux_vars(i).orig_lead_lag)+1) = ...
+                    DynareModel.endo_histval(DynareModel.orig_endo_nbr+i);
+            end
+        end
+        xinitdata = flip(xinitdata, 2);
+    end
+    initialconditions = dseries([transpose(yinitdata) transpose(xinitdata)], '1Y', ...
+                                vertcat(DynareModel.endo_names(1:DynareModel.orig_endo_nbr), DynareModel.exo_names));
+end
+
+[initialconditions, info] = checkdatabase(initialconditions, DynareModel);
 
 % Test if the first argument contains all the lagged endogenous variables
 endonames = DynareModel.endo_names;
@@ -144,11 +168,18 @@ for i = DynareModel.orig_endo_nbr+1:DynareModel.endo_nbr
         else
             error('This is a bug. Please contact Dynare Team!');
         end
+    elseif DynareModel.aux_vars(k).type == 8
+        if ismember(DynareModel.endo_names{DynareModel.aux_vars(k).orig_index}, initialconditions.name)
+            initialconditions{DynareModel.endo_names{DynareModel.aux_vars(k).endo_index}} = ...
+                initialconditions{DynareModel.endo_names{DynareModel.aux_vars(k).orig_index}}.diff.lag(abs(DynareModel.aux_vars(k).orig_lead_lag));
+        else
+            error('This is a bug. Please contact Dynare Team!');
+        end
     else
         error('Cannot simulate the model with this type of auxiliary variables!')
     end
 end
- 
+
 if nargin<6 || isempty(varargin{6}) 
     % Set the covariance matrix of the structural innovations.
     variances = diag(DynareModel.Sigma_e);

@@ -40,13 +40,12 @@ global M_ options_ oo_
 
 % Check that the model is actually backward
 if M_.maximum_lead
-    error(['simul_model_irf:: The specified model is not backward looking!'])
+    error('backward_model_irf:: The specified model is not backward looking!')
 end
 
 % Set default value for the fourth input argument.
 if nargin<5
     periods = 40;
-    notransform = true;
 else
     periods = varargin{1};
 end
@@ -89,7 +88,13 @@ else
     end
 end
 
-baselineflag = false;
+% Set default initial conditions for the innovations.
+for i=1:M_.exo_nbr
+    if ~ismember(M_.exo_names{i}, initialcondition.name)
+        initialcondition{M_.exo_names{i}} = dseries(zeros(initialcondition.nobs, 1), initialcondition.dates(1), M_.exo_names{i});
+    end
+end
+
 % Set default values for the baseline paths.
 %
 % TODO zero for all variables is probably a poor choice. It should be
@@ -114,7 +119,6 @@ if ~isempty(innovationbaseline)
             Innovations(:,i) = innovationbaseline{exonames{i}}.data(1:periods);
         end
     end
-    baselineflag = true;
 end
 
 % Set up initial conditions
@@ -159,7 +163,7 @@ for i=1:length(listofshocks)
         shock = listofshocks{i};
         timid = shock.dates-initialconditionperiod;
         for j=1:shock.vobs
-            k = find(strcmp(shock.name{i}, exonames));
+            k = find(strcmp(shock.name{j}, exonames));
             for l=1:length(timid)
                 innovations(timid(l),k) = innovations(timid(l),k) + shock.data(l,j);
             end
