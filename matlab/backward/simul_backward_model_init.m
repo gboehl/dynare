@@ -37,10 +37,10 @@ end
 
 % If initialconditions is empty instantiates a dseries object with the informations available in DynareModel.endo_histval.
 if isempty(initialconditions)
-    yinitdata = zeros(DynareModel.orig_endo_nbr, DynareModel.max_lag_orig);
+    yinitdata = zeros(DynareModel.orig_endo_nbr, DynareModel.orig_maximum_lag);
     yinitdata(:,1) = DynareModel.endo_histval(1:DynareModel.orig_endo_nbr);
-    xinitdata = zeros(DynareModel.exo_nbr, DynareModel.max_lag_orig);
-    if DynareModel.max_endo_lag_orig>1
+    xinitdata = zeros(DynareModel.exo_nbr, DynareModel.orig_maximum_lag);
+    if DynareModel.orig_maximum_endo_lag>1
         for i = 1:length(DynareModel.aux_vars)
             if DynareModel.aux_vars(i).type==1
                 yinitdata(DynareModel.aux_vars(i).orig_index, abs(DynareModel.aux_vars(i).orig_lead_lag)+1) = ...
@@ -49,7 +49,7 @@ if isempty(initialconditions)
         end
         yinitdata = flip(yinitdata, 2);
     end
-    if DynareModel.max_exo_lag_orig>0
+    if DynareModel.orig_maximum_exo_lag>0
         for i = 1:length(DynareModel.aux_vars)
             if DynareModel.aux_vars(i).type==3
                 xinitdata(DynareModel.aux_vars(i).orig_index, abs(DynareModel.aux_vars(i).orig_lead_lag)+1) = ...

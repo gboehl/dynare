@@ -37,7 +37,7 @@ if ischar(initialperiod)
 end
 
 % Initialize endo_histval.
-M_.endo_histval = zeros(M_.endo_nbr, M_.max_endo_lag_orig);
+M_.endo_histval = zeros(M_.endo_nbr, M_.orig_maximum_endo_lag);
 
 % Fill endo_histval.
 k = 1;
