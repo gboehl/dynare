@@ -94,7 +94,7 @@ for i=1:nyctrl
 end
 
 % Exogenous variables.
-X = exogenousvariables.data; %{exo_names{:}}(constraints.dates(1)-max(1,DynareModel.max_exo_lag_orig):constraints.dates(end)).data;
+X = exogenousvariables.data; %{exo_names{:}}(constraints.dates(1)-max(1,DynareModel.orig_maximum_exo_lag):constraints.dates(end)).data;
 
 % Inversion of the model, solvers for the free endogenous and exogenous variables (call a Newton-like algorithm in each period).
 
