@@ -188,8 +188,10 @@ end
 % Remove time t matrix for autoregressive part
 oo_.var.(var_model_name).AutoregressiveMatrices = oo_.var.(var_model_name).AutoregressiveMatrices(2:end);
 
-% Remove error correction matrices if never assigned
-if ~ecm_assigned
+if ecm_assigned
+    oo_.var.(var_model_name).ecm = oo_.var.(var_model_name).ecm(2:end);
+else
+    % Remove error correction matrices if never assigned
     oo_.var.(var_model_name) = rmfield(oo_.var.(var_model_name), 'ecm');
     oo_.var.(var_model_name) = rmfield(oo_.var.(var_model_name), 'ecm_idx');
 end
