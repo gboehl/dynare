@@ -48,7 +48,7 @@ for i = DynareModel.orig_endo_nbr+1:DynareModel.endo_nbr
         dbase{DynareModel.endo_names{DynareModel.aux_vars(k).endo_index}} = dbase{DynareModel.exo_names{DynareModel.aux_vars(k).orig_index}}.lag(abs(DynareModel.aux_vars(k).orig_lead_lag));
         listoflaggedexogenousvariables = vertcat(listoflaggedexogenousvariables, DynareModel.exo_names{DynareModel.aux_vars(k).orig_index});
     elseif DynareModel.aux_vars(k).type==8
-        dbase{DynareModel.endo_names{DynareModel.aux_vars(k).endo_index}} = dbase{DynareModel.exo_names{DynareModel.aux_vars(k).orig_index}}.diff.lag(abs(DynareModel.aux_vars(k).orig_lead_lag));
+        dbase{DynareModel.endo_names{DynareModel.aux_vars(k).endo_index}} = dbase{DynareModel.endo_names{DynareModel.aux_vars(k).orig_index}}.diff.lag(abs(DynareModel.aux_vars(k).orig_lead_lag));
     else
         warning('Please contact Dynare Team!')
     end
