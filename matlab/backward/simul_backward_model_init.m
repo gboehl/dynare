@@ -62,7 +62,7 @@ if isempty(initialconditions)
                                 vertcat(DynareModel.endo_names(1:DynareModel.orig_endo_nbr), DynareModel.exo_names));
 end
 
-[initialconditions, info] = checkdatabase(initialconditions, DynareModel);
+[initialconditions, info] = checkdatabase(initialconditions, DynareModel, false, true);
 
 % Test if the first argument contains all the lagged endogenous variables
 endonames = DynareModel.endo_names;
