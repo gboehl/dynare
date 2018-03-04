@@ -150,36 +150,6 @@ if missinginitialcondition
     error('Please fix the dseries object used for setting the initial conditions!')
 end
 
-% Add auxiliary variables to the database.
-k = 0;
-for i = DynareModel.orig_endo_nbr+1:DynareModel.endo_nbr
-    k = k+1;
-    if DynareModel.aux_vars(k).type==1
-        if ismember(DynareModel.endo_names{DynareModel.aux_vars(k).orig_index}, initialconditions.name)
-            initialconditions{DynareModel.endo_names{DynareModel.aux_vars(k).endo_index}} = ...
-                initialconditions{DynareModel.endo_names{DynareModel.aux_vars(k).orig_index}}.lag(abs(DynareModel.aux_vars(k).orig_lead_lag));
-        else
-            error('This is a bug. Please contact Dynare Team!');
-        end
-    elseif DynareModel.aux_vars(k).type==3
-        if ismember(DynareModel.exo_names{DynareModel.aux_vars(k).orig_index}, initialconditions.name)
-            initialconditions{DynareModel.endo_names{DynareModel.aux_vars(k).endo_index}} = ...
-                initialconditions{DynareModel.exo_names{DynareModel.aux_vars(k).orig_index}}.lag(abs(DynareModel.aux_vars(k).orig_lead_lag));
-        else
-            error('This is a bug. Please contact Dynare Team!');
-        end
-    elseif DynareModel.aux_vars(k).type == 8
-        if ismember(DynareModel.endo_names{DynareModel.aux_vars(k).orig_index}, initialconditions.name)
-            initialconditions{DynareModel.endo_names{DynareModel.aux_vars(k).endo_index}} = ...
-                initialconditions{DynareModel.endo_names{DynareModel.aux_vars(k).orig_index}}.diff.lag(abs(DynareModel.aux_vars(k).orig_lead_lag));
-        else
-            error('This is a bug. Please contact Dynare Team!');
-        end
-    else
-        error('Cannot simulate the model with this type of auxiliary variables!')
-    end
-end
-
 if nargin<6 || isempty(varargin{6}) 
     % Set the covariance matrix of the structural innovations.
     variances = diag(DynareModel.Sigma_e);
