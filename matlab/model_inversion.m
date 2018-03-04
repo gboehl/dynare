@@ -59,7 +59,7 @@ crange = constraints.dates;
 instruments = exogenousvariables(crange);
 freeinnovations = instruments.name(find(all(isnan(instruments))));
 if ~isequal(length(freeinnovations), constraints.vobs)
-    error('model_inversion: The number of instruments must be equal to the number of constrained variables!')
+    error('The number of instruments must be equal to the number of constrained variables!')
 end
 
 % Check if some of the exogenous variables are given.
