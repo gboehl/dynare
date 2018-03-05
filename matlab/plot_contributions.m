@@ -105,8 +105,8 @@ lhs = jsonmodel{1}.lhs;
 rhs = jsonmodel{1}.rhs;
 
 % Get variable and parameter names in the equation.
-rhs_ = strsplit(rhs,{'+','-','*','/','^','log(','exp(','(',')'});
-rhs_(cellfun(@(x) all(isstrprop(x, 'digit')), rhs_)) = []; % Remove numbers
+rhs_ = strsplit(rhs,{'+','-','*','/','^','log(','diff(','adl(','exp(','(',')'});
+rhs_(cellfun(@(x) all(isstrprop(x, 'digit')+isstrprop(x, 'punct')), rhs_)) = []; % Remove numbers
 pnames = M_.param_names;
 vnames = setdiff(rhs_, pnames);
 pnames = setdiff(rhs_, vnames);
