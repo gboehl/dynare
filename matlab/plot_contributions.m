@@ -117,13 +117,16 @@ if ~isempty(regexp(rhs, regexprnoleads(1:end-1), 'match'))
 end
 
 % Get values for the parameters
-idp = strmatch(pnames{1}, M_.param_names, 'exact');
-str = sprintf('%s = M_.params(%d);', pnames{1}, idp);
-for i=2:length(pnames)
-    idp = strmatch(pnames{i}, M_.param_names, 'exact');
-    str = sprintf('%s %s = M_.params(%d);', str, pnames{i}, idp);
+if ~isempty(pnames)
+    % In case all the parameters are hard coded
+    idp = strmatch(pnames{1}, M_.param_names, 'exact');
+    str = sprintf('%s = M_.params(%d);', pnames{1}, idp);
+    for i=2:length(pnames)
+        idp = strmatch(pnames{i}, M_.param_names, 'exact');
+        str = sprintf('%s %s = M_.params(%d);', str, pnames{i}, idp);
+    end
+    eval(str)
 end
-eval(str)
 
 % Replace variables with ds.variablename
 for i = 1:length(vnames)
