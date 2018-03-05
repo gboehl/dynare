@@ -83,6 +83,14 @@ end
 if ~isempty(rhslag)
     maxlag = max(maxlag, max(abs(rhslag)));
 end
+vars = union(rhsvars, M_.var.(var_model_name).lhs);
+vars = vars(vars > M_.orig_endo_nbr);
+for i = 1:length(vars)
+    av = M_.aux_vars([M_.aux_vars.endo_index] == vars(i));
+    if isfield(av, 'orig_lead_lag')
+        maxlag = max(maxlag, abs(av.orig_lead_lag));
+    end
+end
 
 Bvars = setdiff(rhsvars, M_.var.(var_model_name).lhs);
 orig_diff_var_vec = M_.var.(var_model_name).orig_diff_var(M_.var.(var_model_name).diff);
