@@ -164,7 +164,9 @@ contribution = zeros(ds1.nobs, ds1.vobs + 1);
 % Evaluate RHS with all the actual paths.
 ds = ds1;
 rhseval = eval(rhs);
-contribution(:, 1) = rhseval.data;
+ds = ds0;
+rhseval_other = eval(rhs);
+contribution(:, 1) = rhseval.data - rhseval_other.data;
 
 % Evaluate RHS with the baseline paths.
 ds = ds0;
@@ -184,12 +186,18 @@ end
 figure('Name', lhs);
 hold on
 cc = contribution(:,2:end);
-ccneg = cc; ccneg(cc>=0) = nan;
-ccpos = cc; ccpos(cc<0) = nan;
-bar(1:ds.nobs, ccneg,'stack');
-bar(1:ds.nobs, ccpos,'stack');
-plot(1:ds.nobs, contribution(:,1), '-k', 'linewidth', 3);
+
+% Limit the matrices to what we care about
+ccneg = cc(:,1:length(vnames)); ccneg(ccneg>=0) = nan;
+ccpos = cc(:,1:length(vnames)); ccpos(ccpos<0) = nan;
+H = bar(1:ds.nobs, ccneg, 'stacked');
+B = bar(1:ds.nobs, ccpos, 'stacked');
+line_ = plot(1:ds.nobs, contribution(:,1), '-r', 'linewidth', 2);
 hold off
+
+lhs = strrep(lhs, '_', '\_');
 title(sprintf('Decomposition of %s', lhs))
+
 vnames = strrep(vnames,'_','\_');
-legend(vnames{:});
+legend([H, line_], [vnames, lhs], 'location', 'northwest');
+
