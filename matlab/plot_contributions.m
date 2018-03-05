@@ -22,7 +22,7 @@ function plot_contributions(equationname, ds1, ds0)
 %      [name='Phillips curve']
 %      pi = beta*pi(1) + slope*y + lam;
 
-% Copyright (C) 2017-2018 Dynare Team
+% Copyright (C) 2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -54,6 +54,11 @@ end
 % Check the type of the first argument
 if ~ischar(equationname)
     error('First argument must be a string.')
+end
+
+% Check that the equation name is actually the name of an equation in the model.
+if ~ismember(equationname, M_.equations_tags(strmatch('name', M_.equations_tags(:,2)),3))
+    error('There is no equation named as %s!', equationname);
 end
 
 % Check second argument
@@ -96,7 +101,6 @@ end
 jsonmodel = loadjson(jsonfile);
 jsonmodel = jsonmodel.model;
 jsonmodel = getEquationsByTags(jsonmodel, 'name', equationname);
-assert(~isempty(jsonmodel), ['No equation found with tag name: ' equationname]);
 lhs = jsonmodel{1}.lhs;
 rhs = jsonmodel{1}.rhs;
 
