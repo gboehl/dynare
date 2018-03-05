@@ -87,12 +87,12 @@ end
 Bvars = setdiff(rhsvars, M_.var.(var_model_name).lhs);
 orig_diff_var_vec = M_.var.(var_model_name).orig_diff_var(M_.var.(var_model_name).diff);
 diff_vars = M_.var.(var_model_name).lhs(M_.var.(var_model_name).lhs > M_.orig_endo_nbr);
-drop_avs_related_to = [];
+drop_diff_avs_related_to = [];
 for i = 1:length(diff_vars)
     av = M_.aux_vars([M_.aux_vars.endo_index] == diff_vars(i));
     assert(any(orig_diff_var_vec == av.orig_index));
     if av.type == 8
-        drop_diff_avs_related_to = [drop_avs_related_to av.orig_index];
+        drop_diff_avs_related_to = [drop_diff_avs_related_to av.orig_index];
     end
 end
 keep = true(length(Bvars), 1);
