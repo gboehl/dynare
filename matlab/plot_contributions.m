@@ -22,7 +22,7 @@ function plot_contributions(equationname, ds1, ds0)
 %      [name='Phillips curve']
 %      pi = beta*pi(1) + slope*y + lam;
 
-% Copyright (C) 2017-2018 Dynare Team
+% Copyright (C) 2017 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -54,6 +54,11 @@ end
 % Check the type of the first argument
 if ~ischar(equationname)
     error('First argument must be a string.')
+end
+
+% Check that the equation name is actually the name of an equation in the model.
+if ~ismember(equationname, M_.equations_tags(strmatch('name', M_.equations_tags(:,2)),3))
+    error('There is no equation named as %s!', equationname);
 end
 
 % Check second argument
@@ -96,13 +101,12 @@ end
 jsonmodel = loadjson(jsonfile);
 jsonmodel = jsonmodel.model;
 jsonmodel = getEquationsByTags(jsonmodel, 'name', equationname);
-assert(~isempty(jsonmodel), ['No equation found with tag name: ' equationname]);
 lhs = jsonmodel{1}.lhs;
 rhs = jsonmodel{1}.rhs;
 
 % Get variable and parameter names in the equation.
-rhs_ = strsplit(rhs,{'+','-','*','/','^','log(','exp(','(',')'});
-rhs_(cellfun(@(x) all(isstrprop(x, 'digit')), rhs_)) = []; % Remove numbers
+rhs_ = strsplit(rhs,{'+','-','*','/','^','log(','diff(','adl(','exp(','(',')'});
+rhs_(cellfun(@(x) all(isstrprop(x, 'digit')+isstrprop(x, 'punct')), rhs_)) = []; % Remove numbers
 pnames = M_.param_names;
 vnames = setdiff(rhs_, pnames);
 pnames = setdiff(rhs_, vnames);
@@ -113,13 +117,16 @@ if ~isempty(regexp(rhs, regexprnoleads(1:end-1), 'match'))
 end
 
 % Get values for the parameters
-idp = strmatch(pnames{1}, M_.param_names, 'exact');
-str = sprintf('%s = M_.params(%d);', pnames{1}, idp);
-for i=2:length(pnames)
-    idp = strmatch(pnames{i}, M_.param_names, 'exact');
-    str = sprintf('%s %s = M_.params(%d);', str, pnames{i}, idp);
+if ~isempty(pnames)
+    % In case all the parameters are hard coded
+    idp = strmatch(pnames{1}, M_.param_names, 'exact');
+    str = sprintf('%s = M_.params(%d);', pnames{1}, idp);
+    for i=2:length(pnames)
+        idp = strmatch(pnames{i}, M_.param_names, 'exact');
+        str = sprintf('%s %s = M_.params(%d);', str, pnames{i}, idp);
+    end
+    eval(str)
 end
-eval(str)
 
 % Replace variables with ds.variablename
 for i = 1:length(vnames)
@@ -157,7 +164,9 @@ contribution = zeros(ds1.nobs, ds1.vobs + 1);
 % Evaluate RHS with all the actual paths.
 ds = ds1;
 rhseval = eval(rhs);
-contribution(:, 1) = rhseval.data;
+ds = ds0;
+rhseval_other = eval(rhs);
+contribution(:, 1) = rhseval.data - rhseval_other.data;
 
 % Evaluate RHS with the baseline paths.
 ds = ds0;
@@ -177,12 +186,18 @@ end
 figure('Name', lhs);
 hold on
 cc = contribution(:,2:end);
-ccneg = cc; ccneg(cc>=0) = nan;
-ccpos = cc; ccpos(cc<0) = nan;
-bar(1:ds.nobs, ccneg,'stack');
-bar(1:ds.nobs, ccpos,'stack');
-plot(1:ds.nobs, contribution(:,1), '-k', 'linewidth', 3);
+
+% Limit the matrices to what we care about
+ccneg = cc(:,1:length(vnames)); ccneg(ccneg>=0) = nan;
+ccpos = cc(:,1:length(vnames)); ccpos(ccpos<0) = nan;
+H = bar(1:ds.nobs, ccneg, 'stacked');
+B = bar(1:ds.nobs, ccpos, 'stacked');
+line_ = plot(1:ds.nobs, contribution(:,1), '-r', 'linewidth', 2);
 hold off
+
+lhs = strrep(lhs, '_', '\_');
 title(sprintf('Decomposition of %s', lhs))
+
 vnames = strrep(vnames,'_','\_');
-legend(vnames{:});
+legend([H, line_], [vnames, lhs], 'location', 'northwest');
+

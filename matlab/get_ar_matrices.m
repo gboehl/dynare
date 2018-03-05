@@ -83,16 +83,24 @@ end
 if ~isempty(rhslag)
     maxlag = max(maxlag, max(abs(rhslag)));
 end
+vars = union(rhsvars, M_.var.(var_model_name).lhs);
+vars = vars(vars > M_.orig_endo_nbr);
+for i = 1:length(vars)
+    av = M_.aux_vars([M_.aux_vars.endo_index] == vars(i));
+    if isfield(av, 'orig_lead_lag')
+        maxlag = max(maxlag, abs(av.orig_lead_lag));
+    end
+end
 
 Bvars = setdiff(rhsvars, M_.var.(var_model_name).lhs);
 orig_diff_var_vec = M_.var.(var_model_name).orig_diff_var(M_.var.(var_model_name).diff);
 diff_vars = M_.var.(var_model_name).lhs(M_.var.(var_model_name).lhs > M_.orig_endo_nbr);
-drop_avs_related_to = [];
+drop_diff_avs_related_to = [];
 for i = 1:length(diff_vars)
     av = M_.aux_vars([M_.aux_vars.endo_index] == diff_vars(i));
     assert(any(orig_diff_var_vec == av.orig_index));
     if av.type == 8
-        drop_diff_avs_related_to = [drop_avs_related_to av.orig_index];
+        drop_diff_avs_related_to = [drop_diff_avs_related_to av.orig_index];
     end
 end
 keep = true(length(Bvars), 1);
@@ -188,8 +196,10 @@ end
 % Remove time t matrix for autoregressive part
 oo_.var.(var_model_name).AutoregressiveMatrices = oo_.var.(var_model_name).AutoregressiveMatrices(2:end);
 
-% Remove error correction matrices if never assigned
-if ~ecm_assigned
+if ecm_assigned
+    oo_.var.(var_model_name).ecm = oo_.var.(var_model_name).ecm(2:end);
+else
+    % Remove error correction matrices if never assigned
     oo_.var.(var_model_name) = rmfield(oo_.var.(var_model_name), 'ecm');
     oo_.var.(var_model_name) = rmfield(oo_.var.(var_model_name), 'ecm_idx');
 end

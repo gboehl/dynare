@@ -59,7 +59,7 @@ crange = constraints.dates;
 instruments = exogenousvariables(crange);
 freeinnovations = instruments.name(find(all(isnan(instruments))));
 if ~isequal(length(freeinnovations), constraints.vobs)
-    error('model_inversion: The number of instruments must be equal to the number of constrained variables!')
+    error('The number of instruments must be equal to the number of constrained variables!')
 end
 
 % Check if some of the exogenous variables are given.
@@ -69,29 +69,7 @@ if exogenousvariables.vobs>constraints.vobs
 end
 
 % Add auxiliary variables in initialconditions object.
-for i=1:length(DynareModel.aux_vars)
-    if ~ismember(DynareModel.endo_names{DynareModel.aux_vars(i).endo_index}, initialconditions.name)
-        switch DynareModel.aux_vars(i).type
-          case 1 % lag on endogenous variable.
-            initialconditions{DynareModel.endo_names{DynareModel.aux_vars(i).endo_index}} = ...
-                initialconditions{DynareModel.endo_names{DynareModel.aux_vars(i).orig_index}}.lag(abs(DynareModel.aux_vars(i).orig_lead_lag));
-          case 8 % diff on endogenous variable.
-            initialconditions{DynareModel.endo_names{DynareModel.aux_vars(i).endo_index}} = ...
-                initialconditions{DynareModel.endo_names{DynareModel.aux_vars(i).orig_index}}.diff.lag(abs(DynareModel.aux_vars(i).orig_lead_lag));
-          case 3 % lag on exogenous variable.
-            initialconditions{DynareModel.endo_names{DynareModel.aux_vars(i).endo_index}} = ...
-                initialconditions{DynareModel.exo_names{DynareModel.aux_vars(i).orig_index}}.lag(abs(DynareModel.aux_vars(i).orig_lead_lag));
-          case 0 % lead on endogenous variable.
-            initialconditions{DynareModel.endo_names{DynareModel.aux_vars(i).endo_index}} = ...
-                initialconditions{DynareModel.endo_names{DynareModel.aux_vars(i).orig_index}}.lead(abs(DynareModel.aux_vars(i).orig_lead_lag));
-          case 2 % lead on exogenous variable.
-            initialconditions{DynareModel.endo_names{DynareModel.aux_vars(i).endo_index}} = ...
-                initialconditions{DynareModel.exo_names{DynareModel.aux_vars(i).orig_index}}.lead(abs(DynareModel.aux_vars(i).orig_lead_lag));
-          otherwise
-            error("This is a bug! PLease report to Dynare developpers.")
-        end
-    end
-end
+[initialconditions, info] = checkdatabase(initialconditions, DynareModel, true, false);
 
 % Get the list of endogenous and exogenous variables.
 endo_names = DynareModel.endo_names;

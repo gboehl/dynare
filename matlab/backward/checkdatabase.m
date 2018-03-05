@@ -1,4 +1,4 @@
-function [dbase, info] = checkdatabase(dbase, DynareModel, inversionflag)
+function [dbase, info] = checkdatabase(dbase, DynareModel, inversionflag, simulationflag)
 
 % Check that dbase contains all the endogenous variables of the model, and
 % reorder the endogenous variables as declared in the mod file. If Dynare
@@ -31,29 +31,34 @@ if nargin<3
     inversionflag = false;
 end
 
+set_auxiliary_series = [DynareModel.fname '_dynamic_set_auxiliary_series'];
+
+if exist([set_auxiliary_series '.m'])
+    dbase = feval(set_auxiliary_series, dbase, DynareModel.params);
+end
+
 listoflaggedexogenousvariables = {};
+if ~isempty(DynareModel.aux_vars)
+    listoflaggedexogenousvariables = DynareModel.exo_names([DynareModel.aux_vars(find([DynareModel.aux_vars.type]==3)).orig_index]);
+end
 
-info = struct;
-
-k = 0;
-for i = DynareModel.orig_endo_nbr+1:DynareModel.endo_nbr
-    k = k+1;
-    if DynareModel.aux_vars(k).type==1
-        if ismember(DynareModel.endo_names{DynareModel.aux_vars(k).orig_index}, dbase.name)
-            dbase{DynareModel.endo_names{DynareModel.aux_vars(k).endo_index}} = dbase{DynareModel.endo_names{DynareModel.aux_vars(k).orig_index}}.lag(abs(DynareModel.aux_vars(k).orig_lead_lag));
-        else
-            error('%s not available in dbase!', DynareModel.endo_names{DynareModel.aux_vars(k).orig_index});
-        end
-    elseif DynareModel.aux_vars(k).type==3
-        dbase{DynareModel.endo_names{DynareModel.aux_vars(k).endo_index}} = dbase{DynareModel.exo_names{DynareModel.aux_vars(k).orig_index}}.lag(abs(DynareModel.aux_vars(k).orig_lead_lag));
-        listoflaggedexogenousvariables = vertcat(listoflaggedexogenousvariables, DynareModel.exo_names{DynareModel.aux_vars(k).orig_index});
-    elseif DynareModel.aux_vars(k).type==8
-        dbase{DynareModel.endo_names{DynareModel.aux_vars(k).endo_index}} = dbase{DynareModel.endo_names{DynareModel.aux_vars(k).orig_index}}.diff.lag(abs(DynareModel.aux_vars(k).orig_lead_lag));
-    else
-        warning('Please contact Dynare Team!')
+listoflaggedendogenousvariables = {};
+laggedendogenousvariablesidx = find(DynareModel.lead_lag_incidence(1,1:DynareModel.orig_endo_nbr));
+if ~isempty(laggedendogenousvariablesidx)
+    listoflaggedendogenousvariables = DynareModel.endo_names(laggedendogenousvariablesidx);
+end
+if ~isempty(DynareModel.aux_vars)
+    laggedendogenousvariablesidx = find([DynareModel.aux_vars.type]==1);
+    if ~isempty(laggedendogenousvariablesidx)
+        listoflaggedendogenousvariables = union(listoflaggedendogenousvariables, DynareModel.endo_names([DynareModel.aux_vars(laggedendogenousvariablesidx).orig_index]));
+    end
+    laggedendogenousvariablesidx = find([DynareModel.aux_vars.type]==8);
+    if ~isempty(laggedendogenousvariablesidx)
+        listoflaggedendogenousvariables = union(listoflaggedendogenousvariables, DynareModel.endo_names([DynareModel.aux_vars(laggedendogenousvariablesidx).orig_index]));
     end
 end
 
+info = struct;
 info.endonames = DynareModel.endo_names;
 info.exonames = DynareModel.exo_names;
 info.computeresiduals = false;
@@ -61,14 +66,14 @@ info.computeresiduals = false;
 % Check that all the endogenous variables are defined in dbase.
 missingendogenousvariables = setdiff(info.endonames, dbase.name);
 if ~isempty(missingendogenousvariables)
-    disp('Some endognous variables are missing:')
-    missingendogenousvariables
-    error()
+    missinglaggedendogenousvariables = intersect(missingendogenousvariables, listoflaggedendogenousvariables);
+    if ~isempty(missinglaggedendogenousvariables)
+        error('Endogenous variable %s is missing in the database!', missinglaggedendogenousvariables{:})
+    end
 end
 
 if inversionflag
-    % If some exogenous variables are missing, check that they can be
-    % interpreted as residuals. 
+    % If some exogenous variables are missing, check that they can be interpreted as residuals.
     missingexogenousvariables = setdiff(info.exonames, dbase.name);
     if ~isempty(missingexogenousvariables)
         disp(sprintf('%s exogenous variables are missing in the database...', num2str(length(missingexogenousvariables))))
@@ -78,7 +83,7 @@ if inversionflag
             info.computeresiduals = true;
             disp('These variables can be calibrated by calling calibrateresiduals routine.')
         else
-            info.residuals = setdiff(missingexogenousvariables, listofmissinglaggedexognousvariables);
+            info.residuals = setdiff(missingexogenousvariables, listofmissinglaggedexogenousvariables);
             disp('The following exogenous variables:')
             listofmissinglaggedexognousvariables
             disp('are not residuals, and cannot be calibrated by calling calibrateresiduals.')
@@ -86,13 +91,12 @@ if inversionflag
     else
         disp('All the endogenous and exogenous variables are calibrated!')
     end
-else
+elseif simulationflag
     % Check that all the exogenous variables are defined in dbase
     missingexogenousvariables = setdiff(info.exonames, dbase.name);
-    if ~isempty(missingexogenousvariables)
-        disp('Some exognous variables are missing:')
-        missingexogenousvariables
-        error()
+    listofmissingexovarforinit = intersect(missingexogenousvariables, listoflaggedexogenousvariables);
+    if ~isempty(listofmissingexovarforinit)
+        error('Exogenous variable %s is missing!', listofmissingexovarforinit{:})
     end
     info.residuals = [];
 end
