@@ -192,8 +192,10 @@ for i = 1:length(jsonmodel)
     [q, r] = qr(X, 0);
     xpxi = (r'*r)\eye(nvars);
     oo_.ols.(tag).beta = r\(q'*Y.data);
+    oo_.ols.(tag).param_idxs = zeros(length(pnames), 1);
     for j = 1:length(pnames)
-        M_.params(strcmp(M_.param_names, pnames{j})) = oo_.ols.(tag).beta(j);
+        oo_.ols.(tag).param_idxs(j) = find(strcmp(M_.param_names, pnames{j}));
+        M_.params(oo_.ols.(tag).param_idxs(j)) = oo_.ols.(tag).beta(j);
     end
 
     % Yhat
