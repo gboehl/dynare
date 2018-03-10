@@ -17,4 +17,5 @@ importall Dynare
 #  using rbc1
 
 print(rbc1.model_.fname)
+
 print(rbc2.model_.fname)
