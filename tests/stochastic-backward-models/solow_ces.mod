@@ -35,11 +35,17 @@ model;
     PhysicalCapitalStock = (1-delta)*PhysicalCapitalStock(-1) + s*Output;
 end;
 
-d = dseries([1 1.02 1 1.02 1], 2000Q1, {'Efficiency'; 'EfficiencyGrowth'; 'Population'; 'PopulationGrowth'; 'PhysicalCapitalStock'});
+histval;
+    Efficiency(0) = 1;
+    EfficiencyGrowth(0) = 1.02;
+    Population(0) = 1;
+    PopulationGrowth(0) = 1.02;
+    PhysicalCapitalStock(0) = 1;
+end;
 
 shocks;
     var e_x = 0.005;
     var e_n = 0.001;
 end;
 
-simulations = simul_backward_model(d, 5000);
+simulations = simul_backward_model([], 5000);

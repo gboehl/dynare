@@ -35,6 +35,14 @@ end;
 
 d = dseries([.5 1 1 1.04 15], 2000Q1, {'Efficiency'; 'EfficiencyGrowth'; 'Population'; 'PopulationGrowth'; 'PhysicalCapitalStock'});
 
+histval;
+    Efficiency(0) = .5;
+    EfficiencyGrowth(0) = 1;
+    Population(0) = 1;
+    PopulationGrowth(0) = 1.04;
+    PhysicalCapitalStock(0) = 15;
+end;
+
 LongRunEfficiency = d.Efficiency*d.EfficiencyGrowth^(rho_x/(1-rho_x));
 LongRunPopulation = d.Population*d.PopulationGrowth^(rho_n/(1-rho_n));
 LongRunEfficiencyGrowth = EfficiencyGrowth_ss; 
@@ -46,18 +54,18 @@ T = 5*floor(log(precision)/log(max(rho_x, rho_n)));
 
 e = dseries(zeros(T, 2), 2000Q2, {'e_x'; 'e_n'});
 
-simulations = simul_backward_model(d, T, e);
+simulations = simul_backward_model([], T, e);
 
 if abs(simulations.Efficiency.data(end)-LongRunEfficiency.data)>1e-10
-   error('Wrong long run level!')
+   error('Wrong long run level (Efficiency, diff=%s)!', num2str(abs(simulations.Efficiency.data(end)-LongRunEfficiency.data)))
 end
 
 if abs(simulations.Population.data(end)-LongRunPopulation.data)>1e-10
-   error('Wrong long run level!')
+   error('Wrong long run level (Population, diff=%s)!', num2str(abs(simulations.Population.data(end)-LongRunPopulation.data)))
 end
 
 IntensiveCapitalStock = simulations.PhysicalCapitalStock/(simulations.Efficiency*simulations.Population);
 
 if abs(IntensiveCapitalStock.data(end)-LongRunIntensiveCapitalStock)>1e-3
-    error('Wrong long run level!')
+    error('Wrong long run level (Intensive capital stock)!')
 end

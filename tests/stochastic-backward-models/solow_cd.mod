@@ -54,6 +54,4 @@ shocks;
     var e_n = 0.001;
 end;
 
-initialconditions = dseries([1 1.02 1 1.02 1], 2000Q1, {'Efficiency'; 'EfficiencyGrowth'; 'Population'; 'PopulationGrowth'; 'PhysicalCapitalStock'});
-
-simulations = simul_backward_model(initialconditions, 5000);
+simulations = simul_backward_model([], 5000);
