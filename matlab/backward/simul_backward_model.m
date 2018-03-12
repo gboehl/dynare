@@ -38,25 +38,44 @@ function simulation = simul_backward_model(initialconditions, samplesize, innova
 global options_ M_ oo_
 
 if nargin<3
-    Innovations  =[];
+    Innovations = [];
 else
     if isdseries(innovations)
-        if isequal(innovations.dates(1)-1, initialconditions.dates(end))
-            if innovations.nobs<samplesize
-                error('Time span in third argument is too short (should not be less than %s, the value of the second argument)', num2str(samplesize))
-            end
-            % Set array holding innovations values.
-            Innovations = zeros(samplesize, M_.exo_nbr);
-            exonames = M_.exo_names;
-            for i=1:M_.exo_nbr
-                if ismember(exonames{i}, innovations.name)
-                    Innovations(:,i) = innovations{exonames{i}}.data(1:samplesize);
-                else
-                    disp(sprintf('Exogenous variable %s is not available in third argument, default value is zero.', exonames{i}));
+        if isdseries(initialconditions)
+            if isequal(innovations.dates(1)-1, initialconditions.dates(end))
+                if innovations.nobs<samplesize
+                    error('Time span in third argument is too short (should not be less than %s, the value of the second argument)', num2str(samplesize))
                 end
+                % Set array holding innovations values.
+                Innovations = zeros(samplesize, M_.exo_nbr);
+                exonames = M_.exo_names;
+                for i=1:M_.exo_nbr
+                    if ismember(exonames{i}, innovations.name)
+                        Innovations(:,i) = innovations{exonames{i}}.data(1:samplesize);
+                    else
+                        disp(sprintf('Exogenous variable %s is not available in third argument, default value is zero.', exonames{i}));
+                    end
+                end
+            else
+                error('Time spans in first and third arguments should be contiguous!')
             end
         else
-            error('Time spans in first and third arguments should be contiguous!')
+            if isempty(initialconditions)
+                if innovations.nobs<samplesize
+                    error('Time span in third argument is too short (should not be less than %s, the value of the second argument)', num2str(samplesize))
+                end
+                Innovations = zeros(samplesize, M_.exo_nbr);
+                exonames = M_.exo_names;
+                for i=1:M_.exo_nbr
+                    if ismember(exonames{i}, innovations.name)
+                        Innovations(:,i) = innovations{exonames{i}}.data(1:samplesize);
+                    else
+                        disp(sprintf('Exogenous variable %s is not available in third argument, default value is zero.', exonames{i}));
+                    end
+                end
+            else
+                error('First input must be an empty array!')
+            end
         end
     else
         error('Third argument must be a dseries object!')
