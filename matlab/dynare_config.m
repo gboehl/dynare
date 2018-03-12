@@ -124,6 +124,11 @@ if isoctave || matlab_ver_less_than('9.3')
     p{end+1} = '/missing/isfile';
 end
 
+% strsplit is missing in Matlab<R2013a
+if ~isoctave && matlab_ver_less_than('8.1')
+    p{end+1} = '/missing/strsplit';
+end
+
 P = cellfun(@(c)[dynareroot(1:end-1) c], p, 'uni',false);
 
 % Get mex files folder(s)
