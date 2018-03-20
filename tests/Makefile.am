@@ -52,6 +52,7 @@ MODFILES = \
 	ramst_a.mod \
 	ramst_static_tag.mod \
 	example1.mod \
+	example1_on_the_fly.mod \
 	example2.mod \
 	example1_use_dll.mod \
 	example1_with_tags.mod \

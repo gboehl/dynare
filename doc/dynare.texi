@@ -221,6 +221,10 @@ The Model file
 * Verbatim inclusion::
 * Misc commands::
 
+Variable declarations
+
+* On-the-fly Model Variable Declaration::
+
 Expressions
 
 * Parameters and variables::
@@ -979,6 +983,7 @@ Allows Dynare to issue a warning and continue processing when
 @enumerate
 @item there are more endogenous variables than equations
 @item an undeclared symbol is assigned in @code{initval} or @code{endval}
+@item an undeclared symbol is found in the @code{model} block; in this case, it is automatically declared exogenous
 @item exogenous variables were declared but not used in the @code{model} block
 @end enumerate
 
@@ -1613,6 +1618,50 @@ model_local_variable GDP_US $GDPUS$;
 @end example
 
 @end deffn
+
+@menu
+* On-the-fly Model Variable Declaration::
+@end menu
+
+@node On-the-fly Model Variable Declaration
+@subsection On-the-fly Model Variable Declaration
+
+Endogenous variables, exogenous variables, and parameters can also be declared
+inside the model block. To do this, simply follow the symbol name with a
+vertical line (@code{|}) and either an @code{e}, an @code{x}, or a
+@code{p}. For example, to declare a parameter named @code{alphaa} in the model
+block, you could write @code{alphaa|p} directly in an equation where it
+appears. Similarly, to declare an endogenous variable @code{c} in the model
+block you could write @code{c|e}. These on-the-fly variable declarations do not
+have to appear in the first place where this variable is encountered. Note that
+on-the-fly variable declarations must be made on contemporaneous variables.
+
+As an example, the following two snippets are equivalent:
+
+@emph{Using on-the-fly variable and parameter declaration}
+@example
+model;
+k(+1) = i|e + (1-delta|p)*k;
+y|e = k|e^alpha|p;
+@dots{}
+end;
+delta = 0.025;
+alpha = 0.36;
+@end example
+
+@emph{Using standard variable declaration}
+@example
+var k, i, y;
+parameters delta, alpha;
+delta = 0.025;
+alpha = 0.36;
+@dots{}
+model;
+k(1) = i|e + (1-delta|p)*k;
+y|e = k|e^alpha|p;
+@dots{}
+end;
+@end example
 
 @node Expressions
 @section Expressions
