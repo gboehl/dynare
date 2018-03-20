@@ -2334,7 +2334,7 @@ For the required @LaTeX{} packages, @pxref{write_latex_original_model}.
 @table @code
 
 @item write_equation_tags
-@xref{write_equation_tags}
+@xref{write_equation_tags}.
 
 @end table
 
@@ -2375,7 +2375,7 @@ For the required @LaTeX{} packages, @pxref{write_latex_original_model}.
 @table @code
 
 @item write_equation_tags
-@xref{write_equation_tags}
+@xref{write_equation_tags}.
 
 @end table
 
@@ -4002,7 +4002,7 @@ options).
 
 @item 7
 Allows the user to solve the perfect foresight model with the solvers available
-through option @code{solve_algo} (@xref{solve_algo} for a list of possible
+through option @code{solve_algo} (@pxref{solve_algo} for a list of possible
 values, note that values 5, 6, 7 and 8, which require @code{bytecode} and/or
 @code{block} options, are not allowed). For instance, the following commands:
 @example
@@ -7445,7 +7445,7 @@ graphs. See @code{colormap} in Matlab/Octave manual for valid arguments.
 @item nograph
 @xref{nograph}. Suppresses the display and creation only within the
 @code{shock_decomposition}-command, but does not affect other commands.
-@xref{plot_shock_decomposition} for plotting graphs.
+@xref{plot_shock_decomposition}, for plotting graphs.
 
 @item init_state = @var{BOOLEAN}
 @anchor{init_state} If equal to @math{0}, the shock decomposition is computed conditional on the smoothed state
@@ -7578,7 +7578,7 @@ model).
 @item nograph
 @xref{nograph}. Only shock decompositions are computed and stored in @code{oo_.realtime_shock_decomposition},
 @code{oo_.conditional_shock_decomposition} and @code{oo_.realtime_forecast_shock_decomposition} but no plot is made 
-(@xref{plot_shock_decomposition}).
+(@pxref{plot_shock_decomposition}).
 
 @item presample = @var{INTEGER}
 @anchor{presample_shock_decomposition} Data point above which recursive
