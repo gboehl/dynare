@@ -2,9 +2,9 @@
 
 var y x z;
 
-varexo ex ey ez g;
+varexo ex ey ez ;
 
-parameters a_y_1 a_y_2 b_y_1 b_y_2 b_x_1 b_x_2 ; // VAR parameters
+parameters a_y_1 a_y_2 b_y_1 b_y_2 b_x_1 b_x_2 g; // VAR parameters
 
 parameters beta e_c_m c_z_1 c_z_2;               // PAC equation parameters
 
@@ -20,7 +20,11 @@ e_c_m =  .1;
 c_z_1 =  .7;
 c_z_2 = -.3;
 
+g = .02;
+
 var_model(model_name=toto, eqtags=['eq:x', 'eq:y']);
+
+
 
 model;
 

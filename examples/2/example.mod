@@ -1,6 +1,6 @@
 // --+ options: json=compute +--
 
-var y x z;
+var y x z ;
 
 varexo ex ey ez;
 
@@ -24,6 +24,8 @@ gamma =  .7;
 
 var_model(model_name=toto, eqtags=['eq:x', 'eq:y']);
 
+pac_model(var_model_name=toto, discount=beta, model_name=pacman);
+
 model;
 
 [name='eq:y']
@@ -33,8 +35,25 @@ y = a_y_1*y(-1) + a_y_2*diff(x(-1)) + b_y_1*y(-2) + b_y_2*diff(x(-2)) + ey ;
 diff(x) = b_x_1*y(-2) + b_x_2*diff(x(-1)) + ex ;
 
 [name='eq:pac']
-diff(z) = gamma*(e_c_m*(x(-1)-z(-1)) + c_z_1*diff(z(-1))  + c_z_2*diff(z(-2)) + pac_expectation(model_name=pacman, var_model_name=toto, discount=beta)) + (1-gamma)*ez;
+diff(z) = gamma*(e_c_m*(x(-1)-z(-1)) + c_z_1*diff(z(-1))  + c_z_2*diff(z(-2)) + pac_expectation(pacman)) + (1-gamma)*ez;
 
 end;
 
+shocks;
+    var ey = 1.0;
+    var ex = 1.0;
+    var ez = 1.0;
+end;
+
+
+// Build the companion matrix of the VAR model (toto).
 get_companion_matrix('toto');
+
+// Update the parameters of the PAC expectation model (h0 and h1 vectors).
+pac.update.equation('pacman');
+
+// Set initial conditions to zero. Please use more sensible values if any...
+initialconditions = dseries(zeros(10, M_.endo_nbr+M_.exo_nbr), 2000Q1, vertcat(M_.endo_names,M_.exo_names));
+
+// Simulate the model for 500 periods
+TrueData = simul_backward_model(initialconditions, 500);
