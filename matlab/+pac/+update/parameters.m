@@ -36,12 +36,12 @@ if ~isrow(pacname)==1 || ~ischar(pacname)
 end
 
 % Check the name of the PAC model.
-if ~isfield(DynareModel.pac_expectation, pacname)
+if ~isfield(DynareModel.pac, pacname)
     error('PAC model %s is not defined in the model block!', pacname)
 end
 
 % Get PAC model description
-pacmodel = DynareModel.pac_expectation.(pacname);
+pacmodel = DynareModel.pac.(pacname);
 
 % Get the name of the associated VAR model and test its existence.
 if ~isfield(DynareModel.var, pacmodel.var_model_name)

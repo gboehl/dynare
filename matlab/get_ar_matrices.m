@@ -75,7 +75,12 @@ assert(length(M_.var.(var_model_name).lhs) == rows(g1));
 % ECM
 rhsvars = [];
 rhslag = [];
-maxlag = max(M_.var.(var_model_name).rhs.lag);
+
+maxlag = 0;
+for i=1:length(M_.var.(var_model_name).rhs.vars_at_eq)
+    maxlag = max([maxlag; -min(M_.var.(var_model_name).rhs.vars_at_eq{i}.lag)]);
+end
+
 for i = 1:length(M_.var.(var_model_name).rhs.vars_at_eq)
     rhsvars = union(rhsvars, M_.var.(var_model_name).rhs.vars_at_eq{i}.var);
     rhslag = union(rhslag, M_.var.(var_model_name).rhs.vars_at_eq{i}.lag);
