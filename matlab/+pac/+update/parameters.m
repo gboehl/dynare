@@ -58,7 +58,7 @@ end
 varcalib = DynareOutput.var.(pacmodel.var_model_name);
 
 if ~isfield(varcalib, 'CompanionMatrix') || any(isnan(varcalib.CompanionMatrix(:)))
-    error('VAR model %s has to be estimated first.', pacmode.var_model_name)
+    error('VAR model %s has to be estimated first.', pacmodel.var_model_name)
 end
 
 % Build the vector of PAC parameters (ECM parameter + autoregressive parameters).
