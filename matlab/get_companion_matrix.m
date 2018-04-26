@@ -3,10 +3,10 @@ function get_companion_matrix(var_model_name)
 % Gets the companion matrix associated with the var specified by
 % var_model_name. Output stored in cellarray oo_.var.(var_model_name).H.
 %
-% INPUTS 
+% INPUTS
 % - var_model_name   [string]        the name of the VAR model
 %
-% OUTPUTS 
+% OUTPUTS
 % - None
 
 % Copyright (C) 2018 Dynare Team
@@ -36,15 +36,30 @@ p = length(oo_.var.(var_model_name).AutoregressiveMatrices);
 % Get the number of variables
 n = length(oo_.var.(var_model_name).AutoregressiveMatrices{1});
 
-% Initialise the companion matrix
-oo_.var.(var_model_name).CompanionMatrix = zeros(n*p);
-
-% Fill the companion matrix
-oo_.var.(var_model_name).CompanionMatrix(1:n,1:n) = oo_.var.(var_model_name).AutoregressiveMatrices{1};
-
-if p>1
-    for i=2:p
-        oo_.var.(var_model_name).CompanionMatrix(1:n,(i-1)*n+(1:n)) = oo_.var.(var_model_name).AutoregressiveMatrices{i};
-        oo_.var.(var_model_name).CompanionMatrix((i-1)*n+(1:n),(i-2)*n+(1:n)) = eye(n);
+if all(cellfun(@iszero, oo_.var.(var_model_name).ecm))
+    % Build the companion matrix (standard VAR)
+    oo_.var.(var_model_name).CompanionMatrix = zeros(n*p);
+    oo_.var.(var_model_name).CompanionMatrix(1:n,1:n) = oo_.var.(var_model_name).AutoregressiveMatrices{1};
+    if p>1
+        for i=2:p
+            oo_.var.(var_model_name).CompanionMatrix(1:n,(i-1)*n+(1:n)) = oo_.var.(var_model_name).AutoregressiveMatrices{i};
+            oo_.var.(var_model_name).CompanionMatrix((i-1)*n+(1:n),(i-2)*n+(1:n)) = eye(n);
+        end
     end
+else
+    B = zeros(n,n,p+1);
+    idx = oo_.var.(var_model_name).ecm_idx;
+    B(:,:,1) = oo_.var.(var_model_name).AutoregressiveMatrices{1};
+    B(idx, idx, 1) = B(idx,idx, 1) + eye(length(idx));
+    for i=2:p
+        B(idx,idx,i) = oo_.var.(var_model_name).AutoregressiveMatrices{i}(idx,idx)-oo_.var.(var_model_name).AutoregressiveMatrices{i-1}(idx,idx);
+    end
+    B(idx,idx,p+1) = -oo_.var.(var_model_name).AutoregressiveMatrices{p}(idx,idx)
+    % Build the companion matrix (VECM, rewrite in levels)
+    oo_.var.(var_model_name).CompanionMatrix = zeros(n*(p+1));
+    for i=1:p
+        oo_.var.(var_model_name).CompanionMatrix(1:n, (i-1)*n+(1:n)) = B(:,:,1);
+        oo_.var.(var_model_name).CompanionMatrix(i*n+(1:n),(i-1)*n+(1:n)) = eye(n);
+    end
+    oo_.var.(var_model_name).CompanionMatrix(1:n, p*n+(1:n)) = B(:,:,p+1);
 end
