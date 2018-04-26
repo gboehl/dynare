@@ -54,7 +54,7 @@ else
     for i=2:p
         B(idx,idx,i) = oo_.var.(var_model_name).AutoregressiveMatrices{i}(idx,idx)-oo_.var.(var_model_name).AutoregressiveMatrices{i-1}(idx,idx);
     end
-    B(idx,idx,p+1) = -oo_.var.(var_model_name).AutoregressiveMatrices{p}(idx,idx)
+    B(idx,idx,p+1) = -oo_.var.(var_model_name).AutoregressiveMatrices{p}(idx,idx);
     % Build the companion matrix (VECM, rewrite in levels)
     oo_.var.(var_model_name).CompanionMatrix = zeros(n*(p+1));
     for i=1:p
