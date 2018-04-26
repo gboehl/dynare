@@ -24,10 +24,18 @@ n = length(H);
 
 tmp = eye(n*m)-kron(G, transpose(H));
 
-h0 = A_1*A_b*((kron(iota(m, m), H))'*(tmp\kron(iota(m, m), iota(n, ids))));
+if isempty(ids)
+    h0 = [];
+else
+    h0 = A_1*A_b*((kron(iota(m, m), H))'*(tmp\kron(iota(m, m), iota(n, ids))));
+end
 
 if nargout>1
-    h1 = A_1*A_b*(kron(iota(m, m)'*inv(eye(m)-G), H')*(tmp\kron(iota(m, m), iota(n, idns))));
+    if isempty(idns)
+        h1 = [];
+    else
+        h1 = A_1*A_b*(kron(iota(m, m)'*inv(eye(m)-G), H')*(tmp\kron(iota(m, m), iota(n, idns))));
+    end
 end
 
 if nargout>2
