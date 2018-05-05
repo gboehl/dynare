@@ -1,80 +1,37 @@
-function [dr,info,M,options,oo] = resol(check_flag,M,options,oo)
+function [dr, info, M, options, oo] = resol(check_flag, M, options, oo)
 
-%@info:
-%! @deftypefn {Function File} {[@var{dr},@var{info},@var{M},@var{options},@var{oo}] =} resol (@var{check_flag},@var{M},@var{options},@var{oo})
-%! @anchor{resol}
-%! @sp 1
-%! Computes the perturbation-based decisions rules of the DSGE model (orders 1 to 3).
-%! @sp 2
-%! @strong{Inputs}
-%! @sp 1
-%! @table @ @var
-%! @item check_flag
-%! Integer scalar, equal to 0 if all the approximation is required, positive if only the eigenvalues are to be computed.
-%! @item M
-%! Matlab's structure describing the model (initialized by @code{dynare}).
-%! @item options
-%! Matlab's structure describing the options (initialized by @code{dynare}).
-%! @item oo
-%! Matlab's structure gathering the results (initialized by @code{dynare}).
-%! @end table
-%! @sp 2
-%! @strong{Outputs}
-%! @sp 1
-%! @table @ @var
-%! @item dr
-%! Matlab's structure describing the reduced form solution of the model.
-%! @item info
-%! Integer scalar, error code.
-%! @sp 1
-%! @table @ @code
-%! @item info==0
-%! No error.
-%! @item info==1
-%! The model doesn't determine the current variables uniquely.
-%! @item info==2
-%! MJDGGES returned an error code.
-%! @item info==3
-%! Blanchard & Kahn conditions are not satisfied: no stable equilibrium.
-%! @item info==4
-%! Blanchard & Kahn conditions are not satisfied: indeterminacy.
-%! @item info==5
-%! Blanchard & Kahn conditions are not satisfied: indeterminacy due to rank failure.
-%! @item info==6
-%! The jacobian evaluated at the deterministic steady state is complex.
-%! @item info==19
-%! The steadystate routine has thrown an exception (inconsistent deep parameters).
-%! @item info==20
-%! Cannot find the steady state, info(2) contains the sum of square residuals (of the static equations).
-%! @item info==21
-%! The steady state is complex, info(2) contains the sum of square of imaginary parts of the steady state.
-%! @item info==22
-%! The steady has NaNs.
-%! @item info==23
-%! M_.params has been updated in the steadystate routine and has complex valued scalars.
-%! @item info==24
-%! M_.params has been updated in the steadystate routine and has some NaNs.
-%! @item info==30
-%! Ergodic variance can't be computed.
-%! @end table
-%! @sp 1
-%! @item M
-%! Matlab's structure describing the model (initialized by @code{dynare}).
-%! @item options
-%! Matlab's structure describing the options (initialized by @code{dynare}).
-%! @item oo
-%! Matlab's structure gathering the results (initialized by @code{dynare}).
-%! @end table
-%! @sp 2
-%! @strong{This function is called by:}
-%! @sp 1
-%! @ref{dynare_estimation_init}
-%! @sp 2
-%! @strong{This function calls:}
-%! @sp 1
-%! None.
-%! @end deftypefn
-%@eod:
+% Computes the perturbation based decision rules of the DSGE model (orders 1 to 3)
+%
+% INPUTS
+% - check_flag    [integer]       scalar, equal to 0 if all the approximation is required, equal to 1 if only the eigenvalues are to be computed.
+% - M             [structure]     Matlab's structure describing the model (M_).
+% - options       [structure]     Matlab's structure describing the current options (options_).
+% - oo            [structure]     Matlab's structure containing the results (oo_).
+%
+% OUTPUTS
+% - dr            [structure]     Reduced form model.
+% - info          [integer]       scalar or vector, error code.
+% - M             [structure]     Matlab's structure describing the model (M_).
+% - options       [structure]     Matlab's structure describing the current options (options_).
+% - oo            [structure]     Matlab's structure containing the results (oo_).
+%
+% REMARKS
+% Possible values for the error codes are:
+%
+%   info(1)=0     ->    No error.
+%   info(1)=1     ->    The model doesn't determine the current variables uniquely.
+%   info(1)=2     ->    MJDGGES returned an error code.
+%   info(1)=3     ->    Blanchard & Kahn conditions are not satisfied: no stable equilibrium.
+%   info(1)=4     ->    Blanchard & Kahn conditions are not satisfied: indeterminacy.
+%   info(1)=5     ->    Blanchard & Kahn conditions are not satisfied: indeterminacy due to rank failure.
+%   info(1)=6     ->    The jacobian evaluated at the deterministic steady state is complex.
+%   info(1)=19    ->    The steadystate routine has thrown an exception (inconsistent deep parameters).
+%   info(1)=20    ->    Cannot find the steady state, info(2) contains the sum of square residuals (of the static equations).
+%   info(1)=21    ->    The steady state is complex, info(2) contains the sum of square of imaginary parts of the steady state.
+%   info(1)=22    ->    The steady has NaNs.
+%   info(1)=23    ->    M_.params has been updated in the steadystate routine and has complex valued scalars.
+%   info(1)=24    ->    M_.params has been updated in the steadystate routine and has some NaNs.
+%   info(1)=30    ->    Ergodic variance can't be computed.
 
 % Copyright (C) 2001-2018 Dynare Team
 %

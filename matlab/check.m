@@ -1,46 +1,18 @@
 function [eigenvalues_,result,info] = check(M, options, oo)
+
 % Checks determinacy conditions by computing the generalized eigenvalues.
+%
+% INPUTS
+% - M             [structure]     Matlab's structure describing the model (M_).
+% - options       [structure]     Matlab's structure describing the current options (options_).
+% - oo            [structure]     Matlab's structure containing the results (oo_).
+%
+% OUTPUTS
+% - eigenvalues_  [double]        vector, eigenvalues.
+% - result        [integer]       scalar, equal to 1 if Blanchard and Kahn conditions are satisfied, zero otherwise.
+% - info          [integer]       scalar or vector, error code as returned by resol routine.
 
-%@info:
-%! @deftypefn {Function File} {[result,info] =} check (@var{M},@var{options},@var{oo})
-%! @anchor{check}
-%! @sp 1
-%! Checks determinacy conditions by computing the generalized eigenvalues.
-%! @sp 2
-%! @strong{Inputs}
-%! @sp 1
-%! @table @ @var
-%! @item M
-%! Matlab's structure describing the model (initialized by dynare).
-%! @item options
-%! Matlab's structure describing the options (initialized by dynare).
-%! @item oo
-%! Matlab's structure gathering the results (initialized by dynare).
-%! @end table
-%! @sp 2
-%! @strong{Outputs}
-%! @sp 1
-%! @table @ @var
-%! @item eigenvalues_
-%! Eigenvalues of the model.
-%! @item result
-%! Integer scalar equal to one (BK conditions are satisfied) or zero (otherwise).
-%! @item info
-%! Integer scalar, error code as returned by @ref{resol}.
-%! @end table
-%! @sp 2
-%! @strong{This function is called by:}
-%! @sp 1
-%! @ref{smm_objective}
-%! @sp 2
-%! @strong{This function calls:}
-%! @sp 1
-%! @ref{resol}
-%! None.
-%! @end deftypefn
-%@eod:
-
-% Copyright (C) 2001-2014 Dynare Team
+% Copyright (C) 2001-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
