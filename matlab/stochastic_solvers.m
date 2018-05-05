@@ -232,10 +232,11 @@ if M_.maximum_endo_lead == 0
         end
         dr.eigval = eig(kalman_transition_matrix(dr,nstatic+(1:nspred),1:nspred,M_.exo_nbr));
         dr.full_rank = 1;
-        if any(abs(dr.eigval) > options_.qz_criterium)
+        dr.edim = nnz(abs(dr.eigval) > options_.qz_criterium);
+        dr.sdim = nd-dr.edim;
+        if dr.edim
             temp = sort(abs(dr.eigval));
-            nba = nnz(abs(dr.eigval) > options_.qz_criterium);
-            temp = temp(nd-nba+1:nd)-1-options_.qz_criterium;
+            temp = temp(dr.sdim+1:nd)-1-options_.qz_criterium;
             info(1) = 3;
             info(2) = temp'*temp;
         end

@@ -3729,6 +3729,9 @@ the square submatrix of the right Schur vectors corresponding to the
 forward looking variables (jumpers) and to the explosive eigenvalues
 must have full rank.
 
+Note that the outcome may be different from what would be suggested by
+@code{sum(abs(oo_.dr.eigval))} when eigenvalues are very close to @ref{qz_criterium}.
+
 @optionshead
 
 @table @code
@@ -4348,6 +4351,7 @@ exogenous variables are made available in @code{oo_.exo_simul}
 (@pxref{oo_.exo_simul}). Default: @code{0}.
 
 @item qz_criterium = @var{DOUBLE}
+@anchor{qz_criterium}
 Value used to split stable from unstable eigenvalues in reordering the
 Generalized Schur decomposition used for solving 1^st order
 problems. Default: @code{1.000001} (except when estimating with

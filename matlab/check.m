@@ -78,7 +78,6 @@ end
 
 eigenvalues_ = dr.eigval;
 [m_lambda,i]=sort(abs(eigenvalues_));
-n_explod = nnz(abs(eigenvalues_) > options.qz_criterium);
 
 % Count number of forward looking variables
 if ~options.block
@@ -91,7 +90,7 @@ else
 end
 
 result = 0;
-if (nyf == n_explod) && (dr.full_rank)
+if (nyf == dr.edim) && (dr.full_rank)
     result = 1;
 end
 
@@ -101,7 +100,7 @@ if options.noprint == 0
     disp(sprintf('%16s %16s %16s\n','Modulus','Real','Imaginary'))
     z=[m_lambda real(eigenvalues_(i)) imag(eigenvalues_(i))]';
     disp(sprintf('%16.4g %16.4g %16.4g\n',z))
-    disp(sprintf('\nThere are %d eigenvalue(s) larger than 1 in modulus ', n_explod));
+    disp(sprintf('\nThere are %d eigenvalue(s) larger than 1 in modulus ', dr.edim));
     disp(sprintf('for %d forward-looking variable(s)',nyf));
     skipline()
     if result

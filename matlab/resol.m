@@ -140,6 +140,8 @@ end
 
 if options.block
     [dr,info,M,options,oo] = dr_block(dr,check_flag,M,options,oo);
+    dr.edim = nnz(abs(dr.eigval) > options.qz_criterium);
+    dr.sdim = dr.nd-dr.edim;
 else
     [dr,info] = stochastic_solvers(dr,check_flag,M,options,oo);
 end

@@ -202,6 +202,9 @@ else
         return
     end
 
+    dr.sdim = sdim;                      % Number of stable eigenvalues.
+    dr.edim = length(dr.eigval)-sdim;    % Number of exposive eigenvalues.
+
     nba = nd-sdim;
 
     if task==1
