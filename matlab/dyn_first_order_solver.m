@@ -230,13 +230,12 @@ else
 
     nba = nd-sdim;
 
-    if task == 1
+    if task==1
         if rcond(w(npred+nboth+1:end,npred+nboth+1:end)) < 1e-9
             dr.full_rank = 0;
         else
             dr.full_rank = 1;
         end
-        return
     end
 
     if nba ~= nsfwrd
@@ -251,8 +250,11 @@ else
         info(2) = temp'*temp;
         return
     end
+
+    if task==1, return, end
+
     %First order approximation
-    indx_stable_root = 1: (nd - nsfwrd);     %=> index of stable roots
+    indx_stable_root = 1: (nd - nsfwrd);         %=> index of stable roots
     indx_explosive_root = npred + nboth + 1:nd;  %=> index of explosive roots
                                                  % derivatives with respect to dynamic state variables
                                                  % forward variables
