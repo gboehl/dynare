@@ -1,53 +1,27 @@
-function [dr,info] = dyn_first_order_solver(jacobia,DynareModel,dr,DynareOptions,task)
+function [dr, info] = dyn_first_order_solver(jacobia, DynareModel, dr, DynareOptions, task)
 
-%@info:
-%! @deftypefn {Function File} {[@var{dr},@var{info}] =} dyn_first_order_solver (@var{jacobia},@var{DynareModel},@var{dr},@var{DynareOptions},@var{task})
-%! @anchor{dyn_first_order_solver}
-%! @sp 1
-%! Computes the first order reduced form of the DSGE model
-%! @sp 2
-%! @strong{Inputs}
-%! @sp 1
-%! @table @ @var
-%! @item jacobia
-%! Matrix containing the Jacobian of the model
-%! @item DynareModel
-%! Matlab's structure describing the model (initialized by @code{dynare}).
-%! @item dr
-%! Matlab's structure describing the reduced form solution of the model.
-%! @item qz_criterium
-%! Double containing the criterium to separate explosive from stable eigenvalues
-%! @end table
-%! @sp 2
-%! @strong{Outputs}
-%! @sp 1
-%! @table @ @var
-%! @item dr
-%! Matlab's structure describing the reduced form solution of the model.
-%! @item info
-%! Integer scalar, error code.
-%! @sp 1
-%! @table @ @code
-%! @item info==0
-%! No error.
-%! @item info==1
-%! The model doesn't determine the current variables uniquely.
-%! @item info==2
-%! MJDGGES returned an error code.
-%! @item info==3
-%! Blanchard & Kahn conditions are not satisfied: no stable equilibrium.
-%! @item info==4
-%! Blanchard & Kahn conditions are not satisfied: indeterminacy.
-%! @item info==5
-%! Blanchard & Kahn conditions are not satisfied: indeterminacy due to rank failure.
-%! @item info==7
-%! One of the generalized eigenvalues is close to 0/0
-%! @end table
-%! @end table
-%! @end deftypefn
-%@eod:
+% Computes the first order reduced form of a DSGE model.
+%
+% INPUTS
+% - jacobia       [double]    matrix, the jacobian of the dynamic model.
+% - DynareModel   [struct]    Matlab's structre describing the model, M_ global.
+% - dr            [struct]    Matlab's structure describing the reduced form model.
+% - DynareOptions [struct]    Matlab's structure containing the current state of the options, oo_ global.
+% - task          [integer]   scalar, if task = 0 then decision rules are computed and if task = 1 then only eigenvales are computed.
+%
+% OUTPUTS
+% - dr            [struct]    Matlab's structure describing the reduced form model.
+% - info          [integer]   scalar, error code. Possible values are:
+%
+%                                     info=0 -> no error,
+%                                     info=1 -> the model doesn't determine the current variables uniquely,
+%                                     info=2 -> mjdgges dll returned an error,
+%                                     info=3 -> Blanchard and Kahn conditions are not satisfied: no stable equilibrium,
+%                                     info=4 -> Blanchard and Kahn conditions are not satisfied: indeterminacy,
+%                                     info=5 -> Blanchard and Kahn conditions are not satisfied: indeterminacy due to rank failure,
+%                                     info=7 -> One of the eigenvalues is close to 0/0 (infinity of complex solutions)
 
-% Copyright (C) 2001-2017 Dynare Team
+% Copyright (C) 2001-2018 Dynare Team
 %
 % This file is part of Dynare.
 %

@@ -1,33 +1,28 @@
-function [dr,info] = stochastic_solvers(dr,task,M_,options_,oo_)
-% function [dr,info,M_,options_,oo_] = stochastic_solvers(dr,task,M_,options_,oo_)
-% computes the reduced form solution of a rational expectations model (first, second or third
+function [dr, info] = stochastic_solvers(dr, task, M_, options_, oo_)
+
+% Computes the reduced form solution of a rational expectations model (first, second or third
 % order approximation of the stochastic model around the deterministic steady state).
 %
 % INPUTS
-%   dr         [matlab structure] Decision rules for stochastic simulations.
-%   task       [integer]          if task = 0 then dr1 computes decision rules.
-%                                 if task = 1 then dr1 computes eigenvalues.
-%   M_         [matlab structure] Definition of the model.
-%   options_   [matlab structure] Global options.
-%   oo_        [matlab structure] Results
+% - dr         [struct]     Decision rules for stochastic simulations.
+% - task       [integer]    scalar, if task = 0 then decision rules are computed and if task = 1 then only eigenvales are computed.
+% - M_         [struct]     Definition of the model.
+% - options_   [struct]     Options.
+% - oo_        [struct]     Results
 %
 % OUTPUTS
-%   dr         [matlab structure] Decision rules for stochastic simulations.
-%   info       [integer]          info=1: the model doesn't define current variables uniquely
-%                                 info=2: problem in mjdgges.dll info(2) contains error code.
-%                                 info=3: BK order condition not satisfied info(2) contains "distance"
-%                                         absence of stable trajectory.
-%                                 info=4: BK order condition not satisfied info(2) contains "distance"
-%                                         indeterminacy.
-%                                 info=5: BK rank condition not satisfied.
-%                                 info=6: The jacobian matrix evaluated at the steady state is complex.
-%                                 info=9: k_order_pert was unable to compute the solution
-% ALGORITHM
-%   ...
+% - dr         [struct]     Decision rules for stochastic simulations.
+% - info       [integer]    scalar, error code:
 %
-% SPECIAL REQUIREMENTS
-%   none.
-%
+%                                 info=1 -> the model doesn't define current variables uniquely
+%                                 info=2 -> problem in mjdgges.dll info(2) contains error code.
+%                                 info=3 -> BK order condition not satisfied info(2) contains "distance"
+%                                           absence of stable trajectory.
+%                                 info=4 -> BK order condition not satisfied info(2) contains "distance"
+%                                           indeterminacy.
+%                                 info=5 -> BK rank condition not satisfied.
+%                                 info=6 -> The jacobian matrix evaluated at the steady state is complex.
+%                                 info=9 -> k_order_pert was unable to compute the solution
 
 % Copyright (C) 1996-2018 Dynare Team
 %
