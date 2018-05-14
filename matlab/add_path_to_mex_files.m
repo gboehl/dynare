@@ -51,8 +51,16 @@ else
                     addpath(mexpath);
                 end
             end
-        else
+        elseif matlab_ver_less_than('9.4')
             tmp = [dynareroot '../mex/matlab/win64-7.8-9.3/'];
+            if exist(tmp, 'dir')
+                mexpath = tmp;
+                if modifypath
+                    addpath(mexpath);
+                end
+            end
+        else
+            tmp = [dynareroot '../mex/matlab/win64-9.4/'];
             if exist(tmp, 'dir')
                 mexpath = tmp;
                 if modifypath
