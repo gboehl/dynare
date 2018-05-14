@@ -32,17 +32,14 @@ my_criteria(const double *alphar, const double *alphai, const double *beta)
 }
 
 void
-mjdgges(double *a, double *b, double *z, double *n, double *sdim, double *eval_r, double *eval_i, double zhreshold, double *info)
+mjdgges(double *a, double *b, double *z, unsigned int n, double *sdim, double *alphar, double *alphai, double *beta, double *info)
 {
   lapack_int i_n, i_info, i_sdim, lwork;
-  double *alphar, *alphai, *beta, *work, *par, *pai, *pb, *per, *pei;
+  double *work;
   double *junk;
   lapack_int *bwork;
 
-  i_n = (lapack_int)*n;
-  alphar = mxCalloc(i_n, sizeof(double));
-  alphai = mxCalloc(i_n, sizeof(double));
-  beta = mxCalloc(i_n, sizeof(double));
+  i_n = (lapack_int) n;
   lwork = 16*i_n+16;
   work = mxCalloc(lwork, sizeof(double));
   bwork = mxCalloc(i_n, sizeof(lapack_int));
@@ -53,31 +50,6 @@ mjdgges(double *a, double *b, double *z, double *n, double *sdim, double *eval_r
 
   *sdim = i_sdim;
   *info = i_info;
-
-  par = alphar;
-  pai = alphai;
-  pb = beta;
-  pei = eval_i;
-  for (per = eval_r; per <= &eval_r[i_n-1]; ++per)
-    {
-      if ((fabs(*par) > zhreshold) || (fabs(*pb) > zhreshold))
-        *per = *par / *pb;
-      else
-        {
-          /* the ratio is too close to 0/0;
-             returns specific error number only if no other error */
-          if (i_info == 0)
-            *info = -30;
-        }
-      if (*pai == 0.0 && *pb == 0.0)
-        *pei = 0.0;
-      else
-        *pei = *pai / *pb;
-      ++par;
-      ++pai;
-      ++pb;
-      ++pei;
-    }
 }
 
 /* MATLAB interface */
@@ -87,8 +59,7 @@ mexFunction(int nlhs, mxArray *plhs[],
 
 {
   unsigned int m1, n1, m2, n2;
-  double *s, *t, *z, *sdim, *eval_r, *eval_i, *info, *a, *b;
-  double n;
+  double *s, *t, *z, *sdim, *info, *a, *b;
 
   /* Check for proper number of arguments */
 
@@ -119,8 +90,12 @@ mexFunction(int nlhs, mxArray *plhs[],
   t = mxGetPr(plhs[2]);
   z = mxGetPr(plhs[3]);
   sdim = mxGetPr(plhs[4]);
-  eval_r = mxGetPr(plhs[5]);
-  eval_i = mxGetPi(plhs[5]);
+#if defined(MATLAB_MEX_FILE) && MATLAB_VERSION >= 0x0904
+  mxComplexDouble *gev = mxGetComplexDoubles(plhs[5]);
+#else
+  double *gev_r = mxGetPr(plhs[5]);
+  double *gev_i = mxGetPi(plhs[5]);
+#endif
   info = mxGetPr(plhs[6]);
 
   a = mxGetPr(prhs[0]);
@@ -151,10 +126,40 @@ mexFunction(int nlhs, mxArray *plhs[],
   memcpy(s, a, sizeof(double)*n1*n1);
   memcpy(t, b, sizeof(double)*n1*n1);
 
-  n = n1;
+  double *alpha_r = mxCalloc(n1, sizeof(double));
+  double *alpha_i = mxCalloc(n1, sizeof(double));
+  double *beta = mxCalloc(n1, sizeof(double));
 
-  /* Do the actual computations in a subroutine */
-  mjdgges(s, t, z, &n, sdim, eval_r, eval_i, zhreshold, info);
+  mjdgges(s, t, z, n1, sdim, alpha_r, alpha_i, beta, info);
+
+  for (int i = 0; i < n1; i++)
+    {
+      if ((fabs(alpha_r[i]) > zhreshold) || (fabs(beta[i]) > zhreshold))
+#if defined(MATLAB_MEX_FILE) && MATLAB_VERSION >= 0x0904
+        gev[i].real = alpha_r[i] / beta[i];
+#else
+        gev_r[i] = alpha_r[i] / beta[i];
+#endif
+      else
+        {
+          /* the ratio is too close to 0/0;
+             returns specific error number only if no other error */
+          if (*info == 0)
+            *info = -30;
+        }
+      if (alpha_i[i] == 0.0 && beta[i] == 0.0)
+#if defined(MATLAB_MEX_FILE) && MATLAB_VERSION >= 0x0904
+        gev[i].imag = 0.0;
+#else
+        gev_i[i] = 0.0;
+#endif
+      else
+#if defined(MATLAB_MEX_FILE) && MATLAB_VERSION >= 0x0904
+        gev[i].imag = alpha_i[i] / beta[i];
+#else
+        gev_i[i] = alpha_i[i] / beta[i];
+#endif
+    }
 
   plhs[0] = mxCreateDoubleScalar(0);
 }
