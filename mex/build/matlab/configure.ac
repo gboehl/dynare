@@ -58,6 +58,7 @@ CXXFLAGS="$CXXFLAGS -Wall -Wno-parentheses"
 
 AC_PROG_F77([gfortran g77 f77])
 AC_PROG_CC
+AC_PROG_CC_C99 # mjdgges DLL now uses C99 features (variable declared in for loop)
 AC_PROG_CXX
 AC_PROG_RANLIB
 AX_PROG_LN_S
