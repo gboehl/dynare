@@ -134,25 +134,29 @@ for i = 1:length(rhsvars)
             if rhsvars{i}.arRhsIdxs(j) > 0
                 % Fill AR
                 [lag, ndiffs] = findLagForVar(var, -rhsvars{i}.lags(j), 0, arRhsVars);
-                oo_.var.(var_model_name).ar(i, rhsvars{i}.arRhsIdxs(j), lag) = ...
-                    oo_.var.(var_model_name).ar(i, rhsvars{i}.arRhsIdxs(j), lag) + g1(i, g1col);
-                ndiffs = ndiffs - 1;
-                if ndiffs == 1
-                    oo_.var.(var_model_name).ar(i, rhsvars{i}.arRhsIdxs(j), lag + 1) = ...
-                        oo_.var.(var_model_name).ar(i, rhsvars{i}.arRhsIdxs(j), lag + 1) - g1(i, g1col);
-                elseif ndiffs > 1
-                    error('No support yet for more than one nested diff');
+                if ndiffs >= 1
+                    ndiffs = ndiffs - 1;
+                end
+                for k = 0:ndiffs
+                    if mod(k, 2) == 0
+                        oo_.var.(var_model_name).ar(i, rhsvars{i}.arRhsIdxs(j), lag + k) = ...
+                            oo_.var.(var_model_name).ar(i, rhsvars{i}.arRhsIdxs(j), lag + k) + nchoosek(ndiffs,k) * g1(i, g1col);
+                    else
+                        oo_.var.(var_model_name).ar(i, rhsvars{i}.arRhsIdxs(j), lag + k) = ...
+                            oo_.var.(var_model_name).ar(i, rhsvars{i}.arRhsIdxs(j), lag + k) - nchoosek(ndiffs,k) * g1(i, g1col);
+                    end
                 end
             elseif rhsvars{i}.ecRhsIdxs(j) > 0
                 % Fill EC
                 [lag, ndiffs] = findLagForVar(var, -rhsvars{i}.lags(j), 0, ecRhsVars);
-                oo_.var.(var_model_name).ec(i, rhsvars{i}.ecRhsIdxs(j), lag) = ...
-                    oo_.var.(var_model_name).ec(i, rhsvars{i}.ecRhsIdxs(j), lag) + g1(i, g1col);
-                if ndiffs == 1
-                    oo_.var.(var_model_name).ec(i, rhsvars{i}.ecRhsIdxs(j), lag + 1) = ...
-                        oo_.var.(var_model_name).ec(i, rhsvars{i}.ecRhsIdxs(j), lag + 1) - g1(i, g1col);
-                elseif ndiffs > 1
-                    error('No support yet for more than one nested diff');
+                for k = 0:ndiffs
+                    if mod(k, 2) == 0
+                        oo_.var.(var_model_name).ec(i, rhsvars{i}.ecRhsIdxs(j), lag + k) = ...
+                            oo_.var.(var_model_name).ec(i, rhsvars{i}.ecRhsIdxs(j), lag + k) + nchoosek(ndiffs,k) * g1(i, g1col);
+                    else
+                        oo_.var.(var_model_name).ec(i, rhsvars{i}.ecRhsIdxs(j), lag + k) = ...
+                            oo_.var.(var_model_name).ec(i, rhsvars{i}.ecRhsIdxs(j), lag + k) - nchoosek(ndiffs,k) * g1(i, g1col);
+                    end
                 end
             else
                 error('Shouldn''t arrive here');
