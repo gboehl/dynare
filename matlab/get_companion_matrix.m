@@ -1,4 +1,5 @@
 function get_companion_matrix(var_model_name)
+%function get_companion_matrix(var_model_name)
 
 % Gets the companion matrix associated with the var specified by
 % var_model_name. Output stored in cellarray oo_.var.(var_model_name).H.
@@ -28,33 +29,33 @@ function get_companion_matrix(var_model_name)
 
 global oo_
 
-get_ar_matrices(var_model_name);
+get_ar_ec_matrices(var_model_name);
 
 % Get the number of lags
-p = length(oo_.var.(var_model_name).AutoregressiveMatrices);
+p = length(oo_.var.(var_model_name).ar);
 
 % Get the number of variables
-n = length(oo_.var.(var_model_name).AutoregressiveMatrices{1});
+n = length(oo_.var.(var_model_name).ar{1});
 
 if all(cellfun(@iszero, oo_.var.(var_model_name).ecm))
     % Build the companion matrix (standard VAR)
     oo_.var.(var_model_name).CompanionMatrix = zeros(n*p);
-    oo_.var.(var_model_name).CompanionMatrix(1:n,1:n) = oo_.var.(var_model_name).AutoregressiveMatrices{1};
+    oo_.var.(var_model_name).CompanionMatrix(1:n,1:n) = oo_.var.(var_model_name).ar{1};
     if p>1
         for i=2:p
-            oo_.var.(var_model_name).CompanionMatrix(1:n,(i-1)*n+(1:n)) = oo_.var.(var_model_name).AutoregressiveMatrices{i};
+            oo_.var.(var_model_name).CompanionMatrix(1:n,(i-1)*n+(1:n)) = oo_.var.(var_model_name).ar{i};
             oo_.var.(var_model_name).CompanionMatrix((i-1)*n+(1:n),(i-2)*n+(1:n)) = eye(n);
         end
     end
 else
     B = zeros(n,n,p+1);
     idx = oo_.var.(var_model_name).ecm_idx;
-    B(:,:,1) = oo_.var.(var_model_name).AutoregressiveMatrices{1};
+    B(:,:,1) = oo_.var.(var_model_name).ar{1};
     B(idx, idx, 1) = B(idx,idx, 1) + eye(length(idx));
     for i=2:p
-        B(idx,idx,i) = oo_.var.(var_model_name).AutoregressiveMatrices{i}(idx,idx)-oo_.var.(var_model_name).AutoregressiveMatrices{i-1}(idx,idx);
+        B(idx,idx,i) = oo_.var.(var_model_name).ar{i}(idx,idx)-oo_.var.(var_model_name).ar{i-1}(idx,idx);
     end
-    B(idx,idx,p+1) = -oo_.var.(var_model_name).AutoregressiveMatrices{p}(idx,idx);
+    B(idx,idx,p+1) = -oo_.var.(var_model_name).ar{p}(idx,idx);
     % Build the companion matrix (VECM, rewrite in levels)
     oo_.var.(var_model_name).CompanionMatrix = zeros(n*(p+1));
     for i=1:p
