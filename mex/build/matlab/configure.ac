@@ -69,6 +69,10 @@ case ${host_os} in
   *mingw32*)
     # Ensure that -lpthread is statically linked under MinGW
     PTHREAD_LIBS="-Wl,-Bstatic -lpthread -Wl,-Bdynamic"
+    # Kludge for bug in MinGW, that defines __STDC_UTF_16__ but not char16_t
+    # This breaks the matrix.h of older MATLABs (e.g. R2009a)
+    # Also see <uchar.h>
+    CFLAGS="$CFLAGS -include stdint.h -Dchar16_t=uint_least16_t"
     ;;
 esac
 AX_PTHREAD
