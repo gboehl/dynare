@@ -32,7 +32,7 @@ if test "x$MKOCTFILE" != "x"; then
   CXXFLAGS=`$MKOCTFILE -p CXXFLAGS`
   LDFLAGS="`$MKOCTFILE -p LFLAGS` `$MKOCTFILE -p LDFLAGS`"
   OCTAVE_VERSION=`$MKOCTFILE -v 2>&1 | sed 's/mkoctfile, version //'`
-  AX_COMPARE_VERSION([$OCTAVE_VERSION], [lt], [3.6], [AC_MSG_ERROR([Your Octave is too old, please upgrade to version 3.6 at least.])])
+  AX_COMPARE_VERSION([$OCTAVE_VERSION], [lt], [4.2], [AC_MSG_ERROR([Your Octave is too old, please upgrade to version 4.2 at least.])])
 fi
 
 CFLAGS="$CFLAGS -Wall -Wno-parentheses"
