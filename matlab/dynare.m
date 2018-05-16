@@ -81,11 +81,7 @@ more off
 
 % sets default format for save() command
 if isoctave
-    if octave_ver_less_than('3.8')
-        default_save_options('-mat')
-    else
-        save_default_options('-mat')
-    end
+    save_default_options('-mat')
 end
 
 if nargin < 1

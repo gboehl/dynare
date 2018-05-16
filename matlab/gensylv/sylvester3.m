@@ -38,11 +38,7 @@ end
 if isoctave
     [aa,bb,qq,zz]=qz(full(a),full(b));
     for j=1:p
-        if octave_ver_less_than('3.4.0')
-            d(:,:,j)=qq'*d(:,:,j)*u;
-        else
-            d(:,:,j)=qq*d(:,:,j)*u;
-        end
+        d(:,:,j)=qq*d(:,:,j)*u;
     end
 else
     [aa,bb,qq,zz]=qz(full(a),full(b),'real'); % available in Matlab version 6.0
