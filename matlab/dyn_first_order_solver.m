@@ -297,7 +297,7 @@ end
 dr.ghx = ghx;
 dr.ghu = ghu;
 
-if DynareOptions.aim_solver ~= 1 && DynareOptions.use_qzdiv
+if DynareOptions.aim_solver ~= 1
     % Necessary when using Sims' routines for QZ
     dr.ghx = real(ghx);
     dr.ghu = real(ghu);

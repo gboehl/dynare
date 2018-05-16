@@ -593,7 +593,7 @@ for i = 1:Size
                 else
                     [err, ghx_other] = gensylv(1, A_, B_, C_, -D_);
                 end
-                if options_.aim_solver ~= 1 && options_.use_qzdiv
+                if options_.aim_solver ~= 1
                     % Necessary when using Sims' routines for QZ
                     ghx_other = real(ghx_other);
                 end
@@ -650,7 +650,7 @@ for i = 1:Size
             end
 
 
-            if options_.aim_solver ~= 1 && options_.use_qzdiv
+            if options_.aim_solver ~= 1
                 % Necessary when using Sims' routines for QZ
                 ghx = real(ghx);
                 ghu = real(ghu);

@@ -334,15 +334,6 @@ options_.linear = 0;
 options_.replic = 50;
 options_.simul_replic = 1;
 options_.drop = 100;
-% if mjdgges.dll (or .mexw32 or ....) doesn't exist, matlab/qz is added to the path.
-% There exists now qz/mjdgges.m that contains the calls to the old Sims code
-% Hence, if mjdgges.m is visible exist(...)==2,
-% this means that the DLL isn't avaiable and use_qzdiv is set to 1
-if exist('mjdgges','file')==2
-    options_.use_qzdiv = 1;
-else
-    options_.use_qzdiv = 0;
-end
 options_.aim_solver = 0; % i.e. by default do not use G.Anderson's AIM solver, use mjdgges instead
 options_.k_order_solver=0; % by default do not use k_order_perturbation but mjdgges
 options_.partial_information = 0;
