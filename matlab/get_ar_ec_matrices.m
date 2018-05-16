@@ -138,25 +138,15 @@ for i = 1:length(rhsvars)
                     ndiffs = ndiffs - 1;
                 end
                 for k = 0:ndiffs
-                    if mod(k, 2) == 0
-                        oo_.var.(var_model_name).ar(i, rhsvars{i}.arRhsIdxs(j), lag + k) = ...
-                            oo_.var.(var_model_name).ar(i, rhsvars{i}.arRhsIdxs(j), lag + k) + nchoosek(ndiffs,k) * g1(i, g1col);
-                    else
-                        oo_.var.(var_model_name).ar(i, rhsvars{i}.arRhsIdxs(j), lag + k) = ...
-                            oo_.var.(var_model_name).ar(i, rhsvars{i}.arRhsIdxs(j), lag + k) - nchoosek(ndiffs,k) * g1(i, g1col);
-                    end
+                    oo_.var.(var_model_name).ar(i, rhsvars{i}.arRhsIdxs(j), lag + k) = ...
+                        oo_.var.(var_model_name).ar(i, rhsvars{i}.arRhsIdxs(j), lag + k) + (-1)^k * nchoosek(ndiffs,k) * g1(i, g1col);
                 end
             elseif rhsvars{i}.ecRhsIdxs(j) > 0
                 % Fill EC
                 [lag, ndiffs] = findLagForVar(var, -rhsvars{i}.lags(j), 0, ecRhsVars);
                 for k = 0:ndiffs
-                    if mod(k, 2) == 0
-                        oo_.var.(var_model_name).ec(i, rhsvars{i}.ecRhsIdxs(j), lag + k) = ...
-                            oo_.var.(var_model_name).ec(i, rhsvars{i}.ecRhsIdxs(j), lag + k) + nchoosek(ndiffs,k) * g1(i, g1col);
-                    else
-                        oo_.var.(var_model_name).ec(i, rhsvars{i}.ecRhsIdxs(j), lag + k) = ...
-                            oo_.var.(var_model_name).ec(i, rhsvars{i}.ecRhsIdxs(j), lag + k) - nchoosek(ndiffs,k) * g1(i, g1col);
-                    end
+                    oo_.var.(var_model_name).ec(i, rhsvars{i}.ecRhsIdxs(j), lag + k) = ...
+                        oo_.var.(var_model_name).ec(i, rhsvars{i}.ecRhsIdxs(j), lag + k) + (-1)^k * nchoosek(ndiffs,k) * g1(i, g1col);
                 end
             else
                 error('Shouldn''t arrive here');
