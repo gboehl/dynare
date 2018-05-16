@@ -4,14 +4,6 @@ ACLOCAL_AMFLAGS = -I ../../../m4
 if DO_SOMETHING
 SUBDIRS = mjdgges kronecker bytecode libdynare++ gensylv qzcomplex block_kalman_filter sobol local_state_space_iterations
 
-if COMPILE_LINSOLVE
-SUBDIRS += linsolve
-endif
-
-if COMPILE_ORDSCHUR
-SUBDIRS += ordschur
-endif
-
 if HAVE_MATIO
 SUBDIRS += k_order_perturbation dynare_simul_
 endif

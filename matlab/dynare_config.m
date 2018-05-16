@@ -103,11 +103,6 @@ if isoctave && ~compare_versions(version(), supported_octave_version(),'>=')
     skipline()
 end
 
-% ilu is missing in Octave < 4.0
-if isoctave && octave_ver_less_than('4.0')
-    p{end+1} = '/missing/ilu';
-end
-
 % corrcoef with two outputs is missing in Octave (ticket #796)
 if isoctave && ~user_has_octave_forge_package('nan')
     p{end+1} = '/missing/corrcoef';

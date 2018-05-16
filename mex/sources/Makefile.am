@@ -8,13 +8,11 @@ EXTRA_DIST = \
 	bytecode \
 	qzcomplex \
 	k_order_perturbation \
-	ordschur \
 	kalman_steady_state \
 	ms-sbvar \
 	block_kalman_filter \
 	sobol \
-	local_state_space_iterations \
-	linsolve
+	local_state_space_iterations
 
 clean-local:
 	rm -rf `find mex/sources -name *.o`
