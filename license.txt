@@ -9,7 +9,7 @@ Upstream-Contact: Dynare Team, whose members in 2017 are:
                   Ferhat Mihoubi <fmihoubi@univ-evry.fr>
                   Johannes Pfeifer <jpfeifer@gmx.de>
                   Marco Ratto <marco.ratto@ec.europa.eu>
-                  Sébastien Villemot <sebastien.villemot@sciencespo.fr>
+                  Sébastien Villemot <sebastien@dynare.org>
 Source: http://www.dynare.org
 
 Files: *
@@ -41,8 +41,8 @@ License: public-domain-aim
 Files: matlab/optimization/bfgsi1.m matlab/csolve.m matlab/optimization/csminit1.m matlab/optimization/numgrad2.m
  matlab/optimization/numgrad3.m matlab/optimization/numgrad3_.m matlab/optimization/numgrad5.m
  matlab/optimization/numgrad5_.m matlab/optimization/csminwel1.m matlab/bvar_density.m
- matlab/bvar_toolbox.m matlab/partial_information/PI_gensys.m matlab/qzswitch.m
- matlab/qzdiv.m
+ matlab/bvar_toolbox.m matlab/partial_information/PI_gensys.m matlab/partial_information/qzswitch.m
+ matlab/partial_information/qzdiv.m
 Copyright: 1993-2009 Christopher Sims
            2006-2016 Dynare Team
 License: GPL-3+

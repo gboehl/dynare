@@ -1,46 +1,18 @@
 function [eigenvalues_,result,info] = check(M, options, oo)
+
 % Checks determinacy conditions by computing the generalized eigenvalues.
+%
+% INPUTS
+% - M             [structure]     Matlab's structure describing the model (M_).
+% - options       [structure]     Matlab's structure describing the current options (options_).
+% - oo            [structure]     Matlab's structure containing the results (oo_).
+%
+% OUTPUTS
+% - eigenvalues_  [double]        vector, eigenvalues.
+% - result        [integer]       scalar, equal to 1 if Blanchard and Kahn conditions are satisfied, zero otherwise.
+% - info          [integer]       scalar or vector, error code as returned by resol routine.
 
-%@info:
-%! @deftypefn {Function File} {[result,info] =} check (@var{M},@var{options},@var{oo})
-%! @anchor{check}
-%! @sp 1
-%! Checks determinacy conditions by computing the generalized eigenvalues.
-%! @sp 2
-%! @strong{Inputs}
-%! @sp 1
-%! @table @ @var
-%! @item M
-%! Matlab's structure describing the model (initialized by dynare).
-%! @item options
-%! Matlab's structure describing the options (initialized by dynare).
-%! @item oo
-%! Matlab's structure gathering the results (initialized by dynare).
-%! @end table
-%! @sp 2
-%! @strong{Outputs}
-%! @sp 1
-%! @table @ @var
-%! @item eigenvalues_
-%! Eigenvalues of the model.
-%! @item result
-%! Integer scalar equal to one (BK conditions are satisfied) or zero (otherwise).
-%! @item info
-%! Integer scalar, error code as returned by @ref{resol}.
-%! @end table
-%! @sp 2
-%! @strong{This function is called by:}
-%! @sp 1
-%! @ref{smm_objective}
-%! @sp 2
-%! @strong{This function calls:}
-%! @sp 1
-%! @ref{resol}
-%! None.
-%! @end deftypefn
-%@eod:
-
-% Copyright (C) 2001-2014 Dynare Team
+% Copyright (C) 2001-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -78,7 +50,6 @@ end
 
 eigenvalues_ = dr.eigval;
 [m_lambda,i]=sort(abs(eigenvalues_));
-n_explod = nnz(abs(eigenvalues_) > options.qz_criterium);
 
 % Count number of forward looking variables
 if ~options.block
@@ -91,7 +62,7 @@ else
 end
 
 result = 0;
-if (nyf == n_explod) && (dr.full_rank)
+if (nyf == dr.edim) && (dr.full_rank)
     result = 1;
 end
 
@@ -101,7 +72,7 @@ if options.noprint == 0
     disp(sprintf('%16s %16s %16s\n','Modulus','Real','Imaginary'))
     z=[m_lambda real(eigenvalues_(i)) imag(eigenvalues_(i))]';
     disp(sprintf('%16.4g %16.4g %16.4g\n',z))
-    disp(sprintf('\nThere are %d eigenvalue(s) larger than 1 in modulus ', n_explod));
+    disp(sprintf('\nThere are %d eigenvalue(s) larger than 1 in modulus ', dr.edim));
     disp(sprintf('for %d forward-looking variable(s)',nyf));
     skipline()
     if result

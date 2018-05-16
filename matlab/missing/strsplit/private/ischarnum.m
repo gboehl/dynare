@@ -1,7 +1,8 @@
-function [L, U, P] = ilu(A, setup)
-% Partially implement function ilu using the (now deprecated) luinc
+function l = ischarnum(x)
 
-% Copyright (C) 2013-2017 Dynare Team
+% Returns true if and only if char x represents a real number.
+
+% Copyright © 2018 DynareTeam
 %
 % This file is part of Dynare.
 %
@@ -18,20 +19,17 @@ function [L, U, P] = ilu(A, setup)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-if nargout ~= 2
-    error('Only two output arguments supported')
-end
-if nargin ~= 2
-    error('Only two input arguments supported')
-end
+l = false;
 
-if isfield(setup, 'milu')
-    if setup.milu == 'off'
-        setup.milu = 0;
-    else
-        error(['Unsupported milu: ' setup.milu ])
+s = warning;
+warning off;
+
+number = str2double(x);
+
+warning(s);
+
+if ~isempty(number)
+    if isreal(number)
+        l = true;
     end
-end
-
-[L, U] = luinc(A, setup);
 end

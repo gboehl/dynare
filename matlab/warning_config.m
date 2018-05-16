@@ -34,11 +34,7 @@ warning('on', 'backtrace');
 
 if isoctave
     warning('off', 'Octave:separator-insert');
-    if octave_ver_less_than('4.0')
-        warning('off', 'Octave:matlab-incompatible');
-    else
-        warning('off', 'Octave:language-extension');
-    end
+    warning('off', 'Octave:language-extension');
     warning('off', 'Octave:single-quote-string');
     warning('off', 'Octave:missing-semicolon');
     warning('off', 'Octave:empty-list-elements');

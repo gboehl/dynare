@@ -70,9 +70,20 @@ dynareroot = dynare_config('', preprocessoroutput);
 
 warning_config()
 
-if ~isoctave
+if isoctave
+    if octave_ver_less_than(supported_octave_version)
+        skipline()
+        warning(['This version of Octave is not supported. Consider installing ' ...
+                 'version %s+ of Octave,\notherwise m files will be used instead ' ...
+                 'of precompiled mex files and some features, like solution\n' ...
+                 'of models approximated at third order, will not be available.'], supported_octave_version())
+        skipline()
+    end
+else
     if matlab_ver_less_than('7.5')
+        skipline()
         warning('This version of Dynare has only been tested on MATLAB 7.5 (R2007b) and above. Since your MATLAB version is older than that, Dynare may fail to run, or give unexpected results. Consider upgrading your MATLAB installation, or switch to Octave.');
+        skipline()
     end
 end
 
@@ -81,11 +92,7 @@ more off
 
 % sets default format for save() command
 if isoctave
-    if octave_ver_less_than('3.8')
-        default_save_options('-mat')
-    else
-        save_default_options('-mat')
-    end
+    save_default_options('-mat')
 end
 
 if nargin < 1

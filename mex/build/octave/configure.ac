@@ -32,13 +32,8 @@ if test "x$MKOCTFILE" != "x"; then
   CXXFLAGS=`$MKOCTFILE -p CXXFLAGS`
   LDFLAGS="`$MKOCTFILE -p LFLAGS` `$MKOCTFILE -p LDFLAGS`"
   OCTAVE_VERSION=`$MKOCTFILE -v 2>&1 | sed 's/mkoctfile, version //'`
-  AX_COMPARE_VERSION([$OCTAVE_VERSION], [lt], [3.6], [AC_MSG_ERROR([Your Octave is too old, please upgrade to version 3.6 at least.])])
-  AX_COMPARE_VERSION([$OCTAVE_VERSION], [ge], [3.8], [OCTAVE38=yes])
-  AX_COMPARE_VERSION([$OCTAVE_VERSION], [ge], [4.0], [OCTAVE40=yes])
+  AX_COMPARE_VERSION([$OCTAVE_VERSION], [lt], [4.2], [AC_MSG_ERROR([Your Octave is too old, please upgrade to version 4.2 at least.])])
 fi
-
-AM_CONDITIONAL([COMPILE_LINSOLVE], [test "$OCTAVE38" != "yes"])
-AM_CONDITIONAL([COMPILE_ORDSCHUR], [test "$OCTAVE40" != "yes"])
 
 CFLAGS="$CFLAGS -Wall -Wno-parentheses"
 FFLAGS="$FFLAGS -Wall"
@@ -46,6 +41,7 @@ CXXFLAGS="$CXXFLAGS -Wall -Wno-parentheses"
 
 AC_PROG_F77([gfortran g77 f77])
 AC_PROG_CC
+AC_PROG_CC_C99 # mjdgges DLL now uses C99 features (variable declared in for loop)
 AC_PROG_CXX
 AC_PROG_RANLIB
 AX_PROG_LN_S
@@ -108,18 +104,6 @@ else
    BUILD_MS_SBVAR_MEX_OCTAVE="no (missing GSL or MatIO library)"
 fi
 
-if test -n "$MKOCTFILE" -a "$OCTAVE38" != "yes"; then
-   BUILD_LINSOLVE_OCTAVE="yes"
-else
-   BUILD_LINSOLVE_OCTAVE="no (Octave >= 3.8)"
-fi
-
-if test -n "$MKOCTFILE" -a "$OCTAVE40" != "yes"; then
-   BUILD_ORDSCHUR_OCTAVE="yes"
-else
-   BUILD_ORDSCHUR_OCTAVE="no (Octave >= 4.0)"
-fi
-
 AC_ARG_ENABLE([openmp], AS_HELP_STRING([--enable-openmp], [use OpenMP for parallelization of some MEX files]), [
   if test "x$enable_openmp" = "xyes"; then
     CPPFLAGS="$CPPFLAGS -DUSE_OMP"
@@ -137,8 +121,6 @@ Binaries (with "make"):
  MS-SBVAR MEX files for Octave:                                      $BUILD_MS_SBVAR_MEX_OCTAVE
  Kalman Steady State MEX file for Octave:                            $BUILD_KALMAN_STEADY_STATE_OCTAVE
  K-order and dynare_simul MEX for Octave:                            $BUILD_KORDER_DYNSIMUL_MEX_OCTAVE
- Linsolve for Octave:                                                $BUILD_LINSOLVE_OCTAVE
- Ordschur for Octave:                                                $BUILD_ORDSCHUR_OCTAVE
 
 ])
 
@@ -151,12 +133,10 @@ AC_CONFIG_FILES([Makefile
                  k_order_perturbation/Makefile
                  dynare_simul_/Makefile
                  qzcomplex/Makefile
-                 ordschur/Makefile
                  kalman_steady_state/Makefile
                  ms_sbvar/Makefile
                  block_kalman_filter/Makefile
 		 sobol/Makefile
-		 local_state_space_iterations/Makefile
-                 linsolve/Makefile])
+		 local_state_space_iterations/Makefile])
 
 AC_OUTPUT

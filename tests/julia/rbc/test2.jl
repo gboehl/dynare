@@ -3,14 +3,12 @@ if isempty(findin([abspath("../../../julia")], LOAD_PATH))
     unshift!(LOAD_PATH, abspath("../../../julia"))
 end
 
-# Load Dynare package
-importall Dynare
+# Load Dynare package(s)
+using Dynare
+using SteadyState
 
 # Compile the rbc.mod file -> produce a module with the model definition.
+@dynare "rbc1.mod"
 
-
-@dynare "rbc2.mod"
-
-importall SteadyState
-
-steady!(model_, oo_)
+# Compute the steady state
+steady_state!(model_, oo_)

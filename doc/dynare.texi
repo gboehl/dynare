@@ -222,6 +222,10 @@ The Model file
 * Verbatim inclusion::
 * Misc commands::
 
+Variable declarations
+
+* On-the-fly Model Variable Declaration::
+
 Expressions
 
 * Parameters and variables::
@@ -382,7 +386,7 @@ Adjemian (Université du Maine, Gains and Cepremap), Houtan Bastani
 (Université du Maine, Gains and Cepremap), Junior Maih (Norges Bank),
 Ferhat Mihoubi (Université Paris-Est Créteil, Epee and Cepremap), George
 Perendia, Johannes Pfeifer (University of Cologne), Marco Ratto (European Commission, Joint Research Centre - JRC)
-and Sébastien Villemot (OFCE – Sciences Po).
+and Sébastien Villemot (CEPREMAP).
 Increasingly, the developer base is expanding, as tools developed by
 researchers outside of Cepremap are integrated into Dynare. Financial
 support is provided by Cepremap, Banque de France and DSGE-net (an
@@ -985,6 +989,7 @@ Allows Dynare to issue a warning and continue processing when
 @enumerate
 @item there are more endogenous variables than equations
 @item an undeclared symbol is assigned in @code{initval} or @code{endval}
+@item an undeclared symbol is found in the @code{model} block; in this case, it is automatically declared exogenous
 @item exogenous variables were declared but not used in the @code{model} block
 @end enumerate
 
@@ -1620,6 +1625,50 @@ model_local_variable GDP_US $GDPUS$;
 @end example
 
 @end deffn
+
+@menu
+* On-the-fly Model Variable Declaration::
+@end menu
+
+@node On-the-fly Model Variable Declaration
+@subsection On-the-fly Model Variable Declaration
+
+Endogenous variables, exogenous variables, and parameters can also be declared
+inside the model block. To do this, simply follow the symbol name with a
+vertical line (@code{|}) and either an @code{e}, an @code{x}, or a
+@code{p}. For example, to declare a parameter named @code{alphaa} in the model
+block, you could write @code{alphaa|p} directly in an equation where it
+appears. Similarly, to declare an endogenous variable @code{c} in the model
+block you could write @code{c|e}. These on-the-fly variable declarations do not
+have to appear in the first place where this variable is encountered. Note that
+on-the-fly variable declarations must be made on contemporaneous variables.
+
+As an example, the following two snippets are equivalent:
+
+@emph{Using on-the-fly variable and parameter declaration}
+@example
+model;
+k(+1) = i|e + (1-delta|p)*k;
+y|e = k|e^alpha|p;
+@dots{}
+end;
+delta = 0.025;
+alpha = 0.36;
+@end example
+
+@emph{Using standard variable declaration}
+@example
+var k, i, y;
+parameters delta, alpha;
+delta = 0.025;
+alpha = 0.36;
+@dots{}
+model;
+k(1) = i|e + (1-delta|p)*k;
+y|e = k|e^alpha|p;
+@dots{}
+end;
+@end example
 
 @node Expressions
 @section Expressions
@@ -2337,7 +2386,7 @@ For the required @LaTeX{} packages, @pxref{write_latex_original_model}.
 @table @code
 
 @item write_equation_tags
-@xref{write_equation_tags}
+@xref{write_equation_tags}.
 
 @end table
 
@@ -2378,7 +2427,7 @@ For the required @LaTeX{} packages, @pxref{write_latex_original_model}.
 @table @code
 
 @item write_equation_tags
-@xref{write_equation_tags}
+@xref{write_equation_tags}.
 
 @end table
 
@@ -3732,6 +3781,9 @@ the square submatrix of the right Schur vectors corresponding to the
 forward looking variables (jumpers) and to the explosive eigenvalues
 must have full rank.
 
+Note that the outcome may be different from what would be suggested by
+@code{sum(abs(oo_.dr.eigval))} when eigenvalues are very close to @ref{qz_criterium}.
+
 @optionshead
 
 @table @code
@@ -4005,7 +4057,7 @@ options).
 
 @item 7
 Allows the user to solve the perfect foresight model with the solvers available
-through option @code{solve_algo} (@xref{solve_algo} for a list of possible
+through option @code{solve_algo} (@pxref{solve_algo} for a list of possible
 values, note that values 5, 6, 7 and 8, which require @code{bytecode} and/or
 @code{block} options, are not allowed). For instance, the following commands:
 @example
@@ -4351,6 +4403,7 @@ exogenous variables are made available in @code{oo_.exo_simul}
 (@pxref{oo_.exo_simul}). Default: @code{0}.
 
 @item qz_criterium = @var{DOUBLE}
+@anchor{qz_criterium}
 Value used to split stable from unstable eigenvalues in reordering the
 Generalized Schur decomposition used for solving 1^st order
 problems. Default: @code{1.000001} (except when estimating with
@@ -5612,12 +5665,17 @@ variance if the acceptance ratio is too low. In some situations it may
 help to consider parameter-specific values for this scale parameter. 
 This  can  be  done  in  the  @ref{estimated_params}- block.  
 
-Note that @code{mode_compute=6} will tune the scale parameter to achieve an acceptance rate of 
-@ref{AcceptanceRateTarget}. The resulting scale parameter will be saved into a file
-named @file{@var{MODEL_FILENAME}_mh_scale.mat}. This file can be loaded in subsequent runs
-via the @code{posterior_sampler_options}-option @ref{scale_file}. Both @code{mode_compute=6}
-and @code{scale_file} will overwrite any value specified in @code{estimated_params} with the tuned value.  
-Default: @code{0.2}
+Note that @code{mode_compute=6} will tune the scale parameter to achieve an
+acceptance rate of @ref{AcceptanceRateTarget}. The resulting scale parameter
+will be saved into a file named @file{@var{MODEL_FILENAME}_mh_scale.mat}. This
+file can be loaded in subsequent runs via the
+@code{posterior_sampler_options}-option @ref{scale_file}. Both
+@code{mode_compute=6} and @code{scale_file} will overwrite any value specified
+in @code{estimated_params} with the tuned value.  Default: @code{0.2}
+
+Note also that for the Random Walk Metropolis Hastings algorithm, it is
+possible to use option @ref{mh_tune_jscale}, to automatically tune the value of
+@code{mh_jscale}.
 
 @item mh_init_scale = @var{DOUBLE}
 The scale to be used for drawing the initial value of the
@@ -5633,6 +5691,16 @@ of a new @code{mh_init_scale} value with which the next 100 draws will be drawn 
 If the @ref{nointeractive}-option has been invoked, the program will instead automatically decrease 
 @code{mh_init_scale} by 10 percent after 100 futile draws and try another 100 draws. This iterative 
 procedure will take place at most 10 times, at which point Dynare will abort with an error message.
+
+@item mh_tune_jscale [= @var{DOUBLE}]
+@anchor{mh_tune_jscale} Automatically tunes the scale parameter of the jumping
+distribution's covariance matrix (Metropolis-Hastings), so that the overall
+acceptance ratio is close to the desired level. Default value is
+@code{0.33}. It is not possible to match exactly the desired
+acceptance ratio because of the stochastic nature of the algoirithm (the
+proposals and the initialial conditions of the markov chains if
+@code{mh_nblocks>1}). This option is only available for the Random Walk
+Metropolis Hastings algorithm.
 
 @item mh_recover
 @anchor{mh_recover} Attempts to recover a Metropolis-Hastings
@@ -7466,7 +7534,7 @@ graphs. See @code{colormap} in Matlab/Octave manual for valid arguments.
 @item nograph
 @xref{nograph}. Suppresses the display and creation only within the
 @code{shock_decomposition}-command, but does not affect other commands.
-@xref{plot_shock_decomposition} for plotting graphs.
+@xref{plot_shock_decomposition}, for plotting graphs.
 
 @item init_state = @var{BOOLEAN}
 @anchor{init_state} If equal to @math{0}, the shock decomposition is computed conditional on the smoothed state
@@ -7599,7 +7667,7 @@ model).
 @item nograph
 @xref{nograph}. Only shock decompositions are computed and stored in @code{oo_.realtime_shock_decomposition},
 @code{oo_.conditional_shock_decomposition} and @code{oo_.realtime_forecast_shock_decomposition} but no plot is made 
-(@xref{plot_shock_decomposition}).
+(@pxref{plot_shock_decomposition}).
 
 @item presample = @var{INTEGER}
 @anchor{presample_shock_decomposition} Data point above which recursive

@@ -103,6 +103,11 @@ Section "MEX files for MATLAB 64-bit, version 7.8 to 9.3 (R2009a to R2017b)"
  File ..\mex\matlab\win64-7.8-9.3\*.mexw64
 SectionEnd
 
+Section "MEX files for MATLAB 64-bit, version 9.4 (R2018a)"
+ SetOutPath $INSTDIR\mex\matlab\win64-9.4
+ File ..\mex\matlab\win64-9.4\*.mexw64
+SectionEnd
+
 SectionGroupEnd
 
 SectionGroup "MEX files for OCTAVE"
