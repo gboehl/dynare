@@ -94,15 +94,6 @@ if isoctave
     p{end+1} = '/missing/ordeig';
 end
 
-if isoctave && ~compare_versions(version(), supported_octave_version(),'>=')
-    skipline()
-    warning(['This version of Octave is not supported. Consider installing ' ...
-             'version %s+ of Octave,\notherwise m files will be used instead ' ...
-             'of precompiled mex files and some features, like solution\n' ...
-             'of models approximated at third order, will not be available.'], supported_octave_version())
-    skipline()
-end
-
 % corrcoef with two outputs is missing in Octave (ticket #796)
 if isoctave && ~user_has_octave_forge_package('nan')
     p{end+1} = '/missing/corrcoef';
