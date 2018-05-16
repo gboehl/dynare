@@ -5595,12 +5595,17 @@ variance if the acceptance ratio is too low. In some situations it may
 help to consider parameter-specific values for this scale parameter. 
 This  can  be  done  in  the  @ref{estimated_params}- block.  
 
-Note that @code{mode_compute=6} will tune the scale parameter to achieve an acceptance rate of 
-@ref{AcceptanceRateTarget}. The resulting scale parameter will be saved into a file
-named @file{@var{MODEL_FILENAME}_mh_scale.mat}. This file can be loaded in subsequent runs
-via the @code{posterior_sampler_options}-option @ref{scale_file}. Both @code{mode_compute=6}
-and @code{scale_file} will overwrite any value specified in @code{estimated_params} with the tuned value.  
-Default: @code{0.2}
+Note that @code{mode_compute=6} will tune the scale parameter to achieve an
+acceptance rate of @ref{AcceptanceRateTarget}. The resulting scale parameter
+will be saved into a file named @file{@var{MODEL_FILENAME}_mh_scale.mat}. This
+file can be loaded in subsequent runs via the
+@code{posterior_sampler_options}-option @ref{scale_file}. Both
+@code{mode_compute=6} and @code{scale_file} will overwrite any value specified
+in @code{estimated_params} with the tuned value.  Default: @code{0.2}
+
+Note also that for the Random Walk Metropolis Hastings algorithm, it is
+possible to use option @ref{mh_tune_jscale}, to automatically tune the value of
+@code{mh_jscale}.
 
 @item mh_init_scale = @var{DOUBLE}
 The scale to be used for drawing the initial value of the
@@ -5616,6 +5621,16 @@ of a new @code{mh_init_scale} value with which the next 100 draws will be drawn 
 If the @ref{nointeractive}-option has been invoked, the program will instead automatically decrease 
 @code{mh_init_scale} by 10 percent after 100 futile draws and try another 100 draws. This iterative 
 procedure will take place at most 10 times, at which point Dynare will abort with an error message.
+
+@item mh_tune_jscale [= @var{DOUBLE}]
+@anchor{mh_tune_jscale} Automatically tunes the scale parameter of the jumping
+distribution's covariance matrix (Metropolis-Hastings), so that the overall
+acceptance ratio is close to the desired level. Default value is
+@code{0.33}. It is not possible to match exactly the desired
+acceptance ratio because of the stochastic nature of the algoirithm (the
+proposals and the initialial conditions of the markov chains if
+@code{mh_nblocks>1}). This option is only available for the Random Walk
+Metropolis Hastings algorithm.
 
 @item mh_recover
 @anchor{mh_recover} Attempts to recover a Metropolis-Hastings

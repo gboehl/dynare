@@ -41,6 +41,7 @@ MODFILES = \
 	estimation/MH_recover/fs2000_recover_2.mod \
 	estimation/MH_recover/fs2000_recover_3.mod \
 	estimation/t_proposal/fs2000_student.mod \
+	estimation/tune_mh_jscale/fs2000.mod \
 	moments/example1_var_decomp.mod \
 	moments/example1_bp_test.mod \
 	moments/test_AR1_spectral_density.mod \

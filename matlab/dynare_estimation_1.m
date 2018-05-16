@@ -228,7 +228,7 @@ if ~isequal(options_.mode_compute,0) && ~options_.mh_posterior_mode_estimation
     elseif isnumeric(options_.mode_compute) && options_.mode_compute==6 %save scaling factor
         save([M_.fname '_optimal_mh_scale_parameter.mat'],'Scale');
         options_.mh_jscale = Scale;
-        bayestopt_.jscale = ones(length(xparam1),1)*Scale;
+        bayestopt_.jscale(:) = options_.mh_jscale;
     end
     if ~isnumeric(options_.mode_compute) || ~isequal(options_.mode_compute,6) %always already computes covariance matrix
         if options_.cova_compute == 1 %user did not request covariance not to be computed
@@ -436,6 +436,21 @@ if (any(bayestopt_.pshape  >0 ) && options_.mh_replic) || ...
             error(['Estimation:: Mode value(s) of ', disp_string ,' are outside parameter bounds. Potentially, you should set prior_trunc=0.'])
         else
             error(['Estimation:: Mode value(s) of ', disp_string ,' are outside parameter bounds.'])
+        end
+    end
+    % Tunes the jumping distribution's scale parameter
+    if options_.mh_tune_jscale.status
+        if options_.posterior_sampler_options.posterior_sampling_method=='random_walk_metropolis_hastings'
+            options = options_.mh_tune_jscale;
+            options.rwmh = options_.posterior_sampler_options.rwmh;
+            options_.mh_jscale = calibrate_mh_scale_parameter(objective_function, ...
+                                                                  invhess, xparam1, [bounds.lb,bounds.ub], ...
+                                                                  options, dataset_, dataset_info, options_, M_, estim_params_, bayestopt_, bounds, oo_);
+                bayestopt_.jscale(:) = options_.mh_jscale;
+                disp(sprintf('mh_jscale has been set equal to %s', num2str(options_.mh_jscale)))
+                skipline()
+        else
+            warning('mh_tune_jscale is only available with Random Walk Metropolis Hastings!')
         end
     end
     % runs MCMC
