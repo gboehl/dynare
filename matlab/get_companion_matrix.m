@@ -32,30 +32,30 @@ global oo_
 get_ar_ec_matrices(var_model_name);
 
 % Get the number of lags
-p = length(oo_.var.(var_model_name).ar);
+p = size(oo_.var.(var_model_name).ar, 3);
 
 % Get the number of variables
-n = length(oo_.var.(var_model_name).ar{1});
+n = length(oo_.var.(var_model_name).ar(:,:,1));
 
-if all(cellfun(@iszero, oo_.var.(var_model_name).ecm))
+if all(~oo_.var.(var_model_name).ec(:))
     % Build the companion matrix (standard VAR)
     oo_.var.(var_model_name).CompanionMatrix = zeros(n*p);
-    oo_.var.(var_model_name).CompanionMatrix(1:n,1:n) = oo_.var.(var_model_name).ar{1};
+    oo_.var.(var_model_name).CompanionMatrix(1:n,1:n) = oo_.var.(var_model_name).ar(:,:,1);
     if p>1
         for i=2:p
-            oo_.var.(var_model_name).CompanionMatrix(1:n,(i-1)*n+(1:n)) = oo_.var.(var_model_name).ar{i};
+            oo_.var.(var_model_name).CompanionMatrix(1:n,(i-1)*n+(1:n)) = oo_.var.(var_model_name).ar(:,:,i);
             oo_.var.(var_model_name).CompanionMatrix((i-1)*n+(1:n),(i-2)*n+(1:n)) = eye(n);
         end
     end
 else
     B = zeros(n,n,p+1);
-    idx = oo_.var.(var_model_name).ecm_idx;
-    B(:,:,1) = oo_.var.(var_model_name).ar{1};
+    idx = oo_.var.(var_model_name).ec_idx;
+    B(:,:,1) = oo_.var.(var_model_name).ar(:,:,1);
     B(idx, idx, 1) = B(idx,idx, 1) + eye(length(idx));
     for i=2:p
-        B(idx,idx,i) = oo_.var.(var_model_name).ar{i}(idx,idx)-oo_.var.(var_model_name).ar{i-1}(idx,idx);
+        B(idx,idx,i) = oo_.var.(var_model_name).ar(idx,idx,i)-oo_.var.(var_model_name).ar(idx,idx,i-1);
     end
-    B(idx,idx,p+1) = -oo_.var.(var_model_name).ar{p}(idx,idx);
+    B(idx,idx,p+1) = -oo_.var.(var_model_name).ar(idx,idx,p);
     % Build the companion matrix (VECM, rewrite in levels)
     oo_.var.(var_model_name).CompanionMatrix = zeros(n*(p+1));
     for i=1:p
