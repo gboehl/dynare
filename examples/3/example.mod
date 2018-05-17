@@ -24,7 +24,7 @@ g = .02;
 
 var_model(model_name=toto, eqtags=['eq:x', 'eq:y']);
 
-
+pac_model(var_model_name=toto, discount=beta, model_name=pacman);
 
 model;
 
@@ -35,7 +35,7 @@ y = a_y_1*y(-1) + a_y_2*diff(x(-1)) + b_y_1*y(-2) + b_y_2*diff(x(-2)) + ey ;
 diff(x) = b_x_1*y(-2) + b_x_2*diff(x(-1)) + ex ;
 
 [name='eq:pac']
-diff(z) = e_c_m*(x(-1)-z(-1)) + c_z_1*diff(z(-1))  + c_z_2*diff(z(-2)) + pac_expectation(model_name=pacman, var_model_name=toto, discount=beta, growth=g) + ez;
+diff(z) = e_c_m*(x(-1)-z(-1)) + c_z_1*diff(z(-1))  + c_z_2*diff(z(-2)) + pac_expectation(pacman) + ez;
 
 end;
 
