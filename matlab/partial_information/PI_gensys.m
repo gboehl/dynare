@@ -176,13 +176,9 @@ end
 
 G0pi=eye(n+FL_RANK+NX);
 try
-    % In Matlab: [aa bb q z v w] = qz(a,b) s.t. qaz = aa, qbz = bb %
-    % In Octave: [aa bb q z v w] = qz(a,b) s.t. q'az = aa, q'bz=bb %
-    % and qzcomplex() extension based on lapack zgges produces same
-    % qz output for Octave as Matlab qz() does for Matlab thus:
     if isoctave
-        [a b q z]=qzcomplex(G0pi,G1pi);
-        q=q';
+        % Need to force QZ complex on Octave (otherwise it returns the real one)
+        [a b q z]=qz(complex(G0pi),complex(G1pi));
     else
         [a b q z]=qz(G0pi,G1pi);
     end

@@ -132,7 +132,6 @@ AC_CONFIG_FILES([Makefile
                  gensylv/Makefile
                  k_order_perturbation/Makefile
                  dynare_simul_/Makefile
-                 qzcomplex/Makefile
                  kalman_steady_state/Makefile
                  ms_sbvar/Makefile
                  block_kalman_filter/Makefile

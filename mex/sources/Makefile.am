@@ -6,7 +6,6 @@ EXTRA_DIST = \
 	mjdgges \
 	kronecker \
 	bytecode \
-	qzcomplex \
 	k_order_perturbation \
 	kalman_steady_state \
 	ms-sbvar \
