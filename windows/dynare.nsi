@@ -114,12 +114,12 @@ SectionGroup "MEX files for OCTAVE"
 
 Section "MEX files for Octave 4.2.1 (MinGW, 64bit)"
  SetOutPath $INSTDIR\mex\octave
- File ..\mex\octave\*.mex
+ File ..\mex\octave\*
 SectionEnd
 
 Section "MEX files for Octave 4.2.1 (MinGW, 32bit)"
  SetOutPath $INSTDIR\mex\octave32
- File ..\mex\octave32\*.mex
+ File ..\mex\octave32\*
 SectionEnd
 
 SectionGroupEnd
