@@ -4218,7 +4218,10 @@ TrinaryOpNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
   temporary_terms_t::const_iterator it = temporary_terms.find(const_cast<TrinaryOpNode *>(this));
   if (it != temporary_terms.end())
     {
-      output << "T" << idx;
+      if (output_type == oMatlabDynamicModelSparse)
+        output << "T" << idx << "(it_)";
+      else
+        output << "T" << idx;
       return;
     }
 
