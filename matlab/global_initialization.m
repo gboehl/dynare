@@ -117,6 +117,7 @@ M_.osr.param_bounds=[];
 M_.osr.variable_weights=[];
 M_.osr.variable_indices =[];
 
+% Set default options_ in function below; this change was made for the GUI
 options_ = default_option_values(M_);
 
 % initialize persistent variables in priordens()
