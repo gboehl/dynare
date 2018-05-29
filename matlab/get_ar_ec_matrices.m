@@ -154,8 +154,13 @@ for i = 1:length(rhsvars)
         end
     end
 end
-end
 
+% Temporary bug fix (ordering of the variables in the VAR model)
+[a,b,c] = intersect(M_.var.toto.lhs, oo_.var.toto.ar_idx, 'stable')
+oo_.var.toto.ar_idx = oo_.var.toto.ar_idx(c);
+oo_.var.toto.ar = oo_.var.toto.ar(:,c,:);
+
+end
 
 
 function lhsvaridx = findLhsInAuxVar(auxVar, lhsvars)
