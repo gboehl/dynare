@@ -226,7 +226,6 @@ end
 
 if ismember(av.endo_index, rhsVars)
     if ~isempty(av.unary_op_handle) && (av.type == 8 || av.type == 9)
-        keyboard
         lag = lag + abs(av.orig_lead_lag);
     end
 elseif ismember(av.orig_index, rhsVars)
