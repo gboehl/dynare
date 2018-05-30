@@ -1,4 +1,4 @@
-function [h0, h1, longruncorrectionparameter] = hVectors(params, H, ids, idns)
+function [h0, h1, longruncorrectionparameter] = hVectors(params, H, ids, idns, auxmodel)
 
 % INPUTS
 % - params          [double]     (m+1)*1 vector, PAC parameters (lag polynomial coefficients and discount factor).
@@ -34,7 +34,12 @@ if nargout>1
     if isempty(idns)
         h1 = [];
     else
-        h1 = A_1*A_b*(kron(iota(m, m)'*inv(eye(m)-G), H')*(tmp\kron(iota(m, m), iota(n, idns))));
+        switch auxmodel
+          case 'var'
+            h1 = A_1*A_b*(kron(iota(m, m)'*inv(eye(m)-G), H')*(tmp\kron(iota(m, m), iota(n, idns))));
+          case 'vecm'
+            h1 = A_1*A_b*(kron(iota(m, m)'*inv(eye(m)-G), (H'-eye(length(H))))*(tmp\kron(iota(m, m), iota(n, idns))));
+        end
     end
 end
 

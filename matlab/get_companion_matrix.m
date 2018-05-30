@@ -39,6 +39,7 @@ n = length(oo_.var.(var_model_name).ar(:,:,1));
 
 if all(~oo_.var.(var_model_name).ec(:))
     % The auxiliary model is a VAR model.
+    M_.pac.(pac_model_name).auxmodel = 'var';
     if isempty(M_.pac.(pac_model_name).undiff_eqtags)
         % Build the companion matrix (standard VAR)
         oo_.var.(var_model_name).CompanionMatrix = zeros(n*p);
@@ -54,6 +55,7 @@ if all(~oo_.var.(var_model_name).ec(:))
     end
 else
     % The auxiliary model is a VECM model.
+    M_.pac.(pac_model_name).auxmodel = 'vecm';
     if ~isempty(M_.pac.(pac_model_name).undiff_eqtags)
         % REMARK It is assumed that the equations with undiff option are the
         %        ECM equations. By complementarity, the other equations are
