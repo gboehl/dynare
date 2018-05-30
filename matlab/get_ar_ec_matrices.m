@@ -121,6 +121,7 @@ oo_.var.(var_model_name).ar = zeros(length(lhs), length(arRhsVars), M_.var.(var_
 oo_.var.(var_model_name).ec = zeros(length(lhs), length(ecRhsVars), M_.var.(var_model_name).max_lag);
 oo_.var.(var_model_name).ar_idx = arRhsVars;
 oo_.var.(var_model_name).ec_idx = ecRhsVars;
+
 % Fill matrices
 for i = 1:length(rhsvars)
     for j = 1:length(rhsvars{i}.vars)
@@ -159,7 +160,6 @@ end
 [a,b,c] = intersect(M_.var.toto.lhs, oo_.var.toto.ar_idx, 'stable');
 oo_.var.toto.ar_idx = oo_.var.toto.ar_idx(c);
 oo_.var.toto.ar = oo_.var.toto.ar(:,c,:);
-
 end
 
 
@@ -197,7 +197,11 @@ if ~isempty(av.unary_op_handle)
     idx = av.endo_index;
 else
     if av.orig_index <= M_.orig_endo_nbr
-        idx = av.orig_index;
+        if av.type == 10
+            idx = av.endo_index;
+        else
+            idx = av.orig_index;
+        end
     else
         idx = findVarNoLag(av.orig_index);
     end
@@ -222,19 +226,20 @@ end
 
 if ismember(av.endo_index, rhsVars)
     if ~isempty(av.unary_op_handle) && (av.type == 8 || av.type == 9)
+        keyboard
         lag = lag + abs(av.orig_lead_lag);
     end
 elseif ismember(av.orig_index, rhsVars)
     if av.orig_index <= M_.orig_endo_nbr
         lag = lag + abs(av.orig_lead_lag);
     else
-        [lag, ndiffs] = findLagForVar(av.orig_index, lag + 1, ndiffs, rhsVars);
+        [lag, ndiffs] = findLagForVar(av.orig_index, lag + max(1, abs(av.orig_lead_lag)), ndiffs, rhsVars);
     end
 else
     if av.type == 8
         [lag, ndiffs] = findLagForVar(av.orig_index, lag, ndiffs, rhsVars);
     else
-        [lag, ndiffs] = findLagForVar(av.orig_index, lag + 1, ndiffs, rhsVars);
+        [lag, ndiffs] = findLagForVar(av.orig_index, lag + max(1, abs(av.orig_lead_lag)), ndiffs, rhsVars);
     end
 end
 assert(lag > 0)
