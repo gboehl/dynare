@@ -34,6 +34,12 @@ get_ar_ec_matrices(var_model_name);
 % Get the number of lags
 p = size(oo_.var.(var_model_name).ar, 3);
 
+% FIXME
+while all(oo_.var.(var_model_name).ar(:,:,p)==0)
+    p = p-1;
+    oo_.var.(var_model_name).ar = oo_.var.(var_model_name).ar(:,:,1:p);
+end
+
 % Get the number of variables
 n = length(oo_.var.(var_model_name).ar(:,:,1));
 
