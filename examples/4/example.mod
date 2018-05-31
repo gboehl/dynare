@@ -8,27 +8,27 @@ parameters a_x1_0 a_x1_1 a_x1_2 a_x1_x2_1 a_x1_x2_2
 	   a_x2_0 a_x2_1 a_x2_2 a_x2_x1_1 a_x2_x1_2
 	   e_c_m c_z_1 c_z_2 gamma beta ;
 
-a_x1_0 = -.3;
-a_x1_1 =  .3;
-a_x1_2 =  .1;
-a_x1_x2_1 =  .1;
-a_x1_x2_2 = -.2;
+a_x1_0 =  -.9;
+a_x1_1 =  .4;
+a_x1_2 =  .3;
+a_x1_x2_1 = .1;
+a_x1_x2_2 = .2;
 
 
-a_x2_0 = -.9;
-a_x2_1 =  .2;
-a_x2_2 = -.1;
+a_x2_0 =  -.9;
+a_x2_1 =   .2;
+a_x2_2 =  -.1;
 a_x2_x1_1 = -.1;
-a_x2_x1_2 = -.3;
+a_x2_x1_2 = .2;
 
-beta  =  .9;
-e_c_m =  .1;
-c_z_1 =  .7;
-c_z_2 = -.3;
+beta  =  .2;
+e_c_m =  .5;
+c_z_1 =  .2;
+c_z_2 = -.1;
 
 gamma =  .7;
 
-var_model(model_name=toto, eqtags=['eq:x1', 'eq:x2', 'eq:x1bar', 'eq:x2bar']);
+var_model(model_name=toto, eqtags=[  'eq:x1', 'eq:x2', 'eq:x1bar', 'eq:x2bar']);
 
 pac_model(var_model_name=toto, discount=beta, model_name=pacman, undiff('eq:x1', 1), undiff('eq:x2', 1));
 
@@ -60,7 +60,7 @@ shocks;
 end;
 
 // Build the companion matrix of the VAR model (toto).
-get_companion_matrix('toto');
+get_companion_matrix('toto', 'pacman');
 
 // Update the parameters of the PAC expectation model (h0 and h1 vectors).
 pac.update.equation('pacman');
