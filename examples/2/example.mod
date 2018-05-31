@@ -47,7 +47,7 @@ end;
 
 
 // Build the companion matrix of the VAR model (toto).
-get_companion_matrix('toto');
+get_companion_matrix('toto', 'pacman');
 
 // Update the parameters of the PAC expectation model (h0 and h1 vectors).
 pac.update.equation('pacman');
