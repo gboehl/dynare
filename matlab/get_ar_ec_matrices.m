@@ -1,13 +1,13 @@
 function get_ar_ec_matrices(var_model_name)
 %function get_ar_ec_matrices(var_model_name)
 %
-% Returns the autoregressive and error correction matrices associated with the
-% VAR specified by var_model_name. Output is stored in cellarray
-% oo_.var.(var_model_name).ar, with oo_.var.(var_model_name).ar{i} being the
-% AR matrix at time t-i (same holds for error correction matrices with ec
-% replacing ar). Each AR (EC) matrix is stored with rows organized by the
-% ordering of the equation tags found in M_.var.(var_model_name).eqtags and
-% columns organized consistently.
+% Returns the autoregressive matrix associated with the VAR specified by
+% var_model_name. Output is stored in cellarray oo_.var.(var_model_name).ar,
+% with oo_.var.(var_model_name).ar(:,:,i) being the AR matrix at time t-i. Each
+% AR matrix is stored with rows and columns organized by the ordering of the
+% equation tags found in M_.var.(var_model_name).eqtags.
+% oo_.var.(var_model_name).ec contains those entries that are not
+% autoregressive.
 %
 % INPUTS
 %
@@ -75,21 +75,20 @@ end
 assert(length(M_.var.(var_model_name).lhs) == rows(g1));
 
 % Find RHS vars for AR & EC matrices
-arRhsVars = [];
 ecRhsVars = [];
 lhs       = M_.var.(var_model_name).lhs;
+rhsvars   = cell(length(lhs), 1);
 for i = 1:length(M_.var.(var_model_name).rhs.vars_at_eq)
     vars = M_.var.(var_model_name).rhs.vars_at_eq{i}.var;
-    rhsvars{i}.vars = [];
-    rhsvars{i}.lags = [];
+    rhsvars{i}.vars = vars;
+    rhsvars{i}.lags = M_.var.(var_model_name).rhs.vars_at_eq{i}.lag;
     rhsvars{i}.arRhsIdxs = [];
     rhsvars{i}.ecRhsIdxs = [];
     for j = 1:length(vars)
         if vars(j) <= M_.orig_endo_nbr
             % vars(j) is not an aux var
             if ismember(vars(j), lhs)
-                arRhsVars = union(arRhsVars, vars(j), 'stable');
-                rhsvars{i}.arRhsIdxs = [rhsvars{i}.arRhsIdxs find(arRhsVars == vars(j))];
+                rhsvars{i}.arRhsIdxs = [rhsvars{i}.arRhsIdxs find(lhs == vars(j))];
                 rhsvars{i}.ecRhsIdxs = [rhsvars{i}.ecRhsIdxs -1];
             else
                 ecRhsVars = union(ecRhsVars, vars(j), 'stable');
@@ -100,8 +99,7 @@ for i = 1:length(M_.var.(var_model_name).rhs.vars_at_eq)
             % Search aux vars for matching lhs var
             lhsvaridx = findLhsInAuxVar(vars(j), lhs);
             if lhsvaridx >= 1
-                arRhsVars = union(arRhsVars, lhsvaridx, 'stable');
-                rhsvars{i}.arRhsIdxs = [rhsvars{i}.arRhsIdxs find(arRhsVars == lhsvaridx)];
+                rhsvars{i}.arRhsIdxs = [rhsvars{i}.arRhsIdxs find(lhs == lhsvaridx)];
                 rhsvars{i}.ecRhsIdxs = [rhsvars{i}.ecRhsIdxs -1];
             else
                 % otherwise find endog that corresponds to this aux var
@@ -112,18 +110,16 @@ for i = 1:length(M_.var.(var_model_name).rhs.vars_at_eq)
             end
         end
     end
-    rhsvars{i}.vars = vars;
-    rhsvars{i}.lags = M_.var.(var_model_name).rhs.vars_at_eq{i}.lag;
 end
 
 % Initialize matrices
-oo_.var.(var_model_name).ar = zeros(length(lhs), length(arRhsVars), M_.var.(var_model_name).max_lag);
+oo_.var.(var_model_name).ar = zeros(length(lhs), length(lhs), M_.var.(var_model_name).max_lag);
 oo_.var.(var_model_name).ec = zeros(length(lhs), length(ecRhsVars), M_.var.(var_model_name).max_lag);
-oo_.var.(var_model_name).ar_idx = arRhsVars;
+oo_.var.(var_model_name).ar_idx = lhs;
 oo_.var.(var_model_name).ec_idx = ecRhsVars;
 
 % Fill matrices
-for i = 1:length(rhsvars)
+for i = 1:length(lhs)
     for j = 1:length(rhsvars{i}.vars)
         var = rhsvars{i}.vars(j);
         if rhsvars{i}.lags(j) == -1
@@ -134,32 +130,20 @@ for i = 1:length(rhsvars)
         if g1col ~= 0 && any(g1(:, g1col))
             if rhsvars{i}.arRhsIdxs(j) > 0
                 % Fill AR
-                [lag, ndiffs] = findLagForVar(var, -rhsvars{i}.lags(j), 0, arRhsVars);
-                if ndiffs >= 1
-                    ndiffs = ndiffs - 1;
-                end
-                for k = 0:ndiffs
-                    oo_.var.(var_model_name).ar(i, rhsvars{i}.arRhsIdxs(j), lag + k) = ...
-                        oo_.var.(var_model_name).ar(i, rhsvars{i}.arRhsIdxs(j), lag + k) + (-1)^k * nchoosek(ndiffs,k) * g1(i, g1col);
-                end
+                [lag, ndiffs] = findLagForVar(var, -rhsvars{i}.lags(j), 0, lhs);
+                oo_.var.(var_model_name).ar(i, rhsvars{i}.arRhsIdxs(j), lag) = ...
+                    oo_.var.(var_model_name).ar(i, rhsvars{i}.arRhsIdxs(j), lag) + g1(i, g1col);
             elseif rhsvars{i}.ecRhsIdxs(j) > 0
                 % Fill EC
                 [lag, ndiffs] = findLagForVar(var, -rhsvars{i}.lags(j), 0, ecRhsVars);
-                for k = 0:ndiffs
-                    oo_.var.(var_model_name).ec(i, rhsvars{i}.ecRhsIdxs(j), lag + k) = ...
-                        oo_.var.(var_model_name).ec(i, rhsvars{i}.ecRhsIdxs(j), lag + k) + (-1)^k * nchoosek(ndiffs,k) * g1(i, g1col);
-                end
+                oo_.var.(var_model_name).ec(i, rhsvars{i}.ecRhsIdxs(j), lag) = ...
+                    oo_.var.(var_model_name).ec(i, rhsvars{i}.ecRhsIdxs(j), lag) + g1(i, g1col);
             else
                 error('Shouldn''t arrive here');
             end
         end
     end
 end
-
-% Temporary bug fix (ordering of the variables in the VAR model)
-[a,b,c] = intersect(M_.var.toto.lhs, oo_.var.toto.ar_idx, 'stable');
-oo_.var.toto.ar_idx = oo_.var.toto.ar_idx(c);
-oo_.var.toto.ar = oo_.var.toto.ar(:,c,:);
 end
 
 
@@ -174,10 +158,18 @@ end
 
 av = M_.aux_vars([M_.aux_vars.endo_index] == auxVar);
 
-if ismember(av.orig_index, lhsvars)
-    lhsvaridx = av.orig_index;
+if av.type == 8 || av.type == 10
+    if ismember(av.endo_index, lhsvars)
+        lhsvaridx = av.endo_index;
+    else
+        lhsvaridx = findLhsInAuxVar(av.orig_index, lhsvars);
+    end
 else
-    lhsvaridx = findLhsInAuxVar(av.orig_index, lhsvars);
+    if ismember(av.orig_index, lhsvars)
+        lhsvaridx = av.orig_index;
+    else
+        lhsvaridx = findLhsInAuxVar(av.orig_index, lhsvars);
+    end
 end
 end
 
@@ -193,15 +185,11 @@ end
 
 av = M_.aux_vars([M_.aux_vars.endo_index] == auxVar);
 
-if ~isempty(av.unary_op_handle)
+if av.type == 8 || av.type == 10
     idx = av.endo_index;
 else
     if av.orig_index <= M_.orig_endo_nbr
-        if av.type == 10
-            idx = av.endo_index;
-        else
-            idx = av.orig_index;
-        end
+        idx = av.orig_index;
     else
         idx = findVarNoLag(av.orig_index);
     end
@@ -215,6 +203,7 @@ function [lag, ndiffs] = findLagForVar(auxVar, lag, ndiffs, rhsVars)
 global M_
 
 if auxVar <= M_.orig_endo_nbr
+    assert(lag > 0)
     return
 end
 
@@ -225,7 +214,7 @@ if av.type == 8
 end
 
 if ismember(av.endo_index, rhsVars)
-    if ~isempty(av.unary_op_handle) && (av.type == 8 || av.type == 9)
+    if av.type == 8 || av.type == 9
         lag = lag + abs(av.orig_lead_lag);
     end
 elseif ismember(av.orig_index, rhsVars)
