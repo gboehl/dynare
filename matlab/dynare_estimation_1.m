@@ -420,6 +420,9 @@ switch options_.MCMC_jumping_covariance
     end
 end
 
+bounds = prior_bounds(bayestopt_, options_.prior_trunc); %reset bounds as lb and ub must only be operational during mode-finding
+DSMH_sampler(objective_function,xparam1,bounds,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,oo_);
+
 if (any(bayestopt_.pshape  >0 ) && options_.mh_replic) || ...
         (any(bayestopt_.pshape >0 ) && options_.load_mh_file)  %% not ML estimation
     bounds = prior_bounds(bayestopt_, options_.prior_trunc); %reset bounds as lb and ub must only be operational during mode-finding
