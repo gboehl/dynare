@@ -139,7 +139,7 @@ else
                     end
                 end
             else
-                if get_aux_variable_id(v) && M_.aux_vars(get_aux_variable_id(v)).orig_index~=trend_variables(i)
+                if get_aux_variable_id(v) && M_.aux_vars(get_aux_variable_id(v)).endo_index~=trend_variables(i)
                     error('In a trend equation (%s) RHS variable must be lagged LHS variable!', M_.var.(var_model_name).eqtags{trend_eqnums(i)})
                 end
             end
