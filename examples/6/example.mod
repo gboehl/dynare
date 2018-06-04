@@ -53,11 +53,11 @@ diff(z) = gamma*(e_c_m*(x1(-1)-z(-1)) + c_z_1*diff(z(-1))  + c_z_2*diff(z(-2)) +
 end;
 
 shocks;
-    var ex1 = 1.0;
-    var ex2 = .1;
-    var ex1bar = 1.0;
-    var ex2bar = 0.1;
-    var ez = 1.0;
+    var ex1 = 1;
+    var ex2 = 1;
+    var ex1bar = 1;
+    var ex2bar = 1;
+    var ez = 1;
 end;
 
 // Build the companion matrix of the VAR model (toto).
@@ -65,7 +65,7 @@ get_companion_matrix('toto', 'pacman');
 
 // Update the parameters of the PAC expectation model (h0 and h1 vectors).
 pac.update.equation('pacman');
-return
+
 // Set initial conditions to zero for non logged variables, and one for logged variables
 init = zeros(10, M_.endo_nbr+M_.exo_nbr);
 init(:,[2,4]) = ones(10,2);
