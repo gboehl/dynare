@@ -124,4 +124,4 @@ estimation(order=1, datafile='../fs2000/fsdat_simul', nobs=192, loglinear, mh_re
  */
 
 //stoch_simul(periods=200, order=1);
-//datatomfile('fsdat_simul', char('gy_obs', 'gp_obs'));
+//datatomfile('fsdat_simul', {'gy_obs'; 'gp_obs'});
