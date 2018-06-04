@@ -118,4 +118,4 @@ estimation(order=1, datafile=fsdat_simul, mode_compute=0,nobs=192, loglinear,dif
  */
 
 //stoch_simul(periods=200, order=1);
-//datatomfile('fsdat_simul', char('gy_obs', 'gp_obs'));
+//datatomfile('fsdat_simul', {'gy_obs'; 'gp_obs'});
