@@ -1,4 +1,4 @@
-// --+ options: json=compute +--
+// --+ options: json=compute, stochastic +--
 
 var x1 x2 x1bar x2bar z ;
 

@@ -1,4 +1,4 @@
-// --+ options: json=compute, transform_unary_ops +--
+// --+ options: json=compute, transform_unary_ops, stochastic +--
 
 var x1 x2 x1bar x2bar z ;
 
