@@ -1,4 +1,4 @@
-// --+ options: json=compute +--
+// --+ options: json=compute, transform_unary_ops +--
 
 var x1 x2 x1bar x2bar z ;
 
