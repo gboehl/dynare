@@ -75,16 +75,11 @@ p = {'/distributions/' ; ...
 % For functions that exist only under some Octave versions
 % or some MATLAB versions, and for which we provide some replacement functions
 
+% Replacements for rows(), columns(), vec() and issquare() (inexistent under MATLAB)
 if ~isoctave
-    % Replacements for rows(), columns() and issquare() (inexistent under MATLAB)
     p{end+1} = '/missing/rows_columns';
     p{end+1} = '/missing/issquare';
-    % Replacement for vec() (inexistent under MATLAB)
     p{end+1} = '/missing/vec';
-    if ~user_has_matlab_license('statistics_toolbox')
-        % Replacements for functions of the stats toolbox
-        p{end+1} = '/missing/stats/';
-    end
 end
 
 % ordeig() doesn't exist in Octave
@@ -116,6 +111,13 @@ end
 if (isoctave && ~user_has_octave_forge_package('statistics')) ...
         || (~isoctave && ~user_has_matlab_license('statistics_toolbox'))
     p{end+1} = '/missing/nanmean';
+end
+
+% Replacements for functions of the MATLAB statistics toolbox
+% These functions were part of Octave < 4.4, they are now in the statistics Forge package
+if (isoctave && ~octave_ver_less_than('4.4') && ~user_has_octave_forge_package('statistics')) ...
+        || (~isoctave && ~user_has_matlab_license('statistics_toolbox'))
+    p{end+1} = '/missing/stats/';
 end
 
 % Check if struct2array is available.
