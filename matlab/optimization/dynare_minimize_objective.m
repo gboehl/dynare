@@ -135,11 +135,7 @@ switch minimizer_algorithm
         simulated_annealing(objective_function,start_par_value,sa_options,LB,UB,varargin{:});
   case 3
     if isoctave && ~user_has_octave_forge_package('optim')
-        try
-            pkg load optim
-        catch
-            error('Optimization algorithm 3 requires the optim package')
-        end
+        error('Optimization algorithm 3 requires the optim package')
     elseif ~isoctave && ~user_has_matlab_license('optimization_toolbox')
         error('Optimization algorithm 3 requires the Optimization Toolbox')
     end
