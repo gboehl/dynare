@@ -226,9 +226,10 @@ end
 if preprocessoroutput
     fprintf(['Starting Dynare (version ' dynare_version() ').\n']);
     fprintf('Calling Dynare with arguments: ');
-    disp(varargin);
     if isempty(varargin)
         disp('none')
+    else
+        disp(varargin);
     end
 end
 
