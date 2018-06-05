@@ -50,6 +50,7 @@ if isoctave
     warning('off', 'Octave:mixed-string-concat');
     warning('off', 'Octave:variable-switch-label');
     warning('off', 'Octave:fortran-indexing');
+    warning('off', 'Octave:classdef-to-struct');
 else
     % In MATLAB >= 7.7, don't display a warning if we use deprecated
     % interface to set seed of random number generators
