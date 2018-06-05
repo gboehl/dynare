@@ -516,7 +516,7 @@ options_.newrat=newrat;
 % Simplex optimization routine (variation on Nelder Mead algorithm).
 simplex.tolerance.x = 1e-4;
 simplex.tolerance.f = 1e-4;
-simplex.maxiter = 5000;
+simplex.maxiter = 10000;
 simplex.maxfcallfactor = 500;
 simplex.maxfcall = [];
 simplex.verbosity = 2;
