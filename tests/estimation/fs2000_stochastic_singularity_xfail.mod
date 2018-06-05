@@ -64,7 +64,7 @@ var e_junk; stderr 0.005;
 end;
 
 stoch_simul(order=1,periods=300,irf=0,nomoments) k y c;
-datatomfile('fsdat_simul_collinear', char('k','y','c'));
+datatomfile('fsdat_simul_collinear', {'k'; 'y'; 'c'});
 
 estimated_params;
 alp, beta_pdf, 0.356, 0.02;

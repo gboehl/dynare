@@ -226,9 +226,10 @@ end
 if preprocessoroutput
     fprintf(['Starting Dynare (version ' dynare_version() ').\n']);
     fprintf('Calling Dynare with arguments: ');
-    disp(varargin);
     if isempty(varargin)
         disp('none')
+    else
+        disp(varargin);
     end
 end
 
@@ -238,14 +239,14 @@ if status ~= 0 || preprocessoroutput
 end
 if ismember('onlymacro', varargin)
     if preprocessoroutput
-        disp('Preprocesser stopped after macroprocessing step because of ''onlymacro'' option.');
+        disp('Preprocessor stopped after macroprocessing step because of ''onlymacro'' option.');
     end
     return
 end
 
 if ismember('onlyjson', varargin)
     if preprocessoroutput
-        disp('Preprocesser stopped after preprocessing step because of ''onlyjson'' option.');
+        disp('Preprocessor stopped after preprocessing step because of ''onlyjson'' option.');
     end
     return;
 end

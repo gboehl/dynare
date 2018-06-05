@@ -36,7 +36,6 @@
 # ifdef MATLAB_MEX_FILE
 extern bool utIsInterruptPending();
 # else
-#  include <octave/config.h>
 #  include <octave/quit.h>
 # endif
 

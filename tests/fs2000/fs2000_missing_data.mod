@@ -90,4 +90,4 @@ estimation(order=1, datafile=fsdat_simul_missing_obs, nobs=192, loglinear, mh_re
  */
 
 //stoch_simul(periods=200, order=1);
-//datatomfile('fsdat_simul', char('gy_obs', 'gp_obs'));
+//datatomfile('fsdat_simul', {'gy_obs'; 'gp_obs'});
