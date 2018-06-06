@@ -74,8 +74,11 @@ periods 1;
 values 1.2;
 end;
 
-// Deterministic simulation of the model for 200 periods
-simul(periods=200);
+// Prepare the deterministic simulation of the model over 200 periods
+perfect_foresight_setup(periods=200);
+
+// Perform the simulation
+perfect_foresight_solver;
 
 // Display the path of consumption and capital
 rplot c;
