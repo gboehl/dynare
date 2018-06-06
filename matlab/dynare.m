@@ -87,7 +87,7 @@ if isoctave
         skipline()
     end
 else
-    if matlab_ver_less_than('7.5')
+    if matlab_ver_less_than('7.5') % Should match the test in mex/build/matlab/configure.ac
         skipline()
         warning('This version of Dynare has only been tested on MATLAB 7.5 (R2007b) and above. Since your MATLAB version is older than that, Dynare may fail to run, or give unexpected results. Consider upgrading your MATLAB installation, or switch to Octave.');
         skipline()
