@@ -65,8 +65,20 @@ dynareroot = dynare_config;
 warning_config()
 
 if isoctave
-    if octave_ver_less_than('3.6.0')
-        warning('This version of Dynare has only been tested on Octave 3.6.0 and above. Since your Octave version is older than that, Dynare may fail to run, or give unexpected results. Consider upgrading your Octave installation.');
+    % The supported_octave_version.m file is not in git nor in the source
+    % package, it is manually added in binary packages distributed on dynare.org
+    if exist('supported_octave_version', 'file') && ~strcmp(supported_octave_version, version)
+        skipline()
+        warning(['This version of Octave is not supported. Consider installing ' ...
+                 'version %s of Octave\n' ...
+                 'from www.octave.org, otherwise m files will be used instead ' ...
+                 'of precompiled mex files and some\nfeatures, like solution ' ...
+                 'of models approximated at third order, will not be available.'], supported_octave_version())
+        skipline()
+    elseif octave_ver_less_than('3.6') % Should match the test in mex/build/octave/configure.ac
+        skipline()
+        warning(['This version of Dynare has only been tested on Octave 3.6 and above. Dynare may fail to run or give unexpected result. Consider upgrading your version of Octave.'])
+        skipline()
     end
 else
     if matlab_ver_less_than('7.5')
