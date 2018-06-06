@@ -118,6 +118,9 @@ end
 if (isoctave && ~octave_ver_less_than('4.4') && ~user_has_octave_forge_package('statistics')) ...
         || (~isoctave && ~user_has_matlab_license('statistics_toolbox'))
     p{end+1} = '/missing/stats/';
+    if ~isoctave
+        p{end+1} = '/missing/stats-matlab/';
+    end
 end
 
 % Check if struct2array is available.

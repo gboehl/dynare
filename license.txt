@@ -143,23 +143,24 @@ Copyright: 2005 Henning Schmidt, FCC, henning@fcc.chalmers.se
 License: GPL-3+
 
 Files: matlab/missing/stats/normpdf.m matlab/missing/stats/gamcdf.m
- matlab/missing/stats/common_size.m matlab/missing/stats/chi2inv.m
+ matlab/missing/stats/chi2inv.m
  matlab/missing/stats/gaminv.m matlab/missing/stats/gampdf.m
  matlab/missing/stats/stdnormal_inv.m matlab/missing/stats/betacdf.m
  matlab/missing/stats/betapdf.m matlab/missing/stats/normcdf.m
  matlab/missing/stats/stdnormal_cdf.m matlab/missing/stats/norminv.m
  matlab/missing/stats/stdnormal_pdf.m matlab/missing/stats/betainv.m
+ matlab/missing/stats-matlab/common_size.m
 Copyright: 1995-2007 Kurt Hornik
            2008-2011 Dynare Team
 License: GPL-3+
 
-Files: matlab/missing/stats/quantile.m
+Files: matlab/missing/stats-matlab/quantile.m
 Copyright: 2014-2016 Christopher Hummersone
            2016 Dynare Team
 License: GPL-3+
 
 
-Files: matlab/missing/stats/corr.m
+Files: matlab/missing/stats-matlab/corr.m
 Copyright: 1993-1996 Kurt Hornik
            1996-2015 John W. Eaton
            2013-2015 Julien Bect
