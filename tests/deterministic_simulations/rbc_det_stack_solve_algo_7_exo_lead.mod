@@ -17,7 +17,7 @@ sigma2  =   0;
 model;
 
   // Eq. n°1:
-  efficiency = rho*efficiency(-1) + EfficiencyInnovation;
+  efficiency = rho*efficiency(-1) + EfficiencyInnovation(+2); // Use a lead of two to test the maximum_lag logic
 
   // Eq. n°2:
   Efficiency = effstar*exp(efficiency);
@@ -83,8 +83,8 @@ rplot Capital;
 
 D = load('rbc_det_results');
 
-if norm(D.oo_.endo_simul - oo_.endo_simul) > 1e-30;
-   disp(norm(D.oo_.endo_simul - oo_.endo_simul));
+if norm(D.oo_.endo_simul(:,D.M_.maximum_lag+1:end-D.M_.maximum_lead) - oo_.endo_simul(:,M_.maximum_lag+1:end-M_.maximum_lead)) > 1e-30;
+   disp(D.oo_.endo_simul(:,D.M_.maximum_lag+1:end-D.M_.maximum_lead) - oo_.endo_simul(:,M_.maximum_lag+1:end-M_.maximum_lead));
    error('rbc_det_stack_solve_algo_7 failed');
 end;                       
 
@@ -109,8 +109,8 @@ if isoctave && options_.solve_algo==0
 else
     tol_crit=1e-8;    
 end
-if norm(D.oo_.endo_simul - oo_.endo_simul) > tol_crit;
-    disp(norm(D.oo_.endo_simul - oo_.endo_simul));
+if norm(D.oo_.endo_simul(:,D.M_.maximum_lag+1:end-D.M_.maximum_lead) - oo_.endo_simul(:,M_.maximum_lag+1:end-M_.maximum_lead)) > tol_crit;
+    disp(D.oo_.endo_simul(:,D.M_.maximum_lag+1:end-D.M_.maximum_lead) - oo_.endo_simul(:,M_.maximum_lag+1:end-M_.maximum_lead));
     error(sprintf('rbc_det_stack_solve_algo_7 failed with solve_algo=%u',options_.solve_algo));
 end;
 @#endfor

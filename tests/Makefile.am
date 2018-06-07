@@ -280,6 +280,8 @@ MODFILES = \
 	deterministic_simulations/multiple_lead_lags/ramst_augmented_histval.mod \
 	deterministic_simulations/rbc_det.mod \
 	deterministic_simulations/rbc_det_stack_solve_algo_7.mod \
+	deterministic_simulations/rbc_det_stack_solve_algo_7_exo_lag.mod \
+	deterministic_simulations/rbc_det_stack_solve_algo_7_exo_lead.mod \
 	lmmcp/rbc.mod \
 	lmmcp/sw_lmmcp.mod \
 	lmmcp/sw_newton.mod \
