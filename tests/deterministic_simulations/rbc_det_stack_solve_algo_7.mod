@@ -17,7 +17,7 @@ sigma2  =   0;
 model;
 
   // Eq. n°1:
-  efficiency = rho*efficiency(-1) + EfficiencyInnovation;
+  efficiency = rho*efficiency(-1) + EfficiencyInnovation(-2); // Use a lag of two to test the maximum_lag logic
 
   // Eq. n°2:
   Efficiency = effstar*exp(efficiency);
