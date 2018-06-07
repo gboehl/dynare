@@ -1,3 +1,43 @@
+Announcement for Dynare 4.5.5 (on 2018-06-08)
+=============================================
+
+We are pleased to announce the release of Dynare 4.5.5.
+
+This is a bugfix release.
+
+The Windows packages are already available for download at:
+
+ http://www.dynare.org/download/dynare-stable
+
+The Mac and GNU/Linux packages (for Debian and Ubuntu LTS) should follow soon.
+
+This release is compatible with MATLAB versions 7.5 (R2007b) to 9.3 (R2018a)
+and with GNU Octave versions 4.2.
+
+Here is a list of the problems identified in version 4.5.4 and that have been
+fixed in version 4.5.5:
+
+ - Identification was crashing during prior sampling if `ar` was initially too
+   low.
+
+ - The `align` method on `dseries` did not return a functional second `dseries`
+   output.
+
+ - Predetermined variables were not properly set when used in model local
+   variables.
+
+ - `perfect_foresight_solver` with option `stack_solve_algo=7` was not working
+   correctly when an exogenous variable has a lag greater than 1.
+
+ - `identification` with `prior_mc` option would crash if the number of moments
+   with non-zero derivative is smaller than the number of parameters.
+
+ - Calling several times `normcdf` or `normpdf` with the same arguments in a
+   model with block decomposition (but not bytecode) was leading to incorrect
+   results.
+
+
+
 Announcement for Dynare 4.5.4 (on 2018-01-29)
 =============================================
 
@@ -146,7 +186,7 @@ fixed in version 4.5.2:
    another variable. Note that the constraint on a variable that is not an
    instrument of the Ramsey problem must be written with an equation tag in the
    model block.
- 
+
  - Fixed bug in Ramsey problem with constraints on policy instrument.
 
  - Fixed crash with optimizer 5 when not used with DSGE model at order 1.
