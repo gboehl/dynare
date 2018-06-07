@@ -74,7 +74,7 @@ i_rows = 1:ny;
 offset = 0;
 i_cols_J = i_cols;
 
-for it = 2:(T+1)
+for it = maximum_lag+(1:T)
     if nargout == 1
         res = dynamic_function(YY(i_cols),exo_simul, params, ...
                                steady_state,it);
@@ -83,15 +83,15 @@ for it = 2:(T+1)
         [res,jacobian] = dynamic_function(YY(i_cols),exo_simul, params, ...
                                           steady_state,it);
         residuals(i_rows) = res(eq_index);
-        if it == 2
+        if it == maximum_lag+1
             [rows,cols,vals] = find(jacobian(eq_index,i_cols_1));
             iJacobian{1} = [offset+rows, i_cols_J1(cols), vals];
-        elseif it == T + 1
+        elseif it == maximum_lag+T
             [rows,cols,vals] = find(jacobian(eq_index,i_cols_T));
             iJacobian{T} = [offset+rows, i_cols_J(i_cols_T(cols)), vals];
         else
             [rows,cols,vals] = find(jacobian(eq_index,i_cols_j));
-            iJacobian{it-1} = [offset+rows, i_cols_J(cols), vals];
+            iJacobian{it-maximum_lag} = [offset+rows, i_cols_J(cols), vals];
             i_cols_J = i_cols_J + ny;
         end
         offset = offset + ny;

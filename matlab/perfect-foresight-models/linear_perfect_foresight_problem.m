@@ -55,9 +55,9 @@ for it = maximum_lag+(1:T)
     z(jexog) = transpose(exo_simul(it,:));
     residuals(i_rows) = dynamicjacobian*z;
     if nargout == 2
-        if it == 2
+        if it == maximum_lag+1
             JJacobian(i_rows,i_cols_J1) = dynamicjacobian(:,i_cols_1);
-        elseif it == T + 1
+        elseif it == maximum_lag+T
             JJacobian(i_rows,i_cols_J(i_cols_T)) = dynamicjacobian(:,i_cols_T);
         else
             JJacobian(i_rows,i_cols_J) = dynamicjacobian(:,i_cols_j);
