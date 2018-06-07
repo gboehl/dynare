@@ -67,9 +67,9 @@ elseif (options.solve_algo == 11)
     end
 end
 
-y0 = endogenousvariables(:,1);
-yT = endogenousvariables(:,periods+2);
-z = endogenousvariables(:,2:periods+1);
+y0 = endogenousvariables(:,M.maximum_lag);
+yT = endogenousvariables(:,M.maximum_lag+periods+1);
+z = endogenousvariables(:,M.maximum_lag+(1:periods));
 illi = M.lead_lag_incidence';
 [i_cols, junk,i_cols_j] = find(illi(:));
 illi = illi(:,2:3);

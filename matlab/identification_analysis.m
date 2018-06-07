@@ -102,6 +102,7 @@ if info(1)==0
             derivatives_info.DOm=dOm;
             derivatives_info.DYss=dYss;
             options_.ar=nlags;
+            options_ident.ar=nlags;
             indJJ = (find(max(abs(JJ'),[],1)>1.e-8));
         end
         if length(indJJ)<nparam

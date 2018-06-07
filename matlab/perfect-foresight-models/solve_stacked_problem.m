@@ -69,7 +69,7 @@ else
     check = 1;
 end
 
-endogenousvariables = [y0 reshape(y, M.endo_nbr, options.periods) yT];
+endogenousvariables(:, M.maximum_lag+(1:options.periods)) = reshape(y, M.endo_nbr, options.periods);
 
 if check
     info.status = false;
