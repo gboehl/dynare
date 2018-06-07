@@ -71,7 +71,7 @@ i_rows = 1:ny;
 i_cols_J = i_cols;
 offset = 0;
 
-for it = 2:(T+1)
+for it = (maximum_lag+1):(T+1)
     if nargout == 1
         residuals(i_rows) = dynamic_function(YY(i_cols),exo_simul, params, ...
                                              steady_state,it);
