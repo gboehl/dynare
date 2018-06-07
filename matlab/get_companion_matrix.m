@@ -106,7 +106,7 @@ else
         % Check that the lhs of candidate ecm equations are at least first differences.
         difference_orders_in_error_correction_eq = zeros(m, 1);
         for i=1:m
-            difference_orders_in_error_correction_eq(i) = get_difference_order(M_.var.(var_model_name).lhs(i));
+            difference_orders_in_error_correction_eq(i) = get_difference_order(M_.var.(var_model_name).lhs(ecm_eqnums(i)));
         end
         if any(~difference_orders_in_error_correction_eq)
             error('Model %s is not a VECM model! LHS variables should be in difference', var_model_name)
