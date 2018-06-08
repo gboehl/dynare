@@ -453,6 +453,10 @@ deterministic_simulations/rbc_det_exo_lag_2b.o.trs: deterministic_simulations/rb
 deterministic_simulations/rbc_det_exo_lag_2c.o.trs: deterministic_simulations/rbc_det_exo_lag_2a.o.trs
 deterministic_simulations/rbc_det_stack_solve_algo_7.m.trs: deterministic_simulations/rbc_det.m.trs
 deterministic_simulations/rbc_det_stack_solve_algo_7.o.trs: deterministic_simulations/rbc_det.o.trs
+deterministic_simulations/rbc_det_stack_solve_algo_7_exo_lead.m.trs: deterministic_simulations/rbc_det.m.trs
+deterministic_simulations/rbc_det_stack_solve_algo_7_exo_lead.o.trs: deterministic_simulations/rbc_det.o.trs
+deterministic_simulations/rbc_det_stack_solve_algo_7_exo_lag.m.trs: deterministic_simulations/rbc_det.m.trs
+deterministic_simulations/rbc_det_stack_solve_algo_7_exo_lag.o.trs: deterministic_simulations/rbc_det.o.trs
 
 initval_file/ramst_initval_file.m.trs: initval_file/ramst_initval_file_data.m.tls
 initval_file/ramst_initval_file.o.trs: initval_file/ramst_initval_file_data.o.tls
