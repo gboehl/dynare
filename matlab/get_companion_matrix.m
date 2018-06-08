@@ -144,22 +144,7 @@ else
                 end
             end
         end
-        % Associate trends with error correction equations. It is assumed
-        % that only one stochastic trend enters in each error correction
-        % term.
-        ecm_trend_eq = zeros(size(ecm_eqnums));
-        for i=1:m
-            [id, id1, id2] = intersect(trend_autoregressive_variables, M_.var.(var_model_name).rhs.vars_at_eq{ecm_eqnums(i)}.var);
-            if isempty(id)
-                error('Cannot find Error Correction term in equation %s!', M_.var.(var_model_name).eqtags{ecm_eqnums(i)})
-            else
-                if length(id)>1
-                    error('Cannot have more than one stochastic trend in Error Correction term in equation %s!', M_.var.(var_model_name).eqtags{ecm_eqnums(i)})
-                else
-                    ecm_trend_eq(i) = trend_eqnums(id1);
-                end
-            end
-        end
+        ecm_trend_eq = trend_eqnums;
         % Get the EC matrix (the EC term is assumend to be in t-1).
         %
         % TODO: Check that the EC term is the difference between the
