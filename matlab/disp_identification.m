@@ -87,7 +87,7 @@ disp(['  ']),
 
 no_warning_message_display=1;
 
-if any(idemodel.ino) || any(any(idemodel.ind0==0)) || any(idemodel.jweak_pair)
+if any(idemodel.ino) || any(any(idemodel.ind0==0)) || any(any(idemodel.jweak_pair))
     no_warning_message_display=0;
     disp('WARNING !!!')
     if SampleSize>1
@@ -163,7 +163,7 @@ end
 
 no_warning_message_display = 1;
 
-if any(idemoments.ino) || any(any(idemoments.ind0==0)) || any(idemoments.jweak_pair)
+if any(idemoments.ino) || any(any(idemoments.ind0==0)) || any(any(idemoments.jweak_pair))
     no_warning_message_display = 0;
     skipline()
     disp('WARNING !!!')
