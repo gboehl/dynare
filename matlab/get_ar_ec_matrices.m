@@ -136,6 +136,9 @@ for i = 1:length(lhs)
             elseif rhsvars{i}.ecRhsIdxs(j) > 0
                 % Fill EC
                 [lag, ndiffs] = findLagForVar(var, -rhsvars{i}.lags(j), 0, ecRhsVars);
+                if size(oo_.var.(var_model_name).ec, 3) < lag
+                    oo_.var.(var_model_name).ec(i, rhsvars{i}.ecRhsIdxs(j), lag) = 0;
+                end
                 oo_.var.(var_model_name).ec(i, rhsvars{i}.ecRhsIdxs(j), lag) = ...
                     oo_.var.(var_model_name).ec(i, rhsvars{i}.ecRhsIdxs(j), lag) + g1(i, g1col);
             else
