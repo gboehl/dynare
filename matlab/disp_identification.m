@@ -84,7 +84,11 @@ end
 
 disp(['  ']),
 
-if any(idemodel.ino)
+
+no_warning_message_display=1;
+
+if any(idemodel.ino) || any(any(idemodel.ind0==0)) || any(any(idemodel.jweak_pair))
+    no_warning_message_display=0;
     disp('WARNING !!!')
     if SampleSize>1
         disp(['The rank of H (model) is deficient for ', num2str(length(find(idemodel.ino))),' out of ',int2str(SampleSize),' MC runs!'  ]),
@@ -152,12 +156,15 @@ if any(idemodel.ino)
     %         end
 end
 
-if ~any(idemodel.ino) && ~any(any(idemodel.ind0==0))
+if no_warning_message_display
     disp(['All parameters are identified in the model (rank of H).' ]),
     skipline()
 end
 
-if any(idemoments.ino)
+no_warning_message_display = 1;
+
+if any(idemoments.ino) || any(any(idemoments.ind0==0)) || any(any(idemoments.jweak_pair))
+    no_warning_message_display = 0;
     skipline()
     disp('WARNING !!!')
     if SampleSize > 1
@@ -234,7 +241,7 @@ if any(idemoments.ino)
     %         end
     %     end
 end
-if ~any(idemoments.ino) && ~any(any(idemoments.ind0==0))
+if no_warning_message_display
     skipline()
     disp(['All parameters are identified by J moments (rank of J)' ]),
     skipline()

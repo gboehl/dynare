@@ -15275,7 +15275,7 @@ Models of the Business Cycle: A Bayesian Approach,'' Federal Reserve
 of Atlanta, @i{Working Paper Series}, 2003-30.
 
 @item
-Raftery, Adrien E. and Steven Lewis (1992): ``How many iterations in the Gibbs sampler?,''  in @i{Bayesian Statistics, Vol. 4}, 
+Raftery, Adrian E. and Steven Lewis (1992): ``How many iterations in the Gibbs sampler?,''  in @i{Bayesian Statistics, Vol. 4}, 
 ed. J.O. Berger, J.M. Bernardo, A.P. Dawid, and A.F.M. Smith, Clarendon Press: Oxford, pp. 763-773.   
 
 @item

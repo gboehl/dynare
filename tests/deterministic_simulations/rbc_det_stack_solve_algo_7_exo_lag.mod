@@ -17,7 +17,7 @@ sigma2  =   0;
 model;
 
   // Eq. n°1:
-  efficiency = rho*efficiency(-1) + EfficiencyInnovation;
+  efficiency = rho*efficiency(-1) + EfficiencyInnovation(-2); // Use a lag of two to test the maximum_lag logic
 
   // Eq. n°2:
   Efficiency = effstar*exp(efficiency);
@@ -72,7 +72,7 @@ end;
 
 perfect_foresight_setup(periods=200);
 
-perfect_foresight_solver;
+perfect_foresight_solver(stack_solve_algo=7,solve_algo=1);
 
 if ~oo_.deterministic_simulation.status
    error('Perfect foresight simulation failed')
@@ -80,3 +80,37 @@ end
 
 rplot Consumption;
 rplot Capital;
+
+D = load('rbc_det_results');
+
+if norm(D.oo_.endo_simul(:,D.M_.maximum_lag+1:end-D.M_.maximum_lead) - oo_.endo_simul(:,M_.maximum_lag+1:end-M_.maximum_lead)) > 1e-30;
+   disp(D.oo_.endo_simul(:,D.M_.maximum_lag+1:end-D.M_.maximum_lead) - oo_.endo_simul(:,M_.maximum_lag+1:end-M_.maximum_lead));
+   error('rbc_det_stack_solve_algo_7 failed');
+end;                       
+
+options_.dynatol.f=1e-10;
+@#define J = [0,1,2,3,4,9,10]
+@#for solve_algo_iter in J
+
+perfect_foresight_setup(periods=200);
+perfect_foresight_solver(stack_solve_algo=7,solve_algo=@{solve_algo_iter});
+
+if ~oo_.deterministic_simulation.status
+   error('Perfect foresight simulation failed')
+end
+
+rplot Consumption;
+rplot Capital;
+
+D = load('rbc_det_results');
+if isoctave && options_.solve_algo==0
+    %%acount for somehow weaker convergence criterion in Octave's fsolve
+    tol_crit=1e-4;
+else
+    tol_crit=1e-8;    
+end
+if norm(D.oo_.endo_simul(:,D.M_.maximum_lag+1:end-D.M_.maximum_lead) - oo_.endo_simul(:,M_.maximum_lag+1:end-M_.maximum_lead)) > tol_crit;
+    disp(D.oo_.endo_simul(:,D.M_.maximum_lag+1:end-D.M_.maximum_lead) - oo_.endo_simul(:,M_.maximum_lag+1:end-M_.maximum_lead));
+    error(sprintf('rbc_det_stack_solve_algo_7 failed with solve_algo=%u',options_.solve_algo));
+end;
+@#endfor
