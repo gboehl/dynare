@@ -89,6 +89,7 @@ else
         m = length(M_.pac.(pac_model_name).undiff_eqtags);
         q = length(M_.var.(var_model_name).eqn)-m;
         ecm_eqnums = zeros(m, 1);
+        ecm_eqnums_in_auxiliary_model = zeros(m, 1);
         for i=1:m
             number = get_equation_number_by_tag(M_.pac.(pac_model_name).undiff_eqtags{i});
             if number>0
@@ -113,8 +114,8 @@ else
         end
         % Get the indices of the trend equations.
         trend_eqnums = transpose(setdiff(M_.var.(var_model_name).eqn,ecm_eqnums));
-        trend_eqnums_in__auxiliary_model = zeros(length(trend_eqnums), 1);
-        for i=1:length(trend_eqnums)
+        trend_eqnums_in_auxiliary_model = zeros(q, 1);
+        for i=1:q
             idt = find(M_.var.(var_model_name).eqn==trend_eqnums(i));
             if isempty(idt)
                 error('(eq = %s, eq_in_aux_model = %s) This is most likely a bug. Please contact the DynareTeam.', int2str(trend_eqnums(i)), int2str(idt))
@@ -123,7 +124,7 @@ else
             end
         end
         % Get the trend variables indices (lhs variables in trend equations).
-        [id, id_trend_in_var, id2] = intersect(M_.var.(var_model_name).eqn, trend_eqnums);
+        [~, id_trend_in_var, ~] = intersect(M_.var.(var_model_name).eqn, trend_eqnums);
         trend_variables = M_.var.(var_model_name).lhs(id_trend_in_var);
         % Get the rhs variables in trend equations.
         trend_autoregressive_variables = zeros(q, 1);
