@@ -93,6 +93,12 @@ else
             number = get_equation_number_by_tag(M_.pac.(pac_model_name).undiff_eqtags{i});
             if number>0
                 ecm_eqnums(i) = number;
+                ide = find(M_.var.(var_model_name).eqn==number);
+                if isempty(ide)
+                    error('(eq = %s, eq_in_aux_model = %s) This is most likely a bug. Please contact the DynareTeam.', int2str(number), int2str(ide))
+                else
+                    ecm_eqnums_in_auxiliary_model(i) = ide;
+                end
             else
                 error('%s is not declared as an equation in the model block!', M_.pac.(pac_model_name).undiff_eqtag{i})
             end
@@ -100,13 +106,22 @@ else
         % Check that the lhs of candidate ecm equations are at least first differences.
         difference_orders_in_error_correction_eq = zeros(m, 1);
         for i=1:m
-            difference_orders_in_error_correction_eq(i) = get_difference_order(M_.var.(var_model_name).lhs(ecm_eqnums(i)));
+            difference_orders_in_error_correction_eq(i) = get_difference_order(M_.var.(var_model_name).lhs(ecm_eqnums_in_auxiliary_model(i)));
         end
         if any(~difference_orders_in_error_correction_eq)
             error('Model %s is not a VECM model! LHS variables should be in difference', var_model_name)
         end
         % Get the indices of the trend equations.
-        trend_eqnums = transpose(setdiff(M_.var.(var_model_name).eqn, ecm_eqnums));
+        trend_eqnums = transpose(setdiff(M_.var.(var_model_name).eqn,ecm_eqnums));
+        trend_eqnums_in__auxiliary_model = zeros(length(trend_eqnums), 1);
+        for i=1:length(trend_eqnums)
+            idt = find(M_.var.(var_model_name).eqn==trend_eqnums(i));
+            if isempty(idt)
+                error('(eq = %s, eq_in_aux_model = %s) This is most likely a bug. Please contact the DynareTeam.', int2str(trend_eqnums(i)), int2str(idt))
+            else
+                trend_eqnums_in_auxiliary_model(i) = idt;
+            end
+        end
         % Get the trend variables indices (lhs variables in trend equations).
         [id, id_trend_in_var, id2] = intersect(M_.var.(var_model_name).eqn, trend_eqnums);
         trend_variables = M_.var.(var_model_name).lhs(id_trend_in_var);
@@ -138,24 +153,22 @@ else
                 end
             end
         end
-        ecm_trend_eq = trend_eqnums;
         % Get the EC matrix (the EC term is assumend to be in t-1).
         %
         % TODO: Check that the EC term is the difference between the
         %       endogenous variable and the trend variable.
         %
-        A0 = oo_.var.(var_model_name).ec(ecm_eqnums,:,1);
+        A0 = oo_.var.(var_model_name).ec(ecm_eqnums_in_auxiliary_model,:,1);
         % Get the AR matrices.
-        AR = oo_.var.(var_model_name).ar(ecm_eqnums,ecm_eqnums,:);
+        AR = oo_.var.(var_model_name).ar(ecm_eqnums_in_auxiliary_model,ecm_eqnums_in_auxiliary_model,:);
         % Build B matrices (VAR in levels)
-        B = zeros(n, n, p+1);
-        B(ecm_eqnums,ecm_eqnums,1) = eye(m)+A0+AR(:,:,1);
-        B(ecm_eqnums,ecm_trend_eq) = -A0;
-        B(ecm_trend_eq,ecm_trend_eq) = eye(q);
+        B(ecm_eqnums_in_auxiliary_model,ecm_eqnums_in_auxiliary_model,1) = eye(m)+A0+AR(:,:,1);
+        B(ecm_eqnums_in_auxiliary_model,trend_eqnums_in_auxiliary_model) = -A0;
+        B(trend_eqnums_in_auxiliary_model,trend_eqnums_in_auxiliary_model) = eye(q);
         for i=2:p
-            B(ecm_eqnums,ecm_eqnums,i) = AR(:,:,i)-AR(:,:,i-1);
+            B(ecm_eqnums_in_auxiliary_model,ecm_eqnums_in_auxiliary_model,i) = AR(:,:,i)-AR(:,:,i-1);
         end
-        B(ecm_eqnums,ecm_eqnums,p+1) = -AR(:,:,p);
+        B(ecm_eqnums_in_auxiliary_model,ecm_eqnums_in_auxiliary_model,p+1) = -AR(:,:,p);
         % Write Companion matrix
         oo_.var.(var_model_name).CompanionMatrix = zeros(size(B, 1)*size(B, 3));
         for i=1:p
