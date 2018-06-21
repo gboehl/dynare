@@ -64,7 +64,7 @@ end;
 get_companion_matrix('toto', 'pacman');
 
 // Update the parameters of the PAC expectation model (h0 and h1 vectors).
-pac.update.equation('pacman');
+pac.update.expectation('pacman');
 
 // Set initial conditions to zero for non logged variables, and one for logged variables
 init = zeros(10, M_.endo_nbr+M_.exo_nbr);
