@@ -1,4 +1,4 @@
-function equation(pacname)
+function expectation(pacname)
 
 % Updates the parameters of a PAC expectation.
 %
@@ -28,7 +28,6 @@ function equation(pacname)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-warning('Function pac.update.equation() is deprecated. Use pac.update.expectation() instead.')
-skipline()
+global M_ oo_
 
-pac.update.expectation(pacname);
+M_ = pac.update.parameters(pacname, M_, oo_);
