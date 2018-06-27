@@ -299,7 +299,7 @@ else
     end
     if options_.steadystate_flag
         if options_.steadystate_flag == 1
-            NamFileInput(length(NamFileInput)+1,:)={'',[M_.fname '.steadystate.m']};
+            NamFileInput(length(NamFileInput)+1,:)={'',[M_.fname '_steadystate.m']};
         else
             NamFileInput(length(NamFileInput)+1,:)={'',[M_.fname '.steadystate.m']};
         end

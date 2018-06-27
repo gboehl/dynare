@@ -67,7 +67,7 @@ check1 = 0;
 % testing for steadystate file
 fh = str2func([M_.fname '.static']);
 if options_.steadystate_flag
-    [dr.ys,check1] = feval([M_.fname '.steadystate'],dr.ys,...
+    [dr.ys,check1] = feval([M_.fname '_steadystate'],dr.ys,...
                            [oo_.exo_steady_state; ...
                         oo_.exo_det_steady_state]);
     if size(dr.ys,1) < M_.endo_nbr
@@ -78,7 +78,7 @@ if options_.steadystate_flag
                                                            oo_.exo_det_steady_state,...
                                                            M_.params);
         else
-            error([M_.fname '.steadystate doesn''t match the model']);
+            error([M_.fname '_steadystate.m doesn''t match the model']);
         end
     end
 
