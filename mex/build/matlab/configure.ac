@@ -48,9 +48,6 @@ case ${host_os} in
     AC_MSG_WARN([not run from MATLAB, because it cannot load the Cygwin DLL.])
     AC_MSG_WARN([This is probably not what you want. Consider using a MinGW cross-compiler.])
     ;;
-  *darwin13*)
-    CXXFLAGS="$CXXFLAGS -std=c++11"
-    ;;
 esac
 
 CFLAGS="$CFLAGS -Wall -Wno-parentheses"
@@ -75,6 +72,9 @@ case ${host_os} in
     # This breaks the matrix.h of older MATLABs (e.g. R2009a)
     # Also see <uchar.h>
     CFLAGS="$CFLAGS -include stdint.h -Dchar16_t=uint_least16_t"
+    ;;
+  *darwin*)
+    CXXFLAGS="$CXXFLAGS -stdlib=libc++"
     ;;
 esac
 AX_PTHREAD
