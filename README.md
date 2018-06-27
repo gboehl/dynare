@@ -65,7 +65,7 @@ A number of tools and libraries are needed in order to recompile everything. You
 - The [GNU Compiler Collection](http://gcc.gnu.org/), with gcc, g++ and gfortran (mandatory)
 - MATLAB (if you want to compile MEX for MATLAB)
 - [GNU Octave](http://www.octave.org), with the development headers (if you want to compile MEX for Octave)
-- [Boost libraries](http://www.boost.org), version 1.36 or later
+- [Boost libraries](http://www.boost.org), version 1.36 or later (with the filesystem library compiled)
 - [Bison](http://www.gnu.org/software/bison/), version 2.5 or later (only if you get the source through Git)
 - [Flex](http://flex.sourceforge.net/), version 2.5.4 or later (only if you get the source through Git)
 - [Autoconf](http://www.gnu.org/software/autoconf/), version 2.62 or later (only if you get the source through Git) (see [Installing an updated version of Autoconf in your own directory, in GNU/Linux](http://www.dynare.org/DynareWiki/AutoMake))
@@ -220,7 +220,7 @@ Alternatively, if you want to build everything, manually install the following p
 - `build-essential` (for gcc, g++ and make)
 - `gfortran`
 - `liboctave-dev` (or `octave3.2-headers` on older systems)
-- `libboost-graph-dev`
+- `libboost-graph-dev` and `libboost-filesystem-dev`
 - `libgsl-dev` (or `libgsl0-dev` on older systems)
 - `libmatio-dev`
 - `libslicot-dev` and `libslicot-pic`
