@@ -935,15 +935,6 @@ clean-local:
 		$(patsubst %.trs, %.json, $(O_TRS_FILES)) \
 		$(patsubst %.trs, %.json, $(O_XFAIL_TRS_FILES))
 
-	rm -f $(patsubst %.mod, %.m, $(MODFILES)) \
-		$(patsubst %.mod, %_static.*, $(MODFILES)) \
-		$(patsubst %.mod, %_static_*.m, $(MODFILES)) \
-		$(patsubst %.mod, %_objective_static.m, $(MODFILES)) \
-		$(patsubst %.mod, %_set_auxiliary_variables.m, $(MODFILES)) \
-		$(patsubst %.mod, %_steadystate2.m, $(MODFILES)) \
-		$(patsubst %.mod, %_dynamic.*, $(MODFILES)) \
-		$(patsubst %.mod, %_dynamic_*.m, $(MODFILES))
-
 	rm -f $(patsubst %.mod, %_results.mat, $(MODFILES)) \
 		$(patsubst %.mod, %_mode.mat, $(MODFILES)) \
 		$(patsubst %.mod, %_mh_mode.mat, $(MODFILES)) \
@@ -954,6 +945,8 @@ clean-local:
 		$(patsubst %.mod, %.log, $(MODFILES))
 
 	rm -rf $(patsubst %.mod, %, $(MODFILES))
+
+	rm -rf $(foreach mod, $(MODFILES), $(dir $(mod))+$(basename $(notdir $(mod))))
 
 	rm -f $(patsubst %.mod, %*.pdf, $(MODFILES)) \
 		$(patsubst %.mod, %*.eps, $(MODFILES)) \
@@ -1013,4 +1006,3 @@ clean-local:
 	find . -name "*.aux" -type f -delete
 	find . -name "*.log" -type f -delete
 	find . -name "*.eps" -type f -delete
-	find . -name "*.json" -type f -delete

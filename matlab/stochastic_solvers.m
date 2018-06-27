@@ -115,7 +115,7 @@ if local_order == 1
                                         M_.params, dr.ys, 1);
         jacobia_ = [loc_dr.g1 loc_dr.g1_x loc_dr.g1_xd];
     else
-        [junk,jacobia_] = feval([M_.fname '_dynamic'],z(iyr0),exo_simul, ...
+        [junk,jacobia_] = feval([M_.fname '.dynamic'],z(iyr0),exo_simul, ...
                                 M_.params, dr.ys, it_);
     end
 elseif local_order == 2
@@ -124,7 +124,7 @@ elseif local_order == 2
                                         M_.params, dr.ys, 1);
         jacobia_ = [loc_dr.g1 loc_dr.g1_x];
     else
-        [junk,jacobia_,hessian1] = feval([M_.fname '_dynamic'],z(iyr0),...
+        [junk,jacobia_,hessian1] = feval([M_.fname '.dynamic'],z(iyr0),...
                                          exo_simul, ...
                                          M_.params, dr.ys, it_);
     end

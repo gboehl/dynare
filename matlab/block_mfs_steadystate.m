@@ -21,5 +21,5 @@ function [r, g1] = block_mfs_steadystate(y, b, y_all, exo, params, M)
 
 y_all(M.block_structure_stat.block(b).variable) = y;
 
-eval(['[r,g1] = ' M.fname '_static(b, y_all, exo, params);']);
+eval(['[r,g1] = ' M.fname '.static(b, y_all, exo, params);']);
 g1 = full(g1);

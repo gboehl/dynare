@@ -524,23 +524,22 @@ dynSparseMatrix::Read_SparseMatrix(string file_name, const int Size, int periods
 {
   unsigned int eq, var;
   int lag;
-  filename = file_name;
   mem_mngr.fixe_file_name(file_name);
   /*mexPrintf("steady_state=%d, size=%d, solve_algo=%d, stack_solve_algo=%d, two_boundaries=%d\n",steady_state, Size, solve_algo, stack_solve_algo, two_boundaries);
     mexEvalString("drawnow;");*/
   if (!SaveCode.is_open())
     {
       if (steady_state)
-        SaveCode.open((file_name + "_static.bin").c_str(), ios::in | ios::binary);
+        SaveCode.open(file_name + "/model/bytecode/static.bin", ios::in | ios::binary);
       else
-        SaveCode.open((file_name + "_dynamic.bin").c_str(), ios::in | ios::binary);
+        SaveCode.open(file_name + "/model/bytecode/dynamic.bin", ios::in | ios::binary);
       if (!SaveCode.is_open())
         {
           ostringstream tmp;
           if (steady_state)
-            tmp << " in Read_SparseMatrix, " << file_name << "_static.bin cannot be opened\n";
+            tmp << " in Read_SparseMatrix, " << file_name << "/model/bytecode/static.bin cannot be opened\n";
           else
-            tmp << " in Read_SparseMatrix, " << file_name << "_dynamic.bin cannot be opened\n";
+            tmp << " in Read_SparseMatrix, " << file_name << "/model/bytecode/dynamic.bin cannot be opened\n";
           throw FatalExceptionHandling(tmp.str());
         }
     }

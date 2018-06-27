@@ -107,7 +107,7 @@ if verbose
     skipline()
 end
 
-dynamicmodel = str2func([M.fname,'_dynamic']);
+dynamicmodel = str2func([M.fname,'.dynamic']);
 
 z = steadystate_y([ip; ic; in]);
 x = repmat(transpose(steadystate_x), 1+M.maximum_exo_lag+M.maximum_exo_lead, 1);

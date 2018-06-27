@@ -77,7 +77,7 @@ options_.threads.local_state_space_iteration_2 = 1;
 options_.jacobian_flag = 1;
 
 % steady state file
-if exist([M_.fname '_steadystate2.m'],'file')
+if exist(['+' M_.fname '/steadystate.m'],'file')
     options_.steadystate_flag = 2;
 elseif exist([M_.fname '_steadystate.m'],'file')
     options_.steadystate_flag = 1;

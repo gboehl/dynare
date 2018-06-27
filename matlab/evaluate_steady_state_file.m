@@ -53,7 +53,7 @@ if options.steadystate_flag == 1
     params1 = evalin('base','M_.params');
 else % steadystate_flag == 2
      % new format
-    h_steadystate = str2func([fname '_steadystate2']);
+    h_steadystate = str2func([fname '.steadystate']);
     [ys,params1,check] = h_steadystate(ys_init, exo_ss, params);
 end
 
@@ -75,7 +75,7 @@ if M.set_auxiliary_variables
     % variables only if the model has auxiliary variables. Otherwise
     % Octave may crash (see https://savannah.gnu.org/bugs/?52568) because
     % the function does not exist in the path.
-    h_set_auxiliary_variables = str2func([M.fname '_set_auxiliary_variables']);
+    h_set_auxiliary_variables = str2func([M.fname '.set_auxiliary_variables']);
 end
 
 if  isnan(updated_params_flag) || (updated_params_flag  && any(isnan(params(~isnan(params))-params1(~isnan(params))))) %checks if new NaNs were added

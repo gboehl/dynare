@@ -48,7 +48,7 @@ isf1 = [nyp+ny+1:nyf+nyp+ny+1];
 stop = false;
 iz = [1:ny+nyp+nyf];
 
-dynamicmodel = sprintf('%s_dynamic', M.fname);
+dynamicmodel = sprintf('%s.dynamic', M.fname);
 
 verbose = options.verbosity;
 

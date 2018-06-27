@@ -20,7 +20,7 @@
 #include "dynamic_m.hh"
 
 DynamicModelMFile::DynamicModelMFile(const string &modName) throw (DynareException) :
-  DynamicMFilename(modName + "_dynamic")
+  DynamicMFilename(modName + ".dynamic")
 {
 }
 

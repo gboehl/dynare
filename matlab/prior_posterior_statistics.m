@@ -292,16 +292,16 @@ else
                         'estim_params_', estim_params_, ...
                         'oo_', oo_);
     % which files have to be copied to run remotely
-    NamFileInput(1,:) = {'',[M_.fname '_static.m']};
-    NamFileInput(2,:) = {'',[M_.fname '_dynamic.m']};
+    NamFileInput(1,:) = {'',[M_.fname '.static.m']};
+    NamFileInput(2,:) = {'',[M_.fname '.dynamic.m']};
     if M.set_auxiliary_variables
-        NamFileInput(3,:) = {'',[M_.fname '_set_auxiliary_variables.m']};
+        NamFileInput(3,:) = {'',[M_.fname '.set_auxiliary_variables.m']};
     end
     if options_.steadystate_flag
         if options_.steadystate_flag == 1
-            NamFileInput(length(NamFileInput)+1,:)={'',[M_.fname '_steadystate.m']};
+            NamFileInput(length(NamFileInput)+1,:)={'',[M_.fname '.steadystate.m']};
         else
-            NamFileInput(length(NamFileInput)+1,:)={'',[M_.fname '_steadystate2.m']};
+            NamFileInput(length(NamFileInput)+1,:)={'',[M_.fname '.steadystate.m']};
         end
     end
     [fout] = masterParallel(options_.parallel, 1, B,NamFileInput,'prior_posterior_statistics_core', localVars,globalVars, options_.parallel_info);

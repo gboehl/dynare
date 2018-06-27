@@ -34,7 +34,7 @@ if ny0 ~= M.endo_nbr
     error('All endogenous variables must appear at the current period!')
 end
 
-dynamicmodel = str2func([M.fname,'_dynamic']);
+dynamicmodel = str2func([M.fname,'.dynamic']);
 
 info.status = 1;
 

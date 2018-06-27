@@ -577,9 +577,9 @@ void
 Interpreter::ReadCodeFile(string file_name, CodeLoad &code)
 {
   if (steady_state)
-    file_name += "_static";
+    file_name += "/model/bytecode/static";
   else
-    file_name += "_dynamic";
+    file_name += "/model/bytecode/dynamic";
 
   //First read and store in memory the code
   code_liste = code.get_op_code(file_name);

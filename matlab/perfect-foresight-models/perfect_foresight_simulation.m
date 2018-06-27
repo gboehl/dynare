@@ -41,7 +41,7 @@ persistent lead_lag_incidence dynamic_model ny nyp nyf nrs nrc iyf iyp isp is is
 
 if ~nargin && isempty(iflag)% Initialization of the persistent variables.
     lead_lag_incidence = M_.lead_lag_incidence;
-    dynamic_model = [M_.fname '_dynamic'];
+    dynamic_model = [M_.fname '.dynamic'];
     ny   = size(oo_.endo_simul,1);
     nyp  = nnz(lead_lag_incidence(1,:));% number of lagged variables.
     nyf  = nnz(lead_lag_incidence(3,:));% number of leaded variables.

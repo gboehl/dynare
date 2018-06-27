@@ -130,7 +130,7 @@ else
         z = repmat(dr.ys,1,klen);
     end
     z = z(iyr0) ;
-    [junk,jacobia_] = feval([M_.fname '_dynamic'],z,[oo_.exo_simul ...
+    [junk,jacobia_] = feval([M_.fname '.dynamic'],z,[oo_.exo_simul ...
                         oo_.exo_det_simul], M_.params, dr.ys, it_);
 
     if options_.ACES_solver==1 && (length(sim_ruleids)>0 || length(tct_ruleids)>0 )

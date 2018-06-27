@@ -124,7 +124,7 @@ end
 
 if kronflag==-2
     if nargout>5
-        [residual, g1, g2 ] = feval([M_.fname,'_dynamic'],yy0, oo_.exo_steady_state', ...
+        [residual, g1, g2 ] = feval([M_.fname,'.dynamic'],yy0, oo_.exo_steady_state', ...
                                     M_.params, oo_.dr.ys, 1);
         g22 = hessian_sparse('thet2tau',[M_.params(indx)],options_.gstep,estim_params_,M_, oo_, indx,[],-1);
         H2ss=full(g22(1:M_.endo_nbr,:));
@@ -144,7 +144,7 @@ if kronflag==-2
         g22 = gx22;
         clear gx22;
     else
-        [residual, g1 ] = feval([M_.fname,'_dynamic'],yy0, oo_.exo_steady_state', ...
+        [residual, g1 ] = feval([M_.fname,'.dynamic'],yy0, oo_.exo_steady_state', ...
                                 M_.params, oo_.dr.ys, 1);
     end
     gp = fjaco('thet2tau',[M_.params(indx)],estim_params_,M_, oo_, indx,[],-1);
@@ -154,17 +154,17 @@ if kronflag==-2
 else
     dyssdtheta=zeros(length(oo_.dr.ys),M_.param_nbr);
     d2yssdtheta=zeros(length(oo_.dr.ys),M_.param_nbr,M_.param_nbr);
-    [residual, gg1] = feval([M_.fname,'_static'],oo_.dr.ys, oo_.exo_steady_state', M_.params);
-    df = feval([M_.fname,'_static_params_derivs'],oo_.dr.ys, repmat(oo_.exo_steady_state',[M_.maximum_exo_lag+M_.maximum_exo_lead+1]), ...
+    [residual, gg1] = feval([M_.fname,'.static'],oo_.dr.ys, oo_.exo_steady_state', M_.params);
+    df = feval([M_.fname,'.static_params_derivs'],oo_.dr.ys, repmat(oo_.exo_steady_state',[M_.maximum_exo_lag+M_.maximum_exo_lead+1]), ...
                M_.params);
     dyssdtheta = -gg1\df;
     if nargout>5
-        [residual, gg1, gg2] = feval([M_.fname,'_static'],oo_.dr.ys, oo_.exo_steady_state', M_.params);
-        [residual, g1, g2, g3] = feval([M_.fname,'_dynamic'],yy0, oo_.exo_steady_state', ...
+        [residual, gg1, gg2] = feval([M_.fname,'.static'],oo_.dr.ys, oo_.exo_steady_state', M_.params);
+        [residual, g1, g2, g3] = feval([M_.fname,'.dynamic'],yy0, oo_.exo_steady_state', ...
                                        M_.params, oo_.dr.ys, 1);
         [nr, nc]=size(gg2);
 
-        [df, gpx, d2f] = feval([M_.fname,'_static_params_derivs'],oo_.dr.ys, oo_.exo_steady_state', ...
+        [df, gpx, d2f] = feval([M_.fname,'.static_params_derivs'],oo_.dr.ys, oo_.exo_steady_state', ...
                                M_.params);%, oo_.dr.ys, 1, dyssdtheta*0, d2yssdtheta);
         d2f = get_all_resid_2nd_derivs(d2f,length(oo_.dr.ys),M_.param_nbr);
         if isempty(find(gg2))
@@ -207,7 +207,7 @@ else
     else
         [df, gp] = feval([M_.fname,'_params_derivs'],yy0, repmat(oo_.exo_steady_state',[M_.maximum_exo_lag+M_.maximum_exo_lead+1,1]), ...
                          M_.params, oo_.dr.ys, 1, dyssdtheta,d2yssdtheta);
-        [residual, g1, g2 ] = feval([M_.fname,'_dynamic'],yy0, repmat(oo_.exo_steady_state',[M_.maximum_exo_lag+M_.maximum_exo_lead+1,1]), ...
+        [residual, g1, g2 ] = feval([M_.fname,'.dynamic'],yy0, repmat(oo_.exo_steady_state',[M_.maximum_exo_lag+M_.maximum_exo_lead+1,1]), ...
                                     M_.params, oo_.dr.ys, 1);
     end
 

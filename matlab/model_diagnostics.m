@@ -115,7 +115,7 @@ for b=1:nb
                                 int2str(b)]);
         end
     else
-        [res,jacob]=feval([M.fname '_static'],dr.ys,exo,M.params);
+        [res,jacob]=feval([M.fname '.static'],dr.ys,exo,M.params);
     end
     if any(any(isinf(jacob) | isnan(jacob)))
         problem_dummy=1;
@@ -208,7 +208,7 @@ if ~options.block
                                             M.params, dr.ys, 1);
             jacobia_ = [loc_dr.g1 loc_dr.g1_x loc_dr.g1_xd];
         else
-            [junk,jacobia_] = feval([M.fname '_dynamic'],z(iyr0),exo_simul, ...
+            [junk,jacobia_] = feval([M.fname '.dynamic'],z(iyr0),exo_simul, ...
                                     M.params, dr.ys, it_);
         end
     elseif options.order >= 2
@@ -217,7 +217,7 @@ if ~options.block
                                             M.params, dr.ys, 1);
             jacobia_ = [loc_dr.g1 loc_dr.g1_x];
         else
-            [junk,jacobia_,hessian1] = feval([M.fname '_dynamic'],z(iyr0),...
+            [junk,jacobia_,hessian1] = feval([M.fname '.dynamic'],z(iyr0),...
                                              exo_simul, ...
                                              M.params, dr.ys, it_);
         end

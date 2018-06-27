@@ -27,7 +27,7 @@ DynamicModelDLL::DynamicModelDLL(const string &modName) throw (DynareException)
 #if !defined(__CYGWIN32__) && !defined(_WIN32)
   fName = "./";
 #endif
-  fName += modName + "_dynamic" + MEXEXT;
+  fName += "+" + modName + "/dynamic" + MEXEXT;
 
   try
     {

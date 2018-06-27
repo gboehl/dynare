@@ -31,7 +31,7 @@ if nargin<3
     inversionflag = false;
 end
 
-set_auxiliary_series = [DynareModel.fname '_dynamic_set_auxiliary_series'];
+set_auxiliary_series = [DynareModel.fname '.dynamic_set_auxiliary_series'];
 
 if exist([set_auxiliary_series '.m'])
     dbase = feval(set_auxiliary_series, dbase, DynareModel.params);

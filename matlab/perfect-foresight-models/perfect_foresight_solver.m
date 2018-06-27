@@ -40,7 +40,7 @@ end
 options_.scalv= 1;
 
 if options_.debug
-    model_static = str2func([M_.fname,'_static']);
+    model_static = str2func([M_.fname,'.static']);
     for ii=1:size(oo_.exo_simul,1)
         [residual(:,ii)] = model_static(oo_.steady_state, oo_.exo_simul(ii,:),M_.params);
     end
@@ -183,7 +183,7 @@ if ~isreal(oo_.endo_simul(:)) %can only happen without bytecode
     illi = illi(:,2:3);
     [i_cols_J1,junk,i_cols_1] = find(illi(:));
     i_cols_T = nonzeros(M_.lead_lag_incidence(1:2,:)');
-    residuals = perfect_foresight_problem(yy(:),str2func([M_.fname '_dynamic']), y0, yT, ...
+    residuals = perfect_foresight_problem(yy(:),str2func([M_.fname '.dynamic']), y0, yT, ...
                                           oo_.exo_simul,M_.params,oo_.steady_state, ...
                                           M_.maximum_lag,options_.periods,M_.endo_nbr,i_cols, ...
                                           i_cols_J1, i_cols_1, i_cols_T, i_cols_j, ...
