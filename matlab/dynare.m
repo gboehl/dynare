@@ -283,4 +283,9 @@ end
 if ~ isempty(find(abs(fname) == 46))
     fname = fname(:,1:find(abs(fname) == 46)-1) ;
 end
+
+% We need to clear the driver (and only the driver, because the "clear all"
+% within the driver will clean the rest)
+clear(['+' fname '/driver'])
+
 evalin('base',[fname '.driver']) ;

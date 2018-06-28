@@ -587,7 +587,7 @@ Interpreter::ReadCodeFile(string file_name, CodeLoad &code)
   if (!code_liste.size())
     {
       ostringstream tmp;
-      tmp << " in compute_blocks, " << file_name.c_str() << " cannot be opened\n";
+      tmp << " in compute_blocks, " << file_name << ".cod cannot be opened\n";
       throw FatalExceptionHandling(tmp.str());
     }
   if (block >= (int) code.get_block_number())
