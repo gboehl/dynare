@@ -293,7 +293,7 @@ extern "C" {
                 ++ii;
 
               }
-            if (kOrder == 3 && nlhs > 4)
+            if (kOrder == 3 && nlhs > 5)
               {
                 const FGSContainer *derivs = app.get_rule_ders();
                 const std::string fieldnames[] = {"gy", "gu", "gyy", "gyu", "guu", "gss",
