@@ -52,7 +52,7 @@ fig_name_long = opts_decomp.fig_name;
 
 use_shock_groups = DynareOptions.plot_shock_decomp.use_shock_groups;
 screen_shocks = opts_decomp.screen_shocks;
-if use_shock_groups | comp_nbr<=18
+if ~isempty(use_shock_groups) || comp_nbr<=18
     screen_shocks=0;
 end
 if use_shock_groups
@@ -189,7 +189,7 @@ for j=1:nvar
         hold on
         ht = text(0.3,y1+0.3*height,labels(i,:),'Interpreter','none');
         hold on
-        if interactive && (~isoctave && use_shock_groups)
+        if interactive && (~isoctave && ~isempty(use_shock_groups))
             mydata.fig_name = DynareOptions.plot_shock_decomp.fig_name(2:end);
             mydata.use_shock_groups = DynareOptions.plot_shock_decomp.use_shock_groups;
             mydata.shock_group = shock_groups.(shock_ind{i});
