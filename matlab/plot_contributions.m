@@ -134,7 +134,7 @@ for i = 1:length(vnames)
         % Match all words with vnames{i}
         [b, e] = regexp(rhs, sprintf('\\w*%s\\w*', vnames{i}));
         % Filter out non exact matches (words longer than vnames{i})
-        rid = find(~(e-b>length(vnames{i})));
+        rid = find(~(e-b>=length(vnames{i})));
         if ~isempty(rid)
             b = b(rid);
             e = e(rid);
