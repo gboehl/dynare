@@ -16,8 +16,10 @@ end
 
 [G, alpha, beta] = buildGmatrixWithAlphaAndBeta(params);
 
-A_1 = polyval(alpha, 1.0);
-A_b = polyval(alpha, beta);
+A = [alpha; 1];
+
+A_1 = polyval(A, 1.0);
+A_b = polyval(A, beta);
 
 m = length(alpha);
 n = length(H);
