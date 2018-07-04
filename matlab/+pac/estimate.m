@@ -193,7 +193,7 @@ fclose(fid);
 % Create a function handle returning the sum of square residuals for a given
 % vector of parameters.
 DATA = data(range).data;
-ssr = @(p) ssr_zpac(p, DATA, M_, oo_);
+ssr = @(p) feval(['ssr_' eqname], p, DATA, M_, oo_);
 
 % Set initial condition.
 params0 = cell2mat(struct2cell(params));
