@@ -2,7 +2,6 @@
 
 rm -rf example
 rm  -f example*.json
-rm -f example*.m
 rm -f example*.mat
 rm -f example.log
-rm -f ssr_zpac.m
+rm -f *.m
