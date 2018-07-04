@@ -62,7 +62,7 @@ if ~isfield(varcalib, 'CompanionMatrix') || any(isnan(varcalib.CompanionMatrix(:
 end
 
 % Build the vector of PAC parameters (ECM parameter + autoregressive parameters).
-pacvalues = DynareModel.params([pacmodel.ec.params; pacmodel.ec.params]);
+pacvalues = DynareModel.params([pacmodel.ec.params; pacmodel.ar.params(:)]);
 
 % Get the indices for the stationary/nonstationary variables in the VAR system.
 if any(varmodel.nonstationary)
