@@ -50,7 +50,7 @@ if ~contains(RHS, 'pac_expectation', 'IgnoreCase', true)
 end
 
 % Get the name of the PAC model.
-pattern = '(\(model_name\s*=\s*)(?<name>\w+)\))';
+pattern = '(\(model_name\s*=\s*)(?<name>\w+)\)';
 pacmodl = regexp(RHS, pattern, 'names'); 
 pacmodl = pacmodl.name;
 
