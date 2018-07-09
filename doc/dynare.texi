@@ -1618,22 +1618,34 @@ model_local_variable GDP_US $GDPUS$;
 @subsection On-the-fly Model Variable Declaration
 
 Endogenous variables, exogenous variables, and parameters can also be declared
-inside the model block. To do this, simply follow the symbol name with a
-vertical line (@code{|}) and either an @code{e}, an @code{x}, or a
-@code{p}. For example, to declare a parameter named @code{alphaa} in the model
-block, you could write @code{alphaa|p} directly in an equation where it
-appears. Similarly, to declare an endogenous variable @code{c} in the model
-block you could write @code{c|e}. These on-the-fly variable declarations do not
-have to appear in the first place where this variable is encountered. Note that
+inside the model block. You can do this in two different ways: either via the
+equation tag or directly in an equation.
+
+To declare a variable on-the-fly in an equation tag, simply state the type of
+variable to be declared (@code{endogenous}, @code{exogenous}, or
+@code{parameter} followed by an equal sign and the variable name in single
+quotes. Hence, to declare a variable @code{c} as endogenous in an equation tag,
+you can type @code{[endogenous='c']}.
+
+To perform on-the-fly variable declaration in an equtaion, simply follow the
+symbol name with a vertical line (@code{|}) and either an @code{e}, an
+@code{x}, or a @code{p}. For example, to declare a parameter named
+@code{alphaa} in the model block, you could write @code{alphaa|p} directly in
+an equation where it appears. Similarly, to declare an endogenous variable
+@code{c} in the model block you could write @code{c|e}. Note that in-equation
 on-the-fly variable declarations must be made on contemporaneous variables.
+
+On-the-fly variable declarations do not have to appear in the first place where
+this variable is encountered.
 
 As an example, the following two snippets are equivalent:
 
 @emph{Using on-the-fly variable and parameter declaration}
 @example
 model;
+[endogenous='k',name='law of motion of capital']
 k(+1) = i|e + (1-delta|p)*k;
-y|e = k|e^alpha|p;
+y|e = k^alpha|p;
 @dots{}
 end;
 delta = 0.025;
@@ -1648,6 +1660,7 @@ delta = 0.025;
 alpha = 0.36;
 @dots{}
 model;
+[name='law of motion of capital']
 k(1) = i|e + (1-delta|p)*k;
 y|e = k|e^alpha|p;
 @dots{}
