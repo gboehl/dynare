@@ -10587,8 +10587,8 @@ strings.
 
 It is possible to construct macro-expressions which can be assigned to
 macro-variables or used within a macro-directive. The expressions are
-constructed using literals of the four basic types (integers, strings,
-arrays of strings, arrays of integers), macro-variables names and
+constructed using literals of five basic types (integers, strings, arrays of
+strings, arrays of integers, and string functions), macro-variable names, and
 standard operators.
 
 String literals have to be enclosed between @strong{double} quotes
@@ -10651,6 +10651,14 @@ getting the length of an array: @code{length} operator (for example:
 @code{[1,2,3]})
 @end itemize
 
+The following operators can be used on string functions:
+@itemize
+@item
+comparison operators: @code{==}, @code{!=}
+@item
+concatenation of two strings: @code{+}
+@end itemize
+
 Macro-expressions can be used at two places:
 @itemize
 @item
@@ -10706,16 +10714,18 @@ file will be searched for in the folders provided by @ref{-I} and
 @end deffn
 
 @deffn {Macro directive} @@#define @var{MACRO_VARIABLE} = @var{MACRO_EXPRESSION}
-Defines a macro-variable.
+Defines a macro-variable or macro-function
 
 @customhead{Example 1}
 @example
-@@#define x = 5              // Integer
-@@#define y = "US"           // String
-@@#define v = [ 1, 2, 4 ]    // Integer array
-@@#define w = [ "US", "EA" ] // String array
-@@#define z = 3 + v[2]       // Equals 5
-@@#define t = ("US" in w)    // Equals 1 (true)
+@@#define x = 5                   // Integer
+@@#define y = "US"                // String
+@@#define v = [ 1, 2, 4 ]         // Integer array
+@@#define w = [ "US", "EA" ]      // String array
+@@#define z = 3 + v[2]            // Equals 5
+@@#define t = ("US" in w)         // Equals 1 (true)
+@@#define f(x) = " + @@@{x@} + @@@{y@}" // Defines a function 'f' with argument 'x'
+                                 // that returns the string: ' + @@@{x@} + US'
 @end example
 
 @customhead{Example 2}
@@ -10723,15 +10733,16 @@ Defines a macro-variable.
 @example
 @@#define x = [ "B", "C" ]
 @@#define i = 2
+@@#define f(x) = " + @@@{x@}"
 
 model;
-  A = @@@{x[i]@};
+  A = @@@{x[i] + f("D")@};
 end;
 @end example
 is strictly equivalent to:
 @example
 model;
-  A = C;
+  A = C + D;
 end;
 @end example
 
