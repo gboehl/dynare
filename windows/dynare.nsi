@@ -110,7 +110,7 @@ SectionEnd
 
 SectionGroupEnd
 
-SectionGroup "MEX files for OCTAVE"
+SectionGroup "MEX files for Octave"
 
 Section "MEX files for Octave 4.4.0 (MinGW, 64bit)"
  SetOutPath $INSTDIR\mex\octave
