@@ -33,7 +33,7 @@ end
 
 set_auxiliary_series = [DynareModel.fname '.dynamic_set_auxiliary_series'];
 
-if exist([set_auxiliary_series '.m'])
+if exist(['+' DynareModel.fname filesep() 'dynamic_set_auxiliary_series'])
     dbase = feval(set_auxiliary_series, dbase, DynareModel.params);
 end
 

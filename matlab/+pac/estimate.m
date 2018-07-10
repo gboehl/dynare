@@ -95,7 +95,7 @@ for i=1:length(ipnames_)
 end
 
 % Add the auxiliary variables in the dataset.
-data = feval([M_.fname '_dynamic_set_auxiliary_series'], data, M_.params);
+data = feval([M_.fname '.dynamic_set_auxiliary_series'], data, M_.params);
 
 % Check that the data for endogenous variables have values. Note that we
 % also need data in range(1)-1 for the lagged variables, and we do not test

@@ -12,7 +12,7 @@ function [residuals,JJacobian] = perfect_foresight_problem(y, dynamic_function, 
 %
 % INPUTS
 %   y                   [double] N*1 array, terminal conditions for the endogenous variables
-%   dynamic_function    [handle] function handle to _dynamic-file
+%   dynamic_function    [handle] function handle to the dynamic routine
 %   Y0                  [double] N*1 array, initial conditions for the endogenous variables
 %   YT                  [double] N*1 array, terminal conditions for the endogenous variables
 %   exo_simul           [double] nperiods*M_.exo_nbr matrix of exogenous variables (in declaration order)
@@ -23,7 +23,7 @@ function [residuals,JJacobian] = perfect_foresight_problem(y, dynamic_function, 
 %   T                   [scalar] number of simulation periods
 %   ny                  [scalar] number of endogenous variables
 %   i_cols              [double] indices of variables appearing in M.lead_lag_incidence
-%                                and that need to be passed to _dynamic-file
+%                                and that need to be passed to the dynamic routine
 %   i_cols_J1           [double] indices of contemporaneous and forward looking variables
 %                                appearing in M.lead_lag_incidence
 %   i_cols_1            [double] indices of contemporaneous and forward looking variables in

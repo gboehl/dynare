@@ -1,5 +1,5 @@
 function [r, g1] = bytecode_steadystate(y, exo, params)
-% Wrapper around the *_static.m file, for use with dynare_solve,
+% Wrapper around the static.m file, for use with dynare_solve,
 % when block_mfs option is given to steady.
 
 % Copyright (C) 2009-2011 Dynare Team

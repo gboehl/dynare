@@ -15,7 +15,7 @@ function [options, y0, yT, z, i_cols, i_cols_J1, i_cols_T, i_cols_j, i_cols_1, .
 % - yT                  [double] N*1 array, terminal conditions for the endogenous variables
 % - z                   [double] T*M array, paths for the exogenous variables.
 % - i_cols              [double] indices of variables appearing in M.lead_lag_incidence
-%                                and that need to be passed to _dynamic-file
+%                                and that need to be passed to the dynamic routine
 % - i_cols_J1           [double] indices of contemporaneous and forward looking variables
 %                                appearing in M.lead_lag_incidence
 % - i_cols_T            [double] columns of dynamic Jacobian related to
@@ -25,7 +25,7 @@ function [options, y0, yT, z, i_cols, i_cols_J1, i_cols_T, i_cols_j, i_cols_1, .
 %                                in dynamic Jacobian (relevant in intermediate periods)
 % - i_cols_1            [double] indices of contemporaneous and forward looking variables in
 %                                M.lead_lag_incidence in dynamic Jacobian (relevant in first period)
-% - dynamicmodel        [handle] function handle to _dynamic-file
+% - dynamicmodel        [handle] function handle to the dynamic routine
 
 % Copyright (C) 2015-2017 Dynare Team
 %

@@ -1,5 +1,5 @@
 function [r, g1] = block_mfs_steadystate(y, b, y_all, exo, params, M)
-% Wrapper around the *_static.m file, for use with dynare_solve,
+% Wrapper around the static.m file, for use with dynare_solve,
 % when block_mfs option is given to steady.
 
 % Copyright (C) 2009-2012 Dynare Team
