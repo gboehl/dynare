@@ -38,6 +38,6 @@ perfect_foresight_solver;
 rplot c;
 rplot k;
 
-if ~exist('./ramst.json', 'file') || exist('./ramst.log', 'file')
+if ~exist('./ramst/model/json/modfile.json', 'file') || exist('./ramst.log', 'file')
    error('The dynare command did not honor the options provided in the mod file!')
 end

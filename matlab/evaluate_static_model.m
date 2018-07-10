@@ -43,7 +43,7 @@ if options.bytecode
                                    exo_ss, params, ys, 1);
     mexErrCheck('bytecode', check1);
 else
-    fh_static = str2func([M.fname '_static']);
+    fh_static = str2func([M.fname '.static']);
     if options.block
         residuals = zeros(M.endo_nbr,1);
         for b = 1:length(M.block_structure_stat.block)

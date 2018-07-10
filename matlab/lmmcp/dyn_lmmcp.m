@@ -54,7 +54,7 @@ i_upd = ny+(1:periods*ny);
 
 x = endo_simul(:);
 
-model_dynamic = str2func([M.fname,'_dynamic']);
+model_dynamic = str2func([M.fname,'.dynamic']);
 z = x(find(lead_lag_incidence'));
 [res,A] = model_dynamic(z, exo_simul, params, steady_state,2);
 nnzA = nnz(A);

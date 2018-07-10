@@ -56,7 +56,7 @@ end;
 
 // Write analytical steady state file (without globals)
 options_.steadystate_flag = 2;
-copyfile('rbcii_steady_state.m','rbcii_steadystate2.m');
+copyfile('rbcii_steady_state.m','+rbcii/steadystate.m');
 
 @#if extended_path_version
 

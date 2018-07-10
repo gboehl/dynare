@@ -203,7 +203,7 @@ if nargout>8
    idx = 1:DynareModel.endo_nbr;
    jdx = idx+ny1;
    % Get the name of the dynamic model routine.
-   model_dynamic = str2func([DynareModel.fname,'_dynamic']);
+   model_dynamic = str2func([DynareModel.fname,'.dynamic']);
    % initialization of vector y.
    y = NaN(length(idx)+ny1,1);
 end

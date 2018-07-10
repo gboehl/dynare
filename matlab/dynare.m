@@ -137,7 +137,7 @@ else
     fnamelength = length(fname) - 4;
 end
 
-if fnamelength + length('_set_auxiliary_variables') > namelengthmax()
+if fnamelength + length('.set_auxiliary_variables') > namelengthmax()
     error('The name of your MOD file is too long, please shorten it')
 end
 
@@ -283,4 +283,9 @@ end
 if ~ isempty(find(abs(fname) == 46))
     fname = fname(:,1:find(abs(fname) == 46)-1) ;
 end
-evalin('base',fname) ;
+
+% We need to clear the driver (and only the driver, because the "clear all"
+% within the driver will clean the rest)
+clear(['+' fname '/driver'])
+
+evalin('base',[fname '.driver']) ;

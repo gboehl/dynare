@@ -75,4 +75,4 @@ illi = M.lead_lag_incidence';
 illi = illi(:,2:3);
 [i_cols_J1, junk,i_cols_1] = find(illi(:));
 i_cols_T = nonzeros(M.lead_lag_incidence(1:2,:)');
-dynamicmodel = str2func([M.fname,'_dynamic']);
+dynamicmodel = str2func([M.fname,'.dynamic']);

@@ -39,7 +39,7 @@ params = M_.params;
 endo_simul = oo_.endo_simul;
 exo_simul = oo_.exo_simul;
 
-model_dynamic = str2func([M_.fname,'_dynamic']);
+model_dynamic = str2func([M_.fname,'.dynamic']);
 
 residuals = zeros(ny,periods);
 

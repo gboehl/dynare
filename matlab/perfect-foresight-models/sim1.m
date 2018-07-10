@@ -76,7 +76,7 @@ if verbose
     skipline()
 end
 
-model_dynamic = str2func([M.fname,'_dynamic']);
+model_dynamic = str2func([M.fname,'.dynamic']);
 z = Y(find(lead_lag_incidence'));
 
 [d1,jacobian] = model_dynamic(z, exogenousvariables, params, steadystate,maximum_lag+1);

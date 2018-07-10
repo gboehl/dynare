@@ -49,7 +49,7 @@ gu(dr.order_var,:) = dr.ghu;
 
 ys = oo.dr.ys;
 
-[U,Uy,Uyy] = feval([M.fname '_objective_static'],ys,zeros(1,exo_nbr), ...
+[U,Uy,Uyy] = feval([M.fname '.objective.static'],ys,zeros(1,exo_nbr), ...
                    M.params);
 %second order terms
 Uyy = full(Uyy);

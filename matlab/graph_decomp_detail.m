@@ -52,7 +52,7 @@ if ~isempty(opts_decomp.type)
     fig_mode = [fig_mode '_'];
 end
 screen_shocks = opts_decomp.screen_shocks;
-if DynareOptions.plot_shock_decomp.use_shock_groups | comp_nbr<=18
+if ~isempty(DynareOptions.plot_shock_decomp.use_shock_groups) || comp_nbr<=18
     screen_shocks=0;
 end
 fig_name_long = opts_decomp.fig_name;
@@ -166,7 +166,7 @@ for j=1:nvar
             ineg=zz<0;
             hax = subplot(nrow,ncol,i); set(gca,'box','on')
             hbar = bar(x(2:end),(zz.*ipos)','stacked','FaceColor','flat');
-            if ~matlab_ver_less_than('9.3.0')
+            if ~isoctave && ~matlab_ver_less_than('9.3.0')
             % make bar obey colormap under MATLAB R2017b
             for k = 1:2
                 hbar(k).CData = k;
@@ -175,7 +175,7 @@ for j=1:nvar
             set(hbar,'edgecolor','flat');
             hold on,
             hbar = bar(x(2:end),(zz.*ineg)','stacked','FaceColor','flat');
-            if ~matlab_ver_less_than('9.3.0')
+            if ~isoctave && ~matlab_ver_less_than('9.3.0')
             % make bar obey colormap under MATLAB R2017b
             for k = 1:2
                 hbar(k).CData = k;
@@ -191,7 +191,7 @@ for j=1:nvar
             a0(4)=max(a(4),a0(4));
             set(gca,'ylim',a0(3:4))
             hold on, h1=plot(x(2:end),z1(end,:),'k-','LineWidth',2);
-            if interactive & (~isoctave & use_shock_groups)
+            if interactive && (~isoctave && ~isempty(use_shock_groups))
                 mydata.fig_name = DynareOptions.plot_shock_decomp.fig_name(2:end);
                 mydata.use_shock_groups = DynareOptions.plot_shock_decomp.use_shock_groups;
                 mydata.shock_group = shock_groups.(shock_ind{ic});

@@ -66,7 +66,7 @@ if options_.steadystate_flag
     [junk,M_.params,info] = evaluate_steady_state_file(oo_.steady_state,[oo_.exo_steady_state; oo_.exo_det_steady_state],M_, ...
                                                       options_,0);
 end
-[U,Uy,W] = feval([M_.fname,'_objective_static'],zeros(endo_nbr,1),[], M_.params);
+[U,Uy,W] = feval([M_.fname,'.objective.static'],zeros(endo_nbr,1),[], M_.params);
 if any(any(Uy~=0))
     non_zero_derivs=find(any(Uy~=0));
     for ii=1:length(non_zero_derivs)
@@ -94,7 +94,7 @@ if exo_nbr == 0
     oo_.exo_steady_state = [] ;
 end
 
-[junk,jacobia_] = feval([M_.fname '_dynamic'],z, [zeros(size(oo_.exo_simul)) ...
+[junk,jacobia_] = feval([M_.fname '.dynamic'],z, [zeros(size(oo_.exo_simul)) ...
                     oo_.exo_det_simul], M_.params, zeros(endo_nbr,1), it_);
 if any(junk~=0)
     error(['discretionary_policy: the model must be written in deviation ' ...

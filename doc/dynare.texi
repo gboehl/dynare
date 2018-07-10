@@ -97,7 +97,7 @@
 @c %**end of header
 
 @copying
-Copyright @copyright{} 1996-2017, Dynare Team.
+Copyright @copyright{} 1996-2018, Dynare Team.
 
 @quotation
 Permission is granted to copy, distribute and/or modify this document
@@ -778,30 +778,21 @@ file.  By default (unless @code{use_dll} option has been given to
 
 @table @file
 
-@item @var{FILENAME}.m
+@item +@var{FILENAME}/driver.m
 Contains variable declarations, and computing tasks
 
-@item @var{FILENAME}_dynamic.m
+@item +@var{FILENAME}/dynamic.m
 @vindex M_.lead_lag_incidence
 Contains the dynamic model equations. Note that Dynare might introduce auxiliary equations and variables (@pxref{Auxiliary variables}). Outputs are the residuals of the dynamic model equations in the order the equations were declared and the Jacobian of the dynamic model equations. For higher order approximations also the Hessian and the third-order derivatives are provided. When computing the Jacobian of the dynamic model, the order of the endogenous variables in the columns is stored in @code{M_.lead_lag_incidence}. The rows of this matrix represent time periods: the first row denotes a lagged (time t-1) variable, the second row a contemporaneous (time t) variable, and the third row a leaded (time t+1) variable. The columns of the matrix represent the endogenous variables in their order of declaration. A zero in the matrix means that this endogenous does not appear in the model in this time period. The value in the @code{M_.lead_lag_incidence} matrix corresponds to the column of that variable in the Jacobian of the dynamic model. Example: Let the second declared variable be @code{c} and the @code{(3,2)} entry of @code{M_.lead_lag_incidence} be @code{15}. Then the @code{15}th column of the Jacobian is the derivative with respect to @code{c(+1)}.
 
-@item @var{FILENAME}_static.m
+@item +@var{FILENAME}/static.m
 Contains the long run static model equations. Note that Dynare might introduce auxiliary equations and variables (@pxref{Auxiliary variables}). Outputs are the residuals of the static model equations in the order the equations were declared and the Jacobian of the static equations. Entry @code{(i,j)} of the Jacobian represents the derivative of the @code{i}th static model equation with respect to the @code{j}th model variable in declaration order.
 @end table
 
 @noindent
 These files may be looked at to understand errors reported at the simulation stage.
 
-@code{dynare} will then run the computing tasks by executing @file{@var{FILENAME}.m}.
-
-A few words of warning is warranted here: the filename of the
-@file{.mod} file should be chosen in such a way that the generated
-@file{.m} files described above do not conflict with @file{.m} files
-provided by MATLAB/Octave or by Dynare. Not respecting this rule could
-cause crashes or unexpected behaviour. In particular, it means that
-the @file{.mod} file cannot be given the name of a MATLAB/Octave or
-Dynare command. Under Octave, it also means that the @file{.mod} file
-cannot be named @file{test.mod}.
+@code{dynare} will then run the computing tasks by executing @file{+@var{FILENAME}/driver.m}.
 
 @optionshead
 
@@ -875,16 +866,16 @@ Suppresses all warnings.
 @item json=parse|transform|compute
 Causes the preprocessor to output a version of the @file{.mod} file in JSON
 format. If @code{parse} is passed, the output will be written after the parsing
-of the @file{.mod} file to a file called @file{@var{FILENAME}.json}. If
+of the @file{.mod} file to a file called @file{@var{FILENAME}/model/json/modfile.json}. If
 @code{transform} is passed, the JSON output of the transformed model (maximum
 lead of 1, minimum lag of -1, expectation operators substituted, etc.) will be
-written to a file called @file{@var{FILENAME}.json} and the original,
-untransformed model will be written in @file{@var{FILENAME}_original.json}. And
+written to a file called @file{@var{FILENAME}/model/json/modfile.json} and the original,
+untransformed model will be written in @file{@var{FILENAME}/model/json/modfile-original.json}. And
 if @code{compute} is passed, the output is written after the computing pass. In
-this case, the transformed model is written to @file{@var{FILENAME}.json}, the
-original model is written to @file{@var{FILENAME}_original.json}, and the
-dynamic and static files are written to @file{@var{FILENAME}_dynamic.json} and
-@file{@var{FILENAME}_static.json}.
+this case, the transformed model is written to @file{@var{FILENAME}/model/json/modfile.json}, the
+original model is written to @file{@var{FILENAME}/model/json/model-original.json}, and the
+dynamic and static files are written to @file{@var{FILENAME}/model/json/dynamic.json} and
+@file{@var{FILENAME}/model/json/static.json}.
 
 @item jsonstdout
 Instead of writing output requested by @ref{json} to files, write to standard
@@ -895,8 +886,8 @@ Quit processing once the output requested by @ref{json} has been written.
 
 @item jsonderivsimple
 Print a simplified version (excluding variable name(s) and lag information) of the
-static and dynamic files in @file{@var{FILENAME}_static.json} and
-@file{@var{FILENAME}_dynamic.json}.
+static and dynamic files in @file{@var{FILENAME}/model/json/static.json} and
+@file{@var{FILENAME}/model/json/dynamic.json}.
 
 @item warn_uninit
 Display a warning for each variable or parameter which is not
@@ -1634,22 +1625,34 @@ model_local_variable GDP_US $GDPUS$;
 @subsection On-the-fly Model Variable Declaration
 
 Endogenous variables, exogenous variables, and parameters can also be declared
-inside the model block. To do this, simply follow the symbol name with a
-vertical line (@code{|}) and either an @code{e}, an @code{x}, or a
-@code{p}. For example, to declare a parameter named @code{alphaa} in the model
-block, you could write @code{alphaa|p} directly in an equation where it
-appears. Similarly, to declare an endogenous variable @code{c} in the model
-block you could write @code{c|e}. These on-the-fly variable declarations do not
-have to appear in the first place where this variable is encountered. Note that
+inside the model block. You can do this in two different ways: either via the
+equation tag or directly in an equation.
+
+To declare a variable on-the-fly in an equation tag, simply state the type of
+variable to be declared (@code{endogenous}, @code{exogenous}, or
+@code{parameter} followed by an equal sign and the variable name in single
+quotes. Hence, to declare a variable @code{c} as endogenous in an equation tag,
+you can type @code{[endogenous='c']}.
+
+To perform on-the-fly variable declaration in an equtaion, simply follow the
+symbol name with a vertical line (@code{|}) and either an @code{e}, an
+@code{x}, or a @code{p}. For example, to declare a parameter named
+@code{alphaa} in the model block, you could write @code{alphaa|p} directly in
+an equation where it appears. Similarly, to declare an endogenous variable
+@code{c} in the model block you could write @code{c|e}. Note that in-equation
 on-the-fly variable declarations must be made on contemporaneous variables.
+
+On-the-fly variable declarations do not have to appear in the first place where
+this variable is encountered.
 
 As an example, the following two snippets are equivalent:
 
 @emph{Using on-the-fly variable and parameter declaration}
 @example
 model;
+[endogenous='k',name='law of motion of capital']
 k(+1) = i|e + (1-delta|p)*k;
-y|e = k|e^alpha|p;
+y|e = k^alpha|p;
 @dots{}
 end;
 delta = 0.025;
@@ -1664,6 +1667,7 @@ delta = 0.025;
 alpha = 0.36;
 @dots{}
 model;
+[name='law of motion of capital']
 k(1) = i|e + (1-delta|p)*k;
 y|e = k|e^alpha|p;
 @dots{}
@@ -3601,7 +3605,7 @@ is described below in more details. See also @file{fs2000.mod} in the
 @file{examples} directory for an example.
 
 The steady state file generated by Dynare will be called
-@file{@var{FILENAME}_steadystate2.m}.
+@file{+@var{FILENAME}/steadystate.m}.
 
 @item
 You can write the corresponding MATLAB function by hand. If your
@@ -10838,8 +10842,8 @@ strings.
 
 It is possible to construct macro-expressions which can be assigned to
 macro-variables or used within a macro-directive. The expressions are
-constructed using literals of the four basic types (integers, strings,
-arrays of strings, arrays of integers), macro-variables names and
+constructed using literals of five basic types (integers, strings, arrays of
+strings, arrays of integers, and string functions), macro-variable names, and
 standard operators.
 
 String literals have to be enclosed between @strong{double} quotes
@@ -10902,6 +10906,14 @@ getting the length of an array: @code{length} operator (for example:
 @code{[1,2,3]})
 @end itemize
 
+The following operators can be used on string functions:
+@itemize
+@item
+comparison operators: @code{==}, @code{!=}
+@item
+concatenation of two strings: @code{+}
+@end itemize
+
 Macro-expressions can be used at two places:
 @itemize
 @item
@@ -10957,16 +10969,18 @@ file will be searched for in the folders provided by @ref{-I} and
 @end deffn
 
 @deffn {Macro directive} @@#define @var{MACRO_VARIABLE} = @var{MACRO_EXPRESSION}
-Defines a macro-variable.
+Defines a macro-variable or macro-function
 
 @customhead{Example 1}
 @example
-@@#define x = 5              // Integer
-@@#define y = "US"           // String
-@@#define v = [ 1, 2, 4 ]    // Integer array
-@@#define w = [ "US", "EA" ] // String array
-@@#define z = 3 + v[2]       // Equals 5
-@@#define t = ("US" in w)    // Equals 1 (true)
+@@#define x = 5                   // Integer
+@@#define y = "US"                // String
+@@#define v = [ 1, 2, 4 ]         // Integer array
+@@#define w = [ "US", "EA" ]      // String array
+@@#define z = 3 + v[2]            // Equals 5
+@@#define t = ("US" in w)         // Equals 1 (true)
+@@#define f(x) = " + @@@{x@} + @@@{y@}" // Defines a function 'f' with argument 'x'
+                                 // that returns the string: ' + @@@{x@} + US'
 @end example
 
 @customhead{Example 2}
@@ -10974,15 +10988,16 @@ Defines a macro-variable.
 @example
 @@#define x = [ "B", "C" ]
 @@#define i = 2
+@@#define f(x) = " + @@@{x@}"
 
 model;
-  A = @@@{x[i]@};
+  A = @@@{x[i] + f("D")@};
 end;
 @end example
 is strictly equivalent to:
 @example
 model;
-  A = C;
+  A = C + D;
 end;
 @end example
 

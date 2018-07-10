@@ -25,7 +25,7 @@ ss = oo_.steady_state;
 
 ss(indx) = y;
 
-eval(['[R,G] = ' M_.fname '_static(ss, x, M_.params);']);
+eval(['[R,G] = ' M_.fname '.static(ss, x, M_.params);']);
 
 sR = R(inde);
 sG = G(inde,indx);

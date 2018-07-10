@@ -135,7 +135,7 @@ xx(1:M.orig_endo_nbr) = x(1:M.orig_endo_nbr); %set values of original endogenous
 if any([M.aux_vars.type] ~= 6) %auxiliary variables other than multipliers
     needs_set_auxiliary_variables = 1;
     if M.set_auxiliary_variables
-        fh = str2func([M.fname '_set_auxiliary_variables']);
+        fh = str2func([M.fname '.set_auxiliary_variables']);
         s_a_v_func = @(z) fh(z,...
             [oo.exo_steady_state,...
             oo.exo_det_steady_state],...
@@ -150,7 +150,7 @@ end
 
 % value and Jacobian of objective function
 ex = zeros(1,M.exo_nbr);
-[U,Uy,Uyy] = feval([fname '_objective_static'],x,ex, params);
+[U,Uy,Uyy] = feval([fname '.objective.static'],x,ex, params);
 Uyy = reshape(Uyy,endo_nbr,endo_nbr);
 
 % set multipliers and auxiliary variables that
@@ -160,7 +160,7 @@ if (options_.bytecode)
                                  params, 'evaluate');
     fJ = junk.g1;
 else
-    [res,fJ] = feval([fname '_static'],xx,[oo.exo_steady_state oo.exo_det_steady_state], ...
+    [res,fJ] = feval([fname '.static'],xx,[oo.exo_steady_state oo.exo_det_steady_state], ...
                      params);
 end
 % index of multipliers and corresponding equations
@@ -197,7 +197,7 @@ if (options_.bytecode)
     [chck, res, junk] = bytecode('static',ys,[oo.exo_steady_state oo.exo_det_steady_state], ...
                                  M.params, 'evaluate');
 else
-    res = feval([M.fname '_static'],ys,[oo.exo_steady_state oo.exo_det_steady_state], ...
+    res = feval([M.fname '.static'],ys,[oo.exo_steady_state oo.exo_det_steady_state], ...
                 M.params);
 end
 if norm(res) < options_.solve_tolf

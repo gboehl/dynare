@@ -17,7 +17,7 @@ function e = euler_equation_error(y0,x,innovations,M,options,oo,pfm,nodes,weight
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.    
 
-dynamic_model = str2func([M.fname '_dynamic']);
+dynamic_model = str2func([M.fname '.dynamic']);
 ep = options.ep;
 [y1, info_convergence, endogenousvariablespaths] = extended_path_core(ep.periods, ...
                                                   M.endo_nbr, M.exo_nbr, ...

@@ -43,7 +43,7 @@ if options_.block
             mexErrCheck('bytecode', info);
         end
     else
-        oo_ = feval([M_.fname '_dynamic'], options_, M_, oo_);
+        oo_ = feval([M_.fname '.dynamic'], options_, M_, oo_);
     end
 else
     if options_.bytecode
@@ -110,7 +110,7 @@ if nargout>1
         if options_.bytecode
             [chck, residuals, junk]= bytecode('dynamic','evaluate', oo_.endo_simul, oo_.exo_simul, M_.params, oo_.steady_state, 1);
         else
-            residuals = perfect_foresight_problem(yy(:),str2func([M_.fname '_dynamic']), y0, yT, ...
+            residuals = perfect_foresight_problem(yy(:),str2func([M_.fname '.dynamic']), y0, yT, ...
                                                   oo_.exo_simul,M_.params,oo_.steady_state, ...
                                                   M_.maximum_lag,options_.periods,M_.endo_nbr,i_cols, ...
                                                   i_cols_J1, i_cols_1, i_cols_T, i_cols_j, ...

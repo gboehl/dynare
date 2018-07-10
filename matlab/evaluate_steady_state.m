@@ -47,7 +47,7 @@ params = M.params;
 exo_ss = [oo.exo_steady_state; oo.exo_det_steady_state];
 
 if length(M.aux_vars) > 0 && ~steadystate_flag
-    h_set_auxiliary_variables = str2func([M.fname '_set_auxiliary_variables']);
+    h_set_auxiliary_variables = str2func([M.fname '.set_auxiliary_variables']);
     if M.set_auxiliary_variables
         ys_init = h_set_auxiliary_variables(ys_init,exo_ss,M.params);
     end
@@ -219,7 +219,7 @@ elseif steadystate_flag
 elseif (options.bytecode == 0 && options.block == 0)
     if options.linear == 0
         % non linear model
-        static_model = str2func([M.fname '_static']);
+        static_model = str2func([M.fname '.static']);
         [ys,check] = dynare_solve(@static_problem,...
                                   ys_init,...
                                   options, exo_ss, params,...
@@ -247,7 +247,7 @@ elseif (options.bytecode == 0 && options.block == 0)
         end
     else
         % linear model
-        fh_static = str2func([M.fname '_static']);
+        fh_static = str2func([M.fname '.static']);
         [fvec,jacob] = fh_static(ys_init,exo_ss, ...
                                  params);
 
@@ -312,12 +312,12 @@ if M.static_and_dynamic_models_differ
         [chck, r, junk]= bytecode('dynamic','evaluate', z, zx, M.params, ys, 1);
         mexErrCheck('bytecode', chck);
     elseif options.block
-        [r, oo.dr] = feval([M.fname '_dynamic'], z', zx, M.params, ys, M.maximum_lag+1, oo.dr);
+        [r, oo.dr] = feval([M.fname '.dynamic'], z', zx, M.params, ys, M.maximum_lag+1, oo.dr);
     else
         iyv = M.lead_lag_incidence';
         iyr0 = find(iyv(:));
         xys = z(iyr0);
-        r = feval([M.fname '_dynamic'], z(iyr0), zx, M.params, ys, M.maximum_lag + 1);
+        r = feval([M.fname '.dynamic'], z(iyr0), zx, M.params, ys, M.maximum_lag + 1);
     end
     % Fail if residual greater than tolerance
     if max(abs(r)) > options.solve_tolf

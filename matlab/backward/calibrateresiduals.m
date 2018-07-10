@@ -36,7 +36,7 @@ function [residuals, info] = calibrateresiduals(dbase, info, DynareModel)
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 % Get function handle for the dynamic model
-model_dynamic = str2func([DynareModel.fname,'_dynamic']);
+model_dynamic = str2func([DynareModel.fname,'.dynamic']);
 
 % Get data for all the endogenous variables.
 ydata = dbase{info.endonames{:}}.data;

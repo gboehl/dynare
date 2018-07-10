@@ -1,5 +1,5 @@
 // Example 1 from Collard's guide to Dynare
-var y, c, k, a, h, b;
+var y, k, a, h, b;
 varexo e, u;
 
 verbatim;
@@ -22,6 +22,7 @@ theta = 2.95;
 phi   = 0.1;
 
 model;
+[endogenous='c',name='law of motion of capital']
 c*theta*h^(1+psi)=(1-alpha)*y;
 k = beta*(((exp(b)*c)/(exp(b(+1))*c(+1)))
     *(exp(b(+1))*alpha*y(+1)+(1-delta)*k));

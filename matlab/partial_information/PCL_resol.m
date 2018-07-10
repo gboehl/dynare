@@ -65,7 +65,7 @@ end
 dr.ys = ys;
 check1 = 0;
 % testing for steadystate file
-fh = str2func([M_.fname '_static']);
+fh = str2func([M_.fname '.static']);
 if options_.steadystate_flag
     [dr.ys,check1] = feval([M_.fname '_steadystate'],dr.ys,...
                            [oo_.exo_steady_state; ...

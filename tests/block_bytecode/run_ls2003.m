@@ -17,12 +17,7 @@ function run_ls2003(block, bytecode, solve_algo, stack_solve_algo)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-% Workaround for a strange race condition under Octave
-if exist('ls2003_tmp.m') == 2
-    delete('ls2003_tmp.m')
-end
-
-disp(['TEST: ls2003 (block=' num2str(block) ', bytecode=' ...
+  disp(['TEST: ls2003 (block=' num2str(block) ', bytecode=' ...
       num2str(bytecode) ', solve_algo=' num2str(solve_algo) ...
       ', stack_solve_algo=' num2str(stack_solve_algo) ')...']);
 fid = fopen('ls2003_tmp.mod', 'w');
