@@ -42,9 +42,9 @@ end
 
 % Get the equation from the JSON output.
 if original
-    jsonfil = loadjson([DynareModel.fname '_original.json']);
+    jsonfil = loadjson([DynareModel.fname filesep() 'model' filesep() 'json' filesep() 'modfile-original.json']);
 else
-    jsonfil = loadjson([DynareModel.fname '.json']);
+    jsonfil = loadjson([DynareModel.fname filesep() 'model' filesep() 'json' filesep() 'modfile.json']));
 end
 jsonmod = jsonfil.model;
 jsoneqn = getEquationsByTags(jsonmod, 'name', eqname);
