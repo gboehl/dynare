@@ -30,7 +30,7 @@ function olseqs(ds, varargin)
 
 global M_ oo_
 
-jsonfile = [M_.fname '_original.json'];
+jsonfile = [M_.fname filesep() 'model' filesep() 'json' filesep() 'modfile-original.json']);
 if exist(jsonfile, 'file') ~= 2
     error('Could not find %s! Please use the json option (See the Dynare invocation section in the reference manual).', jsonfile);
 end
