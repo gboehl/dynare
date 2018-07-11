@@ -9,6 +9,11 @@
 **                       |x is an exogenous variable,
 **                       |p is a parameter.
 **
+** Variables can also be declared on the fly via equation tags:
+**                       [endogenous='varname']
+**                       [exogenous='varname']
+**                       [parameter='varname']
+**
 ** Example. If the first equation (consumption/leisure arbitrage) is removed from the following model block, then h (hours)
 ** will be interpreted as an exogenous variable.
 */
@@ -17,7 +22,8 @@ model;
 c*theta|p*h|e^(1+psi|p)=(1-alpha)*y;
 k|e = beta|p*(((exp(b)*c)/(exp(b(+1))*c(+1)))
     *(exp(b(+1))*alpha|p*y(+1)+(1-delta)*k));
-y|e = exp(a)*(k(-1)^alpha)*(h^(1-alpha));
+[endogenous='y']
+y = exp(a)*(k(-1)^alpha)*(h^(1-alpha));
 k = exp(b)*(y-c|e)+(1-delta|p)*k(-1);
 a|e = rho|p*a(-1)+tau*b(-1) + e|x;
 b|e = tau|p*a(-1)+rho*b(-1) + u|x;
