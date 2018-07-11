@@ -1,7 +1,6 @@
 #!/bin/sh
 
 rm -rf example
-rm  -f example*.json
-rm -f example*.mat
+rm  -rf +example
 rm -f example.log
-rm -f *.m
+rm -f *.mat
