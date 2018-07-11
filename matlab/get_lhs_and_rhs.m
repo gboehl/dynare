@@ -44,7 +44,7 @@ end
 if original
     jsonfil = loadjson([DynareModel.fname filesep() 'model' filesep() 'json' filesep() 'modfile-original.json']);
 else
-    jsonfil = loadjson([DynareModel.fname filesep() 'model' filesep() 'json' filesep() 'modfile.json']));
+    jsonfil = loadjson([DynareModel.fname filesep() 'model' filesep() 'json' filesep() 'modfile.json']);
 end
 jsonmod = jsonfil.model;
 jsoneqn = getEquationsByTags(jsonmod, 'name', eqname);
