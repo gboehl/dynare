@@ -894,7 +894,8 @@ check-octave: $(O_XFAIL_TRS_FILES) $(O_TRS_FILES)
 %.o.trs %.o.log : %.m
 	@echo "`tput bold``tput setaf 8`OCTAVE: $(PWD)/$*... `tput sgr0`"
 	@DYNARE_VERSION="$(PACKAGE_VERSION)" TOP_TEST_DIR="$(PWD)" \
-		$(OCTAVE) --no-init-file --silent --no-history $< > $*.o.log 2>&1
+		$(OCTAVE) --no-init-file --silent --no-history $< > $*.o.log 2>&1 || \
+		printf ":test-result: FAIL\n:number-tests: 1\n:number-failed-tests: 1\n:list-of-failed-tests: $*.m\n:elapsed-time: 0.0\n" > $*.o.trs
 	@echo "`tput bold``tput setaf 8`OCTAVE: $(PWD)/$* Done!`tput sgr0`"
 
 %.m.tls : %.m
