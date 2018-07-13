@@ -46,11 +46,9 @@ steadystate_flag = options.steadystate_flag;
 params = M.params;
 exo_ss = [oo.exo_steady_state; oo.exo_det_steady_state];
 
-if length(M.aux_vars) > 0 && ~steadystate_flag
+if length(M.aux_vars) > 0 && ~steadystate_flag && M.set_auxiliary_variables
     h_set_auxiliary_variables = str2func([M.fname '.set_auxiliary_variables']);
-    if M.set_auxiliary_variables
-        ys_init = h_set_auxiliary_variables(ys_init,exo_ss,M.params);
-    end
+    ys_init = h_set_auxiliary_variables(ys_init,exo_ss,M.params);
 end
 
 if options.ramsey_policy
