@@ -163,7 +163,11 @@ for i=1:length(objNames)
             rhs = regexprep(rhs, ['\<' objNames{i} '\>'], sprintf('data(:,%u)', k));
         end
         if contains(lhs, objNames{i})
-            lhs = strrep(lhs, objNames{i}, sprintf('data(2:end,%u)', k));
+            if islaggedvariables
+                lhs = strrep(lhs, objNames{i}, sprintf('data(2:end,%u)', k));
+            else
+                lhs = strrep(lhs, objNames{i}, sprintf('data(:,%u)', k));
+            end
         end
     end
 end
