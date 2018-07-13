@@ -51,7 +51,7 @@ end
 
 % Get the name of the PAC model.
 pattern = '(\(model_name\s*=\s*)(?<name>\w+)\)';
-pacmodl = regexp(RHS, pattern, 'names'); 
+pacmodl = regexp(RHS, pattern, 'names');
 pacmodl = pacmodl.name;
 
 % Get the transformed equation to be estimated.
@@ -99,7 +99,7 @@ data = feval([M_.fname '.dynamic_set_auxiliary_series'], data, M_.params);
 
 % Check that the data for endogenous variables have values. Note that we
 % also need data in range(1)-1 for the lagged variables, and we do not test
-% for them here. 
+% for them here.
 if any(isnan(data{enames{:}}(range).data(:)))
     error('Some variable values are missing in the database.')
 end
@@ -115,7 +115,7 @@ if isequal(xnbr, 1)
         error('The residual (%s) must have NaN values in the provided database.', xnames{1})
     end
 else
-    % We have observed exogenous variables in the PAC equation. 
+    % We have observed exogenous variables in the PAC equation.
     tmp = data{xnames{:}}(range).data;
     idx = find(all(~isnan(tmp))); % Indices for the observed exogenous variables.
     if isequal(length(idx), length(xnames))
@@ -136,7 +136,7 @@ end
 % be without consequence.
 rhs = regexprep(rhs, rname, '');
 
-% Create a dummy variable 
+% Create a dummy variable
 islaggedvariables = contains(rhs, '(-1)');
 
 % Substitute parameters and variables.
@@ -152,12 +152,12 @@ for i=1:length(objNames)
         n = length(objNames{i});
         j = regexp(rhs, ['\<', objNames{i}, '\>']);
         if islaggedvariables
-            for l = 1:length(j)
-                if isequal(rhs(j(l)+n:j(l)+n+3), '(-1)')
-                    rhs = strrep(rhs, [objNames{i} '(-1)'], sprintf('data(1:end-1,%u)', k));
-                else
-                    rhs = regexprep(rhs, ['\<' objNames{i} '\>'], sprintf('data(2:end,%u)', k));
-                end
+            jlag = regexp(rhs, ['\<(', objNames{i}, '\(-1\))\>']);
+            if ~isempty(jlag)
+                rhs = regexprep(rhs, ['\<(' objNames{i} '\(-1\))\>'], sprintf('data(1:end-1,%u)', k));
+            end
+            if ~isempty(setdiff(j, jlag))
+                rhs = regexprep(rhs, ['\<' objNames{i} '\>'], sprintf('data(2:end,%u)', k));
             end
         else
             rhs = regexprep(rhs, ['\<' objNames{i} '\>'], sprintf('data(:,%u)', k));
@@ -206,6 +206,5 @@ pparams1 = fminunc(ssr, params0, options);
 
 % Update M_.params
 for i=1:length(pparams1)
-    M_.params(ipnames_(i)) = pparams1(i); 
+    M_.params(ipnames_(i)) = pparams1(i);
 end
-
