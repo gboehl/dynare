@@ -92,18 +92,18 @@ end
 
 % Get h0 and h1 vectors (plus the parameter for the growth neutrality correction).
 if growth_flag
-    [h0, h1, growthneutrality] = hVectors([pacvalues; beta], varcalib.CompanionMatrix, ids, idns, DynareModel.pac.(pacname).auxmodel);
+    [h0, h1, growthneutrality] = hVectors([pacvalues; beta], varcalib.CompanionMatrix, ids, pacmodel.ec.var(1), pacmodel.auxmodel);
 else
-    [h0, h1] = hVectors([pacvalues; beta], varcalib.CompanionMatrix, ids, idns, DynareModel.pac.(pacname).auxmodel);
+    [h0, h1] = hVectors([pacvalues; beta], varcalib.CompanionMatrix, ids, pacmodel.ec.vars(1), pacmodel.auxmodel);
 end
 
 % Update the parameters related to the stationary components.
-if length(ids)
+if length(h0)
     DynareModel.params(pacmodel.h0_param_indices) = h0;
 end
 
 % Update the parameters related to the nonstationary components.
-if length(idns)
+if length(h1)
     DynareModel.params(pacmodel.h1_param_indices) = h1;
 end
 
