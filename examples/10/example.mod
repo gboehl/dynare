@@ -89,7 +89,7 @@ eparams.c_z_2 = .2;
 edata = TrueData;
 edata.ez = dseries(NaN(TrueData.nobs, 1), 200Q1, 'ez');
 
-pac.estimate('zpac', eparams, edata, 2005Q1:2120Q1);
+pac.estimate.nls('zpac', eparams, edata, 2005Q1:2120Q1);
 
 disp(sprintf('Estimate of e_c_m: %f', M_.params(strmatch('e_c_m', M_.param_names, 'exact'))))
 disp(sprintf('Estimate of c_z_1: %f', M_.params(strmatch('c_z_1', M_.param_names, 'exact'))))
