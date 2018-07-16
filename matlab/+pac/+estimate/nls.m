@@ -1,6 +1,6 @@
-function estimate(eqname, params, data, range)
+function nls(eqname, params, data, range)
 
-% Estimates the parameters of a PAC equation.
+% Estimates the parameters of a PAC equation by Nonlinear Least Squares.
 %
 % INPUTS
 % - eqname       [string]    Name of the pac equation.
