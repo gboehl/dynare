@@ -206,7 +206,7 @@ end
 %$
 %$ try
 %$    if isoctave
-%$        s = quadv(density, .0000000001, 100000,1e-10);
+%$        s = quadl(density, .0000000001, 100000, 1e-10);
 %$    else
 %$        s = integral(density, 0, 100000);
 %$    end
@@ -229,7 +229,7 @@ end
 %$
 %$ try
 %$    if isoctave
-%$        s = quadv(density, .0000000001, 100000,1e-10);
+%$        s = quadl(density, .0000000001, 100000, 1e-10);
 %$    else
 %$        s = integral(density, 0, 100000);
 %$    end
@@ -252,7 +252,7 @@ end
 %$
 %$ try
 %$    if isoctave
-%$        s = quadv(density, .0000000001, 100000,1e-10);
+%$        s = quadl(density, .0000000001, 100000, 1e-10);
 %$    else
 %$        s = integral(density, 0, 100000);
 %$    end
@@ -279,7 +279,7 @@ end
 %$
 %$ try
 %$    if isoctave
-%$        s = quadv(xdens, .0000000001, 20,1e-10);
+%$        s = quadgk(xdens, .0000000001, 100000, 1e-10);
 %$    else
 %$        s = integral(xdens, 0, 100000);
 %$    end
@@ -302,7 +302,7 @@ end
 %$
 %$ try
 %$    if isoctave
-%$        s = quadv(xdens, .0000000001, 100000,1e-10);
+%$        s = quadl(xdens, .0000000001, 100000, 1e-10);
 %$    else
 %$        s = integral(xdens, 0, 100000);
 %$    end
@@ -325,7 +325,7 @@ end
 %$
 %$ try
 %$    if isoctave
-%$        s = quadv(xdens, .0000000001, 100000,1e-10);
+%$        s = quadl(xdens, .0000000001, 100000, 1e-10);
 %$    else
 %$        s = integral(xdens, 0, 100000);
 %$    end
@@ -351,7 +351,7 @@ end
 %$    s = NaN(n, 1);
 %$    for i=1:n
 %$        if isoctave()
-%$            s(i) = quadv(density, .0000000001, .1*i,1e-10);
+%$             s(i) = quadl(density, .0000000001, .1*i, 1e-10);
 %$        else
 %$            s(i) = integral(density, 0, .1*i);
 %$        end
@@ -382,7 +382,7 @@ end
 %$    s = NaN(n, 1);
 %$    for i=1:n
 %$        if isoctave()
-%$            s(i) = quadv(density, .0000000001, .1*i,1e-10);
+%$            s(i) = quadl(density, .0000000001, .1*i, 1e-10);
 %$        else
 %$            s(i) = integral(density, 0, .1*i);
 %$        end
@@ -413,7 +413,7 @@ end
 %$    s = NaN(n, 1);
 %$    for i=1:n
 %$        if isoctave()
-%$            s(i) = quadv(density, .0000000001, .1*i,1e-10);
+%$            s(i) = quadl(density, .0000000001, .1*i, 1e-10);
 %$        else
 %$            s(i) = integral(density, 0, .1*i);
 %$        end
