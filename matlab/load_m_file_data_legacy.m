@@ -82,7 +82,7 @@ return
 
 %@test:1
 % Write a data file
-fid = fopen('example.m','w');
+fid = fopen('example1.m','w');
 fwriten(fid, 'a = randn(100,1);');
 fwriten(fid, 'b = randn(100,1);');
 fwriten(fid, 'c = transpose(randn(100,1));');
@@ -98,8 +98,8 @@ fclose(fid);
 listofvariablestobeloaded = {'b', 'a'};
 % Test if we can load the data.
 try
-    data = load_m_file_data_legacy('example.m', listofvariablestobeloaded);
-    delete example.m
+    data = load_m_file_data_legacy('example1.m', listofvariablestobeloaded);
+    delete('example1.m');
     t(1) = 1;
 catch
     t(1) = 0;
@@ -109,7 +109,7 @@ T = all(t);
 
 %@test:2
 % Write a data file
-fid = fopen('example.m','w');
+fid = fopen('example2.m','w');
 fwriten(fid, 'a = randn(100,1);');
 fwriten(fid, 'b = randn(100,1);');
 fwriten(fid, 'c = transpose(randn(100,1));');
@@ -125,8 +125,8 @@ fclose(fid);
 listofvariablestobeloaded = {'e', 'a'};
 % Test if we can load the data.
 try
-    data = load_m_file_data_legacy('example.m', listofvariablestobeloaded);
-    delete example.m
+    data = load_m_file_data_legacy('example2.m', listofvariablestobeloaded);
+    delete('example2.m');
     t(1) = 0;
 catch
     t(1) = 1;
@@ -136,7 +136,7 @@ T = all(t);
 
 %@test:3
 % Write a data file
-fid = fopen('example.m','w');
+fid = fopen('example3.m','w');
 fwriten(fid, 'a = randn(100,1);');
 fwriten(fid, 'b = randn(100,1);');
 fwriten(fid, 'c = transpose(randn(100,1));');
@@ -152,8 +152,8 @@ fclose(fid);
 listofvariablestobeloaded = {'c', 'a'};
 % Test if we can load the data.
 try
-    data = load_m_file_data_legacy('example.m', listofvariablestobeloaded);
-    delete example.m
+    data = load_m_file_data_legacy('example3.m', listofvariablestobeloaded);
+    delete('example3.m');
     t(1) = 1;
 catch
     t(1) = 0;
