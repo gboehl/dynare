@@ -242,6 +242,12 @@ Alternatively, if you want to build everything, manually install the following p
 - `latex2html`
 - `doxygen`
 
+You can load all necessary packages at once with
+```
+sudo apt install build-essential gfortran liboctave-dev libboost-graph-dev libboost-filesystem-dev libgsl-dev libmatio-dev libslicot-dev libslicot-pic libsuitesparse-dev flex bison autoconf automake texlive texlive-publishers texlive-extra-utils texlive-formats-extra texlive-latex-extra texlive-fonts-extra texlive-latex-recommended texlive-science texinfo lmodern latex2html doxygen
+
+```
+
 ## Fedora
 
 **NB**: Documentation still in progress…
