@@ -729,9 +729,9 @@ main(int nrhs, const char *prhs[])
               char name [100];
               mxGetString(tmp, name, 100);
               splan[i].var = name;
-              SymbolType variable_type = eEndogenous;
+              SymbolType variable_type = SymbolType::endogenous;
               int exo_num = emsg.get_ID(name, &variable_type);
-              if (variable_type == eExogenous || variable_type == eExogenousDet)
+              if (variable_type == SymbolType::exogenous || variable_type == SymbolType::exogenousDet)
                 splan[i].var_num = exo_num;
               else
                 {
@@ -749,7 +749,7 @@ main(int nrhs, const char *prhs[])
               splan[i].exo = name;
               SymbolType variable_type;
               int exo_num = emsg.get_ID(name, &variable_type);
-              if (variable_type == eEndogenous)
+              if (variable_type == SymbolType::endogenous)
                 splan[i].exo_num = exo_num;
               else
                 {
@@ -807,9 +807,9 @@ main(int nrhs, const char *prhs[])
               char name [100];
               mxGetString(tmp, name, 100);
               spfplan[i].var = name;
-              SymbolType variable_type = eEndogenous;
+              SymbolType variable_type = SymbolType::endogenous;
               int exo_num = emsg.get_ID(name, &variable_type);
-              if (variable_type == eExogenous || variable_type == eExogenousDet)
+              if (variable_type == SymbolType::exogenous || variable_type == SymbolType::exogenousDet)
                 splan[i].var_num = exo_num;
               else
                 {
@@ -827,7 +827,7 @@ main(int nrhs, const char *prhs[])
               spfplan[i].exo = name;
               SymbolType variable_type;
               int exo_num = emsg.get_ID(name, &variable_type);
-              if (variable_type == eEndogenous)
+              if (variable_type == SymbolType::endogenous)
                 spfplan[i].exo_num = exo_num;
               else
                 {
