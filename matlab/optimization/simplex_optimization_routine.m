@@ -29,7 +29,7 @@ function [x,fval,exitflag] = simplex_optimization_routine(objective_function,x,o
 %  o exitflag               [integer]                 scalar equal to 0 or 1 (0 if the algorithm did not converge to
 %                                                     a minimum).
 
-% Copyright (C) 2010-2017 Dynare Team
+% Copyright (C) 2010-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
