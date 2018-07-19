@@ -52,8 +52,13 @@ MODFILES = \
 	ramst.mod \
 	ramst_a.mod \
 	ramst_static_tag.mod \
+	on-the-fly/ex1.mod \
+	on-the-fly/ex2.mod \
+	on-the-fly/ex3.mod \
+	on-the-fly/ex4.mod \
+	on-the-fly/ex5.mod \
+	on-the-fly/ex6.mod \
 	example1.mod \
-	example1_on_the_fly.mod \
 	example2.mod \
 	example1_use_dll.mod \
 	example1_with_tags.mod \
@@ -482,13 +487,13 @@ deterministic_simulations/multiple_lead_lags/sim_lead_lag_aux_vars.o.trs: determ
 deterministic_simulations/multiple_lead_lags/sim_lead_lag.m.trs: deterministic_simulations/multiple_lead_lags/sim_base.m.trs deterministic_simulations/multiple_lead_lags/sim_lead_lag_aux_vars.m.trs
 deterministic_simulations/multiple_lead_lags/sim_lead_lag.o.trs: deterministic_simulations/multiple_lead_lags/sim_base.o.trs deterministic_simulations/multiple_lead_lags/sim_lead_lag_aux_vars.o.trs
 
-deterministic_simulations/multiple_lead_lags/ramst_augmented_histval.m.trs: ramst.m.trs 
+deterministic_simulations/multiple_lead_lags/ramst_augmented_histval.m.trs: ramst.m.trs
 deterministic_simulations/multiple_lead_lags/ramst_augmented_histval.o.trs: ramst.o.trs
 
 loglinear/example4_loglinear.m.trs: loglinear/example4_exp.m.trs
 loglinear/example4_loglinear.o.trs: loglinear/example4_exp.o.trs
-loglinear/example4_loglinear_lagged_exogenous_a.m.trs: loglinear/example4_loglinear_lagged_exogenous.m.trs 
-loglinear/example4_loglinear_lagged_exogenous_a.o.trs: loglinear/example4_loglinear_lagged_exogenous.o.trs 
+loglinear/example4_loglinear_lagged_exogenous_a.m.trs: loglinear/example4_loglinear_lagged_exogenous.m.trs
+loglinear/example4_loglinear_lagged_exogenous_a.o.trs: loglinear/example4_loglinear_lagged_exogenous.o.trs
 
 loglinear/example4_loglinear_histval.m.trs: loglinear/example4_exp_histval.m.trs
 loglinear/example4_loglinear_histval.o.trs: loglinear/example4_exp_histval.o.trs
@@ -580,6 +585,10 @@ o/expectations: $(patsubst %.mod, %.o.trs, $(filter expectations/%.mod, $(MODFIL
 external_function: m/external_function o/external_function
 m/external_function: $(patsubst %.mod, %.m.trs, $(filter external_function/%.mod, $(MODFILES)))
 o/external_function: $(patsubst %.mod, %.o.trs, $(filter external_function/%.mod, $(MODFILES)))
+
+on-the-fly: m/on-the-fly o/on-the-fly
+m/on-the-fly: $(patsubst %.mod, %.m.trs, $(filter on-the-fly/%.mod, $(MODFILES)))
+o/on-the-fly: $(patsubst %.mod, %.o.trs, $(filter on-the-fly/%.mod, $(MODFILES)))
 
 trend_var: m/trend_var o/trend_var
 m/trend_var: $(patsubst %.mod, %.m.trs, $(filter trend_var/%.mod, $(MODFILES)))
@@ -882,7 +891,7 @@ check-octave: $(O_XFAIL_TRS_FILES) $(O_TRS_FILES)
 %.m.trs %.m.log : %.m
 	@echo "`tput bold``tput setaf 8`MATLAB: $(PWD)/$*... `tput sgr0`"
 	@DYNARE_VERSION="$(PACKAGE_VERSION)" TOP_TEST_DIR="$(PWD)" \
-		$(MATLAB)/bin/matlab -nosplash -nodisplay -r $* > $*.m.log 2> /dev/null 
+		$(MATLAB)/bin/matlab -nosplash -nodisplay -r $* > $*.m.log 2> /dev/null
 	@echo "`tput bold``tput setaf 8`MATLAB: $(PWD)/$* Done!`tput sgr0`"
 
 %.o.trs %.o.log: %.mod

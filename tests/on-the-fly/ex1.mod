@@ -30,24 +30,16 @@ beta  = 0.99;
 delta = 0.025;
 psi   = 0;
 theta = 2.95;
-
 phi   = 0.1;
 
-initval;
-y = 1.08068253095672;
-c = 0.80359242014163;
-h = 0.29175631001732;
-k = 11.08360443260358;
-a = 0;
-b = 0;
-e = 0;
-u = 0;
-end;
+if ~isequal(length(intersect(M_.endo_names, {'c'; 'h'; 'y'; 'k'; 'b'; 'a'})), 6)
+   error('Endogenous variables are wrong.')
+end
 
-shocks;
-var e; stderr 0.009;
-var u; stderr 0.009;
-var e, u = phi*0.009*0.009;
-end;
+if ~isequal(length(intersect(M_.param_names, {'theta'; 'psi'; 'alpha'; 'beta'; 'delta'; 'rho'; 'tau'})), 7)
+   error('Parameters are wrong.')
+end
 
-stoch_simul;
+if ~isequal(length(intersect(M_.exo_names, {'e'; 'u'})), 2)
+   error('Exogenous variables are wrong.')
+end
