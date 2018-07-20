@@ -92,7 +92,7 @@ end
 
 % Get h0 and h1 vectors (plus the parameter for the growth neutrality correction).
 if growth_flag
-    [h0, h1, growthneutrality] = hVectors([pacvalues; beta], varcalib.CompanionMatrix, ids, pacmodel.ec.var(1), pacmodel.auxmodel);
+    [h0, h1, growthneutrality] = hVectors([pacvalues; beta], varcalib.CompanionMatrix, ids, pacmodel.ec.vars(1), pacmodel.auxmodel);
 else
     [h0, h1] = hVectors([pacvalues; beta], varcalib.CompanionMatrix, ids, pacmodel.ec.vars(1), pacmodel.auxmodel);
 end
