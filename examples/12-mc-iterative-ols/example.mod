@@ -89,9 +89,9 @@ for i=1:B
     // Simulate the model for 500 periods
     TrueData = simul_backward_model(initialconditions, 300);
     // Define a structure describing the parameters to be estimated (with initial conditions). 
-    eparams.e_c_m = rand();
-    eparams.c_z_1 = .5*randn();
-    eparams.c_z_2 = .5*randn();
+    eparams.e_c_m = .5;
+    eparams.c_z_1 = .2;
+    eparams.c_z_2 =-.1;
     // Define the dataset used for estimation
     edata = TrueData;
     edata.ez = dseries(NaN(TrueData.nobs, 1), 2000Q1, 'ez');
