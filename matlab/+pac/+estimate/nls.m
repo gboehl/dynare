@@ -41,24 +41,8 @@ function nls(eqname, params, data, range)
 
 global M_ oo_
 
-% Get the original equation to be estimated
-[LHS, RHS] = get_lhs_and_rhs(eqname, M_, true);
-
-% Check that the equation has a PAC expectation term.
-if ~contains(RHS, 'pac_expectation', 'IgnoreCase', true)
-    error('This is not a PAC equation.')
-end
-
-% Get the name of the PAC model.
-pattern = '(\(model_name\s*=\s*)(?<name>\w+)\)';
-pacmodl = regexp(RHS, pattern, 'names');
-pacmodl = pacmodl.name;
-
-% Get the transformed equation to be estimated.
-[lhs, rhs] = get_lhs_and_rhs(eqname, M_);
-
-% Get the parameters and variables in the PAC equation.
-[pnames, enames, xnames, pid, eid, xid] = get_variables_and_parameters_in_equation(lhs, rhs, M_);
+[pacmodl, lhs, rhs, pnames, enames, xnames, pid, eid, xid, pnames_, ipnames_, data, islaggedvariables] = ...
+    pac.estimate.init(M_, oo_, eqname, params, data, range);
 
 % List of objects to be replaced
 objNames = [pnames; enames; xnames];
@@ -69,75 +53,6 @@ objTypes = [ones(length(pid), 1); 2*ones(length(eid), 1); 3*ones(length(eid), 1)
 objNames = objNames(I);
 objIndex = objIndex(I);
 objTypes = objTypes(I);
-
-% Get the list of estimated parameters
-pnames_ = fieldnames(params);
-
-% Check that the estimated parameters are used in the PAC equation.
-ParametersNotInPAC = setdiff(pnames_, pnames);
-if ~isempty(ParametersNotInPAC)
-    skipline()
-    if length(ParametersNotInPAC)>1
-        list = sprintf('  %s\n', ParametersNotInPAC{:});
-        remk = sprintf('  The following parameters:\n\n%s\n  do not appear in the PAC equation.', list);
-    else
-        remk = sprintf('  Parameter %s does not appear in the PAC equation.', ParametersNotInPAC{1});
-    end
-    disp(remk)
-    skipline()
-    error('The estimated parameters must be used in equation %s.', eqname)
-end
-
-% Get indices of estimated parameters.
-ipnames_ = zeros(size(pnames_));
-for i=1:length(ipnames_)
-    ipnames_(i) = strmatch(pnames_{i}, M_.param_names, 'exact');
-end
-
-% Add the auxiliary variables in the dataset.
-data = feval([M_.fname '.dynamic_set_auxiliary_series'], data, M_.params);
-
-% Check that the data for endogenous variables have values. Note that we
-% also need data in range(1)-1 for the lagged variables, and we do not test
-% for them here.
-if any(isnan(data{enames{:}}(range).data(:)))
-    error('Some variable values are missing in the database.')
-end
-
-% Set the number of exogenous variables.
-xnbr = length(xnames);
-
-% Test if we have a residual and get its name (-> rname).
-if isequal(xnbr, 1)
-    rname = M_.exo_names{strmatch(xnames{1}, M_.exo_names, 'exact')};
-    irname = 1;
-    if ~all(isnan(data{xnames{1}}.data))
-        error('The residual (%s) must have NaN values in the provided database.', xnames{1})
-    end
-else
-    % We have observed exogenous variables in the PAC equation.
-    tmp = data{xnames{:}}(range).data;
-    idx = find(all(~isnan(tmp))); % Indices for the observed exogenous variables.
-    if isequal(length(idx), length(xnames))
-        error('There is no residual in this equation, all the exogenous variables are observed.')
-    else
-        if length(idx)<length(xnames)-1
-            error('It is not allowed to have more than one residual in a PAC equation')
-        end
-        irname = setdiff(1:length(xnames), idx);
-        rname = xnames{irname};
-    end
-end
-
-
-% Remove residuals from the equation.
-%
-% Note that a plus or minus will remain in the equation, but this seems to
-% be without consequence.
-rhs = regexprep(rhs, rname, '');
-
-% Create a dummy variable
-islaggedvariables = contains(rhs, '(-1)');
 
 % Substitute parameters and variables.
 for i=1:length(objNames)
@@ -212,3 +127,5 @@ pparams1 = fminunc(ssr, params0, options);
 for i=1:length(pparams1)
     M_.params(ipnames_(i)) = pparams1(i);
 end
+
+M_ = pac.update.parameters(pacmodl, M_, oo_);
