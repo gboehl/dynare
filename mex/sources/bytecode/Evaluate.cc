@@ -120,7 +120,7 @@ Evaluate::compute_block_time(const int Per_u_, const bool evaluate, /*const int 
   double *jacob = NULL, *jacob_other_endo = NULL, *jacob_exo = NULL, *jacob_exo_det = NULL;
   EQN_block = block_num;
   stack<double> Stack;
-  external_function_type function_type = ExternalFunctionWithoutDerivative;
+  ExternalFunctionType function_type = ExternalFunctionType::withoutDerivative;
 
 #ifdef DEBUG
   mexPrintf("compute_block_time\n");
@@ -310,9 +310,9 @@ Evaluate::compute_block_time(const int Per_u_, const bool evaluate, /*const int 
           break;
         case FLDV:
           //load a variable in the processor
-          switch (((FLDV_ *) it_code->second)->get_type())
+          switch (static_cast<SymbolType>(((FLDV_ *) it_code->second)->get_type()))
             {
-            case eParameter:
+            case SymbolType::parameter:
               var = ((FLDV_ *) it_code->second)->get_pos();
 #ifdef DEBUG
               mexPrintf("FLDV Param[var=%d]\n", var);
@@ -320,7 +320,7 @@ Evaluate::compute_block_time(const int Per_u_, const bool evaluate, /*const int 
 #endif
               Stack.push(params[var]);
               break;
-            case eEndogenous:
+            case SymbolType::endogenous:
               var = ((FLDV_ *) it_code->second)->get_pos();
               lag = ((FLDV_ *) it_code->second)->get_lead_lag();
 #ifdef DEBUG
@@ -337,7 +337,7 @@ Evaluate::compute_block_time(const int Per_u_, const bool evaluate, /*const int 
               tmp_out << " y[" << it_+lag << ", " << var << "](" << y[(it_+lag)*y_size+var] << ")";
 #endif
               break;
-            case eExogenous:
+            case SymbolType::exogenous:
               var = ((FLDV_ *) it_code->second)->get_pos();
               lag = ((FLDV_ *) it_code->second)->get_lead_lag();
 #ifdef DEBUG
@@ -346,12 +346,12 @@ Evaluate::compute_block_time(const int Per_u_, const bool evaluate, /*const int 
 #endif
               Stack.push(x[it_+lag+var*nb_row_x]);
               break;
-            case eExogenousDet:
+            case SymbolType::exogenousDet:
               var = ((FLDV_ *) it_code->second)->get_pos();
               lag = ((FLDV_ *) it_code->second)->get_lead_lag();
               Stack.push(x[it_+lag+var*nb_row_xd]);
               break;
-            case eModelLocalVariable:
+            case SymbolType::modelLocalVariable:
 #ifdef DEBUG
               mexPrintf("FLDV a local variable in Block %d Stack.size()=%d", block_num, Stack.size());
               mexPrintf(" value=%f\n", Stack.top());
@@ -363,9 +363,9 @@ Evaluate::compute_block_time(const int Per_u_, const bool evaluate, /*const int 
           break;
         case FLDSV:
           //load a variable in the processor
-          switch (((FLDSV_ *) it_code->second)->get_type())
+          switch (static_cast<SymbolType>(((FLDSV_ *) it_code->second)->get_type()))
             {
-            case eParameter:
+            case SymbolType::parameter:
               var = ((FLDSV_ *) it_code->second)->get_pos();
 #ifdef DEBUG
               mexPrintf("FLDSV Param[var=%d]=%f\n", var, params[var]);
@@ -373,7 +373,7 @@ Evaluate::compute_block_time(const int Per_u_, const bool evaluate, /*const int 
 #endif
               Stack.push(params[var]);
               break;
-            case eEndogenous:
+            case SymbolType::endogenous:
               var = ((FLDSV_ *) it_code->second)->get_pos();
 #ifdef DEBUG
               mexPrintf("FLDSV y[var=%d]=%f\n", var, ya[var]);
@@ -384,7 +384,7 @@ Evaluate::compute_block_time(const int Per_u_, const bool evaluate, /*const int 
               else
                 Stack.push(y[var]);
               break;
-            case eExogenous:
+            case SymbolType::exogenous:
               var = ((FLDSV_ *) it_code->second)->get_pos();
 #ifdef DEBUG
               mexPrintf("FLDSV x[var=%d]\n", var);
@@ -392,14 +392,14 @@ Evaluate::compute_block_time(const int Per_u_, const bool evaluate, /*const int 
 #endif
               Stack.push(x[var]);
               break;
-            case eExogenousDet:
+            case SymbolType::exogenousDet:
               var = ((FLDSV_ *) it_code->second)->get_pos();
 #ifdef DEBUG
               mexPrintf("FLDSV xd[var=%d]\n", var);
 #endif
               Stack.push(x[var]);
               break;
-            case eModelLocalVariable:
+            case SymbolType::modelLocalVariable:
 #ifdef DEBUG
               mexPrintf("FLDSV a local variable in Block %d Stack.size()=%d", block_num, Stack.size());
               mexPrintf(" value=%f\n", Stack.top());
@@ -411,37 +411,37 @@ Evaluate::compute_block_time(const int Per_u_, const bool evaluate, /*const int 
           break;
         case FLDVS:
           //load a variable in the processor
-          switch (((FLDVS_ *) it_code->second)->get_type())
+          switch (static_cast<SymbolType>(((FLDVS_ *) it_code->second)->get_type()))
             {
-            case eParameter:
+            case SymbolType::parameter:
               var = ((FLDVS_ *) it_code->second)->get_pos();
 #ifdef DEBUG
               mexPrintf("params[%d]\n", var);
 #endif
               Stack.push(params[var]);
               break;
-            case eEndogenous:
+            case SymbolType::endogenous:
               var = ((FLDVS_ *) it_code->second)->get_pos();
 #ifdef DEBUG
               mexPrintf("FLDVS steady_y[%d]\n", var);
 #endif
               Stack.push(steady_y[var]);
               break;
-            case eExogenous:
+            case SymbolType::exogenous:
               var = ((FLDVS_ *) it_code->second)->get_pos();
 #ifdef DEBUG
               mexPrintf("FLDVS x[%d] \n", var);
 #endif
               Stack.push(x[var]);
               break;
-            case eExogenousDet:
+            case SymbolType::exogenousDet:
               var = ((FLDVS_ *) it_code->second)->get_pos();
 #ifdef DEBUG
               mexPrintf("FLDVS xd[%d]\n", var);
 #endif
               Stack.push(x[var]);
               break;
-            case eModelLocalVariable:
+            case SymbolType::modelLocalVariable:
 #ifdef DEBUG
               mexPrintf("FLDVS a local variable in Block %d Stack.size()=%d", block_num, Stack.size());
               mexPrintf(" value=%f\n", Stack.top());
@@ -521,9 +521,9 @@ Evaluate::compute_block_time(const int Per_u_, const bool evaluate, /*const int 
           break;
         case FSTPV:
           //load a variable in the processor
-          switch (((FSTPV_ *) it_code->second)->get_type())
+          switch (static_cast<SymbolType>(((FSTPV_ *) it_code->second)->get_type()))
             {
-            case eParameter:
+            case SymbolType::parameter:
               var = ((FSTPV_ *) it_code->second)->get_pos();
 #ifdef DEBUG
               mexPrintf("FSTPV params[%d]\n", var);
@@ -531,7 +531,7 @@ Evaluate::compute_block_time(const int Per_u_, const bool evaluate, /*const int 
               params[var] = Stack.top();
               Stack.pop();
               break;
-            case eEndogenous:
+            case SymbolType::endogenous:
               var = ((FSTPV_ *) it_code->second)->get_pos();
               lag = ((FSTPV_ *) it_code->second)->get_lead_lag();
               y[(it_+lag)*y_size+var] = Stack.top();
@@ -542,7 +542,7 @@ Evaluate::compute_block_time(const int Per_u_, const bool evaluate, /*const int 
 #endif
               Stack.pop();
               break;
-            case eExogenous:
+            case SymbolType::exogenous:
               var = ((FSTPV_ *) it_code->second)->get_pos();
               lag = ((FSTPV_ *) it_code->second)->get_lead_lag();
               x[it_+lag+var*nb_row_x]  = Stack.top();
@@ -554,7 +554,7 @@ Evaluate::compute_block_time(const int Per_u_, const bool evaluate, /*const int 
 
               Stack.pop();
               break;
-            case eExogenousDet:
+            case SymbolType::exogenousDet:
               var = ((FSTPV_ *) it_code->second)->get_pos();
               lag = ((FSTPV_ *) it_code->second)->get_lead_lag();
               x[it_+lag+var*nb_row_xd] = Stack.top();
@@ -571,14 +571,14 @@ Evaluate::compute_block_time(const int Per_u_, const bool evaluate, /*const int 
           break;
         case FSTPSV:
           //load a variable in the processor
-          switch (((FSTPSV_ *) it_code->second)->get_type())
+          switch (static_cast<SymbolType>(((FSTPSV_ *) it_code->second)->get_type()))
             {
-            case eParameter:
+            case SymbolType::parameter:
               var = ((FSTPSV_ *) it_code->second)->get_pos();
               params[var] = Stack.top();
               Stack.pop();
               break;
-            case eEndogenous:
+            case SymbolType::endogenous:
               var = ((FSTPSV_ *) it_code->second)->get_pos();
               y[var] = Stack.top();
 #ifdef DEBUG
@@ -588,8 +588,8 @@ Evaluate::compute_block_time(const int Per_u_, const bool evaluate, /*const int 
 #endif
               Stack.pop();
               break;
-            case eExogenous:
-            case eExogenousDet:
+            case SymbolType::exogenous:
+            case SymbolType::exogenousDet:
               var = ((FSTPSV_ *) it_code->second)->get_pos();
               x[var]  = Stack.top();
 #ifdef DEBUG
@@ -800,27 +800,27 @@ Evaluate::compute_block_time(const int Per_u_, const bool evaluate, /*const int 
           Stack.pop();
           v1 = Stack.top();
           Stack.pop();
-          switch (op)
+          switch (static_cast<BinaryOpcode>(op))
             {
-            case oPlus:
+            case BinaryOpcode::plus:
               Stack.push(v1 + v2);
 #ifdef DEBUG
               tmp_out << " |" << v1 << "+" << v2 << "|";
 #endif
               break;
-            case oMinus:
+            case BinaryOpcode::minus:
               Stack.push(v1 - v2);
 #ifdef DEBUG
               tmp_out << " |" << v1 << "-" << v2 << "|";
 #endif
               break;
-            case oTimes:
+            case BinaryOpcode::times:
               Stack.push(v1 * v2);
 #ifdef DEBUG
               tmp_out << " |" << v1 << "*" << v2 << "|";
 #endif
               break;
-            case oDivide:
+            case BinaryOpcode::divide:
               double tmp;
 #ifdef DEBUG
               mexPrintf("v1=%f / v2=%f\n", v1, v2);
@@ -839,43 +839,43 @@ Evaluate::compute_block_time(const int Per_u_, const bool evaluate, /*const int 
               tmp_out << " |" << v1 << "/" << v2 << "|";
 #endif
               break;
-            case oLess:
+            case BinaryOpcode::less:
               Stack.push(double (v1 < v2));
 #ifdef DEBUG
               mexPrintf("v1=%f v2=%f v1 < v2 = %f\n", v1, v2, double (v1 < v2));
 #endif
               break;
-            case oGreater:
+            case BinaryOpcode::greater:
               Stack.push(double (v1 > v2));
 #ifdef DEBUG
               tmp_out << " |" << v1 << ">" << v2 << "|";
 #endif
               break;
-            case oLessEqual:
+            case BinaryOpcode::lessEqual:
               Stack.push(double (v1 <= v2));
 #ifdef DEBUG
               tmp_out << " |" << v1 << "<=" << v2 << "|";
 #endif
               break;
-            case oGreaterEqual:
+            case BinaryOpcode::greaterEqual:
               Stack.push(double (v1 >= v2));
 #ifdef DEBUG
               tmp_out << " |" << v1 << ">=" << v2 << "|";
 #endif
               break;
-            case oEqualEqual:
+            case BinaryOpcode::equalEqual:
               Stack.push(double (v1 == v2));
 #ifdef DEBUG
               tmp_out << " |" << v1 << "==" << v2 << "|";
 #endif
               break;
-            case oDifferent:
+            case BinaryOpcode::different:
               Stack.push(double (v1 != v2));
 #ifdef DEBUG
               tmp_out << " |" << v1 << "!=" << v2 << "|";
 #endif
               break;
-            case oPower:
+            case BinaryOpcode::power:
 #ifdef DEBUG
               mexPrintf("pow\n");
 #endif
@@ -894,15 +894,15 @@ Evaluate::compute_block_time(const int Per_u_, const bool evaluate, /*const int 
               tmp_out << " |" << v1 << "^" << v2 << "|";
 #endif
               break;
-            case oPowerDeriv:
+            case BinaryOpcode::powerDeriv:
               {
                 int derivOrder = int (nearbyint(Stack.top()));
                 Stack.pop();
                 try
                   {
-                    if (fabs(v1) < NEAR_ZERO && v2 > 0
+                    if (fabs(v1) < near_zero && v2 > 0
                         && derivOrder > v2
-                        && fabs(v2-nearbyint(v2)) < NEAR_ZERO)
+                        && fabs(v2-nearbyint(v2)) < near_zero)
                       Stack.push(0.0);
                     else
                       {
@@ -923,19 +923,19 @@ Evaluate::compute_block_time(const int Per_u_, const bool evaluate, /*const int 
               tmp_out << " |PowerDeriv(" << v1 << ", " << v2 << ")|";
 #endif
               break;
-            case oMax:
+            case BinaryOpcode::max:
               Stack.push(max(v1, v2));
 #ifdef DEBUG
               tmp_out << " |max(" << v1 << "," << v2 << ")|";
 #endif
               break;
-            case oMin:
+            case BinaryOpcode::min:
               Stack.push(min(v1, v2));
 #ifdef DEBUG
               tmp_out << " |min(" << v1 << "," << v2 << ")|";
 #endif
               break;
-            case oEqual:
+            case BinaryOpcode::equal:
               // Nothing to do
               break;
             default:
@@ -954,22 +954,22 @@ Evaluate::compute_block_time(const int Per_u_, const bool evaluate, /*const int 
 #ifdef DEBUG
           mexPrintf("FUNARY, op=%d\n", op);
 #endif
-          switch (op)
+          switch (static_cast<UnaryOpcode>(op))
             {
-            case oUminus:
+            case UnaryOpcode::uminus:
               Stack.push(-v1);
 #ifdef DEBUG
               tmp_out << " |-(" << v1 << ")|";
 #endif
 
               break;
-            case oExp:
+            case UnaryOpcode::exp:
               Stack.push(exp(v1));
 #ifdef DEBUG
               tmp_out << " |exp(" << v1 << ")|";
 #endif
               break;
-            case oLog:
+            case UnaryOpcode::log:
               double tmp;
               try
                 {
@@ -987,7 +987,7 @@ Evaluate::compute_block_time(const int Per_u_, const bool evaluate, /*const int 
               tmp_out << " |log(" << v1 << ")|";
 #endif
               break;
-            case oLog10:
+            case UnaryOpcode::log10:
               try
                 {
                   tmp = log10_1(v1);
@@ -1002,85 +1002,85 @@ Evaluate::compute_block_time(const int Per_u_, const bool evaluate, /*const int 
               tmp_out << " |log10(" << v1 << ")|";
 #endif
               break;
-            case oCos:
+            case UnaryOpcode::cos:
               Stack.push(cos(v1));
 #ifdef DEBUG
               tmp_out << " |cos(" << v1 << ")|";
 #endif
               break;
-            case oSin:
+            case UnaryOpcode::sin:
               Stack.push(sin(v1));
 #ifdef DEBUG
               tmp_out << " |sin(" << v1 << ")|";
 #endif
               break;
-            case oTan:
+            case UnaryOpcode::tan:
               Stack.push(tan(v1));
 #ifdef DEBUG
               tmp_out << " |tan(" << v1 << ")|";
 #endif
               break;
-            case oAcos:
+            case UnaryOpcode::acos:
               Stack.push(acos(v1));
 #ifdef DEBUG
               tmp_out << " |acos(" << v1 << ")|";
 #endif
               break;
-            case oAsin:
+            case UnaryOpcode::asin:
               Stack.push(asin(v1));
 #ifdef DEBUG
               tmp_out << " |asin(" << v1 << ")|";
 #endif
               break;
-            case oAtan:
+            case UnaryOpcode::atan:
               Stack.push(atan(v1));
 #ifdef DEBUG
               tmp_out << " |atan(" << v1 << ")|";
 #endif
               break;
-            case oCosh:
+            case UnaryOpcode::cosh:
               Stack.push(cosh(v1));
 #ifdef DEBUG
               tmp_out << " |cosh(" << v1 << ")|";
 #endif
               break;
-            case oSinh:
+            case UnaryOpcode::sinh:
               Stack.push(sinh(v1));
 #ifdef DEBUG
               tmp_out << " |sinh(" << v1 << ")|";
 #endif
               break;
-            case oTanh:
+            case UnaryOpcode::tanh:
               Stack.push(tanh(v1));
 #ifdef DEBUG
               tmp_out << " |tanh(" << v1 << ")|";
 #endif
               break;
-            case oAcosh:
+            case UnaryOpcode::acosh:
               Stack.push(acosh(v1));
 #ifdef DEBUG
               tmp_out << " |acosh(" << v1 << ")|";
 #endif
               break;
-            case oAsinh:
+            case UnaryOpcode::asinh:
               Stack.push(asinh(v1));
 #ifdef DEBUG
               tmp_out << " |asinh(" << v1 << ")|";
 #endif
               break;
-            case oAtanh:
+            case UnaryOpcode::atanh:
               Stack.push(atanh(v1));
 #ifdef DEBUG
               tmp_out << " |atanh(" << v1 << ")|";
 #endif
               break;
-            case oSqrt:
+            case UnaryOpcode::sqrt:
               Stack.push(sqrt(v1));
 #ifdef DEBUG
               tmp_out << " |sqrt(" << v1 << ")|";
 #endif
               break;
-            case oErf:
+            case UnaryOpcode::erf:
               Stack.push(erf(v1));
 #ifdef DEBUG
               tmp_out << " |erf(" << v1 << ")|";
@@ -1104,15 +1104,15 @@ Evaluate::compute_block_time(const int Per_u_, const bool evaluate, /*const int 
           Stack.pop();
           v1 = Stack.top();
           Stack.pop();
-          switch (op)
+          switch (static_cast<TrinaryOpcode>(op))
             {
-            case oNormcdf:
+            case TrinaryOpcode::normcdf:
               Stack.push(0.5*(1+erf((v1-v2)/v3/M_SQRT2)));
 #ifdef DEBUG
               tmp_out << " |normcdf(" << v1 << ", " << v2 << ", " << v3 << ")|";
 #endif
               break;
-            case oNormpdf:
+            case TrinaryOpcode::normpdf:
               Stack.push(1/(v3*sqrt(2*M_PI)*exp(pow((v1-v2)/v3, 2)/2)));
 #ifdef DEBUG
               tmp_out << " |normpdf(" << v1 << ", " << v2 << ", " << v3 << ")|";
@@ -1166,9 +1166,9 @@ Evaluate::compute_block_time(const int Per_u_, const bool evaluate, /*const int 
             mxArray **input_arguments;
             switch (function_type)
               {
-              case ExternalFunctionWithoutDerivative:
-              case ExternalFunctionWithFirstDerivative:
-              case ExternalFunctionWithFirstandSecondDerivative:
+              case ExternalFunctionType::withoutDerivative:
+              case ExternalFunctionType::withFirstDerivative:
+              case ExternalFunctionType::withFirstAndSecondDerivative:
                 {
                   input_arguments = (mxArray **) mxMalloc(nb_input_arguments * sizeof(mxArray *));
                   test_mxMalloc(input_arguments, __LINE__, __FILE__, __func__, nb_input_arguments * sizeof(mxArray *));
@@ -1191,7 +1191,7 @@ Evaluate::compute_block_time(const int Per_u_, const bool evaluate, /*const int 
 
                   double *rr = mxGetPr(output_arguments[0]);
                   Stack.push(*rr);
-                  if (function_type == ExternalFunctionWithFirstDerivative || function_type == ExternalFunctionWithFirstandSecondDerivative)
+                  if (function_type == ExternalFunctionType::withFirstDerivative || function_type == ExternalFunctionType::withFirstAndSecondDerivative)
                     {
                       unsigned int indx = fc->get_indx();
                       double *FD1 = mxGetPr(output_arguments[1]);
@@ -1199,7 +1199,7 @@ Evaluate::compute_block_time(const int Per_u_, const bool evaluate, /*const int 
                       for (unsigned int i = 0; i < rows; i++)
                         TEFD[make_pair(indx, i)] = FD1[i];
                     }
-                  if (function_type == ExternalFunctionWithFirstandSecondDerivative)
+                  if (function_type == ExternalFunctionType::withFirstAndSecondDerivative)
                     {
                       unsigned int indx = fc->get_indx();
                       double *FD2 = mxGetPr(output_arguments[2]);
@@ -1212,7 +1212,7 @@ Evaluate::compute_block_time(const int Per_u_, const bool evaluate, /*const int 
                     }
                 }
                 break;
-              case ExternalFunctionNumericalFirstDerivative:
+              case ExternalFunctionType::numericalFirstDerivative:
                 {
                   input_arguments = (mxArray **) mxMalloc((nb_input_arguments+1+nb_add_input_arguments) * sizeof(mxArray *));
                   test_mxMalloc(input_arguments, __LINE__, __FILE__, __func__, (nb_input_arguments+1+nb_add_input_arguments) * sizeof(mxArray *));
@@ -1252,7 +1252,7 @@ Evaluate::compute_block_time(const int Per_u_, const bool evaluate, /*const int 
                   Stack.push(*rr);
                 }
                 break;
-              case ExternalFunctionFirstDerivative:
+              case ExternalFunctionType::firstDerivative:
                 {
                   input_arguments = (mxArray **) mxMalloc(nb_input_arguments * sizeof(mxArray *));
                   test_mxMalloc(input_arguments, __LINE__, __FILE__, __func__, nb_input_arguments * sizeof(mxArray *));
@@ -1276,7 +1276,7 @@ Evaluate::compute_block_time(const int Per_u_, const bool evaluate, /*const int 
                     TEFD[make_pair(indx, i)] = FD1[i];
                 }
                 break;
-              case ExternalFunctionNumericalSecondDerivative:
+              case ExternalFunctionType::numericalSecondDerivative:
                 {
                   input_arguments = (mxArray **) mxMalloc((nb_input_arguments+1+nb_add_input_arguments) * sizeof(mxArray *));
                   test_mxMalloc(input_arguments, __LINE__, __FILE__, __func__, (nb_input_arguments+1+nb_add_input_arguments) * sizeof(mxArray *));
@@ -1315,7 +1315,7 @@ Evaluate::compute_block_time(const int Per_u_, const bool evaluate, /*const int 
                   Stack.push(*rr);
                 }
                 break;
-              case ExternalFunctionSecondDerivative:
+              case ExternalFunctionType::secondDerivative:
                 {
                   input_arguments = (mxArray **) mxMalloc(nb_input_arguments * sizeof(mxArray *));
                   test_mxMalloc(input_arguments, __LINE__, __FILE__, __func__, nb_input_arguments * sizeof(mxArray *));
@@ -1375,7 +1375,7 @@ Evaluate::compute_block_time(const int Per_u_, const bool evaluate, /*const int 
             mexPrintf("FSTPTEFD\n");
             mexPrintf("indx=%d Stack.size()=%d\n", indx, Stack.size());
 #endif
-            if (function_type == ExternalFunctionNumericalFirstDerivative)
+            if (function_type == ExternalFunctionType::numericalFirstDerivative)
               {
                 TEFD[make_pair(indx, row-1)] = Stack.top();
 #ifdef DEBUG
@@ -1409,7 +1409,7 @@ Evaluate::compute_block_time(const int Per_u_, const bool evaluate, /*const int 
             mexPrintf("FSTPTEFD\n");
             mexPrintf("indx=%d Stack.size()=%d\n", indx, Stack.size());
 #endif
-            if (function_type == ExternalFunctionNumericalSecondDerivative)
+            if (function_type == ExternalFunctionType::numericalSecondDerivative)
               {
                 TEFDD[make_pair(indx, make_pair(row-1, col-1))] = Stack.top();
 #ifdef DEBUG

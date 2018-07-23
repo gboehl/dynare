@@ -1,74 +1,67 @@
-var Capital, Output, Labour, Consumption,  Investment, Efficiency, efficiency, residual, marginal_utility;
-
-varexo EfficiencyInnovation;
-
-parameters beta, theta, tau, alpha, psi, delta, rho, effstar, sigma;
-
-/*
-** Calibration
-*/
+var k, y, L, c, i, A, a, mu;
+varexo epsilon;
+parameters beta, theta, tau, alpha, psi, delta, rho, Astar, sigma;
 
 beta    =  0.990;
 theta   =  0.357;
 tau     =  2.000;
 alpha   =  0.450;
-psi     = -0.200;
+psi     = -2.500;
 delta   =  0.020;
-rho     =  0.800;
-effstar =  1.000;
+rho     =  0.998;
+Astar   =  1.000;
 sigma   =  0.100;
 
 model;
+ a = rho*a(-1) + sigma*epsilon;
+ A = Astar*exp(a);
+ (c^theta*(1-L)^(1-theta))^(1-tau)/c - mu = beta*((c(+1)^theta*(1-L(+1))^(1-theta))^(1-tau)/c(+1)*(alpha*(y(+1)/k)^(1-psi)+1-delta)-mu(+1)*(1-delta));
+ ((1-theta)/theta)*(c/(1-L)) - (1-alpha)*(y/L)^(1-psi);
+ y = A*(alpha*(k(-1)^psi)+(1-alpha)*(L^psi))^(1/psi);
+ k = y-c+(1-delta)*k(-1);
+ i = k-(1-delta)*k(-1);
 
-  efficiency = rho*efficiency(-1) + sigma*EfficiencyInnovation;
-
-  Efficiency = effstar*exp(efficiency);
-
-  [mcp = 'Investment > 0',name='Investment Euler Equation']
-  -(((Consumption^theta)*((1-Labour)^(1-theta)))^(1-tau))/Consumption + beta*((((Consumption(+1)^theta)*((1-Labour(+1))^(1-theta)))^(1-tau))/Consumption(+1))*(alpha*((Output(+1)/Capital)^(1-psi))+1-delta);
-
-  residual =   (((Consumption^theta)*((1-Labour)^(1-theta)))^(1-tau))/Consumption - beta*((((Consumption(+1)^theta)*((1-Labour(+1))^(1-theta)))^(1-tau))/Consumption(+1))*(alpha*((Output(+1)/Capital)^(1-psi))+1-delta);
-
-  ((1-theta)/theta)*(Consumption/(1-Labour)) - (1-alpha)*(Output/Labour)^(1-psi);
-
-  Output = Efficiency*(alpha*(Capital(-1)^psi)+(1-alpha)*(Labour^psi))^(1/psi);
-
-  Output = Consumption + Investment;
-
-  Investment = Capital - (1-delta)*Capital(-1);
-
-  marginal_utility = (((Consumption^theta)*((1-Labour)^(1-theta)))^(1-tau))/Consumption;
+[ mcp = 'i > 0' ]
+ mu = 0;
 end;
 
 steady_state_model;
-Efficiency = effstar;
-y_k = (Efficiency^(-psi)*(1/beta-1+delta)/alpha)^(1/(1-psi));
-c_k = y_k - delta;
-n_k = (((y_k/Efficiency)^psi-alpha)/(1-alpha))^(1/psi);
-y_n = y_k/n_k;
-c_n = c_k/n_k;
-Labour = y_k*(1-alpha)/(((1-theta)/theta)*c_k*(alpha*n_k^(-psi)+1-alpha)+y_k*(1-alpha));
-Capital = Labour/n_k;
-Consumption = c_n*Labour;
-Output = Efficiency*(alpha*Capital^psi+(1-alpha)*Labour^psi)^(1/psi);
-Investment = delta*Capital;
-residual = 0;
-marginal_utility = (((Consumption^theta)*((1-Labour)^(1-theta)))^(1-tau))/Consumption;
-end;
+ a=0;
+ mu=0;
+ A=Astar;
 
-resid;
-steady;
+ // Steady state ratios
+ Output_per_unit_of_Capital=((1/beta-1+delta)/alpha)^(1/(1-psi));
+ Consumption_per_unit_of_Capital=Output_per_unit_of_Capital-delta;
+ Labour_per_unit_of_Capital=(((Output_per_unit_of_Capital/A)^psi-alpha)/(1-alpha))^(1/psi);
+ Output_per_unit_of_Labour=Output_per_unit_of_Capital/Labour_per_unit_of_Capital;
+ Consumption_per_unit_of_Labour=Consumption_per_unit_of_Capital/Labour_per_unit_of_Capital;
+
+ L=1/(1+Consumption_per_unit_of_Labour/((1-alpha)*theta/(1-theta)*Output_per_unit_of_Labour^(1-psi)));
+ c=Consumption_per_unit_of_Labour*L;
+ k=L/Labour_per_unit_of_Capital;
+ y=Output_per_unit_of_Capital*k;
+ i=delta*k;
+end;
 
 shocks;
-var EfficiencyInnovation;
-periods 1;
-values -4;
+ var epsilon;
+ periods 10;
+ values -1;
 end;
 
-perfect_foresight_setup(periods=100);
+steady;
 
-perfect_foresight_solver(lmmcp);
+perfect_foresight_setup(periods=400);
+perfect_foresight_solver(lmmcp, maxit=200);
 
-rplot Investment;
+n = 40;
 
-rplot residual;
+figure(2);
+subplot(3,2,1); plot(1:n,A(1:n)); title('A');
+subplot(3,2,2); plot(2:n,y(2:n)); title('y');
+subplot(3,2,3); plot(2:n,L(2:n)); title('L');
+subplot(3,2,4); plot(1:n,k(1:n)); title('k');
+subplot(3,2,5); plot(2:n,c(2:n)); title('c');
+subplot(3,2,6); plot(2:n, y(2:n)-c(2:n)); title('i');
+

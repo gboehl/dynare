@@ -58,31 +58,31 @@ end
 
 %@test:1
 %$ t = false(3,1);
-%$ mkdir toto
+%$ mkdir toto;
 %$ cd toto
-%$ mkdir titi
-%$ mkdir tata
+%$ mkdir titi;
+%$ mkdir tata;
 %$ cd tata
-%$ mkdir tutu
+%$ mkdir tutu;
 %$ cd tutu
-%$ system('touch a.m')
+%$ system('touch a.m');
 %$ cd ..
-%$ system('touch b.m')
-%$ system('touch c.m')
+%$ system('touch b.m');
+%$ system('touch c.m');
 %$ cd ../titi
-%$ system('touch d.m')
+%$ system('touch d.m');
 %$ cd ..
 %$ pause(1)
-%$ system('touch e.m')
+%$ system('touch e.m');
 %$ t(1) = isequal(isolder('e.m'), false);
 %$ pause(1)
-%$ system('touch tata/tutu/a.m')
-%$ system('touch tata/b.m')
-%$ system('touch tata/c.m')
-%$ system('touch titi/d.m')
+%$ system('touch tata/tutu/a.m');
+%$ system('touch tata/b.m');
+%$ system('touch tata/c.m');
+%$ system('touch titi/d.m');
 %$ t(2) = isequal(isolder('e.m'), true);
 %$ pause(1)
-%$ system('touch e.m')
+%$ system('touch e.m');
 %$ t(3) = isequal(isolder('e.m'), false);
 %$ cd ..
 %$ if isoctave()

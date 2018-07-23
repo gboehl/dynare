@@ -29,7 +29,7 @@ function [x,fval,exitflag] = simplex_optimization_routine(objective_function,x,o
 %  o exitflag               [integer]                 scalar equal to 0 or 1 (0 if the algorithm did not converge to
 %                                                     a minimum).
 
-% Copyright (C) 2010-2017 Dynare Team
+% Copyright (C) 2010-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -48,6 +48,13 @@ function [x,fval,exitflag] = simplex_optimization_routine(objective_function,x,o
 
 % Set verbose mode
 verbose = options.verbosity;
+
+% Set header
+if verbose
+    header = sprintf('#Iter.      #FnCalls.   Best Value      Worst Value     Norm(f)        Norm(x)        Move');
+    iter_ = '          ';
+    fval_ = '          ';
+end
 
 % Set number of control variables.
 number_of_variables = length(x);
@@ -77,7 +84,7 @@ end
 if isfield(options,'maxiter')
     max_iterations = options.maxiter;
 else
-    max_iterations = 5000;
+    max_iterations = 10000;
 end
 
 % Set reflection parameter.
@@ -179,27 +186,23 @@ trend_vector_2 = 2:(number_of_variables+1);
 
 % Set initial simplex around the initial guess (x).
 if verbose
-    skipline(3)
-    disp('+----------------------+')
-    disp(' SIMPLEX INITIALIZATION ')
-    disp('+----------------------+')
     skipline()
+    disp('Simplex initialization...')
 end
 initial_point = x;
-[initial_score,junk1,junk2,nopenalty] = feval(objective_function,x,varargin{:});
+[initial_score,junk1,nopenalty] = feval(objective_function,x,varargin{:});
 if ~nopenalty
+    disp('Cannot initialize the simplex with the provided initial guess.')
+    skipline()
     error('simplex_optimization_routine:: Initial condition is wrong!')
 else
     [v,fv,delta] = simplex_initialization(objective_function,initial_point,initial_score,delta,zero_delta,1,varargin{:});
+    disp('Done!')
+    skipline()
     func_count = number_of_variables + 1;
     iter_count = 1;
     if verbose
         disp(['Objective function value: ' num2str(fv(1))])
-        disp(['Current parameter values: '])
-        fprintf(1,'%s: \t\t\t %s \t\t\t %s \t\t\t %s \t\t\t %s \t\t\t %s \n','Names','Best point', 'Worst point', 'Mean values', 'Min values', 'Max values');
-        for i=1:number_of_variables
-            fprintf(1,'%s: \t\t\t %+8.6f \t\t\t %+8.6f \t\t\t %+8.6f \t\t\t %+8.6f \t\t\t %+8.6f \n',var_names{i},v(i,1), v(i,end), mean(v(i,:),2), min(v(i,:),[],2), max(v(i,:),[],2));
-        end
         skipline()
     end
 end
@@ -220,10 +223,15 @@ tooslow = 0;
 iter_no_improvement_break = 0;
 max_no_improvement_break = 1;
 
+if verbose
+    disp(header)
+end
+
+critF = 1.0;
+critX = 1.0;
+
 while (func_count < max_func_calls) && (iter_count < max_iterations) && (simplex_algo_iterations<=max_simplex_algo_iterations)
     % Do we really need to continue?
-    critF = max(abs(fv(1)-fv(trend_vector_2)));
-    critX = max(max(abs(v(:,trend_vector_2)-v(:,unit_vector))));
     if critF <= max(f_tolerance,10*eps(fv(1))) && critX <= max(x_tolerance,10*eps(max(v(:,1))))
         convergence = 1;
     end
@@ -258,10 +266,7 @@ while (func_count < max_func_calls) && (iter_count < max_iterations) && (simplex
         func_count = func_count+1;
         if fxe < fxr% xe is even better than xr.
             if optimize_expansion_parameter
-                if verbose>1
-                    skipline(2)
-                    disp('Compute optimal expansion...')
-                end
+                % Compute optimal expansion...
                 xee  = xbar + rho*chi*1.01*(xbar-v(:,end));
                 x    = xee;
                 fxee = feval(objective_function,x,varargin{:});
@@ -271,14 +276,8 @@ while (func_count < max_func_calls) && (iter_count < max_iterations) && (simplex
                     weight = rho*chi*1.02;
                     fxeee_old = fxee;
                     xeee_old  = xee;
-                    if verbose>1
-                        fprintf(1,'Weight =        ');
-                    end
                     while decrease
                         weight = 1.02*weight;
-                        if verbose>1
-                            fprintf(1,'\b\b\b\b\b\b\b %6.4f',weight);
-                        end
                         xeee   = xbar + weight*(xbar-v(:,end));
                         x      = xeee;
                         fxeee  = feval(objective_function,x,varargin{:});
@@ -289,9 +288,6 @@ while (func_count < max_func_calls) && (iter_count < max_iterations) && (simplex
                         else
                             decrease = 0;
                         end
-                    end
-                    if verbose>1
-                        fprintf(1,'\n');
                     end
                     xe  = xeee_old;
                     fxe = fxeee_old;
@@ -300,14 +296,8 @@ while (func_count < max_func_calls) && (iter_count < max_iterations) && (simplex
                     weight = rho*chi;
                     fxeee_old = fxee;
                     xeee_old  = xee;
-                    if verbose>1
-                        fprintf(1,'Weight =        ');
-                    end
                     while decrease
                         weight = weight/1.02;
-                        if verbose>1
-                            fprintf(1,'\b\b\b\b\b\b\b %6.4f',weight);
-                        end
                         xeee   = xbar + weight*(xbar-v(:,end));
                         x      = xeee;
                         fxeee  = feval(objective_function,x,varargin{:});
@@ -319,20 +309,15 @@ while (func_count < max_func_calls) && (iter_count < max_iterations) && (simplex
                             decrease = 0;
                         end
                     end
-                    if verbose>1
-                        fprintf(1,'\n');
-                    end
                     xe  = xeee_old;
                     fxe = fxeee_old;
                 end
-                if verbose>1
-                    disp('Done!')
-                    skipline(2)
-                end
+                move = 'expand-opt';
+            else
+                move = 'expand';
             end
             v(:,end) = xe;
             fv(end)  = fxe;
-            move = 'expand';
         else% if xe is not better than xr.
             v(:,end) = xr;
             fv(end)  = fxr;
@@ -383,37 +368,37 @@ while (func_count < max_func_calls) && (iter_count < max_iterations) && (simplex
     % Sort n+1 points by incresing order of the objective function values.
     [fv,sort_idx] = sort(fv);
     v = v(:,sort_idx);
+    critF = max(abs(fv(1)-fv(trend_vector_2)));
+    critX = max(max(abs(v(:,trend_vector_2)-v(:,unit_vector))));
+    if verbose
+        if ~mod(simplex_iterations, 50)
+            skipline()
+            disp(header)
+        end
+        iter = int2str(simplex_iterations);
+        fval = int2str(func_count);
+        iter_(1:length(iter)) = iter;
+        fval_(1:length(fval)) = fval;
+        if isfinite(fv(end)) && isfinite(fv(1))
+            if fv(end)<0
+                disp(sprintf('%s  %s  %12.7E  %12.7E  %12.7E  %12.7E  %s', iter_, fval_, fv(1), fv(end), critF, critX, move))
+            else
+                if fv(1)>0
+                    disp(sprintf('%s  %s %12.7E %12.7E  %12.7E  %12.7E  %s', iter_, fval_, fv(1), fv(end), critF, critX, move))
+                else
+                    disp(sprintf('%s  %s  %12.7E %12.7E  %12.7E  %12.7E  %s', iter_, fval_, fv(1), fv(end), critF, critX, move))
+                end
+            end
+        else
+            if isfinite(fv(1))
+                disp(sprintf(['%s  %s  %12.7E                                 %12.7E  %s'], iter_, fval_, fv(1) , critX, move))
+            else
+                disp(sprintf('%s  %s                                         %12.7E  %s', iter_, fval_, critX, move))
+            end
+        end
+    end
     iter_count = iter_count + 1;
     simplex_iterations = simplex_iterations+1;
-    if verbose>1
-        disp(['Simplex iteration number: ' int2str(simplex_iterations) '-' int2str(simplex_init) '-' int2str(simplex_algo_iterations)])
-        disp(['Simplex move:             ' move])
-        disp(['Objective function value: ' num2str(fv(1))])
-        disp(['Mode improvement:         ' num2str(best_point_score-fv(1))])
-        disp(['Norm of dx:               ' num2str(norm(best_point-v(:,1)))])
-        disp(['Norm of dSimplex:         ' num2str(norm(v-vold,'fro'))])
-        disp(['Crit. f:                  ' num2str(critF)])
-        disp(['Crit. x:                  ' num2str(critX)])
-        skipline()
-    end
-    if verbose && max(abs(best_point-v(:,1)))>x_tolerance
-        if verbose<2
-            disp(['Simplex iteration number: ' int2str(simplex_iterations) '-' int2str(simplex_init) '-' int2str(simplex_algo_iterations)])
-            disp(['Objective function value: ' num2str(fv(1))])
-            disp(['Mode improvement:         ' num2str(best_point_score-fv(1))])
-            disp(['Norm of dx:               ' num2str(norm(best_point-v(:,1)))])
-            disp(['Norm of dSimplex:         ' num2str(norm(v-vold,'fro'))])
-            disp(['Crit. f:                  ' num2str(critF)])
-            disp(['Crit. x:                  ' num2str(critX)])
-            skipline()
-        end
-        disp(['Current parameter values: '])
-        fprintf(1,'%s: \t\t\t %s \t\t\t %s \t\t\t %s \t\t\t %s \t\t\t %s \n','Names','Best point', 'Worst point', 'Mean values', 'Min values', 'Max values');
-        for i=1:number_of_variables
-            fprintf(1,'%s: \t\t\t %+8.6f \t\t\t %+8.6f \t\t\t %+8.6f \t\t\t %+8.6f \t\t\t %+8.6f \n',var_names{i}, v(i,1), v(i,end), mean(v(i,:),2), min(v(i,:),[],2), max(v(i,:),[],2));
-        end
-        skipline()
-    end
     if abs(best_point_score-fv(1))<f_tolerance
         no_improvements = no_improvements+1;
     else
@@ -424,7 +409,9 @@ while (func_count < max_func_calls) && (iter_count < max_iterations) && (simplex
     vold = v;
     if no_improvements>max_no_improvements
         if verbose
+            skipline()
             disp(['NO SIGNIFICANT IMPROVEMENT AFTER ' int2str(no_improvements) ' ITERATIONS!'])
+            skipline()
         end
         if simplex_algo_iterations<=max_simplex_algo_iterations
             % Compute the size of the simplex
@@ -432,12 +419,9 @@ while (func_count < max_func_calls) && (iter_count < max_iterations) && (simplex
             % Compute the new initial simplex.
             [v,fv,delta] = simplex_initialization(objective_function,best_point,best_point_score,delta,zero_delta,1,varargin{:});
             if verbose
-                disp(['(Re)Start with a lager simplex around the based on the best current '])
-                disp(['values for the control variables. '])
-                disp(['New value of delta (size of the new simplex) is: '])
-                for i=1:number_of_variables
-                    fprintf(1,'%s: \t\t\t %+8.6f \n',var_names{i}, delta(i));
-                end
+                disp('(Re)Start with a lager simplex based on the best current values for the control variables.')
+                skipline()
+                disp(header)
             end
             % Reset counters
             no_improvements = 0;
@@ -446,22 +430,27 @@ while (func_count < max_func_calls) && (iter_count < max_iterations) && (simplex
             iter_no_improvement_break = iter_no_improvement_break + 1;
             simplex_init = simplex_init+1;
             simplex_iterations = simplex_iterations+1;
-            skipline(2)
         end
     end
     if ((func_count==max_func_calls) || (iter_count==max_iterations) || (iter_no_improvement_break==max_no_improvement_break) || convergence || tooslow)
         [v,fv,delta] = simplex_initialization(objective_function,best_point,best_point_score,DELTA,zero_delta,1,varargin{:});
         if func_count==max_func_calls
             if verbose
+                skipline()
                 disp(['MAXIMUM NUMBER OF OBJECTIVE FUNCTION CALLS EXCEEDED (' int2str(max_func_calls) ')!'])
+                skipline()
             end
         elseif iter_count== max_iterations
             if verbose
+                skipline()
                 disp(['MAXIMUM NUMBER OF ITERATIONS EXCEEDED (' int2str(max_iterations) ')!'])
+                skipline()
             end
         elseif iter_no_improvement_break==max_no_improvement_break
             if verbose
+                skipline()
                 disp(['MAXIMUM NUMBER OF SIMPLEX REINITIALIZATION EXCEEDED (' int2str(max_no_improvement_break) ')!'])
+                skipline()
             end
             iter_no_improvement_break = 0;
             if simplex_algo_iterations==max_simplex_algo_iterations
@@ -469,9 +458,13 @@ while (func_count < max_func_calls) && (iter_count < max_iterations) && (simplex
                 continue
             end
         elseif tooslow
+            skipline()
             disp(['CONVERGENCE NOT ACHIEVED AFTER ' int2str(simplex_iterations) ' ITERATIONS! IMPROVING TOO SLOWLY!'])
+            skipline()
         else
+            skipline()
             disp(['CONVERGENCE ACHIEVED AFTER ' int2str(simplex_iterations) ' ITERATIONS!'])
+            skipline()
         end
         if simplex_algo_iterations<max_simplex_algo_iterations
             % Compute the size of the simplex
@@ -479,12 +472,9 @@ while (func_count < max_func_calls) && (iter_count < max_iterations) && (simplex
             % Compute the new initial simplex.
             [v,fv,delta] = simplex_initialization(objective_function,best_point,best_point_score,delta,zero_delta,1,varargin{:});
             if verbose
-                disp(['(Re)Start with a lager simplex around the based on the best current '])
-                disp(['values for the control variables. '])
-                disp(['New value of delta (size of the new simplex) is: '])
-                for i=1:number_of_variables
-                    fprintf(1,'%s: \t\t\t %+8.6f \n',var_names{i}, delta(i));
-                end
+                disp('(Re)Start with a lager simplex based on the best current values for the control variables.')
+                skipline()
+                disp(header)
             end
             % Reset counters
             func_count=0;
@@ -495,7 +485,6 @@ while (func_count < max_func_calls) && (iter_count < max_iterations) && (simplex
             iter_count = iter_count+1;
             simplex_iterations = simplex_iterations+1;
             simplex_algo_iterations = simplex_algo_iterations+1;
-            skipline(2)
         else
             break
         end
@@ -537,7 +526,7 @@ for j = 1:n
     end
     v(:,j+1) = y;
     x = y;
-    [fv(j+1),junk1,junk2,nopenalty_flag] = feval(objective_function,x,varargin{:});
+    [fv(j+1),junk1,nopenalty_flag] = feval(objective_function,x,varargin{:});
     if check_delta
         while ~nopenalty_flag
             if y(j)~=0
@@ -553,7 +542,7 @@ for j = 1:n
             end
             v(:,j+1) = y;
             x = y;
-            [fv(j+1),junk1,junk2,nopenalty_flag] = feval(objective_function,x,varargin{:});
+            [fv(j+1),junk1,nopenalty_flag] = feval(objective_function,x,varargin{:});
         end
     end
 end

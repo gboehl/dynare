@@ -419,14 +419,14 @@ public:
         for (unsigned int i = 0; i < endo_name_length; i++)
           if (P_endo_names[CHAR_LENGTH*(variable_num+i*nb_endo)] != ' ')
             res << P_endo_names[CHAR_LENGTH*(variable_num+i*nb_endo)];
-        Variable_list.push_back(make_pair(res.str(), make_pair(eEndogenous, variable_num)));
+        Variable_list.push_back(make_pair(res.str(), make_pair(SymbolType::endogenous, variable_num)));
       }
     for (unsigned int variable_num = 0; variable_num < (unsigned int) nb_exo; variable_num++)
       {
         for (unsigned int i = 0; i < exo_name_length; i++)
           if (P_exo_names[CHAR_LENGTH*(variable_num+i*nb_exo)] != ' ')
             res << P_exo_names[CHAR_LENGTH*(variable_num+i*nb_exo)];
-        Variable_list.push_back(make_pair(res.str(), make_pair(eExogenous, variable_num)));
+        Variable_list.push_back(make_pair(res.str(), make_pair(SymbolType::exogenous, variable_num)));
       }
   }
 
@@ -460,7 +460,7 @@ public:
     ostringstream res;
     switch (variable_type)
       {
-      case eEndogenous:
+      case SymbolType::endogenous:
         if (variable_num <= nb_endo)
           {
             for (unsigned int i = 0; i < endo_name_length; i++)
@@ -470,8 +470,8 @@ public:
         else
           mexPrintf("=> Unknown endogenous variable # %d", variable_num);
         break;
-      case eExogenous:
-      case eExogenousDet:
+      case SymbolType::exogenous:
+      case SymbolType::exogenousDet:
         if (variable_num <= nb_exo)
           {
             for (unsigned int i = 0; i < exo_name_length; i++)
@@ -481,7 +481,7 @@ public:
         else
           mexPrintf("=> Unknown exogenous variable # %d", variable_num);
         break;
-      case eParameter:
+      case SymbolType::parameter:
         if (variable_num <= nb_param)
           {
             for (unsigned int i = 0; i < param_name_length; i++)
@@ -518,33 +518,33 @@ public:
           break;
         case FirstEndoDerivative:
           if (EQN_block_number > 1)
-            Error_loc << "first order derivative of equation " << EQN_equation+1 << " in block " << EQN_block+1 << " with respect to endogenous variable " << get_variable(eEndogenous, EQN_dvar1) << " at time " << it_;
+            Error_loc << "first order derivative of equation " << EQN_equation+1 << " in block " << EQN_block+1 << " with respect to endogenous variable " << get_variable(SymbolType::endogenous, EQN_dvar1) << " at time " << it_;
           else
-            Error_loc << "first order derivative of equation " << EQN_equation+1 << " with respect to endogenous variable " << get_variable(eEndogenous, EQN_dvar1) << " at time " << it_;
+            Error_loc << "first order derivative of equation " << EQN_equation+1 << " with respect to endogenous variable " << get_variable(SymbolType::endogenous, EQN_dvar1) << " at time " << it_;
           break;
         case FirstOtherEndoDerivative:
           if (EQN_block_number > 1)
-            Error_loc << "first order derivative of equation " << EQN_equation+1 << " in block " << EQN_block+1 << " with respect to other endogenous variable "  << get_variable(eEndogenous, EQN_dvar1) << " at time " << it_;
+            Error_loc << "first order derivative of equation " << EQN_equation+1 << " in block " << EQN_block+1 << " with respect to other endogenous variable "  << get_variable(SymbolType::endogenous, EQN_dvar1) << " at time " << it_;
           else
-            Error_loc << "first order derivative of equation " << EQN_equation+1 << " with respect to other endogenous variable " << get_variable(eEndogenous, EQN_dvar1) << " at time " << it_;
+            Error_loc << "first order derivative of equation " << EQN_equation+1 << " with respect to other endogenous variable " << get_variable(SymbolType::endogenous, EQN_dvar1) << " at time " << it_;
           break;
         case FirstExoDerivative:
           if (EQN_block_number > 1)
-            Error_loc << "first order derivative of equation " << EQN_equation+1 << " in block " << EQN_block+1 << " with respect to exogenous variable "  << get_variable(eEndogenous, EQN_dvar1) << " at time " << it_;
+            Error_loc << "first order derivative of equation " << EQN_equation+1 << " in block " << EQN_block+1 << " with respect to exogenous variable "  << get_variable(SymbolType::endogenous, EQN_dvar1) << " at time " << it_;
           else
-            Error_loc << "first order derivative of equation " << EQN_equation+1 << " with respect to exogenous variable " << get_variable(eEndogenous, EQN_dvar1) << " at time " << it_;
+            Error_loc << "first order derivative of equation " << EQN_equation+1 << " with respect to exogenous variable " << get_variable(SymbolType::endogenous, EQN_dvar1) << " at time " << it_;
           break;
         case FirstExodetDerivative:
           if (EQN_block_number > 1)
-            Error_loc << "first order derivative of equation " << EQN_equation+1 << " in block " << EQN_block+1 << " with respect to deterministic exogenous variable "  << get_variable(eEndogenous, EQN_dvar1) << " at time " << it_;
+            Error_loc << "first order derivative of equation " << EQN_equation+1 << " in block " << EQN_block+1 << " with respect to deterministic exogenous variable "  << get_variable(SymbolType::endogenous, EQN_dvar1) << " at time " << it_;
           else
-            Error_loc << "first order derivative of equation " << EQN_equation+1 << " with respect to deterministic exogenous variable " << get_variable(eEndogenous, EQN_dvar1) << " at time " << it_;
+            Error_loc << "first order derivative of equation " << EQN_equation+1 << " with respect to deterministic exogenous variable " << get_variable(SymbolType::endogenous, EQN_dvar1) << " at time " << it_;
           break;
         case FirstParamDerivative:
           if (EQN_block_number > 1)
-            Error_loc << "first order derivative of equation " << EQN_equation+1 << " in block " << EQN_block+1 << " with respect to parameter "  << get_variable(eEndogenous, EQN_dvar1) << " at time " << it_;
+            Error_loc << "first order derivative of equation " << EQN_equation+1 << " in block " << EQN_block+1 << " with respect to parameter "  << get_variable(SymbolType::endogenous, EQN_dvar1) << " at time " << it_;
           else
-            Error_loc << "first order derivative of equation " << EQN_equation+1 << " with respect to parameter " << get_variable(eEndogenous, EQN_dvar1) << " at time " << it_;
+            Error_loc << "first order derivative of equation " << EQN_equation+1 << " with respect to parameter " << get_variable(SymbolType::endogenous, EQN_dvar1) << " at time " << it_;
           break;
         default:
           return ("???");
@@ -566,33 +566,33 @@ public:
           break;
         case FirstEndoDerivative:
           if (EQN_block_number > 1)
-            Error_loc << "first order derivative of equation " << EQN_equation+1 << " in block " << EQN_block+1 << " with respect to endogenous variable "  << get_variable(eEndogenous, EQN_dvar1);
+            Error_loc << "first order derivative of equation " << EQN_equation+1 << " in block " << EQN_block+1 << " with respect to endogenous variable "  << get_variable(SymbolType::endogenous, EQN_dvar1);
           else
-            Error_loc << "first order derivative of equation " << EQN_equation+1 << " with respect to endogenous variable " << get_variable(eEndogenous, EQN_dvar1);
+            Error_loc << "first order derivative of equation " << EQN_equation+1 << " with respect to endogenous variable " << get_variable(SymbolType::endogenous, EQN_dvar1);
           break;
         case FirstOtherEndoDerivative:
           if (EQN_block_number > 1)
-            Error_loc << "first order derivative of equation " << EQN_equation+1 << " in block " << EQN_block+1 << " with respect to other endogenous variable "  << get_variable(eEndogenous, EQN_dvar1);
+            Error_loc << "first order derivative of equation " << EQN_equation+1 << " in block " << EQN_block+1 << " with respect to other endogenous variable "  << get_variable(SymbolType::endogenous, EQN_dvar1);
           else
-            Error_loc << "first order derivative of equation " << EQN_equation+1 << " with respect to other endogenous variable " << get_variable(eEndogenous, EQN_dvar1);
+            Error_loc << "first order derivative of equation " << EQN_equation+1 << " with respect to other endogenous variable " << get_variable(SymbolType::endogenous, EQN_dvar1);
           break;
         case FirstExoDerivative:
           if (EQN_block_number > 1)
-            Error_loc << "first order derivative of equation " << EQN_equation+1 << " in block " << EQN_block+1 << " with respect to exogenous variable "  << get_variable(eEndogenous, EQN_dvar1);
+            Error_loc << "first order derivative of equation " << EQN_equation+1 << " in block " << EQN_block+1 << " with respect to exogenous variable "  << get_variable(SymbolType::endogenous, EQN_dvar1);
           else
-            Error_loc << "first order derivative of equation " << EQN_equation+1 << " with respect to exogenous variable " << get_variable(eEndogenous, EQN_dvar1);
+            Error_loc << "first order derivative of equation " << EQN_equation+1 << " with respect to exogenous variable " << get_variable(SymbolType::endogenous, EQN_dvar1);
           break;
         case FirstExodetDerivative:
           if (EQN_block_number > 1)
-            Error_loc << "first order derivative of equation " << EQN_equation+1 << " in block " << EQN_block+1 << " with respect to deterministic exogenous variable "  << get_variable(eEndogenous, EQN_dvar1);
+            Error_loc << "first order derivative of equation " << EQN_equation+1 << " in block " << EQN_block+1 << " with respect to deterministic exogenous variable "  << get_variable(SymbolType::endogenous, EQN_dvar1);
           else
-            Error_loc << "first order derivative of equation " << EQN_equation+1 << " with respect to deterministic exogenous variable " << get_variable(eEndogenous, EQN_dvar1);
+            Error_loc << "first order derivative of equation " << EQN_equation+1 << " with respect to deterministic exogenous variable " << get_variable(SymbolType::endogenous, EQN_dvar1);
           break;
         case FirstParamDerivative:
           if (EQN_block_number > 1)
-            Error_loc << "first order derivative of equation " << EQN_equation+1 << " in block " << EQN_block+1 << " with respect to parameter "  << get_variable(eEndogenous, EQN_dvar1);
+            Error_loc << "first order derivative of equation " << EQN_equation+1 << " in block " << EQN_block+1 << " with respect to parameter "  << get_variable(SymbolType::endogenous, EQN_dvar1);
           else
-            Error_loc << "first order derivative of equation " << EQN_equation+1 << " with respect to parameter " << get_variable(eEndogenous, EQN_dvar1);
+            Error_loc << "first order derivative of equation " << EQN_equation+1 << " with respect to parameter " << get_variable(SymbolType::endogenous, EQN_dvar1);
           break;
         default:
           return ("???");
@@ -616,7 +616,7 @@ public:
     ExpressionType equation_type = TemporaryTerm;
     size_t found;
     double *jacob = NULL, *jacob_other_endo = NULL, *jacob_exo = NULL, *jacob_exo_det = NULL;
-    external_function_type function_type = ExternalFunctionWithoutDerivative;
+    ExternalFunctionType function_type = ExternalFunctionType::withoutDerivative;
 
     if (evaluate)
       {
@@ -693,35 +693,35 @@ public:
             break;
           case FLDV:
             //load a variable in the processor
-            switch (((FLDV_ *) it_code->second)->get_type())
+            switch (static_cast<SymbolType>(((FLDV_ *) it_code->second)->get_type()))
               {
-              case eParameter:
+              case SymbolType::parameter:
                 var = ((FLDV_ *) it_code->second)->get_pos();
 #ifdef DEBUG
                 mexPrintf("FLDV_ Param var=%d\n", var);
-                mexPrintf("get_variable(eParameter, var)=%s\n", get_variable(eParameter, var).c_str());
+                mexPrintf("get_variable(SymbolType::parameter, var)=%s\n", get_variable(SymbolType::parameter, var).c_str());
                 mexEvalString("drawnow;");
 #endif
-                Stack.push(get_variable(eParameter, var));
+                Stack.push(get_variable(SymbolType::parameter, var));
                 if (compute)
                   Stackf.push(params[var]);
                 break;
-              case eEndogenous:
+              case SymbolType::endogenous:
                 var = ((FLDV_ *) it_code->second)->get_pos();
                 lag = ((FLDV_ *) it_code->second)->get_lead_lag();
 #ifdef DEBUG
                 mexPrintf("FLDV_ endo var=%d, lag=%d\n", var, lag);
-                mexPrintf("get_variable(eEndogenous, var)=%s, compute=%d\n", get_variable(eEndogenous, var).c_str(), compute);
+                mexPrintf("get_variable(SymbolType::endogenous, var)=%s, compute=%d\n", get_variable(SymbolType::endogenous, var).c_str(), compute);
                 mexPrintf("it_=%d, lag=%d, y_size=%d, var=%d, y=%x\n", it_, lag, y_size, var, y);
                 mexEvalString("drawnow;");
 #endif
                 tmp_out.str("");
                 if (lag > 0)
-                  tmp_out << get_variable(eEndogenous, var) << "(+" << lag << ")";
+                  tmp_out << get_variable(SymbolType::endogenous, var) << "(+" << lag << ")";
                 else if (lag < 0)
-                  tmp_out << get_variable(eEndogenous, var) << "(" << lag << ")";
+                  tmp_out << get_variable(SymbolType::endogenous, var) << "(" << lag << ")";
                 else
-                  tmp_out << get_variable(eEndogenous, var);
+                  tmp_out << get_variable(SymbolType::endogenous, var);
                 Stack.push(tmp_out.str());
                 if (compute)
                   {
@@ -731,7 +731,7 @@ public:
                       Stackf.push(y[(it_+lag)*y_size+var]);
                   }
                 break;
-              case eExogenous:
+              case SymbolType::exogenous:
                 var = ((FLDV_ *) it_code->second)->get_pos();
                 lag = ((FLDV_ *) it_code->second)->get_lead_lag();
 #ifdef DEBUG
@@ -739,14 +739,14 @@ public:
 #endif
                 tmp_out.str("");
                 if (lag != 0)
-                  tmp_out << get_variable(eExogenous, var) << "(" << lag << ")";
+                  tmp_out << get_variable(SymbolType::exogenous, var) << "(" << lag << ")";
                 else
-                  tmp_out << get_variable(eExogenous, var);
+                  tmp_out << get_variable(SymbolType::exogenous, var);
                 Stack.push(tmp_out.str());
                 if (compute)
                   Stackf.push(x[it_+lag+var*nb_row_x]);
                 break;
-              case eExogenousDet:
+              case SymbolType::exogenousDet:
                 var = ((FLDV_ *) it_code->second)->get_pos();
                 lag = ((FLDV_ *) it_code->second)->get_lead_lag();
 #ifdef DEBUG
@@ -754,14 +754,14 @@ public:
 #endif
                 tmp_out.str("");
                 if (lag != 0)
-                  tmp_out << get_variable(eExogenousDet, var) << "(" << lag << ")";
+                  tmp_out << get_variable(SymbolType::exogenousDet, var) << "(" << lag << ")";
                 else
-                  tmp_out << get_variable(eExogenousDet, var);
+                  tmp_out << get_variable(SymbolType::exogenousDet, var);
                 Stack.push(tmp_out.str());
                 if (compute)
                   Stackf.push(x[it_+lag+var*nb_row_xd]);
                 break;
-              case eModelLocalVariable:
+              case SymbolType::modelLocalVariable:
                 break;
               default:
                 mexPrintf("FLDV: Unknown variable type\n");
@@ -770,23 +770,23 @@ public:
           case FLDSV:
           case FLDVS:
             //load a variable in the processor
-            switch (((FLDSV_ *) it_code->second)->get_type())
+            switch (static_cast<SymbolType>(((FLDSV_ *) it_code->second)->get_type()))
               {
-              case eParameter:
+              case SymbolType::parameter:
                 var = ((FLDSV_ *) it_code->second)->get_pos();
 #ifdef DEBUG
                 mexPrintf("FLDSV_ param var=%d", var);
 #endif
-                Stack.push(get_variable(eParameter, var));
+                Stack.push(get_variable(SymbolType::parameter, var));
                 if (compute)
                   Stackf.push(params[var]);
                 break;
-              case eEndogenous:
+              case SymbolType::endogenous:
                 var = ((FLDSV_ *) it_code->second)->get_pos();
 #ifdef DEBUG
                 mexPrintf("FLDSV_ endo var=%d", var);
 #endif
-                Stack.push(get_variable(eEndogenous, var));
+                Stack.push(get_variable(SymbolType::endogenous, var));
                 if (compute)
                   {
                     if (it_code->first == FLDSV)
@@ -800,28 +800,28 @@ public:
                       Stackf.push(steady_y[var]);
                   }
                 break;
-              case eExogenous:
+              case SymbolType::exogenous:
                 var = ((FLDSV_ *) it_code->second)->get_pos();
 #ifdef DEBUG
                 mexPrintf("FLDSV_ exo var=%d", var);
 #endif
-                Stack.push(get_variable(eExogenous, var));
+                Stack.push(get_variable(SymbolType::exogenous, var));
 #ifdef DEBUG
                 mexPrintf("oka var=%d, Stack.size()=%d x=%x\n", var, Stack.size(), x);
 #endif
                 if (compute)
                   Stackf.push(x[var]);
                 break;
-              case eExogenousDet:
+              case SymbolType::exogenousDet:
                 var = ((FLDSV_ *) it_code->second)->get_pos();
 #ifdef DEBUG
                 mexPrintf("FLDSV_ exo_det var=%d", var);
 #endif
-                Stack.push(get_variable(eExogenousDet, var));
+                Stack.push(get_variable(SymbolType::exogenousDet, var));
                 if (compute)
                   Stackf.push(x[var]);
                 break;
-              case eModelLocalVariable:
+              case SymbolType::modelLocalVariable:
                 break;
               default:
                 mexPrintf("FLDSV: Unknown variable type\n");
@@ -913,9 +913,9 @@ public:
           case FSTPV:
             //load a variable in the processor
             go_on = false;
-            switch (((FSTPV_ *) it_code->second)->get_type())
+            switch (static_cast<SymbolType>(((FSTPV_ *) it_code->second)->get_type()))
               {
-              case eParameter:
+              case SymbolType::parameter:
                 var = ((FSTPV_ *) it_code->second)->get_pos();
 #ifdef DEBUG
                 mexPrintf("FSTPV_ param var=%d", var);
@@ -923,7 +923,7 @@ public:
                 tmp_out2.str("");
                 tmp_out2 << Stack.top();
                 tmp_out.str("");
-                tmp_out << get_variable(eParameter, var) << " = " << tmp_out2.str();
+                tmp_out << get_variable(SymbolType::parameter, var) << " = " << tmp_out2.str();
                 Stack.pop();
                 if (compute)
                   {
@@ -931,7 +931,7 @@ public:
                     Stackf.pop();
                   }
                 break;
-              case eEndogenous:
+              case SymbolType::endogenous:
                 var = ((FSTPV_ *) it_code->second)->get_pos();
                 lag = ((FSTPV_ *) it_code->second)->get_lead_lag();
 #ifdef DEBUG
@@ -940,7 +940,7 @@ public:
                 tmp_out2.str("");
                 tmp_out2 << Stack.top();
                 tmp_out.str("");
-                tmp_out << get_variable(eEndogenous, var);
+                tmp_out << get_variable(SymbolType::endogenous, var);
                 if (lag > 0)
                   tmp_out << "(+" << lag << ")";
                 else if (lag < 0)
@@ -953,7 +953,7 @@ public:
                     Stackf.pop();
                   }
                 break;
-              case eExogenous:
+              case SymbolType::exogenous:
                 var = ((FSTPV_ *) it_code->second)->get_pos();
                 lag = ((FSTPV_ *) it_code->second)->get_lead_lag();
 #ifdef DEBUG
@@ -962,7 +962,7 @@ public:
                 tmp_out2.str("");
                 tmp_out2 << Stack.top();
                 tmp_out.str("");
-                tmp_out << get_variable(eExogenous, var);
+                tmp_out << get_variable(SymbolType::exogenous, var);
                 if (lag != 0)
                   tmp_out << "(" << lag << ")";
                 tmp_out << " = " << tmp_out2.str();
@@ -973,7 +973,7 @@ public:
                     Stackf.pop();
                   }
                 break;
-              case eExogenousDet:
+              case SymbolType::exogenousDet:
                 var = ((FSTPV_ *) it_code->second)->get_pos();
                 lag = ((FSTPV_ *) it_code->second)->get_lead_lag();
 #ifdef DEBUG
@@ -982,7 +982,7 @@ public:
                 tmp_out2.str("");
                 tmp_out2 << Stack.top();
                 tmp_out.str("");
-                tmp_out << get_variable(eExogenousDet, var);
+                tmp_out << get_variable(SymbolType::exogenousDet, var);
                 if (lag != 0)
                   tmp_out << "(" << lag << ")";
                 tmp_out << " = " << tmp_out2.str();
@@ -1000,9 +1000,9 @@ public:
           case FSTPSV:
             go_on = false;
             //load a variable in the processor
-            switch (((FSTPSV_ *) it_code->second)->get_type())
+            switch (static_cast<SymbolType>(((FSTPSV_ *) it_code->second)->get_type()))
               {
-              case eParameter:
+              case SymbolType::parameter:
                 var = ((FSTPSV_ *) it_code->second)->get_pos();
 #ifdef DEBUG
                 mexPrintf("FSTPSV_ param var=%d", var);
@@ -1010,7 +1010,7 @@ public:
                 tmp_out2.str("");
                 tmp_out2 << Stack.top();
                 tmp_out.str("");
-                tmp_out << get_variable(eParameter, var);
+                tmp_out << get_variable(SymbolType::parameter, var);
                 tmp_out << " = " << tmp_out2.str();
                 Stack.pop();
                 if (compute)
@@ -1019,7 +1019,7 @@ public:
                     Stackf.pop();
                   }
                 break;
-              case eEndogenous:
+              case SymbolType::endogenous:
                 var = ((FSTPSV_ *) it_code->second)->get_pos();
 #ifdef DEBUG
                 mexPrintf("FSTPSV_ endo var=%d", var);
@@ -1027,7 +1027,7 @@ public:
                 tmp_out2.str("");
                 tmp_out2 << Stack.top();
                 tmp_out.str("");
-                tmp_out << get_variable(eEndogenous, var);
+                tmp_out << get_variable(SymbolType::endogenous, var);
                 tmp_out << " = " << tmp_out2.str();
                 Stack.pop();
                 if (compute)
@@ -1036,8 +1036,8 @@ public:
                     Stackf.pop();
                   }
                 break;
-              case eExogenous:
-              case eExogenousDet:
+              case SymbolType::exogenous:
+              case SymbolType::exogenousDet:
                 var = ((FSTPSV_ *) it_code->second)->get_pos();
 #ifdef DEBUG
                 mexPrintf("FSTPSV_ exo var=%d", var);
@@ -1045,7 +1045,7 @@ public:
                 tmp_out2.str("");
                 tmp_out2 << Stack.top();
                 tmp_out.str("");
-                tmp_out << get_variable(eExogenous, var);
+                tmp_out << get_variable(SymbolType::exogenous, var);
                 tmp_out << " = " << tmp_out2.str();
                 Stack.pop();
                 if (compute)
@@ -1251,9 +1251,9 @@ public:
                 v1f = Stackf.top();
                 Stackf.pop();
               }
-            switch (op)
+            switch (static_cast<BinaryOpcode>(op))
               {
-              case oPlus:
+              case BinaryOpcode::plus:
 #ifdef DEBUG
                 mexPrintf("+");
 #endif
@@ -1263,7 +1263,7 @@ public:
                 tmp_out << v1 << " + " << v2;
                 Stack.push(tmp_out.str());
                 break;
-              case oMinus:
+              case BinaryOpcode::minus:
 #ifdef DEBUG
                 mexPrintf("-");
 #endif
@@ -1285,7 +1285,7 @@ public:
                   tmp_out << ")";
                 Stack.push(tmp_out.str());
                 break;
-              case oTimes:
+              case BinaryOpcode::times:
 #ifdef DEBUG
                 mexPrintf("*");
 #endif
@@ -1307,7 +1307,7 @@ public:
                   tmp_out << ")";
                 Stack.push(tmp_out.str());
                 break;
-              case oDivide:
+              case BinaryOpcode::divide:
 #ifdef DEBUG
                 mexPrintf("/");
 #endif
@@ -1341,7 +1341,7 @@ public:
                   tmp_out << ")";
                 Stack.push(tmp_out.str());
                 break;
-              case oLess:
+              case BinaryOpcode::less:
 #ifdef DEBUG
                 mexPrintf("<");
 #endif
@@ -1363,7 +1363,7 @@ public:
                   tmp_out << ")";
                 Stack.push(tmp_out.str());
                 break;
-              case oGreater:
+              case BinaryOpcode::greater:
 #ifdef DEBUG
                 mexPrintf(">");
 #endif
@@ -1385,7 +1385,7 @@ public:
                   tmp_out << ")";
                 Stack.push(tmp_out.str());
                 break;
-              case oLessEqual:
+              case BinaryOpcode::lessEqual:
 #ifdef DEBUG
                 mexPrintf("<=");
 #endif
@@ -1407,7 +1407,7 @@ public:
                   tmp_out << ")";
                 Stack.push(tmp_out.str());
                 break;
-              case oGreaterEqual:
+              case BinaryOpcode::greaterEqual:
 #ifdef DEBUG
                 mexPrintf(">=");
 #endif
@@ -1429,7 +1429,7 @@ public:
                   tmp_out << ")";
                 Stack.push(tmp_out.str());
                 break;
-              case oEqualEqual:
+              case BinaryOpcode::equalEqual:
 #ifdef DEBUG
                 mexPrintf("==");
 #endif
@@ -1451,7 +1451,7 @@ public:
                   tmp_out << ")";
                 Stack.push(tmp_out.str());
                 break;
-              case oDifferent:
+              case BinaryOpcode::different:
 #ifdef DEBUG
                 mexPrintf("!=");
 #endif
@@ -1473,7 +1473,7 @@ public:
                   tmp_out << ")";
                 Stack.push(tmp_out.str());
                 break;
-              case oPower:
+              case BinaryOpcode::power:
 #ifdef DEBUG
                 mexPrintf("^");
 #endif
@@ -1506,7 +1506,7 @@ public:
                   tmp_out << ")";
                 Stack.push(tmp_out.str());
                 break;
-              case oPowerDeriv:
+              case BinaryOpcode::powerDeriv:
                 {
                   v3 = Stack.top();
                   Stack.pop();
@@ -1514,9 +1514,9 @@ public:
                     {
                       int derivOrder = int (nearbyint(Stackf.top()));
                       Stackf.pop();
-                      if (fabs(v1f) < NEAR_ZERO && v2f > 0
+                      if (fabs(v1f) < near_zero && v2f > 0
                           && derivOrder > v2f
-                          && fabs(v2f-nearbyint(v2f)) < NEAR_ZERO)
+                          && fabs(v2f-nearbyint(v2f)) < near_zero)
                         {
                           r = 0.0;
                           Stackf.push(r);
@@ -1547,7 +1547,7 @@ public:
                 tmp_out << " |PowerDeriv(" << v1 << ", " << v2 << v3 << ")|";
 #endif
                 break;
-              case oMax:
+              case BinaryOpcode::max:
 #ifdef DEBUG
                 mexPrintf("max");
 #endif
@@ -1557,7 +1557,7 @@ public:
                 tmp_out << "max(" << v1 << ", " << v2 << ")";
                 Stack.push(tmp_out.str());
                 break;
-              case oMin:
+              case BinaryOpcode::min:
 #ifdef DEBUG
                 mexPrintf("min");
 #endif
@@ -1567,7 +1567,7 @@ public:
                 tmp_out << "min(" << v1 << ", " << v2 << ")";
                 Stack.push(tmp_out.str());
                 break;
-              case oEqual:
+              case BinaryOpcode::equal:
               default:
                 mexPrintf("Error unknown Unary operator=%d\n", op); mexEvalString("drawnow;");
                 ;
@@ -1582,23 +1582,23 @@ public:
                 v1f = Stackf.top();
                 Stackf.pop();
               }
-            switch (op)
+            switch (static_cast<UnaryOpcode>(op))
               {
-              case oUminus:
+              case UnaryOpcode::uminus:
                 if (compute)
                   Stackf.push(-v1f);
                 tmp_out.str("");
                 tmp_out << " -" << v1;
                 Stack.push(tmp_out.str());
                 break;
-              case oExp:
+              case UnaryOpcode::exp:
                 if (compute)
                   Stackf.push(exp(v1f));
                 tmp_out.str("");
                 tmp_out << "exp(" << v1 << ")";
                 Stack.push(tmp_out.str());
                 break;
-              case oLog:
+              case UnaryOpcode::log:
                 if (compute)
                   {
                     r = log(v1f);
@@ -1616,7 +1616,7 @@ public:
                   tmp_out << "log(" << v1 << ")";
                 Stack.push(tmp_out.str());
                 break;
-              case oLog10:
+              case UnaryOpcode::log10:
                 if (compute)
                   {
                     r = log10(v1f);
@@ -1634,98 +1634,98 @@ public:
                   tmp_out << "log10(" << v1 << ")";
                 Stack.push(tmp_out.str());
                 break;
-              case oCos:
+              case UnaryOpcode::cos:
                 if (compute)
                   Stackf.push(cos(v1f));
                 tmp_out.str("");
                 tmp_out << "cos(" << v1 << ")";
                 Stack.push(tmp_out.str());
                 break;
-              case oSin:
+              case UnaryOpcode::sin:
                 if (compute)
                   Stackf.push(sin(v1f));
                 tmp_out.str("");
                 tmp_out << "sin(" << v1 << ")";
                 Stack.push(tmp_out.str());
                 break;
-              case oTan:
+              case UnaryOpcode::tan:
                 if (compute)
                   Stackf.push(tan(v1f));
                 tmp_out.str("");
                 tmp_out << "tan(" << v1 << ")";
                 Stack.push(tmp_out.str());
                 break;
-              case oAcos:
+              case UnaryOpcode::acos:
                 if (compute)
                   Stackf.push(acos(v1f));
                 tmp_out.str("");
                 tmp_out << "acos(" << v1 << ")";
                 Stack.push(tmp_out.str());
                 break;
-              case oAsin:
+              case UnaryOpcode::asin:
                 if (compute)
                   Stackf.push(asin(v1f));
                 tmp_out.str("");
                 tmp_out << "asin(" << v1 << ")";
                 Stack.push(tmp_out.str());
                 break;
-              case oAtan:
+              case UnaryOpcode::atan:
                 if (compute)
                   Stackf.push(atan(v1f));
                 tmp_out.str("");
                 tmp_out << "atan(" << v1 << ")";
                 Stack.push(tmp_out.str());
                 break;
-              case oCosh:
+              case UnaryOpcode::cosh:
                 if (compute)
                   Stackf.push(cosh(v1f));
                 tmp_out.str("");
                 tmp_out << "cosh(" << v1 << ")";
                 Stack.push(tmp_out.str());
                 break;
-              case oSinh:
+              case UnaryOpcode::sinh:
                 if (compute)
                   Stackf.push(sinh(v1f));
                 tmp_out.str("");
                 tmp_out << "sinh(" << v1 << ")";
                 Stack.push(tmp_out.str());
                 break;
-              case oTanh:
+              case UnaryOpcode::tanh:
                 if (compute)
                   Stackf.push(tanh(v1f));
                 tmp_out.str("");
                 tmp_out << "tanh(" << v1 << ")";
                 Stack.push(tmp_out.str());
                 break;
-              case oAcosh:
+              case UnaryOpcode::acosh:
                 if (compute)
                   Stackf.push(acosh(v1f));
                 tmp_out.str("");
                 tmp_out << "acosh(" << v1 << ")";
                 Stack.push(tmp_out.str());
                 break;
-              case oAsinh:
+              case UnaryOpcode::asinh:
                 if (compute)
                   Stackf.push(asinh(v1f));
                 tmp_out.str("");
                 tmp_out << "asinh(" << v1 << ")";
                 Stack.push(tmp_out.str());
                 break;
-              case oAtanh:
+              case UnaryOpcode::atanh:
                 if (compute)
                   Stackf.push(atanh(v1f));
                 tmp_out.str("");
                 tmp_out << "atanh(" << v1 << ")";
                 Stack.push(tmp_out.str());
                 break;
-              case oSqrt:
+              case UnaryOpcode::sqrt:
                 if (compute)
                   Stackf.push(sqrt(v1f));
                 tmp_out.str("");
                 tmp_out << "sqrt(" << v1 << ")";
                 Stack.push(tmp_out.str());
                 break;
-              case oErf:
+              case UnaryOpcode::erf:
                 if (compute)
                   Stackf.push(erf(v1f));
                 tmp_out.str("");
@@ -1754,16 +1754,16 @@ public:
                 v1f = Stackf.top();
                 Stackf.pop();
               }
-            switch (op)
+            switch (static_cast<TrinaryOpcode>(op))
               {
-              case oNormcdf:
+              case TrinaryOpcode::normcdf:
                 if (compute)
                   Stackf.push(0.5*(1+erf((v1f-v2f)/v3f/M_SQRT2)));
                 tmp_out.str("");
                 tmp_out << "normcdf(" << v1 << ", " << v2 << ", " << v3 << ")";
                 Stack.push(tmp_out.str());
                 break;
-              case oNormpdf:
+              case TrinaryOpcode::normpdf:
                 if (compute)
                   Stackf.push(1/(v3f*sqrt(2*M_PI)*exp(pow((v1f-v2f)/v3f, 2)/2)));
                 tmp_out.str("");
@@ -1809,9 +1809,9 @@ public:
               mxArray **input_arguments;
               switch (function_type)
                 {
-                case ExternalFunctionWithoutDerivative:
-                case ExternalFunctionWithFirstDerivative:
-                case ExternalFunctionWithFirstandSecondDerivative:
+                case ExternalFunctionType::withoutDerivative:
+                case ExternalFunctionType::withFirstDerivative:
+                case ExternalFunctionType::withFirstAndSecondDerivative:
                   {
                     if (compute)
                       {
@@ -1848,7 +1848,7 @@ public:
                     Stack.push(tmp_out.str());
                   }
                   break;
-                case ExternalFunctionNumericalFirstDerivative:
+                case ExternalFunctionType::numericalFirstDerivative:
                   {
                     if (compute)
                       {
@@ -1902,7 +1902,7 @@ public:
                     Stack.push(tmp_out.str());
                   }
                   break;
-                case ExternalFunctionFirstDerivative:
+                case ExternalFunctionType::firstDerivative:
                   {
                     if (compute)
                       {
@@ -1933,7 +1933,7 @@ public:
                     Stack.push(tmp_out.str());
                   }
                   break;
-                case ExternalFunctionNumericalSecondDerivative:
+                case ExternalFunctionType::numericalSecondDerivative:
                   {
                     if (compute)
                       {
@@ -1986,7 +1986,7 @@ public:
                     Stack.push(tmp_out.str());
                   }
                   break;
-                case ExternalFunctionSecondDerivative:
+                case ExternalFunctionType::secondDerivative:
                   {
                     if (compute)
                       {
@@ -2043,13 +2043,13 @@ public:
             tmp_out.str("");
             switch (function_type)
               {
-              case ExternalFunctionWithoutDerivative:
+              case ExternalFunctionType::withoutDerivative:
                 tmp_out << "TEF(" << var << ") = " << Stack.top();
                 break;
-              case ExternalFunctionWithFirstDerivative:
+              case ExternalFunctionType::withFirstDerivative:
                 tmp_out << "[TEF(" << var << "), TEFD(" << var << ") ]= " << Stack.top();
                 break;
-              case ExternalFunctionWithFirstandSecondDerivative:
+              case ExternalFunctionType::withFirstAndSecondDerivative:
                 tmp_out << "[TEF(" << var << "), TEFD(" << var << "), TEFDD(" << var << ") ]= " << Stack.top();
                 break;
               default:
@@ -2105,9 +2105,9 @@ public:
                   Stackf.pop();
                 }
               tmp_out.str("");
-              if (function_type == ExternalFunctionNumericalFirstDerivative)
+              if (function_type == ExternalFunctionType::numericalFirstDerivative)
                 tmp_out << "TEFD(" << indx << ", " << row << ") = " << Stack.top();
-              else if (function_type == ExternalFunctionFirstDerivative)
+              else if (function_type == ExternalFunctionType::firstDerivative)
                 tmp_out << "TEFD(" << indx << ") = " << Stack.top();
               Stack.pop();
             }
@@ -2155,9 +2155,9 @@ public:
                   Stackf.pop();
                 }
               tmp_out.str("");
-              if (function_type == ExternalFunctionNumericalSecondDerivative)
+              if (function_type == ExternalFunctionType::numericalSecondDerivative)
                 tmp_out << "TEFDD(" << indx << ", " << row << ", " << col << ") = " << Stack.top();
-              else if (function_type == ExternalFunctionSecondDerivative)
+              else if (function_type == ExternalFunctionType::secondDerivative)
                 tmp_out << "TEFDD(" << indx << ") = " << Stack.top();
               Stack.pop();
             }
