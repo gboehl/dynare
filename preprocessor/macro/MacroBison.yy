@@ -139,7 +139,7 @@ expr : INTEGER
            }
          delete $1;
        }
-     | LENGTH LPAREN array_expr RPAREN
+     | LENGTH LPAREN expr RPAREN
        { TYPERR_CATCH($$ = $3->length(), @$); }
      | LPAREN expr RPAREN
        { $$ = $2; }
