@@ -15,7 +15,7 @@
 	url = git@github.com:DynareTeam/m-unit-tests.git
 [submodule "matlab/particles"]
 	path = matlab/particles
-	url = git@github.com:DynareTeam/particles.git
+	url = https://git.dynare.org/Dynare/particles.git
 [submodule "matlab/modules/dates"]
 	path = matlab/modules/dates
 	url =  git@gitlab.com:McModelTeam/dates.git
