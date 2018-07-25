@@ -194,6 +194,7 @@ public:
   /*! The first argument must be a string array. Returns a string array. */
   virtual const MacroValue *append(const MacroValue *array) const throw (TypeError);
   virtual const MacroValue *in(const MacroValue *array) const throw (TypeError);
+  virtual const MacroValue *length() const throw (TypeError);
 };
 
 //! Represents an array in macro language

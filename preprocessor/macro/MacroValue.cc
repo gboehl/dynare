@@ -436,3 +436,9 @@ StringMV::in(const MacroValue *array) const throw (TypeError)
 
   return new IntMV(driver, result);
 }
+
+const MacroValue *
+StringMV::length() const throw (TypeError)
+{
+  return new IntMV(driver, value.length());
+}
