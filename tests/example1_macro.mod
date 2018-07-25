@@ -1,4 +1,5 @@
-// Example 1 from Collard's guide to Dynare
+// Various tests for the macroprocessor
+
 var y, c, k, a, h, b;
 varexo e, u;
 
@@ -20,6 +21,39 @@ psi   = 0;
 theta = 2.95;
 phi   = 0.1;
 @#endif
+
+@#define a = 5
+@#define b = 2*(a + 3)/4-1
+@#if b != 3
+@#error "Arithmetic problem"
+@#endif
+
+@#define v = [ "a", 1, 2:3]
+@#define empty = []
+@#define z = v[2:3]
+@#if z != [ 1, [ 2, 3 ]] || length(v) != 3 || 5 in v || !("a" in v) || length(empty) != 0
+@#error "Array problem"
+@#endif
+
+@#define w = [ 1 ]
+@#for elt in v
+@#define w = w + [ elt ]
+@#endfor
+@#if w != [ 1, "a", 1, 2:3]
+@#error "For loop problem"
+@#endif
+
+@#define s = "abcde"
+@#if length(s) != 5 || s[3:4] != "cd"
+@#error "String problem"
+@#endif
+
+@#define f(y, z) = "@{y}bar@{z}"
+@#if f("foo", "baz") != "foobarbaz"
+@#error "Function problem"
+@#endif
+
+
 
 model;
 c*theta*h^(1+psi)=(1-alpha)*y;
