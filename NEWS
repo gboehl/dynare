@@ -21,7 +21,7 @@ fixed in version 4.5.6:
    rejected.
 
  - Fixed online particle filter by drawing initial conditions in the prior
-   distribution.x
+   distribution.
 
  - Fixed evaluation of the likelihood in non linear / particle filters.
 
