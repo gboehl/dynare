@@ -144,7 +144,7 @@ if tt5
     if any(x(id5)-p3(id5)<0) || any(x(id5)-p4(id5)>0)
         logged_prior_density = -Inf ;
         if nargout ==4
-            info=id5((x(id5)-p3(id5)<0) || (x(id5)-p4(id5)>0));
+            info=id5(any(x(id5)-p3(id5)<0) || any(x(id5)-p4(id5)>0));
         end
         return
     end
