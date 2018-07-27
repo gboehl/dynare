@@ -1,3 +1,49 @@
+Announcement for Dynare 4.5.6 (on 2018-07-25)
+=============================================
+
+We are pleased to announce the release of Dynare 4.5.6.
+
+This is a bugfix release.
+
+The Windows packages are already available for download at:
+
+ http://www.dynare.org/download/dynare-stable
+
+The Mac and GNU/Linux packages (for Debian and Ubuntu LTS) should follow soon.
+
+This release is compatible with MATLAB versions 7.5 (R2007b) to 9.3 (R2018a)
+and with GNU Octave versions 4.4.
+
+Here is a list of the problems identified in version 4.5.5 and that have been
+fixed in version 4.5.6:
+
+ - TaRB sampler: incorrect last posterior was returned if the last draw was
+   rejected.
+
+ - Fixed online particle filter by drawing initial conditions in the prior
+   distribution.
+
+ - Fixed evaluation of the likelihood in non linear / particle filters.
+
+ - Added missing documented `montecarlo` option in Gaussian Filter and
+   Nonlinear Kalman Filter.
+
+ - Added back a flag to deal with errors on Cholesky decomposition in the
+   Conditional Particle Filter.
+
+ - Macroprocessor `length()` operator was returning 1 when applied to a
+   string. Macroprocessor now raises an error when `length()` operator is
+   called on an integer and return the number of characters when applied to a
+   string.
+
+ - `mode_compute=8`: the error code during mode-finding was not correctly
+   handled, resulting in crashes.
+
+ - Identification was not correctly displaying a message for collinear parameters
+   if there was no unidentified parameter present.
+
+
+
 Announcement for Dynare 4.5.5 (on 2018-06-08)
 =============================================
 
