@@ -27,6 +27,11 @@ function ida = get_aux_variable_id(var)
 
 global M_
 
+if isempty(var)
+    ida = 0;
+    return
+end
+
 if ischar(var)
     id = strmatch(var, M_.endo_names, 'exact');
     if isempty(var)
