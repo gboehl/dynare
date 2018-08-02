@@ -151,12 +151,17 @@ else
     elseif horizon <= exo_det_length
         ex = zeros(exo_det_length,M.exo_nbr);
     end
+    if options.linear
+        iorder = 1;
+    else
+        iorder = options.order;
+    end
     if isequal(M.H,0)
         [yf,int_width] = simultxdet(y0,ex,oo.exo_det_simul,...
-                                    options.order,var_list,M,oo,options);
+                                    iorder,var_list,M,oo,options);
     else
         [yf,int_width,int_width_ME] = simultxdet(y0,ex,oo.exo_det_simul,...
-                                                 options.order,var_list,M,oo,options);
+                                                 iorder,var_list,M,oo,options);
     end
 end
 
