@@ -303,6 +303,7 @@ MODFILES = \
 	stochastic_purely_forward/stochastic_purely_forward.mod \
 	stochastic_purely_forward/stochastic_purely_forward_with_static.mod \
 	forecast/Hansen_exo_det_forecast.mod \
+	forecast/linear_exo_det_forecast.mod \
 	forecast/ls2003_rolling_window_forecast.mod \
 	gradient/fs2000_numgrad_13.mod \
 	gradient/fs2000_numgrad_15.mod \
