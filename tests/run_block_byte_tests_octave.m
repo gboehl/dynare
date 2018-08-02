@@ -43,19 +43,17 @@ cd([top_test_dir filesep 'block_bytecode']);
 tic;
 for blockFlag = 0:1
     for bytecodeFlag = 0:1
-        ## Recall that solve_algo=7 and stack_solve_algo=2 are not supported
-        ## under Octave
         default_solve_algo = 2;
         default_stack_solve_algo = 0;
         if !blockFlag && !bytecodeFlag
             solve_algos = 0:4;
             stack_solve_algos = [0 6];
         elseif blockFlag && !bytecodeFlag
-            solve_algos = [0:4 6 8];
-            stack_solve_algos = [0 1 3 4];
+            solve_algos = [0:4 6:8];
+            stack_solve_algos = 0:4;
         else
-            solve_algos = [0:6 8];
-            stack_solve_algos = [0 1 3:5];
+            solve_algos = 0:8;
+            stack_solve_algos = 0:5;
         endif
 
         sleep(1) # Workaround for strange race condition related to the _static.m file

@@ -37,10 +37,6 @@ if (DynareOptions.block || DynareOptions.bytecode) && DynareOptions.stack_solve_
     error('perfect_foresight_solver:ArgCheck','PERFECT_FORESIGHT_SOLVER: you can''t use stack_solve_algo = 6 with block or bytecode option')
 end
 
-if isoctave && DynareOptions.stack_solve_algo == 2
-    error('perfect_foresight_solver:ArgCheck','PERFECT_FORESIGHT_SOLVER: you can''t use stack_solve_algo = 2 under Octave')
-end
-
 
 if isempty(DynareResults.endo_simul) || any(size(DynareResults.endo_simul) ~= [ DynareModel.endo_nbr, DynareModel.maximum_lag+DynareOptions.periods+DynareModel.maximum_lead ])
 

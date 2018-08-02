@@ -4833,14 +4833,6 @@ dynSparseMatrix::Solve_CUDA_BiCGStab(int *Ap, int *Ai, double *Ax, int *Ap_tild,
 void
 dynSparseMatrix::Solve_Matlab_GMRES(mxArray *A_m, mxArray *b_m, int Size, double slowc, int block, bool is_two_boundaries, int it_, mxArray *x0_m)
 {
-#ifdef OCTAVE_MEX_FILE
-  ostringstream tmp;
-  if (steady_state)
-    tmp << " GMRES method is not implemented in Octave. You cannot use solve_algo=7, change solve_algo.\n";
-  else
-    tmp << " GMRES method is not implemented in Octave. You cannot use stack_solve_algo=2, change stack_solve_algo.\n";
-  throw FatalExceptionHandling(tmp.str());
-#endif
   size_t n = mxGetM(A_m);
   const char *field_names[] = {"droptol", "type"};
   mwSize dims[1] = { 1 };

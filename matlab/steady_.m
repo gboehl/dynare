@@ -48,7 +48,7 @@ if ~options_.bytecode && options_.block && options_.solve_algo == 5
     error('STEADY: you can''t use solve_algo = 5 without bytecode option')
 end
 
-if isoctave && ismember(options_.solve_algo,[7,11])
+if isoctave && options_.solve_algo == 11
     error(['SIMUL: you can''t use solve_algo = %u under Octave'],options_.solve_algo)
 end
 
