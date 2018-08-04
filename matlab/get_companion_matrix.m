@@ -37,6 +37,20 @@ p = size(oo_.var.(var_model_name).ar, 3);
 % Get the number of variables
 n = length(oo_.var.(var_model_name).ar(:,:,1));
 
+% If not used in a PAC equation
+if nargin<2
+    oo_.var.(var_model_name).CompanionMatrix = zeros(n*p);
+    oo_.var.(var_model_name).CompanionMatrix(1:n,1:n) = oo_.var.(var_model_name).ar(:,:,1);
+    if p>1
+        for i=2:p
+            oo_.var.(var_model_name).CompanionMatrix(1:n,(i-1)*n+(1:n)) = oo_.var.(var_model_name).ar(:,:,i);
+            oo_.var.(var_model_name).CompanionMatrix((i-1)*n+(1:n),(i-2)*n+(1:n)) = eye(n);
+        end
+    end
+    return
+end
+
+
 if all(~oo_.var.(var_model_name).ec(:))
     % The auxiliary model is a VAR model.
     M_.pac.(pac_model_name).auxmodel = 'var';
