@@ -1,4 +1,4 @@
-function DynareModel = update_pac_parameters(pacname, DynareModel, DynareOutput)
+function DynareModel = parameters(pacname, DynareModel, DynareOutput)
 
 % Updates the parameters of a PAC equation.
 %
