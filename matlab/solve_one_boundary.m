@@ -280,9 +280,6 @@ for it_=start:incr:finish
                 end
             elseif (stack_solve_algo==2 && is_dynamic) || (options.solve_algo==7 && ~is_dynamic)
                 flag1=1;
-                if isoctave
-                    error('SOLVE_ONE_BOUNDARY: you can''t use solve_algo=7 since GMRES is not implemented in Octave')
-                end
                 if verbose == 1 && ~is_dynamic
                     disp('steady: GMRES ')
                 end

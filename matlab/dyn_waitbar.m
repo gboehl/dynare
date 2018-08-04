@@ -43,7 +43,7 @@ if nargout
 end
 
 if ~whoiam
-    if isoctave || options_.console_mode
+    if options_.console_mode
         if init
             diary off;
             running_text = varargin{1};
@@ -52,13 +52,9 @@ if ~whoiam
         elseif nargin>2
             running_text =  varargin{2};
         end
-        if isoctave
-            printf([running_text,' %3.f%% done\r'], prctdone*100);
-        else
-            s0=repmat('\b',1,length(newString));
-            newString=sprintf([running_text,' %3.f%% done'], prctdone*100);
-            fprintf([s0,'%s'],newString);
-        end
+        s0=repmat('\b',1,length(newString));
+        newString=sprintf([running_text,' %3.f%% done'], prctdone*100);
+        fprintf([s0,'%s'],newString);
     else
         if nargout
             h = waitbar(prctdone,varargin{:});
