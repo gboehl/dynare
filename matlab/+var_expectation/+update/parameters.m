@@ -1,0 +1,170 @@
+function DynareModel = parameters(varexpectationmodelname, DynareModel, DynareOutput)
+
+% Updates the VAR expectation reduced form parameters.
+%
+% INPUTS
+% - varexpectationmodelname       [string]    Name of the pac equation.
+% - DynareModel                   [struct]    M_ global structure (model properties)
+% - DynareOutput                  [struct]    oo_ global structure (model results)
+%
+% OUTPUTS
+% - DynareModel                   [struct]    M_ global structure (with updated params field)
+%
+% SPECIAL REQUIREMENTS
+%    none
+
+% Copyright (C) 2018 Dynare Team
+%
+% This file is part of Dynare.
+%
+% Dynare is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% Dynare is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+
+% Check that the first input is a row character array.
+if ~isrow(varexpectationmodelname)==1 || ~ischar(varexpectationmodelname)
+    error('First input argument must be a row character array!')
+end
+
+% Check that the model exists.
+if ~isfield(DynareModel.var_expectation, varexpectationmodelname)
+    error('VAR_EXPECTATION_MODEL %s is not defined!', varexpectationmodelname)
+end
+
+% Get the VAR model description
+varexpectationmodel = DynareModel.var_expectation.(varexpectationmodelname);
+
+% Get the name of the associated VAR model and test its existence.
+if ~isfield(DynareModel.var, varexpectationmodel.var_model_name)
+    error('Unknown VAR (%s) in VAR_EXPECTATION_MODEL (%s)!', varexpectationmodel.var_model_name, varexpectationmodelname)
+end
+
+varmodel = DynareModel.var.(varexpectationmodel.var_model_name);
+
+% Check that we have the values of the VAR matrices.
+if ~isfield(DynareOutput.var, varexpectationmodel.var_model_name)
+    error('VAR model %s has to be estimated or calibrated first!', varexpectationmodel.var_model_name)
+end
+
+varcalib = DynareOutput.var.(varexpectationmodel.var_model_name);
+
+if ~isfield(varcalib, 'CompanionMatrix') || any(isnan(varcalib.CompanionMatrix(:)))
+    message = sprintf('VAR model %s has to be estimated first.', varexpectationmodel.var_model_name);
+    message = sprintf('s\nPlease use get_companion_matrix command first.', message);
+    error(message)
+end
+
+% Set discount factor
+if isfield(varexpectationmodel, 'discount_value')
+    discountfactor = varexpectationmodel.discount_value;
+else
+    if isfield(varexpectationmodel, 'discount_index')
+        discountfactor = DynareModel.params(varexpectationmodel.discount_index);
+    else
+        error('This is most likely a bug. Pleasse conntact the Dynare Team.')
+    end
+end
+
+% A discount factor has to be positive.
+if discountfactor<=0
+    error('The discount factor must be positive.')
+end
+
+% A discount factor cannot be greater than one.
+if discountfactor>1
+    error('The discount cannot be greater than one.')
+end
+
+% Set variable_id in VAR model
+variable_id_in_var = find(varexpectationmodel.variable_id==varmodel.lhs);
+
+% Get the horizon parameter.
+horizon = varexpectationmodel.horizon;
+
+% Check the horizon parameter
+wrong_horizon_parameter = true;
+if length(horizon)==1
+    if isnumeric(horizon)
+        if isfinite(horizon)
+            if isint(horizon)
+                if horizon>0
+                    wrong_horizon_parameter = false;
+                end
+            end
+        end
+    end
+elseif length(horizon)==2
+    if isnumeric(horizon)
+        if isfinite(horizon(1))
+            if isint(horizon(1))
+                if horizon(1)>=0
+                    if isinf(horizon(2)) || (isint(horizon(2)) && horizon(2)>horizon(1)) 
+                        wrong_horizon_parameter = false;
+                    end
+                end
+            end
+        end
+    end
+end
+
+if wrong_horizon_parameter
+    error('horizon must be an integer scalar or an integer vector with two elements.')
+end
+
+% Get the companion matrix
+CompanionMatrix = varcalib.CompanionMatrix;
+
+% Get the dimension of the problem.
+n = length(CompanionMatrix);
+
+% Set the selection vector
+alpha = zeros(1, length(CompanionMatrix));
+alpha(variable_id_in_var) = 1;
+
+if length(horizon)==1
+    % Compute the reduced form parameters of the (discounted) forecast in period t+horizon(1)
+    if varexpectationmodel.horizon==1
+        parameters = discountfactor*(alpha*CompanionMatrix);
+    elseif horizon>1 
+        parameters = alpha*mpower(discountfactor*CompanionMatrix, varexpectationmodel.horizon);
+    end
+else
+    % Compute the reduced form parameters of the discounted sum of forecasts between t+horizon(1) and
+    % t+horizon(2). Not that horzizon(2) need not be finite.
+    if horizon(1)==0 && isinf(horizon(2))
+        parameters = alpha/(eye(n)-discountfactor*CompanionMatrix);
+    elseif horizon(1)>0 && isinf(horizon(2))
+        % Define the discounted companion matrix
+        DiscountedCompanionMatrix = discountfactor*CompanionMatrix;
+        % First compute the parameters implied by the discounted sum from h=0 to h=horizon(1)-1
+        tmp1 = eye(n);
+        for h=1:horizon(1)
+            tmp1 = tmp1 + mpower(DiscountedCompanionMatrix, h); 
+        end
+        tmp1 = alpha*tmp1;
+        % Second compute the parameters implied by the discounted sum from h=0 to h=Inf 
+        tmp2 = alpha/(eye(n)-DiscountedCompanionMatrix);
+        % Finally
+        parameters = tmp2-tmp1;
+    elseif isfinite(horizon(2))
+        % Define the discounted companion matrix
+        DiscountedCompanionMatrix = discountfactor*CompanionMatrix;
+        tmp = zeros(n);
+        for h=horizon(1):horizon(2)
+            tmp = tmp + mpower(DiscountedCompanionMatrix, h);
+        end
+        parameters = alpha*tmp;
+    end
+end
+
+% Update reduced form parameters in M_.params.
+DynareModel.params(varexpectationmodel.param_indices) = parameters;
