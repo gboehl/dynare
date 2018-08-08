@@ -1,4 +1,4 @@
-function update(varexpectationmodelname)OA
+function update(varexpectationmodelname)
 
 % Updates the parameters of a VAR_EXPECTATION_MODEL.
 %
