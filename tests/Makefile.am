@@ -353,6 +353,10 @@ MODFILES = \
 	observation_trends_and_prefiltering/calib_smoother/Tr_prefilter_loglin_calib_smoother.mod \
 	observation_trends_and_prefiltering/calib_smoother/Tr_prefil_f_obs_loglin_cal_smoother.mod \
 	observation_trends_and_prefiltering/ML/Trend_no_prefilter_selected_var.mod \
+	var-expectations/1/example.mod \
+	var-expectations/2/example.mod \
+	var-expectations/3/example.mod \
+	var-expectations/4/example.mod \
 	dynare-command-options/ramst.mod
 
 PARTICLEFILES = \
@@ -552,6 +556,9 @@ kalman/likelihood_from_dynare/fs2000ns_corr_ME_missing.o.trs: kalman/likelihood_
 lmmcp/sw_newton.m.trs: lmmcp/sw_lmmcp.m.trs
 lmmcp/sw_newton.o.trs: lmmcp/sw_lmmcp.o.trs
 
+var-expectations/4/example.m.trs: var-expectations/3/example.m.trs
+var-expectations/4/example.o.trs: var-expectations/3/example.o.trs
+
 observation_trends_and_prefiltering/MCMC: m/observation_trends_and_prefiltering/MCMC o/observation_trends_and_prefiltering/MCMC
 m/observation_trends_and_prefiltering/MCMC: $(patsubst %.mod, %.m.trs, $(filter observation_trends_and_prefiltering/MCMC/%.mod, $(MODFILES)))
 o/observation_trends_and_prefiltering/MCMC: $(patsubst %.mod, %.o.trs, $(filter observation_trends_and_prefiltering/MCMC/%.mod, $(MODFILES)))
@@ -723,6 +730,10 @@ o/optimizers: $(patsubst %.mod, %.o.trs, $(filter optimizers/%.mod, $(MODFILES))
 gradient: m/gradient o/gradient
 m/gradient: $(patsubst %.mod, %.m.trs, $(filter gradient/%.mod, $(MODFILES)))
 o/gradient: $(patsubst %.mod, %.o.trs, $(filter gradient/%.mod, $(MODFILES)))
+
+var-expectations: m/var-expectations o/var-expectations
+m/var-expectations: $(patsubst %.mod, %.m.trs, $(filter var-expectations/%.mod, $(MODFILES)))
+o/var-expectations: $(patsubst %.mod, %.o.trs, $(filter var-expectations/%.mod, $(MODFILES)))
 
 particle: m/particle o/particle
 m/particle: $(patsubst %.mod, %.m.trs, $(PARTICLEFILES))
