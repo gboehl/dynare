@@ -36,7 +36,7 @@ var_model(model_name = toto, eqtags = [ 'X' 'Y' 'Z' ]);
 ** where the sum is over h=0,…,∞ and the conditional expectations are computed with VAR model `var_model_name`.
 */
 
-var_expectation_model(model_name = varexp, variable = x, var_model_name = toto, horizon = 0:Inf, discount = beta)  ;
+var_expectation_model(model_name = varexp, variable = x, var_model_name = toto, horizon = 15:50, discount = beta)  ;
 
 
 model;
@@ -69,5 +69,3 @@ weights = M_.params(M_.var_expectation.varexp.param_indices);
 if weights(2) || ~weights(3) || weights(5) || ~weights(1) || ~weights(4) || ~weights(6)
    error('Wrong reduced form parameter for VAR_EXPECTATION_MODEL')
 end
-
-save('weights.mat','weights');

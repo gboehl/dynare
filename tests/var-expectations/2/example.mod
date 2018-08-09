@@ -31,7 +31,7 @@ var_model(model_name = toto, eqtags = [ 'X' 'Y' 'Z' ]);
 ** VAR_EXPECTATION_MODEL returns a discounted sum of expected values. If `horizon` is set equal to the range
 ** 0:Inf, then VAR_EXPECTATION_MODEL computes:
 **
-**                                       ∑ βʰ Eₜ[yₜ₊ₕ] 
+**                                       ∑ βʰ Eₜ[yₜ₊ₕ]
 **
 ** where the sum is over h=0,…,∞ and the conditional expectations are computed with VAR model `var_model_name`.
 */
@@ -58,7 +58,7 @@ get_companion_matrix('toto');
 // Update VAR_EXPECTATION reduced form parameters
 var_expectation.update('varexp');
 
-/* 
+/*
 ** REMARK The VAR model is such that x depends on past values of x
 ** (xₜ₋₁ and xₜ₋₂) and on zₜ₋₂ ⇒ yₜ₋₁, yₜ₋₂ and zₜ₋₁ do not bring any
 ** useful information for predicting xₜ₊₁. Consequently the reduced
@@ -67,6 +67,6 @@ var_expectation.update('varexp');
 
 weights = M_.params(M_.var_expectation.varexp.param_indices);
 
-if weights(2) || ~weights(3) || weights(5) || ~weights(1) || ~weights(4) || ~weights(6) 
+if weights(2) || ~weights(3) || weights(5) || ~weights(1) || ~weights(4) || ~weights(6)
    error('Wrong reduced form parameter for VAR_EXPECTATION_MODEL')
 end

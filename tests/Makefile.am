@@ -357,6 +357,7 @@ MODFILES = \
 	var-expectations/2/example.mod \
 	var-expectations/3/example.mod \
 	var-expectations/4/example.mod \
+	var-expectations/5/example.mod \
 	dynare-command-options/ramst.mod
 
 PARTICLEFILES = \
