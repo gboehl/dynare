@@ -76,25 +76,25 @@ else
         %        the trends appearing in the error correction terms. We
         %        assume that the model can be cast in the following form:
         %
-        %        Δ X_t = A_0 (X_{t-1} - Z_{t-1}) + Σ_{i=1}^p A_i Δ X_{t-i} + ϵ_t
+        %        Δ Xₜ = A₀ (Xₜ₋₁ - Zₜ₋₁) + Σᵢ₌₁ᵖ Aᵢ Δ Xₜ₋ᵢ + ϵₜ
         %
-        %        Z_t = Z_{t-1} + η_t
+        %        Zₜ = Zₜ₋₁ + ηₜ
         %
         %        We first recast the equation into this representation, and
         %        we rewrite the model in levels (we integrate the first set
         %        of equations) to rewrite the model as a VAR(1) model. Let
-        %        Y_t = [X_t; Z_t] be the vertical concatenation of vectors
-        %        X_t (variables with EC) and Z_t (trends). We have
+        %        Yₜ = [Xₜ; Zₜ] be the vertical concatenation of vectors
+        %        Xₜ (variables with EC) and Zₜ (trends). We have
         %
-        %        Y_t = Σ_{i=1}^{p+1} B_i Y_{t-i} + [ε_t; η_t]
+        %        Yₜ = Σᵢ₌₁ᵖ⁺¹ Bᵢ Yₜ₋ᵢ + [εₜ; ηₜ]
         %
         %        with
         %
-        %               B_1 = [I+Λ+A_1, -Λ; 0, I]
+        %               B₁ = [I+Λ+A₁, -Λ; 0, I]
         %
-        %               B_i = [A_i-A_{i-1}, 0; 0, 0]   for i = 2,..., p
+        %               Bᵢ = [Aᵢ-Aᵢ₋₁, 0; 0, 0]   for i = 2,…, p
         %        and
-        %               B_{p+1} = -[A_p, 0; 0, 0]
+        %               Bₚ₊₁ = -[Aₚ, 0; 0, 0]
         %
         %        where the dimensions of I and 0 matrices can easily be
         %        deduced from the number of EC and trend equations.
