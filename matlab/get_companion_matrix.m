@@ -47,6 +47,7 @@ if nargin<2
             oo_.var.(var_model_name).CompanionMatrix((i-1)*n+(1:n),(i-2)*n+(1:n)) = eye(n);
         end
     end
+    M_.var.(var_model_name).list_of_variables_in_companion_var = M_.endo_names(M_.var.(var_model_name).lhs);
     return
 end
 
@@ -64,6 +65,7 @@ if all(~oo_.var.(var_model_name).ec(:))
                 oo_.var.(var_model_name).CompanionMatrix((i-1)*n+(1:n),(i-2)*n+(1:n)) = eye(n);
             end
         end
+        M_.var.(var_model_name).list_of_variables_in_companion_var = M_.endo_names(M_.var.(var_model_name).lhs);
     else
         error('You should not use undiff option in this model!')
     end
@@ -189,6 +191,22 @@ else
             oo_.var.(var_model_name).CompanionMatrix(i*n+(1:n),(i-1)*n+(1:n)) = eye(n);
         end
         oo_.var.(var_model_name).CompanionMatrix(1:n, p*n+(1:n)) = B(:,:,p+1);
+        M_.var.(var_model_name).list_of_variables_in_companion_var = M_.endo_names(M_.var.(var_model_name).lhs);
+        variables_rewritten_in_levels = M_.var.(var_model_name).list_of_variables_in_companion_var(ecm_eqnums_in_auxiliary_model);
+        for i=1:m
+            id = get_aux_variable_id(variables_rewritten_in_levels{i});
+            if id
+                auxinfo = M_.aux_vars(id);
+                if auxinfo.type==8
+                    M_.var.(var_model_name).list_of_variables_in_companion_var(ecm_eqnums_in_auxiliary_model(i)) = ...
+                        {M_.endo_names{auxinfo.orig_index}};
+                else
+                    error('This is a bug. Please contact the Dynare Team.')
+                end
+            else
+                error('This is a bug. Please contact the Dynare Team.')
+            end
+        end
     else
         error('It is not possible to cast the VECM model in a companion representation! Use undiff option.')
     end

@@ -65,18 +65,33 @@ end
 pacvalues = DynareModel.params([pacmodel.ec.params; pacmodel.ar.params(:)]);
 
 % Get the indices for the stationary/nonstationary variables in the VAR system.
-if any(varmodel.nonstationary)
-    idns = find(varmodel.nonstationary);
-    if length(idns)<length(varmodel.eqn)
-        ids = find(~varmodel.nonstationary);
+id = find(strcmp(DynareModel.endo_names{pacmodel.ec.vars(1)}, varmodel.list_of_variables_in_companion_var));
+
+if isempty(id)
+    % Find the auxiliary variables if any
+    ad = find(cell2mat(cellfun(@(x) isauxiliary(x, 8), varmodel.list_of_variables_in_companion_var, 'UniformOutput', false)));
+    if isempty(ad)
+        error('Cannot find the trend variable in the Companion VAR/VECM model.')
     else
-        % All the variables in the system are non stationary.
-        ids = [];
+        for i=1:length(ad)
+            auxinfo = DynareModel.aux_vars(get_aux_variable_id(varmodel.list_of_variables_in_companion_var{ad(i)}));
+            if isequal(auxinfo.orig_index, pacmodel.ec.vars(1))
+                id = ad(i);
+                break
+            end
+        end
     end
+    if isempty(id)
+        error('Cannot find the trend variable in the Companion VAR/VECM model.')
+    end
+end
+
+if varmodel.nonstationary(id)
+    idns = id;
+    ids = [];
 else
-    % All the variables in the system are stationary.
     idns = [];
-    ids = 1:length(varmodel.eqn);
+    ids = id;
 end
 
 % Get the value of the discount factor.
@@ -92,19 +107,27 @@ end
 
 % Get h0 and h1 vectors (plus the parameter for the growth neutrality correction).
 if growth_flag
-    [h0, h1, growthneutrality] = hVectors([pacvalues; beta], varcalib.CompanionMatrix, ids, pacmodel.ec.vars(1), pacmodel.auxmodel);
+    [h0, h1, growthneutrality] = hVectors([pacvalues; beta], varcalib.CompanionMatrix, ids, idns, pacmodel.auxmodel);
 else
-    [h0, h1] = hVectors([pacvalues; beta], varcalib.CompanionMatrix, ids, pacmodel.ec.vars(1), pacmodel.auxmodel);
+    [h0, h1] = hVectors([pacvalues; beta], varcalib.CompanionMatrix, ids, idns, pacmodel.auxmodel);
 end
 
 % Update the parameters related to the stationary components.
 if length(h0)
     DynareModel.params(pacmodel.h0_param_indices) = h0;
+else
+    if isfield(pacmodel, 'h0_param_indices') && length(pacmodel.h0_param_indices)
+        DynareModel.params(pacmodel.h0_param_indices) = .0;
+    end
 end
 
 % Update the parameters related to the nonstationary components.
 if length(h1)
     DynareModel.params(pacmodel.h1_param_indices) = h1;
+else
+    if isfield(pacmodel, 'h1_param_indices') && length(pacmodel.h1_param_indices)
+        DynareModel.params(pacmodel.h1_param_indices) = .0;
+    end
 end
 
 % Update the parameter related to the growth neutrality correction.
