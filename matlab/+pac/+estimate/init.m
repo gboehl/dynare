@@ -1,4 +1,4 @@
-function [pacmodl, lhs, rhs, pnames, enames, xnames, pid, eid, xid, pnames_, ipnames_, data, islaggedvariables] = ...
+function [pacmodl, lhs, rhs, pnames, enames, xnames, pid, eid, xid, pnames_, ipnames_, params, data, islaggedvariables] = ...
     init(M_, oo_, eqname, params, data, range)
 
 % Copyright (C) 2018 Dynare Team
@@ -60,6 +60,25 @@ ipnames_ = zeros(size(pnames_));
 for i=1:length(ipnames_)
     ipnames_(i) = strmatch(pnames_{i}, M_.param_names, 'exact');
 end
+
+% Ensure that the error correction parameter comes first, followed by the
+% autoregressive parameters (in increasing order w.r.t. the lags).
+ipnames__ = ipnames_;                                                  % The user provided order.
+ipnames_  = [M_.pac.(pacmodl).ec.params; M_.pac.(pacmodl).ar.params']; % The correct order.
+for i=1:length(ipnames_)
+    if ~ismember(ipnames_(i), ipnames__)
+        % This parameter is not estimated.
+        ipnames_(i) = NaN;
+    end
+end
+
+% Remove calibrated parameters (if any).
+ipnames_(find(isnan(ipnames_))) = [];
+
+% Reorder params if needed.
+[~, permutation] = ismember(ipnames__, ipnames_);
+pnames_ = pnames_(permutation);
+params = orderfields(params, permutation);
 
 % Add the auxiliary variables in the dataset.
 data = feval([M_.fname '.dynamic_set_auxiliary_series'], data, M_.params);
