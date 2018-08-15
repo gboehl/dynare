@@ -9,6 +9,13 @@ function [h0, h1, longruncorrectionparameter] = hVectors(params, H, ids, idns, a
 % OUTPUTS
 % - h0              [double]     1*n vector.
 % - h1              [double]     1*n vector.
+%
+% REMARKS
+% The parameters are ordered as follows in the params vector:
+%
+%    params(1)       ⟶ Error correction parameter.
+%    params(2:end-1) ⟶ Autoregressive parameters.
+%    params(end)     ⟶ Discount factor.
 
 if nargout>1 && nargin<4
     error('Wrong number of Inputs/Outputs!')
@@ -47,5 +54,5 @@ end
 
 if nargout>2
     d = A_1*A_b*(iota(m, m)'*inv((eye(m)-G)*(eye(m)-G))*iota(m, m));
-    longruncorrectionparameter = (1-sum(params(2:end-2))-d);
+    longruncorrectionparameter = (1-sum(params(2:end-1))-d);
 end
