@@ -22,7 +22,7 @@ c_z_2 = -.3;
 
 var_model(model_name=toto, eqtags=['eq:x', 'eq:y']);
 
-pac_model(var_model_name=toto, discount=beta, model_name=pacman);
+pac_model(auxiliary_model_name=toto, discount=beta, model_name=pacman);
 
 model;
 

@@ -32,9 +32,9 @@ c_z_2 = -.1;
 
 g=.1;
 
-var_model(model_name=toto, eqtags=['eq:x1', 'eq:x2', 'eq:x1bar', 'eq:x2bar']);
+trend_component_model(model_name=toto, eqtags=['eq:x1', 'eq:x2', 'eq:x1bar', 'eq:x2bar'], trends=['eq:x1bar', 'eq:x2bar']);
 
-pac_model(var_model_name=toto, discount=beta, growth=g, model_name=pacman, undiff('eq:x1', 1), undiff('eq:x2', 1));
+pac_model(auxiliary_model_name=toto, discount=beta, growth=g, model_name=pacman);
 
 model;
 
