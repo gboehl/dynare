@@ -65,6 +65,9 @@ end
 % autoregressive parameters (in increasing order w.r.t. the lags).
 ipnames__ = ipnames_;                                                  % The user provided order.
 ipnames_  = [M_.pac.(pacmodl).ec.params; M_.pac.(pacmodl).ar.params']; % The correct order.
+if isfield(M_.pac.(pacmodl), 'share_of_optimizing_agents_index')
+    ipnames_ = [ipnames_; M_.pac.(pacmodl).share_of_optimizing_agents_index]
+end
 for i=1:length(ipnames_)
     if ~ismember(ipnames_(i), ipnames__)
         % This parameter is not estimated.
