@@ -106,16 +106,19 @@ for i = 1:length(M_.(model_type).(model_name).rhs.vars_at_eq)
     rhsvars{i}.lags = M_.(model_type).(model_name).rhs.vars_at_eq{i}.lag;
     rhsvars{i}.arRhsIdxs = [];
     rhsvars{i}.ecRhsIdxs = [];
+    rhsvars{i}.ecRhsVars = [];
     for j = 1:length(vars)
         if vars(j) <= M_.orig_endo_nbr
             % vars(j) is not an aux var
             if ismember(vars(j), lhs)
                 rhsvars{i}.arRhsIdxs = [rhsvars{i}.arRhsIdxs find(lhs == vars(j))];
                 rhsvars{i}.ecRhsIdxs = [rhsvars{i}.ecRhsIdxs -1];
+                rhsvars{i}.ecRhsVars = [rhsvars{i}.ecRhsVars -1];
             else
-                ecRhsVars = union(ecRhsVars, vars(j), 'stable');
+                ecRhsVars = union(ecRhsVars, vars(j));
+                rhsvars{i}.ecRhsVars = [rhsvars{i}.ecRhsVars vars(j)];
                 rhsvars{i}.arRhsIdxs = [rhsvars{i}.arRhsIdxs -1];
-                rhsvars{i}.ecRhsIdxs = [rhsvars{i}.ecRhsIdxs find(ecRhsVars == vars(j))];
+                rhsvars{i}.ecRhsIdxs = [rhsvars{i}.ecRhsIdxs find(rhsvars{i}.ecRhsVars == vars(j))];
             end
         else
             % Search aux vars for matching lhs var
@@ -123,20 +126,24 @@ for i = 1:length(M_.(model_type).(model_name).rhs.vars_at_eq)
             if lhsvaridx >= 1
                 rhsvars{i}.arRhsIdxs = [rhsvars{i}.arRhsIdxs find(lhs == lhsvaridx)];
                 rhsvars{i}.ecRhsIdxs = [rhsvars{i}.ecRhsIdxs -1];
+                rhsvars{i}.ecRhsVars = [rhsvars{i}.ecRhsVars -1];
             else
                 % otherwise find endog that corresponds to this aux var
                 varidx = findVarNoLag(vars(j));
-                ecRhsVars = union(ecRhsVars, varidx, 'stable');
+                ecRhsVars = union(ecRhsVars, varidx);
+                rhsvars{i}.ecRhsVars = [rhsvars{i}.ecRhsVars varidx];
                 rhsvars{i}.arRhsIdxs = [rhsvars{i}.arRhsIdxs -1];
-                rhsvars{i}.ecRhsIdxs = [rhsvars{i}.ecRhsIdxs find(ecRhsVars == varidx)];
+                rhsvars{i}.ecRhsIdxs = [rhsvars{i}.ecRhsIdxs find(rhsvars{i}.ecRhsVars == varidx)];
             end
         end
     end
 end
 
+[rhsvars, ecRhsVars] = reorderECvars(rhsvars, ecRhsVars, lhs);
+
 % Initialize matrices
-oo_.(model_type).(model_name).ar = zeros(length(lhs), length(lhs), M_.(model_type).(model_name).max_lag);
-oo_.(model_type).(model_name).ec = zeros(length(lhs), length(ecRhsVars), M_.(model_type).(model_name).max_lag);
+oo_.(model_type).(model_name).ar = zeros(length(lhs), length(lhs), max(M_.(model_type).(model_name).max_lag));
+oo_.(model_type).(model_name).ec = zeros(length(lhs), length(ecRhsVars), max(M_.(model_type).(model_name).max_lag));
 oo_.(model_type).(model_name).ar_idx = lhs;
 oo_.(model_type).(model_name).ec_idx = ecRhsVars;
 
@@ -166,6 +173,29 @@ for i = 1:length(lhs)
             else
                 error('Shouldn''t arrive here');
             end
+        end
+    end
+end
+end
+
+
+function [rhsvars, ecRhsVarsReordered] = reorderECvars(rhsvars, ecRhsVars, lhs)
+
+global M_
+
+ecRhsVarsReordered = [];
+for i = 1:length(lhs)
+    av = M_.aux_vars([M_.aux_vars.endo_index] == lhs(i));
+    if ~isempty(av)
+        var = ecRhsVars(ecRhsVars == av.orig_index);
+        if ~isempty(var)
+            ecRhsVarsReordered = [ecRhsVarsReordered var];
+             for j = 1:length(rhsvars)
+                 rhsidx = find(rhsvars{j}.ecRhsVars == var);
+                 if ~isempty(rhsidx)
+                     rhsvars{j}.ecRhsIdxs(rhsidx) = length(ecRhsVarsReordered);
+                 end
+             end
         end
     end
 end
