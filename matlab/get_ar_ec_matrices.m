@@ -1,17 +1,23 @@
-function get_ar_ec_matrices(var_model_name)
-%function get_ar_ec_matrices(var_model_name)
+function get_ar_ec_matrices(model_name, model_type)
+%function get_ar_ec_matrices(model_name, model_type)
 %
-% Returns the autoregressive matrix associated with the VAR specified by
-% var_model_name. Output is stored in cellarray oo_.var.(var_model_name).ar,
-% with oo_.var.(var_model_name).ar(:,:,i) being the AR matrix at time t-i. Each
+% Returns the autoregressive matrix associated with the auxiliary model specified by
+% model_name. Output is stored in cellarray oo_.(model_type).(model_name).ar,
+% with oo_.(model_type).(model_name).ar(:,:,i) being the AR matrix at time t-i. Each
 % AR matrix is stored with rows and columns organized by the ordering of the
-% equation tags found in M_.var.(var_model_name).eqtags.
-% oo_.var.(var_model_name).ec contains those entries that are not
+% equation tags found in M_.(model_type).(model_name).eqtags.
+% oo_.(model_type).(model_name).ec contains those entries that are not
 % autoregressive.
 %
 % INPUTS
 %
-%   var_model_name   [string]        the name of the VAR model
+%   model_name   [string]        the name of the auxiliary model
+%   model_type   [string]        the type of the auxiliary model ('var' or
+%                                'trend_component'. If not passed, the
+%                                value is set by the function; if a 'var'
+%                                subfield is found, that is used. Otherwise
+%                                'trend_component' is used (if it exists as
+%                                a subfield of M_.
 %
 % OUTPUTS
 %
@@ -36,13 +42,29 @@ function get_ar_ec_matrices(var_model_name)
 
 global M_ oo_
 
-%% Check inputs and initialize output
-assert(nargin == 1, 'This function requires one argument');
-assert(~isempty(var_model_name) && ischar(var_model_name), ...
-    'The sole argument must be a non-empty string');
-if ~isfield(M_.var, var_model_name)
-    error(['Could not find ' var_model_name ' in M_.var. ' ...
-        'First declare it via the var_model statement.']);
+%% Check inputs
+assert(nargin <= 2, 'This function requires one or two arguments');
+assert(~isempty(model_name) && ischar(model_name), ...
+    'The first argument must be a non-empty string');
+
+if nargin < 2
+    model_type = 'var';
+    if ~(isfield(M_, model_type) && isfield(M_.(model_type), model_name))
+        model_type = 'trend_component';
+        if ~(isfield(M_, model_type) && isfield(M_.(model_type), model_name))
+            error(['Could not find ' model_name ' in M_.var or ' ...
+                'M_.trend_component. First declare it via the var_model ' ...
+                'or trend_component_model statement.']);
+        end
+    end
+else
+    assert(~isempty(model_type) && ischar(model_type), ...
+        'If provided, the second argument must be a non-empty string');
+    if ~(isfield(M_, model_type) && isfield(M_.(model_type), model_name))
+        error(['Could not find M_.' model_type '.' model_name ...
+            '. First declare it via the var_model or ' ...
+            'trend_component_model statement.']);
+    end
 end
 
 %% Call Dynamic Function
@@ -54,10 +76,10 @@ end
     1);
 
 % Choose rows of Jacobian based on equation tags
-ntags = length(M_.var.(var_model_name).eqtags);
+ntags = length(M_.(model_type).(model_name).eqtags);
 g1rows = zeros(ntags, 1);
 for i = 1:ntags
-    idxs = strcmp(M_.equations_tags(:, 3), M_.var.(var_model_name).eqtags{i});
+    idxs = strcmp(M_.equations_tags(:, 3), M_.(model_type).(model_name).eqtags{i});
     if any(idxs)
         g1rows(i) = M_.equations_tags{idxs, 1};
     end
@@ -68,20 +90,20 @@ g1 = -1 * g1(g1rows, :);
 if rows(M_.lead_lag_incidence) == 3
     idxs = M_.lead_lag_incidence(3, M_.lead_lag_incidence(3, :) ~= 0);
     assert(~any(any(g1(g1rows, idxs))), ...
-        ['You cannot have leads in the equations specified by ' strjoin(M_.var.(var_model_name).eqtags, ',')]);
+        ['You cannot have leads in the equations specified by ' strjoin(M_.(model_type).(model_name).eqtags, ',')]);
 end
 
 %% Organize AR & EC matrices
-assert(length(M_.var.(var_model_name).lhs) == rows(g1));
+assert(length(M_.(model_type).(model_name).lhs) == rows(g1));
 
 % Find RHS vars for AR & EC matrices
 ecRhsVars = [];
-lhs       = M_.var.(var_model_name).lhs;
+lhs       = M_.(model_type).(model_name).lhs;
 rhsvars   = cell(length(lhs), 1);
-for i = 1:length(M_.var.(var_model_name).rhs.vars_at_eq)
-    vars = M_.var.(var_model_name).rhs.vars_at_eq{i}.var;
+for i = 1:length(M_.(model_type).(model_name).rhs.vars_at_eq)
+    vars = M_.(model_type).(model_name).rhs.vars_at_eq{i}.var;
     rhsvars{i}.vars = vars;
-    rhsvars{i}.lags = M_.var.(var_model_name).rhs.vars_at_eq{i}.lag;
+    rhsvars{i}.lags = M_.(model_type).(model_name).rhs.vars_at_eq{i}.lag;
     rhsvars{i}.arRhsIdxs = [];
     rhsvars{i}.ecRhsIdxs = [];
     for j = 1:length(vars)
@@ -113,10 +135,10 @@ for i = 1:length(M_.var.(var_model_name).rhs.vars_at_eq)
 end
 
 % Initialize matrices
-oo_.var.(var_model_name).ar = zeros(length(lhs), length(lhs), M_.var.(var_model_name).max_lag);
-oo_.var.(var_model_name).ec = zeros(length(lhs), length(ecRhsVars), M_.var.(var_model_name).max_lag);
-oo_.var.(var_model_name).ar_idx = lhs;
-oo_.var.(var_model_name).ec_idx = ecRhsVars;
+oo_.(model_type).(model_name).ar = zeros(length(lhs), length(lhs), M_.(model_type).(model_name).max_lag);
+oo_.(model_type).(model_name).ec = zeros(length(lhs), length(ecRhsVars), M_.(model_type).(model_name).max_lag);
+oo_.(model_type).(model_name).ar_idx = lhs;
+oo_.(model_type).(model_name).ec_idx = ecRhsVars;
 
 % Fill matrices
 for i = 1:length(lhs)
@@ -131,16 +153,16 @@ for i = 1:length(lhs)
             if rhsvars{i}.arRhsIdxs(j) > 0
                 % Fill AR
                 [lag, ndiffs] = findLagForVar(var, -rhsvars{i}.lags(j), 0, lhs);
-                oo_.var.(var_model_name).ar(i, rhsvars{i}.arRhsIdxs(j), lag) = ...
-                    oo_.var.(var_model_name).ar(i, rhsvars{i}.arRhsIdxs(j), lag) + g1(i, g1col);
+                oo_.(model_type).(model_name).ar(i, rhsvars{i}.arRhsIdxs(j), lag) = ...
+                    oo_.(model_type).(model_name).ar(i, rhsvars{i}.arRhsIdxs(j), lag) + g1(i, g1col);
             elseif rhsvars{i}.ecRhsIdxs(j) > 0
                 % Fill EC
                 [lag, ndiffs] = findLagForVar(var, -rhsvars{i}.lags(j), 0, ecRhsVars);
-                if size(oo_.var.(var_model_name).ec, 3) < lag
-                    oo_.var.(var_model_name).ec(i, rhsvars{i}.ecRhsIdxs(j), lag) = 0;
+                if size(oo_.(model_type).(model_name).ec, 3) < lag
+                    oo_.(model_type).(model_name).ec(i, rhsvars{i}.ecRhsIdxs(j), lag) = 0;
                 end
-                oo_.var.(var_model_name).ec(i, rhsvars{i}.ecRhsIdxs(j), lag) = ...
-                    oo_.var.(var_model_name).ec(i, rhsvars{i}.ecRhsIdxs(j), lag) + g1(i, g1col);
+                oo_.(model_type).(model_name).ec(i, rhsvars{i}.ecRhsIdxs(j), lag) = ...
+                    oo_.(model_type).(model_name).ec(i, rhsvars{i}.ecRhsIdxs(j), lag) + g1(i, g1col);
             else
                 error('Shouldn''t arrive here');
             end
