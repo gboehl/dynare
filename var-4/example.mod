@@ -45,7 +45,8 @@ shocks;
     var ez = 1.0;
 end;
 
-get_companion_matrix('toto', 'pacman');
+// Initialize the PAC model (build the Companion VAR representation for the auxiliary model).
+pac.initialize('pacman');
 
 // Update the parameters of the PAC expectation model (h0 and h1 vectors).
 pac.update.expectation('pacman');
