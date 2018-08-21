@@ -44,21 +44,21 @@ end
 pacmodel = DynareModel.pac.(pacname);
 
 % Get the name of the associated VAR model and test its existence.
-if ~isfield(DynareModel.var, pacmodel.var_model_name)
-    error('Unknown VAR (%s) in PAC model (%s)!', pacmodel.var_model_name, pacname)
+if ~isfield(DynareModel.(pacmodel.auxiliary_model_type), pacmodel.auxiliary_model_name)
+    error('Unknown auxiliary model (%s) in PAC model (%s)!', pacmodel.auxiliary_model_name, pacname)
 end
 
-varmodel = DynareModel.var.(pacmodel.var_model_name);
+varmodel = DynareModel.(pacmodel.auxiliary_model_type).(pacmodel.auxiliary_model_name);
 
 % Check that we have the values of the VAR matrices.
-if ~isfield(DynareOutput.var, pacmodel.var_model_name) 
-    error('VAR model %s has to be estimated first!', pacmodel.var_model_name)
+if ~isfield(DynareOutput.(pacmodel.auxiliary_model_type), pacmodel.auxiliary_model_name)
+    error('Auxiliary model %s has to be estimated first!', pacmodel.auxiliary_model_name)
 end
 
-varcalib = DynareOutput.var.(pacmodel.var_model_name);
+varcalib = DynareOutput.(pacmodel.auxiliary_model_type).(pacmodel.auxiliary_model_name);
 
 if ~isfield(varcalib, 'CompanionMatrix') || any(isnan(varcalib.CompanionMatrix(:)))
-    error('VAR model %s has to be estimated first.', pacmodel.var_model_name)
+    error('Auxiliary model %s has to be estimated first.', pacmodel.auxiliary_model_name)
 end
 
 % Build the vector of PAC parameters (ECM parameter + autoregressive parameters).
@@ -86,12 +86,18 @@ if isempty(id)
     end
 end
 
-if varmodel.nonstationary(id)
-    idns = id;
-    ids = [];
+if isequal(pacmodel.auxiliary_model_type, 'var')
+    if varmodel.nonstationary(id)
+        idns = id;
+        ids = [];
+    else
+        idns = [];
+        ids = id;
+    end
 else
-    idns = [];
-    ids = id;
+    % Trend component model is assumed.
+    ids = [];
+    idns = id;
 end
 
 % Get the value of the discount factor.

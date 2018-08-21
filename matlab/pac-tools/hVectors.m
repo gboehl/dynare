@@ -63,7 +63,7 @@ if nargout>1
         switch auxmodel
           case 'var'
             h1 = A_1*A_b*(kron(iota(m, m)'*inv(eye(m)-G), H')*(tmp\kron(iota(m, m), iota(n, idns))));
-          case 'vecm'
+          case 'trend_component'
             h1 = A_1*A_b*(kron(iota(m, m)'*inv(eye(m)-G), (H'-eye(length(H))))*(tmp\kron(iota(m, m), iota(n, idns))));
         end
     end
