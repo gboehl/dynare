@@ -100,32 +100,31 @@ beta = DynareModel.params(pacmodel.discount_index);
 % Is growth argument passed to pac_expectation?
 if isfield(pacmodel, 'growth_index')
     growth_flag = true;
-    growth_type = pacmodel.growth_type;
 else
     growth_flag = false;
 end
 
 % Get h0 and h1 vectors (plus the parameter for the growth neutrality correction).
 if growth_flag
-    [h0, h1, growthneutrality] = hVectors([pacvalues; beta], varcalib.CompanionMatrix, ids, idns, pacmodel.auxmodel);
+    [h0, h1, growthneutrality] = hVectors([pacvalues; beta], varcalib.CompanionMatrix, ids, idns, pacmodel.auxiliary_model_type);
 else
-    [h0, h1] = hVectors([pacvalues; beta], varcalib.CompanionMatrix, ids, idns, pacmodel.auxmodel);
+    [h0, h1] = hVectors([pacvalues; beta], varcalib.CompanionMatrix, ids, idns, pacmodel.auxiliary_model_type);
 end
 
 % Update the parameters related to the stationary components.
-if length(h0)
+if ~isempty(h0)
     DynareModel.params(pacmodel.h0_param_indices) = h0;
 else
-    if isfield(pacmodel, 'h0_param_indices') && length(pacmodel.h0_param_indices)
+    if isfield(pacmodel, 'h0_param_indices') && ~isempty(pacmodel.h0_param_indices)
         DynareModel.params(pacmodel.h0_param_indices) = .0;
     end
 end
 
 % Update the parameters related to the nonstationary components.
-if length(h1)
+if ~isempty(h1)
     DynareModel.params(pacmodel.h1_param_indices) = h1;
 else
-    if isfield(pacmodel, 'h1_param_indices') && length(pacmodel.h1_param_indices)
+    if isfield(pacmodel, 'h1_param_indices') && ~isempty(pacmodel.h1_param_indices)
         DynareModel.params(pacmodel.h1_param_indices) = .0;
     end
 end
