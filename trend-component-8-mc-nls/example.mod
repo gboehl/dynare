@@ -85,6 +85,7 @@ for i=1:B
     // Simulate the model for 500 periods
     TrueData = simul_backward_model(initialconditions, 300);
     // Define a structure describing the parameters to be estimated (with initial conditions). 
+    clear eparams
     eparams.e_c_m = .5;
     eparams.c_z_1 = .2;
     eparams.c_z_2 =-.1;

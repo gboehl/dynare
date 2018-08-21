@@ -78,6 +78,7 @@ initialconditions = dseries(zeros(10, M_.endo_nbr+M_.exo_nbr), 2000Q1, vertcat(M
 TrueData = simul_backward_model(initialconditions, 300);
 
 // Define a structure describing the parameters to be estimated (with initial conditions). 
+clear eparams
 eparams.e_c_m = .9;
 eparams.c_z_1 = .5;
 eparams.c_z_2 = .2;

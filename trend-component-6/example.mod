@@ -83,6 +83,7 @@ TrueData = simul_backward_model(initialconditions, 500);
 //[pnames, enames, xnames, pid, eid, xid] = get_variables_and_parameters_in_equation('zpac', M_)
 
 // Define a structure describing the parameters to be estimated (with initial conditions). 
+clear eparams
 eparams.e_c_m = .9;
 eparams.c_z_1 = .5;
 eparams.c_z_2 = .2;
