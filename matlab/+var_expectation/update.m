@@ -6,10 +6,7 @@ function update(varexpectationmodelname)
 % - varepxpectationmodelname       [string]    Name of the VAR expectation model.
 % 
 % OUTPUTS
-% - none
-%
-% SPECIAL REQUIREMENTS
-%    none
+% None
 
 % Copyright (C) 2018 Dynare Team
 %
