@@ -58,7 +58,7 @@ end
 % Get indices of estimated parameters.
 ipnames_ = zeros(size(pnames_));
 for i=1:length(ipnames_)
-    ipnames_(i) = strmatch(pnames_{i}, M_.param_names, 'exact');
+    ipnames_(i) = find(strcmp(pnames_{i}, M_.param_names));
 end
 
 % Ensure that the error correction parameter comes first, followed by the
@@ -76,7 +76,7 @@ for i=1:length(ipnames_)
 end
 
 % Remove calibrated parameters (if any).
-ipnames_(find(isnan(ipnames_))) = [];
+ipnames_(isnan(ipnames_)) = [];
 
 % Reorder params if needed.
 [~, permutation] = ismember(ipnames__, ipnames_);
@@ -96,8 +96,7 @@ xnbr = length(xnames);
 
 % Test if we have a residual and get its name (-> rname).
 if isequal(xnbr, 1)
-    rname = M_.exo_names{strmatch(xnames{1}, M_.exo_names, 'exact')};
-    irname = 1;
+    rname = M_.exo_names{strcmp(xnames{1}, M_.exo_names)};
     if ~all(isnan(data{xnames{1}}.data))
         error('The residual (%s) must have NaN values in the provided database.', xnames{1})
     end
