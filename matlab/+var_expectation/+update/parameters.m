@@ -44,21 +44,21 @@ end
 varexpectationmodel = DynareModel.var_expectation.(varexpectationmodelname);
 
 % Get the name of the associated VAR model and test its existence.
-if ~isfield(DynareModel.var, varexpectationmodel.var_model_name)
-    error('Unknown VAR (%s) in VAR_EXPECTATION_MODEL (%s)!', varexpectationmodel.var_model_name, varexpectationmodelname)
+if ~isfield(DynareModel.var, varexpectationmodel.auxiliary_model_name)
+    error('Unknown VAR (%s) in VAR_EXPECTATION_MODEL (%s)!', varexpectationmodel.auxiliary_model_name, varexpectationmodelname)
 end
 
-varmodel = DynareModel.var.(varexpectationmodel.var_model_name);
+varmodel = DynareModel.var.(varexpectationmodel.auxiliary_model_name);
 
 % Check that we have the values of the VAR matrices.
-if ~isfield(DynareOutput.var, varexpectationmodel.var_model_name)
-    error('VAR model %s has to be estimated or calibrated first!', varexpectationmodel.var_model_name)
+if ~isfield(DynareOutput.var, varexpectationmodel.auxiliary_model_name)
+    error('VAR model %s has to be estimated or calibrated first!', varexpectationmodel.auxiliary_model_name)
 end
 
-varcalib = DynareOutput.var.(varexpectationmodel.var_model_name);
+varcalib = DynareOutput.var.(varexpectationmodel.auxiliary_model_name);
 
 if ~isfield(varcalib, 'CompanionMatrix') || any(isnan(varcalib.CompanionMatrix(:)))
-    message = sprintf('VAR model %s has to be estimated first.', varexpectationmodel.var_model_name);
+    message = sprintf('VAR model %s has to be estimated first.', varexpectationmodel.auxiliary_model_name);
     message = sprintf('s\nPlease use get_companion_matrix command first.', message);
     error(message)
 end

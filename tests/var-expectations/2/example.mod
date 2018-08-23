@@ -36,7 +36,7 @@ var_model(model_name = toto, eqtags = [ 'X' 'Y' 'Z' ]);
 ** where the sum is over h=0,…,∞ and the conditional expectations are computed with VAR model `var_model_name`.
 */
 
-var_expectation_model(model_name = varexp, variable = x, var_model_name = toto, horizon = 2, discount = beta)  ;
+var_expectation_model(model_name = varexp, variable = x, auxiliary_model_name = toto, horizon = 2, discount = beta)  ;
 
 
 model;
