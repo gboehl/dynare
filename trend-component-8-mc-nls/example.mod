@@ -8,7 +8,7 @@ parameters
        rho_1 rho_2
        a_x1_0 a_x1_1 a_x1_2 a_x1_x2_1 a_x1_x2_2
 	   a_x2_0 a_x2_1 a_x2_2 a_x2_x1_1 a_x2_x1_2
-	   e_c_m c_z_1 c_z_2 beta ;
+	   e_c_m c_z_1 c_z_2 beta g;
 
 rho_1 = .9;
 rho_2 = -.2;
@@ -29,6 +29,8 @@ beta  =  .2;
 e_c_m =  .5;
 c_z_1 =  .2;
 c_z_2 = -.1;
+
+g = .1;
 
 trend_component_model(model_name=toto, eqtags=['eq:x1', 'eq:x2', 'eq:x1bar', 'eq:x2bar'], trends=['eq:x1bar', 'eq:x2bar']);
 
