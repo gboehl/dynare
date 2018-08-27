@@ -69,7 +69,7 @@ id = find(strcmp(DynareModel.endo_names{pacmodel.ec.vars(1)}, varmodel.list_of_v
 
 if isempty(id)
     % Find the auxiliary variables if any
-    ad = find(cell2mat(cellfun(@(x) isauxiliary(x, 8), varmodel.list_of_variables_in_companion_var, 'UniformOutput', false)));
+    ad = find(cell2mat(cellfun(@(x) isauxiliary(x, [8 10]), varmodel.list_of_variables_in_companion_var, 'UniformOutput', false)));
     if isempty(ad)
         error('Cannot find the trend variable in the Companion VAR/VECM model.')
     else

@@ -1,10 +1,10 @@
-function b = isauxiliary(var, type)
+function b = isauxiliary(var, types)
 
 % Returns true if var is an auxiliary variable.
 %
 % INPUTS
 % - var       [string]    Name of the variable.
-% - type      [integer]   Type of auxiliary variable.
+% - types      [integer]  vector of type of auxiliary variables.
 %
 % OUTPUTS
 % - b         [logical]
@@ -63,6 +63,6 @@ end
 
 auxinfo = M_.aux_vars(get_aux_variable_id(id));
 
-if ~isequal(auxinfo.type, type)
+if ~ismember(auxinfo.type, types)
     b = false;
 end
