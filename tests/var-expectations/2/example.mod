@@ -51,9 +51,8 @@ foo = .5*foo(-1) + var_expectation(varexp);
 end;
 
 
-// Build the companion matrix of the VAR model (toto).
-get_companion_matrix('toto');
-
+// Initialize the VAR expectation model, will build the companion matrix of the VAR.
+var_expectation.initialize('varexp')
 
 // Update VAR_EXPECTATION reduced form parameters
 var_expectation.update('varexp');

@@ -38,7 +38,6 @@ var_model(model_name = toto, eqtags = [ 'X' 'Y' 'Z' ]);
 
 var_expectation_model(model_name = varexp, variable = x, auxiliary_model_name = toto, horizon = 15:50, discount = beta)  ;
 
-
 model;
 [ name = 'X' ]
 x = a*x(-1) + b*x(-2) + c*z(-2) + e_x;
@@ -50,10 +49,8 @@ y = d*y(-2) + e*z(-1) + e_y;
 foo = .5*foo(-1) + var_expectation(varexp);
 end;
 
-
-// Build the companion matrix of the VAR model (toto).
-get_companion_matrix('toto');
-
+// Initialize the VAR expectation model, will build the companion matrix of the VAR.
+var_expectation.initialize('varexp')
 
 // Update VAR_EXPECTATION reduced form parameters
 var_expectation.update('varexp');

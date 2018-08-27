@@ -44,23 +44,23 @@ end
 varexpectationmodel = DynareModel.var_expectation.(varexpectationmodelname);
 
 % Get the name of the associated VAR model and test its existence.
-if ~isfield(DynareModel.var, varexpectationmodel.auxiliary_model_name)
+if ~isfield(DynareModel.(varexpectationmodel.auxiliary_model_type), varexpectationmodel.auxiliary_model_name)
     error('Unknown VAR (%s) in VAR_EXPECTATION_MODEL (%s)!', varexpectationmodel.auxiliary_model_name, varexpectationmodelname)
 end
 
-varmodel = DynareModel.var.(varexpectationmodel.auxiliary_model_name);
+auxmodel = DynareModel.(varexpectationmodel.auxiliary_model_type).(varexpectationmodel.auxiliary_model_name);
 
 % Check that we have the values of the VAR matrices.
-if ~isfield(DynareOutput.var, varexpectationmodel.auxiliary_model_name)
-    error('VAR model %s has to be estimated or calibrated first!', varexpectationmodel.auxiliary_model_name)
+if ~isfield(DynareOutput.(varexpectationmodel.auxiliary_model_type), varexpectationmodel.auxiliary_model_name)
+    error('Auxiliary model %s has to be estimated or calibrated first!', varexpectationmodel.auxiliary_model_name)
 end
 
-varcalib = DynareOutput.var.(varexpectationmodel.auxiliary_model_name);
+auxcalib = DynareOutput.(varexpectationmodel.auxiliary_model_type).(varexpectationmodel.auxiliary_model_name);
 
-if ~isfield(varcalib, 'CompanionMatrix') || any(isnan(varcalib.CompanionMatrix(:)))
-    message = sprintf('VAR model %s has to be estimated first.', varexpectationmodel.auxiliary_model_name);
-    message = sprintf('s\nPlease use get_companion_matrix command first.', message);
-    error(message)
+if ~isfield(auxcalib, 'CompanionMatrix') || any(isnan(auxcalib.CompanionMatrix(:)))
+    message = sprintf('Auxiliary model %s has to be estimated first.', varexpectationmodel.auxiliary_model_name);
+    message = sprintf('%s\nPlease use get_companion_matrix command first.', message);
+    error(message);
 end
 
 % Set discount factor
@@ -85,7 +85,7 @@ if discountfactor>1
 end
 
 % Set variable_id in VAR model
-variable_id_in_var = find(varexpectationmodel.variable_id==varmodel.lhs);
+variable_id_in_var = find(varexpectationmodel.variable_id==auxmodel.lhs);
 
 % Get the horizon parameter.
 horizon = varexpectationmodel.horizon;
@@ -121,7 +121,7 @@ if wrong_horizon_parameter
 end
 
 % Get the companion matrix
-CompanionMatrix = varcalib.CompanionMatrix;
+CompanionMatrix = auxcalib.CompanionMatrix;
 
 % Get the dimension of the problem.
 n = length(CompanionMatrix);
