@@ -16,7 +16,7 @@ b_x_1 = -.1;
 b_x_2 = -.2;
 
 beta  =  .9;
-e_c_m =  .1;
+e_c_m =  -.1;
 c_z_1 =  .7;
 c_z_2 = -.3;
 
@@ -35,7 +35,7 @@ y = a_y_1*y(-1) + a_y_2*diff(x(-1)) + b_y_1*y(-2) + b_y_2*diff(x(-2)) + ey ;
 diff(x) = b_x_1*y(-2) + b_x_2*diff(x(-1)) + g*(1-b_x_2)  + ex ;
 
 [name='eq:pac']
-diff(z) = e_c_m*(x(-1)-z(-1)) + c_z_1*diff(z(-1))  + c_z_2*diff(z(-2)) + pac_expectation(pacman) + ez;
+diff(z) = e_c_m*(z(-1)-x(-1)) + c_z_1*diff(z(-1))  + c_z_2*diff(z(-2)) + pac_expectation(pacman) + ez;
 
 end;
 

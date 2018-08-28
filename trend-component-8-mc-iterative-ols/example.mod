@@ -26,7 +26,7 @@ a_x2_x1_1 = -.1;
 a_x2_x1_2 = .2;
 
 beta  =  .2;
-e_c_m =  .5;
+e_c_m =  -.5;
 c_z_1 =  .2;
 c_z_2 = -.1;
 
@@ -54,7 +54,7 @@ x1bar = x1bar(-1) + ex1bar;
 x2bar = x2bar(-1) + ex2bar;
 
 [name='zpac']
-diff(z) = e_c_m*(x1(-1)-z(-1)) + c_z_1*diff(z(-1))  + c_z_2*diff(z(-2)) + pac_expectation(pacman) + ez;
+diff(z) = e_c_m*(z(-1)-x1(-1)) + c_z_1*diff(z(-1))  + c_z_2*diff(z(-2)) + pac_expectation(pacman) + ez;
 
 end;
 
@@ -77,7 +77,7 @@ pac.update.expectation('pacman');
 // Set initial conditions to zero. Please use more sensible values if any...
 initialconditions = dseries(zeros(10, M_.endo_nbr+M_.exo_nbr), 2000Q1, vertcat(M_.endo_names,M_.exo_names));
 
-B = 20000;
+B = 1;
 X = zeros(3,B);
 
 set_dynare_seed('default');
@@ -91,7 +91,7 @@ for i=1:B
     TrueData = simul_backward_model(initialconditions, 300);
     // Define a structure describing the parameters to be estimated (with initial conditions). 
     clear eparams
-    eparams.e_c_m = .5;
+    eparams.e_c_m = -.5;
     eparams.c_z_1 = .2;
     eparams.c_z_2 =-.1;
     // Define the dataset used for estimation
