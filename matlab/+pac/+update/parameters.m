@@ -75,7 +75,14 @@ if isempty(id)
     else
         for i=1:length(ad)
             auxinfo = DynareModel.aux_vars(get_aux_variable_id(varmodel.list_of_variables_in_companion_var{ad(i)}));
-            if isequal(auxinfo.orig_index, pacmodel.ec.vars(1))
+            if isequal(auxinfo.endo_index, pacmodel.ec.vars(2))
+                % /!\ First element of ec.vars is the level of the endogenous
+                % variable in the PAC equation, the second element
+                % is the target variable.
+                id = ad(i);
+                break
+            end
+            if isequal(auxinfo.type, 8) && isequal(auxinfo.orig_index, pacmodel.ec.vars(2))
                 id = ad(i);
                 break
             end
