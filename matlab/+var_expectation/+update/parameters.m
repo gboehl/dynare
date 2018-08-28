@@ -85,7 +85,7 @@ if discountfactor>1
 end
 
 % Set variable_id in VAR model
-variable_id_in_var = find(varexpectationmodel.variable_id==auxmodel.lhs);
+variable_id_in_var = strcmp(auxmodel.list_of_variables_in_companion_var, varexpectationmodel.variable);
 
 % Get the horizon parameter.
 horizon = varexpectationmodel.horizon;
