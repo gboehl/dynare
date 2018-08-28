@@ -47,7 +47,7 @@ trend_component_model(model_name=toto, eqtags=['eq:x1', 'eq:x2', 'eq:x1bar', 'eq
 ** where the sum is over h=0,…,∞ and the conditional expectations are computed with VAR model `var_model_name`.
 */
 
-var_expectation_model(model_name = varexp, variable = x1bar, auxiliary_model_name = toto, horizon = 15:50, discount = beta)  ;
+var_expectation_model(model_name = varexp, variable = x1, auxiliary_model_name = toto, horizon = 15:50, discount = beta)  ;
 
 
 model;
@@ -73,14 +73,8 @@ var_expectation.initialize('varexp')
 // Update VAR_EXPECTATION reduced form parameters
 var_expectation.update('varexp');
 
-/*
-** REMARK The VAR model is such that x depends on past values of x
-** (xₜ₋₁ and xₜ₋₂) and on zₜ₋₂. Consequently the reduced
-** form parameters associated to yₜ₋₁, yₜ₋₂ have to be zero.
-*/
-
 weights = M_.params(M_.var_expectation.varexp.param_indices);
 
-if weights(2) || ~weights(3) || weights(5) || ~weights(1) || ~weights(4) || ~weights(6)
+if ~all(weights(1:6)) || ~all(weights(9:10)) || weights(7) || weights(8) || weights(11) || weights(12)
    error('Wrong reduced form parameter for VAR_EXPECTATION_MODEL')
 end
