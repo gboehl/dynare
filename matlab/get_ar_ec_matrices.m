@@ -143,7 +143,7 @@ end
 
 % Initialize matrices
 oo_.(model_type).(model_name).ar = zeros(length(lhs), length(lhs), max(M_.(model_type).(model_name).max_lag));
-oo_.(model_type).(model_name).ec = zeros(length(lhs), length(ecRhsVars), max(M_.(model_type).(model_name).max_lag));
+oo_.(model_type).(model_name).ec = zeros(length(lhs), length(ecRhsVars), 1);
 oo_.(model_type).(model_name).ar_idx = lhs;
 oo_.(model_type).(model_name).ec_idx = ecRhsVars;
 
@@ -165,11 +165,13 @@ for i = 1:length(lhs)
             elseif rhsvars{i}.ecRhsIdxs(j) > 0
                 % Fill EC
                 [lag, ndiffs] = findLagForVar(var, -rhsvars{i}.lags(j), 0, ecRhsVars);
-                if size(oo_.(model_type).(model_name).ec, 3) < lag
-                    oo_.(model_type).(model_name).ec(i, rhsvars{i}.ecRhsIdxs(j), lag) = 0;
+                if lag==1
+                    if size(oo_.(model_type).(model_name).ec, 3) < lag
+                        oo_.(model_type).(model_name).ec(i, rhsvars{i}.ecRhsIdxs(j), lag) = 0;
+                    end
+                    oo_.(model_type).(model_name).ec(i, rhsvars{i}.ecRhsIdxs(j), lag) = ...
+                        oo_.(model_type).(model_name).ec(i, rhsvars{i}.ecRhsIdxs(j), lag) + g1(i, g1col);
                 end
-                oo_.(model_type).(model_name).ec(i, rhsvars{i}.ecRhsIdxs(j), lag) = ...
-                    oo_.(model_type).(model_name).ec(i, rhsvars{i}.ecRhsIdxs(j), lag) + g1(i, g1col);
             else
                 error('Shouldn''t arrive here');
             end
