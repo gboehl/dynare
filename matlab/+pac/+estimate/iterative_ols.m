@@ -89,6 +89,11 @@ if isfield(M_.pac.(pacmodl), 'growth_type')
     switch M_.pac.(pacmodl).growth_type
       case 'parameter'
         correction = M_.params(M_.pac.(pacmodl).growth_index)*M_.params(M_.pac.(pacmodl).growth_neutrality_param_index);
+      case 'exogenous'
+        ExogenousGrowthVariable = ...
+            data{M_.exo_names{M_.pac.(pacmodl).growth_index}};
+        ExogenousGrowthVariable = ExogenousGrowthVariable(range).data;
+        correction = ExogenousGrowthVariable*M_.params(M_.pac.(pacmodl).growth_neutrality_param_index);
       otherwise
         error('Not yet implemented.')
     end
