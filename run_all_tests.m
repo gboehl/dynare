@@ -33,6 +33,7 @@ r = [r; run_this_test('trend-component-6')];
 r = [r; run_this_test('trend-component-7')];
 r = [r; run_this_test('trend-component-9')];
 r = [r; run_this_test('trend-component-10')];
+r = [r; run_this_test('trend-component-11')];
 
 print_results(r);
 
@@ -55,7 +56,7 @@ end
 function print_results(r)
 message = sprintf('Testsuite results (PAC model):\n');
 for i = 1:size(r, 1)
-    if r{i, 2}
+    if r{i,2}
         message = sprintf('%s\n%s\t\t PASS (%ss)', message, r{i,1}, num2str(r{i,3}));
     else
         message = sprintf('%s\n%s\t\t FAILED', message, r{i,1});
