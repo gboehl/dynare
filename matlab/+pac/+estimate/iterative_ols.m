@@ -41,7 +41,7 @@ function iterative_ols(eqname, params, data, range)
 
 global M_ oo_
 
-[pacmodl, lhs, rhs, pnames, enames, xnames, pid, eid, xid, pnames_, ipnames_, params, data, islaggedvariables] = ...
+[pacmodl, ~, rhs, ~, ~, ~, ~, ~, ~, ~, ipnames_, params, data] = ...
     pac.estimate.init(M_, oo_, eqname, params, data, range);
 
 % Set initial condition.
@@ -149,3 +149,5 @@ for i=1:length(params0)
 end
 
 M_ = pac.update.parameters(pacmodl, M_, oo_);
+
+% ssr_zpac(M_.params, data(range).data, M_, oo_)
