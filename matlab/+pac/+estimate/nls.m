@@ -41,7 +41,7 @@ function nls(eqname, params, data, range)
 
 global M_ oo_
 
-[pacmodl, lhs, rhs, pnames, enames, xnames, pid, eid, xid, pnames_, ipnames_, params, data, islaggedvariables] = ...
+[pacmodl, lhs, rhs, pnames, enames, xnames, pid, eid, xid, ~, ipnames_, params, data, islaggedvariables] = ...
     pac.estimate.init(M_, oo_, eqname, params, data, range);
 
 % List of objects to be replaced
@@ -60,11 +60,10 @@ for i=1:length(objNames)
       case 1
         rhs = strrep(rhs, objNames{i}, sprintf('DynareModel.params(%u)', objIndex(i)));
       case {2,3}
-        k = strmatch(objNames{i}, data.name, 'exact');
+        k = find(strcmp(objNames{i}, data.name));
         if isempty(k)
             error('Variable %s is missing in the database.', objNames{i})
         end
-        n = length(objNames{i});
         j = regexp(rhs, ['\<', objNames{i}, '\>']);
         if islaggedvariables
             jlag = regexp(rhs, ['\<(', objNames{i}, '\(-1\))\>']);
