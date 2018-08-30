@@ -358,7 +358,15 @@ MODFILES = \
 	var-expectations/3/example.mod \
 	var-expectations/4/example.mod \
 	var-expectations/5/example.mod \
-	dynare-command-options/ramst.mod
+    trend-component-and-var-models/vm1.mod \
+    trend-component-and-var-models/vm2.mod \
+    trend-component-and-var-models/vm3.mod \
+    trend-component-and-var-models/tcm1.mod \
+    trend-component-and-var-models/tcm2.mod \
+    trend-component-and-var-models/tcm3.mod \
+    trend-component-and-var-models/tcm4.mod \
+    trend-component-and-var-models/tcm5.mod \
+    dynare-command-options/ramst.mod
 
 PARTICLEFILES = \
 	particle/dsge_base2.mod \
@@ -735,6 +743,10 @@ o/gradient: $(patsubst %.mod, %.o.trs, $(filter gradient/%.mod, $(MODFILES)))
 var-expectations: m/var-expectations o/var-expectations
 m/var-expectations: $(patsubst %.mod, %.m.trs, $(filter var-expectations/%.mod, $(MODFILES)))
 o/var-expectations: $(patsubst %.mod, %.o.trs, $(filter var-expectations/%.mod, $(MODFILES)))
+
+trend-component-and-var-models: m/trend-component-and-var-models o/trend-component-and-var-models
+m/trend-component-and-var-models: $(patsubst %.mod, %.m.trs, $(filter trend-component-and-var-models/%.mod, $(MODFILES)))
+o/trend-component-and-var-models: $(patsubst %.mod, %.o.trs, $(filter trend-component-and-var-models/%.mod, $(MODFILES)))
 
 particle: m/particle o/particle
 m/particle: $(patsubst %.mod, %.m.trs, $(PARTICLEFILES))
