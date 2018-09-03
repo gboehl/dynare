@@ -366,6 +366,7 @@ MODFILES = \
     trend-component-and-var-models/tcm3.mod \
     trend-component-and-var-models/tcm4.mod \
     trend-component-and-var-models/tcm5.mod \
+	trend-component-and-var-models/tcm6.mod \
     dynare-command-options/ramst.mod
 
 PARTICLEFILES = \

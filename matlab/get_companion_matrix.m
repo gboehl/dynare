@@ -132,6 +132,12 @@ switch auxiliary_model_type
             end
         end
     end
+    % Reorder trend_eqnums_in_auxiliary_model to ensure that the order of
+    % the trend variables matches the order of the error correction
+    % variables.
+    [~,reorder] = ismember(M_.trend_component.toto.lhs(trend_eqnums_in_auxiliary_model), ...
+                           M_.trend_component.toto.trend_vars(find(M_.trend_component.toto.trend_vars>0)));
+    trend_eqnums_in_auxiliary_model = trend_eqnums_in_auxiliary_model(reorder);
     % Get the EC matrix (the EC term is assumend to be in t-1).
     %
     % TODO: Check that the EC term is the difference between the
