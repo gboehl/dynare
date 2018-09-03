@@ -114,8 +114,6 @@ end
 
 XDATA = DataForOLS{listofvariables3{:}}(range).data;
 
-params0
-
 % Iterative OLS
 noconvergence = true;
 counter = 0;
