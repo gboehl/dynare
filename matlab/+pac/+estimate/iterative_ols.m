@@ -141,8 +141,10 @@ while noconvergence
     YDATA = data{M_.endo_names{M_.pac.(pacmodl).lhs_var}}(range).data-correction-PACExpectations;
     % Do OLS
     params1 = XDATA\YDATA;
+    r = YDATA-XDATA*params1;
+    ssr = r'*r;
     noconvergence = max(abs(params0-params1))>1e-6;
-    disp(sprintf('Iter. %u,\t crit: %10.5f', counter, max(abs(params0-params1))))
+    disp(sprintf('Iter. %u,\t crit: %10.5f\t ssr: %10.8f', counter, max(abs(params0-params1)), ssr))
     params0 = params1;
 end
 
@@ -153,5 +155,3 @@ for i=1:length(params0)
 end
 
 M_ = pac.update.parameters(pacmodl, M_, oo_);
-
-% ssr_zpac(M_.params, data(range).data, M_, oo_)
