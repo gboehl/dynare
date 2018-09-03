@@ -101,7 +101,7 @@ end
 
 % Build matrix for EC and AR terms.
 DataForOLS = dseries();
-DataForOLS{'ec-term'} = data{M_.endo_names{M_.pac.(pacmodl).ec.vars(1)}}.lag(1)-data{M_.endo_names{M_.pac.(pacmodl).ec.vars(2)}}.lag(1);
+DataForOLS{'ec-term'} = data{M_.endo_names{M_.pac.(pacmodl).ec.vars(2)}}.lag(1)-data{M_.endo_names{M_.pac.(pacmodl).ec.vars(1)}}.lag(1);
 listofvariables3 = {'ec-term'};
 xparm = { M_.param_names(M_.pac.(pacmodl).ec.params(1))};
 for i = 1:length(M_.pac.(pacmodl).ar.params)
