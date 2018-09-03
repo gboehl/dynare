@@ -1,4 +1,4 @@
-function get_companion_matrix(auxiliary_model_name, auxiliary_model_type)
+function [A0, AR, B] = get_companion_matrix(auxiliary_model_name, auxiliary_model_type)
 
 % Gets the companion VAR representation of a PAC auxiliary model.
 % Depending on the nature of this auxiliary model the output is
@@ -37,6 +37,12 @@ if nargin<2
     else
         error('Unknown type of auxiliary model.')
     end
+end
+
+if nargout
+    A0 = [];
+    AR = [];
+    B = [];
 end
 
 get_ar_ec_matrices(auxiliary_model_name, auxiliary_model_type);
