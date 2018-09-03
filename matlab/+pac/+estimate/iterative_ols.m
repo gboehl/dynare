@@ -83,22 +83,6 @@ if ~isempty(M_.pac.(pacmodl).h1_param_indices)
     end
 end
 
-% Set correction for growth neutrality
-correction = 0;
-if isfield(M_.pac.(pacmodl), 'growth_type')
-    switch M_.pac.(pacmodl).growth_type
-      case 'parameter'
-        correction = M_.params(M_.pac.(pacmodl).growth_index)*M_.params(M_.pac.(pacmodl).growth_neutrality_param_index);
-      case 'exogenous'
-        ExogenousGrowthVariable = ...
-            data{M_.exo_names{M_.pac.(pacmodl).growth_index}};
-        ExogenousGrowthVariable = ExogenousGrowthVariable(range).data;
-        correction = ExogenousGrowthVariable*M_.params(M_.pac.(pacmodl).growth_neutrality_param_index);
-      otherwise
-        error('Not yet implemented.')
-    end
-end
-
 % Build matrix for EC and AR terms.
 DataForOLS = dseries();
 DataForOLS{'ec-term'} = data{M_.endo_names{M_.pac.(pacmodl).ec.vars(2)}}.lag(1)-data{M_.endo_names{M_.pac.(pacmodl).ec.vars(1)}}.lag(1);
@@ -132,6 +116,28 @@ while noconvergence
     if ~isempty(listofvariables1)
         PACExpectations = dataForPACExpectation1{listofvariables1{:}}(range).data*M_.params(M_.pac.pacman.h1_param_indices);
     end
+    % Set correction for growth neutrality
+    correction = 0;
+    if isfield(M_.pac.(pacmodl), 'growth_type')
+        switch M_.pac.(pacmodl).growth_type
+          case 'parameter'
+            correction = M_.params(M_.pac.(pacmodl).growth_index)*M_.params(M_.pac.(pacmodl).growth_neutrality_param_index);
+          case 'exogenous'
+            GrowthVariable = ...
+                data{M_.exo_names{M_.pac.(pacmodl).growth_index}};
+            GrowthVariable = GrowthVariable(range).data;
+            correction = GrowthVariable* ...
+                M_.params(M_.pac.(pacmodl).growth_neutrality_param_index);
+          case 'endogenous'
+            GrowthVariable = ...
+                data{M_.endo_names{M_.pac.(pacmodl).growth_index}};
+            GrowthVariable = GrowthVariable(range).data;
+            correction = GrowthVariable*M_.params(M_.pac.(pacmodl).growth_neutrality_param_index);
+          otherwise
+            error('Not yet implemented.')
+        end
+    end
+    PACExpectations = PACExpectations+correction;
     YDATA = data{M_.endo_names{M_.pac.(pacmodl).lhs_var}}(range).data-correction-PACExpectations;
     % Do OLS
     params1 = XDATA\YDATA;
