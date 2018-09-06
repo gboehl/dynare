@@ -144,7 +144,7 @@ while noconvergence
     r = YDATA-XDATA*params1;
     ssr = r'*r;
     noconvergence = max(abs(params0-params1))>1e-6;
-    disp(sprintf('Iter. %u,\t crit: %10.5f\t ssr: %10.8f', counter, max(abs(params0-params1)), ssr))
+    fprintf('Iter. %u,\t crit: %10.5f\t ssr: %10.8f\n', counter, max(abs(params0-params1)), ssr)
     params0 = params1;
 end
 
