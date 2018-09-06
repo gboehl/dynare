@@ -35,6 +35,8 @@ r = [r; run_this_test('trend-component-9')];
 r = [r; run_this_test('trend-component-10')];
 r = [r; run_this_test('trend-component-11')];
 r = [r; run_this_test('trend-component-12')];
+r = [r; run_this_test('trend-component-13a')];
+r = [r; run_this_test('trend-component-13b')];
 
 print_results(r);
 
