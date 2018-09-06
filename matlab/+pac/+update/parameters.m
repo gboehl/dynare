@@ -65,7 +65,7 @@ end
 pacvalues = DynareModel.params([pacmodel.ec.params; pacmodel.ar.params(1:pacmodel.max_lag)']);
 
 % Get the indices for the stationary/nonstationary variables in the VAR system.
-id = find(strcmp(DynareModel.endo_names{pacmodel.ec.vars(2)}, varmodel.list_of_variables_in_companion_var));
+id = find(strcmp(DynareModel.endo_names{pacmodel.ec.vars(find(~pacmodel.ec.isendo))}, varmodel.list_of_variables_in_companion_var));
 
 if isempty(id)
     % Find the auxiliary variables if any
@@ -75,14 +75,11 @@ if isempty(id)
     else
         for i=1:length(ad)
             auxinfo = DynareModel.aux_vars(get_aux_variable_id(varmodel.list_of_variables_in_companion_var{ad(i)}));
-            if isequal(auxinfo.endo_index, pacmodel.ec.vars(2))
-                % /!\ First element of ec.vars is the level of the endogenous
-                % variable in the PAC equation, the second element
-                % is the target variable.
+            if isequal(auxinfo.endo_index, pacmodel.ec.vars(find(~pacmodel.ec.isendo)))
                 id = ad(i);
                 break
             end
-            if isequal(auxinfo.type, 8) && isequal(auxinfo.orig_index, pacmodel.ec.vars(2))
+            if isequal(auxinfo.type, 8) && isequal(auxinfo.orig_index, pacmodel.ec.vars(find(~pacmodel.ec.isendo)))
                 id = ad(i);
                 break
             end

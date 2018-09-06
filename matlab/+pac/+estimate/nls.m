@@ -44,6 +44,13 @@ global M_ oo_
 [pacmodl, lhs, rhs, pnames, enames, xnames, pid, eid, xid, ~, ipnames_, params, data, islaggedvariables] = ...
     pac.estimate.init(M_, oo_, eqname, params, data, range);
 
+% Check that the error correction term is correct.
+if M_.pac.(pacmodl).ec.isendo(1)
+    error(['\nThe error correction term in PAC equation (%s) is not correct.\nThe ' ...
+           'error correction term should be the difference between a trend\n' ...
+           'and the level of the endogenous variable.'], pacmodl);
+end
+
 % List of objects to be replaced
 objNames = [pnames; enames; xnames];
 objIndex = [pid; eid; xid];

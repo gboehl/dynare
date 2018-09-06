@@ -83,9 +83,18 @@ if ~isempty(M_.pac.(pacmodl).h1_param_indices)
     end
 end
 
+% Reorder ec.vars locally if necessary. Second variable must be the
+% endogenous variable, while the first must be the associated trend.
+if M_.pac.(pacmodl).ec.isendo(2)
+    ecvars = M_.pac.(pacmodl).ec.vars;
+else
+    ecvars = flip(M_.pac.(pacmodl).ec.vars);
+end
+
 % Build matrix for EC and AR terms.
 DataForOLS = dseries();
-DataForOLS{'ec-term'} = data{M_.endo_names{M_.pac.(pacmodl).ec.vars(2)}}.lag(1)-data{M_.endo_names{M_.pac.(pacmodl).ec.vars(1)}}.lag(1);
+% Error correction term is trend minus the level of the endogenous variable.
+DataForOLS{'ec-term'} = data{M_.endo_names{ecvars(1)}}.lag(1)-data{M_.endo_names{ecvars(2)}}.lag(1);
 listofvariables3 = {'ec-term'};
 xparm = { M_.param_names(M_.pac.(pacmodl).ec.params(1))};
 for i = 1:length(M_.pac.(pacmodl).ar.params)
