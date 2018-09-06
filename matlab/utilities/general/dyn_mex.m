@@ -44,7 +44,7 @@ if ~isempty(Dmex)
     end
 end
 
-if ~exist('OCTAVE_VERSION')
+if ~isoctave
     % Some mex commands are enclosed in an eval(), because otherwise it will make Octave fail
     if ispc
         if strcmp(win_compiler,'msvc')
