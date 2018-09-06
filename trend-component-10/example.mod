@@ -26,7 +26,7 @@ a_x2_x1_1 = -.1;
 a_x2_x1_2 = .2;
 
 beta  =  .2;
-e_c_m =  -.5;
+e_c_m =  .5;
 c_z_1 =  .2;
 c_z_2 = -.1;
 
@@ -52,7 +52,7 @@ x1bar = x1bar(-1) + ex1bar;
 x2bar = x2bar(-1) + ex2bar;
 
 [name='zpac']
-diff(z) = e_c_m*(z(-1)-log(x1(-1))) + c_z_1*diff(z(-1))  + c_z_2*diff(z(-2)) + pac_expectation(pacman) + ez;
+diff(z) = e_c_m*(log(x1(-1))-z(-1)) + c_z_1*diff(z(-1))  + c_z_2*diff(z(-2)) + pac_expectation(pacman) + ez;
 
 end;
 
@@ -83,7 +83,6 @@ TrueData = simul_backward_model(initialconditions, 300);
 clear eparams
 eparams.e_c_m = .9;
 eparams.c_z_1 = .5;
-
 eparams.c_z_2 = .2;
 
 // Define the dataset used for estimation

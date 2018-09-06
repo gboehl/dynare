@@ -22,7 +22,7 @@ a_x2_x1_1 = -.1;
 a_x2_x1_2 = 0;//.2;
 
 beta  =  .1;
-e_c_m =  -.1;
+e_c_m =  .1;
 c_z_1 =  .07;
 c_z_2 = -.3;
 
@@ -47,7 +47,7 @@ x1bar = x1bar(-1) + ex1bar;
 x2bar = x2bar(-1) + ex2bar;
 
 [name='eq:pac']
-diff(z) = gamma*(e_c_m*(z(-1)-log(x1(-1))) + c_z_1*diff(z(-1))  + c_z_2*diff(z(-2)) + pac_expectation(pacman)) + (1-gamma)*ez;
+diff(z) = gamma*(e_c_m*(log(x1(-1))-z(-1)) + c_z_1*diff(z(-1))  + c_z_2*diff(z(-2)) + pac_expectation(pacman)) + (1-gamma)*ez;
 
 
 end;
