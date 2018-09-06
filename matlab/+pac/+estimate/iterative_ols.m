@@ -52,9 +52,9 @@ dataForPACExpectation0 = dseries();
 listofvariables0 = {};
 if ~isempty(M_.pac.(pacmodl).h0_param_indices)
     for i=1:length(M_.pac.(pacmodl).h0_param_indices)
-        match = regexp(rhs, sprintf('(?<var>((\\w*)|\\w*\\(-1\\)))\\*%s', M_.param_names{M_.pac.(pacmodl).h0_param_indices(i)}), 'names'); 
+        match = regexp(rhs, sprintf('(?<var>((\\w*)|\\w*\\(-1\\)))\\*%s', M_.param_names{M_.pac.(pacmodl).h0_param_indices(i)}), 'names');
         if isempty(match)
-            match = regexp(rhs, sprintf('%s\\*(?<var>((\\w*)|\\w*\\(-1\\)))', M_.param_names{M_.pac.(pacmodl).h0_param_indices(i)}), 'names'); 
+            match = regexp(rhs, sprintf('%s\\*(?<var>((\\w*\\(-1\\))|(\\w*)))', M_.param_names{M_.pac.(pacmodl).h0_param_indices(i)}), 'names');
         end
         if isempty(strfind(match.var, '(-1)'))
             listofvariables0{i} = match.var;
@@ -69,9 +69,9 @@ dataForPACExpectation1 = dseries();
 listofvariables1 = {};
 if ~isempty(M_.pac.(pacmodl).h1_param_indices)
     for i=1:length(M_.pac.(pacmodl).h1_param_indices)
-        match = regexp(rhs, sprintf('(?<var>((\\w*)|\\w*\\(-1\\)))\\*%s', M_.param_names{M_.pac.(pacmodl).h1_param_indices(i)}), 'names'); 
+        match = regexp(rhs, sprintf('(?<var>((\\w*)|(\\w*\\(-1\\))))\\*%s', M_.param_names{M_.pac.(pacmodl).h1_param_indices(i)}), 'names');
         if isempty(match)
-            match = regexp(rhs, sprintf('%s\\*(?<var>((\\w*)|\\w*\\(-1\\)))', M_.param_names{M_.pac.(pacmodl).h1_param_indices(i)}), 'names'); 
+            match = regexp(rhs, sprintf('%s\\*(?<var>((\\w*\\(-1\\))|(\\w*)))', M_.param_names{M_.pac.(pacmodl).h1_param_indices(i)}), 'names');
         end
         if isempty(strfind(match.var, '(-1)'))
             listofvariables1{i} = match.var;
