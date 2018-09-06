@@ -367,6 +367,23 @@ MODFILES = \
     trend-component-and-var-models/tcm4.mod \
     trend-component-and-var-models/tcm5.mod \
 	trend-component-and-var-models/tcm6.mod \
+	pac/var-1/example.mod \
+	pac/var-2/example.mod \
+	pac/var-3/example.mod \
+	pac/var-4/example.mod \
+	trend-component-1/example.mod \
+	trend-component-2/example.mod \
+	trend-component-3/example.mod \
+	trend-component-4/example.mod \
+	trend-component-5/example.mod \
+	trend-component-6/example.mod \
+	trend-component-7/example.mod \
+	trend-component-9/example.mod \
+	trend-component-10/example.mod \
+	trend-component-11/example.mod \
+	trend-component-12/example.mod \
+	trend-component-13a/example.mod \
+	trend-component-13b/example.mod \
     dynare-command-options/ramst.mod
 
 PARTICLEFILES = \
@@ -748,6 +765,10 @@ o/var-expectations: $(patsubst %.mod, %.o.trs, $(filter var-expectations/%.mod, 
 trend-component-and-var-models: m/trend-component-and-var-models o/trend-component-and-var-models
 m/trend-component-and-var-models: $(patsubst %.mod, %.m.trs, $(filter trend-component-and-var-models/%.mod, $(MODFILES)))
 o/trend-component-and-var-models: $(patsubst %.mod, %.o.trs, $(filter trend-component-and-var-models/%.mod, $(MODFILES)))
+
+pac: m/pac o/pac
+m/pac: $(patsubst %.mod, %.m.trs, $(filter pac/%.mod, $(MODFILES)))
+o/pac: $(patsubst %.mod, %.o.trs, $(filter pac/%.mod, $(MODFILES)))
 
 particle: m/particle o/particle
 m/particle: $(patsubst %.mod, %.m.trs, $(PARTICLEFILES))
