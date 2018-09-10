@@ -19,7 +19,7 @@
 	branch = old-oop-style
 [submodule "matlab/modules/dseries"]
 	path = matlab/modules/dseries
-	url = https://github.com/DynareTeam/dseries.git
+	url = https://git.dynare.org/Dynare/dseries.git
 	branch = old-oop-style
 [submodule "matlab/modules/reporting"]
 	path = matlab/modules/reporting
