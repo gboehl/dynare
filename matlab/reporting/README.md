@@ -16,17 +16,17 @@ specifics).
 # Obtain the code that Dynare Reporting depends on
 
 Dynare ```reporting``` depends on the Dynare
-[```dates```](https://github.com/DynareTeam/dates) and
-[```dseries```](https://github.com/DynareTeam/dseries) repositories and on
-utility functions from the [```dynare```](https://github.com/DynareTeam/dynare)
+[```dates```](https://git.dynare.org/Dynare/dates) and
+[```dseries```](https://git.dynare.org/Dynare/dseries) repositories and on
+utility functions from the [```dynare```](https://git.dynare.org/Dynare/dynare)
 repository, located in ```dynare/matlab/utilities/general```
 
 # Use the Dynare Reporting code
 
 - Open Matlab/Octave
 - Change into the ```reporting``` directory
-- Ensure that the [```dates```](https://github.com/DynareTeam/dates)
-  and [```dseries```](https://github.com/DynareTeam/dseries)
+- Ensure that the [```dates```](https://git.dynare.org/Dynare/dates)
+  and [```dseries```](https://git.dynare.org/Dynare/dseries)
   directories are in your path and initialized correctly (follow the
   directions on the respective sites)
 - Add ```<<dynare>>/matlab/utilities/general``` to your path where ```<<dynare>>``` refers to the base of your Dynare installation

@@ -21,7 +21,7 @@ before_install:
   - brew install octave
 
 install:
-  - git clone --depth=1 --recursive --branch=master https://github.com/DynareTeam/dynare.git ~/builds/dynare
+  - git clone --depth=1 --recursive --branch=master https://git.dynare.org/Dynare/dynare.git ~/builds/dynare
 
 script:
   - make check-octave
