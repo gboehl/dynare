@@ -16,7 +16,7 @@ available via the Dynare homepage: <http://www.dynare.org/download/dynare-stable
 
 # Contributions
 
-To contribute to Dynare and participate in the Dynare community, please see: [CONTRIBUTING.md](https://github.com/DynareTeam/dynare/blob/master/CONTRIBUTING.md)
+To contribute to Dynare and participate in the Dynare community, please see: [CONTRIBUTING.md](https://git.dynare.org/Dynare/dynare/blob/master/CONTRIBUTING.md)
 
 # License
 
@@ -32,7 +32,7 @@ Here, we explain how to build from source:
 - all the associated documentation (PDF and HTML)
 
 This source can be retrieved in three forms:
-- via git, at <https://github.com/DynareTeam/dynare.git>
+- via git, at <https://git.dynare.org/Dynare/dynare.git>
 - using the stable source archive of the latest Dynare version (currently 4.4) from <http://www.dynare.org/download/dynare-stable/>
 - using a source snapshot of the unstable version, from <http://www.dynare.org/download/dynare-unstable/source-snapshot>
 
@@ -91,7 +91,7 @@ If you have downloaded the sources from an official source archive or the source
 
 If you want to use Git, do the following from a terminal:
 
-    git clone --recursive https://github.com/DynareTeam/dynare.git
+    git clone --recursive https://git.dynare.org/Dynare/dynare.git
     cd dynare
     autoreconf -si
 
