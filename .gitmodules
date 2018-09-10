@@ -26,7 +26,7 @@
 	branch = ecb-master
 [submodule "matlab/modules/reporting"]
 	path = matlab/modules/reporting
-	url = git@github.com:DynareTeam/reporting.git
+	url = https://git.dynare.org/Dynare/reporting.git
 [submodule "contrib/jsonlab"]
 	path = contrib/jsonlab
 	url = https://github.com/fangq/jsonlab.git
