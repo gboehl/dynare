@@ -10,13 +10,13 @@ If something is not clear, don't hesitate to ask if you can't find the answer on
 
 Please note that the repositories under the purview of this page are:
 
-* [Dynare](https://github.com/DynareTeam/dynare)
-* [Particles](https://github.com/DynareTeam/particles)
-* [Dates](https://github.com/DynareTeam/dates)
-* [Dseries](https://github.com/DynareTeam/dseries)
-* [Reporting](https://github.com/DynareTeam/reporting)
-* [Testsuite](https://github.com/DynareTeam/testsuite)
-* [M-unit-tests](https://github.com/DynareTeam/m-unit-tests)
+* [Dynare](https://git.dynare.org/Dynare/dynare)
+* [Particles](https://git.dynare.org/Dynare/particles)
+* [Dates](https://git.dynare.org/Dynare/dates)
+* [Dseries](https://git.dynare.org/Dynare/dseries)
+* [Reporting](https://git.dynare.org/Dynare/reporting)
+* [Testsuite](https://git.dynare.org/Dynare/testsuite)
+* [M-unit-tests](https://git.dynare.org/Dynare/m-unit-tests)
 
 ## Making your Intentions Known
 
@@ -26,7 +26,7 @@ Before making changes to the codebase, it'd be helpful if you communicated your 
 
 You can report bugs in both the stable and unstable versions of Dynare. Before reporting a bug in the stable version of Dynare, please check the [Known Bugs](http://www.dynare.org/DynareWiki/KnownBugs) page to ensure it has not already been encountered/fixed. If reporting a bug in the unstable version of Dynare, please ensure the bug exists in the latest [unstable Dynare snapshot](http://www.dynare.org/download/dynare-unstable).
 
-To report a bug in Dynare, simply open a GitHub issue in the repository where the bug resides. For example, to report a bug in Dynare itself, go to the [Dynare repository issue page](https://github.com/DynareTeam/dynare/issues) and click on "New Issue."
+To report a bug in Dynare, simply open a GitHub issue in the repository where the bug resides. For example, to report a bug in Dynare itself, go to the [Dynare repository issue page](https://git.dynare.org/Dynare/dynare/issues) and click on "New Issue."
 
 The minimal information to add is a subject and a description of the steps needed to reproduce the bug. However, the most helpful description would also provide the code to reproduce the bug (often times a `.mod` file). The most helpful `.mod` file is a minimal, quick-running example that reproduces the bug, but we'll take anything that will help us squash a bug.
 
@@ -45,7 +45,7 @@ So, now you've reported the bug or asked for an enhancemnt by creating a GitHub 
 Now, if you want to go the extra mile, you'll volunteer to contribute code to fix the GitHub issue you created above. Once we've agreed that you'll do it, please do the following:
 
 1. Clone the Dynare repository:
-   * `git clone https://github.com/DynareTeam/dynare.git`
+   * `git clone https://git.dynare.org/Dynare/dynare.git`
 1. [Fork the Dynare repository](https://help.github.com/articles/fork-a-repo)
 1. Change into the `dynare` folder and add the forked repository as a remote:
    * `cd dynare`
