@@ -32,4 +32,4 @@
 	url = https://github.com/fangq/jsonlab.git
 [submodule "preprocessor"]
 	path = preprocessor
-	url = https://github.com/DynareTeam/dynare-preprocessor.git
+	url = https://git.dynare.org/Dynare/preprocessor.git
