@@ -18,8 +18,8 @@
 	url = https://git.dynare.org/Dynare/particles.git
 [submodule "matlab/modules/dates"]
 	path = matlab/modules/dates
-	url = https://github.com/DynareTeam/dates.git
-	branch = old-oop-style
+	url = https://git.dynare.org/Dynare/dates.git
+	branch = master
 [submodule "matlab/modules/dseries"]
 	path = matlab/modules/dseries
 	url = https://github.com/DynareTeam/dseries.git
