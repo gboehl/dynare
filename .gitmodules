@@ -22,8 +22,8 @@
 	branch = master
 [submodule "matlab/modules/dseries"]
 	path = matlab/modules/dseries
-	url = https://github.com/DynareTeam/dseries.git
-	branch = old-oop-style
+	url = https://git.dynare.org/Dynare/dseries.git
+	branch = master
 [submodule "matlab/modules/reporting"]
 	path = matlab/modules/reporting
 	url = https://github.com/DynareTeam/reporting.git
