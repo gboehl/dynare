@@ -147,7 +147,7 @@ while noconvergence
         end
     end
     PACExpectations = PACExpectations+correction;
-    YDATA = data{M_.endo_names{M_.pac.(pacmodl).lhs_var}}(range).data-correction-PACExpectations;
+    YDATA = data{M_.endo_names{M_.pac.(pacmodl).lhs_var}}(range).data-PACExpectations;
     % Do OLS
     params1 = XDATA\YDATA;
     r = YDATA-XDATA*params1;
