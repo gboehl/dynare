@@ -57,11 +57,9 @@ switch auxiliary_model_type
   case 'var'
     oo_.var.(auxiliary_model_name).CompanionMatrix = zeros(n*p);
     oo_.var.(auxiliary_model_name).CompanionMatrix(1:n,1:n) = oo_.var.(auxiliary_model_name).ar(:,:,1);
-    if p>1
-        for i=2:p
-            oo_.var.(auxiliary_model_name).CompanionMatrix(1:n,(i-1)*n+(1:n)) = oo_.var.(auxiliary_model_name).ar(:,:,i);
-            oo_.var.(auxiliary_model_name).CompanionMatrix((i-1)*n+(1:n),(i-2)*n+(1:n)) = eye(n);
-        end
+    for i=2:p
+        oo_.var.(auxiliary_model_name).CompanionMatrix(1:n,(i-1)*n+(1:n)) = oo_.var.(auxiliary_model_name).ar(:,:,i);
+        oo_.var.(auxiliary_model_name).CompanionMatrix((i-1)*n+(1:n),(i-2)*n+(1:n)) = eye(n);
     end
     M_.var.(auxiliary_model_name).list_of_variables_in_companion_var = M_.endo_names(M_.var.(auxiliary_model_name).lhs);
   case 'trend_component'
