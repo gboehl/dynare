@@ -57,7 +57,7 @@ Using Dynare with Octave
 Dynare also works on top of GNU Octave, a free clone of MATLAB (R) (see
 <http://www.octave.org>).
 
-This version of Dynare is compiled for Octave 4.4.0 (MinGW, 32bit and 64bit), and may not work
+This version of Dynare is compiled for Octave 4.4.1 (MinGW, 32bit and 64bit), and may not work
 with other versions of Octave. The recommended version of Octave can be
 downloaded at:
 

@@ -413,7 +413,7 @@ all commands and features in a systematic fashion.
 
 Other useful sources of information include the
 @uref{http://www.dynare.org/DynareWiki,old Dynare wiki}, the
-@uref{https://github.com/DynareTeam/dynare/wiki,new Dynare wiki}, the documentation
+@uref{https://git.dynare.org/Dynare/dynare/wikis/home,new Dynare wiki}, the documentation
 section of the @uref{http://www.dynare.org/documentation-and-support,Dynare
 website} and the @uref{https://forum.dynare.org/,Dynare forum}.
 
@@ -574,7 +574,7 @@ You need to download Dynare source code from the
 
 Then you will need to recompile the pre-processor and the dynamic
 loadable libraries. Please refer to
-@uref{https://github.com/DynareTeam/dynare/blob/master/README.md,README.md}.
+@uref{https://git.dynare.org/Dynare/dynare/blob/master/README.md,README.md}.
 
 @node Compiler installation
 @section Compiler installation
@@ -9819,7 +9819,7 @@ that of the parameter at @code{t-1}.
 
 @end table
 
-In case of estimating a MS-DSGE model,@footnote{An example can be found at @uref{https://github.com/DynareTeam/dynare/blob/master/tests/ms-dsge/test_ms_dsge.mod}.} in addition the following options are allowed:
+In case of estimating a MS-DSGE model,@footnote{An example can be found at @uref{https://git.dynare.org/Dynare/dynare/blob/master/tests/ms-dsge/test_ms_dsge.mod}.} in addition the following options are allowed:
 
 @table @code
 

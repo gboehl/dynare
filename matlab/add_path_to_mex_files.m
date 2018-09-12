@@ -21,7 +21,7 @@ if nargin<2
     modifypath = true;
 end
 
-if exist('OCTAVE_VERSION')
+if isoctave
     if ispc() && strcmpi(computer(), 'i686-w64-mingw32')
         mexpath = {[dynareroot '../mex/octave32/']};
     else
