@@ -1,0 +1,27 @@
+build_binaries:
+  stage: build
+  script:
+    - autoreconf -si
+    - './configure --with-matlab=$(dirname $(dirname $(readlink -f `which matlab`))) MATLAB_VERSION=$(echo version | matlab -nodesktop -nodisplay -nosplash 2>/dev/null | sed -En "/ans\ =/!d;n;n;s/^[^0-9]*([0-9]+\.[0-9]+).*$/\1/;p")'
+    - make -j $(nproc)
+  artifacts:
+    paths:
+      - preprocessor/src/dynare_m
+      - matlab/preprocessor*/
+      - mex/octave/
+      - mex/build/octave/*/*.mex
+      - mex/matlab/
+      - mex/build/matlab/*/*.mex*
+      - dynare++/src/dynare++
+
+build_doc:
+  stage: build
+  script:
+    - autoreconf -si
+    - ./configure
+    - make -j $(nproc) info pdf html
+  artifacts:
+    paths:
+      - doc/dynare.info*
+      - doc/dynare.html
+      - doc/dynare.pdf
