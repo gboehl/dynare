@@ -98,12 +98,10 @@ switch auxiliary_model_type
     %        where the dimensions of I and 0 matrices can easily be
     %        deduced from the number of EC and trend equations.
     % Check that the lhs of candidate ecm equations are at least first differences.
-    difference_orders_in_error_correction_eq = zeros(m, 1);
     for i=1:m
-        difference_orders_in_error_correction_eq(i) = get_difference_order(M_.trend_component.(auxiliary_model_name).lhs(ecm_eqnums_in_auxiliary_model(i)));
-    end
-    if any(~difference_orders_in_error_correction_eq)
-        error('Model %s is not a Trend component  model! LHS variables should be in difference', auxiliary_model_name)
+        if ~get_difference_order(M_.trend_component.(auxiliary_model_name).lhs(ecm_eqnums_in_auxiliary_model(i)))
+            error('Model %s is not a Trend component  model! LHS variables should be in difference', auxiliary_model_name)
+        end
     end
     % Get the trend variables indices (lhs variables in trend equations).
     [~, id_trend_in_var, ~] = intersect(M_.trend_component.(auxiliary_model_name).eqn, trend_eqnums);
