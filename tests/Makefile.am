@@ -371,19 +371,19 @@ MODFILES = \
 	pac/var-2/example.mod \
 	pac/var-3/example.mod \
 	pac/var-4/example.mod \
-	trend-component-1/example.mod \
-	trend-component-2/example.mod \
-	trend-component-3/example.mod \
-	trend-component-4/example.mod \
-	trend-component-5/example.mod \
-	trend-component-6/example.mod \
-	trend-component-7/example.mod \
-	trend-component-9/example.mod \
-	trend-component-10/example.mod \
-	trend-component-11/example.mod \
-	trend-component-12/example.mod \
-	trend-component-13a/example.mod \
-	trend-component-13b/example.mod \
+	pac/trend-component-1/example.mod \
+	pac/trend-component-2/example.mod \
+	pac/trend-component-3/example.mod \
+	pac/trend-component-4/example.mod \
+	pac/trend-component-5/example.mod \
+	pac/trend-component-6/example.mod \
+	pac/trend-component-7/example.mod \
+	pac/trend-component-9/example.mod \
+	pac/trend-component-10/example.mod \
+	pac/trend-component-11/example.mod \
+	pac/trend-component-12/example.mod \
+	pac/trend-component-13a/example.mod \
+	pac/trend-component-13b/example.mod \
     dynare-command-options/ramst.mod
 
 PARTICLEFILES = \
