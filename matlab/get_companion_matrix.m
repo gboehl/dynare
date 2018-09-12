@@ -2,10 +2,12 @@ function [A0, AR, B] = get_companion_matrix(auxiliary_model_name, auxiliary_mode
 
 % Gets the companion VAR representation of a PAC auxiliary model.
 % Depending on the nature of this auxiliary model the output is
-% saved in oo_.{var,trend_component}.(auxiliary_model_name).H
+% saved in oo_.{var,trend_component}.(auxiliary_model_name).CompanionMatrix
 %
 % INPUTS
 % - auxiliary_model_name     [string]    the name of the auxiliary model
+% - auxiliary_model_type     [string]    the type of the auxiliary model
+%                                        ('var' or 'trend_component')
 %
 % OUTPUTS
 % - None
