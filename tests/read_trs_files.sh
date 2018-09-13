@@ -89,3 +89,6 @@ fi
     echo "$timing" | tr ':' '\n' | sed -e 's/^[ \t]*//;/^$/d;s/^|[ ]/|     * /'
     echo
 } > $outfile
+
+# Exit with error code if some tests failed
+((failed + xpassed == 0))
