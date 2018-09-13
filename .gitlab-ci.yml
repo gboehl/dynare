@@ -25,3 +25,27 @@ build_doc:
       - doc/dynare.info*
       - doc/dynare.html
       - doc/dynare.pdf
+
+testsuite_matlab:
+  stage: test
+  script:
+    - autoreconf -si
+    - './configure --disable-octave --with-matlab=$(dirname $(dirname $(readlink -f `which matlab`))) MATLAB_VERSION=$(echo version | matlab -nodesktop -nodisplay -nosplash 2>/dev/null | sed -En "/ans\ =/!d;n;n;s/^[^0-9]*([0-9]+\.[0-9]+).*$/\1/;p")'
+    - make -j $(($(nproc) / 2)) -C tests check-matlab
+  dependencies:
+    - build_binaries
+
+testsuite_octave:
+  stage: test
+  variables:
+    OPENBLAS_NUM_THREADS: 1
+  script:
+    - autoreconf -si
+    - ./configure --disable-matlab
+    - make -j $(nproc) -C tests check-octave
+  dependencies:
+    - build_binaries
+  only:
+    - tags
+    - schedules
+    - web
