@@ -38,7 +38,7 @@ B12 = B(1,2);
 B21 = B(2,1);
 B22 = B(2,2);
 
-trend_component_model(model_name=toto, eqtags=['eq:y4', 'eq:y1', 'eq:y2', 'eq:y3'], trends=['eq:y3', 'eq:y4']);
+trend_component_model(model_name=toto, eqtags=['eq:y4', 'eq:y1', 'eq:y2', 'eq:y3'], targets=['eq:y3', 'eq:y4']);
 
 model;
 

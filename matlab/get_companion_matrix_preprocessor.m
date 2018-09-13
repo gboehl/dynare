@@ -71,17 +71,17 @@ switch auxiliary_model_type
     end
   case 'trend_component'
     % Get number of trends.
-    q = sum(M_.trend_component.(auxiliary_model_name).trends);
+    q = sum(M_.trend_component.(auxiliary_model_name).targets);
 
     % Get the number of equations with error correction.
     m  = n - q;
     
     % Get the indices of trend and EC equations in the auxiliary model.
-    trend_eqnums_in_auxiliary_model = find(M_.trend_component.(auxiliary_model_name).trends);
-    ecm_eqnums_in_auxiliary_model = find(~M_.trend_component.(auxiliary_model_name).trends);
+    target_eqnums_in_auxiliary_model = find(M_.trend_component.(auxiliary_model_name).targets);
+    ecm_eqnums_in_auxiliary_model = find(~M_.trend_component.(auxiliary_model_name).targets);
     
     % Get the indices of trend equations in model.
-    trend_eqnums = M_.trend_component.(auxiliary_model_name).trend_eqn;
+    target_eqnums = M_.trend_component.(auxiliary_model_name).target_eqn;
     
     % REMARK It is assumed that the non trend equations are the error correction
     %        equations. We assume that the model can be cast in the following form:
@@ -117,7 +117,7 @@ switch auxiliary_model_type
     end
     
     % Get the trend variables indices (lhs variables in trend equations).
-    [~, id_trend_in_var, ~] = intersect(M_.trend_component.(auxiliary_model_name).eqn, trend_eqnums);
+    [~, id_trend_in_var, ~] = intersect(M_.trend_component.(auxiliary_model_name).eqn, target_eqnums);
     trend_variables = reshape(M_.trend_component.(auxiliary_model_name).lhs(id_trend_in_var), q, 1);
     
     % Get the rhs variables in trend equations.
@@ -125,36 +125,32 @@ switch auxiliary_model_type
         % Check that there is only one variable on the rhs and update trend_autoregressive_variables.
         v = M_.trend_component.(auxiliary_model_name).rhs.vars_at_eq{id_trend_in_var(i)}.var;
         if length(v) ~= 1
-            error('A trend equation (%s) must have only one variable on the RHS!', M_.trend_component.(auxiliary_model_name).eqtags{trend_eqnums(i)})
+            error('A trend equation (%s) must have only one variable on the RHS!', M_.trend_component.(auxiliary_model_name).eqtags{target_eqnums(i)})
         end
         
         % Check that the variables on lhs and rhs have the same difference orders.
         if get_difference_order(trend_variables(i)) ~= get_difference_order(v)
-            error('In a trend equation (%s) LHS and RHS variables must have the same difference orders!', M_.trend_component.(auxiliary_model_name).eqtags{trend_eqnums(i)})
+            error('In a trend equation (%s) LHS and RHS variables must have the same difference orders!', M_.trend_component.(auxiliary_model_name).eqtags{target_eqnums(i)})
         end
         
         % Check that the trend equation is autoregressive.
         if isdiff(v)
             if ~M_.aux_vars(get_aux_variable_id(v)).type == 9
-                error('In a trend equation (%s) RHS variable must be lagged LHS variable!', M_.trend_component.(auxiliary_model_name).eqtags{trend_eqnums(i)})
-            else
-                if M_.aux_vars(get_aux_variable_id(v)).orig_index ~= trend_variables(i)
-                    error('In a trend equation (%s) RHS variable must be lagged LHS variable!', M_.trend_component.(auxiliary_model_name).eqtags{trend_eqnums(i)})
-                end
+                error('In a trend equation (%s) RHS variable must be lagged LHS variable!', M_.trend_component.(auxiliary_model_name).eqtags{target_eqnums(i)})
+            elseif M_.aux_vars(get_aux_variable_id(v)).orig_index ~= trend_variables(i)
+                error('In a trend equation (%s) RHS variable must be lagged LHS variable!', M_.trend_component.(auxiliary_model_name).eqtags{target_eqnums(i)})
             end
-        else
-            if get_aux_variable_id(v) && M_.aux_vars(get_aux_variable_id(v)).endo_index ~= trend_variables(i)
-                error('In a trend equation (%s) RHS variable must be lagged LHS variable!', M_.trend_component.(auxiliary_model_name).eqtags{trend_eqnums(i)})
-            end
+        elseif get_aux_variable_id(v) && M_.aux_vars(get_aux_variable_id(v)).endo_index ~= trend_variables(i)
+            error('In a trend equation (%s) RHS variable must be lagged LHS variable!', M_.trend_component.(auxiliary_model_name).eqtags{target_eqnums(i)})
         end
     end
     
-    % Reorder trend_eqnums_in_auxiliary_model to ensure that the order of
+    % Reorder target_eqnums_in_auxiliary_model to ensure that the order of
     % the trend variables matches the order of the error correction
     % variables.
-    [~,reorder] = ismember(M_.trend_component.toto.lhs(trend_eqnums_in_auxiliary_model), ...
-                           M_.trend_component.toto.trend_vars(M_.trend_component.toto.trend_vars > 0));
-    trend_eqnums_in_auxiliary_model = trend_eqnums_in_auxiliary_model(reorder);
+    [~,reorder] = ismember(M_.trend_component.toto.lhs(target_eqnums_in_auxiliary_model), ...
+                           M_.trend_component.toto.target_vars(M_.trend_component.toto.target_vars > 0));
+    target_eqnums_in_auxiliary_model = target_eqnums_in_auxiliary_model(reorder);
     
     % Get the EC matrix (the EC term is assumend to be in t-1).
     %
@@ -163,8 +159,8 @@ switch auxiliary_model_type
     %
     % Build B matrices (VAR in levels)
     B(ecm_eqnums_in_auxiliary_model, ecm_eqnums_in_auxiliary_model, 1) = eye(m) + A0 + AR(:,:,1);
-    B(ecm_eqnums_in_auxiliary_model, trend_eqnums_in_auxiliary_model) = -A0;
-    B(trend_eqnums_in_auxiliary_model, trend_eqnums_in_auxiliary_model) = eye(q);
+    B(ecm_eqnums_in_auxiliary_model, target_eqnums_in_auxiliary_model) = -A0;
+    B(target_eqnums_in_auxiliary_model, target_eqnums_in_auxiliary_model) = eye(q);
     for i = 2:p
         B(ecm_eqnums_in_auxiliary_model,ecm_eqnums_in_auxiliary_model,i) = AR(:,:,i) - AR(:,:,i-1);
     end

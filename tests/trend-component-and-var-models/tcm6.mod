@@ -116,22 +116,22 @@ end;
 M_.params(1:25) = randn(25, 1);
 
 
-trend_component_model(model_name=toto, eqtags=['U2_Q_YED', 'U2_G_YER', 'U2_STN', 'U2_EHIC', 'U2_G_EYER', 'U2_ESTN', 'U2_HH_OCOR', 'U2_H_Q_YER400'], trends=['U2_EHIC', 'U2_G_EYER', 'U2_ESTN', 'U2_H_Q_YER400']);
+trend_component_model(model_name=toto, eqtags=['U2_Q_YED', 'U2_G_YER', 'U2_STN', 'U2_EHIC', 'U2_G_EYER', 'U2_ESTN', 'U2_HH_OCOR', 'U2_H_Q_YER400'], targets=['U2_EHIC', 'U2_G_EYER', 'U2_ESTN', 'U2_H_Q_YER400']);
 pac_model(auxiliary_model_name=toto, discount=beta, model_name=pacman, growth = U2_H_Q_YER400);
 pac.initialize('pacman');
 C0 = oo_.trend_component.toto.CompanionMatrix;
 
-trend_component_model(model_name=titi, eqtags=['U2_Q_YED', 'U2_G_YER', 'U2_STN', 'U2_EHIC', 'U2_G_EYER', 'U2_ESTN', 'U2_HH_OCOR', 'U2_H_Q_YER400'], trends=['U2_EHIC', 'U2_G_EYER', 'U2_ESTN', 'U2_H_Q_YER400']);
+trend_component_model(model_name=titi, eqtags=['U2_Q_YED', 'U2_G_YER', 'U2_STN', 'U2_EHIC', 'U2_G_EYER', 'U2_ESTN', 'U2_HH_OCOR', 'U2_H_Q_YER400'], targets=['U2_EHIC', 'U2_G_EYER', 'U2_ESTN', 'U2_H_Q_YER400']);
 pac_model(auxiliary_model_name=titi, discount=beta, model_name=pacman1, growth = U2_H_Q_YER400);
 pac.initialize('pacman1');
 C1 = oo_.trend_component.titi.CompanionMatrix;
 
 
-trend_component_model(model_name=tata, eqtags=['U2_Q_YED', 'U2_G_YER', 'U2_STN', 'U2_G_EYER', 'U2_H_Q_YER400', 'U2_EHIC', 'U2_HH_OCOR', 'U2_ESTN'], trends=['U2_EHIC', 'U2_G_EYER', 'U2_ESTN', 'U2_H_Q_YER400']);
+trend_component_model(model_name=tata, eqtags=['U2_Q_YED', 'U2_G_YER', 'U2_STN', 'U2_G_EYER', 'U2_H_Q_YER400', 'U2_EHIC', 'U2_HH_OCOR', 'U2_ESTN'], targets=['U2_EHIC', 'U2_G_EYER', 'U2_ESTN', 'U2_H_Q_YER400']);
 pac_model(auxiliary_model_name=tata, discount=beta, model_name=pacman2, growth = U2_H_Q_YER400);
 pac.initialize('pacman2');
 C2 = oo_.trend_component.tata.CompanionMatrix;
 
 if any(abs(C0(:)-C1(:)))>1e-12 || any(abs(C0(:)-C2(:)))>1e-12
-   error('Companion matrix is not independent of the ordering of the trends.')
+   error('Companion matrix is not independent of the ordering of the targets.')
 end
