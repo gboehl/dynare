@@ -159,14 +159,29 @@ if nargin<5 || isempty(optimizer)
 else
     switch optimizer
       case 'fmincon'
+        if isoctave
+            error('Optimization algorithm ''fmincon'' is not available under Octave')
+        elseif ~user_has_matlab_license('optimization_toolbox')
+            error('Optimization algorithm ''fmincon'' requires the Optimization Toolbox')
+        end
         minalgo = 1;
         bounds = ones(length(params0),1)*[-10,10];
         bounds(strcmp(fieldnames(params), M_.param_names(M_.pac.pacman.ec.params)),1)  = .0;
       case 'fminunc'
+        if isoctave && ~user_has_octave_forge_package('optim')
+            error('Optimization algorithm ''fminunc'' requires the optim package')
+        elseif ~isoctave && ~user_has_matlab_license('optimization_toolbox')
+            error('Optimization algorithm ''fminunc'' requires the Optimization Toolbox')
+        end
         minalgo = 3;
       case 'csminwel'
         minalgo = 4;
       case 'fminsearch'
+        if isoctave && ~user_has_octave_forge_package('optim')
+            error('Optimization algorithm ''fminsearch'' requires the optim package')
+        elseif ~isoctave && ~user_has_matlab_license('optimization_toolbox')
+            error('Optimization algorithm ''fminsearch'' requires the Optimization Toolbox')
+        end
         minalgo = 7;
       case 'simplex'
         minalgo = 8;
@@ -176,6 +191,11 @@ else
         bounds(strcmp(fieldnames(params), M_.param_names(M_.pac.pacman.ec.params)),1)  = .0;
         parameter_names = fieldnames(params);
       case 'particleswarm'
+        if isoctave
+            error('Optimization ''particleswarm'' is not available under Octave')
+        elseif ~user_has_matlab_license('global_optimization_toolbox')
+            error('Optimization ''particleswarm'' requires the Global Optimization Toolbox')
+        end
         minalgo = 12;
         bounds = ones(length(params0),1)*[-10,10];
         bounds(strcmp(fieldnames(params), M_.param_names(M_.pac.pacman.ec.params)),1)  = .0;
