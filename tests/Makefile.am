@@ -849,29 +849,19 @@ EXTRA_DIST = \
 	prior_posterior_function/posterior_function_demo.m
 
 
-TARGETS =
-TEXTOUT =
-
 if HAVE_CMD_LINE_MATLAB
-TARGETS += check-matlab
-TEXTOUT += run_test_matlab_output.txt
+check-local: check-matlab
 endif
 
 if HAVE_OCTAVE
-TARGETS += check-octave
-TEXTOUT += run_test_octave_output.txt
+check-local: check-octave
 endif
 
-check-local: $(TEXTOUT)
-	@cat $(TEXTOUT)
-
-$(TEXTOUT): $(TARGETS)
-
 check-matlab: $(M_XFAIL_TRS_FILES) $(M_TRS_FILES)
-	./read_trs_files.sh "$(M_TRS_FILES)" "$(M_XFAIL_TRS_FILES)"
+	@./read_trs_files.sh "$(M_TRS_FILES)" "$(M_XFAIL_TRS_FILES)"
 
 check-octave: $(O_XFAIL_TRS_FILES) $(O_TRS_FILES)
-	./read_trs_files.sh "$(O_TRS_FILES)" "$(O_XFAIL_TRS_FILES)"
+	@./read_trs_files.sh "$(O_TRS_FILES)" "$(O_XFAIL_TRS_FILES)"
 
 %.m.trs %.m.log: %.mod
 	@echo "`tput bold``tput setaf 8`MATLAB: $(CURDIR)/$*... `tput sgr0`"

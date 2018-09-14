@@ -55,7 +55,7 @@ else
   outfile=run_test_matlab_output.txt
 fi
 
-# Print Output
+# Print Output (to stdout and to a file)
 {
     echo '================================'
     echo "DYNARE MAKE CHECK $prg RESULTS"
@@ -88,7 +88,7 @@ fi
     fi
     echo "$timing" | tr ':' '\n' | sed -e 's/^[ \t]*//;/^$/d;s/^|[ ]/|     * /'
     echo
-} > $outfile
+} | tee $outfile
 
 # Exit with error code if some tests failed
 ((failed + xpassed == 0))
