@@ -37,7 +37,6 @@ testsuite_matlab:
     - cat tests/run_test_matlab_output.txt
   artifacts:
     paths:
-      - tests/run_test_matlab_output.txt
       - tests/*.m.log
       - tests/*.m.trs
       - tests/*/*.m.log
@@ -58,7 +57,6 @@ testsuite_matlab:
     - cat tests/run_test_octave_output.txt
   artifacts:
     paths:
-      - tests/run_test_octave_output.txt
       - tests/*.o.log
       - tests/*.o.trs
       - tests/*/*.o.log
