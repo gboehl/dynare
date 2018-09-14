@@ -33,7 +33,7 @@ testsuite_matlab:
   script:
     - autoreconf -si
     - './configure --disable-octave --with-matlab=$(dirname $(dirname $(readlink -f `which matlab`))) MATLAB_VERSION=$(echo version | matlab -nodesktop -nodisplay -nosplash 2>/dev/null | sed -En "/ans\ =/!d;n;n;s/^[^0-9]*([0-9]+\.[0-9]+).*$/\1/;p")'
-    - make -j $(($(nproc) / 2)) -C tests check-matlab
+    - make -j $(($(nproc) * 3 / 4)) -C tests check-matlab
     - cat tests/run_test_matlab_output.txt
   artifacts:
     paths:
