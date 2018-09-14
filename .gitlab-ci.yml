@@ -14,6 +14,7 @@ build_binaries:
       - mex/octave/
       - mex/matlab/
       - dynare++/src/dynare++
+    expire_in: 1 week
 
 build_doc:
   stage: build
@@ -40,10 +41,12 @@ testsuite_matlab:
       - tests/*.m.trs
       - tests/*/*.m.log
       - tests/*/*.m.trs
+      - tests/run_test_matlab_output.txt
+    when: always
   dependencies:
     - build_binaries
 
-testsuite_octave:
+.testsuite_octave_template:
   stage: test
   variables:
     OPENBLAS_NUM_THREADS: 1
@@ -58,9 +61,20 @@ testsuite_octave:
       - tests/*.o.trs
       - tests/*/*.o.log
       - tests/*/*.o.trs
+      - tests/run_test_octave_output.txt
+    when: always
   dependencies:
     - build_binaries
+
+testsuite_octave_auto:
+  extends: .testsuite_octave_template
   only:
     - tags
     - schedules
-    - web
+
+testsuite_octave_manual:
+  extends: .testsuite_octave_template
+  except:
+    - tags
+    - schedules
+  when: manual
