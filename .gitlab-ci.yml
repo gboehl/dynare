@@ -2,6 +2,10 @@ variables:
   GIT_SUBMODULE_STRATEGY: normal
   TERM: linux
 
+before_script:
+  - wget http://www.dynare.org/x13/x13.zip
+  - unzip x13.zip
+
 build_binaries:
   stage: build
   script:
@@ -31,6 +35,7 @@ build_doc:
 testsuite_matlab:
   stage: test
   script:
+    - cp -r binaries/linux matlab/modules/dseries/externals/x13
     - autoreconf -si
     - './configure --disable-octave --with-matlab=$(dirname $(dirname $(readlink -f `which matlab`))) MATLAB_VERSION=$(echo version | matlab -nodesktop -nodisplay -nosplash 2>/dev/null | sed -En "/ans\ =/!d;n;n;s/^[^0-9]*([0-9]+\.[0-9]+).*$/\1/;p")'
     - make -j $(($(nproc) * 3 / 4)) -C tests check-matlab
@@ -50,6 +55,7 @@ testsuite_matlab:
   variables:
     OPENBLAS_NUM_THREADS: 1
   script:
+    - cp -r binaries/linux matlab/modules/dseries/externals/x13
     - autoreconf -si
     - ./configure --disable-matlab
     - make -j $(nproc) -C tests check-octave
