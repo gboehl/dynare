@@ -59,7 +59,7 @@ auxcalib = DynareOutput.(varexpectationmodel.auxiliary_model_type).(varexpectati
 
 if ~isfield(auxcalib, 'CompanionMatrix') || any(isnan(auxcalib.CompanionMatrix(:)))
     message = sprintf('Auxiliary model %s has to be estimated first.', varexpectationmodel.auxiliary_model_name);
-    message = sprintf('%s\nPlease use get_companion_matrix command first.', message);
+    message = sprintf('%s\nPlease use *get_companion_matrix command first.', message);
     error(message);
 end
 

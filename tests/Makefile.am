@@ -361,20 +361,21 @@ MODFILES = \
 	trend-component-and-var-models/vm1.mod \
 	trend-component-and-var-models/vm2.mod \
 	trend-component-and-var-models/vm3.mod \
+	trend-component-and-var-models/vm4.mod \
 	trend-component-and-var-models/tcm1.mod \
 	trend-component-and-var-models/tcm2.mod \
 	trend-component-and-var-models/tcm3.mod \
 	trend-component-and-var-models/tcm4.mod \
 	trend-component-and-var-models/tcm5.mod \
 	trend-component-and-var-models/tcm6.mod \
-	trend-component-and-var-models/vm1p.mod \
-	trend-component-and-var-models/vm2p.mod \
-	trend-component-and-var-models/vm3p.mod \
-	trend-component-and-var-models/tcm1p.mod \
-	trend-component-and-var-models/tcm2p.mod \
-	trend-component-and-var-models/tcm3p.mod \
-	trend-component-and-var-models/tcm4p.mod \
-	trend-component-and-var-models/tcm5p.mod \
+	trend-component-and-var-models/legacy/vm1.mod \
+	trend-component-and-var-models/legacy/vm2.mod \
+	trend-component-and-var-models/legacy/vm3.mod \
+	trend-component-and-var-models/legacy/tcm1.mod \
+	trend-component-and-var-models/legacy/tcm2.mod \
+	trend-component-and-var-models/legacy/tcm3.mod \
+	trend-component-and-var-models/legacy/tcm4.mod \
+	trend-component-and-var-models/legacy/tcm5.mod \
 	pac/var-1/example.mod \
 	pac/var-2/example.mod \
 	pac/var-3/example.mod \

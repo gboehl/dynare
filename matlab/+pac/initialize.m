@@ -39,4 +39,4 @@ end
 
 M_.pac.(pacmodel).auxiliary_model_type = auxiliary_model_type;
 
-get_companion_matrix(auxiliary_model_name, auxiliary_model_type);
+get_companion_matrix_legacy(auxiliary_model_name, auxiliary_model_type);

@@ -1,6 +1,5 @@
-function [A0, AR, B] = get_companion_matrix_preprocessor(auxiliary_model_name, auxiliary_model_type)
-%function [A0, AR, B] = get_companion_matrix_preprocessor(auxiliary_model_name, auxiliary_model_type)
-%
+function [A0, AR, B] = get_companion_matrix_legacy(auxiliary_model_name, auxiliary_model_type)
+
 % Gets the companion VAR representation of a PAC auxiliary model.
 % Depending on the nature of this auxiliary model the output is
 % saved in oo_.{var,trend_component}.(auxiliary_model_name).CompanionMatrix
@@ -32,7 +31,7 @@ function [A0, AR, B] = get_companion_matrix_preprocessor(auxiliary_model_name, a
 
 global oo_ M_
 
-if nargin < 2
+if nargin<2
     if isfield(M_, 'var') && isfield(M_.var, auxiliary_model_name)
         auxiliary_model_type = 'var';
     elseif isfield(M_, 'trend_component') && isfield(M_.trend_component, auxiliary_model_name)
@@ -42,47 +41,39 @@ if nargin < 2
     end
 end
 
-if strcmp(auxiliary_model_type, 'var')
-    AR = evalin('base', [M_.fname '.var_ar(''' auxiliary_model_name ''', M_.params)']);
-elseif strcmp(auxiliary_model_type, 'trend_component')
-    [AR, A0] = evalin('base', [M_.fname '.trend_component_ar_ec(''' auxiliary_model_name ''', M_.params)']);
-else
-    error('Unknown type of auxiliary model.')
+if nargout
+    A0 = [];
+    AR = [];
+    B = [];
 end
 
+get_ar_ec_matrices(auxiliary_model_name, auxiliary_model_type);
+
 % Get the number of lags
-p = size(AR, 3);
+p = size(oo_.(auxiliary_model_type).(auxiliary_model_name).ar, 3);
 
 % Get the number of variables
-n = length(M_.(auxiliary_model_type).(auxiliary_model_name).lhs);
+n = length(oo_.(auxiliary_model_type).(auxiliary_model_name).ar(:,:,1));
 
 switch auxiliary_model_type
   case 'var'
     oo_.var.(auxiliary_model_name).CompanionMatrix = zeros(n*p);
-    oo_.var.(auxiliary_model_name).CompanionMatrix(1:n,1:n) = AR(:,:,1);
-    for i = 2:p
-        oo_.var.(auxiliary_model_name).CompanionMatrix(1:n,(i-1)*n+(1:n)) = AR(:,:,i);
+    oo_.var.(auxiliary_model_name).CompanionMatrix(1:n,1:n) = oo_.var.(auxiliary_model_name).ar(:,:,1);
+    for i=2:p
+        oo_.var.(auxiliary_model_name).CompanionMatrix(1:n,(i-1)*n+(1:n)) = oo_.var.(auxiliary_model_name).ar(:,:,i);
         oo_.var.(auxiliary_model_name).CompanionMatrix((i-1)*n+(1:n),(i-2)*n+(1:n)) = eye(n);
     end
     M_.var.(auxiliary_model_name).list_of_variables_in_companion_var = M_.endo_names(M_.var.(auxiliary_model_name).lhs);
-    if nargout
-        A0 = [];
-        B  = [];
-    end
   case 'trend_component'
     % Get number of trends.
     q = sum(M_.trend_component.(auxiliary_model_name).trends);
-
     % Get the number of equations with error correction.
-    m  = n - q;
-    
+    m  = n-q;
     % Get the indices of trend and EC equations in the auxiliary model.
     trend_eqnums_in_auxiliary_model = find(M_.trend_component.(auxiliary_model_name).trends);
     ecm_eqnums_in_auxiliary_model = find(~M_.trend_component.(auxiliary_model_name).trends);
-    
     % Get the indices of trend equations in model.
     trend_eqnums = M_.trend_component.(auxiliary_model_name).trend_eqn;
-    
     % REMARK It is assumed that the non trend equations are the error correction
     %        equations. We assume that the model can be cast in the following form:
     %
@@ -108,71 +99,68 @@ switch auxiliary_model_type
     %
     %        where the dimensions of I and 0 matrices can easily be
     %        deduced from the number of EC and trend equations.
-
     % Check that the lhs of candidate ecm equations are at least first differences.
-    for i = 1:m
+    for i=1:m
         if ~get_difference_order(M_.trend_component.(auxiliary_model_name).lhs(ecm_eqnums_in_auxiliary_model(i)))
-            error([auxiliary_model_name ' is not a trend component model. The LHS variables should be in differences'])
+            error('Model %s is not a Trend component  model! LHS variables should be in difference', auxiliary_model_name)
         end
     end
-    
     % Get the trend variables indices (lhs variables in trend equations).
     [~, id_trend_in_var, ~] = intersect(M_.trend_component.(auxiliary_model_name).eqn, trend_eqnums);
     trend_variables = reshape(M_.trend_component.(auxiliary_model_name).lhs(id_trend_in_var), q, 1);
-    
     % Get the rhs variables in trend equations.
-    for i = 1:q
+    trend_autoregressive_variables = zeros(q, 1);
+    for i=1:q
         % Check that there is only one variable on the rhs and update trend_autoregressive_variables.
         v = M_.trend_component.(auxiliary_model_name).rhs.vars_at_eq{id_trend_in_var(i)}.var;
-        if length(v) ~= 1
+        if length(v)~=1
             error('A trend equation (%s) must have only one variable on the RHS!', M_.trend_component.(auxiliary_model_name).eqtags{trend_eqnums(i)})
         end
-        
+        trend_autoregressive_variables(i) = v;
         % Check that the variables on lhs and rhs have the same difference orders.
-        if get_difference_order(trend_variables(i)) ~= get_difference_order(v)
+        if get_difference_order(trend_variables(i))~=get_difference_order(trend_autoregressive_variables(i))
             error('In a trend equation (%s) LHS and RHS variables must have the same difference orders!', M_.trend_component.(auxiliary_model_name).eqtags{trend_eqnums(i)})
         end
-        
         % Check that the trend equation is autoregressive.
         if isdiff(v)
-            if ~M_.aux_vars(get_aux_variable_id(v)).type == 9
+            if ~M_.aux_vars(get_aux_variable_id(v)).type==9
                 error('In a trend equation (%s) RHS variable must be lagged LHS variable!', M_.trend_component.(auxiliary_model_name).eqtags{trend_eqnums(i)})
             else
-                if M_.aux_vars(get_aux_variable_id(v)).orig_index ~= trend_variables(i)
+                if M_.aux_vars(get_aux_variable_id(v)).orig_index~=trend_variables(i)
                     error('In a trend equation (%s) RHS variable must be lagged LHS variable!', M_.trend_component.(auxiliary_model_name).eqtags{trend_eqnums(i)})
                 end
             end
         else
-            if get_aux_variable_id(v) && M_.aux_vars(get_aux_variable_id(v)).endo_index ~= trend_variables(i)
+            if get_aux_variable_id(v) && M_.aux_vars(get_aux_variable_id(v)).endo_index~=trend_variables(i)
                 error('In a trend equation (%s) RHS variable must be lagged LHS variable!', M_.trend_component.(auxiliary_model_name).eqtags{trend_eqnums(i)})
             end
         end
     end
-    
     % Reorder trend_eqnums_in_auxiliary_model to ensure that the order of
     % the trend variables matches the order of the error correction
     % variables.
     [~,reorder] = ismember(M_.trend_component.toto.lhs(trend_eqnums_in_auxiliary_model), ...
-                           M_.trend_component.toto.trend_vars(M_.trend_component.toto.trend_vars > 0));
+                           M_.trend_component.toto.trend_vars(find(M_.trend_component.toto.trend_vars>0)));
     trend_eqnums_in_auxiliary_model = trend_eqnums_in_auxiliary_model(reorder);
-    
     % Get the EC matrix (the EC term is assumend to be in t-1).
     %
     % TODO: Check that the EC term is the difference between the
     %       endogenous variable and the trend variable.
     %
+    A0 = oo_.trend_component.(auxiliary_model_name).ec(ecm_eqnums_in_auxiliary_model,:,1);
+    % Get the AR matrices.
+    AR = oo_.trend_component.(auxiliary_model_name).ar(ecm_eqnums_in_auxiliary_model,ecm_eqnums_in_auxiliary_model,:);
     % Build B matrices (VAR in levels)
-    B(ecm_eqnums_in_auxiliary_model, ecm_eqnums_in_auxiliary_model, 1) = eye(m) + A0 + AR(:,:,1);
-    B(ecm_eqnums_in_auxiliary_model, trend_eqnums_in_auxiliary_model) = -A0;
-    B(trend_eqnums_in_auxiliary_model, trend_eqnums_in_auxiliary_model) = eye(q);
-    for i = 2:p
-        B(ecm_eqnums_in_auxiliary_model,ecm_eqnums_in_auxiliary_model,i) = AR(:,:,i) - AR(:,:,i-1);
+    B(ecm_eqnums_in_auxiliary_model,ecm_eqnums_in_auxiliary_model,1) = eye(m)+A0+AR(:,:,1);
+    B(ecm_eqnums_in_auxiliary_model,trend_eqnums_in_auxiliary_model) = -A0;
+    B(trend_eqnums_in_auxiliary_model,trend_eqnums_in_auxiliary_model) = eye(q);
+    for i=2:p
+        B(ecm_eqnums_in_auxiliary_model,ecm_eqnums_in_auxiliary_model,i) = AR(:,:,i)-AR(:,:,i-1);
     end
     B(ecm_eqnums_in_auxiliary_model,ecm_eqnums_in_auxiliary_model,p+1) = -AR(:,:,p);
-    
     % Write Companion matrix
     oo_.trend_component.(auxiliary_model_name).CompanionMatrix = zeros(size(B, 1)*size(B, 3));
-    for i = 1:p
+    for i=1:p
         oo_.trend_component.(auxiliary_model_name).CompanionMatrix(1:n, (i-1)*n+(1:n)) = B(:,:,i);
         oo_.trend_component.(auxiliary_model_name).CompanionMatrix(i*n+(1:n),(i-1)*n+(1:n)) = eye(n);
     end
