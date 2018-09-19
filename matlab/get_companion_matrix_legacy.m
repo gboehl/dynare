@@ -63,6 +63,7 @@ switch auxiliary_model_type
         oo_.var.(auxiliary_model_name).CompanionMatrix(1:n,(i-1)*n+(1:n)) = oo_.var.(auxiliary_model_name).ar(:,:,i);
         oo_.var.(auxiliary_model_name).CompanionMatrix((i-1)*n+(1:n),(i-2)*n+(1:n)) = eye(n);
     end
+    AR = oo_.var.(auxiliary_model_name).ar;
     M_.var.(auxiliary_model_name).list_of_variables_in_companion_var = M_.endo_names(M_.var.(auxiliary_model_name).lhs);
   case 'trend_component'
     % Get number of trends.
