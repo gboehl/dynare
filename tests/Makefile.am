@@ -905,86 +905,74 @@ EXTRA_DIST = \
 	prior_posterior_function/posterior_function_demo.m
 
 
-TARGETS =
-TEXTOUT =
-
 if HAVE_CMD_LINE_MATLAB
-TARGETS += check-matlab
-TEXTOUT += run_test_matlab_output.txt
+check-local: check-matlab
 endif
 
 if HAVE_OCTAVE
-TARGETS += check-octave
-TEXTOUT += run_test_octave_output.txt
+check-local: check-octave
 endif
 
-check-local: $(TEXTOUT)
-	@cat $(TEXTOUT)
-
-$(TEXTOUT): $(TARGETS)
-
 check-matlab: $(M_XFAIL_TRS_FILES) $(M_TRS_FILES)
-	./read_trs_files.sh "$(M_TRS_FILES)" "$(M_XFAIL_TRS_FILES)"
-	@echo 'Matlab Tests Done'
+	@./read_trs_files.sh "$(M_TRS_FILES)" "$(M_XFAIL_TRS_FILES)"
 
 check-octave: $(O_XFAIL_TRS_FILES) $(O_TRS_FILES)
-	./read_trs_files.sh "$(O_TRS_FILES)" "$(O_XFAIL_TRS_FILES)"
-	@echo 'Octave Tests Done'
+	@./read_trs_files.sh "$(O_TRS_FILES)" "$(O_XFAIL_TRS_FILES)"
 
 %.m.trs %.m.log: %.mod
-	@echo "`tput bold``tput setaf 8`MATLAB: $(PWD)/$*... `tput sgr0`"
-	@DYNARE_VERSION="$(PACKAGE_VERSION)" TOP_TEST_DIR="$(PWD)" FILESTEM="$*" \
+	@echo "`tput bold``tput setaf 8`MATLAB: $(CURDIR)/$*... `tput sgr0`"
+	@DYNARE_VERSION="$(PACKAGE_VERSION)" TOP_TEST_DIR="$(CURDIR)" FILESTEM="$*" \
 		$(MATLAB)/bin/matlab -nosplash -nodisplay -r run_test_matlab > $*.m.log  2> /dev/null || \
 	printf ":test-result: FAIL\n:number-tests: 1\n:number-failed-tests: 1\n:list-of-failed-tests: $*.mod\n:elapsed-time: 0.0\n" > $*.m.trs
 	@if grep -q ":test-result: PASS" $*.m.trs; then \
-	echo "`tput bold``tput setaf 2`MATLAB: $(PWD)/$* PASSED!`tput sgr0`" ; \
+	echo "`tput bold``tput setaf 2`MATLAB: $(CURDIR)/$* PASSED!`tput sgr0`" ; \
 	else \
-	echo "`tput bold``tput setaf 1`MATLAB: $(PWD)/$* FAILED!`tput sgr0`" ; \
+	echo "`tput bold``tput setaf 1`MATLAB: $(CURDIR)/$* FAILED!`tput sgr0`" ; \
 	fi
 
 %.m.drs %.m.log: %.m.trs
 	@cat $*.m.log
 
 %.m.trs %.m.log : %.m
-	@echo "`tput bold``tput setaf 8`MATLAB: $(PWD)/$*... `tput sgr0`"
-	@DYNARE_VERSION="$(PACKAGE_VERSION)" TOP_TEST_DIR="$(PWD)" \
+	@echo "`tput bold``tput setaf 8`MATLAB: $(CURDIR)/$*... `tput sgr0`"
+	@DYNARE_VERSION="$(PACKAGE_VERSION)" TOP_TEST_DIR="$(CURDIR)" \
 		$(MATLAB)/bin/matlab -nosplash -nodisplay -r $* > $*.m.log 2> /dev/null
-	@echo "`tput bold``tput setaf 8`MATLAB: $(PWD)/$* Done!`tput sgr0`"
+	@echo "`tput bold``tput setaf 8`MATLAB: $(CURDIR)/$* Done!`tput sgr0`"
 
 %.o.trs %.o.log: %.mod
-	@echo "`tput bold``tput setaf 8`OCTAVE: $(PWD)/$*... `tput sgr0`"
-	@DYNARE_VERSION="$(PACKAGE_VERSION)" TOP_TEST_DIR="$(PWD)" FILESTEM="$*" \
+	@echo "`tput bold``tput setaf 8`OCTAVE: $(CURDIR)/$*... `tput sgr0`"
+	@DYNARE_VERSION="$(PACKAGE_VERSION)" TOP_TEST_DIR="$(CURDIR)" FILESTEM="$*" \
 		$(OCTAVE) --no-init-file --silent --no-history --path "$*.mod" run_test_octave.m > $*.o.log 2>&1 || \
 	printf ":test-result: FAIL\n:number-tests: 1\n:number-failed-tests: 1\n:list-of-failed-tests: $*.mod\n:elapsed-time: 0.0\n" > $*.o.trs
 	@if grep -q ":test-result: PASS" $*.o.trs; then \
-	echo "`tput bold``tput setaf 2`OCTAVE: $(PWD)/$* PASSED!`tput sgr0`" ; \
+	echo "`tput bold``tput setaf 2`OCTAVE: $(CURDIR)/$* PASSED!`tput sgr0`" ; \
 	else \
-	echo "`tput bold``tput setaf 1`OCTAVE: $(PWD)/$* FAILED!`tput sgr0`" ; \
+	echo "`tput bold``tput setaf 1`OCTAVE: $(CURDIR)/$* FAILED!`tput sgr0`" ; \
 	fi
 
 %.o.drs %.o.log: %.mod %.o.trs
 	@cat $*.o.log
 
 %.o.trs %.o.log : %.m
-	@echo "`tput bold``tput setaf 8`OCTAVE: $(PWD)/$*... `tput sgr0`"
-	@DYNARE_VERSION="$(PACKAGE_VERSION)" TOP_TEST_DIR="$(PWD)" \
+	@echo "`tput bold``tput setaf 8`OCTAVE: $(CURDIR)/$*... `tput sgr0`"
+	@DYNARE_VERSION="$(PACKAGE_VERSION)" TOP_TEST_DIR="$(CURDIR)" \
 		$(OCTAVE) --no-init-file --silent --no-history $< > $*.o.log 2>&1 || \
 		printf ":test-result: FAIL\n:number-tests: 1\n:number-failed-tests: 1\n:list-of-failed-tests: $*.m\n:elapsed-time: 0.0\n" > $*.o.trs
-	@echo "`tput bold``tput setaf 8`OCTAVE: $(PWD)/$* Done!`tput sgr0`"
+	@echo "`tput bold``tput setaf 8`OCTAVE: $(CURDIR)/$* Done!`tput sgr0`"
 
 %.m.tls : %.m
-	@echo "`tput bold``tput setaf 8`MATLAB: $(PWD)/$*... `tput sgr0`"
-	@TOP_TEST_DIR="$(PWD)" FILESTEM="$*" \
+	@echo "`tput bold``tput setaf 8`MATLAB: $(CURDIR)/$*... `tput sgr0`"
+	@TOP_TEST_DIR="$(CURDIR)" FILESTEM="$*" \
 		$(MATLAB)/bin/matlab -nosplash -nodisplay -r run_m_script 2> /dev/null
 	@touch $*.m.tls
-	@echo "`tput bold`MATLAB`tput setaf 8`: $(PWD)/$* Done!`tput sgr0`"
+	@echo "`tput bold`MATLAB`tput setaf 8`: $(CURDIR)/$* Done!`tput sgr0`"
 
 %.o.tls : %.m
-	@echo "`tput bold``tput setaf 8`OCTAVE: $(PWD)/$*... `tput sgr0`"
-	@TOP_TEST_DIR="$(PWD)"  FILESTEM="$*" \
+	@echo "`tput bold``tput setaf 8`OCTAVE: $(CURDIR)/$*... `tput sgr0`"
+	@TOP_TEST_DIR="$(CURDIR)"  FILESTEM="$*" \
 		$(OCTAVE) --no-init-file --silent --no-history run_o_script.m 2>&1
 	@touch $*.o.tls
-	@echo "`tput bold``tput setaf 8`OCTAVE: $(PWD)/$* Done!`tput sgr0`"
+	@echo "`tput bold``tput setaf 8`OCTAVE: $(CURDIR)/$* Done!`tput sgr0`"
 
 clean-local:
 	rm -f $(M_TRS_FILES)

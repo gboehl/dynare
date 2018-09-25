@@ -1,102 +1,94 @@
 #!/bin/bash
 
-declare -i total=0;
-declare -i total_xfail=0;
-declare -i failed=0;
-declare -i xpassed=0;
-declare -a failed_tests=("");
-declare -a xpassed_tests=("");
+declare -i total=0
+declare -i total_xfail=0
+declare -i failed=0
+declare -i xpassed=0
+declare -a failed_tests=()
+declare -a xpassed_tests=()
 
 # Parse TRS Files
 tosort=""
 for file in $1 ; do
   # Find number of tests run in trs file
-  ((total += `grep number-tests $file | cut -d: -f3`))
+  ((total += $(grep ^:number-tests: "$file" | cut -d: -f3)))
 
   # Find number of tests failed in trs file
-  numfailed=`grep number-failed-tests $file | cut -d: -f3`
-  if [ $numfailed -ne 0 ] ; then
-    ((failed += $numfailed))
-    for failedfile in `grep list-of-failed-tests $file | cut -d: -f3` ; do
-      failed_tests=("${failed_tests[@]}" "$failedfile");
-    done
+  numfailed=$(grep ^:number-failed-tests: "$file" | cut -d: -f3)
+  if ((numfailed != 0)) ; then
+      ((failed += numfailed))
+      failed_tests+=($(grep ^:list-of-failed-tests: "$file" | cut -d: -f3))
   fi
 
-  time=`grep elapsed-time $file | cut -d: -f3`
-  tosort=`echo $tosort\| $file ' - ' $time:`
+  time=$(grep ^:elapsed-time: "$file" | cut -d: -f3)
+  tosort="$tosort| $file - $time:"
 done
-((passed=$total-$failed));
+((passed = total - failed))
 
 # Parse XFAIL TRS Files
 for file in $2 ; do
   # Find number of tests run in xfail trs file
-  ((xfail = `grep number-tests $file | cut -d: -f3`))
-  ((total_xfail += $xfail))
+  xfail=$(grep ^:number-tests: "$file" | cut -d: -f3)
+  ((total_xfail += xfail))
 
   # Find number of tests failed in trs file
-  numpassed=`grep number-failed-tests $file | cut -d: -f3`
-  if [ $numpassed -eq 0 ] ; then
-    ((xpassed += (($xfail - $numpassed))))
-    for xpassedfile in `grep list-of-passed-tests $file | cut -d: -f3` ; do
-      xpassed_tests=("${xpassed_tests[@]}" "$xpassedfile");
-    done
+  numfailed=$(grep ^:number-failed-tests: "$file" | cut -d: -f3)
+  if ((numfailed != xfail)) ; then
+    ((xpassed += xfail - numfailed))
+    xpassed_tests+=($(grep ^:list-of-passed-tests: "$file" | cut -d: -f3))
   fi
 
-  time=`grep elapsed-time $file | cut -d: -f3`
-  tosort=`echo $tosort\| $file ' - ' $time:`
+  time=$(grep ^:elapsed-time: "$file" | cut -d: -f3)
+  tosort="$tosort| $file - $time:"
 done
-((xfailed=$total_xfail-$xpassed));
-((total+=$total_xfail));
+((xfailed = total_xfail - xpassed))
+((total += total_xfail))
 
-timing=`echo $tosort | tr ":" "\n" | sort -rn -k4 | sed -e 's/$/:/' | head -n10`
+timing=$(echo "$tosort" | tr ":" "\n" | sort -rn -k4 | sed -e 's/$/:/' | head -n10)
 
 # Determine if we are parsing Matlab or Octave trs files
-if [ `grep -c '.m.trs' <<< $1` -eq 0 ]; then
-  prg='OCTAVE';
-  outfile='run_test_octave_output.txt'
+if (($(grep -c '.m.trs' <<< "$1") == 0)); then
+  prg=OCTAVE
+  outfile=run_test_octave_output.txt
 else
-  prg='MATLAB';
-  outfile='run_test_matlab_output.txt'
+  prg=MATLAB
+  outfile=run_test_matlab_output.txt
 fi
 
-# Print Output
-echo '================================'             > $outfile
-echo 'DYNARE MAKE CHECK '$prg' RESULTS'            >> $outfile
-echo '================================'            >> $outfile
-echo '| TOTAL: '$total                             >> $outfile
-echo '|  PASS: '$passed                            >> $outfile
-echo '|  FAIL: '$failed                            >> $outfile
-echo '| XFAIL: '$xfailed                           >> $outfile
-echo '| XPASS: '$xpassed                           >> $outfile
-if [ $failed -gt 0 ] ; then
-  echo '| LIST OF FAILED TESTS:'                   >> $outfile
-  for file in ${failed_tests[@]} ; do
-    if [ "$prg" == "MATLAB" ]; then
-      modfile=`sed 's/\.m\.trs/\.mod/g' <<< $file` >> $outfile
-    else
-      modfile=`sed 's/\.o\.trs/\.mod/g' <<< $file` >> $outfile
+# Print Output (to stdout and to a file)
+{
+    echo '================================'
+    echo "DYNARE MAKE CHECK $prg RESULTS"
+    echo '================================'
+    echo "| TOTAL: $total"
+    echo "|  PASS: $passed"
+    echo "|  FAIL: $failed"
+    echo "| XFAIL: $xfailed"
+    echo "| XPASS: $xpassed"
+    if ((failed > 0)) ; then
+        echo '|'
+        echo '| LIST OF FAILED TESTS:'
+        for file in "${failed_tests[@]}" ; do
+            echo "|     * $file"
+        done
     fi
-    echo '|     * '$modfile                        >> $outfile
-  done
-fi
-if [ $xpassed -gt 0 ] ; then
-  echo '|  LIST OF XPASSED TESTS:'                 >> $outfile
-  for file in ${xpassed_tests[@]} ; do
-    if [ "$prg" == "MATLAB" ]; then
-      modfile=`sed 's/\.m\.trs/\.mod/g' <<< $file` >> $outfile
-    else
-      modfile=`sed 's/\.o\.trs/\.mod/g' <<< $file` >> $outfile
+    if ((xpassed > 0)) ; then
+        echo '|'
+        echo '| LIST OF XPASSED TESTS:'
+        for file in "${xpassed_tests[@]}" ; do
+            echo "|     * $file"
+        done
     fi
-    echo '|     * '$modfile                        >> $outfile
-  done
-fi
-echo '|'                                           >> $outfile
-echo '| LIST OF 10 SLOWEST TESTS:'                 >> $outfile
-if [ "$prg" == "MATLAB" ]; then
-    timing=`sed 's/\.m\.trs/\.mod/g' <<< $timing`
-else
-    timing=`sed 's/\.o\.trs/\.mod/g' <<< $timing`
-fi
-echo $timing | tr ':' '\n' | sed -e 's/^[ \t]*//' | \
-     sed '/^$/d' | sed -e 's/^|[ ]/|     * /'      >> $outfile
-echo                                               >> $outfile
+    echo '|'
+    echo '| LIST OF 10 SLOWEST TESTS:'
+    if [[ $prg == MATLAB ]]; then
+        timing=$(sed 's/\.m\.trs/\.mod/g' <<< "$timing")
+    else
+        timing=$(sed 's/\.o\.trs/\.mod/g' <<< "$timing")
+    fi
+    echo "$timing" | tr ':' '\n' | sed -e 's/^[ \t]*//;/^$/d;s/^|[ ]/|     * /'
+    echo
+} | tee $outfile
+
+# Exit with error code if some tests failed
+((failed + xpassed == 0))

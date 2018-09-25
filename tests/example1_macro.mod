@@ -54,6 +54,25 @@ phi   = 0.1;
 @#endif
 
 
+@#define x = 1:3
+
+@#define y = [ i in x ; i > 1 ]
+@#if y != [ 2, 3 ]
+@# error "One-dimensional comprehension problem"
+@#endif
+
+@#define z = [ (i,j) in x^2 ; i != j ]
+@#if z != [ (1,2), (1,3), (2,1), (2,3), (3,1), (3,2) ]
+@# error "Two-dimensional comprehension problem"
+@#endif
+
+@#define t = 2:4
+@#define tt = [ (i,j) in t^2 ; (i,j) in [ (k,l) in x^2 ; k != l ] ]
+@#if tt != [ (2,3), (3,2) ]
+@# error "Nested comprehension problem"
+@#endif
+
+
 
 model;
 c*theta*h^(1+psi)=(1-alpha)*y;
