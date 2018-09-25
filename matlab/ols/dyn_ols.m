@@ -43,7 +43,7 @@ global M_ oo_ options_
 assert(nargin >= 1 && nargin <= 3, 'dyn_ols: takes between 1 and 3 arguments');
 assert(isdseries(ds), 'dyn_ols: the first argument must be a dseries');
 
-jsonfile = [M_.fname filesep() 'model' filesep() 'json' filesep() 'modfile-original.json']);
+jsonfile = [M_.fname filesep() 'model' filesep() 'json' filesep() 'modfile-original.json'];
 if exist(jsonfile, 'file') ~= 2
     error('Could not find %s! Please use the json=compute option (See the Dynare invocation section in the reference manual).', jsonfile);
 end

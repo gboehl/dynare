@@ -96,17 +96,17 @@ y1 = A111*y1(-1) + A112*y2(-1) + A113*y3(-1) + A114*y4(-1) +
 
 end;
 
-get_companion_matrix('toto');
+[A0, AR, B] = get_companion_matrix('toto');
 
-if max(max(abs(oo_.var.toto.ar(:,:,1)-A1)))>1e-12
+if max(max(abs(AR(:,:,1)-A1)))>1e-12
    error('First order autoregressive matrix is wrong.')
 end
 
-if max(max(abs(oo_.var.toto.ar(:,:,2)-A2)))>1e-12
+if max(max(abs(AR(:,:,2)-A2)))>1e-12
    error('Second order autoregressive matrix is wrong.')
 end
 
-if max(max(abs(oo_.var.toto.ar(:,:,3)-A3)))>1e-12
+if max(max(abs(AR(:,:,3)-A3)))>1e-12
    error('Third order autoregressive matrix is wrong.')
 end
 

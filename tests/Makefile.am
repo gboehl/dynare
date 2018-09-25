@@ -361,20 +361,21 @@ MODFILES = \
 	trend-component-and-var-models/vm1.mod \
 	trend-component-and-var-models/vm2.mod \
 	trend-component-and-var-models/vm3.mod \
+	trend-component-and-var-models/vm4.mod \
 	trend-component-and-var-models/tcm1.mod \
 	trend-component-and-var-models/tcm2.mod \
 	trend-component-and-var-models/tcm3.mod \
 	trend-component-and-var-models/tcm4.mod \
 	trend-component-and-var-models/tcm5.mod \
 	trend-component-and-var-models/tcm6.mod \
-	trend-component-and-var-models/vm1p.mod \
-	trend-component-and-var-models/vm2p.mod \
-	trend-component-and-var-models/vm3p.mod \
-	trend-component-and-var-models/tcm1p.mod \
-	trend-component-and-var-models/tcm2p.mod \
-	trend-component-and-var-models/tcm3p.mod \
-	trend-component-and-var-models/tcm4p.mod \
-	trend-component-and-var-models/tcm5p.mod \
+	trend-component-and-var-models/legacy/vm1.mod \
+	trend-component-and-var-models/legacy/vm2.mod \
+	trend-component-and-var-models/legacy/vm3.mod \
+	trend-component-and-var-models/legacy/tcm1.mod \
+	trend-component-and-var-models/legacy/tcm2.mod \
+	trend-component-and-var-models/legacy/tcm3.mod \
+	trend-component-and-var-models/legacy/tcm4.mod \
+	trend-component-and-var-models/legacy/tcm5.mod \
 	pac/var-1/example.mod \
 	pac/var-2/example.mod \
 	pac/var-3/example.mod \
@@ -986,42 +987,42 @@ check-octave: $(O_XFAIL_TRS_FILES) $(O_TRS_FILES)
 	@echo "`tput bold``tput setaf 8`OCTAVE: $(PWD)/$* Done!`tput sgr0`"
 
 clean-local:
-	rm -f $(M_TRS_FILES) \
-		$(M_TLS_FILES) \
-		$(M_XFAIL_TRS_FILES) \
-		$(O_TRS_FILES) \
-		$(O_TLS_FILES) \
-		$(O_XFAIL_TRS_FILES) \
-		$(patsubst %.trs, %.log, $(M_TRS_FILES)) \
-		$(patsubst %.trs, %.log, $(M_XFAIL_TRS_FILES)) \
-		$(patsubst %.trs, %.log, $(O_TRS_FILES)) \
-		$(patsubst %.trs, %.log, $(O_XFAIL_TRS_FILES)) \
-		$(patsubst %.trs, %.json, $(M_TRS_FILES)) \
-		$(patsubst %.trs, %.json, $(M_XFAIL_TRS_FILES)) \
-		$(patsubst %.trs, %.json, $(O_TRS_FILES)) \
-		$(patsubst %.trs, %.json, $(O_XFAIL_TRS_FILES))
+	rm -f $(M_TRS_FILES)
+	rm -f $(M_TLS_FILES)
+	rm -f $(M_XFAIL_TRS_FILES)
+	rm -f $(O_TRS_FILES)
+	rm -f $(O_TLS_FILES)
+	rm -f $(O_XFAIL_TRS_FILES)
+	rm -f $(patsubst %.trs, %.log, $(M_TRS_FILES))
+	rm -f $(patsubst %.trs, %.log, $(M_XFAIL_TRS_FILES))
+	rm -f $(patsubst %.trs, %.log, $(O_TRS_FILES))
+	rm -f $(patsubst %.trs, %.log, $(O_XFAIL_TRS_FILES))
+	rm -f $(patsubst %.trs, %.json, $(M_TRS_FILES))
+	rm -f $(patsubst %.trs, %.json, $(M_XFAIL_TRS_FILES))
+	rm -f $(patsubst %.trs, %.json, $(O_TRS_FILES))
+	rm -f $(patsubst %.trs, %.json, $(O_XFAIL_TRS_FILES))
 
-	rm -f $(patsubst %.mod, %_results.mat, $(MODFILES)) \
-		$(patsubst %.mod, %_mode.mat, $(MODFILES)) \
-		$(patsubst %.mod, %_mh_mode.mat, $(MODFILES)) \
-		$(patsubst %.mod, %_mean.mat, $(MODFILES)) \
-		$(patsubst %.mod, %_pindx.mat, $(MODFILES)) \
-		$(patsubst %.mod, %_params.mat, $(MODFILES)) \
-		$(patsubst %.mod, %_simul, $(MODFILES)) \
-		$(patsubst %.mod, %.log, $(MODFILES))
+	rm -f $(patsubst %.mod, %_results.mat, $(MODFILES))
+	rm -f $(patsubst %.mod, %_mode.mat, $(MODFILES))
+	rm -f $(patsubst %.mod, %_mh_mode.mat, $(MODFILES))
+	rm -f $(patsubst %.mod, %_mean.mat, $(MODFILES))
+	rm -f $(patsubst %.mod, %_pindx.mat, $(MODFILES))
+	rm -f $(patsubst %.mod, %_params.mat, $(MODFILES))
+	rm -f $(patsubst %.mod, %_simul, $(MODFILES))
+	rm -f $(patsubst %.mod, %.log, $(MODFILES))
 
 	rm -rf $(patsubst %.mod, %, $(MODFILES))
 
 	rm -rf $(foreach mod, $(MODFILES), $(dir $(mod))+$(basename $(notdir $(mod))))
 
-	rm -f $(patsubst %.mod, %*.pdf, $(MODFILES)) \
-		$(patsubst %.mod, %*.eps, $(MODFILES)) \
-		$(patsubst %.mod, %*.fig, $(MODFILES))
+	rm -f $(patsubst %.mod, %*.pdf, $(MODFILES))
+	rm -f $(patsubst %.mod, %*.eps, $(MODFILES))
+	rm -f $(patsubst %.mod, %*.fig, $(MODFILES))
 
-	rm -f $(shell find -name g1.mat) \
-		$(shell find -name g2.mat) \
-		$(shell find -name g3.mat) \
-		$(shell find -name H.dat)
+	rm -f $(shell find -name g1.mat)
+	rm -f $(shell find -name g2.mat)
+	rm -f $(shell find -name g3.mat)
+	rm -f $(shell find -name H.dat)
 
 	rm -f arima/data1.m arima/data2.m \
 		k_order_perturbation/*.jnl \
