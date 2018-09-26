@@ -1,30 +1,32 @@
 function imcforecast(constrained_paths, constrained_vars, options_cond_fcst)
+
 % Computes conditional forecasts.
 %
 % INPUTS
-%  o constrained_paths    [double]      m*p array, where m is the number of constrained endogenous variables and p is the number of constrained periods.
-%  o constrained_vars     [char]        m*x array holding the names of the controlled endogenous variables.
-%  o options_cond_fcst    [structure]   containing the options. The fields are:
-%                                                             + replic              [integer]   scalar, number of monte carlo simulations.
-%                                                             + parameter_set       [char]      values of the estimated parameters:
-%                                                                                               "posterior_mode",
-%                                                                                               "posterior_mean",
-%                                                                                               "posterior_median",
-%                                                                                               "prior_mode" or
-%                                                                                               "prior mean".
-%                                                                                   [double]     np*1 array, values of the estimated parameters.
-%                                                             + controlled_varexo   [char]       m*x array, list of controlled exogenous variables.
-%                                                             + conf_sig            [double]     scalar in [0,1], probability mass covered by the confidence bands.
+% - consnstrained_paths  [double]      m*p array, where m is the number of constrained endogenous variables and p is the number of constrained periods.
+% - constrained_vars     [integer]     m*1 array, indices in M_.endo_names of the constrained variables.
+% - options_cond_fcst    [structure]   containing the options. The fields are:
+%
+%                                      + replic              [integer]   scalar, number of monte carlo simulations.
+%                                      + parameter_set       [char]      values of the estimated parameters:
+%                                                                                               'posterior_mode',
+%                                                                                               'posterior_mean',
+%                                                                                               'posterior_median',
+%                                                                                               'prior_mode' or
+%                                                                                               'prior mean'.
+%                                                            [double]     np*1 array, values of the estimated parameters.
+%                                      + controlled_varexo   [cell]       m*1 cell of row char array, list of controlled exogenous variables.
+%                                      + conf_sig            [double]     scalar in [0,1], probability mass covered by the confidence bands.
 %
 % OUTPUTS
-%  None.
+% None.
 %
 % SPECIAL REQUIREMENTS
-%  This routine has to be called after an estimation statement or an estimated_params block.
+% This routine has to be called after an estimation statement or an estimated_params block.
 %
 % REMARKS
-%  [1] Results are stored in a structure which is saved in a mat file called conditional_forecasts.mat.
-%  [2] Use the function plot_icforecast to plot the results.
+% [1] Results are stored in a structure which is saved in a mat file called conditional_forecasts.mat.
+% [2] Use the function plot_icforecast to plot the results.
 
 % Copyright (C) 2006-2018 Dynare Team
 %
