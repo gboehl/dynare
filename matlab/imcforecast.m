@@ -15,12 +15,12 @@ function imcforecast(constrained_paths, constrained_vars, options_cond_fcst)
 %                                                                                               'prior_mode' or
 %                                                                                               'prior mean'.
 %                                                            [double]     np*1 array, values of the estimated parameters.
-%                                      + controlled_varexo   [cell]       m*1 cell of row char array, list of controlled exogenous variables.
+%                                      + controlled_varexo   [char]       m*n char array, list of controlled exogenous variables (n is the length of the longest name).
 %                                      + conf_sig            [double]     scalar in [0,1], probability mass covered by the confidence bands.
 %
 % OUTPUTS
 % None.
-%
+%  (n is the length of the longest name)
 % SPECIAL REQUIREMENTS
 % This routine has to be called after an estimation statement or an estimated_params block.
 %
