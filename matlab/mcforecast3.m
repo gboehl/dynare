@@ -27,6 +27,10 @@ function [forcs, e]= mcforecast3(cL,H,mcValue,shocks,forcs,T,R,mv,mu)
 %   This is then solved to get:
 %       shocks_controlled_t=(y_t(controlled_vars_index)-(T*y_{t-1}(controlled_vars_index)+R(controlled_vars_index,uncontrolled_shocks_index)*shocks_uncontrolled_t)/R(controlled_vars_index,controlled_shocks_index)
 %
+%   Variable number of controlled vars are allowed in different
+%   periods. Missing control information are indicated by NaN in
+%   y_t(controlled_vars_index). 
+%
 %   After obtaining the shocks, and for uncontrolled periods, the state-space representation
 %       y_t=T*y_{t-1}+R*shocks(:,t)
 %   is used for forecasting
@@ -51,8 +55,10 @@ function [forcs, e]= mcforecast3(cL,H,mcValue,shocks,forcs,T,R,mv,mu)
 if cL
     e = zeros(size(mcValue,1),cL);
     for t = 1:cL
-        e(:,t) = inv(mv*R*mu)*(mcValue(:,t)-mv*T*forcs(:,t)-mv*R*shocks(:,t));
-        forcs(:,t+1) = T*forcs(:,t)+R*(mu*e(:,t)+shocks(:,t));
+        % missing conditional values are indicated by NaN
+        k = find(isfinite(mcValue(:,t)));
+        e(k,t) = inv(mv(k,:)*R*mu(:,k))*(mcValue(k,t)-mv(k,:)*T*forcs(:,t)-mv(k,:)*R*shocks(:,t));
+        forcs(:,t+1) = T*forcs(:,t)+R*(mu(:,k)*e(k,t)+shocks(:,t));
     end
 end
 for t = cL+1:H
