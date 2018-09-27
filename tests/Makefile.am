@@ -188,10 +188,12 @@ MODFILES = \
 	simul/simul_ZLB_purely_forward_no_solution.mod \
 	simul/Irreversible_investment.mod \
 	simul/linear_state_space_arma.mod \
+	conditional_forecasts/1/fs2000_cal.mod \
 	conditional_forecasts/2/fs2000_est.mod \
 	conditional_forecasts/3/fs2000_conditional_forecast_initval.mod \
 	conditional_forecasts/4/fs2000_conditional_forecast_histval.mod \
 	conditional_forecasts/5/fs2000_cal.mod \
+	conditional_forecasts/6/fs2000_cal.mod \
 	recursive/ls2003.mod \
 	recursive/ls2003_bayesian.mod \
 	recursive/ls2003_bayesian_xls.mod \
