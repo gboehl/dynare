@@ -69,6 +69,11 @@ else
 end
 
 %% Estimation
+%  Notation from:
+%  Ando, Tomohiro and Zellner, Arnold. Hierarchical Bayesian Analysis of
+%  the Seemingly Unrelated Regression and Simultaneous Equations Models
+%  Using a Combination of Direct Monte Carlo and Importance Sampling
+%  Techniques. Bayesian Analysis. 2010. pp 67-70.
 if nargin == 8
     [nobs, pidxs, X, Y, m] = sur(ds, param_names, eqtags);
 else
