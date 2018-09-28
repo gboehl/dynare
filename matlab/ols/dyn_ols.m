@@ -1,5 +1,5 @@
-function ds = dyn_ols(ds, fitted_names_dict, eqtags)
-% function ds = dyn_ols(ds, fitted_names_dict, eqtags)
+function varargout = dyn_ols(ds, fitted_names_dict, eqtags)
+% function varargout = dyn_ols(ds, fitted_names_dict, eqtags)
 % Run OLS on chosen model equations; unlike olseqs, allow for time t
 % endogenous variables on LHS
 %
@@ -16,7 +16,8 @@ function ds = dyn_ols(ds, fitted_names_dict, eqtags)
 %                                  estimate all equations
 %
 % OUTPUTS
-%   ds                [dseries]    data updated with fitted values
+%   varargout{1}      [dseries]    data updated with fitted values (if not
+%                                  called from olsgibbs)
 %
 % SPECIAL REQUIREMENTS
 %   none
@@ -68,6 +69,13 @@ M_endo_exo_names_trim = [M_.endo_names; M_.exo_names];
 [junk, idxs] = sort(cellfun(@length, M_endo_exo_names_trim), 'descend');
 regex = strjoin(M_endo_exo_names_trim(idxs), '|');
 mathops = '[\+\*\^\-\/\(\)]';
+st = dbstack(1);
+varargout = cell(1, 1);
+called_from_olsgibbs = false;
+if strcmp(st(1).name, 'olsgibbs')
+    varargout = cell(1, 4);
+    called_from_olsgibbs = true;
+end
 for i = 1:length(jsonmodel)
     %% Construct regression matrices
     rhs_ = strsplit(jsonmodel{i}.rhs, {'+','-','*','/','^','log(','exp(','(',')'});
@@ -183,9 +191,18 @@ for i = 1:length(jsonmodel)
         tag = ['eq_line_no_' num2str(jsonmodel{i}.line)];
     end
 
+    [nobs, nvars] = size(X);
+    if called_from_olsgibbs
+        varargout{1} = nobs;
+        varargout{2} = pnames;
+        varargout{3} = X;
+        varargout{4} = Y.data;
+        return
+    end
+
     %% Estimation
     % From LeSage, James P. "Applied Econometrics using MATLAB"
-    [nobs, nvars] = size(X);
+    
     oo_.ols.(tag).dof = nobs - nvars;
 
     % Estimated Parameters
@@ -271,5 +288,8 @@ for i = 1:length(jsonmodel)
             {'Coefficients','t-statistic','Std. Error'}, 4, ...
             [oo_.ols.(tag).beta oo_.ols.(tag).tstat oo_.ols.(tag).stderr]);
     end
+end
+if ~called_from_olsgibbs
+    varargout{1} = ds;
 end
 end
