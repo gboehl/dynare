@@ -368,6 +368,7 @@ MODFILES = \
 	trend-component-and-var-models/tcm4.mod \
 	trend-component-and-var-models/tcm5.mod \
 	trend-component-and-var-models/tcm6.mod \
+	trend-component-and-var-models/tcm7.mod \
 	trend-component-and-var-models/legacy/vm1.mod \
 	trend-component-and-var-models/legacy/vm2.mod \
 	trend-component-and-var-models/legacy/vm3.mod \
@@ -594,6 +595,9 @@ lmmcp/sw_newton.o.trs: lmmcp/sw_lmmcp.o.trs
 
 var-expectations/4/example.m.trs: var-expectations/3/example.m.trs
 var-expectations/4/example.o.trs: var-expectations/3/example.o.trs
+
+trend-component-and-var-models/tcm7.m.trs: trend-component-and-var-models/tcm6.m.trs
+trend-component-and-var-models/tcm7.o.trs: trend-component-and-var-models/tcm6.o.trs
 
 observation_trends_and_prefiltering/MCMC: m/observation_trends_and_prefiltering/MCMC o/observation_trends_and_prefiltering/MCMC
 m/observation_trends_and_prefiltering/MCMC: $(patsubst %.mod, %.m.trs, $(filter observation_trends_and_prefiltering/MCMC/%.mod, $(MODFILES)))
