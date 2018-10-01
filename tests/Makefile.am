@@ -909,7 +909,7 @@ check-octave: $(O_XFAIL_TRS_FILES) $(O_TRS_FILES)
 %.m.tls : %.m
 	@echo "`tput bold``tput setaf 8`MATLAB: $(CURDIR)/$*... `tput sgr0`"
 	@TOP_TEST_DIR="$(CURDIR)" FILESTEM="$*" \
-		$(MATLAB)/bin/matlab -nosplash -nodisplay -r run_m_script 2> /dev/null
+		$(MATLAB)/bin/matlab -nosplash -nodisplay -r run_m_script >/dev/null 2>&1
 	@touch $*.m.tls
 	@echo "`tput bold`MATLAB`tput setaf 8`: $(CURDIR)/$* Done!`tput sgr0`"
 
