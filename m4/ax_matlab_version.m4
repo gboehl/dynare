@@ -22,6 +22,9 @@ AC_REQUIRE([AX_MATLAB])
 AC_MSG_CHECKING([for MATLAB version])
 if test "x$MATLAB_VERSION" != "x"; then
   case $MATLAB_VERSION in
+    *2018b | *2018B)
+      MATLAB_VERSION="9.5"
+      ;;
     *2018a | *2018A)
       MATLAB_VERSION="9.4"
       ;;
