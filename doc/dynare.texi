@@ -4346,7 +4346,7 @@ The variables are arranged in declaration order.
 @end defvr
 
 @defvr {MATLAB/Octave variable} oo_.kurtosis
-After a run of @code{stoch_simul} contains the kurtosis (standardized fourth moment)
+After a run of @code{stoch_simul} contains the excess kurtosis (standardized fourth moment)
 of the simulated variables if the @code{periods} option is present. 
 The variables are arranged in declaration order.
 @end defvr
