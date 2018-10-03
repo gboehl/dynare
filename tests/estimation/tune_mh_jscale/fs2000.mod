@@ -100,6 +100,6 @@ estimation(order=1, datafile='../fsdat_simul', nobs=192, loglinear, mh_replic=20
 
 mhdata = load('fs2000/metropolis/fs2000_mh_history_0.mat');
 
-if any(abs(mhdata.record.AcceptanceRatio-options_.mh_tune_jscale.target)>options_.mh_tune_jscale.c1)
+if any(abs(mhdata.record.AcceptanceRatio-options_.mh_tune_jscale.target)>options_.mh_tune_jscale.c2)
     error('Automagic tuning of the MCMC proposal scale parameter did not work as expected!')
 end
