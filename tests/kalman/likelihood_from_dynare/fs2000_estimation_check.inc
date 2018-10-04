@@ -1,6 +1,6 @@
 %%default
 options_.lik_init=1;
-estimation(kalman_algo=0,mode_compute=4,order=1,datafile=@{data_file_name},smoother,filter_decomposition,forecast = 8,filtered_vars,filter_step_ahead=[1,3],irf=20) m P c e W R k d y gy_obs;
+estimation(kalman_algo=0,mode_compute=8,order=1,datafile=@{data_file_name},smoother,filter_decomposition,forecast = 8,filtered_vars,filter_step_ahead=[1,3],irf=20) m P c e W R k d y gy_obs;
 fval_algo_0=oo_.likelihood_at_initial_parameters;
 %%Multivariate Kalman Filter
 options_.lik_init=1;
