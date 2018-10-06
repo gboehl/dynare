@@ -394,6 +394,7 @@ MODFILES = \
 	pac/trend-component-12/example.mod \
 	pac/trend-component-13a/example.mod \
 	pac/trend-component-13b/example.mod \
+    estimation/univariate/bayesian.mod \
     dynare-command-options/ramst.mod
 
 PARTICLEFILES = \
@@ -906,6 +907,7 @@ EXTRA_DIST = \
 	optimizers/optimizer_function_wrapper.m \
 	optimizers/fs2000.common.inc \
 	estimation/MH_recover/fs2000.common.inc \
+    estimation/univariate/data.csv \
 	prior_posterior_function/posterior_function_demo.m
 
 
