@@ -197,6 +197,9 @@ for i = 1:length(jsonmodel)
         varargout{2} = pnames;
         varargout{3} = X;
         varargout{4} = Y.data;
+        varargout{5} = jsonmodel;
+        varargout{6} = fp;
+        varargout{7} = lp;
         return
     end
 

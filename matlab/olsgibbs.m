@@ -1,20 +1,21 @@
-function olsgibbs(ds, eqtag, beta0, V, s2, nu, ndraws, discarddraws, thin)
-%function olsgibbs(ds, eqtag, beta, V, s2, nu, ndraws, discarddraws, thin)
-% Implements Gibbs Samipling for SUR
+function olsgibbs(ds, eqtag, BetaPriorExpectation, BetaPriorVariance, s2, nu, ndraws, discarddraws, thin)
+
+% Implements Gibbs Samipling for univariate linear model.
+%
 %
 % INPUTS
-%   ds           [dseries]    data
-%   eqtag        [string]     name of equation tag to estimate.
-%   beta0        [vector]     prior mean of beta
-%   V            [matrix]     prior covariance of beta
-%   s2           [double]     prior mean of h
-%   nu           [int]        degrees of freedom of h
-%   ndraws       [int]        number of draws
-%   discarddraws [int]        number of draws to discard
-%   thin         [int]        if thin == N, save every Nth draw
+% - ds                          [dseries]    dataset.
+% - eqtag                       [string]     name of equation tag to estimate.
+% - BetaPriorExpectation        [double]     vector with n elements, prior expectation of β.
+% - BetaPriorVariance           [double]     n*n matrix, prior variance of β.
+% - s2                          [double]     scalar, first hyperparameter for h.
+% - nu                          [integer]    scalar, second hyperparameter for h.
+% - ndraws                      [integer]    scalar, total number of draws (Gibbs sampling)
+% - discarddraws                [integer]    scalar, number of draws to be discarded.
+% - thin                        [integer]    scalar, if thin == N, save every Nth draw (default is 1).
 %
 % OUTPUTS
-%   none
+% - none
 %
 % SPECIAL REQUIREMENTS
 %   none
@@ -44,122 +45,151 @@ function olsgibbs(ds, eqtag, beta0, V, s2, nu, ndraws, discarddraws, thin)
 
 global M_ oo_ options_
 
-%% Check input
+% Check input
+
 if nargin < 7 || nargin > 9
     error('Incorrect number of arguments passed to olsgibbs')
 end
+
 if ~isdseries(ds)
     error('The 1st argument must be a dseries')
 end
+
 if ~ischar(eqtag)
     error('The 2nd argument must be a string')
 end
-if ~isvector(beta0)
+
+if ~isvector(BetaPriorExpectation)
     error('The 3rd argument must be a vector')
 else
-    if isrow(beta0)
-        beta0 = beta0';
+    if ~isempty(BetaPriorExpectation)
+        BetaPriorExpectation = transpose(BetaPriorExpectation(:));
+    else
+
     end
 end
-if ~ismatrix(V) || size(beta0,1) ~= size(V,1) || size(beta0,1) ~= size(V,2)
-    error('The 4th argument must be a square matrix with the same dimension as beta0')
+
+if ~ismatrix(BetaPriorVariance) || length(BetaPriorExpectation)~=length(BetaPriorVariance)
+    error('The 4th argument (BetaPriorVariance) must be a square matrix with the same dimension as the third argument (BetaPriorExpectation)')
 else
-    V = inv(V);
+    warning('off', 'MATLAB:singularMatrix')
+    BetaInversePriorVariance = eye(length(BetaPriorVariance))/BetaPriorVariance;
+    warning('on', 'MATLAB:singularMatrix')
 end
+
 if ~isreal(s2)
-    error('The 5th argument must be a double')
+    error('The 5th argument (s2) must be a double')
 end
+
 if ~isint(nu)
-    error('The 6th argument must be an integer')
+    error('The 6th argument (nu) must be an integer')
 end
+
 if ~isint(ndraws)
-    error('The 7th argument must be an integer')
+    error('The 7th argument (ndraws) must be an integer')
 end
+
 if nargin == 7
     discarddraws = 0;
 else
     if ~isint(discarddraws)
-        error('The 8th argument, if provided, must be an integer')
-    end
-end
-if nargin == 8
-    thin = 1;
-else
-    if ~isint(thin)
-        error('The 9th argument, if provided, must be an integer')
-    end
-end
-
-%% Let dyn_ols parse
-[N, pnames, X, Y] = dyn_ols(ds, {}, {eqtag});
-
-%% Estimation
-%  Notation from: Koop, Gary. Bayesian Econometrics. 2003. Chapter 4.2
-
-% Setup
-nubar = N + nu;
-nparams = length(pnames);
-assert(nparams == size(beta0,1), ['the length prior mean for beta must '...
-    'be the same as the number of parameters in the equation to be estimated.']);
-
-h = rand;
-thinidx = 1;
-drawidx = 1;
-
-% Posterior Simulation
-oo_.olsgibbs.(eqtag).betadraws = zeros(floor((ndraws-discarddraws)/thin), nparams);
-for i = 1:ndraws
-    % draw beta | Y, h
-    Vbar = inv(V + h*(X'*X));
-    betabar = Vbar*(V*beta0 + h*X'*Y);
-    beta = rand_multivariate_normal(betabar', chol(Vbar), nparams)';
-
-    % draw h | Y, beta
-    resid = Y - X*beta;
-    s2bar = (resid'*resid + nu*s2)/nubar;
-    h = gamma_specification(s2bar, nubar);
-    if i > discarddraws
-        if thinidx == thin
-            oo_.olsgibbs.(eqtag).betadraws(drawidx, :) = beta';
-            thinidx = 1;
-            drawidx = drawidx + 1;
-        else
-            thinidx = thinidx + 1;
+        error('The 8th argument (discardeddraws), if provided, must be an integer')
+    else
+        if ~(discarddraws<ndraws)
+            error('The 8th argument (discardeddraws) must be smaller than the 7th argument (ndraws)')
         end
     end
 end
 
-%% Save parameter values
-oo_.olsgibbs.(eqtag).beta = (sum(oo_.olsgibbs.(eqtag).betadraws)/rows(oo_.olsgibbs.(eqtag).betadraws))';
+if nargin == 8
+    thin = 1;
+else
+    if ~isint(thin)
+        error('The 9th argument, must be an integer')
+    end
+end
+
+% Let dyn_ols parse the equation to be estimated.
+[N, pnames, X, Y, equation, fp, lp] = dyn_ols(ds, {}, {eqtag});
+
+% Estimation (see Koop, Gary. Bayesian Econometrics. 2003. Chapter 4.2)
+
+PosteriorDegreesOfFreedom = N + nu;
+n = length(pnames);
+assert(n==length(BetaPriorExpectation), 'the length prior mean for beta must be the same as the number of parameters in the equation to be estimated.');
+h = 1.0/s2*nu; % Initialize h to the prior expectation.
+
+periods = 1;
+linee = 1;
+
+% Posterior Simulation
+oo_.olsgibbs.(eqtag).draws = zeros(floor((ndraws-discarddraws)/thin), n+3);
+for i=1:discarddraws
+    % Set conditional distribution of β
+    InverseConditionalPoseriorVariance = BetaInversePriorVariance + h*(X'*X);
+    cholConditionalPosteriorVariance = chol(InverseConditionalPoseriorVariance\eye(n), 'upper');
+    ConditionalPosteriorExpectation = (BetaPriorExpectation*BetaInversePriorVariance + h*(Y'*X))/InverseConditionalPoseriorVariance;
+    % Draw beta | Y, h
+    beta = rand_multivariate_normal(ConditionalPosteriorExpectation, cholConditionalPosteriorVariance, n);
+    % draw h | Y, beta
+    resids = Y - X*transpose(beta);
+    s2_ = (resids'*resids + nu*s2)/PosteriorDegreesOfFreedom;
+    h = gamrnd(PosteriorDegreesOfFreedom/2.0, 2.0/(PosteriorDegreesOfFreedom*s2_));
+end
+
+for i = discarddraws+1:ndraws
+    % Set conditional distribution of β
+    InverseConditionalPoseriorVariance = BetaInversePriorVariance + h*(X'*X);
+    cholConditionalPosteriorVariance = chol(InverseConditionalPoseriorVariance\eye(n), 'upper');
+    ConditionalPosteriorExpectation = (BetaPriorExpectation*BetaInversePriorVariance + h*(Y'*X))/InverseConditionalPoseriorVariance;
+    % Draw beta | Y, h
+    beta = rand_multivariate_normal(ConditionalPosteriorExpectation, cholConditionalPosteriorVariance, n);
+    % draw h | Y, beta
+    resids = Y - X*transpose(beta);
+    s2_ = (resids'*resids + nu*s2)/PosteriorDegreesOfFreedom;
+    h = gamrnd(PosteriorDegreesOfFreedom/2.0, 2.0/(PosteriorDegreesOfFreedom*s2_));
+    R2 = 1-var(resids)/var(Y);
+    if isequal(periods, thin)
+        oo_.olsgibbs.(eqtag).draws(linee, 1:n) = beta;
+        oo_.olsgibbs.(eqtag).draws(linee, n+1) = h;
+        oo_.olsgibbs.(eqtag).draws(linee, n+2) = s2_;
+        oo_.olsgibbs.(eqtag).draws(linee, n+3) = R2;
+        periods = 1;
+        linee = linee+1;
+    else
+        periods = periods+1;
+    end
+end
+
+% Save posterior moments.
+oo_.olsgibbs.(eqtag).posterior.mean.beta = mean(oo_.olsgibbs.(eqtag).draws(:,1:n));
+oo_.olsgibbs.(eqtag).posterior.mean.h = mean(oo_.olsgibbs.(eqtag).draws(:,n+1));
+oo_.olsgibbs.(eqtag).posterior.variance.beta = cov(oo_.olsgibbs.(eqtag).draws(:,1:n));
+oo_.olsgibbs.(eqtag).posterior.variance.h = var(oo_.olsgibbs.(eqtag).draws(:,n+1));
+oo_.olsgibbs.(eqtag).s2 = mean(oo_.olsgibbs.(eqtag).draws(:,n+2));
+oo_.olsgibbs.(eqtag).R2 = mean(oo_.olsgibbs.(eqtag).draws(:,n+3));
+
+% Compute and save posterior densities.
+for i=1:n
+    xx = oo_.olsgibbs.(eqtag).draws(:,i);
+    nn = length(xx);
+    bandwidth = mh_optimal_bandwidth(xx, nn, 0, 'gaussian');
+    [x, f] = kernel_density_estimate(xx, 512, nn, bandwidth,'gaussian');
+    oo_.olsgibbs.(eqtag).posterior.density.(pnames{i}) = [x, f];
+end
+
+% Update model's parameters with posterior mean.
 for j = 1:length(pnames)
-    oo_.olsgibbs.(eqtag).param_idxs(j) = find(strcmp(M_.param_names, pnames{j}));
-    M_.params(oo_.ols.(eqtag).param_idxs(j)) = oo_.ols.(eqtag).beta(j);
+    isj = strcmp(M_.param_names, pnames{j});
+    M_.params(isj) = oo_.olsgibbs.(eqtag).posterior.mean.beta(j);
 end
-oo_.olsgibbs.(eqtag).s2 = s2bar;
-oo_.olsgibbs.(eqtag).h = h;
 
-%% Print Output
+% Print Output
 if ~options_.noprint
-    ttitle = ['Gibbs sampling of linear model in equation ''' eqtag ''''];
-    afterward = {sprintf('s^2: %f', oo_.olsgibbs.(eqtag).s2)};
-    dyn_table(ttitle, {}, afterward, pnames, ...
-        {'Parameter Value'}, 4, oo_.olsgibbs.(eqtag).beta);
-    
-    % Plot
-    figure
-    nrows = 5;
-    ncols = floor(nparams/nrows);
-    if mod(nparams, nrows) ~= 0
-        ncols = ncols + 1;
-    end
-    for j = 1:length(pnames)
-        M_.params(strmatch(pnames{j}, M_.param_names, 'exact')) = oo_.olsgibbs.(eqtag).beta(j);
-        subplot(nrows, ncols, j)
-        histogram(oo_.olsgibbs.(eqtag).betadraws(:, j))
-        hc = histcounts(oo_.olsgibbs.(eqtag).betadraws(:, j));
-        line([oo_.olsgibbs.(eqtag).beta(j) oo_.olsgibbs.(eqtag).beta(j)], [min(hc) max(hc)], 'Color', 'red');
-        title(pnames{j}, 'Interpreter', 'none')
-    end
+    ttitle = ['Bayesian estimation (with Gibbs sampling) of equation ''' eqtag ''''];
+    preamble = {sprintf('Dependent Variable: %s', equation{1}.lhs), ...
+                sprintf('No. Independent Variables: %d', size(X,2)), ...
+                sprintf('Observations: %d from %s to %s\n', size(X,1), fp.char, lp.char)};
+    afterward = {sprintf('s^2: %f', oo_.olsgibbs.(eqtag).s2), sprintf('R^2: %f', oo_.olsgibbs.(eqtag).R2) };
+    dyn_table(ttitle, preamble, afterward, pnames, {'Posterior mean', 'Posterior std.'}, 4, [transpose(oo_.olsgibbs.(eqtag).posterior.mean.beta), sqrt(diag(oo_.olsgibbs.(eqtag).posterior.variance.beta))]);
 end
-end
-
