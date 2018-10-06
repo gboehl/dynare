@@ -197,8 +197,10 @@ if ~nopenalty
     error('simplex_optimization_routine:: Initial condition is wrong!')
 else
     [v,fv,delta] = simplex_initialization(objective_function,initial_point,initial_score,delta,zero_delta,1,varargin{:});
-    disp('Done!')
-    skipline()
+    if verbose
+        disp('Done!')
+        skipline()
+    end
     func_count = number_of_variables + 1;
     iter_count = 1;
     if verbose
