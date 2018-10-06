@@ -295,14 +295,14 @@ switch minimizer_algorithm
               case 'InitialSimplexSize'
                 simplexOptions.delta_factor = options_list{i,2};
               case 'verbosity'
-                simplexOptions.verbose = options_list{i,2};
+                simplexOptions.verbosity = options_list{i,2};
               otherwise
                 warning(['simplex: Unknown option (' options_list{i,1} ')!'])
             end
         end
     end
     if options_.silent_optimizer
-        simplexOptions.verbose = options_list{i,2};
+        simplexOptions.verbosity = 0;
     end
     [opt_par_values,fval,exitflag] = simplex_optimization_routine(objective_function,start_par_value,simplexOptions,parameter_names,varargin{:});
   case 9
