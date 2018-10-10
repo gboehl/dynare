@@ -25,7 +25,7 @@ a_x2_x1_2 = .2;
 beta = 1/(1+.02);
 
 // Define a TREND_COMPONENT model from a subset of equations in the model block.
-trend_component_model(model_name=toto, eqtags=['eq:x1', 'eq:x2', 'eq:x1bar', 'eq:x2bar'], trends=['eq:x1bar', 'eq:x2bar']);
+trend_component_model(model_name=toto, eqtags=['eq:x1', 'eq:x2', 'eq:x1bar', 'eq:x2bar'], targets=['eq:x1bar', 'eq:x2bar']);
 
 /* Define a VAR_EXPECTATION_MODEL
 ** ------------------------------
