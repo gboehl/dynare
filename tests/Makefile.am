@@ -358,6 +358,12 @@ MODFILES = \
 	var-expectations/3/example.mod \
 	var-expectations/4/example.mod \
 	var-expectations/5/example.mod \
+    var-expectations/6/example.mod \
+    var-expectations/6/substitution.mod \
+    var-expectations/7/example.mod \
+    var-expectations/7/substitution.mod \
+    var-expectations/8/example.mod \
+    var-expectations/8/substitution.mod \
 	trend-component-and-var-models/vm1.mod \
 	trend-component-and-var-models/vm2.mod \
 	trend-component-and-var-models/vm3.mod \
@@ -381,6 +387,8 @@ MODFILES = \
 	pac/var-2/example.mod \
 	pac/var-3/example.mod \
 	pac/var-4/example.mod \
+    pac/var-5/example.mod \
+    pac/var-5/substitution.mod \
 	pac/trend-component-1/example.mod \
 	pac/trend-component-2/example.mod \
 	pac/trend-component-3/example.mod \
@@ -395,6 +403,8 @@ MODFILES = \
 	pac/trend-component-13a/example.mod \
 	pac/trend-component-13b/example.mod \
     estimation/univariate/bayesian.mod \
+    pac/trend-component-14/example.mod \
+    pac/trend-component-14/substitution.mod \
     dynare-command-options/ramst.mod
 
 PARTICLEFILES = \
@@ -590,6 +600,18 @@ kalman/likelihood_from_dynare/fs2000ns_uncorr_ME_missing.m.trs: kalman/likelihoo
 kalman/likelihood_from_dynare/fs2000ns_uncorr_ME_missing.o.trs: kalman/likelihood_from_dynare/fs2000ns_uncorr_ME.o.trs
 kalman/likelihood_from_dynare/fs2000ns_corr_ME_missing.m.trs: kalman/likelihood_from_dynare/fs2000ns_uncorr_ME.m.trs
 kalman/likelihood_from_dynare/fs2000ns_corr_ME_missing.o.trs: kalman/likelihood_from_dynare/fs2000ns_uncorr_ME.o.trs
+
+var-expectations/6/substitution.m.trs: var-expectations/6/example.m.trs
+var-expectations/6/substitution.o.trs: var-expectations/6/example.o.trs
+var-expectations/7/substitution.m.trs: var-expectations/7/example.m.trs
+var-expectations/7/substitution.o.trs: var-expectations/7/example.o.trs
+var-expectations/8/substitution.m.trs: var-expectations/8/example.m.trs
+var-expectations/8/substitution.o.trs: var-expectations/8/example.o.trs
+
+pac/var-5/substitution.m.trs: pac/var-5/example.m.trs
+pac/var-5/substitution.o.trs: pac/var-5/example.o.trs
+pac/trend-component-14/substitution.m.trs: pac/trend-component-14/example.m.trs
+pac/trend-component-14/substitution.o.trs: pac/trend-component-14/example.o.trs
 
 lmmcp/sw_newton.m.trs: lmmcp/sw_lmmcp.m.trs
 lmmcp/sw_newton.o.trs: lmmcp/sw_lmmcp.o.trs

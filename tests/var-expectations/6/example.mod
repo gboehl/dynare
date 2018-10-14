@@ -1,4 +1,4 @@
-// --+ options: stochastic,json=compute +--
+// --+ options: stochastic,transform_unary_ops,json=compute +--
 
 var foo x1 x2 x1bar x2bar;
 
@@ -78,3 +78,17 @@ weights = M_.params(M_.var_expectation.varexp.param_indices);
 if ~all(weights(1:6)) || ~all(weights(9:10)) || weights(7) || weights(8) || weights(11) || weights(12)
    error('Wrong reduced form parameter for VAR_EXPECTATION_MODEL')
 end
+
+var_expectation.print('varexp');
+
+verbatim;
+  set_dynare_seed('default');
+  y = zeros(M_.endo_nbr,1);
+  y(1:M_.orig_endo_nbr) = rand(M_.orig_endo_nbr, 1);
+  x = randn(M_.exo_nbr,1);
+  y = example.set_auxiliary_variables(y, x, M_.params);
+  y = [y(find(M_.lead_lag_incidence(1,:))); y];
+  [residual, g1] = example.dynamic(y, x', M_.params, oo_.steady_state, 1);
+  ynames = M_.endo_names;
+  save('example.mat', 'residual', 'g1');
+end;
