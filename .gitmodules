@@ -1,15 +1,15 @@
 [submodule "contrib/ms-sbvar/utilities_dw"]
 	path = contrib/ms-sbvar/utilities_dw
-	url = http://www.dynare.org/git/frbatlanta/utilities_dw.git
+	url = https://git.dynare.org/contrib/utilities_dw.git
 [submodule "contrib/ms-sbvar/switch_dw"]
 	path = contrib/ms-sbvar/switch_dw
-	url = http://www.dynare.org/git/frbatlanta/switch_dw.git
+	url = https://git.dynare.org/contrib/switch_dw.git
 [submodule "contrib/ms-sbvar/TZcode"]
 	path = contrib/ms-sbvar/TZcode
-	url = http://www.dynare.org/git/frbatlanta/TZcode.git
+	url = https://git.dynare.org/contrib/TZcode.git
 [submodule "contrib/dmm"]
 	path = contrib/dmm
-	url = http://www.dynare.org/git/dmm.git
+	url = https://git.dynare.org/contrib/dmm.git
 [submodule "matlab/utilities/tests"]
 	path = matlab/utilities/tests
 	url = https://git.dynare.org/Dynare/m-unit-tests.git
