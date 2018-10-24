@@ -52,15 +52,15 @@ SmoothedShocks(:,:,6)=cell2mat(struct2cell(oo_.SmoothedShocks));
 SmoothedVariables(:,:,6)=cell2mat(struct2cell(oo_.SmoothedVariables));
 
 
-if max(max(abs(SmoothedMeasurementErrors-repmat(SmoothedMeasurementErrors(:,:,1),[1,1,6]))))>1e-8
+if max(max(abs(SmoothedMeasurementErrors-repmat(SmoothedMeasurementErrors(:,:,1),[1,1,6]))))>1e-6
     error('SmoothedMeasurementErrors do not match')
 end
 
-if max(max(abs(SmoothedShocks-repmat(SmoothedShocks(:,:,1),[1,1,6]))))>1e-8
+if max(max(abs(SmoothedShocks-repmat(SmoothedShocks(:,:,1),[1,1,6]))))>1e-6
     error('SmoothedShocks do not match')
 end
 
-if max(max(abs(SmoothedVariables-repmat(SmoothedVariables(:,:,1),[1,1,6]))))>1e-8
+if max(max(abs(SmoothedVariables-repmat(SmoothedVariables(:,:,1),[1,1,6]))))>1e-6
     error('SmoothedVariables do not match')
 end
 

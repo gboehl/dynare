@@ -40,18 +40,6 @@ using namespace std;
 #endif
 #define DEBUG_OMP 0
 
-#ifdef __MINGW32__
-# define __CROSS_COMPILATION__
-#endif
-
-#ifdef __MINGW64__
-# define __CROSS_COMPILATION__
-#endif
-
-#ifdef __CROSS_COMPILATION__
-# define M_PI 3.14159265358979323846
-#endif
-
 template<typename T>
 T
 icdf(const T uniform)

@@ -35,21 +35,45 @@ DynamicModelDLL::DynamicModelDLL(const string &modName) throw (DynareException)
       dynamicHinstance = LoadLibrary(fName.c_str());
       if (dynamicHinstance == NULL)
         throw 1;
-      Dynamic = (DynamicDLLFn) GetProcAddress(dynamicHinstance, "Dynamic");
-      if (Dynamic == NULL)
+      ntt = (int *) GetProcAddress(dynamicHinstance, "ntt");
+      dynamic_resid_tt = (dynamic_tt_fct) GetProcAddress(dynamicHinstance, "dynamic_resid_tt");
+      dynamic_resid = (dynamic_resid_fct) GetProcAddress(dynamicHinstance, "dynamic_resid");
+      dynamic_g1_tt = (dynamic_tt_fct) GetProcAddress(dynamicHinstance, "dynamic_g1_tt");
+      dynamic_g1 = (dynamic_g1_fct) GetProcAddress(dynamicHinstance, "dynamic_g1");
+      dynamic_g2_tt = (dynamic_tt_fct) GetProcAddress(dynamicHinstance, "dynamic_g2_tt");
+      dynamic_g2 = (dynamic_g2_fct) GetProcAddress(dynamicHinstance, "dynamic_g2");
+      dynamic_g3_tt = (dynamic_tt_fct) GetProcAddress(dynamicHinstance, "dynamic_g3_tt");
+      dynamic_g3 = (dynamic_g3_fct) GetProcAddress(dynamicHinstance, "dynamic_g3");
+      if (ntt == NULL
+          || dynamic_resid_tt == NULL || dynamic_resid == NULL
+          || dynamic_g1_tt == NULL || dynamic_g1 == NULL
+          || dynamic_g2_tt == NULL || dynamic_g2 == NULL
+          || dynamic_g3_tt == NULL || dynamic_g3 == NULL)
         {
           FreeLibrary(dynamicHinstance); // Free the library
           throw 2;
         }
 #else // Linux or Mac
       dynamicHinstance = dlopen(fName.c_str(), RTLD_NOW);
-      if ((dynamicHinstance == NULL) || dlerror())
+      if (dynamicHinstance == NULL)
         {
           cerr << dlerror() << endl;
           throw 1;
         }
-      Dynamic = (DynamicDLLFn) dlsym(dynamicHinstance, "Dynamic");
-      if ((Dynamic  == NULL) || dlerror())
+      ntt = (int *) dlsym(dynamicHinstance, "ntt");
+      dynamic_resid_tt = (dynamic_tt_fct) dlsym(dynamicHinstance, "dynamic_resid_tt");
+      dynamic_resid = (dynamic_resid_fct) dlsym(dynamicHinstance, "dynamic_resid");
+      dynamic_g1_tt = (dynamic_tt_fct) dlsym(dynamicHinstance, "dynamic_g1_tt");
+      dynamic_g1 = (dynamic_g1_fct) dlsym(dynamicHinstance, "dynamic_g1");
+      dynamic_g2_tt = (dynamic_tt_fct) dlsym(dynamicHinstance, "dynamic_g2_tt");
+      dynamic_g2 = (dynamic_g2_fct) dlsym(dynamicHinstance, "dynamic_g2");
+      dynamic_g3_tt = (dynamic_tt_fct) dlsym(dynamicHinstance, "dynamic_g3_tt");
+      dynamic_g3 = (dynamic_g3_fct) dlsym(dynamicHinstance, "dynamic_g3");
+      if (ntt == NULL
+          || dynamic_resid_tt == NULL || dynamic_resid == NULL
+          || dynamic_g1_tt == NULL || dynamic_g1 == NULL
+          || dynamic_g2_tt == NULL || dynamic_g2 == NULL
+          || dynamic_g3_tt == NULL || dynamic_g3 == NULL)
         {
           dlclose(dynamicHinstance); // Free the library
           cerr << dlerror() << endl;
@@ -65,13 +89,13 @@ DynamicModelDLL::DynamicModelDLL(const string &modName) throw (DynareException)
       if (i == 1)
         msg << "can't dynamically load the file";
       if (i == 2)
-        msg << "can't locate the 'Dynamic' symbol";
+        msg << "can't locate the relevant dynamic symbols within the MEX file";
       msg << ")";
       throw DynareException(__FILE__, __LINE__, msg.str());
     }
   catch (...)
     {
-      throw DynareException(__FILE__, __LINE__, string("Can't find Dynamic function in ") + fName);
+      throw DynareException(__FILE__, __LINE__, string("Can't find the relevant dynamic symbols in ") + fName);
     }
 }
 
@@ -90,6 +114,21 @@ void
 DynamicModelDLL::eval(const Vector &y, const Vector &x, const Vector &modParams, const Vector &ySteady,
                       Vector &residual, TwoDMatrix *g1, TwoDMatrix *g2, TwoDMatrix *g3) throw (DynareException)
 {
-  Dynamic(y.base(), x.base(), 1, modParams.base(), ySteady.base(), 0, residual.base(), g1->base(),
-          g2 == NULL ? NULL : g2->base(), g3 == NULL ? NULL : g3->base());
+  double *T = (double *) malloc(sizeof(double) * (*ntt));
+  dynamic_resid_tt(y.base(), x.base(), 1, modParams.base(), ySteady.base(), 0, T);
+  dynamic_resid(y.base(), x.base(), 1, modParams.base(), ySteady.base(), 0, T, residual.base());
+  if (g1 || g2 || g3)
+    dynamic_g1_tt(y.base(), x.base(), 1, modParams.base(), ySteady.base(), 0, T);
+  if (g1)
+    dynamic_g1(y.base(), x.base(), 1, modParams.base(), ySteady.base(), 0, T, g1->base());
+  if (g2 || g3)
+    dynamic_g2_tt(y.base(), x.base(), 1, modParams.base(), ySteady.base(), 0, T);
+  if (g2)
+    dynamic_g2(y.base(), x.base(), 1, modParams.base(), ySteady.base(), 0, T, g2->base());
+  if (g3)
+    {
+      dynamic_g3_tt(y.base(), x.base(), 1, modParams.base(), ySteady.base(), 0, T);
+      dynamic_g3(y.base(), x.base(), 1, modParams.base(), ySteady.base(), 0, T, g3->base());
+    }
+  free(T);
 }

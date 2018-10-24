@@ -189,10 +189,12 @@ MODFILES = \
 	simul/simul_ZLB_purely_forward_no_solution.mod \
 	simul/Irreversible_investment.mod \
 	simul/linear_state_space_arma.mod \
+	conditional_forecasts/1/fs2000_cal.mod \
 	conditional_forecasts/2/fs2000_est.mod \
 	conditional_forecasts/3/fs2000_conditional_forecast_initval.mod \
 	conditional_forecasts/4/fs2000_conditional_forecast_histval.mod \
 	conditional_forecasts/5/fs2000_cal.mod \
+	conditional_forecasts/6/fs2000_cal.mod \
 	recursive/ls2003.mod \
 	recursive/ls2003_bayesian.mod \
 	recursive/ls2003_bayesian_xls.mod \
@@ -994,7 +996,7 @@ check-octave: $(O_XFAIL_TRS_FILES) $(O_TRS_FILES)
 %.m.tls : %.m
 	@echo "`tput bold``tput setaf 8`MATLAB: $(CURDIR)/$*... `tput sgr0`"
 	@TOP_TEST_DIR="$(CURDIR)" FILESTEM="$*" \
-		$(MATLAB)/bin/matlab -nosplash -nodisplay -r run_m_script 2> /dev/null
+		$(MATLAB)/bin/matlab -nosplash -nodisplay -r run_m_script >/dev/null 2>&1
 	@touch $*.m.tls
 	@echo "`tput bold`MATLAB`tput setaf 8`: $(CURDIR)/$* Done!`tput sgr0`"
 

@@ -146,20 +146,6 @@ public:
 };
 #endif
 
-#ifdef __MINGW32__
-# define __CROSS_COMPILATION__
-#endif
-
-#ifdef __MINGW64__
-# define __CROSS_COMPILATION__
-#endif
-
-#ifdef __CROSS_COMPILATION__
-# define M_PI 3.14159265358979323846
-# define M_SQRT2 1.41421356237309504880
-# define finite(x) !std::isfinite(x)
-#endif
-
 //#define DEBUG
 using namespace std;
 

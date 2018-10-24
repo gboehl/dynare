@@ -34,9 +34,11 @@
 #include "dynamic_abstract_class.hh"
 #include "dynare_exception.h"
 
-// <model>_Dynamic DLL pointer
-typedef void (*DynamicDLLFn)(const double *y, const double *x, int nb_row_x, const double *params, const double *steady_state,
-                             int it_, double *residual, double *g1, double *g2, double *g3);
+typedef void (*dynamic_tt_fct)(const double *y, const double *x, int nb_row_x, const double *params, const double *steady_state, int it_, double *T);
+typedef void (*dynamic_resid_fct) (const double *y, const double *x, int nb_row_x, const double *params, const double *steady_state, int it_, const double *T, double *residual);
+typedef void (*dynamic_g1_fct)(const double *y, const double *x, int nb_row_x, const double *params, const double *steady_state, int it_, const double *T, double *g1);
+typedef void (*dynamic_g2_fct)(const double *y, const double *x, int nb_row_x, const double *params, const double *steady_state, int it_, const double *T, double *v2);
+typedef void (*dynamic_g3_fct)(const double *y, const double *x, int nb_row_x, const double *params, const double *steady_state, int it_, const double *T, double *v3);
 
 /**
  * creates pointer to Dynamic function inside <model>_dynamic.dll
@@ -45,7 +47,12 @@ typedef void (*DynamicDLLFn)(const double *y, const double *x, int nb_row_x, con
 class DynamicModelDLL : public DynamicModelAC
 {
 private:
-  DynamicDLLFn Dynamic; // pointer to the Dynamic function in DLL
+  int *ntt;
+  dynamic_tt_fct dynamic_resid_tt, dynamic_g1_tt, dynamic_g2_tt, dynamic_g3_tt;
+  dynamic_resid_fct dynamic_resid;
+  dynamic_g1_fct dynamic_g1;
+  dynamic_g2_fct dynamic_g2;
+  dynamic_g3_fct dynamic_g3;
 #if defined(_WIN32) || defined(__CYGWIN32__)
   HINSTANCE dynamicHinstance;  // DLL instance pointer in Windows
 #else
