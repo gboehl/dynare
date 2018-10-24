@@ -76,8 +76,6 @@ switch auxiliary_model_type
     % Get the indices of trend and EC equations in the auxiliary model.
     target_eqnums_in_auxiliary_model = find(M_.trend_component.(auxiliary_model_name).targets);
     ecm_eqnums_in_auxiliary_model = find(~M_.trend_component.(auxiliary_model_name).targets);
-    % Get the indices of trend equations in model.
-    target_eqnums = M_.trend_component.(auxiliary_model_name).target_eqn;
     % REMARK It is assumed that the non trend equations are the error correction
     %        equations. We assume that the model can be cast in the following form:
     %
