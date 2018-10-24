@@ -1,4 +1,4 @@
-function olsgibbs(ds, eqtag, BetaPriorExpectation, BetaPriorVariance, s2, nu, ndraws, discarddraws, thin)
+function ds = olsgibbs(ds, eqtag, BetaPriorExpectation, BetaPriorVariance, s2, nu, ndraws, discarddraws, thin, fitted_names_dict)
 
 % Implements Gibbs Samipling for univariate linear model.
 %
@@ -13,9 +13,16 @@ function olsgibbs(ds, eqtag, BetaPriorExpectation, BetaPriorVariance, s2, nu, nd
 % - ndraws                      [integer]    scalar, total number of draws (Gibbs sampling)
 % - discarddraws                [integer]    scalar, number of draws to be discarded.
 % - thin                        [integer]    scalar, if thin == N, save every Nth draw (default is 1).
+% - fitted_names_dict           [cell]       Nx2 or Nx3 cell array to be used in naming fitted
+%                                            values; first column is the equation tag,
+%                                            second column is the name of the
+%                                            associated fitted value, third column
+%                                            (if it exists) is the function name of
+%                                            the transformation to perform on the
+%                                            fitted value.
 %
 % OUTPUTS
-% - none
+% - ds                          [dseries]    dataset updated with fitted value
 %
 % SPECIAL REQUIREMENTS
 %   none
@@ -47,7 +54,7 @@ global M_ oo_ options_
 
 % Check input
 
-if nargin < 7 || nargin > 9
+if nargin < 7 || nargin > 10
     error('Incorrect number of arguments passed to olsgibbs')
 end
 
@@ -106,6 +113,16 @@ if nargin == 8
 else
     if ~isint(thin)
         error('The 9th argument, must be an integer')
+    end
+end
+
+if nargin == 9
+    fitted_names_dict = {};
+else
+    if (~isempty(fitted_names_dict) && ...
+            (~iscell(fitted_names_dict) || ...
+            (size(fitted_names_dict, 2) < 2 || size(fitted_names_dict, 2) > 3)))
+        error('The 10th argument must be an Nx2 or Nx3 cell array');
     end
 end
 
@@ -168,6 +185,26 @@ oo_.olsgibbs.(eqtag).posterior.variance.beta = cov(oo_.olsgibbs.(eqtag).draws(:,
 oo_.olsgibbs.(eqtag).posterior.variance.h = var(oo_.olsgibbs.(eqtag).draws(:,n+1));
 oo_.olsgibbs.(eqtag).s2 = mean(oo_.olsgibbs.(eqtag).draws(:,n+2));
 oo_.olsgibbs.(eqtag).R2 = mean(oo_.olsgibbs.(eqtag).draws(:,n+3));
+
+% Yhat
+idx = 0;
+yhatname = [eqtag '_olsgibbs_FIT'];
+if ~isempty(fitted_names_dict)
+    idx = strcmp(fitted_names_dict(:,1), eqtag);
+    if any(idx)
+        yhatname = fitted_names_dict{idx, 2};
+    end
+end
+oo_.olsgibbs.(eqtag).Yhat = dseries(X*oo_.olsgibbs.(eqtag).posterior.mean.beta, fp, yhatname);
+
+% Apply correcting function for Yhat if it was passed
+if any(idx) ...
+        && length(fitted_names_dict(idx, :)) == 3 ...
+        && ~isempty(fitted_names_dict{idx, 3})
+    oo_.olsgibbs.(eqtag).Yhat = ...
+        feval(fitted_names_dict{idx, 3}, oo_.olsgibbs.(eqtag).Yhat);
+end
+ds = [ds oo_.olsgibbs.(eqtag).Yhat];
 
 % Compute and save posterior densities.
 for i=1:n

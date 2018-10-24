@@ -51,8 +51,7 @@ gibbslength = 1000000; // Set the number of iterations in Gibbs
 burnin = 10000;        // Set the number of iterations to be discarded (try to remove the effects of the initial condition).
 steps = 10;            // Do not record all iterations (try to remove the dependence between the draws).
 
-
-olsgibbs(ds, 'eqols', beta0, V0, s2priormean, s2df, gibbslength, burnin, steps);
+ds = olsgibbs(ds, 'eqols', beta0, V0, s2priormean, s2df, gibbslength, burnin, steps, {'eqols', 'eqols_olsgibbs_fit'});
 
 // Since we use a diffuse prior for β, the posterior mean of β should be close to the OLS estimate.
 if max(abs(oo_.ols.eqols.beta-oo_.olsgibbs.eqols.posterior.mean.beta))>.1
