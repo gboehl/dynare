@@ -55,7 +55,7 @@ u2_hh_cor_pac_u2_hh_cor_L1 = 0.4;
 
 model;
 
-[name='U2_G_YER', data_type='nonstationary']
+[name='U2_G_YER']
 diff(U2_G_YER) =   u2_g_yer_ecm_u2_q_yed_L1 * (U2_Q_YED(-1) - U2_EHIC(-1))
                  + u2_g_yer_ecm_u2_stn_L1   * (U2_STN(-1)   - U2_ESTN(-1))
                  + u2_g_yer_ecm_u2_g_yer_L1 * (U2_G_YER(-1) - U2_G_EYER(-1))
@@ -65,7 +65,7 @@ diff(U2_G_YER) =   u2_g_yer_ecm_u2_q_yed_L1 * (U2_Q_YED(-1) - U2_EHIC(-1))
                  + res_U2_G_YER                                           ;
 
 
-[name='U2_Q_YED', data_type='nonstationary']
+[name='U2_Q_YED']
 diff(U2_Q_YED) =   u2_q_yed_ecm_u2_q_yed_L1 * (U2_Q_YED(-1) - U2_EHIC(-1))
                  + u2_q_yed_ecm_u2_stn_L1   * (U2_STN(-1)   - U2_ESTN(-1))
                  + u2_q_yed_ecm_u2_g_yer_L1 * (U2_G_YER(-1)- U2_G_EYER(-1))
@@ -75,16 +75,16 @@ diff(U2_Q_YED) =   u2_q_yed_ecm_u2_q_yed_L1 * (U2_Q_YED(-1) - U2_EHIC(-1))
                  + res_U2_Q_YED                                           ;
 
 
-[name='U2_ESTN', data_type='nonstationary']
+[name='U2_ESTN']
 U2_ESTN        =  U2_ESTN(-1) + res_U2_ESTN                               ;
 
-[name='U2_EHIC', data_type='nonstationary']
+[name='U2_EHIC']
 U2_EHIC        =  U2_EHIC(-1) + res_U2_EHIC                               ;
 
-[name='U2_G_EYER', data_type='nonstationary']
+[name='U2_G_EYER']
 U2_G_EYER        =  0;
 
-[name='U2_HH_OCOR', data_type='nonstationary']
+[name='U2_HH_OCOR']
 diff(diff(log(U2_HH_OCOR))) =  u2_hh_ocor_ecm_u2_q_yed_L1   * (U2_Q_YED(-1) - U2_EHIC(-1))
                  + u2_hh_ocor_ecm_u2_stn_L1     * (U2_STN(-1)   - U2_ESTN(-1))
                  + u2_hh_ocor_ecm_u2_g_yer_L1   * (U2_G_YER(-1) - U2_G_EYER(-1))
@@ -95,10 +95,10 @@ diff(diff(log(U2_HH_OCOR))) =  u2_hh_ocor_ecm_u2_q_yed_L1   * (U2_Q_YED(-1) - U2
                  + u2_hh_ocor_u2_hh_ocor_L1        * diff(diff(log(U2_HH_OCOR(-1))))
                  + res_U2_HH_OCOR                                        ;
 
-[name='U2_H_Q_YER400', data_type='nonstationary']
+[name='U2_H_Q_YER400']
 U2_H_Q_YER400 = U2_H_Q_YER400(-1) + res_U2_H_Q_YER;
 
-[name='U2_STN', data_type='nonstationary']
+[name='U2_STN']
 diff(U2_STN)   =   u2_stn_ecm_u2_q_yed_L1   * (U2_Q_YED(-1) - U2_EHIC(-1))
                  + u2_stn_ecm_u2_stn_L1     * (U2_STN(-1)   - U2_ESTN(-1))
                  + u2_stn_ecm_u2_g_yer_L1   * (U2_G_YER(-1) - U2_G_EYER(-1))
