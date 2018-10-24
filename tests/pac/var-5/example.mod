@@ -31,7 +31,7 @@ model;
 [name='eq:y']
 y = a_y_1*y(-1) + a_y_2*diff(x(-1)) + b_y_1*y(-2) + b_y_2*diff(x(-2)) + ey ;
 
-[name='eq:x', data_type='nonstationary']
+[name='eq:x']
 diff(x) = b_x_1*y(-2) + b_x_2*diff(x(-1)) + g*(1-b_x_2)  + ex ;
 
 [name='eq:pac']

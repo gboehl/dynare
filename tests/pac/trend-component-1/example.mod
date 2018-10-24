@@ -34,16 +34,16 @@ pac_model(auxiliary_model_name=toto, discount=beta, model_name=pacman);
 
 model;
 
-[name='eq:x1', data_type='nonstationary']
+[name='eq:x1']
 diff(x1) = a_x1_0*(x1(-1)-x1bar(-1)) + a_x1_1*diff(x1(-1)) + a_x1_2*diff(x1(-2)) + + a_x1_x2_1*diff(x2(-1)) + a_x1_x2_2*diff(x2(-2)) + ex1;     
 
-[name='eq:x2', data_type='nonstationary']
+[name='eq:x2']
 diff(x2) = a_x2_0*(x2(-1)-x2bar(-1)) + a_x2_1*diff(x1(-1)) + a_x2_2*diff(x1(-2)) + + a_x2_x1_1*diff(x2(-1)) + a_x2_x1_2*diff(x2(-2)) + ex2;     
 
-[name='eq:x1bar', data_type='nonstationary']
+[name='eq:x1bar']
 x1bar = x1bar(-1) + ex1bar;
 
-[name='eq:x2bar', data_type='nonstationary']
+[name='eq:x2bar']
 x2bar = x2bar(-1) + ex2bar;
 
 [name='eq:pac']
