@@ -109,35 +109,6 @@ switch auxiliary_model_type
             error([auxiliary_model_name ' is not a trend component model. The LHS variables should be in differences'])
         end
     end
-    % Get the trend variables indices (lhs variables in trend equations).
-    [~, id_trend_in_var, ~] = intersect(M_.trend_component.(auxiliary_model_name).eqn, target_eqnums);
-    trend_variables = reshape(M_.trend_component.(auxiliary_model_name).lhs(id_trend_in_var), q, 1);
-    % Get the rhs variables in trend equations.
-    for i = 1:q
-        % Check that there is only one variable on the rhs and update trend_autoregressive_variables.
-        v = M_.trend_component.(auxiliary_model_name).rhs.vars_at_eq{id_trend_in_var(i)}.var;
-        if length(v) ~= 1
-            error('A trend equation (%s) must have only one variable on the RHS!', M_.trend_component.(auxiliary_model_name).eqtags{target_eqnums(i)})
-        end
-        % Check that the variables on lhs and rhs have the same difference orders.
-        if get_difference_order(trend_variables(i)) ~= get_difference_order(v)
-            error('In a trend equation (%s) LHS and RHS variables must have the same difference orders!', M_.trend_component.(auxiliary_model_name).eqtags{target_eqnums(i)})
-        end
-        % Check that the trend equation is autoregressive.
-        if isdiff(v)
-            if ~M_.aux_vars(get_aux_variable_id(v)).type == 9
-                error('In a trend equation (%s) RHS variable must be lagged LHS variable!', M_.trend_component.(auxiliary_model_name).eqtags{target_eqnums(i)})
-            else
-                if M_.aux_vars(get_aux_variable_id(v)).orig_index ~= trend_variables(i)
-                    error('In a trend equation (%s) RHS variable must be lagged LHS variable!', M_.trend_component.(auxiliary_model_name).eqtags{target_eqnums(i)})
-                end
-            end
-        else
-            if get_aux_variable_id(v) && M_.aux_vars(get_aux_variable_id(v)).endo_index ~= trend_variables(i)
-                error('In a trend equation (%s) RHS variable must be lagged LHS variable!', M_.trend_component.(auxiliary_model_name).eqtags{target_eqnums(i)})
-            end
-        end
-    end
     % Reorder target_eqnums_in_auxiliary_model to ensure that the order of
     % the trend variables matches the order of the error correction
     % variables.
