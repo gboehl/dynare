@@ -1,5 +1,22 @@
 # -*- coding: utf-8 -*-
 
+# Copyright (C) 2018 Dynare Team
+#
+# This file is part of Dynare.
+#
+# Dynare is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Dynare is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+
 import os
 import sys
 sys.path.insert(0, os.path.abspath('.'))
@@ -32,11 +49,6 @@ highlight_language = 'dynare'
 
 todo_include_todos = False
 
-# -- Options for HTML output ----------------------------------------------
-
-# The theme to use for HTML and HTML Help pages.  See the documentation for
-# a list of builtin themes.
-
 html_theme = 'sphinx_rtd_theme'
 
 # Theme options are theme-specific and customize the look and feel of a theme
@@ -48,7 +60,7 @@ html_theme = 'sphinx_rtd_theme'
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['_static']
+# html_static_path = ['_static']
 
 html_logo = 'dynarelogo.png'
 
