@@ -811,11 +811,11 @@ EstimatedParamsStatement::checkPass(ModFileStructure &mod_file_struct, WarningCo
 void
 EstimatedParamsStatement::writeOutput(ostream &output, const string &basename, bool minimal_workspace) const
 {
-  output << "estim_params_.var_exo = [];" << endl
-         << "estim_params_.var_endo = [];" << endl
-         << "estim_params_.corrx = [];" << endl
-         << "estim_params_.corrn = [];" << endl
-         << "estim_params_.param_vals = [];" << endl;
+  output << "estim_params_.var_exo = zeros(0, 10);" << endl
+         << "estim_params_.var_endo = zeros(0, 10);" << endl
+         << "estim_params_.corrx = zeros(0, 10);" << endl
+         << "estim_params_.corrn = zeros(0, 10);" << endl
+         << "estim_params_.param_vals = zeros(0, 10);" << endl;
 
   for (vector<EstimationParams>::const_iterator it = estim_params_list.begin(); it != estim_params_list.end(); it++)
     {
@@ -886,6 +886,8 @@ EstimatedParamsInitStatement::writeOutput(ostream &output, const string &basenam
   if (use_calibration)
     output << "options_.use_calibration_initialization = 1;" << endl;
 
+  bool skipline = false;
+
   for (vector<EstimationParams>::const_iterator it = estim_params_list.begin(); it != estim_params_list.end(); it++)
     {
       int symb_id = symbol_table.getTypeSpecificID(it->name) + 1;
@@ -896,23 +898,38 @@ EstimatedParamsInitStatement::writeOutput(ostream &output, const string &basenam
           if (symb_type == eExogenous)
             {
               output << "tmp1 = find(estim_params_.var_exo(:,1)==" << symb_id << ");" << endl;
-              output << "estim_params_.var_exo(tmp1,2) = ";
+              output << "if isempty(tmp1)" << endl;
+              output << "    disp(sprintf('The standard deviation of %s is not estimated (the value provided in estimated_params_init is not used).', deblank(M_.exo_names(" << symb_id << ",:))))" << endl;
+              skipline = true;
+              output << "else" << endl;
+              output << "    estim_params_.var_exo(tmp1,2) = ";
               it->init_val->writeOutput(output);
               output << ";" << endl;
+              output << "end" << endl;
             }
           else if (symb_type == eEndogenous)
             {
               output << "tmp1 = find(estim_params_.var_endo(:,1)==" << symb_id << ");" << endl;
-              output << "estim_params_.var_endo(tmp1,2) = ";
+              output << "if isempty(tmp1)" << endl;
+              output << "    disp(sprintf('The standard deviation of the measurement error on %s is not estimated (the value provided in estimated_params_init is not used).', deblank(M_.endo_names(" << symb_id << ",:))))" << endl;
+              skipline = true;
+              output << "else" << endl;
+              output << "    estim_params_.var_endo(tmp1,2) = ";
               it->init_val->writeOutput(output);
               output << ";" << endl;
+              output << "end" << endl;
             }
           else if (symb_type == eParameter)
             {
               output << "tmp1 = find(estim_params_.param_vals(:,1)==" << symb_id << ");" << endl;
-              output << "estim_params_.param_vals(tmp1,2) = ";
+              output << "if isempty(tmp1)" << endl;
+              output << "    disp(sprintf('Parameter %s is not estimated (the value provided in estimated_params_init is not used).', deblank(M_.param_names(" << symb_id << ",:))))" << endl;
+              skipline = true;
+              output << "else" << endl;
+              output << "    estim_params_.param_vals(tmp1,2) = ";
               it->init_val->writeOutput(output);
               output << ";" << endl;
+              output << "end" << endl;
             }
         }
       else
@@ -921,20 +938,34 @@ EstimatedParamsInitStatement::writeOutput(ostream &output, const string &basenam
             {
               output << "tmp1 = find((estim_params_.corrx(:,1)==" << symb_id << " & estim_params_.corrx(:,2)==" << symbol_table.getTypeSpecificID(it->name2)+1 << ") | "
                      <<             "(estim_params_.corrx(:,2)==" << symb_id << " & estim_params_.corrx(:,1)==" << symbol_table.getTypeSpecificID(it->name2)+1 << "));" << endl;
-              output << "estim_params_.corrx(tmp1,3) = ";
+              output << "if isempty(tmp1)" << endl;
+              output << "    disp(sprintf('The correlation between %s and %s is not estimated (the value provided in estimated_params_init is not used).', deblank(M_.exo_names("
+                     << symb_id << ",:)), deblank(M_.exo_names(" << symbol_table.getTypeSpecificID(it->name2)+1 << ",:))))" << endl;
+              skipline = true;
+              output << "else" << endl;
+              output << "    estim_params_.corrx(tmp1,3) = ";
               it->init_val->writeOutput(output);
               output << ";" << endl;
+              output << "end" << endl;
             }
           else if (symb_type == eEndogenous)
             {
               output << "tmp1 = find((estim_params_.corrn(:,1)==" << symb_id << " & estim_params_.corrn(:,2)==" << symbol_table.getTypeSpecificID(it->name2)+1 << ") | "
                      <<             "(estim_params_.corrn(:,2)==" << symb_id << " & estim_params_.corrn(:,1)==" << symbol_table.getTypeSpecificID(it->name2)+1 << "));" << endl;
-              output << "estim_params_.corrn(tmp1,3) = ";
+              output << "if isempty(tmp1)" << endl;
+              output << "    disp(sprintf('The correlation between measurement errors on %s and %s is not estimated (the value provided in estimated_params_init is not used).', deblank(M_.endo_names("
+                     << symb_id << ",:)), deblank(M_.endo_names(" << symbol_table.getTypeSpecificID(it->name2)+1 << ",:))))" << endl;
+              skipline = true;
+              output << "else" << endl;
+              output << "    estim_params_.corrn(tmp1,3) = ";
               it->init_val->writeOutput(output);
               output << ";" << endl;
+              output << "end" << endl;
             }
         }
     }
+  if (skipline == true)
+    output << "skipline()" << endl;
 }
 
 EstimatedParamsBoundsStatement::EstimatedParamsBoundsStatement(const vector<EstimationParams> &estim_params_list_arg,
