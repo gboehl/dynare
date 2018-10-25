@@ -1,0 +1,102 @@
+# To be fixed:
+#
+# - Commands with names starting with block names not recognized
+# 
+# - Commands not recognized when inserting newlines...prefix & suffix! 
+#
+# - Same for other categories....really, use regex to set up prefixes and suffixes
+
+import re
+
+from pygments.lexer import Lexer, RegexLexer, bygroups, do_insertions, words
+from pygments.token import Text, Comment, Operator, Keyword, Name, String, \
+    Number, Punctuation, Generic, Whitespace
+
+# Configuration block :BOLD
+#conf_blocks = ('hooks','paths','cluster','node')
+
+__all__ = ['DynareLexer']
+
+class DynareLexer(RegexLexer):
+
+    name = 'Dynare'
+    aliases = ['dynare']
+    filenames = ['*.mod']
+
+    commands = (
+	"dynare","var","varexo","varexo_det","parameters","change_type",
+	"predetermined_variables","trend_var","log_trend_var","external_function",
+	"write_latex_original_model","write_latex_dynamic_model",
+	"write_latex_static_model","resid","initval_file","histval_file","dsample",
+	"periods","steady","check","model_diagnostics","model_info",
+	"print_bytecode_dynamic_model"," print_bytecode_static_model",
+	"perfect_foresight_setup","perfect_foresight_solver","simul","stoch_simul",
+	"extended_path","varobs","estimation","unit_root_vars","bvar_density",
+	"model_comparison","shock_decomposition","realtime_shock_decomposition",
+	"plot_shock_decomposition","calib_smoother","forecast",
+	"conditional_forecast","plot_conditional_forecast","bvar_forecast",
+	"smoother2histval","osr","osr_params","ramsey_model","ramsey_policy",
+	"discretionary_policy","planner_objective","dynare_sensitivity",
+	"markov_switching","svar","sbvar","ms_estimation","ms_simulation",
+	"ms_compute_mdd","ms_compute_probabilities","ms_irf","ms_forecast",
+	"ms_variance_decomposition","rplot","dynatype","dynasave","set_dynare_seed",
+	"save_params_and_steady_state","load_params_and_steady_state",
+	"dynare_version","write_latex_definitions","write_latex_parameter_table",
+	"write_latex_prior_table","collect_latex_files","prior_function",
+	"posterior_function","generate_trace_plots")
+
+    report_commands = ("report","addPage","addSection","addGraph","addTable",
+	"addSeries","addParagraph","addVspace","write","compile")
+
+    operators = (
+        "STEADY_STATE","EXPECTATION")
+
+    macro_dirs = (
+	"@#includepath", "@#include", "@#define", "@#if",
+	"@#ifdef", "@#ifndef", "@#else","@#endif",
+	"@#for", "@#endfor", "@#echo", "@#error")
+
+    builtin_constants = (
+	"inf", "nan")
+
+    tokens = {
+        'root': [
+            (r'\s*(%|//).*$', Comment),
+
+            (words((
+                'model','steady_state_model','initval','endval','histval',
+				'shocks','mshocks','homotopy_setup','steady_state_model','observation_trends',
+				'estimated_params','estimated_params_init','estimated_params_bounds',
+				'shock_groups','conditional_forecast_paths','optim_weights',
+				'osr_params_bounds','ramsey_constraints','irf_calibration',
+				'moment_calibration','identification','svar_identification',
+				'verbatim','end','node','cluster','paths','hooks')),Keyword.Reserved),
+
+            (words(commands + report_commands,
+                   suffix=r'\s*'),  Name.Entity),
+
+            (words(operators), Operator.Word),
+
+            (words(macro_dirs,suffix=r'\s*'), Name.Function),
+
+            (words(builtin_constants), Name.Constant),
+
+            (r'\s*[a-zA-Z_]\s*', Name),
+
+	    
+            (r'\s*(\d+\.\d+|\d*\.\d+)([eEf][+-]?[0-9]+)?\s*', Number.Float),
+            (r'\s*\d+[eEf][+-]?[0-9]+\s*', Number.Float),
+            (r'\s*\d+\s*', Number.Integer),
+		
+	    	(r'"[^"]*"', String),
+            (r"`[^`]*'", String),
+            (r"'[^']*'", String),	    
+  	
+  			(r'\s*(-|\+|\*|\/|\^)\s*', Operator),
+            (r'\s*(==|<=|>=|~=|<|>|&&|!)\s*', Operator),
+
+            (r'\s*[\[\](){}:@.,\|]\s*', Punctuation),	
+	    	(r'\s*(=|:|;|>>|#|\$)\s*', Punctuation),
+	]
+
+    }
