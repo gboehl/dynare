@@ -1,3 +1,4 @@
 python/*
 src/build/*
 src/source/__pycache__/*
+py/domain/__pycache__/*
