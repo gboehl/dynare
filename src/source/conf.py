@@ -16,7 +16,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 project = u'Dynare'
-copyright = u'2017, Dynare Team'
+copyright = u'2018, Dynare Team'
 author = u'Dynare Team'
 
 add_function_parentheses = False
@@ -72,7 +72,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'Manual.tex', u'Dynare Reference Manual',
+    (master_doc, 'dynare.tex', u'Dynare Reference Manual',
      u'Dynare team', 'manual'),
 ]
 
