@@ -66,7 +66,7 @@ if options.ramsey_policy
                 fprintf('\nevaluate_steady_state: The steady state file computation for the Ramsey problem resulted in NaNs.\n')
                 fprintf('evaluate_steady_state: The steady state was computed conditional on the following initial instrument values: \n')
                 for ii = 1:size(options.instruments,1)
-                    fprintf('\t %s \t %f \n',options.instruments(ii,:),ys_init(strmatch(options.instruments(ii,:),M.endo_names,'exact')))
+                    fprintf('\t %s \t %f \n',options.instruments{ii},ys_init(strmatch(options.instruments{ii},M.endo_names,'exact')))
                 end
                 fprintf('evaluate_steady_state: The problem occured in the following equations: \n')
                 fprintf('\t Equation(s): ')
@@ -87,7 +87,7 @@ if options.ramsey_policy
                 fprintf('\nevaluate_steady_state: The steady state file computation for the Ramsey problem resulted in complex numbers.\n')
                 fprintf('evaluate_steady_state: The steady state was computed conditional on the following initial instrument values: \n')
                 for ii = 1:size(options.instruments,1)
-                    fprintf('\t %s \t %f \n',options.instruments(ii,:),ys_init(strmatch(options.instruments(ii,:),M.endo_names,'exact')))
+                    fprintf('\t %s \t %f \n',options.instruments{ii},ys_init(strmatch(options.instruments{ii},M.endo_names,'exact')))
                 end
                 fprintf('evaluate_steady_state: If those initial values are not admissable, change them using an initval-block.\n')
                 skipline(2)
@@ -102,7 +102,7 @@ if options.ramsey_policy
                 fprintf('\nevaluate_steady_state: The steady state file does not solve the steady state for the Ramsey problem.\n')
                 fprintf('evaluate_steady_state: Conditional on the following instrument values: \n')
                 for ii = 1:size(options.instruments,1)
-                    fprintf('\t %s \t %f \n',options.instruments(ii,:),ys_init(strmatch(options.instruments(ii,:),M.endo_names,'exact')))
+                    fprintf('\t %s \t %f \n',options.instruments{ii},ys_init(strmatch(options.instruments{ii},M.endo_names,'exact')))
                 end
                 fprintf('evaluate_steady_state: the following equations have non-zero residuals: \n')
                 for ii=n_multipliers+1:M.endo_nbr
@@ -150,7 +150,7 @@ if options.ramsey_policy
             fprintf('\nevaluate_steady_state: The steady state computation for the Ramsey problem resulted in NaNs.\n')
             fprintf('evaluate_steady_state: The steady state computation resulted in the following instrument values: \n')
             for i = 1:size(options.instruments,1)
-                fprintf('\t %s \t %f \n',options.instruments(i,:),ys(strmatch(options.instruments(i,:),M.endo_names,'exact')))
+                fprintf('\t %s \t %f \n',options.instruments{i},ys(strmatch(options.instruments{i},M.endo_names,'exact')))
             end
             fprintf('evaluate_steady_state: The problem occured in the following equations: \n')
             fprintf('\t Equation(s): ')
@@ -168,7 +168,7 @@ if options.ramsey_policy
             fprintf('\nevaluate_steady_state: The steady state computation for the Ramsey problem resulted in NaNs in the auxiliary equations.\n')
             fprintf('evaluate_steady_state: The steady state computation resulted in the following instrument values: \n')
             for i = 1:size(options.instruments,1)
-                fprintf('\t %s \t %f \n',options.instruments(i,:),ys(strmatch(options.instruments(i,:),M.endo_names,'exact')))
+                fprintf('\t %s \t %f \n',options.instruments{i},ys(strmatch(options.instruments{i},M.endo_names,'exact')))
             end
             fprintf('evaluate_steady_state: The problem occured in the following equations: \n')
             fprintf('\t Auxiliary equation(s): ')
@@ -186,7 +186,7 @@ if options.ramsey_policy
             fprintf('\nevaluate_steady_state: The steady state for the Ramsey problem could not be computed.\n')
             fprintf('evaluate_steady_state: The steady state computation stopped with the following instrument values:: \n')
             for i = 1:size(options.instruments,1)
-                fprintf('\t %s \t %f \n',options.instruments(i,:),ys(strmatch(options.instruments(i,:),M.endo_names,'exact')))
+                fprintf('\t %s \t %f \n',options.instruments{i},ys(strmatch(options.instruments{i},M.endo_names,'exact')))
             end
             fprintf('evaluate_steady_state: The following equations have non-zero residuals: \n')
             for ii=1:n_multipliers

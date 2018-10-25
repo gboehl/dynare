@@ -115,7 +115,7 @@ end
 
 instr_id=nan(instr_nbr,1);
 for j=1:instr_nbr
-    vj=deblank(Instruments(j,:));
+    vj=deblank(Instruments{j});
     vj_id=strmatch(vj, endo_names, 'exact');
     if ~isempty(vj_id)
         instr_id(j)=vj_id;
