@@ -34,3 +34,4 @@ python/bin/python3:
 	source python/bin/activate ; pip install --upgrade pip ; pip install sphinx recommonmark sphinx_rtd_theme
 	cp py/pygment/dynare.py python/lib/python3.*/site-packages/pygments/lexers/
 	cd python/lib/python3.*/site-packages/pygments/lexers ; python3 _mapping.py
+	patch -i py/basic.css_t.patch python/lib/python3.*/site-packages/sphinx/themes/basic/static/basic.css_t
