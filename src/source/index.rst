@@ -5,7 +5,6 @@ Currently the development team of Dynare is composed of:
 
 * Stéphane Adjemian
 * Houtan Bastani
-* Alejandro Buesa
 * Michel Juillard
 * Frédéric Karamé
 * Junior Maih
