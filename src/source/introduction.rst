@@ -27,8 +27,6 @@ Documentation sources
 
 The present document is the reference manual for Dynare. It documents all commands and features in a systematic fashion.
 
-New users should rather begin with Dynare User Guide (*Mancini (2007)*), distributed with Dynare and also available from the `official Dynare website`_.
-
 Other useful sources of information include the `Dynare wiki`_ and the `Dynare forums`_. 
 
 
