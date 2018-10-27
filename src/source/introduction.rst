@@ -17,9 +17,9 @@ Various public bodies (central banks, ministries of economy and finance, interna
 
 Dynare is a free software, which means that it can be downloaded free of charge, that its source code is freely available, and that it can be used for both non-profit and for-profit purposes. Most of the source files are covered by the GNU General Public Licence (GPL) version 3 or later (there are some exceptions to this, see the file license.txt in Dynare distribution). It is available for the Windows, macOS, and Linux platforms and is fully documented through a user guide and a reference manual. Part of Dynare is programmed in C++, while the rest is written using the `MATLAB`_ programming language. The latter implies that commercially-available MATLAB software is required in order to run Dynare. However, as an alternative to MATLAB, Dynare is also able to run on top of `GNU Octave`_ (basically a free clone of MATLAB): this possibility is particularly interesting for students or institutions who cannot afford, or do not want to pay for, MATLAB and are willing to bear the concomitant performance loss.
 
-The development of Dynare is mainly done at `CEPREMAP`_ by a core team of researchers who devote part of their time to software development. Currently the development team of Dynare is composed of Stéphane Adjemian (Université du Maine, Gains and Cepremap), Houtan Bastani (Cepremap), Alejandro Buesa (Cepremap), Michel Juillard (Banque de France), Frédéric Karamé (Université du Maine, Gains and Cepremap), Junior Maih (Norges Bank), Ferhat Mihoubi (Université Paris-Est Créteil, Epee and Cepremap), Johannes Pfeifer (University of Cologne), Marco Ratto (European Commission, Joint Research Centre - JRC) and Sébastien Villemot (OFCE – Sciences Po). Increasingly, the developer base is expanding, as tools developed by researchers outside of Cepremap are integrated into Dynare. Financial support is provided by Cepremap, Banque de France and DSGE-net (an international research network for DSGE modeling). The Dynare project also received funding through the Seventh Framework Programme for Research (FP7) of the European Commission’s Socio-economic Sciences and Humanities (SSH) Program from October 2008 to September 2011 under grant agreement SSH-CT-2009-225149.
+The development of Dynare is mainly done at `CEPREMAP`_ by a core team of researchers who devote part of their time to software development. Currently the development team of Dynare is composed of Stéphane Adjemian (Université du Maine, Gains and Cepremap), Houtan Bastani (Cepremap), Michel Juillard (Banque de France), Frédéric Karamé (Université du Maine, Gains and Cepremap), Junior Maih (Norges Bank), Ferhat Mihoubi (Université Paris-Est Créteil, Érudite and Cepremap), Johannes Pfeifer (University of Cologne), Marco Ratto (European Commission, Joint Research Centre - JRC) and Sébastien Villemot (Cepremap). Increasingly, the developer base is expanding, as tools developed by researchers outside of Cepremap are integrated into Dynare. Financial support is provided by Cepremap, Banque de France and DSGE-net (an international research network for DSGE modeling).
 
-Interaction between developers and users of Dynare is central to the project. A `web forum`_ is available for users who have questions about the usage of Dynare or who want to report bugs. Training sessions are given through the Dynare Summer School, which is organized every year and is attended by about 40 people. Finally, priorities in terms of future developments and features to be added are decided in cooperation with the institutions providing financial support. 
+Interaction between developers and users of Dynare is central to the project. A `web forum`_ is available for users who have questions about the usage of Dynare or who want to report bugs. Current known and fixed bugs are listed on the `Dynare wiki`_. Issues or whishes can be reported on our `Git repository`_. Training sessions are given through the Dynare Summer School, which is organized every year and is attended by about 40 people. Finally, priorities in terms of future developments and features to be added are decided in cooperation with the institutions providing financial support. 
 
 
 Documentation sources
@@ -41,14 +41,15 @@ If you would like to refer to Dynare in a research article, the recommended way 
 
 Note that citing the Dynare Reference Manual in your research is a good way to help the Dynare project.
 
-If you want to give a URL, use the address of the Dynare website: http://www.dynare.org.
+If you want to give a URL, use the address of the Dynare website: https://www.dynare.org.
 
  
 
 .. _MATLAB: http://www.mathworks.com/products/matlab/
 .. _GNU Octave: http://www.octave.org/
-.. _CEPREMAP: http://www.cepremap.org/
-.. _web forum: http://www.dynare.org/phpBB3
+.. _CEPREMAP: http://www.cepremap.fr/
+.. _web forum: https://forum.dynare.org/
 .. _official Dynare website: http://www.dynare.org/
-.. _Dynare wiki: http://www.dynare.org/
-.. _Dynare forums: http://www.dynare.org/phpBB3
+.. _Dynare wiki: https://git.dynare.org/Dynare/dynare/wikis
+.. _Dynare forums: https://forum.dynare.org/
+.. _Git repository: https://git.dynare.org/Dynare/dynare
