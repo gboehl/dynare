@@ -26,14 +26,14 @@ Table of contents:
    :maxdepth: 4
    
    introduction
-   installconfig
-   runningdynare
-   themodelfile
-   theconfigfile
-   timeseries
+   installation-and-configuration
+   running-dynare
+   the-model-file
+   the-configuration-file
+   time-series
    reporting
    examples
-   dynaremisccomm
+   dynare-misc-commands
    bibliography
 
 .. only:: builder_html
