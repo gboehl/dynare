@@ -47,7 +47,7 @@ testsuite_matlab:
   dependencies:
     - build_binaries
 
-.testsuite_octave_template: &testsuite_octave_definition
+.testsuite_octave_template:
   stage: test
   variables:
     OPENBLAS_NUM_THREADS: 1
@@ -69,13 +69,13 @@ testsuite_matlab:
     - build_binaries
 
 testsuite_octave_auto:
-  <<: *testsuite_octave_definition
+  extends: .testsuite_octave_template
   only:
     - tags
     - schedules
 
 testsuite_octave_manual:
-  <<: *testsuite_octave_definition
+  extends: .testsuite_octave_template
   except:
     - tags
     - schedules
