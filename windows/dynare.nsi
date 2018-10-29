@@ -161,6 +161,7 @@ Section "Uninstall"
  Delete $INSTDIR\license.txt
  Delete $INSTDIR\mexopts-win32.bat
  Delete $INSTDIR\mexopts-win64.bat
+ Delete $INSTDIR\VERSION
  Rmdir /r $INSTDIR\matlab
  Rmdir /r $INSTDIR\contrib
  Rmdir /r $INSTDIR\mex
