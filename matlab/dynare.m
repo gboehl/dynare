@@ -226,6 +226,7 @@ if regexp(firstline, '\s*\/\/', 'once') == 1
 end
 
 command = ['"' dynareroot 'preprocessor' arch_ext filesep 'dynare_m" ' fname] ;
+command = [ command ' mexext=' mexext ' "matlabroot=' matlabroot '"'];
 for i=1:length(varargin)
     command = [command ' ' varargin{i}];
 end
@@ -238,6 +239,14 @@ if preprocessoroutput
     else
         disp(varargin);
     end
+end
+
+% Under Windows, make sure the MEX file is unloaded (in the use_dll case),
+% otherwise the preprocessor can't recompile it
+if isoctave
+  clear([fname(1:end-4) '.static'], [fname(1:end-4) '.dynamic'])
+else
+  clear(['+' fname(1:end-4) '/static'], ['+' fname(1:end-4) '/dynamic'])
 end
 
 [status, result] = system(command);

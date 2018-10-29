@@ -54,7 +54,7 @@ Section "Dynare core (preprocessor and M-files)"
  SectionIn RO
 !insertmacro DETERMINE_CONTEXT
  SetOutPath $INSTDIR
- File README.txt ..\NEWS mexopts-win32.bat mexopts-win64.bat ..\license.txt ..\VERSION
+ File README.txt ..\NEWS ..\license.txt ..\VERSION
 
  SetOutPath $INSTDIR\matlab
  File /r ..\matlab\*.m
@@ -124,6 +124,20 @@ SectionEnd
 
 SectionGroupEnd
 
+SectionGroup "MinGW compiler (needed for use_dll option under MATLAB)"
+
+Section "MinGW for 32-bit MATLAB"
+ SetOutPath $INSTDIR\mingw32
+ File /r mingw32\*
+SectionEnd
+
+Section "MinGW for 64-bit MATLAB"
+ SetOutPath $INSTDIR\mingw64
+ File /r mingw64\*
+SectionEnd
+
+SectionGroupEnd
+
 Section "Dynare++ (standalone executable)"
  SetOutPath $INSTDIR\dynare++
  File ..\dynare++\src\dynare++.exe ..\dynare++\extern\matlab\dynare_simul.m ..\dynare++\*.dll
@@ -159,8 +173,6 @@ Section "Uninstall"
  Delete $INSTDIR\README.txt
  Delete $INSTDIR\NEWS
  Delete $INSTDIR\license.txt
- Delete $INSTDIR\mexopts-win32.bat
- Delete $INSTDIR\mexopts-win64.bat
  Delete $INSTDIR\VERSION
  Rmdir /r $INSTDIR\matlab
  Rmdir /r $INSTDIR\contrib
@@ -169,6 +181,8 @@ Section "Uninstall"
  Rmdir /r $INSTDIR\doc
  Rmdir /r $INSTDIR\examples
  Rmdir /r $INSTDIR\scripts
+ Rmdir /r $INSTDIR\mingw32
+ Rmdir /r $INSTDIR\mingw64
  # We don't force deletion of installation directory (with /r), to avoid deleting important files
  Rmdir $INSTDIR
 
