@@ -26,7 +26,7 @@ AX_COMPARE_VERSION([$MATLAB_VERSION], [lt], [7.5], [AC_MSG_ERROR([Your MATLAB is
 
 AC_MSG_CHECKING([for options to compile MEX for MATLAB])
 
-MATLAB_CPPFLAGS="-I$MATLAB/extern/include"
+MATLAB_CPPFLAGS="-I\"$MATLAB\"/extern/include"
 
 case ${MATLAB_ARCH} in
   glnx86 | glnxa64)
@@ -34,8 +34,8 @@ case ${MATLAB_ARCH} in
     MATLAB_CFLAGS="-fexceptions -fPIC -pthread -g -O2"
     MATLAB_CXXFLAGS="-fPIC -pthread -g -O2"
     MATLAB_FFLAGS="-fPIC -g -O2 -fexceptions"
-    MATLAB_LDFLAGS_NOMAP="-shared -Wl,--no-undefined -Wl,-rpath-link,$MATLAB/bin/${MATLAB_ARCH} -L$MATLAB/bin/${MATLAB_ARCH}"
-    MATLAB_LDFLAGS="$MATLAB_LDFLAGS_NOMAP -Wl,--version-script,$MATLAB/extern/lib/${MATLAB_ARCH}/mexFunction.map"
+    MATLAB_LDFLAGS_NOMAP="-shared -Wl,--no-undefined -Wl,-rpath-link,\"$MATLAB\"/bin/${MATLAB_ARCH} -L\"$MATLAB\"/bin/${MATLAB_ARCH}"
+    MATLAB_LDFLAGS="$MATLAB_LDFLAGS_NOMAP -Wl,--version-script,\"$MATLAB\"/extern/lib/${MATLAB_ARCH}/mexFunction.map"
     MATLAB_LIBS="-lmx -lmex -lmat -lm -lstdc++ -lmwlapack -lmwblas"
     if test "${MATLAB_ARCH}" = "glnx86"; then
       MATLAB_DEFS="$MATLAB_DEFS -D_FILE_OFFSET_BITS=64"
@@ -53,8 +53,8 @@ case ${MATLAB_ARCH} in
     MATLAB_FFLAGS="-fexceptions -g -O2 -fno-underscoring"
     MATLAB_DEFS="$MATLAB_DEFS -DNDEBUG"
     # Note that static-libstdc++ is only supported since GCC 4.5 (but generates no error on older versions)
-    MATLAB_LDFLAGS_NOMAP="-static-libgcc -static-libstdc++ -shared -L$MATLAB/bin/${MATLAB_ARCH}"
-    MATLAB_LDFLAGS="$MATLAB_LDFLAGS_NOMAP $(pwd)/$srcdir/mex.def"
+    MATLAB_LDFLAGS_NOMAP="-static-libgcc -static-libstdc++ -shared -L\"$MATLAB\"/bin/${MATLAB_ARCH}"
+    MATLAB_LDFLAGS="$MATLAB_LDFLAGS_NOMAP \"$(pwd)\"/$srcdir/mex.def"
     MATLAB_LIBS="-lmex -lmx -lmat -lmwlapack -lmwblas"
     ax_mexopts_ok="yes"
     ;;
@@ -69,8 +69,8 @@ case ${MATLAB_ARCH} in
     MATLAB_CFLAGS="-fno-common -arch $ARCHS -mmacosx-version-min=$MACOSX_DEPLOYMENT_TARGET -fexceptions"
     MATLAB_CXXFLAGS="-fno-common -fexceptions -arch $ARCHS -mmacosx-version-min=$MACOSX_DEPLOYMENT_TARGET"
     MATLAB_FFLAGS="-fexceptions -fbackslash -arch $ARCHS"
-    MATLAB_LDFLAGS_NOMAP="-L$MATLAB/bin/${MATLAB_ARCH} -Wl,-twolevel_namespace -undefined error -arch $ARCHS -mmacosx-version-min=$MACOSX_DEPLOYMENT_TARGET -bundle"
-    MATLAB_LDFLAGS="$MATLAB_LDFLAGS_NOMAP -Wl,-exported_symbols_list,$(pwd)/$srcdir/mexFunction-MacOSX.map"
+    MATLAB_LDFLAGS_NOMAP="-L\"$MATLAB\"/bin/${MATLAB_ARCH} -Wl,-twolevel_namespace -undefined error -arch $ARCHS -mmacosx-version-min=$MACOSX_DEPLOYMENT_TARGET -bundle"
+    MATLAB_LDFLAGS="$MATLAB_LDFLAGS_NOMAP -Wl,-exported_symbols_list,\"$(pwd)\"/$srcdir/mexFunction-MacOSX.map"
     MATLAB_LIBS="-lmx -lmex -lmat -lstdc++ -lmwlapack -lmwblas"
     ax_mexopts_ok="yes"
     ;;
@@ -86,9 +86,9 @@ fi
 
 # Converts the MATLAB version number into comparable integers with only major and minor version numbers
 # For example, 7.4.2 will become 0704
-ax_matlab_ver=`echo "$MATLAB_VERSION" | $SED -e 's/\([[0-9]]*\)\.\([[0-9]]*\).*/Z\1ZZ\2Z/' \
-                                             -e 's/Z\([[0-9]]\)Z/Z0\1Z/g' \
-                                             -e 's/[[^0-9]]//g'`
+ax_matlab_ver=$(echo "$MATLAB_VERSION" | $SED -e 's/\([[0-9]]*\)\.\([[0-9]]*\).*/Z\1ZZ\2Z/' \
+                                              -e 's/Z\([[0-9]]\)Z/Z0\1Z/g' \
+                                              -e 's/[[^0-9]]//g')
 
 MATLAB_DEFS="$MATLAB_DEFS -DMATLAB_VERSION=0x${ax_matlab_ver}"
 
