@@ -266,7 +266,62 @@ sudo apt install build-essential gfortran liboctave-dev libboost-graph-dev libbo
 
 ## Windows
 
-We no longer support compilation on Windows. To use the unstable version of Dynare on a Windows system, please download it from the [Dynare website](http://www.dynare.org/download/dynare-unstable).
+- Install [MSYS2](http://www.msys2.org) (pick the 64-bit version)
+- Run a MSYS MinGW 64-bit shell
+- Install all needed dependencies:
+```
+pacman -S git autoconf automake-wrapper bison flex make tar texinfo mingw-w64-x86_64-gcc mingw-w64-x86_64-gcc-fortran mingw-w64-x86_64-boost mingw-w64-x86_64-gsl mingw-w64-x86_64-matio mingw-w64-x86_64-openblas
+```
+- *Optional:* compile install `ctangle`, needed for the k-order MEX file and for
+   Dynare++ (*i.e.* if you want to solve models at order ≥ 3)
+```
+wget ftp://ftp.cs.stanford.edu/pub/cweb/cweb.tar.gz
+mkdir cweb
+cd cweb
+tar xf ../cweb.tar.gz
+make ctangle
+mkdir -p /usr/local/bin
+cp ctangle.exe /usr/local/bin/
+cd ..
+```
+- *Optional:* compile and install SLICOT, needed for the `kalman_steady_state`
+  MEX file
+```
+wget https://deb.debian.org/debian/pool/main/s/slicot/slicot_5.0+20101122.orig.tar.gz
+tar xf slicot_5.0+20101122.orig.tar.gz
+cd slicot-5.0+20101122
+make FORTRAN=gfortran OPTS="-O2 -fno-underscoring -fdefault-integer-8" LOADER=gfortran
+mkdir -p /usr/local/lib
+cp slicot.a /usr/local/lib/libslicot64_pic.a
+cd ..
+```
+- Clone and prepare the Dynare sources:
+```
+git clone --recursive https://git.dynare.org/Dynare/dynare.git
+cd dynare
+autoreconf -si
+```
+- Configure Dynare:
+```
+./configure --with-boost-system=boost_system-mt --with-boost-filesystem=boost_filesystem-mt --with-slicot=/usr/local --with-matlab=<…> MATLAB_VERSION=<…> --disable-octave
+```
+where the path and version of MATLAB are specified. Note that you should not
+put spaces in the MATLAB path, so you probably want to use something like `C:\Progra~1\MATLAB\…`.
+- Compile:
+```
+make
+```
+
+*Note:* The above assumes that you have a 64-bit version of MATLAB. It can be
+adapted to a 32-bit MATLAB with the following modifications:
+
+- run the MSYS MinGW 32-bit shell
+- replace "x86_64" by "i686" in packages names on the `pacman` command-line
+- for SLICOT, remove the `-fdefault-integer-8` option, and instead copy the
+  library into `/usr/local/lib/libslicot_pic.a`
+
+*Note:* Compiling the MEX files for Octave and the documentation under MSYS2 is
+currently not supported.
 
 ## Windows Subsystem for Linux
 
