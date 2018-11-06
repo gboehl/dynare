@@ -202,26 +202,13 @@ in the `tests` folder to delete files that were created by the run of the testsu
 
 ## Debian or Ubuntu
 
-All the prerequisites are packaged.
-
-The easiest way to install the pre-requisites in Debian is to use Debian's dynare package and do 
-(requires that you have added the `deb-src` repositories to your `sources.list`):
-```
-apt-get build-dep dynare
-```
-followed by (only for building the master branch):
-```
-apt-get install texlive-fonts-extra
-```
-which is missing in Debian's list of pre-requisites.
-
-Alternatively, if you want to build everything, manually install the following packages:
+All the prerequisites are packaged:
 
 - `build-essential` (for gcc, g++ and make)
 - `gfortran`
-- `liboctave-dev` (or `octave3.2-headers` on older systems)
+- `liboctave-dev`
 - `libboost-graph-dev` and `libboost-filesystem-dev`
-- `libgsl-dev` (or `libgsl0-dev` on older systems)
+- `libgsl-dev`
 - `libmatio-dev`
 - `libslicot-dev` and `libslicot-pic`
 - `libsuitesparse-dev`
@@ -235,17 +222,16 @@ Alternatively, if you want to build everything, manually install the following p
 - `texlive-formats-extra` (for Eplain)
 - `texlive-latex-extra` (for fullpage.sty)
 - `texlive-fonts-extra` (for ccicons)
-- `texlive-latex-recommended` (or `latex-beamer` on older systems)
-- `texlive-science` (or `texlive-math-extra` on older systems) (for amstex)
+- `texlive-latex-recommended`
+- `texlive-science` (for amstex)
 - `texinfo`
 - `lmodern` (for macroprocessor PDF)
 - `latex2html`
 - `doxygen`
 
-You can load all necessary packages at once with
+You can install them all at once with:
 ```
-sudo apt install build-essential gfortran liboctave-dev libboost-graph-dev libboost-filesystem-dev libgsl-dev libmatio-dev libslicot-dev libslicot-pic libsuitesparse-dev flex bison autoconf automake texlive texlive-publishers texlive-extra-utils texlive-formats-extra texlive-latex-extra texlive-fonts-extra texlive-latex-recommended texlive-science texinfo lmodern latex2html doxygen
-
+apt install build-essential gfortran liboctave-dev libboost-graph-dev libboost-filesystem-dev libgsl-dev libmatio-dev libslicot-dev libslicot-pic libsuitesparse-dev flex bison autoconf automake texlive texlive-publishers texlive-extra-utils texlive-formats-extra texlive-latex-extra texlive-fonts-extra texlive-latex-recommended texlive-science texinfo lmodern latex2html doxygen
 ```
 
 ## Fedora
