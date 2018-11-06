@@ -50,7 +50,6 @@ at the MATLAB prompt: if it returns `PCWIN`, then you have a 32-bit MATLAB; if i
 
 1. [**General Instructions**](#general-instructions)
 1. [**Debian or Ubuntu**](#debian-or-ubuntu)
-1. [**Fedora**](#fedora)
 1. [**Windows**](#windows)
 1. [**Windows Subsystem for Linux**](#windows-subsystem-for-linux)
 1. [**macOS**](#macos)
@@ -233,22 +232,6 @@ You can install them all at once with:
 ```
 apt install build-essential gfortran liboctave-dev libboost-graph-dev libboost-filesystem-dev libgsl-dev libmatio-dev libslicot-dev libslicot-pic libsuitesparse-dev flex bison autoconf automake texlive texlive-publishers texlive-extra-utils texlive-formats-extra texlive-latex-extra texlive-fonts-extra texlive-latex-recommended texlive-science texinfo lmodern latex2html doxygen
 ```
-
-## Fedora
-
-**NB**: Documentation still in progress…
-- `octave-devel`
-- `boost-devel`
-- `gsl-devel`
-- `matio-devel`
-- `flex`
-- `bison`
-- `autoconf`
-- `automake`
-- `texlive`
-- `texinfo`
-- `latex2html`
-- `doxygen`
 
 ## Windows
 
