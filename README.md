@@ -237,11 +237,18 @@ apt install build-essential gfortran liboctave-dev libboost-graph-dev libboost-f
 
 - Install [MSYS2](http://www.msys2.org) (pick the 64-bit version)
 - Run a MSYS MinGW 64-bit shell
+- Update the system:
+```
+pacman -Syu
+```
+  You may be asked to close the window at the end of the
+  first upgrade batch, in which case you should rerun the upgrade in a new
+  window to complete the upgrade.
 - Install all needed dependencies:
 ```
 pacman -S git autoconf automake-wrapper bison flex make tar texinfo mingw-w64-x86_64-gcc mingw-w64-x86_64-gcc-fortran mingw-w64-x86_64-boost mingw-w64-x86_64-gsl mingw-w64-x86_64-matio mingw-w64-x86_64-openblas
 ```
-- *Optional:* compile install `ctangle`, needed for the k-order MEX file and for
+- *Optional:* compile and install `ctangle`, needed for the k-order MEX file and for
    Dynare++ (*i.e.* if you want to solve models at order ≥ 3)
 ```
 wget ftp://ftp.cs.stanford.edu/pub/cweb/cweb.tar.gz
