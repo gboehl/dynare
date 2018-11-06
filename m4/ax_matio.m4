@@ -44,6 +44,8 @@ AC_ARG_WITH(matio, AC_HELP_STRING([--with-matio=DIR], [prefix to MATIO installat
   dnl If detected, libz and libhdf5 are added to LIBS, used for matio test
   LIBS=""
   AC_CHECK_LIB([z], [compress])
+  dnl szip is needed under MSYS2
+  AC_CHECK_LIB([szip], [SZ_Compress])
   AC_CHECK_LIB([hdf5], [H5Fcreate])
 
   AC_CHECK_HEADER([matio.h], [], [has_matio=no])

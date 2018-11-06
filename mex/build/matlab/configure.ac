@@ -66,8 +66,6 @@ AM_PROG_AR
 
 case ${host_os} in
   *mingw32*)
-    # Ensure that -lpthread is statically linked under MinGW
-    PTHREAD_LIBS="-Wl,-Bstatic -lpthread -Wl,-Bdynamic"
     # Kludge for bug in MinGW, that defines __STDC_UTF_16__ but not char16_t
     # This breaks the matrix.h of older MATLABs (e.g. R2009a)
     # Also see <uchar.h>
@@ -93,6 +91,16 @@ AM_CONDITIONAL([HAVE_MATIO], [test "x$has_matio" = "xyes"])
 # Check for libslicot, needed by kalman_steady_state
 AX_SLICOT([matlab])
 AM_CONDITIONAL([HAVE_SLICOT], [test "x$has_slicot" = "xyes"])
+
+# On Windows, we want static linking of the external libraries
+case ${host_os} in
+  *mingw32*)
+    PTHREAD_LIBS="-Wl,-Bstatic $PTHREAD_LIBS -Wl,-Bdynamic"
+    GSL_LIBS="-Wl,-Bstatic $GSL_LIBS -Wl,-Bdynamic"
+    LIBADD_MATIO="-Wl,-Bstatic $LIBADD_MATIO -Wl,-Bdynamic"
+    LIBADD_SLICOT="-Wl,-Bstatic $LIBADD_SLICOT -Wl,-Bdynamic"
+    ;;
+esac
 
 AM_CONDITIONAL([DO_SOMETHING], [test "x$ax_enable_matlab" = "xyes" -a "x$ax_matlab_version_ok" = "xyes" -a "x$ax_mexopts_ok" = "xyes"])
 
