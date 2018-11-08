@@ -281,8 +281,9 @@ autoreconf -si
 ```
 ./configure --with-boost-system=boost_system-mt --with-boost-filesystem=boost_filesystem-mt --with-slicot=/usr/local --with-matlab=<…> MATLAB_VERSION=<…> --disable-octave
 ```
-where the path and version of MATLAB are specified. Note that you should not
-put spaces in the MATLAB path, so you probably want to use something like `C:\Progra~1\MATLAB\…`.
+where the path and version of MATLAB are specified. Note that you should use
+the MSYS2 notation and not put spaces in the MATLAB path, so you probably want
+to use something like `/c/Progra~1/MATLAB/…`.
 - Compile:
 ```
 make
