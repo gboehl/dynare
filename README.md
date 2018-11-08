@@ -266,7 +266,7 @@ cd ..
 wget https://deb.debian.org/debian/pool/main/s/slicot/slicot_5.0+20101122.orig.tar.gz
 tar xf slicot_5.0+20101122.orig.tar.gz
 cd slicot-5.0+20101122
-make FORTRAN=gfortran OPTS="-O2 -fno-underscoring -fdefault-integer-8" LOADER=gfortran LAPACKLIB=-lopenblas
+make FORTRAN=gfortran OPTS="-O2 -fno-underscoring -fdefault-integer-8" LOADER=gfortran slicot.a
 mkdir -p /usr/local/lib
 cp slicot.a /usr/local/lib/libslicot64_pic.a
 cd ..
