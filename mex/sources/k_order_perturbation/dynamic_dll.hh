@@ -34,11 +34,11 @@
 #include "dynamic_abstract_class.hh"
 #include "dynare_exception.h"
 
-typedef void (*dynamic_tt_fct)(const double *y, const double *x, int nb_row_x, const double *params, const double *steady_state, int it_, double *T);
-typedef void (*dynamic_resid_fct) (const double *y, const double *x, int nb_row_x, const double *params, const double *steady_state, int it_, const double *T, double *residual);
-typedef void (*dynamic_g1_fct)(const double *y, const double *x, int nb_row_x, const double *params, const double *steady_state, int it_, const double *T, double *g1);
-typedef void (*dynamic_g2_fct)(const double *y, const double *x, int nb_row_x, const double *params, const double *steady_state, int it_, const double *T, double *v2);
-typedef void (*dynamic_g3_fct)(const double *y, const double *x, int nb_row_x, const double *params, const double *steady_state, int it_, const double *T, double *v3);
+using dynamic_tt_fct = void (*)(const double *y, const double *x, int nb_row_x, const double *params, const double *steady_state, int it_, double *T);
+using dynamic_resid_fct = void (*) (const double *y, const double *x, int nb_row_x, const double *params, const double *steady_state, int it_, const double *T, double *residual);
+using dynamic_g1_fct = void (*)(const double *y, const double *x, int nb_row_x, const double *params, const double *steady_state, int it_, const double *T, double *g1);
+using dynamic_g2_fct = void (*)(const double *y, const double *x, int nb_row_x, const double *params, const double *steady_state, int it_, const double *T, double *v2);
+using dynamic_g3_fct = void (*)(const double *y, const double *x, int nb_row_x, const double *params, const double *steady_state, int it_, const double *T, double *v3);
 
 /**
  * creates pointer to Dynamic function inside <model>_dynamic.dll
@@ -61,11 +61,10 @@ private:
 
 public:
   // construct and load Dynamic model DLL
-  DynamicModelDLL(const string &fname) throw (DynareException);
-  virtual
-  ~DynamicModelDLL();
+  explicit DynamicModelDLL(const string &fname) noexcept(false);
+  virtual ~DynamicModelDLL();
 
   void eval(const Vector &y, const Vector &x, const Vector &params, const Vector &ySteady,
-            Vector &residual, TwoDMatrix *g1, TwoDMatrix *g2, TwoDMatrix *g3) throw (DynareException);
+            Vector &residual, TwoDMatrix *g1, TwoDMatrix *g2, TwoDMatrix *g3) noexcept(false);
 };
 #endif

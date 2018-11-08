@@ -36,10 +36,9 @@ private:
   const static int nlhs_dynamic = 4;
   const static int nrhs_dynamic = 5;
 public:
-  DynamicModelMFile(const string &modName) throw (DynareException);
-  virtual
-  ~DynamicModelMFile();
+  explicit DynamicModelMFile(const string &modName) noexcept(false);
+  virtual ~DynamicModelMFile() = default;
   void eval(const Vector &y, const Vector &x, const Vector &params, const Vector &ySteady,
-            Vector &residual, TwoDMatrix *g1, TwoDMatrix *g2, TwoDMatrix *g3) throw (DynareException);
+            Vector &residual, TwoDMatrix *g1, TwoDMatrix *g2, TwoDMatrix *g3) noexcept(false);
 };
 #endif
