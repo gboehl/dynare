@@ -52,9 +52,9 @@ DynamicModelMFile::eval(const Vector &y, const Vector &x, const Vector &modParam
   residual = Vector(mxGetPr(plhs[0]), residual.skip(), (int) mxGetM(plhs[0]));
   copyDoubleIntoTwoDMatData(mxGetPr(plhs[1]), g1, (int) mxGetM(plhs[1]), (int) mxGetN(plhs[1]));
   if (g2 != NULL)
-    copyDoubleIntoTwoDMatData(unpackSparseMatrix(plhs[2]), g2, (int) mxGetNzmax(plhs[2]), 3);
+    unpackSparseMatrixAndCopyIntoTwoDMatData(plhs[2], g2);
   if (g3 != NULL)
-    copyDoubleIntoTwoDMatData(unpackSparseMatrix(plhs[3]), g3, (int) mxGetNzmax(plhs[3]), 3);
+    unpackSparseMatrixAndCopyIntoTwoDMatData(plhs[3], g3);
 
   for (int i = 0; i < nrhs_dynamic; i++)
     mxDestroyArray(prhs[i]);
