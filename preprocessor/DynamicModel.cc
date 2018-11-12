@@ -4593,6 +4593,10 @@ DynamicModel::substituteExpectation(bool partial_information_model)
 void
 DynamicModel::transformPredeterminedVariables()
 {
+  for (map<int, expr_t>::iterator it = local_variables_table.begin();
+       it != local_variables_table.end(); it++)
+    it->second = it->second->decreaseLeadsLagsPredeterminedVariables();
+
   for (int i = 0; i < (int) equations.size(); i++)
     {
       BinaryOpNode *substeq = dynamic_cast<BinaryOpNode *>(equations[i]->decreaseLeadsLagsPredeterminedVariables());
