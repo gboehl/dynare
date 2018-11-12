@@ -51,7 +51,6 @@ have a 64-bit MATLAB; if it returns `PCWIN`, `MACI` or `GLNX`, then you have a
 1. [**General Instructions**](#general-instructions)
 1. [**Debian or Ubuntu**](#debian-or-ubuntu)
 1. [**Windows**](#windows)
-1. [**Windows Subsystem for Linux**](#windows-subsystem-for-linux)
 1. [**macOS**](#macos)
 
 ## General Instructions
@@ -300,29 +299,6 @@ adapted to a 32-bit MATLAB with the following modifications:
 **Note:** Compiling the MEX files for Octave and the documentation under MSYS2 is
 currently not supported.
 
-## Windows Subsystem for Linux
-
-Dynare can also be compiled from source for the Windows Subsystem for Linux (WSL). The WSL offers Windows 10 Anniversary Update users easy access to a Linux environment. To install the WSL, see https://msdn.microsoft.com/en-us/commandline/wsl/install_guide
-To install most of the build dependencies, make sure that the local `rootfs/etc/apt/sources.list` contains
-```
-deb-src http://archive.ubuntu.com/ubuntu trusty main restricted universe multiverse
-deb-src http://archive.ubuntu.com/ubuntu trusty-updates main restricted universe multiverse
-deb-src http://security.ubuntu.com/ubuntu trusty-security main restricted universe multiverse
-```
-in addition to the regular ```deb``` entries. 
-NB: you cannot edit this file from Windows as this will make the file unreadable for the WSL (rendering WSL unable to detect any package). Therefore, use any Linux editor of your choice.
-
-After that, run 
-```
-apt update
-apt-get build-dep dynare
-```
-If you are building the unstable version, you might also need to install other packages required, e.g 
-```apt-get install texlive-fonts-extra```
-NB: it might be necessary to preface your calls by ```sudo``` in case you do not have root access with the current user
-
-After this, prepare the source and configure the build tree as described for Linux above.
- 
 ## macOS
 
 To simply use a snapshot of Dynare, you have two choices. On MATLAB, you can
