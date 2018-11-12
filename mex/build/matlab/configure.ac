@@ -117,9 +117,9 @@ else
 fi
 
 if test "x$ax_enable_matlab" = "xyes" -a "x$has_matio" = "xyes"; then
-   BUILD_KORDER_DYNSIMUL_MEX_MATLAB="yes"
+   BUILD_GENSYLV_KORDER_DYNSIMUL_MEX_MATLAB="yes"
 else
-   BUILD_KORDER_DYNSIMUL_MEX_MATLAB="no (missing MatIO library)"
+   BUILD_GENSYLV_KORDER_DYNSIMUL_MEX_MATLAB="no (missing MatIO library)"
 fi
 
 if test "x$ax_enable_matlab" = "xyes" -a "x$ax_matlab_version_ok" = "xyes" -a "x$ax_mexopts_ok" = "xyes" -a "x$has_slicot" = "xyes"; then
@@ -158,7 +158,7 @@ Dynare is now configured for building the following components...
 
 Binaries (with "make"):
  MEX files for MATLAB (except those listed below):                   $BUILD_MEX_MATLAB
- K-order and dynare_simul MEX files for MATLAB:                      $BUILD_KORDER_DYNSIMUL_MEX_MATLAB
+ Gensylv, k-order and dynare_simul MEX files for MATLAB:             $BUILD_GENSYLV_KORDER_DYNSIMUL_MEX_MATLAB
  MS-SBVAR MEX files for MATLAB:                                      $BUILD_MS_SBVAR_MEX_MATLAB
  Kalman Steady State MEX file for MATLAB:                            $BUILD_KALMAN_STEADY_STATE_MATLAB
  M2HTML documentation:                                               $BUILD_M2HTML
