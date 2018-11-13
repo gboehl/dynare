@@ -49,7 +49,7 @@ if init
     pdraw = zeros(npar,1);
     lbcum = zeros(npar,1);
     ubcum = ones(npar,1);
-    [junk1,junk2,junk3,lb,ub,junk4] = set_prior(estim_params_,M_,options_); %Prepare bounds
+    [~,~,~,lb,ub,~] = set_prior(estim_params_,M_,options_); %Prepare bounds
     if ~isempty(bayestopt_) && any(bayestopt_.pshape > 0)
         % Set prior bounds
         bounds = prior_bounds(bayestopt_, options_.prior_trunc);

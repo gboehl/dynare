@@ -114,9 +114,9 @@ while t <= last
     tmp = (a+K*v);
     if analytic_derivation
         if analytic_derivation==2
-            [Da,junk,DLIKt,D2a,junk2, Hesst] = computeDLIK(k,tmp,Z,Zflag,v,T,K,[],iF,Da,DYss,DT,[],[],[],notsteady,D2a,D2Yss,D2T,[],[]);
+            [Da,~,DLIKt,D2a,~, Hesst] = computeDLIK(k,tmp,Z,Zflag,v,T,K,[],iF,Da,DYss,DT,[],[],[],notsteady,D2a,D2Yss,D2T,[],[]);
         else
-            [Da,junk,DLIKt,Hesst] = computeDLIK(k,tmp,Z,Zflag,v,T,K,[],iF,Da,DYss,DT,[],[],[],notsteady);
+            [Da,~,DLIKt,Hesst] = computeDLIK(k,tmp,Z,Zflag,v,T,K,[],iF,Da,DYss,DT,[],[],[],notsteady);
         end
         DLIK = DLIK + DLIKt;
         if analytic_derivation==2 || asy_hess

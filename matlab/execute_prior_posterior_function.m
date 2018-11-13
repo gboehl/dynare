@@ -55,7 +55,7 @@ if strcmpi(type,'posterior')
     CutSample(M_, options_, estim_params_);
     %% initialize metropolis draws
     options_.sub_draws=n_draws; %set draws for sampling; changed value is not returned to base workspace
-    [error_flag,junk,options_]= metropolis_draw(1,options_,estim_params_,M_);
+    [error_flag,~,options_]= metropolis_draw(1,options_,estim_params_,M_);
     if error_flag
         error('EXECUTE_POSTERIOR_FUNCTION: The draws could not be initialized')
     end

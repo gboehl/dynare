@@ -18,7 +18,7 @@ function o2WysrOISH  = load_m_file_data_legacy(datafile, U7ORsJ0vy3) % --*-- Uni
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 cXDHdrXnqo5KwwVpTRuc6OprAW = datafile(1:end-2);
-[pathtocXDHdrXnqo5KwwVpTRuc6OprAW,cXDHdrXnqo5KwwVpTRuc6OprAW,junk] = fileparts(cXDHdrXnqo5KwwVpTRuc6OprAW);
+[pathtocXDHdrXnqo5KwwVpTRuc6OprAW,cXDHdrXnqo5KwwVpTRuc6OprAW,~] = fileparts(cXDHdrXnqo5KwwVpTRuc6OprAW);
 
 if ~isempty(pathtocXDHdrXnqo5KwwVpTRuc6OprAW)
     % We need to change directory, first we keep the current directory in memory...
@@ -38,7 +38,7 @@ if ~isempty(pathtocXDHdrXnqo5KwwVpTRuc6OprAW)
 end
 
 % Clear all the variables except the ones defined in the script.
-clear('pathtocXDHdrXnqo5KwwVpTRuc6OprAW', 'cXDHdrXnqo5KwwVpTRuc6OprAW', 'junk');
+clear('pathtocXDHdrXnqo5KwwVpTRuc6OprAW', 'cXDHdrXnqo5KwwVpTRuc6OprAW');
 
 % Get the list of variables in the script.
 mj6F4eU1BN = whos();

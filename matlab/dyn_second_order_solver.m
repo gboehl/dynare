@@ -105,7 +105,7 @@ k1 = find(kstate(:,2) == M_.maximum_endo_lag+2);
 % Jacobian with respect to the variables with the highest lead
 fyp = jacobia(:,kstate(k1,3)+nnz(M_.lead_lag_incidence(M_.maximum_endo_lag+1,:)));
 B(:,nstatic+M_.npred+1:end) = fyp;
-[junk,k1,k2] = find(M_.lead_lag_incidence(M_.maximum_endo_lag+M_.maximum_endo_lead+1,order_var));
+[~,k1,k2] = find(M_.lead_lag_incidence(M_.maximum_endo_lag+M_.maximum_endo_lead+1,order_var));
 A(1:M_.endo_nbr,nstatic+1:nstatic+nspred)=...
     A(1:M_.endo_nbr,nstatic+[1:nspred])+fyp*gx1(k1,1:nspred);
 C = Gy;
@@ -162,7 +162,7 @@ kp = sum(kstate(:,2) <= M_.maximum_endo_lag+1);
 E1 = [eye(nspred); zeros(kp-nspred,nspred)];
 H = E1;
 hxx = dr.ghxx(nstatic+[1:nspred],:);
-[junk,k2a,k2] = find(M_.lead_lag_incidence(M_.maximum_endo_lag+2,order_var));
+[~,k2a,k2] = find(M_.lead_lag_incidence(M_.maximum_endo_lag+2,order_var));
 k3 = nnz(M_.lead_lag_incidence(1:M_.maximum_endo_lag+1,:))+(1:M_.nsfwrd)';
 [B1, err] = sparse_hessian_times_B_kronecker_C(hessian_mat(:,kh(k3,k3)),gu(k2a,:),threads_BC);
 mexErrCheck('sparse_hessian_times_B_kronecker_C', err);

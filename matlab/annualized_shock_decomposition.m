@@ -128,7 +128,7 @@ if realtime_==0
         myopts=options_;
         myopts.plot_shock_decomp.type='qoq';
         myopts.plot_shock_decomp.realtime=0;
-        [z, junk] = plot_shock_decomposition(M_,oo_,myopts,[]);
+        [z, ~] = plot_shock_decomposition(M_,oo_,myopts,[]);
     else
         z = oo_;
     end
@@ -287,7 +287,7 @@ if isstruct(aux)
     yaux=aux.y;
 end
 
-[nvar , nterms, junk] = size(z);
+[nvar, nterms, ~] = size(z);
 for j=1:nvar
     for k =1:nterms
         ztmp = squeeze(z(j,k,min((t0-3):-4:1):end));

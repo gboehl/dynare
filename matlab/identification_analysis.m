@@ -198,7 +198,7 @@ if info(1)==0
             if isoctave || matlab_ver_less_than('8.3')
                 [V,D]=eig(cc);
                 %fix for older Matlab versions that do not support computing left eigenvalues, see http://mathworks.com/help/releases/R2012b/matlab/ref/eig.html
-                [W,junk] = eig(cc.');
+                [W,~] = eig(cc.');
                 W = conj(W);
             else
                 [V,D,W]=eig(cc);

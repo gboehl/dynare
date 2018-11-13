@@ -204,7 +204,7 @@ if ~isempty(options_.nk) && options_.nk ~= 0
         end
     else
         positions_in_declaration_order=oo_.dr.order_var(bayestopt_.smoother_var_list(bayestopt_.smoother_saved_var_list));
-        [junk,sorted_index_declaration_order]=sort(positions_in_declaration_order);
+        [~,sorted_index_declaration_order]=sort(positions_in_declaration_order);
         oo_.FilteredVariablesKStepAhead(:,sorted_index_declaration_order,:)=oo_.FilteredVariablesKStepAhead;
         if ~isempty(PK) && options_.filter_covariance %get K-step ahead variances
             oo_.FilteredVariablesKStepAheadVariances(:,sorted_index_declaration_order,sorted_index_declaration_order,:)=oo_.FilteredVariablesKStepAheadVariances;

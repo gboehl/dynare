@@ -123,16 +123,16 @@ if nargout>1
     yy  = oo_.endo_simul(:,2:options_.periods+1);
     if ~exist('illi')
         illi = M_.lead_lag_incidence';
-        [i_cols,junk,i_cols_j] = find(illi(:));
+        [i_cols,~,i_cols_j] = find(illi(:));
         illi = illi(:,2:3);
-        [i_cols_J1,junk,i_cols_1] = find(illi(:));
+        [i_cols_J1,~,i_cols_1] = find(illi(:));
         i_cols_T = nonzeros(M_.lead_lag_incidence(1:2,:)');
     end
     if options_.block && ~options_.bytecode
         maxerror = oo_.deterministic_simulation.error;
     else
         if options_.bytecode
-            [chck, residuals, junk]= bytecode('dynamic','evaluate', oo_.endo_simul, oo_.exo_simul, M_.params, oo_.steady_state, 1);
+            [chck, residuals, ~]= bytecode('dynamic','evaluate', oo_.endo_simul, oo_.exo_simul, M_.params, oo_.steady_state, 1);
         else
             residuals = perfect_foresight_problem(yy(:),str2func([M_.fname '.dynamic']), y0, yT, ...
                                                   oo_.exo_simul,M_.params,oo_.steady_state, ...

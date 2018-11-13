@@ -142,7 +142,7 @@ while ~done
             elseif ischar(grad)
                 [g1, badg1] = grad(x1,varargin{:});
             else
-                [junk1,cost_flag,g1] = penalty_objective_function(x1,fcn,penalty,varargin{:});
+                [~,cost_flag,g1] = penalty_objective_function(x1,fcn,penalty,varargin{:});
                 badg1 = ~cost_flag;
             end
             wall1=badg1;
@@ -169,7 +169,7 @@ while ~done
                     elseif ischar(grad)
                         [g2, badg2] = grad(x2,varargin{:});
                     else
-                        [junk2,cost_flag,g2] = penalty_objective_function(x1,fcn,penalty,varargin{:});
+                        [~,cost_flag,g2] = penalty_objective_function(x1,fcn,penalty,varargin{:});
                         badg2 = ~cost_flag;
                     end
                     wall2=badg2;
@@ -201,7 +201,7 @@ while ~done
                             elseif ischar(grad)
                                 [g3, badg3] = grad(x3,varargin{:});
                             else
-                                [junk3,cost_flag,g3] = penalty_objective_function(x1,fcn,penalty,varargin{:});
+                                [~,cost_flag,g3] = penalty_objective_function(x1,fcn,penalty,varargin{:});
                                 badg3 = ~cost_flag;
                             end
                             wall3=badg3;
@@ -261,7 +261,7 @@ while ~done
             elseif ischar(grad)
                 [gh, badgh] = grad(xh,varargin{:});
             else
-                [junkh,cost_flag,gh] = penalty_objective_function(x1,fcn,penalty,varargin{:});
+                [~,cost_flag,gh] = penalty_objective_function(x1,fcn,penalty,varargin{:});
                 badgh = ~cost_flag;
             end
         end

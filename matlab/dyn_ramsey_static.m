@@ -75,7 +75,7 @@ elseif options_.steadystate_flag
     ys_init(k_inst) = inst_val;
     exo_ss = [oo.exo_steady_state oo.exo_det_steady_state];
     [xx,params] = evaluate_steady_state_file(ys_init,exo_ss,M,options_,~options_.steadystate.nocheck); %run steady state file again to update parameters
-    [junk,junk,steady_state] = nl_func(inst_val); %compute and return steady state
+    [~,~,steady_state] = nl_func(inst_val); %compute and return steady state
 else
     n_var = M.orig_endo_nbr;
     xx = oo.steady_state(1:n_var);
@@ -85,7 +85,7 @@ else
     if info1~=0
         check=81;
     end
-    [junk,junk,steady_state] = nl_func(xx);
+    [~,~,steady_state] = nl_func(xx);
 end
 
 
@@ -194,8 +194,8 @@ end
 function result = check_static_model(ys,M,options_,oo)
 result = false;
 if (options_.bytecode)
-    [chck, res, junk] = bytecode('static',ys,[oo.exo_steady_state oo.exo_det_steady_state], ...
-                                 M.params, 'evaluate');
+    [chck, res, ~] = bytecode('static',ys,[oo.exo_steady_state oo.exo_det_steady_state], ...
+                              M.params, 'evaluate');
 else
     res = feval([M.fname '.static'],ys,[oo.exo_steady_state oo.exo_det_steady_state], ...
                 M.params);

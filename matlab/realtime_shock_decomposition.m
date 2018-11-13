@@ -98,8 +98,7 @@ nobs = options_.nobs;
 if forecast_ && any(forecast_params)
     M1=M_;
     M1.params = forecast_params;
-    [junk1,junk2,junk3,junk4,junk5,junk6,oo1] = dynare_resolve(M1,options_,oo_);
-    clear junk1 junk2 junk3 junk4 junk5 junk6
+    [~,~,~,~,~,~,oo1] = dynare_resolve(M1,options_,oo_);
 end
 
 if fast_realtime
@@ -109,7 +108,7 @@ if fast_realtime
     newString=sprintf(running_text);
     fprintf(['%s'],newString);
     options_.nobs=fast_realtime;
-    [oo0,M_,junk1,junk2,Smoothed_Variables_deviation_from_mean0] = evaluate_smoother(parameter_set,varlist,M_,oo_,options_,bayestopt_,estim_params_);
+    [oo0,M_,~,~,Smoothed_Variables_deviation_from_mean0] = evaluate_smoother(parameter_set,varlist,M_,oo_,options_,bayestopt_,estim_params_);
     gend0 = size(oo0.SmoothedShocks.(M_.exo_names{1}),1);
     prctdone=0.5;
     if isoctave
@@ -120,7 +119,7 @@ if fast_realtime
         fprintf([s0,'%s'],newString);
     end
     options_.nobs=nobs;
-    [oo2,M_,junk1,junk2,Smoothed_Variables_deviation_from_mean2] = evaluate_smoother(parameter_set,varlist,M_,oo_,options_,bayestopt_,estim_params_);
+    [oo2,M_,~,~,Smoothed_Variables_deviation_from_mean2] = evaluate_smoother(parameter_set,varlist,M_,oo_,options_,bayestopt_,estim_params_);
     gend2 = size(oo2.SmoothedShocks.(M_.exo_names{1}),1);
     prctdone=1;
     if isoctave
@@ -142,7 +141,7 @@ for j=presample+1:nobs
     %    evalin('base',['options_.nobs=' int2str(j) ';'])
     options_.nobs=j;
     if ~fast_realtime
-        [oo,M_,junk1,junk2,Smoothed_Variables_deviation_from_mean] = evaluate_smoother(parameter_set,varlist,M_,oo_,options_,bayestopt_,estim_params_);
+        [oo,M_,~,~,Smoothed_Variables_deviation_from_mean] = evaluate_smoother(parameter_set,varlist,M_,oo_,options_,bayestopt_,estim_params_);
         gend = size(oo.SmoothedShocks.(M_.exo_names{1}),1);
     else
         gend = gend0+j-fast_realtime;

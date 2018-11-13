@@ -191,7 +191,7 @@ end
 if ispc
     arch = getenv('PROCESSOR_ARCHITECTURE');
 else
-    [junk, arch] = system('uname -m');
+    [~, arch] = system('uname -m');
 end
 
 if isempty(strfind(arch, '64'))

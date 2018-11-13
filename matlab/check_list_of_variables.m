@@ -32,7 +32,7 @@ function varlist = check_list_of_variables(options_, M_, varlist)
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 % Get uniques
-[junk1, junk2, index_uniques] = varlist_indices(varlist, M_.endo_names);
+[~, ~, index_uniques] = varlist_indices(varlist, M_.endo_names);
 varlist = varlist(index_uniques);
 
 msg = false;

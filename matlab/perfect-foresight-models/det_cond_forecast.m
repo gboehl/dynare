@@ -368,7 +368,7 @@ end
 save_options_initval_file = options_.initval_file;
 options_.initval_file = '__';
 
-[pos_constrained_pf, junk] = find(constrained_perfect_foresight);
+[pos_constrained_pf, ~] = find(constrained_perfect_foresight);
 indx_endo_solve_pf = constrained_vars(pos_constrained_pf);
 if isempty(indx_endo_solve_pf)
     pf = 0;
@@ -572,7 +572,7 @@ else
     for t = 1:constrained_periods
 
         if direct_mode && ~isempty(is_constraint)
-            [pos_constrained_pf, junk] = find(constrained_perfect_foresight .* is_constraint(t, :)');
+            [pos_constrained_pf, ~] = find(constrained_perfect_foresight .* is_constraint(t, :)');
             indx_endo_solve_pf = constrained_vars(pos_constrained_pf);
             if isempty(indx_endo_solve_pf)
                 pf = 0;
@@ -580,7 +580,7 @@ else
                 pf = length(indx_endo_solve_pf);
             end
 
-            [pos_constrained_surprise, junk] = find((1-constrained_perfect_foresight) .* is_constraint(t, :)');
+            [pos_constrained_surprise, ~] = find((1-constrained_perfect_foresight) .* is_constraint(t, :)');
             indx_endo_solve_surprise = constrained_vars(pos_constrained_surprise);
 
             if isempty(indx_endo_solve_surprise)
@@ -591,7 +591,7 @@ else
         end
 
         if direct_mode && ~isempty(is_shock)
-            [pos_shock_pf, junk] = find(shock_perfect_foresight .* is_shock(t, :)');
+            [pos_shock_pf, ~] = find(shock_perfect_foresight .* is_shock(t, :)');
             indx_endo_solve_pf = shock_vars(pos_shock_pf);
             if isempty(indx_endo_solve_pf)
                 b_pf = 0;
@@ -599,7 +599,7 @@ else
                 b_pf = length(indx_endo_solve_pf);
             end
 
-            [pos_shock_surprise, junk] = find((1-shock_perfect_foresight) .* is_shock(t, :)');
+            [pos_shock_surprise, ~] = find((1-shock_perfect_foresight) .* is_shock(t, :)');
             indx_endo_solve_surprise = shock_vars(pos_shock_surprise);
 
             if isempty(indx_endo_solve_surprise)

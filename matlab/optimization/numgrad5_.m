@@ -48,13 +48,13 @@ for i=1:n
     xiold = x(i);
     h = step_length_correction(xiold,scale,i)*delta;
     x(i) = xiold+h;
-    [f1,junk1,cost_flag1,] = penalty_objective_function(x, fcn, penalty, varargin{:});
+    [f1,~,cost_flag1,] = penalty_objective_function(x, fcn, penalty, varargin{:});
     x(i) = xiold-h;
-    [f2,junk1,cost_flag2] = penalty_objective_function(x, fcn, penalty, varargin{:});
+    [f2,~,cost_flag2] = penalty_objective_function(x, fcn, penalty, varargin{:});
     x(i) = xiold+2*h;
-    [f3,junk1,cost_flag3] = penalty_objective_function(x, fcn, penalty, varargin{:});
+    [f3,~,cost_flag3] = penalty_objective_function(x, fcn, penalty, varargin{:});
     x(i) = xiold-2*h;
-    [f4,junk1,cost_flag4] = penalty_objective_function(x, fcn, penalty, varargin{:});
+    [f4,~,cost_flag4] = penalty_objective_function(x, fcn, penalty, varargin{:});
     if f0<f1 && f1<f3 && f0<f2 && f2<f4
         g0 = 0;
     else

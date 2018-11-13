@@ -43,7 +43,7 @@ bk_number = record.Nblck ;
 predicted_mhname = [ BaseName '_mh' int2str(mh_number) '_blck' int2str(bk_number) '.mat' ] ;
 
 all_mh_files = dir([BaseName '_mh*_blck*' ]);
-[junk,idx] = sort([all_mh_files.datenum]);
+[~,idx] = sort([all_mh_files.datenum]);
 mhname = all_mh_files(idx(end)).name;
 
 if ~strcmpi(mhname,predicted_mhname)

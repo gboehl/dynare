@@ -235,8 +235,8 @@ if ~isequal(options_.mode_compute,0) && ~options_.mh_posterior_mode_estimation
             if options_.analytic_derivation && strcmp(func2str(objective_function),'dsge_likelihood')
                 ana_deriv_old = options_.analytic_derivation;
                 options_.analytic_derivation = 2;
-                [junk1, junk2,junk3, junk4, hh] = feval(objective_function,xparam1, ...
-                                                        dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,bounds,oo_);
+                [~,~,~,~,hh] = feval(objective_function,xparam1, ...
+                                     dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,bounds,oo_);
                 options_.analytic_derivation = ana_deriv_old;
             elseif ~isnumeric(options_.mode_compute) || ~(isequal(options_.mode_compute,5) && newratflag~=1 && strcmp(func2str(objective_function),'dsge_likelihood'))
                 % with flag==0, we force to use the hessian from outer product gradient of optimizer 5
@@ -373,9 +373,8 @@ if any(bayestopt_.pshape > 0) && ~options_.mh_posterior_mode_estimation
         skipline()
     end
     if options_.dsge_var
-        [junk1,junk2,junk3,junk4,junk5,junk6,junk7,oo_.dsge_var.posterior_mode.PHI_tilde,oo_.dsge_var.posterior_mode.SIGMA_u_tilde,oo_.dsge_var.posterior_mode.iXX,oo_.dsge_var.posterior_mode.prior] =...
+        [~,~,~,~,~,~,~,oo_.dsge_var.posterior_mode.PHI_tilde,oo_.dsge_var.posterior_mode.SIGMA_u_tilde,oo_.dsge_var.posterior_mode.iXX,oo_.dsge_var.posterior_mode.prior] =...
             feval(objective_function,xparam1,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,bounds,oo_);
-        clear('junk1','junk2','junk3','junk4','junk5','junk6','junk7');
     end
 
 elseif ~any(bayestopt_.pshape > 0) && ~options_.mh_posterior_mode_estimation
@@ -519,7 +518,7 @@ if (any(bayestopt_.pshape  >0 ) && options_.mh_replic) || ...
                 oo_.posterior.metropolis=oo_load_mh.oo_.posterior.metropolis;
             end
         end
-        [error_flag,junk,options_]= metropolis_draw(1,options_,estim_params_,M_);
+        [error_flag,~,options_]= metropolis_draw(1,options_,estim_params_,M_);
         if options_.bayesian_irf
             if error_flag
                 error('Estimation::mcmc: I cannot compute the posterior IRFs!')

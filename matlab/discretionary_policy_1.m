@@ -63,7 +63,7 @@ end
 %call steady_state_file if present to update parameters
 if options_.steadystate_flag
     % explicit steady state file
-    [junk,M_.params,info] = evaluate_steady_state_file(oo_.steady_state,[oo_.exo_steady_state; oo_.exo_det_steady_state],M_, ...
+    [~,M_.params,info] = evaluate_steady_state_file(oo_.steady_state,[oo_.exo_steady_state; oo_.exo_det_steady_state],M_, ...
                                                       options_,0);
 end
 [U,Uy,W] = feval([M_.fname,'.objective.static'],zeros(endo_nbr,1),[], M_.params);
@@ -129,7 +129,7 @@ iter=1;
 for j=1:numel(Indices)
     eval(['A',Indices{j},'=zeros(eq_nbr,endo_nbr);'])
     if strcmp(Indices{j},'0')||(strcmp(Indices{j},'lag') && MaxLag)||(strcmp(Indices{j},'lead') && MaxLead)
-        [junk,row,col]=find(lead_lag_incidence(iter,:));
+        [~,row,col]=find(lead_lag_incidence(iter,:));
         eval(['A',Indices{j},'(:,row)=jacobia_(:,col);'])
         iter=iter+1;
     end

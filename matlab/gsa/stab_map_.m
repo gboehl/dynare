@@ -92,7 +92,7 @@ p2 = bayestopt_.p2(nshock+1:end);
 p3 = bayestopt_.p3(nshock+1:end);
 p4 = bayestopt_.p4(nshock+1:end);
 
-[junk1,junk2,junk3,lb,ub,junk4] = set_prior(estim_params_,M_,options_); %Prepare bounds
+[~,~,~,lb,ub,~] = set_prior(estim_params_,M_,options_); %Prepare bounds
 if ~isempty(bayestopt_) && any(bayestopt_.pshape > 0)
     % Set prior bounds
     bounds = prior_bounds(bayestopt_, options_.prior_trunc);

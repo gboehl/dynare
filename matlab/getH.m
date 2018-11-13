@@ -319,8 +319,8 @@ if nargout > 5
     end
 end
 
-[junk,cols_b,cols_j] = find(M_.lead_lag_incidence(M_.maximum_endo_lag+1, ...
-                                                  oo_.dr.order_var));
+[~,cols_b,cols_j] = find(M_.lead_lag_incidence(M_.maximum_endo_lag+1, ...
+                                               oo_.dr.order_var));
 GAM0 = zeros(M_.endo_nbr,M_.endo_nbr);
 Dg0 = zeros(M_.endo_nbr,M_.endo_nbr,param_nbr);
 GAM0(:,cols_b) = g1(:,cols_j);

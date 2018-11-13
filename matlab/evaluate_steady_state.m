@@ -307,7 +307,7 @@ if M.static_and_dynamic_models_differ
     z = repmat(ys,1,M.maximum_lead + M.maximum_lag + 1);
     zx = repmat([exo_ss'], M.maximum_lead + M.maximum_lag + 1, 1);
     if options.bytecode
-        [chck, r, junk]= bytecode('dynamic','evaluate', z, zx, M.params, ys, 1);
+        [chck, r, ~]= bytecode('dynamic','evaluate', z, zx, M.params, ys, 1);
         mexErrCheck('bytecode', chck);
     elseif options.block
         [r, oo.dr] = feval([M.fname '.dynamic'], z', zx, M.params, ys, M.maximum_lag+1, oo.dr);

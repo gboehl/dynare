@@ -93,7 +93,7 @@ for j=1:nvar
     d0={};
     z1 = squeeze(z(i_var(j),:,:));
     if screen_shocks
-        [junk, isort] = sort(mean(abs(z1(1:end-2,:)')), 'descend');
+        [~, isort] = sort(mean(abs(z1(1:end-2,:)')), 'descend');
         labels = char(char(shock_names(isort(1:16))),'Others', 'Initial values');
         zres = sum(z1(isort(17:end),:),1);
         z1 = [z1(isort(1:16),:); zres; z1(comp_nbr0:end,:)];
