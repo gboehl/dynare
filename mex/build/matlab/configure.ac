@@ -34,7 +34,7 @@ if test "x$ax_enable_matlab" = "xyes"; then
 
   if test "x$ax_matlab_version_ok" = "xyes"; then
     AX_MEXOPTS
-    AX_COMPARE_VERSION([$MATLAB_VERSION], [lt], [7.5], [AC_MSG_ERROR([Your MATLAB is too old, please upgrade to version 7.5 (R2007b) at least.])])
+    AX_COMPARE_VERSION([$MATLAB_VERSION], [lt], [7.9], [AC_MSG_ERROR([Your MATLAB is too old, please upgrade to version 7.9 (R2009b) at least.])])
   fi
 
   CFLAGS="$MATLAB_CFLAGS"

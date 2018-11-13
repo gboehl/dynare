@@ -33,7 +33,7 @@ if isoctave
 else
     % Add win32 specific paths for Dynare Windows package
     if strcmp(computer, 'PCWIN')
-        tmp = [dynareroot '../mex/matlab/win32-7.5-8.6/'];
+        tmp = [dynareroot '../mex/matlab/win32-7.9-8.6/'];
         if exist(tmp, 'dir')
             mexpath = tmp;
             if modifypath
@@ -43,16 +43,8 @@ else
     end
     % Add win64 specific paths for Dynare Windows package
     if strcmp(computer, 'PCWIN64')
-        if matlab_ver_less_than('7.8')
-            tmp = [dynareroot '../mex/matlab/win64-7.5-7.7/'];
-            if exist(tmp, 'dir')
-                mexpath = tmp;
-                if modifypath
-                    addpath(mexpath);
-                end
-            end
-        elseif matlab_ver_less_than('9.4')
-            tmp = [dynareroot '../mex/matlab/win64-7.8-9.3/'];
+        if matlab_ver_less_than('9.4')
+            tmp = [dynareroot '../mex/matlab/win64-7.9-9.3/'];
             if exist(tmp, 'dir')
                 mexpath = tmp;
                 if modifypath
