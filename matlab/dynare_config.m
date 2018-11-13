@@ -129,9 +129,9 @@ if ~isoctave && matlab_ver_less_than('8.1')
     p{end+1} = '/missing/strsplit';
 end
 
-% isrow is missing in Matlab<R2010b
+% isrow, iscolumn and ismatrix are missing in Matlab<R2010b
 if ~isoctave && matlab_ver_less_than('7.11')
-    p{end+1} = '/missing/isrow';
+    p{end+1} = '/missing/is-row-column-matrix';
 end
 
 P = cellfun(@(c)[dynareroot(1:end-1) c], p, 'uni',false);
