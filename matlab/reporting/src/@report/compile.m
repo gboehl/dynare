@@ -99,9 +99,9 @@ if opts.showOutput
         status = system([opts.compiler ' ' options middle o.fileName], '-echo');
     end
 else
-    [status, junk] = system([opts.compiler ' -interaction=batchmode ' options middle o.fileName]);
+    [status, ~] = system([opts.compiler ' -interaction=batchmode ' options middle o.fileName]);
 end
-[junk, rfn, junk] = fileparts(o.fileName);
+[~, rfn, ~] = fileparts(o.fileName);
 
 if status ~= 0
     error(['@report.compile: There was an error in compiling ' rfn '.pdf.' ...
