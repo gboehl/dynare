@@ -23,7 +23,7 @@ function [state_u,state_n] = get_dynare_random_generator_state()
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-matlab_random_streams = ~(isoctave || matlab_ver_less_than('7.7'));
+matlab_random_streams = ~isoctave;
 
 if matlab_random_streams% Use new matlab interface.
     if matlab_ver_less_than('7.12')

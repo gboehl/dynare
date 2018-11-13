@@ -82,6 +82,7 @@ if isoctave
                  'of models approximated at third order, will not be available.'], supported_octave_version())
         skipline()
     elseif octave_ver_less_than('4.2') % Should match the test in mex/build/octave/configure.ac
+                                       % and in m4/ax_mexopts.m4
         skipline()
         warning(['This version of Dynare has only been tested on Octave 4.2 and above. Dynare may fail to run or give unexpected result. Consider upgrading your version of Octave.'])
         skipline()
