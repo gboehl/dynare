@@ -2,6 +2,7 @@ MODFILES = \
 	walsh.mod \
 	optimizers/fs2000_6.mod \
 	moments/example1_hp_test.mod \
+	moments/fs2000_post_moments.mod \
 	lmmcp/rbcii.mod \
 	ep/rbc_mc.mod \
 	estimation/TaRB/fs2000_tarb.mod \
