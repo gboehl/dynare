@@ -4659,11 +4659,11 @@ Numbers are in percent and sum up to 100 across columns.
 After a run of @code{stoch_simul} with the
 @code{conditional_variance_decomposition} option, contains a
 three-dimensional array with the result of the decomposition. The
-first dimension corresponds to forecast horizons (as declared with the
-option), the second dimension corresponds to endogenous variables (in the order 
+first dimension corresponds to the endogenous variables (in the order 
 of declaration after the command or in @code{M_.endo_names} if not specified)), 
-the third dimension corresponds to
-exogenous variables (in the order of declaration). In the presence of measurement error, the
+the second dimension corresponds to the forecast horizons (as declared with the
+option), and the third dimension corresponds to the exogenous variables 
+(in the order of declaration). In the presence of measurement error, the
 field will contain the variance contribution after measurement error has been taken out, 
 i.e. the decomposition will be conducted of the actual as opposed to the measured variables.
 @end defvr
@@ -4674,10 +4674,11 @@ Field set after a run of @code{stoch_simul} with the @code{conditional_variance_
 option if measurement error is present. It is similar to @ref{oo_.conditional_variance_decomposition}, but 
 the decomposition will be conducted of the measured variables. 
 It contains a three-dimensional array with the result of the decomposition. The
-first dimension corresponds to forecast horizons (as declared with the
-option), the second dimension corresponds to observed endogenous variables (in
-the order of declaration), the third dimension corresponds to
-exogenous variables (in the order of declaration), with the last column
+first dimension corresponds to the endogenous variables (in the order 
+of declaration after the command or in @code{M_.endo_names} if not specified)), 
+the second dimension corresponds to the forecast horizons (as declared with the
+option), and the third dimension corresponds to the exogenous variables 
+(in the order of declaration), with the last column
 corresponding to the contribution of the measurement error. 
 @end defvr
 
