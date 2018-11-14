@@ -3,7 +3,7 @@ function varargout = prior(varargin)
 % Computes various prior statistics and display them in the command window.
 %
 % INPUTS
-%   'table', 'moments', 'optimize', 'simulate', 'plot'
+%   'table', 'moments', 'optimize', 'simulate', 'plot', 'moments(distribution)'
 %
 % OUTPUTS
 %   none
@@ -11,7 +11,7 @@ function varargout = prior(varargin)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2015-2017 Dynare Team
+% Copyright (C) 2015-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
