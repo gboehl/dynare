@@ -34,6 +34,8 @@ if DynareOptions.TeX
     else
         param_names_tex = options_mcf.param_names_tex;
     end
+else
+    param_names_tex = char(strrep(cellstr(options_mcf.param_names),'_','\_'));
 end
 amcf_name = options_mcf.amcf_name;
 amcf_title = options_mcf.amcf_title;
@@ -78,7 +80,7 @@ if ~isempty(indmcf) && ~DynareOptions.nograph
     skipline()
     xx=[];
     if ~ isempty(xparam1), xx=xparam1(indmcf); end
-    scatter_mcf(lpmat(ibeha,indmcf),lpmat(inobeha,indmcf), param_names(indmcf,:), ...
+    scatter_mcf(lpmat(ibeha,indmcf),lpmat(inobeha,indmcf), param_names_tex(indmcf,:), ...
                 '.', [fname_,'_',amcf_name], OutputDirectoryName, amcf_title,xx, DynareOptions, ...
                 beha_title, nobeha_title)
 end
