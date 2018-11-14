@@ -21,6 +21,10 @@
 
 #include "dynamic_abstract_class.hh"
 
+DynamicModelAC::~DynamicModelAC()
+{
+}
+
 void
 DynamicModelAC::copyDoubleIntoTwoDMatData(double *dm, TwoDMatrix *tdm, int rows, int cols)
 {

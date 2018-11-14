@@ -25,6 +25,7 @@
 class DynamicModelAC
 {
 public:
+  virtual ~DynamicModelAC();
   static double *unpackSparseMatrix(mxArray *sparseMatrix);
   static void copyDoubleIntoTwoDMatData(double *dm, TwoDMatrix *tdm, int rows, int cols);
   virtual void eval(const Vector &y, const Vector &x, const Vector &params, const Vector &ySteady,

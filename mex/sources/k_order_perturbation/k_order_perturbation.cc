@@ -229,6 +229,7 @@ extern "C" {
 
     THREAD_GROUP::max_parallel_threads = 2; //params.num_threads;
 
+    DynamicModelAC *dynamicModelFile = NULL;
     try
       {
         // make journal name and journal
@@ -236,7 +237,6 @@ extern "C" {
         jName += ".jnl";
         Journal journal(jName.c_str());
 
-        DynamicModelAC *dynamicModelFile;
         if (use_dll == 1)
           dynamicModelFile = new DynamicModelDLL(fName);
         else
@@ -323,30 +323,41 @@ extern "C" {
         e.print();
         ostringstream strstrm;
         strstrm << "dynare:k_order_perturbation: Caught Kord exception: " << e.get_message();
+        if (dynamicModelFile)
+          delete dynamicModelFile;
         DYN_MEX_FUNC_ERR_MSG_TXT(strstrm.str().c_str());
       }
     catch (const TLException &e)
       {
         e.print();
+        if (dynamicModelFile)
+          delete dynamicModelFile;
         DYN_MEX_FUNC_ERR_MSG_TXT("dynare:k_order_perturbation: Caught TL exception");
       }
     catch (SylvException &e)
       {
         e.printMessage();
+        if (dynamicModelFile)
+          delete dynamicModelFile;
         DYN_MEX_FUNC_ERR_MSG_TXT("dynare:k_order_perturbation: Caught Sylv exception");
       }
     catch (const DynareException &e)
       {
         ostringstream strstrm;
         strstrm << "dynare:k_order_perturbation: Caught KordDynare exception: " << e.message();
+        if (dynamicModelFile)
+          delete dynamicModelFile;
         DYN_MEX_FUNC_ERR_MSG_TXT(strstrm.str().c_str());
       }
     catch (const ogu::Exception &e)
       {
         ostringstream strstrm;
         strstrm << "dynare:k_order_perturbation: Caught general exception: " << e.message();
+        if (dynamicModelFile)
+          delete dynamicModelFile;
         DYN_MEX_FUNC_ERR_MSG_TXT(strstrm.str().c_str());
       }
+    delete dynamicModelFile;
     plhs[0] = mxCreateDoubleScalar(0);
   } // end of mexFunction()
 } // end of extern C
