@@ -1,7 +1,18 @@
 function print_moments_implied_prior(ModelInfo, mm, vm, mv, vv)
-
+%function print_moments_implied_prior(ModelInfo, mm, vm, mv, vv)
 % This routine prints in the command window some descriptive statistics
 % about the endogenous variables implied prior moments.
+% Inputs: 
+%   - ModelInfo     [structure]             Dynare's model structure
+%   - mm            [endo_nbr*1]            mean first moments of the endogenous
+%                                           variables
+%   - vm            [endo_nbr*1]            variance of the first moments of the
+%                                           endogenous variables
+%   - mv            [endo_nbr*endo_nbr]     mean first moments of the endogenous
+%                                           variables
+%   - vv            [endo_nbr]              variance of the first moments of the
+%                                           endogenous variables
+
 
 % Copyright (C) 2016-2017 Dynare Team
 %
@@ -45,7 +56,7 @@ skipline(2)
 disp(TT)
 skipline(2)
 
-disp('(Implied) Prior moments of the endogenous variables'' variance')
+disp('(Implied) Prior moments of the endogenous variables'' (co)variance')
 disp(printline(61, '-'))
 
 T1a = 'VARIABLE-1';
