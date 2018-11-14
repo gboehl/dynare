@@ -143,7 +143,7 @@ for i = 1:p
         end
         if i==1
             if nflag == 1
-                ylabel(vnames(j,:),'Rotation',45,'interpreter','none', ...
+                ylabel(vnames(j,:),'Rotation',45, ...
                        'HorizontalAlignment','right','VerticalAlignment','middle');
             else
                 ylabel([num2str(j),' '],'Rotation',90)
@@ -151,7 +151,7 @@ for i = 1:p
         end
         if j==1
             if nflag == 1
-                title(vnames(i,:),'interpreter','none','Rotation',45, ...
+                title(vnames(i,:),'Rotation',45, ...
                       'HorizontalAlignment','left','VerticalAlignment','bottom')
             else
                 title(num2str(i))
