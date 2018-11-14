@@ -42,7 +42,6 @@ end
 pvalue_ks = DynareOptions.opt_gsa.pvalue_ks;
 indx_irf = [];
 indx_moment = [];
-DynareOptions.nodisplay = 1;
 init = ~DynareOptions.opt_gsa.load_stab;
 
 options_mcf.pvalue_ks = DynareOptions.opt_gsa.pvalue_ks;
