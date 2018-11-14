@@ -49,7 +49,7 @@ exo_ss = [oo.exo_steady_state; oo.exo_det_steady_state];
 if length(M.aux_vars) > 0
     h_set_auxiliary_variables = str2func([M.fname '_set_auxiliary_variables']);
     if ~steadystate_flag
-        ys_init = h_set_auxiliary_variables(ys_init,exo_ss,M.params);
+        ys_init = h_set_auxiliary_variables(ys_init,exo_ss,params);
     end
 end
 
@@ -290,7 +290,7 @@ if check
     info(1)= 20;
     %make sure ys contains auxiliary variables in case of problem with dynare_solve
     if length(M.aux_vars) > 0 && ~steadystate_flag
-        ys = h_set_auxiliary_variables(ys,exo_ss,M.params);
+        ys = h_set_auxiliary_variables(ys,exo_ss,params);
     end
     resid = evaluate_static_model(ys,exo_ss,params,M,options);
     info(2) = resid'*resid ;
@@ -307,15 +307,15 @@ if M.static_and_dynamic_models_differ
     z = repmat(ys,1,M.maximum_lead + M.maximum_lag + 1);
     zx = repmat([exo_ss'], M.maximum_lead + M.maximum_lag + 1, 1);
     if options.bytecode
-        [chck, r, junk]= bytecode('dynamic','evaluate', z, zx, M.params, ys, 1);
+        [chck, r, junk]= bytecode('dynamic','evaluate', z, zx, params, ys, 1);
         mexErrCheck('bytecode', chck);
     elseif options.block
-        [r, oo.dr] = feval([M.fname '_dynamic'], z', zx, M.params, ys, M.maximum_lag+1, oo.dr);
+        [r, oo.dr] = feval([M.fname '_dynamic'], z', zx, params, ys, M.maximum_lag+1, oo.dr);
     else
         iyv = M.lead_lag_incidence';
         iyr0 = find(iyv(:));
         xys = z(iyr0);
-        r = feval([M.fname '_dynamic'], z(iyr0), zx, M.params, ys, M.maximum_lag + 1);
+        r = feval([M.fname '_dynamic'], z(iyr0), zx, params, ys, M.maximum_lag + 1);
     end
     % Fail if residual greater than tolerance
     if max(abs(r)) > options.solve_tolf
