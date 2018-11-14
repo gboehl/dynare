@@ -14477,7 +14477,7 @@ Cycles: The Cycle is the Trend,'' @i{NBER Working Paper}, 10734
 Amisano, Gianni and Tristani, Oreste (2010): ``Euro area inflation persistence in an estimated nonlinear DSGE model'', @i{Journal of Economic Dynamics and Control}, 34(10), 1837--1858
 
 @item
-Andreasen, Martin M., Jesús Fernández-Villaverde, and Juan Rubio-Ramírez (2013): ``The Pruned State-Space System for Non-Linear DSGE Models: Theory and Empirical Applications,'' @i{NBER Working Paper}, 18983
+Andreasen, Martin M., Jesús Fernández-Villaverde, and Juan Rubio-Ramírez (2018): ``The Pruned State-Space System for Non-Linear DSGE Models: Theory and Empirical Applications,'' @i{Review of Economic Studies}, 85(1), 1--49
 
 @item
 Andrews, Donald W.K (1991): ``Heteroskedasticity and autocorrelation consistent covariance matrix estimation'', 
@@ -14501,10 +14501,10 @@ and Control}, 19, 711--734
 @item
 Brooks,  Stephen P.,  and Andrew  Gelman (1998):  ``General methods  for
 monitoring  convergence   of  iterative  simulations,''   @i{Journal  of
-computational and graphical statistics}, 7, pp. 434--455
+Computational and Graphical Statistics}, 7, pp. 434--455
 
 @item
-Cardoso, Margarida F., R. L. Salcedo and S. Feyo de Azevedo (1996): ``The simplex simulated annealing approach to continuous non-linear optimization,'' @i{Computers chem. Engng}, 20(9), 1065-1080
+Cardoso, Margarida F., R. L. Salcedo and S. Feyo de Azevedo (1996): ``The simplex simulated annealing approach to continuous non-linear optimization,'' @i{Computers & Chemical Engineering}, 20(9), 1065-1080
 
 @item
 Chib, Siddhartha and Srikanth Ramamurthy (2010):
