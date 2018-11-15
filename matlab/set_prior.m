@@ -226,12 +226,23 @@ end
 
 % uniform distribution
 k = find(bayestopt_.pshape == 5);
+problem_parameters='';
 for i=1:length(k)
-    [bayestopt_.p1(k(i)),bayestopt_.p2(k(i)),bayestopt_.p6(k(i)),bayestopt_.p7(k(i))] = ...
+    [bayestopt_.p1(k(i)),bayestopt_.p2(k(i)),bayestopt_.p6(k(i)),bayestopt_.p7(k(i)),error_indicator] = ...
         uniform_specification(bayestopt_.p1(k(i)),bayestopt_.p2(k(i)),bayestopt_.p3(k(i)),bayestopt_.p4(k(i)));
+    if error_indicator
+        if isempty(problem_parameters)
+            problem_parameters=[bayestopt_.name{k(i)}];
+        else
+            problem_parameters=[problem_parameters ', ' bayestopt_.name{k(i)}];
+        end
+    end    
     bayestopt_.p3(k(i)) = bayestopt_.p6(k(i)) ;
     bayestopt_.p4(k(i)) = bayestopt_.p7(k(i)) ;
     bayestopt_.p5(k(i)) = NaN ;
+end
+if ~isempty(problem_parameters)
+    error(['uniform_specification: You defined lower and upper bounds for parameter ', problem_parameters, '. In this case, you need to leave mean and standard deviation empty.'])
 end
 
 % inverse gamma distribution (type 2)
