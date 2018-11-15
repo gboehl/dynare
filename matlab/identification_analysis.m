@@ -123,24 +123,27 @@ if info(1)==0
     ide_strength_J=NaN(1,nparam);
     ide_strength_J_prior=NaN(1,nparam);
     if init
-        normaliz = NaN(1,nparam);
+        ide_uncert_unnormaliz = NaN(1,nparam);
+        offset=0;
         if prior_exist
             if ~isempty(estim_params_.var_exo)
-                normaliz1 = estim_params_.var_exo(:,7)'; % normalize with prior standard deviation
+                normaliz_prior_std = bayestopt_.p2(1:estim_params_.nvx)'; % normalize with prior standard deviation
+                offset=offset+estim_params_.nvx+estim_params_.nvn;
             else
-                normaliz1=[];
+                normaliz_prior_std=[];
             end
             if ~isempty(estim_params_.corrx)
-                normaliz1 = [normaliz1 estim_params_.corrx(:,8)']; % normalize with prior standard deviation
+                normaliz_prior_std = [normaliz_prior_std bayestopt_.p2(offset+1:offset+estim_params_.ncx)']; % normalize with prior standard deviation
+                offset=offset+estim_params_.ncx+estim_params_.ncn;
             end
             if ~isempty(estim_params_.param_vals)
-                normaliz1 = [normaliz1 estim_params_.param_vals(:,7)']; % normalize with prior standard deviation
+                normaliz_prior_std = [normaliz_prior_std bayestopt_.p2(offset+1:offset+estim_params_.np)']; % normalize with prior standard deviation
             end
             %                         normaliz = max([normaliz; normaliz1]);
-            normaliz1(isinf(normaliz1)) = 1;
+%             normaliz1(isinf(normaliz1)) = 1;
 
         else
-            normaliz1 = NaN(1,nparam);
+            normaliz_prior_std = NaN(1,nparam);
         end
         try
             options_.irf = 0;
@@ -176,7 +179,7 @@ if info(1)==0
             end
             indok = find(max(ide_hess.indno,[],1)==0);
             cparam(indok,indok) = inv(AHess(indok,indok));
-            normaliz(indok) = sqrt(diag(cparam(indok,indok)))';
+            ide_uncert_unnormaliz(indok) = sqrt(diag(cparam(indok,indok)))';
             cmm = NaN(size(siJ,1),size(siJ,1));
             ind1=find(ide_hess.ind0);
             cmm = siJ(:,ind1)*((AHess(ind1,ind1))\siJ(:,ind1)');
@@ -242,22 +245,23 @@ if info(1)==0
             clre = siLRE(:,ind1-offset)*((MIM(ind1,ind1))\siLRE(:,ind1-offset)');
             if ~isempty(indok)
                 rhoM(indok)=sqrt(1./diag(inv(tildaM(indok,indok))));
-                normaliz(indok) = (sqrt(diag(inv(tildaM(indok,indok))))./deltaM(indok))'; %sqrt(diag(inv(MIM(indok,indok))))';
+                ide_uncert_unnormaliz(indok) = (sqrt(diag(inv(tildaM(indok,indok))))./deltaM(indok))'; %sqrt(diag(inv(MIM(indok,indok))))';
             end
             %             deltaM = deltaM.*abs(params')
             flag_score=0;
-        end
-        ide_strength_J(indok) = (1./(normaliz(indok)'./abs(params(indok)')));
-        ide_strength_J_prior(indok) = (1./(normaliz(indok)'./normaliz1(indok)'));
-        ide_strength_J(params==0)=1./normaliz(params==0)';
-        deltaM_prior = deltaM.*abs(normaliz1');
+        end        
+        ide_strength_J(indok) = (1./(ide_uncert_unnormaliz(indok)'./abs(params(indok)')));
+        ide_strength_J_prior(indok) = (1./(ide_uncert_unnormaliz(indok)'./normaliz_prior_std(indok)'));
+        %ide_strength_J(params==0)=1./ide_uncert_unnormaliz(params==0)';
+        sensitivity_zero_pos=find(isinf(deltaM));
+        deltaM_prior = deltaM.*abs(normaliz_prior_std');
         deltaM = deltaM.*abs(params');
-        deltaM(params==0)=deltaM_prior(params==0);
+        %deltaM(params==0)=deltaM_prior(params==0);
         quant = siJ./repmat(sqrt(diag(cmm)),1,nparam);
         if size(quant,1)==1
-            siJnorm = abs(quant).*normaliz1;
+            siJnorm = abs(quant).*normaliz_prior_std;
         else
-            siJnorm = vnorm(quant).*normaliz1;
+            siJnorm = vnorm(quant).*normaliz_prior_std;
         end
         %                 siJnorm = vnorm(siJ(inok,:)).*normaliz;
         quant=[];
@@ -272,9 +276,9 @@ if info(1)==0
         if ~isempty(iy)
             quant = siH./repmat(sqrt(diag_chh(iy)),1,nparam);
             if size(quant,1)==1
-                siHnorm = abs(quant).*normaliz1;
+                siHnorm = abs(quant).*normaliz_prior_std;
             else
-                siHnorm = vnorm(quant).*normaliz1;
+                siHnorm = vnorm(quant).*normaliz_prior_std;
             end
         else
             siHnorm = [];
@@ -292,9 +296,9 @@ if info(1)==0
         if ~isempty(iy)
             quant = siLRE./repmat(sqrt(diag_clre(iy)),1,np);
             if size(quant,1)==1
-                siLREnorm = abs(quant).*normaliz1(offset+1:end);
+                siLREnorm = abs(quant).*normaliz_prior_std(offset+1:end);
             else
-                siLREnorm = vnorm(quant).*normaliz1(offset+1:end);
+                siLREnorm = vnorm(quant).*normaliz_prior_std(offset+1:end);
             end
         else
             siLREnorm=[];
@@ -304,6 +308,8 @@ if info(1)==0
         ide_hess.ide_strength_J_prior=ide_strength_J_prior;
         ide_hess.deltaM=deltaM;
         ide_hess.deltaM_prior=deltaM_prior;
+        ide_hess.sensitivity_zero_pos=sensitivity_zero_pos;
+        ide_hess.identified_parameter_indices=indok;
         ide_moments.siJnorm=siJnorm;
         ide_model.siHnorm=siHnorm;
         ide_lre.siLREnorm=siLREnorm;
