@@ -66,6 +66,7 @@ MODFILES = \
 	example1_irf_shocks.mod \
 	example1_abs_sign.mod \
 	example1_macro.mod \
+	example1_mlv.mod \
 	example1long.mod \
 	example2long.mod \
 	example2long_use_dll.mod \
