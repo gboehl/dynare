@@ -55,3 +55,7 @@ identification(advanced=1,max_dim_cova_group=3);
 //varobs c i lam; //to check if observing lam identifies phi and theta
 //identification(ar=1,advanced=1,max_dim_cova_group=3,prior_mc=250);
 //identification(prior_mc=100);
+
+
+estim_params_=[]; 
+identification(advanced=1,max_dim_cova_group=3);
