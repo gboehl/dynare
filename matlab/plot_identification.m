@@ -69,6 +69,19 @@ if SampleSize == 1
     else
         bar(log([idehess.ide_strength_J(:,is)' ]))
     end
+    hold on
+    plot((1:length(idehess.ide_strength_J(:,is)))-0.15,log([idehess.ide_strength_J(:,is)']),'o','MarkerSize',7,'MarkerFaceColor',[0 0 0],'MarkerEdgeColor','none')
+    plot((1:length(idehess.ide_strength_J_prior(:,is)))+0.15,log([idehess.ide_strength_J_prior(:,is)']),'o','MarkerSize',7,'MarkerFaceColor',[0 0 0],'MarkerEdgeColor','none')
+    if any(isinf(log(idehess.ide_strength_J(idehess.identified_parameter_indices))))
+        inf_indices=find(isinf(log(idehess.ide_strength_J(idehess.identified_parameter_indices))));
+        inf_pos=ismember(is,inf_indices);
+        plot(find(inf_pos)-0.15,zeros(sum(inf_pos),1),'o','MarkerSize',7,'MarkerFaceColor',[1 1 1],'MarkerEdgeColor',[0 0 0])
+    end
+    if any(isinf(log(idehess.ide_strength_J_prior(idehess.identified_parameter_indices))))
+        inf_indices=find(isinf(log(idehess.ide_strength_J_prior(idehess.identified_parameter_indices))));
+        inf_pos=ismember(is,inf_indices);
+        plot(find(inf_pos)+0.15,zeros(sum(inf_pos),1),'o','MarkerSize',7,'MarkerFaceColor',[1 1 1],'MarkerEdgeColor',[0 0 0])
+    end
     set(gca,'xlim',[0 nparam+1])
     set(gca,'xticklabel','')
     dy = get(gca,'ylim');
@@ -92,7 +105,21 @@ if SampleSize == 1
     else
         bar(log([idehess.deltaM(is)]))
     end
-
+    hold on
+    plot((1:length(idehess.deltaM(is)))-0.15,log([idehess.deltaM(is)']),'o','MarkerSize',7,'MarkerFaceColor',[0 0 0],'MarkerEdgeColor','none')
+    plot((1:length(idehess.deltaM_prior(is)))+0.15,log([idehess.deltaM_prior(is)']),'o','MarkerSize',7,'MarkerFaceColor',[0 0 0],'MarkerEdgeColor','none')
+    inf_pos=find(isinf(log(idehess.deltaM)));
+    if ~isempty(inf_pos)
+        inf_indices=~ismember(inf_pos,idehess.sensitivity_zero_pos);
+        inf_pos=ismember(is,inf_pos(inf_indices));
+        plot(find(inf_pos)-0.15,zeros(sum(inf_pos),1),'o','MarkerSize',7,'MarkerFaceColor',[1 1 1],'MarkerEdgeColor',[0 0 0])
+    end
+    inf_pos=find(isinf(log(idehess.deltaM_prior)));
+    if ~isempty(inf_pos)
+        inf_indices=~ismember(inf_pos,idehess.sensitivity_zero_pos);
+        inf_pos=ismember(is,inf_pos(inf_indices));
+        plot(find(inf_pos)+0.15,zeros(sum(inf_pos),1),'o','MarkerSize',7,'MarkerFaceColor',[1 1 1],'MarkerEdgeColor',[0 0 0])
+    end
     set(gca,'xlim',[0 nparam+1])
     set(gca,'xticklabel','')
     dy = get(gca,'ylim');
