@@ -112,7 +112,7 @@ if length(M.aux_vars) > 0 && ~options.ramsey_policy
     if debug
         ys = h_set_auxiliary_variables(ys,exo_ss,params);
         ys3 = ys;
-        idx = find(abs(ys0-ys1)>0);
+        idx = find(abs(ys0-ys1(1:M.orig_endo_nbr))>0);
         if ~isempty(idx)
             M.endo_names(idx,:)
         else
@@ -124,7 +124,7 @@ if length(M.aux_vars) > 0 && ~options.ramsey_policy
         else
             disp('2-invariant')
         end
-        idx = find(abs(ys3-ys3)>0);
+        idx = find(abs(ys3-ys2)>0);
         if ~isempty(idx)
             M.endo_names(idx,:)
         else
