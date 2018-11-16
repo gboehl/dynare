@@ -36,8 +36,6 @@ function [ys,params,info] = evaluate_steady_state_file(ys_init,exo_ss,M,options,
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-debug = false;
-
 ys = [];
 params = M.params;
 info = 0;
@@ -102,49 +100,11 @@ end
 
 % adding values for auxiliary variables
 if length(M.aux_vars) > 0 && ~options.ramsey_policy
-    if debug
-        ys0 = ys;
-    end
     if M.set_auxiliary_variables
         ys = h_set_auxiliary_variables(ys,exo_ss,params);
-    end
-    if debug
-        ys1 = ys;
-    end
-    if M.set_auxiliary_variables
-        ys = h_set_auxiliary_variables(ys,exo_ss,params);
-    end
-    if debug
-        ys2 = ys;
-    end
-    if debug
-        if M.set_auxiliary_variables
-            ys = h_set_auxiliary_variables(ys,exo_ss,params);
-        end
-        ys3 = ys;
-        idx = find(abs(ys0-ys1(1:M.orig_endo_nbr))>0);
-        if ~isempty(idx)
-            M.endo_names{idx}
-        else
-            disp('1-invariant')
-        end
-        idx = find(abs(ys2-ys1)>0);
-        if ~isempty(idx)
-            M.endo_names{idx}
-        else
-            disp('2-invariant')
-        end
-        idx = find(abs(ys3-ys2)>0);
-        if ~isempty(idx)
-            M.endo_names{idx}
-        else
-            disp('3-invariant')
-        end
-        pause
     end
 end
 
-check1 = 0;
 if steady_state_checkflag
     % Check whether the steady state obtained from the _steadystate file is a steady state.
     [residuals, check] = evaluate_static_model(ys, exo_ss, params, M, options);
