@@ -124,20 +124,20 @@ if info(1)==0
     ide_strength_J_prior=NaN(1,nparam);
     if init
         ide_uncert_unnormaliz = NaN(1,nparam);
-        offset=0;
         if prior_exist
+            offset_prior=0;
             if ~isempty(estim_params_.var_exo)
                 normaliz_prior_std = bayestopt_.p2(1:estim_params_.nvx)'; % normalize with prior standard deviation
-                offset=offset+estim_params_.nvx+estim_params_.nvn;
+                offset_prior=offset_prior+estim_params_.nvx+estim_params_.nvn;
             else
                 normaliz_prior_std=[];
             end
             if ~isempty(estim_params_.corrx)
-                normaliz_prior_std = [normaliz_prior_std bayestopt_.p2(offset+1:offset+estim_params_.ncx)']; % normalize with prior standard deviation
-                offset=offset+estim_params_.ncx+estim_params_.ncn;
+                normaliz_prior_std = [normaliz_prior_std bayestopt_.p2(offset_prior+1:offset_prior+estim_params_.ncx)']; % normalize with prior standard deviation
+                offset_prior=offset_prior+estim_params_.ncx+estim_params_.ncn;
             end
             if ~isempty(estim_params_.param_vals)
-                normaliz_prior_std = [normaliz_prior_std bayestopt_.p2(offset+1:offset+estim_params_.np)']; % normalize with prior standard deviation
+                normaliz_prior_std = [normaliz_prior_std bayestopt_.p2(offset_prior+1:offset_prior+estim_params_.np)']; % normalize with prior standard deviation
             end
             %                         normaliz = max([normaliz; normaliz1]);
 %             normaliz1(isinf(normaliz1)) = 1;
