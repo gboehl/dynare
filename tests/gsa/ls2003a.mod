@@ -97,6 +97,8 @@ y_obs,R_obs(@{ilag}), -; //[ccf]
 y_obs,pie_obs(@{ilag}), -; //[ccf]
 @#endfor
 end;
+prior simulate;
+prior moments(distribution);
 
 if isoctave()
   dynare_sensitivity(prior_range=0, nodisplay, graph_format=(eps));

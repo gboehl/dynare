@@ -62,6 +62,12 @@ end
 
 % Fill or update bayestopt_ structure
 [xparam1, EstimatedParams, BayesOptions, lb, ub, Model] = set_prior(estim_params_, M_, options_);
+% Set restricted state space
+options_plot_priors_old=options_.plot_priors;
+options_.plot_priors=0;
+[~,~,~,~, M_, options_, oo_, EstimatedParams, BayesOptions] = ...
+    dynare_estimation_init(M_.endo_names, M_.fname, 1, M_, options_, oo_, estim_params_, bayestopt_);
+options_.plot_priors=options_plot_priors_old;
 
 
 % Temporarly change qz_criterium option value
@@ -102,7 +108,8 @@ if ismember('simulate', varargin) % Prior simulations (BK).
     disp(['Complex jacobian share                = ' num2str(results.jacobian.problem_share)])
     disp(['mjdgges crash share                   = ' num2str(results.dll.problem_share)])
     disp(['Steady state problem share            = ' num2str(results.ss.problem_share)])
-    disp(['Complex steady state  share           = ' num2str(results.ss.complex_share)])
+    disp(['Complex steady state share            = ' num2str(results.ss.complex_share)])
+    disp(['Endogenous prior violation share      = ' num2str(results.endogenous_prior_violation_share)])
     if options_.loglinear
         disp(['Nonpositive steady state share        = ' num2str(results.ss.nonpositive_share)])
     end
@@ -130,10 +137,13 @@ if ismember('moments', varargin) % Prior simulations (2nd order moments).
     oo__ = oo_;
     oo__.dr = set_state_space(oo__.dr, Model, options_);
     % Solve model
-    [dr, info, Model , options__ , oo__] = resol(0, Model , options_ ,oo__);
+    [T,R,~,info,Model , options__ , oo__] = dynare_resolve(Model , options_ ,oo__,'restrict');
+    if ~info(1)
+        info=endogenous_prior_restrictions(T,R,Model , options__ , oo__);
+    end
     if info
         skipline()
-        disp(sprintf('Cannot solve the model on the prior mode (info = %s, %s)', num2str(info(1)), interpret_resol_info(info)));
+        fprintf('Cannot solve the model on the prior mode (info = %s, %s)\n', num2str(info(1)), interpret_resol_info(info));
         skipline()
         return
     end
