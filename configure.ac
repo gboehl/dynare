@@ -175,6 +175,13 @@ AC_ARG_ENABLE([matlab], AS_HELP_STRING([--disable-matlab], [disable compilation 
 if test "x$enable_matlab" = "xyes"; then
   AC_CONFIG_SUBDIRS([mex/build/matlab])
   AX_MATLAB
+  AX_MATLAB_ARCH
+  if test "${MATLAB_ARCH}" = win32 -o "${MATLAB_ARCH}" = win64; then
+    MATLAB_BATCH_OPTIONS='-nosplash -automation -wait -sd "$(CURDIR)"'
+  else
+    MATLAB_BATCH_OPTIONS='-nosplash -nodisplay'
+  fi
+  AC_SUBST([MATLAB_BATCH_OPTIONS])
 fi
 AM_CONDITIONAL([ENABLE_MATLAB], [test "x$enable_matlab" = "xyes"])
 AM_CONDITIONAL([HAVE_CMD_LINE_MATLAB], [test "x$ax_enable_matlab" = "xyes" -a "x$have_windows" = "x"])

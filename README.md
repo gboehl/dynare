@@ -287,6 +287,10 @@ to use something like `/c/Progra~1/MATLAB/…`.
 ```
 make
 ```
+- Run the testsuite:
+```
+make -C tests check-matlab
+```
 
 **Note:** The above assumes that you have a 64-bit version of MATLAB. It can be
 adapted to a 32-bit MATLAB with the following modifications:
