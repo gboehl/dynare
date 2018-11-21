@@ -1,0 +1,20 @@
+before_script:
+  - git clone https://git.dynare.org/Dynare/dynare.git
+  - git clone https://git.dynare.org/Dynare/dates.git
+  - git clone https://git.dynare.org/Dynare/dseries.git
+
+testsuite_matlab:
+  stage: test
+  script:
+    - make check-matlab
+  artifacts:
+    paths:
+      - test/report.pdf
+
+testsuite_octave:
+  stage: test
+  script:
+    - make check-octave
+  artifacts:
+    paths:
+      - test/report.pdf

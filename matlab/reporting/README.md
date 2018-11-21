@@ -1,5 +1,3 @@
-![](https://travis-ci.org/DynareTeam/reporting.svg?branch=master)
-
 # Dynare Reporting
 
 Originally designed to provide reporting functionality for

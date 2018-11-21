@@ -15,9 +15,9 @@
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-addpath('~/builds/dynare/matlab/utilities/general')
-addpath('~/builds/dynare/matlab/modules/dates/src')
-addpath('~/builds/dynare/matlab/modules/dseries/src')
+addpath('../dynare/matlab/utilities/general')
+addpath('../dates/src')
+addpath('../dseries/src')
 addpath('../src')
 
 initialize_dates_toolbox;
