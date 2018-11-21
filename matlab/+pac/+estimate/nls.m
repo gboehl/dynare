@@ -130,14 +130,10 @@ for i=1:length(ipnames_)
     fprintf(fid, 'DynareModel.params(%u) = params(%u);\n', ipnames_(i), i);
 end
 fprintf(fid, '\n');
-fprintf(fid, 'DynareModel = pac.update.parameters(''%s'', DynareModel, DynareOutput);\n', ...
-        pacmodl);
+fprintf(fid, 'DynareModel = pac.update.parameters(''%s'', DynareModel, DynareOutput);\n', pacmodl);
 fprintf(fid, '\n');
 fprintf(fid, 'r = %s-(%s);\n', lhs, rhs);
-fprintf(fid, 's = .0;\n');
-fprintf(fid, 'for i=1:%u\n', range.length()-islaggedvariables);
-fprintf(fid, '    s = s + r(i)*r(i);\n');
-fprintf(fid, 'end\n');
+fprintf(fid, 's = r''*r;\n');
 fclose(fid);
 
 % Create a function handle returning the sum of square residuals for a given
