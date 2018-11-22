@@ -651,7 +651,6 @@ is=is(find(gpp(is,2)==j));
 
 if ~isempty(is)
     g22(sub2ind([n,n],gpp(is,3),gpp(is,4)))=gpp(is,5)';
-    g22(sub2ind([n,n],gpp(is,4),gpp(is,3)))=gpp(is,5)';
 end
 return
 
@@ -675,10 +674,8 @@ for is=1:length(gpp)
     %     indx = find(ic==find(d));
     if fsparse
         g22(sub2ind([m,n],gpp(is,1),gpp(is,2)),sub2ind([npar,npar],gpp(is,3),gpp(is,4)))=gpp(is,5);
-        g22(sub2ind([m,n],gpp(is,1),gpp(is,2)),sub2ind([npar,npar],gpp(is,4),gpp(is,3)))=gpp(is,5);
     else
         g22(gpp(is,1),gpp(is,2),gpp(is,3),gpp(is,4))=gpp(is,5);
-        g22(gpp(is,1),gpp(is,2),gpp(is,4),gpp(is,3))=gpp(is,5);
     end
 end
 
@@ -696,7 +693,6 @@ for is=1:length(rpp)
     %     d(rpp(is,2),rpp(is,3))=1;
     %     indx = find(ic==find(d));
     r22(rpp(is,1),rpp(is,2),rpp(is,3))=rpp(is,4);
-    r22(rpp(is,1),rpp(is,3),rpp(is,2))=rpp(is,4);
 end
 
 return
@@ -707,7 +703,6 @@ h2=zeros(r,m,m,npar);
 
 for is=1:length(hp)
     h2(hp(is,1),hp(is,2),hp(is,3),hp(is,4))=hp(is,5);
-    h2(hp(is,1),hp(is,3),hp(is,2),hp(is,4))=hp(is,5);
 end
 
 return
@@ -720,12 +715,6 @@ is=is1(find(hp(is1,2)==j));
 
 if ~isempty(is)
     h2(sub2ind([m,npar],hp(is,3),hp(is,4)))=hp(is,5)';
-end
-
-is=is1(find(hp(is1,3)==j));
-
-if ~isempty(is)
-    h2(sub2ind([m,npar],hp(is,2),hp(is,4)))=hp(is,5)';
 end
 
 return
