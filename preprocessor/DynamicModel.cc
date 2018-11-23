@@ -291,7 +291,7 @@ DynamicModel::writeModelEquationsOrdered_M(const string &dynamic_basename) const
       prev_var = 999999999;
       prev_lag = -9999999;
       count_col_exo_det = 0;
-      for (map<pair<int, pair<int, int> >, expr_t>::const_iterator it = tmp_block_exo_derivative.begin(); it != tmp_block_exo_derivative.end(); it++)
+      for (map<pair<int, pair<int, int> >, expr_t>::const_iterator it = tmp_block_exo_det_derivative.begin(); it != tmp_block_exo_det_derivative.end(); it++)
         {
           int lag = it->first.first;
           unsigned int var = it->first.second.first;
