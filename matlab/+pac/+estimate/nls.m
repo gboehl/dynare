@@ -61,6 +61,13 @@ function nls(eqname, params, data, range, optimizer, varargin)
 
 global M_ oo_ options_
 
+is_gauss_newton = false;
+objective = 'ssr_';
+if nargin>4 && isequal(optimizer, 'GaussNewton')
+    is_gauss_newton = true;
+    objective = 'r_';
+end
+
 [pacmodl, lhs, rhs, pnames, enames, xnames, pid, eid, xid, ~, ipnames_, params, data, islaggedvariables] = ...
     pac.estimate.init(M_, oo_, eqname, params, data, range);
 
@@ -113,10 +120,27 @@ for i=1:length(objNames)
     end
 end
 
-% Create a routine for evaluating the sum of squared residuals
-ssrfun = ['ssr_' eqname];
-fid = fopen([ssrfun '.m'], 'w');
-fprintf(fid, 'function [s, fake1, fake2, fake3, fake4] = %s(params, data, DynareModel, DynareOutput)\n', ssrfun);
+% Create a routine for evaluating the residuals of the nonlinear model
+fun = ['r_' eqname];
+fid = fopen(['+' M_.fname filesep() fun '.m'], 'w');
+fprintf(fid, 'function r = %s(params, data, DynareModel, DynareOutput)\n', fun);
+fprintf(fid, '\n');
+fprintf(fid, '%% Evaluates the residuals for equation %s.\n', eqname);
+fprintf(fid, '%% File created by Dynare (%s).\n', datestr(datetime));
+fprintf(fid, '\n');
+for i=1:length(ipnames_)
+    fprintf(fid, 'DynareModel.params(%u) = params(%u);\n', ipnames_(i), i);
+end
+fprintf(fid, '\n');
+fprintf(fid, 'DynareModel = pac.update.parameters(''%s'', DynareModel, DynareOutput);\n', pacmodl);
+fprintf(fid, '\n');
+fprintf(fid, 'r = %s-(%s);\n', lhs, rhs);
+fclose(fid);
+
+% Create a routine for evaluating the sum of squared residuals of the nonlinear model
+fun = ['ssr_' eqname];
+fid = fopen(['+' M_.fname filesep() fun '.m'], 'w');
+fprintf(fid, 'function [s, fake1, fake2, fake3, fake4] = %s(params, data, DynareModel, DynareOutput)\n', fun);
 fprintf(fid, '\n');
 fprintf(fid, '%% Evaluates the sum of square residuals for equation %s.\n', eqname);
 fprintf(fid, '%% File created by Dynare (%s).\n', datestr(datetime));
@@ -136,10 +160,14 @@ fprintf(fid, 'r = %s-(%s);\n', lhs, rhs);
 fprintf(fid, 's = r''*r;\n');
 fclose(fid);
 
-% Create a function handle returning the sum of square residuals for a given
-% vector of parameters.
+% Copy (sub)sample data in a matrix.
 DATA = data([range(1)-1, range]).data;
-ssr = @(p) feval(['ssr_' eqname], p, DATA, M_, oo_);
+
+% Create a function handle returning the sum of square residuals for a given vector of parameters.
+ssrfun = @(p) feval([M_.fname '.ssr_' eqname], p, DATA, M_, oo_);
+
+% Create a function handle returning the sum of square residuals for a given vector of parameters.
+resfun = @(p) feval([M_.fname '.r_' eqname], p, DATA, M_, oo_);
 
 % Set initial condition.
 params0 = cell2mat(struct2cell(params));
@@ -154,6 +182,8 @@ if nargin<5 || isempty(optimizer)
     minalgo = 4;
 else
     switch optimizer
+      case 'GaussNewton'
+        % Nothing to do here.
       case 'fmincon'
         if isoctave
             error('Optimization algorithm ''fmincon'' is not available under Octave')
@@ -205,6 +235,7 @@ else
         msg = sprintf('%s - %s\n', msg, 'fminsearch');
         msg = sprintf('%s - %s\n', msg, 'simplex');
         msg = sprintf('%s - %s\n', msg, 'annealing');
+        msg = sprintf('%s - %s\n', msg, 'GaussNewton');
         error(msg)
     end
 end
@@ -219,22 +250,14 @@ if nargin>5
     opt = '';
     while i<nargin-5
         if i==1
-            opt = sprintf('''%s'',', varargin{i});
+            opt = sprintf('''%s''', varargin{i});
         else
-            opt = sprintf('%s,''%s'',', opt, varargin{i});
+            opt = sprintf('%s,''%s''', opt, varargin{i});
         end
         if isnumeric(varargin{i+1})
-            if (i+1)==(nargin-5)
-                opt = sprintf('%s%s', opt, varargin{i+1});
-            else
-                opt = sprintf('%s%s,', opt, varargin{i+1});
-            end
+            opt = sprintf('%s,%s', opt, num2str(varargin{i+1}));
         else
-            if (i+1)==(nargin-5)
-                opt = sprintf('%s''%s''', opt, varargin{i+1});
-            else
-                opt = sprintf('%s''%s'',', opt, varargin{i+1});
-            end
+            opt = sprintf('%s,''%s''', opt, varargin{i+1});
         end
         i = i+2;
     end
@@ -248,21 +271,43 @@ if nargin<5
     options_.optim_opt = '''verbosity'',0';
 end
 
-
-% Estimate the parameters by minimizing the sum of squared residuals.
-[pparams1, SSR, exitflag] = dynare_minimize_objective(ssr, params0, ...
+if is_gauss_newton
+    [params1, SSR, exitflag] = gauss_newton(resfun, params0);
+else
+    % Estimate the parameters by minimizing the sum of squared residuals.
+    [params1, SSR, exitflag] = dynare_minimize_objective(ssrfun, params0, ...
                                                   minalgo, ...
                                                   options_, ...
                                                   bounds, ...
                                                   parameter_names, ...
                                                   [], ...
                                                   []);
-
-options_.optim_opt = oldopt;
-
-% Update M_.params
-for i=1:length(pparams1)
-    M_.params(ipnames_(i)) = pparams1(i);
 end
 
+% Revert local modifications to the options.
+options_.optim_opt = oldopt;
+
+% Compute an estimator of the covariance matrix (see White and
+% Domovitz [Econometrica, 1984], theorem 3.2).
+[r, J] = jacobian(resfun, params1, 1e-6);
+T = length(r);
+A = 2.0*(J'*J)/T;
+J = bsxfun(@times, J, r);
+B = J'*J;
+l = round(T^.25);
+for tau=1:l
+    B = B + (1-tau/(l+1))*(J(tau+1:end,:)'*J(1:end-tau,:)+J(1:end-tau,:)'*J(tau+1:end,:));
+end
+B = (4.0/T)*B;
+C = inv(A)*B*inv(A); % C is the asymptotic covariance of sqrt(T) times the vector of estimated parameters.
+C = C/T;
+
+% Save results
+oo_.pac.(pacmodl).ssr = SSR;
+oo_.pac.(pacmodl).estimator = params1;
+oo_.pac.(pacmodl).covariance = C;
+oo_.pac.(pacmodl).student = params1./(sqrt(diag(C)));
+
+% Also save estimated parameters in M_
+M_.params(ipnames_) = params1;
 M_ = pac.update.parameters(pacmodl, M_, oo_);
