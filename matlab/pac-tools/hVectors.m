@@ -61,9 +61,9 @@ if nargout>1
         h1 = [];
     else
         switch auxmodel
-          case 'var'
+          case {'var', 'trend_component'}
             h1 = A_1*A_b*(kron(iota(m, m)'*inv(eye(m)-G), H')*(tmp\kron(iota(m, m), iota(n, idns))));
-          case 'trend_component'
+          case 'Need to check in which case we should trigger this one...'
             h1 = A_1*A_b*(kron(iota(m, m)'*inv(eye(m)-G), (H'-eye(length(H))))*(tmp\kron(iota(m, m), iota(n, idns))));
         end
     end
