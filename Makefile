@@ -15,16 +15,18 @@
 # You should have received a copy of the GNU General Public License
 # along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
+SRC = $(wildcard src/source/*.rst)
+
 all: html pdf
 
 html: src/build/html/index.html
 
-src/build/html/index.html: $(src/source/%.rst) src/source/conf.py
+src/build/html/index.html: $(SRC) src/source/conf.py
 	source python/bin/activate ; make -C src html
 
 pdf: src/build/latex/dynare.pdf
 
-src/build/latex/dynare.pdf: $(src/source/%.rst) src/source/conf.py
+src/build/latex/dynare.pdf: $(SRC) src/source/conf.py
 	source python/bin/activate ; make -C src latexpdf
 
 python: python/bin/python3
