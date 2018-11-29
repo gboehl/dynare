@@ -400,7 +400,6 @@ by the ``dynare`` command.
             of ``ramst.mod``:
 
             .. code-block:: dynare
-               :linenos:
 
                // --+ options: savemacro, json=compute +--
 
