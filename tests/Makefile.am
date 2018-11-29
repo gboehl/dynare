@@ -409,6 +409,8 @@ MODFILES = \
     pac/trend-component-14/substitution.mod \
     pac/trend-component-15/example.mod \
     pac/trend-component-16/example.mod \
+    pac/trend-component-17/example.mod \
+    pac/trend-component-18/example.mod \
     estimation/univariate/bayesian.mod \
     dynare-command-options/ramst.mod
 

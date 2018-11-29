@@ -1,0 +1,8 @@
+#!/bin/sh
+
+rm -rf example
+rm  -rf +example
+rm -f example.log
+rm -f *.mat
+rm -f *.m
+rm -f *.dat
