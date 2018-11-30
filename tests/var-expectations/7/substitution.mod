@@ -31,23 +31,31 @@ foo = .5*foo(-1) +
 ;
 end;
 
-verbatim;
-  set_dynare_seed('default');
-  y = zeros(M_.endo_nbr,1);
-  y(1:M_.orig_endo_nbr) = rand(M_.orig_endo_nbr, 1);
-  x = randn(M_.exo_nbr,1);
-  y = substitution.set_auxiliary_variables(y, x, M_.params);
-  y = [y(find(M_.lead_lag_incidence(1,:))); y];
-  [residual, g1] = substitution.dynamic(y, x', M_.params, oo_.steady_state, 1);
-  example = load('example.mat');
+shocks;
+  var e_x = .01;
+  var e_y = .01;
+  var e_z = .01;
 end;
 
-if max(abs(example.residual-residual))>1e-8
-  error('Residuals do not match!')
-end
-
-if max(max(abs(example.g1-g1)))>1e-8
-  error('Jacobian matrices do not match!')
-end
+verbatim;
+  initialconditions =zeros(3,4);
+  initialconditions(3,1) = .1; % foo(-1)
+  initialconditions(:,2) = .2; % y(-1)
+  initialconditions(3,3) = .3; % z(-1)
+  initialconditions(2,3) = .4; % z(-2)
+  initialconditions(3,4) = .5; % x(-1)
+  initialconditions(2,4) = .6; % x(-2)
+  initialconditions(1,4) = .7; % x(-3)
+  initialconditions = ...
+  dseries(initialconditions, dates('2000Q1'), {'foo', 'y','z', 'x'});
+    set_dynare_seed('default');
+  ts = simul_backward_model(initialconditions, 100);
+  ex = load('example.mat');
+end;
 
 delete('example.mat')
+
+if max(abs(ex.foo-ts.foo.data))>1e-12
+   error('Simulations do not match!')
+end
+

@@ -84,8 +84,17 @@ if discountfactor>1
     error('The discount cannot be greater than one.')
 end
 
-% Set variable_id in VAR model
-variable_id_in_var = strcmp(auxmodel.list_of_variables_in_companion_var, varexpectationmodel.variable);
+% Set variables_id in VAR model
+m = length(varexpectationmodel.expr.vars);
+variables_id_in_var = NaN(m,1);
+for i = 1:m
+    j = find(strcmp(auxmodel.list_of_variables_in_companion_var, DynareModel.endo_names{varexpectationmodel.expr.vars(i)}));
+    if isempty(j)
+        error('Cannot find variable %s in the companion VAR', DynareModel.endo_names{varexpectationmodel.expr.vars(i)})
+    else
+        variables_id_in_var(i) = find(strcmp(auxmodel.list_of_variables_in_companion_var, DynareModel.endo_names{varexpectationmodel.expr.vars(i)}));
+    end
+end
 
 % Get the horizon parameter.
 horizon = varexpectationmodel.horizon;
@@ -127,8 +136,10 @@ CompanionMatrix = auxcalib.CompanionMatrix;
 n = length(CompanionMatrix);
 
 % Set the selection vector
-alpha = zeros(1, length(CompanionMatrix));
-alpha(variable_id_in_var) = 1;
+alpha = zeros(1, n);
+alpha(variables_id_in_var) = varexpectationmodel.expr.constants;
+params_id_in_var = ~isnan(varexpectationmodel.expr.params);
+alpha(variables_id_in_var(params_id_in_var)) = varexpectationmodel.expr.params(params_id_in_var);
 
 if length(horizon)==1
     % Compute the reduced form parameters of the (discounted) forecast in period t+horizon(1)

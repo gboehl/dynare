@@ -45,23 +45,32 @@ foo = .5*foo(-1) +
 ;
 end;
 
-verbatim;
-  set_dynare_seed('default');
-  y = zeros(M_.endo_nbr,1);
-  y(1:M_.orig_endo_nbr) = rand(M_.orig_endo_nbr, 1);
-  x = randn(M_.exo_nbr,1);
-  y = substitution.set_auxiliary_variables(y, x, M_.params);
-  y = [y(find(M_.lead_lag_incidence(1,:))); y];
-  example = load('example.mat');
-  [residual, g1] = substitution.dynamic(y, x', M_.params, oo_.steady_state, 1);
+shocks;
+  var ex1 = .01;
+  var ex2 = .01;
+  var ex1bar = .02;
+  var ex2bar = .02;
 end;
 
-if max(abs(example.residual-residual))>1e-8
-  error('Residuals do not match!')
-end
 
-if max(max(abs(example.g1-g1)))>1e-8
-  error('Jacobian matrices do not match!')
-end
-
-delete('example.mat');
+verbatim;
+  initialconditions =zeros(3,5);
+  initialconditions(3,1) = .10; % foo(-1)
+  initialconditions(3,2) = .20; % x1(-1)
+  initialconditions(2,2) = .22; % x1(-2)
+  initialconditions(1,2) = .24; % x1(-3)
+  initialconditions(3,3) = .30; % x2(-1)
+  initialconditions(2,3) = .32; % x2(-2)
+  initialconditions(1,3) = .34; % x2(-3)
+  initialconditions(3,4) = .25; % x1bar(-1)
+  initialconditions(3,5) = .25; % x2bar(-1)
+  initialconditions = ...
+  dseries(initialconditions, dates('2000Q1'), {'foo', 'x1','x2', 'x1bar', 'x2bar'});
+    set_dynare_seed('default');
+  ts = simul_backward_model(initialconditions, 100);
+  ex = load('example.mat');
+  delete('example.mat')
+  if max(abs(ex.foo-ts.foo.data))>1e-12
+     error('Simulations do not match!')
+  end
+end;
