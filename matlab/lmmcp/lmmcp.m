@@ -392,7 +392,7 @@ while (k < kmax) && (Psix > eps2)
     Fx        = Fxnew;
     Phix      = Phixnew;
     Psix      = Psixnew;
-    [junk,DFx]   = feval(FUN,x,varargin{:});
+    [~,DFx]   = feval(FUN,x,varargin{:});
     DPhix     = DPhi(x,Fx,DFx,lb,ub,lambda1,lambda2,n,Indexset);
     DPsix     = DPhix'*Phix;
     normDPsix = norm(DPsix);

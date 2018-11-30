@@ -1,4 +1,4 @@
-function r = isrow(V)
+function r = iscolumn(V)
 % Copyright (C) 2018 Dynare Team
 %
 % This file is part of Dynare.
@@ -16,5 +16,5 @@ function r = isrow(V)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-[m, n] = size(V);
-r = (m == 1);
+sz = size(V);
+r = (length(sz) == 2) && (sz(2) == 1);

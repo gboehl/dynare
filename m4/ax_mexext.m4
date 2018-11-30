@@ -41,13 +41,13 @@ else
     AX_COMPARE_VERSION([$MATLAB_VERSION], [lt], [7.1], [AC_MSG_ERROR([I can't determine the MEX file extension. Please explicitly indicate it to the configure script with the MEXEXT variable.])])
     case $build_os in
       *cygwin*)
-        ax_cv_mexext=`$MATLAB/bin/mexext.bat | sed 's/\r//'`
+        ax_cv_mexext=$("$MATLAB"/bin/mexext.bat | sed 's/\r//')
         ;;
       *mingw*)
-        ax_cv_mexext=`cd $MATLAB/bin && cmd /c mexext.bat | sed 's/\r//'`
+        ax_cv_mexext=$(cd "$MATLAB"/bin && cmd /c mexext.bat | sed 's/\r//')
         ;;
       *)
-        ax_cv_mexext=`$MATLAB/bin/mexext`
+        ax_cv_mexext=$("$MATLAB"/bin/mexext)
         ;;
     esac
 fi])

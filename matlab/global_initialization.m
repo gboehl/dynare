@@ -130,8 +130,8 @@ set_dynare_seed('default');
 
 
 % Create directories
-[junk,junk]=mkdir(M_.fname);
-[junk,junk]=mkdir([M_.fname filesep 'Output']);
+[~,~]=mkdir(M_.fname);
+[~,~]=mkdir([M_.fname filesep 'Output']);
 
 % Load user configuration file.
 if isfield(options_, 'global_init_file')

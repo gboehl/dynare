@@ -34,7 +34,7 @@ if test "x$ax_enable_matlab" = "xyes"; then
 
   if test "x$ax_matlab_version_ok" = "xyes"; then
     AX_MEXOPTS
-    AX_COMPARE_VERSION([$MATLAB_VERSION], [lt], [7.5], [AC_MSG_ERROR([Your MATLAB is too old, please upgrade to version 7.5 (R2007b) at least.])])
+    AX_COMPARE_VERSION([$MATLAB_VERSION], [lt], [7.9], [AC_MSG_ERROR([Your MATLAB is too old, please upgrade to version 7.9 (R2009b) at least.])])
   fi
 
   CFLAGS="$MATLAB_CFLAGS"
@@ -66,8 +66,6 @@ AM_PROG_AR
 
 case ${host_os} in
   *mingw32*)
-    # Ensure that -lpthread is statically linked under MinGW
-    PTHREAD_LIBS="-Wl,-Bstatic -lpthread -Wl,-Bdynamic"
     # Kludge for bug in MinGW, that defines __STDC_UTF_16__ but not char16_t
     # This breaks the matrix.h of older MATLABs (e.g. R2009a)
     # Also see <uchar.h>
@@ -94,6 +92,18 @@ AM_CONDITIONAL([HAVE_MATIO], [test "x$has_matio" = "xyes"])
 AX_SLICOT([matlab])
 AM_CONDITIONAL([HAVE_SLICOT], [test "x$has_slicot" = "xyes"])
 
+# On Windows, we want static linking of the external libraries
+case ${host_os} in
+  *mingw32*)
+    # We hardcode -lpthread here, otherwise it is not detected by the
+    # AX_PTHREAD macro and therefore not statically linked
+    PTHREAD_LIBS="-Wl,-Bstatic -lpthread -Wl,-Bdynamic"
+    GSL_LIBS="-Wl,-Bstatic $GSL_LIBS -Wl,-Bdynamic"
+    LIBADD_MATIO="-Wl,-Bstatic $LIBADD_MATIO -Wl,-Bdynamic"
+    LIBADD_SLICOT="-Wl,-Bstatic $LIBADD_SLICOT -Wl,-Bdynamic"
+    ;;
+esac
+
 AM_CONDITIONAL([DO_SOMETHING], [test "x$ax_enable_matlab" = "xyes" -a "x$ax_matlab_version_ok" = "xyes" -a "x$ax_mexopts_ok" = "xyes"])
 
 if test "x$ax_enable_matlab" = "xyes" -a "x$ax_matlab_version_ok" = "xyes" -a "x$ax_mexopts_ok" = "xyes"; then
@@ -107,9 +117,9 @@ else
 fi
 
 if test "x$ax_enable_matlab" = "xyes" -a "x$has_matio" = "xyes"; then
-   BUILD_KORDER_DYNSIMUL_MEX_MATLAB="yes"
+   BUILD_GENSYLV_KORDER_DYNSIMUL_MEX_MATLAB="yes"
 else
-   BUILD_KORDER_DYNSIMUL_MEX_MATLAB="no (missing MatIO library)"
+   BUILD_GENSYLV_KORDER_DYNSIMUL_MEX_MATLAB="no (missing MatIO library)"
 fi
 
 if test "x$ax_enable_matlab" = "xyes" -a "x$ax_matlab_version_ok" = "xyes" -a "x$ax_mexopts_ok" = "xyes" -a "x$has_slicot" = "xyes"; then
@@ -148,7 +158,7 @@ Dynare is now configured for building the following components...
 
 Binaries (with "make"):
  MEX files for MATLAB (except those listed below):                   $BUILD_MEX_MATLAB
- K-order and dynare_simul MEX files for MATLAB:                      $BUILD_KORDER_DYNSIMUL_MEX_MATLAB
+ Gensylv, k-order and dynare_simul MEX files for MATLAB:             $BUILD_GENSYLV_KORDER_DYNSIMUL_MEX_MATLAB
  MS-SBVAR MEX files for MATLAB:                                      $BUILD_MS_SBVAR_MEX_MATLAB
  Kalman Steady State MEX file for MATLAB:                            $BUILD_KALMAN_STEADY_STATE_MATLAB
  M2HTML documentation:                                               $BUILD_M2HTML

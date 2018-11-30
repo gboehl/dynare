@@ -190,7 +190,7 @@ if verbose
     disp('Simplex initialization...')
 end
 initial_point = x;
-[initial_score,junk1,nopenalty] = feval(objective_function,x,varargin{:});
+[initial_score,~,nopenalty] = feval(objective_function,x,varargin{:});
 if ~nopenalty
     disp('Cannot initialize the simplex with the provided initial guess.')
     skipline()
@@ -528,7 +528,7 @@ for j = 1:n
     end
     v(:,j+1) = y;
     x = y;
-    [fv(j+1),junk1,nopenalty_flag] = feval(objective_function,x,varargin{:});
+    [fv(j+1),~,nopenalty_flag] = feval(objective_function,x,varargin{:});
     if check_delta
         while ~nopenalty_flag
             if y(j)~=0
@@ -544,7 +544,7 @@ for j = 1:n
             end
             v(:,j+1) = y;
             x = y;
-            [fv(j+1),junk1,nopenalty_flag] = feval(objective_function,x,varargin{:});
+            [fv(j+1),~,nopenalty_flag] = feval(objective_function,x,varargin{:});
         end
     end
 end

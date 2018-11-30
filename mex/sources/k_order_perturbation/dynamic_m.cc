@@ -19,18 +19,14 @@
 
 #include "dynamic_m.hh"
 
-DynamicModelMFile::DynamicModelMFile(const string &modName) throw (DynareException) :
-  DynamicMFilename(modName + ".dynamic")
-{
-}
-
-DynamicModelMFile::~DynamicModelMFile()
+DynamicModelMFile::DynamicModelMFile(const string &modName) noexcept(false) :
+  DynamicMFilename{modName + ".dynamic"}
 {
 }
 
 void
 DynamicModelMFile::eval(const Vector &y, const Vector &x, const Vector &modParams, const Vector &ySteady,
-                        Vector &residual, TwoDMatrix *g1, TwoDMatrix *g2, TwoDMatrix *g3) throw (DynareException)
+                        Vector &residual, TwoDMatrix *g1, TwoDMatrix *g2, TwoDMatrix *g3) noexcept(false)
 {
   mxArray *prhs[nrhs_dynamic], *plhs[nlhs_dynamic];
 
@@ -51,10 +47,10 @@ DynamicModelMFile::eval(const Vector &y, const Vector &x, const Vector &modParam
 
   residual = Vector(mxGetPr(plhs[0]), residual.skip(), (int) mxGetM(plhs[0]));
   copyDoubleIntoTwoDMatData(mxGetPr(plhs[1]), g1, (int) mxGetM(plhs[1]), (int) mxGetN(plhs[1]));
-  if (g2 != NULL)
-    copyDoubleIntoTwoDMatData(unpackSparseMatrix(plhs[2]), g2, (int) mxGetNzmax(plhs[2]), 3);
-  if (g3 != NULL)
-    copyDoubleIntoTwoDMatData(unpackSparseMatrix(plhs[3]), g3, (int) mxGetNzmax(plhs[3]), 3);
+  if (g2 != nullptr)
+    unpackSparseMatrixAndCopyIntoTwoDMatData(plhs[2], g2);
+  if (g3 != nullptr)
+    unpackSparseMatrixAndCopyIntoTwoDMatData(plhs[3], g3);
 
   for (int i = 0; i < nrhs_dynamic; i++)
     mxDestroyArray(prhs[i]);

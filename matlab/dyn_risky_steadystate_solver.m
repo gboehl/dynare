@@ -88,7 +88,7 @@ exo_nbr = M.exo_nbr;
 
 M.var_order_endo_names = M.endo_names(dr.order_var);
 
-[junk,dr.i_fwrd_g,i_fwrd_f] = find(lead_lag_incidence(3,order_var));
+[~,dr.i_fwrd_g,i_fwrd_f] = find(lead_lag_incidence(3,order_var));
 dr.i_fwrd_f = i_fwrd_f;
 nd = nnz(lead_lag_incidence) + M.exo_nbr;
 dr.nd = nd;

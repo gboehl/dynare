@@ -198,9 +198,9 @@ extern "C" {
     if ((nEndo != nendo) || (nExog != nexo))
       DYN_MEX_FUNC_ERR_MSG_TXT("Incorrect number of input parameters.");
 
-    TwoDMatrix *g1m = NULL;
-    TwoDMatrix *g2m = NULL;
-    TwoDMatrix *g3m = NULL;
+    TwoDMatrix *g1m = nullptr;
+    TwoDMatrix *g2m = nullptr;
+    TwoDMatrix *g3m = nullptr;
     // derivatives passed as arguments */
     if (nrhs > 3)
       {
@@ -236,11 +236,11 @@ extern "C" {
         jName += ".jnl";
         Journal journal(jName.c_str());
 
-        DynamicModelAC *dynamicModelFile;
+        unique_ptr<DynamicModelAC> dynamicModelFile;
         if (use_dll == 1)
-          dynamicModelFile = new DynamicModelDLL(fName);
+          dynamicModelFile = make_unique<DynamicModelDLL>(fName);
         else
-          dynamicModelFile = new DynamicModelMFile(fName);
+          dynamicModelFile = make_unique<DynamicModelMFile>(fName);
 
         // intiate tensor library
         tls.init(kOrder, nStat+2*nPred+3*nBoth+2*nForw+nExog);
@@ -248,7 +248,7 @@ extern "C" {
         // make KordpDynare object
         KordpDynare dynare(endoNames, nEndo, exoNames, nExog, nPar,
                            ySteady, vCov, modParams, nStat, nPred, nForw, nBoth,
-                           jcols, NNZD, nSteps, kOrder, journal, dynamicModelFile,
+                           jcols, NNZD, nSteps, kOrder, journal, move(dynamicModelFile),
                            sstol, var_order_vp, llincidence, qz_criterium,
                            g1m, g2m, g3m);
 

@@ -56,7 +56,7 @@ AC_SUBST([LIBADD_DLOPEN])
 AX_GSL
 AM_CONDITIONAL([HAVE_GSL], [test "x$has_gsl" = "xyes"])
 
-# Check for libmatio, needed by k-order, dynare_simul, ms-sbvar (only under Octave, as an alternative to MATLAB's libmat)
+# Check for libmatio, needed by MEX files using Dynare++ code, and by ms-sbvar (the latter only under Octave, as an alternative to MATLAB's libmat)
 AX_MATIO
 AM_CONDITIONAL([HAVE_MATIO], [test "x$has_matio" = "xyes"])
 
@@ -88,9 +88,9 @@ else
 fi
 
 if test "x$MKOCTFILE" != "x" -a "x$has_matio" = "xyes"; then
-  BUILD_KORDER_DYNSIMUL_MEX_OCTAVE="yes"
+  BUILD_GENSYLV_KORDER_DYNSIMUL_MEX_OCTAVE="yes"
 else
-  BUILD_KORDER_DYNSIMUL_MEX_OCTAVE="no (missing MatIO library)"
+  BUILD_GENSYLV_KORDER_DYNSIMUL_MEX_OCTAVE="no (missing MatIO library)"
 fi
 
 if  test "x$MKOCTFILE" != "x" -a "x$has_slicot" = "xyes"; then
@@ -119,9 +119,9 @@ Dynare is now configured for building the following components...
 
 Binaries (with "make"):
  MEX files for Octave (except those listed below):                   $BUILD_MEX_OCTAVE
+ Gensylv, k-order and dynare_simul MEX for Octave:                   $BUILD_GENSYLV_KORDER_DYNSIMUL_MEX_OCTAVE
  MS-SBVAR MEX files for Octave:                                      $BUILD_MS_SBVAR_MEX_OCTAVE
  Kalman Steady State MEX file for Octave:                            $BUILD_KALMAN_STEADY_STATE_OCTAVE
- K-order and dynare_simul MEX for Octave:                            $BUILD_KORDER_DYNSIMUL_MEX_OCTAVE
 
 ])
 

@@ -111,22 +111,22 @@ it_ = M_.maximum_lag + 1;
 z = repmat(dr.ys,1,klen);
 if local_order == 1
     if (options_.bytecode)
-        [chck, junk, loc_dr] = bytecode('dynamic','evaluate', z,exo_simul, ...
-                                        M_.params, dr.ys, 1);
+        [chck, ~, loc_dr] = bytecode('dynamic','evaluate', z,exo_simul, ...
+                                     M_.params, dr.ys, 1);
         jacobia_ = [loc_dr.g1 loc_dr.g1_x loc_dr.g1_xd];
     else
-        [junk,jacobia_] = feval([M_.fname '.dynamic'],z(iyr0),exo_simul, ...
-                                M_.params, dr.ys, it_);
+        [~,jacobia_] = feval([M_.fname '.dynamic'],z(iyr0),exo_simul, ...
+                             M_.params, dr.ys, it_);
     end
 elseif local_order == 2
     if (options_.bytecode)
-        [chck, junk, loc_dr] = bytecode('dynamic','evaluate', z,exo_simul, ...
-                                        M_.params, dr.ys, 1);
+        [chck, ~, loc_dr] = bytecode('dynamic','evaluate', z,exo_simul, ...
+                                     M_.params, dr.ys, 1);
         jacobia_ = [loc_dr.g1 loc_dr.g1_x];
     else
-        [junk,jacobia_,hessian1] = feval([M_.fname '.dynamic'],z(iyr0),...
-                                         exo_simul, ...
-                                         M_.params, dr.ys, it_);
+        [~,jacobia_,hessian1] = feval([M_.fname '.dynamic'],z(iyr0),...
+                                      exo_simul, ...
+                                      M_.params, dr.ys, it_);
     end
     if options_.use_dll
         % In USE_DLL mode, the hessian is in the 3-column sparse representation
@@ -217,15 +217,15 @@ nz = nnz(M_.lead_lag_incidence);
 
 sdyn = M_.endo_nbr - nstatic;
 
-[junk,cols_b,cols_j] = find(M_.lead_lag_incidence(M_.maximum_endo_lag+1, ...
-                                                  order_var));
+[~,cols_b,cols_j] = find(M_.lead_lag_incidence(M_.maximum_endo_lag+1, ...
+                                               order_var));
 b = zeros(M_.endo_nbr,M_.endo_nbr);
 b(:,cols_b) = jacobia_(:,cols_j);
 
 if M_.maximum_endo_lead == 0
     % backward models: simplified code exist only at order == 1
     if local_order == 1
-        [k1,junk,k2] = find(kstate(:,4));
+        [k1,~,k2] = find(kstate(:,4));
         dr.ghx(:,k1) = -b\jacobia_(:,k2);
         if M_.exo_nbr
             dr.ghu =  -b\jacobia_(:,nz+1:end);

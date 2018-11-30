@@ -11,7 +11,7 @@ The Windows packages are already available for download at:
 
 The Mac and GNU/Linux packages (for Debian and Ubuntu LTS) should follow soon.
 
-This release is compatible with MATLAB versions 7.5 (R2007b) to 9.3 (R2018a)
+This release is compatible with MATLAB versions 7.5 (R2007b) to 9.4 (R2018a)
 and with GNU Octave versions 4.4.
 
 Here is a list of the problems identified in version 4.5.5 and that have been
@@ -57,7 +57,7 @@ The Windows packages are already available for download at:
 
 The Mac and GNU/Linux packages (for Debian and Ubuntu LTS) should follow soon.
 
-This release is compatible with MATLAB versions 7.5 (R2007b) to 9.3 (R2018a)
+This release is compatible with MATLAB versions 7.5 (R2007b) to 9.4 (R2018a)
 and with GNU Octave versions 4.2.
 
 Here is a list of the problems identified in version 4.5.4 and that have been

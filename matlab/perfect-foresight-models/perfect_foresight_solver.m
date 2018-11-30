@@ -179,9 +179,9 @@ if ~isreal(oo_.endo_simul(:)) %can only happen without bytecode
     yT = real(oo_.endo_simul(:,options_.periods+2));
     yy  = real(oo_.endo_simul(:,2:options_.periods+1));
     illi = M_.lead_lag_incidence';
-    [i_cols,junk,i_cols_j] = find(illi(:));
+    [i_cols,~,i_cols_j] = find(illi(:));
     illi = illi(:,2:3);
-    [i_cols_J1,junk,i_cols_1] = find(illi(:));
+    [i_cols_J1,~,i_cols_1] = find(illi(:));
     i_cols_T = nonzeros(M_.lead_lag_incidence(1:2,:)');
     residuals = perfect_foresight_problem(yy(:),str2func([M_.fname '.dynamic']), y0, yT, ...
                                           oo_.exo_simul,M_.params,oo_.steady_state, ...

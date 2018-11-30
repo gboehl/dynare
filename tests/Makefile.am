@@ -33,6 +33,7 @@ MODFILES = \
 	exogenous-observed-variables/preprocessor.mod \
 	estimation/fs2000_with_weibull_prior.mod \
 	estimation/fs2000_initialize_from_calib.mod	\
+    estimation/fs2000_estimated_params_init.mod	\
 	estimation/fs2000_calibrated_covariance.mod \
 	estimation/fs2000_model_comparison.mod \
 	estimation/fs2000_fast.mod \
@@ -66,6 +67,7 @@ MODFILES = \
 	example1_irf_shocks.mod \
 	example1_abs_sign.mod \
 	example1_macro.mod \
+	example1_mlv.mod \
 	example1long.mod \
 	example2long.mod \
 	example2long_use_dll.mod \
@@ -959,7 +961,7 @@ check-octave: $(O_XFAIL_TRS_FILES) $(O_TRS_FILES)
 %.m.trs %.m.log: %.mod
 	@echo "`tput bold``tput setaf 8`MATLAB: $(CURDIR)/$*... `tput sgr0`"
 	@DYNARE_VERSION="$(PACKAGE_VERSION)" TOP_TEST_DIR="$(CURDIR)" FILESTEM="$*" \
-		$(MATLAB)/bin/matlab -nosplash -nodisplay -r run_test_matlab > $*.m.log  2> /dev/null || \
+		$(MATLAB)/bin/matlab $(MATLAB_BATCH_OPTIONS) -r run_test_matlab > $*.m.log  2> /dev/null || \
 	printf ":test-result: FAIL\n:number-tests: 1\n:number-failed-tests: 1\n:list-of-failed-tests: $*.mod\n:elapsed-time: 0.0\n" > $*.m.trs
 	@if grep -q ":test-result: PASS" $*.m.trs; then \
 	echo "`tput bold``tput setaf 2`MATLAB: $(CURDIR)/$* PASSED!`tput sgr0`" ; \
@@ -973,7 +975,7 @@ check-octave: $(O_XFAIL_TRS_FILES) $(O_TRS_FILES)
 %.m.trs %.m.log : %.m
 	@echo "`tput bold``tput setaf 8`MATLAB: $(CURDIR)/$*... `tput sgr0`"
 	@DYNARE_VERSION="$(PACKAGE_VERSION)" TOP_TEST_DIR="$(CURDIR)" \
-		$(MATLAB)/bin/matlab -nosplash -nodisplay -r $* > $*.m.log 2> /dev/null
+		$(MATLAB)/bin/matlab $(MATLAB_BATCH_OPTIONS) -r $* > $*.m.log 2> /dev/null
 	@echo "`tput bold``tput setaf 8`MATLAB: $(CURDIR)/$* Done!`tput sgr0`"
 
 %.o.trs %.o.log: %.mod
@@ -1000,7 +1002,7 @@ check-octave: $(O_XFAIL_TRS_FILES) $(O_TRS_FILES)
 %.m.tls : %.m
 	@echo "`tput bold``tput setaf 8`MATLAB: $(CURDIR)/$*... `tput sgr0`"
 	@TOP_TEST_DIR="$(CURDIR)" FILESTEM="$*" \
-		$(MATLAB)/bin/matlab -nosplash -nodisplay -r run_m_script >/dev/null 2>&1
+		$(MATLAB)/bin/matlab $(MATLAB_BATCH_OPTIONS) -r run_m_script >/dev/null 2>&1
 	@touch $*.m.tls
 	@echo "`tput bold`MATLAB`tput setaf 8`: $(CURDIR)/$* Done!`tput sgr0`"
 

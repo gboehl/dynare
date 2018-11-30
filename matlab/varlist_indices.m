@@ -48,7 +48,7 @@ if ~all(check)
 end
 
 nvar = length(i_var);
-[i_var_unique, index_uniques, junk] = unique(i_var, 'first');
+[i_var_unique, index_uniques, ~] = unique(i_var, 'first');
 index_uniques = sort(index_uniques);
 i_var_unique = i_var(index_uniques);
 

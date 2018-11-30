@@ -97,7 +97,7 @@ if nargin>2
     if ~isunix
         error('The parallel version of SMM estimation is not implemented for non unix platforms!')
     end
-    [junk,hostname] = unix('hostname --fqdn');
+    [~,hostname] = unix('hostname --fqdn');
     hostname = deblank(hostname);
     master_is_running_a_job = 0;
     for i=1:length(parallel)

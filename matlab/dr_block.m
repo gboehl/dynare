@@ -409,7 +409,7 @@ for i = 1:Size
         index_c = lead_lag_incidence(2,:);             % Index of all endogenous variables present at time=t
         index_s = lead_lag_incidence(2,1:n_static);    % Index of all static endogenous variables present at time=t
         if n_static > 0
-            [Q, junk] = qr(jacob(:,index_s));
+            [Q, ~] = qr(jacob(:,index_s));
             aa = Q'*jacob;
         else
             aa = jacob;
@@ -476,7 +476,7 @@ for i = 1:Size
                     if isfield(options_,'indeterminacy_continuity')
                         if options_.indeterminacy_msv == 1
                             [ss,tt,w,q] = qz(E',D');
-                            [ss,tt,w,junk] = reorder(ss,tt,w,q);
+                            [ss,tt,w,~] = reorder(ss,tt,w,q);
                             ss = ss';
                             tt = tt';
                             w  = w';

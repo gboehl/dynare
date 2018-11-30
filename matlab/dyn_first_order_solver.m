@@ -124,7 +124,7 @@ if isempty(reorder_jacobian_columns)
                                                       nsfwrd)))];
     index_e2 = npred+nboth+(1:nboth);
 
-    [junk,cols_b] = find(lead_lag_incidence(maximum_lag+1, order_var));
+    [~,cols_b] = find(lead_lag_incidence(maximum_lag+1, order_var));
 
     reorder_jacobian_columns = [nonzeros(lead_lag_incidence(:,order_var)'); ...
                         nz+(1:exo_nbr)'];
@@ -138,7 +138,7 @@ dr.state_var = state_var;
 jacobia = jacobia(:,reorder_jacobian_columns);
 
 if nstatic > 0
-    [Q, junk] = qr(jacobia(:,index_s));
+    [Q, ~] = qr(jacobia(:,index_s));
     aa = Q'*jacobia;
 else
     aa = jacobia;

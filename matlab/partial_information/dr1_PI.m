@@ -91,7 +91,7 @@ if options_.ramsey_policy && options_.ACES_solver == 0
     opt.jacobian_flag = 0;
     oo_.steady_state = dynare_solve('ramsey_static',oo_.steady_state,opt,M_,options_,oo_,it_);
     options_.solve_algo = old_solve_algo;
-    [junk,junk,multbar] = ramsey_static(oo_.steady_state,M_,options_,oo_,it_);
+    [~,~,multbar] = ramsey_static(oo_.steady_state,M_,options_,oo_,it_);
     [jacobia_,M_] = ramsey_dynamic(oo_.steady_state,multbar,M_,options_,oo_,it_);
     klen = M_.maximum_lag + M_.maximum_lead + 1;
     dr.ys = [oo_.steady_state;zeros(M_.exo_nbr,1);multbar];
@@ -123,14 +123,14 @@ else
         lq_instruments.sim_ruleids=sim_ruleids;
         lq_instruments.tct_ruleids=tct_ruleids;
         %if isfield(lq_instruments,'xsopt_SS') %% changed by BY
-        [junk, lq_instruments.xsopt_SS,lq_instruments.lmopt_SS,s2,check] = opt_steady_get;%% changed by BY
+        [~, lq_instruments.xsopt_SS,lq_instruments.lmopt_SS,s2,check] = opt_steady_get;%% changed by BY
         [qc, DYN_Q] = QPsolve(lq_instruments, s2, check); %% added by BY
         z = repmat(lq_instruments.xsopt_SS,1,klen);
     else
         z = repmat(dr.ys,1,klen);
     end
     z = z(iyr0) ;
-    [junk,jacobia_] = feval([M_.fname '.dynamic'],z,[oo_.exo_simul ...
+    [~,jacobia_] = feval([M_.fname '.dynamic'],z,[oo_.exo_simul ...
                         oo_.exo_det_simul], M_.params, dr.ys, it_);
 
     if options_.ACES_solver==1 && (length(sim_ruleids)>0 || length(tct_ruleids)>0 )

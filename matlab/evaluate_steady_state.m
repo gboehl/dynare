@@ -48,7 +48,7 @@ exo_ss = [oo.exo_steady_state; oo.exo_det_steady_state];
 
 if length(M.aux_vars) > 0 && ~steadystate_flag && M.set_auxiliary_variables
     h_set_auxiliary_variables = str2func([M.fname '.set_auxiliary_variables']);
-    ys_init = h_set_auxiliary_variables(ys_init,exo_ss,M.params);
+    ys_init = h_set_auxiliary_variables(ys_init,exo_ss,params);
 end
 
 if options.ramsey_policy
@@ -66,7 +66,7 @@ if options.ramsey_policy
                 fprintf('\nevaluate_steady_state: The steady state file computation for the Ramsey problem resulted in NaNs.\n')
                 fprintf('evaluate_steady_state: The steady state was computed conditional on the following initial instrument values: \n')
                 for ii = 1:size(options.instruments,1)
-                    fprintf('\t %s \t %f \n',options.instruments(ii,:),ys_init(strmatch(options.instruments(ii,:),M.endo_names,'exact')))
+                    fprintf('\t %s \t %f \n',options.instruments{ii},ys_init(strmatch(options.instruments{ii},M.endo_names,'exact')))
                 end
                 fprintf('evaluate_steady_state: The problem occured in the following equations: \n')
                 fprintf('\t Equation(s): ')
@@ -87,7 +87,7 @@ if options.ramsey_policy
                 fprintf('\nevaluate_steady_state: The steady state file computation for the Ramsey problem resulted in complex numbers.\n')
                 fprintf('evaluate_steady_state: The steady state was computed conditional on the following initial instrument values: \n')
                 for ii = 1:size(options.instruments,1)
-                    fprintf('\t %s \t %f \n',options.instruments(ii,:),ys_init(strmatch(options.instruments(ii,:),M.endo_names,'exact')))
+                    fprintf('\t %s \t %f \n',options.instruments{ii},ys_init(strmatch(options.instruments{ii},M.endo_names,'exact')))
                 end
                 fprintf('evaluate_steady_state: If those initial values are not admissable, change them using an initval-block.\n')
                 skipline(2)
@@ -102,7 +102,7 @@ if options.ramsey_policy
                 fprintf('\nevaluate_steady_state: The steady state file does not solve the steady state for the Ramsey problem.\n')
                 fprintf('evaluate_steady_state: Conditional on the following instrument values: \n')
                 for ii = 1:size(options.instruments,1)
-                    fprintf('\t %s \t %f \n',options.instruments(ii,:),ys_init(strmatch(options.instruments(ii,:),M.endo_names,'exact')))
+                    fprintf('\t %s \t %f \n',options.instruments{ii},ys_init(strmatch(options.instruments{ii},M.endo_names,'exact')))
                 end
                 fprintf('evaluate_steady_state: the following equations have non-zero residuals: \n')
                 for ii=n_multipliers+1:M.endo_nbr
@@ -150,7 +150,7 @@ if options.ramsey_policy
             fprintf('\nevaluate_steady_state: The steady state computation for the Ramsey problem resulted in NaNs.\n')
             fprintf('evaluate_steady_state: The steady state computation resulted in the following instrument values: \n')
             for i = 1:size(options.instruments,1)
-                fprintf('\t %s \t %f \n',options.instruments(i,:),ys(strmatch(options.instruments(i,:),M.endo_names,'exact')))
+                fprintf('\t %s \t %f \n',options.instruments{i},ys(strmatch(options.instruments{i},M.endo_names,'exact')))
             end
             fprintf('evaluate_steady_state: The problem occured in the following equations: \n')
             fprintf('\t Equation(s): ')
@@ -168,7 +168,7 @@ if options.ramsey_policy
             fprintf('\nevaluate_steady_state: The steady state computation for the Ramsey problem resulted in NaNs in the auxiliary equations.\n')
             fprintf('evaluate_steady_state: The steady state computation resulted in the following instrument values: \n')
             for i = 1:size(options.instruments,1)
-                fprintf('\t %s \t %f \n',options.instruments(i,:),ys(strmatch(options.instruments(i,:),M.endo_names,'exact')))
+                fprintf('\t %s \t %f \n',options.instruments{i},ys(strmatch(options.instruments{i},M.endo_names,'exact')))
             end
             fprintf('evaluate_steady_state: The problem occured in the following equations: \n')
             fprintf('\t Auxiliary equation(s): ')
@@ -186,7 +186,7 @@ if options.ramsey_policy
             fprintf('\nevaluate_steady_state: The steady state for the Ramsey problem could not be computed.\n')
             fprintf('evaluate_steady_state: The steady state computation stopped with the following instrument values:: \n')
             for i = 1:size(options.instruments,1)
-                fprintf('\t %s \t %f \n',options.instruments(i,:),ys(strmatch(options.instruments(i,:),M.endo_names,'exact')))
+                fprintf('\t %s \t %f \n',options.instruments{i},ys(strmatch(options.instruments{i},M.endo_names,'exact')))
             end
             fprintf('evaluate_steady_state: The following equations have non-zero residuals: \n')
             for ii=1:n_multipliers
@@ -289,7 +289,7 @@ if check
     %make sure ys contains auxiliary variables in case of problem with dynare_solve
     if length(M.aux_vars) > 0 && ~steadystate_flag
         if M.set_auxiliary_variables
-            ys = h_set_auxiliary_variables(ys,exo_ss,M.params);
+            ys = h_set_auxiliary_variables(ys,exo_ss,params);
         end
     end
     resid = evaluate_static_model(ys,exo_ss,params,M,options);
@@ -307,15 +307,15 @@ if M.static_and_dynamic_models_differ
     z = repmat(ys,1,M.maximum_lead + M.maximum_lag + 1);
     zx = repmat([exo_ss'], M.maximum_lead + M.maximum_lag + 1, 1);
     if options.bytecode
-        [chck, r, junk]= bytecode('dynamic','evaluate', z, zx, M.params, ys, 1);
+        [chck, r, ~]= bytecode('dynamic','evaluate', z, zx, params, ys, 1);
         mexErrCheck('bytecode', chck);
     elseif options.block
-        [r, oo.dr] = feval([M.fname '.dynamic'], z', zx, M.params, ys, M.maximum_lag+1, oo.dr);
+        [r, oo.dr] = feval([M.fname '.dynamic'], z', zx, params, ys, M.maximum_lag+1, oo.dr);
     else
         iyv = M.lead_lag_incidence';
         iyr0 = find(iyv(:));
         xys = z(iyr0);
-        r = feval([M.fname '.dynamic'], z(iyr0), zx, M.params, ys, M.maximum_lag + 1);
+        r = feval([M.fname '.dynamic'], z(iyr0), zx, params, ys, M.maximum_lag + 1);
     end
     % Fail if residual greater than tolerance
     if max(abs(r)) > options.solve_tolf

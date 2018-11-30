@@ -66,7 +66,7 @@ if isfield(EstimatedParameters,'param_vals') && ~isempty(EstimatedParameters.par
     %check whether steady state file changes estimated parameters
     Model_par_varied=Model; %store Model structure
     Model_par_varied.params(EstimatedParameters.param_vals(:,1))=Model_par_varied.params(EstimatedParameters.param_vals(:,1))*1.01; %vary parameters
-    [junk, new_steady_params_2] = evaluate_steady_state(DynareResults.steady_state,Model_par_varied,DynareOptions,DynareResults,DynareOptions.diffuse_filter==0);
+    [~, new_steady_params_2] = evaluate_steady_state(DynareResults.steady_state,Model_par_varied,DynareOptions,DynareResults,DynareOptions.diffuse_filter==0);
 
     changed_par_indices=find((old_steady_params(EstimatedParameters.param_vals(:,1))-new_steady_params(EstimatedParameters.param_vals(:,1))) ...
                              | (Model_par_varied.params(EstimatedParameters.param_vals(:,1))-new_steady_params_2(EstimatedParameters.param_vals(:,1))));
@@ -105,8 +105,8 @@ end
 % display warning if some parameters are still NaN
 test_for_deep_parameters_calibration(Model);
 
-[lnprior, junk1,junk2,info]= priordens(xparam1,BayesInfo.pshape,BayesInfo.p6,BayesInfo.p7,BayesInfo.p3,BayesInfo.p4);
-if info
+[lnprior,~,~,info]= priordens(xparam1,BayesInfo.pshape,BayesInfo.p6,BayesInfo.p7,BayesInfo.p3,BayesInfo.p4);
+if any(info)
     fprintf('The prior density evaluated at the initial values is Inf for the following parameters: %s\n',BayesInfo.name{info,1})
     error('The initial value of the prior is -Inf')
 end

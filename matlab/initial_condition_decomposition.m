@@ -74,7 +74,7 @@ end
 if ~isfield(oo_,'initval_decomposition')
     options_.selected_variables_only = 0; %make sure all variables are stored
     options_.plot_priors=0;
-    [oo,M,junk1,junk2,Smoothed_Variables_deviation_from_mean] = evaluate_smoother(parameter_set,varlist,M_,oo_,options_,bayestopt_,estim_params_);
+    [oo,M,~,~,Smoothed_Variables_deviation_from_mean] = evaluate_smoother(parameter_set,varlist,M_,oo_,options_,bayestopt_,estim_params_);
 
     % reduced form
     dr = oo.dr;

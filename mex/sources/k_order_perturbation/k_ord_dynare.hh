@@ -20,6 +20,7 @@
 #ifndef K_ORD_DYNARE3_H
 #define K_ORD_DYNARE3_H
 #include <vector>
+#include <memory>
 #include "t_container.h"
 #include "sparse_tensor.h"
 #include "decision_rule.h"
@@ -123,20 +124,19 @@ public:
               Vector &ySteady, TwoDMatrix &vCov, Vector &params, int nstat, int nPred,
               int nforw, int nboth, const int nJcols, const Vector &NNZD,
               const int nSteps, const int ord,
-              Journal &jr, DynamicModelAC *dynamicModelFile_arg, double sstol,
+              Journal &jr, unique_ptr<DynamicModelAC> dynamicModelFile_arg, double sstol,
               const vector<int> &varOrder, const TwoDMatrix &ll_Incidence,
-              double qz_criterium) throw (TLException);
+              double qz_criterium) noexcept(false);
   KordpDynare(const vector<string> &endo, int num_endo,
               const vector<string> &exo, int num_exo, int num_par,
               Vector &ySteady, TwoDMatrix &vCov, Vector &params, int nstat, int nPred,
               int nforw, int nboth, const int nJcols, const Vector &NNZD,
               const int nSteps, const int ord,
-              Journal &jr, DynamicModelAC *dynamicModelFile_arg, double sstol,
+              Journal &jr, unique_ptr<DynamicModelAC> dynamicModelFile_arg, double sstol,
               const vector<int> &varOrder, const TwoDMatrix &ll_Incidence,
-              double qz_criterium, TwoDMatrix *g1_arg, TwoDMatrix *g2_arg, TwoDMatrix *g3_arg) throw (TLException);
+              double qz_criterium, TwoDMatrix *g1_arg, TwoDMatrix *g2_arg, TwoDMatrix *g3_arg) noexcept(false);
 
-  virtual
-  ~KordpDynare();
+  virtual ~KordpDynare();
   int
   nstat() const
   {
@@ -230,21 +230,21 @@ public:
   }
 
   void solveDeterministicSteady();
-  void evaluateSystem(Vector &out, const Vector &yy, const Vector &xx) throw (DynareException);
+  void evaluateSystem(Vector &out, const Vector &yy, const Vector &xx) noexcept(false);
   void evaluateSystem(Vector &out, const Vector &yym, const Vector &yy,
-                      const Vector &yyp, const Vector &xx) throw (DynareException);
+                      const Vector &yyp, const Vector &xx) noexcept(false);
   void calcDerivativesAtSteady();
-  DynamicModelAC *dynamicModelFile;
+  unique_ptr<DynamicModelAC> dynamicModelFile;
   DynamicModel *
   clone() const
   {
     std::cerr << "KordpDynare::clone() not implemented" << std::endl;
     exit(EXIT_FAILURE);
   }
-  void LLxSteady(const Vector &yS, Vector &llxSteady) throw (DynareException, TLException); // Given the steady state in yS, returns in llxSteady the steady state extended with leads and lags
+  void LLxSteady(const Vector &yS, Vector &llxSteady) noexcept(false); // Given the steady state in yS, returns in llxSteady the steady state extended with leads and lags
 
 private:
-  void ReorderDynareJacobianIndices() throw (TLException);
+  void ReorderDynareJacobianIndices() noexcept(false);
   void populateDerivativesContainer(const TwoDMatrix &g, int ord, const vector<int> &vOrder);
 };
 

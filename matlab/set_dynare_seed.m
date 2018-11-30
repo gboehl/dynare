@@ -24,7 +24,7 @@ if ~nargin
     error('set_dynare_seed:: I need at least one input argument!')
 end
 
-matlab_random_streams = ~(isoctave || matlab_ver_less_than('7.7') || options_.parallel_info.isHybridMatlabOctave);
+matlab_random_streams = ~(isoctave || options_.parallel_info.isHybridMatlabOctave);
 
 if matlab_random_streams% Use new matlab interface.
     if nargin==1

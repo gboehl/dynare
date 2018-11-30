@@ -25,9 +25,10 @@
 class DynamicModelAC
 {
 public:
-  static double *unpackSparseMatrix(mxArray *sparseMatrix);
+  virtual ~DynamicModelAC() = default;
+  static void unpackSparseMatrixAndCopyIntoTwoDMatData(mxArray *sparseMat, TwoDMatrix *tdm);
   static void copyDoubleIntoTwoDMatData(double *dm, TwoDMatrix *tdm, int rows, int cols);
   virtual void eval(const Vector &y, const Vector &x, const Vector &params, const Vector &ySteady,
-                    Vector &residual, TwoDMatrix *g1, TwoDMatrix *g2, TwoDMatrix *g3) throw (DynareException) = 0;
+                    Vector &residual, TwoDMatrix *g1, TwoDMatrix *g2, TwoDMatrix *g3) noexcept(false) = 0;
 };
 #endif

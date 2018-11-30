@@ -33,40 +33,40 @@ DynamicModelAC::copyDoubleIntoTwoDMatData(double *dm, TwoDMatrix *tdm, int rows,
       tdm->get(i, j) = dm[dmIdx++];
 }
 
-double *
-DynamicModelAC::unpackSparseMatrix(mxArray *sparseMat)
+void
+DynamicModelAC::unpackSparseMatrixAndCopyIntoTwoDMatData(mxArray *sparseMat, TwoDMatrix *tdm)
 {
   int totalCols = mxGetN(sparseMat);
   mwIndex *rowIdxVector = mxGetIr(sparseMat);
   mwSize sizeRowIdxVector = mxGetNzmax(sparseMat);
   mwIndex *colIdxVector = mxGetJc(sparseMat);
 
+  assert(tdm->ncols() == 3);
+  assert(tdm->nrows() == sizeRowIdxVector);
+
   double *ptr = mxGetPr(sparseMat);
-  double *newMat = (double *) malloc(sizeRowIdxVector*3*sizeof(double));
 
   int rind = 0;
-  int retvalind0 = 0;
-  int retvalind1 = sizeRowIdxVector;
-  int retvalind2 = sizeRowIdxVector*2;
+  int output_row = 0;
 
   for (int i = 0; i < totalCols; i++)
     for (int j = 0; j < (int) (colIdxVector[i+1]-colIdxVector[i]); j++, rind++)
       {
-        newMat[retvalind0++] = rowIdxVector[rind] + 1;
-        newMat[retvalind1++] = i + 1;
-        newMat[retvalind2++] = ptr[rind];
+        tdm->get(output_row, 0) = rowIdxVector[rind] + 1;
+        tdm->get(output_row, 1) = i + 1;
+        tdm->get(output_row, 2) = ptr[rind];
+        output_row++;
       }
 
   /* If there are less elements than Nzmax (that might happen if some
      derivative is symbolically not zero but numerically zero at the evaluation
      point), then fill in the matrix with empty entries, that will be
      recognized as such by KordpDynare::populateDerivativesContainer() */
-  while (retvalind0 < (int) sizeRowIdxVector)
+  while (output_row < (int) sizeRowIdxVector)
     {
-      newMat[retvalind0++] = 0;
-      newMat[retvalind1++] = 0;
-      newMat[retvalind2++] = 0;
+      tdm->get(output_row, 0) = 0;
+      tdm->get(output_row, 1) = 0;
+      tdm->get(output_row, 2) = 0;
+      output_row++;
     }
-
-  return newMat;
 }

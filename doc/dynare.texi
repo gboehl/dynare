@@ -472,7 +472,7 @@ In order to run Dynare, you need one of the following:
 @itemize
 
 @item
-MATLAB version 7.5 (R2007b) or above (MATLAB R2009b 64-bit for macOS);
+MATLAB version 7.9 (R2009b) or above;
 
 @item
 GNU Octave version 4.2.1 or above.
@@ -599,35 +599,28 @@ Octave comes with built-in functionality for compiling mex-files.
 @node Prerequisites on Windows
 @subsection Prerequisites on Windows
 
-If you are using MATLAB under Windows, install a C++ compiler on your machine and configure it with
-MATLAB. There are at least two free compilers you can use. First, there is Microsoft's Visual Studio 
-Community (@uref{https://www.visualstudio.com/}), which has the largest history of MATLAB support, but 
-requires much space on the hard-disk. Second, since MATLAB R2015b, MATLAB supports the MinGW-w64 C/C++ 
-Compiler from TDM-GCC. To install this compiler, use the Add-Ons menu of MATLAB. Search for MinGW or 
-select it from Features. 
-
-For older version of MATLAB, in particular before R2014a, it may sometimes make sense to use the gcc compiler 
-provided by Cygwin. However, integrating it in MATLAB can be quite cumbersome and should be considered as a
-legacy option. For details, see
-@uref{http://www.dynare.org/DynareWiki/ConfigureMatlabWindowsForMexCompilation,instructions
-on the Dynare wiki}. 
+There is no prerequisite on Windows. Dynare now ships a compilation environment
+that can be used with the @code{use_dll} option.
 
 @node Prerequisites on Debian GNU/Linux and Ubuntu
 @subsection Prerequisites on Debian GNU/Linux and Ubuntu
 
-Users of MATLAB under Linux need to have a working compilation environment installed. If not already present,
-it can be installed via @code{apt-get install build-essential}.
+Users of MATLAB under GNU/Linux need a working compilation environment
+installed. If not already present, it can be installed via @code{apt install
+build-essential}.
 
-Users of Octave under Linux should install the package for MEX file compilation 
+Users of Octave under GNU/Linux should install the package for MEX file compilation
 (under Debian or Ubuntu, it is called @file{liboctave-dev}).
 
 @node Prerequisites on macOS
 @subsection Prerequisites on macOS
+
+[TO BE UPDATED]
+
 If you are using MATLAB under macOS, you should install the latest
 version of XCode: see
 @uref{http://www.dynare.org/DynareWiki/InstallOnMacOSX,instructions on
 the Dynare wiki}.
-
 
 @node Configuration
 @section Configuration
@@ -848,6 +841,13 @@ line numbering directives.
 Passing this option removes all empty from the macro expanded mod file created
 when the @code{savemacro} option is used.
 
+@item onlymodel
+Instructs the preprocessor to print only information about the model in the
+driver file; no Dynare commands (other than the shocks statement and parameter
+initializations) are printed and hence no computational tasks performed. NB:
+the same ancillary files are created as would otherwise be created (dynamic,
+static files, etc.).
+
 @item nolog
 Instructs Dynare to no create a logfile of this run in
 @file{@var{FILENAME}.log}. The default is to create the logfile.
@@ -923,22 +923,14 @@ command).
 Prevent Dynare from printing the output of the steps leading up to the
 preprocessor as well as the preprocessor output itself.
 
-@item mingw
-Tells Dynare that your MATLAB is configured for compiling MEX files with the
-MinGW-compiler from TDM-GCC (@pxref{Compiler installation}). This option is
-only available under Windows, and is used in conjunction with
-@code{use_dll}.
+@item mexext=mex|mexw32|mexw64|mexmaci64|mexa64
+The mex extension associated with your platform to be used when compiling
+output associated with @code{use_dll}. NB: Dynare is able to set this
+automatically, so you should not need to set it yourself.
 
-@item msvc
-Tells Dynare that your MATLAB is configured for compiling MEX files with
-Microsoft Visual C++ (@pxref{Compiler installation}). This option is
-only available under Windows, and is used in conjunction with
-@code{use_dll}.
-
-@item cygwin
-Tells Dynare that your MATLAB is configured for compiling MEX files with
-Cygwin (@pxref{Compiler installation}). This option is only available
-under Windows, and is used in conjunction with @code{use_dll}.
+@item matlabroot=@var{<<path>>}
+The path to the Matlab installation for use with @code{use_dll}. NB: Dynare is
+able to set this automatically, so you should not need to set it yourself.
 
 @item parallel[=@var{CLUSTER_NAME}]
 Tells Dynare to perform computations in parallel. If @var{CLUSTER_NAME}
@@ -15074,7 +15066,7 @@ Cycles: The Cycle is the Trend,'' @i{NBER Working Paper}, 10734
 Amisano, Gianni and Tristani, Oreste (2010): ``Euro area inflation persistence in an estimated nonlinear DSGE model'', @i{Journal of Economic Dynamics and Control}, 34(10), 1837--1858
 
 @item
-Andreasen, Martin M., Jesús Fernández-Villaverde, and Juan Rubio-Ramírez (2013): ``The Pruned State-Space System for Non-Linear DSGE Models: Theory and Empirical Applications,'' @i{NBER Working Paper}, 18983
+Andreasen, Martin M., Jesús Fernández-Villaverde, and Juan Rubio-Ramírez (2018): ``The Pruned State-Space System for Non-Linear DSGE Models: Theory and Empirical Applications,'' @i{Review of Economic Studies}, 85(1), 1--49
 
 @item
 Andrews, Donald W.K (1991): ``Heteroskedasticity and autocorrelation consistent covariance matrix estimation'', 
@@ -15098,10 +15090,10 @@ and Control}, 19, 711--734
 @item
 Brooks,  Stephen P.,  and Andrew  Gelman (1998):  ``General methods  for
 monitoring  convergence   of  iterative  simulations,''   @i{Journal  of
-computational and graphical statistics}, 7, pp. 434--455
+Computational and Graphical Statistics}, 7, pp. 434--455
 
 @item
-Cardoso, Margarida F., R. L. Salcedo and S. Feyo de Azevedo (1996): ``The simplex simulated annealing approach to continuous non-linear optimization,'' @i{Computers chem. Engng}, 20(9), 1065-1080
+Cardoso, Margarida F., R. L. Salcedo and S. Feyo de Azevedo (1996): ``The simplex simulated annealing approach to continuous non-linear optimization,'' @i{Computers & Chemical Engineering}, 20(9), 1065-1080
 
 @item
 Chib, Siddhartha and Srikanth Ramamurthy (2010):

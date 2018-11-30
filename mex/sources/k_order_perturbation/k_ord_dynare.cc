@@ -40,14 +40,14 @@ KordpDynare::KordpDynare(const vector<string> &endo, int num_endo,
                          Vector &ysteady, TwoDMatrix &vcov, Vector &inParams, int nstat,
                          int npred, int nforw, int nboth, const int jcols, const Vector &nnzd,
                          const int nsteps, int norder,
-                         Journal &jr, DynamicModelAC *dynamicModelFile_arg, double sstol,
-                         const vector<int> &var_order, const TwoDMatrix &llincidence, double criterium) throw (TLException) :
-  nStat(nstat), nBoth(nboth), nPred(npred), nForw(nforw), nExog(nexog), nPar(npar),
-  nYs(npred + nboth), nYss(nboth + nforw), nY(num_endo), nJcols(jcols), NNZD(nnzd), nSteps(nsteps),
-  nOrder(norder), journal(jr), ySteady(ysteady), params(inParams), vCov(vcov),
-  md(1), dnl(*this, endo), denl(*this, exo), dsnl(*this, dnl, denl), ss_tol(sstol), varOrder(var_order),
-  ll_Incidence(llincidence), qz_criterium(criterium), g1p(NULL),
-  g2p(NULL), g3p(NULL), dynamicModelFile(dynamicModelFile_arg)
+                         Journal &jr, unique_ptr<DynamicModelAC> dynamicModelFile_arg, double sstol,
+                         const vector<int> &var_order, const TwoDMatrix &llincidence, double criterium) noexcept(false) :
+  nStat{nstat}, nBoth{nboth}, nPred{npred}, nForw{nforw}, nExog{nexog}, nPar{npar},
+  nYs{npred + nboth}, nYss{nboth + nforw}, nY{num_endo}, nJcols{jcols}, NNZD{nnzd}, nSteps{nsteps},
+  nOrder{norder}, journal{jr}, ySteady{ysteady}, params{inParams}, vCov{vcov},
+  md{1}, dnl{*this, endo}, denl{*this, exo}, dsnl{*this, dnl, denl}, ss_tol{sstol}, varOrder{var_order},
+  ll_Incidence{llincidence}, qz_criterium{criterium}, g1p{nullptr},
+  g2p{nullptr}, g3p{nullptr}, dynamicModelFile{move(dynamicModelFile_arg)}
 {
   ReorderDynareJacobianIndices();
 
@@ -61,15 +61,15 @@ KordpDynare::KordpDynare(const vector<string> &endo, int num_endo,
                          Vector &ysteady, TwoDMatrix &vcov, Vector &inParams, int nstat,
                          int npred, int nforw, int nboth, const int jcols, const Vector &nnzd,
                          const int nsteps, int norder,
-                         Journal &jr, DynamicModelAC *dynamicModelFile_arg, double sstol,
+                         Journal &jr, unique_ptr<DynamicModelAC> dynamicModelFile_arg, double sstol,
                          const vector<int> &var_order, const TwoDMatrix &llincidence, double criterium,
-                         TwoDMatrix *g1_arg, TwoDMatrix *g2_arg, TwoDMatrix *g3_arg) throw (TLException) :
-  nStat(nstat), nBoth(nboth), nPred(npred), nForw(nforw), nExog(nexog), nPar(npar),
-  nYs(npred + nboth), nYss(nboth + nforw), nY(num_endo), nJcols(jcols), NNZD(nnzd), nSteps(nsteps),
-  nOrder(norder), journal(jr), ySteady(ysteady), params(inParams), vCov(vcov),
-  md(1), dnl(*this, endo), denl(*this, exo), dsnl(*this, dnl, denl), ss_tol(sstol), varOrder(var_order),
-  ll_Incidence(llincidence), qz_criterium(criterium),
-  g1p(g1_arg), g2p(g2_arg), g3p(g3_arg), dynamicModelFile(dynamicModelFile_arg)
+                         TwoDMatrix *g1_arg, TwoDMatrix *g2_arg, TwoDMatrix *g3_arg) noexcept(false) :
+  nStat{nstat}, nBoth{nboth}, nPred{npred}, nForw{nforw}, nExog{nexog}, nPar{npar},
+  nYs{npred + nboth}, nYss{nboth + nforw}, nY{num_endo}, nJcols{jcols}, NNZD{nnzd}, nSteps{nsteps},
+  nOrder{norder}, journal{jr}, ySteady{ysteady}, params{inParams}, vCov{vcov},
+  md{1}, dnl{*this, endo}, denl{*this, exo}, dsnl{*this, dnl, denl}, ss_tol{sstol}, varOrder{var_order},
+  ll_Incidence{llincidence}, qz_criterium{criterium},
+  g1p{g1_arg}, g2p{g2_arg}, g3p{g3_arg}, dynamicModelFile{move(dynamicModelFile_arg)}
 {
   ReorderDynareJacobianIndices();
 
@@ -91,7 +91,7 @@ KordpDynare::solveDeterministicSteady()
 }
 
 void
-KordpDynare::evaluateSystem(Vector &out, const Vector &yy, const Vector &xx) throw (DynareException)
+KordpDynare::evaluateSystem(Vector &out, const Vector &yy, const Vector &xx) noexcept(false)
 {
   // This method is only called when checking the residuals at steady state (Approximation::check), so return zero residuals
   out.zeros();
@@ -99,7 +99,7 @@ KordpDynare::evaluateSystem(Vector &out, const Vector &yy, const Vector &xx) thr
 
 void
 KordpDynare::evaluateSystem(Vector &out, const Vector &yym, const Vector &yy,
-                            const Vector &yyp, const Vector &xx) throw (DynareException)
+                            const Vector &yyp, const Vector &xx) noexcept(false)
 {
   // This method is only called when checking the residuals at steady state (Approximation::check), so return zero residuals
   out.zeros();
@@ -112,7 +112,7 @@ KordpDynare::evaluateSystem(Vector &out, const Vector &yym, const Vector &yy,
 void
 KordpDynare::calcDerivativesAtSteady()
 {
-  if (g1p == NULL)
+  if (g1p == nullptr)
     {
       g1p = new TwoDMatrix(nY, nJcols);
       g1p->zeros();
@@ -166,7 +166,7 @@ KordpDynare::populateDerivativesContainer(const TwoDMatrix &g, int ord, const ve
   // model derivatives FSSparseTensor instance
   FSSparseTensor *mdTi = (new FSSparseTensor(ord, nJcols, nY));
 
-  IntSequence s(ord, 0);
+  IntSequence s{ord, 0};
 
   if (ord == 1)
     {
@@ -261,7 +261,7 @@ KordpDynare::populateDerivativesContainer(const TwoDMatrix &g, int ord, const ve
  * passing to <model>_dynamic DLL
  *************************************************************/
 void
-KordpDynare::LLxSteady(const Vector &yS, Vector &llxSteady) throw (DynareException, TLException)
+KordpDynare::LLxSteady(const Vector &yS, Vector &llxSteady) noexcept(false)
 {
   if ((nJcols-nExog) == yS.length())
     throw DynareException(__FILE__, __LINE__, "ySteady already of right size");
@@ -308,7 +308,7 @@ KordpDynare::LLxSteady(const Vector &yS, Vector &llxSteady) throw (DynareExcepti
 ************************************/
 
 void
-KordpDynare::ReorderDynareJacobianIndices() throw (TLException)
+KordpDynare::ReorderDynareJacobianIndices() noexcept(false)
 {
   // create temporary square 2D matrix size nEndo x nEndo (sparse)
   // for the lag, current and lead blocks of the jacobian
@@ -351,7 +351,7 @@ DynareStateNameList::DynareStateNameList(const KordpDynare &dynare, const Dynare
                                          const DynareNameList &denl)
 {
   for (int i = 0; i < dynare.nys(); i++)
-    names.push_back(string(dnl.getName(i+dynare.nstat())));
+    names.push_back(string{dnl.getName(i+dynare.nstat())});
   for (int i = 0; i < dynare.nexog(); i++)
-    names.push_back(string(denl.getName(i)));
+    names.push_back(string{denl.getName(i)});
 }

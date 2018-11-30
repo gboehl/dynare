@@ -54,7 +54,7 @@ Section "Dynare core (preprocessor and M-files)"
  SectionIn RO
 !insertmacro DETERMINE_CONTEXT
  SetOutPath $INSTDIR
- File README.txt ..\NEWS mexopts-win32.bat mexopts-win64.bat ..\license.txt ..\VERSION
+ File README.txt ..\NEWS ..\license.txt ..\VERSION
 
  SetOutPath $INSTDIR\matlab
  File /r ..\matlab\*.m
@@ -88,19 +88,14 @@ SectionEnd
 
 SectionGroup "MEX files for MATLAB"
 
-Section "MEX files for MATLAB 32-bit, version 7.5 to 8.6 (R2007b to R2015b)"
- SetOutPath $INSTDIR\mex\matlab\win32-7.5-8.6
- File ..\mex\matlab\win32-7.5-8.6\*.mexw32
+Section "MEX files for MATLAB 32-bit, version 7.9 to 8.6 (R2009b to R2015b)"
+ SetOutPath $INSTDIR\mex\matlab\win32-7.9-8.6
+ File ..\mex\matlab\win32-7.9-8.6\*.mexw32
 SectionEnd
 
-Section "MEX files for MATLAB 64-bit, version 7.5 to 7.7 (R2007b to R2008b)"
- SetOutPath $INSTDIR\mex\matlab\win64-7.5-7.7
- File ..\mex\matlab\win64-7.5-7.7\*.mexw64
-SectionEnd
-
-Section "MEX files for MATLAB 64-bit, version 7.8 to 9.3 (R2009a to R2017b)"
- SetOutPath $INSTDIR\mex\matlab\win64-7.8-9.3
- File ..\mex\matlab\win64-7.8-9.3\*.mexw64
+Section "MEX files for MATLAB 64-bit, version 7.9 to 9.3 (R2009b to R2017b)"
+ SetOutPath $INSTDIR\mex\matlab\win64-7.9-9.3
+ File ..\mex\matlab\win64-7.9-9.3\*.mexw64
 SectionEnd
 
 Section "MEX files for MATLAB 64-bit, version 9.4 to 9.5 (R2018a to R2018b)"
@@ -124,9 +119,23 @@ SectionEnd
 
 SectionGroupEnd
 
+SectionGroup "MinGW compiler (needed for use_dll option under MATLAB)"
+
+Section "MinGW for 32-bit MATLAB"
+ SetOutPath $INSTDIR\mingw32
+ File /r mingw32\*
+SectionEnd
+
+Section "MinGW for 64-bit MATLAB"
+ SetOutPath $INSTDIR\mingw64
+ File /r mingw64\*
+SectionEnd
+
+SectionGroupEnd
+
 Section "Dynare++ (standalone executable)"
  SetOutPath $INSTDIR\dynare++
- File ..\dynare++\src\dynare++.exe ..\dynare++\extern\matlab\dynare_simul.m ..\dynare++\*.dll
+ File ..\dynare++\src\dynare++.exe ..\dynare++\extern\matlab\dynare_simul.m
 SectionEnd
 
 Section "Documentation and examples (Dynare and Dynare++)"
@@ -159,8 +168,7 @@ Section "Uninstall"
  Delete $INSTDIR\README.txt
  Delete $INSTDIR\NEWS
  Delete $INSTDIR\license.txt
- Delete $INSTDIR\mexopts-win32.bat
- Delete $INSTDIR\mexopts-win64.bat
+ Delete $INSTDIR\VERSION
  Rmdir /r $INSTDIR\matlab
  Rmdir /r $INSTDIR\contrib
  Rmdir /r $INSTDIR\mex
@@ -168,6 +176,8 @@ Section "Uninstall"
  Rmdir /r $INSTDIR\doc
  Rmdir /r $INSTDIR\examples
  Rmdir /r $INSTDIR\scripts
+ Rmdir /r $INSTDIR\mingw32
+ Rmdir /r $INSTDIR\mingw64
  # We don't force deletion of installation directory (with /r), to avoid deleting important files
  Rmdir $INSTDIR
 

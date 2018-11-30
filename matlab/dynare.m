@@ -82,14 +82,15 @@ if isoctave
                  'of models approximated at third order, will not be available.'], supported_octave_version())
         skipline()
     elseif octave_ver_less_than('4.2') % Should match the test in mex/build/octave/configure.ac
+                                       % and in m4/ax_mexopts.m4
         skipline()
         warning(['This version of Dynare has only been tested on Octave 4.2 and above. Dynare may fail to run or give unexpected result. Consider upgrading your version of Octave.'])
         skipline()
     end
 else
-    if matlab_ver_less_than('7.5') % Should match the test in mex/build/matlab/configure.ac
+    if matlab_ver_less_than('7.9') % Should match the test in mex/build/matlab/configure.ac
         skipline()
-        warning('This version of Dynare has only been tested on MATLAB 7.5 (R2007b) and above. Since your MATLAB version is older than that, Dynare may fail to run, or give unexpected results. Consider upgrading your MATLAB installation, or switch to Octave.');
+        warning('This version of Dynare has only been tested on MATLAB 7.9 (R2009b) and above. Since your MATLAB version is older than that, Dynare may fail to run, or give unexpected results. Consider upgrading your MATLAB installation, or switch to Octave.');
         skipline()
     end
 end
@@ -191,7 +192,7 @@ end
 if ispc
     arch = getenv('PROCESSOR_ARCHITECTURE');
 else
-    [junk, arch] = system('uname -m');
+    [~, arch] = system('uname -m');
 end
 
 if isempty(strfind(arch, '64'))
@@ -226,6 +227,7 @@ if regexp(firstline, '\s*\/\/', 'once') == 1
 end
 
 command = ['"' dynareroot 'preprocessor' arch_ext filesep 'dynare_m" ' fname] ;
+command = [ command ' mexext=' mexext ' "matlabroot=' matlabroot '"'];
 for i=1:length(varargin)
     command = [command ' ' varargin{i}];
 end
@@ -238,6 +240,14 @@ if preprocessoroutput
     else
         disp(varargin);
     end
+end
+
+% Under Windows, make sure the MEX file is unloaded (in the use_dll case),
+% otherwise the preprocessor can't recompile it
+if isoctave
+  clear([fname(1:end-4) '.static'], [fname(1:end-4) '.dynamic'])
+else
+  clear(['+' fname(1:end-4) '/static'], ['+' fname(1:end-4) '/dynamic'])
 end
 
 [status, result] = system(command);

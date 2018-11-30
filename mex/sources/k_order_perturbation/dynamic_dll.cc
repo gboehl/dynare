@@ -21,7 +21,7 @@
 
 #include <sstream>
 
-DynamicModelDLL::DynamicModelDLL(const string &modName) throw (DynareException)
+DynamicModelDLL::DynamicModelDLL(const string &modName) noexcept(false)
 {
   string fName;
 #if !defined(__CYGWIN32__) && !defined(_WIN32)
@@ -33,7 +33,7 @@ DynamicModelDLL::DynamicModelDLL(const string &modName) throw (DynareException)
     {
 #if defined(__CYGWIN32__) || defined(_WIN32)
       dynamicHinstance = LoadLibrary(fName.c_str());
-      if (dynamicHinstance == NULL)
+      if (dynamicHinstance == nullptr)
         throw 1;
       ntt = (int *) GetProcAddress(dynamicHinstance, "ntt");
       dynamic_resid_tt = (dynamic_tt_fct) GetProcAddress(dynamicHinstance, "dynamic_resid_tt");
@@ -44,18 +44,18 @@ DynamicModelDLL::DynamicModelDLL(const string &modName) throw (DynareException)
       dynamic_g2 = (dynamic_g2_fct) GetProcAddress(dynamicHinstance, "dynamic_g2");
       dynamic_g3_tt = (dynamic_tt_fct) GetProcAddress(dynamicHinstance, "dynamic_g3_tt");
       dynamic_g3 = (dynamic_g3_fct) GetProcAddress(dynamicHinstance, "dynamic_g3");
-      if (ntt == NULL
-          || dynamic_resid_tt == NULL || dynamic_resid == NULL
-          || dynamic_g1_tt == NULL || dynamic_g1 == NULL
-          || dynamic_g2_tt == NULL || dynamic_g2 == NULL
-          || dynamic_g3_tt == NULL || dynamic_g3 == NULL)
+      if (ntt == nullptr
+          || dynamic_resid_tt == nullptr || dynamic_resid == nullptr
+          || dynamic_g1_tt == nullptr || dynamic_g1 == nullptr
+          || dynamic_g2_tt == nullptr || dynamic_g2 == nullptr
+          || dynamic_g3_tt == nullptr || dynamic_g3 == nullptr)
         {
           FreeLibrary(dynamicHinstance); // Free the library
           throw 2;
         }
 #else // Linux or Mac
       dynamicHinstance = dlopen(fName.c_str(), RTLD_NOW);
-      if (dynamicHinstance == NULL)
+      if (dynamicHinstance == nullptr)
         {
           cerr << dlerror() << endl;
           throw 1;
@@ -69,11 +69,11 @@ DynamicModelDLL::DynamicModelDLL(const string &modName) throw (DynareException)
       dynamic_g2 = (dynamic_g2_fct) dlsym(dynamicHinstance, "dynamic_g2");
       dynamic_g3_tt = (dynamic_tt_fct) dlsym(dynamicHinstance, "dynamic_g3_tt");
       dynamic_g3 = (dynamic_g3_fct) dlsym(dynamicHinstance, "dynamic_g3");
-      if (ntt == NULL
-          || dynamic_resid_tt == NULL || dynamic_resid == NULL
-          || dynamic_g1_tt == NULL || dynamic_g1 == NULL
-          || dynamic_g2_tt == NULL || dynamic_g2 == NULL
-          || dynamic_g3_tt == NULL || dynamic_g3 == NULL)
+      if (ntt == nullptr
+          || dynamic_resid_tt == nullptr || dynamic_resid == nullptr
+          || dynamic_g1_tt == nullptr || dynamic_g1 == nullptr
+          || dynamic_g2_tt == nullptr || dynamic_g2 == nullptr
+          || dynamic_g3_tt == nullptr || dynamic_g3 == nullptr)
         {
           dlclose(dynamicHinstance); // Free the library
           cerr << dlerror() << endl;
@@ -95,16 +95,19 @@ DynamicModelDLL::DynamicModelDLL(const string &modName) throw (DynareException)
     }
   catch (...)
     {
-      throw DynareException(__FILE__, __LINE__, string("Can't find the relevant dynamic symbols in ") + fName);
+      throw DynareException(__FILE__, __LINE__, "Can't find the relevant dynamic symbols in " + fName);
     }
 }
 
 DynamicModelDLL::~DynamicModelDLL()
 {
 #if defined(__CYGWIN32__) || defined(_WIN32)
-  bool result = FreeLibrary(dynamicHinstance);
+  auto result = FreeLibrary(dynamicHinstance);
   if (result == 0)
-    throw DynareException(__FILE__, __LINE__, string("Can't free the *_dynamic DLL"));
+    {
+      cerr << "Can't free the *_dynamic DLL" << endl;
+      exit(EXIT_FAILURE);
+    }
 #else
   dlclose(dynamicHinstance);
 #endif
@@ -112,7 +115,7 @@ DynamicModelDLL::~DynamicModelDLL()
 
 void
 DynamicModelDLL::eval(const Vector &y, const Vector &x, const Vector &modParams, const Vector &ySteady,
-                      Vector &residual, TwoDMatrix *g1, TwoDMatrix *g2, TwoDMatrix *g3) throw (DynareException)
+                      Vector &residual, TwoDMatrix *g1, TwoDMatrix *g2, TwoDMatrix *g3) noexcept(false)
 {
   double *T = (double *) malloc(sizeof(double) * (*ntt));
   dynamic_resid_tt(y.base(), x.base(), 1, modParams.base(), ySteady.base(), 0, T);

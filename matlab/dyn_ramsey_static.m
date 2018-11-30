@@ -50,7 +50,7 @@ elseif options_.steadystate_flag
     k_inst = [];
     inst_nbr = size(options_.instruments,1);
     for i = 1:inst_nbr
-        k_inst = [k_inst; strmatch(options_.instruments(i,:), M.endo_names, 'exact')];
+        k_inst = [k_inst; strmatch(options_.instruments{i}, M.endo_names, 'exact')];
     end
     if inst_nbr == 1
         %solve for instrument, using univariate solver, starting at initial value for instrument
@@ -75,7 +75,7 @@ elseif options_.steadystate_flag
     ys_init(k_inst) = inst_val;
     exo_ss = [oo.exo_steady_state oo.exo_det_steady_state];
     [xx,params] = evaluate_steady_state_file(ys_init,exo_ss,M,options_,~options_.steadystate.nocheck); %run steady state file again to update parameters
-    [junk,junk,steady_state] = nl_func(inst_val); %compute and return steady state
+    [~,~,steady_state] = nl_func(inst_val); %compute and return steady state
 else
     n_var = M.orig_endo_nbr;
     xx = oo.steady_state(1:n_var);
@@ -85,7 +85,7 @@ else
     if info1~=0
         check=81;
     end
-    [junk,junk,steady_state] = nl_func(xx);
+    [~,~,steady_state] = nl_func(xx);
 end
 
 
@@ -112,7 +112,7 @@ if options_.steadystate_flag
     k_inst = [];
     instruments = options_.instruments;
     for i = 1:size(instruments,1)
-        k_inst = [k_inst; strmatch(instruments(i,:), endo_names, 'exact')];
+        k_inst = [k_inst; strmatch(instruments{i}, endo_names, 'exact')];
     end
     ys_init=zeros(size(oo.steady_state)); %create starting vector for steady state computation as only instrument value is handed over
     ys_init(k_inst) = x; %set instrument, the only value required for steady state computation, to current value
@@ -194,8 +194,8 @@ end
 function result = check_static_model(ys,M,options_,oo)
 result = false;
 if (options_.bytecode)
-    [chck, res, junk] = bytecode('static',ys,[oo.exo_steady_state oo.exo_det_steady_state], ...
-                                 M.params, 'evaluate');
+    [chck, res, ~] = bytecode('static',ys,[oo.exo_steady_state oo.exo_det_steady_state], ...
+                              M.params, 'evaluate');
 else
     res = feval([M.fname '.static'],ys,[oo.exo_steady_state oo.exo_det_steady_state], ...
                 M.params);

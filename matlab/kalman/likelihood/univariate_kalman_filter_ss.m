@@ -153,7 +153,7 @@ while t<=last
     end
     if analytic_derivation
         if analytic_derivation==2
-            [Da,junk,D2a] = univariate_computeDstate(k,a,P,T,Da,DP,DT,[],0,D2a,D2P,D2T);
+            [Da,~,D2a] = univariate_computeDstate(k,a,P,T,Da,DP,DT,[],0,D2a,D2P,D2T);
         else
             Da = univariate_computeDstate(k,a,P,T,Da,DP,DT,[],0);
         end

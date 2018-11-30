@@ -30,9 +30,9 @@ AC_PROG_CXX
 AC_CANONICAL_HOST
 case ${host_os} in
   *mingw32*)
-    # On mingw32, we don't want dynamic libgcc
-    # Note that static-libstdc++ is only supported since GCC 4.5 (but generates no error on older versions)
-    LDFLAGS="$LDFLAGS -static-libgcc -static-libstdc++ -static-libgfortran"
+    # On Windows, we want Dynare++ to be statically linked
+    AM_LDFLAGS="-static"
+    AC_SUBST([AM_LDFLAGS])
     have_windows="yes"
     ;;
   *cygwin*)
@@ -51,7 +51,8 @@ esac
 # Use C++ for testing headers
 AC_LANG([C++])
 
-CXXFLAGS="$CXXFLAGS -Wall -Wno-parentheses"
+AM_CXXFLAGS="-Wall -Wno-parentheses"
+AC_SUBST([AM_CXXFLAGS])
 
 # If default 'ar' is not available, try to find one with a host prefix (see ticket #145)
 AC_CHECK_PROGS([AR], [ar ${host_alias}-ar])
@@ -125,11 +126,6 @@ AM_CONDITIONAL([HAVE_CWEAVE], [test "x$CWEAVE" != "x"])
 AC_PROG_F77
 AC_F77_LIBRARY_LDFLAGS
 case ${host_os} in
-  *mingw32*)
-    # Hack to get static linking of libgfortran on MinGW
-    # (-static-libgfortran doesn't act on gcc/g++)
-    FLIBS=`echo $FLIBS | sed 's/-lgfortran/-Wl,-Bstatic -lgfortran -Wl,-Bdynamic/'`
-    ;;
   *darwin*)
     # * OS X doesn't need to link against the Fortran libraries because
     #   everything is contained within the vecLib framework.
@@ -144,12 +140,6 @@ fi
 AM_CONDITIONAL([HAVE_BLAS], [test x"$ax_blas_ok" = "xyes"])
 AM_CONDITIONAL([HAVE_LAPACK], [test x"$ax_lapack_ok" = "xyes"])
 
-case ${host_os} in
-  *mingw32*)
-    # Ensure that -lpthread is statically linked under MinGW
-    PTHREAD_LIBS="-Wl,-Bstatic -lpthread -Wl,-Bdynamic"
-    ;;
-esac
 AX_PTHREAD
 
 AC_CONFIG_FILES([Makefile
@@ -185,6 +175,13 @@ AC_ARG_ENABLE([matlab], AS_HELP_STRING([--disable-matlab], [disable compilation 
 if test "x$enable_matlab" = "xyes"; then
   AC_CONFIG_SUBDIRS([mex/build/matlab])
   AX_MATLAB
+  AX_MATLAB_ARCH
+  if test "${MATLAB_ARCH}" = win32 -o "${MATLAB_ARCH}" = win64; then
+    MATLAB_BATCH_OPTIONS='-nosplash -automation -wait -sd "$(CURDIR)"'
+  else
+    MATLAB_BATCH_OPTIONS='-nosplash -nodisplay'
+  fi
+  AC_SUBST([MATLAB_BATCH_OPTIONS])
 fi
 AM_CONDITIONAL([ENABLE_MATLAB], [test "x$enable_matlab" = "xyes"])
 AM_CONDITIONAL([HAVE_CMD_LINE_MATLAB], [test "x$ax_enable_matlab" = "xyes" -a "x$have_windows" = "x"])
