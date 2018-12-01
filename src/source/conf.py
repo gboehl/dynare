@@ -67,7 +67,8 @@ html_theme_options = {
     'sidebar_collapse': True,
     'show_relbar_top': True,
     'show_relbar_bottom': True,
-    }
+    'page_width': '100%',
+}
 
 htmlhelp_basename = 'Dynaremanual'
 
