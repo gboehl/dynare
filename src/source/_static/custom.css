@@ -3,3 +3,16 @@ div.sphinxsidebarwrapper p.logo {
     margin: -10px 0 0 0px;
     text-align: left;
 }
+
+div.body {
+    min-width: 450px;
+    max-width: 90%;
+}
+
+.property{
+    display:inline-block;
+    text-decoration: underline;
+    text-decoration-style: double;
+    padding-right: 10px;
+    padding-top: 20px;
+}
