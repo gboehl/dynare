@@ -369,6 +369,7 @@ MODFILES = \
     var-expectations/8/example.mod \
     var-expectations/8/substitution.mod \
     var-expectations/9/example.mod \
+    var-expectations/10/example.mod \
 	trend-component-and-var-models/vm1.mod \
 	trend-component-and-var-models/vm2.mod \
 	trend-component-and-var-models/vm3.mod \
