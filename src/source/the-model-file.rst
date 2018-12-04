@@ -51,7 +51,7 @@ observed:
 * PARAMETER_NAME (sometimes PARAM_NAME) indicates a parameter name
   starting with an alphabetical character and can’t contain:
   ‘()+-\*/^=!;:@#.’ or accentuated characters;
-* LATEX_NAME (sometimes TEX_NAME) indicates a valid LaTeX expression
+* LATEX_NAME (sometimes TEX_NAME) indicates a valid :math:`\LaTeX` expression
   in math mode (not including the dollar signs);
 * FUNCTION_NAME indicates a valid MATLAB function name;
 * FILENAME indicates a filename valid in the underlying operating
@@ -88,7 +88,7 @@ for declaring variables and parameters are described below.
 
     |br| This required command declares the endogenous variables in the
     model. See :ref:`conv` for the syntax of *VAR_NAME* and
-    *MODEL_EXPR*. Optionally it is possible to give a LaTeX name to the
+    *MODEL_EXPR*. Optionally it is possible to give a :math:`\LaTeX` name to the
     variable or, if it is nonstationary, provide information regarding
     its deflator. ``var`` commands can appear several times in the file
     and Dynare will concatenate them. Dynare stores the list of
@@ -152,7 +152,7 @@ for declaring variables and parameters are described below.
 
     |br| This optional command declares the exogenous variables in the
     model. See :ref:`conv` for the syntax of ``VAR_NAME``. Optionally
-    it is possible to give a LaTeX name to the variable. Exogenous
+    it is possible to give a :math:`\LaTeX` name to the variable. Exogenous
     variables are required if the user wants to be able to apply
     shocks to her model. ``varexo`` commands can appear several times
     in the file and Dynare will concatenate them.
@@ -234,7 +234,7 @@ for declaring variables and parameters are described below.
     |br| This command declares parameters used in the model, in variable
     initialization or in shocks declarations. See :ref:`conv` for the
     syntax of ``PARAM_NAME``. Optionally it is possible to give a
-    :math:`LaTeX` name to the parameter.
+    :math:`\LaTeX` name to the parameter.
 
     The parameters must subsequently be assigned values (see :ref:`param-init`).
 
@@ -279,8 +279,8 @@ for declaring variables and parameters are described below.
             change_type(var) alpha, beta;
             change_type(parameters) y, w;
 
-    Here, in the whole model file, ``alpha`` and ``beta`` will be
-    endogenous and ``y`` and ``w`` will be parameters.
+        Here, in the whole model file, ``alpha`` and ``beta`` will be
+        endogenous and ``y`` and ``w`` will be parameters.
 
 
 .. command:: predetermined_variables VAR_NAME...;
@@ -350,8 +350,8 @@ for declaring variables and parameters are described below.
 
     |br| This optional command declares the trend variables in the
     model. See ref:`conv` for the syntax of MODEL_EXPR and
-    VAR_NAME. Optionally it is possible to give a LaTeX name to the
-    variable.
+    VAR_NAME. Optionally it is possible to give a
+    :math:`\LaTeX` name to the variable.
 
     The variable is assumed to have a multiplicative growth trend. For
     an additive growth trend, use ``log_trend_var`` instead.
@@ -389,11 +389,20 @@ for declaring variables and parameters are described below.
 Expressions
 ===========
 
-Dynare distinguishes between two types of mathematical expressions: those that are used to describe the model, and those that are used outside the model block (e.g. for initializing parameters or variables, or as command options). In this manual, those two types of expressions are respectively denoted by MODEL_EXPRESSION and EXPRESSION.
+Dynare distinguishes between two types of mathematical expressions:
+those that are used to describe the model, and those that are used
+outside the model block (e.g. for initializing parameters or
+variables, or as command options). In this manual, those two types of
+expressions are respectively denoted by MODEL_EXPRESSION and
+EXPRESSION.
 
-Unlike MATLAB or Octave expressions, Dynare expressions are necessarily scalar ones: they cannot contain matrices or evaluate to matrices [#f1]_.
+Unlike MATLAB or Octave expressions, Dynare expressions are
+necessarily scalar ones: they cannot contain matrices or evaluate to
+matrices [#f1]_.
 
-Expressions can be constructed using integers (INTEGER), floating point numbers (DOUBLE), parameter names (PARAMETER_NAME), variable names (VARIABLE_NAME), operators and functions.
+Expressions can be constructed using integers (INTEGER), floating
+point numbers (DOUBLE), parameter names (PARAMETER_NAME), variable
+names (VARIABLE_NAME), operators and functions.
 
 The following special constants are also accepted in some contexts:
 
@@ -409,47 +418,89 @@ The following special constants are also accepted in some contexts:
 Parameters and variables
 ------------------------
 
-Parameters and variables can be introduced in expressions by simply typing their names. The semantics of parameters and variables is quite different whether they are used inside or outside the model block.
+Parameters and variables can be introduced in expressions by simply
+typing their names. The semantics of parameters and variables is quite
+different whether they are used inside or outside the model block.
 
 
 Inside the model
 ^^^^^^^^^^^^^^^^
 
-Parameters used inside the model refer to the value given through parameter initialization (see :ref:`param-init`) or ``homotopy_setup`` when doing a simulation, or are the estimated variables when doing an estimation.
+Parameters used inside the model refer to the value given through
+parameter initialization (see :ref:`param-init`) or ``homotopy_setup``
+when doing a simulation, or are the estimated variables when doing an
+estimation.
 
-Variables used in a MODEL_EXPRESSION denote current period values when neither a lead or a lag is given. A lead or a lag can be given by enclosing an integer between parenthesis just after the variable name: a positive integer means a lead, a negative one means a lag. Leads or lags of more than one period are allowed. For example, if ``c`` is an endogenous variable, then ``c(+1)`` is the variable one period ahead, and ``c(-2)`` is the variable two periods before.
+Variables used in a MODEL_EXPRESSION denote current period values when
+neither a lead or a lag is given. A lead or a lag can be given by
+enclosing an integer between parenthesis just after the variable name:
+a positive integer means a lead, a negative one means a lag. Leads or
+lags of more than one period are allowed. For example, if ``c`` is an
+endogenous variable, then ``c(+1)`` is the variable one period ahead,
+and ``c(-2)`` is the variable two periods before.
 
-When specifying the leads and lags of endogenous variables, it is important to respect the following convention: in Dynare, the timing of a variable reflects when that variable is decided. A control variable — which by definition is decided in the current period — must have no lead. A predetermined variable — which by definition has been decided in a previous period — must have a lag. A consequence of this is that all stock variables must use the “stock at the end of the period” convention. Please refer to *Mancini-Griffoli (2007)* for more details and concrete examples.
+When specifying the leads and lags of endogenous variables, it is
+important to respect the following convention: in Dynare, the timing
+of a variable reflects when that variable is decided. A control
+variable — which by definition is decided in the current period — must
+have no lead. A predetermined variable — which by definition has been
+decided in a previous period — must have a lag. A consequence of this
+is that all stock variables must use the “stock at the end of the
+period” convention.
 
-Leads and lags are primarily used for endogenous variables, but can be used for exogenous variables. They have no effect on parameters and are forbidden for local model variables (see Model declaration).
+Leads and lags are primarily used for endogenous variables, but can be
+used for exogenous variables. They have no effect on parameters and
+are forbidden for local model variables (see Model declaration).
 
 
 Outside the model
 ^^^^^^^^^^^^^^^^^
 
-When used in an expression outside the model block, a parameter or a variable simply refers to the last value given to that variable. More precisely, for a parameter it refers to the value given in the corresponding parameter initialization (see :ref:`param-init`); for an endogenous or exogenous variable, it refers to the value given in the most recent ``initval`` or ``endval`` block.
+When used in an expression outside the model block, a parameter or a
+variable simply refers to the last value given to that variable. More
+precisely, for a parameter it refers to the value given in the
+corresponding parameter initialization (see :ref:`param-init`); for an
+endogenous or exogenous variable, it refers to the value given in the
+most recent ``initval`` or ``endval`` block.
 
 
 Operators
 ---------
 
-The following operators are allowed in both MODEL_EXPRESSION and EXPRESSION:
+The following operators are allowed in both MODEL_EXPRESSION and
+EXPRESSION:
 
-* Binary arithmetic operators: ``+, -, *, /, ^``
-* Unary arithmetic operators: ``+, -``
-* Binary comparison operators (which evaluate to either 0 or 1): ``<, >, <=, >=, ==, !=``
+* Binary arithmetic operators: ``+``, ``-``, ``*``, ``/``, ``^``
+* Unary arithmetic operators: ``+``, ``-``
+* Binary comparison operators (which evaluate to either 0 or 1): ``<``,
+  ``>``, ``<=``, ``>=``, ``==``, ``!=``
 
-Note that these operators are differentiable everywhere except on a line of the 2-dimensional real plane. However for facilitating convergence of Newton-type methods, Dynare assumes that, at the points of non-differentiability, the partial derivatives of these operators with respect to both arguments is equal to 0 (since this is the value of the partial derivatives everywhere else).
+Note the binary comparison operators are differentiable everywhere except on a
+line of the 2-dimensional real plane. However for facilitating
+convergence of Newton-type methods, Dynare assumes that, at the points
+of non-differentiability, the partial derivatives of these operators
+with respect to both arguments is equal to 0 (since this is the value
+of the partial derivatives everywhere else).
 
-The following special operators are accepted in MODEL_EXPRESSION (but not in EXPRESSION):
+The following special operators are accepted in MODEL_EXPRESSION (but
+not in EXPRESSION):
 
 .. operator:: STEADY_STATE (MODEL_EXPRESSION)
 
-    This operator is used to take the value of the enclosed expression at the steady state. A typical usage is in the Taylor rule, where you may want to use the value of GDP at steady state to compute the output gap.
+    This operator is used to take the value of the enclosed expression
+    at the steady state. A typical usage is in the Taylor rule, where
+    you may want to use the value of GDP at steady state to compute
+    the output gap.
 
 .. operator:: EXPECTATION (INTEGER) (MODEL_EXPRESSION)
 
-    This operator is used to take the expectation of some expression using a different information set than the information available at current period. For example, ``EXPECTATION(-1)(x(+1))`` is equal to the expected value of variable x at next period, using the information set available at the previous period. See :ref:`aux-variables` for an explanation of how this operator is handled internally and how this affects the output.
+    This operator is used to take the expectation of some expression
+    using a different information set than the information available
+    at current period. For example, ``EXPECTATION(-1)(x(+1))`` is
+    equal to the expected value of variable x at next period, using
+    the information set available at the previous period. See
+    :ref:`aux-variables` for an explanation of how this operator is
+    handled internally and how this affects the output.
 
 
 Functions
@@ -458,7 +509,8 @@ Functions
 Built-in functions
 ^^^^^^^^^^^^^^^^^^
 
-The following standard functions are supported internally for both MODEL_EXPRESSION and EXPRESSION:
+The following standard functions are supported internally for both
+MODEL_EXPRESSION and EXPRESSION:
 
 .. function:: exp(x)
 
@@ -477,17 +529,41 @@ The following standard functions are supported internally for both MODEL_EXPRESS
 
     Square root.
 
+.. function:: sign(x)
+
+    Signum function, defined as:
+
+        .. math::
+
+           \textrm{sign}(x) =
+                  \begin{cases}
+                  -1 &\quad\text{if }x<0\\
+                  0 &\quad\text{if }x=0\\
+                  1 &\quad\text{if }x>0
+                  \end{cases}
+
+
+    Note that this function is not continuous, hence not  differentiable, at
+    :math:`x=0`. However, for facilitating convergence of Newton-type
+    methods, Dynare assumes that the derivative at :math:`x=0` is
+    equal to :math:`0`. This assumption comes from the observation
+    that both the right- and left-derivatives at this point exist and
+    are equal to :math:`0`, so we can remove the singularity by
+    postulating that the derivative at :math:`x=0` is :math:`0`.
+
 .. function:: abs(x)
 
     Absolute value.
 
-    Note that this function is not differentiable at :math:`x=0`. However, for facilitating convergence of Newton-type methods, Dynare assumes that the derivative at :math:`x=0` is equal to :math:`0` (this assumption comes from the observation that the derivative of :math:`abs(x)` is equal to :math:`sign(x)` for :math:`x\neq 0` and from the convention for the derivative of :math:`sign(x)` at :math:`x=0`).
-
-.. function:: sign(x)
-
-    Signum function.
-
-    Note that this function is not differentiable at :math:`x=0`. However, for facilitating convergence of Newton-type methods, Dynare assumes that the derivative at :math:`x=0` is equal to :math:`0` (this assumption comes from the observation that both the right- and left-derivatives at this point exist and are equal to :math:`0`).
+    Note that this continuous function is not differentiable at
+    :math:`x=0`. However, for facilitating convergence of Newton-type
+    methods, Dynare assumes that the derivative at :math:`x=0` is
+    equal to :math:`0` (even if the derivative does not exist). The
+    rational for this mathematically unfounded definition, rely on the
+    observation that the derivative of :math:`\mathrm{abs}(x)` is equal to
+    :math:`\mathrm{sign}(x)` for any :math:`x\neq 0` in :math:`\mathbb R` and
+    from the convention for the value of :math:`\mathrm{sign}(x)` at
+    :math:`x=0`).
 
 .. function:: sin(x)
 .. function:: cos(x)
@@ -503,17 +579,29 @@ The following standard functions are supported internally for both MODEL_EXPRESS
 
     Maximum and minimum of two reals.
 
-    Note that these functions are differentiable everywhere except on a line of the 2-dimensional real plane defined by :math:`a=b`. However for facilitating convergence of Newton-type methods, Dynare assumes that, at the points of non-differentiability, the partial derivative of these functions with respect to the first (resp. the second) argument is equal to :math:`1` (resp. to :math:`0`) (i.e. the derivatives at the kink are equal to the derivatives observed on the half-plane where the function is equal to its first argument).
+    Note that these functions are differentiable everywhere except on
+    a line of the 2-dimensional real plane defined by
+    :math:`a=b`. However for facilitating convergence of Newton-type
+    methods, Dynare assumes that, at the points of
+    non-differentiability, the partial derivative of these functions
+    with respect to the first (resp. the second) argument is equal to
+    :math:`1` (resp. to :math:`0`) (i.e. the derivatives at the kink
+    are equal to the derivatives observed on the half-plane where the
+    function is equal to its first argument).
 
 .. function:: normcdf(x)
               normcdf(x, mu, sigma)
 
-    Gaussian cumulative density function, with mean *mu* and standard deviation *sigma*. Note that ``normcdf(x)`` is equivalent to ``normcdf(x,0,1)``.
+    Gaussian cumulative density function, with mean *mu* and standard
+    deviation *sigma*. Note that ``normcdf(x)`` is equivalent to
+    ``normcdf(x,0,1)``.
 
 .. function:: normpdf(x)
               normpdf(x, mu, sigma)
 
-    Gaussian probability density function, with mean *mu* and standard deviation *sigma*. Note that ``normpdf(x)`` is equivalent to ``normpdf(x,0,1)``.
+    Gaussian probability density function, with mean *mu* and standard
+    deviation *sigma*. Note that ``normpdf(x)`` is equivalent to
+    ``normpdf(x,0,1)``.
 
 .. function:: erf(x)
 
@@ -523,53 +611,80 @@ The following standard functions are supported internally for both MODEL_EXPRESS
 External functions
 ^^^^^^^^^^^^^^^^^^
 
-Any other user-defined (or built-in) MATLAB or Octave function may be used in both a MODEL_EXPRESSION and an EXPRESSION, provided that this function has a scalar argument as a return value.
+Any other user-defined (or built-in) MATLAB or Octave function may be
+used in both a MODEL_EXPRESSION and an EXPRESSION, provided that this
+function has a scalar argument as a return value.
 
-To use an external function in a ``MODEL_EXPRESSION``, one must declare the function using the ``external_function`` statement. This is not necessary for external functions used in an EXPRESSION.
+To use an external function in a MODEL_EXPRESSION, one must declare
+the function using the ``external_function`` statement. This is not
+required for external functions used in an EXPRESSION outside of a
+``model`` block or ``steady_state_model`` block.
 
 .. command:: external_function (OPTIONS...);
 
-    This command declares the external functions used in the model block. It is required for every unique function used in the model block.
+    This command declares the external functions used in the model
+    block. It is required for every unique function used in the model
+    block.
 
-    ``external_function`` commands can appear several times in the file and must come before the model block.
+    ``external_function`` commands can appear several times in the
+    file and must come before the model block.
 
     *Options*
 
     .. option:: name = NAME
 
-        The name of the function, which must also be the name of the M-/MEX file implementing it. This option is mandatory.
+        The name of the function, which must also be the name of the
+        M-/MEX file implementing it. This option is mandatory.
 
     .. option:: nargs = INTEGER
 
-        The number of arguments of the function. If this option is not provided, Dynare assumes ``nargs = 1``.
+        The number of arguments of the function. If this option is not
+        provided, Dynare assumes ``nargs = 1``.
 
     .. option:: first_deriv_provided [= NAME]
 
-        If NAME is provided, this tells Dynare that the Jacobian is provided as the only output of the M-/MEX file given as the option argument. If NAME is not provided, this tells Dynare that the M-/MEX file specified by the argument passed to NAME returns the Jacobian as its second output argument.
+        If NAME is provided, this tells Dynare that the Jacobian is
+        provided as the only output of the M-/MEX file given as the
+        option argument. If NAME is not provided, this tells Dynare
+        that the M-/MEX file specified by the argument passed to NAME
+        returns the Jacobian as its second output argument.
 
     .. option:: second_deriv_provided [= NAME]
 
-        If NAME is provided, this tells Dynare that the Hessian is provided as the only output of the M-/MEX file given as the option argument. If NAME is not provided, this tells Dynare that the M-/MEX file specified by the argument passed to NAME returns the Hessian as its third output argument. NB: This option can only be used if the ``first_deriv_provided`` option is used in the same ``external_function`` command.
+        If NAME is provided, this tells Dynare that the Hessian is
+        provided as the only output of the M-/MEX file given as the
+        option argument. If NAME is not provided, this tells Dynare
+        that the M-/MEX file specified by the argument passed to NAME
+        returns the Hessian as its third output argument. NB: This
+        option can only be used if the ``first_deriv_provided`` option
+        is used in the same ``external_function`` command.
 
-    :ex:
+    *Example*
 
         ::
 
-        external_function(name = funcname);
-        external_function(name = otherfuncname, nargs = 2,
-                          first_deriv_provided, second_deriv_provided);
-        external_function(name = yetotherfuncname, nargs = 3,
-                          first_deriv_provided = funcname_deriv);
+           external_function(name = funcname);
+           external_function(name = otherfuncname, nargs = 2, first_deriv_provided, second_deriv_provided);
+           external_function(name = yetotherfuncname, nargs = 3, first_deriv_provided = funcname_deriv);
 
 
 A few words of warning in stochastic context
 --------------------------------------------
 
-The use of the following functions and operators is strongly discouraged in a stochastic context: ``max, min, abs, sign, <, >, <=, >=, ==, !=.``
+The use of the following functions and operators is strongly
+discouraged in a stochastic context: ``max``, ``min``, ``abs``,
+``sign``, ``<``, ``>``, ``<=``, ``>=``, ``==``, ``!=``.
 
-The reason is that the local approximation used by ``stoch_simul`` or ``estimation`` will by nature ignore the non-linearities introduced by these functions if the steady state is away from the kink. And, if the steady state is exactly at the kink, then the approximation will be bogus because the derivative of these functions at the kink is bogus (as explained in the respective documentations of these functions and operators).
+The reason is that the local approximation used by ``stoch_simul`` or
+``estimation`` will by nature ignore the non-linearities introduced by
+these functions if the steady state is away from the kink. And, if the
+steady state is exactly at the kink, then the approximation will be
+bogus because the derivative of these functions at the kink is bogus
+(as explained in the respective documentations of these functions and
+operators).
 
-Note that ``extended_path`` is not affected by this problem, because it does not rely on a local approximation of the mode.
+Note that ``extended_path`` is not affected by this problem, because
+it does not rely on a local approximation of the mode.
 
 
 .. _param-init:
@@ -743,30 +858,30 @@ The model is declared inside a ``model`` block:
          end;
 
 
-Dynare has the ability to output the original list of model equations to a LaTeX file, using the ``write_latex_original_model`` command, the list of transformed model equations using the ``write_latex_dynamic_model command``, and the list of static model equations using the ``write_latex_static_model`` command.
+Dynare has the ability to output the original list of model equations to a :math:`\LaTeX` file, using the ``write_latex_original_model`` command, the list of transformed model equations using the ``write_latex_dynamic_model command``, and the list of static model equations using the ``write_latex_static_model`` command.
 
 .. command:: write_latex_original_model ;
 
-    This command creates two LaTeX files: one containing the model as defined in the model block and one containing the LaTeX document header information.
+    This command creates two :math:`\LaTeX` files: one containing the model as defined in the model block and one containing the :math:`\LaTeX` document header information.
 
     If your ``.mod`` file is ``FILENAME.mod``, then Dynare will create a file called ``FILENAME_original.tex``, which includes a file called ``FILENAME_original_content.tex`` (also created by Dynare) containing the list of all the original model equations.
 
-    If LaTeX names were given for variables and parameters (see :ref:`var-decl`), then those will be used; otherwise, the plain text names will be used.
+    If :math:`\LaTeX` names were given for variables and parameters (see :ref:`var-decl`), then those will be used; otherwise, the plain text names will be used.
 
-    Time subscripts (``t``, ``t+1``, ``t-1``, ...) will be appended to the variable names, as LaTeX subscripts.
+    Time subscripts (``t``, ``t+1``, ``t-1``, ...) will be appended to the variable names, as :math:`\LaTeX` subscripts.
 
-    Compiling the TeX file requires the following LaTeX packages: ``geometry, fullpage, breqn``.
+    Compiling the TeX file requires the following :math:`\LaTeX` packages: ``geometry, fullpage, breqn``.
 
 .. command:: write_latex_dynamic_model ;
              write_latex_dynamic_model (OPTIONS);
 
-    This command creates two LaTeX files: one containing the dynamic model and one containing the LaTeX document header information.
+    This command creates two :math:`\LaTeX` files: one containing the dynamic model and one containing the :math:`\LaTeX` document header information.
 
     If your ``.mod`` file is ``FILENAME.mod``, then Dynare will create a file called ``FILENAME_dynamic.tex``, which includes a file called ``FILENAME_dynamic_content.tex`` (also created by Dynare) containing the list of all the dynamic model equations.
 
-    If LaTeX names were given for variables and parameters (see :ref:`var-decl`), then those will be used; otherwise, the plain text names will be used.
+    If :math:`\LaTeX` names were given for variables and parameters (see :ref:`var-decl`), then those will be used; otherwise, the plain text names will be used.
 
-    Time subscripts (``t``, ``t+1``, ``t-1``, ...) will be appended to the variable names, as LaTeX subscripts.
+    Time subscripts (``t``, ``t+1``, ``t-1``, ...) will be appended to the variable names, as :math:`\LaTeX` subscripts.
 
     Note that the model written in the TeX file will differ from the model declared by the user in the following dimensions:
 
@@ -775,29 +890,29 @@ Dynare has the ability to output the original list of model equations to a LaTeX
         * Endogenous variables with leads or lags greater or equal than two will have been removed, replaced by new auxiliary variables and equations,
         * F_or a stochastic model, exogenous variables with leads or lags will also have been replaced by new auxiliary variables and equations.
 
-    For the required LaTeX packages, see :comm:`write_latex_original_model`.
+    For the required :math:`\LaTeX` packages, see :comm:`write_latex_original_model`.
 
     *Options*
 
     .. option:: write_equation_tags
 
-        Write the equation tags in the LaTeX output. NB: the equation tags will be interpreted with LaTeX markups.
+        Write the equation tags in the :math:`\LaTeX` output. NB: the equation tags will be interpreted with :math:`\LaTeX` markups.
 
 
 .. command:: write_latex_static_model ;
 
 
-    This command creates two LaTeX files: one containing the static model and one containing the LaTeX document header information.
+    This command creates two :math:`\LaTeX` files: one containing the static model and one containing the :math:`\LaTeX` document header information.
 
     If your ``.mod`` file is ``FILENAME.mod``, then Dynare will create a file called ``FILENAME_static.tex``, which includes a file called ``FILENAME_static_content.tex`` (also created by Dynare) containing the list of all the steady state model equations.
 
-    If LaTeX names were given for variables and parameters (see :ref:`var-decl`), then those will be used; otherwise, the plain text names will be used.
+    If :math:`\LaTeX` names were given for variables and parameters (see :ref:`var-decl`), then those will be used; otherwise, the plain text names will be used.
 
     Note that the model written in the TeX file will differ from the model declared by the user in the some dimensions (see :comm:`write_latex_dynamic_model` for details).
 
     Also note that this command will not output the contents of the optional ``steady_state_model`` block (see :bck:`steady_state_model`); it will rather output a static version (i.e. without leads and lags) of the dynamic ``model`` declared in the model block.
 
-    For the required LaTeX packages, see :comm:`write_latex_original_model`.
+    For the required :math:`\LaTeX` packages, see :comm:`write_latex_original_model`.
 
 .. _aux-variables:
 
@@ -2036,7 +2151,7 @@ Computing the stochastic solution
 
     .. option:: tex
 
-        Requests the printing of results and graphs in TeX tables and graphics that can be later directly included in LaTeX files.
+        Requests the printing of results and graphs in TeX tables and graphics that can be later directly included in :math:`\LaTeX` files.
 
     .. option:: dr_display_tol = DOUBLE
 
@@ -6793,19 +6908,19 @@ Misc commands
 
 .. matcomm:: write_latex_definitions ;
 
-    Writes the names, LaTeX names and long names of model variables to tables in a file named ``<<M_.fname>>_latex_definitions.tex``. Requires the following LaTeX packages: ``longtable``.
+    Writes the names, :math:`\LaTeX` names and long names of model variables to tables in a file named ``<<M_.fname>>_latex_definitions.tex``. Requires the following :math:`\LaTeX` packages: ``longtable``.
 
 .. matcomm:: write_latex_parameter_table ;
 
-    Writes the LaTeX names, parameter names, and long names of model parameters to a table in a file named ``<<M_.fname>>_latex_parameters.tex.`` The command writes the values of the parameters currently stored. Thus, if parameters are set or changed in the steady state computation, the command should be called after a steady-command to make sure the parameters were correctly updated. The long names can be used to add parameter descriptions. Requires the following LaTeX packages: ``longtable, booktabs``.
+    Writes the :math:`\LaTeX` names, parameter names, and long names of model parameters to a table in a file named ``<<M_.fname>>_latex_parameters.tex.`` The command writes the values of the parameters currently stored. Thus, if parameters are set or changed in the steady state computation, the command should be called after a steady-command to make sure the parameters were correctly updated. The long names can be used to add parameter descriptions. Requires the following :math:`\LaTeX` packages: ``longtable, booktabs``.
 
 .. matcomm:: write_latex_prior_table ;
 
-    Writes descriptive statistics about the prior distribution to a LaTeX table in a file named ``<<M_.fname>>_latex_priors_table.tex``. The command writes the prior definitions currently stored. Thus, this command must be invoked after the ``estimated_params`` block. If priors are defined over the measurement errors, the command must also be preceeded by the declaration of the observed variables (with ``varobs``). The command displays a warning if no prior densities are defined (ML estimation) or if the declaration of the observed variables is missing. Requires the following LaTeX packages: ``longtable, booktabs``.
+    Writes descriptive statistics about the prior distribution to a :math:`\LaTeX` table in a file named ``<<M_.fname>>_latex_priors_table.tex``. The command writes the prior definitions currently stored. Thus, this command must be invoked after the ``estimated_params`` block. If priors are defined over the measurement errors, the command must also be preceeded by the declaration of the observed variables (with ``varobs``). The command displays a warning if no prior densities are defined (ML estimation) or if the declaration of the observed variables is missing. Requires the following :math:`\LaTeX` packages: ``longtable, booktabs``.
 
 .. matcomm:: collect_latex_files ;
 
-    Writes a LaTeX file named ``<<M_.fname>>_TeX_binder.tex`` that collects all TeX output generated by Dynare into a file. This file can be compiled using ``pdflatex`` and automatically tries to load all required packages. Requires the following LaTeX packages: ``breqn, psfrag, graphicx, epstopdf, longtable, booktabs, caption, float, amsmath, amsfonts,`` and ``morefloats``.
+    Writes a :math:`\LaTeX` file named ``<<M_.fname>>_TeX_binder.tex`` that collects all TeX output generated by Dynare into a file. This file can be compiled using ``pdflatex`` and automatically tries to load all required packages. Requires the following :math:`\LaTeX` packages: ``breqn, psfrag, graphicx, epstopdf, longtable, booktabs, caption, float, amsmath, amsfonts,`` and ``morefloats``.
 
 
 .. _Dynare wiki: http://www.dynare.org/DynareWiki/EquationsTags
