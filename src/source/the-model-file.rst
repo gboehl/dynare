@@ -692,7 +692,9 @@ it does not rely on a local approximation of the mode.
 Parameter initialization
 ========================
 
-When using Dynare for computing simulations, it is necessary to calibrate the parameters of the model. This is done through parameter initialization.
+When using Dynare for computing simulations, it is necessary to
+calibrate the parameters of the model. This is done through parameter
+initialization.
 
 The syntax is the following::
 
@@ -710,7 +712,9 @@ Internally, the parameter values are stored in ``M_.params``:
 
 .. matvar:: M_.params
 
-    Contains the values of model parameters. The parameters are in the order that was used in the parameters command.
+    Contains the values of model parameters. The parameters are in the
+    order that was used in the parameters command, hence oredered as
+    in ``M_.param_names``.
 
 
 .. _model-decl:
@@ -721,25 +725,48 @@ Model declaration
 The model is declared inside a ``model`` block:
 
 .. block:: model ;
-           model (OPTIONS...);
+   model (OPTIONS...);
 
-    The equations of the model are written in a block delimited by ``model`` and ``end`` keywords.
+    |br| The equations of the model are written in a block delimited by
+    ``model`` and ``end`` keywords.
 
-    There must be as many equations as there are endogenous variables in the model, except when computing the unconstrained optimal policy with ``ramsey_model``, ``ramsey_policy`` or ``discretionary_policy``.
+    There must be as many equations as there are endogenous variables
+    in the model, except when computing the unconstrained optimal
+    policy with ``ramsey_model``, ``ramsey_policy`` or
+    ``discretionary_policy``.
 
-    The syntax of equations must follow the conventions for ``MODEL_EXPRESSION`` as described in :ref:`expr`. Each equation must be terminated by a semicolon (‘;’). A normal equation looks like:
+    The syntax of equations must follow the conventions for
+    MODEL_EXPRESSION as described in :ref:`expr`. Each equation
+    must be terminated by a semicolon (‘;’). A normal equation looks
+    like:
 
-        ``MODEL_EXPRESSION = MODEL_EXPRESSION;``
+        MODEL_EXPRESSION = MODEL_EXPRESSION;
 
-    When the equations are written in homogenous form, it is possible to omit the ‘=0’ part and write only the left hand side of the equation. A homogenous equation looks like:
+    |br| When the equations are written in homogenous form, it is possible
+    to omit the ‘=0’ part and write only the left hand side of the
+    equation. A homogenous equation looks like:
 
-        ``MODEL_EXPRESSION;``
+        MODEL_EXPRESSION;
 
-    Inside the model block, Dynare allows the creation of *model-local variables*, which constitute a simple way to share a common expression between several equations. The syntax consists of a pound sign (#) followed by the name of the new model local variable (which must **not** be declared as in :ref:`var-decl`), an equal sign, and the expression for which this new variable will stand. Later on, every time this variable appears in the model, Dynare will substitute it by the expression assigned to the variable. Note that the scope of this variable is restricted to the model block; it cannot be used outside. A model local variable declaration looks like:
+    |br| Inside the model block, Dynare allows the creation of *model-local
+    variables*, which constitute a simple way to share a common
+    expression between several equations. The syntax consists of a
+    pound sign (#) followed by the name of the new model local
+    variable (which must **not** be declared as in :ref:`var-decl`),
+    an equal sign, and the expression for which this new variable will
+    stand. Later on, every time this variable appears in the model,
+    Dynare will substitute it by the expression assigned to the
+    variable. Note that the scope of this variable is restricted to
+    the model block; it cannot be used outside. A model local variable
+    declaration looks like:
 
-        ``# VARIABLE_NAME = MODEL_EXPRESSION;``
+        #VARIABLE_NAME = MODEL_EXPRESSION;
 
-    It is possible to tag equations written in the model block. A tag can serve different purposes by allowing the user to attach arbitrary informations to each equation and to recover them at runtime. For instance, it is possible to name the equations with a ``name``-tag, using a syntax like::
+    |br| It is possible to tag equations written in the model block. A tag
+    can serve different purposes by allowing the user to attach
+    arbitrary informations to each equation and to recover them at
+    runtime. For instance, it is possible to name the equations with a
+    ``name``-tag, using a syntax like::
 
         model;
 
@@ -748,7 +775,12 @@ The model is declared inside a ``model`` block:
 
         end;
 
-    Here, ``name`` is the keyword indicating that the tag names the equation. If an equation of the model is tagged with a name, the ``resid`` command will display the name of the equations (which may be more informative than the equation numbers) in addition to the equation number. Several tags for one equation can be separated using a comma::
+    Here, ``name`` is the keyword indicating that the tag names the
+    equation. If an equation of the model is tagged with a name, the
+    ``resid`` command will display the name of the equations (which
+    may be more informative than the equation numbers) in addition to
+    the equation number. Several tags for one equation can be
+    separated using a comma::
 
         model;
 
@@ -763,62 +795,115 @@ The model is declared inside a ``model`` block:
 
     .. option:: linear
 
-        Declares the model as being linear. It spares oneself from having to declare initial values for computing the steady state of a stationary linear model. This option can’t be used with non-linear models, it will NOT trigger linearization of the model.
+        Declares the model as being linear. It spares oneself from
+        having to declare initial values for computing the steady
+        state of a stationary linear model. This option can’t be used
+        with non-linear models, it will NOT trigger linearization of
+        the model.
 
     .. option:: use_dll
 
-        Instructs the preprocessor to create dynamic loadable libraries (DLL) containing the model equations and derivatives, instead of writing those in M-files. You need a working compilation environment, i.e. a working ``mex`` command (see :ref:`compil-install` for more details). On MATLAB for Windows, you will need to also pass the compiler name at the command line. Using this option can result in faster simulations or estimations, at the expense of some initial compilation time. [#f2]_
+        Instructs the preprocessor to create dynamic loadable
+        libraries (DLL) containing the model equations and
+        derivatives, instead of writing those in M-files. You need a
+        working compilation environment, i.e. a working ``mex``
+        command (see :ref:`compil-install` for more details). On
+        MATLAB for Windows, you will need to also pass the compiler
+        name at the command line. Using this option can result in
+        faster simulations or estimations, at the expense of some
+        initial compilation time. [#f2]_
 
     .. option:: block
 
-        Perform the block decomposition of the model, and exploit it in computations (steady-state, deterministic simulation, stochastic simulation with first order approximation and estimation). See `Dynare wiki`_ for details on the algorithms used in deterministic simulation and steady-state computation.
+        Perform the block decomposition of the model, and exploit it
+        in computations (steady-state, deterministic simulation,
+        stochastic simulation with first order approximation and
+        estimation). See `Dynare wiki`_ for details on the algorithms
+        used in deterministic simulation and steady-state computation.
 
     .. option:: bytecode
 
-        Instead of M-files, use a bytecode representation of the model, i.e. a binary file containing a compact representation of all the equations.
+        Instead of M-files, use a bytecode representation of the
+        model, i.e. a binary file containing a compact representation
+        of all the equations.
 
     .. option:: cutoff = DOUBLE
 
-        Threshold under which a jacobian element is considered as null during the model normalization. Only available with option ``block``. Default: ``1e-15``
+        Threshold under which a jacobian element is considered as null
+        during the model normalization. Only available with option
+        ``block``. Default: ``1e-15``
 
     .. option:: mfs = INTEGER
 
-        Controls the handling of minimum feedback set of endogenous variables. Only available with option ``block``. Possible values:
+        Controls the handling of minimum feedback set of endogenous
+        variables. Only available with option ``block``. Possible
+        values:
 
         ``0``
 
-            All the endogenous variables are considered as feedback variables (Default).
+            All the endogenous variables are considered as feedback
+            variables (Default).
 
         ``1``
 
-            The endogenous variables assigned to equation naturally normalized (i.e. of the form :math:`x=f(Y)` where :math:`x` does not appear in :math:`Y`) are potentially recursive variables. All the other variables are forced to belong to the set of feedback variables.
+            The endogenous variables assigned to equation naturally
+            normalized (i.e. of the form :math:`x=f(Y)` where
+            :math:`x` does not appear in :math:`Y`) are potentially
+            recursive variables. All the other variables are forced to
+            belong to the set of feedback variables.
 
         ``2``
 
-            In addition of variables with ``mfs = 1`` the endogenous variables related to linear equations which could be normalized are potential recursive variables. All the other variables are forced to belong to the set of feedback variables.
+            In addition of variables with ``mfs = 1`` the endogenous
+            variables related to linear equations which could be
+            normalized are potential recursive variables. All the
+            other variables are forced to belong to the set of
+            feedback variables.
 
         ``3``
 
-            In addition of variables with ``mfs = 2`` the endogenous variables related to non-linear equations which could be normalized are potential recursive variables. All the other variables are forced to belong to the set of feedback variables.
+            In addition of variables with ``mfs = 2`` the endogenous
+            variables related to non-linear equations which could be
+            normalized are potential recursive variables. All the
+            other variables are forced to belong to the set of
+            feedback variables.
 
     .. option:: no_static
 
-        Don’t create the static model file. This can be useful for models which don’t have a steady state.
+        Don’t create the static model file. This can be useful for
+        models which don’t have a steady state.
 
-    .. option:: differentiate_forward_vars
-                differentiate_forward_vars = ( VARIABLE_NAME [VARIABLE_NAME ...] )
+    .. option:: differentiate_forward_vars differentiate_forward_vars = ( VARIABLE_NAME [VARIABLE_NAME ...] )
 
-        Tells Dynare to create a new auxiliary variable for each endogenous variable that appears with a lead, such that the new variable is the time differentiate of the original one. More precisely, if the model contains ``x(+1)``, then a variable ``AUX_DIFF_VAR`` will be created such that ``AUX_DIFF_VAR=x-x(-1)``, and ``x(+1)`` will be replaced with ``x+AUX_DIFF_VAR(+1)``.
+        Tells Dynare to create a new auxiliary variable for each
+        endogenous variable that appears with a lead, such that the
+        new variable is the time differentiate of the original
+        one. More precisely, if the model contains ``x(+1)``, then a
+        variable ``AUX_DIFF_VAR`` will be created such that
+        ``AUX_DIFF_VAR=x-x(-1)``, and ``x(+1)`` will be replaced with
+        ``x+AUX_DIFF_VAR(+1)``.
 
-        The transformation is applied to all endogenous variables with a lead if the option is given without a list of variables. If there is a list, the transformation is restricted to endogenous with a lead that also appear in the list.
+        The transformation is applied to all endogenous variables with
+        a lead if the option is given without a list of variables. If
+        there is a list, the transformation is restricted to
+        endogenous with a lead that also appear in the list.
 
-        This option can useful for some deterministic simulations where convergence is hard to obtain. Bad values for terminal conditions in the case of very persistent dynamics or permanent shocks can hinder correct solutions or any convergence. The new differentiated variables have obvious zero terminal conditions (if the terminal condition is a steady state) and this in many cases helps convergence of simulations.
+        This option can useful for some deterministic simulations
+        where convergence is hard to obtain. Bad values for terminal
+        conditions in the case of very persistent dynamics or
+        permanent shocks can hinder correct solutions or any
+        convergence. The new differentiated variables have obvious
+        zero terminal conditions (if the terminal condition is a
+        steady state) and this in many cases helps convergence of
+        simulations.
 
     .. option:: parallel_local_files = ( FILENAME [, FILENAME]... )
 
-        Declares a list of extra files that should be transferred to slave nodes when doing a parallel computation (see :ref:`paral-conf`).
+        Declares a list of extra files that should be transferred to
+        slave nodes when doing a parallel computation (see
+        :ref:`paral-conf`).
 
-    :ex: Elementary RBC model
+    *Example* (Elementary RBC model)
 
         ::
 
@@ -831,7 +916,7 @@ The model is declared inside a ``model`` block:
             c^(-gam) = (aa*alph*x(+1)*k^(alph-1) + 1 - delt)*c(+1)^(-gam)/(1+bet);
             end;
 
-    :ex: Use of model local variables.
+    *Example* (Use of model local variables)
 
         The following program::
 
@@ -848,7 +933,7 @@ The model is declared inside a ``model`` block:
             u2 = c2^(1-1/sigma)/(1-1/sigma);
             end;
 
-    :ex: A linear model.
+    *Example* (A linear model)
 
         ::
 
@@ -858,84 +943,166 @@ The model is declared inside a ``model`` block:
          end;
 
 
-Dynare has the ability to output the original list of model equations to a :math:`\LaTeX` file, using the ``write_latex_original_model`` command, the list of transformed model equations using the ``write_latex_dynamic_model command``, and the list of static model equations using the ``write_latex_static_model`` command.
+Dynare has the ability to output the original list of model equations
+to a :math:`\LaTeX` file, using the ``write_latex_original_model``
+command, the list of transformed model equations using the
+``write_latex_dynamic_model command``, and the list of static model
+equations using the ``write_latex_static_model`` command.
 
 .. command:: write_latex_original_model ;
 
-    This command creates two :math:`\LaTeX` files: one containing the model as defined in the model block and one containing the :math:`\LaTeX` document header information.
+    |br| This command creates two :math:`\LaTeX` files: one containing the
+    model as defined in the model block and one containing the
+    :math:`\LaTeX` document header information.
 
-    If your ``.mod`` file is ``FILENAME.mod``, then Dynare will create a file called ``FILENAME_original.tex``, which includes a file called ``FILENAME_original_content.tex`` (also created by Dynare) containing the list of all the original model equations.
+    If your ``.mod`` file is ``FILENAME.mod``, then Dynare will create
+    a file called ``FILENAME_original.tex``, which includes a file
+    called ``FILENAME_original_content.tex`` (also created by Dynare)
+    containing the list of all the original model equations.
 
-    If :math:`\LaTeX` names were given for variables and parameters (see :ref:`var-decl`), then those will be used; otherwise, the plain text names will be used.
+    If :math:`\LaTeX` names were given for variables and parameters
+    (see :ref:`var-decl`), then those will be used; otherwise, the
+    plain text names will be used.
 
-    Time subscripts (``t``, ``t+1``, ``t-1``, ...) will be appended to the variable names, as :math:`\LaTeX` subscripts.
+    Time subscripts (``t``, ``t+1``, ``t-1``, ...) will be appended to
+    the variable names, as :math:`\LaTeX` subscripts.
 
-    Compiling the TeX file requires the following :math:`\LaTeX` packages: ``geometry, fullpage, breqn``.
+    Compiling the TeX file requires the following :math:`\LaTeX`
+    packages: ``geometry, fullpage, breqn``.
 
 .. command:: write_latex_dynamic_model ;
              write_latex_dynamic_model (OPTIONS);
 
-    This command creates two :math:`\LaTeX` files: one containing the dynamic model and one containing the :math:`\LaTeX` document header information.
+    |br| This command creates two :math:`\LaTeX` files: one containing
+    the dynamic model and one containing the :math:`\LaTeX` document
+    header information.
 
-    If your ``.mod`` file is ``FILENAME.mod``, then Dynare will create a file called ``FILENAME_dynamic.tex``, which includes a file called ``FILENAME_dynamic_content.tex`` (also created by Dynare) containing the list of all the dynamic model equations.
+    If your ``.mod`` file is ``FILENAME.mod``, then Dynare will create
+    a file called ``FILENAME_dynamic.tex``, which includes a file
+    called ``FILENAME_dynamic_content.tex`` (also created by Dynare)
+    containing the list of all the dynamic model equations.
 
-    If :math:`\LaTeX` names were given for variables and parameters (see :ref:`var-decl`), then those will be used; otherwise, the plain text names will be used.
+    If :math:`\LaTeX` names were given for variables and parameters
+    (see :ref:`var-decl`), then those will be used; otherwise, the
+    plain text names will be used.
 
-    Time subscripts (``t``, ``t+1``, ``t-1``, ...) will be appended to the variable names, as :math:`\LaTeX` subscripts.
+    Time subscripts (``t``, ``t+1``, ``t-1``, ...) will be appended to
+    the variable names, as :math:`\LaTeX` subscripts.
 
-    Note that the model written in the TeX file will differ from the model declared by the user in the following dimensions:
+    Note that the model written in the TeX file will differ from the
+    model declared by the user in the following dimensions:
 
-        * The timing convention of predetermined variables (see :comm:`predetermined_variables`) will have been changed to the default Dynare timing convention; in other words, variables declared as predetermined will be lagged on period back,
-        * The expectation operators (see :op:`expectation <EXPECTATION (INTEGER) (MODEL_EXPRESSION)>`) will have been removed, replaced by auxiliary variables and new equations as explained in the documentation of the operator,
-        * Endogenous variables with leads or lags greater or equal than two will have been removed, replaced by new auxiliary variables and equations,
-        * F_or a stochastic model, exogenous variables with leads or lags will also have been replaced by new auxiliary variables and equations.
+        * The timing convention of predetermined variables (see
+          :comm:`predetermined_variables`) will have been changed to
+          the default Dynare timing convention; in other words,
+          variables declared as predetermined will be lagged on period
+          back,
+        * The expectation operators (see :op:`expectation <EXPECTATION
+          (INTEGER) (MODEL_EXPRESSION)>`) will have been removed,
+          replaced by auxiliary variables and new equations as
+          explained in the documentation of the operator,
+        * Endogenous variables with leads or lags greater or equal
+          than two will have been removed, replaced by new auxiliary
+          variables and equations,
+        * F_or a stochastic model, exogenous variables with leads or
+          lags will also have been replaced by new auxiliary variables
+          and equations.
 
-    For the required :math:`\LaTeX` packages, see :comm:`write_latex_original_model`.
+    For the required :math:`\LaTeX` packages, see
+    :comm:`write_latex_original_model`.
 
     *Options*
 
     .. option:: write_equation_tags
 
-        Write the equation tags in the :math:`\LaTeX` output. NB: the equation tags will be interpreted with :math:`\LaTeX` markups.
+        Write the equation tags in the :math:`\LaTeX` output. NB: the
+        equation tags will be interpreted with :math:`\LaTeX` markups.
 
 
 .. command:: write_latex_static_model ;
 
+    |br| This command creates two :math:`\LaTeX` files: one containing the
+    static model and one containing the :math:`\LaTeX` document header
+    information.
 
-    This command creates two :math:`\LaTeX` files: one containing the static model and one containing the :math:`\LaTeX` document header information.
+    If your ``.mod`` file is ``FILENAME.mod``, then Dynare will create
+    a file called ``FILENAME_static.tex``, which includes a file
+    called ``FILENAME_static_content.tex`` (also created by Dynare)
+    containing the list of all the steady state model equations.
 
-    If your ``.mod`` file is ``FILENAME.mod``, then Dynare will create a file called ``FILENAME_static.tex``, which includes a file called ``FILENAME_static_content.tex`` (also created by Dynare) containing the list of all the steady state model equations.
+    If :math:`\LaTeX` names were given for variables and parameters
+    (see :ref:`var-decl`), then those will be used; otherwise, the
+    plain text names will be used.
 
-    If :math:`\LaTeX` names were given for variables and parameters (see :ref:`var-decl`), then those will be used; otherwise, the plain text names will be used.
+    Note that the model written in the TeX file will differ from the
+    model declared by the user in the some dimensions (see
+    :comm:`write_latex_dynamic_model` for details).
 
-    Note that the model written in the TeX file will differ from the model declared by the user in the some dimensions (see :comm:`write_latex_dynamic_model` for details).
+    Also note that this command will not output the contents of the
+    optional ``steady_state_model`` block (see
+    :bck:`steady_state_model`); it will rather output a static version
+    (i.e. without leads and lags) of the dynamic ``model`` declared in
+    the model block.
 
-    Also note that this command will not output the contents of the optional ``steady_state_model`` block (see :bck:`steady_state_model`); it will rather output a static version (i.e. without leads and lags) of the dynamic ``model`` declared in the model block.
-
-    For the required :math:`\LaTeX` packages, see :comm:`write_latex_original_model`.
+    For the required :math:`\LaTeX` packages, see
+    :comm:`write_latex_original_model`.
 
 .. _aux-variables:
 
 Auxiliary variables
 ===================
 
-The model which is solved internally by Dynare is not exactly the model declared by the user. In some cases, Dynare will introduce auxiliary endogenous variables—along with corresponding auxiliary equations—which will appear in the final output.
+The model which is solved internally by Dynare is not exactly the
+model declared by the user. In some cases, Dynare will introduce
+auxiliary endogenous variables—along with corresponding auxiliary
+equations—which will appear in the final output.
 
-The main transformation concerns leads and lags. Dynare will perform a transformation of the model so that there is only one lead and one lag on endogenous variables and, in the case of a stochastic model, no leads/lags on exogenous variables.
+The main transformation concerns leads and lags. Dynare will perform a
+transformation of the model so that there is only one lead and one lag
+on endogenous variables and, in the case of a stochastic model, no
+leads/lags on exogenous variables.
 
-This transformation is achieved by the creation of auxiliary variables and corresponding equations. For example, if ``x(+2)`` exists in the model, Dynare will create one auxiliary variable ``AUX_ENDO_LEAD = x(+1)``, and replace ``x(+2)`` by ``AUX_ENDO_LEAD(+1)``.
+This transformation is achieved by the creation of auxiliary variables
+and corresponding equations. For example, if ``x(+2)`` exists in the
+model, Dynare will create one auxiliary variable ``AUX_ENDO_LEAD =
+x(+1)``, and replace ``x(+2)`` by ``AUX_ENDO_LEAD(+1)``.
 
-A similar transformation is done for lags greater than 2 on endogenous (auxiliary variables will have a name beginning with ``AUX_ENDO_LAG``), and for exogenous with leads and lags (auxiliary variables will have a name beginning with ``AUX_EXO_LEAD`` or ``AUX_EXO_LAG`` respectively).
+A similar transformation is done for lags greater than 2 on endogenous
+(auxiliary variables will have a name beginning with
+``AUX_ENDO_LAG``), and for exogenous with leads and lags (auxiliary
+variables will have a name beginning with ``AUX_EXO_LEAD`` or
+``AUX_EXO_LAG`` respectively).
 
-Another transformation is done for the ``EXPECTATION`` operator. For each occurrence of this operator, Dynare creates an auxiliary variable defined by a new equation, and replaces the expectation operator by a reference to the new auxiliary variable. For example, the expression ``EXPECTATION(-1)(x(+1))`` is replaced by ``AUX_EXPECT_LAG_1(-1)``, and the new auxiliary variable is declared as ``AUX_EXPECT_LAG_1 = x(+2)``.
+Another transformation is done for the ``EXPECTATION`` operator. For
+each occurrence of this operator, Dynare creates an auxiliary variable
+defined by a new equation, and replaces the expectation operator by a
+reference to the new auxiliary variable. For example, the expression
+``EXPECTATION(-1)(x(+1))`` is replaced by ``AUX_EXPECT_LAG_1(-1)``,
+and the new auxiliary variable is declared as ``AUX_EXPECT_LAG_1 =
+x(+2)``.
 
-Auxiliary variables are also introduced by the preprocessor for the ``ramsey_model`` and ``ramsey_policy`` commands. In this case, they are used to represent the Lagrange multipliers when first order conditions of the Ramsey problem are computed. The new variables take the form ``MULT_i``, where *i* represents the constraint with which the multiplier is associated (counted from the order of declaration in the model block).
+Auxiliary variables are also introduced by the preprocessor for the
+``ramsey_model`` and ``ramsey_policy`` commands. In this case, they
+are used to represent the Lagrange multipliers when first order
+conditions of the Ramsey problem are computed. The new variables take
+the form ``MULT_i``, where *i* represents the constraint with which
+the multiplier is associated (counted from the order of declaration in
+the model block).
 
-The last type of auxiliary variables is introduced by the ``differentiate_forward_vars`` option of the model block. The new variables take the form ``AUX_DIFF_FWRD_i``, and are equal to ``x-x(-1)`` for some endogenous variable ``x``.
+The last type of auxiliary variables is introduced by the
+``differentiate_forward_vars`` option of the model block. The new
+variables take the form ``AUX_DIFF_FWRD_i``, and are equal to
+``x-x(-1)`` for some endogenous variable ``x``.
 
-Once created, all auxiliary variables are included in the set of endogenous variables. The output of decision rules (see below) is such that auxiliary variable names are replaced by the original variables they refer to.
+Once created, all auxiliary variables are included in the set of
+endogenous variables. The output of decision rules (see below) is such
+that auxiliary variable names are replaced by the original variables
+they refer to.
 
-The number of endogenous variables before the creation of auxiliary variables is stored in ``M_.orig_endo_nbr``, and the number of endogenous variables after the creation of auxiliary variables is stored in ``M_.endo_nbr``.
+The number of endogenous variables before the creation of auxiliary
+variables is stored in ``M_.orig_endo_nbr``, and the number of
+endogenous variables after the creation of auxiliary variables is
+stored in ``M_.endo_nbr``.
 
 See `Dynare wiki`_ for more technical details on auxiliary variables.
 
