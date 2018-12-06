@@ -4,6 +4,7 @@ variables:
 
 build_binaries:
   stage: build
+  tags: dynare
   script:
     - autoreconf -si
     - './configure --with-matlab=$(dirname $(dirname $(readlink -f `which matlab`))) MATLAB_VERSION=$(echo version | matlab -nodesktop -nodisplay -nosplash 2>/dev/null | sed -En "/ans\ =/!d;n;n;s/^[^0-9]*([0-9]+\.[0-9]+).*$/\1/;p")'
@@ -18,6 +19,7 @@ build_binaries:
 
 build_doc:
   stage: build
+  tags: dynare
   script:
     - autoreconf -si
     - ./configure --disable-matlab --disable-octave
@@ -30,6 +32,7 @@ build_doc:
 
 testsuite_matlab:
   stage: test
+  tags: dynare
   script:
     - autoreconf -si
     - './configure --disable-octave --with-matlab=$(dirname $(dirname $(readlink -f `which matlab`))) MATLAB_VERSION=$(echo version | matlab -nodesktop -nodisplay -nosplash 2>/dev/null | sed -En "/ans\ =/!d;n;n;s/^[^0-9]*([0-9]+\.[0-9]+).*$/\1/;p")'
@@ -49,6 +52,7 @@ testsuite_matlab:
 
 .testsuite_octave_template:
   stage: test
+  tags: dynare
   variables:
     OPENBLAS_NUM_THREADS: 1
   script:
