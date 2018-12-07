@@ -416,6 +416,9 @@ MODFILES = \
     pac/trend-component-17/example.mod \
     pac/trend-component-18/example.mod \
     estimation/univariate/bayesian.mod \
+    estimation/univariate/ols/ols.mod \
+    estimation/univariate/ols/ols_wc_1.mod \
+    estimation/univariate/ols/ols_wc_2.mod \
     dynare-command-options/ramst.mod
 
 PARTICLEFILES = \
@@ -811,6 +814,10 @@ var-expectations: m/var-expectations o/var-expectations
 m/var-expectations: $(patsubst %.mod, %.m.trs, $(filter var-expectations/%.mod, $(MODFILES)))
 o/var-expectations: $(patsubst %.mod, %.o.trs, $(filter var-expectations/%.mod, $(MODFILES)))
 
+estimation/univariate/ols: m/estimation/univariate/ols o/estimation/univariate/ols
+m/estimation/univariate/ols: $(patsubst %.mod, %.m.trs, $(filter estimation/univariate/ols/%.mod, $(MODFILES)))
+o/estimation/univariate/ols: $(patsubst %.mod, %.o.trs, $(filter estimation/univariate/ols/%.mod, $(MODFILES)))
+
 trend-component-and-var-models: m/trend-component-and-var-models o/trend-component-and-var-models
 m/trend-component-and-var-models: $(patsubst %.mod, %.m.trs, $(filter trend-component-and-var-models/%.mod, $(MODFILES)))
 o/trend-component-and-var-models: $(patsubst %.mod, %.o.trs, $(filter trend-component-and-var-models/%.mod, $(MODFILES)))
@@ -943,6 +950,7 @@ EXTRA_DIST = \
 	optimizers/fs2000.common.inc \
 	estimation/MH_recover/fs2000.common.inc \
     estimation/univariate/data.csv \
+    estimation/univariate/ols/mc-ols.inc \
 	prior_posterior_function/posterior_function_demo.m
 
 

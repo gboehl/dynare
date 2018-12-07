@@ -57,9 +57,8 @@ de_g_yer_ecm_de_q_yed_L1
 de_g_yer_ecm_u2_stn_L1
 de_g_yer_de_q_yed_L1
 de_g_yer_de_g_yer_L1
-de_g_yer_u2_stn_L1
 de_ehic_de_ehic_L1
-
+p
 
 ;
 
@@ -87,8 +86,9 @@ de_g_yer_ecm_de_q_yed_L1  =  0.0189896046977422 ;
 de_g_yer_ecm_u2_stn_L1    = -0.109597659887433  ;
 de_g_yer_de_q_yed_L1      =  0.00376679676320256;
 de_g_yer_de_g_yer_L1      =  0.480506381923643  ;
-de_g_yer_u2_stn_L1        = -0.0722359286123494 ;
 de_ehic_de_ehic_L1        =  1                  ;
+
+p = 0;
 
 
 model(linear);
@@ -128,13 +128,13 @@ diff(DE_G_YER) =   de_g_yer_ecm_de_q_yed_L1 * (DE_Q_YED(-1) - DE_EHIC(-1))
                  + de_g_yer_ecm_u2_stn_L1   * (U2_STN(-1)   - U2_ESTN(-1))
                  + de_g_yer_de_q_yed_L1     * diff(DE_Q_YED(-1))
                  + de_g_yer_de_g_yer_L1     * diff(DE_G_YER(-1))
-                 + de_g_yer_u2_stn_L1       * diff(U2_STN(-1))
+                 + (p-de_g_yer_de_q_yed_L1) * diff(U2_STN(-1))
                  + res_DE_G_YER                                           ;
 [name = 'eq8']
 DE_EHIC        =   de_ehic_de_ehic_L1       * DE_EHIC(-1)
                  + res_DE_EHIC                                            ;
 
-
+//
 
 end;
 
