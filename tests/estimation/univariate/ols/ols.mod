@@ -4,7 +4,7 @@
 ** ------
 **
 ** You need to have the first line on top of the mod file. The options defined on this line are passed
-** to the dynare command (you can add other options, separated by spaces or commas). The option defined
+f** to the dynare command (you can add other options, separated by spaces or commas). The option defined
 ** here is mandatory for the decomposition. It forces Dynare to output another representation of the
 ** model in JSON file (additionaly to the matlab files) which is used here to manipulate the equations.
 */
