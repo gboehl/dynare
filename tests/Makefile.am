@@ -335,6 +335,7 @@ MODFILES = \
 	optimizers/fs2000_101.mod \
 	optimizers/fs2000_102.mod \
 	optimizers/fs2000_w.mod \
+    epilogue/example1.mod \
 	differentiate_forward_vars/RBC_differentiate_forward.mod \
 	partitioning/partitions.mod \
 	prior_posterior_function/fs2000_prior_posterior_function.mod \
