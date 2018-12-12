@@ -32,10 +32,10 @@ function rnd = gamrnd(a, b, method)
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 if (nargin < 2)
-    error('gamrnd:: Two input arguments are needed!');
+    b = ones(size(a));
 end
 
-if nargin==2
+if nargin<3
     method= 'BauwensLubranoRichard';
     if any(a<1)
         method = 'Devroye';
