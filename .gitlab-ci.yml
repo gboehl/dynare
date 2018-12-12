@@ -2,11 +2,6 @@ variables:
   GIT_SUBMODULE_STRATEGY: normal
   TERM: linux
 
-before_script:
-  - wget http://www.dynare.org/x13/x13.zip
-  - unzip x13.zip
-  - cp -r binaries/linux matlab/modules/dseries/externals/x13
-
 build_binaries:
   stage: build
   script:
