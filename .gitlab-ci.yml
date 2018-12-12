@@ -67,6 +67,7 @@ testsuite_matlab:
     when: always
   dependencies:
     - build_binaries
+  allow_failure: true
 
 testsuite_octave_auto:
   extends: .testsuite_octave_template
