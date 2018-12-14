@@ -323,7 +323,7 @@ for i=1:maxlag
         end
         if isequal(id, 1)
             if isequal(expectationmodelkind, 'pac-expectations') && growth_correction
-                pgrowth = M_.param_names(expectationmodel.growth_neutrality_param_index);
+                pgrowth = M_.params(expectationmodel.growth_neutrality_param_index);
                 switch expectationmodel.growth_type
                   case 'parameter'
                     vgrowth = M_.param_names{expectationmodel.growth_index};
