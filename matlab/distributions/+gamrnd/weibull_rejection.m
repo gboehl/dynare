@@ -1,6 +1,6 @@
 function g = weibull_rejection(a, b)
 
-% Returns gamma variates, see Devroye (1986) page 415.
+% Returns gamma variates, using Weibull rejection algorithm, see Väduva (1977) page 556.
 %
 % INPUTS
 % - a    [double]     n*1 vector, first hyperparameter.
@@ -29,22 +29,22 @@ function g = weibull_rejection(a, b)
 nn = length(a);
 mm = nn;
 cc = 1./a ;
-dd = a.^(a./(1-a)).*(1-a);
-ZE = NaN(nn,2);
-X  = NaN(nn,1);
-INDEX = 1:mm;
-index = INDEX;
+zz = a.^(a./(1-a));
+aa = exp(zz.*(a-1));
+Z = NaN(nn, 1);
+Y = NaN(nn, 1);
+X = NaN(nn, 1);
+index = 1:nn;
 
 while mm
-    ZE(index,:) = exprnd(ones(mm,2));
-    X(index) = ZE(index,1).^cc(index);
-    id = find( (ZE(:,1)+ZE(:,2) > dd + X) );
-    if isempty(id)
-        mm = 0;
-    else
-        index = INDEX(id);
-        mm = length(index);
-    end
+    % Generate Weibull
+    Z(index) = -log(rand(mm, 1));
+    Y(index) = Z(index).^cc(index);
+    INDEX = index(rand(mm,1)>aa(index).*exp(Z(index)-Y(index)));
+    id = setdiff(index, INDEX);
+    X(id) = Y(id);
+    index = INDEX;
+    mm = length(index);
 end
 
 g = X.*b;
