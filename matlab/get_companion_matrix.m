@@ -110,9 +110,9 @@ switch auxiliary_model_type
     % Reorder target_eqnums_in_auxiliary_model to ensure that the order of
     % the trend variables matches the order of the error correction
     % variables.
-    [~,reorder] = ismember(M_.trend_component.(auxiliary_model_name).lhs(target_eqnums_in_auxiliary_model), ...
+    [~, reorder] = ismember(M_.trend_component.(auxiliary_model_name).lhs(target_eqnums_in_auxiliary_model), ...
                            M_.trend_component.(auxiliary_model_name).target_vars(M_.trend_component.(auxiliary_model_name).target_vars > 0));
-    target_eqnums_in_auxiliary_model = target_eqnums_in_auxiliary_model(reorder);
+    target_eqnums_in_auxiliary_model(reorder) = target_eqnums_in_auxiliary_model;
     % Get the EC matrix (the EC term is assumend to be in t-1).
     %
     % TODO: Check that the EC term is the difference between the
