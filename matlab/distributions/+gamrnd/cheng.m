@@ -1,6 +1,6 @@
 function  g = cheng(a, b)
 
-% Returns gamma variates, see Devroye (1986) page 413.
+% Returns gamma variates, see Devroye (1986) page 413 and Cheng (JRRS, 1977).
 %
 % INPUTS
 % - a    [double]     n*1 vector, first hyperparameter.
@@ -8,6 +8,9 @@ function  g = cheng(a, b)
 %
 % OUTPUTS
 % - g    [double]     n*1 vector, gamma variates.
+%
+% REMARKS
+% The definition of aa is wrong in Devroye (1986).
 
 % Copyright (C) 2006-2018 Dynare Team
 %
@@ -28,6 +31,7 @@ function  g = cheng(a, b)
 
 nn = length(a);
 mm = nn;
+aa = 1./sqrt(2*a-1);
 bb = a-log(4);
 cc = a+sqrt(2*a-1);
 UV = NaN(nn,2);
@@ -36,23 +40,19 @@ X  = NaN(nn,1);
 Z  = NaN(nn,1);
 R  = NaN(nn,1);
 index = 1:nn;
-INDEX = index;
 
 while mm
     UV(index,:) = rand(mm,2);
-    Y(index) = a(index).*log(UV(index,2)./(1-UV(index,2)));
-    X(index) = a(index).*exp(UV(index,2));
+    Y(index) = aa(index).*log(UV(index,2)./(1-UV(index,2)));
+    X(index) = a(index).*exp(Y(index));
     Z(index) = UV(index,1).*UV(index,2).*UV(index,2);
     R(index) = bb(index) + cc(index).*Y(index)-X(index);
-    jndex = index(R(index) >= 4.5*Z(index)-(1+log(4.5)));
-    Jndex = setdiff(index, jndex);
-    if ~isempty(Jndex)
-        lndex = Jndex(R(Jndex) >= log(Z(Jndex)));
-        Lndex = setdiff(Jndex, lndex);
-    else
-        Lndex = [];
+    % Update the vector of indices, only keeping the rejected Xs.
+    index = index(R(index)+2.504077396776274-4.5*Z(index)<0);
+    if ~isempty(index)
+        % Update the vector of indices, only keeping the rejected Xs.
+        index = index(R(index)<log(Z(index)));
     end
-    index = INDEX(Lndex);
     mm = length(index);
 end
 
