@@ -1,6 +1,6 @@
 function g = best_1983(a, b)
 
-% Returns gamma variates, see Devroye (1986) page 426.
+% Returns gamma variates, see Devroye (1986) page 426 and Best (1983) page 187.
 %
 % INPUTS
 % - a    [double]     n*1 vector, first hyperparameter.
@@ -28,55 +28,31 @@ function g = best_1983(a, b)
 
 nn = length(a);
 mm = nn;
-tt = .07 + .75*sqrt(1-a);
-bb = 1 + exp(-tt).*a./tt;
+index = 1:nn;
+U = NaN(nn,1);
+Ustar = NaN(nn, 1);
+P = NaN(nn,1);
+X = NaN(nn,1);
+Y = NaN(nn,1);
+zz = .07 + .75*sqrt(1-a);
+bb = 1 + exp(-zz).*a./zz;
 cc = 1./a;
-INDEX = 1:mm;
-index = INDEX;
-UW = NaN(nn,2);
-V  = NaN(nn,1);
-X  = NaN(nn,1);
-Y  = NaN(nn,1);
 
 while mm
-    UW(index,:) = rand(mm,2);
-    V(index) = UW(index,1).*bb(index);
-    state1 = find(V(index)<=1);
-    state2 = find(V(index)>1);
-    ID = [];
-    if ~isempty(state1)
-        X(index(state1)) = tt(index(state1)).*V(index(state1)).^cc(index(state1));
-        test11 = UW(index(state1),2) <= (2-X(index(state1)))./(2+X(index(state1))) ;
-        id11 = find(~test11);
-        if ~isempty(id11)
-            test12 = UW(index(state1(id11)),2) <= exp(-X(index(state1(id11)))) ;
-            id12 = find(~test12);
-        else
-            id12 = [];
-        end
-        ID = INDEX(index(state1(id11(id12))));
-    end
-    if ~isempty(state2)
-        X(index(state2)) = -log(cc(index(state2)).*tt(index(state2)).*(bb(index(state2))-V(index(state2)))) ;
-        Y(index(state2)) = X(index(state2))./tt(index(state2)) ;
-        test21 = UW(index(state2),2).*(a(index(state2)) + Y(index(state2)) - a(index(state2)).*Y(index(state2)) ) <= 1 ;
-        id21 = find(~test21);
-        if ~isempty(id21)
-            test22 = UW(index(state2(id21)),2) <= Y(index(state2(id21))).^(a(index(state2(id21)))-1) ;
-            id22 = find(~test22);
-        else
-            id22 = [];
-        end
-        if isempty(ID)
-            ID = INDEX(index(state2(id21(id22))));
-        else
-            ID = [ID,INDEX(index(state2(id21(id22))))];
-        end
-    end
-    mm = length(ID);
-    if mm
-        index = ID;
-    end
+    U(index) = rand(mm,1);
+    Ustar(index) = rand(mm, 1);
+    P(index) = U(index).*bb(index);
+    id1 = index(P(index)<=1);
+    id2 = setdiff(index, id1); % Goto 4.
+    X(id1) = zz(id1).*(P(id1).^cc(id1));
+    id3 = id1(Ustar(id1)>((2-X(id1))./(2+X(id1))));
+    id5 = id3(Ustar(id3)>exp(-X(id3)));
+    X(id2) = -log(cc(id2).*zz(id2).*(bb(id2)-P(id2))); % This is 4.
+    Y(id2) = X(id2)./zz(id2);
+    id4 = id2(Ustar(id2).*(a(id2)+(1-a(id2)).*Y(id2))>1);
+    id6 = id4(Ustar(id4)>Y(id4).^(a(id4)-1));
+    index = [id5, id6];
+    mm = length(index);
 end
 
 g = X.*b;

@@ -1,6 +1,6 @@
 function  g = knuth(a, b)
 
-% Returns gamma variates, see Bauwens, Lubrano & Richard (1999) page 316.
+% Returns gamma variates, see Knuth (1981) page 129.
 %
 % INPUTS
 % - a    [double]     n*1 vector, first hyperparameter.
@@ -29,29 +29,18 @@ function  g = knuth(a, b)
 nn = length(a);
 mm = nn;
 bb = sqrt(2*a-1);
-dd = 1./(a-1);
 Y = NaN(nn,1);
 X = NaN(nn,1);
-INDEX = 1:mm;
-index = INDEX;
+index = 1:mm;
 
 while mm
     Y(index) = tan(pi*rand(mm,1));
-    X(index) = Y(index).*bb(index) + a(index) - 1 ;
-    idy1 = find(X(index)>=0);
-    idn1 = setdiff(index,index(idy1));
-    if ~isempty(idy1)
-        test = log(rand(length(idy1),1)) <= ...
-               log(1+Y(index(idy1)).*Y(index(idy1))) + ...
-               (a(index(idy1))-1).*log(X(index(idy1)).*dd(index(idy1))) - ...
-               Y(index(idy1)).*bb(index(idy1)) ;
-        idy2 = find(test);
-        idn2 = setdiff(idy1, idy1(idy2));
-    else
-        idy2 = [];
-        idn2 = [];
-    end
-    index = [ INDEX(idn1) , INDEX(index(idn2)) ] ;
+    X(index) = Y(
+    index).*bb(index) + a(index) - 1;
+    id1 = index(X(index)<=0); % Rejected draws.
+    id2 = setdiff(index, id1);
+    id3 = id2(rand(length(id2), 1)>(1+Y(id2).*Y(id2)).*exp((a(id2)-1).*(log(X(id2))-log(a(id2)-1))-bb(id2).*Y(id2))); % Rejected draws.
+    index = [id1, id3];
     mm = length(index);
 end
 

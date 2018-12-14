@@ -1,6 +1,6 @@
 function  g = best_1978(a ,b)
 
-% Returns gamma variates, see Devroye (1986) page 410.
+% Returns gamma variates, see Devroye (1986) page 410 and Best (1978).
 %
 % INPUTS
 % - a    [double]     n*1 vector, first hyperparameter.
@@ -30,34 +30,24 @@ nn = length(a);
 mm = nn;
 bb = a-1;
 cc = 3*a-.75;
-UV = NaN(nn,2);
-Y  = NaN(nn,1);
-X  = NaN(nn,1);
-Z  = NaN(nn,1);
-W  = NaN(nn,1);
+U = NaN(nn,1);
+Y = NaN(nn,1);
+X = NaN(nn,1);
+Z = NaN(nn,1);
+W = NaN(nn,1);
 index = 1:nn;
-INDEX = index;
 
 while mm
-    UV(index,:) = rand(mm,2);
-    W(index) = UV(index,1).*(1-UV(index,1));
-    Y(index) = sqrt(cc(index)./W(index)).*(UV(index,1)-.5);
-    X(index) = bb(index)+Y(index);
-    jndex = index(X(index)>=0);
-    Jndex = setdiff(index,jndex);
-    if ~isempty(jndex)
-        Z(jndex) = 64*W(jndex).*W(jndex).*W(jndex).*UV(jndex,2).*UV(jndex,2);
-        kndex = jndex(Z(jndex)<=1-2*Y(jndex).*Y(jndex)./X(jndex));
-        Kndex = setdiff(jndex, kndex);
-        if ~isempty(Kndex)
-            lndex = Kndex(log(Z(Kndex))<=2*(bb(Kndex).*log(X(Kndex)./bb(Kndex))-Y(Kndex)));
-            Lndex = setdiff(Kndex, lndex);
-        else
-            Lndex = [];
-        end
-        new_index = INDEX(Lndex);
-    end
-    index = union(new_index, INDEX(Jndex));
+    U(index) = rand(mm,1);
+    W(index) = U(index).*(1-U(index)); % e
+    Y(index) = sqrt(cc(index)./W(index)).*(U(index)-.5); % f
+    X(index) = bb(index)+Y(index); % x
+    id1 = index(X(index)<0); % Reject.
+    id2 = setdiff(index, id1);
+    Z(id2) = 64.0*(W(id2).^3).*(rand(length(id2),1).^2); % d
+    id3 = id2(Z(id2)>1.0-2.0*Y(id2).*Y(id2)./X(id2)); % Reject.
+    id4 = id3(log(Z(id3))>2.0*(bb(id3).*log(X(id3)./bb(id3))-Y(id3))); % Reject.
+    index = [id1, id4];
     mm = length(index);
 end
 

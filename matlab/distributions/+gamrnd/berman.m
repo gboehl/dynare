@@ -40,13 +40,8 @@ while mm
     UV(index,:) = rand(mm,2);
     X(index) = UV(index,1).^aa(index);
     Y(index) = UV(index,2).^cc(index);
-    id = find(X+Y>1);
-    if isempty(id)
-        mm = 0;
-    else
-        index = INDEX(id);
-        mm = length(index);
-    end
+    index = index(X(index)+Y(index)>1);
+    mm = length(index);
 end
 
 Z = gamrnd(2*ones(nn,1), ones(nn,1));

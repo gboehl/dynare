@@ -37,7 +37,6 @@ X = NaN(nn, 1);
 index = 1:nn;
 
 while mm
-    % Generate Weibull
     Z(index) = -log(rand(mm, 1));
     Y(index) = Z(index).^cc(index);
     INDEX = index(rand(mm,1)>aa(index).*exp(Z(index)-Y(index)));
