@@ -1,4 +1,4 @@
-function rnd = gamrnd(a, b, method)
+function rnd = gamrnd(a, b, method) % --*-- Unitary tests --*--
 
 % This function produces independent random variates from the Gamma distribution.
 %
@@ -125,3 +125,277 @@ if ~isempty(ddx)
         end
     end
 end
+
+return
+
+%@test:1
+  method = struct('small', 'Weibull-rejection', 'large', 'Knuth');
+  n = 1000000;
+  m = 100;
+  a = 0.1;
+  b = 1.0;
+  try
+      mu = 0;
+      s2 = 0;
+      levels = .01:.01:10;
+      ecdf = zeros(length(levels),1);
+      for i = 1:m
+          x = gamrnd(ones(n, 1)*a, ones(n,1)*b, method);
+          mu = mu + mean(x);
+          s2 = s2 + var(x);
+          for j=1:length(levels)
+              ecdf(j) = ecdf(j)+sum(x<levels(j))/n;
+          end
+      end
+      mu = mu/m;
+      s2 = s2/m;
+      ecdf = ecdf/m;
+      t(1) = true;
+  catch
+      t(1) = false;
+  end
+  if t(1)
+      t(2) = abs(mu-a*b)<1e-3;
+      t(3) = abs(s2-a*b^2)<1e-3;
+      t(4) = max(abs(ecdf-gamcdf(transpose(levels), a, b)))<1e-3;
+  end
+  T = all(t);
+%@eof:1
+
+%@test:2
+  method = struct('small', 'Johnk', 'large', 'Knuth');
+  n = 1000000;
+  m = 100;
+  a = 0.1;
+  b = 1.0;
+  try
+      mu = 0;
+      s2 = 0;
+      levels = .01:.01:10;
+      ecdf = zeros(length(levels),1);
+      for i = 1:m
+          x = gamrnd(ones(n, 1)*a, ones(n,1)*b, method);
+          mu = mu + mean(x);
+          s2 = s2 + var(x);
+          for j=1:length(levels)
+              ecdf(j) = ecdf(j)+sum(x<levels(j))/n;
+          end
+      end
+      mu = mu/m;
+      s2 = s2/m;
+      ecdf = ecdf/m;
+      t(1) = true;
+  catch
+      t(1) = false;
+  end
+  if t(1)
+      t(2) = abs(mu-a*b)<1e-3;
+      t(3) = abs(s2-a*b^2)<1e-3;
+      t(4) = max(abs(ecdf-gamcdf(transpose(levels), a, b)))<1e-3;
+  end
+  T = all(t);
+%@eof:2
+
+%@test:3
+  method = struct('small', 'Berman', 'large', 'Knuth');
+  n = 1000000;
+  m = 100;
+  a = 0.1;
+  b = 1.0;
+  try
+      mu = 0;
+      s2 = 0;
+      levels = .01:.01:10;
+      ecdf = zeros(length(levels),1);
+      for i = 1:m
+          x = gamrnd(ones(n, 1)*a, ones(n,1)*b, method);
+          mu = mu + mean(x);
+          s2 = s2 + var(x);
+          for j=1:length(levels)
+              ecdf(j) = ecdf(j)+sum(x<levels(j))/n;
+          end
+      end
+      mu = mu/m;
+      s2 = s2/m;
+      ecdf = ecdf/m;
+      t(1) = true;
+  catch
+      t(1) = false;
+  end
+  if t(1)
+      t(2) = abs(mu-a*b)<1e-3;
+      t(3) = abs(s2-a*b^2)<1e-3;
+      t(4) = max(abs(ecdf-gamcdf(transpose(levels), a, b)))<1e-3;
+  end
+  T = all(t);
+%@eof:3
+
+%@test:4
+  method = struct('small', 'Ahrens-Dieter', 'large', 'Knuth');
+  n = 1000000;
+  m = 100;
+  a = 0.1;
+  b = 1.0;
+  try
+      mu = 0;
+      s2 = 0;
+      levels = .01:.01:10;
+      ecdf = zeros(length(levels),1);
+      for i = 1:m
+          x = gamrnd(ones(n, 1)*a, ones(n,1)*b, method);
+          mu = mu + mean(x);
+          s2 = s2 + var(x);
+          for j=1:length(levels)
+              ecdf(j) = ecdf(j)+sum(x<levels(j))/n;
+          end
+      end
+      mu = mu/m;
+      s2 = s2/m;
+      ecdf = ecdf/m;
+      t(1) = true;
+  catch
+      t(1) = false;
+  end
+  if t(1)
+      t(2) = abs(mu-a*b)<1e-3;
+      t(3) = abs(s2-a*b^2)<1e-3;
+      t(4) = max(abs(ecdf-gamcdf(transpose(levels), a, b)))<1e-3;
+  end
+  T = all(t);
+%@eof:4
+
+%@test:5
+  method = struct('small', 'Best', 'large', 'Knuth');
+  n = 1000000;
+  m = 100;
+  a = 0.1;
+  b = 1.0;
+  try
+      mu = 0;
+      s2 = 0;
+      levels = .01:.01:10;
+      ecdf = zeros(length(levels),1);
+      for i = 1:m
+          x = gamrnd(ones(n, 1)*a, ones(n,1)*b, method);
+          mu = mu + mean(x);
+          s2 = s2 + var(x);
+          for j=1:length(levels)
+              ecdf(j) = ecdf(j)+sum(x<levels(j))/n;
+          end
+      end
+      mu = mu/m;
+      s2 = s2/m;
+      ecdf = ecdf/m;
+      t(1) = true;
+  catch
+      t(1) = false;
+  end
+  if t(1)
+      t(2) = abs(mu-a*b)<1e-3;
+      t(3) = abs(s2-a*b^2)<1e-3;
+      t(4) = max(abs(ecdf-gamcdf(transpose(levels), a, b)))<1e-3;
+  end
+  T = all(t);
+%@eof:5
+
+%@test:6
+  method = struct('small', 'Weibull-rejection', 'large', 'Knuth');
+  n = 1000000;
+  m = 100;
+  a = 1.5;
+  b = 1.0;
+  try
+      mu = 0;
+      s2 = 0;
+      levels = .01:.01:15;
+      ecdf = zeros(length(levels),1);
+      for i = 1:m
+          x = gamrnd(ones(n, 1)*a, ones(n,1)*b, method);
+          mu = mu + mean(x);
+          s2 = s2 + var(x);
+          for j=1:length(levels)
+              ecdf(j) = ecdf(j)+sum(x<levels(j))/n;
+          end
+      end
+      mu = mu/m;
+      s2 = s2/m;
+      ecdf = ecdf/m;
+      t(1) = true;
+  catch
+      t(1) = false;
+  end
+  if t(1)
+      t(2) = abs(mu-a*b)<1e-3;
+      t(3) = abs(s2-a*b^2)<1e-3;
+      t(4) = max(abs(ecdf-gamcdf(transpose(levels), a, b)))<1e-3;
+  end
+  T = all(t);
+%@eof:6
+
+%@test:7
+  method = struct('small', 'Weibull-rejection', 'large', 'Cheng');
+  n = 1000000;
+  m = 100;
+  a = 1.5;
+  b = 1.0;
+  try
+      mu = 0;
+      s2 = 0;
+      levels = .01:.01:15;
+      ecdf = zeros(length(levels),1);
+      for i = 1:m
+          x = gamrnd(ones(n, 1)*a, ones(n,1)*b, method);
+          mu = mu + mean(x);
+          s2 = s2 + var(x);
+          for j=1:length(levels)
+              ecdf(j) = ecdf(j)+sum(x<levels(j))/n;
+          end
+      end
+      mu = mu/m;
+      s2 = s2/m;
+      ecdf = ecdf/m;
+      t(1) = true;
+  catch
+      t(1) = false;
+  end
+  if t(1)
+      t(2) = abs(mu-a*b)<1e-3;
+      t(3) = abs(s2-a*b^2)<1e-3;
+      t(4) = max(abs(ecdf-gamcdf(transpose(levels), a, b)))<1e-3;
+  end
+  T = all(t);
+%@eof:7
+
+%@test:8
+  method = struct('small', 'Weibull-rejection', 'large', 'Best');
+  n = 1000000;
+  m = 100;
+  a = 1.5;
+  b = 1.0;
+  try
+      mu = 0;
+      s2 = 0;
+      levels = .01:.01:15;
+      ecdf = zeros(length(levels),1);
+      for i = 1:m
+          x = gamrnd(ones(n, 1)*a, ones(n,1)*b, method);
+          mu = mu + mean(x);
+          s2 = s2 + var(x);
+          for j=1:length(levels)
+              ecdf(j) = ecdf(j)+sum(x<levels(j))/n;
+          end
+      end
+      mu = mu/m;
+      s2 = s2/m;
+      ecdf = ecdf/m;
+      t(1) = true;
+  catch
+      t(1) = false;
+  end
+  if t(1)
+      t(2) = abs(mu-a*b)<1e-3;
+      t(3) = abs(s2-a*b^2)<1e-3;
+      t(4) = max(abs(ecdf-gamcdf(transpose(levels), a, b)))<1e-3;
+  end
+  T = all(t);
+%@eof:8
