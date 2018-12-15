@@ -3,18 +3,19 @@ function rnd = gamrnd(a, b, method)
 % This function produces independent random variates from the Gamma distribution.
 %
 %  INPUTS
-%    a       [double]    n*1 vector of positive parameters.
-%    b       [double]    n*1 vector of positive parameters.
-%    method  [string]    'BawensLubranoRichard' or anything else (see below).
+%  - a       [double]    n*1 vector of positive parameters.
+%  - b       [double]    n*1 vector of positive parameters.
+%  - method  [struct]    Specifies which algorithms must be used.
 %
 %  OUTPUT
-%    rnd     [double]    n*1 vector of independent variates from the gamma(a,b) distribution.
+%  - rnd     [double]    n*1 vector of independent variates from the gamma(a,b) distribution.
 %                        rnd(i) is gamma distributed with mean a(i)b(i) and variance a(i)b(i)^2.
 %
-%  ALGORITHMS
-%    Described in Bauwens, Lubrano and Richard (1999, page 316) and Devroye (1986, chapter 9).
+%  REMARKS
+%  The third input is a structure with two fields named `large` and `small`.
+%  These fields define the algorithms to be used if a>1 (large) or a<1 (small).
 
-% Copyright (C) 2006-2017 Dynare Team
+% Copyright (C) 2006-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -31,103 +32,96 @@ function rnd = gamrnd(a, b, method)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-if (nargin < 2)
+%>
+%>  Set defaults
+%>  ------------
+
+if nargin<2
     b = ones(size(a));
 end
 
 if nargin<3
-    method= 'BauwensLubranoRichard';
-    if any(a<1)
-        method = 'Devroye';
-        Devroye.small = 'Best'; % 'Weibull' , 'Johnk' , 'Berman' , 'GS' , 'Best'
-                                % REMARK: The first algorithm (Weibull) is producing too much extreme values.
-    end
-    if ~strcmpi(method,'BauwensLubranoRichard')
-        Devroye.big = 'Best'; % 'Cheng' , 'Best'
-                              % REMARK 1: The first algorithm (Cheng) is still producing obviously wrong simulations.
-                              % REMARK 2: The second algorithm seems slightly slower than the algorithm advocated by Bauwens,
-                              %           Lubrano and Richard, but the comparison depends on the value of a (this should be
-                              %           investigated further).
-    end
-else
-    error('gamrnd:: Selection of method not yet implemented')
+    method = struct('large', 'Cheng', 'small', 'Johnk');
 end
+
+%>
+%>  Check inputs
+%>  ------------
+
 
 [ma,na] = size(a);
 [mb,nb] = size(b);
 
 if ma~=mb || na~=nb
-    error('gamrnd:: Input arguments must have the same size!');
+    error('gamrnd:: Input arguments must have the same size.');
 end
 
 if na~=1
-    error('gamrnd:: Input arguments must be column vectors');
+    error('gamrnd:: Input arguments must be column vectors.');
 end
 
 if (any(a<0)) || (any(b<0)) || (any(a==Inf)) || (any(b==Inf))
-    error('gamrnd:: Input arguments must be finite and positive!');
+    error('gamrnd:: Input arguments must be finite and positive.');
 end
 
-[~,integer_idx,double_idx] = isint(a);
-
-number_of_integer_a = length(integer_idx);
-number_of_double_a = length(double_idx);
+%>
+%> Inititialize output
+%> -------------------
 
 rnd = NaN(ma,1);
 
-if number_of_integer_a
-    small_idx = find(a(integer_idx)<30);
-    big_idx = find(a(integer_idx)>=30);
-    number_of_small_a = length(small_idx);
-    number_of_big_a = length(big_idx);
-    if number_of_small_a
-        % Exact sampling.
-        for i=1:number_of_small_a
-            rnd(integer_idx(small_idx(i))) = sum(exprnd(ones(a(integer_idx(small_idx(i))),1)))*b(integer_idx(small_idx(i)));
+
+% Get indices of integer (idx) and non integer (ddx) for the first hyperparameter a.
+[~, idx, ddx] = isint(a);
+
+if ~isempty(idx)
+    % If the first hyperparameter (a) is an integer we can use the
+    % exponential random number generator or rely in a Gaussian
+    % approximation.
+    sdx = find(a(idx)<30);
+    ldx = find(a(idx)>=30);
+    if ~isempty(sdx)
+        % Exact sampling using random deviates from an exponential distribution.
+        for i=1:length(sdx)
+            rnd(idx(sdx(i))) = sum(exprnd(ones(a(idx(sdx(i))),1)))*b(idx(sdx(i)));
         end
     end
-    if number_of_big_a
+    if ~isempty(ldx)
         % Gaussian approximation.
-        rnd(integer_idx(big_idx)) = sqrt(a(integer_idx(big_idx))).* b(integer_idx(big_idx)) .* randn(number_of_big_a, 1) + a(integer_idx(big_idx)) .* b(integer_idx(big_idx));
+        rnd(idx(ldx)) = sqrt(a(idx(ldx))).* b(idx(ldx)) .* randn(length(ldx), 1) + a(idx(ldx)) .* b(idx(ldx));
     end
 end
 
-
-if number_of_double_a
-    if strcmpi(method,'BauwensLubranoRichard')
-        % Algorithm given in Bauwens, Lubrano & Richard (1999) page 316.
-        rnd(double_idx) = gamrnd.knuth(a(double_idx),b(double_idx));
-    else% Algorithm given in  Devroye (1986, chapter 9)
-        small_idx = find(a(double_idx)<1);
-        big_idx = find(a(double_idx)>1);
-        number_of_small_a = length(small_idx);
-        number_of_big_a = length(big_idx);
-        if number_of_small_a
-            if strcmpi(Devroye.small,'Weibull')
-                % Algorithm given in Devroye (1986, page 415) [Rejection from the Weibull density]
-                rnd(double_idx(small_idx)) = gamrnd.weibull_rejection(a(double_idx(small_idx)),b(double_idx(small_idx)));
-            elseif strcmpi(Devroye.small,'Johnk')
-                % Algorithm given in Devroye (1986, page 418) [Johnk's gamma generator]
-                rnd(double_idx(small_idx)) = gamrnd.johnk(a(double_idx(small_idx)),b(double_idx(small_idx)));
-            elseif strcmpi(Devroye.small,'Berman')
-                % Algorithm given in Devroye (1986, page 418) [Berman's gamma generator]
-                rnd(double_idx(small_idx)) = gamrnd.berman(a(double_idx(small_idx)),b(double_idx(small_idx)));
-            elseif strcmpi(Devroye.small,'GS')
-                % Algorithm given in Devroye (1986, page 425) [Ahrens and Dieter, 1974]
-                rnd(double_idx(small_idx)) = gamrnd.ahrens_dieter(a(double_idx(small_idx)),b(double_idx(small_idx)));
-            elseif strcmpi(Devroye.small,'Best')
-                % Algorithm given in Devroye (1986, page 426) [Best, 1983]
-                rnd(double_idx(small_idx)) = gamrnd.best_1983(a(double_idx(small_idx)),b(double_idx(small_idx)));
-            end
+if ~isempty(ddx)
+    % The first hyperparameter is not an integer.
+    sdx = find(a(ddx)<1);  % Indices for small a.
+    ldx = find(a(ddx)>1);  % Indices for large a.
+    if ~isempty(sdx)
+        switch method.small
+          case 'Weibull-rejection'
+            rnd(ddx(sdx)) = gamrnd.weibull_rejection(a(ddx(sdx)),b(ddx(sdx)));
+          case 'Johnk'
+            rnd(ddx(sdx)) = gamrnd.johnk(a(ddx(sdx)),b(ddx(sdx)));
+          case 'Berman'
+            rnd(ddx(sdx)) = gamrnd.berman(a(ddx(sdx)),b(ddx(sdx)));
+          case 'Ahrens-Dieter'
+            rnd(ddx(sdx)) = gamrnd.ahrens_dieter(a(ddx(sdx)),b(ddx(sdx)));
+          case 'Best'
+            rnd(ddx(sdx)) = gamrnd.best_1983(a(ddx(sdx)),b(ddx(sdx)));
+          otherwise
+            error('Unknown algorithm for gamrnd.')
         end
-        if number_of_big_a
-            if strcmpi(Devroye.big,'Cheng')
-                % Algorithm given in Devroye (1986, page 413) [Cheng's rejection algorithm GB]
-                rnd(double_idx(big_idx)) = gamrnd.cheng(a(double_idx(big_idx)),b(double_idx(big_idx)));
-            elseif strcmpi(Devroye.big,'Best')
-                % Algorithm given in Devroye (1986, page 410) [Best's rejection algorithm XG]
-                rnd(double_idx(big_idx)) = gamrnd.best_1978(a(double_idx(big_idx)),b(double_idx(big_idx)));
-            end
+    end
+    if ~isempty(ldx)
+        switch method.large
+          case 'Knuth'
+            rnd(ddx) = gamrnd.knuth(a(ddx),b(ddx));
+          case 'Best'
+            rnd(ddx(ldx)) = gamrnd.best_1978(a(ddx(ldx)),b(ddx(ldx)));
+          case 'Cheng'
+            rnd(ddx(ldx)) = gamrnd.cheng(a(ddx(ldx)),b(ddx(ldx)));
+          otherwise
+            error('Unknown algorithm for gamrnd.')
         end
     end
 end
