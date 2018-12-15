@@ -35,8 +35,7 @@ index = 1:mm;
 
 while mm
     Y(index) = tan(pi*rand(mm,1));
-    X(index) = Y(
-    index).*bb(index) + a(index) - 1;
+    X(index) = Y(index).*bb(index) + a(index) - 1;
     id1 = index(X(index)<=0); % Rejected draws.
     id2 = setdiff(index, id1);
     id3 = id2(rand(length(id2), 1)>(1+Y(id2).*Y(id2)).*exp((a(id2)-1).*(log(X(id2))-log(a(id2)-1))-bb(id2).*Y(id2))); % Rejected draws.
