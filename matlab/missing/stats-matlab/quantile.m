@@ -255,7 +255,7 @@ y = ipermute(y,order);
 %$
 %$ if t(1)
 %$    for i=1:4
-%$        t(i+1) = abs(q(i)-e(i))<1e-3;
+%$        t(i+1) = abs(q(i)-e(i))<2e-3;
 %$    end
 %$ end
 %$
