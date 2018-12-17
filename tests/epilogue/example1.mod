@@ -51,7 +51,7 @@ stoch_simul(periods=200);
 
 epilogue;
 g = log((y/y(-4))^(1/4));
-x = g*alpha;
+x = .7*x(-1)+g(-1)*alpha;
 end;
 
 ds = dseries(oo_.endo_simul', 2000Q1, M_.endo_names);
