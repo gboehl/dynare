@@ -56,14 +56,14 @@ verbatim;
   initialconditions(1,4) = .7; % x(-3)
   initialconditions = ...
   dseries(initialconditions, dates('2000Q1'), {'foo', 'y','z', 'x'});
-    set_dynare_seed('default');
+  set_dynare_seed('default');
   ts = simul_backward_model(initialconditions, 15);
   foo = ts.foo.data;
   % Evaluate the (VAR) expectation term
-  ts = example.var_expectations.evaluate_varexp(ts);
+  ts{'toto'} = example.var_expectations.evaluate_varexp(ts);
   % Check tthat the evaluation is correct.
   range = dates('2000Q4'):dates('2004Q2');
-  if max(abs(ts(range).foo.data-ts(range).varexp.data))>1e-5
+  if max(abs(ts(range).foo.data-ts(range).toto.data))>1e-5
      error('Expectation term evaluations do not match!')
   end
 end;
