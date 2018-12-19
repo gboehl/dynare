@@ -121,7 +121,7 @@ eparams.lambda =  .7;
 
 edata = TrueData;
 edata.ez = dseries(NaN(TrueData.nobs, 1), 2000Q1, 'ez');
-pac.estimate.nls('zpac', eparams, edata, 2005Q1:2005Q1+4000, 'csminwel');
+pac.estimate.nls('zpac', eparams, edata, 2005Q1:2005Q1+4000, 'fmincon');
 
 
 e_c_m_nls = M_.params(strmatch('e_c_m', M_.param_names, 'exact'));
