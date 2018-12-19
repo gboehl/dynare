@@ -73,6 +73,9 @@ if is_non_optimizing_agents
     estimate_non_optimizing_agents_share = ismember(M_.param_names(M_.pac.(pacmodl).share_of_optimizing_agents_index), fieldnames(params));
     if ~estimate_non_optimizing_agents_share
         share_of_optimizing_agents = M_.params(M_.pac.(pacmodl).share_of_optimizing_agents_index);
+        if share_of_optimizing_agents>1 || share_of_optimizing_agents<0
+            error('The share of optimizing agents shoud be in (0,1).')
+        end
     end
 else
     share_of_optimizing_agents = 1.0;
@@ -167,6 +170,9 @@ if estimate_non_optimizing_agents_share
     [~, share_param_id] = setdiff(1:length(ipnames_), ecm_params_id);
     params0_ = params0(ecm_params_id);
     share_of_optimizing_agents = params0(share_param_id);
+    if share_of_optimizing_agents>1 || share_of_optimizing_agents<0
+        error('Initial value for the share of optimizing agents shoud be in (0,1).')
+    end
 else
     params0_ = params0;
 end
@@ -225,6 +231,8 @@ while noconvergence
         ZDATA = XDATA*params0_+PacExpectations-dataForNonOptimizingBehaviour(range).data*non_optimizing_behaviour_params;
         % Update the (estimated) share of optimizing agents by running OLS
         share_of_optimizing_agents = (ZDATA\YDATA);
+        % Force the share of optimizing agents to be in [0,1].
+        share_of_optimizing_agents = max(min(share_of_optimizing_agents, 1.0), 0.0);
         M_.params(ipnames_(share_param_id)) = share_of_optimizing_agents;
     else
         M_.params(ipnames_) = params0_;
