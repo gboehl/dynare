@@ -207,25 +207,6 @@ else
     end
 end
 
-% Read options from the first line in mod/dyn file.
-fid = fopen(fname, 'r');
-firstline = fgetl(fid);
-fclose(fid);
-if regexp(firstline, '\s*\/\/', 'once') == 1
-    firstline = regexprep(firstline, '\s*\/\/', '');
-    if ~isempty(regexp(firstline, '(^\s*\-\-\+\s*options:\s*)', 'once')) ...
-        && ~isempty(regexp(firstline, '(\s*\+\-\-.*$)', 'once'))
-        firstline = regexprep(firstline, '(^\s*\-\-\+\s*options:\s*)', '');
-        firstline = regexprep(firstline, '(\s*\+\-\-.*$)', '');
-        dynoption = strsplit(firstline, {' ', ','});
-        if isequal(nargin, 1)
-            varargin = dynoption;
-        else
-            varargin = union(varargin, dynoption);
-        end
-    end
-end
-
 command = ['"' dynareroot 'preprocessor' arch_ext filesep 'dynare_m" ' fname] ;
 command = [ command ' mexext=' mexext ' "matlabroot=' matlabroot '"'];
 for i=1:length(varargin)
