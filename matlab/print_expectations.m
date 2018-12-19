@@ -247,8 +247,8 @@ fclose(fid);
 % Third print a routine for evaluating VAR_EXPECTATION/PAC_EXPECTATION term (returns a dseries object).
 %
 kind = strrep(expectationmodelkind, '-', '_');
-mkdir(sprintf('+%s/+%s', M_.fname, kind));
-filename = sprintf('+%s/+%s/evaluate_%s.m', M_.fname, kind, expectationmodelname);
+mkdir(sprintf('+%s/+%s/+%s', M_.fname, kind, expectationmodelname));
+filename = sprintf('+%s/+%s/+%s/evaluate.m', M_.fname, kind, expectationmodelname);
 fid = fopen(filename, 'w');
 fprintf(fid, 'function ds = evaluate_%s(dbase)\n\n', expectationmodelname);
 fprintf(fid, '%% Evaluates %s term (%s).\n', kind, expectationmodelname);

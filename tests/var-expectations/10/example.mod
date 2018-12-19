@@ -60,7 +60,7 @@ verbatim;
   ts = simul_backward_model(initialconditions, 15);
   foo = ts.foo.data;
   % Evaluate the (VAR) expectation term
-  ts{'toto'} = example.var_expectations.evaluate_varexp(ts);
+  ts{'toto'} = example.var_expectations.varexp.evaluate(ts);
   % Check tthat the evaluation is correct.
   range = dates('2000Q4'):dates('2004Q2');
   if max(abs(ts(range).foo.data-ts(range).toto.data))>1e-5
