@@ -66,7 +66,7 @@ end
 % parameters (in increasing order w.r.t. the lags).
 stack = dbstack;
 ipnames__ = ipnames_;                              % The user provided order.
-if isequal(stack(2).name, ' terative_ols')
+if isequal(stack(2).name, 'iterative_ols')
     ipnames_  = [M_.pac.(pacmodl).ec.params; M_.pac.(pacmodl).ar.params']; % The correct order.
     if isfield(M_.pac.(pacmodl), 'share_of_optimizing_agents_index')
         ipnames_ = [ipnames_; M_.pac.(pacmodl).share_of_optimizing_agents_index];
