@@ -259,6 +259,12 @@ no_log = 0;
 for i=1:length(varargin)
     no_log = no_log || strcmp(varargin{i}, 'nolog');
 end
+fid = fopen(fname, 'r');
+firstline = fgetl(fid);
+fclose(fid);
+if ~isempty(regexp(firstline, '//\s*--\+\s*options:(|.*\s|.*,)nolog(|\s.*|,.*)\+--'))
+    no_log = 1;
+end
 if ~no_log
     logname = [fname(1:end-4) '.log'];
     fid = fopen(logname, 'w');
