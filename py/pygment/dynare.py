@@ -37,7 +37,7 @@ class DynareLexer(RegexLexer):
 	"predetermined_variables","trend_var","log_trend_var","external_function",
 	"write_latex_original_model","write_latex_dynamic_model",
 	"write_latex_static_model","resid","initval_file","histval_file","dsample",
-	"periods","steady","check","model_diagnostics","model_info",
+	"periods","values","corr","steady","check","model_diagnostics","model_info",
 	"print_bytecode_dynamic_model"," print_bytecode_static_model",
 	"perfect_foresight_setup","perfect_foresight_solver","simul","stoch_simul",
 	"extended_path","varobs","estimation","unit_root_vars","bvar_density",
