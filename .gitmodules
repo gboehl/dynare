@@ -16,10 +16,6 @@
 [submodule "matlab/particles"]
 	path = matlab/particles
 	url = https://git.dynare.org/Dynare/particles.git
-[submodule "matlab/modules/dates"]
-	path = matlab/modules/dates
-	url = https://git.dynare.org/Dynare/dates.git
-	branch = master
 [submodule "matlab/modules/dseries"]
 	path = matlab/modules/dseries
 	url = https://git.dynare.org/Dynare/dseries.git
