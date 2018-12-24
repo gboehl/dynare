@@ -1112,54 +1112,138 @@ See `Dynare wiki`_ for more technical details on auxiliary variables.
 Initial and terminal conditions
 ===============================
 
-For most simulation exercises, it is necessary to provide initial (and possibly terminal) conditions. It is also necessary to provide initial guess values for non-linear solvers. This section describes the statements used for those purposes.
+For most simulation exercises, it is necessary to provide initial (and
+possibly terminal) conditions. It is also necessary to provide initial
+guess values for non-linear solvers. This section describes the
+statements used for those purposes.
 
-In many contexts (deterministic or stochastic), it is necessary to compute the steady state of a non-linear model: ``initval`` then specifies numerical initial values for the non-linear solver. The command ``resid`` can be used to compute the equation residuals for the given initial values.
+In many contexts (deterministic or stochastic), it is necessary to
+compute the steady state of a non-linear model: ``initval`` then
+specifies numerical initial values for the non-linear solver. The
+command ``resid`` can be used to compute the equation residuals for
+the given initial values.
 
-Used in perfect foresight mode, the types of forward-looking models for which Dynare was designed require both initial and terminal conditions. Most often these initial and terminal conditions are static equilibria, but not necessarily.
+Used in perfect foresight mode, the types of forward-looking models
+for which Dynare was designed require both initial and terminal
+conditions. Most often these initial and terminal conditions are
+static equilibria, but not necessarily.
 
-One typical application is to consider an economy at the equilibrium at time 0, trigger a shock in first period, and study the trajectory of return to the initial equilibrium. To do that, one needs ``initval`` and ``shocks`` (see :ref:`shocks-exo`).
+One typical application is to consider an economy at the equilibrium
+at time 0, trigger a shock in first period, and study the trajectory
+of return to the initial equilibrium. To do that, one needs
+``initval`` and ``shocks`` (see :ref:`shocks-exo`).
 
-Another one is to study how an economy, starting from arbitrary initial conditions at time 0 converges towards equilibrium. In this case models, the command ``histval`` permits to specify different historical initial values for variables with lags for the periods before the beginning of the simulation. Due to the design of Dynare, in this case ``initval`` is used to specify the terminal conditions.
+Another one is to study how an economy, starting from arbitrary
+initial conditions at time 0 converges towards equilibrium. In this
+case models, the command ``histval`` permits to specify different
+historical initial values for variables with lags for the periods
+before the beginning of the simulation. Due to the design of Dynare,
+in this case ``initval`` is used to specify the terminal conditions.
 
 .. block:: initval ;
            initval(OPTIONS...);
 
-    The ``initval`` block has two main purposes: providing guess values for non-linear solvers in the context of perfect foresight simulations and providing guess values for steady state computations in both perfect foresight and stochastic simulations. Depending on the presence of ``histval`` and ``endval`` blocks it is also used for declaring the initial and terminal conditions in a perfect foresight simulation exercise. Because of this interaction of the meaning of an ``initval`` block with the presence of ``histval`` and ``endval`` blocks in perfect foresight simulations, it is strongly recommended to check that the constructed ``oo_.endo_simul`` and ``oo_.exo_simul`` variables contain the desired values after running ``perfect_foresight_setup`` and before running ``perfect_foresight_solver``. In the presence of leads and lags, these subfields of the results structure will store the historical values for the lags in the first column/row and the terminal values for the leads in the last column/row.
+    |br| The ``initval`` block has two main purposes: providing guess
+    values for non-linear solvers in the context of perfect foresight
+    simulations and providing guess values for steady state
+    computations in both perfect foresight and stochastic
+    simulations. Depending on the presence of ``histval`` and
+    ``endval`` blocks it is also used for declaring the initial and
+    terminal conditions in a perfect foresight simulation
+    exercise. Because of this interaction of the meaning of an
+    ``initval`` block with the presence of ``histval`` and ``endval``
+    blocks in perfect foresight simulations, it is strongly
+    recommended to check that the constructed ``oo_.endo_simul`` and
+    ``oo_.exo_simul`` variables contain the desired values after
+    running ``perfect_foresight_setup`` and before running
+    ``perfect_foresight_solver``. In the presence of leads and lags,
+    these subfields of the results structure will store the historical
+    values for the lags in the first column/row and the terminal
+    values for the leads in the last column/row.
 
-    The ``initval`` block is terminated by ``end;`` and contains lines of the form:
+    The ``initval`` block is terminated by ``end;`` and contains lines
+    of the form:
 
-        ``VARIABLE_NAME = EXPRESSION;``
+           VARIABLE_NAME = EXPRESSION;
 
-    *In a deterministic (i.e. perfect foresight) model*
 
-    First, it will fill both the ``oo_.endo_simul`` and ``oo_.exo_simul`` variables storing the endogenous and exogenous variables with the values provided by this block. If there are no other blocks present, it will therefore provide the initial and terminal conditions for all the endogenous and exogenous variables, because it will also fill the last column/row of these matrices. For the intermediate simulation periods it thereby provides the starting values for the solver. In the presence of a ``histval`` block (and therefore absence of an ``endval`` block), this ``histval`` block will provide/overwrite the historical values for the state variables (lags) by setting the first column/row of ``oo_.endo_simul`` and ``oo_.exo_simul``. This implies that the ``initval`` block in the presence of ``histval`` only sets the terminal values for the variables with leads and provides initial values for the perfect foresight solver.
+    |br| *In a deterministic (i.e. perfect foresight) model*
 
-    Because of these various functions of ``initval`` it is often necessary to provide values for all the endogenous variables in an ``initval`` block. Initial and terminal conditions are strictly necessary for lagged/leaded variables, while feasible starting values are required for the solver. It is important to be aware that if some variables, endogenous or exogenous, are not mentioned in the ``initval`` block, a zero value is assumed. It is particularly important to keep this in mind when specifying exogenous variables using ``varexo`` that are not allowed to take on the value of zero, like e.g. TFP.
+    First, it will fill both the ``oo_.endo_simul`` and
+    ``oo_.exo_simul`` variables storing the endogenous and exogenous
+    variables with the values provided by this block. If there are no
+    other blocks present, it will therefore provide the initial and
+    terminal conditions for all the endogenous and exogenous
+    variables, because it will also fill the last column/row of these
+    matrices. For the intermediate simulation periods it thereby
+    provides the starting values for the solver. In the presence of a
+    ``histval`` block (and therefore absence of an ``endval`` block),
+    this ``histval`` block will provide/overwrite the historical
+    values for the state variables (lags) by setting the first
+    column/row of ``oo_.endo_simul`` and ``oo_.exo_simul``. This
+    implies that the ``initval`` block in the presence of ``histval``
+    only sets the terminal values for the variables with leads and
+    provides initial values for the perfect foresight solver.
 
-    Note that if the ``initval`` block is immediately followed by a ``steady`` command, its semantics are slightly changed. The ``steady`` command will compute the steady state of the model for all the endogenous variables, assuming that exogenous variables are kept constant at the value declared in the ``initval`` block. These steady state values conditional on the declared exogenous variables are then written into ``oo_.endo_simul`` and take up the potential roles as historical and terminal conditions as well as starting values for the solver. An ``initval`` block followed by ``steady`` is therefore formally equivalent to an ``initval`` block with the specified values for the exogenous variables, and the endogenous variables set to the associated steady state values conditional on the exogenous variables.
+    Because of these various functions of ``initval`` it is often
+    necessary to provide values for all the endogenous variables in an
+    ``initval`` block. Initial and terminal conditions are strictly
+    necessary for lagged/leaded variables, while feasible starting
+    values are required for the solver. It is important to be aware
+    that if some variables, endogenous or exogenous, are not mentioned
+    in the ``initval`` block, a zero value is assumed. It is
+    particularly important to keep this in mind when specifying
+    exogenous variables using ``varexo`` that are not allowed to take
+    on the value of zero, like e.g. TFP.
 
-    *In a stochastic model*
+    Note that if the ``initval`` block is immediately followed by a
+    ``steady`` command, its semantics are slightly changed. The
+    ``steady`` command will compute the steady state of the model for
+    all the endogenous variables, assuming that exogenous variables
+    are kept constant at the value declared in the ``initval``
+    block. These steady state values conditional on the declared
+    exogenous variables are then written into ``oo_.endo_simul`` and
+    take up the potential roles as historical and terminal conditions
+    as well as starting values for the solver. An ``initval`` block
+    followed by ``steady`` is therefore formally equivalent to an
+    ``initval`` block with the specified values for the exogenous
+    variables, and the endogenous variables set to the associated
+    steady state values conditional on the exogenous variables.
 
-    The main purpose of ``initval`` is to provide initial guess values for the non-linear solver in the steady state computation. Note that if the ``initval`` block is not followed by ``steady``, the steady state computation will still be triggered by subsequent commands (``stoch_simul``, ``estimation``...).
+    |br| *In a stochastic model*
 
-    It is not necessary to declare 0 as initial value for exogenous stochastic variables, since it is the only possible value.
+    The main purpose of ``initval`` is to provide initial guess values
+    for the non-linear solver in the steady state computation. Note
+    that if the ``initval`` block is not followed by ``steady``, the
+    steady state computation will still be triggered by subsequent
+    commands (``stoch_simul``, ``estimation``...).
 
-    The subsequently computed steady state (not the initial values, use histval for this) will be used as the initial condition at all the periods preceeding the first simulation period for the three possible types of simulations in stochastic mode:
+    It is not necessary to declare 0 as initial value for exogenous
+    stochastic variables, since it is the only possible value.
+
+    The subsequently computed steady state (not the initial values,
+    use histval for this) will be used as the initial condition at all
+    the periods preceeding the first simulation period for the three
+    possible types of simulations in stochastic mode:
 
         * :comm:`stoch_simul`, if the ``periods`` option is specified.
-        * :comm:`forecast` as the initial point at which the forecasts are computed.
-        * :comm:`conditional_forecast` as the initial point at which the conditional forecasts are computed.
+        * :comm:`forecast` as the initial point at which the forecasts
+          are computed.
+        * :comm:`conditional_forecast` as the initial point at which
+          the conditional forecasts are computed.
 
-    To start simulations at a particular set of starting values that are not a computed steady state, use :bck:`histval`.
+    To start simulations at a particular set of starting values that
+    are not a computed steady state, use :bck:`histval`.
 
     *Options*
 
     .. option:: all_values_required
 
-        Issues an error and stops processing the .mod file if there is at least one endogenous or exogenous variable that has not been set in the initval block.
+        Issues an error and stops processing the .mod file if there is
+        at least one endogenous or exogenous variable that has not
+        been set in the initval block.
 
-    :ex:
+    *Example*
         ::
 
             initval;
@@ -1174,17 +1258,54 @@ Another one is to study how an economy, starting from arbitrary initial conditio
 .. block:: endval ;
            endval (OPTIONS...);
 
-    This block is terminated by ``end;`` and contains lines of the form:
+    |br| This block is terminated by ``end;`` and contains lines of the form:
 
-        ``VARIABLE_NAME = EXPRESSION;``
+        VARIABLE_NAME = EXPRESSION;
 
-    The ``endval`` block makes only sense in a deterministic model and cannot be used together with ``histval``. Similar to the ``initval`` command, it will fill both the ``oo_.endo_simul`` and ``oo_.exo_simul`` variables storing the endogenous and exogenous variables with the values provided by this block. If no ``initval`` block is present, it will fill the whole matrices, therefore providing the initial and terminal conditions for all the endogenous and exogenous variables, because it will also fill the first and last column/row of these matrices. Due to also filling the intermediate simulation periods it will provide the starting values for the solver as well.
+    |br| The ``endval`` block makes only sense in a deterministic model and
+    cannot be used together with ``histval``. Similar to the
+    ``initval`` command, it will fill both the ``oo_.endo_simul`` and
+    ``oo_.exo_simul`` variables storing the endogenous and exogenous
+    variables with the values provided by this block. If no
+    ``initval`` block is present, it will fill the whole matrices,
+    therefore providing the initial and terminal conditions for all
+    the endogenous and exogenous variables, because it will also fill
+    the first and last column/row of these matrices. Due to also
+    filling the intermediate simulation periods it will provide the
+    starting values for the solver as well.
 
-    If an ``initval`` block is present, ``initval`` will provide the historical values for the variables (if there are states/lags), while ``endval`` will fill the remainder of the matrices, thereby still providing *i*) the terminal conditions for variables entering the model with a lead and *ii*) the initial guess values for all endogenous variables at all the simulation dates for the perfect foresight solver.
+    If an ``initval`` block is present, ``initval`` will provide the
+    historical values for the variables (if there are states/lags),
+    while ``endval`` will fill the remainder of the matrices, thereby
+    still providing *i*) the terminal conditions for variables
+    entering the model with a lead and *ii*) the initial guess values
+    for all endogenous variables at all the simulation dates for the
+    perfect foresight solver.
 
-    Note that if some variables, endogenous or exogenous, are NOT mentioned in the ``endval`` block, the value assumed is that of the last ``initval`` block or ``steady`` command (if present). Therefore, in contrast to ``initval``, omitted variables are not automatically assumed to be 0 in this case. Again, it is strongly recommended to check the constructed ``oo_.endo_simul`` and ``oo_.exo_simul`` variables after running ``perfect_foresight_setup`` and before running ``perfect_foresight_solver`` to see whether the desired outcome has been achieved.
+    Note that if some variables, endogenous or exogenous, are NOT
+    mentioned in the ``endval`` block, the value assumed is that of
+    the last ``initval`` block or ``steady`` command (if
+    present). Therefore, in contrast to ``initval``, omitted variables
+    are not automatically assumed to be 0 in this case. Again, it is
+    strongly recommended to check the constructed ``oo_.endo_simul``
+    and ``oo_.exo_simul`` variables after running
+    ``perfect_foresight_setup`` and before running
+    ``perfect_foresight_solver`` to see whether the desired outcome
+    has been achieved.
 
-    Like ``initval``, if the ``endval`` block is immediately followed by a ``steady`` command, its semantics are slightly changed. The ``steady`` command will compute the steady state of the model for all the endogenous variables, assuming that exogenous variables are kept constant to the value declared in the ``endval`` block. These steady state values conditional on the declared exogenous variables are then written into ``oo_.endo_simul`` and therefore take up the potential roles as historical and terminal conditions as well as starting values for the solver. An ``endval`` block followed by ``steady`` is therefore formally equivalent to an ``endval`` block with the specified values for the exogenous variables, and the endogenous variables set to the associated steady state values.
+    Like ``initval``, if the ``endval`` block is immediately followed
+    by a ``steady`` command, its semantics are slightly changed. The
+    ``steady`` command will compute the steady state of the model for
+    all the endogenous variables, assuming that exogenous variables
+    are kept constant to the value declared in the ``endval``
+    block. These steady state values conditional on the declared
+    exogenous variables are then written into ``oo_.endo_simul`` and
+    therefore take up the potential roles as historical and terminal
+    conditions as well as starting values for the solver. An
+    ``endval`` block followed by ``steady`` is therefore formally
+    equivalent to an ``endval`` block with the specified values for
+    the exogenous variables, and the endogenous variables set to the
+    associated steady state values.
 
     *Options*
 
@@ -1192,7 +1313,7 @@ Another one is to study how an economy, starting from arbitrary initial conditio
 
         See :opt:`all_values_required`.
 
-    :ex:
+    *Example*
 
         ::
 
@@ -1215,9 +1336,15 @@ Another one is to study how an economy, starting from arbitrary initial conditio
 
             steady;
 
-    The initial equilibrium is computed by ``steady`` conditional on ``x=1``, and the terminal one conditional on ``x=2``. The ``initval`` block sets the initial condition for ``k``, while the ``endval`` block sets the terminal condition for ``c``. The starting values for the perfect foresight solver are given by the ``endval`` block. A detailed explanation follows below the next example.
+        The initial equilibrium is computed by ``steady`` conditional
+        on ``x=1``, and the terminal one conditional on ``x=2``. The
+        ``initval`` block sets the initial condition for ``k``, while
+        the ``endval`` block sets the terminal condition for
+        ``c``. The starting values for the perfect foresight solver
+        are given by the ``endval`` block. A detailed explanation
+        follows below the next example.
 
-    :ex:
+    *Example*
 
         ::
 
@@ -1239,15 +1366,49 @@ Another one is to study how an economy, starting from arbitrary initial conditio
             end;
             simul(periods=200);
 
-    In this example, the problem is finding the optimal path for consumption and capital for the periods :math:`t=1` to :math:`T=200`, given the path of the exogenous technology level ``x``. ``c`` is a forward-looking variable and the exogenous variable ``x`` appears with a lead in the expected return of physical capital, so we need terminal conditions for them, while ``k`` is a purely backward-looking (state) variable, so we need an initial condition for it.
+        In this example, the problem is finding the optimal path for
+        consumption and capital for the periods :math:`t=1` to
+        :math:`T=200`, given the path of the exogenous technology
+        level ``x``. ``c`` is a forward-looking variable and the
+        exogenous variable ``x`` appears with a lead in the expected
+        return of physical capital, so we need terminal conditions for
+        them, while ``k`` is a purely backward-looking (state)
+        variable, so we need an initial condition for it.
 
-    Setting ``x=1.1`` in the ``endval`` block without a ``shocks`` block implies that technology is at :math:`1.1` in :math:`t=1` and stays there forever, because ``endval`` is filling all entries of ``oo_.endo_simul`` and ``oo_.exo_simul`` except for the very first one, which stores the initial conditions and was set to :math:`0` by the ``initval`` block when not explicitly specifying a value for it.
+        Setting ``x=1.1`` in the ``endval`` block without a ``shocks``
+        block implies that technology is at :math:`1.1` in :math:`t=1`
+        and stays there forever, because ``endval`` is filling all
+        entries of ``oo_.endo_simul`` and ``oo_.exo_simul`` except for
+        the very first one, which stores the initial conditions and
+        was set to :math:`0` by the ``initval`` block when not
+        explicitly specifying a value for it.
 
-    Because the law of motion for capital is backward-looking, we need an initial condition for ``k`` at time :math:`0`. Due to the presence of ``endval``, this cannot be done via a ``histval`` block, but rather must be specified in the ``initval`` block. Similarly, because the Euler equation is forward-looking, we need a terminal condition for ``c`` at :math:`t=201`, which is specified in the ``endval`` block.
+        Because the law of motion for capital is backward-looking, we
+        need an initial condition for ``k`` at time :math:`0`. Due to
+        the presence of ``endval``, this cannot be done via a
+        ``histval`` block, but rather must be specified in the
+        ``initval`` block. Similarly, because the Euler equation is
+        forward-looking, we need a terminal condition for ``c`` at
+        :math:`t=201`, which is specified in the ``endval`` block.
 
-    As can be seen, it is not necessary to specify ``c`` and ``x`` in the ``initval`` block and ``k`` in the ``endval`` block, because they have no impact on the results. Due to the optimization problem in the first period being to choose ``c,k`` at :math:`t=1` given the predetermined capital stock ``k`` inherited from :math:`t=0` as well as the current and future values for technology ``x``, the values for ``c`` and ``x`` at time :math:`t=0` play no role. The same applies to the choice of ``c,k`` at time :math:`t=200`, which does not depend on ``k`` at :math:`t=201`. As the Euler equation shows, that choice only depends on current capital as well as future consumption ``c`` and technology ``x``, but not on future capital ``k``. The intuitive reason is that those variables are the consequence of optimization problems taking place in at periods :math:`t=0` and :math:`t=201`, respectively, which are not modeled here.
+        As can be seen, it is not necessary to specify ``c`` and ``x``
+        in the ``initval`` block and ``k`` in the ``endval`` block,
+        because they have no impact on the results. Due to the
+        optimization problem in the first period being to choose
+        ``c,k`` at :math:`t=1` given the predetermined capital stock
+        ``k`` inherited from :math:`t=0` as well as the current and
+        future values for technology ``x``, the values for ``c`` and
+        ``x`` at time :math:`t=0` play no role. The same applies to
+        the choice of ``c,k`` at time :math:`t=200`, which does not
+        depend on ``k`` at :math:`t=201`. As the Euler equation shows,
+        that choice only depends on current capital as well as future
+        consumption ``c`` and technology ``x``, but not on future
+        capital ``k``. The intuitive reason is that those variables
+        are the consequence of optimization problems taking place in
+        at periods :math:`t=0` and :math:`t=201`, respectively, which
+        are not modeled here.
 
-    :ex:
+    *Example*
 
         ::
 
@@ -1263,31 +1424,75 @@ Another one is to study how an economy, starting from arbitrary initial conditio
             x = 1.1;
             end;
 
-    In this example, initial conditions for the forward-looking variables ``x`` and ``c`` are provided, together with a terminal condition for the backward-looking variable ``k``. As shown in the previous example, these values will not affect the simulation results. Dynare simply takes them as given and basically assumes that there were realizations of exogenous variables and states that make those choices equilibrium values (basically initial/terminal conditions at the unspecified time periods :math:`t<0` and :math:`t>201`).
+        In this example, initial conditions for the forward-looking
+        variables ``x`` and ``c`` are provided, together with a
+        terminal condition for the backward-looking variable ``k``. As
+        shown in the previous example, these values will not affect
+        the simulation results. Dynare simply takes them as given and
+        basically assumes that there were realizations of exogenous
+        variables and states that make those choices equilibrium
+        values (basically initial/terminal conditions at the
+        unspecified time periods :math:`t<0` and :math:`t>201`).
 
-    The above example suggests another way of looking at the use of ``steady`` after ``initval`` and ``endval``. Instead of saying that the implicit unspecified conditions before and after the simulation range have to fit the initial/terminal conditions of the endogenous variables in those blocks, steady specifies that those conditions at :math:`t<0` and :math:`t>201` are equal to being at the steady state given the exogenous variables in the ``initval`` and ``endval`` blocks. The endogenous variables at :math:`t=0` and :math:`t=201` are then set to the corresponding steady state equilibrium values.
+        The above example suggests another way of looking at the use
+        of ``steady`` after ``initval`` and ``endval``. Instead of
+        saying that the implicit unspecified conditions before and
+        after the simulation range have to fit the initial/terminal
+        conditions of the endogenous variables in those blocks, steady
+        specifies that those conditions at :math:`t<0` and
+        :math:`t>201` are equal to being at the steady state given the
+        exogenous variables in the ``initval`` and ``endval``
+        blocks. The endogenous variables at :math:`t=0` and
+        :math:`t=201` are then set to the corresponding steady state
+        equilibrium values.
 
-    The fact that ``c`` at :math:`t=0` and ``k`` at :math:`t=201` specified in ``initval`` and ````endval`` are taken as given has an important implication for plotting the simulated vector for the endogenous variables, i.e. the rows of ``oo_.endo_simul``: this vector will also contain the initial and terminal conditions and thus is 202 periods long in the example. When you specify arbitrary values for the initial and terminal conditions for forward- and backward-looking variables, respectively, these values can be very far away from the endogenously determined values at :math:`t=1` and :math:`t=200`. While the values at :math:`t=0` and :math:`t=201` are unrelated to the dynamics for :math:`0<t<201`, they may result in strange-looking large jumps. In the example above, consumption will display a large jump from :math:`t=0` to :math:`t=1` and capital will jump from :math:`t=200` to :math:`t=201` when using :comm:`rplot` or manually plotting ``oo_.endo_val``.
+        The fact that ``c`` at :math:`t=0` and ``k`` at :math:`t=201`
+        specified in ``initval`` and ````endval`` are taken as given
+        has an important implication for plotting the simulated vector
+        for the endogenous variables, i.e. the rows of
+        ``oo_.endo_simul``: this vector will also contain the initial
+        and terminal conditions and thus is 202 periods long in the
+        example. When you specify arbitrary values for the initial and
+        terminal conditions for forward- and backward-looking
+        variables, respectively, these values can be very far away
+        from the endogenously determined values at :math:`t=1` and
+        :math:`t=200`. While the values at :math:`t=0` and
+        :math:`t=201` are unrelated to the dynamics for
+        :math:`0<t<201`, they may result in strange-looking large
+        jumps. In the example above, consumption will display a large
+        jump from :math:`t=0` to :math:`t=1` and capital will jump
+        from :math:`t=200` to :math:`t=201` when using :comm:`rplot`
+        or manually plotting ``oo_.endo_val``.
 
 
 .. block:: histval ;
            histval (OPTIONS...);
 
-    *In a deterministic perfect foresight context*
+    |br| *In a deterministic perfect foresight context*
 
-    In models with lags on more than one period, the ``histval`` block permits to specify different historical initial values for different periods of the state variables. In this case, the ``initval`` block takes over the role of specifying terminal conditions and starting values for the solver. Note that the ``histval`` block does not take non-state variables.
+    In models with lags on more than one period, the ``histval`` block
+    permits to specify different historical initial values for
+    different periods of the state variables. In this case, the
+    ``initval`` block takes over the role of specifying terminal
+    conditions and starting values for the solver. Note that the
+    ``histval`` block does not take non-state variables.
 
     This block is terminated by ``end;`` and contains lines of the form:
 
-        ``VARIABLE_NAME(INTEGER) = EXPRESSION;``
+        VARIABLE_NAME(INTEGER) = EXPRESSION;
 
-    ``EXPRESSION`` is any valid expression returning a numerical value and can contain already initialized variable names.
+    |br| EXPRESSION is any valid expression returning a numerical value
+    and can contain already initialized variable names.
 
-    By convention in Dynare, period 1 is the first period of the simulation. Going backward in time, the first period before the start of the simulation is period 0, then period -1, and so on.
+    By convention in Dynare, period 1 is the first period of the
+    simulation. Going backward in time, the first period before the
+    start of the simulation is period 0, then period -1, and so on.
 
-    State variables not initialized in the ``histval`` block are assumed to have a value of zero at period 0 and before. Note that ``histval`` cannot be followed by ``steady``.
+    State variables not initialized in the ``histval`` block are
+    assumed to have a value of zero at period 0 and before. Note that
+    ``histval`` cannot be followed by ``steady``.
 
-    :ex:
+    *Example*
 
         ::
 
@@ -1306,16 +1511,45 @@ Another one is to study how an economy, starting from arbitrary initial conditio
             x=1;
             end;
 
-    In this example, ``histval`` is used to set the historical conditions for the two lags of the endogenous variable ``x``, stored in the first column of ``oo_.endo_simul``. The ``initval`` block is used to set the terminal condition for the forward looking variable ``c``, stored in the last column of ``oo_.endo_simul``. Moreover, the ``initval`` block defines the starting values for the perfect foresight solver for both endogenous variables ``c`` and ``x``.
+        In this example, ``histval`` is used to set the historical
+        conditions for the two lags of the endogenous variable ``x``,
+        stored in the first column of ``oo_.endo_simul``. The
+        ``initval`` block is used to set the terminal condition for
+        the forward looking variable ``c``, stored in the last column
+        of ``oo_.endo_simul``. Moreover, the ``initval`` block defines
+        the starting values for the perfect foresight solver for both
+        endogenous variables ``c`` and ``x``.
 
     *In a stochastic simulation context*
 
-    In the context of stochastic simulations, ``histval`` allows setting the starting point of those simulations in the state space. As for the case of perfect foresight simulations, all not explicitly specified variables are set to 0. Moreover, as only states enter the recursive policy functions, all values specified for control variables will be ignored. This can be used
+    In the context of stochastic simulations, ``histval`` allows
+    setting the starting point of those simulations in the state
+    space. As for the case of perfect foresight simulations, all not
+    explicitly specified variables are set to 0. Moreover, as only
+    states enter the recursive policy functions, all values specified
+    for control variables will be ignored. This can be used
 
-        * In :comm:`stoch_simul`, if the ``periods`` option is specified. Note that this only affects the starting point for the simulation, but not for the impulse response functions. When using the :ref:`loglinear <logl>` option, the ``histval`` block nevertheless takes the unlogged starting values.
-        * In :comm:`forecast` as the initial point at which the forecasts are computed. When using the :ref:`loglinear <logl>` option, the ``histval`` block nevertheless takes the unlogged starting values.
-        * In :comm:`conditional_forecast` for a calibrated model as the initial point at which the conditional forecasts are computed. When using the :ref:`loglinear <logl>` option, the histval-block nevertheless takes the unlogged starting values.
-        * In :comm:`Ramsey policy <ramsey_model>`, where it also specifies the values of the endogenous states at which the objective function of the planner is computed. Note that the initial values of the Lagrange multipliers associated with the planner’s problem cannot be set (see :ref:`planner_objective_value <plan-obj>`).
+        * In :comm:`stoch_simul`, if the ``periods`` option is
+          specified. Note that this only affects the starting point
+          for the simulation, but not for the impulse response
+          functions. When using the :ref:`loglinear <logl>` option,
+          the ``histval`` block nevertheless takes the unlogged
+          starting values.
+        * In :comm:`forecast` as the initial point at which the
+          forecasts are computed. When using the :ref:`loglinear
+          <logl>` option, the ``histval`` block nevertheless takes the
+          unlogged starting values.
+        * In :comm:`conditional_forecast` for a calibrated model as
+          the initial point at which the conditional forecasts are
+          computed. When using the :ref:`loglinear <logl>` option, the
+          histval-block nevertheless takes the unlogged starting
+          values.
+        * In :comm:`Ramsey policy <ramsey_model>`, where it also
+          specifies the values of the endogenous states at which the
+          objective function of the planner is computed. Note that the
+          initial values of the Lagrange multipliers associated with
+          the planner’s problem cannot be set (see
+          :ref:`planner_objective_value <plan-obj>`).
 
     *Options*
 
@@ -1323,7 +1557,7 @@ Another one is to study how an economy, starting from arbitrary initial conditio
 
         See :opt:`all_values_required`.
 
-    :ex:
+    *Example*
 
         ::
 
@@ -1353,29 +1587,51 @@ Another one is to study how an economy, starting from arbitrary initial conditio
 
 .. command:: resid ;
 
-    This command will display the residuals of the static equations of the model, using the values given for the endogenous in the last ``initval`` or ``endval`` block (or the steady state file if you provided one, see :ref:`st-st`).
+    |br| This command will display the residuals of the static
+    equations of the model, using the values given for the endogenous
+    in the last ``initval`` or ``endval`` block (or the steady state
+    file if you provided one, see :ref:`st-st`).
 
 .. command:: initval_file (filename = FILENAME);
 
-    In a deterministic setup, this command is used to specify a path for all endogenous and exogenous variables. The length of these paths must be equal to the number of simulation periods, plus the number of leads and the number of lags of the model (for example, with 50 simulation periods, in a model with 2 lags and 1 lead, the paths must have a length of 53). Note that these paths cover two different things:
+    |br| In a deterministic setup, this command is used to specify a
+    path for all endogenous and exogenous variables. The length of
+    these paths must be equal to the number of simulation periods,
+    plus the number of leads and the number of lags of the model (for
+    example, with 50 simulation periods, in a model with 2 lags and 1
+    lead, the paths must have a length of 53). Note that these paths
+    cover two different things:
 
-        * The constraints of the problem, which are given by the path for exogenous and the initial and terminal values for endogenous
-        * The initial guess for the non-linear solver, which is given by the path for endogenous variables for the simulation periods (excluding initial and terminal conditions)
+        * The constraints of the problem, which are given by the path
+          for exogenous and the initial and terminal values for
+          endogenous
+        * The initial guess for the non-linear solver, which is given
+          by the path for endogenous variables for the simulation
+          periods (excluding initial and terminal conditions)
 
     The command accepts three file formats:
 
-        * M-file (extension ``.m``): for each endogenous and exogenous variable, the file must contain a row or column vector of the same name. Their length must be ``periods + M_.maximum_lag + M_.maximum_lead``
+        * M-file (extension ``.m``): for each endogenous and exogenous
+          variable, the file must contain a row or column vector of
+          the same name. Their length must be ``periods +
+          M_.maximum_lag + M_.maximum_lead``
         * MAT-file (extension ``.mat``): same as for M-files.
-        * Excel file (extension ``.xls`` or ``.xlsx``): for each endogenous and exogenous, the file must contain a column of the same name. NB: Octave only supports the ``.xlsx`` file extension and must have the `io`_ package installed (easily done via octave by typing ‘``pkg install -forge io``’).
+        * Excel file (extension ``.xls`` or ``.xlsx``): for each
+          endogenous and exogenous, the file must contain a column of
+          the same name. NB: Octave only supports the ``.xlsx`` file
+          extension and must have the `io`_ package installed (easily
+          done via octave by typing ‘``pkg install -forge io``’).
 
-    .. warning:: The extension must be omitted in the command argument. Dynare will automatically figure out the extension and select the appropriate file type.
+    .. warning:: The extension must be omitted in the command
+                 argument. Dynare will automatically figure out the
+                 extension and select the appropriate file type.
 
 
 .. command:: histval_file (filename = FILENAME);
 
-    This command is equivalent to ``histval``, except that it reads its input from a file.
-
-    This command is typically used in conjunction with ``smoother2histval``.
+    |br| This command is equivalent to ``histval``, except that it
+    reads its input from a file, and is typically used in conjunction
+    with ``smoother2histval``.
 
 
 .. _shocks-exo:
