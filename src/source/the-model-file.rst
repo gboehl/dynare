@@ -1639,36 +1639,73 @@ in this case ``initval`` is used to specify the terminal conditions.
 Shocks on exogenous variables
 =============================
 
-In a deterministic context, when one wants to study the transition of one equilibrium position to another, it is equivalent to analyze the consequences of a permanent shock and this in done in Dynare through the proper use of ``initval`` and ``endval``.
+In a deterministic context, when one wants to study the transition of
+one equilibrium position to another, it is equivalent to analyze the
+consequences of a permanent shock and this in done in Dynare through
+the proper use of ``initval`` and ``endval``.
 
-Another typical experiment is to study the effects of a temporary shock after which the system goes back to the original equilibrium (if the model is stable...). A temporary shock is a temporary change of value of one or several exogenous variables in the model. Temporary shocks are specified with the command ``shocks``.
+Another typical experiment is to study the effects of a temporary
+shock after which the system goes back to the original equilibrium (if
+the model is stable...). A temporary shock is a temporary change of
+value of one or several exogenous variables in the model. Temporary
+shocks are specified with the command ``shocks``.
 
-In a stochastic framework, the exogenous variables take random values in each period. In Dynare, these random values follow a normal distribution with zero mean, but it belongs to the user to specify the variability of these shocks. The non-zero elements of the matrix of variance-covariance of the shocks can be entered with the ``shocks`` command. Or, the entire matrix can be directly entered with ``Sigma_e`` (this use is however deprecated).
+In a stochastic framework, the exogenous variables take random values
+in each period. In Dynare, these random values follow a normal
+distribution with zero mean, but it belongs to the user to specify the
+variability of these shocks. The non-zero elements of the matrix of
+variance-covariance of the shocks can be entered with the ``shocks``
+command. Or, the entire matrix can be directly entered with
+``Sigma_e`` (this use is however deprecated).
 
-If the variance of an exogenous variable is set to zero, this variable will appear in the report on policy and transition functions, but isn’t used in the computation of moments and of Impulse Response Functions. Setting a variance to zero is an easy way of removing an exogenous shock.
+If the variance of an exogenous variable is set to zero, this variable
+will appear in the report on policy and transition functions, but
+isn’t used in the computation of moments and of Impulse Response
+Functions. Setting a variance to zero is an easy way of removing an
+exogenous shock.
 
-Note that, by default, if there are several ``shocks`` or ``mshocks`` blocks in the same ``.mod`` file, then they are cumulative: all the shocks declared in all the blocks are considered; however, if a ``shocks`` or ``mshocks`` block is declared with the ``overwrite`` option, then it replaces all the previous ``shocks`` and ``mshocks`` blocks.
+Note that, by default, if there are several ``shocks`` or ``mshocks``
+blocks in the same ``.mod`` file, then they are cumulative: all the
+shocks declared in all the blocks are considered; however, if a
+``shocks`` or ``mshocks`` block is declared with the ``overwrite``
+option, then it replaces all the previous ``shocks`` and ``mshocks``
+blocks.
 
 .. block:: shocks ;
            shocks(overwrite);
 
-    See above for the meaning of the ``overwrite`` option.
+    |br| See above for the meaning of the ``overwrite`` option.
 
     *In deterministic context*
 
-    For deterministic simulations, the ``shocks`` block specifies temporary changes in the value of exogenous variables. For permanent shocks, use an ``endval`` block.
+    For deterministic simulations, the ``shocks`` block specifies
+    temporary changes in the value of exogenous variables. For
+    permanent shocks, use an ``endval`` block.
 
-    The block should contain one or more occurrences of the following group of three lines::
+    The block should contain one or more occurrences of the following
+    group of three lines::
 
-        var VARIABLE_NAME;
-        periods INTEGER[:INTEGER] [[,] INTEGER[:INTEGER]]...;
-        values DOUBLE | (EXPRESSION)  [[,] DOUBLE | (EXPRESSION) ]...;
+      var VARIABLE_NAME;
+      periods INTEGER[:INTEGER] [[,] INTEGER[:INTEGER]]...;
+      values DOUBLE | (EXPRESSION)  [[,] DOUBLE | (EXPRESSION) ]...;
 
-    It is possible to specify shocks which last several periods and which can vary over time. The ``periods`` keyword accepts a list of several dates or date ranges, which must be matched by as many shock values in the ``values`` keyword. Note that a range in the ``periods`` keyword can be matched by only one value in the ``values`` keyword. If ``values`` represents a scalar, the same value applies to the whole range. If ``values`` represents a vector, it must have as many elements as there are periods in the range.
+    It is possible to specify shocks which last several periods and
+    which can vary over time. The ``periods`` keyword accepts a list
+    of several dates or date ranges, which must be matched by as many
+    shock values in the ``values`` keyword. Note that a range in the
+    ``periods`` keyword can be matched by only one value in the
+    ``values`` keyword. If ``values`` represents a scalar, the same
+    value applies to the whole range. If ``values`` represents a
+    vector, it must have as many elements as there are periods in the
+    range.
 
-    Note that shock values are not restricted to numerical constants: arbitrary expressions are also allowed, but you have to enclose them inside parentheses.
+    Note that shock values are not restricted to numerical constants:
+    arbitrary expressions are also allowed, but you have to enclose
+    them inside parentheses.
 
-    Here is an example::
+    *Example* (with scalar values) 
+
+    ::
 
         shocks;
 
@@ -1687,7 +1724,9 @@ Note that, by default, if there are several ``shocks`` or ``mshocks`` blocks in 
 
         end;
 
-    A second example with a vector of values::
+    *Example* (with vector values)
+
+    ::
 
         xx = [1.2; 1.3; 1];
 
@@ -1697,44 +1736,72 @@ Note that, by default, if there are several ``shocks`` or ``mshocks`` blocks in 
         values (xx);
         end;
 
-    *In stochastic context*
+    |br| *In stochastic context*
 
-    For stochastic simulations, the ``shocks`` block specifies the non zero elements of the covariance matrix of the shocks of exogenous variables.
+    For stochastic simulations, the ``shocks`` block specifies the non
+    zero elements of the covariance matrix of the shocks of exogenous
+    variables.
 
     You can use the following types of entries in the block:
 
-    ``var VARIABLE_NAME; stderr EXPRESSION;``
+    * Specification of the standard error of an exogenous variable. 
 
-        Specifies the standard error of a variable.
+      ::
+         
+         var VARIABLE_NAME; stderr EXPRESSION;
 
-    ``var VARIABLE_NAME = EXPRESSION;``
+       
 
-        Specifies the variance of a variable.
 
-    ``var VARIABLE_NAME, VARIABLE_NAME = EXPRESSION;``
+    * Specification of the variance of an exogenous variable.
 
-        Specifies the covariance of two variables.
+      ::
+         
+         var VARIABLE_NAME = EXPRESSION;
 
-    ``corr VARIABLE_NAME, VARIABLE_NAME = EXPRESSION;``
+       
+    * Specification the covariance of two exogenous variables.
 
-        Specifies the correlation of two variables
+      ::
+         
+         var VARIABLE_NAME, VARIABLE_NAME = EXPRESSION;
 
-    In an estimation context, it is also possible to specify variances and covariances on endogenous variables: in that case, these values are interpreted as the calibration of the measurement errors on these variables. This requires the ``varobs`` command to be specified before the ``shocks`` block.
+    * Specification of the correlation of two exogenous variables.
 
-    Here is an example::
+      ::
+         
+         corr VARIABLE_NAME, VARIABLE_NAME = EXPRESSION;
 
-        shocks;
-        var e = 0.000081;
-        var u; stderr 0.009;
-        corr e, u = 0.8;
-        var v, w = 2;
-        end;
+    In an estimation context, it is also possible to specify variances
+    and covariances on endogenous variables: in that case, these
+    values are interpreted as the calibration of the measurement
+    errors on these variables. This requires the ``varobs`` command to
+    be specified before the ``shocks`` block.
+
+    *Example*
+
+    ::
+      
+       shocks;
+       var e = 0.000081;
+       var u; stderr 0.009;
+       corr e, u = 0.8;
+       var v, w = 2;
+       end;
 
     *Mixing deterministic and stochastic shocks*
 
-    It is possible to mix deterministic and stochastic shocks to build models where agents know from the start of the simulation about future exogenous changes. In that case ``stoch_simul`` will compute the rational expectation solution adding future information to the state space (nothing is shown in the output of ``stoch_simul``) and ``forecast`` will compute a simulation conditional on initial conditions and future information.
+    It is possible to mix deterministic and stochastic shocks to build
+    models where agents know from the start of the simulation about
+    future exogenous changes. In that case ``stoch_simul`` will
+    compute the rational expectation solution adding future
+    information to the state space (nothing is shown in the output of
+    ``stoch_simul``) and ``forecast`` will compute a simulation
+    conditional on initial conditions and future information.
 
-    Here is an example::
+    *Example*
+
+    ::
 
         varexo_det tau;
         varexo e;
@@ -1753,31 +1820,51 @@ Note that, by default, if there are several ``shocks`` or ``mshocks`` blocks in 
 .. block:: mshocks ;
            mshocks(overwrite);
 
-    The purpose of this block is similar to that of the ``shocks`` block for deterministic shocks, except that the numeric values given will be interpreted in a multiplicative way. For example, if a value of ``1.05`` is given as shock value for some exogenous at some date, it means 5% above its steady state value (as given by the last ``initval`` or ``endval`` block).
+    |br| The purpose of this block is similar to that of the
+    ``shocks`` block for deterministic shocks, except that the numeric
+    values given will be interpreted in a multiplicative way. For
+    example, if a value of ``1.05`` is given as shock value for some
+    exogenous at some date, it means 5% above its steady state value
+    (as given by the last ``initval`` or ``endval`` block).
 
     The syntax is the same than ``shocks`` in a deterministic context.
 
     This command is only meaningful in two situations:
 
-        * on exogenous variables with a non-zero steady state, in a deterministic setup,
-        * on deterministic exogenous variables with a non-zero steady state, in a stochastic setup.
+    * on exogenous variables with a non-zero steady state, in a
+      deterministic setup,
+    * on deterministic exogenous variables with a non-zero steady
+      state, in a stochastic setup.
 
     See above for the meaning of the ``overwrite`` option.
 
 .. specvar:: Sigma_e
 
-    This special variable specifies directly the covariance matrix of the stochastic shocks, as an upper (or lower) triangular matrix. Dynare builds the corresponding symmetric matrix. Each row of the triangular matrix, except the last one, must be terminated by a semi-colon ;. For a given element, an arbitrary *EXPRESSION* is allowed (instead of a simple constant), but in that case you need to enclose the expression in parentheses. The order of the covariances in the matrix is the same as the one used in the ``varexo`` declaration.
+    |br| This special variable specifies directly the covariance
+    matrix of the stochastic shocks, as an upper (or lower) triangular
+    matrix. Dynare builds the corresponding symmetric matrix. Each row
+    of the triangular matrix, except the last one, must be terminated
+    by a semi-colon ;. For a given element, an arbitrary *EXPRESSION*
+    is allowed (instead of a simple constant), but in that case you
+    need to enclose the expression in parentheses. The order of the
+    covariances in the matrix is the same as the one used in the
+    ``varexo`` declaration.
 
-    An example::
+    *Example*
+
+    ::
 
         varexo u, e;
 
         Sigma_e = [ 0.81 (phi*0.9*0.009);
                     0.000081];
 
-    This sets the variance of ``u`` to 0.81, the variance of ``e`` to 0.000081, and the correlation between ``e`` and ``u`` to ``phi``.
+    This sets the variance of ``u`` to 0.81, the variance of ``e`` to
+    0.000081, and the correlation between ``e`` and ``u`` to ``phi``.
 
-    .. warning:: **The use of this special variable is deprecated and is strongly discouraged**. You should use a ``shocks`` block instead.
+    .. warning:: **The use of this special variable is deprecated and
+                 is strongly discouraged**. You should use a
+                 ``shocks`` block instead.
 
 
 Other general declarations
