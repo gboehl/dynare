@@ -1703,7 +1703,7 @@ blocks.
     arbitrary expressions are also allowed, but you have to enclose
     them inside parentheses.
 
-    *Example* (with scalar values) 
+    *Example* (with scalar values)
 
     ::
 
@@ -1744,32 +1744,32 @@ blocks.
 
     You can use the following types of entries in the block:
 
-    * Specification of the standard error of an exogenous variable. 
+    * Specification of the standard error of an exogenous variable.
 
       ::
-         
+
          var VARIABLE_NAME; stderr EXPRESSION;
 
-       
+
 
 
     * Specification of the variance of an exogenous variable.
 
       ::
-         
+
          var VARIABLE_NAME = EXPRESSION;
 
-       
+
     * Specification the covariance of two exogenous variables.
 
       ::
-         
+
          var VARIABLE_NAME, VARIABLE_NAME = EXPRESSION;
 
     * Specification of the correlation of two exogenous variables.
 
       ::
-         
+
          corr VARIABLE_NAME, VARIABLE_NAME = EXPRESSION;
 
     In an estimation context, it is also possible to specify variances
@@ -1781,7 +1781,7 @@ blocks.
     *Example*
 
     ::
-      
+
        shocks;
        var e = 0.000081;
        var u; stderr 0.009;
@@ -1872,18 +1872,25 @@ Other general declarations
 
 .. command:: dsample INTEGER [INTEGER];
 
-    Reduces the number of periods considered in subsequent output commands.
+    |br| Reduces the number of periods considered in subsequent output commands.
 
 .. command:: periods INTEGER
 
-    This command is now deprecated (but will still work for older model files). It is not necessary when no simulation is performed and is replaced by an option ``periods`` in ``perfect_foresight_setup``, ``simul`` and ``stoch_simul``.
+    |br| This command is now deprecated (but will still work for older
+    model files). It is not necessary when no simulation is performed
+    and is replaced by an option ``periods`` in
+    ``perfect_foresight_setup``, ``simul`` and ``stoch_simul``.
 
-    This command sets the number of periods in the simulation. The periods are numbered from 1 to *INTEGER*. In perfect foresight simulations, it is assumed that all future events are perfectly known at the beginning of period 1.
+    This command sets the number of periods in the simulation. The
+    periods are numbered from 1 to INTEGER. In perfect foresight
+    simulations, it is assumed that all future events are perfectly
+    known at the beginning of period 1.
 
-    :ex:
-        ::
+    *Example*
 
-            periods 100;
+    ::
+
+       periods 100;
 
 
 .. _st-st:
@@ -1891,7 +1898,13 @@ Other general declarations
 Steady state
 ============
 
-There are two ways of computing the steady state (i.e. the static equilibrium) of a model. The first way is to let Dynare compute the steady state using a nonlinear Newton-type solver; this should work for most models, and is relatively simple to use. The second way is to give more guidance to Dynare, using your knowledge of the model, by providing it with a “steady state file”.
+There are two ways of computing the steady state (i.e. the static
+equilibrium) of a model. The first way is to let Dynare compute the
+steady state using a nonlinear Newton-type solver; this should work
+for most models, and is relatively simple to use. The second way is to
+give more guidance to Dynare, using your knowledge of the model, by
+providing it with a method to compute the steady state, either using a
+`steady_state_model` block or writing matlab routine.
 
 
 Finding the steady state with Dynare nonlinear solver
@@ -1900,219 +1913,343 @@ Finding the steady state with Dynare nonlinear solver
 .. command:: steady ;
              steady (OPTIONS...);
 
-    This command computes the steady state of a model using a nonlinear Newton-type solver and displays it. When a steady state file is used ``steady`` displays the steady state and checks that it is a solution of the static model.
+    |br| This command computes the steady state of a model using a
+    nonlinear Newton-type solver and displays it. When a steady state
+    file is used ``steady`` displays the steady state and checks that
+    it is a solution of the static model.
 
-    More precisely, it computes the equilibrium value of the endogenous variables for the value of the exogenous variables specified in the previous ``initval`` or ``endval`` block.
+    More precisely, it computes the equilibrium value of the
+    endogenous variables for the value of the exogenous variables
+    specified in the previous ``initval`` or ``endval`` block.
 
-    ``steady`` uses an iterative procedure and takes as initial guess the value of the endogenous variables set in the previous ``initval`` or ``endval`` block.
+    ``steady`` uses an iterative procedure and takes as initial guess
+    the value of the endogenous variables set in the previous
+    ``initval`` or ``endval`` block.
 
-    For complicated models, finding good numerical initial values for the endogenous variables is the trickiest part of finding the equilibrium of that model. Often, it is better to start with a smaller model and add new variables one by one.
+    For complicated models, finding good numerical initial values for
+    the endogenous variables is the trickiest part of finding the
+    equilibrium of that model. Often, it is better to start with a
+    smaller model and add new variables one by one.
 
     *Options*
 
     .. option:: maxit = INTEGER
 
-        Determines the maximum number of iterations used in the non-linear solver. The default value of ``maxit`` is 50.
+       Determines the maximum number of iterations used in the
+       non-linear solver. The default value of ``maxit`` is 50.
 
     .. option:: tolf = DOUBLE
 
-        Convergence criterion for termination based on the function value. Iteration will cease when the residuals are smaller than ``tolf``. Default: ``eps^(1/3)``
+       Convergence criterion for termination based on the function
+       value. Iteration will cease when the residuals are smaller than
+       ``tolf``. Default: ``eps^(1/3)``
 
     .. option:: solve_algo = INTEGER
 
-        Determines the non-linear solver to use. Possible values for the option are:
+       Determines the non-linear solver to use. Possible values for the
+       option are:
 
-        ``0``
+           ``0``
 
-            Use ``fsolve`` (under MATLAB, only available if you have the Optimization Toolbox; always available under Octave).
+                Use ``fsolve`` (under MATLAB, only available if you
+                have the Optimization Toolbox; always available under
+                Octave).
 
-        ``1``
+           ``1``
 
-            Use Dynare’s own nonlinear equation solver (a Newton-like algorithm with line-search).
+                Use Dynare’s own nonlinear equation solver (a
+                Newton-like algorithm with line-search).
 
-        ``2``
+           ``2``
 
-            Splits the model into recursive blocks and solves each block in turn using the same solver as value 1.
+                Splits the model into recursive blocks and solves each
+                block in turn using the same solver as value 1.
 
-        ``3``
+           ``3``
 
-            Use Chris Sims’ solver.
+                Use Chris Sims’ solver.
 
-        ``4``
+           ``4``
 
-            Splits the model into recursive blocks and solves each block in turn using a trust-region solver with autoscaling.
+                Splits the model into recursive blocks and solves each
+                block in turn using a trust-region solver with
+                autoscaling.
 
-        ``5``
+           ``5``
 
-            Newton algorithm with a sparse Gaussian elimination (SPE) (requires ``bytecode`` option, see :ref:`model-decl`).
+                Newton algorithm with a sparse Gaussian elimination
+                (SPE) (requires ``bytecode`` option, see
+                :ref:`model-decl`).
 
-        ``6``
+           ``6``
 
-            Newton algorithm with a sparse LU solver at each iteration (requires ``bytecode`` and/or ``block`` option, see :ref:`model-decl`).
+                Newton algorithm with a sparse LU solver at each
+                iteration (requires ``bytecode`` and/or ``block``
+                option, see :ref:`model-decl`).
 
-        ``7``
+           ``7``
 
-            Newton algorithm with a Generalized Minimal Residual (GMRES) solver at each iteration (requires ``bytecode`` and/or ``block`` option, see :ref:`model-decl`; not available under Octave).
+                Newton algorithm with a Generalized Minimal Residual
+                (GMRES) solver at each iteration (requires ``bytecode``
+                and/or ``block`` option, see :ref:`model-decl`; not
+                available under Octave).
 
-        ``8``
+           ``8``
 
-            Newton algorithm with a Stabilized Bi-Conjugate Gradient (BICGSTAB) solver at each iteration (requires bytecode and/or block option, see :ref:`model-decl`).
+                Newton algorithm with a Stabilized Bi-Conjugate
+                Gradient (BICGSTAB) solver at each iteration (requires
+                bytecode and/or block option, see :ref:`model-decl`).
 
-        ``9``
+           ``9``
 
-            Trust-region algorithm on the entire model.
+                Trust-region algorithm on the entire model.
 
-        ``10``
+           ``10``
 
-            Levenberg-Marquardt mixed complementarity problem (LMMCP) solver (*Kanzow and Petra (2004)*).
+                Levenberg-Marquardt mixed complementarity problem
+                (LMMCP) solver (*Kanzow and Petra (2004)*).
 
-        ``11``
+           ``11``
 
-            PATH mixed complementarity problem solver of *Ferris and Munson (1999)*. The complementarity conditions are specified with an ``mcp`` equation tag, see :opt:`lmmcp`. Dynare only provides the interface for using the solver. Due to licence restrictions, you have to download the solver’s most current version yourself from `http://pages.cs.wisc.edu/~ferris/path.html <http://pages.cs.wisc.edu/~ferris/path.html>`_ and place it in Matlab’s search path.
+                PATH mixed complementarity problem solver of *Ferris
+                and Munson (1999)*. The complementarity conditions are
+                specified with an ``mcp`` equation tag, see
+                :opt:`lmmcp`. Dynare only provides the interface for
+                using the solver. Due to licence restrictions, you have
+                to download the solver’s most current version yourself
+                from `http://pages.cs.wisc.edu/~ferris/path.html
+                <http://pages.cs.wisc.edu/~ferris/path.html>`_ and
+                place it in Matlab’s search path.
 
-        Default value is ``4``.
+       |br| Default value is ``4``.
 
     .. option:: homotopy_mode = INTEGER
 
-        Use a homotopy (or divide-and-conquer) technique to solve for the steady state. If you use this option, you must specify a ``homotopy_setup`` block. This option can take three possible values:
+       Use a homotopy (or divide-and-conquer) technique to solve for
+       the steady state. If you use this option, you must specify a
+       ``homotopy_setup`` block. This option can take three possible
+       values:
 
-        ``1``
+           ``1``
 
-            In this mode, all the parameters are changed simultaneously, and the distance between the boundaries for each parameter is divided in as many intervals as there are steps (as defined by the ``homotopy_steps`` option); the problem is solves as many times as there are steps.
+                In this mode, all the parameters are changed
+                simultaneously, and the distance between the boundaries
+                for each parameter is divided in as many intervals as
+                there are steps (as defined by the ``homotopy_steps``
+                option); the problem is solves as many times as there
+                are steps.
 
-        ``2``
+           ``2``
 
-            Same as mode ``1``, except that only one parameter is changed at a time; the problem is solved as many times as steps times number of parameters.
+                Same as mode ``1``, except that only one parameter is
+                changed at a time; the problem is solved as many times
+                as steps times number of parameters.
 
-        ``3``
+           ``3``
 
-            Dynare tries first the most extreme values. If it fails to compute the steady state, the interval between initial and desired values is divided by two for all parameters. Every time that it is impossible to find a steady state, the previous interval is divided by two. When it succeeds to find a steady state, the previous interval is multiplied by two. In that last case ``homotopy_steps`` contains the maximum number of computations attempted before giving up.
+                Dynare tries first the most extreme values. If it
+                fails to compute the steady state, the interval
+                between initial and desired values is divided by two
+                for all parameters. Every time that it is impossible
+                to find a steady state, the previous interval is
+                divided by two. When it succeeds to find a steady
+                state, the previous interval is multiplied by two. In
+                that last case ``homotopy_steps`` contains the maximum
+                number of computations attempted before giving up.
 
     .. option:: homotopy_steps = INTEGER
 
-        Defines the number of steps when performing a homotopy. See ``homotopy_mode`` option for more details.
+       Defines the number of steps when performing a homotopy. See
+       ``homotopy_mode`` option for more details.
 
     .. option:: homotopy_force_continue = INTEGER
 
-        This option controls what happens when homotopy fails.
+       This option controls what happens when homotopy fails.
 
-        ``0``
+           ``0``
 
-            ``steady`` fails with an error message
+                ``steady`` fails with an error message
 
-        ``1``
+           ``1``
 
-            ``steady`` keeps the values of the last homotopy step that was successful and continues. **BE CAREFUL**: parameters and/or exogenous variables are NOT at the value expected by the user
+                ``steady`` keeps the values of the last homotopy step
+                that was successful and continues. **BE CAREFUL**:
+                parameters and/or exogenous variables are NOT at the
+                value expected by the user
 
-        Default is ``0``.
+       |br| Default is ``0``.
 
     .. option:: nocheck
 
-        Don’t check the steady state values when they are provided explicitly either by a steady state file or a ``steady_state_model`` block. This is useful for models with unit roots as, in this case, the steady state is not unique or doesn’t exist.
+       Don’t check the steady state values when they are provided
+       explicitly either by a steady state file or a
+       ``steady_state_model`` block. This is useful for models with
+       unit roots as, in this case, the steady state is not unique or
+       doesn’t exist.
 
     .. option:: markowitz = DOUBLE
 
-        Value of the Markowitz criterion, used to select the pivot. Only used when ``solve_algo = 5``. Default: 0.5.
+       Value of the Markowitz criterion, used to select the
+       pivot. Only used when ``solve_algo = 5``. Default: 0.5.
 
-    :ex:
+    *Example*
 
-        See :ref:`init-term-cond`.
+    See :ref:`init-term-cond`.
 
 After computation, the steady state is available in the following variable:
 
 .. matvar:: oo_.steady_state
 
-    Contains the computed steady state.
-
-    Endogenous variables are ordered in order of declaration used in the ``var`` command (which is also the order used in ``M_.endo_names``).
+    Contains the computed steady state. Endogenous variables are
+    ordered in order of declaration used in the ``var`` command (which
+    is also the order used in ``M_.endo_names``).
 
 
 .. block:: homotopy_setup ;
 
-    This block is used to declare initial and final values when using a homotopy method. It is used in conjunction with the option ``homotopy_mode`` of the steady command.
+    This block is used to declare initial and final values when using
+    a homotopy method. It is used in conjunction with the option
+    ``homotopy_mode`` of the steady command.
 
-    The idea of homotopy (also called divide-and-conquer by some authors) is to subdivide the problem of finding the steady state into smaller problems. It assumes that you know how to compute the steady state for a given set of parameters, and it helps you finding the steady state for another set of parameters, by incrementally moving from one to another set of parameters.
+    The idea of homotopy (also called divide-and-conquer by some
+    authors) is to subdivide the problem of finding the steady state
+    into smaller problems. It assumes that you know how to compute the
+    steady state for a given set of parameters, and it helps you
+    finding the steady state for another set of parameters, by
+    incrementally moving from one to another set of parameters.
 
-    The purpose of the ``homotopy_setup`` block is to declare the final (and possibly also the initial) values for the parameters or exogenous that will be changed during the homotopy. It should contain lines of the form::
+    The purpose of the ``homotopy_setup`` block is to declare the
+    final (and possibly also the initial) values for the parameters or
+    exogenous that will be changed during the homotopy. It should
+    contain lines of the form::
 
         VARIABLE_NAME, EXPRESSION, EXPRESSION;
 
-    This syntax specifies the initial and final values of a given parameter/exogenous.
+    This syntax specifies the initial and final values of a given
+    parameter/exogenous.
 
     There is an alternative syntax::
 
         VARIABLE_NAME, EXPRESSION;
 
-    Here only the final value is specified for a given parameter/exogenous; the initial value is taken from the preceeding ``initval`` block.
+    Here only the final value is specified for a given
+    parameter/exogenous; the initial value is taken from the
+    preceeding ``initval`` block.
 
-    A necessary condition for a successful homotopy is that Dynare must be able to solve the steady state for the initial parameters/exogenous without additional help (using the guess values given in the ``initval`` block).
+    A necessary condition for a successful homotopy is that Dynare
+    must be able to solve the steady state for the initial
+    parameters/exogenous without additional help (using the guess
+    values given in the ``initval`` block).
 
-    If the homotopy fails, a possible solution is to increase the number of steps (given in ``homotopy_steps`` option of ``steady``).
+    If the homotopy fails, a possible solution is to increase the
+    number of steps (given in ``homotopy_steps`` option of
+    ``steady``).
 
-    :ex:
+    *Example*
 
-        In the following example, Dynare will first compute the steady state for the initial values (``gam=0.5`` and ``x=1``), and then subdivide the problem into 50 smaller problems to find the steady state for the final values (``gam=2`` and ``x=2``)::
+    In the following example, Dynare will first compute the steady
+    state for the initial values (``gam=0.5`` and ``x=1``), and then
+    subdivide the problem into 50 smaller problems to find the steady
+    state for the final values (``gam=2`` and ``x=2``)::
 
-            var c k;
-            varexo x;
+         var c k;
+         varexo x;
 
-            parameters alph gam delt bet aa;
-            alph=0.5;
-            delt=0.02;
-            aa=0.5;
-            bet=0.05;
+         parameters alph gam delt bet aa;
+         alph=0.5;
+         delt=0.02;
+         aa=0.5;
+         bet=0.05;
 
-            model;
-            c + k - aa*x*k(-1)^alph - (1-delt)*k(-1);
-            c^(-gam) - (1+bet)^(-1)*(aa*alph*x(+1)*k^(alph-1) + 1 - delt)*c(+1)^(-gam);
-            end;
+         model;
+         c + k - aa*x*k(-1)^alph - (1-delt)*k(-1);
+         c^(-gam) - (1+bet)^(-1)*(aa*alph*x(+1)*k^(alph-1) + 1 - delt)*c(+1)^(-gam);
+         end;
 
-            initval;
-            x = 1;
-            k = ((delt+bet)/(aa*x*alph))^(1/(alph-1));
-            c = aa*x*k^alph-delt*k;
-            end;
+         initval;
+         x = 1;
+         k = ((delt+bet)/(aa*x*alph))^(1/(alph-1));
+         c = aa*x*k^alph-delt*k;
+         end;
 
-            homotopy_setup;
-            gam, 0.5, 2;
-            x, 2;
-            end;
+         homotopy_setup;
+         gam, 0.5, 2;
+         x, 2;
+         end;
 
-            steady(homotopy_mode = 1, homotopy_steps = 50);
+         steady(homotopy_mode = 1, homotopy_steps = 50);
 
 
-Using a steady state file
--------------------------
+Providing the steady state to Dynare
+------------------------------------
 
-If you know how to compute the steady state for your model, you can provide a MATLAB/Octave function doing the computation instead of using ``steady``. Again, there are two options for doing that:
+If you know how to compute the steady state for your model, you can
+provide a MATLAB/Octave function doing the computation instead of
+using ``steady``. Again, there are two options for doing that:
 
-    * The easiest way is to write a ``steady_state_model`` block, which is described below in more details. See also ``fs2000.mod`` in the ``examples`` directory for an example.
+  * The easiest way is to write a ``steady_state_model`` block, which
+    is described below in more details. See also ``fs2000.mod`` in the
+    ``examples`` directory for an example. The steady state file
+    generated by Dynare will be called ``+FILENAME/steadystate.m.``
 
-      The steady state file generated by Dynare will be called ``FILENAME_steadystate2.m.``
+  * You can write the corresponding MATLAB function by hand. If your
+    MOD-file is called ``FILENAME.mod``, the steady state file must be
+    called ``FILENAME_steadystate.m``. See
+    ``NK_baseline_steadystate.m`` in the examples directory for an
+    example. This option gives a bit more flexibility (loops and
+    conditional structures can be used), at the expense of a heavier
+    programming burden and a lesser efficiency.
 
-    * You can write the corresponding MATLAB function by hand. If your MOD-file is called ``FILENAME.mod``, the steady state file must be called ``FILENAME_steadystate.m``. See ``NK_baseline_steadystate.m`` in the examples directory for an example. This option gives a bit more flexibility, at the expense of a heavier programming burden and a lesser efficiency.
-
-Note that both files allow to update parameters in each call of the function. This allows for example to calibrate a model to a labor supply of 0.2 in steady state by setting the labor disutility parameter to a corresponding value (see ``NK_baseline_steadystate.m`` in the ``examples`` directory). They can also be used in estimation where some parameter may be a function of an estimated parameter and needs to be updated for every parameter draw. For example, one might want to set the capital utilization cost parameter as a function of the discount rate to ensure that capacity utilization is 1 in steady state. Treating both parameters as independent or not updating one as a function of the other would lead to wrong results. But this also means that care is required. Do not accidentally overwrite your parameters with new values as it will lead to wrong results.
+Note that both files allow to update parameters in each call of the
+function. This allows for example to calibrate a model to a labor
+supply of 0.2 in steady state by setting the labor disutility
+parameter to a corresponding value (see ``NK_baseline_steadystate.m``
+in the ``examples`` directory). They can also be used in estimation
+where some parameter may be a function of an estimated parameter and
+needs to be updated for every parameter draw. For example, one might
+want to set the capital utilization cost parameter as a function of
+the discount rate to ensure that capacity utilization is 1 in steady
+state. Treating both parameters as independent or not updating one as
+a function of the other would lead to wrong results. But this also
+means that care is required. Do not accidentally overwrite your
+parameters with new values as it will lead to wrong results.
 
 .. block:: steady_state_model ;
 
-    When the analytical solution of the model is known, this command can be used to help Dynare find the steady state in a more efficient and reliable way, especially during estimation where the steady state has to be recomputed for every point in the parameter space.
+    |br| When the analytical solution of the model is known, this command
+    can be used to help Dynare find the steady state in a more
+    efficient and reliable way, especially during estimation where the
+    steady state has to be recomputed for every point in the parameter
+    space.
 
-    Each line of this block consists of a variable (either an endogenous, a temporary variable or a parameter) which is assigned an expression (which can contain parameters, exogenous at the steady state, or any endogenous or temporary variable already declared above). Each line therefore looks like::
+    Each line of this block consists of a variable (either an
+    endogenous, a temporary variable or a parameter) which is assigned
+    an expression (which can contain parameters, exogenous at the
+    steady state, or any endogenous or temporary variable already
+    declared above). Each line therefore looks like::
 
         VARIABLE_NAME = EXPRESSION;
 
-    Note that it is also possible to assign several variables at the same time, if the main function in the right hand side is a MATLAB/Octave function returning several arguments::
+    Note that it is also possible to assign several variables at the
+    same time, if the main function in the right hand side is a
+    MATLAB/Octave function returning several arguments::
 
         [ VARIABLE_NAME, VARIABLE_NAME... ] = EXPRESSION;
 
-    Dynare will automatically generate a steady state file (of the form ``FILENAME_steadystate2.m``) using the information provided in this block.
+    Dynare will automatically generate a steady state file (of the
+    form ``+FILENAME/steadystate.m``) using the information provided
+    in this block.
 
     *Steady state file for deterministic models*
 
-    The ``steady_state_model`` block works also with deterministic models. An ``initval`` block and, when necessary, an ``endval`` block, is used to set the value of the exogenous variables. Each ``initval`` or ``endval`` block must be followed by ``steady`` to execute the function created by ``steady_state_model`` and set the initial, respectively terminal, steady state.
+    The ``steady_state_model`` block works also with deterministic
+    models. An ``initval`` block and, when necessary, an ``endval``
+    block, is used to set the value of the exogenous variables. Each
+    ``initval`` or ``endval`` block must be followed by ``steady`` to
+    execute the function created by ``steady_state_model`` and set the
+    initial, respectively terminal, steady state.
 
-    :ex:
+    *Example*
 
         ::
 
@@ -2159,17 +2296,35 @@ Note that both files allow to update parameters in each call of the function. Th
 Replace some equations during steady state computations
 -------------------------------------------------------
 
-When there is no steady state file, Dynare computes the steady state by solving the static model, i.e. the model from the ``.mod`` file from which leads and lags have been removed.
+When there is no steady state file, Dynare computes the steady state
+by solving the static model, i.e. the model from the ``.mod`` file
+from which leads and lags have been removed.
 
-In some specific cases, one may want to have more control over the way this static model is created. Dynare therefore offers the possibility to explicitly give the form of equations that should be in the static model.
+In some specific cases, one may want to have more control over the way
+this static model is created. Dynare therefore offers the possibility
+to explicitly give the form of equations that should be in the static
+model.
 
-More precisely, if an equation is prepended by a ``[static]`` tag, then it will appear in the static model used for steady state computation, but that equation will not be used for other computations. For every equation tagged in this way, you must tag another equation with ``[dynamic]``: that equation will not be used for steady state computation, but will be used for other computations.
+More precisely, if an equation is prepended by a ``[static]`` tag,
+then it will appear in the static model used for steady state
+computation, but that equation will not be used for other
+computations. For every equation tagged in this way, you must tag
+another equation with ``[dynamic]``: that equation will not be used
+for steady state computation, but will be used for other computations.
 
-This functionality can be useful on models with a unit root, where there is an infinity of steady states. An equation (tagged ``[dynamic]``) would give the law of motion of the nonstationary variable (like a random walk). To pin down one specific steady state, an equation tagged ``[static]`` would affect a constant value to the nonstationary variable.
+This functionality can be useful on models with a unit root, where
+there is an infinity of steady states. An equation (tagged
+``[dynamic]``) would give the law of motion of the nonstationary
+variable (like a random walk). To pin down one specific steady state,
+an equation tagged ``[static]`` would affect a constant value to the
+nonstationary variable. Another situation where the ``[static]`` tag
+can be useful is when one has only a partial closed form solution for
+the steady state.
 
 *Example*
 
-This is a trivial example with two endogenous variables. The second equation takes a different form in the static model::
+This is a trivial example with two endogenous variables. The second
+equation takes a different form in the static model::
 
     var c k;
     varexo x;
