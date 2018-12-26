@@ -15,19 +15,25 @@
 # You should have received a copy of the GNU General Public License
 # along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
+MATHJAX_VERSION = 2.7.5
+
 SRC = $(wildcard src/source/*.rst)
+
+.PHONY: all html pdf deps python mathjax
 
 all: html pdf
 
-html: src/build/html/index.html
+html: deps src/build/html/index.html
 
 src/build/html/index.html: $(SRC) src/source/conf.py
 	source python/bin/activate ; make -C src html
 
-pdf: src/build/latex/dynare.pdf
+pdf: deps src/build/latex/dynare.pdf
 
 src/build/latex/dynare.pdf: $(SRC) src/source/conf.py
 	source python/bin/activate ; make -C src latexpdf
+
+deps: python mathjax
 
 python: python/bin/python3
 
@@ -37,3 +43,15 @@ python/bin/python3:
 	cp py/pygment/dynare.py python/lib/python3.*/site-packages/pygments/lexers/
 	cd python/lib/python3.*/site-packages/pygments/lexers ; python3 _mapping.py
 	patch -i py/basic.css_t.patch python/lib/python3.*/site-packages/sphinx/themes/basic/static/basic.css_t
+
+mathjax: src/source/_static/mathjax/MathJax.js
+	@touch src/source/_static/mathjax/MathJax.js
+
+src/source/_static/mathjax/MathJax.js: mathjax-$(MATHJAX_VERSION).zip
+	unzip mathjax-$(MATHJAX_VERSION).zip
+	mv MathJax-$(MATHJAX_VERSION) src/source/_static/mathjax
+
+mathjax-$(MATHJAX_VERSION).zip:
+	wget https://github.com/mathjax/MathJax/archive/$(MATHJAX_VERSION).zip
+	mv $(MATHJAX_VERSION).zip mathjax-$(MATHJAX_VERSION).zip
+	@touch mathjax-$(MATHJAX_VERSION).zip
