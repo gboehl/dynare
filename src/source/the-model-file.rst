@@ -2790,11 +2790,22 @@ speed-up on large models.
 Stochastic solution and simulation
 ==================================
 
-In a stochastic context, Dynare computes one or several simulations corresponding to a random draw of the shocks.
+In a stochastic context, Dynare computes one or several simulations
+corresponding to a random draw of the shocks.
 
-The main algorithm for solving stochastic models relies on a Taylor approximation, up to third order, of the expectation functions (see *Judd (1996)*, *Collard and Juillard (2001a)*, *Collard and Juillard (2001b)*, and *Schmitt-Grohé and Uríbe (2004)*). The details of the Dynare implementation of the first order solution are given in *Villemot (2011)*. Such a solution is computed using the ``stoch_simul`` command.
+The main algorithm for solving stochastic models relies on a Taylor
+approximation, up to third order, of the expectation functions (see
+*Judd (1996)*, *Collard and Juillard (2001a)*, *Collard and Juillard
+(2001b)*, and *Schmitt-Grohé and Uríbe (2004)*). The details of the
+Dynare implementation of the first order solution are given in
+*Villemot (2011)*. Such a solution is computed using the
+``stoch_simul`` command.
 
-As an alternative, it is possible to compute a simulation to a stochastic model using the *extended path* method presented by *Fair and Taylor (1983)*. This method is especially useful when there are strong nonlinearities or binding constraints. Such a solution is computed using the ``extended_path`` command.
+As an alternative, it is possible to compute a simulation to a
+stochastic model using the *extended path* method presented by *Fair
+and Taylor (1983)*. This method is especially useful when there are
+strong nonlinearities or binding constraints. Such a solution is
+computed using the ``extended_path`` command.
 
 
 Computing the stochastic solution
@@ -2803,243 +2814,442 @@ Computing the stochastic solution
 .. command:: stoch_simul [VARIABLE_NAME...];
              stoch_simul (OPTIONS...) [VARIABLE_NAME...];
 
-    ``stoch_simul`` solves a stochastic (i.e. rational expectations) model, using perturbation techniques.
+    |br| Solves a stochastic (i.e. rational expectations) model, using
+    perturbation techniques.
 
-    More precisely, ``stoch_simul`` computes a Taylor approximation of the decision and transition functions for the model. Using this, it computes impulse response functions and various descriptive statistics (moments, variance decomposition, correlation and autocorrelation coefficients). For correlated shocks, the variance decomposition is computed as in the VAR literature through a Cholesky decomposition of the covariance matrix of the exogenous variables. When the shocks are correlated, the variance decomposition depends upon the order of the variables in the ``varexo`` command.
+    More precisely, ``stoch_simul`` computes a Taylor approximation of
+    the decision and transition functions for the model. Using this,
+    it computes impulse response functions and various descriptive
+    statistics (moments, variance decomposition, correlation and
+    autocorrelation coefficients). For correlated shocks, the variance
+    decomposition is computed as in the VAR literature through a
+    Cholesky decomposition of the covariance matrix of the exogenous
+    variables. When the shocks are correlated, the variance
+    decomposition depends upon the order of the variables in the
+    ``varexo`` command.
 
-    The Taylor approximation is computed around the steady state (see :ref:`st-st`).
+    The Taylor approximation is computed around the steady state (see
+    :ref:`st-st`).
 
-    The IRFs are computed as the difference between the trajectory of a variable following a shock at the beginning of period ``1`` and its steady state value. More details on the computation of IRFs can be found on the `Dynare wiki`_.
+    The IRFs are computed as the difference between the trajectory of
+    a variable following a shock at the beginning of period ``1`` and
+    its steady state value. More details on the computation of IRFs
+    can be found on the `Dynare wiki`_.
 
-    Variance decomposition, correlation, autocorrelation are only displayed for variables with strictly positive variance. Impulse response functions are only plotted for variables with response larger than :math:`10^{-10}`.
+    Variance decomposition, correlation, autocorrelation are only
+    displayed for variables with strictly positive variance. Impulse
+    response functions are only plotted for variables with response
+    larger than :math:`10^{-10}`.
 
-    Variance decomposition is computed relative to the sum of the contribution of each shock. Normally, this is of course equal to aggregate variance, but if a model generates very large variances, it may happen that, due to numerical error, the two differ by a significant amount. Dynare issues a warning if the maximum relative difference between the sum of the contribution of each shock and aggregate variance is larger than ``0.01%``.
+    Variance decomposition is computed relative to the sum of the
+    contribution of each shock. Normally, this is of course equal to
+    aggregate variance, but if a model generates very large variances,
+    it may happen that, due to numerical error, the two differ by a
+    significant amount. Dynare issues a warning if the maximum
+    relative difference between the sum of the contribution of each
+    shock and aggregate variance is larger than ``0.01%``.
 
-    The covariance matrix of the shocks is specified with the ``shocks`` command (see :ref:`shocks-exo`).
+    The covariance matrix of the shocks is specified with the
+    ``shocks`` command (see :ref:`shocks-exo`).
 
-    When a list of ``VARIABLE_NAME`` is specified, results are displayed only for these variables.
+    When a list of ``VARIABLE_NAME`` is specified, results are
+    displayed only for these variables.
 
-    The ``stoch_simul`` command with a first order approximation can benefit from the block decomposition of the model (see :opt:`block`).
+    The ``stoch_simul`` command with a first order approximation can
+    benefit from the block decomposition of the model (see
+    :opt:`block`).
 
     *Options*
 
     .. option:: ar = INTEGER
 
-        Order of autocorrelation coefficients to compute and to print. Default: ``5``.
+       Order of autocorrelation coefficients to compute and to
+       print. Default: ``5``.
 
     .. option:: drop = INTEGER
 
-        Number of points (burnin) dropped at the beginning of simulation before computing the summary statistics. Note that this option does not affect the simulated series stored in ``oo_.endo_simul`` and the workspace. Here, no periods are dropped. Default: ``100``.
+       Number of points (burnin) dropped at the beginning of
+       simulation before computing the summary statistics. Note that
+       this option does not affect the simulated series stored in
+       ``oo_.endo_simul`` and the workspace. Here, no periods are
+       dropped. Default: ``100``.
 
     .. option:: hp_filter = DOUBLE
 
-        Uses HP filter with :math:`\lambda =` ``DOUBLE`` before computing moments. If theoretical moments are requested, the spectrum of the model solution is filtered following the approach outlined in Uhlig (2001). Default: no filter.
+       Uses HP filter with :math:`\lambda =` ``DOUBLE`` before
+       computing moments. If theoretical moments are requested, the
+       spectrum of the model solution is filtered following the
+       approach outlined in Uhlig (2001). Default: no filter.
 
     .. option:: one_sided_hp_filter = DOUBLE
 
-        Uses the one-sided HP filter with :math:`\lambda =` ``DOUBLE`` described in *Stock and Watson (1999)* before computing moments. This option is only available with simulated moments. Default: no filter.
+       Uses the one-sided HP filter with :math:`\lambda =` ``DOUBLE``
+       described in *Stock and Watson (1999)* before computing
+       moments. This option is only available with simulated
+       moments. Default: no filter.
 
     .. option:: hp_ngrid = INTEGER
 
-        Number of points in the grid for the discrete Inverse Fast Fourier Transform used in the HP filter computation. It may be necessary to increase it for highly autocorrelated processes. Default: ``512``.
+       Number of points in the grid for the discrete Inverse Fast
+       Fourier Transform used in the HP filter computation. It may be
+       necessary to increase it for highly autocorrelated
+       processes. Default: ``512``.
 
     .. option:: bandpass_filter
 
-        Uses a bandpass filter with the default passband before computing moments. If theoretical moments are requested, the spectrum of the model solution is filtered using an ideal bandpass filter. If empirical moments are requested, the *Baxter and King (1999)* filter is used. Default: no filter.
+       Uses a bandpass filter with the default passband before
+       computing moments. If theoretical moments are requested, the
+       spectrum of the model solution is filtered using an ideal
+       bandpass filter. If empirical moments are requested, the
+       *Baxter and King (1999)* filter is used. Default: no filter.
 
     .. option:: bandpass_filter = [HIGHEST_PERIODICITY LOWEST_PERIODICITY]
 
-        Uses a bandpass filter before computing moments. The passband is set to a periodicity of  to LOWEST_PERIODICITY, e.g. :math:`6` to :math:`32` quarters if the model frequency is quarterly. Default: ``[6,32]``.
+       Uses a bandpass filter before computing moments. The passband
+       is set to a periodicity of to LOWEST_PERIODICITY,
+       e.g. :math:`6` to :math:`32` quarters if the model frequency is
+       quarterly. Default: ``[6,32]``.
 
     .. option:: irf = INTEGER
 
-        Number of periods on which to compute the IRFs. Setting ``irf=0`` suppresses the plotting of IRFs. Default: ``40``.
+       Number of periods on which to compute the IRFs. Setting
+       ``irf=0`` suppresses the plotting of IRFs. Default: ``40``.
 
     .. option:: irf_shocks = ( VARIABLE_NAME [[,] VARIABLE_NAME ...] )
 
-        The exogenous variables for which to compute IRFs. Default: all.
+       The exogenous variables for which to compute IRFs. Default:
+       all.
 
     .. option:: relative_irf
 
-        Requests the computation of normalized IRFs. At first order, the normal shock vector of size one standard deviation is divided by the standard deviation of the current shock and multiplied by 100. The impulse responses are hence the responses to a unit shock of size 1 (as opposed to the regular shock size of one standard deviation), multiplied by 100. Thus, for a loglinearized model where the variables are measured in percent, the IRFs have the interpretation of the percent responses to a 100 percent shock. For example, a response of 400 of output to a TFP shock shows that output increases by 400 percent after a 100 percent TFP shock (you will see that TFP increases by 100 on impact). Given linearity at ``order=1``, it is straightforward to rescale the IRFs stored in ``oo_.irfs`` to any desired size. At higher order, the interpretation is different. The ``relative_irf`` option then triggers the generation of IRFs as the response to a 0.01 unit shock (corresponding to 1 percent for shocks measured in percent) and no multiplication with 100 is performed. That is, the normal shock vector of size one standard deviation is divided by the standard deviation of the current shock and divided by 100. For example, a response of 0.04 of log output (thus measured in percent of the steady state output level) to a TFP shock also measured in percent then shows that output increases by 4 percent after a 1 percent TFP shock (you will see that TFP increases by 0.01 on impact).
+       Requests the computation of normalized IRFs. At first order,
+       the normal shock vector of size one standard deviation is
+       divided by the standard deviation of the current shock and
+       multiplied by 100. The impulse responses are hence the
+       responses to a unit shock of size 1 (as opposed to the regular
+       shock size of one standard deviation), multiplied by 100. Thus,
+       for a loglinearized model where the variables are measured in
+       percent, the IRFs have the interpretation of the percent
+       responses to a 100 percent shock. For example, a response of
+       400 of output to a TFP shock shows that output increases by 400
+       percent after a 100 percent TFP shock (you will see that TFP
+       increases by 100 on impact). Given linearity at ``order=1``, it
+       is straightforward to rescale the IRFs stored in ``oo_.irfs``
+       to any desired size. At higher order, the interpretation is
+       different. The ``relative_irf`` option then triggers the
+       generation of IRFs as the response to a 0.01 unit shock
+       (corresponding to 1 percent for shocks measured in percent) and
+       no multiplication with 100 is performed. That is, the normal
+       shock vector of size one standard deviation is divided by the
+       standard deviation of the current shock and divided by 100. For
+       example, a response of 0.04 of log output (thus measured in
+       percent of the steady state output level) to a TFP shock also
+       measured in percent then shows that output increases by 4
+       percent after a 1 percent TFP shock (you will see that TFP
+       increases by 0.01 on impact).
 
     .. option:: irf_plot_threshold = DOUBLE
 
-        Threshold size for plotting IRFs. All IRFs for a particular variable with a maximum absolute deviation from the steady state smaller than this value are not displayed. Default: ``1e-10``.
+       Threshold size for plotting IRFs. All IRFs for a particular
+       variable with a maximum absolute deviation from the steady
+       state smaller than this value are not displayed. Default:
+       ``1e-10``.
 
     .. option:: nocorr
 
-        Don’t print the correlation matrix (printing them is the default).
+       Don’t print the correlation matrix (printing them is the
+       default).
 
     .. option:: nodecomposition
 
-        Don’t compute (and don’t print) unconditional variance decomposition.
+       Don’t compute (and don’t print) unconditional variance
+       decomposition.
 
     .. option:: nofunctions
 
-        Don’t print the coefficients of the approximated solution (printing them is the default).
+       Don’t print the coefficients of the approximated solution
+       (printing them is the default).
 
     .. option:: nomoments
 
-        Don’t print moments of the endogenous variables (printing them is the default).
+       Don’t print moments of the endogenous variables (printing them
+       is the default).
 
     .. option:: nograph
 
-        Do not create graphs (which implies that they are not saved to the disk nor displayed). If this option is not used, graphs will be saved to disk (to the format specified by ``graph_format`` option, except if ``graph_format=none``) and displayed to screen (unless ``nodisplay`` option is used).
+       Do not create graphs (which implies that they are not saved to
+       the disk nor displayed). If this option is not used, graphs
+       will be saved to disk (to the format specified by
+       ``graph_format`` option, except if ``graph_format=none``) and
+       displayed to screen (unless ``nodisplay`` option is used).
 
     .. option:: graph
 
-        Re-enables the generation of graphs previously shut off with ``nograph``.
+       Re-enables the generation of graphs previously shut off with
+       ``nograph``.
 
     .. option:: nodisplay
 
-        Do not display the graphs, but still save them to disk (unless ``nograph`` is used).
+       Do not display the graphs, but still save them to disk (unless
+       ``nograph`` is used).
 
     .. option:: graph_format = FORMAT
                 graph_format = ( FORMAT, FORMAT... )
 
-        Specify the file format(s) for graphs saved to disk. Possible values are ``eps`` (the default), ``pdf``, ``fig`` and ``none`` (under Octave, only ``eps`` and ``none`` are available). If the file format is set equal to ``none``, the graphs are displayed but not saved to the disk.
+       Specify the file format(s) for graphs saved to disk. Possible
+       values are ``eps`` (the default), ``pdf``, ``fig`` and ``none``
+       (under Octave, only ``eps`` and ``none`` are available). If the
+       file format is set equal to ``none``, the graphs are displayed
+       but not saved to the disk.
 
     .. option:: noprint
 
-        Don’t print anything. Useful for loops.
+       Don’t print anything. Useful for loops.
 
     .. option:: print
 
-        Print results (opposite of ``noprint``).
+       Print results (opposite of ``noprint``).
 
     .. option:: order = INTEGER
 
-        Order of Taylor approximation. Acceptable values are ``1``, ``2`` and ``3``. Note that for third order, ``k_order_solver`` option is implied and only empirical moments are available (you must provide a value for ``periods`` option). Default: ``2`` (except after an ``estimation`` command, in which case the default is the value used for the estimation).
+       Order of Taylor approximation. Acceptable values are ``1``,
+       ``2`` and ``3``. Note that for third order, ``k_order_solver``
+       option is implied and only empirical moments are available (you
+       must provide a value for ``periods`` option). Default: ``2``
+       (except after an ``estimation`` command, in which case the
+       default is the value used for the estimation).
 
     .. option:: k_order_solver
 
-        Use a k-order solver (implemented in C++) instead of the default Dynare solver. This option is not yet compatible with the ``bytecode`` option (see :ref:`model-decl`). Default: disabled for order 1 and 2, enabled otherwise.
+       Use a k-order solver (implemented in C++) instead of the
+       default Dynare solver. This option is not yet compatible with
+       the ``bytecode`` option (see :ref:`model-decl`). Default:
+       disabled for order 1 and 2, enabled otherwise.
 
     .. option:: periods = INTEGER
 
-        If different from zero, empirical moments will be computed instead of theoretical moments. The value of the option specifies the number of periods to use in the simulations. Values of the initval block, possibly recomputed by ``steady``, will be used as starting point for the simulation. The simulated endogenous variables are made available to the user in a vector for each variable and in the global matrix ``oo_.endo_simul`` (see :mvar:`oo_.endo_simul`). The simulated exogenous variables are made available in ``oo_.exo_simul`` (see :mvar:`oo_.exo_simul`). Default: ``0``.
+       If different from zero, empirical moments will be computed
+       instead of theoretical moments. The value of the option
+       specifies the number of periods to use in the
+       simulations. Values of the initval block, possibly recomputed
+       by ``steady``, will be used as starting point for the
+       simulation. The simulated endogenous variables are made
+       available to the user in a vector for each variable and in the
+       global matrix ``oo_.endo_simul`` (see
+       :mvar:`oo_.endo_simul`). The simulated exogenous variables are
+       made available in ``oo_.exo_simul`` (see
+       :mvar:`oo_.exo_simul`). Default: ``0``.
 
     .. option:: qz_criterium = DOUBLE
 
-        Value used to split stable from unstable eigenvalues in reordering the Generalized Schur decomposition used for solving 1st-order problems. Default: ``1.000001`` (except when estimating with ``lik_init`` option equal to ``1``: the default is ``0.999999`` in that case; see :ref:`estim`).
+       Value used to split stable from unstable eigenvalues in
+       reordering the Generalized Schur decomposition used for solving
+       1st-order problems. Default: ``1.000001`` (except when
+       estimating with ``lik_init`` option equal to ``1``: the default
+       is ``0.999999`` in that case; see :ref:`estim`).
 
     .. option:: qz_zero_threshold = DOUBLE
 
-        See :opt:`qz_zero_threshold <qz_zero_threshold = DOUBLE>`.
+       See :opt:`qz_zero_threshold <qz_zero_threshold = DOUBLE>`.
 
     .. option:: replic = INTEGER
 
-        Number of simulated series used to compute the IRFs. Default: ``1`` if ``order=1``, and ``50`` otherwise.
+       Number of simulated series used to compute the IRFs. Default:
+       ``1`` if ``order=1``, and ``50`` otherwise.
 
     .. option:: simul_replic = INTEGER
 
-        Number of series to simulate when empirical moments are requested (i.e. ``periods`` :math:`>` 0). Note that if this option is greater than 1, the additional series will not be used for computing the empirical moments but will simply be saved in binary form to the file ``FILENAME_simul``. Default: ``1``.
+       Number of series to simulate when empirical moments are
+       requested (i.e. ``periods`` :math:`>` 0). Note that if this
+       option is greater than 1, the additional series will not be
+       used for computing the empirical moments but will simply be
+       saved in binary form to the file ``FILENAME_simul``. Default:
+       ``1``.
 
     .. option:: solve_algo = INTEGER
 
-        See :ref:`solve_algo <solvalg>`, for the possible values and their meaning.
+       See :ref:`solve_algo <solvalg>`, for the possible values and
+       their meaning.
 
     .. option:: aim_solver
 
-        Use the Anderson-Moore Algorithm (AIM) to compute the decision rules, instead of using Dynare’s default method based on a generalized Schur decomposition. This option is only valid for first order approximation. See `AIM website`_ for more details on the algorithm.
+       Use the Anderson-Moore Algorithm (AIM) to compute the decision
+       rules, instead of using Dynare’s default method based on a
+       generalized Schur decomposition. This option is only valid for
+       first order approximation. See `AIM website`_ for more details
+       on the algorithm.
 
     .. option:: conditional_variance_decomposition = INTEGER
                 conditional_variance_decomposition = [INTEGER1:INTEGER2]
                 conditional_variance_decomposition = [INTEGER1 INTEGER2 ...]
 
-        Computes a conditional variance decomposition for the specified period(s). The periods must be strictly positive. Conditional variances are given by :math:`var(y_{t+k}\vert t)`. For period 1, the conditional variance decomposition provides the decomposition of the effects of shocks upon impact.
+       Computes a conditional variance decomposition for the specified
+       period(s). The periods must be strictly positive. Conditional
+       variances are given by :math:`var(y_{t+k}\vert t)`. For period
+       1, the conditional variance decomposition provides the
+       decomposition of the effects of shocks upon impact.
 
-        The results are stored in ``oo_.conditional_variance_decomposition`` (see :mvar:`oo_.conditional_variance_decomposition`). The variance decomposition is only conducted, if theoretical moments are requested, i.e. using the ``periods=0`` option. In case of ``order=2``, Dynare provides a second-order accurate approximation to the true second moments based on the linear terms of the second-order solution (see *Kim, Kim, Schaumburg and Sims (2008)*). Note that the unconditional variance decomposition (i.e. at horizon infinity) is automatically conducted if theoretical moments are requested and if ``nodecomposition`` is not set (see :mvar:`oo_.variance_decomposition`)
+       The results are stored in
+       ``oo_.conditional_variance_decomposition`` (see
+       :mvar:`oo_.conditional_variance_decomposition`). The variance
+       decomposition is only conducted, if theoretical moments are
+       requested, i.e. using the ``periods=0`` option. In case of
+       ``order=2``, Dynare provides a second-order accurate
+       approximation to the true second moments based on the linear
+       terms of the second-order solution (see *Kim, Kim, Schaumburg
+       and Sims (2008)*). Note that the unconditional variance
+       decomposition (i.e. at horizon infinity) is automatically
+       conducted if theoretical moments are requested and if
+       ``nodecomposition`` is not set (see
+       :mvar:`oo_.variance_decomposition`)
 
     .. option:: pruning
 
-        Discard higher order terms when iteratively computing simulations of the solution. At second order, Dynare uses the algorithm of *Kim, Kim, Schaumburg and Sims (2008)*, while at third order its generalization by *Andreasen, Fernández-Villaverde and Rubio-Ramírez (2013)* is used.
+       Discard higher order terms when iteratively computing
+       simulations of the solution. At second order, Dynare uses the
+       algorithm of *Kim, Kim, Schaumburg and Sims (2008)*, while at
+       third order its generalization by *Andreasen,
+       Fernández-Villaverde and Rubio-Ramírez (2013)* is used.
 
     .. option:: partial_information
 
-        Computes the solution of the model under partial information, along the lines of *Pearlman, Currie and Levine (1986)*. Agents are supposed to observe only some variables of the economy. The set of observed variables is declared using the ``varobs`` command. Note that if ``varobs`` is not present or contains all endogenous variables, then this is the full information case and this option has no effect. More references can be found `here <http://www.dynare.org/DynareWiki/PartialInformation>`_ .
+       Computes the solution of the model under partial information,
+       along the lines of *Pearlman, Currie and Levine (1986)*. Agents
+       are supposed to observe only some variables of the economy. The
+       set of observed variables is declared using the ``varobs``
+       command. Note that if ``varobs`` is not present or contains all
+       endogenous variables, then this is the full information case
+       and this option has no effect. More references can be found
+       `here <http://www.dynare.org/DynareWiki/PartialInformation>`_ .
 
     .. option:: sylvester = OPTION
 
-        Determines the algorithm used to solve the Sylvester equation for block decomposed model. Possible values for OPTION are:
+       Determines the algorithm used to solve the Sylvester equation
+       for block decomposed model. Possible values for OPTION are:
 
-        ``default``
+           ``default``
 
-            Uses the default solver for Sylvester equations (``gensylv``) based on Ondra Kamenik’s algorithm (see `here <http://www.dynare.org/documentation-and-support/dynarepp/sylvester.pdf/at_download/file>`_ for more information).
+                Uses the default solver for Sylvester equations
+                (``gensylv``) based on Ondra Kamenik’s algorithm (see
+                `here
+                <http://www.dynare.org/documentation-and-support/dynarepp/sylvester.pdf/at_download/file>`_
+                for more information).
 
-        ``fixed_point``
+           ``fixed_point``
 
-            Uses a fixed point algorithm to solve the Sylvester equation (``gensylv_fp``). This method is faster than the default one for large scale models.
+                Uses a fixed point algorithm to solve the Sylvester
+                equation (``gensylv_fp``). This method is faster than
+                the default one for large scale models.
 
-        Default value is ``default``.
+       |br| Default value is ``default``.
 
     .. option:: sylvester_fixed_point_tol = DOUBLE
 
-        It is the convergence criterion used in the fixed point Sylvester solver. Its default value is ``1e-12``.
+       The convergence criterion used in the fixed point
+       Sylvester solver. Its default value is ``1e-12``.
 
     .. option:: dr = OPTION
 
-        Determines the method used to compute the decision rule. Possible values for OPTION are:
+       Determines the method used to compute the decision
+       rule. Possible values for OPTION are:
 
-        ``default``
+           ``default``
 
-            Uses the default method to compute the decision rule based on the generalized Schur decomposition (see *Villemot (2011)* for more information).
+                Uses the default method to compute the decision rule
+                based on the generalized Schur decomposition (see
+                *Villemot (2011)* for more information).
 
-        ``cycle_reduction``
+           ``cycle_reduction``
 
-            Uses the cycle reduction algorithm to solve the polynomial equation for retrieving the coefficients associated to the endogenous variables in the decision rule. This method is faster than the default one for large scale models.
+                Uses the cycle reduction algorithm to solve the
+                polynomial equation for retrieving the coefficients
+                associated to the endogenous variables in the decision
+                rule. This method is faster than the default one for
+                large scale models.
 
-        ``logarithmic_reduction``
+           ``logarithmic_reduction``
 
-            Uses the logarithmic reduction algorithm to solve the polynomial equation for retrieving the coefficients associated to the endogenous variables in the decision rule. This method is in general slower than the ``cycle_reduction``.
+                Uses the logarithmic reduction algorithm to solve the
+                polynomial equation for retrieving the coefficients
+                associated to the endogenous variables in the decision
+                rule. This method is in general slower than the
+                ``cycle_reduction``.
 
-        Default value is ``default``.
+       |br| Default value is ``default``.
 
     .. option:: dr_cycle_reduction_tol = DOUBLE
 
-        The convergence criterion used in the cycle reduction algorithm. Its default value is ``1e-7``.
+       The convergence criterion used in the cycle reduction
+       algorithm. Its default value is ``1e-7``.
 
     .. option:: dr_logarithmic_reduction_tol = DOUBLE
 
-        The convergence criterion used in the logarithmic reduction algorithm. Its default value is ``1e-12``.
+       The convergence criterion used in the logarithmic reduction
+       algorithm. Its default value is ``1e-12``.
 
     .. option:: dr_logarithmic_reduction_maxiter = INTEGER
 
-        The maximum number of iterations used in the logarithmic reduction algorithm. Its default value is ``100``.
+       The maximum number of iterations used in the logarithmic
+       reduction algorithm. Its default value is ``100``.
 
     .. option:: loglinear
 
-        See :ref:`loglinear <logl>`. Note that ALL variables are log-transformed by using the Jacobian transformation, not only selected ones. Thus, you have to make sure that your variables have strictly positive steady states. ``stoch_simul`` will display the moments, decision rules, and impulse responses for the log-linearized variables. The decision rules saved in ``oo_.dr`` and the simulated variables will also be the ones for the log-linear variables.
+       See :ref:`loglinear <logl>`. Note that ALL variables are
+       log-transformed by using the Jacobian transformation, not only
+       selected ones. Thus, you have to make sure that your variables
+       have strictly positive steady states. ``stoch_simul`` will
+       display the moments, decision rules, and impulse responses for
+       the log-linearized variables. The decision rules saved in
+       ``oo_.dr`` and the simulated variables will also be the ones
+       for the log-linear variables.
 
     .. option:: tex
 
-        Requests the printing of results and graphs in TeX tables and graphics that can be later directly included in :math:`\LaTeX` files.
+       Requests the printing of results and graphs in TeX tables and
+       graphics that can be later directly included in :math:`\LaTeX`
+       files.
 
     .. option:: dr_display_tol = DOUBLE
 
-        Tolerance for the suppression of small terms in the display of decision rules. Rows where all terms are smaller than ``dr_display_tol`` are not displayed. Default value: ``1e-6``.
+       Tolerance for the suppression of small terms in the display of
+       decision rules. Rows where all terms are smaller than
+       ``dr_display_tol`` are not displayed. Default value: ``1e-6``.
 
     .. option:: contemporaneous_correlation
 
-        Saves the contemporaneous correlation between the endogenous variables in ``oo_.contemporaneous_correlation``. Requires the ``nocorr`` option not to be set.
+       Saves the contemporaneous correlation between the endogenous
+       variables in ``oo_.contemporaneous_correlation``. Requires the
+       ``nocorr`` option not to be set.
 
     .. option:: spectral_density
 
-        Triggers the computation and display of the theoretical spectral density of the (filtered) model variables. Results are stored in ´´oo_.SpectralDensity´´, defined below. Default: do not request spectral density estimates.
+       Triggers the computation and display of the theoretical
+       spectral density of the (filtered) model variables. Results are
+       stored in ´´oo_.SpectralDensity´´, defined below. Default: do
+       not request spectral density estimates.
 
 
     *Output*
 
-    This command sets ``oo_.dr``, ``oo_.mean``, ``oo_.var`` and ``oo_.autocorr``, which are described below.
+    This command sets ``oo_.dr``, ``oo_.mean``, ``oo_.var`` and
+    ``oo_.autocorr``, which are described below.
 
-    If the ``periods`` option is present, sets ``oo_.skewness``, ``oo_.kurtosis``, and ``oo_.endo_simul`` (see :mvar:`oo_.endo_simul`), and also saves the simulated variables in MATLAB/Octave vectors of the global workspace with the same name as the endogenous variables.
+    If the ``periods`` option is present, sets ``oo_.skewness``,
+    ``oo_.kurtosis``, and ``oo_.endo_simul`` (see
+    :mvar:`oo_.endo_simul`), and also saves the simulated variables in
+    MATLAB/Octave vectors of the global workspace with the same name
+    as the endogenous variables.
 
-    If option ``irf`` is different from zero, sets ``oo_.irfs`` (see below) and also saves the IRFs in MATLAB/Octave vectors of the global workspace (this latter way of accessing the IRFs is deprecated and will disappear in a future version).
+    If option ``irf`` is different from zero, sets ``oo_.irfs`` (see
+    below) and also saves the IRFs in MATLAB/Octave vectors of the
+    global workspace (this latter way of accessing the IRFs is
+    deprecated and will disappear in a future version).
 
-    If the option ``contemporaneous_correlation`` is different from ``0``, sets ``oo_.contemporaneous_correlation``, which is described below.
+    If the option ``contemporaneous_correlation`` is different from
+    ``0``, sets ``oo_.contemporaneous_correlation``, which is
+    described below.
 
-    :ex:
+    *Example*
 
         ::
 
@@ -3050,111 +3260,200 @@ Computing the stochastic solution
 
             stoch_simul;
 
-        Performs the simulation of the 2nd-order approximation of a model with a single stochastic shock ``e``, with a standard error of ``0.0348``.
+        Performs the simulation of the 2nd-order approximation of a
+        model with a single stochastic shock ``e``, with a standard
+        error of ``0.0348``.
 
-    :ex:
+    *Example*
 
         ::
 
             stoch_simul(irf=60) y k;
 
-        Performs the simulation of a model and displays impulse response functions on 60 periods for variables ``y`` and ``k``.
-
+        Performs the simulation of a model and displays impulse
+        response functions on 60 periods for variables ``y`` and
+        ``k``.
 
 .. matvar:: oo_.mean
 
-    After a run of ``stoch_simul``, contains the mean of the endogenous variables. Contains theoretical mean if the ``periods`` option is not present, and simulated mean otherwise. The variables are arranged in declaration order.
+   |br| After a run of ``stoch_simul``, contains the mean of the
+   endogenous variables. Contains theoretical mean if the ``periods``
+   option is not present, and simulated mean otherwise. The variables
+   are arranged in declaration order.
 
 .. matvar:: oo_.var
 
-    After a run of ``stoch_simul``, contains the variance-covariance of the endogenous variables. Contains theoretical variance if the ``periods`` option is not present (or an approximation thereof for ``order=2``), and simulated variance otherwise. The variables are arranged in declaration order.
+    |br| After a run of ``stoch_simul``, contains the
+    variance-covariance of the endogenous variables. Contains
+    theoretical variance if the ``periods`` option is not present (or
+    an approximation thereof for ``order=2``), and simulated variance
+    otherwise. The variables are arranged in declaration order.
 
 .. matvar:: oo_.skewness
 
-    After a run of ``stoch_simul`` contains the skewness (standardized third moment) of the simulated variables if the ``periods`` option is present. The variables are arranged in declaration order.
+    |br| After a run of ``stoch_simul`` contains the skewness
+    (standardized third moment) of the simulated variables if the
+    ``periods`` option is present. The variables are arranged in
+    declaration order.
 
 .. matvar:: oo_.kurtosis
 
-    After a run of ``stoch_simul`` contains the kurtosis (standardized fourth moment) of the simulated variables if the ``periods`` option is present. The variables are arranged in declaration order.
+   |br| After a run of ``stoch_simul`` contains the kurtosis (standardized
+   fourth moment) of the simulated variables if the ``periods`` option
+   is present. The variables are arranged in declaration order.
 
 .. matvar:: oo_.autocorr
 
-    After a run of ``stoch_simul``, contains a cell array of the autocorrelation matrices of the endogenous variables. The element number of the matrix in the cell array corresponds to the order of autocorrelation. The option ar specifies the number of autocorrelation matrices available. Contains theoretical autocorrelations if the ``periods`` option is not present (or an approximation thereof for ``order=2``), and simulated autocorrelations otherwise. The field is only created if stationary variables are present.
+    |br| After a run of ``stoch_simul``, contains a cell array of the
+    autocorrelation matrices of the endogenous variables. The element
+    number of the matrix in the cell array corresponds to the order of
+    autocorrelation. The option ar specifies the number of
+    autocorrelation matrices available. Contains theoretical
+    autocorrelations if the ``periods`` option is not present (or an
+    approximation thereof for ``order=2``), and simulated
+    autocorrelations otherwise. The field is only created if
+    stationary variables are present.
 
-    The element ``oo_.autocorr{i}(k,l)`` is equal to the correlation between :math:`y^k_t` and :math:`y^l_{t-i}`, where :math:`y^k` (resp. :math:`y^l`) is the :math:`k`-th (resp. :math:`l`-th) endogenous variable in the declaration order.
+    The element ``oo_.autocorr{i}(k,l)`` is equal to the correlation
+    between :math:`y^k_t` and :math:`y^l_{t-i}`, where :math:`y^k`
+    (resp. :math:`y^l`) is the :math:`k`-th (resp. :math:`l`-th)
+    endogenous variable in the declaration order.
 
-    Note that if theoretical moments have been requested, ``oo_.autocorr{i}`` is the same than ``oo_.gamma_y{i+1}``.
+    Note that if theoretical moments have been requested,
+    ``oo_.autocorr{i}`` is the same than ``oo_.gamma_y{i+1}``.
 
 .. matvar:: oo_.gamma_y
 
-    After a run of ``stoch_simul``, if theoretical moments have been requested (i.e. if the ``periods`` option is not present), this variable contains a cell array with the following values (where ``ar`` is the value of the option of the same name):
+    |br| After a run of ``stoch_simul``, if theoretical moments have been
+    requested (i.e. if the ``periods`` option is not present), this
+    variable contains a cell array with the following values (where
+    ``ar`` is the value of the option of the same name):
 
-    ``oo_.gamma{1}``
+        ``oo_.gamma{1}``
 
-        Variance/covariance matrix.
+            Variance/covariance matrix.
 
-    ``oo_.gamma{i+1}`` (for i=1:ar)
+        ``oo_.gamma{i+1}`` (for i=1:ar)
 
-        Autocorrelation function. See :mvar:`oo_.autocorr` for more details. **Beware**, this is the autocorrelation function, not the autocovariance function.
+            Autocorrelation function. See :mvar:`oo_.autocorr` for
+            more details. **Beware**, this is the autocorrelation
+            function, not the autocovariance function.
 
-    ``oo_.gamma{nar+2}``
+        ``oo_.gamma{nar+2}``
 
-        Unconditional variance decomposition, see mvar:`oo_.variance_decomposition`.
+            Unconditional variance decomposition, see
+            mvar:`oo_.variance_decomposition`.
 
-    ``oo_.gamma{nar+3}``
+        ``oo_.gamma{nar+3}``
 
-        If a second order approximation has been requested, contains the vector of the mean correction terms.
+            If a second order approximation has been requested,
+            contains the vector of the mean correction terms.
 
-    In case ``order=2``, the theoretical second moments are a second order accurate approximation of the true second moments, see conditional_variance_decomposition.
+            In case ``order=2``, the theoretical second moments are a
+            second order accurate approximation of the true second
+            moments, see conditional_variance_decomposition.
 
 .. matvar:: oo_.variance_decomposition
 
-    After a run of ``stoch_simul`` when requesting theoretical moments (``periods=0``), contains a matrix with the result of the unconditional variance decomposition (i.e. at horizon infinity). The first dimension corresponds to the endogenous variables (in the order of declaration) and the second dimension corresponds to exogenous variables (in the order of declaration). Numbers are in percent and sum up to 100 across columns.
+    |br| After a run of ``stoch_simul`` when requesting theoretical moments
+    (``periods=0``), contains a matrix with the result of the
+    unconditional variance decomposition (i.e. at horizon
+    infinity). The first dimension corresponds to the endogenous
+    variables (in the order of declaration) and the second dimension
+    corresponds to exogenous variables (in the order of
+    declaration). Numbers are in percent and sum up to 100 across
+    columns.
 
 .. matvar:: oo_.conditional_variance_decomposition
 
-    After a run of ``stoch_simul`` with the ``conditional_variance_decomposition`` option, contains a three-dimensional array with the result of the decomposition. The first dimension corresponds to forecast horizons (as declared with the option), the second dimension corresponds to endogenous variables (in the order of declaration), the third dimension corresponds to exogenous variables (in the order of declaration).
+    |br| After a run of ``stoch_simul`` with the
+    ``conditional_variance_decomposition`` option, contains a
+    three-dimensional array with the result of the decomposition. The
+    first dimension corresponds to forecast horizons (as declared with
+    the option), the second dimension corresponds to endogenous
+    variables (in the order of declaration), the third dimension
+    corresponds to exogenous variables (in the order of declaration).
 
 .. matvar:: oo_.contemporaneous_correlation
 
-    After a run of ``stoch_simul`` with the ``contemporaneous_correlation option``, contains theoretical contemporaneous correlations if the ``periods`` option is not present (or an approximation thereof for ``order=2``), and simulated contemporaneous correlations otherwise. The variables are arranged in declaration order.
+    |br| After a run of ``stoch_simul`` with the
+    ``contemporaneous_correlation option``, contains theoretical
+    contemporaneous correlations if the ``periods`` option is not
+    present (or an approximation thereof for ``order=2``), and
+    simulated contemporaneous correlations otherwise. The variables
+    are arranged in declaration order.
 
 .. matvar:: oo_.SpectralDensity
 
-    After a run of ``stoch_simul`` with option ``spectral_density``, contains the spectral density of the model variables. There will be a ``nvars`` by ``nfrequencies`` subfield ``freqs`` storing the respective frequency grid points ranging from :math:`0` to :math:`2\pi` and a same sized subfield ``density`` storing the corresponding density.
+    |br| After a run of ``stoch_simul`` with option
+    ``spectral_density``, contains the spectral density of the model
+    variables. There will be a ``nvars`` by ``nfrequencies`` subfield
+    ``freqs`` storing the respective frequency grid points ranging
+    from :math:`0` to :math:`2\pi` and a same sized subfield
+    ``density`` storing the corresponding density.
 
 .. matvar:: oo_.irfs
 
-    After a run of ``stoch_simul`` with option ``irf`` different from zero, contains the impulse responses, with the following naming convention: `VARIABLE_NAME_SHOCK_NAME`.
+   |br| After a run of ``stoch_simul`` with option ``irf`` different
+   from zero, contains the impulse responses, with the following
+   naming convention: `VARIABLE_NAME_SHOCK_NAME`.
 
-    For example, ``oo_.irfs.gnp_ea`` contains the effect on ``gnp`` of a one-standard deviation shock on ``ea``.
+    For example, ``oo_.irfs.gnp_ea`` contains the effect on ``gnp`` of
+    a one-standard deviation shock on ``ea``.
 
-The approximated solution of a model takes the form of a set of decision rules or transition equations expressing the current value of the endogenous variables of the model as function of the previous state of the model and shocks observed at the beginning of the period. The decision rules are stored in the structure ``oo_.dr`` which is described below.
+The approximated solution of a model takes the form of a set of
+decision rules or transition equations expressing the current value of
+the endogenous variables of the model as function of the previous
+state of the model and shocks observed at the beginning of the
+period. The decision rules are stored in the structure ``oo_.dr``
+which is described below.
 
 .. command:: extended_path ;
              extended_path (OPTIONS...);
 
-    ``extended_path`` solves a stochastic (i.e. rational expectations) model, using the extended path method presented by *Fair and Taylor (1983)*. Time series for the endogenous variables are generated by assuming that the agents believe that there will no more shocks in the following periods.
+    |br| Simulates a stochastic (i.e. rational expectations) model,
+    using the extended path method presented by *Fair and Taylor
+    (1983)*. Time series for the endogenous variables are generated by
+    assuming that the agents believe that there will no more shocks in
+    the following periods.
 
-    This function first computes a random path for the exogenous variables (stored in ``oo_.exo_simul``, see :mvar:`oo_.exo_simul`) and then computes the corresponding path for endogenous variables, taking the steady state as starting point. The result of the simulation is stored in ``oo_.endo_simul`` (see :mvar:`oo_.endo_simul`). Note that this simulation approach does not solve for the policy and transition equations but for paths for the endogenous variables.
+    This function first computes a random path for the exogenous
+    variables (stored in ``oo_.exo_simul``, see :mvar:`oo_.exo_simul`)
+    and then computes the corresponding path for endogenous variables,
+    taking the steady state as starting point. The result of the
+    simulation is stored in ``oo_.endo_simul`` (see
+    :mvar:`oo_.endo_simul`). Note that this simulation approach does
+    not solve for the policy and transition equations but for paths
+    for the endogenous variables.
 
     *Options*
 
     .. option:: periods = INTEGER
 
-        The number of periods for which the simulation is to be computed. No default value, mandatory option.
+       The number of periods for which the simulation is to be
+       computed. No default value, mandatory option.
 
     .. option:: solver_periods = INTEGER
 
-        The number of periods used to compute the solution of the perfect foresight at every iteration of the algorithm. Default: ``200``.
+       The number of periods used to compute the solution of the
+       perfect foresight at every iteration of the algorithm. Default:
+       ``200``.
 
     .. option:: order = INTEGER
 
-        If order is greater than ``0`` Dynare uses a gaussian quadrature to take into account the effects of future uncertainty. If ``order`` :math:`=S` then the time series for the endogenous variables are generated by assuming that the agents believe that there will no more shocks after period :math:`t+S`. This is an experimental feature and can be quite slow. Default: ``0``.
+       If order is greater than ``0`` Dynare uses a gaussian
+       quadrature to take into account the effects of future
+       uncertainty. If ``order`` :math:`=S` then the time series for
+       the endogenous variables are generated by assuming that the
+       agents believe that there will no more shocks after period
+       :math:`t+S`. This is an experimental feature and can be quite
+       slow. Default: ``0``.
 
     .. option:: hybrid
 
-        Use the constant of the second order perturbation reduced form to correct the paths generated by the (stochastic) extended path algorithm.
+       Use the constant of the second order perturbation reduced form
+       to correct the paths generated by the (stochastic) extended
+       path algorithm.
 
 
 Typology and ordering of variables
@@ -3164,31 +3463,65 @@ Dynare distinguishes four types of endogenous variables:
 
 *Purely backward (or purely predetermined) variables*
 
-    Those that appear only at current and past period in the model, but not at future period (i.e. at :math:`t` and :math:`t-1` but not :math:`t+1`). The number of such variables is equal to ``M_.npred``.
+    Those that appear only at current and past period in the model,
+    but not at future period (i.e. at :math:`t` and :math:`t-1` but
+    not :math:`t+1`). The number of such variables is equal to
+    ``M_.npred``.
 
 *Purely forward variables*
 
-    Those that appear only at current and future period in the model, but not at past period (i.e. at :math:`t` and :math:`t+1` but not :math:`t-1`). The number of such variables is stored in ``M_.nfwrd``.
+    Those that appear only at current and future period in the model,
+    but not at past period (i.e. at :math:`t` and :math:`t+1` but not
+    :math:`t-1`). The number of such variables is stored in
+    ``M_.nfwrd``.
 
 *Mixed variables*
 
-    Those that appear at current, past and future period in the model (i.e. at :math:`t`, :math:`t+1` and :math:`t-1`). The number of such variables is stored in ``M_.nboth``.
+    Those that appear at current, past and future period in the model
+    (i.e. at :math:`t`, :math:`t+1` and :math:`t-1`). The number of
+    such variables is stored in ``M_.nboth``.
 
 *Static variables*
 
-    Those that appear only at current, not past and future period in the model (i.e. only at :math:`t`, not at :math:`t+1` or :math:`t-1`). The number of such variables is stored in ``M_.nstatic``.
+    Those that appear only at current, not past and future period in
+    the model (i.e. only at :math:`t`, not at :math:`t+1` or
+    :math:`t-1`). The number of such variables is stored in
+    ``M_.nstatic``.
 
-Note that all endogenous variables fall into one of these four categories, since after the creation of auxiliary variables (see :ref:`aux-variables`), all endogenous have at most one lead and one lag. We therefore have the following identity:
+Note that all endogenous variables fall into one of these four
+categories, since after the creation of auxiliary variables (see
+:ref:`aux-variables`), all endogenous have at most one lead and one
+lag. We therefore have the following identity:
 
-    ``M_.npred + M_.both + M_.nfwrd + M_.nstatic = M_.endo_nbr``
+    .. code-block:: matlab
 
-Internally, Dynare uses two orderings of the endogenous variables: the order of declaration (which is reflected in ``M_.endo_names``), and an order based on the four types described above, which we will call the DR-order (“DR” stands for decision rules). Most of the time, the declaration order is used, but for elements of the decision rules, the DR-order is used.
+       M_.npred + M_.both + M_.nfwrd + M_.nstatic = M_.endo_nbr
 
-The DR-order is the following: static variables appear first, then purely backward variables, then mixed variables, and finally purely forward variables. Inside each category, variables are arranged according to the declaration order.
+Internally, Dynare uses two orderings of the endogenous variables: the
+order of declaration (which is reflected in ``M_.endo_names``), and an
+order based on the four types described above, which we will call the
+DR-order (“DR” stands for decision rules). Most of the time, the
+declaration order is used, but for elements of the decision rules, the
+DR-order is used.
 
-Variable ``oo_.dr.order_var`` maps DR-order to declaration order, and variable ``oo_.dr.inv_order_var`` contains the inverse map. In other words, the k-th variable in the DR-order corresponds to the endogenous variable numbered ``oo_.dr_order_var(k)`` in declaration order. Conversely, k-th declared variable is numbered ``oo_.dr.inv_order_var(k)`` in DR-order.
+The DR-order is the following: static variables appear first, then
+purely backward variables, then mixed variables, and finally purely
+forward variables. Inside each category, variables are arranged
+according to the declaration order.
 
-Finally, the state variables of the model are the purely backward variables and the mixed variables. They are ordered in DR-order when they appear in decision rules elements. There are ``M_.nspred = M_.npred + M_.nboth`` such variables. Similarly, one has ``M_.nsfwrd = M_.nfwrd + M_.nboth``, and ``M_.ndynamic = M_.nfwrd + M_.nboth + M_.npred``.
+Variable ``oo_.dr.order_var`` maps DR-order to declaration order, and
+variable ``oo_.dr.inv_order_var`` contains the inverse map. In other
+words, the k-th variable in the DR-order corresponds to the endogenous
+variable numbered ``oo_.dr_order_var(k)`` in declaration
+order. Conversely, k-th declared variable is numbered
+``oo_.dr.inv_order_var(k)`` in DR-order.
+
+Finally, the state variables of the model are the purely backward
+variables and the mixed variables. They are ordered in DR-order when
+they appear in decision rules elements. There are ``M_.nspred =
+M_.npred + M_.nboth`` such variables. Similarly, one has ``M_.nsfwrd =
+M_.nfwrd + M_.nboth``, and ``M_.ndynamic = M_.nfwrd + M_.nboth +
+M_.npred``.
 
 
 First-order approximation
@@ -3196,22 +3529,41 @@ First-order approximation
 
 The approximation has the stylized form:
 
-    :math:`y_t = y^s + A y^h_{t-1} + B u_t`
+.. math::
 
-where :math:`y^s` is the steady state value of :math:`y` and :math:`y^h_t=y_t-y^s`.
+       y_t = y^s + A y^h_{t-1} + B u_t
+
+where :math:`y^s` is the steady state value of :math:`y` and
+:math:`y^h_t=y_t-y^s`.
 
 The coefficients of the decision rules are stored as follows:
 
-    * :math:`y^s` is stored in ``oo_.dr.ys``. The vector rows correspond to all endogenous in the declaration order.
-    * :math:`A` is stored in ``oo_.dr.ghx``. The matrix rows correspond to all endogenous in DR-order. The matrix columns correspond to state variables in DR-order.
-    * :math:`B` is stored ``oo_.dr.ghu``. The matrix rows correspond to all endogenous in DR-order. The matrix columns correspond to exogenous variables in declaration order.
+* :math:`y^s` is stored in ``oo_.dr.ys``. The vector rows correspond
+  to all endogenous in the declaration order.
+* :math:`A` is stored in ``oo_.dr.ghx``. The matrix rows correspond to
+  all endogenous in DR-order. The matrix columns correspond to state
+  variables in DR-order.
+* :math:`B` is stored ``oo_.dr.ghu``. The matrix rows correspond to
+  all endogenous in DR-order. The matrix columns correspond to
+  exogenous variables in declaration order.
 
-Of course, the shown form of the approximation is only stylized, because it neglects the required different ordering in :math:`y^s` and :math:`y^h_t`. The precise form of the approximation that shows the way Dynare deals with differences between declaration and DR-order, is
+Of course, the shown form of the approximation is only stylized,
+because it neglects the required different ordering in :math:`y^s` and
+:math:`y^h_t`. The precise form of the approximation that shows the
+way Dynare deals with differences between declaration and DR-order, is
 
-:math:`y_t(oo\_.dr.order\_var) = y^s(oo\_.dr.order\_var) + A \cdot y_{t-1}(oo\_.dr.order\_var(k2)) -`
-:math:`y^s(oo\_.dr.order\_var(k2)) + B\cdot u_t`
+.. math::
 
-where :math:`k2` selects the state variables, :math:`y_t` and :math:`y^s` are in declaration order and the coefficient matrices are in DR-order. Effectively, all variables on the right hand side are brought into DR order for computations and then assigned to :math:`y_t` in declaration order.
+       y_t(\mathrm{oo\_.dr.order\_var}) =
+       y^s(\mathrm{oo\_.dr.order\_var}) + A \cdot
+       y_{t-1}(\mathrm{oo\_.dr.order\_var(k2)}) -
+       y^s(\mathrm{oo\_.dr.order\_var(k2)}) + B\cdot u_t
+
+where :math:`\mathrm{k2}` selects the state variables, :math:`y_t` and
+:math:`y^s` are in declaration order and the coefficient matrices are
+in DR-order. Effectively, all variables on the right hand side are
+brought into DR order for computations and then assigned to
+:math:`y_t` in declaration order.
 
 
 Second-order approximation
@@ -3219,34 +3571,95 @@ Second-order approximation
 
 The approximation has the form:
 
- :math:`y_t = y^s + 0.5 \Delta^2 + A y^h_{t-1} + B u_t + 0.5 C (y^h_{t-1}\otimes y^h_{t-1}) + 0.5 D (u_t \otimes u_t) + E (y^h_{t-1} \otimes u_t)`
+.. math::
 
-where :math:`y^s` is the steady state value of :math:`y`, :math:`y^h_t=y_t-y^s`, and :math:`\Delta^2` is the shift effect of the variance of future shocks. For the reordering required due to differences in declaration and DR order, see the first order approximation.
+       y_t = y^s + 0.5 \Delta^2 + A y^h_{t-1} + B u_t + 0.5 C (y^h_{t-1}\otimes y^h_{t-1}) + 0.5 D (u_t \otimes u_t) + E (y^h_{t-1} \otimes u_t)
 
-The coefficients of the decision rules are stored in the variables described for first order approximation, plus the following variables:
+where :math:`y^s` is the steady state value of :math:`y`,
+:math:`y^h_t=y_t-y^s`, and :math:`\Delta^2` is the shift effect of the
+variance of future shocks. For the reordering required due to
+differences in declaration and DR order, see the first order
+approximation.
 
-    * :math:`\Delta^2` is stored in ``oo_.dr.ghs2``. The vector rows correspond to all endogenous in DR-order.
-    * :math:`C` is stored in ``oo_.dr.ghxx``. The matrix rows correspond to all endogenous in DR-order. The matrix columns correspond to the Kronecker product of the vector of state variables in DR-order.
-    * :math:`D` is stored in ``oo_.dr.ghuu``. The matrix rows correspond to all endogenous in DR-order. The matrix columns correspond to the Kronecker product of exogenous variables in declaration order.
-    * :math:`E` is stored in ``oo_.dr.ghxu``. The matrix rows correspond to all endogenous in DR-order. The matrix columns correspond to the Kronecker product of the vector of state variables (in DR-order) by the vector of exogenous variables (in declaration order).
+The coefficients of the decision rules are stored in the variables
+described for first order approximation, plus the following variables:
 
+* :math:`\Delta^2` is stored in ``oo_.dr.ghs2``. The vector rows
+  correspond to all endogenous in DR-order.
+* :math:`C` is stored in ``oo_.dr.ghxx``. The matrix rows correspond
+  to all endogenous in DR-order. The matrix columns correspond to the
+  Kronecker product of the vector of state variables in DR-order.
+* :math:`D` is stored in ``oo_.dr.ghuu``. The matrix rows correspond
+  to all endogenous in DR-order. The matrix columns correspond to the
+  Kronecker product of exogenous variables in declaration order.
+* :math:`E` is stored in ``oo_.dr.ghxu``. The matrix rows correspond
+  to all endogenous in DR-order. The matrix columns correspond to the
+  Kronecker product of the vector of state variables (in DR-order) by
+  the vector of exogenous variables (in declaration order).
 
 Third-order approximation
 -------------------------
 
 The approximation has the form:
 
- :math:`y_t = y^s + G_0 + G_1 z_t + G_2 (z_t \otimes z_t) + G_3 (z_t \otimes z_t \otimes z_t)`
+.. math::
 
-where :math:`y^s` is the steady state value of :math:`y`, and :math:`z_t` is a vector consisting of the deviation from the steady state of the state variables (in DR-order) at date :math:`t-1` followed by the exogenous variables at date :math:`t` (in declaration order). The vector :math:`z_t` is therefore of size :math:`n_z` = ``M_.nspred`` + ``M_.exo_nbr``.
+       y_t = y^s + G_0 + G_1 z_t + G_2 (z_t \otimes z_t) + G_3 (z_t \otimes z_t \otimes z_t)
+
+where :math:`y^s` is the steady state value of :math:`y`, and
+:math:`z_t` is a vector consisting of the deviation from the steady
+state of the state variables (in DR-order) at date :math:`t-1`
+followed by the exogenous variables at date :math:`t` (in declaration
+order). The vector :math:`z_t` is therefore of size :math:`n_z` =
+``M_.nspred`` + ``M_.exo_nbr``.
 
 The coefficients of the decision rules are stored as follows:
 
-    * :math:`y^s` is stored in ``oo_.dr.ys``. The vector rows correspond to all endogenous in the declaration order.
-    * :math:`G_0` is stored in ``oo_.dr.g_0``. The vector rows correspond to all endogenous in DR-order.
-    * :math:`G_1` is stored in ``oo_.dr.g_1``. The matrix rows correspond to all endogenous in DR-order. The matrix columns correspond to state variables in DR-order, followed by exogenous in declaration order.
-    * :math:`G_2` is stored in ``oo_.dr.g_2``. The matrix rows correspond to all endogenous in DR-order. The matrix columns correspond to the Kronecker product of state variables (in DR-order), followed by exogenous (in declaration order). Note that the Kronecker product is stored in a folded way, i.e. symmetric elements are stored only once, which implies that the matrix has :math:`n_z(n_z+1)/2` columns. More precisely, each column of this matrix corresponds to a pair :math:`(i_1, i_2)` where each index represents an element of :math:`z_t` and is therefore between :math:`1` and :math:`n_z`. Only non-decreasing pairs are stored, i.e. those for which :math:`i_1 \leq i_2`. The columns are arranged in the lexicographical order of non-decreasing pairs. Also note that for those pairs where :math:`i_1 \neq i_2`, since the element is stored only once but appears two times in the unfolded :math:`G_2` matrix, it must be multiplied by 2 when computing the decision rules.
-    * :math:`G_3` is stored in ``oo_.dr.g_3``. The matrix rows correspond to all endogenous in DR-order. The matrix columns correspond to the third Kronecker power of state variables (in DR-order), followed by exogenous (in declaration order). Note that the third Kronecker power is stored in a folded way, i.e. symmetric elements are stored only once, which implies that the matrix has :math:`n_z(n_z+1)(n_z+2)/6` columns. More precisely, each column of this matrix corresponds to a tuple :math:`(i_1, i_2, i_3)` where each index represents an element of :math:`z_t` and is therefore between :math:`1` and :math:`n_z`. Only non-decreasing tuples are stored, i.e. those for which :math:`i_1 \leq i_2 \leq i_3`. The columns are arranged in the lexicographical order of non-decreasing tuples. Also note that for tuples that have three distinct indices (i.e. :math:`i_1 \neq i_2` and :math:`i_1 \neq i_3` and :math:`i_2 \neq i_3`), since these elements are stored only once but appears six times in the unfolded :math:`G_3` matrix, they must be multiplied by 6 when computing the decision rules. Similarly, for those tuples that have two equal indices (i.e. of the form :math:`(a,a,b)` or :math:`(a,b,a)` or :math:`(b,a,a)`), since these elements are stored only once but appears three times in the unfolded :math:`G_3` matrix, they must be multiplied by 3 when computing the decision rules.
+* :math:`y^s` is stored in ``oo_.dr.ys``. The vector rows correspond
+  to all endogenous in the declaration order.
+* :math:`G_0` is stored in ``oo_.dr.g_0``. The vector rows correspond
+  to all endogenous in DR-order.
+* :math:`G_1` is stored in ``oo_.dr.g_1``. The matrix rows correspond
+  to all endogenous in DR-order. The matrix columns correspond to
+  state variables in DR-order, followed by exogenous in declaration
+  order.
+* :math:`G_2` is stored in ``oo_.dr.g_2``. The matrix rows correspond
+  to all endogenous in DR-order. The matrix columns correspond to the
+  Kronecker product of state variables (in DR-order), followed by
+  exogenous (in declaration order). Note that the Kronecker product is
+  stored in a folded way, i.e. symmetric elements are stored only
+  once, which implies that the matrix has :math:`n_z(n_z+1)/2`
+  columns. More precisely, each column of this matrix corresponds to a
+  pair :math:`(i_1, i_2)` where each index represents an element of
+  :math:`z_t` and is therefore between :math:`1` and :math:`n_z`. Only
+  non-decreasing pairs are stored, i.e. those for which :math:`i_1
+  \leq i_2`. The columns are arranged in the lexicographical order of
+  non-decreasing pairs. Also note that for those pairs where
+  :math:`i_1 \neq i_2`, since the element is stored only once but
+  appears two times in the unfolded :math:`G_2` matrix, it must be
+  multiplied by 2 when computing the decision rules.
+* :math:`G_3` is stored in ``oo_.dr.g_3``. The matrix rows correspond
+  to all endogenous in DR-order. The matrix columns correspond to the
+  third Kronecker power of state variables (in DR-order), followed by
+  exogenous (in declaration order). Note that the third Kronecker
+  power is stored in a folded way, i.e. symmetric elements are stored
+  only once, which implies that the matrix has
+  :math:`n_z(n_z+1)(n_z+2)/6` columns. More precisely, each column of
+  this matrix corresponds to a tuple :math:`(i_1, i_2, i_3)` where
+  each index represents an element of :math:`z_t` and is therefore
+  between :math:`1` and :math:`n_z`. Only non-decreasing tuples are
+  stored, i.e. those for which :math:`i_1 \leq i_2 \leq i_3`. The
+  columns are arranged in the lexicographical order of non-decreasing
+  tuples. Also note that for tuples that have three distinct indices
+  (i.e. :math:`i_1 \neq i_2` and :math:`i_1 \neq i_3` and :math:`i_2
+  \neq i_3`), since these elements are stored only once but appears
+  six times in the unfolded :math:`G_3` matrix, they must be
+  multiplied by 6 when computing the decision rules. Similarly, for
+  those tuples that have two equal indices (i.e. of the form
+  :math:`(a,a,b)` or :math:`(a,b,a)` or :math:`(b,a,a)`), since these
+  elements are stored only once but appears three times in the
+  unfolded :math:`G_3` matrix, they must be multiplied by 3 when
+  computing the decision rules.
 
 
 .. _estim:
