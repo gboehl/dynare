@@ -2483,117 +2483,217 @@ Getting information about the model
 Deterministic simulation
 ========================
 
-When the framework is deterministic, Dynare can be used for models with the assumption of perfect foresight. Typically, the system is supposed to be in a state of equilibrium before a period ‘1’ when the news of a contemporaneous or of a future shock is learned by the agents in the model. The purpose of the simulation is to describe the reaction in anticipation of, then in reaction to the shock, until the system returns to the old or to a new state of equilibrium. In most models, this return to equilibrium is only an asymptotic phenomenon, which one must approximate by an horizon of simulation far enough in the future. Another exercise for which Dynare is well suited is to study the transition path to a new equilibrium following a permanent shock. For deterministic simulations, the numerical problem consists of solving a nonlinar system of simultaneous equations in n endogenous variables in T periods. Dynare offers several algorithms for solving this problem, which can be chosen via the ``stack_solve_algo`` option. By default (``stack_solve_algo=0``), Dynare uses a Newton-type method to solve the simultaneous equation system. Because the resulting Jacobian is in the order of ``n`` by ``T`` and hence will be very large for long simulations with many variables, Dynare makes use of the sparse matrix capacities of MATLAB/Octave. A slower but potentially less memory consuming alternative (``stack_solve_algo=6``) is based on a Newton-type algorithm first proposed by *Laffargue (1990)* and *Boucekkine (1995)*, which uses relaxation techniques. Thereby, the algorithm avoids ever storing the full Jacobian. The details of the algorithm can be found in *Juillard (1996)*. The third type of algorithms makes use of block decomposition techniques (divide-and-conquer methods) that exploit the structure of the model. The principle is to identify recursive and simultaneous blocks in the model structure and use this information to aid the solution process. These solution algorithms can provide a significant speed-up on large models.
+When the framework is deterministic, Dynare can be used for models
+with the assumption of perfect foresight. Typically, the system is
+supposed to be in a state of equilibrium before a period ‘1’ when the
+news of a contemporaneous or of a future shock is learned by the
+agents in the model. The purpose of the simulation is to describe the
+reaction in anticipation of, then in reaction to the shock, until the
+system returns to the old or to a new state of equilibrium. In most
+models, this return to equilibrium is only an asymptotic phenomenon,
+which one must approximate by an horizon of simulation far enough in
+the future. Another exercise for which Dynare is well suited is to
+study the transition path to a new equilibrium following a permanent
+shock. For deterministic simulations, the numerical problem consists
+of solving a nonlinar system of simultaneous equations in n endogenous
+variables in T periods. Dynare offers several algorithms for solving
+this problem, which can be chosen via the ``stack_solve_algo``
+option. By default (``stack_solve_algo=0``), Dynare uses a Newton-type
+method to solve the simultaneous equation system. Because the
+resulting Jacobian is in the order of ``n`` by ``T`` and hence will be
+very large for long simulations with many variables, Dynare makes use
+of the sparse matrix capacities of MATLAB/Octave. A slower but
+potentially less memory consuming alternative (``stack_solve_algo=6``)
+is based on a Newton-type algorithm first proposed by *Laffargue
+(1990)* and *Boucekkine (1995)*, which uses relaxation
+techniques. Thereby, the algorithm avoids ever storing the full
+Jacobian. The details of the algorithm can be found in *Juillard
+(1996)*. The third type of algorithms makes use of block decomposition
+techniques (divide-and-conquer methods) that exploit the structure of
+the model. The principle is to identify recursive and simultaneous
+blocks in the model structure and use this information to aid the
+solution process. These solution algorithms can provide a significant
+speed-up on large models.
 
 .. command:: perfect_foresight_setup ;
              perfect_foresight_setup (OPTIONS...);
 
-    Prepares a perfect foresight simulation, by extracting the information in the ``initval``, ``endval`` and ``shocks`` blocks and converting them into simulation paths for exogenous and endogenous variables.
+    |br| Prepares a perfect foresight simulation, by extracting the
+    information in the ``initval``, ``endval`` and ``shocks`` blocks
+    and converting them into simulation paths for exogenous and
+    endogenous variables.
 
-    This command must always be called before running the simulation with ``perfect_foresight_solver``.
+    This command must always be called before running the simulation
+    with ``perfect_foresight_solver``.
 
     *Options*
 
     .. option:: periods = INTEGER
 
-        Number of periods of the simulation.
+       Number of periods of the simulation.
 
     .. option:: datafile = FILENAME
 
-        If the variables of the model are not constant over time, their initial values, stored in a text file, could be loaded, using that option, as initial values before a deterministic simulation.
+       If the variables of the model are not constant over time, their
+       initial values, stored in a text file, could be loaded, using
+       that option, as initial values before a deterministic
+       simulation.
 
     *Output*
 
-    The paths for the exogenous variables are stored into ``oo_.exo_simul``.
+    The paths for the exogenous variables are stored into
+    ``oo_.exo_simul``.
 
-    The initial and terminal conditions for the endogenous variables and the initial guess for the path of endogenous variables are stored into ``oo_.endo_simul``.
+    The initial and terminal conditions for the endogenous variables
+    and the initial guess for the path of endogenous variables are
+    stored into ``oo_.endo_simul``.
 
 
 .. command:: perfect_foresight_solver ;
              perfect_foresight_solver (OPTIONS...);
 
-    Computes the perfect foresight (or deterministic) simulation of the model.
+    |br| Computes the perfect foresight (or deterministic) simulation
+    of the model.
 
-    Note that ``perfect_foresight_setup`` must be called before this command, in order to setup the environment for the simulation.
+    Note that ``perfect_foresight_setup`` must be called before this
+    command, in order to setup the environment for the simulation.
 
     *Options*
 
     .. option:: maxit = INTEGER
 
-        Determines the maximum number of iterations used in the non-linear solver. The default value of ``maxit`` is ``50``.
+       Determines the maximum number of iterations used in the
+       non-linear solver. The default value of ``maxit`` is ``50``.
 
     .. option:: tolf = DOUBLE
 
-        Convergence criterion for termination based on the function value. Iteration will cease when it proves impossible to improve the function value by more than ``tolf``. Default: ``1e-5``
+       Convergence criterion for termination based on the function
+       value. Iteration will cease when it proves impossible to
+       improve the function value by more than ``tolf``. Default:
+       ``1e-5``
 
     .. option:: tolx = DOUBLE
 
-        Convergence criterion for termination based on the change in the function argument. Iteration will cease when the solver attempts to take a step that is smaller than ``tolx``. Default: ``1e-5``
+       Convergence criterion for termination based on the change in
+       the function argument. Iteration will cease when the solver
+       attempts to take a step that is smaller than ``tolx``. Default:
+       ``1e-5``
 
     .. option:: stack_solve_algo = INTEGER
 
-        Algorithm used for computing the solution. Possible values are:
+       Algorithm used for computing the solution. Possible values are:
 
-        ``0``
+           ``0``
 
-            Newton method to solve simultaneously all the equations for every period, using sparse matrices (Default).
+               Newton method to solve simultaneously all the equations for
+               every period, using sparse matrices (Default).
 
-        ``1``
+           ``1``
 
-            Use a Newton algorithm with a sparse LU solver at each iteration (requires ``bytecode`` and/or ``block`` option, see :ref:`model-decl`).
+               Use a Newton algorithm with a sparse LU solver at each
+               iteration (requires ``bytecode`` and/or ``block``
+               option, see :ref:`model-decl`).
 
-        ``2``
+           ``2``
 
-            Use a Newton algorithm with a Generalized Minimal Residual (GMRES) solver at each iteration (requires ``bytecode`` and/or ``block`` option, see :ref:`model-decl`; not available under Octave)
+               Use a Newton algorithm with a Generalized Minimal
+               Residual (GMRES) solver at each iteration (requires
+               ``bytecode`` and/or ``block`` option, see
+               :ref:`model-decl`; not available under Octave)
 
-        ``3``
+           ``3``
 
-            Use a Newton algorithm with a Stabilized Bi-Conjugate Gradient (BICGSTAB) solver at each iteration (requires ``bytecode`` and/or ``block`` option, see :ref:`model-decl`).
+               Use a Newton algorithm with a Stabilized Bi-Conjugate
+               Gradient (BICGSTAB) solver at each iteration (requires
+               ``bytecode`` and/or ``block`` option, see
+               :ref:`model-decl`).
 
-        ``4``
+           ``4``
 
-            Use a Newton algorithm with a optimal path length at each iteration (requires ``bytecode`` and/or ``block`` option, see :ref:`model-decl`).
+               Use a Newton algorithm with a optimal path length at
+               each iteration (requires ``bytecode`` and/or ``block``
+               option, see :ref:`model-decl`).
 
-        ``5``
+           ``5``
 
-            Use a Newton algorithm with a sparse Gaussian elimination (SPE) solver at each iteration (requires ``bytecode`` option, see :ref:`model-decl`).
+               Use a Newton algorithm with a sparse Gaussian
+               elimination (SPE) solver at each iteration (requires
+               ``bytecode`` option, see :ref:`model-decl`).
 
-        ``6``
+           ``6``
 
-            Use the historical algorithm proposed in *Juillard (1996)*: it is slower than ``stack_solve_algo=0``, but may be less memory consuming on big models (not available with ``bytecode`` and/or ``block`` options).
+               Use the historical algorithm proposed in *Juillard
+               (1996)*: it is slower than ``stack_solve_algo=0``, but
+               may be less memory consuming on big models (not
+               available with ``bytecode`` and/or ``block`` options).
 
-        ``7``
+           ``7``
 
-            Allows the user to solve the perfect foresight model with the solvers available through option ``solve_algo`` (See :ref:`solve_algo <solvalg>` for a list of possible values, note that values 5, 6, 7 and 8, which require ``bytecode`` and/or ``block`` options, are not allowed). For instance, the following commands::
+               Allows the user to solve the perfect foresight model
+               with the solvers available through option
+               ``solve_algo`` (See :ref:`solve_algo <solvalg>` for a
+               list of possible values, note that values 5, 6, 7 and
+               8, which require ``bytecode`` and/or ``block`` options,
+               are not allowed). For instance, the following
+               commands::
 
-                perfect_foresight_setup(periods=400);
-                perfect_foresight_solver(stack_solve_algo=7, solve_algo=9)
+                    perfect_foresight_setup(periods=400);
+                    perfect_foresight_solver(stack_solve_algo=7, solve_algo=9)
 
-            trigger the computation of the solution with a trust region algorithm.
+               trigger the computation of the solution with a trust
+               region algorithm.
 
     .. option:: robust_lin_solve
 
-        Triggers the use of a robust linear solver for the default ``stack_solve_algo=0``.
+       Triggers the use of a robust linear solver for the default
+       ``stack_solve_algo=0``.
 
     .. option:: solve_algo
 
-        See :ref:`solve_algo <solvalg>`. Allows selecting the solver used with ``stack_solve_algo=7``.
+       See :ref:`solve_algo <solvalg>`. Allows selecting the solver
+       used with ``stack_solve_algo=7``.
 
     .. option:: no_homotopy
 
-        By default, the perfect foresight solver uses a homotopy technique if it cannot solve the problem. Concretely, it divides the problem into smaller steps by diminishing the size of shocks and increasing them progressively until the problem converges. This option tells Dynare to disable that behavior. Note that the homotopy is not implemented for purely forward or backward models.
+       By default, the perfect foresight solver uses a homotopy
+       technique if it cannot solve the problem. Concretely, it
+       divides the problem into smaller steps by diminishing the size
+       of shocks and increasing them progressively until the problem
+       converges. This option tells Dynare to disable that
+       behavior. Note that the homotopy is not implemented for purely
+       forward or backward models.
 
     .. option:: markowitz = DOUBLE
 
-        Value of the Markowitz criterion, used to select the pivot. Only used when ``stack_solve_algo = 5``. Default: ``0.5``.
+       Value of the Markowitz criterion, used to select the
+       pivot. Only used when ``stack_solve_algo = 5``. Default:
+       ``0.5``.
 
     .. option:: minimal_solving_periods = INTEGER
 
-        Specify the minimal number of periods where the model has to be solved, before using a constant set of operations for the remaining periods. Only used when ``stack_solve_algo = 5``. Default: ``1``.
+       Specify the minimal number of periods where the model has to be
+       solved, before using a constant set of operations for the
+       remaining periods. Only used when ``stack_solve_algo =
+       5``. Default: ``1``.
 
     .. option:: lmmcp
 
-        Solves the perfect foresight model with a Levenberg-Marquardt mixed complementarity problem (LMMCP) solver (*Kanzow and Petra (2004)*), which allows to consider inequality constraints on the endogenous variables (such as a ZLB on the nominal interest rate or a model with irreversible investment). This option is equivalent to ``stack_solve_algo=7`` **and** ``solve_algo=10``. Using the LMMCP solver requires a particular model setup as the goal is to get rid of any min/max operators and complementary slackness conditions that might introduce a singularity into the Jacobian. This is done by attaching an equation tag (see :ref:`model-decl`) with the ``mcp`` keyword to affected equations. This tag states that the equation to which the tag is attached has to hold unless the expression within the tag is binding. For instance, a ZLB on the nominal interest rate would be specified as follows in the model block::
+       Solves the perfect foresight model with a Levenberg-Marquardt
+       mixed complementarity problem (LMMCP) solver (*Kanzow and Petra
+       (2004)*), which allows to consider inequality constraints on
+       the endogenous variables (such as a ZLB on the nominal interest
+       rate or a model with irreversible investment). This option is
+       equivalent to ``stack_solve_algo=7`` **and**
+       ``solve_algo=10``. Using the LMMCP solver requires a particular
+       model setup as the goal is to get rid of any min/max operators
+       and complementary slackness conditions that might introduce a
+       singularity into the Jacobian. This is done by attaching an
+       equation tag (see :ref:`model-decl`) with the ``mcp`` keyword
+       to affected equations. This tag states that the equation to
+       which the tag is attached has to hold unless the expression
+       within the tag is binding. For instance, a ZLB on the nominal
+       interest rate would be specified as follows in the model
+       block::
 
             model;
                ...
@@ -2602,44 +2702,87 @@ When the framework is deterministic, Dynare can be used for models with the assu
                ...
             end;
 
-        where ``1.94478`` is the steady state level of the nominal interest rate and ``r`` is the nominal interest rate in deviation from the steady state. This construct implies that the Taylor rule is operative, unless the implied interest rate ``r<=-1.94478``, in which case the ``r`` is fixed at ``-1.94478`` (thereby being equivalent to a complementary slackness condition). By restricting the value of ``r`` coming out of this equation, the ``mcp`` tag also avoids using ``max(r,-1.94478)`` for other occurrences of ``r`` in the rest of the model. It is important to keep in mind that, because the ``mcp`` tag effectively replaces a complementary slackness condition, it cannot be simply attached to any equation. Rather, it must be attached to the correct affected equation as otherwise the solver will solve a different problem than originally intended.
+       where ``1.94478`` is the steady state level of the nominal
+       interest rate and ``r`` is the nominal interest rate in
+       deviation from the steady state. This construct implies that
+       the Taylor rule is operative, unless the implied interest rate
+       ``r<=-1.94478``, in which case the ``r`` is fixed at
+       ``-1.94478`` (thereby being equivalent to a complementary
+       slackness condition). By restricting the value of ``r`` coming
+       out of this equation, the ``mcp`` tag also avoids using
+       ``max(r,-1.94478)`` for other occurrences of ``r`` in the rest
+       of the model. It is important to keep in mind that, because the
+       ``mcp`` tag effectively replaces a complementary slackness
+       condition, it cannot be simply attached to any
+       equation. Rather, it must be attached to the correct affected
+       equation as otherwise the solver will solve a different problem
+       than originally intended.
 
-        Note that in the current implementation, the content of the ``mcp`` equation tag is not parsed by the preprocessor. The inequalities must therefore be as simple as possible: an endogenous variable, followed by a relational operator, followed by a number (not a variable, parameter or expression).
+       Note that in the current implementation, the content of the
+       ``mcp`` equation tag is not parsed by the preprocessor. The
+       inequalities must therefore be as simple as possible: an
+       endogenous variable, followed by a relational operator,
+       followed by a number (not a variable, parameter or expression).
 
     .. option:: endogenous_terminal_period
 
-        The number of periods is not constant across Newton iterations when solving the perfect foresight model. The size of the nonlinear system of equations is reduced by removing the portion of the paths (and associated equations) for which the solution has already been identified (up to the tolerance parameter). This strategy can be interpreted as a mix of the shooting and relaxation approaches. Note that round off errors are more important with this mixed strategy (user should check the reported value of the maximum absolute error). Only available with option ``stack_solve_algo==0``.
+       The number of periods is not constant across Newton iterations
+       when solving the perfect foresight model. The size of the
+       nonlinear system of equations is reduced by removing the
+       portion of the paths (and associated equations) for which the
+       solution has already been identified (up to the tolerance
+       parameter). This strategy can be interpreted as a mix of the
+       shooting and relaxation approaches. Note that round off errors
+       are more important with this mixed strategy (user should check
+       the reported value of the maximum absolute error). Only
+       available with option ``stack_solve_algo==0``.
 
 
     .. option:: linear_approximation
 
-        Solves the linearized version of the perfect foresight model. The model must be stationary. Only available with option ``stack_solve_algo==0``.
+       Solves the linearized version of the perfect foresight
+       model. The model must be stationary. Only available with option
+       ``stack_solve_algo==0``.
 
     *Output*
 
-    The simulated endogenous variables are available in global matrix ``oo_.endo_simul``.
+    The simulated endogenous variables are available in global matrix
+    ``oo_.endo_simul``.
 
 
 .. command:: simul ;
              simul (OPTIONS...);
 
-    Short-form command for triggering the computation of a deterministic simulation of the model. It is strictly equivalent to a call to ``perfect_foresight_setup`` followed by a call to ``perfect_foresight_solver``.
+    |br| Short-form command for triggering the computation of a
+    deterministic simulation of the model. It is strictly equivalent
+    to a call to ``perfect_foresight_setup`` followed by a call to
+    ``perfect_foresight_solver``.
 
     *Options*
 
-    Accepts all the options of ``perfect_foresight_setup`` and ``perfect_foresight_solver``.
+    Accepts all the options of ``perfect_foresight_setup`` and
+    ``perfect_foresight_solver``.
 
 .. matvar:: oo_.endo_simul
 
-    This variable stores the result of a deterministic simulation (computed by ``perfect_foresight_solver`` or ``simul``) or of a stochastic simulation (computed by ``stoch_simul`` with the periods option or by ``extended_path``).
-
-    The variables are arranged row by row, in order of declaration (as in ``M_.endo_names``). Note that this variable also contains initial and terminal conditions, so it has more columns than the value of ``periods`` option.
+    |br| This variable stores the result of a deterministic simulation
+    (computed by ``perfect_foresight_solver`` or ``simul``) or of a
+    stochastic simulation (computed by ``stoch_simul`` with the
+    periods option or by ``extended_path``). The variables are
+    arranged row by row, in order of declaration (as in
+    ``M_.endo_names``). Note that this variable also contains initial
+    and terminal conditions, so it has more columns than the value of
+    ``periods`` option.
 
 .. matvar:: oo_.exo_simul
 
-    This variable stores the path of exogenous variables during a simulation (computed by ``perfect_foresight_solver``, ``simul``, ``stoch_simul`` or ``extended_path``).
-
-    The variables are arranged in columns, in order of declaration (as in ``M_.exo_names``). Periods are in rows. Note that this convention regarding columns and rows is the opposite of the convention for ``oo_.endo_simul``!
+    |br| This variable stores the path of exogenous variables during a
+    simulation (computed by ``perfect_foresight_solver``, ``simul``,
+    ``stoch_simul`` or ``extended_path``). The variables are arranged
+    in columns, in order of declaration (as in
+    ``M_.exo_names``). Periods are in rows. Note that this convention
+    regarding columns and rows is the opposite of the convention for
+    ``oo_.endo_simul``!
 
 
 .. _stoch-sol:
