@@ -34,8 +34,8 @@ observed:
 * INTEGER_VECTOR indicates a vector of integer numbers separated by
   spaces, enclosed by square brackets;
 * DOUBLE indicates a double precision number. The following syntaxes
-  are valid: ``1.1e3, 1.1E3, 1.1d3, 1.1D3``. In some places, infinite
-  Values ``Inf`` and ``-Inf`` are also allowed;
+  are valid: ``1.1e3``, ``1.1E3``, ``1.1d3``, ``1.1D3``. In some
+  places, infinite Values ``Inf`` and ``-Inf`` are also allowed;
 * NUMERICAL_VECTOR indicates a vector of numbers separated by spaces,
   enclosed by square brackets;
 * EXPRESSION indicates a mathematical expression valid outside the
