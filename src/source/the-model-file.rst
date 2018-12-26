@@ -2342,9 +2342,20 @@ Getting information about the model
 .. command:: check ;
              check (solve_algo = INTEGER);
 
-    Computes the eigenvalues of the model linearized around the values specified by the last ``initval``, ``endval`` or ``steady`` statement. Generally, the eigenvalues are only meaningful if the linearization is done around a steady state of the model. It is a device for local analysis in the neighborhood of this steady state.
+    |br| Computes the eigenvalues of the model linearized around the
+    values specified by the last ``initval``, ``endval`` or ``steady``
+    statement. Generally, the eigenvalues are only meaningful if the
+    linearization is done around a steady state of the model. It is a
+    device for local analysis in the neighborhood of this steady
+    state.
 
-    A necessary condition for the uniqueness of a stable equilibrium in the neighborhood of the steady state is that there are as many eigenvalues larger than one in modulus as there are forward looking variables in the system. An additional rank condition requires that the square submatrix of the right Schur vectors corresponding to the forward looking variables (jumpers) and to the explosive eigenvalues must have full rank.
+    A necessary condition for the uniqueness of a stable equilibrium
+    in the neighborhood of the steady state is that there are as many
+    eigenvalues larger than one in modulus as there are forward
+    looking variables in the system. An additional rank condition
+    requires that the square submatrix of the right Schur vectors
+    corresponding to the forward looking variables (jumpers) and to
+    the explosive eigenvalues must have full rank.
 
     *Options*
 
@@ -2352,11 +2363,14 @@ Getting information about the model
 
     .. option:: solve_algo = INTEGER
 
-        See :ref:`solve_algo <solvalg>`, for the possible values and their meaning.
+        See :ref:`solve_algo <solvalg>`, for the possible values and
+        their meaning.
 
     .. option:: qz_zero_threshold = DOUBLE
 
-        Value used to test if a generalized eigenvalue is :math:`0/0` in the generalized Schur decomposition (in which case the model does not admit a unique solution). Default: ``1e-6``.
+        Value used to test if a generalized eigenvalue is :math:`0/0`
+        in the generalized Schur decomposition (in which case the
+        model does not admit a unique solution). Default: ``1e-6``.
 
     *Output*
 
@@ -2369,58 +2383,99 @@ Getting information about the model
 
 .. command:: model_diagnostics ;
 
-    This command performs various sanity checks on the model, and prints a message if a problem is detected (missing variables at current period, invalid steady state, singular Jacobian of static model).
+    |br| This command performs various sanity checks on the model, and
+    prints a message if a problem is detected (missing variables at
+    current period, invalid steady state, singular Jacobian of static
+    model).
 
 .. command:: model_info ;
              model_info (OPTIONS...);
 
-    This command provides information about:
+    |br| This command provides information about:
 
-        * The normalization of the model: an endogenous variable is attributed to each equation of the model;
-        * The block structure of the model: for each block ``model_info`` indicates its type, the equations number and endogenous variables belonging to this block.
+    * The normalization of the model: an endogenous variable is
+      attributed to each equation of the model;
+    * The block structure of the model: for each block ``model_info``
+      indicates its type, the equations number and endogenous
+      variables belonging to this block.
 
-    This command can only be used in conjunction with the ``block`` option of the ``model`` block.
+    This command can only be used in conjunction with the ``block``
+    option of the ``model`` block.
 
-    There are five different types of blocks depending on the simulation method used:
+    There are five different types of blocks depending on the
+    simulation method used:
 
-    ``‘EVALUATE FORWARD’``
+    * ‘EVALUATE FORWARD’
 
-        In this case the block contains only equations where endogenous variable attributed to the equation appears currently on the left hand side and where no forward looking endogenous variables appear. The block has the form: :math:`y_{j,t} = f_j(y_t, y_{t-1}, \ldots, y_{t-k})`.
+      In this case the block contains only equations where
+      endogenous variable attributed to the equation appears
+      currently on the left hand side and where no forward looking
+      endogenous variables appear. The block has the form:
+      :math:`y_{j,t} = f_j(y_t, y_{t-1}, \ldots, y_{t-k})`.
 
-    ``‘EVALUATE BACKWARD’``
+    * ‘EVALUATE BACKWARD’
 
-        The block contains only equations where endogenous variable attributed to the equation appears currently on the left hand side and where no backward looking endogenous variables appear. The block has the form: :math:`y_{j,t} = f_j(y_t, y_{t+1}, \ldots, y_{t+k})`.
+      The block contains only equations where endogenous variable
+      attributed to the equation appears currently on the left hand
+      side and where no backward looking endogenous variables
+      appear. The block has the form: :math:`y_{j,t} = f_j(y_t,
+      y_{t+1}, \ldots, y_{t+k})`.
 
-    ``‘SOLVE BACKWARD x’``
+    * ‘SOLVE BACKWARD x’
 
-        The block contains only equations where endogenous variable attributed to the equation does not appear currently on the left hand side and where no forward looking endogenous variables appear. The block has the form: :math:`g_j(y_{j,t}, y_t, y_{t-1}, \ldots, y_{t-k})=0`. x is equal to ``‘SIMPLE’`` if the block has only one equation. If several equation appears in the block, x is equal to ``‘COMPLETE’``.
+      The block contains only equations where endogenous variable
+      attributed to the equation does not appear currently on the
+      left hand side and where no forward looking endogenous
+      variables appear. The block has the form: :math:`g_j(y_{j,t},
+      y_t, y_{t-1}, \ldots, y_{t-k})=0`. x is equal to ‘SIMPLE’
+      if the block has only one equation. If several equation
+      appears in the block, x is equal to ‘COMPLETE’.
 
-    ``‘SOLVE FORWARD x’``
+    * ‘SOLVE FORWARD x’
 
-        The block contains only equations where endogenous variable attributed to the equation does not appear currently on the left hand side and where no backward looking endogenous variables appear. The block has the form: :math:`g_j(y_{j,t}, y_t, y_{t+1}, \ldots, y_{t+k})=0`. x is equal to ``‘SIMPLE’`` if the block has only one equation. If several equation appears in the block, x is equal to ``‘COMPLETE’``.
+      The block contains only equations where endogenous variable
+      attributed to the equation does not appear currently on the
+      left hand side and where no backward looking endogenous
+      variables appear. The block has the form: :math:`g_j(y_{j,t},
+      y_t, y_{t+1}, \ldots, y_{t+k})=0`. x is equal to ‘SIMPLE’
+      if the block has only one equation. If several equation
+      appears in the block, x is equal to ‘COMPLETE’.
 
-    ``‘SOLVE TWO BOUNDARIES x’``
+    * ‘SOLVE TWO BOUNDARIES x’
 
-        The block contains equations depending on both forward and backward variables. The block looks like: :math:`g_j(y_{j,t}, y_t, y_{t-1}, \ldots, y_{t-k} ,y_t, y_{t+1}, \ldots, y_{t+k})=0`. x is equal to ``‘SIMPLE’`` if the block has only one equation. If several equation appears in the block, x is equal to ``‘COMPLETE’``.
+      The block contains equations depending on both forward and
+      backward variables. The block looks like: :math:`g_j(y_{j,t},
+      y_t, y_{t-1}, \ldots, y_{t-k} ,y_t, y_{t+1}, \ldots,
+      y_{t+k})=0`. x is equal to ‘SIMPLE’ if the block has only
+      one equation. If several equation appears in the block, x is
+      equal to ‘COMPLETE’.
 
     *Options*
 
     .. option:: 'static'
 
-        Prints out the block decomposition of the static model. Without ’static’ option model_info displays the block decomposition of the dynamic model.
+       Prints out the block decomposition of the static
+       model. Without ’static’ option model_info displays the block
+       decomposition of the dynamic model.
 
     .. option:: 'incidence'
 
-        Displays the gross incidence matrix and the reordered incidence matrix of the block decomposed model.
+       Displays the gross incidence matrix and the reordered incidence
+       matrix of the block decomposed model.
 
 
 .. command:: print_bytecode_dynamic_model ;
 
-    Prints the equations and the Jacobian matrix of the dynamic model stored in the bytecode binary format file. Can only be used in conjunction with the ``bytecode`` option of the ``model`` block.
+    |br| Prints the equations and the Jacobian matrix of the dynamic
+    model stored in the bytecode binary format file. Can only be used
+    in conjunction with the ``bytecode`` option of the ``model``
+    block.
 
 .. command:: print_bytecode_static_model ;
 
-    Prints the equations and the Jacobian matrix of the static model stored in the bytecode binary format file. Can only be used in conjunction with the ``bytecode`` option of the ``model`` block.
+    |br| Prints the equations and the Jacobian matrix of the static model
+    stored in the bytecode binary format file. Can only be used in
+    conjunction with the ``bytecode`` option of the ``model`` block.
 
 
 .. _det-simul:
