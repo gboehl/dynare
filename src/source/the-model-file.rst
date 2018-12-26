@@ -2818,15 +2818,16 @@ Computing the stochastic solution
     perturbation techniques.
 
     More precisely, ``stoch_simul`` computes a Taylor approximation of
-    the decision and transition functions for the model. Using this,
-    it computes impulse response functions and various descriptive
-    statistics (moments, variance decomposition, correlation and
-    autocorrelation coefficients). For correlated shocks, the variance
-    decomposition is computed as in the VAR literature through a
-    Cholesky decomposition of the covariance matrix of the exogenous
-    variables. When the shocks are correlated, the variance
-    decomposition depends upon the order of the variables in the
-    ``varexo`` command.
+    the model around the deterministic steady state and solves of the
+    the decision and transition functions for the approximated
+    model. Using this, it computes impulse response functions and
+    various descriptive statistics (moments, variance decomposition,
+    correlation and autocorrelation coefficients). For correlated
+    shocks, the variance decomposition is computed as in the VAR
+    literature through a Cholesky decomposition of the covariance
+    matrix of the exogenous variables. When the shocks are correlated,
+    the variance decomposition depends upon the order of the variables
+    in the ``varexo`` command.
 
     The Taylor approximation is computed around the steady state (see
     :ref:`st-st`).
