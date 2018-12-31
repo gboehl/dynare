@@ -4349,7 +4349,7 @@ exogenous variables are made available in @code{oo_.exo_simul}
 @item qz_criterium = @var{DOUBLE}
 @anchor{qz_criterium}
 Value used to split stable from unstable eigenvalues in reordering the
-Generalized Schur decomposition used for solving 1^st order
+Generalized Schur decomposition used for solving first order
 problems. Default: @code{1.000001} (except when estimating with
 @code{lik_init} option equal to @code{1}: the default is
 @code{0.999999} in that case; @pxref{Estimation}).
