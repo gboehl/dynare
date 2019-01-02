@@ -191,7 +191,6 @@ Running Dynare
 * Dynare invocation::
 * Dynare hooks::
 * Understanding Preprocessor Error Messages::
-* Invoking the Dynare Preprocessor from the GNU/Linux or macOS Command Line::
 
 The Model file
 
@@ -732,7 +731,6 @@ required by the user. Its contents are described in @ref{The Model file}.
 * Dynare invocation::
 * Dynare hooks::
 * Understanding Preprocessor Error Messages::
-* Invoking the Dynare Preprocessor from the GNU/Linux or macOS Command Line::
 @end menu
 
 @node Dynare invocation
