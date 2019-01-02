@@ -35,7 +35,7 @@ test_for_deep_parameters_calibration(M_);
 
 if size(M_.lead_lag_incidence,2)-nnz(M_.lead_lag_incidence(M_.maximum_endo_lag+1,:)) > 0
     mess = 'PERFECT_FORESIGHT_SETUP: error in model specification : the variable(s) ';
-    var_list = M_.endo_names(find(M_.lead_lag_incidence(M_.maximum_lag+1,:)==0));
+    var_list = M_.endo_names(M_.lead_lag_incidence(M_.maximum_lag+1,:)==0);
     for i=1:length(var_list)
         if i<length(var_list)
             mess = [mess, var_list{i} ', '];
