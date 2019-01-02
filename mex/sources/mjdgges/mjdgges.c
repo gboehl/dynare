@@ -28,7 +28,7 @@ double criterium;
 lapack_int
 my_criteria(const double *alphar, const double *alphai, const double *beta)
 {
-  return ((*alphar **alphar + *alphai **alphai) < criterium **beta **beta);
+  return ((*alphar **alphar + *alphai **alphai) < criterium * criterium **beta **beta);
 }
 
 void
