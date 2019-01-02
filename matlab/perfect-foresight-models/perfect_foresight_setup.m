@@ -55,7 +55,7 @@ if ~isempty(M_.det_shocks) && options_.periods<max([M_.det_shocks.periods])
     % Some expected shocks happen after the terminal period.
     mess = sprintf('Problem with the declaration of the expected shocks:\n');
     for i=1:length(M_.det_shocks)
-        if any(M_.det_shocks(i).periods>options_.periods);
+        if any(M_.det_shocks(i).periods>options_.periods)
             mess = sprintf('%s\n   At least one expected value for %s has been declared after the terminal period.', mess, M_.exo_names{M_.det_shocks(i).exo_id});
         end
     end
