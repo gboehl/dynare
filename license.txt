@@ -1,6 +1,6 @@
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: Dynare
-Upstream-Contact: Dynare Team, whose members in 2018 are:
+Upstream-Contact: Dynare Team, whose members in 2019 are:
                   Stéphane Adjemian <stephane.adjemian@univ-lemans.fr>
                   Houtan Bastani <houtan@dynare.org>
                   Michel Juillard <michel.juillard@mjui.fr>
@@ -13,7 +13,7 @@ Upstream-Contact: Dynare Team, whose members in 2018 are:
 Source: http://www.dynare.org
 
 Files: *
-Copyright: 1996-2018 Dynare Team
+Copyright: 1996-2019 Dynare Team
 License: GPL-3+
 
 Files: matlab/AIM/SP*
@@ -196,7 +196,7 @@ Copyright: 2005-2010 Pascal Getreuer
 License: BSD-2-clause
 
 Files: doc/dynare.texi doc/*.tex doc/*.svg doc/*.pdf doc/*.bib
-Copyright: 1996-2018 Dynare Team
+Copyright: 1996-2019 Dynare Team
 License: GFDL-NIV-1.3+
 
 Files: doc/macroprocessor/*
@@ -204,7 +204,7 @@ Copyright: 2008-2015 Dynare Team
 License: CC-BY-SA-4.0
 
 Files: doc/preprocessor/*
-Copyright: 2007-2018 Dynare Team
+Copyright: 2007-2019 Dynare Team
 License: CC-BY-SA-4.0
 
 Files: doc/dr.tex doc/bvar_a_la_sims.tex
