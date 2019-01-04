@@ -120,9 +120,6 @@ mex/build/matlab/run_m2html.m
 /mex/octave/
 
 # Dynare++
-/dynare++/integ/cc/*.cpp
-/dynare++/integ/cc/*.h
-/dynare++/integ/cc/main.tex
 /dynare++/integ/src/quadrature-points
 /dynare++/integ/src/quadrature-points.exe
 /dynare++/integ/testing/tests

@@ -4,9 +4,9 @@
 
 #include "global_check.hh"
 
-#include "smolyak.h"
-#include "product.h"
-#include "quasi_mcarlo.h"
+#include "smolyak.hh"
+#include "product.hh"
+#include "quasi_mcarlo.hh"
 
 #ifdef __MINGW32__
 # define __CROSS_COMPILATION__

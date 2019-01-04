@@ -76,11 +76,16 @@ TL_SRCS = \
 	$(TOPDIR)/tl/cc/tl_static.cpp
 
 INTEG_SRCS = \
-	$(TOPDIR)/integ/cc/product.cpp \
-	$(TOPDIR)/integ/cc/quadrature.cpp \
-	$(TOPDIR)/integ/cc/quasi_mcarlo.cpp \
-	$(TOPDIR)/integ/cc/smolyak.cpp \
-	$(TOPDIR)/integ/cc/vector_function.cpp
+	$(TOPDIR)/integ/cc/quadrature.cc \
+	$(TOPDIR)/integ/cc/quadrature.hh \
+	$(TOPDIR)/integ/cc/quasi_mcarlo.cc \
+	$(TOPDIR)/integ/cc/quasi_mcarlo.hh \
+	$(TOPDIR)/integ/cc/product.cc \
+	$(TOPDIR)/integ/cc/product.hh \
+	$(TOPDIR)/integ/cc/smolyak.cc \
+	$(TOPDIR)/integ/cc/smolyak.hh \
+	$(TOPDIR)/integ/cc/vector_function.cc \
+	$(TOPDIR)/integ/cc/vector_function.hh
 
 nodist_libdynare___a_SOURCES = \
 	$(KORD_SRCS) \

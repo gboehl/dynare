@@ -37,8 +37,8 @@
 
 #include <matio.h>
 
-#include "vector_function.h"
-#include "quadrature.h"
+#include "vector_function.hh"
+#include "quadrature.hh"
 
 #include "dynamic_model.hh"
 #include "journal.hh"
