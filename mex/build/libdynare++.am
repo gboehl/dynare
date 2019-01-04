@@ -7,17 +7,30 @@ libdynare___a_CXXFLAGS = $(AM_CXXFLAGS) $(PTHREAD_CFLAGS)
 TOPDIR = $(top_srcdir)/../../../dynare++
 
 KORD_SRCS = \
-	$(TOPDIR)/kord/faa_di_bruno.cpp \
-	$(TOPDIR)/kord/korder_stoch.cpp \
-	$(TOPDIR)/kord/journal.cpp \
-	$(TOPDIR)/kord/decision_rule.cpp \
-	$(TOPDIR)/kord/dynamic_model.cpp \
-	$(TOPDIR)/kord/random.cpp \
-	$(TOPDIR)/kord/first_order.cpp \
-	$(TOPDIR)/kord/normal_conjugate.cpp \
-	$(TOPDIR)/kord/approximation.cpp \
-	$(TOPDIR)/kord/global_check.cpp \
-	$(TOPDIR)/kord/korder.cpp
+	$(TOPDIR)/kord/approximation.cc \
+	$(TOPDIR)/kord/approximation.hh \
+	$(TOPDIR)/kord/decision_rule.cc \
+	$(TOPDIR)/kord/decision_rule.hh \
+	$(TOPDIR)/kord/dynamic_model.cc \
+	$(TOPDIR)/kord/dynamic_model.hh \
+	$(TOPDIR)/kord/faa_di_bruno.cc \
+	$(TOPDIR)/kord/faa_di_bruno.hh \
+	$(TOPDIR)/kord/first_order.cc \
+	$(TOPDIR)/kord/first_order.hh \
+	$(TOPDIR)/kord/global_check.cc \
+	$(TOPDIR)/kord/global_check.hh \
+	$(TOPDIR)/kord/kord_exception.hh \
+	$(TOPDIR)/kord/korder.cc \
+	$(TOPDIR)/kord/korder.hh \
+	$(TOPDIR)/kord/korder_stoch.cc \
+	$(TOPDIR)/kord/korder_stoch.hh \
+	$(TOPDIR)/kord/journal.cc \
+	$(TOPDIR)/kord/journal.hh \
+	$(TOPDIR)/kord/mersenne_twister.hh \
+	$(TOPDIR)/kord/normal_conjugate.cc \
+	$(TOPDIR)/kord/normal_conjugate.hh \
+	$(TOPDIR)/kord/random.cc \
+	$(TOPDIR)/kord/random.hh
 
 SYLV_SRCS = \
 	$(TOPDIR)/sylv/cc/IterativeSylvester.cpp \

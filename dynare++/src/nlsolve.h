@@ -6,7 +6,7 @@
 #define OGU_NLSOLVE_H
 
 #include "twod_matrix.h"
-#include "journal.h"
+#include "journal.hh"
 
 namespace ogu
 {

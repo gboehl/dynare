@@ -6,8 +6,8 @@
 
 #include "../tl/cc/t_container.h"
 #include "../tl/cc/sparse_tensor.h"
-#include "../kord/decision_rule.h"
-#include "../kord/dynamic_model.h"
+#include "../kord/decision_rule.hh"
+#include "../kord/dynamic_model.hh"
 
 #include "dynare_model.h"
 #include "nlsolve.h"

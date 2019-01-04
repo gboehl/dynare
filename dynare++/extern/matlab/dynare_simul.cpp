@@ -22,7 +22,7 @@
 #include "dynmex.h"
 #include "mex.h"
 
-#include "decision_rule.h"
+#include "decision_rule.hh"
 #include "fs_tensor.h"
 #include "SylvException.h"
 

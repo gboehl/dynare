@@ -126,10 +126,6 @@ mex/build/matlab/run_m2html.m
 /dynare++/integ/src/quadrature-points
 /dynare++/integ/src/quadrature-points.exe
 /dynare++/integ/testing/tests
-/dynare++/kord/*.cpp
-!/dynare++/kord/tests.cpp
-/dynare++/kord/*.h
-/dynare++/kord/main.tex
 /dynare++/kord/tests
 /dynare++/kord/tests.exe
 /dynare++/kord/out.txt

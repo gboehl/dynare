@@ -23,17 +23,17 @@
 #include <memory>
 #include "t_container.h"
 #include "sparse_tensor.h"
-#include "decision_rule.h"
-#include "dynamic_model.h"
+#include "decision_rule.hh"
+#include "dynamic_model.hh"
 
 #include "exception.h"
 #include "dynare_exception.h"
 #include "fs_tensor.h"
 #include "SylvException.h"
 #include "tl_exception.h"
-#include "kord_exception.h"
+#include "kord_exception.hh"
 #include "nlsolve.h"
-#include "approximation.h"
+#include "approximation.hh"
 
 class KordpDynare;
 

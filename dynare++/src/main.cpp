@@ -7,9 +7,9 @@
 #include "utils/cc/exception.h"
 #include "parser/cc/parser_exception.h"
 #include "../sylv/cc/SylvException.h"
-#include "../kord/random.h"
-#include "../kord/global_check.h"
-#include "../kord/approximation.h"
+#include "../kord/random.hh"
+#include "../kord/global_check.hh"
+#include "../kord/approximation.hh"
 
 int main(int argc, char** argv)
 {

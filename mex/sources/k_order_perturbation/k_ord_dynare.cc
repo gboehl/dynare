@@ -20,7 +20,7 @@
 // GP, based on work by O.Kamenik
 
 #include <vector>
-#include "first_order.h"
+#include "first_order.hh"
 #include "dynamic_abstract_class.hh"
 
 #include <cmath>
