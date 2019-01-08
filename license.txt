@@ -211,14 +211,14 @@ Files: doc/dr.tex doc/bvar_a_la_sims.tex
 Copyright: 2007-2011 Sébastien Villemot
 License: GFDL-NIV-1.3+
 
-Files: dynare++/*.cweb dynare++/*.hweb dynare++/*.cpp dynare++/*.h
- dynare++/*.tex dynare++/*.mod dynare++/*.m dynare++/*.web dynare++/*.lex
- dynare++/*.y
+Files: dynare++/*.cc dynare++/*.hh
+ dynare++/*.tex dynare++/*.mod dynare++/*.m dynare++/*.ll
+ dynare++/*.yy
 Copyright: 2004-2011 Ondra Kamenik
 License: GPL-3+
 
-Files: dynare++/utils/*.cpp dynare++/utils/*.h dynare++/parser/*.cpp
- dynare++/parser/*.h dynare++/parser/*.lex dynare++/parser/*.y
+Files: dynare++/utils/*.cc dynare++/utils/*.hh dynare++/parser/*.cc
+ dynare++/parser/*.hh dynare++/parser/*.ll dynare++/parser/*.yy
 Copyright: 2004-2011 Ondra Kamenik
 License: LGPL-3+
 
