@@ -69,16 +69,13 @@ A number of tools and libraries are needed in order to recompile everything. You
 - [Flex](http://flex.sourceforge.net/), version 2.5.4 or later (only if you get the source through Git)
 - [Autoconf](http://www.gnu.org/software/autoconf/), version 2.62 or later (only if you get the source through Git) (see [Installing an updated version of Autoconf in your own directory, in GNU/Linux](http://www.dynare.org/DynareWiki/AutoMake))
 - [Automake](http://www.gnu.org/software/automake/), version 1.11.2 or later (only if you get the source through Git) (see [Installing an updated version of AutoMake in your own directory, in GNU/Linux](http://www.dynare.org/DynareWiki/AutoMake))
-- [CWEB](http://www-cs-faculty.stanford.edu/%7Eknuth/cweb.html), with its tools
-  `ctangle` and `cweave` (only if you want to build the k-order DLL or Dynare++, and get the source through Git)
 - An implementation of BLAS and LAPACK: either [ATLAS](http://math-atlas.sourceforge.net/), [OpenBLAS](http://xianyi.github.com/OpenBLAS/), Netlib ([BLAS](http://www.netlib.org/blas/), [LAPACK](http://www.netlib.org/lapack/)) or [MKL](http://software.intel.com/en-us/intel-mkl/) (only if you want to build Dynare++)
 - An implementation of [POSIX Threads](http://en.wikipedia.org/wiki/POSIX_Threads) (optional, for taking advantage of multi-core)
 - [MAT File I/O library](http://sourceforge.net/projects/matio/) (if you want to compile Markov-Switching code, the estimation DLL, k-order DLL and Dynare++)
 - [SLICOT](http://www.slicot.org) (if you want to compile the Kalman steady state DLL)
 - [GSL library](http://www.gnu.org/software/gsl/) (if you want to compile Markov-Switching code)
-- A decent LaTeX distribution (if you want to compile PDF documentation). The following extra components may be needed:
-  - [Eplain](http://www.tug.org/eplain/) TeX macros (only if you want to build Dynare++ source documentation)
-  - [Beamer](http://latex-beamer.sourceforge.net/) (for some PDF presentations)
+- A decent LaTeX distribution (if you want to compile PDF documentation),
+  ideally with Beamer
 - For building the reference manual:
   - [GNU Texinfo](http://www.gnu.org/software/texinfo/)
   - [Latex2HTML](http://www.latex2html.org), if you want nice mathematical formulas in HTML output
@@ -216,8 +213,6 @@ All the prerequisites are packaged:
 - `automake`
 - `texlive`
 - `texlive-publishers` (for Econometrica bibliographic style)
-- `texlive-extra-utils` (for CWEB)
-- `texlive-formats-extra` (for Eplain)
 - `texlive-latex-extra` (for fullpage.sty)
 - `texlive-fonts-extra` (for ccicons)
 - `texlive-latex-recommended`
@@ -246,18 +241,6 @@ pacman -Syu
 - Install all needed dependencies:
 ```
 pacman -S git autoconf automake-wrapper bison flex make tar texinfo mingw-w64-x86_64-gcc mingw-w64-x86_64-gcc-fortran mingw-w64-x86_64-boost mingw-w64-x86_64-gsl mingw-w64-x86_64-matio mingw-w64-x86_64-openblas
-```
-- **(Optional)** compile and install `ctangle`, needed for the k-order MEX file and for
-   Dynare++ (*i.e.* if you want to solve models at order ≥ 3)
-```
-wget ftp://ftp.cs.stanford.edu/pub/cweb/cweb.tar.gz
-mkdir cweb
-cd cweb
-tar xf ../cweb.tar.gz
-make ctangle
-mkdir -p /usr/local/bin
-cp ctangle.exe /usr/local/bin/
-cd ..
 ```
 - **(Optional)** compile and install SLICOT, needed for the `kalman_steady_state`
   MEX file
@@ -328,8 +311,6 @@ compile. They should be entered at the command prompt in Terminal.app.
 - **(Optional)** To compile Dynare mex files for use on Octave:
     - `brew install octave`
     - `brew install suite-sparse`
-- **(Optional)** To compile Dynare++
-    - `brew install cweb`
 - **(Optional)** To compile Dynare documentation
      - Install the latest version of [MacTeX](http://www.tug.org/mactex/), deselecting the option to install Ghostscript
      - `brew install doxygen latex2html`

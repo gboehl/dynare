@@ -84,20 +84,8 @@ AM_CONDITIONAL([HAVE_MATIO], [test "x$has_matio" = "xyes"])
 
 AC_CHECK_PROG([MAKEINFO], [makeinfo], [makeinfo])
 
-AC_CHECK_PROG([PDFTEX], [pdftex], [pdftex])
-AM_CONDITIONAL([HAVE_PDFTEX], [test "x$PDFTEX" != "x"])
-
 AC_CHECK_PROG([PDFETEX], [pdfetex], [pdfetex])
 AM_CONDITIONAL([HAVE_PDFETEX], [test "x$PDFETEX" != "x"])
-
-if test "x$PDFTEX" != "x"; then
-  AC_MSG_CHECKING([for eplain])
-  AX_TEX_TEST([\input eplain
-\end
-], [ax_tex_have_eplain])
-  AC_MSG_RESULT([$ax_tex_have_eplain])
-fi
-AM_CONDITIONAL([HAVE_EPLAIN], [test "x$ax_tex_have_eplain" = "xyes"])
 
 AC_CHECK_PROG([PDFLATEX], [pdflatex], [pdflatex])
 AM_CONDITIONAL([HAVE_PDFLATEX], [test "x$PDFLATEX" != "x"])
@@ -112,16 +100,6 @@ if test "x$PDFLATEX" != "x" -a "x$BIBTEX" != "x"; then
   AX_LATEX_CLASS([beamer], [ax_latex_have_beamer])
 fi
 AM_CONDITIONAL([HAVE_BEAMER], [test "x$ax_latex_have_beamer" = "xyes"])
-
-AC_CHECK_PROG([CTANGLE], [ctangle], [ctangle])
-AM_CONDITIONAL([HAVE_CTANGLE], [test "x$CTANGLE" != "x"])
-if test "x$CTANGLE" = "x"; then
-  unset CTANGLE # AM_MISSING_PROG needs an unset variable: an empty variable won't do
-  AM_MISSING_PROG([CTANGLE], [ctangle])
-fi
-
-AC_CHECK_PROG([CWEAVE], [cweave], [cweave])
-AM_CONDITIONAL([HAVE_CWEAVE], [test "x$CWEAVE" != "x"])
 
 AC_PROG_F77
 AC_F77_LIBRARY_LDFLAGS
@@ -211,12 +189,6 @@ else
   BUILD_DYNAREPLUSPLUS="no (missing one of: BLAS, LAPACK, MatIO)"
 fi
 
-if test "x$CWEAVE" != "x" -a x"$PDFTEX" != "x" -a "x$ax_tex_have_eplain" = "xyes"; then
-  BUILD_DYNAREPLUSPLUS_SRCDOC="yes"
-else
-  BUILD_DYNAREPLUSPLUS_SRCDOC="no (missing one of: cweave, pdftex, eplain)"
-fi
-
 if test "x$PDFLATEX" != "x" -a "x$ax_latex_have_beamer" = "xyes"; then
   BUILD_BEAMER_DOC="yes"
 else
@@ -270,7 +242,6 @@ Binaries (with "make"):
 
 PDF documentation (with "make pdf"):
  Dynare reference manual:               $BUILD_DYNARE_PDF_MANUAL
- Dynare++ developer documentation:      $BUILD_DYNAREPLUSPLUS_SRCDOC
  Beamer presentations:                  $BUILD_BEAMER_DOC
  Various other documents:               $BUILD_OTHER_PDF_DOC
 
