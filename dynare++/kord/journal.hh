@@ -5,7 +5,7 @@
 #ifndef JOURNAL_H
 #define JOURNAL_H
 
-#include "int_sequence.h"
+#include "int_sequence.hh"
 
 #include <sys/time.h>
 #include <cstdio>

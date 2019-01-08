@@ -137,9 +137,6 @@ mex/build/matlab/run_m2html.m
 /dynare++/src/dynglob_ll.cc
 /dynare++/src/dynglob_tab.cc
 /dynare++/src/dynglob_tab.hh
-/dynare++/tl/cc/*.cpp
-/dynare++/tl/cc/*.h
-/dynare++/tl/cc/main.tex
 /dynare++/tl/testing/tests
 /dynare++/tl/testing/tests.exe
 !/dynare++/extern/R/Makefile

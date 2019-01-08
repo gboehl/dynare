@@ -1,6 +1,6 @@
 check_PROGRAMS = tests
 
-tests_SOURCES = factory.cpp factory.h monoms.cpp monoms.h tests.cpp
+tests_SOURCES = factory.cc factory.hh monoms.cc monoms.hh tests.cc
 tests_CPPFLAGS = -I../cc -I../../sylv/cc
 tests_CXXFLAGS = $(AM_CXXFLAGS) $(PTHREAD_CFLAGS)
 tests_LDFLAGS = $(AM_LDFLAGS) $(LDFLAGS_MATIO)

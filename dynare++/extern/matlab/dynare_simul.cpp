@@ -23,7 +23,7 @@
 #include "mex.h"
 
 #include "decision_rule.hh"
-#include "fs_tensor.h"
+#include "fs_tensor.hh"
 #include "SylvException.h"
 
 extern "C" {

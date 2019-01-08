@@ -25,13 +25,13 @@
 #ifndef KORDER_H
 #define KORDER_H
 
-#include "int_sequence.h"
-#include "fs_tensor.h"
-#include "gs_tensor.h"
-#include "t_container.h"
-#include "stack_container.h"
-#include "normal_moments.h"
-#include "t_polynomial.h"
+#include "int_sequence.hh"
+#include "fs_tensor.hh"
+#include "gs_tensor.hh"
+#include "t_container.hh"
+#include "stack_container.hh"
+#include "normal_moments.hh"
+#include "t_polynomial.hh"
 #include "faa_di_bruno.hh"
 #include "journal.hh"
 

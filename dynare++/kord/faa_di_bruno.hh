@@ -12,10 +12,10 @@
 #define FAA_DI_BRUNO_H
 
 #include "journal.hh"
-#include "stack_container.h"
-#include "t_container.h"
-#include "sparse_tensor.h"
-#include "gs_tensor.h"
+#include "stack_container.hh"
+#include "t_container.hh"
+#include "sparse_tensor.hh"
+#include "gs_tensor.hh"
 
 /* Nothing special here. See |@<|FaaDiBruno::calculate| folded sparse
    code@>| for reason of having |magic_mult|. */

@@ -1,7 +1,7 @@
 // Copyright 2005, Ondra Kamenik
 
 #include "smolyak.hh"
-#include "symmetry.h"
+#include "symmetry.hh"
 
 smolpit::smolpit()
   : smolq(NULL), isummand(0), jseq(NULL), sig(NULL), p(NULL)

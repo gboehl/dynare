@@ -16,7 +16,7 @@
 #ifndef PRODUCT_H
 #define PRODUCT_H
 
-#include "int_sequence.h"
+#include "int_sequence.hh"
 #include "vector_function.hh"
 #include "quadrature.hh"
 

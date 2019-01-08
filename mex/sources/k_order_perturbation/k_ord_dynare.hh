@@ -21,16 +21,16 @@
 #define K_ORD_DYNARE3_H
 #include <vector>
 #include <memory>
-#include "t_container.h"
-#include "sparse_tensor.h"
+#include "t_container.hh"
+#include "sparse_tensor.hh"
 #include "decision_rule.hh"
 #include "dynamic_model.hh"
 
 #include "exception.h"
 #include "dynare_exception.h"
-#include "fs_tensor.h"
+#include "fs_tensor.hh"
 #include "SylvException.h"
-#include "tl_exception.h"
+#include "tl_exception.hh"
 #include "kord_exception.hh"
 #include "nlsolve.h"
 #include "approximation.hh"

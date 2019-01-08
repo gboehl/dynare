@@ -25,7 +25,7 @@
 #ifndef QUASI_MCARLO_H
 #define QUASI_MCARLO_H
 
-#include "int_sequence.h"
+#include "int_sequence.hh"
 #include "quadrature.hh"
 
 #include "Vector.h"

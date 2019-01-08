@@ -17,8 +17,8 @@
 #ifndef SMOLYAK_H
 #define SMOLYAK_H
 
-#include "int_sequence.h"
-#include "tl_static.h"
+#include "int_sequence.hh"
+#include "tl_static.hh"
 #include "vector_function.hh"
 #include "quadrature.hh"
 

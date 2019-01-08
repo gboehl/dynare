@@ -7,7 +7,7 @@
 #include "parser/cc/atom_assignings.h"
 
 #include "dynare_atoms.h"
-#include "twod_matrix.h"
+#include "twod_matrix.hh"
 
 #include "Vector.h"
 #include "GeneralMatrix.h"

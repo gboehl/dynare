@@ -33,7 +33,7 @@
 #ifndef NORMAL_CONJUGATE_H
 #define NORMAL_CONJUGATE_H
 
-#include "twod_matrix.h"
+#include "twod_matrix.hh"
 
 /* The class is described by the four parameters: $\mu$, $\kappa$, $\nu$ and
    $\Lambda$. */

@@ -4,8 +4,8 @@
 #ifndef DYNARE3_H
 #define DYNARE3_H
 
-#include "../tl/cc/t_container.h"
-#include "../tl/cc/sparse_tensor.h"
+#include "../tl/cc/t_container.hh"
+#include "../tl/cc/sparse_tensor.hh"
 #include "../kord/decision_rule.hh"
 #include "../kord/dynamic_model.hh"
 

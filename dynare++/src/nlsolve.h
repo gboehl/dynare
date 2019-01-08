@@ -5,7 +5,7 @@
 #ifndef OGU_NLSOLVE_H
 #define OGU_NLSOLVE_H
 
-#include "twod_matrix.h"
+#include "twod_matrix.hh"
 #include "journal.hh"
 
 namespace ogu

@@ -53,27 +53,49 @@ SYLV_SRCS = \
 	$(TOPDIR)/sylv/cc/KronUtils.cpp
 
 TL_SRCS = \
-	$(TOPDIR)/tl/cc/normal_moments.cpp \
-	$(TOPDIR)/tl/cc/int_sequence.cpp \
-	$(TOPDIR)/tl/cc/tensor.cpp \
-	$(TOPDIR)/tl/cc/ps_tensor.cpp \
-	$(TOPDIR)/tl/cc/pyramid_prod2.cpp \
-	$(TOPDIR)/tl/cc/equivalence.cpp \
-	$(TOPDIR)/tl/cc/fine_container.cpp \
-	$(TOPDIR)/tl/cc/kron_prod.cpp \
-	$(TOPDIR)/tl/cc/t_polynomial.cpp \
-	$(TOPDIR)/tl/cc/symmetry.cpp \
-	$(TOPDIR)/tl/cc/stack_container.cpp \
-	$(TOPDIR)/tl/cc/twod_matrix.cpp \
-	$(TOPDIR)/tl/cc/sparse_tensor.cpp \
-	$(TOPDIR)/tl/cc/sthread.cpp \
-	$(TOPDIR)/tl/cc/gs_tensor.cpp \
-	$(TOPDIR)/tl/cc/pyramid_prod.cpp \
-	$(TOPDIR)/tl/cc/fs_tensor.cpp \
-	$(TOPDIR)/tl/cc/permutation.cpp \
-	$(TOPDIR)/tl/cc/rfs_tensor.cpp \
-	$(TOPDIR)/tl/cc/t_container.cpp \
-	$(TOPDIR)/tl/cc/tl_static.cpp
+	$(TOPDIR)/tl/cc/equivalence.cc \
+	$(TOPDIR)/tl/cc/equivalence.hh \
+	$(TOPDIR)/tl/cc/fine_container.cc \
+	$(TOPDIR)/tl/cc/fine_container.hh \
+	$(TOPDIR)/tl/cc/fs_tensor.cc \
+	$(TOPDIR)/tl/cc/fs_tensor.hh \
+	$(TOPDIR)/tl/cc/gs_tensor.cc \
+	$(TOPDIR)/tl/cc/gs_tensor.hh \
+	$(TOPDIR)/tl/cc/int_sequence.cc \
+	$(TOPDIR)/tl/cc/int_sequence.hh \
+	$(TOPDIR)/tl/cc/kron_prod.cc \
+	$(TOPDIR)/tl/cc/kron_prod.hh \
+	$(TOPDIR)/tl/cc/normal_moments.cc \
+	$(TOPDIR)/tl/cc/normal_moments.hh \
+	$(TOPDIR)/tl/cc/permutation.cc \
+	$(TOPDIR)/tl/cc/permutation.hh \
+	$(TOPDIR)/tl/cc/ps_tensor.cc \
+	$(TOPDIR)/tl/cc/ps_tensor.hh \
+	$(TOPDIR)/tl/cc/pyramid_prod.cc \
+	$(TOPDIR)/tl/cc/pyramid_prod.hh \
+	$(TOPDIR)/tl/cc/pyramid_prod2.cc \
+	$(TOPDIR)/tl/cc/pyramid_prod2.hh \
+	$(TOPDIR)/tl/cc/rfs_tensor.cc \
+	$(TOPDIR)/tl/cc/rfs_tensor.hh \
+	$(TOPDIR)/tl/cc/sparse_tensor.cc \
+	$(TOPDIR)/tl/cc/sparse_tensor.hh \
+	$(TOPDIR)/tl/cc/stack_container.cc \
+	$(TOPDIR)/tl/cc/stack_container.hh \
+	$(TOPDIR)/tl/cc/sthread.cc \
+	$(TOPDIR)/tl/cc/sthread.hh \
+	$(TOPDIR)/tl/cc/symmetry.cc \
+	$(TOPDIR)/tl/cc/symmetry.hh \
+	$(TOPDIR)/tl/cc/t_container.cc \
+	$(TOPDIR)/tl/cc/t_container.hh \
+	$(TOPDIR)/tl/cc/t_polynomial.cc \
+	$(TOPDIR)/tl/cc/t_polynomial.hh \
+	$(TOPDIR)/tl/cc/tensor.cc \
+	$(TOPDIR)/tl/cc/tensor.hh \
+	$(TOPDIR)/tl/cc/tl_exception.hh \
+	$(TOPDIR)/tl/cc/tl_static.cc \
+	$(TOPDIR)/tl/cc/tl_static.hh \
+	$(TOPDIR)/tl/cc/twod_matrix.cc \
+	$(TOPDIR)/tl/cc/twod_matrix.hh
 
 INTEG_SRCS = \
 	$(TOPDIR)/integ/cc/quadrature.cc \

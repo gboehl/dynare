@@ -8,7 +8,7 @@
 #include "utils/cc/exception.h"
 #include "parser/cc/parser_exception.h"
 #include "parser/cc/atom_substitutions.h"
-#include "../tl/cc/tl_exception.h"
+#include "../tl/cc/tl_exception.hh"
 #include "../kord/kord_exception.hh"
 
 #ifndef DYNVERSION

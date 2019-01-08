@@ -10,8 +10,8 @@
 #ifndef DYNAMIC_MODEL_H
 #define DYNAMIC_MODEL_H
 
-#include "t_container.h"
-#include "sparse_tensor.h"
+#include "t_container.hh"
+#include "sparse_tensor.hh"
 
 #include "Vector.h"
 

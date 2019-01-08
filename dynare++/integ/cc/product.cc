@@ -1,7 +1,7 @@
 // Copyright 2005, Ondra Kamenik
 
 #include "product.hh"
-#include "symmetry.h"
+#include "symmetry.hh"
 
 prodpit::prodpit()
   : prodq(NULL), level(0), npoints(0), jseq(NULL),

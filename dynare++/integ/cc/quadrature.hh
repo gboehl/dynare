@@ -32,8 +32,8 @@
 
 #include <cstdlib>
 #include "vector_function.hh"
-#include "int_sequence.h"
-#include "sthread.h"
+#include "int_sequence.hh"
+#include "sthread.hh"
 
 /* This pure virtual class represents a concept of one-dimensional
    (non-nested) quadrature. So, one dimensional quadrature must return
