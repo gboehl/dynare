@@ -8,7 +8,7 @@
 namespace ogdyn
 {
 
-  using boost::unordered_set;
+  using std::unordered_set;
   using std::map;
   using std::vector;
 

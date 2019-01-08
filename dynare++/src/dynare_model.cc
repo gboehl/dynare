@@ -13,6 +13,7 @@
 #include <string>
 #include <cmath>
 #include <climits>
+#include <ostream>
 
 using namespace ogdyn;
 

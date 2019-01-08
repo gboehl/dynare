@@ -6,15 +6,15 @@
 #include <vector>
 #include <set>
 #include <map>
-#include <boost/unordered_map.hpp>
-#include <boost/unordered_set.hpp>
+#include <unordered_map>
+#include <unordered_set>
 #include <cstdio>
 
 namespace ogp
 {
 
-  using boost::unordered_set;
-  using boost::unordered_map;
+  using std::unordered_set;
+  using std::unordered_map;
   using std::vector;
   using std::set;
   using std::map;

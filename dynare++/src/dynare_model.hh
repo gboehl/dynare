@@ -13,11 +13,11 @@
 #include "GeneralMatrix.hh"
 
 #include <map>
-#include <boost/unordered_set.hpp>
+#include <unordered_set>
 
 namespace ogdyn
 {
-  using boost::unordered_set;
+  using std::unordered_set;
   using std::map;
 
   /** This represents an interval in a string by the pair of
