@@ -15,7 +15,7 @@
 #ifndef TWOD_MATRIX_H
 #define TWOD_MATRIX_H
 
-#include "GeneralMatrix.h"
+#include "GeneralMatrix.hh"
 
 #include <cstdio>
 #include <matio.h>

@@ -1,8 +1,8 @@
 noinst_LIBRARIES = libutils.a
 
 libutils_a_SOURCES = \
-	exception.h \
-	memory_file.cpp \
-	memory_file.h \
-	pascal_triangle.cpp \
-	pascal_triangle.h
+	exception.hh \
+	memory_file.cc \
+	memory_file.hh \
+	pascal_triangle.cc \
+	pascal_triangle.hh

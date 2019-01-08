@@ -1,37 +1,28 @@
 RINTERNALS=/usr/share/R/include/
 
-sylvcppsource := $(wildcard ../../sylv/cc/*.cpp)
-sylvhsource := $(wildcard ../../sylv/cc/*.h)
-sylvobjects := $(patsubst %.cpp, %.o, $(sylvcppsource))
+sylvcppsource := $(wildcard ../../sylv/cc/*.cc)
+sylvhsource := $(wildcard ../../sylv/cc/*.hh)
+sylvobjects := $(patsubst %.cc, %.o, $(sylvcppsource))
 
-tlcwebsource := $(wildcard ../../tl/cc/*.cweb)
-tlcppsource := $(patsubst %.cweb,%.cpp,$(tlcwebsource))
-tlhwebsource := $(wildcard ../../tl/cc/*.hweb)
-tlhsource := $(patsubst %.hweb,%.h,$(tlhwebsource))
-tlobjects := $(patsubst %.cweb,%.o,$(tlcwebsource))
+tlcppsource := $(wildcard ../../tl/cc/*.cc)
+tlhsource := $(wildcard ../../tl/cc/*.hh)
 
-kordcwebsource := $(wildcard ../../kord/*.cweb)
-kordcppsource := $(patsubst %.cweb,%.cpp,$(kordcwebsource))
-kordhwebsource := $(wildcard ../../kord/*.hweb)
-kordhsource := $(patsubst %.hweb,%.h,$(kordhwebsource))
-kordobjects := $(patsubst %.cweb,%.o,$(kordcwebsource))
+kordcppsource := $(wildcard ../../kord/*.cc)
+kordhsource := $(wildcard ../../kord/*.hh)
 
-integcwebsource := $(wildcard ../../integ/cc/*.cweb)
-integcppsource := $(patsubst %.cweb,%.cpp,$(integcwebsource))
-integhwebsource := $(wildcard ../../integ/cc/*.hweb)
-integhsource := $(patsubst %.hweb,%.h,$(integhwebsource))
-integobjects := $(patsubst %.cweb,%.o,$(integcwebsource))
+integcppsource := $(wildcard ../../integ/cc/*.cc)
+integhsource := $(wildcard ../../integ/cc/*.hh)
 
-parserhsource := $(wildcard ../../parser/cc/*.h)
-parsercppsource := $(wildcard ../parser/cc/*.cpp)
+parserhsource := $(wildcard ../../parser/cc/*.hh)
+parsercppsource := $(wildcard ../parser/cc/*.cc)
 
-utilshsource := $(wildcard ../../utils/cc/*.h)
-utilscppsource := $(wildcard ../utils/cc/*.cpp)
+utilshsource := $(wildcard ../../utils/cc/*.hh)
+utilscppsource := $(wildcard ../utils/cc/*.cc)
 
-srccpp := dynare3.cpp dynare_model.cpp planner_builder.cpp dynare_atoms.cpp dynare_params.cpp  nlsolve.cpp
-objects := $(patsubst %.cpp,../../src/%.o,$(srccpp)) \
-$(patsubst %.y,%_ll.o,$(wildcard ../../src/*.y)) \
-$(patsubst %.lex,%_tab.o,$(wildcard ../../src/*.lex))
+srccpp := dynare3.cc dynare_model.cc planner_builder.cc dynare_atoms.cc dynare_params.cc  nlsolve.cc
+objects := $(patsubst %.cc,../../src/%.o,$(srccpp)) \
+$(patsubst %.yy,%_ll.o,$(wildcard ../../src/*.yy)) \
+$(patsubst %.ll,%_tab.o,$(wildcard ../../src/*.ll))
 
 PKG_CPPFLAGS= -I../../tl/cc -I../../sylv/cc -I../../kord -I../../src -I../.. -I$(RINTERNALS)
 PKG_LIBS= ${LAPACK_LIBS} ${BLAS_LIBS} $(objects) $(kordobjects) $(integobjects) $(tlobjects) ../../parser/cc/parser.a ../../utils/cc/utils.a $(sylvobjects) -lpthread -llapack -lcblas -lf77blas -latlas -lg2c -lstdc++
@@ -43,12 +34,12 @@ endif
 dynareR.so: dynareR.o
 	g++ -shared  -o dynareR.so dynareR.o -L/usr/lib/R/lib -lR $(PKG_LIBS)
 
-dynareR.o: dynareR.cpp
+dynareR.o: dynareR.cc
 	g++ -I/usr/share/R/include -I/usr/share/R/include $(PKG_CPPFLAGS) \
-	-fpic  -g -O2 -c dynareR.cpp -o dynareR.o -DDEBUG
+	-fpic  -g -O2 -c dynareR.cc -o dynareR.o -DDEBUG
 
-test: test.cpp dynareR.cpp
-	g++ -O0 -g -o test test.cpp -DDEBUG $(PKG_LIBS) $(PKG_CPPFLAGS)
+test: test.cc dynareR.cc
+	g++ -O0 -g -o test test.cc -DDEBUG $(PKG_LIBS) $(PKG_CPPFLAGS)
 
 test-debug:
 	valgrind --leak-check=yes ./test

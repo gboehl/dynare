@@ -28,7 +28,7 @@
 #include "int_sequence.hh"
 #include "quadrature.hh"
 
-#include "Vector.h"
+#include "Vector.hh"
 
 #include <vector>
 

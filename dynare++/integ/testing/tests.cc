@@ -1,18 +1,18 @@
 /* $Id: tests.cpp 431 2005-08-16 15:41:01Z kamenik $ */
 /* Copyright 2005, Ondra Kamenik */
 
-#include "GeneralMatrix.h"
+#include "GeneralMatrix.hh"
 #include <dynlapack.h>
-#include "SylvException.h"
+#include "SylvException.hh"
 
-#include "rfs_tensor.h"
-#include "normal_moments.h"
+#include "rfs_tensor.hh"
+#include "normal_moments.hh"
 
-#include "vector_function.h"
-#include "quadrature.h"
-#include "smolyak.h"
-#include "product.h"
-#include "quasi_mcarlo.h"
+#include "vector_function.hh"
+#include "quadrature.hh"
+#include "smolyak.hh"
+#include "product.hh"
+#include "quasi_mcarlo.hh"
 
 #include <cstdio>
 #include <cstring>

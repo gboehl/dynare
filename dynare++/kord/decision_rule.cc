@@ -4,7 +4,7 @@
 #include "decision_rule.hh"
 #include "dynamic_model.hh"
 
-#include "SymSchurDecomp.h"
+#include "SymSchurDecomp.hh"
 
 #include <dynlapack.h>
 

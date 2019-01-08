@@ -8,4 +8,4 @@ dynare_simul__CXXFLAGS = $(AM_CXXFLAGS) $(PTHREAD_CFLAGS)
 dynare_simul__LDFLAGS = $(AM_LDFLAGS) $(LDFLAGS_MATIO)
 dynare_simul__LDADD = ../libdynare++/libdynare++.a $(PTHREAD_LIBS) $(LIBADD_MATIO)
 
-nodist_dynare_simul__SOURCES = $(top_srcdir)/../../../dynare++/extern/matlab/dynare_simul.cpp
+nodist_dynare_simul__SOURCES = $(top_srcdir)/../../../dynare++/extern/matlab/dynare_simul.cc

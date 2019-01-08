@@ -1,7 +1,7 @@
 /* $Id: tests.cpp 148 2005-04-19 15:12:26Z kamenik $ */
 /* Copyright 2004, Ondra Kamenik */
 
-#include "SylvException.h"
+#include "SylvException.hh"
 #include "tl_exception.hh"
 #include "gs_tensor.hh"
 #include "factory.hh"

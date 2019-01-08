@@ -33,24 +33,43 @@ KORD_SRCS = \
 	$(TOPDIR)/kord/random.hh
 
 SYLV_SRCS = \
-	$(TOPDIR)/sylv/cc/IterativeSylvester.cpp \
-	$(TOPDIR)/sylv/cc/QuasiTriangular.cpp \
-	$(TOPDIR)/sylv/cc/QuasiTriangularZero.cpp \
-	$(TOPDIR)/sylv/cc/GeneralMatrix.cpp \
-	$(TOPDIR)/sylv/cc/GeneralSylvester.cpp \
-	$(TOPDIR)/sylv/cc/SimilarityDecomp.cpp \
-	$(TOPDIR)/sylv/cc/SylvException.cpp \
-	$(TOPDIR)/sylv/cc/SchurDecompEig.cpp \
-	$(TOPDIR)/sylv/cc/Vector.cpp \
-	$(TOPDIR)/sylv/cc/TriangularSylvester.cpp \
-	$(TOPDIR)/sylv/cc/SylvParams.cpp \
-	$(TOPDIR)/sylv/cc/BlockDiagonal.cpp \
-	$(TOPDIR)/sylv/cc/KronVector.cpp \
-	$(TOPDIR)/sylv/cc/SylvMemory.cpp \
-	$(TOPDIR)/sylv/cc/SymSchurDecomp.cpp \
-	$(TOPDIR)/sylv/cc/SylvMatrix.cpp \
-	$(TOPDIR)/sylv/cc/SchurDecomp.cpp \
-	$(TOPDIR)/sylv/cc/KronUtils.cpp
+	$(TOPDIR)/sylv/cc/BlockDiagonal.cc \
+	$(TOPDIR)/sylv/cc/BlockDiagonal.hh \
+	$(TOPDIR)/sylv/cc/GeneralMatrix.cc \
+	$(TOPDIR)/sylv/cc/GeneralMatrix.hh \
+	$(TOPDIR)/sylv/cc/GeneralSylvester.cc \
+	$(TOPDIR)/sylv/cc/GeneralSylvester.hh \
+	$(TOPDIR)/sylv/cc/IterativeSylvester.cc \
+	$(TOPDIR)/sylv/cc/IterativeSylvester.hh \
+	$(TOPDIR)/sylv/cc/KronUtils.cc \
+	$(TOPDIR)/sylv/cc/KronUtils.hh \
+	$(TOPDIR)/sylv/cc/KronVector.cc \
+	$(TOPDIR)/sylv/cc/KronVector.hh \
+	$(TOPDIR)/sylv/cc/QuasiTriangular.cc \
+	$(TOPDIR)/sylv/cc/QuasiTriangular.hh \
+	$(TOPDIR)/sylv/cc/QuasiTriangularZero.cc \
+	$(TOPDIR)/sylv/cc/QuasiTriangularZero.hh \
+	$(TOPDIR)/sylv/cc/SchurDecomp.cc \
+	$(TOPDIR)/sylv/cc/SchurDecomp.hh \
+	$(TOPDIR)/sylv/cc/SchurDecompEig.cc \
+	$(TOPDIR)/sylv/cc/SchurDecompEig.hh \
+	$(TOPDIR)/sylv/cc/SimilarityDecomp.cc \
+	$(TOPDIR)/sylv/cc/SimilarityDecomp.hh \
+	$(TOPDIR)/sylv/cc/SylvException.cc \
+	$(TOPDIR)/sylv/cc/SylvException.hh \
+	$(TOPDIR)/sylv/cc/SylvMatrix.cc \
+	$(TOPDIR)/sylv/cc/SylvMatrix.hh \
+	$(TOPDIR)/sylv/cc/SylvMemory.cc \
+	$(TOPDIR)/sylv/cc/SylvMemory.hh \
+	$(TOPDIR)/sylv/cc/SylvParams.cc \
+	$(TOPDIR)/sylv/cc/SylvParams.hh \
+	$(TOPDIR)/sylv/cc/SylvesterSolver.hh \
+	$(TOPDIR)/sylv/cc/SymSchurDecomp.cc \
+	$(TOPDIR)/sylv/cc/SymSchurDecomp.hh \
+	$(TOPDIR)/sylv/cc/TriangularSylvester.cc \
+	$(TOPDIR)/sylv/cc/TriangularSylvester.hh \
+	$(TOPDIR)/sylv/cc/Vector.cc \
+	$(TOPDIR)/sylv/cc/Vector.hh
 
 TL_SRCS = \
 	$(TOPDIR)/tl/cc/equivalence.cc \
@@ -114,4 +133,5 @@ nodist_libdynare___a_SOURCES = \
 	$(TL_SRCS) \
 	$(SYLV_SRCS) \
 	$(INTEG_SRCS) \
-	$(TOPDIR)/src/nlsolve.cpp
+	$(TOPDIR)/src/nlsolve.cc \
+	$(TOPDIR)/src/nlsolve.hh

@@ -13,7 +13,7 @@
 #include "t_container.hh"
 #include "sparse_tensor.hh"
 
-#include "Vector.h"
+#include "Vector.hh"
 
 /* The class is a virtual pure class which provides an access to names
    of the variables. */

@@ -16,8 +16,8 @@
 #ifndef VECTOR_FUNCTION_H
 #define VECTOR_FUNCTION_H
 
-#include "Vector.h"
-#include "GeneralMatrix.h"
+#include "Vector.hh"
+#include "GeneralMatrix.hh"
 
 #include <vector>
 

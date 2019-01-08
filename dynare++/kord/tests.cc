@@ -3,7 +3,7 @@
 
 #include <cstdlib>
 #include "korder.hh"
-#include "SylvException.h"
+#include "SylvException.hh"
 
 struct Rand
 {

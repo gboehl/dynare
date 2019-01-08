@@ -26,13 +26,13 @@
 #include "decision_rule.hh"
 #include "dynamic_model.hh"
 
-#include "exception.h"
-#include "dynare_exception.h"
+#include "exception.hh"
+#include "dynare_exception.hh"
 #include "fs_tensor.hh"
-#include "SylvException.h"
+#include "SylvException.hh"
 #include "tl_exception.hh"
 #include "kord_exception.hh"
-#include "nlsolve.h"
+#include "nlsolve.hh"
 #include "approximation.hh"
 
 class KordpDynare;

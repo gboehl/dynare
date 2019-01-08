@@ -1,6 +1,6 @@
 // Copyright 2005, Ondra Kamenik
 
-#include "SymSchurDecomp.h"
+#include "SymSchurDecomp.hh"
 
 #include "global_check.hh"
 

@@ -36,7 +36,7 @@
 #include "journal.hh"
 
 #include "kord_exception.hh"
-#include "GeneralSylvester.h"
+#include "GeneralSylvester.hh"
 
 #include <dynlapack.h>
 

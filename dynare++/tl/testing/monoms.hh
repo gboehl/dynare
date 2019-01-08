@@ -8,7 +8,7 @@
 #include "gs_tensor.hh"
 #include "t_container.hh"
 #include "sparse_tensor.hh"
-#include "Vector.h"
+#include "Vector.hh"
 
 class IntGenerator
 {

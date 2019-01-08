@@ -4,4 +4,4 @@ gensylv_CPPFLAGS = $(AM_CPPFLAGS) -I$(top_srcdir)/../../../dynare++/sylv/cc -I$(
 
 gensylv_LDADD = ../libdynare++/libdynare++.a
 
-nodist_gensylv_SOURCES = $(top_srcdir)/../../../dynare++/sylv/matlab/gensylv.cpp
+nodist_gensylv_SOURCES = $(top_srcdir)/../../../dynare++/sylv/matlab/gensylv.cc

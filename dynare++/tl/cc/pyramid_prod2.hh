@@ -74,7 +74,7 @@
 #include "rfs_tensor.hh"
 #include "stack_container.hh"
 
-#include "Vector.h"
+#include "Vector.hh"
 
 /* First we declare a helper class for the tensor. Its purpose is to
    gather the columns which are going to be Kronecker multiplied. The

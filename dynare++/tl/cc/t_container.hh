@@ -54,7 +54,7 @@
 #include "sparse_tensor.hh"
 #include "equivalence.hh"
 #include "rfs_tensor.hh"
-#include "Vector.h"
+#include "Vector.hh"
 
 #include <map>
 #include <string>

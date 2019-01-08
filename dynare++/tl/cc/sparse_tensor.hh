@@ -27,7 +27,7 @@
 #include "symmetry.hh"
 #include "tensor.hh"
 #include "gs_tensor.hh"
-#include "Vector.h"
+#include "Vector.hh"
 
 #include <map>
 

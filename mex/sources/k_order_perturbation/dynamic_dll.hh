@@ -32,7 +32,7 @@
 #include <string>
 
 #include "dynamic_abstract_class.hh"
-#include "dynare_exception.h"
+#include "dynare_exception.hh"
 
 using dynamic_tt_fct = void (*)(const double *y, const double *x, int nb_row_x, const double *params, const double *steady_state, int it_, double *T);
 using dynamic_resid_fct = void (*) (const double *y, const double *x, int nb_row_x, const double *params, const double *steady_state, int it_, const double *T, double *residual);
