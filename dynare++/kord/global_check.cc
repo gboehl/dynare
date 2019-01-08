@@ -8,17 +8,7 @@
 #include "product.hh"
 #include "quasi_mcarlo.hh"
 
-#ifdef __MINGW32__
-# define __CROSS_COMPILATION__
-#endif
-
-#ifdef __MINGW64__
-# define __CROSS_COMPILATION__
-#endif
-
-#ifdef __CROSS_COMPILATION__
-# define M_PI 3.14159265358979323846
-#endif
+#include <cmath>
 
 /* Here we just set a reference to the approximation, and create a new
    |DynamicModel|. */

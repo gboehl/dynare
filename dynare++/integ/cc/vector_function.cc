@@ -9,18 +9,6 @@
 #include <cstring>
 #include <algorithm>
 
-#ifdef __MINGW32__
-# define __CROSS_COMPILATION__
-#endif
-
-#ifdef __MINGW64__
-# define __CROSS_COMPILATION__
-#endif
-
-#ifdef __CROSS_COMPILATION__
-# define M_PI 3.14159265358979323846
-#endif
-
 /* Just an easy constructor of sequence of booleans defaulting to
    change everywhere. */
 
