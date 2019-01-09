@@ -593,7 +593,7 @@ extern ogp::location_type dynglob_lloc;
 void
 DynareParser::parse_glob(int length, const char *stream)
 {
-  char *buffer = new char[length+2];
+  auto *buffer = new char[length+2];
   strncpy(buffer, stream, length);
   buffer[length] = '\0';
   buffer[length+1] = '\0';
@@ -607,7 +607,7 @@ DynareParser::parse_glob(int length, const char *stream)
 int
 DynareParser::parse_order(int len, const char *str)
 {
-  char *buf = new char[len+1];
+  auto *buf = new char[len+1];
   strncpy(buf, str, len);
   buf[len] = '\0';
   int res;
@@ -619,7 +619,7 @@ DynareParser::parse_order(int len, const char *str)
 int
 DynareParser::parse_pldiscount(int len, const char *str)
 {
-  char *buf = new char[len+1];
+  auto *buf = new char[len+1];
   strncpy(buf, str, len);
   buf[len] = '\0';
   if (!atoms.is_type(buf, DynareDynamicAtoms::param))

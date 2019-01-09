@@ -19,11 +19,11 @@ SparseTensor::insert(const IntSequence &key, int r, double c)
   TL_RAISE_IF(!std::isfinite(c),
               "Insertion of non-finite value in SparseTensor::insert");
 
-  iterator first_pos = m.lower_bound(key);
+  auto first_pos = m.lower_bound(key);
 
   // check that pair |key| and |r| is unique
-  iterator last_pos = m.upper_bound(key);
-  for (iterator it = first_pos; it != last_pos; ++it)
+  auto last_pos = m.upper_bound(key);
+  for (auto it = first_pos; it != last_pos; ++it)
     if ((*it).second.first == r)
       {
         TL_RAISE("Duplicate <key, r> insertion in SparseTensor::insert");
@@ -43,7 +43,7 @@ bool
 SparseTensor::isFinite() const
 {
   bool res = true;
-  const_iterator run = m.begin();
+  auto run = m.begin();
   while (res && run != m.end())
     {
       if (!std::isfinite((*run).second.second))
@@ -60,7 +60,7 @@ double
 SparseTensor::getFoldIndexFillFactor() const
 {
   int cnt = 0;
-  const_iterator start_col = m.begin();
+  auto start_col = m.begin();
   while (start_col != m.end())
     {
       cnt++;
@@ -78,7 +78,7 @@ double
 SparseTensor::getUnfoldIndexFillFactor() const
 {
   int cnt = 0;
-  const_iterator start_col = m.begin();
+  auto start_col = m.begin();
   while (start_col != m.end())
     {
       const IntSequence &key = (*start_col).first;
@@ -96,14 +96,14 @@ void
 SparseTensor::print() const
 {
   printf("Fill: %3.2f %%\n", 100*getFillFactor());
-  const_iterator start_col = m.begin();
+  auto start_col = m.begin();
   while (start_col != m.end())
     {
       const IntSequence &key = (*start_col).first;
       printf("Column: "); key.print();
-      const_iterator end_col = m.upper_bound(key);
+      auto end_col = m.upper_bound(key);
       int cnt = 1;
-      for (const_iterator run = start_col; run != end_col; ++run, cnt++)
+      for (auto run = start_col; run != end_col; ++run, cnt++)
         {
           if ((cnt/7)*7 == cnt)
             printf("\n");
@@ -174,9 +174,9 @@ FSSparseTensor::multColumnAndAdd(const Tensor &t, Vector &v) const
           TL_RAISE_IF(key[0] < 0 || key[key.size()-1] >= nv,
                       "Wrong coordinates of index in FSSparseTensor::multColumnAndAdd");
 
-          const_iterator first_pos = m.lower_bound(key);
-          const_iterator last_pos = m.upper_bound(key);
-          for (const_iterator cit = first_pos; cit != last_pos; ++cit)
+          auto first_pos = m.lower_bound(key);
+          auto last_pos = m.upper_bound(key);
+          for (auto cit = first_pos; cit != last_pos; ++cit)
             {
               int r = (*cit).second.first;
               double c = (*cit).second.second;
@@ -215,9 +215,9 @@ GSSparseTensor::GSSparseTensor(const FSSparseTensor &t, const IntSequence &ss,
       ub[i] = s_offsets[coor[i]] + ss[coor[i]] - 1;
     }
 
-  FSSparseTensor::const_iterator lbi = t.getMap().lower_bound(lb);
-  FSSparseTensor::const_iterator ubi = t.getMap().upper_bound(ub);
-  for (FSSparseTensor::const_iterator run = lbi; run != ubi; ++run)
+  auto lbi = t.getMap().lower_bound(lb);
+  auto ubi = t.getMap().upper_bound(ub);
+  for (auto run = lbi; run != ubi; ++run)
     {
       if (lb.lessEq((*run).first) && (*run).first.lessEq(ub))
         {

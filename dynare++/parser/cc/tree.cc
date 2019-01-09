@@ -54,7 +54,7 @@ OperationTree::add_unary(code_t code, int op)
     return one;
 
   Operation unary(code, op);
-  _Topmap::const_iterator i = ((const _Topmap &) opmap).find(unary);
+  auto i = ((const _Topmap &) opmap).find(unary);
   if (i == opmap.end())
     {
       int newop = terms.size();
@@ -144,7 +144,7 @@ OperationTree::add_binary(code_t code, int op1, int op2)
 
   // construct operation and check/add it
   Operation binary(code, op1, op2);
-  _Topmap::const_iterator i = ((const _Topmap &) opmap).find(binary);
+  auto i = ((const _Topmap &) opmap).find(binary);
   if (i == opmap.end())
     {
       int newop = terms.size();
@@ -334,7 +334,7 @@ OperationTree::add_substitution(int t, const map<int, int> &subst,
                                 const OperationTree &otree)
 {
   // return substitution of t if it is in the map
-  map<int, int>::const_iterator it = subst.find(t);
+  auto it = subst.find(t);
   if (subst.end() != it)
     return (*it).second;
 
@@ -374,7 +374,7 @@ void
 OperationTree::nularify(int t)
 {
   // remove the original operation from opmap
-  _Topmap::iterator it = opmap.find(terms[t]);
+  auto it = opmap.find(terms[t]);
   if (it != opmap.end())
     opmap.erase(it);
   // turn the operation to nulary

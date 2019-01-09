@@ -28,7 +28,7 @@ void
 CSVParser::csv_parse(int length, const char *str)
 {
   // allocate temporary buffer and parse
-  char *buffer = new char[length+2];
+  auto *buffer = new char[length+2];
   strncpy(buffer, str, length);
   buffer[length] = '\0';
   buffer[length+1] = '\0';

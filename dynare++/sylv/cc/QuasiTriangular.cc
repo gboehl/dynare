@@ -478,7 +478,7 @@ QuasiTriangular::QuasiTriangular(const SchurDecompZero &decomp)
         }
     }
   // construct diagonal
-  Diagonal *const d = new Diagonal(getData().base(), decomp.getDim());
+  auto *const d = new Diagonal(getData().base(), decomp.getDim());
   diagonal = *d;
   delete d;
 }

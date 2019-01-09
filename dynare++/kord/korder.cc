@@ -346,7 +346,7 @@ KOrder::switchToFolded()
         {
           if ((*si)[2] == 0 && g<unfold>().check(*si))
             {
-              FGSTensor *ft = new FGSTensor(*(g<unfold>().get(*si)));
+              auto *ft = new FGSTensor(*(g<unfold>().get(*si)));
               insertDerivative<fold>(ft);
               if (dim > 1)
                 {
@@ -357,7 +357,7 @@ KOrder::switchToFolded()
             }
           if (G<unfold>().check(*si))
             {
-              FGSTensor *ft = new FGSTensor(*(G<unfold>().get(*si)));
+              auto *ft = new FGSTensor(*(G<unfold>().get(*si)));
               G<fold>().insert(ft);
               if (dim > 1)
                 {

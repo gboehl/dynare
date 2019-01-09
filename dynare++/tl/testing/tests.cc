@@ -225,7 +225,7 @@ TestRunnable::dense_prod(const Symmetry &bsym, const IntSequence &bnvs,
   Factory f;
   FGSContainer *cont
     = f.makeCont<FGSTensor, FGSContainer>(hnv, bnvs, bsym.dimen()-hdim+1);
-  FGSTensor *fh
+  auto *fh
     = f.make<FGSTensor>(rows, Symmetry(hdim), IntSequence(1, hnv));
   UGSTensor uh(*fh);
   FGSTensor fb(rows, TensorDimens(bsym, bnvs));
@@ -451,8 +451,8 @@ TestRunnable::folded_contraction(int r, int nv, int dim)
   Factory fact;
   Vector *x = fact.makeVector(nv);
 
-  FFSTensor *forig = fact.make<FFSTensor>(r, nv, dim);
-  FFSTensor *f = new FFSTensor(*forig);
+  auto *forig = fact.make<FFSTensor>(r, nv, dim);
+  auto *f = new FFSTensor(*forig);
   clock_t ctime = clock();
   for (int d = dim-1; d > 0; d--)
     {
@@ -493,10 +493,10 @@ TestRunnable::unfolded_contraction(int r, int nv, int dim)
   Factory fact;
   Vector *x = fact.makeVector(nv);
 
-  FFSTensor *forig = fact.make<FFSTensor>(r, nv, dim);
+  auto *forig = fact.make<FFSTensor>(r, nv, dim);
   UFSTensor uorig(*forig);
   delete forig;
-  UFSTensor *u = new UFSTensor(uorig);
+  auto *u = new UFSTensor(uorig);
   clock_t ctime = clock();
   for (int d = dim-1; d > 0; d--)
     {

@@ -22,7 +22,7 @@ AtomSubstitutions::AtomSubstitutions(const AtomSubstitutions &as, const FineAtom
   for (const auto & it : as.old2new)
     {
       Tshiftnameset sset;
-      for (Tshiftnameset::const_iterator itt = it.second.begin();
+      for (auto itt = it.second.begin();
            itt != it.second.end(); ++itt)
         sset.insert(Tshiftname(ns.query((*itt).first), (*itt).second));
       old2new.insert(Toldnamemap::value_type(ns.query(it.first), sset));
@@ -42,7 +42,7 @@ AtomSubstitutions::add_substitution(const char *newname, const char *oldname, in
   // insert to new2old map
   new2old.insert(Tshiftmap::value_type(newname, Tshiftname(oldname, tshift)));
   // insert to old2new map
-  Toldnamemap::iterator it = old2new.find(oldname);
+  auto it = old2new.find(oldname);
   if (it != old2new.end())
     (*it).second.insert(Tshiftname(newname, -tshift));
   else
@@ -80,7 +80,7 @@ AtomSubstitutions::substitutions_finished(VarOrdering::ord_type ot)
 const char *
 AtomSubstitutions::get_new4old(const char *oldname, int tshift) const
 {
-  Toldnamemap::const_iterator it = old2new.find(oldname);
+  auto it = old2new.find(oldname);
   if (it != old2new.end())
     {
       const Tshiftnameset &sset = (*it).second;
@@ -96,7 +96,7 @@ AtomSubstitutions::print() const
 {
   printf("Atom Substitutions:\nOld ==> New:\n");
   for (const auto & it : old2new)
-    for (Tshiftnameset::const_iterator itt = it.second.begin();
+    for (auto itt = it.second.begin();
          itt != it.second.end(); ++itt)
       printf("    %s ==> [%s, %d]\n", it.first, (*itt).first, (*itt).second);
 
@@ -164,7 +164,7 @@ SAtoms::findNameWithLeadInInterval(const vector<const char *> &names,
 {
   for (auto name : names)
     {
-      DynamicAtoms::Tvarmap::const_iterator it = vars.find(name);
+      auto it = vars.find(name);
       if (it != vars.end())
         {
           const DynamicAtoms::Tlagmap &lmap = (*it).second;

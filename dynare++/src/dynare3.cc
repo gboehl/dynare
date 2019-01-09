@@ -333,7 +333,7 @@ DynareDerEvalLoader::DynareDerEvalLoader(const ogp::FineAtoms &a,
   md.clear();
   for (int iord = 1; iord <= order; iord++)
     {
-      FSSparseTensor *t = new FSSparseTensor(iord, atoms.ny()+atoms.nys()+atoms.nyss()+atoms.nexo(), atoms.ny());
+      auto *t = new FSSparseTensor(iord, atoms.ny()+atoms.nys()+atoms.nyss()+atoms.nexo(), atoms.ny());
       md.insert(t);
     }
 }

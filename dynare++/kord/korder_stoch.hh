@@ -182,7 +182,7 @@ StochForwardDerivs<t>::StochForwardDerivs(const PartitionY &ypart, int nu,
   _Tpol g_int_sym(r, ypart.nys()+1);
   for (int d = 1; d <= maxd; d++)
     {
-      _Ttensym *ten = new _Ttensym(r, ypart.nys()+1, d);
+      auto *ten = new _Ttensym(r, ypart.nys()+1, d);
       ten->zeros();
       for (int i = 0; i <= d; i++)
         {
@@ -492,7 +492,7 @@ KOrderStoch::faaDiBrunoG(const Symmetry &sym) const
   JournalRecordPair pa(journal);
   pa << "Faa Di Bruno GX container for " << sym << endrec;
   TensorDimens tdims(sym, nvs);
-  _Ttensor *res = new _Ttensor(ypart.nyss(), tdims);
+  auto *res = new _Ttensor(ypart.nyss(), tdims);
   FaaDiBruno bruno(journal);
   bruno.calculate(Gstack<t>(), h<t>(), *res);
   return res;

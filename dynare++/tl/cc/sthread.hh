@@ -301,7 +301,7 @@ namespace sthread
     mmval *
     get(const void *c, const char *id)
     {
-      iterator it = _Tparent::find(mmkey(c, id));
+      auto it = _Tparent::find(mmkey(c, id));
       if (it == _Tparent::end())
         return NULL;
       return &((*it).second);
@@ -314,7 +314,7 @@ namespace sthread
     void
     remove(const void *c, const char *id)
     {
-      iterator it = _Tparent::find(mmkey(c, id));
+      auto it = _Tparent::find(mmkey(c, id));
       if (it != _Tparent::end())
         this->erase(it);
     }
@@ -563,7 +563,7 @@ namespace sthread
     run()
     {
       int mpt = max_parallel_threads;
-      iterator it = tlist.begin();
+      auto it = tlist.begin();
       while (it != tlist.end())
         {
           if (counter.waitForChange() < mpt)

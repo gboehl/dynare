@@ -124,10 +124,10 @@ URSingleTensor::URSingleTensor(const vector<ConstVector> &cols)
       return;
     }
 
-  Vector *last = new Vector(cols[cols.size()-1]);
+  auto *last = new Vector(cols[cols.size()-1]);
   for (int i = cols.size()-2; i > 0; i--)
     {
-      Vector *newlast = new Vector(Tensor::power(nvar(), cols.size()-i));
+      auto *newlast = new Vector(Tensor::power(nvar(), cols.size()-i));
       KronProd::kronMult(cols[i], ConstVector(*last), *newlast);
       delete last;
       last = newlast;
@@ -148,10 +148,10 @@ URSingleTensor::URSingleTensor(const ConstVector &v, int d)
       return;
     }
 
-  Vector *last = new Vector(v);
+  auto *last = new Vector(v);
   for (int i = d-2; i > 0; i--)
     {
-      Vector *newlast = new Vector(last->length()*v.length());
+      auto *newlast = new Vector(last->length()*v.length());
       KronProd::kronMult(v, ConstVector(*last), *newlast);
       delete last;
       last = newlast;

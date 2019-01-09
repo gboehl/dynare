@@ -54,7 +54,7 @@ FSSparseTensor *
 SparseGenerator::makeTensor(int dim, int nv, int r,
                             double fill, double m)
 {
-  FSSparseTensor *res = new FSSparseTensor(dim, nv, r);
+  auto *res = new FSSparseTensor(dim, nv, r);
   FFSTensor dummy(0, nv, dim);
   for (Tensor::index fi = dummy.begin(); fi != dummy.end(); ++fi)
     {

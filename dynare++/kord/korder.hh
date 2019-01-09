@@ -450,7 +450,7 @@ KOrder::faaDiBrunoG(const Symmetry &sym) const
   JournalRecordPair pa(journal);
   pa << "Faa Di Bruno G container for " << sym << endrec;
   TensorDimens tdims(sym, nvs);
-  _Ttensor *res = new _Ttensor(ypart.nyss(), tdims);
+  auto *res = new _Ttensor(ypart.nyss(), tdims);
   FaaDiBruno bruno(journal);
   bruno.calculate(Gstack<t>(), gss<t>(), *res);
   return res;
@@ -926,7 +926,7 @@ template <int t>
 Vector *
 KOrder::calcStochShift(int order, double sigma) const
 {
-  Vector *res = new Vector(ny);
+  auto *res = new Vector(ny);
   res->zeros();
   int jfac = 1;
   for (int j = 1; j <= order; j++, jfac *= j)

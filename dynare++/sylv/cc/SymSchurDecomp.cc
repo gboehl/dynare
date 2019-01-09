@@ -49,8 +49,8 @@ SymSchurDecomp::SymSchurDecomp(const GeneralMatrix &mata)
   lwork = (int) tmpwork;
   liwork = tmpiwork;
   // allocate work arrays
-  double *work = new double[lwork];
-  lapack_int *iwork = new lapack_int[liwork];
+  auto *work = new double[lwork];
+  auto *iwork = new lapack_int[liwork];
 
   // do the calculation
   dsyevr(jobz, range, uplo, &n, a, &lda, vl, vu, il, iu, &abstol,

@@ -133,7 +133,7 @@ extern location_type fmla_lloc;
 void
 FormulaParser::parse(int length, const char *stream)
 {
-  char *buffer = new char[length+2];
+  auto *buffer = new char[length+2];
   strncpy(buffer, stream, length);
   buffer[length] = '\0';
   buffer[length+1] = '\0';
@@ -273,7 +273,7 @@ FormulaDerivatives::derivative(const FoldMultiIndex &mi) const
     throw ogu::Exception(__FILE__, __LINE__,
                          "Wrong multi-index variables in FormulaDerivatives::derivative");
 
-  Tfmiintmap::const_iterator it = ind2der.find(mi);
+  auto it = ind2der.find(mi);
   if (it == ind2der.end())
     return OperationTree::zero;
   else
@@ -428,7 +428,7 @@ int
 FoldMultiIndex::offset() const
 {
   // make copy for the recursions
-  int *tmp = new int[ord];
+  auto *tmp = new int[ord];
   for (int i = 0; i < ord; i++)
     tmp[i] = data[i];
   // call the recursive algorithm
@@ -499,11 +499,11 @@ FormulaDerEvaluator::eval(const AtomValues &av, FormulaDerEvalLoader &loader, in
   etree.reset_all();
   av.setValues(etree);
 
-  int *vars = new int[order];
+  auto *vars = new int[order];
 
   for (unsigned int i = 0; i < ders.size(); i++)
     {
-      for (FormulaDerivatives::Tfmiintmap::const_iterator it = ders[i]->ind2der.begin();
+      for (auto it = ders[i]->ind2der.begin();
            it != ders[i]->ind2der.end(); ++it)
         {
           const FoldMultiIndex &mi = (*it).first;
@@ -532,7 +532,7 @@ FormulaDerEvaluator::eval(const vector<int> &mp, const AtomValues &av,
 
   int nvar_glob = der_atoms.size();
   int nvar = mp.size();
-  int *vars = new int[order];
+  auto *vars = new int[order];
 
   for (unsigned int i = 0; i < ders.size(); i++)
     {

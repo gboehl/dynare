@@ -33,7 +33,7 @@ double
 NormalICDF::get(double x)
 {
   double xx = (2*normal_icdf_end-1)*std::abs(x-0.5);
-  int i = (int) floor(xx/normal_icdf_step);
+  auto i = (int) floor(xx/normal_icdf_step);
   double xx1 = normal_icdf_step*i;
   double yy1 = normal_icdf_data[i];
   double y;

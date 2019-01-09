@@ -26,7 +26,7 @@ DynareStaticAtoms::check_variable(const char *name) const
 {
   if (0 == varnames.query(name))
     throw ogp::ParserException(std::string("Unknown name <")+name+">", 0);
-  Tvarmap::const_iterator it = vars.find(name);
+  auto it = vars.find(name);
   if (it == vars.end())
     return -1;
   else
@@ -88,7 +88,7 @@ DynareDynamicAtoms::register_uniq_param(const char *name)
 bool
 DynareDynamicAtoms::is_type(const char *name, atype tp) const
 {
-  Tatypemap::const_iterator it = atom_type.find(name);
+  auto it = atom_type.find(name);
   if (it != atom_type.end() && (*it).second == tp)
     return true;
   else

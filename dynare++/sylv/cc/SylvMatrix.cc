@@ -242,7 +242,7 @@ SqSylvMatrix::multInvLeft2(GeneralMatrix &a, GeneralMatrix &b,
     }
   // PLU factorization
   Vector inv(data);
-  lapack_int *const ipiv = new lapack_int[rows];
+  auto *const ipiv = new lapack_int[rows];
   lapack_int info;
   lapack_int rows2 = rows;
   dgetrf(&rows2, &rows2, inv.base(), &rows2, ipiv, &info);
@@ -259,8 +259,8 @@ SqSylvMatrix::multInvLeft2(GeneralMatrix &a, GeneralMatrix &b,
   delete [] ipiv;
 
   // condition numbers
-  double *const work = new double[4*rows];
-  lapack_int *const iwork = new lapack_int[rows];
+  auto *const work = new double[4*rows];
+  auto *const iwork = new lapack_int[rows];
   double norm1 = getNorm1();
   dgecon("1", &rows2, inv.base(), &rows2, &norm1, &rcond1,
          work, iwork, &info);

@@ -46,7 +46,7 @@ OrdSequence::operator==(const OrdSequence &s) const
 void
 OrdSequence::add(int i)
 {
-  vector<int>::iterator vit = data.begin();
+  auto vit = data.begin();
   while (vit != data.end() && *vit < i)
     ++vit;
   if (vit != data.end() && *vit == i)
@@ -57,7 +57,7 @@ OrdSequence::add(int i)
 void
 OrdSequence::add(const OrdSequence &s)
 {
-  vector<int>::const_iterator vit = s.data.begin();
+  auto vit = s.data.begin();
   while (vit != s.data.end())
     {
       add(*vit);
@@ -69,7 +69,7 @@ OrdSequence::add(const OrdSequence &s)
 bool
 OrdSequence::has(int i) const
 {
-  vector<int>::const_iterator vit = data.begin();
+  auto vit = data.begin();
   while (vit != data.end())
     {
       if (*vit == i)
@@ -133,8 +133,8 @@ Equivalence::Equivalence(const Equivalence &e, int i1, int i2)
   : n(e.n),
     classes(e.classes)
 {
-  seqit s1 = find(i1);
-  seqit s2 = find(i2);
+  auto s1 = find(i1);
+  auto s2 = find(i2);
   if (s1 != s2)
     {
       OrdSequence ns(*s1);
@@ -171,7 +171,7 @@ Equivalence::operator==(const Equivalence &e) const
 Equivalence::const_seqit
 Equivalence::findHaving(int i) const
 {
-  const_seqit si = classes.begin();
+  auto si = classes.begin();
   while (si != classes.end())
     {
       if ((*si).has(i))
@@ -186,7 +186,7 @@ Equivalence::findHaving(int i) const
 Equivalence::seqit
 Equivalence::findHaving(int i)
 {
-  seqit si = classes.begin();
+  auto si = classes.begin();
   while (si != classes.end())
     {
       if ((*si).has(i))
@@ -203,7 +203,7 @@ Equivalence::findHaving(int i)
 Equivalence::const_seqit
 Equivalence::find(int j) const
 {
-  const_seqit si = classes.begin();
+  auto si = classes.begin();
   int i = 0;
   while (si != classes.end() && i < j)
     {
@@ -218,7 +218,7 @@ Equivalence::find(int j) const
 Equivalence::seqit
 Equivalence::find(int j)
 {
-  seqit si = classes.begin();
+  auto si = classes.begin();
   int i = 0;
   while (si != classes.end() && i < j)
     {
@@ -234,7 +234,7 @@ Equivalence::find(int j)
 void
 Equivalence::insert(const OrdSequence &s)
 {
-  seqit si = classes.begin();
+  auto si = classes.begin();
   while (si != classes.end() && *si < s)
     ++si;
   classes.insert(si, s);
@@ -251,7 +251,7 @@ Equivalence::trace(IntSequence &out, int num) const
 {
   int i = 0;
   int nc = 0;
-  for (const_seqit it = begin(); it != end() && nc < num; ++it, ++nc)
+  for (auto it = begin(); it != end() && nc < num; ++it, ++nc)
     for (int j = 0; j < (*it).length(); j++, i++)
       {
         TL_RAISE_IF(i >= out.size(),
@@ -270,7 +270,7 @@ Equivalence::trace(IntSequence &out, const Permutation &per) const
   int i = 0;
   for (int iclass = 0; iclass < numClasses(); iclass++)
     {
-      const_seqit itper = find(per.getMap()[iclass]);
+      auto itper = find(per.getMap()[iclass]);
       for (int j = 0; j < (*itper).length(); j++, i++)
         out[i] = (*itper)[j];
     }
@@ -281,7 +281,7 @@ void
 Equivalence::print(const char *prefix) const
 {
   int i = 0;
-  for (const_seqit it = classes.begin();
+  for (auto it = classes.begin();
        it != classes.end();
        ++it, i++)
     {
@@ -343,7 +343,7 @@ EquivalenceSet::EquivalenceSet(int num)
 bool
 EquivalenceSet::has(const Equivalence &e) const
 {
-  list<Equivalence>::const_reverse_iterator rit = equis.rbegin();
+  auto rit = equis.rbegin();
   while (rit != equis.rend() && *rit != e)
     ++rit;
   if (rit != equis.rend())
@@ -385,7 +385,7 @@ EquivalenceSet::print(const char *prefix) const
   strcpy(tmp, prefix);
   strcat(tmp, "    ");
   int i = 0;
-  for (list<Equivalence>::const_iterator it = equis.begin();
+  for (auto it = equis.begin();
        it != equis.end();
        ++it, i++)
     {

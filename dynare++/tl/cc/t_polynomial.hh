@@ -294,7 +294,7 @@ public:
           }
         if (d > 1)
           {
-            _Ttype *new_last = new _Ttype(*last, v);
+            auto *new_last = new _Ttype(*last, v);
             delete last;
             last = new_last;
           }
@@ -364,7 +364,7 @@ public:
     TL_RAISE_IF(v.length() != nvars(),
                 "Wrong length of vector for TensorPolynomial::evalPartially");
 
-    _Ttype *res = new _Ttype(nrows(), nvars(), s);
+    auto *res = new _Ttype(nrows(), nvars(), s);
     res->zeros();
 
     if (_Tparent::check(Symmetry(s)))
@@ -375,10 +375,10 @@ public:
         if (_Tparent::check(Symmetry(d)))
           {
             const _Ttype &ltmp = *(_Tparent::get(Symmetry(d)));
-            _Ttype *last = new _Ttype(ltmp);
+            auto *last = new _Ttype(ltmp);
             for (int j = 0; j < d - s; j++)
               {
-                _Ttype *newlast = new _Ttype(*last, v);
+                auto *newlast = new _Ttype(*last, v);
                 delete last;
                 last = newlast;
               }

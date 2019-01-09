@@ -27,20 +27,20 @@ UNormalMoments::generateMoments(int maxdim, const TwoDMatrix &v)
               "Variance-covariance matrix is not square in UNormalMoments constructor");
 
   int nv = v.nrows();
-  URSingleTensor *mom2 = new URSingleTensor(nv, 2);
+  auto *mom2 = new URSingleTensor(nv, 2);
   mom2->getData() = v.getData();
   insert(mom2);
-  URSingleTensor *kronv = new URSingleTensor(nv, 2);
+  auto *kronv = new URSingleTensor(nv, 2);
   kronv->getData() = v.getData();
   for (int d = 4; d <= maxdim; d += 2)
     {
-      URSingleTensor *newkronv = new URSingleTensor(nv, d);
+      auto *newkronv = new URSingleTensor(nv, d);
       KronProd::kronMult(ConstVector(v.getData()),
                          ConstVector(kronv->getData()),
                          newkronv->getData());
       delete kronv;
       kronv = newkronv;
-      URSingleTensor *mom = new URSingleTensor(nv, d);
+      auto *mom = new URSingleTensor(nv, d);
       // apply $F_n$ to |kronv|
       /* Here we go through all equivalences, select only those having 2
          elements in each class, then go through all elements in |kronv| and
@@ -94,7 +94,7 @@ FNormalMoments::FNormalMoments(const UNormalMoments &moms)
 {
   for (const auto & mom : moms)
     {
-      FRSingleTensor *fm = new FRSingleTensor(*(mom.second));
+      auto *fm = new FRSingleTensor(*(mom.second));
       insert(fm);
     }
 }

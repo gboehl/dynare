@@ -489,7 +489,7 @@ IRFResults::writeMat(mat_t *fd, const char *prefix) const
 void
 SimulationWorker::operator()()
 {
-  ExplicitShockRealization *esr = new ExplicitShockRealization(sr, np);
+  auto *esr = new ExplicitShockRealization(sr, np);
   TwoDMatrix *m = dr.simulate(em, np, st, *esr);
   {
     SYNCHRO syn(&res, "simulation");
@@ -503,7 +503,7 @@ SimulationWorker::operator()()
 void
 SimulationIRFWorker::operator()()
 {
-  ExplicitShockRealization *esr
+  auto *esr
     = new ExplicitShockRealization(res.control.getShocks(idata));
   esr->addToShock(ishock, 0, imp);
   const TwoDMatrix &data = res.control.getData(idata);

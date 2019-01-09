@@ -36,7 +36,7 @@ extern location_type asgn_lloc;
 void
 AtomAssignings::parse(int length, const char *stream)
 {
-  char *buffer = new char[length+2];
+  auto *buffer = new char[length+2];
   strncpy(buffer, stream, length);
   buffer[length] = '\0';
   buffer[length+1] = '\0';
@@ -104,7 +104,7 @@ AtomAssignings::add_assignment(int asgn_off, const char *str, int name_len,
 
   // find the name in the atoms, make copy of name to be able to put
   // '\0' at the end
-  char *buf = new char[name_len+1];
+  auto *buf = new char[name_len+1];
   strncpy(buf, str, name_len);
   buf[name_len] = '\0';
   // if left hand side is a registered atom, insert it to tree
@@ -203,7 +203,7 @@ AtomAsgnEvaluator::setValues(EvalTree &et) const
       int t = aa.atoms.index(ss);
       if (t >= 0)
         {
-          Tusrvalmap::const_iterator it = user_values.find(t);
+          auto it = user_values.find(t);
           if (it == user_values.end())
             et.set_nulary(t, nan);
           else
@@ -218,7 +218,7 @@ AtomAsgnEvaluator::set_user_value(const char *name, double val)
   int t = aa.atoms.index(name);
   if (t >= 0)
     {
-      Tusrvalmap::iterator it = user_values.find(t);
+      auto it = user_values.find(t);
       if (it == user_values.end())
         user_values.insert(Tusrvalmap::value_type(t, val));
       else
@@ -240,7 +240,7 @@ AtomAsgnEvaluator::load(int i, double res)
 double
 AtomAsgnEvaluator::get_value(const char *name) const
 {
-  AtomAssignings::Tvarintmap::const_iterator it = aa.lname2expr.find(name);
+  auto it = aa.lname2expr.find(name);
   if (it == aa.lname2expr.end())
     return std::numeric_limits<double>::quiet_NaN();
   else

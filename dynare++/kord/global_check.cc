@@ -101,7 +101,7 @@ ResidFunction::setYU(const Vector &ys, const Vector &xx)
     }
   else
     {
-      FFSTensor *ten = new FFSTensor(hss->nrows(), hss->nvars(), 0);
+      auto *ten = new FFSTensor(hss->nrows(), hss->nvars(), 0);
       ten->getData() = ysteady_ss;
       hss->insert(ten);
     }

@@ -20,7 +20,7 @@ NameList::writeMat(mat_t *fd, const char *vname) const
   if (maxlen == 0)
     return;
 
-  char *m = new char[getNum()*maxlen];
+  auto *m = new char[getNum()*maxlen];
 
   for (int i = 0; i < getNum(); i++)
     for (int j = 0; j < maxlen; j++)

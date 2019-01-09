@@ -34,7 +34,7 @@ public:
   _Ttype *
   make(int r, int nv, int dim)
   {
-    _Ttype *res = new _Ttype(r, nv, dim);
+    auto *res = new _Ttype(r, nv, dim);
     init(dim, nv);
     fillMatrix(*res);
     return res;
@@ -45,14 +45,14 @@ public:
   makeCont(int r, const IntSequence &nvs, int maxdim)
   {
     int symnum = nvs.size();
-    _Ctype *res = new _Ctype(symnum);
+    auto *res = new _Ctype(symnum);
     for (int dim = 1; dim <= maxdim; dim++)
       {
         if (symnum == 1)
           {
             // full symmetry
             Symmetry sym(dim);
-            _Ttype *t = make<_Ttype>(r, sym, nvs);
+            auto *t = make<_Ttype>(r, sym, nvs);
             res->insert(t);
           }
         else
@@ -61,7 +61,7 @@ public:
             for (int i = 0; i <= dim; i++)
               {
                 Symmetry sym(i, dim-i);
-                _Ttype *t = make<_Ttype>(r, sym, nvs);
+                auto *t = make<_Ttype>(r, sym, nvs);
                 res->insert(t);
               }
           }
@@ -73,10 +73,10 @@ public:
   _Ptype *
   makePoly(int r, int nv, int maxdim)
   {
-    _Ptype *p = new _Ptype(r, nv);
+    auto *p = new _Ptype(r, nv);
     for (int d = 1; d <= maxdim; d++)
       {
-        _Ttype *t = make<_Ttype>(r, nv, d);
+        auto *t = make<_Ttype>(r, nv, d);
         p->insert(t);
       }
     return p;

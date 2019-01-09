@@ -35,7 +35,7 @@ extern "C" {
     if (nhrs != 5 || nlhs > 3 || nlhs < 2)
       DYN_MEX_FUNC_ERR_MSG_TXT("Gensylv: Must have exactly 5 input args and either 2 or 3 output args.");
 
-    int order = (int) mxGetScalar(prhs[0]);
+    auto order = (int) mxGetScalar(prhs[0]);
     const mxArray *const A = prhs[1];
     const mxArray *const B = prhs[2];
     const mxArray *const C = prhs[3];

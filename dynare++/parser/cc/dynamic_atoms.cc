@@ -14,7 +14,7 @@ NameStorage::NameStorage(const NameStorage &stor)
 {
   for (auto i : stor.name_store)
     {
-      char *str = new char[strlen(i)+1];
+      auto *str = new char[strlen(i)+1];
       strcpy(str, i);
       name_store.push_back(str);
       name_set.insert(str);
@@ -33,7 +33,7 @@ NameStorage::~NameStorage()
 const char *
 NameStorage::query(const char *name) const
 {
-  set<const char *, ltstr>::const_iterator it = name_set.find(name);
+  auto it = name_set.find(name);
   if (it == name_set.end())
     return NULL;
   else
@@ -43,10 +43,10 @@ NameStorage::query(const char *name) const
 const char *
 NameStorage::insert(const char *name)
 {
-  set<const char *, ltstr>::const_iterator it = name_set.find(name);
+  auto it = name_set.find(name);
   if (it == name_set.end())
     {
-      char *str = new char[strlen(name)+1];
+      auto *str = new char[strlen(name)+1];
       strcpy(str, name);
       name_store.push_back(str);
       name_set.insert(str);
@@ -97,14 +97,14 @@ Constants::is_constant(int t) const
 {
   if (t < OperationTree::num_constants)
     return true;
-  Tconstantmap::const_iterator it = cmap.find(t);
+  auto it = cmap.find(t);
   return (it != cmap.end());
 }
 
 double
 Constants::get_constant_value(int t) const
 {
-  Tconstantmap::const_iterator it = cmap.find(t);
+  auto it = cmap.find(t);
   if (it != cmap.end())
     return (*it).second;
   else
@@ -120,7 +120,7 @@ Constants::check(const char *str) const
 {
   double d;
   sscanf(str, "%lf", &d);
-  Tconstantinvmap::const_iterator it = cinvmap.find(d);
+  auto it = cinvmap.find(d);
   if (it != cinvmap.end())
     return (*it).second;
   else
@@ -170,12 +170,12 @@ DynamicAtoms::check_variable(const char *name) const
   string str;
   int ll;
   parse_variable(name, str, ll);
-  Tvarmap::const_iterator it = vars.find(str.c_str());
+  auto it = vars.find(str.c_str());
 
   if (it != vars.end())
     {
       const Tlagmap &lmap = (*it).second;
-      Tlagmap::const_iterator itt = lmap.find(ll);
+      auto itt = lmap.find(ll);
       if (itt != lmap.end())
         return (*itt).second;
     }
@@ -220,7 +220,7 @@ DynamicAtoms::assign_variable(const char *varname, int ll, int t)
     throw ogu::Exception(__FILE__, __LINE__,
                          "Attempt to assign already allocated tree index");
 
-  Tvarmap::iterator it = vars.find(varname);
+  auto it = vars.find(varname);
   if (it != vars.end())
     {
       Tlagmap &lmap = (*it).second;
@@ -247,11 +247,11 @@ DynamicAtoms::assign_variable(const char *varname, int ll, int t)
 void
 DynamicAtoms::unassign_variable(const char *varname, int ll, int t)
 {
-  Tvarmap::iterator it = vars.find(varname);
+  auto it = vars.find(varname);
   if (it != vars.end())
     {
       Tlagmap &lmap = (*it).second;
-      Tlagmap::iterator itt = lmap.find(ll);
+      auto itt = lmap.find(ll);
       if (itt != lmap.end())
         {
           if ((*itt).second == t)
@@ -262,7 +262,7 @@ DynamicAtoms::unassign_variable(const char *varname, int ll, int t)
               if (lmap.size() == 0)
                 vars.erase(it);
               // erase it from the indices
-              Tindexmap::iterator ittt = indices.find(t);
+              auto ittt = indices.find(t);
               if (ittt != indices.end())
                 indices.erase(ittt);
 
@@ -318,7 +318,7 @@ DynamicAtoms::variables() const
 void
 DynamicAtoms::varspan(int t, int &mlead, int &mlag) const
 {
-  Tindexmap::const_iterator it = indices.find(t);
+  auto it = indices.find(t);
   if (indices.end() == it)
     {
       mlead = INT_MIN;
@@ -331,7 +331,7 @@ DynamicAtoms::varspan(int t, int &mlead, int &mlag) const
 void
 DynamicAtoms::varspan(const char *name, int &mlead, int &mlag) const
 {
-  Tvarmap::const_iterator it = vars.find(name);
+  auto it = vars.find(name);
   if (vars.end() == it)
     {
       mlead = INT_MIN;
@@ -339,8 +339,8 @@ DynamicAtoms::varspan(const char *name, int &mlead, int &mlag) const
       return;
     }
   const Tlagmap &lmap = (*it).second;
-  Tlagmap::const_iterator beg = lmap.begin();
-  Tlagmap::const_reverse_iterator end = lmap.rbegin();
+  auto beg = lmap.begin();
+  auto end = lmap.rbegin();
   mlag = (*beg).first;
   mlead = (*end).first;
 }
@@ -370,11 +370,11 @@ DynamicAtoms::is_named_atom(int t) const
 int
 DynamicAtoms::index(const char *name, int ll) const
 {
-  Tvarmap::const_iterator it = vars.find(name);
+  auto it = vars.find(name);
   if (vars.end() != it)
     {
       const Tlagmap &lmap = (*it).second;
-      Tlagmap::const_iterator itt = lmap.find(ll);
+      auto itt = lmap.find(ll);
       if (lmap.end() != itt)
         return (*itt).second;
     }
@@ -384,14 +384,14 @@ DynamicAtoms::index(const char *name, int ll) const
 bool
 DynamicAtoms::is_referenced(const char *name) const
 {
-  Tvarmap::const_iterator it = vars.find(name);
+  auto it = vars.find(name);
   return it != vars.end();
 }
 
 const DynamicAtoms::Tlagmap &
 DynamicAtoms::lagmap(const char *name) const
 {
-  Tvarmap::const_iterator it = vars.find(name);
+  auto it = vars.find(name);
   if (vars.end() == it)
     throw ogu::Exception(__FILE__, __LINE__,
                          std::string("Couldn't find the name ")
@@ -402,7 +402,7 @@ DynamicAtoms::lagmap(const char *name) const
 const char *
 DynamicAtoms::name(int t) const
 {
-  Tindexmap::const_iterator it = indices.find(t);
+  auto it = indices.find(t);
   if (indices.end() == it)
     throw ogu::Exception(__FILE__, __LINE__,
                          "Couldn't find tree index in DynamicAtoms::name");
@@ -414,7 +414,7 @@ DynamicAtoms::lead(int t) const
 {
   const char *nam = name(t);
   const Tlagmap &lmap = lagmap(nam);
-  Tlagmap::const_iterator it = lmap.begin();
+  auto it = lmap.begin();
   while (it != lmap.end() && (*it).second != t)
     ++it;
   if (lmap.end() == it)
@@ -462,14 +462,14 @@ VarOrdering::VarOrdering(const VarOrdering &vo, const vector<const char *> &vnam
 bool
 VarOrdering::check(int t) const
 {
-  map<int, int>::const_iterator it = positions.find(t);
+  auto it = positions.find(t);
   return it != positions.end();
 }
 
 int
 VarOrdering::get_pos_of(int t) const
 {
-  map<int, int>::const_iterator it = positions.find(t);
+  auto it = positions.find(t);
   if (it != positions.end())
     {
       return (*it).second;

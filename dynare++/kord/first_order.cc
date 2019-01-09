@@ -161,7 +161,7 @@ FirstOrder::solve(const TwoDMatrix &fd)
   TwoDMatrix vsr(n, n);
   lapack_int lwork = 100*n+16;
   Vector work(lwork);
-  lapack_int *bwork = new lapack_int[n];
+  auto *bwork = new lapack_int[n];
   lapack_int info;
   lapack_int sdim2 = sdim;
   dgges("N", "V", "S", order_eigs, &n, matE.getData().base(), &n,

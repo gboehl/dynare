@@ -117,7 +117,7 @@ namespace sthread
   void *
   posix_thread_function(void *c)
   {
-    thread_traits<posix>::_Ctype *ct
+    auto *ct
       = (thread_traits<posix>::_Ctype *)c;
     try
       {
@@ -133,7 +133,7 @@ namespace sthread
   void *
   posix_detach_thread_function(void *c)
   {
-    thread_traits<posix>::_Dtype *ct
+    auto *ct
       = (thread_traits<posix>::_Dtype *)c;
     condition_counter<posix> *counter = ct->counter;
     try

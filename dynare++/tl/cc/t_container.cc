@@ -13,7 +13,7 @@ UGSContainer::UGSContainer(const FGSContainer &c)
 {
   for (const auto & it : c)
     {
-      UGSTensor *unfolded = new UGSTensor(*(it.second));
+      auto *unfolded = new UGSTensor(*(it.second));
       insert(unfolded);
     }
 }
@@ -59,7 +59,7 @@ FGSContainer::FGSContainer(const UGSContainer &c)
 {
   for (const auto & it : c)
     {
-      FGSTensor *folded = new FGSTensor(*(it.second));
+      auto *folded = new FGSTensor(*(it.second));
       insert(folded);
     }
 }

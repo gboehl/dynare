@@ -29,7 +29,7 @@ AllvarOuterOrdering::AllvarOuterOrdering(const vector<const char *> &allvar_oute
   // fill in endo2all and exo2all
   for (unsigned int i = 0; i < allvar.size(); i++)
     {
-      Tvarintmap::const_iterator it = atoms.endo_outer_map.find(allvar[i]);
+      auto it = atoms.endo_outer_map.find(allvar[i]);
       if (it != atoms.endo_outer_map.end())
         endo2all[(*it).second] = i;
       else
@@ -387,7 +387,7 @@ FineAtoms::get_exo_atoms_map() const
 int
 FineAtoms::name2outer_param(const char *name) const
 {
-  Tvarintmap::const_iterator it = param_outer_map.find(name);
+  auto it = param_outer_map.find(name);
   if (it == param_outer_map.end())
     throw ogu::Exception(__FILE__, __LINE__,
                          "Name is not a parameter in FineAtoms::name2outer_param");
@@ -397,7 +397,7 @@ FineAtoms::name2outer_param(const char *name) const
 int
 FineAtoms::name2outer_endo(const char *name) const
 {
-  Tvarintmap::const_iterator it = endo_outer_map.find(name);
+  auto it = endo_outer_map.find(name);
   if (it == endo_outer_map.end())
     throw ogu::Exception(__FILE__, __LINE__,
                          "Name is not an endogenous variable in FineAtoms::name2outer_endo");
@@ -407,7 +407,7 @@ FineAtoms::name2outer_endo(const char *name) const
 int
 FineAtoms::name2outer_exo(const char *name) const
 {
-  Tvarintmap::const_iterator it = exo_outer_map.find(name);
+  auto it = exo_outer_map.find(name);
   if (it == exo_outer_map.end())
     throw ogu::Exception(__FILE__, __LINE__,
                          "Name is not an exogenous variable in FineAtoms::name2outer_exo");
@@ -421,7 +421,7 @@ FineAtoms::name2outer_allvar(const char *name) const
     throw ogu::Exception(__FILE__, __LINE__,
                          "FineAtoms::name2outer_allvar called beore parsing_finished");
 
-  Tvarintmap::const_iterator it = endo_outer_map.find(name);
+  auto it = endo_outer_map.find(name);
   if (it != endo_outer_map.end())
     return allvar_order->get_endo2all()[(*it).second];
   else

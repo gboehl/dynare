@@ -19,7 +19,7 @@ void namelist_parse();
 void
 NameListParser::namelist_parse(int length, const char *stream)
 {
-  char *buffer = new char[length+2];
+  auto *buffer = new char[length+2];
   strncpy(buffer, stream, length);
   buffer[length] = '\0';
   buffer[length+1] = '\0';

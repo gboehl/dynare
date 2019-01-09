@@ -46,7 +46,7 @@ Factory::makeVector(int n)
 {
   init(n, n*n);
 
-  Vector *v = new Vector(n);
+  auto *v = new Vector(n);
   for (int i = 0; i < n; i++)
     (*v)[i] = get();
 

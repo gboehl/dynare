@@ -184,9 +184,9 @@ FGSTensor::FGSTensor(const FSSparseTensor &t, const IntSequence &ss,
     }
 
   zeros();
-  FSSparseTensor::const_iterator lbi = t.getMap().lower_bound(lb);
-  FSSparseTensor::const_iterator ubi = t.getMap().upper_bound(ub);
-  for (FSSparseTensor::const_iterator run = lbi; run != ubi; ++run)
+  auto lbi = t.getMap().lower_bound(lb);
+  auto ubi = t.getMap().upper_bound(ub);
+  for (auto run = lbi; run != ubi; ++run)
     {
       if (lb.lessEq((*run).first) && (*run).first.lessEq(ub))
         {

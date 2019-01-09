@@ -243,7 +243,7 @@ public:
         len++;
       }
 
-    Vector *res = new Vector(len);
+    auto *res = new Vector(len);
     i = 0;
     while (i < numStacks() && getType(i, s) == _Stype::matrix)
       {

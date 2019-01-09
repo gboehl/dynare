@@ -200,7 +200,7 @@ DecisionRuleImpl<t>::fillTensors(const _Tg &g, double sigma)
   int dfact = 1;
   for (int d = 0; d <= g.getMaxDim(); d++, dfact *= d)
     {
-      _Ttensym *g_yud = new _Ttensym(ypart.ny(), ypart.nys()+nu, d);
+      auto *g_yud = new _Ttensym(ypart.ny(), ypart.nys()+nu, d);
       g_yud->zeros();
 
       // fill tensor of |g_yud| of dimension |d|
@@ -287,7 +287,7 @@ DecisionRuleImpl<t>::simulate(emethod em, int np, const Vector &ystart,
 {
   KORD_RAISE_IF(ysteady.length() != ystart.length(),
                 "Start and steady lengths differ in DecisionRuleImpl::simulate");
-  TwoDMatrix *res = new TwoDMatrix(ypart.ny(), np);
+  auto *res = new TwoDMatrix(ypart.ny(), np);
 
   // initialize vectors and subvectors for simulation
   /* Here allocate the stack vector $(\Delta y^*, u)$, define the
@@ -569,7 +569,7 @@ DRFixPoint<t>::fillTensors(const _Tg &g, double sigma)
   int dfact = 1;
   for (int d = 0; d <= g.getMaxDim(); d++, dfact *= d)
     {
-      _Ttensym *g_yd = new _Ttensym(ypart.ny(), ypart.nys(), d);
+      auto *g_yd = new _Ttensym(ypart.ny(), ypart.nys(), d);
       g_yd->zeros();
       int kfact = 1;
       for (int k = 0; d+k <= g.getMaxDim(); k++, kfact *= k)

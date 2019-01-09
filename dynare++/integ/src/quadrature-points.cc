@@ -150,8 +150,8 @@ main(int argc, char **argv)
       // sort and uniq
       OrderVec ordvec;
       std::sort(points.begin(), points.end(), ordvec);
-      std::vector<Vector *>::iterator new_end = std::unique(points.begin(), points.end());
-      for (std::vector<Vector *>::iterator it = new_end; it != points.end(); ++it)
+      auto new_end = std::unique(points.begin(), points.end());
+      for (auto it = new_end; it != points.end(); ++it)
         delete *it;
       points.erase(new_end, points.end());
 

@@ -29,7 +29,7 @@ int
 IntGenerator::get() const
 {
   double d = drand48();
-  int num_inter = (int) (((double) 2*maxim)/(1.0-probab));
+  auto num_inter = (int) (((double) 2*maxim)/(1.0-probab));
   int num_zero_inter = num_inter - 2*maxim;
   if (d < ((double) num_zero_inter)/num_inter)
     return 0;
@@ -223,7 +223,7 @@ Monom2Vector::deriv(const Symmetry &s) const
 FGSContainer *
 Monom2Vector::deriv(int maxdim) const
 {
-  FGSContainer *res = new FGSContainer(2);
+  auto *res = new FGSContainer(2);
   for (int dim = 1; dim <= maxdim; dim++)
     {
       for (int ydim = 0; ydim <= dim; ydim++)
@@ -404,7 +404,7 @@ Monom4Vector::deriv(int dim) const
   IntSequence cum(4);
   cum[0] = 0; cum[1] = nx1; cum[2] = nx1+nx2; cum[3] = nx1+nx2+nx3;
 
-  FSSparseTensor *res = new FSSparseTensor(dim, nx1+nx2+nx3+nx4, len);
+  auto *res = new FSSparseTensor(dim, nx1+nx2+nx3+nx4, len);
 
   FFSTensor dummy(0, nx1+nx2+nx3+nx4, dim);
   for (Tensor::index run = dummy.begin(); run != dummy.end(); ++run)

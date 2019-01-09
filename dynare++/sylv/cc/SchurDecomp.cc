@@ -13,10 +13,10 @@ SchurDecomp::SchurDecomp(const SqSylvMatrix &m)
   q = new SqSylvMatrix(rows);
   SqSylvMatrix auxt(m);
   lapack_int sdim;
-  double *const wr = new double[rows];
-  double *const wi = new double[rows];
+  auto *const wr = new double[rows];
+  auto *const wi = new double[rows];
   lapack_int lwork = 6*rows;
-  double *const work = new double[lwork];
+  auto *const work = new double[lwork];
   lapack_int info;
   dgees("V", "N", 0, &rows, auxt.base(), &rows, &sdim,
         wr, wi, q->base(), &rows,

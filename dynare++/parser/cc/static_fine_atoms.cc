@@ -135,7 +135,7 @@ StaticFineAtoms::parsing_finished()
 int
 StaticFineAtoms::name2outer_param(const char *name) const
 {
-  Tvarintmap::const_iterator it = param_outer_map.find(name);
+  auto it = param_outer_map.find(name);
   if (it == param_outer_map.end())
     throw ogu::Exception(__FILE__, __LINE__,
                          "Name is not a parameter in StaticFineAtoms::name2outer_param");
@@ -145,7 +145,7 @@ StaticFineAtoms::name2outer_param(const char *name) const
 int
 StaticFineAtoms::name2outer_endo(const char *name) const
 {
-  Tvarintmap::const_iterator it = endo_outer_map.find(name);
+  auto it = endo_outer_map.find(name);
   if (it == endo_outer_map.end())
     throw ogu::Exception(__FILE__, __LINE__,
                          "Name is not an endogenous variable in StaticFineAtoms::name2outer_endo");
@@ -155,7 +155,7 @@ StaticFineAtoms::name2outer_endo(const char *name) const
 int
 StaticFineAtoms::name2outer_exo(const char *name) const
 {
-  Tvarintmap::const_iterator it = exo_outer_map.find(name);
+  auto it = exo_outer_map.find(name);
   if (it == exo_outer_map.end())
     throw ogu::Exception(__FILE__, __LINE__,
                          "Name is not an exogenous variable in StaticFineAtoms::name2outer_exo");

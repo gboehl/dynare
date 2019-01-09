@@ -89,10 +89,10 @@ IrregTensor::IrregTensor(const IrregTensorHeader &h)
       return;
     }
 
-  Vector *last = new Vector(*(header.cols[header.dimen()-1]));
+  auto *last = new Vector(*(header.cols[header.dimen()-1]));
   for (int i = header.dimen()-2; i > 0; i--)
     {
-      Vector *newlast = new Vector(last->length()*header.cols[i]->length());
+      auto *newlast = new Vector(last->length()*header.cols[i]->length());
       KronProd::kronMult(ConstVector(*(header.cols[i])),
                          ConstVector(*last), *newlast);
       delete last;

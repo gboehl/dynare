@@ -12,7 +12,7 @@ PowerProvider::getNext(const URSingleTensor *dummy)
 {
   if (ut)
     {
-      URSingleTensor *ut_new = new URSingleTensor(nv, ut->dimen()+1);
+      auto *ut_new = new URSingleTensor(nv, ut->dimen()+1);
       KronProd::kronMult(ConstVector(origv), ConstVector(ut->getData()), ut_new->getData());
       delete ut;
       ut = ut_new;

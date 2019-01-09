@@ -128,7 +128,7 @@ InducedSymmetries::InducedSymmetries(const Equivalence &e, const Permutation &p,
 {
   for (int i = 0; i < e.numClasses(); i++)
     {
-      Equivalence::const_seqit it = e.find(p.getMap()[i]);
+      auto it = e.find(p.getMap()[i]);
       push_back(Symmetry(s, *it));
     }
 }

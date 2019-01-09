@@ -29,7 +29,7 @@ MatrixParser::parse(int length, const char *stream)
   row_lengths.clear();
   nc = 0;
   // allocate temporary buffer and parse
-  char *buffer = new char[length+2];
+  auto *buffer = new char[length+2];
   strncpy(buffer, stream, length);
   buffer[length] = '\0';
   buffer[length+1] = '\0';

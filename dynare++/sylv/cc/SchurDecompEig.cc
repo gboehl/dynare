@@ -55,7 +55,7 @@ SchurDecompEig::tryToSwap(diag_iter &it, diag_iter &itadd)
   lapack_int n = getDim();
   lapack_int ifst = (*it).getIndex() + 1;
   lapack_int ilst = (*itadd).getIndex() + 1;
-  double *work = new double[n];
+  auto *work = new double[n];
   lapack_int info;
   dtrexc("V", &n, getT().base(), &n, getQ().base(), &n, &ifst, &ilst, work,
          &info);

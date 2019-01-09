@@ -62,7 +62,7 @@ FTensor &
 UPSTensor::fold() const
 {
   TL_RAISE("Never should come to this place in UPSTensor::fold");
-  FFSTensor *nothing = new FFSTensor(0, 0, 0);
+  auto *nothing = new FFSTensor(0, 0, 0);
   return *nothing;
 }
 
@@ -171,11 +171,11 @@ UPSTensor::fillFromSparseOne(const FSSparseTensor &t, const IntSequence &ss,
       IntSequence c(run.getCoor());
       c.add(1, cum);
       c.sort();
-      FSSparseTensor::const_iterator sl = t.getMap().lower_bound(c);
+      auto sl = t.getMap().lower_bound(c);
       if (sl != t.getMap().end())
         {
-          FSSparseTensor::const_iterator su = t.getMap().upper_bound(c);
-          for (FSSparseTensor::const_iterator srun = sl; srun != su; ++srun)
+          auto su = t.getMap().upper_bound(c);
+          for (auto srun = sl; srun != su; ++srun)
             get((*srun).second.first, *run) = (*srun).second.second;
         }
     }
@@ -219,9 +219,9 @@ UPSTensor::fillFromSparseTwo(const FSSparseTensor &t, const IntSequence &ss,
 
   Permutation unsort(coor);
   zeros();
-  FSSparseTensor::const_iterator lbi = t.getMap().lower_bound(lb_srt);
-  FSSparseTensor::const_iterator ubi = t.getMap().upper_bound(ub_srt);
-  for (FSSparseTensor::const_iterator run = lbi; run != ubi; ++run)
+  auto lbi = t.getMap().lower_bound(lb_srt);
+  auto ubi = t.getMap().upper_bound(ub_srt);
+  for (auto run = lbi; run != ubi; ++run)
     {
       if (lb_srt.lessEq((*run).first) && (*run).first.lessEq(ub_srt))
         {
@@ -320,7 +320,7 @@ UTensor &
 FPSTensor::unfold() const
 {
   TL_RAISE("Unfolding of FPSTensor not implemented");
-  UFSTensor *nothing = new UFSTensor(0, 0, 0);
+  auto *nothing = new UFSTensor(0, 0, 0);
   return *nothing;
 }
 
@@ -383,12 +383,12 @@ FPSTensor::FPSTensor(const TensorDimens &td, const Equivalence &e, const Permuta
     {
       Tensor::index fold_ind = dummy.getFirstIndexOf(run);
       const IntSequence &c = fold_ind.getCoor();
-      GSSparseTensor::const_iterator sl = a.getMap().lower_bound(c);
+      auto sl = a.getMap().lower_bound(c);
       if (sl != a.getMap().end())
         {
           Vector *row_prod = kp.multRows(run.getCoor());
-          GSSparseTensor::const_iterator su = a.getMap().upper_bound(c);
-          for (GSSparseTensor::const_iterator srun = sl; srun != su; ++srun)
+          auto su = a.getMap().upper_bound(c);
+          for (auto srun = sl; srun != su; ++srun)
             {
               Vector out_row((*srun).second.first, *this);
               out_row.add((*srun).second.second, *row_prod);

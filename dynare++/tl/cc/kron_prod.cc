@@ -306,7 +306,7 @@ KronProdAll::mult(const ConstTwoDMatrix &in, TwoDMatrix &out) const
         {
           KronProdIAI interkron(*this, i);
           c = interkron.kpd.ncols();
-          TwoDMatrix *newlast = new TwoDMatrix(in.nrows(), c);
+          auto *newlast = new TwoDMatrix(in.nrows(), c);
           interkron.mult(*last, *newlast);
           delete last;
           last = newlast;
@@ -355,7 +355,7 @@ KronProdAll::multRows(const IntSequence &irows) const
         row = new ConstVector(irows[j], *(matlist[j]));
       else
         {
-          Vector *aux = new Vector(ncols(j));
+          auto *aux = new Vector(ncols(j));
           aux->zeros();
           (*aux)[irows[j]] = 1.0;
           to_delete.push_back(aux);

@@ -115,9 +115,9 @@ public:
   TensorContainer(const TensorContainer<_Ttype> &c)
     : n(c.n), m(), ebundle(c.ebundle)
   {
-    for (const_iterator it = c.m.begin(); it != c.m.end(); ++it)
+    for (auto it = c.m.begin(); it != c.m.end(); ++it)
       {
-        _Ttype *ten = new _Ttype(*((*it).second));
+        auto *ten = new _Ttype(*((*it).second));
         insert(ten);
       }
   }
@@ -128,9 +128,9 @@ public:
   TensorContainer(int first_row, int num, TensorContainer<_Ttype> &c)
     : n(c.n), ebundle(*(tls.ebundle))
   {
-    for (iterator it = c.m.begin(); it != c.m.end(); ++it)
+    for (auto it = c.m.begin(); it != c.m.end(); ++it)
       {
-        _Ttype *t = new _Ttype(first_row, num, *((*it).second));
+        auto *t = new _Ttype(first_row, num, *((*it).second));
         insert(t);
       }
   }
@@ -140,7 +140,7 @@ public:
   {
     TL_RAISE_IF(s.num() != num(),
                 "Incompatible symmetry lookup in TensorContainer::get");
-    const_iterator it = m.find(s);
+    auto it = m.find(s);
     if (it == m.end())
       {
         TL_RAISE("Symmetry not found in TensorContainer::get");
@@ -157,7 +157,7 @@ public:
   {
     TL_RAISE_IF(s.num() != num(),
                 "Incompatible symmetry lookup in TensorContainer::get");
-    iterator it = m.find(s);
+    auto it = m.find(s);
     if (it == m.end())
       {
         TL_RAISE("Symmetry not found in TensorContainer::get");
@@ -174,7 +174,7 @@ public:
   {
     TL_RAISE_IF(s.num() != num(),
                 "Incompatible symmetry lookup in TensorContainer::check");
-    const_iterator it = m.find(s);
+    auto it = m.find(s);
     return it != m.end();
   }
 
@@ -195,7 +195,7 @@ public:
   void
   remove(const Symmetry &s)
   {
-    iterator it = m.find(s);
+    auto it = m.find(s);
     if (it != m.end())
       {
         _ptr t = (*it).second;
@@ -218,7 +218,7 @@ public:
   getMaxDim() const
   {
     int res = -1;
-    for (const_iterator run = m.begin(); run != m.end(); ++run)
+    for (auto run = m.begin(); run != m.end(); ++run)
       {
         int dim = (*run).first.dimen();
         if (dim > res)
@@ -244,7 +244,7 @@ public:
   void
   writeMat(mat_t *fd, const char *prefix) const
   {
-    for (const_iterator it = begin(); it != end(); ++it)
+    for (auto it = begin(); it != end(); ++it)
       {
         char lname[100];
         sprintf(lname, "%s_g", prefix);
@@ -285,7 +285,7 @@ public:
   {
     vector<_const_ptr> res(e.numClasses());
     int i = 0;
-    for (Equivalence::const_seqit it = e.begin();
+    for (auto it = e.begin();
          it != e.end(); ++it, i++)
       {
         Symmetry s(rsym, *it);

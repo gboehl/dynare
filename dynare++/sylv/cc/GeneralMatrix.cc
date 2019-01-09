@@ -453,7 +453,7 @@ ConstGeneralMatrix::multInvLeft(const char *trans, int mrows, int mcols, int mld
   if (rows > 0)
     {
       GeneralMatrix inv(*this);
-      lapack_int *ipiv = new lapack_int[rows];
+      auto *ipiv = new lapack_int[rows];
       lapack_int info;
       lapack_int rows2 = rows, mcols2 = mcols, mld2 = mld;
       dgetrf(&rows2, &rows2, inv.getData().base(), &rows2, ipiv, &info);
@@ -564,7 +564,7 @@ SVDDecomp::construct(const GeneralMatrix &A)
   lapack_int lwork = -1;
   lapack_int info;
 
-  lapack_int *iwork = new lapack_int[8*minmn];
+  auto *iwork = new lapack_int[8*minmn];
   // query for optimal lwork
   dgesdd("A", &m, &n, a, &lda, s, u, &ldu, vt, &ldvt, &tmpwork,
          &lwork, iwork, &info);

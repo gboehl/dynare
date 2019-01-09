@@ -34,20 +34,20 @@ extern "C" {
     if (nhrs < 12 || nlhs != 2)
       DYN_MEX_FUNC_ERR_MSG_TXT("dynare_simul_ must have at least 12 input parameters and exactly 2 output arguments.\n");
 
-    int order = (int) mxGetScalar(prhs[0]);
+    auto order = (int) mxGetScalar(prhs[0]);
     if (nhrs != 12 + order)
       DYN_MEX_FUNC_ERR_MSG_TXT("dynare_simul_ must have exactly 11+order input parameters.\n");
 
-    int nstat = (int) mxGetScalar(prhs[1]);
-    int npred = (int) mxGetScalar(prhs[2]);
-    int nboth = (int) mxGetScalar(prhs[3]);
-    int nforw = (int) mxGetScalar(prhs[4]);
-    int nexog = (int) mxGetScalar(prhs[5]);
+    auto nstat = (int) mxGetScalar(prhs[1]);
+    auto npred = (int) mxGetScalar(prhs[2]);
+    auto nboth = (int) mxGetScalar(prhs[3]);
+    auto nforw = (int) mxGetScalar(prhs[4]);
+    auto nexog = (int) mxGetScalar(prhs[5]);
 
     const mxArray *const ystart = prhs[6];
     const mxArray *const shocks = prhs[7];
     const mxArray *const vcov = prhs[8];
-    int seed = (int) mxGetScalar(prhs[9]);
+    auto seed = (int) mxGetScalar(prhs[9]);
     const mxArray *const ysteady = prhs[10];
     const mwSize *const ystart_dim = mxGetDimensions(ystart);
     const mwSize *const shocks_dim = mxGetDimensions(shocks);
@@ -102,7 +102,7 @@ extern "C" {
             ft.zeros();
             ConstTwoDMatrix gk_mat(ft.nrows(), ft.ncols(), mxGetPr(gk));
             ft.add(1.0, gk_mat);
-            UFSTensor *ut = new UFSTensor(ft);
+            auto *ut = new UFSTensor(ft);
             pol.insert(ut);
           }
         // form the decision rule

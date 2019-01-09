@@ -40,7 +40,7 @@ ConstTwoDMatrix::writeMat(mat_t *fd, const char *vname) const
 #endif
   dims[0] = nrows();
   dims[1] = ncols();
-  double *data = new double[nrows()*ncols()];
+  auto *data = new double[nrows()*ncols()];
 
   for (int j = 0; j < ncols(); j++)
     for (int i = 0; i < nrows(); i++)

@@ -72,7 +72,7 @@ StaticAtoms::check(const char *name) const
 int
 StaticAtoms::index(const char *name) const
 {
-  Tvarmap::const_iterator it = vars.find(name);
+  auto it = vars.find(name);
   if (it == vars.end())
     return -1;
   else
@@ -82,7 +82,7 @@ StaticAtoms::index(const char *name) const
 const char *
 StaticAtoms::inv_index(int t) const
 {
-  Tinvmap::const_iterator it = indices.find(t);
+  auto it = indices.find(t);
   if (it == indices.end())
     return NULL;
   else
