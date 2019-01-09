@@ -47,6 +47,7 @@ namespace ogdyn
      * function. This will save us many occurrences of other
      * variables involved in the equation. */
     ForwSubstBuilder(DynareModel &m);
+    ForwSubstBuilder(const ForwSubstBuilder &b) = delete;
     /** Copy constructor with a new instance of the model. */
     ForwSubstBuilder(const ForwSubstBuilder &b, DynareModel &m);
     /** Return the auxiliary variable mapping. */
@@ -62,7 +63,6 @@ namespace ogdyn
       return info;
     }
   private:
-    ForwSubstBuilder(const ForwSubstBuilder &b);
     /** This method takes a nonlinear term t, and if it has leads
      * of greater than 1, then it substitutes the term for the new
      * variable (or string of variables). Note that the

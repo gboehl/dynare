@@ -357,6 +357,7 @@ namespace ogp
     }
     VarOrdering(const VarOrdering &vo, const vector<const char *> &vnames,
                 const DynamicAtoms &a);
+    VarOrdering(const VarOrdering &vo) = delete;
     virtual VarOrdering *clone(const vector<const char *> &vnames,
                                const DynamicAtoms &a) const = 0;
     /** Destructor does nothing here. */
@@ -462,9 +463,6 @@ namespace ogp
      * from the least to the most time preserving the order of atoms
      * within one time. */
     void do_increasing_time();
-  private:
-    /** Declare this copy constructor as private to hide it. */
-    VarOrdering(const VarOrdering &vo);
   };
 
 };

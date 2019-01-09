@@ -101,6 +101,7 @@ class IrregTensorHeader
   IntSequence end_seq;
 public:
   IrregTensorHeader(const StackProduct<FGSTensor> &sp, const IntSequence &c);
+  IrregTensorHeader(const IrregTensorHeader &) = delete;
   ~IrregTensorHeader();
   int
   dimen() const
@@ -109,8 +110,6 @@ public:
   }
   void increment(IntSequence &v) const;
   int calcMaxOffset() const;
-private:
-  IrregTensorHeader(const IrregTensorHeader &);
 };
 
 /* Here we declare the irregular tensor. There is no special logic

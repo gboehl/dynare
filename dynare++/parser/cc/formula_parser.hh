@@ -158,6 +158,7 @@ namespace ogp
       : atoms(a)
     {
     }
+    FormulaParser(const FormulaParser &fp) = delete;
     /** Copy constructor using a different instance of Atoms. */
     FormulaParser(const FormulaParser &fp, Atoms &a);
     virtual
@@ -295,9 +296,6 @@ namespace ogp
     /** Debug print. */
     void print() const;
   private:
-    /** Hide this copy constructor declaration by declaring it as
-     * private. */
-    FormulaParser(const FormulaParser &fp);
     /** Destroy all derivatives. */
     void destroy_derivatives();
   };

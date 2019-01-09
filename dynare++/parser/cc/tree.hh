@@ -403,6 +403,7 @@ namespace ogp
      * will contain only formulas up to the given last index
      * (included). */
     EvalTree(const OperationTree &otree, int last = -1);
+    EvalTree(const EvalTree &) = delete;
     virtual ~EvalTree()
     {
       delete [] values; delete [] flags;
@@ -422,8 +423,6 @@ namespace ogp
     {
       return otree;
     }
-  private:
-    EvalTree(const EvalTree &);
   };
 
   /** This is an interface describing how a given operation is

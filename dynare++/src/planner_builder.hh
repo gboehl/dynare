@@ -234,6 +234,8 @@ namespace ogdyn
     /** Construct a copy of the builder with provided model, which
      * is supposed to be the copy of the model in the builder. */
     PlannerBuilder(const PlannerBuilder &pb, ogdyn::DynareModel &m);
+    /** Avoid copying from only PlannerBuilder. */
+    PlannerBuilder(const PlannerBuilder &pb) = delete;
     /** Return the information. */
     const PlannerInfo &
     get_info() const
@@ -272,8 +274,6 @@ namespace ogdyn
      * aux_map_static. */
     void fill_aux_map(const ogp::NameStorage &ns, const Tsubstmap &aaux_map,
                       const Tsubstmap &astatic_aux_map);
-    /** Avoid copying from only PlannerBuilder. */
-    PlannerBuilder(const PlannerBuilder &pb);
   };
 
   /** This class only calculates for the given initial guess of
