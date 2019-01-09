@@ -70,7 +70,7 @@ Permutation::computeSortingMap(const IntSequence &s)
 }
 
 PermutationSet::PermutationSet()
-  : order(1), size(1), pers(new const Permutation *[size])
+  :  pers(new const Permutation *[size])
 {
   pers[0] = new Permutation(1);
 }

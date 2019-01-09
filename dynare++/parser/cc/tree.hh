@@ -32,11 +32,11 @@ namespace ogp
   {
   protected:
     /** Code of the operation. */
-    code_t code;
+    code_t code{NONE};
     /** First operand. If none, then it is -1. */
-    int op1;
+    int op1{-1};
     /** Second operand. If none, then it is -1. */
-    int op2;
+    int op2{-1};
 
   public:
     /** Constructs a binary operation. */
@@ -46,12 +46,12 @@ namespace ogp
     }
     /** Constructs a unary operation. */
     Operation(code_t cd, int oper1)
-      : code(cd), op1(oper1), op2(-1)
+      : code(cd), op1(oper1) 
     {
     }
     /** Constructs a nulary operation. */
     Operation()
-      : code(NONE), op1(-1), op2(-1)
+       
     {
     }
     /** A copy constructor. */

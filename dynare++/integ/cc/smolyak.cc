@@ -4,7 +4,7 @@
 #include "symmetry.hh"
 
 smolpit::smolpit()
-  : smolq(NULL), isummand(0), jseq(NULL), sig(NULL), p(NULL)
+  : smolq(NULL),  jseq(NULL), sig(NULL), p(NULL)
 {
 }
 

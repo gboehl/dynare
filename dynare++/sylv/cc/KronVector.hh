@@ -12,11 +12,11 @@ class ConstKronVector;
 class KronVector : public Vector
 {
 protected:
-  int m;
-  int n;
-  int depth;
+  int m{0};
+  int n{0};
+  int depth{0};
 public:
-  KronVector() : Vector((double *) 0, 0), m(0), n(0), depth(0)
+  KronVector() : Vector((double *) 0, 0) 
   {
   }
   KronVector(int mm, int nn, int dp); // new instance

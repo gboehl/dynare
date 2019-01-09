@@ -41,7 +41,7 @@ class smolpit
 {
 protected:
   const SmolyakQuadrature *smolq;
-  unsigned int isummand;
+  unsigned int isummand{0};
   IntSequence *jseq;
   ParameterSignal *sig;
   Vector *p;

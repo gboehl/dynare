@@ -83,22 +83,22 @@ namespace ogdyn
     /** Parsed model equations. */
     ogp::FormulaParser eqs;
     /** Order of approximation. */
-    int order;
+    int order{-1};
     /** A vector of parameters values created by a subclass. It
      * is stored with natural ordering (outer) of the parameters
      * given by atoms. */
-    Vector *param_vals;
+    Vector *param_vals{0};
     /** A vector of initial values created by a subclass. It is
      * stored with internal ordering given by atoms. */
-    Vector *init_vals;
+    Vector *init_vals{0};
     /** A matrix for vcov. It is created by a subclass. */
-    TwoDMatrix *vcov_mat;
+    TwoDMatrix *vcov_mat{0};
     /** Tree index of the planner objective. If there was no
      * planner objective keyword, the value is set to -1. */
-    int t_plobjective;
+    int t_plobjective{-1};
     /** Tree index of the planner discount. If there was no
      * planner discount keyword, the value is set to -1. */
-    int t_pldiscount;
+    int t_pldiscount{-1};
     /** Pointer to PlannerBuilder, which is created only if the
      * planner's FOC are added to the model. */
     PlannerBuilder *pbuilder;

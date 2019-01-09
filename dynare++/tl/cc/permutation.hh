@@ -141,8 +141,8 @@ protected:
 
 class PermutationSet
 {
-  int order;
-  int size;
+  int order{1};
+  int size{1};
   const Permutation **const pers;
 public:
   PermutationSet();

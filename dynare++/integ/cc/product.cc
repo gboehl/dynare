@@ -4,8 +4,8 @@
 #include "symmetry.hh"
 
 prodpit::prodpit()
-  : prodq(NULL), level(0), npoints(0), jseq(NULL),
-    end_flag(true), sig(NULL), p(NULL)
+  : prodq(NULL),  jseq(NULL),
+     sig(NULL), p(NULL)
 {
 }
 

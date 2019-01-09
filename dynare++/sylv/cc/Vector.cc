@@ -18,13 +18,13 @@ using namespace std;
 ZeroPad zero_pad;
 
 Vector::Vector(const Vector &v)
-  : len(v.length()), s(1), data(new double[len]), destroy(true)
+  : len(v.length()),  data(new double[len]), destroy(true)
 {
   copy(v.base(), v.skip());
 }
 
 Vector::Vector(const ConstVector &v)
-  : len(v.length()), s(1), data(new double[len]), destroy(true)
+  : len(v.length()),  data(new double[len]), destroy(true)
 {
   copy(v.base(), v.skip());
 }
@@ -79,14 +79,14 @@ Vector::copy(const double *d, int inc)
 }
 
 Vector::Vector(Vector &v, int off, int l)
-  : len(l), s(v.skip()), data(v.base()+off*v.skip()), destroy(false)
+  : len(l), s(v.skip()), data(v.base()+off*v.skip()) 
 {
   if (off < 0 || off + length() > v.length())
     throw SYLV_MES_EXCEPTION("Subvector not contained in supvector.");
 }
 
 Vector::Vector(const Vector &v, int off, int l)
-  : len(l), s(1), data(new double[len]), destroy(true)
+  : len(l),  data(new double[len]), destroy(true)
 {
   if (off < 0 || off + length() > v.length())
     throw SYLV_MES_EXCEPTION("Subvector not contained in supvector.");
@@ -94,12 +94,12 @@ Vector::Vector(const Vector &v, int off, int l)
 }
 
 Vector::Vector(GeneralMatrix &m, int col)
-  : len(m.numRows()), s(1), data(&(m.get(0, col))), destroy(false)
+  : len(m.numRows()),  data(&(m.get(0, col))) 
 {
 }
 
 Vector::Vector(int row, GeneralMatrix &m)
-  : len(m.numCols()), s(m.getLD()), data(&(m.get(row, 0))), destroy(false)
+  : len(m.numCols()), s(m.getLD()), data(&(m.get(row, 0))) 
 {
 }
 

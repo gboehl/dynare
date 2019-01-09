@@ -31,10 +31,10 @@ namespace ogp
     /** Number of items in each row. */
     vector<int> row_lengths;
     /** Maximum number of row lengths. */
-    int nc;
+    int nc{0};
   public:
     MatrixParser()
-      : nc(0)
+       
     {
     }
     MatrixParser(const MatrixParser &mp)
@@ -87,14 +87,14 @@ namespace ogp
     /** Reference to the matrix parser. */
     const MatrixParser *p;
     /** The index of the pointed item in the matrix parser. */
-    unsigned int i;
+    unsigned int i{0};
     /** The column number of the pointed item starting from zero. */
-    int c;
+    int c{0};
     /** The row number of the pointed item starting from zero. */
-    int r;
+    int r{0};
 
   public:
-    MPIterator() : p(NULL), i(0), c(0), r(0)
+    MPIterator() : p(NULL) 
     {
     }
     /** Constructs an iterator pointing to the beginning of the

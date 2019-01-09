@@ -12,6 +12,7 @@
 #include <set>
 #include <string>
 #include <cstring>
+#include <climits>
 
 namespace ogp
 {
@@ -161,11 +162,11 @@ namespace ogp
     Tindexmap indices;
 
     /** Number of variables. */
-    int nv;
+    int nv{0};
     /** Minimum lag, if there is at least one lag, than this is a negative number. */
-    int minlag;
+    int minlag{INT_MAX};
     /** Maximum lead, if there is at least one lead, than this is a positive number. */
-    int maxlead;
+    int maxlead{INT_MIN};
   public:
     /** Construct empty DynamicAtoms. */
     DynamicAtoms();

@@ -204,12 +204,12 @@ public:
   typedef _diag_iter<const Diagonal &, const DiagonalBlock &, list<DiagonalBlock>::const_iterator> const_diag_iter;
   typedef _diag_iter<Diagonal &, DiagonalBlock &, list<DiagonalBlock>::iterator> diag_iter;
 private:
-  int num_all;
+  int num_all{0};
   list<DiagonalBlock> blocks;
-  int num_real;
+  int num_real{0};
   void copy(const Diagonal &);
 public:
-  Diagonal() : num_all(0), num_real(0)
+  Diagonal()  
   {
   }
   Diagonal(double *data, int d_size);

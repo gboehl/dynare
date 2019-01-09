@@ -23,9 +23,9 @@ namespace ogp
 
   struct location_type
   {
-    int off; // offset of the token
-    int ll; // length ot the token
-    location_type() : off(0), ll(0)
+    int off{0}; // offset of the token
+    int ll{0}; // length ot the token
+    location_type()  
     {
     }
   };

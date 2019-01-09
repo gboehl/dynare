@@ -12,11 +12,11 @@
 
 class IntGenerator
 {
-  int maxim;
-  double probab;
+  int maxim{5};
+  double probab{0.3};
 public:
   IntGenerator()
-    : maxim(5), probab(0.3)
+     
   {
   }
   void init(int nf, int ny, int nv, int nw, int nu, int mx, double prob);

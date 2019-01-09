@@ -21,7 +21,7 @@
 SylvMemoryPool memory_pool;
 
 SylvMemoryPool::SylvMemoryPool()
-  : base(0), length(0), allocated(0), stack_mode(false)
+   
 {
 }
 

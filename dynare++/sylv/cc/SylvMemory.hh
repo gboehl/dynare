@@ -29,10 +29,10 @@ void operator delete[](void *p);
 
 class SylvMemoryPool
 {
-  char *base;
-  size_t length;
-  size_t allocated;
-  bool stack_mode;
+  char *base{0};
+  size_t length{0};
+  size_t allocated{0};
+  bool stack_mode{false};
   SylvMemoryPool(const SylvMemoryPool &);
   const SylvMemoryPool &operator=(const SylvMemoryPool &);
 public:

@@ -89,12 +89,12 @@ MatrixParser::end() const
 }
 
 MPIterator::MPIterator(const MatrixParser &mp)
-  : p(&mp), i(0), c(0), r(mp.find_first_non_empty_row())
+  : p(&mp), i(0),  r(mp.find_first_non_empty_row())
 {
 }
 
 MPIterator::MPIterator(const MatrixParser &mp, const char *dummy)
-  : p(&mp), i(mp.data.size()), c(0), r(mp.row_lengths.size())
+  : p(&mp), i(mp.data.size()),  r(mp.row_lengths.size())
 {
 }
 

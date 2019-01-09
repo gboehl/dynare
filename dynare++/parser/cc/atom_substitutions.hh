@@ -21,8 +21,8 @@ namespace ogp
    * about, this is a number of substitutions. */
   struct SubstInfo
   {
-    int num_substs;
-    SubstInfo() : num_substs(0)
+    int num_substs{0};
+    SubstInfo()  
     {
     }
   };

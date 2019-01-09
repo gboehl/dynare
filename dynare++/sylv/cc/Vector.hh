@@ -17,33 +17,33 @@ class ConstVector;
 class Vector
 {
 protected:
-  int len;
-  int s;
-  double *data;
-  bool destroy;
+  int len{0};
+  int s{1};
+  double *data{0};
+  bool destroy{false};
 public:
-  Vector() : len(0), s(1), data(0), destroy(false)
+  Vector()  
   {
   }
-  Vector(int l) : len(l), s(1), data(new double[l]), destroy(true)
+  Vector(int l) : len(l),  data(new double[l]), destroy(true)
   {
   }
-  Vector(Vector &v) : len(v.length()), s(v.skip()), data(v.base()), destroy(false)
+  Vector(Vector &v) : len(v.length()), s(v.skip()), data(v.base()) 
   {
   }
   Vector(const Vector &v);
   Vector(const ConstVector &v);
   Vector(const double *d, int l)
-    : len(l), s(1), data(new double[len]), destroy(true)
+    : len(l),  data(new double[len]), destroy(true)
   {
     copy(d, 1);
   }
   Vector(double *d, int l)
-    : len(l), s(1), data(d), destroy(false)
+    : len(l),  data(d) 
   {
   }
   Vector(double *d, int skip, int l)
-    : len(l), s(skip), data(d), destroy(false)
+    : len(l), s(skip), data(d) 
   {
   }
   Vector(Vector &v, int off, int l);

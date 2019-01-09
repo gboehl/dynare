@@ -125,13 +125,12 @@ namespace ogdyn
    * planner's problem. */
   struct PlannerInfo
   {
-    int num_lagrange_mults;
-    int num_aux_variables;
-    int num_new_terms;
+    int num_lagrange_mults{0};
+    int num_aux_variables{0};
+    int num_new_terms{0};
     PlannerInfo()
-      : num_lagrange_mults(0),
-        num_aux_variables(0),
-        num_new_terms(0)
+      
+        
     {
     }
   };

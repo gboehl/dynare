@@ -39,10 +39,10 @@ class prodpit
 {
 protected:
   const ProductQuadrature *prodq;
-  int level;
-  int npoints;
+  int level{0};
+  int npoints{0};
   IntSequence *jseq;
-  bool end_flag;
+  bool end_flag{true};
   ParameterSignal *sig;
   Vector *p;
   double w;

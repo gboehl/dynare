@@ -5,9 +5,6 @@
 #include "utils/cc/exception.hh"
 #include "dynamic_atoms.hh"
 
-#include <cstring>
-#include <climits>
-
 using namespace ogp;
 
 NameStorage::NameStorage(const NameStorage &stor)
@@ -136,7 +133,6 @@ Constants::print() const
 }
 
 DynamicAtoms::DynamicAtoms()
-  : nv(0), minlag(INT_MAX), maxlead(INT_MIN)
 {
 }
 

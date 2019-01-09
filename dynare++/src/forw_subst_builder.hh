@@ -14,15 +14,13 @@ namespace ogdyn
    * forward substitutions. */
   struct ForwSubstInfo
   {
-    int num_affected_equations;
-    int num_subst_terms;
-    int num_aux_variables;
-    int num_new_terms;
+    int num_affected_equations{0};
+    int num_subst_terms{0};
+    int num_aux_variables{0};
+    int num_new_terms{0};
     ForwSubstInfo()
-      : num_affected_equations(0),
-        num_subst_terms(0),
-        num_aux_variables(0),
-        num_new_terms(0)
+      
+        
     {
     }
   };

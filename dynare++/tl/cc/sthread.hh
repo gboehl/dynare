@@ -427,16 +427,16 @@ namespace sthread
   {
     typedef typename mutex_traits<thread_impl>::_Tmutex _Tmutex;
     typedef typename cond_traits<thread_impl>::_Tcond _Tcond;
-    int counter;
+    int counter{0};
     _Tmutex mut;
     _Tcond cond;
-    bool changed;
+    bool changed{true};
   public:
     /* We initialize the counter to 0, and |changed| flag to |true|, since
        the counter was change from undefined value to 0. */
 
     condition_counter()
-      : counter(0), changed(true)
+       
     {
       mutex_traits<thread_impl>::init(mut);
       cond_traits<thread_impl>::init(cond);

@@ -14,10 +14,10 @@ namespace ogu
 
   class PascalRow : public vector<int>
   {
-    int k;
+    int k{1};
   public:
     PascalRow()
-      : vector<int>(), k(1)
+      : vector<int>() 
     {
       push_back(2);
     }
