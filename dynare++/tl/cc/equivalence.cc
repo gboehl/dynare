@@ -124,10 +124,9 @@ Equivalence::Equivalence(int num, const char *dummy)
 /* Copy constructors. The second also glues a given couple. */
 
 Equivalence::Equivalence(const Equivalence &e)
-  : n(e.n),
-    classes(e.classes)
-{
-}
+  
+    
+= default;
 
 Equivalence::Equivalence(const Equivalence &e, int i1, int i2)
   : n(e.n),

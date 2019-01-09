@@ -23,8 +23,7 @@ namespace ogp
   {
     int num_substs{0};
     SubstInfo()  
-    {
-    }
+    = default;
   };
 
   /** This class tracks all atom substitutions during the job and
@@ -74,8 +73,7 @@ namespace ogp
      * semantically same as the atoms from as. */
     AtomSubstitutions(const AtomSubstitutions &as, const FineAtoms &oa, FineAtoms &na);
     virtual ~AtomSubstitutions()
-    {
-    }
+    = default;
     /** This is called during the substitution job from the
      * substitution method of the new atoms. This says that the
      * new name, say "a_m3" is a substitution of old name "a"
@@ -131,12 +129,10 @@ namespace ogp
     {
     }
     SAtoms(const SAtoms &sa)
-      : FineAtoms(sa)
-    {
-    }
+       
+    = default;
     virtual ~SAtoms()
-    {
-    }
+    = default;
     /** This substitutes all lags and leads for all exogenous and
      * all lags and leads greater than 1 for all endogenous
      * variables. This is useful for perfect foresight problems

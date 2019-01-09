@@ -28,8 +28,7 @@ public:
   ConstGeneralMatrix(const GeneralMatrix &m, int i, int j, int nrows, int ncols);
   ConstGeneralMatrix(const ConstGeneralMatrix &m, int i, int j, int nrows, int ncols);
   virtual ~ConstGeneralMatrix()
-  {
-  }
+  = default;
 
   const double &
   get(int i, int j) const
@@ -149,11 +148,9 @@ public:
 
   virtual
   ~GeneralMatrix();
-  const GeneralMatrix &
+  GeneralMatrix &
   operator=(const GeneralMatrix &m)
-  {
-    data = m.data; rows = m.rows; cols = m.cols; ld = m.ld; return *this;
-  }
+  = default;
 
   const double &
   get(int i, int j) const

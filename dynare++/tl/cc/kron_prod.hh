@@ -66,16 +66,13 @@ public:
   {
   }
   KronProdDimens(const KronProdDimens &kd)
-    : rows(kd.rows), cols(kd.cols)
-  {
-  }
+     
+  = default;
   KronProdDimens(const KronProdDimens &kd, int i);
 
-  const KronProdDimens &
+  KronProdDimens &
   operator=(const KronProdDimens &kd)
-  {
-    rows = kd.rows; cols = kd.cols; return *this;
-  }
+  = default;
   bool
   operator==(const KronProdDimens &kd) const
   {
@@ -149,12 +146,10 @@ public:
   {
   }
   KronProd(const KronProd &kp)
-    : kpd(kp.kpd)
-  {
-  }
+     
+  = default;
   virtual ~KronProd()
-  {
-  }
+  = default;
 
   int
   dimen() const

@@ -104,8 +104,7 @@ public:
     prefix[0] = '\0'; mes[0] = '\0'; writePrefix(flash);
   }
   virtual ~JournalRecord()
-  {
-  }
+  = default;
   JournalRecord &operator<<(const IntSequence &s);
   JournalRecord &
   operator<<(_Tfunc f)

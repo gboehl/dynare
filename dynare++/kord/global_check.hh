@@ -95,12 +95,10 @@ public:
   {
   }
   GResidFunction(const GResidFunction &rf)
-    : GaussConverterFunction(rf)
-  {
-  }
+     
+  = default;
   virtual ~GResidFunction()
-  {
-  }
+  = default;
   virtual VectorFunction *
   clone() const
   {

@@ -59,9 +59,8 @@ public:
   FFSTensor(const FFSTensor &t, const ConstVector &x);
   FFSTensor(const FSSparseTensor &t);
   FFSTensor(const FFSTensor &ft)
-    : FTensor(ft), nv(ft.nv)
-  {
-  }
+     
+  = default;
   FFSTensor(const UFSTensor &ut);
   FFSTensor(int first_row, int num, FFSTensor &t)
     : FTensor(first_row, num, t), nv(t.nv)
@@ -104,9 +103,8 @@ public:
   }
   UFSTensor(const UFSTensor &t, const ConstVector &x);
   UFSTensor(const UFSTensor &ut)
-    : UTensor(ut), nv(ut.nv)
-  {
-  }
+     
+  = default;
   UFSTensor(const FFSTensor &ft);
   UFSTensor(int first_row, int num, UFSTensor &t)
     : UTensor(first_row, num, t), nv(t.nv)

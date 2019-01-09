@@ -93,9 +93,8 @@ public:
     operator[](3) = i4;
   }
   Symmetry(const Symmetry &s)
-    : IntSequence(s)
-  {
-  }
+     
+  = default;
   Symmetry(const Symmetry &s, const OrdSequence &cl)
     : IntSequence(s, cl.getData())
   {

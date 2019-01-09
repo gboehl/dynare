@@ -21,8 +21,7 @@ namespace ogdyn
     ForwSubstInfo()
       
         
-    {
-    }
+    = default;
   };
 
   class ForwSubstBuilder

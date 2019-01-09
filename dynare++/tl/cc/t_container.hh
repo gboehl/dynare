@@ -343,9 +343,8 @@ public:
   {
   }
   UGSContainer(const UGSContainer &uc)
-    : TensorContainer<UGSTensor>(uc)
-  {
-  }
+     
+  = default;
   UGSContainer(const FGSContainer &c);
   void multAndAdd(const UGSTensor &t, UGSTensor &out) const;
 };
@@ -372,9 +371,8 @@ public:
   {
   }
   FGSContainer(const FGSContainer &fc)
-    : TensorContainer<FGSTensor>(fc)
-  {
-  }
+     
+  = default;
   FGSContainer(const UGSContainer &c);
   void multAndAdd(const FGSTensor &t, FGSTensor &out) const;
   void multAndAdd(const UGSTensor &t, FGSTensor &out) const;

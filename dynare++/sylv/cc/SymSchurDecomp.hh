@@ -17,12 +17,10 @@ public:
    * symmetric and Lambda real diagonal, hence a vector. */
   SymSchurDecomp(const GeneralMatrix &a);
   SymSchurDecomp(const SymSchurDecomp &ssd)
-    : lambda(ssd.lambda), q(ssd.q)
-  {
-  }
+     
+  = default;
   virtual ~SymSchurDecomp()
-  {
-  }
+  = default;
   const Vector &
   getLambda() const
   {

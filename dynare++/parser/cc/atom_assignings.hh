@@ -52,8 +52,7 @@ namespace ogp
      * static atoms. */
     AtomAssignings(const AtomAssignings &aa, StaticAtoms &a);
     virtual ~AtomAssignings()
-    {
-    }
+    = default;
     /** Parse the assignments from the given string. */
     void parse(int length, const char *stream);
     /** Process a syntax error from bison. */
@@ -99,8 +98,7 @@ namespace ogp
     {
     }
     virtual ~AtomAsgnEvaluator()
-    {
-    }
+    = default;
     /** This sets all initial values to NaNs, all constants and
      * all values set by user by call set_value. This is called by
      * FormulaEvaluator::eval() method, which is called by eval()

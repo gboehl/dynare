@@ -17,8 +17,7 @@ class IntGenerator
 public:
   IntGenerator()
      
-  {
-  }
+  = default;
   void init(int nf, int ny, int nv, int nw, int nu, int mx, double prob);
   int get() const;
 };

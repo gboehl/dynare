@@ -102,8 +102,7 @@ public:
   {
   }
   virtual ~StackContainerInterface()
-  {
-  }
+  = default;
   virtual const IntSequence&getStackSizes() const = 0;
   virtual IntSequence&getStackSizes() = 0;
   virtual const IntSequence&getStackOffsets() const = 0;

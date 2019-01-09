@@ -525,8 +525,7 @@ DynareParser::DynareParser(const DynareParser &dp)
 }
 
 DynareParser::~DynareParser()
-{
-}
+= default;
 
 void
 DynareParser::add_name(const char *name, int flag)

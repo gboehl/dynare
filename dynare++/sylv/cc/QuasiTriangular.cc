@@ -432,8 +432,7 @@ QuasiTriangular::QuasiTriangular(const double *d, int d_size)
 }
 
 QuasiTriangular::~QuasiTriangular()
-{
-}
+= default;
 
 QuasiTriangular::QuasiTriangular(int p, const QuasiTriangular &t)
   : SqSylvMatrix(t.numRows()), diagonal(getData().base(), t.diagonal)

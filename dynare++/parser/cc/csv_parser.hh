@@ -12,8 +12,7 @@ namespace ogp
   {
   public:
     virtual ~CSVParserPeer()
-    {
-    }
+    = default;
     virtual void item(int irow, int icol, const char *str, int length) = 0;
   };
 
@@ -30,13 +29,10 @@ namespace ogp
     {
     }
     CSVParser(const CSVParser &csvp)
-      : peer(csvp.peer), row(csvp.row),
-        col(csvp.col), parsed_string(csvp.parsed_string)
-    {
-    }
+       
+    = default;
     virtual ~CSVParser()
-    {
-    }
+    = default;
 
     void csv_error(const char *mes);
     void csv_parse(int length, const char *str);

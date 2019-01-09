@@ -15,8 +15,7 @@ namespace ogu
   {
   public:
     virtual ~OneDFunction()
-    {
-    }
+    = default;
     virtual double eval(double) = 0;
   };
 
@@ -47,11 +46,9 @@ namespace ogu
   {
   public:
     VectorFunction()
-    {
-    }
+    = default;
     virtual ~VectorFunction()
-    {
-    }
+    = default;
     virtual int inDim() const = 0;
     virtual int outDim() const = 0;
     /** Check dimensions of eval parameters. */
@@ -68,8 +65,7 @@ namespace ogu
     {
     }
     virtual ~Jacobian()
-    {
-    }
+    = default;
     virtual void eval(const Vector &in) = 0;
   };
 
@@ -93,8 +89,7 @@ namespace ogu
       xnewton.zeros(); xcauchy.zeros(); x.zeros();
     }
     virtual ~NLSolver()
-    {
-    }
+    = default;
     /** Returns true if the problem has converged. xx as input is the
      * starting value, as output it is a solution. */
     bool solve(Vector &xx, int &iter);

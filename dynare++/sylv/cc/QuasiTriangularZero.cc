@@ -63,8 +63,7 @@ QuasiTriangularZero::QuasiTriangularZero(const QuasiTriangular &t)
 }
 
 QuasiTriangularZero::~QuasiTriangularZero()
-{
-}
+= default;
 
 void
 QuasiTriangularZero::solvePre(Vector &x, double &eig_min)

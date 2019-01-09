@@ -258,10 +258,8 @@ FormulaDerivatives::FormulaDerivatives(OperationTree &otree,
 }
 
 FormulaDerivatives::FormulaDerivatives(const FormulaDerivatives &fd)
-  : tder(fd.tder), indices(fd.indices), ind2der(fd.ind2der),
-    nvar(fd.nvar), order(fd.order)
-{
-}
+   
+= default;
 
 int
 FormulaDerivatives::derivative(const FoldMultiIndex &mi) const

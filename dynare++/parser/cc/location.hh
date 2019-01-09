@@ -26,8 +26,7 @@ namespace ogp
     int off{0}; // offset of the token
     int ll{0}; // length ot the token
     location_type()  
-    {
-    }
+    = default;
   };
 
 };

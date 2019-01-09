@@ -109,8 +109,7 @@ class SmolyakQuadrature : public QuadratureImpl<smolpit>
 public:
   SmolyakQuadrature(int d, int l, const OneDQuadrature &uq);
   virtual ~SmolyakQuadrature()
-  {
-  }
+  = default;
   virtual int numEvals(int level) const;
   void designLevelForEvals(int max_eval, int &lev, int &evals) const;
 protected:

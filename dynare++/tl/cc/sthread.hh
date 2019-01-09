@@ -107,8 +107,7 @@ namespace sthread
     _Tthread th;
   public:
     virtual ~thread()
-    {
-    }
+    = default;
     _Tthread &
     getThreadIden()
     {

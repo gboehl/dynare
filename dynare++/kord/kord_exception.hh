@@ -38,8 +38,7 @@ public:
     cd = c;
   }
   virtual ~KordException()
-  {
-  }
+  = default;
   virtual void
   print() const
   {

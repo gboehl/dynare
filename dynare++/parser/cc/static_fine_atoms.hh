@@ -62,8 +62,7 @@ namespace ogp
     vector<int> exo_atoms_map;
   public:
     StaticFineAtoms()
-    {
-    }
+    = default;
     /** Copy constructor making a new storage for atom names. */
     StaticFineAtoms(const StaticFineAtoms &sfa);
     /** Conversion from dynamic FineAtoms taking its outer
@@ -86,8 +85,7 @@ namespace ogp
       StaticFineAtoms::import_atoms(fa, otree, tmap, dummy);
     }
     virtual ~StaticFineAtoms()
-    {
-    }
+    = default;
     /** This adds atoms from dynamic atoms inserting new tree
      * indices to the given tree and tracing the mapping from old
      * atoms to new atoms in tmap. The ordering of the static

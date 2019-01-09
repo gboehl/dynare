@@ -53,14 +53,12 @@ public:
   {
   }
   URTensor(const URTensor &ut)
-    : UTensor(ut), nv(ut.nv)
-  {
-  }
+     
+  = default;
   URTensor(const FRTensor &ft);
 
   virtual ~URTensor()
-  {
-  }
+  = default;
 
   void increment(IntSequence &v) const;
   void decrement(IntSequence &v) const;
@@ -91,14 +89,12 @@ public:
   {
   }
   FRTensor(const FRTensor &ft)
-    : FTensor(ft), nv(ft.nv)
-  {
-  }
+     
+  = default;
   FRTensor(const URTensor &ut);
 
   virtual ~FRTensor()
-  {
-  }
+  = default;
 
   void increment(IntSequence &v) const;
   void decrement(IntSequence &v) const;
@@ -138,12 +134,10 @@ public:
   URSingleTensor(const vector<ConstVector> &cols);
   URSingleTensor(const ConstVector &v, int d);
   URSingleTensor(const URSingleTensor &ut)
-    : URTensor(ut)
-  {
-  }
+     
+  = default;
   virtual ~URSingleTensor()
-  {
-  }
+  = default;
   FTensor&fold() const;
 };
 
@@ -162,12 +156,10 @@ public:
   }
   FRSingleTensor(const URSingleTensor &ut);
   FRSingleTensor(const FRSingleTensor &ft)
-    : FRTensor(ft)
-  {
-  }
+     
+  = default;
   virtual ~FRSingleTensor()
-  {
-  }
+  = default;
 };
 
 #endif

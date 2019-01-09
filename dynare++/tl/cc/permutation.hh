@@ -77,9 +77,8 @@ public:
     computeSortingMap(s);
   };
   Permutation(const Permutation &p)
-    : permap(p.permap)
-  {
-  }
+     
+  = default;
   Permutation(const Permutation &p1, const Permutation &p2)
     : permap(p2.permap)
   {
@@ -89,11 +88,9 @@ public:
     : permap(p.size(), p.permap, i)
   {
   }
-  const Permutation &
+  Permutation &
   operator=(const Permutation &p)
-  {
-    permap = p.permap; return *this;
-  }
+  = default;
   bool
   operator==(const Permutation &p)
   {

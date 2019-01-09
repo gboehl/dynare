@@ -86,9 +86,8 @@ protected:
     DoubleParamItem(double val) : ParamItem<double>(val)
     {
     }
-    DoubleParamItem(const DoubleParamItem &item) : ParamItem<double>(item)
-    {
-    }
+    DoubleParamItem(const DoubleParamItem &item)  
+    = default;
     const DoubleParamItem &
     operator=(const double &val)
     {
@@ -108,9 +107,8 @@ protected:
     IntParamItem(int val) : ParamItem<int>(val)
     {
     }
-    IntParamItem(const IntParamItem &item) : ParamItem<int>(item)
-    {
-    }
+    IntParamItem(const IntParamItem &item)  
+    = default;
     const IntParamItem &
     operator=(const int &val)
     {
@@ -130,9 +128,8 @@ protected:
     BoolParamItem(bool val) : ParamItem<bool>(val)
     {
     }
-    BoolParamItem(const BoolParamItem &item) : ParamItem<bool>(item)
-    {
-    }
+    BoolParamItem(const BoolParamItem &item)  
+    = default;
     const BoolParamItem &
     operator=(const bool &val)
     {
@@ -152,9 +149,8 @@ protected:
     MethodParamItem(solve_method val) : ParamItem<solve_method>(val)
     {
     }
-    MethodParamItem(const MethodParamItem &item) : ParamItem<solve_method>(item)
-    {
-    }
+    MethodParamItem(const MethodParamItem &item)  
+    = default;
     const MethodParamItem
     operator=(const solve_method &val)
     {
@@ -212,8 +208,7 @@ public:
     copy(p); return *this;
   }
   ~SylvParams()
-  {
-  }
+  = default;
   void print(const char *prefix) const;
   void print(FILE *fdesc, const char *prefix) const;
   void setArrayNames(int &num, const char **names) const;

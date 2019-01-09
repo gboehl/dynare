@@ -60,14 +60,11 @@ public:
   OrdSequence() : data()
   {
   }
-  OrdSequence(const OrdSequence &s) : data(s.data)
-  {
-  }
-  const OrdSequence &
+  OrdSequence(const OrdSequence &s)  
+  = default;
+  OrdSequence &
   operator=(const OrdSequence &s)
-  {
-    data = s.data; return *this;
-  }
+  = default;
   bool operator==(const OrdSequence &s) const;
   int operator[](int i) const;
   bool operator<(const OrdSequence &s) const;

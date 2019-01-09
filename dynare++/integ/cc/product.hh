@@ -94,8 +94,7 @@ class ProductQuadrature : public QuadratureImpl<prodpit>
 public:
   ProductQuadrature(int d, const OneDQuadrature &uq);
   virtual ~ProductQuadrature()
-  {
-  }
+  = default;
   int
   numEvals(int l) const
   {

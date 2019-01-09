@@ -17,11 +17,9 @@ namespace ogp
   {
   public:
     Atoms()
-    {
-    }
+    = default;
     virtual ~Atoms()
-    {
-    }
+    = default;
     /** This returns previously assigned internal index to the
      * given atom, or returns -1 if the atom has not been assigned
      * yet. The method can raise an exception, if the Atoms
@@ -51,8 +49,7 @@ namespace ogp
   {
   public:
     virtual ~AtomValues()
-    {
-    }
+    = default;
     virtual void setValues(EvalTree &et) const = 0;
   };
 
@@ -114,8 +111,7 @@ namespace ogp
     /** Copy constructor. */
     FormulaDerivatives(const FormulaDerivatives &fd);
     virtual ~FormulaDerivatives()
-    {
-    }
+    = default;
     /** Random access to the derivatives via multiindex. */
     int derivative(const FoldMultiIndex &mi) const;
     /** Return the order. */
@@ -314,8 +310,7 @@ namespace ogp
   {
   public:
     virtual ~FormulaEvalLoader()
-    {
-    }
+    = default;
     /** Set the value res for the given formula. The formula is
      * identified by an index corresponding to the ordering in
      * which the formulas have been parsed (starting from
@@ -376,8 +371,7 @@ namespace ogp
   {
   public:
     virtual ~FormulaDerEvalLoader()
-    {
-    }
+    = default;
     /** This loads the result of the derivative of the given
      * order. The semantics of i is the same as in
      * FormulaEvalLoader::load. The indices of variables with

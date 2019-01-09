@@ -81,8 +81,7 @@ GeneralMatrix::GeneralMatrix(const GeneralMatrix &a, const char *dum1,
 }
 
 GeneralMatrix::~GeneralMatrix()
-{
-}
+= default;
 
 void
 GeneralMatrix::place(const ConstGeneralMatrix &m, int i, int j)

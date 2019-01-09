@@ -72,8 +72,7 @@ public:
   {
   }
   virtual ~SparseTensor()
-  {
-  }
+  = default;
   void insert(const IntSequence &s, int r, double c);
   const Map &
   getMap() const
@@ -166,9 +165,8 @@ public:
   GSSparseTensor(const FSSparseTensor &t, const IntSequence &ss,
                  const IntSequence &coor, const TensorDimens &td);
   GSSparseTensor(const GSSparseTensor &t)
-    : SparseTensor(t), tdims(t.tdims)
-  {
-  }
+     
+  = default;
   void insert(const IntSequence &s, int r, double c);
   const Symmetry &
   getSym() const

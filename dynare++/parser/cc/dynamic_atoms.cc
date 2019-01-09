@@ -133,8 +133,7 @@ Constants::print() const
 }
 
 DynamicAtoms::DynamicAtoms()
-{
-}
+= default;
 
 DynamicAtoms::DynamicAtoms(const DynamicAtoms &da)
   : Constants(da),

@@ -43,8 +43,7 @@ namespace ogp
     }
     /* Destructor. */
     virtual ~StaticAtoms()
-    {
-    }
+    = default;
     /** This imports atoms from dynamic atoms inserting the new
      * tree indices to the given tree (including constants). The
      * mapping from old atoms to new atoms is traced in tmap. */

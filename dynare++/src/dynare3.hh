@@ -269,8 +269,7 @@ protected:
 public:
   DynareJacobian(Dynare &dyn);
   virtual ~DynareJacobian()
-  {
-  }
+  = default;
   void load(int i, int iord, const int *vars, double res);
   void eval(const Vector &in);
 };
@@ -285,8 +284,7 @@ public:
   {
   }
   virtual ~DynareVectorFunction()
-  {
-  }
+  = default;
   int
   inDim() const
   {

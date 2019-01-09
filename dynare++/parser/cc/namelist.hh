@@ -21,8 +21,7 @@ namespace ogp
   {
   public:
     virtual ~NameListParser()
-    {
-    }
+    = default;
     virtual void add_name(const char *name) = 0;
     virtual void namelist_error(const char *mes) = 0;
     void namelist_parse(int length, const char *text);

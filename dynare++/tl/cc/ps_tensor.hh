@@ -109,14 +109,11 @@ public:
     per.apply(nvmax);
   }
   PerTensorDimens(const PerTensorDimens &td)
-    : TensorDimens(td), per(td.per)
-  {
-  }
-  const PerTensorDimens &
+     
+  = default;
+  PerTensorDimens &
   operator=(const PerTensorDimens &td)
-  {
-    TensorDimens::operator=(td); per = td.per; return *this;
-  }
+  = default;
   bool
   operator==(const PerTensorDimens &td)
   {
@@ -204,9 +201,8 @@ public:
   UPSTensor(const FSSparseTensor &t, const IntSequence &ss,
             const IntSequence &coor, const PerTensorDimens &ptd);
   UPSTensor(const UPSTensor &ut)
-    : UTensor(ut), tdims(ut.tdims)
-  {
-  }
+     
+  = default;
 
   void increment(IntSequence &v) const;
   void decrement(IntSequence &v) const;
@@ -369,9 +365,8 @@ public:
             const GSSparseTensor &t, const KronProdAll &kp);
 
   FPSTensor(const FPSTensor &ft)
-    : FTensor(ft), tdims(ft.tdims)
-  {
-  }
+     
+  = default;
 
   void increment(IntSequence &v) const;
   void decrement(IntSequence &v) const;

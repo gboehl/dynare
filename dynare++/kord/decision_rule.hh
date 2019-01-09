@@ -33,8 +33,7 @@ class ShockRealization
 {
 public:
   virtual ~ShockRealization()
-  {
-  }
+  = default;
   virtual void get(int n, Vector &out) = 0;
   virtual int numShocks() const = 0;
 };
@@ -57,8 +56,7 @@ class DecisionRule
 public:
   enum emethod { horner, trad };
   virtual ~DecisionRule()
-  {
-  }
+  = default;
   virtual TwoDMatrix *simulate(emethod em, int np, const Vector &ystart,
                                ShockRealization &sr) const = 0;
   virtual void eval(emethod em, Vector &out, const ConstVector &v) const = 0;
@@ -1002,8 +1000,7 @@ public:
   {
   }
   virtual ~RandomShockRealization()
-  {
-  }
+  = default;
   void get(int n, Vector &out);
   int
   numShocks() const

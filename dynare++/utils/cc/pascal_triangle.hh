@@ -36,14 +36,11 @@ namespace ogu
       tr.emplace_back();
     }
     PascalTriangle(const PascalTriangle &triang)
-      : tr(triang.tr)
-    {
-    }
-    const PascalTriangle &
+       
+    = default;
+    PascalTriangle &
     operator=(const PascalTriangle &triang)
-    {
-      tr = triang.tr; return *this;
-    }
+    = default;
     int noverk(int n, int k);
     void print() const;
   protected:

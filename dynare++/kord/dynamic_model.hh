@@ -22,8 +22,7 @@ class NameList
 {
 public:
   virtual ~NameList()
-  {
-  }
+  = default;
   virtual int getNum() const = 0;
   virtual const char *getName(int i) const = 0;
   void print() const;
@@ -85,8 +84,7 @@ class DynamicModel
 public:
   virtual DynamicModel *clone() const = 0;
   virtual ~DynamicModel()
-  {
-  }
+  = default;
 
   virtual int nstat() const = 0;
   virtual int nboth() const = 0;

@@ -131,8 +131,7 @@ namespace ogdyn
     PlannerInfo()
       
         
-    {
-    }
+    = default;
   };
 
   class MultInitSS;

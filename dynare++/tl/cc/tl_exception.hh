@@ -62,8 +62,7 @@ public:
     lnum = l;
   }
   virtual ~TLException()
-  {
-  }
+  = default;
   virtual void
   print() const
   {

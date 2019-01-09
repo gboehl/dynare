@@ -46,8 +46,7 @@ namespace ogp
     set<const char *, ltstr> name_set;
   public:
     NameStorage()
-    {
-    }
+    = default;
     NameStorage(const NameStorage &stor);
     virtual
     ~NameStorage();
@@ -82,8 +81,7 @@ namespace ogp
     Tconstantmap cmap;
   public:
     Constants()
-    {
-    }
+    = default;
     /** Copy constructor. */
     Constants(const Constants &c)
       : cmap(c.cmap), cinvmap(c.cinvmap)
@@ -172,8 +170,7 @@ namespace ogp
     DynamicAtoms();
     DynamicAtoms(const DynamicAtoms &da);
     virtual ~DynamicAtoms()
-    {
-    }
+    = default;
     /** Check the nulary term identified by its string
      * representation. The nulary term can be either a constant or
      * a variable. If constant, -1 is returned so that it could be
@@ -364,8 +361,7 @@ namespace ogp
                                const DynamicAtoms &a) const = 0;
     /** Destructor does nothing here. */
     virtual ~VarOrdering()
-    {
-    }
+    = default;
     /** This is the method setting the ordering and the map. A
      * subclass must reimplement it, possibly using a
      * preimplemented ordering. This method must be called by the

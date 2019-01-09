@@ -41,8 +41,7 @@ namespace ogu
       mes[mes_length-1] = '\0';
     }
     virtual ~Exception()
-    {
-    }
+    = default;
     void
     print(FILE *fd) const
     {

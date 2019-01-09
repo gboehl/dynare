@@ -34,12 +34,10 @@ namespace ogdyn
     {
     }
     DynareStaticAtoms(const DynareStaticAtoms &a)
-      : StaticAtoms(a)
-    {
-    }
+       
+    = default;
     virtual ~DynareStaticAtoms()
-    {
-    }
+    = default;
     /** This registers a unique varname identifier. It throws an
      * exception if the variable name is duplicate. It checks the
      * uniqueness and then it calls StaticAtoms::register_name. */
@@ -66,8 +64,7 @@ namespace ogdyn
     }
     DynareDynamicAtoms(const DynareDynamicAtoms &dda);
     virtual ~DynareDynamicAtoms()
-    {
-    }
+    = default;
     /** This parses a variable of the forms: varname(+3),
      * varname(3), varname, varname(-3), varname(0), varname(+0),
      * varname(-0). */

@@ -23,16 +23,9 @@ public:
   KronVector(Vector &v, int mm, int nn, int dp); // conversion
   KronVector(KronVector &, int i); // picks i-th subvector
   KronVector(const ConstKronVector &v); // new instance and copy
-  const KronVector &
-  operator=(KronVector &v)
-  {
-    Vector::operator=(v); m = v.m; n = v.n; depth = v.depth; return *this;
-  }
-  const KronVector &
+  KronVector &
   operator=(const KronVector &v)
-  {
-    Vector::operator=(v); m = v.m; n = v.n; depth = v.depth; return *this;
-  }
+  = default;
   const KronVector &operator=(const ConstKronVector &v);
   const KronVector &operator=(const Vector &v);
   int

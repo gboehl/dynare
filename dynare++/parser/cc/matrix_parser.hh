@@ -35,15 +35,12 @@ namespace ogp
   public:
     MatrixParser()
        
-    {
-    }
+    = default;
     MatrixParser(const MatrixParser &mp)
-      : data(mp.data), row_lengths(mp.row_lengths), nc(mp.nc)
-    {
-    }
+       
+    = default;
     virtual ~MatrixParser()
-    {
-    }
+    = default;
     /** Return a number of read rows. */
     int
     nrows() const
@@ -122,11 +119,9 @@ namespace ogp
       return c;
     }
     /** Assignment operator. */
-    const MPIterator &
+    MPIterator &
     operator=(const MPIterator &it)
-    {
-      p = it.p; i = it.i; c = it.c; r = it.r; return *this;
-    }
+    = default;
     /** Return true if the iterators are the same, this is if they
      * have the same underlying object and the same item index. */
     bool

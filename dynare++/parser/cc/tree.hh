@@ -52,23 +52,16 @@ namespace ogp
     /** Constructs a nulary operation. */
     Operation()
        
-    {
-    }
+    = default;
     /** A copy constructor. */
     Operation(const Operation &op)
-      : code(op.code), op1(op.op1), op2(op.op2)
-    {
-    }
+       
+    = default;
 
     /** Operator =. */
-    const Operation &
+    Operation &
     operator=(const Operation &op)
-    {
-      code = op.code;
-      op1 = op.op1;
-      op2 = op.op2;
-      return *this;
-    }
+    = default;
     /** Operator ==. */
     bool
     operator==(const Operation &op) const
@@ -141,8 +134,7 @@ namespace ogp
   {
     virtual bool operator()(int t) const = 0;
     virtual ~opselector()
-    {
-    }
+    = default;
   };
 
   /** Forward declaration of OperationFormatter. */
@@ -229,11 +221,9 @@ namespace ogp
 
     /** Copy constructor. */
     OperationTree(const OperationTree &ot)
-      : terms(ot.terms), opmap(ot.opmap), nul_incidence(ot.nul_incidence),
-        derivatives(ot.derivatives),
-        last_nulary(ot.last_nulary)
-    {
-    }
+      
+        
+    = default;
 
     /** Add a nulary operation. The caller is responsible for not
      * inserting two semantically equivalent nulary operations.
@@ -443,8 +433,7 @@ namespace ogp
   public:
     /** Empty virtual destructor. */
     virtual ~OperationFormatter()
-    {
-    }
+    = default;
     /** Print the formatted operation op with a given tree index t
      * to a given descriptor. (See class OperationTree to know
      * what is a tree index.) This prints all the tree. This
@@ -488,8 +477,7 @@ namespace ogp
   {
   public:
     virtual ~NularyStringConvertor()
-    {
-    }
+    = default;
     /** Return the string representation of the atom with the tree
      * index t. */
     virtual std::string convert(int t) const = 0;
@@ -508,8 +496,7 @@ namespace ogp
     }
     /** Empty virtual destructor. */
     virtual ~OperationStringConvertor()
-    {
-    }
+    = default;
     /** Convert the operation to the string mathematical
      * representation. This does not write any equation, just
      * returns a string representation of the formula. */

@@ -44,8 +44,7 @@ class OneDQuadrature
 {
 public:
   virtual ~OneDQuadrature()
-  {
-  }
+  = default;
   virtual int numLevels() const = 0;
   virtual int numPoints(int level) const = 0;
   virtual double point(int level, int i) const = 0;
@@ -74,8 +73,7 @@ public:
   {
   }
   virtual ~Quadrature()
-  {
-  }
+  = default;
   int
   dimen() const
   {
@@ -249,8 +247,7 @@ public:
     calcOffsets();
   }
   virtual ~OneDPrecalcQuadrature()
-  {
-  }
+  = default;
   int
   numLevels() const
   {

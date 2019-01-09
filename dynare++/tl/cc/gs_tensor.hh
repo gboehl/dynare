@@ -69,18 +69,14 @@ public:
     nvs[0] = nvar;
   }
   TensorDimens(const TensorDimens &td)
-    : nvs(td.nvs), sym(td.sym), nvmax(td.nvmax)
-  {
-  }
+     
+  = default;
   virtual ~TensorDimens()
-  {
-  }
+  = default;
   TensorDimens(const IntSequence &ss, const IntSequence &coor);
-  const TensorDimens &
+  TensorDimens &
   operator=(const TensorDimens &td)
-  {
-    nvs = td.nvs; sym = td.sym; nvmax = td.nvmax; return *this;
-  }
+  = default;
   bool
   operator==(const TensorDimens &td) const
   {
@@ -156,9 +152,8 @@ public:
   {
   }
   FGSTensor(const FGSTensor &ft)
-    : FTensor(ft), tdims(ft.tdims)
-  {
-  }
+     
+  = default;
   FGSTensor(const UGSTensor &ut);
   FGSTensor(int first_row, int num, FGSTensor &t)
     : FTensor(first_row, num, t), tdims(t.tdims)
@@ -175,8 +170,7 @@ public:
   }
 
   virtual ~FGSTensor()
-  {
-  }
+  = default;
 
   void increment(IntSequence &v) const;
   void
@@ -227,9 +221,8 @@ public:
   {
   }
   UGSTensor(const UGSTensor &ut)
-    : UTensor(ut), tdims(ut.tdims)
-  {
-  }
+     
+  = default;
   UGSTensor(const FGSTensor &ft);
 
   UGSTensor(int first_row, int num, UGSTensor &t)
@@ -245,8 +238,7 @@ public:
   {
   }
   virtual ~UGSTensor()
-  {
-  }
+  = default;
 
   void increment(IntSequence &v) const;
   void decrement(IntSequence &v) const;

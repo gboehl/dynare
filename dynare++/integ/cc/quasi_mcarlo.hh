@@ -40,11 +40,9 @@ class PermutationScheme
 {
 public:
   PermutationScheme()
-  {
-  }
+  = default;
   virtual ~PermutationScheme()
-  {
-  }
+  = default;
   virtual int permute(int i, int base, int c) const  = 0;
 };
 
@@ -68,16 +66,11 @@ class RadicalInverse
 public:
   RadicalInverse(int n, int b, int mxn);
   RadicalInverse(const RadicalInverse &ri)
-    : num(ri.num), base(ri.base), maxn(ri.maxn), j(ri.j), coeff(ri.coeff)
-  {
-  }
-  const RadicalInverse &
+     
+  = default;
+  RadicalInverse &
   operator=(const RadicalInverse &radi)
-  {
-    num = radi.num; base = radi.base; maxn = radi.maxn;
-    j = radi.j; coeff = radi.coeff;
-    return *this;
-  }
+  = default;
   double eval(const PermutationScheme &p) const;
   void increase();
   void print() const;
@@ -103,9 +96,8 @@ protected:
 public:
   HaltonSequence(int n, int mxn, int dim, const PermutationScheme &p);
   HaltonSequence(const HaltonSequence &hs)
-    : num(hs.num), maxn(hs.maxn), ri(hs.ri), per(hs.per), pt(hs.pt)
-  {
-  }
+     
+  = default;
   const HaltonSequence &operator=(const HaltonSequence &hs);
   void increase();
   const Vector &
@@ -140,8 +132,7 @@ public:
   {
   }
   virtual ~QMCSpecification()
-  {
-  }
+  = default;
   int
   dimen() const
   {
@@ -216,8 +207,7 @@ public:
   {
   }
   virtual ~QMCarloCubeQuadrature()
-  {
-  }
+  = default;
   int
   numEvals(int l) const
   {
@@ -291,8 +281,7 @@ public:
   {
   }
   virtual ~QMCarloNormalQuadrature()
-  {
-  }
+  = default;
   int
   numEvals(int l) const
   {

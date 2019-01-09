@@ -23,8 +23,7 @@ protected:
   bool destroy{false};
 public:
   Vector()  
-  {
-  }
+  = default;
   Vector(int l) : len(l),  data(new double[l]), destroy(true)
   {
   }
@@ -150,14 +149,11 @@ public:
   BaseConstVector(int l, int si, const double *d) : len(l), s(si), data(d)
   {
   }
-  BaseConstVector(const BaseConstVector &v) : len(v.len), s(v.s), data(v.data)
-  {
-  }
-  const BaseConstVector &
+  BaseConstVector(const BaseConstVector &v)  
+  = default;
+  BaseConstVector &
   operator=(const BaseConstVector &v)
-  {
-    len = v.len; s = v.s; data = v.data; return *this;
-  }
+  = default;
   const double &
   operator[](int i) const
   {
@@ -188,9 +184,8 @@ public:
   ConstVector(const Vector &v) : BaseConstVector(v.length(), v.skip(), v.base())
   {
   }
-  ConstVector(const ConstVector &v) : BaseConstVector(v)
-  {
-  }
+  ConstVector(const ConstVector &v)  
+  = default;
   ConstVector(const double *d, int l) : BaseConstVector(l, 1, d)
   {
   }
@@ -201,8 +196,7 @@ public:
   ConstVector(int row, const ConstGeneralMatrix &m);
 
   virtual ~ConstVector()
-  {
-  }
+  = default;
   /** Exact equality. */
   bool operator==(const ConstVector &y) const;
   bool

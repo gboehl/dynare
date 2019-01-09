@@ -31,17 +31,14 @@ namespace ogdyn
     int ll;
     int lc;
     PosInterval()
-    {
-    }
+    = default;
     PosInterval(int ifl, int ifc, int ill, int ilc)
       : fl(ifl), fc(ifc), ll(ill), lc(ilc)
     {
     }
-    const PosInterval &
+    PosInterval &
     operator=(const PosInterval &pi)
-    {
-      fl = pi.fl; fc = pi.fc; ll = pi.ll; lc = pi.lc; return *this;
-    }
+    = default;
     /** This returns the interval beginning and interval length
      * within the given string. */
     void translate(const char *beg, int len, const char * &ibeg, int &ilen) const;
@@ -364,12 +361,10 @@ namespace ogdyn
                   const char **par, int num_par,
                   const char *equations, int len, int ord);
     DynareSPModel(const DynareSPModel &dm)
-      : DynareModel(dm)
-    {
-    }
+       
+    = default;
     ~DynareSPModel()
-    {
-    }
+    = default;
     virtual DynareModel *
     clone() const
     {

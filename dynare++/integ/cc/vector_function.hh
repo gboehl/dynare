@@ -72,12 +72,10 @@ public:
   {
   }
   VectorFunction(const VectorFunction &func)
-    : in_dim(func.in_dim), out_dim(func.out_dim)
-  {
-  }
+     
+  = default;
   virtual ~VectorFunction()
-  {
-  }
+  = default;
   virtual VectorFunction *clone() const = 0;
   virtual void eval(const Vector &point, const ParameterSignal &sig, Vector &out) = 0;
   int

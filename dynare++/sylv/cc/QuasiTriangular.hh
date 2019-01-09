@@ -22,8 +22,7 @@ private:
   double *a2;
 public:
   DiagPair()
-  {
-  }
+  = default;
   DiagPair(double *aa1, double *aa2)
   {
     a1 = aa1; a2 = aa2;
@@ -32,12 +31,10 @@ public:
   {
     a1 = p.a1; a2 = p.a2;
   }
-  const DiagPair &
+  DiagPair &
   operator=(const DiagPair &p)
-  {
-    a1 = p.a1; a2 = p.a2; return *this;
-  }
-  const DiagPair &
+  = default;
+  DiagPair &
   operator=(double v)
   {
     *a1 = v; *a2 = v; return *this;
@@ -74,8 +71,7 @@ private:
 
 public:
   DiagonalBlock()
-  {
-  }
+  = default;
   DiagonalBlock(int jb, bool r, double *a1, double *a2,
                 double *b1, double *b2)
     : alpha(a1, a2)
@@ -210,8 +206,7 @@ private:
   void copy(const Diagonal &);
 public:
   Diagonal()  
-  {
-  }
+  = default;
   Diagonal(double *data, int d_size);
   Diagonal(double *data, const Diagonal &d);
   Diagonal(const Diagonal &d)
@@ -224,8 +219,7 @@ public:
     copy(d); return *this;
   }
   virtual ~Diagonal()
-  {
-  }
+  = default;
 
   int
   getNumComplex() const
@@ -297,8 +291,7 @@ public:
     ptr = base; d_size = ds; real = r;
   }
   virtual ~_matrix_iter()
-  {
-  }
+  = default;
   const _Self &
   operator=(const _Self &it)
   {

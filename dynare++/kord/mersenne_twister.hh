@@ -25,8 +25,7 @@ public:
   MersenneTwister(uint32 iseed);
   MersenneTwister(const MersenneTwister &mt);
   virtual ~MersenneTwister()
-  {
-  }
+  = default;
   uint32 lrand();
   double drand();
   double

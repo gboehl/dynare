@@ -74,9 +74,8 @@ public:
   SqSylvMatrix(double *d, int m) : SylvMatrix(d, m, m)
   {
   }
-  SqSylvMatrix(const SqSylvMatrix &m) : SylvMatrix(m)
-  {
-  }
+  SqSylvMatrix(const SqSylvMatrix &m)  
+  = default;
   SqSylvMatrix(const GeneralMatrix &m, int i, int j, int nrows)
     : SylvMatrix(m, i, j, nrows, nrows)
   {

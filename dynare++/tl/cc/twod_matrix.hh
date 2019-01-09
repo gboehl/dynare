@@ -43,8 +43,7 @@ public:
   {
   }
   virtual ~ConstTwoDMatrix()
-  {
-  }
+  = default;
 
   int
   nrows() const
@@ -117,8 +116,7 @@ public:
   {
   }
   virtual ~TwoDMatrix()
-  {
-  }
+  = default;
 
   int
   nrows() const

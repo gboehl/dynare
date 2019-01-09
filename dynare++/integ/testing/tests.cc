@@ -34,9 +34,8 @@ public:
   {
   }
   MomentFunction(const MomentFunction &func)
-    : VectorFunction(func), D(func.D), k(func.k)
-  {
-  }
+     
+  = default;
   VectorFunction *
   clone() const
   {
@@ -70,9 +69,8 @@ public:
   {
   }
   TensorPower(const TensorPower &func)
-    : VectorFunction(func), k(func.k)
-  {
-  }
+     
+  = default;
   VectorFunction *
   clone() const
   {
@@ -143,9 +141,8 @@ public:
   {
   }
   Function1Trans(const Function1Trans &func)
-    : Function1(func)
-  {
-  }
+     
+  = default;
   VectorFunction *
   clone() const
   {

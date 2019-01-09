@@ -30,9 +30,8 @@ NormalConj::NormalConj(const ConstTwoDMatrix &ydata)
 }
 
 NormalConj::NormalConj(const NormalConj &nc)
-  : mu(nc.mu), kappa(nc.kappa), nu(nc.nu), lambda(nc.lambda)
-{
-}
+   
+= default;
 
 // |NormalConj::update| one observation code
 /* The method performs the following:

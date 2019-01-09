@@ -57,8 +57,7 @@ public:
   NormalConj(const NormalConj &nc);
 
   virtual ~NormalConj()
-  {
-  }
+  = default;
   void update(const ConstVector &y);
   void update(const ConstTwoDMatrix &ydata);
   void update(const NormalConj &nc);
