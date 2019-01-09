@@ -41,6 +41,7 @@
 #include <dynlapack.h>
 
 #include <cmath>
+#include <type_traits>
 
 #define TYPENAME typename
 
@@ -69,35 +70,23 @@ class UnfoldedZXContainer;
 class FoldedGXContainer;
 class UnfoldedGXContainer;
 
-template<bool condition, class Then, class Else>
-struct IF
-{
-  using RET = Then;
-};
-
-template<class Then, class Else>
-struct IF<false, Then, Else>
-{
-  using RET = Else;
-};
-
 template <int type>
 class ctraits
 {
 public:
   enum { fold, unfold };
-  using Ttensor = TYPENAME IF<type == fold, FGSTensor, UGSTensor>::RET;
-  using Ttensym = TYPENAME IF<type == fold, FFSTensor, UFSTensor>::RET;
-  using Tg = TYPENAME IF<type == fold, FGSContainer, UGSContainer>::RET;
-  using Tgs = TYPENAME IF<type == fold, FGSContainer, UGSContainer>::RET;
-  using Tgss = TYPENAME IF<type == fold, FGSContainer, UGSContainer>::RET;
-  using TG = TYPENAME IF<type == fold, FGSContainer, UGSContainer>::RET;
-  using TZstack = TYPENAME IF<type == fold, FoldedZContainer, UnfoldedZContainer>::RET;
-  using TGstack = TYPENAME IF<type == fold, FoldedGContainer, UnfoldedGContainer>::RET;
-  using Tm = TYPENAME IF<type == fold, FNormalMoments, UNormalMoments>::RET;
-  using Tpol = TYPENAME IF<type == fold, FTensorPolynomial, UTensorPolynomial>::RET;
-  using TZXstack = TYPENAME IF<type == fold, FoldedZXContainer, UnfoldedZXContainer>::RET;
-  using TGXstack = TYPENAME IF<type == fold, FoldedGXContainer, UnfoldedGXContainer>::RET;
+  using Ttensor = std::conditional_t<type == fold, FGSTensor, UGSTensor>;
+  using Ttensym = std::conditional_t<type == fold, FFSTensor, UFSTensor>;
+  using Tg = std::conditional_t<type == fold, FGSContainer, UGSContainer>;
+  using Tgs = std::conditional_t<type == fold, FGSContainer, UGSContainer>;
+  using Tgss = std::conditional_t<type == fold, FGSContainer, UGSContainer>;
+  using TG = std::conditional_t<type == fold, FGSContainer, UGSContainer>;
+  using TZstack = std::conditional_t<type == fold, FoldedZContainer, UnfoldedZContainer>;
+  using TGstack = std::conditional_t<type == fold, FoldedGContainer, UnfoldedGContainer>;
+  using Tm = std::conditional_t<type == fold, FNormalMoments, UNormalMoments>;
+  using Tpol = std::conditional_t<type == fold, FTensorPolynomial, UTensorPolynomial>;
+  using TZXstack = std::conditional_t<type == fold, FoldedZXContainer, UnfoldedZXContainer>;
+  using TGXstack = std::conditional_t<type == fold, FoldedGXContainer, UnfoldedGXContainer>;
 };
 
 /* The |PartitionY| class defines the partitioning of state variables

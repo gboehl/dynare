@@ -68,6 +68,7 @@
 #include <cstdio>
 #include <list>
 #include <map>
+#include <type_traits>
 
 namespace sthread
 {
@@ -75,19 +76,6 @@ namespace sthread
 
   class Empty
   {
-  };
-  // classical IF template
-  /* Here is the classical IF template. */
-  template<bool condition, class Then, class Else>
-  struct IF
-  {
-    using RET = Then;
-  };
-
-  template<class Then, class Else>
-  struct IF<false, Then, Else>
-  {
-    using RET = Else;
   };
 
   enum { posix, empty};
@@ -103,7 +91,7 @@ namespace sthread
   template <int thread_impl>
   struct thread_traits
   {
-    using _Tthread = typename IF<thread_impl == posix, pthread_t, Empty>::RET;
+    using _Tthread = std::conditional_t<thread_impl == posix, pthread_t, Empty>;
     using _Ctype = thread<0>;
     using _Dtype = detach_thread<0>;
     static void run(_Ctype *c);
@@ -238,7 +226,7 @@ namespace sthread
   template <int thread_impl>
   struct mutex_traits
   {
-    using _Tmutex = typename IF<thread_impl == posix, pthread_mutex_t, Empty>::RET;
+    using _Tmutex = std::conditional_t<thread_impl == posix, pthread_mutex_t, Empty>;
     using mutex_int_map = map<mmkey, pair<_Tmutex, int>, ltmmkey>;
     static void init(_Tmutex &m);
     static void lock(_Tmutex &m);
@@ -406,7 +394,7 @@ namespace sthread
   template <int thread_impl>
   struct cond_traits
   {
-    using _Tcond = typename IF<thread_impl == posix, pthread_cond_t, Empty>::RET;
+    using _Tcond = std::conditional_t<thread_impl == posix, pthread_cond_t, Empty>;
     using _Tmutex = typename mutex_traits<thread_impl>::_Tmutex;
     static void init(_Tcond &cond);
     static void broadcast(_Tcond &cond);
