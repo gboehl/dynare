@@ -54,7 +54,7 @@ main(int argc, char **argv)
       FILE *mfd;
       std::string mfile1(params.basename);
       mfile1 += "_f.m";
-      if (NULL == (mfd = fopen(mfile1.c_str(), "w")))
+      if (nullptr == (mfd = fopen(mfile1.c_str(), "w")))
         {
           fprintf(stderr, "Couldn't open %s for writing.\n", mfile1.c_str());
           exit(1);
@@ -65,7 +65,7 @@ main(int argc, char **argv)
 
       std::string mfile2(params.basename);
       mfile2 += "_ff.m";
-      if (NULL == (mfd = fopen(mfile2.c_str(), "w")))
+      if (nullptr == (mfd = fopen(mfile2.c_str(), "w")))
         {
           fprintf(stderr, "Couldn't open %s for writing.\n", mfile2.c_str());
           exit(1);
@@ -77,8 +77,8 @@ main(int argc, char **argv)
       // open mat file
       std::string matfile(params.basename);
       matfile += ".mat";
-      mat_t *matfd = Mat_Create(matfile.c_str(), NULL);
-      if (matfd == NULL)
+      mat_t *matfd = Mat_Create(matfile.c_str(), nullptr);
+      if (matfd == nullptr)
         {
           fprintf(stderr, "Couldn't open %s for writing.\n", matfile.c_str());
           exit(1);

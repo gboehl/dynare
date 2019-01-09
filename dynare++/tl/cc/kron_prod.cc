@@ -106,7 +106,7 @@ KronProdAll::setMat(int i, const TwoDMatrix &m)
 void
 KronProdAll::setUnit(int i, int n)
 {
-  matlist[i] = NULL;
+  matlist[i] = nullptr;
   kpd.setRC(i, n, n);
 }
 
@@ -114,7 +114,7 @@ bool
 KronProdAll::isUnit() const
 {
   int i = 0;
-  while (i < dimen() && matlist[i] == NULL)
+  while (i < dimen() && matlist[i] == nullptr)
     i++;
   return i == dimen();
 }
@@ -279,7 +279,7 @@ KronProdAll::mult(const ConstTwoDMatrix &in, TwoDMatrix &out) const
     }
 
   int c;
-  TwoDMatrix *last = NULL;
+  TwoDMatrix *last = nullptr;
 
   // perform first multiplication AI
   /* Here we have to construct $A_1\otimes I$, allocate intermediate
@@ -338,7 +338,7 @@ KronProdAll::multRows(const IntSequence &irows) const
   TL_RAISE_IF(irows.size() != dimen(),
               "Wrong length of row indices in KronProdAll::multRows");
 
-  Vector *last = NULL;
+  Vector *last = nullptr;
   ConstVector *row;
   vector<Vector *> to_delete;
   for (int i = 0; i < dimen(); i++)

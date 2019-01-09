@@ -104,7 +104,7 @@ void
 TwoDMatrix::save(const char *fname) const
 {
   FILE *fd;
-  if (NULL == (fd = fopen(fname, "w")))
+  if (nullptr == (fd = fopen(fname, "w")))
     {
       TL_RAISE("Cannot open file for writing in TwoDMatrix::save");
     }

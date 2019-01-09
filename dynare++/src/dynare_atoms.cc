@@ -24,7 +24,7 @@ DynareStaticAtoms::register_name(const char *name)
 int
 DynareStaticAtoms::check_variable(const char *name) const
 {
-  if (0 == varnames.query(name))
+  if (nullptr == varnames.query(name))
     throw ogp::ParserException(std::string("Unknown name <")+name+">", 0);
   auto it = vars.find(name);
   if (it == vars.end())

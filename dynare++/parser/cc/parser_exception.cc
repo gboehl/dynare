@@ -48,7 +48,7 @@ ParserException::ParserException(const string &m, const char *dum, int i1, int i
 }
 
 ParserException::ParserException(const ParserException &m, int plus_offset)
-  : mes(NULL),
+  : mes(nullptr),
     aux_i1(-1), aux_i2(-1), aux_i3(-1)
 {
   copy(m);
@@ -56,7 +56,7 @@ ParserException::ParserException(const ParserException &m, int plus_offset)
 }
 
 ParserException::ParserException(const ParserException &m, const char *dum, int i)
-  : mes(NULL),
+  : mes(nullptr),
     aux_i1(-1), aux_i2(-1), aux_i3(-1)
 {
   copy(m);
@@ -66,7 +66,7 @@ ParserException::ParserException(const ParserException &m, const char *dum, int 
 }
 
 ParserException::ParserException(const ParserException &m, const char *dum, int i1, int i2)
-  : mes(NULL),
+  : mes(nullptr),
     aux_i1(-1), aux_i2(-1), aux_i3(-1)
 {
   copy(m);
@@ -76,7 +76,7 @@ ParserException::ParserException(const ParserException &m, const char *dum, int 
 }
 
 ParserException::ParserException(const ParserException &m, const char *dum, int i1, int i2, int i3)
-  : mes(NULL),
+  : mes(nullptr),
     aux_i1(-1), aux_i2(-1), aux_i3(-1)
 {
   copy(m);
@@ -86,7 +86,7 @@ ParserException::ParserException(const ParserException &m, const char *dum, int 
 }
 
 ParserException::ParserException(const ParserException &e)
-  : mes(NULL),
+  : mes(nullptr),
     aux_i1(-1), aux_i2(-1), aux_i3(-1)
 {
   copy(e);

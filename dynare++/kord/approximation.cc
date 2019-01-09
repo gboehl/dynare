@@ -30,7 +30,7 @@ ZAuxContainer::getType(int i, const Symmetry &s) const
 }
 
 Approximation::Approximation(DynamicModel &m, Journal &j, int ns, bool dr_centr, double qz_crit)
-  : model(m), journal(j), rule_ders(NULL), rule_ders_ss(NULL), fdr(NULL), udr(NULL),
+  : model(m), journal(j), rule_ders(nullptr), rule_ders_ss(nullptr), fdr(nullptr), udr(nullptr),
     ypart(model.nstat(), model.npred(), model.nboth(), model.nforw()),
     mom(UNormalMoments(model.order(), model.getVcov())), nvs(4), steps(ns),
     dr_centralize(dr_centr), qz_criterium(qz_crit), ss(ypart.ny(), steps+1)
@@ -57,7 +57,7 @@ Approximation::~Approximation()
 const FoldDecisionRule &
 Approximation::getFoldDecisionRule() const
 {
-  KORD_RAISE_IF(fdr == NULL,
+  KORD_RAISE_IF(fdr == nullptr,
                 "Folded decision rule has not been created in Approximation::getFoldDecisionRule");
   return *fdr;
 }
@@ -66,7 +66,7 @@ Approximation::getFoldDecisionRule() const
 const UnfoldDecisionRule &
 Approximation::getUnfoldDecisionRule() const
 {
-  KORD_RAISE_IF(udr == NULL,
+  KORD_RAISE_IF(udr == nullptr,
                 "Unfolded decision rule has not been created in Approximation::getUnfoldDecisionRule");
   return *udr;
 }
@@ -208,12 +208,12 @@ Approximation::walkStochSteady()
   if (fdr)
     {
       delete fdr;
-      fdr = NULL;
+      fdr = nullptr;
     }
   if (udr)
     {
       delete udr;
-      udr = NULL;
+      udr = nullptr;
     }
 
   fdr = new FoldDecisionRule(*rule_ders, ypart, model.nexog(),

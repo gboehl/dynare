@@ -16,7 +16,7 @@ protected:
   int n{0};
   int depth{0};
 public:
-  KronVector() : Vector((double *) 0, 0) 
+  KronVector() : Vector((double *) nullptr, 0) 
   {
   }
   KronVector(int mm, int nn, int dp); // new instance

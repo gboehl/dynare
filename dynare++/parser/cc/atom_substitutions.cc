@@ -35,7 +35,7 @@ AtomSubstitutions::add_substitution(const char *newname, const char *oldname, in
   // make sure the storage is from the new_atoms
   newname = new_atoms.get_name_storage().query(newname);
   oldname = new_atoms.get_name_storage().query(oldname);
-  if (newname == NULL || oldname == NULL)
+  if (newname == nullptr || oldname == nullptr)
     throw ogu::Exception(__FILE__, __LINE__,
                          "Bad newname or oldname in AtomSubstitutions::add_substitution");
 
@@ -88,7 +88,7 @@ AtomSubstitutions::get_new4old(const char *oldname, int tshift) const
         if (itt.second == -tshift)
           return itt.first;
     }
-  return NULL;
+  return nullptr;
 }
 
 void
@@ -114,19 +114,19 @@ SAtoms::substituteAllLagsAndLeads(FormulaParser &fp, AtomSubstitutions &as)
   endovarspan(mlead, mlag);
 
   // substitute all endo lagged more than 1
-  while (NULL != (name = findEndoWithLeadInInterval(mlag, -2)))
+  while (nullptr != (name = findEndoWithLeadInInterval(mlag, -2)))
     makeAuxVariables(name, -1, -2, mlag, fp, as);
   // substitute all endo leaded more than 1
-  while (NULL != (name = findEndoWithLeadInInterval(2, mlead)))
+  while (nullptr != (name = findEndoWithLeadInInterval(2, mlead)))
     makeAuxVariables(name, 1, 2, mlead, fp, as);
 
   exovarspan(mlead, mlag);
 
   // substitute all lagged exo
-  while (NULL != (name = findExoWithLeadInInterval(mlag, -1)))
+  while (nullptr != (name = findExoWithLeadInInterval(mlag, -1)))
     makeAuxVariables(name, -1, -1, mlag, fp, as);
   // substitute all leaded exo
-  while (NULL != (name = findExoWithLeadInInterval(1, mlead)))
+  while (nullptr != (name = findExoWithLeadInInterval(1, mlead)))
     makeAuxVariables(name, 1, 1, mlead, fp, as);
 
   // notify that substitution have been finished
@@ -142,16 +142,16 @@ SAtoms::substituteAllLagsAndExo1Leads(FormulaParser &fp, AtomSubstitutions &as)
   endovarspan(mlead, mlag);
 
   // substitute all endo lagged more than 1
-  while (NULL != (name = findEndoWithLeadInInterval(mlag, -2)))
+  while (nullptr != (name = findEndoWithLeadInInterval(mlag, -2)))
     makeAuxVariables(name, -1, -2, mlag, fp, as);
 
   exovarspan(mlead, mlag);
 
   // substitute all lagged exo
-  while (NULL != (name = findExoWithLeadInInterval(mlag, -1)))
+  while (nullptr != (name = findExoWithLeadInInterval(mlag, -1)))
     makeAuxVariables(name, -1, -1, mlag, fp, as);
   // substitute all leaded exo by 1
-  while (NULL != (name = findExoWithLeadInInterval(1, 1)))
+  while (nullptr != (name = findExoWithLeadInInterval(1, 1)))
     makeAuxVariables(name, 1, 1, 1, fp, as);
 
   // notify that substitution have been finished
@@ -175,7 +175,7 @@ SAtoms::findNameWithLeadInInterval(const vector<const char *> &names,
     }
 
   // nothing found
-  return NULL;
+  return nullptr;
 }
 
 void
@@ -242,7 +242,7 @@ SAtoms::makeAuxVariables(const char *name, int step, int start, int limit_lead,
       const char *newname;
       string newname_str;
       int taux;
-      if (NULL == (newname = as.get_new4old(name, ll-step)))
+      if (nullptr == (newname = as.get_new4old(name, ll-step)))
         {
           attemptAuxName(name, ll-step, newname_str);
           newname = newname_str.c_str();

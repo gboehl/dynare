@@ -4,7 +4,7 @@
 #include "symmetry.hh"
 
 smolpit::smolpit()
-  : smolq(NULL),  jseq(NULL), sig(NULL), p(NULL)
+  : smolq(nullptr),  jseq(nullptr), sig(nullptr), p(nullptr)
 {
 }
 
@@ -28,15 +28,15 @@ smolpit::smolpit(const smolpit &spit)
   if (spit.jseq)
     jseq = new IntSequence(*(spit.jseq));
   else
-    jseq = NULL;
+    jseq = nullptr;
   if (spit.sig)
     sig = new ParameterSignal(*(spit.sig));
   else
-    sig = NULL;
+    sig = nullptr;
   if (spit.p)
     p = new Vector(*(spit.p));
   else
-    p = NULL;
+    p = nullptr;
 }
 
 smolpit::~smolpit()
@@ -55,8 +55,8 @@ smolpit::operator==(const smolpit &spit) const
   bool ret = true;
   ret = ret & smolq == spit.smolq;
   ret = ret & isummand == spit.isummand;
-  ret = ret & ((jseq == NULL && spit.jseq == NULL)
-               || (jseq != NULL && spit.jseq != NULL && *jseq == *(spit.jseq)));
+  ret = ret & ((jseq == nullptr && spit.jseq == nullptr)
+               || (jseq != nullptr && spit.jseq != nullptr && *jseq == *(spit.jseq)));
   return ret;
 }
 
@@ -77,15 +77,15 @@ smolpit::operator=(const smolpit &spit)
   if (spit.jseq)
     jseq = new IntSequence(*(spit.jseq));
   else
-    jseq = NULL;
+    jseq = nullptr;
   if (spit.sig)
     sig = new ParameterSignal(*(spit.sig));
   else
-    sig = NULL;
+    sig = nullptr;
   if (spit.p)
     p = new Vector(*(spit.p));
   else
-    p = NULL;
+    p = nullptr;
 
   return *this;
 }

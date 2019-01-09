@@ -49,7 +49,7 @@ ogu::calc_pos_line_and_col(int length, const char *str, int offset,
 }
 
 MemoryFile::MemoryFile(const char *fname)
-  : len(-1), data(NULL)
+  : len(-1), data(nullptr)
 {
   FILE *fd = fopen(fname, "rb");
   if (fd)

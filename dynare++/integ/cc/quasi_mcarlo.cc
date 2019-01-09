@@ -162,7 +162,7 @@ HaltonSequence::print() const
 }
 
 qmcpit::qmcpit()
-  : spec(NULL), halton(NULL), sig(NULL)
+  : spec(nullptr), halton(nullptr), sig(nullptr)
 {
 }
 
@@ -173,7 +173,7 @@ qmcpit::qmcpit(const QMCSpecification &s, int n)
 }
 
 qmcpit::qmcpit(const qmcpit &qpit)
-  : spec(qpit.spec), halton(NULL), sig(NULL)
+  : spec(qpit.spec), halton(nullptr), sig(nullptr)
 {
   if (qpit.halton)
     halton = new HaltonSequence(*(qpit.halton));
@@ -193,8 +193,8 @@ bool
 qmcpit::operator==(const qmcpit &qpit) const
 {
   return (spec == qpit.spec)
-    && ((halton == NULL && qpit.halton == NULL)
-        || (halton != NULL && qpit.halton != NULL && halton->getNum() == qpit.halton->getNum()));
+    && ((halton == nullptr && qpit.halton == nullptr)
+        || (halton != nullptr && qpit.halton != nullptr && halton->getNum() == qpit.halton->getNum()));
 }
 
 const qmcpit &
@@ -206,7 +206,7 @@ qmcpit::operator=(const qmcpit &qpit)
   if (qpit.halton)
     halton = new HaltonSequence(*(qpit.halton));
   else
-    halton = NULL;
+    halton = nullptr;
   return *this;
 }
 
@@ -225,7 +225,7 @@ qmcpit::weight() const
 }
 
 qmcnpit::qmcnpit()
-  : qmcpit(), pnt(NULL)
+  : qmcpit(), pnt(nullptr)
 {
 }
 
@@ -235,7 +235,7 @@ qmcnpit::qmcnpit(const QMCSpecification &s, int n)
 }
 
 qmcnpit::qmcnpit(const qmcnpit &qpit)
-  : qmcpit(qpit), pnt(NULL)
+  : qmcpit(qpit), pnt(nullptr)
 {
   if (qpit.pnt)
     pnt = new Vector(*(qpit.pnt));
@@ -256,7 +256,7 @@ qmcnpit::operator=(const qmcnpit &qpit)
   if (qpit.pnt)
     pnt = new Vector(*(qpit.pnt));
   else
-    pnt = NULL;
+    pnt = nullptr;
   return *this;
 }
 

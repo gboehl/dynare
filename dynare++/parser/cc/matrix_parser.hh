@@ -91,7 +91,7 @@ namespace ogp
     int r{0};
 
   public:
-    MPIterator() : p(NULL) 
+    MPIterator() : p(nullptr) 
     {
     }
     /** Constructs an iterator pointing to the beginning of the

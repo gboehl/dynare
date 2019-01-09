@@ -29,7 +29,7 @@ private:
 };
 
 QuadParams::QuadParams(int argc, char **argv)
-  : outname(NULL), vcovname(NULL), max_level(3), discard_weight(0.0)
+  : outname(nullptr), vcovname(nullptr), max_level(3), discard_weight(0.0)
 {
   if (argc == 1)
     {
@@ -41,10 +41,10 @@ QuadParams::QuadParams(int argc, char **argv)
   argc--;
 
   struct option const opts [] = {
-    {"max-level", required_argument, NULL, opt_max_level},
-    {"discard-weight", required_argument, NULL, opt_discard_weight},
-    {"vcov", required_argument, NULL, opt_vcov},
-    {NULL, 0, NULL, 0}
+    {"max-level", required_argument, nullptr, opt_max_level},
+    {"discard-weight", required_argument, nullptr, opt_discard_weight},
+    {"vcov", required_argument, nullptr, opt_vcov},
+    {nullptr, 0, nullptr, 0}
   };
 
   int ret;
@@ -73,13 +73,13 @@ QuadParams::QuadParams(int argc, char **argv)
 void
 QuadParams::check_consistency() const
 {
-  if (outname == NULL)
+  if (outname == nullptr)
     {
       fprintf(stderr, "Error: output name not set\n");
       exit(1);
     }
 
-  if (vcovname == NULL)
+  if (vcovname == nullptr)
     {
       fprintf(stderr, "Error: vcov file name not set\n");
       exit(1);
@@ -104,7 +104,7 @@ main(int argc, char **argv)
 
   // open output file for writing
   FILE *fout;
-  if (NULL == (fout = fopen(params.outname, "w")))
+  if (nullptr == (fout = fopen(params.outname, "w")))
     {
       fprintf(stderr, "Could not open %s for writing\n", params.outname);
       exit(1);

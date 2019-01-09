@@ -534,7 +534,7 @@ template <int t>
 DRFixPoint<t>::DRFixPoint(const _Tg &g, const PartitionY &yp,
                           const Vector &ys, double sigma)
   : ctraits<t>::Tpol(yp.ny(), yp.nys()),
-  ysteady(ys), ypart(yp), bigf(NULL), bigfder(NULL)
+  ysteady(ys), ypart(yp), bigf(nullptr), bigfder(nullptr)
 {
   fillTensors(g, sigma);
   _Tparent yspol(ypart.nstat, ypart.nys(), *this);

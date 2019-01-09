@@ -10,9 +10,9 @@ TLStatic tls;
 
 TLStatic::TLStatic()
 {
-  ebundle = NULL;
-  pbundle = NULL;
-  ptriang = NULL;
+  ebundle = nullptr;
+  pbundle = nullptr;
+  ptriang = nullptr;
 }
 
 TLStatic::~TLStatic()

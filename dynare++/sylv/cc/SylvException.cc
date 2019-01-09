@@ -16,7 +16,7 @@ SylvException::SylvException(const char *f, int l, const SylvException *s)
 
 SylvException::~SylvException()
 {
-  if (source != NULL)
+  if (source != nullptr)
     {
       delete source;
     }
@@ -35,7 +35,7 @@ int
 SylvException::printMessage(char *str, int maxlen) const
 {
   int remain = maxlen;
-  if (source != NULL)
+  if (source != nullptr)
     {
       remain = source->printMessage(str, maxlen);
     }
@@ -53,7 +53,7 @@ SylvException::printMessage(char *str, int maxlen) const
 
 SylvExceptionMessage::SylvExceptionMessage(const char *f, int i,
                                            const char *mes)
-  : SylvException(f, i, NULL)
+  : SylvException(f, i, nullptr)
 {
   strcpy(message, mes);
 }

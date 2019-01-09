@@ -19,7 +19,7 @@ class Vector
 protected:
   int len{0};
   int s{1};
-  double *data{0};
+  double *data{nullptr};
   bool destroy{false};
 public:
   Vector()  

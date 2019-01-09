@@ -27,18 +27,18 @@ ParsedMatrix::ParsedMatrix(const ogp::MatrixParser &mp)
 
 DynareModel::DynareModel()
   : atoms(), eqs(atoms), 
-    pbuilder(NULL), fbuilder(NULL),
-    atom_substs(NULL), old_atoms(NULL)
+    pbuilder(nullptr), fbuilder(nullptr),
+    atom_substs(nullptr), old_atoms(nullptr)
 {
 }
 
 DynareModel::DynareModel(const DynareModel &dm)
   : atoms(dm.atoms), eqs(dm.eqs, atoms), order(dm.order),
-    param_vals(0), init_vals(0), vcov_mat(0),
+    param_vals(nullptr), init_vals(nullptr), vcov_mat(nullptr),
     t_plobjective(dm.t_plobjective),
     t_pldiscount(dm.t_pldiscount),
-    pbuilder(NULL), fbuilder(NULL),
-    atom_substs(NULL), old_atoms(NULL)
+    pbuilder(nullptr), fbuilder(nullptr),
+    atom_substs(nullptr), old_atoms(nullptr)
 {
   if (dm.param_vals)
     param_vals = new Vector((const Vector &) *(dm.param_vals));
@@ -79,7 +79,7 @@ DynareModel::get_planner_info() const
 {
   if (pbuilder)
     return &(pbuilder->get_info());
-  return NULL;
+  return nullptr;
 }
 
 const ForwSubstInfo *
@@ -87,7 +87,7 @@ DynareModel::get_forw_subst_info() const
 {
   if (fbuilder)
     return &(fbuilder->get_info());
-  return NULL;
+  return nullptr;
 }
 
 const ogp::SubstInfo *
@@ -95,7 +95,7 @@ DynareModel::get_subst_info() const
 {
   if (atom_substs)
     return &(atom_substs->get_info());
-  return NULL;
+  return nullptr;
 }
 
 void

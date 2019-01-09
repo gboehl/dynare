@@ -32,7 +32,7 @@ NameStorage::query(const char *name) const
 {
   auto it = name_set.find(name);
   if (it == name_set.end())
-    return NULL;
+    return nullptr;
   else
     return (*it);
 }

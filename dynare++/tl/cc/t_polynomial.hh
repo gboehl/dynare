@@ -65,7 +65,7 @@ class PowerProvider
   int nv;
 public:
   PowerProvider(const ConstVector &v)
-    : origv(v), ut(NULL), ft(NULL), nv(v.length())
+    : origv(v), ut(nullptr), ft(nullptr), nv(v.length())
   {
   }
   ~PowerProvider();
@@ -165,7 +165,7 @@ public:
     PowerProvider pwp(xval);
     for (int i = 1; i <= tp.maxdim; i++)
       {
-        const _Stype &xpow = pwp.getNext((const _Stype *) NULL);
+        const _Stype &xpow = pwp.getNext((const _Stype *) nullptr);
         for (int j = 0; j <= tp.maxdim-i; j++)
           {
             if (tp.check(Symmetry(i+j)))
@@ -255,7 +255,7 @@ public:
     PowerProvider pp(v);
     for (int d = 1; d <= maxdim; d++)
       {
-        const _Stype &p = pp.getNext((const _Stype *) NULL);
+        const _Stype &p = pp.getNext((const _Stype *) nullptr);
         Symmetry cs(d);
         if (_Tparent::check(cs))
           {

@@ -29,7 +29,7 @@ void operator delete[](void *p);
 
 class SylvMemoryPool
 {
-  char *base{0};
+  char *base{nullptr};
   size_t length{0};
   size_t allocated{0};
   bool stack_mode{false};

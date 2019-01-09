@@ -67,7 +67,7 @@ sysconf(int name)
 
 SystemResources::SystemResources()
 {
-  gettimeofday(&start, NULL);
+  gettimeofday(&start, nullptr);
 }
 
 long int
@@ -103,7 +103,7 @@ SystemResources::getRUS(double &load_avg, long int &pg_avail,
                         long int &idrss, long int &majflt)
 {
   struct timeval now;
-  gettimeofday(&now, NULL);
+  gettimeofday(&now, nullptr);
   elapsed = now.tv_sec-start.tv_sec + (now.tv_usec-start.tv_usec)*1.0e-6;
 
 #if !defined(__MINGW32__)
@@ -239,7 +239,7 @@ Journal::printHeader()
 
   (*this)<< "\n\nStart time: ";
   char ts[100];
-  time_t curtime = time(NULL);
+  time_t curtime = time(nullptr);
   tm loctime;
   localtime_r(&curtime, &loctime);
   asctime_r(&loctime, ts);

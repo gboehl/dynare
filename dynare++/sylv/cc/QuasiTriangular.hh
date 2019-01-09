@@ -96,8 +96,8 @@ public:
   {
     jbar = jb;
     real = true;
-    beta1 = 0;
-    beta2 = 0;
+    beta1 = nullptr;
+    beta2 = nullptr;
   }
   DiagonalBlock(const DiagonalBlock &b)
   {

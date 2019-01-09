@@ -57,7 +57,7 @@ Symmetry::isFull() const
    beginning as subordinal |symiterator|. */
 
 symiterator::symiterator(SymmetrySet &ss)
-  : s(ss), subit(NULL), subs(NULL), end_flag(false)
+  : s(ss), subit(nullptr), subs(nullptr), end_flag(false)
 {
   s.sym()[0] = 0;
   if (s.size() == 2)

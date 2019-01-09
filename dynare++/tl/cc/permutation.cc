@@ -80,7 +80,7 @@ PermutationSet::PermutationSet(const PermutationSet &sp, int n)
     pers(new const Permutation *[size])
 {
   for (int i = 0; i < size; i++)
-    pers[i] = NULL;
+    pers[i] = nullptr;
 
   TL_RAISE_IF(n != sp.order+1,
               "Wrong new order in PermutationSet constructor");

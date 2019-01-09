@@ -25,7 +25,7 @@ namespace ogp
     const char *parsed_string;
   public:
     CSVParser(CSVParserPeer &p)
-      : peer(p), row(0), col(0), parsed_string(0)
+      : peer(p), row(0), col(0), parsed_string(nullptr)
     {
     }
     CSVParser(const CSVParser &csvp)

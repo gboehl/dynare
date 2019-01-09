@@ -10,7 +10,7 @@
 MMMatrixIn::MMMatrixIn(const char *fname)
 {
   FILE *fd;
-  if (NULL == (fd = fopen(fname, "r")))
+  if (nullptr == (fd = fopen(fname, "r")))
     throw MMException(string("Cannot open file ")+fname+" for reading\n");
 
   char buffer[1000];
@@ -51,7 +51,7 @@ void
 MMMatrixOut::write(const char *fname, int rows, int cols, const double *data)
 {
   FILE *fd;
-  if (NULL == (fd = fopen(fname, "w")))
+  if (nullptr == (fd = fopen(fname, "w")))
     throw MMException(string("Cannot open file ")+fname+" for writing\n");
 
   if (0 > fprintf(fd, "%%%%MatrixMarket matrix array real general\n"))

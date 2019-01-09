@@ -97,7 +97,7 @@ int
 StaticFineAtoms::check_variable(const char *name) const
 {
   const char *ss = varnames.query(name);
-  if (ss == NULL)
+  if (ss == nullptr)
     throw ParserException(string("Variable <")+name+"> not declared.", 0);
   return index(name);
 }
@@ -208,7 +208,7 @@ void
 StaticFineAtoms::register_endo(const char *name)
 {
   const char *ss = varnames.query(name);
-  if (ss == NULL)
+  if (ss == nullptr)
     throw ogp::ParserException(string("Endogenous variable <")
                                +name+"> not found in storage.", 0);
   endovars.push_back(ss);
@@ -219,7 +219,7 @@ void
 StaticFineAtoms::register_exo(const char *name)
 {
   const char *ss = varnames.query(name);
-  if (ss == NULL)
+  if (ss == nullptr)
     throw ogp::ParserException(string("Exogenous variable <")
                                +name+"> not found in storage.", 0);
   exovars.push_back(ss);
@@ -230,7 +230,7 @@ void
 StaticFineAtoms::register_param(const char *name)
 {
   const char *ss = varnames.query(name);
-  if (ss == NULL)
+  if (ss == nullptr)
     throw ogp::ParserException(string("Parameter <")+name+"> not found in storage.", 0);
   params.push_back(ss);
   param_outer_map.insert(Tvarintmap::value_type(ss, params.size()-1));

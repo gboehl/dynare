@@ -144,7 +144,7 @@ public:
     if (it == m.end())
       {
         TL_RAISE("Symmetry not found in TensorContainer::get");
-        return NULL;
+        return nullptr;
       }
     else
       {
@@ -161,7 +161,7 @@ public:
     if (it == m.end())
       {
         TL_RAISE("Symmetry not found in TensorContainer::get");
-        return NULL;
+        return nullptr;
       }
     else
       {

@@ -40,5 +40,5 @@ CSVParser::csv_parse(int length, const char *str)
   ::csv_parse();
   delete [] buffer;
   csv__destroy_buffer(p);
-  parsed_string = NULL;
+  parsed_string = nullptr;
 }

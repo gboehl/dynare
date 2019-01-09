@@ -132,8 +132,8 @@ SimResults::writeMat(const char *base, const char *lname) const
 {
   char matfile_name[100];
   sprintf(matfile_name, "%s.mat", base);
-  mat_t *matfd = Mat_Create(matfile_name, NULL);
-  if (matfd != NULL)
+  mat_t *matfd = Mat_Create(matfile_name, nullptr);
+  if (matfd != nullptr)
     {
       writeMat(matfd, lname);
       Mat_Close(matfd);

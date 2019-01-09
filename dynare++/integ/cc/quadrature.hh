@@ -188,7 +188,7 @@ public:
   savePoints(const char *fname, int level) const
   {
     FILE *fd;
-    if (NULL == (fd = fopen(fname, "w")))
+    if (nullptr == (fd = fopen(fname, "w")))
       {
         // todo: raise
         fprintf(stderr, "Cannot open file %s for writing.\n", fname);

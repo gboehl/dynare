@@ -40,8 +40,8 @@ DynareNameList::selectIndices(const vector<const char *> &ns) const
 /**************************************************************************************/
 
 Dynare::Dynare(const char *modname, int ord, double sstol, Journal &jr)
-  : journal(jr), model(NULL), ysteady(NULL), md(1), dnl(NULL), denl(NULL), dsnl(NULL),
-    fe(NULL), fde(NULL), ss_tol(sstol)
+  : journal(jr), model(nullptr), ysteady(nullptr), md(1), dnl(nullptr), denl(nullptr), dsnl(nullptr),
+    fe(nullptr), fde(nullptr), ss_tol(sstol)
 {
   // make memory file
   ogu::MemoryFile mf(modname);
@@ -77,8 +77,8 @@ Dynare::Dynare(const char **endo, int num_endo,
                const char **par, int num_par,
                const char *equations, int len, int ord,
                double sstol, Journal &jr)
-  : journal(jr), model(NULL), ysteady(NULL), md(1), dnl(NULL), denl(NULL), dsnl(NULL),
-    fe(NULL), fde(NULL), ss_tol(sstol)
+  : journal(jr), model(nullptr), ysteady(nullptr), md(1), dnl(nullptr), denl(nullptr), dsnl(nullptr),
+    fe(nullptr), fde(nullptr), ss_tol(sstol)
 {
   try
     {
@@ -99,9 +99,9 @@ Dynare::Dynare(const char **endo, int num_endo,
 }
 
 Dynare::Dynare(const Dynare &dynare)
-  : journal(dynare.journal), model(NULL),
-    ysteady(NULL), md(dynare.md),
-    dnl(NULL), denl(NULL), dsnl(NULL), fe(NULL), fde(NULL),
+  : journal(dynare.journal), model(nullptr),
+    ysteady(nullptr), md(dynare.md),
+    dnl(nullptr), denl(nullptr), dsnl(nullptr), fe(nullptr), fde(nullptr),
     ss_tol(dynare.ss_tol)
 {
   model = dynare.model->clone();

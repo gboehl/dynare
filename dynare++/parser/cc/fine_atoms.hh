@@ -229,7 +229,7 @@ namespace ogp
     vector<int> exo_atoms_map;
   public:
     FineAtoms()
-      : endo_order(NULL), exo_order(NULL), allvar_order(NULL)
+      : endo_order(nullptr), exo_order(nullptr), allvar_order(nullptr)
     {
     }
     FineAtoms(const FineAtoms &fa);

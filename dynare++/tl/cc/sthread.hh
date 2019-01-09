@@ -302,7 +302,7 @@ namespace sthread
     {
       auto it = _Tparent::find(mmkey(c, id));
       if (it == _Tparent::end())
-        return NULL;
+        return nullptr;
       return &((*it).second);
     }
 
@@ -502,7 +502,7 @@ namespace sthread
   {
   public:
     condition_counter<thread_impl> *counter;
-    detach_thread() : counter(NULL)
+    detach_thread() : counter(nullptr)
     {
     }
     void

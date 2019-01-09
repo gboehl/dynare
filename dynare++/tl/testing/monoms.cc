@@ -505,11 +505,11 @@ DenseDerivGenerator::DenseDerivGenerator(int ng, int nx, int ny, int nu,
   Monom2Vector r(g, x);
   xcont = x.deriv(maxdimen);
   rcont = r.deriv(maxdimen);
-  uxcont = NULL;
+  uxcont = nullptr;
   for (int d = 1; d <= maxdimen; d++)
     {
       ts[d-1] = g.deriv(d);
-      uts[d-1] = NULL;
+      uts[d-1] = nullptr;
     }
 }
 

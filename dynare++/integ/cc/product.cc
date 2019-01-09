@@ -4,8 +4,8 @@
 #include "symmetry.hh"
 
 prodpit::prodpit()
-  : prodq(NULL),  jseq(NULL),
-     sig(NULL), p(NULL)
+  : prodq(nullptr),  jseq(nullptr),
+     sig(nullptr), p(nullptr)
 {
 }
 
@@ -33,15 +33,15 @@ prodpit::prodpit(const prodpit &ppit)
   if (ppit.jseq)
     jseq = new IntSequence(*(ppit.jseq));
   else
-    jseq = NULL;
+    jseq = nullptr;
   if (ppit.sig)
     sig = new ParameterSignal(*(ppit.sig));
   else
-    sig = NULL;
+    sig = nullptr;
   if (ppit.p)
     p = new Vector(*(ppit.p));
   else
-    p = NULL;
+    p = nullptr;
 }
 
 prodpit::~prodpit()
@@ -60,8 +60,8 @@ prodpit::operator==(const prodpit &ppit) const
   bool ret = true;
   ret = ret & prodq == ppit.prodq;
   ret = ret & end_flag == ppit.end_flag;
-  ret = ret & ((jseq == NULL && ppit.jseq == NULL)
-               || (jseq != NULL && ppit.jseq != NULL && *jseq == *(ppit.jseq)));
+  ret = ret & ((jseq == nullptr && ppit.jseq == nullptr)
+               || (jseq != nullptr && ppit.jseq != nullptr && *jseq == *(ppit.jseq)));
   return ret;
 }
 
@@ -82,15 +82,15 @@ prodpit::operator=(const prodpit &ppit)
   if (ppit.jseq)
     jseq = new IntSequence(*(ppit.jseq));
   else
-    jseq = NULL;
+    jseq = nullptr;
   if (ppit.sig)
     sig = new ParameterSignal(*(ppit.sig));
   else
-    sig = NULL;
+    sig = nullptr;
   if (ppit.p)
     p = new Vector(*(ppit.p));
   else
-    p = NULL;
+    p = nullptr;
 
   return *this;
 }

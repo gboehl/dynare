@@ -18,9 +18,9 @@ SchurDecomp::SchurDecomp(const SqSylvMatrix &m)
   lapack_int lwork = 6*rows;
   auto *const work = new double[lwork];
   lapack_int info;
-  dgees("V", "N", 0, &rows, auxt.base(), &rows, &sdim,
+  dgees("V", "N", nullptr, &rows, auxt.base(), &rows, &sdim,
         wr, wi, q->base(), &rows,
-        work, &lwork, 0, &info);
+        work, &lwork, nullptr, &info);
   delete [] work;
   delete [] wi;
   delete [] wr;

@@ -84,12 +84,12 @@ namespace ogdyn
     /** A vector of parameters values created by a subclass. It
      * is stored with natural ordering (outer) of the parameters
      * given by atoms. */
-    Vector *param_vals{0};
+    Vector *param_vals{nullptr};
     /** A vector of initial values created by a subclass. It is
      * stored with internal ordering given by atoms. */
-    Vector *init_vals{0};
+    Vector *init_vals{nullptr};
     /** A matrix for vcov. It is created by a subclass. */
-    TwoDMatrix *vcov_mat{0};
+    TwoDMatrix *vcov_mat{nullptr};
     /** Tree index of the planner objective. If there was no
      * planner objective keyword, the value is set to -1. */
     int t_plobjective{-1};

@@ -76,7 +76,7 @@ AllvarOuterOrdering::AllvarOuterOrdering(const AllvarOuterOrdering &avo,
 
 FineAtoms::FineAtoms(const FineAtoms &fa)
   : DynamicAtoms(fa), params(), endovars(), exovars(),
-    endo_order(NULL), exo_order(NULL), allvar_order(NULL),
+    endo_order(nullptr), exo_order(nullptr), allvar_order(nullptr),
     der_atoms(fa.der_atoms),
     endo_atoms_map(fa.endo_atoms_map),
     exo_atoms_map(fa.exo_atoms_map)

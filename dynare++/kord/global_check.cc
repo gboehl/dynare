@@ -16,13 +16,13 @@
 ResidFunction::ResidFunction(const Approximation &app)
   : VectorFunction(app.getModel().nexog(), app.getModel().numeq()), approx(app),
     model(app.getModel().clone()),
-    yplus(NULL), ystar(NULL), u(NULL), hss(NULL)
+    yplus(nullptr), ystar(nullptr), u(nullptr), hss(nullptr)
 {
 }
 
 ResidFunction::ResidFunction(const ResidFunction &rf)
   : VectorFunction(rf), approx(rf.approx), model(rf.model->clone()),
-    yplus(NULL), ystar(NULL), u(NULL), hss(NULL)
+    yplus(nullptr), ystar(nullptr), u(nullptr), hss(nullptr)
 {
   if (rf.yplus)
     yplus = new Vector(*(rf.yplus));

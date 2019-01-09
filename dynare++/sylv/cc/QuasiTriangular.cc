@@ -87,7 +87,7 @@ Diagonal::Diagonal(double *data, int d_size)
       else
         {
           // it is last column or we have zero below diagonal
-          DiagonalBlock b(jbar, true, &data[id], &data[id], NULL, NULL);
+          DiagonalBlock b(jbar, true, &data[id], &data[id], nullptr, nullptr);
           blocks.push_back(b);
         }
       jbar++;
@@ -102,8 +102,8 @@ Diagonal::Diagonal(double *data, const Diagonal &d)
   int d_size = d.getSize();
   for (const auto & dit : d)
     {
-      double *beta1 = NULL;
-      double *beta2 = NULL;
+      double *beta1 = nullptr;
+      double *beta2 = nullptr;
       int id = dit.getIndex()*(d_size+1);
       int idd = id;
       if (!dit.isReal())
@@ -157,7 +157,7 @@ Diagonal::changeBase(double *p)
       if (b.isReal())
         {
           DiagonalBlock bnew(jbar, true, &p[base], &p[base],
-                             NULL, NULL);
+                             nullptr, nullptr);
           it = bnew;
         }
       else
@@ -243,8 +243,8 @@ Diagonal::checkConsistency(diag_iter it)
       double *d2 = (*it).alpha.a2;
       (*it).alpha.a2 = (*it).alpha.a1;
       (*it).real = true;
-      (*it).beta1 = 0;
-      (*it).beta2 = 0;
+      (*it).beta1 = nullptr;
+      (*it).beta2 = nullptr;
       DiagonalBlock b(jbar+1, d2);
       blocks.insert((++it).iter(), b);
       num_real += 2;

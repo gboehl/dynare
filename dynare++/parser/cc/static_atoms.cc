@@ -84,7 +84,7 @@ StaticAtoms::inv_index(int t) const
 {
   auto it = indices.find(t);
   if (it == indices.end())
-    return NULL;
+    return nullptr;
   else
     return (*it).second;
 }

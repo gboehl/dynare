@@ -22,7 +22,7 @@ namespace sthread
   void
   thread_traits<posix>::run(_Ctype *c)
   {
-    pthread_create(&(c->getThreadIden()), NULL, posix_thread_function, (void *) c);
+    pthread_create(&(c->getThreadIden()), nullptr, posix_thread_function, (void *) c);
   }
 
   void *posix_detach_thread_function(void *c);
@@ -42,21 +42,21 @@ namespace sthread
   void
   thread_traits<posix>::exit()
   {
-    pthread_exit(NULL);
+    pthread_exit(nullptr);
   }
 
   template <>
   void
   thread_traits<posix>::join(_Ctype *c)
   {
-    pthread_join(c->getThreadIden(), NULL);
+    pthread_join(c->getThreadIden(), nullptr);
   }
 
   template <>
   void
   mutex_traits<posix>::init(pthread_mutex_t &m)
   {
-    pthread_mutex_init(&m, NULL);
+    pthread_mutex_init(&m, nullptr);
   }
 
   template <>
@@ -77,7 +77,7 @@ namespace sthread
   void
   cond_traits<posix>::init(_Tcond &cond)
   {
-    pthread_cond_init(&cond, NULL);
+    pthread_cond_init(&cond, nullptr);
   }
 
   template <>
@@ -127,7 +127,7 @@ namespace sthread
       {
         ct->exit();
       }
-    return NULL;
+    return nullptr;
   }
 
   void *
@@ -146,7 +146,7 @@ namespace sthread
       }
     if (counter)
       counter->decrease();
-    return NULL;
+    return nullptr;
   }
 }
 #else

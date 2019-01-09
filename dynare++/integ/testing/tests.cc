@@ -172,12 +172,12 @@ class WallTimer
 public:
   WallTimer(const char *m, bool nl = true)
   {
-    strcpy(mes, m); new_line = nl; gettimeofday(&start, NULL);
+    strcpy(mes, m); new_line = nl; gettimeofday(&start, nullptr);
   }
   ~WallTimer()
   {
     struct timeval end;
-    gettimeofday(&end, NULL);
+    gettimeofday(&end, nullptr);
     printf("%s%8.4g", mes,
            end.tv_sec-start.tv_sec + (end.tv_usec-start.tv_usec)*1.0e-6);
     if (new_line)
