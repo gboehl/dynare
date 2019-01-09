@@ -31,10 +31,10 @@ namespace ogp
   class AtomSubstitutions
   {
   public:
-    typedef pair<const char *, int> Tshiftname;
-    typedef map<const char *, Tshiftname, ltstr> Tshiftmap;
-    typedef set<Tshiftname> Tshiftnameset;
-    typedef map<const char *, Tshiftnameset, ltstr> Toldnamemap;
+    using Tshiftname = pair<const char *, int>;
+    using Tshiftmap = map<const char *, Tshiftname, ltstr>;
+    using Tshiftnameset = set<Tshiftname>;
+    using Toldnamemap = map<const char *, Tshiftnameset, ltstr>;
   protected:
     /** This maps a new name to a shifted old name. This is, one
      * entry looks as "a_m3 ==> a(-3)", saying that a variable

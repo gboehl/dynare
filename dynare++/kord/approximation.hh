@@ -70,8 +70,8 @@
 class ZAuxContainer : public StackContainer<FGSTensor>, public FoldedStackContainer
 {
 public:
-  typedef StackContainer<FGSTensor>::_Ctype _Ctype;
-  typedef StackContainer<FGSTensor>::itype itype;
+  using _Ctype = StackContainer<FGSTensor>::_Ctype;
+  using itype = StackContainer<FGSTensor>::itype;
   ZAuxContainer(const _Ctype *gss, int ngss, int ng, int ny, int nu);
   itype getType(int i, const Symmetry &s) const override;
 };

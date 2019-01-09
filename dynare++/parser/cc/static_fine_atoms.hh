@@ -22,9 +22,9 @@ namespace ogp
   class StaticFineAtoms : public StaticAtoms
   {
   public:
-    typedef map<int, int> Tintintmap;
+    using Tintintmap = map<int, int>;
   protected:
-    typedef map<const char *, int, ltstr> Tvarintmap;
+    using Tvarintmap = map<const char *, int, ltstr>;
   private:
     /** The vector of parameter names, gives the parameter
      * ordering. */

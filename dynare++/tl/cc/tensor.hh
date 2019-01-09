@@ -76,7 +76,7 @@
 template<class _Tptr>
 class _index
 {
-  typedef _index<_Tptr> _Self;
+  using _Self = _index<_Tptr>;
   _Tptr tensor;
   int offset;
   IntSequence coor;
@@ -162,7 +162,7 @@ class Tensor : public TwoDMatrix
 {
 public:
   enum indor {along_row, along_col};
-  typedef _index<const Tensor *> index;
+  using index = _index<const Tensor *>;
 protected:
   const index in_beg;
   const index in_end;

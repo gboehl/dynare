@@ -94,13 +94,13 @@ template<class _Ttype>
 class TensorContainer
 {
 protected:
-  typedef const _Ttype *_const_ptr;
-  typedef _Ttype *_ptr;
-  typedef map<Symmetry, _ptr, ltsym> _Map;
-  typedef typename _Map::value_type _mvtype;
+  using _const_ptr = const _Ttype *;
+  using _ptr = _Ttype *;
+  using _Map = map<Symmetry, _ptr, ltsym>;
+  using _mvtype = typename _Map::value_type;
 public:
-  typedef typename _Map::iterator iterator;
-  typedef typename _Map::const_iterator const_iterator;
+  using iterator = typename _Map::iterator;
+  using const_iterator = typename _Map::const_iterator;
 private:
   int n;
   _Map m;

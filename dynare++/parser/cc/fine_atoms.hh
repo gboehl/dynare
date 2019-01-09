@@ -109,7 +109,7 @@ namespace ogp
   {
   protected:
     /** Type for a map mapping a variable name to an integer. */
-    typedef map<const char *, int, ltstr> Tvarintmap;
+    using Tvarintmap = map<const char *, int, ltstr>;
     /** Reference to atoms. */
     const FineAtoms &atoms;
     /** The vector of all endo and exo variables in outer
@@ -175,7 +175,7 @@ namespace ogp
   {
     friend class AllvarOuterOrdering;
   protected:
-    typedef map<const char *, int, ltstr> Tvarintmap;
+    using Tvarintmap = map<const char *, int, ltstr>;
   private:
     /** The vector of parameters names. The order gives the order
      * the data is communicated with outside world. */

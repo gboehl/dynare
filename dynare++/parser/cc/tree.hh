@@ -181,22 +181,22 @@ namespace ogp
 
     /** This defines a type for a map mapping the unary and binary
      * operations to their indices. */
-    typedef unordered_map<Operation, int, ophash> _Topmap;
-    typedef _Topmap::value_type _Topval;
+    using _Topmap = unordered_map<Operation, int, ophash>;
+    using _Topval = _Topmap::value_type;
 
     /** This is the map mapping the unary and binary operations to
      * the indices of the terms.*/
     _Topmap opmap;
 
     /** This is a type for a set of integers. */
-    typedef unordered_set<int> _Tintset;
+    using _Tintset = unordered_set<int>;
     /** This is a vector of integer sets corresponding to the
      * nulary terms contained in the term. */
     vector<_Tintset> nul_incidence;
 
     /** This is a type of the map from variables (nulary terms) to
      * the terms. */
-    typedef unordered_map<int, int> _Tderivmap;
+    using _Tderivmap = unordered_map<int, int>;
     /** This is a vector of derivative mappings. For each term, it
      * maps variables to the derivatives of the term with respect
      * to the variables. */

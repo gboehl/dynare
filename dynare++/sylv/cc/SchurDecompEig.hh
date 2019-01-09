@@ -13,7 +13,7 @@
 class SchurDecompEig : public SchurDecomp
 {
 public:
-  typedef QuasiTriangular::diag_iter diag_iter;
+  using diag_iter = QuasiTriangular::diag_iter;
   SchurDecompEig(const SqSylvMatrix &m) : SchurDecomp(m)
   {
   }

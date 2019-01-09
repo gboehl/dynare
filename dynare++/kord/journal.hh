@@ -96,7 +96,7 @@ public:
   char prefix[MAXLEN];
   char mes[MAXLEN];
   SystemResourcesFlash flash;
-  typedef JournalRecord & (*_Tfunc)(JournalRecord &);
+  using _Tfunc = JournalRecord &(*)(JournalRecord &);
 
   JournalRecord(Journal &jr, char rc = 'M')
     : recChar(rc), ord(jr.getOrd()), journal(jr)

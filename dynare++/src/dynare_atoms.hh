@@ -24,7 +24,7 @@ namespace ogdyn
   /** A definition of a type mapping a string to an integer. Used as
    * a substitution map, saying what names are substituted for what
    * expressions represented by tree indices. */
-  typedef map<const char *, int, ogp::ltstr> Tsubstmap;
+  using Tsubstmap = map<const char *, int, ogp::ltstr>;
 
   class DynareStaticAtoms : public ogp::StaticAtoms
   {
@@ -54,7 +54,7 @@ namespace ogdyn
   public:
     enum atype {endovar, exovar, param};
   protected:
-    typedef map<const char *, atype, ogp::ltstr> Tatypemap;
+    using Tatypemap = map<const char *, atype, ogp::ltstr>;
     /** The map assigining a type to each name. */
     Tatypemap atom_type;
   public:

@@ -99,8 +99,8 @@ private:
   int n;
   list<OrdSequence> classes;
 public:
-  typedef list<OrdSequence>::const_iterator const_seqit;
-  typedef list<OrdSequence>::iterator seqit;
+  using const_seqit = list<OrdSequence>::const_iterator;
+  using seqit = list<OrdSequence>::iterator;
 
   /* The first constructor constructs $\{\{0\},\{1\},\ldots,\{n-1\}\}$.
 
@@ -185,7 +185,7 @@ class EquivalenceSet
   int n;
   list<Equivalence> equis;
 public:
-  typedef list<Equivalence>::const_iterator const_iterator;
+  using const_iterator = list<Equivalence>::const_iterator;
   EquivalenceSet(int num);
   void print(const char *prefix) const;
   const_iterator

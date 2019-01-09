@@ -76,8 +76,8 @@ private:
   /* recursivelly calculates kronecker product of complex vectors (used in getEigSep) */
   static void multEigVector(KronVector &eig, const Vector &feig, const Vector &keig);
   /* auxiliary typedefs */
-  typedef QuasiTriangular::const_diag_iter const_diag_iter;
-  typedef QuasiTriangular::const_row_iter const_row_iter;
+  using const_diag_iter = QuasiTriangular::const_diag_iter;
+  using const_row_iter = QuasiTriangular::const_row_iter;
   /* called from solvi */
   void solviRealAndEliminate(double r, const_diag_iter di,
                              KronVector &d, double &eig_min) const;

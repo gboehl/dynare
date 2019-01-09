@@ -97,7 +97,7 @@ template <int t>
 class DecisionRuleImpl : public ctraits<t>::Tpol, public DecisionRule
 {
 protected:
-  typedef typename ctraits<t>::Tpol _Tparent;
+  using _Tparent = typename ctraits<t>::Tpol;
   const Vector ysteady;
   const PartitionY ypart;
   const int nu;
@@ -482,7 +482,7 @@ public:
 template <int t>
 class DRFixPoint : public ctraits<t>::Tpol
 {
-  typedef typename ctraits<t>::Tpol _Tparent;
+  using _Tparent = typename ctraits<t>::Tpol;
   static int max_iter;
   static int max_newton_iter;
   static int newton_pause;
@@ -492,7 +492,7 @@ class DRFixPoint : public ctraits<t>::Tpol
   _Tparent *bigf;
   _Tparent *bigfder;
 public:
-  typedef typename DecisionRule::emethod emethod;
+  using emethod = typename DecisionRule::emethod;
   DRFixPoint(const _Tg &g, const PartitionY &yp,
              const Vector &ys, double sigma);
   

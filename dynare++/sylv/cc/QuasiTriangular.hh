@@ -150,7 +150,7 @@ public:
 template <class _Tdiag, class _Tblock, class _Titer>
 struct _diag_iter
 {
-  typedef _diag_iter<_Tdiag, _Tblock, _Titer> _Self;
+  using _Self = _diag_iter<_Tdiag, _Tblock, _Titer>;
   _Tdiag diag;
   _Titer it;
 public:
@@ -197,8 +197,8 @@ public:
 class Diagonal
 {
 public:
-  typedef _diag_iter<const Diagonal &, const DiagonalBlock &, list<DiagonalBlock>::const_iterator> const_diag_iter;
-  typedef _diag_iter<Diagonal &, DiagonalBlock &, list<DiagonalBlock>::iterator> diag_iter;
+  using const_diag_iter = _diag_iter<const Diagonal &, const DiagonalBlock &, list<DiagonalBlock>::const_iterator>;
+  using diag_iter = _diag_iter<Diagonal &, DiagonalBlock &, list<DiagonalBlock>::iterator>;
 private:
   int num_all{0};
   list<DiagonalBlock> blocks;
@@ -281,7 +281,7 @@ private:
 template <class _TRef, class _TPtr>
 struct _matrix_iter
 {
-  typedef _matrix_iter<_TRef, _TPtr> _Self;
+  using _Self = _matrix_iter<_TRef, _TPtr>;
   int d_size;
   bool real;
   _TPtr ptr;
@@ -323,8 +323,8 @@ public:
 template <class _TRef, class _TPtr>
 class _column_iter : public _matrix_iter<_TRef, _TPtr>
 {
-  typedef _matrix_iter<_TRef, _TPtr> _Tparent;
-  typedef _column_iter<_TRef, _TPtr> _Self;
+  using _Tparent = _matrix_iter<_TRef, _TPtr>;
+  using _Self = _column_iter<_TRef, _TPtr>;
   int row;
 public:
   _column_iter(_TPtr base, int ds, bool r, int rw)
@@ -358,8 +358,8 @@ public:
 template <class _TRef, class _TPtr>
 class _row_iter : public _matrix_iter<_TRef, _TPtr>
 {
-  typedef _matrix_iter<_TRef, _TPtr> _Tparent;
-  typedef _row_iter<_TRef, _TPtr> _Self;
+  using _Tparent = _matrix_iter<_TRef, _TPtr>;
+  using _Self = _row_iter<_TRef, _TPtr>;
   int col;
 public:
   _row_iter(_TPtr base, int ds, bool r, int cl)
@@ -396,12 +396,12 @@ class SchurDecompZero;
 class QuasiTriangular : public SqSylvMatrix
 {
 public:
-  typedef _column_iter<const double &, const double *> const_col_iter;
-  typedef _column_iter<double &, double *> col_iter;
-  typedef _row_iter<const double &, const double *> const_row_iter;
-  typedef _row_iter<double &, double *> row_iter;
-  typedef Diagonal::const_diag_iter const_diag_iter;
-  typedef Diagonal::diag_iter diag_iter;
+  using const_col_iter = _column_iter<const double &, const double *>;
+  using col_iter = _column_iter<double &, double *>;
+  using const_row_iter = _row_iter<const double &, const double *>;
+  using row_iter = _row_iter<double &, double *>;
+  using const_diag_iter = Diagonal::const_diag_iter;
+  using diag_iter = Diagonal::diag_iter;
 protected:
   Diagonal diagonal;
 public:

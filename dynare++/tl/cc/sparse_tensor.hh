@@ -50,11 +50,11 @@ struct ltseq
 class SparseTensor
 {
 public:
-  typedef pair<int, double> Item;
-  typedef multimap<IntSequence, Item, ltseq> Map;
-  typedef Map::const_iterator const_iterator;
+  using Item = pair<int, double>;
+  using Map = multimap<IntSequence, Item, ltseq>;
+  using const_iterator = Map::const_iterator;
 protected:
-  typedef Map::iterator iterator;
+  using iterator = Map::iterator;
 
   Map m;
   const int dim;
@@ -128,7 +128,7 @@ public:
 class FSSparseTensor : public SparseTensor
 {
 public:
-  typedef SparseTensor::const_iterator const_iterator;
+  using const_iterator = SparseTensor::const_iterator;
 private:
   const int nv;
   const Symmetry sym;
@@ -158,7 +158,7 @@ public:
 class GSSparseTensor : public SparseTensor
 {
 public:
-  typedef SparseTensor::const_iterator const_iterator;
+  using const_iterator = SparseTensor::const_iterator;
 private:
   const TensorDimens tdims;
 public:

@@ -247,9 +247,9 @@ template <class _Ttype>
 class GXContainer : public GContainer<_Ttype>
 {
 public:
-  typedef StackContainerInterface<_Ttype> _Stype;
-  typedef typename StackContainer<_Ttype>::_Ctype _Ctype;
-  typedef typename StackContainer<_Ttype>::itype itype;
+  using _Stype = StackContainerInterface<_Ttype>;
+  using _Ctype = typename StackContainer<_Ttype>::_Ctype;
+  using itype = typename StackContainer<_Ttype>::itype;
   GXContainer(const _Ctype *gs, int ngs, int nu)
     : GContainer<_Ttype>(gs, ngs, nu)
   {
@@ -291,9 +291,9 @@ template <class _Ttype>
 class ZXContainer : public ZContainer<_Ttype>
 {
 public:
-  typedef StackContainerInterface<_Ttype> _Stype;
-  typedef typename StackContainer<_Ttype>::_Ctype _Ctype;
-  typedef typename StackContainer<_Ttype>::itype itype;
+  using _Stype = StackContainerInterface<_Ttype>;
+  using _Ctype = typename StackContainer<_Ttype>::_Ctype;
+  using itype = typename StackContainer<_Ttype>::itype;
   ZXContainer(const _Ctype *gss, int ngss, const _Ctype *g, int ng, int ny, int nu)
     : ZContainer<_Ttype>(gss, ngss, g, ng, ny, nu)
   {
@@ -335,7 +335,7 @@ ZXContainer<_Ttype>::getType(int i, const Symmetry &s) const
 class UnfoldedGXContainer : public GXContainer<UGSTensor>, public UnfoldedStackContainer
 {
 public:
-  typedef TensorContainer<UGSTensor> _Ctype;
+  using _Ctype = TensorContainer<UGSTensor>;
   UnfoldedGXContainer(const _Ctype *gs, int ngs, int nu)
     : GXContainer<UGSTensor>(gs, ngs, nu)
   {
@@ -345,7 +345,7 @@ public:
 class FoldedGXContainer : public GXContainer<FGSTensor>, public FoldedStackContainer
 {
 public:
-  typedef TensorContainer<FGSTensor> _Ctype;
+  using _Ctype = TensorContainer<FGSTensor>;
   FoldedGXContainer(const _Ctype *gs, int ngs, int nu)
     : GXContainer<FGSTensor>(gs, ngs, nu)
   {
@@ -355,7 +355,7 @@ public:
 class UnfoldedZXContainer : public ZXContainer<UGSTensor>, public UnfoldedStackContainer
 {
 public:
-  typedef TensorContainer<UGSTensor> _Ctype;
+  using _Ctype = TensorContainer<UGSTensor>;
   UnfoldedZXContainer(const _Ctype *gss, int ngss, const _Ctype *g, int ng, int ny, int nu)
     : ZXContainer<UGSTensor>(gss, ngss, g, ng, ny, nu)
   {
@@ -365,7 +365,7 @@ public:
 class FoldedZXContainer : public ZXContainer<FGSTensor>, public FoldedStackContainer
 {
 public:
-  typedef TensorContainer<FGSTensor> _Ctype;
+  using _Ctype = TensorContainer<FGSTensor>;
   FoldedZXContainer(const _Ctype *gss, int ngss, const _Ctype *g, int ng, int ny, int nu)
     : ZXContainer<FGSTensor>(gss, ngss, g, ng, ny, nu)
   {

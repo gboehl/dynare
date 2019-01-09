@@ -18,7 +18,7 @@ template <class _Type>
 struct ParamItem
 {
 protected:
-  typedef ParamItem<_Type> _Self;
+  using _Self = ParamItem<_Type>;
   status s;
   _Type value;
 public:
@@ -74,7 +74,7 @@ public:
 class SylvParams
 {
 public:
-  typedef enum {iter, recurse} solve_method;
+  using solve_method = enum {iter, recurse};
 
 protected:
   class DoubleParamItem : public ParamItem<double>

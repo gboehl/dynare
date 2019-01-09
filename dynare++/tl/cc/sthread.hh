@@ -81,20 +81,36 @@ namespace sthread
   template<bool condition, class Then, class Else>
   struct IF
   {
-    typedef Then RET;
+    using RET = Then;
   };
 
   template<class Then, class Else>
   struct IF<false, Then, Else>
   {
-    typedef Else RET;
+    using RET = Else;
   };
 
   enum { posix, empty};
-  template <int>
-  class thread_traits;
+
+  template <int thread_impl>
+  class thread;
   template <int>
   class detach_thread;
+
+  /* Clear. We have only |run|, |detach_run|, |exit| and |join|, since
+     this is only a simple interface. */
+
+  template <int thread_impl>
+  struct thread_traits
+  {
+    using _Tthread = typename IF<thread_impl == posix, pthread_t, Empty>::RET;
+    using _Ctype = thread<0>;
+    using _Dtype = detach_thread<0>;
+    static void run(_Ctype *c);
+    static void detach_run(_Dtype *c);
+    static void exit();
+    static void join(_Ctype *c);
+  };
 
   /* The class of |thread| is clear. The user implements |operator()()|,
      the method |run| runs the user's code as joinable thread, |exit| kills the
@@ -102,8 +118,8 @@ namespace sthread
   template <int thread_impl>
   class thread
   {
-    typedef thread_traits<thread_impl> _Ttraits;
-    typedef typename _Ttraits::_Tthread _Tthread;
+    using _Ttraits = thread_traits<0>;
+    using _Tthread = typename _Ttraits::_Tthread;
     _Tthread th;
   public:
     virtual ~thread()
@@ -144,10 +160,10 @@ namespace sthread
   template <int thread_impl>
   class thread_group
   {
-    typedef thread_traits<thread_impl> _Ttraits;
-    typedef thread<thread_impl> _Ctype;
+    using _Ttraits = thread_traits<thread_impl>;
+    using _Ctype = thread<thread_impl>;
     list<_Ctype *> tlist;
-    typedef typename list<_Ctype *>::iterator iterator;
+    using iterator = typename list<_Ctype *>::iterator;
   public:
     static int max_parallel_threads;
     void
@@ -214,30 +230,16 @@ namespace sthread
     }
   };
 
-  /* Clear. We have only |run|, |detach_run|, |exit| and |join|, since
-     this is only a simple interface. */
-
-  template <int thread_impl>
-  struct thread_traits
-  {
-    typedef typename IF<thread_impl == posix, pthread_t, Empty>::RET _Tthread;
-    typedef thread<thread_impl> _Ctype;
-    typedef detach_thread<thread_impl> _Dtype;
-    static void run(_Ctype *c);
-    static void detach_run(_Dtype *c);
-    static void exit();
-    static void join(_Ctype *c);
-  };
 
   /* Clear. We have only |init|, |lock|, and |unlock|. */
   struct ltmmkey;
-  typedef pair<const void *, const char *> mmkey;
+  using mmkey = pair<const void *, const char *>;
 
   template <int thread_impl>
   struct mutex_traits
   {
-    typedef typename IF<thread_impl == posix, pthread_mutex_t, Empty>::RET _Tmutex;
-    typedef map<mmkey, pair<_Tmutex, int>, ltmmkey> mutex_int_map;
+    using _Tmutex = typename IF<thread_impl == posix, pthread_mutex_t, Empty>::RET;
+    using mutex_int_map = map<mmkey, pair<_Tmutex, int>, ltmmkey>;
     static void init(_Tmutex &m);
     static void lock(_Tmutex &m);
     static void unlock(_Tmutex &m);
@@ -274,12 +276,12 @@ namespace sthread
   class mutex_map :
     public mutex_traits<thread_impl>::mutex_int_map
   {
-    typedef typename mutex_traits<thread_impl>::_Tmutex _Tmutex;
-    typedef mutex_traits<thread_impl> _Mtraits;
-    typedef pair<_Tmutex, int> mmval;
-    typedef map<mmkey, mmval, ltmmkey> _Tparent;
-    typedef typename _Tparent::iterator iterator;
-    typedef typename _Tparent::value_type _mvtype;
+    using _Tmutex = typename mutex_traits<thread_impl>::_Tmutex;
+    using _Mtraits = mutex_traits<thread_impl>;
+    using mmval = pair<_Tmutex, int>;
+    using _Tparent = map<mmkey, mmval, ltmmkey>;
+    using iterator = typename _Tparent::iterator;
+    using _mvtype = typename _Tparent::value_type;
     _Tmutex m;
   public:
     mutex_map()
@@ -340,10 +342,10 @@ namespace sthread
   template <int thread_impl>
   class synchro
   {
-    typedef typename mutex_traits<thread_impl>::_Tmutex _Tmutex;
-    typedef mutex_traits<thread_impl> _Mtraits;
+    using _Tmutex = typename mutex_traits<thread_impl>::_Tmutex;
+    using _Mtraits = mutex_traits<0>;
   public:
-    typedef mutex_map<thread_impl> mutex_map_t;
+    using mutex_map_t = mutex_map<0>;
   private:
     const void *caller;
     const char *iden;
@@ -404,8 +406,8 @@ namespace sthread
   template <int thread_impl>
   struct cond_traits
   {
-    typedef typename IF<thread_impl == posix, pthread_cond_t, Empty>::RET _Tcond;
-    typedef typename mutex_traits<thread_impl>::_Tmutex _Tmutex;
+    using _Tcond = typename IF<thread_impl == posix, pthread_cond_t, Empty>::RET;
+    using _Tmutex = typename mutex_traits<thread_impl>::_Tmutex;
     static void init(_Tcond &cond);
     static void broadcast(_Tcond &cond);
     static void wait(_Tcond &cond, _Tmutex &mutex);
@@ -424,8 +426,8 @@ namespace sthread
   template <int thread_impl>
   class condition_counter
   {
-    typedef typename mutex_traits<thread_impl>::_Tmutex _Tmutex;
-    typedef typename cond_traits<thread_impl>::_Tcond _Tcond;
+    using _Tmutex = typename mutex_traits<thread_impl>::_Tmutex;
+    using _Tcond = typename cond_traits<thread_impl>::_Tcond;
     int counter{0};
     _Tmutex mut;
     _Tcond cond;
@@ -524,11 +526,11 @@ namespace sthread
   template<int thread_impl>
   class detach_thread_group
   {
-    typedef thread_traits<thread_impl> _Ttraits;
-    typedef cond_traits<thread_impl> _Ctraits;
-    typedef detach_thread<thread_impl> _Ctype;
+    using _Ttraits = thread_traits<thread_impl>;
+    using _Ctraits = cond_traits<thread_impl>;
+    using _Ctype = detach_thread<thread_impl>;
     list<_Ctype *> tlist;
-    typedef typename list<_Ctype *>::iterator iterator;
+    using iterator = typename list<_Ctype *>::iterator;
     condition_counter<thread_impl> counter;
   public:
     static int max_parallel_threads;
@@ -583,9 +585,9 @@ namespace sthread
   /* Here we only define the specializations for POSIX threads. Then we
      define the macros. Note that the |PosixSynchro| class construct itself
      from the static map defined in {\tt sthreads.cpp}. */
-  typedef detach_thread<posix> PosixThread;
-  typedef detach_thread_group<posix> PosixThreadGroup;
-  typedef synchro<posix> posix_synchro;
+  using PosixThread = detach_thread<posix>;
+  using PosixThreadGroup = detach_thread_group<posix>;
+  using posix_synchro = synchro<posix>;
   class PosixSynchro : public posix_synchro
   {
   public:
@@ -602,9 +604,9 @@ namespace sthread
      mutex. |NoSynchro| class is also empty, but an empty constructor is
      declared. The empty destructor is declared only to avoid ``unused
      variable warning''. */
-  typedef thread<empty> NoThread;
-  typedef thread_group<empty> NoThreadGroup;
-  typedef synchro<empty> no_synchro;
+  using NoThread = thread<empty>;
+  using NoThreadGroup = thread_group<empty>;
+  using no_synchro = synchro<empty>;
   class NoSynchro
   {
   public:

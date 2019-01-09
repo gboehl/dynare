@@ -72,13 +72,13 @@ class UnfoldedGXContainer;
 template<bool condition, class Then, class Else>
 struct IF
 {
-  typedef Then RET;
+  using RET = Then;
 };
 
 template<class Then, class Else>
 struct IF<false, Then, Else>
 {
-  typedef Else RET;
+  using RET = Else;
 };
 
 template <int type>
@@ -86,18 +86,18 @@ class ctraits
 {
 public:
   enum { fold, unfold };
-  typedef TYPENAME IF<type == fold, FGSTensor, UGSTensor>::RET Ttensor;
-  typedef TYPENAME IF<type == fold, FFSTensor, UFSTensor>::RET Ttensym;
-  typedef TYPENAME IF<type == fold, FGSContainer, UGSContainer>::RET Tg;
-  typedef TYPENAME IF<type == fold, FGSContainer, UGSContainer>::RET Tgs;
-  typedef TYPENAME IF<type == fold, FGSContainer, UGSContainer>::RET Tgss;
-  typedef TYPENAME IF<type == fold, FGSContainer, UGSContainer>::RET TG;
-  typedef TYPENAME IF<type == fold, FoldedZContainer, UnfoldedZContainer>::RET TZstack;
-  typedef TYPENAME IF<type == fold, FoldedGContainer, UnfoldedGContainer>::RET TGstack;
-  typedef TYPENAME IF<type == fold, FNormalMoments, UNormalMoments>::RET Tm;
-  typedef TYPENAME IF<type == fold, FTensorPolynomial, UTensorPolynomial>::RET Tpol;
-  typedef TYPENAME IF<type == fold, FoldedZXContainer, UnfoldedZXContainer>::RET TZXstack;
-  typedef TYPENAME IF<type == fold, FoldedGXContainer, UnfoldedGXContainer>::RET TGXstack;
+  using Ttensor = TYPENAME IF<type == fold, FGSTensor, UGSTensor>::RET;
+  using Ttensym = TYPENAME IF<type == fold, FFSTensor, UFSTensor>::RET;
+  using Tg = TYPENAME IF<type == fold, FGSContainer, UGSContainer>::RET;
+  using Tgs = TYPENAME IF<type == fold, FGSContainer, UGSContainer>::RET;
+  using Tgss = TYPENAME IF<type == fold, FGSContainer, UGSContainer>::RET;
+  using TG = TYPENAME IF<type == fold, FGSContainer, UGSContainer>::RET;
+  using TZstack = TYPENAME IF<type == fold, FoldedZContainer, UnfoldedZContainer>::RET;
+  using TGstack = TYPENAME IF<type == fold, FoldedGContainer, UnfoldedGContainer>::RET;
+  using Tm = TYPENAME IF<type == fold, FNormalMoments, UNormalMoments>::RET;
+  using Tpol = TYPENAME IF<type == fold, FTensorPolynomial, UTensorPolynomial>::RET;
+  using TZXstack = TYPENAME IF<type == fold, FoldedZXContainer, UnfoldedZXContainer>::RET;
+  using TGXstack = TYPENAME IF<type == fold, FoldedGXContainer, UnfoldedGXContainer>::RET;
 };
 
 /* The |PartitionY| class defines the partitioning of state variables

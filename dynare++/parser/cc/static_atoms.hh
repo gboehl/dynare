@@ -13,8 +13,8 @@ namespace ogp
   class StaticAtoms : public Atoms, public Constants
   {
   protected:
-    typedef map<const char *, int, ltstr> Tvarmap;
-    typedef map<int, const char *> Tinvmap;
+    using Tvarmap = map<const char *, int, ltstr>;
+    using Tinvmap = map<int, const char *>;
     /** Storage for names. */
     NameStorage varnames;
     /** Outer order of variables. */

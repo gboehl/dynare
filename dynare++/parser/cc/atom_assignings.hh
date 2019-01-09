@@ -26,7 +26,7 @@ namespace ogp
   {
     friend class AtomAsgnEvaluator;
   protected:
-    typedef std::map<const char *, int, ltstr> Tvarintmap;
+    using Tvarintmap = std::map<const char *, int, ltstr>;
     /** All atoms which should be sufficient for formulas at the
      * right hand sides. The atoms should be filled with names
      * (preregistered). This is a responsibility of the caller. */
@@ -88,7 +88,7 @@ namespace ogp
                             public std::vector<double>
   {
   protected:
-    typedef std::map<int, double> Tusrvalmap;
+    using Tusrvalmap = std::map<int, double>;
     Tusrvalmap user_values;
     const AtomAssignings &aa;
   public:

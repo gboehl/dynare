@@ -74,8 +74,8 @@ namespace ogp
   {
   public:
     /** Type for a map mapping tree indices to double values. */
-    typedef map<int, double> Tconstantmap;
-    typedef map<int, int> Tintintmap;
+    using Tconstantmap = map<int, double>;
+    using Tintintmap = map<int, int>;
   protected:
     /** Map mapping a tree index of a constant to its double value. */
     Tconstantmap cmap;
@@ -124,7 +124,7 @@ namespace ogp
     }
   private:
     /** Inverse map to Tconstantmap. */
-    typedef map<double, int> Tconstantinvmap;
+    using Tconstantinvmap = map<double, int>;
     /** This is an inverse map to cmap. This is only used for fast
      * queries for the existing double constants in check
      * method and add_constant. */
@@ -140,12 +140,12 @@ namespace ogp
   {
   public:
     /** Definition of a type mapping lags to the indices of the variables. */
-    typedef map<int, int> Tlagmap;
+    using Tlagmap = map<int, int>;
   protected:
     /** Definition of a type mapping names of the atoms to Tlagmap. */
-    typedef map<const char *, Tlagmap, ltstr> Tvarmap;
+    using Tvarmap = map<const char *, Tlagmap, ltstr>;
     /** Definition of a type mapping indices of variables to the variable names. */
-    typedef map<int, const char *> Tindexmap;
+    using Tindexmap = map<int, const char *>;
     /** This is just a storage for variable names, since all other
      * instances of a variable name just point to the memory
      * allocated by this object. */

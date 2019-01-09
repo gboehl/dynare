@@ -150,12 +150,12 @@ namespace ogdyn
     friend class MultInitSS;
   public:
     /** Type for a set of variable names. */
-    typedef unordered_set<const char *> Tvarset;
+    using Tvarset = unordered_set<const char *>;
     /** Type for a set of equations. An equation is identified by
      * an index to an equation in the equation vector given by
      * DynareModel::eqs. The tree index of the i-th formula is
      * retrieved as DynareModel::egs.formula(i). */
-    typedef vector<int> Teqset;
+    using Teqset = vector<int>;
   protected:
     /** This is a set of variables wrt which the planner
      * optimizes. These could be all endogenous variables, but it

@@ -16,7 +16,7 @@
 class MersenneTwister : public RandomGenerator
 {
 protected:
-  typedef unsigned int uint32;
+  using uint32 = unsigned int;
   enum {STATE_SIZE = 624};
   enum {RECUR_OFFSET = 397};
   uint32 statevec[STATE_SIZE];

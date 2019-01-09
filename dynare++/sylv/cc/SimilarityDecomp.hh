@@ -14,7 +14,7 @@ class SimilarityDecomp
   SqSylvMatrix *q;
   BlockDiagonal *b;
   SqSylvMatrix *invq;
-  typedef BlockDiagonal::diag_iter diag_iter;
+  using diag_iter = BlockDiagonal::diag_iter;
 public:
   SimilarityDecomp(const double *d, int d_size, double log10norm = 3.0);
   virtual

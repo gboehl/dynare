@@ -92,8 +92,8 @@ template <class _Ttype>
 class StackContainerInterface
 {
 public:
-  typedef TensorContainer<_Ttype> _Ctype;
-  typedef enum { matrix, unit, zero} itype;
+  using _Ctype = TensorContainer<_Ttype>;
+  using itype = enum { matrix, unit, zero};
 protected:
   const EquivalenceBundle &ebundle;
 public:
@@ -134,9 +134,9 @@ template <class _Ttype>
 class StackContainer : virtual public StackContainerInterface<_Ttype>
 {
 public:
-  typedef StackContainerInterface<_Ttype> _Stype;
-  typedef typename StackContainerInterface<_Ttype>::_Ctype _Ctype;
-  typedef typename StackContainerInterface<_Ttype>::itype itype;
+  using _Stype = StackContainerInterface<_Ttype>;
+  using _Ctype = typename StackContainerInterface<_Ttype>::_Ctype;
+  using itype = typename StackContainerInterface<_Ttype>::itype;
 protected:
   int num_conts;
   IntSequence stack_sizes;
@@ -341,10 +341,10 @@ template <class _Ttype>
 class ZContainer : public StackContainer<_Ttype>
 {
 public:
-  typedef StackContainer<_Ttype> _Tparent;
-  typedef StackContainerInterface<_Ttype> _Stype;
-  typedef typename _Tparent::_Ctype _Ctype;
-  typedef typename _Tparent::itype itype;
+  using _Tparent = StackContainer<_Ttype>;
+  using _Stype = StackContainerInterface<_Ttype>;
+  using _Ctype = typename _Tparent::_Ctype;
+  using itype = typename _Tparent::itype;
   ZContainer(const _Ctype *gss, int ngss, const _Ctype *g, int ng,
              int ny, int nu)
     : _Tparent(4, 2)
@@ -390,7 +390,7 @@ class FoldedZContainer : public ZContainer<FGSTensor>,
                          public FoldedStackContainer
 {
 public:
-  typedef TensorContainer<FGSTensor> _Ctype;
+  using _Ctype = TensorContainer<FGSTensor>;
   FoldedZContainer(const _Ctype *gss, int ngss, const _Ctype *g, int ng,
                    int ny, int nu)
     : ZContainer<FGSTensor>(gss, ngss, g, ng, ny, nu)
@@ -402,7 +402,7 @@ class UnfoldedZContainer : public ZContainer<UGSTensor>,
                            public UnfoldedStackContainer
 {
 public:
-  typedef TensorContainer<UGSTensor> _Ctype;
+  using _Ctype = TensorContainer<UGSTensor>;
   UnfoldedZContainer(const _Ctype *gss, int ngss, const _Ctype *g, int ng,
                      int ny, int nu)
     : ZContainer<UGSTensor>(gss, ngss, g, ng, ny, nu)
@@ -424,10 +424,10 @@ template <class _Ttype>
 class GContainer : public StackContainer<_Ttype>
 {
 public:
-  typedef StackContainer<_Ttype> _Tparent;
-  typedef StackContainerInterface<_Ttype> _Stype;
-  typedef typename StackContainer<_Ttype>::_Ctype _Ctype;
-  typedef typename StackContainer<_Ttype>::itype itype;
+  using _Tparent = StackContainer<_Ttype>;
+  using _Stype = StackContainerInterface<_Ttype>;
+  using _Ctype = typename StackContainer<_Ttype>::_Ctype;
+  using itype = typename StackContainer<_Ttype>::itype;
   GContainer(const _Ctype *gs, int ngs, int nu)
     : StackContainer<_Ttype>(4, 1)
   {
@@ -473,7 +473,7 @@ class FoldedGContainer : public GContainer<FGSTensor>,
                          public FoldedStackContainer
 {
 public:
-  typedef TensorContainer<FGSTensor> _Ctype;
+  using _Ctype = TensorContainer<FGSTensor>;
   FoldedGContainer(const _Ctype *gs, int ngs, int nu)
     : GContainer<FGSTensor>(gs, ngs, nu)
   {
@@ -484,7 +484,7 @@ class UnfoldedGContainer : public GContainer<UGSTensor>,
                            public UnfoldedStackContainer
 {
 public:
-  typedef TensorContainer<UGSTensor> _Ctype;
+  using _Ctype = TensorContainer<UGSTensor>;
   UnfoldedGContainer(const _Ctype *gs, int ngs, int nu)
     : GContainer<UGSTensor>(gs, ngs, nu)
   {
@@ -501,9 +501,9 @@ template <class _Ttype>
 class StackProduct
 {
 public:
-  typedef StackContainerInterface<_Ttype> _Stype;
-  typedef typename _Stype::_Ctype _Ctype;
-  typedef typename _Stype::itype itype;
+  using _Stype = StackContainerInterface<_Ttype>;
+  using _Ctype = typename _Stype::_Ctype;
+  using itype = typename _Stype::itype;
 protected:
   const _Stype &stack_cont;
   InducedSymmetries syms;
@@ -611,8 +611,8 @@ template <class _Ttype>
 class KronProdStack : public KronProdAllOptim
 {
 public:
-  typedef StackProduct<_Ttype> _Ptype;
-  typedef StackContainerInterface<_Ttype> _Stype;
+  using _Ptype = StackProduct<_Ttype>;
+  using _Stype = StackContainerInterface<_Ttype>;
 
   /* Here we construct |KronProdAllOptim| from |StackContainer| and given
      selections of stack items from stack containers in the product. We

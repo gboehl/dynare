@@ -26,7 +26,7 @@ namespace ogdyn
 
   class ForwSubstBuilder
   {
-    typedef map<int, const char *> Ttermauxmap;
+    using Ttermauxmap = map<int, const char *>;
   protected:
     /** Reference to the model, to which we will add equations and
      * change some equations. */

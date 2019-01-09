@@ -97,8 +97,8 @@ class TensorPolynomial : public TensorContainer<_Ttype>
   int nr;
   int nv;
   int maxdim;
-  typedef TensorContainer<_Ttype> _Tparent;
-  typedef typename _Tparent::_ptr _ptr;
+  using _Tparent = TensorContainer<_Ttype>;
+  using _ptr = typename _Tparent::_ptr;
 public:
   TensorPolynomial(int rows, int vars)
     : TensorContainer<_Ttype>(1),

@@ -89,7 +89,7 @@ namespace ogp
     /** For retrieving derivatives via a multiindex, we have a map
      * mapping a multiindex to a derivative in the tder
      * ordering. This means that indices[ind2der[index]] == index. */
-    typedef map<FoldMultiIndex, int, ltfmi> Tfmiintmap;
+    using Tfmiintmap = map<FoldMultiIndex, int, ltfmi>;
     Tfmiintmap ind2der;
     /** The number of variables. */
     int nvar;

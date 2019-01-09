@@ -75,9 +75,9 @@ template <class _Ttype>
 class FineContainer : public SizeRefinement, public StackContainer<_Ttype>
 {
 protected:
-  typedef StackContainer<_Ttype> _Stype;
-  typedef typename StackContainerInterface<_Ttype>::_Ctype _Ctype;
-  typedef typename StackContainerInterface<_Ttype>::itype itype;
+  using _Stype = StackContainer<_Ttype>;
+  using _Ctype = typename StackContainerInterface<_Ttype>::_Ctype;
+  using itype = typename StackContainerInterface<_Ttype>::itype;
   _Ctype **const ref_conts;
   const _Stype &stack_cont;
 public:
