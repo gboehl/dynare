@@ -6,6 +6,7 @@
 #include "dynare_exception.hh"
 
 #include <cmath>
+#include <utility>
 
 using namespace ogdyn;
 
@@ -30,8 +31,8 @@ IntegerArray3::operator=(const IntegerArray3 &ia3)
 }
 
 PlannerBuilder::PlannerBuilder(DynareModel &m, const Tvarset &yyset,
-                               const Teqset &ffset)
-  : yset(), fset(ffset), model(m),
+                               Teqset ffset)
+  : yset(), fset(std::move(ffset)), model(m),
     tb(model.t_plobjective), tbeta(model.t_pldiscount),
     maxlead(model.atoms.get_maxlead()),
     minlag(model.atoms.get_minlag()),

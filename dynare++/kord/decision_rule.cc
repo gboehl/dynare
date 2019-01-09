@@ -9,6 +9,7 @@
 #include <dynlapack.h>
 
 #include <limits>
+#include <utility>
 
 template <>
 int DRFixPoint<KOrder::fold>::max_iter = 10000;
@@ -439,9 +440,9 @@ RTSimResultsStats::writeMat(mat_t *fd, const char *lname)
 }
 
 IRFResults::IRFResults(const DynamicModel &mod, const DecisionRule &dr,
-                       const SimResults &control, const vector<int> &ili,
+                       const SimResults &control, vector<int> ili,
                        Journal &journal)
-  : model(mod), irf_list_ind(ili)
+  : model(mod), irf_list_ind(std::move(ili))
 {
   int num_per = control.getNumPer();
   JournalRecordPair pa(journal);

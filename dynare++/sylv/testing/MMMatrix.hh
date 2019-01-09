@@ -9,6 +9,7 @@
 #include "SylvMemory.hh"
 
 #include <string>
+#include <utility>
 
 using namespace std;
 
@@ -16,7 +17,7 @@ class MMException : public MallocAllocator
 {
   string message;
 public:
-  MMException(string mes) : message(mes)
+  MMException(string mes) : message(std::move(mes))
   {
   }
   MMException(const char *mes) : message(mes)

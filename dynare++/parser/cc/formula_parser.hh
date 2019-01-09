@@ -3,6 +3,8 @@
 #ifndef OGP_FORMULA_PARSER_H
 #define OGP_FORMULA_PARSER_H
 
+#include <utility>
+
 #include "tree.hh"
 
 namespace ogp
@@ -336,13 +338,13 @@ namespace ogp
     vector<int> terms;
   public:
     /** Construct from FormulaParser and given list of terms. */
-    FormulaCustomEvaluator(const FormulaParser &fp, const vector<int> &ts)
-      : etree(fp.otree), terms(ts)
+    FormulaCustomEvaluator(const FormulaParser &fp, vector<int> ts)
+      : etree(fp.otree), terms(std::move(ts))
     {
     }
     /** Construct from OperationTree and given list of terms. */
-    FormulaCustomEvaluator(const OperationTree &ot, const vector<int> &ts)
-      : etree(ot), terms(ts)
+    FormulaCustomEvaluator(const OperationTree &ot, vector<int> ts)
+      : etree(ot), terms(std::move(ts))
     {
     }
     /** Evaluate the terms using the given AtomValues and load the

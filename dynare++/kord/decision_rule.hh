@@ -901,7 +901,7 @@ class IRFResults
   vector<int> irf_list_ind;
 public:
   IRFResults(const DynamicModel &mod, const DecisionRule &dr,
-             const SimResults &control, const vector<int> &ili,
+             const SimResults &control, vector<int> ili,
              Journal &journal);
   ~IRFResults();
   void writeMat(mat_t *fd, const char *prefix) const;

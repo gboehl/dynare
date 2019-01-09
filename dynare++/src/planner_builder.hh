@@ -232,7 +232,7 @@ namespace ogdyn
      * predetermined process which cannot be influenced by the
      * social planner. */
     PlannerBuilder(ogdyn::DynareModel &m, const Tvarset &yyset,
-                   const Teqset &ffset);
+                   Teqset ffset);
     /** Construct a copy of the builder with provided model, which
      * is supposed to be the copy of the model in the builder. */
     PlannerBuilder(const PlannerBuilder &pb, ogdyn::DynareModel &m);
