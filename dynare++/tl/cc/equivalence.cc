@@ -84,8 +84,8 @@ double
 OrdSequence::average() const
 {
   double res = 0;
-  for (unsigned int i = 0; i < data.size(); i++)
-    res += data[i];
+  for (int i : data)
+    res += i;
   TL_RAISE_IF(data.size() == 0,
               "Attempt to take average of empty class in OrdSequence::average");
   return res/data.size();
@@ -96,8 +96,8 @@ void
 OrdSequence::print(const char *prefix) const
 {
   printf("%s", prefix);
-  for (unsigned int i = 0; i < data.size(); i++)
-    printf("%d ", data[i]);
+  for (int i : data)
+    printf("%d ", i);
   printf("\n");
 }
 
@@ -404,8 +404,8 @@ EquivalenceBundle::EquivalenceBundle(int nmax)
 /* Destruct bundle. Just free all pointers. */
 EquivalenceBundle::~EquivalenceBundle()
 {
-  for (unsigned int i = 0; i < bundle.size(); i++)
-    delete bundle[i];
+  for (auto & i : bundle)
+    delete i;
 }
 
 /* Remember, that the first item is |EquivalenceSet(1)|. */

@@ -32,10 +32,9 @@ FoldDecisionRule::FoldDecisionRule(const UnfoldDecisionRule &udr)
   : DecisionRuleImpl<KOrder::fold>(ctraits<KOrder::fold>::Tpol(udr.nrows(), udr.nvars()),
                                    udr.ypart, udr.nu, udr.ysteady)
 {
-  for (ctraits<KOrder::unfold>::Tpol::const_iterator it = udr.begin();
-       it != udr.end(); ++it)
+  for (const auto & it : udr)
     {
-      insert(new ctraits<KOrder::fold>::Ttensym(*((*it).second)));
+      insert(new ctraits<KOrder::fold>::Ttensym(*(it.second)));
     }
 }
 
@@ -44,10 +43,9 @@ UnfoldDecisionRule::UnfoldDecisionRule(const FoldDecisionRule &fdr)
   : DecisionRuleImpl<KOrder::unfold>(ctraits<KOrder::unfold>::Tpol(fdr.nrows(), fdr.nvars()),
                                      fdr.ypart, fdr.nu, fdr.ysteady)
 {
-  for (ctraits<KOrder::fold>::Tpol::const_iterator it = fdr.begin();
-       it != fdr.end(); ++it)
+  for (const auto & it : fdr)
     {
-      insert(new ctraits<KOrder::unfold>::Ttensym(*((*it).second)));
+      insert(new ctraits<KOrder::unfold>::Ttensym(*(it.second)));
     }
 }
 
@@ -196,11 +194,11 @@ SimResultsStats::calcMean()
   if (data.size()*num_per > 0)
     {
       double mult = 1.0/data.size()/num_per;
-      for (unsigned int i = 0; i < data.size(); i++)
+      for (auto & i : data)
         {
           for (int j = 0; j < num_per; j++)
             {
-              ConstVector col(*data[i], j);
+              ConstVector col(*i, j);
               mean.add(mult, col);
             }
         }
@@ -214,9 +212,9 @@ SimResultsStats::calcVcov()
     {
       vcov.zeros();
       double mult = 1.0/(data.size()*num_per - 1);
-      for (unsigned int i = 0; i < data.size(); i++)
+      for (auto & i : data)
         {
-          const TwoDMatrix &d = *(data[i]);
+          const TwoDMatrix &d = *i;
           for (int j = 0; j < num_per; j++)
             {
               for (int m = 0; m < num_y; m++)
@@ -276,9 +274,9 @@ SimResultsDynamicStats::calcMean()
       for (int j = 0; j < num_per; j++)
         {
           Vector meanj(mean, j);
-          for (unsigned int i = 0; i < data.size(); i++)
+          for (auto & i : data)
             {
-              ConstVector col(*data[i], j);
+              ConstVector col(*i, j);
               meanj.add(mult, col);
             }
         }
@@ -296,9 +294,9 @@ SimResultsDynamicStats::calcVariance()
         {
           ConstVector meanj(mean, j);
           Vector varj(variance, j);
-          for (int i = 0; i < (int) data.size(); i++)
+          for (auto & i : data)
             {
-              Vector col(ConstVector((*data[i]), j));
+              Vector col(ConstVector((*i), j));
               col.add(-1.0, meanj);
               for (int k = 0; k < col.length(); k++)
                 col[k] = col[k]*col[k];
@@ -350,8 +348,8 @@ SimResultsIRF::calcMeans()
   means.zeros();
   if (data.size() > 0)
     {
-      for (unsigned int i = 0; i < data.size(); i++)
-        means.add(1.0, *(data[i]));
+      for (auto & i : data)
+        means.add(1.0, *i);
       means.mult(1.0/data.size());
     }
 }
@@ -362,9 +360,9 @@ SimResultsIRF::calcVariances()
   if (data.size() > 1)
     {
       variances.zeros();
-      for (unsigned int i = 0; i < data.size(); i++)
+      for (auto & i : data)
         {
-          TwoDMatrix d((const TwoDMatrix &)(*(data[i])));
+          TwoDMatrix d((const TwoDMatrix &)(*i));
           d.add(-1.0, means);
           for (int j = 0; j < d.nrows(); j++)
             for (int k = 0; k < d.ncols(); k++)
@@ -450,9 +448,8 @@ IRFResults::IRFResults(const DynamicModel &mod, const DecisionRule &dr,
   pa << "Calculating IRFs against control for " << (int) irf_list_ind.size() << " shocks and for "
      << num_per << " periods" << endrec;
   const TwoDMatrix &vcov = mod.getVcov();
-  for (unsigned int ii = 0; ii < irf_list_ind.size(); ii++)
+  for (int ishock : irf_list_ind)
     {
-      int ishock = irf_list_ind[ii];
       double stderror = sqrt(vcov.get(ishock, ishock));
       irf_res.push_back(new SimResultsIRF(control, model.numeq(), num_per,
                                           ishock, stderror));
@@ -469,8 +466,8 @@ IRFResults::IRFResults(const DynamicModel &mod, const DecisionRule &dr,
 
 IRFResults::~IRFResults()
 {
-  for (unsigned int i = 0; i < irf_res.size(); i++)
-    delete irf_res[i];
+  for (auto & irf_re : irf_res)
+    delete irf_re;
 }
 
 void

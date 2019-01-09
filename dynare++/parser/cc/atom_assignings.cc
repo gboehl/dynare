@@ -18,9 +18,8 @@ AtomAssignings::AtomAssignings(const AtomAssignings &aa, ogp::StaticAtoms &a)
     order(aa.order)
 {
   // fill the lname2expr
-  for (Tvarintmap::const_iterator it = aa.lname2expr.begin();
-       it != aa.lname2expr.end(); ++it)
-    lname2expr.insert(Tvarintmap::value_type(left_names.query((*it).first), (*it).second));
+  for (auto it : aa.lname2expr)
+    lname2expr.insert(Tvarintmap::value_type(left_names.query(it.first), it.second));
 }
 
 /** A global symbol for passing info to the AtomAssignings from
@@ -153,11 +152,10 @@ AtomAssignings::apply_subst(const AtomSubstitutions::Toldnamemap &mm)
 {
   // go through all old variables and see what are their derived new
   // variables
-  for (AtomSubstitutions::Toldnamemap::const_iterator it = mm.begin();
-       it != mm.end(); ++it)
+  for (const auto & it : mm)
     {
-      const char *oldname = (*it).first;
-      const AtomSubstitutions::Tshiftnameset &sset = (*it).second;
+      const char *oldname = it.first;
+      const AtomSubstitutions::Tshiftnameset &sset = it.second;
       if (!sset.empty())
         {
           int told = atoms.index(oldname);
@@ -171,10 +169,9 @@ AtomAssignings::apply_subst(const AtomSubstitutions::Toldnamemap &mm)
           order.push_back(-1);
           // now go through all new names derived from the old name and
           // reference to the newly added formula
-          for (AtomSubstitutions::Tshiftnameset::const_iterator itt = sset.begin();
-               itt != sset.end(); ++itt)
+          for (const auto & itt : sset)
             {
-              const char *newname = (*itt).first;
+              const char *newname = itt.first;
               const char *nn = left_names.insert(newname);
               lname2expr.insert(Tvarintmap::value_type(nn, expr.nformulas()-1));
             }
@@ -188,9 +185,8 @@ AtomAssignings::print() const
   printf("Atom Assignings\nExpressions:\n");
   expr.print();
   printf("Left names:\n");
-  for (Tvarintmap::const_iterator it = lname2expr.begin();
-       it != lname2expr.end(); ++it)
-    printf("%s ==> %d (t=%d)\n", (*it).first, expr.formula((*it).second), order[(*it).second]);
+  for (auto it : lname2expr)
+    printf("%s ==> %d (t=%d)\n", it.first, expr.formula(it.second), order[it.second]);
 }
 
 void

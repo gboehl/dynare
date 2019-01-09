@@ -259,9 +259,9 @@ Approximation::saveRuleDerivs(const FGSContainer &g)
     }
   rule_ders = new FGSContainer(g);
   rule_ders_ss = new FGSContainer(4);
-  for (FGSContainer::iterator run = (*rule_ders).begin(); run != (*rule_ders).end(); ++run)
+  for (auto & run : (*rule_ders))
     {
-      FGSTensor *ten = new FGSTensor(ypart.nstat+ypart.npred, ypart.nyss(), *((*run).second));
+      FGSTensor *ten = new FGSTensor(ypart.nstat+ypart.npred, ypart.nyss(), *(run.second));
       rule_ders_ss->insert(ten);
     }
 }

@@ -228,10 +228,10 @@ UPSTensor::fillFromSparseTwo(const FSSparseTensor &t, const IntSequence &ss,
           IntSequence c((*run).first);
           c.add(-1, lb_srt);
           unsort.apply(c);
-          for (unsigned int i = 0; i < pp.size(); i++)
+          for (auto & i : pp)
             {
               IntSequence cp(coor.size());
-              pp[i]->apply(c, cp);
+              i->apply(c, cp);
               Tensor::index ind(this, cp);
               TL_RAISE_IF(*ind < 0 || *ind >= ncols(),
                           "Internal error in slicing constructor of UPSTensor");

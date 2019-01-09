@@ -16,14 +16,14 @@ AllvarOuterOrdering::AllvarOuterOrdering(const vector<const char *> &allvar_oute
     exo2all(a.get_exovars().size(), -1)
 {
   // fill in the allvar from allvar_outer
-  for (unsigned int i = 0; i < allvar_outer.size(); i++)
+  for (auto i : allvar_outer)
     {
-      const char *s = atoms.varnames.query(allvar_outer[i]);
+      const char *s = atoms.varnames.query(i);
       if (s)
         allvar.push_back(s);
       else
         throw ogu::Exception(__FILE__, __LINE__,
-                             string("Variable ") + allvar_outer[i] + " is not a declared symbol in AllvarOuterOrdering constructor");
+                             string("Variable ") + i + " is not a declared symbol in AllvarOuterOrdering constructor");
     }
 
   // fill in endo2all and exo2all
@@ -67,9 +67,9 @@ AllvarOuterOrdering::AllvarOuterOrdering(const AllvarOuterOrdering &avo,
     exo2all(avo.exo2all)
 {
   // fill in the allvar from avo.allvar
-  for (unsigned int i = 0; i < avo.allvar.size(); i++)
+  for (auto i : avo.allvar)
     {
-      const char *s = atoms.varnames.query(avo.allvar[i]);
+      const char *s = atoms.varnames.query(i);
       allvar.push_back(s);
     }
 }
@@ -82,32 +82,32 @@ FineAtoms::FineAtoms(const FineAtoms &fa)
     exo_atoms_map(fa.exo_atoms_map)
 {
   // fill in params
-  for (unsigned int i = 0; i < fa.params.size(); i++)
+  for (auto param : fa.params)
     {
-      const char *s = varnames.query(fa.params[i]);
+      const char *s = varnames.query(param);
       if (!s)
         throw ogu::Exception(__FILE__, __LINE__,
-                             string("Parameter ") + fa.params[i] + " does not exist in FineAtoms copy cosntructor");
+                             string("Parameter ") + param + " does not exist in FineAtoms copy cosntructor");
       params.push_back(s);
       param_outer_map.insert(Tvarintmap::value_type(s, params.size()-1));
     }
   // fill in endovars
-  for (unsigned int i = 0; i < fa.endovars.size(); i++)
+  for (auto endovar : fa.endovars)
     {
-      const char *s = varnames.query(fa.endovars[i]);
+      const char *s = varnames.query(endovar);
       if (!s)
         throw ogu::Exception(__FILE__, __LINE__,
-                             string("Endo variable ") + fa.endovars[i] + " does not exist in FineAtoms copy constructor");
+                             string("Endo variable ") + endovar + " does not exist in FineAtoms copy constructor");
       endovars.push_back(s);
       endo_outer_map.insert(Tvarintmap::value_type(s, endovars.size()-1));
     }
   // fill in exovars
-  for (unsigned int i = 0; i < fa.exovars.size(); i++)
+  for (auto exovar : fa.exovars)
     {
-      const char *s = varnames.query(fa.exovars[i]);
+      const char *s = varnames.query(exovar);
       if (!s)
         throw ogu::Exception(__FILE__, __LINE__,
-                             string("Exo variable ") + fa.exovars[i] + " does not exist in FineAtoms copy cosntructor");
+                             string("Exo variable ") + exovar + " does not exist in FineAtoms copy cosntructor");
       exovars.push_back(s);
       exo_outer_map.insert(Tvarintmap::value_type(s, exovars.size()-1));
     }

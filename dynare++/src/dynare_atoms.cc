@@ -37,9 +37,8 @@ DynareDynamicAtoms::DynareDynamicAtoms(const DynareDynamicAtoms &dda)
   : SAtoms(dda)
 {
   // fill atom_type
-  for (Tatypemap::const_iterator it = dda.atom_type.begin();
-       it != dda.atom_type.end(); ++it)
-    atom_type.insert(Tatypemap::value_type(varnames.query((*it).first), (*it).second));
+  for (auto it : dda.atom_type)
+    atom_type.insert(Tatypemap::value_type(varnames.query(it.first), it.second));
 }
 
 void
@@ -101,10 +100,9 @@ DynareDynamicAtoms::print() const
 {
   SAtoms::print();
   printf("Name types:\n");
-  for (Tatypemap::const_iterator it = atom_type.begin();
-       it != atom_type.end(); ++it)
-    printf("name=%s type=%s\n", (*it).first,
-           ((*it).second == endovar) ? "endovar" : (((*it).second == exovar) ? "exovar" : "param"));
+  for (auto it : atom_type)
+    printf("name=%s type=%s\n", it.first,
+           (it.second == endovar) ? "endovar" : ((it.second == exovar) ? "exovar" : "param"));
 }
 
 std::string
@@ -154,10 +152,9 @@ DynareAtomValues::setValues(ogp::EvalTree &et) const
       if (atoms.is_referenced(atoms.get_params()[i]))
         {
           const ogp::DynamicAtoms::Tlagmap &lmap = atoms.lagmap(atoms.get_params()[i]);
-          for (ogp::DynamicAtoms::Tlagmap::const_iterator it = lmap.begin();
-               it != lmap.end(); ++it)
+          for (auto it : lmap)
             {
-              int t = (*it).second;
+              int t = it.second;
               et.set_nulary(t, paramvals[i]);
             }
         }
@@ -169,11 +166,10 @@ DynareAtomValues::setValues(ogp::EvalTree &et) const
       if (atoms.is_referenced(atoms.get_endovars()[outer_i]))
         {
           const ogp::DynamicAtoms::Tlagmap &lmap = atoms.lagmap(atoms.get_endovars()[outer_i]);
-          for (ogp::DynamicAtoms::Tlagmap::const_iterator it = lmap.begin();
-               it != lmap.end(); ++it)
+          for (auto it : lmap)
             {
-              int ll = (*it).first;
-              int t = (*it).second;
+              int ll = it.first;
+              int t = it.second;
               int i = atoms.outer2y_endo()[outer_i];
               if (ll == -1)
                 {
@@ -193,13 +189,12 @@ DynareAtomValues::setValues(ogp::EvalTree &et) const
       if (atoms.is_referenced(atoms.get_exovars()[outer_i]))
         {
           const ogp::DynamicAtoms::Tlagmap &lmap = atoms.lagmap(atoms.get_exovars()[outer_i]);
-          for (ogp::DynamicAtoms::Tlagmap::const_iterator it = lmap.begin();
-               it != lmap.end(); ++it)
+          for (auto it : lmap)
             {
-              int ll = (*it).first;
+              int ll = it.first;
               if (ll == 0)   // this is always true because of checks
                 {
-                  int t = (*it).second;
+                  int t = it.second;
                   int i = atoms.outer2y_exo()[outer_i];
                   et.set_nulary(t, xx[i]);
                 }
@@ -215,9 +210,8 @@ DynareStaticSteadyAtomValues::setValues(ogp::EvalTree &et) const
   atoms_static.setValues(et);
 
   // set parameters
-  for (unsigned int i = 0; i < atoms_static.get_params().size(); i++)
+  for (auto name : atoms_static.get_params())
     {
-      const char *name = atoms_static.get_params()[i];
       int t = atoms_static.index(name);
       if (t != -1)
         {
@@ -227,9 +221,8 @@ DynareStaticSteadyAtomValues::setValues(ogp::EvalTree &et) const
     }
 
   // set endogenous
-  for (unsigned int i = 0; i < atoms_static.get_endovars().size(); i++)
+  for (auto name : atoms_static.get_endovars())
     {
-      const char *name = atoms_static.get_endovars()[i];
       int t = atoms_static.index(name);
       if (t != -1)
         {
@@ -239,9 +232,8 @@ DynareStaticSteadyAtomValues::setValues(ogp::EvalTree &et) const
     }
 
   // set exogenous
-  for (unsigned int i = 0; i < atoms_static.get_exovars().size(); i++)
+  for (auto name : atoms_static.get_exovars())
     {
-      const char *name = atoms_static.get_exovars()[i];
       int t = atoms_static.index(name);
       if (t != -1)
         et.set_nulary(t, 0.0);
@@ -255,11 +247,10 @@ DynareSteadySubstitutions::DynareSteadySubstitutions(const ogp::FineAtoms &a,
   : atoms(a), y(yy)
 {
   // fill the vector of left and right hand sides
-  for (Tsubstmap::const_iterator it = subst.begin();
-       it != subst.end(); ++it)
+  for (auto it : subst)
     {
-      left_hand_sides.push_back((*it).first);
-      right_hand_sides.push_back((*it).second);
+      left_hand_sides.push_back(it.first);
+      right_hand_sides.push_back(it.second);
     }
 
   // evaluate right hand sides
@@ -286,11 +277,10 @@ DynareStaticSteadySubstitutions(const ogp::FineAtoms &a, const ogp::StaticFineAt
   : atoms(a), atoms_static(sa), y(yy)
 {
   // fill the vector of left and right hand sides
-  for (Tsubstmap::const_iterator it = subst.begin();
-       it != subst.end(); ++it)
+  for (auto it : subst)
     {
-      left_hand_sides.push_back((*it).first);
-      right_hand_sides.push_back((*it).second);
+      left_hand_sides.push_back(it.first);
+      right_hand_sides.push_back(it.second);
     }
 
   // evaluate right hand sides

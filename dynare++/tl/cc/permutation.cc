@@ -131,8 +131,8 @@ PermutationBundle::PermutationBundle(int nmax)
 
 PermutationBundle::~PermutationBundle()
 {
-  for (unsigned int i = 0; i < bundle.size(); i++)
-    delete bundle[i];
+  for (auto & i : bundle)
+    delete i;
 }
 
 const PermutationSet &

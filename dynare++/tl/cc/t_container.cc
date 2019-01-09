@@ -11,10 +11,9 @@ const int FGSContainer::num_one_time = 10;
 UGSContainer::UGSContainer(const FGSContainer &c)
   : TensorContainer<UGSTensor>(c.num())
 {
-  for (FGSContainer::const_iterator it = c.begin();
-       it != c.end(); ++it)
+  for (const auto & it : c)
     {
-      UGSTensor *unfolded = new UGSTensor(*((*it).second));
+      UGSTensor *unfolded = new UGSTensor(*(it.second));
       insert(unfolded);
     }
 }
@@ -38,18 +37,17 @@ UGSContainer::multAndAdd(const UGSTensor &t, UGSTensor &out) const
   int k = out.dimen();
   const EquivalenceSet &eset = ebundle.get(k);
 
-  for (EquivalenceSet::const_iterator it = eset.begin();
-       it != eset.end(); ++it)
+  for (const auto & it : eset)
     {
-      if ((*it).numClasses() == l)
+      if (it.numClasses() == l)
         {
           vector<const UGSTensor *> ts
-            = fetchTensors(out.getSym(), *it);
+            = fetchTensors(out.getSym(), it);
           KronProdAllOptim kp(l);
           for (int i = 0; i < l; i++)
             kp.setMat(i, *(ts[i]));
           kp.optimizeOrder();
-          UPSTensor ups(out.getDims(), *it, t, kp);
+          UPSTensor ups(out.getDims(), it, t, kp);
           ups.addTo(out);
         }
     }
@@ -59,10 +57,9 @@ UGSContainer::multAndAdd(const UGSTensor &t, UGSTensor &out) const
 FGSContainer::FGSContainer(const UGSContainer &c)
   : TensorContainer<FGSTensor>(c.num())
 {
-  for (UGSContainer::const_iterator it = c.begin();
-       it != c.end(); ++it)
+  for (const auto & it : c)
     {
-      FGSTensor *folded = new FGSTensor(*((*it).second));
+      FGSTensor *folded = new FGSTensor(*(it.second));
       insert(folded);
     }
 }
@@ -88,18 +85,17 @@ FGSContainer::multAndAdd(const UGSTensor &t, FGSTensor &out) const
   int k = out.dimen();
   const EquivalenceSet &eset = ebundle.get(k);
 
-  for (EquivalenceSet::const_iterator it = eset.begin();
-       it != eset.end(); ++it)
+  for (const auto & it : eset)
     {
-      if ((*it).numClasses() == l)
+      if (it.numClasses() == l)
         {
           vector<const FGSTensor *> ts
-            = fetchTensors(out.getSym(), *it);
+            = fetchTensors(out.getSym(), it);
           KronProdAllOptim kp(l);
           for (int i = 0; i < l; i++)
             kp.setMat(i, *(ts[i]));
           kp.optimizeOrder();
-          FPSTensor fps(out.getDims(), *it, t, kp);
+          FPSTensor fps(out.getDims(), it, t, kp);
           fps.addTo(out);
         }
     }

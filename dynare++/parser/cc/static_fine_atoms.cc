@@ -50,18 +50,18 @@ StaticFineAtoms::import_atoms(const FineAtoms &fa, OperationTree &otree, Tintint
 
   // parameters
   const vector<const char *> &fa_params = fa.get_params();
-  for (unsigned int i = 0; i < fa_params.size(); i++)
-    register_param(fa_params[i]);
+  for (auto fa_param : fa_params)
+    register_param(fa_param);
 
   // endogenous
   const vector<const char *> &fa_endovars = fa.get_endovars();
-  for (unsigned int i = 0; i < fa_endovars.size(); i++)
-    register_endo(fa_endovars[i]);
+  for (auto fa_endovar : fa_endovars)
+    register_endo(fa_endovar);
 
   // exogenous
   const vector<const char *> &fa_exovars = fa.get_exovars();
-  for (unsigned int i = 0; i < fa_exovars.size(); i++)
-    register_exo(fa_exovars[i]);
+  for (auto fa_exovar : fa_exovars)
+    register_exo(fa_exovar);
 
   parsing_finished();
 }
@@ -77,8 +77,8 @@ StaticFineAtoms::import_atoms(const FineAtoms &fa, OperationTree &otree, Tintint
 
   // parameters
   const vector<const char *> &fa_params = fa.get_params();
-  for (unsigned int i = 0; i < fa_params.size(); i++)
-    register_param(fa_params[i]);
+  for (auto fa_param : fa_params)
+    register_param(fa_param);
 
   // endogenous
   const vector<const char *> &fa_endovars = fa.get_endovars();
@@ -112,18 +112,18 @@ StaticFineAtoms::parsing_finished()
 
   // go through all endo and exo insert tree indices, ignore names
   // whose tree index is -1 (those which are not referenced)
-  for (unsigned int i = 0; i < endovars.size(); i++)
+  for (auto & endovar : endovars)
     {
-      int t = index(endovars[i]);
+      int t = index(endovar);
       if (t != -1)
         {
           endo_atoms_map.push_back(der_atoms.size());
           der_atoms.push_back(t);
         }
     }
-  for (unsigned int i = 0; i < exovars.size(); i++)
+  for (auto & exovar : exovars)
     {
-      int t = index(exovars[i]);
+      int t = index(exovar);
       if (t != -1)
         {
           exo_atoms_map.push_back(der_atoms.size());

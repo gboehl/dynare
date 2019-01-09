@@ -20,8 +20,8 @@ FormulaParser::FormulaParser(const FormulaParser &fp, Atoms &a)
   : otree(fp.otree), atoms(a), formulas(fp.formulas), ders()
 {
   // create derivatives
-  for (unsigned int i = 0; i < fp.ders.size(); i++)
-    ders.push_back(new FormulaDerivatives(*(fp.ders[i])));
+  for (auto der : fp.ders)
+    ders.push_back(new FormulaDerivatives(*der));
 }
 
 FormulaParser::~FormulaParser()
@@ -35,8 +35,8 @@ FormulaParser::differentiate(int max_order)
   destroy_derivatives();
   vector<int> vars;
   vars = atoms.variables();
-  for (unsigned int i = 0; i < formulas.size(); i++)
-    ders.push_back(new FormulaDerivatives(otree, vars, formulas[i], max_order));
+  for (int formula : formulas)
+    ders.push_back(new FormulaDerivatives(otree, vars, formula, max_order));
 }
 
 const FormulaDerivatives &
@@ -156,9 +156,9 @@ int
 FormulaParser::last_formula() const
 {
   int res = -1;
-  for (unsigned int i = 0; i < formulas.size(); i++)
-    if (res < formulas[i])
-      res = formulas[i];
+  for (int formula : formulas)
+    if (res < formula)
+      res = formula;
   return std::max(res, otree.get_last_nulary());
 }
 
@@ -181,10 +181,10 @@ void
 FormulaParser::print() const
 {
   atoms.print();
-  for (unsigned int i = 0; i < formulas.size(); i++)
+  for (int formula : formulas)
     {
-      printf("formula %d:\n", formulas[i]);
-      otree.print_operation(formulas[i]);
+      printf("formula %d:\n", formula);
+      otree.print_operation(formula);
     }
   for (unsigned int i = 0; i < ders.size(); i++)
     {
@@ -283,13 +283,12 @@ FormulaDerivatives::derivative(const FoldMultiIndex &mi) const
 void
 FormulaDerivatives::print(const OperationTree &otree) const
 {
-  for (Tfmiintmap::const_iterator it = ind2der.begin();
-       it != ind2der.end(); ++it)
+  for (const auto & it : ind2der)
     {
       printf("derivative ");
-      (*it).first.print();
-      printf(" is formula %d\n", tder[(*it).second]);
-      otree.print_operation(tder[(*it).second]);
+      it.first.print();
+      printf(" is formula %d\n", tder[it.second]);
+      otree.print_operation(tder[it.second]);
     }
 }
 
@@ -480,8 +479,8 @@ ltfmi::operator()(const FoldMultiIndex &i1, const FoldMultiIndex &i2) const
 FormulaDerEvaluator::FormulaDerEvaluator(const FormulaParser &fp)
   : etree(fp.otree, -1)
 {
-  for (unsigned int i = 0; i < fp.ders.size(); i++)
-    ders.push_back((const FormulaDerivatives *) (fp.ders[i]));
+  for (auto der : fp.ders)
+    ders.push_back((const FormulaDerivatives *) der);
 
   der_atoms = fp.atoms.variables();
 }

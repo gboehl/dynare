@@ -413,6 +413,6 @@ ConstVector::print() const
 
 ZeroPad::ZeroPad()
 {
-  for (int i = 0; i < length; i++)
-    pad[i] = 0.0;
+  for (double & i : pad)
+    i = 0.0;
 }

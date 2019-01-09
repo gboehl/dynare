@@ -111,12 +111,11 @@ WorkerFoldMAASparse1::operator()()
       const Permutation &per = pset.get(iper);
       IntSequence percoor(coor.size());
       per.apply(coor, percoor);
-      for (EquivalenceSet::const_iterator it = eset.begin();
-           it != eset.end(); ++it)
+      for (const auto & it : eset)
         {
-          if ((*it).numClasses() == t.dimen())
+          if (it.numClasses() == t.dimen())
             {
-              StackProduct<FGSTensor> sp(cont, *it, out.getSym());
+              StackProduct<FGSTensor> sp(cont, it, out.getSym());
               if (!sp.isZero(percoor))
                 {
                   KronProdStack<FGSTensor> kp(sp, percoor);
@@ -124,7 +123,7 @@ WorkerFoldMAASparse1::operator()()
                   const Permutation &oper = kp.getPer();
                   if (Permutation(oper, per) == iden)
                     {
-                      FPSTensor fps(out.getDims(), *it, slice, kp);
+                      FPSTensor fps(out.getDims(), it, slice, kp);
                       {
                         SYNCHRO syn(&out, "WorkerUnfoldMAASparse1");
                         fps.addTo(out);
@@ -226,12 +225,11 @@ FoldedStackContainer::multAndAddSparse3(const FSSparseTensor &t,
       Vector outcol(out, *run);
       FRSingleTensor sumcol(t.nvar(), t.dimen());
       sumcol.zeros();
-      for (EquivalenceSet::const_iterator it = eset.begin();
-           it != eset.end(); ++it)
+      for (const auto & it : eset)
         {
-          if ((*it).numClasses() == t.dimen())
+          if (it.numClasses() == t.dimen())
             {
-              StackProduct<FGSTensor> sp(*this, *it, out.getSym());
+              StackProduct<FGSTensor> sp(*this, it, out.getSym());
               IrregTensorHeader header(sp, run.getCoor());
               IrregTensor irten(header);
               irten.addTo(sumcol);
@@ -308,18 +306,17 @@ FoldedStackContainer::multAndAddStacks(const IntSequence &coor,
         {
           Permutation sort_per(ui.getCoor());
           sort_per.inverse();
-          for (EquivalenceSet::const_iterator it = eset.begin();
-               it != eset.end(); ++it)
+          for (const auto & it : eset)
             {
-              if ((*it).numClasses() == g.dimen())
+              if (it.numClasses() == g.dimen())
                 {
-                  StackProduct<FGSTensor> sp(*this, *it, sort_per, out.getSym());
+                  StackProduct<FGSTensor> sp(*this, it, sort_per, out.getSym());
                   if (!sp.isZero(coor))
                     {
                       KronProdStack<FGSTensor> kp(sp, coor);
                       if (ug.getSym().isFull())
                         kp.optimizeOrder();
-                      FPSTensor fps(out.getDims(), *it, sort_per, ug, kp);
+                      FPSTensor fps(out.getDims(), it, sort_per, ug, kp);
                       {
                         SYNCHRO syn(ad, "multAndAddStacks");
                         fps.addTo(out);
@@ -352,16 +349,15 @@ FoldedStackContainer::multAndAddStacks(const IntSequence &coor,
         {
           Permutation sort_per(ui.getCoor());
           sort_per.inverse();
-          for (EquivalenceSet::const_iterator it = eset.begin();
-               it != eset.end(); ++it)
+          for (const auto & it : eset)
             {
-              if ((*it).numClasses() == g.dimen())
+              if (it.numClasses() == g.dimen())
                 {
-                  StackProduct<FGSTensor> sp(*this, *it, sort_per, out.getSym());
+                  StackProduct<FGSTensor> sp(*this, it, sort_per, out.getSym());
                   if (!sp.isZero(coor))
                     {
                       KronProdStack<FGSTensor> kp(sp, coor);
-                      FPSTensor fps(out.getDims(), *it, sort_per, g, kp);
+                      FPSTensor fps(out.getDims(), it, sort_per, g, kp);
                       {
                         SYNCHRO syn(ad, "multAndAddStacks");
                         fps.addTo(out);
@@ -507,12 +503,11 @@ WorkerUnfoldMAASparse1::operator()()
       const Permutation &per = pset.get(iper);
       IntSequence percoor(coor.size());
       per.apply(coor, percoor);
-      for (EquivalenceSet::const_iterator it = eset.begin();
-           it != eset.end(); ++it)
+      for (const auto & it : eset)
         {
-          if ((*it).numClasses() == t.dimen())
+          if (it.numClasses() == t.dimen())
             {
-              StackProduct<UGSTensor> sp(cont, *it, out.getSym());
+              StackProduct<UGSTensor> sp(cont, it, out.getSym());
               if (!sp.isZero(percoor))
                 {
                   KronProdStack<UGSTensor> kp(sp, percoor);
@@ -520,7 +515,7 @@ WorkerUnfoldMAASparse1::operator()()
                   const Permutation &oper = kp.getPer();
                   if (Permutation(oper, per) == iden)
                     {
-                      UPSTensor ups(out.getDims(), *it, slice, kp);
+                      UPSTensor ups(out.getDims(), it, slice, kp);
                       {
                         SYNCHRO syn(&out, "WorkerUnfoldMAASparse1");
                         ups.addTo(out);
@@ -638,18 +633,17 @@ UnfoldedStackContainer::multAndAddStacks(const IntSequence &fi,
         {
           Permutation sort_per(ui.getCoor());
           sort_per.inverse();
-          for (EquivalenceSet::const_iterator it = eset.begin();
-               it != eset.end(); ++it)
+          for (const auto & it : eset)
             {
-              if ((*it).numClasses() == g.dimen())
+              if (it.numClasses() == g.dimen())
                 {
-                  StackProduct<UGSTensor> sp(*this, *it, sort_per, out.getSym());
+                  StackProduct<UGSTensor> sp(*this, it, sort_per, out.getSym());
                   if (!sp.isZero(fi))
                     {
                       KronProdStack<UGSTensor> kp(sp, fi);
                       if (g.getSym().isFull())
                         kp.optimizeOrder();
-                      UPSTensor ups(out.getDims(), *it, sort_per, g, kp);
+                      UPSTensor ups(out.getDims(), it, sort_per, g, kp);
                       {
                         SYNCHRO syn(ad, "multAndAddStacks");
                         ups.addTo(out);

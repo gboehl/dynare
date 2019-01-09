@@ -26,14 +26,13 @@ USubTensor::USubTensor(const TensorDimens &bdims,
               "Tensor has not full symmetry in USubTensor()");
   const EquivalenceSet &eset = cont.getEqBundle().get(bdims.dimen());
   zeros();
-  for (EquivalenceSet::const_iterator it = eset.begin();
-       it != eset.end(); ++it)
+  for (const auto & it : eset)
     {
-      if ((*it).numClasses() == hdims.dimen())
+      if (it.numClasses() == hdims.dimen())
         {
-          Permutation per(*it);
+          Permutation per(it);
           vector<const FGSTensor *> ts
-            = cont.fetchTensors(bdims.getSym(), *it);
+            = cont.fetchTensors(bdims.getSym(), it);
           for (int i = 0; i < (int) lst.size(); i++)
             {
               IntSequence perindex(lst[i].size());
@@ -64,12 +63,12 @@ USubTensor::addKronColumn(int i, const vector<const FGSTensor *> &ts,
 {
   vector<ConstVector> tmpcols;
   int lastdim = 0;
-  for (unsigned int j = 0; j < ts.size(); j++)
+  for (auto t : ts)
     {
-      IntSequence ind(pindex, lastdim, lastdim+ts[j]->dimen());
-      lastdim += ts[j]->dimen();
-      index in(ts[j], ind);
-      tmpcols.push_back(ConstVector(*(ts[j]), *in));
+      IntSequence ind(pindex, lastdim, lastdim+t->dimen());
+      lastdim += t->dimen();
+      index in(t, ind);
+      tmpcols.push_back(ConstVector(*t, *in));
     }
 
   URSingleTensor kronmult(tmpcols);

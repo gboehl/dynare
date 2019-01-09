@@ -130,20 +130,20 @@ DynareModel::dump_model(std::ostream &os) const
 {
   // endogenous variable declaration
   os << "var";
-  for (int i = 0; i < (int) atoms.get_endovars().size(); i++)
-    os << " " << atoms.get_endovars()[i];
+  for (auto i : atoms.get_endovars())
+    os << " " << i;
   os << ";\n\n";
 
   // exogenous variables
   os << "varexo";
-  for (int i = 0; i < (int) atoms.get_exovars().size(); i++)
-    os << " " << atoms.get_exovars()[i];
+  for (auto i : atoms.get_exovars())
+    os << " " << i;
   os << ";\n\n";
 
   // parameters
   os << "parameters";
-  for (int i = 0; i < (int) atoms.get_params().size(); i++)
-    os << " " << atoms.get_params()[i];
+  for (auto i : atoms.get_params())
+    os << " " << i;
   os << ";\n\n";
 
   // parameter values
@@ -216,9 +216,8 @@ DynareModel::check_model() const
     {
       int ft = eqs.formula(i);
       const unordered_set<int> &nuls = eqs.nulary_of_term(ft);
-      for (unordered_set<int>::const_iterator it = nuls.begin();
-           it != nuls.end(); ++it)
-        if (!atoms.is_constant(*it) && !atoms.is_named_atom(*it))
+      for (int nul : nuls)
+        if (!atoms.is_constant(nul) && !atoms.is_named_atom(nul))
           throw DynareException(__FILE__, __LINE__,
                                 "Dangling nulary term found, internal error.");
     }
@@ -268,10 +267,8 @@ DynareModel::variable_shift_map(const unordered_set<int> &a_set, int tshift,
                                 map<int, int> &s_map)
 {
   s_map.clear();
-  for (unordered_set<int>::const_iterator it = a_set.begin();
-       it != a_set.end(); ++it)
+  for (int t : a_set)
     {
-      int t = *it;
       // make shift map only for non-constants and non-parameters
       if (!atoms.is_constant(t))
         {
@@ -292,14 +289,13 @@ DynareModel::termspan(int t, int &mlead, int &mlag) const
   mlead = INT_MIN;
   mlag = INT_MAX;
   const unordered_set<int> &nul_terms = eqs.nulary_of_term(t);
-  for (unordered_set<int>::const_iterator ni = nul_terms.begin();
-       ni != nul_terms.end(); ++ni)
+  for (int nul_term : nul_terms)
     {
-      if (!atoms.is_constant(*ni)
-          && (atoms.is_type(atoms.name(*ni), DynareDynamicAtoms::endovar)
-              || atoms.is_type(atoms.name(*ni), DynareDynamicAtoms::exovar)))
+      if (!atoms.is_constant(nul_term)
+          && (atoms.is_type(atoms.name(nul_term), DynareDynamicAtoms::endovar)
+              || atoms.is_type(atoms.name(nul_term), DynareDynamicAtoms::exovar)))
         {
-          int ll = atoms.lead(*ni);
+          int ll = atoms.lead(nul_term);
           if (ll < mlag)
             mlag = ll;
           if (ll > mlead)
@@ -312,10 +308,9 @@ bool
 DynareModel::is_constant_term(int t) const
 {
   const unordered_set<int> &nul_terms = eqs.nulary_of_term(t);
-  for (unordered_set<int>::const_iterator ni = nul_terms.begin();
-       ni != nul_terms.end(); ++ni)
-    if (!atoms.is_constant(*ni)
-        && !atoms.is_type(atoms.name(*ni), DynareDynamicAtoms::param))
+  for (int nul_term : nul_terms)
+    if (!atoms.is_constant(nul_term)
+        && !atoms.is_type(atoms.name(nul_term), DynareDynamicAtoms::param))
       return false;
   return true;
 }
@@ -827,9 +822,9 @@ ModelSSWriter::write_der1(FILE *fd)
   for (int i = 0; i < model.getParser().nformulas(); i++)
     {
       const ogp::FormulaDerivatives &fder = model.getParser().derivatives(i);
-      for (unsigned int j = 0; j < eam.size(); j++)
+      for (int j : eam)
         {
-          int t = fder.derivative(ogp::FoldMultiIndex(variables.size(), 1, eam[j]));
+          int t = fder.derivative(ogp::FoldMultiIndex(variables.size(), 1, j));
           if (t > 0)
             otree.print_operation_tree(t, fd, *this);
         }
@@ -891,16 +886,14 @@ MatlabSSWriter::write_common1_preamble(FILE *fd) const
           model.getAtoms().ny(), DYNVERSION);
   // write ordering of parameters
   fprintf(fd, "\n%% params ordering\n%% =====================\n");
-  for (unsigned int ip = 0; ip < model.getAtoms().get_params().size(); ip++)
+  for (auto parname : model.getAtoms().get_params())
     {
-      const char *parname = model.getAtoms().get_params()[ip];
       fprintf(fd, "%% %s\n", parname);
     }
   // write endogenous variables
   fprintf(fd, "%%\n%% y ordering\n%% =====================\n");
-  for (unsigned int ie = 0; ie < model.getAtoms().get_endovars().size(); ie++)
+  for (auto endoname : model.getAtoms().get_endovars())
     {
-      const char *endoname = model.getAtoms().get_endovars()[ie];
       fprintf(fd, "%% %s\n", endoname);
     }
   fprintf(fd, "\n");
@@ -933,11 +926,10 @@ MatlabSSWriter::write_atom_assignment(FILE *fd) const
   // write numerical constants
   fprintf(fd, "%% numerical constants\n");
   const ogp::Constants::Tconstantmap &cmap = model.getAtoms().get_constantmap();
-  for (ogp::Constants::Tconstantmap::const_iterator it = cmap.begin();
-       it != cmap.end(); ++it)
+  for (auto it : cmap)
     {
-      format_nulary((*it).first, fd);
-      fprintf(fd, " = %12.8g;\n", (*it).second);
+      format_nulary(it.first, fd);
+      fprintf(fd, " = %12.8g;\n", it.second);
     }
   // write parameters
   fprintf(fd, "%% parameter values\n");
@@ -963,10 +955,9 @@ MatlabSSWriter::write_atom_assignment(FILE *fd) const
       try
         {
           const ogp::DynamicAtoms::Tlagmap &lmap = model.getAtoms().lagmap(exoname);
-          for (ogp::DynamicAtoms::Tlagmap::const_iterator it = lmap.begin();
-               it != lmap.end(); ++it)
+          for (auto it : lmap)
             {
-              format_nulary((*it).second, fd);
+              format_nulary(it.second, fd);
               fprintf(fd, " = 0.0; %% %s\n", exoname);
             }
         }
@@ -981,10 +972,9 @@ MatlabSSWriter::write_atom_assignment(FILE *fd) const
     {
       const char *endoname = model.getAtoms().get_endovars()[ie];
       const ogp::DynamicAtoms::Tlagmap &lmap = model.getAtoms().lagmap(endoname);
-      for (ogp::DynamicAtoms::Tlagmap::const_iterator it = lmap.begin();
-           it != lmap.end(); ++it)
+      for (auto it : lmap)
         {
-          format_nulary((*it).second, fd);
+          format_nulary(it.second, fd);
           fprintf(fd, " = y(%d); %% %s\n", ie+1, endoname);
         }
     }
@@ -1021,12 +1011,12 @@ MatlabSSWriter::write_der1_assignment(FILE *fd) const
   for (int i = 0; i < model.getParser().nformulas(); i++)
     {
       const ogp::FormulaDerivatives &fder = model.getParser().derivatives(i);
-      for (unsigned int j = 0; j < eam.size(); j++)
+      for (int j : eam)
         {
-          int tvar = variables[eam[j]];
+          int tvar = variables[j];
           const char *name = model.getAtoms().name(tvar);
           int yi = model.getAtoms().name2outer_endo(name);
-          int t = fder.derivative(ogp::FoldMultiIndex(variables.size(), 1, eam[j]));
+          int t = fder.derivative(ogp::FoldMultiIndex(variables.size(), 1, j));
           if (t != ogp::OperationTree::zero)
             {
               fprintf(fd, "out(%d,%d) = out(%d,%d) + ", i+1, yi+1, i+1, yi+1);

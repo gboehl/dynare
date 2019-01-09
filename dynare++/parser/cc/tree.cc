@@ -468,8 +468,8 @@ OperationTree::select_terms_inv(int t, const opselector &sel, unordered_set<int>
 void
 OperationTree::forget_derivative_maps()
 {
-  for (unsigned int i = 0; i < derivatives.size(); i++)
-    derivatives[i].clear();
+  for (auto & derivative : derivatives)
+    derivative.clear();
 }
 
 void

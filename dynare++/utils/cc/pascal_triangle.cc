@@ -96,6 +96,6 @@ PascalTriangle::noverk(int n, int k)
 void
 PascalTriangle::print() const
 {
-  for (unsigned int i = 0; i < tr.size(); i++)
-    tr[i].print();
+  for (const auto & i : tr)
+    i.print();
 }

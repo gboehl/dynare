@@ -160,17 +160,17 @@ main(int argc, char **argv)
       // calculate weights and mass
       double mass = 0.0;
       std::vector<double> weights;
-      for (int i = 0; i < (int) points.size(); i++)
+      for (auto & point : points)
         {
-          weights.push_back(std::exp(-points[i]->dot(*(points[i]))));
+          weights.push_back(std::exp(-point->dot(*point)));
           mass += weights.back();
         }
 
       // calculate discarded mass
       double discard_mass = 0.0;
-      for (int i = 0; i < (int) weights.size(); i++)
-        if (weights[i]/mass < params.discard_weight)
-          discard_mass += weights[i];
+      for (double weight : weights)
+        if (weight/mass < params.discard_weight)
+          discard_mass += weight;
 
       printf("Total mass discarded:     %f\n", discard_mass/mass);
 

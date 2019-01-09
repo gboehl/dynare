@@ -60,11 +60,10 @@ FFSTensor::FFSTensor(const FSSparseTensor &t)
     nv(t.nvar())
 {
   zeros();
-  for (FSSparseTensor::const_iterator it = t.getMap().begin();
-       it != t.getMap().end(); ++it)
+  for (const auto & it : t.getMap())
     {
-      index ind(this, (*it).first);
-      get((*it).second.first, *ind) = (*it).second.second;
+      index ind(this, it.first);
+      get(it.second.first, *ind) = it.second.second;
     }
 }
 

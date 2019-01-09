@@ -116,9 +116,9 @@ symiterator::operator++()
 
 InducedSymmetries::InducedSymmetries(const Equivalence &e, const Symmetry &s)
 {
-  for (Equivalence::const_seqit i = e.begin(); i != e.end(); ++i)
+  for (const auto & i : e)
     {
-      push_back(Symmetry(s, *i));
+      push_back(Symmetry(s, i));
     }
 }
 

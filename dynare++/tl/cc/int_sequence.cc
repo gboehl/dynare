@@ -37,8 +37,8 @@ IntSequence::IntSequence(const Symmetry &sy, const vector<int> &se)
   for (int i = 0; i < length; i++)
     operator[](i) = 0;
 
-  for (unsigned int i = 0; i < se.size(); i++)
-    operator[](sy.findClass(se[i]))++;
+  for (int i : se)
+    operator[](sy.findClass(i))++;
 }
 
 /* This constructs an ordered integer sequence from the given ordered

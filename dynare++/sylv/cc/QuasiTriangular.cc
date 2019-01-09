@@ -100,9 +100,8 @@ Diagonal::Diagonal(double *data, const Diagonal &d)
   num_all = d.num_all;
   num_real = d.num_real;
   int d_size = d.getSize();
-  for (const_diag_iter it = d.begin(); it != d.end(); ++it)
+  for (const auto & dit : d)
     {
-      const DiagonalBlock &dit = *it;
       double *beta1 = NULL;
       double *beta2 = NULL;
       int id = dit.getIndex()*(d_size+1);
@@ -150,22 +149,22 @@ void
 Diagonal::changeBase(double *p)
 {
   int d_size = getSize();
-  for (diag_iter it = begin(); it != end(); ++it)
+  for (auto & it : *this)
     {
-      const DiagonalBlock &b = *it;
+      const DiagonalBlock &b = it;
       int jbar = b.getIndex();
       int base = d_size*jbar + jbar;
       if (b.isReal())
         {
           DiagonalBlock bnew(jbar, true, &p[base], &p[base],
                              NULL, NULL);
-          *it = bnew;
+          it = bnew;
         }
       else
         {
           DiagonalBlock bnew(jbar, false, &p[base], &p[base+d_size+1],
                              &p[base+d_size], &p[base+1]);
-          *it = bnew;
+          it = bnew;
         }
     }
 }
@@ -181,9 +180,8 @@ Diagonal::getEigenValues(Vector &eig) const
               eig.length(), 2*d_size);
       throw SYLV_MES_EXCEPTION(mes);
     }
-  for (const_diag_iter it = begin(); it != end(); ++it)
+  for (const auto & b : *this)
     {
-      const DiagonalBlock &b = *it;
       int ind = b.getIndex();
       eig[2*ind] = *(b.getAlpha());
       if (b.isReal())
@@ -307,16 +305,16 @@ void
 Diagonal::print() const
 {
   printf("Num real: %d, num complex: %d\n", getNumReal(), getNumComplex());
-  for (const_diag_iter it = begin(); it != end(); ++it)
+  for (const auto & it : *this)
     {
-      if ((*it).isReal())
+      if (it.isReal())
         {
-          printf("real: jbar=%d, alpha=%f\n", (*it).getIndex(), *((*it).getAlpha()));
+          printf("real: jbar=%d, alpha=%f\n", it.getIndex(), *(it.getAlpha()));
         }
       else
         {
           printf("complex: jbar=%d, alpha=%f, beta1=%f, beta2=%f\n",
-                 (*it).getIndex(), *((*it).getAlpha()), (*it).getBeta1(), (*it).getBeta2());
+                 it.getIndex(), *(it.getAlpha()), it.getBeta1(), it.getBeta2());
         }
     }
 }

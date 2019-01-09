@@ -12,10 +12,10 @@ using namespace ogp;
 
 NameStorage::NameStorage(const NameStorage &stor)
 {
-  for (unsigned int i = 0; i < stor.name_store.size(); i++)
+  for (auto i : stor.name_store)
     {
-      char *str = new char[strlen(stor.name_store[i])+1];
-      strcpy(str, stor.name_store[i]);
+      char *str = new char[strlen(i)+1];
+      strcpy(str, i);
       name_store.push_back(str);
       name_set.insert(str);
     }
@@ -61,20 +61,19 @@ NameStorage::insert(const char *name)
 void
 NameStorage::print() const
 {
-  for (unsigned int i = 0; i < name_store.size(); i++)
-    printf("%s\n", name_store[i]);
+  for (auto i : name_store)
+    printf("%s\n", i);
 }
 
 void
 Constants::import_constants(const Constants &c, OperationTree &otree, Tintintmap &tmap)
 {
-  for (Tconstantmap::const_iterator it = c.cmap.begin();
-       it != c.cmap.end(); ++it)
+  for (auto it : c.cmap)
     {
-      int told = (*it).first;
+      int told = it.first;
       int tnew = otree.add_nulary();
       tmap.insert(Tintintmap::value_type(told, tnew));
-      add_constant(tnew, (*it).second);
+      add_constant(tnew, it.second);
     }
 }
 
@@ -147,15 +146,13 @@ DynamicAtoms::DynamicAtoms(const DynamicAtoms &da)
     nv(da.nv), minlag(da.minlag), maxlead(da.maxlead)
 {
   // copy vars
-  for (Tvarmap::const_iterator it = da.vars.begin();
-       it != da.vars.end(); ++it)
-    vars.insert(Tvarmap::value_type(varnames.query((*it).first),
-                                    (*it).second));
+  for (const auto & var : da.vars)
+    vars.insert(Tvarmap::value_type(varnames.query(var.first),
+                                    var.second));
   // copy indices
-  for (Tindexmap::const_iterator it = da.indices.begin();
-       it != da.indices.end(); ++it)
-    indices.insert(Tindexmap::value_type((*it).first,
-                                         varnames.query((*it).second)));
+  for (auto indice : da.indices)
+    indices.insert(Tindexmap::value_type(indice.first,
+                                         varnames.query(indice.second)));
 }
 
 int
@@ -294,9 +291,9 @@ DynamicAtoms::update_minmaxll()
   for (Tvarmap::const_iterator it = vars.begin(); it != vars.end(); ++it)
     {
       const Tlagmap &lmap = (*it).second;
-      for (Tlagmap::const_iterator itt = lmap.begin(); itt != lmap.end(); ++itt)
+      for (auto itt : lmap)
         {
-          int ll = (*itt).first;
+          int ll = itt.first;
           if (ll < minlag)
             minlag = ll;
           if (ll > maxlead)
@@ -309,13 +306,11 @@ vector<int>
 DynamicAtoms::variables() const
 {
   vector<int> res;
-  for (Tvarmap::const_iterator it = vars.begin();
-       it != vars.end(); ++it)
+  for (const auto & var : vars)
     {
-      const Tlagmap &lmap = (*it).second;
-      for (Tlagmap::const_iterator itt = lmap.begin();
-           itt != lmap.end(); ++itt)
-        res.push_back((*itt).second);
+      const Tlagmap &lmap = var.second;
+      for (auto itt : lmap)
+        res.push_back(itt.second);
     }
   return res;
 }
@@ -355,10 +350,10 @@ DynamicAtoms::varspan(const vector<const char *> &names, int &mlead, int &mlag) 
 {
   mlead = INT_MIN;
   mlag = INT_MAX;
-  for (unsigned int i = 0; i < names.size(); i++)
+  for (auto name : names)
     {
       int lag, lead;
-      varspan(names[i], lead, lag);
+      varspan(name, lead, lag);
       if (lead > mlead)
         mlead = lead;
       if (lag < mlag)
@@ -436,18 +431,15 @@ DynamicAtoms::print() const
   printf("constants:\n");
   Constants::print();
   printf("variables:\n");
-  for (Tvarmap::const_iterator it = vars.begin();
-       it != vars.end(); ++it)
+  for (const auto & var : vars)
     {
-      const Tlagmap &lmap = (*it).second;
-      for (Tlagmap::const_iterator itt = lmap.begin();
-           itt != lmap.end(); ++itt)
-        printf("$%d: %s(%d)\n", (*itt).second, (*it).first, (*itt).first);
+      const Tlagmap &lmap = var.second;
+      for (auto itt : lmap)
+        printf("$%d: %s(%d)\n", itt.second, var.first, itt.first);
     }
   printf("indices:\n");
-  for (Tindexmap::const_iterator it = indices.begin();
-       it != indices.end(); ++it)
-    printf("t=%d ==> %s\n", (*it).first, (*it).second);
+  for (auto indice : indices)
+    printf("t=%d ==> %s\n", indice.first, indice.second);
 }
 
 /** Note that the str has been parsed by the lexicographic
@@ -578,12 +570,12 @@ VarOrdering::do_general(ord_type ordering)
 
   // make der_atoms and positions
   int off = 0;
-  for (unsigned int i = 0; i < 8; i++)
-    for (unsigned int j = 0; j < (ords[i])->size(); j++, off++)
-      if ((*(ords[i]))[j] != -1)
+  for (auto & ord : ords)
+    for (unsigned int j = 0; j < ord->size(); j++, off++)
+      if ((*ord)[j] != -1)
         {
-          der_atoms.push_back((*(ords[i]))[j]);
-          positions.insert(std::pair<int, int>((*(ords[i]))[j], off));
+          der_atoms.push_back((*ord)[j]);
+          positions.insert(std::pair<int, int>((*ord)[j], off));
         }
 
   // set integer constants
@@ -618,11 +610,10 @@ VarOrdering::do_increasing_time()
       try
         {
           const DynamicAtoms::Tlagmap &lmap = atoms.lagmap(varnames[iv]);
-          for (DynamicAtoms::Tlagmap::const_iterator it = lmap.begin();
-               it != lmap.end(); ++it)
+          for (auto it : lmap)
             {
-              int ll = (*it).first;
-              int t = (*it).second;
+              int ll = it.first;
+              int t = it.second;
               tree_ind[ll-mlag][iv] = t;
             }
         }
@@ -653,10 +644,10 @@ VarOrdering::do_increasing_time()
     }
 
   // set n_stat, n_pred, n_both, and n_forw
-  for (unsigned int iv = 0; iv < varnames.size(); iv++)
+  for (auto varname : varnames)
     {
       int mmlag, mmlead;
-      atoms.varspan(varnames[iv], mmlead, mmlag);
+      atoms.varspan(varname, mmlead, mmlag);
       if (mmlead == 0 && mmlag == 0)
         {
           n_stat++;
@@ -691,17 +682,17 @@ VarOrdering::print() const
 {
   printf("nstat=%d, npred=%d, nboth=%d, nforw=%d\n", n_stat, n_pred, n_both, n_forw);
   printf("der_atoms:\n");
-  for (unsigned int i = 0; i < der_atoms.size(); i++)
-    printf(" %d", der_atoms[i]);
+  for (int der_atom : der_atoms)
+    printf(" %d", der_atom);
   printf("\nmap:\n");
-  for (map<int, int>::const_iterator it = positions.begin(); it != positions.end(); ++it)
-    printf(" [%d->%d]", (*it).first, (*it).second);
+  for (auto position : positions)
+    printf(" [%d->%d]", position.first, position.second);
   printf("\ny2outer:\n");
-  for (unsigned int i = 0; i < y2outer.size(); i++)
-    printf(" %d", y2outer[i]);
+  for (int i : y2outer)
+    printf(" %d", i);
   printf("\nouter2y:\n");
-  for (unsigned int i = 0; i < outer2y.size(); i++)
-    printf(" %d", outer2y[i]);
+  for (int i : outer2y)
+    printf(" %d", i);
   printf("\n");
 }
 

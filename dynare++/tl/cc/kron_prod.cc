@@ -382,8 +382,8 @@ KronProdAll::multRows(const IntSequence &irows) const
       delete row;
     }
 
-  for (unsigned int i = 0; i < to_delete.size(); i++)
-    delete to_delete[i];
+  for (auto & i : to_delete)
+    delete i;
 
   return last;
 }

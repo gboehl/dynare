@@ -166,8 +166,8 @@ JournalRecord::operator<<(const IntSequence &s)
 void
 JournalRecord::writePrefix(const SystemResourcesFlash &f)
 {
-  for (int i = 0; i < MAXLEN; i++)
-    prefix[i] = ' ';
+  for (char & i : prefix)
+    i = ' ';
   double mb = 1024*1024;
   sprintf(prefix, "%07.6g", f.elapsed);
   sprintf(prefix+7, ":%c%05d", recChar, ord);
@@ -182,8 +182,8 @@ JournalRecord::writePrefix(const SystemResourcesFlash &f)
 void
 JournalRecordPair::writePrefixForEnd(const SystemResourcesFlash &f)
 {
-  for (int i = 0; i < MAXLEN; i++)
-    prefix_end[i] = ' ';
+  for (char & i : prefix_end)
+    i = ' ';
   double mb = 1024*1024;
   SystemResourcesFlash difnow;
   difnow.diff(f);

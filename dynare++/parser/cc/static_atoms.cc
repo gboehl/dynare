@@ -12,26 +12,24 @@ StaticAtoms::StaticAtoms(const StaticAtoms &a)
     varorder(), vars(), indices()
 {
   // fill varorder
-  for (unsigned int i = 0; i < a.varorder.size(); i++)
+  for (auto i : a.varorder)
     {
-      const char *s = varnames.query(a.varorder[i]);
+      const char *s = varnames.query(i);
       varorder.push_back(s);
     }
 
   // fill vars
-  for (Tvarmap::const_iterator it = a.vars.begin();
-       it != a.vars.end(); ++it)
+  for (auto var : a.vars)
     {
-      const char *s = varnames.query((*it).first);
-      vars.insert(Tvarmap::value_type(s, (*it).second));
+      const char *s = varnames.query(var.first);
+      vars.insert(Tvarmap::value_type(s, var.second));
     }
 
   // fill indices
-  for (Tinvmap::const_iterator it = a.indices.begin();
-       it != a.indices.end(); ++it)
+  for (auto indice : a.indices)
     {
-      const char *s = varnames.query((*it).second);
-      indices.insert(Tinvmap::value_type((*it).first, s));
+      const char *s = varnames.query(indice.second);
+      indices.insert(Tinvmap::value_type(indice.first, s));
     }
 }
 
@@ -49,10 +47,9 @@ StaticAtoms::import_atoms(const DynamicAtoms &da, OperationTree &otree, Tintintm
       if (da.is_referenced(name))
         {
           const DynamicAtoms::Tlagmap &lmap = da.lagmap(name);
-          for (DynamicAtoms::Tlagmap::const_iterator it = lmap.begin();
-               it != lmap.end(); ++it)
+          for (auto it : lmap)
             {
-              int told = (*it).second;
+              int told = it.second;
               tmap.insert(Tintintmap::value_type(told, tnew));
             }
         }
@@ -113,10 +110,9 @@ vector<int>
 StaticAtoms::variables() const
 {
   vector<int> res;
-  for (Tvarmap::const_iterator it = vars.begin();
-       it != vars.end(); ++it)
+  for (auto var : vars)
     {
-      res.push_back((*it).second);
+      res.push_back(var.second);
     }
   return res;
 }
@@ -136,6 +132,6 @@ StaticAtoms::print() const
   printf("variable names:\n");
   varnames.print();
   printf("map to tree indices:\n");
-  for (Tvarmap::const_iterator it = vars.begin(); it != vars.end(); ++it)
-    printf("%s\t->\t%d\n", (*it).first, (*it).second);
+  for (auto var : vars)
+    printf("%s\t->\t%d\n", var.first, var.second);
 }

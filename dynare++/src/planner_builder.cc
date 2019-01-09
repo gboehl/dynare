@@ -302,8 +302,8 @@ void
 PlannerBuilder::fill_yset(const ogp::NameStorage &ns,
                           const PlannerBuilder::Tvarset &yyset)
 {
-  for (Tvarset::const_iterator it = yyset.begin(); it != yyset.end(); ++it)
-    yset.insert(ns.query(*it));
+  for (auto it : yyset)
+    yset.insert(ns.query(it));
 }
 
 void
@@ -311,15 +311,13 @@ PlannerBuilder::fill_aux_map(const ogp::NameStorage &ns, const Tsubstmap &aaux_m
                              const Tsubstmap &astatic_aux_map)
 {
   // fill aux_map
-  for (Tsubstmap::const_iterator it = aaux_map.begin();
-       it != aaux_map.end(); ++it)
-    aux_map.insert(Tsubstmap::value_type(ns.query((*it).first), (*it).second));
+  for (auto it : aaux_map)
+    aux_map.insert(Tsubstmap::value_type(ns.query(it.first), it.second));
 
   // fill static_aux_map
-  for (Tsubstmap::const_iterator it = astatic_aux_map.begin();
-       it != astatic_aux_map.end(); ++it)
-    static_aux_map.insert(Tsubstmap::value_type(static_atoms.get_name_storage().query((*it).first),
-                                                (*it).second));
+  for (auto it : astatic_aux_map)
+    static_aux_map.insert(Tsubstmap::value_type(static_atoms.get_name_storage().query(it.first),
+                                                it.second));
 }
 
 MultInitSS::MultInitSS(const PlannerBuilder &pb, const Vector &pvals, Vector &yy)
@@ -380,10 +378,9 @@ MultInitSS::MultInitSS(const PlannerBuilder &pb, const Vector &pvals, Vector &yy
           if (it != old2new.end())
             {
               const ogp::AtomSubstitutions::Tshiftnameset &sset = (*it).second;
-              for (ogp::AtomSubstitutions::Tshiftnameset::const_iterator itt = sset.begin();
-                   itt != sset.end(); ++itt)
+              for (const auto & itt : sset)
                 {
-                  const char *newname = (*itt).first;
+                  const char *newname = itt.first;
                   int iouter = builder.model.atoms.name2outer_endo(newname);
                   int iy = builder.model.atoms.outer2y_endo()[iouter];
                   if (!std::isfinite(yy[iy]))

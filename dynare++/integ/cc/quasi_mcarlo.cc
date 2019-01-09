@@ -122,8 +122,8 @@ HaltonSequence::operator=(const HaltonSequence &hs)
   num = hs.num;
   maxn = hs.maxn;
   ri.clear();
-  for (unsigned int i = 0; i < hs.ri.size(); i++)
-    ri.push_back(RadicalInverse(hs.ri[i]));
+  for (const auto & i : hs.ri)
+    ri.push_back(RadicalInverse(i));
   pt = hs.pt;
   return *this;
 }
@@ -134,8 +134,8 @@ HaltonSequence::operator=(const HaltonSequence &hs)
 void
 HaltonSequence::increase()
 {
-  for (unsigned int i = 0; i < ri.size(); i++)
-    ri[i].increase();
+  for (auto & i : ri)
+    i.increase();
   num++;
   if (num <= maxn)
     eval();
@@ -153,8 +153,8 @@ HaltonSequence::eval()
 void
 HaltonSequence::print() const
 {
-  for (unsigned int i = 0; i < ri.size(); i++)
-    ri[i].print();
+  for (const auto & i : ri)
+    i.print();
   printf("point=[ ");
   for (unsigned int i = 0; i < ri.size(); i++)
     printf("%7.6f ", pt[i]);

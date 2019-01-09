@@ -21,14 +21,14 @@ vector<int>
 DynareNameList::selectIndices(const vector<const char *> &ns) const
 {
   vector<int> res;
-  for (unsigned int i = 0; i < ns.size(); i++)
+  for (auto n : ns)
     {
       int j = 0;
-      while (j < getNum() && strcmp(getName(j), ns[i]) != 0)
+      while (j < getNum() && strcmp(getName(j), n) != 0)
         j++;
       if (j == getNum())
         throw DynareException(__FILE__, __LINE__,
-                              string("Couldn't find name for ") + ns[i]
+                              string("Couldn't find name for ") + n
                               +" in DynareNameList::selectIndices");
       res.push_back(j);
     }

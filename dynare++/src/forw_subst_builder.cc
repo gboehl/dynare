@@ -114,20 +114,19 @@ void
 ForwSubstBuilder::unassign_gt_1_leads()
 {
   const vector<const char *> &endovars = model.atoms.get_endovars();
-  for (unsigned int i = 0; i < endovars.size(); i++)
-    unassign_gt_1_leads(endovars[i]);
+  for (auto endovar : endovars)
+    unassign_gt_1_leads(endovar);
   const vector<const char *> &exovars = model.atoms.get_exovars();
-  for (unsigned int i = 0; i < exovars.size(); i++)
-    unassign_gt_1_leads(exovars[i]);
+  for (auto exovar : exovars)
+    unassign_gt_1_leads(exovar);
 }
 
 ForwSubstBuilder::ForwSubstBuilder(const ForwSubstBuilder &b, DynareModel &m)
   : model(m)
 {
-  for (Tsubstmap::const_iterator it = b.aux_map.begin();
-       it != b.aux_map.end(); ++it)
+  for (auto it : b.aux_map)
     {
-      const char *ss = m.atoms.get_name_storage().query((*it).first);
-      aux_map.insert(Tsubstmap::value_type(ss, (*it).second));
+      const char *ss = m.atoms.get_name_storage().query(it.first);
+      aux_map.insert(Tsubstmap::value_type(ss, it.second));
     }
 }

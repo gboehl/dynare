@@ -14,20 +14,18 @@ AtomSubstitutions::AtomSubstitutions(const AtomSubstitutions &as, const FineAtom
   const NameStorage &ns = na.get_name_storage();
 
   // fill new2old
-  for (Tshiftmap::const_iterator it = as.new2old.begin();
-       it != as.new2old.end(); ++it)
-    new2old.insert(Tshiftmap::value_type(ns.query((*it).first),
-                                         Tshiftname(ns.query((*it).second.first),
-                                                    (*it).second.second)));
+  for (const auto & it : as.new2old)
+    new2old.insert(Tshiftmap::value_type(ns.query(it.first),
+                                         Tshiftname(ns.query(it.second.first),
+                                                    it.second.second)));
   // fill old2new
-  for (Toldnamemap::const_iterator it = as.old2new.begin();
-       it != as.old2new.end(); ++it)
+  for (const auto & it : as.old2new)
     {
       Tshiftnameset sset;
-      for (Tshiftnameset::const_iterator itt = (*it).second.begin();
-           itt != (*it).second.end(); ++itt)
+      for (Tshiftnameset::const_iterator itt = it.second.begin();
+           itt != it.second.end(); ++itt)
         sset.insert(Tshiftname(ns.query((*itt).first), (*itt).second));
-      old2new.insert(Toldnamemap::value_type(ns.query((*it).first), sset));
+      old2new.insert(Toldnamemap::value_type(ns.query(it.first), sset));
     }
 }
 
@@ -64,17 +62,15 @@ AtomSubstitutions::substitutions_finished(VarOrdering::ord_type ot)
   // create an external ordering of new_atoms from old_atoms
   const vector<const char *> &oa_ext = old_atoms.get_allvar();
   vector<const char *> na_ext;
-  for (unsigned int i = 0; i < oa_ext.size(); i++)
+  for (auto oname : oa_ext)
     {
-      const char *oname = oa_ext[i];
       // add the old name itself
       na_ext.push_back(oname);
       // add all new names derived from the old name
       Toldnamemap::const_iterator it = old2new.find(oname);
       if (it != old2new.end())
-        for (Tshiftnameset::const_iterator itt = (*it).second.begin();
-             itt != (*it).second.end(); ++itt)
-          na_ext.push_back((*itt).first);
+        for (const auto & itt : (*it).second)
+          na_ext.push_back(itt.first);
     }
 
   // call parsing finished for the new_atoms
@@ -88,10 +84,9 @@ AtomSubstitutions::get_new4old(const char *oldname, int tshift) const
   if (it != old2new.end())
     {
       const Tshiftnameset &sset = (*it).second;
-      for (Tshiftnameset::const_iterator itt = sset.begin();
-           itt != sset.end(); ++itt)
-        if ((*itt).second == -tshift)
-          return (*itt).first;
+      for (const auto & itt : sset)
+        if (itt.second == -tshift)
+          return itt.first;
     }
   return NULL;
 }
@@ -100,14 +95,14 @@ void
 AtomSubstitutions::print() const
 {
   printf("Atom Substitutions:\nOld ==> New:\n");
-  for (Toldnamemap::const_iterator it = old2new.begin(); it != old2new.end(); ++it)
-    for (Tshiftnameset::const_iterator itt = (*it).second.begin();
-         itt != (*it).second.end(); ++itt)
-      printf("    %s ==> [%s, %d]\n", (*it).first, (*itt).first, (*itt).second);
+  for (const auto & it : old2new)
+    for (Tshiftnameset::const_iterator itt = it.second.begin();
+         itt != it.second.end(); ++itt)
+      printf("    %s ==> [%s, %d]\n", it.first, (*itt).first, (*itt).second);
 
   printf("Old <== New:\n");
-  for (Tshiftmap::const_iterator it = new2old.begin(); it != new2old.end(); ++it)
-    printf("    [%s, %d] <== %s\n", (*it).second.first, (*it).second.second, (*it).first);
+  for (const auto & it : new2old)
+    printf("    [%s, %d] <== %s\n", it.second.first, it.second.second, it.first);
 }
 
 void
@@ -167,16 +162,14 @@ const char *
 SAtoms::findNameWithLeadInInterval(const vector<const char *> &names,
                                    int ll1, int ll2) const
 {
-  for (unsigned int i = 0; i < names.size(); i++)
+  for (auto name : names)
     {
-      const char *name = names[i];
       DynamicAtoms::Tvarmap::const_iterator it = vars.find(name);
       if (it != vars.end())
         {
           const DynamicAtoms::Tlagmap &lmap = (*it).second;
-          for (DynamicAtoms::Tlagmap::const_iterator itt = lmap.begin();
-               itt != lmap.end(); ++itt)
-            if ((*itt).first >= ll1 && (*itt).first <= ll2)
+          for (auto itt : lmap)
+            if (itt.first >= ll1 && itt.first <= ll2)
               return name;
         }
     }

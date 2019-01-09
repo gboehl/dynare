@@ -52,12 +52,11 @@ UNormalMoments::generateMoments(int maxdim, const TwoDMatrix &v)
          how the |Equivalence::apply| method works. */
       mom->zeros();
       const EquivalenceSet eset = ebundle.get(d);
-      for (EquivalenceSet::const_iterator cit = eset.begin();
-           cit != eset.end(); cit++)
+      for (const auto & cit : eset)
         {
-          if (selectEquiv(*cit))
+          if (selectEquiv(cit))
             {
-              Permutation per(*cit);
+              Permutation per(cit);
               per.inverse();
               for (Tensor::index it = kronv->begin(); it != kronv->end(); ++it)
                 {
@@ -80,10 +79,9 @@ UNormalMoments::selectEquiv(const Equivalence &e)
 {
   if (2*e.numClasses() != e.getN())
     return false;
-  for (Equivalence::const_seqit si = e.begin();
-       si != e.end(); ++si)
+  for (const auto & si : e)
     {
-      if ((*si).length() != 2)
+      if (si.length() != 2)
         return false;
     }
   return true;
@@ -94,10 +92,9 @@ UNormalMoments::selectEquiv(const Equivalence &e)
 FNormalMoments::FNormalMoments(const UNormalMoments &moms)
   : TensorContainer<FRSingleTensor>(1)
 {
-  for (UNormalMoments::const_iterator it = moms.begin();
-       it != moms.end(); ++it)
+  for (const auto & mom : moms)
     {
-      FRSingleTensor *fm = new FRSingleTensor(*((*it).second));
+      FRSingleTensor *fm = new FRSingleTensor(*(mom.second));
       insert(fm);
     }
 }
