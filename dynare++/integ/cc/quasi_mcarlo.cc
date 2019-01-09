@@ -112,7 +112,7 @@ HaltonSequence::HaltonSequence(int n, int mxn, int dim, const PermutationScheme 
   // todo: raise if |dim > num_primes|
   // todo: raise if |n > mxn|
   for (int i = 0; i < dim; i++)
-    ri.push_back(RadicalInverse(num, primes[i], maxn));
+    ri.emplace_back(num, primes[i], maxn);
   eval();
 }
 
@@ -123,7 +123,7 @@ HaltonSequence::operator=(const HaltonSequence &hs)
   maxn = hs.maxn;
   ri.clear();
   for (const auto & i : hs.ri)
-    ri.push_back(RadicalInverse(i));
+    ri.emplace_back(i);
   pt = hs.pt;
   return *this;
 }

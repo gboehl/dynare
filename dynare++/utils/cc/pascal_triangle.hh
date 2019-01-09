@@ -33,7 +33,7 @@ namespace ogu
   public:
     PascalTriangle()
     {
-      tr.push_back(PascalRow());
+      tr.emplace_back();
     }
     PascalTriangle(const PascalTriangle &triang)
       : tr(triang.tr)
