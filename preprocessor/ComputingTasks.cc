@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2003-2017 Dynare Team
+ * Copyright (C) 2003-2019 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -663,6 +663,7 @@ DynareSensitivityStatement::checkPass(ModFileStructure &mod_file_struct, Warning
   if (it != options_list.num_options.end()
       && it->second == "1")
     mod_file_struct.identification_present = true;
+  mod_file_struct.sensitivity_present = true;
 }
 
 void

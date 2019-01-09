@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006-2017 Dynare Team
+ * Copyright (C) 2006-2019 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -38,6 +38,7 @@ ModFileStructure::ModFileStructure() :
   bvar_present(false),
   svar_identification_present(false),
   identification_present(false),
+  sensitivity_present(false),
   estimation_analytic_derivation(false),
   partial_information(false),
   k_order_solver(false),

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006-2017 Dynare Team
+ * Copyright (C) 2006-2019 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -129,7 +129,9 @@ ModFile::checkPass(bool nostrict)
     || mod_file_struct.osr_present
     || mod_file_struct.ramsey_policy_present
     || mod_file_struct.discretionary_policy_present
-    || mod_file_struct.calib_smoother_present;
+    || mod_file_struct.calib_smoother_present
+    || mod_file_struct.identification_present
+    || mod_file_struct.sensitivity_present;
 
   // Allow empty model only when doing a standalone BVAR estimation
   if (dynamic_model.equation_number() == 0
@@ -407,7 +409,9 @@ ModFile::transformPass(bool nostrict, bool compute_xrefs)
       || mod_file_struct.osr_present
       || mod_file_struct.ramsey_policy_present
       || mod_file_struct.discretionary_policy_present
-      || mod_file_struct.calib_smoother_present)
+      || mod_file_struct.calib_smoother_present
+      || mod_file_struct.identification_present
+      || mod_file_struct.sensitivity_present)
     {
       // In stochastic models, create auxiliary vars for leads and lags greater than 2, on both endos and exos
       dynamic_model.substituteEndoLeadGreaterThanTwo(false);
