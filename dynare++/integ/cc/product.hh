@@ -93,10 +93,10 @@ class ProductQuadrature : public QuadratureImpl<prodpit>
   const OneDQuadrature &uquad;
 public:
   ProductQuadrature(int d, const OneDQuadrature &uq);
-  virtual ~ProductQuadrature()
-  = default;
+  ~ProductQuadrature()
+  override = default;
   int
-  numEvals(int l) const
+  numEvals(int l) const override
   {
     int res = 1;
     for (int i = 0; i < dimen(); i++)
@@ -105,7 +105,7 @@ public:
   }
   void designLevelForEvals(int max_eval, int &lev, int &evals) const;
 protected:
-  prodpit begin(int ti, int tn, int level) const;
+  prodpit begin(int ti, int tn, int level) const override;
 };
 
 #endif

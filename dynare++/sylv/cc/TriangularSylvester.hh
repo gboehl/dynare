@@ -19,10 +19,10 @@ public:
   TriangularSylvester(const QuasiTriangular &k, const QuasiTriangular &f);
   TriangularSylvester(const SchurDecompZero &kdecomp, const SchurDecomp &fdecomp);
   TriangularSylvester(const SchurDecompZero &kdecomp, const SimilarityDecomp &fdecomp);
-  virtual
-  ~TriangularSylvester();
+  
+  ~TriangularSylvester() override;
   void print() const;
-  void solve(SylvParams &pars, KronVector &d) const;
+  void solve(SylvParams &pars, KronVector &d) const override;
 
   void solvi(double r, KronVector &d, double &eig_min) const;
   void solvii(double alpha, double beta1, double beta2,

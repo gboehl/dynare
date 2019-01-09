@@ -42,8 +42,8 @@ namespace ogp
       import_atoms(da, otree, tmap);
     }
     /* Destructor. */
-    virtual ~StaticAtoms()
-    = default;
+    ~StaticAtoms()
+    override = default;
     /** This imports atoms from dynamic atoms inserting the new
      * tree indices to the given tree (including constants). The
      * mapping from old atoms to new atoms is traced in tmap. */
@@ -53,17 +53,17 @@ namespace ogp
      * constant is registered in Constants, it returns -1
      * otherwise. If the name is not constant, it returns result
      * from check_variable, which is implemented by a subclass. */
-    int check(const char *name) const;
+    int check(const char *name) const override;
     /** This assigns a given tree index to the variable name. The
      * name should have been checked before the call. */
-    void assign(const char *name, int t);
+    void assign(const char *name, int t) override;
     int
-    nvar() const
+    nvar() const override
     {
       return varnames.num();
     }
     /** This returns a vector of all variables. */
-    vector<int> variables() const;
+    vector<int> variables() const override;
     /** This returns a tree index of the given variable. */
     int index(const char *name) const;
     /** This returns a name from the given tree index. NULL is
@@ -76,7 +76,7 @@ namespace ogp
       return varorder[i];
     }
     /** Debug print. */
-    void print() const;
+    void print() const override;
     /** This registers a variable. A subclass can reimplement
      * this, for example, to ensure uniqueness of the
      * name. However, this method should be always called in

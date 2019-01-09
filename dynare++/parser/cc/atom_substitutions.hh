@@ -131,8 +131,8 @@ namespace ogp
     SAtoms(const SAtoms &sa)
        
     = default;
-    virtual ~SAtoms()
-    = default;
+    ~SAtoms()
+    override = default;
     /** This substitutes all lags and leads for all exogenous and
      * all lags and leads greater than 1 for all endogenous
      * variables. This is useful for perfect foresight problems

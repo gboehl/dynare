@@ -125,14 +125,14 @@ public:
 
   /* Here we deallocate the refined containers, and deallocate the array of
      refined containers. */
-  virtual ~FineContainer()
+  ~FineContainer() override
   {
     for (int i = 0; i < _Stype::numConts(); i++)
       delete ref_conts[i];
     delete [] ref_conts;
   }
   itype
-  getType(int i, const Symmetry &s) const
+  getType(int i, const Symmetry &s) const override
   {
     return stack_cont.getType(getOldIndex(i), s);
   }

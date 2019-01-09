@@ -29,7 +29,7 @@ public:
   uint32 lrand();
   double drand();
   double
-  uniform()
+  uniform() override
   {
     return drand();
   }

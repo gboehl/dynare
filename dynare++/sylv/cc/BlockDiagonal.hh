@@ -22,7 +22,7 @@ public:
     GeneralMatrix::operator=(t); return *this;
   }
   const BlockDiagonal &operator=(const BlockDiagonal &b);
-  ~BlockDiagonal()
+  ~BlockDiagonal() override
   {
     delete [] row_len; delete [] col_len;
   }
@@ -32,15 +32,15 @@ public:
   int getLargestBlock() const;
   void printInfo() const;
 
-  void multKron(KronVector &x) const;
-  void multKronTrans(KronVector &x) const;
+  void multKron(KronVector &x) const override;
+  void multKronTrans(KronVector &x) const override;
 
-  const_col_iter col_begin(const DiagonalBlock &b) const;
-  col_iter col_begin(const DiagonalBlock &b);
-  const_row_iter row_end(const DiagonalBlock &b) const;
-  row_iter row_end(const DiagonalBlock &b);
+  const_col_iter col_begin(const DiagonalBlock &b) const override;
+  col_iter col_begin(const DiagonalBlock &b) override;
+  const_row_iter row_end(const DiagonalBlock &b) const override;
+  row_iter row_end(const DiagonalBlock &b) override;
   QuasiTriangular *
-  clone() const
+  clone() const override
   {
     return new BlockDiagonal(*this);
   }

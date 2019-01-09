@@ -26,7 +26,7 @@ class SylvExceptionMessage : public SylvException
   char message[500];
 public:
   SylvExceptionMessage(const char *f, int l, const char *mes);
-  virtual int printMessage(char *str, int maxlen) const;
+  int printMessage(char *str, int maxlen) const override;
 };
 
 // define macros:

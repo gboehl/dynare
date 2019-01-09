@@ -20,38 +20,38 @@ public:
   QuasiTriangularZero(int p, const QuasiTriangularZero &t);
   QuasiTriangularZero(const QuasiTriangular &t);
   QuasiTriangularZero(const SchurDecompZero &decomp);
-  ~QuasiTriangularZero();
-  void solvePre(Vector &x, double &eig_min);
-  void solvePreTrans(Vector &x, double &eig_min);
-  void multVec(Vector &x, const ConstVector &b) const;
-  void multVecTrans(Vector &x, const ConstVector &b) const;
-  void multaVec(Vector &x, const ConstVector &b) const;
-  void multaVecTrans(Vector &x, const ConstVector &b) const;
-  void multKron(KronVector &x) const;
-  void multKronTrans(KronVector &x) const;
-  void multLeftOther(GeneralMatrix &a) const;
+  ~QuasiTriangularZero() override;
+  void solvePre(Vector &x, double &eig_min) override;
+  void solvePreTrans(Vector &x, double &eig_min) override;
+  void multVec(Vector &x, const ConstVector &b) const override;
+  void multVecTrans(Vector &x, const ConstVector &b) const override;
+  void multaVec(Vector &x, const ConstVector &b) const override;
+  void multaVecTrans(Vector &x, const ConstVector &b) const override;
+  void multKron(KronVector &x) const override;
+  void multKronTrans(KronVector &x) const override;
+  void multLeftOther(GeneralMatrix &a) const override;
   /* clone */
-  virtual QuasiTriangular *
-  clone() const
+  QuasiTriangular *
+  clone() const override
   {
     return new QuasiTriangularZero(*this);
   }
-  virtual QuasiTriangular *
-  clone(int p, const QuasiTriangular &t) const
+  QuasiTriangular *
+  clone(int p, const QuasiTriangular &t) const override
   {
     return new QuasiTriangularZero(p, (const QuasiTriangularZero &) t);
   }
-  virtual QuasiTriangular *
-  clone(double r) const
+  QuasiTriangular *
+  clone(double r) const override
   {
     return new QuasiTriangularZero(r, *this);
   }
-  virtual QuasiTriangular *
-  clone(double r, double rr, const QuasiTriangular &tt) const
+  QuasiTriangular *
+  clone(double r, double rr, const QuasiTriangular &tt) const override
   {
     return new QuasiTriangularZero(r, *this, rr, (const QuasiTriangularZero &) tt);
   }
-  void print() const;
+  void print() const override;
 };
 
 #endif /* QUASI_TRIANGULAR_ZERO_H */

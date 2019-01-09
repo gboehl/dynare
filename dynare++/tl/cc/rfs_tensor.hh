@@ -57,14 +57,14 @@ public:
   = default;
   URTensor(const FRTensor &ft);
 
-  virtual ~URTensor()
-  = default;
+  ~URTensor()
+  override = default;
 
-  void increment(IntSequence &v) const;
-  void decrement(IntSequence &v) const;
-  FTensor&fold() const;
+  void increment(IntSequence &v) const override;
+  void decrement(IntSequence &v) const override;
+  FTensor&fold() const override;
 
-  int getOffset(const IntSequence &v) const;
+  int getOffset(const IntSequence &v) const override;
   int
   nvar() const
   {
@@ -93,12 +93,12 @@ public:
   = default;
   FRTensor(const URTensor &ut);
 
-  virtual ~FRTensor()
-  = default;
+  ~FRTensor()
+  override = default;
 
-  void increment(IntSequence &v) const;
-  void decrement(IntSequence &v) const;
-  UTensor&unfold() const;
+  void increment(IntSequence &v) const override;
+  void decrement(IntSequence &v) const override;
+  UTensor&unfold() const override;
 
   int
   nvar() const
@@ -106,7 +106,7 @@ public:
     return nv;
   }
   int
-  getOffset(const IntSequence &v) const
+  getOffset(const IntSequence &v) const override
   {
     return FTensor::getOffset(v, nv);
   }
@@ -136,9 +136,9 @@ public:
   URSingleTensor(const URSingleTensor &ut)
      
   = default;
-  virtual ~URSingleTensor()
-  = default;
-  FTensor&fold() const;
+  ~URSingleTensor()
+  override = default;
+  FTensor&fold() const override;
 };
 
 /* This class represents one column row-oriented tensor. The only way
@@ -158,8 +158,8 @@ public:
   FRSingleTensor(const FRSingleTensor &ft)
      
   = default;
-  virtual ~FRSingleTensor()
-  = default;
+  ~FRSingleTensor()
+  override = default;
 };
 
 #endif

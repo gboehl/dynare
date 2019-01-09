@@ -21,7 +21,7 @@ public:
 class SystemRandomGenerator : public RandomGenerator
 {
 public:
-  double uniform();
+  double uniform() override;
   void initSeed(int seed);
 };
 

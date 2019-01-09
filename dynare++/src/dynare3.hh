@@ -24,12 +24,12 @@ class DynareNameList : public NameList
 public:
   DynareNameList(const Dynare &dynare);
   int
-  getNum() const
+  getNum() const override
   {
     return (int) names.size();
   }
   const char *
-  getName(int i) const
+  getName(int i) const override
   {
     return names[i];
   }
@@ -45,12 +45,12 @@ class DynareExogNameList : public NameList
 public:
   DynareExogNameList(const Dynare &dynare);
   int
-  getNum() const
+  getNum() const override
   {
     return (int) names.size();
   }
   const char *
-  getName(int i) const
+  getName(int i) const override
   {
     return names[i];
   }
@@ -63,12 +63,12 @@ public:
   DynareStateNameList(const Dynare &dynare, const DynareNameList &dnl,
                       const DynareExogNameList &denl);
   int
-  getNum() const
+  getNum() const override
   {
     return (int) names.size();
   }
   const char *
-  getName(int i) const
+  getName(int i) const override
   {
     return names[i];
   }
@@ -106,34 +106,34 @@ public:
   /** Makes a deep copy of the object. */
   Dynare(const Dynare &dyn);
   DynamicModel *
-  clone() const
+  clone() const override
   {
     return new Dynare(*this);
   }
-  virtual
-  ~Dynare();
+  
+  ~Dynare() override;
   int
-  nstat() const
+  nstat() const override
   {
     return model->getAtoms().nstat();
   }
   int
-  nboth() const
+  nboth() const override
   {
     return model->getAtoms().nboth();
   }
   int
-  npred() const
+  npred() const override
   {
     return model->getAtoms().npred();
   }
   int
-  nforw() const
+  nforw() const override
   {
     return model->getAtoms().nforw();
   }
   int
-  nexog() const
+  nexog() const override
   {
     return model->getAtoms().nexo();
   }
@@ -153,23 +153,23 @@ public:
     return model->getAtoms().ny();
   }
   int
-  order() const
+  order() const override
   {
     return model->getOrder();
   }
 
   const NameList &
-  getAllEndoNames() const
+  getAllEndoNames() const override
   {
     return *dnl;
   }
   const NameList &
-  getStateNames() const
+  getStateNames() const override
   {
     return *dsnl;
   }
   const NameList &
-  getExogNames() const
+  getExogNames() const override
   {
     return *denl;
   }
@@ -180,7 +180,7 @@ public:
     return model->getVcov();
   }
   const TwoDMatrix &
-  getVcov() const
+  getVcov() const override
   {
     return model->getVcov();
   }
@@ -201,17 +201,17 @@ public:
   }
 
   const TensorContainer<FSSparseTensor> &
-  getModelDerivatives() const
+  getModelDerivatives() const override
   {
     return md;
   }
   const Vector &
-  getSteady() const
+  getSteady() const override
   {
     return *ysteady;
   }
   Vector &
-  getSteady()
+  getSteady() override
   {
     return *ysteady;
   }
@@ -224,15 +224,15 @@ public:
   // here is true public interface
   void solveDeterministicSteady(Vector &steady);
   void
-  solveDeterministicSteady()
+  solveDeterministicSteady() override
   {
     solveDeterministicSteady(*ysteady);
   }
-  void evaluateSystem(Vector &out, const Vector &yy, const Vector &xx);
+  void evaluateSystem(Vector &out, const Vector &yy, const Vector &xx) override;
   void evaluateSystem(Vector &out, const Vector &yym, const Vector &yy,
-                      const Vector &yyp, const Vector &xx);
+                      const Vector &yyp, const Vector &xx) override;
   void calcDerivatives(const Vector &yy, const Vector &xx);
-  void calcDerivativesAtSteady();
+  void calcDerivativesAtSteady() override;
 
   void writeMat(mat_t *fd, const char *prefix) const;
   void writeDump(const std::string &basename) const;
@@ -245,7 +245,7 @@ class DynareEvalLoader : public ogp::FormulaEvalLoader, public Vector
 public:
   DynareEvalLoader(const ogp::FineAtoms &a, Vector &out);
   void
-  load(int i, double res)
+  load(int i, double res) override
   {
     operator[](i) = res;
   }
@@ -259,7 +259,7 @@ protected:
 public:
   DynareDerEvalLoader(const ogp::FineAtoms &a, TensorContainer<FSSparseTensor> &mod_ders,
                       int order);
-  void load(int i, int iord, const int *vars, double res);
+  void load(int i, int iord, const int *vars, double res) override;
 };
 
 class DynareJacobian : public ogu::Jacobian, public ogp::FormulaDerEvalLoader
@@ -268,10 +268,10 @@ protected:
   Dynare &d;
 public:
   DynareJacobian(Dynare &dyn);
-  virtual ~DynareJacobian()
-  = default;
-  void load(int i, int iord, const int *vars, double res);
-  void eval(const Vector &in);
+  ~DynareJacobian()
+  override = default;
+  void load(int i, int iord, const int *vars, double res) override;
+  void eval(const Vector &in) override;
 };
 
 class DynareVectorFunction : public ogu::VectorFunction
@@ -283,19 +283,19 @@ public:
     : d(dyn)
   {
   }
-  virtual ~DynareVectorFunction()
-  = default;
+  ~DynareVectorFunction()
+  override = default;
   int
-  inDim() const
+  inDim() const override
   {
     return d.ny();
   }
   int
-  outDim() const
+  outDim() const override
   {
     return d.ny();
   }
-  void eval(const ConstVector &in, Vector &out);
+  void eval(const ConstVector &in, Vector &out) override;
 };
 
 #endif

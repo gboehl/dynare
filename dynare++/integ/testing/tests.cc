@@ -37,11 +37,11 @@ public:
      
   = default;
   VectorFunction *
-  clone() const
+  clone() const override
   {
     return new MomentFunction(*this);
   }
-  void eval(const Vector &point, const ParameterSignal &sig, Vector &out);
+  void eval(const Vector &point, const ParameterSignal &sig, Vector &out) override;
 };
 
 void
@@ -72,11 +72,11 @@ public:
      
   = default;
   VectorFunction *
-  clone() const
+  clone() const override
   {
     return new TensorPower(*this);
   }
-  void eval(const Vector &point, const ParameterSignal &sig, Vector &out);
+  void eval(const Vector &point, const ParameterSignal &sig, Vector &out) override;
 };
 
 void
@@ -108,11 +108,11 @@ public:
   {
   }
   VectorFunction *
-  clone() const
+  clone() const override
   {
     return new Function1(*this);
   }
-  virtual void eval(const Vector &point, const ParameterSignal &sig, Vector &out);
+  void eval(const Vector &point, const ParameterSignal &sig, Vector &out) override;
 };
 
 void
@@ -144,11 +144,11 @@ public:
      
   = default;
   VectorFunction *
-  clone() const
+  clone() const override
   {
     return new Function1Trans(*this);
   }
-  virtual void eval(const Vector &point, const ParameterSignal &sig, Vector &out);
+  void eval(const Vector &point, const ParameterSignal &sig, Vector &out) override;
 };
 
 void
@@ -438,7 +438,7 @@ public:
   }
 
   bool
-  run() const
+  run() const override
   {
     GeneralMatrix m(2, 2);
     m.zeros(); m.get(0, 0) = 1; m.get(1, 1) = 1;
@@ -455,7 +455,7 @@ public:
   }
 
   bool
-  run() const
+  run() const override
   {
     GeneralMatrix m(3, 3);
     m.zeros();
@@ -474,7 +474,7 @@ public:
   }
 
   bool
-  run() const
+  run() const override
   {
     GeneralMatrix m(2, 2);
     m.zeros(); m.get(0, 0) = 1; m.get(1, 1) = 1;
@@ -491,7 +491,7 @@ public:
   }
 
   bool
-  run() const
+  run() const override
   {
     GeneralMatrix m(3, 3);
     m.zeros();
@@ -510,7 +510,7 @@ public:
   }
 
   bool
-  run() const
+  run() const override
   {
     GeneralMatrix m(2, 2);
     m.zeros(); m.get(0, 0) = 1; m.get(1, 1) = 1;
@@ -527,7 +527,7 @@ public:
   }
 
   bool
-  run() const
+  run() const override
   {
     GeneralMatrix m(3, 3);
     m.zeros();
@@ -547,7 +547,7 @@ public:
   }
 
   bool
-  run() const
+  run() const override
   {
     Function1Trans f1(6);
     Vector res(1); res[0] = 1.0;
@@ -564,7 +564,7 @@ public:
   }
 
   bool
-  run() const
+  run() const override
   {
     Function1 f1(6);
     return qmc_cube(f1, 1.0, 1.e-4, 1000000);

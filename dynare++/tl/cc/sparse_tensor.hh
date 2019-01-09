@@ -138,7 +138,7 @@ public:
   void insert(const IntSequence &s, int r, double c);
   void multColumnAndAdd(const Tensor &t, Vector &v) const;
   const Symmetry &
-  getSym() const
+  getSym() const override
   {
     return sym;
   }
@@ -169,7 +169,7 @@ public:
   = default;
   void insert(const IntSequence &s, int r, double c);
   const Symmetry &
-  getSym() const
+  getSym() const override
   {
     return tdims.getSym();
   }

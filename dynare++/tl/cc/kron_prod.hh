@@ -224,7 +224,7 @@ public:
     : KronProd(dim), matlist(new const TwoDMatrix *[dim])
   {
   }
-  virtual ~KronProdAll()
+  ~KronProdAll() override
   {
     delete [] matlist;
   }
@@ -236,7 +236,7 @@ public:
     return *(matlist[i]);
   }
 
-  void mult(const ConstTwoDMatrix &in, TwoDMatrix &out) const;
+  void mult(const ConstTwoDMatrix &in, TwoDMatrix &out) const override;
   Vector *multRows(const IntSequence &irows) const;
 private:
   bool isUnit() const;
@@ -301,7 +301,7 @@ public:
       mat(kpa.getMat(kpa.dimen()-1))
   {
   }
-  void mult(const ConstTwoDMatrix &in, TwoDMatrix &out) const;
+  void mult(const ConstTwoDMatrix &in, TwoDMatrix &out) const override;
 };
 
 /* This class represents $A\otimes I$. We have only one reference to
@@ -320,7 +320,7 @@ public:
   }
   KronProdAI(const KronProdIAI &kpiai);
 
-  void mult(const ConstTwoDMatrix &in, TwoDMatrix &out) const;
+  void mult(const ConstTwoDMatrix &in, TwoDMatrix &out) const override;
 };
 
 /* This class represents $I\otimes A\otimes I$. We have only one reference to
@@ -337,7 +337,7 @@ public:
       mat(kpa.getMat(i))
   {
   }
-  void mult(const ConstTwoDMatrix &in, TwoDMatrix &out) const;
+  void mult(const ConstTwoDMatrix &in, TwoDMatrix &out) const override;
 };
 
 #endif

@@ -254,7 +254,7 @@ public:
     : GContainer<_Ttype>(gs, ngs, nu)
   {
   }
-  itype getType(int i, const Symmetry &s) const;
+  itype getType(int i, const Symmetry &s) const override;
 };
 
 /* This routine corresponds to this stack:
@@ -298,7 +298,7 @@ public:
     : ZContainer<_Ttype>(gss, ngss, g, ng, ny, nu)
   {
   }
-  itype getType(int i, const Symmetry &s) const;
+  itype getType(int i, const Symmetry &s) const override;
 };
 
 /* This |getType| method corresponds to this stack:

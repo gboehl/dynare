@@ -54,7 +54,7 @@ public:
   {
     return ru;
   }
-  int getDim() const;
+  int getDim() const override;
   int
   getZeroCols() const
   {

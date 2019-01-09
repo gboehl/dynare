@@ -49,7 +49,7 @@ public:
   {
     printHeader();
   }
-  ~Journal()
+  ~Journal() override
   {
     flush();
   }
@@ -139,7 +139,7 @@ public:
   {
     prefix_end[0] = '\0'; journal.incrementDepth();
   }
-  ~JournalRecordPair();
+  ~JournalRecordPair() override;
 private:
   void writePrefixForEnd(const SystemResourcesFlash &f);
 };

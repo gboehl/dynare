@@ -153,17 +153,17 @@ public:
   GaussConverterFunction(VectorFunction &f, const GeneralMatrix &vcov);
   GaussConverterFunction(VectorFunction *f, const GeneralMatrix &vcov);
   GaussConverterFunction(const GaussConverterFunction &f);
-  virtual ~GaussConverterFunction()
+  ~GaussConverterFunction() override
   {
     if (delete_flag)
       delete func;
   }
-  virtual VectorFunction *
-  clone() const
+  VectorFunction *
+  clone() const override
   {
     return new GaussConverterFunction(*this);
   }
-  virtual void eval(const Vector &point, const ParameterSignal &sig, Vector &out);
+  void eval(const Vector &point, const ParameterSignal &sig, Vector &out) override;
 private:
   double calcMultiplier() const;
   void calcCholeskyFactor(const GeneralMatrix &vcov);

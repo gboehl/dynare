@@ -460,7 +460,7 @@ namespace ogp
     {
     }
     /** Format the operation with the default syntax. */
-    void format(const Operation &op, int t, FILE *fd);
+    void format(const Operation &op, int t, FILE *fd) override;
     /** This prints a string represenation of the given term, for
      * example 'tmp10' for term 10. In this implementation it
      * prints $10. */

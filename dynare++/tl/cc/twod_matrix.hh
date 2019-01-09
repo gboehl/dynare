@@ -42,8 +42,8 @@ public:
     : ConstGeneralMatrix(m, first_row, first_col, rows, cols)
   {
   }
-  virtual ~ConstTwoDMatrix()
-  = default;
+  ~ConstTwoDMatrix()
+  override = default;
 
   int
   nrows() const
@@ -115,8 +115,8 @@ public:
     : GeneralMatrix(a, b)
   {
   }
-  virtual ~TwoDMatrix()
-  = default;
+  ~TwoDMatrix()
+  override = default;
 
   int
   nrows() const

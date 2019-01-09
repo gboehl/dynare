@@ -74,14 +74,14 @@ protected:
 public:
   ResidFunction(const Approximation &app);
   ResidFunction(const ResidFunction &rf);
-  virtual
-  ~ResidFunction();
-  virtual VectorFunction *
-  clone() const
+  
+  ~ResidFunction() override;
+  VectorFunction *
+  clone() const override
   {
     return new ResidFunction(*this);
   }
-  virtual void eval(const Vector &point, const ParameterSignal &sig, Vector &out);
+  void eval(const Vector &point, const ParameterSignal &sig, Vector &out) override;
   void setYU(const Vector &ys, const Vector &xx);
 };
 
@@ -97,10 +97,10 @@ public:
   GResidFunction(const GResidFunction &rf)
      
   = default;
-  virtual ~GResidFunction()
-  = default;
-  virtual VectorFunction *
-  clone() const
+  ~GResidFunction()
+  override = default;
+  VectorFunction *
+  clone() const override
   {
     return new GResidFunction(*this);
   }

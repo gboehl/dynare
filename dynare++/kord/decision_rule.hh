@@ -126,31 +126,31 @@ public:
     centralize(dr);
   }
   const Vector &
-  getSteady() const
+  getSteady() const override
   {
     return ysteady;
   }
   TwoDMatrix *simulate(emethod em, int np, const Vector &ystart,
-                       ShockRealization &sr) const;
+                       ShockRealization &sr) const override;
   void evaluate(emethod em, Vector &out, const ConstVector &ys,
-                const ConstVector &u) const;
-  DecisionRule *centralizedClone(const Vector &fixpoint) const;
-  void writeMat(mat_t *fd, const char *prefix) const;
+                const ConstVector &u) const override;
+  DecisionRule *centralizedClone(const Vector &fixpoint) const override;
+  void writeMat(mat_t *fd, const char *prefix) const override;
 
   int
-  nexog() const
+  nexog() const override
   {
     return nu;
   }
   const PartitionY &
-  getYPart() const
+  getYPart() const override
   {
     return ypart;
   }
 protected:
   void fillTensors(const _Tg &g, double sigma);
   void centralize(const DecisionRuleImpl &dr);
-  void eval(emethod em, Vector &out, const ConstVector &v) const;
+  void eval(emethod em, Vector &out, const ConstVector &v) const override;
 };
 
 /* Here we have to fill the tensor polynomial. This involves two
@@ -495,8 +495,8 @@ public:
   typedef typename DecisionRule::emethod emethod;
   DRFixPoint(const _Tg &g, const PartitionY &yp,
              const Vector &ys, double sigma);
-  virtual
-  ~DRFixPoint();
+  
+  ~DRFixPoint() override;
 
   bool calcFixPoint(emethod em, Vector &out);
 
@@ -925,7 +925,7 @@ public:
     : res(sim_res), dr(dec_rule), em(emet), np(num_per), st(start), sr(shock_r)
   {
   }
-  void operator()();
+  void operator()() override;
 };
 
 /* This worker simulates a given impulse |imp| to a given shock
@@ -951,7 +951,7 @@ public:
       idata(id), ishock(ishck), imp(impulse)
   {
   }
-  void operator()();
+  void operator()() override;
 };
 
 /* This class does the real time simulation job for
@@ -977,7 +977,7 @@ public:
     : res(sim_res), dr(dec_rule), em(emet), np(num_per), ystart(start), sr(shock_r)
   {
   }
-  void operator()();
+  void operator()() override;
 };
 
 /* This class generates draws from Gaussian distribution with zero mean
@@ -999,11 +999,11 @@ public:
     : mtwister(sr.mtwister), factor(sr.factor)
   {
   }
-  virtual ~RandomShockRealization()
-  = default;
-  void get(int n, Vector &out);
+  ~RandomShockRealization()
+  override = default;
+  void get(int n, Vector &out) override;
   int
-  numShocks() const
+  numShocks() const override
   {
     return factor.nrows();
   }
@@ -1032,9 +1032,9 @@ public:
   {
   }
   ExplicitShockRealization(ShockRealization &sr, int num_per);
-  void get(int n, Vector &out);
+  void get(int n, Vector &out) override;
   int
-  numShocks() const
+  numShocks() const override
   {
     return shocks.nrows();
   }
@@ -1069,9 +1069,9 @@ public:
     KORD_RAISE_IF(sh.nrows() != v.nrows() || v.nrows() != v.ncols(),
                   "Wrong dimension of input matrix in GenShockRealization constructor");
   }
-  void get(int n, Vector &out);
+  void get(int n, Vector &out) override;
   int
-  numShocks() const
+  numShocks() const override
   {
     return RandomShockRealization::numShocks();
   }

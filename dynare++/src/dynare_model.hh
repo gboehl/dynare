@@ -257,10 +257,10 @@ namespace ogdyn
      * in the model file. */
     DynareParser(const char *str, int len, int ord);
     DynareParser(const DynareParser &p);
-    virtual
-    ~DynareParser();
+    
+    ~DynareParser() override;
     DynareModel *
-    clone() const
+    clone() const override
     {
       return new DynareParser(*this);
     }
@@ -364,9 +364,9 @@ namespace ogdyn
        
     = default;
     ~DynareSPModel()
-    = default;
-    virtual DynareModel *
-    clone() const
+    override = default;
+    DynareModel *
+    clone() const override
     {
       return new DynareSPModel(*this);
     }
@@ -384,7 +384,7 @@ namespace ogdyn
     NLSelector(const DynareModel &m) : model(m)
     {
     }
-    bool operator()(int t) const;
+    bool operator()(int t) const override;
   };
 
   /** This class writes a mathematical code evaluating the system of
@@ -426,27 +426,27 @@ namespace ogdyn
     char *id;
   public:
     MatlabSSWriter(const DynareModel &dm, const char *idd);
-    virtual ~MatlabSSWriter()
+    ~MatlabSSWriter() override
     {
       delete [] id;
     }
   protected:
     // from ModelSSWriter
-    void write_der0_preamble(FILE *fd) const;
-    void write_der1_preamble(FILE *fd) const;
+    void write_der0_preamble(FILE *fd) const override;
+    void write_der1_preamble(FILE *fd) const override;
     /** This writes atom assignments. We have four kinds of atoms
      * set here: endogenous vars coming from one parameter,
      * parameter values given by the second parameter, constants,
      * and the OperationTree::num_constants hardwired constants in
      * ogp::OperationTree. */
-    void write_atom_assignment(FILE *fd) const;
-    void write_der0_assignment(FILE *fd) const;
-    void write_der1_assignment(FILE *fd) const;
+    void write_atom_assignment(FILE *fd) const override;
+    void write_der0_assignment(FILE *fd) const override;
+    void write_der1_assignment(FILE *fd) const override;
     /** This prints t10 for t=10. */
-    void format_term(int t, FILE *fd) const;
+    void format_term(int t, FILE *fd) const override;
     /** This prints a10 for t=10. The atoms a10 are supposed to be
      * set by write_atom_assignments(). */
-    void format_nulary(int t, FILE *fd) const;
+    void format_nulary(int t, FILE *fd) const override;
   private:
     void write_common1_preamble(FILE *fd) const;
     void write_common2_preamble(FILE *fd) const;
@@ -465,7 +465,7 @@ namespace ogdyn
         model(m)
     {
     }
-    void format_nulary(int t, FILE *fd) const;
+    void format_nulary(int t, FILE *fd) const override;
   };
 };
 

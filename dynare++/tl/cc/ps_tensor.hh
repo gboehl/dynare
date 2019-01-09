@@ -204,11 +204,11 @@ public:
      
   = default;
 
-  void increment(IntSequence &v) const;
-  void decrement(IntSequence &v) const;
-  FTensor&fold() const;
+  void increment(IntSequence &v) const override;
+  void decrement(IntSequence &v) const override;
+  FTensor&fold() const override;
 
-  int getOffset(const IntSequence &v) const;
+  int getOffset(const IntSequence &v) const override;
   void addTo(FGSTensor &out) const;
   void addTo(UGSTensor &out) const;
 
@@ -368,11 +368,11 @@ public:
      
   = default;
 
-  void increment(IntSequence &v) const;
-  void decrement(IntSequence &v) const;
-  UTensor&unfold() const;
+  void increment(IntSequence &v) const override;
+  void decrement(IntSequence &v) const override;
+  UTensor&unfold() const override;
 
-  int getOffset(const IntSequence &v) const;
+  int getOffset(const IntSequence &v) const override;
   void addTo(FGSTensor &out) const;
 };
 

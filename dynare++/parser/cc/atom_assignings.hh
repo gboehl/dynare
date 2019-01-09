@@ -97,14 +97,14 @@ namespace ogp
         std::vector<double>(a.expr.nformulas()), aa(a)
     {
     }
-    virtual ~AtomAsgnEvaluator()
-    = default;
+    ~AtomAsgnEvaluator()
+    override = default;
     /** This sets all initial values to NaNs, all constants and
      * all values set by user by call set_value. This is called by
      * FormulaEvaluator::eval() method, which is called by eval()
      * method passing this argument as AtomValues. So the
      * ogp::EvalTree will be always this->etree. */
-    void setValues(EvalTree &et) const;
+    void setValues(EvalTree &et) const override;
     /** User setting of the values. For example in initval,
      * parameters are known and should be set to their values. In
      * constrast endogenous variables are set initially to NaNs by
@@ -114,7 +114,7 @@ namespace ogp
      * also checks whether the i-th expression is an atom. If so,
      * it sets the value of the atom in ogp::EvalTree
      * this->etree. */
-    void load(int i, double res);
+    void load(int i, double res) override;
     /** After the user values have been set, the assignments can
      * be evaluated. For this purpose we have eval() method. The
      * result is that this object as std::vector<double> will

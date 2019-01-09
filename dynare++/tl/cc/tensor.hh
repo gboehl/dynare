@@ -197,8 +197,8 @@ public:
       dim(t.dim)
   {
   }
-  virtual ~Tensor()
-  = default;
+  ~Tensor()
+  override = default;
   virtual void increment(IntSequence &v) const = 0;
   virtual void decrement(IntSequence &v) const = 0;
   virtual int getOffset(const IntSequence &v) const = 0;
@@ -252,8 +252,8 @@ public:
     : Tensor(first_row, num, t)
   {
   }
-  virtual ~UTensor()
-  = default;
+  ~UTensor()
+  override = default;
   virtual FTensor&fold() const = 0;
 
   static void increment(IntSequence &v, int nv);
@@ -287,8 +287,8 @@ public:
     : Tensor(first_row, num, t)
   {
   }
-  virtual ~FTensor()
-  = default;
+  ~FTensor()
+  override = default;
   virtual UTensor&unfold() const = 0;
 
   static void decrement(IntSequence &v, int nv);

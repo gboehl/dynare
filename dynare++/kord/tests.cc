@@ -343,7 +343,7 @@ public:
   }
 
   bool
-  run() const
+  run() const override
   {
     TwoDMatrix gy(8, 4, gy_data);
     TwoDMatrix gu(8, 3, gu_data);
@@ -366,7 +366,7 @@ public:
   }
 
   bool
-  run() const
+  run() const override
   {
     TwoDMatrix gy(30, 20, gy_data2);
     TwoDMatrix gu(30, 10, gu_data2);
@@ -390,7 +390,7 @@ public:
   }
 
   bool
-  run() const
+  run() const override
   {
     TwoDMatrix gy(30, 20, gy_data2);
     TwoDMatrix gu(30, 10, gu_data2);

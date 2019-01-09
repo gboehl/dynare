@@ -36,17 +36,17 @@ namespace ogdyn
     DynareStaticAtoms(const DynareStaticAtoms &a)
        
     = default;
-    virtual ~DynareStaticAtoms()
-    = default;
+    ~DynareStaticAtoms()
+    override = default;
     /** This registers a unique varname identifier. It throws an
      * exception if the variable name is duplicate. It checks the
      * uniqueness and then it calls StaticAtoms::register_name. */
-    void register_name(const char *name);
+    void register_name(const char *name) override;
   protected:
     /** This returns a tree index of the given variable, and if
      * the variable has not been registered, it throws an
      * exception. */
-    int check_variable(const char *name) const;
+    int check_variable(const char *name) const override;
   };
 
   class DynareDynamicAtoms : public ogp::SAtoms, public ogp::NularyStringConvertor
@@ -63,24 +63,24 @@ namespace ogdyn
     {
     }
     DynareDynamicAtoms(const DynareDynamicAtoms &dda);
-    virtual ~DynareDynamicAtoms()
-    = default;
+    ~DynareDynamicAtoms()
+    override = default;
     /** This parses a variable of the forms: varname(+3),
      * varname(3), varname, varname(-3), varname(0), varname(+0),
      * varname(-0). */
-    virtual void parse_variable(const char *in, std::string &out, int &ll) const;
+    void parse_variable(const char *in, std::string &out, int &ll) const override;
     /** Registers unique name of endogenous variable. */
-    void register_uniq_endo(const char *name);
+    void register_uniq_endo(const char *name) override;
     /** Registers unique name of exogenous variable. */
-    void register_uniq_exo(const char *name);
+    void register_uniq_exo(const char *name) override;
     /** Registers unique name of parameter. */
-    void register_uniq_param(const char *name);
+    void register_uniq_param(const char *name) override;
     /** Return true if the name is a given type. */
     bool is_type(const char *name, atype tp) const;
     /** Debug print. */
-    void print() const;
+    void print() const override;
     /** Implement NularyStringConvertor::convert. */
-    std::string convert(int t) const;
+    std::string convert(int t) const override;
   };
 
   /** This class represents the atom values for dynare, where
@@ -116,7 +116,7 @@ namespace ogdyn
       : atoms(a), paramvals(pvals), yym(ym), yy(y), yyp(yp), xx(x)
     {
     }
-    void setValues(ogp::EvalTree &et) const;
+    void setValues(ogp::EvalTree &et) const override;
   };
 
   /** This class represents the atom values at the steady state. It
@@ -144,7 +144,7 @@ namespace ogdyn
       xx.zeros();
     }
     void
-    setValues(ogp::EvalTree &et) const
+    setValues(ogp::EvalTree &et) const override
     {
       av.setValues(et);
     }
@@ -177,7 +177,7 @@ namespace ogdyn
     {
     }
     /** Set the values to the tree defined over the static atoms. */
-    void setValues(ogp::EvalTree &et) const;
+    void setValues(ogp::EvalTree &et) const override;
   };
 
   /** This class takes a vector of endogenous variables and a
@@ -196,7 +196,7 @@ namespace ogdyn
     DynareSteadySubstitutions(const ogp::FineAtoms &a, const ogp::OperationTree &tree,
                               const Tsubstmap &subst,
                               const Vector &pvals, Vector &yy);
-    void load(int i, double res);
+    void load(int i, double res) override;
   protected:
     Vector &y;
     vector<const char *> left_hand_sides;
@@ -219,7 +219,7 @@ namespace ogdyn
                                     const ogp::OperationTree &tree,
                                     const Tsubstmap &subst,
                                     const Vector &pvals, Vector &yy);
-    void load(int i, double res);
+    void load(int i, double res) override;
   protected:
     Vector &y;
     vector<const char *> left_hand_sides;

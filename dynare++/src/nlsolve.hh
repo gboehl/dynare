@@ -64,8 +64,8 @@ namespace ogu
       : TwoDMatrix(n, n)
     {
     }
-    virtual ~Jacobian()
-    = default;
+    ~Jacobian()
+    override = default;
     virtual void eval(const Vector &in) = 0;
   };
 
@@ -88,8 +88,8 @@ namespace ogu
     {
       xnewton.zeros(); xcauchy.zeros(); x.zeros();
     }
-    virtual ~NLSolver()
-    = default;
+    ~NLSolver()
+    override = default;
     /** Returns true if the problem has converged. xx as input is the
      * starting value, as output it is a solution. */
     bool solve(Vector &xx, int &iter);
@@ -97,7 +97,7 @@ namespace ogu
      * func(xx)^T*func(xx), where
      * xx=x+lambda*xcauchy+(1-lambda)*xnewton. It is non-const only
      * because it calls func, x, xnewton, xcauchy is not changed. */
-    double eval(double lambda);
+    double eval(double lambda) override;
   };
 
 };

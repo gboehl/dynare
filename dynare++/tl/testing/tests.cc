@@ -600,7 +600,7 @@ public:
   {
   }
   bool
-  run() const
+  run() const override
   {
     Symmetry s(2, 3);
     IntSequence nvs(2); nvs[0] = 4; nvs[1] = 2;
@@ -616,7 +616,7 @@ public:
   {
   }
   bool
-  run() const
+  run() const override
   {
     Symmetry s(2, 3);
     IntSequence nvs(2); nvs[0] = 4; nvs[1] = 2;
@@ -632,7 +632,7 @@ public:
   {
   }
   bool
-  run() const
+  run() const override
   {
     Symmetry s(2, 3, 2);
     IntSequence nvs(3); nvs[0] = 5; nvs[1] = 2; nvs[2] = 2;
@@ -648,7 +648,7 @@ public:
   {
   }
   bool
-  run() const
+  run() const override
   {
     Symmetry s(2, 3, 2);
     IntSequence nvs(3); nvs[0] = 5; nvs[1] = 2; nvs[2] = 2;
@@ -664,7 +664,7 @@ public:
   {
   }
   bool
-  run() const
+  run() const override
   {
     Symmetry s(1, 1, 3);
     IntSequence nvs(3); nvs[0] = 3; nvs[1] = 3; nvs[2] = 2;
@@ -680,7 +680,7 @@ public:
   {
   }
   bool
-  run() const
+  run() const override
   {
     Symmetry s(2, 3, 2);
     IntSequence nvs(3); nvs[0] = 4; nvs[1] = 2; nvs[2] = 4;
@@ -696,7 +696,7 @@ public:
   {
   }
   bool
-  run() const
+  run() const override
   {
     Symmetry s(1, 1, 3);
     IntSequence nvs(3); nvs[0] = 3; nvs[1] = 3; nvs[2] = 2;
@@ -712,7 +712,7 @@ public:
   {
   }
   bool
-  run() const
+  run() const override
   {
     Symmetry s(2, 3, 2);
     IntSequence nvs(3); nvs[0] = 4; nvs[1] = 2; nvs[2] = 4;
@@ -728,7 +728,7 @@ public:
   {
   }
   bool
-  run() const
+  run() const override
   {
     Symmetry s(2, 3);
     IntSequence nvs(2); nvs[0] = 4; nvs[1] = 2;
@@ -744,7 +744,7 @@ public:
   {
   }
   bool
-  run() const
+  run() const override
   {
     Symmetry s(2, 3);
     IntSequence nvs(2); nvs[0] = 4; nvs[1] = 2;
@@ -760,7 +760,7 @@ public:
   {
   }
   bool
-  run() const
+  run() const override
   {
     Symmetry s(2, 3, 2);
     IntSequence nvs(3); nvs[0] = 5; nvs[1] = 2; nvs[2] = 2;
@@ -776,7 +776,7 @@ public:
   {
   }
   bool
-  run() const
+  run() const override
   {
     Symmetry s(2, 3, 2);
     IntSequence nvs(3); nvs[0] = 5; nvs[1] = 2; nvs[2] = 2;
@@ -792,7 +792,7 @@ public:
   {
   }
   bool
-  run() const
+  run() const override
   {
     return fs_fold_unfold(5, 4, 3);
   }
@@ -806,7 +806,7 @@ public:
   {
   }
   bool
-  run() const
+  run() const override
   {
     Symmetry s(1, 2, 2);
     IntSequence nvs(3); nvs[0] = 3; nvs[1] = 3; nvs[2] = 2;
@@ -822,7 +822,7 @@ public:
   {
   }
   bool
-  run() const
+  run() const override
   {
     return fs_fold_unfold(5, 9, 4);
   }
@@ -836,7 +836,7 @@ public:
   {
   }
   bool
-  run() const
+  run() const override
   {
     Symmetry s(2, 1, 2);
     IntSequence nvs(3); nvs[0] = 6; nvs[1] = 2; nvs[2] = 6;
@@ -852,7 +852,7 @@ public:
   {
   }
   bool
-  run() const
+  run() const override
   {
     return r_fold_unfold(5, 3, 3);
   }
@@ -866,7 +866,7 @@ public:
   {
   }
   bool
-  run() const
+  run() const override
   {
     return r_fold_unfold(5, 6, 5);
   }
@@ -880,7 +880,7 @@ public:
   {
   }
   bool
-  run() const
+  run() const override
   {
     IntSequence bnvs(2); bnvs[0] = 3; bnvs[1] = 2;
     return dense_prod(Symmetry(1, 2), bnvs, 2, 3, 2);
@@ -895,7 +895,7 @@ public:
   {
   }
   bool
-  run() const
+  run() const override
   {
     IntSequence bnvs(2); bnvs[0] = 10; bnvs[1] = 7;
     return dense_prod(Symmetry(2, 3), bnvs, 3, 15, 10);
@@ -910,7 +910,7 @@ public:
   {
   }
   bool
-  run() const
+  run() const override
   {
     IntSequence bnvs(2); bnvs[0] = 13; bnvs[1] = 11;
     return dense_prod(Symmetry(3, 2), bnvs, 3, 20, 20);
@@ -925,7 +925,7 @@ public:
   {
   }
   bool
-  run() const
+  run() const override
   {
     return folded_monomial(10, 4, 5, 3, 4);
   }
@@ -939,7 +939,7 @@ public:
   {
   }
   bool
-  run() const
+  run() const override
   {
     return folded_monomial(20, 12, 10, 5, 4);
   }
@@ -953,7 +953,7 @@ public:
   {
   }
   bool
-  run() const
+  run() const override
   {
     return unfolded_monomial(10, 4, 5, 3, 4);
   }
@@ -967,7 +967,7 @@ public:
   {
   }
   bool
-  run() const
+  run() const override
   {
     return unfolded_monomial(20, 12, 10, 5, 4);
   }
@@ -981,7 +981,7 @@ public:
   {
   }
   bool
-  run() const
+  run() const override
   {
     return folded_contraction(5, 4, 3);
   }
@@ -995,7 +995,7 @@ public:
   {
   }
   bool
-  run() const
+  run() const override
   {
     return folded_contraction(20, 12, 5);
   }
@@ -1009,7 +1009,7 @@ public:
   {
   }
   bool
-  run() const
+  run() const override
   {
     return unfolded_contraction(5, 4, 3);
   }
@@ -1023,7 +1023,7 @@ public:
   {
   }
   bool
-  run() const
+  run() const override
   {
     return unfolded_contraction(20, 12, 5);
   }
@@ -1037,7 +1037,7 @@ public:
   {
   }
   bool
-  run() const
+  run() const override
   {
     return poly_eval(4, 5, 4);
   }
@@ -1051,7 +1051,7 @@ public:
   {
   }
   bool
-  run() const
+  run() const override
   {
     return poly_eval(244, 97, 2);
   }
@@ -1066,7 +1066,7 @@ public:
   {
   }
   bool
-  run() const
+  run() const override
   {
     return fold_zcont(3, 2, 2, 1, 2, 2, 3);
   }
@@ -1081,7 +1081,7 @@ public:
   {
   }
   bool
-  run() const
+  run() const override
   {
     return fold_zcont(13, 5, 7, 4, 6, 7, 4);
   }
@@ -1096,7 +1096,7 @@ public:
   {
   }
   bool
-  run() const
+  run() const override
   {
     return unfold_zcont(3, 2, 2, 1, 2, 2, 3);
   }
@@ -1111,7 +1111,7 @@ public:
   {
   }
   bool
-  run() const
+  run() const override
   {
     return unfold_zcont(13, 5, 7, 4, 6, 7, 4);
   }

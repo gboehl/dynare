@@ -148,48 +148,48 @@ public:
       conts(new const _Ctype *[nc])
   {
   }
-  virtual ~StackContainer()
+  ~StackContainer() override
   {
     delete [] conts;
   }
   const IntSequence &
-  getStackSizes() const
+  getStackSizes() const override
   {
     return stack_sizes;
   }
   IntSequence &
-  getStackSizes()
+  getStackSizes() override
   {
     return stack_sizes;
   }
   const IntSequence &
-  getStackOffsets() const
+  getStackOffsets() const override
   {
     return stack_offsets;
   }
   IntSequence &
-  getStackOffsets()
+  getStackOffsets() override
   {
     return stack_offsets;
   }
   int
-  numConts() const
+  numConts() const override
   {
     return num_conts;
   }
   const _Ctype *
-  getCont(int i) const
+  getCont(int i) const override
   {
     return conts[i];
   }
-  virtual itype getType(int i, const Symmetry &s) const = 0;
+  itype getType(int i, const Symmetry &s) const override = 0;
   int
-  numStacks() const
+  numStacks() const override
   {
     return stack_sizes.size();
   }
   bool
-  isZero(int i, const Symmetry &s) const
+  isZero(int i, const Symmetry &s) const override
   {
     TL_RAISE_IF(i < 0 || i >= numStacks(),
                 "Wrong index to stack in StackContainer::isZero.");
@@ -198,7 +198,7 @@ public:
   }
 
   const _Ttype *
-  getMatrix(int i, const Symmetry &s) const
+  getMatrix(int i, const Symmetry &s) const override
   {
     TL_RAISE_IF(isZero(i, s) || getType(i, s) == _Stype::unit,
                 "Matrix is not returned in StackContainer::getMatrix");
@@ -206,7 +206,7 @@ public:
   }
 
   int
-  getLengthOfMatrixStacks(const Symmetry &s) const
+  getLengthOfMatrixStacks(const Symmetry &s) const override
   {
     int res = 0;
     int i = 0;
@@ -216,7 +216,7 @@ public:
   }
 
   int
-  getUnitPos(const Symmetry &s) const
+  getUnitPos(const Symmetry &s) const override
   {
     if (s.dimen() != 1)
       return -1;
@@ -228,7 +228,7 @@ public:
 
   Vector *
   createPackedColumn(const Symmetry &s,
-                     const IntSequence &coor, int &iu) const
+                     const IntSequence &coor, int &iu) const override
   {
     TL_RAISE_IF(s.dimen() != coor.size(),
                 "Incompatible coordinates for symmetry in StackContainer::createPackedColumn");
@@ -360,7 +360,7 @@ public:
      file, how $z$ looks, and code is clear. */
 
   itype
-  getType(int i, const Symmetry &s) const
+  getType(int i, const Symmetry &s) const override
   {
     if (i == 0)
       return _Stype::matrix;
@@ -443,7 +443,7 @@ public:
      information. */
 
   itype
-  getType(int i, const Symmetry &s) const
+  getType(int i, const Symmetry &s) const override
   {
     if (i == 0)
       if (s[2] > 0 || s == Symmetry(0, 0, 0, 1))
@@ -656,7 +656,7 @@ public:
                      const Symmetry &s,
                      const FGSContainer &dcontainer,
                      FGSTensor &outten);
-  void operator()();
+  void operator()() override;
 };
 
 class WorkerFoldMAASparse1 : public THREAD
@@ -670,7 +670,7 @@ public:
   WorkerFoldMAASparse1(const FoldedStackContainer &container,
                        const FSSparseTensor &ten,
                        FGSTensor &outten, const IntSequence &c);
-  void operator()();
+  void operator()() override;
 };
 
 class WorkerFoldMAASparse2 : public THREAD
@@ -683,7 +683,7 @@ public:
   WorkerFoldMAASparse2(const FoldedStackContainer &container,
                        const FSSparseTensor &ten,
                        FGSTensor &outten, const IntSequence &c);
-  void operator()();
+  void operator()() override;
 };
 
 class WorkerFoldMAASparse4 : public THREAD
@@ -696,7 +696,7 @@ public:
   WorkerFoldMAASparse4(const FoldedStackContainer &container,
                        const FSSparseTensor &ten,
                        FGSTensor &outten, const IntSequence &c);
-  void operator()();
+  void operator()() override;
 };
 
 class WorkerUnfoldMAADense : public THREAD
@@ -710,7 +710,7 @@ public:
                        const Symmetry &s,
                        const UGSContainer &dcontainer,
                        UGSTensor &outten);
-  void operator()();
+  void operator()() override;
 };
 
 class WorkerUnfoldMAASparse1 : public THREAD
@@ -724,7 +724,7 @@ public:
   WorkerUnfoldMAASparse1(const UnfoldedStackContainer &container,
                          const FSSparseTensor &ten,
                          UGSTensor &outten, const IntSequence &c);
-  void operator()();
+  void operator()() override;
 };
 
 class WorkerUnfoldMAASparse2 : public THREAD
@@ -737,7 +737,7 @@ public:
   WorkerUnfoldMAASparse2(const UnfoldedStackContainer &container,
                          const FSSparseTensor &ten,
                          UGSTensor &outten, const IntSequence &c);
-  void operator()();
+  void operator()() override;
 };
 
 #endif

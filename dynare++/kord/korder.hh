@@ -162,7 +162,7 @@ public:
   {
   }
   PLUMatrix(const PLUMatrix &plu);
-  virtual ~PLUMatrix()
+  ~PLUMatrix() override
   {
     delete [] ipiv;
   }

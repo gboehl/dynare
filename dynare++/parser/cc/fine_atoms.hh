@@ -33,12 +33,12 @@ namespace ogp
     {
     }
     VarOrdering *
-    clone(const vector<const char *> &vnames, const DynamicAtoms &a) const
+    clone(const vector<const char *> &vnames, const DynamicAtoms &a) const override
     {
       return new EndoVarOrdering1(*this, vnames, a);
     }
     void
-    do_ordering()
+    do_ordering() override
     {
       do_pbspbfbf();
     }
@@ -61,12 +61,12 @@ namespace ogp
     {
     }
     VarOrdering *
-    clone(const vector<const char *> &vnames, const DynamicAtoms &a) const
+    clone(const vector<const char *> &vnames, const DynamicAtoms &a) const override
     {
       return new EndoVarOrdering2(*this, vnames, a);
     }
     void
-    do_ordering()
+    do_ordering() override
     {
       do_bfspbfpb();
     }
@@ -88,12 +88,12 @@ namespace ogp
     {
     }
     VarOrdering *
-    clone(const vector<const char *> &vnames, const DynamicAtoms &a) const
+    clone(const vector<const char *> &vnames, const DynamicAtoms &a) const override
     {
       return new ExoVarOrdering(*this, vnames, a);
     }
     void
-    do_ordering()
+    do_ordering() override
     {
       do_increasing_time();
     }
@@ -234,7 +234,7 @@ namespace ogp
     }
     FineAtoms(const FineAtoms &fa);
     /** Deletes endo_order and exo_order. */
-    virtual ~FineAtoms()
+    ~FineAtoms() override
     {
       if (endo_order)
         delete endo_order;
@@ -248,7 +248,7 @@ namespace ogp
      * variable is declared by inserting it to
      * DynamicAtoms::varnames. This is a responsibility of a
      * subclass. */
-    int check_variable(const char *name) const;
+    int check_variable(const char *name) const override;
     /** This calculates min lag and max lead of endogenous variables. */
     void
     endovarspan(int &mlead, int &mlag) const
@@ -310,7 +310,7 @@ namespace ogp
     /** Return the atoms with respect to which we are going to
      * differentiate. This must be called after
      * parsing_finished. */
-    vector<int> variables() const;
+    vector<int> variables() const override;
     /** Return the number of static. */
     int nstat() const;
     /** Return the number of predetermined. */
@@ -412,7 +412,7 @@ namespace ogp
      * action. */
     virtual void register_uniq_param(const char *name);
     /** Debug print. */
-    void print() const;
+    void print() const override;
   private:
     /** This performs the common part of parsing_finished(), which
      * is a construction of internal orderings. */

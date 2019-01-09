@@ -67,16 +67,16 @@ public:
   {
   }
 
-  void increment(IntSequence &v) const;
-  void decrement(IntSequence &v) const;
-  UTensor&unfold() const;
+  void increment(IntSequence &v) const override;
+  void decrement(IntSequence &v) const override;
+  UTensor&unfold() const override;
   Symmetry
   getSym() const
   {
     return Symmetry(dimen());
   }
 
-  int getOffset(const IntSequence &v) const;
+  int getOffset(const IntSequence &v) const override;
   void addSubTensor(const FGSTensor &t);
   int
   nvar() const
@@ -111,16 +111,16 @@ public:
   {
   }
 
-  void increment(IntSequence &v) const;
-  void decrement(IntSequence &v) const;
-  FTensor&fold() const;
+  void increment(IntSequence &v) const override;
+  void decrement(IntSequence &v) const override;
+  FTensor&fold() const override;
   Symmetry
   getSym() const
   {
     return Symmetry(dimen());
   }
 
-  int getOffset(const IntSequence &v) const;
+  int getOffset(const IntSequence &v) const override;
   void addSubTensor(const UGSTensor &t);
   int
   nvar() const

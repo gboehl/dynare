@@ -84,8 +84,8 @@ namespace ogp
     {
       StaticFineAtoms::import_atoms(fa, otree, tmap, dummy);
     }
-    virtual ~StaticFineAtoms()
-    = default;
+    ~StaticFineAtoms()
+    override = default;
     /** This adds atoms from dynamic atoms inserting new tree
      * indices to the given tree and tracing the mapping from old
      * atoms to new atoms in tmap. The ordering of the static
@@ -102,7 +102,7 @@ namespace ogp
      * variable is declared by inserting it to
      * StaticAtoms::varnames, which is done with registering
      * methods. This a responsibility of a subclass. */
-    int check_variable(const char *name) const;
+    int check_variable(const char *name) const override;
     /** Return an (external) ordering of parameters. */
     const vector<const char *> &
     get_params() const
@@ -128,7 +128,7 @@ namespace ogp
     /** Return the atoms with respect to which we are going to
      * differentiate. */
     vector<int>
-    variables() const
+    variables() const override
     {
       return der_atoms;
     }
@@ -190,7 +190,7 @@ namespace ogp
      * action. */
     virtual void register_uniq_param(const char *name);
     /** Debug print. */
-    void print() const;
+    void print() const override;
   private:
     /** Add endogenous variable name, which is already in the name
      * storage. */

@@ -169,16 +169,16 @@ public:
   {
   }
 
-  virtual ~FGSTensor()
-  = default;
+  ~FGSTensor()
+  override = default;
 
-  void increment(IntSequence &v) const;
+  void increment(IntSequence &v) const override;
   void
-  decrement(IntSequence &v) const
+  decrement(IntSequence &v) const override
   {
     tdims.decrement(v);
   }
-  UTensor&unfold() const;
+  UTensor&unfold() const override;
   const TensorDimens &
   getDims() const
   {
@@ -193,7 +193,7 @@ public:
   void contractAndAdd(int i, FGSTensor &out,
                       const FRSingleTensor &col) const;
   int
-  getOffset(const IntSequence &v) const
+  getOffset(const IntSequence &v) const override
   {
     return tdims.calcFoldOffset(v);
   }
@@ -237,12 +237,12 @@ public:
     : UTensor(0, t.nrows(), t), tdims(t.nvar(), t.dimen())
   {
   }
-  virtual ~UGSTensor()
-  = default;
+  ~UGSTensor()
+  override = default;
 
-  void increment(IntSequence &v) const;
-  void decrement(IntSequence &v) const;
-  FTensor&fold() const;
+  void increment(IntSequence &v) const override;
+  void decrement(IntSequence &v) const override;
+  FTensor&fold() const override;
   const TensorDimens &
   getDims() const
   {
@@ -256,7 +256,7 @@ public:
 
   void contractAndAdd(int i, UGSTensor &out,
                       const URSingleTensor &col) const;
-  int getOffset(const IntSequence &v) const;
+  int getOffset(const IntSequence &v) const override;
 private:
   void unfoldData();
 public:

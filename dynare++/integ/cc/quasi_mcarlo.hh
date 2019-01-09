@@ -206,16 +206,16 @@ public:
     : QuadratureImpl<qmcpit>(d), QMCSpecification(d, l, p)
   {
   }
-  virtual ~QMCarloCubeQuadrature()
-  = default;
+  ~QMCarloCubeQuadrature()
+  override = default;
   int
-  numEvals(int l) const
+  numEvals(int l) const override
   {
     return l;
   }
 protected:
   qmcpit
-  begin(int ti, int tn, int lev) const
+  begin(int ti, int tn, int lev) const override
   {
     return qmcpit(*this, ti*level()/tn + 1);
   }
@@ -280,16 +280,16 @@ public:
     : QuadratureImpl<qmcnpit>(d), QMCSpecification(d, l, p)
   {
   }
-  virtual ~QMCarloNormalQuadrature()
-  = default;
+  ~QMCarloNormalQuadrature()
+  override = default;
   int
-  numEvals(int l) const
+  numEvals(int l) const override
   {
     return l;
   }
 protected:
   qmcnpit
-  begin(int ti, int tn, int lev) const
+  begin(int ti, int tn, int lev) const override
   {
     return qmcnpit(*this, ti*level()/tn + 1);
   }
@@ -299,14 +299,14 @@ protected:
 class WarnockPerScheme : public PermutationScheme
 {
 public:
-  int permute(int i, int base, int c) const;
+  int permute(int i, int base, int c) const override;
 };
 
 /* Declares reverse permutation scheme. */
 class ReversePerScheme : public PermutationScheme
 {
 public:
-  int permute(int i, int base, int c) const;
+  int permute(int i, int base, int c) const override;
 };
 
 /* Declares no permutation (identity) scheme. */
@@ -314,7 +314,7 @@ class IdentityPerScheme : public PermutationScheme
 {
 public:
   int
-  permute(int i, int base, int c) const
+  permute(int i, int base, int c) const override
   {
     return c;
   }

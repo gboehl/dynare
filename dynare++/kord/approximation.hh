@@ -73,7 +73,7 @@ public:
   typedef StackContainer<FGSTensor>::_Ctype _Ctype;
   typedef StackContainer<FGSTensor>::itype itype;
   ZAuxContainer(const _Ctype *gss, int ngss, int ng, int ny, int nu);
-  itype getType(int i, const Symmetry &s) const;
+  itype getType(int i, const Symmetry &s) const override;
 };
 
 /* This class provides an interface to approximation algorithms. The

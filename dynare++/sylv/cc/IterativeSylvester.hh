@@ -25,7 +25,7 @@ public:
     : SylvesterSolver(kdecomp, fdecomp)
   {
   }
-  void solve(SylvParams &pars, KronVector &x) const;
+  void solve(SylvParams &pars, KronVector &x) const override;
 private:
   double performFirstStep(KronVector &x) const;
   static double performStep(const QuasiTriangular &k, const QuasiTriangular &f,

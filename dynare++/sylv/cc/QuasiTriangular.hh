@@ -332,7 +332,7 @@ public:
   {
   };
   _Self &
-  operator++()
+  operator++() override
   {
     _Tparent::ptr++; row++; return *this;
   }
@@ -367,7 +367,7 @@ public:
   {
   };
   _Self &
-  operator++()
+  operator++() override
   {
     _Tparent::ptr += _Tparent::d_size; col++; return *this;
   }
@@ -413,8 +413,8 @@ public:
   QuasiTriangular(const SchurDecomp &decomp);
   QuasiTriangular(const SchurDecompZero &decomp);
   QuasiTriangular(const QuasiTriangular &t);
-  virtual
-  ~QuasiTriangular();
+  
+  ~QuasiTriangular() override;
   const Diagonal &
   getDiagonal() const
   {

@@ -120,7 +120,7 @@ public:
      smarter. */
 
   void
-  operator()()
+  operator()() override
   {
     _Tpit beg = quad.begin(ti, tn, level);
     _Tpit end = quad.begin(ti+1, tn, level);
@@ -162,7 +162,7 @@ public:
 
   /* Just fill a thread group with workes and run it. */
   void
-  integrate(VectorFunctionSet &fs, int level, Vector &out) const
+  integrate(VectorFunctionSet &fs, int level, Vector &out) const override
   {
     // todo: out.length()==func.outdim()
     // todo: dim == func.indim()
@@ -177,7 +177,7 @@ public:
   }
   void
   integrate(const VectorFunction &func,
-            int level, int tn, Vector &out) const
+            int level, int tn, Vector &out) const override
   {
     VectorFunctionSet fs(func, tn);
     integrate(fs, level, out);
@@ -246,25 +246,25 @@ public:
   {
     calcOffsets();
   }
-  virtual ~OneDPrecalcQuadrature()
-  = default;
+  ~OneDPrecalcQuadrature()
+  override = default;
   int
-  numLevels() const
+  numLevels() const override
   {
     return num_levels;
   }
   int
-  numPoints(int level) const
+  numPoints(int level) const override
   {
     return num_points[level-1];
   }
   double
-  point(int level, int i) const
+  point(int level, int i) const override
   {
     return points[offsets[level-1]+i];
   }
   double
-  weight(int level, int i) const
+  weight(int level, int i) const override
   {
     return weights[offsets[level-1]+i];
   }

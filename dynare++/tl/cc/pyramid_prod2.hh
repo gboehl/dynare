@@ -135,17 +135,17 @@ public:
   IrregTensor(const IrregTensorHeader &h);
   void addTo(FRSingleTensor &out) const;
   void
-  increment(IntSequence &v) const
+  increment(IntSequence &v) const override
   {
     header.increment(v);
   }
   void
-  decrement(IntSequence &v) const
+  decrement(IntSequence &v) const override
   {
     TL_RAISE("Not implemented error in IrregTensor::decrement");
   }
   int
-  getOffset(const IntSequence &v) const
+  getOffset(const IntSequence &v) const override
   {
     TL_RAISE("Not implemented error in IrregTensor::getOffset"); return 0;
   }

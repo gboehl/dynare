@@ -100,7 +100,7 @@ namespace ogp
     void import_constants(const Constants &c, OperationTree &otree, Tintintmap &tmap);
     /** Implements AtomValues interface. This sets the values to
      * the evaluation tree EvalTree. */
-    void setValues(EvalTree &et) const;
+    void setValues(EvalTree &et) const override;
     /** This adds a constant with the given tree index. The
      * constant must be checked previously and asserted that it
      * does not exist. */
@@ -169,8 +169,8 @@ namespace ogp
     /** Construct empty DynamicAtoms. */
     DynamicAtoms();
     DynamicAtoms(const DynamicAtoms &da);
-    virtual ~DynamicAtoms()
-    = default;
+    ~DynamicAtoms()
+    override = default;
     /** Check the nulary term identified by its string
      * representation. The nulary term can be either a constant or
      * a variable. If constant, -1 is returned so that it could be
@@ -178,19 +178,19 @@ namespace ogp
      * appeared or not. If variable, then -1 is returned only if
      * the variable has not been assigned an index, otherwise the
      * assigned index is returned. */
-    int check(const char *name) const;
+    int check(const char *name) const override;
     /** Assign the nulary term identified by its string
      * representation. This method should be called when check()
      * returns -1. */
-    void assign(const char *name, int t);
+    void assign(const char *name, int t) override;
     /** Return a number of all variables. */
     int
-    nvar() const
+    nvar() const override
     {
       return nv;
     }
     /** Return the vector of variable indices. */
-    vector<int> variables() const;
+    vector<int> variables() const override;
     /** Return max lead and min lag for a variable given by the
      * index. If a variable cannot be found, the method retursn
      * the smallest integer as maxlead and the largest integer as
@@ -254,7 +254,7 @@ namespace ogp
      * storage. */
     void unassign_variable(const char *varname, int ll, int t);
     /** Debug print. */
-    void print() const;
+    void print() const override;
   protected:
     /** Do the check for the variable. A subclass may need to
      * reimplement this so that it could raise an error if the

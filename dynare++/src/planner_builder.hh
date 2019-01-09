@@ -315,7 +315,7 @@ namespace ogdyn
      * builder.diff_f_save have been put the the
      * ogp::FormulaCustomEvaluator. This is documented in the code
      * of the constructor. */
-    void load(int i, double res);
+    void load(int i, double res) override;
   };
 };
 

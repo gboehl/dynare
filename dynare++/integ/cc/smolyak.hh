@@ -108,12 +108,12 @@ class SmolyakQuadrature : public QuadratureImpl<smolpit>
   PascalTriangle psc;
 public:
   SmolyakQuadrature(int d, int l, const OneDQuadrature &uq);
-  virtual ~SmolyakQuadrature()
-  = default;
-  virtual int numEvals(int level) const;
+  ~SmolyakQuadrature()
+  override = default;
+  int numEvals(int level) const override;
   void designLevelForEvals(int max_eval, int &lev, int &evals) const;
 protected:
-  smolpit begin(int ti, int tn, int level) const;
+  smolpit begin(int ti, int tn, int level) const override;
   unsigned int
   numSummands() const
   {
