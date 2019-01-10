@@ -155,6 +155,8 @@ for i = 1:length(ast)
                     Xtmp = Xtmp.remove(Xtmp.name{j});
                 end
             end
+        else
+            ols_error('didn''t expect to arrive here', jsonmodel{i}.line);
         end
         if ~isempty(Xtmp)
             to_remove = [];
