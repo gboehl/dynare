@@ -42,29 +42,30 @@ function varargout = dyn_ols(ds, fitted_names_dict, eqtags)
 global M_ oo_ options_
 
 assert(nargin >= 1 && nargin <= 3, 'dyn_ols: takes between 1 and 3 arguments');
-assert(isdseries(ds), 'dyn_ols: the first argument must be a dseries');
+assert(~isempty(ds) && isdseries(ds), 'dyn_ols: the first argument must be a dseries');
 
 jsonfile = [M_.fname filesep() 'model' filesep() 'json' filesep() 'modfile-original.json'];
 if exist(jsonfile, 'file') ~= 2
     error('Could not find %s! Please use the json=compute option (See the Dynare invocation section in the reference manual).', jsonfile);
 end
 
-%% Get Equation(s)
-jsonmodel = loadjson(jsonfile);
-ast       = jsonmodel.abstract_syntax_tree;
-jsonmodel = jsonmodel.model;
-
-if nargin == 1
-    fitted_names_dict = {};
-elseif nargin == 2
-    assert(isempty(fitted_names_dict) || ...
-        (iscell(fitted_names_dict) && ...
-        (size(fitted_names_dict, 2) == 2 || size(fitted_names_dict, 2) == 3)), ...
-        'dyn_ols: the second argument must be an Nx2 or Nx3 cell array');
-elseif nargin == 3
-    ast = getEquationsByTags(ast, 'name', eqtags);
-    jsonmodel = getEquationsByTags(jsonmodel, 'name', eqtags);
+if nargin < 3
+    eqtags = {};
+    if nargin == 2
+        assert(isempty(fitted_names_dict) || ...
+            (iscell(fitted_names_dict) && ...
+            (size(fitted_names_dict, 2) == 2 || size(fitted_names_dict, 2) == 3)), ...
+            'dyn_ols: the second argument must be an Nx2 or Nx3 cell array');
+        if nargin == 2
+            eqtags = {};
+        end
+    else
+        fitted_names_dict = {};
+    end
 end
+
+%% Get Equation(s)
+[ast, jsonmodel] = get_ast_jsonmodel(eqtags);
 
 %% Check to see if called from Gibbs
 st = dbstack(1);
