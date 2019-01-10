@@ -272,7 +272,3 @@ dyn_basename(const char *str)
     i--;
   return str+i;
 }
-
-// Local Variables:
-// mode:C++
-// End:

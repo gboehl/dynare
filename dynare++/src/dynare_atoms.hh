@@ -229,7 +229,3 @@ namespace ogdyn
 };
 
 #endif
-
-// Local Variables:
-// mode:C++
-// End:

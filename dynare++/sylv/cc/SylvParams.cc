@@ -235,7 +235,3 @@ SylvParams::createStructArray() const
   return res;
 }
 #endif
-
-// Local Variables:
-// mode:C++
-// End:

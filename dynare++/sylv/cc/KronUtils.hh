@@ -27,7 +27,3 @@ public:
 };
 
 #endif /* KRON_UTILS_H */
-
-// Local Variables:
-// mode:C++
-// End:

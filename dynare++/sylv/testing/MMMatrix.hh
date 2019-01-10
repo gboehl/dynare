@@ -68,7 +68,3 @@ public:
 };
 
 #endif /* MM_MATRIX_H */
-
-// Local Variables:
-// mode:C++
-// End:

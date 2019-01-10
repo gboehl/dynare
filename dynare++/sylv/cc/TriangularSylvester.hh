@@ -116,7 +116,3 @@ private:
 };
 
 #endif /* TRIANGULAR_SYLVESTER_H */
-
-// Local Variables:
-// mode:C++
-// End:

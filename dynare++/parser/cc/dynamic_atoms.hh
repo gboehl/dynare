@@ -468,7 +468,3 @@ namespace ogp
 };
 
 #endif
-
-// Local Variables:
-// mode:C++
-// End:

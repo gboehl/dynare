@@ -536,7 +536,3 @@ DenseDerivGenerator::~DenseDerivGenerator()
   delete [] ts;
   delete [] uts;
 }
-
-// Local Variables:
-// mode:C++
-// End:

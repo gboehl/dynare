@@ -55,7 +55,3 @@ public:
 };
 
 #endif /* QUASI_TRIANGULAR_ZERO_H */
-
-// Local Variables:
-// mode:C++
-// End:

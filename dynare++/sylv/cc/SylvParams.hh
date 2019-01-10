@@ -220,7 +220,3 @@ private:
 };
 
 #endif /* SYLV_PARAMS_H */
-
-// Local Variables:
-// mode:C++
-// End:

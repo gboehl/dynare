@@ -485,7 +485,3 @@ private:
 };
 
 #endif /* GENERAL_MATRIX_H */
-
-// Local Variables:
-// mode:C++
-// End:

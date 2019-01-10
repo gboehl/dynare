@@ -246,7 +246,3 @@ public:
 };
 
 #endif /* VECTOR_H */
-
-// Local Variables:
-// mode:C++
-// End:

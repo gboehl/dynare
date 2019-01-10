@@ -55,7 +55,3 @@ private:
 };
 
 #endif /* BLOCK_DIAGONAL_H */
-
-// Local Variables:
-// mode:C++
-// End:

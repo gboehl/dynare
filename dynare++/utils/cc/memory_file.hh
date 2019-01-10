@@ -69,7 +69,3 @@ namespace ogu
 };
 
 #endif
-
-// Local Variables:
-// mode:C++
-// End:

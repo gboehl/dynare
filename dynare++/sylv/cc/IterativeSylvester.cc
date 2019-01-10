@@ -51,7 +51,3 @@ IterativeSylvester::performStep(const QuasiTriangular &k, const QuasiTriangular 
   double norm = xtmp.getMax();
   return norm;
 }
-
-// Local Variables:
-// mode:C++
-// End:

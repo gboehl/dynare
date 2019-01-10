@@ -427,7 +427,3 @@ TriangularSylvester::multEigVector(KronVector &eig, const Vector &feig,
         }
     }
 }
-
-// Local Variables:
-// mode:C++
-// End:

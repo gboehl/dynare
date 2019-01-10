@@ -522,7 +522,3 @@ private:
 };
 
 #endif /* QUASI_TRIANGULAR_H */
-
-// Local Variables:
-// mode:C++
-// End:

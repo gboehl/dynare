@@ -34,7 +34,3 @@ public:
 #define SYLV_MES_EXCEPTION(mes) (SylvExceptionMessage(__FILE__, __LINE__, mes))
 
 #endif /* SYLV_EXCEPTION_H */
-
-// Local Variables:
-// mode:C++
-// End:

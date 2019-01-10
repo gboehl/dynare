@@ -59,7 +59,3 @@ protected:
 };
 
 #endif /* SYLV_MEMORY_H */
-
-// Local Variables:
-// mode:C++
-// End:

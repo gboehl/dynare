@@ -45,7 +45,3 @@ protected:
 };
 
 #endif /* SIMILARITY_DECOMP_H */
-
-// Local Variables:
-// mode:C++
-// End:

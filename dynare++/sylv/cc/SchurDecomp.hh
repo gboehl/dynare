@@ -63,7 +63,3 @@ public:
 };
 
 #endif /* SCHUR_DECOMP_H */
-
-// Local Variables:
-// mode:C++
-// End:

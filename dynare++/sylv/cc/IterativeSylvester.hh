@@ -33,7 +33,3 @@ private:
 };
 
 #endif /* ITERATIVE_SYLVESTER_H */
-
-// Local Variables:
-// mode:C++
-// End:

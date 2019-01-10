@@ -1815,7 +1815,3 @@ static const double normal_icdf_data[] = {
      2.408915545815460e+00,     2.512144327930459e+00,     2.652069807902199e+00,
      2.878161739095476e+00
 };
-
-// Local Variables:
-// mode:C++
-// End:

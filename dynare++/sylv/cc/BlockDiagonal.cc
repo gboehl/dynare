@@ -349,7 +349,3 @@ BlockDiagonal::getNumBlocks() const
     }
   return num_blocks;
 }
-
-// Local Variables:
-// mode:C++
-// End:

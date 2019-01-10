@@ -165,7 +165,3 @@ SimilarityDecomp::infoToPars(SylvParams &pars) const
   pars.f_zeros = getB().getNumZeros();
   pars.f_offdiag = getB().getNumOffdiagonal();
 }
-
-// Local Variables:
-// mode:C++
-// End:

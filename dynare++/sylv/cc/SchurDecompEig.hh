@@ -30,7 +30,3 @@ protected:
 };
 
 #endif /* SCHUR_DECOMP_EIG_H */
-
-// Local Variables:
-// mode:C++
-// End:

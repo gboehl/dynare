@@ -52,7 +52,3 @@ public:
 };
 
 #endif /* SYLVESTER_SOLVER_H */
-
-// Local Variables:
-// mode:C++
-// End:

@@ -690,7 +690,3 @@ VarOrdering::print() const
     printf(" %d", i);
   printf("\n");
 }
-
-// Local Variables:
-// mode:C++
-// End:

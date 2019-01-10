@@ -85,7 +85,3 @@ private:
    * since this is the model file. */
   void processIRFList(int argc, char **argv);
 };
-
-// Local Variables:
-// mode:C++
-// End:

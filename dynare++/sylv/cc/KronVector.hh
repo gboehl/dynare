@@ -78,7 +78,3 @@ public:
 int power(int m, int depth);
 
 #endif /* KRON_VECTOR */
-
-// Local Variables:
-// mode:C++
-// End:

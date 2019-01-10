@@ -42,7 +42,3 @@ namespace ogp
 #define SET_LLOC(prefix) (prefix ## lloc.off += prefix ## lloc.ll, prefix ## lloc.ll = prefix ## leng)
 
 #endif
-
-// Local Variables:
-// mode:C++
-// End:

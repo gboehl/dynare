@@ -285,7 +285,3 @@ SqSylvMatrix::setUnit()
         }
     }
 }
-
-// Local Variables:
-// mode:C++
-// End:

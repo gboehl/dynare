@@ -135,7 +135,3 @@ GeneralSylvester::~GeneralSylvester()
   delete cdecomp;
   delete sylv;
 }
-
-// Local Variables:
-// mode:C++
-// End:

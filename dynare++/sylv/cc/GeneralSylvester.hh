@@ -76,7 +76,3 @@ private:
 };
 
 #endif /* GENERAL_SYLVESTER_H */
-
-// Local Variables:
-// mode:C++
-// End:

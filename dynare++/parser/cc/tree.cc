@@ -1007,7 +1007,3 @@ OperationStringConvertor::convert(const Operation &op, int t) const
       return res;
     }
 }
-
-// Local Variables:
-// mode:C++
-// End:

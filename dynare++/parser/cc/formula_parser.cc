@@ -557,7 +557,3 @@ FormulaDerEvaluator::eval(const vector<int> &mp, const AtomValues &av,
 
   delete [] vars;
 }
-
-// Local Variables:
-// mode:C++
-// End:

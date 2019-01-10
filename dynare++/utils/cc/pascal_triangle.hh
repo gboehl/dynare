@@ -53,7 +53,3 @@ namespace ogu
 extern ogu::PascalTriangle ptriang;
 
 #endif
-
-// Local Variables:
-// mode:C++
-// End:
