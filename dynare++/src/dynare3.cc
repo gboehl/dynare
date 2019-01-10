@@ -1,9 +1,11 @@
+#include <sstream>
+#include <fstream>
+
 #include "dynare3.hh"
 #include "dynare_exception.hh"
 #include "planner_builder.hh"
 #include "forw_subst_builder.hh"
 
-#include "utils/cc/memory_file.hh"
 #include "utils/cc/exception.hh"
 #include "parser/cc/parser_exception.hh"
 #include "parser/cc/atom_substitutions.hh"
@@ -43,33 +45,43 @@ Dynare::Dynare(const char *modname, int ord, double sstol, Journal &jr)
   : journal(jr), model(nullptr), ysteady(nullptr), md(1), dnl(nullptr), denl(nullptr), dsnl(nullptr),
     fe(nullptr), fde(nullptr), ss_tol(sstol)
 {
-  // make memory file
-  ogu::MemoryFile mf(modname);
-  if (mf.exists())
+  std::ifstream f{modname};
+  if (f.fail())
+    throw DynareException(__FILE__, __LINE__, string{"Could not open model file "}+modname);
+
+  std::ostringstream buffer;
+  buffer << f.rdbuf();
+  std::string contents{buffer.str()};
+
+  try
     {
-      try
-        {
-          model = new ogdyn::DynareParser(mf.base(), mf.length(), ord);
-        }
-      catch (const ogp::ParserException &pe)
-        {
-          int line;
-          int col;
-          mf.line_and_col(pe.offset(), line, col);
-          throw DynareException(pe.message(), modname, line, col);
-        }
-      ysteady = new Vector(model->getAtoms().ny());
-      dnl = new DynareNameList(*this);
-      denl = new DynareExogNameList(*this);
-      dsnl = new DynareStateNameList(*this, *dnl, *denl);
-      fe = new ogp::FormulaEvaluator(model->getParser());
-      fde = new ogp::FormulaDerEvaluator(model->getParser());
-      writeModelInfo(journal);
+      model = new ogdyn::DynareParser(contents.c_str(), contents.length(), ord);
     }
-  else
+  catch (const ogp::ParserException &pe)
     {
-      throw DynareException(__FILE__, __LINE__, string("Could not open model file ")+modname);
+      // Compute line and column, given the offset in the file
+      int line = 1;
+      int col = 0;
+      size_t i = 0;
+      while (i < contents.length() && i < (size_t) pe.offset())
+        {
+          if (contents[i] == '\n')
+            {
+              line++;
+              col = 0;
+            }
+          i++;
+          col++;
+        }
+      throw DynareException(pe.message(), modname, line, col);
     }
+  ysteady = new Vector(model->getAtoms().ny());
+  dnl = new DynareNameList(*this);
+  denl = new DynareExogNameList(*this);
+  dsnl = new DynareStateNameList(*this, *dnl, *denl);
+  fe = new ogp::FormulaEvaluator(model->getParser());
+  fde = new ogp::FormulaDerEvaluator(model->getParser());
+  writeModelInfo(journal);
 }
 
 Dynare::Dynare(const char **endo, int num_endo,

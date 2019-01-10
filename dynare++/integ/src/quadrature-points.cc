@@ -1,7 +1,6 @@
 // Copyright (C) 2008-2011, Ondra Kamenik
 
 #include "parser/cc/matrix_parser.hh"
-#include "utils/cc/memory_file.hh"
 #include "utils/cc/exception.hh"
 #include "sylv/cc/GeneralMatrix.hh"
 #include "sylv/cc/Vector.hh"
@@ -15,6 +14,9 @@
 #include <cstdio>
 
 #include <cmath>
+
+#include <fstream>
+#include <sstream>
 
 struct QuadParams
 {
@@ -112,13 +114,14 @@ main(int argc, char **argv)
 
   try
     {
-
-      // open memory file for vcov
-      ogu::MemoryFile vcov_mf(params.vcovname);
+      std::ifstream f{params.vcovname};
+      std::ostringstream buffer;
+      buffer << f.rdbuf();
+      std::string contents{buffer.str()};
 
       // parse the vcov matrix
       ogp::MatrixParser mp;
-      mp.parse(vcov_mf.length(), vcov_mf.base());
+      mp.parse(contents.length(), contents.c_str());
       if (mp.nrows() != mp.ncols())
         throw ogu::Exception(__FILE__, __LINE__,
                              "VCOV matrix not square");
