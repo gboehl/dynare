@@ -26,8 +26,6 @@
 #include <cmath>
 #include <sstream>
 
-#include "memory_file.hh"
-
 #include <iostream>
 #include <fstream>
 
