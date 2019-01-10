@@ -162,7 +162,7 @@ HaltonSequence::print() const
 }
 
 qmcpit::qmcpit()
-  : spec(nullptr), halton(nullptr), sig(nullptr)
+   
 {
 }
 
@@ -225,7 +225,7 @@ qmcpit::weight() const
 }
 
 qmcnpit::qmcnpit()
-  : qmcpit(), pnt(nullptr)
+  : qmcpit() 
 {
 }
 

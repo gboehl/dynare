@@ -98,19 +98,19 @@ namespace ogdyn
     int t_pldiscount{-1};
     /** Pointer to PlannerBuilder, which is created only if the
      * planner's FOC are added to the model. */
-    PlannerBuilder *pbuilder;
+    PlannerBuilder *pbuilder{nullptr};
     /** Pointer to an object which builds auxiliary variables and
      * equations to rewrite a model containing multiple leads to
      * an equivalent model having only +1 leads. */
-    ForwSubstBuilder *fbuilder;
+    ForwSubstBuilder *fbuilder{nullptr};
     /** Pointer to AtomSubstitutions which are created when the
      * atoms are being substituted because of multiple lags
      * etc. It uses also an old copy of atoms, which is
      * created. */
-    ogp::AtomSubstitutions *atom_substs;
+    ogp::AtomSubstitutions *atom_substs{nullptr};
     /** Pointer to a copy of original atoms before substitutions
      * took place. */
-    ogp::SAtoms *old_atoms;
+    ogp::SAtoms *old_atoms{nullptr};
   public:
     /** Initializes the object to an empty state. */
     DynareModel();

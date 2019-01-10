@@ -22,9 +22,8 @@ AtomSubstitutions::AtomSubstitutions(const AtomSubstitutions &as, const FineAtom
   for (const auto & it : as.old2new)
     {
       Tshiftnameset sset;
-      for (auto itt = it.second.begin();
-           itt != it.second.end(); ++itt)
-        sset.insert(Tshiftname(ns.query((*itt).first), (*itt).second));
+      for (const auto & itt : it.second)
+        sset.insert(Tshiftname(ns.query(itt.first), itt.second));
       old2new.insert(Toldnamemap::value_type(ns.query(it.first), sset));
     }
 }

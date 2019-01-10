@@ -40,11 +40,11 @@ class SmolyakQuadrature;
 class smolpit
 {
 protected:
-  const SmolyakQuadrature *smolq;
+  const SmolyakQuadrature *smolq{nullptr};
   unsigned int isummand{0};
-  IntSequence *jseq;
-  ParameterSignal *sig;
-  Vector *p;
+  IntSequence *jseq{nullptr};
+  ParameterSignal *sig{nullptr};
+  Vector *p{nullptr};
   double w;
 public:
   smolpit();

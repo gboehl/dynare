@@ -201,14 +201,14 @@ namespace ogp
      * to endogenous variables. It is constructed by
      * parsing_finished() method, which should be called after all
      * parsing jobs have been finished. */
-    VarOrdering *endo_order;
+    VarOrdering *endo_order{nullptr};
     /** This is the internal ordering of all atoms corresponding
      * to exogenous variables. It has the same handling as
      * endo_order. */
-    VarOrdering *exo_order;
+    VarOrdering *exo_order{nullptr};
     /** This is the all variables outer ordering. It is
      * constructed by parsing finished. */
-    AllvarOuterOrdering *allvar_order;
+    AllvarOuterOrdering *allvar_order{nullptr};
     /** This vector defines a set of atoms as tree indices used
      * for differentiation. The order of the atoms in this vector
      * defines ordering of the derivative tensors. The ordering is
@@ -229,9 +229,8 @@ namespace ogp
     vector<int> exo_atoms_map;
   public:
     FineAtoms()
-      : endo_order(nullptr), exo_order(nullptr), allvar_order(nullptr)
-    {
-    }
+       
+    = default;
     FineAtoms(const FineAtoms &fa);
     /** Deletes endo_order and exo_order. */
     ~FineAtoms() override

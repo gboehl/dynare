@@ -4,8 +4,7 @@
 #include "symmetry.hh"
 
 prodpit::prodpit()
-  : prodq(nullptr),  jseq(nullptr),
-     sig(nullptr), p(nullptr)
+   
 {
 }
 

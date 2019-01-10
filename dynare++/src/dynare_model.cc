@@ -26,9 +26,7 @@ ParsedMatrix::ParsedMatrix(const ogp::MatrixParser &mp)
 }
 
 DynareModel::DynareModel()
-  : atoms(), eqs(atoms), 
-    pbuilder(nullptr), fbuilder(nullptr),
-    atom_substs(nullptr), old_atoms(nullptr)
+  : atoms(), eqs(atoms) 
 {
 }
 

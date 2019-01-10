@@ -160,9 +160,9 @@ public:
 class qmcpit
 {
 protected:
-  const QMCSpecification *spec;
-  HaltonSequence *halton;
-  ParameterSignal *sig;
+  const QMCSpecification *spec{nullptr};
+  HaltonSequence *halton{nullptr};
+  ParameterSignal *sig{nullptr};
 public:
   qmcpit();
   qmcpit(const QMCSpecification &s, int n);
@@ -233,7 +233,7 @@ protected:
 class qmcnpit : public qmcpit
 {
 protected:
-  Vector *pnt;
+  Vector *pnt{nullptr};
 public:
   qmcnpit();
   qmcnpit(const QMCSpecification &spec, int n);

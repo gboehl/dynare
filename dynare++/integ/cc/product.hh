@@ -38,13 +38,13 @@ class ProductQuadrature;
 class prodpit
 {
 protected:
-  const ProductQuadrature *prodq;
+  const ProductQuadrature *prodq{nullptr};
   int level{0};
   int npoints{0};
-  IntSequence *jseq;
+  IntSequence *jseq{nullptr};
   bool end_flag{true};
-  ParameterSignal *sig;
-  Vector *p;
+  ParameterSignal *sig{nullptr};
+  Vector *p{nullptr};
   double w;
 public:
   prodpit();

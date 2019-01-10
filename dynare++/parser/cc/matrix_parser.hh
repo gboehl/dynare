@@ -82,7 +82,7 @@ namespace ogp
     friend class MatrixParser;
   protected:
     /** Reference to the matrix parser. */
-    const MatrixParser *p;
+    const MatrixParser *p{nullptr};
     /** The index of the pointed item in the matrix parser. */
     unsigned int i{0};
     /** The column number of the pointed item starting from zero. */
@@ -91,9 +91,8 @@ namespace ogp
     int r{0};
 
   public:
-    MPIterator() : p(nullptr) 
-    {
-    }
+    MPIterator()  
+    = default;
     /** Constructs an iterator pointing to the beginning of the
      * parsed matrix. */
     MPIterator(const MatrixParser &mp);
