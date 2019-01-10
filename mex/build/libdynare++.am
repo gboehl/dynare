@@ -126,7 +126,8 @@ INTEG_SRCS = \
 	$(TOPDIR)/integ/cc/smolyak.cc \
 	$(TOPDIR)/integ/cc/smolyak.hh \
 	$(TOPDIR)/integ/cc/vector_function.cc \
-	$(TOPDIR)/integ/cc/vector_function.hh
+	$(TOPDIR)/integ/cc/vector_function.hh \
+	$(TOPDIR)/integ/cc/precalc_quadrature.hh
 
 nodist_libdynare___a_SOURCES = \
 	$(KORD_SRCS) \

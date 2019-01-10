@@ -1,7 +1,7 @@
 // Copyright 2005, Ondra Kamenik
 
 #include "quadrature.hh"
-#include "precalc_quadrature.dat"
+#include "precalc_quadrature.hh"
 
 #include <cmath>
 
