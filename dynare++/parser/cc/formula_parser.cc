@@ -11,6 +11,7 @@
 #include "formula_tab.hh"
 
 #include <cmath>
+#include <cstring>
 
 using namespace ogp;
 

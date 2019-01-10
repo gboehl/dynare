@@ -1,5 +1,6 @@
 #include "pascal_triangle.hh"
-#include <cstdio>
+
+#include <iostream>
 
 using namespace ogu;
 
@@ -41,10 +42,10 @@ PascalRow::prolongFirst(int n)
 void
 PascalRow::print() const
 {
-  printf("k=%d\n", k);
+  std::cout << "k=" << k << std::endl;
   for (unsigned int i = 0; i < size(); i++)
-    printf("%d ", operator[](i));
-  printf("\n");
+    std::cout << operator[](i) << ' ';
+  std::cout << std::endl;
 }
 
 int

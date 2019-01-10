@@ -9,6 +9,7 @@
  * to avoid running virtual method invokation mechanism. Some
  * members, and methods are thus duplicated */
 
+#include <array>
 #include <cstdio>
 
 class GeneralMatrix;
@@ -235,13 +236,13 @@ class ZeroPad
 public:
   static const int length = 16;
 private:
-  double pad[16];
+  std::array<double, length> pad;
 public:
   ZeroPad();
   const double *
   getBase() const
   {
-    return pad;
+    return pad.data();
   }
 };
 

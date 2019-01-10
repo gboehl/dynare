@@ -16,8 +16,7 @@ namespace ogu
   {
     int k{1};
   public:
-    PascalRow()
-      : vector<int>() 
+    PascalRow() : vector<int>{}
     {
       push_back(2);
     }
@@ -35,12 +34,8 @@ namespace ogu
     {
       tr.emplace_back();
     }
-    PascalTriangle(const PascalTriangle &triang)
-       
-    = default;
-    PascalTriangle &
-    operator=(const PascalTriangle &triang)
-    = default;
+    PascalTriangle(const PascalTriangle &triang) = default;
+    PascalTriangle &operator=(const PascalTriangle &triang) = default;
     int noverk(int n, int k);
     void print() const;
   protected:
