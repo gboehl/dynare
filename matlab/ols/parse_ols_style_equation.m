@@ -1,4 +1,4 @@
-function [Y, lhssub, X] = parse_ols_style_equation(ds, ast, line)
+function [Y, lhssub, X] = parse_ols_style_equation(ds, ast)
 %function X = parse_ols_style_equation()
 % Run OLS on chosen model equations; unlike olseqs, allow for time t
 % endogenous variables on LHS
@@ -6,7 +6,6 @@ function [Y, lhssub, X] = parse_ols_style_equation(ds, ast, line)
 % INPUTS
 %   ds          [dseries]   data
 %   ast         [struct]    AST representing the equation to be parsed
-%   line        [int]       equation line number
 %
 % OUTPUTS
 %   Y           [dseries]   LHS of the equation (with lhssub subtracted)
@@ -33,7 +32,7 @@ function [Y, lhssub, X] = parse_ols_style_equation(ds, ast, line)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-if nargin ~= 3
+if nargin ~= 2
     error('parse_ols_style_equation takes 3 arguments')
 end
 
@@ -45,6 +44,7 @@ if ~isstruct(ast) || length(ast) ~= 1
     error('ast must be a celength must be equal to 1');
 end
 
+line = ast.line;
 if ~strcmp(ast.AST.node_type, 'BinaryOpNode') ...
         || ~strcmp(ast.AST.op, '=')
     ols_error('expecting equation with equal sign', line);
