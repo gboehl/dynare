@@ -60,13 +60,6 @@ if nargin == 1 && size(X, 2) ~= M_.param_nbr
     warning(['Not all parameters were used in model: ' strjoin(setdiff(M_.param_names, X.name), ', ')]);
 end
 
-% constrained_param_idxs: indexes in X.name of parameters that were constrained
-constrained_param_idxs = zeros(length(constrained), 1);
-for i = 1:length(constrained)
-    constrained_param_idxs(i, 1) = find(strcmp(X.name, constrained{i}));
-end
-constrained_params_str = strjoin(X.name(constrained_param_idxs), ', ');
-
 if ~isempty(param_names)
     newX = dseries();
     nparams = length(param_names);
@@ -99,12 +92,21 @@ end
 %% Return to surgibbs if called from there
 st = dbstack(1);
 if strcmp(st(1).name, 'surgibbs')
-    varargout{1} = nobs; %dof
+    varargout{1} = nobs;
     varargout{2} = opidxs;
     varargout{3} = X.data;
     varargout{4} = Y.data;
     varargout{5} = neqs;
     return
+end
+
+% constrained_param_idxs: indexes in X.name of parameters that were constrained
+constrained_param_idxs = [];
+for i = 1:length(constrained)
+    idx = find(strcmp(X.name, constrained{i}));
+    if ~isempty(idx)
+        constrained_param_idxs(end+1, 1) = idx;
+    end
 end
 
 %% Estimation
@@ -164,7 +166,8 @@ if ~options_.noprint
         sprintf('Durbin-Watson: %f', oo_.sur.dw)};
 
     if ~isempty(constrained_param_idxs)
-        afterward = [afterward, ['Constrained parameters: ' constrained_params_str]];
+        afterward = [afterward, ['Constrained parameters: ' ...
+            strjoin(X.name(constrained_param_idxs), ', ')]];
     end
 
     dyn_table('SUR Estimation', preamble, afterward, X.name, ...
