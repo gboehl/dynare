@@ -67,16 +67,6 @@ end
 %% Get Equation(s)
 [ast, jsonmodel] = get_ast_jsonmodel(eqtags);
 
-%% Check to see if called from Gibbs
-st = dbstack(1);
-varargout = cell(1, 1);
-called_from_olsgibbs = false;
-if strcmp(st(1).name, 'olsgibbs')
-    varargout = cell(1, 4);
-    called_from_olsgibbs = true;
-    assert(length(ast) == 1);
-end
-
 %% Parse equations
 [Y, lhssub, X, fp, lp ] = common_parsing(ds, ast, jsonmodel, true);
 
@@ -84,16 +74,6 @@ end
 for i = 1:length(Y)
     pnames = X{i}.name;
     [nobs, nvars] = size(X{i}.data);
-    if called_from_olsgibbs
-        varargout{1} = nobs;
-        varargout{2} = pnames;
-        varargout{3} = X{i}.data;
-        varargout{4} = Y{i}.data;
-        varargout{5} = jsonmodel;
-        varargout{6} = fp{i};
-        varargout{7} = lp{i};
-        return
-    end
 
     if isfield(jsonmodel{i}, 'tags') && ...
             isfield(jsonmodel{i}.tags, 'name')
