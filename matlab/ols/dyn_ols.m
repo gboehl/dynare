@@ -41,7 +41,7 @@ function varargout = dyn_ols(ds, fitted_names_dict, eqtags)
 
 global M_ oo_ options_
 
-assert(nargin >= 1 && nargin <= 3, 'dyn_ols: takes between 1 and 3 arguments');
+assert(nargin >= 1 && nargin <= 3, 'dyn_ols() takes between 1 and 3 arguments');
 assert(~isempty(ds) && isdseries(ds), 'dyn_ols: the first argument must be a dseries');
 
 jsonfile = [M_.fname filesep() 'model' filesep() 'json' filesep() 'modfile-original.json'];
@@ -77,54 +77,21 @@ if strcmp(st(1).name, 'olsgibbs')
     assert(length(ast) == 1);
 end
 
+%% Parse equations
+[Y, lhssub, X, fp, lp ] = common_parsing(ds, ast, jsonmodel, true);
+
 %% Loop over equations
-for i = 1:length(ast)
-    %% Parse equation i
-    [Y, lhssub, X] = parse_ols_style_equation(ds, ast{i}, jsonmodel{i}.line);
-
-    %% Set dates
-    fp = max(Y.firstobservedperiod, X.firstobservedperiod);
-    lp = min(Y.lastobservedperiod, X.lastobservedperiod);
-    if ~isempty(lhssub)
-        fp = max(fp, lhssub.firstobservedperiod);
-        lp = min(lp, lhssub.lastobservedperiod);
-    end
-    if isfield(jsonmodel{i}, 'tags') ...
-            && isfield(jsonmodel{i}.tags, 'sample') ...
-            && ~isempty(jsonmodel{i}.tags.sample)
-        colon_idx = strfind(jsonmodel{i}.tags.sample, ':');
-        fsd = dates(jsonmodel{i}.tags.sample(1:colon_idx-1));
-        lsd = dates(jsonmodel{i}.tags.sample(colon_idx+1:end));
-        if fp > fsd
-            warning(['The sample over which you want to estimate contains NaNs. '...
-                'Adjusting estimation range to begin on: ' fp.char])
-        else
-            fp = fsd;
-        end
-        if lp < lsd
-            warning(['The sample over which you want to estimate contains NaNs. '...
-                'Adjusting estimation range to end on: ' lp.char])
-        else
-            lp = lsd;
-        end
-    end
-
-    Y = Y(fp:lp);
-    if ~isempty(lhssub)
-        lhssub = lhssub(fp:lp);
-    end
-    pnames = X.name;
-    X = X(fp:lp).data;
-
-    [nobs, nvars] = size(X);
+for i = 1:length(Y)
+    pnames = X{i}.name;
+    [nobs, nvars] = size(X{i}.data);
     if called_from_olsgibbs
         varargout{1} = nobs;
         varargout{2} = pnames;
-        varargout{3} = X;
-        varargout{4} = Y.data;
+        varargout{3} = X{i}.data;
+        varargout{4} = Y{i}.data;
         varargout{5} = jsonmodel;
-        varargout{6} = fp;
-        varargout{7} = lp;
+        varargout{6} = fp{i};
+        varargout{7} = lp{i};
         return
     end
 
@@ -140,9 +107,9 @@ for i = 1:length(ast)
     oo_.ols.(tag).dof = nobs - nvars;
 
     % Estimated Parameters
-    [q, r] = qr(X, 0);
+    [q, r] = qr(X{i}.data, 0);
     xpxi = (r'*r)\eye(nvars);
-    oo_.ols.(tag).beta = r\(q'*Y.data);
+    oo_.ols.(tag).beta = r\(q'*Y{i}.data);
     oo_.ols.(tag).param_idxs = zeros(length(pnames), 1);
     for j = 1:length(pnames)
         if ~strcmp(pnames{j}, 'intercept')
@@ -160,14 +127,14 @@ for i = 1:length(ast)
             yhatname = fitted_names_dict{idx, 2};
         end
     end
-    oo_.ols.(tag).Yhat = dseries(X*oo_.ols.(tag).beta, fp, yhatname);
+    oo_.ols.(tag).Yhat = dseries(X{i}.data*oo_.ols.(tag).beta, fp{i}, yhatname);
 
     % Residuals
-    oo_.ols.(tag).resid = Y - oo_.ols.(tag).Yhat;
+    oo_.ols.(tag).resid = Y{i} - oo_.ols.(tag).Yhat;
 
     % Correct Yhat reported back to user
-    Y = Y + lhssub;
-    oo_.ols.(tag).Yhat = oo_.ols.(tag).Yhat + lhssub;
+    Y{i} = Y{i} + lhssub{i};
+    oo_.ols.(tag).Yhat = oo_.ols.(tag).Yhat + lhssub{i};
 
     % Apply correcting function for Yhat if it was passed
     if any(idx) ...
@@ -184,7 +151,7 @@ for i = 1:length(ast)
     oo_.ols.(tag).s2 = SS_res/oo_.ols.(tag).dof;
 
     % R^2
-    ym = Y.data - mean(Y);
+    ym = Y{i}.data - mean(Y{i});
     SS_tot = ym'*ym;
     oo_.ols.(tag).R2 = 1 - SS_res/SS_tot;
 
@@ -211,7 +178,7 @@ for i = 1:length(ast)
 
         preamble = {sprintf('Dependent Variable: %s', jsonmodel{i}.lhs), ...
             sprintf('No. Independent Variables: %d', nvars), ...
-            sprintf('Observations: %d from %s to %s\n', nobs, fp.char, lp.char)};
+            sprintf('Observations: %d from %s to %s\n', nobs, fp{i}.char, lp{i}.char)};
 
         afterward = {sprintf('R^2: %f', oo_.ols.(tag).R2), ...
             sprintf('R^2 Adjusted: %f', oo_.ols.(tag).adjR2), ...

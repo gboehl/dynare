@@ -1,15 +1,19 @@
-function [X, Y, startdates, enddates, startidxs, residnames, pbeta, vars, surpidxs, surconstrainedparams] = pooled_sur_common(ds, jsonmodel)
-%function [X, Y, startdates, enddates, startidxs, residnames, pbeta, vars, surpidxs, surconstrainedparams] = pooled_sur_common(ds, jsonmodel)
+function [Y, lhssub, X, startdates, enddates, startidxs, residnames, pbeta, vars, surpidxs, surconestrainedparams] = common_parsing(ds, ast, jsonmodel, overlapping_dates)
+%function [Y, lhssub, X, startdates, enddates, startidxs, residnames, pbeta, vars, surpidxs, surconstrainedparams] = common_parsing(ds, ast, jsonmodel, overlapping_dates)
 %
 % Code common to sur.m and pooled_ols.m
 %
 % INPUTS
 %   ds                   [dseries]     dataset
+%   ast                  [cell array]  JSON representation of abstract syntax tree
 %   jsonmodel            [cell array]  JSON representation of model block
+%   overlapping_dates    [boolean]     if true, dates are same across
+%                                      equations
 %
 % OUTPUTS
-%   X                    [matrix]      regressors
-%   Y                    [vector]      dependent variables
+%   Y                    [cell array]  dependent variables
+%   lhssub               [cell array]  RHS to subtract from Y
+%   X                    [cell array]  regressors
 %   startdates           [cell array]  first observed period for each
 %                                      equation
 %   enddates             [cell array]  last observed period for each
@@ -29,7 +33,7 @@ function [X, Y, startdates, enddates, startidxs, residnames, pbeta, vars, surpid
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2017-2018 Dynare Team
+% Copyright (C) 2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -46,7 +50,43 @@ function [X, Y, startdates, enddates, startidxs, residnames, pbeta, vars, surpid
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-global M_
+
+%% Initialize variables
+Y = cell(length(ast), 1);
+lhssub = cell(length(ast), 1);
+X = cell(length(ast), 1);
+startdates = cell(length(ast), 1);
+enddates = cell(length(ast), 1);
+
+%% Loop over equations
+neqs = length(ast);
+for i = 1:neqs
+    %% Parse equation i
+    [Y{i}, lhssub{i}, X{i}] = parse_ols_style_equation(ds, ast{i}, jsonmodel{i}.line);
+
+    %% Set start and end dates
+    if overlapping_dates
+        [startdates{i}, enddates{i}] = get_ols_start_end_dates(Y{i}, lhssub{i}, X{i}, jsonmodel{i});
+    end
+end
+
+if overlapping_dates
+    maxfp = max([startdates{:}]);
+    minlp = min([enddates{:}]);
+    for i = 1:neqs
+        Y{i} = Y{i}(maxfp:minlp);
+        X{i} = X{i}(maxfp:minlp);
+        if ~isempty(lhssub{i})
+            lhssub{i} = lhssub{i}(maxfp:minlp);
+        end
+    end
+end
+
+
+
+return
+%%
+
 
 M_endo_exo_names_trim = [M_.endo_names; M_.exo_names];
 [junk, idxs] = sort(cellfun(@length, M_endo_exo_names_trim), 'descend');
