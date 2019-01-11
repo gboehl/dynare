@@ -9,7 +9,7 @@ function [Y, lhssub, X] = parse_ols_style_equation(ds, ast, line)
 %   line        [int]       equation line number
 %
 % OUTPUTS
-%   Y           [dseries]   LHS of the equation
+%   Y           [dseries]   LHS of the equation (with lhssub subtracted)
 %   lhssub      [dseries]   RHS subtracted from LHS
 %   X           [dseries]   RHS of the equation
 %
@@ -203,7 +203,7 @@ end
 function [param, X] = parseTimesNodeHelper(ds, node, line, param, X)
 if isOlsParamExpr(node, line)
     param = assignParam(param, node, line);
-elseif isOlsVarExpr(node, line)
+elseif isOlsVarExpr(ds, node, line)
     if isempty(X)
         X = evalNode(ds, node, line, X);
     else
@@ -237,7 +237,7 @@ else
 end
 end
 
-function tf = isOlsVar(node)
+function tf = isOlsVar(ds, node)
 if strcmp(node.node_type, 'VariableNode') ...
         && (strcmp(node.type, 'endogenous') ...
         || (strcmp(node.type, 'exogenous') && any(strcmp(ds.name, node.name))))
@@ -251,11 +251,11 @@ else
 end
 end
 
-function tf = isOlsVarExpr(node, line)
+function tf = isOlsVarExpr(ds, node, line)
 if strcmp(node.node_type, 'VariableNode') || strcmp(node.node_type, 'UnaryOpNode')
-    tf = isOlsVar(node);
+    tf = isOlsVar(ds, node);
 elseif strcmp(node.node_type, 'BinaryOpNode')
-    tf = isOlsVarExpr(node.arg1, line) || isOlsVarExpr(node.arg2, line);
+    tf = isOlsVarExpr(ds, node.arg1, line) || isOlsVarExpr(ds, node.arg2, line);
 else
     ols_error(['got unexpected type ' node.node_type], line);
 end

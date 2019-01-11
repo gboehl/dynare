@@ -14,7 +14,7 @@ function varargout = sur(ds, param_names, eqtags)
 % SPECIAL REQUIREMENTS
 %   dynare must be run with the option: json=compute
 
-% Copyright (C) 2017-2018 Dynare Team
+% Copyright (C) 2017-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -34,113 +34,100 @@ function varargout = sur(ds, param_names, eqtags)
 global M_ oo_ options_
 
 %% Check input argument
-assert(nargin >= 1 && nargin <= 3, 'You must provide one, two, or three arguments');
-assert(~isempty(ds) && isdseries(ds), 'The first argument must be a dseries');
-if nargin >= 2
-    assert(iscellstr(param_names), 'The 2nd argument must be a cellstr');
-else
+assert(nargin >= 1 && nargin <= 3, 'sur() takes between 1 and 3 arguments');
+
+if nargin < 3
+    eqtags = {};
+end
+
+if nargin < 2
     param_names = {};
+else
+    assert(iscellstr(param_names), 'sur: the 2nd argument must be a cellstr');
 end
 
-%% Read JSON
-jsonfile = [M_.fname filesep() 'model' filesep() 'json' filesep() 'modfile-original.json'];
-if exist(jsonfile, 'file') ~= 2
-    error('Could not find %s! Please use the json=compute option (See the Dynare invocation section in the reference manual).', jsonfile);
-end
-
-jsonmodel = loadjson(jsonfile);
-jsonmodel = jsonmodel.model;
-if nargin == 3
-    jsonmodel = getEquationsByTags(jsonmodel, 'name', eqtags);
-end
+%% Get Equation(s)
+[ast, jsonmodel] = get_ast_jsonmodel(eqtags);
+neqs = length(jsonmodel);
 
 %% Find parameters and variable names in equations and setup estimation matrices
-[X, Y, startdates, enddates, startidxs, residnames, pbeta, vars, opidxs, surconstrainedparams] = ...
-    pooled_sur_common(ds, jsonmodel);
+[Y, ~, X] = common_parsing(ds, ast, jsonmodel, true);
+clear ast jsonmodel;
+nobs = Y{1}.nobs;
+[Y, X, constrained] = put_in_sur_form(Y, X);
 
 if nargin == 1 && size(X, 2) ~= M_.param_nbr
-    warning(['Not all parameters were used in model: ' ...
-        sprintf('%s', strjoin(setdiff(M_.param_names, pbeta), ', '))]);
+    warning(['Not all parameters were used in model: ' strjoin(setdiff(M_.param_names, X.name), ', ')]);
 end
 
-%% Force equations to have the same sample range
-maxfp = max([startdates{:}]);
-minlp = min([enddates{:}]);
-nobs = minlp - maxfp;
-newY = zeros(nobs*length(jsonmodel), 1);
-newX = zeros(nobs*length(jsonmodel), columns(X));
-lastidx = 1;
-for i = 1:length(jsonmodel)
-    if i == length(jsonmodel)
-        yds = dseries(Y(startidxs(i):end), startdates{i});
-        xds = dseries(X(startidxs(i):end, :), startdates{i});
-    else
-        yds = dseries(Y(startidxs(i):startidxs(i+1)-1), startdates{i});
-        xds = dseries(X(startidxs(i):startidxs(i+1)-1, :), startdates{i});
-    end
-    newY(lastidx:lastidx + nobs, 1) = yds(maxfp:minlp).data;
-    newX(lastidx:lastidx + nobs, :) = xds(maxfp:minlp, :).data;
-    if i ~= length(jsonmodel)
-        lastidx = lastidx + nobs + 1;
-    end
+% constrained_param_idxs: indexes in X.name of parameters that were constrained
+constrained_param_idxs = zeros(length(constrained), 1);
+for i = 1:length(constrained)
+    constrained_param_idxs(i, 1) = find(strcmp(X.name, constrained{i}));
 end
+constrained_params_str = strjoin(X.name(constrained_param_idxs), ', ');
 
 if ~isempty(param_names)
-    pnamesall = M_.param_names(opidxs);
+    newX = dseries();
     nparams = length(param_names);
     pidxs = zeros(nparams, 1);
     for i = 1:nparams
-        idxs = find(strcmp(param_names{i}, pnamesall));
-        if isempty(idxs)
+        idx = find(strcmp(param_names{i}, X.name));
+        if isempty(idx)
             if ~isempty(eqtags)
                 error(['Could not find ' param_names{i} ...
                     ' in the provided equations specified by ' strjoin(eqtags, ',')]);
             end
             error('Unspecified error. Please report');
         end
-        pidxs(i) = idxs;
+        pidxs(i) = idx;
+        newX = [newX X.(X.name{idx})];
     end
-    vars = [vars{:}];
-    vars = {vars(pidxs)};
-    newY = newY - newX(:, setdiff(1:size(newX, 2), pidxs)) * M_.params(setdiff(opidxs, opidxs(pidxs), 'stable'));
-    newX = newX(:, pidxs);
-    opidxs = opidxs(pidxs);
+    subcols = setdiff(1:length(X.name), pidxs);
+    for i = length(subcols):-1:1
+        Y = Y - M_.params(strcmp(X.name{subcols(i)}, M_.param_names))*X.(X.name{subcols(i)});
+    end
+    X = newX;
+end
+
+% opidxs: indexes in M_.params associated with columns of X
+opidxs = zeros(length(X.name), 1);
+for i = 1:length(X.name)
+    opidxs(i, 1) = find(strcmp(X.name{i}, M_.param_names));
 end
 
 %% Return to surgibbs if called from there
 st = dbstack(1);
 if strcmp(st(1).name, 'surgibbs')
-    varargout{1} = length(maxfp:minlp); %dof
+    varargout{1} = nobs; %dof
     varargout{2} = opidxs;
-    varargout{3} = newX;
-    varargout{4} = newY;
-    varargout{5} = length(jsonmodel);
+    varargout{3} = X.data;
+    varargout{4} = Y.data;
+    varargout{5} = neqs;
     return
 end
 
-Y = newY;
-X = newX;
-oo_.sur.dof = length(maxfp:minlp);
-
 %% Estimation
+oo_.sur.dof = nobs;
+
 % Estimated Parameters
-[q, r] = qr(X, 0);
-xpxi = (r'*r)\eye(size(X, 2));
-resid = Y - X * (r\(q'*Y));
-resid = reshape(resid, oo_.sur.dof, length(jsonmodel));
+[q, r] = qr(X.data, 0);
+xpxi = (r'*r)\eye(size(X.data, 2));
+resid = Y.data - X.data * (r\(q'*Y.data));
+resid = reshape(resid, oo_.sur.dof, neqs);
 
 M_.Sigma_e = resid'*resid/oo_.sur.dof;
 kLeye = kron(chol(inv(M_.Sigma_e)), eye(oo_.sur.dof));
-[q, r] = qr(kLeye*X, 0);
-oo_.sur.beta = r\(q'*kLeye*Y);
+[q, r] = qr(kLeye*X.data, 0);
+oo_.sur.beta = r\(q'*kLeye*Y.data);
 
 M_.params(opidxs) = oo_.sur.beta;
 
 % Yhat
-oo_.sur.Yhat = X * oo_.sur.beta;
+oo_.sur.Yhat = X.data * oo_.sur.beta;
 
 % Residuals
-oo_.sur.resid = Y - oo_.sur.Yhat;
+oo_.sur.resid = Y.data - oo_.sur.Yhat;
 
 %% Calculate statistics
 % Estimate for sigma^2
@@ -148,7 +135,7 @@ SS_res = oo_.sur.resid'*oo_.sur.resid;
 oo_.sur.s2 = SS_res/oo_.sur.dof;
 
 % R^2
-ym = Y - mean(Y);
+ym = Y.data - mean(Y.data);
 SS_tot = ym'*ym;
 oo_.sur.R2 = 1 - SS_res/SS_tot;
 
@@ -167,7 +154,7 @@ oo_.sur.tstat = oo_.sur.beta./oo_.sur.stderr;
 
 %% Print Output
 if ~options_.noprint
-    preamble = {sprintf('No. Equations: %d', length(jsonmodel)), ...
+    preamble = {sprintf('No. Equations: %d', neqs), ...
         sprintf('No. Independent Variables: %d', size(X, 2)), ...
         sprintf('Observations: %d', oo_.sur.dof)};
 
@@ -176,14 +163,12 @@ if ~options_.noprint
         sprintf('s^2: %f', oo_.sur.s2), ...
         sprintf('Durbin-Watson: %f', oo_.sur.dw)};
 
-    if ~isempty(surconstrainedparams)
-        afterward = [afterward, ...
-            sprintf('Constrained parameters: %s', ...
-            strjoin(pbeta(surconstrainedparams), ', '))];
+    if ~isempty(constrained_param_idxs)
+        afterward = [afterward, ['Constrained parameters: ' constrained_params_str]];
     end
 
-    dyn_table('SUR Estimation', preamble, afterward, [vars{:}], ...
-        {'Coefficients','t-statistic','Std. Error'}, 4, ...
+    dyn_table('SUR Estimation', preamble, afterward, X.name, ...
+        {'Estimates','t-statistic','Std. Error'}, 4, ...
         [oo_.sur.beta oo_.sur.tstat oo_.sur.stderr]);
 end
 end

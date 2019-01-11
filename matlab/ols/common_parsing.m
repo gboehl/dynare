@@ -1,5 +1,5 @@
-function [Y, lhssub, X, startdates, enddates, startidxs, residnames, pbeta, vars, surpidxs, surconestrainedparams] = common_parsing(ds, ast, jsonmodel, overlapping_dates)
-%function [Y, lhssub, X, startdates, enddates, startidxs, residnames, pbeta, vars, surpidxs, surconstrainedparams] = common_parsing(ds, ast, jsonmodel, overlapping_dates)
+function [Y, lhssub, X, startdates, enddates, startidxs, residnames, pbeta, vars] = common_parsing(ds, ast, jsonmodel, overlapping_dates)
+%function [Y, lhssub, X, startdates, enddates, startidxs, residnames, pbeta, vars] = common_parsing(ds, ast, jsonmodel, overlapping_dates)
 %
 % Code common to sur.m and pooled_ols.m
 %
@@ -81,6 +81,7 @@ if overlapping_dates
         end
     end
 end
+
 
 
 
