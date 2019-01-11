@@ -20,7 +20,7 @@ function surgibbs(ds, param_names, beta0, A, ndraws, discarddraws, thin, eqtags)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2017-2018 Dynare Team
+% Copyright (C) 2017-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -79,12 +79,16 @@ if nargin == 8
 else
     [nobs, pidxs, X, Y, m] = sur(ds, param_names);
 end
+
 beta = beta0;
 A = inv(A);
 thinidx = 1;
 drawidx = 1;
 nparams = length(param_names);
 oo_.surgibbs.betadraws = zeros(floor((ndraws-discarddraws)/thin), nparams);
+if ~options_.noprint
+    disp('surgibbs: estimating...please wait...')
+end
 for i = 1:ndraws
     % Draw Omega, given X, Y, Beta
     resid = reshape(Y - X*beta, nobs, m);
@@ -113,21 +117,27 @@ oo_.surgibbs.beta = (sum(oo_.surgibbs.betadraws)/rows(oo_.surgibbs.betadraws))';
 M_.params(pidxs) = oo_.surgibbs.beta;
 
 %% Print Output
-dyn_table('Gibbs Sampling on SUR', {}, {}, param_names, ...
-    {'Parameter Value'}, 4, oo_.surgibbs.beta);
+if ~options_.noprint
+    dyn_table('Gibbs Sampling on SUR', {}, {}, param_names, ...
+        {'Parameter Value'}, 4, oo_.surgibbs.beta);
+end
 
 %% Plot
-figure
-nrows = 5;
-ncols = floor(nparams/nrows);
-if mod(nparams, nrows) ~= 0
-    ncols = ncols + 1;
+if ~options_.nograph
+    figure
+    nrows = 5;
+    ncols = floor(nparams/nrows);
+    if mod(nparams, nrows) ~= 0
+        ncols = ncols + 1;
+    end
+    for j = 1:length(param_names)
+        M_.params(strmatch(param_names{j}, M_.param_names, 'exact')) = oo_.surgibbs.beta(j);
+        subplot(nrows, ncols, j)
+        histogram(oo_.surgibbs.betadraws(:, j))
+        hc = histcounts(oo_.surgibbs.betadraws(:, j));
+        line([oo_.surgibbs.beta(j) oo_.surgibbs.beta(j)], [min(hc) max(hc)], 'Color', 'red');
+        title(param_names{j}, 'Interpreter', 'none')
+    end
 end
-for j = 1:length(param_names)
-    M_.params(strmatch(param_names{j}, M_.param_names, 'exact')) = oo_.surgibbs.beta(j);
-    subplot(nrows, ncols, j)
-    histogram(oo_.surgibbs.betadraws(:, j))
-    hc = histcounts(oo_.surgibbs.betadraws(:, j));
-    line([oo_.surgibbs.beta(j) oo_.surgibbs.beta(j)], [min(hc) max(hc)], 'Color', 'red');
-    title(param_names{j}, 'Interpreter', 'none')
 end
+
