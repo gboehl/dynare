@@ -20,6 +20,7 @@
 #include "GeneralMatrix.hh"
 
 #include <vector>
+#include <memory>
 
 /* This is a simple class representing a vector of booleans. The items
    night be retrieved or changed, or can be set |true| after some
@@ -31,22 +32,18 @@
 class ParameterSignal
 {
 protected:
-  bool *data;
-  int num;
+  std::vector<bool> data;
 public:
   ParameterSignal(int n);
-  ParameterSignal(const ParameterSignal &sig);
-  ~ParameterSignal()
-  {
-    delete [] data;
-  }
+  ParameterSignal(const ParameterSignal &sig) = default;
+  ~ParameterSignal() = default;
   void signalAfter(int l);
-  const bool &
+  bool
   operator[](int i) const
   {
     return data[i];
   }
-  bool &
+  std::vector<bool>::reference
   operator[](int i)
   {
     return data[i];
@@ -71,12 +68,9 @@ public:
     : in_dim(idim), out_dim(odim)
   {
   }
-  VectorFunction(const VectorFunction &func)
-     
-  = default;
-  virtual ~VectorFunction()
-  = default;
-  virtual VectorFunction *clone() const = 0;
+  VectorFunction(const VectorFunction &func) = default;
+  virtual ~VectorFunction() = default;
+  virtual std::unique_ptr<VectorFunction> clone() const = 0;
   virtual void eval(const Vector &point, const ParameterSignal &sig, Vector &out) = 0;
   int
   indim() const
@@ -100,13 +94,15 @@ public:
 
 class VectorFunctionSet
 {
+private:
+  // Stores the hard copies made by the class
+  std::vector<std::unique_ptr<VectorFunction>> func_copies;
 protected:
   std::vector<VectorFunction *> funcs;
-  bool first_shallow;
 public:
   VectorFunctionSet(const VectorFunction &f, int n);
   VectorFunctionSet(VectorFunction &f, int n);
-  ~VectorFunctionSet();
+  ~VectorFunctionSet() = default;
   VectorFunction &
   getFunc(int i)
   {
@@ -136,32 +132,28 @@ public:
    normally distributed inputs.
 
    The class maintains a pointer to the function $f$. When the object is
-   constructed by the first constructor, the $f$ is not copied. If the
-   object of this class is copied, then $f$ is copied and we need to
-   remember to destroy it in the desctructor; hence |delete_flag|. The
-   second constructor takes a pointer to the function and differs from
-   the first only by setting |delete_flag| to |true|. */
+   constructed by the first constructor, the $f$ is assumed to be owned by the
+   caller. If the object of this class is copied, then $f$ is copied and hence
+   stored in a std::unique_ptr. The second constructor takes a smart pointer to
+   the function and in that case the class takes ownership of $f$. */
 
 class GaussConverterFunction : public VectorFunction
 {
+private:
+  std::unique_ptr<VectorFunction> func_storage;
 protected:
   VectorFunction *func;
-  bool delete_flag;
   GeneralMatrix A;
   double multiplier;
 public:
   GaussConverterFunction(VectorFunction &f, const GeneralMatrix &vcov);
-  GaussConverterFunction(VectorFunction *f, const GeneralMatrix &vcov);
+  GaussConverterFunction(std::unique_ptr<VectorFunction> f, const GeneralMatrix &vcov);
   GaussConverterFunction(const GaussConverterFunction &f);
-  ~GaussConverterFunction() override
-  {
-    if (delete_flag)
-      delete func;
-  }
-  VectorFunction *
+  ~GaussConverterFunction() override = default;
+  std::unique_ptr<VectorFunction>
   clone() const override
   {
-    return new GaussConverterFunction(*this);
+    return std::make_unique<GaussConverterFunction>(*this);
   }
   void eval(const Vector &point, const ParameterSignal &sig, Vector &out) override;
 private:

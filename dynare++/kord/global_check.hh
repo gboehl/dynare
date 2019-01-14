@@ -37,6 +37,8 @@
 
 #include <matio.h>
 
+#include <memory>
+
 #include "vector_function.hh"
 #include "quadrature.hh"
 
@@ -76,10 +78,10 @@ public:
   ResidFunction(const ResidFunction &rf);
   
   ~ResidFunction() override;
-  VectorFunction *
+  std::unique_ptr<VectorFunction>
   clone() const override
   {
-    return new ResidFunction(*this);
+    return std::make_unique<ResidFunction>(*this);
   }
   void eval(const Vector &point, const ParameterSignal &sig, Vector &out) override;
   void setYU(const Vector &ys, const Vector &xx);
@@ -91,18 +93,15 @@ class GResidFunction : public GaussConverterFunction
 {
 public:
   GResidFunction(const Approximation &app)
-    : GaussConverterFunction(new ResidFunction(app), app.getModel().getVcov())
+    : GaussConverterFunction(std::make_unique<ResidFunction>(app), app.getModel().getVcov())
   {
   }
-  GResidFunction(const GResidFunction &rf)
-     
-  = default;
-  ~GResidFunction()
-  override = default;
-  VectorFunction *
+  GResidFunction(const GResidFunction &rf) = default;
+  ~GResidFunction() override = default;
+  std::unique_ptr<VectorFunction>
   clone() const override
   {
-    return new GResidFunction(*this);
+    return std::make_unique<GResidFunction>(*this);
   }
   void
   setYU(const Vector &ys, const Vector &xx)

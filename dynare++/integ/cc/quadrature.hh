@@ -30,7 +30,10 @@
 #ifndef QUADRATURE_H
 #define QUADRATURE_H
 
-#include <cstdlib>
+#include <iostream>
+#include <fstream>
+#include <iomanip>
+
 #include "vector_function.hh"
 #include "int_sequence.hh"
 #include "sthread.hh"
@@ -43,8 +46,7 @@
 class OneDQuadrature
 {
 public:
-  virtual ~OneDQuadrature()
-  = default;
+  virtual ~OneDQuadrature() = default;
   virtual int numLevels() const = 0;
   virtual int numPoints(int level) const = 0;
   virtual double point(int level, int i) const = 0;
@@ -72,8 +74,7 @@ public:
   Quadrature(int d) : dim(d)
   {
   }
-  virtual ~Quadrature()
-  = default;
+  virtual ~Quadrature() = default;
   int
   dimen() const
   {
@@ -183,25 +184,26 @@ public:
 
   /* Just for debugging. */
   void
-  savePoints(const char *fname, int level) const
+  savePoints(const string &fname, int level) const
   {
-    FILE *fd;
-    if (nullptr == (fd = fopen(fname, "w")))
+    ofstream fd{fname, std::ios::out | std::ios::trunc};
+    if (fd.fail())
       {
         // todo: raise
-        fprintf(stderr, "Cannot open file %s for writing.\n", fname);
-        exit(1);
+        std::cerr << "Cannot open file " << fname << " for writing." << std::endl;
+        exit(EXIT_FAILURE);
       }
     _Tpit beg = begin(0, 1, level);
     _Tpit end = begin(1, 1, level);
+    fd << std::setprecision(12);
     for (_Tpit run = beg; run != end; ++run)
       {
-        fprintf(fd, "%16.12g", run.weight());
+        fd << std::setw(16) << run.weight();
         for (int i = 0; i < dimen(); i++)
-          fprintf(fd, "\t%16.12g", run.point()[i]);
-        fprintf(fd, "\n");
+          fd << '\t' << std::setw(16) << run.point()[i];
+        fd << std::endl;
       }
-    fclose(fd);
+    fd.close();
   }
 
   _Tpit
@@ -244,8 +246,7 @@ public:
   {
     calcOffsets();
   }
-  ~OneDPrecalcQuadrature()
-  override = default;
+  ~OneDPrecalcQuadrature() override = default;
   int
   numLevels() const override
   {

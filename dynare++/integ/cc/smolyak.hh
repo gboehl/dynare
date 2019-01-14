@@ -40,34 +40,33 @@ class SmolyakQuadrature;
 class smolpit
 {
 protected:
-  const SmolyakQuadrature *smolq{nullptr};
+  const SmolyakQuadrature &smolq;
   unsigned int isummand{0};
-  IntSequence *jseq{nullptr};
-  ParameterSignal *sig{nullptr};
-  Vector *p{nullptr};
+  IntSequence jseq;
+  ParameterSignal sig;
+  Vector p;
   double w;
 public:
-  smolpit();
   smolpit(const SmolyakQuadrature &q, unsigned int isum);
-  smolpit(const smolpit &spit);
-  ~smolpit();
+  smolpit(const smolpit &spit) = default;
+  ~smolpit() = default;
   bool operator==(const smolpit &spit) const;
   bool
   operator!=(const smolpit &spit) const
   {
     return !operator==(spit);
   }
-  const smolpit &operator=(const smolpit &spit);
+  smolpit &operator=(const smolpit &spit) = delete;
   smolpit &operator++();
   const ParameterSignal &
   signal() const
   {
-    return *sig;
+    return sig;
   }
   const Vector &
   point() const
   {
-    return *p;
+    return p;
   }
   double
   weight() const
@@ -108,8 +107,7 @@ class SmolyakQuadrature : public QuadratureImpl<smolpit>
   PascalTriangle psc;
 public:
   SmolyakQuadrature(int d, int l, const OneDQuadrature &uq);
-  ~SmolyakQuadrature()
-  override = default;
+  ~SmolyakQuadrature() override = default;
   int numEvals(int level) const override;
   void designLevelForEvals(int max_eval, int &lev, int &evals) const;
 protected:

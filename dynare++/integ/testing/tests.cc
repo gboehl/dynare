@@ -14,10 +14,14 @@
 #include "product.hh"
 #include "quasi_mcarlo.hh"
 
-#include <cstdio>
-#include <cstring>
-#include <sys/time.h>
+#include <iomanip>
+#include <chrono>
 #include <cmath>
+#include <iostream>
+#include <utility>
+#include <array>
+#include <memory>
+#include <cstdlib>
 
 const int num_threads = 2; // does nothing if DEBUG defined
 
@@ -33,13 +37,12 @@ public:
       D(inD), k(kk)
   {
   }
-  MomentFunction(const MomentFunction &func)
-     
-  = default;
-  VectorFunction *
+  MomentFunction(const MomentFunction &func) = default;
+
+  std::unique_ptr<VectorFunction>
   clone() const override
   {
-    return new MomentFunction(*this);
+    return std::make_unique<MomentFunction>(*this);
   }
   void eval(const Vector &point, const ParameterSignal &sig, Vector &out) override;
 };
@@ -49,8 +52,8 @@ MomentFunction::eval(const Vector &point, const ParameterSignal &sig, Vector &ou
 {
   if (point.length() != indim() || out.length() != outdim())
     {
-      printf("Wrong length of vectors in MomentFunction::eval\n");
-      exit(1);
+      std::cerr << "Wrong length of vectors in MomentFunction::eval" << std::endl;
+      std::exit(EXIT_FAILURE);
     }
   Vector y(point);
   y.zeros();
@@ -68,13 +71,12 @@ public:
     : VectorFunction(nvar, UFSTensor::calcMaxOffset(nvar, kk)), k(kk)
   {
   }
-  TensorPower(const TensorPower &func)
-     
-  = default;
-  VectorFunction *
+  TensorPower(const TensorPower &func) = default;
+
+  std::unique_ptr<VectorFunction>
   clone() const override
   {
-    return new TensorPower(*this);
+    return std::make_unique<TensorPower>(*this);
   }
   void eval(const Vector &point, const ParameterSignal &sig, Vector &out) override;
 };
@@ -84,8 +86,8 @@ TensorPower::eval(const Vector &point, const ParameterSignal &sig, Vector &out)
 {
   if (point.length() != indim() || out.length() != outdim())
     {
-      printf("Wrong length of vectors in TensorPower::eval\n");
-      exit(1);
+      std::cerr << "Wrong length of vectors in TensorPower::eval" << std::endl;
+      std::exit(EXIT_FAILURE);
     }
   URSingleTensor ypow(point, k);
   out.zeros();
@@ -107,10 +109,10 @@ public:
     : VectorFunction(f.indim(), f.outdim()), dim(f.dim)
   {
   }
-  VectorFunction *
+  std::unique_ptr<VectorFunction>
   clone() const override
   {
-    return new Function1(*this);
+    return std::make_unique<Function1>(*this);
   }
   void eval(const Vector &point, const ParameterSignal &sig, Vector &out) override;
 };
@@ -120,8 +122,8 @@ Function1::eval(const Vector &point, const ParameterSignal &sig, Vector &out)
 {
   if (point.length() != dim || out.length() != 1)
     {
-      printf("Wrong length of vectors in Function1::eval\n");
-      exit(1);
+      std::cerr << "Wrong length of vectors in Function1::eval" << std::endl;
+      std::exit(EXIT_FAILURE);
     }
   double r = 1;
   for (int i = 0; i < dim; i++)
@@ -140,13 +142,12 @@ public:
     : Function1(d)
   {
   }
-  Function1Trans(const Function1Trans &func)
-     
-  = default;
-  VectorFunction *
+  Function1Trans(const Function1Trans &func) = default;
+
+  std::unique_ptr<VectorFunction>
   clone() const override
   {
-    return new Function1Trans(*this);
+    return std::make_unique<Function1Trans>(*this);
   }
   void eval(const Vector &point, const ParameterSignal &sig, Vector &out) override;
 };
@@ -166,22 +167,21 @@ Function1Trans::eval(const Vector &point, const ParameterSignal &sig, Vector &ou
 // with time information
 class WallTimer
 {
-  char mes[100];
-  struct timeval start;
+  string mes;
+  std::chrono::time_point<std::chrono::high_resolution_clock> start;
   bool new_line;
 public:
-  WallTimer(const char *m, bool nl = true)
+  WallTimer(string m, bool nl = true)
+    : mes{m}, start{std::chrono::high_resolution_clock::now()}, new_line{nl}
   {
-    strcpy(mes, m); new_line = nl; gettimeofday(&start, nullptr);
   }
   ~WallTimer()
   {
-    struct timeval end;
-    gettimeofday(&end, nullptr);
-    printf("%s%8.4g", mes,
-           end.tv_sec-start.tv_sec + (end.tv_usec-start.tv_usec)*1.0e-6);
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> duration = end - start;
+    std::cout << mes << std::setw(8) << std::setprecision(4) << duration.count();
     if (new_line)
-      printf("\n");
+      std::cout << std::endl;
   }
 };
 
@@ -190,22 +190,17 @@ public:
 /****************************************************/
 class TestRunnable
 {
-  char name[100];
 public:
+  const string name;
   int dim; // dimension of the solved problem
   int nvar; // number of variable of the solved problem
-  TestRunnable(const char *n, int d, int nv)
-    : dim(d), nvar(nv)
+  TestRunnable(string name_arg, int d, int nv)
+    : name{move(name_arg)}, dim(d), nvar(nv)
   {
-    strncpy(name, n, 100);
   }
+  virtual ~TestRunnable() = default;
   bool test() const;
   virtual bool run() const = 0;
-  const char *
-  getName() const
-  {
-    return name;
-  }
 protected:
   static bool smolyak_normal_moments(const GeneralMatrix &m, int imom, int level);
   static bool product_normal_moments(const GeneralMatrix &m, int imom, int level);
@@ -218,7 +213,7 @@ protected:
 bool
 TestRunnable::test() const
 {
-  printf("Running test <%s>\n", name);
+  cout << "Running test <" << name << ">" << endl;
   bool passed;
   {
     WallTimer tim("Wall clock time ", false);
@@ -226,12 +221,12 @@ TestRunnable::test() const
   }
   if (passed)
     {
-      printf("............................ passed\n\n");
+      std::cout << "............................ passed" << std::endl << std::endl;
       return passed;
     }
   else
     {
-      printf("............................ FAILED\n\n");
+      std::cout << "............................ FAILED" << std::endl << std::endl;
       return passed;
     }
 }
@@ -258,13 +253,13 @@ TestRunnable::smolyak_normal_moments(const GeneralMatrix &m, int imom, int level
     GaussHermite gs;
     SmolyakQuadrature quad(dim, level, gs);
     quad.integrate(func, level, num_threads, smol_out);
-    printf("\tNumber of Smolyak evaluations:    %d\n", quad.numEvals(level));
+    std::cout << "\tNumber of Smolyak evaluations:    " << quad.numEvals(level) << std::endl;
   }
 
   // check against theoretical moments
   UNormalMoments moments(imom, msq);
   smol_out.add(-1.0, (moments.get(Symmetry(imom)))->getData());
-  printf("\tError:                         %16.12g\n", smol_out.getMax());
+  std::cout << "\tError:                         " << std::setw(16) << std::setprecision(12) << smol_out.getMax() << std::endl;
   return smol_out.getMax() < 1.e-7;
 }
 
@@ -287,13 +282,13 @@ TestRunnable::product_normal_moments(const GeneralMatrix &m, int imom, int level
     GaussHermite gs;
     ProductQuadrature quad(dim, gs);
     quad.integrate(func, level, num_threads, prod_out);
-    printf("\tNumber of product evaluations:    %d\n", quad.numEvals(level));
+    std::cout << "\tNumber of product evaluations:    " << quad.numEvals(level) << std::endl;
   }
 
   // check against theoretical moments
   UNormalMoments moments(imom, msq);
   prod_out.add(-1.0, (moments.get(Symmetry(imom)))->getData());
-  printf("\tError:                         %16.12g\n", prod_out.getMax());
+  std::cout << "\tError:                         " << std::setw(16) << std::setprecision(12) << prod_out.getMax() << endl;
   return prod_out.getMax() < 1.e-7;
 }
 
@@ -318,8 +313,8 @@ TestRunnable::qmc_normal_moments(const GeneralMatrix &m, int imom, int level)
   WarnockPerScheme wps;
   ReversePerScheme rps;
   IdentityPerScheme ips;
-  PermutationScheme *scheme[] = {&wps, &rps, &ips};
-  const char *labs[] = {"Warnock", "Reverse", "Identity"};
+  array<PermutationScheme *, 3> scheme = {&wps, &rps, &ips};
+  array<string, 3> labs = {"Warnock", "Reverse", "Identity"};
 
   // theoretical result
   int dim = mchol.numRows();
@@ -329,21 +324,19 @@ TestRunnable::qmc_normal_moments(const GeneralMatrix &m, int imom, int level)
   // quasi monte carlo normal quadrature
   double max_error = 0.0;
   Vector qmc_out(UFSTensor::calcMaxOffset(dim, imom));
-  for (int i = 0; i < 3; i++)
+  for (int i = 0; i < (int) scheme.size(); i++)
     {
       {
-        char mes[100];
-        sprintf(mes, "\tQMC normal quadrature time %8s:         ", labs[i]);
-        WallTimer tim(mes);
+        ostringstream mes;
+        mes << "\tQMC normal quadrature time " << std::setw(8) << labs[i] << ":         ";
+        WallTimer tim(mes.str());
         QMCarloNormalQuadrature quad(dim, level, *(scheme[i]));
         quad.integrate(func, level, num_threads, qmc_out);
       }
       qmc_out.add(-1.0, res);
-      printf("\tError %8s:                         %16.12g\n", labs[i], qmc_out.getMax());
+      std::cout << "\tError " << std::setw(8) << labs[i] << ":                         " << std::setw(16) << std::setprecision(12) << qmc_out.getMax() << std::endl;
       if (qmc_out.getMax() > max_error)
-        {
-          max_error = qmc_out.getMax();
-        }
+        max_error = qmc_out.getMax();
     }
 
   return max_error < 1.e-7;
@@ -355,8 +348,8 @@ TestRunnable::smolyak_product_cube(const VectorFunction &func, const Vector &res
 {
   if (res.length() != func.outdim())
     {
-      fprintf(stderr, "Incompatible dimensions of check value and function.\n");
-      exit(1);
+      std::cerr << "Incompatible dimensions of check value and function." << std::endl;
+      std::exit(EXIT_FAILURE);
     }
 
   GaussLegendre glq;
@@ -369,8 +362,8 @@ TestRunnable::smolyak_product_cube(const VectorFunction &func, const Vector &res
     quad.integrate(func, level, num_threads, out);
     out.add(-1.0, res);
     smol_error = out.getMax();
-    printf("\tNumber of Smolyak evaluations:    %d\n", quad.numEvals(level));
-    printf("\tError:                            %16.12g\n", smol_error);
+    std::cout << "\tNumber of Smolyak evaluations:    " << quad.numEvals(level) << std::endl;
+    std::cout << "\tError:                            " << std::setw(16) << std::setprecision(12) << smol_error << std::endl;
   }
   {
     WallTimer tim("\tProduct quadrature time:         ");
@@ -378,8 +371,8 @@ TestRunnable::smolyak_product_cube(const VectorFunction &func, const Vector &res
     quad.integrate(func, level, num_threads, out);
     out.add(-1.0, res);
     prod_error = out.getMax();
-    printf("\tNumber of product evaluations:    %d\n", quad.numEvals(level));
-    printf("\tError:                            %16.12g\n", prod_error);
+    std::cout << "\tNumber of product evaluations:    " << quad.numEvals(level) << std::endl;
+    std::cout << "\tError:                            " << std::setw(16) << std::setprecision(12) << prod_error << std::endl;
   }
 
   return smol_error < tol && prod_error < tol;
@@ -397,8 +390,7 @@ TestRunnable::qmc_cube(const VectorFunction &func, double res, double tol, int l
     //		qmc.savePoints("warnock.txt", level);
     qmc.integrate(func, level, num_threads, r);
     error1 = std::max(res - r[0], r[0] - res);
-    printf("\tQuasi-Monte Carlo (Warnock scrambling) error: %16.12g\n",
-           error1);
+    std::cout << "\tQuasi-Monte Carlo (Warnock scrambling) error: " << std::setw(16) << std::setprecision(12) << error1 << std::endl;
   }
   double error2;
   {
@@ -408,8 +400,7 @@ TestRunnable::qmc_cube(const VectorFunction &func, double res, double tol, int l
     //		qmc.savePoints("reverse.txt", level);
     qmc.integrate(func, level, num_threads, r);
     error2 = std::max(res - r[0], r[0] - res);
-    printf("\tQuasi-Monte Carlo (reverse scrambling) error: %16.12g\n",
-           error2);
+    std::cout << "\tQuasi-Monte Carlo (reverse scrambling) error: " << std::setw(16) << std::setprecision(12) << error2 << std::endl;
   }
   double error3;
   {
@@ -419,8 +410,7 @@ TestRunnable::qmc_cube(const VectorFunction &func, double res, double tol, int l
     //		qmc.savePoints("identity.txt", level);
     qmc.integrate(func, level, num_threads, r);
     error3 = std::max(res - r[0], r[0] - res);
-    printf("\tQuasi-Monte Carlo (no scrambling) error:      %16.12g\n",
-           error3);
+    std::cout << "\tQuasi-Monte Carlo (no scrambling) error:      " << std::setw(16) << std::setprecision(12) << error3 << std::endl;
   }
 
   return error1 < tol && error2 < tol && error3 < tol;
@@ -574,61 +564,54 @@ public:
 int
 main()
 {
-  TestRunnable *all_tests[50];
+  std::vector<std::unique_ptr<TestRunnable>> all_tests;
   // fill in vector of all tests
-  int num_tests = 0;
-  all_tests[num_tests++] = new SmolyakNormalMom1();
-  all_tests[num_tests++] = new SmolyakNormalMom2();
-  all_tests[num_tests++] = new ProductNormalMom1();
-  all_tests[num_tests++] = new ProductNormalMom2();
-  all_tests[num_tests++] = new QMCNormalMom1();
-  all_tests[num_tests++] = new QMCNormalMom2();
+  all_tests.push_back(std::make_unique<SmolyakNormalMom1>());
+  all_tests.push_back(std::make_unique<SmolyakNormalMom2>());
+  all_tests.push_back(std::make_unique<ProductNormalMom1>());
+  all_tests.push_back(std::make_unique<ProductNormalMom2>());
+  all_tests.push_back(std::make_unique<QMCNormalMom1>());
+  all_tests.push_back(std::make_unique<QMCNormalMom2>());
   /*
-    all_tests[num_tests++] = new F1GaussLegendre();
-    all_tests[num_tests++] = new F1QuasiMCarlo();
+    all_tests.push_back(make_unique<F1GaussLegendre>());
+    all_tests.push_back(make_unique<F1QuasiMCarlo>());
   */
   // find maximum dimension and maximum nvar
   int dmax = 0;
   int nvmax = 0;
-  for (int i = 0; i < num_tests; i++)
+  for (const auto &test : all_tests)
     {
-      if (dmax < all_tests[i]->dim)
-        dmax = all_tests[i]->dim;
-      if (nvmax < all_tests[i]->nvar)
-        nvmax = all_tests[i]->nvar;
+      if (dmax < test->dim)
+        dmax = test->dim;
+      if (nvmax < test->nvar)
+        nvmax = test->nvar;
     }
   tls.init(dmax, nvmax); // initialize library
   THREAD_GROUP::max_parallel_threads = num_threads;
 
   // launch the tests
   int success = 0;
-  for (int i = 0; i < num_tests; i++)
+  for (const auto &test : all_tests)
     {
       try
         {
-          if (all_tests[i]->test())
+          if (test->test())
             success++;
         }
       catch (const TLException &e)
         {
-          printf("Caugth TL exception in <%s>:\n", all_tests[i]->getName());
+          std::cout << "Caught TL exception in <" << test->name << ">:" << std::endl;
           e.print();
         }
       catch (SylvException &e)
         {
-          printf("Caught Sylv exception in <%s>:\n", all_tests[i]->getName());
+          std::cout << "Caught Sylv exception in <" << test->name << ">:" << std::endl;
           e.printMessage();
         }
     }
 
-  printf("There were %d tests that failed out of %d tests run.\n",
-         num_tests - success, num_tests);
+  std::cout << "There were " << all_tests.size() - success << " tests that failed out of "
+            << all_tests.size() << " tests run." << std::endl;
 
-  // destroy
-  for (int i = 0; i < num_tests; i++)
-    {
-      delete all_tests[i];
-    }
-
-  return 0;
+  return EXIT_SUCCESS;
 }

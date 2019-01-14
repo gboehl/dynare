@@ -39,11 +39,9 @@
 class PermutationScheme
 {
 public:
-  PermutationScheme()
-  = default;
-  virtual ~PermutationScheme()
-  = default;
-  virtual int permute(int i, int base, int c) const  = 0;
+  PermutationScheme() = default;
+  virtual ~PermutationScheme() = default;
+  virtual int permute(int i, int base, int c) const = 0;
 };
 
 /* This class represents an integer number |num| as
@@ -65,12 +63,8 @@ class RadicalInverse
   IntSequence coeff;
 public:
   RadicalInverse(int n, int b, int mxn);
-  RadicalInverse(const RadicalInverse &ri)
-     
-  = default;
-  RadicalInverse &
-  operator=(const RadicalInverse &radi)
-  = default;
+  RadicalInverse(const RadicalInverse &ri) = default;
+  RadicalInverse &operator=(const RadicalInverse &radi) = default;
   double eval(const PermutationScheme &p) const;
   void increase();
   void print() const;
@@ -85,8 +79,7 @@ public:
 class HaltonSequence
 {
 private:
-  static int primes[];
-  static int num_primes;
+  static std::array<int, 170> primes;
 protected:
   int num;
   int maxn;
@@ -95,10 +88,8 @@ protected:
   Vector pt;
 public:
   HaltonSequence(int n, int mxn, int dim, const PermutationScheme &p);
-  HaltonSequence(const HaltonSequence &hs)
-     
-  = default;
-  const HaltonSequence &operator=(const HaltonSequence &hs);
+  HaltonSequence(const HaltonSequence &hs) = default;
+  HaltonSequence &operator=(const HaltonSequence &hs) = delete;
   void increase();
   const Vector &
   point() const
@@ -131,8 +122,7 @@ public:
     : dim(d), lev(l), per_scheme(p)
   {
   }
-  virtual ~QMCSpecification()
-  = default;
+  virtual ~QMCSpecification() = default;
   int
   dimen() const
   {
@@ -153,44 +143,41 @@ public:
 /* This is an iterator for quasi Monte Carlo over a cube
    |QMCarloCubeQuadrature|. The iterator maintains |HaltonSequence| of
    the same dimension as given by the specification. An iterator can be
-   constructed from a given number |n|, or by a copy constructor. For
-   technical reasons, there is also an empty constructor; for that
-   reason, every member is a pointer. */
+   constructed from a given number |n|, or by a copy constructor. */
 
 class qmcpit
 {
 protected:
-  const QMCSpecification *spec{nullptr};
-  HaltonSequence *halton{nullptr};
-  ParameterSignal *sig{nullptr};
+  const QMCSpecification &spec;
+  HaltonSequence halton;
+  ParameterSignal sig;
 public:
-  qmcpit();
   qmcpit(const QMCSpecification &s, int n);
-  qmcpit(const qmcpit &qpit);
-  ~qmcpit();
+  qmcpit(const qmcpit &qpit) = default;
+  virtual ~qmcpit() = default;
   bool operator==(const qmcpit &qpit) const;
   bool
   operator!=(const qmcpit &qpit) const
   {
     return !operator==(qpit);
   }
-  const qmcpit &operator=(const qmcpit &qpit);
+  qmcpit &operator=(const qmcpit &qpit) = delete;
   qmcpit &operator++();
   const ParameterSignal &
   signal() const
   {
-    return *sig;
+    return sig;
   }
   const Vector &
   point() const
   {
-    return halton->point();
+    return halton.point();
   }
   double weight() const;
   void
   print() const
   {
-    halton->print();
+    halton.print();
   }
 };
 
@@ -206,8 +193,7 @@ public:
     : QuadratureImpl<qmcpit>(d), QMCSpecification(d, l, p)
   {
   }
-  ~QMCarloCubeQuadrature()
-  override = default;
+  ~QMCarloCubeQuadrature() override = default;
   int
   numEvals(int l) const override
   {
@@ -233,12 +219,11 @@ protected:
 class qmcnpit : public qmcpit
 {
 protected:
-  Vector *pnt{nullptr};
+  Vector pnt;
 public:
-  qmcnpit();
   qmcnpit(const QMCSpecification &spec, int n);
-  qmcnpit(const qmcnpit &qpit);
-  ~qmcnpit();
+  qmcnpit(const qmcnpit &qpit) = default;
+  ~qmcnpit() override = default;
   bool
   operator==(const qmcnpit &qpit) const
   {
@@ -249,22 +234,23 @@ public:
   {
     return !operator==(qpit);
   }
-  const qmcnpit &operator=(const qmcnpit &qpit);
+  qmcnpit &operator=(const qmcnpit &qpit) = delete;
   qmcnpit &operator++();
   const ParameterSignal &
   signal() const
   {
-    return *sig;
+    return sig;
   }
   const Vector &
   point() const
   {
-    return *pnt;
+    return pnt;
   }
   void
   print() const
   {
-    halton->print(); pnt->print();
+    halton.print();
+    pnt.print();
   }
 };
 
@@ -280,8 +266,7 @@ public:
     : QuadratureImpl<qmcnpit>(d), QMCSpecification(d, l, p)
   {
   }
-  ~QMCarloNormalQuadrature()
-  override = default;
+  ~QMCarloNormalQuadrature() override = default;
   int
   numEvals(int l) const override
   {

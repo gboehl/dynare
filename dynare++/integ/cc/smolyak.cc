@@ -3,91 +3,27 @@
 #include "smolyak.hh"
 #include "symmetry.hh"
 
-smolpit::smolpit()
-   
-{
-}
+#include <iostream>
+#include <iomanip>
 
 /* This constructs a beginning of |isum| summand in |smolq|. We must be
    careful here, since |isum| can be past-the-end, so no reference to
    vectors in |smolq| by |isum| must be done in this case. */
 
 smolpit::smolpit(const SmolyakQuadrature &q, unsigned int isum)
-  : smolq(&q), isummand(isum), jseq(new IntSequence(q.dimen(), 0)),
-    sig(new ParameterSignal(q.dimen())), p(new Vector(q.dimen()))
+  : smolq(q), isummand(isum),
+    jseq{q.dimen(), 0},
+    sig{q.dimen()},
+    p{q.dimen()}
 {
   if (isummand < q.numSummands())
-    {
-      setPointAndWeight();
-    }
-}
-
-smolpit::smolpit(const smolpit &spit)
-  : smolq(spit.smolq), isummand(spit.isummand), w(spit.w)
-{
-  if (spit.jseq)
-    jseq = new IntSequence(*(spit.jseq));
-  else
-    jseq = nullptr;
-  if (spit.sig)
-    sig = new ParameterSignal(*(spit.sig));
-  else
-    sig = nullptr;
-  if (spit.p)
-    p = new Vector(*(spit.p));
-  else
-    p = nullptr;
-}
-
-smolpit::~smolpit()
-{
-  if (jseq)
-    delete jseq;
-  if (sig)
-    delete sig;
-  if (p)
-    delete p;
+    setPointAndWeight();
 }
 
 bool
 smolpit::operator==(const smolpit &spit) const
 {
-  bool ret = true;
-  ret = ret & smolq == spit.smolq;
-  ret = ret & isummand == spit.isummand;
-  ret = ret & ((jseq == nullptr && spit.jseq == nullptr)
-               || (jseq != nullptr && spit.jseq != nullptr && *jseq == *(spit.jseq)));
-  return ret;
-}
-
-const smolpit &
-smolpit::operator=(const smolpit &spit)
-{
-  smolq = spit.smolq;
-  isummand = spit.isummand;
-  w = spit.w;
-
-  if (jseq)
-    delete jseq;
-  if (sig)
-    delete sig;
-  if (p)
-    delete p;
-
-  if (spit.jseq)
-    jseq = new IntSequence(*(spit.jseq));
-  else
-    jseq = nullptr;
-  if (spit.sig)
-    sig = new ParameterSignal(*(spit.sig));
-  else
-    sig = nullptr;
-  if (spit.p)
-    p = new Vector(*(spit.p));
-  else
-    p = nullptr;
-
-  return *this;
+  return &smolq == &spit.smolq && isummand == spit.isummand && jseq == spit.jseq;
 }
 
 /* We first try to increase index within the current summand. If we are
@@ -98,22 +34,22 @@ smolpit &
 smolpit::operator++()
 {
   // todo: throw if |smolq==NULL| or |jseq==NULL| or |sig==NULL|
-  const IntSequence &levpts = smolq->levpoints[isummand];
-  int i = smolq->dimen()-1;
-  (*jseq)[i]++;
-  while (i >= 0 && (*jseq)[i] == levpts[i])
+  const IntSequence &levpts = smolq.levpoints[isummand];
+  int i = smolq.dimen()-1;
+  jseq[i]++;
+  while (i >= 0 && jseq[i] == levpts[i])
     {
-      (*jseq)[i] = 0;
+      jseq[i] = 0;
       i--;
       if (i >= 0)
-        (*jseq)[i]++;
+        jseq[i]++;
     }
-  sig->signalAfter(std::max(i, 0));
+  sig.signalAfter(std::max(i, 0));
 
   if (i < 0)
     isummand++;
 
-  if (isummand < smolq->numSummands())
+  if (isummand < smolq.numSummands())
     setPointAndWeight();
 
   return *this;
@@ -126,18 +62,18 @@ void
 smolpit::setPointAndWeight()
 {
   // todo: raise if |smolq==NULL| or |jseq==NULL| or |sig==NULL| or
-  // |p==NULL| or |isummand>=smolq->numSummands()|
-  int l = smolq->level;
-  int d = smolq->dimen();
-  int sumk = (smolq->levels[isummand]).sum();
+  // |p==NULL| or |isummand>=smolq.numSummands()|
+  int l = smolq.level;
+  int d = smolq.dimen();
+  int sumk = (smolq.levels[isummand]).sum();
   int m1exp = l + d - sumk - 1;
   w = (2*(m1exp/2) == m1exp) ? 1.0 : -1.0;
-  w *= smolq->psc.noverk(d-1, sumk-l);
+  w *= smolq.psc.noverk(d-1, sumk-l);
   for (int i = 0; i < d; i++)
     {
-      int ki = (smolq->levels[isummand])[i];
-      (*p)[i] = (smolq->uquad).point(ki, (*jseq)[i]);
-      w *= (smolq->uquad).weight(ki, (*jseq)[i]);
+      int ki = (smolq.levels[isummand])[i];
+      p[i] = (smolq.uquad).point(ki, jseq[i]);
+      w *= (smolq.uquad).weight(ki, jseq[i]);
     }
 }
 
@@ -145,16 +81,19 @@ smolpit::setPointAndWeight()
 void
 smolpit::print() const
 {
-  printf("isum=%-3d: [", isummand);
-  for (int i = 0; i < smolq->dimen(); i++)
-    printf("%2d ", (smolq->levels[isummand])[i]);
-  printf("] j=[");
-  for (int i = 0; i < smolq->dimen(); i++)
-    printf("%2d ", (*jseq)[i]);
-  printf("] %+4.3f*(", w);
-  for (int i = 0; i < smolq->dimen()-1; i++)
-    printf("%+4.3f ", (*p)[i]);
-  printf("%+4.3f)\n", (*p)[smolq->dimen()-1]);
+  auto ff = std::cout.flags();
+  std::cout << "isum=" << std::left << std::setw(3) << isummand << std::right << ": [";
+  for (int i = 0; i < smolq.dimen(); i++)
+    std::cout << std::setw(2) << (smolq.levels[isummand])[i] << ' ';
+  std::cout << "] j=[";
+  for (int i = 0; i < smolq.dimen(); i++)
+    std::cout << std::setw(2) << jseq[i] << ' ';
+  std::cout << std::showpos << std::fixed << std::setprecision(3)
+            << "] " << std::setw(4) << w << "*(";
+  for (int i = 0; i < smolq.dimen()-1; i++)
+    std::cout << std::setw(4) << p[i] << ' ';
+  std::cout << std::setw(4) << p[smolq.dimen()-1] << ')' << std::endl;
+  std::cout.flags(ff);
 }
 
 /* Here is the constructor of |SmolyakQuadrature|. We have to setup

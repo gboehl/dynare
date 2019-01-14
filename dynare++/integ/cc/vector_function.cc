@@ -5,24 +5,14 @@
 #include <dynlapack.h>
 
 #include <cmath>
-
-#include <cstring>
 #include <algorithm>
 
 /* Just an easy constructor of sequence of booleans defaulting to
    change everywhere. */
 
 ParameterSignal::ParameterSignal(int n)
-  : data(new bool[n]), num(n)
+  : data(n, true)
 {
-  for (int i = 0; i < num; i++)
-    data[i] = true;
-}
-
-ParameterSignal::ParameterSignal(const ParameterSignal &sig)
-  : data(new bool[sig.num]), num(sig.num)
-{
-  memcpy(data, sig.data, num);
 }
 
 /* This sets |false| (no change) before a given parameter, and |true|
@@ -31,47 +21,44 @@ ParameterSignal::ParameterSignal(const ParameterSignal &sig)
 void
 ParameterSignal::signalAfter(int l)
 {
-  for (int i = 0; i < std::min(l, num); i++)
+  for (size_t i = 0; i < std::min((size_t) l, data.size()); i++)
     data[i] = false;
-  for (int i = l; i < num; i++)
+  for (size_t i = l; i < data.size(); i++)
     data[i] = true;
 }
 
 /* This constructs a function set hardcopying also the first. */
 VectorFunctionSet::VectorFunctionSet(const VectorFunction &f, int n)
-  : funcs(n), first_shallow(false)
+  : funcs(n)
 {
   for (int i = 0; i < n; i++)
-    funcs[i] = f.clone();
+    {
+      func_copies.push_back(f.clone());
+      funcs[i] = func_copies.back().get();
+    }
 }
 
 /* This constructs a function set with shallow copy in the first and
    hard copies in others. */
 VectorFunctionSet::VectorFunctionSet(VectorFunction &f, int n)
-  : funcs(n), first_shallow(true)
+  : funcs(n)
 {
   if (n > 0)
     funcs[0] = &f;
   for (int i = 1; i < n; i++)
-    funcs[i] = f.clone();
+    {
+      func_copies.push_back(f.clone());
+      funcs[i] = func_copies.back().get();
+    }
 }
 
-/* This deletes the functions. The first is deleted only if it was not
-   a shallow copy. */
-
-VectorFunctionSet::~VectorFunctionSet()
-{
-  unsigned int start = first_shallow ? 1 : 0;
-  for (unsigned int i = start; i < funcs.size(); i++)
-    delete funcs[i];
-}
 
 /* Here we construct the object from the given function $f$ and given
    variance-covariance matrix $\Sigma=$|vcov|. The matrix $A$ is
    calculated as lower triangular and yields $\Sigma=AA^T$. */
 
 GaussConverterFunction::GaussConverterFunction(VectorFunction &f, const GeneralMatrix &vcov)
-  : VectorFunction(f), func(&f), delete_flag(false), A(vcov.numRows(), vcov.numRows()),
+  : VectorFunction(f), func(&f), A(vcov.numRows(), vcov.numRows()),
     multiplier(calcMultiplier())
 {
   // todo: raise if |A.numRows() != indim()|
@@ -80,9 +67,8 @@ GaussConverterFunction::GaussConverterFunction(VectorFunction &f, const GeneralM
 
 /* Here we construct the object in the same way, however we mark the
    function as to be deleted. */
-
-GaussConverterFunction::GaussConverterFunction(VectorFunction *f, const GeneralMatrix &vcov)
-  : VectorFunction(*f), func(f), delete_flag(true), A(vcov.numRows(), vcov.numRows()),
+GaussConverterFunction::GaussConverterFunction(std::unique_ptr<VectorFunction> f, const GeneralMatrix &vcov)
+  : VectorFunction(*f), func_storage{move(f)}, func{func_storage.get()}, A(vcov.numRows(), vcov.numRows()),
     multiplier(calcMultiplier())
 {
   // todo: raise if |A.numRows() != indim()|
@@ -90,7 +76,7 @@ GaussConverterFunction::GaussConverterFunction(VectorFunction *f, const GeneralM
 }
 
 GaussConverterFunction::GaussConverterFunction(const GaussConverterFunction &f)
-  : VectorFunction(f), func(f.func->clone()), delete_flag(true), A(f.A),
+  : VectorFunction(f), func_storage{f.func->clone()}, func{func_storage.get()}, A(f.A),
     multiplier(f.multiplier)
 {
 }

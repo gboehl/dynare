@@ -38,36 +38,36 @@ class ProductQuadrature;
 class prodpit
 {
 protected:
-  const ProductQuadrature *prodq{nullptr};
+  const ProductQuadrature &prodq;
   int level{0};
   int npoints{0};
-  IntSequence *jseq{nullptr};
+  IntSequence jseq;
   bool end_flag{true};
-  ParameterSignal *sig{nullptr};
-  Vector *p{nullptr};
+  ParameterSignal sig;
+  Vector p;
   double w;
 public:
-  prodpit();
+  prodpit() = default;
   prodpit(const ProductQuadrature &q, int j0, int l);
-  prodpit(const prodpit &ppit);
-  ~prodpit();
+  prodpit(const prodpit &ppit) = default;
+  ~prodpit() = default;
   bool operator==(const prodpit &ppit) const;
   bool
   operator!=(const prodpit &ppit) const
   {
     return !operator==(ppit);
   }
-  const prodpit &operator=(const prodpit &spit);
+  prodpit &operator=(const prodpit &spit) = delete;
   prodpit &operator++();
   const ParameterSignal &
   signal() const
   {
-    return *sig;
+    return sig;
   }
   const Vector &
   point() const
   {
-    return *p;
+    return p;
   }
   double
   weight() const
@@ -93,8 +93,7 @@ class ProductQuadrature : public QuadratureImpl<prodpit>
   const OneDQuadrature &uquad;
 public:
   ProductQuadrature(int d, const OneDQuadrature &uq);
-  ~ProductQuadrature()
-  override = default;
+  ~ProductQuadrature() override = default;
   int
   numEvals(int l) const override
   {

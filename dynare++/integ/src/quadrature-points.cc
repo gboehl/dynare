@@ -11,19 +11,21 @@
 #include "integ/cc/product.hh"
 
 #include <getopt.h>
-#include <cstdio>
 
 #include <cmath>
-
+#include <cstdlib>
+#include <iostream>
 #include <fstream>
 #include <sstream>
+#include <memory>
+#include <string>
 
 struct QuadParams
 {
-  const char *outname;
-  const char *vcovname;
-  int max_level;
-  double discard_weight;
+  string outname;
+  string vcovname;
+  int max_level{3};
+  double discard_weight{0.0};
   QuadParams(int argc, char **argv);
   void check_consistency() const;
 private:
@@ -31,12 +33,12 @@ private:
 };
 
 QuadParams::QuadParams(int argc, char **argv)
-  : outname(nullptr), vcovname(nullptr), max_level(3), discard_weight(0.0)
 {
   if (argc == 1)
     {
       // print the help and exit
-      exit(1);
+      std::cerr << "Usage: " << argv[0] << " [--max-level INTEGER] [--discard-weight FLOAT] [--vcov FILENAME] OUTPUT_FILENAME" << std::endl;
+      std::exit(EXIT_FAILURE);
     }
 
   outname = argv[argc-1];
@@ -56,12 +58,24 @@ QuadParams::QuadParams(int argc, char **argv)
       switch (ret)
         {
         case opt_max_level:
-          if (1 != sscanf(optarg, "%d", &max_level))
-            fprintf(stderr, "Couldn't parse integer %s, ignored\n", optarg);
+          try
+            {
+              max_level = std::stoi(string{optarg});
+            }
+          catch (const std::invalid_argument &e)
+            {
+              std::cerr << "Couldn't parse integer " << optarg << ", ignored" << std::endl;
+            }
           break;
         case opt_discard_weight:
-          if (1 != sscanf(optarg, "%lf", &discard_weight))
-            fprintf(stderr, "Couldn't parse float %s, ignored\n", optarg);
+          try
+            {
+              discard_weight = std::stod(string{optarg});
+            }
+          catch (const std::invalid_argument &e)
+            {
+              std::cerr << "Couldn't parse float " << optarg << ", ignored" << std::endl;
+            }
           break;
         case opt_vcov:
           vcovname = optarg;
@@ -75,29 +89,18 @@ QuadParams::QuadParams(int argc, char **argv)
 void
 QuadParams::check_consistency() const
 {
-  if (outname == nullptr)
+  if (outname.empty())
     {
-      fprintf(stderr, "Error: output name not set\n");
-      exit(1);
+      std::cerr << "Error: output name not set" << std::endl;
+      std::exit(EXIT_FAILURE);
     }
 
-  if (vcovname == nullptr)
+  if (vcovname.empty())
     {
-      fprintf(stderr, "Error: vcov file name not set\n");
-      exit(1);
+      std::cerr << "Error: vcov file name not set" << std::endl;
+      std::exit(EXIT_FAILURE);
     }
 }
-
-/** Utility class for ordering pointers to vectors according their
- * ordering. */
-struct OrderVec
-{
-  bool
-  operator()(const Vector *a, const Vector *b) const
-  {
-    return *a < *b;
-  }
-};
 
 int
 main(int argc, char **argv)
@@ -105,11 +108,11 @@ main(int argc, char **argv)
   QuadParams params(argc, argv);
 
   // open output file for writing
-  FILE *fout;
-  if (nullptr == (fout = fopen(params.outname, "w")))
+  std::ofstream fout{params.outname, std::ios::out | std::ios::trunc};
+  if (fout.fail())
     {
-      fprintf(stderr, "Could not open %s for writing\n", params.outname);
-      exit(1);
+      std::cerr << "Could not open " << params.outname << " for writing" << std::endl;
+      std::exit(EXIT_FAILURE);
     }
 
   try
@@ -142,23 +145,21 @@ main(int argc, char **argv)
       int level = params.max_level;
       SmolyakQuadrature sq(vcov.numRows(), level, ghq);
 
-      printf("Dimension:                %d\n", vcov.numRows());
-      printf("Maximum level:            %d\n", level);
-      printf("Total number of nodes:    %d\n", sq.numEvals(level));
+      std::cout << "Dimension:                " << vcov.numRows() << std::endl
+                << "Maximum level:            " << level << std::endl
+                << "Total number of nodes:    " << sq.numEvals(level) << std::endl;
 
       // put the points to the vector
-      std::vector<Vector *> points;
+      std::vector<std::unique_ptr<Vector>> points;
       for (smolpit qit = sq.start(level); qit != sq.end(level); ++qit)
-        points.push_back(new Vector((const Vector &) qit.point()));
+        points.push_back(std::make_unique<Vector>((const Vector &) qit.point()));
       // sort and uniq
-      OrderVec ordvec;
-      std::sort(points.begin(), points.end(), ordvec);
+      std::sort(points.begin(), points.end(), [](auto &a, auto &b) { return a.get() < b.get(); });
       auto new_end = std::unique(points.begin(), points.end());
-      for (auto it = new_end; it != points.end(); ++it)
-        delete *it;
       points.erase(new_end, points.end());
 
-      printf("Duplicit nodes removed:   %lu\n", (unsigned long) (sq.numEvals(level)-points.size()));
+      std::cout << "Duplicit nodes removed:   " << (unsigned long) (sq.numEvals(level)-points.size())
+                << std::endl;
 
       // calculate weights and mass
       double mass = 0.0;
@@ -175,41 +176,41 @@ main(int argc, char **argv)
         if (weight/mass < params.discard_weight)
           discard_mass += weight;
 
-      printf("Total mass discarded:     %f\n", discard_mass/mass);
+      std::cout << "Total mass discarded:     " << std::fixed << discard_mass/mass << std::endl;
 
       // dump the results
       int npoints = 0;
       double upscale_weight = 1/(mass-discard_mass);
       Vector x(vcov.numRows());
+      fout << std::setprecision(16);
       for (int i = 0; i < (int) weights.size(); i++)
         if (weights[i]/mass >= params.discard_weight)
           {
             // print the upscaled weight
-            fprintf(fout, "%20.16g", upscale_weight*weights[i]);
+            fout << std::setw(20) << upscale_weight*weights[i];
             // multiply point with the factor A and sqrt(2)
             A.multVec(0.0, x, std::sqrt(2.), *(points[i]));
             // print the coordinates
             for (int j = 0; j < x.length(); j++)
-              fprintf(fout, " %20.16g", x[j]);
-            fprintf(fout, "\n");
+              fout << ' ' << std::setw(20) << x[j];
+            fout << std::endl;
             npoints++;
           }
 
-      printf("Final number of points:   %d\n", npoints);
+      std::cout << "Final number of points:   " << npoints << std::endl;
 
-      fclose(fout);
-
+      fout.close();
     }
   catch (const SylvException &e)
     {
       e.printMessage();
-      return 1;
+      return EXIT_FAILURE;
     }
   catch (const ogu::Exception &e)
     {
       e.print();
-      return 1;
+      return EXIT_FAILURE;
     }
 
-  return 0;
+  return EXIT_SUCCESS;
 }

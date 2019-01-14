@@ -3,6 +3,8 @@
 #include "quasi_mcarlo.hh"
 
 #include <cmath>
+#include <iostream>
+#include <iomanip>
 
 /* Here in the constructor, we have to calculate a maximum length of
    |coeff| array for a given |base| and given maximum |maxn|. After
@@ -10,7 +12,7 @@
 
 RadicalInverse::RadicalInverse(int n, int b, int mxn)
   : num(n), base(b), maxn(mxn),
-    coeff((int) (floor(log((double)maxn)/log((double)b))+2), 0)
+    coeff(static_cast<int>(floor(log(static_cast<double>(maxn))/log(static_cast<double>(b)))+2), 0)
 {
   int nr = num;
   j = -1;
@@ -75,15 +77,14 @@ RadicalInverse::increase()
 void
 RadicalInverse::print() const
 {
-  printf("n=%d b=%d c=", num, base);
+  std::cout << "n=" << num << " b=" << base << " c=";
   coeff.print();
 }
 
 /* Here we have the first 170 primes. This means that we are not able
    to integrate dimensions greater than 170. */
 
-int HaltonSequence::num_primes = 170;
-int HaltonSequence::primes[] = {
+std::array<int, 170> HaltonSequence::primes = {
   2,     3,     5,     7,    11,    13,    17,    19,    23,    29,
   31,    37,    41,    43,    47,    53,    59,    61,    67,    71,
   73,    79,    83,    89,    97,   101,   103,   107,   109,   113,
@@ -116,18 +117,6 @@ HaltonSequence::HaltonSequence(int n, int mxn, int dim, const PermutationScheme 
   eval();
 }
 
-const HaltonSequence &
-HaltonSequence::operator=(const HaltonSequence &hs)
-{
-  num = hs.num;
-  maxn = hs.maxn;
-  ri.clear();
-  for (const auto & i : hs.ri)
-    ri.emplace_back(i);
-  pt = hs.pt;
-  return *this;
-}
-
 /* This calls |RadicalInverse::increase| for all radical inverses and
    calls |eval|. */
 
@@ -153,111 +142,46 @@ HaltonSequence::eval()
 void
 HaltonSequence::print() const
 {
+  auto ff = std::cout.flags();
   for (const auto & i : ri)
     i.print();
-  printf("point=[ ");
+  std::cout << "point=[ "
+            << std::fixed << std::setprecision(6);
   for (unsigned int i = 0; i < ri.size(); i++)
-    printf("%7.6f ", pt[i]);
-  printf("]\n");
-}
-
-qmcpit::qmcpit()
-   
-{
+    std::cout << std::setw(7) << pt[i] << ' ';
+  std::cout << ']' << std::endl;
+  std::cout.flags(ff);
 }
 
 qmcpit::qmcpit(const QMCSpecification &s, int n)
-  : spec(&s), halton(new HaltonSequence(n, s.level(), s.dimen(), s.getPerScheme())),
-    sig(new ParameterSignal(s.dimen()))
+  : spec(s), halton{n, s.level(), s.dimen(), s.getPerScheme()},
+    sig{s.dimen()}
 {
-}
-
-qmcpit::qmcpit(const qmcpit &qpit)
-  : spec(qpit.spec), halton(nullptr), sig(nullptr)
-{
-  if (qpit.halton)
-    halton = new HaltonSequence(*(qpit.halton));
-  if (qpit.sig)
-    sig = new ParameterSignal(qpit.spec->dimen());
-}
-
-qmcpit::~qmcpit()
-{
-  if (halton)
-    delete halton;
-  if (sig)
-    delete sig;
 }
 
 bool
 qmcpit::operator==(const qmcpit &qpit) const
 {
-  return (spec == qpit.spec)
-    && ((halton == nullptr && qpit.halton == nullptr)
-        || (halton != nullptr && qpit.halton != nullptr && halton->getNum() == qpit.halton->getNum()));
-}
-
-const qmcpit &
-qmcpit::operator=(const qmcpit &qpit)
-{
-  spec = qpit.spec;
-  if (halton)
-    delete halton;
-  if (qpit.halton)
-    halton = new HaltonSequence(*(qpit.halton));
-  else
-    halton = nullptr;
-  return *this;
+  return &spec == &qpit.spec && halton.getNum() == qpit.halton.getNum();
 }
 
 qmcpit &
 qmcpit::operator++()
 {
   // todo: raise if |halton == null || qmcq == NULL|
-  halton->increase();
+  halton.increase();
   return *this;
 }
 
 double
 qmcpit::weight() const
 {
-  return 1.0/spec->level();
-}
-
-qmcnpit::qmcnpit()
-  : qmcpit() 
-{
+  return 1.0/spec.level();
 }
 
 qmcnpit::qmcnpit(const QMCSpecification &s, int n)
-  : qmcpit(s, n), pnt(new Vector(s.dimen()))
+  : qmcpit(s, n), pnt{s.dimen()}
 {
-}
-
-qmcnpit::qmcnpit(const qmcnpit &qpit)
-  : qmcpit(qpit), pnt(nullptr)
-{
-  if (qpit.pnt)
-    pnt = new Vector(*(qpit.pnt));
-}
-
-qmcnpit::~qmcnpit()
-{
-  if (pnt)
-    delete pnt;
-}
-
-const qmcnpit &
-qmcnpit::operator=(const qmcnpit &qpit)
-{
-  qmcpit::operator=(qpit);
-  if (pnt)
-    delete pnt;
-  if (qpit.pnt)
-    pnt = new Vector(*(qpit.pnt));
-  else
-    pnt = nullptr;
-  return *this;
 }
 
 /* Here we inccrease a point in Halton sequence ant then store images
@@ -267,8 +191,8 @@ qmcnpit &
 qmcnpit::operator++()
 {
   qmcpit::operator++();
-  for (int i = 0; i < halton->point().length(); i++)
-    (*pnt)[i] = NormalICDF::get(halton->point()[i]);
+  for (int i = 0; i < halton.point().length(); i++)
+    pnt[i] = NormalICDF::get(halton.point()[i]);
   return *this;
 }
 
