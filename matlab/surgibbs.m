@@ -43,7 +43,7 @@ function surgibbs(ds, param_names, beta0, A, ndraws, discarddraws, thin, eqtags)
 % Combination of Direct Monte Carlo and Importance Sampling Techniques.
 % Bayesian Analysis Volume 5, Number 1, pp. 65-96.
 
-global M_ oo_
+global M_ oo_ options_
 
 %% Check input
 assert(nargin >= 5 && nargin <= 8, 'Incorrect number of arguments passed to surgibbs');
@@ -87,7 +87,7 @@ drawidx = 1;
 nparams = length(param_names);
 oo_.surgibbs.betadraws = zeros(floor((ndraws-discarddraws)/thin), nparams);
 if ~options_.noprint
-    disp('surgibbs: estimating...please wait...')
+    disp('surgibbs: estimating, please wait...')
 end
 for i = 1:ndraws
     % Draw Omega, given X, Y, Beta
