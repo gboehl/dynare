@@ -40,14 +40,21 @@ if isempty(Y) || ~iscell(Y) || isempty(X) || ~iscell(X) || length(Y) ~= length(X
 end
 
 %% Organize output
-nobs = size(X{1}, 1);
 neqs = length(X);
-Xmat = dseries([X{1}.data; zeros(nobs*(neqs-1), size(X{1}, 2))], X{1}.firstdate, X{1}.name);
+nobs = zeros(neqs, 1);
+for i = 1:neqs
+    assert(size(X{i}, 1) == size(Y{i}, 1), 'Y{i} and X{i} must have the same nuber of observations');
+    nobs(i) = size(X{i}, 1);
+end
+nrows = sum(nobs);
+Xmat = dseries([X{1}.data; zeros(nrows-nobs(1), size(X{1}, 2))], X{1}.firstdate, X{1}.name);
 Yvec = Y{1};
 constrained = {};
 for i = 2:neqs
     to_remove = [];
-    Xtmp = dseries([zeros(nobs*(i-1), size(X{i}, 2)); X{i}.data; zeros(nobs*(neqs-i), size(X{i}, 2))], X{i}.firstdate, X{i}.name);
+    nr = sum(nobs(1:i-1));
+    nxcol = size(X{i}, 2);
+    Xtmp = dseries([zeros(nr, nxcol); X{i}.data; zeros(nrows-nr-nobs(i), nxcol)], X{1}.firstdate, X{i}.name);
     for j = 1:length(X{i}.name)
         idx = find(strcmp(Xmat.name, X{i}.name{j}));
         if ~isempty(idx)
