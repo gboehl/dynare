@@ -1,4 +1,4 @@
-function [Y, lhssub, X] = parse_ols_style_equation(ds, ast)
+function [Y, lhssub, X, residual] = parse_ols_style_equation(ds, ast)
 %function X = parse_ols_style_equation()
 % Run OLS on chosen model equations; unlike olseqs, allow for time t
 % endogenous variables on LHS
@@ -11,6 +11,7 @@ function [Y, lhssub, X] = parse_ols_style_equation(ds, ast)
 %   Y           [dseries]   LHS of the equation (with lhssub subtracted)
 %   lhssub      [dseries]   RHS subtracted from LHS
 %   X           [dseries]   RHS of the equation
+%   residual    [string]    name of residual in equation
 %
 % SPECIAL REQUIREMENTS
 %   none

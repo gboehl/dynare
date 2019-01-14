@@ -84,21 +84,22 @@ if strcmp(st(1).name, 'pooled_fgls')
 end
 
 %% Find parameters and variable names in every equation & Setup estimation matrices
-[Y, ~, X] = common_parsing(ds, ast, jsonmodel, overlapping_dates);
+[Y, ~, X, ~, ~, residnames] = common_parsing(ds, ast, jsonmodel, overlapping_dates);
 clear ast jsonmodel;
-nobs = Y{1}.nobs;
+nobs = zeros(length(Y), 1);
+nobs(1) = Y{1}.nobs;
 fp = Y{1}.firstobservedperiod;
 for i = 2:length(Y)
     if Y{i}.firstobservedperiod < fp
         fp = Y{i}.firstobservedperiod;
     end
-    nobs = nobs + Y{i}.nobs;
+    nobs(i) = Y{i}.nobs;
 end
 [Y, X] = put_in_sur_form(Y, X);
 
 %% Save
-oo_.(save_structure_name).sample_range = fp:fp+nobs;
-%oo_.(save_structure_name).residnames = residnames;
+oo_.(save_structure_name).sample_range = fp:fp+sum(nobs);
+oo_.(save_structure_name).residnames = residnames;
 oo_.(save_structure_name).Y = Y.data;
 oo_.(save_structure_name).X = X.data;
 oo_.(save_structure_name).pbeta = X.name;
@@ -136,17 +137,19 @@ for i = 1:length(idxs)
     M_.params(strcmp(M_.param_names, names{i})) = values(i);
 end
 
-% residuals = Y.data - X.data * oo_.(save_structure_name).beta;
-% for i = 1:neqs
-%     if i == neqs
-%         oo_.(save_structure_name).resid.(residnames{i}{:}) = residuals(startidxs(i):end);
-%     else
-%         oo_.(save_structure_name).resid.(residnames{i}{:}) = residuals(startidxs(i):startidxs(i+1)-1);
-%     end
-%     oo_.(save_structure_name).varcovar.(['eq' num2str(i)]) = oo_.(save_structure_name).resid.(residnames{i}{:})*oo_.(save_structure_name).resid.(residnames{i}{:})';
-%     idx = find(strcmp(residnames{i}{:}, M_.exo_names));
-%     M_.Sigma_e(idx, idx) = var(oo_.(save_structure_name).resid.(residnames{i}{:}));
-% end
+residuals = Y.data - X.data * oo_.(save_structure_name).beta;
+for i = 1:neqs
+    if i == 1
+        oo_.(save_structure_name).resid.(residnames{i}) = residuals(1:nobs(1));
+    elseif i == neqs
+        oo_.(save_structure_name).resid.(residnames{i}) = residuals(sum(nobs(1:i-1))+1:end);
+    else
+        oo_.(save_structure_name).resid.(residnames{i}) = residuals(sum(nobs(1:i-1))+1:sum(nobs(1:i)));
+    end
+    oo_.(save_structure_name).varcovar.(['eq' num2str(i)]) = oo_.(save_structure_name).resid.(residnames{i})*oo_.(save_structure_name).resid.(residnames{i})';
+    idx = find(strcmp(residnames{i}, M_.exo_names));
+    M_.Sigma_e(idx, idx) = var(oo_.(save_structure_name).resid.(residnames{i}));
+end
 end
 
 function ast = replace_parameters(ast, country_name, regexcountries, param_regex)

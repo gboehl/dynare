@@ -1,5 +1,5 @@
-function [Y, lhssub, X, startdates, enddates] = common_parsing(ds, ast, jsonmodel, overlapping_dates)
-%function [Y, lhssub, X, startdates, enddates] = common_parsing(ds, ast, jsonmodel, overlapping_dates)
+function [Y, lhssub, X, startdates, enddates, residnames] = common_parsing(ds, ast, jsonmodel, overlapping_dates)
+%function [Y, lhssub, X, startdates, enddates, residnames] = common_parsing(ds, ast, jsonmodel, overlapping_dates)
 %
 % Code common to sur.m and pooled_ols.m
 %
@@ -20,14 +20,6 @@ function [Y, lhssub, X, startdates, enddates] = common_parsing(ds, ast, jsonmode
 %   startidxs            [vector]      rows corresponding to each
 %                                      equation's observations
 %   residnames           [cell array]  name of residual in each equation
-%   pbeta                [cell array]  parameter names corresponding to
-%                                      columns of X
-%   vars                 [cell array]  variable names corresponding to
-%                                      parameters
-%   surpidxs             [vector]      indexes in M_.params associated with
-%                                      columns of X
-%   surconstrainedparams [vector]      indexes of parameters that were
-%                                      constrained
 %
 % SPECIAL REQUIREMENTS
 %   none
@@ -54,6 +46,7 @@ function [Y, lhssub, X, startdates, enddates] = common_parsing(ds, ast, jsonmode
 Y = cell(length(ast), 1);
 lhssub = cell(length(ast), 1);
 X = cell(length(ast), 1);
+residnames = cell(length(ast), 1);
 startdates = cell(length(ast), 1);
 enddates = cell(length(ast), 1);
 
@@ -61,7 +54,7 @@ enddates = cell(length(ast), 1);
 neqs = length(ast);
 for i = 1:neqs
     %% Parse equation i
-    [Y{i}, lhssub{i}, X{i}] = parse_ols_style_equation(ds, ast{i});
+    [Y{i}, lhssub{i}, X{i}, residnames{i}] = parse_ols_style_equation(ds, ast{i});
 
     %% Set start and end dates
     [startdates{i}, enddates{i}] = get_ols_start_end_dates(Y{i}, lhssub{i}, X{i}, jsonmodel{i});
