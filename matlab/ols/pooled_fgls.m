@@ -17,7 +17,7 @@ function pooled_fgls(ds, param_common, param_regex, eqtags)
 % SPECIAL REQUIREMENTS
 %   dynare must be run with the option: json=parse
 
-% Copyright (C) 2017-2018 Dynare Team
+% Copyright (C) 2017-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -36,19 +36,20 @@ function pooled_fgls(ds, param_common, param_regex, eqtags)
 
 global M_ oo_
 
+%% Check input arguments
+
 if nargin < 4
-    eqtags ={};
-    pooled_ols(ds, param_common, param_regex, true);
-else
-    param_regex = pooled_ols(ds, param_common, param_regex, true, eqtags);
+    eqtags = {};
 end
 
-oo_.sur.dof = length(oo_.pooled_fgls.sample_range);
-resid = oo_.pooled_fgls.Y - oo_.pooled_fgls.X * oo_.pooled_fgls.beta;
-resid = reshape(resid, oo_.sur.dof, length(oo_.pooled_fgls.residnames));
-M_.Sigma_e = resid'*resid/oo_.sur.dof;
+pooled_ols(ds, param_common, param_regex, true, eqtags);
 
-kLeye = kron(chol(inv(M_.Sigma_e)), eye(oo_.sur.dof));
+oo_.pooled_fgls.dof = size(oo_.pooled_fgls.X,1)/length(oo_.pooled_fgls.residnames);
+resid = oo_.pooled_fgls.Y - oo_.pooled_fgls.X * oo_.pooled_fgls.beta;
+resid = reshape(resid, oo_.pooled_fgls.dof, length(oo_.pooled_fgls.residnames));
+M_.Sigma_e = resid'*resid/oo_.pooled_fgls.dof;
+
+kLeye = kron(chol(inv(M_.Sigma_e)), eye(oo_.pooled_fgls.dof));
 [q, r] = qr(kLeye*oo_.pooled_fgls.X, 0);
 oo_.pooled_fgls.beta = r\(q'*kLeye*oo_.pooled_fgls.Y);
 

@@ -1,4 +1,4 @@
-function varargout = pooled_ols(ds, param_common, param_regex, overlapping_dates, eqtags)
+function pooled_ols(ds, param_common, param_regex, overlapping_dates, eqtags)
 % function pooled_ols(ds, param_common, param_regex, overlapping_dates, eqtags)
 % Run Pooled OLS
 % Apply parameter values found to corresponding parameter values in the
@@ -75,14 +75,6 @@ country_name = param_common{1};
 regexcountries = ['(' strjoin(param_common(2:end),'|') ')'];
 ast = replace_parameters(ast, country_name, regexcountries, param_regex);
 
-%% Handle FGLS
-st = dbstack(1);
-save_structure_name = 'pooled_ols';
-if strcmp(st(1).name, 'pooled_fgls')
-    varargout{1} = param_regex;
-    save_structure_name = 'pooled_fgls';
-end
-
 %% Find parameters and variable names in every equation & Setup estimation matrices
 [Y, ~, X, ~, ~, residnames] = common_parsing(ds, ast, jsonmodel, overlapping_dates);
 clear ast jsonmodel;
@@ -97,8 +89,15 @@ for i = 2:length(Y)
 end
 [Y, X] = put_in_sur_form(Y, X);
 
+%% Handle FGLS
+st = dbstack(1);
+if strcmp(st(1).name, 'pooled_fgls')
+    save_structure_name = 'pooled_fgls';
+else
+    save_structure_name = 'pooled_ols';
+end
+
 %% Save
-oo_.(save_structure_name).sample_range = fp:fp+sum(nobs);
 oo_.(save_structure_name).residnames = residnames;
 oo_.(save_structure_name).Y = Y.data;
 oo_.(save_structure_name).X = X.data;
@@ -113,6 +112,7 @@ oo_.(save_structure_name).beta = r\(q'*Y.data);
 if strcmp(st(1).name, 'pooled_fgls')
     return
 end
+clear save_structure_name;
 
 % Assign parameter values back to parameters using param_regex & param_common
 regexcountries = ['(' strjoin(param_common(1:end),'|') ')'];
@@ -120,7 +120,7 @@ assigned_idxs = false(size(X.name));
 for i = 1:length(param_regex)
     beta_idx = strcmp(X.name, strrep(param_regex{i}, '*', country_name));
     assigned_idxs = assigned_idxs | beta_idx;
-    value = oo_.(save_structure_name).beta(beta_idx);
+    value = oo_.pooled_ols.beta(beta_idx);
     if isempty(eqtags)
         assert(~isempty(value));
     end
@@ -130,25 +130,25 @@ for i = 1:length(param_regex)
     end
 end
 idxs = find(assigned_idxs == 0);
-values = oo_.(save_structure_name).beta(idxs);
+values = oo_.pooled_ols.beta(idxs);
 names = X.name(idxs);
 assert(length(values) == length(names));
 for i = 1:length(idxs)
     M_.params(strcmp(M_.param_names, names{i})) = values(i);
 end
 
-residuals = Y.data - X.data * oo_.(save_structure_name).beta;
+residuals = Y.data - X.data * oo_.pooled_ols.beta;
 for i = 1:neqs
     if i == 1
-        oo_.(save_structure_name).resid.(residnames{i}) = residuals(1:nobs(1));
+        oo_.pooled_ols.resid.(residnames{i}) = residuals(1:nobs(1));
     elseif i == neqs
-        oo_.(save_structure_name).resid.(residnames{i}) = residuals(sum(nobs(1:i-1))+1:end);
+        oo_.pooled_ols.resid.(residnames{i}) = residuals(sum(nobs(1:i-1))+1:end);
     else
-        oo_.(save_structure_name).resid.(residnames{i}) = residuals(sum(nobs(1:i-1))+1:sum(nobs(1:i)));
+        oo_.pooled_ols.resid.(residnames{i}) = residuals(sum(nobs(1:i-1))+1:sum(nobs(1:i)));
     end
-    oo_.(save_structure_name).varcovar.(['eq' num2str(i)]) = oo_.(save_structure_name).resid.(residnames{i})*oo_.(save_structure_name).resid.(residnames{i})';
+    oo_.pooled_ols.varcovar.(['eq' num2str(i)]) = oo_.pooled_ols.resid.(residnames{i})*oo_.pooled_ols.resid.(residnames{i})';
     idx = find(strcmp(residnames{i}, M_.exo_names));
-    M_.Sigma_e(idx, idx) = var(oo_.(save_structure_name).resid.(residnames{i}));
+    M_.Sigma_e(idx, idx) = var(oo_.pooled_ols.resid.(residnames{i}));
 end
 end
 
