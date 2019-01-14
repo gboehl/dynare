@@ -130,17 +130,17 @@ for i = 1:length(idxs)
     M_.params(strcmp(M_.param_names, names{i})) = values(i);
 end
 
-residuals = Y.data - X.data * oo_.(save_structure_name).beta;
-for i = 1:neqs
-    if i == neqs
-        oo_.(save_structure_name).resid.(residnames{i}{:}) = residuals(startidxs(i):end);
-    else
-        oo_.(save_structure_name).resid.(residnames{i}{:}) = residuals(startidxs(i):startidxs(i+1)-1);
-    end
-    oo_.(save_structure_name).varcovar.(['eq' num2str(i)]) = oo_.(save_structure_name).resid.(residnames{i}{:})*oo_.(save_structure_name).resid.(residnames{i}{:})';
-    idx = find(strcmp(residnames{i}{:}, M_.exo_names));
-    M_.Sigma_e(idx, idx) = var(oo_.(save_structure_name).resid.(residnames{i}{:}));
-end
+% residuals = Y.data - X.data * oo_.(save_structure_name).beta;
+% for i = 1:neqs
+%     if i == neqs
+%         oo_.(save_structure_name).resid.(residnames{i}{:}) = residuals(startidxs(i):end);
+%     else
+%         oo_.(save_structure_name).resid.(residnames{i}{:}) = residuals(startidxs(i):startidxs(i+1)-1);
+%     end
+%     oo_.(save_structure_name).varcovar.(['eq' num2str(i)]) = oo_.(save_structure_name).resid.(residnames{i}{:})*oo_.(save_structure_name).resid.(residnames{i}{:})';
+%     idx = find(strcmp(residnames{i}{:}, M_.exo_names));
+%     M_.Sigma_e(idx, idx) = var(oo_.(save_structure_name).resid.(residnames{i}{:}));
+% end
 end
 
 function ast = replace_parameters(ast, country_name, regexcountries, param_regex)
