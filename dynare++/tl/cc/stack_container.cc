@@ -4,6 +4,8 @@
 #include "pyramid_prod2.hh"
 #include "ps_tensor.hh"
 
+#include <memory>
+
 double FoldedStackContainer::fill_threshold = 0.00005;
 double UnfoldedStackContainer::fill_threshold = 0.00005;
 
@@ -42,13 +44,9 @@ FoldedStackContainer::multAndAdd(int dim, const FGSContainer &c, FGSTensor &out)
   THREAD_GROUP gr;
   SymmetrySet ss(dim, c.num());
   for (symiterator si(ss); !si.isEnd(); ++si)
-    {
-      if (c.check(*si))
-        {
-          THREAD *worker = new WorkerFoldMAADense(*this, *si, c, out);
-          gr.insert(worker);
-        }
-    }
+    if (c.check(*si))
+      gr.insert(std::make_unique<WorkerFoldMAADense>(*this, *si, c, out));
+
   gr.run();
 }
 
@@ -81,10 +79,8 @@ FoldedStackContainer::multAndAddSparse1(const FSSparseTensor &t,
   THREAD_GROUP gr;
   UFSTensor dummy(0, numStacks(), t.dimen());
   for (Tensor::index ui = dummy.begin(); ui != dummy.end(); ++ui)
-    {
-      THREAD *worker = new WorkerFoldMAASparse1(*this, t, out, ui.getCoor());
-      gr.insert(worker);
-    }
+    gr.insert(std::make_unique<WorkerFoldMAASparse1>(*this, t, out, ui.getCoor()));
+
   gr.run();
 }
 
@@ -155,10 +151,8 @@ FoldedStackContainer::multAndAddSparse2(const FSSparseTensor &t,
   THREAD_GROUP gr;
   FFSTensor dummy_f(0, numStacks(), t.dimen());
   for (Tensor::index fi = dummy_f.begin(); fi != dummy_f.end(); ++fi)
-    {
-      THREAD *worker = new WorkerFoldMAASparse2(*this, t, out, fi.getCoor());
-      gr.insert(worker);
-    }
+      gr.insert(std::make_unique<WorkerFoldMAASparse2>(*this, t, out, fi.getCoor()));
+
   gr.run();
 }
 
@@ -253,10 +247,8 @@ FoldedStackContainer::multAndAddSparse4(const FSSparseTensor &t, FGSTensor &out)
   THREAD_GROUP gr;
   FFSTensor dummy_f(0, numStacks(), t.dimen());
   for (Tensor::index fi = dummy_f.begin(); fi != dummy_f.end(); ++fi)
-    {
-      THREAD *worker = new WorkerFoldMAASparse4(*this, t, out, fi.getCoor());
-      gr.insert(worker);
-    }
+    gr.insert(std::make_unique<WorkerFoldMAASparse4>(*this, t, out, fi.getCoor()));
+
   gr.run();
 }
 
@@ -405,13 +397,9 @@ UnfoldedStackContainer::multAndAdd(int dim, const UGSContainer &c,
   THREAD_GROUP gr;
   SymmetrySet ss(dim, c.num());
   for (symiterator si(ss); !si.isEnd(); ++si)
-    {
-      if (c.check(*si))
-        {
-          THREAD *worker = new WorkerUnfoldMAADense(*this, *si, c, out);
-          gr.insert(worker);
-        }
-    }
+    if (c.check(*si))
+      gr.insert(std::make_unique<WorkerUnfoldMAADense>(*this, *si, c, out));
+
   gr.run();
 }
 
@@ -456,10 +444,8 @@ UnfoldedStackContainer::multAndAddSparse1(const FSSparseTensor &t,
   THREAD_GROUP gr;
   UFSTensor dummy(0, numStacks(), t.dimen());
   for (Tensor::index ui = dummy.begin(); ui != dummy.end(); ++ui)
-    {
-      THREAD *worker = new WorkerUnfoldMAASparse1(*this, t, out, ui.getCoor());
-      gr.insert(worker);
-    }
+    gr.insert(std::make_unique<WorkerUnfoldMAASparse1>(*this, t, out, ui.getCoor()));
+
   gr.run();
 }
 
@@ -562,10 +548,8 @@ UnfoldedStackContainer::multAndAddSparse2(const FSSparseTensor &t,
   THREAD_GROUP gr;
   FFSTensor dummy_f(0, numStacks(), t.dimen());
   for (Tensor::index fi = dummy_f.begin(); fi != dummy_f.end(); ++fi)
-    {
-      THREAD *worker = new WorkerUnfoldMAASparse2(*this, t, out, fi.getCoor());
-      gr.insert(worker);
-    }
+    gr.insert(std::make_unique<WorkerUnfoldMAASparse2>(*this, t, out, fi.getCoor()));
+
   gr.run();
 }
 

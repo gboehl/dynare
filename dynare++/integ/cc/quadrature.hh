@@ -169,10 +169,8 @@ public:
     out.zeros();
     THREAD_GROUP gr;
     for (int ti = 0; ti < fs.getNum(); ti++)
-      {
-        gr.insert(new IntegrationWorker<_Tpit>(*this, fs.getFunc(ti),
-                                               level, ti, fs.getNum(), out));
-      }
+      gr.insert(std::make_unique<IntegrationWorker<_Tpit>>(*this, fs.getFunc(ti),
+                                                           level, ti, fs.getNum(), out));
     gr.run();
   }
   void

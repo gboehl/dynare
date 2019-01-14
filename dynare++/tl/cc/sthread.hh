@@ -69,6 +69,8 @@
 #include <list>
 #include <map>
 #include <type_traits>
+#include <memory>
+#include <utility>
 
 namespace sthread
 {
@@ -517,29 +519,21 @@ namespace sthread
     using _Ttraits = thread_traits<thread_impl>;
     using _Ctraits = cond_traits<thread_impl>;
     using _Ctype = detach_thread<thread_impl>;
-    list<_Ctype *> tlist;
-    using iterator = typename list<_Ctype *>::iterator;
+    list<unique_ptr<_Ctype>> tlist;
+    using iterator = typename list<unique_ptr<_Ctype>>::iterator;
     condition_counter<thread_impl> counter;
   public:
     static int max_parallel_threads;
 
     /* When inserting, the counter is installed to the thread. */
     void
-    insert(_Ctype *c)
+    insert(unique_ptr<_Ctype> c)
     {
-      tlist.push_back(c);
       c->installCounter(&counter);
+      tlist.push_back(move(c));
     }
 
-    /* The destructor is clear. */
-    ~detach_thread_group()
-    {
-      while (!tlist.empty())
-        {
-          delete tlist.front();
-          tlist.pop_front();
-        }
-    }
+    ~detach_thread_group() = default;
 
     /* We cycle through all threads in the group, and in each cycle we wait
        for the change in the |counter|. If the counter indicates less than

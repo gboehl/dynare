@@ -10,6 +10,7 @@
 
 #include <limits>
 #include <utility>
+#include <memory>
 
 template <>
 int DRFixPoint<KOrder::fold>::max_iter = 10000;
@@ -94,10 +95,8 @@ SimResults::simulate(int num_sim, const DecisionRule &dr, const Vector &start,
     {
       RandomShockRealization sr(vcov, system_random_generator.int_uniform());
       rsrs.push_back(sr);
-      THREAD *worker = new
-        SimulationWorker(*this, dr, DecisionRule::horner,
-                         num_per+num_burn, start, rsrs.back());
-      gr.insert(worker);
+      gr.insert(std::make_unique<SimulationWorker>(*this, dr, DecisionRule::horner,
+                                                   num_per+num_burn, start, rsrs.back()));
     }
   gr.run();
 }
@@ -334,12 +333,8 @@ SimResultsIRF::simulate(const DecisionRule &dr)
 {
   THREAD_GROUP gr;
   for (int idata = 0; idata < control.getNumSets(); idata++)
-    {
-      THREAD *worker = new
-        SimulationIRFWorker(*this, dr, DecisionRule::horner,
-                            num_per, idata, ishock, imp);
-      gr.insert(worker);
-    }
+    gr.insert(std::make_unique<SimulationIRFWorker>(*this, dr, DecisionRule::horner,
+                                                    num_per, idata, ishock, imp));
   gr.run();
 }
 
@@ -420,10 +415,8 @@ RTSimResultsStats::simulate(int num_sim, const DecisionRule &dr, const Vector &s
     {
       RandomShockRealization sr(vcov, system_random_generator.int_uniform());
       rsrs.push_back(sr);
-      THREAD *worker = new
-        RTSimulationWorker(*this, dr, DecisionRule::horner,
-                           num_per, start, rsrs.back());
-      gr.insert(worker);
+      gr.insert(std::make_unique<RTSimulationWorker>(*this, dr, DecisionRule::horner,
+                                                     num_per, start, rsrs.back()));
     }
   gr.run();
 }
