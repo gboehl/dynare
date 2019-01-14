@@ -66,7 +66,6 @@ else
     assert(islogical(overlapping_dates) && length(overlapping_dates) == 1, 'The fourth argument must be a bool');
 end
 
-
 %% Get Equation(s)
 [ast, jsonmodel] = get_ast_jsonmodel(eqtags);
 neqs = length(jsonmodel);
@@ -88,10 +87,17 @@ end
 [Y, ~, X] = common_parsing(ds, ast, jsonmodel, overlapping_dates);
 clear ast jsonmodel;
 nobs = Y{1}.nobs;
+fp = Y{1}.firstobservedperiod;
+for i = 2:length(Y)
+    if Y{i}.firstobservedperiod < fp
+        fp = Y{i}.firstobservedperiod;
+    end
+    nobs = nobs + Y{i}.nobs;
+end
 [Y, X] = put_in_sur_form(Y, X);
 
 %% Save
-oo_.(save_structure_name).sample_range = X.firstdate:X.firstdate+nobs;
+oo_.(save_structure_name).sample_range = fp:fp+nobs;
 %oo_.(save_structure_name).residnames = residnames;
 oo_.(save_structure_name).Y = Y.data;
 oo_.(save_structure_name).X = X.data;
