@@ -484,10 +484,9 @@ main()
   all_tests.push_back(std::make_unique<SmolyakNormalMom2>());
   all_tests.push_back(std::make_unique<ProductNormalMom1>());
   all_tests.push_back(std::make_unique<ProductNormalMom2>());
-  /*
-    all_tests.push_back(make_unique<F1GaussLegendre>());
-    all_tests.push_back(make_unique<F1QuasiMCarlo>());
-  */
+  all_tests.push_back(std::make_unique<F1GaussLegendre>());
+  all_tests.push_back(std::make_unique<F1QuasiMCarlo>());
+
   // find maximum dimension and maximum nvar
   int dmax = 0;
   int nvmax = 0;
@@ -522,8 +521,12 @@ main()
         }
     }
 
-  std::cout << "There were " << all_tests.size() - success << " tests that failed out of "
+  int nfailed = all_tests.size() - success;
+  std::cout << "There were " << nfailed << " tests that failed out of "
             << all_tests.size() << " tests run." << std::endl;
 
-  return EXIT_SUCCESS;
+  if (nfailed)
+    return EXIT_FAILURE;
+  else
+    return EXIT_SUCCESS;
 }
