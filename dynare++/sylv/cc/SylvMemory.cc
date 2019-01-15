@@ -20,10 +20,6 @@
 
 SylvMemoryPool memory_pool;
 
-SylvMemoryPool::SylvMemoryPool()
-   
-= default;
-
 void
 SylvMemoryPool::init(size_t size)
 {

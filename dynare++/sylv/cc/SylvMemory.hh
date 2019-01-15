@@ -34,7 +34,7 @@ class SylvMemoryPool
   size_t allocated{0};
   bool stack_mode{false};
 public:
-  SylvMemoryPool();
+  SylvMemoryPool() = default;
   SylvMemoryPool(const SylvMemoryPool &) = delete;
   const SylvMemoryPool &operator=(const SylvMemoryPool &) = delete;
   ~SylvMemoryPool();

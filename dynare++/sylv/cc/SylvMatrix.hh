@@ -74,8 +74,7 @@ public:
   SqSylvMatrix(double *d, int m) : SylvMatrix(d, m, m)
   {
   }
-  SqSylvMatrix(const SqSylvMatrix &m)  
-  = default;
+  SqSylvMatrix(const SqSylvMatrix &m) = default;
   SqSylvMatrix(const GeneralMatrix &m, int i, int j, int nrows)
     : SylvMatrix(m, i, j, nrows, nrows)
   {
@@ -88,7 +87,8 @@ public:
   const SqSylvMatrix &
   operator=(const SqSylvMatrix &m)
   {
-    GeneralMatrix::operator=(m); return *this;
+    GeneralMatrix::operator=(m);
+    return *this;
   }
   /* x = (this \otimes this..\otimes this)*d */
   void multVecKron(KronVector &x, const KronVector &d) const;

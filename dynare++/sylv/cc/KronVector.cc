@@ -10,9 +10,7 @@ power(int m, int depth)
 {
   int p = 1;
   for (int i = 0; i < depth; i++)
-    {
-      p *= m;
-    }
+    p *= m;
   return p;
 }
 
@@ -24,11 +22,8 @@ KronVector::KronVector(int mm, int nn, int dp)
 KronVector::KronVector(Vector &v, int mm, int nn, int dp)
   : Vector(v), m(mm), n(nn), depth(dp)
 {
-  len = power(m, depth)*n;
-  if (v.length() != length())
-    {
-      throw SYLV_MES_EXCEPTION("Bad conversion KronVector from Vector.");
-    }
+  if (length() != power(m, depth)*n)
+    throw SYLV_MES_EXCEPTION("Bad conversion KronVector from Vector.");
 }
 
 KronVector::KronVector(KronVector &v, int i)
@@ -36,9 +31,7 @@ KronVector::KronVector(KronVector &v, int i)
     depth(v.depth-1)
 {
   if (depth < 0)
-    {
-      throw SYLV_MES_EXCEPTION("Bad KronVector pick, depth < 0.");
-    }
+    throw SYLV_MES_EXCEPTION("Bad KronVector pick, depth < 0.");
 }
 
 KronVector::KronVector(const ConstKronVector &v)
@@ -61,9 +54,7 @@ const KronVector &
 KronVector::operator=(const Vector &v)
 {
   if (length() != v.length())
-    {
-      throw SYLV_MES_EXCEPTION("Wrong lengths for vector operator =.");
-    }
+    throw SYLV_MES_EXCEPTION("Wrong lengths for vector operator =.");
   Vector::operator=(v);
   return *this;
 }
@@ -82,21 +73,15 @@ ConstKronVector::ConstKronVector(const ConstKronVector &v)
 ConstKronVector::ConstKronVector(const Vector &v, int mm, int nn, int dp)
   : ConstVector(v), m(mm), n(nn), depth(dp)
 {
-  len = power(m, depth)*n;
-  if (v.length() != length())
-    {
-      throw SYLV_MES_EXCEPTION("Bad conversion KronVector from Vector.");
-    }
+  if (length() != power(m, depth)*n)
+    throw SYLV_MES_EXCEPTION("Bad conversion KronVector from Vector.");
 }
 
 ConstKronVector::ConstKronVector(const ConstVector &v, int mm, int nn, int dp)
   : ConstVector(v), m(mm), n(nn), depth(dp)
 {
-  len = power(m, depth)*n;
-  if (v.length() != length())
-    {
-      throw SYLV_MES_EXCEPTION("Bad conversion KronVector from Vector.");
-    }
+  if (length() != power(m, depth)*n)
+    throw SYLV_MES_EXCEPTION("Bad conversion KronVector from Vector.");
 }
 
 ConstKronVector::ConstKronVector(const KronVector &v, int i)
@@ -105,9 +90,7 @@ ConstKronVector::ConstKronVector(const KronVector &v, int i)
     m(v.getM()), n(v.getN()), depth(v.getDepth()-1)
 {
   if (depth < 0)
-    {
-      throw SYLV_MES_EXCEPTION("Bad KronVector pick, depth < 0.");
-    }
+    throw SYLV_MES_EXCEPTION("Bad KronVector pick, depth < 0.");
 }
 
 ConstKronVector::ConstKronVector(const ConstKronVector &v, int i)
@@ -115,7 +98,5 @@ ConstKronVector::ConstKronVector(const ConstKronVector &v, int i)
     m(v.getM()), n(v.getN()), depth(v.getDepth()-1)
 {
   if (depth < 0)
-    {
-      throw SYLV_MES_EXCEPTION("Bad KronVector pick, depth < 0.");
-    }
+    throw SYLV_MES_EXCEPTION("Bad KronVector pick, depth < 0.");
 }

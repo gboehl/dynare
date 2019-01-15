@@ -12,11 +12,9 @@ class SylvException : public MallocAllocator
 protected:
   char file[50];
   int line;
-  const SylvException *source;
 public:
-  SylvException(const char *f, int l, const SylvException *s);
-  virtual
-  ~SylvException();
+  SylvException(const char *f, int l);
+  virtual ~SylvException() = default;
   virtual int printMessage(char *str, int maxlen) const;
   void printMessage() const;
 };
@@ -30,7 +28,6 @@ public:
 };
 
 // define macros:
-#define SYLV_EXCEPTION(exc) (SylvException(__FILE__, __LINE__, exc))
 #define SYLV_MES_EXCEPTION(mes) (SylvExceptionMessage(__FILE__, __LINE__, mes))
 
 #endif /* SYLV_EXCEPTION_H */

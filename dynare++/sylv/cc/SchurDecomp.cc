@@ -7,10 +7,9 @@
 #include <dynlapack.h>
 
 SchurDecomp::SchurDecomp(const SqSylvMatrix &m)
-  : q_destroy(true), t_destroy(true)
+  : q(m.numRows())
 {
   lapack_int rows = m.numRows();
-  q = new SqSylvMatrix(rows);
   SqSylvMatrix auxt(m);
   lapack_int sdim;
   auto *const wr = new double[rows];
@@ -19,36 +18,25 @@ SchurDecomp::SchurDecomp(const SqSylvMatrix &m)
   auto *const work = new double[lwork];
   lapack_int info;
   dgees("V", "N", nullptr, &rows, auxt.base(), &rows, &sdim,
-        wr, wi, q->base(), &rows,
+        wr, wi, q.base(), &rows,
         work, &lwork, nullptr, &info);
   delete [] work;
   delete [] wi;
   delete [] wr;
-  t = new QuasiTriangular(auxt.base(), rows);
+  t_storage = std::make_unique<QuasiTriangular>(auxt.base(), rows);
+  t = t_storage.get();
 }
 
 SchurDecomp::SchurDecomp(const QuasiTriangular &tr)
-  : q_destroy(true), t_destroy(true)
+  : q(tr.numRows()), t_storage{std::make_unique<QuasiTriangular>(tr)}, t{t_storage.get()}
 {
-  q = new SqSylvMatrix(tr.numRows());
-  q->setUnit();
-  t = new QuasiTriangular(tr);
+  q.setUnit();
 }
 
 SchurDecomp::SchurDecomp(QuasiTriangular &tr)
-  : q_destroy(true), t_destroy(false)
+  : q(tr.numRows()), t{&tr}
 {
-  q = new SqSylvMatrix(tr.numRows());
-  q->setUnit();
-  t = &tr;
-}
-
-SchurDecomp::~SchurDecomp()
-{
-  if (t_destroy)
-    delete t;
-  if (q_destroy)
-    delete q;
+  q.setUnit();
 }
 
 int

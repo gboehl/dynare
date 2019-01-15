@@ -10,6 +10,8 @@
 #include "SimilarityDecomp.hh"
 #include "SylvesterSolver.hh"
 
+#include <memory>
+
 class GeneralSylvester
 {
   SylvParams pars;
@@ -20,9 +22,9 @@ class GeneralSylvester
   const SqSylvMatrix c;
   SylvMatrix d;
   bool solved;
-  SchurDecompZero *bdecomp;
-  SimilarityDecomp *cdecomp;
-  SylvesterSolver *sylv;
+  std::unique_ptr<SchurDecompZero> bdecomp;
+  std::unique_ptr<SimilarityDecomp> cdecomp;
+  std::unique_ptr<SylvesterSolver> sylv;
 public:
   /* construct with my copy of d*/
   GeneralSylvester(int ord, int n, int m, int zero_cols,
@@ -42,8 +44,7 @@ public:
                    const double *da, const double *db,
                    const double *dc, double *dd,
                    const SylvParams &ps);
-  virtual
-  ~GeneralSylvester();
+  virtual ~GeneralSylvester() = default;
   int
   getM() const
   {

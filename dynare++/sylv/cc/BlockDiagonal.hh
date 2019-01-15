@@ -5,6 +5,8 @@
 #ifndef BLOCK_DIAGONAL_H
 #define BLOCK_DIAGONAL_H
 
+#include <memory>
+
 #include "QuasiTriangular.hh"
 
 class BlockDiagonal : public QuasiTriangular
@@ -39,10 +41,10 @@ public:
   col_iter col_begin(const DiagonalBlock &b) override;
   const_row_iter row_end(const DiagonalBlock &b) const override;
   row_iter row_end(const DiagonalBlock &b) override;
-  QuasiTriangular *
+  std::unique_ptr<QuasiTriangular>
   clone() const override
   {
-    return new BlockDiagonal(*this);
+    return std::make_unique<BlockDiagonal>(*this);
   }
 private:
   void setZerosToRU(diag_iter edge);

@@ -7,19 +7,10 @@
 #include <cstring>
 #include <cstdio>
 
-SylvException::SylvException(const char *f, int l, const SylvException *s)
+SylvException::SylvException(const char *f, int l)
 {
   strcpy(file, f);
   line = l;
-  source = s;
-}
-
-SylvException::~SylvException()
-{
-  if (source != nullptr)
-    {
-      delete source;
-    }
 }
 
 void
@@ -35,10 +26,6 @@ int
 SylvException::printMessage(char *str, int maxlen) const
 {
   int remain = maxlen;
-  if (source != nullptr)
-    {
-      remain = source->printMessage(str, maxlen);
-    }
   char aux[100];
   sprintf(aux, "From %s:%d\n", file, line);
   int newremain = remain - strlen(aux);
@@ -53,7 +40,7 @@ SylvException::printMessage(char *str, int maxlen) const
 
 SylvExceptionMessage::SylvExceptionMessage(const char *f, int i,
                                            const char *mes)
-  : SylvException(f, i, nullptr)
+  : SylvException(f, i)
 {
   strcpy(message, mes);
 }

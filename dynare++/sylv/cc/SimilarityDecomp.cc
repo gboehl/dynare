@@ -14,20 +14,13 @@
 SimilarityDecomp::SimilarityDecomp(const double *d, int d_size, double log10norm)
 {
   SchurDecomp sd(SqSylvMatrix(d, d_size));
-  q = new SqSylvMatrix(sd.getQ());
-  b = new BlockDiagonal(sd.getT());
-  invq = new SqSylvMatrix(d_size);
+  q = std::make_unique<SqSylvMatrix>(sd.getQ());
+  b = std::make_unique<BlockDiagonal>(sd.getT());
+  invq = std::make_unique<SqSylvMatrix>(d_size);
   invq->setUnit();
   invq->multLeftTrans(sd.getQ());
   double norm = pow(10.0, log10norm);
   diagonalize(norm);
-}
-
-SimilarityDecomp::~SimilarityDecomp()
-{
-  delete invq;
-  delete b;
-  delete q;
 }
 
 void

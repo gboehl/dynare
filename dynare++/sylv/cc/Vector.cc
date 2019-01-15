@@ -6,12 +6,13 @@
 
 #include <dynblas.h>
 
-#include <cstdio>
 #include <cstring>
 #include <cstdlib>
 #include <cmath>
 #include <algorithm>
 #include <limits>
+#include <iostream>
+#include <iomanip>
 
 using namespace std;
 
@@ -29,42 +30,41 @@ Vector::Vector(const ConstVector &v)
   copy(v.base(), v.skip());
 }
 
-const Vector &
+Vector &
 Vector::operator=(const Vector &v)
 {
   if (this == &v)
     return *this;
 
   if (v.length() != length())
-    {
-      throw SYLV_MES_EXCEPTION("Attempt to assign vectors with different lengths.");
-    }
+    throw SYLV_MES_EXCEPTION("Attempt to assign vectors with different lengths.");
+
   if (s == v.s
       && (data <= v.data && v.data < data+len*s
           || v.data <= data && data < v.data+v.len*v.s)
       && (data-v.data) % s == 0)
     {
-      printf("this destroy=%d, v destroy=%d, data-v.data=%lu, len=%d\n", destroy, v.destroy, (unsigned long) (data-v.data), len);
+      std::cout << "this destroy=" << destroy << ", v destroy=" << v.destroy
+                << ", data-v.data=" << (unsigned long) (data-v.data)
+                << ", len=" << len << std::endl;
       throw SYLV_MES_EXCEPTION("Attempt to assign overlapping vectors.");
     }
   copy(v.base(), v.skip());
   return *this;
 }
 
-const Vector &
+Vector &
 Vector::operator=(const ConstVector &v)
 {
   if (v.length() != length())
-    {
-      throw SYLV_MES_EXCEPTION("Attempt to assign vectors with different lengths.");
-    }
+    throw SYLV_MES_EXCEPTION("Attempt to assign vectors with different lengths.");
+
   if (v.skip() == 1 && skip() == 1 && (
                                        (base() < v.base() + v.length() && base() >= v.base())
                                        || (base() + length() < v.base() + v.length()
                                            && base() + length() > v.base())))
-    {
-      throw SYLV_MES_EXCEPTION("Attempt to assign overlapping vectors.");
-    }
+    throw SYLV_MES_EXCEPTION("Attempt to assign overlapping vectors.");
+
   copy(v.base(), v.skip());
   return *this;
 }
@@ -175,9 +175,7 @@ Vector::infs()
 Vector::~Vector()
 {
   if (destroy)
-    {
-      delete [] data;
-    }
+    delete[] data;
 }
 
 void
@@ -283,28 +281,25 @@ Vector::isFinite() const
 void
 Vector::print() const
 {
+  auto ff = std::cout.flags();
+  std::cout << std::setprecision(4);
   for (int i = 0; i < length(); i++)
-    {
-      printf("%d\t%8.4g\n", i, operator[](i));
-    }
+    std::cout << i << '\t' << std::setw(8) << operator[](i) << std::endl;
+  std::cout.flags(ff);
 }
 
 ConstVector::ConstVector(const Vector &v, int off, int l)
   : BaseConstVector(l, v.skip(), v.base() + v.skip()*off)
 {
   if (off < 0 || off + length() > v.length())
-    {
-      throw SYLV_MES_EXCEPTION("Subvector not contained in supvector.");
-    }
+    throw SYLV_MES_EXCEPTION("Subvector not contained in supvector.");
 }
 
 ConstVector::ConstVector(const ConstVector &v, int off, int l)
   : BaseConstVector(l, v.skip(), v.base() + v.skip()*off)
 {
   if (off < 0 || off + length() > v.length())
-    {
-      throw SYLV_MES_EXCEPTION("Subvector not contained in supvector.");
-    }
+    throw SYLV_MES_EXCEPTION("Subvector not contained in supvector.");
 }
 
 ConstVector::ConstVector(const double *d, int skip, int l)
@@ -353,9 +348,7 @@ ConstVector::getNorm() const
 {
   double s = 0;
   for (int i = 0; i < length(); i++)
-    {
-      s += operator[](i)*operator[](i);
-    }
+    s += operator[](i)*operator[](i);
   return sqrt(s);
 }
 
@@ -364,10 +357,8 @@ ConstVector::getMax() const
 {
   double r = 0;
   for (int i = 0; i < length(); i++)
-    {
-      if (abs(operator[](i)) > r)
-        r = abs(operator[](i));
-    }
+    if (abs(operator[](i)) > r)
+      r = abs(operator[](i));
   return r;
 }
 
@@ -376,9 +367,7 @@ ConstVector::getNorm1() const
 {
   double norm = 0.0;
   for (int i = 0; i < length(); i++)
-    {
-      norm += abs(operator[](i));
-    }
+    norm += abs(operator[](i));
   return norm;
 }
 
@@ -405,10 +394,11 @@ ConstVector::isFinite() const
 void
 ConstVector::print() const
 {
+  auto ff = std::cout.flags();
+  std::cout << std::setprecision(4);
   for (int i = 0; i < length(); i++)
-    {
-      printf("%d\t%8.4g\n", i, operator[](i));
-    }
+    std::cout << i << '\t' << std::setw(8) << operator[](i) << std::endl;
+  std::cout.flags(ff);
 }
 
 ZeroPad::ZeroPad()

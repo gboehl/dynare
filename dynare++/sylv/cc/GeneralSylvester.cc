@@ -67,14 +67,14 @@ GeneralSylvester::init()
   a.multInvLeft2(ainvb, d, rcond1, rcondinf);
   pars.rcondA1 = rcond1;
   pars.rcondAI = rcondinf;
-  bdecomp = new SchurDecompZero(ainvb);
-  cdecomp = new SimilarityDecomp(c.getData().base(), c.numRows(), *(pars.bs_norm));
+  bdecomp = std::make_unique<SchurDecompZero>(ainvb);
+  cdecomp = std::make_unique<SimilarityDecomp>(c.getData().base(), c.numRows(), *(pars.bs_norm));
   cdecomp->check(pars, c);
   cdecomp->infoToPars(pars);
   if (*(pars.method) == SylvParams::recurse)
-    sylv = new TriangularSylvester(*bdecomp, *cdecomp);
+    sylv = std::make_unique<TriangularSylvester>(*bdecomp, *cdecomp);
   else
-    sylv = new IterativeSylvester(*bdecomp, *cdecomp);
+    sylv = std::make_unique<IterativeSylvester>(*bdecomp, *cdecomp);
 }
 
 void
@@ -127,11 +127,4 @@ GeneralSylvester::check(const double *ds)
   pars.vec_errI = dcheck.getData().getMax()/d.getData().getMax();
 
   mem_driver.setStackMode(false);
-}
-
-GeneralSylvester::~GeneralSylvester()
-{
-  delete bdecomp;
-  delete cdecomp;
-  delete sylv;
 }

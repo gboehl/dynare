@@ -17,7 +17,7 @@ TriangularSylvester::TriangularSylvester(const QuasiTriangular &k,
                                          const QuasiTriangular &f)
   : SylvesterSolver(k, f),
     matrixKK(matrixK->clone(2, *matrixK)),
-    matrixFF(new QuasiTriangular(2, *matrixF))
+    matrixFF(std::make_unique<QuasiTriangular>(2, *matrixF))
 {
 }
 
@@ -25,7 +25,7 @@ TriangularSylvester::TriangularSylvester(const SchurDecompZero &kdecomp,
                                          const SchurDecomp &fdecomp)
   : SylvesterSolver(kdecomp, fdecomp),
     matrixKK(matrixK->clone(2, *matrixK)),
-    matrixFF(new QuasiTriangular(2, *matrixF))
+    matrixFF(std::make_unique<QuasiTriangular>(2, *matrixF))
 {
 }
 
@@ -33,14 +33,8 @@ TriangularSylvester::TriangularSylvester(const SchurDecompZero &kdecomp,
                                          const SimilarityDecomp &fdecomp)
   : SylvesterSolver(kdecomp, fdecomp),
     matrixKK(matrixK->clone(2, *matrixK)),
-    matrixFF(new BlockDiagonal(2, *matrixF))
+    matrixFF(std::make_unique<BlockDiagonal>(2, *matrixF))
 {
-}
-
-TriangularSylvester::~TriangularSylvester()
-{
-  delete matrixKK;
-  delete matrixFF;
 }
 
 void
@@ -65,9 +59,8 @@ TriangularSylvester::solvi(double r, KronVector &d, double &eig_min) const
 {
   if (d.getDepth() == 0)
     {
-      QuasiTriangular *t = matrixK->clone(r);
+      auto t = matrixK->clone(r);
       t->solvePre(d, eig_min);
-      delete t;
     }
   else
     {
@@ -114,9 +107,8 @@ TriangularSylvester::solviip(double alpha, double betas,
   if (d.getDepth() == 0)
     {
       double aspbs = alpha*alpha+betas;
-      QuasiTriangular *t = matrixK->clone(2*alpha, aspbs, *matrixKK);
+      auto t = matrixK->clone(2*alpha, aspbs, *matrixKK);
       t->solvePre(d, eig_min);
-      delete t;
     }
   else
     {

@@ -431,9 +431,6 @@ QuasiTriangular::QuasiTriangular(const double *d, int d_size)
 {
 }
 
-QuasiTriangular::~QuasiTriangular()
-= default;
-
 QuasiTriangular::QuasiTriangular(int p, const QuasiTriangular &t)
   : SqSylvMatrix(t.numRows()), diagonal(getData().base(), t.diagonal)
 {
@@ -477,9 +474,7 @@ QuasiTriangular::QuasiTriangular(const SchurDecompZero &decomp)
         }
     }
   // construct diagonal
-  auto *const d = new Diagonal(getData().base(), decomp.getDim());
-  diagonal = *d;
-  delete d;
+  diagonal = Diagonal{getData().base(), decomp.getDim()};
 }
 
 void

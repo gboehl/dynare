@@ -13,8 +13,8 @@ IterativeSylvester::solve(SylvParams &pars, KronVector &x) const
   double max_norm = *(pars.convergence_tol);
   double norm = performFirstStep(x);
 
-  QuasiTriangular *kpow = matrixK->clone();
-  QuasiTriangular *fpow = matrixF->clone();
+  auto kpow = matrixK->clone();
+  auto fpow = matrixF->clone();
   while (steps < max_steps &&norm > max_norm)
     {
       kpow->multRight(SqSylvMatrix(*kpow)); // be careful to make copy
@@ -22,9 +22,6 @@ IterativeSylvester::solve(SylvParams &pars, KronVector &x) const
       norm = performStep(*kpow, *fpow, x);
       steps++;
     }
-
-  delete fpow;
-  delete kpow;
 
   pars.converged = (norm <= max_norm);
   pars.iter_last_norm = norm;

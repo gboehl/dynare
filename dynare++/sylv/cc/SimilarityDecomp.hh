@@ -9,16 +9,17 @@
 #include "BlockDiagonal.hh"
 #include "SylvParams.hh"
 
+#include <memory>
+
 class SimilarityDecomp
 {
-  SqSylvMatrix *q;
-  BlockDiagonal *b;
-  SqSylvMatrix *invq;
+  std::unique_ptr<SqSylvMatrix> q;
+  std::unique_ptr<BlockDiagonal> b;
+  std::unique_ptr<SqSylvMatrix> invq;
   using diag_iter = BlockDiagonal::diag_iter;
 public:
   SimilarityDecomp(const double *d, int d_size, double log10norm = 3.0);
-  virtual
-  ~SimilarityDecomp();
+  virtual ~SimilarityDecomp() = default;
   const SqSylvMatrix &
   getQ() const
   {

@@ -8,6 +8,8 @@
 #include "QuasiTriangular.hh"
 #include "GeneralMatrix.hh"
 
+#include <memory>
+
 class QuasiTriangularZero : public QuasiTriangular
 {
   int nz; // number of zero columns
@@ -31,25 +33,25 @@ public:
   void multKronTrans(KronVector &x) const override;
   void multLeftOther(GeneralMatrix &a) const override;
   /* clone */
-  QuasiTriangular *
+  std::unique_ptr<QuasiTriangular>
   clone() const override
   {
-    return new QuasiTriangularZero(*this);
+    return std::make_unique<QuasiTriangularZero>(*this);
   }
-  QuasiTriangular *
+  std::unique_ptr<QuasiTriangular>
   clone(int p, const QuasiTriangular &t) const override
   {
-    return new QuasiTriangularZero(p, (const QuasiTriangularZero &) t);
+    return std::make_unique<QuasiTriangularZero>(p, (const QuasiTriangularZero &) t);
   }
-  QuasiTriangular *
+  std::unique_ptr<QuasiTriangular>
   clone(double r) const override
   {
-    return new QuasiTriangularZero(r, *this);
+    return std::make_unique<QuasiTriangularZero>(r, *this);
   }
-  QuasiTriangular *
+  std::unique_ptr<QuasiTriangular>
   clone(double r, double rr, const QuasiTriangular &tt) const override
   {
-    return new QuasiTriangularZero(r, *this, rr, (const QuasiTriangularZero &) tt);
+    return std::make_unique<QuasiTriangularZero>(r, *this, rr, (const QuasiTriangularZero &) tt);
   }
   void print() const override;
 };

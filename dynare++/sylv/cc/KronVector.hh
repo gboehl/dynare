@@ -23,9 +23,7 @@ public:
   KronVector(Vector &v, int mm, int nn, int dp); // conversion
   KronVector(KronVector &, int i); // picks i-th subvector
   KronVector(const ConstKronVector &v); // new instance and copy
-  KronVector &
-  operator=(const KronVector &v)
-  = default;
+  KronVector &operator=(const KronVector &v) = default;
   const KronVector &operator=(const ConstKronVector &v);
   const KronVector &operator=(const Vector &v);
   int

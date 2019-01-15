@@ -11,16 +11,18 @@
 #include "QuasiTriangularZero.hh"
 #include "SimilarityDecomp.hh"
 
+#include <memory>
+
 class TriangularSylvester : public SylvesterSolver
 {
-  const QuasiTriangular *const matrixKK;
-  const QuasiTriangular *const matrixFF;
+  const std::unique_ptr<const QuasiTriangular> matrixKK;
+  const std::unique_ptr<const QuasiTriangular> matrixFF;
 public:
   TriangularSylvester(const QuasiTriangular &k, const QuasiTriangular &f);
   TriangularSylvester(const SchurDecompZero &kdecomp, const SchurDecomp &fdecomp);
   TriangularSylvester(const SchurDecompZero &kdecomp, const SimilarityDecomp &fdecomp);
   
-  ~TriangularSylvester() override;
+  ~TriangularSylvester() override = default;
   void print() const;
   void solve(SylvParams &pars, KronVector &d) const override;
 

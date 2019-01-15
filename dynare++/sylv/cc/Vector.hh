@@ -10,7 +10,6 @@
  * members, and methods are thus duplicated */
 
 #include <array>
-#include <cstdio>
 
 class GeneralMatrix;
 class ConstVector;
@@ -23,8 +22,7 @@ protected:
   double *data{nullptr};
   bool destroy{false};
 public:
-  Vector()  
-  = default;
+  Vector() = default;
   Vector(int l) : len(l),  data(new double[l]), destroy(true)
   {
   }
@@ -50,8 +48,8 @@ public:
   Vector(const Vector &v, int off, int l);
   Vector(GeneralMatrix &m, int col);
   Vector(int row, GeneralMatrix &m);
-  const Vector &operator=(const Vector &v);
-  const Vector &operator=(const ConstVector &v);
+  Vector &operator=(const Vector &v);
+  Vector &operator=(const ConstVector &v);
   double &
   operator[](int i)
   {
@@ -92,8 +90,7 @@ public:
   bool operator>(const Vector &y) const;
   bool operator>=(const Vector &y) const;
 
-  virtual
-  ~Vector();
+  virtual ~Vector();
   void zeros();
   void nans();
   void infs();
@@ -150,11 +147,8 @@ public:
   BaseConstVector(int l, int si, const double *d) : len(l), s(si), data(d)
   {
   }
-  BaseConstVector(const BaseConstVector &v)  
-  = default;
-  BaseConstVector &
-  operator=(const BaseConstVector &v)
-  = default;
+  BaseConstVector(const BaseConstVector &v) = default;
+  BaseConstVector &operator=(const BaseConstVector &v) = default;
   const double &
   operator[](int i) const
   {
@@ -185,8 +179,7 @@ public:
   ConstVector(const Vector &v) : BaseConstVector(v.length(), v.skip(), v.base())
   {
   }
-  ConstVector(const ConstVector &v)  
-  = default;
+  ConstVector(const ConstVector &v) = default;
   ConstVector(const double *d, int l) : BaseConstVector(l, 1, d)
   {
   }
@@ -196,8 +189,8 @@ public:
   ConstVector(const ConstGeneralMatrix &m, int col);
   ConstVector(int row, const ConstGeneralMatrix &m);
 
-  virtual ~ConstVector()
-  = default;
+  virtual ~ConstVector() = default;
+  ConstVector &operator=(const ConstVector &v) = default;
   /** Exact equality. */
   bool operator==(const ConstVector &y) const;
   bool

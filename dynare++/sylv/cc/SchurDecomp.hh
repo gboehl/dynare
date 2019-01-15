@@ -8,12 +8,14 @@
 #include "SylvMatrix.hh"
 #include "QuasiTriangular.hh"
 
+#include <memory>
+
 class QuasiTriangular;
 class SchurDecomp
 {
-  bool q_destroy;
-  SqSylvMatrix *q;
-  bool t_destroy;
+  SqSylvMatrix q;
+  // Stores t if is owned
+  std::unique_ptr<QuasiTriangular> t_storage;
   QuasiTriangular *t;
 public:
   SchurDecomp(const SqSylvMatrix &m);
@@ -22,7 +24,7 @@ public:
   const SqSylvMatrix &
   getQ() const
   {
-    return *q;
+    return q;
   }
   const QuasiTriangular &
   getT() const
@@ -32,7 +34,7 @@ public:
   SqSylvMatrix &
   getQ()
   {
-    return *q;
+    return q;
   }
   QuasiTriangular &
   getT()
@@ -40,8 +42,7 @@ public:
     return *t;
   }
   virtual int getDim() const;
-  virtual
-  ~SchurDecomp();
+  virtual ~SchurDecomp() = default;
 };
 
 class SchurDecompZero : public SchurDecomp

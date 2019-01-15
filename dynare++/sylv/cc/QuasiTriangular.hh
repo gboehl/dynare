@@ -10,6 +10,7 @@
 #include "SylvMatrix.hh"
 
 #include <list>
+#include <memory>
 
 using namespace std;
 
@@ -21,8 +22,7 @@ private:
   double *a1;
   double *a2;
 public:
-  DiagPair()
-  = default;
+  DiagPair() = default;
   DiagPair(double *aa1, double *aa2)
   {
     a1 = aa1; a2 = aa2;
@@ -31,9 +31,7 @@ public:
   {
     a1 = p.a1; a2 = p.a2;
   }
-  DiagPair &
-  operator=(const DiagPair &p)
-  = default;
+  DiagPair &operator=(const DiagPair &p) = default;
   DiagPair &
   operator=(double v)
   {
@@ -70,8 +68,7 @@ private:
   }
 
 public:
-  DiagonalBlock()
-  = default;
+  DiagonalBlock() = default;
   DiagonalBlock(int jb, bool r, double *a1, double *a2,
                 double *b1, double *b2)
     : alpha(a1, a2)
@@ -205,8 +202,7 @@ private:
   int num_real{0};
   void copy(const Diagonal &);
 public:
-  Diagonal()  
-  = default;
+  Diagonal() = default;
   Diagonal(double *data, int d_size);
   Diagonal(double *data, const Diagonal &d);
   Diagonal(const Diagonal &d)
@@ -218,8 +214,7 @@ public:
   {
     copy(d); return *this;
   }
-  virtual ~Diagonal()
-  = default;
+  virtual ~Diagonal() = default;
 
   int
   getNumComplex() const
@@ -290,8 +285,7 @@ public:
   {
     ptr = base; d_size = ds; real = r;
   }
-  virtual ~_matrix_iter()
-  = default;
+  virtual ~_matrix_iter() = default;
   const _Self &
   operator=(const _Self &it)
   {
@@ -414,7 +408,7 @@ public:
   QuasiTriangular(const SchurDecompZero &decomp);
   QuasiTriangular(const QuasiTriangular &t);
   
-  ~QuasiTriangular() override;
+  ~QuasiTriangular() override = default;
   const Diagonal &
   getDiagonal() const
   {
@@ -484,25 +478,25 @@ public:
   virtual row_iter row_end(const DiagonalBlock &b);
 
   /* clone */
-  virtual QuasiTriangular *
+  virtual std::unique_ptr<QuasiTriangular>
   clone() const
   {
-    return new QuasiTriangular(*this);
+    return std::make_unique<QuasiTriangular>(*this);
   }
-  virtual QuasiTriangular *
+  virtual std::unique_ptr<QuasiTriangular>
   clone(int p, const QuasiTriangular &t) const
   {
-    return new QuasiTriangular(p, t);
+    return std::make_unique<QuasiTriangular>(p, t);
   }
-  virtual QuasiTriangular *
+  virtual std::unique_ptr<QuasiTriangular>
   clone(double r) const
   {
-    return new QuasiTriangular(r, *this);
+    return std::make_unique<QuasiTriangular>(r, *this);
   }
-  virtual QuasiTriangular *
+  virtual std::unique_ptr<QuasiTriangular>
   clone(double r, double rr, const QuasiTriangular &tt) const
   {
-    return new QuasiTriangular(r, *this, rr, tt);
+    return std::make_unique<QuasiTriangular>(r, *this, rr, tt);
   }
 protected:
   void setMatrix(double r, const QuasiTriangular &t);
