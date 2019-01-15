@@ -22,7 +22,7 @@ function plot_contributions(equationname, ds1, ds0)
 %      [name='Phillips curve']
 %      pi = beta*pi(1) + slope*y + lam;
 
-% Copyright (C) 2017 Dynare Team
+% Copyright (C) 2017-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -98,9 +98,7 @@ else
 end
 
 % Get equation.
-jsonmodel = loadjson(jsonfile);
-jsonmodel = jsonmodel.model;
-jsonmodel = getEquationsByTags(jsonmodel, 'name', equationname);
+[~, jsonmodel] = get_ast_jsonmodel(eqtags);
 lhs = jsonmodel{1}.lhs;
 rhs = jsonmodel{1}.rhs;
 
