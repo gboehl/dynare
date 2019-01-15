@@ -48,23 +48,23 @@ end
 line = ast.line;
 if ~strcmp(ast.AST.node_type, 'BinaryOpNode') ...
         || ~strcmp(ast.AST.op, '=')
-    ols_error('expecting equation with equal sign', line);
+    parsing_error('expecting equation with equal sign', line);
 end
 
 % Check LHS
 if ~strcmp(ast.AST.arg1.node_type, 'VariableNode') ...
         && ~strcmp(ast.AST.arg1.node_type, 'UnaryOpNode')
-    ols_error('expecting Variable or UnaryOp on LHS', line);
+    parsing_error('expecting Variable or UnaryOp on LHS', line);
 else
     if strcmp(ast.AST.arg1.node_type, 'VariableNode') ...
             && (ast.AST.arg1.lag ~= 0 ...
             || ~any(strcmp(ds.name, ast.AST.arg1.name)))
-        ols_error('the lhs of the equation must be an Variable or UnaryOp with lag == 0 that exists in the dataset', line);
+        parsing_error('the lhs of the equation must be an Variable or UnaryOp with lag == 0 that exists in the dataset', line);
     end
     if strcmp(ast.AST.arg1.node_type, 'UnaryOpNode') ...
             && (ast.AST.arg1.arg.lag ~= 0 ...
             || ~any(strcmp(ds.name, ast.AST.arg1.arg.name)))
-        ols_error('the lhs of the equation must be an Variable or UnaryOp with lag == 0 that exists in the dataset', line);
+        parsing_error('the lhs of the equation must be an Variable or UnaryOp with lag == 0 that exists in the dataset', line);
     end
 end
 
@@ -95,7 +95,7 @@ while ~isempty(plus_node) || ~isempty(last_node_to_parse)
                 if isempty(residual)
                     residual = node_to_parse.name;
                 else
-                    ols_error(['only one residual allowed per equation; encountered ' residual ' & ' node_to_parse.name], line);
+                    parsing_error(['only one residual allowed per equation; encountered ' residual ' & ' node_to_parse.name], line);
                 end
             elseif strcmp(node_to_parse.type, 'endogenous') ...
                     || (strcmp(node_to_parse.type, 'exogenous') && any(strcmp(ds.name, node_to_parse.name)))
@@ -103,7 +103,7 @@ while ~isempty(plus_node) || ~isempty(last_node_to_parse)
                 % NB: treat exogenous that exist in ds as endogenous
                 lhssub = lhssub + evalNode(ds, node_to_parse, line, dseries());
             else
-                ols_error('unexpected variable type found', line);
+                parsing_error('unexpected variable type found', line);
             end
         else
             % Subtract UnaryOpNode from LHS
@@ -133,7 +133,7 @@ while ~isempty(plus_node) || ~isempty(last_node_to_parse)
             end
         end
     else
-        ols_error('didn''t expect to arrive here', line);
+        parsing_error('didn''t expect to arrive here', line);
     end
     if ~isempty(Xtmp)
         to_remove = [];
@@ -155,8 +155,8 @@ Y = Y - lhssub;
 end
 
 %% Helper Functions
-function ols_error(msg, line)
-error(['ERROR encountered in `dyn_ols` line ' num2str(line) ': ' msg])
+function parsing_error(msg, line)
+error(['ERROR encountered parsing of equation on line ' num2str(line) ': ' msg])
 end
 
 function [next_plus_node, node_to_parse, last_node_to_parse] = findNextplus_node(plus_node, line)
@@ -165,7 +165,7 @@ function [next_plus_node, node_to_parse, last_node_to_parse] = findNextplus_node
 % parameter*endogenous||param||exog|endog (node_to_parse).
 % Function used for moving through the AST.
 if ~(strcmp(plus_node.node_type, 'BinaryOpNode') && strcmp(plus_node.op, '+'))
-    ols_error('pairs of nodes must be separated additively', line);
+    parsing_error('pairs of nodes must be separated additively', line);
 end
 next_plus_node = [];
 last_node_to_parse = [];
@@ -185,7 +185,7 @@ function node_to_parse = getOlsNode(node, line)
 if ~(strcmp(node.node_type, 'BinaryOpNode') && strcmp(node.op, '*')) ...
         && ~strcmp(node.node_type, 'VariableNode') ...
         && ~strcmp(node.node_type, 'UnaryOpNode')
-    ols_error('couldn''t find node to parse', line);
+    parsing_error('couldn''t find node to parse', line);
 end
 node_to_parse = node;
 end
@@ -208,16 +208,16 @@ elseif isOlsVarExpr(ds, node, line)
     if isempty(X)
         X = evalNode(ds, node, line, X);
     else
-        ols_error(['got endog * endog' node.name ' (' node.type ')'], line);
+        parsing_error(['got endog * endog' node.name ' (' node.type ')'], line);
     end
 else
-    ols_error('unexpected expression', line);
+    parsing_error('unexpected expression', line);
 end
 end
 
 function param = assignParam(param, node, line)
 if ~isempty(param)
-    ols_error(['got param * param' node.name ' (' node.type ')'], line);
+    parsing_error(['got param * param' node.name ' (' node.type ')'], line);
 end
 param = assignParamHelper(param, node, line);
 end
@@ -229,12 +229,12 @@ elseif strcmp(node.node_type, 'VariableNode')
     param{end+1} = node.name;
 elseif strcmp(node.node_type, 'BinaryOpNode')
     if ~strcmp(node.op, '-')
-        ols_error(['got unexpected parameter op ' node.op], line);
+        parsing_error(['got unexpected parameter op ' node.op], line);
     end
     param = assignParamHelper(param, node.arg1, line);
     param = assignParamHelper(param, node.arg2, line);
 else
-    ols_error(['got unexpected node (' node.type ')'], line);
+    parsing_error(['got unexpected node (' node.type ')'], line);
 end
 end
 
@@ -258,7 +258,7 @@ if strcmp(node.node_type, 'VariableNode') || strcmp(node.node_type, 'UnaryOpNode
 elseif strcmp(node.node_type, 'BinaryOpNode')
     tf = isOlsVarExpr(ds, node.arg1, line) || isOlsVarExpr(ds, node.arg2, line);
 else
-    ols_error(['got unexpected type ' node.node_type], line);
+    parsing_error(['got unexpected type ' node.node_type], line);
 end
 end
 
@@ -268,7 +268,7 @@ if strcmp(node.node_type, 'NumConstNode')
 elseif strcmp(node.node_type, 'VariableNode')
     if ~(strcmp(node.type, 'endogenous') ...
             || (strcmp(node.type, 'exogenous') && any(strcmp(ds.name, node.name))))
-        ols_error(['got unexpected type ' node.name ': ' node.type], line);
+        parsing_error(['got unexpected type ' node.name ': ' node.type], line);
     end
     X = ds.(node.name)(node.lag);
 elseif strcmp(node.node_type, 'UnaryOpNode')
@@ -281,7 +281,7 @@ elseif strcmp(node.node_type, 'BinaryOpNode')
     Xtmp2 = evalNode(ds, node.arg2, line, X);
     X = X + eval(['Xtmp1 ' node.op ' Xtmp2']);
 else
-    ols_error(['got unexpected node type ' node.node_type], line);
+    parsing_error(['got unexpected node type ' node.node_type], line);
 end
 end
 
@@ -303,9 +303,9 @@ elseif strcmp(node.node_type, 'UnaryOpNode')
 elseif strcmp(node.node_type, 'BinaryOpNode')
     tf = isOlsParamExpr(node.arg1) && isOlsParamExpr(node.arg2);
     if tf && ~strcmp(node.op, '-')
-        ols_error(['got unexpected op ' node.op], line);
+        parsing_error(['got unexpected op ' node.op], line);
     end
 else
-    ols_error(['got unexpected type ' node.node_type], line);
+    parsing_error(['got unexpected type ' node.node_type], line);
 end
 end
