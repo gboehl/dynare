@@ -43,15 +43,15 @@ function [Y, lhssub, X, startdates, enddates, residnames] = common_parsing(ds, a
 
 
 %% Initialize variables
-Y = cell(length(ast), 1);
-lhssub = cell(length(ast), 1);
-X = cell(length(ast), 1);
-residnames = cell(length(ast), 1);
-startdates = cell(length(ast), 1);
-enddates = cell(length(ast), 1);
+neqs = length(ast);
+Y = cell(neqs, 1);
+lhssub = cell(neqs, 1);
+X = cell(neqs, 1);
+startdates = cell(neqs, 1);
+enddates = cell(neqs, 1);
+residnames = cell(neqs, 1);
 
 %% Loop over equations
-neqs = length(ast);
 for i = 1:neqs
     %% Parse equation i
     [Y{i}, lhssub{i}, X{i}, residnames{i}] = parse_ols_style_equation(ds, ast{i});
