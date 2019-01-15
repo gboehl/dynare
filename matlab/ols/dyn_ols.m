@@ -1,4 +1,4 @@
-function varargout = dyn_ols(ds, fitted_names_dict, eqtags)
+function ds = dyn_ols(ds, fitted_names_dict, eqtags)
 % function varargout = dyn_ols(ds, fitted_names_dict, eqtags)
 % Run OLS on chosen model equations; unlike olseqs, allow for time t
 % endogenous variables on LHS
@@ -16,8 +16,7 @@ function varargout = dyn_ols(ds, fitted_names_dict, eqtags)
 %                                  estimate all equations
 %
 % OUTPUTS
-%   varargout{1}      [dseries]    data updated with fitted values (if not
-%                                  called from olsgibbs)
+%   ds                [dseries]    data updated with fitted values
 %
 % SPECIAL REQUIREMENTS
 %   none
@@ -68,7 +67,7 @@ end
 [ast, jsonmodel] = get_ast_jsonmodel(eqtags);
 
 %% Parse equations
-[Y, lhssub, X, fp, lp ] = common_parsing(ds, ast, jsonmodel, true);
+[Y, lhssub, X, fp, lp] = common_parsing(ds, ast, jsonmodel, true);
 
 %% Loop over equations
 for i = 1:length(Y)
@@ -170,7 +169,4 @@ for i = 1:length(Y)
             [oo_.ols.(tag).beta oo_.ols.(tag).tstat oo_.ols.(tag).stderr]);
     end
 end
-
-%% Set return value
-varargout{1} = ds;
 end
