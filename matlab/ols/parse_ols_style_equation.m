@@ -93,31 +93,29 @@ while ~isempty(plus_node) || ~isempty(last_node_to_parse)
         node_to_parse = last_node_to_parse;
         last_node_to_parse = [];
     end
-    if strcmp(node_to_parse.node_type, 'VariableNode') || strcmp(node_to_parse.node_type, 'UnaryOpNode')
-        if strcmp(node_to_parse.node_type, 'VariableNode')
-            if strcmp(node_to_parse.type, 'parameter')
-                % Intercept
-                Xtmp = dseries(ones(ds.nobs, 1), ds.firstdate, node_to_parse.name);
-            elseif strcmp(node_to_parse.type, 'exogenous') && ~any(strcmp(ds.name, node_to_parse.name))
-                % Residual if not contained in ds
-                if isempty(residual)
-                    residual = node_to_parse.name;
-                else
-                    parsing_error(['only one residual allowed per equation; encountered ' residual ' & ' node_to_parse.name], line);
-                end
-            elseif strcmp(node_to_parse.type, 'endogenous') ...
-                    || (strcmp(node_to_parse.type, 'exogenous') && any(strcmp(ds.name, node_to_parse.name)))
-                % Subtract VariableNode from LHS
-                % NB: treat exogenous that exist in ds as endogenous
-                lhssub = lhssub + evalNode(ds, node_to_parse, line, dseries());
+    if strcmp(node_to_parse.node_type, 'VariableNode')
+        if strcmp(node_to_parse.type, 'parameter')
+            % Intercept
+            Xtmp = dseries(ones(ds.nobs, 1), ds.firstdate, node_to_parse.name);
+        elseif strcmp(node_to_parse.type, 'exogenous') && ~any(strcmp(ds.name, node_to_parse.name))
+            % Residual if not contained in ds
+            if isempty(residual)
+                residual = node_to_parse.name;
             else
-                parsing_error('unexpected variable type found', line);
+                parsing_error(['only one residual allowed per equation; encountered ' residual ' & ' node_to_parse.name], line);
             end
-        else
-            % Subtract UnaryOpNode from LHS
+        elseif strcmp(node_to_parse.type, 'endogenous') ...
+                || (strcmp(node_to_parse.type, 'exogenous') && any(strcmp(ds.name, node_to_parse.name)))
+            % Subtract VariableNode from LHS
             % NB: treat exogenous that exist in ds as endogenous
             lhssub = lhssub + evalNode(ds, node_to_parse, line, dseries());
+        else
+            parsing_error('unexpected variable type found', line);
         end
+    elseif strcmp(node_to_parse.node_type, 'UnaryOpNode')
+        % Subtract UnaryOpNode from LHS
+        % NB: treat exogenous that exist in ds as endogenous
+        lhssub = lhssub + evalNode(ds, node_to_parse, line, dseries());
     elseif strcmp(node_to_parse.node_type, 'BinaryOpNode') && strcmp(node_to_parse.op, '*')
         % Parse param_expr * endog_expr
         Xtmp = parseTimesNode(ds, node_to_parse, line);
