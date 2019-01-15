@@ -366,7 +366,9 @@ elseif options_.mh_recover
         FirstLine = ones(NumberOfBlocks,1);
         LastFileFullIndicator=1;
     end
-    [d,bayestopt_]=set_proposal_density_to_previous_value(record,options_,bayestopt_);
+    if ~isequal(options_.posterior_sampler_options.posterior_sampling_method,'slice'),
+        [d,bayestopt_]=set_proposal_density_to_previous_value(record,options_,bayestopt_);
+    end
     %% Now find out what exactly needs to be redone
     % 1. Check if really something needs to be done
     % How many mh files should we have ?
