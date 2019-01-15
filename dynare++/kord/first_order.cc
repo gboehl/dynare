@@ -14,7 +14,7 @@ double qz_criterium = 1.000001;
 lapack_int
 order_eigs(const double *alphar, const double *alphai, const double *beta)
 {
-  return (*alphar **alphar + *alphai **alphai < *beta **beta * qz_criterium);
+  return (*alphar **alphar + *alphai **alphai < *beta **beta * qz_criterium * qz_criterium);
 }
 
 /* Here we solve the linear approximation. The result are the matrices
