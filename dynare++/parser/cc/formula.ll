@@ -1,3 +1,4 @@
+/* -*- C++ -*- */
 %{
 #include "location.hh"
 #include "formula_tab.hh"

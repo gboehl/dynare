@@ -1,3 +1,4 @@
+// -*- C++ -*-
 %{
 #include "location.hh"
 #include "csv_parser.hh"

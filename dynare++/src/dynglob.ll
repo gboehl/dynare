@@ -1,3 +1,4 @@
+/* -*- C++ -*- */
 %{
 #include "parser/cc/location.hh"
 #include "dynglob_tab.hh"

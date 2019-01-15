@@ -1,3 +1,4 @@
+/* -*- C++ -*- */
 %{
 #include "location.hh"
 #include "assign_tab.hh"
