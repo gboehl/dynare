@@ -1,17 +1,20 @@
-function [Y, lhssub, X, residual] = parse_ols_style_equation(ds, ast)
+function [Y, lhssub, X, residual, fp, lp] = parse_ols_style_equation(ds, ast, jsonmodel)
 %function X = parse_ols_style_equation()
 % Run OLS on chosen model equations; unlike olseqs, allow for time t
 % endogenous variables on LHS
 %
 % INPUTS
-%   ds          [dseries]   data
-%   ast         [struct]    AST representing the equation to be parsed
+%   ds          [dseries]     data
+%   ast         [struct]      AST representing the equation to be parsed
+%   jsonmodel   [cell array]  JSON representation of model block
 %
 % OUTPUTS
-%   Y           [dseries]   LHS of the equation (with lhssub subtracted)
-%   lhssub      [dseries]   RHS subtracted from LHS
-%   X           [dseries]   RHS of the equation
-%   residual    [string]    name of residual in equation
+%   Y           [dseries]     LHS of the equation (with lhssub subtracted)
+%   lhssub      [dseries]     RHS subtracted from LHS
+%   X           [dseries]     RHS of the equation
+%   residual    [string]      name of residual in equation
+%   fp          [date]        first common observed period between Y, lhssub, and X
+%   lp          [date]        last common observed period between Y, lhssub, and X
 %
 % SPECIAL REQUIREMENTS
 %   none
@@ -33,7 +36,8 @@ function [Y, lhssub, X, residual] = parse_ols_style_equation(ds, ast)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-if nargin ~= 2
+%% Check inputs
+if nargin ~= 3
     error('parse_ols_style_equation takes 3 arguments')
 end
 
@@ -41,8 +45,8 @@ if isempty(ds) || ~isdseries(ds)
     error('parse_ols_style_equation: arg 1 must be a dseries');
 end
 
-if ~isstruct(ast) || length(ast) ~= 1
-    error('ast must be a celength must be equal to 1');
+if isempty(ast) || ~isstruct(ast)
+    error('ast must be a struct');
 end
 
 line = ast.line;
@@ -68,11 +72,15 @@ else
     end
 end
 
-% Set LHS (Y)
+if isempty(jsonmodel) || ~isstruct(jsonmodel)
+    error('jsonmodel must be a struct');
+end
+
+%% Set LHS (Y)
 lhssub = dseries();
 Y = evalNode(ds, ast.AST.arg1, line, dseries());
 
-% Set RHS (X)
+%% Set RHS (X)
 plus_node = ast.AST.arg2;
 last_node_to_parse = [];
 residual = '';
@@ -152,6 +160,41 @@ while ~isempty(plus_node) || ~isempty(last_node_to_parse)
     end
 end
 Y = Y - lhssub;
+
+%% Set start and end dates
+fp = max(Y.firstobservedperiod, X.firstobservedperiod);
+lp = min(Y.lastobservedperiod, X.lastobservedperiod);
+if ~isempty(lhssub)
+    fp = max(fp, lhssub.firstobservedperiod);
+    lp = min(lp, lhssub.lastobservedperiod);
+end
+
+% If it exists, account for tag set in mod file
+if isfield(jsonmodel, 'tags') ...
+        && isfield(jsonmodel.tags, 'sample') ...
+        && ~isempty(jsonmodel.tags.sample)
+    colon_idx = strfind(jsonmodel.tags.sample, ':');
+    fsd = dates(jsonmodel.tags.sample(1:colon_idx-1));
+    lsd = dates(jsonmodel.tags.sample(colon_idx+1:end));
+    if fp > fsd
+        warning(['The sample over which you want to estimate contains NaNs. '...
+            'Adjusting estimation range to begin on: ' fp.char])
+    else
+        fp = fsd;
+    end
+    if lp < lsd
+        warning(['The sample over which you want to estimate contains NaNs. '...
+            'Adjusting estimation range to end on: ' lp.char])
+    else
+        lp = lsd;
+    end
+end
+
+Y = Y(fp:lp);
+X = X(fp:lp);
+if ~isempty(lhssub)
+    lhssub = lhssub(fp:lp);
+end
 end
 
 %% Helper Functions

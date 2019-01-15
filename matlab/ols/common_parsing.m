@@ -53,16 +53,8 @@ residnames = cell(neqs, 1);
 
 %% Loop over equations
 for i = 1:neqs
-    %% Parse equation i
-    [Y{i}, lhssub{i}, X{i}, residnames{i}] = parse_ols_style_equation(ds, ast{i});
-
-    %% Set start and end dates
-    [startdates{i}, enddates{i}] = get_ols_start_end_dates(Y{i}, lhssub{i}, X{i}, jsonmodel{i});
-    Y{i} = Y{i}(startdates{i}:enddates{i});
-    X{i} = X{i}(startdates{i}:enddates{i});
-    if ~isempty(lhssub{i})
-        lhssub{i} = lhssub{i}(startdates{i}:enddates{i});
-    end
+    [Y{i}, lhssub{i}, X{i}, residnames{i}, startdates{i}, enddates{i}] = ...
+        parse_ols_style_equation(ds, ast{i}, jsonmodel{i});
 end
 
 if overlapping_dates
