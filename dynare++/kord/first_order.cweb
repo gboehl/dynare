@@ -22,7 +22,7 @@ to select (return true) the pairs for which $\alpha<\beta$.
 @<|order_eigs| function code@>=
 lapack_int order_eigs(const double* alphar, const double* alphai, const double* beta)
 {
-	return (*alphar * *alphar + *alphai * *alphai < *beta * *beta * qz_criterium);
+	return (*alphar * *alphar + *alphai * *alphai < *beta * *beta * qz_criterium * qz_criterium);
 }
 
 
