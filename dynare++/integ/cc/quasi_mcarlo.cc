@@ -179,23 +179,6 @@ qmcpit::weight() const
   return 1.0/spec.level();
 }
 
-qmcnpit::qmcnpit(const QMCSpecification &s, int n)
-  : qmcpit(s, n), pnt{s.dimen()}
-{
-}
-
-/* Here we inccrease a point in Halton sequence ant then store images
-   of the points in |NormalICDF| function. */
-
-qmcnpit &
-qmcnpit::operator++()
-{
-  qmcpit::operator++();
-  for (int i = 0; i < halton.point().length(); i++)
-    pnt[i] = NormalICDF::get(halton.point()[i]);
-  return *this;
-}
-
 /* Clear from code. */
 int
 WarnockPerScheme::permute(int i, int base, int c) const

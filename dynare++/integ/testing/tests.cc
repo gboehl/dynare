@@ -293,56 +293,6 @@ TestRunnable::product_normal_moments(const GeneralMatrix &m, int imom, int level
 }
 
 bool
-TestRunnable::qmc_normal_moments(const GeneralMatrix &m, int imom, int level)
-{
-  // first make m*m' and then Cholesky factor
-  GeneralMatrix mtr(m, "transpose");
-  GeneralMatrix msq(m, mtr);
-  GeneralMatrix mchol(msq);
-  int rows = mchol.numRows();
-  for (int i = 0; i < rows; i++)
-    for (int j = i+1; j < rows; j++)
-      mchol.get(i, j) = 0.0;
-  int info;
-  dpotrf("L", &rows, mchol.base(), &rows, &info);
-
-  // make vector function
-  MomentFunction func(mchol, imom);
-
-  // permutation schemes
-  WarnockPerScheme wps;
-  ReversePerScheme rps;
-  IdentityPerScheme ips;
-  array<PermutationScheme *, 3> scheme = {&wps, &rps, &ips};
-  array<string, 3> labs = {"Warnock", "Reverse", "Identity"};
-
-  // theoretical result
-  int dim = mchol.numRows();
-  UNormalMoments moments(imom, msq);
-  Vector res((const Vector &)((moments.get(Symmetry(imom)))->getData()));
-
-  // quasi monte carlo normal quadrature
-  double max_error = 0.0;
-  Vector qmc_out(UFSTensor::calcMaxOffset(dim, imom));
-  for (int i = 0; i < (int) scheme.size(); i++)
-    {
-      {
-        ostringstream mes;
-        mes << "\tQMC normal quadrature time " << std::setw(8) << labs[i] << ":         ";
-        WallTimer tim(mes.str());
-        QMCarloNormalQuadrature quad(dim, level, *(scheme[i]));
-        quad.integrate(func, level, num_threads, qmc_out);
-      }
-      qmc_out.add(-1.0, res);
-      std::cout << "\tError " << std::setw(8) << labs[i] << ":                         " << std::setw(16) << std::setprecision(12) << qmc_out.getMax() << std::endl;
-      if (qmc_out.getMax() > max_error)
-        max_error = qmc_out.getMax();
-    }
-
-  return max_error < 1.e-7;
-}
-
-bool
 TestRunnable::smolyak_product_cube(const VectorFunction &func, const Vector &res,
                                    double tol, int level)
 {
@@ -491,42 +441,6 @@ public:
   }
 };
 
-class QMCNormalMom1 : public TestRunnable
-{
-public:
-  QMCNormalMom1()
-    : TestRunnable("QMC normal moments (dim=2, level=1000, order=4)", 4, 2)
-  {
-  }
-
-  bool
-  run() const override
-  {
-    GeneralMatrix m(2, 2);
-    m.zeros(); m.get(0, 0) = 1; m.get(1, 1) = 1;
-    return qmc_normal_moments(m, 4, 1000);
-  }
-};
-
-class QMCNormalMom2 : public TestRunnable
-{
-public:
-  QMCNormalMom2()
-    : TestRunnable("QMC normal moments (dim=3, level=10000, order=8)", 8, 3)
-  {
-  }
-
-  bool
-  run() const override
-  {
-    GeneralMatrix m(3, 3);
-    m.zeros();
-    m.get(0, 0) = 1; m.get(0, 2) = 0.5; m.get(1, 1) = 1;
-    m.get(1, 0) = 0.5; m.get(2, 2) = 2; m.get(2, 1) = 4;
-    return qmc_normal_moments(m, 8, 10000);
-  }
-};
-
 // note that here we pass 1,1 to tls since smolyak has its own PascalTriangle
 class F1GaussLegendre : public TestRunnable
 {
@@ -570,8 +484,6 @@ main()
   all_tests.push_back(std::make_unique<SmolyakNormalMom2>());
   all_tests.push_back(std::make_unique<ProductNormalMom1>());
   all_tests.push_back(std::make_unique<ProductNormalMom2>());
-  all_tests.push_back(std::make_unique<QMCNormalMom1>());
-  all_tests.push_back(std::make_unique<QMCNormalMom2>());
   /*
     all_tests.push_back(make_unique<F1GaussLegendre>());
     all_tests.push_back(make_unique<F1QuasiMCarlo>());

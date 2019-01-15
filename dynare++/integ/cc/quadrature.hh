@@ -301,21 +301,4 @@ public:
   GaussLegendre();
 };
 
-/* This is just an inverse cummulative density function of normal
-   distribution. Its only method |get| returns for a given number
-   $x\in(0,1)$ a number $y$ such that $P(z<y)=x$, where the probability
-   is taken over normal distribution $N(0,1)$.
-
-   Currently, the implementation is done by a table lookup which implies
-   that the tails had to be chopped off. This further implies that Monte
-   Carlo quadratures using this transformation to draw points from
-   multidimensional $N(0,I)$ fail to integrate with satisfactory
-   precision polynomial functions, for which the tails matter. */
-
-class NormalICDF
-{
-public:
-  static double get(double x);
-};
-
 #endif
