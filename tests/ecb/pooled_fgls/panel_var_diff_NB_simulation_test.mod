@@ -149,3 +149,80 @@ var res_DE_G_YER = 0.005;
 var res_DE_EHIC = 0.005;
 end;
 
+NSIMS = 1000;
+
+calibrated_values = M_.params;
+verbatim;
+Sigma_e = M_.Sigma_e;
+end;
+
+options_.bnlms.set_dynare_seed_to_default = false;
+
+nparampool = length(M_.params);
+BETA = zeros(NSIMS, nparampool);
+for i=1:NSIMS
+    firstobs = rand(3, length(M_.endo_names));
+    M_.params = calibrated_values;
+    M_.Sigma_e = Sigma_e; 
+    simdata = simul_backward_model(dseries(firstobs, dates('1995Q1'), M_.endo_names), 10000);
+    simdata = simdata(simdata.dates(5001:6000));
+    names=regexp(simdata.name, 'res\w*');
+    idxs = [];
+    for j=1:length(names)
+        if isempty(names{j})
+            idxs = [idxs j];
+        end
+    end
+    pooled_fgls(simdata{idxs}, ...
+        {'de','u2'}, ...
+        {'*_q_yed_ecm_*_q_yed_L1', ...
+        '*_q_yed_ecm_u2_stn_L1', ...
+        '*_q_yed_*_g_yer_L1', ...
+        '*_q_yed_u2_stn_L1', ...
+        '*_g_yer_ecm_*_q_yed_L1', ...
+        '*_g_yer_ecm_u2_stn_L1', ...
+        '*_g_yer_*_q_yed_L1', ...
+        '*_g_yer_*_g_yer_L1', ...
+        '*_g_yer_u2_stn_L1', ...
+        '*_ehic_*_ehic_L1'});
+    BETA(i, :) = M_.params';
+end
+
+tmp = mean(BETA)' - calibrated_values;
+good = [-0.117075725840299
+  -0.415772666038150
+  -0.164200084092597
+  -0.590183263021335
+   0.145687952199179
+   0.095087188729817
+  -0.109667429232965
+  -0.281691072046120
+  -0.386631489016812
+   0.147073439164064
+  -0.582630982519539
+  -0.768471596296734
+  -0.280530746352647
+  -0.622354568301842
+  -0.213391752393322
+  -0.117075725841298
+  -0.415772666037151
+  -0.164200084092396
+  -0.590183263021439
+   0.145687952199079
+   0.095087188730816
+  -0.109667429233025
+  -0.281691072045120
+  -0.386631489016812
+  -0.213391752393322]*1.0e-03;
+if sum(abs(tmp-good)) > 1e-14
+    error(['sum of tmp - good was: ' num2str(sum(abs(tmp-good)))]);
+end
+
+for i=1:nparampool
+    figure
+    hold on
+    title(strrep(M_.param_names(i,:), '_', '\_'));
+    histogram(BETA(:,i),50);
+    line([calibrated_values(i) calibrated_values(i)], [0 NSIMS/10], 'LineWidth', 2, 'Color', 'r');
+    hold off
+end

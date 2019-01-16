@@ -149,3 +149,70 @@ var res_DE_G_YER = 0.005;
 var res_DE_EHIC = 0.005;
 end;
 
+NSIMS = 1000;
+
+options_.noprint = 1;
+calibrated_values = M_.params;
+verbatim;
+Sigma_e = M_.Sigma_e;
+end;
+
+options_.bnlms.set_dynare_seed_to_default = false;
+
+nparampool = length(M_.params);
+BETA = zeros(NSIMS, nparampool);
+for i=1:NSIMS
+    firstobs = rand(3, length(M_.endo_names));
+    M_.params = calibrated_values;
+    M_.Sigma_e = Sigma_e; 
+    simdata = simul_backward_model(dseries(firstobs, dates('1995Q1'), M_.endo_names), 10000);
+    simdata = simdata(simdata.dates(5001:6000));
+    names=regexp(simdata.name, 'res\w*');
+    idxs = [];
+    for j=1:length(names)
+        if isempty(names{j})
+            idxs = [idxs j];
+        end
+    end
+    sur(simdata{idxs});
+    BETA(i, :) = M_.params';
+end
+
+tmp = mean(BETA)' - calibrated_values;
+good = [-0.000851537463734
+  -0.000642098588814
+  -0.000079443724899
+  -0.000419521985776
+   0.000261352267293
+  -0.000246882667909
+  -0.000075222092522
+  -0.001730995757516
+  -0.001143211421785
+   0.000121019009672
+  -0.000575440175324
+  -0.000750521500994
+  -0.000275330543235
+  -0.000622488610298
+  -0.000634806469499
+  -0.000250251968285
+  -0.000444189625703
+  -0.000187665881528
+  -0.000442546748709
+  -0.000017025547277
+   0.000090404659306
+  -0.000235245783302
+  -0.000840347833802
+   0.000815049712458
+  -0.000656563787956];
+if sum(abs(tmp-good)) > 1e-14
+    error(['sum of tmp - good was: ' num2str(sum(abs(tmp-good)))]);
+end
+
+for i=1:nparampool
+    figure
+    hold on
+    title(strrep(M_.param_names(i,:), '_', '\_'));
+    histogram(BETA(:,i),50);
+    line([calibrated_values(i) calibrated_values(i)], [0 NSIMS/10], 'LineWidth', 2, 'Color', 'r');
+    hold off
+end

@@ -419,7 +419,11 @@ MODFILES = \
 	estimation/univariate/ols/ols.mod \
 	estimation/univariate/ols/ols_wc_1.mod \
 	estimation/univariate/ols/ols_wc_2.mod \
-	dynare-command-options/ramst.mod
+	dynare-command-options/ramst.mod \
+	ecb/SURGibbs/fulton_fish.mod \
+	ecb/SUR/panel_var_diff_NB_simulation_test.mod \
+	ecb/pooled_ols/panel_var_diff_NB_simulation_test.mod \
+	ecb/pooled_fgls/panel_var_diff_NB_simulation_test.mod
 
 PARTICLEFILES = \
 	particle/dsge_base2.mod \
@@ -951,7 +955,8 @@ EXTRA_DIST = \
 	estimation/MH_recover/fs2000.common.inc \
 	estimation/univariate/data.csv \
 	estimation/univariate/ols/mc-ols.inc \
-	prior_posterior_function/posterior_function_demo.m
+	prior_posterior_function/posterior_function_demo.m \
+	ecb/SURGibbs/fishdata.csv
 
 
 if HAVE_CMD_LINE_MATLAB
