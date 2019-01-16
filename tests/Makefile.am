@@ -834,6 +834,15 @@ particle: m/particle o/particle
 m/particle: $(patsubst %.mod, %.m.trs, $(PARTICLEFILES))
 o/particle: $(patsubst %.mod, %.o.trs, $(PARTICLEFILES))
 
+ecb: m/ecb o/ecb
+m/ecb: $(patsubst %.mod, %.m.trs, $(filter ecb/%.mod, $(MODFILES)))
+o/ecb: $(patsubst %.mod, %.o.trs, $(filter ecb/%.mod, $(MODFILES)))
+
+estimation/univariate: m/estimation/univariate o/estimation/univariate
+m/estimation/univariate: $(patsubst %.mod, %.m.trs, $(filter estimation/univariate/%.mod, $(MODFILES)))
+o/estimation/univariate: $(patsubst %.mod, %.o.trs, $(filter estimation/univariate/%.mod, $(MODFILES)))
+
+
 # Matlab TRS Files
 M_TRS_FILES = $(patsubst %.mod, %.m.trs, $(MODFILES))
 M_TRS_FILES += run_block_byte_tests_matlab.m.trs run_reporting_test_matlab.m.trs run_all_unitary_tests.m.trs
