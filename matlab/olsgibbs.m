@@ -126,14 +126,16 @@ end
 
 %% Parse equation
 [ast, jsonmodel] = get_ast_jsonmodel({eqtag});
-[Y, lhssub, X, fp, lp ] = common_parsing(ds, ast, jsonmodel, true);
-Y = Y{1};
-lhssub = lhssub{1};
+[Y, ~, X, fp, lp ] = common_parsing(ds, ast, jsonmodel, true);
+clear ast jsonmodel
+lhsname = Y{1}.name;
+Y = Y{1}.data;
 X = X{1};
 fp = fp{1};
 lp = lp{1};
 pnames = X.name;
-N = size(X.data,1);
+N = size(X.data, 1);
+X = X.data;
 
 %% Estimation (see Koop, Gary. Bayesian Econometrics. 2003. Chapter 4.2)
 PosteriorDegreesOfFreedom = N + nu;
@@ -229,10 +231,10 @@ end
 %% Print Output
 if ~options_.noprint
     ttitle = ['Bayesian estimation (with Gibbs sampling) of equation ''' eqtag ''''];
-    preamble = {sprintf('Dependent Variable: %s', equation{1}.lhs), ...
+    preamble = {['Dependent Variable: ' lhsname{:}], ...
                 sprintf('No. Independent Variables: %d', size(X,2)), ...
                 sprintf('Observations: %d from %s to %s\n', size(X,1), fp.char, lp.char)};
-    afterward = {sprintf('s^2: %f', oo_.olsgibbs.(eqtag).s2), sprintf('R^2: %f', oo_.olsgibbs.(eqtag).R2) };
+    afterward = {sprintf('s^2: %f', oo_.olsgibbs.(eqtag).s2), sprintf('R^2: %f', oo_.olsgibbs.(eqtag).R2)};
     dyn_table(ttitle, preamble, afterward, pnames, {'Posterior mean', 'Posterior std.'}, 4, [oo_.olsgibbs.(eqtag).posterior.mean.beta, sqrt(diag(oo_.olsgibbs.(eqtag).posterior.variance.beta))]);
 end
 end
