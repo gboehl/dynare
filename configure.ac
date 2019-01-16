@@ -26,6 +26,7 @@ AC_CONFIG_SUBDIRS([preprocessor])
 
 AC_PROG_CC
 AC_PROG_CXX
+AX_CXX_COMPILE_STDCXX_14
 
 AC_CANONICAL_HOST
 case ${host_os} in
