@@ -9,6 +9,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <vector>
 
 SymSchurDecomp::SymSchurDecomp(const GeneralMatrix &mata)
   : lambda(mata.numRows()), q(mata.numRows())
@@ -36,7 +37,7 @@ SymSchurDecomp::SymSchurDecomp(const GeneralMatrix &mata)
   double *w = lambda.base();
   double *z = q.base();
   lapack_int ldz = q.getLD();
-  lapack_int *isuppz = new lapack_int[2*std::max(1, (int) m)];
+  std::vector<lapack_int> isuppz(2*std::max(1, (int) m));
   double tmpwork;
   lapack_int lwork = -1;
   lapack_int tmpiwork;
@@ -45,25 +46,21 @@ SymSchurDecomp::SymSchurDecomp(const GeneralMatrix &mata)
 
   // query for lwork and liwork
   dsyevr(jobz, range, uplo, &n, a, &lda, vl, vu, il, iu, &abstol,
-         &m, w, z, &ldz, isuppz, &tmpwork, &lwork, &tmpiwork, &liwork, &info);
+         &m, w, z, &ldz, isuppz.data(), &tmpwork, &lwork, &tmpiwork, &liwork, &info);
   lwork = (int) tmpwork;
   liwork = tmpiwork;
   // allocate work arrays
-  auto *work = new double[lwork];
-  auto *iwork = new lapack_int[liwork];
+  std::vector<double> work(lwork);
+  std::vector<lapack_int> iwork(liwork);
 
   // do the calculation
   dsyevr(jobz, range, uplo, &n, a, &lda, vl, vu, il, iu, &abstol,
-         &m, w, z, &ldz, isuppz, work, &lwork, iwork, &liwork, &info);
+         &m, w, z, &ldz, isuppz.data(), work.data(), &lwork, iwork.data(), &liwork, &info);
 
   if (info < 0)
     throw SYLV_MES_EXCEPTION("Internal error in SymSchurDecomp constructor");
   if (info > 0)
     throw SYLV_MES_EXCEPTION("Internal LAPACK error in DSYEVR");
-
-  delete [] work;
-  delete [] iwork;
-  delete [] isuppz;
 }
 
 void

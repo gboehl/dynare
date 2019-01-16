@@ -4,6 +4,8 @@
 
 #include "SchurDecomp.hh"
 
+#include <vector>
+
 #include <dynlapack.h>
 
 SchurDecomp::SchurDecomp(const SqSylvMatrix &m)
@@ -12,17 +14,13 @@ SchurDecomp::SchurDecomp(const SqSylvMatrix &m)
   lapack_int rows = m.numRows();
   SqSylvMatrix auxt(m);
   lapack_int sdim;
-  auto *const wr = new double[rows];
-  auto *const wi = new double[rows];
+  std::vector<double> wr(rows), wi(rows);
   lapack_int lwork = 6*rows;
-  auto *const work = new double[lwork];
+  std::vector<double> work(lwork);
   lapack_int info;
   dgees("V", "N", nullptr, &rows, auxt.base(), &rows, &sdim,
-        wr, wi, q.base(), &rows,
-        work, &lwork, nullptr, &info);
-  delete [] work;
-  delete [] wi;
-  delete [] wr;
+        wr.data(), wi.data(), q.base(), &rows,
+        work.data(), &lwork, nullptr, &info);
   t_storage = std::make_unique<QuasiTriangular>(auxt.base(), rows);
   t = t_storage.get();
 }

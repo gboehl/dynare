@@ -12,11 +12,13 @@
 #include "SylvParams.hh"
 #include "SchurDecomp.hh"
 
+#include <memory>
+
 class SylvesterSolver
 {
 protected:
-  const QuasiTriangular *const matrixK;
-  const QuasiTriangular *const matrixF;
+  const std::unique_ptr<const QuasiTriangular> matrixK;
+  const std::unique_ptr<const QuasiTriangular> matrixF;
 private:
   /* return true when it is more efficient to use QuasiTriangular
    * than QuasiTriangularZero */
@@ -28,26 +30,25 @@ private:
   }
 public:
   SylvesterSolver(const QuasiTriangular &k, const QuasiTriangular &f)
-    : matrixK(new QuasiTriangular(k)),
-      matrixF(new QuasiTriangular(f))
+    : matrixK(std::make_unique<QuasiTriangular>(k)),
+      matrixF(std::make_unique<QuasiTriangular>(f))
   {
   }
   SylvesterSolver(const SchurDecompZero &kdecomp, const SchurDecomp &fdecomp)
     : matrixK((zeroPad(kdecomp)) ?
-              new QuasiTriangular(kdecomp) : new QuasiTriangularZero(kdecomp)),
-      matrixF(new QuasiTriangular(fdecomp))
+              std::make_unique<QuasiTriangular>(kdecomp) :
+              std::make_unique<QuasiTriangularZero>(kdecomp)),
+      matrixF(std::make_unique<QuasiTriangular>(fdecomp))
   {
   }
   SylvesterSolver(const SchurDecompZero &kdecomp, const SimilarityDecomp &fdecomp)
     : matrixK((zeroPad(kdecomp)) ?
-              new QuasiTriangular(kdecomp) : new QuasiTriangularZero(kdecomp)),
-      matrixF(new BlockDiagonal(fdecomp.getB()))
+              std::make_unique<QuasiTriangular>(kdecomp) :
+              std::make_unique<QuasiTriangularZero>(kdecomp)),
+      matrixF(std::make_unique<BlockDiagonal>(fdecomp.getB()))
   {
   }
-  virtual ~SylvesterSolver()
-  {
-    delete matrixK; delete matrixF;
-  }
+  virtual ~SylvesterSolver() = default;
   virtual void solve(SylvParams &pars, KronVector &x) const = 0;
 };
 

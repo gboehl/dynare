@@ -3,6 +3,8 @@
 
 #include <dynlapack.h>
 
+#include <vector>
+
 /* bubble diagonal 1-1, or 2-2 block from position 'from' to position
  * 'to'. If an eigenvalue cannot be swapped with its neighbour, the
  * neighbour is bubbled also in front. The method returns a new
@@ -55,15 +57,12 @@ SchurDecompEig::tryToSwap(diag_iter &it, diag_iter &itadd)
   lapack_int n = getDim();
   lapack_int ifst = (*it).getIndex() + 1;
   lapack_int ilst = (*itadd).getIndex() + 1;
-  auto *work = new double[n];
+  std::vector<double> work(n);
   lapack_int info;
-  dtrexc("V", &n, getT().base(), &n, getQ().base(), &n, &ifst, &ilst, work,
+  dtrexc("V", &n, getT().base(), &n, getQ().base(), &n, &ifst, &ilst, work.data(),
          &info);
-  delete [] work;
   if (info < 0)
-    {
-      throw SYLV_MES_EXCEPTION("Wrong argument to dtrexc.");
-    }
+    throw SYLV_MES_EXCEPTION("Wrong argument to dtrexc.");
 
   if (info == 0)
     {

@@ -40,7 +40,7 @@ KronVector::KronVector(const ConstKronVector &v)
   Vector::operator=(v);
 }
 
-const KronVector &
+KronVector &
 KronVector::operator=(const ConstKronVector &v)
 {
   Vector::operator=(v);
@@ -50,7 +50,7 @@ KronVector::operator=(const ConstKronVector &v)
   return *this;
 }
 
-const KronVector &
+KronVector &
 KronVector::operator=(const Vector &v)
 {
   if (length() != v.length())

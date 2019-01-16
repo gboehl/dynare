@@ -8,8 +8,9 @@
 
 #include <dynblas.h>
 
-#include <cstdio>
 #include <cmath>
+#include <iostream>
+#include <sstream>
 
 using namespace std;
 
@@ -137,9 +138,7 @@ Diagonal::getNumComplex(const double *data, int d_size)
         {
           num_complex++;
           if (in < d_size - 2 && !isZero(data[in + d_size +1]))
-            {
-              throw SYLV_MES_EXCEPTION("Matrix is not quasi-triangular");
-            }
+            throw SYLV_MES_EXCEPTION("Matrix is not quasi-triangular");
         }
     }
   return num_complex;
@@ -175,19 +174,17 @@ Diagonal::getEigenValues(Vector &eig) const
   int d_size = getSize();
   if (eig.length() != 2*d_size)
     {
-      char mes[500];
-      sprintf(mes, "Wrong length of vector for eigenvalues len=%d, should be=%d.\n",
-              eig.length(), 2*d_size);
-      throw SYLV_MES_EXCEPTION(mes);
+      ostringstream mes;
+      mes << "Wrong length of vector for eigenvalues len=" << eig.length()
+          << ", should be=" << 2*d_size << '.' << std::endl;
+      throw SYLV_MES_EXCEPTION(mes.str());
     }
   for (const auto & b : *this)
     {
       int ind = b.getIndex();
       eig[2*ind] = *(b.getAlpha());
       if (b.isReal())
-        {
-          eig[2*ind+1] = 0.0;
-        }
+        eig[2*ind+1] = 0.0;
       else
         {
           double beta = sqrt(b.getSBeta());
@@ -304,22 +301,19 @@ Diagonal::findNextLargerBlock(diag_iter start, diag_iter end, double a)
 void
 Diagonal::print() const
 {
-  printf("Num real: %d, num complex: %d\n", getNumReal(), getNumComplex());
+  auto ff = std::cout.flags();
+  std::cout << "Num real: " << getNumReal() << ", num complex: " << getNumComplex() << std::endl
+            << std::fixed;
   for (const auto & it : *this)
-    {
-      if (it.isReal())
-        {
-          printf("real: jbar=%d, alpha=%f\n", it.getIndex(), *(it.getAlpha()));
-        }
-      else
-        {
-          printf("complex: jbar=%d, alpha=%f, beta1=%f, beta2=%f\n",
-                 it.getIndex(), *(it.getAlpha()), it.getBeta1(), it.getBeta2());
-        }
-    }
+    if (it.isReal())
+      std::cout << "real: jbar=" << it.getIndex() << ", alpha=" << *(it.getAlpha()) << std::endl;
+    else
+      std::cout << "complex: jbar=" << it.getIndex()
+                << ", alpha=" << *(it.getAlpha())
+                << ", beta1=" << it.getBeta1()
+                << ", beta2=" << it.getBeta2() << std::endl;
+  std::cout.flags(ff);
 }
-
-double Diagonal::EPS = 1.0e-300;
 
 bool
 Diagonal::isZero(double p)

@@ -4,7 +4,7 @@
 
 #include "BlockDiagonal.hh"
 
-#include <cstdio>
+#include <iostream>
 #include <cstring>
 
 BlockDiagonal::BlockDiagonal(const double *d, int d_size)
@@ -315,7 +315,7 @@ BlockDiagonal::multKronTrans(KronVector &x) const
 void
 BlockDiagonal::printInfo() const
 {
-  printf("Block sizes:");
+  std::cout << "Block sizes:";
   int num_blocks = 0;
   const_diag_iter start = diag_begin();
   const_diag_iter end = findBlockStart(start);
@@ -325,14 +325,14 @@ BlockDiagonal::printInfo() const
       int ei = diagonal.getSize();
       if (end != diag_end())
         ei = (*end).getIndex();
-      printf(" %d", ei-si);
+      std::cout << ' ' << ei-si;
       num_blocks++;
       start = end;
       end = findBlockStart(start);
     }
-  printf("\nNum blocks: %d\n", num_blocks);
-  printf("There are %d zeros out of %d\n",
-         getNumZeros(), getNumOffdiagonal());
+  std::cout << std::endl
+            << "Num blocks: " << num_blocks << std::endl
+            << "There are " << getNumZeros() << " zeros out of " << getNumOffdiagonal() << std::endl;
 }
 
 int

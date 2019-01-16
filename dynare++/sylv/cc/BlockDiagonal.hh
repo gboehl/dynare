@@ -18,12 +18,12 @@ public:
   BlockDiagonal(int p, const BlockDiagonal &b);
   BlockDiagonal(const BlockDiagonal &b);
   BlockDiagonal(const QuasiTriangular &t);
-  const BlockDiagonal &
+  BlockDiagonal &
   operator=(const QuasiTriangular &t)
   {
     GeneralMatrix::operator=(t); return *this;
   }
-  const BlockDiagonal &operator=(const BlockDiagonal &b);
+  BlockDiagonal &operator=(const BlockDiagonal &b);
   ~BlockDiagonal() override
   {
     delete [] row_len; delete [] col_len;

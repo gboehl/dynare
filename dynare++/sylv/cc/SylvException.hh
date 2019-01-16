@@ -5,26 +5,28 @@
 #ifndef SYLV_EXCEPTION_H
 #define SYLV_EXCEPTION_H
 
+#include <string>
+
 #include "SylvMemory.hh"
 
 class SylvException : public MallocAllocator
 {
 protected:
-  char file[50];
+  std::string file;
   int line;
 public:
-  SylvException(const char *f, int l);
+  SylvException(std::string f, int l);
   virtual ~SylvException() = default;
-  virtual int printMessage(char *str, int maxlen) const;
   void printMessage() const;
+  virtual std::string getMessage() const;
 };
 
 class SylvExceptionMessage : public SylvException
 {
-  char message[500];
+  std::string message;
 public:
-  SylvExceptionMessage(const char *f, int l, const char *mes);
-  int printMessage(char *str, int maxlen) const override;
+  SylvExceptionMessage(std::string f, int l, std::string mes);
+  std::string getMessage() const override;
 };
 
 // define macros:

@@ -24,8 +24,8 @@ public:
   KronVector(KronVector &, int i); // picks i-th subvector
   KronVector(const ConstKronVector &v); // new instance and copy
   KronVector &operator=(const KronVector &v) = default;
-  const KronVector &operator=(const ConstKronVector &v);
-  const KronVector &operator=(const Vector &v);
+  KronVector &operator=(const ConstKronVector &v);
+  KronVector &operator=(const Vector &v);
   int
   getM() const
   {

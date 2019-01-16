@@ -70,23 +70,17 @@ extern "C" {
     try
       {
         if (nlhs == 2)
-          {
-            gen_sylv_solve(order, n, m, zero_cols,
-                           mxGetPr(A), mxGetPr(B), mxGetPr(C),
-                           mxGetPr(X));
-          }
+          gen_sylv_solve(order, n, m, zero_cols,
+                         mxGetPr(A), mxGetPr(B), mxGetPr(C),
+                         mxGetPr(X));
         else if (nlhs == 3)
-          {
-            gen_sylv_solve_and_check(order, n, m, zero_cols,
-                                     mxGetPr(A), mxGetPr(B), mxGetPr(C),
-                                     mxGetPr(D), mxGetPr(X), plhs[2]);
-          }
+          gen_sylv_solve_and_check(order, n, m, zero_cols,
+                                   mxGetPr(A), mxGetPr(B), mxGetPr(C),
+                                   mxGetPr(D), mxGetPr(X), plhs[2]);
       }
     catch (const SylvException &e)
       {
-        char mes[1000];
-        e.printMessage(mes, 999);
-        DYN_MEX_FUNC_ERR_MSG_TXT(mes);
+        DYN_MEX_FUNC_ERR_MSG_TXT(e.getMessage().c_str());
       }
     plhs[1] = X;
     plhs[0] = mxCreateDoubleScalar(0);

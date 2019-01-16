@@ -4,46 +4,47 @@
 
 #include "SylvParams.hh"
 
+#include <iostream>
+
 void
-SylvParams::print(const char *prefix) const
+SylvParams::print(const std::string &prefix) const
 {
-  print(stdout, prefix);
+  print(std::cout, prefix);
 }
 
 void
-SylvParams::print(FILE *fdesc, const char *prefix) const
+SylvParams::print(std::ostream &fdesc, const std::string &prefix) const
 {
-  rcondA1.print(fdesc, prefix,  "reci. cond1 A      ", "%8.4g");
-  rcondAI.print(fdesc, prefix,  "reci. condInf A    ", "%8.4g");
-  bs_norm.print(fdesc, prefix,  "log10 diag norm    ", "%8.4g");
-  f_err1.print(fdesc, prefix,   "abs. err 1 F diag  ", "%8.4g");
-  f_errI.print(fdesc, prefix,   "abs. err I F diag  ", "%8.4g");
-  viv_err1.print(fdesc, prefix, "abs. err 1 V*invV  ", "%8.4g");
-  viv_errI.print(fdesc, prefix, "abs. err I V*invV  ", "%8.4g");
-  ivv_err1.print(fdesc, prefix, "abs. err 1 invV*V  ", "%8.4g");
-  ivv_errI.print(fdesc, prefix, "abs. err I invV*V  ", "%8.4g");
-  f_blocks.print(fdesc, prefix, "num blocks in F    ", "%d");
-  f_largest.print(fdesc, prefix, "largest block in F ", "%d");
-  f_zeros.print(fdesc, prefix,  "num zeros in F     ", "%d");
-  f_offdiag.print(fdesc, prefix, "num offdiag in F   ", "%d");
+  rcondA1.print(fdesc, prefix,  "reci. cond1 A      ");
+  rcondAI.print(fdesc, prefix,  "reci. condInf A    ");
+  bs_norm.print(fdesc, prefix,  "log10 diag norm    ");
+  f_err1.print(fdesc, prefix,   "abs. err 1 F diag  ");
+  f_errI.print(fdesc, prefix,   "abs. err I F diag  ");
+  viv_err1.print(fdesc, prefix, "abs. err 1 V*invV  ");
+  viv_errI.print(fdesc, prefix, "abs. err I V*invV  ");
+  ivv_err1.print(fdesc, prefix, "abs. err 1 invV*V  ");
+  ivv_errI.print(fdesc, prefix, "abs. err I invV*V  ");
+  f_blocks.print(fdesc, prefix, "num blocks in F    ");
+  f_largest.print(fdesc, prefix, "largest block in F ");
+  f_zeros.print(fdesc, prefix,  "num zeros in F     ");
+  f_offdiag.print(fdesc, prefix, "num offdiag in F   ");
   if (*method == iter)
     {
-      converged.print(fdesc, prefix,       "converged          ", "%d");
-      convergence_tol.print(fdesc, prefix, "convergence tol.   ", "%8.4g");
-      iter_last_norm.print(fdesc, prefix,  "last norm          ", "%8.4g");
-      max_num_iter.print(fdesc, prefix,    "max num iter       ", "%d");
-      num_iter.print(fdesc, prefix,        "num iter           ", "%d");
+      converged.print(fdesc, prefix,       "converged          ");
+      convergence_tol.print(fdesc, prefix, "convergence tol.   ");
+      iter_last_norm.print(fdesc, prefix,  "last norm          ");
+      max_num_iter.print(fdesc, prefix,    "max num iter       ");
+      num_iter.print(fdesc, prefix,        "num iter           ");
     }
   else
-    {
-      eig_min.print(fdesc, prefix,         "minimum eigenvalue ", "%8.4g");
-    }
-  mat_err1.print(fdesc, prefix, "rel. matrix norm1  ", "%8.4g");
-  mat_errI.print(fdesc, prefix, "rel. matrix normInf", "%8.4g");
-  mat_errF.print(fdesc, prefix, "rel. matrix normFro", "%8.4g");
-  vec_err1.print(fdesc, prefix, "rel. vector norm1  ", "%8.4g");
-  vec_errI.print(fdesc, prefix, "rel. vector normInf", "%8.4g");
-  cpu_time.print(fdesc, prefix, "time (CPU secs)    ", "%8.4g");
+    eig_min.print(fdesc, prefix,         "minimum eigenvalue ");
+
+  mat_err1.print(fdesc, prefix, "rel. matrix norm1  ");
+  mat_errI.print(fdesc, prefix, "rel. matrix normInf");
+  mat_errF.print(fdesc, prefix, "rel. matrix normFro");
+  vec_err1.print(fdesc, prefix, "rel. vector norm1  ");
+  vec_errI.print(fdesc, prefix, "rel. vector normInf");
+  cpu_time.print(fdesc, prefix, "time (CPU secs)    ");
 }
 
 void

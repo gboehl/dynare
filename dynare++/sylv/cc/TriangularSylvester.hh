@@ -113,8 +113,8 @@ private:
                       KronVector &d1, KronVector &d2,
                       double &eig_min) const;
   /* norms for what we consider zero on diagonal of F */
-  static double diag_zero;
-  static double diag_zero_sq; // square of diag_zero
+  static constexpr double diag_zero = 1.e-15;
+  static constexpr double diag_zero_sq = 1.e-30; // square of diag_zero
 };
 
 #endif /* TRIANGULAR_SYLVESTER_H */

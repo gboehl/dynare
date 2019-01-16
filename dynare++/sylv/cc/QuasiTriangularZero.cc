@@ -7,7 +7,7 @@
 #include "SylvMatrix.hh"
 #include "SylvException.hh"
 
-#include <cstdio>
+#include <iostream>
 
 QuasiTriangularZero::QuasiTriangularZero(int num_zeros, const double *d,
                                          int d_size)
@@ -61,9 +61,6 @@ QuasiTriangularZero::QuasiTriangularZero(const QuasiTriangular &t)
     nz(0), ru(0, t.getDiagonal().getSize())
 {
 }
-
-QuasiTriangularZero::~QuasiTriangularZero()
-= default;
 
 void
 QuasiTriangularZero::solvePre(Vector &x, double &eig_min)
@@ -136,10 +133,10 @@ QuasiTriangularZero::multLeftOther(GeneralMatrix &a) const
 void
 QuasiTriangularZero::print() const
 {
-  printf("super=\n");
+  std::cout << "super=" << std::endl;
   QuasiTriangular::print();
-  printf("nz=%d\n", nz);
-  printf("ru=\n");
+  std::cout << "nz=" << nz << std::endl
+            << "ru=" << std::endl;
   ru.print();
 }
 

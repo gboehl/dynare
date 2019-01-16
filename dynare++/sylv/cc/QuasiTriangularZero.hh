@@ -22,7 +22,7 @@ public:
   QuasiTriangularZero(int p, const QuasiTriangularZero &t);
   QuasiTriangularZero(const QuasiTriangular &t);
   QuasiTriangularZero(const SchurDecompZero &decomp);
-  ~QuasiTriangularZero() override;
+  ~QuasiTriangularZero() override = default;
   void solvePre(Vector &x, double &eig_min) override;
   void solvePreTrans(Vector &x, double &eig_min) override;
   void multVec(Vector &x, const ConstVector &b) const override;

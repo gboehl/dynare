@@ -5,8 +5,8 @@
 #ifndef SYLV_PARAMS_H
 #define SYLV_PARAMS_H
 
-#include <cstdio>
-#include <cstring>
+#include <string>
+#include <ostream>
 
 #if defined(MATLAB_MEX_FILE) || defined(OCTAVE_MEX_FILE)
 # include <dynmex.h>
@@ -34,12 +34,12 @@ public:
   {
     value = item.value; s = item.s;
   }
-  const _Self &
+  _Self &
   operator=(const _Self &item)
   {
     value = item.value; s = item.s; return *this;
   }
-  const _Self &
+  _Self &
   operator=(const _Type &val)
   {
     value = val; s = changed; return *this;
@@ -55,19 +55,14 @@ public:
     return s;
   }
   void
-  print(FILE *f, const char *prefix, const char *str, const char *fmt) const
+  print(std::ostream &out, const std::string &prefix, const std::string &str) const
   {
     if (s == undef)
       return;
-    char out[1000];
-    strcpy(out, prefix);
-    strcat(out, str);
-    strcat(out, "= ");
-    strcat(out, fmt);
+    out << prefix << str << "= " << value;
     if (s == def)
-      strcat(out, " <default>");
-    strcat(out, "\n");
-    fprintf(f, out, value);
+      out << " <default>";
+    out << std::endl;
   }
 };
 
@@ -86,9 +81,8 @@ protected:
     DoubleParamItem(double val) : ParamItem<double>(val)
     {
     }
-    DoubleParamItem(const DoubleParamItem &item)  
-    = default;
-    const DoubleParamItem &
+    DoubleParamItem(const DoubleParamItem &item) = default;
+    DoubleParamItem &
     operator=(const double &val)
     {
       ParamItem<double>::operator=(val); return *this;
@@ -107,9 +101,8 @@ protected:
     IntParamItem(int val) : ParamItem<int>(val)
     {
     }
-    IntParamItem(const IntParamItem &item)  
-    = default;
-    const IntParamItem &
+    IntParamItem(const IntParamItem &item) = default;
+    IntParamItem &
     operator=(const int &val)
     {
       ParamItem<int>::operator=(val); return *this;
@@ -128,9 +121,8 @@ protected:
     BoolParamItem(bool val) : ParamItem<bool>(val)
     {
     }
-    BoolParamItem(const BoolParamItem &item)  
-    = default;
-    const BoolParamItem &
+    BoolParamItem(const BoolParamItem &item) = default;
+    BoolParamItem &
     operator=(const bool &val)
     {
       ParamItem<bool>::operator=(val); return *this;
@@ -149,9 +141,8 @@ protected:
     MethodParamItem(solve_method val) : ParamItem<solve_method>(val)
     {
     }
-    MethodParamItem(const MethodParamItem &item)  
-    = default;
-    const MethodParamItem
+    MethodParamItem(const MethodParamItem &item) = default;
+    MethodParamItem
     operator=(const solve_method &val)
     {
       ParamItem<solve_method>::operator=(val); return *this;
@@ -202,15 +193,14 @@ public:
   {
     copy(p);
   }
-  const SylvParams &
+  SylvParams &
   operator=(const SylvParams &p)
   {
     copy(p); return *this;
   }
-  ~SylvParams()
-  = default;
-  void print(const char *prefix) const;
-  void print(FILE *fdesc, const char *prefix) const;
+  ~SylvParams() = default;
+  void print(const std::string &prefix) const;
+  void print(std::ostream &fdesc, const std::string &prefix) const;
   void setArrayNames(int &num, const char **names) const;
 #if defined(MATLAB_MEX_FILE) || defined(OCTAVE_MEX_FILE)
   mxArray *createStructArray() const;

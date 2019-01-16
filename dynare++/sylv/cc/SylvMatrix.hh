@@ -84,7 +84,7 @@ public:
   {
   }
   SqSylvMatrix(const GeneralMatrix &a, const GeneralMatrix &b);
-  const SqSylvMatrix &
+  SqSylvMatrix &
   operator=(const SqSylvMatrix &m)
   {
     GeneralMatrix::operator=(m);

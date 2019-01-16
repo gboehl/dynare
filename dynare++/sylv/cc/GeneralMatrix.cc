@@ -8,11 +8,13 @@
 #include <dynblas.h>
 #include <dynlapack.h>
 
-#include <cstdio>
+#include <iostream>
+#include <iomanip>
 #include <cstring>
 #include <cstdlib>
 #include <cmath>
 #include <limits>
+#include <vector>
 
 int GeneralMatrix::md_length = 32;
 
@@ -79,9 +81,6 @@ GeneralMatrix::GeneralMatrix(const GeneralMatrix &a, const char *dum1,
 {
   gemm("T", a, "T", b, 1.0, 0.0);
 }
-
-GeneralMatrix::~GeneralMatrix()
-= default;
 
 void
 GeneralMatrix::place(const ConstGeneralMatrix &m, int i, int j)
@@ -178,11 +177,9 @@ GeneralMatrix::zeros()
   if (ld == rows)
     data.zeros();
   else
-    {
-      for (int i = 0; i < rows; i++)
-        for (int j = 0; j < cols; j++)
-          get(i, j) = 0;
-    }
+    for (int i = 0; i < rows; i++)
+      for (int j = 0; j < cols; j++)
+        get(i, j) = 0;
 }
 
 void
@@ -219,11 +216,9 @@ GeneralMatrix::mult(double a)
   if (ld == rows)
     data.mult(a);
   else
-    {
-      for (int i = 0; i < rows; i++)
-        for (int j = 0; j < cols; j++)
-          get(i, j) *= a;
-    }
+    for (int i = 0; i < rows; i++)
+      for (int j = 0; j < cols; j++)
+        get(i, j) *= a;
 }
 
 // here we must be careful for ld
@@ -236,11 +231,9 @@ GeneralMatrix::add(double a, const ConstGeneralMatrix &m)
   if (ld == rows && m.ld == m.rows)
     data.add(a, m.data);
   else
-    {
-      for (int i = 0; i < rows; i++)
-        for (int j = 0; j < cols; j++)
-          get(i, j) += a*m.get(i, j);
-    }
+    for (int i = 0; i < rows; i++)
+      for (int j = 0; j < cols; j++)
+        get(i, j) += a*m.get(i, j);
 }
 
 void
@@ -396,9 +389,7 @@ void
 ConstGeneralMatrix::multVec(double a, Vector &x, double b, const ConstVector &d) const
 {
   if (x.length() != rows || cols != d.length())
-    {
-      throw SYLV_MES_EXCEPTION("Wrong dimensions for vector multiply.");
-    }
+    throw SYLV_MES_EXCEPTION("Wrong dimensions for vector multiply.");
   if (rows > 0)
     {
       blas_int mm = rows;
@@ -419,9 +410,7 @@ ConstGeneralMatrix::multVecTrans(double a, Vector &x, double b,
                                  const ConstVector &d) const
 {
   if (x.length() != cols || rows != d.length())
-    {
-      throw SYLV_MES_EXCEPTION("Wrong dimensions for vector multiply.");
-    }
+    throw SYLV_MES_EXCEPTION("Wrong dimensions for vector multiply.");
   if (rows > 0)
     {
       blas_int mm = rows;
@@ -441,24 +430,19 @@ void
 ConstGeneralMatrix::multInvLeft(const char *trans, int mrows, int mcols, int mld, double *d) const
 {
   if (rows != cols)
-    {
-      throw SYLV_MES_EXCEPTION("The matrix is not square for inversion.");
-    }
+    throw SYLV_MES_EXCEPTION("The matrix is not square for inversion.");
   if (cols != mrows)
-    {
-      throw SYLV_MES_EXCEPTION("Wrong dimensions for matrix inverse mutliply.");
-    }
+    throw SYLV_MES_EXCEPTION("Wrong dimensions for matrix inverse mutliply.");
 
   if (rows > 0)
     {
       GeneralMatrix inv(*this);
-      auto *ipiv = new lapack_int[rows];
+      std::vector<lapack_int> ipiv(rows);
       lapack_int info;
       lapack_int rows2 = rows, mcols2 = mcols, mld2 = mld;
-      dgetrf(&rows2, &rows2, inv.getData().base(), &rows2, ipiv, &info);
-      dgetrs(trans, &rows2, &mcols2, inv.base(), &rows2, ipiv, d,
+      dgetrf(&rows2, &rows2, inv.getData().base(), &rows2, ipiv.data(), &info);
+      dgetrs(trans, &rows2, &mcols2, inv.base(), &rows2, ipiv.data(), d,
              &mld2, &info);
-      delete [] ipiv;
     }
 }
 
@@ -481,9 +465,7 @@ void
 ConstGeneralMatrix::multInvLeft(Vector &d) const
 {
   if (d.skip() != 1)
-    {
-      throw SYLV_MES_EXCEPTION("Skip!=1 not implemented in ConstGeneralMatrix::multInvLeft(Vector&)");
-    }
+    throw SYLV_MES_EXCEPTION("Skip!=1 not implemented in ConstGeneralMatrix::multInvLeft(Vector&)");
 
   multInvLeft("N", d.length(), 1, d.length(), d.base());
 }
@@ -493,9 +475,7 @@ void
 ConstGeneralMatrix::multInvLeftTrans(Vector &d) const
 {
   if (d.skip() != 1)
-    {
-      throw SYLV_MES_EXCEPTION("Skip!=1 not implemented in ConstGeneralMatrix::multInvLeft(Vector&)");
-    }
+    throw SYLV_MES_EXCEPTION("Skip!=1 not implemented in ConstGeneralMatrix::multInvLeft(Vector&)");
 
   multInvLeft("T", d.length(), 1, d.length(), d.base());
 }
@@ -523,16 +503,17 @@ ConstGeneralMatrix::isZero() const
 void
 ConstGeneralMatrix::print() const
 {
-  printf("rows=%d, cols=%d\n", rows, cols);
+  auto ff = std::cout.flags();
+  std::cout << "rows=" << rows << ", cols=" << cols << std::endl;
   for (int i = 0; i < rows; i++)
     {
-      printf("row %d:\n", i);
+      std::cout << "row " << i << ':' << std::endl
+                << std::setprecision(3);
       for (int j = 0; j < cols; j++)
-        {
-          printf("%6.3g ", get(i, j));
-        }
-      printf("\n");
+        std::cout << std::setw(6) << get(i, j) << ' ';
+      std::cout << std::endl;
     }
+  std::cout.flags(ff);
 }
 
 void
@@ -563,16 +544,15 @@ SVDDecomp::construct(const GeneralMatrix &A)
   lapack_int lwork = -1;
   lapack_int info;
 
-  auto *iwork = new lapack_int[8*minmn];
+  std::vector<lapack_int> iwork(8*minmn);
   // query for optimal lwork
   dgesdd("A", &m, &n, a, &lda, s, u, &ldu, vt, &ldvt, &tmpwork,
-         &lwork, iwork, &info);
+         &lwork, iwork.data(), &info);
   lwork = (lapack_int) tmpwork;
   Vector work(lwork);
   // do the decomposition
   dgesdd("A", &m, &n, a, &lda, s, u, &ldu, vt, &ldvt, work.base(),
-         &lwork, iwork, &info);
-  delete [] iwork;
+         &lwork, iwork.data(), &info);
   if (info < 0)
     throw SYLV_MES_EXCEPTION("Internal error in SVDDecomp constructor");
   if (info == 0)

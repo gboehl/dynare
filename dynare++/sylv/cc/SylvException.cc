@@ -4,58 +4,34 @@
 
 #include "SylvException.hh"
 
-#include <cstring>
-#include <cstdio>
+#include <iostream>
+#include <utility>
 
-SylvException::SylvException(const char *f, int l)
+SylvException::SylvException(std::string f, int l)
+  : file{std::move(f)}, line{l}
 {
-  strcpy(file, f);
-  line = l;
 }
 
 void
 SylvException::printMessage() const
 {
-  char mes[1500];
-  mes[0] = '\0';
-  printMessage(mes, 1499);
-  puts(mes);
+  std::cout << getMessage();
 }
 
-int
-SylvException::printMessage(char *str, int maxlen) const
+std::string
+SylvException::getMessage() const
 {
-  int remain = maxlen;
-  char aux[100];
-  sprintf(aux, "From %s:%d\n", file, line);
-  int newremain = remain - strlen(aux);
-  if (newremain < 0)
-    {
-      aux[remain] = '\0';
-      newremain = 0;
-    }
-  strcat(str, aux);
-  return newremain;
+  return "From " + file + ':' + std::to_string(line) + '\n';
 }
 
-SylvExceptionMessage::SylvExceptionMessage(const char *f, int i,
-                                           const char *mes)
-  : SylvException(f, i)
+SylvExceptionMessage::SylvExceptionMessage(std::string f, int i,
+                                           std::string mes)
+  : SylvException{std::move(f), i}, message{std::move(mes)}
 {
-  strcpy(message, mes);
 }
 
-int
-SylvExceptionMessage::printMessage(char *str, int maxlen) const
+std::string
+SylvExceptionMessage::getMessage() const
 {
-  char aux[600];
-  sprintf(aux, "At %s:%d:%s\n", file, line, message);
-  int newremain = maxlen - strlen(aux);
-  if (newremain < 0)
-    {
-      aux[maxlen] = '\0';
-      newremain = 0;
-    }
-  strcat(str, aux);
-  return newremain;
+  return "At " + file + ':' + std::to_string(line) + ':' + message + '\n';
 }

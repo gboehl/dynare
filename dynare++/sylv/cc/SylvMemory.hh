@@ -36,7 +36,7 @@ class SylvMemoryPool
 public:
   SylvMemoryPool() = default;
   SylvMemoryPool(const SylvMemoryPool &) = delete;
-  const SylvMemoryPool &operator=(const SylvMemoryPool &) = delete;
+  SylvMemoryPool &operator=(const SylvMemoryPool &) = delete;
   ~SylvMemoryPool();
   void init(size_t size);
   void *allocate(size_t size);
@@ -51,7 +51,7 @@ public:
   SylvMemoryDriver(int num_d, int m, int n, int order);
   SylvMemoryDriver(const SylvParams &pars, int num_d, int m, int n, int order);
   SylvMemoryDriver(const SylvMemoryDriver &) = delete;
-  const SylvMemoryDriver &operator=(const SylvMemoryDriver &) = delete;
+  SylvMemoryDriver &operator=(const SylvMemoryDriver &) = delete;
   static void setStackMode(bool);
   ~SylvMemoryDriver();
 protected:

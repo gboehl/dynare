@@ -100,7 +100,7 @@ public:
   {
     copy(b);
   }
-  const DiagonalBlock &
+  DiagonalBlock &
   operator=(const DiagonalBlock &b)
   {
     copy(b); return *this;
@@ -179,7 +179,7 @@ public:
   {
     return x.it != it;
   }
-  const _Self &
+  _Self &
   operator=(const _Self &x)
   {
     it = x.it; return *this;
@@ -209,7 +209,7 @@ public:
   {
     copy(d);
   }
-  const Diagonal &
+  Diagonal &
   operator=(const Diagonal &d)
   {
     copy(d); return *this;
@@ -268,7 +268,7 @@ public:
   /* redefine pointers as data start at p */
   void changeBase(double *p);
 private:
-  static double EPS;
+  constexpr static double EPS = 1.0e-300;
   static int getNumComplex(const double *data, int d_size);
   static bool isZero(double p);
 };
@@ -286,7 +286,7 @@ public:
     ptr = base; d_size = ds; real = r;
   }
   virtual ~_matrix_iter() = default;
-  const _Self &
+  _Self &
   operator=(const _Self &it)
   {
     ptr = it.ptr; d_size = it.d_size; real = it.real; return *this;

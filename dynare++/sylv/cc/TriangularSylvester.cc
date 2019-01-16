@@ -7,11 +7,8 @@
 #include "KronUtils.hh"
 #include "BlockDiagonal.hh"
 
-#include <cstdio>
+#include <iostream>
 #include <cmath>
-
-double TriangularSylvester::diag_zero = 1.e-15;
-double TriangularSylvester::diag_zero_sq = 1.e-30;
 
 TriangularSylvester::TriangularSylvester(const QuasiTriangular &k,
                                          const QuasiTriangular &f)
@@ -40,9 +37,9 @@ TriangularSylvester::TriangularSylvester(const SchurDecompZero &kdecomp,
 void
 TriangularSylvester::print() const
 {
-  printf("matrix K (%d):\n", matrixK->getDiagonal().getSize());
+  std::cout << "matrix K (" << matrixK->getDiagonal().getSize() << "):" << std::endl;
   matrixK->print();
-  printf("matrix F (%d):\n", matrixF->getDiagonal().getSize());
+  std::cout << "matrix F (" << matrixF->getDiagonal().getSize() << "):" << std::endl;
   matrixF->print();
 }
 
@@ -67,16 +64,10 @@ TriangularSylvester::solvi(double r, KronVector &d, double &eig_min) const
       for (const_diag_iter di = matrixF->diag_begin();
            di != matrixF->diag_end();
            ++di)
-        {
-          if ((*di).isReal())
-            {
-              solviRealAndEliminate(r, di, d, eig_min);
-            }
-          else
-            {
-              solviComplexAndEliminate(r, di, d, eig_min);
-            }
-        }
+        if ((*di).isReal())
+          solviRealAndEliminate(r, di, d, eig_min);
+        else
+          solviComplexAndEliminate(r, di, d, eig_min);
     }
 }
 
@@ -115,16 +106,10 @@ TriangularSylvester::solviip(double alpha, double betas,
       const_diag_iter di = matrixF->diag_begin();
       const_diag_iter dsi = matrixFF->diag_begin();
       for (; di != matrixF->diag_end(); ++di, ++dsi)
-        {
-          if ((*di).isReal())
-            {
-              solviipRealAndEliminate(alpha, betas, di, dsi, d, eig_min);
-            }
-          else
-            {
-              solviipComplexAndEliminate(alpha, betas, di, dsi, d, eig_min);
-            }
-        }
+        if ((*di).isReal())
+          solviipRealAndEliminate(alpha, betas, di, dsi, d, eig_min);
+        else
+          solviipComplexAndEliminate(alpha, betas, di, dsi, d, eig_min);
     }
 }
 
@@ -138,9 +123,7 @@ TriangularSylvester::solviRealAndEliminate(double r, const_diag_iter di,
   KronVector dj(d, jbar);
   // solve system
   if (abs(r*f) > diag_zero)
-    {
-      solvi(r*f, dj, eig_min);
-    }
+    solvi(r*f, dj, eig_min);
   // calculate y
   KronVector y((const KronVector &)dj);
   KronUtils::multKron(*matrixF, *matrixK, y);
@@ -177,9 +160,7 @@ TriangularSylvester::solviComplexAndEliminate(double r, const_diag_iter di,
   KronVector djj(d, jbar+1);
   // solve
   if (r*r*aspbs > diag_zero_sq)
-    {
-      solvii(r*alpha, r*beta1, r*beta2, dj, djj, eig_min);
-    }
+    solvii(r*alpha, r*beta1, r*beta2, dj, djj, eig_min);
   KronVector y1(dj);
   KronVector y2(djj);
   KronUtils::multKron(*matrixF, *matrixK, y1);
@@ -219,9 +200,7 @@ TriangularSylvester::solviipRealAndEliminate(double alpha, double betas,
   KronVector dj(d, jbar);
   // solve
   if (fs*aspbs > diag_zero_sq)
-    {
-      solviip(f*alpha, fs*betas, dj, eig_min);
-    }
+    solviip(f*alpha, fs*betas, dj, eig_min);
   KronVector y1((const KronVector &)dj);
   KronVector y2((const KronVector &)dj);
   KronUtils::multKron(*matrixF, *matrixK, y1);
@@ -265,9 +244,7 @@ TriangularSylvester::solviipComplexAndEliminate(double alpha, double betas,
   KronVector dj(d, jbar);
   KronVector djj(d, jbar+1);
   if (gspds*aspbs > diag_zero_sq)
-    {
-      solviipComplex(alpha, betas, gamma, delta1, delta2, dj, djj, eig_min);
-    }
+    solviipComplex(alpha, betas, gamma, delta1, delta2, dj, djj, eig_min);
   // here dj, djj is solution, set y1, y2, y11, y22
   // y1
   KronVector y1((const KronVector &)dj);
@@ -404,9 +381,7 @@ TriangularSylvester::multEigVector(KronVector &eig, const Vector &feig,
   int n = eig.getN();
 
   if (depth == 0)
-    {
-      eig = keig;
-    }
+    eig = keig;
   else
     {
       KronVector aux(m, n, depth-1);

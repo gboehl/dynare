@@ -145,7 +145,7 @@ public:
   GeneralMatrix(const GeneralMatrix &a, const char *dum1,
                 const GeneralMatrix &b, const char *dum2);
 
-  virtual ~GeneralMatrix();
+  virtual ~GeneralMatrix() = default;
   GeneralMatrix &operator=(const GeneralMatrix &m) = default;
 
   const double &

@@ -133,8 +133,8 @@ public:
   }
 private:
   void copy(const double *d, int inc);
-  const Vector &operator=(int); // must not be used (not implemented)
-  const Vector &operator=(double); // must not be used (not implemented)
+  Vector &operator=(int); // must not be used (not implemented)
+  Vector &operator=(double); // must not be used (not implemented)
 };
 
 class BaseConstVector

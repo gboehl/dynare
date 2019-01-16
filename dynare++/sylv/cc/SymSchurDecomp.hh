@@ -16,11 +16,8 @@ public:
   /** Calculates A = Q*Lambda*Q^T, where A is assummed to be
    * symmetric and Lambda real diagonal, hence a vector. */
   SymSchurDecomp(const GeneralMatrix &a);
-  SymSchurDecomp(const SymSchurDecomp &ssd)
-     
-  = default;
-  virtual ~SymSchurDecomp()
-  = default;
+  SymSchurDecomp(const SymSchurDecomp &ssd) = default;
+  virtual ~SymSchurDecomp() = default;
   const Vector &
   getLambda() const
   {
