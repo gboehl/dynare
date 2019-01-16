@@ -33,7 +33,7 @@ MODFILES = \
 	exogenous-observed-variables/preprocessor.mod \
 	estimation/fs2000_with_weibull_prior.mod \
 	estimation/fs2000_initialize_from_calib.mod	\
-    estimation/fs2000_estimated_params_init.mod	\
+	estimation/fs2000_estimated_params_init.mod	\
 	estimation/fs2000_calibrated_covariance.mod \
 	estimation/fs2000_model_comparison.mod \
 	estimation/fs2000_fast.mod \
@@ -362,14 +362,14 @@ MODFILES = \
 	var-expectations/3/example.mod \
 	var-expectations/4/example.mod \
 	var-expectations/5/example.mod \
-    var-expectations/6/example.mod \
-    var-expectations/6/substitution.mod \
-    var-expectations/7/example.mod \
-    var-expectations/7/substitution.mod \
-    var-expectations/8/example.mod \
-    var-expectations/8/substitution.mod \
-    var-expectations/9/example.mod \
-    var-expectations/10/example.mod \
+	var-expectations/6/example.mod \
+	var-expectations/6/substitution.mod \
+	var-expectations/7/example.mod \
+	var-expectations/7/substitution.mod \
+	var-expectations/8/example.mod \
+	var-expectations/8/substitution.mod \
+	var-expectations/9/example.mod \
+	var-expectations/10/example.mod \
 	trend-component-and-var-models/vm1.mod \
 	trend-component-and-var-models/vm2.mod \
 	trend-component-and-var-models/vm3.mod \
@@ -381,7 +381,7 @@ MODFILES = \
 	trend-component-and-var-models/tcm5.mod \
 	trend-component-and-var-models/tcm6.mod \
 	trend-component-and-var-models/tcm7.mod \
-    trend-component-and-var-models/tcm8.mod \
+	trend-component-and-var-models/tcm8.mod \
 	trend-component-and-var-models/legacy/vm1.mod \
 	trend-component-and-var-models/legacy/vm2.mod \
 	trend-component-and-var-models/legacy/vm3.mod \
@@ -394,8 +394,8 @@ MODFILES = \
 	pac/var-2/example.mod \
 	pac/var-3/example.mod \
 	pac/var-4/example.mod \
-    pac/var-5/example.mod \
-    pac/var-5/substitution.mod \
+	pac/var-5/example.mod \
+	pac/var-5/substitution.mod \
 	pac/trend-component-1/example.mod \
 	pac/trend-component-2/example.mod \
 	pac/trend-component-3/example.mod \
@@ -409,17 +409,17 @@ MODFILES = \
 	pac/trend-component-12/example.mod \
 	pac/trend-component-13a/example.mod \
 	pac/trend-component-13b/example.mod \
-    pac/trend-component-14/example.mod \
-    pac/trend-component-14/substitution.mod \
-    pac/trend-component-15/example.mod \
-    pac/trend-component-16/example.mod \
-    pac/trend-component-17/example.mod \
-    pac/trend-component-18/example.mod \
-    estimation/univariate/bayesian.mod \
-    estimation/univariate/ols/ols.mod \
-    estimation/univariate/ols/ols_wc_1.mod \
-    estimation/univariate/ols/ols_wc_2.mod \
-    dynare-command-options/ramst.mod
+	pac/trend-component-14/example.mod \
+	pac/trend-component-14/substitution.mod \
+	pac/trend-component-15/example.mod \
+	pac/trend-component-16/example.mod \
+	pac/trend-component-17/example.mod \
+	pac/trend-component-18/example.mod \
+	estimation/univariate/bayesian.mod \
+	estimation/univariate/ols/ols.mod \
+	estimation/univariate/ols/ols_wc_1.mod \
+	estimation/univariate/ols/ols_wc_2.mod \
+	dynare-command-options/ramst.mod
 
 PARTICLEFILES = \
 	particle/dsge_base2.mod \
@@ -949,8 +949,8 @@ EXTRA_DIST = \
 	optimizers/optimizer_function_wrapper.m \
 	optimizers/fs2000.common.inc \
 	estimation/MH_recover/fs2000.common.inc \
-    estimation/univariate/data.csv \
-    estimation/univariate/ols/mc-ols.inc \
+	estimation/univariate/data.csv \
+	estimation/univariate/ols/mc-ols.inc \
 	prior_posterior_function/posterior_function_demo.m
 
 
