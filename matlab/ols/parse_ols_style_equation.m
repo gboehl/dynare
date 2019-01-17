@@ -153,8 +153,13 @@ end
 Y = Y - lhssub;
 
 %% Set start and end dates
-fp = max(Y.firstobservedperiod, X.firstobservedperiod);
-lp = min(Y.lastobservedperiod, X.lastobservedperiod);
+fp = Y.firstobservedperiod;
+lp = Y.lastobservedperiod;
+if ~isempty(X)
+    % X is empty when AR(1) without parameter is encountered
+    fp = max(fp, X.firstobservedperiod);
+    lp = min(lp, X.lastobservedperiod);
+end
 if ~isempty(lhssub)
     fp = max(fp, lhssub.firstobservedperiod);
     lp = min(lp, lhssub.lastobservedperiod);
@@ -182,7 +187,9 @@ if isfield(jsonmodel, 'tags') ...
 end
 
 Y = Y(fp:lp);
-X = X(fp:lp);
+if ~isempty(X)
+    X = X(fp:lp);
+end
 if ~isempty(lhssub)
     lhssub = lhssub(fp:lp);
 end

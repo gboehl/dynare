@@ -40,10 +40,13 @@ if isempty(Y) || ~iscell(Y) || isempty(X) || ~iscell(X) || length(Y) ~= length(X
 end
 
 %% Organize output
-neqs = length(X);
+neqs = length(Y);
 nobs = zeros(neqs, 1);
 for i = 1:neqs
-    assert(size(X{i}, 1) == size(Y{i}, 1), 'Y{i} and X{i} must have the same nuber of observations');
+    if ~isempty(X{i})
+        % X{i} is empty for AR(1) equations
+        assert(size(X{i}, 1) == size(Y{i}, 1), 'Y{i} and X{i} must have the same nuber of observations');
+    end
     nobs(i) = size(X{i}, 1);
 end
 nrows = sum(nobs);
@@ -51,23 +54,28 @@ Xmat = dseries([X{1}.data; zeros(nrows-nobs(1), size(X{1}, 2))], X{1}.firstdate,
 Yvec = Y{1};
 constrained = {};
 for i = 2:neqs
-    to_remove = [];
-    nr = sum(nobs(1:i-1));
-    nxcol = size(X{i}, 2);
-    Xtmp = dseries([zeros(nr, nxcol); X{i}.data; zeros(nrows-nr-nobs(i), nxcol)], X{1}.firstdate, X{i}.name);
-    for j = 1:length(X{i}.name)
-        idx = find(strcmp(Xmat.name, X{i}.name{j}));
-        if ~isempty(idx)
-            Xmat.(Xmat.name{idx}) = Xmat{idx} + Xtmp{j};
-            to_remove = [to_remove j];
-            constrained{end+1} = Xmat.name{idx}; 
+    if isempty(X{i})
+        data = [Xmat.data;zeros(size(Y{i},1), size(Xmat.data, 2))];
+        Xmat = dseries(data, X{1}.firstdate, Xmat.name);
+    else
+        to_remove = [];
+        nr = sum(nobs(1:i-1));
+        nxcol = size(X{i}, 2);
+        Xtmp = dseries([zeros(nr, nxcol); X{i}.data; zeros(nrows-nr-nobs(i), nxcol)], X{1}.firstdate, X{i}.name);
+        for j = 1:length(X{i}.name)
+            idx = find(strcmp(Xmat.name, X{i}.name{j}));
+            if ~isempty(idx)
+                Xmat.(Xmat.name{idx}) = Xmat{idx} + Xtmp{j};
+                to_remove = [to_remove j];
+                constrained{end+1} = Xmat.name{idx};
+            end
         end
-    end
-    for j = length(to_remove):-1:1
-        Xtmp = Xtmp.remove(Xtmp.name{j});
-    end
-    if ~isempty(Xtmp)
-        Xmat = [Xmat Xtmp];
+        for j = length(to_remove):-1:1
+            Xtmp = Xtmp.remove(Xtmp.name{j});
+        end
+        if ~isempty(Xtmp)
+            Xmat = [Xmat Xtmp];
+        end
     end
     Yvec = dseries([Yvec.data; Y{i}.data], Yvec.firstdate);
 end

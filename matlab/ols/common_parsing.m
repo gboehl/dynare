@@ -62,7 +62,9 @@ if overlapping_dates
     minlp = min([enddates{:}]);
     for i = 1:neqs
         Y{i} = Y{i}(maxfp:minlp);
-        X{i} = X{i}(maxfp:minlp);
+        if ~isempty(X{i})
+            X{i} = X{i}(maxfp:minlp);
+        end
         if ~isempty(lhssub{i})
             lhssub{i} = lhssub{i}(maxfp:minlp);
         end
