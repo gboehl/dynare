@@ -124,39 +124,31 @@ while ~isempty(plus_node) || ~isempty(last_node_to_parse)
             % Handle constraits
             % Look through Xtmp names for constant
             % if found, subtract from LHS
-            to_remove = [];
-            for j = 1:length(Xtmp.name)
+            for j = length(Xtmp.name):-1:1
                 if ~isnan(str2double(Xtmp.name{j}))
                     lhssub = lhssub + str2double(Xtmp.name{j}) * Xtmp{j};
-                    to_remove = [to_remove j];
+                    Xtmp = Xtmp.remove(Xtmp.name{j});
+                else
+                    % Multiply by -1 now so that it can be added together below
+                    % Otherwise, it would matter which was encountered first,
+                    % a parameter on its own or a linear constraint
+                    Xtmp.(Xtmp.name{j}) = -1 * Xtmp{j};
                 end
-                % Multiply by -1 now so that it can be added together below
-                % Otherwise, it would matter which was encountered first,
-                % a parameter on its own or a linear constraint
-                Xtmp.(Xtmp.name{j}) = -1 * Xtmp{j};
-            end
-            for j = length(to_remove):-1:1
-                Xtmp = Xtmp.remove(Xtmp.name{j});
             end
         end
     else
         parsing_error('didn''t expect to arrive here', line);
     end
-    if ~isempty(Xtmp)
-        to_remove = [];
-        for j = 1:length(Xtmp.name)
-            % Handle constraits
-            idx = find(strcmp(X.name, Xtmp.name{j}));
-            if ~isempty(idx)
-                X.(X.name{idx}) = X{idx} + Xtmp{j};
-                to_remove = [to_remove j];
-            end
-        end
-        for j = length(to_remove):-1:1
+
+    for j = length(Xtmp.name):-1:1
+        % Handle constraits
+        idx = find(strcmp(X.name, Xtmp.name{j}));
+        if ~isempty(idx)
+            X.(X.name{idx}) = X{idx} + Xtmp{j};
             Xtmp = Xtmp.remove(Xtmp.name{j});
         end
-        X = [X Xtmp];
     end
+    X = [X Xtmp];
 end
 Y = Y - lhssub;
 
