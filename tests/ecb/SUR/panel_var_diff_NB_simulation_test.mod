@@ -131,8 +131,7 @@ diff(DE_G_YER) =   de_g_yer_ecm_de_q_yed_L1 * (DE_Q_YED(-1) - DE_EHIC(-1))
                  + de_g_yer_u2_stn_L1       * diff(U2_STN(-1))
                  + res_DE_G_YER                                           ;
 [name = 'eq8']
-DE_EHIC        =   de_ehic_de_ehic_L1       * DE_EHIC(-1)
-                 + res_DE_EHIC                                            ;
+DE_EHIC        = DE_EHIC(-1) + res_DE_EHIC                                ;
 
 
 
@@ -156,7 +155,7 @@ calibrated_values = M_.params;
 verbatim;
 Sigma_e = M_.Sigma_e;
 end;
-
+assert(NSIMS > 1);
 options_.bnlms.set_dynare_seed_to_default = false;
 
 nparampool = length(M_.params);
@@ -174,31 +173,7 @@ for i=1:NSIMS
             idxs = [idxs j];
         end
     end
-    sur(simdata{idxs}, ...
-        {'u2_q_yed_ecm_u2_q_yed_L1'
-        'u2_q_yed_ecm_u2_stn_L1'
-        'u2_q_yed_u2_g_yer_L1'
-        'u2_q_yed_u2_stn_L1'
-        'u2_g_yer_ecm_u2_q_yed_L1'
-        'u2_g_yer_ecm_u2_stn_L1'
-        'u2_g_yer_u2_q_yed_L1'
-        'u2_g_yer_u2_g_yer_L1'
-        'u2_g_yer_u2_stn_L1'
-        'u2_stn_ecm_u2_q_yed_L1'
-        'u2_stn_ecm_u2_stn_L1'
-        'u2_stn_u2_q_yed_L1'
-        'u2_stn_u2_g_yer_L1'
-        'u2_estn_u2_estn_L1'
-        'u2_ehic_u2_ehic_L1'
-        'de_q_yed_ecm_de_q_yed_L1'
-        'de_q_yed_ecm_u2_stn_L1'
-        'de_q_yed_de_g_yer_L1'
-        'de_q_yed_u2_stn_L1'
-        'de_g_yer_ecm_de_q_yed_L1'
-        'de_g_yer_ecm_u2_stn_L1'
-        'de_g_yer_de_q_yed_L1'
-        'de_g_yer_de_g_yer_L1'
-        'de_g_yer_u2_stn_L1'});
+    sur(simdata{idxs});
     BETA(i, :) = M_.params';
 end
 
