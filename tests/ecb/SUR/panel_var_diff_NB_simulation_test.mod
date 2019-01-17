@@ -164,7 +164,7 @@ BETA = zeros(NSIMS, nparampool);
 for i=1:NSIMS
     firstobs = rand(3, length(M_.endo_names));
     M_.params = calibrated_values;
-    M_.Sigma_e = Sigma_e; 
+    M_.Sigma_e = Sigma_e;
     simdata = simul_backward_model(dseries(firstobs, dates('1995Q1'), M_.endo_names), 10000);
     simdata = simdata(simdata.dates(5001:6000));
     names=regexp(simdata.name, 'res\w*');
@@ -174,36 +174,60 @@ for i=1:NSIMS
             idxs = [idxs j];
         end
     end
-    sur(simdata{idxs});
+    sur(simdata{idxs}, ...
+        {'u2_q_yed_ecm_u2_q_yed_L1'
+        'u2_q_yed_ecm_u2_stn_L1'
+        'u2_q_yed_u2_g_yer_L1'
+        'u2_q_yed_u2_stn_L1'
+        'u2_g_yer_ecm_u2_q_yed_L1'
+        'u2_g_yer_ecm_u2_stn_L1'
+        'u2_g_yer_u2_q_yed_L1'
+        'u2_g_yer_u2_g_yer_L1'
+        'u2_g_yer_u2_stn_L1'
+        'u2_stn_ecm_u2_q_yed_L1'
+        'u2_stn_ecm_u2_stn_L1'
+        'u2_stn_u2_q_yed_L1'
+        'u2_stn_u2_g_yer_L1'
+        'u2_estn_u2_estn_L1'
+        'u2_ehic_u2_ehic_L1'
+        'de_q_yed_ecm_de_q_yed_L1'
+        'de_q_yed_ecm_u2_stn_L1'
+        'de_q_yed_de_g_yer_L1'
+        'de_q_yed_u2_stn_L1'
+        'de_g_yer_ecm_de_q_yed_L1'
+        'de_g_yer_ecm_u2_stn_L1'
+        'de_g_yer_de_q_yed_L1'
+        'de_g_yer_de_g_yer_L1'
+        'de_g_yer_u2_stn_L1'});
     BETA(i, :) = M_.params';
 end
 
 tmp = mean(BETA)' - calibrated_values;
-good = [-0.000851537463734
-  -0.000642098588814
-  -0.000079443724899
-  -0.000419521985776
-   0.000261352267293
-  -0.000246882667909
-  -0.000075222092522
-  -0.001730995757516
-  -0.001143211421785
-   0.000121019009672
-  -0.000575440175324
-  -0.000750521500994
-  -0.000275330543235
-  -0.000622488610298
-  -0.000634806469499
-  -0.000250251968285
-  -0.000444189625703
-  -0.000187665881528
-  -0.000442546748709
-  -0.000017025547277
-   0.000090404659306
-  -0.000235245783302
-  -0.000840347833802
-   0.000815049712458
-  -0.000656563787956];
+good = [-0.000851256219733
+  -0.000643255670073
+  -0.000078774226193
+  -0.000420026410496
+   0.000262319820667
+  -0.000245434738588
+  -0.000076193984629
+  -0.001732502219600
+  -0.001142802053612
+   0.000120684867379
+  -0.000577323101449
+  -0.000750502207473
+  -0.000277709424315
+  -0.000622119904600
+  -0.000635564841533
+  -0.000249342272071
+  -0.000443999454424
+  -0.000187590389264
+  -0.000441672489341
+  -0.000015259855753
+   0.000091236076295
+  -0.000236028177813
+  -0.000838101091676
+   0.000815800740293
+                   0];
 if sum(abs(tmp-good)) > 1e-14
     error(['sum of tmp - good was: ' num2str(sum(abs(tmp-good)))]);
 end
