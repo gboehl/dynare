@@ -54,11 +54,6 @@ neqs = length(jsonmodel);
 [Y, ~, X] = common_parsing(ds, ast, jsonmodel, true);
 clear ast jsonmodel;
 nobs = Y{1}.nobs;
-
-
-
-
-
 [Y, X, constrained] = put_in_sur_form(Y, X);
 
 if nargin == 1 && size(X, 2) ~= M_.param_nbr
