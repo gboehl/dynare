@@ -48,6 +48,7 @@ end
 
 %% Get Equation(s)
 [ast, jsonmodel] = get_ast_jsonmodel(eqtags);
+[ast, jsonmodel, ds] = handle_constant_eqs(ast, jsonmodel, ds);
 neqs = length(jsonmodel);
 
 %% Find parameters and variable names in equations and setup estimation matrices
