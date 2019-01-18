@@ -15,6 +15,7 @@ SylvParams::print(const std::string &prefix) const
 void
 SylvParams::print(std::ostream &fdesc, const std::string &prefix) const
 {
+  method.print(fdesc, prefix, "method             ");
   rcondA1.print(fdesc, prefix,  "reci. cond1 A      ");
   rcondAI.print(fdesc, prefix,  "reci. condInf A    ");
   bs_norm.print(fdesc, prefix,  "log10 diag norm    ");
@@ -45,38 +46,6 @@ SylvParams::print(std::ostream &fdesc, const std::string &prefix) const
   vec_err1.print(fdesc, prefix, "rel. vector norm1  ");
   vec_errI.print(fdesc, prefix, "rel. vector normInf");
   cpu_time.print(fdesc, prefix, "time (CPU secs)    ");
-}
-
-void
-SylvParams::copy(const SylvParams &p)
-{
-  method = p.method;
-  convergence_tol = p.convergence_tol;
-  max_num_iter = p.max_num_iter;
-  bs_norm = p.bs_norm;
-  want_check = p.want_check;
-  converged = p.converged;
-  iter_last_norm = p.iter_last_norm;
-  num_iter = p.num_iter;
-  f_err1 = p.f_err1;
-  f_errI = p.f_errI;
-  viv_err1 = p.viv_err1;
-  viv_errI = p.viv_errI;
-  ivv_err1 = p.ivv_err1;
-  ivv_errI = p.ivv_errI;
-  f_blocks = p.f_blocks;
-  f_largest = p.f_largest;
-  f_zeros = p.f_zeros;
-  f_offdiag = p.f_offdiag;
-  rcondA1 = p.rcondA1;
-  rcondAI = p.rcondAI;
-  eig_min = p.eig_min;
-  mat_err1 = p.mat_err1;
-  mat_errI = p.mat_errI;
-  mat_errF = p.mat_errF;
-  vec_err1 = p.vec_err1;
-  vec_errI = p.vec_errI;
-  cpu_time = p.cpu_time;
 }
 
 void

@@ -182,22 +182,14 @@ public:
   DoubleParamItem vec_err1; // rel. vector 1 norm of A*X-B*X*kron(C,..,C)-D
   DoubleParamItem vec_errI; // rel. vector Inf norm of A*X-B*X*kron(C,..,C)-D
   DoubleParamItem cpu_time; // time of the job in CPU seconds
-  // note: remember to change copy() if adding/removing member
 
   SylvParams(bool wc = false)
     : method(recurse), convergence_tol(1.e-30), max_num_iter(15),
       bs_norm(1.3), want_check(wc)
   {
   }
-  SylvParams(const SylvParams &p)
-  {
-    copy(p);
-  }
-  SylvParams &
-  operator=(const SylvParams &p)
-  {
-    copy(p); return *this;
-  }
+  SylvParams(const SylvParams &p) = default;
+  SylvParams &operator=(const SylvParams &p) = default;
   ~SylvParams() = default;
   void print(const std::string &prefix) const;
   void print(std::ostream &fdesc, const std::string &prefix) const;
@@ -208,5 +200,20 @@ public:
 private:
   void copy(const SylvParams &p);
 };
+
+inline std::ostream &
+operator<<(std::ostream &out, SylvParams::solve_method m)
+{
+  switch (m)
+    {
+    case SylvParams::iter:
+      out << "iterative";
+      break;
+    case SylvParams::recurse:
+      out << "recurse (a.k.a. triangular)";
+      break;
+    }
+  return out;
+}
 
 #endif /* SYLV_PARAMS_H */
