@@ -47,21 +47,19 @@ for i = 1:neqs
         % X{i} is empty for AR(1) equations
         assert(size(X{i}, 1) == size(Y{i}, 1), 'Y{i} and X{i} must have the same nuber of observations');
     end
-    nobs(i) = size(X{i}, 1);
+    nobs(i) = size(Y{i}, 1);
 end
+fd = Y{1}.firstdate;
 nrows = sum(nobs);
-Xmat = dseries([X{1}.data; zeros(nrows-nobs(1), size(X{1}, 2))], X{1}.firstdate, X{1}.name);
-Yvec = Y{1};
+Xmat = dseries();
+Yvec = dseries();
 constrained = {};
-for i = 2:neqs
-    if isempty(X{i})
-        data = [Xmat.data;zeros(size(Y{i},1), size(Xmat.data, 2))];
-        Xmat = dseries(data, X{1}.firstdate, Xmat.name);
-    else
+for i = 1:neqs
+    if ~isempty(X{i})
         to_remove = [];
         nr = sum(nobs(1:i-1));
         nxcol = size(X{i}, 2);
-        Xtmp = dseries([zeros(nr, nxcol); X{i}.data; zeros(nrows-nr-nobs(i), nxcol)], X{1}.firstdate, X{i}.name);
+        Xtmp = dseries([zeros(nr, nxcol); X{i}.data; zeros(nrows-nr-nobs(i), nxcol)], fd, X{i}.name);
         for j = 1:length(X{i}.name)
             idx = find(strcmp(Xmat.name, X{i}.name{j}));
             if ~isempty(idx)
@@ -77,6 +75,7 @@ for i = 2:neqs
             Xmat = [Xmat Xtmp];
         end
     end
-    Yvec = dseries([Yvec.data; Y{i}.data], Yvec.firstdate);
+    Yvec = dseries([Yvec.data; Y{i}.data], fd);
 end
+assert(size(Y, 1) == size(X, 1));
 end
