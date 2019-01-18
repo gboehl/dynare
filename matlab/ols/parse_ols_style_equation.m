@@ -60,14 +60,7 @@ if ~strcmp(ast.AST.arg1.node_type, 'VariableNode') ...
         && ~strcmp(ast.AST.arg1.node_type, 'UnaryOpNode')
     parsing_error('expecting Variable or UnaryOp on LHS', line);
 else
-    if strcmp(ast.AST.arg1.node_type, 'VariableNode') ...
-            && (ast.AST.arg1.lag ~= 0 ...
-            || ~any(strcmp(ds.name, ast.AST.arg1.name)))
-        parsing_error('the lhs of the equation must be an Variable or UnaryOp with lag == 0 that exists in the dataset', line);
-    end
-    if strcmp(ast.AST.arg1.node_type, 'UnaryOpNode') ...
-            && (ast.AST.arg1.arg.lag ~= 0 ...
-            || ~any(strcmp(ds.name, ast.AST.arg1.arg.name)))
+    if ~isOlsVar(ds, ast.AST.arg1) || ~isBaseVarLagEqualToZero(ast.AST.arg1)
         parsing_error('the lhs of the equation must be an Variable or UnaryOp with lag == 0 that exists in the dataset', line);
     end
 end
@@ -279,15 +272,23 @@ else
 end
 end
 
+function tf = isBaseVarLagEqualToZero(node)
+if strcmp(node.node_type, 'VariableNode')
+    tf = node.lag == 0;
+elseif strcmp(node.node_type, 'UnaryOpNode')
+    tf = isBaseVarLagEqualToZero(node.arg);
+else
+    tf = false;
+end
+end
+
 function tf = isOlsVar(ds, node)
 if strcmp(node.node_type, 'VariableNode') ...
         && (strcmp(node.type, 'endogenous') ...
         || (strcmp(node.type, 'exogenous') && any(strcmp(ds.name, node.name))))
     tf = true;
-elseif strcmp(node.node_type, 'UnaryOpNode') ...
-        && (strcmp(node.arg.type, 'endogenous') ...
-        || (strcmp(node.arg.type, 'exogenous') && any(strcmp(ds.name, node.arg.name))))
-    tf = true;
+elseif strcmp(node.node_type, 'UnaryOpNode')
+    tf = isOlsVar(ds, node.arg);
 else
     tf = false;
 end
