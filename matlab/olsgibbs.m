@@ -124,7 +124,7 @@ end
 
 %% Parse equation
 [ast, jsonmodel] = get_ast_jsonmodel({eqtag});
-[Y, ~, X, fp, lp ] = common_parsing(ds, ast, jsonmodel, true);
+[Y, ~, X, fp, lp] = common_parsing(ds, ast, jsonmodel, true);
 clear ast jsonmodel
 lhsname = Y{1}.name;
 Y = Y{1}.data;
