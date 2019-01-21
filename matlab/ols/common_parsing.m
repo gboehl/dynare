@@ -1,12 +1,11 @@
-function [Y, lhssub, X, startdates, enddates, residnames] = common_parsing(ds, ast, jsonmodel, overlapping_dates)
-%function [Y, lhssub, X, startdates, enddates, residnames] = common_parsing(ds, ast, jsonmodel, overlapping_dates)
+function [Y, lhssub, X, startdates, enddates, residnames] = common_parsing(ds, ast, overlapping_dates)
+%function [Y, lhssub, X, startdates, enddates, residnames] = common_parsing(ds, ast, overlapping_dates)
 %
 % Code common to sur.m and pooled_ols.m
 %
 % INPUTS
 %   ds                   [dseries]     dataset
 %   ast                  [cell array]  JSON representation of abstract syntax tree
-%   jsonmodel            [cell array]  JSON representation of model block
 %   overlapping_dates    [boolean]     if true, dates are same across equations
 %
 % OUTPUTS
@@ -54,7 +53,7 @@ residnames = cell(neqs, 1);
 %% Loop over equations
 for i = 1:neqs
     [Y{i}, lhssub{i}, X{i}, residnames{i}, startdates{i}, enddates{i}] = ...
-        parse_ols_style_equation(ds, ast{i}, jsonmodel{i});
+        parse_ols_style_equation(ds, ast{i});
 end
 
 if overlapping_dates

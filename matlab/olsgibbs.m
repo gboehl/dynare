@@ -123,9 +123,7 @@ else
 end
 
 %% Parse equation
-[ast, jsonmodel] = get_ast_jsonmodel({eqtag});
-[Y, ~, X, fp, lp] = common_parsing(ds, ast, jsonmodel, true);
-clear ast jsonmodel
+[Y, ~, X, fp, lp] = common_parsing(ds, get_ast({eqtag}), true);
 lhsname = Y{1}.name;
 Y = Y{1}.data;
 X = X{1};

@@ -1,15 +1,14 @@
-function [ast, jsonmodel] = get_ast_jsonmodel(eqtags)
-% function [ast, jsonmodel] = get_ast_jsonmodel(eqtags)
-% return AST and jsonmodel from json output of preprocessor for the given
-% equation tags.
+function ast = get_ast(eqtags)
+%function ast = get_ast(eqtags)
+% return the Abstract Syntax Tree the JSON output of preprocessor for the
+% given equation tags. Equations are ordered in eqtag order
 %
 % INPUTS
 %   eqtags     [cellstr]    names of equation tags for which to get info.
-%                           If empty, get all
+%                           If empty, get all equations
 %
 % OUTPUTS
 %   ast        [cell array] JSON representation of the abstract syntax tree
-%   jsonmodel  [cell array] JSON representation of the model block
 %
 % SPECIAL REQUIREMENTS
 %   none
@@ -39,14 +38,14 @@ end
 
 jsonfile = [M_.fname filesep() 'model' filesep() 'json' filesep() 'modfile-original.json'];
 if exist(jsonfile, 'file') ~= 2
-    error('Could not find %s! Please use the json=compute option (See the Dynare invocation section in the reference manual).', jsonfile);
+    error(['Could not find ' jsonfile '! ' ...
+        'Please use the json=compute option ' ...
+        '(See the Dynare invocation section in the reference manual).']);
 end
 
-jsonmodel = loadjson(jsonfile);
-ast       = jsonmodel.abstract_syntax_tree;
-jsonmodel = jsonmodel.model;
+ast = loadjson(jsonfile);
+ast = ast.abstract_syntax_tree;
 if ~isempty(eqtags)
     ast = getEquationsByTags(ast, 'name', eqtags);
-    jsonmodel = getEquationsByTags(jsonmodel, 'name', eqtags);
 end
 end

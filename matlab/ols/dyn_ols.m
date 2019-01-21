@@ -64,21 +64,21 @@ if nargin < 3
 end
 
 %% Get Equation(s)
-[ast, jsonmodel] = get_ast_jsonmodel(eqtags);
+ast = get_ast(eqtags);
 
 %% Parse equations
-[Y, lhssub, X, fp, lp] = common_parsing(ds, ast, jsonmodel, true);
+[Y, lhssub, X, fp, lp] = common_parsing(ds, ast, true);
 
 %% Loop over equations
 for i = 1:length(Y)
     pnames = X{i}.name;
     [nobs, nvars] = size(X{i}.data);
 
-    if isfield(jsonmodel{i}, 'tags') && ...
-            isfield(jsonmodel{i}.tags, 'name')
-        tag = jsonmodel{i}.tags.('name');
+    if isfield(ast{i}, 'tags') && ...
+            isfield(ast{i}.tags, 'name')
+        tag = ast{i}.tags.('name');
     else
-        tag = ['eq_line_no_' num2str(jsonmodel{i}.line)];
+        tag = ['eq_line_no_' num2str(ast{i}.line)];
     end
 
     %% Estimation
@@ -155,7 +155,7 @@ for i = 1:length(Y)
             title = ['OLS Estimation of equation ''' tag ''''];
         end
 
-        preamble = {sprintf('Dependent Variable: %s', jsonmodel{i}.lhs), ...
+        preamble = {['Dependent Variable: ' Y{i}.name{:}], ...
             sprintf('No. Independent Variables: %d', nvars), ...
             sprintf('Observations: %d from %s to %s\n', nobs, fp{i}.char, lp{i}.char)};
 

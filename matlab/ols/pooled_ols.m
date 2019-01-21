@@ -67,8 +67,8 @@ else
 end
 
 %% Get Equation(s)
-[ast, jsonmodel] = get_ast_jsonmodel(eqtags);
-neqs = length(jsonmodel);
+ast = get_ast(eqtags);
+neqs = length(ast);
 
 %% Replace parameter names in equations
 country_name = param_common{1};
@@ -76,8 +76,8 @@ regexcountries = ['(' strjoin(param_common(2:end),'|') ')'];
 ast = replace_parameters(ast, country_name, regexcountries, param_regex);
 
 %% Find parameters and variable names in every equation & Setup estimation matrices
-[Y, ~, X, ~, ~, residnames] = common_parsing(ds, ast, jsonmodel, overlapping_dates);
-clear ast jsonmodel;
+[Y, ~, X, ~, ~, residnames] = common_parsing(ds, ast, overlapping_dates);
+clear ast
 nobs = zeros(length(Y), 1);
 nobs(1) = Y{1}.nobs;
 fp = Y{1}.firstobservedperiod;

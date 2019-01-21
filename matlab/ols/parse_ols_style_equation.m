@@ -1,12 +1,11 @@
-function [Y, lhssub, X, residual, fp, lp] = parse_ols_style_equation(ds, ast, jsonmodel)
-%function X = parse_ols_style_equation()
+function [Y, lhssub, X, residual, fp, lp] = parse_ols_style_equation(ds, ast)
+%function [Y, lhssub, X, residual, fp, lp] = parse_ols_style_equation(ds, ast)
 % Run OLS on chosen model equations; unlike olseqs, allow for time t
 % endogenous variables on LHS
 %
 % INPUTS
 %   ds          [dseries]     data
 %   ast         [struct]      AST representing the equation to be parsed
-%   jsonmodel   [cell array]  JSON representation of model block
 %
 % OUTPUTS
 %   Y           [dseries]     LHS of the equation (with lhssub subtracted)
@@ -37,8 +36,8 @@ function [Y, lhssub, X, residual, fp, lp] = parse_ols_style_equation(ds, ast, js
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 %% Check inputs
-if nargin ~= 3
-    error('parse_ols_style_equation takes 3 arguments')
+if nargin ~= 2
+    error('parse_ols_style_equation takes 2 arguments')
 end
 
 if isempty(ds) || ~isdseries(ds)
@@ -46,7 +45,7 @@ if isempty(ds) || ~isdseries(ds)
 end
 
 if isempty(ast) || ~isstruct(ast)
-    error('ast must be a struct');
+    error('parse_ols_style_equation: arg 2 must be a struct');
 end
 
 line = ast.line;
@@ -63,10 +62,6 @@ else
     if ~isOlsVar(ds, ast.AST.arg1) || ~isBaseVarLagEqualToZero(ast.AST.arg1)
         parsing_error('the lhs of the equation must be an Variable or UnaryOp with lag == 0 that exists in the dataset', line);
     end
-end
-
-if isempty(jsonmodel) || ~isstruct(jsonmodel)
-    error('jsonmodel must be a struct');
 end
 
 %% Set LHS (Y)
@@ -161,12 +156,12 @@ if ~isempty(lhssub)
 end
 
 % If it exists, account for tag set in mod file
-if isfield(jsonmodel, 'tags') ...
-        && isfield(jsonmodel.tags, 'sample') ...
-        && ~isempty(jsonmodel.tags.sample)
-    colon_idx = strfind(jsonmodel.tags.sample, ':');
-    fsd = dates(jsonmodel.tags.sample(1:colon_idx-1));
-    lsd = dates(jsonmodel.tags.sample(colon_idx+1:end));
+if isfield(ast, 'tags') ...
+        && isfield(ast.tags, 'sample') ...
+        && ~isempty(ast.tags.sample)
+    colon_idx = strfind(ast.tags.sample, ':');
+    fsd = dates(ast.tags.sample(1:colon_idx-1));
+    lsd = dates(ast.tags.sample(colon_idx+1:end));
     if fp > fsd
         warning(['The sample over which you want to estimate contains NaNs. '...
             'Adjusting estimation range to begin on: ' fp.char])

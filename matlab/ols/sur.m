@@ -47,13 +47,13 @@ else
 end
 
 %% Get Equation(s)
-[ast, jsonmodel] = get_ast_jsonmodel(eqtags);
-[ast, jsonmodel, ds] = handle_constant_eqs(ast, jsonmodel, ds);
-neqs = length(jsonmodel);
+ast = get_ast(eqtags);
+[ast, ds] = handle_constant_eqs(ast, ds);
+neqs = length(ast);
 
 %% Find parameters and variable names in equations and setup estimation matrices
-[Y, ~, X] = common_parsing(ds, ast, jsonmodel, true);
-clear ast jsonmodel;
+[Y, ~, X] = common_parsing(ds, ast, true);
+clear ast
 nobs = Y{1}.nobs;
 [Y, X, constrained] = put_in_sur_form(Y, X);
 

@@ -1,23 +1,23 @@
-function [jsonmodel] = getEquationsByTags(jsonmodel, tagname, tagvalue)
-%function [jsonmodel] = getEquationsByTags(jsonmodel, tagname, tagvalue)
-% Return the jsonmodel structure with the matching tags
+function [ast] = getEquationsByTags(ast, tagname, tagvalue)
+%function [ast] = getEquationsByTags(ast, tagname, tagvalue)
+% Return the ast structure with the matching tags
 %
 % INPUTS
-%   jsonmodel       [cell array]    JSON representation of model block
-%   tagname         [string]        The name of the tag whos values are to
-%                                   be selected
-%   tagvalue        [string]        The values to be selected for the
-%                                   provided tagname
+%   ast       [cell array]    JSON representation of model block
+%   tagname   [string]        The name of the tag whos values are to
+%                             be selected
+%   tagvalue  [string]        The values to be selected for the
+%                             provided tagname
 %
 % OUTPUTS
-%   jsonmodel       [cell array]    JSON representation of model block,
-%                                   with equations removed that don't match
-%                                   eqtags
+%   ast       [cell array]    JSON representation of model block,
+%                             with equations removed that don't match
+%                             eqtags
 %
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2017-2018 Dynare Team
+% Copyright (C) 2017-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -34,24 +34,34 @@ function [jsonmodel] = getEquationsByTags(jsonmodel, tagname, tagvalue)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-assert(nargin == 3, 'Incorrect number of arguments passed to getEquationsByTags');
-assert(iscell(jsonmodel) && ~isempty(jsonmodel), ...
-    'the first argument must be a cell array of structs');
-assert(ischar(tagname), 'Tag name must be a string');
-assert(ischar(tagvalue) || iscell(tagvalue), 'Tag value must be a string or a cell string array');
+if nargin ~= 3
+    error('Incorrect number of arguments passed to function')
+end
+
+if isempty(ast) || ~iscell(ast)
+    error('the first argument must be a cell array of structs');
+end
+
+if ~ischar(tagname)
+    error('Tag name must be a string');
+end
+
+if ~ischar(tagvalue) && ~iscell(tagvalue)
+    error('Tag value must be a string or a cell string array');
+end
 
 if ischar(tagvalue)
     tagvalue = {tagvalue};
 end
 
 idx2keep = [];
-for i=1:length(tagvalue)
+for i = 1:length(tagvalue)
     found = false;
-    for j=1:length(jsonmodel)
-        assert(isstruct(jsonmodel{j}), 'Every entry in jsonmodel must be a struct');
-        if isfield(jsonmodel{j}, 'tags') && ...
-                isfield(jsonmodel{j}.tags, tagname) && ...
-                strcmp(jsonmodel{j}.tags.(tagname), tagvalue{i})
+    for j=1:length(ast)
+        assert(isstruct(ast{j}), 'Every entry in the ast must be a struct');
+        if isfield(ast{j}, 'tags') && ...
+                isfield(ast{j}.tags, tagname) && ...
+                strcmp(ast{j}.tags.(tagname), tagvalue{i})
             idx2keep = [idx2keep; j];
             found = true;
             break
@@ -62,5 +72,5 @@ for i=1:length(tagvalue)
     end
 end
 assert(~isempty(idx2keep), 'getEquationsByTags: no equations selected');
-jsonmodel = jsonmodel(unique(idx2keep, 'stable'));
+ast = ast(unique(idx2keep, 'stable'));
 end

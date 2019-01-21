@@ -1,18 +1,16 @@
-function [ast, jsonmodel, ds] = handle_constant_eqs(ast, jsonmodel, ds)
-%function [ast, jsonmodel, ds] = handle_constant_eqs(ast, jsonmodel, ds)
+function [ast, ds] = handle_constant_eqs(ast, ds)
+%function [ast, ds] = handle_constant_eqs(ast, ds)
 %
 % Code to handle equations of type `X = 0;` in AST. Returns equation(s)
 % removed from AST and ds.X == 0.
 %
 % INPUTS
-%   ast                  [cell array]  JSON representation of abstract syntax tree
-%   jsonmodel            [cell array]  JSON representation of model block
-%   ds                   [dseries]     data to be updated
+%   ast       [cell array]  JSON representation of abstract syntax tree
+%   ds        [dseries]     data to be updated
 %
 % OUTPUTS
-%   ast                  [cell array]  updated JSON representation of abstract syntax tree
-%   jsonmodel            [cell array]  JSON representation of model block
-%   ds                   [dseries]     data to be updated
+%   ast       [cell array]  updated JSON representation of abstract syntax tree
+%   ds        [dseries]     data to be updated
 %
 % SPECIAL REQUIREMENTS
 %   none
@@ -34,6 +32,18 @@ function [ast, jsonmodel, ds] = handle_constant_eqs(ast, jsonmodel, ds)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
+if nargin ~= 2
+    error('Incorrect number of arguments to function')
+end
+
+if isempty(ast) || ~iscell(ast)
+    error('ast must be a cell')
+end
+
+if isempty(ds) || ~isdseries(ds)
+    error('ds must be a nonempty dseries')
+end
+
 for i = length(ast):-1:1
     assert(strcmp(ast{i}.AST.node_type, 'BinaryOpNode') && strcmp(ast{i}.AST.op, '='), 'Expecting equation');
     if strcmp(ast{i}.AST.arg2.node_type, 'NumConstNode')
@@ -43,61 +53,6 @@ for i = length(ast):-1:1
         ds.(ast{i}.AST.arg1.name) = ...
             dseries(ast{i}.AST.arg2.value*ones(ds.nobs, 1), ds.firstdate, ast{i}.AST.arg1.name);
         ast = ast([1:i-1, i+1:end]);
-        jsonmodel = jsonmodel([1:i-1, i+1:end]);
     end
 end
-% for i = 1:length(ast)
-%     ast{i}.AST.arg2 = replace_in_equtaion_recursive(ast{i}.AST.arg2, vars_and_vals);
-% end
 end
-
-% function node = replace_in_equtaion_recursive(node, vars_and_vals)
-% if strcmp(node.node_type, 'NumConstNode')
-% elseif strcmp(node.node_type, 'VariableNode')
-%     if strcmp(node.type, 'endogenous')
-%         if any(strcmp(vars_and_vals(:,1), node.name))
-%             node = struct('node_type', 'NumConstNode', ...
-%                 'value', vars_and_vals{strcmp(vars_and_vals(:,1), node.name), 2});
-%         end
-%     end
-% elseif strcmp(node.node_type, 'UnaryOpNode')
-%     node.arg = replace_in_equtaion_recursive(node.arg, vars_and_vals);
-%     if strcmp(node.arg.node_type, 'NumConstNode')
-%         switch node.op
-%             case 'log'
-%                 node = struct('node_type', 'NumConstNode', ...
-%                     'value', log(node.arg.value));
-%             case 'exp'
-%                 node = struct('node_type', 'NumConstNode', ...
-%                     'value', exp(node.arg.value));
-%             case 'uminus'
-%                 node = struct('node_type', 'NumConstNode', ...
-%                     'value', -node.arg.value);
-%         end
-%     end
-% elseif strcmp(node.node_type, 'BinaryOpNode')
-%     node.arg1 = replace_in_equtaion_recursive(node.arg1, vars_and_vals);
-%     node.arg2 = replace_in_equtaion_recursive(node.arg2, vars_and_vals);
-%     if strcmp(node.arg1.node_type, 'NumConstNode')
-%         if strcmp(node.arg2.node_type, 'NumConstNode')
-%             node = struct('node_type', 'NumConstNode', ...
-%                 'value', eval(['node.arg1.value' node.op 'node.arg1.value']));
-%         elseif node.arg1.value == 0
-%             if strcmp(node.op, 'minus')
-%                 node = struct('node_type', 'UnaryOpNode', ...
-%                     'op', 'uminus', ...
-%                     'arg', node.arg2);
-%             elseif strcmp(node.op, 'plus')
-%                 node = node.arg2;
-%             else
-%                 error(['Node type not supported ' node.op]);
-%             end
-%         end
-%     end
-%     if strcmp(node.arg2.node_type, 'NumConstNode') && node.arg2.value == 0
-%         node = node.arg1;
-%     end
-% else
-%     error(['Node type not supported: ' node.node_type])
-% end
-% end
