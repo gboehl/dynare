@@ -69,8 +69,6 @@ if ~isvector(BetaPriorExpectation)
 else
     if ~isempty(BetaPriorExpectation)
         BetaPriorExpectation = transpose(BetaPriorExpectation(:));
-    else
-
     end
 end
 
@@ -94,19 +92,19 @@ if ~isint(ndraws)
     error('The 7th argument (ndraws) must be an integer')
 end
 
-if nargin == 7
+if nargin <= 7
     discarddraws = 0;
 else
     if ~isint(discarddraws)
         error('The 8th argument (discardeddraws), if provided, must be an integer')
     else
-        if ~(discarddraws<ndraws)
+        if discarddraws >= ndraws
             error('The 8th argument (discardeddraws) must be smaller than the 7th argument (ndraws)')
         end
     end
 end
 
-if nargin == 8
+if nargin <= 8
     thin = 1;
 else
     if ~isint(thin)
@@ -114,12 +112,12 @@ else
     end
 end
 
-if nargin == 9
+if nargin <= 9
     fitted_names_dict = {};
 else
-    if (~isempty(fitted_names_dict) && ...
+    if ~isempty(fitted_names_dict) && ...
             (~iscell(fitted_names_dict) || ...
-            (size(fitted_names_dict, 2) < 2 || size(fitted_names_dict, 2) > 3)))
+            (size(fitted_names_dict, 2) < 2 || size(fitted_names_dict, 2) > 3))
         error('The 10th argument must be an Nx2 or Nx3 cell array');
     end
 end
