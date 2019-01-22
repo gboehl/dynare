@@ -54,6 +54,13 @@ ConstTwoDMatrix::writeMat(mat_t *fd, const char *vname) const
   delete[] data;
 }
 
+TwoDMatrix &
+TwoDMatrix::operator=(const ConstTwoDMatrix &m)
+{
+  GeneralMatrix::operator=(m);
+  return *this;
+}
+
 void
 TwoDMatrix::copyRow(int from, int to)
 {
