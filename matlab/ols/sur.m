@@ -12,7 +12,7 @@ function varargout = sur(ds, param_names, eqtags)
 %   none
 %
 % SPECIAL REQUIREMENTS
-%   dynare must be run with the option: json=compute
+%   dynare must have been run with the option: json=parse
 
 % Copyright (C) 2017-2019 Dynare Team
 %
@@ -34,7 +34,9 @@ function varargout = sur(ds, param_names, eqtags)
 global M_ oo_ options_
 
 %% Check input argument
-assert(nargin >= 1 && nargin <= 3, 'sur() takes between 1 and 3 arguments');
+if nargin < 1 || nargin > 3
+    error('function takes between 1 and 3 arguments');
+end
 
 if nargin < 3
     eqtags = {};
@@ -43,7 +45,7 @@ end
 if nargin < 2
     param_names = {};
 else
-    assert(iscellstr(param_names), 'sur: the 2nd argument must be a cellstr');
+    assert(iscellstr(param_names), 'the 2nd argument must be a cellstr');
 end
 
 %% Get Equation(s)

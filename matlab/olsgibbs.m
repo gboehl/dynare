@@ -24,7 +24,7 @@ function ds = olsgibbs(ds, eqtag, BetaPriorExpectation, BetaPriorVariance, s2, n
 % - ds                          [dseries]    dataset updated with fitted value
 %
 % SPECIAL REQUIREMENTS
-%   none
+%   dynare must have been run with the option: json=parse
 
 % Copyright (C) 2018-2019 Dynare Team
 %
@@ -42,12 +42,6 @@ function ds = olsgibbs(ds, eqtag, BetaPriorExpectation, BetaPriorVariance, s2, n
 %
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
-
-%% The notation that follows comes from Section 2.2 of
-% Ando, Tomohiro and Zellner, Arnold. 2010. Hierarchical Bayesian Analysis of the
-% Seemingly Unrelated Regression and Simultaneous Equations Models Using a
-% Combination of Direct Monte Carlo and Importance Sampling Techniques.
-% Bayesian Analysis Volume 5, Number 1, pp. 65-96.
 
 global M_ oo_ options_
 

@@ -19,7 +19,7 @@ function pooled_ols(ds, param_common, param_regex, overlapping_dates, eqtags)
 %   none
 %
 % SPECIAL REQUIREMENTS
-%   dynare must be run with the option: json=compute
+%   dynare must have been run with the option: json=parse
 
 % Copyright (C) 2017-2019 Dynare Team
 %
@@ -41,7 +41,9 @@ function pooled_ols(ds, param_common, param_regex, overlapping_dates, eqtags)
 global M_ oo_
 
 %% Check input arguments
-assert(~isempty(ds) && isdseries(ds), 'The first argument must be a dseries');
+if isempty(ds) || ~isdseries(ds)
+    error('The first argument must be a dseries');
+end
 
 if isempty(param_common) && isempty(param_regex)
     disp('Performing OLS instead of Pooled OLS...')

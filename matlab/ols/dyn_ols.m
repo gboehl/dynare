@@ -19,7 +19,7 @@ function ds = dyn_ols(ds, fitted_names_dict, eqtags)
 %   ds                [dseries]    data updated with fitted values
 %
 % SPECIAL REQUIREMENTS
-%   none
+%   dynare must have been run with the option: json=parse
 
 % Copyright (C) 2017-2019 Dynare Team
 %
@@ -42,11 +42,6 @@ global M_ oo_ options_
 
 assert(nargin >= 1 && nargin <= 3, 'dyn_ols() takes between 1 and 3 arguments');
 assert(~isempty(ds) && isdseries(ds), 'dyn_ols: the first argument must be a dseries');
-
-jsonfile = [M_.fname filesep() 'model' filesep() 'json' filesep() 'modfile-original.json'];
-if exist(jsonfile, 'file') ~= 2
-    error('Could not find %s! Please use the json=compute option (See the Dynare invocation section in the reference manual).', jsonfile);
-end
 
 if nargin < 3
     eqtags = {};
