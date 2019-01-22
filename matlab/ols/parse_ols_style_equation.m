@@ -112,8 +112,8 @@ while ~isempty(plus_node) || ~isempty(last_node_to_parse)
     elseif strcmp(node_to_parse.node_type, 'BinaryOpNode') && strcmp(node_to_parse.op, '*')
         % Parse param_expr * endog_expr
         Xtmp = parseTimesNode(ds, node_to_parse, line);
-        if length(Xtmp.name) > 1 || ...
-                (length(Xtmp.name) == 1 && ~isnan(str2double(Xtmp.name)))
+        if Xtmp.vobs > 1 || ...
+                (Xtmp.vobs == 1 && ~isnan(str2double(Xtmp.name)))
             % Handle constraits
             % Look through Xtmp names for constant
             % if found, subtract from LHS
