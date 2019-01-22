@@ -415,15 +415,19 @@ MODFILES = \
 	pac/trend-component-16/example.mod \
 	pac/trend-component-17/example.mod \
 	pac/trend-component-18/example.mod \
+	dynare-command-options/ramst.mod
+
+OLS_MODFILES = \
 	estimation/univariate/bayesian.mod \
 	estimation/univariate/ols/ols.mod \
 	estimation/univariate/ols/ols_wc_1.mod \
 	estimation/univariate/ols/ols_wc_2.mod \
-	dynare-command-options/ramst.mod \
 	ecb/SURGibbs/fulton_fish.mod \
 	ecb/SUR/panel_var_diff_NB_simulation_test.mod \
 	ecb/pooled_ols/panel_var_diff_NB_simulation_test.mod \
 	ecb/pooled_fgls/panel_var_diff_NB_simulation_test.mod
+
+MODFILES += $(OLS_MODFILES)
 
 PARTICLEFILES = \
 	particle/dsge_base2.mod \
@@ -843,6 +847,9 @@ m/estimation/univariate: $(patsubst %.mod, %.m.trs, $(filter estimation/univaria
 o/estimation/univariate: $(patsubst %.mod, %.o.trs, $(filter estimation/univariate/%.mod, $(MODFILES)))
 
 
+# Just OLS files
+M_OLS_TRS_FILES = $(patsubst %.mod, %.m.trs, $(OLS_MODFILES))
+
 # Matlab TRS Files
 M_TRS_FILES = $(patsubst %.mod, %.m.trs, $(MODFILES))
 M_TRS_FILES += run_block_byte_tests_matlab.m.trs run_reporting_test_matlab.m.trs run_all_unitary_tests.m.trs
@@ -982,6 +989,9 @@ check-matlab: $(M_XFAIL_TRS_FILES) $(M_TRS_FILES)
 check-octave: $(O_XFAIL_TRS_FILES) $(O_TRS_FILES)
 	@./read_trs_files.sh "$(O_TRS_FILES)" "$(O_XFAIL_TRS_FILES)"
 
+check-matlab-ols: $(M_OLS_TRS_FILES)
+	@./read_trs_files.sh "$(M_OLS_TRS_FILES)"
+
 %.m.trs %.m.log: %.mod
 	@echo "`tput bold``tput setaf 8`MATLAB: $(CURDIR)/$*... `tput sgr0`"
 	@DYNARE_VERSION="$(PACKAGE_VERSION)" TOP_TEST_DIR="$(CURDIR)" FILESTEM="$*" \
@@ -1039,16 +1049,19 @@ check-octave: $(O_XFAIL_TRS_FILES) $(O_TRS_FILES)
 
 clean-local:
 	rm -f $(M_TRS_FILES)
+	rm -f $(M_OLS_TRS_FILES)
 	rm -f $(M_TLS_FILES)
 	rm -f $(M_XFAIL_TRS_FILES)
 	rm -f $(O_TRS_FILES)
 	rm -f $(O_TLS_FILES)
 	rm -f $(O_XFAIL_TRS_FILES)
 	rm -f $(patsubst %.trs, %.log, $(M_TRS_FILES))
+	rm -f $(patsubst %.trs, %.log, $(M_OLS_TRS_FILES))
 	rm -f $(patsubst %.trs, %.log, $(M_XFAIL_TRS_FILES))
 	rm -f $(patsubst %.trs, %.log, $(O_TRS_FILES))
 	rm -f $(patsubst %.trs, %.log, $(O_XFAIL_TRS_FILES))
 	rm -f $(patsubst %.trs, %.json, $(M_TRS_FILES))
+	rm -f $(patsubst %.trs, %.json, $(M_OLS_TRS_FILES))
 	rm -f $(patsubst %.trs, %.json, $(M_XFAIL_TRS_FILES))
 	rm -f $(patsubst %.trs, %.json, $(O_TRS_FILES))
 	rm -f $(patsubst %.trs, %.json, $(O_XFAIL_TRS_FILES))
