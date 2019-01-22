@@ -560,7 +560,7 @@ RTSimulationWorker::operator()()
    not work for semidefinite matrices. */
 
 void
-RandomShockRealization::choleskyFactor(const ConstTwoDMatrix &v)
+RandomShockRealization::choleskyFactor(const TwoDMatrix &v)
 {
   factor = v;
   lapack_int rows = factor.nrows();
@@ -578,7 +578,7 @@ RandomShockRealization::choleskyFactor(const ConstTwoDMatrix &v)
    decomposition. It works for semidifinite matrices. */
 
 void
-RandomShockRealization::schurFactor(const ConstTwoDMatrix &v)
+RandomShockRealization::schurFactor(const TwoDMatrix &v)
 {
   SymSchurDecomp ssd(v);
   ssd.getFactor(factor);

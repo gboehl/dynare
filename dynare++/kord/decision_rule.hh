@@ -990,7 +990,7 @@ protected:
   MersenneTwister mtwister;
   TwoDMatrix factor;
 public:
-  RandomShockRealization(const ConstTwoDMatrix &v, unsigned int iseed)
+  RandomShockRealization(const TwoDMatrix &v, unsigned int iseed)
     : mtwister(iseed), factor(v.nrows(), v.nrows())
   {
     schurFactor(v);
@@ -1008,8 +1008,8 @@ public:
     return factor.nrows();
   }
 protected:
-  void choleskyFactor(const ConstTwoDMatrix &v);
-  void schurFactor(const ConstTwoDMatrix &v);
+  void choleskyFactor(const TwoDMatrix &v);
+  void schurFactor(const TwoDMatrix &v);
 };
 
 /* This is just a matrix of finite numbers. It can be constructed from
@@ -1019,6 +1019,10 @@ class ExplicitShockRealization : virtual public ShockRealization
 {
   TwoDMatrix shocks;
 public:
+  ExplicitShockRealization(const TwoDMatrix &sh)
+    : shocks(sh)
+  {
+  }
   ExplicitShockRealization(const ConstTwoDMatrix &sh)
     : shocks(sh)
   {
@@ -1059,7 +1063,7 @@ public:
 class GenShockRealization : public RandomShockRealization, public ExplicitShockRealization
 {
 public:
-  GenShockRealization(const ConstTwoDMatrix &v, const ConstTwoDMatrix &sh, int seed)
+  GenShockRealization(const TwoDMatrix &v, const TwoDMatrix &sh, int seed)
     : RandomShockRealization(v, seed), ExplicitShockRealization(sh)
   {
     KORD_RAISE_IF(sh.nrows() != v.nrows() || v.nrows() != v.ncols(),

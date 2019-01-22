@@ -110,8 +110,8 @@ extern "C" {
           dr(pol, PartitionY(nstat, npred, nboth, nforw),
              nexog, ConstVector{ysteady});
         // form the shock realization
-        ConstTwoDMatrix shocks_mat(nexog, nper, ConstVector{shocks});
-        ConstTwoDMatrix vcov_mat(nexog, nexog, ConstVector{vcov});
+        TwoDMatrix shocks_mat(nexog, nper, ConstVector{shocks});
+        TwoDMatrix vcov_mat(nexog, nexog, ConstVector{vcov});
         GenShockRealization sr(vcov_mat, shocks_mat, seed);
         // simulate and copy the results
         TwoDMatrix *res_mat
