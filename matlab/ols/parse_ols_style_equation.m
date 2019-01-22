@@ -117,15 +117,16 @@ while ~isempty(plus_node) || ~isempty(last_node_to_parse)
             % Handle constraits
             % Look through Xtmp names for constant
             % if found, subtract from LHS
-            for j = length(Xtmp.name):-1:1
-                if ~isnan(str2double(Xtmp.name{j}))
-                    lhssub = lhssub + str2double(Xtmp.name{j}) * Xtmp{j};
-                    Xtmp = Xtmp.remove(Xtmp.name{j});
+            names = Xtmp.name;
+            for j = length(names):-1:1
+                if ~isnan(str2double(names{j}))
+                    lhssub = lhssub + str2double(names{j}) * Xtmp.(names{j});
+                    Xtmp = Xtmp.remove(names{j});
                 else
                     % Multiply by -1 now so that it can be added together below
                     % Otherwise, it would matter which was encountered first,
                     % a parameter on its own or a linear constraint
-                    Xtmp.(Xtmp.name{j}) = -1 * Xtmp{j};
+                    Xtmp.(names{j}) = -1 * Xtmp.(names{j});
                 end
             end
         end
@@ -133,12 +134,13 @@ while ~isempty(plus_node) || ~isempty(last_node_to_parse)
         parsing_error('didn''t expect to arrive here', line);
     end
 
-    for j = length(Xtmp.name):-1:1
+    names = Xtmp.name;
+    for j = length(names):-1:1
         % Handle constraits
-        idx = find(strcmp(X.name, Xtmp.name{j}));
+        idx = find(strcmp(X.name, names{j}));
         if ~isempty(idx)
             X.(X.name{idx}) = X{idx} + Xtmp{j};
-            Xtmp = Xtmp.remove(Xtmp.name{j});
+            Xtmp = Xtmp.remove(names{j});
         end
     end
     X = [X Xtmp];
