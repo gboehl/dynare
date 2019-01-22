@@ -84,7 +84,7 @@ public:
     return std::make_unique<ResidFunction>(*this);
   }
   void eval(const Vector &point, const ParameterSignal &sig, Vector &out) override;
-  void setYU(const Vector &ys, const Vector &xx);
+  void setYU(const ConstVector &ys, const ConstVector &xx);
 };
 
 /* This is a |ResidFunction| wrapped with |GaussConverterFunction|. */
@@ -104,7 +104,7 @@ public:
     return std::make_unique<GResidFunction>(*this);
   }
   void
-  setYU(const Vector &ys, const Vector &xx)
+  setYU(const ConstVector &ys, const ConstVector &xx)
   {
     ((ResidFunction *) func)->setYU(ys, xx);
   }

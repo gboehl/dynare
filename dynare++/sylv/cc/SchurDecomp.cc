@@ -21,7 +21,7 @@ SchurDecomp::SchurDecomp(const SqSylvMatrix &m)
   dgees("V", "N", nullptr, &rows, auxt.base(), &rows, &sdim,
         wr.data(), wi.data(), q.base(), &rows,
         work.data(), &lwork, nullptr, &info);
-  t_storage = std::make_unique<QuasiTriangular>(auxt.base(), rows);
+  t_storage = std::make_unique<QuasiTriangular>(auxt.getData(), rows);
   t = t_storage.get();
 }
 

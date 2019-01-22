@@ -28,21 +28,21 @@ class GeneralSylvester
 public:
   /* construct with my copy of d*/
   GeneralSylvester(int ord, int n, int m, int zero_cols,
-                   const double *da, const double *db,
-                   const double *dc, const double *dd,
+                   const ConstVector &da, const ConstVector &db,
+                   const ConstVector &dc, const ConstVector &dd,
                    const SylvParams &ps);
   GeneralSylvester(int ord, int n, int m, int zero_cols,
-                   const double *da, const double *db,
-                   const double *dc, const double *dd,
+                   const ConstVector &da, const ConstVector &db,
+                   const ConstVector &dc, const ConstVector &dd,
                    bool alloc_for_check = false);
   /* construct with provided storage for d */
   GeneralSylvester(int ord, int n, int m, int zero_cols,
-                   const double *da, const double *db,
-                   const double *dc, double *dd,
+                   const ConstVector &da, const ConstVector &db,
+                   const ConstVector &dc, Vector &dd,
                    bool alloc_for_check = false);
   GeneralSylvester(int ord, int n, int m, int zero_cols,
-                   const double *da, const double *db,
-                   const double *dc, double *dd,
+                   const ConstVector &da, const ConstVector &db,
+                   const ConstVector &dc, Vector &dd,
                    const SylvParams &ps);
   virtual ~GeneralSylvester() = default;
   int
@@ -71,7 +71,7 @@ public:
     return pars;
   }
   void solve();
-  void check(const double *ds);
+  void check(const ConstVector &ds);
 private:
   void init();
 };

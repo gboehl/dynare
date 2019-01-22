@@ -24,12 +24,12 @@ MMMatrixIn::MMMatrixIn(const char *fname)
   if (2 != sscanf(buffer, "%d %d", &rows, &cols))
     throw MMException("Couldn't parse rows and cols\n");
   // read in data
-  data = (double *) operator new[](rows*cols*sizeof(double));
+  data = std::shared_ptr<const double>(static_cast<double *>(operator new[](rows*cols*sizeof(double))), [](double *arr) { operator delete[](static_cast<void *>(arr)); });
   int len = rows*cols;
   int i = 0;
   while (fgets(buffer, 1000, fd) && i < len)
     {
-      if (1 != sscanf(buffer, "%lf", &data[i]))
+      if (1 != sscanf(buffer, "%lf", const_cast<double *>(data.get())+i))
         throw MMException(string("Couldn't parse float number ")+buffer+"\n");
       i++;
     }
@@ -40,11 +40,6 @@ MMMatrixIn::MMMatrixIn(const char *fname)
       throw MMException(mes);
     }
   fclose(fd);
-}
-
-MMMatrixIn::~MMMatrixIn()
-{
-  operator delete [](data);
 }
 
 void

@@ -10,65 +10,67 @@
  * members, and methods are thus duplicated */
 
 #include <array>
+#include <memory>
+#include <complex>
+
+#if defined(MATLAB_MEX_FILE) || defined(OCTAVE_MEX_FILE)
+# include <dynmex.h>
+#endif
 
 class GeneralMatrix;
 class ConstVector;
 
 class Vector
 {
+  friend class ConstVector;
 protected:
   int len{0};
-  int s{1};
-  double *data{nullptr};
-  bool destroy{false};
+  int off{0}; // offset to double* pointer
+  int s{1}; // stride (also called "skip" in some places)
+  std::shared_ptr<double> data;
 public:
   Vector() = default;
-  Vector(int l) : len(l),  data(new double[l]), destroy(true)
+  Vector(int l) : len{l}, data{new double[l], [](double *arr) { delete[] arr; }}
   {
   }
-  Vector(Vector &v) : len(v.length()), s(v.skip()), data(v.base()) 
-  {
-  }
+  Vector(Vector &v) = default;
   Vector(const Vector &v);
-  Vector(const ConstVector &v);
-  Vector(const double *d, int l)
-    : len(l),  data(new double[len]), destroy(true)
-  {
-    copy(d, 1);
-  }
-  Vector(double *d, int l)
-    : len(l),  data(d) 
+  Vector(Vector &&v) = default;
+  // We don't want implict conversion from ConstVector, since it's expensive
+  explicit Vector(const ConstVector &v);
+  Vector(std::shared_ptr<double> d, int l)
+    : len(l), data{std::move(d)}
   {
   }
-  Vector(double *d, int skip, int l)
-    : len(l), s(skip), data(d) 
-  {
-  }
-  Vector(Vector &v, int off, int l);
-  Vector(const Vector &v, int off, int l);
-  Vector(GeneralMatrix &m, int col);
-  Vector(int row, GeneralMatrix &m);
+  Vector(Vector &v, int off_arg, int l);
+  Vector(const Vector &v, int off_arg, int l);
+  Vector(Vector &v, int off_arg, int skip, int l);
+  Vector(const Vector &v, int off_arg, int skip, int l);
+#if defined(MATLAB_MEX_FILE) || defined(OCTAVE_MEX_FILE)
+  explicit Vector(mxArray *p);
+#endif
   Vector &operator=(const Vector &v);
+  Vector &operator=(Vector &&v);
   Vector &operator=(const ConstVector &v);
   double &
   operator[](int i)
   {
-    return data[s*i];
+    return data.get()[off+s*i];
   }
   const double &
   operator[](int i) const
   {
-    return data[s*i];
+    return data.get()[off+s*i];
   }
   const double *
   base() const
   {
-    return data;
+    return data.get() + off;
   }
   double *
   base()
   {
-    return data;
+    return data.get() + off;
   }
   int
   length() const
@@ -90,20 +92,19 @@ public:
   bool operator>(const Vector &y) const;
   bool operator>=(const Vector &y) const;
 
-  virtual ~Vector();
+  virtual ~Vector() = default;
   void zeros();
   void nans();
   void infs();
-  bool
-  toBeDestroyed() const
-  {
-    return destroy;
-  }
   void rotatePair(double alpha, double beta1, double beta2, int i);
+  // Computes this += r*v
   void add(double r, const Vector &v);
+  // Computes this += r*v
   void add(double r, const ConstVector &v);
-  void add(const double *z, const Vector &v);
-  void add(const double *z, const ConstVector &v);
+  // Computes this += z*v (where this and v are intepreted as complex vectors)
+  void addComplex(const std::complex<double> &z, const Vector &v);
+  // Computes this += z*v (where this and v are intepreted as complex vectors)
+  void addComplex(const std::complex<double> &z, const ConstVector &v);
   void mult(double r);
   double getNorm() const;
   double getMax() const;
@@ -133,31 +134,43 @@ public:
   }
 private:
   void copy(const double *d, int inc);
-  Vector &operator=(int); // must not be used (not implemented)
-  Vector &operator=(double); // must not be used (not implemented)
 };
 
-class BaseConstVector
+class ConstGeneralMatrix;
+
+class ConstVector
 {
 protected:
   int len;
-  int s;
-  const double *data;
+  int off{0}; // offset to double* pointer
+  int s{1}; // stride (also called "skip" in some places)
+  std::shared_ptr<const double> data;
 public:
-  BaseConstVector(int l, int si, const double *d) : len(l), s(si), data(d)
+  // Implicit conversion from Vector is ok, since it's cheap
+  ConstVector(const Vector &v);
+  ConstVector(const ConstVector &v) = default;
+  ConstVector(ConstVector &&v) = default;
+  ConstVector(std::shared_ptr<const double> d, int l) : len{l}, data{std::move(d)}
   {
   }
-  BaseConstVector(const BaseConstVector &v) = default;
-  BaseConstVector &operator=(const BaseConstVector &v) = default;
+  ConstVector(const ConstVector &v, int off_arg, int l);
+  ConstVector(const ConstVector &v, int off_arg, int skip, int l);
+  ConstVector(std::shared_ptr<const double> d, int skip, int l);
+#if defined(MATLAB_MEX_FILE) || defined(OCTAVE_MEX_FILE)
+  explicit ConstVector(const mxArray *p);
+#endif
+  virtual ~ConstVector() = default;
+  ConstVector &operator=(const ConstVector &v) = delete;
+  ConstVector &operator=(ConstVector &&v) = delete;
   const double &
   operator[](int i) const
   {
-    return data[s*i];
+    return data.get()[off+s*i];
   }
   const double *
   base() const
   {
-    return data;
+    return data.get() + off;
   }
   int
   length() const
@@ -169,28 +182,6 @@ public:
   {
     return s;
   }
-};
-
-class ConstGeneralMatrix;
-
-class ConstVector : public BaseConstVector
-{
-public:
-  ConstVector(const Vector &v) : BaseConstVector(v.length(), v.skip(), v.base())
-  {
-  }
-  ConstVector(const ConstVector &v) = default;
-  ConstVector(const double *d, int l) : BaseConstVector(l, 1, d)
-  {
-  }
-  ConstVector(const Vector &v, int off, int l);
-  ConstVector(const ConstVector &v, int off, int l);
-  ConstVector(const double *d, int skip, int l);
-  ConstVector(const ConstGeneralMatrix &m, int col);
-  ConstVector(int row, const ConstGeneralMatrix &m);
-
-  virtual ~ConstVector() = default;
-  ConstVector &operator=(const ConstVector &v) = default;
   /** Exact equality. */
   bool operator==(const ConstVector &y) const;
   bool

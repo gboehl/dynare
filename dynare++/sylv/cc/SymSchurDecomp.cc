@@ -76,7 +76,7 @@ SymSchurDecomp::getFactor(GeneralMatrix &f) const
   f = q;
   for (int i = 0; i < f.numCols(); i++)
     {
-      Vector fi(f, i);
+      Vector fi{f.getCol(i)};
       fi.mult(std::sqrt(lambda[i]));
     }
 }

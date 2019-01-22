@@ -230,9 +230,9 @@ public:
   }
 
   void solveDeterministicSteady();
-  void evaluateSystem(Vector &out, const Vector &yy, const Vector &xx) noexcept(false);
-  void evaluateSystem(Vector &out, const Vector &yym, const Vector &yy,
-                      const Vector &yyp, const Vector &xx) noexcept(false);
+  void evaluateSystem(Vector &out, const ConstVector &yy, const Vector &xx) noexcept(false);
+  void evaluateSystem(Vector &out, const ConstVector &yym, const ConstVector &yy,
+                      const ConstVector &yyp, const Vector &xx) noexcept(false);
   void calcDerivativesAtSteady();
   unique_ptr<DynamicModelAC> dynamicModelFile;
   DynamicModel *

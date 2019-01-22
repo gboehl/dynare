@@ -181,7 +181,7 @@ UFSTensor::UFSTensor(const UFSTensor &t, const ConstVector &x)
   for (int i = 0; i < ncols(); i++)
     {
       ConstTwoDMatrix tpart(t, i *nvar(), nvar());
-      Vector outcol(*this, i);
+      Vector outcol{getCol(i)};
       tpart.multaVec(outcol, x);
     }
 }

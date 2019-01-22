@@ -57,7 +57,7 @@ public:
   enum emethod { horner, trad };
   virtual ~DecisionRule()
   = default;
-  virtual TwoDMatrix *simulate(emethod em, int np, const Vector &ystart,
+  virtual TwoDMatrix *simulate(emethod em, int np, const ConstVector &ystart,
                                ShockRealization &sr) const = 0;
   virtual void eval(emethod em, Vector &out, const ConstVector &v) const = 0;
   virtual void evaluate(emethod em, Vector &out, const ConstVector &ys,
@@ -103,18 +103,18 @@ protected:
   const int nu;
 public:
   DecisionRuleImpl(const _Tparent &pol, const PartitionY &yp, int nuu,
-                   const Vector &ys)
+                   const ConstVector &ys)
     : ctraits<t>::Tpol(pol), ysteady(ys), ypart(yp), nu(nuu)
   {
   }
   DecisionRuleImpl(_Tparent &pol, const PartitionY &yp, int nuu,
-                   const Vector &ys)
+                   const ConstVector &ys)
     : ctraits<t>::Tpol(0, yp.ny(), pol), ysteady(ys), ypart(yp),
     nu(nuu)
   {
   }
   DecisionRuleImpl(const _Tg &g, const PartitionY &yp, int nuu,
-                   const Vector &ys, double sigma)
+                   const ConstVector &ys, double sigma)
     : ctraits<t>::Tpol(yp.ny(), yp.nys()+nuu), ysteady(ys), ypart(yp), nu(nuu)
   {
     fillTensors(g, sigma);
@@ -130,7 +130,7 @@ public:
   {
     return ysteady;
   }
-  TwoDMatrix *simulate(emethod em, int np, const Vector &ystart,
+  TwoDMatrix *simulate(emethod em, int np, const ConstVector &ystart,
                        ShockRealization &sr) const override;
   void evaluate(emethod em, Vector &out, const ConstVector &ys,
                 const ConstVector &u) const override;
@@ -280,7 +280,7 @@ DecisionRuleImpl<t>::centralize(const DecisionRuleImpl &dr)
 
 template <int t>
 TwoDMatrix *
-DecisionRuleImpl<t>::simulate(emethod em, int np, const Vector &ystart,
+DecisionRuleImpl<t>::simulate(emethod em, int np, const ConstVector &ystart,
                               ShockRealization &sr) const
 {
   KORD_RAISE_IF(ysteady.length() != ystart.length(),
@@ -303,7 +303,7 @@ DecisionRuleImpl<t>::simulate(emethod em, int np, const Vector &ystart,
   dy = ystart_pred;
   dy.add(-1.0, ysteady_pred);
   sr.get(0, u);
-  Vector out(*res, 0);
+  Vector out{res->getCol(0)};
   eval(em, out, dyu);
 
   // perform all other steps of simulations
@@ -312,11 +312,11 @@ DecisionRuleImpl<t>::simulate(emethod em, int np, const Vector &ystart,
   int i = 1;
   while (i < np)
     {
-      ConstVector ym(*res, i-1);
+      ConstVector ym{res->getCol(i-1)};
       ConstVector dym(ym, ypart.nstat, ypart.nys());
       dy = dym;
       sr.get(i, u);
-      Vector out(*res, i);
+      Vector out{res->getCol(i)};
       eval(em, out, dyu);
       if (!out.isFinite())
         {
@@ -335,7 +335,7 @@ DecisionRuleImpl<t>::simulate(emethod em, int np, const Vector &ystart,
      and leave the padded columns to zero. */
   for (int j = 0; j < i; j++)
     {
-      Vector col(*res, j);
+      Vector col{res->getCol(j)};
       col.add(1.0, ysteady);
     }
 
@@ -415,17 +415,17 @@ class FoldDecisionRule : public DecisionRuleImpl<KOrder::fold>
   friend class UnfoldDecisionRule;
 public:
   FoldDecisionRule(const ctraits<KOrder::fold>::Tpol &pol, const PartitionY &yp, int nuu,
-                   const Vector &ys)
+                   const ConstVector &ys)
     : DecisionRuleImpl<KOrder::fold>(pol, yp, nuu, ys)
   {
   }
   FoldDecisionRule(ctraits<KOrder::fold>::Tpol &pol, const PartitionY &yp, int nuu,
-                   const Vector &ys)
+                   const ConstVector &ys)
     : DecisionRuleImpl<KOrder::fold>(pol, yp, nuu, ys)
   {
   }
   FoldDecisionRule(const ctraits<KOrder::fold>::Tg &g, const PartitionY &yp, int nuu,
-                   const Vector &ys, double sigma)
+                   const ConstVector &ys, double sigma)
     : DecisionRuleImpl<KOrder::fold>(g, yp, nuu, ys, sigma)
   {
   }
@@ -445,17 +445,17 @@ class UnfoldDecisionRule : public DecisionRuleImpl<KOrder::unfold>
   friend class FoldDecisionRule;
 public:
   UnfoldDecisionRule(const ctraits<KOrder::unfold>::Tpol &pol, const PartitionY &yp, int nuu,
-                     const Vector &ys)
+                     const ConstVector &ys)
     : DecisionRuleImpl<KOrder::unfold>(pol, yp, nuu, ys)
   {
   }
   UnfoldDecisionRule(ctraits<KOrder::unfold>::Tpol &pol, const PartitionY &yp, int nuu,
-                     const Vector &ys)
+                     const ConstVector &ys)
     : DecisionRuleImpl<KOrder::unfold>(pol, yp, nuu, ys)
   {
   }
   UnfoldDecisionRule(const ctraits<KOrder::unfold>::Tg &g, const PartitionY &yp, int nuu,
-                     const Vector &ys, double sigma)
+                     const ConstVector &ys, double sigma)
     : DecisionRuleImpl<KOrder::unfold>(g, yp, nuu, ys, sigma)
   {
   }

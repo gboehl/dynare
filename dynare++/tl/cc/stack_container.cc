@@ -216,7 +216,7 @@ FoldedStackContainer::multAndAddSparse3(const FSSparseTensor &t,
   const EquivalenceSet &eset = ebundle.get(out.dimen());
   for (Tensor::index run = out.begin(); run != out.end(); ++run)
     {
-      Vector outcol(out, *run);
+      Vector outcol{out.getCol(*run)};
       FRSingleTensor sumcol(t.nvar(), t.dimen());
       sumcol.zeros();
       for (const auto & it : eset)

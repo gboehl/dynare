@@ -100,7 +100,7 @@ extern "C" {
                 DYN_MEX_FUNC_ERR_MSG_TXT(buf);
               }
             ft.zeros();
-            ConstTwoDMatrix gk_mat(ft.nrows(), ft.ncols(), mxGetPr(gk));
+            ConstTwoDMatrix gk_mat(ft.nrows(), ft.ncols(), ConstVector{gk});
             ft.add(1.0, gk_mat);
             auto *ut = new UFSTensor(ft);
             pol.insert(ut);
@@ -108,17 +108,16 @@ extern "C" {
         // form the decision rule
         UnfoldDecisionRule
           dr(pol, PartitionY(nstat, npred, nboth, nforw),
-             nexog, ConstVector(mxGetPr(ysteady), ny));
+             nexog, ConstVector{ysteady});
         // form the shock realization
-        TwoDMatrix shocks_mat(nexog, nper, (const double *)mxGetPr(shocks));
-        TwoDMatrix vcov_mat(nexog, nexog, (const double *)mxGetPr(vcov));
+        TwoDMatrix shocks_mat(nexog, nper, ConstVector{shocks});
+        TwoDMatrix vcov_mat(nexog, nexog, ConstVector{vcov});
         GenShockRealization sr(vcov_mat, shocks_mat, seed);
         // simulate and copy the results
-        Vector ystart_vec((const double *)mxGetPr(ystart), ny);
         TwoDMatrix *res_mat
           = dr.simulate(DecisionRule::horner, nper,
-                        ystart_vec, sr);
-        TwoDMatrix res_tmp_mat(ny, nper, mxGetPr(res));
+                        ConstVector{ystart}, sr);
+        TwoDMatrix res_tmp_mat{ny, nper, Vector{res}};
         res_tmp_mat = (const TwoDMatrix &) (*res_mat);
         delete res_mat;
         plhs[1] = res;

@@ -8,23 +8,23 @@
 
 void
 gen_sylv_solve(int order, int n, int m, int zero_cols,
-               const double *A, const double *B,
-               const double *C, double *X)
+               const ConstVector &A, const ConstVector &B,
+               const ConstVector &C, Vector &X)
 {
   GeneralSylvester s(order, n, m, zero_cols, A, B, C, X, false);
   s.solve();
 }
 
-void
+mxArray *
 gen_sylv_solve_and_check(int order, int n, int m, int zero_cols,
-                         const double *A, const double *B,
-                         const double *C, const double *D,
-                         double *X, mxArray * &p)
+                         const ConstVector &A, const ConstVector &B,
+                         const ConstVector &C, const ConstVector &D,
+                         Vector &X)
 {
   GeneralSylvester s(order, n, m, zero_cols, A, B, C, X, true);
   s.solve();
   s.check(D);
-  p = s.getParams().createStructArray();
+  return s.getParams().createStructArray();
 }
 
 extern "C" {
@@ -35,7 +35,7 @@ extern "C" {
     if (nhrs != 5 || nlhs > 3 || nlhs < 2)
       DYN_MEX_FUNC_ERR_MSG_TXT("Gensylv: Must have exactly 5 input args and either 2 or 3 output args.");
 
-    auto order = (int) mxGetScalar(prhs[0]);
+    auto order = static_cast<int>(mxGetScalar(prhs[0]));
     const mxArray *const A = prhs[1];
     const mxArray *const B = prhs[2];
     const mxArray *const C = prhs[3];
@@ -55,28 +55,24 @@ extern "C" {
       DYN_MEX_FUNC_ERR_MSG_TXT("Matrix C must be square.");
     if (Bdims[0] < Bdims[1])
       DYN_MEX_FUNC_ERR_MSG_TXT("Matrix B must not have more columns than rows.");
-    if (Ddims[1] != (mwSize) power(Cdims[0], order))
+    if (Ddims[1] != static_cast<mwSize>(power(Cdims[0], order)))
       DYN_MEX_FUNC_ERR_MSG_TXT("Matrix D has wrong number of columns.");
 
-    int n = Adims[0];
-    int m = Cdims[0];
-    int zero_cols = Bdims[0] - Bdims[1];
+    auto n = static_cast<int>(Adims[0]);
+    auto m = static_cast<int>(Cdims[0]);
+    auto zero_cols = static_cast<int>(Bdims[0] - Bdims[1]);
     mxArray *X = mxCreateDoubleMatrix(Ddims[0], Ddims[1], mxREAL);
     // copy D to X
-    Vector Xvec((double *)mxGetPr(X), power(m, order)*n);
-    ConstVector Dvec((double *)mxGetPr(D), power(m, order)*n);
+    ConstVector Avec{A}, Bvec{B}, Cvec{C}, Dvec{D};
+    Vector Xvec{X};
     Xvec = Dvec;
     // solve (or solve and check)
     try
       {
         if (nlhs == 2)
-          gen_sylv_solve(order, n, m, zero_cols,
-                         mxGetPr(A), mxGetPr(B), mxGetPr(C),
-                         mxGetPr(X));
+          gen_sylv_solve(order, n, m, zero_cols, Avec, Bvec, Cvec, Xvec);
         else if (nlhs == 3)
-          gen_sylv_solve_and_check(order, n, m, zero_cols,
-                                   mxGetPr(A), mxGetPr(B), mxGetPr(C),
-                                   mxGetPr(D), mxGetPr(X), plhs[2]);
+          plhs[2] = gen_sylv_solve_and_check(order, n, m, zero_cols, Avec, Bvec, Cvec, Dvec, Xvec);
       }
     catch (const SylvException &e)
       {

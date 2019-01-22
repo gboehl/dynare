@@ -69,7 +69,7 @@ SylvMatrix::multRightKron(const SqSylvMatrix &m, int order)
   KronVector auxrow(m.numRows(), m.numRows(), order-1);
   for (int i = 0; i < rows; i++)
     {
-      Vector rowi(data.base()+i, rows, cols);
+      Vector rowi{getRow(i)};
       KronVector rowikron(rowi, m.numRows(), m.numRows(), order-1);
       auxrow = rowi; // copy data
       m.multVecKronTrans(rowikron, auxrow);
@@ -85,7 +85,7 @@ SylvMatrix::multRightKronTrans(const SqSylvMatrix &m, int order)
   KronVector auxrow(m.numRows(), m.numRows(), order-1);
   for (int i = 0; i < rows; i++)
     {
-      Vector rowi(data.base()+i, rows, cols);
+      Vector rowi{getRow(i)};
       KronVector rowikron(rowi, m.numRows(), m.numRows(), order-1);
       auxrow = rowi; // copy data
       m.multVecKron(rowikron, auxrow);
@@ -169,7 +169,7 @@ SqSylvMatrix::SqSylvMatrix(const GeneralMatrix &a, const GeneralMatrix &b)
 }
 
 void
-SqSylvMatrix::multVecKron(KronVector &x, const KronVector &d) const
+SqSylvMatrix::multVecKron(KronVector &x, const ConstKronVector &d) const
 {
   x.zeros();
   if (d.getDepth() == 0)
@@ -196,7 +196,7 @@ SqSylvMatrix::multVecKron(KronVector &x, const KronVector &d) const
 }
 
 void
-SqSylvMatrix::multVecKronTrans(KronVector &x, const KronVector &d) const
+SqSylvMatrix::multVecKronTrans(KronVector &x, const ConstKronVector &d) const
 {
   x.zeros();
   if (d.getDepth() == 0)

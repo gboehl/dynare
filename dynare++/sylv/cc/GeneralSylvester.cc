@@ -11,8 +11,8 @@
 #include <ctime>
 
 GeneralSylvester::GeneralSylvester(int ord, int n, int m, int zero_cols,
-                                   const double *da, const double *db,
-                                   const double *dc, const double *dd,
+                                   const ConstVector &da, const ConstVector &db,
+                                   const ConstVector &dc, const ConstVector &dd,
                                    const SylvParams &ps)
   : pars(ps),
     mem_driver(pars, 1, m, n, ord), order(ord), a(da, n),
@@ -23,8 +23,8 @@ GeneralSylvester::GeneralSylvester(int ord, int n, int m, int zero_cols,
 }
 
 GeneralSylvester::GeneralSylvester(int ord, int n, int m, int zero_cols,
-                                   const double *da, const double *db,
-                                   const double *dc, double *dd,
+                                   const ConstVector &da, const ConstVector &db,
+                                   const ConstVector &dc, Vector &dd,
                                    const SylvParams &ps)
   : pars(ps),
     mem_driver(pars, 0, m, n, ord), order(ord), a(da, n),
@@ -35,8 +35,8 @@ GeneralSylvester::GeneralSylvester(int ord, int n, int m, int zero_cols,
 }
 
 GeneralSylvester::GeneralSylvester(int ord, int n, int m, int zero_cols,
-                                   const double *da, const double *db,
-                                   const double *dc, const double *dd,
+                                   const ConstVector &da, const ConstVector &db,
+                                   const ConstVector &dc, const ConstVector &dd,
                                    bool alloc_for_check)
   : pars(alloc_for_check),
     mem_driver(pars, 1, m, n, ord), order(ord), a(da, n),
@@ -47,8 +47,8 @@ GeneralSylvester::GeneralSylvester(int ord, int n, int m, int zero_cols,
 }
 
 GeneralSylvester::GeneralSylvester(int ord, int n, int m, int zero_cols,
-                                   const double *da, const double *db,
-                                   const double *dc, double *dd,
+                                   const ConstVector &da, const ConstVector &db,
+                                   const ConstVector &dc, Vector &dd,
                                    bool alloc_for_check)
   : pars(alloc_for_check),
     mem_driver(pars, 0, m, n, ord), order(ord), a(da, n),
@@ -68,7 +68,7 @@ GeneralSylvester::init()
   pars.rcondA1 = rcond1;
   pars.rcondAI = rcondinf;
   bdecomp = std::make_unique<SchurDecompZero>(ainvb);
-  cdecomp = std::make_unique<SimilarityDecomp>(c.getData().base(), c.numRows(), *(pars.bs_norm));
+  cdecomp = std::make_unique<SimilarityDecomp>(c.getData(), c.numRows(), *(pars.bs_norm));
   cdecomp->check(pars, c);
   cdecomp->infoToPars(pars);
   if (*(pars.method) == SylvParams::recurse)
@@ -105,7 +105,7 @@ GeneralSylvester::solve()
 }
 
 void
-GeneralSylvester::check(const double *ds)
+GeneralSylvester::check(const ConstVector &ds)
 {
   if (!solved)
     throw SYLV_MES_EXCEPTION("Cannot run check on system, which is not solved yet.");
@@ -117,8 +117,7 @@ GeneralSylvester::check(const double *ds)
   dcheck.multLeft(b.numRows()-b.numCols(), b, d);
   dcheck.multRightKron(c, order);
   dcheck.multAndAdd(a, d);
-  ConstVector dv(ds, d.numRows()*d.numCols());
-  dcheck.getData().add(-1.0, dv);
+  dcheck.getData().add(-1.0, ds);
   // calculate relative norms
   pars.mat_err1 = dcheck.getNorm1()/d.getNorm1();
   pars.mat_errI = dcheck.getNormInf()/d.getNormInf();

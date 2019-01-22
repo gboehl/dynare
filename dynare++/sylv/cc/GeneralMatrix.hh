@@ -8,6 +8,8 @@
 #include "Vector.hh"
 
 #include <algorithm>
+#include <memory>
+#include <utility>
 
 class GeneralMatrix;
 
@@ -20,10 +22,11 @@ protected:
   int cols;
   int ld;
 public:
-  ConstGeneralMatrix(const double *d, int m, int n)
-    : data(d, m*n), rows(m), cols(n), ld(m)
+  ConstGeneralMatrix(ConstVector d, int m, int n)
+    : data(std::move(d)), rows(m), cols(n), ld(m)
   {
   }
+  // Implicit conversion from ConstGeneralMatrix is ok, since it's cheap
   ConstGeneralMatrix(const GeneralMatrix &m);
   ConstGeneralMatrix(const GeneralMatrix &m, int i, int j, int nrows, int ncols);
   ConstGeneralMatrix(const ConstGeneralMatrix &m, int i, int j, int nrows, int ncols);
@@ -59,6 +62,8 @@ public:
   {
     return data;
   }
+  ConstVector getRow(int row) const;
+  ConstVector getCol(int col) const;
 
   double getNormInf() const;
   double getNorm1() const;
@@ -121,29 +126,30 @@ public:
     : data(m*n), rows(m), cols(n), ld(m)
   {
   }
-  GeneralMatrix(const double *d, int m, int n)
-    : data(d, m*n), rows(m), cols(n), ld(m)
+  GeneralMatrix(const ConstVector &d, int m, int n)
+    : data(d), rows(m), cols(n), ld(m)
   {
   }
-  GeneralMatrix(double *d, int m, int n)
-    : data(d, m*n), rows(m), cols(n), ld(m)
+  GeneralMatrix(Vector &d, int m, int n)
+    : data(d), rows(m), cols(n), ld(m)
   {
   }
   GeneralMatrix(const GeneralMatrix &m);
-  GeneralMatrix(const ConstGeneralMatrix &m);
+  // We don't want implict conversion from ConstGeneralMatrix, since it's expensive
+  explicit GeneralMatrix(const ConstGeneralMatrix &m);
   GeneralMatrix(const GeneralMatrix &m, const char *dummy); // transpose
   GeneralMatrix(const ConstGeneralMatrix &m, const char *dummy); // transpose
   GeneralMatrix(const GeneralMatrix &m, int i, int j, int nrows, int ncols);
   GeneralMatrix(GeneralMatrix &m, int i, int j, int nrows, int ncols);
   /* this = a*b */
-  GeneralMatrix(const GeneralMatrix &a, const GeneralMatrix &b);
+  GeneralMatrix(const ConstGeneralMatrix &a, const ConstGeneralMatrix &b);
   /* this = a*b' */
-  GeneralMatrix(const GeneralMatrix &a, const GeneralMatrix &b, const char *dum);
+  GeneralMatrix(const ConstGeneralMatrix &a, const ConstGeneralMatrix &b, const char *dum);
   /* this = a'*b */
-  GeneralMatrix(const GeneralMatrix &a, const char *dum, const GeneralMatrix &b);
+  GeneralMatrix(const ConstGeneralMatrix &a, const char *dum, const ConstGeneralMatrix &b);
   /* this = a'*b */
-  GeneralMatrix(const GeneralMatrix &a, const char *dum1,
-                const GeneralMatrix &b, const char *dum2);
+  GeneralMatrix(const ConstGeneralMatrix &a, const char *dum1,
+                const ConstGeneralMatrix &b, const char *dum2);
 
   virtual ~GeneralMatrix() = default;
   GeneralMatrix &operator=(const GeneralMatrix &m) = default;
@@ -193,6 +199,10 @@ public:
   {
     return data;
   }
+  Vector getRow(int row);
+  Vector getCol(int col);
+  ConstVector getRow(int row) const;
+  ConstVector getCol(int col) const;
 
   double
   getNormInf() const
@@ -432,7 +442,7 @@ private:
   }
 
   /* number of rows/columns for copy used in gemm_partial_* */
-  static int md_length;
+  static constexpr int md_length = 23;
 };
 
 class SVDDecomp
@@ -473,8 +483,8 @@ public:
   void
   solve(const Vector &b, Vector &x) const
   {
-    GeneralMatrix xmat(x.base(), x.length(), 1);
-    solve(GeneralMatrix(b.base(), b.length(), 1), xmat);
+    GeneralMatrix xmat(x, x.length(), 1);
+    solve(GeneralMatrix(b, b.length(), 1), xmat);
   }
 private:
   void construct(const GeneralMatrix &A);

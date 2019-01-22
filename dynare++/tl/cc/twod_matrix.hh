@@ -19,6 +19,7 @@
 
 #include <cstdio>
 #include <matio.h>
+#include <utility>
 
 class TwoDMatrix;
 
@@ -29,10 +30,11 @@ class TwoDMatrix;
 class ConstTwoDMatrix : public ConstGeneralMatrix
 {
 public:
-  ConstTwoDMatrix(int m, int n, const double *d)
-    : ConstGeneralMatrix(d, m, n)
+  ConstTwoDMatrix(int m, int n, ConstVector d)
+    : ConstGeneralMatrix(std::move(d), m, n)
   {
   }
+  // Implicit conversion from TwoDMatrix is ok, since it's cheap
   ConstTwoDMatrix(const TwoDMatrix &m);
   ConstTwoDMatrix(const TwoDMatrix &m, int first_col, int num);
   ConstTwoDMatrix(const ConstTwoDMatrix &m, int first_col, int num);
@@ -71,15 +73,20 @@ public:
     : GeneralMatrix(r, c)
   {
   }
-  TwoDMatrix(int r, int c, double *d)
+  TwoDMatrix(int r, int c, Vector &d)
     : GeneralMatrix(d, r, c)
   {
   }
-  TwoDMatrix(int r, int c, const double *d)
+  TwoDMatrix(int r, int c, const ConstVector &d)
     : GeneralMatrix(d, r, c)
   {
   }
   TwoDMatrix(const GeneralMatrix &m)
+    : GeneralMatrix(m)
+  {
+  }
+  // We don't want implict conversion from ConstGeneralMatrix, since it's expensive
+  explicit TwoDMatrix(const ConstGeneralMatrix &m)
     : GeneralMatrix(m)
   {
   }

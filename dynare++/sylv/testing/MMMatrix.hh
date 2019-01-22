@@ -10,6 +10,7 @@
 
 #include <string>
 #include <utility>
+#include <memory>
 
 using namespace std;
 
@@ -32,16 +33,16 @@ public:
 
 class MMMatrixIn : public MallocAllocator
 {
-  double *data;
+  std::shared_ptr<const double> data;
   int rows;
   int cols;
 public:
   MMMatrixIn(const char *fname);
-  ~MMMatrixIn();
-  const double *
+  ~MMMatrixIn() = default;
+  ConstVector
   getData() const
   {
-    return data;
+    return ConstVector{data, size()};
   }
   int
   size() const

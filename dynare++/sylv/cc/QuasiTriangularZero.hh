@@ -15,7 +15,7 @@ class QuasiTriangularZero : public QuasiTriangular
   int nz; // number of zero columns
   GeneralMatrix ru; // data in right upper part (nz,d_size)
 public:
-  QuasiTriangularZero(int num_zeros, const double *d, int d_size);
+  QuasiTriangularZero(int num_zeros, const ConstVector &d, int d_size);
   QuasiTriangularZero(double r, const QuasiTriangularZero &t);
   QuasiTriangularZero(double r, const QuasiTriangularZero &t,
                       double rr, const QuasiTriangularZero &tt);

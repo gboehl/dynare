@@ -45,7 +45,7 @@ DynamicModelMFile::eval(const Vector &y, const Vector &x, const Vector &modParam
   if (retVal != 0)
     throw DynareException(__FILE__, __LINE__, "Trouble calling " + DynamicMFilename);
 
-  residual = Vector(mxGetPr(plhs[0]), residual.skip(), (int) mxGetM(plhs[0]));
+  residual = Vector{plhs[0]};
   copyDoubleIntoTwoDMatData(mxGetPr(plhs[1]), g1, (int) mxGetM(plhs[1]), (int) mxGetN(plhs[1]));
   if (g2 != nullptr)
     unpackSparseMatrixAndCopyIntoTwoDMatData(plhs[2], g2);

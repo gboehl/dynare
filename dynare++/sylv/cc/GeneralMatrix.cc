@@ -16,8 +16,6 @@
 #include <limits>
 #include <vector>
 
-int GeneralMatrix::md_length = 32;
-
 GeneralMatrix::GeneralMatrix(const GeneralMatrix &m)
   : data(m.rows*m.cols), rows(m.rows), cols(m.cols), ld(m.rows)
 {
@@ -53,33 +51,57 @@ GeneralMatrix::GeneralMatrix(const GeneralMatrix &m, int i, int j, int nrows, in
 }
 
 GeneralMatrix::GeneralMatrix(GeneralMatrix &m, int i, int j, int nrows, int ncols)
-  : data(m.base()+m.ld*j+i, m.ld*(ncols-1)+nrows), rows(nrows), cols(ncols), ld(m.ld)
+  : data(m.data, m.ld*j+i, m.ld*(ncols-1)+nrows), rows(nrows), cols(ncols), ld(m.ld)
 {
 }
 
-GeneralMatrix::GeneralMatrix(const GeneralMatrix &a, const GeneralMatrix &b)
+GeneralMatrix::GeneralMatrix(const ConstGeneralMatrix &a, const ConstGeneralMatrix &b)
   : data(a.rows*b.cols), rows(a.rows), cols(b.cols), ld(a.rows)
 {
   gemm("N", a, "N", b, 1.0, 0.0);
 }
 
-GeneralMatrix::GeneralMatrix(const GeneralMatrix &a, const GeneralMatrix &b, const char *dum)
+GeneralMatrix::GeneralMatrix(const ConstGeneralMatrix &a, const ConstGeneralMatrix &b, const char *dum)
   : data(a.rows*b.rows), rows(a.rows), cols(b.rows), ld(a.rows)
 {
   gemm("N", a, "T", b, 1.0, 0.0);
 }
 
-GeneralMatrix::GeneralMatrix(const GeneralMatrix &a, const char *dum, const GeneralMatrix &b)
+GeneralMatrix::GeneralMatrix(const ConstGeneralMatrix &a, const char *dum, const ConstGeneralMatrix &b)
   : data(a.cols*b.cols), rows(a.cols), cols(b.cols), ld(a.cols)
 {
   gemm("T", a, "N", b, 1.0, 0.0);
 }
 
-GeneralMatrix::GeneralMatrix(const GeneralMatrix &a, const char *dum1,
-                             const GeneralMatrix &b, const char *dum2)
+GeneralMatrix::GeneralMatrix(const ConstGeneralMatrix &a, const char *dum1,
+                             const ConstGeneralMatrix &b, const char *dum2)
   : data(a.cols*b.rows), rows(a.cols), cols(b.rows), ld(a.cols)
 {
   gemm("T", a, "T", b, 1.0, 0.0);
+}
+
+Vector
+GeneralMatrix::getRow(int row)
+{
+  return Vector{data, row, ld, cols};
+}
+
+Vector
+GeneralMatrix::getCol(int col)
+{
+  return Vector{data, ld*col, rows};
+}
+
+ConstVector
+GeneralMatrix::getRow(int row) const
+{
+  return ConstVector{data, row, ld, cols};
+}
+
+ConstVector
+GeneralMatrix::getCol(int col) const
+{
+  return ConstVector{data, ld*col, rows};
 }
 
 void
@@ -357,14 +379,25 @@ ConstGeneralMatrix::ConstGeneralMatrix(const GeneralMatrix &m)
 {
 }
 
+ConstVector
+ConstGeneralMatrix::getRow(int row) const
+{
+  return ConstVector{data, row, ld, cols};
+}
+
+ConstVector
+ConstGeneralMatrix::getCol(int col) const
+{
+  return ConstVector{data, ld*col, rows};
+}
+
 double
 ConstGeneralMatrix::getNormInf() const
 {
   double norm = 0.0;
   for (int i = 0; i < numRows(); i++)
     {
-      ConstVector rowi(data.base()+i, ld, cols);
-      double normi = rowi.getNorm1();
+      double normi = getRow(i).getNorm1();
       if (norm < normi)
         norm = normi;
     }
@@ -377,8 +410,7 @@ ConstGeneralMatrix::getNorm1() const
   double norm = 0.0;
   for (int j = 0; j < numCols(); j++)
     {
-      ConstVector colj(data.base()+ld *j, 1, rows);
-      double normj = colj.getNorm1();
+      double normj = getCol(j).getNorm1();
       if (norm < normj)
         norm = normj;
     }
@@ -581,12 +613,12 @@ SVDDecomp::solve(const GeneralMatrix &B, GeneralMatrix &X) const
   GeneralMatrix Bprime(UTB, m-minmn, 0, minmn-nz, B.numCols());
   // solve sigma
   for (int i = 0; i < minmn-nz; i++)
-    Vector(i, Bprime).mult(1.0/sigma[i]);
+    Bprime.getRow(i).mult(1.0/sigma[i]);
   // solve VT
   X.zeros();
   //- copy Bprime to right place of X
   for (int i = 0; i < minmn-nz; i++)
-    Vector(n-minmn+i, X) = ConstVector(i, Bprime);
+    X.getRow(n-minmn+i) = Bprime.getRow(i);
   //- multiply with VT
   X.multLeftTrans(VT);
 }

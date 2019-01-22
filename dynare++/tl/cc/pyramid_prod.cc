@@ -68,10 +68,10 @@ USubTensor::addKronColumn(int i, const vector<const FGSTensor *> &ts,
       IntSequence ind(pindex, lastdim, lastdim+t->dimen());
       lastdim += t->dimen();
       index in(t, ind);
-      tmpcols.emplace_back(*t, *in);
+      tmpcols.push_back(t->getCol(*in));
     }
 
   URSingleTensor kronmult(tmpcols);
-  Vector coli(*this, i);
+  Vector coli{getCol(i)};
   coli.add(1.0, kronmult.getData());
 }

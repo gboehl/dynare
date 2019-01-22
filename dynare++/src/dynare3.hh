@@ -228,9 +228,9 @@ public:
   {
     solveDeterministicSteady(*ysteady);
   }
-  void evaluateSystem(Vector &out, const Vector &yy, const Vector &xx) override;
-  void evaluateSystem(Vector &out, const Vector &yym, const Vector &yy,
-                      const Vector &yyp, const Vector &xx) override;
+  void evaluateSystem(Vector &out, const ConstVector &yy, const Vector &xx) override;
+  void evaluateSystem(Vector &out, const ConstVector &yym, const ConstVector &yy,
+                      const ConstVector &yyp, const Vector &xx) override;
   void calcDerivatives(const Vector &yy, const Vector &xx);
   void calcDerivativesAtSteady() override;
 

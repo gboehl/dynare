@@ -144,7 +144,7 @@ Approximation::walkStochSteady()
      to |ss|. */
   model.solveDeterministicSteady();
   approxAtSteady();
-  Vector steady0(ss, 0);
+  Vector steady0{ss.getCol(0)};
   steady0 = (const Vector &) model.getSteady();
 
   double sigma_so_far = 0.0;
@@ -172,7 +172,7 @@ Approximation::walkStochSteady()
           rec << " Not converged!!" << endrec;
           KORD_RAISE_X("Fix point calculation not converged", KORD_FP_NOT_CONV);
         }
-      Vector steadyi(ss, i);
+      Vector steadyi{ss.getCol(i)};
       steadyi = (const Vector &) model.getSteady();
 
       // calculate |hh| as expectations of the last $g^{**}$
@@ -378,7 +378,7 @@ Approximation::calcYCov() const
   TwoDMatrix *X = new TwoDMatrix(guSigma, guTrans);
 
   GeneralSylvester gs(1, model.numeq(), model.numeq(), 0,
-                      A.base(), B.base(), C.base(), X->base());
+                      A.getData(), B.getData(), C.getData(), X->getData());
   gs.solve();
 
   return X;

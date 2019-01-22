@@ -8,14 +8,15 @@
 #include "SylvException.hh"
 
 #include <iostream>
+#include <utility>
 
-QuasiTriangularZero::QuasiTriangularZero(int num_zeros, const double *d,
+QuasiTriangularZero::QuasiTriangularZero(int num_zeros, const ConstVector &d,
                                          int d_size)
   : QuasiTriangular(SqSylvMatrix(GeneralMatrix(d, num_zeros+d_size, d_size),
-                                 num_zeros, 0, d_size).getData().base(),
+                                 num_zeros, 0, d_size).getData(),
                     d_size),
     nz(num_zeros),
-    ru(GeneralMatrix(d, num_zeros+d_size, d_size), 0, 0, num_zeros, d_size)
+    ru(GeneralMatrix(std::move(d), num_zeros+d_size, d_size), 0, 0, num_zeros, d_size)
 {
 }
 
@@ -49,7 +50,7 @@ QuasiTriangularZero::QuasiTriangularZero(int p, const QuasiTriangularZero &t)
 }
 
 QuasiTriangularZero::QuasiTriangularZero(const SchurDecompZero &decomp)
-  : QuasiTriangular(decomp.getT().getData().base(),
+  : QuasiTriangular(decomp.getT().getData(),
                     decomp.getT().numRows()),
     nz(decomp.getZeroCols()),
     ru(decomp.getRU())

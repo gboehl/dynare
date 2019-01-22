@@ -33,6 +33,7 @@ public:
   {
     strncpy(name, n, 100);
   }
+  virtual ~TestRunnable() = default;
   bool test() const;
   virtual bool run() const = 0;
   const char *
@@ -117,7 +118,7 @@ TestRunnable::quasi_solve(bool trans, const char *mname, const char *vname)
       printf("  Wrong quasi triangular dimensions, rows must be >= cols.\n");
       return false;
     }
-  ConstVector v(mmv.getData(), mmv.row());
+  ConstVector v{mmv.getData()};
   Vector x(v.length());
   double eig_min = 1.0e20;
   if (trans)
@@ -158,9 +159,9 @@ TestRunnable::mult_kron(bool trans, const char *mname, const char *vname,
 
   SylvMemoryDriver memdriver(1, m, n, depth);
   QuasiTriangular t(mmt.getData(), mmt.row());
-  Vector vraw(mmv.getData(), mmv.row());
+  Vector vraw{mmv.getData()};
   KronVector v(vraw, m, n, depth);
-  Vector craw(mmc.getData(), mmc.row());
+  Vector craw{mmc.getData()};
   KronVector c(craw, m, n, depth);
   if (trans)
     t.multKronTrans(v);
@@ -192,9 +193,9 @@ TestRunnable::level_kron(bool trans, const char *mname, const char *vname,
 
   SylvMemoryDriver memdriver(1, m, n, depth);
   QuasiTriangular t(mmt.getData(), mmt.row());
-  Vector vraw(mmv.getData(), mmv.row());
+  Vector vraw{mmv.getData()};
   ConstKronVector v(vraw, m, n, depth);
-  Vector craw(mmc.getData(), mmc.row());
+  Vector craw{mmc.getData()};
   KronVector c(craw, m, n, depth);
   KronVector x(v);
   if (trans)
@@ -229,9 +230,9 @@ TestRunnable::kron_power(const char *m1name, const char *m2name, const char *vna
   SylvMemoryDriver memdriver(2, m, n, depth);
   QuasiTriangular t1(mmt1.getData(), mmt1.row());
   QuasiTriangular t2(mmt2.getData(), mmt2.row());
-  Vector vraw(mmv.getData(), mmv.row());
+  Vector vraw{mmv.getData()};
   ConstKronVector v(vraw, m, n, depth);
-  Vector craw(mmc.getData(), mmc.row());
+  Vector craw{mmc.getData()};
   KronVector c(craw, m, n, depth);
   KronVector x(v);
   memdriver.setStackMode(true);
@@ -267,14 +268,14 @@ TestRunnable::lin_eval(const char *m1name, const char *m2name, const char *vname
   QuasiTriangular t1(mmt1.getData(), mmt1.row());
   QuasiTriangular t2(mmt2.getData(), mmt2.row());
   TriangularSylvester ts(t2, t1);
-  Vector vraw1(mmv.getData(), length);
+  ConstVector vraw1{mmv.getData(), 0, length};
   ConstKronVector v1(vraw1, m, n, depth);
-  Vector vraw2(mmv.getData()+length, length);
+  ConstVector vraw2{mmv.getData(), length, length};
   ConstKronVector v2(vraw2, m, n, depth);
-  Vector craw1(mmc.getData(), length);
-  KronVector c1(craw1, m, n, depth);
-  Vector craw2(mmc.getData()+length, length);
-  KronVector c2(craw2, m, n, depth);
+  ConstVector craw1{mmc.getData(), 0, length};
+  ConstKronVector c1(craw1, m, n, depth);
+  ConstVector craw2{mmc.getData(), length, length};
+  ConstKronVector c2(craw2, m, n, depth);
   KronVector x1(m, n, depth);
   KronVector x2(m, n, depth);
   memdriver.setStackMode(true);
@@ -313,14 +314,14 @@ TestRunnable::qua_eval(const char *m1name, const char *m2name, const char *vname
   QuasiTriangular t1(mmt1.getData(), mmt1.row());
   QuasiTriangular t2(mmt2.getData(), mmt2.row());
   TriangularSylvester ts(t2, t1);
-  Vector vraw1(mmv.getData(), length);
+  ConstVector vraw1{mmv.getData(), 0, length};
   ConstKronVector v1(vraw1, m, n, depth);
-  Vector vraw2(mmv.getData()+length, length);
+  ConstVector vraw2{mmv.getData(), length, length};
   ConstKronVector v2(vraw2, m, n, depth);
-  Vector craw1(mmc.getData(), length);
-  KronVector c1(craw1, m, n, depth);
-  Vector craw2(mmc.getData()+length, length);
-  KronVector c2(craw2, m, n, depth);
+  ConstVector craw1{mmc.getData(), 0, length};
+  ConstKronVector c1(craw1, m, n, depth);
+  ConstVector craw2{mmc.getData(), length, length};
+  ConstKronVector c2(craw2, m, n, depth);
   KronVector x1(m, n, depth);
   KronVector x2(m, n, depth);
   memdriver.setStackMode(true);
@@ -356,7 +357,7 @@ TestRunnable::tri_sylv(const char *m1name, const char *m2name, const char *vname
   QuasiTriangular t1(mmt1.getData(), mmt1.row());
   QuasiTriangular t2(mmt2.getData(), mmt2.row());
   TriangularSylvester ts(t2, t1);
-  Vector vraw(mmv.getData(), length);
+  Vector vraw{mmv.getData()};
   ConstKronVector v(vraw, m, n, depth);
   KronVector d(v); // copy of v
   SylvParams pars;
@@ -458,7 +459,7 @@ TestRunnable::block_diag(const char *aname, double log10norm)
   int n = mma.row();
   SylvMemoryDriver memdriver(3, n, n, 2);
   SqSylvMatrix orig(mma.getData(), n);
-  SimilarityDecomp dec(orig.base(), orig.numRows(), log10norm);
+  SimilarityDecomp dec(orig.getData(), orig.numRows(), log10norm);
   dec.getB().printInfo();
   SqSylvMatrix check(dec.getQ(), dec.getB());
   check.multRight(dec.getInvQ());
@@ -506,7 +507,7 @@ TestRunnable::iter_sylv(const char *m1name, const char *m2name, const char *vnam
   QuasiTriangular t1(mmt1.getData(), mmt1.row());
   QuasiTriangular t2(mmt2.getData(), mmt2.row());
   IterativeSylvester is(t2, t1);
-  Vector vraw(mmv.getData(), length);
+  Vector vraw{mmv.getData()};
   ConstKronVector v(vraw, m, n, depth);
   KronVector d(v); // copy of v
   SylvParams pars;

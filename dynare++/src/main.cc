@@ -142,7 +142,7 @@ main(int argc, char **argv)
       if (params.num_condper > 0 && params.num_condsim > 0)
         {
           SimResultsDynamicStats rescond(dynare.numeq(), params.num_condper, 0);
-          ConstVector det_ss(app.getSS(), 0);
+          Vector det_ss{app.getSS().getCol(0)};
           rescond.simulate(params.num_condsim, app.getFoldDecisionRule(), det_ss, dynare.getVcov(), journal);
           rescond.writeMat(matfd, params.prefix);
         }

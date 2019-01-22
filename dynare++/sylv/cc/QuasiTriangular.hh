@@ -399,7 +399,7 @@ public:
 protected:
   Diagonal diagonal;
 public:
-  QuasiTriangular(const double *d, int d_size);
+  QuasiTriangular(const ConstVector &d, int d_size);
   QuasiTriangular(double r, const QuasiTriangular &t);
   QuasiTriangular(double r, const QuasiTriangular &t,
                   double rr, const QuasiTriangular &tt);

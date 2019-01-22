@@ -64,17 +64,13 @@ TwoDMatrix::copyRow(int from, int to)
 void
 TwoDMatrix::copyRow(const ConstTwoDMatrix &m, int from, int to)
 {
-  ConstVector fr_row(from, m);
-  Vector to_row(to, *this);
-  to_row = fr_row;
+  getRow(to) = m.getRow(from);
 }
 
 void
 TwoDMatrix::addRow(double d, const ConstTwoDMatrix &m, int from, int to)
 {
-  ConstVector fr_row(from, m);
-  Vector to_row(to, *this);
-  to_row.add(d, fr_row);
+  getRow(to).add(d, m.getRow(from));
 }
 
 void
@@ -87,17 +83,13 @@ TwoDMatrix::copyColumn(int from, int to)
 void
 TwoDMatrix::copyColumn(const ConstTwoDMatrix &m, int from, int to)
 {
-  ConstVector fr_col(m, from);
-  Vector to_col(*this, to);
-  to_col = fr_col;
+  getCol(to) = m.getCol(from);
 }
 
 void
 TwoDMatrix::addColumn(double d, const ConstTwoDMatrix &m, int from, int to)
 {
-  ConstVector fr_col(m, from);
-  Vector to_col(*this, to);
-  to_col.add(d, fr_col);
+  getCol(to).add(d, m.getCol(from));
 }
 
 void

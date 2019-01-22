@@ -14,7 +14,7 @@ class BlockDiagonal : public QuasiTriangular
   int *const row_len;
   int *const col_len;
 public:
-  BlockDiagonal(const double *d, int d_size);
+  BlockDiagonal(ConstVector d, int d_size);
   BlockDiagonal(int p, const BlockDiagonal &b);
   BlockDiagonal(const BlockDiagonal &b);
   BlockDiagonal(const QuasiTriangular &t);

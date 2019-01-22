@@ -182,8 +182,8 @@ KronProdAI::mult(const ConstTwoDMatrix &in, TwoDMatrix &out) const
 
   if (in.getLD() == in.nrows())
     {
-      ConstTwoDMatrix in_resh(in.nrows()*id_cols, a.nrows(), in.getData().base());
-      TwoDMatrix out_resh(in.nrows()*id_cols, a.ncols(), out.getData().base());
+      ConstTwoDMatrix in_resh(in.nrows()*id_cols, a.nrows(), in.getData());
+      TwoDMatrix out_resh(in.nrows()*id_cols, a.ncols(), out.getData());
       out_resh.mult(in_resh, a);
     }
   else
@@ -293,7 +293,7 @@ KronProdAll::mult(const ConstTwoDMatrix &in, TwoDMatrix &out) const
     }
   else
     {
-      last = new TwoDMatrix(in.nrows(), in.ncols(), in.getData().base());
+      last = new TwoDMatrix(in.nrows(), in.ncols(), in.getData());
     }
 
   // perform intermediate multiplications IAI
@@ -352,7 +352,7 @@ KronProdAll::multRows(const IntSequence &irows) const
          the |row| as ConstVector of this vector, which sheduled for
          deallocation. */
       if (matlist[j])
-        row = new ConstVector(irows[j], *(matlist[j]));
+        row = new ConstVector(matlist[j]->getRow(irows[j]));
       else
         {
           auto *aux = new Vector(ncols(j));

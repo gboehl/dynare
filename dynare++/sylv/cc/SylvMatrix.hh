@@ -17,11 +17,11 @@ public:
     : GeneralMatrix(m, n)
   {
   }
-  SylvMatrix(const double *d, int m, int n)
+  SylvMatrix(const ConstVector &d, int m, int n)
     : GeneralMatrix(d, m, n)
   {
   }
-  SylvMatrix(double *d, int m, int n)
+  SylvMatrix(Vector &d, int m, int n)
     : GeneralMatrix(d, m, n)
   {
   }
@@ -68,10 +68,10 @@ public:
   SqSylvMatrix(int m) : SylvMatrix(m, m)
   {
   }
-  SqSylvMatrix(const double *d, int m) : SylvMatrix(d, m, m)
+  SqSylvMatrix(const ConstVector &d, int m) : SylvMatrix(d, m, m)
   {
   }
-  SqSylvMatrix(double *d, int m) : SylvMatrix(d, m, m)
+  SqSylvMatrix(Vector &d, int m) : SylvMatrix(d, m, m)
   {
   }
   SqSylvMatrix(const SqSylvMatrix &m) = default;
@@ -91,9 +91,9 @@ public:
     return *this;
   }
   /* x = (this \otimes this..\otimes this)*d */
-  void multVecKron(KronVector &x, const KronVector &d) const;
+  void multVecKron(KronVector &x, const ConstKronVector &d) const;
   /* x = (this' \otimes this'..\otimes this')*d */
-  void multVecKronTrans(KronVector &x, const KronVector &d) const;
+  void multVecKronTrans(KronVector &x, const ConstKronVector &d) const;
   /* a = inv(this)*a, b=inv(this)*b */
   void multInvLeft2(GeneralMatrix &a, GeneralMatrix &b,
                     double &rcond1, double &rcondinf) const;

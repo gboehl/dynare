@@ -5,6 +5,8 @@
 #include "KronVector.hh"
 #include "SylvException.hh"
 
+#include <utility>
+
 int
 power(int m, int depth)
 {
@@ -77,8 +79,8 @@ ConstKronVector::ConstKronVector(const Vector &v, int mm, int nn, int dp)
     throw SYLV_MES_EXCEPTION("Bad conversion KronVector from Vector.");
 }
 
-ConstKronVector::ConstKronVector(const ConstVector &v, int mm, int nn, int dp)
-  : ConstVector(v), m(mm), n(nn), depth(dp)
+ConstKronVector::ConstKronVector(ConstVector v, int mm, int nn, int dp)
+  : ConstVector(std::move(v)), m(mm), n(nn), depth(dp)
 {
   if (length() != power(m, depth)*n)
     throw SYLV_MES_EXCEPTION("Bad conversion KronVector from Vector.");

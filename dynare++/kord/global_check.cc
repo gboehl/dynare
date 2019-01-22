@@ -52,7 +52,7 @@ ResidFunction::~ResidFunction()
    |hss|. */
 
 void
-ResidFunction::setYU(const Vector &ys, const Vector &xx)
+ResidFunction::setYU(const ConstVector &ys, const ConstVector &xx)
 {
   // delete |y| and |u| dependent data
   /* NB: code shared with the destructor */
@@ -195,9 +195,9 @@ GlobalChecker::check(int max_evals, const ConstTwoDMatrix &y,
   ConstTwoDMatrix ysmat(y, first_row, 0, model.npred()+model.nboth(), y.ncols());
   for (int j = 0; j < y.ncols(); j++)
     {
-      ConstVector yj(ysmat, j);
-      ConstVector xj(x, j);
-      Vector outj(out, j);
+      ConstVector yj{ysmat.getCol(j)};
+      ConstVector xj{x.getCol(j)};
+      Vector outj{out.getCol(j)};
       check(*quad, lev, yj, xj, outj);
     }
 
@@ -221,7 +221,7 @@ GlobalChecker::checkAlongShocksAndSave(mat_t *fd, const char *prefix,
   TwoDMatrix y_mat(model.numeq(), 2*m *model.nexog()+1);
   for (int j = 0; j < 2*m*model.nexog()+1; j++)
     {
-      Vector yj(y_mat, j);
+      Vector yj{y_mat.getCol(j)};
       yj = (const Vector &) model.getSteady();
     }
 
@@ -246,7 +246,7 @@ GlobalChecker::checkAlongShocksAndSave(mat_t *fd, const char *prefix,
   TwoDMatrix res(model.nexog(), 2*m+1);
   JournalRecord rec(journal);
   rec << "Shock    value         error" << endrec;
-  ConstVector err0(errors, 0);
+  ConstVector err0{errors.getCol(0)};
   char shock[9];
   char erbuf[17];
   for (int ishock = 0; ishock < model.nexog(); ishock++)
@@ -256,14 +256,14 @@ GlobalChecker::checkAlongShocksAndSave(mat_t *fd, const char *prefix,
       for (int j = 0; j < 2*m+1; j++)
         {
           int jj;
-          Vector error(err_out, j);
+          Vector error{err_out.getCol(j)};
           if (j != m)
             {
               if (j < m)
                 jj = 1 + 2*m*ishock+j;
               else
                 jj = 1 + 2*m*ishock+j-1;
-              ConstVector coljj(errors, jj);
+              ConstVector coljj{errors.getCol(jj)};
               error = coljj;
             }
           else
@@ -347,7 +347,7 @@ GlobalChecker::checkOnEllipseAndSave(mat_t *fd, const char *prefix,
       qmcpit end = qmc.end(m);
       for (qmcpit run = beg; run != end; ++run, icol++)
         {
-          Vector ycol(ymat, icol);
+          Vector ycol{ymat.getCol(icol)};
           Vector x(run.point());
           x.mult(2*M_PI);
           ycol[0] = 1;
@@ -372,7 +372,7 @@ GlobalChecker::checkOnEllipseAndSave(mat_t *fd, const char *prefix,
                  model.npred()+model.nboth());
   for (int icol = 0; icol < ymat.ncols(); icol++)
     {
-      Vector ycol(ymat, icol);
+      Vector ycol{ymat.getCol(icol)};
       ycol.add(1.0, ys);
     }
 

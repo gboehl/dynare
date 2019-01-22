@@ -89,15 +89,15 @@ KordpDynare::solveDeterministicSteady()
 }
 
 void
-KordpDynare::evaluateSystem(Vector &out, const Vector &yy, const Vector &xx) noexcept(false)
+KordpDynare::evaluateSystem(Vector &out, const ConstVector &yy, const Vector &xx) noexcept(false)
 {
   // This method is only called when checking the residuals at steady state (Approximation::check), so return zero residuals
   out.zeros();
 }
 
 void
-KordpDynare::evaluateSystem(Vector &out, const Vector &yym, const Vector &yy,
-                            const Vector &yyp, const Vector &xx) noexcept(false)
+KordpDynare::evaluateSystem(Vector &out, const ConstVector &yym, const ConstVector &yy,
+                            const ConstVector &yyp, const Vector &xx) noexcept(false)
 {
   // This method is only called when checking the residuals at steady state (Approximation::check), so return zero residuals
   out.zeros();

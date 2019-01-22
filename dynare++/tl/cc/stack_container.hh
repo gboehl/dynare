@@ -249,7 +249,7 @@ public:
         const _Ttype *t = getMatrix(i, s);
         Tensor::index ind(t, coor);
         Vector subres(*res, stack_offsets[i], stack_sizes[i]);
-        subres = ConstVector(ConstGeneralMatrix(*t), *ind);
+        subres = ConstGeneralMatrix(*t).getCol(*ind);
         i++;
       }
     if (iu != -1)

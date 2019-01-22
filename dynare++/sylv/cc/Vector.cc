@@ -19,13 +19,13 @@ using namespace std;
 ZeroPad zero_pad;
 
 Vector::Vector(const Vector &v)
-  : len(v.length()),  data(new double[len]), destroy(true)
+  : len(v.len), data{new double[len], [](double *arr) { delete[] arr; }}
 {
-  copy(v.base(), v.skip());
+  copy(v.base(), v.s);
 }
 
 Vector::Vector(const ConstVector &v)
-  : len(v.length()),  data(new double[len]), destroy(true)
+  : len(v.length()), data{new double[len], [](double *arr) { delete[] arr; }}
 {
   copy(v.base(), v.skip());
 }
@@ -36,9 +36,9 @@ Vector::operator=(const Vector &v)
   if (this == &v)
     return *this;
 
-  if (v.length() != length())
+  if (v.len != len)
     throw SYLV_MES_EXCEPTION("Attempt to assign vectors with different lengths.");
-
+  /*
   if (s == v.s
       && (data <= v.data && v.data < data+len*s
           || v.data <= data && data < v.data+v.len*v.s)
@@ -48,23 +48,32 @@ Vector::operator=(const Vector &v)
                 << ", data-v.data=" << (unsigned long) (data-v.data)
                 << ", len=" << len << std::endl;
       throw SYLV_MES_EXCEPTION("Attempt to assign overlapping vectors.");
-    }
-  copy(v.base(), v.skip());
+      } */
+  copy(v.base(), v.s);
+  return *this;
+}
+
+Vector &
+Vector::operator=(Vector &&v)
+{
+  if (v.len != len)
+    throw SYLV_MES_EXCEPTION("Attempt to assign vectors with different lengths.");
+  copy(v.base(), v.s);
   return *this;
 }
 
 Vector &
 Vector::operator=(const ConstVector &v)
 {
-  if (v.length() != length())
+  if (v.length() != len)
     throw SYLV_MES_EXCEPTION("Attempt to assign vectors with different lengths.");
-
+  /*
   if (v.skip() == 1 && skip() == 1 && (
                                        (base() < v.base() + v.length() && base() >= v.base())
                                        || (base() + length() < v.base() + v.length()
                                            && base() + length() > v.base())))
     throw SYLV_MES_EXCEPTION("Attempt to assign overlapping vectors.");
-
+  */
   copy(v.base(), v.skip());
   return *this;
 }
@@ -72,36 +81,47 @@ Vector::operator=(const ConstVector &v)
 void
 Vector::copy(const double *d, int inc)
 {
-  blas_int n = length();
-  blas_int incy = skip();
+  blas_int n = len;
+  blas_int incy = s;
   blas_int inc2 = inc;
   dcopy(&n, d, &inc2, base(), &incy);
 }
 
-Vector::Vector(Vector &v, int off, int l)
-  : len(l), s(v.skip()), data(v.base()+off*v.skip()) 
+Vector::Vector(Vector &v, int off_arg, int l)
+  : len(l), off{v.off+off_arg*v.s}, s(v.s), data{v.data}
 {
-  if (off < 0 || off + length() > v.length())
+  if (off_arg < 0 || off_arg + len > v.len)
     throw SYLV_MES_EXCEPTION("Subvector not contained in supvector.");
 }
 
-Vector::Vector(const Vector &v, int off, int l)
-  : len(l),  data(new double[len]), destroy(true)
+Vector::Vector(const Vector &v, int off_arg, int l)
+  : len(l), data{new double[len], [](double *arr) { delete[] arr; }}
 {
-  if (off < 0 || off + length() > v.length())
+  if (off_arg < 0 || off_arg + len > v.len)
     throw SYLV_MES_EXCEPTION("Subvector not contained in supvector.");
-  copy(v.base()+off*v.skip(), v.skip());
+  copy(v.base()+off_arg*v.s, v.s);
 }
 
-Vector::Vector(GeneralMatrix &m, int col)
-  : len(m.numRows()),  data(&(m.get(0, col))) 
+Vector::Vector(Vector &v, int off_arg, int skip, int l)
+  : len(l), off{v.off+off_arg*v.s}, s(v.s*skip), data{v.data}
 {
 }
 
-Vector::Vector(int row, GeneralMatrix &m)
-  : len(m.numCols()), s(m.getLD()), data(&(m.get(row, 0))) 
+Vector::Vector(const Vector &v, int off_arg, int skip, int l)
+  : len(l), data{new double[len], [](double *arr) { delete[] arr; }}
 {
+  copy(v.base()+off_arg*v.s, v.s*skip);
 }
+
+#if defined(MATLAB_MEX_FILE) || defined(OCTAVE_MEX_FILE)
+Vector::Vector(mxArray *p)
+  : len{static_cast<int>(mxGetNumberOfElements(p))},
+    data{std::shared_ptr<double>{mxGetPr(p), [](double *arr) { }}}
+{
+  if (!mxIsDouble(p))
+    throw SYLV_MES_EXCEPTION("This is not a MATLAB array of doubles.");
+}
+#endif
 
 bool
 Vector::operator==(const Vector &y) const
@@ -142,18 +162,18 @@ Vector::operator>=(const Vector &y) const
 void
 Vector::zeros()
 {
-  if (skip() == 1)
+  if (s == 1)
     {
       double *p = base();
-      for (int i = 0; i < length()/ZeroPad::length;
+      for (int i = 0; i < len/ZeroPad::length;
            i++, p += ZeroPad::length)
         memcpy(p, zero_pad.getBase(), sizeof(double)*ZeroPad::length);
-      for (; p < base()+length(); p++)
+      for (; p < base()+len; p++)
         *p = 0.0;
     }
   else
     {
-      for (int i = 0; i < length(); i++)
+      for (int i = 0; i < len; i++)
         operator[](i) = 0.0;
     }
 }
@@ -161,21 +181,15 @@ Vector::zeros()
 void
 Vector::nans()
 {
-  for (int i = 0; i < length(); i++)
+  for (int i = 0; i < len; i++)
     operator[](i) = std::numeric_limits<double>::quiet_NaN();
 }
 
 void
 Vector::infs()
 {
-  for (int i = 0; i < length(); i++)
+  for (int i = 0; i < len; i++)
     operator[](i) = std::numeric_limits<double>::infinity();
-}
-
-Vector::~Vector()
-{
-  if (destroy)
-    delete[] data;
 }
 
 void
@@ -195,32 +209,32 @@ Vector::add(double r, const Vector &v)
 void
 Vector::add(double r, const ConstVector &v)
 {
-  blas_int n = length();
+  blas_int n = len;
   blas_int incx = v.skip();
-  blas_int incy = skip();
+  blas_int incy = s;
   daxpy(&n, &r, v.base(), &incx, base(), &incy);
 }
 
 void
-Vector::add(const double *z, const Vector &v)
+Vector::addComplex(const std::complex<double> &z, const Vector &v)
 {
-  add(z, ConstVector(v));
+  addComplex(z, ConstVector(v));
 }
 
 void
-Vector::add(const double *z, const ConstVector &v)
+Vector::addComplex(const std::complex<double> &z, const ConstVector &v)
 {
-  blas_int n = length()/2;
+  blas_int n = len/2;
   blas_int incx = v.skip();
-  blas_int incy = skip();
-  zaxpy(&n, z, v.base(), &incx, base(), &incy);
+  blas_int incy = s;
+  zaxpy(&n, reinterpret_cast<const double(&)[2]>(z), v.base(), &incx, base(), &incy);
 }
 
 void
 Vector::mult(double r)
 {
-  blas_int n = length();
-  blas_int incx = skip();
+  blas_int n = len;
+  blas_int incx = s;
   dscal(&n, &r, base(), &incx);
 }
 
@@ -283,71 +297,74 @@ Vector::print() const
 {
   auto ff = std::cout.flags();
   std::cout << std::setprecision(4);
-  for (int i = 0; i < length(); i++)
+  for (int i = 0; i < len; i++)
     std::cout << i << '\t' << std::setw(8) << operator[](i) << std::endl;
   std::cout.flags(ff);
 }
 
-ConstVector::ConstVector(const Vector &v, int off, int l)
-  : BaseConstVector(l, v.skip(), v.base() + v.skip()*off)
+ConstVector::ConstVector(const Vector &v)
+  : len{v.len}, off{v.off}, s{v.s}, data{v.data}
 {
-  if (off < 0 || off + length() > v.length())
+}
+
+ConstVector::ConstVector(const ConstVector &v, int off_arg, int l)
+  : len{l}, off{v.off+off_arg*v.s}, s{v.s}, data{v.data}
+{
+  if (off_arg < 0 || off_arg + len > v.len)
     throw SYLV_MES_EXCEPTION("Subvector not contained in supvector.");
 }
 
-ConstVector::ConstVector(const ConstVector &v, int off, int l)
-  : BaseConstVector(l, v.skip(), v.base() + v.skip()*off)
-{
-  if (off < 0 || off + length() > v.length())
-    throw SYLV_MES_EXCEPTION("Subvector not contained in supvector.");
-}
-
-ConstVector::ConstVector(const double *d, int skip, int l)
-  : BaseConstVector(l, skip, d)
+ConstVector::ConstVector(const ConstVector &v, int off_arg, int skip, int l)
+  : len(l), off{v.off+off_arg*v.s}, s{v.s*skip}, data{v.data}
 {
 }
 
-ConstVector::ConstVector(const ConstGeneralMatrix &m, int col)
-  : BaseConstVector(m.numRows(), 1, &(m.get(0, col)))
+ConstVector::ConstVector(std::shared_ptr<const double> d, int skip, int l)
+  : len{l}, s{skip}, data{std::move(d)}
 {
 }
 
-ConstVector::ConstVector(int row, const ConstGeneralMatrix &m)
-  : BaseConstVector(m.numCols(), m.getLD(), &(m.get(row, 0)))
+#if defined(MATLAB_MEX_FILE) || defined(OCTAVE_MEX_FILE)
+ConstVector::ConstVector(const mxArray *p)
+  : len{static_cast<int>(mxGetNumberOfElements(p))},
+    data{std::shared_ptr<const double>{mxGetPr(p), [](const double *arr) { }}}
 {
+  if (!mxIsDouble(p))
+    throw SYLV_MES_EXCEPTION("This is not a MATLAB array of doubles.");
 }
+#endif
 
 bool
 ConstVector::operator==(const ConstVector &y) const
 {
-  if (length() != y.length())
+  if (len != y.len)
     return false;
-  if (length() == 0)
+  if (len == 0)
     return true;
   int i = 0;
-  while (i < length() && operator[](i) == y[i])
+  while (i < len && operator[](i) == y[i])
     i++;
-  return i == length();
+  return i == len;
 }
 
 bool
 ConstVector::operator<(const ConstVector &y) const
 {
-  int i = std::min(length(), y.length());
+  int i = std::min(len, y.len);
   int ii = 0;
   while (ii < i && operator[](ii) == y[ii])
     ii++;
   if (ii < i)
     return operator[](ii) < y[ii];
   else
-    return length() < y.length();
+    return len < y.len;
 }
 
 double
 ConstVector::getNorm() const
 {
   double s = 0;
-  for (int i = 0; i < length(); i++)
+  for (int i = 0; i < len; i++)
     s += operator[](i)*operator[](i);
   return sqrt(s);
 }
@@ -356,7 +373,7 @@ double
 ConstVector::getMax() const
 {
   double r = 0;
-  for (int i = 0; i < length(); i++)
+  for (int i = 0; i < len; i++)
     if (abs(operator[](i)) > r)
       r = abs(operator[](i));
   return r;
@@ -366,7 +383,7 @@ double
 ConstVector::getNorm1() const
 {
   double norm = 0.0;
-  for (int i = 0; i < length(); i++)
+  for (int i = 0; i < len; i++)
     norm += abs(operator[](i));
   return norm;
 }
@@ -374,11 +391,11 @@ ConstVector::getNorm1() const
 double
 ConstVector::dot(const ConstVector &y) const
 {
-  if (length() != y.length())
+  if (len != y.len)
     throw SYLV_MES_EXCEPTION("Vector has different length in ConstVector::dot.");
-  blas_int n = length();
-  blas_int incx = skip();
-  blas_int incy = y.skip();
+  blas_int n = len;
+  blas_int incx = s;
+  blas_int incy = y.s;
   return ddot(&n, base(), &incx, y.base(), &incy);
 }
 
@@ -386,9 +403,9 @@ bool
 ConstVector::isFinite() const
 {
   int i = 0;
-  while (i < length() && isfinite(operator[](i)))
+  while (i < len && isfinite(operator[](i)))
     i++;
-  return i == length();
+  return i == len;
 }
 
 void
@@ -396,7 +413,7 @@ ConstVector::print() const
 {
   auto ff = std::cout.flags();
   std::cout << std::setprecision(4);
-  for (int i = 0; i < length(); i++)
+  for (int i = 0; i < len; i++)
     std::cout << i << '\t' << std::setw(8) << operator[](i) << std::endl;
   std::cout.flags(ff);
 }

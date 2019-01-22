@@ -18,7 +18,7 @@ KronUtils::multAtLevel(int level, const QuasiTriangular &t,
     }
   else if (0 == level && 0 < x.getDepth())
     {
-      GeneralMatrix tmp(x.base(), x.getN(), power(x.getM(), x.getDepth()));
+      GeneralMatrix tmp(x, x.getN(), power(x.getM(), x.getDepth()));
       t.multLeftOther(tmp);
     }
   else if (0 == level && 0 == x.getDepth())
@@ -46,7 +46,7 @@ KronUtils::multAtLevelTrans(int level, const QuasiTriangular &t,
     }
   else if (0 == level && 0 < x.getDepth())
     {
-      GeneralMatrix tmp(x.base(), x.getN(), power(x.getM(), x.getDepth()));
+      GeneralMatrix tmp(x, x.getN(), power(x.getM(), x.getDepth()));
       t.multLeftOtherTrans(tmp);
     }
   else if (level == 0 && 0 == x.getDepth())

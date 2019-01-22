@@ -111,23 +111,18 @@ extern "C" {
       qz_criterium = (double) mxGetScalar(mxFldp);
 
     mxFldp = mxGetField(M_, 0, "params");
-    double *dparams = mxGetPr(mxFldp);
-    int npar = (int) mxGetM(mxFldp);
-    Vector modParams(dparams, npar);
+    Vector modParams{mxFldp};
     if (!modParams.isFinite())
       DYN_MEX_FUNC_ERR_MSG_TXT("The parameters vector contains NaN or Inf");
 
     mxFldp = mxGetField(M_, 0, "Sigma_e");
-    dparams = mxGetPr(mxFldp);
-    npar = (int) mxGetN(mxFldp);
-    TwoDMatrix vCov(npar, npar, dparams);
+    int npar = static_cast<int>(mxGetN(mxFldp));
+    TwoDMatrix vCov(npar, npar, Vector{mxFldp});
     if (!vCov.isFinite())
       DYN_MEX_FUNC_ERR_MSG_TXT("The covariance matrix of shocks contains NaN or Inf");
 
     mxFldp = mxGetField(dr, 0, "ys");  // and not in order of dr.order_var
-    dparams = mxGetPr(mxFldp);
-    const int nSteady = (int) mxGetM(mxFldp);
-    Vector ySteady(dparams, nSteady);
+    Vector ySteady{mxFldp};
     if (!ySteady.isFinite())
       DYN_MEX_FUNC_ERR_MSG_TXT("The steady state vector contains NaN or Inf");
 
@@ -152,7 +147,7 @@ extern "C" {
     const int nPar = (int) mxGetScalar(mxFldp);
 
     mxFldp = mxGetField(dr, 0, "order_var");
-    dparams = mxGetPr(mxFldp);
+    auto dparams = mxGetPr(mxFldp);
     npar = (int) mxGetM(mxFldp);
     if (npar != nEndo)
       DYN_MEX_FUNC_ERR_MSG_TXT("Incorrect number of input var_order vars.");
@@ -163,11 +158,10 @@ extern "C" {
 
     // the lag, current and lead blocks of the jacobian respectively
     mxFldp = mxGetField(M_, 0, "lead_lag_incidence");
-    dparams = mxGetPr(mxFldp);
     npar = (int) mxGetN(mxFldp);
     int nrows = (int) mxGetM(mxFldp);
 
-    TwoDMatrix llincidence(nrows, npar, dparams);
+    TwoDMatrix llincidence(nrows, npar, Vector{mxFldp});
     if (npar != nEndo)
       {
         ostringstream strstrm;
@@ -176,8 +170,7 @@ extern "C" {
       }
     //get NNZH =NNZD(2) = the total number of non-zero Hessian elements
     mxFldp = mxGetField(M_, 0, "NNZDerivatives");
-    dparams = mxGetPr(mxFldp);
-    Vector NNZD(dparams, (int)mxGetM(mxFldp));
+    Vector NNZD{mxFldp};
     if (NNZD[kOrder-1] == -1)
       DYN_MEX_FUNC_ERR_MSG_TXT("The derivatives were not computed for the required order. Make sure that you used the right order option inside the stoch_simul command");
 
@@ -207,19 +200,19 @@ extern "C" {
         const mxArray *g1 = prhs[3];
         int m = (int) mxGetM(g1);
         int n = (int) mxGetN(g1);
-        g1m = new TwoDMatrix(m, n, mxGetPr(g1));
+        g1m = new TwoDMatrix(m, n, ConstVector{g1});
         if (nrhs > 4)
           {
             const mxArray *g2 = prhs[4];
             int m = (int) mxGetM(g2);
             int n = (int) mxGetN(g2);
-            g2m = new TwoDMatrix(m, n, mxGetPr(g2));
+            g2m = new TwoDMatrix(m, n, ConstVector{g2});
             if (nrhs > 5)
               {
                 const mxArray *g3 = prhs[5];
                 int m = (int) mxGetM(g3);
                 int n = (int) mxGetN(g3);
-                g3m = new TwoDMatrix(m, n, mxGetPr(g3));
+                g3m = new TwoDMatrix(m, n, ConstVector{g3});
               }
           }
       }

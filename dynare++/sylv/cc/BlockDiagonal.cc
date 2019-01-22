@@ -6,9 +6,10 @@
 
 #include <iostream>
 #include <cstring>
+#include <utility>
 
-BlockDiagonal::BlockDiagonal(const double *d, int d_size)
-  : QuasiTriangular(d, d_size),
+BlockDiagonal::BlockDiagonal(ConstVector d, int d_size)
+  : QuasiTriangular(std::move(d), d_size),
     row_len(new int[d_size]), col_len(new int[d_size])
 {
   for (int i = 0; i < d_size; i++)

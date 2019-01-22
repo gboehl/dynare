@@ -18,12 +18,12 @@ NormalConj::NormalConj(const ConstTwoDMatrix &ydata)
 {
   mu.zeros();
   for (int i = 0; i < ydata.numCols(); i++)
-    mu.add(1.0/ydata.numCols(), ConstVector(ydata, i));
+    mu.add(1.0/ydata.numCols(), ydata.getCol(i));
 
   lambda.zeros();
   for (int i = 0; i < ydata.numCols(); i++)
     {
-      Vector diff(ConstVector(ydata, i));
+      Vector diff{ydata.getCol(i)};
       diff.add(-1, mu);
       lambda.addOuter(diff);
     }

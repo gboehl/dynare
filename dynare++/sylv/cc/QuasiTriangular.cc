@@ -420,7 +420,7 @@ QuasiTriangular::QuasiTriangular(const QuasiTriangular &t)
 {
 }
 
-QuasiTriangular::QuasiTriangular(const double *d, int d_size)
+QuasiTriangular::QuasiTriangular(const ConstVector &d, int d_size)
   : SqSylvMatrix(d, d_size), diagonal(getData().base(), d_size)
 {
 }
@@ -679,8 +679,8 @@ void
 QuasiTriangular::multaKron(KronVector &x, const ConstKronVector &b) const
 {
   int id = b.getN()*power(b.getM(), b.getDepth()-1);
-  ConstGeneralMatrix b_resh(b.base(), id, b.getM());
-  GeneralMatrix x_resh(x.base(), id, b.getM());
+  ConstGeneralMatrix b_resh(b, id, b.getM());
+  GeneralMatrix x_resh(x, id, b.getM());
   x_resh.multAndAdd(b_resh, ConstGeneralMatrix(*this), "trans");
 }
 
@@ -689,8 +689,8 @@ void
 QuasiTriangular::multaKronTrans(KronVector &x, const ConstKronVector &b) const
 {
   int id = b.getN()*power(b.getM(), b.getDepth()-1);
-  ConstGeneralMatrix b_resh(b.base(), id, b.getM());
-  GeneralMatrix x_resh(x.base(), id, b.getM());
+  ConstGeneralMatrix b_resh(b, id, b.getM());
+  GeneralMatrix x_resh(x, id, b.getM());
   x_resh.multAndAdd(b_resh, ConstGeneralMatrix(*this));
 }
 

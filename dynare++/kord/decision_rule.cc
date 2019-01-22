@@ -181,7 +181,7 @@ SimResultsStats::writeMat(mat_t *fd, const char *lname) const
 {
   char tmp[100];
   sprintf(tmp, "%s_mean", lname);
-  ConstTwoDMatrix m(num_y, 1, mean.base());
+  ConstTwoDMatrix m(num_y, 1, mean);
   m.writeMat(fd, tmp);
   sprintf(tmp, "%s_vcov", lname);
   ConstTwoDMatrix(vcov).writeMat(fd, tmp);
@@ -198,7 +198,7 @@ SimResultsStats::calcMean()
         {
           for (int j = 0; j < num_per; j++)
             {
-              ConstVector col(*i, j);
+              ConstVector col{i->getCol(j)};
               mean.add(mult, col);
             }
         }
@@ -273,10 +273,10 @@ SimResultsDynamicStats::calcMean()
       double mult = 1.0/data.size();
       for (int j = 0; j < num_per; j++)
         {
-          Vector meanj(mean, j);
+          Vector meanj{mean.getCol(j)};
           for (auto & i : data)
             {
-              ConstVector col(*i, j);
+              ConstVector col{i->getCol(j)};
               meanj.add(mult, col);
             }
         }
@@ -292,11 +292,11 @@ SimResultsDynamicStats::calcVariance()
       double mult = 1.0/(data.size()-1);
       for (int j = 0; j < num_per; j++)
         {
-          ConstVector meanj(mean, j);
-          Vector varj(variance, j);
+          ConstVector meanj{mean.getCol(j)};
+          Vector varj{variance.getCol(j)};
           for (auto & i : data)
             {
-              Vector col(ConstVector((*i), j));
+              Vector col{i->getCol(j)};
               col.add(-1.0, meanj);
               for (int k = 0; k < col.length(); k++)
                 col[k] = col[k]*col[k];
@@ -426,7 +426,7 @@ RTSimResultsStats::writeMat(mat_t *fd, const char *lname)
 {
   char tmp[100];
   sprintf(tmp, "%s_rt_mean", lname);
-  ConstTwoDMatrix m(nc.getDim(), 1, mean.base());
+  ConstTwoDMatrix m(nc.getDim(), 1, mean);
   m.writeMat(fd, tmp);
   sprintf(tmp, "%s_rt_vcov", lname);
   ConstTwoDMatrix(vcov).writeMat(fd, tmp);
@@ -500,7 +500,7 @@ SimulationIRFWorker::operator()()
     = new ExplicitShockRealization(res.control.getShocks(idata));
   esr->addToShock(ishock, 0, imp);
   const TwoDMatrix &data = res.control.getData(idata);
-  ConstVector st(data, res.control.getNumBurn());
+  Vector st{data.getCol(res.control.getNumBurn())};
   TwoDMatrix *m = dr.simulate(em, np, st, *esr);
   m->add(-1.0, res.control.getData(idata));
   {
@@ -604,7 +604,7 @@ ExplicitShockRealization::ExplicitShockRealization(ShockRealization &sr,
 {
   for (int j = 0; j < num_per; j++)
     {
-      Vector jcol(shocks, j);
+      Vector jcol{shocks.getCol(j)};
       sr.get(j, jcol);
     }
 }
@@ -615,7 +615,7 @@ ExplicitShockRealization::get(int n, Vector &out)
   KORD_RAISE_IF(out.length() != numShocks(),
                 "Wrong length of out vector in ExplicitShockRealization::get");
   int i = n % shocks.ncols();
-  ConstVector icol(shocks, i);
+  ConstVector icol{shocks.getCol(i)};
   out = icol;
 }
 

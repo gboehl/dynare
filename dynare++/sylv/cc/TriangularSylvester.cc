@@ -390,7 +390,7 @@ TriangularSylvester::multEigVector(KronVector &eig, const Vector &feig,
         {
           KronVector eigi(eig, i);
           eigi.zeros();
-          eigi.add(&feig[2*i], aux);
+          eigi.addComplex({ feig[2*i], feig[2*i+1] }, aux);
         }
     }
 }

@@ -390,7 +390,7 @@ FPSTensor::FPSTensor(const TensorDimens &td, const Equivalence &e, const Permuta
           auto su = a.getMap().upper_bound(c);
           for (auto srun = sl; srun != su; ++srun)
             {
-              Vector out_row((*srun).second.first, *this);
+              Vector out_row{getRow((*srun).second.first)};
               out_row.add((*srun).second.second, *row_prod);
             }
           delete row_prod;

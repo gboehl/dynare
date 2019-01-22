@@ -13,6 +13,13 @@ struct Rand
   static bool discrete(double prob); // answers true with given probability
 };
 
+TwoDMatrix
+make_matrix(int rows, int cols, const double *p)
+{
+  return TwoDMatrix{rows, cols,
+      ConstVector{std::shared_ptr<const double>{p, [](const double *arr) {}}, rows*cols}};
+}
+
 void
 Rand::init(int n1, int n2, int n3, int n4, int n5)
 {
@@ -345,9 +352,9 @@ public:
   bool
   run() const override
   {
-    TwoDMatrix gy(8, 4, gy_data);
-    TwoDMatrix gu(8, 3, gu_data);
-    TwoDMatrix v(3, 3, vdata);
+    TwoDMatrix gy{make_matrix(8, 4, gy_data)};
+    TwoDMatrix gu{make_matrix(8, 3, gu_data)};
+    TwoDMatrix v{make_matrix(3, 3, vdata)};
     double err = korder_unfold_fold(4, 3, 2, 3, 1, 2,
                                     gy, gu, v);
 
@@ -368,9 +375,9 @@ public:
   bool
   run() const override
   {
-    TwoDMatrix gy(30, 20, gy_data2);
-    TwoDMatrix gu(30, 10, gu_data2);
-    TwoDMatrix v(10, 10, vdata2);
+    TwoDMatrix gy{make_matrix(30, 20, gy_data2)};
+    TwoDMatrix gu{make_matrix(30, 10, gu_data2)};
+    TwoDMatrix v{make_matrix(10, 10, vdata2)};
     v.mult(0.001);
     gu.mult(.01);
     double err = korder_unfold_fold(4, 4, 5, 12, 8, 5,
@@ -392,9 +399,9 @@ public:
   bool
   run() const override
   {
-    TwoDMatrix gy(30, 20, gy_data2);
-    TwoDMatrix gu(30, 10, gu_data2);
-    TwoDMatrix v(10, 10, vdata2);
+    TwoDMatrix gy{make_matrix(30, 20, gy_data2)};
+    TwoDMatrix gu{make_matrix(30, 10, gu_data2)};
+    TwoDMatrix v{make_matrix(10, 10, vdata2)};
     v.mult(0.001);
     gu.mult(.01);
     double err = korder_unfold_fold(4, 3, 5, 12, 8, 5,

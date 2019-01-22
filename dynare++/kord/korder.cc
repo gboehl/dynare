@@ -307,8 +307,8 @@ KOrder::sylvesterSolve<KOrder::unfold>(ctraits<unfold>::Ttensor &der) const
       TwoDMatrix gs_y(*(gs<unfold>().get(Symmetry(1, 0, 0, 0))));
       GeneralSylvester sylv(der.getSym()[0], ny, ypart.nys(),
                             ypart.nstat+ypart.npred,
-                            matA.getData().base(), matB.getData().base(),
-                            gs_y.getData().base(), der.getData().base());
+                            matA.getData(), matB.getData(),
+                            gs_y.getData(), der.getData());
       sylv.solve();
     }
   else if (ypart.nys() > 0 && ypart.nyss() == 0)

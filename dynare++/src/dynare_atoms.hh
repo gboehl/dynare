@@ -112,7 +112,7 @@ namespace ogdyn
     {
     }
     DynareAtomValues(const ogp::FineAtoms &a, const Vector &pvals, const ConstVector &ym,
-                     const Vector &y, const ConstVector &yp, const Vector &x)
+                     const ConstVector &y, const ConstVector &yp, const Vector &x)
       : atoms(a), paramvals(pvals), yym(ym), yy(y), yyp(yp), xx(x)
     {
     }

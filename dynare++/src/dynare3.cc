@@ -199,7 +199,7 @@ Dynare::solveDeterministicSteady(Vector &steady)
 
 // evaluate system at given y_t=y_{t+1}=y_{t-1}, and given shocks x_t
 void
-Dynare::evaluateSystem(Vector &out, const Vector &yy, const Vector &xx)
+Dynare::evaluateSystem(Vector &out, const ConstVector &yy, const Vector &xx)
 {
   ConstVector yym(yy, nstat(), nys());
   ConstVector yyp(yy, nstat()+npred(), nyss());
@@ -210,8 +210,8 @@ Dynare::evaluateSystem(Vector &out, const Vector &yy, const Vector &xx)
 // exogenous x_t, all three vectors yym, yy, and yyp have the
 // respective lengths of y^*_{t-1}, y_t, y^{**}_{t+1}
 void
-Dynare::evaluateSystem(Vector &out, const Vector &yym, const Vector &yy,
-                       const Vector &yyp, const Vector &xx)
+Dynare::evaluateSystem(Vector &out, const ConstVector &yym, const ConstVector &yy,
+                       const ConstVector &yyp, const Vector &xx)
 {
   ogdyn::DynareAtomValues dav(model->getAtoms(), model->getParams(), yym, yy, yyp, xx);
   DynareEvalLoader del(model->getAtoms(), out);

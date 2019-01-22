@@ -16,13 +16,12 @@ protected:
   int n{0};
   int depth{0};
 public:
-  KronVector() : Vector((double *) nullptr, 0) 
-  {
-  }
+  KronVector() = default;
   KronVector(int mm, int nn, int dp); // new instance
   KronVector(Vector &v, int mm, int nn, int dp); // conversion
   KronVector(KronVector &, int i); // picks i-th subvector
-  KronVector(const ConstKronVector &v); // new instance and copy
+  // We don't want implict conversion from ConstKronVector, since it's expensive
+  explicit KronVector(const ConstKronVector &v); // new instance and copy
   KronVector &operator=(const KronVector &v) = default;
   KronVector &operator=(const ConstKronVector &v);
   KronVector &operator=(const Vector &v);
@@ -50,10 +49,11 @@ protected:
   int n;
   int depth;
 public:
+  // Implicit conversion from KronVector is ok, since it's cheap
   ConstKronVector(const KronVector &v);
   ConstKronVector(const ConstKronVector &v);
   ConstKronVector(const Vector &v, int mm, int nn, int dp);
-  ConstKronVector(const ConstVector &v, int mm, int nn, int dp);
+  ConstKronVector(ConstVector v, int mm, int nn, int dp);
   ConstKronVector(const KronVector &v, int i);
   ConstKronVector(const ConstKronVector &v, int i);
   int
