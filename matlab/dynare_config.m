@@ -245,6 +245,6 @@ if verbose
 end
 
 % Initialization of the dates and dseries classes (recursive).
-dseries.initialize();
+dseries().initialize();
 
 cd(origin);
