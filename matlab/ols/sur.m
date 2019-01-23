@@ -79,7 +79,7 @@ if ~isempty(param_names)
         pidxs(i) = idx;
         newX = [newX X.(X.name{idx})];
     end
-    subcols = setdiff(1:length(X.name), pidxs);
+    subcols = setdiff(1:X.vobs, pidxs);
     for i = length(subcols):-1:1
         Y = Y - M_.params(strcmp(X.name{subcols(i)}, M_.param_names))*X.(X.name{subcols(i)});
     end
@@ -87,8 +87,8 @@ if ~isempty(param_names)
 end
 
 % opidxs: indexes in M_.params associated with columns of X
-opidxs = zeros(length(X.name), 1);
-for i = 1:length(X.name)
+opidxs = zeros(X.vobs, 1);
+for i = 1:X.vobs
     opidxs(i, 1) = find(strcmp(X.name{i}, M_.param_names));
 end
 
