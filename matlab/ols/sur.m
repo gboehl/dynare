@@ -67,8 +67,9 @@ if ~isempty(param_names)
     newX = dseries();
     nparams = length(param_names);
     pidxs = zeros(nparams, 1);
+    names = X.name;
     for i = 1:nparams
-        idx = find(strcmp(param_names{i}, X.name));
+        idx = find(strcmp(param_names{i}, names));
         if isempty(idx)
             if ~isempty(eqtags)
                 error(['Could not find ' param_names{i} ...
@@ -77,11 +78,11 @@ if ~isempty(param_names)
             error('Unspecified error. Please report');
         end
         pidxs(i) = idx;
-        newX = [newX X.(X.name{idx})];
+        newX = [newX X.(names{idx})];
     end
     subcols = setdiff(1:X.vobs, pidxs);
     for i = length(subcols):-1:1
-        Y = Y - M_.params(strcmp(X.name{subcols(i)}, M_.param_names))*X.(X.name{subcols(i)});
+        Y = Y - M_.params(strcmp(names{subcols(i)}, M_.param_names))*X.(names{subcols(i)});
     end
     X = newX;
 end
