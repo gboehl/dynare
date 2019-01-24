@@ -10,7 +10,7 @@ function [Y, lhssub, X, startdates, enddates, residnames] = common_parsing(ds, a
 %
 % OUTPUTS
 %   Y                    [cell array]  dependent variables
-%   lhssub               [cell array]  RHS to subtract from Y
+%   lhssub               [cell array]  RHS subtracted from LHS
 %   X                    [cell array]  regressors
 %   startdates           [cell array]  first observed period for each
 %                                      equation
