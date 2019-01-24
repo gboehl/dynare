@@ -19,7 +19,7 @@ function ds = dyn_ols(ds, fitted_names_dict, eqtags)
 %   ds                [dseries]    data updated with fitted values
 %
 % SPECIAL REQUIREMENTS
-%   dynare must have been run with the option: json=parse
+%   dynare must have been run with the option: json=compute
 
 % Copyright (C) 2017-2019 Dynare Team
 %

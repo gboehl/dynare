@@ -24,7 +24,7 @@ function ds = olsgibbs(ds, eqtag, BetaPriorExpectation, BetaPriorVariance, s2, n
 % - ds                          [dseries]    dataset updated with fitted value
 %
 % SPECIAL REQUIREMENTS
-%   dynare must have been run with the option: json=parse
+%   dynare must have been run with the option: json=compute
 
 % Copyright (C) 2018-2019 Dynare Team
 %

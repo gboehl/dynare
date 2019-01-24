@@ -12,7 +12,7 @@ function varargout = sur(ds, param_names, eqtags)
 %   none
 %
 % SPECIAL REQUIREMENTS
-%   dynare must have been run with the option: json=parse
+%   dynare must have been run with the option: json=compute
 
 % Copyright (C) 2017-2019 Dynare Team
 %
