@@ -14,8 +14,10 @@ build_binaries:
       - mex/octave/
       - mex/matlab/
       - dynare++/parser/cc/*_tab.cc
+      - dynare++/parser/cc/*_tab.hh
       - dynare++/parser/cc/*_ll.cc
       - dynare++/src/*_tab.cc
+      - dynare++/src/*_tab.hh
       - dynare++/src/*_ll.cc
       - dynare++/*/*.o
       - dynare++/*/*.a
