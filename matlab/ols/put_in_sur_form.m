@@ -77,5 +77,5 @@ for i = 1:neqs
     end
     Yvec = dseries([Yvec.data; Y{i}.data], fd);
 end
-assert(size(Y, 1) == size(X, 1));
+assert(size(Yvec, 1) == size(Xmat, 1));
 end
