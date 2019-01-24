@@ -1,12 +1,14 @@
-function [Yvec, Xmat, constrained] = put_in_sur_form(Y, X)
-%function [Yvec, Xmat, constrained] = put_in_sur_form(Y, X)
+function [Yvec, lhssubvec, Xmat, constrained] = put_in_sur_form(Y, lhssub, X)
+%function [Yvec, lhssubvec, Xmat, constrained] = put_in_sur_form(Y, lhssub, X)
 %
 % INPUTS
 %   Y           [cell array]  dependent variables
+%   lhssub      [cell array]  RHS subtracted from LHS
 %   X           [cell array]  regressors
 %
 % OUTPUTS
 %   Yvec        [vector]      dependent variables
+%   lhssubvec   [cell array]  RHS subtracted from LHS
 %   Xmat        [matrix]      regressors
 %   constrained [cellstr]     names of parameters that were constrained
 %
@@ -31,12 +33,16 @@ function [Yvec, Xmat, constrained] = put_in_sur_form(Y, X)
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 %% Check inputs
-if nargin ~= 2
-    error('put_in_sur_form expects 2 arguments');
+if nargin ~= 3
+    error('function expects 3 arguments');
 end
 
-if isempty(Y) || ~iscell(Y) || isempty(X) || ~iscell(X) || length(Y) ~= length(X)
-    error('put_in_sur_form arguments should be cells of the same size');
+if isempty(Y) || ~iscell(Y) ...
+        || isempty(lhssub) || ~iscell(lhssub) ...
+        || isempty(X) || ~iscell(X) ...
+        || length(Y) ~= length(X) ...
+        || length(Y) ~= length(lhssub)
+    error('function arguments should be cells of the same size');
 end
 
 %% Organize output
@@ -53,6 +59,7 @@ fd = Y{1}.firstdate;
 nrows = sum(nobs);
 Xmat = dseries();
 Yvec = dseries();
+lhssubvec = dseries();
 constrained = {};
 for i = 1:neqs
     if ~isempty(X{i})
@@ -76,6 +83,12 @@ for i = 1:neqs
         end
     end
     Yvec = dseries([Yvec.data; Y{i}.data], fd);
+    if isempty(lhssub{i})
+        lhssubvec = dseries([lhssubvec.data; zeros(size(Y{i}.data, 1), 1)], fd);
+    else
+        lhssubvec = dseries([lhssubvec.data; lhssub{i}.data], fd);
+    end
 end
 assert(size(Yvec, 1) == size(Xmat, 1));
+assert(size(Yvec, 1) == size(lhssubvec, 1));
 end

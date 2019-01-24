@@ -54,10 +54,10 @@ ast = get_ast(eqtags);
 neqs = length(ast);
 
 %% Find parameters and variable names in equations and setup estimation matrices
-[Y, ~, X] = common_parsing(ds, ast, true);
+[Y, lhssub, X] = common_parsing(ds, ast, true);
 clear ast
 nobs = Y{1}.nobs;
-[Y, X, constrained] = put_in_sur_form(Y, X);
+[Y, lhssub, X, constrained] = put_in_sur_form(Y, lhssub, X);
 
 if nargin == 1 && size(X, 2) ~= M_.param_nbr
     warning(['Not all parameters were used in model: ' strjoin(setdiff(M_.param_names, X.name), ', ')]);
@@ -134,6 +134,9 @@ oo_.sur.Yhat = X.data * oo_.sur.beta;
 
 % Residuals
 oo_.sur.resid = Y.data - oo_.sur.Yhat;
+
+% Correct Yhat reported back to user
+oo_.sur.Yhat = oo_.sur.Yhat + lhssub;
 
 %% Calculate statistics
 % Estimate for sigma^2
