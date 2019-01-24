@@ -145,6 +145,7 @@ FirstOrder::solve(const TwoDMatrix &fd)
   matD.place(fyplus, 0, ypart.nys()+ypart.nstat);
   for (int i = 0; i < ypart.nboth; i++)
     matD.get(ypart.ny()+i, ypart.npred+i) = 1.0;
+  lapack_int ldb = matD.getLD();
 
   // form matrix $E$
   TwoDMatrix matE(n, n);
@@ -155,18 +156,20 @@ FirstOrder::solve(const TwoDMatrix &fd)
   for (int i = 0; i < ypart.nboth; i++)
     matE.get(ypart.ny()+i, ypart.nys()+ypart.nstat+i) = -1.0;
   matE.mult(-1.0);
+  lapack_int lda = matE.getLD();
 
   // solve generalized Schur
   TwoDMatrix vsl(n, n);
   TwoDMatrix vsr(n, n);
+  lapack_int ldvsl = vsl.getLD(), ldvsr = vsr.getLD();
   lapack_int lwork = 100*n+16;
   Vector work(lwork);
   auto *bwork = new lapack_int[n];
   lapack_int info;
   lapack_int sdim2 = sdim;
-  dgges("N", "V", "S", order_eigs, &n, matE.getData().base(), &n,
-        matD.getData().base(), &n, &sdim2, alphar.base(), alphai.base(),
-        beta.base(), vsl.getData().base(), &n, vsr.getData().base(), &n,
+  dgges("N", "V", "S", order_eigs, &n, matE.getData().base(), &lda,
+        matD.getData().base(), &ldb, &sdim2, alphar.base(), alphai.base(),
+        beta.base(), vsl.getData().base(), &ldvsl, vsr.getData().base(), &ldvsr,
         work.base(), &lwork, bwork, &info);
   if (info)
     {

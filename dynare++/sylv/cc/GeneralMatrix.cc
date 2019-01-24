@@ -448,7 +448,7 @@ ConstGeneralMatrix::multVecTrans(double a, Vector &x, double b,
       blas_int mm = rows;
       blas_int nn = cols;
       double alpha = b;
-      blas_int lda = rows;
+      blas_int lda = ld;
       blas_int incx = d.skip();
       double beta = a;
       blas_int incy = x.skip();
@@ -471,9 +471,9 @@ ConstGeneralMatrix::multInvLeft(const char *trans, int mrows, int mcols, int mld
       GeneralMatrix inv(*this);
       std::vector<lapack_int> ipiv(rows);
       lapack_int info;
-      lapack_int rows2 = rows, mcols2 = mcols, mld2 = mld;
-      dgetrf(&rows2, &rows2, inv.getData().base(), &rows2, ipiv.data(), &info);
-      dgetrs(trans, &rows2, &mcols2, inv.base(), &rows2, ipiv.data(), d,
+      lapack_int rows2 = rows, mcols2 = mcols, mld2 = mld, lda = inv.ld;
+      dgetrf(&rows2, &rows2, inv.getData().base(), &lda, ipiv.data(), &info);
+      dgetrs(trans, &rows2, &mcols2, inv.base(), &lda, ipiv.data(), d,
              &mld2, &info);
     }
 }

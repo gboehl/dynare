@@ -13,13 +13,14 @@ SchurDecomp::SchurDecomp(const SqSylvMatrix &m)
 {
   lapack_int rows = m.numRows();
   SqSylvMatrix auxt(m);
+  lapack_int lda = auxt.getLD(), ldvs = q.getLD();
   lapack_int sdim;
   std::vector<double> wr(rows), wi(rows);
   lapack_int lwork = 6*rows;
   std::vector<double> work(lwork);
   lapack_int info;
-  dgees("V", "N", nullptr, &rows, auxt.base(), &rows, &sdim,
-        wr.data(), wi.data(), q.base(), &rows,
+  dgees("V", "N", nullptr, &rows, auxt.base(), &lda, &sdim,
+        wr.data(), wi.data(), q.base(), &ldvs,
         work.data(), &lwork, nullptr, &info);
   t_storage = std::make_unique<QuasiTriangular>(auxt.getData(), rows);
   t = t_storage.get();

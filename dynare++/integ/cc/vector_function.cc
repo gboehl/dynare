@@ -120,12 +120,12 @@ GaussConverterFunction::calcCholeskyFactor(const GeneralMatrix &vcov)
 {
   A = vcov;
 
-  lapack_int rows = A.numRows();
+  lapack_int rows = A.numRows(), lda = A.getLD();
   for (int i = 0; i < rows; i++)
     for (int j = i+1; j < rows; j++)
       A.get(i, j) = 0.0;
 
   lapack_int info;
-  dpotrf("L", &rows, A.base(), &rows, &info);
+  dpotrf("L", &rows, A.base(), &lda, &info);
   // todo: raise if |info!=1|
 }

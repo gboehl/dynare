@@ -233,27 +233,27 @@ SqSylvMatrix::multInvLeft2(GeneralMatrix &a, GeneralMatrix &b,
   Vector inv(data);
   std::vector<lapack_int> ipiv(rows);
   lapack_int info;
-  lapack_int rows2 = rows;
-  dgetrf(&rows2, &rows2, inv.base(), &rows2, ipiv.data(), &info);
+  lapack_int rows2 = rows, lda = ld;
+  dgetrf(&rows2, &rows2, inv.base(), &lda, ipiv.data(), &info);
   // solve a
   lapack_int acols = a.numCols();
   double *abase = a.base();
-  dgetrs("N", &rows2, &acols, inv.base(), &rows2, ipiv.data(),
+  dgetrs("N", &rows2, &acols, inv.base(), &lda, ipiv.data(),
          abase, &rows2, &info);
   // solve b
   lapack_int bcols = b.numCols();
   double *bbase = b.base();
-  dgetrs("N", &rows2, &bcols, inv.base(), &rows2, ipiv.data(),
+  dgetrs("N", &rows2, &bcols, inv.base(), &lda, ipiv.data(),
          bbase, &rows2, &info);
 
   // condition numbers
   std::vector<double> work(4*rows);
   std::vector<lapack_int> iwork(rows);
   double norm1 = getNorm1();
-  dgecon("1", &rows2, inv.base(), &rows2, &norm1, &rcond1,
+  dgecon("1", &rows2, inv.base(), &lda, &norm1, &rcond1,
          work.data(), iwork.data(), &info);
   double norminf = getNormInf();
-  dgecon("I", &rows2, inv.base(), &rows2, &norminf, &rcondinf,
+  dgecon("I", &rows2, inv.base(), &lda, &norminf, &rcondinf,
          work.data(), iwork.data(), &info);
 }
 

@@ -17,9 +17,9 @@ void
 PLUMatrix::calcPLU()
 {
   lapack_int info;
-  lapack_int rows = nrows();
+  lapack_int rows = nrows(), lda = ld;
   inv = (const Vector &) getData();
-  dgetrf(&rows, &rows, inv.base(), &rows, ipiv, &info);
+  dgetrf(&rows, &rows, inv.base(), &lda, ipiv, &info);
 }
 
 /* Here we just call the LAPACK machinery to multiply by the inverse. */
@@ -30,11 +30,13 @@ PLUMatrix::multInv(TwoDMatrix &m) const
   KORD_RAISE_IF(m.nrows() != ncols(),
                 "The matrix is not square in PLUMatrix::multInv");
   lapack_int info;
+  lapack_int lda = ld;
   lapack_int mcols = m.ncols();
   lapack_int mrows = m.nrows();
+  lapack_int ldb = m.getLD();
   double *mbase = m.getData().base();
-  dgetrs("N", &mrows, &mcols, inv.base(), &mrows, ipiv,
-         mbase, &mrows, &info);
+  dgetrs("N", &mrows, &mcols, inv.base(), &lda, ipiv,
+         mbase, &ldb, &info);
   KORD_RAISE_IF(info != 0,
                 "Info!=0 in PLUMatrix::multInv");
 }

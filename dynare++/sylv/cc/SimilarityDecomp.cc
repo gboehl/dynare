@@ -51,9 +51,10 @@ SimilarityDecomp::solveX(diag_iter start, diag_iter end,
   lapack_int isgn = -1;
   lapack_int m = A.numRows();
   lapack_int n = B.numRows();
+  lapack_int lda = A.getLD(), ldb = B.getLD();
   double scale;
   lapack_int info;
-  dtrsyl("N", "N", &isgn, &m, &n, A.base(), &m, B.base(), &n,
+  dtrsyl("N", "N", &isgn, &m, &n, A.base(), &lda, B.base(), &ldb,
          C.base(), &m, &scale, &info);
   if (info < -1)
     throw SYLV_MES_EXCEPTION("Wrong parameter to LAPACK dtrsyl.");

@@ -432,8 +432,9 @@ QuasiTriangular::QuasiTriangular(int p, const QuasiTriangular &t)
   blas_int d_size = diagonal.getSize();
   double alpha = 1.0;
   double beta = 0.0;
+  blas_int lda = t.getLD(), ldb = t.getLD(), ldc = ld;
   dgemm("N", "N", &d_size, &d_size, &d_size, &alpha, aux.base(),
-        &d_size, t.getData().base(), &d_size, &beta, getData().base(), &d_size);
+        &lda, t.getData().base(), &ldb, &beta, getData().base(), &ldc);
 }
 
 QuasiTriangular::QuasiTriangular(const SchurDecomp &decomp)
@@ -590,7 +591,7 @@ QuasiTriangular::solvePre(Vector &x, double &eig_min)
     }
 
   blas_int nn = diagonal.getSize();
-  blas_int lda = diagonal.getSize();
+  blas_int lda = ld;
   blas_int incx = x.skip();
   dtrsv("U", "N", "N", &nn, getData().base(), &lda, x.base(), &incx);
 }
@@ -616,7 +617,7 @@ QuasiTriangular::solvePreTrans(Vector &x, double &eig_min)
     }
 
   blas_int nn = diagonal.getSize();
-  blas_int lda = diagonal.getSize();
+  blas_int lda = ld;
   blas_int incx = x.skip();
   dtrsv("U", "T", "N", &nn, getData().base(), &lda, x.base(), &incx);
 }
@@ -627,7 +628,7 @@ QuasiTriangular::multVec(Vector &x, const ConstVector &b) const
 {
   x = b;
   blas_int nn = diagonal.getSize();
-  blas_int lda = diagonal.getSize();
+  blas_int lda = ld;
   blas_int incx = x.skip();
   dtrmv("U", "N", "N", &nn, getData().base(), &lda, x.base(), &incx);
   for (const_diag_iter di = diag_begin(); di != diag_end(); ++di)
@@ -645,7 +646,7 @@ QuasiTriangular::multVecTrans(Vector &x, const ConstVector &b) const
 {
   x = b;
   blas_int nn = diagonal.getSize();
-  blas_int lda = diagonal.getSize();
+  blas_int lda = ld;
   blas_int incx = x.skip();
   dtrmv("U", "T", "N", &nn, getData().base(), &lda, x.base(), &incx);
   for (const_diag_iter di = diag_begin(); di != diag_end(); ++di)

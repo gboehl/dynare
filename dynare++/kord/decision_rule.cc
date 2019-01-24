@@ -563,13 +563,13 @@ void
 RandomShockRealization::choleskyFactor(const TwoDMatrix &v)
 {
   factor = v;
-  lapack_int rows = factor.nrows();
+  lapack_int rows = factor.nrows(), lda = factor.getLD();
   for (int i = 0; i < rows; i++)
     for (int j = i+1; j < rows; j++)
       factor.get(i, j) = 0.0;
   lapack_int info;
 
-  dpotrf("L", &rows, factor.base(), &rows, &info);
+  dpotrf("L", &rows, factor.base(), &lda, &info);
   KORD_RAISE_IF(info != 0,
                 "Info!=0 in RandomShockRealization::choleskyFactor");
 }
