@@ -13,6 +13,15 @@ build_binaries:
       - matlab/preprocessor*/*
       - mex/octave/
       - mex/matlab/
+      - dynare++/parser/cc/*_tab.cc
+      - dynare++/parser/cc/*_ll.cc
+      - dynare++/src/*_tab.cc
+      - dynare++/src/*_ll.cc
+      - dynare++/*/*.o
+      - dynare++/*/*.a
+      - dynare++/*/*/*.o
+      - dynare++/*/*/*.a
+      - dynare++/integ/src/quadrature-points
       - dynare++/src/dynare++
     expire_in: 1 week
 
@@ -81,3 +90,12 @@ testsuite_octave_manual:
     - tags
     - schedules
   when: manual
+
+test_dynare++:
+  stage: test
+  script:
+    - autoreconf -si
+    - ./configure --disable-matlab --disable-octave
+    - make -C dynare++ check
+  dependencies:
+    - build_binaries
