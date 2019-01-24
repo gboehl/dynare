@@ -117,7 +117,7 @@ else
 end
 
 %% Parse equation
-[Y, ~, X, fp, lp] = common_parsing(ds, get_ast({eqtag}), true);
+[Y, lhssub, X, fp, lp] = common_parsing(ds, get_ast({eqtag}), true);
 lhsname = Y{1}.name;
 Y = Y{1}.data;
 X = X{1};
@@ -192,7 +192,7 @@ if ~isempty(fitted_names_dict)
         yhatname = fitted_names_dict{idx, 2};
     end
 end
-oo_.olsgibbs.(eqtag).Yhat = dseries(X*oo_.olsgibbs.(eqtag).posterior.mean.beta, fp, yhatname);
+oo_.olsgibbs.(eqtag).Yhat = dseries(X*oo_.olsgibbs.(eqtag).posterior.mean.beta, fp, yhatname) + lhssub;
 
 % Apply correcting function for Yhat if it was passed
 if any(idx) ...
