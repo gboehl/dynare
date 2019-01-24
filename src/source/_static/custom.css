@@ -14,5 +14,10 @@ div.body {
     text-decoration: underline;
     text-decoration-style: double;
     padding-right: 10px;
-    padding-top: 20px;
+    padding-top: 0px;
+}
+
+blockquote {
+    margin: 0 0 15px 30px;
+    padding: 0;
 }
