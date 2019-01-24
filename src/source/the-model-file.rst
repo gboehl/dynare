@@ -3668,44 +3668,72 @@ The coefficients of the decision rules are stored as follows:
 Estimation
 ==========
 
-Provided that you have observations on some endogenous variables, it is possible to use Dynare to estimate some or all parameters. Both maximum likelihood (as in *Ireland (2004)*) and Bayesian techniques (as in *Rabanal and Rubio-Ramirez (2003)*, *Schorfheide (2000)* or *Smets and Wouters (2003)*) are available. Using Bayesian methods, it is possible to estimate DSGE models, VAR models, or a combination of the two techniques called DSGE-VAR.
+Provided that you have observations on some endogenous variables, it
+is possible to use Dynare to estimate some or all parameters. Both
+maximum likelihood (as in *Ireland (2004)*) and Bayesian techniques
+(as in *Rabanal and Rubio-Ramirez (2003)*, *Schorfheide (2000)* or
+*Smets and Wouters (2003)*) are available. Using Bayesian methods, it
+is possible to estimate DSGE models, VAR models, or a combination of
+the two techniques called DSGE-VAR.
 
-Note that in order to avoid stochastic singularity, you must have at least as many shocks or measurement errors in your model as you have observed variables.
+Note that in order to avoid stochastic singularity, you must have at
+least as many shocks or measurement errors in your model as you have
+observed variables.
 
-The estimation using a first order approximation can benefit from the block decomposition of the model (see :opt:`block`).
+The estimation using a first order approximation can benefit from the
+block decomposition of the model (see :opt:`block`).
 
 .. command:: varobs VARIABLE_NAME...;
 
-    This command lists the name of observed endogenous variables for the estimation procedure. These variables must be available in the data file (see :ref:`estimation_cmd <estim-comm>`).
+    |br| This command lists the name of observed endogenous variables
+    for the estimation procedure. These variables must be available in
+    the data file (see :ref:`estimation_cmd <estim-comm>`).
 
-    Alternatively, this command is also used in conjunction with the ``partial_information`` option of ``stoch_simul``, for declaring the set of observed variables when solving the model under partial information.
+    Alternatively, this command is also used in conjunction with the
+    ``partial_information`` option of ``stoch_simul``, for declaring
+    the set of observed variables when solving the model under partial
+    information.
 
-    Only one instance of ``varobs`` is allowed in a model file. If one needs to declare observed variables in a loop, the macro-processor can be used as shown in the second example below.
+    Only one instance of ``varobs`` is allowed in a model file. If one
+    needs to declare observed variables in a loop, the macro-processor
+    can be used as shown in the second example below.
 
-    A simple example::
+    *Example*
 
-        varobs C y rr;
+        ::
 
-    An example with a loop::
+           varobs C y rr;
 
-        varobs
-        @#for co in countries
-          GDP_@{co}
-        @#endfor
-        ;
+        Declares endogenous variables ``C``, ``y`` and ``rr`` as
+        observed variables.
+
+    *Example* (with a macro-processor loop)
+
+        ::
+
+           varobs
+           @#for co in countries
+           GDP_@{co}
+           @#endfor
+           ;
 
 
 .. block:: observation_trends ;
 
-    This block specifies linear trends for observed variables as functions of model parameters. In case the ``loglinear`` option is used, this corresponds to a linear trend in the logged observables, i.e. an exponential trend in the level of the observables.
+    |br| This block specifies linear trends for observed variables as
+    functions of model parameters. In case the ``loglinear`` option is
+    used, this corresponds to a linear trend in the logged
+    observables, i.e. an exponential trend in the level of the
+    observables.
 
     Each line inside of the block should be of the form::
 
         VARIABLE_NAME(EXPRESSION);
 
-    In most cases, variables shouldn’t be centered when ``observation_trends`` is used.
+    In most cases, variables shouldn’t be centered when
+    ``observation_trends`` is used.
 
-    :ex:
+    *Example*
 
         ::
 
@@ -3717,7 +3745,8 @@ The estimation using a first order approximation can benefit from the block deco
 
 .. block:: estimated_params ;
 
-    This block lists all parameters to be estimated and specifies bounds and priors as necessary.
+    |br| This block lists all parameters to be estimated and specifies
+    bounds and priors as necessary.
 
     Each line corresponds to an estimated parameter.
 
@@ -3728,92 +3757,160 @@ The estimation using a first order approximation can benefit from the block deco
 
     In a Bayesian estimation, each line follows this syntax::
 
-        stderr VARIABLE_NAME | corr VARIABLE_NAME_1, VARIABLE_NAME_2 |
-        PARAMETER_NAME | DSGE_PRIOR_WEIGHT
+        stderr VARIABLE_NAME | corr VARIABLE_NAME_1, VARIABLE_NAME_2 | PARAMETER_NAME | DSGE_PRIOR_WEIGHT
         [, INITIAL_VALUE [, LOWER_BOUND, UPPER_BOUND]], PRIOR_SHAPE,
         PRIOR_MEAN, PRIOR_STANDARD_ERROR [, PRIOR_3RD_PARAMETER [,
         PRIOR_4TH_PARAMETER [, SCALE_PARAMETER ] ] ];
 
-    The first part of the line consists of one of the four following alternatives:
+    The first part of the line consists of one of the four following
+    alternatives:
 
-    ``stderr VARIABLE_NAME``
+    * ``stderr VARIABLE_NAME``
 
-        Indicates that the standard error of the exogenous variable *VARIABLE_NAME*, or of the observation error/measurement errors associated with endogenous observed variable *VARIABLE_NAME*, is to be estimated.
+      Indicates that the standard error of the exogenous
+      variable VARIABLE_NAME, or of the observation
+      error/measurement errors associated with endogenous
+      observed variable VARIABLE_NAME, is to be estimated.
 
-    ``corr VARIABLE_NAME1, VARIABLE_NAME2``
+    * ``corr VARIABLE_NAME1, VARIABLE_NAME2``
 
-        Indicates that the correlation between the exogenous variables *VARIABLE_NAME1* and *VARIABLE_NAME2*, or the correlation of the observation errors/measurement errors associated with endogenous observed variables *VARIABLE_NAME1* and *VARIABLE_NAME2*, is to be estimated. Note that correlations set by previous shocks-blocks or estimation-commands are kept at their value set prior to estimation if they are not estimated again subsequently. Thus, the treatment is the same as in the case of deep parameters set during model calibration and not estimated.
+      Indicates that the correlation between the exogenous
+      variables VARIABLE_NAME1 and VARIABLE_NAME2, or the
+      correlation of the observation errors/measurement errors
+      associated with endogenous observed variables
+      VARIABLE_NAME1 and VARIABLE_NAME2, is to be
+      estimated. Note that correlations set by previous
+      shocks-blocks or estimation-commands are kept at their
+      value set prior to estimation if they are not estimated
+      again subsequently. Thus, the treatment is the same as in
+      the case of deep parameters set during model calibration
+      and not estimated.
 
-    ``PARAMETER_NAME``
+    * ``PARAMETER_NAME``
 
-        The name of a model parameter to be estimated
+      The name of a model parameter to be estimated
 
-    ``DSGE_PRIOR_WEIGHT``
+    * ``DSGE_PRIOR_WEIGHT``
 
-        ...
+      Special name for the weigh of the DSGE model in DSGE-VAR model.
 
 
-    The rest of the line consists of the following fields, some of them being optional:
+    The rest of the line consists of the following fields, some of
+    them being optional:
 
     .. option:: INITIAL_VALUE
 
-        Specifies a starting value for the posterior mode optimizer or the maximum likelihood estimation. If unset, defaults to the prior mean.
+       Specifies a starting value for the posterior mode optimizer or
+       the maximum likelihood estimation. If unset, defaults to the
+       prior mean.
 
     .. option:: LOWER_BOUND
 
-        Specifies a lower bound for the parameter value in maximum likelihood estimation. In a Bayesian estimation context, sets a lower bound only effective while maximizing the posterior kernel. This lower bound does not modify the shape of the prior density, and is only aimed at helping the optimizer in identifying the posterior mode (no consequences for the MCMC). For some prior densities (namely inverse gamma, gamma, uniform, beta or Weibull) it is possible to shift the support of the prior distributions to the left or the right using :opt:`prior_3rd_parameter <PRIOR_3RD_PARAMETER>`. In this case the prior density is effectively modified (note that the truncated Gaussian density is not implemented in Dynare). If unset, defaults to minus infinity (ML) or the natural lower bound of the prior (Bayesian estimation).
+       Specifies a lower bound for the parameter value in maximum
+       likelihood estimation. In a Bayesian estimation context, sets a
+       lower bound only effective while maximizing the posterior
+       kernel. This lower bound does not modify the shape of the prior
+       density, and is only aimed at helping the optimizer in
+       identifying the posterior mode (no consequences for the
+       MCMC). For some prior densities (namely inverse gamma, gamma,
+       uniform, beta or Weibull) it is possible to shift the support
+       of the prior distributions to the left or the right using
+       :opt:`prior_3rd_parameter <PRIOR_3RD_PARAMETER>`. In this case
+       the prior density is effectively modified (note that the
+       truncated Gaussian density is not implemented in Dynare). If
+       unset, defaults to minus infinity (ML) or the natural lower
+       bound of the prior (Bayesian estimation).
 
     .. option:: UPPER_BOUND
 
-        Same as ``lower_bound``, but specifying an upper bound instead.
+       Same as ``lower_bound``, but specifying an upper bound instead.
 
     .. option:: PRIOR_SHAPE
 
-        A keyword specifying the shape of the prior density. The possible values are: ``beta_pdf``, ``gamma_pdf``, ``normal_pdf``, ``uniform_pdf``, ``inv_gamma_pdf``, ``inv_gamma1_pdf``, ``inv_gamma2_pdf`` and ``weibull_pdf``. Note that ``inv_gamma_pdf`` is equivalent to ``inv_gamma1_pdf``.
+       A keyword specifying the shape of the prior density. The
+       possible values are: ``beta_pdf``, ``gamma_pdf``,
+       ``normal_pdf``, ``uniform_pdf``, ``inv_gamma_pdf``,
+       ``inv_gamma1_pdf``, ``inv_gamma2_pdf`` and
+       ``weibull_pdf``. Note that ``inv_gamma_pdf`` is equivalent to
+       ``inv_gamma1_pdf``.
 
     .. option:: PRIOR_MEAN
 
-        The mean of the prior distribution.
+       The mean of the prior distribution.
 
     .. option:: PRIOR_STANDARD_ERROR
 
-        The standard error of the prior distribution.
+       The standard error of the prior distribution.
 
     .. option:: PRIOR_3RD_PARAMETER
 
-        A third parameter of the prior used for generalized beta distribution, generalized gamma, generalized Weibull and for the uniform distribution. Default: ``0``.
+       A third parameter of the prior used for generalized beta
+       distribution, generalized gamma, generalized Weibull and for
+       the uniform distribution. Default: ``0``.
 
     .. option:: PRIOR_4TH_PARAMETER
 
-        A fourth parameter of the prior used for generalized beta distribution and for the uniform distribution. Default: ``1``.
+        A fourth parameter of the prior used for generalized beta
+        distribution and for the uniform distribution. Default: ``1``.
 
     .. option:: SCALE_PARAMETER
 
-        A parameter specific scale parameter for the jumping distribution’s covariance matrix of the Metropolis-Hasting algorithm.
+        A parameter specific scale parameter for the jumping
+        distribution’s covariance matrix of the Metropolis-Hasting
+        algorithm.
 
-    Note that INITIAL_VALUE, LOWER_BOUND, UPPER_BOUND, PRIOR_MEAN, PRIOR_STANDARD_ERROR, PRIOR_3RD_PARAMETER, PRIOR_4TH_PARAMETER and SCALE_PARAMETER can be any valid EXPRESSION. Some of them can be empty, in which Dynare will select a default value depending on the context and the prior shape.
+    Note that INITIAL_VALUE, LOWER_BOUND, UPPER_BOUND, PRIOR_MEAN,
+    PRIOR_STANDARD_ERROR, PRIOR_3RD_PARAMETER, PRIOR_4TH_PARAMETER and
+    SCALE_PARAMETER can be any valid EXPRESSION. Some of them can be
+    empty, in which Dynare will select a default value depending on
+    the context and the prior shape.
 
-    As one uses options more towards the end of the list, all previous options must be filled: for example, if you want to specify SCALE_PARAMETER, you must specify ``PRIOR_3RD_PARAMETER`` and ``PRIOR_4TH_PARAMETER``. Use empty values, if these parameters don’t apply.
+    As one uses options more towards the end of the list, all previous
+    options must be filled: for example, if you want to specify
+    SCALE_PARAMETER, you must specify ``PRIOR_3RD_PARAMETER`` and
+    ``PRIOR_4TH_PARAMETER``. Use empty values, if these parameters
+    don’t apply.
 
-    ::
+    *Example*
 
-        corr eps_1, eps_2, 0.5,  ,  , beta_pdf, 0, 0.3, -1, 1;
+       ::
 
-    The previous line sets a generalized beta prior for the correlation between ``eps_1`` and ``eps_2`` with mean ``0`` and variance ``0.3``. By setting ``PRIOR_3RD_PARAMETER`` to ``-1`` and ``PRIOR_4TH_PARAMETER`` to ``1`` the standard beta distribution with support ``[0,1]`` is changed to a generalized beta with support ``[-1,1]``. Note that LOWER_BOUND and UPPER_BOUND are left empty and thus default to ``-1`` and ``1``, respectively. The initial value is set to ``0.5``.
+          corr eps_1, eps_2, 0.5,  ,  , beta_pdf, 0, 0.3, -1, 1;
 
-    Similarly, the following line::
+       Sets a generalized beta prior for the correlation between
+       ``eps_1`` and ``eps_2`` with mean ``0`` and variance
+       ``0.3``. By setting ``PRIOR_3RD_PARAMETER`` to ``-1`` and
+       ``PRIOR_4TH_PARAMETER`` to ``1`` the standard beta distribution
+       with support ``[0,1]`` is changed to a generalized beta with
+       support ``[-1,1]``. Note that LOWER_BOUND and UPPER_BOUND are
+       left empty and thus default to ``-1`` and ``1``,
+       respectively. The initial value is set to ``0.5``.
 
-        corr eps_1, eps_2, 0.5,  -0.5,  1, beta_pdf, 0, 0.3, -1, 1;
+    *Example*
 
-    sets the same generalized beta distribution as before, but now truncates this distribution to ``[-0.5,1]`` through the use of LOWER_BOUND and UPPER_BOUND. Hence, the prior does not integrate to ``1`` anymore.
+       ::
+
+          corr eps_1, eps_2, 0.5,  -0.5,  1, beta_pdf, 0, 0.3, -1, 1;
+
+       Sets the same generalized beta distribution as before, but now
+       truncates this distribution to ``[-0.5,1]`` through the use of
+       LOWER_BOUND and UPPER_BOUND. Hence, the prior does not
+       integrate to ``1`` anymore.
 
     *Parameter transformation*
 
-    Sometimes, it is desirable to estimate a transformation of a parameter appearing in the model, rather than the parameter itself. It is of course possible to replace the original parameter by a function of the estimated parameter everywhere is the model, but it is often unpractical.
+    Sometimes, it is desirable to estimate a transformation of a
+    parameter appearing in the model, rather than the parameter
+    itself. It is of course possible to replace the original parameter
+    by a function of the estimated parameter everywhere is the model,
+    but it is often unpractical.
 
-    In such a case, it is possible to declare the parameter to be estimated in the parameters statement and to define the transformation, using a pound sign (#) expression (see :ref:`model-decl`).
+    In such a case, it is possible to declare the parameter to be
+    estimated in the parameters statement and to define the
+    transformation, using a pound sign (#) expression (see
+    :ref:`model-decl`).
 
-    :ex:
+    *Example*
 
         ::
 
@@ -3832,32 +3929,41 @@ The estimation using a first order approximation can benefit from the block deco
 .. block:: estimated_params_init ;
            estimated_params_init (OPTIONS...);
 
-    This block declares numerical initial values for the optimizer when these ones are different from the prior mean. It should be specified after the ``estimated_params`` block as otherwise the specified starting values are overwritten by the latter.
+    |br| This block declares numerical initial values for the
+    optimizer when these ones are different from the prior mean. It
+    should be specified after the ``estimated_params`` block as
+    otherwise the specified starting values are overwritten by the
+    latter.
 
     Each line has the following syntax::
 
-        stderr VARIABLE_NAME | corr VARIABLE_NAME_1, VARIABLE_NAME_2 | PARAMETER_NAME
-        , INITIAL_VALUE;
+        stderr VARIABLE_NAME | corr VARIABLE_NAME_1, VARIABLE_NAME_2 | PARAMETER_NAME, INITIAL_VALUE;
 
     *Options*
 
     .. option:: use_calibration
 
-        For not specifically initialized parameters, use the deep parameters and the elements of the covariance matrix specified in the ``shocks`` block from calibration as starting values for estimation. For components of the ``shocks`` block that were not explicitly specified during calibration or which violate the prior, the prior mean is used.
+        For not specifically initialized parameters, use the deep
+        parameters and the elements of the covariance matrix specified
+        in the ``shocks`` block from calibration as starting values
+        for estimation. For components of the ``shocks`` block that
+        were not explicitly specified during calibration or which
+        violate the prior, the prior mean is used.
 
-    See :bck:`estimated_params`, for the meaning and syntax of the various components.
+    See :bck:`estimated_params`, for the meaning and syntax of the
+    various components.
 
 
 .. block:: estimated_params_bounds ;
 
-    This block declares lower and upper bounds for parameters in maximum likelihood estimation.
+    |br| This block declares lower and upper bounds for parameters in maximum likelihood estimation.
 
     Each line has the following syntax::
 
-        stderr VARIABLE_NAME | corr VARIABLE_NAME_1, VARIABLE_NAME_2 | PARAMETER_NAME
-        , LOWER_BOUND, UPPER_BOUND;
+        stderr VARIABLE_NAME | corr VARIABLE_NAME_1, VARIABLE_NAME_2 | PARAMETER_NAME, LOWER_BOUND, UPPER_BOUND;
 
-    See :bck:`estimated_params`, for the meaning and syntax of the various components.
+    See :bck:`estimated_params`, for the meaning and syntax of the
+    various components.
 
 
 .. _estim-comm:
@@ -3865,23 +3971,58 @@ The estimation using a first order approximation can benefit from the block deco
 .. command:: estimation [VARIABLE_NAME...];
              estimation (OPTIONS...) [VARIABLE_NAME...];
 
-    This command runs Bayesian or maximum likelihood estimation.
+    |br| This command runs Bayesian or maximum likelihood estimation.
 
     The following information will be displayed by the command:
 
-        * Results from posterior optimization (also for maximum likelihood)
-        * Marginal log data density
-        * Posterior mean and highest posterior density interval (shortest credible set) from posterior simulation
-        * Convergence diagnostic table when only one MCM chain is used or Metropolis-Hastings convergence graphs documented in *Pfeiffer (2014)* in case of multiple MCM chains
-        * Table with numerical inefficiency factors of the MCMC
-        * Graphs with prior, posterior, and mode
-        * Graphs of smoothed shocks, smoothed observation errors, smoothed and historical variables
+    * Results from posterior optimization (also for maximum likelihood)
+    * Marginal log data density
+    * Posterior mean and highest posterior density interval (shortest
+      credible set) from posterior simulation
+    * Convergence diagnostic table when only one MCM chain is used or
+      Metropolis-Hastings convergence graphs documented in *Pfeiffer
+      (2014)* in case of multiple MCM chains
+    * Table with numerical inefficiency factors of the MCMC
+    * Graphs with prior, posterior, and mode
+    * Graphs of smoothed shocks, smoothed observation errors, smoothed
+      and historical variables
 
-    Note that the posterior moments, smoothed variables, k-step ahead filtered variables and forecasts (when requested) will only be computed on the variables listed after the ``estimation`` command. Alternatively, one can choose to compute these quantities on all endogenous or on all observed variables (see ``consider_all_endogenous`` and ``consider_only_observed`` options below). If no variable is listed after the estimation command, then Dynare will interactively ask which variable set to use.
+    Note that the posterior moments, smoothed variables, k-step ahead
+    filtered variables and forecasts (when requested) will only be
+    computed on the variables listed after the ``estimation``
+    command. Alternatively, one can choose to compute these quantities
+    on all endogenous or on all observed variables (see
+    ``consider_all_endogenous`` and ``consider_only_observed`` options
+    below). If no variable is listed after the estimation command,
+    then Dynare will interactively ask which variable set to use.
 
-    Also, during the MCMC (Bayesian estimation with ``mh_replic`` :math:`>0`) a (graphical or text) waiting bar is displayed showing the progress of the Monte-Carlo and the current value of the acceptance ratio. Note that if the ``load_mh_file`` option is used (see below) the reported acceptance ratio does not take into account the draws from the previous MCMC. In the literature there is a general agreement for saying that the acceptance ratio should be close to one third or one quarter. If this not the case, you can stop the MCMC (``Ctrl-C``) and change the value of option ``mh_jscale`` (see below).
+    Also, during the MCMC (Bayesian estimation with ``mh_replic``
+    :math:`>0`) a (graphical or text) waiting bar is displayed showing
+    the progress of the Monte-Carlo and the current value of the
+    acceptance ratio. Note that if the ``load_mh_file`` option is used
+    (see below) the reported acceptance ratio does not take into
+    account the draws from the previous MCMC. In the literature there
+    is a general agreement for saying that the acceptance ratio should
+    be close to one third or one quarter. If this not the case, you
+    can stop the MCMC (``Ctrl-C``) and change the value of option
+    ``mh_jscale`` (see below).
 
-    Note that by default Dynare generates random numbers using the algorithm ``mt199937ar`` (i.e. Mersenne Twister method) with a seed set equal to ``0``. Consequently the MCMCs in Dynare are deterministic: one will get exactly the same results across different Dynare runs (*ceteris paribus*). For instance, the posterior moments or posterior densities will be exactly the same. This behaviour allows to easily identify the consequences of a change on the model, the priors or the estimation options. But one may also want to check that across multiple runs, with different sequences of proposals, the returned results are almost identical. This should be true if the number of iterations (i.e. the value of ``mh_replic``) is important enough to ensure the convergence of the MCMC to its ergodic distribution. In this case the default behaviour of the random number generators in not wanted, and the user should set the seed according to the system clock before the estimation command using the following command::
+    Note that by default Dynare generates random numbers using the
+    algorithm ``mt199937ar`` (i.e. Mersenne Twister method) with a
+    seed set equal to ``0``. Consequently the MCMCs in Dynare are
+    deterministic: one will get exactly the same results across
+    different Dynare runs (*ceteris paribus*). For instance, the
+    posterior moments or posterior densities will be exactly the
+    same. This behaviour allows to easily identify the consequences of
+    a change on the model, the priors or the estimation options. But
+    one may also want to check that across multiple runs, with
+    different sequences of proposals, the returned results are almost
+    identical. This should be true if the number of iterations
+    (i.e. the value of ``mh_replic``) is important enough to ensure
+    the convergence of the MCMC to its ergodic distribution. In this
+    case the default behaviour of the random number generators in not
+    wanted, and the user should set the seed according to the system
+    clock before the estimation command using the following command::
 
         set_dynare_seed('clock');
 
@@ -3889,9 +4030,36 @@ The estimation using a first order approximation can benefit from the block deco
 
     *Algorithms*
 
-    The Monte Carlo Markov Chain (MCMC) diagnostics are generated by the estimation command if :opt:`mh_replic <mh_replic = INTEGER>` is larger than 2000 and if option :opt:`nodiagnostic` is not used. If :opt:`mh_nblocks <mh_nblocks = INTEGER>` is equal to one, the convergence diagnostics of *Geweke (1992,1999)* is computed. It uses a chi-square test to compare the means of the first and last draws specified by :opt:`geweke_interval <geweke_interval = [DOUBLE DOUBLE]>` after discarding the burn-in of :opt:`mh_drop <mh_drop = DOUBLE>`. The test is computed using variance estimates under the assumption of no serial correlation as well as using tapering windows specified in :opt:`taper_steps <taper_steps = [INTEGER1 INTEGER2 ...]>`. If :opt:`mh_nblocks <mh_nblocks = INTEGER>` is larger than 1, the convergence diagnostics of *Brooks and Gelman (1998)* are used instead. As described in section 3 of *Brooks and Gelman (1998)* the univariate convergence diagnostics are based on comparing pooled and within MCMC moments (Dynare displays the second and third order moments, and the length of the Highest Probability Density interval covering 80% of the posterior distribution). Due to computational reasons, the multivariate convergence diagnostic does not follow *Brooks and Gelman (1998)* strictly, but rather applies their idea for univariate convergence diagnostics to the range of the posterior likelihood function instead of the individual parameters. The posterior kernel is used to aggregate the parameters into a scalar statistic whose convergence is then checked using the *Brooks and Gelman (1998)* univariate convergence diagnostic.
+    The Monte Carlo Markov Chain (MCMC) diagnostics are generated by
+    the estimation command if :opt:`mh_replic <mh_replic = INTEGER>`
+    is larger than 2000 and if option :opt:`nodiagnostic` is not
+    used. If :opt:`mh_nblocks <mh_nblocks = INTEGER>` is equal to one,
+    the convergence diagnostics of *Geweke (1992,1999)* is
+    computed. It uses a chi-square test to compare the means of the
+    first and last draws specified by :opt:`geweke_interval
+    <geweke_interval = [DOUBLE DOUBLE]>` after discarding the burn-in
+    of :opt:`mh_drop <mh_drop = DOUBLE>`. The test is computed using
+    variance estimates under the assumption of no serial correlation
+    as well as using tapering windows specified in :opt:`taper_steps
+    <taper_steps = [INTEGER1 INTEGER2 ...]>`. If :opt:`mh_nblocks
+    <mh_nblocks = INTEGER>` is larger than 1, the convergence
+    diagnostics of *Brooks and Gelman (1998)* are used instead. As
+    described in section 3 of *Brooks and Gelman (1998)* the
+    univariate convergence diagnostics are based on comparing pooled
+    and within MCMC moments (Dynare displays the second and third
+    order moments, and the length of the Highest Probability Density
+    interval covering 80% of the posterior distribution). Due to
+    computational reasons, the multivariate convergence diagnostic
+    does not follow *Brooks and Gelman (1998)* strictly, but rather
+    applies their idea for univariate convergence diagnostics to the
+    range of the posterior likelihood function instead of the
+    individual parameters. The posterior kernel is used to aggregate
+    the parameters into a scalar statistic whose convergence is then
+    checked using the *Brooks and Gelman (1998)* univariate
+    convergence diagnostic.
 
-    The inefficiency factors are computed as in *Giordano et al.(2011)* based on Parzen windows as in e.g. *Andrews (1991)*.
+    The inefficiency factors are computed as in *Giordano et
+    al.(2011)* based on Parzen windows as in e.g. *Andrews (1991)*.
 
 
     *Options*
@@ -3900,116 +4068,189 @@ The estimation using a first order approximation can benefit from the block deco
 
     .. option:: datafile = FILENAME
 
-        The datafile: a ``.m`` file, a ``.mat`` file, a ``.csv`` file, or a ``.xls/.xlsx`` file (under Octave, the `io <http://octave.sourceforge.net/io/>`_ package from Octave-Forge is required for the ``.csv`` and ``.xlsx`` formats and the ``.xls`` file extension is not supported). Note that the base name (i.e. without extension) of the datafile has to be different from the base name of the model file. If there are several files named FILENAME, but with different file endings, the file name must be included in quoted strings and provide the file ending like::
+       The datafile: a ``.m`` file, a ``.mat`` file, a ``.csv`` file,
+       or a ``.xls/.xlsx`` file (under Octave, the `io
+       <http://octave.sourceforge.net/io/>`_ package from Octave-Forge
+       is required for the ``.csv`` and ``.xlsx`` formats and the
+       ``.xls`` file extension is not supported). Note that the base
+       name (i.e. without extension) of the datafile has to be
+       different from the base name of the model file. If there are
+       several files named FILENAME, but with different file endings,
+       the file name must be included in quoted strings and provide
+       the file ending like::
 
             estimation(datafile='../fsdat_simul.mat',...);
 
     .. option:: dirname = FILENAME
 
-        Directory in which to store ``estimation`` output. To pass a subdirectory of a directory, you must quote the argument. Default: ``<mod_file>``.
+       Directory in which to store ``estimation`` output. To pass a
+       subdirectory of a directory, you must quote the
+       argument. Default: ``<mod_file>``.
 
     .. option:: xls_sheet = NAME
 
-        The name of the sheet with the data in an Excel file.
+       The name of the sheet with the data in an Excel file.
 
     .. option:: xls_range = RANGE
 
-        The range with the data in an Excel file. For example, ``xls_range=B2:D200``.
+       The range with the data in an Excel file. For example,
+       ``xls_range=B2:D200``.
 
     .. option:: nobs = INTEGER
 
-        The number of observations following :opt:`first_obs <first_obs = [INTEGER1:INTEGER2]>` to be used. Default: all observations in the file after ``first_obs``.
+       The number of observations following :opt:`first_obs <first_obs
+       = [INTEGER1:INTEGER2]>` to be used. Default: all observations
+       in the file after ``first_obs``.
 
     .. option:: nobs = [INTEGER1:INTEGER2]
 
-        Runs a recursive estimation and forecast for samples of size ranging of ``INTEGER1`` to ``INTEGER2``. Option ``forecast`` must also be specified. The forecasts are stored in the ``RecursiveForecast`` field of the results structure (see :mvar:`RecursiveForecast <oo_.RecursiveForecast>`). The respective results structures ``oo_`` are saved in ``oo_recursive_`` (see :mvar:`oo_recursive_`) and are indexed with the respective sample length.
+       Runs a recursive estimation and forecast for samples of size
+       ranging of ``INTEGER1`` to ``INTEGER2``. Option ``forecast``
+       must also be specified. The forecasts are stored in the
+       ``RecursiveForecast`` field of the results structure (see
+       :mvar:`RecursiveForecast <oo_.RecursiveForecast>`). The
+       respective results structures ``oo_`` are saved in
+       ``oo_recursive_`` (see :mvar:`oo_recursive_`) and are indexed
+       with the respective sample length.
 
     .. option:: first_obs = INTEGER
 
-        The number of the first observation to be used. In case of estimating a DSGE-VAR, ``first_obs`` needs to be larger than the number of lags. Default: ``1``.
+       The number of the first observation to be used. In case of
+       estimating a DSGE-VAR, ``first_obs`` needs to be larger than
+       the number of lags. Default: ``1``.
 
     .. option:: first_obs = [INTEGER1:INTEGER2]
 
-        Runs a rolling window estimation and forecast for samples of fixed size ``nobs`` starting with the first observation ranging from ``INTEGER1`` to ``INTEGER2``. Option ``forecast`` must also be specified. This option is incompatible with requesting recursive forecasts using an expanding window (see :opt:`nobs <nobs = [INTEGER1:INTEGER2]>`). The respective results structures ``oo_`` are saved in ``oo_recursive_`` (see :mvar:`oo_recursive_`) and are indexed with the respective first observation of the rolling window.
+       Runs a rolling window estimation and forecast for samples of
+       fixed size ``nobs`` starting with the first observation ranging
+       from ``INTEGER1`` to ``INTEGER2``. Option ``forecast`` must
+       also be specified. This option is incompatible with requesting
+       recursive forecasts using an expanding window (see :opt:`nobs
+       <nobs = [INTEGER1:INTEGER2]>`). The respective results
+       structures ``oo_`` are saved in ``oo_recursive_`` (see
+       :mvar:`oo_recursive_`) and are indexed with the respective
+       first observation of the rolling window.
 
     .. option:: prefilter = INTEGER
 
-        A value of 1 means that the estimation procedure will demean each data series by its empirical mean. If the :ref:`loglinear <logl>` option without the :opt:`logdata` option is requested, the data will first be logged and then demeaned. Default: ``0``, i.e. no prefiltering.
+       A value of 1 means that the estimation procedure will demean
+       each data series by its empirical mean. If the :ref:`loglinear
+       <logl>` option without the :opt:`logdata` option is requested,
+       the data will first be logged and then demeaned. Default:
+       ``0``, i.e. no prefiltering.
 
     .. option:: presample = INTEGER
 
-        The number of observations after :opt:`first_obs <first_obs = [INTEGER1:INTEGER2]>` to be skipped before evaluating the likelihood. These presample observations do not enter the likelihood, but are used as a training sample for starting the Kalman filter iterations. This option is incompatible with estimating a DSGE-VAR. Default: ``0``.
+       The number of observations after :opt:`first_obs <first_obs =
+       [INTEGER1:INTEGER2]>` to be skipped before evaluating the
+       likelihood. These presample observations do not enter the
+       likelihood, but are used as a training sample for starting the
+       Kalman filter iterations. This option is incompatible with
+       estimating a DSGE-VAR. Default: ``0``.
 
     .. _logl:
 
     .. option:: loglinear
 
-        Computes a log-linear approximation of the model instead of a linear approximation. As always in the context of estimation, the data must correspond to the definition of the variables used in the model (see *Pfeifer (2013)* for more details on how to correctly specify observation equations linking model variables and the data). If you specify the loglinear option, Dynare will take the logarithm of both your model variables and of your data as it assumes the data to correspond to the original non-logged model variables. The displayed posterior results like impulse responses, smoothed variables, and moments will be for the logged variables, not the original un-logged ones. Default: computes a linear approximation.
+       Computes a log-linear approximation of the model instead of a
+       linear approximation. As always in the context of estimation,
+       the data must correspond to the definition of the variables
+       used in the model (see *Pfeifer (2013)* for more details on how
+       to correctly specify observation equations linking model
+       variables and the data). If you specify the loglinear option,
+       Dynare will take the logarithm of both your model variables and
+       of your data as it assumes the data to correspond to the
+       original non-logged model variables. The displayed posterior
+       results like impulse responses, smoothed variables, and moments
+       will be for the logged variables, not the original un-logged
+       ones. Default: computes a linear approximation.
 
     .. option:: logdata
 
-        Dynare applies the :math:`log` transformation to the provided data if a log-linearization of the model is requested (:opt:`loglinear`) unless ``logdata`` option is used. This option is necessary if the user provides data already in logs, otherwise the :math:`log` transformation will be applied twice (this may result in complex data).
+       Dynare applies the :math:`log` transformation to the provided
+       data if a log-linearization of the model is requested
+       (:opt:`loglinear`) unless ``logdata`` option is used. This
+       option is necessary if the user provides data already in logs,
+       otherwise the :math:`log` transformation will be applied twice
+       (this may result in complex data).
 
     .. option:: plot_priors = INTEGER
 
-        Control the plotting of priors.
+       Control the plotting of priors.
 
-        ``0``
+           ``0``
 
-            No prior plot.
+                No prior plot.
 
-        ``1``
+           ``1``
 
-            Prior density for each estimated parameter is plotted. It is important to check that the actual shape of prior densities matches what you have in mind. Ill-chosen values for the prior standard density can result in absurd prior densities.
+               Prior density for each estimated parameter is
+               plotted. It is important to check that the actual shape
+               of prior densities matches what you have in
+               mind. Ill-chosen values for the prior standard density
+               can result in absurd prior densities.
 
-        Default value is ``1``.
+       |br| Default value is ``1``.
 
     .. option:: nograph
 
-        See :opt:`nograph`.
+       See :opt:`nograph`.
 
     .. option:: posterior_nograph
 
-        Suppresses the generation of graphs associated with Bayesian IRFs (:opt:`bayesian_irf`), posterior smoothed objects (:opt:`smoother`), and posterior forecasts (:opt:`forecast`).
+       Suppresses the generation of graphs associated with Bayesian
+       IRFs (:opt:`bayesian_irf`), posterior smoothed objects
+       (:opt:`smoother`), and posterior forecasts (:opt:`forecast`).
 
     .. option:: posterior_graph
 
-        Re-enables the generation of graphs previously shut off with :opt:`posterior_nograph`.
+       Re-enables the generation of graphs previously shut off with
+       :opt:`posterior_nograph`.
 
     .. option:: nodisplay
 
-        See :opt:`nodisplay`.
+       See :opt:`nodisplay`.
 
     .. option:: graph_format = FORMAT
                 graph_format = ( FORMAT, FORMAT... )
 
-        See :opt:`graph_format <graph_format = ( FORMAT, FORMAT... )>`.
+       See :opt:`graph_format <graph_format = ( FORMAT, FORMAT... )>`.
 
     .. option:: lik_init = INTEGER
 
-        Type of initialization of Kalman filter:
+       Type of initialization of Kalman filter:
 
-        ``1``
+           ``1``
 
-            For stationary models, the initial matrix of variance of the error of forecast is set equal to the unconditional variance of the state variables.
+               For stationary models, the initial matrix of variance
+               of the error of forecast is set equal to the
+               unconditional variance of the state variables.
 
-        ``2``
+           ``2``
 
-            For nonstationary models: a wide prior is used with an initial matrix of variance of the error of forecast diagonal with 10 on the diagonal (follows the suggestion of *Harvey and Phillips(1979)*).
+               For nonstationary models: a wide prior is used with an
+               initial matrix of variance of the error of forecast
+               diagonal with 10 on the diagonal (follows the
+               suggestion of *Harvey and Phillips(1979)*).
 
-        ``3``
+           ``3``
 
-            For nonstationary models: use a diffuse filter (use rather the ``diffuse_filter`` option).
+               For nonstationary models: use a diffuse filter (use
+               rather the ``diffuse_filter`` option).
 
-        ``4``
+           ``4``
 
-            The filter is initialized with the fixed point of the Riccati equation.
+               The filter is initialized with the fixed point of the
+               Riccati equation.
 
-        ``5``
+           ``5``
 
-            Use i) option 2 for the non-stationary elements by setting their initial variance in the forecast error matrix to 10 on the diagonal and all covariances to 0 and ii) option 1 for the stationary elements.
+               Use i) option 2 for the non-stationary elements by
+               setting their initial variance in the forecast error
+               matrix to 10 on the diagonal and all covariances to 0
+               and ii) option 1 for the stationary elements.
 
-        Default value is 1. For advanced use only.
+       |br| Default value is 1. For advanced use only.
 
     .. option:: lik_algo = INTEGER
 
@@ -4017,47 +4258,115 @@ The estimation using a first order approximation can benefit from the block deco
 
     .. option:: conf_sig = DOUBLE
 
-        Confidence interval used for classical forecasting after estimation. See :ref:`conf_sig <confsig>`.
+       Confidence interval used for classical forecasting after
+       estimation. See :ref:`conf_sig <confsig>`.
 
     .. option:: mh_conf_sig = DOUBLE
 
-        Confidence/HPD interval used for the computation of prior and posterior statistics like: parameter distributions, prior/posterior moments, conditional variance decomposition, impulse response functions, Bayesian forecasting. Default: ``0.9``.
+       Confidence/HPD interval used for the computation of prior and
+       posterior statistics like: parameter distributions,
+       prior/posterior moments, conditional variance decomposition,
+       impulse response functions, Bayesian forecasting. Default:
+       ``0.9``.
 
     .. option:: mh_replic = INTEGER
 
-        Number of replications for Metropolis-Hastings algorithm. For the time being, ``mh_replic`` should be larger than 1200. Default: ``20000``.
+       Number of replications for Metropolis-Hastings algorithm. For
+       the time being, ``mh_replic`` should be larger
+       than 1200. Default: ``20000``.
 
     .. option:: sub_draws = INTEGER
 
-        Number of draws from the MCMC that are used to compute posterior distribution of various objects (smoothed variable, smoothed shocks, forecast, moments, IRF). The draws used to compute these posterior moments are sampled uniformly in the estimated empirical posterior distribution (i.e. draws of the MCMC). ``sub_draws`` should be smaller than the total number of MCMC draws available. Default: ``min(posterior_max_subsample_draws, (Total number of draws)*(number of chains) )``.
+       Number of draws from the MCMC that are used to compute
+       posterior distribution of various objects (smoothed variable,
+       smoothed shocks, forecast, moments, IRF). The draws used to
+       compute these posterior moments are sampled uniformly in the
+       estimated empirical posterior distribution (i.e. draws of the
+       MCMC). ``sub_draws`` should be smaller than the total number of
+       MCMC draws available. Default:
+       ``min(posterior_max_subsample_draws, (Total number of
+       draws)*(number of chains) )``.
 
     .. option:: posterior_max_subsample_draws = INTEGER
 
-        maximum number of draws from the MCMC used to compute posterior distribution of various objects (smoothed variable, smoothed shocks, forecast, moments, IRF), if not overriden by option ``sub_draws``. Default: ``1200``.
+       Maximum number of draws from the MCMC used to compute posterior
+       distribution of various objects (smoothed variable, smoothed
+       shocks, forecast, moments, IRF), if not overriden by option
+       ``sub_draws``. Default: ``1200``.
 
     .. option:: mh_nblocks = INTEGER
 
-        Number of parallel chains for Metropolis-Hastings algorithm. Default: ``2``.
+       Number of parallel chains for Metropolis-Hastings
+       algorithm. Default: ``2``.
 
     .. option:: mh_drop = DOUBLE
 
-        The fraction of initially generated parameter vectors to be dropped as a burn-in before using posterior simulations. Default: ``0.5``.
+       The fraction of initially generated parameter vectors to be
+       dropped as a burn-in before using posterior
+       simulations. Default: ``0.5``.
 
     .. option:: mh_jscale = DOUBLE
 
-        The scale parameter of the jumping distribution’s covariance matrix (Metropolis-Hastings or TaRB-algorithm). The default value is rarely satisfactory. This option must be tuned to obtain, ideally, an acceptance ratio of 25%-33%. Basically, the idea is to increase the variance of the jumping distribution if the acceptance ratio is too high, and decrease the same variance if the acceptance ratio is too low. In some situations it may help to consider parameter-specific values for this scale parameter. This can be done in the :bck:`estimated_params` block.
+       The scale parameter of the jumping distribution’s covariance
+       matrix (Metropolis-Hastings or TaRB-algorithm). The default
+       value is rarely satisfactory. This option must be tuned to
+       obtain, ideally, an acceptance ratio of 25%-33%. Basically, the
+       idea is to increase the variance of the jumping distribution if
+       the acceptance ratio is too high, and decrease the same
+       variance if the acceptance ratio is too low. In some situations
+       it may help to consider parameter-specific values for this
+       scale parameter. This can be done in the
+       :bck:`estimated_params` block.
 
-        Note that ``mode_compute=6`` will tune the scale parameter to achieve an acceptance rate of :ref:`AcceptanceRateTarget <art>`. The resulting scale parameter will be saved into a file named ``MODEL_FILENAME_mh_scale.mat.`` This file can be loaded in subsequent runs via the ``posterior_sampler_options`` option :ref:`scale_file <scale-file>`. Both ``mode_compute=6`` and ``scale_file`` will overwrite any value specified in ``estimated_params`` with the tuned value. Default: ``0.2``.
+       Note that ``mode_compute=6`` will tune the scale parameter to
+       achieve an acceptance rate of
+       :ref:`AcceptanceRateTarget<art>`. The resulting scale parameter
+       will be saved into a file named
+       ``MODEL_FILENAME_mh_scale.mat.`` This file can be loaded in
+       subsequent runs via the ``posterior_sampler_options`` option
+       :ref:`scale_file <scale-file>`. Both ``mode_compute=6`` and
+       ``scale_file`` will overwrite any value specified in
+       ``estimated_params`` with the tuned value. Default: ``0.2``.
 
     .. option:: mh_init_scale = DOUBLE
 
-        The scale to be used for drawing the initial value of the Metropolis-Hastings chain. Generally, the starting points should be overdispersed for the *Brooks and Gelman (1998)* convergence diagnostics to be meaningful. Default: ``2*mh_jscale.``
+       The scale to be used for drawing the initial value of the
+       Metropolis-Hastings chain. Generally, the starting points
+       should be overdispersed for the *Brooks and Gelman (1998)*
+       convergence diagnostics to be meaningful. Default:
+       ``2*mh_jscale.``
 
-        It is important to keep in mind that ``mh_init_scale`` is set at the beginning of Dynare execution, i.e. the default will not take into account potential changes in ``mh_jscale`` introduced by either ``mode_compute=6`` or the ``posterior_sampler_options`` option :ref:`scale_file <scale-file>`. If ``mh_init_scale`` is too wide during initalization of the posterior sampler so that 100 tested draws are inadmissible (e.g. Blanchard-Kahn conditions are always violated), Dynare will request user input of a new ``mh_init_scale`` value with which the next 100 draws will be drawn and tested. If the :opt:`nointeractive` option has been invoked, the program will instead automatically decrease ``mh_init_scale`` by 10 percent after 100 futile draws and try another 100 draws. This iterative procedure will take place at most 10 times, at which point Dynare will abort with an error message.
+       It is important to keep in mind that ``mh_init_scale`` is set
+       at the beginning of Dynare execution, i.e. the default will not
+       take into account potential changes in ``mh_jscale`` introduced
+       by either ``mode_compute=6`` or the
+       ``posterior_sampler_options`` option :ref:`scale_file
+       <scale-file>`. If ``mh_init_scale`` is too wide during
+       initalization of the posterior sampler so that 100 tested draws
+       are inadmissible (e.g. Blanchard-Kahn conditions are always
+       violated), Dynare will request user input of a new
+       ``mh_init_scale`` value with which the next 100 draws will be
+       drawn and tested. If the :opt:`nointeractive` option has been
+       invoked, the program will instead automatically decrease
+       ``mh_init_scale`` by 10 percent after 100 futile draws and try
+       another 100 draws. This iterative procedure will take place at
+       most 10 times, at which point Dynare will abort with an error
+       message.
 
     .. option:: mh_recover
 
-        Attempts to recover a Metropolis-Hastings simulation that crashed prematurely, starting with the last available saved ``mh``-file. Shouldn’t be used together with ``load_mh_file`` or a different ``mh_replic`` than in the crashed run. Since Dynare 4.5 the proposal density from the previous run will automatically be loaded. In older versions, to assure a neat continuation of the chain with the same proposal density, you should provide the ``mode_file`` used in the previous run or the same user-defined ``mcmc_jumping_covariance`` when using this option. Note that under Octave, a neat continuation of the crashed chain with the respective last random number generator state is currently not supported.
+       Attempts to recover a Metropolis-Hastings simulation that
+       crashed prematurely, starting with the last available saved
+       ``mh``-file. Shouldn’t be used together with ``load_mh_file``
+       or a different ``mh_replic`` than in the crashed run. Since
+       Dynare 4.5 the proposal density from the previous run will
+       automatically be loaded. In older versions, to assure a neat
+       continuation of the chain with the same proposal density, you
+       should provide the ``mode_file`` used in the previous run or
+       the same user-defined ``mcmc_jumping_covariance`` when using
+       this option. Note that under Octave, a neat continuation of the
+       crashed chain with the respective last random number generator
+       state is currently not supported.
 
     .. option:: mh_mode = INTEGER
 
@@ -4065,417 +4374,626 @@ The estimation using a first order approximation can benefit from the block deco
 
     .. option:: mode_file = FILENAME
 
-        Name of the file containing previous value for the mode. When computing the mode, Dynare stores the mode (``xparam1``) and the hessian (``hh``, only if ``cova_compute=1``) in a file called ``MODEL_FILENAME_mode.mat``. After a successful run of the estimation command, the ``mode_file`` will be disabled to prevent other function calls from implicitly using an updated ``mode-file``. Thus, if the mod-file contains subsequent ``estimation`` commands, the ``mode_file`` option, if desired, needs to be specified again.
+       Name of the file containing previous value for the mode. When
+       computing the mode, Dynare stores the mode (``xparam1``) and
+       the hessian (``hh``, only if ``cova_compute=1``) in a file
+       called ``MODEL_FILENAME_mode.mat``. After a successful run of
+       the estimation command, the ``mode_file`` will be disabled to
+       prevent other function calls from implicitly using an updated
+       ``mode-file``. Thus, if the mod-file contains subsequent
+       ``estimation`` commands, the ``mode_file`` option, if desired,
+       needs to be specified again.
 
     .. option:: mode_compute = INTEGER | FUNCTION_NAME
 
-        Specifies the optimizer for the mode computation:
+       Specifies the optimizer for the mode computation:
 
-        ``0``
+           ``0``
 
-            The mode isn’t computed. When the ``mode_file`` option is specified, the mode is simply read from that file.
+                The mode isn’t computed. When the ``mode_file`` option
+                is specified, the mode is simply read from that file.
 
-            When ``mode_file`` option is not specified, Dynare reports the value of the log posterior (log likelihood) evaluated at the initial value of the parameters.
+                When ``mode_file`` option is not specified, Dynare
+                reports the value of the log posterior (log
+                likelihood) evaluated at the initial value of the
+                parameters.
 
-            When ``mode_file`` is not specified and there is no ``estimated_params`` block, but the ``smoother`` option is used, it is a roundabout way to compute the smoothed value of the variables of a model with calibrated parameters.
+                When ``mode_file`` is not specified and there is no
+                ``estimated_params`` block, but the ``smoother``
+                option is used, it is a roundabout way to compute the
+                smoothed value of the variables of a model with
+                calibrated parameters.
 
-        ``1``
+           ``1``
 
-            Uses ``fmincon`` optimization routine (available under MATLAB if the Optimization Toolbox is installed; not available under Octave).
+                Uses ``fmincon`` optimization routine (available under
+                MATLAB if the Optimization Toolbox is installed; not
+                available under Octave).
 
-        ``2``
+           ``2``
 
-            Uses the continuous simulated annealing global optimization algorithm described in *Corana et al.(1987)* and *Goffe et al.(1994)*.
+                Uses the continuous simulated annealing global
+                optimization algorithm described in *Corana et
+                al.(1987)* and *Goffe et al.(1994)*.
 
-        ``3``
+           ``3``
 
-            Uses ``fminunc`` optimization routine (available under MATLAB if the Optimization Toolbox is installed; available under Octave if the `optim <http://octave.sourceforge.net/optim/>`_ package from Octave-Forge is installed).
+                Uses ``fminunc`` optimization routine (available under
+                MATLAB if the Optimization Toolbox is installed;
+                available under Octave if the `optim
+                <http://octave.sourceforge.net/optim/>`_ package from
+                Octave-Forge is installed).
 
-        ``4``
+           ``4``
 
-            Uses Chris Sims’s ``csminwel``.
+                Uses Chris Sims’s ``csminwel``.
 
-        ``5``
+           ``5``
 
-            Uses Marco Ratto’s ``newrat``. This value is not compatible with non linear filters or DSGE-VAR models. This is a slice optimizer: most iterations are a sequence of univariate optimization step, one for each estimated parameter or shock. Uses ``csminwel`` for line search in each step.
+                Uses Marco Ratto’s ``newrat``. This value is not
+                compatible with non linear filters or DSGE-VAR
+                models. This is a slice optimizer: most iterations are
+                a sequence of univariate optimization step, one for
+                each estimated parameter or shock. Uses ``csminwel``
+                for line search in each step.
 
-        ``6``
+           ``6``
 
-            Uses a Monte-Carlo based optimization routine (see `Dynare wiki`_ for more details).
+                Uses a Monte-Carlo based optimization routine (see
+                `Dynare wiki`_ for more details).
 
-        ``7``
+           ``7``
 
-            Uses ``fminsearch``, a simplex-based optimization routine (available under MATLAB if the Optimization Toolbox is installed; available under Octave if the optim package from Octave-Forge is installed).
+                Uses ``fminsearch``, a simplex-based optimization
+                routine (available under MATLAB if the Optimization
+                Toolbox is installed; available under Octave if the
+                optim package from Octave-Forge is installed).
 
-        ``8``
+           ``8``
 
-            Uses Dynare implementation of the Nelder-Mead simplex-based optimization routine (generally more efficient than the MATLAB or Octave implementation available with ``mode_compute=7``).
+                Uses Dynare implementation of the Nelder-Mead
+                simplex-based optimization routine (generally more
+                efficient than the MATLAB or Octave implementation
+                available with ``mode_compute=7``).
 
-        ``9``
+           ``9``
 
-            Uses the CMA-ES (Covariance Matrix Adaptation Evolution Strategy) algorithm of *Hansen and Kern (2004)*, an evolutionary algorithm for difficult non-linear non-convex optimization.
+                Uses the CMA-ES (Covariance Matrix Adaptation
+                Evolution Strategy) algorithm of *Hansen and Kern
+                (2004)*, an evolutionary algorithm for difficult
+                non-linear non-convex optimization.
 
-        ``10``
+           ``10``
 
-            Uses the ``simpsa`` algorithm, based on the combination of the non-linear simplex and simulated annealing algorithms as proposed by *Cardoso, Salcedo and Feyo de Azevedo (1996)*.
+                Uses the ``simpsa`` algorithm, based on the
+                combination of the non-linear simplex and simulated
+                annealing algorithms as proposed by *Cardoso, Salcedo
+                and Feyo de Azevedo (1996)*.
 
-        ``11``
+           ``11``
 
-            This is not strictly speaking an optimization algorithm. The (estimated) parameters are treated as state variables and estimated jointly with the original state variables of the model using a nonlinear filter. The algorithm implemented in Dynare is described in *Liu and West (2001)*.
+                This is not strictly speaking an optimization
+                algorithm. The (estimated) parameters are treated as
+                state variables and estimated jointly with the
+                original state variables of the model using a
+                nonlinear filter. The algorithm implemented in Dynare
+                is described in *Liu and West (2001)*.
 
-        ``12``
+           ``12``
 
-            Uses the ``particleswarm`` optimization routine (available under MATLAB if the Global Optimization Toolbox is installed; not available under Octave).
+                Uses the ``particleswarm`` optimization routine
+                (available under MATLAB if the Global Optimization
+                Toolbox is installed; not available under Octave).
 
-        ``101``
+           ``101``
 
-            Uses the SolveOpt algorithm for local nonlinear optimization problems proposed by *Kuntsevich and Kappel (1997)*.
+                Uses the SolveOpt algorithm for local nonlinear
+                optimization problems proposed by *Kuntsevich and
+                Kappel (1997)*.
 
-        ``102``
+           ``102``
 
-            Uses ``simulannealbnd`` optimization routine (available under MATLAB if the Global Optimization Toolbox is installed; not available under Octave)
+                Uses ``simulannealbnd`` optimization routine
+                (available under MATLAB if the Global Optimization
+                Toolbox is installed; not available under Octave)
 
-        ``FUNCTION_NAME``
+           ``FUNCTION_NAME``
 
-            It is also possible to give a FUNCTION_NAME to this option, instead of an INTEGER. In that case, Dynare takes the return value of that function as the posterior mode.
+                It is also possible to give a FUNCTION_NAME to this
+                option, instead of an INTEGER. In that case, Dynare
+                takes the return value of that function as the
+                posterior mode.
 
-        Default value is ``4``.
+       |br| Default value is ``4``.
 
     .. option:: silent_optimizer
 
-        Instructs Dynare to run mode computing/optimization silently without displaying results or saving files in between. Useful when running loops.
+       Instructs Dynare to run mode computing/optimization silently
+       without displaying results or saving files in between. Useful
+       when running loops.
 
     .. option:: mcmc_jumping_covariance = OPTION
 
-        Tells Dynare which covariance to use for the proposal density of the MCMC sampler. OPTION can be one of the following:
+       Tells Dynare which covariance to use for the proposal density
+       of the MCMC sampler. OPTION can be one of the following:
 
-        ``hessian``
+           ``hessian``
 
-            Uses the Hessian matrix computed at the mode.
+               Uses the Hessian matrix computed at the mode.
 
-        ``prior_variance``
+           ``prior_variance``
 
-            Uses the prior variances. No infinite prior variances are allowed in this case.
+               Uses the prior variances. No infinite prior variances
+               are allowed in this case.
 
-        ``identity_matrix``
+           ``identity_matrix``
 
-            Uses an identity matrix.
+               Uses an identity matrix.
 
-        ``FILENAME``
+           ``FILENAME``
 
-            Loads an arbitrary user-specified covariance matrix from ``FILENAME.mat``. The covariance matrix must be saved in a variable named ``jumping_covariance``, must be square, positive definite, and have the same dimension as the number of estimated parameters.
+               Loads an arbitrary user-specified covariance matrix
+               from ``FILENAME.mat``. The covariance matrix must be
+               saved in a variable named ``jumping_covariance``, must
+               be square, positive definite, and have the same
+               dimension as the number of estimated parameters.
 
-        Note that the covariance matrices are still scaled with :opt:`mh_jscale <mh_jscale = DOUBLE>`. Default value is ``hessian``.
+       Note that the covariance matrices are still scaled with
+       :opt:`mh_jscale <mh_jscale = DOUBLE>`. Default value is
+       ``hessian``.
 
     .. option:: mode_check
 
-        Tells Dynare to plot the posterior density for values around the computed mode for each estimated parameter in turn. This is helpful to diagnose problems with the optimizer. Note that for ``order>1`` the likelihood function resulting from the particle filter is not differentiable anymore due to random chatter introduced by selecting different particles for different parameter values. For this reason, the ``mode_check`` plot may look wiggly.
+       Tells Dynare to plot the posterior density for values around
+       the computed mode for each estimated parameter in turn. This is
+       helpful to diagnose problems with the optimizer. Note that for
+       ``order>1`` the likelihood function resulting from the particle
+       filter is not differentiable anymore due to random chatter
+       introduced by selecting different particles for different
+       parameter values. For this reason, the ``mode_check`` plot may
+       look wiggly.
 
     .. option:: mode_check_neighbourhood_size = DOUBLE
 
-        Used in conjunction with option ``mode_check``, gives the width of the window around the posterior mode to be displayed on the diagnostic plots. This width is expressed in percentage deviation. The ``Inf`` value is allowed, and will trigger a plot over the entire domain (see also ``mode_check_symmetric_plots``). Default:``0.5``.
+       Used in conjunction with option ``mode_check``, gives the width
+       of the window around the posterior mode to be displayed on the
+       diagnostic plots. This width is expressed in percentage
+       deviation. The ``Inf`` value is allowed, and will trigger a
+       plot over the entire domain (see also
+       ``mode_check_symmetric_plots``). Default:``0.5``.
 
     .. option:: mode_check_symmetric_plots = INTEGER
 
-        Used in conjunction with option ``mode_check``, if set to ``1``, tells Dynare to ensure that the check plots are symmetric around the posterior mode. A value of ``0`` allows to have asymmetric plots, which can be useful if the posterior mode is close to a domain boundary, or in conjunction with ``mode_check_neighbourhood_size = Inf`` when the domain in not the entire real line. Default: ``1``.
+       Used in conjunction with option ``mode_check``, if set to
+       ``1``, tells Dynare to ensure that the check plots are
+       symmetric around the posterior mode. A value of ``0`` allows to
+       have asymmetric plots, which can be useful if the posterior
+       mode is close to a domain boundary, or in conjunction with
+       ``mode_check_neighbourhood_size = Inf`` when the domain in not
+       the entire real line. Default: ``1``.
 
     .. option:: mode_check_number_of_points = INTEGER
 
-        Number of points around the posterior mode where the posterior kernel is evaluated (for each parameter). Default is ``20``.
+       Number of points around the posterior mode where the posterior
+       kernel is evaluated (for each parameter). Default is ``20``.
 
     .. option:: prior_trunc = DOUBLE
 
-        Probability of extreme values of the prior density that is ignored when computing bounds for the parameters. Default: ``1e-32``.
+       Probability of extreme values of the prior density that is
+       ignored when computing bounds for the parameters. Default:
+       ``1e-32``.
 
     .. option:: huge_number = DOUBLE
 
-        Value for replacing infinite values in the definition of (prior) bounds when finite values are required for computational reasons. Default: ``1e7``.
+       Value for replacing infinite values in the definition of
+       (prior) bounds when finite values are required for
+       computational reasons. Default: ``1e7``.
 
     .. option:: load_mh_file
 
-        Tells Dynare to add to previous Metropolis-Hastings simulations instead of starting from scratch. Since Dynare 4.5 the proposal density from the previous run will automatically be loaded. In older versions, to assure a neat continuation of the chain with the same proposal density, you should provide the ``mode_file`` used in the previous run or the same user-defined ``mcmc_jumping_covariance`` when using this option. Shouldn’t be used together with ``mh_recover``. Note that under Octave, a neat continuation of the chain with the last random number generator state of the already present draws is currently not supported.
+       Tells Dynare to add to previous Metropolis-Hastings simulations
+       instead of starting from scratch. Since Dynare 4.5 the proposal
+       density from the previous run will automatically be loaded. In
+       older versions, to assure a neat continuation of the chain with
+       the same proposal density, you should provide the ``mode_file``
+       used in the previous run or the same user-defined
+       ``mcmc_jumping_covariance`` when using this option. Shouldn’t
+       be used together with ``mh_recover``. Note that under Octave, a
+       neat continuation of the chain with the last random number
+       generator state of the already present draws is currently not
+       supported.
 
     .. option:: load_results_after_load_mh
 
-        This option is available when loading a previous MCMC run without adding additional draws, i.e. when ``load_mh_file`` is specified with ``mh_replic=0``. It tells Dynare to load the previously computed convergence diagnostics, marginal data density, and posterior statistics from an existing ``_results`` file instead of recomputing them.
+       This option is available when loading a previous MCMC run
+       without adding additional draws, i.e. when ``load_mh_file`` is
+       specified with ``mh_replic=0``. It tells Dynare to load the
+       previously computed convergence diagnostics, marginal data
+       density, and posterior statistics from an existing ``_results``
+       file instead of recomputing them.
 
     .. option:: optim = (NAME, VALUE, ...)
 
-        A list of NAME and VALUE pairs. Can be used to set options for the optimization routines. The set of available options depends on the selected optimization routine (i.e. on the value of option :opt:`mode_compute <mode_compute = INTEGER | FUNCTION_NAME>`):
+       A list of NAME and VALUE pairs. Can be used to set options for
+       the optimization routines. The set of available options depends
+       on the selected optimization routine (i.e. on the value of
+       option :opt:`mode_compute <mode_compute = INTEGER |
+       FUNCTION_NAME>`):
 
-        ``1, 3, 7, 12``
+           ``1, 3, 7, 12``
 
-            Available options are given in the documentation of the MATLAB Optimization Toolbox or in Octave’s documentation.
+               Available options are given in the documentation of the
+               MATLAB Optimization Toolbox or in Octave’s
+               documentation.
 
-        ``2``
+           ``2``
 
-            Available options are:
+               Available options are:
 
-            ``'initial_step_length'``
+                   ``'initial_step_length'``
 
-                Initial step length. Default: ``1``.
+                       Initial step length. Default: ``1``.
 
-            ``'initial_temperature'``
+                   ``'initial_temperature'``
 
-                Initial temperature. Default: ``15``.
+                       Initial temperature. Default: ``15``.
 
-            ``'MaxIter'``
+                   ``'MaxIter'``
 
-                Maximum number of function evaluations. Default: ``100000``.
+                       Maximum number of function
+                       evaluations. Default: ``100000``.
 
-            ``'neps'``
+                   ``'neps'``
 
-                Number of final function values used to decide upon termination. Default: ``10``.
+                       Number of final function values used to decide
+                       upon termination. Default: ``10``.
 
-            ``'ns'``
+                   ``'ns'``
 
-                Number of cycles. Default: ``10``.
+                       Number of cycles. Default: ``10``.
 
-            ``'nt'``
+                   ``'nt'``
 
-                Number of iterations before temperature reduction. Default: ``10``.
+                       Number of iterations before temperature
+                       reduction. Default: ``10``.
 
-            ``'step_length_c'``
+                   ``'step_length_c'``
 
-                Step length adjustment. Default: ``0.1``.
+                       Step length adjustment. Default: ``0.1``.
 
-            ``'TolFun'``
+                   ``'TolFun'``
 
-                Stopping criteria. Default: ``1e-8``.
+                       Stopping criteria. Default: ``1e-8``.
 
-            ``'rt'``
+                   ``'rt'``
 
-                Temperature reduction factor. Default: ``0.1``.
+                       Temperature reduction factor. Default: ``0.1``.
 
-            ``'verbosity'``
+                   ``'verbosity'``
 
-                Controls verbosity of display during optimization, ranging from ``0`` (silent) to ``3`` (each function evaluation). Default: ``1``
+                       Controls verbosity of display during
+                       optimization, ranging from ``0`` (silent) to
+                       ``3`` (each function evaluation). Default:
+                       ``1``
 
-        ``4``
+           ``4``
 
-            Available options are:
+               Available options are:
 
-            ``'InitialInverseHessian'``
+                   ``'InitialInverseHessian'``
 
-                Initial approximation for the inverse of the Hessian matrix of the posterior kernel (or likelihood). Obviously this approximation has to be a square, positive definite and symmetric matrix. Default: ``'1e-4*eye(nx)'``, where nx is the number of parameters to be estimated.
+                       Initial approximation for the inverse of the
+                       Hessian matrix of the posterior kernel (or
+                       likelihood). Obviously this approximation has
+                       to be a square, positive definite and symmetric
+                       matrix. Default: ``'1e-4*eye(nx)'``, where nx
+                       is the number of parameters to be estimated.
 
-            ``'MaxIter'``
+                   ``'MaxIter'``
 
-                Maximum number of iterations. Default: ``1000``.
+                       Maximum number of iterations. Default: ``1000``.
 
-            ``'NumgradAlgorithm'``
+                   ``'NumgradAlgorithm'``
 
-                Possible values are ``2``, ``3`` and ``5``, respectively, corresponding to the two, three and five points formula used to compute the gradient of the objective function (see *Abramowitz and Stegun (1964)*). Values ``13`` and ``15`` are more experimental. If perturbations on the right and the left increase the value of the objective function (we minimize this function) then we force the corresponding element of the gradient to be zero. The idea is to temporarily reduce the size of the optimization problem. Default: ``2``.
+                       Possible values are ``2``, ``3`` and ``5``,
+                       respectively, corresponding to the two, three
+                       and five points formula used to compute the
+                       gradient of the objective function (see
+                       *Abramowitz and Stegun (1964)*). Values ``13``
+                       and ``15`` are more experimental. If
+                       perturbations on the right and the left
+                       increase the value of the objective function
+                       (we minimize this function) then we force the
+                       corresponding element of the gradient to be
+                       zero. The idea is to temporarily reduce the
+                       size of the optimization problem. Default:
+                       ``2``.
 
-            ``'NumgradEpsilon'``
+                   ``'NumgradEpsilon'``
 
-                Size of the perturbation used to compute numerically the gradient of the objective function. Default: ``1e-6``.
+                       Size of the perturbation used to compute
+                       numerically the gradient of the objective
+                       function. Default: ``1e-6``.
 
-            ``'TolFun'``
+                   ``'TolFun'``
 
-                Stopping criteria. Default: ``1e-7``.
+                       Stopping criteria. Default: ``1e-7``.
 
-            ``'verbosity'``
+                   ``'verbosity'``
 
-                Controls verbosity of display during optimization. Set to ``0`` to set to silent. Default: ``1``.
+                       Controls verbosity of display during
+                       optimization. Set to ``0`` to set to
+                       silent. Default: ``1``.
 
-            ``'SaveFiles'``
+                   ``'SaveFiles'``
 
-                Controls saving of intermediate results during optimization. Set to ``0`` to shut off saving. Default: ``1``.
+                       Controls saving of intermediate results during
+                       optimization. Set to ``0`` to shut off
+                       saving. Default: ``1``.
 
-        ``5``
+           ``5``
 
-            Available options are:
+               Available options are:
 
-            ``'Hessian'``
+               ``'Hessian'``
 
-                Triggers three types of Hessian computations. ``0``: outer product gradient; ``1``: default DYNARE Hessian routine; ``2``: ’mixed’ outer product gradient, where diagonal elements are obtained using second order derivation formula and outer product is used for correlation structure. Both {0} and {2} options require univariate filters, to ensure using maximum number of individual densities and a positive definite Hessian. Both {0} and {2} are quicker than default DYNARE numeric Hessian, but provide decent starting values for Metropolis for large models (option {2} being more accurate than {0}). Default: ``1``.
+                   Triggers three types of Hessian
+                   computations. ``0``: outer product gradient; ``1``:
+                   default DYNARE Hessian routine; ``2``: ’mixed’
+                   outer product gradient, where diagonal elements are
+                   obtained using second order derivation formula and
+                   outer product is used for correlation
+                   structure. Both {0} and {2} options require
+                   univariate filters, to ensure using maximum number
+                   of individual densities and a positive definite
+                   Hessian. Both {0} and {2} are quicker than default
+                   DYNARE numeric Hessian, but provide decent starting
+                   values for Metropolis for large models (option {2}
+                   being more accurate than {0}). Default: ``1``.
 
-            ``'MaxIter'``
+               ``'MaxIter'``
 
-                Maximum number of iterations. Default: ``1000``.
+                   Maximum number of iterations. Default: ``1000``.
 
-            ``'TolFun'``
+               ``'TolFun'``
 
-                Stopping criteria. Default: ``1e-5`` for numerical derivatives, ``1e-7`` for analytic derivatives.
+                   Stopping criteria. Default: ``1e-5`` for numerical
+                   derivatives, ``1e-7`` for analytic derivatives.
 
-            ``'verbosity'``
+               ``'verbosity'``
 
-                Controls verbosity of display during optimization. Set to ``0`` to set to silent. Default: ``1``.
+                   Controls verbosity of display during
+                   optimization. Set to ``0`` to set to
+                   silent. Default: ``1``.
 
-            ``'SaveFiles'``
+               ``'SaveFiles'``
 
-                Controls saving of intermediate results during optimization. Set to ``0`` to shut off saving. Default: ``1``.
+                   Controls saving of intermediate results during
+                   optimization. Set to ``0`` to shut off
+                   saving. Default: ``1``.
 
-        ``6``
+           ``6``
 
-            Available options are:
+               Available options are:
 
-            .. _art:
+                   .. _art:
 
-            ``'AcceptanceRateTarget'``
+                   ``'AcceptanceRateTarget'``
 
-                A real number between zero and one. The scale parameter of the jumping distribution is adjusted so that the effective acceptance rate matches the value of option ``'AcceptanceRateTarget'``. Default: ``1.0/3.0``.
+                       A real number between zero and one. The scale
+                       parameter of the jumping distribution is
+                       adjusted so that the effective acceptance rate
+                       matches the value of option
+                       ``'AcceptanceRateTarget'``. Default:
+                       ``1.0/3.0``.
 
-            ``'InitialCovarianceMatrix'``
+                   ``'InitialCovarianceMatrix'``
 
-                Initial covariance matrix of the jumping distribution. Default is ``'previous'`` if option ``mode_file`` is used, ``'prior'`` otherwise.
+                       Initial covariance matrix of the jumping
+                       distribution. Default is ``'previous'`` if
+                       option ``mode_file`` is used, ``'prior'``
+                       otherwise.
 
-            ``'nclimb-mh'``
+                   ``'nclimb-mh'``
 
-                Number of iterations in the last MCMC (climbing mode). Default: ``200000``.
+                       Number of iterations in the last MCMC (climbing
+                       mode). Default: ``200000``.
 
-            ``'ncov-mh'``
+                   ``'ncov-mh'``
 
-                Number of iterations used for updating the covariance matrix of the jumping distribution. Default: ``20000``.
+                       Number of iterations used for updating the
+                       covariance matrix of the jumping
+                       distribution. Default: ``20000``.
 
-            ``'nscale-mh'``
+                   ``'nscale-mh'``
 
-                Maximum number of iterations used for adjusting the scale parameter of the jumping distribution. Default: ``200000``.
+                       Maximum number of iterations used for adjusting
+                       the scale parameter of the jumping
+                       distribution. Default: ``200000``.
 
-            ``'NumberOfMh'``
+                   ``'NumberOfMh'``
 
-                Number of MCMC run sequentially. Default: ``3``.
+                       Number of MCMC run sequentially. Default: ``3``.
 
-        ``8``
+           ``8``
 
-            Available options are:
+               Available options are:
 
-            ``'InitialSimplexSize'``
+                   ``'InitialSimplexSize'``
 
-                Initial size of the simplex, expressed as percentage deviation from the provided initial guess in each direction. Default: ``.05``.
+                       Initial size of the simplex, expressed as
+                       percentage deviation from the provided initial
+                       guess in each direction. Default: ``.05``.
 
-            ``'MaxIter'``
+                   ``'MaxIter'``
 
-                Maximum number of iterations. Default: ``5000``.
+                       Maximum number of iterations. Default: ``5000``.
 
-            ``'MaxFunEvals'``
+                   ``'MaxFunEvals'``
 
-                Maximum number of objective function evaluations. No default.
+                       Maximum number of objective function
+                       evaluations. No default.
 
-            ``'MaxFunvEvalFactor'``
+                   ``'MaxFunvEvalFactor'``
 
-                Set ``MaxFunvEvals`` equal to ``MaxFunvEvalFactor`` times the number of estimated parameters. Default: ``500``.
+                       Set ``MaxFunvEvals`` equal to
+                       ``MaxFunvEvalFactor`` times the number of
+                       estimated parameters. Default: ``500``.
 
-            ``'TolFun'``
+                   ``'TolFun'``
 
-                Tolerance parameter (w.r.t the objective function). Default: ``1e-4``.
+                       Tolerance parameter (w.r.t the objective
+                       function). Default: ``1e-4``.
 
-            ``'TolX'``
+                   ``'TolX'``
 
-                Tolerance parameter (w.r.t the instruments). Default: ``1e-4``.
+                       Tolerance parameter (w.r.t the
+                       instruments). Default: ``1e-4``.
 
-            ``'verbosity'``
+                   ``'verbosity'``
 
-                Controls verbosity of display during optimization. Set to ``0`` to set to silent. Default: ``1``.
+                       Controls verbosity of display during
+                       optimization. Set to ``0`` to set to
+                       silent. Default: ``1``.
 
-        ``9``
+           ``9``
 
-            Available options are:
+               Available options are:
 
-            ``'CMAESResume'``
+                   ``'CMAESResume'``
 
-                Resume previous run. Requires the ``variablescmaes.mat`` from the last run. Set to ``1`` to enable. Default: ``0``.
+                       Resume previous run. Requires the
+                       ``variablescmaes.mat`` from the last run. Set
+                       to ``1`` to enable. Default: ``0``.
 
-            ``'MaxIter'``
+                   ``'MaxIter'``
 
-                Maximum number of iterations.
+                       Maximum number of iterations.
 
-            ``'MaxFunEvals'``
+                   ``'MaxFunEvals'``
 
-                Maximum number of objective function evaluations. Default: ``Inf``.
+                       Maximum number of objective function
+                       evaluations. Default: ``Inf``.
 
-            ``'TolFun'``
+                   ``'TolFun'``
 
-                Tolerance parameter (w.r.t the objective function). Default: ``1e-7``.
+                       Tolerance parameter (w.r.t the objective
+                       function). Default: ``1e-7``.
 
-            ``'TolX'``
+                   ``'TolX'``
 
-                Tolerance parameter (w.r.t the instruments). Default: ``1e-7``.
+                       Tolerance parameter (w.r.t the
+                       instruments). Default: ``1e-7``.
 
-            ``'verbosity'``
+                   ``'verbosity'``
 
-                Controls verbosity of display during optimization. Set to ``0`` to set to silent. Default: ``1``.
+                       Controls verbosity of display during
+                       optimization. Set to ``0`` to set to
+                       silent. Default: ``1``.
 
-            ``'SaveFiles'``
+                   ``'SaveFiles'``
 
-                Controls saving of intermediate results during optimization. Set to ``0`` to shut off saving. Default: ``1``.
+                       Controls saving of intermediate results during
+                       optimization. Set to ``0`` to shut off
+                       saving. Default: ``1``.
 
 
-        ``10``
+           ``10``
 
-            Available options are:
+               Available options are:
 
-            ``'EndTemperature'``
+                   ``'EndTemperature'``
 
-                Terminal condition w.r.t the temperature. When the temperature reaches ``EndTemperature``, the temperature is set to zero and the algorithm falls back into a standard simplex algorithm. Default: ``0.1``.
+                       Terminal condition w.r.t the temperature. When
+                       the temperature reaches ``EndTemperature``, the
+                       temperature is set to zero and the algorithm
+                       falls back into a standard simplex
+                       algorithm. Default: ``0.1``.
 
-            ``'MaxIter'``
+                   ``'MaxIter'``
 
-                Maximum number of iterations. Default: ``5000``.
+                       Maximum number of iterations. Default:
+                       ``5000``.
 
-            ``'MaxFunvEvals'``
+                   ``'MaxFunvEvals'``
 
-                Maximum number of objective function evaluations. No default.
+                       Maximum number of objective function
+                       evaluations. No default.
 
-            ``'TolFun'``
+                   ``'TolFun'``
 
-                Tolerance parameter (w.r.t the objective function). Default: ``1e-4``.
+                       Tolerance parameter (w.r.t the objective
+                       function). Default: ``1e-4``.
 
-            ``'TolX'``
+                   ``'TolX'``
 
-                Tolerance parameter (w.r.t the instruments). Default: ``1e-4``.
+                       Tolerance parameter (w.r.t the
+                       instruments). Default: ``1e-4``.
 
-            ``'verbosity'``
+                   ``'verbosity'``
 
-                Controls verbosity of display during optimization. Set to ``0`` to set to silent. Default: ``1``.
+                       Controls verbosity of display during
+                       optimization. Set to ``0`` to set to
+                       silent. Default: ``1``.
 
-        ``101``
+           ``101``
 
-            Available options are:
+               Available options are:
 
-            ``'LBGradientStep'``
+                   ``'LBGradientStep'``
 
-                Lower bound for the stepsize used for the difference approximation of gradients. Default: ``1e-11``.
+                       Lower bound for the stepsize used for the
+                       difference approximation of gradients. Default:
+                       ``1e-11``.
 
-            ``'MaxIter'``
+                   ``'MaxIter'``
 
-                Maximum number of iterations. Default: ``15000``
+                       Maximum number of iterations. Default: ``15000``
 
-            ``'SpaceDilation'``
+                   ``'SpaceDilation'``
 
-                Coefficient of space dilation. Default: ``2.5``.
+                       Coefficient of space dilation. Default: ``2.5``.
 
-            ``'TolFun'``
+                   ``'TolFun'``
 
-                Tolerance parameter (w.r.t the objective function). Default: ``1e-6``.
+                       Tolerance parameter (w.r.t the objective
+                       function). Default: ``1e-6``.
 
-            ``'TolX'``
+                   ``'TolX'``
 
-                Tolerance parameter (w.r.t the instruments). Default: ``1e-6``.
+                       Tolerance parameter (w.r.t the
+                       instruments). Default: ``1e-6``.
 
-            ``'verbosity'``
+                   ``'verbosity'``
 
-                Controls verbosity of display during optimization. Set to ``0`` to set to silent. Default: ``1``.
+                       Controls verbosity of display during
+                       optimization. Set to ``0`` to set to
+                       silent. Default: ``1``.
 
-        ``102``
+           ``102``
 
-            Available options are given in the documentation of the MATLAB Global Optimization Toolbox.
+               Available options are given in the documentation of the
+               MATLAB Global Optimization Toolbox.
 
-        *Example*
+       *Example*
 
-        To change the defaults of ``csminwel`` (``mode_compute=4``)::
+           To change the defaults of ``csminwel`` (``mode_compute=4``)::
 
-            estimation(..., mode_compute=4, optim=('NumgradAlgorithm',3,'TolFun',1e-5),...);
+               estimation(..., mode_compute=4,optim=('NumgradAlgorithm',3,'TolFun',1e-5),...);
 
 
     .. option:: nodiagnostic
 
-        Does not compute the convergence diagnostics for Metropolis-Hastings. Default: diagnostics are computed and displayed.
+       Does not compute the convergence diagnostics for
+       Metropolis-Hastings. Default: diagnostics are computed and
+       displayed.
 
     .. option:: bayesian_irf
 
-        Triggers the computation of the posterior distribution of IRFs. The length of the IRFs are controlled by the ``irf`` option. Results are stored in ``oo_.PosteriorIRF.dsge`` (see below for a description of this variable).
+       Triggers the computation of the posterior distribution of
+       IRFs. The length of the IRFs are controlled by the ``irf``
+       option. Results are stored in ``oo_.PosteriorIRF.dsge`` (see
+       below for a description of this variable).
 
     .. option:: relative_irf
 
@@ -4483,938 +5001,1500 @@ The estimation using a first order approximation can benefit from the block deco
 
     .. option:: dsge_var = DOUBLE
 
-        Triggers the estimation of a DSGE-VAR model, where the weight of the DSGE prior of the VAR model is calibrated to the value passed (see *Del Negro and Schorfheide (2004)*). It represents the ratio of dummy over actual observations. To assure that the prior is proper, the value must be bigger than :math:`(k+n)/T`, where :math:`k` is the number of estimated parameters, :math:`n` is the number of observables, and :math:`T` is the number of observations.
+       Triggers the estimation of a DSGE-VAR model, where the weight
+       of the DSGE prior of the VAR model is calibrated to the value
+       passed (see *Del Negro and Schorfheide (2004)*). It represents
+       the ratio of dummy over actual observations. To assure that the
+       prior is proper, the value must be bigger than :math:`(k+n)/T`,
+       where :math:`k` is the number of estimated parameters,
+       :math:`n` is the number of observables, and :math:`T` is the
+       number of observations.
 
-        NB: The previous method of declaring ``dsge_prior_weight`` as a parameter and then calibrating it is now deprecated and will be removed in a future release of Dynare. Some of objects arising during estimation are stored with their values at the mode in ``oo_.dsge_var.posterior_mode``.
+        NB: The previous method of declaring ``dsge_prior_weight`` as
+        a parameter and then calibrating it is now deprecated and will
+        be removed in a future release of Dynare. Some of objects
+        arising during estimation are stored with their values at the
+        mode in ``oo_.dsge_var.posterior_mode``.
 
     .. option:: dsge_var
 
-        Triggers the estimation of a DSGE-VAR model, where the weight of the DSGE prior of the VAR model will be estimated (as in *Adjemian et al.(2008)*). The prior on the weight of the DSGE prior, ``dsge_prior_weight``, must be defined in the ``estimated_params`` section.
+       Triggers the estimation of a DSGE-VAR model, where the weight
+       of the DSGE prior of the VAR model will be estimated (as in
+       *Adjemian et al.(2008)*). The prior on the weight of the DSGE
+       prior, ``dsge_prior_weight``, must be defined in the
+       ``estimated_params`` section.
 
-        NB: The previous method of declaring ``dsge_prior_weight`` as a parameter and then placing it in ``estimated_params`` is now deprecated and will be removed in a future release of Dynare.
+       NB: The previous method of declaring ``dsge_prior_weight`` as
+       a parameter and then placing it in ``estimated_params`` is now
+       deprecated and will be removed in a future release of Dynare.
 
     .. option:: dsge_varlag = INTEGER
 
-        The number of lags used to estimate a DSGE-VAR model. Default: ``4``.
+       The number of lags used to estimate a DSGE-VAR model. Default:
+       ``4``.
 
     .. option:: posterior_sampling_method = NAME
 
-        Selects the sampler used to sample from the posterior distribution during Bayesian estimation. Default:``’random_walk_metropolis_hastings’``.
+       Selects the sampler used to sample from the posterior
+       distribution during Bayesian
+       estimation. Default:``’random_walk_metropolis_hastings’``.
 
-        ``'random_walk_metropolis_hastings'``
+           ``'random_walk_metropolis_hastings'``
 
-            Instructs Dynare to use the Random-Walk Metropolis-Hastings. In this algorithm, the proposal density is recentered to the previous draw in every step.
+               Instructs Dynare to use the Random-Walk
+               Metropolis-Hastings. In this algorithm, the proposal
+               density is recentered to the previous draw in every
+               step.
 
-        ``'tailored_random_block_metropolis_hastings'``
+           ``'tailored_random_block_metropolis_hastings'``
 
-            Instructs Dynare to use the Tailored randomized block (TaRB) Metropolis-Hastings algorithm proposed by *Chib and Ramamurthy (2010)* instead of the standard Random-Walk Metropolis-Hastings. In this algorithm, at each iteration the estimated parameters are randomly assigned to different blocks. For each of these blocks a mode-finding step is conducted. The inverse Hessian at this mode is then used as the covariance of the proposal density for a Random-Walk Metropolis-Hastings step. If the numerical Hessian is not positive definite, the generalized Cholesky decomposition of *Schnabel and Eskow (1990)* is used, but without pivoting. The TaRB-MH algorithm massively reduces the autocorrelation in the MH draws and thus reduces the number of draws required to representatively sample from the posterior. However, this comes at a computational cost as the algorithm takes more time to run.
+               Instructs Dynare to use the Tailored randomized block
+               (TaRB) Metropolis-Hastings algorithm proposed by *Chib
+               and Ramamurthy (2010)* instead of the standard
+               Random-Walk Metropolis-Hastings. In this algorithm, at
+               each iteration the estimated parameters are randomly
+               assigned to different blocks. For each of these blocks
+               a mode-finding step is conducted. The inverse Hessian
+               at this mode is then used as the covariance of the
+               proposal density for a Random-Walk Metropolis-Hastings
+               step. If the numerical Hessian is not positive
+               definite, the generalized Cholesky decomposition of
+               *Schnabel and Eskow (1990)* is used, but without
+               pivoting. The TaRB-MH algorithm massively reduces the
+               autocorrelation in the MH draws and thus reduces the
+               number of draws required to representatively sample
+               from the posterior. However, this comes at a
+               computational cost as the algorithm takes more time to
+               run.
 
-        ``'independent_metropolis_hastings'``
+           ``'independent_metropolis_hastings'``
 
-            Use the Independent Metropolis-Hastings algorithm where the proposal distribution - in contrast to the Random Walk Metropolis-Hastings algorithm - does not depend on the state of the chain.
+               Use the Independent Metropolis-Hastings algorithm where
+               the proposal distribution - in contrast to the Random
+               Walk Metropolis-Hastings algorithm - does not depend on
+               the state of the chain.
 
-        ``'slice'``
+           ``'slice'``
 
-            Instructs Dynare to use the Slice sampler of *Planas, Ratto, and Rossi (2015)*. Note that ``'slice'`` is incompatible with ``prior_trunc=0``.
+               Instructs Dynare to use the Slice sampler of *Planas,
+               Ratto, and Rossi (2015)*. Note that ``'slice'`` is
+               incompatible with ``prior_trunc=0``.
 
     .. option:: posterior_sampler_options = (NAME, VALUE, ...)
 
-        A list of NAME and VALUE pairs. Can be used to set options for the posterior sampling methods. The set of available options depends on the selected posterior sampling routine (i.e. on the value of option :opt:`posterior_sampling_method <posterior_sampling_method = NAME>`):
+       A list of NAME and VALUE pairs. Can be used to set options for
+       the posterior sampling methods. The set of available options
+       depends on the selected posterior sampling routine (i.e. on the
+       value of option :opt:`posterior_sampling_method
+       <posterior_sampling_method = NAME>`):
 
-        ``'random_walk_metropolis_hastings'``
+           ``'random_walk_metropolis_hastings'``
 
-            Available options are:
+               Available options are:
 
-            ``'proposal_distribution'``
+           ``'proposal_distribution'``
 
-                Specifies the statistical distribution used for the proposal density.
+               Specifies the statistical distribution used for the
+               proposal density.
 
-                ``'rand_multivariate_normal'``
+           ``'rand_multivariate_normal'``
 
-                    Use a multivariate normal distribution. This is the default.
+               Use a multivariate normal distribution. This is the default.
 
-                ``'rand_multivariate_student'``
+           ``'rand_multivariate_student'``
 
-                    Use a multivariate student distribution.
+               Use a multivariate student distribution.
 
-            ``'student_degrees_of_freedom'``
+           ``'student_degrees_of_freedom'``
 
-                Specifies the degrees of freedom to be used with the multivariate student distribution. Default: ``3``.
+               Specifies the degrees of freedom to be used with the
+               multivariate student distribution. Default: ``3``.
 
-            .. _usemhcov:
+           .. _usemhcov:
 
-            ``'use_mh_covariance_matrix'``
+           ``'use_mh_covariance_matrix'``
 
-                Indicates to use the covariance matrix of the draws from a previous MCMC run to define the covariance of the proposal distribution. Requires the :opt:`load_mh_file` option to be specified. Default: ``0``.
+               Indicates to use the covariance matrix of the draws
+               from a previous MCMC run to define the covariance of
+               the proposal distribution. Requires the
+               :opt:`load_mh_file` option to be specified. Default:
+               ``0``.
 
-            .. _scale-file:
+           .. _scale-file:
 
-            ``'scale_file'``
+           ``'scale_file'``
 
-                Provides the name of a ``_mh_scale.mat`` file storing the tuned scale factor from a previous run of ``mode_compute=6``.
+               Provides the name of a ``_mh_scale.mat`` file storing
+               the tuned scale factor from a previous run of
+               ``mode_compute=6``.
 
-            .. _savetmp:
+           .. _savetmp:
 
-            ``'save_tmp_file'``
+           ``'save_tmp_file'``
 
-                Save the MCMC draws into a ``_mh_tmp_blck`` file at the refresh rate of the status bar instead of just saving the draws when the current ``_mh*_blck`` file is full. Default: ``0``
+               Save the MCMC draws into a ``_mh_tmp_blck`` file at the
+               refresh rate of the status bar instead of just saving
+               the draws when the current ``_mh*_blck`` file is
+               full. Default: ``0``
 
-        ``'independent_metropolis_hastings'``
+           ``'independent_metropolis_hastings'``
 
-            Takes the same options as in the case of ``random_walk_metropolis_hastings``.
+               Takes the same options as in the case of
+               ``random_walk_metropolis_hastings``.
 
-        ``'slice'``
+           ``'slice'``
 
-            ``'rotated'``
+           ``'rotated'``
 
-                Triggers rotated slice iterations using a covariance matrix from initial burn-in iterations. Requires either ``use_mh_covariance_matrix`` or ``slice_initialize_with_mode``. Default: ``0``.
+               Triggers rotated slice iterations using a covariance
+               matrix from initial burn-in iterations. Requires either
+               ``use_mh_covariance_matrix`` or
+               ``slice_initialize_with_mode``. Default: ``0``.
 
-            ``'mode_files'``
+           ``'mode_files'``
 
-                For multimodal posteriors, provide the name of a file containing a ``nparam`` by ``nmodes`` variable called ``xparams`` storing the different modes. This array must have one column vector per mode and the estimated parameters along the row dimension. With this info, the code will automatically trigger the ``rotated`` and ``mode`` options. Default: ``[]``.
+               For multimodal posteriors, provide the name of a file
+               containing a ``nparam`` by ``nmodes`` variable called
+               ``xparams`` storing the different modes. This array
+               must have one column vector per mode and the estimated
+               parameters along the row dimension. With this info, the
+               code will automatically trigger the ``rotated`` and
+               ``mode`` options. Default: ``[]``.
 
-            ``'slice_initialize_with_mode'``
+           ``'slice_initialize_with_mode'``
 
-                The default for slice is to set ``mode_compute=0`` and start the chain(s) from a random location in the prior space. This option first runs the mode-finder and then starts the chain from the mode. Together with ``rotated``, it will use the inverse Hessian from the mode to perform rotated slice iterations. Default: ``0``.
+               The default for slice is to set ``mode_compute=0`` and
+               start the chain(s) from a random location in the prior
+               space. This option first runs the mode-finder and then
+               starts the chain from the mode. Together with
+               ``rotated``, it will use the inverse Hessian from the
+               mode to perform rotated slice iterations. Default:
+               ``0``.
 
-            ``'initial_step_size'``
+           ``'initial_step_size'``
 
-                Sets the initial size of the interval in the stepping-out procedure as fraction of the prior support, i.e. the size will be ``initial_step_size * (UB-LB)``. ``initial_step_size`` must be a real number in the interval ``[0,1]``. Default: ``0.8``.
+               Sets the initial size of the interval in the
+               stepping-out procedure as fraction of the prior
+               support, i.e. the size will be ``initial_step_size *
+               (UB-LB)``. ``initial_step_size`` must be a real number
+               in the interval ``[0,1]``. Default: ``0.8``.
 
-            ``'use_mh_covariance_matrix'``
+           ``'use_mh_covariance_matrix'``
 
-                See :ref:`use_mh_covariance_matrix <usemhcov>`. Must be used with ``'rotated'``. Default: ``0``.
+               See :ref:`use_mh_covariance_matrix <usemhcov>`. Must be
+               used with ``'rotated'``. Default: ``0``.
 
-            ``'save_tmp_file'``
+           ``'save_tmp_file'``
 
-                See :ref:`save_tmp_file <savetmp>`. Default: ``1``.
+               See :ref:`save_tmp_file <savetmp>`. Default: ``1``.
 
-        ``'tailored_random_block_metropolis_hastings'``
+           ``'tailored_random_block_metropolis_hastings'``
 
-            ``new_block_probability = DOUBLE``
+           ``new_block_probability = DOUBLE``
 
-                Specifies the probability of the next parameter belonging to a new block when the random blocking in the TaRB Metropolis-Hastings algorithm is conducted. The higher this number, the smaller is the average block size and the more random blocks are formed during each parameter sweep. Default: ``0.25``.
+               Specifies the probability of the next parameter
+               belonging to a new block when the random blocking in
+               the TaRB Metropolis-Hastings algorithm is
+               conducted. The higher this number, the smaller is the
+               average block size and the more random blocks are
+               formed during each parameter sweep. Default: ``0.25``.
 
-            ``mode_compute = INTEGER``
+           ``mode_compute = INTEGER``
 
-                Specifies the mode-finder run in every iteration for every block of the TaRB Metropolis-Hastings algorithm. See :opt:`mode_compute <mode_compute = INTEGER | FUNCTION_NAME>`. Default: ``4``.
+               Specifies the mode-finder run in every iteration for
+               every block of the TaRB Metropolis-Hastings
+               algorithm. See :opt:`mode_compute <mode_compute =
+               INTEGER | FUNCTION_NAME>`. Default: ``4``.
 
-            ``optim = (NAME, VALUE,...)``
+           ``optim = (NAME, VALUE,...)``
 
-                Specifies the options for the mode-finder used in the TaRB Metropolis-Hastings algorithm. See :opt:`optim <optim = (NAME, VALUE, ...)>`.
+               Specifies the options for the mode-finder used in the
+               TaRB Metropolis-Hastings algorithm. See :opt:`optim
+               <optim = (NAME, VALUE, ...)>`.
 
-            ``'scale_file'``
+           ``'scale_file'``
 
-                See :ref:`scale_file <scale-file>`..
+               See :ref:`scale_file <scale-file>`..
 
-            ``'save_tmp_file'``
+           ``'save_tmp_file'``
 
-                See :ref:`save_tmp_file <savetmp>`. Default: ``1``.
+               See :ref:`save_tmp_file <savetmp>`. Default: ``1``.
 
     .. option:: moments_varendo
 
-        Triggers the computation of the posterior distribution of the theoretical moments of the endogenous variables. Results are stored in ``oo_.PosteriorTheoreticalMoments`` (see :mvar:`oo_.PosteriorTheoreticalMoments`). The number of lags in the autocorrelation function is controlled by the ``ar`` option.
+       Triggers the computation of the posterior distribution of the
+       theoretical moments of the endogenous variables. Results are
+       stored in ``oo_.PosteriorTheoreticalMoments`` (see
+       :mvar:`oo_.PosteriorTheoreticalMoments`). The number of lags in
+       the autocorrelation function is controlled by the ``ar``
+       option.
 
     .. option:: contemporaneous_correlation
 
-        See :opt:`contemporaneous_correlation`. Results are stored in ``oo_.PosteriorTheoreticalMoments``. Note that the ``nocorr`` option has no effect.
+       See :opt:`contemporaneous_correlation`. Results are stored in
+       ``oo_.PosteriorTheoreticalMoments``. Note that the ``nocorr``
+       option has no effect.
 
     .. option:: no_posterior_kernel_density
 
-        Shuts off the computation of the kernel density estimator for the posterior objects (see :ref:`density <dens>` field).
+       Shuts off the computation of the kernel density estimator for
+       the posterior objects (see :ref:`density <dens>` field).
 
     .. option:: conditional_variance_decomposition = INTEGER
                 conditional_variance_decomposition = [INTEGER1:INTEGER2]
                 conditional_variance_decomposition = [INTEGER1 INTEGER2 ...]
 
-        Computes the posterior distribution of the conditional variance decomposition for the specified period(s). The periods must be strictly positive. Conditional variances are given by :math:`var(y_{t+k}\vert t)`. For period 1, the conditional variance decomposition provides the decomposition of the effects of shocks upon impact. The results are stored in ``oo_.PosteriorTheoreticalMoments.dsge.ConditionalVarianceDecomposition``, but currently there is no displayed output. Note that this option requires the ``moments_varendo`` to be specified.
+       Computes the posterior distribution of the conditional variance
+       decomposition for the specified period(s). The periods must be
+       strictly positive. Conditional variances are given by
+       :math:`var(y_{t+k}\vert t)`. For period 1, the conditional
+       variance decomposition provides the decomposition of the
+       effects of shocks upon impact. The results are stored in
+       ``oo_.PosteriorTheoreticalMoments.dsge.ConditionalVarianceDecomposition``,
+       but currently there is no displayed output. Note that this
+       option requires the ``moments_varendo`` to be specified.
 
     .. option:: filtered_vars
 
-        Triggers the computation of the posterior distribution of filtered endogenous variables/one-step ahead forecasts, i.e. :math:`E_{t}{y_{t+1}}`. Results are stored in ``oo_.FilteredVariables`` (see below for a description of this variable)
+       Triggers the computation of the posterior distribution of
+       filtered endogenous variables/one-step ahead forecasts,
+       i.e. :math:`E_{t}{y_{t+1}}`. Results are stored in
+       ``oo_.FilteredVariables`` (see below for a description of this
+       variable)
 
     .. option:: smoother
 
-        Triggers the computation of the posterior distribution of smoothed endogenous variables and shocks, i.e. the expected value of variables and shocks given the information available in all observations up to the final date (:math:`E_{T}{y_t}`). Results are stored in ``oo_.SmoothedVariables``, ``oo_.SmoothedShocks`` and ``oo_.SmoothedMeasurementErrors``. Also triggers the computation of ``oo_.UpdatedVariables``, which contains the estimation of the expected value of variables given the information available at the current date (:math:`E_{t}{y_t}`). See below for a description of all these variables.
+       Triggers the computation of the posterior distribution of
+       smoothed endogenous variables and shocks, i.e. the expected
+       value of variables and shocks given the information available
+       in all observations up to the final date
+       (:math:`E_{T}{y_t}`). Results are stored in
+       ``oo_.SmoothedVariables``, ``oo_.SmoothedShocks`` and
+       ``oo_.SmoothedMeasurementErrors``. Also triggers the
+       computation of ``oo_.UpdatedVariables``, which contains the
+       estimation of the expected value of variables given the
+       information available at the current date
+       (:math:`E_{t}{y_t}`). See below for a description of all these
+       variables.
 
     .. option:: forecast = INTEGER
 
-        Computes the posterior distribution of a forecast on INTEGER periods after the end of the sample used in estimation. If no Metropolis-Hastings is computed, the result is stored in variable ``oo_.forecast`` and corresponds to the forecast at the posterior mode. If a Metropolis-Hastings is computed, the distribution of forecasts is stored in variables ``oo_.PointForecast`` and ``oo_.MeanForecast``. See :ref:`fore`, for a description of these variables.
+       Computes the posterior distribution of a forecast on INTEGER
+       periods after the end of the sample used in estimation. If no
+       Metropolis-Hastings is computed, the result is stored in
+       variable ``oo_.forecast`` and corresponds to the forecast at
+       the posterior mode. If a Metropolis-Hastings is computed, the
+       distribution of forecasts is stored in variables
+       ``oo_.PointForecast`` and ``oo_.MeanForecast``. See
+       :ref:`fore`, for a description of these variables.
 
     .. option:: tex
 
-        see :opt:`tex`.
+       See :opt:`tex`.
 
     .. option:: kalman_algo = INTEGER
 
-        ``0``
+           ``0``
 
-            Automatically use the Multivariate Kalman Filter for stationary models and the Multivariate Diffuse Kalman Filter for non-stationary models.
+               Automatically use the Multivariate Kalman Filter for
+               stationary models and the Multivariate Diffuse Kalman
+               Filter for non-stationary models.
 
-        ``1``
+           ``1``
 
-            Use the Multivariate Kalman Filter.
+               Use the Multivariate Kalman Filter.
 
-        ``2``
+           ``2``
 
-            Use the Univariate Kalman Filter.
+               Use the Univariate Kalman Filter.
 
-        ``3``
+           ``3``
 
-            Use the Multivariate Diffuse Kalman Filter.
+               Use the Multivariate Diffuse Kalman Filter.
 
-        ``4``
+           ``4``
 
-            Use the Univariate Diffuse Kalman Filter.
+               Use the Univariate Diffuse Kalman Filter.
 
-        Default value is ``0``. In case of missing observations of single or all series, Dynare treats those missing values as unobserved states and uses the Kalman filter to infer their value (see e.g. *Durbin and Koopman (2012)*, Ch. 4.10) This procedure has the advantage of being capable of dealing with observations where the forecast error variance matrix becomes singular for some variable(s). If this happens, the respective observation enters with a weight of zero in the log-likelihood, i.e. this observation for the respective variable(s) is dropped from the likelihood computations (for details see *Durbin and Koopman (2012)*, Ch. 6.4 and 7.2.5 and *Koopman and Durbin (2000)*). If the use of a multivariate Kalman filter is specified and a singularity is encountered, Dynare by default automatically switches to the univariate Kalman filter for this parameter draw. This behavior can be changed via the :opt:`use_univariate_filters_if_singularity_is_detected <use_univariate_filters_if_singularity_is_detected = INTEGER>` option.
+       Default value is ``0``. In case of missing observations of
+       single or all series, Dynare treats those missing values as
+       unobserved states and uses the Kalman filter to infer their
+       value (see e.g. *Durbin and Koopman (2012)*, Ch. 4.10) This
+       procedure has the advantage of being capable of dealing with
+       observations where the forecast error variance matrix becomes
+       singular for some variable(s). If this happens, the respective
+       observation enters with a weight of zero in the log-likelihood,
+       i.e. this observation for the respective variable(s) is dropped
+       from the likelihood computations (for details see *Durbin and
+       Koopman (2012)*, Ch. 6.4 and 7.2.5 and *Koopman and Durbin
+       (2000)*). If the use of a multivariate Kalman filter is
+       specified and a singularity is encountered, Dynare by default
+       automatically switches to the univariate Kalman filter for this
+       parameter draw. This behavior can be changed via the
+       :opt:`use_univariate_filters_if_singularity_is_detected
+       <use_univariate_filters_if_singularity_is_detected = INTEGER>`
+       option.
 
     .. option:: fast_kalman_filter
 
-        Select the fast Kalman filter using Chandrasekhar recursions as described by ``Herbst (2015)``. This setting is only used with ``kalman_algo=1`` or ``kalman_algo=3``. In case of using the diffuse Kalman filter (``kalman_algo=3/lik_init=3``), the observables must be stationary. This option is not yet compatible with :opt:`analytic_derivation`.
+       Select the fast Kalman filter using Chandrasekhar recursions as
+       described by ``Herbst (2015)``. This setting is only used with
+       ``kalman_algo=1`` or ``kalman_algo=3``. In case of using the
+       diffuse Kalman filter (``kalman_algo=3/lik_init=3``), the
+       observables must be stationary. This option is not yet
+       compatible with :opt:`analytic_derivation`.
 
     .. option:: kalman_tol = DOUBLE
 
-        Numerical tolerance for determining the singularity of the covariance matrix of the prediction errors during the Kalman filter (minimum allowed reciprocal of the matrix condition number). Default value is ``1e-10``.
+       Numerical tolerance for determining the singularity of the
+       covariance matrix of the prediction errors during the Kalman
+       filter (minimum allowed reciprocal of the matrix condition
+       number). Default value is ``1e-10``.
 
     .. option:: diffuse_kalman_tol = DOUBLE
 
-        Numerical tolerance for determining the singularity of the covariance matrix of the prediction errors (:math:`F_{\infty}`) and the rank of the covariance matrix of the non-stationary state variables (:math:`P_{\infty}`) during the Diffuse Kalman filter. Default value is ``1e-6``.
+       Numerical tolerance for determining the singularity of the
+       covariance matrix of the prediction errors (:math:`F_{\infty}`)
+       and the rank of the covariance matrix of the non-stationary
+       state variables (:math:`P_{\infty}`) during the Diffuse Kalman
+       filter. Default value is ``1e-6``.
 
     .. option:: filter_covariance
 
-        Saves the series of one step ahead error of forecast covariance matrices. With Metropolis, they are saved in :mvar:`oo_.FilterCovariance`, otherwise in :mvar:`oo_.Smoother.Variance`. Saves also k-step ahead error of forecast covariance matrices if ``filter_step_ahead`` is set.
+       Saves the series of one step ahead error of forecast covariance
+       matrices. With Metropolis, they are saved in
+       :mvar:`oo_.FilterCovariance`, otherwise in
+       :mvar:`oo_.Smoother.Variance`. Saves also k-step ahead error of
+       forecast covariance matrices if ``filter_step_ahead`` is set.
 
     .. option:: filter_step_ahead = [INTEGER1:INTEGER2]
                 filter_step_ahead = [INTEGER1 INTEGER2 ...]
 
-        Triggers the computation k-step ahead filtered values, i.e. :math:`E_{t}{y_{t+k}}`. Stores results in ``oo_.FilteredVariablesKStepAhead``. Also stores 1-step ahead values in ``oo_.FilteredVariables``. ``oo_.FilteredVariablesKStepAheadVariances`` is stored if ``filter_covariance``.
+       Triggers the computation k-step ahead filtered values,
+       i.e. :math:`E_{t}{y_{t+k}}`. Stores results in
+       ``oo_.FilteredVariablesKStepAhead``. Also stores 1-step ahead
+       values in
+       ``oo_.FilteredVariables``. ``oo_.FilteredVariablesKStepAheadVariances``
+       is stored if ``filter_covariance``.
 
     .. option:: filter_decomposition
 
-        Triggers the computation of the shock decomposition of the above k-step ahead filtered values. Stores results in ``oo_.FilteredVariablesShockDecomposition``.
+       Triggers the computation of the shock decomposition of the
+       above k-step ahead filtered values. Stores results in
+       ``oo_.FilteredVariablesShockDecomposition``.
 
     .. option:: smoothed_state_uncertainty
 
-        Triggers the computation of the variance of smoothed estimates, i.e. :math:`var_T(y_t)`. Stores results in ``oo_.Smoother.State_uncertainty``.
+       Triggers the computation of the variance of smoothed estimates,
+       i.e. :math:`var_T(y_t)`. Stores results in
+       ``oo_.Smoother.State_uncertainty``.
 
     .. option:: diffuse_filter
 
-        Uses the diffuse Kalman filter (as described in *Durbin and Koopman (2012)* and *Koopman and Durbin (2003)* for the multivariate and *Koopman and Durbin (2000)* for the univariate filter) to estimate models with non-stationary observed variables.
+       Uses the diffuse Kalman filter (as described in *Durbin and
+       Koopman (2012)* and *Koopman and Durbin (2003)* for the
+       multivariate and *Koopman and Durbin (2000)* for the univariate
+       filter) to estimate models with non-stationary observed
+       variables.
 
-        When ``diffuse_filter`` is used the ``lik_init`` option of ``estimation`` has no effect.
+       When ``diffuse_filter`` is used the ``lik_init`` option of
+       ``estimation`` has no effect.
 
-        When there are nonstationary exogenous variables in a model, there is no unique deterministic steady state. For instance, if productivity is a pure random walk:
+       When there are nonstationary exogenous variables in a model,
+       there is no unique deterministic steady state. For instance, if
+       productivity is a pure random walk:
 
-         :math:`a_t = a_{t-1} + e_t`
+           .. math::
 
-        any value of :math:`\bar a` of :math:`a` is a deterministic steady state for productivity. Consequently, the model admits an infinity of steady states. In this situation, the user must help Dynare in selecting one steady state, except if zero is a trivial model’s steady state, which happens when the ``linear`` option is used in the model declaration. The user can either provide the steady state to Dynare using a ``steady_state_model`` block (or writing a steady state file) if a closed form solution is available, see :bck:`steady_state_model`, or specify some constraints on the steady state, see :ref:`equation_tag_for_conditional_steady_state <eq-tag-ss>`, so that Dynare computes the steady state conditionally on some predefined levels for the non stationary variables. In both cases, the idea is to use dummy values for the steady state level of the exogenous non stationary variables.
+              a_t = a_{t-1} + e_t
 
-        Note that the nonstationary variables in the model must be integrated processes (their first difference or k-difference must be stationary).
+       any value of :math:`\bar a` of :math:`a` is a deterministic
+       steady state for productivity. Consequently, the model admits
+       an infinity of steady states. In this situation, the user must
+       help Dynare in selecting one steady state, except if zero is a
+       trivial model’s steady state, which happens when the ``linear``
+       option is used in the model declaration. The user can either
+       provide the steady state to Dynare using a
+       ``steady_state_model`` block (or writing a steady state file)
+       if a closed form solution is available, see
+       :bck:`steady_state_model`, or specify some constraints on the
+       steady state, see
+       :ref:`equation_tag_for_conditional_steady_state <eq-tag-ss>`,
+       so that Dynare computes the steady state conditionally on some
+       predefined levels for the non stationary variables. In both
+       cases, the idea is to use dummy values for the steady state
+       level of the exogenous non stationary variables.
+
+       Note that the nonstationary variables in the model must be
+       integrated processes (their first difference or k-difference
+       must be stationary).
 
     .. option:: selected_variables_only
 
-        Only run the classical smoother on the variables listed just after the ``estimation`` command. This option is incompatible with requesting classical frequentist forecasts and will be overridden in this case. When using Bayesian estimation, the smoother is by default only run on the declared endogenous variables. Default: run the smoother on all the declared endogenous variables.
+       Only run the classical smoother on the variables listed just
+       after the ``estimation`` command. This option is incompatible
+       with requesting classical frequentist forecasts and will be
+       overridden in this case. When using Bayesian estimation, the
+       smoother is by default only run on the declared endogenous
+       variables. Default: run the smoother on all the declared
+       endogenous variables.
 
     .. option:: cova_compute = INTEGER
 
-        When ``0``, the covariance matrix of estimated parameters is not computed after the computation of posterior mode (or maximum likelihood). This increases speed of computation in large models during development, when this information is not always necessary. Of course, it will break all successive computations that would require this covariance matrix. Otherwise, if this option is equal to ``1``, the covariance matrix is computed and stored in variable ``hh`` of ``MODEL_FILENAME_mode.mat``. Default is ``1``.
+       When ``0``, the covariance matrix of estimated parameters is
+       not computed after the computation of posterior mode (or
+       maximum likelihood). This increases speed of computation in
+       large models during development, when this information is not
+       always necessary. Of course, it will break all successive
+       computations that would require this covariance
+       matrix. Otherwise, if this option is equal to ``1``, the
+       covariance matrix is computed and stored in variable ``hh`` of
+       ``MODEL_FILENAME_mode.mat``. Default is ``1``.
 
     .. option:: solve_algo = INTEGER
 
-        See :ref:`solve_algo <solvalg>`.
+       See :ref:`solve_algo <solvalg>`.
 
     .. option:: order = INTEGER
 
-        Order of approximation, either ``1`` or ``2``. When equal to ``2``, the likelihood is evaluated with a particle filter based on a second order approximation of the model (see *Fernandez-Villaverde and Rubio-Ramirez (2005)*). Default is ``1``, i.e. the likelihood of the linearized model is evaluated using a standard Kalman filter.
+       Order of approximation, either ``1`` or ``2``. When equal to
+       ``2``, the likelihood is evaluated with a particle filter based
+       on a second order approximation of the model (see
+       *Fernandez-Villaverde and Rubio-Ramirez (2005)*). Default is
+       ``1``, i.e. the likelihood of the linearized model is evaluated
+       using a standard Kalman filter.
 
     .. option:: irf = INTEGER
 
-        See :opt:`irf <irf = INTEGER>`. Only used if :opt:`bayesian_irf` is passed.
+       See :opt:`irf <irf = INTEGER>`. Only used if
+       :opt:`bayesian_irf` is passed.
 
     .. option:: irf_shocks = ( VARIABLE_NAME [[,] VARIABLE_NAME ...] )
 
-        See :opt:`irf_shocks <irf_shocks = ( VARIABLE_NAME [[,] VARIABLE_NAME ...] )>`. Only used if :opt:`bayesian_irf` is passed.
+        See :opt:`irf_shocks <irf_shocks = ( VARIABLE_NAME [[,]
+        VARIABLE_NAME ...] )>`. Only used if :opt:`bayesian_irf` is
+        passed.
 
     .. option:: irf_plot_threshold = DOUBLE
 
-        See :opt:`irf_plot_threshold <irf_plot_threshold = DOUBLE>`. Only used if :opt:`bayesian_irf` is passed.
+       See :opt:`irf_plot_threshold <irf_plot_threshold =
+       DOUBLE>`. Only used if :opt:`bayesian_irf` is passed.
 
     .. option:: aim_solver
 
-        See :opt:`aim_solver`.
+       See :opt:`aim_solver`.
 
     .. option:: sylvester = OPTION
 
-        See :opt:`sylvester <sylvester = OPTION>`.
+       See :opt:`sylvester <sylvester = OPTION>`.
 
     .. option:: sylvester_fixed_point_tol = DOUBLE
 
-        See :opt:`sylvester_fixed_point_tol <sylvester_fixed_point_tol = DOUBLE>`   .
+       See :opt:`sylvester_fixed_point_tol <sylvester_fixed_point_tol
+       = DOUBLE>` .
 
     .. option:: lyapunov = OPTION
 
-        Determines the algorithm used to solve the Lyapunov equation to initialized the variance-covariance matrix of the Kalman filter using the steady-state value of state variables. Possible values for OPTION are:
+       Determines the algorithm used to solve the Lyapunov equation to
+       initialized the variance-covariance matrix of the Kalman filter
+       using the steady-state value of state variables. Possible
+       values for OPTION are:
 
-        ``default``
+           ``default``
 
-            Uses the default solver for Lyapunov equations based on Bartels-Stewart algorithm.
+               Uses the default solver for Lyapunov equations based on
+               Bartels-Stewart algorithm.
 
-        ``fixed_point``
+           ``fixed_point``
 
-            Uses a fixed point algorithm to solve the Lyapunov equation. This method is faster than the ``default`` one for large scale models, but it could require a large amount of iterations.
+               Uses a fixed point algorithm to solve the Lyapunov
+               equation. This method is faster than the ``default``
+               one for large scale models, but it could require a
+               large amount of iterations.
 
-        ``doubling``
+           ``doubling``
 
-            Uses a doubling algorithm to solve the Lyapunov equation (``disclyap_fast``). This method is faster than the two previous one for large scale models.
+               Uses a doubling algorithm to solve the Lyapunov
+               equation (``disclyap_fast``). This method is faster
+               than the two previous one for large scale models.
 
-        ``square_root_solver``
+           ``square_root_solver``
 
-            Uses a square-root solver for Lyapunov equations (``dlyapchol``). This method is fast for large scale models (available under MATLAB if the Control System Toolbox is installed; available under Octave if the `control <http://octave.sourceforge.net/control/>`_ package from Octave-Forge is installed)
+               Uses a square-root solver for Lyapunov equations
+               (``dlyapchol``). This method is fast for large scale
+               models (available under MATLAB if the Control System
+               Toolbox is installed; available under Octave if the
+               `control <http://octave.sourceforge.net/control/>`_
+               package from Octave-Forge is installed)
 
-        Default value is ``default``.
+       Default value is ``default``.
 
     .. option:: lyapunov_fixed_point_tol = DOUBLE
 
-        This is the convergence criterion used in the fixed point Lyapunov solver. Its default value is ``1e-10``.
+       This is the convergence criterion used in the fixed point
+       Lyapunov solver. Its default value is ``1e-10``.
 
     .. option:: lyapunov_doubling_tol = DOUBLE
 
-        This is the convergence criterion used in the doubling algorithm to solve the Lyapunov equation. Its default value is ``1e-16``.
+       This is the convergence criterion used in the doubling
+       algorithm to solve the Lyapunov equation. Its default value is
+       ``1e-16``.
 
     .. option:: use_penalized_objective_for_hessian
 
-        Use the penalized objective instead of the objective function to compute numerically the hessian matrix at the mode. The penalties decrease the value of the posterior density (or likelihood) when, for some perturbations, Dynare is not able to solve the model (issues with steady state existence, Blanchard and Kahn conditions, ...). In pratice, the penalized and original objectives will only differ if the posterior mode is found to be near a region where the model is ill-behaved. By default the original objective function is used.
+       Use the penalized objective instead of the objective function
+       to compute numerically the hessian matrix at the mode. The
+       penalties decrease the value of the posterior density (or
+       likelihood) when, for some perturbations, Dynare is not able to
+       solve the model (issues with steady state existence, Blanchard
+       and Kahn conditions, ...). In pratice, the penalized and
+       original objectives will only differ if the posterior mode is
+       found to be near a region where the model is ill-behaved. By
+       default the original objective function is used.
 
     .. option:: analytic_derivation
 
-        Triggers estimation with analytic gradient. The final hessian is also computed analytically. Only works for stationary models without missing observations, i.e. for ``kalman_algo<3``.
+       Triggers estimation with analytic gradient. The final hessian
+       is also computed analytically. Only works for stationary models
+       without missing observations, i.e. for ``kalman_algo<3``.
 
     .. option:: ar = INTEGER
 
-        See :opt:`ar <ar = INTEGER>`. Only useful in conjunction with option ``moments_varendo``.
+       See :opt:`ar <ar = INTEGER>`. Only useful in conjunction with
+       option ``moments_varendo``.
 
     .. option:: endogenous_prior
 
-        Use endogenous priors as in *Christiano, Trabandt and Walentin (2011)*. The procedure is motivated by sequential Bayesian learning. Starting from independent initial priors on the parameters, specified in the ``estimated_params`` block, the standard deviations observed in a "pre-sample", taken to be the actual sample, are used to update the initial priors. Thus, the product of the initial priors and the pre-sample likelihood of the standard deviations of the observables is used as the new prior (for more information, see the technical appendix of *Christiano, Trabandt and Walentin (2011)*). This procedure helps in cases where the regular posterior estimates, which minimize in-sample forecast errors, result in a large overprediction of model variable variances (a statistic that is not explicitly targeted, but often of particular interest to researchers).
+       Use endogenous priors as in *Christiano, Trabandt and Walentin
+       (2011)*. The procedure is motivated by sequential Bayesian
+       learning. Starting from independent initial priors on the
+       parameters, specified in the ``estimated_params`` block, the
+       standard deviations observed in a "pre-sample", taken to be the
+       actual sample, are used to update the initial priors. Thus, the
+       product of the initial priors and the pre-sample likelihood of
+       the standard deviations of the observables is used as the new
+       prior (for more information, see the technical appendix of
+       *Christiano, Trabandt and Walentin (2011)*). This procedure
+       helps in cases where the regular posterior estimates, which
+       minimize in-sample forecast errors, result in a large
+       overprediction of model variable variances (a statistic that is
+       not explicitly targeted, but often of particular interest to
+       researchers).
 
     .. option:: use_univariate_filters_if_singularity_is_detected = INTEGER
 
-        Decide whether Dynare should automatically switch to univariate filter if a singularity is encountered in the likelihood computation (this is the behaviour if the option is equal to ``1``). Alternatively, if the option is equal to ``0``, Dynare will not automatically change the filter, but rather use a penalty value for the likelihood when such a singularity is encountered. Default: ``1``.
+       Decide whether Dynare should automatically switch to univariate
+       filter if a singularity is encountered in the likelihood
+       computation (this is the behaviour if the option is equal to
+       ``1``). Alternatively, if the option is equal to ``0``, Dynare
+       will not automatically change the filter, but rather use a
+       penalty value for the likelihood when such a singularity is
+       encountered. Default: ``1``.
 
     .. option:: keep_kalman_algo_if_singularity_is_detected
 
-        With the default :opt:`use_univariate_filters_if_singularity_is_detected=1 <use_univariate_filters_if_singularity_is_detected = INTEGER>`, Dynare will switch to the univariate Kalman filter when it encounters a singular forecast error variance matrix during Kalman filtering. Upon encountering such a singularity for the first time, all subsequent parameter draws and computations will automatically rely on univariate filter, i.e. Dynare will never try the multivariate filter again. Use the ``keep_kalman_algo_if_singularity_is_detected`` option to have the ``use_univariate_filters_if_singularity_is_detected`` only affect the behavior for the current draw/computation.
+       With the default
+       :opt:`use_univariate_filters_if_singularity_is_detected=1
+       <use_univariate_filters_if_singularity_is_detected = INTEGER>`,
+       Dynare will switch to the univariate Kalman filter when it
+       encounters a singular forecast error variance matrix during
+       Kalman filtering. Upon encountering such a singularity for the
+       first time, all subsequent parameter draws and computations
+       will automatically rely on univariate filter, i.e. Dynare will
+       never try the multivariate filter again. Use the
+       ``keep_kalman_algo_if_singularity_is_detected`` option to have
+       the ``use_univariate_filters_if_singularity_is_detected`` only
+       affect the behavior for the current draw/computation.
 
     .. option:: rescale_prediction_error_covariance
 
-        Rescales the prediction error covariance in the Kalman filter to avoid badly scaled matrix and reduce the probability of a switch to univariate Kalman filters (which are slower). By default no rescaling is done.
+       Rescales the prediction error covariance in the Kalman filter
+       to avoid badly scaled matrix and reduce the probability of a
+       switch to univariate Kalman filters (which are slower). By
+       default no rescaling is done.
 
     .. option:: qz_zero_threshold = DOUBLE
 
-        See :opt:`qz_zero_threshold <qz_zero_threshold = DOUBLE>`.
+       See :opt:`qz_zero_threshold <qz_zero_threshold = DOUBLE>`.
 
     .. option:: taper_steps = [INTEGER1 INTEGER2 ...]
 
-        Percent tapering used for the spectral window in the *Geweke (1992,1999)* convergence diagnostics (requires :opt:`mh_nblocks=1 <mh_nblocks = INTEGER>`). The tapering is used to take the serial correlation of the posterior draws into account. Default: ``[4 8 15]``.
+       Percent tapering used for the spectral window in the *Geweke
+       (1992,1999)* convergence diagnostics (requires
+       :opt:`mh_nblocks=1 <mh_nblocks = INTEGER>`). The tapering is
+       used to take the serial correlation of the posterior draws into
+       account. Default: ``[4 8 15]``.
 
     .. option:: geweke_interval = [DOUBLE DOUBLE]
 
-        Percentage of MCMC draws at the beginning and end of the MCMC chain taken to compute the *Geweke (1992,1999)* convergence diagnostics (requires :opt:`mh_nblocks=1 <mh_nblocks = INTEGER>`) after discarding the first :opt:`mh_drop = DOUBLE <mh_drop>` percent of draws as a burnin. Default: [0.2 0.5].
+       Percentage of MCMC draws at the beginning and end of the MCMC
+       chain taken to compute the *Geweke (1992,1999)* convergence
+       diagnostics (requires :opt:`mh_nblocks=1 <mh_nblocks =
+       INTEGER>`) after discarding the first :opt:`mh_drop = DOUBLE
+       <mh_drop>` percent of draws as a burnin. Default: [0.2 0.5].
 
     .. option:: raftery_lewis_diagnostics
 
-        Triggers the computation of the *Raftery and Lewis (1992)* convergence diagnostics. The goal is deliver the number of draws required to estimate a particular quantile of the CDF ``q`` with precision ``r`` with a probability ``s``. Typically, one wants to estimate the ``q=0.025`` percentile (corresponding to a 95 percent HPDI) with a precision of 0.5 percent (``r=0.005``) with 95 percent certainty (``s=0.95``). The defaults can be changed via :opt:`raftery_lewis_qrs <raftery_lewis_qrs = [DOUBLE DOUBLE DOUBLE]>`. Based on the theory of first order Markov Chains, the diagnostics will provide a required burn-in (``M``), the number of draws after the burnin (``N``) as well as a thinning factor that would deliver a first order chain (``k``). The last line of the table will also deliver the maximum over all parameters for the respective values.
+       Triggers the computation of the *Raftery and Lewis (1992)*
+       convergence diagnostics. The goal is deliver the number of
+       draws required to estimate a particular quantile of the CDF
+       ``q`` with precision ``r`` with a probability ``s``. Typically,
+       one wants to estimate the ``q=0.025`` percentile (corresponding
+       to a 95 percent HPDI) with a precision of 0.5 percent
+       (``r=0.005``) with 95 percent certainty (``s=0.95``). The
+       defaults can be changed via :opt:`raftery_lewis_qrs
+       <raftery_lewis_qrs = [DOUBLE DOUBLE DOUBLE]>`. Based on the
+       theory of first order Markov Chains, the diagnostics will
+       provide a required burn-in (``M``), the number of draws after
+       the burnin (``N``) as well as a thinning factor that would
+       deliver a first order chain (``k``). The last line of the table
+       will also deliver the maximum over all parameters for the
+       respective values.
 
     .. option:: raftery_lewis_qrs = [DOUBLE DOUBLE DOUBLE]
 
-        Sets the quantile of the CDF ``q`` that is estimated with precision ``r`` with a probability ``s`` in the *Raftery and Lewis (1992)* convergence diagnostics. Default: ``[0.025 0.005 0.95]``.
+       Sets the quantile of the CDF ``q`` that is estimated with
+       precision ``r`` with a probability ``s`` in the *Raftery and
+       Lewis (1992)* convergence diagnostics. Default: ``[0.025 0.005
+       0.95]``.
 
     .. option:: consider_all_endogenous
 
-        Compute the posterior moments, smoothed variables, k-step ahead filtered variables and forecasts (when requested) on all the endogenous variables. This is equivalent to manually listing all the endogenous variables after the ``estimation`` command.
+       Compute the posterior moments, smoothed variables, k-step ahead
+       filtered variables and forecasts (when requested) on all the
+       endogenous variables. This is equivalent to manually listing
+       all the endogenous variables after the ``estimation`` command.
 
     .. option:: consider_only_observed
 
-        Compute the posterior moments, smoothed variables, k-step ahead filtered variables and forecasts (when requested) on all the observed variables. This is equivalent to manually listing all the observed variables after the ``estimation`` command.
+       Compute the posterior moments, smoothed variables, k-step ahead
+       filtered variables and forecasts (when requested) on all the
+       observed variables. This is equivalent to manually listing all
+       the observed variables after the ``estimation`` command.
 
     .. option:: number_of_particles = INTEGER
 
-        Number of particles used when evaluating the likelihood of a non linear state space model. Default: ``1000``.
+       Number of particles used when evaluating the likelihood of a
+       non linear state space model. Default: ``1000``.
 
     .. option:: resampling = OPTION
 
-        Determines if resampling of the particles is done. Possible values for OPTION are:
+       Determines if resampling of the particles is done. Possible
+       values for OPTION are:
 
-        ``none``
+           ``none``
 
-            No resampling.
+               No resampling.
 
-        ``systematic``
+           ``systematic``
 
-            Resampling at each iteration, this is the default value.
+               Resampling at each iteration, this is the default value.
 
-        ``generic``
+           ``generic``
 
-            Resampling if and only if the effective sample size is below a certain level defined by :opt:`resampling_threshold <resampling_threshold = DOUBLE>` * :opt:`number_of_particles <number_of_particles = INTEGER>`.
+               Resampling if and only if the effective sample size is
+               below a certain level defined by
+               :opt:`resampling_threshold <resampling_threshold =
+               DOUBLE>` * :opt:`number_of_particles
+               <number_of_particles = INTEGER>`.
 
     .. option:: resampling_threshold = DOUBLE
 
-        A real number between zero and one. The resampling step is triggered as soon as the effective number of particles is less than this number times the total number of particles (as set by :opt:`number_of_particles <number_of_particles = INTEGER>`). This option is effective if and only if option :opt:`resampling <resampling = OPTION>` has value ``generic``.
+       A real number between zero and one. The resampling step is
+       triggered as soon as the effective number of particles is less
+       than this number times the total number of particles (as set by
+       :opt:`number_of_particles <number_of_particles =
+       INTEGER>`). This option is effective if and only if option
+       :opt:`resampling <resampling = OPTION>` has value ``generic``.
 
     .. option:: resampling_method = OPTION
 
-        Sets the resampling method. Possible values for OPTION are: ``kitagawa``, ``stratified`` and ``smooth``.
+       Sets the resampling method. Possible values for OPTION are:
+       ``kitagawa``, ``stratified`` and ``smooth``.
 
     .. option:: filter_algorithm = OPTION
 
-        Sets the particle filter algorithm. Possible values for OPTION are:
+       Sets the particle filter algorithm. Possible values for OPTION
+       are:
 
-        ``sis``
+           ``sis``
 
-            Sequential importance sampling algorithm, this is the default value.
+               Sequential importance sampling algorithm, this is the
+               default value.
 
-        ``apf``
+           ``apf``
 
-            Auxiliary particle filter.
+               Auxiliary particle filter.
 
-        ``gf``
+           ``gf``
 
-            Gaussian filter.
+               Gaussian filter.
 
-        ``gmf``
+           ``gmf``
 
-            Gaussian mixture filter.
+               Gaussian mixture filter.
 
-        ``cpf``
+           ``cpf``
 
-            Conditional particle filter.
+               Conditional particle filter.
 
-        ``nlkf``
+           ``nlkf``
 
-            Use a standard (linear) Kalman filter algorithm with the nonlinear measurement and state equations.
+               Use a standard (linear) Kalman filter algorithm with
+               the nonlinear measurement and state equations.
 
     .. option:: proposal_approximation = OPTION
 
-        Sets the method for approximating the proposal distribution. Possible values for OPTION are: ``cubature``, ``montecarlo`` and ``unscented``. Default value is ``unscented``.
+       Sets the method for approximating the proposal
+       distribution. Possible values for OPTION are: ``cubature``,
+       ``montecarlo`` and ``unscented``. Default value is
+       ``unscented``.
 
     .. option:: distribution_approximation = OPTION
 
-        Sets the method for approximating the particle distribution. Possible values for OPTION are: ``cubature``, ``montecarlo`` and ``unscented``. Default value is ``unscented``.
+       Sets the method for approximating the particle
+       distribution. Possible values for OPTION are: ``cubature``,
+       ``montecarlo`` and ``unscented``. Default value is
+       ``unscented``.
 
     .. option:: cpf_weights = OPTION
 
-        Controls the method used to update the weights in conditional particle filter, possible values are ``amisanotristani`` (*Amisano et al. (2010)*) or ``murrayjonesparslow`` (*Murray et al. (2013)*). Default value is ``amisanotristani``.
+       Controls the method used to update the weights in conditional
+       particle filter, possible values are ``amisanotristani``
+       (*Amisano et al. (2010)*) or ``murrayjonesparslow`` (*Murray et
+       al. (2013)*). Default value is ``amisanotristani``.
 
     .. option:: nonlinear_filter_initialization = INTEGER
 
-        Sets the initial condition of the nonlinear filters. By default the nonlinear filters are initialized with the unconditional covariance matrix of the state variables, computed with the reduced form solution of the first order approximation of the model. If ``nonlinear_filter_initialization=2``, the nonlinear filter is instead initialized with a covariance matrix estimated with a stochastic simulation of the reduced form solution of the second order approximation of the model. Both these initializations assume that the model is stationary, and cannot be used if the model has unit roots (which can be seen with the :comm:`check` command prior to estimation). If the model has stochastic trends, user must use ``nonlinear_filter_initialization=3``, the filters are then initialized with an identity matrix for the covariance matrix of the state variables. Default value is ``nonlinear_filter_initialization=1`` (initialization based on the first order approximation of the model).
+       Sets the initial condition of the nonlinear filters. By default
+       the nonlinear filters are initialized with the unconditional
+       covariance matrix of the state variables, computed with the
+       reduced form solution of the first order approximation of the
+       model. If ``nonlinear_filter_initialization=2``, the nonlinear
+       filter is instead initialized with a covariance matrix
+       estimated with a stochastic simulation of the reduced form
+       solution of the second order approximation of the model. Both
+       these initializations assume that the model is stationary, and
+       cannot be used if the model has unit roots (which can be seen
+       with the :comm:`check` command prior to estimation). If the
+       model has stochastic trends, user must use
+       ``nonlinear_filter_initialization=3``, the filters are then
+       initialized with an identity matrix for the covariance matrix
+       of the state variables. Default value is
+       ``nonlinear_filter_initialization=1`` (initialization based on
+       the first order approximation of the model).
 
     *Note*
 
-    If no ``mh_jscale`` parameter is used for a parameter in ``estimated_params``, the procedure uses ``mh_jscale`` for all parameters. If ``mh_jscale`` option isn’t set, the procedure uses ``0.2`` for all parameters. Note that if ``mode_compute=6`` is used or the ``posterior_sampler_option`` called ``scale_file`` is specified, the values set in ``estimated_params`` will be overwritten.
+    If no ``mh_jscale`` parameter is used for a parameter in
+    ``estimated_params``, the procedure uses ``mh_jscale`` for all
+    parameters. If ``mh_jscale`` option isn’t set, the procedure uses
+    ``0.2`` for all parameters. Note that if ``mode_compute=6`` is
+    used or the ``posterior_sampler_option`` called ``scale_file`` is
+    specified, the values set in ``estimated_params`` will be
+    overwritten.
 
     *“Endogenous” prior restrictions*
 
-    It is also possible to impose implicit “endogenous” priors about IRFs and moments on the model during estimation. For example, one can specify that all valid parameter draws for the model must generate fiscal multipliers that are bigger than 1 by specifying how the IRF to a government spending shock must look like. The prior restrictions can be imposed via ``irf_calibration`` and ``moment_calibration`` blocks (see :ref:`irf-momcal`). The way it works internally is that any parameter draw that is inconsistent with the “calibration” provided in these blocks is discarded, i.e. assigned a prior density of 0. When specifying these blocks, it is important to keep in mind that one won’t be able to easily do ``model_comparison`` in this case, because the prior density will not integrate to 1.
+    It is also possible to impose implicit “endogenous” priors about
+    IRFs and moments on the model during estimation. For example, one
+    can specify that all valid parameter draws for the model must
+    generate fiscal multipliers that are bigger than 1 by specifying
+    how the IRF to a government spending shock must look like. The
+    prior restrictions can be imposed via ``irf_calibration`` and
+    ``moment_calibration`` blocks (see :ref:`irf-momcal`). The way it
+    works internally is that any parameter draw that is inconsistent
+    with the “calibration” provided in these blocks is discarded,
+    i.e. assigned a prior density of 0. When specifying these blocks,
+    it is important to keep in mind that one won’t be able to easily
+    do ``model_comparison`` in this case, because the prior density
+    will not integrate to 1.
 
     *Output*
 
-    After running estimation, the parameters ``M_.params`` and the variance matrix ``M_.Sigma_e`` of the shocks are set to the mode for maximum likelihood estimation or posterior mode computation without Metropolis iterations.
+    After running estimation, the parameters ``M_.params`` and the
+    variance matrix ``M_.Sigma_e`` of the shocks are set to the mode
+    for maximum likelihood estimation or posterior mode computation
+    without Metropolis iterations. After estimation with Metropolis
+    iterations (option ``mh_replic > 0`` or option ``load_mh_file``
+    set) the parameters ``M_.params`` and the variance matrix
+    ``M_.Sigma_e`` of the shocks are set to the posterior mean.
 
-    After estimation with Metropolis iterations (option ``mh_replic > 0`` or option ``load_mh_file`` set) the parameters ``M_.params`` and the variance matrix ``M_.Sigma_e`` of the shocks are set to the posterior mean.
+    Depending on the options, ``estimation`` stores results in various
+    fields of the ``oo_`` structure, described below. In the following
+    variables, we will adopt the following shortcuts for specific
+    field names:
 
-    Depending on the options, ``estimation`` stores results in various fields of the ``oo_`` structure, described below.
 
+        ``MOMENT_NAME``
 
-In the following variables, we will adopt the following shortcuts for specific field names:
+            This field can take the following values:
 
+            ``HPDinf``
 
-``MOMENT_NAME``
+                Lower bound of a 90% HPD interval [#f3]_.
 
-    This field can take the following values:
+            ``HPDsup``
 
-    ``HPDinf``
+                Upper bound of a 90% HPD interval.
 
-        Lower bound of a 90% HPD interval [#f3]_.
+            ``HPDinf_ME``
 
-    ``HPDsup``
+                Lower bound of a 90% HPD interval [#f4]_ for
+                observables when taking measurement error into account
+                (see e.g. *Christoffel et al. (2010*), p.17).
 
-        Upper bound of a 90% HPD interval.
+            ``HPDsup_ME``
 
-    ``HPDinf_ME``
+                Upper bound of a 90% HPD interval for observables when
+                taking measurement error into account.
 
-        Lower bound of a 90% HPD interval [#f4]_ for observables when taking measurement error into account (see e.g. *Christoffel et al. (2010*), p.17).
+            ``Mean``
 
-    ``HPDsup_ME``
+                Mean of the posterior distribution.
 
-        Upper bound of a 90% HPD interval for observables when taking measurement error into account.
+            ``Median``
 
-    ``Mean``
+                Median of the posterior distribution.
 
-        Mean of the posterior distribution.
+            ``Std``
 
-    ``Median``
+                Standard deviation of the posterior distribution.
 
-        Median of the posterior distribution.
+            ``Variance``
 
-    ``Std``
+                Variance of the posterior distribution.
 
-        Standard deviation of the posterior distribution.
+            ``deciles``
 
-    ``Variance``
+                Deciles of the distribution.
 
-        Variance of the posterior distribution.
+            .. _dens:
 
-    ``deciles``
+            ``density``
 
-        Deciles of the distribution.
+                Non parametric estimate of the posterior density
+                following the approach outlined in *Skoeld and Roberts
+                (2003)*. First and second columns are respectively
+                abscissa and ordinate coordinates.
 
-    .. _dens:
+        ``ESTIMATED_OBJECT``
 
-    ``density``
+            This field can take the following values:
 
-        Non parametric estimate of the posterior density following the approach outlined in *Skoeld and Roberts (2003)*. First and second columns are respectively abscissa and ordinate coordinates.
+            ``measurement_errors_corr``
 
+                Correlation between two measurement errors.
 
-``ESTIMATED_OBJECT``
+            ``measurement_errors_std``
 
-    This field can take the following values:
+                Standard deviation of measurement errors.
 
-    ``measurement_errors_corr``
+            ``parameters``
 
-        Correlation between two measurement errors.
+                Parameters.
 
-    ``measurement_errors_std``
+            ``shocks_corr``
 
-        Standard deviation of measurement errors.
+                Correlation between two structural shocks.
 
-    ``parameters``
+            ``shocks_std``
 
-        Parameters.
+                Standard deviation of structural shocks.
 
-    ``shocks_corr``
 
-        Correlation between two structural shocks.
+    .. matvar:: oo_.MarginalDensity.LaplaceApproximation
 
-    ``shocks_std``
+        Variable set by the ``estimation`` command. Stores the marginal
+        data density based on the Laplace Approximation.
 
-        Standard deviation of structural shocks.
 
+    .. matvar:: oo_.MarginalDensity.ModifiedHarmonicMean
 
-.. matvar:: oo_.MarginalDensity.LaplaceApproximation
+        Variable set by the ``estimation command``, if it is used with
+        ``mh_replic > 0`` or ``load_mh_file`` option. Stores the
+        marginal data density based on *Geweke (1999)* Modified
+        Harmonic Mean estimator.
 
-    Variable set by the ``estimation`` command. Stores the marginal data density based on the Laplace Approximation.
 
+    .. matvar:: oo_.posterior.optimization
 
-.. matvar:: oo_.MarginalDensity.ModifiedHarmonicMean
+        Variable set by the ``estimation`` command if mode-finding is
+        used. Stores the results at the mode. Fields are of the form::
 
-    Variable set by the ``estimation command``, if it is used with ``mh_replic > 0`` or ``load_mh_file`` option. Stores the marginal data density based on *Geweke (1999)* Modified Harmonic Mean estimator.
+            oo_.posterior.optimization.OBJECT
 
+        where OBJECT is one of the following:
 
-.. matvar:: oo_.posterior.optimization
+           ``mode``
 
-    Variable set by the ``estimation`` command if mode-finding is used. Stores the results at the mode. Fields are of the form::
+               Parameter vector at the mode.
 
-        oo_.posterior.optimization.OBJECT
+           ``Variance``
 
-    where OBJECT is one of the following:
+               Inverse Hessian matrix at the mode or MCMC jumping
+               covariance matrix when used with the
+               :opt:`MCMC_jumping_covariance <mcmc_jumping_covariance
+               = OPTION>` option.
 
-    ``mode``
+           ``log_density``
 
-        Parameter vector at the mode.
+               Log likelihood (ML)/log posterior density (Bayesian) at the
+               mode when used with ``mode_compute>0``.
 
-    ``Variance``
 
-        Inverse Hessian matrix at the mode or MCMC jumping covariance matrix when used with the :opt:`MCMC_jumping_covariance <mcmc_jumping_covariance = OPTION>` option.
+    .. matvar:: oo_.posterior.metropolis
 
-    ``log_density``
+        Variable set by the ``estimation`` command if ``mh_replic>0`` is
+        used. Fields are of the form::
 
-        Log likelihood (ML)/log posterior density (Bayesian) at the mode when used with ``mode_compute>0``.
+            oo_.posterior.metropolis.OBJECT
 
+        where OBJECT is one of the following:
 
-.. matvar:: oo_.posterior.metropolis
+            ``mean``
 
-    Variable set by the ``estimation`` command if ``mh_replic>0`` is used. Fields are of the form::
+                Mean parameter vector from the MCMC.
 
-        oo_.posterior.metropolis.OBJECT
+            ``Variance``
 
-    where OBJECT is one of the following:
+                Covariance matrix of the parameter draws in the MCMC.
 
-    ``mean``
 
-        Mean parameter vector from the MCMC.
+    .. matvar:: oo_.FilteredVariables
 
-    ``Variance``
+        Variable set by the ``estimation`` command, if it is used with the
+        ``filtered_vars`` option.
 
-        Covariance matrix of the parameter draws in the MCMC.
+        After an estimation without Metropolis, fields are of the form::
 
+            oo_.FilteredVariables.VARIABLE_NAME
 
-.. matvar:: oo_.FilteredVariables
+        After an estimation with Metropolis, fields are of the form::
 
-    Variable set by the ``estimation`` command, if it is used with the ``filtered_vars`` option.
+            oo_.FilteredVariables.MOMENT_NAME.VARIABLE_NAME
 
-    After an estimation without Metropolis, fields are of the form::
 
-        oo_.FilteredVariables.VARIABLE_NAME
+    .. matvar:: oo_.FilteredVariablesKStepAhead
 
-    After an estimation with Metropolis, fields are of the form::
+        Variable set by the ``estimation`` command, if it is used with
+        the ``filter_step_ahead`` option. The k-steps are stored along
+        the rows while the columns indicate the respective
+        variables. The third dimension of the array provides the
+        observation for which the forecast has been made. For example,
+        if ``filter_step_ahead=[1 2 4]`` and ``nobs=200``, the element
+        (3,5,204) stores the four period ahead filtered value of
+        variable 5 computed at time t=200 for time t=204. The periods
+        at the beginning and end of the sample for which no forecasts
+        can be made, e.g. entries (1,5,1) and (1,5,204) in the
+        example, are set to zero. Note that in case of Bayesian
+        estimation the variables will be ordered in the order of
+        declaration after the estimation command (or in general
+        declaration order if no variables are specified here). In case
+        of running the classical smoother, the variables will always
+        be ordered in general declaration order. If the
+        :opt:`selected_variables_only` option is specified with the
+        classical smoother, non-requested variables will be simply
+        left out in this order.
 
-        oo_.FilteredVariables.MOMENT_NAME.VARIABLE_NAME
 
+    .. matvar:: oo_.FilteredVariablesKStepAheadVariances
 
+        Variable set by the ``estimation`` command, if it is used with
+        the ``filter_step_ahead option``. It is a 4 dimensional array
+        where the k-steps are stored along the first dimension, while
+        the fourth dimension of the array provides the observation for
+        which the forecast has been made. The second and third
+        dimension provide the respective variables. For example, if
+        ``filter_step_ahead=[1 2 4]`` and ``nobs=200``, the element
+        (3,4,5,204) stores the four period ahead forecast error
+        covariance between variable 4 and variable 5, computed at time
+        t=200 for time t=204. Padding with zeros and variable ordering
+        is analogous to ``oo_.FilteredVariablesKStepAhead``.
 
-.. matvar:: oo_.FilteredVariablesKStepAhead
+    .. matvar:: oo_.Filtered_Variables_X_step_ahead
 
-    Variable set by the ``estimation`` command, if it is used with the ``filter_step_ahead`` option. The k-steps are stored along the rows while the columns indicate the respective variables. The third dimension of the array provides the observation for which the forecast has been made. For example, if ``filter_step_ahead=[1 2 4]`` and ``nobs=200``, the element (3,5,204) stores the four period ahead filtered value of variable 5 computed at time t=200 for time t=204. The periods at the beginning and end of the sample for which no forecasts can be made, e.g. entries (1,5,1) and (1,5,204) in the example, are set to zero. Note that in case of Bayesian estimation the variables will be ordered in the order of declaration after the estimation command (or in general declaration order if no variables are specified here). In case of running the classical smoother, the variables will always be ordered in general declaration order. If the :opt:`selected_variables_only` option is specified with the classical smoother, non-requested variables will be simply left out in this order.
+        Variable set by the ``estimation`` command, if it is used with the
+        ``filter_step_ahead option`` in the context of Bayesian
+        estimation. Fields are of the form::
 
+            oo_.Filtered_Variables_X_step_ahead.VARIABLE_NAME
 
-.. matvar:: oo_.FilteredVariablesKStepAheadVariances
+        The n-th entry stores the k-step ahead filtered variable computed
+        at time n for time n+k.
 
-    Variable set by the ``estimation`` command, if it is used with the ``filter_step_ahead option``. It is a 4 dimensional array where the k-steps are stored along the first dimension, while the fourth dimension of the array provides the observation for which the forecast has been made. The second and third dimension provide the respective variables. For example, if ``filter_step_ahead=[1 2 4]`` and ``nobs=200``, the element (3,4,5,204) stores the four period ahead forecast error covariance between variable 4 and variable 5, computed at time t=200 for time t=204. Padding with zeros and variable ordering is analogous to ``oo_.FilteredVariablesKStepAhead``.
 
-.. matvar:: oo_.Filtered_Variables_X_step_ahead
+    .. matvar:: oo_.FilteredVariablesShockDecomposition
 
-    Variable set by the ``estimation`` command, if it is used with the ``filter_step_ahead option`` in the context of Bayesian estimation. Fields are of the form::
+        Variable set by the ``estimation`` command, if it is used with
+        the ``filter_step_ahead`` option. The k-steps are stored along
+        the rows while the columns indicate the respective
+        variables. The third dimension corresponds to the shocks in
+        declaration order. The fourth dimension of the array provides
+        the observation for which the forecast has been made. For
+        example, if ``filter_step_ahead=[1 2 4]`` and ``nobs=200``,
+        the element (3,5,2,204) stores the contribution of the second
+        shock to the four period ahead filtered value of variable 5
+        (in deviations from the mean) computed at time t=200 for time
+        t=204. The periods at the beginning and end of the sample for
+        which no forecasts can be made, e.g. entries (1,5,1) and
+        (1,5,204) in the example, are set to zero. Padding with zeros
+        and variable ordering is analogous to
+        ``oo_.FilteredVariablesKStepAhead``.
 
-        oo_.Filtered_Variables_X_step_ahead.VARIABLE_NAME
+    .. matvar:: oo_.PosteriorIRF.dsge
 
-    The n-th entry stores the k-step ahead filtered variable computed at time n for time n+k.
+        Variable set by the ``estimation`` command, if it is used with the
+        ``bayesian_irf`` option. Fields are of the form::
 
+            oo_.PosteriorIRF.dsge.MOMENT_NAME.VARIABLE_NAME_SHOCK_NAME
 
-.. matvar:: oo_.FilteredVariablesShockDecomposition
 
-    Variable set by the ``estimation`` command, if it is used with the ``filter_step_ahead`` option. The k-steps are stored along the rows while the columns indicate the respective variables. The third dimension corresponds to the shocks in declaration order. The fourth dimension of the array provides the observation for which the forecast has been made. For example, if ``filter_step_ahead=[1 2 4]`` and ``nobs=200``, the element (3,5,2,204) stores the contribution of the second shock to the four period ahead filtered value of variable 5 (in deviations from the mean) computed at time t=200 for time t=204. The periods at the beginning and end of the sample for which no forecasts can be made, e.g. entries (1,5,1) and (1,5,204) in the example, are set to zero. Padding with zeros and variable ordering is analogous to ``oo_.FilteredVariablesKStepAhead``.
+    .. matvar:: oo_.SmoothedMeasurementErrors
 
-.. matvar:: oo_.PosteriorIRF.dsge
+        Variable set by the ``estimation`` command, if it is used with the
+        ``smoother`` option. Fields are of the form::
 
-    Variable set by the ``estimation`` command, if it is used with the ``bayesian_irf`` option. Fields are of the form::
+            oo_.SmoothedMeasurementErrors.VARIABLE_NAME
 
-        oo_.PosteriorIRF.dsge.MOMENT_NAME.VARIABLE_NAME_SHOCK_NAME
 
+    .. matvar:: oo_.SmoothedShocks
 
-.. matvar:: oo_.SmoothedMeasurementErrors
+        Variable set by the ``estimation`` command (if used with the
+        ``smoother`` option), or by the ``calib_smoother`` command.
 
-    Variable set by the ``estimation`` command, if it is used with the ``smoother`` option. Fields are of the form::
+        After an estimation without Metropolis, or if computed by
+        ``calib_smoother``, fields are of the form::
 
-        oo_.SmoothedMeasurementErrors.VARIABLE_NAME
+            oo_.SmoothedShocks.VARIABLE_NAME
 
+        After an estimation with Metropolis, fields are of the form::
 
-.. matvar:: oo_.SmoothedShocks
+            oo_.SmoothedShocks.MOMENT_NAME.VARIABLE_NAME
 
-    Variable set by the ``estimation`` command (if used with the ``smoother`` option), or by the ``calib_smoother`` command.
 
-    After an estimation without Metropolis, or if computed by ``calib_smoother``, fields are of the form::
+    .. matvar:: oo_.SmoothedVariables
 
-        oo_.SmoothedShocks.VARIABLE_NAME
+        Variable set by the ``estimation`` command (if used with the
+        ``smoother`` option), or by the ``calib_smoother`` command.
 
-    After an estimation with Metropolis, fields are of the form::
+        After an estimation without Metropolis, or if computed by
+        ``calib_smoother``, fields are of the form::
 
-        oo_.SmoothedShocks.MOMENT_NAME.VARIABLE_NAME
+            oo_.SmoothedVariables.VARIABLE_NAME
 
+        After an estimation with Metropolis, fields are of the form::
 
-.. matvar:: oo_.SmoothedVariables
+            oo_.SmoothedVariables.MOMENT_NAME.VARIABLE_NAME
 
-    Variable set by the ``estimation`` command (if used with the ``smoother`` option), or by the ``calib_smoother`` command.
 
-    After an estimation without Metropolis, or if computed by ``calib_smoother``, fields are of the form::
+    .. matvar:: oo_.UpdatedVariables
 
-        oo_.SmoothedVariables.VARIABLE_NAME
+        Variable set by the ``estimation`` command (if used with the
+        ``smoother`` option), or by the ``calib_smoother``
+        command. Contains the estimation of the expected value of
+        variables given the information available at the current date.
 
-    After an estimation with Metropolis, fields are of the form::
+        After an estimation without Metropolis, or if computed by
+        ``calib_smoother``, fields are of the form::
 
-        oo_.SmoothedVariables.MOMENT_NAME.VARIABLE_NAME
+            oo_.UpdatedVariables.VARIABLE_NAME
 
+        After an estimation with Metropolis, fields are of the form::
 
-.. matvar:: oo_.UpdatedVariables
+            oo_.UpdatedVariables.MOMENT_NAME.VARIABLE_NAME
 
-    Variable set by the ``estimation`` command (if used with the ``smoother`` option), or by the ``calib_smoother`` command. Contains the estimation of the expected value of variables given the information available at the current date.
 
-    After an estimation without Metropolis, or if computed by ``calib_smoother``, fields are of the form::
+    .. matvar:: oo_.FilterCovariance
 
-        oo_.UpdatedVariables.VARIABLE_NAME
+        Three-dimensional array set by the ``estimation`` command if
+        used with the ``smoother`` and Metropolis, if the
+        ``filter_covariance`` option has been requested. Contains the
+        series of one-step ahead forecast error covariance matrices
+        from the Kalman smoother. The ``M_.endo_nbr`` times
+        ``M_.endo_nbr`` times ``T+1`` array contains the variables in
+        declaration order along the first two dimensions. The third
+        dimension of the array provides the observation for which the
+        forecast has been made. Fields are of the form::
 
-    After an estimation with Metropolis, fields are of the form::
+            oo_.FilterCovariance.MOMENT_NAME
 
-        oo_.UpdatedVariables.MOMENT_NAME.VARIABLE_NAME
+        Note that density estimation is not supported.
 
 
-.. matvar:: oo_.FilterCovariance
+    .. matvar:: oo_.Smoother.Variance
 
-    Three-dimensional array set by the ``estimation`` command if used with the ``smoother`` and Metropolis, if the ``filter_covariance`` option has been requested. Contains the series of one-step ahead forecast error covariance matrices from the Kalman smoother. The ``M_.endo_nbr`` times ``M_.endo_nbr`` times ``T+1`` array contains the variables in declaration order along the first two dimensions. The third dimension of the array provides the observation for which the forecast has been made. Fields are of the form::
+        Three-dimensional array set by the ``estimation`` command (if
+        used with the ``smoother``) without Metropolis, or by the
+        ``calib_smoother`` command, if the ``filter_covariance``
+        option has been requested. Contains the series of one-step
+        ahead forecast error covariance matrices from the Kalman
+        smoother. The ``M_.endo_nbr`` times ``M_.endo_nbr`` times
+        ``T+1`` array contains the variables in declaration order
+        along the first two dimensions. The third dimension of the
+        array provides the observation for which the forecast has been
+        made.
 
-        oo_.FilterCovariance.MOMENT_NAME
 
-    Note that density estimation is not supported.
+    .. matvar:: oo_.Smoother.State_uncertainty
 
+        Three-dimensional array set by the ``estimation`` command (if
+        used with the ``smoother`` option) without Metropolis, or by
+        the ``calib_smoother`` command, if the
+        ``smoothed_state_uncertainty`` option has been
+        requested. Contains the series of covariance matrices for the
+        state estimate given the full data from the Kalman
+        smoother. The ``M_.endo_nbr`` times ``M_.endo_nbr`` times
+        ``T`` array contains the variables in declaration order along
+        the first two dimensions. The third dimension of the array
+        provides the observation for which the smoothed estimate has
+        been made.
 
-.. matvar:: oo_.Smoother.Variance
 
-    Three-dimensional array set by the ``estimation`` command (if used with the ``smoother``) without Metropolis, or by the ``calib_smoother`` command, if the ``filter_covariance`` option has been requested. Contains the series of one-step ahead forecast error covariance matrices from the Kalman smoother. The ``M_.endo_nbr`` times ``M_.endo_nbr`` times ``T+1`` array contains the variables in declaration order along the first two dimensions. The third dimension of the array provides the observation for which the forecast has been made.
+    .. matvar:: oo_.Smoother.SteadyState
 
+        Variable set by the ``estimation`` command (if used with the
+        ``smoother``) without Metropolis, or by the
+        ````calib_smoother`` command. Contains the steady state
+        component of the endogenous variables used in the smoother in
+        order of variable declaration.
 
-.. matvar:: oo_.Smoother.State_uncertainty
 
-    Three-dimensional array set by the ``estimation`` command (if used with the ``smoother`` option) without Metropolis, or by the ``calib_smoother`` command, if the ``smoothed_state_uncertainty`` option has been requested. Contains the series of covariance matrices for the state estimate given the full data from the Kalman smoother. The ``M_.endo_nbr`` times ``M_.endo_nbr`` times ``T`` array contains the variables in declaration order along the first two dimensions. The third dimension of the array provides the observation for which the smoothed estimate has been made.
+    .. matvar:: oo_.Smoother.TrendCoeffs
 
+        Variable set by the ````estimation`` command (if used with the
+        ``smoother``) without Metropolis, or by the ``calib_smoother``
+        command. Contains the trend coefficients of the observed
+        variables used in the smoother in order of declaration of the
+        observed variables.
 
-.. matvar:: oo_.Smoother.SteadyState
 
-    Variable set by the ``estimation`` command (if used with the ``smoother``) without Metropolis, or by the ````calib_smoother`` command. Contains the steady state component of the endogenous variables used in the smoother in order of variable declaration.
+    .. matvar:: oo_.Smoother.Trend
 
+        Variable set by the ``estimation command`` (if used with the
+        ``smoother`` option), or by the ````calib_smoother``
+        command. Contains the trend component of the variables used in
+        the smoother.
 
-.. matvar:: oo_.Smoother.TrendCoeffs
+        Fields are of the form::
 
-    Variable set by the ````estimation`` command (if used with the ``smoother``) without Metropolis, or by the ``calib_smoother`` command. Contains the trend coefficients of the observed variables used in the smoother in order of declaration of the observed variables.
+            oo_.Smoother.Trend.VARIABLE_NAME
 
 
-.. matvar:: oo_.Smoother.Trend
+    .. matvar:: oo_.Smoother.Constant
 
-    Variable set by the ``estimation command`` (if used with the ``smoother`` option), or by the ````calib_smoother`` command. Contains the trend component of the variables used in the smoother.
+        Variable set by the ``estimation`` command (if used with the
+        ``smoother`` option), or by the ``calib_smoother``
+        command. Contains the constant part of the endogenous
+        variables used in the smoother, accounting e.g. for the data
+        mean when using the prefilter option.
 
-    Fields are of the form::
+        Fields are of the form::
 
-        oo_.Smoother.Trend.VARIABLE_NAME
+            oo_.Smoother.Constant.VARIABLE_NAME
 
 
-.. matvar:: oo_.Smoother.Constant
+    .. matvar:: oo_.Smoother.loglinear
 
-    Variable set by the ``estimation`` command (if used with the ``smoother`` option), or by the ``calib_smoother`` command. Contains the constant part of the endogenous variables used in the smoother, accounting e.g. for the data mean when using the prefilter option.
+        Indicator keeping track of whether the smoother was run with
+        the :ref:`loglinear <logl>` option and thus whether stored
+        smoothed objects are in logs.
 
-    Fields are of the form::
 
-        oo_.Smoother.Constant.VARIABLE_NAME
+    .. matvar:: oo_.PosteriorTheoreticalMoments
 
+        Variable set by the ``estimation`` command, if it is used with the
+        ``moments_varendo`` option. Fields are of the form::
 
-.. matvar:: oo_.Smoother.loglinear
+            oo_.PosteriorTheoreticalMoments.dsge.THEORETICAL_MOMENT.ESTIMATED_OBJECT.MOMENT_NAME.VARIABLE_NAME
 
-    Indicator keeping track of whether the smoother was run with the :ref:`loglinear <logl>` option and thus whether stored smoothed objects are in logs.
+        where *THEORETICAL_MOMENT* is one of the following:
 
+            ``covariance``
 
-.. matvar:: oo_.PosteriorTheoreticalMoments
+                Variance-covariance of endogenous variables.
 
-    Variable set by the ``estimation`` command, if it is used with the ``moments_varendo`` option. Fields are of the form::
+            ``contemporaneous_correlation``
 
-        oo_.PosteriorTheoreticalMoments.dsge.THEORETICAL_MOMENT.
-        ESTIMATED_OBJECT.MOMENT_NAME.VARIABLE_NAME
+                Contemporaneous correlation of endogenous variables when the
+                :opt:`contemporaneous_correlation` option is specified.
 
-    where *THEORETICAL_MOMENT* is one of the following:
+            ``correlation``
 
-    ``covariance``
+                Auto- and cross-correlation of endogenous variables. Fields
+                are vectors with correlations from 1 up to order
+                ``options_.ar``.
 
-        Variance-covariance of endogenous variables.
+            ``VarianceDecomposition``
 
-    ``contemporaneous_correlation``
+                Decomposition of variance (unconditional variance, i.e. at
+                horizon infinity). [#f5]_
 
-        Contemporaneous correlation of endogenous variables when the :opt:`contemporaneous_correlation` option is specified.
+            ``ConditionalVarianceDecomposition``
 
-    ``correlation``
+                Only if the ``conditional_variance_decomposition`` option has
+                been specified.
 
-        Auto- and cross-correlation of endogenous variables. Fields are vectors with correlations from 1 up to order ``options_.ar``.
 
-    ``VarianceDecomposition``
+    .. matvar:: oo_.posterior_density
 
-        Decomposition of variance (unconditional variance, i.e. at horizon infinity). [#f5]_
+        Variable set by the ``estimation`` command, if it is used with
+        ``mh_replic > 0`` or ``load_mh_file`` option. Fields are of
+        the form::
 
-    ``ConditionalVarianceDecomposition``
+            oo_.posterior_density.PARAMETER_NAME
 
-        Only if the ``conditional_variance_decomposition`` option has been specified.
 
+    .. matvar:: oo_.posterior_hpdinf
 
-.. matvar:: oo_.posterior_density
+        Variable set by the ``estimation`` command, if it is used with
+        ``mh_replic > 0`` or ``load_mh_file`` option. Fields are of
+        the form::
 
-    Variable set by the ``estimation`` command, if it is used with ``mh_replic > 0`` or ``load_mh_file`` option. Fields are of the form::
+            oo_.posterior_hpdinf.ESTIMATED_OBJECT.VARIABLE_NAME
 
-        oo_.posterior_density.PARAMETER_NAME
 
+    .. matvar:: oo_.posterior_hpdsup
 
-.. matvar:: oo_.posterior_hpdinf
+        Variable set by the ``estimation`` command, if it is used with
+        ``mh_replic > 0`` or ``load_mh_file`` option. Fields are of the
+        form::
 
-    Variable set by the ``estimation`` command, if it is used with ``mh_replic > 0`` or ``load_mh_file`` option. Fields are of the form::
+            oo_.posterior_hpdsup.ESTIMATED_OBJECT.VARIABLE_NAME
 
-        oo_.posterior_hpdinf.ESTIMATED_OBJECT.VARIABLE_NAME
 
+    .. matvar:: oo_.posterior_mean
 
-.. matvar:: oo_.posterior_hpdsup
+        Variable set by the ``estimation`` command, if it is used with
+        ``mh_replic > 0`` or ``load_mh_file`` option. Fields are of the
+        form::
 
-    Variable set by the ``estimation`` command, if it is used with ``mh_replic > 0`` or ``load_mh_file`` option. Fields are of the form::
+            oo_.posterior_mean.ESTIMATED_OBJECT.VARIABLE_NAME
 
-        oo_.posterior_hpdsup.ESTIMATED_OBJECT.VARIABLE_NAME
 
+    .. matvar:: oo_.posterior_mode
 
-.. matvar:: oo_.posterior_mean
+        Variable set by the ``estimation`` command during
+        mode-finding. Fields are of the form::
 
-    Variable set by the ``estimation`` command, if it is used with ``mh_replic > 0`` or ``load_mh_file`` option. Fields are of the form::
+            oo_.posterior_mode.ESTIMATED_OBJECT.VARIABLE_NAME
 
-        oo_.posterior_mean.ESTIMATED_OBJECT.VARIABLE_NAME
 
+    .. matvar:: oo_.posterior_std_at_mode
 
-.. matvar:: oo_.posterior_mode
+        Variable set by the ``estimation`` command during mode-finding. It
+        is based on the inverse Hessian at ``oo_.posterior_mode``. Fields
+        are of the form::
 
-    Variable set by the ``estimation`` command during mode-finding. Fields are of the form::
+            oo_.posterior_std_at_mode.ESTIMATED_OBJECT.VARIABLE_NAME
 
-        oo_.posterior_mode.ESTIMATED_OBJECT.VARIABLE_NAME
 
+    .. matvar:: oo_.posterior_std
 
-.. matvar:: oo_.posterior_std_at_mode
+        Variable set by the ``estimation`` command, if it is used with
+        ``mh_replic > 0`` or ``load_mh_file`` option. Fields are of the
+        form::
 
-    Variable set by the ``estimation`` command during mode-finding. It is based on the inverse Hessian at ``oo_.posterior_mode``. Fields are of the form::
+            oo_.posterior_std.ESTIMATED_OBJECT.VARIABLE_NAME
 
-        oo_.posterior_std_at_mode.ESTIMATED_OBJECT.VARIABLE_NAME
 
+    .. matvar:: oo_.posterior_var
 
-.. matvar:: oo_.posterior_std
+        Variable set by the ``estimation`` command, if it is used with
+        ``mh_replic > 0`` or ``load_mh_file`` option. Fields are of the
+        form::
 
-    Variable set by the ``estimation`` command, if it is used with ``mh_replic > 0`` or ``load_mh_file`` option. Fields are of the form::
+            oo_.posterior_var.ESTIMATED_OBJECT.VARIABLE_NAME
 
-        oo_.posterior_std.ESTIMATED_OBJECT.VARIABLE_NAME
 
+    .. matvar:: oo_.posterior_median
 
-.. matvar:: oo_.posterior_var
+        Variable set by the ``estimation`` command, if it is used with
+        ``mh_replic > 0`` or ``load_mh_file`` option. Fields are of the
+        form::
 
-    Variable set by the ``estimation`` command, if it is used with ``mh_replic > 0`` or ``load_mh_file`` option. Fields are of the form::
+            oo_.posterior_median.ESTIMATED_OBJECT.VARIABLE_NAME
 
-        oo_.posterior_var.ESTIMATED_OBJECT.VARIABLE_NAME
 
+    *Example*
 
-.. matvar:: oo_.posterior_median
+    Here are some examples of generated variables::
 
-    Variable set by the ``estimation`` command, if it is used with ``mh_replic > 0`` or ``load_mh_file`` option. Fields are of the form::
+        oo_.posterior_mode.parameters.alp
+        oo_.posterior_mean.shocks_std.ex
+        oo_.posterior_hpdsup.measurement_errors_corr.gdp_conso
 
-        oo_.posterior_median.ESTIMATED_OBJECT.VARIABLE_NAME
 
+    .. matvar:: oo_.dsge_var.posterior_mode
 
-Here are some examples of generated variables::
+        Structure set by the ``dsge_var`` option of the ``estimation``
+        command after mode_compute.
 
-    oo_.posterior_mode.parameters.alp
-    oo_.posterior_mean.shocks_std.ex
-    oo_.posterior_hpdsup.measurement_errors_corr.gdp_conso
+        The following fields are saved:
 
+            ``PHI_tilde``
 
-.. matvar:: oo_.dsge_var.posterior_mode
+                Stacked posterior DSGE-BVAR autoregressive matrices at the
+                mode (equation (28) of *Del Negro and Schorfheide (2004)*).
 
-    Structure set by the ``dsge_var`` option of the ``estimation`` command after mode_compute.
+            ``SIGMA_u_tilde``
 
-    The following fields are saved:
+                Posterior covariance matrix of the DSGE-BVAR at the mode
+                (equation (29) of *Del Negro and Schorfheide (2004)*).
 
-    ``PHI_tilde``
+            ``iXX``
 
-        Stacked posterior DSGE-BVAR autoregressive matrices at the mode (equation (28) of *Del Negro and Schorfheide (2004)*).
+                Posterior population moments in the DSGE-BVAR at the mode (
+                :math:`inv(\lambda T \Gamma_{XX}^*+ X'X)`).
 
-    ``SIGMA_u_tilde``
+            ``prior``
 
-        Posterior covariance matrix of the DSGE-BVAR at the mode (equation (29) of *Del Negro and Schorfheide (2004)*).
+                Structure storing the DSGE-BVAR prior.
 
-    ``iXX``
+            ``PHI_star``
 
-        Posterior population moments in the DSGE-BVAR at the mode ( :math:`inv(\lambda T \Gamma_{XX}^*+ X'X)`).
+                Stacked prior DSGE-BVAR autoregressive matrices at the
+                mode (equation (22) of *Del Negro and Schorfheide
+                (2004)*).
 
-    ``prior``
+            ``SIGMA_star``
 
-        Structure storing the DSGE-BVAR prior.
+                Prior covariance matrix of the DSGE-BVAR at the mode
+                (equation (23) of *Del Negro and Schorfheide (2004)*).
 
-        ``PHI_star``
+            ``ArtificialSampleSize``
 
-            Stacked prior DSGE-BVAR autoregressive matrices at the mode (equation (22) of *Del Negro and Schorfheide (2004)*).
+                Size of the artifical prior sample ( :math:`inv(\lambda T)`).
 
-        ``SIGMA_star``
+            ``DF``
 
-            Prior covariance matrix of the DSGE-BVAR at the mode (equation (23) of *Del Negro and Schorfheide (2004)*).
+                Prior degrees of freedom ( :math:`inv(\lambda T-k-n)`).
 
-        ``ArtificialSampleSize``
+            ``iGXX_star``
 
-            Size of the artifical prior sample ( :math:`inv(\lambda T)`).
+                Inverse of the theoretical prior “covariance” between
+                X and X (:math:`\Gamma_{xx}^*` in *Del Negro and
+                Schorfheide (2004)*).
 
-        ``DF``
 
-            Prior degrees of freedom ( :math:`inv(\lambda T-k-n)`).
+    .. matvar:: oo_.RecursiveForecast
 
-        ``iGXX_star``
+        Variable set by the ``forecast`` option of the ``estimation``
+        command when used with the nobs = [INTEGER1:INTEGER2] option (see
+        :opt:`nobs <nobs = [INTEGER1:INTEGER2]>`).
 
-            Inverse of the theoretical prior “covariance” between X and X (:math:`\Gamma_{xx}^*` in *Del Negro and Schorfheide (2004)*).
+        Fields are of the form::
 
+            oo_.RecursiveForecast.FORECAST_OBJECT.VARIABLE_NAME
 
-.. matvar:: oo_.RecursiveForecast
+        where ``FORECAST_OBJECT`` is one of the following [#f6]_ :
 
-    Variable set by the ``forecast`` option of the ``estimation`` command when used with the nobs = [INTEGER1:INTEGER2] option (see :opt:`nobs <nobs = [INTEGER1:INTEGER2]>`).
+        ``Mean``
 
-    Fields are of the form::
+            Mean of the posterior forecast distribution.
 
-        oo_.RecursiveForecast.FORECAST_OBJECT.VARIABLE_NAME
+        ``HPDinf/HPDsup``
 
-    where ``FORECAST_OBJECT`` is one of the following [#f6]_ :
+            Upper/lower bound of the 90% HPD interval taking into account
+            only parameter uncertainty (corresponding to
+            :mvar:`oo_.MeanForecast`).
 
-    ``Mean``
+        ``HPDTotalinf/HPDTotalsup``.
 
-        Mean of the posterior forecast distribution.
+            Upper/lower bound of the 90% HPD interval taking into account
+            both parameter and future shock uncertainty (corresponding to
+            :mvar:`oo_.PointForecast`)
 
-    ``HPDinf/HPDsup``
+        ``VARIABLE_NAME`` contains a matrix of the following size:
+        number of time periods for which forecasts are requested using
+        the ``nobs = [INTEGER1:INTEGER2]`` option times the number of
+        forecast horizons requested by the forecast option. i.e., the
+        row indicates the period at which the forecast is performed
+        and the column the respective k-step ahead forecast. The
+        starting periods are sorted in ascending order, not in
+        declaration order.
 
-        Upper/lower bound of the 90% HPD interval taking into account only parameter uncertainty (corresponding to :mvar:`oo_.MeanForecast`).
+    .. matvar:: oo_.convergence.geweke
 
-    ``HPDTotalinf/HPDTotalsup``.
+        Variable set by the convergence diagnostics of the ``estimation``
+        command when used with ``mh_nblocks=1`` option (see
+        :opt:`mh_nblocks <mh_nblocks = INTEGER>`).
 
-        Upper/lower bound of the 90% HPD interval taking into account both parameter and future shock uncertainty (corresponding to :mvar:`oo_.PointForecast`)
+        Fields are of the form::
 
-    ``VARIABLE_NAME`` contains a matrix of the following size: number of time periods for which forecasts are requested using the ``nobs = [INTEGER1:INTEGER2]`` option times the number of forecast horizons requested by the forecast option. i.e., the row indicates the period at which the forecast is performed and the column the respective k-step ahead forecast. The starting periods are sorted in ascending order, not in declaration order.
+            oo_.convergence.geweke.VARIABLE_NAME.DIAGNOSTIC_OBJECT
 
-.. matvar:: oo_.convergence.geweke
+        where *DIAGNOSTIC_OBJECT* is one of the following:
 
-    Variable set by the convergence diagnostics of the ``estimation`` command when used with ``mh_nblocks=1`` option (see :opt:`mh_nblocks <mh_nblocks = INTEGER>`).
+        ``posteriormean``
 
-    Fields are of the form::
+            Mean of the posterior parameter distribution.
 
-        oo_.convergence.geweke.VARIABLE_NAME.DIAGNOSTIC_OBJECT
+        ``posteriorstd``
 
-    where *DIAGNOSTIC_OBJECT* is one of the following:
+            Standard deviation of the posterior parameter distribution.
 
-    ``posteriormean``
+        ``nse_iid``
 
-        Mean of the posterior parameter distribution.
+            Numerical standard error (NSE) under the assumption of iid draws.
 
-    ``posteriorstd``
+        ``rne_iid``
 
-        Standard deviation of the posterior parameter distribution.
+            Relative numerical efficiency (RNE) under the assumption
+            of iid draws.
 
-    ``nse_iid``
+        ``nse_x``
 
-        Numerical standard error (NSE) under the assumption of iid draws.
+            Numerical standard error (NSE) when using an x% taper.
 
-    ``rne_iid``
+        ``rne_x``
 
-        Relative numerical efficiency (RNE) under the assumption of iid draws.
+            Relative numerical efficiency (RNE) when using an x% taper.
 
-    ``nse_x``
+        ``pooled_mean``
 
-        Numerical standard error (NSE) when using an x% taper.
+            Mean of the parameter when pooling the beginning and end parts
+            of the chain specified in :opt:`geweke_interval
+            <geweke_interval = [DOUBLE DOUBLE]>` and weighting them with
+            their relative precision. It is a vector containing the
+            results under the iid assumption followed by the ones using
+            the ``taper_steps`` option (see :opt:`taper_steps <taper_steps
+            = [INTEGER1 INTEGER2 ...]>`).
 
-    ``rne_x``
+        ``pooled_nse``
 
-        Relative numerical efficiency (RNE) when using an x% taper.
+            NSE of the parameter when pooling the beginning and end parts
+            of the chain and weighting them with their relative
+            precision. See ``pooled_mean``.
 
-    ``pooled_mean``
+        ``prob_chi2_test``
 
-        Mean of the parameter when pooling the beginning and end parts of the chain specified in :opt:`geweke_interval <geweke_interval = [DOUBLE DOUBLE]>` and weighting them with their relative precision. It is a vector containing the results under the iid assumption followed by the ones using the ``taper_steps`` option (see :opt:`taper_steps <taper_steps = [INTEGER1 INTEGER2 ...]>`).
-
-    ``pooled_nse``
-
-        NSE of the parameter when pooling the beginning and end parts of the chain and weighting them with their relative precision. See ``pooled_mean``.
-
-    ``prob_chi2_test``
-
-        p-value of a chi-squared test for equality of means in the beginning and the end of the MCMC chain. See ``pooled_mean``. A value above 0.05 indicates that the null hypothesis of equal means and thus convergence cannot be rejected at the 5 percent level. Differing values along the ``taper_steps`` signal the presence of significant autocorrelation in draws. In this case, the estimates using a higher tapering are usually more reliable.
+            p-value of a chi-squared test for equality of means in the
+            beginning and the end of the MCMC chain. See
+            ``pooled_mean``. A value above 0.05 indicates that the null
+            hypothesis of equal means and thus convergence cannot be
+            rejected at the 5 percent level. Differing values along the
+            ``taper_steps`` signal the presence of significant
+            autocorrelation in draws. In this case, the estimates using a
+            higher tapering are usually more reliable.
 
 .. command:: unit_root_vars VARIABLE_NAME...;
 
-    This command is deprecated. Use ``estimation`` option ``diffuse_filter`` instead for estimating a model with non-stationary observed variables or ``steady`` option ``nocheck`` to prevent ``steady`` to check the steady state returned by your steady state file.
+    |br| This command is deprecated. Use ``estimation`` option
+    ``diffuse_filter`` instead for estimating a model with
+    non-stationary observed variables or ``steady`` option ``nocheck``
+    to prevent ``steady`` to check the steady state returned by your
+    steady state file.
 
 Dynare also has the ability to estimate Bayesian VARs:
 
 .. command:: bvar_density ;
 
-    Computes the marginal density of an estimated BVAR model, using Minnesota priors.
+    |br| Computes the marginal density of an estimated BVAR model, using
+    Minnesota priors.
 
-    See ``bvar-a-la-sims.pdf``, which comes with Dynare distribution, for more information on this command.
+    See ``bvar-a-la-sims.pdf``, which comes with Dynare distribution,
+    for more information on this command.
 
 
 
@@ -5424,52 +6504,80 @@ Model Comparison
 .. command:: model_comparison FILENAME[(DOUBLE)]...;
              model_comparison (marginal_density = ESTIMATOR) FILENAME[(DOUBLE)]...;
 
-    This command computes odds ratios and estimate a posterior density over a collection of models (see e.g. *Koop (2003)*, Ch. 1). The priors over models can be specified as the *DOUBLE* values, otherwise a uniform prior over all models is assumed. In contrast to frequentist econometrics, the models to be compared do not need to be nested. However, as the computation of posterior odds ratios is a Bayesian technique, the comparison of models estimated with maximum likelihood is not supported.
+    |br| This command computes odds ratios and estimate a posterior density
+    over a collection of models (see e.g. *Koop (2003)*, Ch. 1). The
+    priors over models can be specified as the *DOUBLE* values,
+    otherwise a uniform prior over all models is assumed. In contrast
+    to frequentist econometrics, the models to be compared do not need
+    to be nested. However, as the computation of posterior odds ratios
+    is a Bayesian technique, the comparison of models estimated with
+    maximum likelihood is not supported.
 
-    It is important to keep in mind that model comparison of this type is only valid with proper priors. If the prior does not integrate to one for all compared models, the comparison is not valid. This may be the case if part of the prior mass is implicitly truncated because Blanchard and Kahn conditions (instability or indeterminacy of the model) are not fulfilled, or because for some regions of the parameters space the deterministic steady state is undefined (or Dynare is unable to find it). The compared marginal densities should be renormalized by the effective prior mass, but this not done by Dynare: it is the user’s responsibility to make sure that model comparison is based on proper priors. Note that, for obvious reasons, this is not an issue if the compared marginal densities are based on Laplace approximations.
+    It is important to keep in mind that model comparison of this type
+    is only valid with proper priors. If the prior does not integrate
+    to one for all compared models, the comparison is not valid. This
+    may be the case if part of the prior mass is implicitly truncated
+    because Blanchard and Kahn conditions (instability or
+    indeterminacy of the model) are not fulfilled, or because for some
+    regions of the parameters space the deterministic steady state is
+    undefined (or Dynare is unable to find it). The compared marginal
+    densities should be renormalized by the effective prior mass, but
+    this not done by Dynare: it is the user’s responsibility to make
+    sure that model comparison is based on proper priors. Note that,
+    for obvious reasons, this is not an issue if the compared marginal
+    densities are based on Laplace approximations.
 
     *Options*
 
     .. option:: marginal_density = ESTIMATOR
 
-        Specifies the estimator for computing the marginal data density. *ESTIMATOR* can take one of the following two values: ``laplace`` for the Laplace estimator or ``modifiedharmonicmean`` for the *Geweke (1999)* Modified Harmonic Mean estimator. Default value: ``laplace``
+         Specifies the estimator for computing the marginal data
+         density. *ESTIMATOR* can take one of the following two values:
+         ``laplace`` for the Laplace estimator or
+         ``modifiedharmonicmean`` for the *Geweke (1999)* Modified
+         Harmonic Mean estimator. Default value: ``laplace``
 
     *Output*
 
-    The results are stored in ``oo_.Model_Comparison``, which is described below.
+    The results are stored in ``oo_.Model_Comparison``, which is
+    described below.
 
-    :ex:
+    *Example*
 
         ::
 
             model_comparison my_model(0.7) alt_model(0.3);
 
-        This example attributes a 70% prior over ``my_model`` and 30% prior over ``alt_model``.
+        This example attributes a 70% prior over ``my_model`` and 30%
+        prior over ``alt_model``.
 
 
 .. matvar:: oo_.Model_Comparison
 
-    Variable set by the ``model_comparison`` command. Fields are of the form::
+    Variable set by the ``model_comparison`` command. Fields are of
+    the form::
 
         oo_.Model_Comparison.FILENAME.VARIABLE_NAME
 
-    where FILENAME is the file name of the model and VARIABLE_NAME is one of the following:
+    where FILENAME is the file name of the model and VARIABLE_NAME is
+    one of the following:
 
-    ``Prior``
+        ``Prior``
 
-        (Normalized) prior density over the model.
+            (Normalized) prior density over the model.
 
-    ``Log_Marginal_Density``
+        ``Log_Marginal_Density``
 
-        Logarithm of the marginal data density.
+            Logarithm of the marginal data density.
 
-    ``Bayes_Ratio``
+        ``Bayes_Ratio``
 
-        Ratio of the marginal data density of the model relative to the one of the first declared model
+            Ratio of the marginal data density of the model relative
+            to the one of the first declared model
 
-    ``Posterior_Model_Probability``
+        ``Posterior_Model_Probability``
 
-        Posterior probability of the respective model.
+            Posterior probability of the respective model.
 
 
 Shock Decomposition
@@ -5478,15 +6586,23 @@ Shock Decomposition
 .. command:: shock_decomposition [VARIABLE_NAME]...;
              shock_decomposition (OPTIONS...) [VARIABLE_NAME]...;
 
-    This command computes the historical shock decomposition for a given sample based on the Kalman smoother, i.e. it decomposes the historical deviations of the endogenous variables from their respective steady state values into the contribution coming from the various shocks. The ``variable_names`` provided govern for which variables the decomposition is plotted.
+    |br| This command computes the historical shock decomposition for a
+    given sample based on the Kalman smoother, i.e. it decomposes the
+    historical deviations of the endogenous variables from their
+    respective steady state values into the contribution coming from
+    the various shocks. The ``variable_names`` provided govern for
+    which variables the decomposition is plotted.
 
-    Note that this command must come after either ``estimation`` (in case of an estimated model) or ``stoch_simul`` (in case of a calibrated model).
+    Note that this command must come after either ``estimation`` (in
+    case of an estimated model) or ``stoch_simul`` (in case of a
+    calibrated model).
 
     *Options*
 
     .. option:: parameter_set = OPTION
 
-        Specify the parameter set to use for running the smoother. Possible values for OPTION are:
+        Specify the parameter set to use for running the
+        smoother. Possible values for OPTION are:
 
             * ``calibration``
             * ``prior_mode``
@@ -5496,11 +6612,15 @@ Shock Decomposition
             * ``posterior_median``
             * ``mle_mode``
 
-        Note that the parameter set used in subsequent commands like ``stoch_simul`` will be set to the specified ``parameter_set``. Default value: ``posterior_mean`` if Metropolis has been run, ``mle_mode`` if MLE has been run.
+        Note that the parameter set used in subsequent commands like
+        ``stoch_simul`` will be set to the specified
+        ``parameter_set``. Default value: ``posterior_mean`` if
+        Metropolis has been run, ``mle_mode`` if MLE has been run.
 
     .. option:: datafile = FILENAME
 
-        See :ref:`datafile <dataf>`. Useful when computing the shock decomposition on a calibrated model.
+        See :ref:`datafile <dataf>`. Useful when computing the shock
+        decomposition on a calibrated model.
 
     .. option:: first_obs = INTEGER
 
@@ -5512,31 +6632,56 @@ Shock Decomposition
 
     .. option:: use_shock_groups [= STRING]
 
-        Uses shock grouping defined by the string instead of individual shocks in the decomposition. The groups of shocks are defined in the :bck:`shock_groups` block.
+        Uses shock grouping defined by the string instead of
+        individual shocks in the decomposition. The groups of shocks
+        are defined in the :bck:`shock_groups` block.
 
     .. option:: colormap = STRING
 
-        Controls the ``colormap`` used for the shocks decomposition graphs. See colormap in Matlab/Octave manual for valid arguments.
+        Controls the ``colormap`` used for the shocks decomposition
+        graphs. See colormap in Matlab/Octave manual for valid
+        arguments.
 
     .. option:: nograph
 
-        See :opt:`nograph`. Suppresses the display and creation only within the ``shock_decomposition`` command, but does not affect other commands. See :comm:`plot_shock_decomposition` for plotting graphs.
+        See :opt:`nograph`. Suppresses the display and creation only
+        within the ``shock_decomposition`` command, but does not
+        affect other commands. See :comm:`plot_shock_decomposition`
+        for plotting graphs.
 
-    .. init_state = BOOLEAN
+    .. option:: init_state = BOOLEAN
 
-        If equal to 0, the shock decomposition is computed conditional on the smoothed state variables in period ``0``, i.e. the smoothed shocks starting in period 1 are used. If equal to ``1``, the shock decomposition is computed conditional on the smoothed state variables in period 1. Default: ``0``.
+        If equal to 0, the shock decomposition is computed conditional
+        on the smoothed state variables in period ``0``, i.e. the
+        smoothed shocks starting in period 1 are used. If equal to
+        ``1``, the shock decomposition is computed conditional on the
+        smoothed state variables in period 1. Default: ``0``.
 
     *Output*
 
     .. matvar:: oo_.shock_decomposition
 
-        The results are stored in the field ``oo_.shock_decomposition``, which is a three dimensional array. The first dimension contains the ``M_.endo_nbr`` endogenous variables. The second dimension stores in the first ``M_.exo_nbr`` columns the contribution of the respective shocks. Column ``M_.exo_nbr+1`` stores the contribution of the initial conditions, while column ``M_.exo_nbr+2`` stores the smoothed value of the respective endogenous variable in deviations from their steady state, i.e. the mean and trends are subtracted. The third dimension stores the time periods. Both the variables and shocks are stored in the order of declaration, i.e. ``M_.endo_names`` and ``M_.exo_names``, respectively.
+        The results are stored in the field
+        ``oo_.shock_decomposition``, which is a three dimensional
+        array. The first dimension contains the ``M_.endo_nbr``
+        endogenous variables. The second dimension stores in the first
+        ``M_.exo_nbr`` columns the contribution of the respective
+        shocks. Column ``M_.exo_nbr+1`` stores the contribution of the
+        initial conditions, while column ``M_.exo_nbr+2`` stores the
+        smoothed value of the respective endogenous variable in
+        deviations from their steady state, i.e. the mean and trends
+        are subtracted. The third dimension stores the time
+        periods. Both the variables and shocks are stored in the order
+        of declaration, i.e. ``M_.endo_names`` and ``M_.exo_names``,
+        respectively.
 
 
 .. block:: shock_groups ;
            shock_groups(OPTIONS...);
 
-    Shocks can be regrouped for the purpose of shock decomposition. The composition of the shock groups is written in a block delimited by ``shock_groups`` and ``end``.
+    |br| Shocks can be regrouped for the purpose of shock
+    decomposition. The composition of the shock groups is written in a
+    block delimited by ``shock_groups`` and ``end``.
 
     Each line defines a group of shocks as a list of exogenous variables::
 
@@ -5547,9 +6692,13 @@ Shock Decomposition
 
     .. option:: name = NAME
 
-        Specifies a name for the following definition of shock groups. It is possible to use several ``shock_groups`` blocks in a model file, each grouping being identified by a different name. This name must in turn be used in the ``shock_decomposition`` command.
+        Specifies a name for the following definition of shock
+        groups. It is possible to use several ``shock_groups`` blocks
+        in a model file, each grouping being identified by a different
+        name. This name must in turn be used in the
+        ``shock_decomposition`` command.
 
-    :ex:
+    *Example*
 
         ::
 
@@ -5563,21 +6712,49 @@ Shock Decomposition
 
             shock_decomposition(use_shock_groups=group1);
 
-        This example defines a shock grouping with the name ``group1``, containing a set of supply and demand shocks and conducts the shock decomposition for these two groups.
+        This example defines a shock grouping with the name
+        ``group1``, containing a set of supply and demand shocks and
+        conducts the shock decomposition for these two groups.
 
 
 .. command:: realtime_shock_decomposition [VARIABLE_NAME]...;
              realtime_shock_decomposition (OPTIONS...) [VARIABLE_NAME]...;
 
-    This command computes the realtime historical shock decomposition for a given sample based on the Kalman smoother. For each period :math:`T=[\texttt{presample},\ldots,\texttt{nobs}]`, it recursively computes three objects:
+    |br| This command computes the realtime historical shock
+    decomposition for a given sample based on the Kalman smoother. For
+    each period :math:`T=[\texttt{presample},\ldots,\texttt{nobs}]`,
+    it recursively computes three objects:
 
-        * Real-time historical shock decomposition :math:`Y(t\vert T)` for :math:`t=[1,\ldots,T]`, i.e. without observing data in :math:`[T+1,\ldots,\texttt{nobs}]`. This results in a standard shock decomposition being computed for each additional datapoint becoming available after ``presample``.
-        * Forecast shock decomposition :math:`Y(T+k\vert T)` for :math:`k=[1,\ldots,forecast]`, i.e. the :math:`k`-step ahead forecast made for every :math:`T` is decomposed in its shock contributions.
-        * Real-time conditional shock decomposition of the difference between the real-time historical shock decomposition and the forecast shock decomposition. If :opt:`vintage <vintage = INTEGER>` is equal to ``0``, it computes the effect of shocks realizing in period :math:`T`, i.e. decomposes :math:`Y(T\vert T)-Y(T\vert T-1)`. Put differently, it conducts a :math:`1`-period ahead shock decomposition from :math:`T-1` to :math:`T`, by decomposing the update step of the Kalman filter. If ``vintage>0`` and smaller than ``nobs``, the decomposition is conducted of the forecast revision :math:`Y(T+k\vert T+k)-Y(T+k\vert T)`.
+        * Real-time historical shock decomposition :math:`Y(t\vert T)`
+          for :math:`t=[1,\ldots,T]`, i.e. without observing data in
+          :math:`[T+1,\ldots,\texttt{nobs}]`. This results in a
+          standard shock decomposition being computed for each
+          additional datapoint becoming available after ``presample``.
+        * Forecast shock decomposition :math:`Y(T+k\vert T)` for
+          :math:`k=[1,\ldots,forecast]`, i.e. the :math:`k`-step ahead
+          forecast made for every :math:`T` is decomposed in its shock
+          contributions.
+        * Real-time conditional shock decomposition of the difference
+          between the real-time historical shock decomposition and the
+          forecast shock decomposition. If :opt:`vintage <vintage =
+          INTEGER>` is equal to ``0``, it computes the effect of
+          shocks realizing in period :math:`T`, i.e. decomposes
+          :math:`Y(T\vert T)-Y(T\vert T-1)`. Put differently, it
+          conducts a :math:`1`-period ahead shock decomposition from
+          :math:`T-1` to :math:`T`, by decomposing the update step of
+          the Kalman filter. If ``vintage>0`` and smaller than
+          ``nobs``, the decomposition is conducted of the forecast
+          revision :math:`Y(T+k\vert T+k)-Y(T+k\vert T)`.
 
-    Like :comm:`shock_decomposition` it decomposes the historical deviations of the endogenous variables from their respective steady state values into the contribution coming from the various shocks. The ``variable_names`` provided govern for which variables the decomposition is plotted.
+    Like :comm:`shock_decomposition` it decomposes the historical
+    deviations of the endogenous variables from their respective
+    steady state values into the contribution coming from the various
+    shocks. The ``variable_names`` provided govern for which variables
+    the decomposition is plotted.
 
-    Note that this command must come after either ``estimation`` (in case of an estimated model) or ``stoch_simul`` (in case of a calibrated model).
+    Note that this command must come after either ``estimation`` (in
+    case of an estimated model) or ``stoch_simul`` (in case of a
+    calibrated model).
 
     *Options*
 
@@ -5607,77 +6784,125 @@ Shock Decomposition
 
     .. option:: nograph
 
-        See :opt:`nograph`. Only shock decompositions are computed and stored in ``oo_.realtime_shock_decomposition``, ``oo_.conditional_shock_decomposition`` and ``oo_.realtime_forecast_shock_decomposition`` but no plot is made (See :comm:`plot_shock_decomposition`).
+        See :opt:`nograph`. Only shock decompositions are computed and
+        stored in ``oo_.realtime_shock_decomposition``,
+        ``oo_.conditional_shock_decomposition`` and
+        ``oo_.realtime_forecast_shock_decomposition`` but no plot is
+        made (See :comm:`plot_shock_decomposition`).
 
     .. option:: presample = INTEGER
 
-        First data point from which recursive realtime shock decompositions are computed, i.e. for :math:`T=[\texttt{presample} \ldots \texttt{nobs}]`.
+        First data point from which recursive realtime shock
+        decompositions are computed, i.e. for
+        :math:`T=[\texttt{presample} \ldots \texttt{nobs}]`.
 
     .. option:: forecast = INTEGER
 
-        Compute shock decompositions up to :math:`T+k` periods, i.e. get shock contributions to k-step ahead forecasts.
+        Compute shock decompositions up to :math:`T+k` periods,
+        i.e. get shock contributions to k-step ahead forecasts.
 
     .. option:: save_realtime = INTEGER_VECTOR
 
-        Choose for which vintages to save the full realtime shock decomposition. Default: ``0``..
+        Choose for which vintages to save the full realtime shock
+        decomposition. Default: ``0``..
 
     *Output*
 
     .. matvar:: oo_.realtime_shock_decomposition
 
-        Structure storing the results of realtime historical decompositions. Fields are three-dimensional arrays with the first two dimension equal to the ones of :mvar:`oo_.shock_decomposition`. The third dimension stores the time periods and is therefore of size ``T+forecast``. Fields are of the form::
+        Structure storing the results of realtime historical
+        decompositions. Fields are three-dimensional arrays with the
+        first two dimension equal to the ones of
+        :mvar:`oo_.shock_decomposition`. The third dimension stores
+        the time periods and is therefore of size
+        ``T+forecast``. Fields are of the form::
 
             oo_.realtime_shock_decomposition.OBJECT
 
         where OBJECT is one of the following:
 
-        ``pool``
+            ``pool``
 
-            Stores the pooled decomposition, i.e. for every real-time shock decomposition terminal period :math:`T=[\texttt{presample},\ldots,\texttt{nobs}]` it collects the last period’s decomposition :math:`Y(T\vert T)` (see also :comm:`plot_shock_decomposition`). The third dimension of the array will have size ``nobs+forecast``.
+                Stores the pooled decomposition, i.e. for every
+                real-time shock decomposition terminal period
+                :math:`T=[\texttt{presample},\ldots,\texttt{nobs}]` it
+                collects the last period’s decomposition
+                :math:`Y(T\vert T)` (see also
+                :comm:`plot_shock_decomposition`). The third dimension
+                of the array will have size ``nobs+forecast``.
 
-        ``time_*``
+            ``time_*``
 
-            Stores the vintages of realtime historical shock decompositions if ``save_realtime`` is used. For example, if ``save_realtime=[5]`` and ``forecast=8``, the third dimension will be of size ``13``.
+                Stores the vintages of realtime historical shock
+                decompositions if ``save_realtime`` is used. For
+                example, if ``save_realtime=[5]`` and ``forecast=8``,
+                the third dimension will be of size ``13``.
 
     .. matvar:: oo_.realtime_conditional_shock_decomposition
 
-        Structure storing the results of real-time conditional decompositions. Fields are of the form::
+        Structure storing the results of real-time conditional
+        decompositions. Fields are of the form::
 
             oo_.realtime_conditional_shock_decomposition.OBJECT
 
         where OBJECT is one of the following:
 
-        ``pool``
+            ``pool``
 
-            Stores the pooled real-time conditional shock decomposition, i.e. collects the decompositions of :math:`Y(T\vert T)-Y(T\vert T-1)` for the terminal periods :math:`T=[\texttt{presample},\ldots,\texttt{nobs}]`. The third dimension is of size ``nobs``.
+                Stores the pooled real-time conditional shock
+                decomposition, i.e. collects the decompositions of
+                :math:`Y(T\vert T)-Y(T\vert T-1)` for the terminal
+                periods
+                :math:`T=[\texttt{presample},\ldots,\texttt{nobs}]`. The
+                third dimension is of size ``nobs``.
 
-        ``time_*``
+            ``time_*``
 
-            Store the vintages of :math:`k`-step conditional forecast shock decompositions :math:`Y(t\vert T+k)`, for :math:`t=[T \ldots T+k]`. See :opt:`vintage <vintage = INTEGER>`. The third dimension is of size ``1+forecast``.
+                Store the vintages of :math:`k`-step conditional
+                forecast shock decompositions :math:`Y(t\vert T+k)`,
+                for :math:`t=[T \ldots T+k]`. See :opt:`vintage
+                <vintage = INTEGER>`. The third dimension is of size
+                ``1+forecast``.
 
     .. matvar:: oo_.realtime_forecast_shock_decomposition
 
-        Structure storing the results of realtime forecast decompositions. Fields are of the form::
+        Structure storing the results of realtime forecast
+        decompositions. Fields are of the form::
 
             oo_.realtime_forecast_shock_decomposition.OBJECT
 
         where ``OBJECT`` is one of the following:
 
-        ``pool``
+            ``pool``
 
-            Stores the pooled real-time forecast decomposition of the :math:`1`-step ahead effect of shocks on the :math:`1`-step ahead prediction, i.e. :math:`Y(T\vert T-1)`.
+                Stores the pooled real-time forecast decomposition of
+                the :math:`1`-step ahead effect of shocks on the
+                :math:`1`-step ahead prediction, i.e. :math:`Y(T\vert
+                T-1)`.
 
-        ``time_*``
+            ``time_*``
 
-            Stores the vintages of :math:`k`-step out-of-sample forecast shock decompositions, i.e. :math:`Y(t\vert T)`, for :math:`t=[T \ldots T+k]`. See :opt:`vintage <vintage = INTEGER>`.
+                Stores the vintages of :math:`k`-step out-of-sample
+                forecast shock decompositions, i.e. :math:`Y(t\vert
+                T)`, for :math:`t=[T \ldots T+k]`. See :opt:`vintage
+                <vintage = INTEGER>`.
 
 
 .. command:: plot_shock_decomposition [VARIABLE_NAME]...;
              plot_shock_decomposition (OPTIONS...) [VARIABLE_NAME]...;
 
-    This command plots the historical shock decomposition already computed by ``shock_decomposition`` or ``realtime_shock_decomposition``. For that reason, it must come after one of these commands. The ``variable_names`` provided govern which variables the decomposition is plotted for.
+    |br| This command plots the historical shock decomposition already
+    computed by ``shock_decomposition`` or
+    ``realtime_shock_decomposition``. For that reason, it must come
+    after one of these commands. The ``variable_names`` provided
+    govern which variables the decomposition is plotted for.
 
-    Further note that, unlike the majority of Dynare commands, the options specified below are overwritten with their defaults before every call to ``plot_shock_decomposition``. Hence, if you want to reuse an option in a subsequent call to ``plot_shock_decomposition``, you must pass it to the command again.
+    Further note that, unlike the majority of Dynare commands, the
+    options specified below are overwritten with their defaults before
+    every call to ``plot_shock_decomposition``. Hence, if you want to
+    reuse an option in a subsequent call to
+    ``plot_shock_decomposition``, you must pass it to the command
+    again.
 
     *Options*
 
@@ -5700,53 +6925,97 @@ Shock Decomposition
 
     .. option:: detail_plot
 
-        Plots shock contributions using subplots, one per shock (or group of shocks). Default: not activated
+        Plots shock contributions using subplots, one per shock (or
+        group of shocks). Default: not activated
 
     .. option:: interactive
 
-        Under MATLAB, add uimenus for detailed group plots. Default: not activated
+        Under MATLAB, add uimenus for detailed group plots. Default:
+        not activated
 
     .. option:: screen_shocks
 
-        For large models (i.e. for models with more than 16 shocks), plots only the shocks that have the largest historical contribution for chosen selected ``variable_names``. Historical contribution is ranked by the mean absolute value of all historical contributions.
+        For large models (i.e. for models with more than 16 shocks),
+        plots only the shocks that have the largest historical
+        contribution for chosen selected
+        ``variable_names``. Historical contribution is ranked by the
+        mean absolute value of all historical contributions.
 
     .. option:: steadystate
 
-        If passed, the the :math:`y`-axis value of the zero line in the shock decomposition plot is translated to the steady state level. Default: not activated
+        If passed, the the :math:`y`-axis value of the zero line in
+        the shock decomposition plot is translated to the steady state
+        level. Default: not activated
 
     .. option:: type = qoq | yoy | aoa
 
-        For quarterly data, valid arguments are: ``qoq`` for quarter-on-quarter plots, ``yoy`` for year-on-year plots of growth rates, ``aoa`` for annualized variables, i.e. the value in the last quarter for each year is plotted. Default value: empty, i.e. standard period-on-period plots (``qoq`` for quarterly data).
+        For quarterly data, valid arguments are: ``qoq`` for
+        quarter-on-quarter plots, ``yoy`` for year-on-year plots of
+        growth rates, ``aoa`` for annualized variables, i.e. the value
+        in the last quarter for each year is plotted. Default value:
+        empty, i.e. standard period-on-period plots (``qoq`` for
+        quarterly data).
 
     .. option:: fig_name = STRING
 
-        Specifies a user-defined keyword to be appended to the default figure name set by ``plot_shock_decomposition``. This can avoid to overwrite plots in case of sequential calls to ``plot_shock_decomposition``.
+        Specifies a user-defined keyword to be appended to the default
+        figure name set by ``plot_shock_decomposition``. This can
+        avoid to overwrite plots in case of sequential calls to
+        ``plot_shock_decomposition``.
 
     .. option:: write_xls
 
-        Saves shock decompositions to Excel-file in the main directory, named ``FILENAME_shock_decomposition_TYPE_FIG_NAME.xls``. This option requires your system to be configured to be able to write Excel files. [#f7]_
+        Saves shock decompositions to Excel-file in the main
+        directory, named
+        ``FILENAME_shock_decomposition_TYPE_FIG_NAME.xls``. This
+        option requires your system to be configured to be able to
+        write Excel files. [#f7]_
 
     .. option:: realtime = INTEGER
 
-        Which kind of shock decomposition to plot. INTEGER can take the following values:
+        Which kind of shock decomposition to plot. INTEGER can take
+        the following values:
 
-            * ``0``: standard historical shock decomposition. See :comm:`shock_decomposition`.
-            * ``1``: realtime historical shock decomposition. See :comm:`realtime_shock_decomposition`.
-            * ``2``: conditional realtime shock decomposition. See :comm:`realtime_shock_decomposition`.
-            * ``3``: realtime forecast shock decomposition. See :comm:`realtime_shock_decomposition`.
+            * ``0``: standard historical shock decomposition. See
+              :comm:`shock_decomposition`.
+            * ``1``: realtime historical shock decomposition. See
+              :comm:`realtime_shock_decomposition`.
+            * ``2``: conditional realtime shock decomposition. See
+              :comm:`realtime_shock_decomposition`.
+            * ``3``: realtime forecast shock decomposition. See
+              :comm:`realtime_shock_decomposition`.
 
-        If no vintage is requested, i.e. ``vintage=0`` then the pooled objects from :comm:`realtime_shock_decomposition` will be plotted and the respective vintage otherwise. Default: ``0``.
+        If no vintage is requested, i.e. ``vintage=0`` then the pooled
+        objects from :comm:`realtime_shock_decomposition` will be
+        plotted and the respective vintage otherwise. Default: ``0``.
 
     .. option:: vintage = INTEGER
 
-        Selects a particular data vintage in :math:`[presample,\ldots,nobs]` for which to plot the results from :comm:`realtime_shock_decomposition` selected via the :opt:`realtime <realtime = INTEGER>` option. If the standard historical shock decomposition is selected (``realtime=0``), ``vintage`` will have no effect. If ``vintage=0`` the pooled objects from :comm:`realtime_shock_decomposition` will be plotted. If ``vintage>0``, it plots the shock decompositions for vintage :math:`T=\texttt{vintage}` under the following scenarios:
+        Selects a particular data vintage in
+        :math:`[presample,\ldots,nobs]` for which to plot the results
+        from :comm:`realtime_shock_decomposition` selected via the
+        :opt:`realtime <realtime = INTEGER>` option. If the standard
+        historical shock decomposition is selected (``realtime=0``),
+        ``vintage`` will have no effect. If ``vintage=0`` the pooled
+        objects from :comm:`realtime_shock_decomposition` will be
+        plotted. If ``vintage>0``, it plots the shock decompositions
+        for vintage :math:`T=\texttt{vintage}` under the following
+        scenarios:
 
-            * ``realtime=1``: the full vintage shock decomposition :math:`Y(t\vert T)` for :math:`t=[1,\ldots,T]`
-            * ``realtime=2``: the conditional forecast shock decomposition from :math:`T`, i.e. plots :math:`Y(T+j\vert T+j)` and the shock contributions needed to get to the data :math:`Y(T+j)` conditional on :math:`T=` vintage, with :math:`j=[0,\ldots,\texttt{forecast}]`.
-            * ``realtime=3``: plots unconditional forecast shock decomposition from :math:`T`, i.e. :math:`Y(T+j\vert T)`, where :math:`T=\texttt{vintage}` and :math:`j=[0,\ldots,\texttt{forecast}]`.
+            * ``realtime=1``: the full vintage shock decomposition
+              :math:`Y(t\vert T)` for :math:`t=[1,\ldots,T]`
+            * ``realtime=2``: the conditional forecast shock
+              decomposition from :math:`T`, i.e. plots
+              :math:`Y(T+j\vert T+j)` and the shock contributions
+              needed to get to the data :math:`Y(T+j)` conditional on
+              :math:`T=` vintage, with
+              :math:`j=[0,\ldots,\texttt{forecast}]`.
+            * ``realtime=3``: plots unconditional forecast shock
+              decomposition from :math:`T`, i.e. :math:`Y(T+j\vert
+              T)`, where :math:`T=\texttt{vintage}` and
+              :math:`j=[0,\ldots,\texttt{forecast}]`.
 
         Default: ``0``.
-
 
 
 Calibrated Smoother
@@ -5757,11 +7026,16 @@ Dynare can also run the smoother on a calibrated model:
 .. command:: calib_smoother [VARIABLE_NAME]...;
              calib_smoother (OPTIONS...) [VARIABLE_NAME]...;
 
-    This command computes the smoothed variables (and possible the filtered variables) on a calibrated model.
+    |br| This command computes the smoothed variables (and possible
+    the filtered variables) on a calibrated model.
 
-    A datafile must be provided, and the observable variables declared with ``varobs``. The smoother is based on a first-order approximation of the model.
+    A datafile must be provided, and the observable variables declared
+    with ``varobs``. The smoother is based on a first-order
+    approximation of the model.
 
-    By default, the command computes the smoothed variables and shocks and stores the results in ``oo_.SmoothedVariables` and ``oo_.SmoothedShocks``. It also fills ``oo_.UpdatedVariables``.
+    By default, the command computes the smoothed variables and shocks
+    and stores the results in ``oo_.SmoothedVariables` and
+    ``oo_.SmoothedShocks``. It also fills ``oo_.UpdatedVariables``.
 
     *Options*
 
@@ -5771,7 +7045,8 @@ Dynare can also run the smoother on a calibrated model:
 
     .. option:: filtered_vars
 
-        Triggers the computation of filtered variables. See :opt:`filtered_vars`, for more details.
+        Triggers the computation of filtered variables. See
+        :opt:`filtered_vars`, for more details.
 
     .. option:: filter_step_ahead = [INTEGER1:INTEGER2]
 
@@ -5806,22 +7081,38 @@ Dynare can also run the smoother on a calibrated model:
 Forecasting
 ===========
 
-On a calibrated model, forecasting is done using the ``forecast`` command. On an estimated model, use the ``forecast`` option of ``estimation`` command.
+On a calibrated model, forecasting is done using the ``forecast``
+command. On an estimated model, use the ``forecast`` option of
+``estimation`` command.
 
-It is also possible to compute forecasts on a calibrated or estimated model for a given constrained path of the future endogenous variables. This is done, from the reduced form representation of the DSGE model, by finding the structural shocks that are needed to match the restricted paths. Use ``conditional_forecast``, ``conditional_forecast_paths`` and ``plot_conditional_forecast`` for that purpose.
+It is also possible to compute forecasts on a calibrated or estimated
+model for a given constrained path of the future endogenous
+variables. This is done, from the reduced form representation of the
+DSGE model, by finding the structural shocks that are needed to match
+the restricted paths. Use ``conditional_forecast``,
+``conditional_forecast_paths`` and ``plot_conditional_forecast`` for
+that purpose.
 
-Finally, it is possible to do forecasting with a Bayesian VAR using the ``bvar_forecast`` command.
+Finally, it is possible to do forecasting with a Bayesian VAR using
+the ``bvar_forecast`` command.
 
 .. command:: forecast [VARIABLE_NAME...];
              forecast (OPTIONS...) [VARIABLE_NAME...];
 
-    This command computes a simulation of a stochastic model from an arbitrary initial point.
+    |br| This command computes a simulation of a stochastic model from
+    an arbitrary initial point.
 
-    When the model also contains deterministic exogenous shocks, the simulation is computed conditionally to the agents knowing the future values of the deterministic exogenous variables.
+    When the model also contains deterministic exogenous shocks, the
+    simulation is computed conditionally to the agents knowing the
+    future values of the deterministic exogenous variables.
 
     ``forecast`` must be called after ``stoch_simul``.
 
-    ``forecast`` plots the trajectory of endogenous variables. When a list of variable names follows the command, only those variables are plotted. A 90% confidence interval is plotted around the mean trajectory. Use option ``conf_sig`` to change the level of the confidence interval.
+    ``forecast`` plots the trajectory of endogenous variables. When a
+    list of variable names follows the command, only those variables
+    are plotted. A 90% confidence interval is plotted around the mean
+    trajectory. Use option ``conf_sig`` to change the level of the
+    confidence interval.
 
     *Options*
 
@@ -5850,13 +7141,18 @@ Finally, it is possible to do forecasting with a Bayesian VAR using the ``bvar_f
 
     *Initial Values*
 
-    ``forecast`` computes the forecast taking as initial values the values specified in ``histval`` (see :bck:`histval`). When no ``histval`` block is present, the initial values are the one stated in ``initval``. When ``initval`` is followed by command ``steady``, the initial values are the steady state (see :comm:`steady`).
+    ``forecast`` computes the forecast taking as initial values the
+    values specified in ``histval`` (see :bck:`histval`). When no
+    ``histval`` block is present, the initial values are the one
+    stated in ``initval``. When ``initval`` is followed by command
+    ``steady``, the initial values are the steady state (see
+    :comm:`steady`).
 
     *Output*
 
     The results are stored in ``oo_.forecast``, which is described below.
 
-    :ex:
+    *Example*
 
         ::
 
@@ -5876,81 +7172,140 @@ Finally, it is possible to do forecasting with a Bayesian VAR using the ``bvar_f
             forecast;
 
 
-.. matvar:: oo_.forecast
+    .. matvar:: oo_.forecast
 
-    Variable set by the ``forecast`` command, or by the ``estimation`` command if used with the ``forecast`` option and if no Metropolis-Hastings has been computed (in that case, the forecast is computed for the posterior mode). Fields are of the form::
+        Variable set by the ``forecast`` command, or by the
+        ``estimation`` command if used with the ``forecast`` option
+        and if no Metropolis-Hastings has been computed (in that case,
+        the forecast is computed for the posterior mode). Fields are
+        of the form::
 
-        oo_.forecast.FORECAST_MOMENT.VARIABLE_NAME
+            oo_.forecast.FORECAST_MOMENT.VARIABLE_NAME
 
-    where ``FORECAST_MOMENT`` is one of the following:
+        where ``FORECAST_MOMENT`` is one of the following:
 
-    ``HPDinf``
+            ``HPDinf``
 
-        Lower bound of a 90% HPD interval [#f8]_ of forecast due to parameter uncertainty, but ignoring the effect of measurement error on observed variables.
+                Lower bound of a 90% HPD interval [#f8]_ of forecast
+                due to parameter uncertainty, but ignoring the effect
+                of measurement error on observed variables.
 
-    ``HPDsup``
+            ``HPDsup``
 
-        Upper bound of a 90% HPD forecast interval due to parameter uncertainty, but ignoring the effect of measurement error on observed variables.
+                Upper bound of a 90% HPD forecast interval due to
+                parameter uncertainty, but ignoring the effect of
+                measurement error on observed variables.
 
-    ``HPDinf_ME``
+            ``HPDinf_ME``
 
-        Lower bound of a 90% HPD interval [#f9]_ of forecast for observed variables due to parameter uncertainty and measurement error.
+                Lower bound of a 90% HPD interval [#f9]_ of forecast
+                for observed variables due to parameter uncertainty
+                and measurement error.
 
-    ``HPDsup_ME``
+            ``HPDsup_ME``
 
-        Upper bound of a 90% HPD interval of forecast for observed variables due to parameter uncertainty and measurement error.
+                Upper bound of a 90% HPD interval of forecast for
+                observed variables due to parameter uncertainty and
+                measurement error.
 
-    ``Mean``
+            ``Mean``
 
-        Mean of the posterior distribution of forecasts.
+                Mean of the posterior distribution of forecasts.
 
-    ``Median``
+            ``Median``
 
-        Median of the posterior distribution of forecasts.
+                Median of the posterior distribution of forecasts.
 
-    ``Std``
+            ``Std``
 
-        Standard deviation of the posterior distribution of forecasts.
+                Standard deviation of the posterior distribution of forecasts.
 
-.. matvar:: oo_.PointForecast
+    .. matvar:: oo_.PointForecast
 
-    Set by the ``estimation`` command, if it is used with the ``forecast`` option and if either ``mh_replic > 0`` or the ``load_mh_file`` option are used.
+        Set by the ``estimation`` command, if it is used with the
+        ``forecast`` option and if either ``mh_replic > 0`` or the
+        ``load_mh_file`` option are used.
 
-    Contains the distribution of forecasts taking into account the uncertainty about both parameters and shocks.
+        Contains the distribution of forecasts taking into account the
+        uncertainty about both parameters and shocks.
 
-    Fields are of the form::
+        Fields are of the form::
 
-        oo_.PointForecast.MOMENT_NAME.VARIABLE_NAME
+            oo_.PointForecast.MOMENT_NAME.VARIABLE_NAME
 
-.. matvar:: oo_.MeanForecast
+    .. matvar:: oo_.MeanForecast
 
-    Set by the ``estimation`` command, if it is used with the ``forecast`` option and if either ``mh_replic > 0`` or ``load_mh_file`` option are used.
+        Set by the ``estimation`` command, if it is used with the
+        ``forecast`` option and if either ``mh_replic > 0`` or
+        ``load_mh_file`` option are used.
 
-    Contains the distribution of forecasts where the uncertainty about shocks is averaged out. The distribution of forecasts therefore only represents the uncertainty about parameters.
+        Contains the distribution of forecasts where the uncertainty
+        about shocks is averaged out. The distribution of forecasts
+        therefore only represents the uncertainty about parameters.
 
-    Fields are of the form::
+        Fields are of the form::
 
-        oo_.MeanForecast.MOMENT_NAME.VARIABLE_NAME
+            oo_.MeanForecast.MOMENT_NAME.VARIABLE_NAME
 
 
 .. command:: conditional_forecast (OPTIONS...) [VARIABLE_NAME...];
 
-    This command computes forecasts on an estimated or calibrated model for a given constrained path of some future endogenous variables. This is done using the reduced form first order state-space representation of the DSGE model by finding the structural shocks that are needed to match the restricted paths. Consider the an augmented state space representation that stacks both predetermined and non-predetermined variables into a vector :math:`y_{t}`:
+    |br| This command computes forecasts on an estimated or calibrated
+    model for a given constrained path of some future endogenous
+    variables. This is done using the reduced form first order
+    state-space representation of the DSGE model by finding the
+    structural shocks that are needed to match the restricted
+    paths. Consider the an augmented state space representation that
+    stacks both predetermined and non-predetermined variables into a
+    vector :math:`y_{t}`:
 
-     :math:`y_t=Ty_{t-1}+R\varepsilon_t`
+        .. math::
 
-    Both :math:`y_t` and :math:`\varepsilon_t` are split up into controlled and uncontrolled ones to get:
+           y_t=Ty_{t-1}+R\varepsilon_t
 
-    :math:`y_t(contr\_vars)=Ty_{t-1}(contr\_vars)+R(contr\_vars,uncontr\_shocks)\varepsilon_t(uncontr\_shocks) +`
-    :math:`+ R(contr\_vars,contr\_shocks)\varepsilon_t(contr\_shocks)`
+    Both :math:`y_t` and :math:`\varepsilon_t` are split up into
+    controlled and uncontrolled ones to get:
+
+        .. math::
+
+           y_t(contr\_vars)=Ty_{t-1}(contr\_vars)+R(contr\_vars,uncontr\_shocks)\varepsilon_t(uncontr\_shocks) + R(contr\_vars,contr\_shocks)\varepsilon_t(contr\_shocks)
 
     which can be solved algebraically for :math:`\varepsilon_t(contr\_shocks)`.
 
-    Using these controlled shocks, the state-space representation can be used for forecasting. A few things need to be noted. First, it is assumed that controlled exogenous variables are fully under control of the policy maker for all forecast periods and not just for the periods where the endogenous variables are controlled. For all uncontrolled periods, the controlled exogenous variables are assumed to be 0. This implies that there is no forecast uncertainty arising from these exogenous variables in uncontrolled periods. Second, by making use of the first order state space solution, even if a higher-order approximation was performed, the conditional forecasts will be based on a first order approximation. Third, although controlled exogenous variables are taken as instruments perfectly under the control of the policy-maker, they are nevertheless random and unforeseen shocks from the perspective of the households. That is, households are in each period surprised by the realization of a shock that keeps the controlled endogenous variables at their respective level. Fourth, keep in mind that if the structural innovations are correlated, because the calibrated or estimated covariance matrix has non zero off diagonal elements, the results of the conditional forecasts will depend on the ordering of the innovations (as declared after ``varexo``). As in VAR models, a Cholesky decomposition is used to factorize the covariance matrix and identify orthogonal impulses. It is preferable to declare the correlations in the model block (explicitly imposing the identification restrictions), unless you are satisfied with the implicit identification restrictions implied by the Cholesky decomposition.
+    Using these controlled shocks, the state-space representation can
+    be used for forecasting. A few things need to be noted. First, it
+    is assumed that controlled exogenous variables are fully under
+    control of the policy maker for all forecast periods and not just
+    for the periods where the endogenous variables are controlled. For
+    all uncontrolled periods, the controlled exogenous variables are
+    assumed to be 0. This implies that there is no forecast
+    uncertainty arising from these exogenous variables in uncontrolled
+    periods. Second, by making use of the first order state space
+    solution, even if a higher-order approximation was performed, the
+    conditional forecasts will be based on a first order
+    approximation. Third, although controlled exogenous variables are
+    taken as instruments perfectly under the control of the
+    policy-maker, they are nevertheless random and unforeseen shocks
+    from the perspective of the households. That is, households are in
+    each period surprised by the realization of a shock that keeps the
+    controlled endogenous variables at their respective level. Fourth,
+    keep in mind that if the structural innovations are correlated,
+    because the calibrated or estimated covariance matrix has non zero
+    off diagonal elements, the results of the conditional forecasts
+    will depend on the ordering of the innovations (as declared after
+    ``varexo``). As in VAR models, a Cholesky decomposition is used to
+    factorize the covariance matrix and identify orthogonal
+    impulses. It is preferable to declare the correlations in the
+    model block (explicitly imposing the identification restrictions),
+    unless you are satisfied with the implicit identification
+    restrictions implied by the Cholesky decomposition.
 
     This command has to be called after ``estimation`` or ``stoch_simul``.
 
-    Use ``conditional_forecast_paths`` block to give the list of constrained endogenous, and their constrained future path. Option ``controlled_varexo`` is used to specify the structural shocks which will be matched to generate the constrained path.
+    Use ``conditional_forecast_paths`` block to give the list of
+    constrained endogenous, and their constrained future path. Option
+    ``controlled_varexo`` is used to specify the structural shocks
+    which will be matched to generate the constrained path.
 
     Use ``plot_conditional_forecast`` to graph the results.
 
@@ -5958,7 +7313,8 @@ Finally, it is possible to do forecasting with a Bayesian VAR using the ``bvar_f
 
     .. option:: parameter_set = OPTION
 
-        Specify the parameter set to use for the forecasting. Possible values for OPTION are:
+        Specify the parameter set to use for the forecasting. Possible
+        values for OPTION are:
 
             * ``calibration``
             * ``prior_mode``
@@ -5967,15 +7323,20 @@ Finally, it is possible to do forecasting with a Bayesian VAR using the ``bvar_f
             * ``posterior_mean``
             * ``posterior_median``
 
-        No default value, mandatory option. Note that in case of estimated models, ``conditional_forecast`` does not support the ``prefilter`` option.
+        No default value, mandatory option. Note that in case of
+        estimated models, ``conditional_forecast`` does not support
+        the ``prefilter`` option.
 
     .. option:: controlled_varexo = (VARIABLE_NAME...)
 
-        Specify the exogenous variables to use as control variables. No default value, mandatory option.
+        Specify the exogenous variables to use as control
+        variables. No default value, mandatory option.
 
     .. option:: periods = INTEGER
 
-        Number of periods of the forecast. Default: ``40``. ``periods`` cannot be smaller than the number of constrained periods.
+        Number of periods of the forecast. Default:
+        ``40``. ``periods`` cannot be smaller than the number of
+        constrained periods.
 
     .. option:: replic = INTEGER
 
@@ -5987,9 +7348,11 @@ Finally, it is possible to do forecasting with a Bayesian VAR using the ``bvar_f
 
     *Output*
 
-    The results are not stored in the ``oo_`` structure but in a separate structure ``forecasts``, described below, saved to the hard disk into a file called ``conditional_forecasts.mat.``
+    The results are not stored in the ``oo_`` structure but in a
+    separate structure ``forecasts``, described below, saved to the
+    hard disk into a file called ``conditional_forecasts.mat.``
 
-    :ex:
+    *Example*
 
         ::
 
@@ -6012,103 +7375,180 @@ Finally, it is possible to do forecasting with a Bayesian VAR using the ``bvar_f
             plot_conditional_forecast(periods = 10) a y;
 
 
-.. matvar:: forecasts.cond
+    .. matvar:: forecasts.cond
 
-    Variable set by the ``conditional_forecast`` command. It stores the conditional forecasts. Fields are ``periods+1`` by ``1`` vectors storing the steady state (time 0) and the subsequent ``periods`` forecasts periods. Fields are of the form::
+        Variable set by the ``conditional_forecast`` command. It
+        stores the conditional forecasts. Fields are ``periods+1`` by
+        ``1`` vectors storing the steady state (time 0) and the
+        subsequent ``periods`` forecasts periods. Fields are of the
+        form::
 
-        forecasts.cond.FORECAST_MOMENT.VARIABLE_NAME
+            forecasts.cond.FORECAST_MOMENT.VARIABLE_NAME
 
-    where FORECAST_MOMENT is one of the following:
+        where FORECAST_MOMENT is one of the following:
 
-    ``Mean``
+            ``Mean``
 
-        Mean of the conditional forecast distribution.
+                Mean of the conditional forecast distribution.
 
-    ``ci``
+            ``ci``
 
-        Confidence interval of the conditional forecast distribution. The size corresponds to ``conf_sig``.
-
-
-.. matvar:: forecasts.uncond
-
-    Variable set by the ``conditional_forecast`` command. It stores the unconditional forecasts. Fields are of the form::
-
-        forecasts.uncond.FORECAST_MOMENT.VARIABLE_NAME
+                Confidence interval of the conditional forecast
+                distribution. The size corresponds to ``conf_sig``.
 
 
-.. matvar:: forecasts.instruments
+    .. matvar:: forecasts.uncond
 
-    Variable set by the ``conditional_forecast command``. Stores the names of the exogenous instruments.
+        Variable set by the ``conditional_forecast`` command. It stores
+        the unconditional forecasts. Fields are of the form::
 
-
-.. matvar:: forecasts.controlled_variables
-
-    Variable set by the ``conditional_forecast`` command. Stores the position of the constrained endogenous variables in declaration order.
+            forecasts.uncond.FORECAST_MOMENT.VARIABLE_NAME
 
 
-.. matvar:: forecasts.controlled_exo_variables
+    .. matvar:: forecasts.instruments
 
-    Variable set by the ``conditional_forecast`` command. Stores the values of the controlled exogenous variables underlying the conditional forecasts to achieve the constrained endogenous variables. Fields are ``[number of constrained periods]`` by ``1`` vectors and are of the form::
+        Variable set by the ``conditional_forecast command``. Stores
+        the names of the exogenous instruments.
 
-        forecasts.controlled_exo_variables.FORECAST_MOMENT.SHOCK_NAME
 
-.. matvar:: forecasts.graphs
+    .. matvar:: forecasts.controlled_variables
 
-    Variable set by the ``conditional_forecast`` command. Stores the information for generating the conditional forecast plots.
+        Variable set by the ``conditional_forecast`` command. Stores
+        the position of the constrained endogenous variables in
+        declaration order.
+
+
+    .. matvar:: forecasts.controlled_exo_variables
+
+        Variable set by the ``conditional_forecast`` command. Stores
+        the values of the controlled exogenous variables underlying
+        the conditional forecasts to achieve the constrained
+        endogenous variables. Fields are ``[number of constrained
+        periods]`` by ``1`` vectors and are of the form::
+
+            forecasts.controlled_exo_variables.FORECAST_MOMENT.SHOCK_NAME
+
+    .. matvar:: forecasts.graphs
+
+        Variable set by the ``conditional_forecast`` command. Stores
+        the information for generating the conditional forecast plots.
 
 
 .. block:: conditional_forecast_paths ;
 
-    Describes the path of constrained endogenous, before calling ``conditional_forecast``. The syntax is similar to deterministic shocks in ``shocks``, see ``conditional_forecast`` for an example.
+    |br| Describes the path of constrained endogenous, before calling
+    ``conditional_forecast``. The syntax is similar to deterministic
+    shocks in ``shocks``, see ``conditional_forecast`` for an example.
 
-    The syntax of the block is the same as for the deterministic shocks in the ``shocks`` blocks (see :ref:`shocks-exo`). Note that you need to specify the full path for all constrained endogenous variables between the first and last specified period. If an intermediate period is not specified, a value of 0 is assumed. That is, if you specify only values for periods 1 and 3, the values for period 2 will be 0. Currently, it is not possible to have uncontrolled intermediate periods. In case of the presence of ``observation_trends``, the specified controlled path for these variables needs to include the trend component. When using the :ref:`loglinear <logl>` option, it is necessary to specify the logarithm of the controlled variables.
+    The syntax of the block is the same as for the deterministic
+    shocks in the ``shocks`` blocks (see :ref:`shocks-exo`). Note that
+    you need to specify the full path for all constrained endogenous
+    variables between the first and last specified period. If an
+    intermediate period is not specified, a value of 0 is
+    assumed. That is, if you specify only values for periods 1 and 3,
+    the values for period 2 will be 0. Currently, it is not possible
+    to have uncontrolled intermediate periods. In case of the presence
+    of ``observation_trends``, the specified controlled path for these
+    variables needs to include the trend component. When using the
+    :ref:`loglinear <logl>` option, it is necessary to specify the
+    logarithm of the controlled variables.
 
 
 .. command:: plot_conditional_forecast [VARIABLE_NAME...];
              plot_conditional_forecast (periods = INTEGER) [VARIABLE_NAME...];
 
-    Plots the conditional (plain lines) and unconditional (dashed lines) forecasts.
+    |br| Plots the conditional (plain lines) and unconditional (dashed
+    lines) forecasts.
 
     To be used after ``conditional_forecast``.
 
     *Options*
 
-    ``periods = INTEGER``
+    .. option:: periods = INTEGER
 
-        Number of periods to be plotted. Default: equal to periods in ``conditional_forecast``. The number of periods declared in ``plot_conditional_forecast`` cannot be greater than the one declared in ``conditional_forecast``.
+        Number of periods to be plotted. Default: equal to periods in
+        ``conditional_forecast``. The number of periods declared in
+        ``plot_conditional_forecast`` cannot be greater than the one
+        declared in ``conditional_forecast``.
 
 .. command:: bvar_forecast ;
 
-    This command computes (out-of-sample) forecasts for an estimated BVAR model, using Minnesota priors.
+    |br| This command computes (out-of-sample) forecasts for an
+    estimated BVAR model, using Minnesota priors.
 
-    See ``bvar-a-la-sims.pdf``, which comes with Dynare distribution, for more information on this command.
+    See ``bvar-a-la-sims.pdf``, which comes with Dynare distribution,
+    for more information on this command.
 
 
-If the model contains strong non-linearities or if some perfectly expected shocks are considered, the forecasts and the conditional forecasts can be computed using an extended path method. The forecast scenario describing the shocks and/or the constrained paths on some endogenous variables should be build. The first step is the forecast scenario initialization using the function ``init_plan``:
+If the model contains strong non-linearities or if some perfectly
+expected shocks are considered, the forecasts and the conditional
+forecasts can be computed using an extended path method. The forecast
+scenario describing the shocks and/or the constrained paths on some
+endogenous variables should be build. The first step is the forecast
+scenario initialization using the function ``init_plan``:
 
 .. matcomm:: HANDLE = init_plan (DATES);
 
-    Creates a new forecast scenario for a forecast period (indicated as a dates class, see :ref:`dates class members <dates-members>`). This function return a handle on the new forecast scenario.
+    Creates a new forecast scenario for a forecast period (indicated
+    as a dates class, see :ref:`dates class members
+    <dates-members>`). This function return a handle on the new
+    forecast scenario.
 
-The forecast scenario can contain some simple shocks on the exogenous variables. This shocks are described using the function ``basic_plan``:
+The forecast scenario can contain some simple shocks on the exogenous
+variables. This shocks are described using the function
+``basic_plan``:
 
-.. matcomm:: HANDLE = basic_plan (HANDLE, 'VAR_NAME', 'SHOCK_TYPE', DATES, \
-                                  MATLAB VECTOR OF DOUBLE | [DOUBLE | EXPR [DOUBLE | | EXPR] ] );
+.. matcomm:: HANDLE = basic_plan (HANDLE, 'VAR_NAME', 'SHOCK_TYPE', DATES, MATLAB VECTOR OF DOUBLE | [DOUBLE | EXPR [DOUBLE | | EXPR] ] );
 
-    Adds to the forecast scenario a shock on the exogenous variable indicated between quotes in the second argument. The shock type has to be specified in the third argument between quotes: ’surprise’ in case of an unexpected shock or ’perfect_foresight’ for a perfectly anticipated shock. The fourth argument indicates the period of the shock using a dates class (see :ref:`dates class members <dates-members>`). The last argument is the shock path indicated as a Matlab vector of double. This function return the handle of the updated forecast scenario.
+    Adds to the forecast scenario a shock on the exogenous variable
+    indicated between quotes in the second argument. The shock type
+    has to be specified in the third argument between quotes:
+    ’surprise’ in case of an unexpected shock or ’perfect_foresight’
+    for a perfectly anticipated shock. The fourth argument indicates
+    the period of the shock using a dates class (see :ref:`dates class
+    members <dates-members>`). The last argument is the shock path
+    indicated as a Matlab vector of double. This function return the
+    handle of the updated forecast scenario.
 
-The forecast scenario can also contain a constrained path on an endogenous variable. The values of the related exogenous variable compatible with the constrained path are in this case computed. In other words, a conditional forecast is performed. This kind of shock is described with the function ``flip_plan``:
+The forecast scenario can also contain a constrained path on an
+endogenous variable. The values of the related exogenous variable
+compatible with the constrained path are in this case computed. In
+other words, a conditional forecast is performed. This kind of shock
+is described with the function ``flip_plan``:
 
-.. matcomm:: HANDLE = flip_plan (HANDLE, 'VAR_NAME, 'VAR_NAME', 'SHOCK_TYPE', DATES, \
-                                 MATLAB VECTOR OF DOUBLE | [DOUBLE | EXPR [DOUBLE | | EXPR] ] );
+.. matcomm:: HANDLE = flip_plan (HANDLE, 'VAR_NAME, 'VAR_NAME', 'SHOCK_TYPE', DATES, MATLAB VECTOR OF DOUBLE | [DOUBLE | EXPR [DOUBLE | | EXPR] ] );
 
-    Adds to the forecast scenario a constrained path on the endogenous variable specified between quotes in the second argument. The associated exogenous variable provided in the third argument between quotes, is considered as an endogenous variable and its values compatible with the constrained path on the endogenous variable will be computed. The nature of the expectation on the constrained path has to be specified in the fourth argument between quotes: ’surprise’ in case of an unexpected path or ’perfect_foresight’ for a perfectly anticipated path. The fifth argument indicates the period where the path of the endogenous variable is constrained using a dates class (see :ref:`dates class members <dates-members>`). The last argument contains the constrained path as a Matlab vector of double. This function return the handle of the updated forecast scenario.
+    Adds to the forecast scenario a constrained path on the endogenous
+    variable specified between quotes in the second argument. The
+    associated exogenous variable provided in the third argument
+    between quotes, is considered as an endogenous variable and its
+    values compatible with the constrained path on the endogenous
+    variable will be computed. The nature of the expectation on the
+    constrained path has to be specified in the fourth argument
+    between quotes: ’surprise’ in case of an unexpected path or
+    ’perfect_foresight’ for a perfectly anticipated path. The fifth
+    argument indicates the period where the path of the endogenous
+    variable is constrained using a dates class (see :ref:`dates class
+    members <dates-members>`). The last argument contains the
+    constrained path as a Matlab vector of double. This function
+    return the handle of the updated forecast scenario.
 
-Once the forecast scenario if fully described, the forecast is computed with the command ``det_cond_forecast``:
+Once the forecast scenario if fully described, the forecast is
+computed with the command ``det_cond_forecast``:
 
 .. matcomm:: DSERIES = det_cond_forecast (HANDLE[, DSERIES [, DATES]]);
 
-    Computes the forecast or the conditional forecast using an extended path method for the given forecast scenario (first argument). The past values of the endogenous and exogenous variables provided with a dseries class (see :ref:`dseries class members <dseries-members>`) can be indicated in the second argument. By default, the past values of the variables are equal to their steady-state values. The initial date of the forecast can be provided in the third argument. By default, the forecast will start at the first date indicated in the ``init_plan command``. This function returns a dset containing the historical and forecast values for the endogenous and exogenous variables.
+    Computes the forecast or the conditional forecast using an
+    extended path method for the given forecast scenario (first
+    argument). The past values of the endogenous and exogenous
+    variables provided with a dseries class (see :ref:`dseries class
+    members <dseries-members>`) can be indicated in the second
+    argument. By default, the past values of the variables are equal
+    to their steady-state values. The initial date of the forecast can
+    be provided in the third argument. By default, the forecast will
+    start at the first date indicated in the ``init_plan
+    command``. This function returns a dset containing the historical
+    and forecast values for the endogenous and exogenous variables.
 
 
 *Example*
@@ -6135,95 +7575,186 @@ Once the forecast scenario if fully described, the forecast is computed with the
 
 .. command:: smoother2histval [(OPTIONS...)]
 
-    The purpose of this command is to construct initial conditions (for a subsequent simulation) that are the smoothed values of a previous estimation.
+    The purpose of this command is to construct initial conditions
+    (for a subsequent simulation) that are the smoothed values of a
+    previous estimation.
 
-    More precisely, after an estimation run with the ``smoother`` option, ``smoother2histval`` will extract the smoothed values (from ``oo_.SmoothedVariables``, and possibly from ``oo_.SmoothedShocks`` if there are lagged exogenous), and will use these values to construct initial conditions (as if they had been manually entered through ``histval``).
+    More precisely, after an estimation run with the ``smoother``
+    option, ``smoother2histval`` will extract the smoothed values
+    (from ``oo_.SmoothedVariables``, and possibly from
+    ``oo_.SmoothedShocks`` if there are lagged exogenous), and will
+    use these values to construct initial conditions (as if they had
+    been manually entered through ``histval``).
 
     *Options*
 
     .. option:: period = INTEGER
 
-        Period number to use as the starting point for the subsequent simulation. It should be between 1 and the number of observations that were used to produce the smoothed values. Default: the last observation.
+        Period number to use as the starting point for the subsequent
+        simulation. It should be between 1 and the number of
+        observations that were used to produce the smoothed
+        values. Default: the last observation.
 
     .. option:: infile = FILENAME
 
-        Load the smoothed values from a ``_results.mat`` file created by a previous Dynare run. Default: use the smoothed values currently in the global workspace.
+        Load the smoothed values from a ``_results.mat`` file created
+        by a previous Dynare run. Default: use the smoothed values
+        currently in the global workspace.
 
     .. option:: invars = ( VARIABLE_NAME [VARIABLE_NAME ...] )
 
-        A list of variables to read from the smoothed values. It can contain state endogenous variables, and also exogenous variables having a lag. Default: all the state endogenous variables, and all the exogenous variables with a lag.
+        A list of variables to read from the smoothed values. It can
+        contain state endogenous variables, and also exogenous
+        variables having a lag. Default: all the state endogenous
+        variables, and all the exogenous variables with a lag.
 
     .. option:: outfile = FILENAME
 
-        Write the initial conditions to a file. Default: write the initial conditions in the current workspace, so that a simulation can be performed.
+        Write the initial conditions to a file. Default: write the
+        initial conditions in the current workspace, so that a
+        simulation can be performed.
 
     .. option:: outvars = ( VARIABLE_NAME [VARIABLE_NAME ...] )
 
-        A list of variables which will be given the initial conditions. This list must have the same length than the list given to ``invars``, and there will be a one-to-one mapping between the two list. Default: same value as option ``invars``.
+        A list of variables which will be given the initial
+        conditions. This list must have the same length than the list
+        given to ``invars``, and there will be a one-to-one mapping
+        between the two list. Default: same value as option
+        ``invars``.
 
     *Use cases*
 
     There are three possible ways of using this command:
 
-        * Everything in a single file: run an estimation with a smoother, then run ``smoother2histval`` (without the ``infile`` and ``outfile`` options), then run a stochastic simulation.
-        * In two files: in the first file, run the smoother and then run ``smoother2histval`` with the ``outfile`` option; in the second file, run ``histval_file`` to load the initial conditions, and run a (deterministic or stochastic) simulation.
-        * In two files: in the first file, run the smoother; in the second file, run ``smoother2histval`` with the ``infile`` option equal to the ``_results.mat`` file created by the first file, and then run a (deterministic or stochastic) simulation.
-
+        * Everything in a single file: run an estimation with a
+          smoother, then run ``smoother2histval`` (without the
+          ``infile`` and ``outfile`` options), then run a stochastic
+          simulation.
+        * In two files: in the first file, run the smoother and then
+          run ``smoother2histval`` with the ``outfile`` option; in the
+          second file, run ``histval_file`` to load the initial
+          conditions, and run a (deterministic or stochastic)
+          simulation.
+        * In two files: in the first file, run the smoother; in the
+          second file, run ``smoother2histval`` with the ``infile``
+          option equal to the ``_results.mat`` file created by the
+          first file, and then run a (deterministic or stochastic)
+          simulation.
 
 
 Optimal policy
 ==============
 
-Dynare has tools to compute optimal policies for various types of objectives. ``ramsey_model`` computes automatically the First Order Conditions (FOC) of a model, given the ``planner_objective``. You can then use other standard commands to solve, estimate or simulate this new, expanded model.
+Dynare has tools to compute optimal policies for various types of
+objectives. ``ramsey_model`` computes automatically the First Order
+Conditions (FOC) of a model, given the ``planner_objective``. You can
+then use other standard commands to solve, estimate or simulate this
+new, expanded model.
 
-Alternatively, you can either solve for optimal policy under commitment with ``ramsey_policy``, for optimal policy under discretion with ``discretionary_policy`` or for optimal simple rule with ``osr`` (also implying commitment).
+Alternatively, you can either solve for optimal policy under
+commitment with ``ramsey_policy``, for optimal policy under discretion
+with ``discretionary_policy`` or for optimal simple rule with ``osr``
+(also implying commitment).
 
 .. command:: osr [VARIABLE_NAME...];
              osr (OPTIONS...) [VARIABLE_NAME...];
 
-    This command computes optimal simple policy rules for linear-quadratic problems of the form:
+    |br| This command computes optimal simple policy rules for
+    linear-quadratic problems of the form:
 
-        :math:`\min_\gamma E(y'_tWy_t)`
+        .. math::
+
+             \min_\gamma E(y'_tWy_t)
 
     such that:
 
-        :math:`A_1 E_ty_{t+1}+A_2 y_t+ A_3 y_{t-1}+C e_t=0`
+        .. math::
+
+             A_1 E_ty_{t+1}+A_2 y_t+ A_3 y_{t-1}+C e_t=0
 
     where:
 
         * :math:`E` denotes the unconditional expectations operator;
-        * :math:`\gamma` are parameters to be optimized. They must be elements of the matrices :math:`A_1`, :math:`A_2`, :math:`A_3`, i.e. be specified as parameters in the ``params`` command and be entered in the ``model`` block;
-        * :math:`y` are the endogenous variables, specified in the ``var`` command, whose (co)-variance enters the loss function;
-        * :math:`e` are the exogenous stochastic shocks, specified in the ``varexo``- ommand;
+        * :math:`\gamma` are parameters to be optimized. They must be
+          elements of the matrices :math:`A_1`, :math:`A_2`,
+          :math:`A_3`, i.e. be specified as parameters in the
+          ``params`` command and be entered in the ``model`` block;
+        * :math:`y` are the endogenous variables, specified in the
+          ``var`` command, whose (co)-variance enters the loss
+          function;
+        * :math:`e` are the exogenous stochastic shocks, specified in
+          the ``varexo``- ommand;
         * :math:`W` is the weighting matrix;
 
-    The linear quadratic problem consists of choosing a subset of model parameters to minimize the weighted (co)-variance of a specified subset of endogenous variables, subject to a linear law of motion implied by the first order conditions of the model. A few things are worth mentioning. First, :math:`y` denotes the selected endogenous variables’ deviations from their steady state, i.e. in case they are not already mean 0 the variables entering the loss function are automatically demeaned so that the centered second moments are minimized. Second, ``osr`` only solves linear quadratic problems of the type resulting from combining the specified quadratic loss function with a first order approximation to the model’s equilibrium conditions. The reason is that the first order state-space representation is used to compute the unconditional (co)-variances. Hence, ``osr`` will automatically select ``order=1``. Third, because the objective involves minimizing a weighted sum of unconditional second moments, those second moments must be finite. In particular, unit roots in :math:`y` are not allowed.
+    The linear quadratic problem consists of choosing a subset of
+    model parameters to minimize the weighted (co)-variance of a
+    specified subset of endogenous variables, subject to a linear law
+    of motion implied by the first order conditions of the model. A
+    few things are worth mentioning. First, :math:`y` denotes the
+    selected endogenous variables’ deviations from their steady state,
+    i.e. in case they are not already mean 0 the variables entering
+    the loss function are automatically demeaned so that the centered
+    second moments are minimized. Second, ``osr`` only solves linear
+    quadratic problems of the type resulting from combining the
+    specified quadratic loss function with a first order approximation
+    to the model’s equilibrium conditions. The reason is that the
+    first order state-space representation is used to compute the
+    unconditional (co)-variances. Hence, ``osr`` will automatically
+    select ``order=1``. Third, because the objective involves
+    minimizing a weighted sum of unconditional second moments, those
+    second moments must be finite. In particular, unit roots in
+    :math:`y` are not allowed.
 
-    The subset of the model parameters over which the optimal simple rule is to be optimized, :math:`\gamma`, must be listed with ``osr_params``.
+    The subset of the model parameters over which the optimal simple
+    rule is to be optimized, :math:`\gamma`, must be listed with
+    ``osr_params``.
 
-    The weighting matrix :math:`W` used for the quadratic objective function is specified in the ``optim_weights`` block. By attaching weights to endogenous variables, the subset of endogenous variables entering the objective function, :math:`y`, is implicitly specified.
+    The weighting matrix :math:`W` used for the quadratic objective
+    function is specified in the ``optim_weights`` block. By attaching
+    weights to endogenous variables, the subset of endogenous
+    variables entering the objective function, :math:`y`, is
+    implicitly specified.
 
-    The linear quadratic problem is solved using the numerical optimizer specified with :opt:`opt_algo <opt_algo = INTEGER>`.
+    The linear quadratic problem is solved using the numerical
+    optimizer specified with :opt:`opt_algo <opt_algo = INTEGER>`.
 
     *Options*
 
-    The ``osr`` command will subsequently run ``stoch_simul`` and accepts the same options, including restricting the endogenous variables by listing them after the command, as ``stoch_simul`` (see :ref:`stoch-sol`) plus
+    The ``osr`` command will subsequently run ``stoch_simul`` and
+    accepts the same options, including restricting the endogenous
+    variables by listing them after the command, as ``stoch_simul``
+    (see :ref:`stoch-sol`) plus
 
     .. option:: opt_algo = INTEGER
 
-        Specifies the optimizer for minimizing the objective function. The same solvers as for ``mode_compute`` (see :opt:`mode_compute <mode_compute = INTEGER | FUNCTION_NAME>`) are available, except for ``5``, ``6``, and ``10``.
+        Specifies the optimizer for minimizing the objective
+        function. The same solvers as for ``mode_compute`` (see
+        :opt:`mode_compute <mode_compute = INTEGER | FUNCTION_NAME>`)
+        are available, except for ``5``, ``6``, and ``10``.
 
     .. option:: optim = (NAME, VALUE, ...)
 
-        A list of NAME`` and VALUE pairs. Can be used to set options for the optimization routines. The set of available options depends on the selected optimization routine (i.e. on the value of option :opt:`opt_algo <opt_algo = INTEGER>`). See :opt:`optim <optim = (NAME, VALUE, ...)>`.
+        A list of NAME`` and VALUE pairs. Can be used to set options
+        for the optimization routines. The set of available options
+        depends on the selected optimization routine (i.e. on the
+        value of option :opt:`opt_algo <opt_algo = INTEGER>`). See
+        :opt:`optim <optim = (NAME, VALUE, ...)>`.
 
     .. option:: maxit = INTEGER
 
-        Determines the maximum number of iterations used in ``opt_algo=4``. This option is now deprecated and will be removed in a future release of Dynare. Use ``optim`` instead to set optimizer-specific values. Default: ``1000``.
+        Determines the maximum number of iterations used in
+        ``opt_algo=4``. This option is now deprecated and will be
+        removed in a future release of Dynare. Use ``optim`` instead
+        to set optimizer-specific values. Default: ``1000``.
 
     .. option:: tolf = DOUBLE
 
-        Convergence criterion for termination based on the function value used in ``opt_algo=4``. Iteration will cease when it proves impossible to improve the function value by more than tolf. This option is now deprecated and will be removed in a future release of Dynare. Use ``optim`` instead to set optimizer-specific values. Default: ``e-7``.
+        Convergence criterion for termination based on the function
+        value used in ``opt_algo=4``. Iteration will cease when it
+        proves impossible to improve the function value by more than
+        tolf. This option is now deprecated and will be removed in a
+        future release of Dynare. Use ``optim`` instead to set
+        optimizer-specific values. Default: ``e-7``.
 
     .. option:: silent_optimizer
 
@@ -6231,28 +7762,41 @@ Alternatively, you can either solve for optimal policy under commitment with ``r
 
     .. option:: huge_number = DOUBLE
 
-        Value for replacing the infinite bounds on parameters by finite numbers. Used by some optimizers for numerical reasons (see :opt:`huge_number <huge_number = DOUBLE>`). Users need to make sure that the optimal parameters are not larger than this value. Default: ``1e7``.
+        Value for replacing the infinite bounds on parameters by
+        finite numbers. Used by some optimizers for numerical reasons
+        (see :opt:`huge_number <huge_number = DOUBLE>`). Users need to
+        make sure that the optimal parameters are not larger than this
+        value. Default: ``1e7``.
 
-    The value of the objective is stored in the variable ``oo_.osr.objective_function`` and the value of parameters at the optimum is stored in ``oo_.osr.optim_params``. See below for more details.
+    The value of the objective is stored in the variable
+    ``oo_.osr.objective_function`` and the value of parameters at the
+    optimum is stored in ``oo_.osr.optim_params``. See below for more
+    details.
 
-    After running ``osr`` the parameters entering the simple rule will be set to their optimal value so that subsequent runs of ``stoch_simul`` will be conducted at these values.
+    After running ``osr`` the parameters entering the simple rule will
+    be set to their optimal value so that subsequent runs of
+    ``stoch_simul`` will be conducted at these values.
 
 
 .. command:: osr_params PARAMETER_NAME...;
 
-    This command declares parameters to be optimized by ``osr``.
+    |br| This command declares parameters to be optimized by ``osr``.
 
 .. block:: optim_weights ;
 
-    This block specifies quadratic objectives for optimal policy problems.
+    |br| This block specifies quadratic objectives for optimal policy problems.
 
-    More precisely, this block specifies the nonzero elements of the weight matrix :math:`W` used in the quadratic form of the objective function in ``osr``.
+    More precisely, this block specifies the nonzero elements of the
+    weight matrix :math:`W` used in the quadratic form of the
+    objective function in ``osr``.
 
-    An element of the diagonal of the weight matrix is given by a line of the form::
+    An element of the diagonal of the weight matrix is given by a line
+    of the form::
 
         VARIABLE_NAME EXPRESSION;
 
-    An off-the-diagonal element of the weight matrix is given by a line of the form::
+    An off-the-diagonal element of the weight matrix is given
+    by a line of the form::
 
         VARIABLE_NAME,  VARIABLE_NAME EXPRESSION;
 
@@ -6299,15 +7843,19 @@ Alternatively, you can either solve for optimal policy under commitment with ``r
 
 .. block:: osr_params_bounds ;
 
-    This block declares lower and upper bounds for parameters in the optimal simple rule. If not specified the optimization is unconstrained.
+    |br| This block declares lower and upper bounds for parameters in
+    the optimal simple rule. If not specified the optimization is
+    unconstrained.
 
     Each line has the following syntax::
 
         PARAMETER_NAME, LOWER_BOUND, UPPER_BOUND;
 
-    Note that the use of this block requires the use of a constrained optimizer, i.e. setting :opt:`opt_algo <opt_algo = INTEGER>` to ``1``, ``2``, ``5`` or ``9``.
+    Note that the use of this block requires the use of a constrained
+    optimizer, i.e. setting :opt:`opt_algo <opt_algo = INTEGER>` to
+    ``1``, ``2``, ``5`` or ``9``.
 
-    :ex:
+    *Example*
 
         ::
 
@@ -6320,42 +7868,61 @@ Alternatively, you can either solve for optimal policy under commitment with ``r
 
 .. matvar:: oo_.osr.objective_function
 
-    After an execution of the ``osr`` command, this variable contains the value of the objective under optimal policy.
+    After an execution of the ``osr`` command, this variable contains
+    the value of the objective under optimal policy.
 
 .. matvar:: oo_.osr.optim_params
 
-    After an execution of the ``osr`` command, this variable contains the value of parameters at the optimum, stored in fields of the form ``oo_.osr.optim_params.PARAMETER_NAME``.
+    After an execution of the ``osr`` command, this variable contains
+    the value of parameters at the optimum, stored in fields of the
+    form ``oo_.osr.optim_params.PARAMETER_NAME``.
 
 .. matvar:: M_.osr.param_names
 
-    After an execution of the ``osr`` command, this cell contains the names of the parameters.
+    After an execution of the ``osr`` command, this cell contains the
+    names of the parameters.
 
 .. matvar:: M_.osr.param_indices
 
-    After an execution of the ``osr`` command, this vector contains the indices of the OSR parameters in ``M_.params``.
+    After an execution of the ``osr`` command, this vector contains
+    the indices of the OSR parameters in ``M_.params``.
 
 .. matvar:: M_.osr.param_bounds
 
-    After an execution of the ``osr`` command, this two by number of OSR parameters matrix contains the lower and upper bounds of the parameters in the first and second column, respectively.
+    After an execution of the ``osr`` command, this two by number of
+    OSR parameters matrix contains the lower and upper bounds of the
+    parameters in the first and second column, respectively.
 
 .. matvar:: M_.osr.variable_weights
 
-    After an execution of the ``osr`` command, this sparse matrix contains the weighting matrix associated with the variables in the objective function.
+    After an execution of the ``osr`` command, this sparse matrix
+    contains the weighting matrix associated with the variables in the
+    objective function.
 
 .. matvar:: M_.osr.variable_indices
 
-    After an execution of the ``osr`` command, this vector contains the indices of the variables entering the objective function in ``M_.endo_names``.
+    After an execution of the ``osr`` command, this vector contains
+    the indices of the variables entering the objective function in
+    ``M_.endo_names``.
 
 
 .. command:: ramsey_model (OPTIONS...);
 
-    This command computes the First Order Conditions for maximizing the policy maker objective function subject to the constraints provided by the equilibrium path of the private economy.
+    |br| This command computes the First Order Conditions for maximizing
+    the policy maker objective function subject to the constraints
+    provided by the equilibrium path of the private economy.
 
-    The planner objective must be declared with the ``planner_objective`` command.
+    The planner objective must be declared with the
+    ``planner_objective`` command.
 
-    This command only creates the expanded model, it doesn’t perform any computations. It needs to be followed by other instructions to actually perform desired computations. Note that it is the only way to perform perfect foresight simulation of the Ramsey policy problem.
+    This command only creates the expanded model, it doesn’t perform
+    any computations. It needs to be followed by other instructions to
+    actually perform desired computations. Note that it is the only
+    way to perform perfect foresight simulation of the Ramsey policy
+    problem.
 
-    See :ref:`aux-variables`, for an explanation of how Lagrange multipliers are automatically created.
+    See :ref:`aux-variables`, for an explanation of how Lagrange
+    multipliers are automatically created.
 
     *Options*
 
@@ -6363,24 +7930,44 @@ Alternatively, you can either solve for optimal policy under commitment with ``r
 
     .. option:: planner_discount = EXPRESSION
 
-        Declares or reassigns the discount factor of the central planner ``optimal_policy_discount_factor``. Default: ``1.0``.
+        Declares or reassigns the discount factor of the central
+        planner ``optimal_policy_discount_factor``. Default: ``1.0``.
 
     .. option:: instruments = (VARIABLE_NAME,...)
 
-        Declares instrument variables for the computation of the steady state under optimal policy. Requires a ``steady_state_model`` block or a ``_steadystate.m`` file. See below.
+        Declares instrument variables for the computation of the
+        steady state under optimal policy. Requires a
+        ``steady_state_model`` block or a ``_steadystate.m`` file. See
+        below.
 
     *Steady state*
 
-    Dynare takes advantage of the fact that the Lagrange multipliers appear linearly in the equations of the steady state of the model under optimal policy. Nevertheless, it is in general very difficult to compute the steady state with simply a numerical guess in ``initval`` for the endogenous variables.
+    Dynare takes advantage of the fact that the Lagrange multipliers
+    appear linearly in the equations of the steady state of the model
+    under optimal policy. Nevertheless, it is in general very
+    difficult to compute the steady state with simply a numerical
+    guess in ``initval`` for the endogenous variables.
 
-    It greatly facilitates the computation, if the user provides an analytical solution for the steady state (in ``steady_state_model`` block or in a ``_steadystate.m`` file). In this case, it is necessary to provide a steady state solution CONDITIONAL on the value of the instruments in the optimal policy problem and declared with option ``instruments``. Note that choosing the instruments is partly a matter of interpretation and you can choose instruments that are handy from a mathematical point of view but different from the instruments you would refer to in the analysis of the paper. A typical example is choosing inflation or nominal interest rate as an instrument.
+    It greatly facilitates the computation, if the user provides an
+    analytical solution for the steady state (in
+    ``steady_state_model`` block or in a ``_steadystate.m`` file). In
+    this case, it is necessary to provide a steady state solution
+    CONDITIONAL on the value of the instruments in the optimal policy
+    problem and declared with option ``instruments``. Note that
+    choosing the instruments is partly a matter of interpretation and
+    you can choose instruments that are handy from a mathematical
+    point of view but different from the instruments you would refer
+    to in the analysis of the paper. A typical example is choosing
+    inflation or nominal interest rate as an instrument.
 
 
 .. block:: ramsey_constraints ;
 
-    This block lets you define constraints on the variables in the Ramsey problem. The constraints take the form of a variable, an inequality operator (> or <) and a constant.
+    |br| This block lets you define constraints on the variables in
+    the Ramsey problem. The constraints take the form of a variable,
+    an inequality operator (> or <) and a constant.
 
-    :ex:
+    *Example*
 
         ::
 
@@ -6392,15 +7979,40 @@ Alternatively, you can either solve for optimal policy under commitment with ``r
 .. command:: ramsey_policy [VARIABLE_NAME...];
              ramsey_policy (OPTIONS...) [VARIABLE_NAME...];
 
-    This command computes the first order approximation of the policy that maximizes the policy maker’s objective function subject to the constraints provided by the equilibrium path of the private economy and under commitment to this optimal policy. The Ramsey policy is computed by approximating the equilibrium system around the perturbation point where the Lagrange multipliers are at their steady state, i.e. where the Ramsey planner acts as if the initial multipliers had been set to 0 in the distant past, giving them time to converge to their steady state value. Consequently, the optimal decision rules are computed around this steady state of the endogenous variables and the Lagrange multipliers.
+    |br| This command computes the first order approximation of the
+    policy that maximizes the policy maker’s objective function
+    subject to the constraints provided by the equilibrium path of the
+    private economy and under commitment to this optimal policy. The
+    Ramsey policy is computed by approximating the equilibrium system
+    around the perturbation point where the Lagrange multipliers are
+    at their steady state, i.e. where the Ramsey planner acts as if
+    the initial multipliers had been set to 0 in the distant past,
+    giving them time to converge to their steady state
+    value. Consequently, the optimal decision rules are computed
+    around this steady state of the endogenous variables and the
+    Lagrange multipliers.
 
-    This first order approximation to the optimal policy conducted by Dynare is not to be confused with a naive linear quadratic approach to optimal policy that can lead to spurious welfare rankings (see *Kim and Kim (2003)*). In the latter, the optimal policy would be computed subject to the first order approximated FOCs of the private economy. In contrast, Dynare first computes the FOCs of the Ramsey planner’s problem subject to the nonlinear constraints that are the FOCs of the private economy and only then approximates these FOCs of planner’s problem to first order. Thereby, the second order terms that are required for a second-order correct welfare evaluation are preserved.
+    This first order approximation to the optimal policy conducted by
+    Dynare is not to be confused with a naive linear quadratic
+    approach to optimal policy that can lead to spurious welfare
+    rankings (see *Kim and Kim (2003)*). In the latter, the optimal
+    policy would be computed subject to the first order approximated
+    FOCs of the private economy. In contrast, Dynare first computes
+    the FOCs of the Ramsey planner’s problem subject to the nonlinear
+    constraints that are the FOCs of the private economy and only then
+    approximates these FOCs of planner’s problem to first
+    order. Thereby, the second order terms that are required for a
+    second-order correct welfare evaluation are preserved.
 
-    Note that the variables in the list after the ``ramsey_policy`` command can also contain multiplier names. In that case, Dynare will for example display the IRFs of the respective multipliers when ``irf>0``.
+    Note that the variables in the list after the ``ramsey_policy``
+    command can also contain multiplier names. In that case, Dynare
+    will for example display the IRFs of the respective multipliers
+    when ``irf>0``.
 
     The planner objective must be declared with the planner_objective command.
 
-    See :ref:`aux-variables`, for an explanation of how this operator is handled internally and how this affects the output.
+    See :ref:`aux-variables`, for an explanation of how this operator
+    is handled internally and how this affects the output.
 
     *Options*
 
@@ -6412,21 +8024,45 @@ Alternatively, you can either solve for optimal policy under commitment with ``r
 
     .. option:: instruments = (VARIABLE_NAME,...)
 
-        Declares instrument variables for the computation of the steady state under optimal policy. Requires a ``steady_state_model`` block or a ``_steadystate.m`` file. See below.
+        Declares instrument variables for the computation of the
+        steady state under optimal policy. Requires a
+        ``steady_state_model`` block or a ``_steadystate.m`` file. See
+        below.
 
-    Note that only a first order approximation of the optimal Ramsey policy is available, leading to a second-order accurate welfare ranking (i.e. ``order=1`` must be specified).
+    Note that only a first order approximation of the optimal Ramsey
+    policy is available, leading to a second-order accurate welfare
+    ranking (i.e. ``order=1`` must be specified).
 
     *Output*
 
-    This command generates all the output variables of ``stoch_simul``. For specifying the initial values for the endogenous state variables (except for the Lagrange multipliers), see :bck:`histval`.
+    This command generates all the output variables of
+    ``stoch_simul``. For specifying the initial values for the
+    endogenous state variables (except for the Lagrange multipliers),
+    see :bck:`histval`.
 
     .. _plan-obj:
 
-    In addition, it stores the value of planner objective function under Ramsey policy in ``oo_.planner_objective_value``, given the initial values of the endogenous state variables. If not specified with ``histval``, they are taken to be at their steady state values. The result is a 1 by 2 vector, where the first entry stores the value of the planner objective when the initial Lagrange multipliers associated with the planner’s problem are set to their steady state values (see :comm:`ramsey_policy`).
+    In addition, it stores the value of planner objective function
+    under Ramsey policy in ``oo_.planner_objective_value``, given the
+    initial values of the endogenous state variables. If not specified
+    with ``histval``, they are taken to be at their steady state
+    values. The result is a 1 by 2 vector, where the first entry
+    stores the value of the planner objective when the initial
+    Lagrange multipliers associated with the planner’s problem are set
+    to their steady state values (see :comm:`ramsey_policy`).
 
-    In contrast, the second entry stores the value of the planner objective with initial Lagrange multipliers of the planner’s problem set to 0, i.e. it is assumed that the planner exploits its ability to surprise private agents in the first period of implementing Ramsey policy. This is the value of implementating optimal policy for the first time and committing not to re-optimize in the future.
+    In contrast, the second entry stores the value of the planner
+    objective with initial Lagrange multipliers of the planner’s
+    problem set to 0, i.e. it is assumed that the planner exploits its
+    ability to surprise private agents in the first period of
+    implementing Ramsey policy. This is the value of implementating
+    optimal policy for the first time and committing not to
+    re-optimize in the future.
 
-    Because it entails computing at least a second order approximation, this computation is skipped with a message when the model is too large (more than 180 state variables, including lagged Lagrange multipliers).
+    Because it entails computing at least a second order
+    approximation, this computation is skipped with a message when the
+    model is too large (more than 180 state variables, including
+    lagged Lagrange multipliers).
 
     *Steady state*
 
@@ -6436,9 +8072,13 @@ Alternatively, you can either solve for optimal policy under commitment with ``r
 .. command:: discretionary_policy [VARIABLE_NAME...];
              discretionary_policy (OPTIONS...) [VARIABLE_NAME...];
 
-    This command computes an approximation of the optimal policy under discretion. The algorithm implemented is essentially an LQ solver, and is described by *Dennis (2007)*.
+    |br| This command computes an approximation of the optimal policy
+    under discretion. The algorithm implemented is essentially an LQ
+    solver, and is described by *Dennis (2007)*.
 
-    You should ensure that your model is linear and your objective is quadratic. Also, you should set the ``linear`` option of the ``model`` block.
+    You should ensure that your model is linear and your objective is
+    quadratic. Also, you should set the ``linear`` option of the
+    ``model`` block.
 
     *Options*
 
@@ -6446,7 +8086,8 @@ Alternatively, you can either solve for optimal policy under commitment with ``r
 
     .. option:: discretionary_tol = NON-NEGATIVE DOUBLE
 
-        Sets the tolerance level used to assess convergence of the solution algorithm. Default: ``1e-7``.
+        Sets the tolerance level used to assess convergence of the
+        solution algorithm. Default: ``1e-7``.
 
     .. option:: maxit = INTEGER
 
@@ -6455,28 +8096,47 @@ Alternatively, you can either solve for optimal policy under commitment with ``r
 
 .. command:: planner_objective MODEL_EXPRESSION ;
 
-    This command declares the policy maker objective, for use with ``ramsey_policy`` or ``discretionary_policy``.
+    |br| This command declares the policy maker objective, for use
+    with ``ramsey_policy`` or ``discretionary_policy``.
 
-    You need to give the one-period objective, not the discounted lifetime objective. The discount factor is given by the ``planner_discount`` option of ``ramsey_policy`` and ``discretionary_policy``. The objective function can only contain current endogenous variables and no exogenous ones. This limitation is easily circumvented by defining an appropriate auxiliary variable in the model.
+    You need to give the one-period objective, not the discounted
+    lifetime objective. The discount factor is given by the
+    ``planner_discount`` option of ``ramsey_policy`` and
+    ``discretionary_policy``. The objective function can only contain
+    current endogenous variables and no exogenous ones. This
+    limitation is easily circumvented by defining an appropriate
+    auxiliary variable in the model.
 
-    With ``ramsey_policy``, you are not limited to quadratic objectives: you can give any arbitrary nonlinear expression.
+    With ``ramsey_policy``, you are not limited to quadratic
+    objectives: you can give any arbitrary nonlinear expression.
 
     With ``discretionary_policy``, the objective function must be quadratic.
-
 
 
 Sensitivity and identification analysis
 =======================================
 
-Dynare provides an interface to the global sensitivity analysis (GSA) toolbox (developed by the Joint Research Center (JRC) of the European Commission), which is now part of the official Dynare distribution. The GSA toolbox can be used to answer the following questions:
+Dynare provides an interface to the global sensitivity analysis (GSA)
+toolbox (developed by the Joint Research Center (JRC) of the European
+Commission), which is now part of the official Dynare
+distribution. The GSA toolbox can be used to answer the following
+questions:
 
-    1. What is the domain of structural coefficients assuring the stability and determinacy of a DSGE model?
-    2. Which parameters mostly drive the fit of, e.g., GDP and which the fit of inflation? Is there any conflict between the optimal fit of one observed series versus another?
-    3. How to represent in a direct, albeit approximated, form the relationship between structural parameters and the reduced form of a rational expectations model?
+    1. What is the domain of structural coefficients assuring the
+       stability and determinacy of a DSGE model?
+    2. Which parameters mostly drive the fit of, e.g., GDP and which
+       the fit of inflation? Is there any conflict between the optimal
+       fit of one observed series versus another?
+    3. How to represent in a direct, albeit approximated, form the
+       relationship between structural parameters and the reduced form
+       of a rational expectations model?
 
-The discussion of the methodologies and their application is described in *Ratto (2008)*.
+The discussion of the methodologies and their application is described
+in *Ratto (2008)*.
 
-With respect to the previous version of the toolbox, in order to work properly, the GSA toolbox no longer requires that the Dynare estimation environment is set up.
+With respect to the previous version of the toolbox, in order to work
+properly, the GSA toolbox no longer requires that the Dynare
+estimation environment is set up.
 
 
 Performing sensitivity analysis
@@ -6485,7 +8145,7 @@ Performing sensitivity analysis
 .. command:: dynare_sensitivity ;
              dynare_sensitivity(OPTIONS...);
 
-    This command triggers sensitivity analysis on a DSGE model.
+    |br| This command triggers sensitivity analysis on a DSGE model.
 
     .. _sampl-opt:
 
@@ -6497,19 +8157,30 @@ Performing sensitivity analysis
 
     .. option:: ilptau = INTEGER
 
-        If equal to ``1``, use :math:`LP_\tau` quasi-Monte-Carlo. If equal to ``0``, use LHS Monte-Carlo. Default: ``1``.
+        If equal to ``1``, use :math:`LP_\tau` quasi-Monte-Carlo. If
+        equal to ``0``, use LHS Monte-Carlo. Default: ``1``.
 
     .. option:: pprior = INTEGER
 
-        If equal to ``1``, sample from the prior distributions. If equal to ``0``, sample from the multivariate normal :math:`N(\bar{\theta},\Sigma)`, where :math:`\bar{\theta}` is the posterior mode and :math:`\Sigma=H^{-1}`, :math:`H` is the Hessian at the mode. Default: ``1``.
+        If equqal to ``1``, sample from the prior distributions. If
+        equal to ``0``, sample from the multivariate normal
+        :math:`N(\bar{\theta},\Sigma)`, where :math:`\bar{\theta}` is
+        the posterior mode and :math:`\Sigma=H^{-1}`, :math:`H` is the
+        Hessian at the mode. Default: ``1``.
 
     .. option:: prior_range = INTEGER
 
-        If equal to ``1``, sample uniformly from prior ranges. If equal to ``0``, sample from prior distributions. Default: ``1``.
+        If equal to ``1``, sample uniformly from prior ranges. If
+        equal to ``0``, sample from prior distributions. Default:
+        ``1``.
 
     .. option:: morris = INTEGER
 
-        If equal to ``0``, ANOVA mapping (Type I error) If equal to ``1``, Screening analysis (Type II error). If equal to ``2``, Analytic derivatives (similar to Type II error, only valid when identification=1). Default: ``1`` when ``identification=1``, ``0`` otherwise.
+        If equal to ``0``, ANOVA mapping (Type I error) If equal to
+        ``1``, Screening analysis (Type II error). If equal to ``2``,
+        Analytic derivatives (similar to Type II error, only valid
+        when identification=1). Default: ``1`` when
+        ``identification=1``, ``0`` otherwise.
 
     .. option:: morris_nliv = INTEGER
 
@@ -6521,94 +8192,130 @@ Performing sensitivity analysis
 
     .. option:: ppost = INTEGER
 
-        If equal to ``1``, use Metropolis posterior sample. If equal to ``0``, do not use Metropolis posterior sample. Default: ``0``.
+        If equal to ``1``, use Metropolis posterior sample. If equal
+        to ``0``, do not use Metropolis posterior sample. Default:
+        ``0``.
 
         NB: This overrides any other sampling option.
 
     .. option:: neighborhood_width = DOUBLE
 
-        When ``pprior=0`` and ``ppost=0``, allows for the sampling of parameters around the value specified in the ``mode_file``, in the range :math:`\texttt{xparam1} \pm \left \vert \texttt{xparam1} \times \texttt{neighborhood\_width} \right \vert`. Default: ``0``.
+        When ``pprior=0`` and ``ppost=0``, allows for the sampling of
+        parameters around the value specified in the ``mode_file``, in
+        the range :math:`\texttt{xparam1} \pm \left \vert
+        \texttt{xparam1} \times \texttt{neighborhood\_width} \right
+        \vert`. Default: ``0``.
 
 
     *Stability Mapping Options*
 
     .. option:: stab = INTEGER
 
-        If equal to ``1``, perform stability mapping. If equal to ``0``, do not perform stability mapping. Default: ``1``.
+        If equal to ``1``, perform stability mapping. If equal to
+        ``0``, do not perform stability mapping. Default: ``1``.
 
     .. option:: load_stab = INTEGER
 
-        If equal to ``1``, load a previously created sample. If equal to ``0``, generate a new sample. Default: ``0``.
+        If equal to ``1``, load a previously created sample. If equal
+        to ``0``, generate a new sample. Default: ``0``.
 
     .. option:: alpha2_stab = DOUBLE
 
-        Critical value for correlations :math:`\rho` in filtered samples: plot couples of parmaters with :math:`\left\vert\rho\right\vert>` ``alpha2_stab``. Default: ``0``.
+        Critical value for correlations :math:`\rho` in filtered
+        samples: plot couples of parmaters with
+        :math:`\left\vert\rho\right\vert>` ``alpha2_stab``. Default:
+        ``0``.
 
     .. option:: pvalue_ks = DOUBLE
 
-        The threshold :math:`pvalue` for significant Kolmogorov-Smirnov test (i.e. plot parameters with :math:`pvalue<` ``pvalue_ks``). Default: ``0.001``.
+        The threshold :math:`pvalue` for significant
+        Kolmogorov-Smirnov test (i.e. plot parameters with
+        :math:`pvalue<` ``pvalue_ks``). Default: ``0.001``.
 
     .. option:: pvalue_corr = DOUBLE
 
-        The threshold :math:`pvalue` for significant correlation in filtered samples (i.e. plot bivariate samples when :math:`pvalue<` ``pvalue_corr``). Default: ``1e-5``.
+        The threshold :math:`pvalue` for significant correlation in
+        filtered samples (i.e. plot bivariate samples when
+        :math:`pvalue<` ``pvalue_corr``). Default: ``1e-5``.
 
 
     *Reduced Form Mapping Options*
 
     .. option:: redform = INTEGER
 
-        If equal to ``1``, prepare Monte-Carlo sample of reduced form matrices. If equal to ``0``, do not prepare Monte-Carlo sample of reduced form matrices. Default: ``0``.
+        If equal to ``1``, prepare Monte-Carlo sample of reduced form
+        matrices. If equal to ``0``, do not prepare Monte-Carlo sample
+        of reduced form matrices. Default: ``0``.
 
     .. option:: load_redform = INTEGER
 
-        If equal to ``1``, load previously estimated mapping. If equal to ``0``, estimate the mapping of the reduced form model. Default: ``0``.
+        If equal to ``1``, load previously estimated mapping. If equal
+        to ``0``, estimate the mapping of the reduced form
+        model. Default: ``0``.
 
     .. option:: logtrans_redform = INTEGER
 
-        If equal to ``1``, use log-transformed entries. If equal to ``0``, use raw entries. Default: ``0``.
+        If equal to ``1``, use log-transformed entries. If equal to
+        ``0``, use raw entries. Default: ``0``.
 
     .. option:: threshold_redform = [DOUBLE DOUBLE]
 
-        The range over which the filtered Monte-Carlo entries of the reduced form coefficients should be analyzed. The first number is the lower bound and the second is the upper bound. An empty vector indicates that these entries will not be filtered. Default: empty.
+        The range over which the filtered Monte-Carlo entries of the
+        reduced form coefficients should be analyzed. The first number
+        is the lower bound and the second is the upper bound. An empty
+        vector indicates that these entries will not be
+        filtered. Default: empty.
 
     .. option:: ksstat_redform = DOUBLE
 
-        Critical value for Smirnov statistics :math:`d` when reduced form entries are filtered. Default: ``0.001``.
+        Critical value for Smirnov statistics :math:`d` when reduced
+        form entries are filtered. Default: ``0.001``.
 
     .. option:: alpha2_redform = DOUBLE
 
-        Critical value for correlations :math:`\rho` when reduced form entries are filtered. Default: ``1e-5``.
+        Critical value for correlations :math:`\rho` when reduced form
+        entries are filtered. Default: ``1e-5``.
 
     .. option:: namendo = (VARIABLE_NAME...)
 
-        List of endogenous variables. ‘:’ indicates all endogenous variables. Default: empty.
+        List of endogenous variables. ‘:’ indicates all endogenous
+        variables. Default: empty.
 
     .. option:: namlagendo = (VARIABLE_NAME...)
 
-        List of lagged endogenous variables. ‘:’ indicates all lagged endogenous variables. Analyze entries [namendo :math:`\times` namlagendo] Default: empty.
+        List of lagged endogenous variables. ‘:’ indicates all lagged
+        endogenous variables. Analyze entries [namendo :math:`\times`
+        namlagendo] Default: empty.
 
     .. option:: namexo = (VARIABLE_NAME...)
 
-        List of exogenous variables. ‘:’ indicates all exogenous variables. Analyze entries [namendo :math:`\times` namexo]. Default: empty.
+        List of exogenous variables. ‘:’ indicates all exogenous
+        variables. Analyze entries [namendo :math:`\times`
+        namexo]. Default: empty.
 
 
     *RMSE Options*
 
     .. option:: rmse = INTEGER
 
-        If equal to ``1``, perform RMSE analysis. If equal to ``0``, do not perform RMSE analysis. Default: ``0``.
+        If equal to ``1``, perform RMSE analysis. If equal to ``0``,
+        do not perform RMSE analysis. Default: ``0``.
 
     .. option:: load_rmse = INTEGER
 
-        If equal to ``1``, load previous RMSE analysis. If equal to ``0``, make a new RMSE analysis. Default: ``0``.
+        If equal to ``1``, load previous RMSE analysis. If equal to
+        ``0``, make a new RMSE analysis. Default: ``0``.
 
     .. option:: lik_only = INTEGER
 
-        If equal to ``1``, compute only likelihood and posterior. If equal to ``0``, compute RMSE’s for all observed series. Default: ``0``.
+        If equal to ``1``, compute only likelihood and posterior. If
+        equal to ``0``, compute RMSE’s for all observed
+        series. Default: ``0``.
 
     .. option:: var_rmse = (VARIABLE_NAME...)
 
-        List of observed series to be considered. ‘:’ indicates all observed variables. Default: ``varobs``.
+        List of observed series to be considered. ‘:’ indicates all
+        observed variables. Default: ``varobs``.
 
     .. option:: pfilt_rmse = DOUBLE
 
@@ -6616,15 +8323,19 @@ Performing sensitivity analysis
 
     .. option:: istart_rmse = INTEGER
 
-        Value at which to start computing RMSE’s (use ``2`` to avoid big intitial error). Default: ``presample+1``.
+        Value at which to start computing RMSE’s (use ``2`` to avoid
+        big intitial error). Default: ``presample+1``.
 
     .. option:: alpha_rmse = DOUBLE
 
-        Critical value for Smirnov statistics :math:`d`: plot parameters with :math:`d>` ``alpha_rmse``. Default: ``0.001``.
+        Critical value for Smirnov statistics :math:`d`: plot
+        parameters with :math:`d>` ``alpha_rmse``. Default: ``0.001``.
 
     .. option:: alpha2_rmse = DOUBLE
 
-        Critical value for correlation :math:`\rho`: plot couples of parmaters with :math:`\left\vert\rho\right\vert=` ``alpha2_rmse``. Default: ``1e-5``.
+        Critical value for correlation :math:`\rho`: plot couples of
+        parmaters with :math:`\left\vert\rho\right\vert=`
+        ``alpha2_rmse``. Default: ``1e-5``.
 
     .. option:: datafile = FILENAME
 
@@ -6681,7 +8392,9 @@ Performing sensitivity analysis
 
     .. option:: identification = INTEGER
 
-        If equal to ``1``, performs identification analysis (forcing ``redform=0`` and ``morris=1``) If equal to ``0``, no identification analysis. Default: ``0``.
+        If equal to ``1``, performs identification analysis (forcing
+        ``redform=0`` and ``morris=1``) If equal to ``0``, no
+        identification analysis. Default: ``0``.
 
     .. option:: morris = INTEGER
 
@@ -6701,11 +8414,14 @@ Performing sensitivity analysis
 
     .. option:: useautocorr = INTEGER
 
-        Use autocorrelation matrices in place of autocovariance matrices in moments for identification analysis. Default: ``0``.
+        Use autocorrelation matrices in place of autocovariance
+        matrices in moments for identification analysis. Default:
+        ``0``.
 
     .. option:: ar = INTEGER
 
-        Maximum number of lags for moments in identification analysis. Default: ``1``.
+        Maximum number of lags for moments in identification
+        analysis. Default: ``1``.
 
     .. option:: diffuse_filter = INTEGER
 
@@ -6716,24 +8432,37 @@ Performing sensitivity analysis
 IRF/Moment calibration
 ----------------------
 
-The ``irf_calibration`` and ``moment_calibration`` blocks allow imposing implicit “endogenous” priors about IRFs and moments on the model. The way it works internally is that any parameter draw that is inconsistent with the “calibration” provided in these blocks is discarded, i.e. assigned a prior density of ``0``. In the context of ``dynare_sensitivity``, these restrictions allow tracing out which parameters are driving the model to satisfy or violate the given restrictions.
+The ``irf_calibration`` and ``moment_calibration`` blocks allow
+imposing implicit “endogenous” priors about IRFs and moments on the
+model. The way it works internally is that any parameter draw that is
+inconsistent with the “calibration” provided in these blocks is
+discarded, i.e. assigned a prior density of ``0``. In the context of
+``dynare_sensitivity``, these restrictions allow tracing out which
+parameters are driving the model to satisfy or violate the given
+restrictions.
 
-IRF and moment calibration can be defined in ``irf_calibration`` and ``moment_calibration`` blocks:
+IRF and moment calibration can be defined in ``irf_calibration`` and
+``moment_calibration`` blocks:
 
 .. block:: irf_calibration ;
            irf_calibration (OPTIONS...);
 
-    This block allows defining IRF calibration criteria and is terminated by ``end;``. To set IRF sign restrictions, the following syntax is used::
+    |br| This block allows defining IRF calibration criteria and is
+    terminated by ``end;``. To set IRF sign restrictions, the
+    following syntax is used::
 
         VARIABLE_NAME(INTEGER),EXOGENOUS_NAME, -;
         VARIABLE_NAME(INTEGER:INTEGER),EXOGENOUS_NAME, +;
 
-    To set IRF restrictions with specific intervals, the following syntax is used::
+    To set IRF restrictions with specific intervals, the following
+    syntax is used::
 
         VARIABLE_NAME(INTEGER),EXOGENOUS_NAME, [DOUBLE DOUBLE];
         VARIABLE_NAME(INTEGER:INTEGER),EXOGENOUS_NAME, [DOUBLE DOUBLE];
 
-    When ``(INTEGER:INTEGER)`` is used, the restriction is considered to be fulfilled by a logical OR. A list of restrictions must always be fulfilled with logical AND.
+    When ``(INTEGER:INTEGER)`` is used, the restriction is considered
+    to be fulfilled by a logical OR. A list of restrictions must
+    always be fulfilled with logical AND.
 
     *Options*
 
@@ -6741,7 +8470,7 @@ IRF and moment calibration can be defined in ``irf_calibration`` and ``moment_ca
 
         See :opt:`relative_irf`.
 
-    :ex:
+    *Example*
 
         ::
 
@@ -6756,16 +8485,19 @@ IRF and moment calibration can be defined in ``irf_calibration`` and ``moment_ca
 .. block:: moment_calibration ;
            moment_calibration (OPTIONS...);
 
-    This block allows defining moment calibration criteria. This block is terminated by ``end;``, and contains lines of the form::
+    |br| This block allows defining moment calibration criteria. This
+    block is terminated by ``end;``, and contains lines of the form::
 
         VARIABLE_NAME1,VARIABLE_NAME2(+/-INTEGER), [DOUBLE DOUBLE];
         VARIABLE_NAME1,VARIABLE_NAME2(+/-INTEGER), +/-;
         VARIABLE_NAME1,VARIABLE_NAME2(+/-(INTEGER:INTEGER)), [DOUBLE DOUBLE];
         VARIABLE_NAME1,VARIABLE_NAME2((-INTEGER:+INTEGER)), [DOUBLE DOUBLE];
 
-    When ``(INTEGER:INTEGER)`` is used, the restriction is considered to be fulfilled by a logical OR. A list of restrictions must always be fulfilled with logical AND.
+    When ``(INTEGER:INTEGER)`` is used, the restriction is considered
+    to be fulfilled by a logical OR. A list of restrictions must
+    always be fulfilled with logical AND.
 
-    :ex:
+    *Example*
 
         ::
 
@@ -6787,21 +8519,25 @@ Performing identification analysis
 .. command:: identification ;
              identification (OPTIONS...);
 
-    This command triggers identification analysis.
+    |br| This command triggers identification analysis.
 
     *Options*
 
     .. option:: ar = INTEGER
 
-        Number of lags of computed autocorrelations (theoretical moments). Default: ``1``.
+        Number of lags of computed autocorrelations (theoretical
+        moments). Default: ``1``.
 
     .. option:: useautocorr = INTEGER
 
-        If equal to ``1``, compute derivatives of autocorrelation. If equal to ``0``, compute derivatives of autocovariances. Default: ``0``.
+        If equal to ``1``, compute derivatives of autocorrelation. If
+        equal to ``0``, compute derivatives of
+        autocovariances. Default: ``0``.
 
     .. option:: load_ident_files = INTEGER
 
-        If equal to ``1``, allow Dynare to load previously computed analyzes. Default: ``0``.
+        If equal to ``1``, allow Dynare to load previously computed
+        analyzes. Default: ``0``.
 
     .. option:: prior_mc = INTEGER
 
@@ -6809,31 +8545,51 @@ Performing identification analysis
 
     .. option:: prior_range = INTEGER
 
-        Triggers uniform sample within the range implied by the prior specifications (when ``prior_mc>1``). Default: ``0``.
+        Triggers uniform sample within the range implied by the prior
+        specifications (when ``prior_mc>1``). Default: ``0``.
 
     .. option:: advanced = INTEGER
 
-        Shows a more detailed analysis, comprised of an analysis for the linearized rational expectation model as well as the associated reduced form solution. Further performs a brute force search of the groups of parameters best reproducing the behavior of each single parameter. The maximum dimension of the group searched is triggered by ``max_dim_cova_group``. Default: ``0``.
+        Shows a more detailed analysis, comprised of an analysis for
+        the linearized rational expectation model as well as the
+        associated reduced form solution. Further performs a brute
+        force search of the groups of parameters best reproducing the
+        behavior of each single parameter. The maximum dimension of
+        the group searched is triggered by
+        ``max_dim_cova_group``. Default: ``0``.
 
     .. option:: max_dim_cova_group = INTEGER
 
-        In the brute force search (performed when ``advanced=1``) this option sets the maximum dimension of groups of parameters that best reproduce the behavior of each single model parameter. Default: ``2``.
+        In the brute force search (performed when ``advanced=1``) this
+        option sets the maximum dimension of groups of parameters that
+        best reproduce the behavior of each single model
+        parameter. Default: ``2``.
 
     .. option:: periods = INTEGER
 
-        When the analytic Hessian is not available (i.e. with missing values or diffuse Kalman filter or univariate Kalman filter), this triggers the length of stochastic simulation to compute Simulated Moments Uncertainty. Default: ``300``.
+        When the analytic Hessian is not available (i.e. with missing
+        values or diffuse Kalman filter or univariate Kalman filter),
+        this triggers the length of stochastic simulation to compute
+        Simulated Moments Uncertainty. Default: ``300``.
 
     .. option:: replic = INTEGER
 
-        When the analytic Hessian is not available, this triggers the number of replicas to compute Simulated Moments Uncertainty. Default: ``100``.
+        When the analytic Hessian is not available, this triggers the
+        number of replicas to compute Simulated Moments
+        Uncertainty. Default: ``100``.
 
     .. option:: gsa_sample_file = INTEGER
 
-        If equal to ``0``, do not use sample file. If equal to ``1``, triggers gsa prior sample. If equal to ``2``, triggers gsa Monte-Carlo sample (i.e. loads a sample corresponding to ``pprior=0`` and ``ppost=0`` in the ``dynare_sensitivity`` options). Default: ``0``.
+        If equal to ``0``, do not use sample file. If equal to ``1``,
+        triggers gsa prior sample. If equal to ``2``, triggers gsa
+        Monte-Carlo sample (i.e. loads a sample corresponding to
+        ``pprior=0`` and ``ppost=0`` in the ``dynare_sensitivity``
+        options). Default: ``0``.
 
     .. option:: gsa_sample_file = FILENAME
 
-        Uses the provided path to a specific user defined sample file. Default: ``0``.
+        Uses the provided path to a specific user defined sample
+        file. Default: ``0``.
 
     .. option:: parameter_set = OPTION
 
@@ -6873,30 +8629,60 @@ Performing identification analysis
 Types of analysis and output files
 ----------------------------------
 
-The sensitivity analysis toolbox includes several types of analyses. Sensitivity analysis results are saved locally in ``<mod_file>/gsa``, where ``<mod_file>.mod`` is the name of the DYNARE model file.
+The sensitivity analysis toolbox includes several types of
+analyses. Sensitivity analysis results are saved locally in
+``<mod_file>/gsa``, where ``<mod_file>.mod`` is the name of the DYNARE
+model file.
 
 Sampling
 ^^^^^^^^
 
 The following binary files are produced:
 
-    * ``<mod_file>_prior.mat``: this file stores information about the analyses performed sampling from the prior, i.e. ``pprior=1`` and ``ppost=0``;
-    * ``<mod_file>_mc.mat``: this file stores information about the analyses performed sampling from multivariate normal, i.e. ``pprior=0`` and ``ppost=0``;
-    * ``<mod_file>_post.mat``: this file stores information about analyses performed using the Metropolis posterior sample, i.e. ``ppost=1``.
+    * ``<mod_file>_prior.mat``: this file stores information about the
+      analyses performed sampling from the prior, i.e. ``pprior=1``
+      and ``ppost=0``;
+    * ``<mod_file>_mc.mat``: this file stores information about the
+      analyses performed sampling from multivariate normal,
+      i.e. ``pprior=0`` and ``ppost=0``;
+    * ``<mod_file>_post.mat``: this file stores information about
+      analyses performed using the Metropolis posterior sample,
+      i.e. ``ppost=1``.
 
 
 Stability Mapping
 ^^^^^^^^^^^^^^^^^
 
-Figure files produced are of the form ``<mod_file>_prior_*.fig`` and store results for stability mapping from prior Monte-Carlo samples:
+Figure files produced are of the form ``<mod_file>_prior_*.fig`` and
+store results for stability mapping from prior Monte-Carlo samples:
 
-    * ``<mod_file>_prior_stable.fig``: plots of the Smirnov test and the correlation analyses confronting the cdf of the sample fulfilling Blanchard-Kahn conditions (blue color) with the cdf of the rest of the sample (red color), i.e. either instability or indeterminacy or the solution could not be found (e.g. the steady state solution could not be found by the solver);
-    * ``<mod_file>_prior_indeterm.fig``: plots of the Smirnov test and the correlation analyses confronting the cdf of the sample producing indeterminacy (red color) with the cdf of the rest of the sample (blue color);
-    * ``<mod_file>_prior_unstable.fig``: plots of the Smirnov test and the correlation analyses confronting the cdf of the sample producing explosive roots (red color) with the cdf of the rest of the sample (blue color);
-    * ``<mod_file>_prior_wrong.fig``: plots of the Smirnov test and the correlation analyses confronting the cdf of the sample where the solution could not be found (e.g. the steady state solution could not be found by the solver - red color) with the cdf of the rest of the sample (blue color);
-    * ``<mod_file>_prior_calib.fig``: plots of the Smirnov test and the correlation analyses splitting the sample fulfilling Blanchard-Kahn conditions, by confronting the cdf of the sample where IRF/moment restrictions are matched (blue color) with the cdf where IRF/moment restrictions are NOT matched (red color);
+    * ``<mod_file>_prior_stable.fig``: plots of the Smirnov test and
+      the correlation analyses confronting the cdf of the sample
+      fulfilling Blanchard-Kahn conditions (blue color) with the cdf
+      of the rest of the sample (red color), i.e. either instability
+      or indeterminacy or the solution could not be found (e.g. the
+      steady state solution could not be found by the solver);
+    * ``<mod_file>_prior_indeterm.fig``: plots of the Smirnov test and
+      the correlation analyses confronting the cdf of the sample
+      producing indeterminacy (red color) with the cdf of the rest of
+      the sample (blue color);
+    * ``<mod_file>_prior_unstable.fig``: plots of the Smirnov test and
+      the correlation analyses confronting the cdf of the sample
+      producing explosive roots (red color) with the cdf of the rest
+      of the sample (blue color);
+    * ``<mod_file>_prior_wrong.fig``: plots of the Smirnov test and
+      the correlation analyses confronting the cdf of the sample where
+      the solution could not be found (e.g. the steady state solution
+      could not be found by the solver - red color) with the cdf of
+      the rest of the sample (blue color);
+    * ``<mod_file>_prior_calib.fig``: plots of the Smirnov test and
+      the correlation analyses splitting the sample fulfilling
+      Blanchard-Kahn conditions, by confronting the cdf of the sample
+      where IRF/moment restrictions are matched (blue color) with the
+      cdf where IRF/moment restrictions are NOT matched (red color);
 
-Similar conventions apply for ``<mod_file>_mc_*.fig`` files, obtained when samples from multivariate normal are used.
+Similar conventions apply for ``<mod_file>_mc_*.fig`` files, obtained
+when samples from multivariate normal are used.
 
 
 IRF/Moment restrictions
@@ -6904,54 +8690,153 @@ IRF/Moment restrictions
 
 The following binary files are produced:
 
-    * ``<mod_file>_prior_restrictions.mat``: this file stores information about the IRF/moment restriction analysis performed sampling from the prior ranges, i.e. ``pprior=1`` and ``ppost=0``;
-    * ``<mod_file>_mc_restrictions.mat``: this file stores information about the IRF/moment restriction analysis performed sampling from multivariate normal, i.e. ``pprior=0`` and ``ppost=0``;
-    * ``<mod_file>_post_restrictions.mat``: this file stores information about IRF/moment restriction analysis performed using the Metropolis posterior sample, i.e. ``ppost=1``.
+    * ``<mod_file>_prior_restrictions.mat``: this file stores
+      information about the IRF/moment restriction analysis performed
+      sampling from the prior ranges, i.e. ``pprior=1`` and
+      ``ppost=0``;
+    * ``<mod_file>_mc_restrictions.mat``: this file stores information
+      about the IRF/moment restriction analysis performed sampling
+      from multivariate normal, i.e. ``pprior=0`` and ``ppost=0``;
+    * ``<mod_file>_post_restrictions.mat``: this file stores
+      information about IRF/moment restriction analysis performed
+      using the Metropolis posterior sample, i.e. ``ppost=1``.
 
-Figure files produced are of the form ``<mod_file>_prior_irf_calib_*.fig`` and ``<mod_file>_prior_moment_calib_*.fig`` and store results for mapping restrictions from prior Monte-Carlo samples:
+Figure files produced are of the form
+``<mod_file>_prior_irf_calib_*.fig`` and
+``<mod_file>_prior_moment_calib_*.fig`` and store results for mapping
+restrictions from prior Monte-Carlo samples:
 
-    * ``<mod_file>_prior_irf_calib_<ENDO_NAME>_vs_<EXO_NAME>_<PERIOD>.fig``: plots of the Smirnov test and the correlation analyses splitting the sample fulfilling Blanchard-Kahn conditions, by confronting the cdf of the sample where the individual IRF restriction ``<ENDO_NAME>`` vs. ``<EXO_NAME>`` at period(s) ``<PERIOD>`` is matched (blue color) with the cdf where the IRF restriction is NOT matched (red color)
-    * ``<mod_file>_prior_irf_calib_<ENDO_NAME>_vs_<EXO_NAME>_ALL.fig``: plots of the Smirnov test and the correlation analyses splitting the sample fulfilling Blanchard-Kahn conditions, by confronting the cdf of the sample where ALL the individual IRF restrictions for the same couple ``<ENDO_NAME>`` vs. ``<EXO_NAME>`` are matched (blue color) with the cdf where the IRF restriction is NOT matched (red color)
-    * ``<mod_file>_prior_irf_restrictions.fig``: plots visual information on the IRF restrictions compared to the actual Monte Carlo realization from prior sample.
-    * ``<mod_file>_prior_moment_calib_<ENDO_NAME1>_vs_<ENDO_NAME2>_<LAG>.fig``: plots of the Smirnov test and the correlation analyses splitting the sample fulfilling Blanchard-Kahn conditions, by confronting the cdf of the sample where the individual acf/ccf moment restriction ``<ENDO_NAME1>`` vs. ``<ENDO_NAME2>`` at lag(s) ``<LAG>`` is matched (blue color) with the cdf where the IRF restriction is NOT matched (red color)
-    * ``<mod_file>_prior_moment_calib_<ENDO_NAME>_vs_<EXO_NAME>_ALL.fig``: plots of the Smirnov test and the correlation analyses splitting the sample fulfilling Blanchard-Kahn conditions, by confronting the cdf of the sample where ALL the individual acf/ccf moment restrictions for the same couple ``<ENDO_NAME1>`` vs. ``<ENDO_NAME2>`` are matched (blue color) with the cdf where the IRF restriction is NOT matched (red color)
-    * ``<mod_file>_prior_moment_restrictions.fig``: plots visual information on the moment restrictions compared to the actual Monte Carlo realization from prior sample.
+    * ``<mod_file>_prior_irf_calib_<ENDO_NAME>_vs_<EXO_NAME>_<PERIOD>.fig``:
+      plots of the Smirnov test and the correlation analyses splitting
+      the sample fulfilling Blanchard-Kahn conditions, by confronting
+      the cdf of the sample where the individual IRF restriction
+      ``<ENDO_NAME>`` vs. ``<EXO_NAME>`` at period(s) ``<PERIOD>`` is
+      matched (blue color) with the cdf where the IRF restriction is
+      NOT matched (red color)
+    * ``<mod_file>_prior_irf_calib_<ENDO_NAME>_vs_<EXO_NAME>_ALL.fig``:
+      plots of the Smirnov test and the correlation analyses splitting
+      the sample fulfilling Blanchard-Kahn conditions, by confronting
+      the cdf of the sample where ALL the individual IRF restrictions
+      for the same couple ``<ENDO_NAME>`` vs. ``<EXO_NAME>`` are
+      matched (blue color) with the cdf where the IRF restriction is
+      NOT matched (red color)
+    * ``<mod_file>_prior_irf_restrictions.fig``: plots visual
+      information on the IRF restrictions compared to the actual Monte
+      Carlo realization from prior sample.
+    * ``<mod_file>_prior_moment_calib_<ENDO_NAME1>_vs_<ENDO_NAME2>_<LAG>.fig``:
+      plots of the Smirnov test and the correlation analyses splitting
+      the sample fulfilling Blanchard-Kahn conditions, by confronting
+      the cdf of the sample where the individual acf/ccf moment
+      restriction ``<ENDO_NAME1>`` vs. ``<ENDO_NAME2>`` at lag(s)
+      ``<LAG>`` is matched (blue color) with the cdf where the IRF
+      restriction is NOT matched (red color)
+    * ``<mod_file>_prior_moment_calib_<ENDO_NAME>_vs_<EXO_NAME>_ALL.fig``:
+      plots of the Smirnov test and the correlation analyses splitting
+      the sample fulfilling Blanchard-Kahn conditions, by confronting
+      the cdf of the sample where ALL the individual acf/ccf moment
+      restrictions for the same couple ``<ENDO_NAME1>``
+      vs. ``<ENDO_NAME2>`` are matched (blue color) with the cdf where
+      the IRF restriction is NOT matched (red color)
+    * ``<mod_file>_prior_moment_restrictions.fig``: plots visual
+      information on the moment restrictions compared to the actual
+      Monte Carlo realization from prior sample.
 
-Similar conventions apply for ``<mod_file>_mc_*.fig`` and ``<mod_file>_post_*.fig`` files, obtained when samples from multivariate normal or from posterior are used.
+Similar conventions apply for ``<mod_file>_mc_*.fig`` and
+``<mod_file>_post_*.fig`` files, obtained when samples from
+multivariate normal or from posterior are used.
 
 
 Reduced Form Mapping
 ^^^^^^^^^^^^^^^^^^^^
 
-When the option ``threshold_redform`` is not set, or it is empty (the default), this analysis estimates a multivariate smoothing spline ANOVA model (the ’mapping’) for the selected entries in the transition matrix of the shock matrix of the reduce form first order solution of the model. This mapping is done either with prior samples or with MC samples with ``neighborhood_width``. Unless ``neighborhood_width`` is set with MC samples, the mapping of the reduced form solution forces the use of samples from prior ranges or prior distributions, i.e.: ``pprior=1`` and ``ppost=0``. It uses 250 samples to optimize smoothing parameters and 1000 samples to compute the fit. The rest of the sample is used for out-of-sample validation. One can also load a previously estimated mapping with a new Monte-Carlo sample, to look at the forecast for the new Monte-Carlo sample.
+When the option ``threshold_redform`` is not set, or it is empty (the
+default), this analysis estimates a multivariate smoothing spline
+ANOVA model (the ’mapping’) for the selected entries in the transition
+matrix of the shock matrix of the reduce form first order solution of
+the model. This mapping is done either with prior samples or with MC
+samples with ``neighborhood_width``. Unless ``neighborhood_width`` is
+set with MC samples, the mapping of the reduced form solution forces
+the use of samples from prior ranges or prior distributions, i.e.:
+``pprior=1`` and ``ppost=0``. It uses 250 samples to optimize
+smoothing parameters and 1000 samples to compute the fit. The rest of
+the sample is used for out-of-sample validation. One can also load a
+previously estimated mapping with a new Monte-Carlo sample, to look at
+the forecast for the new Monte-Carlo sample.
 
 The following synthetic figures are produced:
 
-    * ``<mod_file>_redform_<endo name>_vs_lags_*.fig``: shows bar charts of the sensitivity indices for the ten most important parameters driving the reduced form coefficients of the selected endogenous variables (``namendo``) versus lagged endogenous variables (``namlagendo``); suffix ``log`` indicates the results for log-transformed entries;
-    * ``<mod_file>_redform_<endo name>_vs_shocks_*.fig``: shows bar charts of the sensitivity indices for the ten most important parameters driving the reduced form coefficients of the selected endogenous variables (``namendo``) versus exogenous variables (``namexo``); suffix ``log`` indicates the results for log-transformed entries;
-    * ``<mod_file>_redform_gsa(_log).fig``: shows bar chart of all sensitivity indices for each parameter: this allows one to notice parameters that have a minor effect for any of the reduced form coefficients.
+    * ``<mod_file>_redform_<endo name>_vs_lags_*.fig``: shows bar
+      charts of the sensitivity indices for the ten most important
+      parameters driving the reduced form coefficients of the selected
+      endogenous variables (``namendo``) versus lagged endogenous
+      variables (``namlagendo``); suffix ``log`` indicates the results
+      for log-transformed entries;
+    * ``<mod_file>_redform_<endo name>_vs_shocks_*.fig``: shows bar
+      charts of the sensitivity indices for the ten most important
+      parameters driving the reduced form coefficients of the selected
+      endogenous variables (``namendo``) versus exogenous variables
+      (``namexo``); suffix ``log`` indicates the results for
+      log-transformed entries;
+    * ``<mod_file>_redform_gsa(_log).fig``: shows bar chart of all
+      sensitivity indices for each parameter: this allows one to
+      notice parameters that have a minor effect for any of the
+      reduced form coefficients.
 
-Detailed results of the analyses are shown in the subfolder ``<mod_file>/gsa/redform_prior`` for prior samples and in ``<mod_file>/gsa/redform_mc`` for MC samples with option ``neighborhood_width``, where the detailed results of the estimation of the single functional relationships between parameters :math:`\theta` and reduced form coefficient (denoted as :math:`y` hereafter) are stored in separate directories named as:
+Detailed results of the analyses are shown in the subfolder
+``<mod_file>/gsa/redform_prior`` for prior samples and in
+``<mod_file>/gsa/redform_mc`` for MC samples with option
+``neighborhood_width``, where the detailed results of the estimation
+of the single functional relationships between parameters
+:math:`\theta` and reduced form coefficient (denoted as :math:`y`
+hereafter) are stored in separate directories named as:
 
     * ``<namendo>_vs_<namlagendo>``, for the entries of the transition matrix;
     * ``<namendo>_vs_<namexo>``, for entries of the matrix of the shocks.
 
-The following files are stored in each directory (we stick with prior sample but similar conventions are used for MC samples):
+The following files are stored in each directory (we stick with prior
+sample but similar conventions are used for MC samples):
 
-    * ``<mod_file>_prior_<namendo>_vs_<namexo>.fig``: histogram and CDF plot of the MC sample of the individual entry of the shock matrix, in sample and out of sample fit of the ANOVA model;
-    * ``<mod_file>_prior_<namendo>_vs_<namexo>_map_SE.fig``: for entries of the shock matrix it shows graphs of the estimated first order ANOVA terms :math:`y = f(\theta_i)` for each deep parameter :math:`\theta_i`;
-    * ``<mod_file>_prior_<namendo>_vs_<namlagendo>.fig``: histogram and CDF plot of the MC sample of the individual entry of the transition matrix, in sample and out of sample fit of the ANOVA model;
-    * ``<mod_file>_prior_<namendo>_vs_<namlagendo>_map_SE.fig``: for entries of the transition matrix it shows graphs of the estimated first order ANOVA terms :math:`y = f(\theta_i)` for each deep parameter :math:`\theta_i`;
-    * ``<mod_file>_prior_<namendo>_vs_<namexo>_map.mat``, ``<mod_file>_<namendo>_vs_<namlagendo>_map.mat``: these files store info in the estimation;
+    * ``<mod_file>_prior_<namendo>_vs_<namexo>.fig``: histogram and
+      CDF plot of the MC sample of the individual entry of the shock
+      matrix, in sample and out of sample fit of the ANOVA model;
+    * ``<mod_file>_prior_<namendo>_vs_<namexo>_map_SE.fig``: for
+      entries of the shock matrix it shows graphs of the estimated
+      first order ANOVA terms :math:`y = f(\theta_i)` for each deep
+      parameter :math:`\theta_i`;
+    * ``<mod_file>_prior_<namendo>_vs_<namlagendo>.fig``: histogram
+      and CDF plot of the MC sample of the individual entry of the
+      transition matrix, in sample and out of sample fit of the ANOVA
+      model;
+    * ``<mod_file>_prior_<namendo>_vs_<namlagendo>_map_SE.fig``: for
+      entries of the transition matrix it shows graphs of the
+      estimated first order ANOVA terms :math:`y = f(\theta_i)` for
+      each deep parameter :math:`\theta_i`;
+    * ``<mod_file>_prior_<namendo>_vs_<namexo>_map.mat``,
+      ``<mod_file>_<namendo>_vs_<namlagendo>_map.mat``: these files
+      store info in the estimation;
 
-When option ``logtrans_redform`` is set, the ANOVA estimation is performed using a log-transformation of each y. The ANOVA mapping is then transformed back onto the original scale, to allow comparability with the baseline estimation. Graphs for this log-transformed case, are stored in the same folder in files denoted with the ``_log`` suffix.
+When option ``logtrans_redform`` is set, the ANOVA estimation is
+performed using a log-transformation of each y. The ANOVA mapping is
+then transformed back onto the original scale, to allow comparability
+with the baseline estimation. Graphs for this log-transformed case,
+are stored in the same folder in files denoted with the ``_log``
+suffix.
 
-When the option ``threshold_redform`` is set, the analysis is performed via Monte Carlo filtering, by displaying parameters that drive the individual entry ``y`` inside the range specified in ``threshold_redform``. If no entry is found (or all entries are in the range), the MCF algorithm ignores the range specified in ``threshold_redform`` and performs the analysis splitting the MC sample of ``y`` into deciles. Setting ``threshold_redform=[-inf inf]`` triggers this approach for all ``y``’s.
+When the option ``threshold_redform`` is set, the analysis is
+performed via Monte Carlo filtering, by displaying parameters that
+drive the individual entry ``y`` inside the range specified in
+``threshold_redform``. If no entry is found (or all entries are in the
+range), the MCF algorithm ignores the range specified in
+``threshold_redform`` and performs the analysis splitting the MC
+sample of ``y`` into deciles. Setting ``threshold_redform=[-inf inf]``
+triggers this approach for all ``y``’s.
 
 Results are stored in subdirectories of ``<mod_file>/gsa/redform_prior`` named
 
-    * ``<mod_file>_prior_<namendo>_vs_<namlagendo>_threshold``, for the entries of the transition matrix;
-    * ``<mod_file>_prior_<namendo>_vs_<namexo>_threshold``, for entries of the matrix of the shocks.
+    * ``<mod_file>_prior_<namendo>_vs_<namlagendo>_threshold``, for
+      the entries of the transition matrix;
+    * ``<mod_file>_prior_<namendo>_vs_<namexo>_threshold``, for
+      entries of the matrix of the shocks.
 
 The files saved are named:
 
@@ -6964,11 +8849,23 @@ RMSE
 
 The RMSE analysis can be performed with different types of sampling options:
 
-    1. When ``pprior=1`` and ``ppost=0``, the toolbox analyzes the RMSEs for the Monte-Carlo sample obtained by sampling parameters from their prior distributions (or prior ranges): this analysis provides some hints about what parameter drives the fit of which observed series, prior to the full estimation;
-    2. When ``pprior=0`` and ``ppost=0``, the toolbox analyzes the RMSEs for a multivariate normal Monte-Carlo sample, with covariance matrix based on the inverse Hessian at the optimum: this analysis is useful when maximum likelihood estimation is done (i.e. no Bayesian estimation);
-    3. When ``ppost=1`` the toolbox analyzes the RMSEs for the posterior sample obtained by Dynare’s Metropolis procedure.
+    1. When ``pprior=1`` and ``ppost=0``, the toolbox analyzes the
+       RMSEs for the Monte-Carlo sample obtained by sampling
+       parameters from their prior distributions (or prior ranges):
+       this analysis provides some hints about what parameter drives
+       the fit of which observed series, prior to the full estimation;
+    2. When ``pprior=0`` and ``ppost=0``, the toolbox analyzes the
+       RMSEs for a multivariate normal Monte-Carlo sample, with
+       covariance matrix based on the inverse Hessian at the optimum:
+       this analysis is useful when maximum likelihood estimation is
+       done (i.e. no Bayesian estimation);
+    3. When ``ppost=1`` the toolbox analyzes the RMSEs for the
+       posterior sample obtained by Dynare’s Metropolis procedure.
 
-The use of cases 2 and 3 requires an estimation step beforehand. To facilitate the sensitivity analysis after estimation, the ``dynare_sensitivity`` command also allows you to indicate some options of the ``estimation command``. These are:
+The use of cases 2 and 3 requires an estimation step beforehand. To
+facilitate the sensitivity analysis after estimation, the
+``dynare_sensitivity`` command also allows you to indicate some
+options of the ``estimation command``. These are:
 
     * ``datafile``
     * ``nobs``
@@ -6984,70 +8881,146 @@ The use of cases 2 and 3 requires an estimation step beforehand. To facilitate t
 
 Binary files produced my RMSE analysis are:
 
-    * ``<mod_file>_prior_*.mat``: these files store the filtered and smoothed variables for the prior Monte-Carlo sample, generated when doing RMSE analysis (``pprior=1`` and ``ppost=0``);
-    * ``<mode_file>_mc_*.mat``: these files store the filtered and smoothed variables for the multivariate normal Monte-Carlo sample, generated when doing RMSE analysis (``pprior=0`` and ``ppost=0``).
+    * ``<mod_file>_prior_*.mat``: these files store the filtered and
+      smoothed variables for the prior Monte-Carlo sample, generated
+      when doing RMSE analysis (``pprior=1`` and ``ppost=0``);
+    * ``<mode_file>_mc_*.mat``: these files store the filtered and
+      smoothed variables for the multivariate normal Monte-Carlo
+      sample, generated when doing RMSE analysis (``pprior=0`` and
+      ``ppost=0``).
 
 Figure files <mod_file>_rmse_*.fig store results for the RMSE analysis.
 
-    * ``<mod_file>_rmse_prior*.fig``: save results for the analysis using prior Monte-Carlo samples;
-    * ``<mod_file>_rmse_mc*.fig``: save results for the analysis using multivariate normal Monte-Carlo samples;
-    * ``<mod_file>_rmse_post*.fig``: save results for the analysis using Metropolis posterior samples.
+    * ``<mod_file>_rmse_prior*.fig``: save results for the analysis
+      using prior Monte-Carlo samples;
+    * ``<mod_file>_rmse_mc*.fig``: save results for the analysis using
+      multivariate normal Monte-Carlo samples;
+    * ``<mod_file>_rmse_post*.fig``: save results for the analysis
+      using Metropolis posterior samples.
 
-The following types of figures are saved (we show prior sample to fix ideas, but the same conventions are used for multivariate normal and posterior):
+The following types of figures are saved (we show prior sample to fix
+ideas, but the same conventions are used for multivariate normal and
+posterior):
 
-    * ``<mod_file>_rmse_prior_params_*.fig``: for each parameter, plots the cdfs corresponding to the best 10% RMSEs of each observed series (only those cdfs below the significance threshold ``alpha_rmse``);
-    * ``<mod_file>_rmse_prior_<var_obs>_*.fig``: if a parameter significantly affects the fit of ``var_obs``, all possible trade-off’s with other observables for same parameter are plotted;
-    * ``<mod_file>_rmse_prior_<var_obs>_map.fig``: plots the MCF analysis of parameters significantly driving the fit the observed series ``var_obs``;
-    * ``<mod_file>_rmse_prior_lnlik*.fig``: for each observed series, plots in BLUE the cdf of the log-likelihood corresponding to the best 10% RMSEs, in RED the cdf of the rest of the sample and in BLACK the cdf of the full sample; this allows one to see the presence of some idiosyncratic behavior;
-    * ``<mod_file>_rmse_prior_lnpost*.fig``: for each observed series, plots in BLUE the cdf of the log-posterior corresponding to the best 10% RMSEs, in RED the cdf of the rest of the sample and in BLACK the cdf of the full sample; this allows one to see idiosyncratic behavior;
-    * ``<mod_file>_rmse_prior_lnprior*.fig``: for each observed series, plots in BLUE the cdf of the log-prior corresponding to the best 10% RMSEs, in RED the cdf of the rest of the sample and in BLACK the cdf of the full sample; this allows one to see idiosyncratic behavior;
-    * ``<mod_file>_rmse_prior_lik.fig``: when ``lik_only=1``, this shows the MCF tests for the filtering of the best 10% log-likelihood values;
-    * ``<mod_file>_rmse_prior_post.fig``: when ``lik_only=1``, this shows the MCF tests for the filtering of the best 10% log-posterior values.
+    * ``<mod_file>_rmse_prior_params_*.fig``: for each parameter,
+      plots the cdfs corresponding to the best 10% RMSEs of each
+      observed series (only those cdfs below the significance
+      threshold ``alpha_rmse``);
+    * ``<mod_file>_rmse_prior_<var_obs>_*.fig``: if a parameter
+      significantly affects the fit of ``var_obs``, all possible
+      trade-off’s with other observables for same parameter are
+      plotted;
+    * ``<mod_file>_rmse_prior_<var_obs>_map.fig``: plots the MCF
+      analysis of parameters significantly driving the fit the
+      observed series ``var_obs``;
+    * ``<mod_file>_rmse_prior_lnlik*.fig``: for each observed series,
+      plots in BLUE the cdf of the log-likelihood corresponding to the
+      best 10% RMSEs, in RED the cdf of the rest of the sample and in
+      BLACK the cdf of the full sample; this allows one to see the
+      presence of some idiosyncratic behavior;
+    * ``<mod_file>_rmse_prior_lnpost*.fig``: for each observed series,
+      plots in BLUE the cdf of the log-posterior corresponding to the
+      best 10% RMSEs, in RED the cdf of the rest of the sample and in
+      BLACK the cdf of the full sample; this allows one to see
+      idiosyncratic behavior;
+    * ``<mod_file>_rmse_prior_lnprior*.fig``: for each observed
+      series, plots in BLUE the cdf of the log-prior corresponding to
+      the best 10% RMSEs, in RED the cdf of the rest of the sample and
+      in BLACK the cdf of the full sample; this allows one to see
+      idiosyncratic behavior;
+    * ``<mod_file>_rmse_prior_lik.fig``: when ``lik_only=1``, this
+      shows the MCF tests for the filtering of the best 10%
+      log-likelihood values;
+    * ``<mod_file>_rmse_prior_post.fig``: when ``lik_only=1``, this
+      shows the MCF tests for the filtering of the best 10%
+      log-posterior values.
 
 
 Screening Analysis
 ^^^^^^^^^^^^^^^^^^
 
-Screening analysis does not require any additional options with respect to those listed in :ref:`Sampling Options <sampl-opt>`. The toolbox performs all the analyses required and displays results.
+Screening analysis does not require any additional options with
+respect to those listed in :ref:`Sampling Options <sampl-opt>`. The
+toolbox performs all the analyses required and displays results.
 
-The results of the screening analysis with Morris sampling design are stored in the subfolder ``<mod_file>/gsa/screen``. The data file ``<mod_file>_prior`` stores all the information of the analysis (Morris sample, reduced form coefficients, etc.).
+The results of the screening analysis with Morris sampling design are
+stored in the subfolder ``<mod_file>/gsa/screen``. The data file
+``<mod_file>_prior`` stores all the information of the analysis
+(Morris sample, reduced form coefficients, etc.).
 
-Screening analysis merely concerns reduced form coefficients. Similar synthetic bar charts as for the reduced form analysis with Monte-Carlo samples are saved:
+Screening analysis merely concerns reduced form coefficients. Similar
+synthetic bar charts as for the reduced form analysis with Monte-Carlo
+samples are saved:
 
-    * ``<mod_file>_redform_<endo name>_vs_lags_*.fig``: shows bar charts of the elementary effect tests for the ten most important parameters driving the reduced form coefficients of the selected endogenous variables (``namendo``) versus lagged endogenous variables (``namlagendo``);
-    * ``<mod_file>_redform_<endo name>_vs_shocks_*.fig``: shows bar charts of the elementary effect tests for the ten most important parameters driving the reduced form coefficients of the selected endogenous variables (``namendo``) versus exogenous variables (``namexo``);
-    * ``<mod_file>_redform_screen.fig``: shows bar chart of all elementary effect tests for each parameter: this allows one to identify parameters that have a minor effect for any of the reduced form coefficients.
+    * ``<mod_file>_redform_<endo name>_vs_lags_*.fig``: shows bar
+      charts of the elementary effect tests for the ten most important
+      parameters driving the reduced form coefficients of the selected
+      endogenous variables (``namendo``) versus lagged endogenous
+      variables (``namlagendo``);
+    * ``<mod_file>_redform_<endo name>_vs_shocks_*.fig``: shows bar
+      charts of the elementary effect tests for the ten most important
+      parameters driving the reduced form coefficients of the selected
+      endogenous variables (``namendo``) versus exogenous variables
+      (``namexo``);
+    * ``<mod_file>_redform_screen.fig``: shows bar chart of all
+      elementary effect tests for each parameter: this allows one to
+      identify parameters that have a minor effect for any of the
+      reduced form coefficients.
 
 
 Identification Analysis
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-Setting the option ``identification=1``, an identification analysis based on theoretical moments is performed. Sensitivity plots are provided that allow to infer which parameters are most likely to be less identifiable.
+Setting the option ``identification=1``, an identification analysis
+based on theoretical moments is performed. Sensitivity plots are
+provided that allow to infer which parameters are most likely to be
+less identifiable.
 
-Prerequisite for properly running all the identification routines, is the keyword ``identification``; in the Dynare model file. This keyword triggers the computation of analytic derivatives of the model with respect to estimated parameters and shocks. This is required for option ``morris=2``, which implements *Iskrev (2010)* identification analysis.
+Prerequisite for properly running all the identification routines, is
+the keyword ``identification``; in the Dynare model file. This keyword
+triggers the computation of analytic derivatives of the model with
+respect to estimated parameters and shocks. This is required for
+option ``morris=2``, which implements *Iskrev (2010)* identification
+analysis.
 
 For example, the placing::
 
     identification;
     dynare_sensitivity(identification=1, morris=2);
 
-in the Dynare model file triggers identification analysis using analytic derivatives *Iskrev (2010)*, jointly with the mapping of the acceptable region.
+in the Dynare model file triggers identification analysis using
+analytic derivatives *Iskrev (2010)*, jointly with the mapping of the
+acceptable region.
 
-The identification analysis with derivatives can also be triggered by the commands ``identification;`` This does not do the mapping of acceptable regions for the model and uses the standard random sampler of Dynare. It completely offsets any use of the sensitivity analysis toolbox.
+The identification analysis with derivatives can also be triggered by
+the commands ``identification;`` This does not do the mapping of
+acceptable regions for the model and uses the standard random sampler
+of Dynare. It completely offsets any use of the sensitivity analysis
+toolbox.
 
 
 
 Markov-switching SBVAR
 ======================
 
-Given a list of variables, observed variables and a data file, Dynare can be used to solve a Markov-switching SBVAR model according to *Sims, Waggoner and Zha (2008)* [#f10]_ . Having done this, you can create forecasts and compute the marginal data density, regime probabilities, IRFs, and variance decomposition of the model.
+Given a list of variables, observed variables and a data file, Dynare
+can be used to solve a Markov-switching SBVAR model according to
+*Sims, Waggoner and Zha (2008)* [#f10]_ . Having done this, you can
+create forecasts and compute the marginal data density, regime
+probabilities, IRFs, and variance decomposition of the model.
 
-The commands have been modularized, allowing for multiple calls to the same command within a ``<mod_file>.mod`` file. The default is to use ``<mod_file>`` to tag the input (output) files used (produced) by the program. Thus, to call any command more than once within a ``<mod_file>.mod`` file, you must use the ``*_tag`` options described below.
+The commands have been modularized, allowing for multiple calls to the
+same command within a ``<mod_file>.mod`` file. The default is to use
+``<mod_file>`` to tag the input (output) files used (produced) by the
+program. Thus, to call any command more than once within a
+``<mod_file>.mod`` file, you must use the ``*_tag`` options described
+below.
 
 
 .. command:: markov_switching (OPTIONS...);
 
-    Declares the Markov state variable information of a Markov-switching SBVAR model.
+    |br| Declares the Markov state variable information of a
+    Markov-switching SBVAR model.
 
     *Options*
 
@@ -7057,72 +9030,114 @@ The commands have been modularized, allowing for multiple calls to the same comm
 
     .. option:: number_of_regimes = INTEGER
 
-        Specifies the total number of regimes in the Markov Chain. This is a required option.
+        Specifies the total number of regimes in the Markov
+        Chain. This is a required option.
 
     .. option:: duration = DOUBLE | [ROW VECTOR OF DOUBLES]
 
-        The duration of the regimes or regimes. This is a required option. When passed a scalar real number, it specifies the average duration for all regimes in this chain. When passed a vector of size equal ``number_of_regimes``, it specifies the average duration of the associated regimes (``1:number_of_regimes``) in this chain. An absorbing state can be specified through the :opt:`restrictions <restrictions = [[ROW VECTOR OF 3 DOUBLES],[ROW VECTOR OF 3 DOUBLES],...]>` option.
+        The duration of the regimes or regimes. This is a required
+        option. When passed a scalar real number, it specifies the
+        average duration for all regimes in this chain. When passed a
+        vector of size equal ``number_of_regimes``, it specifies the
+        average duration of the associated regimes
+        (``1:number_of_regimes``) in this chain. An absorbing state
+        can be specified through the :opt:`restrictions <restrictions
+        = [[ROW VECTOR OF 3 DOUBLES],[ROW VECTOR OF 3 DOUBLES],...]>`
+        option.
 
     .. option:: restrictions = [[ROW VECTOR OF 3 DOUBLES],[ROW VECTOR OF 3 DOUBLES],...]
 
-        Provides restrictions on this chain’s regime transition matrix. Its vector argument takes three inputs of the form: ``[current_period_regime, next_period_regime, transition_probability]``.
+        Provides restrictions on this chain’s regime transition
+        matrix. Its vector argument takes three inputs of the form:
+        ``[current_period_regime, next_period_regime,
+        transition_probability]``.
 
-        The first two entries are positive integers, and the third is a non-negative real in the set [0,1]. If restrictions are specified for every transition for a regime, the sum of the probabilities must be 1. Otherwise, if restrictions are not provided for every transition for a given regime the sum of the provided transition probabilities msut be <1. Regardless of the number of lags, the restrictions are specified for parameters at time ``t`` since the transition probability for a parameter at t is equal to that of the parameter at ``t-1``.
+        The first two entries are positive integers, and the third is
+        a non-negative real in the set [0,1]. If restrictions are
+        specified for every transition for a regime, the sum of the
+        probabilities must be 1. Otherwise, if restrictions are not
+        provided for every transition for a given regime the sum of
+        the provided transition probabilities msut be <1. Regardless
+        of the number of lags, the restrictions are specified for
+        parameters at time ``t`` since the transition probability for
+        a parameter at t is equal to that of the parameter at ``t-1``.
 
-    In case of estimating a MS-DSGE model, [#f11]_ in addition the following options are allowed:
+    In case of estimating a MS-DSGE model, [#f11]_ in addition the
+    following options are allowed:
 
     .. option:: parameters = [LIST OF PARAMETERS]
 
-        This option specifies which parameters are controlled by this Markov Chain.
+        This option specifies which parameters are controlled by this
+        Markov Chain.
 
     .. option:: number_of_lags = DOUBLE
 
-        Provides the number of lags that each parameter can take within each regime in this chain.
+        Provides the number of lags that each parameter can take
+        within each regime in this chain.
 
-    :ex:
+    *Example*
 
         ::
 
             markov_switching(chain=1, duration=2.5, restrictions=[[1,3,0],[3,1,0]]);
 
-        Specifies a Markov-switching BVAR with a first chain with 3 regimes that all have a duration of 2.5 periods. The probability of directly going from regime 1 to regime 3 and vice versa is 0.
+        Specifies a Markov-switching BVAR with a first chain with 3
+        regimes that all have a duration of 2.5 periods. The
+        probability of directly going from regime 1 to regime 3 and
+        vice versa is 0.
 
-    :ex:
+    *Example*
 
         ::
 
             markov_switching(chain=2, number_of_regimes=3, duration=[0.5, 2.5, 2.5],
             parameter=[alpha, rho], number_of_lags=2, restrictions=[[1,3,0],[3,3,1]]);
 
-        Specifies a Markov-switching DSGE model with a second chain with 3 regimes that have durations of 0.5, 2.5, and 2.5 periods, respectively. The switching parameters are ``alpha`` and ``rho``. The probability of directly going from regime 1 to regime 3 is 0, while regime 3 is an absorbing state.
+        Specifies a Markov-switching DSGE model with a second chain
+        with 3 regimes that have durations of 0.5, 2.5, and 2.5
+        periods, respectively. The switching parameters are ``alpha``
+        and ``rho``. The probability of directly going from regime 1
+        to regime 3 is 0, while regime 3 is an absorbing state.
 
 
 .. command:: svar (OPTIONS...);
 
-    Each Markov chain can control the switching of a set of parameters. We allow the parameters to be divided equation by equation and by variance or slope and intercept.
+    |br| Each Markov chain can control the switching of a set of
+    parameters. We allow the parameters to be divided equation by
+    equation and by variance or slope and intercept.
 
     *Options*
 
     .. option:: coefficients
 
-        Specifies that only the slope and intercept in the given equations are controlled by the given chain. One, but not both, of ``coefficients`` or ``variances`` must appear. Default: ``none``.
+        Specifies that only the slope and intercept in the given
+        equations are controlled by the given chain. One, but not
+        both, of ``coefficients`` or ``variances`` must
+        appear. Default: ``none``.
 
     .. option:: variances
 
-        Specifies that only variances in the given equations are controlled by the given chain. One, but not both, of ``coefficients`` or ``variances`` must appear. Default: ``none``.
+        Specifies that only variances in the given equations are
+        controlled by the given chain. One, but not both, of
+        ``coefficients`` or ``variances`` must appear. Default:
+        ``none``.
 
     .. option:: equations
 
-        Defines the equation controlled by the given chain. If not specified, then all equations are controlled by ``chain``. Default: ``none``.
+        Defines the equation controlled by the given chain. If not
+        specified, then all equations are controlled by
+        ``chain``. Default: ``none``.
 
     .. option:: chain = INTEGER
 
-        Specifies a Markov chain defined by :comm:`markov_switching`. Default: ``none``.
+        Specifies a Markov chain defined by
+        :comm:`markov_switching`. Default: ``none``.
 
 
 .. command:: sbvar (OPTIONS...);
 
-    To be documented. For now, see the wiki: `<http://www.dynare.org/DynareWiki/SbvarOptions>`_
+    |br| To be documented. For now, see the wiki:
+    `<https://www.dynare.org/DynareWiki/SbvarOptions>`_
 
     *Options*
 
@@ -7177,7 +9192,7 @@ The commands have been modularized, allowing for multiple calls to the same comm
 
 .. block:: svar_identification ;
 
-    This block is terminated by ``end;`` and contains lines of the form::
+    |br| This block is terminated by ``end;`` and contains lines of the form::
 
         UPPER_CHOLESKY;
         LOWER_CHOLESKY;
@@ -7186,36 +9201,54 @@ The commands have been modularized, allowing for multiple calls to the same comm
         EXCLUSION LAG INTEGER; EQUATION INTEGER, VARIABLE_NAME [,VARIABLE_NAME...];
         RESTRICTION EQUATION INTEGER, EXPRESSION = EXPRESSION;
 
-    To be documented. For now, see the wiki: `<http://www.dynare.org/DynareWiki/MarkovSwitchingInterface>`_
+    To be documented. For now, see the wiki:
+    `<http://www.dynare.org/DynareWiki/MarkovSwitchingInterface>`_
 
 
 .. command:: ms_estimation (OPTIONS...);
 
-    Triggers the creation of an initialization file for, and the estimation of, a Markov-switching SBVAR model. At the end of the run, the :math:`A^0`, :math:`A^+`, :math:`Q` and :math:`\zeta` matrices are contained in the ``oo_.ms`` structure.
+    |br| Triggers the creation of an initialization file for, and the
+    estimation of, a Markov-switching SBVAR model. At the end of the
+    run, the :math:`A^0`, :math:`A^+`, :math:`Q` and :math:`\zeta`
+    matrices are contained in the ``oo_.ms`` structure.
 
     *General Options*
 
     .. option:: file_tag = FILENAME
 
-        The portion of the filename associated with this run. This will create the model initialization file, ``init_<file_tag>.dat``. Default: ``<mod_file>``.
+        The portion of the filename associated with this run. This
+        will create the model initialization file,
+        ``init_<file_tag>.dat``. Default: ``<mod_file>``.
 
     .. option:: output_file_tag = FILENAME
 
-        The portion of the output filename that will be assigned to this run. This will create, among other files, ``est_final_<output_file_tag>.out``, ``est_intermediate_<output_file_tag>.out``. Default: ``<file_tag>``.
+        The portion of the output filename that will be assigned to
+        this run. This will create, among other files,
+        ``est_final_<output_file_tag>.out``,
+        ``est_intermediate_<output_file_tag>.out``. Default:
+        ``<file_tag>``.
 
     .. option:: no_create_init
 
-        Do not create an initialization file for the model. Passing this option will cause the *Initialization Options* to be ignored. Further, the model will be generated from the output files associated with the previous estimation run (i.e. ``est_final_<file_tag>.out``, ``est_intermediate_<file_tag>.out`` or ``init_<file_tag>.dat``, searched for in sequential order). This functionality can be useful for continuing a previous estimation run to ensure convergence was reached or for reusing an initialization file. NB: If this option is not passed, the files from the previous estimation run will be overwritten. Default: off (i.e. create initialization file)
+        Do not create an initialization file for the model. Passing
+        this option will cause the *Initialization Options* to be
+        ignored. Further, the model will be generated from the output
+        files associated with the previous estimation run
+        (i.e. ``est_final_<file_tag>.out``,
+        ``est_intermediate_<file_tag>.out`` or
+        ``init_<file_tag>.dat``, searched for in sequential
+        order). This functionality can be useful for continuing a
+        previous estimation run to ensure convergence was reached or
+        for reusing an initialization file. NB: If this option is not
+        passed, the files from the previous estimation run will be
+        overwritten. Default: off (i.e. create initialization file)
 
     *Initialization Options*
 
     .. option:: coefficients_prior_hyperparameters = [DOUBLE1 DOUBLE2 ... DOUBLE6]
 
-        Sets the hyper parameters for the model. The six elements of the argument vector have the following interpretations:
-
-            *Position*
-
-                *Interpretation*
+        Sets the hyper parameters for the model. The six elements of
+        the argument vector have the following interpretations:
 
         ``1``
 
@@ -7231,7 +9264,8 @@ The commands have been modularized, allowing for multiple calls to the same comm
 
         ``4``
 
-            Tightness on lag decay (range: 1.2 - 1.5); a faster decay produces better inflation process.
+            Tightness on lag decay (range: 1.2 - 1.5); a faster decay
+            produces better inflation process.
 
         ``5``
 
@@ -7253,7 +9287,8 @@ The commands have been modularized, allowing for multiple calls to the same comm
 
     .. option:: initial_subperiod = INTEGER
 
-        The first period of data (i.e. for quarterly data, an integer in ``[1,4]``). Default: ``1``.
+        The first period of data (i.e. for quarterly data, an integer
+        in ``[1,4]``). Default: ``1``.
 
     .. option:: final_year = INTEGER
 
@@ -7261,7 +9296,11 @@ The commands have been modularized, allowing for multiple calls to the same comm
 
     .. option:: final_subperiod = INTEGER
 
-        The final period of data (i.e. for monthly data, an integer in ``[1,12]``. Default: When final_year is also missing, set to encompass entire dataset; when ``final_year`` is indicated, set to the maximum number of subperiods given the frequency (i.e. 4 for quarterly data, 12 for monthly,...).
+        The final period of data (i.e. for monthly data, an integer in
+        ``[1,12]``. Default: When final_year is also missing, set to
+        encompass entire dataset; when ``final_year`` is indicated,
+        set to the maximum number of subperiods given the frequency
+        (i.e. 4 for quarterly data, 12 for monthly,...).
 
     .. option:: datafile = FILENAME
 
@@ -7293,83 +9332,131 @@ The commands have been modularized, allowing for multiple calls to the same comm
 
     .. option:: alpha = INTEGER
 
-        Alpha value for squared time-varying structural shock lambda. Default: ``1``.
+        Alpha value for squared time-varying structural shock
+        lambda. Default: ``1``.
 
     .. option:: beta = INTEGER
 
-        Beta value for squared time-varying structural shock lambda. Default: ``1``.
+        Beta value for squared time-varying structural shock
+        lambda. Default: ``1``.
 
     .. option:: gsig2_lmdm = INTEGER
 
-        The variance for each independent :math:`\lambda` parameter under ``SimsZha`` restrictions. Default: ``50^2``.
+        The variance for each independent :math:`\lambda` parameter
+        under ``SimsZha`` restrictions. Default: ``50^2``.
 
     .. option:: specification = sims_zha | none
 
-        This controls how restrictions are imposed to reduce the number of parameters. Default: ``Random Walk``.
+        This controls how restrictions are imposed to reduce the
+        number of parameters. Default: ``Random Walk``.
 
     *Estimation Options*
 
     .. option:: convergence_starting_value = DOUBLE
 
-        This is the tolerance criterion for convergence and refers to changes in the objective function value. It should be rather loose since it will gradually be tightened during estimation. Default: ``1e-3``.
+        This is the tolerance criterion for convergence and refers to
+        changes in the objective function value. It should be rather
+        loose since it will gradually be tightened during
+        estimation. Default: ``1e-3``.
 
     .. option:: convergence_ending_value = DOUBLE
 
-        The convergence criterion ending value. Values much smaller than square root machine epsilon are probably overkill. Default: ``1e-6``.
+        The convergence criterion ending value. Values much smaller
+        than square root machine epsilon are probably
+        overkill. Default: ``1e-6``.
 
     .. option:: convergence_increment_value = DOUBLE
 
-        Determines how quickly the convergence criterion moves from the starting value to the ending value. Default: ``0.1``.
+        Determines how quickly the convergence criterion moves from
+        the starting value to the ending value. Default: ``0.1``.
 
     .. option:: max_iterations_starting_value = INTEGER
 
-        This is the maximum number of iterations allowed in the hill-climbing optimization routine and should be rather small since it will gradually be increased during estimation. Default: ``50``.
+        This is the maximum number of iterations allowed in the
+        hill-climbing optimization routine and should be rather small
+        since it will gradually be increased during
+        estimation. Default: ``50``.
 
     .. option:: max_iterations_increment_value = DOUBLE
 
-        Determines how quickly the maximum number of iterations is increased. Default: ``2``.
+        Determines how quickly the maximum number of iterations is
+        increased. Default: ``2``.
 
     .. option:: max_block_iterations = INTEGER
 
-        The parameters are divided into blocks and optimization proceeds over each block. After a set of blockwise optimizations are performed, the convergence criterion is checked and the blockwise optimizations are repeated if the criterion is violated. This controls the maximum number of times the blockwise optimization can be performed. Note that after the blockwise optimizations have converged, a single optimization over all the parameters is performed before updating the convergence value and maximum number of iterations. Default: ``100``.
+        The parameters are divided into blocks and optimization
+        proceeds over each block. After a set of blockwise
+        optimizations are performed, the convergence criterion is
+        checked and the blockwise optimizations are repeated if the
+        criterion is violated. This controls the maximum number of
+        times the blockwise optimization can be performed. Note that
+        after the blockwise optimizations have converged, a single
+        optimization over all the parameters is performed before
+        updating the convergence value and maximum number of
+        iterations. Default: ``100``.
 
     .. option:: max_repeated_optimization_runs = INTEGER
 
-        The entire process described by :opt:`max_block_iterations <max_block_iterations = INTEGER>` is repeated until improvement has stopped. This is the maximum number of times the process is allowed to repeat. Set this to ``0`` to not allow repetitions. Default: ``10``.
+        The entire process described by :opt:`max_block_iterations
+        <max_block_iterations = INTEGER>` is repeated until
+        improvement has stopped. This is the maximum number of times
+        the process is allowed to repeat. Set this to ``0`` to not
+        allow repetitions. Default: ``10``.
 
     .. option:: function_convergence_criterion = DOUBLE
 
-        The convergence criterion for the objective function when ``max_repeated_optimizations_runs`` is positive. Default: ``0.1``.
+        The convergence criterion for the objective function when
+        ``max_repeated_optimizations_runs`` is positive. Default:
+        ``0.1``.
 
     .. option:: parameter_convergence_criterion = DOUBLE
 
-        The convergence criterion for parameter values when ``max_repeated_optimizations_runs`` is positive. Default: ``0.1``.
+        The convergence criterion for parameter values when
+        ``max_repeated_optimizations_runs`` is positive. Default:
+        ``0.1``.
 
     .. option:: number_of_large_perturbations = INTEGER
 
-        The entire process described by :opt:`max_block_iterations <max_block_iterations = INTEGER>` is repeated with random starting values drawn from the posterior. This specifies the number of random starting values used. Set this to ``0`` to not use random starting values. A larger number should be specified to ensure that the entire parameter space has been covered. Default: ``5``.
+        The entire process described by :opt:`max_block_iterations
+        <max_block_iterations = INTEGER>` is repeated with random
+        starting values drawn from the posterior. This specifies the
+        number of random starting values used. Set this to ``0`` to
+        not use random starting values. A larger number should be
+        specified to ensure that the entire parameter space has been
+        covered. Default: ``5``.
 
     .. option:: number_of_small_perturbations = INTEGER
 
-        The number of small perturbations to make after the large perturbations have stopped improving. Setting this number much above ``10`` is probably overkill. Default: ``5``.
+        The number of small perturbations to make after the large
+        perturbations have stopped improving. Setting this number much
+        above ``10`` is probably overkill. Default: ``5``.
 
     .. option:: number_of_posterior_draws_after_perturbation = INTEGER
 
-        The number of consecutive posterior draws to make when producing a small perturbation. Because the posterior draws are serially correlated, a small number will result in a small perturbation. Default: ``1``.
+        The number of consecutive posterior draws to make when
+        producing a small perturbation. Because the posterior draws
+        are serially correlated, a small number will result in a small
+        perturbation. Default: ``1``.
 
     .. option:: max_number_of_stages = INTEGER
 
-        The small and large perturbation are repeated until improvement has stopped. This specifies the maximum number of stages allowed. Default: ``20``.
+        The small and large perturbation are repeated until
+        improvement has stopped. This specifies the maximum number of
+        stages allowed. Default: ``20``.
 
     .. option:: random_function_convergence_criterion = DOUBLE
 
-        The convergence criterion for the objective function when ``number_of_large_perturbations`` is positive. Default: ``0.1``.
+        The convergence criterion for the objective function when
+        ``number_of_large_perturbations`` is positive. Default:
+        ``0.1``.
 
     .. option:: random_parameter_convergence_criterion = DOUBLE
 
-        The convergence criterion for parameter values when ``number_of_large_perturbations`` is positive. Default: ``0.1``.
+        The convergence criterion for parameter values when
+        ``number_of_large_perturbations`` is positive. Default:
+        ``0.1``.
 
-    :ex:
+    *Example*
 
         ::
 
@@ -7388,17 +9475,19 @@ The commands have been modularized, allowing for multiple calls to the same comm
 .. command:: ms_simulation ;
              ms_simulation (OPTIONS...);
 
-    Simulates a Markov-switching SBVAR model.
+    |br| Simulates a Markov-switching SBVAR model.
 
     *Options*
 
     .. option:: file_tag = FILENAME
 
-        The portion of the filename associated with the ``ms_estimation`` run. Default: ``<mod_file>``.
+        The portion of the filename associated with the
+        ``ms_estimation`` run. Default: ``<mod_file>``.
 
     .. option:: output_file_tag = FILENAME
 
-        The portion of the output filename that will be assigned to this run. Default: ``<file_tag>``.
+        The portion of the output filename that will be assigned to
+        this run. Default: ``<file_tag>``.
 
     .. option:: mh_replic = INTEGER
 
@@ -7410,7 +9499,8 @@ The commands have been modularized, allowing for multiple calls to the same comm
 
     .. option:: thinning_factor = INTEGER
 
-        The total number of draws is equal to ``thinning_factor*mh_replic+drop``. Default: ``1``.
+        The total number of draws is equal to
+        ``thinning_factor*mh_replic+drop``. Default: ``1``.
 
     .. option:: adaptive_mh_draws = INTEGER
 
@@ -7418,9 +9508,17 @@ The commands have been modularized, allowing for multiple calls to the same comm
 
     .. option:: save_draws
 
-        Save all elements of :math:`A^0`, :math:`A^+`, :math:`Q`, and :math:`\zeta`, to a file named ``draws_<<file_tag>>.out`` with each draw on a separate line. A file that describes how these matrices are laid out is contained in ``draws_header_<<file_tag>>.out``. A file called ``load_flat_file.m`` is provided to simplify loading the saved files into the corresponding variables ``A0``, ``Aplus``, ``Q``, and ``Zeta`` in your MATLAB/Octave workspace. Default: ``off``.
+        Save all elements of :math:`A^0`, :math:`A^+`, :math:`Q`, and
+        :math:`\zeta`, to a file named ``draws_<<file_tag>>.out`` with
+        each draw on a separate line. A file that describes how these
+        matrices are laid out is contained in
+        ``draws_header_<<file_tag>>.out``. A file called
+        ``load_flat_file.m`` is provided to simplify loading the saved
+        files into the corresponding variables ``A0``, ``Aplus``,
+        ``Q``, and ``Zeta`` in your MATLAB/Octave workspace. Default:
+        ``off``.
 
-    :ex:
+    *Example*
 
         ::
 
@@ -7431,7 +9529,10 @@ The commands have been modularized, allowing for multiple calls to the same comm
 .. command:: ms_compute_mdd ;
              ms_compute_mdd (OPTIONS...);
 
-    Computes the marginal data density of a Markov-switching SBVAR model from the posterior draws. At the end of the run, the Muller and Bridged log marginal densities are contained in the ``oo_.ms`` structure.
+    |br| Computes the marginal data density of a Markov-switching
+    SBVAR model from the posterior draws. At the end of the run, the
+    Muller and Bridged log marginal densities are contained in the
+    ``oo_.ms`` structure.
 
     *Options*
 
@@ -7445,7 +9546,8 @@ The commands have been modularized, allowing for multiple calls to the same comm
 
     .. option:: simulation_file_tag = FILENAME
 
-        The portion of the filename associated with the simulation run. Default: ``<file_tag>``.
+        The portion of the filename associated with the simulation
+        run. Default: ``<file_tag>``.
 
     .. option:: proposal_type = INTEGER
 
@@ -7475,11 +9577,15 @@ The commands have been modularized, allowing for multiple calls to the same comm
 
     .. option:: proposal_lower_bound = DOUBLE
 
-        The lower cutoff in terms of probability. Not used for ``proposal_type`` in ``[1,2]``. Required for all other proposal types. Default: ``0.1``.
+        The lower cutoff in terms of probability. Not used for
+        ``proposal_type`` in ``[1,2]``. Required for all other
+        proposal types. Default: ``0.1``.
 
     .. option:: proposal_upper_bound = DOUBLE
 
-        The upper cutoff in terms of probability. Not used for ``proposal_type`` equal to ``1``. Required for all other proposal types. Default: ``0.9``.
+        The upper cutoff in terms of probability. Not used for
+        ``proposal_type`` equal to ``1``. Required for all other
+        proposal types. Default: ``0.9``.
 
     .. option:: mdd_proposal_draws = INTEGER
 
@@ -7493,7 +9599,9 @@ The commands have been modularized, allowing for multiple calls to the same comm
 .. command:: ms_compute_probabilities ;
              ms_compute_probabilities (OPTIONS...);
 
-    Computes smoothed regime probabilities of a Markov-switching SBVAR model. Output ``.eps`` files are contained in ``<output_file_tag/Output/Probabilities>``.
+    |br| Computes smoothed regime probabilities of a Markov-switching SBVAR
+    model. Output ``.eps`` files are contained in
+    ``<output_file_tag/Output/Probabilities>``.
 
     *Options*
 
@@ -7507,17 +9615,22 @@ The commands have been modularized, allowing for multiple calls to the same comm
 
     .. option:: filtered_probabilities
 
-        Filtered probabilities are computed instead of smoothed. Default: ``off``.
+        Filtered probabilities are computed instead of
+        smoothed. Default: ``off``.
 
     .. option:: real_time_smoothed
 
-        Smoothed probabilities are computed based on time ``t`` information for :math:`0\le t\le nobs`. Default: ``off``
+        Smoothed probabilities are computed based on time ``t``
+        information for :math:`0\le t\le nobs`. Default: ``off``
 
 
 .. command:: ms_irf ;
              ms_irf (OPTIONS...);
 
-    Computes impulse response functions for a Markov-switching SBVAR model. Output ``.eps`` files are contained in ``<output_file_tag/Output/IRF>``, while data files are contained in ``<output_file_tag/IRF>``.
+    |br| Computes impulse response functions for a Markov-switching SBVAR
+    model. Output ``.eps`` files are contained in
+    ``<output_file_tag/Output/IRF>``, while data files are contained
+    in ``<output_file_tag/IRF>``.
 
     *Options*
 
@@ -7539,11 +9652,15 @@ The commands have been modularized, allowing for multiple calls to the same comm
 
     .. option:: filtered_probabilities
 
-        Uses filtered probabilities at the end of the sample as initial conditions for regime probabilities. Only one of ``filtered_probabilities``, ``regime`` and ``regimes`` may be passed. Default: ``off``.
+        Uses filtered probabilities at the end of the sample as
+        initial conditions for regime probabilities. Only one of
+        ``filtered_probabilities``, ``regime`` and ``regimes`` may be
+        passed. Default: ``off``.
 
     .. option:: error_band_percentiles = [DOUBLE1 ...]
 
-        The percentiles to compute. Default: ``[0.16 0.50 0.84]``. If ``median`` is passed, the default is ``[0.5]``.
+        The percentiles to compute. Default: ``[0.16 0.50 0.84]``. If
+        ``median`` is passed, the default is ``[0.5]``.
 
     .. option:: shock_draws = INTEGER
 
@@ -7551,37 +9668,50 @@ The commands have been modularized, allowing for multiple calls to the same comm
 
     .. option:: shocks_per_parameter = INTEGER
 
-        The number of regime paths to draw under parameter uncertainty. Default: ``10``.
+        The number of regime paths to draw under parameter
+        uncertainty. Default: ``10``.
 
     .. option:: thinning_factor = INTEGER
 
-        Only :math:`1/ \texttt{thinning\_factor}` of the draws in posterior draws file are used. Default: ``1``.
+        Only :math:`1/ \texttt{thinning\_factor}` of the draws in
+        posterior draws file are used. Default: ``1``.
 
     .. option:: free_parameters = NUMERICAL_VECTOR
 
-        A vector of free parameters to initialize theta of the model. Default: use estimated parameters
+        A vector of free parameters to initialize theta of the
+        model. Default: use estimated parameters
 
     .. option:: parameter_uncertainty
 
-        Calculate IRFs under parameter uncertainty. Requires that ``ms_simulation`` has been run. Default: ``off``.
+        Calculate IRFs under parameter uncertainty. Requires that
+        ``ms_simulation`` has been run. Default: ``off``.
 
     .. option:: regime = INTEGER
 
-        Given the data and model parameters, what is the ergodic probability of being in the specified regime. Only one of ``filtered_probabilities``, ``regime`` and ``regimes`` may be passed. Default: ``off``.
+        Given the data and model parameters, what is the ergodic
+        probability of being in the specified regime. Only one of
+        ``filtered_probabilities``, ``regime`` and ``regimes`` may be
+        passed. Default: ``off``.
 
     .. option:: regimes
 
-        Describes the evolution of regimes. Only one of ``filtered_probabilities``, ``regime`` and ``regimes`` may be passed. Default: ``off``.
+        Describes the evolution of regimes. Only one of
+        ``filtered_probabilities``, ``regime`` and ``regimes`` may be
+        passed. Default: ``off``.
 
     .. option:: median
 
-        A shortcut to setting ``error_band_percentiles=[0.5]``. Default: ``off``.
+        A shortcut to setting
+        ``error_band_percentiles=[0.5]``. Default: ``off``.
 
 
 .. command:: ms_forecast ;
              ms_forecast (OPTIONS...);
 
-    Generates forecasts for a Markov-switching SBVAR model. Output ``.eps`` files are contained in ``<output_file_tag/Output/Forecast>``, while data files are contained in ``<output_file_tag/Forecast>``.
+    |br| Generates forecasts for a Markov-switching SBVAR
+    model. Output ``.eps`` files are contained in
+    ``<output_file_tag/Output/Forecast>``, while data files are
+    contained in ``<output_file_tag/Forecast>``.
 
     *Options*
 
@@ -7603,7 +9733,8 @@ The commands have been modularized, allowing for multiple calls to the same comm
 
     .. option:: error_band_percentiles = [DOUBLE1 ...]
 
-        See :opt:`error_band_percentiles <error_band_percentiles = [DOUBLE1 ...]>`.
+        See :opt:`error_band_percentiles <error_band_percentiles =
+        [DOUBLE1 ...]>`.
 
     .. option:: shock_draws = INTEGER
 
@@ -7645,7 +9776,11 @@ The commands have been modularized, allowing for multiple calls to the same comm
 .. command:: ms_variance_decomposition ;
              ms_variance_decomposition (OPTIONS...);
 
-    Computes the variance decomposition for a Markov-switching SBVAR model. Output ``.eps`` files are contained in ``<output_file_tag/Output/Variance_Decomposition>``, while data files are contained in ``<output_file_tag/Variance_Decomposition>``.
+    |br| Computes the variance decomposition for a Markov-switching
+    SBVAR model. Output ``.eps`` files are contained in
+    ``<output_file_tag/Output/Variance_Decomposition>``, while data
+    files are contained in
+    ``<output_file_tag/Variance_Decomposition>``.
 
     *Options*
 
@@ -7671,11 +9806,13 @@ The commands have been modularized, allowing for multiple calls to the same comm
 
     .. option:: no_error_bands
 
-        Do not output percentile error bands (i.e. compute mean). Default: ``off`` (i.e. output error bands)
+        Do not output percentile error bands (i.e. compute
+        mean). Default: ``off`` (i.e. output error bands)
 
     .. option:: error_band_percentiles = [DOUBLE1 ...]
 
-        See :opt:`error_band_percentiles <error_band_percentiles = [DOUBLE1 ...]>`.
+        See :opt:`error_band_percentiles <error_band_percentiles =
+        [DOUBLE1 ...]>`.
 
     .. option:: shock_draws = INTEGER
 
@@ -7706,7 +9843,6 @@ The commands have been modularized, allowing for multiple calls to the same comm
         See :opt:`regimes`.
 
 
-
 Displaying and saving results
 =============================
 
@@ -7714,17 +9850,26 @@ Dynare has comments to plot the results of a simulation and to save the results.
 
 .. command:: rplot VARIABLE_NAME...;
 
-    Plots the simulated path of one or several variables, as stored in ``oo_.endo_simul`` by either ``perfect_foresight_solver``, ``simul`` (see :ref:`det-simul`) or ``stoch_simul`` with option ``periods`` (see :ref:`stoch-sol`). The variables are plotted in levels.
+    |br| Plots the simulated path of one or several variables, as
+    stored in ``oo_.endo_simul`` by either
+    ``perfect_foresight_solver``, ``simul`` (see :ref:`det-simul`) or
+    ``stoch_simul`` with option ``periods`` (see
+    :ref:`stoch-sol`). The variables are plotted in levels.
 
 .. command:: dynatype (FILENAME) [VARIABLE_NAME...];
 
-    This command prints the listed variables in a text file named FILENAME. If no VARIABLE_NAME is listed, all endogenous variables are printed.
+    |br| This command prints the listed variables in a text file named
+    FILENAME. If no VARIABLE_NAME is listed, all endogenous variables
+    are printed.
 
 .. command:: dynasave (FILENAME) [VARIABLE_NAME...];
 
-    This command saves the listed variables in a binary file named FILENAME. If no VARIABLE_NAME are listed, all endogenous variables are saved.
+    |br| This command saves the listed variables in a binary file
+    named FILENAME. If no VARIABLE_NAME are listed, all endogenous
+    variables are saved.
 
-    In MATLAB or Octave, variables saved with the ``dynasave command`` can be retrieved by the command::
+    In MATLAB or Octave, variables saved with the ``dynasave command``
+    can be retrieved by the command::
 
         load -mat FILENAME
 
@@ -7734,18 +9879,36 @@ Dynare has comments to plot the results of a simulation and to save the results.
 Macro-processing language
 =========================
 
-It is possible to use “macro” commands in the ``.mod`` file for doing the following tasks: including modular source files, replicating blocks of equations through loops, conditionally executing some code, writing indexed sums or products inside equations...
+It is possible to use “macro” commands in the ``.mod`` file for doing
+the following tasks: including modular source files, replicating
+blocks of equations through loops, conditionally executing some code,
+writing indexed sums or products inside equations...
 
-The Dynare macro-language provides a new set of *macro-commands* which can be inserted inside ``.mod`` files. It features:
+The Dynare macro-language provides a new set of *macro-commands* which
+can be inserted inside ``.mod`` files. It features:
 
     * File inclusion
     * Loops (for structure)
     * Conditional inclusion (``if/then/else`` structures)
     * Expression substitution
 
-Technically, this macro language is totally independent of the basic Dynare language, and is processed by a separate component of the Dynare pre-processor. The macro processor transforms a ``.mod`` file with macros into a ``.mod`` file without macros (doing expansions/inclusions), and then feeds it to the Dynare parser. The key point to understand is that the macro-processor only does text substitution (like the C preprocessor or the PHP language). Note that it is possible to see the output of the macro-processor by using the ``savemacro`` option of the ``dynare`` command (see :ref:`dyn-invoc`).
+Technically, this macro language is totally independent of the basic
+Dynare language, and is processed by a separate component of the
+Dynare pre-processor. The macro processor transforms a ``.mod`` file
+with macros into a ``.mod`` file without macros (doing
+expansions/inclusions), and then feeds it to the Dynare parser. The
+key point to understand is that the macro-processor only does text
+substitution (like the C preprocessor or the PHP language). Note that
+it is possible to see the output of the macro-processor by using the
+``savemacro`` option of the ``dynare`` command (see :ref:`dyn-invoc`).
 
-The macro-processor is invoked by placing *macro directives* in the ``.mod`` file. Directives begin with an at-sign followed by a pound sign (``@#``). They produce no output, but give instructions to the macro-processor. In most cases, directives occupy exactly one line of text. In case of need, two backslashes (``\\``) at the end of the line indicate that the directive is continued on the next line. The main directives are:
+The macro-processor is invoked by placing *macro directives* in the
+``.mod`` file. Directives begin with an at-sign followed by a pound
+sign (``@#``). They produce no output, but give instructions to the
+macro-processor. In most cases, directives occupy exactly one line of
+text. In case of need, two backslashes (``\\``) at the end of the line
+indicate that the directive is continued on the next line. The main
+directives are:
 
     * ``@#includepath``, paths to search for files that are to be included,
     * ``@#include``, for file inclusion,
@@ -7753,7 +9916,10 @@ The macro-processor is invoked by placing *macro directives* in the ``.mod`` fil
     * ``@#if, @#ifdef, @#ifndef, @#else, @#endif`` for conditional statements,
     * ``@#for, @#endfor`` for constructing loops.
 
-The macro-processor maintains its own list of variables (distinct of model variables and of MATLAB/Octave variables). These macro-variables are assigned using the ``@#define`` directive, and can be of four types: integer, character string, array of integers, array of strings.
+The macro-processor maintains its own list of variables (distinct of
+model variables and of MATLAB/Octave variables). These macro-variables
+are assigned using the ``@#define`` directive, and can be of four
+types: integer, character string, array of integers, array of strings.
 
 
 .. _macro-exp:
@@ -7761,40 +9927,62 @@ The macro-processor maintains its own list of variables (distinct of model varia
 Macro expressions
 -----------------
 
-It is possible to construct macro-expressions which can be assigned to macro-variables or used within a macro-directive. The expressions are constructed using literals of the four basic types (integers, strings, arrays of strings, arrays of integers), macro-variables names and standard operators.
+It is possible to construct macro-expressions which can be assigned to
+macro-variables or used within a macro-directive. The expressions are
+constructed using literals of the four basic types (integers, strings,
+arrays of strings, arrays of integers), macro-variables names and
+standard operators.
 
-String literals have to be enclosed between **double** quotes (like ``"name"``). Arrays are enclosed within brackets, and their elements are separated by commas (like ``[1,2,3]`` or ``["US", "EA"]``).
+String literals have to be enclosed between **double** quotes (like
+``"name"``). Arrays are enclosed within brackets, and their elements
+are separated by commas (like ``[1,2,3]`` or ``["US", "EA"]``).
 
-Note that there is no boolean type: *false* is represented by integer zero and *true* is any non-null integer. Further note that, as the macro-processor cannot handle non-integer real numbers, integer division results in the quotient with the fractional part truncated (hence, :math:`5/3=3/3=1`).
+Note that there is no boolean type: *false* is represented by integer
+zero and *true* is any non-null integer. Further note that, as the
+macro-processor cannot handle non-integer real numbers, integer
+division results in the quotient with the fractional part truncated
+(hence, :math:`5/3=3/3=1`).
 
 The following operators can be used on integers:
 
     * Arithmetic operators: ``+, -, *, /``
     * Comparison operators: ``<, >, <=, >=, ==, !=``
     * Logical operators: ``&&, ||, !``
-    * Integer ranges, using the following syntax: ``INTEGER1:INTEGER2`` (for example, ``1:4`` is equivalent to integer array ``[1,2,3,4]``)
+    * Integer ranges, using the following syntax:
+      ``INTEGER1:INTEGER2`` (for example, ``1:4`` is equivalent to
+      integer array ``[1,2,3,4]``)
 
 The following operators can be used on strings:
 
     * Comparison operators: ``==, !=``
     * Concatenation of two strings: ``+``
-    * Extraction of substrings: if ``s`` is a string, then ``s[3]`` is a string containing only the third character of ``s``, and ``s[4:6]`` contains the characters from 4th to 6th
+    * Extraction of substrings: if ``s`` is a string, then ``s[3]`` is
+      a string containing only the third character of ``s``, and
+      ``s[4:6]`` contains the characters from 4th to 6th
 
 The following operators can be used on arrays:
 
     * Dereferencing: if ``v`` is an array, then ``v[2]`` is its 2nd element.
     * Concatenation of two arrays: ``+``.
-    * Difference ``-``: returns the first operand from which the elements of the second operand have been removed.
+    * Difference ``-``: returns the first operand from which the
+      elements of the second operand have been removed.
     * Extraction of sub-arrays: e.g. ``v[4:6]``.
-    * Testing membership of an array: ``in`` operator (for example: ``"b"`` in ``["a", "b", "c"]`` returns ``1``)
-    * Getting the length of an array: ``length`` operator (for example: ``length(["a", "b", "c"])`` returns ``3`` and, hence, ``1:length(["a", "b", "c"])`` is equivalent to integer array ``[1,2,3]``)
+    * Testing membership of an array: ``in`` operator (for example:
+      ``"b"`` in ``["a", "b", "c"]`` returns ``1``)
+    * Getting the length of an array: ``length`` operator (for
+      example: ``length(["a", "b", "c"])`` returns ``3`` and, hence,
+      ``1:length(["a", "b", "c"])`` is equivalent to integer array
+      ``[1,2,3]``)
 
 Macro-expressions can be used at two places:
 
     * Inside macro directives, directly;
-    * In the body of the ``.mod`` file, between an at-sign and curly braces (like ``@{expr}``): the macro processor will substitute the expression with its value.
+    * In the body of the ``.mod`` file, between an at-sign and curly
+      braces (like ``@{expr}``): the macro processor will substitute
+      the expression with its value.
 
-In the following, MACRO_EXPRESSION designates an expression constructed as explained above.
+In the following, MACRO_EXPRESSION designates an expression
+constructed as explained above.
 
 
 Macro directives
@@ -7803,9 +9991,12 @@ Macro directives
 .. macrodir:: @#includepath "PATH"
               @#includepath MACRO_VARIABLE
 
-    This directive adds the colon-separated paths contained in PATH to the list of those to search when looking for a ``.mod`` file specified by ``@#include``. Note that these paths are added *after* any paths passed using :opt:`-I <-I\<\<path\>\>>`.
+    |br| This directive adds the colon-separated paths contained in PATH to
+    the list of those to search when looking for a ``.mod`` file
+    specified by ``@#include``. Note that these paths are added
+    *after* any paths passed using :opt:`-I <-I\<\<path\>\>>`.
 
-    :ex:
+    *Example*
 
         ::
 
@@ -7816,9 +10007,15 @@ Macro directives
 .. macrodir:: @#include "FILENAME"
               @#include MACRO_VARIABLE
 
-    This directive simply includes the content of another file at the place where it is inserted. It is exactly equivalent to a copy/paste of the content of the included file. Note that it is possible to nest includes (i.e. to include a file from an included file). The file will be searched for in the current directory. If it is not found, the file will be searched for in the folders provided by :opt:`-I <-I\<\<path\>\>>` and ``@#includepath``.
+    |br| This directive simply includes the content of another file at the
+    place where it is inserted. It is exactly equivalent to a
+    copy/paste of the content of the included file. Note that it is
+    possible to nest includes (i.e. to include a file from an included
+    file). The file will be searched for in the current directory. If
+    it is not found, the file will be searched for in the folders
+    provided by :opt:`-I <-I\<\<path\>\>>` and ``@#includepath``.
 
-    :ex:
+    *Example*
 
         ::
 
@@ -7828,9 +10025,9 @@ Macro directives
 
 .. macrodir:: @#define MACRO_VARIABLE = MACRO_EXPRESSION
 
-    Defines a macro-variable.
+    |br| Defines a macro-variable.
 
-    :ex:
+    *Example*
 
         ::
 
@@ -7841,7 +10038,7 @@ Macro directives
             @#define z = 3 + v[2]       // Equals 5
             @#define t = ("US" in w)    // Equals 1 (true)
 
-    :ex:
+    *Example*
 
         ::
 
@@ -7852,11 +10049,11 @@ Macro directives
               A = @{x[i]};
             end;
 
-    The latter is strictly equivalent to::
+        The latter is strictly equivalent to::
 
-        model;
-          A = C;
-        end;
+            model;
+              A = C;
+            end;
 
 
 .. macrodir:: @#if MACRO_EXPRESSION
@@ -7865,54 +10062,53 @@ Macro directives
 .. macrodir:: @#else
 .. macrodir:: @#endif
 
-    Conditional inclusion of some part of the ``.mod`` file. The lines between ``@#if``, ``@#ifdef`` or ``@#ifndef`` and the next ``@#else`` or ``@#endif`` is executed only if the condition evaluates to a non-null integer. The ``@#else`` branch is optional and, if present, is only evaluated if the condition evaluates to ``0``.
+    |br| Conditional inclusion of some part of the ``.mod`` file. The
+    lines between ``@#if``, ``@#ifdef`` or ``@#ifndef`` and the next
+    ``@#else`` or ``@#endif`` is executed only if the condition
+    evaluates to a non-null integer. The ``@#else`` branch is optional
+    and, if present, is only evaluated if the condition evaluates to
+    ``0``.
 
     *Example*
 
-    Choose between two alternative monetary policy rules using a macro-variable::
+        Choose between two alternative monetary policy rules using a
+        macro-variable::
 
-        @#define linear_mon_pol = 0 // or 1
-        ...
-        model;
-        @#if linear_mon_pol
-          i = w*i(-1) + (1-w)*i_ss + w2*(pie-piestar);
-        @#else
-          i = i(-1)^w * i_ss^(1-w) * (pie/piestar)^w2;
-        @#endif
-        ...
-        end;
+            @#define linear_mon_pol = 0 // or 1
+            ...
+            model;
+            @#if linear_mon_pol
+              i = w*i(-1) + (1-w)*i_ss + w2*(pie-piestar);
+            @#else
+              i = i(-1)^w * i_ss^(1-w) * (pie/piestar)^w2;
+            @#endif
+            ...
+            end;
 
     *Example*
 
-    Choose between two alternative monetary policy rules using a macro-variable. As ``linear_mon_pol`` was not previously defined in this example, the second equation will be chosen::
+        Choose between two alternative monetary policy rules using a
+        macro-variable. As ``linear_mon_pol`` was not previously defined
+        in this example, the second equation will be chosen::
 
-        model;
-        @#ifdef linear_mon_pol
-          i = w*i(-1) + (1-w)*i_ss + w2*(pie-piestar);
-        @#else
-          i = i(-1)^w * i_ss^(1-w) * (pie/piestar)^w2;
-        @#endif
-        ...
-        end;
-
-    Choose between two alternative monetary policy rules using a macro-variable. As linear_mon_pol was not previously defined in this example, the first equation will be chosen::
-
-        model;
-        @#ifndef linear_mon_pol
-          i = w*i(-1) + (1-w)*i_ss + w2*(pie-piestar);
-        @#else
-          i = i(-1)^w * i_ss^(1-w) * (pie/piestar)^w2;
-        @#endif
-        ...
-        end;
+            model;
+            @#ifdef linear_mon_pol
+              i = w*i(-1) + (1-w)*i_ss + w2*(pie-piestar);
+            @#else
+              i = i(-1)^w * i_ss^(1-w) * (pie/piestar)^w2;
+            @#endif
+            ...
+            end;
 
 
 .. macrodir:: @#for MACRO_VARIABLE in MACRO_EXPRESSION
 .. macrodir:: @#endfor
 
-    Loop construction for replicating portions of the ``.mod`` file. Note that this construct can enclose variable/parameters declaration, computational tasks, but not a model declaration.
+    |br| Loop construction for replicating portions of the ``.mod``
+    file. Note that this construct can enclose variable/parameters
+    declaration, computational tasks, but not a model declaration.
 
-    :ex:
+    *Example*
 
         ::
 
@@ -7922,22 +10118,24 @@ Macro directives
             @#endfor
             end;
 
-    The latter is equivalent to::
+        The latter is equivalent to::
 
-        model;
-          GDP_home = A * K_home^a * L_home^(1-a);
-          GDP_foreign = A * K_foreign^a * L_foreign^(1-a);
-        end;
+            model;
+              GDP_home = A * K_home^a * L_home^(1-a);
+              GDP_foreign = A * K_foreign^a * L_foreign^(1-a);
+            end;
 
 
 .. macrodir:: @#echo MACRO_EXPRESSION
 
-    Asks the preprocessor to display some message on standard output. The argument must evaluate to a string.
+    |br| Asks the preprocessor to display some message on standard
+    output. The argument must evaluate to a string.
 
 
 .. macrodir:: @#error MACRO_EXPRESSION
 
-    Asks the preprocessor to display some error message on standard output and to abort. The argument must evaluate to a string.
+    |br| Asks the preprocessor to display some error message on standard
+    output and to abort. The argument must evaluate to a string.
 
 
 Typical usages
@@ -7946,7 +10144,8 @@ Typical usages
 Modularization
 ^^^^^^^^^^^^^^
 
-The ``@#include`` directive can be used to split ``.mod`` files into several modular components.
+The ``@#include`` directive can be used to split ``.mod`` files into
+several modular components.
 
 Example setup:
 
@@ -7956,15 +10155,20 @@ Example setup:
 
 ``simul.mod``
 
-    Includes ``modeldesc.mod``, calibrates parameters and runs stochastic simulations.
+    Includes ``modeldesc.mod``, calibrates parameters and runs
+    stochastic simulations.
 
 ``estim.mod``
 
-    Includes ``modeldesc.mod``, declares priors on parameters and runs Bayesian estimation.
+    Includes ``modeldesc.mod``, declares priors on parameters and runs
+    Bayesian estimation.
 
-Dynare can be called on ``simul.mod`` and ``estim.mod``, but it makes no sense to run it on ``modeldesc.mod``.
+Dynare can be called on ``simul.mod`` and ``estim.mod``, but it makes
+no sense to run it on ``modeldesc.mod``.
 
-The main advantage is that it is no longer needed to manually copy/paste the whole model (at the beginning) or changes to the model (during development).
+The main advantage is that it is no longer needed to manually
+copy/paste the whole model (at the beginning) or changes to the model
+(during development).
 
 
 Indexed sums of products
@@ -8033,27 +10237,42 @@ Here is a skeleton example for a multi-country model::
 Endogeneizing parameters
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-When doing the steady state calibration of the model, it may be useful to consider a parameter as an endogenous (and vice-versa).
+When doing the steady state calibration of the model, it may be useful
+to consider a parameter as an endogenous (and vice-versa).
 
 For example, suppose production is defined by a CES function:
 
- :math:`y = \left(\alpha^{1/\xi} \ell^{1-1/\xi}+(1-\alpha)^{1/\xi}k^{1-1/\xi}\right)^{\xi/(\xi-1)}`
+    .. math::
+
+           y = \left(\alpha^{1/\xi} \ell^{1-1/\xi}+(1-\alpha)^{1/\xi}k^{1-1/\xi}\right)^{\xi/(\xi-1)}
 
 The labor share in GDP is defined as:
 
-    ``lab_rat`` :math:`= (w \ell)/(p y)`
+    .. math::
 
-In the model, :math:`\alpha` is a (share) parameter, and ``lab_rat`` is an endogenous variable.
+        \textrm{lab_rat} = (w \ell)/(p y)
 
-It is clear that calibrating :math:`\alpha` is not straightforward; but on the contrary, we have real world data for ``lab_rat``, and it is clear that these two variables are economically linked.
+In the model, :math:`\alpha` is a (share) parameter, and ``lab_rat``
+is an endogenous variable.
 
-The solution is to use a method called *variable flipping*, which consists in changing the way of computing the steady state. During this computation, :math:`\alpha` will be made an endogenous variable and ``lab_rat`` will be made a parameter. An economically relevant value will be calibrated for ``lab_rat``, and the solution algorithm will deduce the implied value for :math:`\alpha`.
+It is clear that calibrating :math:`\alpha` is not straightforward;
+but on the contrary, we have real world data for ``lab_rat``, and it
+is clear that these two variables are economically linked.
+
+The solution is to use a method called *variable flipping*, which
+consists in changing the way of computing the steady state. During
+this computation, :math:`\alpha` will be made an endogenous variable
+and ``lab_rat`` will be made a parameter. An economically relevant
+value will be calibrated for ``lab_rat``, and the solution algorithm
+will deduce the implied value for :math:`\alpha`.
 
 An implementation could consist of the following files:
 
 ``modeqs.mod``
 
-    This file contains variable declarations and model equations. The code for the declaration of :math:`\alpha` and ``lab_rat`` would look like::
+    This file contains variable declarations and model equations. The
+    code for the declaration of :math:`\alpha` and ``lab_rat`` would
+    look like::
 
         @#if steady
         var alpha;
@@ -8070,24 +10289,34 @@ An implementation could consist of the following files:
         @#define steady = 1
         @#include "modeqs.mod"
 
-    Then it initializes parameters (including ``lab_rat``, excluding :math:`\alpha`), computes the steady state (using guess values for endogenous, including :math:`\alpha`), then saves values of parameters and endogenous at steady state in a file, using the ``save_params_and_steady_state`` command.
+    Then it initializes parameters (including ``lab_rat``, excluding
+    :math:`\alpha`), computes the steady state (using guess values for
+    endogenous, including :math:`\alpha`), then saves values of
+    parameters and endogenous at steady state in a file, using the
+    ``save_params_and_steady_state`` command.
 
 ``simul.mod``
 
-This file computes the simulation. It begins with::
+    This file computes the simulation. It begins with::
 
         @#define steady = 0
         @#include "modeqs.mod"
 
-Then it loads values of parameters and endogenous at steady state from file, using the ``load_params_and_steady_state`` command, and computes the simulations.
+    Then it loads values of parameters and endogenous at steady state
+    from file, using the ``load_params_and_steady_state`` command, and
+    computes the simulations.
 
 
 MATLAB/Octave loops versus macro-processor loops
 ------------------------------------------------
 
-Suppose you have a model with a parameter :math:`\rho`, and you want to make simulations for three values: :math:`\rho = 0.8, 0.9, 1`. There are several ways of doing this:
+Suppose you have a model with a parameter :math:`\rho`, and you want
+to make simulations for three values: :math:`\rho = 0.8, 0.9,
+1`. There are several ways of doing this:
 
-*With a MATLAB/Octave loop*::
+*With a MATLAB/Octave loop*
+
+    ::
 
         rhos = [ 0.8, 0.9, 1];
         for i = 1:length(rhos)
@@ -8095,9 +10324,12 @@ Suppose you have a model with a parameter :math:`\rho`, and you want to make sim
           stoch_simul(order=1);
         end
 
-Here the loop is not unrolled, MATLAB/Octave manages the iterations. This is interesting when there are a lot of iterations.
+    Here the loop is not unrolled, MATLAB/Octave manages the
+    iterations. This is interesting when there are a lot of iterations.
 
-*With a macro-processor loop (case 1)*::
+*With a macro-processor loop (case 1)*
+
+    ::
 
         rhos = [ 0.8, 0.9, 1];
         @#for i in 1:3
@@ -8105,30 +10337,44 @@ Here the loop is not unrolled, MATLAB/Octave manages the iterations. This is int
           stoch_simul(order=1);
         @#endfor
 
-This is very similar to the previous example, except that the loop is unrolled. The macro-processor manages the loop index but not the data array (``rhos``).
+    This is very similar to the previous example, except that the loop
+    is unrolled. The macro-processor manages the loop index but not
+    the data array (``rhos``).
 
-*With a macro-processor loop (case 2)*::
+*With a macro-processor loop (case 2)*
+
+    ::
 
         @#for rho_val in [ "0.8", "0.9", "1"]
           rho = @{rho_val};
           stoch_simul(order=1);
         @#endfor
 
-The advantage of this method is that it uses a shorter syntax, since list of values directly given in the loop construct. Note that values are given as character strings (the macro-processor does not know floating point values). The inconvenience is that you can not reuse an array stored in a MATLAB/Octave variable.
+    The advantage of this method is that it uses a shorter syntax,
+    since list of values directly given in the loop construct. Note
+    that values are given as character strings (the macro-processor
+    does not know floating point values). The inconvenience is that
+    you can not reuse an array stored in a MATLAB/Octave variable.
 
 
 Verbatim inclusion
 ==================
 
-Pass everything contained within the verbatim block to the ``<mod_file>.m`` file.
+Pass everything contained within the verbatim block to the
+``<mod_file>.m`` file.
 
 .. block:: verbatim ;
 
-    By default, whenever Dynare encounters code that is not understood by the parser, it is directly passed to the preprocessor output.
+    |br| By default, whenever Dynare encounters code that is not
+    understood by the parser, it is directly passed to the
+    preprocessor output.
 
-    In order to force this behavior you can use the ``verbatim`` block. This is useful when the code you want passed to the ``<mod_file>.m`` file contains tokens recognized by the Dynare preprocessor.
+    In order to force this behavior you can use the ``verbatim``
+    block. This is useful when the code you want passed to the
+    ``<mod_file>.m`` file contains tokens recognized by the Dynare
+    preprocessor.
 
-    :ex:
+    *Example*
 
         ::
 
@@ -8148,56 +10394,123 @@ Misc commands
              set_dynare_seed (`reset')
              set_dynare_seed (`ALGORITHM', INTEGER)
 
-    Sets the seed used for random number generation. It is possible to set a given integer value, to use a default value, or to use the clock (by using the latter, one will therefore get different results across different Dynare runs). The ``reset`` option serves to reset the seed to the value set by the last ``set_dynare_seed`` command. On MATLAB 7.8 or above, it is also possible to choose a specific algorithm for random number generation; accepted values are ``mcg16807``, ``mlfg6331_64``, ``mrg32k3a``, ``mt19937ar`` (the default), ``shr3cong`` and ``swb2712``.
+    |br| Sets the seed used for random number generation. It is
+    possible to set a given integer value, to use a default value, or
+    to use the clock (by using the latter, one will therefore get
+    different results across different Dynare runs). The ``reset``
+    option serves to reset the seed to the value set by the last
+    ``set_dynare_seed`` command. On MATLAB 7.8 or above, it is also
+    possible to choose a specific algorithm for random number
+    generation; accepted values are ``mcg16807``, ``mlfg6331_64``,
+    ``mrg32k3a``, ``mt19937ar`` (the default), ``shr3cong`` and
+    ``swb2712``.
 
 .. command:: save_params_and_steady_state (FILENAME);
 
-    For all parameters, endogenous and exogenous variables, stores their value in a text file, using a simple name/value associative table.
+    |br| For all parameters, endogenous and exogenous variables,
+    stores their value in a text file, using a simple name/value
+    associative table.
 
-        * for parameters, the value is taken from the last parameter initialization.
-        * for exogenous, the value is taken from the last ``initval`` block.
-        * for endogenous, the value is taken from the last steady state computation (or, if no steady state has been computed, from the last ``initval`` block).
+        * for parameters, the value is taken from the last parameter
+          initialization.
+        * for exogenous, the value is taken from the last ``initval``
+          block.
+        * for endogenous, the value is taken from the last steady
+          state computation (or, if no steady state has been computed,
+          from the last ``initval`` block).
 
-    Note that no variable type is stored in the file, so that the values can be reloaded with ``load_params_and_steady_state`` in a setup where the variable types are different.
+    Note that no variable type is stored in the file, so that the
+    values can be reloaded with ``load_params_and_steady_state`` in a
+    setup where the variable types are different.
 
-    The typical usage of this function is to compute the steady-state of a model by calibrating the steady-state value of some endogenous variables (which implies that some parameters must be endogeneized during the steady-state computation).
+    The typical usage of this function is to compute the steady-state
+    of a model by calibrating the steady-state value of some
+    endogenous variables (which implies that some parameters must be
+    endogeneized during the steady-state computation).
 
-    You would then write a first ``.mod`` file which computes the steady state and saves the result of the computation at the end of the file, using ``save_params_and_steady_state``.
+    You would then write a first ``.mod`` file which computes the
+    steady state and saves the result of the computation at the end of
+    the file, using ``save_params_and_steady_state``.
 
-    In a second file designed to perform the actual simulations, you would use ``load_params_and_steady_state`` just after your variable declarations, in order to load the steady state previously computed (including the parameters which had been endogeneized during the steady state computation).
+    In a second file designed to perform the actual simulations, you
+    would use ``load_params_and_steady_state`` just after your
+    variable declarations, in order to load the steady state
+    previously computed (including the parameters which had been
+    endogeneized during the steady state computation).
 
-    The need for two separate ``.mod`` files arises from the fact that the variable declarations differ between the files for steady state calibration and for simulation (the set of endogenous and parameters differ between the two); this leads to different ``var`` and ``parameters`` statements.
+    The need for two separate ``.mod`` files arises from the fact that
+    the variable declarations differ between the files for steady
+    state calibration and for simulation (the set of endogenous and
+    parameters differ between the two); this leads to different
+    ``var`` and ``parameters`` statements.
 
-    Also note that you can take advantage of the ``@#include`` directive to share the model equations between the two files (see :ref:`macro-proc-lang`).
+    Also note that you can take advantage of the ``@#include``
+    directive to share the model equations between the two files (see
+    :ref:`macro-proc-lang`).
 
 .. command:: load_params_and_steady_state (FILENAME);
 
-    For all parameters, endogenous and exogenous variables, loads their value from a file created with ``save_params_and_steady_state``.
+    |br| For all parameters, endogenous and exogenous variables, loads
+    their value from a file created with
+    ``save_params_and_steady_state``.
 
-        * for parameters, their value will be initialized as if they had been calibrated in the ``.mod`` file.
-        * for endogenous and exogenous variables, their value will be initialized as they would have been from an ``initval`` block .
+        * for parameters, their value will be initialized as if they
+          had been calibrated in the ``.mod`` file.
+        * for endogenous and exogenous variables, their value will be
+          initialized as they would have been from an ``initval``
+          block .
 
-    This function is used in conjunction with ``save_params_and_steady_state``; see the documentation of that function for more information.
+    This function is used in conjunction with
+    ``save_params_and_steady_state``; see the documentation of that
+    function for more information.
 
 .. matcomm:: dynare_version ;
 
-    Output the version of Dynare that is currently being used (i.e. the one that is highest on the MATLAB/Octave path).
+    |br| Output the version of Dynare that is currently being used
+    (i.e. the one that is highest on the MATLAB/Octave path).
 
 .. matcomm:: write_latex_definitions ;
 
-    Writes the names, :math:`\LaTeX` names and long names of model variables to tables in a file named ``<<M_.fname>>_latex_definitions.tex``. Requires the following :math:`\LaTeX` packages: ``longtable``.
+    |br| Writes the names, :math:`\LaTeX` names and long names of
+    model variables to tables in a file named
+    ``<<M_.fname>>_latex_definitions.tex``. Requires the following
+    :math:`\LaTeX` packages: ``longtable``.
 
 .. matcomm:: write_latex_parameter_table ;
 
-    Writes the :math:`\LaTeX` names, parameter names, and long names of model parameters to a table in a file named ``<<M_.fname>>_latex_parameters.tex.`` The command writes the values of the parameters currently stored. Thus, if parameters are set or changed in the steady state computation, the command should be called after a steady-command to make sure the parameters were correctly updated. The long names can be used to add parameter descriptions. Requires the following :math:`\LaTeX` packages: ``longtable, booktabs``.
+    |br| Writes the :math:`\LaTeX` names, parameter names, and long
+    names of model parameters to a table in a file named
+    ``<<M_.fname>>_latex_parameters.tex.`` The command writes the
+    values of the parameters currently stored. Thus, if parameters are
+    set or changed in the steady state computation, the command should
+    be called after a steady-command to make sure the parameters were
+    correctly updated. The long names can be used to add parameter
+    descriptions. Requires the following :math:`\LaTeX` packages:
+    ``longtable, booktabs``.
 
 .. matcomm:: write_latex_prior_table ;
 
-    Writes descriptive statistics about the prior distribution to a :math:`\LaTeX` table in a file named ``<<M_.fname>>_latex_priors_table.tex``. The command writes the prior definitions currently stored. Thus, this command must be invoked after the ``estimated_params`` block. If priors are defined over the measurement errors, the command must also be preceeded by the declaration of the observed variables (with ``varobs``). The command displays a warning if no prior densities are defined (ML estimation) or if the declaration of the observed variables is missing. Requires the following :math:`\LaTeX` packages: ``longtable, booktabs``.
+    |br| Writes descriptive statistics about the prior distribution to
+    a :math:`\LaTeX` table in a file named
+    ``<<M_.fname>>_latex_priors_table.tex``. The command writes the
+    prior definitions currently stored. Thus, this command must be
+    invoked after the ``estimated_params`` block. If priors are
+    defined over the measurement errors, the command must also be
+    preceeded by the declaration of the observed variables (with
+    ``varobs``). The command displays a warning if no prior densities
+    are defined (ML estimation) or if the declaration of the observed
+    variables is missing. Requires the following :math:`\LaTeX`
+    packages: ``longtable, booktabs``.
 
 .. matcomm:: collect_latex_files ;
 
-    Writes a :math:`\LaTeX` file named ``<<M_.fname>>_TeX_binder.tex`` that collects all TeX output generated by Dynare into a file. This file can be compiled using ``pdflatex`` and automatically tries to load all required packages. Requires the following :math:`\LaTeX` packages: ``breqn, psfrag, graphicx, epstopdf, longtable, booktabs, caption, float, amsmath, amsfonts,`` and ``morefloats``.
+    |br |Writes a :math:`\LaTeX` file named
+    ``<<M_.fname>>_TeX_binder.tex`` that collects all TeX output
+    generated by Dynare into a file. This file can be compiled using
+    ``pdflatex`` and automatically tries to load all required
+    packages. Requires the following :math:`\LaTeX` packages: ``breqn,
+    psfrag, graphicx, epstopdf, longtable, booktabs, caption, float,
+    amsmath, amsfonts,`` and ``morefloats``.
 
 
 .. _Dynare wiki: http://www.dynare.org/DynareWiki/EquationsTags
@@ -8206,24 +10519,43 @@ Misc commands
 
 .. rubric:: Footnotes
 
-.. [#f1] Note that arbitrary MATLAB or Octave expressions can be put in a ``.mod`` file, but those expressions have to be on separate lines, generally at the end of the file for post-processing purposes. They are not interpreted by Dynare, and are simply passed on unmodified to MATLAB or Octave. Those constructions are not addresses in this section.
+.. [#f1] Note that arbitrary MATLAB or Octave expressions can be put
+         in a ``.mod`` file, but those expressions have to be on
+         separate lines, generally at the end of the file for
+         post-processing purposes. They are not interpreted by Dynare,
+         and are simply passed on unmodified to MATLAB or
+         Octave. Those constructions are not addresses in this
+         section.
 
-.. [#f2] In particular, for big models, the compilation step can be very time-consuming, and use of this option may be counter-productive in those cases.
+.. [#f2] In particular, for big models, the compilation step can be
+         very time-consuming, and use of this option may be
+         counter-productive in those cases.
 
-.. [#f3] See option :ref:`conf_sig <confsig>` to change the size of the HPD interval.
+.. [#f3] See option :ref:`conf_sig <confsig>` to change the size of
+         the HPD interval.
 
-.. [#f4] See option :ref:`conf_sig <confsig>` to change the size of the HPD interval.
+.. [#f4] See option :ref:`conf_sig <confsig>` to change the size of
+         the HPD interval.
 
-.. [#f5] When the shocks are correlated, it is the decomposition of orthogonalized shocks via Cholesky decomposition according to the order of declaration of shocks (see :ref:`var-decl`)
+.. [#f5] When the shocks are correlated, it is the decomposition of
+         orthogonalized shocks via Cholesky decomposition according to
+         the order of declaration of shocks (see :ref:`var-decl`)
 
 .. [#f6] See :opt:`forecast <forecast = INTEGER>` for more information.
 
-.. [#f7] In case of Excel not being installed, `<https://mathworks.com/matlabcentral/fileexchange/38591-xlwrite--generate-xls-x--files-without-excel-on-mac-linux-win>`_ may be helpful.
+.. [#f7] In case of Excel not being installed,
+         `<https://mathworks.com/matlabcentral/fileexchange/38591-xlwrite--generate-xls-x--files-without-excel-on-mac-linux-win>`_
+         may be helpful.
 
-.. [#f8] See option :ref:`conf_sig <confsig>` to change the size of the HPD interval.
+.. [#f8] See option :ref:`conf_sig <confsig>` to change the size of
+         the HPD interval.
 
-.. [#f9] See option :ref:`conf_sig <confsig>` to change the size of the HPD interval.
+.. [#f9] See option :ref:`conf_sig <confsig>` to change the size of
+         the HPD interval.
 
-.. [#f10] If you want to align the paper with the description herein, please note that :math:`A` is :math:`A^0` and :math:`F` is :math:`A^+`.
+.. [#f10] If you want to align the paper with the description herein,
+          please note that :math:`A` is :math:`A^0` and :math:`F` is
+          :math:`A^+`.
 
-.. [#f11] An example can be found at `<https://github.com/DynareTeam/dynare/blob/master/tests/ms-dsge/test_ms_dsge.mod>`_.
+.. [#f11] An example can be found at
+          `<https://github.com/DynareTeam/dynare/blob/master/tests/ms-dsge/test_ms_dsge.mod>`_.
