@@ -15,8 +15,8 @@ GeneralSylvester::GeneralSylvester(int ord, int n, int m, int zero_cols,
                                    const ConstVector &dc, const ConstVector &dd,
                                    const SylvParams &ps)
   : pars(ps),
-    mem_driver(pars, 1, m, n, ord), order(ord), a(da, n),
-    b(db, n, n-zero_cols), c(dc, m), d(dd, n, power(m, order)),
+    mem_driver(pars, 1, m, n, ord), order(ord), a(Vector{da}, n),
+    b(Vector{db}, n, n-zero_cols), c(Vector{dc}, m), d(Vector{dd}, n, power(m, order)),
     solved(false)
 {
   init();
@@ -27,8 +27,8 @@ GeneralSylvester::GeneralSylvester(int ord, int n, int m, int zero_cols,
                                    const ConstVector &dc, Vector &dd,
                                    const SylvParams &ps)
   : pars(ps),
-    mem_driver(pars, 0, m, n, ord), order(ord), a(da, n),
-    b(db, n, n-zero_cols), c(dc, m), d(dd, n, power(m, order)),
+    mem_driver(pars, 0, m, n, ord), order(ord), a(Vector{da}, n),
+    b(Vector{db}, n, n-zero_cols), c(Vector{dc}, m), d(dd, n, power(m, order)),
     solved(false)
 {
   init();
@@ -39,8 +39,8 @@ GeneralSylvester::GeneralSylvester(int ord, int n, int m, int zero_cols,
                                    const ConstVector &dc, const ConstVector &dd,
                                    bool alloc_for_check)
   : pars(alloc_for_check),
-    mem_driver(pars, 1, m, n, ord), order(ord), a(da, n),
-    b(db, n, n-zero_cols), c(dc, m), d(dd, n, power(m, order)),
+    mem_driver(pars, 1, m, n, ord), order(ord), a(Vector{da}, n),
+    b(Vector{db}, n, n-zero_cols), c(Vector{dc}, m), d(Vector{dd}, n, power(m, order)),
     solved(false)
 {
   init();
@@ -51,8 +51,8 @@ GeneralSylvester::GeneralSylvester(int ord, int n, int m, int zero_cols,
                                    const ConstVector &dc, Vector &dd,
                                    bool alloc_for_check)
   : pars(alloc_for_check),
-    mem_driver(pars, 0, m, n, ord), order(ord), a(da, n),
-    b(db, n, n-zero_cols), c(dc, m), d(dd, n, power(m, order)),
+    mem_driver(pars, 0, m, n, ord), order(ord), a(Vector{da}, n),
+    b(Vector{db}, n, n-zero_cols), c(Vector{dc}, m), d(dd, n, power(m, order)),
     solved(false)
 {
   init();

@@ -13,7 +13,7 @@
 
 SimilarityDecomp::SimilarityDecomp(const ConstVector &d, int d_size, double log10norm)
 {
-  SchurDecomp sd(SqSylvMatrix(d, d_size));
+  SchurDecomp sd(SqSylvMatrix(Vector{d}, d_size));
   q = std::make_unique<SqSylvMatrix>(sd.getQ());
   b = std::make_unique<BlockDiagonal>(sd.getT());
   invq = std::make_unique<SqSylvMatrix>(d_size);

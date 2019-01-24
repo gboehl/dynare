@@ -6,6 +6,7 @@
 #define GENERAL_MATRIX_H
 
 #include "Vector.hh"
+#include "SylvException.hh"
 
 #include <algorithm>
 #include <memory>
@@ -17,7 +18,7 @@ class ConstGeneralMatrix
 {
   friend class GeneralMatrix;
 protected:
-  ConstVector data;
+  ConstVector data; // Has unit-stride
   int rows;
   int cols;
   int ld;
@@ -25,12 +26,21 @@ public:
   ConstGeneralMatrix(ConstVector d, int m, int n)
     : data(std::move(d)), rows(m), cols(n), ld(m)
   {
+    if (data.skip() > 1)
+      throw SYLV_MES_EXCEPTION("Vector must have unit-stride");
+    if (data.length() < m*n)
+      throw SYLV_MES_EXCEPTION("Vector is too small");
   }
+  ConstGeneralMatrix(const ConstGeneralMatrix &m) = default;
+  ConstGeneralMatrix(ConstGeneralMatrix &&m) = default;
   // Implicit conversion from ConstGeneralMatrix is ok, since it's cheap
   ConstGeneralMatrix(const GeneralMatrix &m);
   ConstGeneralMatrix(const GeneralMatrix &m, int i, int j, int nrows, int ncols);
   ConstGeneralMatrix(const ConstGeneralMatrix &m, int i, int j, int nrows, int ncols);
   virtual ~ConstGeneralMatrix() = default;
+
+  ConstGeneralMatrix &operator=(const ConstGeneralMatrix &v) = delete;
+  ConstGeneralMatrix &operator=(ConstGeneralMatrix &&v) = delete;
 
   const double &
   get(int i, int j) const
@@ -117,7 +127,7 @@ class GeneralMatrix
 {
   friend class ConstGeneralMatrix;
 protected:
-  Vector data;
+  Vector data; // Has unit-stride
   int rows;
   int cols;
   int ld;
@@ -126,17 +136,22 @@ public:
     : data(m*n), rows(m), cols(n), ld(m)
   {
   }
-  GeneralMatrix(const ConstVector &d, int m, int n)
-    : data(d), rows(m), cols(n), ld(m)
+  GeneralMatrix(Vector d, int m, int n)
+    : data(std::move(d)), rows(m), cols(n), ld(m)
   {
+    if (data.skip() > 1)
+      throw SYLV_MES_EXCEPTION("Vector must have unit-stride");
+    if (data.length() < m*n)
+      throw SYLV_MES_EXCEPTION("Vector is too small");
   }
-  GeneralMatrix(Vector &d, int m, int n)
-    : data(d), rows(m), cols(n), ld(m)
-  {
-  }
+
+  /* The copies will have ld==rows, for memory efficiency (hence we do not use
+     the default copy constructor) */
   GeneralMatrix(const GeneralMatrix &m);
   // We don't want implict conversion from ConstGeneralMatrix, since it's expensive
   explicit GeneralMatrix(const ConstGeneralMatrix &m);
+
+  GeneralMatrix(GeneralMatrix &&m) = default;
   GeneralMatrix(const GeneralMatrix &m, const char *dummy); // transpose
   GeneralMatrix(const ConstGeneralMatrix &m, const char *dummy); // transpose
   GeneralMatrix(const GeneralMatrix &m, int i, int j, int nrows, int ncols);
@@ -153,6 +168,8 @@ public:
 
   virtual ~GeneralMatrix() = default;
   GeneralMatrix &operator=(const GeneralMatrix &m) = default;
+  GeneralMatrix &operator=(GeneralMatrix &&m) = default;
+  GeneralMatrix &operator=(const ConstGeneralMatrix &m);
 
   const double &
   get(int i, int j) const
@@ -194,7 +211,7 @@ public:
   {
     return data;
   }
-  const Vector &
+  ConstVector
   getData() const
   {
     return data;
@@ -479,12 +496,12 @@ public:
   {
     return VT;
   }
-  void solve(const GeneralMatrix &B, GeneralMatrix &X) const;
+  void solve(const ConstGeneralMatrix &B, GeneralMatrix &X) const;
   void
-  solve(const Vector &b, Vector &x) const
+  solve(const ConstVector &b, Vector &x) const
   {
     GeneralMatrix xmat(x, x.length(), 1);
-    solve(GeneralMatrix(b, b.length(), 1), xmat);
+    solve(ConstGeneralMatrix(b, b.length(), 1), xmat);
   }
 private:
   void construct(const GeneralMatrix &A);

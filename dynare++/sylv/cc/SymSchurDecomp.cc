@@ -11,7 +11,7 @@
 #include <cmath>
 #include <vector>
 
-SymSchurDecomp::SymSchurDecomp(const GeneralMatrix &mata)
+SymSchurDecomp::SymSchurDecomp(const ConstGeneralMatrix &mata)
   : lambda(mata.numRows()), q(mata.numRows())
 {
   // check mata is square

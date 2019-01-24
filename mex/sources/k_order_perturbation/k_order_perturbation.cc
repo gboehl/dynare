@@ -200,19 +200,19 @@ extern "C" {
         const mxArray *g1 = prhs[3];
         int m = (int) mxGetM(g1);
         int n = (int) mxGetN(g1);
-        g1m = new TwoDMatrix(m, n, ConstVector{g1});
+        g1m = new TwoDMatrix(m, n, Vector{ConstVector{g1}});
         if (nrhs > 4)
           {
             const mxArray *g2 = prhs[4];
             int m = (int) mxGetM(g2);
             int n = (int) mxGetN(g2);
-            g2m = new TwoDMatrix(m, n, ConstVector{g2});
+            g2m = new TwoDMatrix(m, n, Vector{ConstVector{g2}});
             if (nrhs > 5)
               {
                 const mxArray *g3 = prhs[5];
                 int m = (int) mxGetM(g3);
                 int n = (int) mxGetN(g3);
-                g3m = new TwoDMatrix(m, n, ConstVector{g3});
+                g3m = new TwoDMatrix(m, n, Vector{ConstVector{g3}});
               }
           }
       }

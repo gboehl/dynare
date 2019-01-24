@@ -80,6 +80,16 @@ GeneralMatrix::GeneralMatrix(const ConstGeneralMatrix &a, const char *dum1,
   gemm("T", a, "T", b, 1.0, 0.0);
 }
 
+GeneralMatrix &
+GeneralMatrix::operator=(const ConstGeneralMatrix &m)
+{
+  data = m.data;
+  rows = m.rows;
+  cols = m.cols;
+  ld = m.ld;
+  return *this;
+}
+
 Vector
 GeneralMatrix::getRow(int row)
 {
@@ -592,7 +602,7 @@ SVDDecomp::construct(const GeneralMatrix &A)
 }
 
 void
-SVDDecomp::solve(const GeneralMatrix &B, GeneralMatrix &X) const
+SVDDecomp::solve(const ConstGeneralMatrix &B, GeneralMatrix &X) const
 {
   if (B.numRows() != U.numRows())
     throw SYLV_MES_EXCEPTION("Incompatible number of rows ");

@@ -50,7 +50,7 @@ class SchurDecompZero : public SchurDecomp
   GeneralMatrix ru; /* right upper matrix */
 public:
   SchurDecompZero(const GeneralMatrix &m);
-  const GeneralMatrix &
+  ConstGeneralMatrix
   getRU() const
   {
     return ru;

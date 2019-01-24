@@ -8,6 +8,8 @@
 #include "GeneralMatrix.hh"
 #include "KronVector.hh"
 
+#include <utility>
+
 class SqSylvMatrix;
 
 class SylvMatrix : public GeneralMatrix
@@ -17,12 +19,8 @@ public:
     : GeneralMatrix(m, n)
   {
   }
-  SylvMatrix(const ConstVector &d, int m, int n)
-    : GeneralMatrix(d, m, n)
-  {
-  }
-  SylvMatrix(Vector &d, int m, int n)
-    : GeneralMatrix(d, m, n)
+  SylvMatrix(Vector d, int m, int n)
+    : GeneralMatrix(std::move(d), m, n)
   {
   }
   SylvMatrix(const GeneralMatrix &m)
@@ -68,10 +66,7 @@ public:
   SqSylvMatrix(int m) : SylvMatrix(m, m)
   {
   }
-  SqSylvMatrix(const ConstVector &d, int m) : SylvMatrix(d, m, m)
-  {
-  }
-  SqSylvMatrix(Vector &d, int m) : SylvMatrix(d, m, m)
+  SqSylvMatrix(Vector d, int m) : SylvMatrix(std::move(d), m, m)
   {
   }
   SqSylvMatrix(const SqSylvMatrix &m) = default;

@@ -24,7 +24,7 @@ MMMatrixIn::MMMatrixIn(const char *fname)
   if (2 != sscanf(buffer, "%d %d", &rows, &cols))
     throw MMException("Couldn't parse rows and cols\n");
   // read in data
-  data = std::shared_ptr<const double>(static_cast<double *>(operator new[](rows*cols*sizeof(double))), [](double *arr) { operator delete[](static_cast<void *>(arr)); });
+  data = std::shared_ptr<double>(static_cast<double *>(operator new[](rows*cols*sizeof(double))), [](double *arr) { operator delete[](static_cast<void *>(arr)); });
   int len = rows*cols;
   int i = 0;
   while (fgets(buffer, 1000, fd) && i < len)

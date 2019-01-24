@@ -33,16 +33,16 @@ public:
 
 class MMMatrixIn : public MallocAllocator
 {
-  std::shared_ptr<const double> data;
+  std::shared_ptr<double> data;
   int rows;
   int cols;
 public:
   MMMatrixIn(const char *fname);
   ~MMMatrixIn() = default;
-  ConstVector
+  Vector
   getData() const
   {
-    return ConstVector{data, size()};
+    return Vector{data, size()};
   }
   int
   size() const

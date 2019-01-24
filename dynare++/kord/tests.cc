@@ -13,10 +13,10 @@ struct Rand
   static bool discrete(double prob); // answers true with given probability
 };
 
-TwoDMatrix
+ConstTwoDMatrix
 make_matrix(int rows, int cols, const double *p)
 {
-  return TwoDMatrix{rows, cols,
+  return ConstTwoDMatrix{rows, cols,
       ConstVector{std::shared_ptr<const double>{p, [](const double *arr) {}}, rows*cols}};
 }
 

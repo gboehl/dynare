@@ -34,6 +34,8 @@ public:
     : ConstGeneralMatrix(std::move(d), m, n)
   {
   }
+  ConstTwoDMatrix(const ConstTwoDMatrix &m) = default;
+  ConstTwoDMatrix(ConstTwoDMatrix &&m) = default;
   // Implicit conversion from TwoDMatrix is ok, since it's cheap
   ConstTwoDMatrix(const TwoDMatrix &m);
   ConstTwoDMatrix(const TwoDMatrix &m, int first_col, int num);
@@ -46,6 +48,9 @@ public:
   }
   ~ConstTwoDMatrix()
   override = default;
+
+  ConstTwoDMatrix &operator=(const ConstTwoDMatrix &v) = delete;
+  ConstTwoDMatrix &operator=(ConstTwoDMatrix &&v) = delete;
 
   int
   nrows() const
@@ -69,16 +74,14 @@ public:
 class TwoDMatrix : public GeneralMatrix
 {
 public:
+  TwoDMatrix(const TwoDMatrix &m) = default;
+  TwoDMatrix(TwoDMatrix &&m) = default;
   TwoDMatrix(int r, int c)
     : GeneralMatrix(r, c)
   {
   }
-  TwoDMatrix(int r, int c, Vector &d)
-    : GeneralMatrix(d, r, c)
-  {
-  }
-  TwoDMatrix(int r, int c, const ConstVector &d)
-    : GeneralMatrix(d, r, c)
+  TwoDMatrix(int r, int c, Vector d)
+    : GeneralMatrix(std::move(d), r, c)
   {
   }
   TwoDMatrix(const GeneralMatrix &m)
@@ -122,8 +125,11 @@ public:
     : GeneralMatrix(a, b)
   {
   }
-  ~TwoDMatrix()
-  override = default;
+  ~TwoDMatrix() override = default;
+
+  TwoDMatrix &operator=(const TwoDMatrix &m) = default;
+  TwoDMatrix &operator=(TwoDMatrix &&m) = default;
+  TwoDMatrix &operator=(const ConstTwoDMatrix &m);
 
   int
   nrows() const

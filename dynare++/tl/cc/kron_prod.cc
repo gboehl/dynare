@@ -234,7 +234,7 @@ KronProdIAI::mult(const ConstTwoDMatrix &in, TwoDMatrix &out) const
 }
 
 /* Here we multiply $B\cdot(A_1\otimes\ldots\otimes A_n)$. First we
-   multiply $B\cdot(A_1\otimes)$, then this is multiplied by all
+   multiply $B\cdot(A_1\otimes I)$, then this is multiplied by all
    $I\otimes A_i\otimes I$, and finally by $I\otimes A_n$.
 
    If the dimension of the Kronecker product is only 1, then we multiply
@@ -293,7 +293,7 @@ KronProdAll::mult(const ConstTwoDMatrix &in, TwoDMatrix &out) const
     }
   else
     {
-      last = new TwoDMatrix(in.nrows(), in.ncols(), in.getData());
+      last = new TwoDMatrix(in.nrows(), in.ncols(), Vector{in.getData()});
     }
 
   // perform intermediate multiplications IAI
