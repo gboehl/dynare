@@ -192,7 +192,7 @@ if ~isempty(fitted_names_dict)
         yhatname = fitted_names_dict{idx, 2};
     end
 end
-oo_.olsgibbs.(eqtag).Yhat = dseries(X*oo_.olsgibbs.(eqtag).posterior.mean.beta, fp, yhatname) + lhssub;
+oo_.olsgibbs.(eqtag).Yhat = dseries(X*oo_.olsgibbs.(eqtag).posterior.mean.beta, fp, yhatname) + lhssub{1};
 
 % Apply correcting function for Yhat if it was passed
 if any(idx) ...
