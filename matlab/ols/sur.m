@@ -1,5 +1,5 @@
-function varargout = sur(ds, param_names, eqtags)
-%function varargout = sur(ds, param_names, eqtags)
+function varargout = sur(ds, param_names, eqtags, model_name)
+%function varargout = sur(ds, param_names, eqtags, model_name)
 % Seemingly Unrelated Regressions
 %
 % INPUTS
@@ -7,6 +7,8 @@ function varargout = sur(ds, param_names, eqtags)
 %   param_names       [cellstr]    list of parameters to estimate
 %   eqtags            [cellstr]    names of equation tags to estimate. If empty,
 %                                  estimate all equations
+%   model_name        [string]     name of model to be displayed with
+%                                  report
 %
 % OUTPUTS
 %   none
@@ -34,8 +36,16 @@ function varargout = sur(ds, param_names, eqtags)
 global M_ oo_ options_
 
 %% Check input argument
-if nargin < 1 || nargin > 3
-    error('function takes between 1 and 3 arguments');
+if nargin < 1 || nargin > 4
+    error('function takes between 1 and 4 arguments');
+end
+
+if nargin < 4
+    if ~isfield(oo_, 'sur')
+        model_name = 'sur_model_number_1';
+    else
+        model_name = ['sur_model_number_' num2str(length(fieldnames(oo_.sur)) + 1)];
+    end
 end
 
 if nargin < 3
@@ -114,63 +124,64 @@ for i = 1:length(constrained)
 end
 
 %% Estimation
-oo_.sur.dof = nobs;
+oo_.sur.(model_name).dof = nobs;
 
 % Estimated Parameters
 [q, r] = qr(X.data, 0);
 xpxi = (r'*r)\eye(size(X.data, 2));
 resid = Y.data - X.data * (r\(q'*Y.data));
-resid = reshape(resid, oo_.sur.dof, neqs);
+resid = reshape(resid, oo_.sur.(model_name).dof, neqs);
 
-M_.Sigma_e = resid'*resid/oo_.sur.dof;
-kLeye = kron(chol(inv(M_.Sigma_e)), eye(oo_.sur.dof));
+M_.Sigma_e = resid'*resid/oo_.sur.(model_name).dof;
+kLeye = kron(chol(inv(M_.Sigma_e)), eye(oo_.sur.(model_name).dof));
 [q, r] = qr(kLeye*X.data, 0);
-oo_.sur.beta = r\(q'*kLeye*Y.data);
+oo_.sur.(model_name).beta = r\(q'*kLeye*Y.data);
 
-M_.params(opidxs) = oo_.sur.beta;
+M_.params(opidxs) = oo_.sur.(model_name).beta;
 
 % Yhat
-oo_.sur.Yhat = X.data * oo_.sur.beta;
+oo_.sur.(model_name).Yhat = X.data * oo_.sur.(model_name).beta;
 
 % Residuals
-oo_.sur.resid = Y.data - oo_.sur.Yhat;
+oo_.sur.(model_name).resid = Y.data - oo_.sur.(model_name).Yhat;
 
 % Correct Yhat reported back to user
-oo_.sur.Yhat = oo_.sur.Yhat + lhssub;
+oo_.sur.(model_name).Yhat = oo_.sur.(model_name).Yhat + lhssub;
 
 %% Calculate statistics
 % Estimate for sigma^2
-SS_res = oo_.sur.resid'*oo_.sur.resid;
-oo_.sur.s2 = SS_res/oo_.sur.dof;
+SS_res = oo_.sur.(model_name).resid'*oo_.sur.(model_name).resid;
+oo_.sur.(model_name).s2 = SS_res/oo_.sur.(model_name).dof;
 
 % R^2
 ym = Y.data - mean(Y.data);
 SS_tot = ym'*ym;
-oo_.sur.R2 = 1 - SS_res/SS_tot;
+oo_.sur.(model_name).R2 = 1 - SS_res/SS_tot;
 
 % Adjusted R^2
-oo_.sur.adjR2 = oo_.sur.R2 - (1 - oo_.sur.R2)*M_.param_nbr/(oo_.sur.dof - 1);
+oo_.sur.(model_name).adjR2 = oo_.sur.(model_name).R2 - (1 - oo_.sur.(model_name).R2)*M_.param_nbr/(oo_.sur.(model_name).dof - 1);
 
 % Durbin-Watson
-ediff = oo_.sur.resid(2:oo_.sur.dof) - oo_.sur.resid(1:oo_.sur.dof - 1);
-oo_.sur.dw = (ediff'*ediff)/SS_res;
+ediff = oo_.sur.(model_name).resid(2:oo_.sur.(model_name).dof) - oo_.sur.(model_name).resid(1:oo_.sur.(model_name).dof - 1);
+oo_.sur.(model_name).dw = (ediff'*ediff)/SS_res;
 
 % Standard Error
-oo_.sur.stderr = sqrt(oo_.sur.s2*diag(xpxi));
+oo_.sur.(model_name).stderr = sqrt(oo_.sur.(model_name).s2*diag(xpxi));
 
 % T-Stat
-oo_.sur.tstat = oo_.sur.beta./oo_.sur.stderr;
+oo_.sur.(model_name).tstat = oo_.sur.(model_name).beta./oo_.sur.(model_name).stderr;
 
 %% Print Output
 if ~options_.noprint
-    preamble = {sprintf('No. Equations: %d', neqs), ...
+    preamble = {['Model name: ' model_name], ...
+        sprintf('No. Equations: %d', neqs), ...
         sprintf('No. Independent Variables: %d', size(X, 2)), ...
-        sprintf('Observations: %d', oo_.sur.dof)};
+        sprintf('Observations: %d', oo_.sur.(model_name).dof)};
 
-    afterward = {sprintf('R^2: %f', oo_.sur.R2), ...
-        sprintf('R^2 Adjusted: %f', oo_.sur.adjR2), ...
-        sprintf('s^2: %f', oo_.sur.s2), ...
-        sprintf('Durbin-Watson: %f', oo_.sur.dw)};
+    afterward = {sprintf('R^2: %f', oo_.sur.(model_name).R2), ...
+        sprintf('R^2 Adjusted: %f', oo_.sur.(model_name).adjR2), ...
+        sprintf('s^2: %f', oo_.sur.(model_name).s2), ...
+        sprintf('Durbin-Watson: %f', oo_.sur.(model_name).dw)};
 
     if ~isempty(constrained_param_idxs)
         afterward = [afterward, ['Constrained parameters: ' ...
@@ -179,6 +190,6 @@ if ~options_.noprint
 
     dyn_table('SUR Estimation', preamble, afterward, X.name, ...
         {'Estimates','t-statistic','Std. Error'}, 4, ...
-        [oo_.sur.beta oo_.sur.tstat oo_.sur.stderr]);
+        [oo_.sur.(model_name).beta oo_.sur.(model_name).tstat oo_.sur.(model_name).stderr]);
 end
 end
