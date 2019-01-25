@@ -171,10 +171,13 @@ oo_.sur.(model_name).stderr = sqrt(oo_.sur.(model_name).s2*diag(xpxi));
 % T-Stat
 oo_.sur.(model_name).tstat = oo_.sur.(model_name).beta./oo_.sur.(model_name).stderr;
 
+oo_.sur.(model_name).neqs = neqs;
+oo_.sur.(model_name).pname = X.name;
+
 %% Print Output
 if ~options_.noprint
     preamble = {['Model name: ' model_name], ...
-        sprintf('No. Equations: %d', neqs), ...
+        sprintf('No. Equations: %d', oo_.sur.(model_name).neqs), ...
         sprintf('No. Independent Variables: %d', size(X, 2)), ...
         sprintf('Observations: %d', oo_.sur.(model_name).dof)};
 
