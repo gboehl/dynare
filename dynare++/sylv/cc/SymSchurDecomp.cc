@@ -19,9 +19,6 @@ SymSchurDecomp::SymSchurDecomp(const ConstGeneralMatrix &mata)
     throw SYLV_MES_EXCEPTION("Matrix is not square in SymSchurDecomp constructor");
 
   // prepare for dsyevr
-  const char *jobz = "V";
-  const char *range = "A";
-  const char *uplo = "U";
   lapack_int n = mata.numRows();
   GeneralMatrix tmpa(mata);
   double *a = tmpa.base();
@@ -45,7 +42,7 @@ SymSchurDecomp::SymSchurDecomp(const ConstGeneralMatrix &mata)
   lapack_int info;
 
   // query for lwork and liwork
-  dsyevr(jobz, range, uplo, &n, a, &lda, vl, vu, il, iu, &abstol,
+  dsyevr("V", "A", "U", &n, a, &lda, vl, vu, il, iu, &abstol,
          &m, w, z, &ldz, isuppz.data(), &tmpwork, &lwork, &tmpiwork, &liwork, &info);
   lwork = (int) tmpwork;
   liwork = tmpiwork;
@@ -54,7 +51,7 @@ SymSchurDecomp::SymSchurDecomp(const ConstGeneralMatrix &mata)
   std::vector<lapack_int> iwork(liwork);
 
   // do the calculation
-  dsyevr(jobz, range, uplo, &n, a, &lda, vl, vu, il, iu, &abstol,
+  dsyevr("V", "A", "U", &n, a, &lda, vl, vu, il, iu, &abstol,
          &m, w, z, &ldz, isuppz.data(), work.data(), &lwork, iwork.data(), &liwork, &info);
 
   if (info < 0)

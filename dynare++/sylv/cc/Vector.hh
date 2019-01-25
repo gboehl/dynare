@@ -140,6 +140,7 @@ class ConstGeneralMatrix;
 
 class ConstVector
 {
+  friend class Vector;
 protected:
   int len;
   int off{0}; // offset to double* pointer

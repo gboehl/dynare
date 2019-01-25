@@ -29,7 +29,7 @@ SylvParams::print(std::ostream &fdesc, const std::string &prefix) const
   f_largest.print(fdesc, prefix, "largest block in F ");
   f_zeros.print(fdesc, prefix,  "num zeros in F     ");
   f_offdiag.print(fdesc, prefix, "num offdiag in F   ");
-  if (*method == iter)
+  if (*method == solve_method::iter)
     {
       converged.print(fdesc, prefix,       "converged          ");
       convergence_tol.print(fdesc, prefix, "convergence tol.   ");
@@ -52,57 +52,57 @@ void
 SylvParams::setArrayNames(int &num, const char **names) const
 {
   num = 0;
-  if (method.getStatus() != undef)
+  if (method.getStatus() != status::undef)
     names[num++] = "method";
-  if (convergence_tol.getStatus() != undef)
+  if (convergence_tol.getStatus() != status::undef)
     names[num++] = "convergence_tol";
-  if (max_num_iter.getStatus() != undef)
+  if (max_num_iter.getStatus() != status::undef)
     names[num++] = "max_num_iter";
-  if (bs_norm.getStatus() != undef)
+  if (bs_norm.getStatus() != status::undef)
     names[num++] = "bs_norm";
-  if (converged.getStatus() != undef)
+  if (converged.getStatus() != status::undef)
     names[num++] = "converged";
-  if (iter_last_norm.getStatus() != undef)
+  if (iter_last_norm.getStatus() != status::undef)
     names[num++] = "iter_last_norm";
-  if (num_iter.getStatus() != undef)
+  if (num_iter.getStatus() != status::undef)
     names[num++] = "num_iter";
-  if (f_err1.getStatus() != undef)
+  if (f_err1.getStatus() != status::undef)
     names[num++] = "f_err1";
-  if (f_errI.getStatus() != undef)
+  if (f_errI.getStatus() != status::undef)
     names[num++] = "f_errI";
-  if (viv_err1.getStatus() != undef)
+  if (viv_err1.getStatus() != status::undef)
     names[num++] = "viv_err1";
-  if (viv_errI.getStatus() != undef)
+  if (viv_errI.getStatus() != status::undef)
     names[num++] = "viv_errI";
-  if (ivv_err1.getStatus() != undef)
+  if (ivv_err1.getStatus() != status::undef)
     names[num++] = "ivv_err1";
-  if (ivv_errI.getStatus() != undef)
+  if (ivv_errI.getStatus() != status::undef)
     names[num++] = "ivv_errI";
-  if (f_blocks.getStatus() != undef)
+  if (f_blocks.getStatus() != status::undef)
     names[num++] = "f_blocks";
-  if (f_largest.getStatus() != undef)
+  if (f_largest.getStatus() != status::undef)
     names[num++] = "f_largest";
-  if (f_zeros.getStatus() != undef)
+  if (f_zeros.getStatus() != status::undef)
     names[num++] = "f_zeros";
-  if (f_offdiag.getStatus() != undef)
+  if (f_offdiag.getStatus() != status::undef)
     names[num++] = "f_offdiag";
-  if (rcondA1.getStatus() != undef)
+  if (rcondA1.getStatus() != status::undef)
     names[num++] = "rcondA1";
-  if (rcondAI.getStatus() != undef)
+  if (rcondAI.getStatus() != status::undef)
     names[num++] = "rcondAI";
-  if (eig_min.getStatus() != undef)
+  if (eig_min.getStatus() != status::undef)
     names[num++] = "eig_min";
-  if (mat_err1.getStatus() != undef)
+  if (mat_err1.getStatus() != status::undef)
     names[num++] = "mat_err1";
-  if (mat_errI.getStatus() != undef)
+  if (mat_errI.getStatus() != status::undef)
     names[num++] = "mat_errI";
-  if (mat_errF.getStatus() != undef)
+  if (mat_errF.getStatus() != status::undef)
     names[num++] = "mat_errF";
-  if (vec_err1.getStatus() != undef)
+  if (vec_err1.getStatus() != status::undef)
     names[num++] = "vec_err1";
-  if (vec_errI.getStatus() != undef)
+  if (vec_errI.getStatus() != status::undef)
     names[num++] = "vec_errI";
-  if (cpu_time.getStatus() != undef)
+  if (cpu_time.getStatus() != status::undef)
     names[num++] = "cpu_time";
 }
 
@@ -133,7 +133,7 @@ SylvParams::BoolParamItem::createMatlabArray() const
 mxArray *
 SylvParams::MethodParamItem::createMatlabArray() const
 {
-  if (value == iter)
+  if (value == solve_method::iter)
     return mxCreateString("iterative");
   else
     return mxCreateString("recursive");
@@ -149,57 +149,57 @@ SylvParams::createStructArray() const
   mxArray *const res = mxCreateStructArray(2, dims, num, names);
 
   int i = 0;
-  if (method.getStatus() != undef)
+  if (method.getStatus() != status::undef)
     mxSetFieldByNumber(res, 0, i++, method.createMatlabArray());
-  if (convergence_tol.getStatus() != undef)
+  if (convergence_tol.getStatus() != status::undef)
     mxSetFieldByNumber(res, 0, i++, convergence_tol.createMatlabArray());
-  if (max_num_iter.getStatus() != undef)
+  if (max_num_iter.getStatus() != status::undef)
     mxSetFieldByNumber(res, 0, i++, max_num_iter.createMatlabArray());
-  if (bs_norm.getStatus() != undef)
+  if (bs_norm.getStatus() != status::undef)
     mxSetFieldByNumber(res, 0, i++, bs_norm.createMatlabArray());
-  if (converged.getStatus() != undef)
+  if (converged.getStatus() != status::undef)
     mxSetFieldByNumber(res, 0, i++, converged.createMatlabArray());
-  if (iter_last_norm.getStatus() != undef)
+  if (iter_last_norm.getStatus() != status::undef)
     mxSetFieldByNumber(res, 0, i++, iter_last_norm.createMatlabArray());
-  if (num_iter.getStatus() != undef)
+  if (num_iter.getStatus() != status::undef)
     mxSetFieldByNumber(res, 0, i++, num_iter.createMatlabArray());
-  if (f_err1.getStatus() != undef)
+  if (f_err1.getStatus() != status::undef)
     mxSetFieldByNumber(res, 0, i++, f_err1.createMatlabArray());
-  if (f_errI.getStatus() != undef)
+  if (f_errI.getStatus() != status::undef)
     mxSetFieldByNumber(res, 0, i++, f_errI.createMatlabArray());
-  if (viv_err1.getStatus() != undef)
+  if (viv_err1.getStatus() != status::undef)
     mxSetFieldByNumber(res, 0, i++, viv_err1.createMatlabArray());
-  if (viv_errI.getStatus() != undef)
+  if (viv_errI.getStatus() != status::undef)
     mxSetFieldByNumber(res, 0, i++, viv_errI.createMatlabArray());
-  if (ivv_err1.getStatus() != undef)
+  if (ivv_err1.getStatus() != status::undef)
     mxSetFieldByNumber(res, 0, i++, ivv_err1.createMatlabArray());
-  if (ivv_errI.getStatus() != undef)
+  if (ivv_errI.getStatus() != status::undef)
     mxSetFieldByNumber(res, 0, i++, ivv_errI.createMatlabArray());
-  if (f_blocks.getStatus() != undef)
+  if (f_blocks.getStatus() != status::undef)
     mxSetFieldByNumber(res, 0, i++, f_blocks.createMatlabArray());
-  if (f_largest.getStatus() != undef)
+  if (f_largest.getStatus() != status::undef)
     mxSetFieldByNumber(res, 0, i++, f_largest.createMatlabArray());
-  if (f_zeros.getStatus() != undef)
+  if (f_zeros.getStatus() != status::undef)
     mxSetFieldByNumber(res, 0, i++, f_zeros.createMatlabArray());
-  if (f_offdiag.getStatus() != undef)
+  if (f_offdiag.getStatus() != status::undef)
     mxSetFieldByNumber(res, 0, i++, f_offdiag.createMatlabArray());
-  if (rcondA1.getStatus() != undef)
+  if (rcondA1.getStatus() != status::undef)
     mxSetFieldByNumber(res, 0, i++, rcondA1.createMatlabArray());
-  if (rcondAI.getStatus() != undef)
+  if (rcondAI.getStatus() != status::undef)
     mxSetFieldByNumber(res, 0, i++, rcondAI.createMatlabArray());
-  if (eig_min.getStatus() != undef)
+  if (eig_min.getStatus() != status::undef)
     mxSetFieldByNumber(res, 0, i++, eig_min.createMatlabArray());
-  if (mat_err1.getStatus() != undef)
+  if (mat_err1.getStatus() != status::undef)
     mxSetFieldByNumber(res, 0, i++, mat_err1.createMatlabArray());
-  if (mat_errI.getStatus() != undef)
+  if (mat_errI.getStatus() != status::undef)
     mxSetFieldByNumber(res, 0, i++, mat_errI.createMatlabArray());
-  if (mat_errF.getStatus() != undef)
+  if (mat_errF.getStatus() != status::undef)
     mxSetFieldByNumber(res, 0, i++, mat_errF.createMatlabArray());
-  if (vec_err1.getStatus() != undef)
+  if (vec_err1.getStatus() != status::undef)
     mxSetFieldByNumber(res, 0, i++, vec_err1.createMatlabArray());
-  if (vec_errI.getStatus() != undef)
+  if (vec_errI.getStatus() != status::undef)
     mxSetFieldByNumber(res, 0, i++, vec_errI.createMatlabArray());
-  if (cpu_time.getStatus() != undef)
+  if (cpu_time.getStatus() != status::undef)
     mxSetFieldByNumber(res, 0, i++, cpu_time.createMatlabArray());
 
   return res;

@@ -39,6 +39,10 @@ public:
     : GeneralMatrix(a, b)
   {
   }
+  SylvMatrix(const SylvMatrix &m) = default;
+  SylvMatrix(SylvMatrix &&m) = default;
+  SylvMatrix &operator=(const SylvMatrix &m) = default;
+  SylvMatrix &operator=(SylvMatrix &&m) = default;
 
   /* this = |I 0|* this
      |0 m|         */
@@ -70,6 +74,7 @@ public:
   {
   }
   SqSylvMatrix(const SqSylvMatrix &m) = default;
+  SqSylvMatrix(SqSylvMatrix &&m) = default;
   SqSylvMatrix(const GeneralMatrix &m, int i, int j, int nrows)
     : SylvMatrix(m, i, j, nrows, nrows)
   {
@@ -79,12 +84,8 @@ public:
   {
   }
   SqSylvMatrix(const GeneralMatrix &a, const GeneralMatrix &b);
-  SqSylvMatrix &
-  operator=(const SqSylvMatrix &m)
-  {
-    GeneralMatrix::operator=(m);
-    return *this;
-  }
+  SqSylvMatrix &operator=(const SqSylvMatrix &m) = default;
+  SqSylvMatrix &operator=(SqSylvMatrix &&m) = default;
   /* x = (this \otimes this..\otimes this)*d */
   void multVecKron(KronVector &x, const ConstKronVector &d) const;
   /* x = (this' \otimes this'..\otimes this')*d */

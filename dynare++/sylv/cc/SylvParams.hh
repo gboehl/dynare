@@ -12,7 +12,7 @@
 # include <dynmex.h>
 #endif
 
-typedef enum {def, changed, undef} status;
+enum class status {def, changed, undef};
 
 template <class _Type>
 struct ParamItem
@@ -24,25 +24,21 @@ protected:
 public:
   ParamItem()
   {
-    s = undef;
+    s = status::undef;
   }
   ParamItem(_Type val)
   {
-    value = val; s = def;
+    value = val;
+    s = status::def;
   }
-  ParamItem(const _Self &item)
-  {
-    value = item.value; s = item.s;
-  }
-  _Self &
-  operator=(const _Self &item)
-  {
-    value = item.value; s = item.s; return *this;
-  }
+  ParamItem(const _Self &item) = default;
+  _Self &operator=(const _Self &item) = default;
   _Self &
   operator=(const _Type &val)
   {
-    value = val; s = changed; return *this;
+    value = val;
+    s = status::changed;
+    return *this;
   }
   _Type
   operator*() const
@@ -57,10 +53,10 @@ public:
   void
   print(std::ostream &out, const std::string &prefix, const std::string &str) const
   {
-    if (s == undef)
+    if (s == status::undef)
       return;
     out << prefix << str << "= " << value;
-    if (s == def)
+    if (s == status::def)
       out << " <default>";
     out << std::endl;
   }
@@ -69,7 +65,7 @@ public:
 class SylvParams
 {
 public:
-  using solve_method = enum {iter, recurse};
+  enum class solve_method {iter, recurse};
 
 protected:
   class DoubleParamItem : public ParamItem<double>
@@ -184,7 +180,7 @@ public:
   DoubleParamItem cpu_time; // time of the job in CPU seconds
 
   SylvParams(bool wc = false)
-    : method(recurse), convergence_tol(1.e-30), max_num_iter(15),
+    : method(solve_method::recurse), convergence_tol(1.e-30), max_num_iter(15),
       bs_norm(1.3), want_check(wc)
   {
   }
@@ -206,10 +202,10 @@ operator<<(std::ostream &out, SylvParams::solve_method m)
 {
   switch (m)
     {
-    case SylvParams::iter:
+    case SylvParams::solve_method::iter:
       out << "iterative";
       break;
-    case SylvParams::recurse:
+    case SylvParams::solve_method::recurse:
       out << "recurse (a.k.a. triangular)";
       break;
     }

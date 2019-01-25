@@ -12,8 +12,6 @@
 #include <list>
 #include <memory>
 
-using namespace std;
-
 class DiagonalBlock;
 class Diagonal;
 class DiagPair
@@ -23,19 +21,17 @@ private:
   double *a2;
 public:
   DiagPair() = default;
-  DiagPair(double *aa1, double *aa2)
+  DiagPair(double *aa1, double *aa2) : a1{aa1}, a2{aa2}
   {
-    a1 = aa1; a2 = aa2;
   }
-  DiagPair(const DiagPair &p)
-  {
-    a1 = p.a1; a2 = p.a2;
-  }
+  DiagPair(const DiagPair &p) = default;
   DiagPair &operator=(const DiagPair &p) = default;
   DiagPair &
   operator=(double v)
   {
-    *a1 = v; *a2 = v; return *this;
+    *a1 = v;
+    *a2 = v;
+    return *this;
   }
   const double &
   operator*() const
@@ -48,6 +44,9 @@ public:
   friend class DiagonalBlock;
 };
 
+// Stores a diagonal block: either a scalar, or a 2x2 block
+/* alpha points to the diagonal element(s); beta1 and beta2 point to the
+   off-diagonal elements of the 2x2 block */
 class DiagonalBlock
 {
 private:
@@ -57,54 +56,25 @@ private:
   double *beta1;
   double *beta2;
 
-  void
-  copy(const DiagonalBlock &b)
-  {
-    jbar = b.jbar;
-    real = b.real;
-    alpha = b.alpha;
-    beta1 = b.beta1;
-    beta2 = b.beta2;
-  }
-
 public:
   DiagonalBlock() = default;
   DiagonalBlock(int jb, bool r, double *a1, double *a2,
                 double *b1, double *b2)
-    : alpha(a1, a2)
+    : jbar{jb}, real{r}, alpha{a1, a2}, beta1{b1}, beta2{b2}
   {
-    jbar = jb;
-    real = r;
-    beta1 = b1;
-    beta2 = b2;
   }
   // construct complex block
   DiagonalBlock(int jb, double *a1, double *a2)
-    : alpha(a1, a2)
+    : jbar{jb}, real{false}, alpha{a1, a2}, beta1{a2-1}, beta2{a1+1}
   {
-    jbar = jb;
-    real = false;
-    beta1 = a2 - 1;
-    beta2 = a1 + 1;
   }
   // construct real block
   DiagonalBlock(int jb, double *a1)
-    : alpha(a1, a1)
+    : jbar{jb}, real{true}, alpha{a1, a1}, beta1{nullptr}, beta2{nullptr}
   {
-    jbar = jb;
-    real = true;
-    beta1 = nullptr;
-    beta2 = nullptr;
   }
-  DiagonalBlock(const DiagonalBlock &b)
-  {
-    copy(b);
-  }
-  DiagonalBlock &
-  operator=(const DiagonalBlock &b)
-  {
-    copy(b); return *this;
-  }
+  DiagonalBlock(const DiagonalBlock &b) = default;
+  DiagonalBlock &operator=(const DiagonalBlock &b) = default;
   int
   getIndex() const
   {
@@ -144,76 +114,21 @@ public:
   friend class Diagonal;
 };
 
-template <class _Tdiag, class _Tblock, class _Titer>
-struct _diag_iter
-{
-  using _Self = _diag_iter<_Tdiag, _Tblock, _Titer>;
-  _Tdiag diag;
-  _Titer it;
-public:
-  _diag_iter(_Tdiag d, _Titer iter) : diag(d), it(iter)
-  {
-  }
-  _Tblock
-  operator*() const
-  {
-    return *it;
-  }
-  _Self &
-  operator++()
-  {
-    ++it; return *this;
-  }
-  _Self &
-  operator--()
-  {
-    --it; return *this;
-  }
-  bool
-  operator==(const _Self &x) const
-  {
-    return x.it == it;
-  }
-  bool
-  operator!=(const _Self &x) const
-  {
-    return x.it != it;
-  }
-  _Self &
-  operator=(const _Self &x)
-  {
-    it = x.it; return *this;
-  }
-  _Titer
-  iter() const
-  {
-    return it;
-  }
-};
-
 class Diagonal
 {
 public:
-  using const_diag_iter = _diag_iter<const Diagonal &, const DiagonalBlock &, list<DiagonalBlock>::const_iterator>;
-  using diag_iter = _diag_iter<Diagonal &, DiagonalBlock &, list<DiagonalBlock>::iterator>;
+  using const_diag_iter = std::list<DiagonalBlock>::const_iterator;
+  using diag_iter = std::list<DiagonalBlock>::iterator;
 private:
   int num_all{0};
-  list<DiagonalBlock> blocks;
+  std::list<DiagonalBlock> blocks;
   int num_real{0};
-  void copy(const Diagonal &);
 public:
   Diagonal() = default;
   Diagonal(double *data, int d_size);
   Diagonal(double *data, const Diagonal &d);
-  Diagonal(const Diagonal &d)
-  {
-    copy(d);
-  }
-  Diagonal &
-  operator=(const Diagonal &d)
-  {
-    copy(d); return *this;
-  }
+  Diagonal(const Diagonal &d) = default;
+  Diagonal &operator=(const Diagonal &d) = default;
   virtual ~Diagonal() = default;
 
   int
@@ -247,22 +162,22 @@ public:
   diag_iter
   begin()
   {
-    return diag_iter(*this, blocks.begin());
+    return blocks.begin();
   }
   const_diag_iter
   begin() const
   {
-    return const_diag_iter(*this, blocks.begin());
+    return blocks.begin();
   }
   diag_iter
   end()
   {
-    return diag_iter(*this, blocks.end());
+    return blocks.end();
   }
   const_diag_iter
   end() const
   {
-    return const_diag_iter(*this, blocks.end());
+    return blocks.end();
   }
 
   /* redefine pointers as data start at p */
@@ -283,14 +198,11 @@ struct _matrix_iter
 public:
   _matrix_iter(_TPtr base, int ds, bool r)
   {
-    ptr = base; d_size = ds; real = r;
+    ptr = base;
+    d_size = ds;
+    real = r;
   }
   virtual ~_matrix_iter() = default;
-  _Self &
-  operator=(const _Self &it)
-  {
-    ptr = it.ptr; d_size = it.d_size; real = it.real; return *this;
-  }
   bool
   operator==(const _Self &it) const
   {
@@ -328,19 +240,17 @@ public:
   _Self &
   operator++() override
   {
-    _Tparent::ptr++; row++; return *this;
+    _Tparent::ptr++;
+    row++;
+    return *this;
   }
   _TRef
   b() const
   {
     if (_Tparent::real)
-      {
-        return *(_Tparent::ptr);
-      }
+      return *(_Tparent::ptr);
     else
-      {
-        return *(_Tparent::ptr+_Tparent::d_size);
-      }
+      return *(_Tparent::ptr+_Tparent::d_size);
   }
   int
   getRow() const
@@ -363,19 +273,17 @@ public:
   _Self &
   operator++() override
   {
-    _Tparent::ptr += _Tparent::d_size; col++; return *this;
+    _Tparent::ptr += _Tparent::d_size;
+    col++;
+    return *this;
   }
   virtual _TRef
   b() const
   {
     if (_Tparent::real)
-      {
-        return *(_Tparent::ptr);
-      }
+      return *(_Tparent::ptr);
     else
-      {
-        return *(_Tparent::ptr+1);
-      }
+      return *(_Tparent::ptr+1);
   }
   int
   getCol() const
@@ -387,6 +295,12 @@ public:
 class SchurDecomp;
 class SchurDecompZero;
 
+/* Represents an upper quasi-triangular matrix.
+   All the elements are stored in the SqSylvMatrix super-class.
+   Additionally, a list of the diagonal blocks (1x1 or 2x2), is stored in the
+   "diagonal" member, in order to optimize some operations (where the matrix is
+   seen as an upper-triangular matrix, plus sub-diagonal elements of the 2x2
+   diagonal blocks) */
 class QuasiTriangular : public SqSylvMatrix
 {
 public:

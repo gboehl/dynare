@@ -4,70 +4,52 @@
 
 #include "MMMatrix.hh"
 
-#include <cstdio>
-#include <cstring>
+#include <fstream>
+#include <iomanip>
 
-MMMatrixIn::MMMatrixIn(const char *fname)
+MMMatrixIn::MMMatrixIn(const std::string &fname)
 {
-  FILE *fd;
-  if (nullptr == (fd = fopen(fname, "r")))
-    throw MMException(string("Cannot open file ")+fname+" for reading\n");
+  std::ifstream fd{fname};
+  if (fd.fail())
+    throw MMException("Cannot open file "+fname+" for reading\n");
 
-  char buffer[1000];
   // jump over initial comments
-  while (fgets(buffer, 1000, fd) && strncmp(buffer, "%%", 2))
-    {
-    }
+  while (fd.peek() == '%')
+    fd.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
   // read in number of rows and cols
-  if (!fgets(buffer, 1000, fd))
-    throw MMException(string("Cannot read rows and cols while reading ")+fname+"\n");
-  if (2 != sscanf(buffer, "%d %d", &rows, &cols))
+  fd >> rows >> cols;
+  if (fd.fail())
     throw MMException("Couldn't parse rows and cols\n");
   // read in data
   data = std::shared_ptr<double>(static_cast<double *>(operator new[](rows*cols*sizeof(double))), [](double *arr) { operator delete[](static_cast<void *>(arr)); });
   int len = rows*cols;
   int i = 0;
-  while (fgets(buffer, 1000, fd) && i < len)
+  while (!fd.eof() && i < len)
     {
-      if (1 != sscanf(buffer, "%lf", const_cast<double *>(data.get())+i))
-        throw MMException(string("Couldn't parse float number ")+buffer+"\n");
+      fd >> data.get()[i];
+      if (fd.fail())
+        throw MMException("Couldn't parse float number\n");
       i++;
     }
   if (i < len)
-    {
-      char mes[1000];
-      sprintf(mes, "Couldn't read all %d lines, read %d so far\n", len, i);
-      throw MMException(mes);
-    }
-  fclose(fd);
+    throw MMException("Couldn't read all " + std::to_string(len) + " elements, read "
+                      + std::to_string(i) + " so far\n");
+  fd.close();
 }
 
 void
-MMMatrixOut::write(const char *fname, int rows, int cols, const double *data)
+MMMatrixOut::write(const std::string &fname, const GeneralMatrix &m)
 {
-  FILE *fd;
-  if (nullptr == (fd = fopen(fname, "w")))
-    throw MMException(string("Cannot open file ")+fname+" for writing\n");
+  std::ofstream fd{fname, std::ios::out | std::ios::trunc};
+  if (fd.fail())
+    throw MMException("Cannot open file "+fname+" for writing\n");
 
-  if (0 > fprintf(fd, "%%%%MatrixMarket matrix array real general\n"))
-    throw MMException(string("Output error when writing file ")+fname);
-  if (0 > fprintf(fd, "%d %d\n", rows, cols))
-    throw MMException(string("Output error when writing file ")+fname);
-  int running = 0;
-  for (int i = 0; i < cols; i++)
-    {
-      for (int j = 0; j < rows; j++)
-        {
-          if (0 > fprintf(fd, "%40.35g\n", data[running]))
-            throw MMException(string("Output error when writing file ")+fname);
-          running++;
-        }
-    }
-  fclose(fd);
-}
-
-void
-MMMatrixOut::write(const char *fname, const GeneralMatrix &m)
-{
-  write(fname, m.numRows(), m.numCols(), m.base());
+  fd << "%%%%MatrixMarket matrix array real general" << std::endl
+     << m.numRows() << ' ' << m.numCols() << std::endl
+     << std::setprecision(35);
+  for (int i = 0; i < m.numCols(); i++)
+    for (int j = 0; j < m.numRows(); j++)
+      fd << std::setw(40) << m.get(i, j);
+  fd.close();
 }

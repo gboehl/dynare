@@ -27,9 +27,7 @@ KronUtils::multAtLevel(int level, const QuasiTriangular &t,
       t.multVec(x, b);
     }
   else // 0 < level == depth
-    {
-      t.multKron(x);
-    }
+    t.multKron(x);
 }
 
 void
@@ -55,9 +53,7 @@ KronUtils::multAtLevelTrans(int level, const QuasiTriangular &t,
       t.multVecTrans(x, b);
     }
   else // 0 < level == depth
-    {
-      t.multKronTrans(x);
-    }
+    t.multKronTrans(x);
 }
 
 void

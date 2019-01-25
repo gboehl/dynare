@@ -18,76 +18,65 @@
 
 #include "MMMatrix.hh"
 
-#include <cstdio>
-#include <cstring>
 #include <ctime>
-
 #include <cmath>
+#include <string>
+#include <utility>
+#include <iostream>
+#include <iomanip>
+#include <memory>
 
 class TestRunnable : public MallocAllocator
 {
-  char name[100];
-  static double eps_norm;
 public:
-  TestRunnable(const char *n)
+  const std::string name;
+  static constexpr double eps_norm = 1.0e-10;
+  TestRunnable(std::string n) : name(std::move(n))
   {
-    strncpy(name, n, 100);
   }
   virtual ~TestRunnable() = default;
   bool test() const;
   virtual bool run() const = 0;
-  const char *
-  getName() const
-  {
-    return name;
-  }
 protected:
   // declaration of auxiliary static methods
-  static bool quasi_solve(bool trans, const char *mname, const char *vname);
-  static bool mult_kron(bool trans, const char *mname, const char *vname,
-                        const char *cname, int m, int n, int depth);
-  static bool level_kron(bool trans, const char *mname, const char *vname,
-                         const char *cname, int level, int m, int n, int depth);
-  static bool kron_power(const char *m1name, const char *m2name, const char *vname,
-                         const char *cname, int m, int n, int depth);
-  static bool lin_eval(const char *m1name, const char *m2name, const char *vname,
-                       const char *cname, int m, int n, int depth,
+  static bool quasi_solve(bool trans, const std::string &mname, const std::string &vname);
+  static bool mult_kron(bool trans, const std::string &mname, const std::string &vname,
+                        const std::string &cname, int m, int n, int depth);
+  static bool level_kron(bool trans, const std::string &mname, const std::string &vname,
+                         const std::string &cname, int level, int m, int n, int depth);
+  static bool kron_power(const std::string &m1name, const std::string &m2name, const std::string &vname,
+                         const std::string &cname, int m, int n, int depth);
+  static bool lin_eval(const std::string &m1name, const std::string &m2name, const std::string &vname,
+                       const std::string &cname, int m, int n, int depth,
                        double alpha, double beta1, double beta2);
-  static bool qua_eval(const char *m1name, const char *m2name, const char *vname,
-                       const char *cname, int m, int n, int depth,
+  static bool qua_eval(const std::string &m1name, const std::string &m2name, const std::string &vname,
+                       const std::string &cname, int m, int n, int depth,
                        double alpha, double betas, double gamma,
                        double delta1, double delta2);
-  static bool tri_sylv(const char *m1name, const char *m2name, const char *vname,
+  static bool tri_sylv(const std::string &m1name, const std::string &m2name, const std::string &vname,
                        int m, int n, int depth);
-  static bool gen_sylv(const char *aname, const char *bname, const char *cname,
-                       const char *dname, int m, int n, int order);
-  static bool eig_bubble(const char *aname, int from, int to);
-  static bool block_diag(const char *aname, double log10norm = 3.0);
-  static bool iter_sylv(const char *m1name, const char *m2name, const char *vname,
+  static bool gen_sylv(const std::string &aname, const std::string &bname, const std::string &cname,
+                       const std::string &dname, int m, int n, int order);
+  static bool eig_bubble(const std::string &aname, int from, int to);
+  static bool block_diag(const std::string &aname, double log10norm = 3.0);
+  static bool iter_sylv(const std::string &m1name, const std::string &m2name, const std::string &vname,
                         int m, int n, int depth);
 };
-
-double TestRunnable::eps_norm = 1.0e-10;
 
 bool
 TestRunnable::test() const
 {
-  printf("Running test <%s>\n", name);
+  std::cout << "Running test <" << name << '>' << std::endl;
   clock_t start = clock();
   bool passed = run();
   clock_t end = clock();
-  printf("CPU time %8.4g (CPU seconds)..................",
-         ((double) (end-start))/CLOCKS_PER_SEC);
+  std::cout << "CPU time " << ((double) (end-start))/CLOCKS_PER_SEC << " (CPU seconds)..................";
   if (passed)
-    {
-      printf("passed\n\n");
-      return passed;
-    }
+    std::cout << "passed";
   else
-    {
-      printf("FAILED\n\n");
-      return passed;
-    }
+    std::cout << "FAILED";
+  std::cout << std::endl << std::endl;
+  return passed;
 }
 
 /**********************************************************/
@@ -95,27 +84,27 @@ TestRunnable::test() const
 /**********************************************************/
 
 bool
-TestRunnable::quasi_solve(bool trans, const char *mname, const char *vname)
+TestRunnable::quasi_solve(bool trans, const std::string &mname, const std::string &vname)
 {
   MMMatrixIn mmt(mname);
   MMMatrixIn mmv(vname);
 
   SylvMemoryDriver memdriver(1, mmt.row(), mmt.row(), 1);
-  QuasiTriangular *t;
-  QuasiTriangular *tsave;
+  std::unique_ptr<QuasiTriangular> t;
+  std::unique_ptr<QuasiTriangular> tsave;
   if (mmt.row() == mmt.col())
     {
-      t = new QuasiTriangular(mmt.getData(), mmt.row());
-      tsave = new QuasiTriangular(*t);
+      t = std::make_unique<QuasiTriangular>(mmt.getData(), mmt.row());
+      tsave = std::make_unique<QuasiTriangular>(*t);
     }
   else if (mmt.row() > mmt.col())
     {
-      t = new QuasiTriangularZero(mmt.row()-mmt.col(), mmt.getData(), mmt.col());
-      tsave = new QuasiTriangularZero((const QuasiTriangularZero &) *t);
+      t = std::make_unique<QuasiTriangularZero>(mmt.row()-mmt.col(), mmt.getData(), mmt.col());
+      tsave = std::make_unique<QuasiTriangularZero>((const QuasiTriangularZero &) *t);
     }
   else
     {
-      printf("  Wrong quasi triangular dimensions, rows must be >= cols.\n");
+      std::cout << "  Wrong quasi triangular dimensions, rows must be >= cols.\n";
       return false;
     }
   ConstVector v{mmv.getData()};
@@ -125,24 +114,22 @@ TestRunnable::quasi_solve(bool trans, const char *mname, const char *vname)
     t->solveTrans(x, v, eig_min);
   else
     t->solve(x, v, eig_min);
-  printf("eig_min = %8.4g\n", eig_min);
+  std::cout << "eig_min = " << eig_min << std::endl;
   Vector xx(v.length());
   if (trans)
     tsave->multVecTrans(xx, ConstVector(x));
   else
     tsave->multVec(xx, ConstVector(x));
-  delete tsave;
-  delete t;
   xx.add(-1.0, v);
   xx.add(1.0, x);
   double norm = xx.getNorm();
-  printf("\terror norm = %8.4g\n", norm);
+  std::cout << "\terror norm = " << norm << std::endl;
   return (norm < eps_norm);
 }
 
 bool
-TestRunnable::mult_kron(bool trans, const char *mname, const char *vname,
-                        const char *cname, int m, int n, int depth)
+TestRunnable::mult_kron(bool trans, const std::string &mname, const std::string &vname,
+                        const std::string &cname, int m, int n, int depth)
 {
   MMMatrixIn mmt(mname);
   MMMatrixIn mmv(vname);
@@ -153,7 +140,10 @@ TestRunnable::mult_kron(bool trans, const char *mname, const char *vname,
       || mmv.row() != length
       || mmc.row() != length)
     {
-      printf("  Incompatible sizes for krom mult action, len=%d, matrow=%d, m=%d, vrow=%d, crow=%d \n", length, mmt.row(), m, mmv.row(), mmc.row());
+      std::cout << "  Incompatible sizes for kron mult action, len=" << length
+                << ", matrow=" << mmt.row() << ", m=" << m
+                << ", vrow=" << mmv.row() << ", crow=" << mmc.row()
+                << std::endl;
       return false;
     }
 
@@ -169,13 +159,13 @@ TestRunnable::mult_kron(bool trans, const char *mname, const char *vname,
     t.multKron(v);
   c.add(-1.0, v);
   double norm = c.getNorm();
-  printf("\terror norm = %8.4g\n", norm);
+  std::cout << "\terror norm = " << norm << std::endl;
   return (norm < eps_norm);
 }
 
 bool
-TestRunnable::level_kron(bool trans, const char *mname, const char *vname,
-                         const char *cname, int level, int m, int n, int depth)
+TestRunnable::level_kron(bool trans, const std::string &mname, const std::string &vname,
+                         const std::string &cname, int level, int m, int n, int depth)
 {
   MMMatrixIn mmt(mname);
   MMMatrixIn mmv(vname);
@@ -187,7 +177,10 @@ TestRunnable::level_kron(bool trans, const char *mname, const char *vname,
       || mmv.row() != length
       || mmc.row() != length)
     {
-      printf("  Incompatible sizes for krom mult action, len=%d, matrow=%d, m=%d, n=%d, vrow=%d, crow=%d \n", length, mmt.row(), m, n, mmv.row(), mmc.row());
+      std::cout << "  Incompatible sizes for kron mult action, len=" << length
+                << ", matrow=" << mmt.row() << ", m=" << m << ", n=" << n
+                << ", vrow=" << mmv.row() << ", crow=" << mmc.row()
+                << std::endl;
       return false;
     }
 
@@ -204,13 +197,13 @@ TestRunnable::level_kron(bool trans, const char *mname, const char *vname,
     KronUtils::multAtLevel(level, t, x);
   x.add(-1, c);
   double norm = x.getNorm();
-  printf("\terror norm = %8.4g\n", norm);
+  std::cout << "\terror norm = " << norm << std::endl;
   return (norm < eps_norm);
 }
 
 bool
-TestRunnable::kron_power(const char *m1name, const char *m2name, const char *vname,
-                         const char *cname, int m, int n, int depth)
+TestRunnable::kron_power(const std::string &m1name, const std::string &m2name, const std::string &vname,
+                         const std::string &cname, int m, int n, int depth)
 {
   MMMatrixIn mmt1(m1name);
   MMMatrixIn mmt2(m2name);
@@ -223,7 +216,11 @@ TestRunnable::kron_power(const char *m1name, const char *m2name, const char *vna
       || mmv.row() != length
       || mmc.row() != length)
     {
-      printf("  Incompatible sizes for krom power mult action, len=%d, row1=%d, row2=%d, m=%d, n=%d, vrow=%d, crow=%d \n", length, mmt1.row(), mmt2.row(), m, n, mmv.row(), mmc.row());
+      std::cout << "  Incompatible sizes for kron power mult action, len=" << length
+                << ", row1=" << mmt1.row() << ", row2=" << mmt2.row()
+                << ", m=" << m << ", n=" << n
+                << ", vrow=" << mmv.row() << ", crow=" << mmc.row()
+                << std::endl;
       return false;
     }
 
@@ -240,13 +237,13 @@ TestRunnable::kron_power(const char *m1name, const char *m2name, const char *vna
   memdriver.setStackMode(false);
   x.add(-1, c);
   double norm = x.getNorm();
-  printf("\terror norm = %8.4g\n", norm);
+  std::cout << "\terror norm = " << norm << std::endl;
   return (norm < eps_norm);
 }
 
 bool
-TestRunnable::lin_eval(const char *m1name, const char *m2name, const char *vname,
-                       const char *cname, int m, int n, int depth,
+TestRunnable::lin_eval(const std::string &m1name, const std::string &m2name, const std::string &vname,
+                       const std::string &cname, int m, int n, int depth,
                        double alpha, double beta1, double beta2)
 {
   MMMatrixIn mmt1(m1name);
@@ -260,7 +257,11 @@ TestRunnable::lin_eval(const char *m1name, const char *m2name, const char *vname
       || mmv.row() != 2*length
       || mmc.row() != 2*length)
     {
-      printf("  Incompatible sizes for lin eval action, len=%d, row1=%d, row2=%d, m=%d, n=%d, vrow=%d, crow=%d \n", length, mmt1.row(), mmt2.row(), m, n, mmv.row(), mmc.row());
+      std::cout << "  Incompatible sizes for lin eval action, len=" << length
+                << ", row1=" << mmt1.row() << ", row2=" << mmt2.row()
+                << ", m=" << m << ", n=" << n
+                << ", vrow=" << mmv.row() << ", crow=" << mmc.row()
+                << std::endl;
       return false;
     }
 
@@ -285,13 +286,13 @@ TestRunnable::lin_eval(const char *m1name, const char *m2name, const char *vname
   x2.add(-1, c2);
   double norm1 = x1.getNorm();
   double norm2 = x2.getNorm();
-  printf("\terror norm1 = %8.4g\n\terror norm2 = %8.4g\n", norm1, norm2);
+  std::cout << "\terror norm1 = " << norm1 << "\n\terror norm2 = " << norm2 << '\n';
   return (norm1*norm1+norm2*norm2 < eps_norm*eps_norm);
 }
 
 bool
-TestRunnable::qua_eval(const char *m1name, const char *m2name, const char *vname,
-                       const char *cname, int m, int n, int depth,
+TestRunnable::qua_eval(const std::string &m1name, const std::string &m2name, const std::string &vname,
+                       const std::string &cname, int m, int n, int depth,
                        double alpha, double betas, double gamma,
                        double delta1, double delta2)
 {
@@ -306,7 +307,11 @@ TestRunnable::qua_eval(const char *m1name, const char *m2name, const char *vname
       || mmv.row() != 2*length
       || mmc.row() != 2*length)
     {
-      printf("  Incompatible sizes for qua eval action, len=%d, row1=%d, row2=%d, m=%d, n=%d, vrow=%d, crow=%d \n", length, mmt1.row(), mmt2.row(), m, n, mmv.row(), mmc.row());
+      std::cout << "  Incompatible sizes for qua eval action, len=" << length
+                << ", row1=" << mmt1.row() << ", row2=" << mmt2.row()
+                << ", m=" << m << ", n=" << n
+                << ", vrow=" << mmv.row() << ", crow=" << mmc.row()
+                << std::endl;
       return false;
     }
 
@@ -331,12 +336,12 @@ TestRunnable::qua_eval(const char *m1name, const char *m2name, const char *vname
   x2.add(-1, c2);
   double norm1 = x1.getNorm();
   double norm2 = x2.getNorm();
-  printf("\terror norm1 = %8.4g\n\terror norm2 = %8.4g\n", norm1, norm2);
+  std::cout << "\terror norm1 = " << norm1 << "\n\terror norm2 = " << norm2 << std::endl;
   return (norm1*norm1+norm2*norm2 < 100*eps_norm*eps_norm); // relax norm
 }
 
 bool
-TestRunnable::tri_sylv(const char *m1name, const char *m2name, const char *vname,
+TestRunnable::tri_sylv(const std::string &m1name, const std::string &m2name, const std::string &vname,
                        int m, int n, int depth)
 {
   MMMatrixIn mmt1(m1name);
@@ -348,7 +353,11 @@ TestRunnable::tri_sylv(const char *m1name, const char *m2name, const char *vname
       || mmt2.row() != n
       || mmv.row() != length)
     {
-      printf("  Incompatible sizes for triangular sylvester action, len=%d, row1=%d, row2=%d, m=%d, n=%d, vrow=%d\n", length, mmt1.row(), mmt2.row(), m, n, mmv.row());
+      std::cout << "  Incompatible sizes for triangular sylvester action, len=" << length
+                << ", row1=" << mmt1.row() << ", row2=" << mmt2.row()
+                << ", m=" << m << ", n=" << n
+                << ", vrow=" << mmv.row()
+                << std::endl;
       return false;
     }
 
@@ -369,17 +378,17 @@ TestRunnable::tri_sylv(const char *m1name, const char *m2name, const char *vname
   dcheck.add(-1.0, v);
   double norm = dcheck.getNorm();
   double xnorm = v.getNorm();
-  printf("\trel. error norm = %8.4g\n", norm/xnorm);
+  std::cout << "\trel. error norm = " << norm/xnorm << std::endl;
   double max = dcheck.getMax();
   double xmax = v.getMax();
-  printf("\trel. error max = %8.4g\n", max/xmax);
+  std::cout << "\trel. error max = " << max/xmax << std::endl;
   memdriver.setStackMode(false);
   return (norm < xnorm*eps_norm);
 }
 
 bool
-TestRunnable::gen_sylv(const char *aname, const char *bname, const char *cname,
-                       const char *dname, int m, int n, int order)
+TestRunnable::gen_sylv(const std::string &aname, const std::string &bname, const std::string &cname,
+                       const std::string &dname, int m, int n, int order)
 {
   MMMatrixIn mma(aname);
   MMMatrixIn mmb(bname);
@@ -391,7 +400,7 @@ TestRunnable::gen_sylv(const char *aname, const char *bname, const char *cname,
       || n != mmb.row() || n <  mmb.col()
       || n != mmd.row() || power(m, order) != mmd.col())
     {
-      printf("  Incompatible sizes for gen_sylv.\n");
+      std::cout << "  Incompatible sizes for gen_sylv.\n";
       return false;
     }
 
@@ -410,13 +419,13 @@ TestRunnable::gen_sylv(const char *aname, const char *bname, const char *cname,
 }
 
 bool
-TestRunnable::eig_bubble(const char *aname, int from, int to)
+TestRunnable::eig_bubble(const std::string &aname, int from, int to)
 {
   MMMatrixIn mma(aname);
 
   if (mma.row() != mma.col())
     {
-      printf("  Matrix is not square\n");
+      std::cout << "  Matrix is not square\n";
       return false;
     }
 
@@ -438,21 +447,21 @@ TestRunnable::eig_bubble(const char *aname, int from, int to)
   double normInf = check.getNormInf();
   double onorm1 = orig.getNorm1();
   double onormInf = orig.getNormInf();
-  printf("\tabs. error1 = %8.4g\n", norm1);
-  printf("\tabs. errorI = %8.4g\n", normInf);
-  printf("\trel. error1 = %8.4g\n", norm1/onorm1);
-  printf("\trel. errorI = %8.4g\n", normInf/onormInf);
+  std:: cout << "\tabs. error1 = " << norm1 << std::endl
+             << "\tabs. errorI = " << normInf << std::endl
+             << "\trel. error1 = " << norm1/onorm1 << std::endl
+             << "\trel. errorI = " << normInf/onormInf << std::endl;
   return (norm1 < eps_norm*onorm1 && normInf < eps_norm*onormInf);
 }
 
 bool
-TestRunnable::block_diag(const char *aname, double log10norm)
+TestRunnable::block_diag(const std::string &aname, double log10norm)
 {
   MMMatrixIn mma(aname);
 
   if (mma.row() != mma.col())
     {
-      printf("  Matrix is not square\n");
+      std::cout << "  Matrix is not square\n";
       return false;
     }
 
@@ -468,25 +477,25 @@ TestRunnable::block_diag(const char *aname, double log10norm)
   double normInf = check.getNormInf();
   double onorm1 = orig.getNorm1();
   double onormInf = orig.getNormInf();
-  printf("\terror Q*B*invQ:\n");
-  printf("\tabs. error1 = %8.4g\n", norm1);
-  printf("\tabs. errorI = %8.4g\n", normInf);
-  printf("\trel. error1 = %8.4g\n", norm1/onorm1);
-  printf("\trel. errorI = %8.4g\n", normInf/onormInf);
+  std::cout << "\terror Q*B*invQ:" << std::endl
+            << "\tabs. error1 = " << norm1 << std::endl
+            << "\tabs. errorI = " << normInf << std::endl
+            << "\trel. error1 = " << norm1/onorm1 << std::endl
+            << "\trel. errorI = " << normInf/onormInf << std::endl;
   SqSylvMatrix check2(dec.getQ(), dec.getInvQ());
   SqSylvMatrix in(n);
   in.setUnit();
   check2.add(-1, in);
   double nor1 = check2.getNorm1();
   double norInf = check2.getNormInf();
-  printf("\terror Q*invQ:\n");
-  printf("\tabs. error1 = %8.4g\n", nor1);
-  printf("\tabs. errorI = %8.4g\n", norInf);
+  std::cout << "\terror Q*invQ:" << std::endl
+            << "\tabs. error1 = " << nor1 << std::endl
+            << "\tabs. errorI = " << norInf << std::endl;
   return (norm1 < eps_norm*pow(10, log10norm)*onorm1);
 }
 
 bool
-TestRunnable::iter_sylv(const char *m1name, const char *m2name, const char *vname,
+TestRunnable::iter_sylv(const std::string &m1name, const std::string &m2name, const std::string &vname,
                         int m, int n, int depth)
 {
   MMMatrixIn mmt1(m1name);
@@ -498,7 +507,11 @@ TestRunnable::iter_sylv(const char *m1name, const char *m2name, const char *vnam
       || mmt2.row() != n
       || mmv.row() != length)
     {
-      printf("  Incompatible sizes for triangular sylvester iteration, len=%d, row1=%d, row2=%d, m=%d, n=%d, vrow=%d\n", length, mmt1.row(), mmt2.row(), m, n, mmv.row());
+      std::cout << "  Incompatible sizes for triangular sylvester iteration, len=" << length
+                << ", row1=" << mmt1.row() << ", row2=" << mmt2.row()
+                << ", m=" << m << ", n=" << n
+                << ", vrow=" << mmv.row()
+                << std::endl;
       return false;
     }
 
@@ -511,7 +524,7 @@ TestRunnable::iter_sylv(const char *m1name, const char *m2name, const char *vnam
   ConstKronVector v(vraw, m, n, depth);
   KronVector d(v); // copy of v
   SylvParams pars;
-  pars.method = SylvParams::iter;
+  pars.method = SylvParams::solve_method::iter;
   is.solve(pars, d);
   pars.print("\t");
   KronVector dcheck((const KronVector &)d);
@@ -520,10 +533,10 @@ TestRunnable::iter_sylv(const char *m1name, const char *m2name, const char *vnam
   dcheck.add(-1.0, v);
   double cnorm = dcheck.getNorm();
   double xnorm = v.getNorm();
-  printf("\trel. error norm = %8.4g\n", cnorm/xnorm);
+  std::cout << "\trel. error norm = " << cnorm/xnorm << std::endl;
   double max = dcheck.getMax();
   double xmax = v.getMax();
-  printf("\trel. error max = %8.4g\n", max/xmax);
+  std::cout << "\trel. error max = " << max/xmax << std::endl;
   memdriver.setStackMode(false);
   return (cnorm < xnorm*eps_norm);
 }
@@ -1149,79 +1162,76 @@ BlockDiagBigTest::run() const
 int
 main()
 {
-  TestRunnable *all_tests[50];
+  std::vector<std::unique_ptr<TestRunnable>> all_tests;
   // fill in vector of all tests
-  int num_tests = 0;
-  all_tests[num_tests++] = new PureTriangTest();
-  all_tests[num_tests++] = new PureTriangTransTest();
-  all_tests[num_tests++] = new PureTrLargeTest();
-  all_tests[num_tests++] = new PureTrLargeTransTest();
-  all_tests[num_tests++] = new QuasiTriangTest();
-  all_tests[num_tests++] = new QuasiTriangTransTest();
-  all_tests[num_tests++] = new QuasiTrLargeTest();
-  all_tests[num_tests++] = new QuasiTrLargeTransTest();
-  all_tests[num_tests++] = new QuasiZeroSmallTest();
-  all_tests[num_tests++] = new MultKronSmallTest();
-  all_tests[num_tests++] = new MultKronTest();
-  all_tests[num_tests++] = new MultKronSmallTransTest();
-  all_tests[num_tests++] = new MultKronTransTest();
-  all_tests[num_tests++] = new LevelKronTest();
-  all_tests[num_tests++] = new LevelKronTransTest();
-  all_tests[num_tests++] = new LevelZeroKronTest();
-  all_tests[num_tests++] = new LevelZeroKronTransTest();
-  all_tests[num_tests++] = new KronPowerTest();
-  all_tests[num_tests++] = new SmallLinEvalTest();
-  all_tests[num_tests++] = new LinEvalTest();
-  all_tests[num_tests++] = new SmallQuaEvalTest();
-  all_tests[num_tests++] = new QuaEvalTest();
-  all_tests[num_tests++] = new EigBubFrankTest();
-  all_tests[num_tests++] = new EigBubSplitTest();
-  all_tests[num_tests++] = new EigBubSameTest();
-  all_tests[num_tests++] = new BlockDiagSmallTest();
-  all_tests[num_tests++] = new BlockDiagFrankTest();
-  all_tests[num_tests++] = new BlockDiagIllCondTest();
-  all_tests[num_tests++] = new BlockDiagBigTest();
-  all_tests[num_tests++] = new TriSylvSmallRealTest();
-  all_tests[num_tests++] = new TriSylvSmallComplexTest();
-  all_tests[num_tests++] = new TriSylvTest();
-  all_tests[num_tests++] = new TriSylvBigTest();
-  all_tests[num_tests++] = new TriSylvLargeTest();
-  all_tests[num_tests++] = new IterSylvTest();
-  all_tests[num_tests++] = new IterSylvLargeTest();
-  all_tests[num_tests++] = new GenSylvSmallTest();
-  all_tests[num_tests++] = new GenSylvTest();
-  all_tests[num_tests++] = new GenSylvSingTest();
-  all_tests[num_tests++] = new GenSylvLargeTest();
+  all_tests.push_back(std::make_unique<PureTriangTest>());
+  all_tests.push_back(std::make_unique<PureTriangTransTest>());
+  all_tests.push_back(std::make_unique<PureTrLargeTest>());
+  all_tests.push_back(std::make_unique<PureTrLargeTransTest>());
+  all_tests.push_back(std::make_unique<QuasiTriangTest>());
+  all_tests.push_back(std::make_unique<QuasiTriangTransTest>());
+  all_tests.push_back(std::make_unique<QuasiTrLargeTest>());
+  all_tests.push_back(std::make_unique<QuasiTrLargeTransTest>());
+  all_tests.push_back(std::make_unique<QuasiZeroSmallTest>());
+  all_tests.push_back(std::make_unique<MultKronSmallTest>());
+  all_tests.push_back(std::make_unique<MultKronTest>());
+  all_tests.push_back(std::make_unique<MultKronSmallTransTest>());
+  all_tests.push_back(std::make_unique<MultKronTransTest>());
+  all_tests.push_back(std::make_unique<LevelKronTest>());
+  all_tests.push_back(std::make_unique<LevelKronTransTest>());
+  all_tests.push_back(std::make_unique<LevelZeroKronTest>());
+  all_tests.push_back(std::make_unique<LevelZeroKronTransTest>());
+  all_tests.push_back(std::make_unique<KronPowerTest>());
+  all_tests.push_back(std::make_unique<SmallLinEvalTest>());
+  all_tests.push_back(std::make_unique<LinEvalTest>());
+  all_tests.push_back(std::make_unique<SmallQuaEvalTest>());
+  all_tests.push_back(std::make_unique<QuaEvalTest>());
+  all_tests.push_back(std::make_unique<EigBubFrankTest>());
+  all_tests.push_back(std::make_unique<EigBubSplitTest>());
+  all_tests.push_back(std::make_unique<EigBubSameTest>());
+  all_tests.push_back(std::make_unique<BlockDiagSmallTest>());
+  all_tests.push_back(std::make_unique<BlockDiagFrankTest>());
+  all_tests.push_back(std::make_unique<BlockDiagIllCondTest>());
+  all_tests.push_back(std::make_unique<BlockDiagBigTest>());
+  all_tests.push_back(std::make_unique<TriSylvSmallRealTest>());
+  all_tests.push_back(std::make_unique<TriSylvSmallComplexTest>());
+  all_tests.push_back(std::make_unique<TriSylvTest>());
+  all_tests.push_back(std::make_unique<TriSylvBigTest>());
+  all_tests.push_back(std::make_unique<TriSylvLargeTest>());
+  all_tests.push_back(std::make_unique<IterSylvTest>());
+  all_tests.push_back(std::make_unique<IterSylvLargeTest>());
+  all_tests.push_back(std::make_unique<GenSylvSmallTest>());
+  all_tests.push_back(std::make_unique<GenSylvTest>());
+  all_tests.push_back(std::make_unique<GenSylvSingTest>());
+  all_tests.push_back(std::make_unique<GenSylvLargeTest>());
 
   // launch the tests
+  std::cout << std::setprecision(4);
   int success = 0;
-  for (int i = 0; i < num_tests; i++)
+  for (const auto &test : all_tests)
     {
       try
         {
-          if (all_tests[i]->test())
+          if (test->test())
             success++;
         }
       catch (const MMException &e)
         {
-          printf("Caugth MM exception in <%s>:\n%s", all_tests[i]->getName(),
-                 e.getMessage());
+          std::cout << "Caught MM exception in <" << test->name << ">:\n" << e.getMessage();
         }
       catch (SylvException &e)
         {
-          printf("Caught Sylv exception in %s:\n", all_tests[i]->getName());
+          std::cout << "Caught Sylv exception in " << test->name << ":\n";
           e.printMessage();
         }
     }
 
-  printf("There were %d tests that failed out of %d tests run.\n",
-         num_tests - success, num_tests);
+  int nfailed = all_tests.size() - success;
+  std::cout << "There were " << nfailed << " tests that failed out of "
+            << all_tests.size() << " tests run." << std::endl;
 
-  // destroy
-  for (int i = 0; i < num_tests; i++)
-    {
-      delete all_tests[i];
-    }
-
-  return 0;
+  if (nfailed)
+    return EXIT_FAILURE;
+  else
+    return EXIT_SUCCESS;
 }

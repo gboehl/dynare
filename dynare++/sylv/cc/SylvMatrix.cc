@@ -8,7 +8,6 @@
 #include <dynblas.h>
 #include <dynlapack.h>
 
-#include <cstring>
 #include <cmath>
 #include <vector>
 
@@ -102,9 +101,7 @@ SylvMatrix::eliminateLeft(int row, int col, Vector &x)
       get(row, col) = 0.0;
       double mult = e/d;
       for (int i = col + 1; i < numCols(); i++)
-        {
-          get(row, i) = get(row, i) - mult*get(col, i);
-        }
+        get(row, i) = get(row, i) - mult*get(col, i);
       x[row] = x[row] - mult*x[col];
     }
   else if (std::abs(e) > std::abs(d))
@@ -137,9 +134,7 @@ SylvMatrix::eliminateRight(int row, int col, Vector &x)
       get(row, col) = 0.0;
       double mult = e/d;
       for (int i = 0; i < row; i++)
-        {
-          get(i, col) = get(i, col) - mult*get(i, row);
-        }
+        get(i, col) = get(i, col) - mult*get(i, row);
       x[col] = x[col] - mult*x[row];
     }
   else if (std::abs(e) > std::abs(d))

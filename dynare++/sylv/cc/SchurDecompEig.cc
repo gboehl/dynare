@@ -19,9 +19,7 @@ SchurDecompEig::bubbleEigen(diag_iter from, diag_iter to)
     {
       diag_iter runm = run;
       if (!tryToSwap(run, runm) && runm == to)
-        {
-          ++to;
-        }
+        ++to;
       else
         {
           // bubble all eigenvalues from runm(incl.) to run(excl.),

@@ -11,6 +11,7 @@
 #include <algorithm>
 #include <memory>
 #include <utility>
+#include <string>
 
 class GeneralMatrix;
 
@@ -120,7 +121,7 @@ public:
 
   virtual void print() const;
 protected:
-  void multInvLeft(const char *trans, int mrows, int mcols, int mld, double *d) const;
+  void multInvLeft(const std::string &trans, int mrows, int mcols, int mld, double *d) const;
 };
 
 class GeneralMatrix
@@ -152,19 +153,19 @@ public:
   explicit GeneralMatrix(const ConstGeneralMatrix &m);
 
   GeneralMatrix(GeneralMatrix &&m) = default;
-  GeneralMatrix(const GeneralMatrix &m, const char *dummy); // transpose
-  GeneralMatrix(const ConstGeneralMatrix &m, const char *dummy); // transpose
+  GeneralMatrix(const GeneralMatrix &m, const std::string &dummy); // transpose
+  GeneralMatrix(const ConstGeneralMatrix &m, const std::string &dummy); // transpose
   GeneralMatrix(const GeneralMatrix &m, int i, int j, int nrows, int ncols);
   GeneralMatrix(GeneralMatrix &m, int i, int j, int nrows, int ncols);
   /* this = a*b */
   GeneralMatrix(const ConstGeneralMatrix &a, const ConstGeneralMatrix &b);
   /* this = a*b' */
-  GeneralMatrix(const ConstGeneralMatrix &a, const ConstGeneralMatrix &b, const char *dum);
+  GeneralMatrix(const ConstGeneralMatrix &a, const ConstGeneralMatrix &b, const std::string &dum);
   /* this = a'*b */
-  GeneralMatrix(const ConstGeneralMatrix &a, const char *dum, const ConstGeneralMatrix &b);
+  GeneralMatrix(const ConstGeneralMatrix &a, const std::string &dum, const ConstGeneralMatrix &b);
   /* this = a'*b */
-  GeneralMatrix(const ConstGeneralMatrix &a, const char *dum1,
-                const ConstGeneralMatrix &b, const char *dum2);
+  GeneralMatrix(const ConstGeneralMatrix &a, const std::string &dum1,
+                const ConstGeneralMatrix &b, const std::string &dum2);
 
   virtual ~GeneralMatrix() = default;
   GeneralMatrix &operator=(const GeneralMatrix &m) = default;
@@ -260,30 +261,30 @@ public:
 
   /* this = this + scalar*a*b' */
   void multAndAdd(const ConstGeneralMatrix &a, const ConstGeneralMatrix &b,
-                  const char *dum, double mult = 1.0);
+                  const std::string &dum, double mult = 1.0);
   void
   multAndAdd(const GeneralMatrix &a, const GeneralMatrix &b,
-             const char *dum, double mult = 1.0)
+             const std::string &dum, double mult = 1.0)
   {
     multAndAdd(ConstGeneralMatrix(a), ConstGeneralMatrix(b), dum, mult);
   }
 
   /* this = this + scalar*a'*b */
-  void multAndAdd(const ConstGeneralMatrix &a, const char *dum, const ConstGeneralMatrix &b,
+  void multAndAdd(const ConstGeneralMatrix &a, const std::string &dum, const ConstGeneralMatrix &b,
                   double mult = 1.0);
   void
-  multAndAdd(const GeneralMatrix &a, const char *dum, const GeneralMatrix &b,
+  multAndAdd(const GeneralMatrix &a, const std::string &dum, const GeneralMatrix &b,
              double mult = 1.0)
   {
     multAndAdd(ConstGeneralMatrix(a), dum, ConstGeneralMatrix(b), mult);
   }
 
   /* this = this + scalar*a'*b' */
-  void multAndAdd(const ConstGeneralMatrix &a, const char *dum1,
-                  const ConstGeneralMatrix &b, const char *dum2, double mult = 1.0);
+  void multAndAdd(const ConstGeneralMatrix &a, const std::string &dum1,
+                  const ConstGeneralMatrix &b, const std::string &dum2, double mult = 1.0);
   void
-  multAndAdd(const GeneralMatrix &a, const char *dum1,
-             const GeneralMatrix &b, const char *dum2, double mult = 1.0)
+  multAndAdd(const GeneralMatrix &a, const std::string &dum1,
+             const GeneralMatrix &b, const std::string &dum2, double mult = 1.0)
   {
     multAndAdd(ConstGeneralMatrix(a), dum1, ConstGeneralMatrix(b), dum2, mult);
   }
@@ -394,9 +395,9 @@ public:
   }
 
   /* this = this + scalar*m' */
-  void add(double a, const ConstGeneralMatrix &m, const char *dum);
+  void add(double a, const ConstGeneralMatrix &m, const std::string &dum);
   void
-  add(double a, const GeneralMatrix &m, const char *dum)
+  add(double a, const GeneralMatrix &m, const std::string &dum)
   {
     add(a, ConstGeneralMatrix(m), dum);
   }
@@ -426,12 +427,12 @@ private:
     copy(ConstGeneralMatrix(m), ioff, joff);
   }
 
-  void gemm(const char *transa, const ConstGeneralMatrix &a,
-            const char *transb, const ConstGeneralMatrix &b,
+  void gemm(const std::string &transa, const ConstGeneralMatrix &a,
+            const std::string &transb, const ConstGeneralMatrix &b,
             double alpha, double beta);
   void
-  gemm(const char *transa, const GeneralMatrix &a,
-       const char *transb, const GeneralMatrix &b,
+  gemm(const std::string &transa, const GeneralMatrix &a,
+       const std::string &transb, const GeneralMatrix &b,
        double alpha, double beta)
   {
     gemm(transa, ConstGeneralMatrix(a), transb, ConstGeneralMatrix(b),
@@ -439,20 +440,20 @@ private:
   }
 
   /* this = this * op(m) (without whole copy of this) */
-  void gemm_partial_right(const char *trans, const ConstGeneralMatrix &m,
+  void gemm_partial_right(const std::string &trans, const ConstGeneralMatrix &m,
                           double alpha, double beta);
   void
-  gemm_partial_right(const char *trans, const GeneralMatrix &m,
+  gemm_partial_right(const std::string &trans, const GeneralMatrix &m,
                      double alpha, double beta)
   {
     gemm_partial_right(trans, ConstGeneralMatrix(m), alpha, beta);
   }
 
   /* this = op(m) *this (without whole copy of this) */
-  void gemm_partial_left(const char *trans, const ConstGeneralMatrix &m,
+  void gemm_partial_left(const std::string &trans, const ConstGeneralMatrix &m,
                          double alpha, double beta);
   void
-  gemm_partial_left(const char *trans, const GeneralMatrix &m,
+  gemm_partial_left(const std::string &trans, const GeneralMatrix &m,
                     double alpha, double beta)
   {
     gemm_partial_left(trans, ConstGeneralMatrix(m), alpha, beta);

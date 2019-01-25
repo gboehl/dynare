@@ -5,12 +5,11 @@
 #include "BlockDiagonal.hh"
 
 #include <iostream>
-#include <cstring>
 #include <utility>
 
 BlockDiagonal::BlockDiagonal(ConstVector d, int d_size)
   : QuasiTriangular(std::move(d), d_size),
-    row_len(new int[d_size]), col_len(new int[d_size])
+    row_len(d_size), col_len(d_size)
 {
   for (int i = 0; i < d_size; i++)
     {
@@ -21,7 +20,7 @@ BlockDiagonal::BlockDiagonal(ConstVector d, int d_size)
 
 BlockDiagonal::BlockDiagonal(const QuasiTriangular &t)
   : QuasiTriangular(t),
-    row_len(new int[t.numRows()]), col_len(new int[t.numRows()])
+    row_len(t.numRows()), col_len(t.numRows())
 {
   for (int i = 0; i < t.numRows(); i++)
     {
@@ -32,18 +31,8 @@ BlockDiagonal::BlockDiagonal(const QuasiTriangular &t)
 
 BlockDiagonal::BlockDiagonal(int p, const BlockDiagonal &b)
   : QuasiTriangular(p, b),
-    row_len(new int[b.numRows()]), col_len(new int[b.numRows()])
+    row_len(b.row_len), col_len(b.col_len)
 {
-  memcpy(row_len, b.row_len, b.numRows()*sizeof(int));
-  memcpy(col_len, b.col_len, b.numRows()*sizeof(int));
-}
-
-BlockDiagonal::BlockDiagonal(const BlockDiagonal &b)
-  : QuasiTriangular(b),
-    row_len(new int[b.numRows()]), col_len(new int[b.numRows()])
-{
-  memcpy(row_len, b.row_len, b.numRows()*sizeof(int));
-  memcpy(col_len, b.col_len, b.numRows()*sizeof(int));
 }
 
 /* put zeroes to right upper submatrix whose first column is defined
@@ -135,9 +124,7 @@ BlockDiagonal::getNumZeros() const
 {
   int sum = 0;
   for (int i = 0; i < diagonal.getSize(); i++)
-    {
-      sum += diagonal.getSize() - row_len[i];
-    }
+    sum += diagonal.getSize() - row_len[i];
   return sum;
 }
 

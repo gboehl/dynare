@@ -71,7 +71,7 @@ GeneralSylvester::init()
   cdecomp = std::make_unique<SimilarityDecomp>(c.getData(), c.numRows(), *(pars.bs_norm));
   cdecomp->check(pars, c);
   cdecomp->infoToPars(pars);
-  if (*(pars.method) == SylvParams::recurse)
+  if (*(pars.method) == SylvParams::solve_method::recurse)
     sylv = std::make_unique<TriangularSylvester>(*bdecomp, *cdecomp);
   else
     sylv = std::make_unique<IterativeSylvester>(*bdecomp, *cdecomp);

@@ -48,7 +48,7 @@ TriangularSylvester::solve(SylvParams &pars, KronVector &d) const
 {
   double eig_min = 1e30;
   solvi(1., d, eig_min);
-  pars.eig_min = sqrt(eig_min);
+  pars.eig_min = std::sqrt(eig_min);
 }
 
 void
@@ -122,7 +122,7 @@ TriangularSylvester::solviRealAndEliminate(double r, const_diag_iter di,
   double f = *((*di).getAlpha());
   KronVector dj(d, jbar);
   // solve system
-  if (abs(r*f) > diag_zero)
+  if (std::abs(r*f) > diag_zero)
     solvi(r*f, dj, eig_min);
   // calculate y
   KronVector y((const KronVector &)dj);
@@ -277,8 +277,8 @@ TriangularSylvester::solviipComplex(double alpha, double betas, double gamma,
   KronVector d2tmp(d2);
   quaEval(alpha, betas, gamma, delta1, delta2,
           d1, d2, d1tmp, d2tmp);
-  double delta = sqrt(delta1*delta2);
-  double beta = sqrt(betas);
+  double delta = std::sqrt(delta1*delta2);
+  double beta = std::sqrt(betas);
   double a1 = alpha*gamma - beta*delta;
   double b1 = alpha*delta + gamma*beta;
   double a2 = alpha*gamma + beta*delta;

@@ -10,7 +10,6 @@
 
 #include <iostream>
 #include <iomanip>
-#include <cstring>
 #include <cstdlib>
 #include <cmath>
 #include <limits>
@@ -28,7 +27,7 @@ GeneralMatrix::GeneralMatrix(const ConstGeneralMatrix &m)
   copy(m);
 }
 
-GeneralMatrix::GeneralMatrix(const GeneralMatrix &m, const char *dummy)
+GeneralMatrix::GeneralMatrix(const GeneralMatrix &m, const std::string &dummy)
   : data(m.rows*m.cols), rows(m.cols), cols(m.rows), ld(m.cols)
 {
   for (int i = 0; i < m.rows; i++)
@@ -36,7 +35,7 @@ GeneralMatrix::GeneralMatrix(const GeneralMatrix &m, const char *dummy)
       get(j, i) = m.get(i, j);
 }
 
-GeneralMatrix::GeneralMatrix(const ConstGeneralMatrix &m, const char *dummy)
+GeneralMatrix::GeneralMatrix(const ConstGeneralMatrix &m, const std::string &dummy)
   : data(m.rows*m.cols), rows(m.cols), cols(m.rows), ld(m.cols)
 {
   for (int i = 0; i < m.rows; i++)
@@ -61,20 +60,20 @@ GeneralMatrix::GeneralMatrix(const ConstGeneralMatrix &a, const ConstGeneralMatr
   gemm("N", a, "N", b, 1.0, 0.0);
 }
 
-GeneralMatrix::GeneralMatrix(const ConstGeneralMatrix &a, const ConstGeneralMatrix &b, const char *dum)
+GeneralMatrix::GeneralMatrix(const ConstGeneralMatrix &a, const ConstGeneralMatrix &b, const std::string &dum)
   : data(a.rows*b.rows), rows(a.rows), cols(b.rows), ld(a.rows)
 {
   gemm("N", a, "T", b, 1.0, 0.0);
 }
 
-GeneralMatrix::GeneralMatrix(const ConstGeneralMatrix &a, const char *dum, const ConstGeneralMatrix &b)
+GeneralMatrix::GeneralMatrix(const ConstGeneralMatrix &a, const std::string &dum, const ConstGeneralMatrix &b)
   : data(a.cols*b.cols), rows(a.cols), cols(b.cols), ld(a.cols)
 {
   gemm("T", a, "N", b, 1.0, 0.0);
 }
 
-GeneralMatrix::GeneralMatrix(const ConstGeneralMatrix &a, const char *dum1,
-                             const ConstGeneralMatrix &b, const char *dum2)
+GeneralMatrix::GeneralMatrix(const ConstGeneralMatrix &a, const std::string &dum1,
+                             const ConstGeneralMatrix &b, const std::string &dum2)
   : data(a.cols*b.rows), rows(a.cols), cols(b.rows), ld(a.cols)
 {
   gemm("T", a, "T", b, 1.0, 0.0);
@@ -140,21 +139,21 @@ GeneralMatrix::multAndAdd(const ConstGeneralMatrix &a, const ConstGeneralMatrix 
 
 void
 GeneralMatrix::multAndAdd(const ConstGeneralMatrix &a, const ConstGeneralMatrix &b,
-                          const char *dum, double mult)
+                          const std::string &dum, double mult)
 {
   gemm("N", a, "T", b, mult, 1.0);
 }
 
 void
-GeneralMatrix::multAndAdd(const ConstGeneralMatrix &a, const char *dum,
+GeneralMatrix::multAndAdd(const ConstGeneralMatrix &a, const std::string &dum,
                           const ConstGeneralMatrix &b, double mult)
 {
   gemm("T", a, "N", b, mult, 1.0);
 }
 
 void
-GeneralMatrix::multAndAdd(const ConstGeneralMatrix &a, const char *dum1,
-                          const ConstGeneralMatrix &b, const char *dum2, double mult)
+GeneralMatrix::multAndAdd(const ConstGeneralMatrix &a, const std::string &dum1,
+                          const ConstGeneralMatrix &b, const std::string &dum2, double mult)
 {
   gemm("T", a, "T", b, mult, 1.0);
 }
@@ -269,7 +268,7 @@ GeneralMatrix::add(double a, const ConstGeneralMatrix &m)
 }
 
 void
-GeneralMatrix::add(double a, const ConstGeneralMatrix &m, const char *dum)
+GeneralMatrix::add(double a, const ConstGeneralMatrix &m, const std::string &dum)
 {
   if (m.numRows() != cols || m.numCols() != rows)
     throw SYLV_MES_EXCEPTION("Matrix has different size in GeneralMatrix::add.");
@@ -288,20 +287,20 @@ GeneralMatrix::copy(const ConstGeneralMatrix &m, int ioff, int joff)
 }
 
 void
-GeneralMatrix::gemm(const char *transa, const ConstGeneralMatrix &a,
-                    const char *transb, const ConstGeneralMatrix &b,
+GeneralMatrix::gemm(const std::string &transa, const ConstGeneralMatrix &a,
+                    const std::string &transb, const ConstGeneralMatrix &b,
                     double alpha, double beta)
 {
   int opa_rows = a.numRows();
   int opa_cols = a.numCols();
-  if (!strcmp(transa, "T"))
+  if (transa == "T")
     {
       opa_rows = a.numCols();
       opa_cols = a.numRows();
     }
   int opb_rows = b.numRows();
   int opb_cols = b.numCols();
-  if (!strcmp(transb, "T"))
+  if (transb == "T")
     {
       opb_rows = b.numCols();
       opb_cols = b.numRows();
@@ -322,7 +321,7 @@ GeneralMatrix::gemm(const char *transa, const ConstGeneralMatrix &a,
   blas_int ldc = ld;
   if (lda > 0 && ldb > 0 && ldc > 0)
     {
-      dgemm(transa, transb, &m, &n, &k, &alpha, a.data.base(), &lda,
+      dgemm(transa.c_str(), transb.c_str(), &m, &n, &k, &alpha, a.data.base(), &lda,
             b.data.base(), &ldb, &beta, data.base(), &ldc);
     }
   else if (numRows()*numCols() > 0)
@@ -335,7 +334,7 @@ GeneralMatrix::gemm(const char *transa, const ConstGeneralMatrix &a,
 }
 
 void
-GeneralMatrix::gemm_partial_left(const char *trans, const ConstGeneralMatrix &m,
+GeneralMatrix::gemm_partial_left(const std::string &trans, const ConstGeneralMatrix &m,
                                  double alpha, double beta)
 {
   int icol;
@@ -354,7 +353,7 @@ GeneralMatrix::gemm_partial_left(const char *trans, const ConstGeneralMatrix &m,
 }
 
 void
-GeneralMatrix::gemm_partial_right(const char *trans, const ConstGeneralMatrix &m,
+GeneralMatrix::gemm_partial_right(const std::string &trans, const ConstGeneralMatrix &m,
                                   double alpha, double beta)
 {
   int irow;
@@ -469,7 +468,7 @@ ConstGeneralMatrix::multVecTrans(double a, Vector &x, double b,
 
 /* m = inv(this)*m */
 void
-ConstGeneralMatrix::multInvLeft(const char *trans, int mrows, int mcols, int mld, double *d) const
+ConstGeneralMatrix::multInvLeft(const std::string &trans, int mrows, int mcols, int mld, double *d) const
 {
   if (rows != cols)
     throw SYLV_MES_EXCEPTION("The matrix is not square for inversion.");
@@ -483,7 +482,7 @@ ConstGeneralMatrix::multInvLeft(const char *trans, int mrows, int mcols, int mld
       lapack_int info;
       lapack_int rows2 = rows, mcols2 = mcols, mld2 = mld, lda = inv.ld;
       dgetrf(&rows2, &rows2, inv.getData().base(), &lda, ipiv.data(), &info);
-      dgetrs(trans, &rows2, &mcols2, inv.base(), &lda, ipiv.data(), d,
+      dgetrs(trans.c_str(), &rows2, &mcols2, inv.base(), &lda, ipiv.data(), d,
              &mld2, &info);
     }
 }

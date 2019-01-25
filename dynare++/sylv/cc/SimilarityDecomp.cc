@@ -120,9 +120,7 @@ SimilarityDecomp::diagonalize(double norm)
           ++end;
         }
       else
-        {
-          bringGuiltyBlock(start, end); // moves with end
-        }
+        bringGuiltyBlock(start, end); // moves with end
     }
 }
 

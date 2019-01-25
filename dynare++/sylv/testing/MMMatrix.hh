@@ -12,22 +12,17 @@
 #include <utility>
 #include <memory>
 
-using namespace std;
-
 class MMException : public MallocAllocator
 {
-  string message;
+  std::string message;
 public:
-  MMException(string mes) : message(std::move(mes))
+  MMException(std::string mes) : message(std::move(mes))
   {
   }
-  MMException(const char *mes) : message(mes)
-  {
-  }
-  const char *
+  std::string
   getMessage() const
   {
-    return message.data();
+    return message;
   }
 };
 
@@ -37,7 +32,7 @@ class MMMatrixIn : public MallocAllocator
   int rows;
   int cols;
 public:
-  MMMatrixIn(const char *fname);
+  MMMatrixIn(const std::string &fname);
   ~MMMatrixIn() = default;
   Vector
   getData() const
@@ -64,8 +59,7 @@ public:
 class MMMatrixOut : public MallocAllocator
 {
 public:
-  static void write(const char *fname, int rows, int cols, const double *data);
-  static void write(const char *fname, const GeneralMatrix &m);
+  static void write(const std::string &fname, const GeneralMatrix &m);
 };
 
 #endif /* MM_MATRIX_H */

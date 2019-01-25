@@ -14,8 +14,6 @@
 #include <iostream>
 #include <iomanip>
 
-using namespace std;
-
 ZeroPad zero_pad;
 
 Vector::Vector(const Vector &v)
@@ -25,9 +23,9 @@ Vector::Vector(const Vector &v)
 }
 
 Vector::Vector(const ConstVector &v)
-  : len(v.length()), data{new double[len], [](double *arr) { delete[] arr; }}
+  : len(v.len), data{new double[len], [](double *arr) { delete[] arr; }}
 {
-  copy(v.base(), v.skip());
+  copy(v.base(), v.s);
 }
 
 Vector &
@@ -38,17 +36,13 @@ Vector::operator=(const Vector &v)
 
   if (v.len != len)
     throw SYLV_MES_EXCEPTION("Attempt to assign vectors with different lengths.");
-  /*
+
   if (s == v.s
-      && (data <= v.data && v.data < data+len*s
-          || v.data <= data && data < v.data+v.len*v.s)
-      && (data-v.data) % s == 0)
-    {
-      std::cout << "this destroy=" << destroy << ", v destroy=" << v.destroy
-                << ", data-v.data=" << (unsigned long) (data-v.data)
-                << ", len=" << len << std::endl;
-      throw SYLV_MES_EXCEPTION("Attempt to assign overlapping vectors.");
-      } */
+      && (base() <= v.base() && v.base() < base()+len*s
+          || v.base() <= base() && base() < v.base()+v.len*v.s)
+      && (base()-v.base()) % s == 0)
+    throw SYLV_MES_EXCEPTION("Attempt to assign overlapping vectors.");
+
   copy(v.base(), v.s);
   return *this;
 }
@@ -65,16 +59,15 @@ Vector::operator=(Vector &&v)
 Vector &
 Vector::operator=(const ConstVector &v)
 {
-  if (v.length() != len)
+  if (v.len != len)
     throw SYLV_MES_EXCEPTION("Attempt to assign vectors with different lengths.");
-  /*
-  if (v.skip() == 1 && skip() == 1 && (
-                                       (base() < v.base() + v.length() && base() >= v.base())
-                                       || (base() + length() < v.base() + v.length()
-                                           && base() + length() > v.base())))
+  if (s == v.s
+      && (base() <= v.base() && v.base() < base()+len*s
+          || v.base() <= base() && base() < v.base()+v.len*v.s)
+      && (base()-v.base()) % s == 0)
     throw SYLV_MES_EXCEPTION("Attempt to assign overlapping vectors.");
-  */
-  copy(v.base(), v.skip());
+
+  copy(v.base(), v.s);
   return *this;
 }
 
@@ -210,7 +203,7 @@ void
 Vector::add(double r, const ConstVector &v)
 {
   blas_int n = len;
-  blas_int incx = v.skip();
+  blas_int incx = v.s;
   blas_int incy = s;
   daxpy(&n, &r, v.base(), &incx, base(), &incy);
 }
@@ -225,7 +218,7 @@ void
 Vector::addComplex(const std::complex<double> &z, const ConstVector &v)
 {
   blas_int n = len/2;
-  blas_int incx = v.skip();
+  blas_int incx = v.s;
   blas_int incy = s;
   zaxpy(&n, reinterpret_cast<const double(&)[2]>(z), v.base(), &incx, base(), &incy);
 }
@@ -374,8 +367,8 @@ ConstVector::getMax() const
 {
   double r = 0;
   for (int i = 0; i < len; i++)
-    if (abs(operator[](i)) > r)
-      r = abs(operator[](i));
+    if (std::abs(operator[](i)) > r)
+      r = std::abs(operator[](i));
   return r;
 }
 
@@ -384,7 +377,7 @@ ConstVector::getNorm1() const
 {
   double norm = 0.0;
   for (int i = 0; i < len; i++)
-    norm += abs(operator[](i));
+    norm += std::abs(operator[](i));
   return norm;
 }
 
@@ -403,7 +396,7 @@ bool
 ConstVector::isFinite() const
 {
   int i = 0;
-  while (i < len && isfinite(operator[](i)))
+  while (i < len && std::isfinite(operator[](i)))
     i++;
   return i == len;
 }

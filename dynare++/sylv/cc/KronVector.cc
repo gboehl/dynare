@@ -37,18 +37,17 @@ KronVector::KronVector(KronVector &v, int i)
 }
 
 KronVector::KronVector(const ConstKronVector &v)
-  : Vector(v.length()), m(v.getM()), n(v.getN()), depth(v.getDepth())
+  : Vector(v), m(v.m), n(v.n), depth(v.depth)
 {
-  Vector::operator=(v);
 }
 
 KronVector &
 KronVector::operator=(const ConstKronVector &v)
 {
   Vector::operator=(v);
-  m = v.getM();
-  n = v.getN();
-  depth = v.getDepth();
+  m = v.m;
+  n = v.n;
+  depth = v.depth;
   return *this;
 }
 
@@ -62,13 +61,7 @@ KronVector::operator=(const Vector &v)
 }
 
 ConstKronVector::ConstKronVector(const KronVector &v)
-  : ConstVector(v), m(v.getM()), n(v.getN()), depth(v.getDepth())
-{
-}
-
-ConstKronVector::ConstKronVector(const ConstKronVector &v)
-  : ConstVector(power(v.getM(), v.getDepth())*v.getN()), m(v.getM()), n(v.getN()),
-    depth(v.getDepth())
+  : ConstVector(v), m(v.m), n(v.n), depth(v.depth)
 {
 }
 

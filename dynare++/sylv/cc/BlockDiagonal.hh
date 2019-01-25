@@ -6,28 +6,25 @@
 #define BLOCK_DIAGONAL_H
 
 #include <memory>
+#include <vector>
 
 #include "QuasiTriangular.hh"
 
 class BlockDiagonal : public QuasiTriangular
 {
-  int *const row_len;
-  int *const col_len;
+  std::vector<int> row_len, col_len;
 public:
   BlockDiagonal(ConstVector d, int d_size);
   BlockDiagonal(int p, const BlockDiagonal &b);
-  BlockDiagonal(const BlockDiagonal &b);
+  BlockDiagonal(const BlockDiagonal &b) = default;
   BlockDiagonal(const QuasiTriangular &t);
-  BlockDiagonal &
-  operator=(const QuasiTriangular &t)
+  BlockDiagonal &operator=(const QuasiTriangular &t)
   {
-    GeneralMatrix::operator=(t); return *this;
+    GeneralMatrix::operator=(t);
+    return *this;
   }
-  BlockDiagonal &operator=(const BlockDiagonal &b);
-  ~BlockDiagonal() override
-  {
-    delete [] row_len; delete [] col_len;
-  }
+  BlockDiagonal &operator=(const BlockDiagonal &b) = default;
+  ~BlockDiagonal() override = default;
   void setZeroBlockEdge(diag_iter edge);
   int getNumZeros() const;
   int getNumBlocks() const;
