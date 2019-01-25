@@ -1,0 +1,47 @@
+function o = printData(o, fid, data, precision)
+%function printData(o, fid, dser, precision)
+% function to print a row of data, contained in data
+%
+% INPUTS
+%   fid          [int]              file id
+%   data         [string]           value to be printed
+%   dates        [dates]            dates for report_series slice
+%   precision    [float]            precision with which to print the data
+%
+%
+% OUTPUTS
+%   o            [report_series]    report_series object
+%
+% SPECIAL REQUIREMENTS
+%   none
+
+% Copyright (C) 2019 Dynare Team
+%
+% This file is part of Dynare.
+%
+% Dynare is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% Dynare is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+
+dataString = sprintf('%%.%df', precision);
+precision  = 10^precision;
+data = setDataToZeroFromZeroTol(o, data);
+for i=1:size(data,1)
+    fprintf(fid, '&');
+    output = round(data(i)*precision)/precision;
+    if isnan(output)
+        fprintf(fid, '%s', o.tableNaNSymb);
+    else
+        fprintf(fid, dataString, output);
+    end
+end
+end

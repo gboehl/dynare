@@ -12,7 +12,7 @@ function o = report_table(varargin)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2013-2017 Dynare Team
+% Copyright (C) 2013-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -53,6 +53,11 @@ o.writeCSV = false;
 
 o.highlightRows = {''};
 
+o.preamble = {''};
+o.afterward = {''};
+o.column_names = '';
+o.table_data = {};
+
 if nargin == 1
     assert(isa(varargin{1}, 'report_table'),['With one arg to Report_Table constructor, ' ...
                         'you must pass a report_table object']);
@@ -89,6 +94,7 @@ end
 if ischar(o.title)
     o.title = {o.title};
 end
+
 if ischar(o.titleFormat)
     o.titleFormat = {o.titleFormat};
 end
