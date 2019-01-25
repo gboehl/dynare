@@ -59,8 +59,6 @@ SYLV_SRCS = \
 	$(TOPDIR)/sylv/cc/SylvException.hh \
 	$(TOPDIR)/sylv/cc/SylvMatrix.cc \
 	$(TOPDIR)/sylv/cc/SylvMatrix.hh \
-	$(TOPDIR)/sylv/cc/SylvMemory.cc \
-	$(TOPDIR)/sylv/cc/SylvMemory.hh \
 	$(TOPDIR)/sylv/cc/SylvParams.cc \
 	$(TOPDIR)/sylv/cc/SylvParams.hh \
 	$(TOPDIR)/sylv/cc/SylvesterSolver.hh \

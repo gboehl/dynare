@@ -10,7 +10,6 @@
 #include "KronUtils.hh"
 #include "TriangularSylvester.hh"
 #include "GeneralSylvester.hh"
-#include "SylvMemory.hh"
 #include "SchurDecompEig.hh"
 #include "SimilarityDecomp.hh"
 #include "IterativeSylvester.hh"
@@ -26,7 +25,7 @@
 #include <iomanip>
 #include <memory>
 
-class TestRunnable : public MallocAllocator
+class TestRunnable
 {
 public:
   const std::string name;
@@ -89,7 +88,6 @@ TestRunnable::quasi_solve(bool trans, const std::string &mname, const std::strin
   MMMatrixIn mmt(mname);
   MMMatrixIn mmv(vname);
 
-  SylvMemoryDriver memdriver(1, mmt.row(), mmt.row(), 1);
   std::unique_ptr<QuasiTriangular> t;
   std::unique_ptr<QuasiTriangular> tsave;
   if (mmt.row() == mmt.col())
@@ -147,7 +145,6 @@ TestRunnable::mult_kron(bool trans, const std::string &mname, const std::string 
       return false;
     }
 
-  SylvMemoryDriver memdriver(1, m, n, depth);
   QuasiTriangular t(mmt.getData(), mmt.row());
   Vector vraw{mmv.getData()};
   KronVector v(vraw, m, n, depth);
@@ -184,7 +181,6 @@ TestRunnable::level_kron(bool trans, const std::string &mname, const std::string
       return false;
     }
 
-  SylvMemoryDriver memdriver(1, m, n, depth);
   QuasiTriangular t(mmt.getData(), mmt.row());
   Vector vraw{mmv.getData()};
   ConstKronVector v(vraw, m, n, depth);
@@ -224,7 +220,6 @@ TestRunnable::kron_power(const std::string &m1name, const std::string &m2name, c
       return false;
     }
 
-  SylvMemoryDriver memdriver(2, m, n, depth);
   QuasiTriangular t1(mmt1.getData(), mmt1.row());
   QuasiTriangular t2(mmt2.getData(), mmt2.row());
   Vector vraw{mmv.getData()};
@@ -232,9 +227,7 @@ TestRunnable::kron_power(const std::string &m1name, const std::string &m2name, c
   Vector craw{mmc.getData()};
   KronVector c(craw, m, n, depth);
   KronVector x(v);
-  memdriver.setStackMode(true);
   KronUtils::multKron(t1, t2, x);
-  memdriver.setStackMode(false);
   x.add(-1, c);
   double norm = x.getNorm();
   std::cout << "\terror norm = " << norm << std::endl;
@@ -265,7 +258,6 @@ TestRunnable::lin_eval(const std::string &m1name, const std::string &m2name, con
       return false;
     }
 
-  SylvMemoryDriver memdriver(1, m, n, depth);
   QuasiTriangular t1(mmt1.getData(), mmt1.row());
   QuasiTriangular t2(mmt2.getData(), mmt2.row());
   TriangularSylvester ts(t2, t1);
@@ -279,9 +271,7 @@ TestRunnable::lin_eval(const std::string &m1name, const std::string &m2name, con
   ConstKronVector c2(craw2, m, n, depth);
   KronVector x1(m, n, depth);
   KronVector x2(m, n, depth);
-  memdriver.setStackMode(true);
   ts.linEval(alpha, beta1, beta2, x1, x2, v1, v2);
-  memdriver.setStackMode(false);
   x1.add(-1, c1);
   x2.add(-1, c2);
   double norm1 = x1.getNorm();
@@ -315,7 +305,6 @@ TestRunnable::qua_eval(const std::string &m1name, const std::string &m2name, con
       return false;
     }
 
-  SylvMemoryDriver memdriver(3, m, n, depth);
   QuasiTriangular t1(mmt1.getData(), mmt1.row());
   QuasiTriangular t2(mmt2.getData(), mmt2.row());
   TriangularSylvester ts(t2, t1);
@@ -329,9 +318,7 @@ TestRunnable::qua_eval(const std::string &m1name, const std::string &m2name, con
   ConstKronVector c2(craw2, m, n, depth);
   KronVector x1(m, n, depth);
   KronVector x2(m, n, depth);
-  memdriver.setStackMode(true);
   ts.quaEval(alpha, betas, gamma, delta1, delta2, x1, x2, v1, v2);
-  memdriver.setStackMode(false);
   x1.add(-1, c1);
   x2.add(-1, c2);
   double norm1 = x1.getNorm();
@@ -361,8 +348,6 @@ TestRunnable::tri_sylv(const std::string &m1name, const std::string &m2name, con
       return false;
     }
 
-  SylvMemoryDriver memdriver(4, m, n, depth); // need extra 2 for checks done via KronUtils::multKron
-  memdriver.setStackMode(true);
   QuasiTriangular t1(mmt1.getData(), mmt1.row());
   QuasiTriangular t2(mmt2.getData(), mmt2.row());
   TriangularSylvester ts(t2, t1);
@@ -382,7 +367,6 @@ TestRunnable::tri_sylv(const std::string &m1name, const std::string &m2name, con
   double max = dcheck.getMax();
   double xmax = v.getMax();
   std::cout << "\trel. error max = " << max/xmax << std::endl;
-  memdriver.setStackMode(false);
   return (norm < xnorm*eps_norm);
 }
 
@@ -430,7 +414,6 @@ TestRunnable::eig_bubble(const std::string &aname, int from, int to)
     }
 
   int n = mma.row();
-  SylvMemoryDriver memdriver(3, n, n, 2);
   QuasiTriangular orig(mma.getData(), n);
   SchurDecompEig dec((const QuasiTriangular &)orig);
   QuasiTriangular::diag_iter itf = dec.getT().diag_begin();
@@ -466,7 +449,6 @@ TestRunnable::block_diag(const std::string &aname, double log10norm)
     }
 
   int n = mma.row();
-  SylvMemoryDriver memdriver(3, n, n, 2);
   SqSylvMatrix orig(mma.getData(), n);
   SimilarityDecomp dec(orig.getData(), orig.numRows(), log10norm);
   dec.getB().printInfo();
@@ -515,8 +497,6 @@ TestRunnable::iter_sylv(const std::string &m1name, const std::string &m2name, co
       return false;
     }
 
-  SylvMemoryDriver memdriver(4, m, n, depth); // need extra 2 for checks done via KronUtils::multKron
-  memdriver.setStackMode(true);
   QuasiTriangular t1(mmt1.getData(), mmt1.row());
   QuasiTriangular t2(mmt2.getData(), mmt2.row());
   IterativeSylvester is(t2, t1);
@@ -537,7 +517,6 @@ TestRunnable::iter_sylv(const std::string &m1name, const std::string &m2name, co
   double max = dcheck.getMax();
   double xmax = v.getMax();
   std::cout << "\trel. error max = " << max/xmax << std::endl;
-  memdriver.setStackMode(false);
   return (cnorm < xnorm*eps_norm);
 }
 

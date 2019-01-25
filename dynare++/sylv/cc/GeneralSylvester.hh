@@ -6,7 +6,6 @@
 #define GENERAL_SYLVESTER_H
 
 #include "SylvMatrix.hh"
-#include "SylvMemory.hh"
 #include "SimilarityDecomp.hh"
 #include "SylvesterSolver.hh"
 
@@ -15,7 +14,6 @@
 class GeneralSylvester
 {
   SylvParams pars;
-  SylvMemoryDriver mem_driver;
   int order;
   const SqSylvMatrix a;
   const SylvMatrix b;

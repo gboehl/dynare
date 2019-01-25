@@ -6,13 +6,12 @@
 #define MM_MATRIX_H
 
 #include "GeneralMatrix.hh"
-#include "SylvMemory.hh"
 
 #include <string>
 #include <utility>
 #include <memory>
 
-class MMException : public MallocAllocator
+class MMException
 {
   std::string message;
 public:
@@ -26,7 +25,7 @@ public:
   }
 };
 
-class MMMatrixIn : public MallocAllocator
+class MMMatrixIn
 {
   std::shared_ptr<double> data;
   int rows;
@@ -56,7 +55,7 @@ public:
   }
 };
 
-class MMMatrixOut : public MallocAllocator
+class MMMatrixOut
 {
 public:
   static void write(const std::string &fname, const GeneralMatrix &m);

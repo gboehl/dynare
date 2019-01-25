@@ -7,9 +7,7 @@
 
 #include <string>
 
-#include "SylvMemory.hh"
-
-class SylvException : public MallocAllocator
+class SylvException
 {
 protected:
   std::string file;

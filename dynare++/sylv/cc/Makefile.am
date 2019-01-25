@@ -30,8 +30,6 @@ libsylv_a_SOURCES = \
 	SylvException.hh \
 	SylvMatrix.cc \
 	SylvMatrix.hh \
-	SylvMemory.cc \
-	SylvMemory.hh \
 	SylvParams.cc \
 	SylvParams.hh \
 	SylvesterSolver.hh \
