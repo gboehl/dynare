@@ -96,7 +96,7 @@ template <typename _Tpit>
 class QuadratureImpl;
 
 template <typename _Tpit>
-class IntegrationWorker : public THREAD
+class IntegrationWorker : public sthread::detach_thread
 {
   const QuadratureImpl<_Tpit> &quad;
   VectorFunction &func;
@@ -138,7 +138,7 @@ public:
       }
 
     {
-      SYNCHRO syn(&outvec, "IntegrationWorker");
+      sthread::synchro syn(&outvec, "IntegrationWorker");
       outvec.add(1.0, tmpall);
     }
   }
@@ -168,7 +168,7 @@ public:
     // todo: out.length()==func.outdim()
     // todo: dim == func.indim()
     out.zeros();
-    THREAD_GROUP gr;
+    sthread::detach_thread_group gr;
     for (int ti = 0; ti < fs.getNum(); ti++)
       gr.insert(std::make_unique<IntegrationWorker<_Tpit>>(*this, fs.getFunc(ti),
                                                            level, ti, fs.getNum(), out));

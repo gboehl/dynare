@@ -75,7 +75,8 @@ case ${host_os} in
     CXXFLAGS="$CXXFLAGS -stdlib=libc++"
     ;;
 esac
-AX_PTHREAD
+
+AX_CXX11_THREAD
 
 # Check for dlopen(), needed by k_order_perturbation DLL
 AC_CHECK_LIB([dl], [dlopen], [LIBADD_DLOPEN="-ldl"], [])
@@ -95,9 +96,6 @@ AM_CONDITIONAL([HAVE_SLICOT], [test "x$has_slicot" = "xyes"])
 # On Windows, we want static linking of the external libraries
 case ${host_os} in
   *mingw32*)
-    # We hardcode -lpthread here, otherwise it is not detected by the
-    # AX_PTHREAD macro and therefore not statically linked
-    PTHREAD_LIBS="-Wl,-Bstatic -lpthread -Wl,-Bdynamic"
     GSL_LIBS="-Wl,-Bstatic $GSL_LIBS -Wl,-Bdynamic"
     LIBADD_MATIO="-Wl,-Bstatic $LIBADD_MATIO -Wl,-Bdynamic"
     LIBADD_SLICOT="-Wl,-Bstatic $LIBADD_SLICOT -Wl,-Bdynamic"
@@ -107,11 +105,7 @@ esac
 AM_CONDITIONAL([DO_SOMETHING], [test "x$ax_enable_matlab" = "xyes" -a "x$ax_matlab_version_ok" = "xyes" -a "x$ax_mexopts_ok" = "xyes"])
 
 if test "x$ax_enable_matlab" = "xyes" -a "x$ax_matlab_version_ok" = "xyes" -a "x$ax_mexopts_ok" = "xyes"; then
-  if test x"$ax_pthread_ok" = "xyes"; then
-     BUILD_MEX_MATLAB="yes"
-  else
-     BUILD_MEX_MATLAB="yes (without POSIX threads)"
-  fi
+  BUILD_MEX_MATLAB="yes"
 else
   BUILD_MEX_MATLAB="no (missing MATLAB, or unknown version, or unknown architecture)"
 fi

@@ -226,11 +226,6 @@ Files: m4/ax_blas.m4 m4/ax_lapack.m4
 Copyright: 2008 Steven G. Johnson <stevenj@alum.mit.edu>
 License: GPL-3+ with Autoconf exception
 
-Files: m4/ax_pthread.m4
-Copyright: 2008 Steven G. Johnson <stevenj@alum.mit.edu>
-           2011 Daniel Richard G. <skunk@iSKUNK.ORG>
-License: GPL-3+ with Autoconf exception
-
 Files: m4/ax_boost_base.m4
 Copyright: 2008 Thomas Porschberg <thomas@randspringer.de>
            2009 Peter Adolphs

@@ -27,15 +27,15 @@ libkord_a_SOURCES = \
 	random.hh
 
 libkord_a_CPPFLAGS = -I../sylv/cc -I../tl/cc -I../integ/cc -I$(top_srcdir)/mex/sources $(CPPFLAGS_MATIO)
-libkord_a_CXXFLAGS = $(AM_CXXFLAGS) $(PTHREAD_CFLAGS)
+libkord_a_CXXFLAGS = $(AM_CXXFLAGS) $(THREAD_CXXFLAGS)
 
 check_PROGRAMS = tests
 
 tests_SOURCES = tests.cc
 tests_CPPFLAGS = -I../sylv/cc -I../tl/cc -I../integ/cc -I$(top_srcdir)/mex/sources
-tests_CXXFLAGS = $(AM_CXXFLAGS) $(PTHREAD_CFLAGS)
+tests_CXXFLAGS = $(AM_CXXFLAGS) $(THREAD_CXXFLAGS)
 tests_LDFLAGS = $(AM_LDFLAGS) $(LDFLAGS_MATIO)
-tests_LDADD = libkord.a ../tl/cc/libtl.a ../sylv/cc/libsylv.a $(LAPACK_LIBS) $(BLAS_LIBS) $(LIBS) $(FLIBS) $(PTHREAD_LIBS) $(LIBADD_MATIO)
+tests_LDADD = libkord.a ../tl/cc/libtl.a ../sylv/cc/libsylv.a $(LAPACK_LIBS) $(BLAS_LIBS) $(LIBS) $(FLIBS) $(LIBADD_MATIO)
 
 check-local:
 	./tests

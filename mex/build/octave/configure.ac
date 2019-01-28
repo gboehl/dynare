@@ -48,7 +48,9 @@ AC_PROG_RANLIB
 AX_PROG_LN_S
 AC_PROG_MKDIR_P
 AM_PROG_AR
-AX_PTHREAD
+
+AX_CXX11_THREAD
+
 # Check for dlopen(), needed by k_order_perturbation DLL
 AC_CHECK_LIB([dl], [dlopen], [LIBADD_DLOPEN="-ldl"], [])
 AC_SUBST([LIBADD_DLOPEN])
@@ -78,11 +80,7 @@ AC_SUBST([LIBADD_UMFPACK])
 AM_CONDITIONAL([DO_SOMETHING], [test "x$MKOCTFILE" != "x"])
 
 if test "x$MKOCTFILE" != "x"; then
-  if test x"$ax_pthread_ok" = "xyes"; then
-     BUILD_MEX_OCTAVE="yes"
-  else
-     BUILD_MEX_OCTAVE="yes (without POSIX threads)"
-  fi
+  BUILD_MEX_OCTAVE="yes"
 else
   BUILD_MEX_OCTAVE="no (missing mkoctfile)"
 fi

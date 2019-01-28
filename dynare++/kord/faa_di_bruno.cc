@@ -120,7 +120,7 @@ int
 FaaDiBruno::estimRefinment(const TensorDimens &tdims, int nr, int l,
                            int &avmem_mb, int &tmpmem_mb)
 {
-  int nthreads = THREAD_GROUP::max_parallel_threads;
+  int nthreads = sthread::detach_thread_group::max_parallel_threads;
   long int per_size1 = tdims.calcUnfoldMaxOffset();
   auto per_size2 = (long int) pow((double) tdims.getNVS().getMax(), l);
   double lambda = 0.0;

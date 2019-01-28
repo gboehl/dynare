@@ -220,7 +220,7 @@ extern "C" {
     const int nSteps = 0; // Dynare++ solving steps, for time being default to 0 = deterministic steady state
     const double sstol = 1.e-13; //NL solver tolerance from
 
-    THREAD_GROUP::max_parallel_threads = 2; //params.num_threads;
+    sthread::detach_thread_group::max_parallel_threads = 2; //params.num_threads;
 
     try
       {

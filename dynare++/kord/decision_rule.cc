@@ -90,7 +90,7 @@ SimResults::simulate(int num_sim, const DecisionRule &dr, const Vector &start,
   std::vector<RandomShockRealization> rsrs;
   rsrs.reserve(num_sim);
 
-  THREAD_GROUP gr;
+  sthread::detach_thread_group gr;
   for (int i = 0; i < num_sim; i++)
     {
       RandomShockRealization sr(vcov, system_random_generator.int_uniform());
@@ -331,7 +331,7 @@ SimResultsIRF::simulate(const DecisionRule &dr, Journal &journal)
 void
 SimResultsIRF::simulate(const DecisionRule &dr)
 {
-  THREAD_GROUP gr;
+  sthread::detach_thread_group gr;
   for (int idata = 0; idata < control.getNumSets(); idata++)
     gr.insert(std::make_unique<SimulationIRFWorker>(*this, dr, DecisionRule::horner,
                                                     num_per, idata, ishock, imp));
@@ -410,7 +410,7 @@ RTSimResultsStats::simulate(int num_sim, const DecisionRule &dr, const Vector &s
   std::vector<RandomShockRealization> rsrs;
   rsrs.reserve(num_sim);
 
-  THREAD_GROUP gr;
+  sthread::detach_thread_group gr;
   for (int i = 0; i < num_sim; i++)
     {
       RandomShockRealization sr(vcov, system_random_generator.int_uniform());
@@ -485,7 +485,7 @@ SimulationWorker::operator()()
   auto *esr = new ExplicitShockRealization(sr, np);
   TwoDMatrix *m = dr.simulate(em, np, st, *esr);
   {
-    SYNCHRO syn(&res, "simulation");
+    sthread::synchro syn(&res, "simulation");
     res.addDataSet(m, esr);
   }
 }
@@ -504,7 +504,7 @@ SimulationIRFWorker::operator()()
   TwoDMatrix *m = dr.simulate(em, np, st, *esr);
   m->add(-1.0, res.control.getData(idata));
   {
-    SYNCHRO syn(&res, "simulation");
+    sthread::synchro syn(&res, "simulation");
     res.addDataSet(m, esr);
   }
 }
@@ -546,7 +546,7 @@ RTSimulationWorker::operator()()
         nc.update(y);
     }
   {
-    SYNCHRO syn(&res, "rtsimulation");
+    sthread::synchro syn(&res, "rtsimulation");
     res.nc.update(nc);
     if (res.num_per-ip > 0)
       {

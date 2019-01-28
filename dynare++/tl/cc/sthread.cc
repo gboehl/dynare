@@ -1,232 +1,70 @@
 // Copyright 2004, Ondra Kamenik
 
-/* We set the default values for
-   |max_parallel_threads| for both |posix| and |empty| implementation and
-   both joinable and detach group. For |posix| this defaults to
-   uniprocessor machine with hyper-threading, this is 2. */
 
-#include <cstring>
 #include "sthread.hh"
 
-#ifdef HAVE_PTHREAD
 namespace sthread
 {
-  template<>
-  int thread_group<posix>::max_parallel_threads = 2;
-  template<>
-  int detach_thread_group<posix>::max_parallel_threads = 2;
+  /* We set the default value for |max_parallel_threads| to 2, i.e.
+     uniprocessor machine with hyper-threading */
+  int detach_thread_group::max_parallel_threads = 2;
 
-  // POSIX specializations methods
-  void *posix_thread_function(void *c);
-  template <>
-  void
-  thread_traits<posix>::run(_Ctype *c)
+  /* The constructor acquires the mutex in the map. First it tries to
+     get an exclusive access to the map. Then it increases a number of
+     references of the mutex (if it does not exists, it inserts it). Then
+     unlocks the map, and finally tries to lock the mutex of the map. */
+  synchro::synchro(const void *c, std::string id)
+    : caller{c}, iden{std::move(id)}
   {
-    pthread_create(&(c->getThreadIden()), nullptr, posix_thread_function, (void *) c);
+    mutmap.lock_map();
+    if (!mutmap.check(caller, iden))
+      mutmap.insert(caller, iden);
+    mutmap.get(caller, iden).second++;
+    mutmap.unlock_map();
+    mutmap.get(caller, iden).first.lock();
   }
 
-  void *posix_detach_thread_function(void *c);
-
-  template <>
-  void
-  thread_traits<posix>::detach_run(_Dtype *c)
+  /* The destructor first locks the map. Then releases the lock,
+     and decreases a number of references. If it is zero, it removes the
+     mutex. */
+  synchro::~synchro()
   {
-    pthread_attr_t attr;
-    pthread_attr_init(&attr);
-    pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
-    pthread_create(&(c->getThreadIden()), &attr, posix_detach_thread_function, (void *) c);
-    pthread_attr_destroy(&attr);
-  }
-
-  template <>
-  void
-  thread_traits<posix>::exit()
-  {
-    pthread_exit(nullptr);
-  }
-
-  template <>
-  void
-  thread_traits<posix>::join(_Ctype *c)
-  {
-    pthread_join(c->getThreadIden(), nullptr);
-  }
-
-  template <>
-  void
-  mutex_traits<posix>::init(pthread_mutex_t &m)
-  {
-    pthread_mutex_init(&m, nullptr);
-  }
-
-  template <>
-  void
-  mutex_traits<posix>::lock(pthread_mutex_t &m)
-  {
-    pthread_mutex_lock(&m);
-  }
-
-  template <>
-  void
-  mutex_traits<posix>::unlock(pthread_mutex_t &m)
-  {
-    pthread_mutex_unlock(&m);
-  }
-
-  template <>
-  void
-  cond_traits<posix>::init(_Tcond &cond)
-  {
-    pthread_cond_init(&cond, nullptr);
-  }
-
-  template <>
-  void
-  cond_traits<posix>::broadcast(_Tcond &cond)
-  {
-    pthread_cond_broadcast(&cond);
-  }
-
-  template <>
-  void
-  cond_traits<posix>::wait(_Tcond &cond, _Tmutex &mutex)
-  {
-    pthread_cond_wait(&cond, &mutex);
-  }
-
-  template <>
-  void
-  cond_traits<posix>::destroy(_Tcond &cond)
-  {
-    pthread_cond_destroy(&cond);
-  }
-
-  /* Here we instantiate the static map, and construct |PosixSynchro|
-     using that map. */
-
-  static posix_synchro::mutex_map_t posix_mm;
-
-  PosixSynchro::PosixSynchro(const void *c, const char *id)
-    : posix_synchro(c, id, posix_mm)
-  {
-  }
-
-  /* This function is of the type |void* function(void*)| as required by
-     POSIX, but it typecasts its argument and runs |operator()()|. */
-
-  void *
-  posix_thread_function(void *c)
-  {
-    auto *ct
-      = (thread_traits<posix>::_Ctype *)c;
-    try
+    mutmap.lock_map();
+    if (mutmap.check(caller, iden))
       {
-        ct->operator()();
+        mutmap.get(caller, iden).first.unlock();
+        mutmap.get(caller, iden).second--;
+        if (mutmap.get(caller, iden).second == 0)
+          mutmap.remove(caller, iden);
       }
-    catch (...)
-      {
-        ct->exit();
-      }
-    return nullptr;
+    mutmap.unlock_map();
   }
 
-  void *
-  posix_detach_thread_function(void *c)
+  /* We cycle through all threads in the group, and in each cycle we wait
+     for the change in the |counter|. If the counter indicates less than
+     maximum parallel threads running, then a new thread is run, and the
+     iterator in the list is moved.
+
+     At the end we have to wait for all thread to finish. */
+  void
+  detach_thread_group::run()
   {
-    auto *ct
-      = (thread_traits<posix>::_Dtype *)c;
-    condition_counter<posix> *counter = ct->counter;
-    try
+    std::unique_lock<std::mutex> lk{m};
+    auto it = tlist.begin();
+    while (it != tlist.end())
       {
-        ct->operator()();
+        counter++;
+        std::thread th{[&, it] {
+            // The "it" variable is captured by value, because otherwise the iterator may move
+            (*it)->operator()();
+            std::unique_lock<std::mutex> lk2{m};
+            counter--;
+            std::notify_all_at_thread_exit(cv, std::move(lk2));
+          }};
+        th.detach();
+        ++it;
+        cv.wait(lk, [&] { return counter < max_parallel_threads; });
       }
-    catch (...)
-      {
-        ct->exit();
-      }
-    if (counter)
-      counter->decrease();
-    return nullptr;
+    cv.wait(lk, [&] { return counter == 0; });
   }
 }
-#else
-namespace sthread
-{
-  template<>
-  int thread_group<empty>::max_parallel_threads = 1;
-  template<>
-  int detach_thread_group<empty>::max_parallel_threads = 1;
-
-  // non-threading specialization methods
-  /* The only trait methods we need to work are |thread_traits::run| and
-     |thread_traits::detach_run|, which directly call
-     |operator()()|. Anything other is empty. */
-
-  template <>
-  void
-  thread_traits<empty>::run(_Ctype *c)
-  {
-    c->operator()();
-  }
-  template <>
-  void
-  thread_traits<empty>::detach_run(_Dtype *c)
-  {
-    c->operator()();
-  }
-
-  template <>
-  void
-  thread_traits<empty>::exit()
-  {
-  }
-
-  template <>
-  void
-  thread_traits<empty>::join(_Ctype *c)
-  {
-  }
-
-  template <>
-  void
-  mutex_traits<empty>::init(Empty &m)
-  {
-  }
-
-  template <>
-  void
-  mutex_traits<empty>::lock(Empty &m)
-  {
-  }
-
-  template <>
-  void
-  mutex_traits<empty>::unlock(Empty &m)
-  {
-  }
-
-  template <>
-  void
-  cond_traits<empty>::init(_Tcond &cond)
-  {
-  }
-
-  template <>
-  void
-  cond_traits<empty>::broadcast(_Tcond &cond)
-  {
-  }
-
-  template <>
-  void
-  cond_traits<empty>::wait(_Tcond &cond, _Tmutex &mutex)
-  {
-  }
-
-  template <>
-  void
-  cond_traits<empty>::destroy(_Tcond &cond)
-  {
-  }
-}
-#endif

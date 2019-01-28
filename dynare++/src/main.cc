@@ -31,7 +31,7 @@ main(int argc, char **argv)
       printf(" for LGPL see http://www.gnu.org/licenses/lgpl.html\n");
       return 0;
     }
-  THREAD_GROUP::max_parallel_threads = params.num_threads;
+  sthread::detach_thread_group::max_parallel_threads = params.num_threads;
 
   try
     {
@@ -118,7 +118,7 @@ main(int argc, char **argv)
       if (params.check_along_path || params.check_along_shocks
           || params.check_on_ellipse)
         {
-          GlobalChecker gcheck(app, THREAD_GROUP::max_parallel_threads, journal);
+          GlobalChecker gcheck(app, sthread::detach_thread_group::max_parallel_threads, journal);
           if (params.check_along_shocks)
             gcheck.checkAlongShocksAndSave(matfd, params.prefix,
                                            params.getCheckShockPoints(),

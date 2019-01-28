@@ -908,7 +908,7 @@ public:
 /* This worker simulates the given decision rule and inserts the result
    to |SimResults|. */
 
-class SimulationWorker : public THREAD
+class SimulationWorker : public sthread::detach_thread
 {
 protected:
   SimResults &res;
@@ -933,7 +933,7 @@ public:
    control simulations are contained in |SimResultsIRF| which is passed
    to the constructor. */
 
-class SimulationIRFWorker : public THREAD
+class SimulationIRFWorker : public sthread::detach_thread
 {
   SimResultsIRF &res;
   const DecisionRule &dr;
@@ -960,7 +960,7 @@ public:
    Inf is observed, it ends the simulation and adds to the
    |thrown_periods| of |RTSimResultsStats|. */
 
-class RTSimulationWorker : public THREAD
+class RTSimulationWorker : public sthread::detach_thread
 {
 protected:
   RTSimResultsStats &res;

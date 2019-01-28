@@ -645,7 +645,7 @@ public:
   }
 };
 
-class WorkerFoldMAADense : public THREAD
+class WorkerFoldMAADense : public sthread::detach_thread
 {
   const FoldedStackContainer &cont;
   Symmetry sym;
@@ -659,7 +659,7 @@ public:
   void operator()() override;
 };
 
-class WorkerFoldMAASparse1 : public THREAD
+class WorkerFoldMAASparse1 : public sthread::detach_thread
 {
   const FoldedStackContainer &cont;
   const FSSparseTensor &t;
@@ -673,7 +673,7 @@ public:
   void operator()() override;
 };
 
-class WorkerFoldMAASparse2 : public THREAD
+class WorkerFoldMAASparse2 : public sthread::detach_thread
 {
   const FoldedStackContainer &cont;
   const FSSparseTensor &t;
@@ -686,7 +686,7 @@ public:
   void operator()() override;
 };
 
-class WorkerFoldMAASparse4 : public THREAD
+class WorkerFoldMAASparse4 : public sthread::detach_thread
 {
   const FoldedStackContainer &cont;
   const FSSparseTensor &t;
@@ -699,7 +699,7 @@ public:
   void operator()() override;
 };
 
-class WorkerUnfoldMAADense : public THREAD
+class WorkerUnfoldMAADense : public sthread::detach_thread
 {
   const UnfoldedStackContainer &cont;
   Symmetry sym;
@@ -713,7 +713,7 @@ public:
   void operator()() override;
 };
 
-class WorkerUnfoldMAASparse1 : public THREAD
+class WorkerUnfoldMAASparse1 : public sthread::detach_thread
 {
   const UnfoldedStackContainer &cont;
   const FSSparseTensor &t;
@@ -727,7 +727,7 @@ public:
   void operator()() override;
 };
 
-class WorkerUnfoldMAASparse2 : public THREAD
+class WorkerUnfoldMAASparse2 : public sthread::detach_thread
 {
   const UnfoldedStackContainer &cont;
   const FSSparseTensor &t;

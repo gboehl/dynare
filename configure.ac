@@ -79,6 +79,8 @@ CPPFLAGS="$CPPFLAGS_SAVED"
 # Don't use deprecated hash structures
 AC_DEFINE([BOOST_NO_HASH], [], [Don't use deprecated STL hash structures])
 
+AX_CXX11_THREAD
+
 # Check for libmatio, needed by Dynare++
 AX_MATIO
 AM_CONDITIONAL([HAVE_MATIO], [test "x$has_matio" = "xyes"])
@@ -118,8 +120,6 @@ if test "x$F77" != "x"; then
 fi
 AM_CONDITIONAL([HAVE_BLAS], [test x"$ax_blas_ok" = "xyes"])
 AM_CONDITIONAL([HAVE_LAPACK], [test x"$ax_lapack_ok" = "xyes"])
-
-AX_PTHREAD
 
 AC_CONFIG_FILES([Makefile
                  VERSION
@@ -181,11 +181,7 @@ AM_CONDITIONAL([ENABLE_ORG_EXPORT], [test "x$enable_org_export" != "x"])
 # Construct final output message
 
 if test "x$ax_blas_ok" = "xyes" -a "x$ax_lapack_ok" = "xyes" -a "x$has_matio" = "xyes"; then
-  if test x"$ax_pthread_ok" = "xyes"; then
-     BUILD_DYNAREPLUSPLUS="yes"
-  else
-     BUILD_DYNAREPLUSPLUS="yes (without POSIX threads)"
-  fi
+  BUILD_DYNAREPLUSPLUS="yes"
 else
   BUILD_DYNAREPLUSPLUS="no (missing one of: BLAS, LAPACK, MatIO)"
 fi

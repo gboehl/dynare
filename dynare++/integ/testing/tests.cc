@@ -498,7 +498,7 @@ main()
         nvmax = test->nvar;
     }
   tls.init(dmax, nvmax); // initialize library
-  THREAD_GROUP::max_parallel_threads = num_threads;
+  sthread::detach_thread_group::max_parallel_threads = num_threads;
 
   // launch the tests
   int success = 0;

@@ -41,7 +41,7 @@ FoldedStackContainer::multAndAdd(int dim, const FGSContainer &c, FGSTensor &out)
   TL_RAISE_IF(c.num() != numStacks(),
               "Wrong symmetry length of container for FoldedStackContainer::multAndAdd");
 
-  THREAD_GROUP gr;
+  sthread::detach_thread_group gr;
   SymmetrySet ss(dim, c.num());
   for (symiterator si(ss); !si.isEnd(); ++si)
     if (c.check(*si))
@@ -76,7 +76,7 @@ void
 FoldedStackContainer::multAndAddSparse1(const FSSparseTensor &t,
                                         FGSTensor &out) const
 {
-  THREAD_GROUP gr;
+  sthread::detach_thread_group gr;
   UFSTensor dummy(0, numStacks(), t.dimen());
   for (Tensor::index ui = dummy.begin(); ui != dummy.end(); ++ui)
     gr.insert(std::make_unique<WorkerFoldMAASparse1>(*this, t, out, ui.getCoor()));
@@ -121,7 +121,7 @@ WorkerFoldMAASparse1::operator()()
                     {
                       FPSTensor fps(out.getDims(), it, slice, kp);
                       {
-                        SYNCHRO syn(&out, "WorkerUnfoldMAASparse1");
+                        sthread::synchro syn(&out, "WorkerUnfoldMAASparse1");
                         fps.addTo(out);
                       }
                     }
@@ -148,7 +148,7 @@ void
 FoldedStackContainer::multAndAddSparse2(const FSSparseTensor &t,
                                         FGSTensor &out) const
 {
-  THREAD_GROUP gr;
+  sthread::detach_thread_group gr;
   FFSTensor dummy_f(0, numStacks(), t.dimen());
   for (Tensor::index fi = dummy_f.begin(); fi != dummy_f.end(); ++fi)
       gr.insert(std::make_unique<WorkerFoldMAASparse2>(*this, t, out, fi.getCoor()));
@@ -244,7 +244,7 @@ FoldedStackContainer::multAndAddSparse3(const FSSparseTensor &t,
 void
 FoldedStackContainer::multAndAddSparse4(const FSSparseTensor &t, FGSTensor &out) const
 {
-  THREAD_GROUP gr;
+  sthread::detach_thread_group gr;
   FFSTensor dummy_f(0, numStacks(), t.dimen());
   for (Tensor::index fi = dummy_f.begin(); fi != dummy_f.end(); ++fi)
     gr.insert(std::make_unique<WorkerFoldMAASparse4>(*this, t, out, fi.getCoor()));
@@ -310,7 +310,7 @@ FoldedStackContainer::multAndAddStacks(const IntSequence &coor,
                         kp.optimizeOrder();
                       FPSTensor fps(out.getDims(), it, sort_per, ug, kp);
                       {
-                        SYNCHRO syn(ad, "multAndAddStacks");
+                        sthread::synchro syn(ad, "multAndAddStacks");
                         fps.addTo(out);
                       }
                     }
@@ -351,7 +351,7 @@ FoldedStackContainer::multAndAddStacks(const IntSequence &coor,
                       KronProdStack<FGSTensor> kp(sp, coor);
                       FPSTensor fps(out.getDims(), it, sort_per, g, kp);
                       {
-                        SYNCHRO syn(ad, "multAndAddStacks");
+                        sthread::synchro syn(ad, "multAndAddStacks");
                         fps.addTo(out);
                       }
                     }
@@ -394,7 +394,7 @@ UnfoldedStackContainer::multAndAdd(int dim, const UGSContainer &c,
   TL_RAISE_IF(c.num() != numStacks(),
               "Wrong symmetry length of container for UnfoldedStackContainer::multAndAdd");
 
-  THREAD_GROUP gr;
+  sthread::detach_thread_group gr;
   SymmetrySet ss(dim, c.num());
   for (symiterator si(ss); !si.isEnd(); ++si)
     if (c.check(*si))
@@ -441,7 +441,7 @@ void
 UnfoldedStackContainer::multAndAddSparse1(const FSSparseTensor &t,
                                           UGSTensor &out) const
 {
-  THREAD_GROUP gr;
+  sthread::detach_thread_group gr;
   UFSTensor dummy(0, numStacks(), t.dimen());
   for (Tensor::index ui = dummy.begin(); ui != dummy.end(); ++ui)
     gr.insert(std::make_unique<WorkerUnfoldMAASparse1>(*this, t, out, ui.getCoor()));
@@ -503,7 +503,7 @@ WorkerUnfoldMAASparse1::operator()()
                     {
                       UPSTensor ups(out.getDims(), it, slice, kp);
                       {
-                        SYNCHRO syn(&out, "WorkerUnfoldMAASparse1");
+                        sthread::synchro syn(&out, "WorkerUnfoldMAASparse1");
                         ups.addTo(out);
                       }
                     }
@@ -545,7 +545,7 @@ void
 UnfoldedStackContainer::multAndAddSparse2(const FSSparseTensor &t,
                                           UGSTensor &out) const
 {
-  THREAD_GROUP gr;
+  sthread::detach_thread_group gr;
   FFSTensor dummy_f(0, numStacks(), t.dimen());
   for (Tensor::index fi = dummy_f.begin(); fi != dummy_f.end(); ++fi)
     gr.insert(std::make_unique<WorkerUnfoldMAASparse2>(*this, t, out, fi.getCoor()));
@@ -629,7 +629,7 @@ UnfoldedStackContainer::multAndAddStacks(const IntSequence &fi,
                         kp.optimizeOrder();
                       UPSTensor ups(out.getDims(), it, sort_per, g, kp);
                       {
-                        SYNCHRO syn(ad, "multAndAddStacks");
+                        sthread::synchro syn(ad, "multAndAddStacks");
                         ups.addTo(out);
                       }
                     }
