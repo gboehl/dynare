@@ -265,7 +265,7 @@ function [PacExpectations, Model] = UpdatePacExpectationsData(dataPAC0, dataPAC1
             GrowthVariable = GrowthVariable(range).data;
             correction = GrowthVariable*Model.params(Model.pac.(pacmodl).growth_neutrality_param_index);
           case 'endogenous'
-            GrowthVariable = data{Model.endo_names{Model.pac.(pacmodl).growth_index}};
+            GrowthVariable = data{Model.endo_names{Model.pac.(pacmodl).growth_index}}.lag(abs(Model.pac.(pacmodl).growth_lag));
             GrowthVariable = GrowthVariable(range).data;
             correction = GrowthVariable*Model.params(Model.pac.(pacmodl).growth_neutrality_param_index);
           otherwise
