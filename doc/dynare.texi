@@ -14221,7 +14221,8 @@ Whether or not to show horizontal lines separating the rows. Default: @code{fals
 
 @anchor{precision}
 @item precision, @code{INTEGER}
-The number of decimal places to report in the table data. Default: @code{1}
+The number of decimal places to report in the table data (rounding done via the
+@i{round half away from zero} method). Default: @code{1}
 
 @item range, @code{dates}
 The date range of the data to be displayed. Default: @code{all}
