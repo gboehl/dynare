@@ -15,7 +15,7 @@ function o = printSeries(o, fid, dser, dates, precision)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2014-2016 Dynare Team
+% Copyright (C) 2014-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -47,7 +47,7 @@ for i=1:size(data,1)
         end
         fprintf(fid, '[');
     end
-
+    % Use round half away from zero rounding
     output = round(data(i)*precision)/precision;
     if isnan(output)
         fprintf(fid, '%s', o.tableNaNSymb);

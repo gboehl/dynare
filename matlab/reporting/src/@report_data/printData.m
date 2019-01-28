@@ -37,6 +37,7 @@ precision  = 10^precision;
 data = setDataToZeroFromZeroTol(o, data);
 for i=1:size(data,1)
     fprintf(fid, '&');
+    % Use round half away from zero rounding
     output = round(data(i)*precision)/precision;
     if isnan(output)
         fprintf(fid, '%s', o.tableNaNSymb);

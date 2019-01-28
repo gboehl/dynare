@@ -99,6 +99,7 @@ for i = 1:nrows
             if val < o.zeroTol && val > -o.zeroTol
                 val = 0;
             end
+            % Use round half away from zero rounding
             val = round(val*rounding)/rounding;
             if isnan(val)
                 val = o.tableNaNSymb;
