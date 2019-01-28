@@ -8277,7 +8277,7 @@ osr_param_bounds;
 gamma_inf_, 0, 2.5;
 end;
 
-osr(solve_algo=9) y; 
+osr(opt_algo=9) y; 
 @end example
 
 @end deffn
