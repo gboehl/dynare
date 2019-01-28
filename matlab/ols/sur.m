@@ -59,7 +59,8 @@ else
 end
 
 %% Get Equation(s)
-ast = handle_constant_eqs(get_ast(eqtags));
+ast = get_ast(eqtags);
+[ast, ds] = handle_constant_eqs(ast, ds);
 neqs = length(ast);
 
 %% Find parameters and variable names in equations and setup estimation matrices

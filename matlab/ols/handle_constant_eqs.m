@@ -1,14 +1,16 @@
-function ast = handle_constant_eqs(ast)
-%function ast = handle_constant_eqs(ast)
+function [ast, ds] = handle_constant_eqs(ast, ds)
+%function [ast, ds] = handle_constant_eqs(ast, ds)
 %
 % Code to handle equations of type `X = 0;` in AST. Returns equation(s)
-% removed from AST.
+% removed from AST and ds.X == 0.
 %
 % INPUTS
 %   ast       [cell array]  JSON representation of abstract syntax tree
+%   ds        [dseries]     data to be updated
 %
 % OUTPUTS
 %   ast       [cell array]  updated JSON representation of abstract syntax tree
+%   ds        [dseries]     data to be updated
 %
 % SPECIAL REQUIREMENTS
 %   none
@@ -30,12 +32,16 @@ function ast = handle_constant_eqs(ast)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-if nargin ~= 1
+if nargin ~= 2
     error('Incorrect number of arguments to function')
 end
 
 if isempty(ast) || ~iscell(ast)
     error('ast must be a cell')
+end
+
+if isempty(ds) || ~isdseries(ds)
+    error('ds must be a nonempty dseries')
 end
 
 for i = length(ast):-1:1
@@ -44,6 +50,8 @@ for i = length(ast):-1:1
         if ~strcmp(ast{i}.AST.arg1.node_type, 'VariableNode')
             error('At the moment only handling Variable Nodes on LHS')
         end
+        ds.(ast{i}.AST.arg1.name) = ...
+            dseries(ast{i}.AST.arg2.value*ones(ds.nobs, 1), ds.firstdate, ast{i}.AST.arg1.name);
         ast = ast([1:i-1, i+1:end]);
     end
 end
