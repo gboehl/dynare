@@ -5,6 +5,7 @@
 #include <getopt.h>
 #include <cstdio>
 #include <cstring>
+#include <thread>
 
 const char *help_str
 = "usage: dynare++ [--help] [--version] [options] <model file>\n"
@@ -49,7 +50,7 @@ DynareParams::DynareParams(int argc, char **argv)
   : modname(nullptr), num_per(100), num_burn(0), num_sim(80),
     num_rtper(0), num_rtsim(0),
     num_condper(0), num_condsim(0),
-    num_threads(2), num_steps(0),
+    num_threads(std::thread::hardware_concurrency()), num_steps(0),
     prefix("dyn"), seed(934098), order(-1), ss_tol(1.e-13),
     check_along_path(false), check_along_shocks(false),
     check_on_ellipse(false), check_evals(1000), check_num(10), check_scale(2.0),
