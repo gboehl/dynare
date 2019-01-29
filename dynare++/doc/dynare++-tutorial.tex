@@ -1033,12 +1033,8 @@ default.
 threads. Complex evaluations of Faa Di Bruno formulas, simulations and
 numerical integration can be parallelized, Dynare++ exploits this
 advantage. You have to have a hardware support for this, otherwise
-there is no gain from the parallelization. As a rule of thumb, set the
-number of threads to the number of processors. An exception is a
-machine with Pentium 4 with Hyper Threading (abbreviated by HT). This
-processor can run two threads concurrently. The same applies to
-Dual-Core processors. Since these processors are present in most new
-PC desktops/laptops, the default is 2.
+there is no gain from the parallelization. The default value is the number of
+logical processors present on the machine.
 
 \item[\desc{\tt --ss-tol \it float}] This sets the tolerance of the
 non-linear solver of deterministic steady state to {\it float}. It is

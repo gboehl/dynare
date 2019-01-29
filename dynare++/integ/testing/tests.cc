@@ -23,8 +23,6 @@
 #include <memory>
 #include <cstdlib>
 
-const int num_threads = 2; // does nothing if DEBUG defined
-
 // evaluates unfolded (Dx)^k power, where x is a vector, D is a
 // Cholesky factor (lower triangular)
 class MomentFunction : public VectorFunction
@@ -252,7 +250,7 @@ TestRunnable::smolyak_normal_moments(const GeneralMatrix &m, int imom, int level
     WallTimer tim("\tSmolyak quadrature time:         ");
     GaussHermite gs;
     SmolyakQuadrature quad(dim, level, gs);
-    quad.integrate(func, level, num_threads, smol_out);
+    quad.integrate(func, level, sthread::detach_thread_group::max_parallel_threads, smol_out);
     std::cout << "\tNumber of Smolyak evaluations:    " << quad.numEvals(level) << std::endl;
   }
 
@@ -281,7 +279,7 @@ TestRunnable::product_normal_moments(const GeneralMatrix &m, int imom, int level
     WallTimer tim("\tProduct quadrature time:         ");
     GaussHermite gs;
     ProductQuadrature quad(dim, gs);
-    quad.integrate(func, level, num_threads, prod_out);
+    quad.integrate(func, level, sthread::detach_thread_group::max_parallel_threads, prod_out);
     std::cout << "\tNumber of product evaluations:    " << quad.numEvals(level) << std::endl;
   }
 
@@ -309,7 +307,7 @@ TestRunnable::smolyak_product_cube(const VectorFunction &func, const Vector &res
   {
     WallTimer tim("\tSmolyak quadrature time:         ");
     SmolyakQuadrature quad(func.indim(), level, glq);
-    quad.integrate(func, level, num_threads, out);
+    quad.integrate(func, level, sthread::detach_thread_group::max_parallel_threads, out);
     out.add(-1.0, res);
     smol_error = out.getMax();
     std::cout << "\tNumber of Smolyak evaluations:    " << quad.numEvals(level) << std::endl;
@@ -318,7 +316,7 @@ TestRunnable::smolyak_product_cube(const VectorFunction &func, const Vector &res
   {
     WallTimer tim("\tProduct quadrature time:         ");
     ProductQuadrature quad(func.indim(), glq);
-    quad.integrate(func, level, num_threads, out);
+    quad.integrate(func, level, sthread::detach_thread_group::max_parallel_threads, out);
     out.add(-1.0, res);
     prod_error = out.getMax();
     std::cout << "\tNumber of product evaluations:    " << quad.numEvals(level) << std::endl;
@@ -338,7 +336,7 @@ TestRunnable::qmc_cube(const VectorFunction &func, double res, double tol, int l
     WarnockPerScheme wps;
     QMCarloCubeQuadrature qmc(func.indim(), level, wps);
     //		qmc.savePoints("warnock.txt", level);
-    qmc.integrate(func, level, num_threads, r);
+    qmc.integrate(func, level, sthread::detach_thread_group::max_parallel_threads, r);
     error1 = std::max(res - r[0], r[0] - res);
     std::cout << "\tQuasi-Monte Carlo (Warnock scrambling) error: " << std::setw(16) << std::setprecision(12) << error1 << std::endl;
   }
@@ -348,7 +346,7 @@ TestRunnable::qmc_cube(const VectorFunction &func, double res, double tol, int l
     ReversePerScheme rps;
     QMCarloCubeQuadrature qmc(func.indim(), level, rps);
     //		qmc.savePoints("reverse.txt", level);
-    qmc.integrate(func, level, num_threads, r);
+    qmc.integrate(func, level, sthread::detach_thread_group::max_parallel_threads, r);
     error2 = std::max(res - r[0], r[0] - res);
     std::cout << "\tQuasi-Monte Carlo (reverse scrambling) error: " << std::setw(16) << std::setprecision(12) << error2 << std::endl;
   }
@@ -358,7 +356,7 @@ TestRunnable::qmc_cube(const VectorFunction &func, double res, double tol, int l
     IdentityPerScheme ips;
     QMCarloCubeQuadrature qmc(func.indim(), level, ips);
     //		qmc.savePoints("identity.txt", level);
-    qmc.integrate(func, level, num_threads, r);
+    qmc.integrate(func, level, sthread::detach_thread_group::max_parallel_threads, r);
     error3 = std::max(res - r[0], r[0] - res);
     std::cout << "\tQuasi-Monte Carlo (no scrambling) error:      " << std::setw(16) << std::setprecision(12) << error3 << std::endl;
   }
@@ -498,7 +496,6 @@ main()
         nvmax = test->nvar;
     }
   tls.init(dmax, nvmax); // initialize library
-  sthread::detach_thread_group::max_parallel_threads = num_threads;
 
   // launch the tests
   int success = 0;

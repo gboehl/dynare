@@ -26,7 +26,7 @@ const char *help_str
   "    --prefix <string>    prefix of variables in Mat-4 file [\"dyn\"]\n"
   "    --seed <num>         random number generator seed [934098]\n"
   "    --order <num>        order of approximation [no default]\n"
-  "    --threads <num>      number of max parallel threads [2]\n"
+  "    --threads <num>      number of max parallel threads [nb. of logical CPUs]\n"
   "    --ss-tol <num>       steady state calcs tolerance [1.e-13]\n"
   "    --check pesPES       check model residuals [no checks]\n"
   "                         lower/upper case switches off/on\n"

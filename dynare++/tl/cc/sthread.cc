@@ -5,9 +5,9 @@
 
 namespace sthread
 {
-  /* We set the default value for |max_parallel_threads| to 2, i.e.
-     uniprocessor machine with hyper-threading */
-  int detach_thread_group::max_parallel_threads = 2;
+  /* We set the default value for |max_parallel_threads| to the number of
+     logical CPUs */
+  int detach_thread_group::max_parallel_threads = std::thread::hardware_concurrency();
 
   /* We cycle through all threads in the group, and in each cycle we wait
      for the change in the |counter|. If the counter indicates less than
