@@ -925,7 +925,7 @@ public:
     : res(sim_res), dr(dec_rule), em(emet), np(num_per), st(start), sr(shock_r)
   {
   }
-  void operator()() override;
+  void operator()(std::mutex &mut) override;
 };
 
 /* This worker simulates a given impulse |imp| to a given shock
@@ -951,7 +951,7 @@ public:
       idata(id), ishock(ishck), imp(impulse)
   {
   }
-  void operator()() override;
+  void operator()(std::mutex &mut) override;
 };
 
 /* This class does the real time simulation job for
@@ -977,7 +977,7 @@ public:
     : res(sim_res), dr(dec_rule), em(emet), np(num_per), ystart(start), sr(shock_r)
   {
   }
-  void operator()() override;
+  void operator()(std::mutex &mut) override;
 };
 
 /* This class generates draws from Gaussian distribution with zero mean

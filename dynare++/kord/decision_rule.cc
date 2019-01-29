@@ -480,12 +480,12 @@ IRFResults::writeMat(mat_t *fd, const char *prefix) const
 }
 
 void
-SimulationWorker::operator()()
+SimulationWorker::operator()(std::mutex &mut)
 {
   auto *esr = new ExplicitShockRealization(sr, np);
   TwoDMatrix *m = dr.simulate(em, np, st, *esr);
   {
-    sthread::synchro syn(&res, "simulation");
+    std::unique_lock<std::mutex> lk{mut};
     res.addDataSet(m, esr);
   }
 }
@@ -494,7 +494,7 @@ SimulationWorker::operator()()
    corresponding control, add the impulse, and simulate. */
 
 void
-SimulationIRFWorker::operator()()
+SimulationIRFWorker::operator()(std::mutex &mut)
 {
   auto *esr
     = new ExplicitShockRealization(res.control.getShocks(idata));
@@ -504,13 +504,13 @@ SimulationIRFWorker::operator()()
   TwoDMatrix *m = dr.simulate(em, np, st, *esr);
   m->add(-1.0, res.control.getData(idata));
   {
-    sthread::synchro syn(&res, "simulation");
+    std::unique_lock<std::mutex> lk{mut};
     res.addDataSet(m, esr);
   }
 }
 
 void
-RTSimulationWorker::operator()()
+RTSimulationWorker::operator()(std::mutex &mut)
 {
   NormalConj nc(res.nc.getDim());
   const PartitionY &ypart = dr.getYPart();
@@ -546,7 +546,7 @@ RTSimulationWorker::operator()()
         nc.update(y);
     }
   {
-    sthread::synchro syn(&res, "rtsimulation");
+    std::unique_lock<std::mutex> lk{mut};
     res.nc.update(nc);
     if (res.num_per-ip > 0)
       {

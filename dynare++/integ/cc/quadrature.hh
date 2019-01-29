@@ -121,7 +121,7 @@ public:
      smarter. */
 
   void
-  operator()() override
+  operator()(std::mutex &mut) override
   {
     _Tpit beg = quad.begin(ti, tn, level);
     _Tpit end = quad.begin(ti+1, tn, level);
@@ -138,7 +138,7 @@ public:
       }
 
     {
-      sthread::synchro syn(&outvec, "IntegrationWorker");
+      std::unique_lock<std::mutex> lk{mut};
       outvec.add(1.0, tmpall);
     }
   }
