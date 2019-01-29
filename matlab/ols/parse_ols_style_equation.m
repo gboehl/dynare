@@ -84,7 +84,7 @@ while ~isempty(plus_node) || ~isempty(last_node_to_parse)
     if strcmp(node_to_parse.node_type, 'VariableNode')
         if strcmp(node_to_parse.type, 'parameter')
             % Intercept
-            Xtmp = dseries(ones(ds.nobs, 1), ds.firstdate, node_to_parse.name);
+            Xtmp = dseries(1, ds.dates, node_to_parse.name);
         elseif strcmp(node_to_parse.type, 'exogenous') && ~any(strcmp(ds.name, node_to_parse.name))
             % Residual if not contained in ds
             if isempty(residual)
