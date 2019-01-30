@@ -415,9 +415,9 @@ MODFILES = \
 	pac/trend-component-16/example.mod \
 	pac/trend-component-17/example.mod \
 	pac/trend-component-18/example.mod \
-    pac/trend-component-19/example1.mod \
-    pac/trend-component-19/example2.mod \
-    pac/trend-component-19/example3.mod \
+	pac/trend-component-19/example1.mod \
+	pac/trend-component-19/example2.mod \
+	pac/trend-component-19/example3.mod \
 	dynare-command-options/ramst.mod
 
 OLS_MODFILES = \
