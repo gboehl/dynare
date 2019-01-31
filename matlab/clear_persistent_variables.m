@@ -2,7 +2,7 @@ function clear_persistent_variables(folder, writelistofroutinestobecleared)
 
 % Clear all the functions with persistent variables in directory folder (and subdirectories).
 
-% Copyright (C) 2015-2017 Dynare Team
+% Copyright (C) 2015-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -33,11 +33,11 @@ DYNARE_FOLDER = strrep(which('dynare'),'dynare.m','');
 if writelistofroutinestobecleared
     if ~exist('list_of_functions_to_be_cleared.m') || isolder(sprintf('%slist_of_functions_to_be_cleared.m', DYNARE_FOLDER), DYNARE_FOLDER)
         if isunix() || ismac()
-            [status, output] = system(sprintf('grep -lr ^persistent %s', folder));
+            [~, output] = system(sprintf('grep -lr ^persistent %s', folder));
             list_of_files = strsplit(output);
             list_of_files(find(cellfun(@isempty, list_of_files))) = [];
         else
-            [status, output] = system(sprintf('findstr /B/S/M persistent %s\\*', folder));
+            [~, output] = system(sprintf('findstr /B/S/M persistent %s\\*', folder));
             list_of_files = strsplit(output);
             list_of_files(find(cellfun(@isempty, list_of_files))) = [];
             i = 1; mobius = true;
@@ -52,7 +52,7 @@ if writelistofroutinestobecleared
                 end
             end
         end
-        [paths, list_of_functions, extensions] = cellfun(@fileparts, list_of_files, 'UniformOutput',false);
+        [~, list_of_functions, ~] = cellfun(@fileparts, list_of_files, 'UniformOutput',false);
         cellofchar2mfile(sprintf('%slist_of_functions_to_be_cleared.m', DYNARE_FOLDER), list_of_functions)
     end
     return

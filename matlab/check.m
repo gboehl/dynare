@@ -12,7 +12,7 @@ function [eigenvalues_,result,info] = check(M, options, oo)
 % - result        [integer]       scalar, equal to 1 if Blanchard and Kahn conditions are satisfied, zero otherwise.
 % - info          [integer]       scalar or vector, error code as returned by resol routine.
 
-% Copyright (C) 2001-2018 Dynare Team
+% Copyright (C) 2001-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -42,7 +42,7 @@ end
 
 oo.dr=set_state_space(oo.dr,M,options);
 
-[dr,info,M,options,oo] = resol(1,M,options,oo);
+[dr,info,M,options,~] = resol(1,M,options,oo);
 
 if info(1) ~= 0 && info(1) ~= 3 && info(1) ~= 4
     print_info(info, 0, options);
