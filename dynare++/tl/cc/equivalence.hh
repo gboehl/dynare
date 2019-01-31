@@ -212,10 +212,10 @@ private:
 
 class EquivalenceBundle
 {
-  vector<EquivalenceSet *> bundle;
+  vector<EquivalenceSet> bundle;
 public:
   EquivalenceBundle(int nmax);
-  ~EquivalenceBundle();
+  ~EquivalenceBundle() = default;
   const EquivalenceSet&get(int n) const;
   void generateUpTo(int nmax);
 };

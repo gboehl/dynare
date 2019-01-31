@@ -400,13 +400,6 @@ EquivalenceBundle::EquivalenceBundle(int nmax)
   generateUpTo(nmax);
 }
 
-/* Destruct bundle. Just free all pointers. */
-EquivalenceBundle::~EquivalenceBundle()
-{
-  for (auto & i : bundle)
-    delete i;
-}
-
 /* Remember, that the first item is |EquivalenceSet(1)|. */
 const EquivalenceSet &
 EquivalenceBundle::get(int n) const
@@ -414,11 +407,11 @@ EquivalenceBundle::get(int n) const
   if (n > (int) (bundle.size()) || n < 1)
     {
       TL_RAISE("Equivalence set not found in EquivalenceBundle::get");
-      return *(bundle[0]);
+      return bundle[0];
     }
   else
     {
-      return *(bundle[n-1]);
+      return bundle[n-1];
     }
 }
 
@@ -430,5 +423,5 @@ EquivalenceBundle::generateUpTo(int nmax)
 {
   int curmax = bundle.size();
   for (int i = curmax+1; i <= nmax; i++)
-    bundle.push_back(new EquivalenceSet(i));
+    bundle.emplace_back(i);
 }
