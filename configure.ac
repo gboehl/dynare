@@ -87,9 +87,6 @@ AM_CONDITIONAL([HAVE_MATIO], [test "x$has_matio" = "xyes"])
 
 AC_CHECK_PROG([MAKEINFO], [makeinfo], [makeinfo])
 
-AC_CHECK_PROG([PDFETEX], [pdfetex], [pdfetex])
-AM_CONDITIONAL([HAVE_PDFETEX], [test "x$PDFETEX" != "x"])
-
 AC_CHECK_PROG([PDFLATEX], [pdflatex], [pdflatex])
 AM_CONDITIONAL([HAVE_PDFLATEX], [test "x$PDFLATEX" != "x"])
 
