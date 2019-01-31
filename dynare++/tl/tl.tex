@@ -108,7 +108,7 @@ tensor with nicer symmetry, here folded $\left[B_{y^3u^4}\right]$.
 \item[USubTensor] 
 Class representing unfolded full symmetry, row-oriented tensor which
 contains a few columns of huge product
-$\prod_{m=1}^l\left[g_{c_m}\right]^{\gamma_m}_{c_m(\alpha)}$. This is
+$\prod_{m=1}^l\left[g_{s^{\vert c_m\vert}}\right]^{\gamma_m}_{c_m(\alpha)}$. This is
 needed during the Faa Di Bruno for folded matrices.
 \item[IrregTensor] 
 Class representing a product of columns of derivatives
@@ -116,7 +116,9 @@ $\left[z_{y^ku^l}\right]$, where $z=[y^T,v^T,w^T]^T$. Since the first
 part of $z$ is $y$, the derivatives contain many zeros, which are not
 stored, hence the tensor's irregularity. The tensor is used when
 calculating one step of Faa Di Bruno formula, i.e.
-$\left[f_{z^l}\right]\sum\prod_{m=1}^l\left[z_{c_m}\right]^{\gamma_m}_{c_m(\alpha)}$.
+$\left[h_{y^l}\right]_{\gamma_1\ldots\gamma_l}
+\left(\sum_{c\in M_{l,k}}
+\prod_{m=1}^l\left[g_{s^{\vert c_m\vert}}\right]^{\gamma_m}_{c_m(\alpha)}\right)$.
 \item[FSSparseTensor] 
 Class representing full symmetry, column-oriented, sparse tensor. It
 is able to store elements keyed by the multidimensional index, and
@@ -207,13 +209,13 @@ preset maximum number parallel threads.
 \section{Tests}
 
 A few words to the library's test suite. The suite resides in
-directory {\tt tl/testing}. There is a file {\tt tests.cpp} which
+directory {\tt tl/testing}. There is a file {\tt tests.cc} which
 contains all tests and {\tt main()} function. Also there are files
-{\tt factory.h} and {\tt factory.cpp} implementing random generation
+{\tt factory.hh} and {\tt factory.cc} implementing random generation
 of various objects. The important property of these random objects is
 that they are the same for all object's invocations. This is very
 important in testing and debugging. Further, one can find files {\tt
-monoms.h} and {\tt monoms.cpp}. See below for their explanation.
+monoms.hh} and {\tt monoms.cc}. See below for their explanation.
 
 There are a few types of tests:
 \begin{itemize}
@@ -223,7 +225,7 @@ vice-versa. We test whether their coordinates are as expected.
 \item We test the Faa Di Bruno by comparison of the results of
 \texttt{FGSContainer::multAndAdd} against the results of \texttt{UGSContainer::multAndAdd}. The two
  implementations are pretty different, so this is a good test.
-\item We use a code in {\tt monoms.h} and {\tt monoms.cpp} to generate a
+\item We use a code in {\tt monoms.hh} and {\tt monoms.cc} to generate a
  random vector function $f(x(y,u))$ along with derivatives of
  $\left[f_x\right]$, $\left[x_{y^ku^l}\right]$, and
  $\left[f_{y^ku^l}\right]$. Then we calculate the resulting derivatives
