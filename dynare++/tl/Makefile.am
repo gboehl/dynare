@@ -1,16 +1,13 @@
 SUBDIRS = cc testing
 
-PDF_TARGETS =
+EXTRA_DIST = tl.tex
 
 if HAVE_PDFLATEX
-PDF_TARGETS += tl.pdf
-endif
-
-pdf-local: $(PDF_TARGETS)
+pdf-local: tl.pdf
 
 tl.pdf: tl.tex
 	$(PDFLATEX) tl
 	$(PDFLATEX) tl
+endif
 
-clean-local:
-	rm -f *~ *.pdf *.log *.aux *.out
+CLEANFILES = *.pdf *.log *.aux
