@@ -28,7 +28,15 @@ namespace sthread
             (*it)->operator()(mut_threads);
             std::unique_lock<std::mutex> lk2{mut_cv};
             counter--;
-            std::notify_all_at_thread_exit(cv, std::move(lk2));
+            /* First notify the thread waiting on the condition variable, then
+               unlock the mutex. We must do these two operations in that order,
+               otherwise there is a possibility of having the main process
+               destroying the condition variable before the thread tries to
+               notify it (if all other threads terminate at the same time and
+               bring the counter down to zero).
+               For that reason, we cannot use std::notify_all_at_thread_exit() */
+            cv.notify_one();
+            lk2.unlock();
           }};
         th.detach();
         ++it;
