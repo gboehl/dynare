@@ -95,16 +95,15 @@ end
 st = dbstack(1);
 if strcmp(st(1).name, 'pooled_fgls')
     save_structure_name = 'pooled_fgls';
+    % Pass vars back to pooled_fgls
+    oo_.pooled_fgls.residnames = residnames;
+    oo_.pooled_fgls.Y = Y.data;
+    oo_.pooled_fgls.X = X.data;
+    oo_.pooled_fgls.pbeta = X.name;
+    oo_.pooled_fgls.country_name = country_name;
 else
     save_structure_name = 'pooled_ols';
 end
-
-%% Save
-oo_.(save_structure_name).residnames = residnames;
-oo_.(save_structure_name).Y = Y.data;
-oo_.(save_structure_name).X = X.data;
-oo_.(save_structure_name).pbeta = X.name;
-oo_.(save_structure_name).country_name = country_name;
 
 %% Estimation
 % Estimated Parameters
