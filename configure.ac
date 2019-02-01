@@ -65,20 +65,6 @@ AX_PROG_LN_S
 
 AC_PROG_MKDIR_P
 
-# We need 1.36 because of unordered_{set,hash} used by Dynare++
-AX_BOOST_BASE([1.36], [], [AC_MSG_ERROR([Can't find Boost >= 1.36])])
-
-CPPFLAGS_SAVED="$CPPFLAGS"
-CPPFLAGS="$CPPFLAGS $BOOST_CPPFLAGS"
-AC_CHECK_HEADERS([boost/graph/adjacency_list.hpp], [], [AC_MSG_ERROR([Can't find Boost Graph Library])])
-AC_CHECK_HEADERS([boost/algorithm/string/trim.hpp], [], [AC_MSG_ERROR([Can't find Boost String Library])])
-AC_CHECK_HEADERS([boost/algorithm/string/split.hpp], [], [AC_MSG_ERROR([Can't find Boost String Library])])
-AC_CHECK_HEADERS([boost/lexical_cast.hpp], [], [AC_MSG_ERROR([Can't find Boost Lexical Cast Header])])
-CPPFLAGS="$CPPFLAGS_SAVED"
-
-# Don't use deprecated hash structures
-AC_DEFINE([BOOST_NO_HASH], [], [Don't use deprecated STL hash structures])
-
 AX_CXX11_THREAD
 
 # Check for libmatio, needed by Dynare++
