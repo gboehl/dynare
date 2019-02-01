@@ -78,7 +78,7 @@ regexcountries = ['(' strjoin(param_common(2:end),'|') ')'];
 ast = replace_parameters(ast, country_name, regexcountries, param_regex);
 
 %% Find parameters and variable names in every equation & Setup estimation matrices
-[Y, ~, X, ~, ~, residnames] = common_parsing(ds, ast, overlapping_dates);
+[Y, lhssub, X, ~, ~, residnames] = common_parsing(ds, ast, overlapping_dates);
 clear ast
 nobs = zeros(length(Y), 1);
 nobs(1) = Y{1}.nobs;
@@ -89,7 +89,7 @@ for i = 2:length(Y)
     end
     nobs(i) = Y{i}.nobs;
 end
-[Y, X] = put_in_sur_form(Y, X);
+[Y, ~, X] = put_in_sur_form(Y, lhssub, X);
 
 %% Handle FGLS
 st = dbstack(1);
