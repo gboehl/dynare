@@ -379,7 +379,7 @@ elseif strcmp(node.node_type, 'VariableNode')
 elseif strcmp(node.node_type, 'UnaryOpNode')
     tf = false;
 elseif strcmp(node.node_type, 'BinaryOpNode')
-    tf = isOlsParamExpr(node.arg1) && isOlsParamExpr(node.arg2);
+    tf = isOlsParamExpr(node.arg1, line) && isOlsParamExpr(node.arg2, line);
     if tf && ~strcmp(node.op, '-')
         parsing_error(['got unexpected op ' node.op], line, node);
     end
