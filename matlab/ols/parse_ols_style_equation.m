@@ -324,19 +324,15 @@ else
 end
 end
 
-function tf = isOlsParam(node)
-if strcmp(node.node_type, 'VariableNode') && strcmp(node.type, 'parameter')
-    tf = true;
-else
-    tf = false;
-end
-end
-
 function tf = isOlsParamExpr(node, line)
 if strcmp(node.node_type, 'NumConstNode')
     tf = true;
 elseif strcmp(node.node_type, 'VariableNode')
-    tf = isOlsParam(node);
+    if strcmp(node.type, 'parameter')
+        tf = true;
+    else
+        tf = false;
+    end
 elseif strcmp(node.node_type, 'UnaryOpNode')
     tf = false;
 elseif strcmp(node.node_type, 'BinaryOpNode')
