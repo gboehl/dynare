@@ -60,7 +60,7 @@ if ~strcmp(ast.AST.arg1.node_type, 'VariableNode') ...
     parsing_error('expecting Variable or UnaryOp on LHS', line);
 else
     if ~isOlsVar(ds, ast.AST.arg1) || ~isBaseVarLagEqualToZero(ast.AST.arg1)
-        parsing_error('the lhs of the equation must be an Variable or UnaryOp with lag == 0 that exists in the dataset', line);
+        parsing_error('the LHS of the equation must be an Variable or UnaryOp with lag == 0 that exists in the dataset', line);
     end
 end
 
