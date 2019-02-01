@@ -311,7 +311,19 @@ elseif strcmp(node.node_type, 'UnaryOpNode')
 elseif strcmp(node.node_type, 'BinaryOpNode')
     Xtmp1 = evalNode(ds, node.arg1, line, X);
     Xtmp2 = evalNode(ds, node.arg2, line, X);
-    X = X + eval(['Xtmp1 ' node.op ' Xtmp2']);
+    switch node.op
+        case '*'
+            Xtmp = Xtmp1 * Xtmp2;
+        case '/'
+            Xtmp = Xtmp1 / Xtmp2;
+        case '+'
+            Xtmp = Xtmp1 + Xtmp2;
+        case '-'
+            Xtmp = Xtmp1 - Xtmp2;
+        otherwise
+            parsing_error(['got unexpected binary op ' node.op], line);
+    end
+    X = X + Xtmp;
 else
     parsing_error(['got unexpected node type ' node.node_type], line);
 end
