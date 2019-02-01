@@ -295,7 +295,7 @@ function tf = isOlsVarExpr(ds, node, line)
 if strcmp(node.node_type, 'VariableNode') || strcmp(node.node_type, 'UnaryOpNode')
     tf = isOlsVar(ds, node);
 elseif strcmp(node.node_type, 'BinaryOpNode')
-    tf = isOlsVarExpr(ds, node.arg1, line) || isOlsVarExpr(ds, node.arg2, line);
+    tf = isOlsVarExpr(ds, node.arg1, line) && isOlsVarExpr(ds, node.arg2, line);
 else
     parsing_error(['got unexpected type ' node.node_type], line);
 end
