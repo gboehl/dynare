@@ -51,8 +51,10 @@ testsuite_matlab:
       - tests/*.m.trs
       - tests/*/*.m.log
       - tests/*/*.m.trs
+      - tests/*/*.jnl
       - tests/*/*/*.m.log
       - tests/*/*/*.m.trs
+      - tests/*/*/*.jnl
       - tests/run_test_matlab_output.txt
     when: always
   dependencies:
@@ -72,8 +74,10 @@ testsuite_matlab:
       - tests/*.o.trs
       - tests/*/*.o.log
       - tests/*/*.o.trs
+      - tests/*/*.jnl
       - tests/*/*/*.o.log
       - tests/*/*/*.o.trs
+      - tests/*/*/*.jnl
       - tests/run_test_octave_output.txt
     when: always
   dependencies:
