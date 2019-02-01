@@ -224,26 +224,27 @@ end
 function X = parseTimesNode(ds, node, line)
 % Separate the parameter expression from the endogenous expression
 assert(strcmp(node.node_type, 'BinaryOpNode') && strcmp(node.op, '*'))
-[param, X] = parseTimesNodeHelper(ds, node.arg1, line, {}, dseries());
-[param, X] = parseTimesNodeHelper(ds, node.arg2, line, param, X);
+
+if isOlsParamExpr(node.arg1, line)
+    param = assignParam([], node.arg1, line);
+    X = assignEndog(ds, node.arg2, line, dseries());
+elseif isOlsParamExpr(node.arg2, line)
+    param = assignParam([], node.arg2, line);
+    X = assignEndog(ds, node.arg1, line, dseries());
+else
+    parsing_error('expecting (param expr)*(var expr)', line);
+end
 X = X.rename(param{1});
 for ii = 2:length(param)
     X = [X dseries(X{1}.data, X{1}.firstdate, param{ii})];
 end
 end
 
-function [param, X] = parseTimesNodeHelper(ds, node, line, param, X)
-if isOlsParamExpr(node, line)
-    param = assignParam(param, node, line);
-elseif isOlsVarExpr(ds, node, line)
-    if isempty(X)
-        X = evalNode(ds, node, line, X);
-    else
-        parsing_error(['got endog * endog' node.name ' (' node.type ')'], line);
-    end
-else
-    parsing_error('unexpected expression', line);
+function X = assignEndog(ds, node, line, X)
+if ~isempty(X)
+    parsing_error(['got endog * endog' node.name ' (' node.type ')'], line);
 end
+X = evalNode(ds, node, line, X);
 end
 
 function param = assignParam(param, node, line)
@@ -291,25 +292,17 @@ else
 end
 end
 
-function tf = isOlsVarExpr(ds, node, line)
-if strcmp(node.node_type, 'VariableNode') || strcmp(node.node_type, 'UnaryOpNode')
-    tf = isOlsVar(ds, node);
-elseif strcmp(node.node_type, 'BinaryOpNode')
-    tf = isOlsVarExpr(ds, node.arg1, line) && isOlsVarExpr(ds, node.arg2, line);
-else
-    parsing_error(['got unexpected type ' node.node_type], line);
-end
-end
-
 function X = evalNode(ds, node, line, X)
+global M_
 if strcmp(node.node_type, 'NumConstNode')
     X = dseries(node.value, ds.dates, 'const');
 elseif strcmp(node.node_type, 'VariableNode')
-    if ~(strcmp(node.type, 'endogenous') ...
-            || (strcmp(node.type, 'exogenous') && any(strcmp(ds.name, node.name))))
-        parsing_error(['got unexpected type ' node.name ': ' node.type], line);
+    if strcmp(node.type, 'endogenous') ...
+            || (strcmp(node.type, 'exogenous') && any(strcmp(ds.name, node.name)))
+        X = ds.(node.name)(node.lag);
+    elseif strcmp(node.type, 'parameter')
+        X = M_.params(not(cellfun('isempty', strfind(M_.param_names, node.name))));
     end
-    X = ds.(node.name)(node.lag);
 elseif strcmp(node.node_type, 'UnaryOpNode')
     Xtmp = evalNode(ds, node.arg, line, X);
     % Only works if dseries supports . notation for unary op (true for log/diff)
