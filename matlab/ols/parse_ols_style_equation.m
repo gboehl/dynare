@@ -303,7 +303,7 @@ end
 
 function X = evalNode(ds, node, line, X)
 if strcmp(node.node_type, 'NumConstNode')
-    X = dseries(str2double(node.value), ds.dates, 'const');
+    X = dseries(node.value, ds.dates, 'const');
 elseif strcmp(node.node_type, 'VariableNode')
     if ~(strcmp(node.type, 'endogenous') ...
             || (strcmp(node.type, 'exogenous') && any(strcmp(ds.name, node.name))))
