@@ -3,24 +3,15 @@ function read()
 % Read JSON and run perfect foresight solver
 %
 % INPUTS
-%   ds                [dseries]    data
-%   fitted_names_dict [cell]       Nx2 or Nx3 cell array to be used in naming fitted
-%                                  values; first column is the equation tag,
-%                                  second column is the name of the
-%                                  associated fitted value, third column
-%                                  (if it exists) is the function name of
-%                                  the transformation to perform on the
-%                                  fitted value.
-%   eqtags            [cellstr]    names of equation tags to estimate. If empty,
-%                                  estimate all equations
+%   none
 %
 % OUTPUTS
-%   ds                [dseries]    data updated with fitted values
+%   none
 %
 % SPECIAL REQUIREMENTS
 %   dynare must have been run with the option: json=compute
 
-% Copyright (C) 2017-2019 Dynare Team
+% Copyright (C) 2019 Dynare Team
 %
 % This file is part of Dynare.
 %
