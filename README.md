@@ -60,7 +60,8 @@ have a 64-bit MATLAB; if it returns `PCWIN`, `MACI` or `GLNX`, then you have a
 A number of tools and libraries are needed in order to recompile everything. You don't necessarily need to install everything, depending on what you want to compile.
 
 - A POSIX compliant shell and an implementation of Make (mandatory)
-- The [GNU Compiler Collection](http://gcc.gnu.org/), with gcc, g++ and gfortran (mandatory)
+- The [GNU Compiler Collection](http://gcc.gnu.org/), version 6 or later, with
+  gcc, g++ and gfortran (mandatory)
 - MATLAB (if you want to compile the MEX for MATLAB)
 - [GNU Octave](http://www.octave.org), with the development headers (if you
   want to compile the MEX for Octave)
