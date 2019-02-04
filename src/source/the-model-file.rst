@@ -51,8 +51,9 @@ observed:
 * PARAMETER_NAME (sometimes PARAM_NAME) indicates a parameter name
   starting with an alphabetical character and can’t contain:
   ‘()+-\*/^=!;:@#.’ or accentuated characters;
-* LATEX_NAME (sometimes TEX_NAME) indicates a valid :math:`\LaTeX` expression
-  in math mode (not including the dollar signs);
+* LATEX_NAME (sometimes TEX_NAME) indicates a valid
+  :math:`\text{\LaTeX}` expression in math mode (not including the
+  dollar signs);
 * FUNCTION_NAME indicates a valid MATLAB function name;
 * FILENAME indicates a filename valid in the underlying operating
   system; it is necessary to put it between quotes when specifying the
@@ -86,14 +87,15 @@ for declaring variables and parameters are described below.
     var(deflator=MODEL_EXPR) VAR_NAME (... same options apply)
     var(log_deflator=MODEL_EXPR) VAR_NAME (... same options apply)
 
-    |br| This required command declares the endogenous variables in the
-    model. See :ref:`conv` for the syntax of *VAR_NAME* and
-    *MODEL_EXPR*. Optionally it is possible to give a :math:`\LaTeX` name to the
-    variable or, if it is nonstationary, provide information regarding
-    its deflator. ``var`` commands can appear several times in the file
-    and Dynare will concatenate them. Dynare stores the list of
-    declared parameters, in the order of declaration, in a column cell
-    array ``M_.endo_names``.
+    |br| This required command declares the endogenous variables in
+    the model. See :ref:`conv` for the syntax of *VAR_NAME* and
+    *MODEL_EXPR*. Optionally it is possible to give a
+    :math:`\text{\LaTeX}` name to the variable or, if it is
+    nonstationary, provide information regarding its deflator. ``var``
+    commands can appear several times in the file and Dynare will
+    concatenate them. Dynare stores the list of declared parameters,
+    in the order of declaration, in a column cell array
+    ``M_.endo_names``.
 
     *Options*
 
@@ -152,10 +154,10 @@ for declaring variables and parameters are described below.
 
     |br| This optional command declares the exogenous variables in the
     model. See :ref:`conv` for the syntax of ``VAR_NAME``. Optionally
-    it is possible to give a :math:`\LaTeX` name to the variable. Exogenous
-    variables are required if the user wants to be able to apply
-    shocks to her model. ``varexo`` commands can appear several times
-    in the file and Dynare will concatenate them.
+    it is possible to give a :math:`\text{\LaTeX}` name to the
+    variable. Exogenous variables are required if the user wants to be
+    able to apply shocks to her model. ``varexo`` commands can appear
+    several times in the file and Dynare will concatenate them.
 
     *Options*
 
@@ -196,7 +198,7 @@ for declaring variables and parameters are described below.
 
     |br| This optional command declares exogenous deterministic
     variables in a stochastic model. See :ref:`conv` for the syntax of
-    VARIABLE_NAME. Optionally it is possible to give a :math:`\LaTeX`
+    VARIABLE_NAME. Optionally it is possible to give a :math:`\text{\LaTeX}`
     name to the variable. ``varexo_det`` commands can appear several
     times in the file and Dynare will concatenate them.
 
@@ -234,7 +236,7 @@ for declaring variables and parameters are described below.
     |br| This command declares parameters used in the model, in variable
     initialization or in shocks declarations. See :ref:`conv` for the
     syntax of ``PARAM_NAME``. Optionally it is possible to give a
-    :math:`\LaTeX` name to the parameter.
+    :math:`\text{\LaTeX}` name to the parameter.
 
     The parameters must subsequently be assigned values (see :ref:`param-init`).
 
@@ -351,7 +353,7 @@ for declaring variables and parameters are described below.
     |br| This optional command declares the trend variables in the
     model. See ref:`conv` for the syntax of MODEL_EXPR and
     VAR_NAME. Optionally it is possible to give a
-    :math:`\LaTeX` name to the variable.
+    :math:`\text{\LaTeX}` name to the variable.
 
     The variable is assumed to have a multiplicative growth trend. For
     an additive growth trend, use ``log_trend_var`` instead.
@@ -944,37 +946,37 @@ The model is declared inside a ``model`` block:
 
 
 Dynare has the ability to output the original list of model equations
-to a :math:`\LaTeX` file, using the ``write_latex_original_model``
+to a :math:`\text{\LaTeX}` file, using the ``write_latex_original_model``
 command, the list of transformed model equations using the
 ``write_latex_dynamic_model command``, and the list of static model
 equations using the ``write_latex_static_model`` command.
 
 .. command:: write_latex_original_model ;
 
-    |br| This command creates two :math:`\LaTeX` files: one containing the
-    model as defined in the model block and one containing the
-    :math:`\LaTeX` document header information.
+    |br| This command creates two :math:`\text{\LaTeX}` files: one
+    containing the model as defined in the model block and one
+    containing the :math:`\text{\LaTeX}` document header information.
 
     If your ``.mod`` file is ``FILENAME.mod``, then Dynare will create
     a file called ``FILENAME_original.tex``, which includes a file
     called ``FILENAME_original_content.tex`` (also created by Dynare)
     containing the list of all the original model equations.
 
-    If :math:`\LaTeX` names were given for variables and parameters
+    If :math:`\text{\LaTeX}` names were given for variables and parameters
     (see :ref:`var-decl`), then those will be used; otherwise, the
     plain text names will be used.
 
     Time subscripts (``t``, ``t+1``, ``t-1``, ...) will be appended to
-    the variable names, as :math:`\LaTeX` subscripts.
+    the variable names, as :math:`\text{\LaTeX}` subscripts.
 
-    Compiling the TeX file requires the following :math:`\LaTeX`
+    Compiling the TeX file requires the following :math:`\text{\LaTeX}`
     packages: ``geometry, fullpage, breqn``.
 
 .. command:: write_latex_dynamic_model ;
              write_latex_dynamic_model (OPTIONS);
 
-    |br| This command creates two :math:`\LaTeX` files: one containing
-    the dynamic model and one containing the :math:`\LaTeX` document
+    |br| This command creates two :math:`\text{\LaTeX}` files: one containing
+    the dynamic model and one containing the :math:`\text{\LaTeX}` document
     header information.
 
     If your ``.mod`` file is ``FILENAME.mod``, then Dynare will create
@@ -982,12 +984,12 @@ equations using the ``write_latex_static_model`` command.
     called ``FILENAME_dynamic_content.tex`` (also created by Dynare)
     containing the list of all the dynamic model equations.
 
-    If :math:`\LaTeX` names were given for variables and parameters
+    If :math:`\text{\LaTeX}` names were given for variables and parameters
     (see :ref:`var-decl`), then those will be used; otherwise, the
     plain text names will be used.
 
     Time subscripts (``t``, ``t+1``, ``t-1``, ...) will be appended to
-    the variable names, as :math:`\LaTeX` subscripts.
+    the variable names, as :math:`\text{\LaTeX}` subscripts.
 
     Note that the model written in the TeX file will differ from the
     model declared by the user in the following dimensions:
@@ -1008,29 +1010,29 @@ equations using the ``write_latex_static_model`` command.
           lags will also have been replaced by new auxiliary variables
           and equations.
 
-    For the required :math:`\LaTeX` packages, see
+    For the required :math:`\text{\LaTeX}` packages, see
     :comm:`write_latex_original_model`.
 
     *Options*
 
     .. option:: write_equation_tags
 
-        Write the equation tags in the :math:`\LaTeX` output. NB: the
-        equation tags will be interpreted with :math:`\LaTeX` markups.
+        Write the equation tags in the :math:`\text{\LaTeX}` output. NB: the
+        equation tags will be interpreted with :math:`\text{\LaTeX}` markups.
 
 
 .. command:: write_latex_static_model ;
 
-    |br| This command creates two :math:`\LaTeX` files: one containing the
-    static model and one containing the :math:`\LaTeX` document header
-    information.
+    |br| This command creates two :math:`\text{\LaTeX}` files: one
+    containing the static model and one containing the :math:`\text{\LaTeX}`
+    document header information.
 
     If your ``.mod`` file is ``FILENAME.mod``, then Dynare will create
     a file called ``FILENAME_static.tex``, which includes a file
     called ``FILENAME_static_content.tex`` (also created by Dynare)
     containing the list of all the steady state model equations.
 
-    If :math:`\LaTeX` names were given for variables and parameters
+    If :math:`\text{\LaTeX}` names were given for variables and parameters
     (see :ref:`var-decl`), then those will be used; otherwise, the
     plain text names will be used.
 
@@ -1044,7 +1046,7 @@ equations using the ``write_latex_static_model`` command.
     (i.e. without leads and lags) of the dynamic ``model`` declared in
     the model block.
 
-    For the required :math:`\LaTeX` packages, see
+    For the required :math:`\text{\LaTeX}` packages, see
     :comm:`write_latex_original_model`.
 
 .. _aux-variables:
@@ -3207,7 +3209,7 @@ Computing the stochastic solution
     .. option:: tex
 
        Requests the printing of results and graphs in TeX tables and
-       graphics that can be later directly included in :math:`\LaTeX`
+       graphics that can be later directly included in :math:`\text{\LaTeX}`
        files.
 
     .. option:: dr_display_tol = DOUBLE
@@ -10250,7 +10252,7 @@ The labor share in GDP is defined as:
 
     .. math::
 
-        \textrm{lab_rat} = (w \ell)/(p y)
+        \textrm{lab\_rat} = (w \ell)/(p y)
 
 In the model, :math:`\alpha` is a (share) parameter, and ``lab_rat``
 is an endogenous variable.
@@ -10471,27 +10473,27 @@ Misc commands
 
 .. matcomm:: write_latex_definitions ;
 
-    |br| Writes the names, :math:`\LaTeX` names and long names of
+    |br| Writes the names, :math:`\text{\LaTeX}` names and long names of
     model variables to tables in a file named
     ``<<M_.fname>>_latex_definitions.tex``. Requires the following
-    :math:`\LaTeX` packages: ``longtable``.
+    :math:`\text{\LaTeX}` packages: ``longtable``.
 
 .. matcomm:: write_latex_parameter_table ;
 
-    |br| Writes the :math:`\LaTeX` names, parameter names, and long
+    |br| Writes the :math:`\text{\LaTeX}` names, parameter names, and long
     names of model parameters to a table in a file named
     ``<<M_.fname>>_latex_parameters.tex.`` The command writes the
     values of the parameters currently stored. Thus, if parameters are
     set or changed in the steady state computation, the command should
     be called after a steady-command to make sure the parameters were
     correctly updated. The long names can be used to add parameter
-    descriptions. Requires the following :math:`\LaTeX` packages:
+    descriptions. Requires the following :math:`\text{\LaTeX}` packages:
     ``longtable, booktabs``.
 
 .. matcomm:: write_latex_prior_table ;
 
     |br| Writes descriptive statistics about the prior distribution to
-    a :math:`\LaTeX` table in a file named
+    a :math:`\text{\LaTeX}` table in a file named
     ``<<M_.fname>>_latex_priors_table.tex``. The command writes the
     prior definitions currently stored. Thus, this command must be
     invoked after the ``estimated_params`` block. If priors are
@@ -10499,16 +10501,16 @@ Misc commands
     preceeded by the declaration of the observed variables (with
     ``varobs``). The command displays a warning if no prior densities
     are defined (ML estimation) or if the declaration of the observed
-    variables is missing. Requires the following :math:`\LaTeX`
+    variables is missing. Requires the following :math:`\text{\LaTeX}`
     packages: ``longtable, booktabs``.
 
 .. matcomm:: collect_latex_files ;
 
-    |br| Writes a :math:`\LaTeX` file named
+    |br| Writes a :math:`\text{\LaTeX}` file named
     ``<<M_.fname>>_TeX_binder.tex`` that collects all TeX output
     generated by Dynare into a file. This file can be compiled using
     ``pdflatex`` and automatically tries to load all required
-    packages. Requires the following :math:`\LaTeX` packages:
+    packages. Requires the following :math:`\text{\LaTeX}` packages:
     ``breqn``, ``psfrag``, ``graphicx``, ``epstopdf``, ``longtable``,
     ``booktabs``, ``caption``, ``float,`` ``amsmath``, ``amsfonts``,
     and ``morefloats``.

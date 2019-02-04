@@ -10,16 +10,17 @@
 Reporting
 #########
 
-Dynare provides a simple interface for creating LaTeX reports,
-comprised of LaTeX tables and ``PGFPLOTS/TikZ graphs``. You can use
-the report as created through Dynare or pick out the pieces (tables
-and graphs) you want for inclusion in your own paper. Though Dynare
-provides a subset of options available through ``PGFPLOTS/TikZ``, you
-can easily modify the graphs created by Dynare using the options
-available in the ``PGFPLOTS/TikZ`` manual. You can either do this
-manually or by passing the options to :opt:`miscTikzAxisOptions
-<miscTikzAxisOptions, STRING>` or :opt:`graphMiscTikzAddPlotOptions
-<graphMiscTikzAddPlotOptions, STRING>`.
+Dynare provides a simple interface for creating :math:`\text{\LaTeX}`
+reports, comprised of :math:`\text{\LaTeX}` tables and ``PGFPLOTS/TikZ
+graphs``. You can use the report as created through Dynare or pick out
+the pieces (tables and graphs) you want for inclusion in your own
+paper. Though Dynare provides a subset of options available through
+``PGFPLOTS/TikZ``, you can easily modify the graphs created by Dynare
+using the options available in the ``PGFPLOTS/TikZ`` manual. You can
+either do this manually or by passing the options to
+:opt:`miscTikzAxisOptions <miscTikzAxisOptions, STRING>` or
+:opt:`graphMiscTikzAddPlotOptions <graphMiscTikzAddPlotOptions,
+STRING>`.
 
 Reports are created and modified by calling methods on class
 objects. The objects are hierarchical, with the following order (from
@@ -60,10 +61,10 @@ and a clarifying example.
 
     .. option:: compiler, FILENAME
 
-        The full path to the LaTeX compiler on your system. If this
-        option is not provided, Dynare will try to find the
-        appropriate program to compile LaTeX on your system. Default
-        is system dependent:
+        The full path to the :math:`\text{\LaTeX}` compiler on your
+        system. If this option is not provided, Dynare will try to
+        find the appropriate program to compile :math:`\text{\LaTeX}` on your
+        system. Default is system dependent:
 
             * Windows: the result of findtexmf ``--file-type=exe pdflatex``.
             * macOS and Linux: the result of ``which pdflatex``.
@@ -79,7 +80,7 @@ and a clarifying example.
 
     .. option:: header, STRING
 
-        The valid LaTeX code to be included in the report before
+        The valid :math:`\text{\LaTeX}` code to be included in the report before
         ``\begin{document}``. Default: ``empty``.
 
     .. option:: margin, DOUBLE
@@ -122,12 +123,12 @@ and a clarifying example.
 
     .. option:: latex, STRING
 
-        The valid LaTeX code to be used for this page. Alows the user
-        to create a page to be included in the report by passing LaTeX
-        code directly. If this option is passed, the page itself will
-        be saved in the :opt:`pageDirName <pageDirName, STRING>`
-        directory in the form ``page_X.tex`` where X refers to the
-        page number. Default: ``empty``.
+        The valid :math:`\text{\LaTeX}` code to be used for this
+        page. Alows the user to create a page to be included in the
+        report by passing :math:`\text{\LaTeX}` code directly. If this option is
+        passed, the page itself will be saved in the :opt:`pageDirName
+        <pageDirName, STRING>` directory in the form ``page_X.tex``
+        where X refers to the page number. Default: ``empty``.
 
     .. option:: orientation, `landscape' | `portrait'
 
@@ -147,12 +148,13 @@ and a clarifying example.
 
         With one entry (a STRING), the title of the page. With more
         than one entry (a CELL_ARRAY_STRINGS), the title and
-        subtitle(s) of the page. Values passed must be valid LaTeX
-        code (e.g., ``%`` must be ``\%``). Default: ``none``.
+        subtitle(s) of the page. Values passed must be valid
+        :math:`\text{\LaTeX}` code (e.g., ``%`` must be
+        ``\%``). Default: ``none``.
 
     .. option:: titleFormat, STRING | CELL_ARRAY_STRINGS
 
-        A string representing the valid LaTeX markup to use on
+        A string representing the valid :math:`\text{\LaTeX}` markup to use on
         ``title``. The number of cell array entries must be equal to
         that of the ``title`` option if you do not want to use the
         default value for the title (and subtitles). Default:
@@ -178,7 +180,7 @@ and a clarifying example.
 
     .. option:: height, STRING
 
-        A string to be used with the ``\sectionheight`` LaTeX
+        A string to be used with the ``\sectionheight`` :math:`\text{\LaTeX}`
         command. Default: ``'!'``
 
 
@@ -577,7 +579,7 @@ and a clarifying example.
     .. option:: graphLegendName, STRING
 
         The name to display in the legend for this series, passed as
-        valid LaTeX (e.g., ``GDP_{US}, $\alpha$,
+        valid :math:`\text{\LaTeX}` (e.g., ``GDP_{US}, $\alpha$,
         \color{red}GDP\color{black}``). Will be displayed only if the
         ``data`` and :opt:`showLegend <showLegend, BOOLEAN>` options
         have been passed. Default: the tex name of the series.
@@ -748,7 +750,7 @@ and a clarifying example.
     .. option:: heading, STRING
 
         The heading for the ``Paragraph`` (like a section
-        heading). The string must be valid LaTeX code. Default:
+        heading). The string must be valid :math:`\text{\LaTeX}` code. Default:
         ``empty``.
 
     .. option:: indent, BOOLEAN
@@ -757,7 +759,7 @@ and a clarifying example.
 
     .. option:: text, STRING
 
-        The paragraph itself. The string must be valid LaTeX
+        The paragraph itself. The string must be valid :math:`\text{\LaTeX}`
         code. Default: ``empty``.
 
 
@@ -778,8 +780,9 @@ and a clarifying example.
 
 .. reportingmethod:: write
 
-    |br| Writes the LaTeX representation of this ``Report``, saving it
-    to the file specified by :opt:`filename <fileName, FILENAME>`.
+    |br| Writes the :math:`\text{\LaTeX}` representation of this
+    ``Report``, saving it to the file specified by :opt:`filename
+    <fileName, FILENAME>`.
 
 
 .. reportingmethod:: compile
@@ -796,13 +799,13 @@ and a clarifying example.
         Like :opt:`compiler <compiler, FILENAME>`, except will not
         overwrite the value of ``compiler`` contained in the report
         object. Hence, passing the value here is useful for using
-        different LaTeX compilers or just for passing the value at the
-        last minute.
+        different :math:`\text{\LaTeX}` compilers or just for passing
+        the value at the last minute.
 
     .. option:: showOutput, BOOLEAN
 
         Print the compiler output to the screen. Useful for debugging
-        your code as the LaTeX compiler hangs if there is a
+        your code as the :math:`\text{\LaTeX}` compiler hangs if there is a
         problem. Default: the value of :opt:`showOutput <showOutput,
         BOOLEAN>`.
 
