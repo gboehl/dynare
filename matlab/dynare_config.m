@@ -245,6 +245,8 @@ if verbose
 end
 
 % Initialization of the dates and dseries classes (recursive).
-dseries().initialize();
+octaveworkaround = dseries();
+octaveworkaround.initialize();
+clear octaveworkaround;
 
 cd(origin);
