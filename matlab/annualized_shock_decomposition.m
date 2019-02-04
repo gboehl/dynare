@@ -120,6 +120,7 @@ elseif q2a.plot ~= 2
 end
 
 % end initialize names
+steady_state=steady_state(i_var);
 
 if realtime_==0
     % usual shock decomp
@@ -143,7 +144,6 @@ if isstruct(aux)
         aux.yss=steady_state_aux;
     end
 end
-steady_state=steady_state(i_var);
 % endo_names = M_.endo_names(i_var,:);
 % endo_names_tex = M_.endo_names_tex(i_var,:);
 

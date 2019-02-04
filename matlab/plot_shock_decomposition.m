@@ -57,6 +57,7 @@ if isfield(options_.plot_shock_decomp,'expand') % private trap for uimenu calls
     expand=options_.plot_shock_decomp.expand;
 else
     expand=0;
+    options_.plot_shock_decomp.expand=0;
 end
 
 if ~isempty(options_.plot_shock_decomp.fig_name)
@@ -95,84 +96,119 @@ else
 end
 
 switch realtime_
-
-  case 0
-    z = oo_.shock_decomposition;
-    fig_name1=fig_name;
-
-  case 1 % realtime
-    if vintage_
-        z = oo_.realtime_shock_decomposition.(['time_' int2str(vintage_)]);
-        fig_name1=[fig_name ' realtime (vintage ' char(initial_date+vintage_-1) ')'];
-    else
-        z = oo_.realtime_shock_decomposition.pool;
-        fig_name1=[fig_name ' realtime (rolling)'];
-    end
-
-  case 2 % conditional
-    if vintage_
-        z = oo_.realtime_conditional_shock_decomposition.(['time_' int2str(vintage_)]);
-        initial_date = initial_date+vintage_-1;
-        fig_name1=[fig_name ' ' int2str(forecast_) '-step ahead conditional forecast (given ' char(initial_date) ')'];
-    else
-        z = oo_.conditional_shock_decomposition.pool;
-        fig_name1=[fig_name ' 1-step ahead conditional forecast (rolling)'];
-    end
-
-  case 3 % forecast
-    if vintage_
-        z = oo_.realtime_forecast_shock_decomposition.(['time_' int2str(vintage_)]);
-        initial_date = initial_date+vintage_-1;
-        fig_name1=[fig_name ' ' int2str(forecast_) '-step ahead forecast (given ' char(initial_date) ')'];
-    else
-        z = oo_.realtime_forecast_shock_decomposition.pool;
-        fig_name1=[fig_name ' 1-step ahead forecast (rolling)'];
-    end
+    
+    case 0
+        if ~(expand && isfield(options_.plot_shock_decomp,'zfull'))
+            z = oo_.shock_decomposition;
+        end
+        fig_name1=fig_name;
+        
+    case 1 % realtime
+        if vintage_
+            if ~(expand && isfield(options_.plot_shock_decomp,'zfull'))
+                z = oo_.realtime_shock_decomposition.(['time_' int2str(vintage_)]);
+            end
+            fig_name1=[fig_name ' realtime (vintage ' char(initial_date+vintage_-1) ')'];
+        else
+            if ~(expand && isfield(options_.plot_shock_decomp,'zfull'))
+                z = oo_.realtime_shock_decomposition.pool;
+            end
+            fig_name1=[fig_name ' realtime (rolling)'];
+        end
+        
+    case 2 % conditional
+        if vintage_
+            if ~(expand && isfield(options_.plot_shock_decomp,'zfull'))
+                z = oo_.realtime_conditional_shock_decomposition.(['time_' int2str(vintage_)]);
+            end
+            initial_date = initial_date+vintage_-1;
+            fig_name1=[fig_name ' ' int2str(forecast_) '-step ahead conditional forecast (given ' char(initial_date) ')'];
+        else
+            if ~(expand && isfield(options_.plot_shock_decomp,'zfull'))
+                z = oo_.conditional_shock_decomposition.pool;
+            end
+            fig_name1=[fig_name ' 1-step ahead conditional forecast (rolling)'];
+        end
+        
+    case 3 % forecast
+        if vintage_
+            if ~(expand && isfield(options_.plot_shock_decomp,'zfull'))
+                z = oo_.realtime_forecast_shock_decomposition.(['time_' int2str(vintage_)]);
+            end
+            initial_date = initial_date+vintage_-1;
+            fig_name1=[fig_name ' ' int2str(forecast_) '-step ahead forecast (given ' char(initial_date) ')'];
+        else
+            if ~(expand && isfield(options_.plot_shock_decomp,'zfull'))
+                z = oo_.realtime_forecast_shock_decomposition.pool;
+            end
+            fig_name1=[fig_name ' 1-step ahead forecast (rolling)'];
+        end
 end
 
-steady_state = oo_.steady_state;
+if isfield(oo_.dr,'ys')
+    steady_state = oo_.dr.ys;
+else
+    steady_state = oo_.steady_state;
+end
 
-if isequal(type,'aoa') && isstruct(q2a) && realtime_
-    % take all dates where realtime is saved
-    qqq=options_.initial_date+options_.shock_decomp.save_realtime(:)-1; 
-    % take the first Q4 of saved realtime
-    t0=min(options_.shock_decomp.save_realtime(qqq.time(:,2)==4)); 
-    if isempty(t0)
-        error('the realtime decompositions are not stored in Q4! Please check your dates and settings.')
+if isequal(type,'aoa') && isstruct(q2a)
+    if (expand && isfield(options_.plot_shock_decomp,'zfull'))
+        za = options_.plot_shock_decomp.zfull;
+        genda = size(za,3);
+        endo_nbra = size(za,1);
+        [za, shock_names, M_] = make_the_groups(za,genda,endo_nbra,nshocks,M_, options_);
     end
-    if ~isfield(q2a,'var_type') % private trap for aoa calls
-        q2a.var_type=1;
+    if realtime_
+        % take all dates where realtime is saved
+        qqq=options_.initial_date+options_.shock_decomp.save_realtime(:)-1;
+        % take the first Q4 of saved realtime
+        t0=min(options_.shock_decomp.save_realtime(qqq.time(:,2)==4));
+        if isempty(t0)
+            error('the realtime decompositions are not stored in Q4! Please check your dates and settings.')
+        end
+        if ~isfield(q2a,'var_type') % private trap for aoa calls
+            q2a.var_type=1;
+        end
+        if ~isfield(q2a,'islog') % private trap for aoa calls
+            q2a.islog=0;
+        end
+        if ~isfield(q2a,'GYTREND0') % private trap for aoa calls
+            q2a.GYTREND0=0;
+        end
+        if ~isfield(q2a,'aux') % private trap for aoa calls
+            q2a.aux=0;
+        end
+        if ~isfield(q2a,'cumfix') % private trap for aoa calls
+            q2a.cumfix=1;
+        end
+        if ~isfield(q2a,'plot') % private trap for aoa calls
+            q2a.plot=1; % growth rate
+        end
+        
+        %     if isstruct(q2a.aux) && ischar(q2a.aux.y)
+        %         opts=options_;
+        %         opts.plot_shock_decomp.type='qoq';
+        %         [y_aux, steady_state_aux] = plot_shock_decomposition(M_,oo_,opts,q2a.aux.y);
+        %         q2a.aux.y=y_aux;
+        %         q2a.aux.yss=steady_state_aux;
+        %     end
+        if ~(expand && isfield(options_.plot_shock_decomp,'zfull'))
+            if options_.plot_shock_decomp.interactive && ~isempty(options_.plot_shock_decomp.use_shock_groups)
+                mygroup = options_.plot_shock_decomp.use_shock_groups;
+                options_.plot_shock_decomp.use_shock_groups='';
+                zafull = ...
+                    annualized_shock_decomposition(oo_,M_, options_, i_var, t0, options_.nobs, realtime_, vintage_, steady_state,q2a);
+                options_.plot_shock_decomp.use_shock_groups = mygroup;
+            end
+            [za, endo_names, endo_names_tex, steady_state, i_var, oo_] = ...
+                annualized_shock_decomposition(oo_,M_, options_, i_var, t0, options_.nobs, realtime_, vintage_, steady_state,q2a);
+        end
+        %     if realtime_<2
+        %         initial_date = initial_date1;
+        %     else
+        %         initial_date = initial_date0;
+        %     end
     end
-    if ~isfield(q2a,'islog') % private trap for aoa calls
-        q2a.islog=0;
-    end
-    if ~isfield(q2a,'GYTREND0') % private trap for aoa calls
-        q2a.GYTREND0=0;
-    end
-    if ~isfield(q2a,'aux') % private trap for aoa calls
-        q2a.aux=0;
-    end
-    if ~isfield(q2a,'cumfix') % private trap for aoa calls
-        q2a.cumfix=1;
-    end
-    if ~isfield(q2a,'plot') % private trap for aoa calls
-        q2a.plot=1; % growth rate
-    end
-
-    %     if isstruct(q2a.aux) && ischar(q2a.aux.y)
-    %         opts=options_;
-    %         opts.plot_shock_decomp.type='qoq';
-    %         [y_aux, steady_state_aux] = plot_shock_decomposition(M_,oo_,opts,q2a.aux.y);
-    %         q2a.aux.y=y_aux;
-    %         q2a.aux.yss=steady_state_aux;
-    %     end
-    [za, endo_names, endo_names_tex, steady_state, i_var, oo_] = ...
-        annualized_shock_decomposition(oo_,M_, options_, i_var, t0, options_.nobs, realtime_, vintage_, steady_state,q2a);
-    %     if realtime_<2
-    %         initial_date = initial_date1;
-    %     else
-    %         initial_date = initial_date0;
-    %     end
 end
 
 
@@ -180,36 +216,26 @@ end
 if ~expand
     fig_name = fig_name1;
 end
-gend = size(z,3);
 if options_.plot_shock_decomp.use_shock_groups
-    shock_groups = M_.shock_groups.(options_.plot_shock_decomp.use_shock_groups);
-    shock_ind = fieldnames(shock_groups);
-    ngroups = length(shock_ind);
     fig_name=[fig_name ' group ' options_.plot_shock_decomp.use_shock_groups];
-    shock_names = shock_ind;
-    for i=1:ngroups
-        shock_names{i} = (shock_groups.(shock_ind{i}).label);
-    end
-    zz = zeros(endo_nbr,ngroups+2,gend);
-    kcum=[];
-    for i=1:ngroups
-        for j = shock_groups.(shock_ind{i}).shocks
-            k = find(strcmp(j,cellstr(M_.exo_names)));
-            zz(:,i,:) = zz(:,i,:) + z(:,k,:);
-            z(:,k,:) = 0;
-            kcum = [kcum k];
+    if (expand && isfield(options_.plot_shock_decomp,'zfull'))
+        z = options_.plot_shock_decomp.zfull;
+        endo_names = options_.plot_shock_decomp.endo_names;
+        endo_names_tex = options_.plot_shock_decomp.endo_names_tex;
+        steady_state=steady_state(i_var);
+        i_var = 1;
+        if ~(isequal(type,'aoa') && isstruct(q2a))
+            gend = size(z,3);
+            endo_nbr = size(z,1);
+            [z, shock_names, M_] = make_the_groups(z,gend,endo_nbr,nshocks,M_,options_);
+            M_.endo_names = endo_names;
+            M_.endo_names_tex = endo_names_tex;
         end
+    else
+        gend = size(z,3);
+        zfull = z;
+        [z, shock_names, M_] = make_the_groups(z,gend,endo_nbr,nshocks,M_,options_);
     end
-    zothers = sum(z(:,1:nshocks,:),2);
-    shock_groups.(['group' int2str(ngroups+1)]).label =  'Others';
-    shock_groups.(['group' int2str(ngroups+1)]).shocks =  cellstr(M_.exo_names(find(~ismember([1:M_.exo_nbr],kcum)),:))';
-    M_.shock_groups.(options_.plot_shock_decomp.use_shock_groups)=shock_groups;
-    if any(any(zothers))
-        shock_names = [shock_names; {'Others + Initial Values'}];
-    end
-    zz(:,ngroups+1,:) = sum(z(:,1:nshocks+1,:),2);
-    zz(:,ngroups+2,:) = z(:,nshocks+2,:);
-    z = zz;
 else
     shock_names = M_.exo_names;
 end
@@ -281,6 +307,7 @@ switch type
                 q2a.plot=1; % growth rate
             end
 
+            if ~(expand && isfield(options_.plot_shock_decomp,'zfull'))
             if isstruct(q2a.aux) && ischar(q2a.aux.y)
                 opts=options_;
                 opts.plot_shock_decomp.type='qoq';
@@ -290,8 +317,19 @@ switch type
             end
             [za, endo_names, endo_names_tex, steady_state, i_var, oo_] = ...
                 annualized_shock_decomposition(z,M_, options_, i_var, t0, options_.nobs, realtime_, vintage_, steady_state,q2a);
+                if options_.plot_shock_decomp.interactive && ~isempty(options_.plot_shock_decomp.use_shock_groups)
+                    mygroup = options_.plot_shock_decomp.use_shock_groups;
+                    options_.plot_shock_decomp.use_shock_groups='';
+                    zafull = ...
+                        annualized_shock_decomposition(z,M_, options_, i_var, t0, options_.nobs, realtime_, vintage_, steady_state,q2a);
+                    options_.plot_shock_decomp.use_shock_groups = mygroup;
+                end
+            end
         end
         z = za;
+            if options_.plot_shock_decomp.interactive && ~isempty(options_.plot_shock_decomp.use_shock_groups)
+                zfull = zafull;
+            end
         M_.endo_names = endo_names;
         M_.endo_names_tex = endo_names_tex;
         %     endo_nbr = size(z,1);
@@ -346,12 +384,49 @@ z = z(:,:,a:b);
 
 options_.plot_shock_decomp.fig_name=fig_name;
 options_.plot_shock_decomp.orig_varlist = varlist;
+if options_.plot_shock_decomp.interactive && ~isempty(options_.plot_shock_decomp.use_shock_groups)
+    options_.plot_shock_decomp.zfull = zfull;
+end
 if detail_plot
     graph_decomp_detail(z,shock_names,M_.endo_names,i_var,my_initial_date,M_,options_)
 else
     graph_decomp(z,shock_names,M_.endo_names,i_var,my_initial_date,M_,options_);
 end
 
-if write_xls
-    WriteShockDecomp2Excel(z,shock_names,M_.endo_names,i_var,initial_date,M_,options_,options_.plot_shock_decomp);
+if write_xls 
+    WriteShockDecomp2Excel(z,shock_names,M_.endo_names,i_var,my_initial_date,M_,options_,options_.plot_shock_decomp);
+end
+
+end
+
+function [z, shock_names, M_] = make_the_groups(z,gend,endo_nbr,nshocks,M_,options_)
+
+shock_groups = M_.shock_groups.(options_.plot_shock_decomp.use_shock_groups);
+shock_ind = fieldnames(shock_groups);
+ngroups = length(shock_ind);
+shock_names = shock_ind;
+for i=1:ngroups
+    shock_names{i} = (shock_groups.(shock_ind{i}).label);
+end
+zz = zeros(endo_nbr,ngroups+2,gend);
+kcum=[];
+for i=1:ngroups
+    for j = shock_groups.(shock_ind{i}).shocks
+        k = find(strcmp(j,cellstr(M_.exo_names)));
+        zz(:,i,:) = zz(:,i,:) + z(:,k,:);
+        z(:,k,:) = 0;
+        kcum = [kcum k];
+    end
+end
+zothers = sum(z(:,1:nshocks,:),2);
+shock_groups.(['group' int2str(ngroups+1)]).label =  'Others';
+shock_groups.(['group' int2str(ngroups+1)]).shocks =  cellstr(M_.exo_names(find(~ismember([1:M_.exo_nbr],kcum)),:))';
+M_.shock_groups.(options_.plot_shock_decomp.use_shock_groups)=shock_groups;
+if any(any(zothers))
+    shock_names = [shock_names; {'Others + Initial Values'}];
+end
+zz(:,ngroups+1,:) = sum(z(:,1:nshocks+1,:),2);
+zz(:,ngroups+2,:) = z(:,nshocks+2,:);
+z = zz;
+
 end

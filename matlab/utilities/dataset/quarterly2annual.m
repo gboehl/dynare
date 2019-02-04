@@ -125,7 +125,8 @@ switch type
 end
 
 % annual growth rate
-gyass = GYTREND0*4;
+% gyass = GYTREND0*4; % this is for log diff
+gyass = exp(4*GYTREND0)-1; % this is for exact growth rate definition
 gya = (ya+yass)./(lagged(ya,1)+yass).*exp(4*GYTREND0)-1-gyass;
 
 if islog

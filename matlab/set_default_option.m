@@ -41,6 +41,10 @@ if isempty(options.(field))
     return
 end
 
+if isdates(options.(field))
+    return
+end
+
 if isnan(options.(field))
     options.(field) = default;
     return
