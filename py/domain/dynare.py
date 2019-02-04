@@ -121,8 +121,8 @@ class DynObject(ObjectDescription):
             return _('%s (dates method)') % name
         elif self.objtype == 'dseriesmethod':
             return _('%s (dseries method)') % name
-        elif self.objtype == 'repmethod':
-            return _('%s (report method)') % name            
+        elif self.objtype == 'reportingmethod':
+            return _('%s (reporting method)') % name
         elif self.objtype == 'matcomm':
             return _('%s (MATLAB command)') % name
         elif self.objtype == 'command':
@@ -176,8 +176,8 @@ class DseriesMethod(DynCallable):
     display_prefix = 'Method: '
     allow_nesting = True
 
-class DynRepMethod(DynCallable):
-    display_prefix = 'Method on report: '
+class ReportingMethod(DynCallable):
+    display_prefix = 'Method: '
     allow_nesting = True
 
 class MatComm(DynCallable):
@@ -294,7 +294,7 @@ class DynDomain(Domain):
     'function':      ObjType(l_('function'),         'func'),
     'datesmethod':   ObjType(l_('method'),           'datmeth'),
     'dseriesmethod': ObjType(l_('method'),           'dsermeth'),
-    'repmethod': 	 ObjType(l_('method on report'), 'repmeth'),
+    'reportingmethod': 	 ObjType(l_('method'),       'repmeth'),
     'matcomm':   	 ObjType(l_('matlab command'),   'mcomm'),
     'command':   	 ObjType(l_('command'),          'comm'),
     'class':     	 ObjType(l_('class'),            'class'),
@@ -312,7 +312,7 @@ class DynDomain(Domain):
     'function':      DynFunction,
     'datesmethod':   DatesMethod,
     'dseriesmethod': DseriesMethod,
-    'repmethod': 	 DynRepMethod,
+    'reportingmethod': 	 ReportingMethod,
     'matcomm':   	 MatComm,
     'command':   	 DynComm,
     'class':     	 DynClass,
