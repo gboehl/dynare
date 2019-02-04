@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Copyright (C) 2018 Dynare Team
+# Copyright (C) 2018-2019 Dynare Team
 #
 # This file is part of Dynare.
 #
@@ -36,7 +36,7 @@ mathjax_path = 'mathjax/MathJax.js?config=TeX-AMS-MML_HTMLorMML'
 master_doc = 'index'
 
 project = u'Dynare'
-copyright = u'2018, Dynare Team'
+copyright = u'2019, Dynare Team'
 author = u'Dynare Team'
 
 add_function_parentheses = False
