@@ -41,7 +41,7 @@ if isempty(options.(field))
     return
 end
 
-if ~iscell(options.(field))
+if ~iscell(options.(field)) && ~isdates(options.(field))
     if isnan(options.(field))
         options.(field) = default;
         return
