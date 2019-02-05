@@ -74,15 +74,15 @@ class DynareLexer(RegexLexer):
 
             (words((
                 'model','steady_state_model','initval','endval','histval',
-				'shocks','mshocks','homotopy_setup','steady_state_model','observation_trends',
+				'shocks','mshocks','homotopy_setup','observation_trends',
 				'estimated_params','estimated_params_init','estimated_params_bounds',
 				'shock_groups','conditional_forecast_paths','optim_weights',
 				'osr_params_bounds','ramsey_constraints','irf_calibration',
 				'moment_calibration','identification','svar_identification',
-				'verbatim','end','node','cluster','paths','hooks')),Keyword.Reserved),
+				'verbatim','end','node','cluster','paths','hooks'), prefix=r'\b', suffix=r'\s*\b'),Keyword.Reserved),
 
             (words(commands + report_commands,
-                   suffix=r'\s*'),  Name.Entity),
+                   prefix=r'\b', suffix=r'\s*\b'),  Name.Entity),
 
             (words(operators), Operator.Word),
 
