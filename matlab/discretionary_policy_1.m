@@ -67,6 +67,9 @@ if options_.steadystate_flag
                                                       options_,0);
 end
 [U,Uy,W] = feval([M_.fname,'.objective.static'],zeros(endo_nbr,1),[], M_.params);
+if any(any(isnan(Uy)))
+    error(['discretionary_policy: the derivatives of the objective function contain NaN'])
+end
 if any(any(Uy~=0))
     non_zero_derivs=find(any(Uy~=0));
     for ii=1:length(non_zero_derivs)
