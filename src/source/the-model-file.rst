@@ -7091,12 +7091,12 @@ It is also possible to compute forecasts on a calibrated or estimated
 model for a given constrained path of the future endogenous
 variables. This is done, from the reduced form representation of the
 DSGE model, by finding the structural shocks that are needed to match
-the restricted paths. Use ``conditional_forecast``,
-``conditional_forecast_paths`` and ``plot_conditional_forecast`` for
+the restricted paths. Use :comm:`conditional_forecast`,
+:bck:`conditional_forecast_paths` and :comm:`plot_conditional_forecast` for
 that purpose.
 
 Finally, it is possible to do forecasting with a Bayesian VAR using
-the ``bvar_forecast`` command.
+the :comm:`bvar_forecast` command.
 
 .. command:: forecast [VARIABLE_NAME...];
              forecast (OPTIONS...) [VARIABLE_NAME...];
@@ -7304,12 +7304,12 @@ the ``bvar_forecast`` command.
 
     This command has to be called after ``estimation`` or ``stoch_simul``.
 
-    Use ``conditional_forecast_paths`` block to give the list of
+    Use :bck:`conditional_forecast_paths` block to give the list of
     constrained endogenous, and their constrained future path. Option
     ``controlled_varexo`` is used to specify the structural shocks
     which will be matched to generate the constrained path.
 
-    Use ``plot_conditional_forecast`` to graph the results.
+    Use :comm:`plot_conditional_forecast` to graph the results.
 
     *Options*
 
