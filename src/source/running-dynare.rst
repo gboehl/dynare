@@ -243,6 +243,11 @@ by the ``dynare`` command.
         can be temporarly modified by the user at the top of the
         ``.mod`` file (using Matlab/Octave’s ``addpath`` command).
 
+    .. option:: nopreprocessoroutput
+
+        Prevent Dynare from printing the output of the steps leading up to the
+        preprocessor as well as the preprocessor output itself.
+
     .. option:: mingw
 
         Tells Dynare that your MATLAB is configured for compiling MEX
