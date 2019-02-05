@@ -838,8 +838,8 @@ The dseries class
         of strings with one entry for each variable name. The default
         name associated with column ``i`` of *DATA_MATRIX* is
         ``Variable_i``. The final argument, *TEX_NAMES*, is a :math:`N
-        \times 1` cell of strings composed of the :math:`\text{\LaTeX}` names
-        associated with the variables. The default :math:`\text{\LaTeX}` name
+        \times 1` cell of strings composed of the LaTeX names
+        associated with the variables. The default LaTeX name
         associated with column ``i`` of *DATA_MATRIX* is
         ``Variable\_i``. If the optional second input argument is a
         range of dates, ``dates`` object *RANGE_OF_DATES*, the number
