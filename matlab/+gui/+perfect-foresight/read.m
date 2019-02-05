@@ -30,14 +30,8 @@ function read()
 
 global M_ options_ oo_ ys0_ ex0_
 
-%remove this instruction when proper path is found
-addpath jsonlab-1.5
-
-disp('di_perfect_foresight performing Matlab tasks')
-
 %loading JSON
 jm = loadjson('perforin.JSON','SimplifyCell',0);
-runflag=1;
 data2json=struct();
 
 %We test if jsonload loads string or char
@@ -46,9 +40,7 @@ data2json=struct();
 % INITVAL instructions
 %we initialize exogenous shocks to zero and compute initial ss
 options_.initval_file = 0;
-for nexo = 1:jm.exonum
-    oo_.exo_steady_state( nexo ) = 0;
-end
+oo_.exo_steady_state(1:jm.exonum) = 0;
 if M_.exo_nbr > 0
     oo_.exo_simul = ones(M_.maximum_lag,1)*oo_.exo_steady_state';
 end
@@ -64,9 +56,7 @@ data2json.steady_state1=oo_.steady_state;
 ys0_= oo_.steady_state;
 ex0_ = oo_.exo_steady_state;
 if jm.permanentshockexist==0
-    for nexo = 1:jm.exonum
-        oo_.exo_steady_state( nexo ) = 0;
-    end
+    oo_.exo_steady_state(1:jm.exonum) = 0;
 else
     for exoiter = 1:length(jm.permanentshocksdescription)
         currentshock=jm.permanentshocksdescription(exoiter);
@@ -99,7 +89,6 @@ if ((jm.nonanticipatedshockexist==1) || (jm.delayexist==1))
     nonanticip=jm.nonanticipmatrix;
     rowindex=1;
     firstsimul=0;
-    permanentnonanticip=0;
 
     while nonanticip{rowindex}{1}>0
 
@@ -155,7 +144,6 @@ if ((jm.nonanticipatedshockexist==1) || (jm.delayexist==1))
                 steady;
                 savedpermanentSS=oo_.steady_state;
                 data2json.steady_state2=oo_.steady_state;
-                permanentnonanticip=1;
 
                 if nonanticip{rowindex}{4}==0
                     %this is a current permanent nonanticipated shock
@@ -183,18 +171,17 @@ if ((jm.nonanticipatedshockexist==1) || (jm.delayexist==1))
             %oo_.exo_simul=ooexosaved((currentperiod+1):end,:);
             oo_.exo_simul=[zeros(1,colexo);ooexosaved((currentperiod+1):end,:)];
 
-            [ooexolength,dummy]=size(oo_.exo_simul);
             %we fill oo_.exo_simul until it has the correct size depending on of there are permanent shocks or not
             if jm.permanentshockexist==1
                 %if there is a permanent shock we fill with last value of ooexosaved
                 %oo_.exo_simul((length(ooexosaved((currentperiod+1):end,:))+1):rowexo,:)=ones(rowexo-(length(ooexosaved((currentperiod+1):end,:))+1)+1,1)*ooexosaved(end,:);
                 %oo_.exo_simul((ooexolength+1):rowexo,:)=ones(rowexo-ooexolength,1)*ooexosaved(end,:);
-                oo_.exo_simul=[oo_.exo_simul;ones(rowexo-ooexolength,1)*ooexosaved(end,:)];
+                oo_.exo_simul=[oo_.exo_simul;ones(rowexo-size(oo_.exo_simul, 1),1)*ooexosaved(end,:)];
             else
                 %otherwise we fill with zeros
                 %oo_.exo_simul((length(ooexosaved((currentperiod+1):end,:))+1):rowexo,:)=zeros(rowexo-(length(ooexosaved((currentperiod+1):end,:))+1)+1,colexo);
                 %oo_.exo_simul((ooexolength+1):rowexo,:)=zeros(rowexo-ooexolength,colexo);
-                oo_.exo_simul=[oo_.exo_simul;zeros(rowexo-ooexolength,colexo)];
+                oo_.exo_simul=[oo_.exo_simul;zeros(rowexo-size(oo_.exo_simul, 1),colexo)];
             end
 
             if nonanticip{rowindex+1}{1}~=currentperiod
@@ -217,7 +204,7 @@ if ((jm.nonanticipatedshockexist==1) || (jm.delayexist==1))
 
                 if nonanticip{rowindex+1}{1}>0
                     %we collect all the path from ooendo period 1 to just before the next shock...
-                    yy=[yy,oo_.endo_simul(:,2:(2+(nonanticip{rowindex+1}{1}-currentperiod-1)))]
+                    yy=[yy,oo_.endo_simul(:,2:(2+(nonanticip{rowindex+1}{1}-currentperiod-1)))];
                 else
                     %... or if there are no more shocks we collect the whole path
                     yy=[yy,oo_.endo_simul(:,2:end)];
