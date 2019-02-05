@@ -106,7 +106,7 @@ SimResults::simulate(int num_sim, const DecisionRule &dr, const Vector &start,
    and shocks are thrown away. */
 
 bool
-SimResults::addDataSet(TwoDMatrix *d, ExplicitShockRealization *sr)
+SimResults::addDataSet(TwoDMatrix *d, ExplicitShockRealization *sr, const ConstVector &st)
 {
   KORD_RAISE_IF(d->nrows() != num_y,
                 "Incompatible number of rows for SimResults::addDataSets");
@@ -118,6 +118,10 @@ SimResults::addDataSet(TwoDMatrix *d, ExplicitShockRealization *sr)
       data.push_back(new TwoDMatrix((const TwoDMatrix &) (*d), num_burn, num_per));
       shocks.push_back(new ExplicitShockRealization(
                                                     ConstTwoDMatrix(sr->getShocks(), num_burn, num_per)));
+      if (num_burn == 0)
+        start.emplace_back(st);
+      else
+        start.emplace_back(d->getCol(num_burn-1));
       ret = true;
     }
 
@@ -486,7 +490,7 @@ SimulationWorker::operator()(std::mutex &mut)
   TwoDMatrix *m = dr.simulate(em, np, st, *esr);
   {
     std::unique_lock<std::mutex> lk{mut};
-    res.addDataSet(m, esr);
+    res.addDataSet(m, esr, st);
   }
 }
 
@@ -499,13 +503,11 @@ SimulationIRFWorker::operator()(std::mutex &mut)
   auto *esr
     = new ExplicitShockRealization(res.control.getShocks(idata));
   esr->addToShock(ishock, 0, imp);
-  const TwoDMatrix &data = res.control.getData(idata);
-  Vector st{data.getCol(res.control.getNumBurn())};
-  TwoDMatrix *m = dr.simulate(em, np, st, *esr);
+  TwoDMatrix *m = dr.simulate(em, np, res.control.getStart(idata), *esr);
   m->add(-1.0, res.control.getData(idata));
   {
     std::unique_lock<std::mutex> lk{mut};
-    res.addDataSet(m, esr);
+    res.addDataSet(m, esr, res.control.getStart(idata));
   }
 }
 

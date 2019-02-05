@@ -718,7 +718,8 @@ DRFixPoint<t>::calcFixPoint(emethod em, Vector &out)
 
 /* This is a basically a number of matrices of the same dimensions,
    which can be obtained as simulation results from a given decision rule
-   and shock realizations. We also store the realizations of shocks. */
+   and shock realizations. We also store the realizations of shocks and the
+   starting point of each simulation. */
 
 class ExplicitShockRealization;
 class SimResults
@@ -729,6 +730,7 @@ protected:
   int num_burn;
   vector<TwoDMatrix *> data;
   vector<ExplicitShockRealization *> shocks;
+  vector<ConstVector> start;
 public:
   SimResults(int ny, int nper, int nburn = 0)
     : num_y(ny), num_per(nper), num_burn(nburn)
@@ -765,7 +767,13 @@ public:
   {
     return *(shocks[i]);
   }
-  bool addDataSet(TwoDMatrix *d, ExplicitShockRealization *sr);
+  const ConstVector &
+  getStart(int i) const
+  {
+    return start[i];
+  }
+
+  bool addDataSet(TwoDMatrix *d, ExplicitShockRealization *sr, const ConstVector &st);
   void writeMat(const char *base, const char *lname) const;
   void writeMat(mat_t *fd, const char *lname) const;
 };
