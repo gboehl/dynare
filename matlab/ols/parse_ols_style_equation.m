@@ -179,6 +179,12 @@ end
 Y = Y(fp:lp);
 if ~isempty(X)
     X = X(fp:lp);
+    names = X.name;
+    for i = 1:length(names)
+        if all(X.(names{i}).data == 0)
+            X = X.remove(names{i});
+        end
+    end
 end
 if ~isempty(lhssub)
     lhssub = lhssub(fp:lp);
