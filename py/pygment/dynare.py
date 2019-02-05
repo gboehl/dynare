@@ -33,7 +33,7 @@ class DynareLexer(RegexLexer):
     filenames = ['*.mod']
 
     commands = (
-	"dynare","var","varexo","varexo_det","parameters","change_type",
+	"dynare","var","varexo","varexo_det","parameters","change_type","model_local_variable",
 	"predetermined_variables","trend_var","log_trend_var","external_function",
 	"write_latex_original_model","write_latex_dynamic_model",
 	"write_latex_static_model","resid","initval_file","histval_file","dsample",

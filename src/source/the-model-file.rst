@@ -376,6 +376,8 @@ for declaring variables and parameters are described below.
 
     *Example*
 
+        ::
+
             trend_var (growth_factor=gA) A;
 
 
@@ -384,6 +386,21 @@ for declaring variables and parameters are described below.
     |br| Same as ``trend_var``, except that the variable is supposed to
     have an additive trend (or, to put it otherwise, to be equal to
     the log of a variable with a multiplicative trend).
+
+
+.. command::  model_local_variable VARIABLE_NAME [LATEX_NAME]... ;
+
+    This optional command declares a model local variable. See
+    :ref:`conv` for the syntax of VARIABLE_NAME. As you can create
+    model local variables on the fly in the model block (see
+    :ref:`model-decl`), the interest of this command is primarily to
+    assign a LATEX_NAME to the model local variable.
+
+    *Example*
+
+        ::
+
+            model_local_variable GDP_US $GDPUS$;
 
 
 .. _expr:
@@ -750,17 +767,20 @@ The model is declared inside a ``model`` block:
 
         MODEL_EXPRESSION;
 
-    |br| Inside the model block, Dynare allows the creation of *model-local
-    variables*, which constitute a simple way to share a common
-    expression between several equations. The syntax consists of a
-    pound sign (#) followed by the name of the new model local
-    variable (which must **not** be declared as in :ref:`var-decl`),
-    an equal sign, and the expression for which this new variable will
+    |br| Inside the model block, Dynare allows the creation of
+    *model-local variables*, which constitute a simple way to share a
+    common expression between several equations. The syntax consists
+    of a pound sign (#) followed by the name of the new model local
+    variable (which must **not** be declared as in :ref:`var-decl`,
+    but may have been declared by :comm:`model_local_variable`), an
+    equal sign, and the expression for which this new variable will
     stand. Later on, every time this variable appears in the model,
     Dynare will substitute it by the expression assigned to the
     variable. Note that the scope of this variable is restricted to
-    the model block; it cannot be used outside. A model local variable
-    declaration looks like:
+    the model block; it cannot be used outside. To assign a LaTeX name
+    to the model local variable, use the declaration syntax outlined
+    by :comm:`model_local_variable`. A model local variable declaration
+    looks like:
 
         #VARIABLE_NAME = MODEL_EXPRESSION;
 
