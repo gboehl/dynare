@@ -342,7 +342,11 @@ elseif strcmp(node.node_type, 'UnaryOpNode')
     % Only works if dseries supports . notation for unary op (true for log/diff)
     % Otherwise, use: X = eval([node.op '(Xtmp)']);
     try
-        X = Xtmp.(node.op);
+        if strcmp(node.op, 'uminus')
+            X = -Xtmp;
+        else
+            X = Xtmp.(node.op);
+        end
         if any(isinf(X)) || ~isreal(X)
             parsing_error(['Error applying ' node.op], line, node);
         end
