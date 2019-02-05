@@ -100,6 +100,7 @@ SimResults::~SimResults()
 	for (int i = 0; i < getNumSets(); i++) {
 		delete data[i];
 		delete shocks[i];
+		delete start[i];
 	}
 }
 
@@ -149,7 +150,7 @@ which are not to be burnt. If the data is not finite, the both data
 and shocks are thrown away.
 
 @<|SimResults::addDataSet| code@>=
-bool SimResults::addDataSet(TwoDMatrix* d, ExplicitShockRealization* sr)
+bool SimResults::addDataSet(TwoDMatrix* d, ExplicitShockRealization* sr, const ConstVector& st)
 {
 	KORD_RAISE_IF(d->nrows() != num_y,
 				  "Incompatible number of rows for SimResults::addDataSets");
@@ -160,6 +161,10 @@ bool SimResults::addDataSet(TwoDMatrix* d, ExplicitShockRealization* sr)
 		data.push_back(new TwoDMatrix((const TwoDMatrix&)(*d),num_burn,num_per));
 		shocks.push_back(new ExplicitShockRealization(
 								ConstTwoDMatrix(sr->getShocks(),num_burn,num_per)));
+		if (num_burn == 0)
+			start.push_back(new Vector(st));
+		else
+			start.push_back(new Vector(ConstVector(*d, num_burn-1)));
 		ret = true;
 	}
 
@@ -527,7 +532,7 @@ void SimulationWorker::operator()()
 	TwoDMatrix* m = dr.simulate(em, np, st, *esr);
 	{
 		SYNCHRO syn(&res, "simulation");
-		res.addDataSet(m, esr);
+		res.addDataSet(m, esr, st);
 	}
 }
 
@@ -540,13 +545,11 @@ void SimulationIRFWorker::operator()()
 	ExplicitShockRealization* esr =
 	    new ExplicitShockRealization(res.control.getShocks(idata));
 	esr->addToShock(ishock, 0, imp);
-	const TwoDMatrix& data = res.control.getData(idata);
-	ConstVector st(data, res.control.getNumBurn());
-	TwoDMatrix* m = dr.simulate(em, np, st, *esr);
+	TwoDMatrix* m = dr.simulate(em, np, res.control.getStart(idata), *esr);
 	m->add(-1.0, res.control.getData(idata));
 	{
 		SYNCHRO syn(&res, "simulation");
-		res.addDataSet(m, esr);
+		res.addDataSet(m, esr, res.control.getStart(idata));
 	}
 }
 
