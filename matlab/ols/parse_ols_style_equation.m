@@ -193,7 +193,7 @@ end
 
 %% Helper Functions
 function parsing_error(msg, line, node)
-if ~isempty(node)
+if nargin == 3 && ~isempty(node)
     error('\nERROR encountered parsing `%s` in equation on line %d: %s\n', printNode(node), line, msg);
 else
     error('\nERROR encountered parsing of equation on line %d: %s\n', num2str(line), msg)
