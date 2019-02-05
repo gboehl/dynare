@@ -1050,6 +1050,13 @@ it did not expect. Hence, it throws an error of the form: @code{ERROR:
 PARAMETERS}. In this case, you would simply place a semicolon at the
 end of line one and the parser would continue processing.
 
+It is also helpful to keep in mind that any piece of code that does not violate
+Dynare syntax, but at the same time is not recognized by the parser, is interpreted 
+as native Matlab code. This code will be directly passed to the @code{driver.m}-file. 
+Investigating @code{driver.m}-file then helps with debugging. Such problems most often 
+occur when defined variable or parameter names have been misspelled so that Dynare's
+parser is unable to recognize them.
+
 @node The Model file
 @chapter The Model file
 
@@ -1087,6 +1094,12 @@ end of line one and the parser would continue processing.
 A model file contains a list of commands and of blocks.  Each command
 and each element of a block is terminated by a semicolon
 (@code{;}). Blocks are terminated by @code{end;}.
+
+If Dynare encounters an unknown expression at the beginning of a line or after a semicolon, 
+it will parse the rest of that line as native Matlab code, even if there are 
+more statements separated by semicolons present. To prevent cryptic error
+messages, it is strongly recommended to always only put one statement/command 
+into each line and start a new line after each semicolon.
 
 Most Dynare commands have arguments and several accept options,
 indicated in parentheses after the command keyword. Several options
