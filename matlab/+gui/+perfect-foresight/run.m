@@ -1,13 +1,14 @@
-function read(json)
-% function read(json)
-% Read JSON and run perfect foresight solver
+function varargout = run(json)
+% function varargout = run(json)
+% Read JSON and run perfect foresight solver. Potentially return output as
+% JSON
 %
 % INPUTS
 %   json         [string]   JSON string representing options to run perfect
 %                           foresight solver
 %
 % OUTPUTS
-%   none
+%   varargout{1} [string]   if desired, return output as JSON string
 %
 % SPECIAL REQUIREMENTS
 %   dynare must have been run with the option: json=compute
@@ -35,9 +36,12 @@ if nargin ~= 1 || ~ischar(json)
     error('function takes one string input argument')
 end
 
+if nargout > 1
+    error('function provides up to one output argument')
+end
+
 %loading JSON
 jm = loadjson(json,'SimplifyCell',0);
-data2json=struct();
 
 %We test if jsonload loads string or char
 % jsl=length(class(jm.jsontest{1,1}));
@@ -53,7 +57,10 @@ if M_.exo_det_nbr > 0
     oo_.exo_det_simul = ones(M_.maximum_lag,1)*oo_.exo_det_steady_state';
 end
 steady;
-data2json.steady_state1=oo_.steady_state;
+if nargout == 1
+    data2json=struct();
+    data2json.steady_state1=oo_.steady_state;
+end
 
 
 % ENDVAL instructions
@@ -74,7 +81,9 @@ else
 end
 steady;
 savedpermanentSS=oo_.steady_state;
-data2json.steady_state2=oo_.steady_state;
+if nargout == 1
+    data2json.steady_state2=oo_.steady_state;
+end
 
 
 if jm.transitoryshockexist==1
@@ -148,7 +157,9 @@ if ((jm.nonanticipatedshockexist==1) || (jm.delayexist==1))
                 oo_.exo_steady_state((nonanticip{rowindex}{2}+1)) = nonanticip{rowindex}{7};
                 steady;
                 savedpermanentSS=oo_.steady_state;
-                data2json.steady_state2=oo_.steady_state;
+                if nargout == 1
+                    data2json.steady_state2=oo_.steady_state;
+                end
 
                 if nonanticip{rowindex}{4}==0
                     %this is a current permanent nonanticipated shock
@@ -231,15 +242,15 @@ else
     perfect_foresight_solver;
 end
 
-
-plotlgt=length(oo_.endo_simul);
-data2json.endosimul_length=plotlgt;
-data2json.endo_names=char(M_.endo_names);
-data2json.endo_nbr=M_.endo_nbr;
-for nendo = 1:M_.endo_nbr
-    data2json.endo_simul.(strtrim(char(M_.endo_names(nendo,:))))=oo_.endo_simul(nendo,:);
+if nargout == 1
+    plotlgt=length(oo_.endo_simul);
+    data2json.endosimul_length=plotlgt;
+    data2json.endo_names=char(M_.endo_names);
+    data2json.endo_nbr=M_.endo_nbr;
+    for nendo = 1:M_.endo_nbr
+        data2json.endo_simul.(strtrim(char(M_.endo_names(nendo,:))))=oo_.endo_simul(nendo,:);
+    end
+    data2json.endo_simul.plotx=[0:1:plotlgt];
+    varargout{1} = savejson('',data2json,'');
 end
-data2json.endo_simul.plotx=[0:1:plotlgt];
-savejson('',data2json,'perforout.JSON');
-
 end
