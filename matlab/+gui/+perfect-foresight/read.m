@@ -1,9 +1,10 @@
-function read()
-% function read()
+function read(json)
+% function read(json)
 % Read JSON and run perfect foresight solver
 %
 % INPUTS
-%   none
+%   json         [string]   JSON string representing options to run perfect
+%                           foresight solver
 %
 % OUTPUTS
 %   none
@@ -30,8 +31,12 @@ function read()
 
 global M_ options_ oo_ ys0_ ex0_
 
+if nargin ~= 1 || ~ischar(json)
+    error('function takes one string input argument')
+end
+
 %loading JSON
-jm = loadjson('perforin.JSON','SimplifyCell',0);
+jm = loadjson(json,'SimplifyCell',0);
 data2json=struct();
 
 %We test if jsonload loads string or char
