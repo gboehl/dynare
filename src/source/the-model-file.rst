@@ -6794,7 +6794,8 @@ Shock Decomposition
 
     .. option:: parameter_set = OPTION
 
-        See :opt:`parameter_set <parameter_set = OPTION>`.
+        See :opt:`parameter_set <parameter_set = OPTION>` for the
+        possible values.
 
     .. option:: datafile = FILENAME
 
@@ -7089,6 +7090,10 @@ Dynare can also run the smoother on a calibrated model:
     .. option:: prefilter = INTEGER
 
         See :opt:`prefilter <prefilter = INTEGER>`.
+
+    .. option:: parameter_set = OPTION
+
+        See :opt:`parameter_set` for the possible values.
 
     .. option:: loglinear
 
