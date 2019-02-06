@@ -4,15 +4,16 @@
 #include "symmetry.hh"
 #include "tl_exception.hh"
 
-#include <cstdio>
-#include <climits>
+#include <iostream>
+#include <limits>
+#include <numeric>
 
 /* This unfolds a given integer sequence with respect to the given
    symmetry. If for example the symmetry is $(2,3)$, and the sequence is
    $(a,b)$, then the result is $(a,a,b,b,b)$. */
 
 IntSequence::IntSequence(const Symmetry &sy, const IntSequence &se)
-  : data(new int[sy.dimen()]), length(sy.dimen()), destroy(true)
+  : data{new int[sy.dimen()], [](int *arr) { delete[] arr; }}, length{sy.dimen()}
 {
   int k = 0;
   for (int i = 0; i < sy.num(); i++)
@@ -30,7 +31,7 @@ IntSequence::IntSequence(const Symmetry &sy, const IntSequence &se)
    and one $u$. */
 
 IntSequence::IntSequence(const Symmetry &sy, const std::vector<int> &se)
-  : data(new int[sy.num()]), length(sy.num()), destroy(true)
+  : data{new int[sy.num()], [](int *arr) { delete[] arr; }}, length{sy.num()}
 {
   TL_RAISE_IF(sy.dimen() <= se[se.size()-1],
               "Sequence is not reachable by symmetry in IntSequence()");
@@ -45,7 +46,7 @@ IntSequence::IntSequence(const Symmetry &sy, const std::vector<int> &se)
    sequence inserting the given number to the sequence. */
 
 IntSequence::IntSequence(int i, const IntSequence &s)
-  : data(new int[s.size()+1]), length(s.size()+1), destroy(true)
+  : data{new int[s.size()+1], [](int *arr) { delete[] arr; }}, length{s.size()+1}
 {
   int j = 0;
   while (j < s.size() && s[j] < i)
@@ -58,7 +59,7 @@ IntSequence::IntSequence(int i, const IntSequence &s)
 }
 
 IntSequence::IntSequence(int i, const IntSequence &s, int pos)
-  : data(new int[s.size()+1]), length(s.size()+1), destroy(true)
+  : data{new int[s.size()+1], [](int *arr) { delete[] arr; }}, length{s.size()+1}
 {
   TL_RAISE_IF(pos < 0 || pos > s.size(),
               "Wrong position for insertion IntSequence constructor");
@@ -72,42 +73,31 @@ IntSequence::IntSequence(int i, const IntSequence &s, int pos)
 const IntSequence &
 IntSequence::operator=(const IntSequence &s)
 {
-  TL_RAISE_IF(!destroy && length != s.length,
-              "Wrong length for in-place IntSequence::operator=");
-  if (destroy && length != s.length)
-    {
-      delete [] data;
-      data = new int[s.length];
-      destroy = true;
-      length = s.length;
-    }
-  memcpy(data, s.data, sizeof(int)*length);
+  TL_RAISE_IF(length != s.length, "Wrong length for in-place IntSequence::operator=");
+  std::copy_n(s.data.get()+s.offset, length, data.get()+offset);
+  return *this;
+}
+
+const IntSequence &
+IntSequence::operator=(IntSequence &&s)
+{
+  TL_RAISE_IF(length != s.length, "Wrong length for in-place IntSequence::operator=");
+  std::copy_n(s.data.get()+s.offset, length, data.get()+offset);
   return *this;
 }
 
 bool
 IntSequence::operator==(const IntSequence &s) const
 {
-  if (size() != s.size())
-    return false;
-
-  int i = 0;
-  while (i < size() && operator[](i) == s[i])
-    i++;
-  return i == size();
+  return std::equal(data.get()+offset, data.get()+offset+length,
+                    s.data.get()+s.offset, s.data.get()+s.offset+s.length);
 }
 
-/* We need some linear irreflexive ordering, we implement it as
-   lexicographic ordering without identity. */
 bool
 IntSequence::operator<(const IntSequence &s) const
 {
-  int len = std::min(size(), s.size());
-
-  int i = 0;
-  while (i < len && operator[](i) == s[i])
-    i++;
-  return (i < s.size() && (i == size() || operator[](i) < s[i]));
+  return std::lexicographical_compare(data.get()+offset, data.get()+offset+length,
+                                      s.data.get()+s.offset, s.data.get()+s.offset+s.length);
 }
 
 bool
@@ -134,28 +124,10 @@ IntSequence::less(const IntSequence &s) const
   return (i == size());
 }
 
-/* This is a bubble sort, all sequences are usually very short, so this
-   sin might be forgiven. */
-
 void
 IntSequence::sort()
 {
-  for (int i = 0; i < length; i++)
-    {
-      int swaps = 0;
-      for (int j = 0; j < length-1; j++)
-        {
-          if (data[j] > data[j+1])
-            {
-              int s = data[j+1];
-              data[j+1] = data[j];
-              data[j] = s;
-              swaps++;
-            }
-        }
-      if (swaps == 0)
-        return;
-    }
+  std::sort(data.get()+offset, data.get()+offset+length);
 }
 
 /* Here we monotonize the sequence. If an item is less then its
@@ -165,8 +137,8 @@ void
 IntSequence::monotone()
 {
   for (int i = 1; i < length; i++)
-    if (data[i-1] > data[i])
-      data[i] = data[i-1];
+    if (operator[](i-1) > operator[](i))
+      operator[](i) = operator[](i-1);
 }
 
 /* This partially monotones the sequence. The partitioning is done by a
@@ -181,8 +153,8 @@ IntSequence::pmonotone(const Symmetry &s)
   for (int i = 0; i < s.num(); i++)
     {
       for (int j = cum + 1; j < cum + s[i]; j++)
-        if (data[j-1] > data[j])
-          data[j] = data[j-1];
+        if (operator[](j-1) > operator[](j))
+          operator[](j) = operator[](j-1);
       cum += s[i];
     }
 }
@@ -192,10 +164,7 @@ IntSequence::pmonotone(const Symmetry &s)
 int
 IntSequence::sum() const
 {
-  int res = 0;
-  for (int i = 0; i < length; i++)
-    res += operator[](i);
-  return res;
+  return std::accumulate(data.get()+offset, data.get()+offset+length, 0);
 }
 
 /* This returns product of subsequent items. Useful for Kronecker product
@@ -204,10 +173,8 @@ IntSequence::sum() const
 int
 IntSequence::mult(int i1, int i2) const
 {
-  int res = 1;
-  for (int i = i1; i < i2; i++)
-    res *= operator[](i);
-  return res;
+  return std::accumulate(data.get()+offset+i1, data.get()+offset+i2,
+                         1, std::multiplies<int>());
 }
 
 /* Return a number of the same items in the beginning of the sequence. */
@@ -228,9 +195,9 @@ int
 IntSequence::getNumDistinct() const
 {
   int res = 0;
-  if (size() > 0)
+  if (length > 0)
     res++;
-  for (int i = 1; i < size(); i++)
+  for (int i = 1; i < length; i++)
     if (operator[](i) != operator[](i-1))
       res++;
   return res;
@@ -242,11 +209,9 @@ IntSequence::getNumDistinct() const
 int
 IntSequence::getMax() const
 {
-  int res = INT_MIN;
-  for (int i = 0; i < size(); i++)
-    if (operator[](i) > res)
-      res = operator[](i);
-  return res;
+  if (length == 0)
+    return std::numeric_limits<int>::min();
+  return *std::max_element(data.get()+offset, data.get()+offset+length);
 }
 
 void
@@ -268,36 +233,23 @@ IntSequence::add(int f, const IntSequence &s)
 bool
 IntSequence::isPositive() const
 {
-  int i = 0;
-  while (i < size() && operator[](i) >= 0)
-    i++;
-  return (i == size());
+  return std::all_of(data.get()+offset, data.get()+offset+length,
+                     [](int x) { return x >= 0; });
 }
 
 bool
 IntSequence::isConstant() const
 {
-  bool res = true;
-  int i = 1;
-  while (res && i < size())
-    {
-      res = res && operator[](0) == operator[](i);
-      i++;
-    }
-  return res;
+  if (length < 2)
+    return true;
+  return std::all_of(data.get()+offset+1, data.get()+offset+length,
+                     [this](int x) { return x == operator[](0); });
 }
 
 bool
 IntSequence::isSorted() const
 {
-  bool res = true;
-  int i = 1;
-  while (res && i < size())
-    {
-      res = res && operator[](i-1) <= operator[](i);
-      i++;
-    }
-  return res;
+  return std::is_sorted(data.get()+offset, data.get()+offset+length);
 }
 
 /* Debug print. */
@@ -305,8 +257,8 @@ IntSequence::isSorted() const
 void
 IntSequence::print() const
 {
-  printf("[");
+  std::cout << '[';
   for (int i = 0; i < size(); i++)
-    printf("%2d ", operator[](i));
-  printf("]\n");
+    std::cout << operator[](i) << ' ';
+  std::cout << ']' << std::endl;
 }

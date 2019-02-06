@@ -75,7 +75,8 @@ public:
   Symmetry(int i1, int i2)
     : IntSequence(2)
   {
-    operator[](0) = i1; operator[](1) = i2;
+    operator[](0) = i1;
+    operator[](1) = i2;
   }
   Symmetry(int i1, int i2, int i3)
     : IntSequence(3)
@@ -92,9 +93,8 @@ public:
     operator[](2) = i3;
     operator[](3) = i4;
   }
-  Symmetry(const Symmetry &s)
-     
-  = default;
+  Symmetry(const Symmetry &s) = default;
+  Symmetry(Symmetry &&s) = default;
   Symmetry(const Symmetry &s, const OrdSequence &cl)
     : IntSequence(s, cl.getData())
   {

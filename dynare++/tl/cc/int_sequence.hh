@@ -19,26 +19,25 @@
    items in the front (|getPrefixLength|), and also to add some integer
    number to all items.
 
-   Also, we need to construct a subsequence of a sequence, so
-   some instances do destroy the underlying data, and some not. */
+   Also, we need to construct a subsequence of a sequence. */
 
 #ifndef INT_SEQUENCE_H
 #define INT_SEQUENCE_H
 
-#include <cstring>
 #include <vector>
+#include <memory>
+#include <algorithm>
 
-
-/* The implementation of |IntSequence| is straightforward. It has a
-   pointer |data|, a |length| of the data, and a flag |destroy|, whether
-   the instance must destroy the underlying data. */
+/* The implementation of |IntSequence| is straightforward. It has a pointer
+   |data|, an |offset| integer indicating the beginning of the data relatively
+   to the pointer and a |length| of the sequence. */
 
 class Symmetry;
 class IntSequence
 {
-  int *data;
+  std::shared_ptr<int> data;
   int length;
-  bool destroy;
+  int offset{0};
 public:
   /* We have a constructor allocating a given length of data, constructor
      allocating and then initializing all members to a given number, a copy
@@ -49,46 +48,38 @@ public:
      respect to a given symmetry and constructor which inserts a given
      number to the ordered sequence or given number to a given position. */
 
-  IntSequence(int l)
-    : data(new int[l]), length(l), destroy(true)
+  explicit IntSequence(int l)
+    : data{new int[l], [](int *arr) { delete[] arr; }}, length{l}
   {
   }
   IntSequence(int l, int n)
-    :  data(new int[l]), length(l), destroy(true)
+    : data{new int[l], [](int *arr) { delete[] arr; }}, length{l}
   {
-    for (int i = 0; i < length; i++)
-      data[i] = n;
+    std::fill_n(data.get(), length, n);
   }
   IntSequence(const IntSequence &s)
-    : data(new int[s.length]), length(s.length), destroy(true)
+    : data{new int[s.length], [](int *arr) { delete[] arr; }}, length{s.length}
   {
-    memcpy(data, s.data, length*sizeof(int));
+    std::copy_n(s.data.get()+s.offset, length, data.get());
   }
+  IntSequence(IntSequence &&s) = default;
   IntSequence(IntSequence &s, int i1, int i2)
-    : data(s.data+i1), length(i2-i1), destroy(false)
+    : data{s.data}, length{i2-i1}, offset{s.offset+i1}
   {
   }
   IntSequence(const IntSequence &s, int i1, int i2)
-    : data(new int[i2-i1]), length(i2-i1), destroy(true)
+    : data{new int[i2-i1], [](int *arr) { delete[] arr; }}, length{i2-i1}
   {
-    memcpy(data, s.data+i1, sizeof(int)*length);
+    std::copy_n(s.data.get()+s.offset+i1, length, data.get());
   }
   IntSequence(const Symmetry &sy, const std::vector<int> &se);
   IntSequence(const Symmetry &sy, const IntSequence &se);
   IntSequence(int i, const IntSequence &s);
   IntSequence(int i, const IntSequence &s, int pos);
-  IntSequence(int l, const int *d)
-    : data(new int[l]), length(l), destroy(true)
-  {
-    memcpy(data, d, sizeof(int)*length);
-  }
 
   const IntSequence &operator=(const IntSequence &s);
-  virtual ~IntSequence()
-  {
-    if (destroy)
-      delete [] data;
-  }
+  const IntSequence &operator=(IntSequence &&s);
+  virtual ~IntSequence() = default;
   bool operator==(const IntSequence &s) const;
   bool
   operator!=(const IntSequence &s) const
@@ -98,12 +89,12 @@ public:
   int &
   operator[](int i)
   {
-    return data[i];
+    return data.get()[offset+i];
   }
   int
   operator[](int i) const
   {
-    return data[i];
+    return data.get()[offset+i];
   }
   int
   size() const
