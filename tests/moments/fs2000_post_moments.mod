@@ -138,10 +138,10 @@ for par_iter=1:size(par.pdraws,1)
 end
 
 correlation=mean(correlation,3);
-nvars=size(M_.endo_names(1:M_.orig_endo_nbr,:),1);
+nvars=M_.orig_endo_nbr;
 for var_iter_1=1:nvars
     for var_iter_2=1:nvars
-        if max(abs(correlation(var_iter_1,var_iter_2:nvars:end)'-oo_.PosteriorTheoreticalMoments.dsge.correlation.Mean.(deblank(M_.endo_names{var_iter_1,:})).(deblank(M_.endo_names{var_iter_2,:}))))>1e-8
+        if max(abs(correlation(var_iter_1,var_iter_2:nvars:end)'-oo_.PosteriorTheoreticalMoments.dsge.correlation.Mean.(deblank(M_.endo_names(var_iter_1,:))).(deblank(M_.endo_names(var_iter_2,:)))))>1e-8
             error('Correlations do not match')
         end
     end
@@ -151,7 +151,7 @@ covariance=mean(covariance,3);
 nvars=size(M_.endo_names(1:M_.orig_endo_nbr,:),1);
 for var_iter_1=1:nvars
     for var_iter_2=var_iter_1:nvars
-        if max(abs(covariance(var_iter_1,var_iter_2)-oo_.PosteriorTheoreticalMoments.dsge.covariance.Mean.(deblank(M_.endo_names{var_iter_1,:})).(deblank(M_.endo_names{var_iter_2,:}))))>1e-8
+        if max(abs(covariance(var_iter_1,var_iter_2)-oo_.PosteriorTheoreticalMoments.dsge.covariance.Mean.(deblank(M_.endo_names(var_iter_1,:))).(deblank(M_.endo_names(var_iter_2,:)))))>1e-8
             error('Covariances do not match')
         end
     end
@@ -161,7 +161,7 @@ variance_decomposition=mean(variance_decomposition,3);
 nvars=size(M_.endo_names(1:M_.orig_endo_nbr,:),1);
 for var_iter_1=1:nvars
     for shock_iter=1:M_.exo_nbr
-        if max(abs(variance_decomposition(var_iter_1,shock_iter)/100-oo_.PosteriorTheoreticalMoments.dsge.VarianceDecomposition.Mean.(deblank(M_.endo_names{var_iter_1,:})).(deblank(M_.exo_names{shock_iter,:}))))>1e-8
+        if max(abs(variance_decomposition(var_iter_1,shock_iter)/100-oo_.PosteriorTheoreticalMoments.dsge.VarianceDecomposition.Mean.(deblank(M_.endo_names(var_iter_1,:))).(deblank(M_.exo_names(shock_iter,:)))))>1e-8
             error('Variance decomposition does not match')
         end
     end
@@ -173,7 +173,7 @@ horizon_size=size(conditional_variance_decomposition,3);
 for var_iter_1=1:nvars
     for shock_iter=1:M_.exo_nbr
         for horizon_iter=1:horizon_size
-            if max(abs(conditional_variance_decomposition(var_iter_1,horizon_iter,shock_iter)-oo_.PosteriorTheoreticalMoments.dsge.ConditionalVarianceDecomposition.Mean.(deblank(M_.endo_names{var_iter_1,:})).(deblank(M_.exo_names{shock_iter,:}))(horizon_iter)))>1e-8
+            if max(abs(conditional_variance_decomposition(var_iter_1,horizon_iter,shock_iter)-oo_.PosteriorTheoreticalMoments.dsge.ConditionalVarianceDecomposition.Mean.(deblank(M_.endo_names(var_iter_1,:))).(deblank(M_.exo_names(shock_iter,:)))(horizon_iter)))>1e-8
                 error('Conditional Variance decomposition does not match')
             end
         end
