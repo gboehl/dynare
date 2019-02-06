@@ -104,6 +104,13 @@ while ~isempty(plus_node) || ~isempty(last_node_to_parse)
         % Subtract UnaryOpNode from LHS
         % NB: treat exogenous that exist in ds as endogenous
         lhssub = lhssub + evalNode(ds, node_to_parse, line, dseries());
+    elseif strcmp(node_to_parse.node_type, 'BinaryOpNode') && strcmp(node_to_parse.op, '/')
+        % Subtract Node from LHS
+        % if either arg contains a parameter, it's a parsing error.
+        if containsParameter(node_to_parse, line)
+            parsing_error('unexpected node found', line, node_to_parse)
+        end
+        lhssub = lhssub + evalNode(ds, node_to_parse, line, dseries());
     elseif strcmp(node_to_parse.node_type, 'BinaryOpNode') && strcmp(node_to_parse.op, '*')
         % Parse param_expr * endog_expr
         Xtmp = parseTimesNode(ds, node_to_parse, line);
@@ -245,6 +252,7 @@ end
 
 function node_to_parse = getOlsNode(node, line)
 if ~(strcmp(node.node_type, 'BinaryOpNode') && strcmp(node.op, '*')) ...
+        && ~(strcmp(node.node_type, 'BinaryOpNode') && strcmp(node.op, '/')) ...
         && ~strcmp(node.node_type, 'VariableNode') ...
         && ~strcmp(node.node_type, 'UnaryOpNode')
     parsing_error('couldn''t find node to parse', line, node);
@@ -393,6 +401,24 @@ elseif strcmp(node.node_type, 'BinaryOpNode')
     if tf && ~strcmp(node.op, '-')
         parsing_error(['got unexpected op ' node.op], line, node);
     end
+else
+    parsing_error(['got unexpected type ' node.node_type], line, node);
+end
+end
+
+function tf = containsParameter(node, line)
+if strcmp(node.node_type, 'NumConstNode')
+    tf = false;
+elseif strcmp(node.node_type, 'VariableNode')
+    if strcmp(node.type, 'parameter')
+        tf = true;
+    else
+        tf = false;
+    end
+elseif strcmp(node.node_type, 'UnaryOpNode')
+    tf = containsParameter(node, line);
+elseif strcmp(node.node_type, 'BinaryOpNode')
+    tf = containsParameter(node.arg1, line) || containsParameter(node.arg2, line);
 else
     parsing_error(['got unexpected type ' node.node_type], line, node);
 end
