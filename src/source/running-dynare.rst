@@ -343,6 +343,14 @@ by the ``dynare`` command.
         Tells Dynare to compute the equation cross references, writing
         them to the output ``.m`` file.
 
+    .. option:: stochastic
+
+        Tells Dynare that the model to be solved is stochastic. If no
+        Dynare commands related to stochastic models (``stoch_simul``,
+        ``estimation``, ...) are present in the ``.mod`` file, Dynare
+        understands by default that the model to be solved is
+        deterministic.
+
     These options can be passed to the preprocessor by listing them
     after the name of the ``.mod`` file. They can alternatively be
     defined in the first line of the ``.mod`` file, this avoids typing
