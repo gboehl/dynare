@@ -1070,7 +1070,8 @@ equations using the ``write_latex_static_model`` command.
     optional ``steady_state_model`` block (see
     :bck:`steady_state_model`); it will rather output a static version
     (i.e. without leads and lags) of the dynamic ``model`` declared in
-    the model block.
+    the model block. To write the LaTeX contents of the
+    ``steady_state_model`` see :comm:`write_latex_steady_state_model`.
 
     For the required LaTeX packages, see
     :comm:`write_latex_original_model`.
@@ -1080,6 +1081,30 @@ equations using the ``write_latex_static_model`` command.
     .. option:: write_equation_tags
 
         See :opt:`write_equation_tags`.
+
+.. command:: write_latex_steady_state_model
+
+    |br| This command creates two LaTeX files: one containing the steady
+    state model and one containing the LaTeX document header
+    information.
+
+    If your ``.mod`` file is ``FILENAME.mod``, then Dynare
+    will create a file called ``FILENAME_steady_state.tex``,
+    which includes a file called
+    ``FILENAME_steady_state_content.tex`` (also created by
+    Dynare) containing the list of all the steady state model
+    equations.
+
+    If LaTeX names were given for variables and parameters
+    (see :ref:`var-decl`), then those will be used;
+    otherwise, the plain text names will be used.
+
+    Note that the model written in the ``.tex`` file will differ from
+    the model declared by the user in some dimensions
+    (see :comm:`write_latex_dynamic_model` for details).
+
+    For the required LaTeX packages, see :comm:`write_latex_original_model`.
+
 
 .. _aux-variables:
 
