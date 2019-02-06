@@ -390,7 +390,7 @@ for declaring variables and parameters are described below.
 
 .. command::  model_local_variable VARIABLE_NAME [LATEX_NAME]... ;
 
-    This optional command declares a model local variable. See
+    |br| This optional command declares a model local variable. See
     :ref:`conv` for the syntax of VARIABLE_NAME. As you can create
     model local variables on the fly in the model block (see
     :ref:`model-decl`), the interest of this command is primarily to
