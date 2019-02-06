@@ -49,7 +49,7 @@
 // hence a rather low level approach is needed
 ///////////////////////////////////////////////////////
 void
-DynareMxArrayToString(const mxArray *mxFldp, const int len, const int width, vector<string> &out)
+DynareMxArrayToString(const mxArray *mxFldp, const int len, const int width, std::vector<std::string> &out)
 {
   char *cNamesCharStr = mxArrayToString(mxFldp);
 
@@ -91,7 +91,7 @@ extern "C" {
     if (!mxIsChar(mFname))
       DYN_MEX_FUNC_ERR_MSG_TXT("Input must be of type char.");
 
-    string fName = mxArrayToString(mFname);
+    std::string fName = mxArrayToString(mFname);
 
     int kOrder;
     mxArray *mxFldp = mxGetField(options_, 0, "order");
@@ -152,7 +152,7 @@ extern "C" {
     if (npar != nEndo)
       DYN_MEX_FUNC_ERR_MSG_TXT("Incorrect number of input var_order vars.");
 
-    vector<int> var_order_vp(nEndo);
+    std::vector<int> var_order_vp(nEndo);
     for (int v = 0; v < nEndo; v++)
       var_order_vp[v] = (int) (*(dparams++));
 
@@ -164,7 +164,7 @@ extern "C" {
     TwoDMatrix llincidence(nrows, npar, Vector{mxFldp});
     if (npar != nEndo)
       {
-        ostringstream strstrm;
+        std::ostringstream strstrm;
         strstrm << "dynare:k_order_perturbation " << "Incorrect length of lead lag incidences: ncol=" << npar << " != nEndo=" << nEndo;
         DYN_MEX_FUNC_ERR_MSG_TXT(strstrm.str().c_str());
       }
@@ -179,13 +179,13 @@ extern "C" {
     mxFldp = mxGetField(M_, 0, "var_order_endo_names");
     const int nendo = (int) mxGetM(mxFldp);
     const int widthEndo = (int) mxGetN(mxFldp);
-    vector<string> endoNames;
+    std::vector<std::string> endoNames;
     DynareMxArrayToString(mxFldp, nendo, widthEndo, endoNames);
 
     mxFldp = mxGetField(M_, 0, "exo_names");
     const int nexo = (int) mxGetM(mxFldp);
     const int widthExog = (int) mxGetN(mxFldp);
-    vector<string> exoNames;
+    std::vector<std::string> exoNames;
     DynareMxArrayToString(mxFldp, nexo, widthExog, exoNames);
 
     if ((nEndo != nendo) || (nExog != nexo))
@@ -227,11 +227,11 @@ extern "C" {
         jName += ".jnl";
         Journal journal(jName.c_str());
 
-        unique_ptr<DynamicModelAC> dynamicModelFile;
+        std::unique_ptr<DynamicModelAC> dynamicModelFile;
         if (use_dll == 1)
-          dynamicModelFile = make_unique<DynamicModelDLL>(fName);
+          dynamicModelFile = std::make_unique<DynamicModelDLL>(fName);
         else
-          dynamicModelFile = make_unique<DynamicModelMFile>(fName);
+          dynamicModelFile = std::make_unique<DynamicModelMFile>(fName);
 
         // intiate tensor library
         tls.init(kOrder, nStat+2*nPred+3*nBoth+2*nForw+nExog);
@@ -239,7 +239,7 @@ extern "C" {
         // make KordpDynare object
         KordpDynare dynare(endoNames, nEndo, exoNames, nExog, nPar,
                            ySteady, vCov, modParams, nStat, nPred, nForw, nBoth,
-                           jcols, NNZD, nSteps, kOrder, journal, move(dynamicModelFile),
+                           jcols, NNZD, nSteps, kOrder, journal, std::move(dynamicModelFile),
                            sstol, var_order_vp, llincidence, qz_criterium,
                            g1m, g2m, g3m);
 
@@ -250,8 +250,8 @@ extern "C" {
         app.walkStochSteady();
 
         /* Write derivative outputs into memory map */
-        map<string, ConstTwoDMatrix> mm;
-        app.getFoldDecisionRule().writeMMap(mm, string());
+        std::map<std::string, ConstTwoDMatrix> mm;
+        app.getFoldDecisionRule().writeMMap(mm, std::string());
 
         // get latest ysteady
         ySteady = dynare.getSteady();
@@ -259,7 +259,7 @@ extern "C" {
         if (kOrder == 1)
           {
             /* Set the output pointer to the output matrix ysteady. */
-            map<string, ConstTwoDMatrix>::const_iterator cit = mm.begin();
+            auto cit = mm.begin();
             ++cit;
             plhs[1] = mxCreateDoubleMatrix((*cit).second.numRows(), (*cit).second.numCols(), mxREAL);
 
@@ -271,7 +271,7 @@ extern "C" {
         if (kOrder >= 2)
           {
             int ii = 1;
-            for (map<string, ConstTwoDMatrix>::const_iterator cit = mm.begin();
+            for (auto cit = mm.begin();
                  ((cit != mm.end()) && (ii < nlhs)); ++cit)
               {
                 plhs[ii] = mxCreateDoubleMatrix((*cit).second.numRows(), (*cit).second.numCols(), mxREAL);
@@ -312,7 +312,7 @@ extern "C" {
     catch (const KordException &e)
       {
         e.print();
-        ostringstream strstrm;
+        std::ostringstream strstrm;
         strstrm << "dynare:k_order_perturbation: Caught Kord exception: " << e.get_message();
         DYN_MEX_FUNC_ERR_MSG_TXT(strstrm.str().c_str());
       }
@@ -328,13 +328,13 @@ extern "C" {
       }
     catch (const DynareException &e)
       {
-        ostringstream strstrm;
+        std::ostringstream strstrm;
         strstrm << "dynare:k_order_perturbation: Caught KordDynare exception: " << e.message();
         DYN_MEX_FUNC_ERR_MSG_TXT(strstrm.str().c_str());
       }
     catch (const ogu::Exception &e)
       {
-        ostringstream strstrm;
+        std::ostringstream strstrm;
         strstrm << "dynare:k_order_perturbation: Caught general exception: " << e.message();
         DYN_MEX_FUNC_ERR_MSG_TXT(strstrm.str().c_str());
       }

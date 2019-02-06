@@ -54,8 +54,6 @@
 
 #include <vector>
 
-using namespace std;
-
 /* Here we define the new tensor for representing
    $[G]_S^{\gamma_1\ldots\gamma_l}$. It allows a construction from
    container of folded general symmetry tensors |cont|, and set of
@@ -66,8 +64,8 @@ class USubTensor : public URTensor
 {
 public:
   USubTensor(const TensorDimens &bdims, const TensorDimens &hdims,
-             const FGSContainer &cont, const vector<IntSequence> &lst);
-  void addKronColumn(int i, const vector<const FGSTensor *> &ts,
+             const FGSContainer &cont, const std::vector<IntSequence> &lst);
+  void addKronColumn(int i, const std::vector<const FGSTensor *> &ts,
                      const IntSequence &pindex);
 };
 

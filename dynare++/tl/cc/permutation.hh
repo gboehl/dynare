@@ -155,7 +155,7 @@ public:
   {
     return *(pers[i]);
   }
-  vector<const Permutation *> getPreserving(const IntSequence &s) const;
+  std::vector<const Permutation *> getPreserving(const IntSequence &s) const;
 };
 
 /* The permutation bundle encapsulates all permutations sets up to some
@@ -163,7 +163,7 @@ public:
 
 class PermutationBundle
 {
-  vector<PermutationSet *> bundle;
+  std::vector<PermutationSet *> bundle;
 public:
   PermutationBundle(int nmax);
   ~PermutationBundle();

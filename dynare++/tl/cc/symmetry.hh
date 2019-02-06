@@ -215,7 +215,7 @@ public:
    symmetries from the given equivalence and outer symmetry. A
    permutation might optionally permute the classes of the equivalence. */
 
-class InducedSymmetries : public vector<Symmetry>
+class InducedSymmetries : public std::vector<Symmetry>
 {
 public:
   InducedSymmetries(const Equivalence &e, const Symmetry &s);

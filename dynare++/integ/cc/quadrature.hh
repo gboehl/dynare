@@ -184,9 +184,9 @@ public:
 
   /* Just for debugging. */
   void
-  savePoints(const string &fname, int level) const
+  savePoints(const std::string &fname, int level) const
   {
-    ofstream fd{fname, std::ios::out | std::ios::trunc};
+    std::ofstream fd{fname, std::ios::out | std::ios::trunc};
     if (fd.fail())
       {
         // todo: raise

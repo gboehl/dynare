@@ -204,7 +204,7 @@ JournalRecordPair::~JournalRecordPair()
   writePrefixForEnd(flash);
   journal << prefix_end;
   journal << mes;
-  journal << endl;
+  journal << std::endl;
   journal.flush();
 }
 
@@ -213,7 +213,7 @@ endrec(JournalRecord &rec)
 {
   rec.journal << rec.prefix;
   rec.journal << rec.mes;
-  rec.journal << endl;
+  rec.journal << std::endl;
   rec.journal.flush();
   rec.journal.incrementOrd();
   return rec;

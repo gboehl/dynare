@@ -437,7 +437,7 @@ RTSimResultsStats::writeMat(mat_t *fd, const char *lname)
 }
 
 IRFResults::IRFResults(const DynamicModel &mod, const DecisionRule &dr,
-                       const SimResults &control, vector<int> ili,
+                       const SimResults &control, std::vector<int> ili,
                        Journal &journal)
   : model(mod), irf_list_ind(std::move(ili))
 {
@@ -639,6 +639,6 @@ GenShockRealization::get(int n, Vector &out)
   Vector r(numShocks());
   RandomShockRealization::get(n, r);
   for (int j = 0; j < numShocks(); j++)
-    if (!isfinite(out[j]))
+    if (!std::isfinite(out[j]))
       out[j] = r[j];
 }

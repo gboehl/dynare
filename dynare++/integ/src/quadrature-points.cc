@@ -22,8 +22,8 @@
 
 struct QuadParams
 {
-  string outname;
-  string vcovname;
+  std::string outname;
+  std::string vcovname;
   int max_level{3};
   double discard_weight{0.0};
   QuadParams(int argc, char **argv);
@@ -60,7 +60,7 @@ QuadParams::QuadParams(int argc, char **argv)
         case opt_max_level:
           try
             {
-              max_level = std::stoi(string{optarg});
+              max_level = std::stoi(std::string{optarg});
             }
           catch (const std::invalid_argument &e)
             {
@@ -70,7 +70,7 @@ QuadParams::QuadParams(int argc, char **argv)
         case opt_discard_weight:
           try
             {
-              discard_weight = std::stod(string{optarg});
+              discard_weight = std::stod(std::string{optarg});
             }
           catch (const std::invalid_argument &e)
             {

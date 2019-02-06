@@ -340,7 +340,7 @@ public:
         if (_Tparent::check(Symmetry(d)))
           {
             _Ttype *ten = _Tparent::get(Symmetry(d));
-            ten->mult((double) max((d-k), 0));
+            ten->mult((double) std::max((d-k), 0));
           }
       }
   }

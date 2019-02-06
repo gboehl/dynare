@@ -44,8 +44,6 @@
 #include <vector>
 #include <list>
 
-using namespace std;
-
 /* Here is the abstraction for an equivalence class. We implement it as
    |vector<int>|. We have a constructor for empty class, copy
    constructor. What is important here is the ordering operator
@@ -55,7 +53,7 @@ using namespace std;
 
 class OrdSequence
 {
-  vector<int> data;
+  std::vector<int> data;
 public:
   OrdSequence() : data()
   {
@@ -68,7 +66,7 @@ public:
   bool operator==(const OrdSequence &s) const;
   int operator[](int i) const;
   bool operator<(const OrdSequence &s) const;
-  const vector<int> &
+  const std::vector<int> &
   getData() const
   {
     return data;
@@ -97,10 +95,10 @@ class Equivalence
 {
 private:
   int n;
-  list<OrdSequence> classes;
+  std::list<OrdSequence> classes;
 public:
-  using const_seqit = list<OrdSequence>::const_iterator;
-  using seqit = list<OrdSequence>::iterator;
+  using const_seqit = std::list<OrdSequence>::const_iterator;
+  using seqit = std::list<OrdSequence>::iterator;
 
   /* The first constructor constructs $\{\{0\},\{1\},\ldots,\{n-1\}\}$.
 
@@ -183,9 +181,9 @@ protected:
 class EquivalenceSet
 {
   int n;
-  list<Equivalence> equis;
+  std::list<Equivalence> equis;
 public:
-  using const_iterator = list<Equivalence>::const_iterator;
+  using const_iterator = std::list<Equivalence>::const_iterator;
   EquivalenceSet(int num);
   void print(const char *prefix) const;
   const_iterator
@@ -200,7 +198,7 @@ public:
   }
 private:
   bool has(const Equivalence &e) const;
-  void addParents(const Equivalence &e, list<Equivalence> &added);
+  void addParents(const Equivalence &e, std::list<Equivalence> &added);
 };
 
 /* The equivalence bundle class only encapsulates |EquivalenceSet|s
@@ -212,7 +210,7 @@ private:
 
 class EquivalenceBundle
 {
-  vector<EquivalenceSet> bundle;
+  std::vector<EquivalenceSet> bundle;
 public:
   EquivalenceBundle(int nmax);
   ~EquivalenceBundle() = default;

@@ -103,13 +103,13 @@ PermutationSet::~PermutationSet()
   delete [] pers;
 }
 
-vector<const Permutation *>
+std::vector<const Permutation *>
 PermutationSet::getPreserving(const IntSequence &s) const
 {
   TL_RAISE_IF(s.size() != order,
               "Wrong sequence length in PermutationSet::getPreserving");
 
-  vector<const Permutation *> res;
+  std::vector<const Permutation *> res;
   IntSequence tmp(s.size());
   for (int i = 0; i < size; i++)
     {
@@ -125,7 +125,7 @@ PermutationSet::getPreserving(const IntSequence &s) const
 
 PermutationBundle::PermutationBundle(int nmax)
 {
-  nmax = max(nmax, 1);
+  nmax = std::max(nmax, 1);
   generateUpTo(nmax);
 }
 

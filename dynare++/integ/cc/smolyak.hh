@@ -101,9 +101,9 @@ class SmolyakQuadrature : public QuadratureImpl<smolpit>
   friend class smolpit;
   int level;
   const OneDQuadrature &uquad;
-  vector<IntSequence> levels;
-  vector<IntSequence> levpoints;
-  vector<int> cumevals;
+  std::vector<IntSequence> levels;
+  std::vector<IntSequence> levpoints;
+  std::vector<int> cumevals;
   PascalTriangle psc;
 public:
   SmolyakQuadrature(int d, int l, const OneDQuadrature &uq);

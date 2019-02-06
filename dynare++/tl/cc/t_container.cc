@@ -41,7 +41,7 @@ UGSContainer::multAndAdd(const UGSTensor &t, UGSTensor &out) const
     {
       if (it.numClasses() == l)
         {
-          vector<const UGSTensor *> ts
+          std::vector<const UGSTensor *> ts
             = fetchTensors(out.getSym(), it);
           KronProdAllOptim kp(l);
           for (int i = 0; i < l; i++)
@@ -89,7 +89,7 @@ FGSContainer::multAndAdd(const UGSTensor &t, FGSTensor &out) const
     {
       if (it.numClasses() == l)
         {
-          vector<const FGSTensor *> ts
+          std::vector<const FGSTensor *> ts
             = fetchTensors(out.getSym(), it);
           KronProdAllOptim kp(l);
           for (int i = 0; i < l; i++)
@@ -106,7 +106,7 @@ FGSContainer::multAndAdd(const UGSTensor &t, FGSTensor &out) const
    (excluding). If there are not |num| of such indices, the shorter vector
    is returned. */
 Tensor::index
-FGSContainer::getIndices(int num, vector<IntSequence> &out,
+FGSContainer::getIndices(int num, std::vector<IntSequence> &out,
                          const Tensor::index &start,
                          const Tensor::index &end)
 {

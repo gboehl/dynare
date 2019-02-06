@@ -96,7 +96,7 @@ class TensorContainer
 protected:
   using _const_ptr = const _Ttype *;
   using _ptr = _Ttype *;
-  using _Map = map<Symmetry, _ptr, ltsym>;
+  using _Map = std::map<Symmetry, _ptr, ltsym>;
   using _mvtype = typename _Map::value_type;
 public:
   using iterator = typename _Map::iterator;
@@ -262,9 +262,9 @@ public:
 
   /* Output to the Memory Map. */
   void
-  writeMMap(map<string, ConstTwoDMatrix> &mm, const string &prefix) const
+  writeMMap(std::map<std::string, ConstTwoDMatrix> &mm, const std::string &prefix) const
   {
-    ostringstream lname;
+    std::ostringstream lname;
     for (const_iterator it = begin(); it != end(); ++it)
       {
         lname.str(prefix);
@@ -280,10 +280,10 @@ public:
      through all equivalence classes, calculate implied symmetry, and
      fetch its tensor storing it in the same order to the vector. */
 
-  vector<_const_ptr>
+  std::vector<_const_ptr>
   fetchTensors(const Symmetry &rsym, const Equivalence &e) const
   {
-    vector<_const_ptr> res(e.numClasses());
+    std::vector<_const_ptr> res(e.numClasses());
     int i = 0;
     for (auto it = e.begin();
          it != e.end(); ++it, i++)
@@ -377,7 +377,7 @@ public:
   void multAndAdd(const FGSTensor &t, FGSTensor &out) const;
   void multAndAdd(const UGSTensor &t, FGSTensor &out) const;
 private:
-  static Tensor::index getIndices(int num, vector<IntSequence> &out,
+  static Tensor::index getIndices(int num, std::vector<IntSequence> &out,
                                   const Tensor::index &start,
                                   const Tensor::index &end);
 };

@@ -19,7 +19,7 @@
 USubTensor::USubTensor(const TensorDimens &bdims,
                        const TensorDimens &hdims,
                        const FGSContainer &cont,
-                       const vector<IntSequence> &lst)
+                       const std::vector<IntSequence> &lst)
   : URTensor(lst.size(), hdims.getNVX()[0], hdims.dimen())
 {
   TL_RAISE_IF(!hdims.getNVX().isConstant(),
@@ -31,7 +31,7 @@ USubTensor::USubTensor(const TensorDimens &bdims,
       if (it.numClasses() == hdims.dimen())
         {
           Permutation per(it);
-          vector<const FGSTensor *> ts
+          std::vector<const FGSTensor *> ts
             = cont.fetchTensors(bdims.getSym(), it);
           for (int i = 0; i < (int) lst.size(); i++)
             {
@@ -58,10 +58,10 @@ USubTensor::USubTensor(const TensorDimens &bdims,
    |i|-th column. */
 
 void
-USubTensor::addKronColumn(int i, const vector<const FGSTensor *> &ts,
+USubTensor::addKronColumn(int i, const std::vector<const FGSTensor *> &ts,
                           const IntSequence &pindex)
 {
-  vector<ConstVector> tmpcols;
+  std::vector<ConstVector> tmpcols;
   int lastdim = 0;
   for (auto t : ts)
     {

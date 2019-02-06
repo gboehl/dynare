@@ -21,9 +21,9 @@
 
 #include <sstream>
 
-DynamicModelDLL::DynamicModelDLL(const string &modName) noexcept(false)
+DynamicModelDLL::DynamicModelDLL(const std::string &modName) noexcept(false)
 {
-  string fName;
+  std::string fName;
 #if !defined(__CYGWIN32__) && !defined(_WIN32)
   fName = "./";
 #endif
@@ -57,7 +57,7 @@ DynamicModelDLL::DynamicModelDLL(const string &modName) noexcept(false)
       dynamicHinstance = dlopen(fName.c_str(), RTLD_NOW);
       if (dynamicHinstance == nullptr)
         {
-          cerr << dlerror() << endl;
+          std::cerr << dlerror() << std::endl;
           throw 1;
         }
       ntt = (int *) dlsym(dynamicHinstance, "ntt");
@@ -76,7 +76,7 @@ DynamicModelDLL::DynamicModelDLL(const string &modName) noexcept(false)
           || dynamic_g3_tt == nullptr || dynamic_g3 == nullptr)
         {
           dlclose(dynamicHinstance); // Free the library
-          cerr << dlerror() << endl;
+          std::cerr << dlerror() << std::endl;
           throw 2;
         }
 #endif
@@ -84,7 +84,7 @@ DynamicModelDLL::DynamicModelDLL(const string &modName) noexcept(false)
     }
   catch (int i)
     {
-      ostringstream msg;
+      std::ostringstream msg;
       msg << "Error when loading " << fName << " (";
       if (i == 1)
         msg << "can't dynamically load the file";
@@ -105,7 +105,7 @@ DynamicModelDLL::~DynamicModelDLL()
   auto result = FreeLibrary(dynamicHinstance);
   if (result == 0)
     {
-      cerr << "Can't free the *_dynamic DLL" << endl;
+      std::cerr << "Can't free the *_dynamic DLL" << std::endl;
       exit(EXIT_FAILURE);
     }
 #else

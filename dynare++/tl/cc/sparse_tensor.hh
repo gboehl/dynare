@@ -31,8 +31,6 @@
 
 #include <map>
 
-using namespace std;
-
 // |ltseq| predicate
 struct ltseq
 {
@@ -50,8 +48,8 @@ struct ltseq
 class SparseTensor
 {
 public:
-  using Item = pair<int, double>;
-  using Map = multimap<IntSequence, Item, ltseq>;
+  using Item = std::pair<int, double>;
+  using Map = std::multimap<IntSequence, Item, ltseq>;
   using const_iterator = Map::const_iterator;
 protected:
   using iterator = Map::iterator;

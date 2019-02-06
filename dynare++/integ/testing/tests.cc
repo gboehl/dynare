@@ -165,11 +165,11 @@ Function1Trans::eval(const Vector &point, const ParameterSignal &sig, Vector &ou
 // with time information
 class WallTimer
 {
-  string mes;
+  std::string mes;
   std::chrono::time_point<std::chrono::high_resolution_clock> start;
   bool new_line;
 public:
-  WallTimer(string m, bool nl = true)
+  WallTimer(std::string m, bool nl = true)
     : mes{m}, start{std::chrono::high_resolution_clock::now()}, new_line{nl}
   {
   }
@@ -189,10 +189,10 @@ public:
 class TestRunnable
 {
 public:
-  const string name;
+  const std::string name;
   int dim; // dimension of the solved problem
   int nvar; // number of variable of the solved problem
-  TestRunnable(string name_arg, int d, int nv)
+  TestRunnable(std::string name_arg, int d, int nv)
     : name{move(name_arg)}, dim(d), nvar(nv)
   {
   }
@@ -211,7 +211,7 @@ protected:
 bool
 TestRunnable::test() const
 {
-  cout << "Running test <" << name << ">" << endl;
+  std::cout << "Running test <" << name << ">" << std::endl;
   bool passed;
   {
     WallTimer tim("Wall clock time ", false);
@@ -286,7 +286,7 @@ TestRunnable::product_normal_moments(const GeneralMatrix &m, int imom, int level
   // check against theoretical moments
   UNormalMoments moments(imom, msq);
   prod_out.add(-1.0, (moments.get(Symmetry(imom)))->getData());
-  std::cout << "\tError:                         " << std::setw(16) << std::setprecision(12) << prod_out.getMax() << endl;
+  std::cout << "\tError:                         " << std::setw(16) << std::setprecision(12) << prod_out.getMax() << std::endl;
   return prod_out.getMax() < 1.e-7;
 }
 

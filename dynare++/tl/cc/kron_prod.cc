@@ -340,7 +340,7 @@ KronProdAll::multRows(const IntSequence &irows) const
 
   Vector *last = nullptr;
   ConstVector *row;
-  vector<Vector *> to_delete;
+  std::vector<Vector *> to_delete;
   for (int i = 0; i < dimen(); i++)
     {
       int j = dimen()-1-i;

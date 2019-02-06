@@ -19,7 +19,7 @@
 
 #include "dynamic_m.hh"
 
-DynamicModelMFile::DynamicModelMFile(const string &modName) noexcept(false) :
+DynamicModelMFile::DynamicModelMFile(const std::string &modName) noexcept(false) :
   DynamicMFilename{modName + ".dynamic"}
 {
 }

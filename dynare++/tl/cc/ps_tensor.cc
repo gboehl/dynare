@@ -215,7 +215,7 @@ UPSTensor::fillFromSparseTwo(const FSSparseTensor &t, const IntSequence &ss,
     }
 
   const PermutationSet &pset = tls.pbundle->get(coor.size());
-  vector<const Permutation *> pp = pset.getPreserving(coor);
+  std::vector<const Permutation *> pp = pset.getPreserving(coor);
 
   Permutation unsort(coor);
   zeros();

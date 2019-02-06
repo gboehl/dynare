@@ -43,7 +43,7 @@ main(int argc, char **argv)
       // make dynare object
       Dynare dynare(params.modname, params.order, params.ss_tol, journal);
       // make list of shocks for which we will do IRFs
-      vector<int> irf_list_ind;
+      std::vector<int> irf_list_ind;
       if (params.do_irfs_all)
         for (int i = 0; i < dynare.nexog(); i++)
           irf_list_ind.push_back(i);

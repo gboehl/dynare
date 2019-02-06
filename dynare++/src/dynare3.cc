@@ -19,10 +19,10 @@
 /**************************************************************************************/
 /*       DynareNameList class                                                         */
 /**************************************************************************************/
-vector<int>
-DynareNameList::selectIndices(const vector<const char *> &ns) const
+std::vector<int>
+DynareNameList::selectIndices(const std::vector<const char *> &ns) const
 {
-  vector<int> res;
+  std::vector<int> res;
   for (auto n : ns)
     {
       int j = 0;
@@ -30,7 +30,7 @@ DynareNameList::selectIndices(const vector<const char *> &ns) const
         j++;
       if (j == getNum())
         throw DynareException(__FILE__, __LINE__,
-                              string("Couldn't find name for ") + n
+                              std::string("Couldn't find name for ") + n
                               +" in DynareNameList::selectIndices");
       res.push_back(j);
     }
@@ -47,7 +47,7 @@ Dynare::Dynare(const char *modname, int ord, double sstol, Journal &jr)
 {
   std::ifstream f{modname};
   if (f.fail())
-    throw DynareException(__FILE__, __LINE__, string{"Could not open model file "}+modname);
+    throw DynareException(__FILE__, __LINE__, std::string{"Could not open model file "}+modname);
 
   std::ostringstream buffer;
   buffer << f.rdbuf();

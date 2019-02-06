@@ -728,9 +728,9 @@ protected:
   int num_y;
   int num_per;
   int num_burn;
-  vector<TwoDMatrix *> data;
-  vector<ExplicitShockRealization *> shocks;
-  vector<ConstVector> start;
+  std::vector<TwoDMatrix *> data;
+  std::vector<ExplicitShockRealization *> shocks;
+  std::vector<ConstVector> start;
 public:
   SimResults(int ny, int nper, int nburn = 0)
     : num_y(ny), num_per(nper), num_burn(nburn)
@@ -902,12 +902,12 @@ public:
 class DynamicModel;
 class IRFResults
 {
-  vector<SimResultsIRF *> irf_res;
+  std::vector<SimResultsIRF *> irf_res;
   const DynamicModel &model;
-  vector<int> irf_list_ind;
+  std::vector<int> irf_list_ind;
 public:
   IRFResults(const DynamicModel &mod, const DecisionRule &dr,
-             const SimResults &control, vector<int> ili,
+             const SimResults &control, std::vector<int> ili,
              Journal &journal);
   ~IRFResults();
   void writeMat(mat_t *fd, const char *prefix) const;

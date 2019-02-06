@@ -83,7 +83,7 @@ private:
 protected:
   int num;
   int maxn;
-  vector<RadicalInverse> ri;
+  std::vector<RadicalInverse> ri;
   const PermutationScheme &per;
   Vector pt;
 public:

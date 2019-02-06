@@ -313,7 +313,7 @@ EquivalenceSet::EquivalenceSet(int num)
   : n(num),
     equis()
 {
-  list<Equivalence> added;
+  std::list<Equivalence> added;
   Equivalence first(n);
   equis.push_back(first);
   addParents(first, added);
@@ -359,7 +359,7 @@ EquivalenceSet::has(const Equivalence &e) const
 
 void
 EquivalenceSet::addParents(const Equivalence &e,
-                           list<Equivalence> &added)
+                           std::list<Equivalence> &added)
 {
   if (e.numClasses() == 2 || e.numClasses() == 1)
     return;
@@ -396,7 +396,7 @@ EquivalenceSet::print(const char *prefix) const
 /* Construct the bundle. |nmax| is a maximum size of underlying set. */
 EquivalenceBundle::EquivalenceBundle(int nmax)
 {
-  nmax = max(nmax, 1);
+  nmax = std::max(nmax, 1);
   generateUpTo(nmax);
 }
 

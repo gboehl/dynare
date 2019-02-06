@@ -131,7 +131,7 @@ public:
     : URTensor(1, nvar, d)
   {
   }
-  URSingleTensor(const vector<ConstVector> &cols);
+  URSingleTensor(const std::vector<ConstVector> &cols);
   URSingleTensor(const ConstVector &v, int d);
   URSingleTensor(const URSingleTensor &ut)
      

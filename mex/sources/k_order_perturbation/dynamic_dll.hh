@@ -61,7 +61,7 @@ private:
 
 public:
   // construct and load Dynamic model DLL
-  explicit DynamicModelDLL(const string &fname) noexcept(false);
+  explicit DynamicModelDLL(const std::string &fname) noexcept(false);
   virtual ~DynamicModelDLL();
 
   void eval(const Vector &y, const Vector &x, const Vector &params, const Vector &ySteady,

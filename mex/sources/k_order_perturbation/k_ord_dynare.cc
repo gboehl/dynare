@@ -33,13 +33,13 @@
 /*       Dynare DynamicModel class                                                                 */
 /**************************************************************************************/
 
-KordpDynare::KordpDynare(const vector<string> &endo, int num_endo,
-                         const vector<string> &exo, int nexog, int npar,
+KordpDynare::KordpDynare(const std::vector<std::string> &endo, int num_endo,
+                         const std::vector<std::string> &exo, int nexog, int npar,
                          Vector &ysteady, TwoDMatrix &vcov, Vector &inParams, int nstat,
                          int npred, int nforw, int nboth, const int jcols, const Vector &nnzd,
                          const int nsteps, int norder,
-                         Journal &jr, unique_ptr<DynamicModelAC> dynamicModelFile_arg, double sstol,
-                         const vector<int> &var_order, const TwoDMatrix &llincidence, double criterium) noexcept(false) :
+                         Journal &jr, std::unique_ptr<DynamicModelAC> dynamicModelFile_arg, double sstol,
+                         const std::vector<int> &var_order, const TwoDMatrix &llincidence, double criterium) noexcept(false) :
   nStat{nstat}, nBoth{nboth}, nPred{npred}, nForw{nforw}, nExog{nexog}, nPar{npar},
   nYs{npred + nboth}, nYss{nboth + nforw}, nY{num_endo}, nJcols{jcols}, NNZD{nnzd}, nSteps{nsteps},
   nOrder{norder}, journal{jr}, ySteady{ysteady}, params{inParams}, vCov{vcov},
@@ -54,13 +54,13 @@ KordpDynare::KordpDynare(const vector<string> &endo, int num_endo,
     md.insert(new FSSparseTensor(iord, nY+nYs+nYss+nExog, nY));
 }
 
-KordpDynare::KordpDynare(const vector<string> &endo, int num_endo,
-                         const vector<string> &exo, int nexog, int npar,
+KordpDynare::KordpDynare(const std::vector<std::string> &endo, int num_endo,
+                         const std::vector<std::string> &exo, int nexog, int npar,
                          Vector &ysteady, TwoDMatrix &vcov, Vector &inParams, int nstat,
                          int npred, int nforw, int nboth, const int jcols, const Vector &nnzd,
                          const int nsteps, int norder,
-                         Journal &jr, unique_ptr<DynamicModelAC> dynamicModelFile_arg, double sstol,
-                         const vector<int> &var_order, const TwoDMatrix &llincidence, double criterium,
+                         Journal &jr, std::unique_ptr<DynamicModelAC> dynamicModelFile_arg, double sstol,
+                         const std::vector<int> &var_order, const TwoDMatrix &llincidence, double criterium,
                          TwoDMatrix *g1_arg, TwoDMatrix *g2_arg, TwoDMatrix *g3_arg) noexcept(false) :
   nStat{nstat}, nBoth{nboth}, nPred{npred}, nForw{nforw}, nExog{nexog}, nPar{npar},
   nYs{npred + nboth}, nYss{nboth + nforw}, nY{num_endo}, nJcols{jcols}, NNZD{nnzd}, nSteps{nsteps},
@@ -159,7 +159,7 @@ KordpDynare::calcDerivativesAtSteady()
  * populateDerivatives to sparse Tensor and fit it in the Derivatives Container
  *******************************************************************************/
 void
-KordpDynare::populateDerivativesContainer(const TwoDMatrix &g, int ord, const vector<int> &vOrder)
+KordpDynare::populateDerivativesContainer(const TwoDMatrix &g, int ord, const std::vector<int> &vOrder)
 {
   // model derivatives FSSparseTensor instance
   FSSparseTensor *mdTi = (new FSSparseTensor(ord, nJcols, nY));
@@ -186,7 +186,7 @@ KordpDynare::populateDerivativesContainer(const TwoDMatrix &g, int ord, const ve
   else if (ord == 2)
     {
       int nJcols1 = nJcols-nExog;
-      vector<int> revOrder(nJcols1);
+      std::vector<int> revOrder(nJcols1);
       for (int i = 0; i < nJcols1; i++)
         revOrder[vOrder[i]] = i;
       for (int i = 0; i < g.nrows(); i++)
@@ -216,7 +216,7 @@ KordpDynare::populateDerivativesContainer(const TwoDMatrix &g, int ord, const ve
     {
       int nJcols1 = nJcols-nExog;
       int nJcols2 = nJcols*nJcols;
-      vector<int> revOrder(nJcols1);
+      std::vector<int> revOrder(nJcols1);
       for (int i = 0; i < nJcols1; i++)
         revOrder[vOrder[i]] = i;
       for (int i = 0; i < g.nrows(); i++)
@@ -311,7 +311,7 @@ KordpDynare::ReorderDynareJacobianIndices() noexcept(false)
   // create temporary square 2D matrix size nEndo x nEndo (sparse)
   // for the lag, current and lead blocks of the jacobian
   JacobianIndices.resize(nJcols);
-  vector <int> tmp(nY);
+  std::vector<int> tmp(nY);
   int i, j, rjoff = nJcols-nExog-1;
 
   for (int ll_row = 0; ll_row < ll_Incidence.nrows(); ll_row++)
@@ -341,7 +341,7 @@ KordpDynare::ReorderDynareJacobianIndices() noexcept(false)
 /*       DynareNameList class                                                         */
 /**************************************************************************************/
 
-DynareNameList::DynareNameList(const KordpDynare &dynare, const vector<string> &names_arg) : names(names_arg)
+DynareNameList::DynareNameList(const KordpDynare &dynare, const std::vector<std::string> &names_arg) : names(names_arg)
 {
 }
 
@@ -349,7 +349,7 @@ DynareStateNameList::DynareStateNameList(const KordpDynare &dynare, const Dynare
                                          const DynareNameList &denl)
 {
   for (int i = 0; i < dynare.nys(); i++)
-    names.push_back(string{dnl.getName(i+dynare.nstat())});
+    names.push_back(std::string{dnl.getName(i+dynare.nstat())});
   for (int i = 0; i < dynare.nexog(); i++)
-    names.push_back(string{denl.getName(i)});
+    names.push_back(std::string{denl.getName(i)});
 }

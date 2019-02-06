@@ -20,7 +20,7 @@ class Dynare;
 
 class DynareNameList : public NameList
 {
-  vector<const char *> names;
+  std::vector<const char *> names;
 public:
   DynareNameList(const Dynare &dynare);
   int
@@ -36,12 +36,12 @@ public:
   /** This for each string of the input vector calculates its index
    * in the names. And returns the resulting vector of indices. If
    * the name cannot be found, then an exception is raised. */
-  vector<int> selectIndices(const vector<const char *> &ns) const;
+  std::vector<int> selectIndices(const std::vector<const char *> &ns) const;
 };
 
 class DynareExogNameList : public NameList
 {
-  vector<const char *> names;
+  std::vector<const char *> names;
 public:
   DynareExogNameList(const Dynare &dynare);
   int
@@ -58,7 +58,7 @@ public:
 
 class DynareStateNameList : public NameList
 {
-  vector<const char *> names;
+  std::vector<const char *> names;
 public:
   DynareStateNameList(const Dynare &dynare, const DynareNameList &dnl,
                       const DynareExogNameList &denl);

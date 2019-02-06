@@ -115,7 +115,7 @@ URTensor::getOffset(const IntSequence &v) const
 /* Here we construct $v_1\otimes v_2\otimes\ldots\otimes v_n$, where
    $v_1,v_2,\ldots,v_n$ are stored in |vector<ConstVector>|. */
 
-URSingleTensor::URSingleTensor(const vector<ConstVector> &cols)
+URSingleTensor::URSingleTensor(const std::vector<ConstVector> &cols)
   : URTensor(1, cols[0].length(), cols.size())
 {
   if (dimen() == 1)

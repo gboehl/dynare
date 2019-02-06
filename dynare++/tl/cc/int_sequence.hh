@@ -28,7 +28,6 @@
 #include <cstring>
 #include <vector>
 
-using namespace std;
 
 /* The implementation of |IntSequence| is straightforward. It has a
    pointer |data|, a |length| of the data, and a flag |destroy|, whether
@@ -74,7 +73,7 @@ public:
   {
     memcpy(data, s.data+i1, sizeof(int)*length);
   }
-  IntSequence(const Symmetry &sy, const vector<int> &se);
+  IntSequence(const Symmetry &sy, const std::vector<int> &se);
   IntSequence(const Symmetry &sy, const IntSequence &se);
   IntSequence(int i, const IntSequence &s);
   IntSequence(int i, const IntSequence &s, int pos);

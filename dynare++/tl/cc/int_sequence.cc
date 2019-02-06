@@ -29,7 +29,7 @@ IntSequence::IntSequence(const Symmetry &sy, const IntSequence &se)
    constructed sequence must be $(1,1)$, meaning that we picked one $y$
    and one $u$. */
 
-IntSequence::IntSequence(const Symmetry &sy, const vector<int> &se)
+IntSequence::IntSequence(const Symmetry &sy, const std::vector<int> &se)
   : data(new int[sy.num()]), length(sy.num()), destroy(true)
 {
   TL_RAISE_IF(sy.dimen() <= se[se.size()-1],
@@ -102,7 +102,7 @@ IntSequence::operator==(const IntSequence &s) const
 bool
 IntSequence::operator<(const IntSequence &s) const
 {
-  int len = min(size(), s.size());
+  int len = std::min(size(), s.size());
 
   int i = 0;
   while (i < len && operator[](i) == s[i])

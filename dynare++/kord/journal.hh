@@ -39,13 +39,13 @@ struct SystemResourcesFlash
   void diff(const SystemResourcesFlash &pre);
 };
 
-class Journal : public ofstream
+class Journal : public std::ofstream
 {
   int ord;
   int depth;
 public:
   Journal(const char *fname)
-    : ofstream(fname), ord(0), depth(0)
+    : std::ofstream(fname), ord(0), depth(0)
   {
     printHeader();
   }

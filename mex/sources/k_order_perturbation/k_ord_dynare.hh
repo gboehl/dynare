@@ -42,9 +42,9 @@ class KordpDynare;
 /*////////////////////////////////////////////*/
 class DynareNameList : public NameList
 {
-  vector<string> names;
+  std::vector<std::string> names;
 public:
-  DynareNameList(const KordpDynare &dynare, const vector<string> &names_arg);
+  DynareNameList(const KordpDynare &dynare, const std::vector<std::string> &names_arg);
   int
   getNum() const
   {
@@ -59,7 +59,7 @@ public:
 
 class DynareStateNameList : public NameList
 {
-  vector<string> names;
+  std::vector<std::string> names;
 public:
   DynareStateNameList(const KordpDynare &dynare, const DynareNameList &dnl,
                       const DynareNameList &denl);
@@ -110,30 +110,30 @@ class KordpDynare : public DynamicModel
   DynareNameList dnl, denl;
   DynareStateNameList dsnl;
   const double ss_tol;
-  const vector<int> &varOrder;
+  const std::vector<int> &varOrder;
   const TwoDMatrix &ll_Incidence;
   double qz_criterium;
-  vector<int> JacobianIndices;
+  std::vector<int> JacobianIndices;
 
   TwoDMatrix *g1p;
   TwoDMatrix *g2p;
   TwoDMatrix *g3p;
 public:
-  KordpDynare(const vector<string> &endo, int num_endo,
-              const vector<string> &exo, int num_exo, int num_par,
+  KordpDynare(const std::vector<std::string> &endo, int num_endo,
+              const std::vector<std::string> &exo, int num_exo, int num_par,
               Vector &ySteady, TwoDMatrix &vCov, Vector &params, int nstat, int nPred,
               int nforw, int nboth, const int nJcols, const Vector &NNZD,
               const int nSteps, const int ord,
-              Journal &jr, unique_ptr<DynamicModelAC> dynamicModelFile_arg, double sstol,
-              const vector<int> &varOrder, const TwoDMatrix &ll_Incidence,
+              Journal &jr, std::unique_ptr<DynamicModelAC> dynamicModelFile_arg, double sstol,
+              const std::vector<int> &varOrder, const TwoDMatrix &ll_Incidence,
               double qz_criterium) noexcept(false);
-  KordpDynare(const vector<string> &endo, int num_endo,
-              const vector<string> &exo, int num_exo, int num_par,
+  KordpDynare(const std::vector<std::string> &endo, int num_endo,
+              const std::vector<std::string> &exo, int num_exo, int num_par,
               Vector &ySteady, TwoDMatrix &vCov, Vector &params, int nstat, int nPred,
               int nforw, int nboth, const int nJcols, const Vector &NNZD,
               const int nSteps, const int ord,
-              Journal &jr, unique_ptr<DynamicModelAC> dynamicModelFile_arg, double sstol,
-              const vector<int> &varOrder, const TwoDMatrix &ll_Incidence,
+              Journal &jr, std::unique_ptr<DynamicModelAC> dynamicModelFile_arg, double sstol,
+              const std::vector<int> &varOrder, const TwoDMatrix &ll_Incidence,
               double qz_criterium, TwoDMatrix *g1_arg, TwoDMatrix *g2_arg, TwoDMatrix *g3_arg) noexcept(false);
 
   virtual ~KordpDynare();
@@ -234,7 +234,7 @@ public:
   void evaluateSystem(Vector &out, const ConstVector &yym, const ConstVector &yy,
                       const ConstVector &yyp, const Vector &xx) noexcept(false);
   void calcDerivativesAtSteady();
-  unique_ptr<DynamicModelAC> dynamicModelFile;
+  std::unique_ptr<DynamicModelAC> dynamicModelFile;
   DynamicModel *
   clone() const
   {
@@ -245,7 +245,7 @@ public:
 
 private:
   void ReorderDynareJacobianIndices() noexcept(false);
-  void populateDerivativesContainer(const TwoDMatrix &g, int ord, const vector<int> &vOrder);
+  void populateDerivativesContainer(const TwoDMatrix &g, int ord, const std::vector<int> &vOrder);
 };
 
 #endif

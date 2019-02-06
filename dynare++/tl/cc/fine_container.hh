@@ -39,8 +39,8 @@
 
 class SizeRefinement
 {
-  vector<int> rsizes;
-  vector<int> ind_map;
+  std::vector<int> rsizes;
+  std::vector<int> ind_map;
   int new_nc;
 public:
   SizeRefinement(const IntSequence &s, int nc, int max);
