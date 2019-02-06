@@ -9,7 +9,6 @@
  * to avoid running virtual method invokation mechanism. Some
  * members, and methods are thus duplicated */
 
-#include <array>
 #include <memory>
 #include <complex>
 
@@ -214,21 +213,6 @@ public:
   double dot(const ConstVector &y) const;
   bool isFinite() const;
   void print() const;
-};
-
-class ZeroPad
-{
-public:
-  static const int length = 16;
-private:
-  std::array<double, length> pad;
-public:
-  ZeroPad();
-  const double *
-  getBase() const
-  {
-    return pad.data();
-  }
 };
 
 #endif /* VECTOR_H */

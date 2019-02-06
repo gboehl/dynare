@@ -6,15 +6,11 @@
 
 #include <dynblas.h>
 
-#include <cstring>
-#include <cstdlib>
 #include <cmath>
 #include <algorithm>
 #include <limits>
 #include <iostream>
 #include <iomanip>
-
-ZeroPad zero_pad;
 
 Vector::Vector(const Vector &v)
   : len(v.len), data{new double[len], [](double *arr) { delete[] arr; }}
@@ -156,19 +152,10 @@ void
 Vector::zeros()
 {
   if (s == 1)
-    {
-      double *p = base();
-      for (int i = 0; i < len/ZeroPad::length;
-           i++, p += ZeroPad::length)
-        memcpy(p, zero_pad.getBase(), sizeof(double)*ZeroPad::length);
-      for (; p < base()+len; p++)
-        *p = 0.0;
-    }
+    std::fill_n(base(), len, 0.0);
   else
-    {
-      for (int i = 0; i < len; i++)
-        operator[](i) = 0.0;
-    }
+    for (int i = 0; i < len; i++)
+      operator[](i) = 0.0;
 }
 
 void
@@ -409,9 +396,4 @@ ConstVector::print() const
   for (int i = 0; i < len; i++)
     std::cout << i << '\t' << std::setw(8) << operator[](i) << std::endl;
   std::cout.flags(ff);
-}
-
-ZeroPad::ZeroPad()
-{
-  pad.fill(0.0);
 }
