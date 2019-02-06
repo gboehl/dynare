@@ -247,7 +247,7 @@ function node_to_parse = getOlsNode(node, line)
 if ~(strcmp(node.node_type, 'BinaryOpNode') && strcmp(node.op, '*')) ...
         && ~strcmp(node.node_type, 'VariableNode') ...
         && ~strcmp(node.node_type, 'UnaryOpNode')
-    parsing_error('couldn''t find node to parse', line);
+    parsing_error('couldn''t find node to parse', line, node);
 end
 node_to_parse = node;
 end
