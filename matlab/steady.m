@@ -11,7 +11,7 @@ function steady()
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2001-2018 Dynare Team
+% Copyright (C) 2001-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -28,7 +28,7 @@ function steady()
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-global M_ oo_ options_ ys0_
+global M_ oo_ options_
 
 test_for_deep_parameters_calibration(M_);
 
@@ -36,12 +36,11 @@ if options_.steadystate_flag && options_.homotopy_mode
     error('STEADY: Can''t use homotopy when providing a steady state external file');
 end
 
-
 % Keep of a copy of M_.Sigma_e
 Sigma_e = M_.Sigma_e;
 
 % Set M_.Sigma_e=0 (we compute the *deterministic* steady state)
-M_.Sigma_e = zeros(size(Sigma_e));
+M_.Sigma_e(:,:) = 0;
 
 info = 0;
 switch options_.homotopy_mode
@@ -59,16 +58,16 @@ if info(1)
     disp('WARNING: homotopy step was not completed')
     disp('The last values for which a solution was found are:')
     for i=1:length(ip)
-        disp(sprintf('%12s %12.6f',char(M_.param_names(hv(ip(i),2))), ...
-                     M_.params(hv(ip(i),2))))
+        fprintf('%12s %12.6f\n',char(M_.param_names(hv(ip(i),2))), ...
+            M_.params(hv(ip(i),2)))
     end
     for i=1:length(ix)
-        disp(sprintf('%12s %12.6f',char(M_.exo_names(hv(ix(i),2))), ...
-                     oo_.exo_steady_state(hv(ix(i),2))))
+        fprintf('%12s %12.6f\n',char(M_.exo_names(hv(ix(i),2))), ...
+            oo_.exo_steady_state(hv(ix(i),2)))
     end
     for i=1:length(ixd)
-        disp(sprintf('%12s %12.6f',char(M_.exo_det_names(hv(ixd(i),2))), ...
-                     oo_.exo_det_steady_state(hv(ixd(i),2))))
+        fprintf('%12s %12.6f\n',char(M_.exo_det_names(hv(ixd(i),2))), ...
+            oo_.exo_det_steady_state(hv(ixd(i),2)))
     end
 
     if options_.homotopy_force_continue
@@ -78,8 +77,7 @@ if info(1)
     end
 end
 
-[steady_state,M_.params,info] = steady_(M_,options_,oo_);
-oo_.steady_state = steady_state;
+[oo_.steady_state,M_.params,info] = steady_(M_,options_,oo_);
 
 if info(1) == 0
     if options_.noprint == 0
@@ -87,7 +85,7 @@ if info(1) == 0
     end
 else
     if options_.noprint == 0
-        if ~isempty(steady_state)
+        if ~isempty(oo_.steady_state)
             resid;
         else
             skipline()
@@ -98,7 +96,7 @@ else
     if options_.debug
         fprintf('\nThe steady state computation failed. It terminated with the following values:\n')
         for i=1:M_.orig_endo_nbr
-            fprintf('%s \t\t %g\n', M_.endo_names{i}, steady_state(i));
+            fprintf('%s \t\t %g\n', M_.endo_names{i}, oo_.steady_state(i));
         end
     end
     print_info(info,options_.noprint, options_);
