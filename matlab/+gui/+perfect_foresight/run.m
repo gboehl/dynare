@@ -47,7 +47,7 @@ jm = loadjson(json, 'SimplifyCell', 0);
 %% INITVAL instructions
 % initialize exogenous shocks to zero and compute initial steady state
 options_.initval_file = 0;
-oo_.exo_steady_state(1:jm.exonum) = 0;
+oo_.exo_steady_state(:, 1) = 0;
 if M_.exo_nbr > 0
     oo_.exo_simul = ones(M_.maximum_lag,1)*oo_.exo_steady_state';
 end
@@ -65,7 +65,7 @@ end
 ys0_= oo_.steady_state;
 ex0_ = oo_.exo_steady_state;
 if jm.permanentshockexist == 0
-    oo_.exo_steady_state(1:jm.exonum) = 0;
+    oo_.exo_steady_state(:, 1) = 0;
 else
     for exoiter = 1:length(jm.permanentshocksdescription)
         currentshock = jm.permanentshocksdescription(exoiter);
