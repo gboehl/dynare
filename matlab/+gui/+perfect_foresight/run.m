@@ -93,10 +93,16 @@ if nargout == 1
 end
 
 %% SHOCKS instructions (for transitory shocks)
-if jm.transitoryshockexist == 1
-    for exotriter = 1:length(jm.shocksdescription)
-        currenttrshock = jm.shocksdescription(exotriter);
-        M_.det_shocks = [ M_.det_shocks;struct('exo_det',0,'exo_id',(currenttrshock{1}.shockindex+1),'multiplicative',0,'periods',currenttrshock{1}.shockstartperiod:currenttrshock{1}.shockendperiod,'value',currenttrshock{1}.shockvalue) ];
+if isfield(jm, 'transitory_shocks') && ~isempty(jm.transitory_shocks)
+    for i = 1:length(jm.transitory_shocks)
+        s = jm.transitory_shocks(i);
+        M_.det_shocks = [ ...
+            M_.det_shocks; ...
+            struct('exo_det', 0, ...
+            'exo_id', s.index, ...
+            'multiplicative', 0, ...
+            'periods', s.start_period:s.end_period, ...
+            'value', s.value)];
     end
     M_.exo_det_length = 0;
 end
