@@ -62,6 +62,7 @@ end
 
 %% ENDVAL instructions
 % initialize exogenous shocks to zero and compute final ss unless there is a permanent shock
+M_.det_shocks = [];
 ys0_= oo_.steady_state;
 ex0_ = oo_.exo_steady_state;
 if jm.permanentshockexist == 0
