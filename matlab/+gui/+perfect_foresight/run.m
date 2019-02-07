@@ -65,17 +65,26 @@ end
 M_.det_shocks = [];
 ys0_= oo_.steady_state;
 ex0_ = oo_.exo_steady_state;
-if jm.permanentshockexist == 0
-    oo_.exo_steady_state(:, 1) = 0;
-else
-    for exoiter = 1:length(jm.permanentshocksdescription)
-        currentshock = jm.permanentshocksdescription(exoiter);
-        oo_.exo_steady_state(currentshock{1}.shockindex+1) = currentshock{1}.shockvalue;
-        if currentshock{1}.shockstartperiod > 1
-            %in case the permanent shock does not start at the initial period, we add a shocks block to mask the unnecessary periods
-            M_.det_shocks = [ M_.det_shocks;struct('exo_det',0,'exo_id',(currentshock{1}.shockindex+1),'multiplicative',0,'periods',1:(currentshock{1}.shockstartperiod-1),'value',0.0) ];
+permanent_shock_exists = isfield(jm, 'permanent_shocks') && ~isempty(jm.permanent_shocks);
+if permanent_shock_exists
+    for i = 1:length(jm.permanent_shocks)
+        s = jm.permanent_shocks(i);
+        oo_.exo_steady_state(s.index) = s.value;
+        if s.start_period > 1
+            % if the permanent shock does not start at the initial period
+            % add a shocks block to mask the unnecessary periods
+            M_.det_shocks = [ ...
+                M_.det_shocks; ...
+                struct(...
+                'exo_det', 0, ...
+                'exo_id', s.index, ...
+                'multiplicative', 0, ...
+                'periods', 1:s.start_period, ...
+                'value', 0)];
         end
     end
+else
+    oo_.exo_steady_state(:, 1) = 0;
 end
 steady;
 savedpermanentSS = oo_.steady_state;
@@ -175,7 +184,7 @@ if jm.nonanticipatedshockexist == 1 || jm.delayexist == 1
             oo_.exo_simul = [zeros(1, colexo); ooexosaved(currentperiod+1:end, :)];
 
             % fill oo_.exo_simul until it has the correct size depending on of there are permanent shocks or not
-            if jm.permanentshockexist==1
+            if permanent_shock_exists
                 % if there is a permanent shock, fill with last value of ooexosaved
                 oo_.exo_simul = [oo_.exo_simul; ones(rowexo-size(oo_.exo_simul, 1), 1)*ooexosaved(end, :)];
             else
@@ -185,7 +194,7 @@ if jm.nonanticipatedshockexist == 1 || jm.delayexist == 1
 
             if nonanticip{rowindex+1}{1} ~= currentperiod
                 % when we have tracked all the non-anticipated/delayed shocks for the current period, we can simulate
-                if jm.permanentshockexist == 1
+                if permanent_shock_exists
                     % if there are permanent shocks, fill oo_.endo with finalSS
                     oo_.endo_simul = savedpermanentSS*ones(1, options_.periods+2);
                 else
