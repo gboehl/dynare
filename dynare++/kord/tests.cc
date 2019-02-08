@@ -287,7 +287,7 @@ TestRunnable::korder_unfold_fold(int maxdim, int unfold_dim,
   for (int d = 1; d <= maxdim; d++)
     {
       printf("\ttensor fill for dim=%d is:   %3.2f %%\n",
-             d, c.get(Symmetry(d))->getFillFactor()*100.0);
+             d, c.get(Symmetry{d})->getFillFactor()*100.0);
     }
   Journal jr("out.txt");
   KOrder kord(nstat, npred, nboth, nforw, c, gy, gu, v, jr);

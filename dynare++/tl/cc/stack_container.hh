@@ -284,8 +284,8 @@ public:
   multAndAdd(int dim, const TensorContainer<FSSparseTensor> &c,
              FGSTensor &out) const
   {
-    if (c.check(Symmetry(dim)))
-      multAndAdd(*(c.get(Symmetry(dim))), out);
+    if (c.check(Symmetry{dim}))
+      multAndAdd(*(c.get(Symmetry{dim})), out);
   }
   void multAndAdd(const FSSparseTensor &t, FGSTensor &out) const;
   void multAndAdd(int dim, const FGSContainer &c, FGSTensor &out) const;
@@ -314,8 +314,8 @@ public:
   multAndAdd(int dim, const TensorContainer<FSSparseTensor> &c,
              UGSTensor &out) const
   {
-    if (c.check(Symmetry(dim)))
-      multAndAdd(*(c.get(Symmetry(dim))), out);
+    if (c.check(Symmetry{dim}))
+      multAndAdd(*(c.get(Symmetry{dim})), out);
   }
   void multAndAdd(const FSSparseTensor &t, UGSTensor &out) const;
   void multAndAdd(int dim, const UGSContainer &c, UGSTensor &out) const;
@@ -370,12 +370,12 @@ public:
       else
         return _Stype::matrix;
     if (i == 2)
-      if (s == Symmetry(1, 0, 0, 0))
+      if (s == Symmetry{1, 0, 0, 0})
         return _Stype::unit;
       else
         return _Stype::zero;
     if (i == 3)
-      if (s == Symmetry(0, 1, 0, 0))
+      if (s == Symmetry{0, 1, 0, 0})
         return _Stype::unit;
       else
         return _Stype::zero;
@@ -446,19 +446,19 @@ public:
   getType(int i, const Symmetry &s) const override
   {
     if (i == 0)
-      if (s[2] > 0 || s == Symmetry(0, 0, 0, 1))
+      if (s[2] > 0 || s == Symmetry{0, 0, 0, 1})
         return _Stype::zero;
       else
         return _Stype::matrix;
     if (i == 1)
-      if (s == Symmetry(0, 0, 1, 0))
+      if (s == Symmetry{0, 0, 1, 0})
         return _Stype::unit;
       else
         return _Stype::zero;
     if (i == 2)
       return _Stype::zero;
     if (i == 3)
-      if (s == Symmetry(0, 0, 0, 1))
+      if (s == Symmetry{0, 0, 0, 1})
         return _Stype::unit;
       else
         return _Stype::zero;

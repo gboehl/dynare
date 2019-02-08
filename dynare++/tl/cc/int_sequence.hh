@@ -27,10 +27,16 @@
 #include <vector>
 #include <memory>
 #include <algorithm>
+#include <initializer_list>
 
 /* The implementation of |IntSequence| is straightforward. It has a pointer
    |data|, an |offset| integer indicating the beginning of the data relatively
-   to the pointer and a |length| of the sequence. */
+   to the pointer and a |length| of the sequence.
+
+   WARNING: IntSequence(n) and IntSequence{n} are not the same. The former
+   initializes a sequence of length n, while the latter constructs a sequence
+   of a single element equal to n. This is similar to the behaviour of
+   std::vector. */
 
 class Symmetry;
 class IntSequence
@@ -39,42 +45,52 @@ class IntSequence
   int length;
   int offset{0};
 public:
-  /* We have a constructor allocating a given length of data, constructor
-     allocating and then initializing all members to a given number, a copy
-     constructor, a conversion from |vector<int>|, a subsequence
-     constructor, a constructor used for calculating implied symmetry from
-     a more general symmetry and one equivalence class (see |Symmetry|
-     class). Finally we have a constructor which unfolds a sequence with
-     respect to a given symmetry and constructor which inserts a given
-     number to the ordered sequence or given number to a given position. */
-
+  // Constructor allocating a given length of (uninitialized) data
   explicit IntSequence(int l)
     : data{new int[l], [](int *arr) { delete[] arr; }}, length{l}
   {
   }
+  // Constructor allocating and then initializing all members to a given number
   IntSequence(int l, int n)
     : data{new int[l], [](int *arr) { delete[] arr; }}, length{l}
   {
     std::fill_n(data.get(), length, n);
   }
+  /* Constructor using an initializer list (gives the contents of the
+     IntSequence, similarly to std::vector) */
+  IntSequence(std::initializer_list<int> init)
+    : data{new int[init.size()], [](int *arr) { delete[] arr; }},
+      length{static_cast<int>(init.size())}
+  {
+    std::copy(init.begin(), init.end(), data.get());
+  }
+  // Copy constructor
   IntSequence(const IntSequence &s)
     : data{new int[s.length], [](int *arr) { delete[] arr; }}, length{s.length}
   {
     std::copy_n(s.data.get()+s.offset, length, data.get());
   }
+  // Move constructor
   IntSequence(IntSequence &&s) = default;
+  // Subsequence constructor (which shares the data pointer)
   IntSequence(IntSequence &s, int i1, int i2)
     : data{s.data}, length{i2-i1}, offset{s.offset+i1}
   {
   }
+  // Subsequence constructor (without pointer sharing)
   IntSequence(const IntSequence &s, int i1, int i2)
     : data{new int[i2-i1], [](int *arr) { delete[] arr; }}, length{i2-i1}
   {
     std::copy_n(s.data.get()+s.offset+i1, length, data.get());
   }
+  /* Constructor used for calculating implied symmetry from a more general
+     symmetry and one equivalence class */
   IntSequence(const Symmetry &sy, const std::vector<int> &se);
+  // Unfolds a given integer sequence with respect to a given symmetry
   IntSequence(const Symmetry &sy, const IntSequence &se);
+  // Inserts an element in an ordered sequence
   IntSequence(int i, const IntSequence &s);
+  // Inserts an element at a given position
   IntSequence(int i, const IntSequence &s, int pos);
 
   const IntSequence &operator=(const IntSequence &s);

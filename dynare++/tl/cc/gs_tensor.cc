@@ -9,7 +9,7 @@
    |@<|TensorDimens| class declaration@>| for details. */
 TensorDimens::TensorDimens(const IntSequence &ss, const IntSequence &coor)
   : nvs(ss),
-    sym(ss.size(), ""),
+    sym(ss.size()),
     nvmax(coor.size(), 0)
 {
   TL_RAISE_IF(!coor.isSorted(),

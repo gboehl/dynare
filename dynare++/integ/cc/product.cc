@@ -10,7 +10,7 @@
 
 prodpit::prodpit(const ProductQuadrature &q, int j0, int l)
   : prodq(q), level(l), npoints(q.uquad.numPoints(l)),
-    jseq{q.dimen(), 0},
+    jseq(q.dimen(), 0),
     end_flag(false),
     sig{q.dimen()},
     p{q.dimen()}

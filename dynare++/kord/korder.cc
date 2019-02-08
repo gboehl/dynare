@@ -239,9 +239,9 @@ KOrder::KOrder(int num_stat, int num_pred, int num_both, int num_forw,
     _uGstack(&_ugs, ypart.nys(), nu),
     _fGstack(&_fgs, ypart.nys(), nu),
     _um(maxk, v), _fm(_um), f(fcont),
-    matA(*(f.get(Symmetry(1))), _uZstack.getStackSizes(), gy, ypart),
-    matS(*(f.get(Symmetry(1))), _uZstack.getStackSizes(), gy, ypart),
-    matB(*(f.get(Symmetry(1))), _uZstack.getStackSizes()),
+    matA(*(f.get(Symmetry{1})), _uZstack.getStackSizes(), gy, ypart),
+    matS(*(f.get(Symmetry{1})), _uZstack.getStackSizes(), gy, ypart),
+    matB(*(f.get(Symmetry{1})), _uZstack.getStackSizes()),
     journal(jr)
 {
   KORD_RAISE_IF(gy.ncols() != ypart.nys(),
@@ -265,20 +265,20 @@ KOrder::KOrder(int num_stat, int num_pred, int num_both, int num_forw,
   // put $g_y$ and $g_u$ to the container
   /* Note that $g_\sigma$ is zero by the nature and we do not insert it to
      the container. We insert a new physical copies. */
-  UGSTensor *tgy = new UGSTensor(ny, TensorDimens(Symmetry(1, 0, 0, 0), nvs));
+  UGSTensor *tgy = new UGSTensor(ny, TensorDimens(Symmetry{1, 0, 0, 0}, nvs));
   tgy->getData() = gy.getData();
   insertDerivative<unfold>(tgy);
-  UGSTensor *tgu = new UGSTensor(ny, TensorDimens(Symmetry(0, 1, 0, 0), nvs));
+  UGSTensor *tgu = new UGSTensor(ny, TensorDimens(Symmetry{0, 1, 0, 0}, nvs));
   tgu->getData() = gu.getData();
   insertDerivative<unfold>(tgu);
 
   // put $G_y$, $G_u$ and $G_{u'}$ to the container
   /* Also note that since $g_\sigma$ is zero, so $G_\sigma$. */
-  UGSTensor *tGy = faaDiBrunoG<unfold>(Symmetry(1, 0, 0, 0));
+  UGSTensor *tGy = faaDiBrunoG<unfold>(Symmetry{1, 0, 0, 0});
   G<unfold>().insert(tGy);
-  UGSTensor *tGu = faaDiBrunoG<unfold>(Symmetry(0, 1, 0, 0));
+  UGSTensor *tGu = faaDiBrunoG<unfold>(Symmetry{0, 1, 0, 0});
   G<unfold>().insert(tGu);
-  UGSTensor *tGup = faaDiBrunoG<unfold>(Symmetry(0, 0, 1, 0));
+  UGSTensor *tGup = faaDiBrunoG<unfold>(Symmetry{0, 0, 1, 0});
   G<unfold>().insert(tGup);
 }
 
@@ -306,7 +306,7 @@ KOrder::sylvesterSolve<KOrder::unfold>(ctraits<unfold>::Ttensor &der) const
     {
       KORD_RAISE_IF(!der.isFinite(),
                     "RHS of Sylverster is not finite");
-      TwoDMatrix gs_y(*(gs<unfold>().get(Symmetry(1, 0, 0, 0))));
+      TwoDMatrix gs_y(*(gs<unfold>().get(Symmetry{1, 0, 0, 0})));
       GeneralSylvester sylv(der.getSym()[0], ny, ypart.nys(),
                             ypart.nstat+ypart.npred,
                             matA.getData(), matB.getData(),

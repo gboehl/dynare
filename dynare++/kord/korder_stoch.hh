@@ -87,7 +87,7 @@ IntegDerivs<t>::IntegDerivs(int r, const IntSequence &nvs, const _Tgss &g, const
       for (int i = 0; i <= d; i++)
         {
           int p = d-i;
-          Symmetry sym(i, 0, 0, p);
+          Symmetry sym{i, 0, 0, p};
           _Ttensor *ten = new _Ttensor(r, TensorDimens(sym, nvs));
 
           // calculate derivative $h_{y^i\sigma^p}$
@@ -105,14 +105,14 @@ IntegDerivs<t>::IntegDerivs(int r, const IntSequence &nvs, const _Tgss &g, const
               for (int m = 0; i+m+n+k <= maxd; m++, mfac *= m)
                 {
                   double mult = (pow(at_sigma, m)*povern)/mfac;
-                  Symmetry sym_mn(i, m+n, 0, k);
+                  Symmetry sym_mn{i, m+n, 0, k};
                   if (m+n == 0 && g.check(sym_mn))
                     ten->add(mult, *(g.get(sym_mn)));
                   if (m+n > 0 && KOrder::is_even(m+n) && g.check(sym_mn))
                     {
                       _Ttensor gtmp(*(g.get(sym_mn)));
                       gtmp.mult(mult);
-                      gtmp.contractAndAdd(1, *ten, *(mom.get(Symmetry(m+n))));
+                      gtmp.contractAndAdd(1, *ten, *(mom.get(Symmetry{m+n})));
                     }
                 }
             }
@@ -187,8 +187,8 @@ StochForwardDerivs<t>::StochForwardDerivs(const PartitionY &ypart, int nu,
       for (int i = 0; i <= d; i++)
         {
           int k = d-i;
-          if (g_int.check(Symmetry(i, 0, 0, k)))
-            ten->addSubTensor(*(g_int.get(Symmetry(i, 0, 0, k))));
+          if (g_int.check(Symmetry{i, 0, 0, k}))
+            ten->addSubTensor(*(g_int.get(Symmetry{i, 0, 0, k})));
         }
       g_int_sym.insert(ten);
     }
@@ -224,13 +224,13 @@ StochForwardDerivs<t>::StochForwardDerivs(const PartitionY &ypart, int nu,
   true_nvs[1] = nu; true_nvs[2] = nu;
   for (int d = 1; d <= maxd; d++)
     {
-      if (g_int_cent.check(Symmetry(d)))
+      if (g_int_cent.check(Symmetry{d}))
         {
           for (int i = 0; i <= d; i++)
             {
-              Symmetry sym(i, 0, 0, d-i);
+              Symmetry sym{i, 0, 0, d-i};
               IntSequence coor(sym, pp);
-              _Ttensor *ten = new _Ttensor(*(g_int_cent.get(Symmetry(d))), ss, coor,
+              _Ttensor *ten = new _Ttensor(*(g_int_cent.get(Symmetry{d})), ss, coor,
                                            TensorDimens(sym, true_nvs));
               this->insert(ten);
             }
@@ -274,7 +274,7 @@ GXContainer<_Ttype>::getType(int i, const Symmetry &s) const
   if (i == 2)
     return _Stype::zero;
   if (i == 3)
-    if (s == Symmetry(0, 0, 0, 1))
+    if (s == Symmetry{0, 0, 0, 1})
       return _Stype::unit;
     else
       return _Stype::zero;
@@ -319,12 +319,12 @@ ZXContainer<_Ttype>::getType(int i, const Symmetry &s) const
     else
       return _Stype::matrix;
   if (i == 2)
-    if (s == Symmetry(1, 0, 0, 0))
+    if (s == Symmetry{1, 0, 0, 0})
       return _Stype::unit;
     else
       return _Stype::zero;
   if (i == 3)
-    if (s == Symmetry(0, 1, 0, 0))
+    if (s == Symmetry{0, 1, 0, 0})
       return _Stype::unit;
     else
       return _Stype::zero;

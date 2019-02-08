@@ -248,7 +248,7 @@ KordpDynare::populateDerivativesContainer(const TwoDMatrix &g, int ord, const st
     }
 
   // md container
-  md.remove(Symmetry(ord));
+  md.remove(Symmetry{ord});
   md.insert(mdTi);
   // No need to delete mdTi, it will be deleted by TensorContainer destructor
 }

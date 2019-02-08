@@ -116,7 +116,7 @@ SparseTensor::print() const
 
 FSSparseTensor::FSSparseTensor(int d, int nvar, int r)
   : SparseTensor(d, r, FFSTensor::calcMaxOffset(nvar, d)),
-    nv(nvar), sym(d)
+    nv(nvar), sym{d}
 {
 }
 

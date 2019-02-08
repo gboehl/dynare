@@ -121,7 +121,7 @@ FGSTensor *
 Monom1Vector::deriv(int dim) const
 {
   FGSTensor *res
-    = new FGSTensor(len, TensorDimens(Symmetry(dim), IntSequence(1, nx)));
+    = new FGSTensor(len, TensorDimens(Symmetry{dim}, IntSequence(1, nx)));
   for (Tensor::index it = res->begin(); it != res->end(); ++it)
     {
       Vector outcol{res->getCol(*it)};
@@ -229,7 +229,7 @@ Monom2Vector::deriv(int maxdim) const
       for (int ydim = 0; ydim <= dim; ydim++)
         {
           int udim = dim - ydim;
-          Symmetry s(ydim, udim);
+          Symmetry s{ydim, udim};
           res->insert(deriv(s));
         }
     }
@@ -409,7 +409,7 @@ Monom4Vector::deriv(int dim) const
   FFSTensor dummy(0, nx1+nx2+nx3+nx4, dim);
   for (Tensor::index run = dummy.begin(); run != dummy.end(); ++run)
     {
-      Symmetry ind_sym(0, 0, 0, 0);
+      Symmetry ind_sym{0, 0, 0, 0};
       IntSequence ind(run.getCoor());
       for (int i = 0; i < ind.size(); i++)
         {

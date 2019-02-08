@@ -294,18 +294,18 @@ extern "C" {
                 for (int i = 0; i < 12; ++i)
                   c_fieldnames[i] = fieldnames[i].c_str();
                 plhs[ii] = mxCreateStructMatrix(1, 1, 12, c_fieldnames);
-                copy_derivatives(plhs[ii], Symmetry(1, 0, 0, 0), derivs, "gy");
-                copy_derivatives(plhs[ii], Symmetry(0, 1, 0, 0), derivs, "gu");
-                copy_derivatives(plhs[ii], Symmetry(2, 0, 0, 0), derivs, "gyy");
-                copy_derivatives(plhs[ii], Symmetry(0, 2, 0, 0), derivs, "guu");
-                copy_derivatives(plhs[ii], Symmetry(1, 1, 0, 0), derivs, "gyu");
-                copy_derivatives(plhs[ii], Symmetry(0, 0, 0, 2), derivs, "gss");
-                copy_derivatives(plhs[ii], Symmetry(3, 0, 0, 0), derivs, "gyyy");
-                copy_derivatives(plhs[ii], Symmetry(0, 3, 0, 0), derivs, "guuu");
-                copy_derivatives(plhs[ii], Symmetry(2, 1, 0, 0), derivs, "gyyu");
-                copy_derivatives(plhs[ii], Symmetry(1, 2, 0, 0), derivs, "gyuu");
-                copy_derivatives(plhs[ii], Symmetry(1, 0, 0, 2), derivs, "gyss");
-                copy_derivatives(plhs[ii], Symmetry(0, 1, 0, 2), derivs, "guss");
+                copy_derivatives(plhs[ii], Symmetry{1, 0, 0, 0}, derivs, "gy");
+                copy_derivatives(plhs[ii], Symmetry{0, 1, 0, 0}, derivs, "gu");
+                copy_derivatives(plhs[ii], Symmetry{2, 0, 0, 0}, derivs, "gyy");
+                copy_derivatives(plhs[ii], Symmetry{0, 2, 0, 0}, derivs, "guu");
+                copy_derivatives(plhs[ii], Symmetry{1, 1, 0, 0}, derivs, "gyu");
+                copy_derivatives(plhs[ii], Symmetry{0, 0, 0, 2}, derivs, "gss");
+                copy_derivatives(plhs[ii], Symmetry{3, 0, 0, 0}, derivs, "gyyy");
+                copy_derivatives(plhs[ii], Symmetry{0, 3, 0, 0}, derivs, "guuu");
+                copy_derivatives(plhs[ii], Symmetry{2, 1, 0, 0}, derivs, "gyyu");
+                copy_derivatives(plhs[ii], Symmetry{1, 2, 0, 0}, derivs, "gyuu");
+                copy_derivatives(plhs[ii], Symmetry{1, 0, 0, 2}, derivs, "gyss");
+                copy_derivatives(plhs[ii], Symmetry{0, 1, 0, 2}, derivs, "guss");
               }
           }
       }

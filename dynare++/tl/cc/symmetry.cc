@@ -3,7 +3,7 @@
 #include "symmetry.hh"
 #include "permutation.hh"
 
-#include <cstdio>
+#include <iostream>
 
 /* Construct symmetry as numbers of successively equal items in the sequence. */
 
@@ -57,26 +57,16 @@ Symmetry::isFull() const
    beginning as subordinal |symiterator|. */
 
 symiterator::symiterator(SymmetrySet &ss)
-  : s(ss), subit(nullptr), subs(nullptr), end_flag(false)
+  : s(ss), end_flag(false)
 {
   s.sym()[0] = 0;
   if (s.size() == 2)
-    {
-      s.sym()[1] = s.dimen();
-    }
+    s.sym()[1] = s.dimen();
   else
     {
-      subs = new SymmetrySet(s, s.dimen());
-      subit = new symiterator(*subs);
+      subs = std::make_unique<SymmetrySet>(s, s.dimen());
+      subit = std::make_unique<symiterator>(*subs);
     }
-}
-
-symiterator::~symiterator()
-{
-  if (subit)
-    delete subit;
-  if (subs)
-    delete subs;
 }
 
 /* Here we move to the next symmetry. We do so only, if we are not at
@@ -101,11 +91,9 @@ symiterator::operator++()
           ++(*subit);
           if (subit->isEnd())
             {
-              delete subit;
-              delete subs;
               s.sym()[0]++;
-              subs = new SymmetrySet(s, s.dimen()-s.sym()[0]);
-              subit = new symiterator(*subs);
+              subs = std::make_unique<SymmetrySet>(s, s.dimen()-s.sym()[0]);
+              subit = std::make_unique<symiterator>(*subs);
             }
         }
       if (s.sym()[0] == s.dimen()+1)
@@ -117,9 +105,7 @@ symiterator::operator++()
 InducedSymmetries::InducedSymmetries(const Equivalence &e, const Symmetry &s)
 {
   for (const auto & i : e)
-    {
-      push_back(Symmetry(s, i));
-    }
+    emplace_back(s, i);
 }
 
 // |InducedSymmetries| permuted constructor code
@@ -129,7 +115,7 @@ InducedSymmetries::InducedSymmetries(const Equivalence &e, const Permutation &p,
   for (int i = 0; i < e.numClasses(); i++)
     {
       auto it = e.find(p.getMap()[i]);
-      push_back(Symmetry(s, *it));
+      emplace_back(s, *it);
     }
 }
 
@@ -138,7 +124,7 @@ InducedSymmetries::InducedSymmetries(const Equivalence &e, const Permutation &p,
 void
 InducedSymmetries::print() const
 {
-  printf("Induced symmetries: %lu\n", (unsigned long) size());
+  std::cout << "Induced symmetries: " << size() << std::endl;
   for (unsigned int i = 0; i < size(); i++)
     operator[](i).print();
 }

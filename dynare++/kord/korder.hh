@@ -461,7 +461,7 @@ template<int t>
 void
 KOrder::recover_y(int i)
 {
-  Symmetry sym(i, 0, 0, 0);
+  Symmetry sym{i, 0, 0, 0};
   JournalRecordPair pa(journal);
   pa << "Recovering symmetry " << sym << endrec;
 
@@ -475,7 +475,7 @@ KOrder::recover_y(int i)
 
   insertDerivative<t>(g_yi);
 
-  _Ttensor *gss_y = gss<t>().get(Symmetry(1, 0, 0, 0));
+  _Ttensor *gss_y = gss<t>().get(Symmetry{1, 0, 0, 0});
   gs<t>().multAndAdd(*gss_y, *G_yi);
   _Ttensor *gss_yi = gss<t>().get(sym);
   gs<t>().multAndAdd(*gss_yi, *G_yi);
@@ -496,7 +496,7 @@ template <int t>
 void
 KOrder::recover_yu(int i, int j)
 {
-  Symmetry sym(i, j, 0, 0);
+  Symmetry sym{i, j, 0, 0};
   JournalRecordPair pa(journal);
   pa << "Recovering symmetry " << sym << endrec;
 
@@ -508,7 +508,7 @@ KOrder::recover_yu(int i, int j)
   matA.multInv(*g_yiuj);
   insertDerivative<t>(g_yiuj);
 
-  gs<t>().multAndAdd(*(gss<t>().get(Symmetry(1, 0, 0, 0))), *G_yiuj);
+  gs<t>().multAndAdd(*(gss<t>().get(Symmetry{1, 0, 0, 0})), *G_yiuj);
 }
 
 /* Here we solve
@@ -535,7 +535,7 @@ template <int t>
 void
 KOrder::recover_ys(int i, int j)
 {
-  Symmetry sym(i, 0, 0, j);
+  Symmetry sym{i, 0, 0, j};
   JournalRecordPair pa(journal);
   pa << "Recovering symmetry " << sym << endrec;
 
@@ -595,7 +595,7 @@ template <int t>
 void
 KOrder::recover_yus(int i, int j, int k)
 {
-  Symmetry sym(i, j, 0, k);
+  Symmetry sym{i, j, 0, k};
   JournalRecordPair pa(journal);
   pa << "Recovering symmetry " << sym << endrec;
 
@@ -662,7 +662,7 @@ template <int t>
 void
 KOrder::recover_s(int i)
 {
-  Symmetry sym(0, 0, 0, i);
+  Symmetry sym{0, 0, 0, i};
   JournalRecordPair pa(journal);
   pa << "Recovering symmetry " << sym << endrec;
 
@@ -710,7 +710,7 @@ KOrder::fillG(int i, int j, int k)
     {
       if (is_even(k-m))
         {
-          _Ttensor *G_yiujupms = faaDiBrunoG<t>(Symmetry(i, j, m, k-m));
+          _Ttensor *G_yiujupms = faaDiBrunoG<t>(Symmetry{i, j, m, k-m});
           G<t>().insert(G_yiujupms);
         }
     }
@@ -727,12 +727,12 @@ template <int t>
 _Ttensor *
 KOrder::calcD_ijk(int i, int j, int k) const
 {
-  _Ttensor *res =       new _Ttensor(ny, TensorDimens(Symmetry(i, j, 0, 0), nvs));
+  _Ttensor *res =       new _Ttensor(ny, TensorDimens(Symmetry{i, j, 0, 0}, nvs));
   res->zeros();
   if (is_even(k))
     {
-      _Ttensor *tmp = faaDiBrunoZ<t>(Symmetry(i, j, k, 0));
-      tmp->contractAndAdd(2, *res, *(m<t>().get(Symmetry(k))));
+      _Ttensor *tmp = faaDiBrunoZ<t>(Symmetry{i, j, k, 0});
+      tmp->contractAndAdd(2, *res, *(m<t>().get(Symmetry{k})));
       delete tmp;
     }
   return res;
@@ -749,13 +749,13 @@ template <int t>
 _Ttensor *
 KOrder::calcE_ijk(int i, int j, int k) const
 {
-  _Ttensor *res = new _Ttensor(ny, TensorDimens(Symmetry(i, j, 0, 0), nvs));
+  _Ttensor *res = new _Ttensor(ny, TensorDimens(Symmetry{i, j, 0, 0}, nvs));
   res->zeros();
   for (int n = 2; n <= k-1; n += 2)
     {
-      _Ttensor *tmp = faaDiBrunoZ<t>(Symmetry(i, j, n, k-n));
+      _Ttensor *tmp = faaDiBrunoZ<t>(Symmetry{i, j, n, k-n});
       tmp->mult((double) (Tensor::noverk(k, n)));
-      tmp->contractAndAdd(2, *res, *(m<t>().get(Symmetry(n))));
+      tmp->contractAndAdd(2, *res, *(m<t>().get(Symmetry{n})));
       delete tmp;
     }
   return res;
@@ -861,7 +861,7 @@ KOrder::check(int dim) const
   // check for $F_{y^iu^j}=0
   for (int i = 0; i <= dim; i++)
     {
-      Symmetry sym(dim-i, i, 0,  0);
+      Symmetry sym{dim-i, i, 0,  0};
       _Ttensor *r = faaDiBrunoZ<t>(sym);
       double err = r->getData().getMax();
       JournalRecord(journal) << "\terror for symmetry " << sym << "\tis " << err << endrec;
@@ -879,7 +879,7 @@ KOrder::check(int dim) const
       int k = (*si)[2];
       if (i+j > 0 && k > 0)
         {
-          Symmetry sym(i, j, 0, k);
+          Symmetry sym{i, j, 0, k};
           _Ttensor *r = faaDiBrunoZ<t>(sym);
           _Ttensor *D_ijk = calcD_ijk<t>(i, j, k);
           r->add(1.0, *D_ijk);
@@ -894,7 +894,7 @@ KOrder::check(int dim) const
     }
 
   // check for $F_{\sigma^i}+D_i+E_i=0
-  _Ttensor *r = faaDiBrunoZ<t>(Symmetry(0, 0, 0, dim));
+  _Ttensor *r = faaDiBrunoZ<t>(Symmetry{0, 0, 0, dim});
   _Ttensor *D_k = calcD_k<t>(dim);
   r->add(1.0, *D_k);
   delete D_k;
@@ -902,7 +902,7 @@ KOrder::check(int dim) const
   r->add(1.0, *E_k);
   delete E_k;
   double err = r->getData().getMax();
-  Symmetry sym(0, 0, 0, dim);
+  Symmetry sym{0, 0, 0, dim};
   JournalRecord(journal) << "\terror for symmetry " << sym << "\tis " << err << endrec;
   if (err > maxerror)
     maxerror = err;

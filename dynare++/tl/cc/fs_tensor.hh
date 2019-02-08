@@ -73,7 +73,7 @@ public:
   Symmetry
   getSym() const
   {
-    return Symmetry(dimen());
+    return Symmetry{dimen()};
   }
 
   int getOffset(const IntSequence &v) const override;
@@ -117,7 +117,7 @@ public:
   Symmetry
   getSym() const
   {
-    return Symmetry(dimen());
+    return Symmetry{dimen()};
   }
 
   int getOffset(const IntSequence &v) const override;

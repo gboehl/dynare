@@ -168,14 +168,14 @@ public:
         const _Stype &xpow = pwp.getNext((const _Stype *) nullptr);
         for (int j = 0; j <= tp.maxdim-i; j++)
           {
-            if (tp.check(Symmetry(i+j)))
+            if (tp.check(Symmetry{i+j}))
               {
                 // initialize |ten| of dimension |j|
                 /* The pointer |ten| is either a new tensor or got from |this| container. */
                 _Ttype *ten;
-                if (_Tparent::check(Symmetry(j)))
+                if (_Tparent::check(Symmetry{j}))
                   {
-                    ten = _Tparent::get(Symmetry(j));
+                    ten = _Tparent::get(Symmetry{j});
                   }
                 else
                   {
@@ -184,9 +184,9 @@ public:
                     insert(ten);
                   }
 
-                Symmetry sym(i, j);
+                Symmetry sym{i, j};
                 IntSequence coor(sym, pp);
-                _TGStype slice(*(tp.get(Symmetry(i+j))), ss, coor, TensorDimens(sym, ss));
+                _TGStype slice(*(tp.get(Symmetry{i+j})), ss, coor, TensorDimens(sym, ss));
                 slice.mult(Tensor::noverk(i+j, j));
                 _TGStype tmp(*ten);
                 slice.contractAndAdd(0, tmp, xpow);
@@ -200,15 +200,15 @@ public:
        simple addition. */
     for (int j = 0; j <= tp.maxdim; j++)
       {
-        if (tp.check(Symmetry(j)))
+        if (tp.check(Symmetry{j}))
           {
 
             // initialize |ten| of dimension |j|
             /* Same code as above */
             _Ttype *ten;
-            if (_Tparent::check(Symmetry(j)))
+            if (_Tparent::check(Symmetry{j}))
               {
-                ten = _Tparent::get(Symmetry(j));
+                ten = _Tparent::get(Symmetry{j});
               }
             else
               {
@@ -217,9 +217,9 @@ public:
                 insert(ten);
               }
 
-            Symmetry sym(0, j);
+            Symmetry sym{0, j};
             IntSequence coor(sym, pp);
-            _TGStype slice(*(tp.get(Symmetry(j))), ss, coor, TensorDimens(sym, ss));
+            _TGStype slice(*(tp.get(Symmetry{j})), ss, coor, TensorDimens(sym, ss));
             ten->add(1.0, slice);
           }
       }
@@ -247,8 +247,8 @@ public:
   void
   evalTrad(Vector &out, const ConstVector &v) const
   {
-    if (_Tparent::check(Symmetry(0)))
-      out = _Tparent::get(Symmetry(0))->getData();
+    if (_Tparent::check(Symmetry{0}))
+      out = _Tparent::get(Symmetry{0})->getData();
     else
       out.zeros();
 
@@ -256,7 +256,7 @@ public:
     for (int d = 1; d <= maxdim; d++)
       {
         const _Stype &p = pp.getNext((const _Stype *) nullptr);
-        Symmetry cs(d);
+        Symmetry cs{d};
         if (_Tparent::check(cs))
           {
             const _Ttype *t = _Tparent::get(cs);
@@ -271,8 +271,8 @@ public:
   void
   evalHorner(Vector &out, const ConstVector &v) const
   {
-    if (_Tparent::check(Symmetry(0)))
-      out = _Tparent::get(Symmetry(0))->getData();
+    if (_Tparent::check(Symmetry{0}))
+      out = _Tparent::get(Symmetry{0})->getData();
     else
       out.zeros();
 
@@ -281,12 +281,12 @@ public:
 
     _Ttype *last;
     if (maxdim == 1)
-      last = new _Ttype(*(_Tparent::get(Symmetry(1))));
+      last = new _Ttype(*(_Tparent::get(Symmetry{1})));
     else
-      last = new _Ttype(*(_Tparent::get(Symmetry(maxdim))), v);
+      last = new _Ttype(*(_Tparent::get(Symmetry{maxdim})), v);
     for (int d = maxdim-1; d >= 1; d--)
       {
-        Symmetry cs(d);
+        Symmetry cs{d};
         if (_Tparent::check(cs))
           {
             const _Ttype *nt = _Tparent::get(cs);
@@ -337,9 +337,9 @@ public:
   {
     for (int d = 1; d <= maxdim; d++)
       {
-        if (_Tparent::check(Symmetry(d)))
+        if (_Tparent::check(Symmetry{d}))
           {
-            _Ttype *ten = _Tparent::get(Symmetry(d));
+            _Ttype *ten = _Tparent::get(Symmetry{d});
             ten->mult((double) std::max((d-k), 0));
           }
       }
@@ -367,14 +367,14 @@ public:
     auto *res = new _Ttype(nrows(), nvars(), s);
     res->zeros();
 
-    if (_Tparent::check(Symmetry(s)))
-      res->add(1.0, *(_Tparent::get(Symmetry(s))));
+    if (_Tparent::check(Symmetry{s}))
+      res->add(1.0, *(_Tparent::get(Symmetry{s})));
 
     for (int d = s+1; d <= maxdim; d++)
       {
-        if (_Tparent::check(Symmetry(d)))
+        if (_Tparent::check(Symmetry{d}))
           {
-            const _Ttype &ltmp = *(_Tparent::get(Symmetry(d)));
+            const _Ttype &ltmp = *(_Tparent::get(Symmetry{d}));
             auto *last = new _Ttype(ltmp);
             for (int j = 0; j < d - s; j++)
               {
@@ -474,12 +474,12 @@ public:
     for (Tensor::index i = dum.begin(); i != dum.end(); ++i)
       {
         int d = i.getCoor().sum();
-        Symmetry symrun(_Ttype::dimen()-d, d);
+        Symmetry symrun{_Ttype::dimen()-d, d};
         _TGStype dumgs(0, TensorDimens(symrun, dumnvs));
-        if (pol.check(Symmetry(d)))
+        if (pol.check(Symmetry{d}))
           {
             TwoDMatrix subt(*this, offset, dumgs.ncols());
-            subt.add(1.0, *(pol.get(Symmetry(d))));
+            subt.add(1.0, *(pol.get(Symmetry{d})));
           }
         offset += dumgs.ncols();
       }

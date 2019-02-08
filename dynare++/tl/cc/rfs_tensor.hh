@@ -73,7 +73,7 @@ public:
   Symmetry
   getSym() const
   {
-    return Symmetry(dimen());
+    return Symmetry{dimen()};
   }
 };
 
@@ -113,7 +113,7 @@ public:
   Symmetry
   getSym() const
   {
-    return Symmetry(dimen());
+    return Symmetry{dimen()};
   }
 };
 

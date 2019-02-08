@@ -64,7 +64,7 @@ public:
   {
   }
   TensorDimens(int nvar, int dimen)
-    : nvs(1), sym(dimen), nvmax(dimen, nvar)
+    : nvs(1), sym{dimen}, nvmax(dimen, nvar)
   {
     nvs[0] = nvar;
   }

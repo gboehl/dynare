@@ -46,63 +46,49 @@
 
 #include <list>
 #include <vector>
+#include <initializer_list>
+#include <utility>
+#include <memory>
 
 /* Clear. The method |isFull| returns true if and only if the symmetry
-   allows for any permutation of indices. */
+   allows for any permutation of indices.
+
+   WARNING: Symmetry(n) and Symmetry{n} are not the same. The former
+   initializes a symmetry of n elements, while the latter is a full symmetry of
+   order n. This is similar to the behaviour of std::vector. */
 
 class Symmetry : public IntSequence
 {
 public:
-  /* We provide three constructors for symmetries of the form $y^n$,
-     $y^nu^m$, $y^nu^m\sigma^k$. Also a copy constructor, and finally a
-     constructor of implied symmetry for a symmetry and an equivalence
-     class. It is already implemented in |IntSequence| so we only call
-     appropriate constructor of |IntSequence|. We also provide the
-     subsymmetry, which takes the given length of symmetry from the end.
-
-     The last constructor constructs a symmetry from an integer sequence
-     (supposed to be ordered) as a symmetry counting successively equal
-     items. For instance the sequence $(a,a,a,b,c,c,d,d,d,d)$ produces
-     symmetry $(3,1,2,4)$. */
-  Symmetry(int len, const char *dummy)
+  // Constructor allocating a given length of (zero-initialized) data
+  Symmetry(int len)
     : IntSequence(len, 0)
   {
   }
-  Symmetry(int i1)
-    : IntSequence(1, i1)
+  /* Constructor using an initializer list, that gives the contents of the
+     Symmetry. Used for symmetries of the form $y^n$, $y^n u^m$, $y^nu^m\sigma^k$ */
+  Symmetry(std::initializer_list<int> init)
+    : IntSequence(std::move(init))
   {
   }
-  Symmetry(int i1, int i2)
-    : IntSequence(2)
-  {
-    operator[](0) = i1;
-    operator[](1) = i2;
-  }
-  Symmetry(int i1, int i2, int i3)
-    : IntSequence(3)
-  {
-    operator[](0) = i1;
-    operator[](1) = i2;
-    operator[](2) = i3;
-  }
-  Symmetry(int i1, int i2, int i3, int i4)
-    : IntSequence(4)
-  {
-    operator[](0) = i1;
-    operator[](1) = i2;
-    operator[](2) = i3;
-    operator[](3) = i4;
-  }
+  // Copy constructor
   Symmetry(const Symmetry &s) = default;
+  // Move constructor
   Symmetry(Symmetry &&s) = default;
+  // Constructor of implied symmetry for a symmetry and an equivalence class
   Symmetry(const Symmetry &s, const OrdSequence &cl)
     : IntSequence(s, cl.getData())
   {
   }
+  /* Subsymmetry, which takes the given length of symmetry from the end (shares
+     data pointer) */
   Symmetry(Symmetry &s, int len)
     : IntSequence(s, s.size()-len, s.size())
   {
   }
+  /* Constructs a symmetry from an integer sequence (supposed to be ordered) as
+     a symmetry counting successively equal items. For instance the sequence
+     $(a,a,a,b,c,c,d,d,d,d)$ produces symmetry $(3,1,2,4)$. */
   Symmetry(const IntSequence &s);
 
   int
@@ -150,7 +136,7 @@ class SymmetrySet
   int dim;
 public:
   SymmetrySet(int d, int length)
-    : run(length, ""), dim(d)
+    : run(length), dim(d)
   {
   }
   SymmetrySet(SymmetrySet &s, int d)
@@ -184,7 +170,7 @@ public:
    to the |SymmetrySet| only to know dimension and for access of its
    symmetry storage. Further we have pointers to subordinal |symiterator|
    and its |SymmetrySet|. These are pointers, since the recursion ends at
-   length equal to 2, in which case these pointers are |NULL|.
+   length equal to 2, in which case these pointers are uninitialized.
 
    The constructor creates the iterator which initializes to the first
    symmetry (beginning). */
@@ -192,12 +178,12 @@ public:
 class symiterator
 {
   SymmetrySet &s;
-  symiterator *subit;
-  SymmetrySet *subs;
+  std::unique_ptr<symiterator> subit;
+  std::unique_ptr<SymmetrySet> subs;
   bool end_flag;
 public:
   symiterator(SymmetrySet &ss);
-  ~symiterator();
+  ~symiterator() = default;
   symiterator &operator++();
   bool
   isEnd() const

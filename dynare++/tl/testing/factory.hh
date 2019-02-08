@@ -51,7 +51,7 @@ public:
         if (symnum == 1)
           {
             // full symmetry
-            Symmetry sym(dim);
+            Symmetry sym{dim};
             auto *t = make<_Ttype>(r, sym, nvs);
             res->insert(t);
           }
@@ -60,7 +60,7 @@ public:
             // general symmetry
             for (int i = 0; i <= dim; i++)
               {
-                Symmetry sym(i, dim-i);
+                Symmetry sym{i, dim-i};
                 auto *t = make<_Ttype>(r, sym, nvs);
                 res->insert(t);
               }

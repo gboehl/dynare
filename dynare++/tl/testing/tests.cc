@@ -226,7 +226,7 @@ TestRunnable::dense_prod(const Symmetry &bsym, const IntSequence &bnvs,
   FGSContainer *cont
     = f.makeCont<FGSTensor, FGSContainer>(hnv, bnvs, bsym.dimen()-hdim+1);
   auto *fh
-    = f.make<FGSTensor>(rows, Symmetry(hdim), IntSequence(1, hnv));
+    = f.make<FGSTensor>(rows, Symmetry{hdim}, IntSequence(1, hnv));
   UGSTensor uh(*fh);
   FGSTensor fb(rows, TensorDimens(bsym, bnvs));
   fb.getData().zeros();
@@ -275,7 +275,7 @@ TestRunnable::folded_monomial(int ng, int nx, int ny, int nu, int dim)
   double maxnorm = 0;
   for (int ydim = 0; ydim <= dim; ydim++)
     {
-      Symmetry s(ydim, dim-ydim);
+      Symmetry s{ydim, dim-ydim};
       printf("\tSymmetry: "); s.print();
       FGSTensor res(ng, TensorDimens(s, nvs));
       res.getData().zeros();
@@ -314,7 +314,7 @@ TestRunnable::unfolded_monomial(int ng, int nx, int ny, int nu, int dim)
   double maxnorm = 0;
   for (int ydim = 0; ydim <= dim; ydim++)
     {
-      Symmetry s(ydim, dim-ydim);
+      Symmetry s{ydim, dim-ydim};
       printf("\tSymmetry: "); s.print();
       UGSTensor res(ng, TensorDimens(s, nvs));
       res.getData().zeros();
@@ -602,7 +602,7 @@ public:
   bool
   run() const override
   {
-    Symmetry s(2, 3);
+    Symmetry s{2, 3};
     IntSequence nvs(2); nvs[0] = 4; nvs[1] = 2;
     return index_forward<FGSTensor>(s, nvs);
   }
@@ -618,7 +618,7 @@ public:
   bool
   run() const override
   {
-    Symmetry s(2, 3);
+    Symmetry s{2, 3};
     IntSequence nvs(2); nvs[0] = 4; nvs[1] = 2;
     return index_forward<UGSTensor>(s, nvs);
   }
@@ -634,7 +634,7 @@ public:
   bool
   run() const override
   {
-    Symmetry s(2, 3, 2);
+    Symmetry s{2, 3, 2};
     IntSequence nvs(3); nvs[0] = 5; nvs[1] = 2; nvs[2] = 2;
     return index_forward<FGSTensor>(s, nvs);
   }
@@ -650,7 +650,7 @@ public:
   bool
   run() const override
   {
-    Symmetry s(2, 3, 2);
+    Symmetry s{2, 3, 2};
     IntSequence nvs(3); nvs[0] = 5; nvs[1] = 2; nvs[2] = 2;
     return index_forward<UGSTensor>(s, nvs);
   }
@@ -666,7 +666,7 @@ public:
   bool
   run() const override
   {
-    Symmetry s(1, 1, 3);
+    Symmetry s{1, 1, 3};
     IntSequence nvs(3); nvs[0] = 3; nvs[1] = 3; nvs[2] = 2;
     return index_backward<FGSTensor>(s, nvs);
   }
@@ -682,7 +682,7 @@ public:
   bool
   run() const override
   {
-    Symmetry s(2, 3, 2);
+    Symmetry s{2, 3, 2};
     IntSequence nvs(3); nvs[0] = 4; nvs[1] = 2; nvs[2] = 4;
     return index_backward<FGSTensor>(s, nvs);
   }
@@ -698,7 +698,7 @@ public:
   bool
   run() const override
   {
-    Symmetry s(1, 1, 3);
+    Symmetry s{1, 1, 3};
     IntSequence nvs(3); nvs[0] = 3; nvs[1] = 3; nvs[2] = 2;
     return index_backward<UGSTensor>(s, nvs);
   }
@@ -714,7 +714,7 @@ public:
   bool
   run() const override
   {
-    Symmetry s(2, 3, 2);
+    Symmetry s{2, 3, 2};
     IntSequence nvs(3); nvs[0] = 4; nvs[1] = 2; nvs[2] = 4;
     return index_backward<UGSTensor>(s, nvs);
   }
@@ -730,7 +730,7 @@ public:
   bool
   run() const override
   {
-    Symmetry s(2, 3);
+    Symmetry s{2, 3};
     IntSequence nvs(2); nvs[0] = 4; nvs[1] = 2;
     return index_offset<FGSTensor>(s, nvs);
   }
@@ -746,7 +746,7 @@ public:
   bool
   run() const override
   {
-    Symmetry s(2, 3);
+    Symmetry s{2, 3};
     IntSequence nvs(2); nvs[0] = 4; nvs[1] = 2;
     return index_offset<UGSTensor>(s, nvs);
   }
@@ -762,7 +762,7 @@ public:
   bool
   run() const override
   {
-    Symmetry s(2, 3, 2);
+    Symmetry s{2, 3, 2};
     IntSequence nvs(3); nvs[0] = 5; nvs[1] = 2; nvs[2] = 2;
     return index_offset<FGSTensor>(s, nvs);
   }
@@ -778,7 +778,7 @@ public:
   bool
   run() const override
   {
-    Symmetry s(2, 3, 2);
+    Symmetry s{2, 3, 2};
     IntSequence nvs(3); nvs[0] = 5; nvs[1] = 2; nvs[2] = 2;
     return index_offset<UGSTensor>(s, nvs);
   }
@@ -808,7 +808,7 @@ public:
   bool
   run() const override
   {
-    Symmetry s(1, 2, 2);
+    Symmetry s{1, 2, 2};
     IntSequence nvs(3); nvs[0] = 3; nvs[1] = 3; nvs[2] = 2;
     return gs_fold_unfold(5, s, nvs);
   }
@@ -838,7 +838,7 @@ public:
   bool
   run() const override
   {
-    Symmetry s(2, 1, 2);
+    Symmetry s{2, 1, 2};
     IntSequence nvs(3); nvs[0] = 6; nvs[1] = 2; nvs[2] = 6;
     return gs_fold_unfold(5, s, nvs);
   }
@@ -883,7 +883,7 @@ public:
   run() const override
   {
     IntSequence bnvs(2); bnvs[0] = 3; bnvs[1] = 2;
-    return dense_prod(Symmetry(1, 2), bnvs, 2, 3, 2);
+    return dense_prod(Symmetry{1, 2}, bnvs, 2, 3, 2);
   }
 };
 
@@ -898,7 +898,7 @@ public:
   run() const override
   {
     IntSequence bnvs(2); bnvs[0] = 10; bnvs[1] = 7;
-    return dense_prod(Symmetry(2, 3), bnvs, 3, 15, 10);
+    return dense_prod(Symmetry{2, 3}, bnvs, 3, 15, 10);
   }
 };
 
@@ -913,7 +913,7 @@ public:
   run() const override
   {
     IntSequence bnvs(2); bnvs[0] = 13; bnvs[1] = 11;
-    return dense_prod(Symmetry(3, 2), bnvs, 3, 20, 20);
+    return dense_prod(Symmetry{3, 2}, bnvs, 3, 20, 20);
   }
 };
 

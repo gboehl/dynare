@@ -12,7 +12,7 @@
 
 smolpit::smolpit(const SmolyakQuadrature &q, unsigned int isum)
   : smolq(q), isummand(isum),
-    jseq{q.dimen(), 0},
+    jseq(q.dimen(), 0),
     sig{q.dimen()},
     p{q.dimen()}
 {

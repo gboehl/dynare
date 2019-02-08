@@ -217,11 +217,11 @@ DecisionRuleImpl<t>::fillTensors(const _Tg &g, double sigma)
           int j = d-i;
           int kfact = 1;
           _Ttensor tmp(ypart.ny(),
-                       TensorDimens(Symmetry(i, j), tns));
+                       TensorDimens(Symmetry{i, j}, tns));
           tmp.zeros();
           for (int k = 0; k+d <= g.getMaxDim(); k++, kfact *= k)
             {
-              Symmetry sym(i, j, 0, k);
+              Symmetry sym{i, j, 0, k};
               if (g.check(sym))
                 {
                   double mult = pow(sigma, k)/dfact/kfact;
@@ -539,7 +539,7 @@ DRFixPoint<t>::DRFixPoint(const _Tg &g, const PartitionY &yp,
   fillTensors(g, sigma);
   _Tparent yspol(ypart.nstat, ypart.nys(), *this);
   bigf = new _Tparent((const _Tparent &) yspol);
-  _Ttensym *frst = bigf->get(Symmetry(1));
+  _Ttensym *frst = bigf->get(Symmetry{1});
   for (int i = 0; i < ypart.nys(); i++)
     frst->get(i, i) = frst->get(i, i) - 1;
   bigfder = new _Tparent(*bigf, 0);
@@ -572,9 +572,9 @@ DRFixPoint<t>::fillTensors(const _Tg &g, double sigma)
       int kfact = 1;
       for (int k = 0; d+k <= g.getMaxDim(); k++, kfact *= k)
         {
-          if (g.check(Symmetry(d, 0, 0, k)))
+          if (g.check(Symmetry{d, 0, 0, k}))
             {
-              const _Ttensor *ten = g.get(Symmetry(d, 0, 0, k));
+              const _Ttensor *ten = g.get(Symmetry{d, 0, 0, k});
               double mult = pow(sigma, k)/dfact/kfact;
               g_yd->add(mult, *ten);
             }
