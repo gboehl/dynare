@@ -82,9 +82,9 @@ if ~isempty(param_names)
         if isempty(pidxs(i))
             if ~isempty(eqtags)
                 error(['Could not find ' param_names{i} ...
-                    ' in the provided equations specified by ' strjoin(eqtags, ',')]);
+                    ' in the equations specified by ' strjoin(eqtags, ',')]);
             end
-            error('Unspecified error. Please report');
+            error('Couldn''t find parameter in equations');
         end
     end
     subcols = setdiff(1:X.vobs, pidxs);
