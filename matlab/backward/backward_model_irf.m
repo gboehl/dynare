@@ -58,6 +58,15 @@ else
     transform = varargin{2};
 end
 
+% If first argument is empty, try to set the initial condition with histval.
+if isempty(initialcondition)
+    try
+        initialcondition = dseries(M_.endo_histval', 1, cellstr(M_.endo_names), cellstr(M_.endo_names_tex));
+    catch
+        error('Use histval block to set the initial condition.')
+    end
+end
+
 % Check third argument.
 if ~iscell(listofshocks)
     error('Third input argument has to be a cell of string or dseries objects!')
