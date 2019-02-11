@@ -76,7 +76,7 @@ for i = 1:neqs
             end
         end
         for j = length(to_remove):-1:1
-            Xtmp = Xtmp.remove(Xtmp.name{j});
+            Xtmp = Xtmp.remove(Xtmp.name{to_remove(j)});
         end
         if ~isempty(Xtmp)
             Xmat = [Xmat Xtmp];
