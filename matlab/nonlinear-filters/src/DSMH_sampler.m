@@ -56,17 +56,17 @@ function DSMH_sampler(TargetFun,xparam1,mh_bounds,dataset_,dataset_info,options_
 
 
 lambda = exp(bsxfun(@minus,options_.dsmh.H,1:1:options_.dsmh.H)/(options_.dsmh.H-1)*log(options_.dsmh.lambda1));
-c = 55 ; 
+c = 0.055 ; 
 
 % Step 0: Initialization of the sampler
-[ param, tlogpost_iminus1, loglik, ~, ~, npar, nparticles, bayestopt_] = ...
-    DSMH_initialization(TargetFun, xparam1, mh_bounds, dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,oo_);
+[ param, tlogpost_iminus1, loglik, npar, ~, bayestopt_] = ...
+    SMC_samplers_initialization(TargetFun, xparam1, mh_bounds, dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,oo_,options_.dsmh.number_of_particles);
 
 ESS = zeros(options_.dsmh.H,1) ;
 zhat = 1 ;
 
 % The DSMH starts here 
-  for i=1:options_.dsmh.H
+  for i=2:options_.dsmh.H
     disp('');
     disp('Tempered iteration');  
 	disp(i) ;
@@ -81,11 +81,32 @@ zhat = 1 ;
   
 weights = exp(loglik*(lambda(end)-lambda(end-1)));
 weights = weights/sum(weights);
-indx_resmpl = DSMH_resampling(weights,rand(1,1),nparticles);
+indx_resmpl = smc_resampling(weights,rand(1,1),options_.dsmh.number_of_particles);
 distrib_param = param(:,indx_resmpl);   
 
-%% Plot parameters densities
+mean_xparam = mean(distrib_param,2);
+%mat_var_cov = bsxfun(@minus,distrib_param,mean_xparam) ;
+%mat_var_cov = (mat_var_cov*mat_var_cov')/(options_.HSsmc.nparticles-1) ;
+%std_xparam = sqrt(diag(mat_var_cov)) ;
+lb95_xparam = zeros(npar,1) ;
+ub95_xparam = zeros(npar,1) ;
+for i=1:npar
+    temp = sortrows(distrib_param(i,:)') ;
+    lb95_xparam(i) = temp(0.025*options_.HSsmc.nparticles) ;
+    ub95_xparam(i) = temp(0.975*options_.HSsmc.nparticles) ;
+end
+
 TeX = options_.TeX;
+
+str = sprintf(' Param. \t Lower Bound (95%%) \t Mean \t Upper Bound (95%%)');
+for l=1:npar
+    [name,~] = get_the_name(l,TeX,M_,estim_params_,options_);
+    str = sprintf('%s\n %s \t\t %5.4f \t\t %7.5f \t\t %5.4f', str, name, lb95_xparam(l), mean_xparam(l), ub95_xparam(l));
+end
+disp([str])
+disp('')
+
+%% Plot parameters densities
 
 [nbplt,nr,nc,lr,lc,nstar] = pltorg(npar);
 
@@ -99,16 +120,18 @@ end
 number_of_grid_points = 2^9;      % 2^9 = 512 !... Must be a power of two.
 bandwidth = 0;                    % Rule of thumb optimal bandwidth parameter.
 kernel_function = 'gaussian';     % Gaussian kernel for Fast Fourier Transform approximation.
-for plt = 1:nbplt,
+
+plt = 1 ;
+%for plt = 1:nbplt,
     if TeX
         NAMES = [];
         TeXNAMES = [];
     end
     hh = dyn_figure(options_.nodisplay,'Name','Parameters Densities');
-    for k=1:min(nstar,npar-(plt-1)*nstar)
-        subplot(nr,nc,k)
-        kk = (plt-1)*nstar+k;
-        [name,texname] = get_the_name(kk,TeX,M_,estim_params_,options_);
+    for k=1:npar %min(nstar,npar-(plt-1)*nstar)
+        subplot(ceil(sqrt(npar)),floor(sqrt(npar)),k)
+        %kk = (plt-1)*nstar+k;
+        [name,texname] = get_the_name(k,TeX,M_,estim_params_,options_);
         if TeX
             if isempty(NAMES)
                 NAMES = name;
@@ -118,9 +141,9 @@ for plt = 1:nbplt,
                 TeXNAMES = char(TeXNAMES,texname);
             end
         end
-        optimal_bandwidth = mh_optimal_bandwidth(distrib_param(kk,:)',nparticles,bandwidth,kernel_function);
-        [density(:,1),density(:,2)] = kernel_density_estimate(distrib_param(kk,:)',number_of_grid_points,...
-                                                          nparticles,optimal_bandwidth,kernel_function);
+        optimal_bandwidth = mh_optimal_bandwidth(distrib_param(k,:)',options_.dsmh.number_of_particles,bandwidth,kernel_function);
+        [density(:,1),density(:,2)] = kernel_density_estimate(distrib_param(k,:)',number_of_grid_points,...
+                                                          options_.dsmh.number_of_particles,optimal_bandwidth,kernel_function);
         plot(density(:,1),density(:,2));
         hold on
         title(name,'interpreter','none')
@@ -142,19 +165,7 @@ for plt = 1:nbplt,
         fprintf(fidTeX,'\\end{figure}\n');
         fprintf(fidTeX,' \n');
     end
-end
-
-function indx = DSMH_resampling(weights,noise,number)
-    indx = zeros(number,1);
-    cumweights = cumsum(weights);
-    randvec = (transpose(1:number)-1+noise(:))/number;
-    j = 1;
-    for i=1:number
-        while (randvec(i)>cumweights(j))
-            j = j+1;
-        end
-        indx(i) = j;
-    end
+%end
     
 function [tlogpost_iminus1,loglik,param] = sort_matrices(tlogpost_iminus1,loglik,param)
     [~,indx_ord] = sortrows(tlogpost_iminus1);
@@ -188,7 +199,7 @@ function c = tune_c(TargetFun,param,tlogpost_i,lambda,i,c,Omegachol,weights,data
 	stop=0 ;
 	while stop==0
 		acpt = 0.0;
-		indx_resmpl = DSMH_resampling(weights,rand(1,1),options_.dsmh.G);
+		indx_resmpl = smc_resampling(weights,rand(1,1),options_.dsmh.G);
 		param0 = param(:,indx_resmpl);
 		tlogpost0 = tlogpost_i(indx_resmpl);
 		for j=1:options_.dsmh.G
@@ -240,7 +251,7 @@ function [out_param,out_tlogpost_iminus1,out_loglik] = mutation_DSMH(TargetFun,p
 	out_tlogpost_iminus1 = tlogpost_i;
 	out_loglik = loglik;
 	% resample and initialize the starting groups 
-	indx_resmpl = DSMH_resampling(weights,rand(1,1),options_.dsmh.G);
+	indx_resmpl = smc_resampling(weights,rand(1,1),options_.dsmh.G);
     param0 = param(:,indx_resmpl);
     tlogpost_iminus10 = tlogpost_iminus1(indx_resmpl);
     tlogpost_i0 = tlogpost_i(indx_resmpl);
