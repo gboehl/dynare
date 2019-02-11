@@ -86,6 +86,7 @@ title('IRF (shock on the growth rate of efficiency)')
 ** the period of the initial condition).
 */
 
+/*
 histval;
   Efficiency(0) = 1;
   EfficiencyGrowth(0) = .5;
@@ -93,7 +94,7 @@ histval;
   PopulationGrowth(0) = .5;
   PhysicalCapitalStock(0) = 1;
 end;
-
+*/
 // Define the shocks for which we want to compute the IRFs
 listofshocks = {'e_x', 'e_n'};
 
@@ -101,17 +102,10 @@ listofshocks = {'e_x', 'e_n'};
 listofvariables = {'Efficiency', 'Population', 'Output'};
 
 // Compute the IRFs
-ds = dseries(repmat(M_.endo_histval', 10, 1), 1990Q1, cellstr(M_.endo_names), cellstr(M_.endo_names_tex));
-irfs = backward_model_irf(ds, dseries(), listofshocks, listofvariables, 50);  // 10 is the number of periods (default value is 40).
+irfs = backward_model_irf([], dseries(), listofshocks, listofvariables, 50);  // 10 is the number of periods (default value is 40).
 
 // Plot an IRF (shock on technology)
 figure(2)
 plot(irfs.e_x.Output)
 legend('Output')
 title('IRF (shock on the growth rate of efficiency)')
-
-/* REMARK
-** ------
-**
-** This model is nonlinear and non stationary. For different initial conditions the IRFs may look quite different. 
-*/
