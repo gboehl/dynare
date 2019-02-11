@@ -66,17 +66,16 @@ for i = 1:neqs
         to_remove = [];
         nr = sum(nobs(1:i-1));
         nxcol = size(X{i}, 2);
-        Xtmp = dseries([zeros(nr, nxcol); X{i}.data; zeros(nrows-nr-nobs(i), nxcol)], fd, X{i}.name);
-        for j = 1:length(X{i}.name)
-            idx = find(strcmp(Xmat.name, X{i}.name{j}));
+        names = X{i}.name;
+        Xtmp = dseries([zeros(nr, nxcol); X{i}.data; zeros(nrows-nr-nobs(i), nxcol)], fd, names);
+        Xmatnames = Xmat.name;
+        for j = 1:length(names)
+            idx = find(strcmp(Xmatnames, names{j}));
             if ~isempty(idx)
-                Xmat.(Xmat.name{idx}) = Xmat{idx} + Xtmp{j};
-                to_remove = [to_remove j];
-                constrained{end+1} = Xmat.name{idx};
+                Xmat.(Xmatnames{idx}) = Xmat.(Xmatnames{idx}) + Xtmp.(names{j});
+                Xtmp = Xtmp.remove(names{j});
+                constrained{end+1} = Xmatnames{idx};
             end
-        end
-        for j = length(to_remove):-1:1
-            Xtmp = Xtmp.remove(Xtmp.name{to_remove(j)});
         end
         if ~isempty(Xtmp)
             Xmat = [Xmat Xtmp];
