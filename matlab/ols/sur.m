@@ -73,27 +73,27 @@ if nargin == 1 && size(X, 2) ~= M_.param_nbr
 end
 
 if ~isempty(param_names)
-    newX = dseries();
+    newlhssub = dseries();
     nparams = length(param_names);
     pidxs = zeros(nparams, 1);
     names = X.name;
     for i = 1:nparams
-        idx = find(strcmp(param_names{i}, names));
-        if isempty(idx)
+        pidxs(i) = find(strcmp(param_names{i}, names));
+        if isempty(pidxs(i))
             if ~isempty(eqtags)
                 error(['Could not find ' param_names{i} ...
                     ' in the provided equations specified by ' strjoin(eqtags, ',')]);
             end
             error('Unspecified error. Please report');
         end
-        pidxs(i) = idx;
-        newX = [newX X.(names{idx})];
     end
     subcols = setdiff(1:X.vobs, pidxs);
-    for i = length(subcols):-1:1
-        Y = Y - M_.params(strcmp(names{subcols(i)}, M_.param_names))*X.(names{subcols(i)});
+    for i = 1:length(subcols)
+        newlhssub = newlhssub + M_.params(strcmp(names{subcols(i)}, M_.param_names)) * X.(names{subcols(i)});
+        X = X.remove(names{subcols(i)});
     end
-    X = newX;
+    Y = Y - newlhssub;
+    lhssub = lhssub + newlhssub;
 end
 
 % opidxs: indexes in M_.params associated with columns of X
@@ -107,7 +107,7 @@ st = dbstack(1);
 if strcmp(st(1).name, 'surgibbs')
     varargout{1} = nobs;
     varargout{2} = opidxs;
-    varargout{3} = X.data;
+    varargout{3} = X{param_names{:}}.data;
     varargout{4} = Y.data;
     varargout{5} = neqs;
     return
