@@ -418,6 +418,8 @@ MODFILES = \
 	pac/trend-component-19/example1.mod \
 	pac/trend-component-19/example2.mod \
 	pac/trend-component-19/example3.mod \
+    ecb/backward-models/irf/solow_1.mod \
+    ecb/backward-models/irf/solow_2.mod \
 	dynare-command-options/ramst.mod
 
 OLS_MODFILES = \
