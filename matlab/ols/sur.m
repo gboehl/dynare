@@ -137,6 +137,10 @@ kLeye = kron(chol(inv(M_.Sigma_e)), eye(oo_.sur.(model_name).dof));
 [q, r] = qr(kLeye*X.data, 0);
 oo_.sur.(model_name).beta = r\(q'*kLeye*Y.data);
 
+resid = Y.data - X.data * oo_.sur.(model_name).beta;
+resid = reshape(resid, oo_.sur.(model_name).dof, neqs);
+M_.Sigma_e = resid'*resid/oo_.sur.(model_name).dof;
+
 M_.params(opidxs) = oo_.sur.(model_name).beta;
 
 % Yhat
