@@ -63,7 +63,7 @@ ast = handle_constant_eqs(get_ast(eqtags));
 neqs = length(ast);
 
 %% Find parameters and variable names in equations and setup estimation matrices
-[Y, lhssub, X, ~, ~, residnames] = common_parsing(ds, ast, true);
+[Y, lhssub, X] = common_parsing(ds, ast, true);
 clear ast
 nobs = Y{1}.nobs;
 [Y, lhssub, X, constrained] = put_in_sur_form(Y, lhssub, X);
@@ -131,8 +131,9 @@ oo_.sur.(model_name).dof = nobs;
 xpxi = (r'*r)\eye(size(X.data, 2));
 resid = Y.data - X.data * (r\(q'*Y.data));
 resid = reshape(resid, oo_.sur.(model_name).dof, neqs);
-Sigma_e = resid'*resid/oo_.sur.(model_name).dof;
-kLeye = kron(chol(inv(Sigma_e)), eye(oo_.sur.(model_name).dof));
+
+M_.Sigma_e = resid'*resid/oo_.sur.(model_name).dof;
+kLeye = kron(chol(inv(M_.Sigma_e)), eye(oo_.sur.(model_name).dof));
 [q, r] = qr(kLeye*X.data, 0);
 oo_.sur.(model_name).beta = r\(q'*kLeye*Y.data);
 
@@ -143,12 +144,6 @@ oo_.sur.(model_name).Yhat = X.data * oo_.sur.(model_name).beta;
 
 % Residuals
 oo_.sur.(model_name).resid = Y.data - oo_.sur.(model_name).Yhat;
-
-% Set M_.Sigma_e
-for i = 1:length(residnames)
-    idx = find(strcmp(residnames{i}, M_.exo_names));
-    M_.Sigma_e(idx, idx) = var(oo_.sur.(model_name).resid((i-1)*nobs+1:i*nobs));
-end
 
 % Correct Yhat reported back to user
 oo_.sur.(model_name).Yhat = oo_.sur.(model_name).Yhat + lhssub;
