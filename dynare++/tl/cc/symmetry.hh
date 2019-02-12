@@ -105,95 +105,77 @@ public:
   bool isFull() const;
 };
 
-/* The class |SymmetrySet| defines a set of symmetries of the given
-   length having given dimension. It does not store all the symmetries,
-   rather it provides a storage for one symmetry, which is changed as an
-   adjoint iterator moves.
+/* This is an iterator that iterates over all symmetries of given length and
+   dimension (see the SymmetrySet class for details).
 
-   The iterator class is |symiterator|. It is implemented
-   recursively. The iterator object, when created, creates subordinal
-   iterator, which iterates over a symmetry set whose length is one less,
-   and dimension is the former dimension. When the subordinal iterator
-   goes to its end, the superordinal iterator increases left most index in
-   the symmetry, resets the subordinal symmetry set with different
-   dimension, and iterates through the subordinal symmetry set until its
-   end, and so on. That's why we provide also |SymmetrySet| constructor
-   for construction of a subordinal symmetry set.
+   The beginning iterator is (0, …, 0, dim).
+   Increasing it gives (0, … , 1, dim-1)
+   The just-before-end iterator is (dim, 0, …, 0)
+   The past-the-end iterator is (dim+1, 0, …, 0)
 
-   The typical usage of the abstractions for |SymmetrySet| and
-   |symiterator| is as follows:
-
-   \kern0.3cm
-   \centerline{|for (symiterator si(SymmetrySet(6, 4)); !si.isEnd(); ++si) {body}|}
-   \kern0.3cm
-
-   \noindent It goes through all symmetries of size 4 having dimension
-   6. One can use |*si| as the symmetry in the body. */
-
-class SymmetrySet
-{
-  Symmetry run;
-  int dim;
-public:
-  SymmetrySet(int d, int length)
-    : run(length), dim(d)
-  {
-  }
-  SymmetrySet(SymmetrySet &s, int d)
-    : run(s.run, s.size()-1), dim(d)
-  {
-  }
-  int
-  dimen() const
-  {
-    return dim;
-  }
-  const Symmetry &
-  sym() const
-  {
-    return run;
-  }
-  Symmetry &
-  sym()
-  {
-    return run;
-  }
-  int
-  size() const
-  {
-    return run.size();
-  }
-};
-
-/* The logic of |symiterator| was described in |@<|SymmetrySet| class
-   declaration@>|. Here we only comment that: the class has a reference
-   to the |SymmetrySet| only to know dimension and for access of its
-   symmetry storage. Further we have pointers to subordinal |symiterator|
-   and its |SymmetrySet|. These are pointers, since the recursion ends at
-   length equal to 2, in which case these pointers are uninitialized.
-
-   The constructor creates the iterator which initializes to the first
+   The constructor creates the iterator which starts from the given symmetry
    symmetry (beginning). */
 
 class symiterator
 {
-  SymmetrySet &s;
-  std::unique_ptr<symiterator> subit;
-  std::unique_ptr<SymmetrySet> subs;
-  bool end_flag;
+  const int dim;
+  Symmetry run;
 public:
-  symiterator(SymmetrySet &ss);
+  symiterator(int dim_arg, Symmetry run_arg);
   ~symiterator() = default;
   symiterator &operator++();
-  bool
-  isEnd() const
-  {
-    return end_flag;
-  }
   const Symmetry &
   operator*() const
   {
-    return s.sym();
+    return run;
+  }
+  bool
+  operator=(const symiterator &it)
+  {
+    return dim == it.dim && run == it.run;
+  }
+  bool
+  operator!=(const symiterator &it)
+  {
+    return !operator=(it);
+  }
+};
+
+/* The class |SymmetrySet| defines a set of symmetries of the given length
+   having given dimension (i.e. it represents all the lists of integers of
+   length "len" and of sum equal to "dim"). It does not store all the
+   symmetries, it is just a convenience class for iteration.
+
+   The typical usage of the abstractions for |SymmetrySet| and
+   |symiterator| is as follows:
+
+     for (auto &si : SymmetrySet(6, 4))
+
+   It goes through all symmetries of lenght 4 having dimension 6. One can use
+   "si" as the symmetry in the body. */
+
+class SymmetrySet
+{
+public:
+  const int len;
+  const int dim;
+  SymmetrySet(int dim_arg, int len_arg)
+    : len(len_arg), dim(dim_arg)
+  {
+  }
+  symiterator
+  begin() const
+  {
+    Symmetry run(len);
+    run[len-1] = dim;
+    return { dim, run };
+  }
+  symiterator
+  end() const
+  {
+    Symmetry run(len);
+    run[0] = dim+1;
+    return { dim, run };
   }
 };
 

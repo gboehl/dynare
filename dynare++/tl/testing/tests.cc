@@ -362,21 +362,19 @@ TestRunnable::fold_zcont(int nf, int ny, int nu, int nup, int nbigg,
 
   for (int d = 2; d <= dim; d++)
     {
-      SymmetrySet ss(d, 4);
-      for (symiterator si(ss); !si.isEnd(); ++si)
+      for (auto &si : SymmetrySet(d, 4))
         {
-          printf("\tSymmetry: "); (*si).print();
-          FGSTensor res(nf, TensorDimens(*si, nvs));
+          printf("\tSymmetry: ");
+          si.print();
+          FGSTensor res(nf, TensorDimens(si, nvs));
           res.getData().zeros();
           clock_t stime = clock();
-          for (int l = 1; l <= (*si).dimen(); l++)
-            {
-              zc.multAndAdd(*(dg.ts[l-1]), res);
-            }
+          for (int l = 1; l <= si.dimen(); l++)
+            zc.multAndAdd(*(dg.ts[l-1]), res);
           stime = clock() - stime;
           printf("\t\ttime for symmetry: %8.4g\n",
                  ((double) stime)/CLOCKS_PER_SEC);
-          const FGSTensor *mres = dg.rcont->get(*si);
+          const FGSTensor *mres = dg.rcont->get(si);
           res.add(-1.0, *mres);
           double normtmp = res.getData().getMax();
           printf("\t\terror normMax:     %10.6g\n", normtmp);
@@ -419,22 +417,20 @@ TestRunnable::unfold_zcont(int nf, int ny, int nu, int nup, int nbigg,
 
   for (int d = 2; d <= dim; d++)
     {
-      SymmetrySet ss(d, 4);
-      for (symiterator si(ss); !si.isEnd(); ++si)
+      for (auto &si : SymmetrySet(d, 4))
         {
-          printf("\tSymmetry: "); (*si).print();
-          UGSTensor res(nf, TensorDimens(*si, nvs));
+          printf("\tSymmetry: ");
+          si.print();
+          UGSTensor res(nf, TensorDimens(si, nvs));
           res.getData().zeros();
           clock_t stime = clock();
-          for (int l = 1; l <= (*si).dimen(); l++)
-            {
-              zc.multAndAdd(*(dg.ts[l-1]), res);
-            }
+          for (int l = 1; l <= si.dimen(); l++)
+            zc.multAndAdd(*(dg.ts[l-1]), res);
           stime = clock() - stime;
           printf("\t\ttime for symmetry: %8.4g\n",
                  ((double) stime)/CLOCKS_PER_SEC);
           FGSTensor fold_res(res);
-          const FGSTensor *mres = dg.rcont->get(*si);
+          const FGSTensor *mres = dg.rcont->get(si);
           fold_res.add(-1.0, *mres);
           double normtmp = fold_res.getData().getMax();
           printf("\t\terror normMax:     %10.6g\n", normtmp);

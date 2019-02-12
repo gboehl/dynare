@@ -42,10 +42,10 @@ FoldedStackContainer::multAndAdd(int dim, const FGSContainer &c, FGSTensor &out)
               "Wrong symmetry length of container for FoldedStackContainer::multAndAdd");
 
   sthread::detach_thread_group gr;
-  SymmetrySet ss(dim, c.num());
-  for (symiterator si(ss); !si.isEnd(); ++si)
-    if (c.check(*si))
-      gr.insert(std::make_unique<WorkerFoldMAADense>(*this, *si, c, out));
+
+  for (auto &si : SymmetrySet(dim, c.num()))
+    if (c.check(si))
+      gr.insert(std::make_unique<WorkerFoldMAADense>(*this, si, c, out));
 
   gr.run();
 }
@@ -395,10 +395,9 @@ UnfoldedStackContainer::multAndAdd(int dim, const UGSContainer &c,
               "Wrong symmetry length of container for UnfoldedStackContainer::multAndAdd");
 
   sthread::detach_thread_group gr;
-  SymmetrySet ss(dim, c.num());
-  for (symiterator si(ss); !si.isEnd(); ++si)
-    if (c.check(*si))
-      gr.insert(std::make_unique<WorkerUnfoldMAADense>(*this, *si, c, out));
+  for (auto &si : SymmetrySet(dim, c.num()))
+    if (c.check(si))
+      gr.insert(std::make_unique<WorkerUnfoldMAADense>(*this, si, c, out));
 
   gr.run();
 }

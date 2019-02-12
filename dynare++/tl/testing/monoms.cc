@@ -471,13 +471,12 @@ SparseDerivGenerator::SparseDerivGenerator(
 
   for (int dim = 1; dim <= maxdimen; dim++)
     {
-      SymmetrySet ss(dim, 4);
-      for (symiterator si(ss); !si.isEnd(); ++si)
+      for (auto &si : SymmetrySet(dim, 4))
         {
-          bigg->insert(bigg_m.deriv(*si));
-          rcont->insert(r.deriv(*si));
-          if ((*si)[2] == 0)
-            g->insert(g_m.deriv(*si));
+          bigg->insert(bigg_m.deriv(si));
+          rcont->insert(r.deriv(si));
+          if (si[2] == 0)
+            g->insert(g_m.deriv(si));
         }
 
       ts[dim-1] = f.deriv(dim);

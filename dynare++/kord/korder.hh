@@ -871,12 +871,11 @@ KOrder::check(int dim) const
     }
 
   // check for $F_{y^iu^ju'^k}+D_{ijk}+E_{ijk}=0$
-  SymmetrySet ss(dim, 3);
-  for (symiterator si(ss); !si.isEnd(); ++si)
+  for (auto &si : SymmetrySet(dim, 3))
     {
-      int i = (*si)[0];
-      int j = (*si)[1];
-      int k = (*si)[2];
+      int i = si[0];
+      int j = si[1];
+      int k = si[2];
       if (i+j > 0 && k > 0)
         {
           Symmetry sym{i, j, 0, k};

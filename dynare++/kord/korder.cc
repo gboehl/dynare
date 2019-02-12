@@ -342,30 +342,27 @@ KOrder::switchToFolded()
 
   int maxdim = g<unfold>().getMaxDim();
   for (int dim = 1; dim <= maxdim; dim++)
-    {
-      SymmetrySet ss(dim, 4);
-      for (symiterator si(ss); !si.isEnd(); ++si)
-        {
-          if ((*si)[2] == 0 && g<unfold>().check(*si))
-            {
-              auto *ft = new FGSTensor(*(g<unfold>().get(*si)));
-              insertDerivative<fold>(ft);
-              if (dim > 1)
-                {
-                  gss<unfold>().remove(*si);
-                  gs<unfold>().remove(*si);
-                  g<unfold>().remove(*si);
-                }
-            }
-          if (G<unfold>().check(*si))
-            {
-              auto *ft = new FGSTensor(*(G<unfold>().get(*si)));
-              G<fold>().insert(ft);
-              if (dim > 1)
-                {
-                  G<fold>().remove(*si);
-                }
-            }
-        }
-    }
+    for (auto &si : SymmetrySet(dim, 4))
+      {
+        if (si[2] == 0 && g<unfold>().check(si))
+          {
+            auto *ft = new FGSTensor(*(g<unfold>().get(si)));
+            insertDerivative<fold>(ft);
+            if (dim > 1)
+              {
+                gss<unfold>().remove(si);
+                gs<unfold>().remove(si);
+                g<unfold>().remove(si);
+              }
+          }
+        if (G<unfold>().check(si))
+          {
+            auto *ft = new FGSTensor(*(G<unfold>().get(si)));
+            G<fold>().insert(ft);
+            if (dim > 1)
+              {
+                G<fold>().remove(si);
+              }
+          }
+      }
 }

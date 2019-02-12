@@ -51,53 +51,42 @@ Symmetry::isFull() const
   return count <= 1;
 }
 
-/* Here we construct the beginning of the |symiterator|. The first
-   symmetry index is 0. If length is 2, the second index is the
-   dimension, otherwise we create the subordinal symmetry set and its
-   beginning as subordinal |symiterator|. */
+/* Construct a symiterator of given dimension, starting from the given
+   symmetry. */
 
-symiterator::symiterator(SymmetrySet &ss)
-  : s(ss), end_flag(false)
+symiterator::symiterator(int dim_arg, Symmetry run_arg)
+  : dim{dim_arg}, run(std::move(run_arg))
 {
-  s.sym()[0] = 0;
-  if (s.size() == 2)
-    s.sym()[1] = s.dimen();
-  else
-    {
-      subs = std::make_unique<SymmetrySet>(s, s.dimen());
-      subit = std::make_unique<symiterator>(*subs);
-    }
 }
 
 /* Here we move to the next symmetry. We do so only, if we are not at
    the end. If length is 2, we increase lower index and decrease upper
    index, otherwise we increase the subordinal symmetry. If we got to the
    end, we recreate the subordinal symmetry set and set the subordinal
-   iterator to the beginning. At the end we test, if we are not at the
-   end. This is recognized if the lowest index exceeded the dimension. */
+   iterator to the beginning. */
 
 symiterator &
 symiterator::operator++()
 {
-  if (!end_flag)
+  if (run[0] == dim)
+    run[0]++; // Jump to the past-the-end iterator
+  else if (run.size() == 2)
     {
-      if (s.size() == 2)
+      run[0]++;
+      run[1]--;
+    }
+  else
+    {
+      symiterator subit{dim-run[0], Symmetry(run, run.size()-1)};
+      ++subit;
+      if (run[1] == dim-run[0]+1)
         {
-          s.sym()[0]++;
-          s.sym()[1]--;
+          run[0]++;
+          run[1] = 0;
+          /* subit is equal to the past-the-end iterator, so the range
+             2..(size()-1) is already set to 0 */
+          run[run.size()-1] = dim-run[0];
         }
-      else
-        {
-          ++(*subit);
-          if (subit->isEnd())
-            {
-              s.sym()[0]++;
-              subs = std::make_unique<SymmetrySet>(s, s.dimen()-s.sym()[0]);
-              subit = std::make_unique<symiterator>(*subs);
-            }
-        }
-      if (s.sym()[0] == s.dimen()+1)
-        end_flag = true;
     }
   return *this;
 }

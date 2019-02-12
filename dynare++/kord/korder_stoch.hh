@@ -516,18 +516,17 @@ KOrderStoch::performStep(int order)
   int maxd = g<t>().getMaxDim();
   KORD_RAISE_IF(order-1 != maxd && (order != 1 || maxd != -1),
                 "Wrong order for KOrderStoch::performStep");
-  SymmetrySet ss(order, 4);
-  for (symiterator si(ss); !si.isEnd(); ++si)
+  for (auto &si : SymmetrySet(order, 4))
     {
-      if ((*si)[2] == 0)
+      if (si[2] == 0)
         {
           JournalRecordPair pa(journal);
-          pa << "Recovering symmetry " << *si << endrec;
+          pa << "Recovering symmetry " << si << endrec;
 
-          _Ttensor *G_sym = faaDiBrunoG<t>(*si);
+          _Ttensor *G_sym = faaDiBrunoG<t>(si);
           G<t>().insert(G_sym);
 
-          _Ttensor *g_sym = faaDiBrunoZ<t>(*si);
+          _Ttensor *g_sym = faaDiBrunoZ<t>(si);
           g_sym->mult(-1.0);
           matA.multInv(*g_sym);
           g<t>().insert(g_sym);
