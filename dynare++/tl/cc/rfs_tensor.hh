@@ -48,7 +48,7 @@ class URTensor : public UTensor
   int nv;
 public:
   URTensor(int c, int nvar, int d)
-    : UTensor(along_row, IntSequence(d, nvar),
+    : UTensor(indor::along_row, IntSequence(d, nvar),
               UFSTensor::calcMaxOffset(nvar, d), c, d), nv(nvar)
   {
   }
@@ -84,7 +84,7 @@ class FRTensor : public FTensor
   int nv;
 public:
   FRTensor(int c, int nvar, int d)
-    : FTensor(along_row, IntSequence(d, nvar),
+    : FTensor(indor::along_row, IntSequence(d, nvar),
               FFSTensor::calcMaxOffset(nvar, d), c, d), nv(nvar)
   {
   }

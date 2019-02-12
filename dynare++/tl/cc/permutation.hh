@@ -76,9 +76,8 @@ public:
   {
     computeSortingMap(s);
   };
-  Permutation(const Permutation &p)
-     
-  = default;
+  Permutation(const Permutation &) = default;
+  Permutation(Permutation &&) = default;
   Permutation(const Permutation &p1, const Permutation &p2)
     : permap(p2.permap)
   {
@@ -88,9 +87,8 @@ public:
     : permap(p.size(), p.permap, i)
   {
   }
-  Permutation &
-  operator=(const Permutation &p)
-  = default;
+  Permutation &operator=(const Permutation &) = default;
+  Permutation &operator=(Permutation &&) = default;
   bool
   operator==(const Permutation &p)
   {
@@ -129,7 +127,7 @@ protected:
    element sets. The second constructor constructs a new permutation set
    over $n$ from all permutations over $n-1$. The parameter $n$ need not
    to be provided, but it serves to distinguish the constructor from copy
-   constructor, which is not provided.
+   constructor.
 
    The method |getPreserving| returns a factor subgroup of permutations,
    which are invariants with respect to the given sequence. This are all
@@ -140,11 +138,11 @@ class PermutationSet
 {
   int order{1};
   int size{1};
-  const Permutation **const pers;
+  std::vector<Permutation> pers;
 public:
   PermutationSet();
   PermutationSet(const PermutationSet &ps, int n);
-  ~PermutationSet();
+  ~PermutationSet() = default;
   int
   getNum() const
   {
@@ -153,9 +151,9 @@ public:
   const Permutation &
   get(int i) const
   {
-    return *(pers[i]);
+    return pers[i];
   }
-  std::vector<const Permutation *> getPreserving(const IntSequence &s) const;
+  std::vector<Permutation> getPreserving(const IntSequence &s) const;
 };
 
 /* The permutation bundle encapsulates all permutations sets up to some
@@ -163,10 +161,10 @@ public:
 
 class PermutationBundle
 {
-  std::vector<PermutationSet *> bundle;
+  std::vector<PermutationSet> bundle;
 public:
   PermutationBundle(int nmax);
-  ~PermutationBundle();
+  ~PermutationBundle() = default;
   const PermutationSet&get(int n) const;
   void generateUpTo(int nmax);
 };

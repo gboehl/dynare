@@ -147,7 +147,7 @@ public:
      from |FFSTensor| to |FGSTensor|. */
 
   FGSTensor(int r, const TensorDimens &td)
-    : FTensor(along_col, td.getNVX(), r,
+    : FTensor(indor::along_col, td.getNVX(), r,
               td.calcFoldMaxOffset(), td.dimen()), tdims(td)
   {
   }
@@ -216,7 +216,7 @@ public:
      constructor allows for in-place conversion from |UFSTensor| to
      |UGSTensor|. */
   UGSTensor(int r, const TensorDimens &td)
-    : UTensor(along_col, td.getNVX(), r,
+    : UTensor(indor::along_col, td.getNVX(), r,
               td.calcUnfoldMaxOffset(), td.dimen()), tdims(td)
   {
   }

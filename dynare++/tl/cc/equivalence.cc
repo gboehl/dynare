@@ -4,7 +4,7 @@
 #include "permutation.hh"
 #include "tl_exception.hh"
 
-#include <cstring>
+#include <iostream>
 
 int
 OrdSequence::operator[](int i) const
@@ -93,12 +93,12 @@ OrdSequence::average() const
 
 /* Debug print. */
 void
-OrdSequence::print(const char *prefix) const
+OrdSequence::print(const std::string &prefix) const
 {
-  printf("%s", prefix);
+  std::cout << prefix;
   for (int i : data)
-    printf("%d ", i);
-  printf("\n");
+    std::cout << i << ' ';
+  std::cout << '\n';
 }
 
 Equivalence::Equivalence(int num)
@@ -112,7 +112,7 @@ Equivalence::Equivalence(int num)
     }
 }
 
-Equivalence::Equivalence(int num, const char *dummy)
+Equivalence::Equivalence(int num, const std::string &dummy)
   : n(num)
 {
   OrdSequence s;
@@ -121,12 +121,7 @@ Equivalence::Equivalence(int num, const char *dummy)
   classes.push_back(s);
 }
 
-/* Copy constructors. The second also glues a given couple. */
-
-Equivalence::Equivalence(const Equivalence &e)
-  
-    
-= default;
+/* Copy constructor that also glues a given couple. */
 
 Equivalence::Equivalence(const Equivalence &e, int i1, int i2)
   : n(e.n),
@@ -142,15 +137,6 @@ Equivalence::Equivalence(const Equivalence &e, int i1, int i2)
       classes.erase(s2);
       insert(ns);
     }
-}
-
-const Equivalence &
-Equivalence::operator=(const Equivalence &e)
-{
-  classes.clear();
-  n = e.n;
-  classes = e.classes;
-  return *this;
 }
 
 bool
@@ -173,7 +159,7 @@ Equivalence::findHaving(int i) const
   auto si = classes.begin();
   while (si != classes.end())
     {
-      if ((*si).has(i))
+      if (si->has(i))
         return si;
       ++si;
     }
@@ -188,7 +174,7 @@ Equivalence::findHaving(int i)
   auto si = classes.begin();
   while (si != classes.end())
     {
-      if ((*si).has(i))
+      if (si->has(i))
         return si;
       ++si;
     }
@@ -251,7 +237,7 @@ Equivalence::trace(IntSequence &out, int num) const
   int i = 0;
   int nc = 0;
   for (auto it = begin(); it != end() && nc < num; ++it, ++nc)
-    for (int j = 0; j < (*it).length(); j++, i++)
+    for (int j = 0; j < it->length(); j++, i++)
       {
         TL_RAISE_IF(i >= out.size(),
                     "Wrong size of output sequence in Equivalence::trace");
@@ -270,22 +256,22 @@ Equivalence::trace(IntSequence &out, const Permutation &per) const
   for (int iclass = 0; iclass < numClasses(); iclass++)
     {
       auto itper = find(per.getMap()[iclass]);
-      for (int j = 0; j < (*itper).length(); j++, i++)
+      for (int j = 0; j < itper->length(); j++, i++)
         out[i] = (*itper)[j];
     }
 }
 
 /* Debug print. */
 void
-Equivalence::print(const char *prefix) const
+Equivalence::print(const std::string &prefix) const
 {
   int i = 0;
   for (auto it = classes.begin();
        it != classes.end();
        ++it, i++)
     {
-      printf("%sclass %d: ", prefix, i);
-      (*it).print("");
+      std::cout << prefix << "class " << i << ": ";
+      it->print("");
     }
 }
 
@@ -310,8 +296,7 @@ Equivalence::print(const char *prefix) const
    (since it is constructed by gluing attempts). */
 
 EquivalenceSet::EquivalenceSet(int num)
-  : n(num),
-    equis()
+  : n(num)
 {
   std::list<Equivalence> added;
   Equivalence first(n);
@@ -323,10 +308,7 @@ EquivalenceSet::EquivalenceSet(int num)
       added.pop_front();
     }
   if (n > 1)
-    {
-      Equivalence last(n, "");
-      equis.push_back(last);
-    }
+    equis.emplace_back(n, "");
 }
 
 /* This method is used in |addParents| and returns |true| if the object
@@ -371,25 +353,23 @@ EquivalenceSet::addParents(const Equivalence &e,
         if (!has(ns))
           {
             added.push_back(ns);
-            equis.push_back(ns);
+            equis.push_back(std::move(ns));
           }
       }
 }
 
 /* Debug print. */
 void
-EquivalenceSet::print(const char *prefix) const
+EquivalenceSet::print(const std::string &prefix) const
 {
-  char tmp[100];
-  strcpy(tmp, prefix);
-  strcat(tmp, "    ");
   int i = 0;
   for (auto it = equis.begin();
        it != equis.end();
        ++it, i++)
     {
-      printf("%sequivalence %d:(classes %d)\n", prefix, i, (*it).numClasses());
-      (*it).print(tmp);
+      std::cout << prefix << "equivalence " << i << ":(classes "
+                << it->numClasses() << ")\n";
+      it->print(prefix + "    ");
     }
 }
 
@@ -404,15 +384,13 @@ EquivalenceBundle::EquivalenceBundle(int nmax)
 const EquivalenceSet &
 EquivalenceBundle::get(int n) const
 {
-  if (n > (int) (bundle.size()) || n < 1)
+  if (n > static_cast<int>(bundle.size()) || n < 1)
     {
       TL_RAISE("Equivalence set not found in EquivalenceBundle::get");
       return bundle[0];
     }
   else
-    {
-      return bundle[n-1];
-    }
+    return bundle[n-1];
 }
 
 /* Get |curmax| which is a maximum size in the bundle, and generate for

@@ -10,7 +10,7 @@
    rows in the unfolded tensor |ut|, make an index of the folded tensor
    by sorting the coordinates, and add the row. */
 FRTensor::FRTensor(const URTensor &ut)
-  : FTensor(along_row, IntSequence(ut.dimen(), ut.nvar()),
+  : FTensor(indor::along_row, IntSequence(ut.dimen(), ut.nvar()),
             FFSTensor::calcMaxOffset(ut.nvar(), ut.dimen()), ut.ncols(),
             ut.dimen()),
     nv(ut.nvar())
@@ -20,7 +20,7 @@ FRTensor::FRTensor(const URTensor &ut)
     {
       IntSequence vtmp(in.getCoor());
       vtmp.sort();
-      index tar(this, vtmp);
+      index tar(*this, vtmp);
       addRow(ut, *in, *tar);
     }
 }
@@ -62,7 +62,7 @@ FRTensor::decrement(IntSequence &v) const
    (duplicates) zero. In this way, if the unfolded tensor is folded back,
    we should get the same data. */
 URTensor::URTensor(const FRTensor &ft)
-  : UTensor(along_row, IntSequence(ft.dimen(), ft.nvar()),
+  : UTensor(indor::along_row, IntSequence(ft.dimen(), ft.nvar()),
             UFSTensor::calcMaxOffset(ft.nvar(), ft.dimen()), ft.ncols(),
             ft.dimen()),
     nv(ft.nvar())
@@ -70,7 +70,7 @@ URTensor::URTensor(const FRTensor &ft)
   zeros();
   for (index src = ft.begin(); src != ft.end(); ++src)
     {
-      index in(this, src.getCoor());
+      index in(*this, src.getCoor());
       copyRow(ft, *src, *in);
     }
 }
@@ -181,7 +181,7 @@ FRSingleTensor::FRSingleTensor(const URSingleTensor &ut)
     {
       IntSequence vtmp(in.getCoor());
       vtmp.sort();
-      index tar(this, vtmp);
+      index tar(*this, vtmp);
       get(*tar, 0) += ut.get(*in, 0);
     }
 }

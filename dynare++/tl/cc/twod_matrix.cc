@@ -3,6 +3,11 @@
 #include "twod_matrix.hh"
 #include "tl_exception.hh"
 
+#include <vector>
+#include <fstream>
+#include <iomanip>
+#include <limits>
+
 ConstTwoDMatrix::ConstTwoDMatrix(const TwoDMatrix &m)
   : ConstGeneralMatrix(m)
 {
@@ -29,23 +34,22 @@ ConstTwoDMatrix::ConstTwoDMatrix(int first_row, int num, const ConstTwoDMatrix &
 }
 
 void
-ConstTwoDMatrix::writeMat(mat_t *fd, const char *vname) const
+ConstTwoDMatrix::writeMat(mat_t *fd, const std::string &vname) const
 {
   size_t dims[2];
   dims[0] = nrows();
   dims[1] = ncols();
-  auto *data = new double[nrows()*ncols()];
+  std::vector<double> data(nrows()*ncols());
 
   for (int j = 0; j < ncols(); j++)
     for (int i = 0; i < nrows(); i++)
       data[j*nrows()+i] = get(i, j);
 
-  matvar_t *v = Mat_VarCreate(vname, MAT_C_DOUBLE, MAT_T_DOUBLE, 2, dims, data, 0);
+  matvar_t *v = Mat_VarCreate(vname.c_str(), MAT_C_DOUBLE, MAT_T_DOUBLE, 2, dims, data.data(), 0);
 
   Mat_VarWrite(fd, v, MAT_COMPRESSION_NONE);
 
   Mat_VarFree(v);
-  delete[] data;
 }
 
 TwoDMatrix &
@@ -94,18 +98,19 @@ TwoDMatrix::addColumn(double d, const ConstTwoDMatrix &m, int from, int to)
 }
 
 void
-TwoDMatrix::save(const char *fname) const
+TwoDMatrix::save(const std::string &fname) const
 {
-  FILE *fd;
-  if (nullptr == (fd = fopen(fname, "w")))
-    {
-      TL_RAISE("Cannot open file for writing in TwoDMatrix::save");
-    }
+  std::ofstream fd{fname, std::ios::out | std::ios::trunc};
+  if (fd.fail())
+    TL_RAISE("Cannot open file for writing in TwoDMatrix::save");
+
+  fd << std::setprecision(std::numeric_limits<double>::digits10 + 1);
+
   for (int row = 0; row < nrows(); row++)
     {
       for (int col = 0; col < ncols(); col++)
-        fprintf(fd, " %20.10g", get(row, col));
-      fprintf(fd, "\n");
+        fd << ' ' << get(row, col);
+      fd << '\n';
     }
-  fclose(fd);
+  fd.close();
 }

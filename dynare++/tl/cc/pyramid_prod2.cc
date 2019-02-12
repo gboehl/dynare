@@ -79,7 +79,7 @@ IrregTensorHeader::calcMaxOffset() const
    multiply all columns of the header. */
 
 IrregTensor::IrregTensor(const IrregTensorHeader &h)
-  : Tensor(along_row, IntSequence(h.dimen(), 0), h.end_seq,
+  : Tensor(indor::along_row, IntSequence(h.dimen(), 0), h.end_seq,
            h.calcMaxOffset(), 1, h.dimen()),
     header(h)
 {
@@ -110,7 +110,7 @@ IrregTensor::addTo(FRSingleTensor &out) const
     {
       IntSequence tmp(it.getCoor());
       tmp.sort();
-      Tensor::index ind(&out, tmp);
+      Tensor::index ind(out, tmp);
       out.get(*ind, 0) += get(*it, 0);
     }
 }

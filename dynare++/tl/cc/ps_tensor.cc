@@ -25,7 +25,7 @@ UPSTensor::decideFillMethod(const FSSparseTensor &t)
 
 UPSTensor::UPSTensor(const FSSparseTensor &t, const IntSequence &ss,
                      const IntSequence &coor, const PerTensorDimens &ptd)
-  : UTensor(along_col, ptd.getNVX(),
+  : UTensor(indor::along_col, ptd.getNVX(),
             t.nrows(), ptd.calcUnfoldMaxOffset(), ptd.dimen()),
     tdims(ptd)
 {
@@ -84,7 +84,7 @@ UPSTensor::addTo(FGSTensor &out) const
     {
       IntSequence vtmp(dimen());
       tdims.getPer().apply(in.getCoor(), vtmp);
-      index tin(this, vtmp);
+      index tin(*this, vtmp);
       out.addColumn(*this, *tin, *in);
     }
 }
@@ -127,7 +127,7 @@ UPSTensor::addTo(UGSTensor &out) const
       // permute |outrun|
       IntSequence perrun(out.dimen());
       tdims.getPer().apply(outrun, perrun);
-      index from(this, perrun);
+      index from(*this, perrun);
       // construct submatrices
       ConstTwoDMatrix subfrom(*this, *from, cols);
       TwoDMatrix subout(out, out_col, cols);
@@ -215,7 +215,7 @@ UPSTensor::fillFromSparseTwo(const FSSparseTensor &t, const IntSequence &ss,
     }
 
   const PermutationSet &pset = tls.pbundle->get(coor.size());
-  std::vector<const Permutation *> pp = pset.getPreserving(coor);
+  std::vector<Permutation> pp = pset.getPreserving(coor);
 
   Permutation unsort(coor);
   zeros();
@@ -231,8 +231,8 @@ UPSTensor::fillFromSparseTwo(const FSSparseTensor &t, const IntSequence &ss,
           for (auto & i : pp)
             {
               IntSequence cp(coor.size());
-              i->apply(c, cp);
-              Tensor::index ind(this, cp);
+              i.apply(c, cp);
+              Tensor::index ind(*this, cp);
               TL_RAISE_IF(*ind < 0 || *ind >= ncols(),
                           "Internal error in slicing constructor of UPSTensor");
               get((*run).second.first, *ind) = (*run).second.second;
@@ -345,7 +345,7 @@ FPSTensor::addTo(FGSTensor &out) const
     {
       IntSequence coor(dimen());
       tdims.getPer().apply(tar.getCoor(), coor);
-      index src(this, coor);
+      index src(*this, coor);
       out.addColumn(*this, *src, *tar);
     }
 }
@@ -372,7 +372,7 @@ FPSTensor::addTo(FGSTensor &out) const
 
 FPSTensor::FPSTensor(const TensorDimens &td, const Equivalence &e, const Permutation &p,
                      const GSSparseTensor &a, const KronProdAll &kp)
-  : FTensor(along_col, PerTensorDimens(td, Permutation(e, p)).getNVX(),
+  : FTensor(indor::along_col, PerTensorDimens(td, Permutation(e, p)).getNVX(),
             a.nrows(), kp.ncols(), td.dimen()),
     tdims(td, e, p)
 {

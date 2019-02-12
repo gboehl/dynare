@@ -247,7 +247,7 @@ public:
     while (i < numStacks() && getType(i, s) == _Stype::matrix)
       {
         const _Ttype *t = getMatrix(i, s);
-        Tensor::index ind(t, coor);
+        Tensor::index ind(*t, coor);
         Vector subres(*res, stack_offsets[i], stack_sizes[i]);
         subres = ConstGeneralMatrix(*t).getCol(*ind);
         i++;

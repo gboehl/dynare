@@ -17,8 +17,9 @@
 
 #include "GeneralMatrix.hh"
 
-#include <cstdio>
 #include <matio.h>
+
+#include <string>
 #include <utility>
 
 class TwoDMatrix;
@@ -46,8 +47,7 @@ public:
     : ConstGeneralMatrix(m, first_row, first_col, rows, cols)
   {
   }
-  ~ConstTwoDMatrix()
-  override = default;
+  ~ConstTwoDMatrix() override = default;
 
   ConstTwoDMatrix &operator=(const ConstTwoDMatrix &v) = delete;
   ConstTwoDMatrix &operator=(ConstTwoDMatrix &&v) = delete;
@@ -62,7 +62,7 @@ public:
   {
     return numCols();
   }
-  void writeMat(mat_t *fd, const char *vname) const;
+  void writeMat(mat_t *fd, const std::string &vname) const;
 };
 
 /* Here we do the same as for |ConstTwoDMatrix| plus define
@@ -192,9 +192,9 @@ public:
     addColumn(d, ConstTwoDMatrix(m), from, to);
   }
 
-  void save(const char *fname) const;
+  void save(const std::string &fname) const;
   void
-  writeMat(mat_t *fd, const char *vname) const
+  writeMat(mat_t *fd, const std::string &vname) const
   {
     ConstTwoDMatrix(*this).writeMat(fd, vname);
   }

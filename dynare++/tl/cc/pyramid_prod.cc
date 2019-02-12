@@ -67,7 +67,7 @@ USubTensor::addKronColumn(int i, const std::vector<const FGSTensor *> &ts,
     {
       IntSequence ind(pindex, lastdim, lastdim+t->dimen());
       lastdim += t->dimen();
-      index in(t, ind);
+      index in(*t, ind);
       tmpcols.push_back(t->getCol(*in));
     }
 

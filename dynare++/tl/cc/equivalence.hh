@@ -43,6 +43,7 @@
 
 #include <vector>
 #include <list>
+#include <string>
 
 /* Here is the abstraction for an equivalence class. We implement it as
    |vector<int>|. We have a constructor for empty class, copy
@@ -58,11 +59,10 @@ public:
   OrdSequence() : data()
   {
   }
-  OrdSequence(const OrdSequence &s)  
-  = default;
-  OrdSequence &
-  operator=(const OrdSequence &s)
-  = default;
+  OrdSequence(const OrdSequence &) = default;
+  OrdSequence(OrdSequence &&) = default;
+  OrdSequence &operator=(const OrdSequence &) = default;
+  OrdSequence &operator=(OrdSequence &&) = default;
   bool operator==(const OrdSequence &s) const;
   int operator[](int i) const;
   bool operator<(const OrdSequence &s) const;
@@ -79,7 +79,7 @@ public:
   void add(int i);
   void add(const OrdSequence &s);
   bool has(int i) const;
-  void print(const char *prefix) const;
+  void print(const std::string &prefix) const;
 private:
   double average() const;
 };
@@ -107,11 +107,13 @@ public:
      The third is the copy constructor. And the fourth is the copy
      constructor plus gluing |i1| and |i2| in one class. */
   Equivalence(int num);
-  Equivalence(int num, const char *dummy);
-  Equivalence(const Equivalence &e);
+  Equivalence(int num, const std::string &dummy);
+  Equivalence(const Equivalence &) = default;
+  Equivalence(Equivalence &&) = default;
   Equivalence(const Equivalence &e, int i1, int i2);
 
-  const Equivalence &operator=(const Equivalence &e);
+  Equivalence &operator=(const Equivalence &) = default;
+  Equivalence &operator=(Equivalence &&) = default;
   bool operator==(const Equivalence &e) const;
   bool
   operator!=(const Equivalence &e) const
@@ -135,7 +137,7 @@ public:
     trace(out, numClasses());
   }
   void trace(IntSequence &out, const Permutation &per) const;
-  void print(const char *prefix) const;
+  void print(const std::string &prefix) const;
   seqit
   begin()
   {
@@ -185,7 +187,7 @@ class EquivalenceSet
 public:
   using const_iterator = std::list<Equivalence>::const_iterator;
   EquivalenceSet(int num);
-  void print(const char *prefix) const;
+  void print(const std::string &prefix) const;
   const_iterator
   begin() const
   {
@@ -214,7 +216,7 @@ class EquivalenceBundle
 public:
   EquivalenceBundle(int nmax);
   ~EquivalenceBundle() = default;
-  const EquivalenceSet&get(int n) const;
+  const EquivalenceSet &get(int n) const;
   void generateUpTo(int nmax);
 };
 

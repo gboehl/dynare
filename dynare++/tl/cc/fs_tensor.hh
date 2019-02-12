@@ -52,7 +52,7 @@ public:
      The fifth constructs a subtensor of selected rows. */
 
   FFSTensor(int r, int nvar, int d)
-    : FTensor(along_col, IntSequence(d, nvar),
+    : FTensor(indor::along_col, IntSequence(d, nvar),
               r, calcMaxOffset(nvar, d), d), nv(nvar)
   {
   }
@@ -97,7 +97,7 @@ class UFSTensor : public UTensor
   int nv;
 public:
   UFSTensor(int r, int nvar, int d)
-    : UTensor(along_col, IntSequence(d, nvar),
+    : UTensor(indor::along_col, IntSequence(d, nvar),
               r, calcMaxOffset(nvar, d), d), nv(nvar)
   {
   }

@@ -172,28 +172,28 @@ public:
      |KronProdAllOptim|, which permutes the permuted equivalence classes. */
   UPSTensor(const TensorDimens &td, const Equivalence &e,
             const ConstTwoDMatrix &a, const KronProdAll &kp)
-    : UTensor(along_col, PerTensorDimens(td, e).getNVX(),
+    : UTensor(indor::along_col, PerTensorDimens(td, e).getNVX(),
               a.nrows(), kp.ncols(), td.dimen()), tdims(td, e)
   {
     kp.mult(a, *this);
   }
   UPSTensor(const TensorDimens &td, const Equivalence &e,
             const ConstTwoDMatrix &a, const KronProdAllOptim &kp)
-    : UTensor(along_col, PerTensorDimens(td, Permutation(e, kp.getPer())).getNVX(),
+    : UTensor(indor::along_col, PerTensorDimens(td, Permutation(e, kp.getPer())).getNVX(),
               a.nrows(), kp.ncols(), td.dimen()), tdims(td, Permutation(e, kp.getPer()))
   {
     kp.mult(a, *this);
   }
   UPSTensor(const TensorDimens &td, const Equivalence &e, const Permutation &p,
             const ConstTwoDMatrix &a, const KronProdAll &kp)
-    : UTensor(along_col, PerTensorDimens(td, Permutation(e, p)).getNVX(),
+    : UTensor(indor::along_col, PerTensorDimens(td, Permutation(e, p)).getNVX(),
               a.nrows(), kp.ncols(), td.dimen()), tdims(td, Permutation(e, p))
   {
     kp.mult(a, *this);
   }
   UPSTensor(const TensorDimens &td, const Equivalence &e, const Permutation &p,
             const ConstTwoDMatrix &a, const KronProdAllOptim &kp)
-    : UTensor(along_col, PerTensorDimens(td, Permutation(e, Permutation(p, kp.getPer()))).getNVX(),
+    : UTensor(indor::along_col, PerTensorDimens(td, Permutation(e, Permutation(p, kp.getPer()))).getNVX(),
               a.nrows(), kp.ncols(), td.dimen()), tdims(td, Permutation(e, Permutation(p, kp.getPer())))
   {
     kp.mult(a, *this);
@@ -334,28 +334,28 @@ public:
      sparse tensor). */
   FPSTensor(const TensorDimens &td, const Equivalence &e,
             const ConstTwoDMatrix &a, const KronProdAll &kp)
-    : FTensor(along_col, PerTensorDimens(td, e).getNVX(),
+    : FTensor(indor::along_col, PerTensorDimens(td, e).getNVX(),
               a.nrows(), kp.ncols(), td.dimen()), tdims(td, e)
   {
     kp.mult(a, *this);
   }
   FPSTensor(const TensorDimens &td, const Equivalence &e,
             const ConstTwoDMatrix &a, const KronProdAllOptim &kp)
-    : FTensor(along_col, PerTensorDimens(td, Permutation(e, kp.getPer())).getNVX(),
+    : FTensor(indor::along_col, PerTensorDimens(td, Permutation(e, kp.getPer())).getNVX(),
               a.nrows(), kp.ncols(), td.dimen()), tdims(td, e, kp.getPer())
   {
     kp.mult(a, *this);
   }
   FPSTensor(const TensorDimens &td, const Equivalence &e, const Permutation &p,
             const ConstTwoDMatrix &a, const KronProdAll &kp)
-    : FTensor(along_col, PerTensorDimens(td, Permutation(e, p)).getNVX(),
+    : FTensor(indor::along_col, PerTensorDimens(td, Permutation(e, p)).getNVX(),
               a.nrows(), kp.ncols(), td.dimen()), tdims(td, e, p)
   {
     kp.mult(a, *this);
   }
   FPSTensor(const TensorDimens &td, const Equivalence &e, const Permutation &p,
             const ConstTwoDMatrix &a, const KronProdAllOptim &kp)
-    : FTensor(along_col, PerTensorDimens(td, Permutation(e, Permutation(p, kp.getPer()))).getNVX(),
+    : FTensor(indor::along_col, PerTensorDimens(td, Permutation(e, Permutation(p, kp.getPer()))).getNVX(),
               a.nrows(), kp.ncols(), td.dimen()), tdims(td, e, Permutation(p, kp.getPer()))
   {
     kp.mult(a, *this);

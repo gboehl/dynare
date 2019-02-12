@@ -62,7 +62,7 @@ UNormalMoments::generateMoments(int maxdim, const TwoDMatrix &v)
                 {
                   IntSequence ind(kronv->dimen());
                   per.apply(it.getCoor(), ind);
-                  Tensor::index it2(mom, ind);
+                  Tensor::index it2(*mom, ind);
                   mom->get(*it2, 0) += kronv->get(*it, 0);
                 }
             }

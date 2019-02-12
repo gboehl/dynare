@@ -16,7 +16,7 @@
    by an appropriate item of |x| and added to the column of $[g]$ tensor. */
 
 FFSTensor::FFSTensor(const FFSTensor &t, const ConstVector &x)
-  : FTensor(along_col, IntSequence(t.dimen()-1, t.nvar()),
+  : FTensor(indor::along_col, IntSequence(t.dimen()-1, t.nvar()),
             t.nrows(), calcMaxOffset(t.nvar(), t.dimen()-1), t.dimen()-1),
     nv(t.nvar())
 {
@@ -32,7 +32,7 @@ FFSTensor::FFSTensor(const FFSTensor &t, const ConstVector &x)
       for (int i = 0; i < nvar(); i++)
         {
           IntSequence from_ind(i, to.getCoor());
-          Tensor::index from(&t, from_ind);
+          Tensor::index from(t, from_ind);
           addColumn(x[i], t, *from, *to);
         }
     }
@@ -55,14 +55,14 @@ FFSTensor::calcMaxOffset(int nvar, int d)
 /* The conversion from sparse tensor is clear. We go through all the
    tensor and write to the dense what is found. */
 FFSTensor::FFSTensor(const FSSparseTensor &t)
-  : FTensor(along_col, IntSequence(t.dimen(), t.nvar()),
+  : FTensor(indor::along_col, IntSequence(t.dimen(), t.nvar()),
             t.nrows(), calcMaxOffset(t.nvar(), t.dimen()), t.dimen()),
     nv(t.nvar())
 {
   zeros();
   for (const auto & it : t.getMap())
     {
-      index ind(this, it.first);
+      index ind(*this, it.first);
       get(it.second.first, *ind) = it.second.second;
     }
 }
@@ -73,13 +73,13 @@ FFSTensor::FFSTensor(const FSSparseTensor &t)
    copy the column. */
 
 FFSTensor::FFSTensor(const UFSTensor &ut)
-  : FTensor(along_col, IntSequence(ut.dimen(), ut.nvar()),
+  : FTensor(indor::along_col, IntSequence(ut.dimen(), ut.nvar()),
             ut.nrows(), calcMaxOffset(ut.nvar(), ut.dimen()), ut.dimen()),
     nv(ut.nvar())
 {
   for (index in = begin(); in != end(); ++in)
     {
-      index src(&ut, in.getCoor());
+      index src(ut, in.getCoor());
       copyColumn(ut, *src, *in);
     }
 }
@@ -156,7 +156,7 @@ FFSTensor::addSubTensor(const FGSTensor &t)
       IntSequence c(ind.getCoor());
       c.add(1, shift);
       c.sort();
-      Tensor::index tar(this, c);
+      Tensor::index tar(*this, c);
       addColumn(t, *ind, *tar);
     }
 }
@@ -167,7 +167,7 @@ FFSTensor::addSubTensor(const FGSTensor &t)
    regularity of the unfolded tensor. */
 
 UFSTensor::UFSTensor(const UFSTensor &t, const ConstVector &x)
-  : UTensor(along_col, IntSequence(t.dimen()-1, t.nvar()),
+  : UTensor(indor::along_col, IntSequence(t.dimen()-1, t.nvar()),
             t.nrows(), calcMaxOffset(t.nvar(), t.dimen()-1), t.dimen()-1),
     nv(t.nvar())
 {
@@ -190,13 +190,13 @@ UFSTensor::UFSTensor(const UFSTensor &t, const ConstVector &x)
    columns of folded tensor, and then call |unfoldData()|. */
 
 UFSTensor::UFSTensor(const FFSTensor &ft)
-  : UTensor(along_col, IntSequence(ft.dimen(), ft.nvar()),
+  : UTensor(indor::along_col, IntSequence(ft.dimen(), ft.nvar()),
             ft.nrows(), calcMaxOffset(ft.nvar(), ft.dimen()), ft.dimen()),
     nv(ft.nvar())
 {
   for (index src = ft.begin(); src != ft.end(); ++src)
     {
-      index in(this, src.getCoor());
+      index in(*this, src.getCoor());
       copyColumn(ft, *src, *in);
     }
   unfoldData();
@@ -266,7 +266,7 @@ UFSTensor::addSubTensor(const UGSTensor &t)
       c.add(-1, shift);
       if (c.isPositive() && c.less(t.getDims().getNVX()))
         {
-          Tensor::index from(&t, c);
+          Tensor::index from(t, c);
           addColumn(t, *from, *tar);
         }
     }
@@ -283,7 +283,7 @@ UFSTensor::unfoldData()
     {
       IntSequence v(in.getCoor());
       v.sort();
-      index tmp(this, v);
+      index tmp(*this, v);
       copyColumn(*tmp, *in);
     }
 }

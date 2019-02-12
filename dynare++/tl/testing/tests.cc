@@ -181,7 +181,7 @@ TestRunnable::index_offset(const Symmetry &s, const IntSequence &nvs)
   for (typename _Ttype::index run = dummy.begin();
        run != dummy.end(); ++run, nincr++)
     {
-      typename _Ttype::index run2(&dummy, run.getCoor());
+      typename _Ttype::index run2(dummy, run.getCoor());
       if (!(run == run2))
         fails++;
     }

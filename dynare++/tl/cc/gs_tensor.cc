@@ -138,13 +138,13 @@ TensorDimens::decrement(IntSequence &v) const
 /* Here we go through columns of folded, calculate column of unfolded,
    and copy data. */
 FGSTensor::FGSTensor(const UGSTensor &ut)
-  : FTensor(along_col, ut.tdims.getNVX(), ut.nrows(),
+  : FTensor(indor::along_col, ut.tdims.getNVX(), ut.nrows(),
             ut.tdims.calcFoldMaxOffset(), ut.dimen()),
     tdims(ut.tdims)
 {
   for (index ti = begin(); ti != end(); ++ti)
     {
-      index ui(&ut, ti.getCoor());
+      index ui(ut, ti.getCoor());
       copyColumn(ut, *ui, *ti);
     }
 }
@@ -160,7 +160,7 @@ FGSTensor::FGSTensor(const UGSTensor &ut)
    obtain coordinates in the |this| tensor and we copy the item. */
 FGSTensor::FGSTensor(const FSSparseTensor &t, const IntSequence &ss,
                      const IntSequence &coor, const TensorDimens &td)
-  : FTensor(along_col, td.getNVX(), t.nrows(),
+  : FTensor(indor::along_col, td.getNVX(), t.nrows(),
             td.calcFoldMaxOffset(), td.dimen()),
     tdims(td)
 {
@@ -192,7 +192,7 @@ FGSTensor::FGSTensor(const FSSparseTensor &t, const IntSequence &ss,
         {
           IntSequence c((*run).first);
           c.add(-1, lb);
-          Tensor::index ind(this, c);
+          Tensor::index ind(*this, c);
           TL_RAISE_IF(*ind < 0 || *ind >= ncols(),
                       "Internal error in slicing constructor of FGSTensor");
           get((*run).second.first, *ind) = (*run).second.second;
@@ -204,7 +204,7 @@ FGSTensor::FGSTensor(const FSSparseTensor &t, const IntSequence &ss,
 /* The code is similar to |@<|FGSTensor| slicing from |FSSparseTensor|@>|. */
 FGSTensor::FGSTensor(const FFSTensor &t, const IntSequence &ss,
                      const IntSequence &coor, const TensorDimens &td)
-  : FTensor(along_col, td.getNVX(), t.nrows(),
+  : FTensor(indor::along_col, td.getNVX(), t.nrows(),
             td.calcFoldMaxOffset(), td.dimen()),
     tdims(td)
 {
@@ -226,8 +226,8 @@ FGSTensor::FGSTensor(const FFSTensor &t, const IntSequence &ss,
     }
 
   zeros();
-  Tensor::index lbi(&t, lb);
-  Tensor::index ubi(&t, ub);
+  Tensor::index lbi(t, lb);
+  Tensor::index ubi(t, ub);
   ++ubi;
   for (Tensor::index run = lbi; run != ubi; ++run)
     {
@@ -235,7 +235,7 @@ FGSTensor::FGSTensor(const FFSTensor &t, const IntSequence &ss,
         {
           IntSequence c(run.getCoor());
           c.add(-1, lb);
-          Tensor::index ind(this, c);
+          Tensor::index ind(*this, c);
           TL_RAISE_IF(*ind < 0 || *ind >= ncols(),
                       "Internal error in slicing constructor of FGSTensor");
           copyColumn(t, *run, *ind);
@@ -245,13 +245,13 @@ FGSTensor::FGSTensor(const FFSTensor &t, const IntSequence &ss,
 
 // |FGSTensor| conversion from |GSSparseTensor|
 FGSTensor::FGSTensor(const GSSparseTensor &t)
-  : FTensor(along_col, t.getDims().getNVX(), t.nrows(),
+  : FTensor(indor::along_col, t.getDims().getNVX(), t.nrows(),
             t.getDims().calcFoldMaxOffset(), t.dimen()), tdims(t.getDims())
 {
   zeros();
   for (const auto & it : t.getMap())
     {
-      index ind(this, it.first);
+      index ind(*this, it.first);
       get(it.second.first, *ind) = it.second.second;
     }
 }
@@ -338,13 +338,13 @@ FGSTensor::contractAndAdd(int i, FGSTensor &out,
    unfold data within the unfolded tensor. */
 
 UGSTensor::UGSTensor(const FGSTensor &ft)
-  : UTensor(along_col, ft.tdims.getNVX(), ft.nrows(),
+  : UTensor(indor::along_col, ft.tdims.getNVX(), ft.nrows(),
             ft.tdims.calcUnfoldMaxOffset(), ft.dimen()),
     tdims(ft.tdims)
 {
   for (index fi = ft.begin(); fi != ft.end(); ++fi)
     {
-      index ui(this, fi.getCoor());
+      index ui(*this, fi.getCoor());
       copyColumn(ft, *fi, *ui);
     }
   unfoldData();
@@ -354,7 +354,7 @@ UGSTensor::UGSTensor(const FGSTensor &ft)
 /* This makes a folded slice from the sparse tensor and unfolds it. */
 UGSTensor::UGSTensor(const FSSparseTensor &t, const IntSequence &ss,
                      const IntSequence &coor, const TensorDimens &td)
-  : UTensor(along_col, td.getNVX(), t.nrows(),
+  : UTensor(indor::along_col, td.getNVX(), t.nrows(),
             td.calcUnfoldMaxOffset(), td.dimen()),
     tdims(td)
 {
@@ -364,7 +364,7 @@ UGSTensor::UGSTensor(const FSSparseTensor &t, const IntSequence &ss,
   FGSTensor ft(t, ss, coor, td);
   for (index fi = ft.begin(); fi != ft.end(); ++fi)
     {
-      index ui(this, fi.getCoor());
+      index ui(*this, fi.getCoor());
       copyColumn(ft, *fi, *ui);
     }
   unfoldData();
@@ -374,7 +374,7 @@ UGSTensor::UGSTensor(const FSSparseTensor &t, const IntSequence &ss,
 /* This makes a folded slice from dense and unfolds it. */
 UGSTensor::UGSTensor(const UFSTensor &t, const IntSequence &ss,
                      const IntSequence &coor, const TensorDimens &td)
-  : UTensor(along_col, td.getNVX(), t.nrows(),
+  : UTensor(indor::along_col, td.getNVX(), t.nrows(),
             td.calcUnfoldMaxOffset(), td.dimen()),
     tdims(td)
 {
@@ -382,7 +382,7 @@ UGSTensor::UGSTensor(const UFSTensor &t, const IntSequence &ss,
   FGSTensor ft(folded, ss, coor, td);
   for (index fi = ft.begin(); fi != ft.end(); ++fi)
     {
-      index ui(this, fi.getCoor());
+      index ui(*this, fi.getCoor());
       copyColumn(ft, *fi, *ui);
     }
   unfoldData();
@@ -450,7 +450,7 @@ UGSTensor::getFirstIndexOf(const index &in) const
       vtmp.sort();
       last += tdims.getSym()[i];
     }
-  return index(this, v);
+  return index(*this, v);
 }
 
 /* Here is perfectly same code with the same semantics as in

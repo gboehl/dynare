@@ -70,54 +70,34 @@ Permutation::computeSortingMap(const IntSequence &s)
 }
 
 PermutationSet::PermutationSet()
-  :  pers(new const Permutation *[size])
 {
-  pers[0] = new Permutation(1);
+  pers.emplace_back(1);
 }
 
 PermutationSet::PermutationSet(const PermutationSet &sp, int n)
-  : order(n), size(n*sp.size),
-    pers(new const Permutation *[size])
+  : order(n), size(n*sp.size)
 {
-  for (int i = 0; i < size; i++)
-    pers[i] = nullptr;
-
   TL_RAISE_IF(n != sp.order+1,
               "Wrong new order in PermutationSet constructor");
 
-  int k = 0;
   for (int i = 0; i < sp.size; i++)
-    {
-      for (int j = 0; j < order; j++, k++)
-        {
-          pers[k] = new Permutation(*(sp.pers[i]), j);
-        }
-    }
+    for (int j = 0; j < order; j++)
+      pers.emplace_back(sp.pers[i], j);
 }
 
-PermutationSet::~PermutationSet()
-{
-  for (int i = 0; i < size; i++)
-    if (pers[i])
-      delete pers[i];
-  delete [] pers;
-}
-
-std::vector<const Permutation *>
+std::vector<Permutation>
 PermutationSet::getPreserving(const IntSequence &s) const
 {
   TL_RAISE_IF(s.size() != order,
               "Wrong sequence length in PermutationSet::getPreserving");
 
-  std::vector<const Permutation *> res;
+  std::vector<Permutation> res;
   IntSequence tmp(s.size());
   for (int i = 0; i < size; i++)
     {
-      pers[i]->apply(s, tmp);
+      pers[i].apply(s, tmp);
       if (s == tmp)
-        {
-          res.push_back(pers[i]);
-        }
+        res.push_back(pers[i]);
     }
 
   return res;
@@ -129,35 +109,25 @@ PermutationBundle::PermutationBundle(int nmax)
   generateUpTo(nmax);
 }
 
-PermutationBundle::~PermutationBundle()
-{
-  for (auto & i : bundle)
-    delete i;
-}
-
 const PermutationSet &
 PermutationBundle::get(int n) const
 {
-  if (n > (int) (bundle.size()) || n < 1)
+  if (n > static_cast<int>(bundle.size()) || n < 1)
     {
       TL_RAISE("Permutation set not found in PermutationSet::get");
-      return *(bundle[0]);
+      return bundle[0];
     }
   else
-    {
-      return *(bundle[n-1]);
-    }
+    return bundle[n-1];
 }
 
 void
 PermutationBundle::generateUpTo(int nmax)
 {
   if (bundle.size() == 0)
-    bundle.push_back(new PermutationSet());
+    bundle.emplace_back();
 
   int curmax = bundle.size();
   for (int n = curmax+1; n <= nmax; n++)
-    {
-      bundle.push_back(new PermutationSet(*(bundle.back()), n));
-    }
+    bundle.emplace_back(bundle.back(), n);
 }
