@@ -82,7 +82,7 @@ if ~isempty(param_names)
         if isempty(idx)
             if ~isempty(eqtags)
                 error(['Could not find ' param_names{i} ...
-                    ' in the equations specified by ' strjoin(eqtags, ',')]);
+                    ' in the equations specified by ' strjoin(eqtags, ', ')]);
             end
             error('Couldn''t find parameter in equations');
         end
