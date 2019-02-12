@@ -164,7 +164,7 @@ KordpDynare::populateDerivativesContainer(const TwoDMatrix &g, int ord, const st
   // model derivatives FSSparseTensor instance
   FSSparseTensor *mdTi = (new FSSparseTensor(ord, nJcols, nY));
 
-  IntSequence s{ord, 0};
+  IntSequence s(ord, 0);
 
   if (ord == 1)
     {
