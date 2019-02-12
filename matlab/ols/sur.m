@@ -78,14 +78,15 @@ if ~isempty(param_names)
     pidxs = zeros(nparams, 1);
     names = X.name;
     for i = 1:nparams
-        pidxs(i) = find(strcmp(param_names{i}, names));
-        if isempty(pidxs(i))
+        idx = find(strcmp(param_names{i}, names));
+        if isempty(idx)
             if ~isempty(eqtags)
                 error(['Could not find ' param_names{i} ...
                     ' in the equations specified by ' strjoin(eqtags, ',')]);
             end
             error('Couldn''t find parameter in equations');
         end
+        pidxs(i) = idx;
     end
     subcols = setdiff(1:X.vobs, pidxs);
     for i = 1:length(subcols)
