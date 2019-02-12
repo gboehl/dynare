@@ -5,9 +5,7 @@
 #include "tl_exception.hh"
 #include "fs_tensor.hh"
 
-#include <cstdlib>
-#include <cmath>
-#include <cstdio>
+#include <iostream>
 
 IntGenerator intgen;
 
@@ -17,23 +15,23 @@ IntGenerator::init(int nf, int ny, int nv, int nw, int nu,
 {
   maxim = mx;
   probab = prob;
-  long int seed = nf;
+  decltype(mtgen)::result_type seed = nf;
   seed = 256*seed + ny;
   seed = 256*seed + nv;
   seed = 256*seed + nw;
   seed = 256*seed + nu;
-  srand48(seed);
+  mtgen.seed(seed);
 }
 
 int
-IntGenerator::get() const
+IntGenerator::get()
 {
-  double d = drand48();
-  auto num_inter = (int) (((double) 2*maxim)/(1.0-probab));
+  double d = dis(mtgen);
+  auto num_inter = static_cast<int>(static_cast<double>(2*maxim)/(1.0-probab));
   int num_zero_inter = num_inter - 2*maxim;
-  if (d < ((double) num_zero_inter)/num_inter)
+  if (d < static_cast<double>(num_zero_inter)/num_inter)
     return 0;
-  return (int) (d*num_inter)-num_zero_inter-maxim;
+  return static_cast<int>((d*num_inter)-num_zero_inter-maxim);
 }
 
 Monom::Monom(int len)
@@ -81,28 +79,17 @@ Monom::multiplyWith(int ex, const Monom &m)
 void
 Monom::print() const
 {
-  printf("[");
+  std::cout << '[';
   for (int i = 0; i < size(); i++)
-    printf("%3d", operator[](i));
-  printf("]");
+    std::cout << operator[](i);
+  std::cout << ']';
 }
 
 Monom1Vector::Monom1Vector(int nxx, int l)
-  : nx(nxx), len(l), x(new Monom *[len])
+  : nx(nxx), len(l)
 {
   for (int i = 0; i < len; i++)
-    {
-      x[i] = new Monom(nx);
-    }
-}
-
-Monom1Vector::~Monom1Vector()
-{
-  for (int i = 0; i < len; i++)
-    {
-      delete x[i];
-    }
-  delete [] x;
+    x.emplace_back(nx);
 }
 
 void
@@ -112,9 +99,7 @@ Monom1Vector::deriv(const IntSequence &c, Vector &out) const
               "Wrong length of output vector in Monom1Vector::deriv");
 
   for (int i = 0; i < len; i++)
-    {
-      out[i] = x[i]->deriv(c);
-    }
+    out[i] = x[i].deriv(c);
 }
 
 FGSTensor *
@@ -133,60 +118,46 @@ Monom1Vector::deriv(int dim) const
 void
 Monom1Vector::print() const
 {
-  printf("Variables: x(%d)\n", nx);
-  printf("Rows: %d\n", len);
+  std::cout << "Variables: x(" << nx << ")\n"
+            << "Rows: " << len << '\n';
   for (int i = 0; i < len; i++)
     {
-      printf("%2d: ", i);
-      x[i]->print();
-      printf("\n");
+      std::cout << i << ": ";
+      x[i].print();
+      std::cout << '\n';
     }
 }
 
 Monom2Vector::Monom2Vector(int nyy, int nuu, int l)
-  : ny(nyy), nu(nuu), len(l), y(new Monom *[len]), u(new Monom *[len])
+  : ny(nyy), nu(nuu), len(l)
 {
   for (int i = 0; i < len; i++)
     {
-      y[i] = new Monom(ny);
-      u[i] = new Monom(nu);
+      y.emplace_back(ny);
+      u.emplace_back(nu);
     }
 }
 
 Monom2Vector::Monom2Vector(const Monom1Vector &g, const Monom2Vector &xmon)
-  : ny(xmon.ny), nu(xmon.nu), len(g.len),
-    y(new Monom *[len]), u(new Monom *[len])
+  : ny(xmon.ny), nu(xmon.nu), len(g.len)
 {
   TL_RAISE_IF(xmon.len != g.nx,
               "Wrong number of x's in Monom2Vector constructor");
 
   for (int i = 0; i < len; i++)
     {
-      y[i] = new Monom(ny, 0);
-      u[i] = new Monom(nu, 0);
+      y.emplace_back(ny, 0);
+      u.emplace_back(nu, 0);
     }
 
   for (int i = 0; i < len; i++)
-    {
-      // multiply from xmon
-      for (int j = 0; j < g.nx; j++)
-        {
-          int ex = g.x[i]->operator[](j);
-          y[i]->multiplyWith(ex, *(xmon.y[j]));
-          u[i]->multiplyWith(ex, *(xmon.u[j]));
-        }
-    }
-}
-
-Monom2Vector::~Monom2Vector()
-{
-  for (int i = 0; i < len; i++)
-    {
-      delete y[i];
-      delete u[i];
-    }
-  delete [] y;
-  delete [] u;
+    // multiply from xmon
+    for (int j = 0; j < g.nx; j++)
+      {
+        int ex = g.x[i].operator[](j);
+        y[i].multiplyWith(ex, xmon.y[j]);
+        u[i].multiplyWith(ex, xmon.u[j]);
+      }
 }
 
 void
@@ -202,15 +173,13 @@ Monom2Vector::deriv(const Symmetry &s, const IntSequence &c,
   IntSequence cy(c, 0, s[0]);
   IntSequence cu(c, s[0], s.dimen());
   for (int i = 0; i < len; i++)
-    {
-      out[i] = y[i]->deriv(cy) * u[i]->deriv(cu);
-    }
+    out[i] = y[i].deriv(cy) * u[i].deriv(cu);
 }
 
 FGSTensor *
 Monom2Vector::deriv(const Symmetry &s) const
 {
-  IntSequence nvs(2); nvs[0] = ny; nvs[1] = nu;
+  IntSequence nvs{ny, nu};
   FGSTensor *t = new FGSTensor(len, TensorDimens(s, nvs));
   for (Tensor::index it = t->begin(); it != t->end(); ++it)
     {
@@ -225,45 +194,28 @@ Monom2Vector::deriv(int maxdim) const
 {
   auto *res = new FGSContainer(2);
   for (int dim = 1; dim <= maxdim; dim++)
-    {
-      for (int ydim = 0; ydim <= dim; ydim++)
-        {
-          int udim = dim - ydim;
-          Symmetry s{ydim, udim};
-          res->insert(deriv(s));
-        }
-    }
+    for (int ydim = 0; ydim <= dim; ydim++)
+      {
+        int udim = dim - ydim;
+        Symmetry s{ydim, udim};
+        res->insert(deriv(s));
+      }
   return res;
 }
 
 void
 Monom2Vector::print() const
 {
-  printf("Variables: y(%d) u(%d)\n", ny, nu);
-  printf("Rows: %d\n", len);
+  std::cout << "Variables: y(" << ny << ") u(" << nu << ")\n"
+            << "Rows: " << len << '\n';
   for (int i = 0; i < len; i++)
     {
-      printf("%2d: ", i);
-      y[i]->print();
-      printf("    ");
-      u[i]->print();
-      printf("\n");
+      std::cout << i;
+      y[i].print();
+      std::cout << "    ";
+      u[i].print();
+      std::cout << '\n';
     }
-}
-
-Monom4Vector::~Monom4Vector()
-{
-  for (int i = 0; i < len; i++)
-    {
-      delete x1[i];
-      delete x2[i];
-      delete x3[i];
-      delete x4[i];
-    }
-  delete [] x1;
-  delete [] x2;
-  delete [] x3;
-  delete [] x4;
 }
 
 void
@@ -271,50 +223,34 @@ Monom4Vector::init_random()
 {
   for (int i = 0; i < len; i++)
     {
-      x1[i] = new Monom(nx1);
-      x2[i] = new Monom(nx2);
-      x3[i] = new Monom(nx3);
-      x4[i] = new Monom(nx4);
+      x1.emplace_back(nx1);
+      x2.emplace_back(nx2);
+      x3.emplace_back(nx3);
+      x4.emplace_back(nx4);
     }
 }
 
 Monom4Vector::Monom4Vector(int l, int ny, int nu)
-  : len(l), nx1(ny), nx2(nu), nx3(0), nx4(1),
-    x1(new Monom *[len]),
-    x2(new Monom *[len]),
-    x3(new Monom *[len]),
-    x4(new Monom *[len])
+  : len(l), nx1(ny), nx2(nu), nx3(0), nx4(1)
 {
   init_random();
 }
 
 Monom4Vector::Monom4Vector(int l, int ny, int nu, int nup)
-  : len(l), nx1(ny), nx2(nu), nx3(nup), nx4(1),
-    x1(new Monom *[len]),
-    x2(new Monom *[len]),
-    x3(new Monom *[len]),
-    x4(new Monom *[len])
+  : len(l), nx1(ny), nx2(nu), nx3(nup), nx4(1)
 {
   init_random();
 }
 
 Monom4Vector::Monom4Vector(int l, int nbigg, int ng, int ny, int nu)
-  : len(l), nx1(nbigg), nx2(ng), nx3(ny), nx4(nu),
-    x1(new Monom *[len]),
-    x2(new Monom *[len]),
-    x3(new Monom *[len]),
-    x4(new Monom *[len])
+  : len(l), nx1(nbigg), nx2(ng), nx3(ny), nx4(nu)
 {
   init_random();
 }
 
 Monom4Vector::Monom4Vector(const Monom4Vector &f, const Monom4Vector &bigg,
                            const Monom4Vector &g)
-  : len(f.len), nx1(bigg.nx1), nx2(bigg.nx2), nx3(bigg.nx3), nx4(1),
-    x1(new Monom *[len]),
-    x2(new Monom *[len]),
-    x3(new Monom *[len]),
-    x4(new Monom *[len])
+  : len(f.len), nx1(bigg.nx1), nx2(bigg.nx2), nx3(bigg.nx3), nx4(1)
 {
   TL_RAISE_IF(!(bigg.nx1 == g.nx1 && bigg.nx2 == g.nx2 && g.nx3 == 0
                 && bigg.nx4 == 1 && g.nx4 == 1),
@@ -325,10 +261,10 @@ Monom4Vector::Monom4Vector(const Monom4Vector &f, const Monom4Vector &bigg,
 
   for (int i = 0; i < len; i++)
     {
-      x1[i] = new Monom(nx1, 0);
-      x2[i] = new Monom(nx2, 0);
-      x3[i] = new Monom(nx3, 0);
-      x4[i] = new Monom(nx4, 0);
+      x1.emplace_back(nx1, 0);
+      x2.emplace_back(nx2, 0);
+      x3.emplace_back(nx3, 0);
+      x4.emplace_back(nx4, 0);
     }
 
   for (int i = 0; i < len; i++)
@@ -336,24 +272,24 @@ Monom4Vector::Monom4Vector(const Monom4Vector &f, const Monom4Vector &bigg,
       // multiply from G (first argument)
       for (int j = 0; j < f.nx1; j++)
         {
-          int ex = f.x1[i]->operator[](j);
-          x1[i]->multiplyWith(ex, *(bigg.x1[j]));
-          x2[i]->multiplyWith(ex, *(bigg.x2[j]));
-          x3[i]->multiplyWith(ex, *(bigg.x3[j]));
-          x4[i]->multiplyWith(ex, *(bigg.x4[j]));
+          int ex = f.x1[i].operator[](j);
+          x1[i].multiplyWith(ex, bigg.x1[j]);
+          x2[i].multiplyWith(ex, bigg.x2[j]);
+          x3[i].multiplyWith(ex, bigg.x3[j]);
+          x4[i].multiplyWith(ex, bigg.x4[j]);
         }
       // multiply from g (second argument)
       for (int j = 0; j < f.nx2; j++)
         {
-          int ex = f.x2[i]->operator[](j);
-          x1[i]->multiplyWith(ex, *(g.x1[j]));
-          x2[i]->multiplyWith(ex, *(g.x2[j]));
-          x4[i]->multiplyWith(ex, *(g.x4[j]));
+          int ex = f.x2[i].operator[](j);
+          x1[i].multiplyWith(ex, g.x1[j]);
+          x2[i].multiplyWith(ex, g.x2[j]);
+          x4[i].multiplyWith(ex, g.x4[j]);
         }
       // add y as third argument of f
-      x1[i]->add(1, *(f.x3[i]));
+      x1[i].add(1, f.x3[i]);
       // add u as fourth argument of f
-      x2[i]->add(1, *(f.x4[i]));
+      x2[i].add(1, f.x4[i]);
     }
 }
 
@@ -372,23 +308,20 @@ Monom4Vector::deriv(const Symmetry &s, const IntSequence &coor,
     {
       out[i] = 1;
       int off = 0;
-      out[i] *= x1[i]->deriv(IntSequence(coor, off, off+s[0]));
+      out[i] *= x1[i].deriv(IntSequence(coor, off, off+s[0]));
       off += s[0];
-      out[i] *= x2[i]->deriv(IntSequence(coor, off, off+s[1]));
+      out[i] *= x2[i].deriv(IntSequence(coor, off, off+s[1]));
       off += s[1];
-      out[i] *= x3[i]->deriv(IntSequence(coor, off, off+s[2]));
+      out[i] *= x3[i].deriv(IntSequence(coor, off, off+s[2]));
       off += s[2];
-      out[i] *= x4[i]->deriv(IntSequence(coor, off, off+s[3]));
+      out[i] *= x4[i].deriv(IntSequence(coor, off, off+s[3]));
     }
 }
 
 FGSTensor *
 Monom4Vector::deriv(const Symmetry &s) const
 {
-  IntSequence nvs(4);
-  nvs[0] = nx1; nvs[1] = nx2;
-  nvs[2] = nx3; nvs[3] = nx4;
-
+  IntSequence nvs{nx1, nx2, nx3, nx4};
   FGSTensor *res = new FGSTensor(len, TensorDimens(s, nvs));
   for (Tensor::index run = res->begin(); run != res->end(); ++run)
     {
@@ -401,8 +334,7 @@ Monom4Vector::deriv(const Symmetry &s) const
 FSSparseTensor *
 Monom4Vector::deriv(int dim) const
 {
-  IntSequence cum(4);
-  cum[0] = 0; cum[1] = nx1; cum[2] = nx1+nx2; cum[3] = nx1+nx2+nx3;
+  IntSequence cum{0, nx1, nx1+nx2, nx1+nx2+nx3};
 
   auto *res = new FSSparseTensor(dim, nx1+nx2+nx3+nx4, len);
 
@@ -423,12 +355,8 @@ Monom4Vector::deriv(int dim) const
       Vector col(len);
       deriv(ind_sym, ind, col);
       for (int i = 0; i < len; i++)
-        {
-          if (col[i] != 0.0)
-            {
-              res->insert(run.getCoor(), i, col[i]);
-            }
-        }
+        if (col[i] != 0.0)
+          res->insert(run.getCoor(), i, col[i]);
     }
 
   return res;
@@ -437,27 +365,26 @@ Monom4Vector::deriv(int dim) const
 void
 Monom4Vector::print() const
 {
-  printf("Variables: x1(%d) x2(%d) x3(%d) x4(%d)\n",
-         nx1, nx2, nx3, nx4);
-  printf("Rows: %d\n", len);
+  std::cout << "Variables: x1(" << nx1 << ") x2(" << nx2
+            << ") x3(" << nx3 << ") x4(" << nx4 << ")\n"
+            << "Rows: " << len << '\n';
   for (int i = 0; i < len; i++)
     {
-      printf("%2d: ", i);
-      x1[i]->print();
-      printf("    ");
-      x2[i]->print();
-      printf("    ");
-      x3[i]->print();
-      printf("    ");
-      x4[i]->print();
-      printf("\n");
+      std::cout << i << ": ";
+      x1[i].print();
+      std::cout << "    ";
+      x2[i].print();
+      std::cout << "    ";
+      x3[i].print();
+      std::cout << "    ";
+      x4[i].print();
+      std::cout << '\n';
     }
 }
 
-SparseDerivGenerator::SparseDerivGenerator(
-                                           int nf, int ny, int nu, int nup, int nbigg, int ng,
+SparseDerivGenerator::SparseDerivGenerator(int nf, int ny, int nu, int nup, int nbigg, int ng,
                                            int mx, double prob, int maxdim)
-  : maxdimen(maxdim), ts(new FSSparseTensor *[maxdimen])
+  : maxdimen(maxdim), bigg(4), g(4), rcont(4), ts(new FSSparseTensor *[maxdimen])
 {
   intgen.init(nf, ny, nu, nup, nbigg, mx, prob);
 
@@ -465,18 +392,15 @@ SparseDerivGenerator::SparseDerivGenerator(
   Monom4Vector g_m(ng, ny, nu);
   Monom4Vector f(nf, nbigg, ng, ny, nu);
   Monom4Vector r(f, bigg_m, g_m);
-  bigg = new FGSContainer(4);
-  g = new FGSContainer(4);
-  rcont = new FGSContainer(4);
 
   for (int dim = 1; dim <= maxdimen; dim++)
     {
       for (auto &si : SymmetrySet(dim, 4))
         {
-          bigg->insert(bigg_m.deriv(si));
-          rcont->insert(r.deriv(si));
+          bigg.insert(bigg_m.deriv(si));
+          rcont.insert(r.deriv(si));
           if (si[2] == 0)
-            g->insert(g_m.deriv(si));
+            g.insert(g_m.deriv(si));
         }
 
       ts[dim-1] = f.deriv(dim);
@@ -485,9 +409,6 @@ SparseDerivGenerator::SparseDerivGenerator(
 
 SparseDerivGenerator::~SparseDerivGenerator()
 {
-  delete bigg;
-  delete g;
-  delete rcont;
   for (int i = 0; i < maxdimen; i++)
     delete ts[i];
   delete [] ts;
@@ -517,9 +438,7 @@ DenseDerivGenerator::unfold()
 {
   uxcont = new UGSContainer(*xcont);
   for (int i = 0; i < maxdimen; i++)
-    {
-      uts[i] = new UGSTensor(*(ts[i]));
-    }
+    uts[i] = new UGSTensor(*(ts[i]));
 }
 
 DenseDerivGenerator::~DenseDerivGenerator()

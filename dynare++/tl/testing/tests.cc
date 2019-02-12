@@ -13,28 +13,28 @@
 #include "ps_tensor.hh"
 #include "tl_static.hh"
 
-#include <cstdio>
-#include <cstring>
+#include <string>
+#include <utility>
+#include <memory>
+#include <vector>
 #include <ctime>
+#include <cstdlib>
+#include <iostream>
+#include <iomanip>
 
 class TestRunnable
 {
-  char name[100];
 public:
+  const std::string name;
   int dim; // dimension of the solved problem
   int nvar; // number of variable of the solved problem
-  TestRunnable(const char *n, int d, int nv)
-    : dim(d), nvar(nv)
+  TestRunnable(std::string name_arg, int d, int nv)
+    : name{std::move(name_arg)}, dim(d), nvar(nv)
   {
-    strncpy(name, n, 100);
   }
+  virtual ~TestRunnable() = default;
   bool test() const;
   virtual bool run() const = 0;
-  const char *
-  getName() const
-  {
-    return name;
-  }
 protected:
   template<class _Ttype>
   static bool index_forward(const Symmetry &s, const IntSequence &nvs);
@@ -92,22 +92,17 @@ protected:
 bool
 TestRunnable::test() const
 {
-  printf("Running test <%s>\n", name);
+  std::cout << "Running test <" << name << ">" << std::endl;
   clock_t start = clock();
   bool passed = run();
   clock_t end = clock();
-  printf("CPU time %8.4g (CPU seconds)..................",
-         ((double) (end-start))/CLOCKS_PER_SEC);
+  std::cout << "CPU time " << static_cast<double>(end-start)/CLOCKS_PER_SEC
+            << " (CPU seconds)..................";
   if (passed)
-    {
-      printf("passed\n\n");
-      return passed;
-    }
+    std::cout << "passed\n\n";
   else
-    {
-      printf("FAILED\n\n");
-      return passed;
-    }
+    std::cout << "FAILED\n\n";
+  return passed;
 }
 
 /****************************************************/
@@ -137,10 +132,10 @@ TestRunnable::index_forward(const Symmetry &s, const IntSequence &nvs)
     }
   while (run != dummy.begin());
 
-  printf("\tnumber of columns    = %d\n", dummy.ncols());
-  printf("\tnumber of increments = %d\n", nincr);
-  printf("\tnumber of decrements = %d\n", ndecr);
-  printf("\tnumber of failures   = %d\n", fails);
+  std::cout << "\tnumber of columns    = " << dummy.ncols() << '\n'
+            << "\tnumber of increments = " << nincr << '\n'
+            << "\tnumber of decrements = " << ndecr << '\n'
+            << "\tnumber of failures   = " << fails << '\n';
 
   return fails == 0;
 }
@@ -168,10 +163,10 @@ TestRunnable::index_backward(const Symmetry &s, const IntSequence &nvs)
       nincr++;
     }
 
-  printf("\tnumber of columns    = %d\n", dummy.ncols());
-  printf("\tnumber of increments = %d\n", nincr);
-  printf("\tnumber of decrements = %d\n", ndecr);
-  printf("\tnumber of failures   = %d\n", fails);
+  std::cout << "\tnumber of columns    = " << dummy.ncols() << '\n'
+            << "\tnumber of increments = " << nincr << '\n'
+            << "\tnumber of decrements = " << ndecr << '\n'
+            << "\tnumber of failures   = " << fails << '\n';
 
   return fails == 0;
 }
@@ -191,9 +186,9 @@ TestRunnable::index_offset(const Symmetry &s, const IntSequence &nvs)
         fails++;
     }
 
-  printf("\tnumber of columns    = %d\n", dummy.ncols());
-  printf("\tnumber of increments = %d\n", nincr);
-  printf("\tnumber of failures   = %d\n", fails);
+  std::cout << "\tnumber of columns    = " << dummy.ncols() << '\n'
+            << "\tnumber of increments = " << nincr << '\n'
+            << "\tnumber of failures   = " << fails << '\n';
 
   return fails == 0;
 }
@@ -206,10 +201,10 @@ TestRunnable::fold_unfold(const FTensor *folded)
   folded2->add(-1.0, *folded);
   double normInf = folded2->getNormInf();
   double norm1 = folded2->getNorm1();
-  printf("\tfolded size:       (%d, %d)\n", folded->nrows(), folded->ncols());
-  printf("\tunfolded size:     (%d, %d)\n", unfolded->nrows(), unfolded->ncols());
-  printf("\tdifference normInf: %8.4g\n", normInf);
-  printf("\tdifference norm1:   %8.4g\n", norm1);
+  std::cout << "\tfolded size:       (" << folded->nrows() << ", " << folded->ncols() << ")\n"
+            << "\tunfolded size:     (" << unfolded->nrows() << ", " << unfolded->ncols() << ")\n"
+            << "\tdifference normInf: " << normInf << '\n'
+            << "\tdifference norm1:   " << norm1 << '\n';
 
   delete folded;
   delete unfolded;
@@ -247,15 +242,12 @@ TestRunnable::dense_prod(const Symmetry &bsym, const IntSequence &bnvs,
   double norm1 = btmp.getNorm1();
   double normInf = btmp.getNormInf();
 
-  printf("\ttime for folded product:     %8.4g\n",
-         ((double) (s2-s1))/CLOCKS_PER_SEC);
-  printf("\ttime for unfolded product:   %8.4g\n",
-         ((double) (s5-s4))/CLOCKS_PER_SEC);
-  printf("\ttime for container convert:  %8.4g\n",
-         ((double) (s3-s2))/CLOCKS_PER_SEC);
-  printf("\tunfolded difference normMax: %10.6g\n", norm);
-  printf("\tunfolded difference norm1:   %10.6g\n", norm1);
-  printf("\tunfolded difference normInf: %10.6g\n", normInf);
+  std::cout << "\ttime for folded product:     " << static_cast<double>(s2-s1)/CLOCKS_PER_SEC << '\n'
+            << "\ttime for unfolded product:   " << static_cast<double>(s5-s4)/CLOCKS_PER_SEC << '\n'
+            << "\ttime for container convert:  " << static_cast<double>(s3-s2)/CLOCKS_PER_SEC << '\n'
+            << "\tunfolded difference normMax: " << norm << '\n'
+            << "\tunfolded difference norm1:   " << norm1 << '\n'
+            << "\tunfolded difference normInf: " << normInf << '\n';
 
   delete cont;
   delete fh;
@@ -269,28 +261,27 @@ TestRunnable::folded_monomial(int ng, int nx, int ny, int nu, int dim)
   clock_t gen_time = clock();
   DenseDerivGenerator gen(ng, nx, ny, nu, 5, 0.3, dim);
   gen_time = clock()-gen_time;
-  printf("\ttime for monom generation: %8.4g\n",
-         ((double) gen_time)/CLOCKS_PER_SEC);
-  IntSequence nvs(2); nvs[0] = ny; nvs[1] = nu;
+  std::cout << "\ttime for monom generation: "
+            << static_cast<double>(gen_time)/CLOCKS_PER_SEC << '\n';
+  IntSequence nvs{ny, nu};
   double maxnorm = 0;
   for (int ydim = 0; ydim <= dim; ydim++)
     {
       Symmetry s{ydim, dim-ydim};
-      printf("\tSymmetry: "); s.print();
+      std::cout << "\tSymmetry: ";
+      s.print();
       FGSTensor res(ng, TensorDimens(s, nvs));
       res.getData().zeros();
       clock_t stime = clock();
       for (int d = 1; d <= dim; d++)
-        {
-          gen.xcont->multAndAdd(*(gen.ts[d-1]), res);
-        }
+        gen.xcont->multAndAdd(*(gen.ts[d-1]), res);
       stime = clock() - stime;
-      printf("\t\ttime for symmetry: %8.4g\n",
-             ((double) stime)/CLOCKS_PER_SEC);
+      std::cout << "\t\ttime for symmetry: "
+                << static_cast<double>(stime)/CLOCKS_PER_SEC << '\n';
       const FGSTensor *mres = gen.rcont->get(s);
       res.add(-1.0, *mres);
       double normtmp = res.getData().getMax();
-      printf("\t\terror normMax:     %10.6g\n", normtmp);
+      std::cout << "\t\terror normMax:     " << normtmp << '\n';
       if (normtmp > maxnorm)
         maxnorm = normtmp;
     }
@@ -303,34 +294,33 @@ TestRunnable::unfolded_monomial(int ng, int nx, int ny, int nu, int dim)
   clock_t gen_time = clock();
   DenseDerivGenerator gen(ng, nx, ny, nu, 5, 0.3, dim);
   gen_time = clock()-gen_time;
-  printf("\ttime for monom generation: %8.4g\n",
-         ((double) gen_time)/CLOCKS_PER_SEC);
+  std::cout << "\ttime for monom generation: "
+            << static_cast<double>(gen_time)/CLOCKS_PER_SEC << '\n';
   clock_t u_time = clock();
   gen.unfold();
   u_time = clock() - u_time;
-  printf("\ttime for monom unfolding:  %8.4g\n",
-         ((double) u_time)/CLOCKS_PER_SEC);
-  IntSequence nvs(2); nvs[0] = ny; nvs[1] = nu;
+  std::cout << "\ttime for monom unfolding:  "
+            << static_cast<double>(u_time)/CLOCKS_PER_SEC << '\n';
+  IntSequence nvs{ny, nu};
   double maxnorm = 0;
   for (int ydim = 0; ydim <= dim; ydim++)
     {
       Symmetry s{ydim, dim-ydim};
-      printf("\tSymmetry: "); s.print();
+      std::cout << "\tSymmetry: ";
+      s.print();
       UGSTensor res(ng, TensorDimens(s, nvs));
       res.getData().zeros();
       clock_t stime = clock();
       for (int d = 1; d <= dim; d++)
-        {
-          gen.uxcont->multAndAdd(*(gen.uts[d-1]), res);
-        }
+        gen.uxcont->multAndAdd(*(gen.uts[d-1]), res);
       stime = clock() - stime;
-      printf("\t\ttime for symmetry: %8.4g\n",
-             ((double) stime)/CLOCKS_PER_SEC);
+      std::cout << "\t\ttime for symmetry: "
+                << static_cast<double>(stime)/CLOCKS_PER_SEC << '\n';
       const FGSTensor *mres = gen.rcont->get(s);
       FGSTensor foldres(res);
       foldres.add(-1.0, *mres);
       double normtmp = foldres.getData().getMax();
-      printf("\t\terror normMax:     %10.6g\n", normtmp);
+      std::cout << "\t\terror normMax:     " << normtmp << '\n';
       if (normtmp > maxnorm)
         maxnorm = normtmp;
     }
@@ -346,42 +336,40 @@ TestRunnable::fold_zcont(int nf, int ny, int nu, int nup, int nbigg,
                           5, 0.55, dim);
   gen_time = clock()-gen_time;
   for (int d = 1; d <= dim; d++)
-    {
-      printf("\tfill of dim=%d tensor:     %3.2f %%\n",
-             d, 100*dg.ts[d-1]->getFillFactor());
-    }
-  printf("\ttime for monom generation: %8.4g\n",
-         ((double) gen_time)/CLOCKS_PER_SEC);
+    std::cout << "\tfill of dim=" << d << " tensor:     "
+              << std::setprecision(2) << std::fixed << std::setw(6)
+              << 100*dg.ts[d-1]->getFillFactor()
+              << std::setprecision(6) << std::defaultfloat << " %\n";
+  std::cout << "\ttime for monom generation: "
+            << static_cast<double>(gen_time)/CLOCKS_PER_SEC << '\n';
 
-  IntSequence nvs(4);
-  nvs[0] = ny; nvs[1] = nu; nvs[2] = nup; nvs[3] = 1;
+  IntSequence nvs{ny, nu, nup, 1};
   double maxnorm = 0.0;
 
   // form ZContainer
-  FoldedZContainer zc(dg.bigg, nbigg, dg.g, ng, ny, nu);
+  FoldedZContainer zc(&dg.bigg, nbigg, &dg.g, ng, ny, nu);
 
   for (int d = 2; d <= dim; d++)
-    {
-      for (auto &si : SymmetrySet(d, 4))
-        {
-          printf("\tSymmetry: ");
-          si.print();
-          FGSTensor res(nf, TensorDimens(si, nvs));
-          res.getData().zeros();
-          clock_t stime = clock();
-          for (int l = 1; l <= si.dimen(); l++)
-            zc.multAndAdd(*(dg.ts[l-1]), res);
-          stime = clock() - stime;
-          printf("\t\ttime for symmetry: %8.4g\n",
-                 ((double) stime)/CLOCKS_PER_SEC);
-          const FGSTensor *mres = dg.rcont->get(si);
-          res.add(-1.0, *mres);
-          double normtmp = res.getData().getMax();
-          printf("\t\terror normMax:     %10.6g\n", normtmp);
-          if (normtmp > maxnorm)
-            maxnorm = normtmp;
-        }
-    }
+    for (auto &si : SymmetrySet(d, 4))
+      {
+        std::cout << "\tSymmetry: ";
+        si.print();
+        FGSTensor res(nf, TensorDimens(si, nvs));
+        res.getData().zeros();
+        clock_t stime = clock();
+        for (int l = 1; l <= si.dimen(); l++)
+          zc.multAndAdd(*(dg.ts[l-1]), res);
+        stime = clock() - stime;
+        std::cout << "\t\ttime for symmetry: "
+                  << static_cast<double>(stime)/CLOCKS_PER_SEC << '\n';
+        const FGSTensor *mres = dg.rcont.get(si);
+        res.add(-1.0, *mres);
+        double normtmp = res.getData().getMax();
+        std::cout << "\t\terror normMax:     " << normtmp << '\n';
+        if (normtmp > maxnorm)
+          maxnorm = normtmp;
+      }
+
   return maxnorm < 1.0e-10;
 }
 
@@ -394,50 +382,48 @@ TestRunnable::unfold_zcont(int nf, int ny, int nu, int nup, int nbigg,
                           5, 0.55, dim);
   gen_time = clock()-gen_time;
   for (int d = 1; d <= dim; d++)
-    {
-      printf("\tfill of dim=%d tensor:     %3.2f %%\n",
-             d, 100*dg.ts[d-1]->getFillFactor());
-    }
-  printf("\ttime for monom generation: %8.4g\n",
-         ((double) gen_time)/CLOCKS_PER_SEC);
+    std::cout << "\tfill of dim=" << d << " tensor:     "
+              << std::setprecision(2) << std::fixed << std::setw(6)
+              << 100*dg.ts[d-1]->getFillFactor()
+              << std::setprecision(6) << std::defaultfloat << " %\n";
+  std::cout << "\ttime for monom generation: "
+            << static_cast<double>(gen_time)/CLOCKS_PER_SEC << '\n';
 
   clock_t con_time = clock();
-  UGSContainer uG_cont(*(dg.bigg));
-  UGSContainer ug_cont(*(dg.g));
+  UGSContainer uG_cont(dg.bigg);
+  UGSContainer ug_cont(dg.g);
   con_time = clock()-con_time;
-  printf("\ttime for container unfold: %8.4g\n",
-         ((double) con_time)/CLOCKS_PER_SEC);
+  std::cout << "\ttime for container unfold: "
+            << static_cast<double>(con_time)/CLOCKS_PER_SEC << '\n';
 
-  IntSequence nvs(4);
-  nvs[0] = ny; nvs[1] = nu; nvs[2] = nup; nvs[3] = 1;
+  IntSequence nvs{ny, nu, nup, 1};
   double maxnorm = 0.0;
 
   // form ZContainer
   UnfoldedZContainer zc(&uG_cont, nbigg, &ug_cont, ng, ny, nu);
 
   for (int d = 2; d <= dim; d++)
-    {
-      for (auto &si : SymmetrySet(d, 4))
-        {
-          printf("\tSymmetry: ");
-          si.print();
-          UGSTensor res(nf, TensorDimens(si, nvs));
-          res.getData().zeros();
-          clock_t stime = clock();
-          for (int l = 1; l <= si.dimen(); l++)
-            zc.multAndAdd(*(dg.ts[l-1]), res);
-          stime = clock() - stime;
-          printf("\t\ttime for symmetry: %8.4g\n",
-                 ((double) stime)/CLOCKS_PER_SEC);
-          FGSTensor fold_res(res);
-          const FGSTensor *mres = dg.rcont->get(si);
-          fold_res.add(-1.0, *mres);
-          double normtmp = fold_res.getData().getMax();
-          printf("\t\terror normMax:     %10.6g\n", normtmp);
-          if (normtmp > maxnorm)
-            maxnorm = normtmp;
-        }
-    }
+    for (auto &si : SymmetrySet(d, 4))
+      {
+        std::cout << "\tSymmetry: ";
+        si.print();
+        UGSTensor res(nf, TensorDimens(si, nvs));
+        res.getData().zeros();
+        clock_t stime = clock();
+        for (int l = 1; l <= si.dimen(); l++)
+          zc.multAndAdd(*(dg.ts[l-1]), res);
+        stime = clock() - stime;
+        std::cout << "\t\ttime for symmetry: "
+                  << static_cast<double>(stime)/CLOCKS_PER_SEC << '\n';
+        FGSTensor fold_res(res);
+        const FGSTensor *mres = dg.rcont.get(si);
+        fold_res.add(-1.0, *mres);
+        double normtmp = fold_res.getData().getMax();
+        std::cout << "\t\terror normMax:     " << normtmp << '\n';
+        if (normtmp > maxnorm)
+          maxnorm = normtmp;
+      }
+
   return maxnorm < 1.0e-10;
 }
 
@@ -470,12 +456,12 @@ TestRunnable::folded_contraction(int r, int nv, int dim)
   utime = clock() - utime;
 
   v.add(-1.0, res);
-  printf("\ttime for folded contraction: %8.4g\n",
-         ((double) ctime)/CLOCKS_PER_SEC);
-  printf("\ttime for unfolded power:     %8.4g\n",
-         ((double) utime)/CLOCKS_PER_SEC);
-  printf("\terror normMax:     %10.6g\n", v.getMax());
-  printf("\terror norm1:       %10.6g\n", v.getNorm1());
+  std::cout << "\ttime for folded contraction: "
+            << static_cast<double>(ctime)/CLOCKS_PER_SEC << '\n'
+            << "\ttime for unfolded power:     "
+            << static_cast<double>(utime)/CLOCKS_PER_SEC << '\n'
+            << "\terror normMax:     " << v.getMax() << '\n'
+            << "\terror norm1:       " << v.getNorm1() << '\n';
 
   delete f;
   delete x;
@@ -513,12 +499,12 @@ TestRunnable::unfolded_contraction(int r, int nv, int dim)
   utime = clock() - utime;
 
   v.add(-1.0, res);
-  printf("\ttime for unfolded contraction: %8.4g\n",
-         ((double) ctime)/CLOCKS_PER_SEC);
-  printf("\ttime for unfolded power:       %8.4g\n",
-         ((double) utime)/CLOCKS_PER_SEC);
-  printf("\terror normMax:     %10.6g\n", v.getMax());
-  printf("\terror norm1:       %10.6g\n", v.getNorm1());
+  std::cout << "\ttime for unfolded contraction: "
+            << static_cast<double>(ctime)/CLOCKS_PER_SEC << '\n'
+            << "\ttime for unfolded power:       "
+            << static_cast<double>(utime)/CLOCKS_PER_SEC << '\n'
+            << "\terror normMax:     " << v.getMax() << '\n'
+            << "\terror norm1:       " << v.getNorm1() << '\n';
 
   delete u;
   delete x;
@@ -532,10 +518,14 @@ TestRunnable::poly_eval(int r, int nv, int maxdim)
   Factory fact;
   Vector *x = fact.makeVector(nv);
 
-  Vector out_ft(r); out_ft.zeros();
-  Vector out_fh(r); out_fh.zeros();
-  Vector out_ut(r); out_ut.zeros();
-  Vector out_uh(r); out_uh.zeros();
+  Vector out_ft(r);
+  out_ft.zeros();
+  Vector out_fh(r);
+  out_fh.zeros();
+  Vector out_ut(r);
+  out_ut.zeros();
+  Vector out_uh(r);
+  out_uh.zeros();
 
   UTensorPolynomial *up;
   {
@@ -544,14 +534,14 @@ TestRunnable::poly_eval(int r, int nv, int maxdim)
     clock_t ft_cl = clock();
     fp->evalTrad(out_ft, *x);
     ft_cl = clock() - ft_cl;
-    printf("\ttime for folded power eval:    %8.4g\n",
-           ((double) ft_cl)/CLOCKS_PER_SEC);
+    std::cout << "\ttime for folded power eval:    "
+              << static_cast<double>(ft_cl)/CLOCKS_PER_SEC << '\n';
 
     clock_t fh_cl = clock();
     fp->evalHorner(out_fh, *x);
     fh_cl = clock() - fh_cl;
-    printf("\ttime for folded horner eval:   %8.4g\n",
-           ((double) fh_cl)/CLOCKS_PER_SEC);
+    std::cout << "\ttime for folded horner eval:   "
+              << static_cast<double>(fh_cl)/CLOCKS_PER_SEC << '\n';
 
     up = new UTensorPolynomial(*fp);
     delete fp;
@@ -560,14 +550,14 @@ TestRunnable::poly_eval(int r, int nv, int maxdim)
   clock_t ut_cl = clock();
   up->evalTrad(out_ut, *x);
   ut_cl = clock() - ut_cl;
-  printf("\ttime for unfolded power eval:  %8.4g\n",
-         ((double) ut_cl)/CLOCKS_PER_SEC);
+  std::cout << "\ttime for unfolded power eval:  "
+            << static_cast<double>(ut_cl)/CLOCKS_PER_SEC << '\n';
 
   clock_t uh_cl = clock();
   up->evalHorner(out_uh, *x);
   uh_cl = clock() - uh_cl;
-  printf("\ttime for unfolded horner eval: %8.4g\n",
-         ((double) uh_cl)/CLOCKS_PER_SEC);
+  std::cout << "\ttime for unfolded horner eval: "
+            << static_cast<double>(uh_cl)/CLOCKS_PER_SEC << '\n';
 
   out_ft.add(-1.0, out_ut);
   double max_ft = out_ft.getMax();
@@ -576,9 +566,9 @@ TestRunnable::poly_eval(int r, int nv, int maxdim)
   out_uh.add(-1.0, out_ut);
   double max_uh = out_uh.getMax();
 
-  printf("\tfolded power error norm max:     %10.6g\n", max_ft);
-  printf("\tfolded horner error norm max:    %10.6g\n", max_fh);
-  printf("\tunfolded horner error norm max:  %10.6g\n", max_uh);
+  std::cout << "\tfolded power error norm max:     " << max_ft << '\n'
+            << "\tfolded horner error norm max:    " << max_fh << '\n'
+            << "\tunfolded horner error norm max:  " << max_uh << '\n';
 
   delete up;
   delete x;
@@ -599,7 +589,7 @@ public:
   run() const override
   {
     Symmetry s{2, 3};
-    IntSequence nvs(2); nvs[0] = 4; nvs[1] = 2;
+    IntSequence nvs{4, 2};
     return index_forward<FGSTensor>(s, nvs);
   }
 };
@@ -615,7 +605,7 @@ public:
   run() const override
   {
     Symmetry s{2, 3};
-    IntSequence nvs(2); nvs[0] = 4; nvs[1] = 2;
+    IntSequence nvs{4, 2};
     return index_forward<UGSTensor>(s, nvs);
   }
 };
@@ -631,7 +621,7 @@ public:
   run() const override
   {
     Symmetry s{2, 3, 2};
-    IntSequence nvs(3); nvs[0] = 5; nvs[1] = 2; nvs[2] = 2;
+    IntSequence nvs{5, 2, 2};
     return index_forward<FGSTensor>(s, nvs);
   }
 };
@@ -647,7 +637,7 @@ public:
   run() const override
   {
     Symmetry s{2, 3, 2};
-    IntSequence nvs(3); nvs[0] = 5; nvs[1] = 2; nvs[2] = 2;
+    IntSequence nvs{5, 2, 2};
     return index_forward<UGSTensor>(s, nvs);
   }
 };
@@ -663,7 +653,7 @@ public:
   run() const override
   {
     Symmetry s{1, 1, 3};
-    IntSequence nvs(3); nvs[0] = 3; nvs[1] = 3; nvs[2] = 2;
+    IntSequence nvs{3, 3, 2};
     return index_backward<FGSTensor>(s, nvs);
   }
 };
@@ -679,7 +669,7 @@ public:
   run() const override
   {
     Symmetry s{2, 3, 2};
-    IntSequence nvs(3); nvs[0] = 4; nvs[1] = 2; nvs[2] = 4;
+    IntSequence nvs{4, 2, 4};
     return index_backward<FGSTensor>(s, nvs);
   }
 };
@@ -695,7 +685,7 @@ public:
   run() const override
   {
     Symmetry s{1, 1, 3};
-    IntSequence nvs(3); nvs[0] = 3; nvs[1] = 3; nvs[2] = 2;
+    IntSequence nvs{3, 3, 2};
     return index_backward<UGSTensor>(s, nvs);
   }
 };
@@ -711,7 +701,7 @@ public:
   run() const override
   {
     Symmetry s{2, 3, 2};
-    IntSequence nvs(3); nvs[0] = 4; nvs[1] = 2; nvs[2] = 4;
+    IntSequence nvs{4, 2, 4};
     return index_backward<UGSTensor>(s, nvs);
   }
 };
@@ -727,7 +717,7 @@ public:
   run() const override
   {
     Symmetry s{2, 3};
-    IntSequence nvs(2); nvs[0] = 4; nvs[1] = 2;
+    IntSequence nvs{4, 2};
     return index_offset<FGSTensor>(s, nvs);
   }
 };
@@ -743,7 +733,7 @@ public:
   run() const override
   {
     Symmetry s{2, 3};
-    IntSequence nvs(2); nvs[0] = 4; nvs[1] = 2;
+    IntSequence nvs{4, 2};
     return index_offset<UGSTensor>(s, nvs);
   }
 };
@@ -759,7 +749,7 @@ public:
   run() const override
   {
     Symmetry s{2, 3, 2};
-    IntSequence nvs(3); nvs[0] = 5; nvs[1] = 2; nvs[2] = 2;
+    IntSequence nvs{5, 2, 2};
     return index_offset<FGSTensor>(s, nvs);
   }
 };
@@ -775,7 +765,7 @@ public:
   run() const override
   {
     Symmetry s{2, 3, 2};
-    IntSequence nvs(3); nvs[0] = 5; nvs[1] = 2; nvs[2] = 2;
+    IntSequence nvs{5, 2, 2};
     return index_offset<UGSTensor>(s, nvs);
   }
 };
@@ -805,7 +795,7 @@ public:
   run() const override
   {
     Symmetry s{1, 2, 2};
-    IntSequence nvs(3); nvs[0] = 3; nvs[1] = 3; nvs[2] = 2;
+    IntSequence nvs{3, 3, 2};
     return gs_fold_unfold(5, s, nvs);
   }
 };
@@ -835,7 +825,7 @@ public:
   run() const override
   {
     Symmetry s{2, 1, 2};
-    IntSequence nvs(3); nvs[0] = 6; nvs[1] = 2; nvs[2] = 6;
+    IntSequence nvs{6, 2, 6};
     return gs_fold_unfold(5, s, nvs);
   }
 };
@@ -878,7 +868,7 @@ public:
   bool
   run() const override
   {
-    IntSequence bnvs(2); bnvs[0] = 3; bnvs[1] = 2;
+    IntSequence bnvs{3, 2};
     return dense_prod(Symmetry{1, 2}, bnvs, 2, 3, 2);
   }
 };
@@ -893,7 +883,7 @@ public:
   bool
   run() const override
   {
-    IntSequence bnvs(2); bnvs[0] = 10; bnvs[1] = 7;
+    IntSequence bnvs{10, 7};
     return dense_prod(Symmetry{2, 3}, bnvs, 3, 15, 10);
   }
 };
@@ -908,7 +898,7 @@ public:
   bool
   run() const override
   {
-    IntSequence bnvs(2); bnvs[0] = 13; bnvs[1] = 11;
+    IntSequence bnvs{13, 11};
     return dense_prod(Symmetry{3, 2}, bnvs, 3, 20, 20);
   }
 };
@@ -1116,86 +1106,83 @@ public:
 int
 main()
 {
-  TestRunnable *all_tests[50];
+  std::vector<std::unique_ptr<TestRunnable>> all_tests;
   // fill in vector of all tests
-  int num_tests = 0;
-  all_tests[num_tests++] = new SmallIndexForwardFold();
-  all_tests[num_tests++] = new SmallIndexForwardUnfold();
-  all_tests[num_tests++] = new IndexForwardFold();
-  all_tests[num_tests++] = new IndexForwardUnfold();
-  all_tests[num_tests++] = new SmallIndexBackwardFold();
-  all_tests[num_tests++] = new IndexBackwardFold();
-  all_tests[num_tests++] = new SmallIndexBackwardUnfold();
-  all_tests[num_tests++] = new IndexBackwardUnfold();
-  all_tests[num_tests++] = new SmallIndexOffsetFold();
-  all_tests[num_tests++] = new SmallIndexOffsetUnfold();
-  all_tests[num_tests++] = new IndexOffsetFold();
-  all_tests[num_tests++] = new IndexOffsetUnfold();
-  all_tests[num_tests++] = new SmallFoldUnfoldFS();
-  all_tests[num_tests++] = new SmallFoldUnfoldGS();
-  all_tests[num_tests++] = new FoldUnfoldFS();
-  all_tests[num_tests++] = new FoldUnfoldGS();
-  all_tests[num_tests++] = new SmallFoldUnfoldR();
-  all_tests[num_tests++] = new FoldUnfoldR();
-  all_tests[num_tests++] = new SmallDenseProd();
-  all_tests[num_tests++] = new DenseProd();
-  all_tests[num_tests++] = new BigDenseProd();
-  all_tests[num_tests++] = new SmallFoldedMonomial();
-  all_tests[num_tests++] = new FoldedMonomial();
-  all_tests[num_tests++] = new SmallUnfoldedMonomial();
-  all_tests[num_tests++] = new UnfoldedMonomial();
-  all_tests[num_tests++] = new FoldedContractionSmall();
-  all_tests[num_tests++] = new FoldedContractionBig();
-  all_tests[num_tests++] = new UnfoldedContractionSmall();
-  all_tests[num_tests++] = new UnfoldedContractionBig();
-  all_tests[num_tests++] = new PolyEvalSmall();
-  all_tests[num_tests++] = new PolyEvalBig();
-  all_tests[num_tests++] = new FoldZContSmall();
-  all_tests[num_tests++] = new FoldZCont();
-  all_tests[num_tests++] = new UnfoldZContSmall();
-  all_tests[num_tests++] = new UnfoldZCont();
+  all_tests.push_back(std::make_unique<SmallIndexForwardFold>());
+  all_tests.push_back(std::make_unique<SmallIndexForwardUnfold>());
+  all_tests.push_back(std::make_unique<IndexForwardFold>());
+  all_tests.push_back(std::make_unique<IndexForwardUnfold>());
+  all_tests.push_back(std::make_unique<SmallIndexBackwardFold>());
+  all_tests.push_back(std::make_unique<IndexBackwardFold>());
+  all_tests.push_back(std::make_unique<SmallIndexBackwardUnfold>());
+  all_tests.push_back(std::make_unique<IndexBackwardUnfold>());
+  all_tests.push_back(std::make_unique<SmallIndexOffsetFold>());
+  all_tests.push_back(std::make_unique<SmallIndexOffsetUnfold>());
+  all_tests.push_back(std::make_unique<IndexOffsetFold>());
+  all_tests.push_back(std::make_unique<IndexOffsetUnfold>());
+  all_tests.push_back(std::make_unique<SmallFoldUnfoldFS>());
+  all_tests.push_back(std::make_unique<SmallFoldUnfoldGS>());
+  all_tests.push_back(std::make_unique<FoldUnfoldFS>());
+  all_tests.push_back(std::make_unique<FoldUnfoldGS>());
+  all_tests.push_back(std::make_unique<SmallFoldUnfoldR>());
+  all_tests.push_back(std::make_unique<FoldUnfoldR>());
+  all_tests.push_back(std::make_unique<SmallDenseProd>());
+  all_tests.push_back(std::make_unique<DenseProd>());
+  all_tests.push_back(std::make_unique<BigDenseProd>());
+  all_tests.push_back(std::make_unique<SmallFoldedMonomial>());
+  all_tests.push_back(std::make_unique<FoldedMonomial>());
+  all_tests.push_back(std::make_unique<SmallUnfoldedMonomial>());
+  all_tests.push_back(std::make_unique<UnfoldedMonomial>());
+  all_tests.push_back(std::make_unique<FoldedContractionSmall>());
+  all_tests.push_back(std::make_unique<FoldedContractionBig>());
+  all_tests.push_back(std::make_unique<UnfoldedContractionSmall>());
+  all_tests.push_back(std::make_unique<UnfoldedContractionBig>());
+  all_tests.push_back(std::make_unique<PolyEvalSmall>());
+  all_tests.push_back(std::make_unique<PolyEvalBig>());
+  all_tests.push_back(std::make_unique<FoldZContSmall>());
+  all_tests.push_back(std::make_unique<FoldZCont>());
+  all_tests.push_back(std::make_unique<UnfoldZContSmall>());
+  all_tests.push_back(std::make_unique<UnfoldZCont>());
 
   // find maximum dimension and maximum nvar
   int dmax = 0;
   int nvmax = 0;
-  for (int i = 0; i < num_tests; i++)
+  for (const auto &test : all_tests)
     {
-      if (dmax < all_tests[i]->dim)
-        dmax = all_tests[i]->dim;
-      if (nvmax < all_tests[i]->nvar)
-        nvmax = all_tests[i]->nvar;
+      if (dmax < test->dim)
+        dmax = test->dim;
+      if (nvmax < test->nvar)
+        nvmax = test->nvar;
     }
   tls.init(dmax, nvmax); // initialize library
 
   // launch the tests
   int success = 0;
-  for (int i = 0; i < num_tests; i++)
+  for (const auto &test : all_tests)
     {
       try
         {
-          if (all_tests[i]->test())
+          if (test->test())
             success++;
         }
       catch (const TLException &e)
         {
-          printf("Caugth TL exception in <%s>:\n", all_tests[i]->getName());
+          std::cout << "Caught TL exception in <" << test->name << ">:\n";
           e.print();
         }
       catch (SylvException &e)
         {
-          printf("Caught Sylv exception in <%s>:\n", all_tests[i]->getName());
+          std::cout << "Caught Sylv exception in <" << test->name << ">:\n";
           e.printMessage();
         }
     }
 
-  printf("There were %d tests that failed out of %d tests run.\n",
-         num_tests - success, num_tests);
+  int nfailed = all_tests.size() - success;
+  std::cout << "There were " << nfailed << " tests that failed out of "
+            << all_tests.size() << " tests run." << std::endl;
 
-  // destroy
-  for (int i = 0; i < num_tests; i++)
-    {
-      delete all_tests[i];
-    }
-
-  return 0;
+  if (nfailed)
+    return EXIT_FAILURE;
+  else
+    return EXIT_SUCCESS;
 }

@@ -4,6 +4,9 @@
 #ifndef MONOMS_H
 #define MONOMS_H
 
+#include <vector>
+#include <random>
+
 #include "int_sequence.hh"
 #include "gs_tensor.hh"
 #include "t_container.hh"
@@ -14,12 +17,12 @@ class IntGenerator
 {
   int maxim{5};
   double probab{0.3};
+  std::mt19937 mtgen;
+  std::uniform_real_distribution<> dis;
 public:
-  IntGenerator()
-     
-  = default;
+  IntGenerator() = default;
   void init(int nf, int ny, int nv, int nw, int nu, int mx, double prob);
-  int get() const;
+  int get();
 };
 
 extern IntGenerator intgen;
@@ -41,10 +44,10 @@ class Monom1Vector
   friend class Monom2Vector;
   int nx;
   int len;
-  Monom **const x;
+  std::vector<Monom> x;
 public:
   Monom1Vector(int nxx, int l);
-  ~Monom1Vector();
+  ~Monom1Vector() = default;
   void deriv(const IntSequence &c, Vector &out) const;
   FGSTensor *deriv(int dim) const;
   void print() const;
@@ -53,17 +56,15 @@ public:
 //class Monom3Vector;
 class Monom2Vector
 {
-  int ny;
-  int nu;
+  int ny, nu;
   int len;
-  Monom **const y;
-  Monom **const u;
+  std::vector<Monom> y, u;
 public:
   // generate random vector of monom two vector
   Monom2Vector(int nyy, int nuu, int l);
   // calculate g(x(y,u))
   Monom2Vector(const Monom1Vector &g, const Monom2Vector &xmon);
-  ~Monom2Vector();
+  ~Monom2Vector() = default;
   void deriv(const Symmetry &s, const IntSequence &c, Vector &out) const;
   FGSTensor *deriv(const Symmetry &s) const;
   FGSContainer *deriv(int maxdim) const;
@@ -73,14 +74,8 @@ public:
 class Monom4Vector
 {
   int len;
-  int nx1;
-  int nx2;
-  int nx3;
-  int nx4;
-  Monom **const x1;
-  Monom **const x2;
-  Monom **const x3;
-  Monom **const x4;
+  int nx1, nx2, nx3, nx4;
+  std::vector<Monom> x1, x2, x3, x4;
 public:
   /* random for g(y,u,sigma) */
   Monom4Vector(int l, int ny, int nu);
@@ -91,7 +86,7 @@ public:
   /* substitution f(G(y,u,u',sigma),g(y,u,sigma),y,u) */
   Monom4Vector(const Monom4Vector &f, const Monom4Vector &bigg,
                const Monom4Vector &g);
-  ~Monom4Vector();
+  ~Monom4Vector() = default;
   FSSparseTensor *deriv(int dim) const;
   FGSTensor *deriv(const Symmetry &s) const;
   void deriv(const Symmetry &s, const IntSequence &coor, Vector &out) const;
@@ -103,9 +98,9 @@ protected:
 struct SparseDerivGenerator
 {
   int maxdimen;
-  FGSContainer *bigg;
-  FGSContainer *g;
-  FGSContainer *rcont;
+  FGSContainer bigg;
+  FGSContainer g;
+  FGSContainer rcont;
   FSSparseTensor **const ts;
   SparseDerivGenerator(int nf, int ny, int nu, int nup, int nbigg, int ng,
                        int mx, double prob, int maxdim);
