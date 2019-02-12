@@ -31,13 +31,7 @@ ConstTwoDMatrix::ConstTwoDMatrix(int first_row, int num, const ConstTwoDMatrix &
 void
 ConstTwoDMatrix::writeMat(mat_t *fd, const char *vname) const
 {
-#if MATIO_MAJOR_VERSION > 1 || (MATIO_MAJOR_VERSION == 1 && MATIO_MINOR_VERSION >= 5)
   size_t dims[2];
-  const matio_compression compression = MAT_COMPRESSION_NONE;
-#else
-  int dims[2];
-  const int compression = COMPRESSION_NONE;
-#endif
   dims[0] = nrows();
   dims[1] = ncols();
   auto *data = new double[nrows()*ncols()];
@@ -48,7 +42,7 @@ ConstTwoDMatrix::writeMat(mat_t *fd, const char *vname) const
 
   matvar_t *v = Mat_VarCreate(vname, MAT_C_DOUBLE, MAT_T_DOUBLE, 2, dims, data, 0);
 
-  Mat_VarWrite(fd, v, compression);
+  Mat_VarWrite(fd, v, MAT_COMPRESSION_NONE);
 
   Mat_VarFree(v);
   delete[] data;

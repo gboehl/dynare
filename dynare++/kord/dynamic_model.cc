@@ -29,19 +29,13 @@ NameList::writeMat(mat_t *fd, const char *vname) const
       else
         m[j*getNum()+i] = ' ';
 
-#if MATIO_MAJOR_VERSION > 1 || (MATIO_MAJOR_VERSION == 1 && MATIO_MINOR_VERSION >= 5)
   size_t dims[2];
-  const matio_compression compression = MAT_COMPRESSION_NONE;
-#else
-  int dims[2];
-  const int compression = COMPRESSION_NONE;
-#endif
   dims[0] = getNum();
   dims[1] = maxlen;
 
   matvar_t *v = Mat_VarCreate(vname, MAT_C_CHAR, MAT_T_UINT8, 2, dims, m, 0);
 
-  Mat_VarWrite(fd, v, compression);
+  Mat_VarWrite(fd, v, MAT_COMPRESSION_NONE);
 
   Mat_VarFree(v);
   delete[] m;
