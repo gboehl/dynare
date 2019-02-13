@@ -1,6 +1,7 @@
 /* $Id: tests.cpp 148 2005-04-19 15:12:26Z kamenik $ */
 /* Copyright 2004, Ondra Kamenik */
 
+#include <chrono>
 #include <cstdlib>
 #include "korder.hh"
 #include "SylvException.hh"
@@ -257,10 +258,15 @@ TestRunnable::test() const
 {
   printf("Running test <%s>\n", name);
   clock_t start = clock();
+  auto start_real = std::chrono::steady_clock::now();
   bool passed = run();
   clock_t end = clock();
-  printf("CPU time %8.4g (CPU seconds)..................",
+  auto end_real = std::chrono::steady_clock::now();
+  printf("CPU time  %8.4g (CPU seconds)\n",
          ((double) (end-start))/CLOCKS_PER_SEC);
+  std::chrono::duration<double> duration = end_real - start_real;
+  printf("Real time %8.4g (seconds).....................",
+         duration.count());
   if (passed)
     {
       printf("passed\n\n");
