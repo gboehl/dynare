@@ -37,21 +37,42 @@ function pooled_fgls(ds, param_common, param_regex, eqtags)
 global M_ oo_
 
 %% Check input arguments
-
 if nargin < 4
     eqtags = {};
 end
 
+maxit = 100;
+tol = 1e-6;
+
+%% Common work between pooled_ols and pooled_fgls
 pooled_ols(ds, param_common, param_regex, true, eqtags);
 
-oo_.pooled_fgls.dof = size(oo_.pooled_fgls.X,1)/length(oo_.pooled_fgls.residnames);
-resid = oo_.pooled_fgls.Y - oo_.pooled_fgls.X * oo_.pooled_fgls.beta;
-resid = reshape(resid, oo_.pooled_fgls.dof, length(oo_.pooled_fgls.residnames));
-M_.Sigma_e = resid'*resid/oo_.pooled_fgls.dof;
+%% Estimation
+neqs = length(oo_.pooled_fgls.residnames);
+oo_.pooled_fgls.dof = size(oo_.pooled_fgls.X,1)/neqs;
+beta0 = oo_.pooled_fgls.beta;
+for i = 1:maxit
+    resid = oo_.pooled_fgls.Y - oo_.pooled_fgls.X * beta0;
+    resid = reshape(resid, oo_.pooled_fgls.dof, neqs);
+    vcv = resid'*resid/oo_.pooled_fgls.dof;
+    kLeye = kron(chol(inv(vcv)), eye(oo_.pooled_fgls.dof));
+    [q, r] = qr(kLeye*oo_.pooled_fgls.X, 0);
+    oo_.pooled_fgls.beta = r\(q'*kLeye*oo_.pooled_fgls.Y);
+    if max(abs(beta0 - oo_.pooled_fgls.beta)) < tol
+        break
+    end
+    beta0 = oo_.pooled_fgls.beta;
+    if i == maxit
+        warning('maximum nuber of iterations reached')
+    end
+end
 
-kLeye = kron(chol(inv(M_.Sigma_e)), eye(oo_.pooled_fgls.dof));
-[q, r] = qr(kLeye*oo_.pooled_fgls.X, 0);
-oo_.pooled_fgls.beta = r\(q'*kLeye*oo_.pooled_fgls.Y);
+% Set appropriate entries in M_.Sigma_e
+idxs = zeros(neqs, 1);
+for i = 1:neqs
+    idxs(i) = find(strcmp(oo_.pooled_fgls.residnames{i}, M_.exo_names));
+end
+M_.Sigma_e(idxs, idxs) = vcv;
 
 regexcountries = ['(' strjoin(param_common(1:end),'|') ')'];
 pbeta = oo_.pooled_fgls.pbeta;
