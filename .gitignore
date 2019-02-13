@@ -57,47 +57,20 @@ checksum
 *.blg
 *.lof
 /doc/dynare.html
-/doc/dynare.info
-/doc/dynare.info-1
-/doc/dynare.info-2
-/doc/dynare.info-3
-/doc/dynare.cp
-/doc/dynare.fn
-/doc/dynare.fns
-/doc/dynare.vrs
-/doc/dynare.ky
-/doc/dynare.pg
-/doc/dynare.tp
-/doc/dynare.vr
-/doc/dynare.t2p/*
+/doc/dynare.info*
 /doc/texinfo.tex
 /doc/version.texi
 /doc/mdate-sh
 /doc/stamp-vti
 !/doc/guide.bbl
-!/doc/userguide/P_ModStruct3.pdf
-!/doc/userguide/P_MH2.pdf
-!/doc/userguide/P_flowest.pdf
-!/doc/userguide/P_ModStruct4.pdf
-!/doc/userguide/Graphics/DynareFigures.key/droppedImage-2.pdf
-!/doc/userguide/Graphics/DynareFigures.key/droppedImage.pdf
-!/doc/userguide/Graphics/DynareFigures.key/droppedImage-1.pdf
-!/doc/userguide/Graphics/DynareTitle.pdf
-!/doc/userguide/P_ModStruct5.pdf
-!/doc/userguide/P_DynareStruct2.pdf
-!/doc/userguide/P_SchorfMod.pdf
-!/doc/userguide/P_ModStruct2.pdf
-!/doc/userguide/P_ShockModel2.pdf
 !/doc/parallel/AvenueParadigm.pdf
 !/doc/parallel/iVaNo_*.pdf
 !/doc/parallel/netbook_*.pdf
 !/doc/parallel/quest_*.pdf
 !/doc/parallel/RWMH_quest1_*.pdf
 !/doc/parallel/waitbars*.pdf
-doc/m2html
 doc/internals/*.html
 doc/internals/ltxpng
-mex/build/matlab/run_m2html.m
 
 # MATLAB dir
 /matlab/preprocessor*
@@ -108,7 +81,6 @@ mex/build/matlab/run_m2html.m
 
 # DLL rules
 *.mex
-*.dll
 *.oct
 *.mexglx
 *.mexa64
@@ -123,6 +95,7 @@ mex/build/matlab/run_m2html.m
 /dynare++/integ/src/quadrature-points
 /dynare++/integ/src/quadrature-points.exe
 /dynare++/integ/testing/tests
+/dynare++/integ/testing/tests.exe
 /dynare++/kord/tests
 /dynare++/kord/tests.exe
 /dynare++/kord/out.txt
@@ -144,26 +117,6 @@ mex/build/matlab/run_m2html.m
 # Windows
 /windows/dynare-version.nsi
 
-# Estimation DLL tests
-/mex/sources/estimation/tests/test-dr
-/mex/sources/estimation/tests/test-dr.exe
-/mex/sources/estimation/tests/testModelSolution
-/mex/sources/estimation/tests/testModelSolution.exe
-/mex/sources/estimation/tests/testInitKalman
-/mex/sources/estimation/tests/testInitKalman.exe
-/mex/sources/estimation/tests/testKalman
-/mex/sources/estimation/tests/testKalman.exe
-/mex/sources/estimation/tests/testPDF
-/mex/sources/estimation/tests/testPDF.exe
-/mex/sources/estimation/libmat/tests/test-qr
-/mex/sources/estimation/libmat/tests/test-qr.exe
-/mex/sources/estimation/libmat/tests/test-gsd
-/mex/sources/estimation/libmat/tests/test-gsd.exe
-/mex/sources/estimation/libmat/tests/test-lu
-/mex/sources/estimation/libmat/tests/test-lu.exe
-/mex/sources/estimation/libmat/tests/test-repmat
-/mex/sources/estimation/libmat/tests/test-repmat.exe
-
 # MacOS stuff
 .DS_Store
 
@@ -175,6 +128,7 @@ scripts/dynare.elc
 /contrib/ms-sbvar/*.dat
 /contrib/ms-sbvar/sbvar_commandline
 /contrib/ms-sbvar/sbvar_init_file
+!/contrib/ms-sbvar/Makefile
 /tests/ms-sbvar/*.tmp
 
 # Reporting
