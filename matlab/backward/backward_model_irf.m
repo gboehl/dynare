@@ -137,8 +137,11 @@ end
 % Get the covariance matrix of the shocks.
 if ~deterministicshockflag
     if nnz(M_.Sigma_e)
+        % Add ϵ>0 on the diagonal, so that the Cholesky won't fail
+        % if a shock has zero variance
         Sigma = M_.Sigma_e + 1e-14*eye(M_.exo_nbr);
-        sigma = transpose(chol(Sigma));
+        % Factorize Sigma (C is such that C*C' == Sigma)
+        C = chol(Sigma, 'lower');
     else
         error('You did not specify the size of the shocks!')
     end
@@ -166,6 +169,7 @@ end
 
 % Compute the IRFs (loop over innovations).
 for i=1:length(listofshocks)
+    % Reset innovations to the default value (typically zero).
     innovations = Innovations;
     % Add the shock.
     if deterministicshockflag
@@ -182,7 +186,8 @@ for i=1:length(listofshocks)
         if isempty(j)
             error('backward_model_irf: Exogenous variable %s is unknown!', listofshocks{i})
         end
-        innovations(1,:) = innovations(1,:) + transpose(sigma(:,j));
+        % Put the column associated to the j-th structural shock in the first row.
+        innovations(1,:) = innovations(1,:) + transpose(C(:,j));
     end
     if options_.linear
         ysim__1 = simul_backward_linear_model_(initialcondition, periods, DynareOptions, DynareModel, DynareOutput, innovations, nx, ny1, iy1, jdx, model_dynamic);
