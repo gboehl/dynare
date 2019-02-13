@@ -4,6 +4,8 @@
 #ifndef FACTORY_H
 #define FACTORY_H
 
+#include <random>
+
 #include "symmetry.hh"
 #include "int_sequence.hh"
 #include "twod_matrix.hh"
@@ -13,11 +15,14 @@
 
 class Factory
 {
+  std::mt19937 mtgen;
+  std::uniform_real_distribution<> dis;
+
   void init(const Symmetry &s, const IntSequence &nvs);
   void init(int dim, int nv);
-  void fillMatrix(TwoDMatrix &m) const;
+  void fillMatrix(TwoDMatrix &m);
 public:
-  double get() const;
+  double get();
   // this can be used with UGSTensor, FGSTensor
   template <class _Ttype>
   _Ttype *
@@ -47,25 +52,23 @@ public:
     int symnum = nvs.size();
     auto *res = new _Ctype(symnum);
     for (int dim = 1; dim <= maxdim; dim++)
-      {
-        if (symnum == 1)
-          {
-            // full symmetry
-            Symmetry sym{dim};
-            auto *t = make<_Ttype>(r, sym, nvs);
-            res->insert(t);
-          }
-        else
-          {
-            // general symmetry
-            for (int i = 0; i <= dim; i++)
-              {
-                Symmetry sym{i, dim-i};
-                auto *t = make<_Ttype>(r, sym, nvs);
-                res->insert(t);
-              }
-          }
-      }
+      if (symnum == 1)
+        {
+          // full symmetry
+          Symmetry sym{dim};
+          auto *t = make<_Ttype>(r, sym, nvs);
+          res->insert(t);
+        }
+      else
+        {
+          // general symmetry
+          for (int i = 0; i <= dim; i++)
+            {
+              Symmetry sym{i, dim-i};
+              auto *t = make<_Ttype>(r, sym, nvs);
+              res->insert(t);
+            }
+        }
     return res;
   }
 
@@ -82,7 +85,7 @@ public:
     return p;
   }
 
-  Vector *makeVector(int n);
+  Vector makeVector(int n);
 };
 
 #endif

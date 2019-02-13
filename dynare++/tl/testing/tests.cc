@@ -431,25 +431,25 @@ bool
 TestRunnable::folded_contraction(int r, int nv, int dim)
 {
   Factory fact;
-  Vector *x = fact.makeVector(nv);
+  Vector x{fact.makeVector(nv)};
 
   auto *forig = fact.make<FFSTensor>(r, nv, dim);
   auto *f = new FFSTensor(*forig);
   clock_t ctime = clock();
   for (int d = dim-1; d > 0; d--)
     {
-      FFSTensor *fnew = new FFSTensor(*f, ConstVector(*x));
+      FFSTensor *fnew = new FFSTensor(*f, ConstVector(x));
       delete f;
       f = fnew;
     }
   ctime = clock() - ctime;
   Vector res(forig->nrows());
   res.zeros();
-  f->multaVec(res, *x);
+  f->multaVec(res, x);
 
   UFSTensor u(*forig);
   clock_t utime = clock();
-  URSingleTensor ux(*x, dim);
+  URSingleTensor ux(x, dim);
   Vector v(u.nrows());
   v.zeros();
   u.multaVec(v, ux.getData());
@@ -464,7 +464,6 @@ TestRunnable::folded_contraction(int r, int nv, int dim)
             << "\terror norm1:       " << v.getNorm1() << '\n';
 
   delete f;
-  delete x;
 
   return (v.getMax() < 1.e-10);
 }
@@ -473,7 +472,7 @@ bool
 TestRunnable::unfolded_contraction(int r, int nv, int dim)
 {
   Factory fact;
-  Vector *x = fact.makeVector(nv);
+  Vector x{fact.makeVector(nv)};
 
   auto *forig = fact.make<FFSTensor>(r, nv, dim);
   UFSTensor uorig(*forig);
@@ -482,17 +481,17 @@ TestRunnable::unfolded_contraction(int r, int nv, int dim)
   clock_t ctime = clock();
   for (int d = dim-1; d > 0; d--)
     {
-      UFSTensor *unew = new UFSTensor(*u, ConstVector(*x));
+      UFSTensor *unew = new UFSTensor(*u, ConstVector(x));
       delete u;
       u = unew;
     }
   ctime = clock() - ctime;
   Vector res(uorig.nrows());
   res.zeros();
-  u->multaVec(res, *x);
+  u->multaVec(res, x);
 
   clock_t utime = clock();
-  URSingleTensor ux(*x, dim);
+  URSingleTensor ux(x, dim);
   Vector v(uorig.nrows());
   v.zeros();
   uorig.multaVec(v, ux.getData());
@@ -507,7 +506,6 @@ TestRunnable::unfolded_contraction(int r, int nv, int dim)
             << "\terror norm1:       " << v.getNorm1() << '\n';
 
   delete u;
-  delete x;
 
   return (v.getMax() < 1.e-10);
 }
@@ -516,7 +514,7 @@ bool
 TestRunnable::poly_eval(int r, int nv, int maxdim)
 {
   Factory fact;
-  Vector *x = fact.makeVector(nv);
+  Vector x{fact.makeVector(nv)};
 
   Vector out_ft(r);
   out_ft.zeros();
@@ -532,13 +530,13 @@ TestRunnable::poly_eval(int r, int nv, int maxdim)
     FTensorPolynomial *fp = fact.makePoly<FFSTensor, FTensorPolynomial>(r, nv, maxdim);
 
     clock_t ft_cl = clock();
-    fp->evalTrad(out_ft, *x);
+    fp->evalTrad(out_ft, x);
     ft_cl = clock() - ft_cl;
     std::cout << "\ttime for folded power eval:    "
               << static_cast<double>(ft_cl)/CLOCKS_PER_SEC << '\n';
 
     clock_t fh_cl = clock();
-    fp->evalHorner(out_fh, *x);
+    fp->evalHorner(out_fh, x);
     fh_cl = clock() - fh_cl;
     std::cout << "\ttime for folded horner eval:   "
               << static_cast<double>(fh_cl)/CLOCKS_PER_SEC << '\n';
@@ -548,13 +546,13 @@ TestRunnable::poly_eval(int r, int nv, int maxdim)
   }
 
   clock_t ut_cl = clock();
-  up->evalTrad(out_ut, *x);
+  up->evalTrad(out_ut, x);
   ut_cl = clock() - ut_cl;
   std::cout << "\ttime for unfolded power eval:  "
             << static_cast<double>(ut_cl)/CLOCKS_PER_SEC << '\n';
 
   clock_t uh_cl = clock();
-  up->evalHorner(out_uh, *x);
+  up->evalHorner(out_uh, x);
   uh_cl = clock() - uh_cl;
   std::cout << "\ttime for unfolded horner eval: "
             << static_cast<double>(uh_cl)/CLOCKS_PER_SEC << '\n';
@@ -571,7 +569,6 @@ TestRunnable::poly_eval(int r, int nv, int maxdim)
             << "\tunfolded horner error norm max:  " << max_uh << '\n';
 
   delete up;
-  delete x;
   return (max_ft+max_fh+max_uh < 1.0e-10);
 }
 
