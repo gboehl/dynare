@@ -1034,7 +1034,7 @@ threads. Complex evaluations of Faa Di Bruno formulas, simulations and
 numerical integration can be parallelized, Dynare++ exploits this
 advantage. You have to have a hardware support for this, otherwise
 there is no gain from the parallelization. The default value is the number of
-logical processors present on the machine.
+logical processors present on the machine, divided by 2.
 
 \item[\desc{\tt --ss-tol \it float}] This sets the tolerance of the
 non-linear solver of deterministic steady state to {\it float}. It is

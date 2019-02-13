@@ -71,6 +71,8 @@ namespace sthread
 
     void run();
   };
+
+  int default_threads_number();
 };
 
 #endif

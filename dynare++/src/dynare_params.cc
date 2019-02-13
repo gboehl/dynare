@@ -2,10 +2,11 @@
 
 #include "dynare_params.hh"
 
+#include "sthread.hh"
+
 #include <getopt.h>
 #include <cstdio>
 #include <cstring>
-#include <thread>
 
 const char *help_str
 = "usage: dynare++ [--help] [--version] [options] <model file>\n"
@@ -27,7 +28,7 @@ const char *help_str
   "    --prefix <string>    prefix of variables in Mat-4 file [\"dyn\"]\n"
   "    --seed <num>         random number generator seed [934098]\n"
   "    --order <num>        order of approximation [no default]\n"
-  "    --threads <num>      number of max parallel threads [nb. of logical CPUs]\n"
+  "    --threads <num>      number of max parallel threads [1/2 * nb. of logical CPUs]\n"
   "    --ss-tol <num>       steady state calcs tolerance [1.e-13]\n"
   "    --check pesPES       check model residuals [no checks]\n"
   "                         lower/upper case switches off/on\n"
@@ -50,7 +51,7 @@ DynareParams::DynareParams(int argc, char **argv)
   : modname(nullptr), num_per(100), num_burn(0), num_sim(80),
     num_rtper(0), num_rtsim(0),
     num_condper(0), num_condsim(0),
-    num_threads(std::thread::hardware_concurrency()), num_steps(0),
+    num_threads(sthread::default_threads_number()), num_steps(0),
     prefix("dyn"), seed(934098), order(-1), ss_tol(1.e-13),
     check_along_path(false), check_along_shocks(false),
     check_on_ellipse(false), check_evals(1000), check_num(10), check_scale(2.0),
