@@ -58,6 +58,9 @@ else
     assert(iscellstr(param_names), 'the 2nd argument must be a cellstr');
 end
 
+maxit = 100;
+tol = 1e-6;
+
 %% Get Equation(s)
 ast = handle_constant_eqs(get_ast(eqtags));
 neqs = length(ast);
@@ -129,17 +132,22 @@ oo_.sur.(model_name).dof = nobs;
 % Estimated Parameters
 [q, r] = qr(X.data, 0);
 xpxi = (r'*r)\eye(size(X.data, 2));
-resid = Y.data - X.data * (r\(q'*Y.data));
-resid = reshape(resid, oo_.sur.(model_name).dof, neqs);
-
-M_.Sigma_e = resid'*resid/oo_.sur.(model_name).dof;
-kLeye = kron(chol(inv(M_.Sigma_e)), eye(oo_.sur.(model_name).dof));
-[q, r] = qr(kLeye*X.data, 0);
-oo_.sur.(model_name).beta = r\(q'*kLeye*Y.data);
-
-resid = Y.data - X.data * oo_.sur.(model_name).beta;
-resid = reshape(resid, oo_.sur.(model_name).dof, neqs);
-M_.Sigma_e = resid'*resid/oo_.sur.(model_name).dof;
+beta0 = (r\(q'*Y.data));
+for i = 1:maxit
+    resid = Y.data - X.data * beta0;
+    resid = reshape(resid, oo_.sur.(model_name).dof, neqs);
+    M_.Sigma_e = resid'*resid/oo_.sur.(model_name).dof;
+    kLeye = kron(chol(inv(M_.Sigma_e)), eye(oo_.sur.(model_name).dof));
+    [q, r] = qr(kLeye*X.data, 0);
+    oo_.sur.(model_name).beta = r\(q'*kLeye*Y.data);
+    if max(abs(beta0 - oo_.sur.(model_name).beta)) < tol
+        break
+    end
+    beta0 = oo_.sur.(model_name).beta;
+    if i == maxit
+        warning('maximum nuber of iterations reached')
+    end
+end
 
 M_.params(opidxs) = oo_.sur.(model_name).beta;
 
