@@ -874,10 +874,11 @@ check-octave: $(O_XFAIL_TRS_FILES) $(O_TRS_FILES)
 	@DYNARE_VERSION="$(PACKAGE_VERSION)" TOP_TEST_DIR="$(CURDIR)" FILESTEM="$*" \
 		$(MATLAB)/bin/matlab $(MATLAB_BATCH_OPTIONS) -r run_test_matlab > $*.m.log  2> /dev/null || \
 	printf ":test-result: FAIL\n:number-tests: 1\n:number-failed-tests: 1\n:list-of-failed-tests: $*.mod\n:elapsed-time: 0.0\n" > $*.m.trs
-	@if grep -q ":test-result: PASS" $*.m.trs; then \
-	echo "`tput bold``tput setaf 2`MATLAB: $(CURDIR)/$* PASSED!`tput sgr0`" ; \
+	@if test -z "$(filter $*.m.trs,$(M_XFAIL_TRS_FILES))"; then pass_color=2; fail_color=1; else pass_color=1; fail_color=2; fi; \
+	if grep -q ":test-result: PASS" $*.m.trs; then \
+	echo "`tput bold``tput setaf $${pass_color}`MATLAB: $(CURDIR)/$* PASSED!`tput sgr0`" ; \
 	else \
-	echo "`tput bold``tput setaf 1`MATLAB: $(CURDIR)/$* FAILED!`tput sgr0`" ; \
+	echo "`tput bold``tput setaf $${fail_color}`MATLAB: $(CURDIR)/$* FAILED!`tput sgr0`" ; \
 	fi
 
 %.m.drs %.m.log: %.m.trs
@@ -894,10 +895,11 @@ check-octave: $(O_XFAIL_TRS_FILES) $(O_TRS_FILES)
 	@DYNARE_VERSION="$(PACKAGE_VERSION)" TOP_TEST_DIR="$(CURDIR)" FILESTEM="$*" \
 		$(OCTAVE) --no-init-file --silent --no-history --path "$*.mod" run_test_octave.m > $*.o.log 2>&1 || \
 	printf ":test-result: FAIL\n:number-tests: 1\n:number-failed-tests: 1\n:list-of-failed-tests: $*.mod\n:elapsed-time: 0.0\n" > $*.o.trs
-	@if grep -q ":test-result: PASS" $*.o.trs; then \
-	echo "`tput bold``tput setaf 2`OCTAVE: $(CURDIR)/$* PASSED!`tput sgr0`" ; \
+	@if test -z "$(filter $*.o.trs,$(O_XFAIL_TRS_FILES))"; then pass_color=2; fail_color=1; else pass_color=1; fail_color=2; fi; \
+	if grep -q ":test-result: PASS" $*.o.trs; then \
+	echo "`tput bold``tput setaf $${pass_color}`OCTAVE: $(CURDIR)/$* PASSED!`tput sgr0`" ; \
 	else \
-	echo "`tput bold``tput setaf 1`OCTAVE: $(CURDIR)/$* FAILED!`tput sgr0`" ; \
+	echo "`tput bold``tput setaf $${fail_color}`OCTAVE: $(CURDIR)/$* FAILED!`tput sgr0`" ; \
 	fi
 
 %.o.drs %.o.log: %.mod %.o.trs
