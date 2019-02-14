@@ -12,7 +12,7 @@ function [A0, AR, B] = get_companion_matrix(auxiliary_model_name, auxiliary_mode
 % OUTPUTS
 % - None
 
-% Copyright (C) 2018 Dynare Team
+% Copyright (C) 2018-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -42,9 +42,9 @@ if nargin < 2
 end
 
 if strcmp(auxiliary_model_type, 'var')
-    AR = evalin('base', [M_.fname '.var_ar(''' auxiliary_model_name ''', M_.params)']);
+    AR = feval([M_.fname '.var_ar'], auxiliary_model_name, M_.params);
 elseif strcmp(auxiliary_model_type, 'trend_component')
-    [AR, A0] = evalin('base', [M_.fname '.trend_component_ar_ec(''' auxiliary_model_name ''', M_.params)']);
+    [AR, A0] = feval([M_.fname '.trend_component_ar_ec'], auxiliary_model_name, M_.params);
 else
     error('Unknown type of auxiliary model.')
 end
