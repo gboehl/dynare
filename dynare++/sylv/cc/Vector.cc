@@ -13,15 +13,15 @@
 #include <iomanip>
 
 Vector::Vector(const Vector &v)
-  : len(v.len), data{new double[len], [](double *arr) { delete[] arr; }}
+  : len(v.len), data{new double[len]}
 {
-  copy(v.base(), v.s);
+  copy(v.data, v.s);
 }
 
 Vector::Vector(const ConstVector &v)
-  : len(v.len), data{new double[len], [](double *arr) { delete[] arr; }}
+  : len(v.len), data{new double[len]}
 {
-  copy(v.base(), v.s);
+  copy(v.data, v.s);
 }
 
 Vector &
@@ -34,12 +34,12 @@ Vector::operator=(const Vector &v)
     throw SYLV_MES_EXCEPTION("Attempt to assign vectors with different lengths.");
 
   if (s == v.s
-      && (base() <= v.base() && v.base() < base()+len*s
-          || v.base() <= base() && base() < v.base()+v.len*v.s)
-      && (base()-v.base()) % s == 0)
+      && (data <= v.data && v.data < data+len*s
+          || v.data <= data && data < v.data+v.len*v.s)
+      && (data-v.data) % s == 0)
     throw SYLV_MES_EXCEPTION("Attempt to assign overlapping vectors.");
 
-  copy(v.base(), v.s);
+  copy(v.data, v.s);
   return *this;
 }
 
@@ -48,7 +48,7 @@ Vector::operator=(Vector &&v)
 {
   if (v.len != len)
     throw SYLV_MES_EXCEPTION("Attempt to assign vectors with different lengths.");
-  copy(v.base(), v.s);
+  copy(v.data, v.s);
   return *this;
 }
 
@@ -58,12 +58,12 @@ Vector::operator=(const ConstVector &v)
   if (v.len != len)
     throw SYLV_MES_EXCEPTION("Attempt to assign vectors with different lengths.");
   if (s == v.s
-      && (base() <= v.base() && v.base() < base()+len*s
-          || v.base() <= base() && base() < v.base()+v.len*v.s)
-      && (base()-v.base()) % s == 0)
+      && (data <= v.data && v.data < data+len*s
+          || v.data <= data && data < v.data+v.len*v.s)
+      && (data-v.data) % s == 0)
     throw SYLV_MES_EXCEPTION("Attempt to assign overlapping vectors.");
 
-  copy(v.base(), v.s);
+  copy(v.data, v.s);
   return *this;
 }
 
@@ -73,39 +73,39 @@ Vector::copy(const double *d, int inc)
   blas_int n = len;
   blas_int incy = s;
   blas_int inc2 = inc;
-  dcopy(&n, d, &inc2, base(), &incy);
+  dcopy(&n, d, &inc2, data, &incy);
 }
 
 Vector::Vector(Vector &v, int off_arg, int l)
-  : len(l), off{v.off+off_arg*v.s}, s(v.s), data{v.data}
+  : len(l), s(v.s), data{v.data+off_arg*v.s}, destroy{false}
 {
   if (off_arg < 0 || off_arg + len > v.len)
     throw SYLV_MES_EXCEPTION("Subvector not contained in supvector.");
 }
 
 Vector::Vector(const Vector &v, int off_arg, int l)
-  : len(l), data{new double[len], [](double *arr) { delete[] arr; }}
+  : len(l), data{new double[len]}
 {
   if (off_arg < 0 || off_arg + len > v.len)
     throw SYLV_MES_EXCEPTION("Subvector not contained in supvector.");
-  copy(v.base()+off_arg*v.s, v.s);
+  copy(v.data+off_arg*v.s, v.s);
 }
 
 Vector::Vector(Vector &v, int off_arg, int skip, int l)
-  : len(l), off{v.off+off_arg*v.s}, s(v.s*skip), data{v.data}
+  : len(l), s(v.s*skip), data{v.data+off_arg*v.s}, destroy{false}
 {
 }
 
 Vector::Vector(const Vector &v, int off_arg, int skip, int l)
-  : len(l), data{new double[len], [](double *arr) { delete[] arr; }}
+  : len(l), data{new double[len]}
 {
-  copy(v.base()+off_arg*v.s, v.s*skip);
+  copy(v.data+off_arg*v.s, v.s*skip);
 }
 
 #if defined(MATLAB_MEX_FILE) || defined(OCTAVE_MEX_FILE)
 Vector::Vector(mxArray *p)
   : len{static_cast<int>(mxGetNumberOfElements(p))},
-    data{std::shared_ptr<double>{mxGetPr(p), [](double *arr) { }}}
+    data{mxGetPr(p)}, destroy{false}
 {
   if (!mxIsDouble(p))
     throw SYLV_MES_EXCEPTION("This is not a MATLAB array of doubles.");
@@ -152,7 +152,7 @@ void
 Vector::zeros()
 {
   if (s == 1)
-    std::fill_n(base(), len, 0.0);
+    std::fill_n(data, len, 0.0);
   else
     for (int i = 0; i < len; i++)
       operator[](i) = 0.0;
@@ -192,7 +192,7 @@ Vector::add(double r, const ConstVector &v)
   blas_int n = len;
   blas_int incx = v.s;
   blas_int incy = s;
-  daxpy(&n, &r, v.base(), &incx, base(), &incy);
+  daxpy(&n, &r, v.data, &incx, data, &incy);
 }
 
 void
@@ -207,7 +207,7 @@ Vector::addComplex(const std::complex<double> &z, const ConstVector &v)
   blas_int n = len/2;
   blas_int incx = v.s;
   blas_int incy = s;
-  zaxpy(&n, reinterpret_cast<const double(&)[2]>(z), v.base(), &incx, base(), &incy);
+  zaxpy(&n, reinterpret_cast<const double(&)[2]>(z), v.data, &incx, data, &incy);
 }
 
 void
@@ -215,7 +215,7 @@ Vector::mult(double r)
 {
   blas_int n = len;
   blas_int incx = s;
-  dscal(&n, &r, base(), &incx);
+  dscal(&n, &r, data, &incx);
 }
 
 void
@@ -283,31 +283,31 @@ Vector::print() const
 }
 
 ConstVector::ConstVector(const Vector &v)
-  : len{v.len}, off{v.off}, s{v.s}, data{v.data}
+  : len{v.len}, s{v.s}, data{v.data}
 {
 }
 
 ConstVector::ConstVector(const ConstVector &v, int off_arg, int l)
-  : len{l}, off{v.off+off_arg*v.s}, s{v.s}, data{v.data}
+  : len{l}, s{v.s}, data{v.data+off_arg*v.s}
 {
   if (off_arg < 0 || off_arg + len > v.len)
     throw SYLV_MES_EXCEPTION("Subvector not contained in supvector.");
 }
 
 ConstVector::ConstVector(const ConstVector &v, int off_arg, int skip, int l)
-  : len(l), off{v.off+off_arg*v.s}, s{v.s*skip}, data{v.data}
+  : len(l), s{v.s*skip}, data{v.data+off_arg*v.s}
 {
 }
 
-ConstVector::ConstVector(std::shared_ptr<const double> d, int skip, int l)
-  : len{l}, s{skip}, data{std::move(d)}
+ConstVector::ConstVector(const double *d, int skip, int l)
+  : len{l}, s{skip}, data{d}
 {
 }
 
 #if defined(MATLAB_MEX_FILE) || defined(OCTAVE_MEX_FILE)
 ConstVector::ConstVector(const mxArray *p)
   : len{static_cast<int>(mxGetNumberOfElements(p))},
-    data{std::shared_ptr<const double>{mxGetPr(p), [](const double *arr) { }}}
+    data{mxGetPr(p)}
 {
   if (!mxIsDouble(p))
     throw SYLV_MES_EXCEPTION("This is not a MATLAB array of doubles.");
@@ -376,7 +376,7 @@ ConstVector::dot(const ConstVector &y) const
   blas_int n = len;
   blas_int incx = s;
   blas_int incy = y.s;
-  return ddot(&n, base(), &incx, y.base(), &incy);
+  return ddot(&n, data, &incx, y.data, &incy);
 }
 
 bool

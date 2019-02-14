@@ -22,12 +22,12 @@ MMMatrixIn::MMMatrixIn(const std::string &fname)
   if (fd.fail())
     throw MMException("Couldn't parse rows and cols\n");
   // read in data
-  data = std::shared_ptr<double>(static_cast<double *>(operator new[](rows*cols*sizeof(double))), [](double *arr) { operator delete[](static_cast<void *>(arr)); });
   int len = rows*cols;
+  data.resize(len);
   int i = 0;
   while (!fd.eof() && i < len)
     {
-      fd >> data.get()[i];
+      fd >> data[i];
       if (fd.fail())
         throw MMException("Couldn't parse float number\n");
       i++;

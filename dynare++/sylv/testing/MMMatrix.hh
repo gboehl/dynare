@@ -9,7 +9,7 @@
 
 #include <string>
 #include <utility>
-#include <memory>
+#include <vector>
 
 class MMException
 {
@@ -27,16 +27,16 @@ public:
 
 class MMMatrixIn
 {
-  std::shared_ptr<double> data;
+  std::vector<double> data;
   int rows;
   int cols;
 public:
   MMMatrixIn(const std::string &fname);
   ~MMMatrixIn() = default;
   Vector
-  getData() const
+  getData()
   {
-    return Vector{data, size()};
+    return Vector{data.data(), size()};
   }
   int
   size() const

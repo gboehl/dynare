@@ -9,7 +9,6 @@
  * to avoid running virtual method invokation mechanism. Some
  * members, and methods are thus duplicated */
 
-#include <memory>
 #include <complex>
 
 #if defined(MATLAB_MEX_FILE) || defined(OCTAVE_MEX_FILE)
@@ -24,21 +23,30 @@ class Vector
   friend class ConstVector;
 protected:
   int len{0};
-  int off{0}; // offset to double* pointer
   int s{1}; // stride (also called "skip" in some places)
-  std::shared_ptr<double> data;
+  double *data;
+  bool destroy{true};
 public:
-  Vector() = default;
-  Vector(int l) : len{l}, data{new double[l], [](double *arr) { delete[] arr; }}
+  Vector() : data{nullptr}, destroy{false}
   {
   }
-  Vector(Vector &v) = default;
+  Vector(int l) : len{l}, data{new double[l]}
+  {
+  }
+  Vector(Vector &v) : len{v.len}, s{v.s}, data{v.data}, destroy{false}
+  {
+  }
   Vector(const Vector &v);
-  Vector(Vector &&v) = default;
+  Vector(Vector &&v) : len{v.len}, s{v.s}, data{v.data}, destroy{v.destroy}
+  {
+    v.len = 0;
+    v.data = nullptr;
+    v.destroy = false;
+  }
   // We don't want implict conversion from ConstVector, since it's expensive
   explicit Vector(const ConstVector &v);
-  Vector(std::shared_ptr<double> d, int l)
-    : len(l), data{std::move(d)}
+  Vector(double *d, int l)
+    : len(l), data{d}, destroy{false}
   {
   }
   Vector(Vector &v, int off_arg, int l);
@@ -54,22 +62,22 @@ public:
   double &
   operator[](int i)
   {
-    return data.get()[off+s*i];
+    return data[s*i];
   }
   const double &
   operator[](int i) const
   {
-    return data.get()[off+s*i];
+    return data[s*i];
   }
   const double *
   base() const
   {
-    return data.get() + off;
+    return data;
   }
   double *
   base()
   {
-    return data.get() + off;
+    return data;
   }
   int
   length() const
@@ -91,7 +99,11 @@ public:
   bool operator>(const Vector &y) const;
   bool operator>=(const Vector &y) const;
 
-  virtual ~Vector() = default;
+  virtual ~Vector()
+  {
+    if (destroy)
+      delete[] data;
+  }
   void zeros();
   void nans();
   void infs();
@@ -142,20 +154,19 @@ class ConstVector
   friend class Vector;
 protected:
   int len;
-  int off{0}; // offset to double* pointer
   int s{1}; // stride (also called "skip" in some places)
-  std::shared_ptr<const double> data;
+  const double *data;
 public:
   // Implicit conversion from Vector is ok, since it's cheap
   ConstVector(const Vector &v);
   ConstVector(const ConstVector &v) = default;
   ConstVector(ConstVector &&v) = default;
-  ConstVector(std::shared_ptr<const double> d, int l) : len{l}, data{std::move(d)}
+  ConstVector(const double *d, int l) : len{l}, data{d}
   {
   }
   ConstVector(const ConstVector &v, int off_arg, int l);
   ConstVector(const ConstVector &v, int off_arg, int skip, int l);
-  ConstVector(std::shared_ptr<const double> d, int skip, int l);
+  ConstVector(const double *d, int skip, int l);
 #if defined(MATLAB_MEX_FILE) || defined(OCTAVE_MEX_FILE)
   explicit ConstVector(const mxArray *p);
 #endif
@@ -165,12 +176,12 @@ public:
   const double &
   operator[](int i) const
   {
-    return data.get()[off+s*i];
+    return data[s*i];
   }
   const double *
   base() const
   {
-    return data.get() + off;
+    return data;
   }
   int
   length() const

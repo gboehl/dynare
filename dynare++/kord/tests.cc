@@ -17,8 +17,7 @@ struct Rand
 ConstTwoDMatrix
 make_matrix(int rows, int cols, const double *p)
 {
-  return ConstTwoDMatrix{rows, cols,
-      ConstVector{std::shared_ptr<const double>{p, [](const double *arr) {}}, rows*cols}};
+  return ConstTwoDMatrix{rows, cols, ConstVector{p, rows*cols}};
 }
 
 void
