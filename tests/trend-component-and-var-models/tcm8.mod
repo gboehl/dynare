@@ -118,12 +118,12 @@ tcm6 = load('tcm6_data.mat');
 M_.params = tcm6.params;
 
 
-trend_component_model(model_name=toto, eqtags=['U2_Q_YED', 'U2_G_YER', 'U2_STN', 'U2_EHIC', 'U2_G_EYER', 'U2_ESTN', 'U2_HH_OCOR', 'U2_H_Q_YER400'], targets=['U2_EHIC', 'U2_G_EYER', 'U2_ESTN', 'U2_H_Q_YER400']);
+trend_component_model(model_name=toto, eqtags=['U2_Q_YED', 'U2_G_YER', 'U2_STN', 'U2_EHIC', 'U2_ESTN', 'U2_HH_OCOR', 'U2_H_Q_YER400'], targets=['U2_EHIC', 'U2_ESTN', 'U2_H_Q_YER400']);
 pac_model(auxiliary_model_name=toto, discount=beta, model_name=pacman, growth = U2_H_Q_YER400);
 pac.initialize('pacman');
 C0 = oo_.trend_component.toto.CompanionMatrix;
 
-trend_component_model(model_name=titi, eqtags=['U2_Q_YED', 'U2_G_YER', 'U2_STN', 'U2_EHIC', 'U2_G_EYER', 'U2_ESTN', 'U2_HH_OCOR', 'U2_H_Q_YER400'], targets=['U2_G_EYER', 'U2_H_Q_YER400', 'U2_ESTN', 'U2_EHIC']);
+trend_component_model(model_name=titi, eqtags=['U2_Q_YED', 'U2_G_YER', 'U2_STN', 'U2_EHIC', 'U2_ESTN', 'U2_HH_OCOR', 'U2_H_Q_YER400'], targets=['U2_H_Q_YER400', 'U2_ESTN', 'U2_EHIC']);
 pac_model(auxiliary_model_name=titi, discount=beta, model_name=pacman1, growth = U2_H_Q_YER400);
 pac.initialize('pacman1');
 C1 = oo_.trend_component.titi.CompanionMatrix;
