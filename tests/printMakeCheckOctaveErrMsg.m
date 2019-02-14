@@ -6,9 +6,11 @@ function printMakeCheckOctaveErrMsg(modfilename, err)
     printf("  WHILE RUNNING MODFILE: %s\n", modfilename);
     printf("                    MSG: %s\n", err.message);
     if (isfield(err, 'stack'))
-        printf("                IN FILE: %s\n", err.stack(1).file);
-        printf("            IN FUNCTION: %s\n", err.stack(1).name);
-        printf("     ON LINE and COLUMN: %d and %d\n",err.stack(1).line,err.stack(1).column);
+        printf("\n  STACKTRACE:\n");
+        for i=1:size(err.stack, 1)
+            printf("  %s(%s):%d.%d\n", err.stack(i).file, err.stack(i).name,
+                   err.stack(i).line, err.stack(i).column);
+        endfor
     end
-    printf("*************************************\n\n\n");
+    printf("********************************************\n\n\n");
 end
