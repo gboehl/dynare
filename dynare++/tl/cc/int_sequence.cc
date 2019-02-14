@@ -13,7 +13,7 @@
    $(a,b)$, then the result is $(a,a,b,b,b)$. */
 
 IntSequence::IntSequence(const Symmetry &sy, const IntSequence &se)
-  : data{new int[sy.dimen()], [](int *arr) { delete[] arr; }}, length{sy.dimen()}
+  : data{new int[sy.dimen()]}, length{sy.dimen()}
 {
   int k = 0;
   for (int i = 0; i < sy.num(); i++)
@@ -31,7 +31,7 @@ IntSequence::IntSequence(const Symmetry &sy, const IntSequence &se)
    and one $u$. */
 
 IntSequence::IntSequence(const Symmetry &sy, const std::vector<int> &se)
-  : data{new int[sy.num()], [](int *arr) { delete[] arr; }}, length{sy.num()}
+  : data{new int[sy.num()]}, length{sy.num()}
 {
   TL_RAISE_IF(sy.dimen() <= se[se.size()-1],
               "Sequence is not reachable by symmetry in IntSequence()");
@@ -46,7 +46,7 @@ IntSequence::IntSequence(const Symmetry &sy, const std::vector<int> &se)
    sequence inserting the given number to the sequence. */
 
 IntSequence::IntSequence(int i, const IntSequence &s)
-  : data{new int[s.size()+1], [](int *arr) { delete[] arr; }}, length{s.size()+1}
+  : data{new int[s.size()+1]}, length{s.size()+1}
 {
   int j = 0;
   while (j < s.size() && s[j] < i)
@@ -59,7 +59,7 @@ IntSequence::IntSequence(int i, const IntSequence &s)
 }
 
 IntSequence::IntSequence(int i, const IntSequence &s, int pos)
-  : data{new int[s.size()+1], [](int *arr) { delete[] arr; }}, length{s.size()+1}
+  : data{new int[s.size()+1]}, length{s.size()+1}
 {
   TL_RAISE_IF(pos < 0 || pos > s.size(),
               "Wrong position for insertion IntSequence constructor");
@@ -74,7 +74,7 @@ const IntSequence &
 IntSequence::operator=(const IntSequence &s)
 {
   TL_RAISE_IF(length != s.length, "Wrong length for in-place IntSequence::operator=");
-  std::copy_n(s.data.get()+s.offset, length, data.get()+offset);
+  std::copy_n(s.data, length, data);
   return *this;
 }
 
@@ -82,22 +82,22 @@ const IntSequence &
 IntSequence::operator=(IntSequence &&s)
 {
   TL_RAISE_IF(length != s.length, "Wrong length for in-place IntSequence::operator=");
-  std::copy_n(s.data.get()+s.offset, length, data.get()+offset);
+  std::copy_n(s.data, length, data);
   return *this;
 }
 
 bool
 IntSequence::operator==(const IntSequence &s) const
 {
-  return std::equal(data.get()+offset, data.get()+offset+length,
-                    s.data.get()+s.offset, s.data.get()+s.offset+s.length);
+  return std::equal(data, data+length,
+                    s.data, s.data+s.length);
 }
 
 bool
 IntSequence::operator<(const IntSequence &s) const
 {
-  return std::lexicographical_compare(data.get()+offset, data.get()+offset+length,
-                                      s.data.get()+s.offset, s.data.get()+s.offset+s.length);
+  return std::lexicographical_compare(data, data+length,
+                                      s.data, s.data+s.length);
 }
 
 bool
@@ -127,7 +127,7 @@ IntSequence::less(const IntSequence &s) const
 void
 IntSequence::sort()
 {
-  std::sort(data.get()+offset, data.get()+offset+length);
+  std::sort(data, data+length);
 }
 
 /* Here we monotonize the sequence. If an item is less then its
@@ -164,7 +164,7 @@ IntSequence::pmonotone(const Symmetry &s)
 int
 IntSequence::sum() const
 {
-  return std::accumulate(data.get()+offset, data.get()+offset+length, 0);
+  return std::accumulate(data, data+length, 0);
 }
 
 /* This returns product of subsequent items. Useful for Kronecker product
@@ -173,7 +173,7 @@ IntSequence::sum() const
 int
 IntSequence::mult(int i1, int i2) const
 {
-  return std::accumulate(data.get()+offset+i1, data.get()+offset+i2,
+  return std::accumulate(data+i1, data+i2,
                          1, std::multiplies<int>());
 }
 
@@ -211,7 +211,7 @@ IntSequence::getMax() const
 {
   if (length == 0)
     return std::numeric_limits<int>::min();
-  return *std::max_element(data.get()+offset, data.get()+offset+length);
+  return *std::max_element(data, data+length);
 }
 
 void
@@ -233,7 +233,7 @@ IntSequence::add(int f, const IntSequence &s)
 bool
 IntSequence::isPositive() const
 {
-  return std::all_of(data.get()+offset, data.get()+offset+length,
+  return std::all_of(data, data+length,
                      [](int x) { return x >= 0; });
 }
 
@@ -242,14 +242,14 @@ IntSequence::isConstant() const
 {
   if (length < 2)
     return true;
-  return std::all_of(data.get()+offset+1, data.get()+offset+length,
+  return std::all_of(data+1, data+length,
                      [this](int x) { return x == operator[](0); });
 }
 
 bool
 IntSequence::isSorted() const
 {
-  return std::is_sorted(data.get()+offset, data.get()+offset+length);
+  return std::is_sorted(data, data+length);
 }
 
 /* Debug print. */

@@ -25,7 +25,6 @@
 #define INT_SEQUENCE_H
 
 #include <vector>
-#include <memory>
 #include <algorithm>
 #include <initializer_list>
 
@@ -41,47 +40,53 @@
 class Symmetry;
 class IntSequence
 {
-  std::shared_ptr<int> data;
+  int *data;
   int length;
-  int offset{0};
+  bool destroy{true};
 public:
   // Constructor allocating a given length of (uninitialized) data
   explicit IntSequence(int l)
-    : data{new int[l], [](int *arr) { delete[] arr; }}, length{l}
+    : data{new int[l]}, length{l}
   {
   }
   // Constructor allocating and then initializing all members to a given number
   IntSequence(int l, int n)
-    : data{new int[l], [](int *arr) { delete[] arr; }}, length{l}
+    : data{new int[l]}, length{l}
   {
-    std::fill_n(data.get(), length, n);
+    std::fill_n(data, length, n);
   }
   /* Constructor using an initializer list (gives the contents of the
      IntSequence, similarly to std::vector) */
   IntSequence(std::initializer_list<int> init)
-    : data{new int[init.size()], [](int *arr) { delete[] arr; }},
+    : data{new int[init.size()]},
       length{static_cast<int>(init.size())}
   {
-    std::copy(init.begin(), init.end(), data.get());
+    std::copy(init.begin(), init.end(), data);
   }
   // Copy constructor
   IntSequence(const IntSequence &s)
-    : data{new int[s.length], [](int *arr) { delete[] arr; }}, length{s.length}
+    : data{new int[s.length]}, length{s.length}
   {
-    std::copy_n(s.data.get()+s.offset, length, data.get());
+    std::copy_n(s.data, length, data);
   }
   // Move constructor
-  IntSequence(IntSequence &&s) = default;
+  IntSequence(IntSequence &&s)
+    : data{s.data}, length{s.length}, destroy{s.destroy}
+  {
+    s.data = nullptr;
+    s.length = 0;
+    s.destroy = false;
+  }
   // Subsequence constructor (which shares the data pointer)
   IntSequence(IntSequence &s, int i1, int i2)
-    : data{s.data}, length{i2-i1}, offset{s.offset+i1}
+    : data{s.data+i1}, length{i2-i1}, destroy{false}
   {
   }
   // Subsequence constructor (without pointer sharing)
   IntSequence(const IntSequence &s, int i1, int i2)
-    : data{new int[i2-i1], [](int *arr) { delete[] arr; }}, length{i2-i1}
+    : data{new int[i2-i1]}, length{i2-i1}
   {
-    std::copy_n(s.data.get()+s.offset+i1, length, data.get());
+    std::copy_n(s.data+i1, length, data);
   }
   /* Constructor used for calculating implied symmetry from a more general
      symmetry and one equivalence class */
@@ -95,7 +100,11 @@ public:
 
   const IntSequence &operator=(const IntSequence &s);
   const IntSequence &operator=(IntSequence &&s);
-  virtual ~IntSequence() = default;
+  virtual ~IntSequence()
+  {
+    if (destroy)
+      delete[] data;
+  }
   bool operator==(const IntSequence &s) const;
   bool
   operator!=(const IntSequence &s) const
@@ -105,12 +114,12 @@ public:
   int &
   operator[](int i)
   {
-    return data.get()[offset+i];
+    return data[i];
   }
   int
   operator[](int i) const
   {
-    return data.get()[offset+i];
+    return data[i];
   }
   int
   size() const
