@@ -137,7 +137,7 @@ for i = 1:maxit
     resid = Y.data - X.data * beta0;
     resid = reshape(resid, oo_.sur.(model_name).dof, neqs);
     vcv = resid'*resid/oo_.sur.(model_name).dof;
-    kLeye = kron(chol(inv(vcv)), eye(oo_.sur.(model_name).dof));
+    kLeye = kron(inv(chol(vcv))', eye(oo_.sur.(model_name).dof));
     [q, r] = qr(kLeye*X.data, 0);
     oo_.sur.(model_name).beta = r\(q'*kLeye*Y.data);
     if max(abs(beta0 - oo_.sur.(model_name).beta)) < tol

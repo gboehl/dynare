@@ -55,7 +55,7 @@ for i = 1:maxit
     resid = oo_.pooled_fgls.Y - oo_.pooled_fgls.X * beta0;
     resid = reshape(resid, oo_.pooled_fgls.dof, neqs);
     vcv = resid'*resid/oo_.pooled_fgls.dof;
-    kLeye = kron(chol(inv(vcv)), eye(oo_.pooled_fgls.dof));
+    kLeye = kron(inv(chol(vcv))', eye(oo_.pooled_fgls.dof));
     [q, r] = qr(kLeye*oo_.pooled_fgls.X, 0);
     oo_.pooled_fgls.beta = r\(q'*kLeye*oo_.pooled_fgls.Y);
     if max(abs(beta0 - oo_.pooled_fgls.beta)) < tol
