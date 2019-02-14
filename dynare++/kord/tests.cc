@@ -3,6 +3,12 @@
 
 #include <chrono>
 #include <random>
+#include <string>
+#include <utility>
+#include <iostream>
+#include <iomanip>
+#include <vector>
+#include <memory>
 
 #include "korder.hh"
 #include "SylvException.hh"
@@ -70,16 +76,12 @@ SparseGenerator::makeTensor(int dim, int nv, int r,
   auto *res = new FSSparseTensor(dim, nv, r);
   FFSTensor dummy(0, nv, dim);
   for (Tensor::index fi = dummy.begin(); fi != dummy.end(); ++fi)
-    {
-      for (int i = 0; i < r; i++)
+    for (int i = 0; i < r; i++)
+      if (Rand::discrete(fill))
         {
-          if (Rand::discrete(fill))
-            {
-              double x = Rand::get(m);
-              res->insert(fi.getCoor(), i, x);
-            }
+          double x = Rand::get(m);
+          res->insert(fi.getCoor(), i, x);
         }
-    }
   return res;
 }
 
@@ -88,7 +90,7 @@ SparseGenerator::fillContainer(TensorContainer<FSSparseTensor> &c,
                                int maxdim, int nv, int r,
                                double m)
 {
-  Rand::init(maxdim, nv, r, (int) (5*m), 0);
+  Rand::init(maxdim, nv, r, static_cast<int>(5*m), 0);
   double fill = 0.5;
   for (int d = 1; d <= maxdim; d++)
     {
@@ -235,22 +237,17 @@ const double gu_data2 [] = { // raw data 300 items
 
 class TestRunnable
 {
-  char name[100];
 public:
+  const std::string name;
   int dim; // dimension of the solved problem
   int nvar; // number of variable of the solved problem
-  TestRunnable(const char *n, int d, int nv)
-    : dim(d), nvar(nv)
+  TestRunnable(std::string n, int d, int nv)
+    : name{std::move(n)}, dim(d), nvar(nv)
   {
-    strncpy(name, n, 100);
   }
+  virtual ~TestRunnable() = default;
   bool test() const;
   virtual bool run() const = 0;
-  const char *
-  getName() const
-  {
-    return name;
-  }
 protected:
   static double korder_unfold_fold(int maxdim, int unfold_dim,
                                    int nstat, int npred, int nboth, int forw,
@@ -261,27 +258,21 @@ protected:
 bool
 TestRunnable::test() const
 {
-  printf("Running test <%s>\n", name);
+  std::cout << "Running test <" << name << ">" << std::endl;
   clock_t start = clock();
   auto start_real = std::chrono::steady_clock::now();
   bool passed = run();
   clock_t end = clock();
   auto end_real = std::chrono::steady_clock::now();
-  printf("CPU time  %8.4g (CPU seconds)\n",
-         ((double) (end-start))/CLOCKS_PER_SEC);
   std::chrono::duration<double> duration = end_real - start_real;
-  printf("Real time %8.4g (seconds).....................",
-         duration.count());
+  std::cout << "CPU time  " << std::setprecision(4) << std::setw(8)
+            << static_cast<double>(end-start)/CLOCKS_PER_SEC << " (CPU seconds)\n"
+            << "Real time " << std::setw(8) << duration.count() << " (seconds).....................";
   if (passed)
-    {
-      printf("passed\n\n");
-      return passed;
-    }
+    std::cout << "passed\n\n";
   else
-    {
-      printf("FAILED\n\n");
-      return passed;
-    }
+    std::cout << "FAILED\n\n";
+  return passed;
 }
 
 double
@@ -296,10 +287,10 @@ TestRunnable::korder_unfold_fold(int maxdim, int unfold_dim,
   int nz = nboth+nforw+ny+nboth+npred+nu;
   SparseGenerator::fillContainer(c, maxdim, nz, ny, 5.0);
   for (int d = 1; d <= maxdim; d++)
-    {
-      printf("\ttensor fill for dim=%d is:   %3.2f %%\n",
-             d, c.get(Symmetry{d})->getFillFactor()*100.0);
-    }
+    std::cout << "\ttensor fill for dim=" << d << " is:   "
+              << std::setprecision(2) << std::setw(6) << std::fixed
+              << c.get(Symmetry{d})->getFillFactor()*100.0 << " %\n"
+              << std::defaultfloat;
   Journal jr("out.txt");
   KOrder kord(nstat, npred, nboth, nforw, c, gy, gu, v, jr);
   // perform unfolded steps until unfold_dim
@@ -309,15 +300,15 @@ TestRunnable::korder_unfold_fold(int maxdim, int unfold_dim,
       clock_t pertime = clock();
       kord.performStep<KOrder::unfold>(d);
       pertime = clock()-pertime;
-      printf("\ttime for unfolded step dim=%d: %8.4g\n",
-             d, ((double) (pertime))/CLOCKS_PER_SEC);
+      std::cout << "\ttime for unfolded step dim=" << d << ": " << std::setprecision(4)
+                << static_cast<double>(pertime)/CLOCKS_PER_SEC << std::endl;
       clock_t checktime = clock();
       double err = kord.check<KOrder::unfold>(d);
       checktime = clock()-checktime;
-      printf("\ttime for step check dim=%d:    %8.4g\n",
-             d, ((double) (checktime))/CLOCKS_PER_SEC);
-      printf("\tmax error in step dim=%d:      %10.6g\n",
-             d, err);
+      std::cout << "\ttime for step check dim=" << d << ":    " << std::setprecision(4)
+                << static_cast<double>(checktime)/CLOCKS_PER_SEC << '\n'
+                << "\tmax error in step dim=" << d << ":      " << std::setprecision(6) << err
+                << std::endl;
       if (maxerror < err)
         maxerror = err;
     }
@@ -327,23 +318,23 @@ TestRunnable::korder_unfold_fold(int maxdim, int unfold_dim,
       clock_t swtime = clock();
       kord.switchToFolded();
       swtime = clock()-swtime;
-      printf("\ttime for switching dim=%d:   %8.4g\n",
-             unfold_dim, ((double) (swtime))/CLOCKS_PER_SEC);
+      std::cout << "\ttime for switching dim=" << unfold_dim << ":     " << std::setprecision(4)
+                << static_cast<double>(swtime)/CLOCKS_PER_SEC << std::endl;
 
       for (int d = unfold_dim+1; d <= maxdim; d++)
         {
           clock_t pertime = clock();
           kord.performStep<KOrder::fold>(d);
           pertime = clock()-pertime;
-          printf("\ttime for folded step dim=%d: %8.4g\n",
-                 d, ((double) (pertime))/CLOCKS_PER_SEC);
+          std::cout << "\ttime for folded step dim=" << d << ":   " << std::setprecision(4)
+                    << static_cast<double>(pertime)/CLOCKS_PER_SEC << std::endl;
           clock_t checktime = clock();
           double err = kord.check<KOrder::fold>(d);
           checktime = clock()-checktime;
-          printf("\ttime for step check dim=%d:    %8.4g\n",
-                 d, ((double) (checktime))/CLOCKS_PER_SEC);
-          printf("\tmax error in step dim=%d:      %10.6g\n",
-                 d, err);
+          std::cout << "\ttime for step check dim=" << d << ":    " << std::setprecision(4)
+                    << static_cast<double>(checktime)/CLOCKS_PER_SEC << '\n'
+                    << "\tmax error in step dim=" << d << ":      " << std::setprecision(6) << err
+                    << std::endl;
           if (maxerror < err)
             maxerror = err;
         }
@@ -425,54 +416,48 @@ public:
 int
 main()
 {
-  TestRunnable *all_tests[50];
+  std::vector<std::unique_ptr<TestRunnable>> all_tests;
   // fill in vector of all tests
-  int num_tests = 0;
-  all_tests[num_tests++] = new UnfoldKOrderSmall();
-  all_tests[num_tests++] = new UnfoldKOrderSW();
-  all_tests[num_tests++] = new UnfoldFoldKOrderSW();
+  all_tests.push_back(std::make_unique<UnfoldKOrderSmall>());
+  all_tests.push_back(std::make_unique<UnfoldKOrderSW>());
+  all_tests.push_back(std::make_unique<UnfoldFoldKOrderSW>());
 
   // find maximum dimension and maximum nvar
   int dmax = 0;
   int nvmax = 0;
-  for (int i = 0; i < num_tests; i++)
+  for (const auto &test : all_tests)
     {
-      if (dmax < all_tests[i]->dim)
-        dmax = all_tests[i]->dim;
-      if (nvmax < all_tests[i]->nvar)
-        nvmax = all_tests[i]->nvar;
+      if (dmax < test->dim)
+        dmax = test->dim;
+      if (nvmax < test->nvar)
+        nvmax = test->nvar;
     }
   tls.init(dmax, nvmax); // initialize library
 
   // launch the tests
   int success = 0;
-  for (int i = 0; i < num_tests; i++)
+  for (const auto &test : all_tests)
     {
       try
         {
-          if (all_tests[i]->test())
+          if (test->test())
             success++;
         }
       catch (const TLException &e)
         {
-          printf("Caugth TL exception in <%s>:\n", all_tests[i]->getName());
+          std::cout << "Caught TL exception in <" << test->name << ">:" << std::endl;
           e.print();
         }
       catch (SylvException &e)
         {
-          printf("Caught Sylv exception in <%s>:\n", all_tests[i]->getName());
+          std::cout << "Caught Sylv exception in <" << test->name << ">:" << std::endl;
           e.printMessage();
         }
     }
 
-  printf("There were %d tests that failed out of %d tests run.\n",
-         num_tests - success, num_tests);
-
-  // destroy
-  for (int i = 0; i < num_tests; i++)
-    {
-      delete all_tests[i];
-    }
+  int nfailed = all_tests.size() - success;
+  std::cout << "There were " << nfailed << " tests that failed out of "
+            << all_tests.size() << " tests run." << std::endl;
 
   return 0;
 }
