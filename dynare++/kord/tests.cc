@@ -2,17 +2,23 @@
 /* Copyright 2004, Ondra Kamenik */
 
 #include <chrono>
-#include <cstdlib>
+#include <random>
+
 #include "korder.hh"
 #include "SylvException.hh"
 
 struct Rand
 {
+  static std::mt19937 mtgen;
+  static std::uniform_real_distribution<> dis;
   static void init(int n1, int n2, int n3, int n4, int n5);
   static double get(double m);
   static int get(int m);
   static bool discrete(double prob); // answers true with given probability
 };
+
+std::mt19937 Rand::mtgen;
+std::uniform_real_distribution<> Rand::dis;
 
 ConstTwoDMatrix
 make_matrix(int rows, int cols, const double *p)
@@ -23,30 +29,30 @@ make_matrix(int rows, int cols, const double *p)
 void
 Rand::init(int n1, int n2, int n3, int n4, int n5)
 {
-  long int seed = n1;
+  decltype(mtgen)::result_type seed = n1;
   seed = 256*seed+n2;
   seed = 256*seed+n3;
   seed = 256*seed+n4;
   seed = 256*seed+n5;
-  srand48(seed);
+  mtgen.seed(seed);
 }
 
 double
 Rand::get(double m)
 {
-  return 2*m*(drand48()-0.5);
+  return 2*m*(dis(mtgen)-0.5);
 }
 
 int
 Rand::get(int m)
 {
-  return (int) (Rand::get(0.9999*m));
+  return static_cast<int>(get(0.9999*m));
 }
 
 bool
 Rand::discrete(double prob)
 {
-  return drand48() < prob;
+  return dis(mtgen) < prob;
 }
 
 struct SparseGenerator
