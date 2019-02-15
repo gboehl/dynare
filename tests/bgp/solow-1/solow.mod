@@ -45,11 +45,19 @@ verbatim;
     GY = NaN(MC,1);
     GK = NaN(MC,1);
     EG = NaN(MC,1);
-    options = optimoptions('fsolve','Display','off','Algorithm','levenberg-marquardt','MaxFunctionEvaluations',1000000,'MaxIterations',100000,'SpecifyObjectiveGradient',true,'FunctionTolerance',1e-8,'StepTolerance',1e-8);
+    if isoctave
+        options = optimset('Display', 'off', 'MaxFunEvals', 1000000,'MaxIter',100000,'Jacobian','on','TolFun',1e-8,'TolX',1e-8);
+        % Octave can't take a function handle of a function in a package
+        % See https://savannah.gnu.org/bugs/index.php?46659
+        fun = str2func('solow.bgpfun');
+    else
+        options = optimoptions('fsolve','Display','off','Algorithm','levenberg-marquardt','MaxFunctionEvaluations',1000000,'MaxIterations',100000,'SpecifyObjectiveGradient',true,'FunctionTolerance',1e-8,'StepTolerance',1e-8);
+        fun = @solow.bgpfun;
+    end
     for i=1:MC
         y = 1+(rand(6,1)-.5)*.2;
         g = ones(6,1);
-        [y, fval, exitflag] = fsolve(@solow.bgpfun, [y;g], options);
+        [y, fval, exitflag] = fsolve(fun, [y;g], options);
         if exitflag>0
             KY(i) = y(6)/y(5);
             GY(i) = y(11);
