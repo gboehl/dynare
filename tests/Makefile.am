@@ -358,6 +358,8 @@ MODFILES = \
 	observation_trends_and_prefiltering/calib_smoother/Tr_prefil_f_obs_loglin_cal_smoother.mod \
 	observation_trends_and_prefiltering/ML/Trend_no_prefilter_selected_var.mod \
     bgp/solow-1/solow.mod \
+    bgp/nk-1/nk.mod \
+    bgp/ramsey-1/ramsey.mod \
     dynare-command-options/ramst.mod
 
 PARTICLEFILES = \

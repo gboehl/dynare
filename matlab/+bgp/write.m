@@ -32,10 +32,43 @@ function write(DynareModel)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-i0 = transpose(DynareModel.lead_lag_incidence(1,:)); % Indices of the lagged variables.
-i1 = transpose(DynareModel.lead_lag_incidence(2,:)); % Indices of the current variables.
+if DynareModel.maximum_lag  && ~DynareModel.maximum_lead
+    i0 = transpose(DynareModel.lead_lag_incidence(1,:)); % Indices of the lagged variables.
+    i1 = transpose(DynareModel.lead_lag_incidence(2,:)); % Indices of the current variables.
+    i2 = [];                                             % Indices of the leaded variables.
+elseif DynareModel.maximum_lag  && DynareModel.maximum_lead
+    i0 = transpose(DynareModel.lead_lag_incidence(1,:)); % Indices of the lagged variables.
+    i1 = transpose(DynareModel.lead_lag_incidence(2,:)); % Indices of the current variables.
+    i2 = transpose(DynareModel.lead_lag_incidence(3,:)); % Indices of the leaded variables.
+elseif ~DynareModel.maximum_lag  && DynareModel.maximum_lead
+    i0 = [];                                             % Indices of the lagged variables.
+    i1 = transpose(DynareModel.lead_lag_incidence(1,:)); % Indices of the current variables.
+    i2 = transpose(DynareModel.lead_lag_incidence(2,:)); % Indices of the leaded variables.
+else
+    error('The model is static. The BGP is trivial.')
+end
+
 n0 = length(find(i0)); % Number of lagged variables.
 n1 = length(find(i1)); % Number of current variables.
+n2 = length(find(i2)); % Number of leaded variables.
+
+purely_backward_model = logical(n0 && n1 && ~n2);
+purely_forward_model = logical(~n0 && n1 && n2);
+
+if purely_backward_model
+    I0 = i0;
+    I1 = i1;
+    I2 = [];
+elseif purely_forward_model
+    I0 = i1;
+    I1 = i2;
+    I2 = [];
+else
+    % Model has both leads and lags.
+    I0 = i0;
+    I1 = i1;
+    I2 = i2;
+end
 
 % Create function in mod namespace.
 fid = fopen(sprintf('+%s/bgpfun.m', DynareModel.fname), 'w');
@@ -51,25 +84,35 @@ fprintf(fid, 'y = z(1:%u);\n\n', DynareModel.endo_nbr);
 fprintf(fid, 'g = z(%u:%u);\n', DynareModel.endo_nbr+1, 2*DynareModel.endo_nbr);
 
 % Define the point where the dynamic model is to be evaluated.
-fprintf(fid, 'Y = zeros(%u, 1);\n', 2*(n0+n1));
-for i=1:length(i0) % period t equations, lagged variables.
-    if i0(i)
-        fprintf(fid, 'Y(%u) = y(%u);\n', i0(i), i);
+fprintf(fid, 'Y = zeros(%u, 1);\n', 2*(n0+n1+n2));
+for i=1:length(I0) % period t equations, lagged variables.
+    if I0(i)
+        fprintf(fid, 'Y(%u) = y(%u);\n', I0(i), i);
     end
 end
-for i=1:length(i1) % period t equations, current variables.
-    if i1(i)
-        fprintf(fid, 'Y(%u) = y(%u)*g(%u);\n', i1(i), i, i);
+for i=1:length(I1) % period t equations, current variables.
+    if I1(i)
+        fprintf(fid, 'Y(%u) = y(%u)*g(%u);\n', I1(i), i, i);
     end
 end
-for i=1:length(i0) % period t+1 equaions lagged variables.
-    if i0(i)
-        fprintf(fid, 'Y(%u) = y(%u)*g(%u);\n', n0+n1+i0(i), i, i);
+for i=1:length(I2) % period t equations, leaded variables.
+    if I2(i)
+        fprintf(fid, 'Y(%u) = y(%u)*g(%u)*g(%u);\n', I2(i), i, i, i);
     end
 end
-for i=1:length(i1) % period t+1 equations current variables.
-    if i1(i)
-        fprintf(fid, 'Y(%u) = y(%u)*g(%u)*g(%u);\n', n0+n1+i1(i), i, i, i);
+for i=1:length(I0) % period t+1 equations lagged variables.
+    if I0(i)
+        fprintf(fid, 'Y(%u) = y(%u)*g(%u);\n', n0+n1+n2+I0(i), i, i);
+    end
+end
+for i=1:length(I1) % period t+1 equations current variables.
+    if I1(i)
+        fprintf(fid, 'Y(%u) = y(%u)*g(%u)*g(%u);\n', n0+n1+n2+I1(i), i, i, i);
+    end
+end
+for i=1:length(I2) % period t+1 equations leaded variables.
+    if I2(i)
+        fprintf(fid, 'Y(%u) = y(%u)*g(%u)*g(%u)*g(%u);\n', n0+n1+n2+I2(i), i, i, i, i);
     end
 end
 fprintf(fid, '\n');
@@ -89,14 +132,14 @@ fprintf(fid, 'x = zeros(1, %u);\n\n', DynareModel.exo_nbr);
 
 % Evaluate the residuals and jacobian of the dynamic model in periods t and t+1.
 fprintf(fid, 'if nargout>1\n');
-fprintf(fid, '    J = zeros(%u, %u);\n', 2*DynareModel.endo_nbr, n0+n1+DynareModel.endo_nbr);
-fprintf(fid, '    [F(1:%u), tmp] = %s.dynamic(Y(1:%u), x, p, y, 1);\n', DynareModel.endo_nbr, DynareModel.fname, n1+n0);
-fprintf(fid, '    J(1:%u,1:%u) = tmp(:,1:%u);\n', DynareModel.endo_nbr, n0+n1, n0+n1);
-fprintf(fid, '    [F(%u:%u), tmp] = %s.dynamic(Y(1+%u:%u), x, p, y, 1);\n', DynareModel.endo_nbr+1, 2*DynareModel.endo_nbr, DynareModel.fname, n1+n0, 2*(n1+n0));
-fprintf(fid, '    J(%u:%u,1:%u) = tmp(:,1:%u);\n', DynareModel.endo_nbr+1, 2*DynareModel.endo_nbr, n0+n1, n0+n1);
+fprintf(fid, '    J = zeros(%u, %u);\n', 2*DynareModel.endo_nbr, n0+n1+n2+DynareModel.endo_nbr);
+fprintf(fid, '    [F(1:%u), tmp] = %s.dynamic(Y(1:%u), x, p, y, 1);\n', DynareModel.endo_nbr, DynareModel.fname, n0+n1+n2);
+fprintf(fid, '    J(1:%u,1:%u) = tmp(:,1:%u);\n', DynareModel.endo_nbr, n0+n1+n2, n0+n1+n2);
+fprintf(fid, '    [F(%u:%u), tmp] = %s.dynamic(Y(1+%u:%u), x, p, y, 1);\n', DynareModel.endo_nbr+1, 2*DynareModel.endo_nbr, DynareModel.fname, n0+n1+n2, 2*(n0+n1+n2));
+fprintf(fid, '    J(%u:%u,1:%u) = tmp(:,1:%u);\n', DynareModel.endo_nbr+1, 2*DynareModel.endo_nbr, n0+n1+n2, n0+n1+n2);
 fprintf(fid, 'else\n');
-fprintf(fid, '    F(1:%u) = %s.dynamic(Y(1:%u), x, p, y, 1);\n', DynareModel.endo_nbr, DynareModel.fname, n1+n0);
-fprintf(fid, '    F(%u:%u) = %s.dynamic(Y(1+%u:%u), x, p, y, 1);\n', DynareModel.endo_nbr+1, 2*DynareModel.endo_nbr, DynareModel.fname, n1+n0, 2*(n1+n0));
+fprintf(fid, '    F(1:%u) = %s.dynamic(Y(1:%u), x, p, y, 1);\n', DynareModel.endo_nbr, DynareModel.fname, n0+n1+n2);
+fprintf(fid, '    F(%u:%u) = %s.dynamic(Y(1+%u:%u), x, p, y, 1);\n', DynareModel.endo_nbr+1, 2*DynareModel.endo_nbr, DynareModel.fname, n0+n1+n2, 2*(n0+n1+n2));
 fprintf(fid, 'end\n\n');
 
 % Compute the jacobian if required.
@@ -105,17 +148,51 @@ fprintf(fid, '    JAC = zeros(%u,%u);\n', 2*DynareModel.endo_nbr, 2*DynareModel.
 
 % Compute the derivatives of the first block of equations (period t)
 % with respect to the endogenous variables.
-for i=1:DynareModel.eq_nbr
-    for j=1:DynareModel.endo_nbr
-        if i1(j)
-            if i0(j)
-                fprintf(fid, '    JAC(%u,%u) = J(%u,%u)+J(%u,%u)*g(%u);\n', i, j, i, i0(j), i, i1(j), j);
+if purely_backward_model || purely_forward_model
+    for i=1:DynareModel.eq_nbr
+        for j=1:DynareModel.endo_nbr
+            if I1(j)
+                if I0(j)
+                    fprintf(fid, '    JAC(%u,%u) = J(%u,%u)+J(%u,%u)*g(%u);\n', i, j, i, I0(j), i, I1(j), j);
+                else
+                    fprintf(fid, '    JAC(%u,%u) = J(%u,%u)*g(%u);\n', i, j, i, I1(j), j);
+                end
             else
-                fprintf(fid, '    JAC(%u,%u) = J(%u,%u)*g(%u);\n', i, j, i, i1(j), j);
+                if I0(j)
+                    fprintf(fid, '    JAC(%u,%u) = J(%u,%u);\n', i, j, i, I0(j));
+                end
             end
-        else
-            if i0(j)
-                fprintf(fid, '    JAC(%u,%u) = J(%u,%u);\n', i, j, i, i0(j));
+        end
+    end
+else
+    for i=1:DynareModel.eq_nbr
+        for j=1:DynareModel.endo_nbr
+            if I2(j)
+                if I1(j)
+                    if I0(j)
+                        fprintf(fid, '    JAC(%u,%u) = J(%u,%u)+J(%u,%u)*g(%u)+J(%u,%u)*g(%u)*g(%u);\n', i, j, i, I0(j), i, I1(j), j, i, I2(j), j, j);
+                    else
+                        fprintf(fid, '    JAC(%u,%u) = J(%u,%u)*g(%u)+J(%u,%u)*g(%u)*g(%u);\n', i, j, i, I1(j), j, i, I2(j), j, j);
+                    end
+                else
+                    if I0(j)
+                        fprintf(fid, '    JAC(%u,%u) = J(%u,%u)+J(%u,%u)*g(%u)*g(%u);\n', i, j, i, I0(j), i, I2(j), j, j);
+                    else
+                        fprintf(fid, '    JAC(%u,%u) = J(%u,%u)*g(%u)*g(%u);\n', i, j, i, I2(j), j, j);
+                    end
+                end
+            else
+                if I1(j)
+                    if I0(j)
+                        fprintf(fid, '    JAC(%u,%u) = J(%u,%u)+J(%u,%u)*g(%u);\n', i, j, i, I0(j), i, I1(j), j);
+                    else
+                        fprintf(fid, '    JAC(%u,%u) = J(%u,%u)*g(%u);\n', i, j, i, I1(j), j);
+                    end
+                else
+                    if I0(j)
+                        fprintf(fid, '    JAC(%u,%u) = J(%u,%u);\n', i, j, i, I0(j));
+                    end
+                end
             end
         end
     end
@@ -123,17 +200,51 @@ end
 
 % Compute the derivatives of the second block of equations (period t+1)
 % with respect to the endogenous variables.
-for i=DynareModel.eq_nbr+1:2*DynareModel.eq_nbr
-    for j=1:DynareModel.endo_nbr
-        if i1(j)
-            if i0(j)
-                fprintf(fid, '    JAC(%u,%u) = J(%u,%u)*g(%u)+J(%u,%u)*g(%u)*g(%u);\n', i, j, i, i0(j), j, i, i1(j), j, j);
+if purely_backward_model || purely_forward_model
+    for i=DynareModel.eq_nbr+1:2*DynareModel.eq_nbr
+        for j=1:DynareModel.endo_nbr
+            if I1(j)
+                if I0(j)
+                    fprintf(fid, '    JAC(%u,%u) = J(%u,%u)*g(%u)+J(%u,%u)*g(%u)*g(%u);\n', i, j, i, I0(j), j, i, I1(j), j, j);
+                else
+                    fprintf(fid, '    JAC(%u,%u) = J(%u,%u)*g(%u)*g(%u);\n', i, j, i, I1(j), j, j);
+                end
             else
-                fprintf(fid, '    JAC(%u,%u) = J(%u,%u)*g(%u)*g(%u);\n', i, j, i, i1(j), j, j);
+                if I0(j)
+                    fprintf(fid, '    JAC(%u, %u) = J(%u, %u)*g(%u);\n', i, j, i, I0(j), j);
+                end
             end
-        else
-            if i0(j)
-                fprintf(fid, '    JAC(%u, %u) = J(%u, %u)*g(%u);\n', i, j, i, i0(j), j);
+        end
+    end
+else
+    for i=DynareModel.eq_nbr+1:2*DynareModel.eq_nbr
+        for j=1:DynareModel.endo_nbr
+            if I2(j)
+               if I1(j)
+                   if I0(j)
+                       fprintf(fid, '    JAC(%u,%u) = J(%u,%u)*g(%u)+J(%u,%u)*g(%u)*g(%u)+J(%u,%u)*g(%u)*g(%u)*g(%u);\n', i, j, i, I0(j), j, i, I1(j), j, j, i, I2(j), j, j, j);
+                   else
+                       fprintf(fid, '    JAC(%u,%u) = J(%u,%u)*g(%u)*g(%u)+J(%u,%u)*g(%u)*g(%u)*g(%u);\n', i, j, i, I1(j), j, j, i, I2(j), j, j, j);
+                   end
+               else
+                   if I0(j)
+                       fprintf(fid, '    JAC(%u,%u) = J(%u,%u)*g(%u)+J(%u,%u)*g(%u)*g(%u)*g(%u);\n', i, j, i, I0(j), j, i, I2(j), j, j, j);
+                   else
+                       fprintf(fid, '    JAC(%u,%u) = J(%u,%u)*g(%u)*g(%u)*g(%u);\n', i, j, i, I2(j), j, j, j);
+                   end
+               end
+            else
+                if I1(j)
+                    if I0(j)
+                        fprintf(fid, '    JAC(%u,%u) = J(%u,%u)*g(%u)+J(%u,%u)*g(%u)*g(%u);\n', i, j, i, I0(j), j, i, I1(j), j, j);
+                    else
+                        fprintf(fid, '    JAC(%u,%u) = J(%u,%u)*g(%u)*g(%u);\n', i, j, i, I1(j), j, j);
+                    end
+                else
+                    if I0(j)
+                        fprintf(fid, '    JAC(%u, %u) = J(%u, %u)*g(%u);\n', i, j, i, I0(j), j);
+                    end
+                end
             end
         end
     end
@@ -141,28 +252,80 @@ end
 
 % Compute the derivatives of the first block of equations (period t)
 % with respect to the growth factors.
-for i=1:DynareModel.eq_nbr
-    for j=1:DynareModel.endo_nbr
-        if i1(j)
-            fprintf(fid, '    J(%u,%u) = J(%u,%u)*y(%u);\n', i, n0+n1+j, i, i1(j), j);
+if purely_backward_model || purely_forward_model
+    for i=1:DynareModel.eq_nbr
+        for j=1:DynareModel.endo_nbr
+            if I1(j)
+                fprintf(fid, '    J(%u,%u) = J(%u,%u)*y(%u);\n', i, n0+n1+n2+j, i, I1(j), j);
+            end
+        end
+    end
+else
+    for i=1:DynareModel.eq_nbr
+        for j=1:DynareModel.endo_nbr
+            if I2(j)
+                if I1(j)
+                    fprintf(fid, '    J(%u,%u) = J(%u,%u)*y(%u)+J(%u,%u)*2*g(%u)*y(%u);\n', i, n0+n1+n2+j, i, I1(j), j, i, I2(j), j, j);
+                else
+                    fprintf(fid, '    J(%u,%u) = J(%u,%u)*2*g(%u)*y(%u);\n', i, n0+n1+n2+j, i, I2(j), j, j);
+                end
+            else
+                if I1(j)
+                    fprintf(fid, '    J(%u,%u) = J(%u,%u)*y(%u);\n', i, n0+n1+n2+j, i, I1(j), j);
+                end
+            end
         end
     end
 end
 
 % Compute the derivatives of the second block of equations (period t+1)
 % with respect to the endogenous variables.
-for i=DynareModel.eq_nbr+1:2*DynareModel.eq_nbr
-    for j=1:DynareModel.endo_nbr
-        if i0(j)
-            fprintf(fid, '    J(%u,%u) = J(%u,%u)+J(%u,%u)*y(%u);\n', i, n0+n1+j, i, n0+n1+j, i, i0(j), j);
+if purely_backward_model || purely_forward_model
+    for i=DynareModel.eq_nbr+1:2*DynareModel.eq_nbr
+        for j=1:DynareModel.endo_nbr
+            if I0(j)
+                fprintf(fid, '    J(%u,%u) = J(%u,%u)+J(%u,%u)*y(%u);\n', i, n0+n1+n2+j, i, n0+n1+n2+j, i, I0(j), j);
+            end
+            if I1(j)
+                fprintf(fid, '    J(%u,%u) = J(%u,%u)+2*J(%u,%u)*y(%u)*g(%u);\n', i, n0+n1+n2+j, i, n0+n1+n2+j, i, I1(j), j, j);
+            end
         end
-        if i1(j)
-            fprintf(fid, '    J(%u,%u) = J(%u,%u)+2*J(%u,%u)*y(%u)*g(%u);\n', i, n0+n1+j, i, n0+n1+j, i, i1(j), j, j);
+    end
+else
+    for i=DynareModel.eq_nbr+1:2*DynareModel.eq_nbr
+        for j=1:DynareModel.endo_nbr
+            if I2(j)
+                if I1(j)
+                    if I0(j)
+                        fprintf(fid, '    J(%u,%u) = J(%u,%u)*y(%u)+2*J(%u,%u)*y(%u)*g(%u)+3*J(%u,%u)*y(%u)*g(%u)*g(%u);\n', i, n0+n1+n2+j, i, I0(j), j, i, I1(j), j, j, i, I2(j), j, j, j);
+                    else
+                        fprintf(fid, '    J(%u,%u) = 2*J(%u,%u)*y(%u)*g(%u)+3*J(%u,%u)*y(%u)*g(%u)*g(%u);\n', i, n0+n1+n2+j, i, I1(j), j, j, i, I2(j), j, j, j);
+                    end
+                else
+                    if I0(j)
+                        fprintf(fid, '    J(%u,%u) = J(%u,%u)*y(%u)+3*J(%u,%u)*y(%u)*g(%u)*g(%u);\n', i, n0+n1+n2+j, i, I0(j), j, i, I2(j), j, j, j);
+                    else
+                        fprintf(fid, '    J(%u,%u) = 3*J(%u,%u)*y(%u)*g(%u)*g(%u);\n', i, n0+n1+n2+j, i, I2(j), j, j, j);
+                    end
+                end
+            else
+                if I1(j)
+                    if I0(j)
+                        fprintf(fid, '    J(%u,%u) = J(%u,%u)*y(%u)+2*J(%u,%u)*y(%u)*g(%u);\n', i, n0+n1+n2+j, i, I0(j), j, i, I1(j), j, j);
+                    else
+                        fprintf(fid, '    J(%u,%u) = 2*J(%u,%u)*y(%u)*g(%u);\n', i, n0+n1+n2+j, i, I1(j), j, j);
+                    end
+                else
+                    if I0(j)
+                        fprintf(fid, '    J(%u,%u) = J(%u,%u)*y(%u);\n', i, n0+n1+n2+j, i, I0(j), j);
+                    end
+                end
+            end
         end
     end
 end
-fprintf(fid, '    JAC(:,%u:%u) = J(:,%u:%u);\n', DynareModel.endo_nbr+1, 2*DynareModel.endo_nbr, n0+n1+1, n0+n1+DynareModel.endo_nbr);
-fprintf(fid,'end\n');
 
-% Close file.
+fprintf(fid, '    JAC(:,%u:%u) = J(:,%u:%u);\n', DynareModel.endo_nbr+1, 2*DynareModel.endo_nbr, n0+n1+n2+1, n0+n1+n2+DynareModel.endo_nbr);
+
+fprintf(fid,'end\n');
 fclose(fid);
