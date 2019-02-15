@@ -777,8 +777,8 @@ EXTRA_DIST = \
 	homotopy/common.mod \
 	block_bytecode/ls2003.mod \
 	fs2000_ssfile_aux.m \
-	printMakeCheckMatlabErrMsg.m \
-	printMakeCheckOctaveErrMsg.m \
+	utils/printMakeCheckMatlabErrMsg.m \
+	utils/printMakeCheckOctaveErrMsg.m \
 	fataltest.m \
 	AIM/data_ca1.m \
 	AIM/fsdat.m \

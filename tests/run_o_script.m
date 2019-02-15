@@ -18,6 +18,8 @@
 load_octave_packages
 
 top_test_dir = getenv('TOP_TEST_DIR');
+addpath([top_test_dir filesep 'utils']);
+
 [mfile, name] = strtok(getenv('FILESTEM'));
 
 [directory, mscript, ext] = fileparts([top_test_dir '/' mfile]);
