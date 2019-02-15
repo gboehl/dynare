@@ -66,7 +66,11 @@ switch type
                                              M_.exo_names,arg2,vartan,arg1,options_.mh_conf_sig,oo_,options_);
     if ~all(M_.H==0)
         if strmatch(arg1,options_.varobs,'exact')
-            [observable_name_requested_vars,index_subset,index_observables]=intersect(vartan,options_.varobs,'stable');            
+            if isoctave
+                [observable_name_requested_vars,index_subset,index_observables]=intersect_stable(vartan,options_.varobs);
+            else
+                [observable_name_requested_vars,index_subset,index_observables]=intersect(vartan,options_.varobs,'stable');
+            end
             oo_ = variance_decomposition_ME_mc_analysis(SampleSize,'posterior',M_.dname,M_.fname,...
                                              M_.exo_names,arg2,observable_name_requested_vars,arg1,options_.mh_conf_sig,oo_,options_);
         end

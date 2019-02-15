@@ -100,6 +100,11 @@ if (isoctave && ~user_has_octave_forge_package('statistics')) ...
     p{end+1} = '/missing/nanmean';
 end
 
+% intersect(..., 'stable') doesn't exist in Octave
+if isoctave
+    p{end+1} = '/missing/intersect_stable';
+end
+
 % Replacements for functions of the MATLAB statistics toolbox
 % These functions were part of Octave < 4.4, they are now in the statistics Forge package
 if (isoctave && ~octave_ver_less_than('4.4') && ~user_has_octave_forge_package('statistics')) ...

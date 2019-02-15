@@ -55,7 +55,11 @@ oo_.var = oo_.gamma_y{1};
 
 ME_present=0;
 if ~all(M_.H==0)
-    [observable_pos_requested_vars,index_subset,index_observables]=intersect(ivar,options_.varobs_id,'stable');
+    if isoctave
+        [observable_pos_requested_vars,index_subset,index_observables]=intersect_stable(ivar,options_.varobs_id);
+    else
+        [observable_pos_requested_vars,index_subset,index_observables]=intersect(ivar,options_.varobs_id,'stable');
+    end
     if ~isempty(observable_pos_requested_vars)
         ME_present=1;
     end
@@ -101,7 +105,11 @@ if size(stationary_vars, 1) > 0
             lh = cellofchararraymaxlength(M_.endo_names(ivar(stationary_vars)))+2;
             dyntable(options_, title, headers, M_.endo_names(ivar(stationary_vars)), 100*oo_.gamma_y{options_.ar+2}(stationary_vars,:), lh, 8, 2);
             if ME_present
-                [stationary_observables, pos_index_subset] = intersect(index_subset, stationary_vars, 'stable');
+                if isoctave
+                    [stationary_observables, pos_index_subset] = intersect_stable(index_subset, stationary_vars);
+                else
+                    [stationary_observables, pos_index_subset] = intersect(index_subset, stationary_vars, 'stable');
+                end
                 headers_ME = vertcat(headers, 'ME');
                 dyntable(options_, [title,' WITH MEASUREMENT ERROR'], headers_ME, M_.endo_names(ivar(stationary_observables)), ...
                          oo_.variance_decomposition_ME(pos_index_subset,:), lh, 8, 2);

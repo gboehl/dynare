@@ -145,7 +145,11 @@ if M_.exo_nbr > 1
     end
     skipline();
     if ~all(M_.H==0)
-        [observable_name_requested_vars, varlist_pos] = intersect(var_list_, options_.varobs, 'stable');
+        if isoctave
+            [observable_name_requested_vars, varlist_pos] = intersect_stable(var_list_, options_.varobs);
+        else
+            [observable_name_requested_vars, varlist_pos] = intersect(var_list_, options_.varobs, 'stable');
+        end
         if ~isempty(observable_name_requested_vars)
             NumberOfObservedEndogenousVariables = length(observable_name_requested_vars);
             temp = NaN(NumberOfObservedEndogenousVariables, NumberOfExogenousVariables+1);

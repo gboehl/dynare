@@ -89,7 +89,11 @@ end
 % Measurement error
 
 if ~all(StateSpaceModel.measurement_error==0)
-    [observable_pos,index_subset,index_observables]=intersect(SubsetOfVariables,StateSpaceModel.observable_pos,'stable');
+    if isoctave
+        [observable_pos,index_subset,index_observables]=intersect_stable(SubsetOfVariables,StateSpaceModel.observable_pos);
+    else
+        [observable_pos,index_subset,index_observables]=intersect(SubsetOfVariables,StateSpaceModel.observable_pos,'stable');
+    end
     ME_Variance=diag(StateSpaceModel.measurement_error);
     
     ConditionalVarianceDecomposition_ME = zeros(length(observable_pos),length(Steps),number_of_state_innovations+1);

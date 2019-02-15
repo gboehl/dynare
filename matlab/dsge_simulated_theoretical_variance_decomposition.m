@@ -87,7 +87,11 @@ MaXNumberOfDecompLines = ceil(options_.MaxNumberOfBytes/NumberOfSavedElementsPer
 
 ME_present=0;
 if ~all(M_.H==0)
-    [observable_pos_requested_vars,index_subset,index_observables]=intersect(ivar,options_.varobs_id,'stable');
+    if isoctave
+        [observable_pos_requested_vars,index_subset,index_observables]=intersect_stable(ivar,options_.varobs_id);
+    else
+        [observable_pos_requested_vars,index_subset,index_observables]=intersect(ivar,options_.varobs_id,'stable');
+    end
     if ~isempty(observable_pos_requested_vars)
         ME_present=1;
         nobs_ME=length(observable_pos_requested_vars);
