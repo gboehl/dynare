@@ -3151,17 +3151,25 @@ Computing the stochastic solution
 
        The results are stored in
        ``oo_.conditional_variance_decomposition`` (see
-       :mvar:`oo_.conditional_variance_decomposition`). The variance
-       decomposition is only conducted, if theoretical moments are
-       requested, i.e. using the ``periods=0`` option. In case of
-       ``order=2``, Dynare provides a second-order accurate
+       :mvar:`oo_.conditional_variance_decomposition`). In the
+       presence of measurement error, the
+       ``oo_.conditional_variance_decomposition`` field will contain
+       the variance contribution after measurement error has been
+       taken out, i.e. the decomposition will be conducted of the
+       actual as opposed to the measured variables. The variance
+       decomposition of the measured variables will be stored in
+       ``oo_.conditional_variance_decomposition_ME`` (see
+       :mvar:`oo_.conditional_variance_decomposition_ME`).  The
+       variance decomposition is only conducted, if theoretical
+       moments are requested, *i.e.* using the ``periods=0``-option.
+       In case of ``order=2``, Dynare provides a second-order accurate
        approximation to the true second moments based on the linear
-       terms of the second-order solution (see *Kim, Kim, Schaumburg
-       and Sims (2008)*). Note that the unconditional variance
-       decomposition (i.e. at horizon infinity) is automatically
-       conducted if theoretical moments are requested and if
-       ``nodecomposition`` is not set (see
-       :mvar:`oo_.variance_decomposition`)
+       terms of the second-order solution (see *Kim, Kim,
+       Schaumburg and Sims (2008)*). Note that the unconditional
+       variance decomposition *i.e.* at horizon infinity) is
+       automatically conducted if theoretical moments are requested
+       and if ``nodecomposition`` is not set (see
+       :mvar:`oo_.variance_decomposition`).
 
     .. option:: pruning
 
@@ -3402,7 +3410,7 @@ Computing the stochastic solution
         ``oo_.gamma{nar+2}``
 
             Unconditional variance decomposition, see
-            mvar:`oo_.variance_decomposition`.
+            :mvar:`oo_.variance_decomposition`.
 
         ``oo_.gamma{nar+3}``
 
@@ -3415,14 +3423,33 @@ Computing the stochastic solution
 
 .. matvar:: oo_.variance_decomposition
 
-    |br| After a run of ``stoch_simul`` when requesting theoretical moments
-    (``periods=0``), contains a matrix with the result of the
+    |br| After a run of ``stoch_simul`` when requesting theoretical
+    moments (``periods=0``), contains a matrix with the result of the
     unconditional variance decomposition (i.e. at horizon
     infinity). The first dimension corresponds to the endogenous
-    variables (in the order of declaration) and the second dimension
-    corresponds to exogenous variables (in the order of
-    declaration). Numbers are in percent and sum up to 100 across
-    columns.
+    variables (in the order of declaration after the command or in
+    ``M_.endo_names``) and the second dimension corresponds to
+    exogenous variables (in the order of declaration). Numbers are in
+    percent and sum up to 100 across columns. In the presence of
+    measurement error, the field will contain the variance
+    contribution after measurement error has been taken out, *i.e.*
+    the decomposition will be conducted of the actual as opposed to
+    the measured variables.
+
+.. matvar:: oo_.variance_decomposition_ME
+
+    |br| Field set after a run of ``stoch_simul`` when requesting
+    theoretical moments (``periods=0``) if measurement error is
+    present. It is similar to :mvar:`oo_.variance_decomposition`, but
+    the decomposition will be conducted of the measured variables. The
+    field contains a matrix with the result of the unconditional
+    variance decomposition (*i.e.* at horizon infinity). The first
+    dimension corresponds to the observed endoogenous variables (in
+    the order of declaration after the command) and the second
+    dimension corresponds to exogenous variables (in the order of
+    declaration), with the last column corresponding to the
+    contribution of measurement error. Numbers are in percent and sum
+    up to 100 across columns.
 
 .. matvar:: oo_.conditional_variance_decomposition
 
@@ -3431,8 +3458,28 @@ Computing the stochastic solution
     three-dimensional array with the result of the decomposition. The
     first dimension corresponds to forecast horizons (as declared with
     the option), the second dimension corresponds to endogenous
-    variables (in the order of declaration), the third dimension
-    corresponds to exogenous variables (in the order of declaration).
+    variables (in the order of declaration after the command or in
+    ``M_.endo_names`` if not specified), the third dimension
+    corresponds to exogenous variables (in the order of
+    declaration). In the presence of measurement error, the field will
+    contain the variance contribution after measurement error has been
+    taken out, *i.e.* the decomposition will be conductedof the actual
+    as opposed to the measured variables.
+
+.. matvar:: oo_.conditional_variance_decomposition_ME
+
+    |br| Field set after a run of ``stoch_simul`` with the
+    ``conditional_variance_decomposition`` option if measurement error
+    is present. It is similar to
+    :mvar:`oo_.conditional_variance_decomposition`, but the
+    decomposition will be conducted of the measured variables.  It
+    contains a three-dimensional array with the result of the
+    decomposition. The first dimension corresponds to forecast
+    horizons (as declared with the option), the second dimension
+    corresponds to observed endogenous variables (in the order of
+    declaration), the third dimension corresponds to exogenous
+    variables (in the order of declaration), with the last column
+    corresponding to the contribution of the measurement error.
 
 .. matvar:: oo_.contemporaneous_correlation
 
@@ -5309,9 +5356,15 @@ block decomposition of the model (see :opt:`block`).
        :math:`var(y_{t+k}\vert t)`. For period 1, the conditional
        variance decomposition provides the decomposition of the
        effects of shocks upon impact. The results are stored in
-       ``oo_.PosteriorTheoreticalMoments.dsge.ConditionalVarianceDecomposition``,
-       but currently there is no displayed output. Note that this
-       option requires the ``moments_varendo`` to be specified.
+       ``oo_.PosteriorTheoreticalMoments.dsge.ConditionalVarianceDecomposition``.. Note
+       that this option requires the option ``moments_varendo`` to be
+       specified. In the presence of measurement error, the field will
+       contain the variance contribution after measurement error has
+       been taken out, *i.e.* the decomposition will be conducted of the
+       actual as opposed to the measured variables. The variance
+       decomposition of the measured variables will be stored in
+       ``oo_.PosteriorTheoreticalMoments.dsge.ConditionalVarianceDecompositionME``.
+
 
     .. option:: filtered_vars
 
@@ -6291,8 +6344,21 @@ block decomposition of the model (see :opt:`block`).
 
             ``ConditionalVarianceDecomposition``
 
-                Only if the ``conditional_variance_decomposition`` option has
-                been specified.
+                Only if the ``conditional_variance_decomposition``
+                option has been specified. In the presence of
+                measurement error, the field will contain the variance
+                contribution after measurement error has been taken
+                out, i.e. the decomposition will be conducted of the
+                actual as opposed to the measured variables.
+
+            ``ConditionalVarianceDecompositionME``
+
+                Only if the ``conditional_variance_decomposition``
+                option has been specified. Same as
+                ``ConditionalVarianceDecomposition``, but contains the
+                decomposition of the measured as opposed to the actual
+                variable. The joint contribution of the measurement
+                error will be saved in a field names ``ME``.
 
 
     .. matvar:: oo_.posterior_density
