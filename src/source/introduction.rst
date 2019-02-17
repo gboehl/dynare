@@ -102,7 +102,7 @@ You should cite Dynare if you use it in your research. The
 recommended way todo this is to cite the present manual, as:
 
     Stéphane Adjemian, Houtan Bastani, Michel Juillard, Frédéric
-    Karamé, Ferhat Mihoubi, George Perendia, Johannes Pfeifer, Marco
+    Karamé, Junior Maih, Ferhat Mihoubi, George Perendia, Johannes Pfeifer, Marco
     Ratto and Sébastien Villemot (2011), “Dynare: Reference Manual,
     Version 4,” *Dynare Working Papers*, 1, CEPREMAP
 
