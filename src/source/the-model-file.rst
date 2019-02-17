@@ -6337,10 +6337,22 @@ block decomposition of the model (see :opt:`block`).
                 are vectors with correlations from 1 up to order
                 ``options_.ar``.
 
+            .. _VarianceDecomposition:
+
             ``VarianceDecomposition``
 
                 Decomposition of variance (unconditional variance, i.e. at
                 horizon infinity). [#f5]_
+
+            ``VarianceDecompositionME``
+
+                Same as `VarianceDecomposition`_, but contains
+                theh decomposition of the measured as opposed to the
+                actual variable. The joint contribution of the
+                measurement error will be saved in a field named
+                ``ME``.
+
+            .. _ConditionalVarianceDecomposition:
 
             ``ConditionalVarianceDecomposition``
 
@@ -6355,7 +6367,7 @@ block decomposition of the model (see :opt:`block`).
 
                 Only if the ``conditional_variance_decomposition``
                 option has been specified. Same as
-                ``ConditionalVarianceDecomposition``, but contains the
+                `ConditionalVarianceDecomposition`_, but contains the
                 decomposition of the measured as opposed to the actual
                 variable. The joint contribution of the measurement
                 error will be saved in a field names ``ME``.
