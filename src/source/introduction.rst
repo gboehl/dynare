@@ -106,6 +106,22 @@ recommended way todo this is to cite the present manual, as:
     Ratto and Sébastien Villemot (2011), “Dynare: Reference Manual,
     Version 4,” *Dynare Working Papers*, 1, CEPREMAP
 
+For convenience, you can copy and paste the following into your BibTeX file:
+
+    .. code-block:: bibtex
+
+        @TechReport{Adjemianetal2011,
+          author      = {Adjemian, St\'ephane and Bastani, Houtan and Juillard, Michel and
+                         Karam\'e, Fr\'ederic and Maih, Junior and Mihoubi, Ferhat and
+                         Perendia, George and Pfeifer, Johannes and Ratto, Marco and
+                         Villemot, S\'ebastien},
+          title       = {Dynare: Reference Manual Version 4},
+          year        = {2011},
+          institution = {CEPREMAP},
+          type        = {Dynare Working Papers},
+          number      = {1},
+        }
+
 If you want to give a URL, use the address of the Dynare website:
 https://www.dynare.org.
 
