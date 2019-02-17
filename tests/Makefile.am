@@ -779,7 +779,7 @@ EXTRA_DIST = \
 	fs2000_ssfile_aux.m \
 	utils/printMakeCheckMatlabErrMsg.m \
 	utils/printMakeCheckOctaveErrMsg.m \
-	fataltest.m \
+	utils/fataltest.m \
 	AIM/data_ca1.m \
 	AIM/fsdat.m \
 	block_bytecode/run_ls2003.m \

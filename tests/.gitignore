@@ -47,7 +47,7 @@ wsOct
 !/external_function/extFunDeriv.m
 !/external_function/extFunNoDerivs.m
 !/external_function/extFunWithFirstAndSecondDerivs.m
-!/fataltest.m
+!/utils/fataltest.m
 !/filter_step_ahead/trend_cycle_decomposition_data.m
 !/fs2000/fs2000a_steadystate.m
 !/fs2000/fsdat_simul.m
@@ -121,8 +121,8 @@ wsOct
 !/practicing/dataHST.mat
 !/practicing/data_consRicardoypg.mat
 !/practicing/datasaver.m
-!/printMakeCheckMatlabErrMsg.m
-!/printMakeCheckOctaveErrMsg.m
+!/utils/printMakeCheckMatlabErrMsg.m
+!/utils/printMakeCheckOctaveErrMsg.m
 !/prior_posterior_function/posterior_function_demo.m
 !/ramst_initval_file_data.m
 !/recursive/data_ca1.m
