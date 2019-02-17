@@ -357,9 +357,10 @@ by the ``dynare`` command.
     them on the command line each time a ``.mod`` file is to be
     run. This line must be a Dynare comment (ie must begin with //)
     and the options must be comma separated between ``--+`` options:
-    and ``+--``. As in the command line, if an option admits a value
-    the equal symbol must not be surrounded by spaces. For instance
-    ``json = compute`` is not correct, and should be written
+    and ``+--``. Note that any text after the ``+--`` will be
+    discarded. As in the command line, if an option admits a value the
+    equal symbol must not be surrounded by spaces. For instance ``json
+    = compute`` is not correct, and should be written
     ``json=compute``.
 
     *Output*
