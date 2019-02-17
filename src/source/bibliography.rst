@@ -51,7 +51,6 @@ Bibliography
 * Laffargue, Jean-Pierre (1990): “Résolution d’un modèle macroéconomique avec anticipations rationnelles”, *Annales d’Économie et Statistique*, 17, 97–119.
 * Liu, Jane and Mike West (2001): “Combined parameter and state estimation in simulation-based filtering”, in *Sequential Monte Carlo Methods in Practice*, Eds. Doucet, Freitas and Gordon, Springer Verlag.
 * Lubik, Thomas and Frank Schorfheide (2007): “Do Central Banks Respond to Exchange Rate Movements? A Structural Investigation,” *Journal of Monetary Economics*, 54(4), 1069–1087.
-* Mancini-Griffoli, Tommaso (2007): “Dynare User Guide: An introduction to the solution and estimation of DSGE models”.
 * Murray, Lawrence M., Emlyn M. Jones and John Parslow (2013): “On Disturbance State-Space Models and the Particle Marginal Metropolis-Hastings Sampler”, *SIAM/ASA Journal on Uncertainty Quantification*, 1, 494–521.
 * Pearlman, Joseph, David Currie, and Paul Levine (1986): “Rational expectations models with partial information,” *Economic Modelling*, 3(2), 90–105.
 * Planas, Christophe, Marco Ratto and Alessandro Rossi (2015): “Slice sampling in Bayesian estimation of DSGE models”.

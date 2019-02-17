@@ -50,16 +50,15 @@ be used for both non-profit and for-profit purposes. Most of the
 source files are covered by the GNU General Public Licence (GPL)
 version 3 or later (there are some exceptions to this, see the file
 license.txt in Dynare distribution). It is available for the Windows,
-macOS, and Linux platforms and is fully documented through a user
-guide and a reference manual. Part of Dynare is programmed in C++,
-while the rest is written using the `MATLAB`_ programming
-language. The latter implies that commercially-available MATLAB
-software is required in order to run Dynare. However, as an
-alternative to MATLAB, Dynare is also able to run on top of `GNU
-Octave`_ (basically a free clone of MATLAB): this possibility is
-particularly interesting for students or institutions who cannot
-afford, or do not want to pay for, MATLAB and are willing to bear the
-concomitant performance loss.
+macOS, and Linux platforms and is fully documented through a reference
+manual. Part of Dynare is programmed in C++, while the rest is written
+using the `MATLAB`_ programming language. The latter implies that
+commercially-available MATLAB software is required in order to run
+Dynare. However, as an alternative to MATLAB, Dynare is also able to
+run on top of `GNU Octave`_ (basically a free clone of MATLAB): this
+possibility is particularly interesting for students or institutions
+who cannot afford, or do not want to pay for, MATLAB and are willing
+to bear the concomitant performance loss.
 
 The development of Dynare is mainly done at `CEPREMAP`_ by a core team
 of researchers who devote part of their time to software
