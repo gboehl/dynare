@@ -98,16 +98,13 @@ Other useful sources of information include the `Dynare wiki`_ and the
 Citing Dynare in your research
 ==============================
 
-If you would like to refer to Dynare in a research article, the
-recommended way is to cite the present manual, as follows:
+You should cite Dynare if you use it in your research. The
+recommended way todo this is to cite the present manual, as:
 
     Stéphane Adjemian, Houtan Bastani, Michel Juillard, Frédéric
     Karamé, Ferhat Mihoubi, George Perendia, Johannes Pfeifer, Marco
     Ratto and Sébastien Villemot (2011), “Dynare: Reference Manual,
     Version 4,” *Dynare Working Papers*, 1, CEPREMAP
-
-Note that citing the Dynare Reference Manual in your research is a
-good way to help the Dynare project.
 
 If you want to give a URL, use the address of the Dynare website:
 https://www.dynare.org.
