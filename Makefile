@@ -26,12 +26,12 @@ all: html pdf
 html: deps src/build/html/index.html
 
 src/build/html/index.html: $(SRC) src/source/conf.py
-	source python/bin/activate ; make -C src html
+	. python/bin/activate ; make -C src html
 
 pdf: deps src/build/latex/dynare.pdf
 
 src/build/latex/dynare.pdf: $(SRC) src/source/conf.py
-	source python/bin/activate ; make -C src latexpdf
+	. python/bin/activate ; make -C src latexpdf
 
 deps: python mathjax
 
@@ -39,7 +39,7 @@ python: python/bin/python3
 
 python/bin/python3:
 	python3 -m venv python
-	source python/bin/activate ; pip install --upgrade pip ; pip install sphinx recommonmark sphinx_rtd_theme
+	. python/bin/activate ; pip3 install --upgrade pip ; pip3 install sphinx recommonmark sphinx_rtd_theme
 	cp py/pygment/dynare.py python/lib/python3.*/site-packages/pygments/lexers/
 	cd python/lib/python3.*/site-packages/pygments/lexers ; python3 _mapping.py
 	patch -i py/basic.css_t.patch python/lib/python3.*/site-packages/sphinx/themes/basic/static/basic.css_t
