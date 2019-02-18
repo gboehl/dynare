@@ -3162,7 +3162,7 @@ Computing the stochastic solution
 
        Value used to split stable from unstable eigenvalues in
        reordering the Generalized Schur decomposition used for solving
-       1st-order problems. Default: ``1.000001`` (except when
+       first order problems. Default: ``1.000001`` (except when
        estimating with ``lik_init`` option equal to ``1``: the default
        is ``0.999999`` in that case; see :ref:`estim`).
 
