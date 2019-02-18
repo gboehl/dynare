@@ -106,12 +106,16 @@ if isoctave
 end
 
 % Replacements for functions of the MATLAB statistics toolbox
-% These functions were part of Octave < 4.4, they are now in the statistics Forge package
-if (isoctave && ~octave_ver_less_than('4.4') && ~user_has_octave_forge_package('statistics')) ...
-        || (~isoctave && ~user_has_matlab_license('statistics_toolbox'))
-    p{end+1} = '/missing/stats/';
-    if ~isoctave
-        p{end+1} = '/missing/stats-matlab/';
+if isoctave
+    % These functions were part of Octave < 4.4, they are now in the statistics Forge package
+    if ~octave_ver_less_than('4.4') && ~user_has_octave_forge_package('statistics')
+        % Our replacement functions don't work under Octave (because of gamrnd, see
+        % #1638), hence the statistics toolbox is now a hard requirement
+        error('You must install the "statistics" package from Octave Forge, either with your distribution package manager or with "pkg install -forge statistics"')
+    end
+else
+    if ~user_has_matlab_license('statistics_toolbox')
+        p{end+1} = '/missing/stats/';
     end
 end
 

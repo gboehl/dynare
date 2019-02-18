@@ -468,11 +468,9 @@ In order to run Dynare, you need one of the following:
 MATLAB version 7.9 (R2009b) or above;
 
 @item
-GNU Octave version 4.2.1 or above.
+GNU Octave version 4.2.1 or above, with the statistics package from
+@uref{http://octave.sourceforge.io/,Octave-Forge}.
 @end itemize
-
-Packages of GNU Octave can be downloaded on the
-@uref{http://www.dynare.org/download/octave,Dynare website}.
 
 The following optional extensions are also useful to benefit from extra
 features, but are in no way required:
@@ -485,8 +483,7 @@ control system toolbox;
 
 @item
 If under GNU Octave, the following
-@uref{http://octave.sourceforge.net/,Octave-Forge} packages: optim,
-io, statistics, control.
+@uref{http://octave.sourceforge.io/,Octave-Forge} packages: optim, io, control.
 
 @end itemize
 

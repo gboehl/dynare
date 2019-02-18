@@ -236,12 +236,6 @@ y = ipermute(y,order);
 
 
 %@test:1
-%$ if isoctave()
-%$   t = true;
-%$   T = t;
-%$   LOG = NaN;
-%$   return
-%$ end
 %$ X = randn(10000000, 1);
 %$
 %$ try

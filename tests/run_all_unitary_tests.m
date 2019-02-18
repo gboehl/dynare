@@ -30,32 +30,19 @@ end
 
 mlist = get_directory_description('../matlab');
 
+% Under Octave, do not run tests under matlab/missing/stats/
+if isoctave
+    mlist = mlist(find(~strncmp('../matlab/missing/stats/', mlist, 24)));
+end
+
 failedtests = {};
 
 counter = 0;
-added_path = false;
-dir = '';
 
 for i = 1:length(mlist)
     f = [top_test_dir filesep mlist{i} ];
     if is_unitary_test_available(f)
-        if isoctave
-            % So that `missing` functions that are in the Octave statistics
-            % package can be tested
-            [dir name ext] = fileparts(f);
-            [dir1 name1 ext1] = fileparts(dir);
-            if strcmp(name1, 'stats')
-                addpath(dir);
-                added_path = true;
-            end
-        end
         [check, info] = mtest(f);
-        if isoctave
-            if added_path
-                rmpath(dir);
-                added_path = false;
-            end
-        end
         for j = 1:size(info, 1)
             counter = counter + 1;
             if ~info{j,3}
