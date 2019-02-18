@@ -8105,7 +8105,7 @@ with ``discretionary_policy`` or for optimal simple rule with ``osr``
             gamma_inf_, 0, 2.5;
             end;
 
-            osr(solve_algo=9) y;
+            osr(opt_algo=9) y;
 
 
 .. matvar:: oo_.osr.objective_function
