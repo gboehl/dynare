@@ -2458,6 +2458,10 @@ Getting information about the model
     corresponding to the forward looking variables (jumpers) and to
     the explosive eigenvalues must have full rank.
 
+    Note that the outcome may be different from what would be
+    suggested by ``sum(abs(oo_.dr.eigval))`` when eigenvalues are very
+    close to :opt:`qz_criterium <qz_criterium = DOUBLE>`.
+
     *Options*
 
     .. _solvalg:
