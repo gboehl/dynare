@@ -6930,9 +6930,9 @@ Shock Decomposition
 
     .. option:: presample = INTEGER
 
-        First data point from which recursive realtime shock
-        decompositions are computed, i.e. for
-        :math:`T=[\texttt{presample} \ldots \texttt{nobs}]`.
+        Data point above which recursive realtime shock
+        decompositions are computed, *i.e.* for
+        :math:`T=[\texttt{presample+1} \ldots \texttt{nobs}]`.
 
     .. option:: forecast = INTEGER
 
