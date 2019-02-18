@@ -7671,11 +7671,19 @@ the :comm:`bvar_forecast` command.
     intermediate period is not specified, a value of 0 is
     assumed. That is, if you specify only values for periods 1 and 3,
     the values for period 2 will be 0. Currently, it is not possible
-    to have uncontrolled intermediate periods. In case of the presence
-    of ``observation_trends``, the specified controlled path for these
-    variables needs to include the trend component. When using the
-    :ref:`loglinear <logl>` option, it is necessary to specify the
-    logarithm of the controlled variables.
+    to have uncontrolled intermediate periods.
+
+    It is however possible to have different number of controlled
+    periods for different variables. In that case, the order of
+    declaration of endogenenous controlled variables and of
+    controlled_varexo matters: if the second endogenous variable is
+    controlled for less periods than the first one, the second
+    controlled_varexo isn't set for the last periods.
+
+    In case of the presence of ``observation_trends``, the specified
+    controlled path for these variables needs to include the trend
+    component. When using the :ref:`loglinear <logl>` option, it is
+    necessary to specify the logarithm of the controlled variables.
 
 
 .. command:: plot_conditional_forecast [VARIABLE_NAME...];
