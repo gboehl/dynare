@@ -147,9 +147,14 @@ by the ``dynare`` command.
         Instructs the macro-preprocessor to omit line numbering
         information in the intermediary ``.mod`` file created after
         the macro-processing step. Useful in conjunction with
-        ``savemacro`` when one wants that to reuse the intermediary
+        :opt:`savemacro <savemacro[=FILENAME]>` when one wants that to reuse the intermediary
         ``.mod`` file, without having it cluttered by line numbering
         directives.
+
+    .. option:: noemptylinemacro
+
+        Passing this option removes all empty from the macro expanded
+        mod file created when the :opt:`savemacro <savemacro[=FILENAME]>` option is used.
 
     .. option:: nolog
 
