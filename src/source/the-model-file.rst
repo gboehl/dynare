@@ -2105,8 +2105,7 @@ Finding the steady state with Dynare nonlinear solver
 
                 Newton algorithm with a Generalized Minimal Residual
                 (GMRES) solver at each iteration (requires ``bytecode``
-                and/or ``block`` option, see :ref:`model-decl`; not
-                available under Octave).
+                and/or ``block`` option, see :ref:`model-decl`).
 
            ``8``
 
@@ -2717,7 +2716,7 @@ speed-up on large models.
                Use a Newton algorithm with a Generalized Minimal
                Residual (GMRES) solver at each iteration (requires
                ``bytecode`` and/or ``block`` option, see
-               :ref:`model-decl`; not available under Octave)
+               :ref:`model-decl`)
 
            ``3``
 
