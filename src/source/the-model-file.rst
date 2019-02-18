@@ -10199,10 +10199,10 @@ Macro directives
 
 
 .. macrodir:: @#if MACRO_EXPRESSION
-.. macrodir:: @#ifdef MACRO_VARIABLE
-.. macrodir:: @#ifndef MACRO_VARIABLE
-.. macrodir:: @#else
-.. macrodir:: @#endif
+              @#ifdef MACRO_VARIABLE
+              @#ifndef MACRO_VARIABLE
+              @#else
+              @#endif
 
     |br| Conditional inclusion of some part of the ``.mod`` file. The
     lines between ``@#if``, ``@#ifdef`` or ``@#ifndef`` and the next
@@ -10244,7 +10244,7 @@ Macro directives
 
 
 .. macrodir:: @#for MACRO_VARIABLE in MACRO_EXPRESSION
-.. macrodir:: @#endfor
+              @#endfor
 
     |br| Loop construction for replicating portions of the ``.mod``
     file. Note that this construct can enclose variable/parameters
