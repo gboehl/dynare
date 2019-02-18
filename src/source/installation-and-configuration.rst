@@ -111,33 +111,24 @@ Compiler installation
 Prerequisites on Windows
 ------------------------
 
-If you are using MATLAB under Windows, install a C++ compiler on your
-machine and configure it with MATLAB. There are at least two free
-compilers you can use. First, there is Microsoft’s Visual Studio
-Community (`https://www.visualstudio.com/`), which has the largest
-history of MATLAB support, but requires much space on the
-hard-disk. Second, since MATLAB R2015b, MATLAB supports the MinGW-w64
-C/C++ Compiler from TDM-GCC. To install this compiler, use the Add-Ons
-menu of MATLAB. Search for MinGW or select it from Features.
+There is no prerequisites on Windows. Dynare now ships a compilation
+environment that can be used with the :opt:`use_dll` option.
 
-For older version of MATLAB, in particular before R2014a, it may
-sometimes make sense to use the ``gcc`` compiler provided by
-Cygwin. However, integrating it in MATLAB can be quite cumbersome and
-should be considered as a legacy option. For details, see
-`instructions on the Dynare wiki`_.
 
 Prerequisites on Debian GNU/Linux and Ubuntu
 --------------------------------------------
 
-Users of MATLAB under Linux need to have a working compilation
+Users of MATLAB under GNU/Linux need a working compilation
 environment installed. If not already present, it can be installed via
 ``apt-get install build-essential``.
 
-Users of Octave under Linux should install the package for MEX file
+Users of Octave under GNU/Linux should install the package for MEX file
 compilation (under Debian or Ubuntu, it is called ``liboctave-dev``).
 
 Prerequisites on macOS
 ----------------------
+
+[TO BE UPDATED]
 
 If you are using MATLAB under macOS, you should install the latest
 version of XCode: `see instructions on the Dynare wiki
@@ -248,4 +239,3 @@ Dynare unusable.
 .. _Ubuntu: http://www.ubuntu.com/
 .. _Dynare website: https://www.dynare.org/
 .. _Dynare wiki: https://git.dynare.org/Dynare/dynare/wikis
-.. _instructions on the Dynare wiki : http://www.dynare.org/DynareWiki/ConfigureMatlabWindowsForMexCompilation

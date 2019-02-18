@@ -263,27 +263,6 @@ by the ``dynare`` command.
         Prevent Dynare from printing the output of the steps leading up to the
         preprocessor as well as the preprocessor output itself.
 
-    .. option:: mingw
-
-        Tells Dynare that your MATLAB is configured for compiling MEX
-        files with the MinGW compiler from TDM-GCC (see
-        :ref:`compil-install`). This option is only available under
-        Windows, and is used in conjunction with ``use_dll``.
-
-    .. option:: msvc
-
-        Tells Dynare that your MATLAB is configured for compiling MEX
-        files with Microsoft Visual C++ (see
-        :ref:`compil-install`). This option is only available under
-        Windows, and is used in conjunction with ``use_dll``.
-
-    .. option:: cygwin
-
-        Tells Dynare that your MATLAB is configured for compiling MEX
-        files with Cygwin (see :ref:`compil-install`). This option is
-        only available under Windows, and is used in conjunction with
-        ``use_dll``.
-
     .. option:: parallel[=CLUSTER_NAME]
 
         Tells Dynare to perform computations in parallel. If
