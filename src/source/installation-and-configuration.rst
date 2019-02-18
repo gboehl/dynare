@@ -101,7 +101,7 @@ unpack it somewhere.
 
 Then you will need to recompile the pre-processor and the dynamic
 loadable libraries. Please refer to `README.md
-<https://github.com/DynareTeam/dynare/blob/master/README.md>`_.
+<https://git.dynare.org/Dynare/dynare/blob/master/README.md>`_.
 
 .. _compil-install:
 

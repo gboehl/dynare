@@ -10798,4 +10798,4 @@ Misc commands
           :math:`A^+`.
 
 .. [#f11] An example can be found at
-          `<https://github.com/DynareTeam/dynare/blob/master/tests/ms-dsge/test_ms_dsge.mod>`_.
+          `<https://git.dynare.org/Dynare/dynare/blob/master/tests/ms-dsge/test_ms_dsge.mod>`_.
