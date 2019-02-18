@@ -6942,7 +6942,13 @@ Shock Decomposition
     .. option:: save_realtime = INTEGER_VECTOR
 
         Choose for which vintages to save the full realtime shock
-        decomposition. Default: ``0``..
+        decomposition. Default: ``0``.
+
+    .. option:: fast_realtime
+
+        Runs the smoother only twice: once for the last in-sample and
+        once for the last out-of-sample data point. Default: not
+        enabled.
 
     *Output*
 
