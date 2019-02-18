@@ -6944,11 +6944,12 @@ Shock Decomposition
         Choose for which vintages to save the full realtime shock
         decomposition. Default: ``0``.
 
-    .. option:: fast_realtime
+    .. option:: fast_realtime = INTEGER
 
         Runs the smoother only twice: once for the last in-sample and
-        once for the last out-of-sample data point. Default: not
-        enabled.
+        once for the last out-of-sample data point, where the provided
+        integer defines the last observation (equivalent to
+        :opt:`nobs`). Default: not enabled.
 
     *Output*
 
