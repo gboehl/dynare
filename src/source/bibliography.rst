@@ -8,13 +8,13 @@ Bibliography
 * Adjemian, Stéphane, Matthieu Darracq Parriès and Stéphane Moyen (2008): “Towards a monetary policy evaluation framework”, *European Central Bank Working Paper*, 942.
 * Aguiar, Mark and Gopinath, Gita (2004): “Emerging Market Business Cycles: The Cycle is the Trend,” *NBER* Working Paper, 10734.
 * Amisano, Gianni and Tristani, Oreste (2010): “Euro area inflation persistence in an estimated nonlinear DSGE model”, *Journal of Economic Dynamics and Control*, 34(10), 1837–1858.
-* Andreasen, Martin M., Jesús Fernández-Villaverde, and Juan Rubio-Ramírez (2013): “The Pruned State-Space System for Non-Linear DSGE Models: Theory and Empirical Applications,” *NBER Working Paper*, 18983.
+* Andreasen, Martin M., Jesús Fernández-Villaverde, and Juan Rubio-Ramírez (2013): “The Pruned State-Space System for Non-Linear DSGE Models: Theory and Empirical Applications,” *Review of Economic Studies*, 85(1), pp. 1-49.
 * Andrews, Donald W.K (1991): “Heteroskedasticity and autocorrelation consistent covariance matrix estimation”, *Econometrica*, 59(3), 817–858.
 * Backus, David K., Patrick J. Kehoe, and Finn E. Kydland (1992): “International Real Business Cycles,” *Journal of Political Economy*, 100(4), 745–775.
 * Baxter, Marianne and Robert G. King (1999): “Measuring Business Cycles: Approximate Band-pass Filters for Economic Time Series,” *Review of Economics and Statistics*, 81(4), 575–593.
 * Boucekkine, Raouf (1995): “An alternative methodology for solving nonlinear forward-looking models,” *Journal of Economic Dynamics and Control*, 19, 711–734.
 * Brooks, Stephen P., and Andrew Gelman (1998): “General methods for monitoring convergence of iterative simulations,” *Journal of Computational and Graphical Statistics*, 7, pp. 434–455.
-* Cardoso, Margarida F., R. L. Salcedo and S. Feyo de Azevedo (1996): “The simplex simulated annealing approach to continuous non-linear optimization,” *Computers chem. Engng*, 20(9), 1065-1080.
+* Cardoso, Margarida F., R. L. Salcedo and S. Feyo de Azevedo (1996): “The simplex simulated annealing approach to continuous non-linear optimization,” *Computers & Chemical Engineering*, 20(9), 1065-1080.
 * Chib, Siddhartha and Srikanth Ramamurthy (2010): “Tailored randomized block MCMC methods with application to DSGE models,” *Journal of Econometrics*, 155, 19–38.
 * Christiano, Lawrence J., Mathias Trabandt and Karl Walentin (2011): “Introducing financial frictions and unemployment into a small open economy model,” *Journal of Economic Dynamics and Control*, 35(12), 1999–2041.
 * Christoffel, Kai, Günter Coenen and Anders Warne (2010): “Forecasting with DSGE models,” *ECB Working Paper Series*, 1185.
