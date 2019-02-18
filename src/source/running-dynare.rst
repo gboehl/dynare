@@ -166,6 +166,15 @@ by the ``dynare`` command.
         Passing this option removes all empty from the macro expanded
         mod file created when the :opt:`savemacro <savemacro[=FILENAME]>` option is used.
 
+    .. option:: onlymodel
+
+        Instructs the preprocessor to print only information about the
+        model in the driver file; no Dynare commands (other than the
+        shocks statement and parameter initializations) are printed
+        and hence no computational tasks performed. The same
+        ancillary files are created as would otherwise be created
+        (dynamic, static files, etc.).
+
     .. option:: nolog
 
         Instructs Dynare to no create a logfile of this run in
