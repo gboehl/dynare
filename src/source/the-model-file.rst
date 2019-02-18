@@ -10141,8 +10141,8 @@ Macro expressions
 
 It is possible to construct macro-expressions which can be assigned to
 macro-variables or used within a macro-directive. The expressions are
-constructed using literals of the four basic types (integers, strings,
-arrays of strings, arrays of integers), macro-variables names and
+constructed using literals of five basic types (integers, strings,
+arrays of strings, arrays of integers, and string functions), macro-variables names and
 standard operators.
 
 String literals have to be enclosed between **double** quotes (like
@@ -10185,6 +10185,11 @@ The following operators can be used on arrays:
       example: ``length(["a", "b", "c"])`` returns ``3`` and, hence,
       ``1:length(["a", "b", "c"])`` is equivalent to integer array
       ``[1,2,3]``)
+
+The following operators can be used on string functions:
+
+    * Comparison operators: ``==``, ``!=``
+    * Concatenation of two strings: ``+``
 
 Macro-expressions can be used at two places:
 
@@ -10237,18 +10242,20 @@ Macro directives
 
 .. macrodir:: @#define MACRO_VARIABLE = MACRO_EXPRESSION
 
-    |br| Defines a macro-variable.
+    |br| Defines a macro-variable or macro function.
 
     *Example*
 
         ::
 
-            @#define x = 5              // Integer
-            @#define y = "US"           // String
-            @#define v = [ 1, 2, 4 ]    // Integer array
-            @#define w = [ "US", "EA" ] // String array
-            @#define z = 3 + v[2]       // Equals 5
-            @#define t = ("US" in w)    // Equals 1 (true)
+            @#define x = 5                    // Integer
+            @#define y = "US"                 // String
+            @#define v = [ 1, 2, 4 ]          // Integer array
+            @#define w = [ "US", "EA" ]       // String array
+            @#define z = 3 + v[2]             // Equals 5
+            @#define t = ("US" in w)          // Equals 1 (true)
+            @#define f(x) = " + @{x} + @{y}"  // Defines a function 'f' with argument 'x'
+                                              // that resturns the string ' + @{x} + US'
 
     *Example*
 
@@ -10256,15 +10263,16 @@ Macro directives
 
             @#define x = [ "B", "C" ]
             @#define i = 2
+            @#define f(x) = " + @{x}"
 
             model;
-              A = @{x[i]};
+              A = @{x[i]+f("D")};
             end;
 
         The latter is strictly equivalent to::
 
             model;
-              A = C;
+              A = C + D;
             end;
 
 
