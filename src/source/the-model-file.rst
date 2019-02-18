@@ -4030,6 +4030,14 @@ block decomposition of the model (see :opt:`block`).
     empty, in which Dynare will select a default value depending on
     the context and the prior shape.
 
+    In case of the uniform distribution, it can be specified either by
+    providing an upper and a lower bound using
+    :opt:`PRIOR_3RD_PARAMETER` and :opt:`PRIOR_4TH_PARAMETER` or via
+    mean and standard deviation using :opt:`PRIOR_MEAN`,
+    :opt:`PRIOR_STANDARD_ERROR`.  The other two will automatically be
+    filled out. Note that providing both sets of hyperparameters will
+    yield an error message.
+
     As one uses options more towards the end of the list, all previous
     options must be filled: for example, if you want to specify
     SCALE_PARAMETER, you must specify ``PRIOR_3RD_PARAMETER`` and
