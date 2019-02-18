@@ -128,15 +128,19 @@ C1 = oo_.trend_component.titi.CompanionMatrix;
 
 save('tcm6_data.mat', 'C0', 'C1', 'params');
 
-[AR0, A00] = feval([M_.fname '.trend_component_ar_ec'], 'toto', M_.params);
-[AR1, A01] = feval([M_.fname '.trend_component_ar_ec'], 'titi', M_.params);
+[AR0, A00, A00star] = feval([M_.fname '.trend_component_ar_a0'], 'toto', M_.params);
+[AR1, A01, A01star] = feval([M_.fname '.trend_component_ar_a0'], 'titi', M_.params);
 
 if sum(sum(abs(AR0-AR1))) ~= 0
     error('Problem with AR matrices')
 end
 
-if sum(sum(abs(A00-A01(:,[4,1,3,2])))) ~= 0
+if sum(sum(abs(A00-A01))) ~= 0
     error('Problem with A0 matrices')
+end
+
+if sum(sum(abs(A00star-A01star(:,[4,1,3,2])))) ~= 0
+    error('Problem with A0star matrices')
 end
 
 ar = zeros(4, 4, 1);
@@ -149,12 +153,12 @@ if sum(sum(abs(AR0-ar))) ~= 0
     error('Problem with AR matrix')
 end
 
-ec = zeros(4, 4, 1);
-ec(1,:) = [M_.params(strcmp(M_.param_names, 'u2_q_yed_ecm_u2_q_yed_L1')),   M_.params(strcmp(M_.param_names, 'u2_q_yed_ecm_u2_g_yer_L1')),   M_.params(strcmp(M_.param_names, 'u2_q_yed_ecm_u2_stn_L1')),   0];
-ec(2,:) = [M_.params(strcmp(M_.param_names, 'u2_g_yer_ecm_u2_q_yed_L1')),   M_.params(strcmp(M_.param_names, 'u2_g_yer_ecm_u2_g_yer_L1')),   M_.params(strcmp(M_.param_names, 'u2_g_yer_ecm_u2_stn_L1')),   0];
-ec(3,:) = [M_.params(strcmp(M_.param_names, 'u2_stn_ecm_u2_q_yed_L1')),     M_.params(strcmp(M_.param_names, 'u2_stn_ecm_u2_g_yer_L1')),     M_.params(strcmp(M_.param_names, 'u2_stn_ecm_u2_stn_L1')),     0];
-ec(4,:) = [M_.params(strcmp(M_.param_names, 'u2_hh_ocor_ecm_u2_q_yed_L1')), M_.params(strcmp(M_.param_names, 'u2_hh_ocor_ecm_u2_g_yer_L1')), M_.params(strcmp(M_.param_names, 'u2_hh_ocor_ecm_u2_stn_L1')), M_.params(strcmp(M_.param_names, 'u2_hh_ocor_ecm_u2_hh_ocor_L1'))];
+a0 = zeros(4, 4, 1);
+a0(1,:) = [M_.params(strcmp(M_.param_names, 'u2_q_yed_ecm_u2_q_yed_L1')),   M_.params(strcmp(M_.param_names, 'u2_q_yed_ecm_u2_g_yer_L1')),   M_.params(strcmp(M_.param_names, 'u2_q_yed_ecm_u2_stn_L1')),   0];
+a0(2,:) = [M_.params(strcmp(M_.param_names, 'u2_g_yer_ecm_u2_q_yed_L1')),   M_.params(strcmp(M_.param_names, 'u2_g_yer_ecm_u2_g_yer_L1')),   M_.params(strcmp(M_.param_names, 'u2_g_yer_ecm_u2_stn_L1')),   0];
+a0(3,:) = [M_.params(strcmp(M_.param_names, 'u2_stn_ecm_u2_q_yed_L1')),     M_.params(strcmp(M_.param_names, 'u2_stn_ecm_u2_g_yer_L1')),     M_.params(strcmp(M_.param_names, 'u2_stn_ecm_u2_stn_L1')),     0];
+a0(4,:) = [M_.params(strcmp(M_.param_names, 'u2_hh_ocor_ecm_u2_q_yed_L1')), M_.params(strcmp(M_.param_names, 'u2_hh_ocor_ecm_u2_g_yer_L1')), M_.params(strcmp(M_.param_names, 'u2_hh_ocor_ecm_u2_stn_L1')), M_.params(strcmp(M_.param_names, 'u2_hh_ocor_ecm_u2_hh_ocor_L1'))];
 
-if sum(sum(abs(A00-ec))) ~= 0
-    error('Problem with A0 matrix')
+if sum(sum(abs(A00star-a0))) ~= 0
+    error('Problem with A0star matrix')
 end

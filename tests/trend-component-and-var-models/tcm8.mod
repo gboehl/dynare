@@ -117,13 +117,61 @@ end;
 tcm6 = load('tcm6_data.mat');
 M_.params = tcm6.params;
 
-
 trend_component_model(model_name=toto, eqtags=['U2_Q_YED', 'U2_G_YER', 'U2_STN', 'U2_EHIC', 'U2_ESTN', 'U2_HH_OCOR', 'U2_H_Q_YER400'], targets=['U2_EHIC', 'U2_ESTN', 'U2_H_Q_YER400']);
+trend_component_model(model_name=titi, eqtags=['U2_Q_YED', 'U2_G_YER', 'U2_STN', 'U2_EHIC', 'U2_ESTN', 'U2_HH_OCOR', 'U2_H_Q_YER400'], targets=['U2_H_Q_YER400', 'U2_ESTN', 'U2_EHIC']);
+
+% toto
+AR  = zeros(4,4,1);
+A0  = zeros(4,4,1);
+A0s = zeros(4,3,1);
+
+AR(1,:) = [M_.params(strcmp(M_.param_names, 'u2_q_yed_u2_q_yed_L1')), M_.params(strcmp(M_.param_names, 'u2_q_yed_u2_g_yer_L1')), M_.params(strcmp(M_.param_names, 'u2_q_yed_u2_stn_L1')), 0];
+AR(2,:) = [M_.params(strcmp(M_.param_names, 'u2_g_yer_u2_q_yed_L1')), M_.params(strcmp(M_.param_names, 'u2_g_yer_u2_g_yer_L1')), M_.params(strcmp(M_.param_names, 'u2_g_yer_u2_stn_L1')), 0];
+AR(3,:) = [M_.params(strcmp(M_.param_names, 'u2_stn_u2_q_yed_L1')), M_.params(strcmp(M_.param_names, 'u2_stn_u2_g_yer_L1')), 0, 0];
+AR(4,:) = [M_.params(strcmp(M_.param_names, 'u2_hh_ocor_u2_q_yed_L1')), M_.params(strcmp(M_.param_names, 'u2_hh_ocor_u2_g_yer_L1')), M_.params(strcmp(M_.param_names, 'u2_hh_ocor_u2_stn_L1')), M_.params(strcmp(M_.param_names, 'u2_hh_ocor_u2_hh_ocor_L1'))];
+
+A0(1,:) = [M_.params(strcmp(M_.param_names, 'u2_q_yed_ecm_u2_q_yed_L1')), M_.params(strcmp(M_.param_names, 'u2_q_yed_ecm_u2_g_yer_L1')), M_.params(strcmp(M_.param_names, 'u2_q_yed_ecm_u2_stn_L1')), 0];
+A0(2,:) = [M_.params(strcmp(M_.param_names, 'u2_g_yer_ecm_u2_q_yed_L1')), M_.params(strcmp(M_.param_names, 'u2_g_yer_ecm_u2_g_yer_L1')), M_.params(strcmp(M_.param_names, 'u2_g_yer_ecm_u2_stn_L1')), 0];
+A0(3,:) = [M_.params(strcmp(M_.param_names, 'u2_stn_ecm_u2_q_yed_L1')), M_.params(strcmp(M_.param_names, 'u2_stn_ecm_u2_g_yer_L1')), M_.params(strcmp(M_.param_names, 'u2_stn_ecm_u2_stn_L1')), 0];
+A0(4,:) = [M_.params(strcmp(M_.param_names, 'u2_hh_ocor_ecm_u2_q_yed_L1')), M_.params(strcmp(M_.param_names, 'u2_hh_ocor_ecm_u2_g_yer_L1')), M_.params(strcmp(M_.param_names, 'u2_hh_ocor_ecm_u2_stn_L1')), M_.params(strcmp(M_.param_names, 'u2_hh_ocor_ecm_u2_hh_ocor_L1'))];
+
+A0s(1,:) = [M_.params(strcmp(M_.param_names, 'u2_q_yed_ecm_u2_q_yed_L1')), M_.params(strcmp(M_.param_names, 'u2_q_yed_ecm_u2_stn_L1')), 0];
+A0s(2,:) = [M_.params(strcmp(M_.param_names, 'u2_g_yer_ecm_u2_q_yed_L1')), M_.params(strcmp(M_.param_names, 'u2_g_yer_ecm_u2_stn_L1')), 0];
+A0s(3,:) = [M_.params(strcmp(M_.param_names, 'u2_stn_ecm_u2_q_yed_L1')), M_.params(strcmp(M_.param_names, 'u2_stn_ecm_u2_stn_L1')), 0];
+A0s(4,:) = [M_.params(strcmp(M_.param_names, 'u2_hh_ocor_ecm_u2_q_yed_L1')), M_.params(strcmp(M_.param_names, 'u2_hh_ocor_ecm_u2_stn_L1')), M_.params(strcmp(M_.param_names, 'u2_hh_ocor_ecm_u2_hh_ocor_L1'))];
+
+[ARt, A0t, A0st] = tcm8.trend_component_ar_a0('toto', M_.params);
+
+if sum(sum(abs(AR-ARt))) ~= 0
+    error('Problem with AR')
+end
+
+if sum(sum(abs(A0-A0t))) ~= 0
+    error('Problem with A0')
+end
+
+if sum(sum(abs(A0s-A0st))) ~= 0
+    error('Problem with A0star')
+end
+
+[ARtt, A0tt, A0stt] = tcm8.trend_component_ar_a0('titi', M_.params);
+
+if sum(sum(abs(AR-ARtt))) ~= 0
+    error('Problem with AR')
+end
+
+if sum(sum(abs(A0-A0tt))) ~= 0
+    error('Problem with A0')
+end
+
+if sum(sum(abs(A0s-A0stt(:,[3,2,1])))) ~= 0
+    error('Problem with A0star')
+end
+
 pac_model(auxiliary_model_name=toto, discount=beta, model_name=pacman, growth = U2_H_Q_YER400);
 pac.initialize('pacman');
 C0 = oo_.trend_component.toto.CompanionMatrix;
 
-trend_component_model(model_name=titi, eqtags=['U2_Q_YED', 'U2_G_YER', 'U2_STN', 'U2_EHIC', 'U2_ESTN', 'U2_HH_OCOR', 'U2_H_Q_YER400'], targets=['U2_H_Q_YER400', 'U2_ESTN', 'U2_EHIC']);
 pac_model(auxiliary_model_name=titi, discount=beta, model_name=pacman1, growth = U2_H_Q_YER400);
 pac.initialize('pacman1');
 C1 = oo_.trend_component.titi.CompanionMatrix;
