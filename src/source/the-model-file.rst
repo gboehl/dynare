@@ -10279,6 +10279,13 @@ Macro directives
     |br| Asks the preprocessor to display some error message on standard
     output and to abort. The argument must evaluate to a string.
 
+.. macrodir:: @#echomacrovars MACRO_EXPRESSION
+              @#echomacrovars(save) MACRO_EXPRESSION
+
+    |br| Asks the preprocessor to display the value of all macro
+    variables up until this point. If the ``save`` option is passed,
+    theh values of the macro variables are saved to
+    ``options_.macrovars``.
 
 Typical usages
 --------------
