@@ -57,7 +57,7 @@ Bibliography
 * Pfeifer, Johannes (2013): “A Guide to Specifying Observation Equations for the Estimation of DSGE Models”.
 * Pfeifer, Johannes (2014): “An Introduction to Graphs in Dynare”.
 * Rabanal, Pau and Juan Rubio-Ramirez (2003): “Comparing New Keynesian Models of the Business Cycle: A Bayesian Approach,” Federal Reserve of Atlanta, *Working Paper Series*, 2003-30.
-* Raftery, Adrien E. and Steven Lewis (1992): “How many iterations in the Gibbs sampler?,” in *Bayesian Statistics, Vol. 4*, ed. J.O. Berger, J.M. Bernardo, A.P. * Dawid, and A.F.M. Smith, Clarendon Press: Oxford, pp. 763-773.
+* Raftery, Adrian E. and Steven Lewis (1992): “How many iterations in the Gibbs sampler?,” in *Bayesian Statistics, Vol. 4*, ed. J.O. Berger, J.M. Bernardo, A.P. * Dawid, and A.F.M. Smith, Clarendon Press: Oxford, pp. 763-773.
 * Ratto, Marco (2008): “Analysing DSGE models with global sensitivity analysis”, *Computational Economics*, 31, 115–139.
 * Schorfheide, Frank (2000): “Loss Function-based evaluation of DSGE models,” *Journal of Applied Econometrics*, 15(6), 645–670.
 * Schmitt-Grohé, Stephanie and Martin Uríbe (2004): “Solving Dynamic General Equilibrium Models Using a Second-Order Approximation to the Policy Function,” *Journal of Economic Dynamics and Control*, 28(4), 755–775.
