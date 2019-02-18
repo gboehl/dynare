@@ -10285,7 +10285,7 @@ Macro directives
     |br| Asks the preprocessor to display the value of all macro
     variables up until this point. If the ``save`` option is passed,
     theh values of the macro variables are saved to
-    ``options_.macrovars``.
+    ``options_.macrovars_line_<<line_numbers>>``.
 
 Typical usages
 --------------
