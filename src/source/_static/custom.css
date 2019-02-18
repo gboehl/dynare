@@ -1,3 +1,14 @@
+div.sphinxsidebar {
+    float: left;
+    width: 230px;
+    font-size: 90%;
+    word-wrap: break-word;
+    overflow-wrap : break-word;
+    overflow-y: scroll;
+    top: 0;
+    bottom: 0;
+}
+
 div.sphinxsidebarwrapper p.logo {
     padding: 0;
     margin: -10px 0 0 0px;
