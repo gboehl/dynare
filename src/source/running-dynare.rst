@@ -496,3 +496,10 @@ expect. Hence, it throws an error of the form: ``ERROR: <<file.mod>>:
 line 2, cols 0-9: syntax error, unexpected PARAMETERS``. In this case,
 you would simply place a semicolon at the end of line one and the
 parser would continue processing.
+
+It is also helpful to keep in mind that any piece of code that does not violate
+Dynare syntax, but at the same time is not recognized by the parser, is interpreted
+as native Matlab code. This code will be directly passed to the ``driver`` script.
+Investigating ``driver.m`` file then helps with debugging. Such problems most often
+occur when defined variable or parameter names have been misspelled so that Dynare's
+parser is unable to recognize them.

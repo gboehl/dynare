@@ -19,6 +19,13 @@ A model file contains a list of commands and of blocks. Each command
 and each element of a block is terminated by a semicolon (;). Blocks
 are terminated by ``end;``.
 
+If Dynare encounters an unknown expression at the beginning of a line
+or after a semicolon, it will parse the rest of that line as native
+Matlab code, even if there are more statements separated by semicolons
+present. To prevent cryptic error messages, it is strongly recommended
+to always only put one statement/command into each line and start a
+new line after each semicolon.
+
 Most Dynare commands have arguments and several accept options,
 indicated in parentheses after the command keyword. Several options
 are separated by commas.
@@ -424,7 +431,7 @@ symbol name with a vertical line (``|``, pipe character) and either an ``e``, an
 ``alphaa`` in the model block, you could write ``alphaa|p`` directly in
 an equation where it appears. Similarly, to declare an endogenous variable
 ``c`` in the model block you could write ``c|e``. Note that in-equation
- on-the-fly variable declarations must be made on contemporaneous variables.
+on-the-fly variable declarations must be made on contemporaneous variables.
 
 On-the-fly variable declarations do not have to appear in the first place where
 this variable is encountered.
