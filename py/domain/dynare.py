@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Copyright (C) 2018 Dynare Team
+# Copyright (C) 2018-2019 Dynare Team
 #
 # This file is part of Dynare.
 #
