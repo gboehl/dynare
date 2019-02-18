@@ -403,6 +403,48 @@ for declaring variables and parameters are described below.
             model_local_variable GDP_US $GDPUS$;
 
 
+.. _on-the-fly-declaration:
+
+On-the-fly Model Variable Declaration
+-------------------------------------
+
+Endogenous variables, exogenous variables, and parameters can also be declared
+inside the model block. To do this, simply follow the symbol name with a
+vertical line (``|``) and either an ``e``, an ``x``, or a
+``p``. For example, to declare a parameter named ``alphaa`` in the model
+block, you could write ``alphaa|p`` directly in an equation where it
+appears. Similarly, to declare an endogenous variable ``c`` in the model
+block you could write ``c|e``. These on-the-fly variable declarations do not
+have to appear in the first place where this variable is encountered. Note that
+on-the-fly variable declarations must be made on contemporaneous variables.
+
+*Example*
+
+    The following two snippets are equivalent:
+
+        ::
+
+            model;
+              k(+1) = i|e + (1-delta|p)*k;
+              y|e = k|e^alpha|p;
+              ...
+            end;
+            delta = 0.025;
+            alpha = 0.36;
+
+        ::
+
+            var k, i, y;
+            parameters delta, alpha;
+            delta = 0.025;
+            alpha = 0.36;
+            ...
+            model;
+              k(1) = i|e + (1-delta|p)*k;
+              y|e = k|e^alpha|p;
+              ...
+            end;
+
 .. _expr:
 
 Expressions

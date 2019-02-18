@@ -322,7 +322,9 @@ by the ``dynare`` command.
 
         1. there are more endogenous variables than equations.
         2. an undeclared symbol is assigned in ``initval`` or ``endval``.
-        3. exogenous variables were declared but not used in the
+        3. an undeclared symbol is found in the ``model`` block in
+           this case, it is automatically declared exogenous.
+        4. exogenous variables were declared but not used in the
            ``model`` block.
 
     .. option:: fast
