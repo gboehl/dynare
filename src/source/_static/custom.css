@@ -5,9 +5,16 @@ div.sphinxsidebar {
     word-wrap: break-word;
     overflow-wrap : break-word;
     overflow-y: scroll;
+    scrollbar-width: none;     /* Firefox */
+    -ms-overflow-style: none;  /* IE 10+ */
     top: 0;
     bottom: 0;
 }
+
+div.sphinxsidebar::-webkit-scrollbar {  /* WebKit */
+  width: 0px;
+}
+
 
 div.sphinxsidebarwrapper p.logo {
     padding: 0;
