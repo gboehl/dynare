@@ -3515,11 +3515,11 @@ Computing the stochastic solution
     |br| After a run of ``stoch_simul`` with the
     ``conditional_variance_decomposition`` option, contains a
     three-dimensional array with the result of the decomposition. The
-    first dimension corresponds to forecast horizons (as declared with
-    the option), the second dimension corresponds to endogenous
-    variables (in the order of declaration after the command or in
-    ``M_.endo_names`` if not specified), the third dimension
-    corresponds to exogenous variables (in the order of
+    first dimension corresponds to the endogenous variables (in the
+    order of declaration after the command or in ``M_.endo_names`` if
+    not specified), the second dimension corresponds to the forecast
+    horizons (as declared with the option), and the third dimension
+    corresponds to the exogenous variables (in the order of
     declaration). In the presence of measurement error, the field will
     contain the variance contribution after measurement error has been
     taken out, *i.e.* the decomposition will be conductedof the actual
@@ -3531,12 +3531,13 @@ Computing the stochastic solution
     ``conditional_variance_decomposition`` option if measurement error
     is present. It is similar to
     :mvar:`oo_.conditional_variance_decomposition`, but the
-    decomposition will be conducted of the measured variables.  It
+    decomposition will be conducted of the measured variables. It
     contains a three-dimensional array with the result of the
-    decomposition. The first dimension corresponds to forecast
-    horizons (as declared with the option), the second dimension
-    corresponds to observed endogenous variables (in the order of
-    declaration), the third dimension corresponds to exogenous
+    decomposition. The first dimension corresponds to the endogenous
+    variables (in the order of declaration after the command or in
+    ``M_.endo_names`` if not specified), the second dimension
+    corresponds to the forecast horizons (as declared with the
+    option), and the third dimension corresponds to the exogenous
     variables (in the order of declaration), with the last column
     corresponding to the contribution of the measurement error.
 
