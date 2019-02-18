@@ -39,11 +39,11 @@ by the ``dynare`` command.
     file``. By default (unless ``use_dll`` option has been given to
     ``model``), the preprocessor creates three intermediary files:
 
-    - ``filename.m``
+    - ``+FILENAME/driver.m``
 
         Contains variable declarations, and computing tasks.
 
-    - ``FILENAME_dynamic.m``
+    - ``+FILENAME/dynamic.m``
 
         Contains the dynamic model equations. Note that Dynare might
         introduce auxiliary equations and variables (see
@@ -68,7 +68,7 @@ by the ``dynare`` command.
         be 15. Then the 15th column of the Jacobian is the derivative
         with respect to ``c(+1)``.
 
-    - ``FILENAME_static.m``
+    - ``+FILENAME/static.m``
 
         Contains the long run static model equations. Note that Dynare
         might introduce auxiliary equations and variables (see
@@ -83,16 +83,26 @@ by the ``dynare`` command.
     These files may be looked at to understand errors reported at the
     simulation stage.
 
-    ``dynare`` will then run the computing tasks by executing ``FILENAME.m``.
+    ``dynare`` will then run the computing tasks by executing
+    ``+FILENAME/driver.m``. If a user needs to rerun the computing
+    tasks without calling the preprocessor (or without calling the
+    :mcomm:`dynare` command), for
+    instance because he has modified the script, he just have to type
+    the following on the command line:
 
-    A few words of warning are warranted here: the filename of the
-    ``.mod`` file should be chosen in such a way that the generated
-    ``.m`` files described above do not conflict with ``.m`` files
-    provided by MATLAB/Octave or by Dynare. Not respecting this rule
-    could cause crashes or unexpected behaviour. In particular, it
-    means that the ``.mod`` file cannot be given the name of a
-    MATLAB/Octave or Dynare command. Under Octave, it also means that
-    the ``.mod`` file cannot be named ``test.mod``.
+    .. code-block:: matlab
+
+        >> FILENAME.driver
+
+    A few words of warning are warranted here: under Octave the
+    filename of the ``.mod`` file should be chosen in such a way that
+    the generated ``.m`` files described above do not conflict with
+    ``.m`` files provided by Octave or by Dynare. Not
+    respecting this rule could cause crashes or unexpected
+    behaviour. In particular, it means that the ``.mod`` file cannot
+    be given the name of an Octave or Dynare command. For instance, under
+    Octave, it also means that the ``.mod`` file cannot be named
+    ``test.mod`` or ``example.mod``.
 
     *Options*
 
