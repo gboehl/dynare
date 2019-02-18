@@ -3424,9 +3424,10 @@ Computing the stochastic solution
 
 .. matvar:: oo_.kurtosis
 
-   |br| After a run of ``stoch_simul`` contains the kurtosis (standardized
-   fourth moment) of the simulated variables if the ``periods`` option
-   is present. The variables are arranged in declaration order.
+   |br| After a run of ``stoch_simul`` contains the excess kurtosis
+   (standardized fourth moment) of the simulated variables if the
+   ``periods`` option is present. The variables are arranged in
+   declaration order.
 
 .. matvar:: oo_.autocorr
 
