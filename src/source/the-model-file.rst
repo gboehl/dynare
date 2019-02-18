@@ -4480,6 +4480,11 @@ block decomposition of the model (see :opt:`block`).
        ``scale_file`` will overwrite any value specified in
        ``estimated_params`` with the tuned value. Default: ``0.2``.
 
+       Note also that for the Random Walk Metropolis Hastings
+       algorithm, it is possible to use option :opt:`mh_tune_jscale
+       <mh_tune_jscale [= DOUBLE]>`, to automatically tune the value
+       of ``mh_jscale``.
+
     .. option:: mh_init_scale = DOUBLE
 
        The scale to be used for drawing the initial value of the
@@ -4504,6 +4509,18 @@ block decomposition of the model (see :opt:`block`).
        another 100 draws. This iterative procedure will take place at
        most 10 times, at which point Dynare will abort with an error
        message.
+
+    .. option:: mh_tune_jscale [= DOUBLE]
+
+       Automatically tunes the scale parameter of the jumping
+       distribution's covariance matrix (Metropolis-Hastings), so that
+       the overall acceptance ratio is close to the desired
+       level. Default value is ``0.33``. It is not possible to
+       match exactly the desired acceptance ratio because of the
+       stochastic nature of the algorithm (the proposals and the
+       initial conditions of the markov chains if
+       ``mh_nblocks>1``). This option is only available for the
+       Random Walk Metropolis Hastings algorithm.
 
     .. option:: mh_recover
 
