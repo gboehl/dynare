@@ -409,14 +409,25 @@ On-the-fly Model Variable Declaration
 -------------------------------------
 
 Endogenous variables, exogenous variables, and parameters can also be declared
-inside the model block. To do this, simply follow the symbol name with a
-vertical line (``|``) and either an ``e``, an ``x``, or a
-``p``. For example, to declare a parameter named ``alphaa`` in the model
-block, you could write ``alphaa|p`` directly in an equation where it
-appears. Similarly, to declare an endogenous variable ``c`` in the model
-block you could write ``c|e``. These on-the-fly variable declarations do not
-have to appear in the first place where this variable is encountered. Note that
-on-the-fly variable declarations must be made on contemporaneous variables.
+inside the model block. You can do this in two different ways: either via the
+equation tag or directly in an equation.
+
+To declare a variable on-the-fly in an equation tag, simply state the type of
+variable to be declared (``endogenous``, ``exogenous``, or
+``parameter`` followed by an equal sign and the variable name in single
+quotes. Hence, to declare a variable ``c`` as endogenous in an equation tag,
+you can type ``[endogenous='c']``.
+
+To perform on-the-fly variable declaration in an equtaion, simply follow the
+symbol name with a vertical line (``|``, pipe character) and either an ``e``, an
+``x``, or a ``p``. For example, to declare a parameter named
+``alphaa`` in the model block, you could write ``alphaa|p`` directly in
+an equation where it appears. Similarly, to declare an endogenous variable
+``c`` in the model block you could write ``c|e``. Note that in-equation
+ on-the-fly variable declarations must be made on contemporaneous variables.
+
+On-the-fly variable declarations do not have to appear in the first place where
+this variable is encountered.
 
 *Example*
 
@@ -425,8 +436,9 @@ on-the-fly variable declarations must be made on contemporaneous variables.
         ::
 
             model;
+              [endogenous='k',name='law of motion of capital']
               k(+1) = i|e + (1-delta|p)*k;
-              y|e = k|e^alpha|p;
+              y|e = k^alpha|p;
               ...
             end;
             delta = 0.025;
@@ -440,6 +452,7 @@ on-the-fly variable declarations must be made on contemporaneous variables.
             alpha = 0.36;
             ...
             model;
+              [name='law of motion of capital']
               k(1) = i|e + (1-delta|p)*k;
               y|e = k|e^alpha|p;
               ...
