@@ -184,6 +184,15 @@ Dynare misc commands
         endogenous variables at the prior mode (considering the
         linearized version of the model).
 
+    ``moments(distribution)``
+
+        Computes and displays the prior mean and prior standard
+        deviation of the first and second moments of the endogenous
+        variables (considering the linearized version of the model) by
+        randomly sampling from the prior.  The results will also be
+        stored in the ``prior`` subfolder in a
+        ``_endogenous_variables_prior_draws.mat`` file.
+
     ``optimize``
 
         Optimizes the prior density (starting from a random initial
