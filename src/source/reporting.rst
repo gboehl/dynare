@@ -468,8 +468,9 @@ and a clarifying example.
 
     .. option:: precision, INTEGER
 
-        The number of decimal places to report in the table
-        data. Default: ``1``.
+        The number of decimal places to report in the table data
+        (rounding done via the *round half away from zero*
+        method). Default: ``1``.
 
     .. option:: range, dates
 
