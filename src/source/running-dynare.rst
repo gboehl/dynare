@@ -263,6 +263,19 @@ by the ``dynare`` command.
         Prevent Dynare from printing the output of the steps leading up to the
         preprocessor as well as the preprocessor output itself.
 
+    .. option:: mexext=mex|mexw32|mexw64|mexmaci64|mexa64
+
+        The mex extension associated with your platform to be used
+        when compiling output associated with :opt:`use_dll`.
+        Dynare is able to set this automatically, so you should not
+        need to set it yourself.
+
+    .. option:: matlabroot=<<path>>
+
+        The path to the Matlab installation for use with
+        :opt:`use_dll`. Dynare is able to set this automatically,
+        so you should not need to set it yourself.
+
     .. option:: parallel[=CLUSTER_NAME]
 
         Tells Dynare to perform computations in parallel. If
