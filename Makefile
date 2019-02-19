@@ -25,6 +25,8 @@ html: src/build/html/index.html
 
 src/build/html/index.html: $(SRC) src/source/conf.py
 	make -C src html
+	rm -rf src/build/html/_static/mathjax
+	ln -s /usr/share/javascript/mathjax src/build/html/_static/mathjax
 
 pdf: src/build/latex/dynare.pdf
 
