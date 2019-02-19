@@ -26,6 +26,10 @@
 #ifndef KRON_PROD_H
 #define KRON_PROD_H
 
+#include <utility>
+#include <vector>
+#include <memory>
+
 #include "twod_matrix.hh"
 #include "permutation.hh"
 #include "int_sequence.hh"
@@ -65,14 +69,12 @@ public:
     : rows(dim, 0), cols(dim, 0)
   {
   }
-  KronProdDimens(const KronProdDimens &kd)
-     
-  = default;
+  KronProdDimens(const KronProdDimens &kd) = default;
+  KronProdDimens(KronProdDimens &&kd) = default;
   KronProdDimens(const KronProdDimens &kd, int i);
 
-  KronProdDimens &
-  operator=(const KronProdDimens &kd)
-  = default;
+  KronProdDimens &operator=(const KronProdDimens &kd) = default;
+  KronProdDimens &operator=(KronProdDimens &&kd) = default;
   bool
   operator==(const KronProdDimens &kd) const
   {
@@ -87,17 +89,18 @@ public:
   void
   setRC(int i, int r, int c)
   {
-    rows[i] = r; cols[i] = c;
+    rows[i] = r;
+    cols[i] = c;
   }
-  void
-  getRC(int i, int &r, int &c) const
+  std::pair<int, int>
+  getRC(int i) const
   {
-    r = rows[i]; c = cols[i];
+    return { rows[i], cols[i] };
   }
-  void
-  getRC(int &r, int &c) const
+  std::pair<int, int>
+  getRC() const
   {
-    r = rows.mult(); c = cols.mult();
+    return { rows.mult(), cols.mult() };
   }
   int
   nrows() const
@@ -145,11 +148,9 @@ public:
     : kpd(kd)
   {
   }
-  KronProd(const KronProd &kp)
-     
-  = default;
-  virtual ~KronProd()
-  = default;
+  KronProd(const KronProd &kp) = default;
+  KronProd(KronProd &&kp) = default;
+  virtual ~KronProd() = default;
 
   int
   dimen() const
@@ -218,16 +219,13 @@ class KronProdAll : public KronProd
   friend class KronProdIAI;
   friend class KronProdAI;
 protected:
-  const TwoDMatrix **const matlist;
+  std::vector<const TwoDMatrix *> matlist;
 public:
   KronProdAll(int dim)
-    : KronProd(dim), matlist(new const TwoDMatrix *[dim])
+    : KronProd(dim), matlist(dim)
   {
   }
-  ~KronProdAll() override
-  {
-    delete [] matlist;
-  }
+  ~KronProdAll() override = default;
   void setMat(int i, const TwoDMatrix &m);
   void setUnit(int i, int n);
   const TwoDMatrix &
@@ -237,7 +235,7 @@ public:
   }
 
   void mult(const ConstTwoDMatrix &in, TwoDMatrix &out) const override;
-  Vector *multRows(const IntSequence &irows) const;
+  std::unique_ptr<Vector> multRows(const IntSequence &irows) const;
 private:
   bool isUnit() const;
 };

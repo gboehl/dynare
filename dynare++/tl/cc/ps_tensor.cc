@@ -386,14 +386,13 @@ FPSTensor::FPSTensor(const TensorDimens &td, const Equivalence &e, const Permuta
       auto sl = a.getMap().lower_bound(c);
       if (sl != a.getMap().end())
         {
-          Vector *row_prod = kp.multRows(run.getCoor());
+          auto row_prod = kp.multRows(run.getCoor());
           auto su = a.getMap().upper_bound(c);
           for (auto srun = sl; srun != su; ++srun)
             {
               Vector out_row{getRow((*srun).second.first)};
               out_row.add((*srun).second.second, *row_prod);
             }
-          delete row_prod;
         }
     }
 }
