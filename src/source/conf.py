@@ -66,9 +66,6 @@ html_theme_options = {
     'logo': 'dlogo.svg',
     'logo_name': False,
     'fixed_sidebar': True,
-    'sidebar_collapse': True,
-    'show_relbar_top': True,
-    'show_relbar_bottom': True,
     'page_width': '100%',
 }
 

@@ -1,6 +1,3 @@
-*.zip
-python/*
 src/build/*
 src/source/__pycache__/*
 utils/__pycache__/*
-src/source/_static/mathjax/*

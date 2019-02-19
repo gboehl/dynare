@@ -15,28 +15,18 @@
 # You should have received a copy of the GNU General Public License
 # along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-MATHJAX_VERSION = 2.7.5
-
 SRC = $(wildcard src/source/*.rst)
 
-.PHONY: all html pdf deps python mathjax
+.PHONY: all html pdf
 
 all: html pdf
 
-html: deps src/build/html/index.html
+html: src/build/html/index.html
 
 src/build/html/index.html: $(SRC) src/source/conf.py
-	. python/bin/activate ; make -C src html
+	make -C src html
 
-pdf: deps src/build/latex/dynare.pdf
+pdf: src/build/latex/dynare.pdf
 
 src/build/latex/dynare.pdf: $(SRC) src/source/conf.py
-	. python/bin/activate ; make -C src latexpdf
-
-deps: python mathjax
-
-python: python/bin/python3
-
-python/bin/python3:
-	python3 -m venv python
-	. python/bin/activate ; pip3 install --upgrade pip ; pip3 install sphinx recommonmark sphinx_rtd_theme
+	make -C src latexpdf
