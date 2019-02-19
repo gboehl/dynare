@@ -23,9 +23,9 @@ names=fieldnames(data_file);
 
 if ~all(ismember(varobs',names))
     missing_variables=varobs(~ismember(varobs',names))';
-    disp_string=[missing_variables{1,:}];
-    for ii=2:size(missing_variables,1)
-        disp_string=[disp_string,', ',missing_variables{ii,:}];
+    disp_string=[missing_variables{1}];
+    for ii=2:size(missing_variables, 2)
+        disp_string=[disp_string,', ',missing_variables{ii}];
     end
     error('makedataset: The variable(s) %s listed in varobs are not contained in the dataset %s',disp_string);
 else
