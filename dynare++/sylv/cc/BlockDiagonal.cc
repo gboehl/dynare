@@ -3,6 +3,7 @@
 /* Tag $Name:  $ */
 
 #include "BlockDiagonal.hh"
+#include "int_power.hh"
 
 #include <iostream>
 #include <utility>

@@ -7,6 +7,7 @@
 #include "SylvException.hh"
 #include "TriangularSylvester.hh"
 #include "IterativeSylvester.hh"
+#include "int_power.hh"
 
 #include <ctime>
 

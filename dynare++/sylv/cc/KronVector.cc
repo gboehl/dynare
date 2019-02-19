@@ -4,17 +4,9 @@
 
 #include "KronVector.hh"
 #include "SylvException.hh"
+#include "int_power.hh"
 
 #include <utility>
-
-int
-power(int m, int depth)
-{
-  int p = 1;
-  for (int i = 0; i < depth; i++)
-    p *= m;
-  return p;
-}
 
 KronVector::KronVector(int mm, int nn, int dp)
   : Vector(power(mm, dp)*nn), m(mm), n(nn), depth(dp)

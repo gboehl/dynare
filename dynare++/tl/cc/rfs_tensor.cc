@@ -127,7 +127,7 @@ URSingleTensor::URSingleTensor(const std::vector<ConstVector> &cols)
   auto *last = new Vector(cols[cols.size()-1]);
   for (int i = cols.size()-2; i > 0; i--)
     {
-      auto *newlast = new Vector(Tensor::power(nvar(), cols.size()-i));
+      auto *newlast = new Vector(power(nvar(), cols.size()-i));
       KronProd::kronMult(cols[i], ConstVector(*last), *newlast);
       delete last;
       last = newlast;

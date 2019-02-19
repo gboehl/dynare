@@ -14,6 +14,7 @@
 #include "SimilarityDecomp.hh"
 #include "IterativeSylvester.hh"
 #include "SylvMatrix.hh"
+#include "int_power.hh"
 
 #include "MMMatrix.hh"
 

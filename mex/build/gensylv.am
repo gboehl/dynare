@@ -1,6 +1,6 @@
 mex_PROGRAMS = gensylv
 
-gensylv_CPPFLAGS = $(AM_CPPFLAGS) -I$(top_srcdir)/../../../dynare++/sylv/cc -I$(top_srcdir)/../../sources
+gensylv_CPPFLAGS = $(AM_CPPFLAGS) -I$(top_srcdir)/../../../dynare++/sylv/cc -I$(top_srcdir)/../../../dynare++/utils/cc -I$(top_srcdir)/../../sources
 
 gensylv_LDADD = ../libdynare++/libdynare++.a
 

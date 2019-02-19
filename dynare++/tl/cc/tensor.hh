@@ -222,7 +222,6 @@ public:
   }
 
   static int noverk(int n, int k);
-  static int power(int a, int b);
   static int
   noverseq(const IntSequence &s)
   {

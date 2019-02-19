@@ -5,6 +5,7 @@
 #include "QuasiTriangular.hh"
 #include "SylvException.hh"
 #include "SchurDecomp.hh"
+#include "int_power.hh"
 
 #include <dynblas.h>
 

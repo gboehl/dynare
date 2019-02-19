@@ -1,3 +1,3 @@
-SUBDIRS = sylv parser/cc tl doc utils/cc integ kord src
+SUBDIRS = utils/cc sylv parser/cc tl doc integ kord src
 
 EXTRA_DIST = change_log.html tests extern

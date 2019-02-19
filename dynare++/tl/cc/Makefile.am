@@ -44,5 +44,5 @@ libtl_a_SOURCES = \
 	tl_static.hh \
 	twod_matrix.cc \
 	twod_matrix.hh
-libtl_a_CPPFLAGS = -I../../sylv/cc $(CPPFLAGS_MATIO)
+libtl_a_CPPFLAGS = -I../../sylv/cc -I../../utils/cc $(CPPFLAGS_MATIO)
 libtl_a_CXXFLAGS = $(AM_CXXFLAGS) $(THREAD_CXXFLAGS)

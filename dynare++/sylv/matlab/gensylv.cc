@@ -5,6 +5,7 @@
 
 #include "GeneralSylvester.hh"
 #include "SylvException.hh"
+#include "int_power.hh"
 
 void
 gen_sylv_solve(int order, int n, int m, int zero_cols,

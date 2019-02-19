@@ -127,10 +127,15 @@ INTEG_SRCS = \
 	$(TOPDIR)/integ/cc/vector_function.hh \
 	$(TOPDIR)/integ/cc/precalc_quadrature.hh
 
+UTILS_SRCS = \
+	$(TOPDIR)/utils/cc/int_power.cc \
+	$(TOPDIR)/utils/cc/int_power.hh
+
 nodist_libdynare___a_SOURCES = \
 	$(KORD_SRCS) \
 	$(TL_SRCS) \
 	$(SYLV_SRCS) \
 	$(INTEG_SRCS) \
+	$(UTILS_SRCS) \
 	$(TOPDIR)/src/nlsolve.cc \
 	$(TOPDIR)/src/nlsolve.hh

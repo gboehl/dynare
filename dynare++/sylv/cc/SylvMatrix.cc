@@ -4,6 +4,7 @@
 
 #include "SylvException.hh"
 #include "SylvMatrix.hh"
+#include "int_power.hh"
 
 #include <dynblas.h>
 #include <dynlapack.h>

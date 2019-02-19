@@ -6,23 +6,12 @@
 
 // |Tensor| static methods
 /* Here we implement calculation of $\pmatrix{n\cr k}$ where $n-k$ is
-   usually bigger than $k$.
-
-   Also we implement $a^b$. */
+   usually bigger than $k$. */
 
 int
 Tensor::noverk(int n, int k)
 {
   return tls.ptriang->noverk(n, k);
-}
-
-int
-Tensor::power(int a, int b)
-{
-  int res = 1;
-  for (int i = 0; i < b; i++)
-    res *= a;
-  return res;
 }
 
 // |Tensor::noverseq_ip| static method

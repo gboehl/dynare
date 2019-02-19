@@ -11,6 +11,7 @@
 
 #include "tensor.hh"
 #include "symmetry.hh"
+#include "int_power.hh"
 
 class FGSTensor;
 class UGSTensor;

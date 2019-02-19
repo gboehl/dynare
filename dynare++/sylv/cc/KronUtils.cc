@@ -3,6 +3,7 @@
 /* Tag $Name:  $ */
 
 #include "KronUtils.hh"
+#include "int_power.hh"
 
 void
 KronUtils::multAtLevel(int level, const QuasiTriangular &t,

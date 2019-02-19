@@ -1,7 +1,7 @@
 noinst_LIBRARIES = libsylv.a
 
 # For dynblas.h and dynlapack.h
-libsylv_a_CPPFLAGS = -I$(top_srcdir)/mex/sources
+libsylv_a_CPPFLAGS = -I$(top_srcdir)/mex/sources -I../../utils/cc
 
 libsylv_a_SOURCES = \
 	BlockDiagonal.cc \
