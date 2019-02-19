@@ -32,3 +32,6 @@ pdf: src/build/latex/dynare.pdf
 
 src/build/latex/dynare.pdf: $(SRC) src/source/conf.py
 	make -C src latexpdf
+
+push: html
+	rsync -avz src/build/html/* $(TARGET)
