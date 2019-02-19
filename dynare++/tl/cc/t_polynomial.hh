@@ -41,6 +41,7 @@
 #include "fs_tensor.hh"
 #include "rfs_tensor.hh"
 #include "tl_static.hh"
+#include "pascal_triangle.hh"
 
 /* Just to make the code nicer, we implement a Kronecker power of a
    vector encapsulated in the following class. It has |getNext| method
@@ -187,7 +188,7 @@ public:
                 Symmetry sym{i, j};
                 IntSequence coor(sym, pp);
                 _TGStype slice(*(tp.get(Symmetry{i+j})), ss, coor, TensorDimens(sym, ss));
-                slice.mult(Tensor::noverk(i+j, j));
+                slice.mult(PascalTriangle::noverk(i+j, j));
                 _TGStype tmp(*ten);
                 slice.contractAndAdd(0, tmp, xpow);
               }

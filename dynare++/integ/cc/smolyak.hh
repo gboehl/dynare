@@ -21,6 +21,7 @@
 #include "tl_static.hh"
 #include "vector_function.hh"
 #include "quadrature.hh"
+#include "pascal_triangle.hh"
 
 /* Here we define the Smolyak point iterator. The Smolyak formula can
    be broken to a sum of product quadratures with various combinations of
@@ -104,7 +105,6 @@ class SmolyakQuadrature : public QuadratureImpl<smolpit>
   std::vector<IntSequence> levels;
   std::vector<IntSequence> levpoints;
   std::vector<int> cumevals;
-  PascalTriangle psc;
 public:
   SmolyakQuadrature(int d, int l, const OneDQuadrature &uq);
   ~SmolyakQuadrature() override = default;

@@ -457,7 +457,7 @@ FoldMultiIndex::offset_recurse(int *data, int len, int nv)
     prefix++;
 
   int m = data[0];
-  int s1 = ptriang.noverk(nv+len-1, len) - ptriang.noverk(nv-m+len-1, len);
+  int s1 = PascalTriangle::noverk(nv+len-1, len) - PascalTriangle::noverk(nv-m+len-1, len);
 
   // cancel m from the rest of the sequence
   for (int i = prefix; i < len; i++)

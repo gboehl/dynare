@@ -25,6 +25,7 @@
 #include "korder.hh"
 #include "faa_di_bruno.hh"
 #include "journal.hh"
+#include "pascal_triangle.hh"
 
 /* This class is a container, which has a specialized constructor
    integrating the policy rule at given $\sigma$. */
@@ -100,7 +101,7 @@ IntegDerivs<t>::IntegDerivs(int r, const IntSequence &nvs, const _Tgss &g, const
           for (int n = 0; n <= p; n++)
             {
               int k = p-n;
-              int povern = Tensor::noverk(p, n);
+              int povern = PascalTriangle::noverk(p, n);
               int mfac = 1;
               for (int m = 0; i+m+n+k <= maxd; m++, mfac *= m)
                 {

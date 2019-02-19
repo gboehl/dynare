@@ -34,6 +34,7 @@
 #include "t_polynomial.hh"
 #include "faa_di_bruno.hh"
 #include "journal.hh"
+#include "pascal_triangle.hh"
 
 #include "kord_exception.hh"
 #include "GeneralSylvester.hh"
@@ -754,7 +755,7 @@ KOrder::calcE_ijk(int i, int j, int k) const
   for (int n = 2; n <= k-1; n += 2)
     {
       _Ttensor *tmp = faaDiBrunoZ<t>(Symmetry{i, j, n, k-n});
-      tmp->mult((double) (Tensor::noverk(k, n)));
+      tmp->mult((double) (PascalTriangle::noverk(k, n)));
       tmp->contractAndAdd(2, *res, *(m<t>().get(Symmetry{n})));
       delete tmp;
     }

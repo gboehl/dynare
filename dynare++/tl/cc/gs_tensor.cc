@@ -4,6 +4,7 @@
 #include "sparse_tensor.hh"
 #include "tl_exception.hh"
 #include "kron_prod.hh"
+#include "pascal_triangle.hh"
 
 /* This constructs the tensor dimensions for slicing. See
    |@<|TensorDimens| class declaration@>| for details. */
@@ -43,7 +44,7 @@ TensorDimens::calcFoldMaxOffset() const
       if (nvs[i] == 0 && sym[i] > 0)
         return 0;
       if (sym[i] > 0)
-        res *= Tensor::noverk(nvs[i]+sym[i]-1, sym[i]);
+        res *= PascalTriangle::noverk(nvs[i]+sym[i]-1, sym[i]);
     }
   return res;
 }

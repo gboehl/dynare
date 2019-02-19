@@ -128,6 +128,8 @@ INTEG_SRCS = \
 	$(TOPDIR)/integ/cc/precalc_quadrature.hh
 
 UTILS_SRCS = \
+	$(TOPDIR)/utils/cc/pascal_triangle.cc \
+	$(TOPDIR)/utils/cc/pascal_triangle.hh \
 	$(TOPDIR)/utils/cc/int_power.cc \
 	$(TOPDIR)/utils/cc/int_power.hh
 

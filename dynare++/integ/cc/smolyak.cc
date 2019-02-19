@@ -68,7 +68,7 @@ smolpit::setPointAndWeight()
   int sumk = (smolq.levels[isummand]).sum();
   int m1exp = l + d - sumk - 1;
   w = (2*(m1exp/2) == m1exp) ? 1.0 : -1.0;
-  w *= smolq.psc.noverk(d-1, sumk-l);
+  w *= PascalTriangle::noverk(d-1, sumk-l);
   for (int i = 0; i < d; i++)
     {
       int ki = (smolq.levels[isummand])[i];
@@ -107,7 +107,7 @@ smolpit::print() const
    obtained by adding $1$ to all $k_i$. */
 
 SmolyakQuadrature::SmolyakQuadrature(int d, int l, const OneDQuadrature &uq)
-  : QuadratureImpl<smolpit>(d), level(l), uquad(uq), psc(d-1, d-1)
+  : QuadratureImpl<smolpit>(d), level(l), uquad(uq)
 {
   // todo: check |l>1|, |l>=d|
   // todo: check |l>=uquad.miLevel()|, |l<=uquad.maxLevel()|

@@ -5,6 +5,7 @@
 #include "sparse_tensor.hh"
 #include "rfs_tensor.hh"
 #include "tl_exception.hh"
+#include "pascal_triangle.hh"
 
 /* This constructs a fully symmetric tensor as given by the contraction:
    $$\left[g_{y^n}\right]_{\alpha_1\ldots\alpha_n}=
@@ -49,7 +50,7 @@ FFSTensor::calcMaxOffset(int nvar, int d)
     return 1;
   if (nvar == 0 && d > 0)
     return 0;
-  return noverk(nvar + d - 1, d);
+  return PascalTriangle::noverk(nvar + d - 1, d);
 }
 
 /* The conversion from sparse tensor is clear. We go through all the

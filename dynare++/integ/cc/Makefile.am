@@ -12,5 +12,5 @@ libinteg_a_SOURCES = \
 	vector_function.cc \
 	vector_function.hh \
 	precalc_quadrature.hh
-libinteg_a_CPPFLAGS = -I../../sylv/cc -I../../tl/cc -I$(top_srcdir)/mex/sources
+libinteg_a_CPPFLAGS = -I../../sylv/cc -I../../utils/cc -I../../tl/cc -I$(top_srcdir)/mex/sources
 libinteg_a_CXXFLAGS = $(AM_CXXFLAGS) $(THREAD_CXXFLAGS)

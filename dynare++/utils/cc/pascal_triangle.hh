@@ -7,44 +7,24 @@
 
 #include <vector>
 
-namespace ogu
+class PascalRow : public std::vector<int>
 {
-
-  using std::vector;
-
-  class PascalRow : public vector<int>
+  int k{1};
+public:
+  PascalRow() : std::vector<int>{}
   {
-    int k{1};
-  public:
-    PascalRow() : vector<int>{}
-    {
-      push_back(2);
-    }
-    void setFromPrevious(const PascalRow &prev);
-    void prolong(const PascalRow &prev);
-    void prolongFirst(int n);
-    void print() const;
-  };
-
-  class PascalTriangle
-  {
-    vector<PascalRow> tr;
-  public:
-    PascalTriangle()
-    {
-      tr.emplace_back();
-    }
-    PascalTriangle(const PascalTriangle &triang) = default;
-    PascalTriangle &operator=(const PascalTriangle &triang) = default;
-    int noverk(int n, int k);
-    void print() const;
-  protected:
-    void ensure(int n, int k);
-    int max_n() const;
-    int max_k() const;
-  };
+    push_back(2);
+  }
+  void setFromPrevious(const PascalRow &prev);
+  void prolong(const PascalRow &prev);
+  void prolongFirst(int n);
+  void print() const;
 };
 
-extern ogu::PascalTriangle ptriang;
+namespace PascalTriangle
+{
+  int noverk(int n, int k);
+  void print();
+};
 
 #endif

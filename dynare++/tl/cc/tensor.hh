@@ -64,10 +64,7 @@
    zeros, and |in_end| is constructed from the sequence |last| passed to
    the constructor, since it depends on subclasses. Also we have to say,
    along what coordinate is the multidimensional index. This is used only
-   for initialization of |in_end|.
-
-   Also, we declare static auxiliary functions for $\pmatrix{n\cr k}$
-   which is |noverk| and $a^b$, which is |power|. */
+   for initialization of |in_end|. */
 
 class Tensor : public TwoDMatrix
 {
@@ -221,7 +218,6 @@ public:
     return in_end;
   }
 
-  static int noverk(int n, int k);
   static int
   noverseq(const IntSequence &s)
   {

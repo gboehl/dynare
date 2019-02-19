@@ -3,16 +3,7 @@
 #include "tensor.hh"
 #include "tl_exception.hh"
 #include "tl_static.hh"
-
-// |Tensor| static methods
-/* Here we implement calculation of $\pmatrix{n\cr k}$ where $n-k$ is
-   usually bigger than $k$. */
-
-int
-Tensor::noverk(int n, int k)
-{
-  return tls.ptriang->noverk(n, k);
-}
+#include "pascal_triangle.hh"
 
 // |Tensor::noverseq_ip| static method
 /* Here we calculate a generalized combination number
@@ -31,7 +22,7 @@ Tensor::noverseq_ip(IntSequence &s)
   if (s.size() == 0 || s.size() == 1)
     return 1;
   s[1] += s[0];
-  return noverk(s[1], s[0]) * noverseq(IntSequence(s, 1, s.size()));
+  return PascalTriangle::noverk(s[1], s[0]) * noverseq(IntSequence(s, 1, s.size()));
 }
 
 /* Here we increment a given sequence within full symmetry given by
@@ -203,7 +194,7 @@ FTensor::getOffsetRecurse(IntSequence &v, int nv)
   int prefix = v.getPrefixLength();
   int m = v[0];
   int k = v.size();
-  int s1 = noverk(nv+k-1, k) - noverk(nv-m+k-1, k);
+  int s1 = PascalTriangle::noverk(nv+k-1, k) - PascalTriangle::noverk(nv-m+k-1, k);
   IntSequence subv(v, prefix, k);
   subv.add(-m);
   int s2 = getOffsetRecurse(subv, nv-m);
