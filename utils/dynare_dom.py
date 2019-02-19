@@ -287,7 +287,7 @@ class DynareXRefRole(XRefRole):
 
 ############### Dynare domain #######################
 
-class DynDomain(Domain):
+class DynareDomain(Domain):
     name = 'dynare'
     label = 'Dynare'
     object_types = {

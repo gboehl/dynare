@@ -40,8 +40,8 @@ python: python/bin/python3
 python/bin/python3:
 	python3 -m venv python
 	. python/bin/activate ; pip3 install --upgrade pip ; pip3 install sphinx recommonmark sphinx_rtd_theme
-	cp py/pygment/dynare.py python/lib/python3.*/site-packages/pygments/lexers/
-	cd python/lib/python3.*/site-packages/pygments/lexers ; python3 _mapping.py
+#	cp py/pygment/dynare.py python/lib/python3.*/site-packages/pygments/lexers/
+#	cd python/lib/python3.*/site-packages/pygments/lexers ; python3 _mapping.py
 
 mathjax: src/source/_static/mathjax/MathJax.js
 	@touch src/source/_static/mathjax/MathJax.js

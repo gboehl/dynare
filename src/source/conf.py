@@ -20,7 +20,7 @@
 import os
 import sys
 
-sys.path.insert(0, os.path.abspath('../../py/domain/'))
+sys.path.insert(0, os.path.abspath('../../utils'))
 
 extensions = ['sphinx.ext.autodoc',
 			  'sphinx.ext.mathjax']
@@ -92,5 +92,7 @@ man_pages = [
 ]
 
 def setup(app):
-    from dynare import DynDomain
-    app.add_domain(DynDomain)
+    from dynare_dom import DynareDomain
+    from dynare_lex import DynareLexer
+    app.add_lexer("dynare", DynareLexer())
+    app.add_domain(DynareDomain)
