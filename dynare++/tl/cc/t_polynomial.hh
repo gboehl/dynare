@@ -143,8 +143,8 @@ public:
   {
     TL_RAISE_IF(nvars() < 0,
                 "Length of xval too big in TensorPolynomial contract constructor");
-    IntSequence ss(2); ss[0] = xval.length(); ss[1] = nvars();
-    IntSequence pp(2); pp[0] = 0; pp[1] = 1;
+    IntSequence ss{xval.length(), nvars()};
+    IntSequence pp{0, 1};
 
     // do contraction for all $i>0$
     /* Here we setup the |PowerProvider|, and cycle through
@@ -462,9 +462,7 @@ public:
   {
     _Ttype::zeros();
 
-    IntSequence dumnvs(2);
-    dumnvs[0] = 1;
-    dumnvs[1] = pol.nvars();
+    IntSequence dumnvs{1, pol.nvars()};
 
     int offset = 0;
     _Ttype dum(0, 2, _Ttype::dimen());

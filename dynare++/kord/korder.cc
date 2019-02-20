@@ -53,7 +53,7 @@ MatrixA::MatrixA(const FSSparseTensor &f, const IntSequence &ss,
 {
   zeros();
 
-  IntSequence c(1); c[0] = 1;
+  IntSequence c{1};
   FGSTensor f_y(f, ss, c, TensorDimens(ss, c));
   add(1.0, f_y);
 
@@ -80,7 +80,7 @@ MatrixS::MatrixS(const FSSparseTensor &f, const IntSequence &ss,
 {
   zeros();
 
-  IntSequence c(1); c[0] = 1;
+  IntSequence c{1};
   FGSTensor f_y(f, ss, c, TensorDimens(ss, c));
   add(1.0, f_y);
 
@@ -231,7 +231,7 @@ KOrder::KOrder(int num_stat, int num_pred, int num_both, int num_forw,
                Journal &jr)
   : ypart(num_stat, num_pred, num_both, num_forw),
     ny(ypart.ny()), nu(gu.ncols()), maxk(fcont.getMaxDim()),
-    nvs(4),
+    nvs{ypart.nys(), nu, nu, 1},
     _ug(4), _fg(4), _ugs(4), _fgs(4), _ugss(4), _fgss(4),
     _uG(4), _fG(4),
     _uZstack(&_uG, ypart.nyss(), &_ug, ny, ypart.nys(), nu),
@@ -258,9 +258,6 @@ KOrder::KOrder(int num_stat, int num_pred, int num_both, int num_forw,
                 "Wrong number of rows in gu in KOrder constructor");
   KORD_RAISE_IF(gu.ncols() != nu,
                 "Wrong number of columns in gu in KOrder constructor");
-
-  // set nvs:
-  nvs[0] = ypart.nys(); nvs[1] = nu; nvs[2] = nu; nvs[3] = 1;
 
   // put $g_y$ and $g_u$ to the container
   /* Note that $g_\sigma$ is zero by the nature and we do not insert it to

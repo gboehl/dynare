@@ -175,8 +175,7 @@ StochForwardDerivs<t>::StochForwardDerivs(const PartitionY &ypart, int nu,
      the tensors has zero dimensions for shocks, this is because we need to
      make easily stacks of the form $\left[\matrix{y^*\cr\sigma}\right]$ in
      the next step. */
-  IntSequence nvs(4);
-  nvs[0] = ypart.nys(); nvs[1] = 0; nvs[2] = 0; nvs[3] = 1;
+  IntSequence nvs{ypart.nys(), 0, 0, 1};
   IntegDerivs<t> g_int(r, nvs, g, m, at_sigma);
 
   // make |g_int_sym| be full symmetric polynomial from |g_int|
@@ -219,12 +218,11 @@ StochForwardDerivs<t>::StochForwardDerivs(const PartitionY &ypart, int nu,
   // pull out general symmetry tensors from |g_int_cent|
   /* Here we only recover the general symmetry derivatives from the full
      symmetric polynomial. Note that the derivative get the true |nvs|. */
-  IntSequence ss(4);
-  ss[0] = ypart.nys(); ss[1] = 0; ss[2] = 0; ss[3] = 1;
-  IntSequence pp(4);
-  pp[0] = 0; pp[1] = 1; pp[2] = 2; pp[3] = 3;
+  IntSequence ss{ypart.nys(), 0, 0, 1};
+  IntSequence pp{0, 1, 2, 3};
   IntSequence true_nvs(nvs);
-  true_nvs[1] = nu; true_nvs[2] = nu;
+  true_nvs[1] = nu;
+  true_nvs[2] = nu;
   for (int d = 1; d <= maxd; d++)
     {
       if (g_int_cent.check(Symmetry{d}))

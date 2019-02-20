@@ -193,8 +193,7 @@ template <int t>
 void
 DecisionRuleImpl<t>::fillTensors(const _Tg &g, double sigma)
 {
-  IntSequence tns(2);
-  tns[0] = ypart.nys(); tns[1] = nu;
+  IntSequence tns{ypart.nys(), nu};
   int dfact = 1;
   for (int d = 0; d <= g.getMaxDim(); d++, dfact *= d)
     {

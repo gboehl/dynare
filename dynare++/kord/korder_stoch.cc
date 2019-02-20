@@ -27,7 +27,7 @@ MatrixAA::MatrixAA(const FSSparseTensor &f, const IntSequence &ss,
 KOrderStoch::KOrderStoch(const PartitionY &yp, int nu,
                          const TensorContainer<FSSparseTensor> &fcont,
                          const FGSContainer &hh, Journal &jr)
-  : nvs(4), ypart(yp), journal(jr),
+  : nvs{yp.nys(), nu, nu, 1}, ypart(yp), journal(jr),
     _ug(4), _fg(4), _ugs(4), _fgs(4), _uG(4), _fG(4),
     _uh(nullptr), _fh(&hh),
     _uZstack(&_uG, ypart.nyss(), &_ug, ypart.ny(), ypart.nys(), nu),
@@ -38,17 +38,13 @@ KOrderStoch::KOrderStoch(const PartitionY &yp, int nu,
     matA(*(fcont.get(Symmetry{1})), _uZstack.getStackSizes(), *(hh.get(Symmetry{1, 0, 0, 0})),
          ypart)
 {
-  nvs[0] = ypart.nys();
-  nvs[1] = nu;
-  nvs[2] = nu;
-  nvs[3] = 1;
 }
 
 // |KOrderStoch| unfolded constructor code
 KOrderStoch::KOrderStoch(const PartitionY &yp, int nu,
                          const TensorContainer<FSSparseTensor> &fcont,
                          const UGSContainer &hh, Journal &jr)
-  : nvs(4), ypart(yp), journal(jr),
+  : nvs{yp.nys(), nu, nu, 1}, ypart(yp), journal(jr),
     _ug(4), _fg(4), _ugs(4), _fgs(4), _uG(4), _fG(4),
     _uh(&hh), _fh(nullptr),
     _uZstack(&_uG, ypart.nyss(), &_ug, ypart.ny(), ypart.nys(), nu),
@@ -59,10 +55,6 @@ KOrderStoch::KOrderStoch(const PartitionY &yp, int nu,
     matA(*(fcont.get(Symmetry{1})), _uZstack.getStackSizes(), *(hh.get(Symmetry{1, 0, 0, 0})),
          ypart)
 {
-  nvs[0] = ypart.nys();
-  nvs[1] = nu;
-  nvs[2] = nu;
-  nvs[3] = 1;
 }
 
 // |KOrderStoch| convenience method specializations
