@@ -58,8 +58,8 @@ WorkerFoldMAADense::operator()(std::mutex &mut)
 {
   Permutation iden(dense_cont.num());
   IntSequence coor(sym, iden.getMap());
-  const FGSTensor *g = dense_cont.get(sym);
-  cont.multAndAddStacks(coor, *g, out, mut);
+  const FGSTensor &g = dense_cont.get(sym);
+  cont.multAndAddStacks(coor, g, out, mut);
 }
 
 WorkerFoldMAADense::WorkerFoldMAADense(const FoldedStackContainer &container,
@@ -407,8 +407,8 @@ WorkerUnfoldMAADense::operator()(std::mutex &mut)
 {
   Permutation iden(dense_cont.num());
   IntSequence coor(sym, iden.getMap());
-  const UGSTensor *g = dense_cont.get(sym);
-  cont.multAndAddStacks(coor, *g, out, mut);
+  const UGSTensor &g = dense_cont.get(sym);
+  cont.multAndAddStacks(coor, g, out, mut);
 }
 
 WorkerUnfoldMAADense::WorkerUnfoldMAADense(const UnfoldedStackContainer &container,

@@ -256,7 +256,7 @@ TestRunnable::smolyak_normal_moments(const GeneralMatrix &m, int imom, int level
 
   // check against theoretical moments
   UNormalMoments moments(imom, msq);
-  smol_out.add(-1.0, (moments.get(Symmetry{imom}))->getData());
+  smol_out.add(-1.0, moments.get(Symmetry{imom}).getData());
   std::cout << "\tError:                         " << std::setw(16) << std::setprecision(12) << smol_out.getMax() << std::endl;
   return smol_out.getMax() < 1.e-7;
 }
@@ -285,7 +285,7 @@ TestRunnable::product_normal_moments(const GeneralMatrix &m, int imom, int level
 
   // check against theoretical moments
   UNormalMoments moments(imom, msq);
-  prod_out.add(-1.0, (moments.get(Symmetry{imom}))->getData());
+  prod_out.add(-1.0, moments.get(Symmetry{imom}).getData());
   std::cout << "\tError:                         " << std::setw(16) << std::setprecision(12) << prod_out.getMax() << std::endl;
   return prod_out.getMax() < 1.e-7;
 }

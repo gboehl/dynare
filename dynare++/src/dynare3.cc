@@ -353,11 +353,11 @@ DynareDerEvalLoader::DynareDerEvalLoader(const ogp::FineAtoms &a,
 void
 DynareDerEvalLoader::load(int i, int iord, const int *vars, double res)
 {
-  FSSparseTensor *t = md.get(Symmetry{iord});
+  FSSparseTensor &t = md.get(Symmetry{iord});
   IntSequence s(iord, 0);
   for (int j = 0; j < iord; j++)
     s[j] = atoms.get_pos_of_all(vars[j]);
-  t->insert(s, i, res);
+  t.insert(s, i, res);
 }
 
 DynareJacobian::DynareJacobian(Dynare &dyn)

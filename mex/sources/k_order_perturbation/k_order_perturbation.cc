@@ -65,11 +65,11 @@ DynareMxArrayToString(const mxArray *mxFldp, const int len, const int width, std
 void
 copy_derivatives(mxArray *destin, const Symmetry &sym, const FGSContainer *derivs, const std::string &fieldname)
 {
-  const TwoDMatrix *x = derivs->get(sym);
-  int n = x->numRows();
-  int m = x->numCols();
+  const TwoDMatrix &x = derivs->get(sym);
+  int n = x.numRows();
+  int m = x.numCols();
   mxArray *tmp = mxCreateDoubleMatrix(n, m, mxREAL);
-  memcpy(mxGetPr(tmp), x->getData().base(), n*m*sizeof(double));
+  memcpy(mxGetPr(tmp), x.getData().base(), n*m*sizeof(double));
   mxSetField(destin, 0, fieldname.c_str(), tmp);
 }
 

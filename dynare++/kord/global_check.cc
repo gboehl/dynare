@@ -97,7 +97,7 @@ ResidFunction::setYU(const ConstVector &ys, const ConstVector &xx)
                          model->nboth()+model->nforw());
   if (hss->check(Symmetry{0}))
     {
-      hss->get(Symmetry{0})->getData().add(1.0, ysteady_ss);
+      hss->get(Symmetry{0}).getData().add(1.0, ysteady_ss);
     }
   else
     {

@@ -478,10 +478,10 @@ KOrder::recover_y(int i)
 
   insertDerivative<t>(std::move(g_yi));
 
-  _Ttensor *gss_y = gss<t>().get(Symmetry{1, 0, 0, 0});
-  gs<t>().multAndAdd(*gss_y, *G_yi_ptr);
-  _Ttensor *gss_yi = gss<t>().get(sym);
-  gs<t>().multAndAdd(*gss_yi, *G_yi_ptr);
+  _Ttensor &gss_y = gss<t>().get(Symmetry{1, 0, 0, 0});
+  gs<t>().multAndAdd(gss_y, *G_yi_ptr);
+  _Ttensor &gss_yi = gss<t>().get(sym);
+  gs<t>().multAndAdd(gss_yi, *G_yi_ptr);
 }
 
 /* Here we solve $\left[F_{y^iu^j}\right]=0$ to obtain $g_{y^iu^j}$ for
@@ -512,7 +512,7 @@ KOrder::recover_yu(int i, int j)
   matA.multInv(*g_yiuj);
   insertDerivative<t>(std::move(g_yiuj));
 
-  gs<t>().multAndAdd(*(gss<t>().get(Symmetry{1, 0, 0, 0})), *G_yiuj_ptr);
+  gs<t>().multAndAdd(gss<t>().get(Symmetry{1, 0, 0, 0}), *G_yiuj_ptr);
 }
 
 /* Here we solve
@@ -739,7 +739,7 @@ KOrder::calcD_ijk(int i, int j, int k) const
   if (is_even(k))
     {
       auto tmp = faaDiBrunoZ<t>(Symmetry{i, j, k, 0});
-      tmp->contractAndAdd(2, *res, *(m<t>().get(Symmetry{k})));
+      tmp->contractAndAdd(2, *res, m<t>().get(Symmetry{k}));
     }
   return res;
 }
@@ -761,7 +761,7 @@ KOrder::calcE_ijk(int i, int j, int k) const
     {
       auto tmp = faaDiBrunoZ<t>(Symmetry{i, j, n, k-n});
       tmp->mult((double) (PascalTriangle::noverk(k, n)));
-      tmp->contractAndAdd(2, *res, *(m<t>().get(Symmetry{n})));
+      tmp->contractAndAdd(2, *res, m<t>().get(Symmetry{n}));
     }
   return res;
 }

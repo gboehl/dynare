@@ -62,6 +62,8 @@
 #include <memory>
 #include <utility>
 
+#include <cstring>
+
 #include <matio.h>
 
 // |ltsym| predicate
@@ -96,8 +98,6 @@ template<class _Ttype>
 class TensorContainer
 {
 protected:
-  using _const_ptr = const _Ttype *;
-  using _ptr = _Ttype *;
   using _Map = std::map<Symmetry, std::unique_ptr<_Ttype>, ltsym>;
 public:
   using iterator = typename _Map::iterator;
@@ -131,34 +131,24 @@ public:
       insert(std::make_unique<_Ttype>(first_row, num, *(it.second)));
   }
 
-  _const_ptr
+  const _Ttype &
   get(const Symmetry &s) const
   {
     TL_RAISE_IF(s.num() != num(),
                 "Incompatible symmetry lookup in TensorContainer::get");
     auto it = m.find(s);
-    if (it == m.end())
-      {
-        TL_RAISE("Symmetry not found in TensorContainer::get");
-        return nullptr;
-      }
-    else
-      return it->second.get();
+    TL_RAISE_IF(it == m.end(), "Symmetry not found in TensorContainer::get");
+    return *(it->second);
   }
 
-  _ptr
+  _Ttype &
   get(const Symmetry &s)
   {
     TL_RAISE_IF(s.num() != num(),
                 "Incompatible symmetry lookup in TensorContainer::get");
     auto it = m.find(s);
-    if (it == m.end())
-      {
-        TL_RAISE("Symmetry not found in TensorContainer::get");
-        return nullptr;
-      }
-    else
-      return it->second.get();
+    TL_RAISE_IF(it == m.end(), "Symmetry not found in TensorContainer::get");
+    return *(it->second);
   }
 
   bool
@@ -260,16 +250,16 @@ public:
      through all equivalence classes, calculate implied symmetry, and
      fetch its tensor storing it in the same order to the vector. */
 
-  std::vector<_const_ptr>
+  std::vector<const _Ttype *>
   fetchTensors(const Symmetry &rsym, const Equivalence &e) const
   {
-    std::vector<_const_ptr> res(e.numClasses());
+    std::vector<const _Ttype *> res(e.numClasses());
     int i = 0;
     for (auto it = e.begin();
          it != e.end(); ++it, i++)
       {
         Symmetry s(rsym, *it);
-        res[i] = get(s);
+        res[i] = &get(s);
       }
     return res;
   }

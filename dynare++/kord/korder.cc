@@ -239,9 +239,9 @@ KOrder::KOrder(int num_stat, int num_pred, int num_both, int num_forw,
     _uGstack(&_ugs, ypart.nys(), nu),
     _fGstack(&_fgs, ypart.nys(), nu),
     _um(maxk, v), _fm(_um), f(fcont),
-    matA(*(f.get(Symmetry{1})), _uZstack.getStackSizes(), gy, ypart),
-    matS(*(f.get(Symmetry{1})), _uZstack.getStackSizes(), gy, ypart),
-    matB(*(f.get(Symmetry{1})), _uZstack.getStackSizes()),
+    matA(f.get(Symmetry{1}), _uZstack.getStackSizes(), gy, ypart),
+    matS(f.get(Symmetry{1}), _uZstack.getStackSizes(), gy, ypart),
+    matB(f.get(Symmetry{1}), _uZstack.getStackSizes()),
     journal(jr)
 {
   KORD_RAISE_IF(gy.ncols() != ypart.nys(),
@@ -303,7 +303,7 @@ KOrder::sylvesterSolve<KOrder::unfold>(ctraits<unfold>::Ttensor &der) const
     {
       KORD_RAISE_IF(!der.isFinite(),
                     "RHS of Sylverster is not finite");
-      TwoDMatrix gs_y(*(gs<unfold>().get(Symmetry{1, 0, 0, 0})));
+      TwoDMatrix gs_y(gs<unfold>().get(Symmetry{1, 0, 0, 0}));
       GeneralSylvester sylv(der.getSym()[0], ny, ypart.nys(),
                             ypart.nstat+ypart.npred,
                             matA.getData(), matB.getData(),
@@ -343,7 +343,7 @@ KOrder::switchToFolded()
       {
         if (si[2] == 0 && g<unfold>().check(si))
           {
-            auto ft = std::make_unique<FGSTensor>(*(g<unfold>().get(si)));
+            auto ft = std::make_unique<FGSTensor>(g<unfold>().get(si));
             insertDerivative<fold>(std::move(ft));
             if (dim > 1)
               {
@@ -354,7 +354,7 @@ KOrder::switchToFolded()
           }
         if (G<unfold>().check(si))
           {
-            auto ft = std::make_unique<FGSTensor>(*(G<unfold>().get(si)));
+            auto ft = std::make_unique<FGSTensor>(G<unfold>().get(si));
             G<fold>().insert(std::move(ft));
             if (dim > 1)
               {

@@ -99,7 +99,6 @@ class TensorPolynomial : public TensorContainer<_Ttype>
   int nv;
   int maxdim;
   using _Tparent = TensorContainer<_Ttype>;
-  using _ptr = typename _Tparent::_ptr;
 public:
   TensorPolynomial(int rows, int vars)
     : TensorContainer<_Ttype>(1),
@@ -175,7 +174,7 @@ public:
                 /* The pointer |ten| is either a new tensor or got from |this| container. */
                 _Ttype *ten;
                 if (_Tparent::check(Symmetry{j}))
-                  ten = _Tparent::get(Symmetry{j});
+                  ten = &_Tparent::get(Symmetry{j});
                 else
                   {
                     auto ten_smart = std::make_unique<_Ttype>(nrows(), nvars(), j);
@@ -186,7 +185,7 @@ public:
 
                 Symmetry sym{i, j};
                 IntSequence coor(sym, pp);
-                _TGStype slice(*(tp.get(Symmetry{i+j})), ss, coor, TensorDimens(sym, ss));
+                _TGStype slice(tp.get(Symmetry{i+j}), ss, coor, TensorDimens(sym, ss));
                 slice.mult(PascalTriangle::noverk(i+j, j));
                 _TGStype tmp(*ten);
                 slice.contractAndAdd(0, tmp, xpow);
@@ -207,7 +206,7 @@ public:
             /* Same code as above */
             _Ttype *ten;
             if (_Tparent::check(Symmetry{j}))
-              ten = _Tparent::get(Symmetry{j});
+              ten = &_Tparent::get(Symmetry{j});
             else
               {
                 auto ten_smart = std::make_unique<_Ttype>(nrows(), nvars(), j);
@@ -218,7 +217,7 @@ public:
 
             Symmetry sym{0, j};
             IntSequence coor(sym, pp);
-            _TGStype slice(*(tp.get(Symmetry{j})), ss, coor, TensorDimens(sym, ss));
+            _TGStype slice(tp.get(Symmetry{j}), ss, coor, TensorDimens(sym, ss));
             ten->add(1.0, slice);
           }
       }
@@ -247,7 +246,7 @@ public:
   evalTrad(Vector &out, const ConstVector &v) const
   {
     if (_Tparent::check(Symmetry{0}))
-      out = _Tparent::get(Symmetry{0})->getData();
+      out = _Tparent::get(Symmetry{0}).getData();
     else
       out.zeros();
 
@@ -258,8 +257,8 @@ public:
         Symmetry cs{d};
         if (_Tparent::check(cs))
           {
-            const _Ttype *t = _Tparent::get(cs);
-            t->multaVec(out, p.getData());
+            const _Ttype &t = _Tparent::get(cs);
+            t.multaVec(out, p.getData());
           }
       }
   }
@@ -271,7 +270,7 @@ public:
   evalHorner(Vector &out, const ConstVector &v) const
   {
     if (_Tparent::check(Symmetry{0}))
-      out = _Tparent::get(Symmetry{0})->getData();
+      out = _Tparent::get(Symmetry{0}).getData();
     else
       out.zeros();
 
@@ -280,16 +279,16 @@ public:
 
     _Ttype *last;
     if (maxdim == 1)
-      last = new _Ttype(*(_Tparent::get(Symmetry{1})));
+      last = new _Ttype(_Tparent::get(Symmetry{1}));
     else
-      last = new _Ttype(*(_Tparent::get(Symmetry{maxdim})), v);
+      last = new _Ttype(_Tparent::get(Symmetry{maxdim}), v);
     for (int d = maxdim-1; d >= 1; d--)
       {
         Symmetry cs{d};
         if (_Tparent::check(cs))
           {
-            const _Ttype *nt = _Tparent::get(cs);
-            last->add(1.0, ConstTwoDMatrix(*nt));
+            const _Ttype &nt = _Tparent::get(cs);
+            last->add(1.0, ConstTwoDMatrix(nt));
           }
         if (d > 1)
           {
@@ -338,8 +337,8 @@ public:
       {
         if (_Tparent::check(Symmetry{d}))
           {
-            _Ttype *ten = _Tparent::get(Symmetry{d});
-            ten->mult((double) std::max((d-k), 0));
+            _Ttype &ten = _Tparent::get(Symmetry{d});
+            ten.mult((double) std::max((d-k), 0));
           }
       }
   }
@@ -367,13 +366,13 @@ public:
     res->zeros();
 
     if (_Tparent::check(Symmetry{s}))
-      res->add(1.0, *(_Tparent::get(Symmetry{s})));
+      res->add(1.0, _Tparent::get(Symmetry{s}));
 
     for (int d = s+1; d <= maxdim; d++)
       {
         if (_Tparent::check(Symmetry{d}))
           {
-            const _Ttype &ltmp = *(_Tparent::get(Symmetry{d}));
+            const _Ttype &ltmp = _Tparent::get(Symmetry{d});
             auto last = std::make_unique<_Ttype>(ltmp);
             for (int j = 0; j < d - s; j++)
               {
@@ -474,7 +473,7 @@ public:
         if (pol.check(Symmetry{d}))
           {
             TwoDMatrix subt(*this, offset, dumgs.ncols());
-            subt.add(1.0, *(pol.get(Symmetry{d})));
+            subt.add(1.0, pol.get(Symmetry{d}));
           }
         offset += dumgs.ncols();
       }

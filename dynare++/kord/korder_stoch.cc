@@ -35,7 +35,7 @@ KOrderStoch::KOrderStoch(const PartitionY &yp, int nu,
     _uGstack(&_ugs, ypart.nys(), nu),
     _fGstack(&_fgs, ypart.nys(), nu),
     f(fcont),
-    matA(*(fcont.get(Symmetry{1})), _uZstack.getStackSizes(), *(hh.get(Symmetry{1, 0, 0, 0})),
+    matA(fcont.get(Symmetry{1}), _uZstack.getStackSizes(), hh.get(Symmetry{1, 0, 0, 0}),
          ypart)
 {
 }
@@ -52,7 +52,7 @@ KOrderStoch::KOrderStoch(const PartitionY &yp, int nu,
     _uGstack(&_ugs, ypart.nys(), nu),
     _fGstack(&_fgs, ypart.nys(), nu),
     f(fcont),
-    matA(*(fcont.get(Symmetry{1})), _uZstack.getStackSizes(), *(hh.get(Symmetry{1, 0, 0, 0})),
+    matA(fcont.get(Symmetry{1}), _uZstack.getStackSizes(), hh.get(Symmetry{1, 0, 0, 0}),
          ypart)
 {
 }

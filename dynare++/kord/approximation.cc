@@ -82,7 +82,7 @@ Approximation::approxAtSteady()
 {
   model.calcDerivativesAtSteady();
   FirstOrder fo(model.nstat(), model.npred(), model.nboth(), model.nforw(),
-                model.nexog(), *(model.getModelDerivatives().get(Symmetry{1})),
+                model.nexog(), model.getModelDerivatives().get(Symmetry{1}),
                 journal, qz_criterium);
   KORD_RAISE_IF_X(!fo.isStable(),
                   "The model is not Blanchard-Kahn stable",
@@ -302,14 +302,14 @@ Approximation::calcStochShift(Vector &out, double at_sigma) const
           ten->zeros();
           for (int l = 1; l <= d; l++)
             {
-              const FSSparseTensor *f = model.getModelDerivatives().get(Symmetry{l});
-              zaux.multAndAdd(*f, *ten);
+              const FSSparseTensor &f = model.getModelDerivatives().get(Symmetry{l});
+              zaux.multAndAdd(f, *ten);
             }
 
           // multiply with shocks and add to result
           FGSTensor *tmp = new FGSTensor(ypart.ny(), TensorDimens(Symmetry{0, 0, 0, 0}, nvs));
           tmp->zeros();
-          ten->contractAndAdd(1, *tmp, *(mom.get(Symmetry{d})));
+          ten->contractAndAdd(1, *tmp, mom.get(Symmetry{d}));
 
           out.add(pow(at_sigma, d)/dfac, tmp->getData());
           delete ten;
@@ -362,8 +362,8 @@ Approximation::check(double at_sigma) const
 TwoDMatrix *
 Approximation::calcYCov() const
 {
-  const TwoDMatrix &gy = *(rule_ders->get(Symmetry{1, 0, 0, 0}));
-  const TwoDMatrix &gu = *(rule_ders->get(Symmetry{0, 1, 0, 0}));
+  const TwoDMatrix &gy = rule_ders->get(Symmetry{1, 0, 0, 0});
+  const TwoDMatrix &gu = rule_ders->get(Symmetry{0, 1, 0, 0});
   TwoDMatrix G(model.numeq(), model.numeq());
   G.zeros();
   G.place(gy, 0, model.nstat());

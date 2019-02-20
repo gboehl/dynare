@@ -269,8 +269,8 @@ TestRunnable::folded_monomial(int ng, int nx, int ny, int nu, int dim)
       stime = clock() - stime;
       std::cout << "\t\ttime for symmetry: "
                 << static_cast<double>(stime)/CLOCKS_PER_SEC << '\n';
-      const FGSTensor *mres = gen.rcont->get(s);
-      res.add(-1.0, *mres);
+      const FGSTensor &mres = gen.rcont->get(s);
+      res.add(-1.0, mres);
       double normtmp = res.getData().getMax();
       std::cout << "\t\terror normMax:     " << normtmp << '\n';
       if (normtmp > maxnorm)
@@ -307,9 +307,9 @@ TestRunnable::unfolded_monomial(int ng, int nx, int ny, int nu, int dim)
       stime = clock() - stime;
       std::cout << "\t\ttime for symmetry: "
                 << static_cast<double>(stime)/CLOCKS_PER_SEC << '\n';
-      const FGSTensor *mres = gen.rcont->get(s);
+      const FGSTensor &mres = gen.rcont->get(s);
       FGSTensor foldres(res);
-      foldres.add(-1.0, *mres);
+      foldres.add(-1.0, mres);
       double normtmp = foldres.getData().getMax();
       std::cout << "\t\terror normMax:     " << normtmp << '\n';
       if (normtmp > maxnorm)
@@ -353,8 +353,8 @@ TestRunnable::fold_zcont(int nf, int ny, int nu, int nup, int nbigg,
         stime = clock() - stime;
         std::cout << "\t\ttime for symmetry: "
                   << static_cast<double>(stime)/CLOCKS_PER_SEC << '\n';
-        const FGSTensor *mres = dg.rcont.get(si);
-        res.add(-1.0, *mres);
+        const FGSTensor &mres = dg.rcont.get(si);
+        res.add(-1.0, mres);
         double normtmp = res.getData().getMax();
         std::cout << "\t\terror normMax:     " << normtmp << '\n';
         if (normtmp > maxnorm)
@@ -407,8 +407,8 @@ TestRunnable::unfold_zcont(int nf, int ny, int nu, int nup, int nbigg,
         std::cout << "\t\ttime for symmetry: "
                   << static_cast<double>(stime)/CLOCKS_PER_SEC << '\n';
         FGSTensor fold_res(res);
-        const FGSTensor *mres = dg.rcont.get(si);
-        fold_res.add(-1.0, *mres);
+        const FGSTensor &mres = dg.rcont.get(si);
+        fold_res.add(-1.0, mres);
         double normtmp = fold_res.getData().getMax();
         std::cout << "\t\terror normMax:     " << normtmp << '\n';
         if (normtmp > maxnorm)

@@ -112,7 +112,7 @@ public:
   virtual itype getType(int i, const Symmetry &s) const = 0;
   virtual int numStacks() const = 0;
   virtual bool isZero(int i, const Symmetry &s) const = 0;
-  virtual const _Ttype *getMatrix(int i, const Symmetry &s) const = 0;
+  virtual const _Ttype &getMatrix(int i, const Symmetry &s) const = 0;
   virtual int getLengthOfMatrixStacks(const Symmetry &s) const = 0;
   virtual int getUnitPos(const Symmetry &s) const = 0;
   virtual Vector *createPackedColumn(const Symmetry &s,
@@ -197,7 +197,7 @@ public:
             || (getType(i, s) == _Stype::matrix && !conts[i]->check(s)));
   }
 
-  const _Ttype *
+  const _Ttype &
   getMatrix(int i, const Symmetry &s) const override
   {
     TL_RAISE_IF(isZero(i, s) || getType(i, s) == _Stype::unit,
@@ -246,10 +246,10 @@ public:
     i = 0;
     while (i < numStacks() && getType(i, s) == _Stype::matrix)
       {
-        const _Ttype *t = getMatrix(i, s);
-        Tensor::index ind(*t, coor);
+        const _Ttype &t = getMatrix(i, s);
+        Tensor::index ind(t, coor);
         Vector subres(*res, stack_offsets[i], stack_sizes[i]);
-        subres = ConstGeneralMatrix(*t).getCol(*ind);
+        subres = ConstGeneralMatrix(t).getCol(*ind);
         i++;
       }
     if (iu != -1)
@@ -285,7 +285,7 @@ public:
              FGSTensor &out) const
   {
     if (c.check(Symmetry{dim}))
-      multAndAdd(*(c.get(Symmetry{dim})), out);
+      multAndAdd(c.get(Symmetry{dim}), out);
   }
   void multAndAdd(const FSSparseTensor &t, FGSTensor &out) const;
   void multAndAdd(int dim, const FGSContainer &c, FGSTensor &out) const;
@@ -315,7 +315,7 @@ public:
              UGSTensor &out) const
   {
     if (c.check(Symmetry{dim}))
-      multAndAdd(*(c.get(Symmetry{dim})), out);
+      multAndAdd(c.get(Symmetry{dim}), out);
   }
   void multAndAdd(const FSSparseTensor &t, UGSTensor &out) const;
   void multAndAdd(int dim, const UGSContainer &c, UGSTensor &out) const;
@@ -557,7 +557,7 @@ public:
     return stack_cont.getType(is, syms[ip]);
   }
 
-  const _Ttype *
+  const _Ttype &
   getMatrix(int is, int ip) const
   {
     return stack_cont.getMatrix(is, syms[ip]);
@@ -636,10 +636,10 @@ public:
           setUnit(i, sp.getSize(istack[i]));
         if (sp.getType(istack[i], i) == _Stype::matrix)
           {
-            const TwoDMatrix *m = sp.getMatrix(istack[i], i);
-            TL_RAISE_IF(m->nrows() != sp.getSize(istack[i]),
+            const TwoDMatrix &m = sp.getMatrix(istack[i], i);
+            TL_RAISE_IF(m.nrows() != sp.getSize(istack[i]),
                         "Wrong size of returned matrix in KronProdStack constructor");
-            setMat(i, *m);
+            setMat(i, m);
           }
       }
   }

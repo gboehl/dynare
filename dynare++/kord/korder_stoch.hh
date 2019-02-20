@@ -110,12 +110,12 @@ IntegDerivs<t>::IntegDerivs(int r, const IntSequence &nvs, const _Tgss &g, const
                   double mult = (pow(at_sigma, m)*povern)/mfac;
                   Symmetry sym_mn{i, m+n, 0, k};
                   if (m+n == 0 && g.check(sym_mn))
-                    ten->add(mult, *(g.get(sym_mn)));
+                    ten->add(mult, g.get(sym_mn));
                   if (m+n > 0 && KOrder::is_even(m+n) && g.check(sym_mn))
                     {
-                      _Ttensor gtmp(*(g.get(sym_mn)));
+                      _Ttensor gtmp(g.get(sym_mn));
                       gtmp.mult(mult);
-                      gtmp.contractAndAdd(1, *ten, *(mom.get(Symmetry{m+n})));
+                      gtmp.contractAndAdd(1, *ten, mom.get(Symmetry{m+n}));
                     }
                 }
             }
@@ -190,7 +190,7 @@ StochForwardDerivs<t>::StochForwardDerivs(const PartitionY &ypart, int nu,
         {
           int k = d-i;
           if (g_int.check(Symmetry{i, 0, 0, k}))
-            ten->addSubTensor(*(g_int.get(Symmetry{i, 0, 0, k})));
+            ten->addSubTensor(g_int.get(Symmetry{i, 0, 0, k}));
         }
       g_int_sym.insert(std::move(ten));
     }
@@ -231,7 +231,7 @@ StochForwardDerivs<t>::StochForwardDerivs(const PartitionY &ypart, int nu,
             {
               Symmetry sym{i, 0, 0, d-i};
               IntSequence coor(sym, pp);
-              auto ten = std::make_unique<_Ttensor>(*(g_int_cent.get(Symmetry{d})), ss, coor,
+              auto ten = std::make_unique<_Ttensor>(g_int_cent.get(Symmetry{d}), ss, coor,
                                                     TensorDimens(sym, true_nvs));
               this->insert(std::move(ten));
             }

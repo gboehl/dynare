@@ -289,7 +289,7 @@ TestRunnable::korder_unfold_fold(int maxdim, int unfold_dim,
   for (int d = 1; d <= maxdim; d++)
     std::cout << "\ttensor fill for dim=" << d << " is:   "
               << std::setprecision(2) << std::setw(6) << std::fixed
-              << c.get(Symmetry{d})->getFillFactor()*100.0 << " %\n"
+              << c.get(Symmetry{d}).getFillFactor()*100.0 << " %\n"
               << std::defaultfloat;
   Journal jr("out.txt");
   KOrder kord(nstat, npred, nboth, nforw, c, gy, gu, v, jr);
