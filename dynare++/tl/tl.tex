@@ -164,7 +164,7 @@ Faa Di Bruno.
 \item[IntSequence] 
 The class represents a sequence of integers. Useful everywhere.
 \item[TwoDMatrix and ConstTwoDMatrix] 
-These classse provide an interface to a code handling two-dimensional
+These classes provide an interface to a code handling two-dimensional
 matrices. The code resides in Sylvester module, in directory {\tt
 sylv/cc}. There is
 no similar interface to \texttt{Vector} and \texttt{ConstVector} classes from the
@@ -188,8 +188,7 @@ higher moments of normal distribution. The code contains an algorithm
 for generating the moments for arbitrary covariance matrix.
 \item[TLStatic] 
 The class encapsulates all static information needed for the
-library. It includes a Pascal triangle (for quick computation of
-binomial coefficients), and precalculated equivalence sets.
+library. It includes precalculated equivalence sets.
 \item[TLException] 
 Simple class thrown as an exception.
 \end{description}
@@ -239,7 +238,7 @@ vice-versa. We test whether their coordinates are as expected.
  and the result $\left[f_{y^ku^l}\right]$. Then we calculate the
  derivatives with \texttt{multAndAdd} of \texttt{ZContainer} and compare.
 \item We test the polynomial evaluation by evaluating a folded and
- unfolded polynomial in traditional and horner-like fashion. This gives
+ unfolded polynomial in traditional and Horner-like fashion. This gives
  four methods in total. The four results are compared.
 \end{itemize}
 
