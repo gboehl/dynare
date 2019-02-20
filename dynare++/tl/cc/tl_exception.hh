@@ -12,8 +12,9 @@
 #ifndef TL_EXCEPTION_H
 #define TL_EXCEPTION_H
 
-#include <cstring>
-#include <cstdio>
+#include <iostream>
+#include <utility>
+#include <string>
 
 /* The basic idea of raising an exception if some condition fails is
    that the conditions is checked only if required. We define global
@@ -51,22 +52,21 @@
 
 class TLException
 {
-  char fname[50];
+  const std::string fname;
   int lnum;
-  char message[500];
+  const std::string message;
 public:
-  TLException(const char *f, int l, const char *mes)
+  TLException(std::string fname_arg, int lnum_arg, std::string message_arg)
+    : fname{std::move(fname_arg)},
+      lnum{lnum_arg},
+      message{std::move(message_arg)}
   {
-    strncpy(fname, f, 50); fname[49] = '\0';
-    strncpy(message, mes, 500); message[499] = '\0';
-    lnum = l;
   }
-  virtual ~TLException()
-  = default;
+  virtual ~TLException() = default;
   virtual void
   print() const
   {
-    printf("At %s:%d:%s\n", fname, lnum, message);
+    std::cout << "At " << fname << ':' << lnum << ':' << message << std::endl;
   }
 };
 
