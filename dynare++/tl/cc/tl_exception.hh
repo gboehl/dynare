@@ -24,13 +24,13 @@
    the exceptions. If the |TL_DEBUG| is equal or higher than
    |TL_DEBUG_EXCEPTION|, the exception conditions are checked.
 
-   We define |TL_RAISE|, and |TL_RAISE_IF| macros which throw an instance
-   of |TLException| if |TL_DEBUG >= TL_DEBUG_EXCEPTION|. The first is
-   unconditional throw, the second is conditioned by a given
-   expression. Note that if |TL_DEBUG < TL_DEBUG_EXCEPTION| then the code
-   is compiled but evaluation of the condition is passed. If code is
-   optimized, the optimizer also passes evaluation of |TL_DEBUG| and
-   |TL_DEBUG_EXCEPTION| comparison (I hope).
+   We define |TL_RAISE|, and |TL_RAISE_IF| macros which throw an instance of
+   |TLException| (only if |TL_DEBUG >= TL_DEBUG_EXCEPTION| for the latter). The
+   first is unconditional throw, the second is conditioned by a given
+   expression. Note that if |TL_DEBUG < TL_DEBUG_EXCEPTION| then the code is
+   compiled but evaluation of the condition is passed. If code is optimized,
+   the optimizer also passes evaluation of |TL_DEBUG| and |TL_DEBUG_EXCEPTION|
+   comparison (I hope).
 
    We provide default values for |TL_DEBUG| and |TL_DEBUG_EXCEPTION|. */
 
@@ -43,7 +43,7 @@
 #endif
 
 #define TL_RAISE(mes)                                                   \
-  if (TL_DEBUG >= TL_DEBUG_EXCEPTION) throw TLException(__FILE__, __LINE__, mes);
+  throw TLException(__FILE__, __LINE__, mes)
 
 #define TL_RAISE_IF(expr, mes)                                          \
   if (TL_DEBUG >= TL_DEBUG_EXCEPTION && (expr)) throw TLException(__FILE__, __LINE__, mes);

@@ -147,7 +147,7 @@ public:
   int
   getOffset(const IntSequence &v) const override
   {
-    TL_RAISE("Not implemented error in IrregTensor::getOffset"); return 0;
+    TL_RAISE("Not implemented error in IrregTensor::getOffset");
   }
 };
 

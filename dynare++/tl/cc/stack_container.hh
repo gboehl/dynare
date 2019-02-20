@@ -381,7 +381,6 @@ public:
         return _Stype::zero;
 
     TL_RAISE("Wrong stack index in ZContainer::getType");
-    return _Stype::zero;
   }
 
 };
@@ -464,7 +463,6 @@ public:
         return _Stype::zero;
 
     TL_RAISE("Wrong stack index in GContainer::getType");
-    return _Stype::zero;
   }
 
 };

@@ -62,7 +62,6 @@ std::unique_ptr<FTensor>
 UPSTensor::fold() const
 {
   TL_RAISE("Never should come to this place in UPSTensor::fold");
-  return std::make_unique<FFSTensor>(0, 0, 0);
 }
 
 int
@@ -319,7 +318,6 @@ std::unique_ptr<UTensor>
 FPSTensor::unfold() const
 {
   TL_RAISE("Unfolding of FPSTensor not implemented");
-  return std::make_unique<UFSTensor>(0, 0, 0);
 }
 
 /* We only call |calcOffset| of the |PerTensorDimens2|. */

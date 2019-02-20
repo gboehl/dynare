@@ -384,13 +384,9 @@ EquivalenceBundle::EquivalenceBundle(int nmax)
 const EquivalenceSet &
 EquivalenceBundle::get(int n) const
 {
-  if (n > static_cast<int>(bundle.size()) || n < 1)
-    {
-      TL_RAISE("Equivalence set not found in EquivalenceBundle::get");
-      return bundle[0];
-    }
-  else
-    return bundle[n-1];
+  TL_RAISE_IF(n > static_cast<int>(bundle.size()) || n < 1,
+              "Equivalence set not found in EquivalenceBundle::get");
+  return bundle[n-1];
 }
 
 /* Get |curmax| which is a maximum size in the bundle, and generate for

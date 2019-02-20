@@ -24,11 +24,7 @@ SparseTensor::insert(const IntSequence &key, int r, double c)
   // check that pair |key| and |r| is unique
   auto last_pos = m.upper_bound(key);
   for (auto it = first_pos; it != last_pos; ++it)
-    if ((*it).second.first == r)
-      {
-        TL_RAISE("Duplicate <key, r> insertion in SparseTensor::insert");
-        return;
-      }
+    TL_RAISE_IF(it->second.first == r, "Duplicate <key, r> insertion in SparseTensor::insert");
 
   m.insert(first_pos, Map::value_type(key, Item(r, c)));
   if (first_nz_row > r)
