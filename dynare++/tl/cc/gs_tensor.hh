@@ -68,15 +68,12 @@ public:
   {
     nvs[0] = nvar;
   }
-  TensorDimens(const TensorDimens &td)
-     
-  = default;
-  virtual ~TensorDimens()
-  = default;
+  TensorDimens(const TensorDimens &) = default;
+  TensorDimens(TensorDimens &&) = default;
+  virtual ~TensorDimens() = default;
   TensorDimens(const IntSequence &ss, const IntSequence &coor);
-  TensorDimens &
-  operator=(const TensorDimens &td)
-  = default;
+  TensorDimens &operator=(const TensorDimens &) = default;
+  TensorDimens &operator=(TensorDimens &&) = default;
   bool
   operator==(const TensorDimens &td) const
   {
@@ -151,9 +148,8 @@ public:
               td.calcFoldMaxOffset(), td.dimen()), tdims(td)
   {
   }
-  FGSTensor(const FGSTensor &ft)
-     
-  = default;
+  FGSTensor(const FGSTensor &) = default;
+  FGSTensor(FGSTensor &&) = default;
   FGSTensor(const UGSTensor &ut);
   FGSTensor(int first_row, int num, FGSTensor &t)
     : FTensor(first_row, num, t), tdims(t.tdims)
@@ -169,8 +165,7 @@ public:
   {
   }
 
-  ~FGSTensor()
-  override = default;
+  ~FGSTensor() override = default;
 
   void increment(IntSequence &v) const override;
   void
@@ -220,9 +215,8 @@ public:
               td.calcUnfoldMaxOffset(), td.dimen()), tdims(td)
   {
   }
-  UGSTensor(const UGSTensor &ut)
-     
-  = default;
+  UGSTensor(const UGSTensor &) = default;
+  UGSTensor(UGSTensor &&) = default;
   UGSTensor(const FGSTensor &ft);
 
   UGSTensor(int first_row, int num, UGSTensor &t)
@@ -237,8 +231,7 @@ public:
     : UTensor(0, t.nrows(), t), tdims(t.nvar(), t.dimen())
   {
   }
-  ~UGSTensor()
-  override = default;
+  ~UGSTensor() override = default;
 
   void increment(IntSequence &v) const override;
   void decrement(IntSequence &v) const override;

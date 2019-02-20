@@ -108,12 +108,10 @@ public:
   {
     per.apply(nvmax);
   }
-  PerTensorDimens(const PerTensorDimens &td)
-     
-  = default;
-  PerTensorDimens &
-  operator=(const PerTensorDimens &td)
-  = default;
+  PerTensorDimens(const PerTensorDimens &) = default;
+  PerTensorDimens(PerTensorDimens &&) = default;
+  PerTensorDimens &operator=(const PerTensorDimens &) = default;
+  PerTensorDimens &operator=(PerTensorDimens &&) = default;
   bool
   operator==(const PerTensorDimens &td)
   {
@@ -200,9 +198,8 @@ public:
   }
   UPSTensor(const FSSparseTensor &t, const IntSequence &ss,
             const IntSequence &coor, const PerTensorDimens &ptd);
-  UPSTensor(const UPSTensor &ut)
-     
-  = default;
+  UPSTensor(const UPSTensor &) = default;
+  UPSTensor(UPSTensor &&) = default;
 
   void increment(IntSequence &v) const override;
   void decrement(IntSequence &v) const override;
@@ -364,9 +361,8 @@ public:
   FPSTensor(const TensorDimens &td, const Equivalence &e, const Permutation &p,
             const GSSparseTensor &t, const KronProdAll &kp);
 
-  FPSTensor(const FPSTensor &ft)
-     
-  = default;
+  FPSTensor(const FPSTensor &) = default;
+  FPSTensor(FPSTensor &&) = default;
 
   void increment(IntSequence &v) const override;
   void decrement(IntSequence &v) const override;

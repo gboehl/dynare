@@ -52,13 +52,11 @@ public:
               UFSTensor::calcMaxOffset(nvar, d), c, d), nv(nvar)
   {
   }
-  URTensor(const URTensor &ut)
-     
-  = default;
+  URTensor(const URTensor &) = default;
+  URTensor(URTensor &&) = default;
   URTensor(const FRTensor &ft);
 
-  ~URTensor()
-  override = default;
+  ~URTensor() override = default;
 
   void increment(IntSequence &v) const override;
   void decrement(IntSequence &v) const override;
@@ -88,13 +86,11 @@ public:
               FFSTensor::calcMaxOffset(nvar, d), c, d), nv(nvar)
   {
   }
-  FRTensor(const FRTensor &ft)
-     
-  = default;
+  FRTensor(const FRTensor &) = default;
+  FRTensor(FRTensor &&) = default;
   FRTensor(const URTensor &ut);
 
-  ~FRTensor()
-  override = default;
+  ~FRTensor() override = default;
 
   void increment(IntSequence &v) const override;
   void decrement(IntSequence &v) const override;
@@ -133,11 +129,9 @@ public:
   }
   URSingleTensor(const std::vector<ConstVector> &cols);
   URSingleTensor(const ConstVector &v, int d);
-  URSingleTensor(const URSingleTensor &ut)
-     
-  = default;
-  ~URSingleTensor()
-  override = default;
+  URSingleTensor(const URSingleTensor &) = default;
+  URSingleTensor(URSingleTensor &&) = default;
+  ~URSingleTensor() override = default;
   std::unique_ptr<FTensor> fold() const override;
 };
 
@@ -155,11 +149,9 @@ public:
   {
   }
   FRSingleTensor(const URSingleTensor &ut);
-  FRSingleTensor(const FRSingleTensor &ft)
-     
-  = default;
-  ~FRSingleTensor()
-  override = default;
+  FRSingleTensor(const FRSingleTensor &) = default;
+  FRSingleTensor(FRSingleTensor &&) = default;
+  ~FRSingleTensor() override = default;
 };
 
 #endif
