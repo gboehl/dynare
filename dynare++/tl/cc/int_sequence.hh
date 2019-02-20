@@ -158,6 +158,10 @@ public:
   bool isConstant() const;
   bool isSorted() const;
   void print() const;
+  // Compute multinomial coefficient (sum(this); this)
+  /* Warning: this operation is destructive; make a copy if you want to keep
+     the original sequence */
+  int noverseq();
 };
 
 #endif

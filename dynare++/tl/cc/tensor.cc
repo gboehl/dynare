@@ -5,26 +5,6 @@
 #include "tl_static.hh"
 #include "pascal_triangle.hh"
 
-// |Tensor::noverseq_ip| static method
-/* Here we calculate a generalized combination number
-   $\left(\matrix{a\cr b_1,\ldots,b_n}\right)$, where $a=b_1+\ldots+
-   b_n$. We use the identity
-   $$\left(\matrix{a\cr b_1,\ldots,b_n}\right)=\left(\matrix{b_1+b_2\cr b_1}\right)\cdot
-   \left(\matrix{a\cr b_1+b_2,b_3,\ldots,b_n}\right)$$
-
-   This number is exactly a number of unfolded indices corresponding to
-   one folded index, where the sequence $b_1,\ldots,b_n$ is the symmetry
-   of the index. */
-
-int
-Tensor::noverseq_ip(IntSequence &s)
-{
-  if (s.size() == 0 || s.size() == 1)
-    return 1;
-  s[1] += s[0];
-  return PascalTriangle::noverk(s[1], s[0]) * noverseq(IntSequence(s, 1, s.size()));
-}
-
 /* Here we increment a given sequence within full symmetry given by
    |nv|, which is number of variables in each dimension. The underlying
    tensor is unfolded, so we increase the rightmost by one, and if it is

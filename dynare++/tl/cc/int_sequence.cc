@@ -3,6 +3,7 @@
 #include "int_sequence.hh"
 #include "symmetry.hh"
 #include "tl_exception.hh"
+#include "pascal_triangle.hh"
 
 #include <iostream>
 #include <limits>
@@ -261,4 +262,37 @@ IntSequence::print() const
   for (int i = 0; i < size(); i++)
     std::cout << operator[](i) << ' ';
   std::cout << ']' << std::endl;
+}
+
+/* Here we calculate the multinomial coefficients
+    $\left(\matrix{a\cr b_1,\ldots,b_n}\right)$, where $a=b_1+\ldots+b_n$.
+
+   See:
+    https://en.wikipedia.org/wiki/Binomial_coefficient#Generalization_to_multinomials
+    https://en.wikipedia.org/wiki/Multinomial_theorem
+
+   For n=1, the coefficient is equal to 1.
+   For n=2, the multinomial coeffs correspond to the binomial coeffs, i.e. the binomial
+    (a; b) is equal to the multinomial (a; b,a-b).
+   For n>=3, we have the identity
+   $$\left(\matrix{a\cr b_1,\ldots,b_n}\right)=\left(\matrix{b_1+b_2\cr b_1}\right)\cdot
+   \left(\matrix{a\cr b_1+b_2,b_3,\ldots,b_n}\right)$$ (where the first factor
+   on the right hand side is to be interpreted as a binomial coefficient)
+
+   This number is exactly a number of unfolded indices corresponding to one
+   folded index, where the sequence $b_1,\ldots,b_n$ is the symmetry of the
+   index. This can be easily seen if the multinomial coefficient is interpreted
+   as the number of unique permutations of a word, where $a$ is the length of
+   the word, $n$ is the number of distinct letters, and the $b_i$ are the
+   number of repetitions of each letter. For example, for a symmetry of the
+   form $y^4 u^2 v^3$, we want to compute the number of permutations of the word
+   $yyyyuuvvv$. This is equal to the multinomial coefficient (9; 4,2,3). */
+
+int
+IntSequence::noverseq()
+{
+  if (size() == 0 || size() == 1)
+    return 1;
+  data[1] += data[0];
+  return PascalTriangle::noverk(data[1], data[0]) * IntSequence(*this, 1, size()).noverseq();
 }

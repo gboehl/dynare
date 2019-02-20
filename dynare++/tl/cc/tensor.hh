@@ -217,15 +217,6 @@ public:
   {
     return in_end;
   }
-
-  static int
-  noverseq(const IntSequence &s)
-  {
-    IntSequence seq(s);
-    return noverseq_ip((IntSequence &) s);
-  }
-private:
-  static int noverseq_ip(IntSequence &s);
 };
 
 /* Here is an abstraction for unfolded tensor. We provide a pure

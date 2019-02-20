@@ -82,8 +82,7 @@ SparseTensor::getUnfoldIndexFillFactor() const
   while (start_col != m.end())
     {
       const IntSequence &key = (*start_col).first;
-      Symmetry s(key);
-      cnt += Tensor::noverseq(s);
+      cnt += Symmetry(key).noverseq();
       start_col = m.upper_bound(key);
     }
 
