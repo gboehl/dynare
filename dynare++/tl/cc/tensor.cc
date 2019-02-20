@@ -83,12 +83,11 @@ UTensor::decrement(IntSequence &v, const IntSequence &nvmx)
 int
 UTensor::getOffset(const IntSequence &v, int nv)
 {
-  int pow = 1;
   int res = 0;
-  for (int i = v.size()-1; i >= 0; i--)
+  for (int i = 0; i < v.size(); i++)
     {
-      res += v[i]*pow;
-      pow *= nv;
+      res *= nv;
+      res += v[i];
     }
   return res;
 }
@@ -98,12 +97,11 @@ UTensor::getOffset(const IntSequence &v, int nv)
 int
 UTensor::getOffset(const IntSequence &v, const IntSequence &nvmx)
 {
-  int pow = 1;
   int res = 0;
-  for (int i = v.size()-1; i >= 0; i--)
+  for (int i = 0; i < v.size(); i++)
     {
-      res += v[i]*pow;
-      pow *= nvmx[i];
+      res *= nvmx[i];
+      res += v[i];
     }
   return res;
 }
