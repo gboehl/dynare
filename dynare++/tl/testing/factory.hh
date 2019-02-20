@@ -5,6 +5,7 @@
 #define FACTORY_H
 
 #include <random>
+#include <memory>
 
 #include "symmetry.hh"
 #include "int_sequence.hh"
@@ -25,10 +26,10 @@ public:
   double get();
   // this can be used with UGSTensor, FGSTensor
   template <class _Ttype>
-  _Ttype *
+  std::unique_ptr<_Ttype>
   make(int r, const Symmetry &s, const IntSequence &nvs)
   {
-    _Ttype *res = new _Ttype(r, TensorDimens(s, nvs));
+    auto res = std::make_unique<_Ttype>(r, TensorDimens(s, nvs));
     init(s, nvs);
     fillMatrix(*res);
     return res;
@@ -36,10 +37,10 @@ public:
 
   // this can be used with FFSTensor, UFSTensor, FRTensor, URTensor
   template <class _Ttype>
-  _Ttype *
+  std::unique_ptr<_Ttype>
   make(int r, int nv, int dim)
   {
-    auto *res = new _Ttype(r, nv, dim);
+    auto res = std::make_unique<_Ttype>(r, nv, dim);
     init(dim, nv);
     fillMatrix(*res);
     return res;
@@ -56,8 +57,7 @@ public:
         {
           // full symmetry
           Symmetry sym{dim};
-          auto *t = make<_Ttype>(r, sym, nvs);
-          res->insert(t);
+          res->insert(make<_Ttype>(r, sym, nvs));
         }
       else
         {
@@ -65,8 +65,7 @@ public:
           for (int i = 0; i <= dim; i++)
             {
               Symmetry sym{i, dim-i};
-              auto *t = make<_Ttype>(r, sym, nvs);
-              res->insert(t);
+              res->insert(make<_Ttype>(r, sym, nvs));
             }
         }
     return res;
@@ -78,10 +77,7 @@ public:
   {
     auto *p = new _Ptype(r, nv);
     for (int d = 1; d <= maxdim; d++)
-      {
-        auto *t = make<_Ttype>(r, nv, d);
-        p->insert(t);
-      }
+      p->insert(make<_Ttype>(r, nv, d));
     return p;
   }
 

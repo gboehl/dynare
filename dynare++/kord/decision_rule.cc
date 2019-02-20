@@ -35,9 +35,7 @@ FoldDecisionRule::FoldDecisionRule(const UnfoldDecisionRule &udr)
                                    udr.ypart, udr.nu, udr.ysteady)
 {
   for (const auto & it : udr)
-    {
-      insert(new ctraits<KOrder::fold>::Ttensym(*(it.second)));
-    }
+    insert(std::make_unique<ctraits<KOrder::fold>::Ttensym>(*(it.second)));
 }
 
 // |UnfoldDecisionRule| conversion from |FoldDecisionRule|
@@ -46,9 +44,7 @@ UnfoldDecisionRule::UnfoldDecisionRule(const FoldDecisionRule &fdr)
                                      fdr.ypart, fdr.nu, fdr.ysteady)
 {
   for (const auto & it : fdr)
-    {
-      insert(new ctraits<KOrder::unfold>::Ttensym(*(it.second)));
-    }
+    insert(std::make_unique<ctraits<KOrder::unfold>::Ttensym>(*(it.second)));
 }
 
 SimResults::~SimResults()

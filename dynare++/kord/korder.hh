@@ -361,14 +361,14 @@ public:
   }
 protected:
   template <int t>
-  void insertDerivative(_Ttensor *der);
+  void insertDerivative(std::unique_ptr<_Ttensor> der);
   template<int t>
   void sylvesterSolve(_Ttensor &der) const;
 
   template <int t>
-  _Ttensor *faaDiBrunoZ(const Symmetry &sym) const;
+  std::unique_ptr<_Ttensor> faaDiBrunoZ(const Symmetry &sym) const;
   template <int t>
-  _Ttensor *faaDiBrunoG(const Symmetry &sym) const;
+  std::unique_ptr<_Ttensor> faaDiBrunoG(const Symmetry &sym) const;
 
   template<int t>
   void recover_y(int i);
@@ -403,12 +403,13 @@ protected:
 
 template <int t>
 void
-KOrder::insertDerivative(_Ttensor *der)
+KOrder::insertDerivative(std::unique_ptr<_Ttensor> der)
 {
-  g<t>().insert(der);
-  gs<t>().insert(new _Ttensor(ypart.nstat, ypart.nys(), *der));
-  gss<t>().insert(new _Ttensor(ypart.nstat+ypart.npred,
-                               ypart.nyss(), *der));
+  auto der_ptr = der.get();
+  g<t>().insert(std::move(der));
+  gs<t>().insert(std::make_unique<_Ttensor>(ypart.nstat, ypart.nys(), *der_ptr));
+  gss<t>().insert(std::make_unique<_Ttensor>(ypart.nstat+ypart.npred,
+                                             ypart.nyss(), *der_ptr));
 }
 
 /* Here we implement Faa Di Bruno formula
@@ -419,12 +420,12 @@ KOrder::insertDerivative(_Ttensor *der)
    symmetry. */
 
 template <int t>
-_Ttensor *
+std::unique_ptr<_Ttensor>
 KOrder::faaDiBrunoZ(const Symmetry &sym) const
 {
   JournalRecordPair pa(journal);
   pa << "Faa Di Bruno Z container for " << sym << endrec;
-  _Ttensor *res = new _Ttensor(ny, TensorDimens(sym, nvs));
+  auto res = std::make_unique<_Ttensor>(ny, TensorDimens(sym, nvs));
   FaaDiBruno bruno(journal);
   bruno.calculate(Zstack<t>(), f, *res);
   return res;
@@ -434,13 +435,13 @@ KOrder::faaDiBrunoZ(const Symmetry &sym) const
    $g^{**}$ and $G$ stack. */
 
 template <int t>
-_Ttensor *
+std::unique_ptr<_Ttensor>
 KOrder::faaDiBrunoG(const Symmetry &sym) const
 {
   JournalRecordPair pa(journal);
   pa << "Faa Di Bruno G container for " << sym << endrec;
   TensorDimens tdims(sym, nvs);
-  auto *res = new _Ttensor(ypart.nyss(), tdims);
+  auto res = std::make_unique<_Ttensor>(ypart.nyss(), tdims);
   FaaDiBruno bruno(journal);
   bruno.calculate(Gstack<t>(), gss<t>(), *res);
   return res;
@@ -466,20 +467,21 @@ KOrder::recover_y(int i)
   JournalRecordPair pa(journal);
   pa << "Recovering symmetry " << sym << endrec;
 
-  _Ttensor *G_yi = faaDiBrunoG<t>(sym);
-  G<t>().insert(G_yi);
+  auto G_yi = faaDiBrunoG<t>(sym);
+  auto G_yi_ptr = G_yi.get();
+  G<t>().insert(std::move(G_yi));
 
-  _Ttensor *g_yi = faaDiBrunoZ<t>(sym);
+  auto g_yi = faaDiBrunoZ<t>(sym);
   g_yi->mult(-1.0);
 
   sylvesterSolve<t>(*g_yi);
 
-  insertDerivative<t>(g_yi);
+  insertDerivative<t>(std::move(g_yi));
 
   _Ttensor *gss_y = gss<t>().get(Symmetry{1, 0, 0, 0});
-  gs<t>().multAndAdd(*gss_y, *G_yi);
+  gs<t>().multAndAdd(*gss_y, *G_yi_ptr);
   _Ttensor *gss_yi = gss<t>().get(sym);
-  gs<t>().multAndAdd(*gss_yi, *G_yi);
+  gs<t>().multAndAdd(*gss_yi, *G_yi_ptr);
 }
 
 /* Here we solve $\left[F_{y^iu^j}\right]=0$ to obtain $g_{y^iu^j}$ for
@@ -501,15 +503,16 @@ KOrder::recover_yu(int i, int j)
   JournalRecordPair pa(journal);
   pa << "Recovering symmetry " << sym << endrec;
 
-  _Ttensor *G_yiuj = faaDiBrunoG<t>(sym);
-  G<t>().insert(G_yiuj);
+  auto G_yiuj = faaDiBrunoG<t>(sym);
+  auto G_yiuj_ptr = G_yiuj.get();
+  G<t>().insert(std::move(G_yiuj));
 
-  _Ttensor *g_yiuj = faaDiBrunoZ<t>(sym);
+  auto g_yiuj = faaDiBrunoZ<t>(sym);
   g_yiuj->mult(-1.0);
   matA.multInv(*g_yiuj);
-  insertDerivative<t>(g_yiuj);
+  insertDerivative<t>(std::move(g_yiuj));
 
-  gs<t>().multAndAdd(*(gss<t>().get(Symmetry{1, 0, 0, 0})), *G_yiuj);
+  gs<t>().multAndAdd(*(gss<t>().get(Symmetry{1, 0, 0, 0})), *G_yiuj_ptr);
 }
 
 /* Here we solve
@@ -544,10 +547,11 @@ KOrder::recover_ys(int i, int j)
 
   if (is_even(j))
     {
-      _Ttensor *G_yisj = faaDiBrunoG<t>(sym);
-      G<t>().insert(G_yisj);
+      auto G_yisj = faaDiBrunoG<t>(sym);
+      auto G_yisj_ptr = G_yisj.get();
+      G<t>().insert(std::move(G_yisj));
 
-      _Ttensor *g_yisj = faaDiBrunoZ<t>(sym);
+      auto g_yisj = faaDiBrunoZ<t>(sym);
 
       {
         _Ttensor *D_ij = calcD_ik<t>(i, j);
@@ -566,10 +570,10 @@ KOrder::recover_ys(int i, int j)
 
       sylvesterSolve<t>(*g_yisj);
 
-      insertDerivative<t>(g_yisj);
+      insertDerivative<t>(std::move(g_yisj));
 
-      Gstack<t>().multAndAdd(1, gss<t>(), *G_yisj);
-      Gstack<t>().multAndAdd(i+j, gss<t>(), *G_yisj);
+      Gstack<t>().multAndAdd(1, gss<t>(), *G_yisj_ptr);
+      Gstack<t>().multAndAdd(i+j, gss<t>(), *G_yisj_ptr);
     }
 }
 
@@ -604,10 +608,11 @@ KOrder::recover_yus(int i, int j, int k)
 
   if (is_even(k))
     {
-      _Ttensor *G_yiujsk = faaDiBrunoG<t>(sym);
-      G<t>().insert(G_yiujsk);
+      auto G_yiujsk = faaDiBrunoG<t>(sym);
+      auto G_yiujsk_ptr = G_yiujsk.get();
+      G<t>().insert(std::move(G_yiujsk));
 
-      _Ttensor *g_yiujsk = faaDiBrunoZ<t>(sym);
+      auto g_yiujsk = faaDiBrunoZ<t>(sym);
 
       {
         _Ttensor *D_ijk = calcD_ijk<t>(i, j, k);
@@ -625,9 +630,9 @@ KOrder::recover_yus(int i, int j, int k)
       g_yiujsk->mult(-1.0);
 
       matA.multInv(*g_yiujsk);
-      insertDerivative<t>(g_yiujsk);
+      insertDerivative<t>(std::move(g_yiujsk));
 
-      Gstack<t>().multAndAdd(1, gss<t>(), *G_yiujsk);
+      Gstack<t>().multAndAdd(1, gss<t>(), *G_yiujsk_ptr);
     }
 }
 
@@ -671,10 +676,11 @@ KOrder::recover_s(int i)
 
   if (is_even(i))
     {
-      _Ttensor *G_si = faaDiBrunoG<t>(sym);
-      G<t>().insert(G_si);
+      auto G_si = faaDiBrunoG<t>(sym);
+      auto G_si_ptr = G_si.get();
+      G<t>().insert(std::move(G_si));
 
-      _Ttensor *g_si = faaDiBrunoZ<t>(sym);
+      auto g_si = faaDiBrunoZ<t>(sym);
 
       {
         _Ttensor *D_i = calcD_k<t>(i);
@@ -692,10 +698,10 @@ KOrder::recover_s(int i)
       g_si->mult(-1.0);
 
       matS.multInv(*g_si);
-      insertDerivative<t>(g_si);
+      insertDerivative<t>(std::move(g_si));
 
-      Gstack<t>().multAndAdd(1, gss<t>(), *G_si);
-      Gstack<t>().multAndAdd(i, gss<t>(), *G_si);
+      Gstack<t>().multAndAdd(1, gss<t>(), *G_si_ptr);
+      Gstack<t>().multAndAdd(i, gss<t>(), *G_si_ptr);
     }
 }
 
@@ -711,8 +717,8 @@ KOrder::fillG(int i, int j, int k)
     {
       if (is_even(k-m))
         {
-          _Ttensor *G_yiujupms = faaDiBrunoG<t>(Symmetry{i, j, m, k-m});
-          G<t>().insert(G_yiujupms);
+          auto G_yiujupms = faaDiBrunoG<t>(Symmetry{i, j, m, k-m});
+          G<t>().insert(std::move(G_yiujupms));
         }
     }
 }
@@ -732,9 +738,8 @@ KOrder::calcD_ijk(int i, int j, int k) const
   res->zeros();
   if (is_even(k))
     {
-      _Ttensor *tmp = faaDiBrunoZ<t>(Symmetry{i, j, k, 0});
+      auto tmp = faaDiBrunoZ<t>(Symmetry{i, j, k, 0});
       tmp->contractAndAdd(2, *res, *(m<t>().get(Symmetry{k})));
-      delete tmp;
     }
   return res;
 }
@@ -754,10 +759,9 @@ KOrder::calcE_ijk(int i, int j, int k) const
   res->zeros();
   for (int n = 2; n <= k-1; n += 2)
     {
-      _Ttensor *tmp = faaDiBrunoZ<t>(Symmetry{i, j, n, k-n});
+      auto tmp = faaDiBrunoZ<t>(Symmetry{i, j, n, k-n});
       tmp->mult((double) (PascalTriangle::noverk(k, n)));
       tmp->contractAndAdd(2, *res, *(m<t>().get(Symmetry{n})));
-      delete tmp;
     }
   return res;
 }
@@ -863,12 +867,11 @@ KOrder::check(int dim) const
   for (int i = 0; i <= dim; i++)
     {
       Symmetry sym{dim-i, i, 0,  0};
-      _Ttensor *r = faaDiBrunoZ<t>(sym);
+      auto r = faaDiBrunoZ<t>(sym);
       double err = r->getData().getMax();
       JournalRecord(journal) << "\terror for symmetry " << sym << "\tis " << err << endrec;
       if (err > maxerror)
         maxerror = err;
-      delete r;
     }
 
   // check for $F_{y^iu^ju'^k}+D_{ijk}+E_{ijk}=0$
@@ -880,7 +883,7 @@ KOrder::check(int dim) const
       if (i+j > 0 && k > 0)
         {
           Symmetry sym{i, j, 0, k};
-          _Ttensor *r = faaDiBrunoZ<t>(sym);
+          auto r = faaDiBrunoZ<t>(sym);
           _Ttensor *D_ijk = calcD_ijk<t>(i, j, k);
           r->add(1.0, *D_ijk);
           delete D_ijk;
@@ -889,12 +892,11 @@ KOrder::check(int dim) const
           delete E_ijk;
           double err = r->getData().getMax();
           JournalRecord(journal) << "\terror for symmetry " << sym << "\tis " << err << endrec;
-          delete r;
         }
     }
 
   // check for $F_{\sigma^i}+D_i+E_i=0
-  _Ttensor *r = faaDiBrunoZ<t>(Symmetry{0, 0, 0, dim});
+  auto r = faaDiBrunoZ<t>(Symmetry{0, 0, 0, dim});
   _Ttensor *D_k = calcD_k<t>(dim);
   r->add(1.0, *D_k);
   delete D_k;
@@ -906,7 +908,6 @@ KOrder::check(int dim) const
   JournalRecord(journal) << "\terror for symmetry " << sym << "\tis " << err << endrec;
   if (err > maxerror)
     maxerror = err;
-  delete r;
 
   return maxerror;
 }

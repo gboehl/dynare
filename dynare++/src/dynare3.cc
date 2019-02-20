@@ -345,8 +345,8 @@ DynareDerEvalLoader::DynareDerEvalLoader(const ogp::FineAtoms &a,
   md.clear();
   for (int iord = 1; iord <= order; iord++)
     {
-      auto *t = new FSSparseTensor(iord, atoms.ny()+atoms.nys()+atoms.nyss()+atoms.nexo(), atoms.ny());
-      md.insert(t);
+      auto t = std::make_unique<FSSparseTensor>(iord, atoms.ny()+atoms.nys()+atoms.nyss()+atoms.nexo(), atoms.ny());
+      md.insert(std::move(t));
     }
 }
 

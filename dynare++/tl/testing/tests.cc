@@ -45,27 +45,24 @@ protected:
   template <class _Ttype>
   static bool index_offset(const Symmetry &s, const IntSequence &nvs);
 
-  static bool fold_unfold(const FTensor *folded);
+  static bool fold_unfold(std::unique_ptr<FTensor> folded);
   static bool
   fs_fold_unfold(int r, int nv, int dim)
   {
     Factory f;
-    FTensor *folded = f.make<FFSTensor>(r, nv, dim);
-    return fold_unfold(folded); // folded deallocated in fold_unfold
+    return fold_unfold(f.make<FFSTensor>(r, nv, dim));
   }
   static bool
   r_fold_unfold(int r, int nv, int dim)
   {
     Factory f;
-    FTensor *folded = f.make<FRTensor>(r, nv, dim);
-    return fold_unfold(folded); // folded deallocated in fold_unfold
+    return fold_unfold(f.make<FRTensor>(r, nv, dim));
   }
   static bool
   gs_fold_unfold(int r, const Symmetry &s, const IntSequence &nvs)
   {
     Factory f;
-    FTensor *folded = f.make<FGSTensor>(r, s, nvs);
-    return fold_unfold(folded); // folded deallocated in fold_unfold
+    return fold_unfold(f.make<FGSTensor>(r, s, nvs));
   }
 
   static bool dense_prod(const Symmetry &bsym, const IntSequence &bnvs,
@@ -194,7 +191,7 @@ TestRunnable::index_offset(const Symmetry &s, const IntSequence &nvs)
 }
 
 bool
-TestRunnable::fold_unfold(const FTensor *folded)
+TestRunnable::fold_unfold(std::unique_ptr<FTensor> folded)
 {
   auto unfolded = folded->unfold();
   auto folded2 = unfolded->fold();
@@ -206,8 +203,6 @@ TestRunnable::fold_unfold(const FTensor *folded)
             << "\tdifference normInf: " << normInf << '\n'
             << "\tdifference norm1:   " << norm1 << '\n';
 
-  delete folded;
-
   return normInf < 1.0e-15;
 }
 
@@ -218,8 +213,7 @@ TestRunnable::dense_prod(const Symmetry &bsym, const IntSequence &bnvs,
   Factory f;
   FGSContainer *cont
     = f.makeCont<FGSTensor, FGSContainer>(hnv, bnvs, bsym.dimen()-hdim+1);
-  auto *fh
-    = f.make<FGSTensor>(rows, Symmetry{hdim}, IntSequence(1, hnv));
+  auto fh = f.make<FGSTensor>(rows, Symmetry{hdim}, IntSequence(1, hnv));
   UGSTensor uh(*fh);
   FGSTensor fb(rows, TensorDimens(bsym, bnvs));
   fb.getData().zeros();
@@ -248,7 +242,6 @@ TestRunnable::dense_prod(const Symmetry &bsym, const IntSequence &bnvs,
             << "\tunfolded difference normInf: " << normInf << '\n';
 
   delete cont;
-  delete fh;
 
   return norm < 1.e-13;
 }
@@ -431,7 +424,7 @@ TestRunnable::folded_contraction(int r, int nv, int dim)
   Factory fact;
   Vector x{fact.makeVector(nv)};
 
-  auto *forig = fact.make<FFSTensor>(r, nv, dim);
+  auto forig = fact.make<FFSTensor>(r, nv, dim);
   auto *f = new FFSTensor(*forig);
   clock_t ctime = clock();
   for (int d = dim-1; d > 0; d--)
@@ -472,9 +465,8 @@ TestRunnable::unfolded_contraction(int r, int nv, int dim)
   Factory fact;
   Vector x{fact.makeVector(nv)};
 
-  auto *forig = fact.make<FFSTensor>(r, nv, dim);
+  auto forig = fact.make<FFSTensor>(r, nv, dim);
   UFSTensor uorig(*forig);
-  delete forig;
   auto *u = new UFSTensor(uorig);
   clock_t ctime = clock();
   for (int d = dim-1; d > 0; d--)

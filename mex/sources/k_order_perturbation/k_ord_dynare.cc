@@ -51,7 +51,7 @@ KordpDynare::KordpDynare(const std::vector<std::string> &endo, int num_endo,
 
   //	Initialise ModelDerivativeContainer(*this, this->md, nOrder);
   for (int iord = 1; iord <= nOrder; iord++)
-    md.insert(new FSSparseTensor(iord, nY+nYs+nYss+nExog, nY));
+    md.insert(std::make_unique<FSSparseTensor>(iord, nY+nYs+nYss+nExog, nY));
 }
 
 KordpDynare::KordpDynare(const std::vector<std::string> &endo, int num_endo,
@@ -73,7 +73,7 @@ KordpDynare::KordpDynare(const std::vector<std::string> &endo, int num_endo,
 
   //	Initialise ModelDerivativeContainer(*this, this->md, nOrder);
   for (int iord = 1; iord <= nOrder; iord++)
-    md.insert(new FSSparseTensor(iord, nY+nYs+nYss+nExog, nY));
+    md.insert(std::make_unique<FSSparseTensor>(iord, nY+nYs+nYss+nExog, nY));
 }
 
 KordpDynare::~KordpDynare()
@@ -162,7 +162,7 @@ void
 KordpDynare::populateDerivativesContainer(const TwoDMatrix &g, int ord, const std::vector<int> &vOrder)
 {
   // model derivatives FSSparseTensor instance
-  FSSparseTensor *mdTi = (new FSSparseTensor(ord, nJcols, nY));
+  auto mdTi = std::make_unique<FSSparseTensor>(ord, nJcols, nY);
 
   IntSequence s(ord, 0);
 
@@ -249,8 +249,7 @@ KordpDynare::populateDerivativesContainer(const TwoDMatrix &g, int ord, const st
 
   // md container
   md.remove(Symmetry{ord});
-  md.insert(mdTi);
-  // No need to delete mdTi, it will be deleted by TensorContainer destructor
+  md.insert(std::move(mdTi));
 }
 
 /*********************************************************

@@ -102,8 +102,7 @@ extern "C" {
             ft.zeros();
             ConstTwoDMatrix gk_mat(ft.nrows(), ft.ncols(), ConstVector{gk});
             ft.add(1.0, gk_mat);
-            auto *ut = new UFSTensor(ft);
-            pol.insert(ut);
+            pol.insert(std::make_unique<UFSTensor>(ft));
           }
         // form the decision rule
         UnfoldDecisionRule

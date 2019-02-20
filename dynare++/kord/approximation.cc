@@ -1,5 +1,7 @@
 // Copyright 2005, Ondra Kamenik
 
+#include <utility>
+
 #include "kord_exception.hh"
 #include "approximation.hh"
 #include "first_order.hh"
@@ -261,8 +263,8 @@ Approximation::saveRuleDerivs(const FGSContainer &g)
   rule_ders_ss = new FGSContainer(4);
   for (auto & run : (*rule_ders))
     {
-      auto *ten = new FGSTensor(ypart.nstat+ypart.npred, ypart.nyss(), *(run.second));
-      rule_ders_ss->insert(ten);
+      auto ten = std::make_unique<FGSTensor>(ypart.nstat+ypart.npred, ypart.nyss(), *(run.second));
+      rule_ders_ss->insert(std::move(ten));
     }
 }
 

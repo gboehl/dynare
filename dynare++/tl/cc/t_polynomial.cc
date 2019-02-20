@@ -50,17 +50,13 @@ PowerProvider::~PowerProvider()
 UTensorPolynomial::UTensorPolynomial(const FTensorPolynomial &fp)
   : TensorPolynomial<UFSTensor, UGSTensor, URSingleTensor>(fp.nrows(), fp.nvars())
 {
-  for (const auto & it : fp)
-    {
-      insert(new UFSTensor(*(it.second)));
-    }
+  for (const auto &it : fp)
+    insert(std::make_unique<UFSTensor>(*(it.second)));
 }
 
 FTensorPolynomial::FTensorPolynomial(const UTensorPolynomial &up)
   : TensorPolynomial<FFSTensor, FGSTensor, FRSingleTensor>(up.nrows(), up.nvars())
 {
-  for (const auto & it : up)
-    {
-      insert(new FFSTensor(*(it.second)));
-    }
+  for (const auto &it : up)
+    insert(std::make_unique<FFSTensor>(*(it.second)));
 }

@@ -22,6 +22,8 @@
    calculate $h$ as an extrapolation based on an approximation to $g$ at
    lower $\sigma$. */
 
+#include <memory>
+
 #include "korder.hh"
 #include "faa_di_bruno.hh"
 #include "journal.hh"
@@ -89,7 +91,7 @@ IntegDerivs<t>::IntegDerivs(int r, const IntSequence &nvs, const _Tgss &g, const
         {
           int p = d-i;
           Symmetry sym{i, 0, 0, p};
-          _Ttensor *ten = new _Ttensor(r, TensorDimens(sym, nvs));
+          auto ten = std::make_unique<_Ttensor>(r, TensorDimens(sym, nvs));
 
           // calculate derivative $h_{y^i\sigma^p}$
           /* This code calculates
@@ -118,7 +120,7 @@ IntegDerivs<t>::IntegDerivs(int r, const IntSequence &nvs, const _Tgss &g, const
                 }
             }
 
-          this->insert(ten);
+          this->insert(std::move(ten));
         }
     }
 }
@@ -183,7 +185,7 @@ StochForwardDerivs<t>::StochForwardDerivs(const PartitionY &ypart, int nu,
   _Tpol g_int_sym(r, ypart.nys()+1);
   for (int d = 1; d <= maxd; d++)
     {
-      auto *ten = new _Ttensym(r, ypart.nys()+1, d);
+      auto ten = std::make_unique<_Ttensym>(r, ypart.nys()+1, d);
       ten->zeros();
       for (int i = 0; i <= d; i++)
         {
@@ -191,7 +193,7 @@ StochForwardDerivs<t>::StochForwardDerivs(const PartitionY &ypart, int nu,
           if (g_int.check(Symmetry{i, 0, 0, k}))
             ten->addSubTensor(*(g_int.get(Symmetry{i, 0, 0, k})));
         }
-      g_int_sym.insert(ten);
+      g_int_sym.insert(std::move(ten));
     }
 
   // make |g_int_cent| the centralized polynomial about $(\bar y,\bar\sigma)$
@@ -210,8 +212,8 @@ StochForwardDerivs<t>::StochForwardDerivs(const PartitionY &ypart, int nu,
   for (int d = 1; d <= maxd; d++)
     {
       g_int_sym.derivative(d-1);
-      _Ttensym *der = g_int_sym.evalPartially(d, delta);
-      g_int_cent.insert(der);
+      auto der = g_int_sym.evalPartially(d, delta);
+      g_int_cent.insert(std::move(der));
     }
 
   // pull out general symmetry tensors from |g_int_cent|
@@ -231,9 +233,9 @@ StochForwardDerivs<t>::StochForwardDerivs(const PartitionY &ypart, int nu,
             {
               Symmetry sym{i, 0, 0, d-i};
               IntSequence coor(sym, pp);
-              _Ttensor *ten = new _Ttensor(*(g_int_cent.get(Symmetry{d})), ss, coor,
-                                           TensorDimens(sym, true_nvs));
-              this->insert(ten);
+              auto ten = std::make_unique<_Ttensor>(*(g_int_cent.get(Symmetry{d})), ss, coor,
+                                                    TensorDimens(sym, true_nvs));
+              this->insert(std::move(ten));
             }
         }
     }
@@ -439,9 +441,9 @@ public:
   }
 protected:
   template <int t>
-  _Ttensor *faaDiBrunoZ(const Symmetry &sym) const;
+  std::unique_ptr<_Ttensor> faaDiBrunoZ(const Symmetry &sym) const;
   template <int t>
-  _Ttensor *faaDiBrunoG(const Symmetry &sym) const;
+  std::unique_ptr<_Ttensor> faaDiBrunoG(const Symmetry &sym) const;
 
   // convenience access methods
   template<int t>
@@ -472,12 +474,12 @@ protected:
    of a given symmetry. */
 
 template <int t>
-_Ttensor *
+std::unique_ptr<_Ttensor>
 KOrderStoch::faaDiBrunoZ(const Symmetry &sym) const
 {
   JournalRecordPair pa(journal);
   pa << "Faa Di Bruno ZX container for " << sym << endrec;
-  _Ttensor *res = new _Ttensor(ypart.ny(), TensorDimens(sym, nvs));
+  auto res = std::make_unique<_Ttensor>(ypart.ny(), TensorDimens(sym, nvs));
   FaaDiBruno bruno(journal);
   bruno.calculate(Zstack<t>(), f, *res);
   return res;
@@ -487,13 +489,13 @@ KOrderStoch::faaDiBrunoZ(const Symmetry &sym) const
    $G(y,u,\sigma)=h(g^*(y,u,\sigma),\sigma)$ of a given symmetry. */
 
 template <int t>
-_Ttensor *
+std::unique_ptr<_Ttensor>
 KOrderStoch::faaDiBrunoG(const Symmetry &sym) const
 {
   JournalRecordPair pa(journal);
   pa << "Faa Di Bruno GX container for " << sym << endrec;
   TensorDimens tdims(sym, nvs);
-  auto *res = new _Ttensor(ypart.nyss(), tdims);
+  auto res = std::make_unique<_Ttensor>(ypart.nyss(), tdims);
   FaaDiBruno bruno(journal);
   bruno.calculate(Gstack<t>(), h<t>(), *res);
   return res;
@@ -524,16 +526,18 @@ KOrderStoch::performStep(int order)
           JournalRecordPair pa(journal);
           pa << "Recovering symmetry " << si << endrec;
 
-          _Ttensor *G_sym = faaDiBrunoG<t>(si);
-          G<t>().insert(G_sym);
+          auto G_sym = faaDiBrunoG<t>(si);
+          auto G_sym_ptr = G_sym.get();
+          G<t>().insert(std::move(G_sym));
 
-          _Ttensor *g_sym = faaDiBrunoZ<t>(si);
+          auto g_sym = faaDiBrunoZ<t>(si);
+          auto g_sym_ptr = g_sym.get();
           g_sym->mult(-1.0);
           matA.multInv(*g_sym);
-          g<t>().insert(g_sym);
-          gs<t>().insert(new _Ttensor(ypart.nstat, ypart.nys(), *g_sym));
+          g<t>().insert(std::move(g_sym));
+          gs<t>().insert(std::make_unique<_Ttensor>(ypart.nstat, ypart.nys(), *g_sym_ptr));
 
-          Gstack<t>().multAndAdd(1, h<t>(), *G_sym);
+          Gstack<t>().multAndAdd(1, h<t>(), *G_sym_ptr);
         }
     }
 }

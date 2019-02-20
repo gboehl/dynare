@@ -101,9 +101,9 @@ ResidFunction::setYU(const ConstVector &ys, const ConstVector &xx)
     }
   else
     {
-      auto *ten = new FFSTensor(hss->nrows(), hss->nvars(), 0);
+      auto ten = std::make_unique<FFSTensor>(hss->nrows(), hss->nvars(), 0);
       ten->getData() = ysteady_ss;
-      hss->insert(ten);
+      hss->insert(std::move(ten));
     }
 
 }

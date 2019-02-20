@@ -11,11 +11,8 @@ const int FGSContainer::num_one_time = 10;
 UGSContainer::UGSContainer(const FGSContainer &c)
   : TensorContainer<UGSTensor>(c.num())
 {
-  for (const auto & it : c)
-    {
-      auto *unfolded = new UGSTensor(*(it.second));
-      insert(unfolded);
-    }
+  for (const auto &it : c)
+    insert(std::make_unique<UGSTensor>(*(it.second)));
 }
 
 /* We set |l| to dimension of |t|, this is a tensor which multiplies
@@ -58,10 +55,7 @@ FGSContainer::FGSContainer(const UGSContainer &c)
   : TensorContainer<FGSTensor>(c.num())
 {
   for (const auto & it : c)
-    {
-      auto *folded = new FGSTensor(*(it.second));
-      insert(folded);
-    }
+    insert(std::make_unique<FGSTensor>(*(it.second)));
 }
 
 // |FGSContainer::multAndAdd| folded code

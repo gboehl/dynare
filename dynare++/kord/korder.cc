@@ -265,21 +265,21 @@ KOrder::KOrder(int num_stat, int num_pred, int num_both, int num_forw,
   // put $g_y$ and $g_u$ to the container
   /* Note that $g_\sigma$ is zero by the nature and we do not insert it to
      the container. We insert a new physical copies. */
-  UGSTensor *tgy = new UGSTensor(ny, TensorDimens(Symmetry{1, 0, 0, 0}, nvs));
+  auto tgy = std::make_unique<UGSTensor>(ny, TensorDimens(Symmetry{1, 0, 0, 0}, nvs));
   tgy->getData() = gy.getData();
-  insertDerivative<unfold>(tgy);
-  UGSTensor *tgu = new UGSTensor(ny, TensorDimens(Symmetry{0, 1, 0, 0}, nvs));
+  insertDerivative<unfold>(std::move(tgy));
+  auto tgu = std::make_unique<UGSTensor>(ny, TensorDimens(Symmetry{0, 1, 0, 0}, nvs));
   tgu->getData() = gu.getData();
-  insertDerivative<unfold>(tgu);
+  insertDerivative<unfold>(std::move(tgu));
 
   // put $G_y$, $G_u$ and $G_{u'}$ to the container
   /* Also note that since $g_\sigma$ is zero, so $G_\sigma$. */
-  UGSTensor *tGy = faaDiBrunoG<unfold>(Symmetry{1, 0, 0, 0});
-  G<unfold>().insert(tGy);
-  UGSTensor *tGu = faaDiBrunoG<unfold>(Symmetry{0, 1, 0, 0});
-  G<unfold>().insert(tGu);
-  UGSTensor *tGup = faaDiBrunoG<unfold>(Symmetry{0, 0, 1, 0});
-  G<unfold>().insert(tGup);
+  auto tGy = faaDiBrunoG<unfold>(Symmetry{1, 0, 0, 0});
+  G<unfold>().insert(std::move(tGy));
+  auto tGu = faaDiBrunoG<unfold>(Symmetry{0, 1, 0, 0});
+  G<unfold>().insert(std::move(tGu));
+  auto tGup = faaDiBrunoG<unfold>(Symmetry{0, 0, 1, 0});
+  G<unfold>().insert(std::move(tGup));
 }
 
 // |KOrder::sylvesterSolve| unfolded specialization
@@ -346,8 +346,8 @@ KOrder::switchToFolded()
       {
         if (si[2] == 0 && g<unfold>().check(si))
           {
-            auto *ft = new FGSTensor(*(g<unfold>().get(si)));
-            insertDerivative<fold>(ft);
+            auto ft = std::make_unique<FGSTensor>(*(g<unfold>().get(si)));
+            insertDerivative<fold>(std::move(ft));
             if (dim > 1)
               {
                 gss<unfold>().remove(si);
@@ -357,8 +357,8 @@ KOrder::switchToFolded()
           }
         if (G<unfold>().check(si))
           {
-            auto *ft = new FGSTensor(*(G<unfold>().get(si)));
-            G<fold>().insert(ft);
+            auto ft = std::make_unique<FGSTensor>(*(G<unfold>().get(si)));
+            G<fold>().insert(std::move(ft));
             if (dim > 1)
               {
                 G<fold>().remove(si);

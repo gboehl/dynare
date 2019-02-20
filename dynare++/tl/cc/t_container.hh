@@ -59,6 +59,8 @@
 #include <map>
 #include <string>
 #include <sstream>
+#include <memory>
+#include <utility>
 
 #include <matio.h>
 
@@ -96,8 +98,7 @@ class TensorContainer
 protected:
   using _const_ptr = const _Ttype *;
   using _ptr = _Ttype *;
-  using _Map = std::map<Symmetry, _ptr, ltsym>;
-  using _mvtype = typename _Map::value_type;
+  using _Map = std::map<Symmetry, std::unique_ptr<_Ttype>, ltsym>;
 public:
   using iterator = typename _Map::iterator;
   using const_iterator = typename _Map::const_iterator;
@@ -113,14 +114,12 @@ public:
   }
   /* This is just a copy constructor. This makes a hard copy of all tensors. */
   TensorContainer(const TensorContainer<_Ttype> &c)
-    : n(c.n), m(), ebundle(c.ebundle)
+    : n(c.n), ebundle(c.ebundle)
   {
-    for (auto it = c.m.begin(); it != c.m.end(); ++it)
-      {
-        auto *ten = new _Ttype(*((*it).second));
-        insert(ten);
-      }
+    for (const auto &it : c.m)
+      insert(std::make_unique<_Ttype>(*(it.second)));
   }
+  TensorContainer(TensorContainer<_Ttype> &&) = default;
 
   // |TensorContainer| subtensor constructor
   /* This constructor constructs a new tensor container, whose tensors
@@ -128,11 +127,8 @@ public:
   TensorContainer(int first_row, int num, TensorContainer<_Ttype> &c)
     : n(c.n), ebundle(*(tls.ebundle))
   {
-    for (auto it = c.m.begin(); it != c.m.end(); ++it)
-      {
-        auto *t = new _Ttype(first_row, num, *((*it).second));
-        insert(t);
-      }
+    for (const auto &it : c.m)
+      insert(std::make_unique<_Ttype>(first_row, num, *(it.second)));
   }
 
   _const_ptr
@@ -147,9 +143,7 @@ public:
         return nullptr;
       }
     else
-      {
-        return (*it).second;
-      }
+      return it->second.get();
   }
 
   _ptr
@@ -164,9 +158,7 @@ public:
         return nullptr;
       }
     else
-      {
-        return (*it).second;
-      }
+      return it->second.get();
   }
 
   bool
@@ -178,49 +170,37 @@ public:
     return it != m.end();
   }
 
-  void
-  insert(_ptr t)
+  virtual void
+  insert(std::unique_ptr<_Ttype> t)
   {
     TL_RAISE_IF(t->getSym().num() != num(),
                 "Incompatible symmetry insertion in TensorContainer::insert");
     TL_RAISE_IF(check(t->getSym()),
                 "Tensor already in container in TensorContainer::insert");
-    m.insert(_mvtype(t->getSym(), t));
     if (!t->isFinite())
-      {
-        throw TLException(__FILE__, __LINE__,  "NaN or Inf asserted in TensorContainer::insert");
-      }
+      throw TLException(__FILE__, __LINE__,  "NaN or Inf asserted in TensorContainer::insert");
+    m.emplace(t->getSym(), std::move(t));
   }
 
   void
   remove(const Symmetry &s)
   {
-    auto it = m.find(s);
-    if (it != m.end())
-      {
-        _ptr t = (*it).second;
-        m.erase(it);
-        delete t;
-      }
+    m.erase(s);
   }
 
   void
   clear()
   {
-    while (!m.empty())
-      {
-        delete (*(m.begin())).second;
-        m.erase(m.begin());
-      }
+    m.clear();
   }
 
   int
   getMaxDim() const
   {
     int res = -1;
-    for (auto run = m.begin(); run != m.end(); ++run)
+    for (const auto &run : m)
       {
-        int dim = (*run).first.dimen();
+        int dim = run.first.dimen();
         if (dim > res)
           res = dim;
       }
@@ -235,8 +215,8 @@ public:
     for (const_iterator it = m.begin(); it != m.end(); ++it)
       {
         printf("Symmetry: ");
-        (*it).first.print();
-        ((*it).second)->print();
+        (it->first).print();
+        (it->second)->print();
       }
   }
 
@@ -255,7 +235,7 @@ public:
             sprintf(tmp, "_%d", sym[i]);
             strcat(lname, tmp);
           }
-        ConstTwoDMatrix m(*((*it).second));
+        ConstTwoDMatrix m(*(it->second));
         m.writeMat(fd, lname);
       }
   }
@@ -294,10 +274,7 @@ public:
     return res;
   }
 
-  virtual ~TensorContainer()
-  {
-    clear();
-  }
+  virtual ~TensorContainer() = default;
 
   int
   num() const
@@ -342,9 +319,8 @@ public:
     : TensorContainer<UGSTensor>(nn)
   {
   }
-  UGSContainer(const UGSContainer &uc)
-     
-  = default;
+  UGSContainer(const UGSContainer &) = default;
+  UGSContainer(UGSContainer &&) = default;
   UGSContainer(const FGSContainer &c);
   void multAndAdd(const UGSTensor &t, UGSTensor &out) const;
 };
@@ -370,9 +346,8 @@ public:
     : TensorContainer<FGSTensor>(nn)
   {
   }
-  FGSContainer(const FGSContainer &fc)
-     
-  = default;
+  FGSContainer(const FGSContainer &) = default;
+  FGSContainer(FGSContainer &&) = default;
   FGSContainer(const UGSContainer &c);
   void multAndAdd(const FGSTensor &t, FGSTensor &out) const;
   void multAndAdd(const UGSTensor &t, FGSTensor &out) const;

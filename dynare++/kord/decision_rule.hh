@@ -198,7 +198,7 @@ DecisionRuleImpl<t>::fillTensors(const _Tg &g, double sigma)
   int dfact = 1;
   for (int d = 0; d <= g.getMaxDim(); d++, dfact *= d)
     {
-      auto *g_yud = new _Ttensym(ypart.ny(), ypart.nys()+nu, d);
+      auto g_yud = std::make_unique<_Ttensym>(ypart.ny(), ypart.nys()+nu, d);
       g_yud->zeros();
 
       // fill tensor of |g_yud| of dimension |d|
@@ -231,7 +231,7 @@ DecisionRuleImpl<t>::fillTensors(const _Tg &g, double sigma)
           g_yud->addSubTensor(tmp);
         }
 
-      this->insert(g_yud);
+      this->insert(std::move(g_yud));
     }
 }
 
@@ -261,9 +261,9 @@ DecisionRuleImpl<t>::centralize(const DecisionRuleImpl &dr)
   for (int d = 1; d <= dr.getMaxDim(); d++, dfac *= d)
     {
       pol.derivative(d-1);
-      _Ttensym *der = pol.evalPartially(d, dstate);
+      auto der = pol.evalPartially(d, dstate);
       der->mult(1.0/dfac);
-      this->insert(der);
+      this->insert(std::move(der));
     }
 }
 
@@ -567,7 +567,7 @@ DRFixPoint<t>::fillTensors(const _Tg &g, double sigma)
   int dfact = 1;
   for (int d = 0; d <= g.getMaxDim(); d++, dfact *= d)
     {
-      auto *g_yd = new _Ttensym(ypart.ny(), ypart.nys(), d);
+      auto g_yd = std::make_unique<_Ttensym>(ypart.ny(), ypart.nys(), d);
       g_yd->zeros();
       int kfact = 1;
       for (int k = 0; d+k <= g.getMaxDim(); k++, kfact *= k)
@@ -579,7 +579,7 @@ DRFixPoint<t>::fillTensors(const _Tg &g, double sigma)
               g_yd->add(mult, *ten);
             }
         }
-      this->insert(g_yd);
+      this->insert(std::move(g_yd));
     }
 }
 
@@ -613,7 +613,7 @@ DRFixPoint<t>::solveNewton(Vector &y)
 
   do
     {
-      _Ttensym *jacob = bigfder->evalPartially(1, sol);
+      auto jacob = bigfder->evalPartially(1, sol);
       bigf->evalHorner(delta, sol);
       if (newton_iter_last == 0)
         flastnorm = delta.getNorm();
@@ -646,7 +646,6 @@ DRFixPoint<t>::solveNewton(Vector &y)
           sol.add(-urelax, delta);
           delta_finite = delta.isFinite();
         }
-      delete jacob;
       newton_iter_last++;
       converged = delta_finite && fnorm < tol;
       flastnorm = fnorm;

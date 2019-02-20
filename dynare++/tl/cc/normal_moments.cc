@@ -29,9 +29,9 @@ UNormalMoments::generateMoments(int maxdim, const TwoDMatrix &v)
               "Variance-covariance matrix is not square in UNormalMoments constructor");
 
   int nv = v.nrows();
-  auto *mom2 = new URSingleTensor(nv, 2);
+  auto mom2 = std::make_unique<URSingleTensor>(nv, 2);
   mom2->getData() = v.getData();
-  insert(mom2);
+  insert(std::move(mom2));
   auto kronv = std::make_unique<URSingleTensor>(nv, 2);
   kronv->getData() = v.getData();
   for (int d = 4; d <= maxdim; d += 2)
@@ -41,7 +41,7 @@ UNormalMoments::generateMoments(int maxdim, const TwoDMatrix &v)
                          ConstVector(kronv->getData()),
                          newkronv->getData());
       kronv = std::move(newkronv);
-      auto *mom = new URSingleTensor(nv, d);
+      auto mom = std::make_unique<URSingleTensor>(nv, d);
       // apply $F_n$ to |kronv|
       /* Here we go through all equivalences, select only those having 2
          elements in each class, then go through all elements in |kronv| and
@@ -66,7 +66,7 @@ UNormalMoments::generateMoments(int maxdim, const TwoDMatrix &v)
                 mom->get(*it2, 0) += kronv->get(*it, 0);
               }
           }
-      insert(mom);
+      insert(std::move(mom));
     }
 }
 
@@ -89,8 +89,5 @@ FNormalMoments::FNormalMoments(const UNormalMoments &moms)
   : TensorContainer<FRSingleTensor>(1)
 {
   for (const auto &mom : moms)
-    {
-      auto *fm = new FRSingleTensor(*(mom.second));
-      insert(fm);
-    }
+    insert(std::make_unique<FRSingleTensor>(*(mom.second)));
 }

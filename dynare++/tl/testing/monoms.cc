@@ -102,11 +102,11 @@ Monom1Vector::deriv(const IntSequence &c, Vector &out) const
     out[i] = x[i].deriv(c);
 }
 
-FGSTensor *
+std::unique_ptr<FGSTensor>
 Monom1Vector::deriv(int dim) const
 {
-  FGSTensor *res
-    = new FGSTensor(len, TensorDimens(Symmetry{dim}, IntSequence(1, nx)));
+  auto res = std::make_unique<FGSTensor>(len, TensorDimens(Symmetry{dim},
+                                                           IntSequence(1, nx)));
   for (Tensor::index it = res->begin(); it != res->end(); ++it)
     {
       Vector outcol{res->getCol(*it)};
@@ -176,11 +176,11 @@ Monom2Vector::deriv(const Symmetry &s, const IntSequence &c,
     out[i] = y[i].deriv(cy) * u[i].deriv(cu);
 }
 
-FGSTensor *
+std::unique_ptr<FGSTensor>
 Monom2Vector::deriv(const Symmetry &s) const
 {
   IntSequence nvs{ny, nu};
-  FGSTensor *t = new FGSTensor(len, TensorDimens(s, nvs));
+  auto t = std::make_unique<FGSTensor>(len, TensorDimens(s, nvs));
   for (Tensor::index it = t->begin(); it != t->end(); ++it)
     {
       Vector col{t->getCol(*it)};
@@ -318,11 +318,11 @@ Monom4Vector::deriv(const Symmetry &s, const IntSequence &coor,
     }
 }
 
-FGSTensor *
+std::unique_ptr<FGSTensor>
 Monom4Vector::deriv(const Symmetry &s) const
 {
   IntSequence nvs{nx1, nx2, nx3, nx4};
-  FGSTensor *res = new FGSTensor(len, TensorDimens(s, nvs));
+  auto res = std::make_unique<FGSTensor>(len, TensorDimens(s, nvs));
   for (Tensor::index run = res->begin(); run != res->end(); ++run)
     {
       Vector col{res->getCol(*run)};
@@ -416,8 +416,7 @@ SparseDerivGenerator::~SparseDerivGenerator()
 
 DenseDerivGenerator::DenseDerivGenerator(int ng, int nx, int ny, int nu,
                                          int mx, double prob, int maxdim)
-  : maxdimen(maxdim), ts(new FGSTensor *[maxdimen]),
-    uts(new UGSTensor *[maxdimen])
+  : maxdimen(maxdim), ts(maxdimen), uts(maxdimen)
 {
   intgen.init(ng, nx, ny, nu, nu, mx, prob);
   Monom1Vector g(nx, ng);
@@ -427,10 +426,7 @@ DenseDerivGenerator::DenseDerivGenerator(int ng, int nx, int ny, int nu,
   rcont = r.deriv(maxdimen);
   uxcont = nullptr;
   for (int d = 1; d <= maxdimen; d++)
-    {
-      ts[d-1] = g.deriv(d);
-      uts[d-1] = nullptr;
-    }
+    ts[d-1] = g.deriv(d);
 }
 
 void
@@ -438,19 +434,11 @@ DenseDerivGenerator::unfold()
 {
   uxcont = new UGSContainer(*xcont);
   for (int i = 0; i < maxdimen; i++)
-    uts[i] = new UGSTensor(*(ts[i]));
+    uts[i] = std::make_unique<UGSTensor>(*(ts[i]));
 }
 
 DenseDerivGenerator::~DenseDerivGenerator()
 {
   delete xcont;
   delete rcont;
-  for (int i = 0; i < maxdimen; i++)
-    {
-      delete ts[i];
-      if (uts[i])
-        delete uts[i];
-    }
-  delete [] ts;
-  delete [] uts;
 }

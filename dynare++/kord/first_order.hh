@@ -72,12 +72,14 @@ public:
   {
     IntSequence nvs(4);
     nvs[0] = fo.ypart.nys(); nvs[1] = fo.nu; nvs[2] = fo.nu; nvs[3] = 1;
-    _Ttensor *ten = new _Ttensor(fo.ypart.ny(), TensorDimens(Symmetry{1, 0, 0, 0}, nvs));
-    ten->zeros(); ten->add(1.0, fo.gy);
-    this->insert(ten);
-    ten = new _Ttensor(fo.ypart.ny(), TensorDimens(Symmetry{0, 1, 0, 0}, nvs));
-    ten->zeros(); ten->add(1.0, fo.gu);
-    this->insert(ten);
+    auto ten = std::make_unique<_Ttensor>(fo.ypart.ny(), TensorDimens(Symmetry{1, 0, 0, 0}, nvs));
+    ten->zeros();
+    ten->add(1.0, fo.gy);
+    this->insert(std::move(ten));
+    ten = std::make_unique<_Ttensor>(fo.ypart.ny(), TensorDimens(Symmetry{0, 1, 0, 0}, nvs));
+    ten->zeros();
+    ten->add(1.0, fo.gu);
+    this->insert(std::move(ten));
   }
 };
 

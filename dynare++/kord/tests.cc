@@ -63,17 +63,17 @@ Rand::discrete(double prob)
 
 struct SparseGenerator
 {
-  static FSSparseTensor *makeTensor(int dim, int nv, int r,
-                                    double fill, double m);
+  static std::unique_ptr<FSSparseTensor> makeTensor(int dim, int nv, int r,
+                                                    double fill, double m);
   static void fillContainer(TensorContainer<FSSparseTensor> &c,
                             int maxdim, int nv, int r, double m);
 };
 
-FSSparseTensor *
+std::unique_ptr<FSSparseTensor>
 SparseGenerator::makeTensor(int dim, int nv, int r,
                             double fill, double m)
 {
-  auto *res = new FSSparseTensor(dim, nv, r);
+  auto res = std::make_unique<FSSparseTensor>(dim, nv, r);
   FFSTensor dummy(0, nv, dim);
   for (Tensor::index fi = dummy.begin(); fi != dummy.end(); ++fi)
     for (int i = 0; i < r; i++)

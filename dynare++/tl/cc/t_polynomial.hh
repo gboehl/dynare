@@ -175,14 +175,13 @@ public:
                 /* The pointer |ten| is either a new tensor or got from |this| container. */
                 _Ttype *ten;
                 if (_Tparent::check(Symmetry{j}))
-                  {
-                    ten = _Tparent::get(Symmetry{j});
-                  }
+                  ten = _Tparent::get(Symmetry{j});
                 else
                   {
-                    ten = new _Ttype(nrows(), nvars(), j);
-                    ten->zeros();
-                    insert(ten);
+                    auto ten_smart = std::make_unique<_Ttype>(nrows(), nvars(), j);
+                    ten_smart->zeros();
+                    ten = ten_smart.get();
+                    insert(std::move(ten_smart));
                   }
 
                 Symmetry sym{i, j};
@@ -208,14 +207,13 @@ public:
             /* Same code as above */
             _Ttype *ten;
             if (_Tparent::check(Symmetry{j}))
-              {
-                ten = _Tparent::get(Symmetry{j});
-              }
+              ten = _Tparent::get(Symmetry{j});
             else
               {
-                ten = new _Ttype(nrows(), nvars(), j);
-                ten->zeros();
-                insert(ten);
+                auto ten_smart = std::make_unique<_Ttype>(nrows(), nvars(), j);
+                ten_smart->zeros();
+                ten = ten_smart.get();
+                insert(std::move(ten_smart));
               }
 
             Symmetry sym{0, j};
@@ -308,15 +306,15 @@ public:
      number of variables. Then we insert and update the |maxdim|. */
 
   void
-  insert(_ptr t)
+  insert(std::unique_ptr<_Ttype> t) override
   {
     TL_RAISE_IF(t->nrows() != nr,
                 "Wrong number of rows in TensorPolynomial::insert");
     TL_RAISE_IF(t->nvar() != nv,
                 "Wrong number of variables in TensorPolynomial::insert");
-    TensorContainer<_Ttype>::insert(t);
     if (maxdim < t->dimen())
       maxdim = t->dimen();
+    TensorContainer<_Ttype>::insert(std::move(t));
   }
 
   /* The polynomial takes the form
@@ -359,13 +357,13 @@ public:
      |g.derivative(0)|, |g.derivative(1)| and |der=g.evalPartially(2, v)|
      calculates $2!$ multiple of the second derivative of |g| at |v|. */
 
-  _Ttype *
+  std::unique_ptr<_Ttype>
   evalPartially(int s, const ConstVector &v)
   {
     TL_RAISE_IF(v.length() != nvars(),
                 "Wrong length of vector for TensorPolynomial::evalPartially");
 
-    auto *res = new _Ttype(nrows(), nvars(), s);
+    auto res = std::make_unique<_Ttype>(nrows(), nvars(), s);
     res->zeros();
 
     if (_Tparent::check(Symmetry{s}))
@@ -376,15 +374,13 @@ public:
         if (_Tparent::check(Symmetry{d}))
           {
             const _Ttype &ltmp = *(_Tparent::get(Symmetry{d}));
-            auto *last = new _Ttype(ltmp);
+            auto last = std::make_unique<_Ttype>(ltmp);
             for (int j = 0; j < d - s; j++)
               {
-                auto *newlast = new _Ttype(*last, v);
-                delete last;
-                last = newlast;
+                auto newlast = std::make_unique<_Ttype>(*last, v);
+                last = std::move(newlast);
               }
             res->add(1.0, *last);
-            delete last;
           }
       }
 
