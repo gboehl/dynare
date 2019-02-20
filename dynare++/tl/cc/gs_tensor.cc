@@ -272,10 +272,10 @@ FGSTensor::increment(IntSequence &v) const
 }
 
 /* Return unfolded version of the tensor. */
-UTensor &
+std::unique_ptr<UTensor>
 FGSTensor::unfold() const
 {
-  return *(new UGSTensor(*this));
+  return std::make_unique<UGSTensor>(*this);
 }
 
 /* Here we implement the contraction
@@ -410,10 +410,10 @@ UGSTensor::decrement(IntSequence &v) const
 }
 
 /* Return a new instance of folded version. */
-FTensor &
+std::unique_ptr<FTensor>
 UGSTensor::fold() const
 {
-  return *(new FGSTensor(*this));
+  return std::make_unique<FGSTensor>(*this);
 }
 
 /* Return an offset of a given index. */

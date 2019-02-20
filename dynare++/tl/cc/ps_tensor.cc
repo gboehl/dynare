@@ -58,12 +58,11 @@ UPSTensor::decrement(IntSequence &v) const
   UTensor::decrement(v, tdims.getNVX());
 }
 
-FTensor &
+std::unique_ptr<FTensor>
 UPSTensor::fold() const
 {
   TL_RAISE("Never should come to this place in UPSTensor::fold");
-  auto *nothing = new FFSTensor(0, 0, 0);
-  return *nothing;
+  return std::make_unique<FFSTensor>(0, 0, 0);
 }
 
 int
@@ -316,12 +315,11 @@ FPSTensor::decrement(IntSequence &v) const
   TL_RAISE("FPSTensor::decrement not implemented");
 }
 
-UTensor &
+std::unique_ptr<UTensor>
 FPSTensor::unfold() const
 {
   TL_RAISE("Unfolding of FPSTensor not implemented");
-  auto *nothing = new UFSTensor(0, 0, 0);
-  return *nothing;
+  return std::make_unique<UFSTensor>(0, 0, 0);
 }
 
 /* We only call |calcOffset| of the |PerTensorDimens2|. */

@@ -86,10 +86,10 @@ FFSTensor::FFSTensor(const UFSTensor &ut)
 }
 
 /* Here just make a new instance and return the reference. */
-UTensor &
+std::unique_ptr<UTensor>
 FFSTensor::unfold() const
 {
-  return *(new UFSTensor(*this));
+  return std::make_unique<UFSTensor>(*this);
 }
 
 /* Incrementing is easy. We have to increment by calling static method
@@ -203,11 +203,10 @@ UFSTensor::UFSTensor(const FFSTensor &ft)
   unfoldData();
 }
 
-/* Here we just return a reference to new instance of folded tensor. */
-FTensor &
+std::unique_ptr<FTensor>
 UFSTensor::fold() const
 {
-  return *(new FFSTensor(*this));
+  return std::make_unique<FFSTensor>(*this);
 }
 
 // |UFSTensor| increment and decrement

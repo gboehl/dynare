@@ -178,7 +178,7 @@ public:
   {
     tdims.decrement(v);
   }
-  UTensor&unfold() const override;
+  std::unique_ptr<UTensor> unfold() const override;
   const TensorDimens &
   getDims() const
   {
@@ -242,7 +242,7 @@ public:
 
   void increment(IntSequence &v) const override;
   void decrement(IntSequence &v) const override;
-  FTensor&fold() const override;
+  std::unique_ptr<FTensor> fold() const override;
   const TensorDimens &
   getDims() const
   {

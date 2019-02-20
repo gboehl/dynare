@@ -62,7 +62,7 @@ public:
 
   void increment(IntSequence &v) const override;
   void decrement(IntSequence &v) const override;
-  FTensor&fold() const override;
+  std::unique_ptr<FTensor> fold() const override;
 
   int getOffset(const IntSequence &v) const override;
   int
@@ -98,7 +98,7 @@ public:
 
   void increment(IntSequence &v) const override;
   void decrement(IntSequence &v) const override;
-  UTensor&unfold() const override;
+  std::unique_ptr<UTensor> unfold() const override;
 
   int
   nvar() const
@@ -138,7 +138,7 @@ public:
   = default;
   ~URSingleTensor()
   override = default;
-  FTensor&fold() const override;
+  std::unique_ptr<FTensor> fold() const override;
 };
 
 /* This class represents one column row-oriented tensor. The only way

@@ -27,10 +27,10 @@ FRTensor::FRTensor(const URTensor &ut)
 
 /* Here just make a new instance and return the reference. */
 
-UTensor &
+std::unique_ptr<UTensor>
 FRTensor::unfold() const
 {
-  return *(new URTensor(*this));
+  return std::make_unique<URTensor>(*this);
 }
 
 /* Incrementing is easy. The same as for |FFSTensor|. */
@@ -77,10 +77,10 @@ URTensor::URTensor(const FRTensor &ft)
 
 /* Here we just return a reference to new instance of folded tensor. */
 
-FTensor &
+std::unique_ptr<FTensor>
 URTensor::fold() const
 {
-  return *(new FRTensor(*this));
+  return std::make_unique<FRTensor>(*this);
 }
 
 /* Here we just call |UTensor| respective static methods. */
@@ -163,10 +163,10 @@ URSingleTensor::URSingleTensor(const ConstVector &v, int d)
 /* Here we construct |FRSingleTensor| from |URSingleTensor| and return
    its reference. */
 
-FTensor &
+std::unique_ptr<FTensor>
 URSingleTensor::fold() const
 {
-  return *(new FRSingleTensor(*this));
+  return std::make_unique<FRSingleTensor>(*this);
 }
 
 // |FRSingleTensor| conversion from unfolded

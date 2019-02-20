@@ -70,7 +70,7 @@ public:
 
   void increment(IntSequence &v) const override;
   void decrement(IntSequence &v) const override;
-  UTensor&unfold() const override;
+  std::unique_ptr<UTensor> unfold() const override;
   Symmetry
   getSym() const
   {
@@ -114,7 +114,7 @@ public:
 
   void increment(IntSequence &v) const override;
   void decrement(IntSequence &v) const override;
-  FTensor&fold() const override;
+  std::unique_ptr<FTensor> fold() const override;
   Symmetry
   getSym() const
   {

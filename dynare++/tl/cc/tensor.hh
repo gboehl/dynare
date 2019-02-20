@@ -49,6 +49,7 @@
 #include "int_sequence.hh"
 #include "twod_matrix.hh"
 
+#include <memory>
 #include <iostream>
 
 /* Here is the |Tensor| class, which is nothing else than a simple subclass
@@ -240,7 +241,7 @@ public:
   {
   }
   ~UTensor() override = default;
-  virtual FTensor &fold() const = 0;
+  virtual std::unique_ptr<FTensor> fold() const = 0;
 
   UTensor &operator=(const UTensor &) = delete;
   UTensor &operator=(UTensor &&) = delete;
@@ -276,7 +277,7 @@ public:
   {
   }
   ~FTensor() override = default;
-  virtual UTensor &unfold() const = 0;
+  virtual std::unique_ptr<UTensor> unfold() const = 0;
 
   FTensor &operator=(const FTensor &) = delete;
   FTensor &operator=(FTensor &&) = delete;

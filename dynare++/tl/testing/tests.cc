@@ -196,8 +196,8 @@ TestRunnable::index_offset(const Symmetry &s, const IntSequence &nvs)
 bool
 TestRunnable::fold_unfold(const FTensor *folded)
 {
-  UTensor *unfolded = &(folded->unfold());
-  FTensor *folded2 = &(unfolded->fold());
+  auto unfolded = folded->unfold();
+  auto folded2 = unfolded->fold();
   folded2->add(-1.0, *folded);
   double normInf = folded2->getNormInf();
   double norm1 = folded2->getNorm1();
@@ -207,8 +207,6 @@ TestRunnable::fold_unfold(const FTensor *folded)
             << "\tdifference norm1:   " << norm1 << '\n';
 
   delete folded;
-  delete unfolded;
-  delete folded2;
 
   return normInf < 1.0e-15;
 }
