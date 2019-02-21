@@ -105,16 +105,14 @@ public:
 private:
   int n;
   _Map m;
-protected:
-  const EquivalenceBundle &ebundle;
 public:
   TensorContainer(int nn)
-    : n(nn), ebundle(*(tls.ebundle))
+    : n(nn)
   {
   }
   /* This is just a copy constructor. This makes a hard copy of all tensors. */
   TensorContainer(const TensorContainer<_Ttype> &c)
-    : n(c.n), ebundle(c.ebundle)
+    : n(c.n)
   {
     for (const auto &it : c.m)
       insert(std::make_unique<_Ttype>(*(it.second)));
@@ -125,7 +123,7 @@ public:
   /* This constructor constructs a new tensor container, whose tensors
      are in-place subtensors of the given container. */
   TensorContainer(int first_row, int num, TensorContainer<_Ttype> &c)
-    : n(c.n), ebundle(*(tls.ebundle))
+    : n(c.n)
   {
     for (const auto &it : c.m)
       insert(std::make_unique<_Ttype>(first_row, num, *(it.second)));
@@ -270,11 +268,6 @@ public:
   num() const
   {
     return n;
-  }
-  const EquivalenceBundle &
-  getEqBundle() const
-  {
-    return ebundle;
   }
 
   const_iterator

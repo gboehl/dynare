@@ -91,9 +91,9 @@ main(int argc, char **argv)
 
       system_random_generator.initSeed(params.seed);
 
-      tls.init(dynare.order(),
-               dynare.nstat()+2*dynare.npred()+3*dynare.nboth()
-               +2*dynare.nforw()+dynare.nexog());
+      TLStatic::init(dynare.order(),
+                     dynare.nstat()+2*dynare.npred()+3*dynare.nboth()
+                     +2*dynare.nforw()+dynare.nexog());
 
       Approximation app(dynare, journal, params.num_steps, params.do_centralize, params.qz_criterium);
       try

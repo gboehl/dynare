@@ -165,7 +165,7 @@ class PermutationBundle
 public:
   PermutationBundle(int nmax);
   ~PermutationBundle() = default;
-  const PermutationSet&get(int n) const;
+  const PermutationSet &get(int n) const;
   void generateUpTo(int nmax);
 };
 

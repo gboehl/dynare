@@ -1,36 +1,38 @@
 // Copyright 2004, Ondra Kamenik
 
 #include "tl_static.hh"
+#include "pascal_triangle.hh"
 
-TLStatic tls;
+#include <mutex>
 
 /* Note that we allow for repeated calls of |init|. This is not normal
    and the only purpose of allowing this is the test suite. */
 
-TLStatic::TLStatic()
+namespace TLStatic
 {
-  ebundle = nullptr;
-  pbundle = nullptr;
-}
+  EquivalenceBundle ebundle(1);
+  PermutationBundle pbundle(1);
+  std::mutex mut;
 
-TLStatic::~TLStatic()
-{
-  if (ebundle)
-    delete ebundle;
-  if (pbundle)
-    delete pbundle;
-}
+  const EquivalenceSet &
+  getEquiv(int n)
+  {
+    return ebundle.get(n);
+  }
 
-void
-TLStatic::init(int dim, int nvar)
-{
-  if (ebundle)
-    ebundle->generateUpTo(dim);
-  else
-    ebundle = new EquivalenceBundle(dim);
+  const PermutationSet &
+  getPerm(int n)
+  {
+    return pbundle.get(n);
+  }
 
-  if (pbundle)
-    pbundle->generateUpTo(dim);
-  else
-    pbundle = new PermutationBundle(dim);
+  void
+  init(int dim, int nvar)
+  {
+    std::lock_guard<std::mutex>{mut};
+    ebundle.generateUpTo(dim);
+    pbundle.generateUpTo(dim);
+
+    PascalTriangle::ensure(nvar, dim);
+  }
 }

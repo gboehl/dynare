@@ -18,16 +18,11 @@
 #include "equivalence.hh"
 #include "permutation.hh"
 
-struct TLStatic
+namespace TLStatic
 {
-  EquivalenceBundle *ebundle;
-  PermutationBundle *pbundle;
-
-  TLStatic();
-  ~TLStatic();
+  const EquivalenceSet &getEquiv(int n);
+  const PermutationSet &getPerm(int n);
   void init(int dim, int nvar);
 };
-
-extern TLStatic tls;
 
 #endif

@@ -234,7 +234,7 @@ extern "C" {
           dynamicModelFile = std::make_unique<DynamicModelMFile>(fName);
 
         // intiate tensor library
-        tls.init(kOrder, nStat+2*nPred+3*nBoth+2*nForw+nExog);
+        TLStatic::init(kOrder, nStat+2*nPred+3*nBoth+2*nForw+nExog);
 
         // make KordpDynare object
         KordpDynare dynare(endoNames, nEndo, exoNames, nExog, nPar,

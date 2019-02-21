@@ -1141,7 +1141,7 @@ main()
       if (nvmax < test->nvar)
         nvmax = test->nvar;
     }
-  tls.init(dmax, nvmax); // initialize library
+  TLStatic::init(dmax, nvmax); // initialize library
 
   // launch the tests
   int success = 0;

@@ -64,29 +64,29 @@ namespace PascalTriangle
     {
       return static_cast<int>(tr.size());
     }
+  }
 
-    void
-    ensure(int n, int k)
-    {
-      // add along n
-      if (n > max_n())
-        {
-          std::lock_guard<std::mutex> lk{mut};
-          tr[0].prolongFirst(n);
-          for (int i = 2; i <= max_k(); i++)
-            tr[i-1].prolong(tr[i-2]);
-        }
+  void
+  ensure(int n, int k)
+  {
+    // add along n
+    if (n > max_n())
+      {
+        std::lock_guard<std::mutex> lk{mut};
+        tr[0].prolongFirst(n);
+        for (int i = 2; i <= max_k(); i++)
+          tr[i-1].prolong(tr[i-2]);
+      }
 
-      if (k > max_k())
-        {
-          std::lock_guard<std::mutex> lk{mut};
-          for (int i = max_k()+1; i <= k; i++)
-            {
-              tr.emplace_back();
-              tr.back().setFromPrevious(tr[i-2]);
-            }
-        }
-    }
+    if (k > max_k())
+      {
+        std::lock_guard<std::mutex> lk{mut};
+        for (int i = max_k()+1; i <= k; i++)
+          {
+            tr.emplace_back();
+            tr.back().setFromPrevious(tr[i-2]);
+          }
+      }
   }
 
   int

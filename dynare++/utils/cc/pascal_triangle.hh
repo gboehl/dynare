@@ -23,6 +23,7 @@ public:
 
 namespace PascalTriangle
 {
+  void ensure(int n, int k);
   int noverk(int n, int k);
   void print();
 };

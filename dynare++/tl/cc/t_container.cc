@@ -32,7 +32,7 @@ UGSContainer::multAndAdd(const UGSTensor &t, UGSTensor &out) const
 {
   int l = t.dimen();
   int k = out.dimen();
-  const EquivalenceSet &eset = ebundle.get(k);
+  const EquivalenceSet &eset = TLStatic::getEquiv(k);
 
   for (const auto & it : eset)
     {
@@ -77,7 +77,7 @@ FGSContainer::multAndAdd(const UGSTensor &t, FGSTensor &out) const
 {
   int l = t.dimen();
   int k = out.dimen();
-  const EquivalenceSet &eset = ebundle.get(k);
+  const EquivalenceSet &eset = TLStatic::getEquiv(k);
 
   for (const auto & it : eset)
     {

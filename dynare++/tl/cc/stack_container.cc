@@ -96,8 +96,8 @@ FoldedStackContainer::multAndAddSparse1(const FSSparseTensor &t,
 void
 WorkerFoldMAASparse1::operator()(std::mutex &mut)
 {
-  const EquivalenceSet &eset = ebundle.get(out.dimen());
-  const PermutationSet &pset = tls.pbundle->get(t.dimen());
+  const EquivalenceSet &eset = TLStatic::getEquiv(out.dimen());
+  const PermutationSet &pset = TLStatic::getPerm(t.dimen());
   Permutation iden(t.dimen());
 
   UPSTensor slice(t, cont.getStackSizes(), coor,
@@ -134,7 +134,7 @@ WorkerFoldMAASparse1::operator()(std::mutex &mut)
 WorkerFoldMAASparse1::WorkerFoldMAASparse1(const FoldedStackContainer &container,
                                            const FSSparseTensor &ten,
                                            FGSTensor &outten, const IntSequence &c)
-  : cont(container), t(ten), out(outten), coor(c), ebundle(*(tls.ebundle))
+  : cont(container), t(ten), out(outten), coor(c)
 {
 }
 
@@ -213,7 +213,7 @@ void
 FoldedStackContainer::multAndAddSparse3(const FSSparseTensor &t,
                                         FGSTensor &out) const
 {
-  const EquivalenceSet &eset = ebundle.get(out.dimen());
+  const EquivalenceSet &eset = TLStatic::getEquiv(out.dimen());
   for (Tensor::index run = out.begin(); run != out.end(); ++run)
     {
       Vector outcol{out.getCol(*run)};
@@ -286,7 +286,7 @@ FoldedStackContainer::multAndAddStacks(const IntSequence &coor,
                                        const FGSTensor &g,
                                        FGSTensor &out, std::mutex &mut) const
 {
-  const EquivalenceSet &eset = ebundle.get(out.dimen());
+  const EquivalenceSet &eset = TLStatic::getEquiv(out.dimen());
 
   UGSTensor ug(g);
   UFSTensor dummy_u(0, numStacks(), g.dimen());
@@ -331,7 +331,7 @@ FoldedStackContainer::multAndAddStacks(const IntSequence &coor,
                                        const GSSparseTensor &g,
                                        FGSTensor &out, std::mutex &mut) const
 {
-  const EquivalenceSet &eset = ebundle.get(out.dimen());
+  const EquivalenceSet &eset = TLStatic::getEquiv(out.dimen());
   UFSTensor dummy_u(0, numStacks(), g.dimen());
   for (Tensor::index ui = dummy_u.begin(); ui != dummy_u.end(); ++ui)
     {
@@ -477,8 +477,8 @@ UnfoldedStackContainer::multAndAddSparse1(const FSSparseTensor &t,
 void
 WorkerUnfoldMAASparse1::operator()(std::mutex &mut)
 {
-  const EquivalenceSet &eset = ebundle.get(out.dimen());
-  const PermutationSet &pset = tls.pbundle->get(t.dimen());
+  const EquivalenceSet &eset = TLStatic::getEquiv(out.dimen());
+  const PermutationSet &pset = TLStatic::getPerm(t.dimen());
   Permutation iden(t.dimen());
 
   UPSTensor slice(t, cont.getStackSizes(), coor,
@@ -515,7 +515,7 @@ WorkerUnfoldMAASparse1::operator()(std::mutex &mut)
 WorkerUnfoldMAASparse1::WorkerUnfoldMAASparse1(const UnfoldedStackContainer &container,
                                                const FSSparseTensor &ten,
                                                UGSTensor &outten, const IntSequence &c)
-  : cont(container), t(ten), out(outten), coor(c), ebundle(*(tls.ebundle))
+  : cont(container), t(ten), out(outten), coor(c)
 {
 }
 
@@ -605,7 +605,7 @@ UnfoldedStackContainer::multAndAddStacks(const IntSequence &fi,
                                          const UGSTensor &g,
                                          UGSTensor &out, std::mutex &mut) const
 {
-  const EquivalenceSet &eset = ebundle.get(out.dimen());
+  const EquivalenceSet &eset = TLStatic::getEquiv(out.dimen());
 
   UFSTensor dummy_u(0, numStacks(), g.dimen());
   for (Tensor::index ui = dummy_u.begin(); ui != dummy_u.end(); ++ui)

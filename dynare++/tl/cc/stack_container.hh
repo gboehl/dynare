@@ -94,13 +94,8 @@ class StackContainerInterface
 public:
   using _Ctype = TensorContainer<_Ttype>;
   using itype = enum { matrix, unit, zero};
-protected:
-  const EquivalenceBundle &ebundle;
 public:
-  StackContainerInterface()
-    : ebundle(*(tls.ebundle))
-  {
-  }
+  StackContainerInterface() = default;
   virtual ~StackContainerInterface()
   = default;
   virtual const IntSequence&getStackSizes() const = 0;
@@ -663,7 +658,6 @@ class WorkerFoldMAASparse1 : public sthread::detach_thread
   const FSSparseTensor &t;
   FGSTensor &out;
   IntSequence coor;
-  const EquivalenceBundle &ebundle;
 public:
   WorkerFoldMAASparse1(const FoldedStackContainer &container,
                        const FSSparseTensor &ten,
@@ -717,7 +711,6 @@ class WorkerUnfoldMAASparse1 : public sthread::detach_thread
   const FSSparseTensor &t;
   UGSTensor &out;
   IntSequence coor;
-  const EquivalenceBundle &ebundle;
 public:
   WorkerUnfoldMAASparse1(const UnfoldedStackContainer &container,
                          const FSSparseTensor &ten,

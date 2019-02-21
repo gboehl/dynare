@@ -76,7 +76,7 @@ extern "C" {
     try
       {
         // initialize tensor library
-        tls.init(order, npred+nboth+nexog);
+        TLStatic::init(order, npred+nboth+nexog);
 
         // form the polynomial
         UTensorPolynomial pol(ny, npred+nboth+nexog);

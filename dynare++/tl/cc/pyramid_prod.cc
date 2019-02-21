@@ -24,7 +24,7 @@ USubTensor::USubTensor(const TensorDimens &bdims,
 {
   TL_RAISE_IF(!hdims.getNVX().isConstant(),
               "Tensor has not full symmetry in USubTensor()");
-  const EquivalenceSet &eset = cont.getEqBundle().get(bdims.dimen());
+  const EquivalenceSet &eset = TLStatic::getEquiv(bdims.dimen());
   zeros();
   for (const auto & it : eset)
     {

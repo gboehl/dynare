@@ -52,7 +52,7 @@ UNormalMoments::generateMoments(int maxdim, const TwoDMatrix &v)
          to identity of indices yileds indices in the equivalence classes. Note
          how the |Equivalence::apply| method works. */
       mom->zeros();
-      const EquivalenceSet eset = ebundle.get(d);
+      const EquivalenceSet eset = TLStatic::getEquiv(d);
       for (const auto &cit : eset)
         if (selectEquiv(cit))
           {
