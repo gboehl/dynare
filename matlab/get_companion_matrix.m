@@ -93,7 +93,7 @@ switch auxiliary_model_type
     %
     %        with
     %
-    %               B₁ = [I+Λ+A₁, -Λ; 0, I]
+    %               B₁ = [I+A₀+A₁, -A₀; 0, I]
     %
     %               Bᵢ = [Aᵢ-Aᵢ₋₁, 0; 0, 0]   for i = 2,…, p
     %        and
