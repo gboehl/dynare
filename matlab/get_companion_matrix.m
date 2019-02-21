@@ -113,8 +113,9 @@ switch auxiliary_model_type
     %       endogenous variable and the trend variable.
     %
     % Build B matrices (VAR in levels)
+    B = zeros(m+q, m+q, p+1);
     B(ecm_eqnums_in_auxiliary_model, ecm_eqnums_in_auxiliary_model, 1) = eye(m) + A0 + AR(:,:,1);
-    B(ecm_eqnums_in_auxiliary_model, target_eqnums_in_auxiliary_model) = -A0;
+    B(ecm_eqnums_in_auxiliary_model, target_eqnums_in_auxiliary_model) = -A0star;
     B(target_eqnums_in_auxiliary_model, target_eqnums_in_auxiliary_model) = eye(q);
     for i = 2:p
         B(ecm_eqnums_in_auxiliary_model,ecm_eqnums_in_auxiliary_model,i) = AR(:,:,i) - AR(:,:,i-1);
