@@ -117,7 +117,7 @@ Prerequisites on Debian GNU/Linux and Ubuntu
 
 Users of MATLAB under GNU/Linux need a working compilation
 environment installed. If not already present, it can be installed via
-``apt-get install build-essential``.
+``apt install build-essential``.
 
 Users of Octave under GNU/Linux should install the package for MEX file
 compilation (under Debian or Ubuntu, it is called ``liboctave-dev``).
