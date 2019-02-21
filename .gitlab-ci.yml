@@ -36,6 +36,7 @@ build_doc:
   artifacts:
     paths:
       - doc/manual/build/
+    expire_in: 1 week
 
 testsuite_matlab:
   stage: test
