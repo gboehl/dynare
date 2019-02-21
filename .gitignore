@@ -56,12 +56,8 @@ checksum
 *.bbl
 *.blg
 *.lof
-/doc/dynare.html
-/doc/dynare.info*
-/doc/texinfo.tex
-/doc/version.texi
-/doc/mdate-sh
-/doc/stamp-vti
+/doc/manual/build
+/doc/manual/utils/version.py
 !/doc/guide.bbl
 !/doc/parallel/AvenueParadigm.pdf
 !/doc/parallel/iVaNo_*.pdf

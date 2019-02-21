@@ -32,12 +32,10 @@ build_doc:
   script:
     - autoreconf -si
     - ./configure --disable-matlab --disable-octave
-    - make -j $(nproc) info pdf html
+    - make -j $(nproc) pdf html
   artifacts:
     paths:
-      - doc/dynare.info*
-      - doc/dynare.html
-      - doc/dynare.pdf
+      - doc/manual/build/
 
 testsuite_matlab:
   stage: test
@@ -105,3 +103,16 @@ test_dynare++:
     - make -C dynare++ check
   dependencies:
     - build_binaries
+
+deploy_manual_unstable:
+  stage: deploy
+  only:
+    - master@Dynare/dynare
+  tags:
+    - secure
+  dependencies:
+    - build_doc
+  script:
+    - rm -rf doc/manual/build/html/_static/mathjax
+    - ln -s /usr/share/javascript/mathjax doc/manual/build/html/_static/mathjax
+    - rsync --recursive --links --delete --compress doc/manual/build/html/ dynbot@eris.dynare.org:/srv/www.dynare.org/manual-unstable/

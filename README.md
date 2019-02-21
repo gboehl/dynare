@@ -77,9 +77,9 @@ A number of tools and libraries are needed in order to recompile everything. You
 - A decent LaTeX distribution (if you want to compile PDF documentation),
   ideally with Beamer
 - For building the reference manual:
-  - [GNU Texinfo](http://www.gnu.org/software/texinfo/)
-  - [Latex2HTML](http://www.latex2html.org), if you want nice mathematical formulas in HTML output
-  - [Doxygen](http://www.stack.nl/%7Edimitri/doxygen/) (if you want to build Dynare preprocessor source documentation)
+  - [Sphinx](http://www.sphinx-doc.org/)
+  - [MathJax](https://www.mathjax.org/)
+- [Doxygen](http://www.stack.nl/%7Edimitri/doxygen/) (if you want to build Dynare preprocessor source documentation)
 - For Octave, the development libraries corresponding to the UMFPACK packaged with Octave
 
 ### Preparing the sources
@@ -217,14 +217,14 @@ All the prerequisites are packaged:
 - `texlive-fonts-extra` (for ccicons)
 - `texlive-latex-recommended`
 - `texlive-science` (for amstex)
-- `texinfo`
 - `lmodern` (for macroprocessor PDF)
-- `latex2html`
+- `python3-sphinx`
+- `libjs-mathjax`
 - `doxygen`
 
 You can install them all at once with:
 ```
-apt install build-essential gfortran liboctave-dev libboost-graph-dev libboost-filesystem-dev libgsl-dev libmatio-dev libslicot-dev libslicot-pic libsuitesparse-dev flex bison autoconf automake texlive texlive-publishers texlive-extra-utils texlive-formats-extra texlive-latex-extra texlive-fonts-extra texlive-latex-recommended texlive-science texinfo lmodern latex2html doxygen
+apt install build-essential gfortran liboctave-dev libboost-graph-dev libboost-filesystem-dev libgsl-dev libmatio-dev libslicot-dev libslicot-pic libsuitesparse-dev flex bison autoconf automake texlive texlive-publishers texlive-extra-utils texlive-formats-extra texlive-latex-extra texlive-fonts-extra texlive-latex-recommended texlive-science lmodern doxygen
 ```
 
 ## Windows

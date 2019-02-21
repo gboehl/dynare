@@ -195,7 +195,7 @@ Files: matlab/utilities/graphics/colorspace.m
 Copyright: 2005-2010 Pascal Getreuer
 License: BSD-2-clause
 
-Files: doc/dynare.texi doc/*.tex doc/*.svg doc/*.pdf doc/*.bib
+Files: doc/*.rst doc/*.tex doc/*.svg doc/*.pdf doc/*.bib
 Copyright: 1996-2019 Dynare Team
 License: GFDL-NIV-1.3+
 

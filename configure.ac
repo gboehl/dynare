@@ -71,16 +71,14 @@ AX_CXX11_THREAD
 AX_MATIO
 AM_CONDITIONAL([HAVE_MATIO], [test "x$has_matio" = "xyes"])
 
-AC_CHECK_PROG([MAKEINFO], [makeinfo], [makeinfo])
-
 AC_CHECK_PROG([PDFLATEX], [pdflatex], [pdflatex])
 AM_CONDITIONAL([HAVE_PDFLATEX], [test "x$PDFLATEX" != "x"])
 
 AC_CHECK_PROG([BIBTEX], [bibtex], [bibtex])
 AM_CONDITIONAL([HAVE_BIBTEX], [test "x$BIBTEX" != "x"])
 
-AC_CHECK_PROG([LATEX2HTML], [latex2html], [latex2html])
-AM_CONDITIONAL([HAVE_LATEX2HTML], [test "x$LATEX2HTML" != "x"])
+AC_CHECK_PROG([SPHINXBUILD], [sphinx-build], [sphinx-build])
+AM_CONDITIONAL([HAVE_SPHINXBUILD], [test "x$SPHINXBUILD" != "x"])
 
 if test "x$PDFLATEX" != "x" -a "x$BIBTEX" != "x"; then
   AX_LATEX_CLASS([beamer], [ax_latex_have_beamer])
@@ -107,6 +105,8 @@ AM_CONDITIONAL([HAVE_LAPACK], [test x"$ax_lapack_ok" = "xyes"])
 AC_CONFIG_FILES([Makefile
                  VERSION
                  doc/Makefile
+                 doc/manual/Makefile
+                 doc/manual/utils/version.py
                  doc/parallel/Makefile
                  doc/internals/Makefile
                  doc/gsa/Makefile
@@ -187,18 +187,12 @@ else
   BUILD_DYNARE_INTERNAL_DOC="no (Org export not enabled)"
 fi
 
-if test "x$MAKEINFO" != "x"; then
-  BUILD_DYNARE_INFO="yes"
-  if test "x$LATEX2HTML" != "x"; then
-    BUILD_DYNARE_HTML_MANUAL="yes"
-  else
-    BUILD_DYNARE_HTML_MANUAL="yes (but with ugly math formulas, missing latex2html)"
-  fi
+if test "x$SPHINXBUILD" != "x"; then
+  BUILD_DYNARE_HTML_MANUAL="yes"
   BUILD_DYNARE_PDF_MANUAL="yes"
 else
-  BUILD_DYNARE_INFO="no (missing makeinfo)"
-  BUILD_DYNARE_HTML_MANUAL="no (missing makeinfo)"
-  BUILD_DYNARE_PDF_MANUAL="no (missing makeinfo)"
+  BUILD_DYNARE_HTML_MANUAL="no (missing sphinx-build)"
+  BUILD_DYNARE_PDF_MANUAL="no (missing sphinx-build)"
 fi
 
 if test "x$OCTAVE" != "x"; then
@@ -228,8 +222,6 @@ PDF documentation (with "make pdf"):
 HTML documentation (with "make html"):
  Dynare reference manual:               $BUILD_DYNARE_HTML_MANUAL
  Dynare internal doc:                   $BUILD_DYNARE_INTERNAL_DOC
-
-Info documentation (with "make info"):  $BUILD_DYNARE_INFO
 
 Testsuites (run with "make check"):
  Dynare for Octave:                     $TESTSUITE_OCTAVE
