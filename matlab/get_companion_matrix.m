@@ -74,7 +74,7 @@ switch auxiliary_model_type
     % Get the number of equations with error correction.
     m  = n - q;
     % Get the indices of trend and EC equations in the auxiliary model.
-    target_eqnums_in_auxiliary_model = find(M_.trend_component.(auxiliary_model_name).targets);
+    target_eqnums_in_auxiliary_model = M_.trend_component.(auxiliary_model_name).target_eqn;
     ecm_eqnums_in_auxiliary_model = find(~M_.trend_component.(auxiliary_model_name).targets);
     % REMARK It is assumed that the non trend equations are the error correction
     %        equations. We assume that the model can be cast in the following form:
@@ -107,12 +107,6 @@ switch auxiliary_model_type
             error([auxiliary_model_name ' is not a trend component model. The LHS variables should be in differences'])
         end
     end
-    % Reorder target_eqnums_in_auxiliary_model to ensure that the order of
-    % the trend variables matches the order of the error correction
-    % variables.
-    [~, reorder] = ismember(M_.trend_component.(auxiliary_model_name).lhs(target_eqnums_in_auxiliary_model), ...
-                           M_.trend_component.(auxiliary_model_name).target_vars(M_.trend_component.(auxiliary_model_name).target_vars > 0));
-    target_eqnums_in_auxiliary_model(reorder) = target_eqnums_in_auxiliary_model;
     % Get the EC matrix (the EC term is assumend to be in t-1).
     %
     % TODO: Check that the EC term is the difference between the
