@@ -154,6 +154,21 @@ if sum(sum(abs(A0s-A0st))) ~= 0
     error('Problem with A0star')
 end
 
+// Remove column associated to U2_G_EYER
+tcm6.A00star(:,2) = [];
+
+if sum(sum(abs(tcm6.AR0-ARt))) ~= 0
+    error('Problem with AR (relative to tcm6.mod, first model)')
+end
+
+if sum(sum(abs(tcm6.A00-A0t))) ~= 0
+    error('Problem with A0 (relative to tcm6.mod, first model)')
+end
+
+if sum(sum(abs(tcm6.A00star-A0st))) ~= 0
+    error('Problem with A0star (relative to tcm6.mod, first model)')
+end
+
 [ARtt, A0tt, A0stt] = tcm8.trend_component_ar_a0('titi', M_.params);
 
 if sum(sum(abs(AR-ARtt))) ~= 0
@@ -168,6 +183,21 @@ if sum(sum(abs(A0s-A0stt(:,[3,2,1])))) ~= 0
     error('Problem with A0star')
 end
 
+// Remove column associated to U2_G_EYER
+tcm6.A01star(:,1) = [];
+
+if sum(sum(abs(tcm6.AR1-ARtt))) ~= 0
+    error('Problem with AR (relative to tcm6.mod, second model)')
+end
+
+if sum(sum(abs(tcm6.A01-A0tt))) ~= 0
+    error('Problem with A0 (relative to tcm6.mod, second model)')
+end
+
+if sum(sum(abs(tcm6.A01star-A0stt))) ~= 0
+    error('Problem with A0star (relative to tcm6.mod, second model)')
+end
+
 pac_model(auxiliary_model_name=toto, discount=beta, model_name=pacman, growth = U2_H_Q_YER400);
 pac.initialize('pacman');
 C0 = oo_.trend_component.toto.CompanionMatrix;
@@ -176,10 +206,18 @@ pac_model(auxiliary_model_name=titi, discount=beta, model_name=pacman1, growth =
 pac.initialize('pacman1');
 C1 = oo_.trend_component.titi.CompanionMatrix;
 
+// Remove U2_G_EYER (columns and rows)
+tcm6.C0(:,[5,13]) = [];
+tcm6.C0([5,13],:) = [];
+
 if any(abs(C0(:)-tcm6.C0(:)))>1e-12
-   error('Companion matrix is not independent of the ordering of the equations.')
+   error('Companion matrix is not independent of the ordering of the equations, first model.')
 end
 
+// Remove U2_G_EYER (columns and rows)
+tcm6.C1(:,[5,13]) = [];
+tcm6.C1([5,13],:) = [];
+
 if any(abs(C1(:)-tcm6.C1(:)))>1e-12
-   error('Companion matrix is not independent of the ordering of the equations.')
+   error('Companion matrix is not independent of the ordering of the equations, second model.')
 end

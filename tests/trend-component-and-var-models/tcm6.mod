@@ -126,10 +126,10 @@ pac_model(auxiliary_model_name=titi, discount=beta, model_name=pacman1, growth =
 pac.initialize('pacman1');
 C1 = oo_.trend_component.titi.CompanionMatrix;
 
-save('tcm6_data.mat', 'C0', 'C1', 'params');
-
 [AR0, A00, A00star] = feval([M_.fname '.trend_component_ar_a0'], 'toto', M_.params);
 [AR1, A01, A01star] = feval([M_.fname '.trend_component_ar_a0'], 'titi', M_.params);
+
+save('tcm6_data.mat', 'C0', 'AR0', 'A00', 'A00star', 'C1', 'AR1', 'A01', 'A01star', 'params');
 
 if sum(sum(abs(AR0-AR1))) ~= 0
     error('Problem with AR matrices')
