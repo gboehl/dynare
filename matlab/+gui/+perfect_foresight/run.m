@@ -47,29 +47,35 @@ jm = loadjson(json, 'SimplifyCell', 1);
 %% INITVAL instructions
 % initialize exogenous shocks to zero and compute initial steady state
 options_.initval_file = 0;
+oo_.steady_state(:, 1) = 0;
+for i = 1:length(jm.initval_endo)
+    oo_.steady_state(jm.initval_endo(i).id) = jm.initval_endo(i).value;
+end
 oo_.exo_steady_state(:, 1) = 0;
+for i = 1:length(jm.initval_exo)
+    oo_.exo_steady_state(jm.initval_exo(i).id) = jm.initval_exo(i).value;
+end
 if M_.exo_nbr > 0
     oo_.exo_simul = ones(M_.maximum_lag,1)*oo_.exo_steady_state';
 end
 if M_.exo_det_nbr > 0
     oo_.exo_det_simul = ones(M_.maximum_lag,1)*oo_.exo_det_steady_state';
 end
-steady;
-if nargout == 1
-    data2json = struct();
-    data2json.steady_state1 = oo_.steady_state;
-end
 
 %% ENDVAL instructions
 % initialize exogenous shocks to zero and compute final ss unless there is a permanent shock
+ys0_ = [];
+ex0_ = [];
 M_.det_shocks = [];
-ys0_= oo_.steady_state;
-ex0_ = oo_.exo_steady_state;
-permanent_shock_exists = isfield(jm, 'permanent_shocks') && ~isempty(jm.permanent_shocks);
-if permanent_shock_exists
-    for i = 1:length(jm.permanent_shocks)
-        s = jm.permanent_shocks(i);
-        oo_.exo_steady_state(s.index) = s.value;
+if ~isempty(jm.anticipated_permanent_shocks) || ~isempty(jm.endval_endo)
+    ys0_= oo_.steady_state;
+    ex0_ = oo_.exo_steady_state;
+    for i = 1:length(jm.endval_endo)
+        oo_.steady_state(jm.endval_endo(i).id) = jm.endval_endo(i).value;
+    end
+    for i = 1:length(jm.anticipated_permanent_shocks)
+        s = jm.anticipated_permanent_shocks(i);
+        oo_.exo_steady_state(s.exo_id) = s.value;
         if s.start_period > 1
             % if the permanent shock does not start at the initial period
             % add a shocks block to mask the unnecessary periods
@@ -77,19 +83,12 @@ if permanent_shock_exists
                 M_.det_shocks; ...
                 struct(...
                 'exo_det', 0, ...
-                'exo_id', s.index, ...
+                'exo_id', s.exo_id, ...
                 'multiplicative', 0, ...
                 'periods', 1:s.start_period, ...
                 'value', 0)];
         end
     end
-else
-    oo_.exo_steady_state(:, 1) = 0;
-end
-steady;
-savedpermanentSS = oo_.steady_state;
-if nargout == 1
-    data2json.steady_state2 = oo_.steady_state;
 end
 
 %% SHOCKS instructions (for transitory shocks)
@@ -99,7 +98,7 @@ if isfield(jm, 'transitory_shocks') && ~isempty(jm.transitory_shocks)
         M_.det_shocks = [ ...
             M_.det_shocks; ...
             struct('exo_det', 0, ...
-            'exo_id', s.index, ...
+            'exo_id', s.exo_id, ...
             'multiplicative', 0, ...
             'periods', s.start_period:s.end_period, ...
             'value', s.value)];
