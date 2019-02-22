@@ -137,7 +137,7 @@ for e=1:number_of_pac_eq
     if ~isempty(h0)
         DynareModel.params(pacmodel.eqyations.(eqtag).h0_param_indices) = h0;
     else
-        if isfield(equations.(eqtag), 'h0_param_indices') && ~isempty(equations.(eqtag).h0_param_indices)
+        if ~isempty(equations.(eqtag).h0_param_indices)
             DynareModel.params(equations.(eqtag).h0_param_indices) = .0;
         end
     end
@@ -145,7 +145,7 @@ for e=1:number_of_pac_eq
     if ~isempty(h1)
         DynareModel.params(equations.(eqtag).h1_param_indices) = h1;
     else
-        if isfield(equations.(eqtag), 'h1_param_indices') && ~isempty(equations.(eqtag).h1_param_indices)
+        if ~isempty(equations.(eqtag).h1_param_indices)
             DynareModel.params(equations.(eqtag).h1_param_indices) = .0;
         end
     end 
