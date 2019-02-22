@@ -106,8 +106,14 @@ if isfield(jm, 'transitory_shocks') && ~isempty(jm.transitory_shocks)
     M_.exo_det_length = 0;
 end
 
-if isfield(jm, 'unanticipated_shocks') && ~isempty(jm.unanticipated_shocks) ...
-        || isfield(jm, 'expected_date') && ~isempty(jm.expected_date)
+%% Simulation
+% No unanticipated shocks
+if isempty(jm.unanticipated_permanent_shocks) && isempty(jm.unanticipated_transitory_shocks)
+    options_.periods = jm.simperiods;
+    perfect_foresight_setup;
+    perfect_foresight_solver;
+    return
+end
     nonanticip = jm.nonanticipmatrix;
     rowindex = 1;
     firstsimul = 0;
