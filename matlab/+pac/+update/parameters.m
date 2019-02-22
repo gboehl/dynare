@@ -1,4 +1,4 @@
-function DynareModel = parameters(pacname, DynareModel, DynareOutput)
+function DynareModel = parameters(pacname, DynareModel, DynareOutput, verbose)
 
 % Updates the parameters of a PAC equation.
 %
@@ -13,7 +13,7 @@ function DynareModel = parameters(pacname, DynareModel, DynareOutput)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2018 Dynare Team
+% Copyright (C) 2018-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -29,6 +29,10 @@ function DynareModel = parameters(pacname, DynareModel, DynareOutput)
 %
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+
+if nargin<4
+    verbose = true;
+end
 
 % Check that the first input is a row character array.
 if ~isrow(pacname)==1 || ~ischar(pacname)
@@ -61,85 +65,92 @@ if ~isfield(varcalib, 'CompanionMatrix') || any(isnan(varcalib.CompanionMatrix(:
     error('Auxiliary model %s has to be estimated first.', pacmodel.auxiliary_model_name)
 end
 
-% Build the vector of PAC parameters (ECM parameter + autoregressive parameters).
-pacvalues = DynareModel.params([pacmodel.ec.params; pacmodel.ar.params(1:pacmodel.max_lag)']);
+% Show the equations where this PAC model is used.
+number_of_pac_eq = size(pacmodel.tag_map, 1);
+if verbose
+    fprintf('PAC model %s is used in %u equation(s):\n', pacname, number_of_pac_eq);
+    skipline()
+    for i=1:number_of_pac_eq
+        fprintf('    - %s\n', pacmodel.tag_map{i,1});
+    end
+    skipline()
+end
 
-% Get the indices for the stationary/nonstationary variables in the VAR system.
-id = find(strcmp(DynareModel.endo_names{pacmodel.ec.vars(find(~pacmodel.ec.isendo))}, varmodel.list_of_variables_in_companion_var));
+equations = pacmodel.equations;
 
-if isempty(id)
-    % Find the auxiliary variables if any
-    ad = find(cell2mat(cellfun(@(x) isauxiliary(x, [8 10]), varmodel.list_of_variables_in_companion_var, 'UniformOutput', false)));
-    if isempty(ad)
-        error('Cannot find the trend variable in the Companion VAR/VECM model.')
-    else
-        for i=1:length(ad)
-            auxinfo = DynareModel.aux_vars(get_aux_variable_id(varmodel.list_of_variables_in_companion_var{ad(i)}));
-            if isequal(auxinfo.endo_index, pacmodel.ec.vars(find(~pacmodel.ec.isendo)))
-                id = ad(i);
-                break
-            end
-            if isequal(auxinfo.type, 8) && isequal(auxinfo.orig_index, pacmodel.ec.vars(find(~pacmodel.ec.isendo)))
-                id = ad(i);
-                break
+for e=1:number_of_pac_eq
+    eqtag = pacmodel.tag_map{e,2};
+    % Build the vector of PAC parameters (ECM parameter + autoregressive parameters).
+    pacvalues = DynareModel.params([equations.(eqtag).ec.params; equations.(eqtag).ar.params(1:equations.(eqtag).max_lag)']);
+    % Get the indices for the stationary/nonstationary variables in the VAR system.
+    id = find(strcmp(DynareModel.endo_names{equations.(eqtag).ec.vars(~equations.(eqtag).ec.isendo)}, varmodel.list_of_variables_in_companion_var));
+    if isempty(id)
+        % Find the auxiliary variables if any
+        ad = find(cell2mat(cellfun(@(x) isauxiliary(x, [8 10]), varmodel.list_of_variables_in_companion_var, 'UniformOutput', false)));
+        if isempty(ad)
+            error('Cannot find the trend variable in the Companion VAR/VECM model.')
+        else
+            for i=1:length(ad)
+                auxinfo = DynareModel.aux_vars(get_aux_variable_id(varmodel.list_of_variables_in_companion_var{ad(i)}));
+                if isequal(auxinfo.endo_index, equations.(eqtag).ec.vars(~equations.(eqtag).ec.isendo))
+                    id = ad(i);
+                    break
+                end
+                if isequal(auxinfo.type, 8) && isequal(auxinfo.orig_index, equations.(eqtag).ec.vars(~equations.(eqtag).ec.isendo))
+                    id = ad(i);
+                    break
+                end
             end
         end
+        if isempty(id)
+            error('Cannot find the trend variable in the Companion VAR/VECM model.')
+        end
     end
-    if isempty(id)
-        error('Cannot find the trend variable in the Companion VAR/VECM model.')
-    end
-end
-
-if isequal(pacmodel.auxiliary_model_type, 'var')
-    if varmodel.nonstationary(id)
-        idns = id;
-        ids = [];
+    if isequal(pacmodel.auxiliary_model_type, 'var')
+        if varmodel.nonstationary(id)
+            idns = id;
+            ids = [];
+        else
+            idns = [];
+            ids = id;
+        end
     else
-        idns = [];
-        ids = id;
+        % Trend component model is assumed.
+        ids = [];
+        idns = id;
     end
-else
-    % Trend component model is assumed.
-    ids = [];
-    idns = id;
-end
-
-% Get the value of the discount factor.
-beta = DynareModel.params(pacmodel.discount_index);
-
-% Is growth argument passed to pac_expectation?
-if isfield(pacmodel, 'growth_index')
-    growth_flag = true;
-else
-    growth_flag = false;
-end
-
-% Get h0 and h1 vectors (plus the parameter for the growth neutrality correction).
-if growth_flag
-    [h0, h1, growthneutrality] = hVectors([pacvalues; beta], varcalib.CompanionMatrix, ids, idns, pacmodel.auxiliary_model_type);
-else
-    [h0, h1] = hVectors([pacvalues; beta], varcalib.CompanionMatrix, ids, idns, pacmodel.auxiliary_model_type);
-end
-
-% Update the parameters related to the stationary components.
-if ~isempty(h0)
-    DynareModel.params(pacmodel.h0_param_indices) = h0;
-else
-    if isfield(pacmodel, 'h0_param_indices') && ~isempty(pacmodel.h0_param_indices)
-        DynareModel.params(pacmodel.h0_param_indices) = .0;
+    % Get the value of the discount factor.
+    beta = DynareModel.params(pacmodel.discount_index);
+    % Is growth argument passed to pac_expectation?
+    if isfield(pacmodel, 'growth_index')
+        growth_flag = true;
+    else
+        growth_flag = false;
     end
-end
-
-% Update the parameters related to the nonstationary components.
-if ~isempty(h1)
-    DynareModel.params(pacmodel.h1_param_indices) = h1;
-else
-    if isfield(pacmodel, 'h1_param_indices') && ~isempty(pacmodel.h1_param_indices)
-        DynareModel.params(pacmodel.h1_param_indices) = .0;
+    % Get h0 and h1 vectors (plus the parameter for the growth neutrality correction).
+    if growth_flag
+        [h0, h1, growthneutrality] = hVectors([pacvalues; beta], varcalib.CompanionMatrix, ids, idns, pacmodel.auxiliary_model_type);
+    else
+        [h0, h1] = hVectors([pacvalues; beta], varcalib.CompanionMatrix, ids, idns, pacmodel.auxiliary_model_type);
     end
-end
-
-% Update the parameter related to the growth neutrality correction.
-if growth_flag
-    DynareModel.params(pacmodel.growth_neutrality_param_index) = growthneutrality;
+    % Update the parameters related to the stationary components.
+    if ~isempty(h0)
+        DynareModel.params(pacmodel.eqyations.(eqtag).h0_param_indices) = h0;
+    else
+        if isfield(equations.(eqtag), 'h0_param_indices') && ~isempty(equations.(eqtag).h0_param_indices)
+            DynareModel.params(equations.(eqtag).h0_param_indices) = .0;
+        end
+    end
+    % Update the parameters related to the nonstationary components.
+    if ~isempty(h1)
+        DynareModel.params(equations.(eqtag).h1_param_indices) = h1;
+    else
+        if isfield(equations.(eqtag), 'h1_param_indices') && ~isempty(equations.(eqtag).h1_param_indices)
+            DynareModel.params(equations.(eqtag).h1_param_indices) = .0;
+        end
+    end 
+    % Update the parameter related to the growth neutrality correction.
+    if growth_flag
+        DynareModel.params(pacmodel.growth_neutrality_param_index) = growthneutrality;
+    end
 end

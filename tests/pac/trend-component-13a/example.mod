@@ -69,6 +69,6 @@ end;
 // Initialize the PAC model (build the Companion VAR representation for the auxiliary model).
 pac.initialize('pacman');
 
-if ~isequal(M_.pac.pacman.ec.isendo, [false, true])
+if ~isequal(M_.pac.pacman.equations.(M_.pac.pacman.tag_map{strcmp(M_.pac.pacman.tag_map(:,1), 'zpac'),2}).ec.isendo, [false, true])
    error('ec.isendo vector is wrong.')
 end

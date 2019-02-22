@@ -1,7 +1,7 @@
-function [pacmodl, lhs, rhs, pnames, enames, xnames, pid, eid, xid, pnames_, ipnames_, params, data, islaggedvariables] = ...
+function [pacmodl, lhs, rhs, pnames, enames, xnames, pid, eid, xid, pnames_, ipnames_, params, data, islaggedvariables, eqtag] = ...
     init(M_, oo_, eqname, params, data, range)
 
-% Copyright (C) 2018 Dynare Team
+% Copyright (C) 2018-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -33,6 +33,9 @@ pacmodl = pacmodl.name;
 
 % Get the transformed equation to be estimated.
 [lhs, rhs] = get_lhs_and_rhs(eqname, M_);
+
+% Get the equation tag (in M_.pac.(pacmodl).equations)
+eqtag = M_.pac.(pacmodl).tag_map{strcmp(M_.pac.(pacmodl).tag_map(:,1), eqname),2};
 
 % Get the parameters and variables in the PAC equation.
 [pnames, enames, xnames, pid, eid, xid] = get_variables_and_parameters_in_equation(lhs, rhs, M_);
@@ -67,9 +70,9 @@ end
 stack = dbstack;
 ipnames__ = ipnames_;                              % The user provided order.
 if isequal(stack(2).name, 'iterative_ols')
-    ipnames_  = [M_.pac.(pacmodl).ec.params; M_.pac.(pacmodl).ar.params']; % The correct order.
-    if isfield(M_.pac.(pacmodl), 'share_of_optimizing_agents_index')
-        ipnames_ = [ipnames_; M_.pac.(pacmodl).share_of_optimizing_agents_index];
+    ipnames_  = [M_.pac.(pacmodl).equations.(eqtag).ec.params; M_.pac.(pacmodl).equations.(eqtag).ar.params']; % The correct order.
+    if isfield(M_.pac.(pacmodl).equations.(eqtag), 'share_of_optimizing_agents_index')
+        ipnames_ = [ipnames_; M_.pac.(pacmodl).equations.(eqtag).share_of_optimizing_agents_index];
     end
     for i=1:length(ipnames_)
         if ~ismember(ipnames_(i), ipnames__)

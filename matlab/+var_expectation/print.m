@@ -18,7 +18,7 @@ function print(varexpectationmodelname, withcalibration)
 % These routines are saved under the {modfilename}/model/varexpectationmodel subfolder, and can be
 % used after in another mod file (ie included with the macro directive @#include).
 
-% Copyright (C) 2018 Dynare Team
+% Copyright (C) 2018-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -40,4 +40,4 @@ if nargin<2
     withcalibration = true;
 end
 
-print_expectations(varexpectationmodelname, 'var-expectations', withcalibration);
+print_expectations('fake', varexpectationmodelname, 'var-expectations', withcalibration);

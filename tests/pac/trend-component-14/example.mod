@@ -79,7 +79,7 @@ set_dynare_seed('default');
 TrueData = simul_backward_model(initialconditions, 300);
 
 // Print expanded PAC_EXPECTATION term.
-pac.print('pacman');
+pac.print('pacman', 'zpac');
 
 verbatim;
   set_dynare_seed('default');

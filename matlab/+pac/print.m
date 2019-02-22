@@ -1,9 +1,10 @@
-function print(pacexpectationmodelname, withcalibration)
+function print(pacexpectationmodelname, eqname, withcalibration)
 
 % Prints the exansion of the PAC_EXPECTATION term in files.
 %
 % INPUTS
-% - pacepxpectationmodelname       [string]    Name of the expectation model.
+% - pacexpectationmodelname       [string]     Name of the expectation model.
+% - eqname                         [string]    Name of the equation.
 % - withcalibration                [logical]   Prints calibration if true.
 %
 % OUTPUTS
@@ -18,7 +19,7 @@ function print(pacexpectationmodelname, withcalibration)
 % These routines are saved under the {modfilename}/model/pacexpectationmodel subfolder, and can be
 % used after in another mod file (ie included with the macro directive @#include).
 
-% Copyright (C) 2018 Dynare Team
+% Copyright (C) 2018-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -35,9 +36,9 @@ function print(pacexpectationmodelname, withcalibration)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-if nargin<2
+if nargin<3
     % Print calibration by default.
     withcalibration = true;
 end
 
-print_expectations(pacexpectationmodelname, 'pac-expectations', withcalibration);
+print_expectations(eqname, pacexpectationmodelname, 'pac-expectations', withcalibration);

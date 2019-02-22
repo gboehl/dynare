@@ -76,11 +76,11 @@ if nargin>4 && (isequal(optimizer, 'GaussNewton') || isequal(optimizer, 'lsqnonl
     objective = 'r_';
 end
 
-[pacmodl, lhs, rhs, pnames, enames, xnames, pid, eid, xid, ~, ipnames_, params, data, islaggedvariables] = ...
+[pacmodl, lhs, rhs, pnames, enames, xnames, pid, eid, xid, ~, ipnames_, params, data, islaggedvariables, eqtag] = ...
     pac.estimate.init(M_, oo_, eqname, params, data, range);
 
 % Check that the error correction term is correct.
-if M_.pac.(pacmodl).ec.isendo(1)
+if M_.pac.(pacmodl).equations.(eqtag).ec.isendo(1)
     error(['\nThe error correction term in PAC equation (%s) is not correct.\nThe ' ...
            'error correction term should be the difference between a trend\n' ...
            'and the level of the endogenous variable.'], pacmodl);
@@ -140,7 +140,7 @@ for i=1:length(ipnames_)
     fprintf(fid, 'DynareModel.params(%u) = params(%u);\n', ipnames_(i), i);
 end
 fprintf(fid, '\n');
-fprintf(fid, 'DynareModel = pac.update.parameters(''%s'', DynareModel, DynareOutput);\n', pacmodl);
+fprintf(fid, 'DynareModel = pac.update.parameters(''%s'', DynareModel, DynareOutput, false);\n', pacmodl);
 fprintf(fid, '\n');
 fprintf(fid, 'r = %s-(%s);\n', lhs, rhs);
 fclose(fid);
@@ -162,7 +162,7 @@ for i=1:length(ipnames_)
     fprintf(fid, 'DynareModel.params(%u) = params(%u);\n', ipnames_(i), i);
 end
 fprintf(fid, '\n');
-fprintf(fid, 'DynareModel = pac.update.parameters(''%s'', DynareModel, DynareOutput);\n', pacmodl);
+fprintf(fid, 'DynareModel = pac.update.parameters(''%s'', DynareModel, DynareOutput, false);\n', pacmodl);
 fprintf(fid, '\n');
 fprintf(fid, 'r = %s-(%s);\n', lhs, rhs);
 fprintf(fid, 's = r''*r;\n');
@@ -194,7 +194,7 @@ else
         % Nothing to do here.
       case 'lsqnonlin'
         bounds = ones(length(params0),1)*[-Inf,Inf];
-        bounds(strcmp(fieldnames(params), M_.param_names(M_.pac.(pacmodl).ec.params)),1)  = .0;
+        bounds(strcmp(fieldnames(params), M_.param_names(M_.pac.(pacmodl).equations.(eqtag).ec.params)),1)  = .0;
       case 'fmincon'
         if isoctave
             error('Optimization algorithm ''fmincon'' is not available under Octave')
@@ -203,7 +203,7 @@ else
         end
         minalgo = 1;
         bounds = ones(length(params0),1)*[-Inf,Inf];
-        bounds(strcmp(fieldnames(params), M_.param_names(M_.pac.(pacmodl).ec.params)),1)  = .0;
+        bounds(strcmp(fieldnames(params), M_.param_names(M_.pac.(pacmodl).equations.(eqtag).ec.params)),1)  = .0;
       case 'fminunc'
         if isoctave && ~user_has_octave_forge_package('optim')
             error('Optimization algorithm ''fminunc'' requires the optim package')
@@ -225,7 +225,7 @@ else
       case 'annealing'
         minalgo = 2;
         bounds = ones(length(params0),1)*[-Inf,Inf];
-        bounds(strcmp(fieldnames(params), M_.param_names(M_.pac.(pacmodl).ec.params)),1)  = .0;
+        bounds(strcmp(fieldnames(params), M_.param_names(M_.pac.(pacmodl).equations.(eqtag).ec.params)),1)  = .0;
         parameter_names = fieldnames(params);
       case 'particleswarm'
         if isoctave
@@ -235,7 +235,7 @@ else
         end
         minalgo = 12;
         bounds = ones(length(params0),1)*[-Inf,Inf];
-        bounds(strcmp(fieldnames(params), M_.param_names(M_.pac.(pacmodl).ec.params)),1)  = .0;
+        bounds(strcmp(fieldnames(params), M_.param_names(M_.pac.(pacmodl).equations.(eqtag).ec.params)),1)  = .0;
         parameter_names = fieldnames(params);
       otherwise
         msg = sprintf('%s is not an implemented optimization routine.\n', optimizer);
@@ -322,11 +322,11 @@ C = inv(A)*B*inv(A); % C is the asymptotic covariance of sqrt(T) times the vecto
 C = C/T;
 
 % Save results
-oo_.pac.(pacmodl).ssr = SSR;
-oo_.pac.(pacmodl).estimator = params1;
-oo_.pac.(pacmodl).covariance = C;
-oo_.pac.(pacmodl).student = params1./(sqrt(diag(C)));
+oo_.pac.(pacmodl).equations.(eqtag).ssr = SSR;
+oo_.pac.(pacmodl).equations.(eqtag).estimator = params1;
+oo_.pac.(pacmodl).equations.(eqtag).covariance = C;
+oo_.pac.(pacmodl).equations.(eqtag).student = params1./(sqrt(diag(C)));
 
 % Also save estimated parameters in M_
 M_.params(ipnames_) = params1;
-M_ = pac.update.parameters(pacmodl, M_, oo_);
+M_ = pac.update.parameters(pacmodl, M_, oo_, false);

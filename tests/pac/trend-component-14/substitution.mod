@@ -30,7 +30,7 @@ e_c_m =  .5;
 c_z_1 =  .2;
 c_z_2 = -.1;
 
-@#include "example/model/pac-expectations/pacman-parameters.inc"
+@#include "example/model/pac-expectations/eq0-pacman-parameters.inc"
 
 model;
 
@@ -51,7 +51,7 @@ x2bar = x2bar(-1) + ex2bar;
 
 [name='zpac']
 diff(z) = e_c_m*(x1(-1)-z(-1)) + c_z_1*diff(z(-1))  + c_z_2*diff(z(-2)) +
-@#include "example/model/pac-expectations/pacman-expression.inc"
+@#include "example/model/pac-expectations/eq0-pacman-expression.inc"
 + ez;
 
 end;

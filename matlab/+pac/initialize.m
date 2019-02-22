@@ -8,7 +8,7 @@ function initialize(pacmodel)
 % OUTPUTS
 % None
 
-% Copyright (C) 2018 Dynare Team
+% Copyright (C) 2018-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -27,16 +27,4 @@ function initialize(pacmodel)
 
 global M_
 
-auxiliary_model_name = M_.pac.(pacmodel).auxiliary_model_name;
-
-if isfield(M_, 'var') && isfield(M_.var, auxiliary_model_name)
-    auxiliary_model_type = 'var';
-elseif isfield(M_, 'trend_component') && isfield(M_.trend_component, auxiliary_model_name)
-    auxiliary_model_type = 'trend_component';
-else
-    error('Unknown type of auxiliary model.')
-end
-
-M_.pac.(pacmodel).auxiliary_model_type = auxiliary_model_type;
-
-get_companion_matrix(auxiliary_model_name, auxiliary_model_type);
+get_companion_matrix(M_.pac.(pacmodel).auxiliary_model_name, M_.pac.(pacmodel).auxiliary_model_type);

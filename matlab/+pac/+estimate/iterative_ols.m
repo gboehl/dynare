@@ -22,7 +22,7 @@ function iterative_ols(eqname, params, data, range)
 %     equation must have NaN values in the object.
 % [4] It is assumed that the residual is additive.
 
-% Copyright (C) 2018 Dynare Team
+% Copyright (C) 2018-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -43,17 +43,17 @@ global M_ oo_
 
 debug = false; % If true, prints the value of SSR for the initial guess.
 
-[pacmodl, ~, rhs, ~, ~, ~, ~, ~, ~, ~, ipnames_, params, data] = ...
+[pacmodl, ~, rhs, ~, ~, ~, ~, ~, ~, ~, ipnames_, params, data, ~, eqtag] = ...
     pac.estimate.init(M_, oo_, eqname, params, data, range);
 
 % Set initial condition.
 params0 = cell2mat(struct2cell(params));
 
 % Set flag for models with non optimizing agents.
-is_non_optimizing_agents = isfield(M_.pac.(pacmodl), 'non_optimizing_behaviour');
+is_non_optimizing_agents = isfield(M_.pac.(pacmodl).equations.(eqtag), 'non_optimizing_behaviour');
 
 if is_non_optimizing_agents
-    non_optimizing_behaviour = M_.pac.(pacmodl).non_optimizing_behaviour;
+    non_optimizing_behaviour = M_.pac.(pacmodl).equations.(eqtag).non_optimizing_behaviour;
     non_optimizing_behaviour_params = NaN(length(non_optimizing_behaviour.params), 1);
     noparams = isnan(non_optimizing_behaviour.params);
     if ~all(noparams)
@@ -70,9 +70,10 @@ if is_non_optimizing_agents
     end
     non_optimizing_behaviour_params = non_optimizing_behaviour_params.*transpose(non_optimizing_behaviour.scaling_factor);
     % Set flag for the estimation of the share of non optimizing agents.
-    estimate_non_optimizing_agents_share = ismember(M_.param_names(M_.pac.(pacmodl).share_of_optimizing_agents_index), fieldnames(params));
+    estimate_non_optimizing_agents_share = ismember(M_.param_names(M_.pac.(pacmodl).equations.(eqtag).share_of_optimizing_agents_index), fieldnames(params));
+    estimate_non_optimizing_agents_share
     if ~estimate_non_optimizing_agents_share
-        share_of_optimizing_agents = M_.params(M_.pac.(pacmodl).share_of_optimizing_agents_index);
+        share_of_optimizing_agents = M_.params(M_.pac.(pacmodl).equations.(eqtag).share_of_optimizing_agents_index);
         if share_of_optimizing_agents>1 || share_of_optimizing_agents<0
             error('The share of optimizing agents shoud be in (0,1).')
         end
@@ -85,11 +86,11 @@ end
 % Build PAC expectation matrix expression.
 dataForPACExpectation0 = dseries();
 listofvariables0 = {};
-if ~isempty(M_.pac.(pacmodl).h0_param_indices)
-    for i=1:length(M_.pac.(pacmodl).h0_param_indices)
-        match = regexp(rhs, sprintf('(?<var>((\\w*)|\\w*\\(-1\\)))\\*%s', M_.param_names{M_.pac.(pacmodl).h0_param_indices(i)}), 'names');
+if ~isempty(M_.pac.(pacmodl).equations.(eqtag).h0_param_indices)
+    for i=1:length(M_.pac.(pacmodl).equations.(eqtag).h0_param_indices)
+        match = regexp(rhs, sprintf('(?<var>((\\w*)|\\w*\\(-1\\)))\\*%s', M_.param_names{M_.pac.(pacmodl).equations.(eqtag).h0_param_indices(i)}), 'names');
         if isempty(match)
-            match = regexp(rhs, sprintf('%s\\*(?<var>((\\w*\\(-1\\))|(\\w*)))', M_.param_names{M_.pac.(pacmodl).h0_param_indices(i)}), 'names');
+            match = regexp(rhs, sprintf('%s\\*(?<var>((\\w*\\(-1\\))|(\\w*)))', M_.param_names{M_.pac.(pacmodl).equations.(eqtag).h0_param_indices(i)}), 'names');
         end
         if isempty(strfind(match.var, '(-1)'))
             listofvariables0{i} = match.var;
@@ -106,11 +107,11 @@ end
 
 dataForPACExpectation1 = dseries();
 listofvariables1 = {};
-if ~isempty(M_.pac.(pacmodl).h1_param_indices)
-    for i=1:length(M_.pac.(pacmodl).h1_param_indices)
-        match = regexp(rhs, sprintf('(?<var>((\\w*)|(\\w*\\(-1\\))))\\*%s', M_.param_names{M_.pac.(pacmodl).h1_param_indices(i)}), 'names');
+if ~isempty(M_.pac.(pacmodl).equations.(eqtag).h1_param_indices)
+    for i=1:length(M_.pac.(pacmodl).equations.(eqtag).h1_param_indices)
+        match = regexp(rhs, sprintf('(?<var>((\\w*)|(\\w*\\(-1\\))))\\*%s', M_.param_names{M_.pac.(pacmodl).equations.(eqtag).h1_param_indices(i)}), 'names');
         if isempty(match)
-            match = regexp(rhs, sprintf('%s\\*(?<var>((\\w*\\(-1\\))|(\\w*)))', M_.param_names{M_.pac.(pacmodl).h1_param_indices(i)}), 'names');
+            match = regexp(rhs, sprintf('%s\\*(?<var>((\\w*\\(-1\\))|(\\w*)))', M_.param_names{M_.pac.(pacmodl).equations.(eqtag).h1_param_indices(i)}), 'names');
         end
         if isempty(strfind(match.var, '(-1)'))
             listofvariables1{i} = match.var;
@@ -142,10 +143,10 @@ end
 
 % Reorder ec.vars locally if necessary. Second variable must be the
 % endogenous variable, while the first must be the associated trend.
-if M_.pac.(pacmodl).ec.isendo(2)
-    ecvars = M_.pac.(pacmodl).ec.vars;
+if M_.pac.(pacmodl).equations.(eqtag).ec.isendo(2)
+    ecvars = M_.pac.(pacmodl).equations.(eqtag).ec.vars;
 else
-    ecvars = flip(M_.pac.(pacmodl).ec.vars);
+    ecvars = flip(M_.pac.(pacmodl).equations.(eqtag).ec.vars);
 end
 
 % Build matrix for EC and AR terms.
@@ -154,19 +155,19 @@ DataForOLS = dseries();
 % Error correction term is trend minus the level of the endogenous variable.
 DataForOLS{'ec-term'} = data{M_.endo_names{ecvars(1)}}.lag(1)-data{M_.endo_names{ecvars(2)}}.lag(1);
 listofvariables3 = {'ec-term'};
-xparm = { M_.param_names(M_.pac.(pacmodl).ec.params(1))};
-for i = 1:length(M_.pac.(pacmodl).ar.params)
-    if islagof(M_.pac.(pacmodl).ar.vars(i), M_.pac.(pacmodl).lhs_var)
-        DataForOLS = [DataForOLS, data{M_.endo_names{M_.pac.(pacmodl).ar.vars(i)}}];
-        listofvariables3{i+1} = M_.endo_names{M_.pac.(pacmodl).ar.vars(i)};
-        xparm{i+1} = M_.param_names(M_.pac.(pacmodl).ar.params(i));
+xparm = { M_.param_names(M_.pac.(pacmodl).equations.(eqtag).ec.params(1))};
+for i = 1:length(M_.pac.(pacmodl).equations.(eqtag).ar.params)
+    if islagof(M_.pac.(pacmodl).equations.(eqtag).ar.vars(i), M_.pac.(pacmodl).equations.(eqtag).lhs_var)
+        DataForOLS = [DataForOLS, data{M_.endo_names{M_.pac.(pacmodl).equations.(eqtag).ar.vars(i)}}];
+        listofvariables3{i+1} = M_.endo_names{M_.pac.(pacmodl).equations.(eqtag).ar.vars(i)};
+        xparm{i+1} = M_.param_names(M_.pac.(pacmodl).equations.(eqtag).ar.params(i));
     end
 end
 
 XDATA = DataForOLS{listofvariables3{:}}(range).data;
 
 if estimate_non_optimizing_agents_share
-    [~, ecm_params_id] = setdiff(ipnames_, M_.pac.(pacmodl).share_of_optimizing_agents_index);
+    [~, ecm_params_id] = setdiff(ipnames_, M_.pac.(pacmodl).equations.(eqtag).share_of_optimizing_agents_index);
     [~, share_param_id] = setdiff(1:length(ipnames_), ecm_params_id);
     params0_ = params0(ecm_params_id);
     share_of_optimizing_agents = params0(share_param_id);
@@ -181,10 +182,10 @@ end
 M_.params(ipnames_) = params0;
 
 % Update the reduced form PAC expectation parameters and compute the expectations.
-[PacExpectations, M_] = UpdatePacExpectationsData(dataPAC0, dataPAC1, data, range, pacmodl, M_, oo_);
+[PacExpectations, M_] = UpdatePacExpectationsData(dataPAC0, dataPAC1, data, range, pacmodl, eqtag, M_, oo_);
 
 if debug
-    YDATA = data{M_.endo_names{M_.pac.(pacmodl).lhs_var}}(range).data;
+    YDATA = data{M_.endo_names{M_.pac.(pacmodl).equations.(eqtag).lhs_var}}(range).data;
     if is_non_optimizing_agents
         YDATA = YDATA-share_of_optimizing_agents*PacExpectations;
         YDATA = YDATA-(1-share_of_optimizing_agents)*(dataForNonOptimizingBehaviour(range).data*non_optimizing_behaviour_params);
@@ -202,7 +203,7 @@ counter = 0;
 while noconvergence
     counter = counter+1;
     % Set vector for left handside variable
-    YDATA = data{M_.endo_names{M_.pac.(pacmodl).lhs_var}}(range).data;
+    YDATA = data{M_.endo_names{M_.pac.(pacmodl).equations.(eqtag).lhs_var}}(range).data;
     if is_non_optimizing_agents
         YDATA = YDATA-share_of_optimizing_agents*PacExpectations;
         YDATA = YDATA-(1-share_of_optimizing_agents)*(dataForNonOptimizingBehaviour(range).data*non_optimizing_behaviour_params);
@@ -223,9 +224,9 @@ while noconvergence
     if estimate_non_optimizing_agents_share
         % First update the parameters and compute the PAC expectation reduced form parameters.
         M_.params(ipnames_(ecm_params_id)) = params0_;
-        [PacExpectations, M_] = UpdatePacExpectationsData(dataPAC0, dataPAC1, data, range, pacmodl, M_, oo_);
+        [PacExpectations, M_] = UpdatePacExpectationsData(dataPAC0, dataPAC1, data, range, pacmodl, eqtag, M_, oo_);
         % Set vector for left handside variable.
-        YDATA = data{M_.endo_names{M_.pac.(pacmodl).lhs_var}}(range).data;
+        YDATA = data{M_.endo_names{M_.pac.(pacmodl).equations.(eqtag).lhs_var}}(range).data;
         YDATA = YDATA-dataForNonOptimizingBehaviour(range).data*non_optimizing_behaviour_params;
         % Set vector for regressor.
         ZDATA = XDATA*params0_+PacExpectations-dataForNonOptimizingBehaviour(range).data*non_optimizing_behaviour_params;
@@ -236,23 +237,23 @@ while noconvergence
         M_.params(ipnames_(share_param_id)) = share_of_optimizing_agents;
     else
         M_.params(ipnames_) = params0_;
-        [PacExpectations, M_] = UpdatePacExpectationsData(dataPAC0, dataPAC1, data, range, pacmodl, M_, oo_);
+        [PacExpectations, M_] = UpdatePacExpectationsData(dataPAC0, dataPAC1, data, range, pacmodl, eqtag, M_, oo_);
     end
 end
 
 
 
-function [PacExpectations, Model] = UpdatePacExpectationsData(dataPAC0, dataPAC1, data, range, pacmodl, Model, Output)
+function [PacExpectations, Model] = UpdatePacExpectationsData(dataPAC0, dataPAC1, data, range, pacmodl, eqtag, Model, Output)
     % Update PAC reduced parameters.
-    Model = pac.update.parameters(pacmodl, Model, Output);
+    Model = pac.update.parameters(pacmodl, Model, Output, false);
     % Compute PAC expectation.
     if isempty(dataPAC0)
         PacExpectations = 0;
     else
-        PacExpectations = dataPAC0*Model.params(Model.pac.pacman.h0_param_indices);
+        PacExpectations = dataPAC0*Model.params(Model.pac.(pacmodl).equations.(eqtag).h0_param_indices);
     end
     if ~isempty(dataPAC1)
-        PacExpectations = PacExpectations+dataPAC1*Model.params(Model.pac.pacman.h1_param_indices);
+        PacExpectations = PacExpectations+dataPAC1*Model.params(Model.pac.(pacmodl).equations.(eqtag).h1_param_indices);
     end
     % Add correction for growth neutrality if required.
     correction = 0;
