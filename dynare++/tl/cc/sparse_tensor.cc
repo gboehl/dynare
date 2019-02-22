@@ -115,12 +115,6 @@ FSSparseTensor::FSSparseTensor(int d, int nvar, int r)
 {
 }
 
-FSSparseTensor::FSSparseTensor(const FSSparseTensor &t)
-  : SparseTensor(t),
-    nv(t.nvar()), sym(t.sym)
-{
-}
-
 void
 FSSparseTensor::insert(const IntSequence &key, int r, double c)
 {

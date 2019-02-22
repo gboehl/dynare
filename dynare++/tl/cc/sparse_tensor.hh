@@ -55,9 +55,9 @@ protected:
   using iterator = Map::iterator;
 
   Map m;
-  const int dim;
-  const int nr;
-  const int nc;
+  int dim;
+  int nr;
+  int nc;
   int first_nz_row;
   int last_nz_row;
 public:
@@ -65,12 +65,6 @@ public:
     : dim(d), nr(nnr), nc(nnc), first_nz_row(nr), last_nz_row(-1)
   {
   }
-  SparseTensor(const SparseTensor &t)
-    : m(t.m), dim(t.dim), nr(t.nr), nc(t.nc)
-  {
-  }
-  virtual ~SparseTensor()
-  = default;
   void insert(const IntSequence &s, int r, double c);
   const Map &
   getMap() const
@@ -128,11 +122,10 @@ class FSSparseTensor : public SparseTensor
 public:
   using const_iterator = SparseTensor::const_iterator;
 private:
-  const int nv;
-  const Symmetry sym;
+  int nv;
+  Symmetry sym;
 public:
   FSSparseTensor(int d, int nvar, int r);
-  FSSparseTensor(const FSSparseTensor &t);
   void insert(const IntSequence &s, int r, double c);
   void multColumnAndAdd(const Tensor &t, Vector &v) const;
   const Symmetry &
@@ -158,13 +151,10 @@ class GSSparseTensor : public SparseTensor
 public:
   using const_iterator = SparseTensor::const_iterator;
 private:
-  const TensorDimens tdims;
+  TensorDimens tdims;
 public:
   GSSparseTensor(const FSSparseTensor &t, const IntSequence &ss,
                  const IntSequence &coor, const TensorDimens &td);
-  GSSparseTensor(const GSSparseTensor &t)
-     
-  = default;
   void insert(const IntSequence &s, int r, double c);
   const Symmetry &
   getSym() const override
