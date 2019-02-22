@@ -91,10 +91,10 @@ if ~isempty(jm.anticipated_permanent_shocks) || ~isempty(jm.endval_endo)
     end
 end
 
-%% SHOCKS instructions (for transitory shocks)
-if isfield(jm, 'transitory_shocks') && ~isempty(jm.transitory_shocks)
-    for i = 1:length(jm.transitory_shocks)
-        s = jm.transitory_shocks(i);
+%% SHOCKS instructions (for anticipated transitory shocks)
+if ~isempty(jm.anticipated_transitory_shocks)
+    for i = 1:length(jm.anticipated_transitory_shocks)
+        s = jm.anticipated_transitory_shocks(i);
         M_.det_shocks = [ ...
             M_.det_shocks; ...
             struct('exo_det', 0, ...
