@@ -129,6 +129,15 @@ public:
       insert(std::make_unique<_Ttype>(first_row, num, *(it.second)));
   }
 
+  TensorContainer<_Ttype> &operator=(const TensorContainer<_Ttype> &c)
+  {
+    n = c.n;
+    m.clear();
+    for (const auto &it : c.m)
+      insert(std::make_unique<_Ttype>(*(it.second)));
+  }
+  TensorContainer<_Ttype> &operator=(TensorContainer<_Ttype> &&) = default;
+
   const _Ttype &
   get(const Symmetry &s) const
   {
@@ -302,8 +311,6 @@ public:
     : TensorContainer<UGSTensor>(nn)
   {
   }
-  UGSContainer(const UGSContainer &) = default;
-  UGSContainer(UGSContainer &&) = default;
   UGSContainer(const FGSContainer &c);
   void multAndAdd(const UGSTensor &t, UGSTensor &out) const;
 };
@@ -329,8 +336,6 @@ public:
     : TensorContainer<FGSTensor>(nn)
   {
   }
-  FGSContainer(const FGSContainer &) = default;
-  FGSContainer(FGSContainer &&) = default;
   FGSContainer(const UGSContainer &c);
   void multAndAdd(const FGSTensor &t, FGSTensor &out) const;
   void multAndAdd(const UGSTensor &t, FGSTensor &out) const;

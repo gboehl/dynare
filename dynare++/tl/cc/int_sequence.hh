@@ -98,8 +98,8 @@ public:
   // Inserts an element at a given position
   IntSequence(int i, const IntSequence &s, int pos);
 
-  const IntSequence &operator=(const IntSequence &s);
-  const IntSequence &operator=(IntSequence &&s);
+  IntSequence &operator=(const IntSequence &s);
+  IntSequence &operator=(IntSequence &&s);
   virtual ~IntSequence()
   {
     if (destroy)

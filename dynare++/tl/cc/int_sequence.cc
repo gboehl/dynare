@@ -71,7 +71,7 @@ IntSequence::IntSequence(int i, const IntSequence &s, int pos)
     operator[](jj+1) = s[jj];
 }
 
-const IntSequence &
+IntSequence &
 IntSequence::operator=(const IntSequence &s)
 {
   TL_RAISE_IF(length != s.length, "Wrong length for in-place IntSequence::operator=");
@@ -79,7 +79,7 @@ IntSequence::operator=(const IntSequence &s)
   return *this;
 }
 
-const IntSequence &
+IntSequence &
 IntSequence::operator=(IntSequence &&s)
 {
   TL_RAISE_IF(length != s.length, "Wrong length for in-place IntSequence::operator=");

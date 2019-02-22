@@ -71,10 +71,6 @@ public:
     : IntSequence(std::move(init))
   {
   }
-  // Copy constructor
-  Symmetry(const Symmetry &s) = default;
-  // Move constructor
-  Symmetry(Symmetry &&s) = default;
   // Constructor of implied symmetry for a symmetry and an equivalence class
   Symmetry(const Symmetry &s, const OrdSequence &cl)
     : IntSequence(s, cl.getData())
