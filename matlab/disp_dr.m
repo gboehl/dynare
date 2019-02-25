@@ -1,14 +1,16 @@
 function disp_dr(dr,order,var_list)
-% function disp_dr(dr,order,var_list)
+
 % Display the decision rules
 %
 % INPUTS
-%    dr [struct]:            decision rules
-%    order [int]:            order of approximation
-%    var_list [char array]:  list of endogenous variables for which the
-%                            decision rules should be printed
+% - dr         [struct]      decision rules.
+% - order      [integer]     order of approximation.
+% - var_list   [cell]        list of endogenous variables for which the decision rules should be printed.
 %
-% Copyright (C) 2001-2018 Dynare Team
+% OUTPUTS
+% none
+
+% Copyright (C) 2001-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -31,7 +33,7 @@ if M_.hessian_eq_zero && order~=1
     order = 1;
     warning('disp_dr: using order = 1 because Hessian is equal to zero');
 end
-    
+
 nx =size(dr.ghx,2);
 nu =size(dr.ghu,2);
 if options_.block
@@ -54,7 +56,7 @@ for i=1:nvar
     i_tmp = strmatch(var_list{i}, M_.endo_names(k1), 'exact');
     if isempty(i_tmp)
         disp(var_list{i});
-        error (['One of the variable specified does not exist']) ;
+        error ('One of the variable specified does not exist') ;
     else
         ivar(i) = i_tmp;
     end
@@ -236,26 +238,58 @@ for i = 1:length(M_.aux_vars)
     if M_.aux_vars(i).endo_index == aux_index
         switch M_.aux_vars(i).type
           case 0
+            % endo leads >= 2
             str = sprintf('%s(%d)', M_.endo_names{aux_index}, aux_lead_lag);
             return
           case 1
+            % endo lags >= 2
             orig_name = M_.endo_names{M_.aux_vars(i).orig_index};
+          case 2
+            % exo leads >= 1
+            orig_name = M_.exo_names{M_.aux_vars(i).orig_index};
           case 3
+            % exo lags >= 1
             orig_name = M_.exo_names{M_.aux_vars(i).orig_index};
           case 4
+            % Expectation operator
             str = sprintf('EXPECTATION(%d)(...)', aux_lead_lag);
             return
           case 6
+            % Ramsey's multipliers
             str = sprintf('%s(%d)', M_.endo_names{M_.aux_vars(i).endo_index}, aux_lead_lag);
             return
+          case 8
+            % Diff operator
+            str = sprintf('diff(%s)', M_.endo_names{M_.aux_vars(i).orig_index});
+            return
+          case 9
+            % Lagged diff
+            lags = 0;
+            j = i;
+            while M_.aux_vars(j).type==9
+                j = M_.aux_vars(j).orig_index;
+                lags = lags+1;
+            end
+            str = sprintf('diff(%s(-%u))', M_.endo_names{M_.aux_vars(j).orig_index}, lags);
+            return
+          case 11
+            % Leaded diff
+            leads = 0;
+            j = i;
+            while M_.aux_vars(j).type==11
+                j = M_.aux_vars(j).orig_index;
+                lags = lags+1;
+            end
+            str = sprintf('diff(%s(%u))', M_.endo_names{M_.aux_vars(j).orig_index}, leads);
+            return
           otherwise
-            error(sprintf('Invalid auxiliary type: %s', M_.endo_names{aux_index}))
+            error('Invalid auxiliary type: %s', M_.endo_names{aux_index})
         end
         str = sprintf('%s(%d)', orig_name, M_.aux_vars(i).orig_lead_lag+aux_lead_lag);
         return
     end
 end
-error(sprintf('Could not find aux var: %s', M_.endo_names{aux_index}))
+error('Could not find aux var: %s', M_.endo_names{aux_index})
 end
 
 function [str,flag]=get_print_string(str, x, value_format_zero, value_format_float, flag, options_)
