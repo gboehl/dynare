@@ -16,7 +16,7 @@ function oo_=make_y_(M_,options_,oo_)
 %   none
 %
 
-% Copyright (C) 1996-2017 Dynare Team
+% Copyright (C) 1996-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -36,7 +36,7 @@ function oo_=make_y_(M_,options_,oo_)
 global ys0_
 
 if options_.steadystate_flag
-    [oo_.steady_state,M_.params,check] = ...
+    [oo_.steady_state,M_.params,~] = ...
         evaluate_steady_state_file(oo_.steady_state,oo_.exo_steady_state,M_, ...
                                    options_,~options_.steadystate.nocheck);
 end
@@ -47,9 +47,9 @@ end
 
 if isempty(M_.endo_histval)
     if isempty(ys0_)
-        oo_.endo_simul = [oo_.steady_state*ones(1,M_.maximum_lag+options_.periods+M_.maximum_lead)];
+        oo_.endo_simul = repmat(oo_.steady_state, 1, M_.maximum_lag+options_.periods+M_.maximum_lead);
     else
-        oo_.endo_simul = [ys0_*ones(1,M_.maximum_lag) oo_.steady_state*ones(1,options_.periods+M_.maximum_lead)];
+        oo_.endo_simul = [repmat(ys0_, 1, M_.maximum_lag) repmat(oo_.steady_state, 1,options_.periods+M_.maximum_lead)];
     end
 else
     if ~isempty(ys0_)
@@ -58,5 +58,5 @@ else
     % the first NaNs take care of the case where there are lags > 1 on
     % exogenous variables
     oo_.endo_simul = [M_.endo_histval ...
-                      oo_.steady_state*ones(1,options_.periods+M_.maximum_lead)];
+                      repmat(oo_.steady_state, 1, options_.periods+M_.maximum_lead)];
 end
