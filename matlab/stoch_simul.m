@@ -1,6 +1,6 @@
-function info=stoch_simul(var_list)
+function info = stoch_simul(var_list)
 
-% Copyright (C) 2001-2018 Dynare Team
+% Copyright (C) 2001-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -79,7 +79,7 @@ elseif options_.discretionary_policy
     if ~options_.linear
         error('discretionary_policy: only linear-quadratic problems can be solved');
     end
-    [oo_.dr,ys,info] = discretionary_policy_1(oo_,options_.instruments);
+    [oo_.dr, ~, info] = discretionary_policy_1(oo_,options_.instruments);
 else
     if options_.logged_steady_state %if steady state was previously logged, undo this
         oo_.dr.ys=exp(oo_.dr.ys);
