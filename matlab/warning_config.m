@@ -51,6 +51,7 @@ if isoctave
     warning('off', 'Octave:variable-switch-label');
     warning('off', 'Octave:fortran-indexing');
     warning('off', 'Octave:classdef-to-struct');
+    warning('off', 'Octave:legacy-function'); % For strmatch and isdir
 else
     % In MATLAB >= 7.7, don't display a warning if we use deprecated
     % interface to set seed of random number generators
