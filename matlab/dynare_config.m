@@ -83,8 +83,8 @@ if ~isoctave
     p{end+1} = '/missing/vec';
 end
 
-% ordeig() doesn't exist in Octave
-if isoctave
+% ordeig() doesn't exist in Octave < 5
+if isoctave && octave_ver_less_than('5')
     p{end+1} = '/missing/ordeig';
 end
 
@@ -117,8 +117,8 @@ if ~exist('struct2array')
     p{end+1} = '/missing/struct2array';
 end
 
-% isfile is missing in Octave and Matlab<R2017b
-if isoctave || matlab_ver_less_than('9.3')
+% isfile is missing in Octave < 5 and Matlab < R2017b
+if (isoctave && octave_ver_less_than('5')) || (~isoctave && matlab_ver_less_than('9.3'))
     p{end+1} = '/missing/isfile';
 end
 
