@@ -27,4 +27,9 @@ function initialize(pacmodel)
 
 global M_
 
-get_companion_matrix(M_.pac.(pacmodel).auxiliary_model_name, M_.pac.(pacmodel).auxiliary_model_type);
+if isempty(M_.pac.(pacmodel).auxiliary_model_name)
+    M_.pac.(pacmodel).model_consistent_expectations = true;
+else
+    M_.pac.(pacmodel).model_consistent_expectations = false;
+    get_companion_matrix(M_.pac.(pacmodel).auxiliary_model_name, M_.pac.(pacmodel).auxiliary_model_type);
+end

@@ -47,20 +47,20 @@ end
 % Get PAC model description
 pacmodel = DynareModel.pac.(pacname);
 
-% Get the name of the associated VAR model and test its existence.
+if pacmodel.model_consistent_expectations
+    error('This function cannot be used with Model Consistent Expectation. Try pac.mce.parameters instead.')
+end
+
+% Get the name of the associated auxiliary model (VAR or TREND_COMPONENT) model and test its existence.
 if ~isfield(DynareModel.(pacmodel.auxiliary_model_type), pacmodel.auxiliary_model_name)
     error('Unknown auxiliary model (%s) in PAC model (%s)!', pacmodel.auxiliary_model_name, pacname)
 end
-
 varmodel = DynareModel.(pacmodel.auxiliary_model_type).(pacmodel.auxiliary_model_name);
-
-% Check that we have the values of the VAR matrices.
+% Check that we have the values of the VAR or TREND_COMPONENT matrices.
 if ~isfield(DynareOutput.(pacmodel.auxiliary_model_type), pacmodel.auxiliary_model_name)
     error('Auxiliary model %s has to be estimated first!', pacmodel.auxiliary_model_name)
 end
-
 varcalib = DynareOutput.(pacmodel.auxiliary_model_type).(pacmodel.auxiliary_model_name);
-
 if ~isfield(varcalib, 'CompanionMatrix') || any(isnan(varcalib.CompanionMatrix(:)))
     error('Auxiliary model %s has to be estimated first.', pacmodel.auxiliary_model_name)
 end
