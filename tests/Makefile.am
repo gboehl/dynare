@@ -423,6 +423,7 @@ MODFILES = \
 	dynare-command-options/ramst.mod
 
 OLS_MODFILES = \
+	ecb/SUR/sur_noniterative.mod \
 	ecb/SUR/panel_var_diff_NB_simulation_test.mod \
 	ecb/SUR/panel_var_diff_NB_simulation_zero_eq.mod \
 	ecb/pooled_ols/panel_var_diff_NB_simulation_test.mod \

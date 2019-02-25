@@ -55,6 +55,10 @@ if nargin < 4
     else
         model_name = ['sur_model_number_' num2str(length(fieldnames(oo_.sur)) + 1)];
     end
+else
+    if ~isvarname(model_name)
+        error('the fourth argument, if passed, must be a string')
+    end
 end
 
 if nargin < 3
@@ -64,7 +68,9 @@ end
 if nargin < 2
     param_names = {};
 else
-    assert(iscellstr(param_names), 'the 2nd argument must be a cellstr');
+    if ~iscellstr(param_names)
+        error('the 2nd argument must be a cellstr')
+    end
 end
 
 maxit = 100;
