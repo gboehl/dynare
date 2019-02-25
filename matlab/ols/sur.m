@@ -1,5 +1,5 @@
-function varargout = sur(ds, param_names, eqtags, model_name)
-%function varargout = sur(ds, param_names, eqtags, model_name)
+function varargout = sur(ds, param_names, eqtags, model_name, noniterative)
+%function varargout = sur(ds, param_names, eqtags, model_name, noniterative)
 % Seemingly Unrelated Regressions
 %
 % INPUTS
@@ -9,6 +9,7 @@ function varargout = sur(ds, param_names, eqtags, model_name)
 %                                  estimate all equations
 %   model_name        [string]     name of model to be displayed with
 %                                  report
+%   noniterative      [bool]       if true use noniterative estimation method
 %
 % OUTPUTS
 %   none
@@ -36,8 +37,16 @@ function varargout = sur(ds, param_names, eqtags, model_name)
 global M_ oo_ options_
 
 %% Check input argument
-if nargin < 1 || nargin > 4
-    error('function takes between 1 and 4 arguments');
+if nargin < 1 || nargin > 5
+    error('function takes between 1 and 5 arguments');
+end
+
+if nargin < 5
+    noniterative = false;
+else
+    if ~islogical(noniterative)
+        error('the fifth argument, if passed, must be a boolean')
+    end
 end
 
 if nargin < 4
@@ -140,7 +149,7 @@ for i = 1:maxit
     kLeye = kron(inv(chol(vcv))', eye(oo_.sur.(model_name).dof));
     [q, r] = qr(kLeye*X.data, 0);
     oo_.sur.(model_name).beta = r\(q'*kLeye*Y.data);
-    if max(abs(beta0 - oo_.sur.(model_name).beta)) < tol
+    if noniterative || max(abs(beta0 - oo_.sur.(model_name).beta)) < tol
         break
     end
     beta0 = oo_.sur.(model_name).beta;
