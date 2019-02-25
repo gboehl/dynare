@@ -1,4 +1,6 @@
-EXTRA_DIST = source
+EXTRA_DIST = source \
+	utils/dynare_dom.py \
+	utils/dynare_lex.py
 
 SRC = $(wildcard src/source/*.rst)
 
