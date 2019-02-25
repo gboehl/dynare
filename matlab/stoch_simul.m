@@ -292,7 +292,7 @@ if options_.irf
                     if TeX && any(strcmp('eps',cellstr(options_.graph_format)))
                         fprintf(fidTeX,'\\begin{figure}[H]\n');
                         for j = 1:number_of_plots_to_draw
-                            fprintf(fidTeX,['\\psfrag{%s}[1][][0.5][0]{$%s$}\n'],deblank(mylist(j,:)),deblank(mylistTeX(j,:)));
+                            fprintf(fidTeX,'\\psfrag{%s}[1][][0.5][0]{$%s$}\n',deblank(mylist(j,:)),deblank(mylistTeX(j,:)));
                         end
                         fprintf(fidTeX,'\\centering \n');
                         fprintf(fidTeX,'\\includegraphics[width=%2.2f\\textwidth]{%s_IRF_%s}\n',options_.figures.textwidth*min(j/nc,1),M_.fname,tit{i});
@@ -324,14 +324,14 @@ if options_.irf
                         if TeX && any(strcmp('eps',cellstr(options_.graph_format)))
                             fprintf(fidTeX,'\\begin{figure}[H]\n');
                             for j = 1:nstar
-                                fprintf(fidTeX,['\\psfrag{%s}[1][][0.5][0]{$%s$}\n'],deblank(mylist((fig-1)*nstar+j,:)),deblank(mylistTeX((fig-1)*nstar+j,:)));
+                                fprintf(fidTeX,'\\psfrag{%s}[1][][0.5][0]{$%s$}\n',deblank(mylist((fig-1)*nstar+j,:)),deblank(mylistTeX((fig-1)*nstar+j,:)));
                             end
                             fprintf(fidTeX,'\\centering \n');
                             fprintf(fidTeX,'\\includegraphics[width=%2.2f\\textwidth]{%s_IRF_%s%s}\n',options_.figures.textwidth*min(plt/nc,1),M_.fname,tit{i},int2str(fig));
                             if options_.relative_irf
-                                fprintf(fidTeX,['\\caption{Relative impulse response functions (orthogonalized shock to $%s$).}'], titTeX{i});
+                                fprintf(fidTeX,'\\caption{Relative impulse response functions (orthogonalized shock to $%s$).}', titTeX{i});
                             else
-                                fprintf(fidTeX,['\\caption{Impulse response functions (orthogonalized shock to $%s$).}'], titTeX{i});
+                                fprintf(fidTeX,'\\caption{Impulse response functions (orthogonalized shock to $%s$).}', titTeX{i});
                             end
                             fprintf(fidTeX,'\\label{Fig:IRF:%s:%s}\n', tit{i},int2str(fig));
                             fprintf(fidTeX,'\\end{figure}\n');
@@ -355,14 +355,14 @@ if options_.irf
                     if TeX && any(strcmp('eps',cellstr(options_.graph_format)))
                         fprintf(fidTeX,'\\begin{figure}[H]\n');
                         for j = 1:m
-                            fprintf(fidTeX,['\\psfrag{%s}[1][][0.5][0]{$%s$}\n'],deblank(mylist((nbplt-1)*nstar+j,:)),deblank(mylistTeX((nbplt-1)*nstar+j,:)));
+                            fprintf(fidTeX,'\\psfrag{%s}[1][][0.5][0]{$%s$}\n',deblank(mylist((nbplt-1)*nstar+j,:)),deblank(mylistTeX((nbplt-1)*nstar+j,:)));
                         end
                         fprintf(fidTeX,'\\centering \n');
                         fprintf(fidTeX,'\\includegraphics[width=%2.2f\\textwidth]{%s_IRF_%s%s}\n',options_.figures.textwidth*min(m/lc,1),M_.fname,tit{i},int2str(nbplt));
                         if options_.relative_irf
-                            fprintf(fidTeX,['\\caption{Relative impulse response functions (orthogonalized shock to $%s$).}'], titTeX{i});
+                            fprintf(fidTeX,'\\caption{Relative impulse response functions (orthogonalized shock to $%s$).}', titTeX{i});
                         else
-                            fprintf(fidTeX,['\\caption{Impulse response functions (orthogonalized shock to $%s$).}'], titTeX{i});
+                            fprintf(fidTeX,'\\caption{Impulse response functions (orthogonalized shock to $%s$).}', titTeX{i});
                         end
                         fprintf(fidTeX,'\\label{Fig:IRF:%s:%s}\n', tit{i},int2str(nbplt));
                         fprintf(fidTeX,'\\end{figure}\n');
