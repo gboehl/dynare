@@ -115,20 +115,13 @@ if ~isempty(param_names)
     lhssub = lhssub + newlhssub;
 end
 
-% opidxs: indexes in M_.params associated with columns of X
-opidxs = zeros(X.vobs, 1);
-for i = 1:X.vobs
-    opidxs(i, 1) = find(strcmp(X.name{i}, M_.param_names));
-end
-
 %% Return to surgibbs if called from there
 st = dbstack(1);
 if strcmp(st(1).name, 'surgibbs')
     varargout{1} = nobs;
-    varargout{2} = opidxs;
-    varargout{3} = X{param_names{:}}.data;
-    varargout{4} = Y.data;
-    varargout{5} = neqs;
+    varargout{2} = X{param_names{:}}.data;
+    varargout{3} = Y.data;
+    varargout{4} = neqs;
     return
 end
 
@@ -170,6 +163,12 @@ for i = 1:length(residnames)
     idxs(i) = find(strcmp(residnames{i}, M_.exo_names));
 end
 M_.Sigma_e(idxs, idxs) = vcv;
+
+% opidxs: indexes in M_.params associated with columns of X
+opidxs = zeros(X.vobs, 1);
+for i = 1:X.vobs
+    opidxs(i, 1) = find(strcmp(X.name{i}, M_.param_names));
+end
 
 % Set params
 M_.params(opidxs) = oo_.sur.(model_name).beta;

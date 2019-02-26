@@ -75,9 +75,9 @@ end
 %  Using a Combination of Direct Monte Carlo and Importance Sampling
 %  Techniques. Bayesian Analysis. 2010. pp 67-70.
 if nargin == 8
-    [nobs, ~, X, Y, m] = sur(ds, param_names, eqtags);
+    [nobs, X, Y, m] = sur(ds, param_names, eqtags);
 else
-    [nobs, ~, X, Y, m] = sur(ds, param_names);
+    [nobs, X, Y, m] = sur(ds, param_names);
 end
 
 beta = beta0;
