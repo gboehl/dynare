@@ -13,6 +13,24 @@
 #include <utility>
 #include <string>
 
+template<class T>
+class TransposedMatrix
+{
+  friend class GeneralMatrix;
+private:
+  T &orig;
+public:
+  TransposedMatrix(T &orig_arg) : orig{orig_arg} {};
+};
+
+// Syntactic sugar for representing a transposed matrix
+template<class T>
+TransposedMatrix<T>
+transpose(T &m)
+{
+  return TransposedMatrix<T>(m);
+}
+
 class GeneralMatrix;
 
 class ConstGeneralMatrix
@@ -155,8 +173,16 @@ public:
   explicit GeneralMatrix(const ConstGeneralMatrix &m);
 
   GeneralMatrix(GeneralMatrix &&m) = default;
-  GeneralMatrix(const GeneralMatrix &m, const std::string &dummy); // transpose
-  GeneralMatrix(const ConstGeneralMatrix &m, const std::string &dummy); // transpose
+
+  template<class T>
+  explicit GeneralMatrix(const TransposedMatrix<T> &m)
+    : data(m.orig.rows*m.orig.cols), rows(m.orig.cols), cols(m.orig.rows), ld(rows)
+  {
+    for (int i = 0; i < rows; i++)
+      for (int j = 0; j < cols; j++)
+        get(i, j) = m.orig.get(j, i);
+  }
+
   // Create submatrix (with data copy)
   GeneralMatrix(const GeneralMatrix &m, int i, int j, int nrows, int ncols);
   // Create submatrix (with data sharing)

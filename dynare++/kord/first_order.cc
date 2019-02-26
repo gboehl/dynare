@@ -190,7 +190,7 @@ FirstOrder::solve(const TwoDMatrix &fd)
   // calculate derivatives of static and forward
   /* Here we calculate $X=-Z_{22}^{-T}Z_{12}^T$, where $X$ is |sfder| in the
      code. */
-  GeneralMatrix sfder(z12, "transpose");
+  GeneralMatrix sfder(transpose(z12));
   z22.multInvLeftTrans(sfder);
   sfder.mult(-1);
 
@@ -200,9 +200,9 @@ FirstOrder::solve(const TwoDMatrix &fd)
      =Z_{11}T^{-1}_{11}(Z_{11}^{-T}S^T_{11})^T$. */
   ConstGeneralMatrix s11(matE, 0, 0, ypart.nys(), ypart.nys());
   ConstGeneralMatrix t11(matD, 0, 0, ypart.nys(), ypart.nys());
-  GeneralMatrix dumm(s11, "transpose");
+  GeneralMatrix dumm(transpose(s11));
   z11.multInvLeftTrans(dumm);
-  GeneralMatrix preder(dumm, "transpose");
+  GeneralMatrix preder(transpose(dumm));
   t11.multInvLeft(preder);
   preder.multLeft(z11);
 

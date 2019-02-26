@@ -93,8 +93,9 @@ public:
     : GeneralMatrix(m)
   {
   }
-  TwoDMatrix(const GeneralMatrix &m, const char *dummy)
-    : GeneralMatrix(m, dummy)
+  template<class T>
+  explicit TwoDMatrix(const TransposedMatrix<T> &m)
+    : GeneralMatrix(m)
   {
   }
   // Select only some columns (with data copy)

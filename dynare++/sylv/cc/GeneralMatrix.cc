@@ -27,22 +27,6 @@ GeneralMatrix::GeneralMatrix(const ConstGeneralMatrix &m)
   copy(m);
 }
 
-GeneralMatrix::GeneralMatrix(const GeneralMatrix &m, const std::string &dummy)
-  : data(m.rows*m.cols), rows(m.cols), cols(m.rows), ld(m.cols)
-{
-  for (int i = 0; i < m.rows; i++)
-    for (int j = 0; j < m.cols; j++)
-      get(j, i) = m.get(i, j);
-}
-
-GeneralMatrix::GeneralMatrix(const ConstGeneralMatrix &m, const std::string &dummy)
-  : data(m.rows*m.cols), rows(m.cols), cols(m.rows), ld(m.cols)
-{
-  for (int i = 0; i < m.rows; i++)
-    for (int j = 0; j < m.cols; j++)
-      get(j, i) = m.get(i, j);
-}
-
 GeneralMatrix::GeneralMatrix(const GeneralMatrix &m, int i, int j, int nrows, int ncols)
   : data(nrows*ncols), rows(nrows), cols(ncols), ld(nrows)
 {
