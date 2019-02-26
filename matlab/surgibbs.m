@@ -75,9 +75,9 @@ end
 %  Using a Combination of Direct Monte Carlo and Importance Sampling
 %  Techniques. Bayesian Analysis. 2010. pp 67-70.
 if nargin == 8
-    [nobs, pidxs, X, Y, m] = sur(ds, param_names, eqtags);
+    [nobs, ~, X, Y, m] = sur(ds, param_names, eqtags);
 else
-    [nobs, pidxs, X, Y, m] = sur(ds, param_names);
+    [nobs, ~, X, Y, m] = sur(ds, param_names);
 end
 
 beta = beta0;
@@ -114,10 +114,15 @@ end
 
 % save parameter values
 oo_.surgibbs.beta = (sum(oo_.surgibbs.betadraws)/rows(oo_.surgibbs.betadraws))';
-M_.params(pidxs) = oo_.surgibbs.beta;
+
+incidxs = zeros(length(param_names), 1);
+for i = 1:length(param_names)
+    incidxs(i) = strmatch(param_names{i}, M_.param_names, 'exact');
+    M_.params(incidxs(i)) = oo_.surgibbs.beta(i);
+end
 
 % Write .inc file
-write_param_init_inc_file('surgibbs', M_.fname, pidxs, oo_.surgibbs.beta);
+write_param_init_inc_file('surgibbs', M_.fname, incidxs, oo_.surgibbs.beta);
 
 %% Print Output
 if ~options_.noprint
@@ -134,7 +139,6 @@ if ~options_.nograph
         ncols = ncols + 1;
     end
     for j = 1:length(param_names)
-        M_.params(strmatch(param_names{j}, M_.param_names, 'exact')) = oo_.surgibbs.beta(j);
         subplot(nrows, ncols, j)
         histogram(oo_.surgibbs.betadraws(:, j))
         hc = histcounts(oo_.surgibbs.betadraws(:, j));
