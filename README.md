@@ -217,6 +217,7 @@ All the prerequisites are packaged:
 - `texlive-fonts-extra` (for ccicons)
 - `texlive-latex-recommended`
 - `texlive-science` (for amstex)
+- `texlive-generic-extra` (for Sphinx)
 - `lmodern` (for macroprocessor PDF)
 - `python3-sphinx`
 - `libjs-mathjax`
@@ -224,7 +225,7 @@ All the prerequisites are packaged:
 
 You can install them all at once with:
 ```
-apt install build-essential gfortran liboctave-dev libboost-graph-dev libboost-filesystem-dev libgsl-dev libmatio-dev libslicot-dev libslicot-pic libsuitesparse-dev flex bison autoconf automake texlive texlive-publishers texlive-extra-utils texlive-formats-extra texlive-latex-extra texlive-fonts-extra texlive-latex-recommended texlive-science lmodern doxygen
+apt install build-essential gfortran liboctave-dev libboost-graph-dev libboost-filesystem-dev libgsl-dev libmatio-dev libslicot-dev libslicot-pic libsuitesparse-dev flex bison autoconf automake texlive texlive-publishers texlive-latex-extra texlive-fonts-extra texlive-latex-recommended texlive-science texlive-generic-extra lmodern python3-sphinx libjs-mathjax doxygen
 ```
 
 ## Windows
