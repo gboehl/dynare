@@ -134,6 +134,7 @@ if ~options_.nograph
         ncols = ncols + 1;
     end
     for j = 1:length(param_names)
+        M_.params(strmatch(param_names{j}, M_.param_names, 'exact')) = oo_.surgibbs.beta(j);
         subplot(nrows, ncols, j)
         histogram(oo_.surgibbs.betadraws(:, j))
         hc = histcounts(oo_.surgibbs.betadraws(:, j));
