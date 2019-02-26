@@ -424,7 +424,7 @@ TestRunnable::eig_bubble(const std::string &aname, int from, int to)
   for (int i = 0; i < to; i++)
     ++itt;
   itt = dec.bubbleEigen(itf, itt);
-  SqSylvMatrix check(dec.getQ(), dec.getT());
+  SqSylvMatrix check(dec.getQ() * dec.getT());
   check.multRightTrans(dec.getQ());
   check.add(-1, orig);
   double norm1 = check.getNorm1();
@@ -453,7 +453,7 @@ TestRunnable::block_diag(const std::string &aname, double log10norm)
   SqSylvMatrix orig(mma.getData(), n);
   SimilarityDecomp dec(orig.getData(), orig.numRows(), log10norm);
   dec.getB().printInfo();
-  SqSylvMatrix check(dec.getQ(), dec.getB());
+  SqSylvMatrix check(dec.getQ() * dec.getB());
   check.multRight(dec.getInvQ());
   check.add(-1, orig);
   double norm1 = check.getNorm1();
@@ -465,7 +465,7 @@ TestRunnable::block_diag(const std::string &aname, double log10norm)
             << "\tabs. errorI = " << normInf << std::endl
             << "\trel. error1 = " << norm1/onorm1 << std::endl
             << "\trel. errorI = " << normInf/onormInf << std::endl;
-  SqSylvMatrix check2(dec.getQ(), dec.getInvQ());
+  SqSylvMatrix check2(dec.getQ() * dec.getInvQ());
   SqSylvMatrix in(n);
   in.setUnit();
   check2.add(-1, in);

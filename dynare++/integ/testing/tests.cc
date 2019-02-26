@@ -236,8 +236,7 @@ bool
 TestRunnable::smolyak_normal_moments(const GeneralMatrix &m, int imom, int level)
 {
   // first make m*m' and then Cholesky factor
-  GeneralMatrix mtr(transpose(m));
-  GeneralMatrix msq(m, mtr);
+  GeneralMatrix msq(m * transpose(m));
 
   // make vector function
   int dim = m.numRows();
@@ -265,8 +264,7 @@ bool
 TestRunnable::product_normal_moments(const GeneralMatrix &m, int imom, int level)
 {
   // first make m*m' and then Cholesky factor
-  GeneralMatrix mtr(transpose(m));
-  GeneralMatrix msq(m, mtr);
+  GeneralMatrix msq(m * transpose(m));
 
   // make vector function
   int dim = m.numRows();

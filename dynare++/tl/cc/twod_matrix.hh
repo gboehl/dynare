@@ -128,10 +128,6 @@ public:
     : GeneralMatrix(m, first_row, first_col, rows, cols)
   {
   }
-  TwoDMatrix(const ConstTwoDMatrix &a, const ConstTwoDMatrix &b)
-    : GeneralMatrix(a, b)
-  {
-  }
   ~TwoDMatrix() override = default;
 
   TwoDMatrix &operator=(const TwoDMatrix &m) = default;

@@ -375,9 +375,7 @@ Approximation::calcYCov() const
   for (int i = 0; i < model.numeq(); i++)
     A.get(i, i) = 1.0;
 
-  TwoDMatrix guSigma(gu, model.getVcov());
-  TwoDMatrix guTrans(transpose(gu));
-  TwoDMatrix *X = new TwoDMatrix(guSigma, guTrans);
+  TwoDMatrix *X = new TwoDMatrix((gu * model.getVcov()) * transpose(gu));
 
   GeneralSylvester gs(1, model.numeq(), model.numeq(), 0,
                       A.getData(), B.getData(), C.getData(), X->getData());

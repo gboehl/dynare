@@ -38,31 +38,6 @@ GeneralMatrix::GeneralMatrix(GeneralMatrix &m, int i, int j, int nrows, int ncol
 {
 }
 
-GeneralMatrix::GeneralMatrix(const ConstGeneralMatrix &a, const ConstGeneralMatrix &b)
-  : data(a.rows*b.cols), rows(a.rows), cols(b.cols), ld(a.rows)
-{
-  gemm("N", a, "N", b, 1.0, 0.0);
-}
-
-GeneralMatrix::GeneralMatrix(const ConstGeneralMatrix &a, const ConstGeneralMatrix &b, const std::string &dum)
-  : data(a.rows*b.rows), rows(a.rows), cols(b.rows), ld(a.rows)
-{
-  gemm("N", a, "T", b, 1.0, 0.0);
-}
-
-GeneralMatrix::GeneralMatrix(const ConstGeneralMatrix &a, const std::string &dum, const ConstGeneralMatrix &b)
-  : data(a.cols*b.cols), rows(a.cols), cols(b.cols), ld(a.cols)
-{
-  gemm("T", a, "N", b, 1.0, 0.0);
-}
-
-GeneralMatrix::GeneralMatrix(const ConstGeneralMatrix &a, const std::string &dum1,
-                             const ConstGeneralMatrix &b, const std::string &dum2)
-  : data(a.cols*b.rows), rows(a.cols), cols(b.rows), ld(a.cols)
-{
-  gemm("T", a, "T", b, 1.0, 0.0);
-}
-
 GeneralMatrix &
 GeneralMatrix::operator=(const ConstGeneralMatrix &m)
 {
@@ -594,8 +569,6 @@ SVDDecomp::solve(const ConstGeneralMatrix &B, GeneralMatrix &X) const
   // end of sigma
   double rcond = 1e-13;
 
-  // solve U: B = U^T*B
-  GeneralMatrix UTB(U, "trans", B);
   // determine nz=number of zeros in the end of sigma
   int nz = 0;
   while (nz < minmn && sigma[minmn-1-nz] < rcond*sigma[0])
@@ -603,7 +576,7 @@ SVDDecomp::solve(const ConstGeneralMatrix &B, GeneralMatrix &X) const
   // take relevant B for sigma inversion
   int m = U.numRows();
   int n = VT.numCols();
-  GeneralMatrix Bprime(UTB, m-minmn, 0, minmn-nz, B.numCols());
+  GeneralMatrix Bprime(transpose(U) * B, m-minmn, 0, minmn-nz, B.numCols());
   // solve sigma
   for (int i = 0; i < minmn-nz; i++)
     Bprime.getRow(i).mult(1.0/sigma[i]);

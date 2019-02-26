@@ -35,10 +35,6 @@ public:
     : GeneralMatrix(m, i, j, nrows, ncols)
   {
   }
-  SylvMatrix(const GeneralMatrix &a, const GeneralMatrix &b)
-    : GeneralMatrix(a, b)
-  {
-  }
   SylvMatrix(const SylvMatrix &m) = default;
   SylvMatrix(SylvMatrix &&m) = default;
   SylvMatrix &operator=(const SylvMatrix &m) = default;
@@ -73,6 +69,9 @@ public:
   SqSylvMatrix(Vector d, int m) : SylvMatrix(std::move(d), m, m)
   {
   }
+  SqSylvMatrix(const SylvMatrix &m) : SylvMatrix(m)
+  {
+  }
   SqSylvMatrix(const SqSylvMatrix &m) = default;
   SqSylvMatrix(SqSylvMatrix &&m) = default;
   SqSylvMatrix(const GeneralMatrix &m, int i, int j, int nrows)
@@ -83,7 +82,6 @@ public:
     : SylvMatrix(m, i, j, nrows, nrows)
   {
   }
-  SqSylvMatrix(const GeneralMatrix &a, const GeneralMatrix &b);
   SqSylvMatrix &operator=(const SqSylvMatrix &m) = default;
   SqSylvMatrix &operator=(SqSylvMatrix &&m) = default;
   /* x = (this \otimes this..\otimes this)*d */

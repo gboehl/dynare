@@ -238,8 +238,7 @@ FirstOrder::solve(const TwoDMatrix &fd)
   GeneralMatrix matA(ypart.ny(), ypart.ny());
   matA.zeros();
   ConstGeneralMatrix gss(gy, ypart.nstat+ypart.npred, 0, ypart.nyss(), ypart.nys());
-  GeneralMatrix aux(fyplus, gss);
-  matA.place(aux, 0, ypart.nstat);
+  matA.place(fyplus * gss, 0, ypart.nstat);
   ConstGeneralMatrix fyzero(fd, 0, ypart.nyss(), ypart.ny(), ypart.ny());
   matA.add(1.0, fyzero);
   gu.zeros();

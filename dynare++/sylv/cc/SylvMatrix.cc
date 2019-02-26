@@ -157,13 +157,6 @@ SylvMatrix::eliminateRight(int row, int col, Vector &x)
     }
 }
 
-SqSylvMatrix::SqSylvMatrix(const GeneralMatrix &a, const GeneralMatrix &b)
-  : SylvMatrix(a, b)
-{
-  if (rows != cols)
-    throw SYLV_MES_EXCEPTION("Wrong matrix dimensions in multiplication constructor of square matrix.");
-}
-
 void
 SqSylvMatrix::multVecKron(KronVector &x, const ConstKronVector &d) const
 {

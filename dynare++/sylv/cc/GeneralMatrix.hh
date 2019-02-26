@@ -17,6 +17,12 @@ template<class T>
 class TransposedMatrix
 {
   friend class GeneralMatrix;
+  template<class T2>
+  friend GeneralMatrix operator*(const ConstGeneralMatrix &a, const TransposedMatrix<T2> &b);
+  template<class T2>
+  friend GeneralMatrix operator*(const TransposedMatrix<T2> &a, const ConstGeneralMatrix &b);
+  template<class T1, class T2>
+  friend GeneralMatrix operator*(const TransposedMatrix<T1> &a, const TransposedMatrix<T2> &b);
 private:
   T &orig;
 public:
@@ -36,6 +42,13 @@ class GeneralMatrix;
 class ConstGeneralMatrix
 {
   friend class GeneralMatrix;
+  friend GeneralMatrix operator*(const ConstGeneralMatrix &a, const ConstGeneralMatrix &b);
+  template<class T>
+  friend GeneralMatrix operator*(const ConstGeneralMatrix &a, const TransposedMatrix<T> &b);
+  template<class T>
+  friend GeneralMatrix operator*(const TransposedMatrix<T> &a, const ConstGeneralMatrix &b);
+  template<class T1, class T2>
+  friend GeneralMatrix operator*(const TransposedMatrix<T1> &a, const TransposedMatrix<T2> &b);
 protected:
   ConstVector data; // Has unit-stride
   int rows;
@@ -147,6 +160,13 @@ protected:
 class GeneralMatrix
 {
   friend class ConstGeneralMatrix;
+  friend GeneralMatrix operator*(const ConstGeneralMatrix &a, const ConstGeneralMatrix &b);
+  template<class T>
+  friend GeneralMatrix operator*(const ConstGeneralMatrix &a, const TransposedMatrix<T> &b);
+  template<class T>
+  friend GeneralMatrix operator*(const TransposedMatrix<T> &a, const ConstGeneralMatrix &b);
+  template<class T1, class T2>
+  friend GeneralMatrix operator*(const TransposedMatrix<T1> &a, const TransposedMatrix<T2> &b);
 protected:
   Vector data; // Has unit-stride
   int rows;
@@ -187,15 +207,6 @@ public:
   GeneralMatrix(const GeneralMatrix &m, int i, int j, int nrows, int ncols);
   // Create submatrix (with data sharing)
   GeneralMatrix(GeneralMatrix &m, int i, int j, int nrows, int ncols);
-  /* this = a*b */
-  GeneralMatrix(const ConstGeneralMatrix &a, const ConstGeneralMatrix &b);
-  /* this = a*b' */
-  GeneralMatrix(const ConstGeneralMatrix &a, const ConstGeneralMatrix &b, const std::string &dum);
-  /* this = a'*b */
-  GeneralMatrix(const ConstGeneralMatrix &a, const std::string &dum, const ConstGeneralMatrix &b);
-  /* this = a'*b */
-  GeneralMatrix(const ConstGeneralMatrix &a, const std::string &dum1,
-                const ConstGeneralMatrix &b, const std::string &dum2);
 
   virtual ~GeneralMatrix() = default;
   GeneralMatrix &operator=(const GeneralMatrix &m) = default;
@@ -492,6 +503,45 @@ private:
   /* number of rows/columns for copy used in gemm_partial_* */
   static constexpr int md_length = 23;
 };
+
+// Computes a*b
+inline GeneralMatrix
+operator*(const ConstGeneralMatrix &a, const ConstGeneralMatrix &b)
+{
+  GeneralMatrix m(a.rows, b.cols);
+  m.gemm("N", a, "N", b, 1.0, 0.0);
+  return m;
+}
+
+// Computes a*b'
+template<class T>
+GeneralMatrix
+operator*(const ConstGeneralMatrix &a, const TransposedMatrix<T> &b)
+{
+  GeneralMatrix m(a.rows, b.orig.rows);
+  m.gemm("N", a, "T", b.orig, 1.0, 0.0);
+  return m;
+}
+
+// Computes a'*b
+template<class T>
+GeneralMatrix
+operator*(const TransposedMatrix<T> &a, const ConstGeneralMatrix &b)
+{
+  GeneralMatrix m(a.orig.cols, b.cols);
+  m.gemm("T", a.orig, "N", b, 1.0, 0.0);
+  return m;
+}
+
+// Computes a'*b'
+template<class T1, class T2>
+GeneralMatrix
+operator*(const TransposedMatrix<T1> &a, const TransposedMatrix<T2> &b)
+{
+  GeneralMatrix m(a.orig.cols, b.orig.rows);
+  m.gemm("T", a.orig, "T", b.orig, 1.0, 0.0);
+  return m;
+}
 
 class SVDDecomp
 {

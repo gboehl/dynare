@@ -128,7 +128,7 @@ void
 SimilarityDecomp::check(SylvParams &pars, const GeneralMatrix &m) const
 {
   // M - Q*B*inv(Q)
-  SqSylvMatrix c(getQ(), getB());
+  SqSylvMatrix c(getQ() * getB());
   c.multRight(getInvQ());
   c.add(-1.0, m);
   pars.f_err1 = c.getNorm1();
