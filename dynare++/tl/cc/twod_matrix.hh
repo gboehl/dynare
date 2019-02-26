@@ -97,26 +97,32 @@ public:
     : GeneralMatrix(m, dummy)
   {
   }
+  // Select only some columns (with data copy)
   TwoDMatrix(const TwoDMatrix &m, int first_col, int num)
     : GeneralMatrix(m, 0, first_col, m.numRows(), num)
   {
   }
+  // Select only some columns (with data sharing)
   TwoDMatrix(TwoDMatrix &m, int first_col, int num)
     : GeneralMatrix(m, 0, first_col, m.numRows(), num)
   {
   }
+  // Select only some rows (with data copy)
   TwoDMatrix(int first_row, int num, const TwoDMatrix &m)
     : GeneralMatrix(m, first_row, 0, num, m.ncols())
   {
   }
+  // Select only some rows (with data sharing)
   TwoDMatrix(int first_row, int num, TwoDMatrix &m)
     : GeneralMatrix(m, first_row, 0, num, m.ncols())
   {
   }
+  // Select a submatrix (with data sharing)
   TwoDMatrix(TwoDMatrix &m, int first_row, int first_col, int rows, int cols)
     : GeneralMatrix(m, first_row, first_col, rows, cols)
   {
   }
+  // Select a submatrix (with data copy)
   TwoDMatrix(const TwoDMatrix &m, int first_row, int first_col, int rows, int cols)
     : GeneralMatrix(m, first_row, first_col, rows, cols)
   {

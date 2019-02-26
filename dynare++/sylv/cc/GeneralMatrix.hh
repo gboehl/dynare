@@ -34,9 +34,11 @@ public:
   }
   ConstGeneralMatrix(const ConstGeneralMatrix &m) = default;
   ConstGeneralMatrix(ConstGeneralMatrix &&m) = default;
-  // Implicit conversion from ConstGeneralMatrix is ok, since it's cheap
+  // Implicit conversion from GeneralMatrix is ok, since it's cheap
   ConstGeneralMatrix(const GeneralMatrix &m);
+  // Create submatrix (with data sharing)
   ConstGeneralMatrix(const GeneralMatrix &m, int i, int j, int nrows, int ncols);
+  // Create submatrix (with data sharing)
   ConstGeneralMatrix(const ConstGeneralMatrix &m, int i, int j, int nrows, int ncols);
   virtual ~ConstGeneralMatrix() = default;
 
@@ -155,7 +157,9 @@ public:
   GeneralMatrix(GeneralMatrix &&m) = default;
   GeneralMatrix(const GeneralMatrix &m, const std::string &dummy); // transpose
   GeneralMatrix(const ConstGeneralMatrix &m, const std::string &dummy); // transpose
+  // Create submatrix (with data copy)
   GeneralMatrix(const GeneralMatrix &m, int i, int j, int nrows, int ncols);
+  // Create submatrix (with data sharing)
   GeneralMatrix(GeneralMatrix &m, int i, int j, int nrows, int ncols);
   /* this = a*b */
   GeneralMatrix(const ConstGeneralMatrix &a, const ConstGeneralMatrix &b);
