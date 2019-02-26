@@ -213,10 +213,14 @@ for i=1:n
 end
 
 % Update model's parameters with posterior mean.
+idxs = zeros(length(pnames), 1);
 for j = 1:length(pnames)
-    isj = strcmp(M_.param_names, pnames{j});
-    M_.params(isj) = oo_.olsgibbs.(eqtag).posterior.mean.beta(j);
+    idxs(j) = find(strcmp(M_.param_names, pnames{j}));
+    M_.params(idxs(j)) = oo_.olsgibbs.(eqtag).posterior.mean.beta(j);
 end
+
+% Write .inc file
+write_param_init_inc_file('olsgibbs', eqtag, idxs, oo_.olsgibbs.(eqtag).posterior.mean.beta);
 
 %% Print Output
 if ~options_.noprint

@@ -118,6 +118,7 @@ clear save_structure_name;
 % Assign parameter values back to parameters using param_regex & param_common
 regexcountries = ['(' strjoin(param_common(1:end),'|') ')'];
 assigned_idxs = false(size(X.name));
+incidxs = [];
 for i = 1:length(param_regex)
     beta_idx = strcmp(X.name, strrep(param_regex{i}, '*', country_name));
     assigned_idxs = assigned_idxs | beta_idx;
@@ -126,8 +127,9 @@ for i = 1:length(param_regex)
         assert(~isempty(value));
     end
     if ~isempty(value)
-        M_.params(~cellfun(@isempty, regexp(M_.param_names, ...
-            strrep(param_regex{i}, '*', regexcountries)))) = value;
+        idxs = find(~cellfun(@isempty, regexp(M_.param_names, strrep(param_regex{i}, '*', regexcountries))))';
+        incidxs = [incidxs idxs];
+        M_.params(idxs) = value;
     end
 end
 idxs = find(assigned_idxs == 0);
@@ -135,8 +137,12 @@ values = oo_.pooled_ols.beta(idxs);
 names = X.name(idxs);
 assert(length(values) == length(names));
 for i = 1:length(idxs)
-    M_.params(strcmp(M_.param_names, names{i})) = values(i);
+    incidxs = [incidxs find(strcmp(M_.param_names, names{i}))];
+    M_.params(incidxs(end)) = values(i);
 end
+
+% Write .inc file
+write_param_init_inc_file('pooled_ols', M_.fname, incidxs, M_.params(incidxs));
 
 residuals = Y.data - X.data * oo_.pooled_ols.beta;
 for i = 1:neqs

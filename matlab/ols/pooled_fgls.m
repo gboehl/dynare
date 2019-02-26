@@ -77,6 +77,7 @@ M_.Sigma_e(idxs, idxs) = vcv;
 regexcountries = ['(' strjoin(param_common(1:end),'|') ')'];
 pbeta = oo_.pooled_fgls.pbeta;
 assigned_idxs = false(size(pbeta));
+incidxs = [];
 for i = 1:length(param_regex)
     beta_idx = strcmp(pbeta, strrep(param_regex{i}, '*', oo_.pooled_fgls.country_name));
     assigned_idxs = assigned_idxs | beta_idx;
@@ -85,8 +86,9 @@ for i = 1:length(param_regex)
         assert(~isempty(value));
     end
     if ~isempty(value)
-        M_.params(~cellfun(@isempty, regexp(M_.param_names, ...
-            strrep(param_regex{i}, '*', regexcountries)))) = value;
+        idxs = find(~cellfun(@isempty, regexp(M_.param_names, strrep(param_regex{i}, '*', regexcountries))))';
+        incidxs = [incidxs idxs];
+        M_.params(idxs) = value;
     end
 end
 idxs = find(assigned_idxs == 0);
@@ -94,8 +96,12 @@ values = oo_.pooled_fgls.beta(idxs);
 names = pbeta(idxs);
 assert(length(values) == length(names));
 for i = 1:length(idxs)
-    M_.params(strcmp(M_.param_names, names{i})) = values(i);
+    incidxs = [incidxs find(strcmp(M_.param_names, names{i}))];
+    M_.params(incidxs(end)) = values(i);
 end
+
+% Write .inc file
+write_param_init_inc_file('pooled_fgls', M_.fname, incidxs, M_.params(incidxs));
 
 oo_.pooled_fgls = rmfield(oo_.pooled_fgls, 'X');
 oo_.pooled_fgls = rmfield(oo_.pooled_fgls, 'Y');

@@ -174,6 +174,9 @@ M_.Sigma_e(idxs, idxs) = vcv;
 % Set params
 M_.params(opidxs) = oo_.sur.(model_name).beta;
 
+% Write .inc file
+write_param_init_inc_file('sur', model_name, opidxs, oo_.sur.(model_name).beta);
+
 % Yhat
 oo_.sur.(model_name).Yhat = X.data * oo_.sur.(model_name).beta;
 

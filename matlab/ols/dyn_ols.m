@@ -92,6 +92,9 @@ for i = 1:length(Y)
         end
     end
 
+    % Write .inc file
+    write_param_init_inc_file('ols', tag, oo_.ols.(tag).param_idxs, oo_.ols.(tag).beta);
+
     % Yhat
     idx = 0;
     yhatname = [tag '_FIT'];

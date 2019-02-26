@@ -116,6 +116,9 @@ end
 oo_.surgibbs.beta = (sum(oo_.surgibbs.betadraws)/rows(oo_.surgibbs.betadraws))';
 M_.params(pidxs) = oo_.surgibbs.beta;
 
+% Write .inc file
+write_param_init_inc_file('surgibbs', M_.fname, pidxs, oo_.surgibbs.beta);
+
 %% Print Output
 if ~options_.noprint
     dyn_table('Gibbs Sampling on SUR', {}, {}, param_names, ...
