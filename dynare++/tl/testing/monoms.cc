@@ -106,7 +106,7 @@ std::unique_ptr<FGSTensor>
 Monom1Vector::deriv(int dim) const
 {
   auto res = std::make_unique<FGSTensor>(len, TensorDimens(Symmetry{dim},
-                                                           IntSequence(1, nx)));
+                                                           IntSequence{nx}));
   for (Tensor::index it = res->begin(); it != res->end(); ++it)
     {
       Vector outcol{res->getCol(*it)};
@@ -189,16 +189,15 @@ Monom2Vector::deriv(const Symmetry &s) const
   return t;
 }
 
-FGSContainer *
+FGSContainer
 Monom2Vector::deriv(int maxdim) const
 {
-  auto *res = new FGSContainer(2);
+  FGSContainer res(2);
   for (int dim = 1; dim <= maxdim; dim++)
     for (int ydim = 0; ydim <= dim; ydim++)
       {
         int udim = dim - ydim;
-        Symmetry s{ydim, udim};
-        res->insert(deriv(s));
+        res.insert(deriv(Symmetry{ydim, udim}));
       }
   return res;
 }
@@ -331,12 +330,12 @@ Monom4Vector::deriv(const Symmetry &s) const
   return res;
 }
 
-FSSparseTensor *
+FSSparseTensor
 Monom4Vector::deriv(int dim) const
 {
   IntSequence cum{0, nx1, nx1+nx2, nx1+nx2+nx3};
 
-  auto *res = new FSSparseTensor(dim, nx1+nx2+nx3+nx4, len);
+  FSSparseTensor res(dim, nx1+nx2+nx3+nx4, len);
 
   FFSTensor dummy(0, nx1+nx2+nx3+nx4, dim);
   for (Tensor::index run = dummy.begin(); run != dummy.end(); ++run)
@@ -356,7 +355,7 @@ Monom4Vector::deriv(int dim) const
       deriv(ind_sym, ind, col);
       for (int i = 0; i < len; i++)
         if (col[i] != 0.0)
-          res->insert(run.getCoor(), i, col[i]);
+          res.insert(run.getCoor(), i, col[i]);
     }
 
   return res;
@@ -384,7 +383,7 @@ Monom4Vector::print() const
 
 SparseDerivGenerator::SparseDerivGenerator(int nf, int ny, int nu, int nup, int nbigg, int ng,
                                            int mx, double prob, int maxdim)
-  : maxdimen(maxdim), bigg(4), g(4), rcont(4), ts(new FSSparseTensor *[maxdimen])
+  : maxdimen(maxdim), bigg(4), g(4), rcont(4)
 {
   intgen.init(nf, ny, nu, nup, nbigg, mx, prob);
 
@@ -403,20 +402,13 @@ SparseDerivGenerator::SparseDerivGenerator(int nf, int ny, int nu, int nup, int 
             g.insert(g_m.deriv(si));
         }
 
-      ts[dim-1] = f.deriv(dim);
+      ts.push_back(f.deriv(dim));
     }
-}
-
-SparseDerivGenerator::~SparseDerivGenerator()
-{
-  for (int i = 0; i < maxdimen; i++)
-    delete ts[i];
-  delete [] ts;
 }
 
 DenseDerivGenerator::DenseDerivGenerator(int ng, int nx, int ny, int nu,
                                          int mx, double prob, int maxdim)
-  : maxdimen(maxdim), ts(maxdimen), uts(maxdimen)
+  : maxdimen(maxdim), xcont(0), rcont(0), ts(maxdimen), uxcont(0), uts(maxdimen)
 {
   intgen.init(ng, nx, ny, nu, nu, mx, prob);
   Monom1Vector g(nx, ng);
@@ -424,7 +416,6 @@ DenseDerivGenerator::DenseDerivGenerator(int ng, int nx, int ny, int nu,
   Monom2Vector r(g, x);
   xcont = x.deriv(maxdimen);
   rcont = r.deriv(maxdimen);
-  uxcont = nullptr;
   for (int d = 1; d <= maxdimen; d++)
     ts[d-1] = g.deriv(d);
 }
@@ -432,13 +423,7 @@ DenseDerivGenerator::DenseDerivGenerator(int ng, int nx, int ny, int nu,
 void
 DenseDerivGenerator::unfold()
 {
-  uxcont = new UGSContainer(*xcont);
+  uxcont = UGSContainer(xcont);
   for (int i = 0; i < maxdimen; i++)
     uts[i] = std::make_unique<UGSTensor>(*(ts[i]));
-}
-
-DenseDerivGenerator::~DenseDerivGenerator()
-{
-  delete xcont;
-  delete rcont;
 }

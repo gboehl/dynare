@@ -113,18 +113,18 @@ TestRunnable::index_forward(const Symmetry &s, const IntSequence &nvs)
   int ndecr = 0;
   int nincr = 0;
   _Ttype dummy(0, TensorDimens(s, nvs));
-  typename _Ttype::index run = dummy.end();
+  auto run = dummy.end();
   do
     {
       --run;
       ndecr++;
-      typename _Ttype::index run2 = dummy.begin();
+      auto run2 = dummy.begin();
       for (int i = 0; i < *run; i++)
         {
           ++run2;
           nincr++;
         }
-      if (!(run == run2))
+      if (run != run2)
         fails++;
     }
   while (run != dummy.begin());
@@ -145,16 +145,16 @@ TestRunnable::index_backward(const Symmetry &s, const IntSequence &nvs)
   int ndecr = 0;
   int nincr = 0;
   _Ttype dummy(0, TensorDimens(s, nvs));
-  typename _Ttype::index run = dummy.begin();
+  auto run = dummy.begin();
   while (run != dummy.end())
     {
-      typename _Ttype::index run2 = dummy.end();
+      auto run2 = dummy.end();
       for (int i = 0; i < dummy.ncols() - *run; i++)
         {
           --run2;
           ndecr++;
         }
-      if (!(run == run2))
+      if (run != run2)
         fails++;
       ++run;
       nincr++;
@@ -175,11 +175,10 @@ TestRunnable::index_offset(const Symmetry &s, const IntSequence &nvs)
   int fails = 0;
   int nincr = 0;
   _Ttype dummy(0, TensorDimens(s, nvs));
-  for (typename _Ttype::index run = dummy.begin();
-       run != dummy.end(); ++run, nincr++)
+  for (auto run = dummy.begin(); run != dummy.end(); ++run, nincr++)
     {
       typename _Ttype::index run2(dummy, run.getCoor());
-      if (!(run == run2))
+      if (run != run2)
         fails++;
     }
 
@@ -211,16 +210,15 @@ TestRunnable::dense_prod(const Symmetry &bsym, const IntSequence &bnvs,
                          int hdim, int hnv, int rows)
 {
   Factory f;
-  FGSContainer *cont
-    = f.makeCont<FGSTensor, FGSContainer>(hnv, bnvs, bsym.dimen()-hdim+1);
+  FGSContainer cont{f.makeCont<FGSTensor, FGSContainer>(hnv, bnvs, bsym.dimen()-hdim+1)};
   auto fh = f.make<FGSTensor>(rows, Symmetry{hdim}, IntSequence(1, hnv));
   UGSTensor uh(*fh);
   FGSTensor fb(rows, TensorDimens(bsym, bnvs));
   fb.getData().zeros();
   clock_t s1 = clock();
-  cont->multAndAdd(uh, fb);
+  cont.multAndAdd(uh, fb);
   clock_t s2 = clock();
-  UGSContainer ucont(*cont);
+  UGSContainer ucont(cont);
   clock_t s3 = clock();
   UGSTensor ub(rows, fb.getDims());
   ub.getData().zeros();
@@ -240,8 +238,6 @@ TestRunnable::dense_prod(const Symmetry &bsym, const IntSequence &bnvs,
             << "\tunfolded difference normMax: " << norm << '\n'
             << "\tunfolded difference norm1:   " << norm1 << '\n'
             << "\tunfolded difference normInf: " << normInf << '\n';
-
-  delete cont;
 
   return norm < 1.e-13;
 }
@@ -265,11 +261,11 @@ TestRunnable::folded_monomial(int ng, int nx, int ny, int nu, int dim)
       res.getData().zeros();
       clock_t stime = clock();
       for (int d = 1; d <= dim; d++)
-        gen.xcont->multAndAdd(*(gen.ts[d-1]), res);
+        gen.xcont.multAndAdd(*(gen.ts[d-1]), res);
       stime = clock() - stime;
       std::cout << "\t\ttime for symmetry: "
                 << static_cast<double>(stime)/CLOCKS_PER_SEC << '\n';
-      const FGSTensor &mres = gen.rcont->get(s);
+      const FGSTensor &mres = gen.rcont.get(s);
       res.add(-1.0, mres);
       double normtmp = res.getData().getMax();
       std::cout << "\t\terror normMax:     " << normtmp << '\n';
@@ -303,11 +299,11 @@ TestRunnable::unfolded_monomial(int ng, int nx, int ny, int nu, int dim)
       res.getData().zeros();
       clock_t stime = clock();
       for (int d = 1; d <= dim; d++)
-        gen.uxcont->multAndAdd(*(gen.uts[d-1]), res);
+        gen.uxcont.multAndAdd(*(gen.uts[d-1]), res);
       stime = clock() - stime;
       std::cout << "\t\ttime for symmetry: "
                 << static_cast<double>(stime)/CLOCKS_PER_SEC << '\n';
-      const FGSTensor &mres = gen.rcont->get(s);
+      const FGSTensor &mres = gen.rcont.get(s);
       FGSTensor foldres(res);
       foldres.add(-1.0, mres);
       double normtmp = foldres.getData().getMax();
@@ -329,7 +325,7 @@ TestRunnable::fold_zcont(int nf, int ny, int nu, int nup, int nbigg,
   for (int d = 1; d <= dim; d++)
     std::cout << "\tfill of dim=" << d << " tensor:     "
               << std::setprecision(2) << std::fixed << std::setw(6)
-              << 100*dg.ts[d-1]->getFillFactor()
+              << 100*dg.ts[d-1].getFillFactor()
               << std::setprecision(6) << std::defaultfloat << " %\n";
   std::cout << "\ttime for monom generation: "
             << static_cast<double>(gen_time)/CLOCKS_PER_SEC << '\n';
@@ -349,7 +345,7 @@ TestRunnable::fold_zcont(int nf, int ny, int nu, int nup, int nbigg,
         res.getData().zeros();
         clock_t stime = clock();
         for (int l = 1; l <= si.dimen(); l++)
-          zc.multAndAdd(*(dg.ts[l-1]), res);
+          zc.multAndAdd(dg.ts[l-1], res);
         stime = clock() - stime;
         std::cout << "\t\ttime for symmetry: "
                   << static_cast<double>(stime)/CLOCKS_PER_SEC << '\n';
@@ -375,7 +371,7 @@ TestRunnable::unfold_zcont(int nf, int ny, int nu, int nup, int nbigg,
   for (int d = 1; d <= dim; d++)
     std::cout << "\tfill of dim=" << d << " tensor:     "
               << std::setprecision(2) << std::fixed << std::setw(6)
-              << 100*dg.ts[d-1]->getFillFactor()
+              << 100*dg.ts[d-1].getFillFactor()
               << std::setprecision(6) << std::defaultfloat << " %\n";
   std::cout << "\ttime for monom generation: "
             << static_cast<double>(gen_time)/CLOCKS_PER_SEC << '\n';
@@ -402,7 +398,7 @@ TestRunnable::unfold_zcont(int nf, int ny, int nu, int nup, int nbigg,
         res.getData().zeros();
         clock_t stime = clock();
         for (int l = 1; l <= si.dimen(); l++)
-          zc.multAndAdd(*(dg.ts[l-1]), res);
+          zc.multAndAdd(dg.ts[l-1], res);
         stime = clock() - stime;
         std::cout << "\t\ttime for symmetry: "
                   << static_cast<double>(stime)/CLOCKS_PER_SEC << '\n';
@@ -425,14 +421,10 @@ TestRunnable::folded_contraction(int r, int nv, int dim)
   Vector x{fact.makeVector(nv)};
 
   auto forig = fact.make<FFSTensor>(r, nv, dim);
-  auto *f = new FFSTensor(*forig);
+  auto f = std::make_unique<FFSTensor>(*forig);
   clock_t ctime = clock();
   for (int d = dim-1; d > 0; d--)
-    {
-      FFSTensor *fnew = new FFSTensor(*f, ConstVector(x));
-      delete f;
-      f = fnew;
-    }
+    f = std::make_unique<FFSTensor>(*f, ConstVector(x));
   ctime = clock() - ctime;
   Vector res(forig->nrows());
   res.zeros();
@@ -454,8 +446,6 @@ TestRunnable::folded_contraction(int r, int nv, int dim)
             << "\terror normMax:     " << v.getMax() << '\n'
             << "\terror norm1:       " << v.getNorm1() << '\n';
 
-  delete f;
-
   return (v.getMax() < 1.e-10);
 }
 
@@ -467,14 +457,10 @@ TestRunnable::unfolded_contraction(int r, int nv, int dim)
 
   auto forig = fact.make<FFSTensor>(r, nv, dim);
   UFSTensor uorig(*forig);
-  auto *u = new UFSTensor(uorig);
+  auto u = std::make_unique<UFSTensor>(uorig);
   clock_t ctime = clock();
   for (int d = dim-1; d > 0; d--)
-    {
-      UFSTensor *unew = new UFSTensor(*u, ConstVector(x));
-      delete u;
-      u = unew;
-    }
+    u = std::make_unique<UFSTensor>(*u, ConstVector(x));
   ctime = clock() - ctime;
   Vector res(uorig.nrows());
   res.zeros();
@@ -495,8 +481,6 @@ TestRunnable::unfolded_contraction(int r, int nv, int dim)
             << "\terror normMax:     " << v.getMax() << '\n'
             << "\terror norm1:       " << v.getNorm1() << '\n';
 
-  delete u;
-
   return (v.getMax() < 1.e-10);
 }
 
@@ -515,34 +499,30 @@ TestRunnable::poly_eval(int r, int nv, int maxdim)
   Vector out_uh(r);
   out_uh.zeros();
 
-  UTensorPolynomial *up;
-  {
-    FTensorPolynomial *fp = fact.makePoly<FFSTensor, FTensorPolynomial>(r, nv, maxdim);
+  FTensorPolynomial fp{fact.makePoly<FFSTensor, FTensorPolynomial>(r, nv, maxdim)};
 
-    clock_t ft_cl = clock();
-    fp->evalTrad(out_ft, x);
-    ft_cl = clock() - ft_cl;
-    std::cout << "\ttime for folded power eval:    "
-              << static_cast<double>(ft_cl)/CLOCKS_PER_SEC << '\n';
+  clock_t ft_cl = clock();
+  fp.evalTrad(out_ft, x);
+  ft_cl = clock() - ft_cl;
+  std::cout << "\ttime for folded power eval:    "
+    << static_cast<double>(ft_cl)/CLOCKS_PER_SEC << '\n';
 
-    clock_t fh_cl = clock();
-    fp->evalHorner(out_fh, x);
-    fh_cl = clock() - fh_cl;
-    std::cout << "\ttime for folded horner eval:   "
-              << static_cast<double>(fh_cl)/CLOCKS_PER_SEC << '\n';
+  clock_t fh_cl = clock();
+  fp.evalHorner(out_fh, x);
+  fh_cl = clock() - fh_cl;
+  std::cout << "\ttime for folded horner eval:   "
+    << static_cast<double>(fh_cl)/CLOCKS_PER_SEC << '\n';
 
-    up = new UTensorPolynomial(*fp);
-    delete fp;
-  }
+  UTensorPolynomial up{fp};
 
   clock_t ut_cl = clock();
-  up->evalTrad(out_ut, x);
+  up.evalTrad(out_ut, x);
   ut_cl = clock() - ut_cl;
   std::cout << "\ttime for unfolded power eval:  "
             << static_cast<double>(ut_cl)/CLOCKS_PER_SEC << '\n';
 
   clock_t uh_cl = clock();
-  up->evalHorner(out_uh, x);
+  up.evalHorner(out_uh, x);
   uh_cl = clock() - uh_cl;
   std::cout << "\ttime for unfolded horner eval: "
             << static_cast<double>(uh_cl)/CLOCKS_PER_SEC << '\n';
@@ -558,7 +538,6 @@ TestRunnable::poly_eval(int r, int nv, int maxdim)
             << "\tfolded horner error norm max:    " << max_fh << '\n'
             << "\tunfolded horner error norm max:  " << max_uh << '\n';
 
-  delete up;
   return (max_ft+max_fh+max_uh < 1.0e-10);
 }
 

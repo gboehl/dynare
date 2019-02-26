@@ -47,37 +47,29 @@ public:
   }
 
   template <class _Ttype, class _Ctype>
-  _Ctype *
+  _Ctype
   makeCont(int r, const IntSequence &nvs, int maxdim)
   {
     int symnum = nvs.size();
-    auto *res = new _Ctype(symnum);
+    _Ctype res(symnum);
     for (int dim = 1; dim <= maxdim; dim++)
       if (symnum == 1)
-        {
-          // full symmetry
-          Symmetry sym{dim};
-          res->insert(make<_Ttype>(r, sym, nvs));
-        }
+        // full symmetry
+        res.insert(make<_Ttype>(r, Symmetry{dim}, nvs));
       else
-        {
-          // general symmetry
-          for (int i = 0; i <= dim; i++)
-            {
-              Symmetry sym{i, dim-i};
-              res->insert(make<_Ttype>(r, sym, nvs));
-            }
-        }
+        // general symmetry
+        for (int i = 0; i <= dim; i++)
+          res.insert(make<_Ttype>(r, Symmetry{i, dim-i}, nvs));
     return res;
   }
 
   template <class _Ttype, class _Ptype>
-  _Ptype *
+  _Ptype
   makePoly(int r, int nv, int maxdim)
   {
-    auto *p = new _Ptype(r, nv);
+    _Ptype p(r, nv);
     for (int d = 1; d <= maxdim; d++)
-      p->insert(make<_Ttype>(r, nv, d));
+      p.insert(make<_Ttype>(r, nv, d));
     return p;
   }
 

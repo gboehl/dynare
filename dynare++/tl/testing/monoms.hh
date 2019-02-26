@@ -68,7 +68,7 @@ public:
   ~Monom2Vector() = default;
   void deriv(const Symmetry &s, const IntSequence &c, Vector &out) const;
   std::unique_ptr<FGSTensor> deriv(const Symmetry &s) const;
-  FGSContainer *deriv(int maxdim) const;
+  FGSContainer deriv(int maxdim) const;
   void print() const;
 };
 
@@ -88,7 +88,7 @@ public:
   Monom4Vector(const Monom4Vector &f, const Monom4Vector &bigg,
                const Monom4Vector &g);
   ~Monom4Vector() = default;
-  FSSparseTensor *deriv(int dim) const;
+  FSSparseTensor deriv(int dim) const;
   std::unique_ptr<FGSTensor> deriv(const Symmetry &s) const;
   void deriv(const Symmetry &s, const IntSequence &coor, Vector &out) const;
   void print() const;
@@ -102,24 +102,22 @@ struct SparseDerivGenerator
   FGSContainer bigg;
   FGSContainer g;
   FGSContainer rcont;
-  FSSparseTensor **const ts;
+  std::vector<FSSparseTensor> ts;
   SparseDerivGenerator(int nf, int ny, int nu, int nup, int nbigg, int ng,
                        int mx, double prob, int maxdim);
-  ~SparseDerivGenerator();
 };
 
 struct DenseDerivGenerator
 {
   int maxdimen;
-  FGSContainer *xcont;
-  FGSContainer *rcont;
+  FGSContainer xcont;
+  FGSContainer rcont;
   std::vector<std::unique_ptr<FGSTensor>> ts;
-  UGSContainer *uxcont;
+  UGSContainer uxcont;
   std::vector<std::unique_ptr<UGSTensor>> uts;
   DenseDerivGenerator(int ng, int nx, int ny, int nu,
                       int mx, double prob, int maxdim);
   void unfold();
-  ~DenseDerivGenerator();
 };
 
 #endif
