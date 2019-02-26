@@ -43,6 +43,8 @@
 #include "tl_static.hh"
 #include "pascal_triangle.hh"
 
+#include <memory>
+
 /* Just to make the code nicer, we implement a Kronecker power of a
    vector encapsulated in the following class. It has |getNext| method
    which returns either folded or unfolded row-oriented single column
@@ -61,17 +63,16 @@
 class PowerProvider
 {
   Vector origv;
-  URSingleTensor *ut;
-  FRSingleTensor *ft;
+  std::unique_ptr<URSingleTensor> ut;
+  std::unique_ptr<FRSingleTensor> ft;
   int nv;
 public:
   PowerProvider(const ConstVector &v)
-    : origv(v), ut(nullptr), ft(nullptr), nv(v.length())
+    : origv(v), nv(v.length())
   {
   }
-  ~PowerProvider();
-  const URSingleTensor&getNext(const URSingleTensor *dummy);
-  const FRSingleTensor&getNext(const FRSingleTensor *dummy);
+  const URSingleTensor &getNext(const URSingleTensor *dummy);
+  const FRSingleTensor &getNext(const FRSingleTensor *dummy);
 };
 
 /* The tensor polynomial is basically a tensor container which is more
@@ -264,7 +265,7 @@ public:
   }
 
   /* Here we construct by contraction |maxdim-1| tensor first, and then
-     cycle. The code is clear, the only messy thing is |new| and |delete|. */
+     cycle. */
 
   void
   evalHorner(Vector &out, const ConstVector &v) const
@@ -277,11 +278,11 @@ public:
     if (maxdim == 0)
       return;
 
-    _Ttype *last;
+    std::unique_ptr<_Ttype> last;
     if (maxdim == 1)
-      last = new _Ttype(_Tparent::get(Symmetry{1}));
+      last = std::make_unique<_Ttype>(_Tparent::get(Symmetry{1}));
     else
-      last = new _Ttype(_Tparent::get(Symmetry{maxdim}), v);
+      last = std::make_unique<_Ttype>(_Tparent::get(Symmetry{maxdim}), v);
     for (int d = maxdim-1; d >= 1; d--)
       {
         Symmetry cs{d};
@@ -291,14 +292,9 @@ public:
             last->add(1.0, ConstTwoDMatrix(nt));
           }
         if (d > 1)
-          {
-            auto *new_last = new _Ttype(*last, v);
-            delete last;
-            last = new_last;
-          }
+          last = std::make_unique<_Ttype>(*last, v);
       }
     last->multaVec(out, v);
-    delete last;
   }
 
   /* Before a tensor is inserted, we check for the number of rows, and

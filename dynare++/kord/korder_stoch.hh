@@ -267,18 +267,18 @@ GXContainer<_Ttype>::getType(int i, const Symmetry &s) const
 {
   if (i == 0)
     if (s[2] > 0)
-      return _Stype::zero;
+      return itype::zero;
     else
-      return _Stype::matrix;
+      return itype::matrix;
   if (i == 1)
-    return _Stype::zero;
+    return itype::zero;
   if (i == 2)
-    return _Stype::zero;
+    return itype::zero;
   if (i == 3)
     if (s == Symmetry{0, 0, 0, 1})
-      return _Stype::unit;
+      return itype::unit;
     else
-      return _Stype::zero;
+      return itype::zero;
 
   KORD_RAISE("Wrong stack index in GXContainer::getType");
 }
@@ -311,24 +311,24 @@ ZXContainer<_Ttype>::getType(int i, const Symmetry &s) const
 {
   if (i == 0)
     if (s[2] > 0)
-      return _Stype::zero;
+      return itype::zero;
     else
-      return _Stype::matrix;
+      return itype::matrix;
   if (i == 1)
     if (s[2] > 0)
-      return _Stype::zero;
+      return itype::zero;
     else
-      return _Stype::matrix;
+      return itype::matrix;
   if (i == 2)
     if (s == Symmetry{1, 0, 0, 0})
-      return _Stype::unit;
+      return itype::unit;
     else
-      return _Stype::zero;
+      return itype::zero;
   if (i == 3)
     if (s == Symmetry{0, 1, 0, 0})
-      return _Stype::unit;
+      return itype::unit;
     else
-      return _Stype::zero;
+      return itype::zero;
 
   KORD_RAISE("Wrong stack index in ZXContainer::getType");
 }

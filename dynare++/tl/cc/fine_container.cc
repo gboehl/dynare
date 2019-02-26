@@ -15,7 +15,7 @@ SizeRefinement::SizeRefinement(const IntSequence &s, int nc, int max)
       int nr = s[i]/max;
       if (s[i] % max != 0)
         nr++;
-      int ss = (nr > 0) ? (int) round(((double) s[i])/nr) : 0;
+      int ss = (nr > 0) ? static_cast<int>(round(static_cast<double>(s[i])/nr)) : 0;
       for (int j = 0; j < nr - 1; j++)
         {
           rsizes.push_back(ss);

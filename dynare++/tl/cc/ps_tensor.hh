@@ -209,7 +209,7 @@ public:
   void addTo(FGSTensor &out) const;
   void addTo(UGSTensor &out) const;
 
-  enum fill_method {first, second};
+  enum class fill_method {first, second};
   static fill_method decideFillMethod(const FSSparseTensor &t);
 private:
   int tailIdentitySize() const;

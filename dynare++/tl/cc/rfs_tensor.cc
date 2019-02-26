@@ -124,16 +124,14 @@ URSingleTensor::URSingleTensor(const std::vector<ConstVector> &cols)
       return;
     }
 
-  auto *last = new Vector(cols[cols.size()-1]);
+  auto last = std::make_unique<Vector>(cols[cols.size()-1]);
   for (int i = cols.size()-2; i > 0; i--)
     {
-      auto *newlast = new Vector(power(nvar(), cols.size()-i));
+      auto newlast = std::make_unique<Vector>(power(nvar(), cols.size()-i));
       KronProd::kronMult(cols[i], ConstVector(*last), *newlast);
-      delete last;
-      last = newlast;
+      last = std::move(newlast);
     }
   KronProd::kronMult(cols[0], ConstVector(*last), getData());
-  delete last;
 }
 
 /* Here we construct $v\otimes\ldots\otimes v$, where the number of $v$
@@ -148,16 +146,14 @@ URSingleTensor::URSingleTensor(const ConstVector &v, int d)
       return;
     }
 
-  auto *last = new Vector(v);
+  auto last = std::make_unique<Vector>(v);
   for (int i = d-2; i > 0; i--)
     {
-      auto *newlast = new Vector(last->length()*v.length());
+      auto newlast = std::make_unique<Vector>(last->length()*v.length());
       KronProd::kronMult(v, ConstVector(*last), *newlast);
-      delete last;
-      last = newlast;
+      last = std::move(newlast);
     }
   KronProd::kronMult(v, ConstVector(*last), getData());
-  delete last;
 }
 
 /* Here we construct |FRSingleTensor| from |URSingleTensor| and return

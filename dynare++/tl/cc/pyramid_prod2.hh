@@ -76,6 +76,8 @@
 
 #include "Vector.hh"
 
+#include <vector>
+
 /* First we declare a helper class for the tensor. Its purpose is to
    gather the columns which are going to be Kronecker multiplied. The
    input of this helper class is |StackProduct<FGSTensor>| and coordinate
@@ -97,12 +99,10 @@ class IrregTensorHeader
   friend class IrregTensor;
   int nv;
   IntSequence unit_flag;
-  Vector **const cols;
+  std::vector<std::unique_ptr<Vector>> cols;
   IntSequence end_seq;
 public:
   IrregTensorHeader(const StackProduct<FGSTensor> &sp, const IntSequence &c);
-  IrregTensorHeader(const IrregTensorHeader &) = delete;
-  ~IrregTensorHeader();
   int
   dimen() const
   {

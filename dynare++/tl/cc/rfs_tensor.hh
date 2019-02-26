@@ -54,7 +54,7 @@ public:
   }
   URTensor(const URTensor &) = default;
   URTensor(URTensor &&) = default;
-  URTensor(const FRTensor &ft);
+  explicit URTensor(const FRTensor &ft);
 
   ~URTensor() override = default;
 
@@ -88,7 +88,7 @@ public:
   }
   FRTensor(const FRTensor &) = default;
   FRTensor(FRTensor &&) = default;
-  FRTensor(const URTensor &ut);
+  explicit FRTensor(const URTensor &ut);
 
   ~FRTensor() override = default;
 

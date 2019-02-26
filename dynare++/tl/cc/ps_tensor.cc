@@ -16,9 +16,9 @@ UPSTensor::fill_method
 UPSTensor::decideFillMethod(const FSSparseTensor &t)
 {
   if (t.getFillFactor() > 0.08)
-    return first;
+    return fill_method::first;
   else
-    return second;
+    return fill_method::second;
 }
 
 /* Here we make a slice. We decide what fill method to use and set it. */
@@ -34,7 +34,7 @@ UPSTensor::UPSTensor(const FSSparseTensor &t, const IntSequence &ss,
   TL_RAISE_IF(ss.sum() != t.nvar(),
               "Wrong length of stacks for UPSTensor slicing constructor");
 
-  if (first == decideFillMethod(t))
+  if (decideFillMethod(t) == fill_method::first)
     fillFromSparseOne(t, ss, coor);
   else
     fillFromSparseTwo(t, ss, coor);

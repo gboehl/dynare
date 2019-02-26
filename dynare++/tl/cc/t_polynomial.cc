@@ -12,14 +12,13 @@ PowerProvider::getNext(const URSingleTensor *dummy)
 {
   if (ut)
     {
-      auto *ut_new = new URSingleTensor(nv, ut->dimen()+1);
+      auto ut_new = std::make_unique<URSingleTensor>(nv, ut->dimen()+1);
       KronProd::kronMult(ConstVector(origv), ConstVector(ut->getData()), ut_new->getData());
-      delete ut;
-      ut = ut_new;
+      ut = std::move(ut_new);
     }
   else
     {
-      ut = new URSingleTensor(nv, 1);
+      ut = std::make_unique<URSingleTensor>(nv, 1);
       ut->getData() = origv;
     }
   return *ut;
@@ -32,19 +31,9 @@ PowerProvider::getNext(const URSingleTensor *dummy)
 const FRSingleTensor &
 PowerProvider::getNext(const FRSingleTensor *dummy)
 {
-  getNext(ut);
-  if (ft)
-    delete ft;
-  ft = new FRSingleTensor(*ut);
+  getNext(ut.get());
+  ft = std::make_unique<FRSingleTensor>(*ut);
   return *ft;
-}
-
-PowerProvider::~PowerProvider()
-{
-  if (ut)
-    delete ut;
-  if (ft)
-    delete ft;
 }
 
 UTensorPolynomial::UTensorPolynomial(const FTensorPolynomial &fp)

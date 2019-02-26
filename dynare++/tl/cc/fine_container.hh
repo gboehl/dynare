@@ -30,6 +30,7 @@
 #include "stack_container.hh"
 
 #include <vector>
+#include <memory>
 
 /* This class splits the first |nc| elements of the given sequence |s|
    to a sequence not having items greater than given |max|. The remaining
@@ -78,7 +79,7 @@ protected:
   using _Stype = StackContainer<_Ttype>;
   using _Ctype = typename StackContainerInterface<_Ttype>::_Ctype;
   using itype = typename StackContainerInterface<_Ttype>::itype;
-  _Ctype **const ref_conts;
+  std::vector<std::unique_ptr<_Ctype>> ref_conts;
   const _Stype &stack_cont;
 public:
   /* Here we construct the |SizeRefinement| and allocate space for the
@@ -98,7 +99,7 @@ public:
   FineContainer(const _Stype &sc, int max)
     : SizeRefinement(sc.getStackSizes(), sc.numConts(), max),
       StackContainer<_Ttype>(numRefinements(), getNC()),
-    ref_conts(new _Ctype *[getNC()]),
+    ref_conts(getNC()),
     stack_cont(sc)
   {
     for (int i = 0; i < numRefinements(); i++)
@@ -114,23 +115,13 @@ public:
             last_cont = getOldIndex(i);
             last_row = 0;
           }
-        union {const _Ctype *c; _Ctype *n;} convert;
-        convert.c = stack_cont.getCont(last_cont);
-        ref_conts[i] = new _Ctype(last_row, _Stype::stack_sizes[i],
-                                  *(convert.n));
-        _Stype::conts[i] = ref_conts[i];
+        ref_conts[i] = std::make_unique<_Ctype>(last_row, _Stype::stack_sizes[i],
+                                                const_cast<_Ctype &>(stack_cont.getCont(last_cont)));
+        _Stype::conts[i] = ref_conts[i].get();
         last_row += _Stype::stack_sizes[i];
       }
   }
 
-  /* Here we deallocate the refined containers, and deallocate the array of
-     refined containers. */
-  ~FineContainer() override
-  {
-    for (int i = 0; i < _Stype::numConts(); i++)
-      delete ref_conts[i];
-    delete [] ref_conts;
-  }
   itype
   getType(int i, const Symmetry &s) const override
   {

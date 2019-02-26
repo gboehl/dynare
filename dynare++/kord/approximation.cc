@@ -25,10 +25,10 @@ ZAuxContainer::getType(int i, const Symmetry &s) const
 {
   if (i == 0)
     if (s[2] > 0)
-      return zero;
+      return itype::zero;
     else
-      return matrix;
-  return zero;
+      return itype::matrix;
+  return itype::zero;
 }
 
 Approximation::Approximation(DynamicModel &m, Journal &j, int ns, bool dr_centr, double qz_crit)

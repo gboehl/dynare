@@ -93,26 +93,25 @@ class StackContainerInterface
 {
 public:
   using _Ctype = TensorContainer<_Ttype>;
-  using itype = enum { matrix, unit, zero};
+  enum class itype { matrix, unit, zero};
 public:
   StackContainerInterface() = default;
-  virtual ~StackContainerInterface()
-  = default;
-  virtual const IntSequence&getStackSizes() const = 0;
-  virtual IntSequence&getStackSizes() = 0;
-  virtual const IntSequence&getStackOffsets() const = 0;
-  virtual IntSequence&getStackOffsets() = 0;
+  virtual ~StackContainerInterface() = default;
+  virtual const IntSequence &getStackSizes() const = 0;
+  virtual IntSequence &getStackSizes() = 0;
+  virtual const IntSequence &getStackOffsets() const = 0;
+  virtual IntSequence &getStackOffsets() = 0;
   virtual int numConts() const = 0;
-  virtual const _Ctype *getCont(int i) const = 0;
+  virtual const _Ctype &getCont(int i) const = 0;
   virtual itype getType(int i, const Symmetry &s) const = 0;
   virtual int numStacks() const = 0;
   virtual bool isZero(int i, const Symmetry &s) const = 0;
   virtual const _Ttype &getMatrix(int i, const Symmetry &s) const = 0;
   virtual int getLengthOfMatrixStacks(const Symmetry &s) const = 0;
   virtual int getUnitPos(const Symmetry &s) const = 0;
-  virtual Vector *createPackedColumn(const Symmetry &s,
-                                     const IntSequence &coor,
-                                     int &iu) const = 0;
+  virtual std::unique_ptr<Vector> createPackedColumn(const Symmetry &s,
+                                                     const IntSequence &coor,
+                                                     int &iu) const = 0;
   int
   getAllSize() const
   {
@@ -123,7 +122,9 @@ public:
 
 /* Here is |StackContainer|, which implements almost all interface
    |StackContainerInterface| but one method |getType| which is left for
-   implementation to specializations. */
+   implementation to specializations.
+
+   It does not own its tensors. */
 
 template <class _Ttype>
 class StackContainer : virtual public StackContainerInterface<_Ttype>
@@ -136,16 +137,12 @@ protected:
   int num_conts;
   IntSequence stack_sizes;
   IntSequence stack_offsets;
-  const _Ctype **const conts;
+  std::vector<const _Ctype *> conts;
 public:
   StackContainer(int ns, int nc)
-    : num_conts(nc), stack_sizes(ns, 0), stack_offsets(ns, 0),
-      conts(new const _Ctype *[nc])
+    : stack_sizes(ns, 0), stack_offsets(ns, 0),
+      conts(nc)
   {
-  }
-  ~StackContainer() override
-  {
-    delete [] conts;
   }
   const IntSequence &
   getStackSizes() const override
@@ -170,12 +167,12 @@ public:
   int
   numConts() const override
   {
-    return num_conts;
+    return conts.size();
   }
-  const _Ctype *
+  const _Ctype &
   getCont(int i) const override
   {
-    return conts[i];
+    return *(conts[i]);
   }
   itype getType(int i, const Symmetry &s) const override = 0;
   int
@@ -188,14 +185,14 @@ public:
   {
     TL_RAISE_IF(i < 0 || i >= numStacks(),
                 "Wrong index to stack in StackContainer::isZero.");
-    return (getType(i, s) == _Stype::zero
-            || (getType(i, s) == _Stype::matrix && !conts[i]->check(s)));
+    return (getType(i, s) == itype::zero
+            || (getType(i, s) == itype::matrix && !conts[i]->check(s)));
   }
 
   const _Ttype &
   getMatrix(int i, const Symmetry &s) const override
   {
-    TL_RAISE_IF(isZero(i, s) || getType(i, s) == _Stype::unit,
+    TL_RAISE_IF(isZero(i, s) || getType(i, s) == itype::unit,
                 "Matrix is not returned in StackContainer::getMatrix");
     return conts[i]->get(s);
   }
@@ -205,7 +202,7 @@ public:
   {
     int res = 0;
     int i = 0;
-    while (i < numStacks() && getType(i, s) == _Stype::matrix)
+    while (i < numStacks() && getType(i, s) == itype::matrix)
       res += stack_sizes[i++];
     return res;
   }
@@ -216,12 +213,12 @@ public:
     if (s.dimen() != 1)
       return -1;
     int i = numStacks()-1;
-    while (i >= 0 && getType(i, s) != _Stype::unit)
+    while (i >= 0 && getType(i, s) != itype::unit)
       i--;
     return i;
   }
 
-  Vector *
+  std::unique_ptr<Vector>
   createPackedColumn(const Symmetry &s,
                      const IntSequence &coor, int &iu) const override
   {
@@ -237,9 +234,9 @@ public:
         len++;
       }
 
-    auto *res = new Vector(len);
+    auto res = std::make_unique<Vector>(len);
     i = 0;
-    while (i < numStacks() && getType(i, s) == _Stype::matrix)
+    while (i < numStacks() && getType(i, s) == itype::matrix)
       {
         const _Ttype &t = getMatrix(i, s);
         Tensor::index ind(t, coor);
@@ -344,8 +341,7 @@ public:
              int ny, int nu)
     : _Tparent(4, 2)
   {
-    _Tparent::stack_sizes[0] = ngss; _Tparent::stack_sizes[1] = ng;
-    _Tparent::stack_sizes[2] = ny; _Tparent::stack_sizes[3] = nu;
+    _Tparent::stack_sizes = { ngss, ng, ny, nu };
     _Tparent::conts[0] = gss;
     _Tparent::conts[1] = g;
     _Tparent::calculateOffsets();
@@ -358,22 +354,22 @@ public:
   getType(int i, const Symmetry &s) const override
   {
     if (i == 0)
-      return _Stype::matrix;
+      return itype::matrix;
     if (i == 1)
       if (s[2] > 0)
-        return _Stype::zero;
+        return itype::zero;
       else
-        return _Stype::matrix;
+        return itype::matrix;
     if (i == 2)
       if (s == Symmetry{1, 0, 0, 0})
-        return _Stype::unit;
+        return itype::unit;
       else
-        return _Stype::zero;
+        return itype::zero;
     if (i == 3)
       if (s == Symmetry{0, 1, 0, 0})
-        return _Stype::unit;
+        return itype::unit;
       else
-        return _Stype::zero;
+        return itype::zero;
 
     TL_RAISE("Wrong stack index in ZContainer::getType");
   }
@@ -425,8 +421,7 @@ public:
   GContainer(const _Ctype *gs, int ngs, int nu)
     : StackContainer<_Ttype>(4, 1)
   {
-    _Tparent::stack_sizes[0] = ngs; _Tparent::stack_sizes[1] = nu;
-    _Tparent::stack_sizes[2] = nu; _Tparent::stack_sizes[3] = 1;
+    _Tparent::stack_sizes = { ngs, nu, nu, 1 };
     _Tparent::conts[0] = gs;
     _Tparent::calculateOffsets();
   }
@@ -441,21 +436,21 @@ public:
   {
     if (i == 0)
       if (s[2] > 0 || s == Symmetry{0, 0, 0, 1})
-        return _Stype::zero;
+        return itype::zero;
       else
-        return _Stype::matrix;
+        return itype::matrix;
     if (i == 1)
       if (s == Symmetry{0, 0, 1, 0})
-        return _Stype::unit;
+        return itype::unit;
       else
-        return _Stype::zero;
+        return itype::zero;
     if (i == 2)
-      return _Stype::zero;
+      return itype::zero;
     if (i == 3)
       if (s == Symmetry{0, 0, 0, 1})
-        return _Stype::unit;
+        return itype::unit;
       else
-        return _Stype::zero;
+        return itype::zero;
 
     TL_RAISE("Wrong stack index in GContainer::getType");
   }
@@ -556,23 +551,24 @@ public:
     return stack_cont.getMatrix(is, syms[ip]);
   }
 
-  void
-  createPackedColumns(const IntSequence &coor,
-                      Vector **vs, IntSequence &iu) const
+  std::vector<std::unique_ptr<Vector>>
+  createPackedColumns(const IntSequence &coor, IntSequence &iu) const
   {
     TL_RAISE_IF(iu.size() != dimen(),
-                "Wrong storage length for unit flags in StackProduct::createPackedColumn");
+                "Wrong storage length for unit flags in StackProduct::createPackedColumns");
     TL_RAISE_IF(coor.size() != per.size(),
-                "Wrong size of index coor in StackProduct::createPackedColumn");
+                "Wrong size of index coor in StackProduct::createPackedColumns");
     IntSequence perindex(coor.size());
+    std::vector<std::unique_ptr<Vector>> vs;
     per.apply(coor, perindex);
     int off = 0;
     for (int i = 0; i < dimen(); i++)
       {
         IntSequence percoor(perindex, off, syms[i].dimen() + off);
-        vs[i] = stack_cont.createPackedColumn(syms[i], percoor, iu[i]);
+        vs.push_back(stack_cont.createPackedColumn(syms[i], percoor, iu[i]));
         off += syms[i].dimen();
       }
+    return vs;
   }
 
   int
@@ -623,11 +619,11 @@ public:
 
     for (int i = 0; i < sp.dimen(); i++)
       {
-        TL_RAISE_IF(sp.getType(istack[i], i) == _Stype::zero,
+        TL_RAISE_IF(sp.getType(istack[i], i) == _Stype::itype::zero,
                     "Attempt to construct KronProdStack from zero matrix");
-        if (sp.getType(istack[i], i) == _Stype::unit)
+        if (sp.getType(istack[i], i) == _Stype::itype::unit)
           setUnit(i, sp.getSize(istack[i]));
-        if (sp.getType(istack[i], i) == _Stype::matrix)
+        if (sp.getType(istack[i], i) == _Stype::itype::matrix)
           {
             const TwoDMatrix &m = sp.getMatrix(istack[i], i);
             TL_RAISE_IF(m.nrows() != sp.getSize(istack[i]),

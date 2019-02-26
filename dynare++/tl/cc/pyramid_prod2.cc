@@ -11,10 +11,9 @@ IrregTensorHeader::IrregTensorHeader(const StackProduct<FGSTensor> &sp,
                                      const IntSequence &c)
   : nv(sp.getAllSize()),
     unit_flag(sp.dimen()),
-    cols(new Vector *[sp.dimen()]),
+    cols(sp.createPackedColumns(c, unit_flag)),
     end_seq(sp.dimen())
 {
-  sp.createPackedColumns(c, cols, unit_flag);
   for (int i = 0; i < sp.dimen(); i++)
     {
       end_seq[i] = cols[i]->length();
@@ -57,13 +56,6 @@ IrregTensorHeader::increment(IntSequence &v) const
     }
 }
 
-IrregTensorHeader::~IrregTensorHeader()
-{
-  for (int i = 0; i < dimen(); i++)
-    delete cols[i];
-  delete [] cols;
-}
-
 /* It is a product of all column lengths. */
 
 int
@@ -89,18 +81,16 @@ IrregTensor::IrregTensor(const IrregTensorHeader &h)
       return;
     }
 
-  auto *last = new Vector(*(header.cols[header.dimen()-1]));
+  auto last = std::make_unique<Vector>(*(header.cols[header.dimen()-1]));
   for (int i = header.dimen()-2; i > 0; i--)
     {
-      auto *newlast = new Vector(last->length()*header.cols[i]->length());
+      auto newlast = std::make_unique<Vector>(last->length()*header.cols[i]->length());
       KronProd::kronMult(ConstVector(*(header.cols[i])),
                          ConstVector(*last), *newlast);
-      delete last;
-      last = newlast;
+      last = std::move(newlast);
     }
   KronProd::kronMult(ConstVector(*(header.cols[0])),
                      ConstVector(*last), getData());
-  delete last;
 }
 
 void
