@@ -129,7 +129,11 @@ end
 if is_non_optimizing_agents
     dataForNonOptimizingBehaviour = dseries();
     for i=1:length(non_optimizing_behaviour.vars)
-        variable = M_.endo_names{non_optimizing_behaviour.vars(i)};
+        if non_optimizing_behaviour.isendo(i)
+            variable = M_.endo_names{non_optimizing_behaviour.vars(i)};
+        else
+            variable = M_.exo_names{non_optimizing_behaviour.vars(i)};
+        end
         if non_optimizing_behaviour.lags(i)
             dataForNonOptimizingBehaviour = [dataForNonOptimizingBehaviour, data{variable}.lag(non_optimizing_behaviour.lags(i))];
         else
