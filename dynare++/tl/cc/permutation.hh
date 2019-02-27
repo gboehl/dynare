@@ -84,7 +84,7 @@ public:
     p1.apply(permap);
   }
   Permutation(const Permutation &p, int i)
-    : permap(p.size(), p.permap, i)
+    : permap(p.permap.insert(p.size(), i))
   {
   }
   Permutation &operator=(const Permutation &) = default;

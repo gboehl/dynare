@@ -93,10 +93,6 @@ public:
   IntSequence(const Symmetry &sy, const std::vector<int> &se);
   // Unfolds a given integer sequence with respect to a given symmetry
   IntSequence(const Symmetry &sy, const IntSequence &se);
-  // Inserts an element in an ordered sequence
-  IntSequence(int i, const IntSequence &s);
-  // Inserts an element at a given position
-  IntSequence(int i, const IntSequence &s, int pos);
 
   IntSequence &operator=(const IntSequence &s);
   IntSequence &operator=(IntSequence &&s);
@@ -138,6 +134,12 @@ public:
   }
   bool lessEq(const IntSequence &s) const;
   bool less(const IntSequence &s) const;
+
+  // Inserts an element into an ordered sequence
+  IntSequence insert(int i) const;
+  // Inserts an element at a given position
+  /* For appending at the end, use pos = size() */
+  IntSequence insert(int i, int pos) const;
 
   void sort();
   void monotone();

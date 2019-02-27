@@ -31,7 +31,7 @@ FFSTensor::FFSTensor(const FFSTensor &t, const ConstVector &x)
   for (Tensor::index to = begin(); to != end(); ++to)
     for (int i = 0; i < nvar(); i++)
       {
-        IntSequence from_ind(i, to.getCoor());
+        IntSequence from_ind(to.getCoor().insert(i));
         Tensor::index from(t, from_ind);
         addColumn(x[i], t, *from, *to);
       }

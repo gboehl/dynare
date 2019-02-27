@@ -46,29 +46,32 @@ IntSequence::IntSequence(const Symmetry &sy, const std::vector<int> &se)
 /* This constructs an ordered integer sequence from the given ordered
    sequence inserting the given number to the sequence. */
 
-IntSequence::IntSequence(int i, const IntSequence &s)
-  : data{new int[s.size()+1]}, length{s.size()+1}
+IntSequence
+IntSequence::insert(int i) const
 {
-  int j = 0;
-  while (j < s.size() && s[j] < i)
-    j++;
-  for (int jj = 0; jj < j; jj++)
-    operator[](jj) = s[jj];
-  operator[](j) = i;
-  for (int jj = j; jj < s.size(); jj++)
-    operator[](jj+1) = s[jj];
+  IntSequence r(size()+1);
+  int j;
+  for (j = 0; j < size() && operator[](j) < i; j++)
+    r[j] = operator[](j);
+  r[j] = i;
+  for (; j < size(); j++)
+    r[j+1] = operator[](j);
+  return r;
 }
 
-IntSequence::IntSequence(int i, const IntSequence &s, int pos)
-  : data{new int[s.size()+1]}, length{s.size()+1}
+IntSequence
+IntSequence::insert(int i, int pos) const
 {
-  TL_RAISE_IF(pos < 0 || pos > s.size(),
-              "Wrong position for insertion IntSequence constructor");
-  for (int jj = 0; jj < pos; jj++)
-    operator[](jj) = s[jj];
-  operator[](pos) = i;
-  for (int jj = pos; jj < s.size(); jj++)
-    operator[](jj+1) = s[jj];
+  TL_RAISE_IF(pos < 0 || pos > size(),
+              "Wrong position for IntSequence::insert()");
+  IntSequence r(size()+1);
+  int j;
+  for (j = 0; j < pos; j++)
+    r[j] = operator[](j);
+  r[j] = i;
+  for (; j < size(); j++)
+    r[j+1] = operator[](j);
+  return r;
 }
 
 IntSequence &
