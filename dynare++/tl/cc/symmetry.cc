@@ -2,6 +2,7 @@
 
 #include "symmetry.hh"
 #include "permutation.hh"
+#include "tl_exception.hh"
 
 #include <iostream>
 
@@ -19,6 +20,26 @@ Symmetry::Symmetry(const IntSequence &s)
         p++;
       operator[](p)++;
     }
+}
+
+/* This constructs an implied symmetry from a more general symmetry and
+   equivalence class. For example, let the general symmetry be $y^3u^2$ and the
+   equivalence class is $\{0,4\}$ picking up first and fifth variable, we
+   calculate symmetry corresponding to the picked variables. These are $yu$.
+   Thus the constructed sequence must be $(1,1)$, meaning that we picked one
+   $y$ and one $u$. */
+
+Symmetry::Symmetry(const Symmetry &sy, const OrdSequence &cl)
+  : IntSequence(sy.num())
+{
+  const std::vector<int> &se = cl.getData();
+  TL_RAISE_IF(sy.dimen() <= se[se.size()-1],
+              "Sequence is not reachable by symmetry in IntSequence()");
+  for (int i = 0; i < size(); i++)
+    operator[](i) = 0;
+
+  for (int i : se)
+    operator[](sy.findClass(i))++;
 }
 
 /* Find a class of the symmetry containing a given index. */

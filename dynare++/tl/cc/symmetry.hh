@@ -72,10 +72,7 @@ public:
   {
   }
   // Constructor of implied symmetry for a symmetry and an equivalence class
-  Symmetry(const Symmetry &s, const OrdSequence &cl)
-    : IntSequence(s, cl.getData())
-  {
-  }
+  Symmetry(const Symmetry &s, const OrdSequence &cl);
   /* Subsymmetry, which takes the given length of symmetry from the end (shares
      data pointer) */
   Symmetry(Symmetry &s, int len)

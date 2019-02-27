@@ -20,26 +20,6 @@ IntSequence::unfold(const Symmetry &sy) const
   return r;
 }
 
-/* This constructs an implied symmetry (implemented as |IntSequence|
-   from a more general symmetry and equivalence class (implemented as
-   |vector<int>|). For example, let the general symmetry be $y^3u^2$ and
-   the equivalence class is $\{0,4\}$ picking up first and fifth
-   variable, we calculate symmetry (at this point only |IntSequence|)
-   corresponding to the picked variables. These are $yu$. Thus the
-   constructed sequence must be $(1,1)$, meaning that we picked one $y$
-   and one $u$. */
-
-IntSequence::IntSequence(const Symmetry &sy, const std::vector<int> &se)
-  : data{new int[sy.num()]}, length{sy.num()}
-{
-  TL_RAISE_IF(sy.dimen() <= se[se.size()-1],
-              "Sequence is not reachable by symmetry in IntSequence()");
-  for (int i = 0; i < length; i++)
-    operator[](i) = 0;
-
-  for (int i : se)
-    operator[](sy.findClass(i))++;
-}
 
 /* This constructs an ordered integer sequence from the given ordered
    sequence inserting the given number to the sequence. */
