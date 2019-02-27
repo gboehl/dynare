@@ -60,7 +60,7 @@ protected:
   IntSequence nvmax;
 public:
   TensorDimens(const Symmetry &s, const IntSequence &nvars)
-    : nvs(nvars), sym(s), nvmax(sym, nvs)
+    : nvs(nvars), sym(s), nvmax(nvs.unfold(sym))
   {
   }
   TensorDimens(int nvar, int dimen)

@@ -91,8 +91,10 @@ public:
   /* Constructor used for calculating implied symmetry from a more general
      symmetry and one equivalence class */
   IntSequence(const Symmetry &sy, const std::vector<int> &se);
-  // Unfolds a given integer sequence with respect to a given symmetry
-  IntSequence(const Symmetry &sy, const IntSequence &se);
+  /* Unfolds a given integer sequence with respect to a given symmetry. If for
+     example the sequence is $(a,b)$ and the symmetry is $(2,3)$, then the
+     result is $(a,a,b,b,b)$. */
+  IntSequence unfold(const Symmetry &sy) const;
 
   IntSequence &operator=(const IntSequence &s);
   IntSequence &operator=(IntSequence &&s);

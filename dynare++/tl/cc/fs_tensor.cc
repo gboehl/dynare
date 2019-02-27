@@ -148,7 +148,7 @@ FFSTensor::addSubTensor(const FGSTensor &t)
   IntSequence shift_pre(t.getSym().num(), 0);
   for (int i = 1; i < t.getSym().num(); i++)
     shift_pre[i] = shift_pre[i-1]+t.getDims().getNVS()[i-1];
-  IntSequence shift(t.getSym(), shift_pre);
+  IntSequence shift(shift_pre.unfold(t.getSym()));
 
   for (Tensor::index ind = t.begin(); ind != t.end(); ++ind)
     {
@@ -255,7 +255,7 @@ UFSTensor::addSubTensor(const UGSTensor &t)
   IntSequence shift_pre(t.getSym().num(), 0);
   for (int i = 1; i < t.getSym().num(); i++)
     shift_pre[i] = shift_pre[i-1]+t.getDims().getNVS()[i-1];
-  IntSequence shift(t.getSym(), shift_pre);
+  IntSequence shift(shift_pre.unfold(t.getSym()));
 
   for (Tensor::index tar = begin(); tar != end(); ++tar)
     {

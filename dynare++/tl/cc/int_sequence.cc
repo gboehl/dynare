@@ -9,17 +9,15 @@
 #include <limits>
 #include <numeric>
 
-/* This unfolds a given integer sequence with respect to the given
-   symmetry. If for example the symmetry is $(2,3)$, and the sequence is
-   $(a,b)$, then the result is $(a,a,b,b,b)$. */
-
-IntSequence::IntSequence(const Symmetry &sy, const IntSequence &se)
-  : data{new int[sy.dimen()]}, length{sy.dimen()}
+IntSequence
+IntSequence::unfold(const Symmetry &sy) const
 {
+  IntSequence r(sy.dimen());
   int k = 0;
   for (int i = 0; i < sy.num(); i++)
     for (int j = 0; j < sy[i]; j++, k++)
-      operator[](k) = se[i];
+      r[k] = operator[](i);
+  return r;
 }
 
 /* This constructs an implied symmetry (implemented as |IntSequence|

@@ -230,7 +230,7 @@ StochForwardDerivs<t>::StochForwardDerivs(const PartitionY &ypart, int nu,
           for (int i = 0; i <= d; i++)
             {
               Symmetry sym{i, 0, 0, d-i};
-              IntSequence coor(sym, pp);
+              IntSequence coor(pp.unfold(sym));
               auto ten = std::make_unique<_Ttensor>(g_int_cent.get(Symmetry{d}), ss, coor,
                                                     TensorDimens(sym, true_nvs));
               this->insert(std::move(ten));

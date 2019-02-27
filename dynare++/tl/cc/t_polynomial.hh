@@ -185,7 +185,7 @@ public:
                   }
 
                 Symmetry sym{i, j};
-                IntSequence coor(sym, pp);
+                IntSequence coor(pp.unfold(sym));
                 _TGStype slice(tp.get(Symmetry{i+j}), ss, coor, TensorDimens(sym, ss));
                 slice.mult(PascalTriangle::noverk(i+j, j));
                 _TGStype tmp(*ten);
@@ -217,7 +217,7 @@ public:
               }
 
             Symmetry sym{0, j};
-            IntSequence coor(sym, pp);
+            IntSequence coor(pp.unfold(sym));
             _TGStype slice(tp.get(Symmetry{j}), ss, coor, TensorDimens(sym, ss));
             ten->add(1.0, slice);
           }
