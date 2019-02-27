@@ -10,7 +10,7 @@ Upstream-Contact: Dynare Team, whose members in 2019 are:
                   Johannes Pfeifer <jpfeifer@gmx.de>
                   Marco Ratto <marco.ratto@ec.europa.eu>
                   Sébastien Villemot <sebastien@dynare.org>
-Source: http://www.dynare.org
+Source: https://www.dynare.org
 
 Files: *
 Copyright: 1996-2019 Dynare Team
@@ -229,11 +229,11 @@ License: GPL-3+ with Autoconf exception
 Files: m4/ax_boost_base.m4
 Copyright: 2008 Thomas Porschberg <thomas@randspringer.de>
            2009 Peter Adolphs
-License: permissive-autoconf
+License: FSFAP
 
 Files: m4/ax_compare_version.m4
 Copyright: 2008 Tim Toolan <toolan@ele.uri.edu>
-License: permissive-autoconf
+License: FSFAP
 
 
 Files: m4/ax_cxx_compile_stdcxx.m4
@@ -244,7 +244,7 @@ Copyright: 2008 Benjamin Kosnik <bkoz@redhat.com>
            2014, 2015 Google Inc.; contributed by Alexey Sokolov <sokolov@google.com>
            2015 Paul Norman <penorman@mac.com>
            2015 Moritz Klammler <moritz@klammler.eu>
-License: permissive-autoconf
+License: FSFAP
 
 Files: m4/ax_latex_class.m4 m4/ax_tex_test.m4
 Copyright: 2008 Boretti Mathieu <boretti@eig.unige.ch>
@@ -927,7 +927,7 @@ License: CC-BY-SA-4.0
  .
  Creative Commons may be contacted at creativecommons.org.
 
-License: permissive-autoconf
+License: FSFAP
  Copying and distribution of this file, with or without modification, are
  permitted in any medium without royalty provided the copyright notice
  and this notice are preserved. This file is offered as-is, without any
