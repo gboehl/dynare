@@ -6,22 +6,6 @@
 
 #include <iostream>
 
-/* Construct symmetry as numbers of successively equal items in the sequence. */
-
-Symmetry::Symmetry(const IntSequence &s)
-  : IntSequence(s.getNumDistinct(), 0)
-{
-  int p = 0;
-  if (s.size() > 0)
-    operator[](p) = 1;
-  for (int i = 1; i < s.size(); i++)
-    {
-      if (s[i] != s[i-1])
-        p++;
-      operator[](p)++;
-    }
-}
-
 /* This constructs an implied symmetry from a more general symmetry and
    equivalence class. For example, let the general symmetry be $y^3u^2$ and the
    equivalence class is $\{0,4\}$ picking up first and fifth variable, we

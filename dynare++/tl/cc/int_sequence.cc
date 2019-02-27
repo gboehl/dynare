@@ -20,6 +20,22 @@ IntSequence::unfold(const Symmetry &sy) const
   return r;
 }
 
+Symmetry
+IntSequence::getSymmetry() const
+{
+  Symmetry r(getNumDistinct());
+  int p = 0;
+  if (size() > 0)
+    r[p] = 1;
+  for (int i = 1; i < size(); i++)
+    {
+      if (operator[](i) != operator[](i-1))
+        p++;
+      r[p]++;
+    }
+  return r;
+}
+
 
 /* This constructs an ordered integer sequence from the given ordered
    sequence inserting the given number to the sequence. */

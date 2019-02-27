@@ -79,10 +79,6 @@ public:
     : IntSequence(s, s.size()-len, s.size())
   {
   }
-  /* Constructs a symmetry from an integer sequence (supposed to be ordered) as
-     a symmetry counting successively equal items. For instance the sequence
-     $(a,a,a,b,c,c,d,d,d,d)$ produces symmetry $(3,1,2,4)$. */
-  Symmetry(const IntSequence &s);
 
   int
   num() const

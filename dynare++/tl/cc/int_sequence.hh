@@ -93,6 +93,11 @@ public:
      result is $(a,a,b,b,b)$. */
   IntSequence unfold(const Symmetry &sy) const;
 
+  /* Constructs a symmetry from the integer sequence (supposed to be ordered) as
+     a symmetry counting successively equal items. For instance the sequence
+     $(a,a,a,b,c,c,d,d,d,d)$ produces symmetry $(3,1,2,4)$. */
+  Symmetry getSymmetry() const;
+
   IntSequence &operator=(const IntSequence &s);
   IntSequence &operator=(IntSequence &&s);
   virtual ~IntSequence()
