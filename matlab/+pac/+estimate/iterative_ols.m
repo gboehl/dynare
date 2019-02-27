@@ -71,7 +71,6 @@ if is_non_optimizing_agents
     non_optimizing_behaviour_params = non_optimizing_behaviour_params.*transpose(non_optimizing_behaviour.scaling_factor);
     % Set flag for the estimation of the share of non optimizing agents.
     estimate_non_optimizing_agents_share = ismember(M_.param_names(M_.pac.(pacmodl).equations.(eqtag).share_of_optimizing_agents_index), fieldnames(params));
-    estimate_non_optimizing_agents_share
     if ~estimate_non_optimizing_agents_share
         share_of_optimizing_agents = M_.params(M_.pac.(pacmodl).equations.(eqtag).share_of_optimizing_agents_index);
         if share_of_optimizing_agents>1 || share_of_optimizing_agents<0
