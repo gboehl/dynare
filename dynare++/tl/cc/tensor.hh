@@ -105,12 +105,12 @@ public:
       : tensor(t), offset(0), coor(n, 0)
     {
     }
-    index(const Tensor &t, const IntSequence &cr, int c)
-      : tensor(t), offset(c), coor(cr)
+    index(const Tensor &t, IntSequence cr, int c)
+      : tensor(t), offset(c), coor(std::move(cr))
     {
     }
-    index(const Tensor &t, const IntSequence &cr)
-      : tensor(t), offset(tensor.getOffset(cr)), coor(cr)
+    index(const Tensor &t, IntSequence cr)
+      : tensor(t), offset(tensor.getOffset(cr)), coor(std::move(cr))
     {
     }
     index(const index &) = default;
@@ -164,18 +164,18 @@ protected:
   const index in_end;
   int dim;
 public:
-  Tensor(indor io, const IntSequence &last, int r, int c, int d)
+  Tensor(indor io, IntSequence last, int r, int c, int d)
     : TwoDMatrix(r, c),
       in_beg(*this, d),
-      in_end(*this, last, (io == indor::along_row) ? r : c),
+      in_end(*this, std::move(last), (io == indor::along_row) ? r : c),
       dim(d)
   {
   }
-  Tensor(indor io, const IntSequence &first, const IntSequence &last,
+  Tensor(indor io, IntSequence first, IntSequence last,
          int r, int c, int d)
     : TwoDMatrix(r, c),
-      in_beg(*this, first, 0),
-      in_end(*this, last, (io == indor::along_row) ? r : c),
+      in_beg(*this, std::move(first), 0),
+      in_end(*this, std::move(last), (io == indor::along_row) ? r : c),
       dim(d)
   {
   }
@@ -230,8 +230,8 @@ class FTensor;
 class UTensor : public Tensor
 {
 public:
-  UTensor(indor io, const IntSequence &last, int r, int c, int d)
-    : Tensor(io, last, r, c, d)
+  UTensor(indor io, IntSequence last, int r, int c, int d)
+    : Tensor(io, std::move(last), r, c, d)
   {
   }
   UTensor(const UTensor &) = default;
@@ -266,8 +266,8 @@ public:
 class FTensor : public Tensor
 {
 public:
-  FTensor(indor io, const IntSequence &last, int r, int c, int d)
-    : Tensor(io, last, r, c, d)
+  FTensor(indor io, IntSequence last, int r, int c, int d)
+    : Tensor(io, std::move(last), r, c, d)
   {
   }
   FTensor(const FTensor &) = default;

@@ -6,6 +6,8 @@
 #include "tl_static.hh"
 #include "stack_container.hh"
 
+#include <iostream>
+
 /* Here we decide, what method for filling a slice in slicing
    constructor to use. A few experiments suggest, that if the tensor is
    more than 8\% filled, the first method (|fillFromSparseOne|) is
@@ -24,10 +26,10 @@ UPSTensor::decideFillMethod(const FSSparseTensor &t)
 /* Here we make a slice. We decide what fill method to use and set it. */
 
 UPSTensor::UPSTensor(const FSSparseTensor &t, const IntSequence &ss,
-                     const IntSequence &coor, const PerTensorDimens &ptd)
+                     const IntSequence &coor, PerTensorDimens ptd)
   : UTensor(indor::along_col, ptd.getNVX(),
             t.nrows(), ptd.calcUnfoldMaxOffset(), ptd.dimen()),
-    tdims(ptd)
+    tdims(std::move(ptd))
 {
   TL_RAISE_IF(coor.size() != t.dimen(),
               "Wrong coordinates length of stacks for UPSTensor slicing constructor");
@@ -174,7 +176,7 @@ UPSTensor::fillFromSparseOne(const FSSparseTensor &t, const IntSequence &ss,
         {
           auto su = t.getMap().upper_bound(c);
           for (auto srun = sl; srun != su; ++srun)
-            get((*srun).second.first, *run) = (*srun).second.second;
+            get(srun->second.first, *run) = srun->second.second;
         }
     }
 }
@@ -221,19 +223,19 @@ UPSTensor::fillFromSparseTwo(const FSSparseTensor &t, const IntSequence &ss,
   auto ubi = t.getMap().upper_bound(ub_srt);
   for (auto run = lbi; run != ubi; ++run)
     {
-      if (lb_srt.lessEq((*run).first) && (*run).first.lessEq(ub_srt))
+      if (lb_srt.lessEq(run->first) && run->first.lessEq(ub_srt))
         {
-          IntSequence c((*run).first);
+          IntSequence c(run->first);
           c.add(-1, lb_srt);
           unsort.apply(c);
-          for (auto & i : pp)
+          for (auto &i : pp)
             {
               IntSequence cp(coor.size());
               i.apply(c, cp);
               Tensor::index ind(*this, cp);
               TL_RAISE_IF(*ind < 0 || *ind >= ncols(),
                           "Internal error in slicing constructor of UPSTensor");
-              get((*run).second.first, *ind) = (*run).second.second;
+              get(run->second.first, *ind) = run->second.second;
             }
         }
     }
@@ -282,10 +284,14 @@ PerTensorDimens2::calcOffset(const IntSequence &coor) const
 void
 PerTensorDimens2::print() const
 {
-  printf("nvmax: "); nvmax.print();
-  printf("per:   "); per.print();
-  printf("syms:  "); syms.print();
-  printf("dims:  "); ds.print();
+  std::cout << "nvmax: ";
+  nvmax.print();
+  std::cout << "per:   ";
+  per.print();
+  std::cout << "syms:  ";
+  syms.print();
+  std::cout << "dims:  ";
+  ds.print();
 }
 
 /* Here we increment the given integer sequence. It corresponds to
@@ -386,8 +392,8 @@ FPSTensor::FPSTensor(const TensorDimens &td, const Equivalence &e, const Permuta
           auto su = a.getMap().upper_bound(c);
           for (auto srun = sl; srun != su; ++srun)
             {
-              Vector out_row{getRow((*srun).second.first)};
-              out_row.add((*srun).second.second, *row_prod);
+              Vector out_row{getRow(srun->second.first)};
+              out_row.add(srun->second.second, *row_prod);
             }
         }
     }

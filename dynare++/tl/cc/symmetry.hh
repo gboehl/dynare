@@ -61,7 +61,7 @@ class Symmetry : public IntSequence
 {
 public:
   // Constructor allocating a given length of (zero-initialized) data
-  Symmetry(int len)
+  explicit Symmetry(int len)
     : IntSequence(len, 0)
   {
   }

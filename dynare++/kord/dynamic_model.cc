@@ -2,6 +2,8 @@
 
 #include "dynamic_model.hh"
 
+#include <cstring>
+
 void
 NameList::print() const
 {

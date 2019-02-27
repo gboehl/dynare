@@ -55,13 +55,13 @@ class Permutation
 protected:
   IntSequence permap;
 public:
-  Permutation(int len)
+  explicit Permutation(int len)
     : permap(len)
   {
     for (int i = 0; i < len; i++)
       permap[i] = i;
   }
-  Permutation(const Equivalence &e)
+  explicit Permutation(const Equivalence &e)
     : permap(e.getN())
   {
     e.trace(permap);
@@ -71,13 +71,11 @@ public:
   {
     e.trace(permap, per);
   }
-  Permutation(const IntSequence &s)
+  explicit Permutation(const IntSequence &s)
     : permap(s.size())
   {
     computeSortingMap(s);
   };
-  Permutation(const Permutation &) = default;
-  Permutation(Permutation &&) = default;
   Permutation(const Permutation &p1, const Permutation &p2)
     : permap(p2.permap)
   {
@@ -87,8 +85,6 @@ public:
     : permap(p.permap.insert(p.size(), i))
   {
   }
-  Permutation &operator=(const Permutation &) = default;
-  Permutation &operator=(Permutation &&) = default;
   bool
   operator==(const Permutation &p)
   {
@@ -142,7 +138,6 @@ class PermutationSet
 public:
   PermutationSet();
   PermutationSet(const PermutationSet &ps, int n);
-  ~PermutationSet() = default;
   int
   getNum() const
   {
@@ -164,7 +159,6 @@ class PermutationBundle
   std::vector<PermutationSet> bundle;
 public:
   PermutationBundle(int nmax);
-  ~PermutationBundle() = default;
   const PermutationSet &get(int n) const;
   void generateUpTo(int nmax);
 };

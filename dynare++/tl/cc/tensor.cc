@@ -128,40 +128,37 @@ FTensor::decrement(IntSequence &v, int nv)
    indices. In order to understand how it works, let us take number of
    variables $n$ and dimension $k$, and write down all the possible
    combinations of indices in our ordering. For example for $n=4$ and
-   $k=3$, the sequence looks as:
+   $k=3$, the sequence looks as (in column-major order):
 
-   \def\tr#1#2#3{\hbox{\rlap{#1}\hskip 0.7em\rlap{#2}\hskip 0.7em\rlap{#3}\hskip 0.7em}}
-   \halign{\tabskip=3em \hskip2cm #&#&#&#\cr
-   \tr 000 &\tr 111 &\tr 222 &\tr 333\cr
-   \tr 001 &\tr 112 &\tr 223 \cr
-   \tr 002 &\tr 113 &\tr 233 \cr
-   \tr 003 &\tr 122 \cr
-   \tr 011 &\tr 123\cr
-   \tr 012 &\tr 133\cr
-   \tr 013\cr
-   \tr 022\cr
-   \tr 023\cr
-   \tr 033\cr
-   }
+   000  111  222  333
+   001  112  223
+   002  113  233
+   003  122
+   011  123
+   012  133
+   013
+   022
+   023
+   033
 
    Now observe, that a number of sequences starting with zero is the same
-   as total number of sequences with the same number of variables but
-   with dimension minus one. More generally, if $S_{n,k}$ denotes number
+   as the total number of sequences with the same number of variables but
+   with dimension minus one. More generally, if $S_{n,k}$ denotes the number
    of indices of $n$ variables and dimension $k$, then the number of
    indices beginning with $m$ is exactly $S_{n-m,k-1}$. This is because $m$
-   can be subtracted from all items, and we obtain sequence of indices of
-   $n-m$ variables. So we have formula:
+   can be subtracted from all items, and we obtain the sequence of indices of
+   $n-m$ variables. So we have the formula:
    $$S_{n,k}=S_{n,k-1}+S_{n-1,k-1}+\ldots+S_{1,k-1}$$
 
-   Now it is easy to calculate offset of index of the form
+   Now it is easy to calculate the offset of index of the form
    $(m,\ldots,m)$. It is a sum of all above it, this is
-   $S_{n,k-1}+\ldots+S_{n-m,k-1}$. We know that $S_{n,k}=\pmatrix{n+k-1\cr
-   k}$. Using above formula, we can calculate offset of $(m,\ldots,m)$ as
-   $$\pmatrix{n+k-1\cr k}-\pmatrix{n-m+k-1\cr k}$$
+   $S_{n,k-1}+\ldots+S_{n-m,k-1}$. We know that $S_{n,k}=\matrix{n+k-1 \\ k}$.
+   Using the above formula, we can calculate offset of $(m,\ldots,m)$ as
+   $$\pmatrix{n+k-1 \cr k}-\pmatrix{n-m+k-1 \cr k}$$
 
    The offset of general index $(m_1,m_2,\ldots,m_k)$ is calculated
-   recursively, since it is offset of $(m_1,\ldots,m_1)$ for $n$
-   variables plus offset of $(m_2-m_1,m_3-m_1,\ldots,m_k-m_1)$ for
+   recursively, since it is the offset of $(m_1,\ldots,m_1)$ for $n$
+   variables plus the offset of $(m_2-m_1,m_3-m_1,\ldots,m_k-m_1)$ for
    $n-m_1$ variables. */
 
 int

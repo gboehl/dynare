@@ -271,7 +271,7 @@ class FoldedStackContainer : virtual public StackContainerInterface<FGSTensor>
   friend class WorkerFoldMAASparse2;
   friend class WorkerFoldMAASparse4;
 public:
-  static double fill_threshold;
+  static constexpr double fill_threshold = 0.00005;
   void
   multAndAdd(int dim, const TensorContainer<FSSparseTensor> &c,
              FGSTensor &out) const
@@ -301,7 +301,7 @@ class UnfoldedStackContainer : virtual public StackContainerInterface<UGSTensor>
   friend class WorkerUnfoldMAASparse1;
   friend class WorkerUnfoldMAASparse2;
 public:
-  static double fill_threshold;
+  static constexpr double fill_threshold = 0.00005;
   void
   multAndAdd(int dim, const TensorContainer<FSSparseTensor> &c,
              UGSTensor &out) const
@@ -642,7 +642,7 @@ class WorkerFoldMAADense : public sthread::detach_thread
   FGSTensor &out;
 public:
   WorkerFoldMAADense(const FoldedStackContainer &container,
-                     const Symmetry &s,
+                     Symmetry s,
                      const FGSContainer &dcontainer,
                      FGSTensor &outten);
   void operator()(std::mutex &mut) override;
@@ -657,7 +657,7 @@ class WorkerFoldMAASparse1 : public sthread::detach_thread
 public:
   WorkerFoldMAASparse1(const FoldedStackContainer &container,
                        const FSSparseTensor &ten,
-                       FGSTensor &outten, const IntSequence &c);
+                       FGSTensor &outten, IntSequence c);
   void operator()(std::mutex &mut) override;
 };
 
@@ -670,7 +670,7 @@ class WorkerFoldMAASparse2 : public sthread::detach_thread
 public:
   WorkerFoldMAASparse2(const FoldedStackContainer &container,
                        const FSSparseTensor &ten,
-                       FGSTensor &outten, const IntSequence &c);
+                       FGSTensor &outten, IntSequence c);
   void operator()(std::mutex &mut) override;
 };
 
@@ -683,7 +683,7 @@ class WorkerFoldMAASparse4 : public sthread::detach_thread
 public:
   WorkerFoldMAASparse4(const FoldedStackContainer &container,
                        const FSSparseTensor &ten,
-                       FGSTensor &outten, const IntSequence &c);
+                       FGSTensor &outten, IntSequence c);
   void operator()(std::mutex &mut) override;
 };
 
@@ -695,7 +695,7 @@ class WorkerUnfoldMAADense : public sthread::detach_thread
   UGSTensor &out;
 public:
   WorkerUnfoldMAADense(const UnfoldedStackContainer &container,
-                       const Symmetry &s,
+                       Symmetry s,
                        const UGSContainer &dcontainer,
                        UGSTensor &outten);
   void operator()(std::mutex &mut) override;
@@ -710,7 +710,7 @@ class WorkerUnfoldMAASparse1 : public sthread::detach_thread
 public:
   WorkerUnfoldMAASparse1(const UnfoldedStackContainer &container,
                          const FSSparseTensor &ten,
-                         UGSTensor &outten, const IntSequence &c);
+                         UGSTensor &outten, IntSequence c);
   void operator()(std::mutex &mut) override;
 };
 
@@ -723,7 +723,7 @@ class WorkerUnfoldMAASparse2 : public sthread::detach_thread
 public:
   WorkerUnfoldMAASparse2(const UnfoldedStackContainer &container,
                          const FSSparseTensor &ten,
-                         UGSTensor &outten, const IntSequence &c);
+                         UGSTensor &outten, IntSequence c);
   void operator()(std::mutex &mut) override;
 };
 

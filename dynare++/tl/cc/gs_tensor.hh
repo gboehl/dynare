@@ -35,19 +35,6 @@ class FSSparseTensor;
    $(10,5)$, and |sym| is $(2,3)$. Also it maintains |nvmax| unfolded |nvs| with
    respect to the symmetry, this is $(10,10,5,5,5)$.
 
-   The constructors of |TensorDimens| are clear and pretty intuitive but
-   the constructor which is used for slicing fully symmetric tensor. It
-   constructs the dimensions from the partitioning of variables of fully
-   symmetric tensor. Let the partitioning be, for instance, $(a,b,c,d)$,
-   where $(n_a,n_b,n_c,n_d)$ are lengths of the partitions. Let one want
-   to get a slice only of the part of the fully symmetric tensor
-   corresponding to indices of the form $b^2d^3$. This corresponds to the
-   symmetry $a^0b^2c^0d^3$. So, the dimension of the slice would be also
-   $(n_a,n_b,n_c,n_d)$ for number of variables and $(0,2,0,3)$ for the
-   symmetry. So we provide the constructor which takes sizes of
-   partitions $(n_a,n_b,n_c,n_d)$ as |IntSequence|, and indices of picked
-   partitions, in our case $(1,1,3,3,3)$, as |IntSequence|.
-
    The class is able to calculate number of offsets (columns or rows depending
    what matrix coordinate we describe) in unfolded and folded tensors
    with the given symmetry. */
@@ -59,21 +46,18 @@ protected:
   Symmetry sym;
   IntSequence nvmax;
 public:
-  TensorDimens(const Symmetry &s, const IntSequence &nvars)
-    : nvs(nvars), sym(s), nvmax(nvs.unfold(sym))
+  TensorDimens(Symmetry s, IntSequence nvars)
+    : nvs(std::move(nvars)), sym(std::move(s)), nvmax(nvs.unfold(sym))
   {
   }
+  // Full-symmetry special case
   TensorDimens(int nvar, int dimen)
-    : nvs(1), sym{dimen}, nvmax(dimen, nvar)
+    : nvs{nvar}, sym{dimen}, nvmax(dimen, nvar)
   {
-    nvs[0] = nvar;
   }
-  TensorDimens(const TensorDimens &) = default;
-  TensorDimens(TensorDimens &&) = default;
-  virtual ~TensorDimens() = default;
+  // Constructs the tensor dimensions for slicing (see the implementation for details)
   TensorDimens(const IntSequence &ss, const IntSequence &coor);
-  TensorDimens &operator=(const TensorDimens &) = default;
-  TensorDimens &operator=(TensorDimens &&) = default;
+
   bool
   operator==(const TensorDimens &td) const
   {
@@ -119,16 +103,7 @@ public:
 
 /* Here is a class for folded general symmetry tensor. It only contains
    tensor dimensions, it defines types for indices, implement virtual
-   methods of super class |FTensor|.
-
-   We add a method |contractAndAdd| which performs a contraction of one
-   variable in the tensor. This is, for instance
-   $$\left[r_{x^iz^k}\right]_{\alpha_1\ldots\alpha_i\gamma_1\ldots\gamma_k}=
-   \left[t_{x^iy^jz^k}\right]_{\alpha_1\ldots\alpha_i\beta_1\ldots\beta_j\gamma_1\ldots\gamma_k}
-   \left[c\right]^{\beta_1\ldots\beta_j}
-   $$
-
-   Also we add |getOffset| which should be used with care. */
+   methods of super class |FTensor|. */
 
 class GSSparseTensor;
 class FGSTensor : public FTensor
@@ -137,30 +112,31 @@ class FGSTensor : public FTensor
 
   const TensorDimens tdims;
 public:
-  /* These are standard constructors followed by two slicing. The first
-     constructs a slice from the sparse, the second from the dense (both
-     fully symmetric). Next constructor is just a conversion from
-     |GSSParseTensor|. The last constructor allows for in-place conversion
-     from |FFSTensor| to |FGSTensor|. */
-
-  FGSTensor(int r, const TensorDimens &td)
+  FGSTensor(int r, TensorDimens td)
     : FTensor(indor::along_col, td.getNVX(), r,
-              td.calcFoldMaxOffset(), td.dimen()), tdims(td)
+              td.calcFoldMaxOffset(), td.dimen()), tdims(std::move(td))
   {
   }
   FGSTensor(const FGSTensor &) = default;
   FGSTensor(FGSTensor &&) = default;
-  FGSTensor(const UGSTensor &ut);
+
   FGSTensor(int first_row, int num, FGSTensor &t)
     : FTensor(first_row, num, t), tdims(t.tdims)
   {
   }
+
+  // Constructs a slice from a fully symmetric sparse tensor
   FGSTensor(const FSSparseTensor &t, const IntSequence &ss,
-            const IntSequence &coor, const TensorDimens &td);
+            const IntSequence &coor, TensorDimens td);
+
+  // Constructs a slice from a fully symmetric dense tensor
   FGSTensor(const FFSTensor &t, const IntSequence &ss,
-            const IntSequence &coor, const TensorDimens &td);
-  FGSTensor(const GSSparseTensor &sp);
-  FGSTensor(FFSTensor &t)
+            const IntSequence &coor, TensorDimens td);
+
+  // Converting constructors
+  explicit FGSTensor(const UGSTensor &ut);
+  explicit FGSTensor(const GSSparseTensor &sp);
+  explicit FGSTensor(FFSTensor &t)
     : FTensor(0, t.nrows(), t), tdims(t.nvar(), t.dimen())
   {
   }
@@ -185,8 +161,13 @@ public:
     return getDims().getSym();
   }
 
+  /* Performs a contraction of one variable in the tensor. This is, for instance
+   $$\left[r_{x^iz^k}\right]_{\alpha_1\ldots\alpha_i\gamma_1\ldots\gamma_k}=
+   \left[t_{x^iy^jz^k}\right]_{\alpha_1\ldots\alpha_i\beta_1\ldots\beta_j\gamma_1\ldots\gamma_k}
+   \left[c\right]^{\beta_1\ldots\beta_j}$$ */
   void contractAndAdd(int i, FGSTensor &out,
                       const FRSingleTensor &col) const;
+
   int
   getOffset(const IntSequence &v) const override
   {
@@ -205,32 +186,35 @@ class UGSTensor : public UTensor
 
   const TensorDimens tdims;
 public:
-  /* These are standard constructors. The last two constructors are
-     slicing. The first makes a slice from fully symmetric sparse, the
-     second from fully symmetric dense unfolded tensor. The last
-     constructor allows for in-place conversion from |UFSTensor| to
-     |UGSTensor|. */
-  UGSTensor(int r, const TensorDimens &td)
+  UGSTensor(int r, TensorDimens td)
     : UTensor(indor::along_col, td.getNVX(), r,
-              td.calcUnfoldMaxOffset(), td.dimen()), tdims(td)
+              td.calcUnfoldMaxOffset(), td.dimen()), tdims(std::move(td))
   {
   }
+
   UGSTensor(const UGSTensor &) = default;
   UGSTensor(UGSTensor &&) = default;
-  UGSTensor(const FGSTensor &ft);
 
   UGSTensor(int first_row, int num, UGSTensor &t)
     : UTensor(first_row,  num, t), tdims(t.tdims)
   {
   }
+
+  // Constructs a slice from fully symmetric sparse tensor
   UGSTensor(const FSSparseTensor &t, const IntSequence &ss,
-            const IntSequence &coor, const TensorDimens &td);
+            const IntSequence &coor, TensorDimens td);
+
+  // Constructs a slice from fully symmetric dense unfolded tensor
   UGSTensor(const UFSTensor &t, const IntSequence &ss,
-            const IntSequence &coor, const TensorDimens &td);
-  UGSTensor(UFSTensor &t)
+            const IntSequence &coor, TensorDimens td);
+
+  // Converting constructors
+  explicit UGSTensor(const FGSTensor &ft);
+  explicit UGSTensor(UFSTensor &t)
     : UTensor(0, t.nrows(), t), tdims(t.nvar(), t.dimen())
   {
   }
+
   ~UGSTensor() override = default;
 
   void increment(IntSequence &v) const override;

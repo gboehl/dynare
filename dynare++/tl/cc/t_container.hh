@@ -58,11 +58,8 @@
 
 #include <map>
 #include <string>
-#include <sstream>
 #include <memory>
 #include <utility>
-
-#include <cstring>
 
 #include <matio.h>
 
@@ -99,9 +96,6 @@ class TensorContainer
 {
 protected:
   using _Map = std::map<Symmetry, std::unique_ptr<_Ttype>, ltsym>;
-public:
-  using iterator = typename _Map::iterator;
-  using const_iterator = typename _Map::const_iterator;
 private:
   int n;
   _Map m;
@@ -208,32 +202,27 @@ public:
   void
   print() const
   {
-    printf("Tensor container: nvars=%d, tensors=%D\n", n, m.size());
-    for (const_iterator it = m.begin(); it != m.end(); ++it)
+    std::cout << "Tensor container: nvars=" << n << ", tensors=" << m.size() << '\n';
+    for (auto &it : *this)
       {
-        printf("Symmetry: ");
-        (it->first).print();
-        (it->second)->print();
+        std::cout << "Symmetry: ";
+        it.first.print();
+        it.second->print();
       }
   }
 
   /* Output to the MAT file. */
   void
-  writeMat(mat_t *fd, const char *prefix) const
+  writeMat(mat_t *fd, const std::string &prefix) const
   {
-    for (auto it = begin(); it != end(); ++it)
+    for (auto &it : *this)
       {
-        char lname[100];
-        sprintf(lname, "%s_g", prefix);
-        const Symmetry &sym = (*it).first;
+        std::string lname = prefix + "_g";
+        const Symmetry &sym = it.first;
         for (int i = 0; i < sym.num(); i++)
-          {
-            char tmp[10];
-            sprintf(tmp, "_%d", sym[i]);
-            strcat(lname, tmp);
-          }
-        ConstTwoDMatrix m(*(it->second));
-        m.writeMat(fd, lname);
+          lname += '_' + std::to_string(sym[i]);
+        ConstTwoDMatrix m(*(it.second));
+        m.writeMat(fd, lname.c_str());
       }
   }
 
@@ -241,15 +230,13 @@ public:
   void
   writeMMap(std::map<std::string, ConstTwoDMatrix> &mm, const std::string &prefix) const
   {
-    std::ostringstream lname;
-    for (const_iterator it = begin(); it != end(); ++it)
+    for (auto &it : *this)
       {
-        lname.str(prefix);
-        lname << "_g";
-        const Symmetry &sym = (*it).first;
+        std::string lname = prefix + "_g";
+        const Symmetry &sym = it.first;
         for (int i = 0; i < sym.num(); i++)
-          lname << "_" << sym[i];
-        mm.insert(make_pair(lname.str(), ConstTwoDMatrix(*((*it).second))));
+          lname += '_' + std::to_string(sym[i]);
+        mm.emplace(lname, ConstTwoDMatrix(*(it.second)));
       }
   }
 
@@ -262,8 +249,7 @@ public:
   {
     std::vector<const _Ttype *> res(e.numClasses());
     int i = 0;
-    for (auto it = e.begin();
-         it != e.end(); ++it, i++)
+    for (auto it = e.begin(); it != e.end(); ++it, i++)
       {
         Symmetry s(rsym, *it);
         res[i] = &get(s);
@@ -279,22 +265,22 @@ public:
     return n;
   }
 
-  const_iterator
+  auto
   begin() const
   {
     return m.begin();
   }
-  const_iterator
+  auto
   end() const
   {
     return m.end();
   }
-  iterator
+  auto
   begin()
   {
     return m.begin();
   }
-  iterator
+  auto
   end()
   {
     return m.end();
@@ -330,7 +316,7 @@ public:
 
 class FGSContainer : public TensorContainer<FGSTensor>
 {
-  static const int num_one_time;
+  static constexpr int num_one_time = 10;
 public:
   FGSContainer(int nn)
     : TensorContainer<FGSTensor>(nn)

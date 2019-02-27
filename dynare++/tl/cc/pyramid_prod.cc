@@ -20,7 +20,7 @@ USubTensor::USubTensor(const TensorDimens &bdims,
                        const TensorDimens &hdims,
                        const FGSContainer &cont,
                        const std::vector<IntSequence> &lst)
-  : URTensor(lst.size(), hdims.getNVX()[0], hdims.dimen())
+  : URTensor(lst.size(), hdims.getNVX(0), hdims.dimen())
 {
   TL_RAISE_IF(!hdims.getNVX().isConstant(),
               "Tensor has not full symmetry in USubTensor()");
@@ -33,7 +33,7 @@ USubTensor::USubTensor(const TensorDimens &bdims,
           Permutation per(it);
           std::vector<const FGSTensor *> ts
             = cont.fetchTensors(bdims.getSym(), it);
-          for (int i = 0; i < (int) lst.size(); i++)
+          for (int i = 0; i < static_cast<int>(lst.size()); i++)
             {
               IntSequence perindex(lst[i].size());
               per.apply(lst[i], perindex);

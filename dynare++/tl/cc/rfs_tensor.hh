@@ -148,7 +148,7 @@ public:
     : FRTensor(1, nvar, d)
   {
   }
-  FRSingleTensor(const URSingleTensor &ut);
+  explicit FRSingleTensor(const URSingleTensor &ut);
   FRSingleTensor(const FRSingleTensor &) = default;
   FRSingleTensor(FRSingleTensor &&) = default;
   ~FRSingleTensor() override = default;

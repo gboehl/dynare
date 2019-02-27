@@ -6,8 +6,17 @@
 #include "kron_prod.hh"
 #include "pascal_triangle.hh"
 
-/* This constructs the tensor dimensions for slicing. See
-   |@<|TensorDimens| class declaration@>| for details. */
+/* Constructor used for slicing fully symmetric tensor. It constructs the
+   dimensions from the partitioning of variables of fully symmetric tensor. Let
+   the partitioning be, for instance, $(a,b,c,d)$, where $(n_a,n_b,n_c,n_d)$
+   are lengths of the partitions. Let one want to get a slice only of the part
+   of the fully symmetric tensor corresponding to indices of the form $b^2d^3$.
+   This corresponds to the symmetry $a^0b^2c^0d^3$. So, the dimension of the
+   slice would be also $(n_a,n_b,n_c,n_d)$ for number of variables and
+   $(0,2,0,3)$ for the symmetry. So we provide the constructor which takes
+   sizes of partitions $(n_a,n_b,n_c,n_d)$ as |IntSequence|, and indices of
+   picked partitions, in our case $(1,1,3,3,3)$, as |IntSequence|. */
+
 TensorDimens::TensorDimens(const IntSequence &ss, const IntSequence &coor)
   : nvs(ss),
     sym(ss.size()),
@@ -82,7 +91,7 @@ TensorDimens::calcFoldOffset(const IntSequence &v) const
       if (bldim > 0)
         {
           blstart -= bldim;
-          int blnvar = getNVX()[blstart];
+          int blnvar = getNVX(blstart);
           IntSequence subv(v, blstart, blstart+bldim);
           res += FTensor::getOffset(subv, blnvar)*pow;
           pow *= FFSTensor::calcMaxOffset(blnvar, bldim);
@@ -160,10 +169,10 @@ FGSTensor::FGSTensor(const UGSTensor &ut)
    slices). If it belongs, then we subtract the lower bound |lb| to
    obtain coordinates in the |this| tensor and we copy the item. */
 FGSTensor::FGSTensor(const FSSparseTensor &t, const IntSequence &ss,
-                     const IntSequence &coor, const TensorDimens &td)
+                     const IntSequence &coor, TensorDimens td)
   : FTensor(indor::along_col, td.getNVX(), t.nrows(),
             td.calcFoldMaxOffset(), td.dimen()),
-    tdims(td)
+    tdims(std::move(td))
 {
   // set |lb| and |ub| to lower and upper bounds of indices
   /* Here we first set |s_offsets| to offsets of partitions whose lengths
@@ -188,26 +197,24 @@ FGSTensor::FGSTensor(const FSSparseTensor &t, const IntSequence &ss,
   auto lbi = t.getMap().lower_bound(lb);
   auto ubi = t.getMap().upper_bound(ub);
   for (auto run = lbi; run != ubi; ++run)
-    {
-      if (lb.lessEq((*run).first) && (*run).first.lessEq(ub))
-        {
-          IntSequence c((*run).first);
-          c.add(-1, lb);
-          Tensor::index ind(*this, c);
-          TL_RAISE_IF(*ind < 0 || *ind >= ncols(),
-                      "Internal error in slicing constructor of FGSTensor");
-          get((*run).second.first, *ind) = (*run).second.second;
-        }
-    }
+    if (lb.lessEq(run->first) && run->first.lessEq(ub))
+      {
+        IntSequence c(run->first);
+        c.add(-1, lb);
+        Tensor::index ind(*this, c);
+        TL_RAISE_IF(*ind < 0 || *ind >= ncols(),
+                    "Internal error in slicing constructor of FGSTensor");
+        get(run->second.first, *ind) = run->second.second;
+      }
 }
 
 // |FGSTensor| slicing from |FFSTensor|
 /* The code is similar to |@<|FGSTensor| slicing from |FSSparseTensor|@>|. */
 FGSTensor::FGSTensor(const FFSTensor &t, const IntSequence &ss,
-                     const IntSequence &coor, const TensorDimens &td)
+                     const IntSequence &coor, TensorDimens td)
   : FTensor(indor::along_col, td.getNVX(), t.nrows(),
             td.calcFoldMaxOffset(), td.dimen()),
-    tdims(td)
+    tdims(std::move(td))
 {
   if (ncols() == 0)
     return;
@@ -250,7 +257,7 @@ FGSTensor::FGSTensor(const GSSparseTensor &t)
             t.getDims().calcFoldMaxOffset(), t.dimen()), tdims(t.getDims())
 {
   zeros();
-  for (const auto & it : t.getMap())
+  for (const auto &it : t.getMap())
     {
       index ind(*this, it.first);
       get(it.second.first, *ind) = it.second.second;
@@ -354,10 +361,10 @@ UGSTensor::UGSTensor(const FGSTensor &ft)
 // |UGSTensor| slicing from |FSSparseTensor|
 /* This makes a folded slice from the sparse tensor and unfolds it. */
 UGSTensor::UGSTensor(const FSSparseTensor &t, const IntSequence &ss,
-                     const IntSequence &coor, const TensorDimens &td)
+                     const IntSequence &coor, TensorDimens td)
   : UTensor(indor::along_col, td.getNVX(), t.nrows(),
             td.calcUnfoldMaxOffset(), td.dimen()),
-    tdims(td)
+    tdims(std::move(td))
 {
   if (ncols() == 0)
     return;
@@ -374,10 +381,10 @@ UGSTensor::UGSTensor(const FSSparseTensor &t, const IntSequence &ss,
 // |UGSTensor| slicing from |UFSTensor|
 /* This makes a folded slice from dense and unfolds it. */
 UGSTensor::UGSTensor(const UFSTensor &t, const IntSequence &ss,
-                     const IntSequence &coor, const TensorDimens &td)
+                     const IntSequence &coor, TensorDimens td)
   : UTensor(indor::along_col, td.getNVX(), t.nrows(),
             td.calcUnfoldMaxOffset(), td.dimen()),
-    tdims(td)
+    tdims(std::move(td))
 {
   FFSTensor folded(t);
   FGSTensor ft(folded, ss, coor, td);
@@ -433,7 +440,7 @@ void
 UGSTensor::unfoldData()
 {
   for (index in = begin(); in != end(); ++in)
-    copyColumn(*(getFirstIndexOf(in)), *in);
+    copyColumn(*getFirstIndexOf(in), *in);
 }
 
 /* Here we return the first index which is equivalent in the symmetry

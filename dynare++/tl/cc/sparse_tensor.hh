@@ -48,12 +48,8 @@ struct ltseq
 class SparseTensor
 {
 public:
-  using Item = std::pair<int, double>;
-  using Map = std::multimap<IntSequence, Item, ltseq>;
-  using const_iterator = Map::const_iterator;
+  using Map = std::multimap<IntSequence, std::pair<int, double>, ltseq>;
 protected:
-  using iterator = Map::iterator;
-
   Map m;
   int dim;
   int nr;
@@ -65,7 +61,7 @@ public:
     : dim(d), nr(nnr), nc(nnc), first_nz_row(nr), last_nz_row(-1)
   {
   }
-  void insert(const IntSequence &s, int r, double c);
+  void insert(IntSequence s, int r, double c);
   const Map &
   getMap() const
   {
@@ -89,7 +85,7 @@ public:
   double
   getFillFactor() const
   {
-    return ((double) m.size())/(nrows()*ncols());
+    return static_cast<double>(m.size())/nrows()/ncols();
   }
   double getFoldIndexFillFactor() const;
   double getUnfoldIndexFillFactor() const;
@@ -108,7 +104,7 @@ public:
   {
     return last_nz_row;
   }
-  virtual const Symmetry&getSym() const = 0;
+  virtual const Symmetry &getSym() const = 0;
   void print() const;
   bool isFinite() const;
 };
@@ -119,14 +115,12 @@ public:
 
 class FSSparseTensor : public SparseTensor
 {
-public:
-  using const_iterator = SparseTensor::const_iterator;
 private:
   int nv;
   Symmetry sym;
 public:
   FSSparseTensor(int d, int nvar, int r);
-  void insert(const IntSequence &s, int r, double c);
+  void insert(IntSequence s, int r, double c);
   void multColumnAndAdd(const Tensor &t, Vector &v) const;
   const Symmetry &
   getSym() const override
@@ -148,14 +142,12 @@ public:
 
 class GSSparseTensor : public SparseTensor
 {
-public:
-  using const_iterator = SparseTensor::const_iterator;
 private:
   TensorDimens tdims;
 public:
   GSSparseTensor(const FSSparseTensor &t, const IntSequence &ss,
-                 const IntSequence &coor, const TensorDimens &td);
-  void insert(const IntSequence &s, int r, double c);
+                 const IntSequence &coor, TensorDimens td);
+  void insert(IntSequence s, int r, double c);
   const Symmetry &
   getSym() const override
   {

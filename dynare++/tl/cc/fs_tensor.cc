@@ -281,7 +281,6 @@ UFSTensor::unfoldData()
     {
       IntSequence v(in.getCoor());
       v.sort();
-      index tmp(*this, v);
-      copyColumn(*tmp, *in);
+      copyColumn(*index(*this, v), *in);
     }
 }

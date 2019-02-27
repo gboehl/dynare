@@ -31,37 +31,45 @@ class FSSparseTensor;
    tensor. For instance, if $x=[y^T, u^T]^T$, then we can add tensor
    $\left[g_{y^2u}\right]$ to tensor $g_{x^3}$. This is done in method
    |addSubTensor|. Consult |@<|FGSTensor| class declaration@>| to know
-   what is general symmetry tensor. */
+   what is general symmetry tensor.
+
+   Note that the past-the-end index is of the form $(nv, \ldots, nv)$, because
+   of the specific implementation of FFSTensor::increment().
+*/
 
 class UFSTensor;
 class FFSTensor : public FTensor
 {
   int nv;
 public:
-  /* Here are the constructors. The second constructor constructs a
-     tensor by one-dimensional contraction from the higher dimensional
-     tensor |t|. This is, it constructs a tensor
-     $$\left[g_{y^n}\right]_{\alpha_1\ldots\alpha_n}=
-     \left[t_{y^{n+1}}\right]_{\alpha_1\ldots\alpha_n\beta}[x]^\beta$$
-     See implementation |@<|FFSTensor| contraction constructor@>| for details.
-
-     The next constructor converts from sparse tensor (which is fully
-     symmetric and folded by nature).
-
-     The fourth constructs object from unfolded fully symmetric.
-
-     The fifth constructs a subtensor of selected rows. */
-
+  /* Constructs given the number of rows (explicit since the tensor is
+     column-oriented), the number of variables in each dimension, and the
+     number of dimensions */
   FFSTensor(int r, int nvar, int d)
     : FTensor(indor::along_col, IntSequence(d, nvar),
-              r, calcMaxOffset(nvar, d), d), nv(nvar)
+              r, calcMaxOffset(nvar, d), d),
+      nv(nvar)
   {
   }
+
+  /* Constructs a tensor by one-dimensional contraction from the higher
+     dimensional tensor |t|. This is, it constructs a tensor
+     $$\left[g_{y^n}\right]_{\alpha_1\ldots\alpha_n}=
+     \left[t_{y^{n+1}}\right]_{\alpha_1\ldots\alpha_n\beta}[x]^\beta$$ See the
+     implementation for details. */
   FFSTensor(const FFSTensor &t, const ConstVector &x);
-  FFSTensor(const FSSparseTensor &t);
+
+  /* Converts from sparse tensor (which is fully symmetric and folded by
+     nature). */
+  explicit FFSTensor(const FSSparseTensor &t);
+
   FFSTensor(const FFSTensor &) = default;
   FFSTensor(FFSTensor &&) = default;
+
+  // Constructs from unfolded fully symmetric
   explicit FFSTensor(const UFSTensor &ut);
+
+  // Constructs a subtensor of selected rows
   FFSTensor(int first_row, int num, FFSTensor &t)
     : FTensor(first_row, num, t), nv(t.nv)
   {
@@ -98,7 +106,8 @@ class UFSTensor : public UTensor
 public:
   UFSTensor(int r, int nvar, int d)
     : UTensor(indor::along_col, IntSequence(d, nvar),
-              r, calcMaxOffset(nvar, d), d), nv(nvar)
+              r, calcMaxOffset(nvar, d), d),
+      nv(nvar)
   {
   }
   UFSTensor(const UFSTensor &t, const ConstVector &x);

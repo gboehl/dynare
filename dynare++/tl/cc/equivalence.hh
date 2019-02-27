@@ -59,10 +59,6 @@ public:
   OrdSequence() : data()
   {
   }
-  OrdSequence(const OrdSequence &) = default;
-  OrdSequence(OrdSequence &&) = default;
-  OrdSequence &operator=(const OrdSequence &) = default;
-  OrdSequence &operator=(OrdSequence &&) = default;
   bool operator==(const OrdSequence &s) const;
   int operator[](int i) const;
   bool operator<(const OrdSequence &s) const;
@@ -100,20 +96,13 @@ public:
   using const_seqit = std::list<OrdSequence>::const_iterator;
   using seqit = std::list<OrdSequence>::iterator;
 
-  /* The first constructor constructs $\{\{0\},\{1\},\ldots,\{n-1\}\}$.
-
-     The second constructor constructs $\{\{0,1,\ldots,n-1\}\}$.
-
-     The third is the copy constructor. And the fourth is the copy
-     constructor plus gluing |i1| and |i2| in one class. */
-  Equivalence(int num);
+  // Constructs $\{\{0\},\{1\},\ldots,\{n-1\}\}$
+  explicit Equivalence(int num);
+  // Constructs $\{\{0,1,\ldots,n-1\}\}$
   Equivalence(int num, const std::string &dummy);
-  Equivalence(const Equivalence &) = default;
-  Equivalence(Equivalence &&) = default;
+  // Copy constructor plus gluing |i1| and |i2| in one class
   Equivalence(const Equivalence &e, int i1, int i2);
 
-  Equivalence &operator=(const Equivalence &) = default;
-  Equivalence &operator=(Equivalence &&) = default;
   bool operator==(const Equivalence &e) const;
   bool
   operator!=(const Equivalence &e) const
@@ -185,15 +174,14 @@ class EquivalenceSet
   int n;
   std::list<Equivalence> equis;
 public:
-  using const_iterator = std::list<Equivalence>::const_iterator;
-  EquivalenceSet(int num);
+  explicit EquivalenceSet(int num);
   void print(const std::string &prefix) const;
-  const_iterator
+  auto
   begin() const
   {
     return equis.begin();
   }
-  const_iterator
+  auto
   end() const
   {
     return equis.end();
@@ -214,8 +202,7 @@ class EquivalenceBundle
 {
   std::vector<EquivalenceSet> bundle;
 public:
-  EquivalenceBundle(int nmax);
-  ~EquivalenceBundle() = default;
+  explicit EquivalenceBundle(int nmax);
   const EquivalenceSet &get(int n) const;
   void generateUpTo(int nmax);
 };

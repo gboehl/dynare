@@ -5,8 +5,6 @@
 #include "ps_tensor.hh"
 #include "pyramid_prod.hh"
 
-const int FGSContainer::num_one_time = 10;
-
 // |UGSContainer| conversion from |FGSContainer|
 UGSContainer::UGSContainer(const FGSContainer &c)
   : TensorContainer<UGSTensor>(c.num())
@@ -34,27 +32,25 @@ UGSContainer::multAndAdd(const UGSTensor &t, UGSTensor &out) const
   int k = out.dimen();
   const EquivalenceSet &eset = TLStatic::getEquiv(k);
 
-  for (const auto & it : eset)
-    {
-      if (it.numClasses() == l)
-        {
-          std::vector<const UGSTensor *> ts
-            = fetchTensors(out.getSym(), it);
-          KronProdAllOptim kp(l);
-          for (int i = 0; i < l; i++)
-            kp.setMat(i, *(ts[i]));
-          kp.optimizeOrder();
-          UPSTensor ups(out.getDims(), it, t, kp);
-          ups.addTo(out);
-        }
-    }
+  for (const auto &it : eset)
+    if (it.numClasses() == l)
+      {
+        std::vector<const UGSTensor *> ts
+          = fetchTensors(out.getSym(), it);
+        KronProdAllOptim kp(l);
+        for (int i = 0; i < l; i++)
+          kp.setMat(i, *(ts[i]));
+        kp.optimizeOrder();
+        UPSTensor ups(out.getDims(), it, t, kp);
+        ups.addTo(out);
+      }
 }
 
 // |FGSContainer| conversion from |UGSContainer|
 FGSContainer::FGSContainer(const UGSContainer &c)
   : TensorContainer<FGSTensor>(c.num())
 {
-  for (const auto & it : c)
+  for (const auto &it : c)
     insert(std::make_unique<FGSTensor>(*(it.second)));
 }
 
@@ -79,20 +75,18 @@ FGSContainer::multAndAdd(const UGSTensor &t, FGSTensor &out) const
   int k = out.dimen();
   const EquivalenceSet &eset = TLStatic::getEquiv(k);
 
-  for (const auto & it : eset)
-    {
-      if (it.numClasses() == l)
-        {
-          std::vector<const FGSTensor *> ts
-            = fetchTensors(out.getSym(), it);
-          KronProdAllOptim kp(l);
-          for (int i = 0; i < l; i++)
-            kp.setMat(i, *(ts[i]));
-          kp.optimizeOrder();
-          FPSTensor fps(out.getDims(), it, t, kp);
-          fps.addTo(out);
-        }
-    }
+  for (const auto &it : eset)
+    if (it.numClasses() == l)
+      {
+        std::vector<const FGSTensor *> ts
+          = fetchTensors(out.getSym(), it);
+        KronProdAllOptim kp(l);
+        for (int i = 0; i < l; i++)
+          kp.setMat(i, *(ts[i]));
+        kp.optimizeOrder();
+        FPSTensor fps(out.getDims(), it, t, kp);
+        fps.addTo(out);
+      }
 }
 
 /* This fills a given vector with integer sequences corresponding to

@@ -71,8 +71,30 @@ public:
     : origv(v), nv(v.length())
   {
   }
-  const URSingleTensor &getNext(const URSingleTensor *dummy);
-  const FRSingleTensor &getNext(const FRSingleTensor *dummy);
+
+  /*
+    We need to select getNext() implementation at compile type depending on a
+    type parameter.
+
+    Unfortunately full specialization is not possible at class scope. This may
+    be a bug in GCC 6. See:
+    https://stackoverflow.com/questions/49707184/explicit-specialization-in-non-namespace-scope-does-not-compile-in-gcc
+
+    Apply the workaround suggested in:
+    https://stackoverflow.com/questions/3052579/explicit-specialization-in-non-namespace-scope
+  */
+  template<typename T>
+  struct dummy { typedef T type; };
+
+  template<class T>
+  const T &getNext()
+  {
+    return getNext(dummy<T>());
+  }
+
+private:
+  const URSingleTensor &getNext(dummy<URSingleTensor>);
+  const FRSingleTensor &getNext(dummy<FRSingleTensor>);
 };
 
 /* The tensor polynomial is basically a tensor container which is more
@@ -166,32 +188,30 @@ public:
     PowerProvider pwp(xval);
     for (int i = 1; i <= tp.maxdim; i++)
       {
-        const _Stype &xpow = pwp.getNext((const _Stype *) nullptr);
+        const _Stype &xpow = pwp.getNext<_Stype>();
         for (int j = 0; j <= tp.maxdim-i; j++)
-          {
-            if (tp.check(Symmetry{i+j}))
-              {
-                // initialize |ten| of dimension |j|
-                /* The pointer |ten| is either a new tensor or got from |this| container. */
-                _Ttype *ten;
-                if (_Tparent::check(Symmetry{j}))
-                  ten = &_Tparent::get(Symmetry{j});
-                else
-                  {
-                    auto ten_smart = std::make_unique<_Ttype>(nrows(), nvars(), j);
-                    ten_smart->zeros();
-                    ten = ten_smart.get();
-                    insert(std::move(ten_smart));
-                  }
+          if (tp.check(Symmetry{i+j}))
+            {
+              // initialize |ten| of dimension |j|
+              /* The pointer |ten| is either a new tensor or got from |this| container. */
+              _Ttype *ten;
+              if (_Tparent::check(Symmetry{j}))
+                ten = &_Tparent::get(Symmetry{j});
+              else
+                {
+                  auto ten_smart = std::make_unique<_Ttype>(nrows(), nvars(), j);
+                  ten_smart->zeros();
+                  ten = ten_smart.get();
+                  insert(std::move(ten_smart));
+                }
 
-                Symmetry sym{i, j};
-                IntSequence coor(pp.unfold(sym));
-                _TGStype slice(tp.get(Symmetry{i+j}), ss, coor, TensorDimens(sym, ss));
-                slice.mult(PascalTriangle::noverk(i+j, j));
-                _TGStype tmp(*ten);
-                slice.contractAndAdd(0, tmp, xpow);
-              }
-          }
+              Symmetry sym{i, j};
+              IntSequence coor(pp.unfold(sym));
+              _TGStype slice(tp.get(Symmetry{i+j}), ss, coor, TensorDimens(sym, ss));
+              slice.mult(PascalTriangle::noverk(i+j, j));
+              _TGStype tmp(*ten);
+              slice.contractAndAdd(0, tmp, xpow);
+            }
       }
 
     // do contraction for $i=0$
@@ -199,29 +219,27 @@ public:
        all $i>0$@>| as for $i=0$. The contraction here takes a form of a
        simple addition. */
     for (int j = 0; j <= tp.maxdim; j++)
-      {
-        if (tp.check(Symmetry{j}))
-          {
+      if (tp.check(Symmetry{j}))
+        {
 
-            // initialize |ten| of dimension |j|
-            /* Same code as above */
-            _Ttype *ten;
-            if (_Tparent::check(Symmetry{j}))
-              ten = &_Tparent::get(Symmetry{j});
-            else
-              {
-                auto ten_smart = std::make_unique<_Ttype>(nrows(), nvars(), j);
-                ten_smart->zeros();
-                ten = ten_smart.get();
-                insert(std::move(ten_smart));
-              }
+          // initialize |ten| of dimension |j|
+          /* Same code as above */
+          _Ttype *ten;
+          if (_Tparent::check(Symmetry{j}))
+            ten = &_Tparent::get(Symmetry{j});
+          else
+            {
+              auto ten_smart = std::make_unique<_Ttype>(nrows(), nvars(), j);
+              ten_smart->zeros();
+              ten = ten_smart.get();
+              insert(std::move(ten_smart));
+            }
 
-            Symmetry sym{0, j};
-            IntSequence coor(pp.unfold(sym));
-            _TGStype slice(tp.get(Symmetry{j}), ss, coor, TensorDimens(sym, ss));
-            ten->add(1.0, slice);
-          }
-      }
+          Symmetry sym{0, j};
+          IntSequence coor(pp.unfold(sym));
+          _TGStype slice(tp.get(Symmetry{j}), ss, coor, TensorDimens(sym, ss));
+          ten->add(1.0, slice);
+        }
   }
 
   TensorPolynomial(const TensorPolynomial &tp)
@@ -254,7 +272,7 @@ public:
     PowerProvider pp(v);
     for (int d = 1; d <= maxdim; d++)
       {
-        const _Stype &p = pp.getNext((const _Stype *) nullptr);
+        const _Stype &p = pp.getNext<_Stype>();
         Symmetry cs{d};
         if (_Tparent::check(cs))
           {
@@ -330,13 +348,11 @@ public:
   derivative(int k)
   {
     for (int d = 1; d <= maxdim; d++)
-      {
-        if (_Tparent::check(Symmetry{d}))
-          {
-            _Ttype &ten = _Tparent::get(Symmetry{d});
-            ten.mult((double) std::max((d-k), 0));
-          }
-      }
+      if (_Tparent::check(Symmetry{d}))
+        {
+          _Ttype &ten = _Tparent::get(Symmetry{d});
+          ten.mult(static_cast<double>(std::max((d-k), 0)));
+        }
   }
 
   /* Now let us suppose that we have an |s| order derivative of a
@@ -365,19 +381,17 @@ public:
       res->add(1.0, _Tparent::get(Symmetry{s}));
 
     for (int d = s+1; d <= maxdim; d++)
-      {
-        if (_Tparent::check(Symmetry{d}))
-          {
-            const _Ttype &ltmp = _Tparent::get(Symmetry{d});
-            auto last = std::make_unique<_Ttype>(ltmp);
-            for (int j = 0; j < d - s; j++)
-              {
-                auto newlast = std::make_unique<_Ttype>(*last, v);
-                last = std::move(newlast);
-              }
-            res->add(1.0, *last);
-          }
-      }
+      if (_Tparent::check(Symmetry{d}))
+        {
+          const _Ttype &ltmp = _Tparent::get(Symmetry{d});
+          auto last = std::make_unique<_Ttype>(ltmp);
+          for (int j = 0; j < d - s; j++)
+            {
+              auto newlast = std::make_unique<_Ttype>(*last, v);
+              last = std::move(newlast);
+            }
+          res->add(1.0, *last);
+        }
 
     return res;
   }
@@ -497,9 +511,9 @@ public:
     else
       {
         PowerProvider pp(x1);
-        const _Stype &xpow = pp.getNext((const _Stype *) NULL);
+        const _Stype &xpow = pp.getNext<_Stype>();
         for (int i = 1; i < _Ttype::dimen(); i++)
-          xpow = pp.getNext((const _Stype *) NULL);
+          xpow = pp.getNext<_Stype>();
         multVec(0.0, out, 1.0, xpow);
       }
   }

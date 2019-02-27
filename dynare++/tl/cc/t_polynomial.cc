@@ -8,7 +8,7 @@
    the previous. */
 
 const URSingleTensor &
-PowerProvider::getNext(const URSingleTensor *dummy)
+PowerProvider::getNext(dummy<URSingleTensor>)
 {
   if (ut)
     {
@@ -29,9 +29,9 @@ PowerProvider::getNext(const URSingleTensor *dummy)
    |ft|. */
 
 const FRSingleTensor &
-PowerProvider::getNext(const FRSingleTensor *dummy)
+PowerProvider::getNext(dummy<FRSingleTensor>)
 {
-  getNext(ut.get());
+  getNext<URSingleTensor>();
   ft = std::make_unique<FRSingleTensor>(*ut);
   return *ft;
 }
