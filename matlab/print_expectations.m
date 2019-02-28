@@ -207,6 +207,8 @@ for i=1:maxlag
                 transformations = [transformations, 'log'];
                 variable = M_.endo_names{M_.aux_vars(ida).orig_index};
                 ida = get_aux_variable_id(variable);
+            else
+                error('This case is not implemented.')
             end
         end
         switch  expectationmodelkind
@@ -332,6 +334,8 @@ for i=1:maxlag
                 transformations = [transformations, 'log'];
                 variable = M_.endo_names{M_.aux_vars(ida).orig_index};
                 ida = get_aux_variable_id(variable);
+            else
+                error('This case is not implemented.')
             end
         end
         switch  expectationmodelkind
