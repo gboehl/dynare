@@ -204,7 +204,7 @@ for i=1:maxlag
                 variable = M_.endo_names{M_.aux_vars(ida).orig_index};
                 ida = get_aux_variable_id(variable);
             elseif isequal(M_.aux_vars(ida).type, 10)
-                transformations = [transformations, 'log'];
+                transformations = [transformations, M_.aux_vars(ida).unary_op];
                 variable = M_.endo_names{M_.aux_vars(ida).orig_index};
                 ida = get_aux_variable_id(variable);
             else
@@ -331,7 +331,7 @@ for i=1:maxlag
                 variable = M_.endo_names{M_.aux_vars(ida).orig_index};
                 ida = get_aux_variable_id(variable);
             elseif isequal(M_.aux_vars(ida).type, 10)
-                transformations = [transformations, 'log'];
+                transformations = [transformations, M_.aux_vars(ida).unary_op];
                 variable = M_.endo_names{M_.aux_vars(ida).orig_index};
                 ida = get_aux_variable_id(variable);
             else
