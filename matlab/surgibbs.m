@@ -1,5 +1,5 @@
-function surgibbs(ds, param_names, beta0, A, ndraws, discarddraws, thin, eqtags)
-%function surgibbs(ds, param_names, beta0, A, ndraws, discarddraws, thin, eqtags)
+function surgibbs(ds, param_names, beta0, A, ndraws, discarddraws, thin, eqtags, model_name)
+%function surgibbs(ds, param_names, beta0, A, ndraws, discarddraws, thin, eqtags, model_name)
 % Implements Gibbs Samipling for SUR
 %
 % INPUTS
@@ -13,6 +13,7 @@ function surgibbs(ds, param_names, beta0, A, ndraws, discarddraws, thin, eqtags)
 %   thin         [int]        if thin == N, save every Nth draw
 %   eqtags       [cellstr]    names of equation tags to estimate. If empty,
 %                             estimate all equations
+%   model_name   [string]     name to use in oo_ and inc file
 %
 % OUTPUTS
 %   none
@@ -46,7 +47,7 @@ function surgibbs(ds, param_names, beta0, A, ndraws, discarddraws, thin, eqtags)
 global M_ oo_ options_
 
 %% Check input
-assert(nargin >= 5 && nargin <= 8, 'Incorrect number of arguments passed to surgibbs');
+assert(nargin >= 5 && nargin <= 9, 'Incorrect number of arguments passed to surgibbs');
 assert(isdseries(ds), 'The 1st argument must be a dseries');
 assert(iscellstr(param_names), 'The 2nd argument must be a cellstr');
 assert(isvector(beta0) && length(beta0) == length(param_names), ...
@@ -68,6 +69,18 @@ else
     assert(isint(thin), 'The 7th argument, if provided, must be an integer');
 end
 
+if nargin <= 8
+    if ~isfield(oo_, 'surgibbs')
+        model_name = 'surgibbs_model_number_1';
+    else
+        model_name = ['surgibbs_model_number_' num2str(length(fieldnames(oo_.surgibbs)) + 1)];
+    end
+else
+    if ~isvarname(model_name)
+        error('The 9th argument must be a valid string');
+    end
+end
+
 %% Estimation
 %  Notation from:
 %  Ando, Tomohiro and Zellner, Arnold. Hierarchical Bayesian Analysis of
@@ -85,7 +98,7 @@ A = inv(A);
 thinidx = 1;
 drawidx = 1;
 nparams = length(param_names);
-oo_.surgibbs.betadraws = zeros(floor((ndraws-discarddraws)/thin), nparams);
+oo_.surgibbs.(model_name).betadraws = zeros(floor((ndraws-discarddraws)/thin), nparams);
 if ~options_.noprint
     disp('surgibbs: estimating, please wait...')
 end
@@ -103,7 +116,7 @@ for i = 1:ndraws
     beta = rand_multivariate_normal(betabar', chol(Omegabar), nparams)';
     if i > discarddraws
         if thinidx == thin
-            oo_.surgibbs.betadraws(drawidx, :) = beta';
+            oo_.surgibbs.(model_name).betadraws(drawidx, :) = beta';
             thinidx = 1;
             drawidx = drawidx + 1;
         else
@@ -113,21 +126,21 @@ for i = 1:ndraws
 end
 
 % save parameter values
-oo_.surgibbs.beta = (sum(oo_.surgibbs.betadraws)/rows(oo_.surgibbs.betadraws))';
+oo_.surgibbs.(model_name).beta = (sum(oo_.surgibbs.(model_name).betadraws)/rows(oo_.surgibbs.(model_name).betadraws))';
 
 incidxs = zeros(length(param_names), 1);
 for i = 1:length(param_names)
     incidxs(i) = strmatch(param_names{i}, M_.param_names, 'exact');
-    M_.params(incidxs(i)) = oo_.surgibbs.beta(i);
+    M_.params(incidxs(i)) = oo_.surgibbs.(model_name).beta(i);
 end
 
 % Write .inc file
-write_param_init_inc_file('surgibbs', M_.fname, incidxs, oo_.surgibbs.beta);
+write_param_init_inc_file('surgibbs', model_name, incidxs, oo_.surgibbs.(model_name).beta);
 
 %% Print Output
 if ~options_.noprint
     dyn_table('Gibbs Sampling on SUR', {}, {}, param_names, ...
-        {'Parameter Value'}, 4, oo_.surgibbs.beta);
+        {'Parameter Value'}, 4, oo_.surgibbs.(model_name).beta);
 end
 
 %% Plot
@@ -140,11 +153,10 @@ if ~options_.nograph
     end
     for j = 1:length(param_names)
         subplot(nrows, ncols, j)
-        histogram(oo_.surgibbs.betadraws(:, j))
-        hc = histcounts(oo_.surgibbs.betadraws(:, j));
-        line([oo_.surgibbs.beta(j) oo_.surgibbs.beta(j)], [min(hc) max(hc)], 'Color', 'red');
+        histogram(oo_.surgibbs.(model_name).betadraws(:, j))
+        hc = histcounts(oo_.surgibbs.(model_name).betadraws(:, j));
+        line([oo_.surgibbs.(model_name).beta(j) oo_.surgibbs.(model_name).beta(j)], [min(hc) max(hc)], 'Color', 'red');
         title(param_names{j}, 'Interpreter', 'none')
     end
 end
 end
-

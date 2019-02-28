@@ -1,5 +1,5 @@
-function pooled_fgls(ds, param_common, param_regex, eqtags)
-% function pooled_fgls(ds, param_common, param_regex, eqtags)
+function pooled_fgls(ds, param_common, param_regex, eqtags, model_name)
+% function pooled_fgls(ds, param_common, param_regex, eqtags, model_name)
 % Run Pooled FGLS
 %
 % INPUTS
@@ -10,6 +10,7 @@ function pooled_fgls(ds, param_common, param_regex, eqtags)
 %                                value in param_common
 %   eqtags        [cellstr]      names of equation tags to estimate. If empty,
 %                                estimate all equations
+%   model_name    [string]   name to use in oo_ and inc file
 %
 % OUTPUTS
 %   none
@@ -37,6 +38,14 @@ function pooled_fgls(ds, param_common, param_regex, eqtags)
 global M_ oo_
 
 %% Check input arguments
+if nargin < 1 || nargin > 5
+    error('Incorrect number of arguments')
+end
+
+if nargin < 5
+    model_name = '';
+end
+
 if nargin < 4
     eqtags = {};
 end
@@ -45,23 +54,28 @@ maxit = 100;
 tol = 1e-6;
 
 %% Common work between pooled_ols and pooled_fgls
-[Y, X, pbeta, residnames, country_name] = pooled_ols(ds, param_common, param_regex, true, eqtags);
+[Y, X, pbeta, residnames, country_name, model_name] = pooled_ols(ds, param_common, param_regex, true, eqtags, model_name);
 
 %% Estimation
 neqs = length(residnames);
-oo_.pooled_fgls.dof = size(X,1)/neqs;
-beta0 = oo_.pooled_fgls.beta;
+oo_.pooled_fgls.(model_name).dof = size(X,1)/neqs;
+pooled_ols(ds, param_common, param_regex, true, eqtags, model_name);
+
+%% Estimation
+neqs = length(residnames);
+oo_.pooled_fgls.(model_name).dof = size(X,1)/neqs;
+beta0 = oo_.pooled_fgls.(model_name).beta;
 for i = 1:maxit
     resid = Y - X * beta0;
-    resid = reshape(resid, oo_.pooled_fgls.dof, neqs);
-    vcv = resid'*resid/oo_.pooled_fgls.dof;
-    kLeye = kron(inv(chol(vcv))', eye(oo_.pooled_fgls.dof));
+    resid = reshape(resid, oo_.pooled_fgls.(model_name).dof, neqs);
+    vcv = resid'*resid/oo_.pooled_fgls.(model_name).dof;
+    kLeye = kron(inv(chol(vcv))', eye(oo_.pooled_fgls.(model_name).dof));
     [q, r] = qr(kLeye*X, 0);
-    oo_.pooled_fgls.beta = r\(q'*kLeye*Y);
-    if max(abs(beta0 - oo_.pooled_fgls.beta)) < tol
+    oo_.pooled_fgls.(model_name).beta = r\(q'*kLeye*Y);
+    if max(abs(beta0 - oo_.pooled_fgls.(model_name).beta)) < tol
         break
     end
-    beta0 = oo_.pooled_fgls.beta;
+    beta0 = oo_.pooled_fgls.(model_name).beta;
     if i == maxit
         warning('maximum nuber of iterations reached')
     end
@@ -80,7 +94,7 @@ incidxs = [];
 for i = 1:length(param_regex)
     beta_idx = strcmp(pbeta, strrep(param_regex{i}, '*', country_name));
     assigned_idxs = assigned_idxs | beta_idx;
-    value = oo_.pooled_fgls.beta(beta_idx);
+    value = oo_.pooled_fgls.(model_name).beta(beta_idx);
     if isempty(eqtags)
         assert(~isempty(value));
     end
@@ -91,7 +105,7 @@ for i = 1:length(param_regex)
     end
 end
 idxs = find(assigned_idxs == 0);
-values = oo_.pooled_fgls.beta(idxs);
+values = oo_.pooled_fgls.(model_name).beta(idxs);
 names = pbeta(idxs);
 assert(length(values) == length(names));
 for i = 1:length(idxs)
@@ -100,6 +114,6 @@ for i = 1:length(idxs)
 end
 
 % Write .inc file
-write_param_init_inc_file('pooled_fgls', M_.fname, incidxs, M_.params(incidxs));
+write_param_init_inc_file('pooled_fgls', model_name, incidxs, M_.params(incidxs));
 
 end

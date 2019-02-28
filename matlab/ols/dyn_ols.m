@@ -1,5 +1,5 @@
-function ds = dyn_ols(ds, fitted_names_dict, eqtags)
-% function varargout = dyn_ols(ds, fitted_names_dict, eqtags)
+function ds = dyn_ols(ds, fitted_names_dict, eqtags, model_name)
+% function varargout = dyn_ols(ds, fitted_names_dict, eqtags, model_name)
 % Run OLS on chosen model equations; unlike olseqs, allow for time t
 % endogenous variables on LHS
 %
@@ -14,6 +14,8 @@ function ds = dyn_ols(ds, fitted_names_dict, eqtags)
 %                                  fitted value.
 %   eqtags            [cellstr]    names of equation tags to estimate. If empty,
 %                                  estimate all equations
+%   model_name        [celltsr]    name to use in oo_ and inc file (must be
+%                                  same size as eqtags
 %
 % OUTPUTS
 %   ds                [dseries]    data updated with fitted values
@@ -40,7 +42,7 @@ function ds = dyn_ols(ds, fitted_names_dict, eqtags)
 
 global M_ oo_ options_
 
-assert(nargin >= 1 && nargin <= 3, 'dyn_ols() takes between 1 and 3 arguments');
+assert(nargin >= 1 && nargin <= 4, 'dyn_ols() takes between 1 and 3 arguments');
 assert(~isempty(ds) && isdseries(ds), 'dyn_ols: the first argument must be a dseries');
 
 if nargin < 3
@@ -61,6 +63,20 @@ end
 %% Get Equation(s)
 ast = get_ast(eqtags);
 
+%% Set model_name
+if nargin < 4
+    model_name = cell(length(ast), 1);
+else
+    if ~iscellstr(model_name) || length(model_name) ~= length(ast)
+        error('The length of the 4th argument must be a cellstr with length equal to the number of equations estimated')
+    end
+    for i = 1:length(model_name)
+        if ~isvarname(model_name{i})
+            error('Every entry in the 4th argument must be a valid string');
+        end
+    end
+end
+
 %% Parse equations
 [Y, lhssub, X, fp, lp] = common_parsing(ds, ast, true);
 
@@ -69,11 +85,14 @@ for i = 1:length(Y)
     pnames = X{i}.name;
     [nobs, nvars] = size(X{i}.data);
 
-    if isfield(ast{i}, 'tags') && ...
-            isfield(ast{i}.tags, 'name')
-        tag = ast{i}.tags.('name');
+    if ~isempty(model_name{i})
+        tag = model_name{i};
     else
-        tag = ['eq_line_no_' num2str(ast{i}.line)];
+        if isfield(ast{i}, 'tags') && isfield(ast{i}.tags, 'name')
+            tag = ast{i}.tags.('name');
+        else
+            tag = ['eq_line_no_' num2str(ast{i}.line)];
+        end
     end
 
     %% Estimation

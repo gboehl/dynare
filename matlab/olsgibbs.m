@@ -1,5 +1,5 @@
-function ds = olsgibbs(ds, eqtag, BetaPriorExpectation, BetaPriorVariance, s2, nu, ndraws, discarddraws, thin, fitted_names_dict)
-%function ds = olsgibbs(ds, eqtag, BetaPriorExpectation, BetaPriorVariance, s2, nu, ndraws, discarddraws, thin, fitted_names_dict)
+function ds = olsgibbs(ds, eqtag, BetaPriorExpectation, BetaPriorVariance, s2, nu, ndraws, discarddraws, thin, fitted_names_dict, model_name)
+%function ds = olsgibbs(ds, eqtag, BetaPriorExpectation, BetaPriorVariance, s2, nu, ndraws, discarddraws, thin, fitted_names_dict, model_name)
 % Implements Gibbs Sampling for univariate linear model.
 %
 % INPUTS
@@ -19,6 +19,7 @@ function ds = olsgibbs(ds, eqtag, BetaPriorExpectation, BetaPriorVariance, s2, n
 %                                            (if it exists) is the function name of
 %                                            the transformation to perform on the
 %                                            fitted value.
+% - model_name                  [string]     name to use in oo_ and inc file
 %
 % OUTPUTS
 % - ds                          [dseries]    dataset updated with fitted value
@@ -46,7 +47,7 @@ function ds = olsgibbs(ds, eqtag, BetaPriorExpectation, BetaPriorVariance, s2, n
 global M_ oo_ options_
 
 %% Check input
-if nargin < 7 || nargin > 10
+if nargin < 7 || nargin > 11
     error('Incorrect number of arguments passed to olsgibbs')
 end
 
@@ -116,6 +117,14 @@ else
     end
 end
 
+if nargin <= 10
+    model_name = eqtag;
+else
+    if ~isvarname(model_name)
+        error('The 11th argument must be a valid string');
+    end
+end
+
 %% Parse equation
 [Y, lhssub, X, fp, lp] = common_parsing(ds, get_ast({eqtag}), true);
 lhsname = Y{1}.name;
@@ -137,7 +146,7 @@ periods = 1;
 linee = 1;
 
 % Posterior Simulation
-oo_.olsgibbs.(eqtag).draws = zeros(floor((ndraws-discarddraws)/thin), n+3);
+oo_.olsgibbs.(model_name).draws = zeros(floor((ndraws-discarddraws)/thin), n+3);
 for i=1:discarddraws
     % Set conditional distribution of β
     InverseConditionalPoseriorVariance = BetaInversePriorVariance + h*(X'*X);
@@ -164,10 +173,10 @@ for i = discarddraws+1:ndraws
     h = gamrnd(PosteriorDegreesOfFreedom/2.0, 2.0/(PosteriorDegreesOfFreedom*s2_));
     R2 = 1-var(resids)/var(Y);
     if isequal(periods, thin)
-        oo_.olsgibbs.(eqtag).draws(linee, 1:n) = beta;
-        oo_.olsgibbs.(eqtag).draws(linee, n+1) = h;
-        oo_.olsgibbs.(eqtag).draws(linee, n+2) = s2_;
-        oo_.olsgibbs.(eqtag).draws(linee, n+3) = R2;
+        oo_.olsgibbs.(model_name).draws(linee, 1:n) = beta;
+        oo_.olsgibbs.(model_name).draws(linee, n+1) = h;
+        oo_.olsgibbs.(model_name).draws(linee, n+2) = s2_;
+        oo_.olsgibbs.(model_name).draws(linee, n+3) = R2;
         periods = 1;
         linee = linee+1;
     else
@@ -176,12 +185,12 @@ for i = discarddraws+1:ndraws
 end
 
 %% Save posterior moments.
-oo_.olsgibbs.(eqtag).posterior.mean.beta = mean(oo_.olsgibbs.(eqtag).draws(:,1:n))';
-oo_.olsgibbs.(eqtag).posterior.mean.h = mean(oo_.olsgibbs.(eqtag).draws(:,n+1));
-oo_.olsgibbs.(eqtag).posterior.variance.beta = cov(oo_.olsgibbs.(eqtag).draws(:,1:n));
-oo_.olsgibbs.(eqtag).posterior.variance.h = var(oo_.olsgibbs.(eqtag).draws(:,n+1));
-oo_.olsgibbs.(eqtag).s2 = mean(oo_.olsgibbs.(eqtag).draws(:,n+2));
-oo_.olsgibbs.(eqtag).R2 = mean(oo_.olsgibbs.(eqtag).draws(:,n+3));
+oo_.olsgibbs.(model_name).posterior.mean.beta = mean(oo_.olsgibbs.(model_name).draws(:,1:n))';
+oo_.olsgibbs.(model_name).posterior.mean.h = mean(oo_.olsgibbs.(model_name).draws(:,n+1));
+oo_.olsgibbs.(model_name).posterior.variance.beta = cov(oo_.olsgibbs.(model_name).draws(:,1:n));
+oo_.olsgibbs.(model_name).posterior.variance.h = var(oo_.olsgibbs.(model_name).draws(:,n+1));
+oo_.olsgibbs.(model_name).s2 = mean(oo_.olsgibbs.(model_name).draws(:,n+2));
+oo_.olsgibbs.(model_name).R2 = mean(oo_.olsgibbs.(model_name).draws(:,n+3));
 
 % Yhat
 idx = 0;
@@ -192,35 +201,35 @@ if ~isempty(fitted_names_dict)
         yhatname = fitted_names_dict{idx, 2};
     end
 end
-oo_.olsgibbs.(eqtag).Yhat = dseries(X*oo_.olsgibbs.(eqtag).posterior.mean.beta, fp, yhatname) + lhssub{1};
+oo_.olsgibbs.(model_name).Yhat = dseries(X*oo_.olsgibbs.(model_name).posterior.mean.beta, fp, yhatname) + lhssub{1};
 
 % Apply correcting function for Yhat if it was passed
 if any(idx) ...
         && length(fitted_names_dict(idx, :)) == 3 ...
         && ~isempty(fitted_names_dict{idx, 3})
-    oo_.olsgibbs.(eqtag).Yhat = ...
-        feval(fitted_names_dict{idx, 3}, oo_.olsgibbs.(eqtag).Yhat);
+    oo_.olsgibbs.(model_name).Yhat = ...
+        feval(fitted_names_dict{idx, 3}, oo_.olsgibbs.(model_name).Yhat);
 end
-ds = [ds oo_.olsgibbs.(eqtag).Yhat];
+ds = [ds oo_.olsgibbs.(model_name).Yhat];
 
 % Compute and save posterior densities.
 for i=1:n
-    xx = oo_.olsgibbs.(eqtag).draws(:,i);
+    xx = oo_.olsgibbs.(model_name).draws(:,i);
     nn = length(xx);
     bandwidth = mh_optimal_bandwidth(xx, nn, 0, 'gaussian');
     [x, f] = kernel_density_estimate(xx, 512, nn, bandwidth,'gaussian');
-    oo_.olsgibbs.(eqtag).posterior.density.(pnames{i}) = [x, f];
+    oo_.olsgibbs.(model_name).posterior.density.(pnames{i}) = [x, f];
 end
 
 % Update model's parameters with posterior mean.
 idxs = zeros(length(pnames), 1);
 for j = 1:length(pnames)
     idxs(j) = find(strcmp(M_.param_names, pnames{j}));
-    M_.params(idxs(j)) = oo_.olsgibbs.(eqtag).posterior.mean.beta(j);
+    M_.params(idxs(j)) = oo_.olsgibbs.(model_name).posterior.mean.beta(j);
 end
 
 % Write .inc file
-write_param_init_inc_file('olsgibbs', eqtag, idxs, oo_.olsgibbs.(eqtag).posterior.mean.beta);
+write_param_init_inc_file('olsgibbs', model_name, idxs, oo_.olsgibbs.(model_name).posterior.mean.beta);
 
 %% Print Output
 if ~options_.noprint
@@ -228,7 +237,7 @@ if ~options_.noprint
     preamble = {['Dependent Variable: ' lhsname{:}], ...
                 sprintf('No. Independent Variables: %d', size(X,2)), ...
                 sprintf('Observations: %d from %s to %s\n', size(X,1), fp.char, lp.char)};
-    afterward = {sprintf('s^2: %f', oo_.olsgibbs.(eqtag).s2), sprintf('R^2: %f', oo_.olsgibbs.(eqtag).R2)};
-    dyn_table(ttitle, preamble, afterward, pnames, {'Posterior mean', 'Posterior std.'}, 4, [oo_.olsgibbs.(eqtag).posterior.mean.beta, sqrt(diag(oo_.olsgibbs.(eqtag).posterior.variance.beta))]);
+    afterward = {sprintf('s^2: %f', oo_.olsgibbs.(model_name).s2), sprintf('R^2: %f', oo_.olsgibbs.(model_name).R2)};
+    dyn_table(ttitle, preamble, afterward, pnames, {'Posterior mean', 'Posterior std.'}, 4, [oo_.olsgibbs.(model_name).posterior.mean.beta, sqrt(diag(oo_.olsgibbs.(model_name).posterior.variance.beta))]);
 end
 end

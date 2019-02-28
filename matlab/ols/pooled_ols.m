@@ -1,5 +1,5 @@
-function varargout = pooled_ols(ds, param_common, param_regex, overlapping_dates, eqtags)
-% function pooled_ols(ds, param_common, param_regex, overlapping_dates, eqtags)
+function varargout = pooled_ols(ds, param_common, param_regex, overlapping_dates, eqtags, model_name)
+% function varargout = pooled_ols(ds, param_common, param_regex, overlapping_dates, eqtags, model_name)
 % Run Pooled OLS
 % Apply parameter values found to corresponding parameter values in the
 % other blocks of the model
@@ -14,6 +14,7 @@ function varargout = pooled_ols(ds, param_common, param_regex, overlapping_dates
 %                                  overlap
 %   eqtags              [cellstr]  names of equation tags to estimate. If empty,
 %                                  estimate all equations
+%   model_name          [string]   name to use in oo_ and inc file
 %
 % OUTPUTS
 %   return arguments common to pooled_fgls only if called from pooled_fgls
@@ -42,12 +43,35 @@ function varargout = pooled_ols(ds, param_common, param_regex, overlapping_dates
 global M_ oo_
 
 %% Check input arguments
+if nargin < 1 || nargin > 6
+    error('Incorrect number of arguments')
+end
+
 if isempty(ds) || ~isdseries(ds)
     error('The first argument must be a dseries');
 end
 
 if nargin < 5
     eqtags = {};
+end
+
+st = dbstack(1);
+if strcmp(st(1).name, 'pooled_fgls')
+    save_structure_name = 'pooled_fgls';
+else
+    save_structure_name = 'pooled_ols';
+end
+
+if nargin < 6 || isempty(model_name)
+    if ~isfield(oo_, save_structure_name)
+        model_name = [save_structure_name '_model_number_1'];
+    else
+        model_name = [save_structure_name '_model_number_' num2str(length(fieldnames(oo_.(save_structure_name))) + 1)];
+    end
+else
+    if ~isvarname(model_name)
+        error('The 7th argument must be a valid string');
+    end
 end
 
 if isempty(param_common) && isempty(param_regex)
@@ -89,23 +113,20 @@ end
 [Y, ~, X] = put_in_sur_form(Y, lhssub, X);
 
 %% Handle FGLS
-st = dbstack(1);
 if strcmp(st(1).name, 'pooled_fgls')
-    save_structure_name = 'pooled_fgls';
     % Pass vars back to pooled_fgls
     varargout{1} = Y.data;
     varargout{2} = X.data;
     varargout{3} = X.name;
     varargout{4} = residnames;
-    varargout{5}= country_name;
-else
-    save_structure_name = 'pooled_ols';
+    varargout{5} = country_name;
+    varargout{6} = model_name;
 end
 
 %% Estimation
 % Estimated Parameters
 [q, r] = qr(X.data, 0);
-oo_.(save_structure_name).beta = r\(q'*Y.data);
+oo_.(save_structure_name).(model_name).beta = r\(q'*Y.data);
 
 if strcmp(st(1).name, 'pooled_fgls')
     return
@@ -119,7 +140,7 @@ incidxs = [];
 for i = 1:length(param_regex)
     beta_idx = strcmp(X.name, strrep(param_regex{i}, '*', country_name));
     assigned_idxs = assigned_idxs | beta_idx;
-    value = oo_.pooled_ols.beta(beta_idx);
+    value = oo_.pooled_ols.(model_name).beta(beta_idx);
     if isempty(eqtags)
         assert(~isempty(value));
     end
@@ -130,7 +151,7 @@ for i = 1:length(param_regex)
     end
 end
 idxs = find(assigned_idxs == 0);
-values = oo_.pooled_ols.beta(idxs);
+values = oo_.pooled_ols.(model_name).beta(idxs);
 names = X.name(idxs);
 assert(length(values) == length(names));
 for i = 1:length(idxs)
@@ -139,20 +160,20 @@ for i = 1:length(idxs)
 end
 
 % Write .inc file
-write_param_init_inc_file('pooled_ols', M_.fname, incidxs, M_.params(incidxs));
+write_param_init_inc_file('pooled_ols', model_name, incidxs, M_.params(incidxs));
 
-residuals = Y.data - X.data * oo_.pooled_ols.beta;
+residuals = Y.data - X.data * oo_.pooled_ols.(model_name).beta;
 for i = 1:neqs
     if i == 1
-        oo_.pooled_ols.resid.(residnames{i}) = residuals(1:nobs(1));
+        oo_.pooled_ols.(model_name).resid.(residnames{i}) = residuals(1:nobs(1));
     elseif i == neqs
-        oo_.pooled_ols.resid.(residnames{i}) = residuals(sum(nobs(1:i-1))+1:end);
+        oo_.pooled_ols.(model_name).resid.(residnames{i}) = residuals(sum(nobs(1:i-1))+1:end);
     else
-        oo_.pooled_ols.resid.(residnames{i}) = residuals(sum(nobs(1:i-1))+1:sum(nobs(1:i)));
+        oo_.pooled_ols.(model_name).resid.(residnames{i}) = residuals(sum(nobs(1:i-1))+1:sum(nobs(1:i)));
     end
-    oo_.pooled_ols.varcovar.(['eq' num2str(i)]) = oo_.pooled_ols.resid.(residnames{i})*oo_.pooled_ols.resid.(residnames{i})';
+    oo_.pooled_ols.(model_name).varcovar.(['eq' num2str(i)]) = oo_.pooled_ols.(model_name).resid.(residnames{i})*oo_.pooled_ols.(model_name).resid.(residnames{i})';
     idx = find(strcmp(residnames{i}, M_.exo_names));
-    M_.Sigma_e(idx, idx) = var(oo_.pooled_ols.resid.(residnames{i}));
+    M_.Sigma_e(idx, idx) = var(oo_.pooled_ols.(model_name).resid.(residnames{i}));
 end
 end
 
