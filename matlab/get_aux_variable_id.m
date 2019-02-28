@@ -8,7 +8,7 @@ function ida = get_aux_variable_id(var)
 % OUTPUTS
 % - ida   [integer]          Corresponding index in M_.aux_vars.
 
-% Copyright (C) 2018 Dynare Team
+% Copyright (C) 2018-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -33,9 +33,10 @@ if isempty(var)
 end
 
 if ischar(var)
-    id = strmatch(var, M_.endo_names, 'exact');
-    if isempty(var)
-        error('Variable %s is unkown.', var)
+    id = find(strcmp(var, M_.endo_names));
+    if isempty(id)
+        ida = 0;
+        return
     else
         var = id;
     end
