@@ -281,7 +281,9 @@ if isequal(expectationmodelkind, 'pac-expectations') && growth_correction
         lgrowth = expectationmodel.growth_lag;
       otherwise
     end
-    vgrowth = rewritegrowthvariable(vgrowth, lgrowth, M_);
+    if ismember(expectationmodel.growth_type, {'endogenous','exogenous'})
+        vgrowth = rewritegrowthvariable(vgrowth, lgrowth, M_);
+    end
     fprintf(fid, '%s*%s', pgrowth, vgrowth);
     fclose(fid);
     fprintf('Growth neutrality correction is saved in %s.\n', filename);
@@ -400,7 +402,9 @@ for i=1:maxlag
                     lgrowth = expectationmodel.growth_lag;
                   otherwise
                 end
-                vgrowth = rewritegrowthvariable(vgrowth, lgrowth, M_);
+                if ismember(expectationmodel.growth_type, {'endogenous','exogenous'})
+                    vgrowth = rewritegrowthvariable(vgrowth, lgrowth, M_);
+                end
                 if parameter>=0
                     expression = sprintf('%s*%s+%s*%s', num2str(pgrowth, '%1.16f'), vgrowth, num2str(parameter, '%1.16f'), variable);
                 else
