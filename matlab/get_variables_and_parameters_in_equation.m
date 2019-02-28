@@ -15,7 +15,7 @@ function [pnames, enames, xnames, pid, eid, xid] = get_variables_and_parameters_
 % - eid         [Integer]           n*1 vector of indices in M_.endo_names for the listed parameters in endogenous.
 % - xid         [Integer]           m*1 vector of indices in M_.exo_names for the listed parameters in exogenous.
 
-% Copyright (C) 2018 Dynare Team
+% Copyright (C) 2018-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -58,7 +58,7 @@ xnames = intersect(rhs_, xnames);
 
 % Decide if we are dealing with a dynamic model. If so, the lhs variable
 % already belongs to enames, we remove this variable from enames. 
-id = strmatch(lhs, enames, 'exact');
+id = find(strcmp(lhs, enames));
 if ~isempty(id)
     enames(id) = [];
 end
@@ -72,16 +72,16 @@ if nargout>3
     p = length(pnames);
     pid = zeros(p, 1);
     for i = 1:p
-        pid(i) = strmatch(pnames{i}, DynareModel.param_names, 'exact');
+        pid(i) = find(strcmp(pnames{i}, DynareModel.param_names));
     end
     p = length(enames);
     eid = zeros(p, 1);
     for i = 1:p
-        eid(i) = strmatch(enames{i}, DynareModel.endo_names, 'exact');
+        eid(i) = find(strcmp(enames{i}, DynareModel.endo_names));
     end
     p = length(xnames);
     xid = zeros(p, 1);
     for i = 1:p
-        xid(i) = strmatch(xnames{i}, DynareModel.exo_names, 'exact');
+        xid(i) = find(strcmp(xnames{i}, DynareModel.exo_names));
     end
 end
