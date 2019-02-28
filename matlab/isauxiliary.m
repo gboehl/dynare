@@ -24,8 +24,9 @@ function b = isauxiliary(var, types)
 %   -  8,    Variable for Diff operator
 %   -  9,    Lag on Diff
 %   - 10,    Unary operator (log, exp)
+%   - 11,    Lead on Diff
 
-% Copyright (C) 2018 Dynare Team
+% Copyright (C) 2018-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
