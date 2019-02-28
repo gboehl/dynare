@@ -271,10 +271,17 @@ if isequal(expectationmodelkind, 'pac-expectations') && growth_correction
         vgrowth = M_.param_names{expectationmodel.growth_index};
       case 'endogenous'
         vgrowth = M_.endo_names{expectationmodel.growth_index};
+        lgrowth = expectationmodel.growth_lag;
       case 'exogenous'
-        vgrowth = M_.exo_names{expectationmodel.growth_index};
+        if expectationmodel.growth_index<=M_.exo_nbr
+            vgrowth = M_.exo_names{expectationmodel.growth_index};
+        else
+            vgrowth = M_.endo_names{expectationmodel.growth_index};
+        end
+        lgrowth = expectationmodel.growth_lag;
       otherwise
     end
+    vgrowth = rewritegrowthvariable(vgrowth, lgrowth, M_);
     fprintf(fid, '%s*%s', pgrowth, vgrowth);
     fclose(fid);
     fprintf('Growth neutrality correction is saved in %s.\n', filename);
@@ -383,10 +390,17 @@ for i=1:maxlag
                     vgrowth = M_.param_names{expectationmodel.growth_index};
                   case 'endogenous'
                     vgrowth = M_.endo_names{expectationmodel.growth_index};
+                    lgrowth = expectationmodel.growth_lag;
                   case 'exogenous'
-                    vgrowth = M_.exo_names{expectationmodel.growth_index};
+                    if expectationmodel.growth_index<=M_.exo_nbr
+                        vgrowth = M_.exo_names{expectationmodel.growth_index};
+                    else
+                        vgrowth = M_.endo_names{expectationmodel.growth_index};
+                    end
+                    lgrowth = expectationmodel.growth_lag;
                   otherwise
                 end
+                vgrowth = rewritegrowthvariable(vgrowth, lgrowth, M_);
                 if parameter>=0
                     expression = sprintf('%s*%s+%s*%s', num2str(pgrowth, '%1.16f'), vgrowth, num2str(parameter, '%1.16f'), variable);
                 else
@@ -411,3 +425,90 @@ fclose(fid);
 fprintf('Expectation dseries expression is saved in %s.\n', filename);
 
 skipline();
+
+function vgrowth = rewritegrowthvariable(vgrowth, lgrowth, M_)
+    if isauxiliary(vgrowth)
+        % We need to rewrite vgrowth in terms of the original (exogenous or endogenous) variable.
+        auxinfo = M_.aux_vars(get_aux_variable_id(vgrowth));
+        switch auxinfo.type
+          case 1
+            tmp = get_aux_variable_id(auxinfo.orig_index);
+            % Lagged endogenous.
+            if ~isauxiliary(auxinfo.orig_index)
+                v = M_.endo_names{auxinfo.orig_index};
+                s = auxinfo.orig_lead_lag;
+                d = 0;
+                t = [];
+            elseif tmp.type==10
+                t = tmp.unary_op;
+                s = auxinfo.orig_lead_lag;
+                d = 0;
+                v = M_.endo_names{tmp.orig_index};
+            else
+                error('Auxiliary variable has wrong type (1).')
+            end
+          case 3
+            % Lagged exogenous.
+            v = M_.exo_names{auxinfo.orig_index};
+            s = auxinfo.orig_lead_lag;
+            d = 0;
+            t = [];
+          case 8
+            tmp = get_aux_variable_id(auxinfo.orig_index);
+            % First difference.
+            if ~isauxiliary(auxinfo.orig_index)
+                v = M_.endo_names{auxinfo.orig_index};
+                s = 0;
+                d = 1;
+                t = [];
+            elseif tmp.type==10
+                t = tmp.unary_op;
+                s = 0;
+                d = 1;
+                v = M_.endo_names{tmp.orig_index};
+            else
+                error('Auxiliary variable has wrong type (8).')
+            end
+          case 9
+            % Lagged first difference
+            s = 0;
+            while auxinfo.type==9
+                s = s+1;
+                auxinfo = M_.aux_vars(get_aux_variable_id(auxinfo.orig_index));
+            end
+            if auxinfo.type==8
+                if isauxiliary(auxinfo.orig_index)
+                    % First difference of an auxiliary variable.
+                    tmp = get_aux_variable_id(auxinfo.orig_index);
+                    if tmp.type==10
+                        t = tmp.unary_op;
+                        d = 1;
+                        v = M_.endo_names{tmp.orig_index};
+                    else
+                        error('Auxiliary variable has wrong type (9).')
+                    end
+                else
+                    % First difference of a declared endogenous variable.
+                    t = [];
+                    d = 1;
+                    v = M_.endo_names{auxinfo.orig_index};
+                end
+            else
+                error('Auxiliary variable has wrong type (9).')
+            end
+          otherwise
+            error('Auxiliary variable has wrong type.')
+        end
+        s = s+lgrowth;
+        if s
+            vgrowth = sprintf('%s(-%u)', v, abs(s));
+        else
+            vgrowth = v;
+        end
+        if ~isempty(t)
+            vgrowth = sprintf('%s(%s)', t, vgrowth);
+        end
+        if d
+            vgrowth = sprintf('%s(%s)', 'diff', vgrowth);
+        end
+    end
