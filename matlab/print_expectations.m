@@ -198,20 +198,22 @@ for i=1:maxlag
         variable = auxmodel.list_of_variables_in_companion_var{j};
         transformations = {};
         ida = get_aux_variable_id(variable);
+        op = 0;
         while ida
+            op = op+1;
             if isequal(M_.aux_vars(ida).type, 8)
-                transformations = [transformations, 'diff'];
+                transformations(op) = {'diff'};
                 variable = M_.endo_names{M_.aux_vars(ida).orig_index};
                 ida = get_aux_variable_id(variable);
             elseif isequal(M_.aux_vars(ida).type, 10)
-                transformations = [transformations, M_.aux_vars(ida).unary_op];
+                transformations(op) = {M_.aux_vars(ida).unary_op};
                 variable = M_.endo_names{M_.aux_vars(ida).orig_index};
                 ida = get_aux_variable_id(variable);
             else
                 error('This case is not implemented.')
             end
         end
-        switch  expectationmodelkind
+        switch expectationmodelkind
           case 'var-expectations'
             parameter = M_.param_names{expectationmodel.param_indices(id)};
           case 'pac-expectations'
@@ -325,20 +327,22 @@ for i=1:maxlag
         variable = auxmodel.list_of_variables_in_companion_var{j};
         transformations = {};
         ida = get_aux_variable_id(variable);
+        op = 0;
         while ida
+            op = op+1;
             if isequal(M_.aux_vars(ida).type, 8)
-                transformations = [transformations, 'diff'];
+                transformations(op) = {'diff'};
                 variable = M_.endo_names{M_.aux_vars(ida).orig_index};
                 ida = get_aux_variable_id(variable);
             elseif isequal(M_.aux_vars(ida).type, 10)
-                transformations = [transformations, M_.aux_vars(ida).unary_op];
+                transformations(op) = {M_.aux_vars(ida).unary_op};
                 variable = M_.endo_names{M_.aux_vars(ida).orig_index};
                 ida = get_aux_variable_id(variable);
             else
                 error('This case is not implemented.')
             end
         end
-        switch  expectationmodelkind
+        switch expectationmodelkind
           case 'var-expectations'
             parameter = M_.params(expectationmodel.param_indices(id));
           case 'pac-expectations'
