@@ -1,8 +1,7 @@
-;;; dynare.el --- major mode to edit .mod files for dynare
-;; Created: 2010 Sep 10
-;; Version: 0.2
+;;; dynare.el --- major mode for editing Dynare mod files
 
 ;; Copyright (C) 2010 Yannick Kalantzis
+;; Copyright (C) 2019 Dynare Team
 ;;
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -18,139 +17,198 @@
 ;; along with this program.  If not, see
 ;; <http://www.gnu.org/licenses/>.
 
-;; Keywords: dynare
-
-;; To comment/uncomment, use `ALT-;'. See `comment-dwim' for further details.
-
 ;;; Installation:
 ;;
-;;   Put the this file as "dynare.el" somewhere on your load path, then
-;;   add this to your .emacs or site-init.el file:
-;;
-;;   (require 'dynare)
-
-;;; Commentary:
-;;
-;;   Use C-c ; to comment/uncomment (or the default M-;).
-
-;;; Changelog
-;;
-;;  2010-10-08 by Yannick Kalantzis v0.2
-;;    Change syntax table: decimal numbers are words, mathematical
-;;    operators are punctuation. `@' and `#' are symbols.
-;;    Better font-lock for var, varexo, and parameters declaration,
-;;    and for macrocommands.
-;;    Add new keybinding for comment/uncomment: C-c ;
-;;
-;;  2010-09-07 by Yannick Kalantzis 
-;;    Minor changes. Add `require'. Add builtin operators `;' and `='.
-;;    Highlight lags and leads.
-;;
-;;  2010-09-06 by Yannick Kalantzis v0.1
-;;    Created.  
-;;    Reproduces Xah Lee's instructions.  See
-;;    <http://xahlee.org/emacs/elisp_syntax_coloring.html>. Very basic
-;;    syntax highlighting: comments, some keywords.
+;;   Put the this file as "dynare.el" somewhere on your load path. The mode
+;;   will be automatically loaded and selected when you open a *.mod file.
 
 ;;; TODO
-;;    - indentation 
+;;    - font-locking: external functions (font-lock-function-name-face),
+;;      change face?), dates?
+;;    - M-a and M-e should skip statements (separated with ;)
+;;    - improve indentation
+;;       * w.r.t. to statements/equations/macro-commands split on several lines
+;;       * for macro-statements (insert space between @# and the keyword)
+;;    - basically deactivate the mode within verbatim blocks?
 ;;    - blocks templates "model/end", "initval/end", etc.
 ;;    - functions to insert main keywords
 
-;;; Code:
+(defgroup dynare nil
+  "Editing Dynare mod files."
+  :link '(url-link "https://www.dynare.org")
+  :link '(custom-group-link :tag "Font Lock Faces group" font-lock-faces)
+  :group 'languages)
 
-;; function to comment/uncomment text
-(defun dynare-comment-dwim (arg)
-"Comment or uncomment current line or region in a smart way.
-For detail, see `comment-dwim'."
-   (interactive "*P")
-   (require 'newcomment)
-   (let ((deactivate-mark nil) (comment-start "//") (comment-end ""))
-     (comment-dwim arg)))
+(defcustom dynare-block-offset 2
+  "Extra indentation applied to statements in Dynare block structures."
+  :type 'integer)
 
-;; define several class of keywords
-(defvar dynare-keywords
-  '("model" "initval" "endval" "end" "shocks" "periods" "values") 
-  "dynare keywords.")
+;; Those keywords that makes the lexer enter the DYNARE_STATEMENT start
+;; condition
+;; Also include "end" in this list
+(defvar dynare-statements
+  '("var" "varexo" "varexo_det" "trend_var" "log_trend_var"
+    "predetermined_variables" "parameters" "model_local_variable" "periods"
+    "model_info" "estimation" "var_estimation" "set_time" "data" "varobs"
+    "varexobs" "unit_root_vars" "rplot" "osr_params" "osr" "dynatype"
+    "dynasave" "model_comparison" "change_type" "load_params_and_steady_state"
+    "save_params_and_steady_state" "write_latex_dynamic_model"
+    "write_latex_static_model" "write_latex_original_model"
+    "write_latex_steady_state_model" "steady" "check" "simul" "stoch_simul"
+    "var_model" "trend_component_model" "var_expectation_model" "pac_model"
+    "dsample" "Sigma_e" "planner_objective" "ramsey_model" "ramsey_policy"
+    "discretionary_policy" "identification" "bvar_density" "bvar_forecast"
+    "dynare_sensitivity" "initval_file" "histval_file" "forecast"
+    "shock_decomposition" "realtime_shock_decomposition"
+    "plot_shock_decomposition" "initial_condition_decomposition" "sbvar"
+    "ms_estimation" "ms_simulation" "ms_compute_mdd" "ms_compute_probabilities"
+    "ms_forecast" "ms_irf" "ms_variance_decomposition" "conditional_forecast"
+    "plot_conditional_forecast" "gmm_estimation" "smm_estimation"
+    "markov_switching" "svar" "svar_global_identification_check"
+    "external_function" "calib_smoother" "model_diagnostics" "extended_path"
+    "smoother2histval" "perfect_foresight_setup" "perfect_foresight_solver"
+    "det_cond_forecast" "std" "corr" "prior_function" "posterior_function" "end")
+  "Dynare statement keywords.")
 
-(defvar dynare-constructs-regexp
-  "^[\s-]*\\(var\\|varexo\\|parameters\\)[a-zA-Z0-9,\s-@{}]*;"
-  "regexp for dynare constructs.")
+;; Keywords that may appear in blocks, and that begin a statement which will be
+;; closed by a semicolon
+(defvar dynare-statements-like
+  '("stderr" "values" "restriction" "exclusion" "equation" "crossequations"
+    "covariance" "upper_cholesky" "lower_cholesky")
+  "Dynare statements-like keywords.")
 
-(defvar dynare-macrocommand-regexp
-  "\\(@#define\\|@#include\\|@#endfor\\|@#for\\s-+[a-zA-Z0-9]+\\s-+in\\s-+[a-zA-Z0-9]+\\|@{[a-zA-Z0-9]+}\\)"
-  "regexp for dynare macrocommand.")
+;; Those keywords that makes the lexer enter the DYNARE_BLOCK start condition
+;; Also include "verbatim" in this list
+(defvar dynare-blocks
+  '("model" "steady_state_model" "initval" "endval" "histval" "shocks"
+    "shock_groups" "mshocks" "estimated_params" "epilogue" "priors"
+    "estimated_param_init" "estimated_params_bounds" "osr_params_bounds"
+    "observation_trends" "optim_weights" "homotopy_setup"
+    "conditional_forecast_paths" "svar_identification" "moment_calibration"
+    "irf_calibration" "ramsey_constraints" "restrictions" "generate_irfs"
+    "verbatim")
+  "Dynare block keywords.")
 
+;; Mathematical functions used in model equations (see "expression" in Bison file)
 (defvar dynare-functions
-  '("simul" "stoch_simul" "steady" "check" "rplot" "dynatype" "dynasave" "resid")
-  "dynare functions.")
+  '("exp" "log" "ln" "log10" "sin" "cos" "tan" "asin" "acos" "atan" "sqrt"
+    "abs" "sign" "max" "min" "normcdf" "normpdf" "erf")
+  "Dynare mathematical functions.")
 
-;; create the regex string for each class of keywords
-(defvar dynare-keywords-regexp (regexp-opt dynare-keywords 'words))
-(defvar dynare-functions-regexp (regexp-opt dynare-functions 'words))
+(defvar dynare-constants
+  '("nan" "inf")
+  "Dynare constants.")
 
-;; clear memory
-(setq dynare-keywords nil)
-(setq dynare-functions nil)
+(defvar dynare-macro-keywords
+  '("in" "length" "line" "define" "echomacrovars" "save" "for" "endfor" "ifdef"
+    "ifndef" "if" "else" "endif" "echo" "error")
+  "Dynare macroprocessor keywords.")
 
-;; create the list for font-lock.
-;; each class of keyword is given a particular face
-(setq dynare-font-lock-keywords
-  `(
-    (,dynare-macrocommand-regexp . font-lock-builtin-face)
-    (,dynare-functions-regexp . font-lock-function-name-face)
-    (,dynare-keywords-regexp . font-lock-keyword-face)
-    (,dynare-constructs-regexp . font-lock-keyword-face)
-    (";\\|=" . font-lock-builtin-face)
-    ("(\\(+\\|-\\)[1-9])" . font-lock-constant-face)
-    ))
+(defvar dynare-font-lock-keywords
+  `(("@#" . font-lock-variable-name-face) ; Beginning of macro-statement
+    ("@#" ,(regexp-opt dynare-macro-keywords 'words)
+          nil nil (0 font-lock-variable-name-face)) ; Keywords in macro-statements
+    ("@{[^}]*}" . font-lock-variable-name-face) ;; For macro-substitutions
+    ;;; Below is an alternative way of dealing with macro-substitutions
+    ;;; Only the delimiters and the keywords are colorized
+    ;; ("@{" . font-lock-variable-name-face)
+    ;; ("@{" "[^}]*\\(}\\)" nil nil (1 font-lock-variable-name-face))
+    ;; ("@{" ,(concat (regexp-opt dynare-macro-keywords 'words) "[^}]*}") nil nil (1 font-lock-variable-name-face))
+    ("^[ \t]*#" . font-lock-warning-face) ; For model-local variables
+    (,(regexp-opt (append dynare-statements dynare-statements-like dynare-blocks) 'words) . font-lock-keyword-face)
+    (,(regexp-opt dynare-functions 'words) . font-lock-builtin-face)
+    (,(regexp-opt dynare-constants 'words) . font-lock-constant-face))
+  "Keyword highlighting specification for `dynare-mode'.")
 
-;;; define the major mode
+(defvar dynare-mode-map
+  (let ((map (make-sparse-keymap)))
+    ;; TODO: To be filled
+    map))
+
+(defvar dynare-mode-syntax-table
+  (let ((st (make-syntax-table)))
+    ;; decimal numbers should be treated as words
+    (modify-syntax-entry ?\. "w" st)
+
+    ;; mathematical operators are treated as punctuation
+    ;; "*" is treated further below
+    (modify-syntax-entry ?+ "." st)
+    (modify-syntax-entry ?- "." st)
+    (modify-syntax-entry ?/ "." st)
+    (modify-syntax-entry ?^ "." st)
+
+    ;; symbols for the macrolanguage
+    (modify-syntax-entry ?@ "_" st)
+    (modify-syntax-entry ?# "_" st)
+
+    ;; underscores are treated as word constituents
+    (modify-syntax-entry ?_ "_" st)
+
+    ;; Single-quoted strings
+    (modify-syntax-entry ?' "\"" st)
+
+    ;; define C++ style comment  “/* ... */” and “// ...”
+    ;; "/" is the 1st and 2nd char of /* and */ (a-style) and the 2nd char of //
+    ;; (b-style)
+    (modify-syntax-entry ?\/ ". 124" st)
+    ;; "*" is the 2nd and 1st char of /* and */ (a-style only)
+    (modify-syntax-entry ?* ". 23b" st)
+    ;; "%" starts a MATLAB-style comment
+    (modify-syntax-entry ?% "<" st)
+    ;; newline is the comment-end sequence of b-style and MATLAB-style comments
+    (modify-syntax-entry ?\n ">" st)
+    st)
+  "Syntax table for `dynare-mode'")
+
+(defun dynare-indent-line ()
+  "Indent current line of Dynare mod file."
+  (interactive)
+  (let ((savep (> (current-column) (current-indentation)))
+        (indent (max (dynare-calculate-indentation) 0)))
+    (if savep
+        (save-excursion (indent-line-to indent))
+      (indent-line-to indent))))
+
+(defun dynare-calculate-indentation ()
+  "Return the column to which the current line should be indented."
+  (save-excursion
+    (beginning-of-line)
+    (cond
+      ((bobp)
+       0)
+      ((looking-at "^[ \t]*end[ \t]*;")
+       ;; This is an "end" keyword: decrease the indentation level
+       (forward-line -1)
+       (max (- (current-indentation) dynare-block-offset)
+            0))
+      (t
+       (let (cur-indent)
+         (while (null cur-indent) ; Iterate backwards until we find an indentation hint
+           (forward-line -1)
+            (cond
+              ((looking-at "^[ \t]*end[ \t]*;")
+               ;; An "end" was matched: indent at the same level
+               (setq cur-indent (current-indentation)))
+              ((looking-at (concat "^[ \t]*" (eval-when-compile (regexp-opt
+                                                                 dynare-blocks))
+                                   "[ \t]*;"))
+               ;; A block opening keyword was found: we need to indent an extra level
+               (setq cur-indent (+ (current-indentation) dynare-block-offset))) ; Do the actual indenting
+              ((bobp)
+               ;; No hint was found: indent at 0
+               (setq cur-indent 0))))
+         cur-indent)))))
+
 ;;;###autoload
-(define-derived-mode dynare-mode fundamental-mode
-  "dynare mode"
-  "dynare is a mode for editing mod files used by dynare."
-  (setq mode-name "dynare mode")
+(define-derived-mode dynare-mode prog-mode "Dynare"
+  "Major mode for editing Dynare mod files."
+  :syntax-table dynare-mode-syntax-table
 
-  ;; modify the keymap
-  (define-key dynare-mode-map [remap comment-dwim] 'dynare-comment-dwim)
-  (define-key dynare-mode-map (kbd "C-c ;") 'dynare-comment-dwim)
+  (setq-local comment-start "// ") ; For comment-dwim
+  (setq-local font-lock-defaults '(dynare-font-lock-keywords))
+  (setq-local indent-line-function 'dynare-indent-line))
 
-
-  ;; decimal numbers should be treated as words
-  (modify-syntax-entry ?\. "w" dynare-mode-syntax-table) 
-
-  ;; mathematical operators are treated as punctuation
-  (modify-syntax-entry ?+ "." dynare-mode-syntax-table)
-  (modify-syntax-entry ?- "." dynare-mode-syntax-table)
-  (modify-syntax-entry ?* "." dynare-mode-syntax-table)
-  (modify-syntax-entry ?/ "." dynare-mode-syntax-table)
-  (modify-syntax-entry ?^ "." dynare-mode-syntax-table)
-
-  ;; symbols for the macrolanguage
-  (modify-syntax-entry ?@ "_" dynare-mode-syntax-table)
-  (modify-syntax-entry ?# "_" dynare-mode-syntax-table)
-
-  ;; define C++ style comment  “/* ... */” and “// ...” 
-  (modify-syntax-entry ?\/ ". 124b" dynare-mode-syntax-table) 
-  ;; "/" is the 1st and 2nd char of /* and */ (a-style) and the 2nd char of //
-  ;; (b-style)
-  (modify-syntax-entry ?* ". 23" dynare-mode-syntax-table)
-  ;; "*" is the 2nd and 1st char of /* and */ (a-style only)
-  (modify-syntax-entry ?\n "> b" dynare-mode-syntax-table)
-  ;; newline is the comment-end sequence of b-style comments
-
-  ;; syntax highlighting
-  (setq font-lock-defaults '((dynare-font-lock-keywords)))
-
-  ;; clear memory
-  (setq dynare-keywords-regexp nil)
-  (setq dynare-functions-regexp nil)
-  )
-
-;;; mode trigger
 ;;;###autoload
 (add-to-list 'auto-mode-alist '("\\.mod$" . dynare-mode))
 
 (provide 'dynare)
-;;; dynare.el ends here

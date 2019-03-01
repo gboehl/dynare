@@ -258,6 +258,7 @@ License: GPL-2+ with Autoconf exception
 
 Files: scripts/dynare.el
 Copyright: 2010 Yannick Kalantzis
+           2019 Dynare Team
 License: GPL-3+
 
 Files: mex/sources/sobol/sobol.hh mex/sources/sobol/initialize_v_array.hh
