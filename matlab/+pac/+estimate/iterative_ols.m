@@ -43,7 +43,7 @@ global M_ oo_
 
 debug = false; % If true, prints the value of SSR for the initial guess.
 
-[pacmodl, ~, rhs, ~, ~, ~, ~, ~, ~, ~, ipnames_, params, data, ~, eqtag] = ...
+[pacmodl, ~, rhs, ~, ~, ~, rname, ~, ~, ~, ~, ipnames_, params, data, ~, eqtag] = ...
     pac.estimate.init(M_, oo_, eqname, params, data, range);
 
 % Set initial condition.
@@ -52,12 +52,19 @@ params0 = cell2mat(struct2cell(params));
 % Set flag for models with non optimizing agents.
 is_non_optimizing_agents = isfield(M_.pac.(pacmodl).equations.(eqtag), 'non_optimizing_behaviour');
 
+% Set flag for models with exogenous variables (outside of non optimizing agents part)
+if isfield(M_.pac.(pacmodl).equations.(eqtag), 'additive')
+    is_exogenous_variables = length(M_.pac.(pacmodl).equations.(eqtag).additive.vars)>1;
+else
+    is_exogenous_variables = false;
+end
+
 if is_non_optimizing_agents
     non_optimizing_behaviour = M_.pac.(pacmodl).equations.(eqtag).non_optimizing_behaviour;
     non_optimizing_behaviour_params = NaN(length(non_optimizing_behaviour.params), 1);
     noparams = isnan(non_optimizing_behaviour.params);
     if ~all(noparams)
-        % Find estimated non optimizing behaviour parameters (if any.
+        % Find estimated non optimizing behaviour parameters (if any).
         non_optimizing_behaviour_estimated_params = ismember(M_.param_names(non_optimizing_behaviour.params), fieldnames(params));
         if any(non_optimizing_behaviour_estimated_params)
             error('The estimation of non optimizing behaviour parameters is not yet allowed.')
@@ -77,9 +84,30 @@ if is_non_optimizing_agents
             error('The share of optimizing agents shoud be in (0,1).')
         end
     end
+    share_of_optimizing_agents_index = M_.pac.(pacmodl).equations.(eqtag).share_of_optimizing_agents_index;
 else
     share_of_optimizing_agents = 1.0;
+    share_of_optimizing_agents_index = [];
     estimate_non_optimizing_agents_share = false;
+end
+
+if is_exogenous_variables
+    additive = M_.pac.(pacmodl).equations.(eqtag).additive;
+    residual_id = find(strcmp(rname, M_.exo_names));
+    residual_jd = find(additive.vars==residual_id & ~additive.isendo);
+    additive.params(residual_jd) = [];
+    additive.vars(residual_jd) = [];
+    additive.isendo(residual_jd) = [];
+    additive.lags(residual_jd) = [];
+    additive.scaling_factor(residual_jd) = [];
+    additive.estimation  = ismember(additive.params, ipnames_);
+else
+    additive.params = [];
+    additive.vars = [];
+    additive.isendo = [];
+    additive.lags = [];
+    additive.scaling_factor = [];
+    additive.estimation = [];
 end
 
 % Build PAC expectation matrix expression.
@@ -144,6 +172,42 @@ else
     dataForNonOptimizingBehaviour = dseries();
 end
 
+% Build data for exogenous variables (out of non optimizing behaviour term).
+if is_exogenous_variables
+    listofvariables2 = {}; j = 0;
+    dataForExogenousVariables = dseries();  % Estimated parameters
+    dataForExogenousVariables_ = 0;         % Calibrated parameters
+    is_any_calibrated_parameter_x = false;
+    is_any_estimated_parameter_x = false;
+    for i=1:length(additive.vars)
+        if additive.isendo(i)
+            variable = M_.endo_names{additive.vars(i)};
+        else
+            variable = M_.exo_names{additive.vars(i)};
+        end
+        if additive.estimation(i)
+            j = j+1;
+            is_any_estimated_parameter_x = true;
+            listofvariables2{j} = variable;
+            dataForExogenousVariables = [dataForExogenousVariables, additive.scaling_factor(i)*data{variable}.lag(additive.lags(i))];
+        else
+            is_any_calibrated_parameter_x = true;
+            tmp = data{variable}.lag(additive.lags(i)).data;
+            if ~isnan(additive.params(i))
+                tmp = M_.params(additive.params(i))*tmp;
+            end
+            tmp = additive.scaling_factor(i)*tmp;
+            dataForExogenousVariables_ = dataForExogenousVariables_+tmp;
+        end
+    end
+    if is_any_calibrated_parameter_x
+        dataForExogenousVariables_ = dseries(dataForExogenousVariables_, data.dates(1), 'exogenous_variables_associated_with_calibrated_parameters');
+    end
+else
+    dataForExogenousVariables = dseries();
+    dataForExogenousVariables_ = dseries();
+end
+
 % Reorder ec.vars locally if necessary. Second variable must be the
 % endogenous variable, while the first must be the associated trend.
 if M_.pac.(pacmodl).equations.(eqtag).ec.isendo(2)
@@ -152,7 +216,7 @@ else
     ecvars = flip(M_.pac.(pacmodl).equations.(eqtag).ec.vars);
 end
 
-% Build matrix for EC and AR terms.
+%% Build matrix for EC and AR terms.
 DataForOLS = dseries();
 
 % Error correction term is trend minus the level of the endogenous variable.
@@ -169,16 +233,39 @@ end
 
 XDATA = DataForOLS{listofvariables3{:}}(range).data;
 
-if estimate_non_optimizing_agents_share
-    [~, ecm_params_id] = setdiff(ipnames_, M_.pac.(pacmodl).equations.(eqtag).share_of_optimizing_agents_index);
-    [~, share_param_id] = setdiff(1:length(ipnames_), ecm_params_id);
-    params0_ = params0(ecm_params_id);
-    share_of_optimizing_agents = params0(share_param_id);
-    if share_of_optimizing_agents>1 || share_of_optimizing_agents<0
-        error('Initial value for the share of optimizing agents shoud be in (0,1).')
-    end
+% Get index in params0 for share of optimizing agents parameter (if
+% not estimated, params_id_0 is empty).
+if is_non_optimizing_agents
+    params_id_0 = find(ipnames_==share_of_optimizing_agents_index);
 else
-    params0_ = params0;
+    params_id_0 = [];
+end
+
+% Get indices in params0 for EC and AR parameters
+[~, params_id_1] = setdiff(ipnames_, [share_of_optimizing_agents_index, additive.params]);
+
+% Get indices in params0 for other parameters (optimizing agents
+% share plus parameters related to exogenous variables).
+[~, params_id_2] = setdiff(1:length(ipnames_), params_id_1);
+
+% Get indices in params0 for the parameters associated to the
+% exogenous variables.
+params_id_3 = setdiff(params_id_2, params_id_0);
+
+% Get values for EC and AR parameters
+params0_ = params0(params_id_1);
+
+% Get values for parameters associated to the exogenous variables.
+params0__ = params0(params_id_3);
+
+% Get value of the share of optimizing agents.
+if estimate_non_optimizing_agents_share
+    share_of_optimizing_agents = params0(params_id_0);
+end
+
+% Check that the share is in (0,1)
+if share_of_optimizing_agents>1 || share_of_optimizing_agents<0
+    error('Initial value for the share of optimizing agents shoud be in (0,1).')
 end
 
 % Update the vector of parameters.
@@ -186,19 +273,6 @@ M_.params(ipnames_) = params0;
 
 % Update the reduced form PAC expectation parameters and compute the expectations.
 [PacExpectations, M_] = UpdatePacExpectationsData(dataPAC0, dataPAC1, data, range, pacmodl, eqtag, M_, oo_);
-
-if debug
-    YDATA = data{M_.endo_names{M_.pac.(pacmodl).equations.(eqtag).lhs_var}}(range).data;
-    if is_non_optimizing_agents
-        YDATA = YDATA-share_of_optimizing_agents*PacExpectations;
-        YDATA = YDATA-(1-share_of_optimizing_agents)*(dataForNonOptimizingBehaviour(range).data*non_optimizing_behaviour_params);
-    else
-        YDATA = YDATA-PacExpectations;
-    end
-    r = YDATA-XDATA*(params0_*share_of_optimizing_agents);
-    ssr = r'*r;
-    fprintf('\nInitial value of the objective (SSR) is %s.\n\n', num2str(ssr));
-end
 
 noconvergence = true;
 counter = 0;
@@ -213,6 +287,14 @@ while noconvergence
     else
         YDATA = YDATA-PacExpectations;
     end
+    if is_exogenous_variables
+        if is_any_calibrated_parameter_x
+            YDATA = YDATA-dataForExogenousVariables_(range).data;
+        end
+        if is_any_estimated_parameter_x
+            YDATA = YDATA-dataForExogenousVariables{listofvariables2{:}}(range).data*params0__;
+        end
+    end
     % Run OLS to estimate PAC parameters (autoregressive parameters and error correction parameter).
     params1_ = (XDATA\YDATA)/share_of_optimizing_agents;
     % Compute residuals and sum of squareed residuals.
@@ -226,18 +308,53 @@ while noconvergence
     % Update the value of the share of non optimizing agents (if estimated)
     if estimate_non_optimizing_agents_share
         % First update the parameters and compute the PAC expectation reduced form parameters.
-        M_.params(ipnames_(ecm_params_id)) = params0_;
+        M_.params(ipnames_(params_id_1)) = params0_;
         [PacExpectations, M_] = UpdatePacExpectationsData(dataPAC0, dataPAC1, data, range, pacmodl, eqtag, M_, oo_);
         % Set vector for left handside variable.
         YDATA = data{M_.endo_names{M_.pac.(pacmodl).equations.(eqtag).lhs_var}}(range).data;
         YDATA = YDATA-dataForNonOptimizingBehaviour(range).data*non_optimizing_behaviour_params;
+        if is_exogenous_variables && is_any_calibrated_parameter_x
+            YDATA = YDATA-dataForExogenousVariables_(range).data;
+        end
         % Set vector for regressor.
         ZDATA = XDATA*params0_+PacExpectations-dataForNonOptimizingBehaviour(range).data*non_optimizing_behaviour_params;
+        if is_exogenous_variables && is_any_estimated_parameter_x
+            ZDATA = [ZDATA, dataForExogenousVariables{listofvariables2{:}}(range).data];
+        end
         % Update the (estimated) share of optimizing agents by running OLS
-        share_of_optimizing_agents = (ZDATA\YDATA);
+        beta = (ZDATA\YDATA);
+        share_of_optimizing_agents = beta(1);
+        if is_exogenous_variables && is_any_estimated_parameter_x
+            params0__ = beta(2:end);
+        end
         % Force the share of optimizing agents to be in [0,1].
         share_of_optimizing_agents = max(min(share_of_optimizing_agents, 1.0), 0.0);
-        M_.params(ipnames_(share_param_id)) = share_of_optimizing_agents;
+        M_.params(ipnames_(params_id_0)) = share_of_optimizing_agents;
+        if is_exogenous_variables && is_any_estimated_parameter_x
+            M_.params(ipnames_(params_id_3)) = params0__;
+        end
+    elseif is_exogenous_variables && is_any_estimated_parameter_x
+        % First update the parameters and compute the PAC expectation reduced form parameters.
+        M_.params(ipnames_(params_id_1)) = params0_;
+        [PacExpectations, M_] = UpdatePacExpectationsData(dataPAC0, dataPAC1, data, range, pacmodl, eqtag, M_, oo_);
+        % Set vector for left handside variable.
+        YDATA = data{M_.endo_names{M_.pac.(pacmodl).equations.(eqtag).lhs_var}}(range).data;
+        if is_any_calibrated_parameter_x
+            YDATA = YDATA-dataForExogenousVariables_(range).data;
+        end
+        if is_non_optimizing_agents
+            YDATA = YDATA-share_of_optimizing_agents*(XDATA*params0_+PacExpectations) - ...
+                    (1-share_of_optimizing_agents)*(dataForNonOptimizingBehaviour(range).data*non_optimizing_behaviour_params);
+        else
+            YDATA = YDATA-XDATA*params0_-PacExpectations;
+        end
+        % Set vector for regressor
+        ZDATA = dataForExogenousVariables{listofvariables2{:}}(range).data;
+        % Update the (estimated) parameters associated to the
+        % exogenous variables.
+        beta = (ZDATA\YDATA);
+        params0__ = beta;
+        M_.params(ipnames_(params_id_3)) = params0__;
     else
         M_.params(ipnames_) = params0_;
         [PacExpectations, M_] = UpdatePacExpectationsData(dataPAC0, dataPAC1, data, range, pacmodl, eqtag, M_, oo_);

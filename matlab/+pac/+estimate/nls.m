@@ -76,7 +76,7 @@ if nargin>4 && (isequal(optimizer, 'GaussNewton') || isequal(optimizer, 'lsqnonl
     objective = 'r_';
 end
 
-[pacmodl, lhs, rhs, pnames, enames, xnames, pid, eid, xid, ~, ipnames_, params, data, islaggedvariables, eqtag] = ...
+[pacmodl, lhs, rhs, pnames, enames, xnames, ~, pid, eid, xid, ~, ipnames_, params, data, islaggedvariables, eqtag] = ...
     pac.estimate.init(M_, oo_, eqname, params, data, range);
 
 % Check that the error correction term is correct.

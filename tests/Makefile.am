@@ -426,6 +426,10 @@ MODFILES = \
     pac/trend-component-20-2/example.mod \
     pac/trend-component-20-3/example.mod \
     pac/trend-component-20-4/example.mod \
+    pac/trend-component-21/example.mod \
+    pac/trend-component-22/example.mod \
+    pac/trend-component-23/example.mod \
+    pac/trend-component-24/example.mod \
     ecb/backward-models/irf/solow_1.mod \
     ecb/backward-models/irf/solow_2.mod \
 	dynare-command-options/ramst.mod
