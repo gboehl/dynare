@@ -45,18 +45,14 @@ if isempty(ds) || ~isdseries(ds)
     error('The first argument must be a dseries');
 end
 
-if isempty(param_common) && isempty(param_regex)
-    disp('Performing OLS instead of Pooled OLS...')
-    if nargin < 6
-        dyn_ols(ds);
-    else
-        dyn_ols(ds, {}, eqtags);
-    end
-    return
-end
-
 if nargin < 5
     eqtags = {};
+end
+
+if isempty(param_common) && isempty(param_regex)
+    disp('Performing OLS instead of Pooled OLS...')
+    dyn_ols(ds, {}, eqtags);
+    return
 end
 
 assert(~isempty(param_common) && iscellstr(param_common), 'The second argument must be a cellstr');
