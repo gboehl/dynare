@@ -84,7 +84,7 @@ public:
     https://stackoverflow.com/questions/3052579/explicit-specialization-in-non-namespace-scope
   */
   template<typename T>
-  struct dummy { typedef T type; };
+  struct dummy { using type = T; };
 
   template<class T>
   const T &getNext()
