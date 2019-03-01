@@ -45,19 +45,19 @@ maxit = 100;
 tol = 1e-6;
 
 %% Common work between pooled_ols and pooled_fgls
-pooled_ols(ds, param_common, param_regex, true, eqtags);
+[Y, X, pbeta, residnames, country_name] = pooled_ols(ds, param_common, param_regex, true, eqtags);
 
 %% Estimation
-neqs = length(oo_.pooled_fgls.residnames);
-oo_.pooled_fgls.dof = size(oo_.pooled_fgls.X,1)/neqs;
+neqs = length(residnames);
+oo_.pooled_fgls.dof = size(X,1)/neqs;
 beta0 = oo_.pooled_fgls.beta;
 for i = 1:maxit
-    resid = oo_.pooled_fgls.Y - oo_.pooled_fgls.X * beta0;
+    resid = Y - X * beta0;
     resid = reshape(resid, oo_.pooled_fgls.dof, neqs);
     vcv = resid'*resid/oo_.pooled_fgls.dof;
     kLeye = kron(inv(chol(vcv))', eye(oo_.pooled_fgls.dof));
-    [q, r] = qr(kLeye*oo_.pooled_fgls.X, 0);
-    oo_.pooled_fgls.beta = r\(q'*kLeye*oo_.pooled_fgls.Y);
+    [q, r] = qr(kLeye*X, 0);
+    oo_.pooled_fgls.beta = r\(q'*kLeye*Y);
     if max(abs(beta0 - oo_.pooled_fgls.beta)) < tol
         break
     end
@@ -70,16 +70,15 @@ end
 % Set appropriate entries in M_.Sigma_e
 idxs = zeros(neqs, 1);
 for i = 1:neqs
-    idxs(i) = find(strcmp(oo_.pooled_fgls.residnames{i}, M_.exo_names));
+    idxs(i) = find(strcmp(residnames{i}, M_.exo_names));
 end
 M_.Sigma_e(idxs, idxs) = vcv;
 
 regexcountries = ['(' strjoin(param_common(1:end),'|') ')'];
-pbeta = oo_.pooled_fgls.pbeta;
 assigned_idxs = false(size(pbeta));
 incidxs = [];
 for i = 1:length(param_regex)
-    beta_idx = strcmp(pbeta, strrep(param_regex{i}, '*', oo_.pooled_fgls.country_name));
+    beta_idx = strcmp(pbeta, strrep(param_regex{i}, '*', country_name));
     assigned_idxs = assigned_idxs | beta_idx;
     value = oo_.pooled_fgls.beta(beta_idx);
     if isempty(eqtags)
@@ -102,11 +101,5 @@ end
 
 % Write .inc file
 write_param_init_inc_file('pooled_fgls', M_.fname, incidxs, M_.params(incidxs));
-
-oo_.pooled_fgls = rmfield(oo_.pooled_fgls, 'X');
-oo_.pooled_fgls = rmfield(oo_.pooled_fgls, 'Y');
-oo_.pooled_fgls = rmfield(oo_.pooled_fgls, 'residnames');
-oo_.pooled_fgls = rmfield(oo_.pooled_fgls, 'pbeta');
-oo_.pooled_fgls = rmfield(oo_.pooled_fgls, 'country_name');
 
 end

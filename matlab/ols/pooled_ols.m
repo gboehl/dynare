@@ -1,4 +1,4 @@
-function pooled_ols(ds, param_common, param_regex, overlapping_dates, eqtags)
+function varargout = pooled_ols(ds, param_common, param_regex, overlapping_dates, eqtags)
 % function pooled_ols(ds, param_common, param_regex, overlapping_dates, eqtags)
 % Run Pooled OLS
 % Apply parameter values found to corresponding parameter values in the
@@ -16,7 +16,8 @@ function pooled_ols(ds, param_common, param_regex, overlapping_dates, eqtags)
 %                                  estimate all equations
 %
 % OUTPUTS
-%   none
+%   return arguments common to pooled_fgls only if called from pooled_fgls
+%   
 %
 % SPECIAL REQUIREMENTS
 %   dynare must have been run with the option: json=compute
@@ -92,11 +93,11 @@ st = dbstack(1);
 if strcmp(st(1).name, 'pooled_fgls')
     save_structure_name = 'pooled_fgls';
     % Pass vars back to pooled_fgls
-    oo_.pooled_fgls.residnames = residnames;
-    oo_.pooled_fgls.Y = Y.data;
-    oo_.pooled_fgls.X = X.data;
-    oo_.pooled_fgls.pbeta = X.name;
-    oo_.pooled_fgls.country_name = country_name;
+    varargout{1} = Y.data;
+    varargout{2} = X.data;
+    varargout{3} = X.name;
+    varargout{4} = residnames;
+    varargout{5}= country_name;
 else
     save_structure_name = 'pooled_ols';
 end
