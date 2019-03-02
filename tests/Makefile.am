@@ -396,6 +396,8 @@ MODFILES = \
 	pac/var-4/example.mod \
 	pac/var-5/example.mod \
 	pac/var-5/substitution.mod \
+    pac/var-6/example.mod \
+	pac/var-6/substitution.mod \
 	pac/trend-component-1/example.mod \
 	pac/trend-component-2/example.mod \
 	pac/trend-component-3/example.mod \
