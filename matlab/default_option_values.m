@@ -212,6 +212,7 @@ ep.replic_nbr = 1;
 % Parallel execution of replications
 ep.parallel = false;
 % Stochastic extended path related options.
+ep.IntegrationAlgorithm = 'Tensor-Gaussian-Quadrature';
 ep.stochastic.method = '';
 ep.stochastic.algo = 0;
 ep.stochastic.quadrature.ortpol = 'hermite';
