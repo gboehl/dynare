@@ -19,19 +19,27 @@
 
 ;;; Installation:
 ;;
-;;   Put the this file as "dynare.el" somewhere on your load path. The mode
-;;   will be automatically loaded and selected when you open a *.mod file.
+;;   Put this file somewhere on your load path. The mode will be automatically
+;;   loaded and selected when you open a file with the "mod" extension.
 
-;;; TODO
-;;    - font-locking: external functions (font-lock-function-name-face),
-;;      change face?), dates?
+;;; TODO:
+;;    - font-locking:
+;;      + external functions (font-lock-function-name-face),
+;;      + change face for macroprocessor?
+;;      + handle dates?
+;;      + multi-line macro-commands/exprs
+;;      + components of option names should not be recognized (e.g. "model"
+;;        should not be colorized in "model_name")
 ;;    - M-a and M-e should skip statements (separated with ;)
 ;;    - improve indentation
-;;       * w.r.t. to statements/equations/macro-commands split on several lines
-;;       * for macro-statements (insert space between @# and the keyword)
+;;      + w.r.t. to statements/equations/macro-commands split on several lines
+;;      + for macro-statements (insert space between @# and the keyword, with
+;;        an option for controlling this offset)
+;;      + add option for controlling whether macrocommands are indented at 0 or
+;;        at same level as Dynare code
 ;;    - basically deactivate the mode within verbatim blocks?
 ;;    - blocks templates "model/end", "initval/end", etc.
-;;    - functions to insert main keywords
+;;    - functions to insert main keywords, with shortcuts in the keymap
 
 (defgroup dynare nil
   "Editing Dynare mod files."
@@ -101,14 +109,14 @@
 
 (defvar dynare-macro-keywords
   '("in" "length" "line" "define" "echomacrovars" "save" "for" "endfor" "ifdef"
-    "ifndef" "if" "else" "endif" "echo" "error")
+    "ifndef" "if" "else" "endif" "echo" "error" "include" "includepath")
   "Dynare macroprocessor keywords.")
 
 (defvar dynare-font-lock-keywords
   `(("@#" . font-lock-variable-name-face) ; Beginning of macro-statement
     ("@#" ,(regexp-opt dynare-macro-keywords 'words)
           nil nil (0 font-lock-variable-name-face)) ; Keywords in macro-statements
-    ("@{[^}]*}" . font-lock-variable-name-face) ;; For macro-substitutions
+    ("@{[^}]*}" . font-lock-variable-name-face) ; For macro-substitutions
     ;;; Below is an alternative way of dealing with macro-substitutions
     ;;; Only the delimiters and the keywords are colorized
     ;; ("@{" . font-lock-variable-name-face)
