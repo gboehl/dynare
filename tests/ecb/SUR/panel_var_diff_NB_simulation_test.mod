@@ -148,14 +148,13 @@ var res_DE_G_YER = 0.005;
 var res_DE_EHIC = 0.005;
 end;
 
-NSIMS = 1000;
+NSIMS = 1;
 
 options_.noprint = 1;
 calibrated_values = M_.params;
 verbatim;
 Sigma_e = M_.Sigma_e;
 end;
-assert(NSIMS > 1);
 options_.bnlms.set_dynare_seed_to_default = false;
 
 nparampool = length(M_.params);
@@ -175,36 +174,43 @@ for i=1:NSIMS
     end
     sur(simdata{idxs});
     BETA(i, :) = M_.params';
+    oo_ = rmfield(oo_, 'sur');
 end
 
-tmp = mean(BETA)' - calibrated_values;
-good = [-0.000851206009290
-  -0.000643198850342
-  -0.000077654636303
-  -0.000420898437454
-   0.000262557551524
-  -0.000245111192739
-  -0.000076643809917
-  -0.001731735812364
-  -0.001143888514328
-   0.000121014793695
-  -0.000577022127737
-  -0.000749730989778
-  -0.000277999433209
-  -0.000622189775653
-  -0.000635550804554
-  -0.000249226746560
-  -0.000444130561721
-  -0.000186765256265
-  -0.000441923342534
-  -0.000014925384893
-   0.000091140073668
-  -0.000237339805772
-  -0.000838249050874
-   0.000815931859253
-                   0];
-if sum(abs(tmp-good)) > 1e-14
-    error(['sum of tmp - good was: ' num2str(sum(abs(tmp-good)))]);
+if NSIMS > 1
+    if max(abs(mean(BETA)' - calibrated_values)) > 1e-2
+        error(['sum(abs(mean(BETA)'' - calibrated_values)) ' num2str(sum(abs(mean(BETA)' - calibrated_values)))]);
+    end
+else
+    good = [-0.826686196809409
+        -0.346753563700393
+        0.063013991583949
+        0.074802596658698
+        -0.017440119721953
+        -0.127090614348862
+        0.025293280404460
+        0.524290302468866
+        -0.117611206771440
+        -0.027776224547132
+        -0.156590828735908
+        0.054039707976331
+        0.276257666502046
+        1.000417289621684
+        0.999336865129450
+        -0.803258152338916
+        -0.309594948488168
+        0.051602756230521
+        0.039275481081030
+        0.024897596371662
+        -0.096310133845385
+        -0.022630284059365
+        0.461683465196454
+        -0.110278113383114
+        1.000000000000000];
+    if max(abs(BETA' - good)) > 1e-14
+        error(['sum of BETA'' - good was: ' num2str(sum(abs(BETA - good)))]);
+    end
+    return
 end
 
 for i=1:nparampool

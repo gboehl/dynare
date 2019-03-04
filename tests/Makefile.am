@@ -437,16 +437,17 @@ MODFILES = \
 	dynare-command-options/ramst.mod
 
 OLS_MODFILES = \
+	estimation/univariate/bayesian.mod \
+	ecb/SURGibbs/fulton_fish.mod \
+	estimation/univariate/ols/ols_wc_1.mod \
+	estimation/univariate/ols/ols_wc_2.mod \
+	estimation/univariate/ols/ols.mod \
 	ecb/SUR/sur_noninteractive.mod \
 	ecb/SUR/panel_var_diff_NB_simulation_test.mod \
 	ecb/SUR/panel_var_diff_NB_simulation_zero_eq.mod \
 	ecb/pooled_ols/panel_var_diff_NB_simulation_test.mod \
-	ecb/pooled_fgls/panel_var_diff_NB_simulation_test.mod \
-	estimation/univariate/bayesian.mod \
-	estimation/univariate/ols/ols_wc_1.mod \
-	estimation/univariate/ols/ols_wc_2.mod \
-	estimation/univariate/ols/ols.mod \
-	ecb/SURGibbs/fulton_fish.mod
+	ecb/pooled_fgls/panel_var_diff_NB_simulation_test.mod
+
 
 MODFILES += $(OLS_MODFILES)
 
