@@ -26,11 +26,10 @@ KORD_SRCS = \
 	$(TOPDIR)/kord/korder_stoch.hh \
 	$(TOPDIR)/kord/journal.cc \
 	$(TOPDIR)/kord/journal.hh \
-	$(TOPDIR)/kord/mersenne_twister.hh \
 	$(TOPDIR)/kord/normal_conjugate.cc \
 	$(TOPDIR)/kord/normal_conjugate.hh \
-	$(TOPDIR)/kord/random.cc \
-	$(TOPDIR)/kord/random.hh
+	$(TOPDIR)/kord/seed_generator.cc \
+	$(TOPDIR)/kord/seed_generator.hh
 
 SYLV_SRCS = \
 	$(TOPDIR)/sylv/cc/BlockDiagonal.cc \

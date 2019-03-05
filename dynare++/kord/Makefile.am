@@ -20,11 +20,10 @@ libkord_a_SOURCES = \
 	korder_stoch.hh \
 	journal.cc \
 	journal.hh \
-	mersenne_twister.hh \
 	normal_conjugate.cc \
 	normal_conjugate.hh \
-	random.cc \
-	random.hh
+	seed_generator.cc \
+	seed_generator.hh
 
 libkord_a_CPPFLAGS = -I../sylv/cc -I../tl/cc -I../integ/cc -I../utils/cc -I$(top_srcdir)/mex/sources $(CPPFLAGS_MATIO)
 libkord_a_CXXFLAGS = $(AM_CXXFLAGS) $(THREAD_CXXFLAGS)

@@ -3,6 +3,7 @@
 #include "SymSchurDecomp.hh"
 
 #include "global_check.hh"
+#include "seed_generator.hh"
 
 #include "smolyak.hh"
 #include "product.hh"
@@ -398,7 +399,7 @@ GlobalChecker::checkAlongSimulationAndSave(mat_t *fd, const char *prefix,
   JournalRecordPair pa(journal);
   pa << "Calculating errors at " << m
      << " simulated points" << endrec;
-  RandomShockRealization sr(model.getVcov(), system_random_generator.int_uniform());
+  RandomShockRealization sr(model.getVcov(), seed_generator::get_new_seed());
   TwoDMatrix *y = approx.getFoldDecisionRule().simulate(DecisionRule::horner,
                                                         m, model.getSteady(), sr);
   TwoDMatrix x(model.nexog(), m);

@@ -22,7 +22,8 @@
 #include "kord_exception.hh"
 #include "korder.hh"
 #include "normal_conjugate.hh"
-#include "mersenne_twister.hh"
+
+#include <random>
 
 /* This is a general interface to a shock realizations. The interface
    has only one method returning the shock realizations at the given
@@ -993,10 +994,11 @@ public:
 class RandomShockRealization : virtual public ShockRealization
 {
 protected:
-  MersenneTwister mtwister;
+  std::mt19937 mtwister;
+  std::normal_distribution<> dis;
   TwoDMatrix factor;
 public:
-  RandomShockRealization(const ConstTwoDMatrix &v, unsigned int iseed)
+  RandomShockRealization(const ConstTwoDMatrix &v, decltype(mtwister)::result_type iseed)
     : mtwister(iseed), factor(v.nrows(), v.nrows())
   {
     schurFactor(v);

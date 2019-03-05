@@ -7,7 +7,7 @@
 #include "utils/cc/exception.hh"
 #include "parser/cc/parser_exception.hh"
 #include "../sylv/cc/SylvException.hh"
-#include "../kord/random.hh"
+#include "../kord/seed_generator.hh"
 #include "../kord/global_check.hh"
 #include "../kord/approximation.hh"
 
@@ -89,7 +89,7 @@ main(int argc, char **argv)
       // write the dump file corresponding to the input
       dynare.writeDump(params.basename);
 
-      system_random_generator.initSeed(params.seed);
+      seed_generator::set_meta_seed(static_cast<std::mt19937::result_type>(params.seed));
 
       TLStatic::init(dynare.order(),
                      dynare.nstat()+2*dynare.npred()+3*dynare.nboth()

@@ -3,6 +3,7 @@
 #include "kord_exception.hh"
 #include "decision_rule.hh"
 #include "dynamic_model.hh"
+#include "seed_generator.hh"
 
 #include "SymSchurDecomp.hh"
 
@@ -89,7 +90,7 @@ SimResults::simulate(int num_sim, const DecisionRule &dr, const Vector &start,
   sthread::detach_thread_group gr;
   for (int i = 0; i < num_sim; i++)
     {
-      RandomShockRealization sr(vcov, system_random_generator.int_uniform());
+      RandomShockRealization sr(vcov, seed_generator::get_new_seed());
       rsrs.push_back(sr);
       gr.insert(std::make_unique<SimulationWorker>(*this, dr, DecisionRule::horner,
                                                    num_per+num_burn, start, rsrs.back()));
@@ -413,7 +414,7 @@ RTSimResultsStats::simulate(int num_sim, const DecisionRule &dr, const Vector &s
   sthread::detach_thread_group gr;
   for (int i = 0; i < num_sim; i++)
     {
-      RandomShockRealization sr(vcov, system_random_generator.int_uniform());
+      RandomShockRealization sr(vcov, seed_generator::get_new_seed());
       rsrs.push_back(sr);
       gr.insert(std::make_unique<RTSimulationWorker>(*this, dr, DecisionRule::horner,
                                                      num_per, start, rsrs.back()));
@@ -589,9 +590,7 @@ RandomShockRealization::get(int n, Vector &out)
                 "Wrong length of out vector in RandomShockRealization::get");
   Vector d(out.length());
   for (int i = 0; i < d.length(); i++)
-    {
-      d[i] = mtwister.normal();
-    }
+    d[i] = dis(mtwister);
   out.zeros();
   factor.multaVec(out, ConstVector(d));
 }
