@@ -39,7 +39,7 @@ function iterative_ols(eqname, params, data, range)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-global M_ oo_
+global M_ oo_ options_
 
 debug = false; % If true, prints the value of SSR for the initial guess.
 
@@ -328,7 +328,12 @@ while noconvergence
             params0__ = beta(2:end);
         end
         % Force the share of optimizing agents to be in [0,1].
-        share_of_optimizing_agents = max(min(share_of_optimizing_agents, 1.0), 0.0);
+        share_of_optimizing_agents = max(min(share_of_optimizing_agents, options_.pac.estimation.ols.share_of_optimizing_agents.ub), ...
+                                         options_.pac.estimation.ols.share_of_optimizing_agents.lb);
+        % Issue an error if the share is nor strictly positive
+        if share_of_optimizing_agents<eps()
+            error('On iteration %u the share of optimizing agents is found to be zero. Please increase the default lower bound for this parameter.', counter)
+        end
         M_.params(ipnames_(params_id_0)) = share_of_optimizing_agents;
         if is_exogenous_variables && is_any_estimated_parameter_x
             M_.params(ipnames_(params_id_3)) = params0__;
