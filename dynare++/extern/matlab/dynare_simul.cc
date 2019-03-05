@@ -113,12 +113,10 @@ extern "C" {
         ConstTwoDMatrix vcov_mat(nexog, nexog, ConstVector{vcov});
         GenShockRealization sr(vcov_mat, shocks_mat, seed);
         // simulate and copy the results
-        TwoDMatrix *res_mat
-          = dr.simulate(DecisionRule::horner, nper,
-                        ConstVector{ystart}, sr);
+        TwoDMatrix res_mat{dr.simulate(DecisionRule::emethod::horner, nper,
+                                       ConstVector{ystart}, sr)};
         TwoDMatrix res_tmp_mat{ny, nper, Vector{res}};
-        res_tmp_mat = (const TwoDMatrix &) (*res_mat);
-        delete res_mat;
+        res_tmp_mat = const_cast<const TwoDMatrix &>(res_mat);
         plhs[1] = res;
       }
     catch (const KordException &e)

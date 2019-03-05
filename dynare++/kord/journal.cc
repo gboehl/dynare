@@ -3,110 +3,85 @@
 #include "journal.hh"
 #include "kord_exception.hh"
 
-#if !defined(__MINGW32__)
-# include <sys/resource.h>
-# include <sys/utsname.h>
-#endif
-#include <cstdlib>
-#include <unistd.h>
+#include <iomanip>
+#include <cmath>
 #include <ctime>
 
-SystemResources _sysres;
-#if defined(__MINGW32__)
-//|sysconf| Win32 implementation
-/* Here we implement |sysconf| for MinGW. We implement only page size,
-   number of physial pages, and a number of available physical pages. The
-   pagesize is set to 1024 bytes, real pagesize can differ but it is not
-   important. We can do this since Windows kernel32 |GlobalMemoryStatus|
-   call returns number of bytes.
-
-   Number of online processors is not implemented and returns -1, since
-   Windows kernel32 |GetSystemInfo| call is too complicated. */
+#ifndef __MINGW32__
+# include <sys/time.h>     // For getrusage()
+# include <sys/resource.h> // For getrusage()
+# include <sys/utsname.h>  // For uname()
+# include <cstdlib>        // For getloadavg()
+# include <unistd.h>       // For sysconf()
+#else
 # ifndef NOMINMAX
-#  define NOMINMAX // Do not define "min" and "max" macros
+#  define NOMINMAX         // Do not define "min" and "max" macros
 # endif
-# include <windows.h>
+# include <windows.h>      // For GlobalMemoryStatus()
+#endif
 
-# define _SC_PAGESIZE 1
-# define _SC_PHYS_PAGES 2
-# define _SC_AVPHYS_PAGES 3
-# define _SC_NPROCESSORS_ONLN 4
+const std::chrono::time_point<std::chrono::high_resolution_clock> SystemResources::start = std::chrono::high_resolution_clock::now();
+
+/* The pagesize is set to 1024 bytes on Windows. Real pagesize can differ but
+   it is not important. We can do this since Windows kernel32
+   GlobalMemoryStatus() call returns a number of bytes. */
+long
+SystemResources::pageSize()
+{
+#ifndef __MINGW32__
+  return sysconf(_SC_PAGESIZE);
+#else
+  return 1024;
+#endif
+}
 
 long
-sysconf(int name)
+SystemResources::physicalPages()
 {
-  switch (name)
-    {
-    case _SC_PAGESIZE:
-      return 1024;
-    case _SC_PHYS_PAGES:
-      {
-        MEMORYSTATUS memstat;
-        GlobalMemoryStatus(&memstat);
-        return memstat.dwTotalPhys/1024;
-      }
-    case _SC_AVPHYS_PAGES:
-      {
-        MEMORYSTATUS memstat;
-        GlobalMemoryStatus(&memstat);
-        return memstat.dwAvailPhys/1024;
-      }
-    case _SC_NPROCESSORS_ONLN:
-      return -1;
-    default:
-      KORD_RAISE("Not implemented in Win32 sysconf.");
-      return -1;
-    }
+#ifndef __MINGW32__
+  return sysconf(_SC_PHYS_PAGES);
+#else
+  MEMORYSTATUS memstat;
+  GlobalMemoryStatus(&memstat);
+  return memstat.dwTotalPhys/1024;
+#endif
 }
-#endif
 
-#if defined(__APPLE__)
-# define _SC_PHYS_PAGES 2
-# define _SC_AVPHYS_PAGES 3
+long
+SystemResources::availablePhysicalPages()
+{
+#ifndef __MINGW32__
+  return sysconf(_SC_AVPHYS_PAGES);
+#else
+  MEMORYSTATUS memstat;
+  GlobalMemoryStatus(&memstat);
+  return memstat.dwAvailPhys/1024;
 #endif
+}
+
+long
+SystemResources::onlineProcessors()
+{
+#ifndef __MINGW32__
+  return sysconf(_SC_NPROCESSORS_ONLN);
+#else
+  return -1;
+#endif
+}
+
+long
+SystemResources::availableMemory()
+{
+  return pageSize()*availablePhysicalPages();
+}
 
 SystemResources::SystemResources()
 {
-  gettimeofday(&start, nullptr);
-}
+  auto now = std::chrono::high_resolution_clock::now();
+  std::chrono::duration<double> duration = now - start;
+  elapsed = duration.count();
 
-long int
-SystemResources::pageSize()
-{
-  return sysconf(_SC_PAGESIZE);
-}
-
-long int
-SystemResources::physicalPages()
-{
-  return sysconf(_SC_PHYS_PAGES);
-}
-
-long int
-SystemResources::onlineProcessors()
-{
-  return sysconf(_SC_NPROCESSORS_ONLN);
-}
-
-long int
-SystemResources::availableMemory()
-{
-  return pageSize()*sysconf(_SC_AVPHYS_PAGES);
-}
-
-/* Here we read the current values of resource usage. For MinGW, we
-   implement only a number of available physical memory pages. */
-
-void
-SystemResources::getRUS(double &load_avg, long int &pg_avail,
-                        double &utime, double &stime, double &elapsed,
-                        long int &idrss, long int &majflt)
-{
-  struct timeval now;
-  gettimeofday(&now, nullptr);
-  elapsed = now.tv_sec-start.tv_sec + (now.tv_usec-start.tv_usec)*1.0e-6;
-
-#if !defined(__MINGW32__)
+#ifndef __MINGW32__
   struct rusage rus;
   getrusage(RUSAGE_SELF, &rus);
   utime = rus.ru_utime.tv_sec+rus.ru_utime.tv_usec*1.0e-6;
@@ -120,26 +95,17 @@ SystemResources::getRUS(double &load_avg, long int &pg_avail,
   majflt = -1;
 #endif
 
-#define MINGCYGTMP (!defined(__MINGW32__) && !defined(__CYGWIN32__) && !defined(__CYGWIN__))
-#define MINGCYG (MINGCYGTMP && !defined(__MINGW64__) && !defined(__CYGWIN64__))
-
-#if MINGCYG
+#ifndef __MINGW32__
   getloadavg(&load_avg, 1);
 #else
   load_avg = -1.0;
 #endif
 
-  pg_avail = sysconf(_SC_AVPHYS_PAGES);
-}
-
-SystemResourcesFlash::SystemResourcesFlash()
-{
-  _sysres.getRUS(load_avg, pg_avail, utime, stime,
-                 elapsed, idrss, majflt);
+  pg_avail = availablePhysicalPages();
 }
 
 void
-SystemResourcesFlash::diff(const SystemResourcesFlash &pre)
+SystemResources::diff(const SystemResources &pre)
 {
   utime -= pre.utime;
   stime -= pre.stime;
@@ -152,50 +118,63 @@ SystemResourcesFlash::diff(const SystemResourcesFlash &pre)
 JournalRecord &
 JournalRecord::operator<<(const IntSequence &s)
 {
-  operator<<("[");
+  operator<<('[');
   for (int i = 0; i < s.size(); i++)
     {
       operator<<(s[i]);
       if (i < s.size()-1)
-        operator<<(",");
+        operator<<(',');
     }
-  operator<<("]");
+  operator<<(']');
   return *this;
 }
 
 void
-JournalRecord::writePrefix(const SystemResourcesFlash &f)
+JournalRecord::writeFloatTabular(std::ostream &s, double d, int width)
 {
-  for (char & i : prefix)
-    i = ' ';
-  double mb = 1024*1024;
-  sprintf(prefix, "%07.6g", f.elapsed);
-  sprintf(prefix+7, ":%c%05d", recChar, ord);
-  sprintf(prefix+14, ":%1.1f", f.load_avg);
-  sprintf(prefix+18, ":%05.4g", f.pg_avail*_sysres.pageSize()/mb);
-  sprintf(prefix+24, "%s", ":      : ");
-  for (int i = 0; i < 2*journal.getDepth(); i++)
-    prefix[i+33] = ' ';
-  prefix[2*journal.getDepth()+33] = '\0';
+  // Number of digits of integer part
+  int intdigits = std::max(static_cast<int>(std::floor(log10(d))+1), 1);
+
+  int prec = std::max(width - 1 - intdigits, 0);
+  s << std::fixed << std::setw(width) << std::setprecision(prec) << d;
 }
 
 void
-JournalRecordPair::writePrefixForEnd(const SystemResourcesFlash &f)
+JournalRecord::writePrefix(const SystemResources &f)
 {
-  for (char & i : prefix_end)
-    i = ' ';
-  double mb = 1024*1024;
-  SystemResourcesFlash difnow;
-  difnow.diff(f);
-  sprintf(prefix_end, "%07.6g", f.elapsed+difnow.elapsed);
-  sprintf(prefix_end+7, ":E%05d", ord);
-  sprintf(prefix_end+14, ":%1.1f", difnow.load_avg);
-  sprintf(prefix_end+18, ":%05.4g", difnow.pg_avail*_sysres.pageSize()/mb);
-  sprintf(prefix_end+24, ":%06.5g", difnow.majflt*_sysres.pageSize()/mb);
-  sprintf(prefix_end+31, "%s", ": ");
+  constexpr double mb = 1024*1024;
+  std::ostringstream s;
+  s << std::setfill('0');
+  writeFloatTabular(s, f.elapsed, 7);
+  s  << ':' << recChar << std::setw(5) << ord << ':';
+  writeFloatTabular(s, f.load_avg, 3);
+  s << ':';
+  writeFloatTabular(s, f.pg_avail*SystemResources::pageSize()/mb, 5);
+  s << ":      : ";
   for (int i = 0; i < 2*journal.getDepth(); i++)
-    prefix_end[i+33] = ' ';
-  prefix_end[2*journal.getDepth()+33] = '\0';
+    s << ' ';
+  prefix = s.str();
+}
+
+void
+JournalRecordPair::writePrefixForEnd(const SystemResources &f)
+{
+  constexpr double mb = 1024*1024;
+  SystemResources difnow;
+  difnow.diff(f);
+  std::ostringstream s;
+  s << std::setfill('0');
+  writeFloatTabular(s, f.elapsed+difnow.elapsed, 7);
+  s << ":E" << std::setw(5) << ord << ':';
+  writeFloatTabular(s, difnow.load_avg, 3);
+  s << ':';
+  writeFloatTabular(s, difnow.pg_avail*SystemResources::pageSize()/mb, 5);
+  s << ':';
+  writeFloatTabular(s, difnow.majflt*SystemResources::pageSize()/mb, 6);
+  s << ": ";
+  for (int i = 0; i < 2*journal.getDepth(); i++)
+    s << ' ';
+  prefix_end = s.str();
 }
 
 JournalRecordPair::~JournalRecordPair()
@@ -222,39 +201,32 @@ endrec(JournalRecord &rec)
 void
 Journal::printHeader()
 {
-  (*this)<< "This is Dynare++, Copyright (C) 2004-2011, Ondra Kamenik\n"
-         << "Dynare++ comes with ABSOLUTELY NO WARRANTY and is distributed under\n"
-         << "GPL: modules integ, tl, kord, sylv, src, extern and documentation\n"
-         << "LGPL: modules parser, utils\n"
-         << " for GPL  see http://www.gnu.org/licenses/gpl.html\n"
-         << " for LGPL see http://www.gnu.org/licenses/lgpl.html\n"
-         << "\n\n";
-
-#if !defined(__MINGW32__)
+  *this << "This is Dynare++, Copyright (C) 2004-2011, Ondra Kamenik\n"
+        << "Dynare++ comes with ABSOLUTELY NO WARRANTY and is distributed under\n"
+        << "GPL: modules integ, tl, kord, sylv, src, extern and documentation\n"
+        << "LGPL: modules parser, utils\n"
+        << " for GPL  see http://www.gnu.org/licenses/gpl.html\n"
+        << " for LGPL see http://www.gnu.org/licenses/lgpl.html\n"
+        << "\n\n"
+        << "System info: ";
+#ifndef __MINGW32__
   utsname info;
   uname(&info);
-  (*this)<< "System info: ";
-  (*this)<< info.sysname << " " << info.release << " " << info.version << " ";
-  (*this)<< info.machine << ", processors online: " << _sysres.onlineProcessors();
-
-  (*this)<< "\n\nStart time: ";
-  char ts[100];
-  time_t curtime = time(nullptr);
-  tm loctime;
-  localtime_r(&curtime, &loctime);
-  asctime_r(&loctime, ts);
-  (*this)<< ts << "\n";
+  *this << info.sysname << " " << info.release << " " << info.version << " "
+        << info.machine << ", processors online: " << SystemResources::onlineProcessors();
 #else
-  (*this) << "System info: (not implemented for MINGW)\n";
-  (*this) << "Start time:  (not implemented for MINGW)\n\n";
+  *this << "(not implemented for MinGW)";
 #endif
-
-  (*this)<< "  ------ elapsed time (seconds)                     \n";
-  (*this)<< "  |       ------ record unique identifier           \n";
-  (*this)<< "  |       |     ------ load average                 \n";
-  (*this)<< "  |       |     |    ------ available memory (MB)   \n";
-  (*this)<< "  |       |     |    |     ------  major faults (MB)\n";
-  (*this)<< "  |       |     |    |     |                        \n";
-  (*this)<< "  V       V     V    V     V                        \n";
-  (*this)<< "\n";
+  *this << "\n\nStart time: ";
+  std::time_t t = std::time(nullptr);
+  *this << std::put_time(std::localtime(&t), "%c %Z")
+        << "\n\n"
+        << "  ------ elapsed time (seconds)                     \n"
+        << "  |       ------ record unique identifier           \n"
+        << "  |       |     ------ load average                 \n"
+        << "  |       |     |    ------ available memory (MB)   \n"
+        << "  |       |     |    |     ------  major faults (MB)\n"
+        << "  |       |     |    |     |                        \n"
+        << "  V       V     V    V     V                        \n"
+        << "\n";
 }

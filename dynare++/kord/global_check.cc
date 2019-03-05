@@ -69,7 +69,7 @@ ResidFunction::setYU(const ConstVector &ys, const ConstVector &xx)
   ystar = new Vector(ys);
   u = new Vector(xx);
   yplus = new Vector(model->numeq());
-  approx.getFoldDecisionRule().evaluate(DecisionRule::horner,
+  approx.getFoldDecisionRule().evaluate(DecisionRule::emethod::horner,
                                         *yplus, *ystar, *u);
 
   // make a tensor polynomial of in-place subtensors from decision rule
@@ -309,10 +309,9 @@ GlobalChecker::checkOnEllipseAndSave(mat_t *fd, const char *prefix,
   /* Here we set |ycovfac| to the symmetric Schur decomposition factor of
      a submatrix of covariances of all endogenous variables. The submatrix
      corresponds to state variables (predetermined plus both). */
-  TwoDMatrix *ycov = approx.calcYCov();
-  TwoDMatrix ycovpred((const TwoDMatrix &)*ycov, model.nstat(), model.nstat(),
+  TwoDMatrix ycov{approx.calcYCov()};
+  TwoDMatrix ycovpred((const TwoDMatrix &) ycov, model.nstat(), model.nstat(),
                       model.npred()+model.nboth(), model.npred()+model.nboth());
-  delete ycov;
   SymSchurDecomp ssd(ycovpred);
   ssd.correctDefinitness(1.e-05);
   TwoDMatrix ycovfac(ycovpred.nrows(), ycovpred.ncols());
@@ -400,18 +399,16 @@ GlobalChecker::checkAlongSimulationAndSave(mat_t *fd, const char *prefix,
   pa << "Calculating errors at " << m
      << " simulated points" << endrec;
   RandomShockRealization sr(model.getVcov(), seed_generator::get_new_seed());
-  TwoDMatrix *y = approx.getFoldDecisionRule().simulate(DecisionRule::horner,
-                                                        m, model.getSteady(), sr);
+  TwoDMatrix y{approx.getFoldDecisionRule().simulate(DecisionRule::emethod::horner,
+                                                     m, model.getSteady(), sr)};
   TwoDMatrix x(model.nexog(), m);
   x.zeros();
   TwoDMatrix out(model.numeq(), m);
-  check(max_evals, *y, x, out);
+  check(max_evals, y, x, out);
 
   char tmp[100];
   sprintf(tmp, "%s_simul_points", prefix);
-  y->writeMat(fd, tmp);
+  y.writeMat(fd, tmp);
   sprintf(tmp, "%s_simul_errors", prefix);
   out.writeMat(fd, tmp);
-
-  delete y;
 }

@@ -6,6 +6,7 @@
 #define DYNARE_EXCEPTION_H
 
 #include <string>
+#include <cstring>
 
 class DynareException
 {

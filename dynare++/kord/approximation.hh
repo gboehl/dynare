@@ -55,6 +55,8 @@
 #include "korder.hh"
 #include "journal.hh"
 
+#include <memory>
+
 /* This class is used to calculate derivatives by faa Di Bruno of the
    $$f(g^{**}(g^*(y^*,u,\sigma),u',\sigma),g(y^*,u,\sigma),y^*,u)$$ with
    respect $u'$. In order to keep it as simple as possible, the class
@@ -108,10 +110,10 @@ class Approximation
 {
   DynamicModel &model;
   Journal &journal;
-  FGSContainer *rule_ders;
-  FGSContainer *rule_ders_ss;
-  FoldDecisionRule *fdr;
-  UnfoldDecisionRule *udr;
+  std::unique_ptr<FGSContainer> rule_ders;
+  std::unique_ptr<FGSContainer> rule_ders_ss;
+  std::unique_ptr<FoldDecisionRule> fdr;
+  std::unique_ptr<UnfoldDecisionRule> udr;
   const PartitionY ypart;
   const FNormalMoments mom;
   IntSequence nvs;
@@ -121,11 +123,9 @@ class Approximation
   TwoDMatrix ss;
 public:
   Approximation(DynamicModel &m, Journal &j, int ns, bool dr_centr, double qz_crit);
-  virtual
-  ~Approximation();
 
-  const FoldDecisionRule&getFoldDecisionRule() const;
-  const UnfoldDecisionRule&getUnfoldDecisionRule() const;
+  const FoldDecisionRule &getFoldDecisionRule() const;
+  const UnfoldDecisionRule &getUnfoldDecisionRule() const;
   const TwoDMatrix &
   getSS() const
   {
@@ -138,16 +138,16 @@ public:
   }
 
   void walkStochSteady();
-  TwoDMatrix *calcYCov() const;
-  const FGSContainer *
+  TwoDMatrix calcYCov() const;
+  const FGSContainer &
   get_rule_ders() const
   {
-    return rule_ders;
+    return *rule_ders;
   }
-  const FGSContainer *
+  const FGSContainer &
   get_rule_ders_ss() const
   {
-    return rule_ders;
+    return *rule_ders_ss;
   }
 protected:
   void approxAtSteady();

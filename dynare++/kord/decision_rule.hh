@@ -23,7 +23,9 @@
 #include "korder.hh"
 #include "normal_conjugate.hh"
 
+#include <memory>
 #include <random>
+#include <string>
 
 /* This is a general interface to a shock realizations. The interface
    has only one method returning the shock realizations at the given
@@ -33,8 +35,7 @@
 class ShockRealization
 {
 public:
-  virtual ~ShockRealization()
-  = default;
+  virtual ~ShockRealization() = default;
   virtual void get(int n, Vector &out) = 0;
   virtual int numShocks() const = 0;
 };
@@ -55,19 +56,18 @@ public:
 class DecisionRule
 {
 public:
-  enum emethod { horner, trad };
-  virtual ~DecisionRule()
-  = default;
-  virtual TwoDMatrix *simulate(emethod em, int np, const ConstVector &ystart,
-                               ShockRealization &sr) const = 0;
+  enum class emethod { horner, trad };
+  virtual ~DecisionRule() = default;
+  virtual TwoDMatrix simulate(emethod em, int np, const ConstVector &ystart,
+                              ShockRealization &sr) const = 0;
   virtual void eval(emethod em, Vector &out, const ConstVector &v) const = 0;
   virtual void evaluate(emethod em, Vector &out, const ConstVector &ys,
                         const ConstVector &u) const = 0;
-  virtual void writeMat(mat_t *fd, const char *prefix) const = 0;
-  virtual DecisionRule *centralizedClone(const Vector &fixpoint) const = 0;
-  virtual const Vector&getSteady() const = 0;
+  virtual void writeMat(mat_t *fd, const std::string &prefix) const = 0;
+  virtual std::unique_ptr<DecisionRule> centralizedClone(const Vector &fixpoint) const = 0;
+  virtual const Vector &getSteady() const = 0;
   virtual int nexog() const = 0;
-  virtual const PartitionY&getYPart() const = 0;
+  virtual const PartitionY &getYPart() const = 0;
 };
 
 /* The main purpose of this class is to implement |DecisionRule|
@@ -131,12 +131,12 @@ public:
   {
     return ysteady;
   }
-  TwoDMatrix *simulate(emethod em, int np, const ConstVector &ystart,
-                       ShockRealization &sr) const override;
+  TwoDMatrix simulate(emethod em, int np, const ConstVector &ystart,
+                      ShockRealization &sr) const override;
   void evaluate(emethod em, Vector &out, const ConstVector &ys,
                 const ConstVector &u) const override;
-  DecisionRule *centralizedClone(const Vector &fixpoint) const override;
-  void writeMat(mat_t *fd, const char *prefix) const override;
+  std::unique_ptr<DecisionRule> centralizedClone(const Vector &fixpoint) const override;
+  void writeMat(mat_t *fd, const std::string &prefix) const override;
 
   int
   nexog() const override
@@ -279,13 +279,13 @@ DecisionRuleImpl<t>::centralize(const DecisionRuleImpl &dr)
    |ysteady| is added to all columns of the result. */
 
 template <int t>
-TwoDMatrix *
+TwoDMatrix
 DecisionRuleImpl<t>::simulate(emethod em, int np, const ConstVector &ystart,
                               ShockRealization &sr) const
 {
   KORD_RAISE_IF(ysteady.length() != ystart.length(),
                 "Start and steady lengths differ in DecisionRuleImpl::simulate");
-  auto *res = new TwoDMatrix(ypart.ny(), np);
+  TwoDMatrix res(ypart.ny(), np);
 
   // initialize vectors and subvectors for simulation
   /* Here allocate the stack vector $(\Delta y^*, u)$, define the
@@ -303,7 +303,7 @@ DecisionRuleImpl<t>::simulate(emethod em, int np, const ConstVector &ystart,
   dy = ystart_pred;
   dy.add(-1.0, ysteady_pred);
   sr.get(0, u);
-  Vector out{res->getCol(0)};
+  Vector out{res.getCol(0)};
   eval(em, out, dyu);
 
   // perform all other steps of simulations
@@ -312,17 +312,17 @@ DecisionRuleImpl<t>::simulate(emethod em, int np, const ConstVector &ystart,
   int i = 1;
   while (i < np)
     {
-      ConstVector ym{res->getCol(i-1)};
+      ConstVector ym{res.getCol(i-1)};
       ConstVector dym(ym, ypart.nstat, ypart.nys());
       dy = dym;
       sr.get(i, u);
-      Vector out{res->getCol(i)};
+      Vector out{res.getCol(i)};
       eval(em, out, dyu);
       if (!out.isFinite())
         {
           if (i+1 < np)
             {
-              TwoDMatrix rest(*res, i+1, np-i-1);
+              TwoDMatrix rest(res, i+1, np-i-1);
               rest.zeros();
             }
           break;
@@ -335,7 +335,7 @@ DecisionRuleImpl<t>::simulate(emethod em, int np, const ConstVector &ystart,
      and leave the padded columns to zero. */
   for (int j = 0; j < i; j++)
     {
-      Vector col{res->getCol(j)};
+      Vector col{res.getCol(j)};
       col.add(1.0, ysteady);
     }
 
@@ -371,10 +371,10 @@ DecisionRuleImpl<t>::evaluate(emethod em, Vector &out, const ConstVector &ys,
    centralized constructor. */
 
 template <int t>
-DecisionRule *
+std::unique_ptr<DecisionRule>
 DecisionRuleImpl<t>::centralizedClone(const Vector &fixpoint) const
 {
-  return new DecisionRuleImpl<t>(*this, fixpoint);
+  return std::make_unique<DecisionRuleImpl<t>>(*this, fixpoint);
 }
 
 /* Here we only encapsulate two implementations to one, deciding
@@ -384,7 +384,7 @@ template <int t>
 void
 DecisionRuleImpl<t>::eval(emethod em, Vector &out, const ConstVector &v) const
 {
-  if (em == DecisionRule::horner)
+  if (em == emethod::horner)
     _Tparent::evalHorner(out, v);
   else
     _Tparent::evalTrad(out, v);
@@ -394,14 +394,12 @@ DecisionRuleImpl<t>::eval(emethod em, Vector &out, const ConstVector &v) const
 
 template <int t>
 void
-DecisionRuleImpl<t>::writeMat(mat_t *fd, const char *prefix) const
+DecisionRuleImpl<t>::writeMat(mat_t *fd, const std::string &prefix) const
 {
   ctraits<t>::Tpol::writeMat(fd, prefix);
   TwoDMatrix dum(ysteady.length(), 1);
   dum.getData() = ysteady;
-  char tmp[100];
-  sprintf(tmp, "%s_ss", prefix);
-  ConstTwoDMatrix(dum).writeMat(fd, tmp);
+  ConstTwoDMatrix(dum).writeMat(fd, prefix + "_ss");
 }
 
 /* This is exactly the same as |DecisionRuleImpl<KOrder::fold>|. The
@@ -483,20 +481,18 @@ template <int t>
 class DRFixPoint : public ctraits<t>::Tpol
 {
   using _Tparent = typename ctraits<t>::Tpol;
-  static int max_iter;
-  static int max_newton_iter;
-  static int newton_pause;
-  static double tol;
+  constexpr static int max_iter = 10000;
+  constexpr static int max_newton_iter = 50;
+  constexpr static int newton_pause = 100;
+  constexpr static double tol = 1e-10;
   const Vector ysteady;
   const PartitionY ypart;
-  _Tparent *bigf;
-  _Tparent *bigfder;
+  std::unique_ptr<_Tparent> bigf;
+  std::unique_ptr<_Tparent> bigfder;
 public:
   using emethod = typename DecisionRule::emethod;
   DRFixPoint(const _Tg &g, const PartitionY &yp,
              const Vector &ys, double sigma);
-  
-  ~DRFixPoint() override;
 
   bool calcFixPoint(emethod em, Vector &out);
 
@@ -534,24 +530,15 @@ template <int t>
 DRFixPoint<t>::DRFixPoint(const _Tg &g, const PartitionY &yp,
                           const Vector &ys, double sigma)
   : ctraits<t>::Tpol(yp.ny(), yp.nys()),
-  ysteady(ys), ypart(yp), bigf(nullptr), bigfder(nullptr)
+  ysteady(ys), ypart(yp)
 {
   fillTensors(g, sigma);
   _Tparent yspol(ypart.nstat, ypart.nys(), *this);
-  bigf = new _Tparent((const _Tparent &) yspol);
+  bigf = std::make_unique<_Tparent>(const_cast<const _Tparent &>(yspol));
   _Ttensym &frst = bigf->get(Symmetry{1});
   for (int i = 0; i < ypart.nys(); i++)
     frst.get(i, i) = frst.get(i, i) - 1;
-  bigfder = new _Tparent(*bigf, 0);
-}
-
-template <int t>
-DRFixPoint<t>::~DRFixPoint()
-{
-  if (bigf)
-    delete bigf;
-  if (bigfder)
-    delete bigfder;
+  bigfder = std::make_unique<_Tparent>(*bigf, 0);
 }
 
 /* Here we fill the tensors for the |DRFixPoint| class. We ignore the
@@ -602,7 +589,7 @@ bool
 DRFixPoint<t>::solveNewton(Vector &y)
 {
   const double urelax_threshold = 1.e-5;
-  Vector sol((const Vector &)y);
+  Vector sol(const_cast<const Vector &>(y));
   Vector delta(y.length());
   newton_iter_last = 0;
   bool delta_finite = true;
@@ -632,7 +619,7 @@ DRFixPoint<t>::solveNewton(Vector &y)
           urelax = 1.0;
           while (!urelax_found && urelax > urelax_threshold)
             {
-              Vector soltmp((const Vector &)sol);
+              Vector soltmp(const_cast<const Vector &>(sol));
               soltmp.add(-urelax, delta);
               Vector f(sol.length());
               bigf->evalHorner(f, soltmp);
@@ -656,7 +643,7 @@ DRFixPoint<t>::solveNewton(Vector &y)
   newton_iter_total += newton_iter_last;
   if (!converged)
     newton_iter_last = 0;
-  y = (const Vector &) sol;
+  y = const_cast<const Vector &>(sol);
   return converged;
 }
 
@@ -727,16 +714,14 @@ protected:
   int num_y;
   int num_per;
   int num_burn;
-  std::vector<TwoDMatrix *> data;
-  std::vector<ExplicitShockRealization *> shocks;
+  std::vector<TwoDMatrix> data;
+  std::vector<ExplicitShockRealization> shocks;
   std::vector<ConstVector> start;
 public:
   SimResults(int ny, int nper, int nburn = 0)
     : num_y(ny), num_per(nper), num_burn(nburn)
   {
   }
-  virtual
-  ~SimResults();
   void simulate(int num_sim, const DecisionRule &dr, const Vector &start,
                 const TwoDMatrix &vcov, Journal &journal);
   void simulate(int num_sim, const DecisionRule &dr, const Vector &start,
@@ -754,17 +739,17 @@ public:
   int
   getNumSets() const
   {
-    return (int) data.size();
+    return static_cast<int>(data.size());
   }
   const TwoDMatrix &
   getData(int i) const
   {
-    return *(data[i]);
+    return data[i];
   }
   const ExplicitShockRealization &
   getShocks(int i) const
   {
-    return *(shocks[i]);
+    return shocks[i];
   }
   const ConstVector &
   getStart(int i) const
@@ -772,9 +757,9 @@ public:
     return start[i];
   }
 
-  bool addDataSet(TwoDMatrix *d, ExplicitShockRealization *sr, const ConstVector &st);
-  void writeMat(const char *base, const char *lname) const;
-  void writeMat(mat_t *fd, const char *lname) const;
+  bool addDataSet(const TwoDMatrix &d, const ExplicitShockRealization &sr, const ConstVector &st);
+  void writeMat(const std::string &base, const std::string &lname) const;
+  void writeMat(mat_t *fd, const std::string &lname) const;
 };
 
 /* This does the same as |SimResults| plus it calculates means and
@@ -792,7 +777,7 @@ public:
   }
   void simulate(int num_sim, const DecisionRule &dr, const Vector &start,
                 const TwoDMatrix &vcov, Journal &journal);
-  void writeMat(mat_t *fd, const char *lname) const;
+  void writeMat(mat_t *fd, const std::string &lname) const;
 protected:
   void calcMean();
   void calcVcov();
@@ -814,7 +799,7 @@ public:
   }
   void simulate(int num_sim, const DecisionRule &dr, const Vector &start,
                 const TwoDMatrix &vcov, Journal &journal);
-  void writeMat(mat_t *fd, const char *lname) const;
+  void writeMat(mat_t *fd, const std::string &lname) const;
 protected:
   void calcMean();
   void calcVariance();
@@ -846,7 +831,7 @@ public:
   }
   void simulate(const DecisionRule &dr, Journal &journal);
   void simulate(const DecisionRule &dr);
-  void writeMat(mat_t *fd, const char *lname) const;
+  void writeMat(mat_t *fd, const std::string &lname) const;
 protected:
   void calcMeans();
   void calcVariances();
@@ -881,7 +866,7 @@ public:
                 const TwoDMatrix &vcov, Journal &journal);
   void simulate(int num_sim, const DecisionRule &dr, const Vector &start,
                 const TwoDMatrix &vcov);
-  void writeMat(mat_t *fd, const char *lname);
+  void writeMat(mat_t *fd, const std::string &lname);
 };
 
 /* For each shock, this simulates plus and minus impulse. The class
@@ -901,15 +886,14 @@ public:
 class DynamicModel;
 class IRFResults
 {
-  std::vector<SimResultsIRF *> irf_res;
+  std::vector<SimResultsIRF> irf_res;
   const DynamicModel &model;
   std::vector<int> irf_list_ind;
 public:
   IRFResults(const DynamicModel &mod, const DecisionRule &dr,
              const SimResults &control, std::vector<int> ili,
              Journal &journal);
-  ~IRFResults();
-  void writeMat(mat_t *fd, const char *prefix) const;
+  void writeMat(mat_t *fd, const std::string &prefix) const;
 };
 
 /* This worker simulates the given decision rule and inserts the result
@@ -1003,12 +987,6 @@ public:
   {
     schurFactor(v);
   }
-  RandomShockRealization(const RandomShockRealization &sr)
-    : mtwister(sr.mtwister), factor(sr.factor)
-  {
-  }
-  ~RandomShockRealization()
-  override = default;
   void get(int n, Vector &out) override;
   int
   numShocks() const override
@@ -1027,12 +1005,8 @@ class ExplicitShockRealization : virtual public ShockRealization
 {
   TwoDMatrix shocks;
 public:
-  ExplicitShockRealization(const ConstTwoDMatrix &sh)
+  explicit ExplicitShockRealization(const ConstTwoDMatrix &sh)
     : shocks(sh)
-  {
-  }
-  ExplicitShockRealization(const ExplicitShockRealization &sr)
-    : shocks(sr.shocks)
   {
   }
   ExplicitShockRealization(ShockRealization &sr, int num_per);
@@ -1043,7 +1017,7 @@ public:
     return shocks.nrows();
   }
   const TwoDMatrix &
-  getShocks()
+  getShocks() const
   {
     return shocks;
   }

@@ -10,8 +10,7 @@
 ZAuxContainer::ZAuxContainer(const _Ctype *gss, int ngss, int ng, int ny, int nu)
   : StackContainer<FGSTensor>(4, 1)
 {
-  stack_sizes[0] = ngss; stack_sizes[1] = ng;
-  stack_sizes[2] = ny; stack_sizes[3] = nu;
+  stack_sizes = { ngss, ng, ny, nu };
   conts[0] = gss;
   calculateOffsets();
 }
@@ -32,34 +31,21 @@ ZAuxContainer::getType(int i, const Symmetry &s) const
 }
 
 Approximation::Approximation(DynamicModel &m, Journal &j, int ns, bool dr_centr, double qz_crit)
-  : model(m), journal(j), rule_ders(nullptr), rule_ders_ss(nullptr), fdr(nullptr), udr(nullptr),
+  : model(m), journal(j),
     ypart(model.nstat(), model.npred(), model.nboth(), model.nforw()),
-    mom(UNormalMoments(model.order(), model.getVcov())), nvs(4), steps(ns),
+    mom(UNormalMoments(model.order(), model.getVcov())),
+    nvs{ypart.nys(), model.nexog(), model.nexog(), 1 },
+    steps(ns),
     dr_centralize(dr_centr), qz_criterium(qz_crit), ss(ypart.ny(), steps+1)
 {
-  nvs[0] = ypart.nys(); nvs[1] = model.nexog();
-  nvs[2] = model.nexog(); nvs[3] = 1;
-
   ss.nans();
-}
-
-Approximation::~Approximation()
-{
-  if (rule_ders_ss)
-    delete rule_ders_ss;
-  if (rule_ders)
-    delete rule_ders;
-  if (fdr)
-    delete fdr;
-  if (udr)
-    delete udr;
 }
 
 /* This just returns |fdr| with a check that it is created. */
 const FoldDecisionRule &
 Approximation::getFoldDecisionRule() const
 {
-  KORD_RAISE_IF(fdr == nullptr,
+  KORD_RAISE_IF(!fdr,
                 "Folded decision rule has not been created in Approximation::getFoldDecisionRule");
   return *fdr;
 }
@@ -68,7 +54,7 @@ Approximation::getFoldDecisionRule() const
 const UnfoldDecisionRule &
 Approximation::getUnfoldDecisionRule() const
 {
-  KORD_RAISE_IF(udr == nullptr,
+  KORD_RAISE_IF(!udr,
                 "Unfolded decision rule has not been created in Approximation::getUnfoldDecisionRule");
   return *udr;
 }
@@ -147,7 +133,7 @@ Approximation::walkStochSteady()
   model.solveDeterministicSteady();
   approxAtSteady();
   Vector steady0{ss.getCol(0)};
-  steady0 = (const Vector &) model.getSteady();
+  steady0 = model.getSteady();
 
   double sigma_so_far = 0.0;
   double dsigma = (steps == 0) ? 0.0 : 1.0/steps;
@@ -156,14 +142,14 @@ Approximation::walkStochSteady()
       JournalRecordPair pa(journal);
       pa << "Approximation about stochastic steady for sigma=" << sigma_so_far+dsigma << endrec;
 
-      Vector last_steady((const Vector &)model.getSteady());
+      Vector last_steady(model.getSteady());
 
       // calculate fix-point of the last rule for |dsigma|
       /* We form the |DRFixPoint| object from the last rule with
          $\sigma=dsigma$. Then we save the steady state to |ss|. The new steady
          is also put to |model.getSteady()|. */
       DRFixPoint<KOrder::fold> fp(*rule_ders, ypart, model.getSteady(), dsigma);
-      bool converged = fp.calcFixPoint(DecisionRule::horner, model.getSteady());
+      bool converged = fp.calcFixPoint(DecisionRule::emethod::horner, model.getSteady());
       JournalRecord rec(journal);
       rec << "Fix point calcs: iter=" << fp.getNumIter() << ", newton_iter="
           << fp.getNewtonTotalIter() << ", last_newton_iter=" << fp.getNewtonLastIter() << ".";
@@ -175,14 +161,14 @@ Approximation::walkStochSteady()
           KORD_RAISE_X("Fix point calculation not converged", KORD_FP_NOT_CONV);
         }
       Vector steadyi{ss.getCol(i)};
-      steadyi = (const Vector &) model.getSteady();
+      steadyi = model.getSteady();
 
       // calculate |hh| as expectations of the last $g^{**}$
       /* We form the steady state shift |dy|, which is the new steady state
          minus the old steady state. Then we create |StochForwardDerivs|
          object, which calculates the derivatives of $g^{**}$ expectations at
          new sigma and new steady. */
-      Vector dy((const Vector &)model.getSteady());
+      Vector dy(model.getSteady());
       dy.add(-1.0, last_steady);
 
       StochForwardDerivs<KOrder::fold> hh(ypart, model.nexog(), *rule_ders_ss, mom, dy,
@@ -197,9 +183,8 @@ Approximation::walkStochSteady()
       KOrderStoch korder_stoch(ypart, model.nexog(), model.getModelDerivatives(),
                                hh, journal);
       for (int d = 1; d <= model.order(); d++)
-        {
-          korder_stoch.performStep<KOrder::fold>(d);
-        }
+        korder_stoch.performStep<KOrder::fold>(d);
+
       saveRuleDerivs(korder_stoch.getFoldDers());
 
       check(sigma_so_far+dsigma);
@@ -207,24 +192,14 @@ Approximation::walkStochSteady()
     }
 
   // construct the resulting decision rules
-  if (fdr)
-    {
-      delete fdr;
-      fdr = nullptr;
-    }
-  if (udr)
-    {
-      delete udr;
-      udr = nullptr;
-    }
-
-  fdr = new FoldDecisionRule(*rule_ders, ypart, model.nexog(),
-                             model.getSteady(), 1.0-sigma_so_far);
+  udr.reset();
+  fdr = std::make_unique<FoldDecisionRule>(*rule_ders, ypart, model.nexog(),
+                                           model.getSteady(), 1.0-sigma_so_far);
   if (steps == 0 && dr_centralize)
     {
       // centralize decision rule for zero steps
       DRFixPoint<KOrder::fold> fp(*rule_ders, ypart, model.getSteady(), 1.0);
-      bool converged = fp.calcFixPoint(DecisionRule::horner, model.getSteady());
+      bool converged = fp.calcFixPoint(DecisionRule::emethod::horner, model.getSteady());
       JournalRecord rec(journal);
       rec << "Fix point calcs: iter=" << fp.getNumIter() << ", newton_iter="
           << fp.getNewtonTotalIter() << ", last_newton_iter=" << fp.getNewtonLastIter() << ".";
@@ -239,9 +214,7 @@ Approximation::walkStochSteady()
       {
         JournalRecordPair recp(journal);
         recp << "Centralizing about fix-point." << endrec;
-        FoldDecisionRule *dr_backup = fdr;
-        fdr = new FoldDecisionRule(*dr_backup, model.getSteady());
-        delete dr_backup;
+        fdr = std::make_unique<FoldDecisionRule>(*fdr, model.getSteady());
       }
     }
 }
@@ -254,14 +227,9 @@ Approximation::walkStochSteady()
 void
 Approximation::saveRuleDerivs(const FGSContainer &g)
 {
-  if (rule_ders)
-    {
-      delete rule_ders;
-      delete rule_ders_ss;
-    }
-  rule_ders = new FGSContainer(g);
-  rule_ders_ss = new FGSContainer(4);
-  for (auto & run : (*rule_ders))
+  rule_ders = std::make_unique<FGSContainer>(g);
+  rule_ders_ss = std::make_unique<FGSContainer>(4);
+  for (auto &run : *rule_ders)
     {
       auto ten = std::make_unique<FGSTensor>(ypart.nstat+ypart.npred, ypart.nyss(), *(run.second));
       rule_ders_ss->insert(std::move(ten));
@@ -287,7 +255,7 @@ Approximation::calcStochShift(Vector &out, double at_sigma) const
                 "Wrong length of output vector for Approximation::calcStochShift");
   out.zeros();
 
-  ZAuxContainer zaux(rule_ders_ss, ypart.nyss(), ypart.ny(),
+  ZAuxContainer zaux(rule_ders_ss.get(), ypart.nyss(), ypart.ny(),
                      ypart.nys(), model.nexog());
 
   int dfac = 1;
@@ -298,7 +266,7 @@ Approximation::calcStochShift(Vector &out, double at_sigma) const
           Symmetry sym{0, d, 0, 0};
 
           // calculate $F_{u'^d}$ via |ZAuxContainer|
-          FGSTensor *ten = new FGSTensor(ypart.ny(), TensorDimens(sym, nvs));
+          auto ten = std::make_unique<FGSTensor>(ypart.ny(), TensorDimens(sym, nvs));
           ten->zeros();
           for (int l = 1; l <= d; l++)
             {
@@ -307,13 +275,11 @@ Approximation::calcStochShift(Vector &out, double at_sigma) const
             }
 
           // multiply with shocks and add to result
-          FGSTensor *tmp = new FGSTensor(ypart.ny(), TensorDimens(Symmetry{0, 0, 0, 0}, nvs));
+          auto tmp = std::make_unique<FGSTensor>(ypart.ny(), TensorDimens(Symmetry{0, 0, 0, 0}, nvs));
           tmp->zeros();
           ten->contractAndAdd(1, *tmp, mom.get(Symmetry{d}));
 
           out.add(pow(at_sigma, d)/dfac, tmp->getData());
-          delete ten;
-          delete tmp;
         }
     }
 }
@@ -359,7 +325,7 @@ Approximation::check(double at_sigma) const
    So we invoke the Sylvester solver for the first dimension with $A=I$,
    $B=-G$, $C=G^T$ and $D=g_u\Sigma g_u^T$. */
 
-TwoDMatrix *
+TwoDMatrix
 Approximation::calcYCov() const
 {
   const TwoDMatrix &gy = rule_ders->get(Symmetry{1, 0, 0, 0});
@@ -367,7 +333,7 @@ Approximation::calcYCov() const
   TwoDMatrix G(model.numeq(), model.numeq());
   G.zeros();
   G.place(gy, 0, model.nstat());
-  TwoDMatrix B((const TwoDMatrix &)G);
+  TwoDMatrix B(const_cast<const TwoDMatrix &>(G));
   B.mult(-1.0);
   TwoDMatrix C(transpose(G));
   TwoDMatrix A(model.numeq(), model.numeq());
@@ -375,10 +341,10 @@ Approximation::calcYCov() const
   for (int i = 0; i < model.numeq(); i++)
     A.get(i, i) = 1.0;
 
-  TwoDMatrix *X = new TwoDMatrix((gu * model.getVcov()) * transpose(gu));
+  TwoDMatrix X((gu * model.getVcov()) * transpose(gu));
 
   GeneralSylvester gs(1, model.numeq(), model.numeq(), 0,
-                      A.getData(), B.getData(), C.getData(), X->getData());
+                      A.getData(), B.getData(), C.getData(), X.getData());
   gs.solve();
 
   return X;

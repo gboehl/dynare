@@ -13,29 +13,12 @@
 #include <utility>
 #include <memory>
 
-template <>
-int DRFixPoint<KOrder::fold>::max_iter = 10000;
-template <>
-int DRFixPoint<KOrder::unfold>::max_iter = 10000;
-template <>
-double DRFixPoint<KOrder::fold>::tol = 1.e-10;
-template <>
-double DRFixPoint<KOrder::unfold>::tol = 1.e-10;
-template <>
-int DRFixPoint<KOrder::fold>::max_newton_iter = 50;
-template <>
-int DRFixPoint<KOrder::unfold>::max_newton_iter = 50;
-template <>
-int DRFixPoint<KOrder::fold>::newton_pause = 100;
-template <>
-int DRFixPoint<KOrder::unfold>::newton_pause = 100;
-
 // |FoldDecisionRule| conversion from |UnfoldDecisionRule|
 FoldDecisionRule::FoldDecisionRule(const UnfoldDecisionRule &udr)
   : DecisionRuleImpl<KOrder::fold>(ctraits<KOrder::fold>::Tpol(udr.nrows(), udr.nvars()),
                                    udr.ypart, udr.nu, udr.ysteady)
 {
-  for (const auto & it : udr)
+  for (const auto &it : udr)
     insert(std::make_unique<ctraits<KOrder::fold>::Ttensym>(*(it.second)));
 }
 
@@ -44,17 +27,8 @@ UnfoldDecisionRule::UnfoldDecisionRule(const FoldDecisionRule &fdr)
   : DecisionRuleImpl<KOrder::unfold>(ctraits<KOrder::unfold>::Tpol(fdr.nrows(), fdr.nvars()),
                                      fdr.ypart, fdr.nu, fdr.ysteady)
 {
-  for (const auto & it : fdr)
+  for (const auto &it : fdr)
     insert(std::make_unique<ctraits<KOrder::unfold>::Ttensym>(*(it.second)));
-}
-
-SimResults::~SimResults()
-{
-  for (int i = 0; i < getNumSets(); i++)
-    {
-      delete data[i];
-      delete shocks[i];
-    }
 }
 
 /* This runs simulations with an output to journal file. Note that we
@@ -92,7 +66,7 @@ SimResults::simulate(int num_sim, const DecisionRule &dr, const Vector &start,
     {
       RandomShockRealization sr(vcov, seed_generator::get_new_seed());
       rsrs.push_back(sr);
-      gr.insert(std::make_unique<SimulationWorker>(*this, dr, DecisionRule::horner,
+      gr.insert(std::make_unique<SimulationWorker>(*this, dr, DecisionRule::emethod::horner,
                                                    num_per+num_burn, start, rsrs.back()));
     }
   gr.run();
@@ -103,39 +77,35 @@ SimResults::simulate(int num_sim, const DecisionRule &dr, const Vector &start,
    and shocks are thrown away. */
 
 bool
-SimResults::addDataSet(TwoDMatrix *d, ExplicitShockRealization *sr, const ConstVector &st)
+SimResults::addDataSet(const TwoDMatrix &d, const ExplicitShockRealization &sr, const ConstVector &st)
 {
-  KORD_RAISE_IF(d->nrows() != num_y,
+  KORD_RAISE_IF(d.nrows() != num_y,
                 "Incompatible number of rows for SimResults::addDataSets");
-  KORD_RAISE_IF(d->ncols() != num_per+num_burn,
+  KORD_RAISE_IF(d.ncols() != num_per+num_burn,
                 "Incompatible number of cols for SimResults::addDataSets");
   bool ret = false;
-  if (d->isFinite())
+  if (d.isFinite())
     {
-      data.push_back(new TwoDMatrix((const TwoDMatrix &) (*d), num_burn, num_per));
-      shocks.push_back(new ExplicitShockRealization(
-                                                    ConstTwoDMatrix(sr->getShocks(), num_burn, num_per)));
+      data.emplace_back(d, num_burn, num_per);
+      shocks.emplace_back(ConstTwoDMatrix(sr.getShocks(), num_burn, num_per));
       if (num_burn == 0)
         start.emplace_back(st);
       else
-        start.emplace_back(d->getCol(num_burn-1));
+        start.emplace_back(d.getCol(num_burn-1));
       ret = true;
     }
 
-  delete d;
-  delete sr;
   return ret;
 }
 
 void
-SimResults::writeMat(const char *base, const char *lname) const
+SimResults::writeMat(const std::string &base, const std::string &lname) const
 {
-  char matfile_name[100];
-  sprintf(matfile_name, "%s.mat", base);
-  mat_t *matfd = Mat_Create(matfile_name, nullptr);
-  if (matfd != nullptr)
+  std::string matfile_name = base + ".mat";
+  mat_t *matfd = Mat_Create(matfile_name.c_str(), nullptr);
+  if (matfd)
     {
-      writeMat(matfd, lname);
+      writeMat(matfd, lname.c_str());
       Mat_Close(matfd);
     }
 }
@@ -144,17 +114,14 @@ SimResults::writeMat(const char *base, const char *lname) const
    appended. If there is only one matrix, the index is not appended. */
 
 void
-SimResults::writeMat(mat_t *fd, const char *lname) const
+SimResults::writeMat(mat_t *fd, const std::string &lname) const
 {
-  char tmp[100];
   for (int i = 0; i < getNumSets(); i++)
     {
+      std::string tmp = lname + "_data";
       if (getNumSets() > 1)
-        sprintf(tmp, "%s_data%d", lname, i+1);
-      else
-        sprintf(tmp, "%s_data", lname);
-      ConstTwoDMatrix m(*(data[i]));
-      m.writeMat(fd, tmp);
+        tmp += std::to_string(i+1);
+      data[i].writeMat(fd, tmp);
     }
 }
 
@@ -178,14 +145,10 @@ SimResultsStats::simulate(int num_sim, const DecisionRule &dr,
 
 /* Here we do not save the data itself, we save only mean and vcov. */
 void
-SimResultsStats::writeMat(mat_t *fd, const char *lname) const
+SimResultsStats::writeMat(mat_t *fd, const std::string &lname) const
 {
-  char tmp[100];
-  sprintf(tmp, "%s_mean", lname);
-  ConstTwoDMatrix m(num_y, 1, mean);
-  m.writeMat(fd, tmp);
-  sprintf(tmp, "%s_vcov", lname);
-  ConstTwoDMatrix(vcov).writeMat(fd, tmp);
+  ConstTwoDMatrix(num_y, 1, mean).writeMat(fd, lname + "_mean");;
+  vcov.writeMat(fd, lname + "_vcov");
 }
 
 void
@@ -195,11 +158,11 @@ SimResultsStats::calcMean()
   if (data.size()*num_per > 0)
     {
       double mult = 1.0/data.size()/num_per;
-      for (auto & i : data)
+      for (const auto &i : data)
         {
           for (int j = 0; j < num_per; j++)
             {
-              ConstVector col{i->getCol(j)};
+              ConstVector col{i.getCol(j)};
               mean.add(mult, col);
             }
         }
@@ -213,28 +176,19 @@ SimResultsStats::calcVcov()
     {
       vcov.zeros();
       double mult = 1.0/(data.size()*num_per - 1);
-      for (auto & i : data)
-        {
-          const TwoDMatrix &d = *i;
-          for (int j = 0; j < num_per; j++)
-            {
-              for (int m = 0; m < num_y; m++)
-                {
-                  for (int n = m; n < num_y; n++)
-                    {
-                      double s = (d.get(m, j)-mean[m])*(d.get(n, j)-mean[n]);
-                      vcov.get(m, n) += mult*s;
-                      if (m != n)
-                        vcov.get(n, m) += mult*s;
-                    }
-                }
-            }
-        }
+      for (const auto &d : data)
+        for (int j = 0; j < num_per; j++)
+          for (int m = 0; m < num_y; m++)
+            for (int n = m; n < num_y; n++)
+              {
+                double s = (d.get(m, j)-mean[m])*(d.get(n, j)-mean[n]);
+                vcov.get(m, n) += mult*s;
+                if (m != n)
+                  vcov.get(n, m) += mult*s;
+              }
     }
   else
-    {
-      vcov.infs();
-    }
+    vcov.infs();
 }
 
 void
@@ -256,13 +210,10 @@ SimResultsDynamicStats::simulate(int num_sim, const DecisionRule &dr,
 }
 
 void
-SimResultsDynamicStats::writeMat(mat_t *fd, const char *lname) const
+SimResultsDynamicStats::writeMat(mat_t *fd, const std::string &lname) const
 {
-  char tmp[100];
-  sprintf(tmp, "%s_cond_mean", lname);
-  ConstTwoDMatrix(mean).writeMat(fd, tmp);
-  sprintf(tmp, "%s_cond_variance", lname);
-  ConstTwoDMatrix(variance).writeMat(fd, tmp);
+  mean.writeMat(fd, lname + "_cond_mean");
+  variance.writeMat(fd, lname + "_cond_variance");
 }
 
 void
@@ -275,9 +226,9 @@ SimResultsDynamicStats::calcMean()
       for (int j = 0; j < num_per; j++)
         {
           Vector meanj{mean.getCol(j)};
-          for (auto & i : data)
+          for (const auto &i : data)
             {
-              ConstVector col{i->getCol(j)};
+              ConstVector col{i.getCol(j)};
               meanj.add(mult, col);
             }
         }
@@ -295,9 +246,9 @@ SimResultsDynamicStats::calcVariance()
         {
           ConstVector meanj{mean.getCol(j)};
           Vector varj{variance.getCol(j)};
-          for (auto & i : data)
+          for (const auto &i : data)
             {
-              Vector col{i->getCol(j)};
+              Vector col{i.getCol(j)};
               col.add(-1.0, meanj);
               for (int k = 0; k < col.length(); k++)
                 col[k] = col[k]*col[k];
@@ -306,9 +257,7 @@ SimResultsDynamicStats::calcVariance()
         }
     }
   else
-    {
-      variance.infs();
-    }
+    variance.infs();
 }
 
 void
@@ -334,7 +283,7 @@ SimResultsIRF::simulate(const DecisionRule &dr)
 {
   sthread::detach_thread_group gr;
   for (int idata = 0; idata < control.getNumSets(); idata++)
-    gr.insert(std::make_unique<SimulationIRFWorker>(*this, dr, DecisionRule::horner,
+    gr.insert(std::make_unique<SimulationIRFWorker>(*this, dr, DecisionRule::emethod::horner,
                                                     num_per, idata, ishock, imp));
   gr.run();
 }
@@ -345,8 +294,8 @@ SimResultsIRF::calcMeans()
   means.zeros();
   if (data.size() > 0)
     {
-      for (auto & i : data)
-        means.add(1.0, *i);
+      for (const auto &i : data)
+        means.add(1.0, i);
       means.mult(1.0/data.size());
     }
 }
@@ -357,9 +306,9 @@ SimResultsIRF::calcVariances()
   if (data.size() > 1)
     {
       variances.zeros();
-      for (auto & i : data)
+      for (const auto &i : data)
         {
-          TwoDMatrix d((const TwoDMatrix &)(*i));
+          TwoDMatrix d(i);
           d.add(-1.0, means);
           for (int j = 0; j < d.nrows(); j++)
             for (int k = 0; k < d.ncols(); k++)
@@ -368,19 +317,14 @@ SimResultsIRF::calcVariances()
         }
     }
   else
-    {
-      variances.infs();
-    }
+    variances.infs();
 }
 
 void
-SimResultsIRF::writeMat(mat_t *fd, const char *lname) const
+SimResultsIRF::writeMat(mat_t *fd, const std::string &lname) const
 {
-  char tmp[100];
-  sprintf(tmp, "%s_mean", lname);
-  means.writeMat(fd, tmp);
-  sprintf(tmp, "%s_var", lname);
-  variances.writeMat(fd, tmp);
+  means.writeMat(fd, lname + "_mean");
+  variances.writeMat(fd, lname + "_var");
 }
 
 void
@@ -416,21 +360,17 @@ RTSimResultsStats::simulate(int num_sim, const DecisionRule &dr, const Vector &s
     {
       RandomShockRealization sr(vcov, seed_generator::get_new_seed());
       rsrs.push_back(sr);
-      gr.insert(std::make_unique<RTSimulationWorker>(*this, dr, DecisionRule::horner,
+      gr.insert(std::make_unique<RTSimulationWorker>(*this, dr, DecisionRule::emethod::horner,
                                                      num_per, start, rsrs.back()));
     }
   gr.run();
 }
 
 void
-RTSimResultsStats::writeMat(mat_t *fd, const char *lname)
+RTSimResultsStats::writeMat(mat_t *fd, const std::string &lname)
 {
-  char tmp[100];
-  sprintf(tmp, "%s_rt_mean", lname);
-  ConstTwoDMatrix m(nc.getDim(), 1, mean);
-  m.writeMat(fd, tmp);
-  sprintf(tmp, "%s_rt_vcov", lname);
-  ConstTwoDMatrix(vcov).writeMat(fd, tmp);
+  ConstTwoDMatrix(nc.getDim(), 1, mean).writeMat(fd, lname + "_rt_mean");
+  vcov.writeMat(fd, lname + "_rt_vcov");
 }
 
 IRFResults::IRFResults(const DynamicModel &mod, const DecisionRule &dr,
@@ -440,51 +380,42 @@ IRFResults::IRFResults(const DynamicModel &mod, const DecisionRule &dr,
 {
   int num_per = control.getNumPer();
   JournalRecordPair pa(journal);
-  pa << "Calculating IRFs against control for " << (int) irf_list_ind.size() << " shocks and for "
+  pa << "Calculating IRFs against control for " << static_cast<int>(irf_list_ind.size()) << " shocks and for "
      << num_per << " periods" << endrec;
   const TwoDMatrix &vcov = mod.getVcov();
   for (int ishock : irf_list_ind)
     {
       double stderror = sqrt(vcov.get(ishock, ishock));
-      irf_res.push_back(new SimResultsIRF(control, model.numeq(), num_per,
-                                          ishock, stderror));
-      irf_res.push_back(new SimResultsIRF(control, model.numeq(), num_per,
-                                          ishock, -stderror));
+      irf_res.emplace_back(control, model.numeq(), num_per,
+                           ishock, stderror);
+      irf_res.emplace_back(control, model.numeq(), num_per,
+                           ishock, -stderror);
     }
 
   for (unsigned int ii = 0; ii < irf_list_ind.size(); ii++)
     {
-      irf_res[2*ii]->simulate(dr, journal);
-      irf_res[2*ii+1]->simulate(dr, journal);
+      irf_res[2*ii].simulate(dr, journal);
+      irf_res[2*ii+1].simulate(dr, journal);
     }
 }
 
-IRFResults::~IRFResults()
-{
-  for (auto & irf_re : irf_res)
-    delete irf_re;
-}
-
 void
-IRFResults::writeMat(mat_t *fd, const char *prefix) const
+IRFResults::writeMat(mat_t *fd, const std::string &prefix) const
 {
   for (unsigned int i = 0; i < irf_list_ind.size(); i++)
     {
-      char tmp[100];
       int ishock = irf_list_ind[i];
-      const char *shockname = model.getExogNames().getName(ishock);
-      sprintf(tmp, "%s_irfp_%s", prefix, shockname);
-      irf_res[2*i]->writeMat(fd, tmp);
-      sprintf(tmp, "%s_irfm_%s", prefix, shockname);
-      irf_res[2*i+1]->writeMat(fd, tmp);
+      auto shockname = model.getExogNames().getName(ishock);
+      irf_res[2*i].writeMat(fd, prefix + "_irfp_" + shockname);
+      irf_res[2*i+1].writeMat(fd, prefix + "_irfm_" + shockname);
     }
 }
 
 void
 SimulationWorker::operator()(std::mutex &mut)
 {
-  auto *esr = new ExplicitShockRealization(sr, np);
-  TwoDMatrix *m = dr.simulate(em, np, st, *esr);
+  ExplicitShockRealization esr(sr, np);
+  TwoDMatrix m{dr.simulate(em, np, st, esr)};
   {
     std::unique_lock<std::mutex> lk{mut};
     res.addDataSet(m, esr, st);
@@ -497,11 +428,10 @@ SimulationWorker::operator()(std::mutex &mut)
 void
 SimulationIRFWorker::operator()(std::mutex &mut)
 {
-  auto *esr
-    = new ExplicitShockRealization(res.control.getShocks(idata));
-  esr->addToShock(ishock, 0, imp);
-  TwoDMatrix *m = dr.simulate(em, np, res.control.getStart(idata), *esr);
-  m->add(-1.0, res.control.getData(idata));
+  ExplicitShockRealization esr(res.control.getShocks(idata));
+  esr.addToShock(ishock, 0, imp);
+  TwoDMatrix m{dr.simulate(em, np, res.control.getStart(idata), esr)};
+  m.add(-1.0, res.control.getData(idata));
   {
     std::unique_lock<std::mutex> lk{mut};
     res.addDataSet(m, esr, res.control.getStart(idata));
@@ -579,8 +509,7 @@ RandomShockRealization::choleskyFactor(const ConstTwoDMatrix &v)
 void
 RandomShockRealization::schurFactor(const ConstTwoDMatrix &v)
 {
-  SymSchurDecomp ssd(v);
-  ssd.getFactor(factor);
+  SymSchurDecomp(v).getFactor(factor);
 }
 
 void

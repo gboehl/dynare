@@ -7,37 +7,35 @@
 
 #include "int_sequence.hh"
 
-#include <sys/time.h>
-#include <cstdio>
-#include <cstring>
 #include <iostream>
+#include <sstream>
 #include <fstream>
+#include <string>
+#include <chrono>
 
-class SystemResources
+/* Implement static methods for accessing some system resources. An instance of
+   this class is a photograph of these resources at the time of instantiation. */
+struct SystemResources
 {
-  timeval start;
-public:
-  SystemResources();
-  static long int pageSize();
-  static long int physicalPages();
-  static long int onlineProcessors();
-  static long int availableMemory();
-  void getRUS(double &load_avg, long int &pg_avail, double &utime,
-              double &stime, double &elapsed, long int &idrss,
-              long int &majflt);
-};
+  // The starting time of the executable
+  static const std::chrono::time_point<std::chrono::high_resolution_clock> start;
 
-struct SystemResourcesFlash
-{
+  static long pageSize();
+  static long physicalPages();
+  static long availablePhysicalPages();
+  static long onlineProcessors();
+  static long availableMemory();
+
   double load_avg;
-  long int pg_avail;
+  long pg_avail;
   double utime;
   double stime;
   double elapsed;
-  long int idrss;
-  long int majflt;
-  SystemResourcesFlash();
-  void diff(const SystemResourcesFlash &pre);
+  long idrss;
+  long majflt;
+
+  SystemResources();
+  void diff(const SystemResources &pre);
 };
 
 class Journal : public std::ofstream
@@ -45,7 +43,7 @@ class Journal : public std::ofstream
   int ord;
   int depth;
 public:
-  Journal(const char *fname)
+  explicit Journal(const std::string &fname)
     : std::ofstream(fname), ord(0), depth(0)
   {
     printHeader();
@@ -82,10 +80,8 @@ public:
   }
 };
 
-#define MAXLEN 1000
-
 class JournalRecord;
-JournalRecord&endrec(JournalRecord &);
+JournalRecord &endrec(JournalRecord &);
 
 class JournalRecord
 {
@@ -94,55 +90,74 @@ protected:
   int ord;
 public:
   Journal &journal;
-  char prefix[MAXLEN];
-  char mes[MAXLEN];
-  SystemResourcesFlash flash;
+  std::string prefix;
+  std::string mes;
+  SystemResources flash;
   using _Tfunc = JournalRecord &(*)(JournalRecord &);
 
-  JournalRecord(Journal &jr, char rc = 'M')
+  explicit JournalRecord(Journal &jr, char rc = 'M')
     : recChar(rc), ord(jr.getOrd()), journal(jr)
   {
-    prefix[0] = '\0'; mes[0] = '\0'; writePrefix(flash);
+    writePrefix(flash);
   }
-  virtual ~JournalRecord()
-  = default;
+  virtual ~JournalRecord() = default;
   JournalRecord &operator<<(const IntSequence &s);
   JournalRecord &
   operator<<(_Tfunc f)
   {
-    (*f)(*this); return *this;
+    (*f)(*this);
+    return *this;
   }
   JournalRecord &
-  operator<<(const char *s)
+  operator<<(char c)
   {
-    strcat(mes, s); return *this;
+    mes += c;
+    return *this;
+  }
+  JournalRecord &
+  operator<<(const std::string &s)
+  {
+    mes += s;
+    return *this;
   }
   JournalRecord &
   operator<<(int i)
   {
-    sprintf(mes+strlen(mes), "%d", i); return *this;
+    mes += std::to_string(i);
+    return *this;
   }
   JournalRecord &
   operator<<(double d)
   {
-    sprintf(mes+strlen(mes), "%f", d); return *this;
+    mes += std::to_string(d);
+    return *this;
   }
 protected:
-  void writePrefix(const SystemResourcesFlash &f);
+  void writePrefix(const SystemResources &f);
+  /* Writes a floating point number as a field of exactly "width" characters
+     large. Note that the width will not be respected if the integer part is
+     too large. */
+  static void writeFloatTabular(std::ostream &s, double d, int width);
 };
 
+/*
+  Constructs a "pair" of symmetric records with a RAII-like logic:
+   - when fed with "endrec", print the opening record
+   - subsequent records will have depth increased by 1
+   - when deleted, prints the symmetric closing record, and decrease depth
+*/
 class JournalRecordPair : public JournalRecord
 {
-  char prefix_end[MAXLEN];
+  std::string prefix_end;
 public:
-  JournalRecordPair(Journal &jr)
+  explicit JournalRecordPair(Journal &jr)
     : JournalRecord(jr, 'S')
   {
-    prefix_end[0] = '\0'; journal.incrementDepth();
+    journal.incrementDepth();
   }
   ~JournalRecordPair() override;
 private:
-  void writePrefixForEnd(const SystemResourcesFlash &f);
+  void writePrefixForEnd(const SystemResources &f);
 };
 
 #endif
