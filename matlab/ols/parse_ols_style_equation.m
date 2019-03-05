@@ -211,8 +211,7 @@ function str = printNode(node)
 if strcmp(node.node_type, 'NumConstNode')
     str = num2str(node.value);
 elseif strcmp(node.node_type, 'VariableNode')
-    if strcmp(node.type, 'endogenous') ...
-            || (strcmp(node.type, 'exogenous') && any(strcmp(ds.name, node.name)))
+    if strcmp(node.type, 'endogenous') || strcmp(node.type, 'exogenous')
         str = node.name;
         if node.lag ~= 0
             str = [str '(' num2str(node.lag) ')'];
