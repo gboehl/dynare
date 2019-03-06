@@ -69,6 +69,6 @@ end;
 // Initialize the PAC model (build the Companion VAR representation for the auxiliary model).
 pac.initialize('pacman');
 
-if ~isequal(M_.pac.pacman.equations.(M_.pac.pacman.tag_map{strcmp(M_.pac.pacman.tag_map(:,1), 'zpac'),2}).ec.isendo, [true, false])
-   error('ec.isendo vector is wrong.')
+if ~isequal(M_.pac.pacman.equations.(M_.pac.pacman.tag_map{strcmp(M_.pac.pacman.tag_map(:,1), 'zpac'),2}).ec.istarget, [true, false])
+   error('ec.istarget vector is wrong.')
 end

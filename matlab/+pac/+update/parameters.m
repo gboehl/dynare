@@ -83,7 +83,7 @@ for e=1:number_of_pac_eq
     % Build the vector of PAC parameters (ECM parameter + autoregressive parameters).
     pacvalues = DynareModel.params([equations.(eqtag).ec.params; equations.(eqtag).ar.params(1:equations.(eqtag).max_lag)']);
     % Get the indices for the stationary/nonstationary variables in the VAR system.
-    id = find(strcmp(DynareModel.endo_names{equations.(eqtag).ec.vars(~equations.(eqtag).ec.isendo)}, varmodel.list_of_variables_in_companion_var));
+    id = find(strcmp(DynareModel.endo_names{equations.(eqtag).ec.vars(~equations.(eqtag).ec.istarget)}, varmodel.list_of_variables_in_companion_var));
     if isempty(id)
         % Find the auxiliary variables if any
         ad = find(cell2mat(cellfun(@(x) isauxiliary(x, [8 10]), varmodel.list_of_variables_in_companion_var, 'UniformOutput', false)));
@@ -92,11 +92,11 @@ for e=1:number_of_pac_eq
         else
             for i=1:length(ad)
                 auxinfo = DynareModel.aux_vars(get_aux_variable_id(varmodel.list_of_variables_in_companion_var{ad(i)}));
-                if isequal(auxinfo.endo_index, equations.(eqtag).ec.vars(~equations.(eqtag).ec.isendo))
+                if isequal(auxinfo.endo_index, equations.(eqtag).ec.vars(~equations.(eqtag).ec.istarget))
                     id = ad(i);
                     break
                 end
-                if isequal(auxinfo.type, 8) && isequal(auxinfo.orig_index, equations.(eqtag).ec.vars(~equations.(eqtag).ec.isendo))
+                if isequal(auxinfo.type, 8) && isequal(auxinfo.orig_index, equations.(eqtag).ec.vars(~equations.(eqtag).ec.istarget))
                     id = ad(i);
                     break
                 end
