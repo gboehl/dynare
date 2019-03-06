@@ -340,7 +340,7 @@ KordpDynare::ReorderDynareJacobianIndices() noexcept(false)
 /*       DynareNameList class                                                         */
 /**************************************************************************************/
 
-DynareNameList::DynareNameList(const KordpDynare &dynare, const std::vector<std::string> &names_arg) : names(names_arg)
+DynareNameList::DynareNameList(const KordpDynare &dynare, std::vector<std::string> names_arg) : names(std::move(names_arg))
 {
 }
 
@@ -348,7 +348,7 @@ DynareStateNameList::DynareStateNameList(const KordpDynare &dynare, const Dynare
                                          const DynareNameList &denl)
 {
   for (int i = 0; i < dynare.nys(); i++)
-    names.push_back(std::string{dnl.getName(i+dynare.nstat())});
+    names.emplace_back(dnl.getName(i+dynare.nstat()));
   for (int i = 0; i < dynare.nexog(); i++)
-    names.push_back(std::string{denl.getName(i)});
+    names.emplace_back(denl.getName(i));
 }

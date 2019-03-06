@@ -7,11 +7,13 @@
 
 #include "korder.hh"
 
-template<int>
+#include <mutex>
+
+template<Storage>
 class FirstOrderDerivs;
 class FirstOrder
 {
-  template <int>
+  template <Storage>
   friend class FirstOrderDerivs;
   PartitionY ypart;
   int nu;
@@ -25,6 +27,17 @@ class FirstOrder
   Vector beta;
   double qz_criterium;
   Journal &journal;
+
+  // Passed to LAPACK's DGGES
+  static lapack_int order_eigs(const double *alphar, const double *alphai, const double *beta);
+
+  // The value of qz_criterium_global used by the order_eigs function
+  /* NB: we have no choice but to use a global variable, since LAPACK won't
+     take a closure */
+  static double qz_criterium_global;
+
+  // Protects the static qz_criterium_global
+  static std::mutex mut;
 public:
   FirstOrder(int num_stat, int num_pred, int num_both, int num_forw,
              int num_u, const FSSparseTensor &f, Journal &jr, double qz_crit)
@@ -63,7 +76,7 @@ protected:
 /* This class only converts the derivatives $g_{y^*}$ and $g_u$ to a
    folded or unfolded container. */
 
-template <int t>
+template <Storage t>
 class FirstOrderDerivs : public ctraits<t>::Tg
 {
 public:
@@ -71,11 +84,11 @@ public:
     : ctraits<t>::Tg(4)
   {
     IntSequence nvs{fo.ypart.nys(), fo.nu, fo.nu, 1};
-    auto ten = std::make_unique<_Ttensor>(fo.ypart.ny(), TensorDimens(Symmetry{1, 0, 0, 0}, nvs));
+    auto ten = std::make_unique<typename ctraits<t>::Ttensor>(fo.ypart.ny(), TensorDimens(Symmetry{1, 0, 0, 0}, nvs));
     ten->zeros();
     ten->add(1.0, fo.gy);
     this->insert(std::move(ten));
-    ten = std::make_unique<_Ttensor>(fo.ypart.ny(), TensorDimens(Symmetry{0, 1, 0, 0}, nvs));
+    ten = std::make_unique<typename ctraits<t>::Ttensor>(fo.ypart.ny(), TensorDimens(Symmetry{0, 1, 0, 0}, nvs));
     ten->zeros();
     ten->add(1.0, fo.gu);
     this->insert(std::move(ten));

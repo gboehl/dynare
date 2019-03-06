@@ -81,13 +81,13 @@ Approximation::approxAtSteady()
                     model.getVcov(), journal);
       korder.switchToFolded();
       for (int k = 2; k <= model.order(); k++)
-        korder.performStep<KOrder::fold>(k);
+        korder.performStep<Storage::fold>(k);
 
       saveRuleDerivs(korder.getFoldDers());
     }
   else
     {
-      FirstOrderDerivs<KOrder::fold> fo_ders(fo);
+      FirstOrderDerivs<Storage::fold> fo_ders(fo);
       saveRuleDerivs(fo_ders);
     }
   check(0.0);
@@ -148,7 +148,7 @@ Approximation::walkStochSteady()
       /* We form the |DRFixPoint| object from the last rule with
          $\sigma=dsigma$. Then we save the steady state to |ss|. The new steady
          is also put to |model.getSteady()|. */
-      DRFixPoint<KOrder::fold> fp(*rule_ders, ypart, model.getSteady(), dsigma);
+      DRFixPoint<Storage::fold> fp(*rule_ders, ypart, model.getSteady(), dsigma);
       bool converged = fp.calcFixPoint(DecisionRule::emethod::horner, model.getSteady());
       JournalRecord rec(journal);
       rec << "Fix point calcs: iter=" << fp.getNumIter() << ", newton_iter="
@@ -171,7 +171,7 @@ Approximation::walkStochSteady()
       Vector dy(model.getSteady());
       dy.add(-1.0, last_steady);
 
-      StochForwardDerivs<KOrder::fold> hh(ypart, model.nexog(), *rule_ders_ss, mom, dy,
+      StochForwardDerivs<Storage::fold> hh(ypart, model.nexog(), *rule_ders_ss, mom, dy,
                                           dsigma, sigma_so_far);
       JournalRecord rec1(journal);
       rec1 << "Calculation of g** expectations done" << endrec;
@@ -183,7 +183,7 @@ Approximation::walkStochSteady()
       KOrderStoch korder_stoch(ypart, model.nexog(), model.getModelDerivatives(),
                                hh, journal);
       for (int d = 1; d <= model.order(); d++)
-        korder_stoch.performStep<KOrder::fold>(d);
+        korder_stoch.performStep<Storage::fold>(d);
 
       saveRuleDerivs(korder_stoch.getFoldDers());
 
@@ -198,7 +198,7 @@ Approximation::walkStochSteady()
   if (steps == 0 && dr_centralize)
     {
       // centralize decision rule for zero steps
-      DRFixPoint<KOrder::fold> fp(*rule_ders, ypart, model.getSteady(), 1.0);
+      DRFixPoint<Storage::fold> fp(*rule_ders, ypart, model.getSteady(), 1.0);
       bool converged = fp.calcFixPoint(DecisionRule::emethod::horner, model.getSteady());
       JournalRecord rec(journal);
       rec << "Fix point calcs: iter=" << fp.getNumIter() << ", newton_iter="

@@ -6,6 +6,7 @@
 #include <iomanip>
 #include <cmath>
 #include <ctime>
+#include <limits>
 
 #ifndef __MINGW32__
 # include <sys/time.h>     // For getrusage()
@@ -89,8 +90,8 @@ SystemResources::SystemResources()
   idrss = rus.ru_idrss;
   majflt = rus.ru_majflt;
 #else
-  utime = -1.0;
-  stime = -1.0;
+  utime = std::numeric_limits<double>::quiet_NaN();
+  stime = std::numeric_limits<double>::quiet_NaN();
   idrss = -1;
   majflt = -1;
 #endif
@@ -98,7 +99,7 @@ SystemResources::SystemResources()
 #ifndef __MINGW32__
   getloadavg(&load_avg, 1);
 #else
-  load_avg = -1.0;
+  load_avg = std::numeric_limits<double>::quiet_NaN();
 #endif
 
   pg_avail = availablePhysicalPages();

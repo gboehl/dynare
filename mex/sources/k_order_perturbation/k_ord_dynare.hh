@@ -44,16 +44,16 @@ class DynareNameList : public NameList
 {
   std::vector<std::string> names;
 public:
-  DynareNameList(const KordpDynare &dynare, const std::vector<std::string> &names_arg);
+  DynareNameList(const KordpDynare &dynare, std::vector<std::string> names_arg);
   int
   getNum() const
   {
-    return (int) names.size();
+    return static_cast<int>(names.size());
   }
-  const char *
+  const std::string &
   getName(int i) const
   {
-    return names[i].c_str();
+    return names[i];
   }
 };
 
@@ -66,12 +66,12 @@ public:
   int
   getNum() const
   {
-    return (int) names.size();
+    return static_cast<int>(names.size());
   }
-  const char *
+  const std::string &
   getName(int i) const
   {
-    return names[i].c_str();
+    return names[i];
   }
 };
 /*********************************************/
@@ -235,7 +235,7 @@ public:
                       const ConstVector &yyp, const Vector &xx) noexcept(false);
   void calcDerivativesAtSteady();
   std::unique_ptr<DynamicModelAC> dynamicModelFile;
-  DynamicModel *
+  std::unique_ptr<DynamicModel>
   clone() const
   {
     std::cerr << "KordpDynare::clone() not implemented" << std::endl;

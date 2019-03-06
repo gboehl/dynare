@@ -32,12 +32,12 @@
 /* This class is a container, which has a specialized constructor
    integrating the policy rule at given $\sigma$. */
 
-template <int t>
+template <Storage t>
 class IntegDerivs : public ctraits<t>::Tgss
 {
 public:
-  IntegDerivs(int r, const IntSequence &nvs, const _Tgss &g, const __Tm &mom,
-              double at_sigma);
+  IntegDerivs(int r, const IntSequence &nvs, const typename ctraits<t>::Tgss &g,
+              const typename ctraits<t>::Tm &mom, double at_sigma);
 };
 
 /* This constructor integrates a rule (namely its $g^{**}$ part) with
@@ -79,9 +79,9 @@ public:
    \Sigma^{m+n}{\tilde\sigma}^m$$
    and this is exactly what the code does. */
 
-template <int t>
-IntegDerivs<t>::IntegDerivs(int r, const IntSequence &nvs, const _Tgss &g, const __Tm &mom,
-                            double at_sigma)
+template <Storage t>
+IntegDerivs<t>::IntegDerivs(int r, const IntSequence &nvs, const typename ctraits<t>::Tgss &g,
+                            const typename ctraits<t>::Tm &mom, double at_sigma)
   : ctraits<t>::Tgss(4)
 {
   int maxd = g.getMaxDim();
@@ -91,7 +91,7 @@ IntegDerivs<t>::IntegDerivs(int r, const IntSequence &nvs, const _Tgss &g, const
         {
           int p = d-i;
           Symmetry sym{i, 0, 0, p};
-          auto ten = std::make_unique<_Ttensor>(r, TensorDimens(sym, nvs));
+          auto ten = std::make_unique<typename ctraits<t>::Ttensor>(r, TensorDimens(sym, nvs));
 
           // calculate derivative $h_{y^i\sigma^p}$
           /* This code calculates
@@ -113,7 +113,7 @@ IntegDerivs<t>::IntegDerivs(int r, const IntSequence &nvs, const _Tgss &g, const
                     ten->add(mult, g.get(sym_mn));
                   if (m+n > 0 && KOrder::is_even(m+n) && g.check(sym_mn))
                     {
-                      _Ttensor gtmp(g.get(sym_mn));
+                      typename ctraits<t>::Ttensor gtmp(g.get(sym_mn));
                       gtmp.mult(mult);
                       gtmp.contractAndAdd(1, *ten, mom.get(Symmetry{m+n}));
                     }
@@ -133,12 +133,12 @@ IntegDerivs<t>::IntegDerivs(int r, const IntSequence &nvs, const _Tgss &g, const
    y^*,\bar\sigma)$. The derivatives are extrapolated based on
    derivatives at $(\tilde y^*,\tilde\sigma)$. */
 
-template <int t>
+template <Storage t>
 class StochForwardDerivs : public ctraits<t>::Tgss
 {
 public:
   StochForwardDerivs(const PartitionY &ypart, int nu,
-                     const _Tgss &g, const __Tm &m,
+                     const typename ctraits<t>::Tgss &g, const typename ctraits<t>::Tm &m,
                      const Vector &ydelta, double sdelta,
                      double at_sigma);
 };
@@ -160,9 +160,10 @@ public:
    \li Recover general symmetry tensors from the (full symmetric) polynomial
    \endorderedlist */
 
-template <int t>
+template <Storage t>
 StochForwardDerivs<t>::StochForwardDerivs(const PartitionY &ypart, int nu,
-                                          const _Tgss &g, const __Tm &m,
+                                          const typename ctraits<t>::Tgss &g,
+                                          const typename ctraits<t>::Tm &m,
                                           const Vector &ydelta, double sdelta,
                                           double at_sigma)
   : ctraits<t>::Tgss(4)
@@ -181,10 +182,10 @@ StochForwardDerivs<t>::StochForwardDerivs(const PartitionY &ypart, int nu,
   // make |g_int_sym| be full symmetric polynomial from |g_int|
   /* Here we just form a polynomial whose unique variable corresponds to
      $\left[\matrix{y^*\cr\sigma}\right]$ stack. */
-  _Tpol g_int_sym(r, ypart.nys()+1);
+  typename ctraits<t>::Tpol g_int_sym(r, ypart.nys()+1);
   for (int d = 1; d <= maxd; d++)
     {
-      auto ten = std::make_unique<_Ttensym>(r, ypart.nys()+1, d);
+      auto ten = std::make_unique<typename ctraits<t>::Ttensym>(r, ypart.nys()+1, d);
       ten->zeros();
       for (int i = 0; i <= d; i++)
         {
@@ -207,7 +208,7 @@ StochForwardDerivs<t>::StochForwardDerivs(const PartitionY &ypart, int nu,
   ConstVector dy_in(ydelta, ypart.nstat, ypart.nys());
   dy = dy_in;
   delta[ypart.nys()] = sdelta;
-  _Tpol g_int_cent(r, ypart.nys()+1);
+  typename ctraits<t>::Tpol g_int_cent(r, ypart.nys()+1);
   for (int d = 1; d <= maxd; d++)
     {
       g_int_sym.derivative(d-1);
@@ -224,19 +225,16 @@ StochForwardDerivs<t>::StochForwardDerivs(const PartitionY &ypart, int nu,
   true_nvs[1] = nu;
   true_nvs[2] = nu;
   for (int d = 1; d <= maxd; d++)
-    {
-      if (g_int_cent.check(Symmetry{d}))
+    if (g_int_cent.check(Symmetry{d}))
+      for (int i = 0; i <= d; i++)
         {
-          for (int i = 0; i <= d; i++)
-            {
-              Symmetry sym{i, 0, 0, d-i};
-              IntSequence coor(pp.unfold(sym));
-              auto ten = std::make_unique<_Ttensor>(g_int_cent.get(Symmetry{d}), ss, coor,
-                                                    TensorDimens(sym, true_nvs));
-              this->insert(std::move(ten));
-            }
+          Symmetry sym{i, 0, 0, d-i};
+          IntSequence coor(pp.unfold(sym));
+          auto ten = std::make_unique<typename ctraits<t>::Ttensor>(g_int_cent.get(Symmetry{d}),
+                                                                    ss, coor,
+                                                                    TensorDimens(sym, true_nvs));
+          this->insert(std::move(ten));
         }
-    }
 }
 
 /* This container corresponds to $h(g^*(y,u,\sigma),\sigma)$. Note that
@@ -425,7 +423,7 @@ public:
               const FGSContainer &hh, Journal &jr);
   KOrderStoch(const PartitionY &ypart, int nu, const TensorContainer<FSSparseTensor> &fcont,
               const UGSContainer &hh, Journal &jr);
-  template <int t>
+  template <Storage t>
   void performStep(int order);
   const FGSContainer &
   getFoldDers() const
@@ -438,46 +436,51 @@ public:
     return _ug;
   }
 protected:
-  template <int t>
-  std::unique_ptr<_Ttensor> faaDiBrunoZ(const Symmetry &sym) const;
-  template <int t>
-  std::unique_ptr<_Ttensor> faaDiBrunoG(const Symmetry &sym) const;
+  template <Storage t>
+  std::unique_ptr<typename ctraits<t>::Ttensor> faaDiBrunoZ(const Symmetry &sym) const;
+  template <Storage t>
+  std::unique_ptr<typename ctraits<t>::Ttensor> faaDiBrunoG(const Symmetry &sym) const;
 
   // convenience access methods
-  template<int t>
-  _Tg&g();
-  template<int t>
-  const _Tg&g() const;
-  template<int t>
-  _Tgs&gs();
-  template<int t>
-  const _Tgs&gs() const;
-  template<int t>
-  const _Tgss&h() const;
-  template<int t>
-  _TG&G();
-  template<int t>
-  const _TG&G() const;
-  template<int t>
-  _TZXstack&Zstack();
-  template<int t>
-  const _TZXstack&Zstack() const;
-  template<int t>
-  _TGXstack&Gstack();
-  template<int t>
-  const _TGXstack&Gstack() const;
+  template<Storage t>
+  typename ctraits<t>::Tg &g();
+  template<Storage t>
+  const typename ctraits<t>::Tg &g() const;
+
+  template<Storage t>
+  typename ctraits<t>::Tgs &gs();
+  template<Storage t>
+  const typename ctraits<t>::Tgs &gs() const;
+
+  template<Storage t>
+  const typename ctraits<t>::Tgss &h() const;
+
+  template<Storage t>
+  typename ctraits<t>::TG &G();
+  template<Storage t>
+  const typename ctraits<t>::TG &G() const;
+
+  template<Storage t>
+  typename ctraits<t>::TZXstack &Zstack();
+  template<Storage t>
+  const typename ctraits<t>::TZXstack &Zstack() const;
+
+  template<Storage t>
+  typename ctraits<t>::TGXstack &Gstack();
+  template<Storage t>
+  const typename ctraits<t>::TGXstack &Gstack() const;
 };
 
 /* This calculates a derivative of $f(G(y,u,\sigma),g(y,u,\sigma),y,u)$
    of a given symmetry. */
 
-template <int t>
-std::unique_ptr<_Ttensor>
+template <Storage t>
+std::unique_ptr<typename ctraits<t>::Ttensor>
 KOrderStoch::faaDiBrunoZ(const Symmetry &sym) const
 {
   JournalRecordPair pa(journal);
   pa << "Faa Di Bruno ZX container for " << sym << endrec;
-  auto res = std::make_unique<_Ttensor>(ypart.ny(), TensorDimens(sym, nvs));
+  auto res = std::make_unique<typename ctraits<t>::Ttensor>(ypart.ny(), TensorDimens(sym, nvs));
   FaaDiBruno bruno(journal);
   bruno.calculate(Zstack<t>(), f, *res);
   return res;
@@ -486,14 +489,14 @@ KOrderStoch::faaDiBrunoZ(const Symmetry &sym) const
 /* This calculates a derivative of
    $G(y,u,\sigma)=h(g^*(y,u,\sigma),\sigma)$ of a given symmetry. */
 
-template <int t>
-std::unique_ptr<_Ttensor>
+template <Storage t>
+std::unique_ptr<typename ctraits<t>::Ttensor>
 KOrderStoch::faaDiBrunoG(const Symmetry &sym) const
 {
   JournalRecordPair pa(journal);
   pa << "Faa Di Bruno GX container for " << sym << endrec;
   TensorDimens tdims(sym, nvs);
-  auto res = std::make_unique<_Ttensor>(ypart.nyss(), tdims);
+  auto res = std::make_unique<typename ctraits<t>::Ttensor>(ypart.nyss(), tdims);
   FaaDiBruno bruno(journal);
   bruno.calculate(Gstack<t>(), h<t>(), *res);
   return res;
@@ -510,7 +513,7 @@ KOrderStoch::faaDiBrunoG(const Symmetry &sym) const
    $$g_s=-matA^{-1}\cdot RHS.$$ Finally we have to update $G_s$ by
    calling |Gstack<t>().multAndAdd(1, h<t>(), *G_sym)|. */
 
-template <int t>
+template <Storage t>
 void
 KOrderStoch::performStep(int order)
 {
@@ -518,24 +521,23 @@ KOrderStoch::performStep(int order)
   KORD_RAISE_IF(order-1 != maxd && (order != 1 || maxd != -1),
                 "Wrong order for KOrderStoch::performStep");
   for (auto &si : SymmetrySet(order, 4))
-    {
-      if (si[2] == 0)
-        {
-          JournalRecordPair pa(journal);
-          pa << "Recovering symmetry " << si << endrec;
+    if (si[2] == 0)
+      {
+        JournalRecordPair pa(journal);
+        pa << "Recovering symmetry " << si << endrec;
 
-          auto G_sym = faaDiBrunoG<t>(si);
-          auto G_sym_ptr = G_sym.get();
-          G<t>().insert(std::move(G_sym));
+        auto G_sym = faaDiBrunoG<t>(si);
+        auto G_sym_ptr = G_sym.get();
+        G<t>().insert(std::move(G_sym));
 
-          auto g_sym = faaDiBrunoZ<t>(si);
-          auto g_sym_ptr = g_sym.get();
-          g_sym->mult(-1.0);
-          matA.multInv(*g_sym);
-          g<t>().insert(std::move(g_sym));
-          gs<t>().insert(std::make_unique<_Ttensor>(ypart.nstat, ypart.nys(), *g_sym_ptr));
+        auto g_sym = faaDiBrunoZ<t>(si);
+        auto g_sym_ptr = g_sym.get();
+        g_sym->mult(-1.0);
+        matA.multInv(*g_sym);
+        g<t>().insert(std::move(g_sym));
+        gs<t>().insert(std::make_unique<typename ctraits<t>::Ttensor>(ypart.nstat, ypart.nys(),
+                                                                      *g_sym_ptr));
 
-          Gstack<t>().multAndAdd(1, h<t>(), *G_sym_ptr);
-        }
-    }
+        Gstack<t>().multAndAdd(1, h<t>(), *G_sym_ptr);
+      }
 }

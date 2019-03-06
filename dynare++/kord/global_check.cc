@@ -9,6 +9,7 @@
 #include "product.hh"
 #include "quasi_mcarlo.hh"
 
+#include <utility>
 #include <cmath>
 
 /* Here we just set a reference to the approximation, and create a new
@@ -16,37 +17,21 @@
 
 ResidFunction::ResidFunction(const Approximation &app)
   : VectorFunction(app.getModel().nexog(), app.getModel().numeq()), approx(app),
-    model(app.getModel().clone()),
-    yplus(nullptr), ystar(nullptr), u(nullptr), hss(nullptr)
+    model(app.getModel().clone())
 {
 }
 
 ResidFunction::ResidFunction(const ResidFunction &rf)
-  : VectorFunction(rf), approx(rf.approx), model(rf.model->clone()),
-    yplus(nullptr), ystar(nullptr), u(nullptr), hss(nullptr)
+  : VectorFunction(rf), approx(rf.approx), model(rf.model->clone())
 {
   if (rf.yplus)
-    yplus = new Vector(*(rf.yplus));
+    yplus = std::make_unique<Vector>(*(rf.yplus));
   if (rf.ystar)
-    ystar = new Vector(*(rf.ystar));
+    ystar = std::make_unique<Vector>(*(rf.ystar));
   if (rf.u)
-    u = new Vector(*(rf.u));
+    u = std::make_unique<Vector>(*(rf.u));
   if (rf.hss)
-    hss = new FTensorPolynomial(*(rf.hss));
-}
-
-ResidFunction::~ResidFunction()
-{
-  delete model;
-  // delete |y| and |u| dependent data
-  if (yplus)
-    delete yplus;
-  if (ystar)
-    delete ystar;
-  if (u)
-    delete u;
-  if (hss)
-    delete hss;
+    hss = std::make_unique<FTensorPolynomial>(*(rf.hss));
 }
 
 /* This sets $y^*$ and $u$. We have to create |ystar|, |u|, |yplus| and
@@ -55,58 +40,41 @@ ResidFunction::~ResidFunction()
 void
 ResidFunction::setYU(const ConstVector &ys, const ConstVector &xx)
 {
-  // delete |y| and |u| dependent data
-  /* NB: code shared with the destructor */
-  if (yplus)
-    delete yplus;
-  if (ystar)
-    delete ystar;
-  if (u)
-    delete u;
-  if (hss)
-    delete hss;
-
-  ystar = new Vector(ys);
-  u = new Vector(xx);
-  yplus = new Vector(model->numeq());
+  ystar = std::make_unique<Vector>(ys);
+  u = std::make_unique<Vector>(xx);
+  yplus = std::make_unique<Vector>(model->numeq());
   approx.getFoldDecisionRule().evaluate(DecisionRule::emethod::horner,
                                         *yplus, *ystar, *u);
 
   // make a tensor polynomial of in-place subtensors from decision rule
-  /* Here we use a dirty tricky of converting |const| to non-|const| to
-     obtain a polynomial of subtensor corresponding to non-predetermined
-     variables. However, this new non-|const| polynomial will be used for a
+  /* Note that the non-|const| polynomial will be used for a
      construction of |hss| and will be used in |const| context. So this
-     dirty thing is safe.
+     const_cast is safe.
 
      Note, that there is always a folded decision rule in |Approximation|. */
-  union {const FoldDecisionRule *c; FoldDecisionRule *n;} dr;
-  dr.c = &(approx.getFoldDecisionRule());
+  const FoldDecisionRule &dr = approx.getFoldDecisionRule();
   FTensorPolynomial dr_ss(model->nstat()+model->npred(), model->nboth()+model->nforw(),
-                          *(dr.n));
+                          const_cast<FoldDecisionRule &>(dr));
 
   // make |ytmp_star| be a difference of |yplus| from steady
   Vector ytmp_star(ConstVector(*yplus, model->nstat(), model->npred()+model->nboth()));
-  ConstVector ysteady_star(dr.c->getSteady(), model->nstat(),
+  ConstVector ysteady_star(dr.getSteady(), model->nstat(),
                            model->npred()+model->nboth());
   ytmp_star.add(-1.0, ysteady_star);
 
   // make |hss| and add steady to it
   /* Here is the |const| context of |dr_ss|. */
-  hss = new FTensorPolynomial(dr_ss, ytmp_star);
-  ConstVector ysteady_ss(dr.c->getSteady(), model->nstat()+model->npred(),
+  hss = std::make_unique<FTensorPolynomial>(dr_ss, ytmp_star);
+  ConstVector ysteady_ss(dr.getSteady(), model->nstat()+model->npred(),
                          model->nboth()+model->nforw());
   if (hss->check(Symmetry{0}))
-    {
-      hss->get(Symmetry{0}).getData().add(1.0, ysteady_ss);
-    }
+    hss->get(Symmetry{0}).getData().add(1.0, ysteady_ss);
   else
     {
       auto ten = std::make_unique<FFSTensor>(hss->nrows(), hss->nvars(), 0);
       ten->getData() = ysteady_ss;
       hss->insert(std::move(ten));
     }
-
 }
 
 /* Here we evaluate the residual $F(y^*,u,u')$. We have to evaluate |hss|
@@ -133,7 +101,7 @@ GlobalChecker::check(const Quadrature &quad, int level,
                      const ConstVector &ys, const ConstVector &x, Vector &out)
 {
   for (int ifunc = 0; ifunc < vfs.getNum(); ifunc++)
-    ((GResidFunction &) (vfs.getFunc(ifunc))).setYU(ys, x);
+    dynamic_cast<GResidFunction &>(vfs.getFunc(ifunc)).setYU(ys, x);
   quad.integrate(vfs, level, out);
 }
 
@@ -168,13 +136,13 @@ GlobalChecker::check(int max_evals, const ConstTwoDMatrix &y,
 
   bool take_smolyak = (smol_evals < prod_evals) && (smol_level >= prod_level-1);
 
-  Quadrature *quad;
+  std::unique_ptr<Quadrature> quad;
   int lev;
 
   // create the quadrature and report the decision
   if (take_smolyak)
     {
-      quad = new SmolyakQuadrature(model.nexog(), smol_level, gh);
+      quad = std::make_unique<SmolyakQuadrature>(model.nexog(), smol_level, gh);
       lev = smol_level;
       JournalRecord rec(journal);
       rec << "Selected Smolyak (level,evals)=(" << smol_level << ","
@@ -183,7 +151,7 @@ GlobalChecker::check(int max_evals, const ConstTwoDMatrix &y,
     }
   else
     {
-      quad = new ProductQuadrature(model.nexog(), gh);
+      quad = std::make_unique<ProductQuadrature>(model.nexog(), gh);
       lev = prod_level;
       JournalRecord rec(journal);
       rec << "Selected product (level,evals)=(" << prod_level << ","
@@ -201,8 +169,6 @@ GlobalChecker::check(int max_evals, const ConstTwoDMatrix &y,
       Vector outj{out.getCol(j)};
       check(*quad, lev, yj, xj, outj);
     }
-
-  delete quad;
 }
 
 /* This method checks an error of the approximation by evaluating
@@ -211,7 +177,7 @@ GlobalChecker::check(int max_evals, const ConstTwoDMatrix &y,
    $-mult\cdot\sigma$ to $mult\cdot\sigma$ in |m| steps. */
 
 void
-GlobalChecker::checkAlongShocksAndSave(mat_t *fd, const char *prefix,
+GlobalChecker::checkAlongShocksAndSave(mat_t *fd, const std::string &prefix,
                                        int m, double mult, int max_evals)
 {
   JournalRecordPair pa(journal);
@@ -219,15 +185,15 @@ GlobalChecker::checkAlongShocksAndSave(mat_t *fd, const char *prefix,
      << mult << " std errors, granularity " << m << endrec;
 
   // setup |y_mat| of steady states for checking
-  TwoDMatrix y_mat(model.numeq(), 2*m *model.nexog()+1);
+  TwoDMatrix y_mat(model.numeq(), 2*m*model.nexog()+1);
   for (int j = 0; j < 2*m*model.nexog()+1; j++)
     {
       Vector yj{y_mat.getCol(j)};
-      yj = (const Vector &) model.getSteady();
+      yj = model.getSteady();
     }
 
   // setup |exo_mat| for checking
-  TwoDMatrix exo_mat(model.nexog(), 2*m *model.nexog()+1);
+  TwoDMatrix exo_mat(model.nexog(), 2*m*model.nexog()+1);
   exo_mat.zeros();
   for (int ishock = 0; ishock < model.nexog(); ishock++)
     {
@@ -235,12 +201,11 @@ GlobalChecker::checkAlongShocksAndSave(mat_t *fd, const char *prefix,
       for (int j = 0; j < 2*m; j++)
         {
           int jmult = (j < m) ? j-m : j-m+1;
-          exo_mat.get(ishock, 1+2*m*ishock+j)
-            = mult*jmult*max_sigma/m;
+          exo_mat.get(ishock, 1+2*m*ishock+j) = mult*jmult*max_sigma/m;
         }
     }
 
-  TwoDMatrix errors(model.numeq(), 2*m *model.nexog()+1);
+  TwoDMatrix errors(model.numeq(), 2*m*model.nexog()+1);
   check(max_evals, y_mat, exo_mat, errors);
 
   // report errors along shock and save them
@@ -248,12 +213,9 @@ GlobalChecker::checkAlongShocksAndSave(mat_t *fd, const char *prefix,
   JournalRecord rec(journal);
   rec << "Shock    value         error" << endrec;
   ConstVector err0{errors.getCol(0)};
-  char shock[9];
-  char erbuf[17];
   for (int ishock = 0; ishock < model.nexog(); ishock++)
     {
       TwoDMatrix err_out(model.numeq(), 2*m+1);
-      sprintf(shock, "%-8s", model.getExogNames().getName(ishock));
       for (int j = 0; j < 2*m+1; j++)
         {
           int jj;
@@ -273,13 +235,12 @@ GlobalChecker::checkAlongShocksAndSave(mat_t *fd, const char *prefix,
               error = err0;
             }
           JournalRecord rec1(journal);
-          sprintf(erbuf, "%12.7g    ", error.getMax());
-          rec1 << shock << " " << exo_mat.get(ishock, jj)
-               << "\t" << erbuf << endrec;
+          std::string shockname{model.getExogNames().getName(ishock)};
+          shockname.resize(8, ' ');
+          rec1 << shockname << ' ' << exo_mat.get(ishock, jj)
+               << "\t" << error.getMax() << endrec;
         }
-      char tmp[100];
-      sprintf(tmp, "%s_shock_%s_errors", prefix, model.getExogNames().getName(ishock));
-      err_out.writeMat(fd, tmp);
+      err_out.writeMat(fd, prefix + "_shock_" + model.getExogNames().getName(ishock) + "_errors");
     }
 }
 
@@ -298,7 +259,7 @@ GlobalChecker::checkAlongShocksAndSave(mat_t *fd, const char *prefix,
    the results. */
 
 void
-GlobalChecker::checkOnEllipseAndSave(mat_t *fd, const char *prefix,
+GlobalChecker::checkOnEllipseAndSave(mat_t *fd, const std::string &prefix,
                                      int m, double mult, int max_evals)
 {
   JournalRecordPair pa(journal);
@@ -310,7 +271,7 @@ GlobalChecker::checkOnEllipseAndSave(mat_t *fd, const char *prefix,
      a submatrix of covariances of all endogenous variables. The submatrix
      corresponds to state variables (predetermined plus both). */
   TwoDMatrix ycov{approx.calcYCov()};
-  TwoDMatrix ycovpred((const TwoDMatrix &) ycov, model.nstat(), model.nstat(),
+  TwoDMatrix ycovpred(const_cast<const TwoDMatrix &>(ycov), model.nstat(), model.nstat(),
                       model.npred()+model.nboth(), model.npred()+model.nboth());
   SymSchurDecomp ssd(ycovpred);
   ssd.correctDefinitness(1.e-05);
@@ -381,18 +342,15 @@ GlobalChecker::checkOnEllipseAndSave(mat_t *fd, const char *prefix,
   TwoDMatrix out(model.numeq(), ymat.ncols());
   check(max_evals, ymat, umat, out);
 
-  char tmp[100];
-  sprintf(tmp, "%s_ellipse_points", prefix);
-  ymat.writeMat(fd, tmp);
-  sprintf(tmp, "%s_ellipse_errors", prefix);
-  out.writeMat(fd, tmp);
+  ymat.writeMat(fd, prefix + "_ellipse_points");
+  out.writeMat(fd, prefix + "_ellipse_errors");
 }
 
 /* Here we check the errors along a simulation. We simulate, then set
    |x| to zeros, check and save results. */
 
 void
-GlobalChecker::checkAlongSimulationAndSave(mat_t *fd, const char *prefix,
+GlobalChecker::checkAlongSimulationAndSave(mat_t *fd, const std::string &prefix,
                                            int m, int max_evals)
 {
   JournalRecordPair pa(journal);
@@ -406,9 +364,6 @@ GlobalChecker::checkAlongSimulationAndSave(mat_t *fd, const char *prefix,
   TwoDMatrix out(model.numeq(), m);
   check(max_evals, y, x, out);
 
-  char tmp[100];
-  sprintf(tmp, "%s_simul_points", prefix);
-  y.writeMat(fd, tmp);
-  sprintf(tmp, "%s_simul_errors", prefix);
-  out.writeMat(fd, tmp);
+  y.writeMat(fd, prefix + "_simul_points");
+  out.writeMat(fd, prefix + "_simul_errors");
 }

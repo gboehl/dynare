@@ -40,7 +40,7 @@ struct DynareParams
   /** Flag for doing IRFs even if the irf_list is empty. */
   bool do_irfs_all;
   /** List of shocks for which IRF will be calculated. */
-  std::vector<const char *> irf_list;
+  std::vector<std::string> irf_list;
   bool do_centralize;
   double qz_criterium;
   bool help;

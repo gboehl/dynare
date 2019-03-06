@@ -2,7 +2,7 @@
 
 // Dynamic model abstraction
 
-/* This file only defines a generic interface to an SDGE model. The model
+/* This file only defines a generic interface to a DSGE model. The model
    takes the form:
    $$E_t\left[f(g^{**}(g^*(y,u_t),u_{t+1}),g(y,u),y,u_t)\right]=0$$
    The interface is defined via pure virtual class |DynamicModel|. */
@@ -15,22 +15,24 @@
 
 #include "Vector.hh"
 
+#include <memory>
+#include <string>
+
 /* The class is a virtual pure class which provides an access to names
    of the variables. */
 
 class NameList
 {
 public:
-  virtual ~NameList()
-  = default;
+  virtual ~NameList() = default;
   virtual int getNum() const = 0;
-  virtual const char *getName(int i) const = 0;
+  virtual const std::string &getName(int i) const = 0;
   void print() const;
-  void writeMat(mat_t *fd, const char *vname) const;
-  void writeMatIndices(mat_t *fd, const char *prefix) const;
+  void writeMat(mat_t *fd, const std::string &vname) const;
+  void writeMatIndices(mat_t *fd, const std::string &prefix) const;
 };
 
-/* This is the interface to an information on a generic SDGE
+/* This is the interface to an information on a generic DSGE
    model. It is sufficient for calculations of policy rule Taylor
    approximations at some (not necessarily deterministic) steady state.
 
@@ -82,9 +84,8 @@ public:
 class DynamicModel
 {
 public:
-  virtual DynamicModel *clone() const = 0;
-  virtual ~DynamicModel()
-  = default;
+  virtual std::unique_ptr<DynamicModel> clone() const = 0;
+  virtual ~DynamicModel() = default;
 
   virtual int nstat() const = 0;
   virtual int nboth() const = 0;
@@ -98,13 +99,13 @@ public:
     return nstat()+nboth()+npred()+nforw();
   }
 
-  virtual const NameList&getAllEndoNames() const = 0;
-  virtual const NameList&getStateNames() const = 0;
-  virtual const NameList&getExogNames() const = 0;
-  virtual const TwoDMatrix&getVcov() const = 0;
-  virtual const TensorContainer<FSSparseTensor>&getModelDerivatives() const = 0;
-  virtual const Vector&getSteady() const = 0;
-  virtual Vector&getSteady() = 0;
+  virtual const NameList &getAllEndoNames() const = 0;
+  virtual const NameList &getStateNames() const = 0;
+  virtual const NameList &getExogNames() const = 0;
+  virtual const TwoDMatrix &getVcov() const = 0;
+  virtual const TensorContainer<FSSparseTensor> &getModelDerivatives() const = 0;
+  virtual const Vector &getSteady() const = 0;
+  virtual Vector &getSteady() = 0;
 
   virtual void solveDeterministicSteady() = 0;
   virtual void evaluateSystem(Vector &out, const ConstVector &yy, const Vector &xx) = 0;

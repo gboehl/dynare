@@ -20,15 +20,15 @@ class Dynare;
 
 class DynareNameList : public NameList
 {
-  std::vector<const char *> names;
+  std::vector<std::string> names;
 public:
   DynareNameList(const Dynare &dynare);
   int
   getNum() const override
   {
-    return (int) names.size();
+    return static_cast<int>(names.size());
   }
-  const char *
+  const std::string &
   getName(int i) const override
   {
     return names[i];
@@ -36,20 +36,20 @@ public:
   /** This for each string of the input vector calculates its index
    * in the names. And returns the resulting vector of indices. If
    * the name cannot be found, then an exception is raised. */
-  std::vector<int> selectIndices(const std::vector<const char *> &ns) const;
+  std::vector<int> selectIndices(const std::vector<std::string> &ns) const;
 };
 
 class DynareExogNameList : public NameList
 {
-  std::vector<const char *> names;
+  std::vector<std::string> names;
 public:
   DynareExogNameList(const Dynare &dynare);
   int
   getNum() const override
   {
-    return (int) names.size();
+    return static_cast<int>(names.size());
   }
-  const char *
+  const std::string &
   getName(int i) const override
   {
     return names[i];
@@ -58,16 +58,16 @@ public:
 
 class DynareStateNameList : public NameList
 {
-  std::vector<const char *> names;
+  std::vector<std::string> names;
 public:
   DynareStateNameList(const Dynare &dynare, const DynareNameList &dnl,
                       const DynareExogNameList &denl);
   int
   getNum() const override
   {
-    return (int) names.size();
+    return static_cast<int>(names.size());
   }
-  const char *
+  const std::string &
   getName(int i) const override
   {
     return names[i];
@@ -105,10 +105,10 @@ public:
          double sstol, Journal &jr);
   /** Makes a deep copy of the object. */
   Dynare(const Dynare &dyn);
-  DynamicModel *
+  std::unique_ptr<DynamicModel>
   clone() const override
   {
-    return new Dynare(*this);
+    return std::make_unique<Dynare>(*this);
   }
   
   ~Dynare() override;

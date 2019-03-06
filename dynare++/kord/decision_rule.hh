@@ -90,25 +90,28 @@ public:
    \left[\matrix{y^*_{t-1}-\tilde y^*\cr u_t}\right]^{\alpha_m}.$$
    We provide a method and a constructor to transform a rule to the centralized form.
 
-   The class is templated, the template argument is either |KOrder::fold|
-   or |KOrder::unfold|. So, there are two implementations of |DecisionRule|
+   The class is templated, the template argument is either |Storage::fold|
+   or |Storage::unfold|. So, there are two implementations of |DecisionRule|
    interface. */
 
-template <int t>
+template <Storage t>
 class DecisionRuleImpl : public ctraits<t>::Tpol, public DecisionRule
 {
 protected:
-  using _Tparent = typename ctraits<t>::Tpol;
+  using _Tpol = typename ctraits<t>::Tpol;
+  using _Tg = typename ctraits<t>::Tg;
+  using _Ttensor = typename ctraits<t>::Ttensor;
+  using _Ttensym = typename ctraits<t>::Ttensym;
   const Vector ysteady;
   const PartitionY ypart;
   const int nu;
 public:
-  DecisionRuleImpl(const _Tparent &pol, const PartitionY &yp, int nuu,
+  DecisionRuleImpl(const _Tpol &pol, const PartitionY &yp, int nuu,
                    const ConstVector &ys)
     : ctraits<t>::Tpol(pol), ysteady(ys), ypart(yp), nu(nuu)
   {
   }
-  DecisionRuleImpl(_Tparent &pol, const PartitionY &yp, int nuu,
+  DecisionRuleImpl(_Tpol &pol, const PartitionY &yp, int nuu,
                    const ConstVector &ys)
     : ctraits<t>::Tpol(0, yp.ny(), pol), ysteady(ys), ypart(yp),
     nu(nuu)
@@ -190,7 +193,7 @@ protected:
    So we go through $i+j=d=0\ldots q$ and in each loop we form the fully
    symmetric tensor $[g_{(yu)^l}]$ and insert it to the container. */
 
-template <int t>
+template <Storage t>
 void
 DecisionRuleImpl<t>::fillTensors(const _Tg &g, double sigma)
 {
@@ -244,7 +247,7 @@ DecisionRuleImpl<t>::fillTensors(const _Tg &g, double sigma)
    $$dstate=\left[\matrix{\tilde y^*-\bar y^*\cr 0}\right],$$
    where $\bar y$ is the steady state of the original rule |dr|. */
 
-template <int t>
+template <Storage t>
 void
 DecisionRuleImpl<t>::centralize(const DecisionRuleImpl &dr)
 {
@@ -278,7 +281,7 @@ DecisionRuleImpl<t>::centralize(const DecisionRuleImpl &dr)
    |ysteady| is canceled from |ystart|, we simulate, and at the end
    |ysteady| is added to all columns of the result. */
 
-template <int t>
+template <Storage t>
 TwoDMatrix
 DecisionRuleImpl<t>::simulate(emethod em, int np, const ConstVector &ystart,
                               ShockRealization &sr) const
@@ -347,7 +350,7 @@ DecisionRuleImpl<t>::simulate(emethod em, int np, const ConstVector &ystart,
    that the steady state (fix point) is cancelled and added once. Hence
    we have two special methods. */
 
-template <int t>
+template <Storage t>
 void
 DecisionRuleImpl<t>::evaluate(emethod em, Vector &out, const ConstVector &ys,
                               const ConstVector &u) const
@@ -370,7 +373,7 @@ DecisionRuleImpl<t>::evaluate(emethod em, Vector &out, const ConstVector &ys,
 /* This is easy. We just return the newly created copy using the
    centralized constructor. */
 
-template <int t>
+template <Storage t>
 std::unique_ptr<DecisionRule>
 DecisionRuleImpl<t>::centralizedClone(const Vector &fixpoint) const
 {
@@ -380,19 +383,19 @@ DecisionRuleImpl<t>::centralizedClone(const Vector &fixpoint) const
 /* Here we only encapsulate two implementations to one, deciding
    according to the parameter. */
 
-template <int t>
+template <Storage t>
 void
 DecisionRuleImpl<t>::eval(emethod em, Vector &out, const ConstVector &v) const
 {
   if (em == emethod::horner)
-    _Tparent::evalHorner(out, v);
+    _Tpol::evalHorner(out, v);
   else
-    _Tparent::evalTrad(out, v);
+    _Tpol::evalTrad(out, v);
 }
 
 /* Write the decision rule and steady state to the MAT file. */
 
-template <int t>
+template <Storage t>
 void
 DecisionRuleImpl<t>::writeMat(mat_t *fd, const std::string &prefix) const
 {
@@ -402,63 +405,63 @@ DecisionRuleImpl<t>::writeMat(mat_t *fd, const std::string &prefix) const
   ConstTwoDMatrix(dum).writeMat(fd, prefix + "_ss");
 }
 
-/* This is exactly the same as |DecisionRuleImpl<KOrder::fold>|. The
+/* This is exactly the same as |DecisionRuleImpl<Storage::fold>|. The
    only difference is that we have a conversion from
    |UnfoldDecisionRule|, which is exactly
-   |DecisionRuleImpl<KOrder::unfold>|. */
+   |DecisionRuleImpl<Storage::unfold>|. */
 
 class UnfoldDecisionRule;
-class FoldDecisionRule : public DecisionRuleImpl<KOrder::fold>
+class FoldDecisionRule : public DecisionRuleImpl<Storage::fold>
 {
   friend class UnfoldDecisionRule;
 public:
-  FoldDecisionRule(const ctraits<KOrder::fold>::Tpol &pol, const PartitionY &yp, int nuu,
+  FoldDecisionRule(const ctraits<Storage::fold>::Tpol &pol, const PartitionY &yp, int nuu,
                    const ConstVector &ys)
-    : DecisionRuleImpl<KOrder::fold>(pol, yp, nuu, ys)
+    : DecisionRuleImpl<Storage::fold>(pol, yp, nuu, ys)
   {
   }
-  FoldDecisionRule(ctraits<KOrder::fold>::Tpol &pol, const PartitionY &yp, int nuu,
+  FoldDecisionRule(ctraits<Storage::fold>::Tpol &pol, const PartitionY &yp, int nuu,
                    const ConstVector &ys)
-    : DecisionRuleImpl<KOrder::fold>(pol, yp, nuu, ys)
+    : DecisionRuleImpl<Storage::fold>(pol, yp, nuu, ys)
   {
   }
-  FoldDecisionRule(const ctraits<KOrder::fold>::Tg &g, const PartitionY &yp, int nuu,
+  FoldDecisionRule(const ctraits<Storage::fold>::Tg &g, const PartitionY &yp, int nuu,
                    const ConstVector &ys, double sigma)
-    : DecisionRuleImpl<KOrder::fold>(g, yp, nuu, ys, sigma)
+    : DecisionRuleImpl<Storage::fold>(g, yp, nuu, ys, sigma)
   {
   }
-  FoldDecisionRule(const DecisionRuleImpl<KOrder::fold> &dr, const ConstVector &fixpoint)
-    : DecisionRuleImpl<KOrder::fold>(dr, fixpoint)
+  FoldDecisionRule(const DecisionRuleImpl<Storage::fold> &dr, const ConstVector &fixpoint)
+    : DecisionRuleImpl<Storage::fold>(dr, fixpoint)
   {
   }
   FoldDecisionRule(const UnfoldDecisionRule &udr);
 };
 
-/* This is exactly the same as |DecisionRuleImpl<KOrder::unfold>|, but
+/* This is exactly the same as |DecisionRuleImpl<Storage::unfold>|, but
    with a conversion from |FoldDecisionRule|, which is exactly
-   |DecisionRuleImpl<KOrder::fold>|. */
+   |DecisionRuleImpl<Storage::fold>|. */
 
-class UnfoldDecisionRule : public DecisionRuleImpl<KOrder::unfold>
+class UnfoldDecisionRule : public DecisionRuleImpl<Storage::unfold>
 {
   friend class FoldDecisionRule;
 public:
-  UnfoldDecisionRule(const ctraits<KOrder::unfold>::Tpol &pol, const PartitionY &yp, int nuu,
+  UnfoldDecisionRule(const ctraits<Storage::unfold>::Tpol &pol, const PartitionY &yp, int nuu,
                      const ConstVector &ys)
-    : DecisionRuleImpl<KOrder::unfold>(pol, yp, nuu, ys)
+    : DecisionRuleImpl<Storage::unfold>(pol, yp, nuu, ys)
   {
   }
-  UnfoldDecisionRule(ctraits<KOrder::unfold>::Tpol &pol, const PartitionY &yp, int nuu,
+  UnfoldDecisionRule(ctraits<Storage::unfold>::Tpol &pol, const PartitionY &yp, int nuu,
                      const ConstVector &ys)
-    : DecisionRuleImpl<KOrder::unfold>(pol, yp, nuu, ys)
+    : DecisionRuleImpl<Storage::unfold>(pol, yp, nuu, ys)
   {
   }
-  UnfoldDecisionRule(const ctraits<KOrder::unfold>::Tg &g, const PartitionY &yp, int nuu,
+  UnfoldDecisionRule(const ctraits<Storage::unfold>::Tg &g, const PartitionY &yp, int nuu,
                      const ConstVector &ys, double sigma)
-    : DecisionRuleImpl<KOrder::unfold>(g, yp, nuu, ys, sigma)
+    : DecisionRuleImpl<Storage::unfold>(g, yp, nuu, ys, sigma)
   {
   }
-  UnfoldDecisionRule(const DecisionRuleImpl<KOrder::unfold> &dr, const ConstVector &fixpoint)
-    : DecisionRuleImpl<KOrder::unfold>(dr, fixpoint)
+  UnfoldDecisionRule(const DecisionRuleImpl<Storage::unfold> &dr, const ConstVector &fixpoint)
+    : DecisionRuleImpl<Storage::unfold>(dr, fixpoint)
   {
   }
   UnfoldDecisionRule(const FoldDecisionRule &udr);
@@ -477,18 +480,21 @@ public:
    Jacobian of the solved system is given by derivatives stored in
    |bigfder|. */
 
-template <int t>
+template <Storage t>
 class DRFixPoint : public ctraits<t>::Tpol
 {
-  using _Tparent = typename ctraits<t>::Tpol;
+  using _Tpol = typename ctraits<t>::Tpol;
+  using _Tg = typename ctraits<t>::Tg;
+  using _Ttensor = typename ctraits<t>::Ttensor;
+  using _Ttensym = typename ctraits<t>::Ttensym;
   constexpr static int max_iter = 10000;
   constexpr static int max_newton_iter = 50;
   constexpr static int newton_pause = 100;
   constexpr static double tol = 1e-10;
   const Vector ysteady;
   const PartitionY ypart;
-  std::unique_ptr<_Tparent> bigf;
-  std::unique_ptr<_Tparent> bigfder;
+  std::unique_ptr<_Tpol> bigf;
+  std::unique_ptr<_Tpol> bigfder;
 public:
   using emethod = typename DecisionRule::emethod;
   DRFixPoint(const _Tg &g, const PartitionY &yp,
@@ -526,19 +532,19 @@ private:
    (|Symmetry(1)|). Then the derivative of the $F$ polynomial is
    calculated. */
 
-template <int t>
+template <Storage t>
 DRFixPoint<t>::DRFixPoint(const _Tg &g, const PartitionY &yp,
                           const Vector &ys, double sigma)
   : ctraits<t>::Tpol(yp.ny(), yp.nys()),
   ysteady(ys), ypart(yp)
 {
   fillTensors(g, sigma);
-  _Tparent yspol(ypart.nstat, ypart.nys(), *this);
-  bigf = std::make_unique<_Tparent>(const_cast<const _Tparent &>(yspol));
+  _Tpol yspol(ypart.nstat, ypart.nys(), *this);
+  bigf = std::make_unique<_Tpol>(const_cast<const _Tpol &>(yspol));
   _Ttensym &frst = bigf->get(Symmetry{1});
   for (int i = 0; i < ypart.nys(); i++)
     frst.get(i, i) = frst.get(i, i) - 1;
-  bigfder = std::make_unique<_Tparent>(*bigf, 0);
+  bigfder = std::make_unique<_Tpol>(*bigf, 0);
 }
 
 /* Here we fill the tensors for the |DRFixPoint| class. We ignore the
@@ -547,7 +553,7 @@ DRFixPoint<t>::DRFixPoint(const _Tg &g, const PartitionY &yp,
    dimension and |d|, and add ${\sigma^k\over d!k!}g_{y^d\sigma^k}$ to
    the tensor $g_{(y)^d}$. */
 
-template <int t>
+template <Storage t>
 void
 DRFixPoint<t>::fillTensors(const _Tg &g, double sigma)
 {
@@ -584,7 +590,7 @@ DRFixPoint<t>::fillTensors(const _Tg &g, double sigma)
    |urelax| is less that |urelax_threshold|, we stop searching and stop
    the Newton. */
 
-template <int t>
+template <Storage t>
 bool
 DRFixPoint<t>::solveNewton(Vector &y)
 {
@@ -661,7 +667,7 @@ DRFixPoint<t>::solveNewton(Vector &y)
 
    The |out| vector is not touched if the algorithm has not convered. */
 
-template <int t>
+template <Storage t>
 bool
 DRFixPoint<t>::calcFixPoint(emethod em, Vector &out)
 {
@@ -695,7 +701,7 @@ DRFixPoint<t>::calcFixPoint(emethod em, Vector &out)
 
   if (converged)
     {
-      _Tparent::evalHorner(out, ystar);
+      _Tpol::evalHorner(out, ystar);
       out.add(1.0, ysteady);
     }
 

@@ -38,7 +38,7 @@ public:
                  UGSTensor &out);
 protected:
   int estimRefinment(const TensorDimens &tdims, int nr, int l, int &avmem_mb, int &tmpmem_mb);
-  static double magic_mult;
+  constexpr static double magic_mult = 1.5;
 };
 
 #endif

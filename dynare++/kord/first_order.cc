@@ -5,16 +5,17 @@
 
 #include <dynlapack.h>
 
-double qz_criterium = 1.000001;
+double FirstOrder::qz_criterium_global;
+std::mutex FirstOrder::mut;
 
 /* This is a function which selects the eigenvalues pair used by
    |dgges|. See documentation to DGGES for details. Here we want
    to select (return true) the pairs for which $\alpha<\beta$. */
 
 lapack_int
-order_eigs(const double *alphar, const double *alphai, const double *beta)
+FirstOrder::order_eigs(const double *alphar, const double *alphai, const double *beta)
 {
-  return (*alphar **alphar + *alphai **alphai < *beta **beta * qz_criterium * qz_criterium);
+  return (*alphar **alphar + *alphai **alphai < *beta **beta * qz_criterium_global * qz_criterium_global);
 }
 
 /* Here we solve the linear approximation. The result are the matrices
@@ -35,8 +36,6 @@ FirstOrder::solve(const TwoDMatrix &fd)
 {
   JournalRecordPair pa(journal);
   pa << "Recovering first order derivatives " << endrec;
-
-  ::qz_criterium = FirstOrder::qz_criterium;
 
   // **********************
   // solve derivatives |gy|
@@ -164,21 +163,22 @@ FirstOrder::solve(const TwoDMatrix &fd)
   lapack_int ldvsl = vsl.getLD(), ldvsr = vsr.getLD();
   lapack_int lwork = 100*n+16;
   Vector work(lwork);
-  auto *bwork = new lapack_int[n];
+  std::vector<lapack_int> bwork(n);
   lapack_int info;
   lapack_int sdim2 = sdim;
-  dgges("N", "V", "S", order_eigs, &n, matE.getData().base(), &lda,
+  {
+    std::lock_guard<std::mutex> lk{mut};
+    qz_criterium_global = qz_criterium;
+    dgges("N", "V", "S", order_eigs, &n, matE.getData().base(), &lda,
         matD.getData().base(), &ldb, &sdim2, alphar.base(), alphai.base(),
         beta.base(), vsl.getData().base(), &ldvsl, vsr.getData().base(), &ldvsr,
-        work.base(), &lwork, bwork, &info);
+        work.base(), &lwork, bwork.data(), &info);
+  }
   if (info)
-    {
-      throw KordException(__FILE__, __LINE__,
-                          "DGGES returns an error in FirstOrder::solve");
-    }
+    throw KordException(__FILE__, __LINE__,
+                        "DGGES returns an error in FirstOrder::solve");
   sdim = sdim2;
   bk_cond = (sdim == ypart.nys());
-  delete[] bwork;
 
   // make submatrices of right space
   /* Here we setup submatrices of the matrix $Z$. */
@@ -214,7 +214,7 @@ FirstOrder::solve(const TwoDMatrix &fd)
   gy.place(fder, ypart.nstat+ypart.nys(), 0);
 
   // check difference for derivatives of both
-  GeneralMatrix bder((const GeneralMatrix &)sfder, ypart.nstat, 0, ypart.nboth, ypart.nys());
+  GeneralMatrix bder(const_cast<const GeneralMatrix &>(sfder), ypart.nstat, 0, ypart.nboth, ypart.nys());
   GeneralMatrix bder2(preder, ypart.npred, 0, ypart.nboth, ypart.nys());
   bder.add(-1, bder2);
   b_error = bder.getData().getMax();
@@ -248,10 +248,8 @@ FirstOrder::solve(const TwoDMatrix &fd)
   journalEigs();
 
   if (!gy.isFinite() || !gu.isFinite())
-    {
-      throw KordException(__FILE__, __LINE__,
-                          "NaN or Inf asserted in first order derivatives in FirstOrder::solve");
-    }
+    throw KordException(__FILE__, __LINE__,
+                        "NaN or Inf asserted in first order derivatives in FirstOrder::solve");
 }
 
 void
@@ -269,24 +267,22 @@ FirstOrder::journalEigs()
          << " " << "npred=" << ypart.nys() << endrec;
     }
   if (!bk_cond)
-    {
-      for (int i = 0; i < alphar.length(); i++)
-        {
-          if (i == sdim || i == ypart.nys())
-            {
-              JournalRecord jr(journal);
-              jr << "---------------------------------------------------- ";
-              if (i == sdim)
-                jr << "sdim";
-              else
-                jr << "npred";
-              jr << endrec;
-            }
-          JournalRecord jr(journal);
-          double mod = sqrt(alphar[i]*alphar[i]+alphai[i]*alphai[i]);
-          mod = mod/round(100000*std::abs(beta[i]))*100000;
-          jr << i << "\t(" << alphar[i] << "," << alphai[i] << ") / " << beta[i]
-             << "  \t" << mod << endrec;
-        }
-    }
+    for (int i = 0; i < alphar.length(); i++)
+      {
+        if (i == sdim || i == ypart.nys())
+          {
+            JournalRecord jr(journal);
+            jr << "---------------------------------------------------- ";
+            if (i == sdim)
+              jr << "sdim";
+            else
+              jr << "npred";
+            jr << endrec;
+          }
+        JournalRecord jr(journal);
+        double mod = std::sqrt(alphar[i]*alphar[i]+alphai[i]*alphai[i]);
+        mod = mod/std::round(100000*std::abs(beta[i]))*100000;
+        jr << i << "\t(" << alphar[i] << "," << alphai[i] << ") / " << beta[i]
+           << "  \t" << mod << endrec;
+      }
 }

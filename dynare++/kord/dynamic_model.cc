@@ -2,31 +2,31 @@
 
 #include "dynamic_model.hh"
 
-#include <cstring>
+#include <iostream>
+#include <algorithm>
 
 void
 NameList::print() const
 {
   for (int i = 0; i < getNum(); i++)
-    printf("%s\n", getName(i));
+    std::cout << getName(i) << '\n';
 }
 
 void
-NameList::writeMat(mat_t *fd, const char *vname) const
+NameList::writeMat(mat_t *fd, const std::string &vname) const
 {
   int maxlen = 0;
   for (int i = 0; i < getNum(); i++)
-    if (maxlen < (int) strlen(getName(i)))
-      maxlen = (int) strlen(getName(i));
+    maxlen = std::max(maxlen, static_cast<int>(getName(i).size()));
 
   if (maxlen == 0)
     return;
 
-  auto *m = new char[getNum()*maxlen];
+  std::vector<char> m(getNum()*maxlen);
 
   for (int i = 0; i < getNum(); i++)
     for (int j = 0; j < maxlen; j++)
-      if (j < (int) strlen(getName(i)))
+      if (j < static_cast<int>(getName(i).size()))
         m[j*getNum()+i] = getName(i)[j];
       else
         m[j*getNum()+i] = ' ';
@@ -35,23 +35,20 @@ NameList::writeMat(mat_t *fd, const char *vname) const
   dims[0] = getNum();
   dims[1] = maxlen;
 
-  matvar_t *v = Mat_VarCreate(vname, MAT_C_CHAR, MAT_T_UINT8, 2, dims, m, 0);
+  matvar_t *v = Mat_VarCreate(vname.c_str(), MAT_C_CHAR, MAT_T_UINT8, 2, dims, m.data(), 0);
 
   Mat_VarWrite(fd, v, MAT_COMPRESSION_NONE);
 
   Mat_VarFree(v);
-  delete[] m;
 }
 
 void
-NameList::writeMatIndices(mat_t *fd, const char *prefix) const
+NameList::writeMatIndices(mat_t *fd, const std::string &prefix) const
 {
-  char tmp[100];
   TwoDMatrix aux(1, 1);
   for (int i = 0; i < getNum(); i++)
     {
-      sprintf(tmp, "%s_i_%s", prefix, getName(i));
       aux.get(0, 0) = i+1;
-      aux.writeMat(fd, tmp);
+      aux.writeMat(fd, prefix + "_i_" + getName(i));
     }
 }

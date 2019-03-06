@@ -5,8 +5,6 @@
 
 #include <cmath>
 
-double FaaDiBruno::magic_mult = 1.5;
-
 // |FaaDiBruno::calculate| folded sparse code
 /* We take an opportunity to refine the stack container to avoid
    allocation of more memory than available. */
@@ -121,19 +119,19 @@ FaaDiBruno::estimRefinment(const TensorDimens &tdims, int nr, int l,
                            int &avmem_mb, int &tmpmem_mb)
 {
   int nthreads = sthread::detach_thread_group::max_parallel_threads;
-  long int per_size1 = tdims.calcUnfoldMaxOffset();
-  auto per_size2 = (long int) pow((double) tdims.getNVS().getMax(), l);
+  long per_size1 = tdims.calcUnfoldMaxOffset();
+  long per_size2 = static_cast<long>(std::pow(tdims.getNVS().getMax(), l));
   double lambda = 0.0;
-  long int per_size = sizeof(double)*nr
-    *(long int) (lambda*per_size1+(1-lambda)*per_size2);
-  long int mem = SystemResources::availableMemory();
+  long per_size = sizeof(double)*nr
+    *static_cast<long>(lambda*per_size1+(1-lambda)*per_size2);
+  long mem = SystemResources::availableMemory();
   int max = 0;
-  double num_cols = ((double) (mem-magic_mult*nthreads*per_size))
+  double num_cols = static_cast<double>(mem-magic_mult*nthreads*per_size)
     /nthreads/sizeof(double)/nr;
   if (num_cols > 0)
     {
-      double maxd = pow(num_cols, ((double) 1)/l);
-      max = (int) floor(maxd);
+      double maxd = std::pow(num_cols, 1.0/l);
+      max = static_cast<int>(std::floor(maxd));
     }
   if (max == 0)
     {
@@ -145,6 +143,6 @@ FaaDiBruno::estimRefinment(const TensorDimens &tdims, int nr, int l,
       rec << endrec;
     }
   avmem_mb = mem/1024/1024;
-  tmpmem_mb = (nthreads*per_size)/1024/1024;
+  tmpmem_mb = nthreads*per_size/1024/1024;
   return max;
 }

@@ -68,16 +68,13 @@ class ResidFunction : public VectorFunction
 {
 protected:
   const Approximation &approx;
-  DynamicModel *model;
-  Vector *yplus;
-  Vector *ystar;
-  Vector *u;
-  FTensorPolynomial *hss;
+  std::unique_ptr<DynamicModel> model;
+  std::unique_ptr<Vector> yplus, ystar, u;
+  std::unique_ptr<FTensorPolynomial> hss;
 public:
   ResidFunction(const Approximation &app);
   ResidFunction(const ResidFunction &rf);
   
-  ~ResidFunction() override;
   std::unique_ptr<VectorFunction>
   clone() const override
   {
@@ -96,8 +93,6 @@ public:
     : GaussConverterFunction(std::make_unique<ResidFunction>(app), app.getModel().getVcov())
   {
   }
-  GResidFunction(const GResidFunction &rf) = default;
-  ~GResidFunction() override = default;
   std::unique_ptr<VectorFunction>
   clone() const override
   {
@@ -106,7 +101,7 @@ public:
   void
   setYU(const ConstVector &ys, const ConstVector &xx)
   {
-    ((ResidFunction *) func)->setYU(ys, xx);
+    dynamic_cast<ResidFunction *>(func)->setYU(ys, xx);
   }
 };
 
@@ -137,13 +132,13 @@ public:
   }
   void check(int max_evals, const ConstTwoDMatrix &y,
              const ConstTwoDMatrix &x, TwoDMatrix &out);
-  void checkAlongShocksAndSave(mat_t *fd, const char *prefix,
+  void checkAlongShocksAndSave(mat_t *fd, const std::string &prefix,
                                int m, double mult, int max_evals);
-  void checkOnEllipseAndSave(mat_t *fd, const char *prefix,
+  void checkOnEllipseAndSave(mat_t *fd, const std::string &prefix,
                              int m, double mult, int max_evals);
-  void checkAlongSimulationAndSave(mat_t *fd, const char *prefix,
+  void checkAlongSimulationAndSave(mat_t *fd, const std::string &prefix,
                                    int m, int max_evals);
-  void checkUnconditionalAndSave(mat_t *fd, const char *prefix,
+  void checkUnconditionalAndSave(mat_t *fd, const std::string &prefix,
                                  int m, int max_evals);
 protected:
   void check(const Quadrature &quad, int level,

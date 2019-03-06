@@ -20,13 +20,13 @@
 /*       DynareNameList class                                                         */
 /**************************************************************************************/
 std::vector<int>
-DynareNameList::selectIndices(const std::vector<const char *> &ns) const
+DynareNameList::selectIndices(const std::vector<std::string> &ns) const
 {
   std::vector<int> res;
-  for (auto n : ns)
+  for (const auto &n : ns)
     {
       int j = 0;
-      while (j < getNum() && strcmp(getName(j), n) != 0)
+      while (j < getNum() && n != getName(j))
         j++;
       if (j == getNum())
         throw DynareException(__FILE__, __LINE__,

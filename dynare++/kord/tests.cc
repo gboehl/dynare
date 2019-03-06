@@ -298,12 +298,12 @@ TestRunnable::korder_unfold_fold(int maxdim, int unfold_dim,
   for (int d = 2; d <= unfold_dim; d++)
     {
       clock_t pertime = clock();
-      kord.performStep<KOrder::unfold>(d);
+      kord.performStep<Storage::unfold>(d);
       pertime = clock()-pertime;
       std::cout << "\ttime for unfolded step dim=" << d << ": " << std::setprecision(4)
                 << static_cast<double>(pertime)/CLOCKS_PER_SEC << std::endl;
       clock_t checktime = clock();
-      double err = kord.check<KOrder::unfold>(d);
+      double err = kord.check<Storage::unfold>(d);
       checktime = clock()-checktime;
       std::cout << "\ttime for step check dim=" << d << ":    " << std::setprecision(4)
                 << static_cast<double>(checktime)/CLOCKS_PER_SEC << '\n'
@@ -324,12 +324,12 @@ TestRunnable::korder_unfold_fold(int maxdim, int unfold_dim,
       for (int d = unfold_dim+1; d <= maxdim; d++)
         {
           clock_t pertime = clock();
-          kord.performStep<KOrder::fold>(d);
+          kord.performStep<Storage::fold>(d);
           pertime = clock()-pertime;
           std::cout << "\ttime for folded step dim=" << d << ":   " << std::setprecision(4)
                     << static_cast<double>(pertime)/CLOCKS_PER_SEC << std::endl;
           clock_t checktime = clock();
-          double err = kord.check<KOrder::fold>(d);
+          double err = kord.check<Storage::fold>(d);
           checktime = clock()-checktime;
           std::cout << "\ttime for step check dim=" << d << ":    " << std::setprecision(4)
                     << static_cast<double>(checktime)/CLOCKS_PER_SEC << '\n'
