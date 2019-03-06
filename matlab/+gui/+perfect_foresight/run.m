@@ -1,4 +1,4 @@
-function varargout = run(json)
+function run(json)
 % function varargout = run(json)
 % Read JSON and run perfect foresight solver. Potentially return output as
 % JSON
@@ -8,7 +8,7 @@ function varargout = run(json)
 %                           foresight solver
 %
 % OUTPUTS
-%   varargout{1} [string]   if desired, return output as JSON string
+%   none
 %
 % SPECIAL REQUIREMENTS
 %   none
@@ -76,7 +76,7 @@ if ~isempty(jm.anticipated_permanent_shocks) || ~isempty(jm.endval_endo)
     for i = 1:length(jm.anticipated_permanent_shocks)
         s = jm.anticipated_permanent_shocks(i);
         oo_.exo_steady_state(s.exo_id) = s.value;
-        if s.start_period > 1
+        if s.start_date > 1
             % if the permanent shock does not start at the initial period
             % add a shocks block to mask the unnecessary periods
             M_.det_shocks = [ ...
@@ -85,7 +85,7 @@ if ~isempty(jm.anticipated_permanent_shocks) || ~isempty(jm.endval_endo)
                 'exo_det', 0, ...
                 'exo_id', s.exo_id, ...
                 'multiplicative', 0, ...
-                'periods', 1:s.start_period, ...
+                'periods', 1:s.start_date, ...
                 'value', 0)];
         end
     end
@@ -100,167 +100,116 @@ if ~isempty(jm.anticipated_transitory_shocks)
             struct('exo_det', 0, ...
             'exo_id', s.exo_id, ...
             'multiplicative', 0, ...
-            'periods', s.start_period:s.end_period, ...
+            'periods', s.start_date:s.end_date, ...
             'value', s.value)];
     end
     M_.exo_det_length = 0;
 end
 
+%% Make unanticipated shock map
+unanticipated_p_shocks = containers.Map('KeyType', 'int32', 'ValueType', 'any');
+for i = 1:length(jm.unanticipated_permanent_shocks)
+    s = jm.unanticipated_permanent_shocks(i);
+    if isempty(s.anticipated_date)
+        unanticipated_p_shocks(s.start_date) = s;
+    else
+        if s.anticipated_date > s.start_date
+            error('The expected date cannot be greater than the shock start date')
+        end
+        unanticipated_p_shocks(s.anticipated_date) = s;
+    end
+end
+
+unanticipated_t_shocks = containers.Map('KeyType', 'int32', 'ValueType', 'any');
+for i = 1:length(jm.unanticipated_transitory_shocks)
+    s = jm.unanticipated_transitory_shocks(i);
+    if isempty(s.anticipated_date)
+        for j = s.start_date:s.end_date
+            ts = s;
+            ts.start_date = j;
+            ts.end_date = j;
+            unanticipated_t_shocks(j) = ts;
+        end
+    else
+        if s.anticipated_date > s.start_date
+            error('The expected date cannot be greater than the shock start date')
+        end
+        unanticipated_t_shocks(s.anticipated_date) = s;
+    end
+end
+
+mapkeys = unique(cell2mat([keys(unanticipated_p_shocks) keys(unanticipated_t_shocks)]));
+
 %% Simulation
-% No unanticipated shocks
-if isempty(jm.unanticipated_permanent_shocks) && isempty(jm.unanticipated_transitory_shocks)
-    options_.periods = jm.simperiods;
-    perfect_foresight_setup;
+options_.periods = jm.periods;
+perfect_foresight_setup;
+
+% no surprise shocks present
+if isempty(mapkeys)
     perfect_foresight_solver;
     return
 end
-    nonanticip = jm.nonanticipmatrix;
-    rowindex = 1;
-    firstsimul = 0;
-    while nonanticip{rowindex}{1} > 0
-        currentperiod=nonanticip{rowindex}{1};
-        if currentperiod == 1
-            % there are nonanticipated shocks to add at first period
-            if nonanticip{rowindex}{4} == 0
-                % this is a current nonanticipated shock
-                M_.det_shocks = [ ...
-                    M_.det_shocks; ...
-                    struct( ...
-                    'exo_det', 0, ...
-                    'exo_id', nonanticip{rowindex}{2}+1, ...
-                    'multiplicative', 0, ...
-                    'periods', 1:1, ...
-                    'value',nonanticip{rowindex}{7})];
-            else
-                % this is a delayed nonanticipated shock
-                M_.det_shocks = [ ...
-                    M_.det_shocks; ...
-                    struct( ...
-                    'exo_det', 0, ...
-                    'exo_id', nonanticip{rowindex}{2}+1, ...
-                    'multiplicative', 0, ...
-                    'periods', nonanticip{rowindex}{5}:nonanticip{rowindex}{6}, ...
-                    'value', nonanticip{rowindex}{7})];
-            end
-            if nonanticip{rowindex+1}{1} ~= currentperiod
-                % when we have tracked all first period shocks we can simulate
-                options_.periods = jm.simperiods;
-                yy = oo_.steady_state;
-                perfect_foresight_setup;
-                [rowexo, colexo] = size(oo_.exo_simul);
-                perfect_foresight_solver;
 
-                if nonanticip{rowindex+1}{1} > 0
-                    % we collect all the path from ooendo period 1 to just before the next shock...
-                    yy = [yy oo_.endo_simul(:,2:(2+(nonanticip{rowindex+1}{1}-currentperiod-1)))];
-                else
-                    % or if there are no more shocks we collect the whole path
-                    yy = [yy oo_.endo_simul(:,2:end)];
-                end
-
-                ooexosaved = oo_.exo_simul;
-                firstsimul = 1;
-            end
-        else
-            % currentperiod is larger than one: we first perform perfect foresight simulation with initial period 1 conditions
-            if firstsimul == 0
-                % Initializing the first simulation
-                options_.periods = jm.simperiods;
-                yy = oo_.steady_state;
-                perfect_foresight_setup;
-                [rowexo, colexo] = size(oo_.exo_simul);
-                perfect_foresight_solver;
-
-                % In this because there is at least one shock we did not consider yet in the first period, we only save the path from the beginning up the period just before the current
-                yy = [yy oo_.endo_simul(:,2:currentperiod)];
-                ooexosaved = oo_.exo_simul;
-                firstsimul = 1;
-            end
-
-            if nonanticip{rowindex}{3} == 1
-                % permanent shock
-                oo_.exo_steady_state(nonanticip{rowindex}{2}+1) = nonanticip{rowindex}{7};
-                steady;
-                savedpermanentSS = oo_.steady_state;
-                if nargout == 1
-                    data2json.steady_state2 = oo_.steady_state;
-                end
-
-                if nonanticip{rowindex}{4} == 0
-                    % current permanent nonanticipated shock
-                    ooexosaved(currentperiod+1:end, nonanticip{rowindex}{2}+1) = nonanticip{rowindex}{7};
-                else
-                    % delayed permanent nonanticipated shock
-                    ooexosaved(nonanticip{rowindex}{5}+1:end, nonanticip{rowindex}{2}+1) = nonanticip{rowindex}{7};
-                end
-
-            else
-                % not a permanent shock
-                % add new shocks in the saved timepath with original time indexes
-                if nonanticip{rowindex}{4} == 0
-                    % this is a single current nonanticipated shock
-                    ooexosaved(currentperiod+1, nonanticip{rowindex}{2}+1) = nonanticip{rowindex}{7};
-                else
-                    % this is a delayed nonanticipated shock
-                    ooexosaved(nonanticip{rowindex}{5}+1:nonanticip{rowindex}{6}+1, nonanticip{rowindex}{2}+1) = nonanticip{rowindex}{7};
-                end
-            end
-
-            % copy only the necessary window in oo_.exo_simul
-            oo_.exo_simul = [zeros(1, colexo); ooexosaved(currentperiod+1:end, :)];
-
-            % fill oo_.exo_simul until it has the correct size depending on of there are permanent shocks or not
-            if permanent_shock_exists
-                % if there is a permanent shock, fill with last value of ooexosaved
-                oo_.exo_simul = [oo_.exo_simul; ones(rowexo-size(oo_.exo_simul, 1), 1)*ooexosaved(end, :)];
-            else
-                % otherwise fill with zeros
-                oo_.exo_simul = [oo_.exo_simul; zeros(rowexo-size(oo_.exo_simul, 1), colexo)];
-            end
-
-            if nonanticip{rowindex+1}{1} ~= currentperiod
-                % when we have tracked all the non-anticipated/delayed shocks for the current period, we can simulate
-                if permanent_shock_exists
-                    % if there are permanent shocks, fill oo_.endo with finalSS
-                    oo_.endo_simul = savedpermanentSS*ones(1, options_.periods+2);
-                else
-                    % no permanent shocks, fill oo_.endo with initialSS
-                    oo_.endo_simul = oo_.steady_state*ones(1, options_.periods+2);
-                end
-
-                % change oo_.endo_simul first value that gives the initial state of the economy
-                oo_.endo_simul(:, 1) = yy(:,end);
-
-                perfect_foresight_solver;
-                if nonanticip{rowindex+1}{1} > 0
-                    % collect all the path from ooendo period 1 to just before the next shock...
-                    yy = [yy oo_.endo_simul(:, 2:2+nonanticip{rowindex+1}{1}-currentperiod-1)];
-                else
-                    % or if there are no more shocks we collect the whole path
-                    yy = [yy oo_.endo_simul(:, 2:end)];
-                end
-            end
-        end
-        rowindex = rowindex+1;
-    end
-    % copy the endo path back
-    oo_.endo_simul = yy;
+% surprise shocks present
+% in case there are unanticipated shocks...
+if isempty(ys0_)
+    yy = oo_.steady_state;
 else
-    % if there are no unanticipated shocks we perform the simulation
-    options_.periods = jm.simperiods;
-    perfect_foresight_setup;
-    perfect_foresight_solver;
+    yy = ys0_;
 end
 
-if nargout == 1
-    plotlgt = length(oo_.endo_simul);
-    data2json.endosimul_length = plotlgt;
-    data2json.endo_names = char(M_.endo_names);
-    data2json.endo_nbr = M_.endo_nbr;
-    for nendo = 1:M_.endo_nbr
-        data2json.endo_simul.(strtrim(char(M_.endo_names(nendo, :)))) = oo_.endo_simul(nendo, :);
-    end
-    data2json.endo_simul.plotx = 0:plotlgt;
-    varargout{1} = savejson('', data2json, '');
+if mapkeys(1) ~= 1
+    % if first unanticipated shock is not in period 1
+    % simulate until first unanticipated shock and save
+    perfect_foresight_solver;
+    yy = [yy oo_.endo_simul(:, 2:mapkeys(1)+1)];
 end
+
+last_period = 1;
+length(oo_.exo_simul)
+oo_exo_simul_rows = options_.periods + 2;
+for i = 1:length(mapkeys)
+    this_period = mapkeys(i);
+    if i ~= length(mapkeys)
+        next_period = mapkeys(i+1);
+    else
+        next_period = -1;
+    end
+    if mapkeys(i) ~= 1
+        % shift shock path
+        nperiods = this_period - last_period;
+        oo_.exo_simul = [oo_.exo_simul(nperiods+1:end, :); repmat(oo_.exo_steady_state, nperiods, 1)];
+    end
+    if isKey(unanticipated_p_shocks, mapkeys(i))
+        s = unanticipated_p_shocks(mapkeys(i));
+        if isempty(s.anticipated_date) || s.start_date == s.anticipated_date
+            oo_.exo_steady_state(s.exo_id) = s.value;
+            oo_.exo_simul(2:end, :) = repmat(oo_.exo_steady_state, oo_exo_simul_rows-1, 1);
+        else
+            date_offset = s.start_date - s.anticipated_date;
+            oo_.exo_steady_state(s.exo_id) = s.value;
+            oo_.exo_simul(date_offset+1:end, :) = repmat(oo_.exo_steady_state, oo_exo_simul_rows-date_offset-1, 1);
+        end
+    end
+    if isKey(unanticipated_t_shocks, mapkeys(i))
+        s = unanticipated_t_shocks(mapkeys(i));
+        if isempty(s.anticipated_date) || s.start_date == s.anticipated_date
+            oo_.exo_simul(2, s.exo_id) = s.value;
+        else
+            date_offset = s.start_date - s.anticipated_date;
+            oo_.exo_simul(date_offset+1:s.end_date-s.start_date+1+date_offset, s.exo_id) = s.value;
+        end
+    end
+    last_period = this_period;
+    assert(rows(oo_.exo_simul) == oo_exo_simul_rows, 'error encountered setting oo_.exo_simul');
+    oo_.endo_simul(:, 1) = yy(:, end);
+    perfect_foresight_solver;
+    if next_period > 0
+        yy = [yy oo_.endo_simul(:, 2:next_period-this_period+1)];
+    else
+        assert(i == length(mapkeys), 'should not arrive here');
+        yy = [yy oo_.endo_simul(:, 2:end)];
+    end
+end
+oo_.endo_simul = yy;
 end
