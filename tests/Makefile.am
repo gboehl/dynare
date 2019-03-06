@@ -442,7 +442,7 @@ OLS_MODFILES = \
 	estimation/univariate/ols/ols_wc_1.mod \
 	estimation/univariate/ols/ols_wc_2.mod \
 	estimation/univariate/ols/ols.mod \
-	ecb/SUR/sur_noninteractive.mod \
+	ecb/SUR/sur_noniterative.mod \
 	ecb/SUR/sur_params_noniterative.mod \
 	ecb/SUR/panel_var_diff_NB_simulation_test.mod \
 	ecb/SUR/panel_var_diff_NB_simulation_zero_eq.mod \
