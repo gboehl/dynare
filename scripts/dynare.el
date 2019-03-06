@@ -28,8 +28,6 @@
 ;;      + change face for macroprocessor?
 ;;      + handle dates?
 ;;      + multi-line macro-commands/exprs
-;;      + components of option names should not be recognized (e.g. "model"
-;;        should not be colorized in "model_name")
 ;;    - M-a and M-e should skip statements (separated with ;)
 ;;    - improve indentation
 ;;      + w.r.t. to statements/equations/macro-commands split on several lines
@@ -107,6 +105,10 @@
   '("nan" "inf")
   "Dynare constants.")
 
+(defvar dynare-type-attributes
+  '("|e" "|x" "|p")
+  "Dynare attributes for on-the-fly type declarations.")
+
 (defvar dynare-macro-keywords
   '("in" "length" "line" "define" "echomacrovars" "save" "for" "endfor" "ifdef"
     "ifndef" "if" "else" "endif" "echo" "error" "include" "includepath")
@@ -114,18 +116,19 @@
 
 (defvar dynare-font-lock-keywords
   `(("@#" . font-lock-variable-name-face) ; Beginning of macro-statement
-    ("@#" ,(regexp-opt dynare-macro-keywords 'words)
+    ("@#" ,(regexp-opt dynare-macro-keywords 'symbols)
           nil nil (0 font-lock-variable-name-face)) ; Keywords in macro-statements
     ("@{[^}]*}" . font-lock-variable-name-face) ; For macro-substitutions
     ;;; Below is an alternative way of dealing with macro-substitutions
     ;;; Only the delimiters and the keywords are colorized
     ;; ("@{" . font-lock-variable-name-face)
     ;; ("@{" "[^}]*\\(}\\)" nil nil (1 font-lock-variable-name-face))
-    ;; ("@{" ,(concat (regexp-opt dynare-macro-keywords 'words) "[^}]*}") nil nil (1 font-lock-variable-name-face))
+    ;; ("@{" ,(concat (regexp-opt dynare-macro-keywords 'symbols) "[^}]*}") nil nil (1 font-lock-variable-name-face))
     ("^[ \t]*#" . font-lock-warning-face) ; For model-local variables
-    (,(regexp-opt (append dynare-statements dynare-statements-like dynare-blocks) 'words) . font-lock-keyword-face)
-    (,(regexp-opt dynare-functions 'words) . font-lock-builtin-face)
-    (,(regexp-opt dynare-constants 'words) . font-lock-constant-face))
+    (,(regexp-opt (append dynare-statements dynare-statements-like dynare-blocks) 'symbols) . font-lock-keyword-face)
+    (,(regexp-opt dynare-functions 'symbols) . font-lock-builtin-face)
+    (,(regexp-opt dynare-constants 'symbols) . font-lock-constant-face))
+    (,(concat (regexp-opt dynare-type-attributes) "\\_>") . font-lock-type-face))
   "Keyword highlighting specification for `dynare-mode'.")
 
 (defvar dynare-mode-map
@@ -135,9 +138,6 @@
 
 (defvar dynare-mode-syntax-table
   (let ((st (make-syntax-table)))
-    ;; decimal numbers should be treated as words
-    (modify-syntax-entry ?\. "w" st)
-
     ;; mathematical operators are treated as punctuation
     ;; "*" is treated further below
     (modify-syntax-entry ?+ "." st)
@@ -146,10 +146,10 @@
     (modify-syntax-entry ?^ "." st)
 
     ;; symbols for the macrolanguage
-    (modify-syntax-entry ?@ "_" st)
-    (modify-syntax-entry ?# "_" st)
+    (modify-syntax-entry ?@ "." st)
+    (modify-syntax-entry ?# "." st)
 
-    ;; underscores are treated as word constituents
+    ;; underscores are symbol constituents
     (modify-syntax-entry ?_ "_" st)
 
     ;; Single-quoted strings
