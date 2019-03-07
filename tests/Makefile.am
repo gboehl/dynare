@@ -439,16 +439,20 @@ MODFILES = \
 
 OLS_MODFILES = \
 	estimation/univariate/bayesian.mod \
+	estimation/univariate/bayesian_param_names.mod \
 	ecb/SURGibbs/fulton_fish.mod \
 	estimation/univariate/ols/ols_wc_1.mod \
 	estimation/univariate/ols/ols_wc_2.mod \
+	estimation/univariate/ols/ols_param_names.mod \
 	estimation/univariate/ols/ols.mod \
 	ecb/SUR/sur_noniterative.mod \
 	ecb/SUR/sur_params_noniterative.mod \
 	ecb/SUR/panel_var_diff_NB_simulation_test.mod \
 	ecb/SUR/panel_var_diff_NB_simulation_zero_eq.mod \
 	ecb/pooled_ols/panel_var_diff_NB_simulation_test.mod \
-	ecb/pooled_fgls/panel_var_diff_NB_simulation_test.mod
+	ecb/pooled_ols/test_param_names.mod \
+	ecb/pooled_fgls/panel_var_diff_NB_simulation_test.mod \
+	ecb/pooled_fgls/test_param_names.mod
 
 
 MODFILES += $(OLS_MODFILES)

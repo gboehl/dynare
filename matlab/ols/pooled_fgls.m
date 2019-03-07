@@ -1,5 +1,5 @@
-function pooled_fgls(ds, param_common, param_regex, eqtags, model_name)
-% function pooled_fgls(ds, param_common, param_regex, eqtags, model_name)
+function pooled_fgls(ds, param_common, param_regex, eqtags, model_name, param_names)
+% function pooled_fgls(ds, param_common, param_regex, eqtags, model_name, param_names)
 % Run Pooled FGLS
 %
 % INPUTS
@@ -10,8 +10,11 @@ function pooled_fgls(ds, param_common, param_regex, eqtags, model_name)
 %                                value in param_common
 %   eqtags        [cellstr]      names of equation tags to estimate. If empty,
 %                                estimate all equations
-%   model_name    [string]   name to use in oo_ and inc file
+%   model_name    [string]       name to use in oo_ and inc file
 %
+%   param_names   [cellstr]      list of parameters to estimate (if
+%                                empty, estimate all) (may contain regex
+%                                to match param_regex)
 % OUTPUTS
 %   none
 %
@@ -38,8 +41,12 @@ function pooled_fgls(ds, param_common, param_regex, eqtags, model_name)
 global M_ oo_
 
 %% Check input arguments
-if nargin < 1 || nargin > 5
+if nargin < 1 || nargin > 6
     error('Incorrect number of arguments')
+end
+
+if nargin < 6
+    param_names = {};
 end
 
 if nargin < 5
@@ -54,7 +61,7 @@ maxit = 100;
 tol = 1e-6;
 
 %% Common work between pooled_ols and pooled_fgls
-[Y, X, pbeta, residnames, country_name, model_name] = pooled_ols(ds, param_common, param_regex, true, eqtags, model_name);
+[Y, X, pbeta, residnames, country_name, model_name] = pooled_ols(ds, param_common, param_regex, true, eqtags, model_name, param_names);
 
 %% Estimation
 neqs = length(residnames);
@@ -90,7 +97,7 @@ for i = 1:length(param_regex)
     beta_idx = strcmp(pbeta, strrep(param_regex{i}, '*', country_name));
     assigned_idxs = assigned_idxs | beta_idx;
     value = oo_.pooled_fgls.(model_name).beta(beta_idx);
-    if isempty(eqtags)
+    if isempty(eqtags) && isempty(param_names)
         assert(~isempty(value));
     end
     if ~isempty(value)

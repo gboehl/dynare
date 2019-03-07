@@ -1,5 +1,5 @@
-function varargout = pooled_ols(ds, param_common, param_regex, overlapping_dates, eqtags, model_name)
-% function varargout = pooled_ols(ds, param_common, param_regex, overlapping_dates, eqtags, model_name)
+function varargout = pooled_ols(ds, param_common, param_regex, overlapping_dates, eqtags, model_name, param_names)
+% function varargout = pooled_ols(ds, param_common, param_regex, overlapping_dates, eqtags, model_name, param_names)
 % Run Pooled OLS
 % Apply parameter values found to corresponding parameter values in the
 % other blocks of the model
@@ -15,6 +15,9 @@ function varargout = pooled_ols(ds, param_common, param_regex, overlapping_dates
 %   eqtags              [cellstr]  names of equation tags to estimate. If empty,
 %                                  estimate all equations
 %   model_name          [string]   name to use in oo_ and inc file
+%   param_names         [cellstr]  list of parameters to estimate (if
+%                                  empty, estimate all) (may contain regex
+%                                  to match param_regex)
 %
 % OUTPUTS
 %   return arguments common to pooled_fgls only if called from pooled_fgls
@@ -43,7 +46,7 @@ function varargout = pooled_ols(ds, param_common, param_regex, overlapping_dates
 global M_ oo_
 
 %% Check input arguments
-if nargin < 1 || nargin > 6
+if nargin < 1 || nargin > 7
     error('Incorrect number of arguments')
 end
 
@@ -89,6 +92,14 @@ else
     assert(islogical(overlapping_dates) && length(overlapping_dates) == 1, 'The fourth argument must be a bool');
 end
 
+if nargin < 7
+    param_names = {};
+else
+    if ~isempty(param_names) && ~iscellstr(param_names)
+        error('The 7th argument, if provided, must be a cellstr')
+    end
+end
+
 %% Get Equation(s)
 ast = get_ast(eqtags);
 neqs = length(ast);
@@ -98,8 +109,13 @@ country_name = param_common{1};
 regexcountries = ['(' strjoin(param_common(2:end),'|') ')'];
 ast = replace_parameters(ast, country_name, regexcountries, param_regex);
 
+%% Replace in param_names
+for i = 1:length(param_names)
+    param_names{i} = strrep(param_names{i}, '*', country_name);
+end
+
 %% Find parameters and variable names in every equation & Setup estimation matrices
-[Y, lhssub, X, ~, ~, residnames] = common_parsing(ds, ast, overlapping_dates);
+[Y, lhssub, X, ~, ~, residnames] = common_parsing(ds, ast, overlapping_dates, param_names);
 clear ast
 nobs = zeros(length(Y), 1);
 nobs(1) = Y{1}.nobs;
@@ -141,7 +157,7 @@ for i = 1:length(param_regex)
     beta_idx = strcmp(X.name, strrep(param_regex{i}, '*', country_name));
     assigned_idxs = assigned_idxs | beta_idx;
     value = oo_.pooled_ols.(model_name).beta(beta_idx);
-    if isempty(eqtags)
+    if isempty(eqtags) && isempty(param_names)
         assert(~isempty(value));
     end
     if ~isempty(value)

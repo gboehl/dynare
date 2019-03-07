@@ -1,5 +1,5 @@
-function ds = olsgibbs(ds, eqtag, BetaPriorExpectation, BetaPriorVariance, s2, nu, ndraws, discarddraws, thin, fitted_names_dict, model_name)
-%function ds = olsgibbs(ds, eqtag, BetaPriorExpectation, BetaPriorVariance, s2, nu, ndraws, discarddraws, thin, fitted_names_dict, model_name)
+function ds = olsgibbs(ds, eqtag, BetaPriorExpectation, BetaPriorVariance, s2, nu, ndraws, discarddraws, thin, fitted_names_dict, model_name, param_names)
+%function ds = olsgibbs(ds, eqtag, BetaPriorExpectation, BetaPriorVariance, s2, nu, ndraws, discarddraws, thin, fitted_names_dict, model_name, param_names)
 % Implements Gibbs Sampling for univariate linear model.
 %
 % INPUTS
@@ -20,6 +20,8 @@ function ds = olsgibbs(ds, eqtag, BetaPriorExpectation, BetaPriorVariance, s2, n
 %                                            the transformation to perform on the
 %                                            fitted value.
 % - model_name                  [string]     name to use in oo_ and inc file
+% - param_names                 [cellstr]    list of parameters to estimate (if
+%                                            empty, estimate all)
 %
 % OUTPUTS
 % - ds                          [dseries]    dataset updated with fitted value
@@ -47,7 +49,7 @@ function ds = olsgibbs(ds, eqtag, BetaPriorExpectation, BetaPriorVariance, s2, n
 global M_ oo_ options_
 
 %% Check input
-if nargin < 7 || nargin > 11
+if nargin < 7 || nargin > 12
     error('Incorrect number of arguments passed to olsgibbs')
 end
 
@@ -125,8 +127,16 @@ else
     end
 end
 
+if nargin <= 11
+    param_names = {};
+else
+    if ~isempty(param_names) && ~iscellstr(param_names)
+        error('The 12th argument, if provided, must be a cellstr')
+    end
+end
+
 %% Parse equation
-[Y, lhssub, X, fp, lp] = common_parsing(ds, get_ast({eqtag}), true);
+[Y, lhssub, X, fp, lp] = common_parsing(ds, get_ast({eqtag}), true, param_names);
 lhsname = Y{1}.name;
 Y = Y{1}.data;
 X = X{1};

@@ -1,21 +1,23 @@
-function ds = dyn_ols(ds, fitted_names_dict, eqtags, model_name)
-% function varargout = dyn_ols(ds, fitted_names_dict, eqtags, model_name)
+function ds = dyn_ols(ds, fitted_names_dict, eqtags, model_name, param_names)
+% function varargout = dyn_ols(ds, fitted_names_dict, eqtags, model_name, param_names)
 % Run OLS on chosen model equations; unlike olseqs, allow for time t
 % endogenous variables on LHS
 %
 % INPUTS
-%   ds                [dseries]    data
-%   fitted_names_dict [cell]       Nx2 or Nx3 cell array to be used in naming fitted
-%                                  values; first column is the equation tag,
-%                                  second column is the name of the
-%                                  associated fitted value, third column
-%                                  (if it exists) is the function name of
-%                                  the transformation to perform on the
-%                                  fitted value.
-%   eqtags            [cellstr]    names of equation tags to estimate. If empty,
-%                                  estimate all equations
-%   model_name        [celltsr]    name to use in oo_ and inc file (must be
-%                                  same size as eqtags
+%   ds                [dseries]         data
+%   fitted_names_dict [cell]            Nx2 or Nx3 cell array to be used in naming fitted
+%                                       values; first column is the equation tag,
+%                                       second column is the name of the
+%                                       associated fitted value, third column
+%                                       (if it exists) is the function name of
+%                                       the transformation to perform on the
+%                                       fitted value.
+%   eqtags            [cellstr]         names of equation tags to estimate. If empty,
+%                                       estimate all equations
+%   model_name        [celltsr]         name to use in oo_ and inc file (must be
+%                                       same size as eqtags)
+%   param_names       [cell of cellstr] list of parameters to estimate by eqtag
+%                                       (if empty, estimate all)
 %
 % OUTPUTS
 %   ds                [dseries]    data updated with fitted values
@@ -42,7 +44,7 @@ function ds = dyn_ols(ds, fitted_names_dict, eqtags, model_name)
 
 global M_ oo_ options_
 
-assert(nargin >= 1 && nargin <= 4, 'dyn_ols() takes between 1 and 3 arguments');
+assert(nargin >= 1 && nargin <= 5, 'dyn_ols() takes between 1 and 5 arguments');
 assert(~isempty(ds) && isdseries(ds), 'dyn_ols: the first argument must be a dseries');
 
 if nargin < 3
@@ -67,18 +69,37 @@ ast = get_ast(eqtags);
 if nargin < 4
     model_name = cell(length(ast), 1);
 else
-    if ~iscellstr(model_name) || length(model_name) ~= length(ast)
-        error('The length of the 4th argument must be a cellstr with length equal to the number of equations estimated')
+    if isempty(model_name)
+        model_name = repmat({''}, length(ast), 1);
+    else
+        if ~iscellstr(model_name) || length(model_name) ~= length(ast)
+            error('The length of the 4th argument must be a cellstr with length equal to the number of equations estimated')
+        end
+        for i = 1:length(model_name)
+            if ~isvarname(model_name{i})
+                error('Every entry in the 4th argument must be a valid string');
+            end
+        end
     end
-    for i = 1:length(model_name)
-        if ~isvarname(model_name{i})
-            error('Every entry in the 4th argument must be a valid string');
+end
+
+if nargin < 5
+    param_names = {};
+else
+    if ~isempty(param_names)
+        if ~iscell(param_names) || (~isempty(eqtags) && length(param_names) ~= length(eqtags))
+            error('The 5th argument, if provided, must be a cell of the same length as the eqtags argument')
+        end
+        for i = 1:length(param_names)
+            if ~iscellstr(param_names{i})
+                error('every entry of param_names must be a cellstr')
+            end
         end
     end
 end
 
 %% Parse equations
-[Y, lhssub, X, fp, lp] = common_parsing(ds, ast, true);
+[Y, lhssub, X, fp, lp] = common_parsing(ds, ast, true, param_names);
 
 %% Loop over equations
 for i = 1:length(Y)

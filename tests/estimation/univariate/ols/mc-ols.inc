@@ -27,7 +27,11 @@ verbatim;
         names = regexp(simdata.name, 'res\w*');
         idxs = find(cellfun(@isempty, names));
         % Perform the estimation of equation 7.
-        dyn_ols(simdata{idxs}, {}, {'eq7'});
+        if strcmp(M_.fname, 'ols_param_names')
+            dyn_ols(simdata{idxs}, {}, {'eq7'}, '', {{'de_g_yer_ecm_u2_stn_L1', 'de_g_yer_de_g_yer_L1'}});
+        else
+            dyn_ols(simdata{idxs}, {}, {'eq7'});
+        end
         if i ~= number_of_simulations
             oo_ = rmfield(oo_, 'ols');
         end
@@ -35,7 +39,7 @@ verbatim;
         Beta(i, :) = M_.params';
     end
 
-    % Get the indices of the estimated parameters 
+    % Get the indices of the estimated parameters
     pid = oo_.ols.eq7.param_idxs;
 
     if number_of_simulations > 1
@@ -49,6 +53,9 @@ verbatim;
                 0.002639663639062
                 0.025487074270635
                 -0.126705792250240];
+        elseif strcmp(M_.fname, 'ols_param_names')
+            good = [0.497003481797960
+                -0.125265361034515];
         elseif strcmp(M_.fname, 'ols_wc_1')
             good = [0.466534186307255
                 -0.010596174928406

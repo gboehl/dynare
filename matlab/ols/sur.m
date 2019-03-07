@@ -68,7 +68,7 @@ end
 if nargin < 2
     param_names = {};
 else
-    if ~iscellstr(param_names)
+    if ~isempty(param_names) && ~iscellstr(param_names)
         error('the 2nd argument must be a cellstr')
     end
 end
@@ -81,38 +81,13 @@ ast = handle_constant_eqs(get_ast(eqtags));
 neqs = length(ast);
 
 %% Find parameters and variable names in equations and setup estimation matrices
-[Y, lhssub, X, ~, ~, residnames] = common_parsing(ds, ast, true);
+[Y, lhssub, X, ~, ~, residnames] = common_parsing(ds, ast, true, param_names);
 clear ast
 nobs = Y{1}.nobs;
 [Y, lhssub, X, constrained] = put_in_sur_form(Y, lhssub, X);
 
 if nargin == 1 && size(X, 2) ~= M_.param_nbr
     warning(['Not all parameters were used in model: ' strjoin(setdiff(M_.param_names, X.name), ', ')]);
-end
-
-if ~isempty(param_names)
-    newlhssub = dseries();
-    nparams = length(param_names);
-    pidxs = zeros(nparams, 1);
-    names = X.name;
-    for i = 1:nparams
-        idx = find(strcmp(param_names{i}, names));
-        if isempty(idx)
-            if ~isempty(eqtags)
-                error(['Could not find ' param_names{i} ...
-                    ' in the equations specified by ' strjoin(eqtags, ', ')]);
-            end
-            error('Couldn''t find parameter in equations');
-        end
-        pidxs(i) = idx;
-    end
-    subcols = setdiff(1:X.vobs, pidxs);
-    for i = 1:length(subcols)
-        newlhssub = newlhssub + M_.params(strcmp(names{subcols(i)}, M_.param_names)) * X.(names{subcols(i)});
-        X = X.remove(names{subcols(i)});
-    end
-    Y = Y - newlhssub;
-    lhssub = lhssub + newlhssub;
 end
 
 %% Return to surgibbs if called from there
