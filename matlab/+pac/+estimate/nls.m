@@ -80,7 +80,7 @@ end
     pac.estimate.init(M_, oo_, eqname, params, data, range);
 
 % Check that the error correction term is correct.
-if M_.pac.(pacmodl).equations.(eqtag).ec.istarget(1)
+if M_.pac.(pacmodl).equations.(eqtag).ec.istarget(2)
     error(['\nThe error correction term in PAC equation (%s) is not correct.\nThe ' ...
            'error correction term should be the difference between a trend\n' ...
            'and the level of the endogenous variable.'], pacmodl);
