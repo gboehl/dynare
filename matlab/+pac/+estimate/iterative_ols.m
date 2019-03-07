@@ -41,8 +41,6 @@ function iterative_ols(eqname, params, data, range)
 
 global M_ oo_ options_
 
-debug = false; % If true, prints the value of SSR for the initial guess.
-
 [pacmodl, ~, rhs, ~, ~, ~, rname, ~, ~, ~, ~, ipnames_, params, data, ~, eqtag] = ...
     pac.estimate.init(M_, oo_, eqname, params, data, range);
 
@@ -204,6 +202,7 @@ if is_exogenous_variables
         dataForExogenousVariables_ = dseries(dataForExogenousVariables_, data.dates(1), 'exogenous_variables_associated_with_calibrated_parameters');
     end
 else
+    listofvariables2 = {};
     dataForExogenousVariables = dseries();
     dataForExogenousVariables_ = dseries();
 end
@@ -233,6 +232,10 @@ end
 
 XDATA = DataForOLS{listofvariables3{:}}(range).data;
 
+if is_exogenous_variables && is_any_estimated_parameter_x
+    XDATA = [XDATA, dataForExogenousVariables{listofvariables2{:}}(range).data];
+end
+
 % Get index in params0 for share of optimizing agents parameter (if
 % not estimated, params_id_0 is empty).
 if is_non_optimizing_agents
@@ -252,8 +255,16 @@ end
 % exogenous variables.
 params_id_3 = setdiff(params_id_2, params_id_0);
 
-% Get values for EC and AR parameters
-params0_ = params0(params_id_1);
+% Get indices in params0 for EC/AR parameters and parameters
+% associated to the exogenous variables (if any).
+params_id_4 = [params_id_1; params_id_3];
+
+[~, params_id_1] = setdiff(ipnames_, [share_of_optimizing_agents_index, additive.params]);
+
+
+% Get values for EC-AR parameters plus the parameters associated to
+% the exogenous variables (if any).
+params0_ = params0([params_id_1; params_id_3]);
 
 % Get values for parameters associated to the exogenous variables.
 params0__ = params0(params_id_3);
@@ -287,16 +298,12 @@ while noconvergence
     else
         YDATA = YDATA-PacExpectations;
     end
-    if is_exogenous_variables
-        if is_any_calibrated_parameter_x
-            YDATA = YDATA-dataForExogenousVariables_(range).data;
-        end
-        if is_any_estimated_parameter_x
-            YDATA = YDATA-dataForExogenousVariables{listofvariables2{:}}(range).data*params0__;
-        end
+    if is_exogenous_variables && is_any_calibrated_parameter_x
+        YDATA = YDATA-dataForExogenousVariables_(range).data;
     end
     % Run OLS to estimate PAC parameters (autoregressive parameters and error correction parameter).
-    params1_ = (XDATA\YDATA)/share_of_optimizing_agents;
+    params1_ = (XDATA\YDATA);
+    params1_(1:length(params_id_1)) = params1_(1:length(params_id_1))/share_of_optimizing_agents;
     % Compute residuals and sum of squareed residuals.
     r = YDATA-XDATA*(params1_*share_of_optimizing_agents);
     ssr = r'*r;
@@ -308,25 +315,23 @@ while noconvergence
     % Update the value of the share of non optimizing agents (if estimated)
     if estimate_non_optimizing_agents_share
         % First update the parameters and compute the PAC expectation reduced form parameters.
-        M_.params(ipnames_(params_id_1)) = params0_;
+        M_.params(ipnames_(params_id_4)) = params0_;
         [PacExpectations, M_] = UpdatePacExpectationsData(dataPAC0, dataPAC1, data, range, pacmodl, eqtag, M_, oo_);
         % Set vector for left handside variable.
         YDATA = data{M_.endo_names{M_.pac.(pacmodl).equations.(eqtag).lhs_var}}(range).data;
         YDATA = YDATA-dataForNonOptimizingBehaviour(range).data*non_optimizing_behaviour_params;
-        if is_exogenous_variables && is_any_calibrated_parameter_x
-            YDATA = YDATA-dataForExogenousVariables_(range).data;
+        if is_exogenous_variables
+            if is_any_calibrated_parameter_x
+                YDATA = YDATA-dataForExogenousVariables_(range).data;
+            end
+            if is_any_estimated_parameter_x
+               YDATA = YDATA-XDATA(:, length(params_id_1):end)*params0_(length(params_id_1):end);
+            end
         end
         % Set vector for regressor.
-        ZDATA = XDATA*params0_+PacExpectations-dataForNonOptimizingBehaviour(range).data*non_optimizing_behaviour_params;
-        if is_exogenous_variables && is_any_estimated_parameter_x
-            ZDATA = [ZDATA, dataForExogenousVariables{listofvariables2{:}}(range).data];
-        end
+        ZDATA = XDATA(:,1:length(params_id_1))*params0_(1:length(params_id_1))+PacExpectations-dataForNonOptimizingBehaviour(range).data*non_optimizing_behaviour_params;
         % Update the (estimated) share of optimizing agents by running OLS
-        beta = (ZDATA\YDATA);
-        share_of_optimizing_agents = beta(1);
-        if is_exogenous_variables && is_any_estimated_parameter_x
-            params0__ = beta(2:end);
-        end
+        share_of_optimizing_agents = (ZDATA\YDATA);
         % Force the share of optimizing agents to be in [0,1].
         share_of_optimizing_agents = max(min(share_of_optimizing_agents, options_.pac.estimation.ols.share_of_optimizing_agents.ub), ...
                                          options_.pac.estimation.ols.share_of_optimizing_agents.lb);
@@ -335,31 +340,6 @@ while noconvergence
             error('On iteration %u the share of optimizing agents is found to be zero. Please increase the default lower bound for this parameter.', counter)
         end
         M_.params(ipnames_(params_id_0)) = share_of_optimizing_agents;
-        if is_exogenous_variables && is_any_estimated_parameter_x
-            M_.params(ipnames_(params_id_3)) = params0__;
-        end
-    elseif is_exogenous_variables && is_any_estimated_parameter_x
-        % First update the parameters and compute the PAC expectation reduced form parameters.
-        M_.params(ipnames_(params_id_1)) = params0_;
-        [PacExpectations, M_] = UpdatePacExpectationsData(dataPAC0, dataPAC1, data, range, pacmodl, eqtag, M_, oo_);
-        % Set vector for left handside variable.
-        YDATA = data{M_.endo_names{M_.pac.(pacmodl).equations.(eqtag).lhs_var}}(range).data;
-        if is_any_calibrated_parameter_x
-            YDATA = YDATA-dataForExogenousVariables_(range).data;
-        end
-        if is_non_optimizing_agents
-            YDATA = YDATA-share_of_optimizing_agents*(XDATA*params0_+PacExpectations) - ...
-                    (1-share_of_optimizing_agents)*(dataForNonOptimizingBehaviour(range).data*non_optimizing_behaviour_params);
-        else
-            YDATA = YDATA-XDATA*params0_-PacExpectations;
-        end
-        % Set vector for regressor
-        ZDATA = dataForExogenousVariables{listofvariables2{:}}(range).data;
-        % Update the (estimated) parameters associated to the
-        % exogenous variables.
-        beta = (ZDATA\YDATA);
-        params0__ = beta;
-        M_.params(ipnames_(params_id_3)) = params0__;
     else
         M_.params(ipnames_) = params0_;
         [PacExpectations, M_] = UpdatePacExpectationsData(dataPAC0, dataPAC1, data, range, pacmodl, eqtag, M_, oo_);
