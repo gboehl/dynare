@@ -59,11 +59,6 @@ tol = 1e-6;
 %% Estimation
 neqs = length(residnames);
 oo_.pooled_fgls.(model_name).dof = size(X,1)/neqs;
-pooled_ols(ds, param_common, param_regex, true, eqtags, model_name);
-
-%% Estimation
-neqs = length(residnames);
-oo_.pooled_fgls.(model_name).dof = size(X,1)/neqs;
 beta0 = oo_.pooled_fgls.(model_name).beta;
 for i = 1:maxit
     resid = Y - X * beta0;
