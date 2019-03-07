@@ -170,6 +170,7 @@ end
 
 fclose(fid);
 
+skipline()
 fprintf('Parameters declarations and calibrations are saved in %s.\n', filename);
 
 %
