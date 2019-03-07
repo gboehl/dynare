@@ -360,7 +360,7 @@ public:
     double err = korder_unfold_fold(4, 3, 2, 3, 1, 2,
                                     gy, gu, v);
 
-    return err < 0.08;
+    return err < 5e-7;
   }
 };
 
@@ -385,7 +385,7 @@ public:
     double err = korder_unfold_fold(4, 4, 5, 12, 8, 5,
                                     gy, gu, v);
 
-    return err < 0.08;
+    return err < 0.5;
   }
 };
 
@@ -409,7 +409,7 @@ public:
     double err = korder_unfold_fold(4, 3, 5, 12, 8, 5,
                                     gy, gu, v);
 
-    return err < 0.08;
+    return err < 0.5;
   }
 };
 
@@ -459,5 +459,8 @@ main()
   std::cout << "There were " << nfailed << " tests that failed out of "
             << all_tests.size() << " tests run." << std::endl;
 
-  return 0;
+  if (nfailed)
+    return EXIT_FAILURE;
+  else
+    return EXIT_SUCCESS;
 }
