@@ -859,6 +859,7 @@ KOrder::check(int dim) const
           r->add(1.0, E_ijk);
           double err = r->getData().getMax();
           JournalRecord(journal) << "\terror for symmetry " << sym << "\tis " << err << endrec;
+          maxerror = std::max(err, maxerror);
         }
     }
 
