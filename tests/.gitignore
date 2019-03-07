@@ -22,6 +22,10 @@ wsOct
 /partial_information/PItest3aHc0PCLsimModPiYrVarobsAll_PCL*
 /partial_information/PItest3aHc0PCLsimModPiYrVarobsCNR_PCL*
 
+/pac/var-6/example/model/pac-expectations/*
+/pac/var-5/example/model/pac-expectations/*
+/pac/trend-component-14/example/model/pac-expectations/*
+
 !/internals/tests.m
 !/fs2000_ssfile_aux.m
 !/printMakeCheckMatlabErrMsg.m
