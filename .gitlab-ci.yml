@@ -104,6 +104,9 @@ test_dynare++:
     - make -C dynare++ check
   dependencies:
     - build_binaries
+  artifacts:
+    paths:
+      - dynare++/kord/out.txt
 
 deploy_manual_unstable:
   stage: deploy
