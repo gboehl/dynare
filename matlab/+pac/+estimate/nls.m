@@ -63,17 +63,13 @@ global M_ oo_ options_
 
 is_gauss_newton = false;
 is_lsqnonlin = false;
-objective = 'ssr_';
 if nargin>4 && (isequal(optimizer, 'GaussNewton') || isequal(optimizer, 'lsqnonlin'))
     switch optimizer
       case 'GaussNewton'
         is_gauss_newton = true;
       case 'lsqnonlin'
         is_lsqnonlin = true;
-      otherwise
-        % Cannot happen.
     end
-    objective = 'r_';
 end
 
 [pacmodl, lhs, rhs, pnames, enames, xnames, ~, pid, eid, xid, ~, ipnames_, params, data, islaggedvariables, eqtag] = ...
@@ -284,23 +280,23 @@ if nargin<5
 end
 
 if is_gauss_newton
-    [params1, SSR, exitflag] = gauss_newton(resfun, params0);
+    [params1, SSR] = gauss_newton(resfun, params0);
 elseif is_lsqnonlin
     if ismember('levenberg-marquardt', varargin)
         % Levenberg Marquardt does not handle boundary constraints.
-        [params1, SSR, ~, exitflag] = lsqnonlin(resfun, params0, [], [], optimset(varargin{:}));
+        [params1, SSR] = lsqnonlin(resfun, params0, [], [], optimset(varargin{:}));
     else
-        [params1, SSR, ~, exitflag] = lsqnonlin(resfun, params0, bounds(:,1), bounds(:,2), optimset(varargin{:}));
+        [params1, SSR] = lsqnonlin(resfun, params0, bounds(:,1), bounds(:,2), optimset(varargin{:}));
     end
 else
     % Estimate the parameters by minimizing the sum of squared residuals.
-    [params1, SSR, exitflag] = dynare_minimize_objective(ssrfun, params0, ...
-                                                  minalgo, ...
-                                                  options_, ...
-                                                  bounds, ...
-                                                  parameter_names, ...
-                                                  [], ...
-                                                  []);
+    [params1, SSR] = dynare_minimize_objective(ssrfun, params0, ...
+        minalgo, ...
+        options_, ...
+        bounds, ...
+        parameter_names, ...
+        [], ...
+        []);
 end
 
 % Revert local modifications to the options.
