@@ -16,8 +16,8 @@ FaaDiBruno::calculate(const StackContainer<FGSTensor> &cont,
   out.zeros();
   for (int l = 1; l <= out.dimen(); l++)
     {
-      int mem_mb, p_size_mb;
-      int max = estimRefinment(out.getDims(), out.nrows(), l, mem_mb, p_size_mb);
+      int max, mem_mb, p_size_mb;
+      std::tie(max, mem_mb, p_size_mb) = estimRefinement(out.getDims(), out.nrows(), l);
       FoldedFineContainer fine_cont(cont, max);
       fine_cont.multAndAdd(l, f, out);
       JournalRecord recc(journal);
@@ -56,8 +56,8 @@ FaaDiBruno::calculate(const StackContainer<UGSTensor> &cont,
   out.zeros();
   for (int l = 1; l <= out.dimen(); l++)
     {
-      int mem_mb, p_size_mb;
-      int max = estimRefinment(out.getDims(), out.nrows(), l, mem_mb, p_size_mb);
+      int max, mem_mb, p_size_mb;
+      std::tie(max, mem_mb, p_size_mb) = estimRefinement(out.getDims(), out.nrows(), l);
       UnfoldedFineContainer fine_cont(cont, max);
       fine_cont.multAndAdd(l, f, out);
       JournalRecord recc(journal);
@@ -114,9 +114,8 @@ FaaDiBruno::calculate(const UnfoldedStackContainer &cont, const UGSContainer &g,
    If the right hand side is less than zero, we set |max| to 10, just to
    let it do something. */
 
-int
-FaaDiBruno::estimRefinment(const TensorDimens &tdims, int nr, int l,
-                           int &avmem_mb, int &tmpmem_mb)
+std::tuple<int, int, int>
+FaaDiBruno::estimRefinement(const TensorDimens &tdims, int nr, int l)
 {
   int nthreads = sthread::detach_thread_group::max_parallel_threads;
   long per_size1 = tdims.calcUnfoldMaxOffset();
@@ -142,7 +141,7 @@ FaaDiBruno::estimRefinment(const TensorDimens &tdims, int nr, int l,
         rec << " (decrease number of threads)";
       rec << endrec;
     }
-  avmem_mb = mem/1024/1024;
-  tmpmem_mb = nthreads*per_size/1024/1024;
-  return max;
+  int avmem_mb = mem/1024/1024;
+  int tmpmem_mb = nthreads*per_size/1024/1024;
+  return { max, avmem_mb, tmpmem_mb };
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2012 Dynare Team
+ * Copyright (C) 2008-2019 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -19,8 +19,6 @@
 
 #include "dynamic_dll.hh"
 
-#include <sstream>
-
 DynamicModelDLL::DynamicModelDLL(const std::string &modName) noexcept(false)
 {
   std::string fName;
@@ -33,22 +31,21 @@ DynamicModelDLL::DynamicModelDLL(const std::string &modName) noexcept(false)
     {
 #if defined(__CYGWIN32__) || defined(_WIN32)
       dynamicHinstance = LoadLibrary(fName.c_str());
-      if (dynamicHinstance == nullptr)
+      if (!dynamicHinstance)
         throw 1;
-      ntt = (int *) GetProcAddress(dynamicHinstance, "ntt");
-      dynamic_resid_tt = (dynamic_tt_fct) GetProcAddress(dynamicHinstance, "dynamic_resid_tt");
-      dynamic_resid = (dynamic_resid_fct) GetProcAddress(dynamicHinstance, "dynamic_resid");
-      dynamic_g1_tt = (dynamic_tt_fct) GetProcAddress(dynamicHinstance, "dynamic_g1_tt");
-      dynamic_g1 = (dynamic_g1_fct) GetProcAddress(dynamicHinstance, "dynamic_g1");
-      dynamic_g2_tt = (dynamic_tt_fct) GetProcAddress(dynamicHinstance, "dynamic_g2_tt");
-      dynamic_g2 = (dynamic_g2_fct) GetProcAddress(dynamicHinstance, "dynamic_g2");
-      dynamic_g3_tt = (dynamic_tt_fct) GetProcAddress(dynamicHinstance, "dynamic_g3_tt");
-      dynamic_g3 = (dynamic_g3_fct) GetProcAddress(dynamicHinstance, "dynamic_g3");
-      if (ntt == nullptr
-          || dynamic_resid_tt == nullptr || dynamic_resid == nullptr
-          || dynamic_g1_tt == nullptr || dynamic_g1 == nullptr
-          || dynamic_g2_tt == nullptr || dynamic_g2 == nullptr
-          || dynamic_g3_tt == nullptr || dynamic_g3 == nullptr)
+      ntt = reinterpret_cast<int *>(GetProcAddress(dynamicHinstance, "ntt"));
+      dynamic_resid_tt = reinterpret_cast<dynamic_tt_fct>(GetProcAddress(dynamicHinstance, "dynamic_resid_tt"));
+      dynamic_resid = reinterpret_cast<dynamic_resid_fct>(GetProcAddress(dynamicHinstance, "dynamic_resid"));
+      dynamic_g1_tt = reinterpret_cast<dynamic_tt_fct>(GetProcAddress(dynamicHinstance, "dynamic_g1_tt"));
+      dynamic_g1 = reinterpret_cast<dynamic_g1_fct>(GetProcAddress(dynamicHinstance, "dynamic_g1"));
+      dynamic_g2_tt = reinterpret_cast<dynamic_tt_fct>(GetProcAddress(dynamicHinstance, "dynamic_g2_tt"));
+      dynamic_g2 = reinterpret_cast<dynamic_g2_fct>(GetProcAddress(dynamicHinstance, "dynamic_g2"));
+      dynamic_g3_tt = reinterpret_cast<dynamic_tt_fct>(GetProcAddress(dynamicHinstance, "dynamic_g3_tt"));
+      dynamic_g3 = reinterpret_cast<dynamic_g3_fct>(GetProcAddress(dynamicHinstance, "dynamic_g3"));
+      if (!ntt || !dynamic_resid_tt || !dynamic_resid
+          || !dynamic_g1_tt || !dynamic_g1
+          || !dynamic_g2_tt || !dynamic_g2
+          || !dynamic_g3_tt || !dynamic_g3)
         {
           FreeLibrary(dynamicHinstance); // Free the library
           throw 2;
@@ -60,20 +57,19 @@ DynamicModelDLL::DynamicModelDLL(const std::string &modName) noexcept(false)
           std::cerr << dlerror() << std::endl;
           throw 1;
         }
-      ntt = (int *) dlsym(dynamicHinstance, "ntt");
-      dynamic_resid_tt = (dynamic_tt_fct) dlsym(dynamicHinstance, "dynamic_resid_tt");
-      dynamic_resid = (dynamic_resid_fct) dlsym(dynamicHinstance, "dynamic_resid");
-      dynamic_g1_tt = (dynamic_tt_fct) dlsym(dynamicHinstance, "dynamic_g1_tt");
-      dynamic_g1 = (dynamic_g1_fct) dlsym(dynamicHinstance, "dynamic_g1");
-      dynamic_g2_tt = (dynamic_tt_fct) dlsym(dynamicHinstance, "dynamic_g2_tt");
-      dynamic_g2 = (dynamic_g2_fct) dlsym(dynamicHinstance, "dynamic_g2");
-      dynamic_g3_tt = (dynamic_tt_fct) dlsym(dynamicHinstance, "dynamic_g3_tt");
-      dynamic_g3 = (dynamic_g3_fct) dlsym(dynamicHinstance, "dynamic_g3");
-      if (ntt == nullptr
-          || dynamic_resid_tt == nullptr || dynamic_resid == nullptr
-          || dynamic_g1_tt == nullptr || dynamic_g1 == nullptr
-          || dynamic_g2_tt == nullptr || dynamic_g2 == nullptr
-          || dynamic_g3_tt == nullptr || dynamic_g3 == nullptr)
+      ntt = reinterpret_cast<int *>(dlsym(dynamicHinstance, "ntt"));
+      dynamic_resid_tt = reinterpret_cast<dynamic_tt_fct>(dlsym(dynamicHinstance, "dynamic_resid_tt"));
+      dynamic_resid = reinterpret_cast<dynamic_resid_fct>(dlsym(dynamicHinstance, "dynamic_resid"));
+      dynamic_g1_tt = reinterpret_cast<dynamic_tt_fct>(dlsym(dynamicHinstance, "dynamic_g1_tt"));
+      dynamic_g1 = reinterpret_cast<dynamic_g1_fct>(dlsym(dynamicHinstance, "dynamic_g1"));
+      dynamic_g2_tt = reinterpret_cast<dynamic_tt_fct>(dlsym(dynamicHinstance, "dynamic_g2_tt"));
+      dynamic_g2 = reinterpret_cast<dynamic_g2_fct>(dlsym(dynamicHinstance, "dynamic_g2"));
+      dynamic_g3_tt = reinterpret_cast<dynamic_tt_fct>(dlsym(dynamicHinstance, "dynamic_g3_tt"));
+      dynamic_g3 = reinterpret_cast<dynamic_g3_fct>(dlsym(dynamicHinstance, "dynamic_g3"));
+      if (!ntt || !dynamic_resid_tt || !dynamic_resid
+          || !dynamic_g1_tt || !dynamic_g1
+          || !dynamic_g2_tt || !dynamic_g2
+          || !dynamic_g3_tt || !dynamic_g3)
         {
           dlclose(dynamicHinstance); // Free the library
           std::cerr << dlerror() << std::endl;
@@ -84,14 +80,13 @@ DynamicModelDLL::DynamicModelDLL(const std::string &modName) noexcept(false)
     }
   catch (int i)
     {
-      std::ostringstream msg;
-      msg << "Error when loading " << fName << " (";
+      std::string msg{"Error when loading " + fName + " ("};
       if (i == 1)
-        msg << "can't dynamically load the file";
+        msg += "can't dynamically load the file";
       if (i == 2)
-        msg << "can't locate the relevant dynamic symbols within the MEX file";
-      msg << ")";
-      throw DynareException(__FILE__, __LINE__, msg.str());
+        msg += "can't locate the relevant dynamic symbols within the MEX file";
+      msg += ")";
+      throw DynareException(__FILE__, __LINE__, msg);
     }
   catch (...)
     {
@@ -117,7 +112,7 @@ void
 DynamicModelDLL::eval(const Vector &y, const Vector &x, const Vector &modParams, const Vector &ySteady,
                       Vector &residual, TwoDMatrix *g1, TwoDMatrix *g2, TwoDMatrix *g3) noexcept(false)
 {
-  double *T = (double *) malloc(sizeof(double) * (*ntt));
+  double *T = new double[*ntt];
   dynamic_resid_tt(y.base(), x.base(), 1, modParams.base(), ySteady.base(), 0, T);
   dynamic_resid(y.base(), x.base(), 1, modParams.base(), ySteady.base(), 0, T, residual.base());
   if (g1 || g2 || g3)
@@ -133,5 +128,5 @@ DynamicModelDLL::eval(const Vector &y, const Vector &x, const Vector &modParams,
       dynamic_g3_tt(y.base(), x.base(), 1, modParams.base(), ySteady.base(), 0, T);
       dynamic_g3(y.base(), x.base(), 1, modParams.base(), ySteady.base(), 0, T, g3->base());
     }
-  free(T);
+  delete[] T;
 }

@@ -195,7 +195,7 @@ main(int argc, char **argv)
     }
   catch (const DynareException &e)
     {
-      printf("Caught Dynare exception: %s\n", e.message());
+      printf("Caught Dynare exception: %s\n", e.message().c_str());
       return 255;
     }
   catch (const ogu::Exception &e)

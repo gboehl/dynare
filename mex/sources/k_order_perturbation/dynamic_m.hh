@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010-2017 Dynare Team
+ * Copyright (C) 2010-2019 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -33,8 +33,8 @@ class DynamicModelMFile : public DynamicModelAC
 {
 private:
   const std::string DynamicMFilename;
-  const static int nlhs_dynamic = 4;
-  const static int nrhs_dynamic = 5;
+  constexpr static int nlhs_dynamic = 4;
+  constexpr static int nrhs_dynamic = 5;
 public:
   explicit DynamicModelMFile(const std::string &modName) noexcept(false);
   virtual ~DynamicModelMFile() = default;

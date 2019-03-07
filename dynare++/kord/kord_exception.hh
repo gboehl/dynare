@@ -4,11 +4,11 @@
 
 /* This is a simple code defining an exception and two convenience macros. */
 
+#include <string>
+#include <iostream>
+
 #ifndef KORD_EXCEPTION_H
 #define KORD_EXCEPTION_H
-
-#include <cstring>
-#include <cstdio>
 
 #define KORD_RAISE(mes)                         \
   throw KordException(__FILE__, __LINE__, mes);
@@ -25,31 +25,27 @@
 class KordException
 {
 protected:
-  char fname[50];
+  std::string fname;
   int lnum;
-  char message[500];
+  std::string message;
   int cd;
 public:
-  KordException(const char *f, int l, const char *mes, int c = 255)
+  KordException(std::string f, int l, std::string mes, int c = 255)
+    : fname{std::move(f)}, lnum{l}, message{std::move(mes)}, cd{c}
   {
-    strncpy(fname, f, 50); fname[49] = '\0';
-    strncpy(message, mes, 500); message[499] = '\0';
-    lnum = l;
-    cd = c;
   }
-  virtual ~KordException()
-  = default;
+  virtual ~KordException() = default;
   virtual void
   print() const
   {
-    printf("At %s:%d:(%d):%s\n", fname, lnum, cd, message);
+    std::cout << "At " << fname << ':' << lnum << ":(" << cd << "):" << message << '\n';
   }
   virtual int
   code() const
   {
     return cd;
   }
-  const char *
+  const std::string &
   get_message() const
   {
     return message;
@@ -57,8 +53,8 @@ public:
 };
 
 // |KordException| error code definitions
-#define KORD_FP_NOT_CONV 254
-#define KORD_FP_NOT_FINITE 253
-#define KORD_MD_NOT_STABLE 252
+constexpr int KORD_FP_NOT_CONV = 254;
+constexpr int KORD_FP_NOT_FINITE = 253;
+constexpr int KORD_MD_NOT_STABLE = 252;
 
 #endif

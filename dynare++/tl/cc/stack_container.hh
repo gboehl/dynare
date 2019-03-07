@@ -3,7 +3,7 @@
 // Stack of containers.
 
 /* Here we develop abstractions for stacked containers of tensors. For
-   instance, in perturbation methods for SDGE we need function
+   instance, in perturbation methods for DSGE we need function
    $$z(y,u,u',\sigma)=\left[\matrix{G(y,u,u',\sigma)\cr g(y,u,\sigma)\cr y\cr u}\right]$$
    and we need to calculate one step of Faa Di Bruno formula
    $$\left[B_{s^k}\right]_{\alpha_1\ldots\alpha_l}=\left[f_{z^l}\right]_{\beta_1\ldots\beta_l}
@@ -319,7 +319,7 @@ protected:
 };
 
 /* Here is the specialization of the |StackContainer|. We implement
-   here the $z$ needed in SDGE context. We implement |getType| and define
+   here the $z$ needed in DSGE context. We implement |getType| and define
    a constructor feeding the data and sizes.
 
    Note that it has two containers, the first is dependent on four
@@ -401,7 +401,7 @@ public:
 };
 
 /* Here we have another specialization of container used in context of
-   SDGE. We define a container for
+   DSGE. We define a container for
    $$G(y,u,u',\sigma)=g^{**}(g^*(y,u,\sigma),u',\sigma)$$
 
    For some reason, the symmetry of $g^{**}$ has length $4$ although it

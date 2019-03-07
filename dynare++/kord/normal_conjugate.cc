@@ -29,10 +29,6 @@ NormalConj::NormalConj(const ConstTwoDMatrix &ydata)
     }
 }
 
-NormalConj::NormalConj(const NormalConj &nc)
-   
-= default;
-
 // |NormalConj::update| one observation code
 /* The method performs the following:
    $$\eqalign{
@@ -71,7 +67,7 @@ NormalConj::update(const ConstTwoDMatrix &ydata)
 void
 NormalConj::update(const NormalConj &nc)
 {
-  double wold = ((double) kappa)/(kappa+nc.kappa);
+  double wold = static_cast<double>(kappa)/(kappa+nc.kappa);
   double wnew = 1-wold;
 
   mu.mult(wold);
@@ -94,7 +90,7 @@ NormalConj::getVariance(TwoDMatrix &v) const
 {
   if (nu > getDim()+1)
     {
-      v = (const TwoDMatrix &) lambda;
+      v = const_cast<const TwoDMatrix &>(lambda);
       v.mult(1.0/(nu-getDim()-1));
     }
   else

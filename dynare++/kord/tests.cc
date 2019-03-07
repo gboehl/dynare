@@ -309,8 +309,7 @@ TestRunnable::korder_unfold_fold(int maxdim, int unfold_dim,
                 << static_cast<double>(checktime)/CLOCKS_PER_SEC << '\n'
                 << "\tmax error in step dim=" << d << ":      " << std::setprecision(6) << err
                 << std::endl;
-      if (maxerror < err)
-        maxerror = err;
+      maxerror = std::max(err, maxerror);
     }
   // perform folded steps until maxdim
   if (unfold_dim < maxdim)
@@ -335,8 +334,7 @@ TestRunnable::korder_unfold_fold(int maxdim, int unfold_dim,
                     << static_cast<double>(checktime)/CLOCKS_PER_SEC << '\n'
                     << "\tmax error in step dim=" << d << ":      " << std::setprecision(6) << err
                     << std::endl;
-          if (maxerror < err)
-            maxerror = err;
+          maxerror = std::max(err, maxerror);
         }
     }
   return maxerror;

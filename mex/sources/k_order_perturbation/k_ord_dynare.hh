@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2017 Dynare Team
+ * Copyright (C) 2008-2019 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -19,8 +19,10 @@
 
 #ifndef K_ORD_DYNARE3_H
 #define K_ORD_DYNARE3_H
+
 #include <vector>
 #include <memory>
+
 #include "t_container.hh"
 #include "sparse_tensor.hh"
 #include "decision_rule.hh"
@@ -115,9 +117,7 @@ class KordpDynare : public DynamicModel
   double qz_criterium;
   std::vector<int> JacobianIndices;
 
-  TwoDMatrix *g1p;
-  TwoDMatrix *g2p;
-  TwoDMatrix *g3p;
+  std::unique_ptr<TwoDMatrix> g1p, g2p, g3p;
 public:
   KordpDynare(const std::vector<std::string> &endo, int num_endo,
               const std::vector<std::string> &exo, int num_exo, int num_par,
@@ -134,9 +134,9 @@ public:
               const int nSteps, const int ord,
               Journal &jr, std::unique_ptr<DynamicModelAC> dynamicModelFile_arg, double sstol,
               const std::vector<int> &varOrder, const TwoDMatrix &ll_Incidence,
-              double qz_criterium, TwoDMatrix *g1_arg, TwoDMatrix *g2_arg, TwoDMatrix *g3_arg) noexcept(false);
+              double qz_criterium, std::unique_ptr<TwoDMatrix> g1_arg,
+              std::unique_ptr<TwoDMatrix> g2_arg, std::unique_ptr<TwoDMatrix> g3_arg) noexcept(false);
 
-  virtual ~KordpDynare();
   int
   nstat() const
   {

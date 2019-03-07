@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2017 Dynare Team
+ * Copyright (C) 2008-2019 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -44,8 +44,8 @@ KordpDynare::KordpDynare(const std::vector<std::string> &endo, int num_endo,
   nYs{npred + nboth}, nYss{nboth + nforw}, nY{num_endo}, nJcols{jcols}, NNZD{nnzd}, nSteps{nsteps},
   nOrder{norder}, journal{jr}, ySteady{ysteady}, params{inParams}, vCov{vcov},
   md{1}, dnl{*this, endo}, denl{*this, exo}, dsnl{*this, dnl, denl}, ss_tol{sstol}, varOrder{var_order},
-  ll_Incidence{llincidence}, qz_criterium{criterium}, g1p{nullptr},
-  g2p{nullptr}, g3p{nullptr}, dynamicModelFile{move(dynamicModelFile_arg)}
+  ll_Incidence{llincidence}, qz_criterium{criterium},
+  dynamicModelFile{move(dynamicModelFile_arg)}
 {
   ReorderDynareJacobianIndices();
 
@@ -61,24 +61,21 @@ KordpDynare::KordpDynare(const std::vector<std::string> &endo, int num_endo,
                          const int nsteps, int norder,
                          Journal &jr, std::unique_ptr<DynamicModelAC> dynamicModelFile_arg, double sstol,
                          const std::vector<int> &var_order, const TwoDMatrix &llincidence, double criterium,
-                         TwoDMatrix *g1_arg, TwoDMatrix *g2_arg, TwoDMatrix *g3_arg) noexcept(false) :
+                         std::unique_ptr<TwoDMatrix> g1_arg, std::unique_ptr<TwoDMatrix> g2_arg,
+                         std::unique_ptr<TwoDMatrix> g3_arg) noexcept(false) :
   nStat{nstat}, nBoth{nboth}, nPred{npred}, nForw{nforw}, nExog{nexog}, nPar{npar},
   nYs{npred + nboth}, nYss{nboth + nforw}, nY{num_endo}, nJcols{jcols}, NNZD{nnzd}, nSteps{nsteps},
   nOrder{norder}, journal{jr}, ySteady{ysteady}, params{inParams}, vCov{vcov},
   md{1}, dnl{*this, endo}, denl{*this, exo}, dsnl{*this, dnl, denl}, ss_tol{sstol}, varOrder{var_order},
   ll_Incidence{llincidence}, qz_criterium{criterium},
-  g1p{g1_arg}, g2p{g2_arg}, g3p{g3_arg}, dynamicModelFile{move(dynamicModelFile_arg)}
+  g1p{std::move(g1_arg)}, g2p{std::move(g2_arg)}, g3p{std::move(g3_arg)},
+  dynamicModelFile{move(dynamicModelFile_arg)}
 {
   ReorderDynareJacobianIndices();
 
   //	Initialise ModelDerivativeContainer(*this, this->md, nOrder);
   for (int iord = 1; iord <= nOrder; iord++)
     md.insert(std::make_unique<FSSparseTensor>(iord, nY+nYs+nYss+nExog, nY));
-}
-
-KordpDynare::~KordpDynare()
-{
-  // No need to manually delete tensors in "md", they are deleted by the TensorContainer destructor
 }
 
 void
@@ -110,21 +107,21 @@ KordpDynare::evaluateSystem(Vector &out, const ConstVector &yym, const ConstVect
 void
 KordpDynare::calcDerivativesAtSteady()
 {
-  if (g1p == nullptr)
+  if (!g1p)
     {
-      g1p = new TwoDMatrix(nY, nJcols);
+      g1p = std::make_unique<TwoDMatrix>(nY, nJcols);
       g1p->zeros();
 
       if (nOrder > 1)
         {
           // allocate space for sparse Hessian
-          g2p = new TwoDMatrix((int) NNZD[1], 3);
+          g2p = std::make_unique<TwoDMatrix>(static_cast<int>(NNZD[1]), 3);
           g2p->zeros();
         }
 
       if (nOrder > 2)
         {
-          g3p = new TwoDMatrix((int) NNZD[2], 3);
+          g3p = std::make_unique<TwoDMatrix>(static_cast<int>(NNZD[2]), 3);
           g3p->zeros();
         }
 
@@ -136,23 +133,16 @@ KordpDynare::calcDerivativesAtSteady()
       Vector llxSteady(nJcols-nExog);
       LLxSteady(ySteady, llxSteady);
 
-      dynamicModelFile->eval(llxSteady, xx, params, ySteady, out, g1p, g2p, g3p);
-
+      dynamicModelFile->eval(llxSteady, xx, params, ySteady, out, g1p.get(), g2p.get(), g3p.get());
     }
 
   populateDerivativesContainer(*g1p, 1, JacobianIndices);
-  delete g1p;
 
   if (nOrder > 1)
-    {
-      populateDerivativesContainer(*g2p, 2, JacobianIndices);
-      delete g2p;
-    }
+    populateDerivativesContainer(*g2p, 2, JacobianIndices);
+
   if (nOrder > 2)
-    {
-      populateDerivativesContainer(*g3p, 3, JacobianIndices);
-      delete g3p;
-    }
+    populateDerivativesContainer(*g3p, 3, JacobianIndices);
 }
 
 /*******************************************************************************
@@ -167,22 +157,20 @@ KordpDynare::populateDerivativesContainer(const TwoDMatrix &g, int ord, const st
   IntSequence s(ord, 0);
 
   if (ord == 1)
-    {
-      for (int i = 0; i < g.ncols(); i++)
-        {
-          for (int j = 0; j < g.nrows(); j++)
-            {
-              double x;
-              if (s[0] < nJcols-nExog)
-                x = g.get(j, vOrder[s[0]]);
-              else
-                x = g.get(j, s[0]);
-              if (x != 0.0)
-                mdTi->insert(s, j, x);
-            }
-          s[0]++;
-        }
-    }
+    for (int i = 0; i < g.ncols(); i++)
+      {
+        for (int j = 0; j < g.nrows(); j++)
+          {
+            double x;
+            if (s[0] < nJcols-nExog)
+              x = g.get(j, vOrder[s[0]]);
+            else
+              x = g.get(j, s[0]);
+            if (x != 0.0)
+              mdTi->insert(s, j, x);
+          }
+        s[0]++;
+      }
   else if (ord == 2)
     {
       int nJcols1 = nJcols-nExog;
@@ -191,8 +179,8 @@ KordpDynare::populateDerivativesContainer(const TwoDMatrix &g, int ord, const st
         revOrder[vOrder[i]] = i;
       for (int i = 0; i < g.nrows(); i++)
         {
-          int j = (int) g.get(i, 0)-1; // hessian indices start with 1
-          int i1 = (int) g.get(i, 1) -1;
+          int j = static_cast<int>(g.get(i, 0))-1; // hessian indices start with 1
+          int i1 = static_cast<int>(g.get(i, 1)) -1;
           if (j < 0 || i1 < 0)
             continue; // Discard empty entries (see comment in DynamicModelAC::unpackSparseMatrix())
           int s0 = i1 / nJcols;
@@ -221,8 +209,8 @@ KordpDynare::populateDerivativesContainer(const TwoDMatrix &g, int ord, const st
         revOrder[vOrder[i]] = i;
       for (int i = 0; i < g.nrows(); i++)
         {
-          int j = (int) g.get(i, 0)-1;
-          int i1 = (int) g.get(i, 1) -1;
+          int j = static_cast<int>(g.get(i, 0))-1;
+          int i1 = static_cast<int>(g.get(i, 1)) -1;
           if (j < 0 || i1 < 0)
             continue; // Discard empty entries (see comment in DynamicModelAC::unpackSparseMatrix())
           int s0 = i1 / nJcols2;
@@ -269,14 +257,12 @@ KordpDynare::LLxSteady(const Vector &yS, Vector &llxSteady) noexcept(false)
     throw DynareException(__FILE__, __LINE__, "llxSteady has wrong size");
 
   for (int ll_row = 0; ll_row < ll_Incidence.nrows(); ll_row++)
-    {
-      // populate (non-sparse) vector with ysteady values
-      for (int i = 0; i < nY; i++)
-        {
-          if (ll_Incidence.get(ll_row, i))
-            llxSteady[((int) ll_Incidence.get(ll_row, i))-1] = yS[i];
-        }
-    }
+    // populate (non-sparse) vector with ysteady values
+    for (int i = 0; i < nY; i++)
+      {
+        if (ll_Incidence.get(ll_row, i))
+          llxSteady[static_cast<int>(ll_Incidence.get(ll_row, i))-1] = yS[i];
+      }
 }
 
 /************************************
@@ -318,7 +304,7 @@ KordpDynare::ReorderDynareJacobianIndices() noexcept(false)
       // reorder in orde-var order & populate temporary nEndo (sparse) vector with
       // the lag, current and lead blocks of the jacobian respectively
       for (i = 0; i < nY; i++)
-        tmp[i] = ((int) ll_Incidence.get(ll_row, varOrder[i]-1));
+        tmp[i] = static_cast<int>(ll_Incidence.get(ll_row, varOrder[i]-1));
       // write the reordered blocks back to the jacobian
       // in reverse order
       for (j = nY-1; j >= 0; j--)
@@ -340,7 +326,8 @@ KordpDynare::ReorderDynareJacobianIndices() noexcept(false)
 /*       DynareNameList class                                                         */
 /**************************************************************************************/
 
-DynareNameList::DynareNameList(const KordpDynare &dynare, std::vector<std::string> names_arg) : names(std::move(names_arg))
+DynareNameList::DynareNameList(const KordpDynare &dynare, std::vector<std::string> names_arg)
+  : names(std::move(names_arg))
 {
 }
 

@@ -17,6 +17,8 @@
 #include "sparse_tensor.hh"
 #include "gs_tensor.hh"
 
+#include <tuple>
+
 /* Nothing special here. See |@<|FaaDiBruno::calculate| folded sparse
    code@>| for reason of having |magic_mult|. */
 
@@ -37,7 +39,7 @@ public:
   void calculate(const UnfoldedStackContainer &cont, const UGSContainer &g,
                  UGSTensor &out);
 protected:
-  int estimRefinment(const TensorDimens &tdims, int nr, int l, int &avmem_mb, int &tmpmem_mb);
+  std::tuple<int,int,int> estimRefinement(const TensorDimens &tdims, int nr, int l);
   constexpr static double magic_mult = 1.5;
 };
 

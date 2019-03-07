@@ -6,37 +6,26 @@
 #define DYNARE_EXCEPTION_H
 
 #include <string>
-#include <cstring>
+#include <utility>
 
 class DynareException
 {
-  char *mes;
+  std::string mes;
 public:
-  DynareException(const char *m, const char *fname, int line, int col)
+  DynareException(const std::string &m, const std::string &fname, int line, int col)
+    : mes{"Parse error at " + fname + ", line " + std::to_string(line) + ", column " +
+          std::to_string(col) + ": " + m}
   {
-    mes = new char[strlen(m) + strlen(fname) + 100];
-    sprintf(mes, "Parse error at %s, line %d, column %d: %s", fname, line, col, m);
   }
-  DynareException(const char *fname, int line, const std::string &m)
+  DynareException(const std::string &fname, int line, const std::string &m)
+    : mes{fname + ':' + std::to_string(line) + ": " + m}
   {
-    mes = new char[m.size() + strlen(fname) + 50];
-    sprintf(mes, "%s:%d: %s", fname, line, m.c_str());
   }
-  DynareException(const char *m, int offset)
+  DynareException(const std::string &m, int offset)
+    : mes{"Parse error in provided string at offset " + std::to_string(offset) + ": " + m}
   {
-    mes = new char[strlen(m) + 100];
-    sprintf(mes, "Parse error in provided string at offset %d: %s", offset, m);
   }
-  DynareException(const DynareException &e)
-    : mes(new char[strlen(e.mes)+1])
-  {
-    strcpy(mes, e.mes);
-  }
-  virtual ~DynareException()
-  {
-    delete [] mes;
-  }
-  const char *
+  const std::string &
   message() const
   {
     return mes;

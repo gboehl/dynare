@@ -26,6 +26,8 @@
 #include "fs_tensor.hh"
 #include "SylvException.hh"
 
+#include <string>
+
 extern "C" {
   void
   mexFunction(int nlhs, mxArray *plhs[],
@@ -34,20 +36,20 @@ extern "C" {
     if (nhrs < 12 || nlhs != 2)
       DYN_MEX_FUNC_ERR_MSG_TXT("dynare_simul_ must have at least 12 input parameters and exactly 2 output arguments.\n");
 
-    auto order = (int) mxGetScalar(prhs[0]);
+    int order = static_cast<int>(mxGetScalar(prhs[0]));
     if (nhrs != 12 + order)
       DYN_MEX_FUNC_ERR_MSG_TXT("dynare_simul_ must have exactly 11+order input parameters.\n");
 
-    auto nstat = (int) mxGetScalar(prhs[1]);
-    auto npred = (int) mxGetScalar(prhs[2]);
-    auto nboth = (int) mxGetScalar(prhs[3]);
-    auto nforw = (int) mxGetScalar(prhs[4]);
-    auto nexog = (int) mxGetScalar(prhs[5]);
+    int nstat = static_cast<int>(mxGetScalar(prhs[1]));
+    int npred = static_cast<int>(mxGetScalar(prhs[2]));
+    int nboth = static_cast<int>(mxGetScalar(prhs[3]));
+    int nforw = static_cast<int>(mxGetScalar(prhs[4]));
+    int nexog = static_cast<int>(mxGetScalar(prhs[5]));
 
     const mxArray *const ystart = prhs[6];
     const mxArray *const shocks = prhs[7];
     const mxArray *const vcov = prhs[8];
-    auto seed = (int) mxGetScalar(prhs[9]);
+    int seed = static_cast<int>(mxGetScalar(prhs[9]));
     const mxArray *const ysteady = prhs[10];
     const mwSize *const ystart_dim = mxGetDimensions(ystart);
     const mwSize *const shocks_dim = mxGetDimensions(shocks);
@@ -55,18 +57,18 @@ extern "C" {
     const mwSize *const ysteady_dim = mxGetDimensions(ysteady);
 
     int ny = nstat + npred + nboth + nforw;
-    if (ny != (int) ystart_dim[0])
+    if (ny != static_cast<int>(ystart_dim[0]))
       DYN_MEX_FUNC_ERR_MSG_TXT("ystart has wrong number of rows.\n");
     if (1 != ystart_dim[1])
       DYN_MEX_FUNC_ERR_MSG_TXT("ystart has wrong number of cols.\n");
     int nper = shocks_dim[1];
-    if (nexog != (int) shocks_dim[0])
+    if (nexog != static_cast<int>(shocks_dim[0]))
       DYN_MEX_FUNC_ERR_MSG_TXT("shocks has a wrong number of rows.\n");
-    if (nexog != (int) vcov_dim[0])
+    if (nexog != static_cast<int>(vcov_dim[0]))
       DYN_MEX_FUNC_ERR_MSG_TXT("vcov has a wrong number of rows.\n");
-    if (nexog != (int) vcov_dim[1])
+    if (nexog != static_cast<int>(vcov_dim[1]))
       DYN_MEX_FUNC_ERR_MSG_TXT("vcov has a wrong number of cols.\n");
-    if (ny != (int) ysteady_dim[0])
+    if (ny != static_cast<int>(ysteady_dim[0]))
       DYN_MEX_FUNC_ERR_MSG_TXT("ysteady has wrong number of rows.\n");
     if (1 != ysteady_dim[1])
       DYN_MEX_FUNC_ERR_MSG_TXT("ysteady has wrong number of cols.\n");
@@ -85,29 +87,18 @@ extern "C" {
             const mxArray *gk = prhs[11+dim];
             const mwSize *const gk_dim = mxGetDimensions(gk);
             FFSTensor ft(ny, npred+nboth+nexog, dim);
-            if (ft.ncols() != (int) gk_dim[1])
-              {
-                char buf[1000];
-                sprintf(buf, "Wrong number of columns for folded tensor: got %d but I want %d\n",
-                        (int) gk_dim[1], ft.ncols());
-                DYN_MEX_FUNC_ERR_MSG_TXT(buf);
-              }
-            if (ft.nrows() != (int) gk_dim[0])
-              {
-                char buf[1000];
-                sprintf(buf, "Wrong number of rows for folded tensor: got %d but I want %d\n",
-                        (int) gk_dim[0], ft.nrows());
-                DYN_MEX_FUNC_ERR_MSG_TXT(buf);
-              }
+            if (ft.ncols() != static_cast<int>(gk_dim[1]))
+              DYN_MEX_FUNC_ERR_MSG_TXT("Wrong number of columns for folded tensor: got " + std::to_string(gk_dim[1]) + " but i want " + std::to_string(ft.ncols()) + '\n');
+            if (ft.nrows() != static_cast<int>(gk_dim[0]))
+              DYN_MEX_FUNC_ERR_MSG_TXT("Wrong number of rows for folded tensor: got " + std::to_string(gk_dim[0]) + " but i want " + std::to_string(ft.nrows()) + '\n');
             ft.zeros();
             ConstTwoDMatrix gk_mat(ft.nrows(), ft.ncols(), ConstVector{gk});
             ft.add(1.0, gk_mat);
             pol.insert(std::make_unique<UFSTensor>(ft));
           }
         // form the decision rule
-        UnfoldDecisionRule
-          dr(pol, PartitionY(nstat, npred, nboth, nforw),
-             nexog, ConstVector{ysteady});
+        UnfoldDecisionRule dr(pol, PartitionY(nstat, npred, nboth, nforw),
+                              nexog, ConstVector{ysteady});
         // form the shock realization
         ConstTwoDMatrix shocks_mat(nexog, nper, ConstVector{shocks});
         ConstTwoDMatrix vcov_mat(nexog, nexog, ConstVector{vcov});

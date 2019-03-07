@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010-2014 Dynare Team
+ * Copyright (C) 2010-2019 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -50,7 +50,7 @@ DynamicModelAC::unpackSparseMatrixAndCopyIntoTwoDMatData(mxArray *sparseMat, Two
   int output_row = 0;
 
   for (int i = 0; i < totalCols; i++)
-    for (int j = 0; j < (int) (colIdxVector[i+1]-colIdxVector[i]); j++, rind++)
+    for (int j = 0; j < static_cast<int>((colIdxVector[i+1]-colIdxVector[i])); j++, rind++)
       {
         tdm->get(output_row, 0) = rowIdxVector[rind] + 1;
         tdm->get(output_row, 1) = i + 1;
@@ -62,7 +62,7 @@ DynamicModelAC::unpackSparseMatrixAndCopyIntoTwoDMatData(mxArray *sparseMat, Two
      derivative is symbolically not zero but numerically zero at the evaluation
      point), then fill in the matrix with empty entries, that will be
      recognized as such by KordpDynare::populateDerivativesContainer() */
-  while (output_row < (int) sizeRowIdxVector)
+  while (output_row < static_cast<int>(sizeRowIdxVector))
     {
       tdm->get(output_row, 0) = 0;
       tdm->get(output_row, 1) = 0;

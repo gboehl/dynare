@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010-2011 Dynare Team
+ * Copyright (C) 2010-2019 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -16,6 +16,8 @@
  * You should have received a copy of the GNU General Public License
  * along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+#include <algorithm>
 
 #include "dynamic_m.hh"
 
@@ -36,20 +38,21 @@ DynamicModelMFile::eval(const Vector &y, const Vector &x, const Vector &modParam
   prhs[3] = mxCreateDoubleMatrix(ySteady.length(), 1, mxREAL);
   prhs[4] = mxCreateDoubleScalar(1.0);
 
-  memcpy(mxGetData(prhs[0]), (void *) y.base(), y.length()*sizeof(double));
-  memcpy(mxGetData(prhs[1]), (void *) x.base(), x.length()*sizeof(double));
-  memcpy(mxGetData(prhs[2]), (void *) modParams.base(), modParams.length()*sizeof(double));
-  memcpy(mxGetData(prhs[3]), (void *) ySteady.base(), ySteady.length()*sizeof(double));
+  std::copy_n(y.base(), y.length(), mxGetPr(prhs[0]));
+  std::copy_n(x.base(), x.length(), mxGetPr(prhs[1]));
+  std::copy_n(modParams.base(), modParams.length(), mxGetPr(prhs[2]));
+  std::copy_n(ySteady.base(), ySteady.length(), mxGetPr(prhs[3]));
 
   int retVal = mexCallMATLAB(nlhs_dynamic, plhs, nrhs_dynamic, prhs, DynamicMFilename.c_str());
   if (retVal != 0)
     throw DynareException(__FILE__, __LINE__, "Trouble calling " + DynamicMFilename);
 
   residual = Vector{plhs[0]};
-  copyDoubleIntoTwoDMatData(mxGetPr(plhs[1]), g1, (int) mxGetM(plhs[1]), (int) mxGetN(plhs[1]));
-  if (g2 != nullptr)
+  copyDoubleIntoTwoDMatData(mxGetPr(plhs[1]), g1, static_cast<int>(mxGetM(plhs[1])),
+                            static_cast<int>(mxGetN(plhs[1])));
+  if (g2)
     unpackSparseMatrixAndCopyIntoTwoDMatData(plhs[2], g2);
-  if (g3 != nullptr)
+  if (g3)
     unpackSparseMatrixAndCopyIntoTwoDMatData(plhs[3], g3);
 
   for (int i = 0; i < nrhs_dynamic; i++)

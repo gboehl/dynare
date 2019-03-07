@@ -54,10 +54,10 @@ public:
      constructor. */
   NormalConj(int d);
   NormalConj(const ConstTwoDMatrix &ydata);
-  NormalConj(const NormalConj &nc);
+  NormalConj(const NormalConj &) = default;
+  NormalConj(NormalConj &&) = default;
 
-  virtual ~NormalConj()
-  = default;
+  virtual ~NormalConj() = default;
   void update(const ConstVector &y);
   void update(const ConstTwoDMatrix &ydata);
   void update(const NormalConj &nc);

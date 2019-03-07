@@ -4,7 +4,7 @@
 
 /*
   The main purpose of this file is to implement a perturbation method
-  algorithm for an SDGE model for higher order approximations. The input
+  algorithm for an DSGE model for higher order approximations. The input
   of the algorithm are sparse tensors as derivatives of the dynamic
   system, then dimensions of vector variables, then the first order
   approximation to the decision rule and finally a covariance matrix of
@@ -76,10 +76,12 @@ public:
 
 /* The |PartitionY| class defines the partitioning of state variables
    $y$. The vector $y$, and subvector $y^*$, and $y^{**}$ are defined.
+
    $$y=\left[\matrix{\hbox{static}\cr\hbox{predeter}\cr\hbox{both}\cr
    \hbox{forward}}\right],\quad
    y^*=\left[\matrix{\hbox{predeter}\cr\hbox{both}}\right],\quad
    y^{**}=\left[\matrix{\hbox{both}\cr\hbox{forward}}\right],$$
+
    where ``static'' means variables appearing only at time $t$,
    ``predeter'' means variables appearing at time $t-1$, but not at
    $t+1$, ``both'' means variables appearing both at $t-1$ and $t+1$
@@ -180,60 +182,51 @@ public:
   }
 };
 
-/* Here we have the class for the higher order approximations. It
-   contains the following data:
+/* Here we have the class for the higher order approximations.
 
-   \halign{\kern\parindent\vrule height12pt width0pt
-   \vtop{\hsize=4cm\noindent\raggedright #}&\kern0.5cm\vtop{\hsize=10cm\noindent #}\cr
-   variable sizes ypart& |PartitionY| struct maintaining partitions of
-   $y$, see |@<|PartitionY| struct declaration@>|\cr
-   tensor variable dimension |nvs|& variable sizes of all tensors in
-   containers, sizes of $y^*$, $u$, $u'$@q'@> and $\sigma$\cr
-   tensor containers & folded and unfolded containers for $g$, $g_{y^*}$,
-   $g_{y^**}$ (the latter two collect appropriate subtensors of $g$, they
-   do not allocate any new space), $G$, $G$ stack, $Z$ stack\cr
-   dynamic model derivatives & just a reference to the container of
-   sparse tensors of the system derivatives, lives outside the class\cr
-   moments & both folded and unfolded normal moment containers, both are
-   calculated at initialization\cr
-   matrices & matrix $A$, matrix $S$, and matrix $B$, see |@<|MatrixA| class
-   declaration@>| and |@<|MatrixB| class declaration@>|\cr
-   }
+   It contains the following data:
 
-   \kern 0.4cm
+   - variable sizes ypart: |PartitionY| struct maintaining partitions of
+     $y$, see |@<|PartitionY| struct declaration@>|
+   - tensor variable dimension |nvs| : variable sizes of all tensors in
+     containers, sizes of $y^*$, $u$, $u'$ and $\sigma$
+   - tensor containers: folded and unfolded containers for $g$, $g_{y^*}$,
+     $g_{y^**}$ (the latter two collect appropriate subtensors of $g$, they
+     do not allocate any new space), $G$, $G$ stack, $Z$ stack
+   - dynamic model derivatives: just a reference to the container of
+     sparse tensors of the system derivatives, lives outside the class
+   - moments: both folded and unfolded normal moment containers, both are
+     calculated at initialization
+   - matrices: matrix $A$, matrix $S$, and matrix $B$, see |@<|MatrixA| class
+     declaration@>| and |@<|MatrixB| class declaration@>
 
    The methods are the following:
-   \halign{\kern\parindent\vrule height12pt width0pt
-   \vtop{\hsize=4cm\noindent\raggedright #}&\kern0.5cm\vtop{\hsize=10cm\noindent #}\cr
-   member access & we declare template methods for accessing containers
-   depending on |fold| and |unfold| flag, we implement their
-   specializations\cr
-   |performStep| & this performs $k$-order step provided that $k=2$ or
-   the $k-1$-th step has been run, this is the core method\cr
-   |check| & this calculates residuals of all solved equations for
-   $k$-order and reports their sizes, it is runnable after $k$-order
-   |performStep| has been run\cr
-   |insertDerivative| & inserts a $g$ derivative to the $g$ container and
-   also creates subtensors and insert them to $g_{y^*}$ and $g_{y^{**}}$
-   containers\cr
-   |sylvesterSolve| & solve the sylvester equation (templated fold, and
-   unfold)\cr
-   |faaDiBrunoZ| & calculates derivatives of $F$ by Faa Di Bruno for the
-   sparse container of system derivatives and $Z$ stack container\cr
-   |faaDiBrunoG| & calculates derivatives of $G$ by Faa Di Bruno for the
-   dense container $g^{**}$ and $G$ stack\cr
-   |recover_y| & recovers $g_{y^{*i}}$\cr
-   |recover_yu| & recovers $g_{y^{*i}u^j}$\cr
-   |recover_ys| & recovers $g_{y^{*i}\sigma^j}$\cr
-   |recover_yus| & recovers $g_{y^{*i}u^j\sigma^k}$\cr
-   |recover_s| & recovers $g_{\sigma^i}$\cr
-   |fillG| & calculates specified derivatives of $G$ and inserts them to
-   the container\cr
-   |calcE_ijk|& calculates $E_{ijk}$\cr
-   |calcD_ijk|& calculates $D_{ijk}$\cr
-   }
-
-   \kern 0.3cm
+   - member access: we declare template methods for accessing containers
+     depending on |fold| and |unfold| flag, we implement their
+     specializations
+   - |performStep|: this performs $k$-order step provided that $k=2$ or
+     the $k-1$-th step has been run, this is the core method
+   - |check|: this calculates residuals of all solved equations for
+     $k$-order and reports their sizes, it is runnable after $k$-order
+     |performStep| has been run
+   - |insertDerivative|: inserts a $g$ derivative to the $g$ container and
+     also creates subtensors and insert them to $g_{y^*}$ and $g_{y^{**}}$
+     containers
+   - |sylvesterSolve|: solve the sylvester equation (templated fold, and
+     unfold)
+   - |faaDiBrunoZ|: calculates derivatives of $F$ by Faa Di Bruno for the
+     sparse container of system derivatives and $Z$ stack container
+   - |faaDiBrunoG|: calculates derivatives of $G$ by Faa Di Bruno for the
+     dense container $g^{**}$ and $G$ stack
+   - |recover_y|: recovers $g_{y^{*i}}$
+   - |recover_yu|: recovers $g_{y^{*i}u^j}$
+   - |recover_ys|: recovers $g_{y^{*i}\sigma^j}$
+   - |recover_yus|: recovers $g_{y^{*i}u^j\sigma^k}$
+   - |recover_s|: recovers $g_{\sigma^i}$
+   - |fillG|: calculates specified derivatives of $G$ and inserts them to
+     the container
+   - |calcE_ijk|: calculates $E_{ijk}$
+   - |calcD_ijk|: calculates $D_{ijk}$
 
    Most of the code is templated, and template types are calculated in
    |ctraits|. So all templated methods get a template argument |T|, which
@@ -839,8 +832,7 @@ KOrder::check(int dim) const
       auto r = faaDiBrunoZ<t>(sym);
       double err = r->getData().getMax();
       JournalRecord(journal) << "\terror for symmetry " << sym << "\tis " << err << endrec;
-      if (err > maxerror)
-        maxerror = err;
+      maxerror = std::max(err, maxerror);
     }
 
   // check for $F_{y^iu^ju'^k}+D_{ijk}+E_{ijk}=0$
@@ -872,8 +864,7 @@ KOrder::check(int dim) const
   double err = r->getData().getMax();
   Symmetry sym{0, 0, 0, dim};
   JournalRecord(journal) << "\terror for symmetry " << sym << "\tis " << err << endrec;
-  if (err > maxerror)
-    maxerror = err;
+  maxerror = std::max(err, maxerror);
 
   return maxerror;
 }

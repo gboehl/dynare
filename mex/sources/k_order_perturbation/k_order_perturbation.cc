@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2017 Dynare Team
+ * Copyright (C) 2008-2019 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -34,14 +34,11 @@
 #include "dynamic_m.hh"
 #include "dynamic_dll.hh"
 
+#include <algorithm>
 #include <cmath>
-#include <cstring>
-#include <cctype>
 #include <cassert>
 
-#if defined(MATLAB_MEX_FILE) || defined(OCTAVE_MEX_FILE)  // exclude mexFunction for other applications
-
-# include "dynmex.h"
+#include "dynmex.h"
 
 //////////////////////////////////////////////////////
 // Convert MATLAB Dynare endo and exo names array to a vector<string> array of string pointers
@@ -69,7 +66,7 @@ copy_derivatives(mxArray *destin, const Symmetry &sym, const FGSContainer &deriv
   int n = x.numRows();
   int m = x.numCols();
   mxArray *tmp = mxCreateDoubleMatrix(n, m, mxREAL);
-  memcpy(mxGetPr(tmp), x.getData().base(), n*m*sizeof(double));
+  std::copy_n(x.getData().base(), n*m, mxGetPr(tmp));
   mxSetField(destin, 0, fieldname.c_str(), tmp);
 }
 
@@ -85,7 +82,7 @@ extern "C" {
     const mxArray *dr = prhs[0];
     const mxArray *M_ = prhs[1];
     const mxArray *options_ = prhs[2];
-    int use_dll = (int) mxGetScalar(mxGetField(options_, 0, "use_dll"));
+    bool use_dll = mxGetScalar(mxGetField(options_, 0, "use_dll")) != 0;
 
     mxArray *mFname = mxGetField(M_, 0, "fname");
     if (!mxIsChar(mFname))
@@ -96,19 +93,14 @@ extern "C" {
     int kOrder;
     mxArray *mxFldp = mxGetField(options_, 0, "order");
     if (mxIsNumeric(mxFldp))
-      kOrder = (int) mxGetScalar(mxFldp);
+      kOrder = static_cast<int>(mxGetScalar(mxFldp));
     else
       kOrder = 1;
-
-    //if (kOrder == 1 && nlhs != 2)
-    //  DYN_MEX_FUNC_ERR_MSG_TXT("k_order_perturbation at order 1 requires exactly 2 arguments in output");
-    //else if (kOrder > 1 && nlhs != kOrder+2)
-    //  DYN_MEX_FUNC_ERR_MSG_TXT("k_order_perturbation at order > 1 requires exactly order+2 arguments in output");
 
     double qz_criterium = 1+1e-6;
     mxFldp = mxGetField(options_, 0, "qz_criterium");
     if (mxGetNumberOfElements(mxFldp) > 0 && mxIsNumeric(mxFldp))
-      qz_criterium = (double) mxGetScalar(mxFldp);
+      qz_criterium = mxGetScalar(mxFldp);
 
     mxFldp = mxGetField(M_, 0, "params");
     Vector modParams{mxFldp};
@@ -127,47 +119,45 @@ extern "C" {
       DYN_MEX_FUNC_ERR_MSG_TXT("The steady state vector contains NaN or Inf");
 
     mxFldp = mxGetField(M_, 0, "nstatic");
-    const int nStat = (int) mxGetScalar(mxFldp);
+    const int nStat = static_cast<int>(mxGetScalar(mxFldp));
     mxFldp = mxGetField(M_, 0, "npred");
-    const int nPred = (int) mxGetScalar(mxFldp);
+    const int nPred = static_cast<int>(mxGetScalar(mxFldp));
     mxFldp = mxGetField(M_, 0, "nspred");
-    const int nsPred = (int) mxGetScalar(mxFldp);
+    const int nsPred = static_cast<int>(mxGetScalar(mxFldp));
     mxFldp = mxGetField(M_, 0, "nboth");
-    const int nBoth = (int) mxGetScalar(mxFldp);
+    const int nBoth = static_cast<int>(mxGetScalar(mxFldp));
     mxFldp = mxGetField(M_, 0, "nfwrd");
-    const int nForw = (int) mxGetScalar(mxFldp);
+    const int nForw = static_cast<int>(mxGetScalar(mxFldp));
     mxFldp = mxGetField(M_, 0, "nsfwrd");
-    const int nsForw = (int) mxGetScalar(mxFldp);
+    const int nsForw = static_cast<int>(mxGetScalar(mxFldp));
 
     mxFldp = mxGetField(M_, 0, "exo_nbr");
-    const int nExog = (int) mxGetScalar(mxFldp);
+    const int nExog = static_cast<int>(mxGetScalar(mxFldp));
     mxFldp = mxGetField(M_, 0, "endo_nbr");
-    const int nEndo = (int) mxGetScalar(mxFldp);
+    const int nEndo = static_cast<int>(mxGetScalar(mxFldp));
     mxFldp = mxGetField(M_, 0, "param_nbr");
-    const int nPar = (int) mxGetScalar(mxFldp);
+    const int nPar = static_cast<int>(mxGetScalar(mxFldp));
 
     mxFldp = mxGetField(dr, 0, "order_var");
     auto dparams = mxGetPr(mxFldp);
-    npar = (int) mxGetM(mxFldp);
+    npar = static_cast<int>(mxGetM(mxFldp));
     if (npar != nEndo)
       DYN_MEX_FUNC_ERR_MSG_TXT("Incorrect number of input var_order vars.");
 
     std::vector<int> var_order_vp(nEndo);
     for (int v = 0; v < nEndo; v++)
-      var_order_vp[v] = (int) (*(dparams++));
+      var_order_vp[v] = static_cast<int>(*(dparams++));
 
     // the lag, current and lead blocks of the jacobian respectively
     mxFldp = mxGetField(M_, 0, "lead_lag_incidence");
-    npar = (int) mxGetN(mxFldp);
-    int nrows = (int) mxGetM(mxFldp);
+    npar = static_cast<int>(mxGetN(mxFldp));
+    int nrows = static_cast<int>(mxGetM(mxFldp));
 
     TwoDMatrix llincidence(nrows, npar, Vector{mxFldp});
     if (npar != nEndo)
-      {
-        std::ostringstream strstrm;
-        strstrm << "dynare:k_order_perturbation " << "Incorrect length of lead lag incidences: ncol=" << npar << " != nEndo=" << nEndo;
-        DYN_MEX_FUNC_ERR_MSG_TXT(strstrm.str().c_str());
-      }
+      DYN_MEX_FUNC_ERR_MSG_TXT("dynare:k_order_perturbation: Incorrect length of lead lag incidences: ncol="
+                               + std::to_string(npar) + " != nEndo=" + std::to_string(nEndo));
+
     //get NNZH =NNZD(2) = the total number of non-zero Hessian elements
     mxFldp = mxGetField(M_, 0, "NNZDerivatives");
     Vector NNZD{mxFldp};
@@ -177,42 +167,40 @@ extern "C" {
     const int jcols = nExog+nEndo+nsPred+nsForw; // Num of Jacobian columns
 
     mxFldp = mxGetField(M_, 0, "var_order_endo_names");
-    const int nendo = (int) mxGetM(mxFldp);
-    const int widthEndo = (int) mxGetN(mxFldp);
+    const int nendo = static_cast<int>(mxGetM(mxFldp));
+    const int widthEndo = static_cast<int>(mxGetN(mxFldp));
     std::vector<std::string> endoNames;
     DynareMxArrayToString(mxFldp, nendo, widthEndo, endoNames);
 
     mxFldp = mxGetField(M_, 0, "exo_names");
-    const int nexo = (int) mxGetM(mxFldp);
-    const int widthExog = (int) mxGetN(mxFldp);
+    const int nexo = static_cast<int>(mxGetM(mxFldp));
+    const int widthExog = static_cast<int>(mxGetN(mxFldp));
     std::vector<std::string> exoNames;
     DynareMxArrayToString(mxFldp, nexo, widthExog, exoNames);
 
-    if ((nEndo != nendo) || (nExog != nexo))
+    if (nEndo != nendo || nExog != nexo)
       DYN_MEX_FUNC_ERR_MSG_TXT("Incorrect number of input parameters.");
 
-    TwoDMatrix *g1m = nullptr;
-    TwoDMatrix *g2m = nullptr;
-    TwoDMatrix *g3m = nullptr;
+    std::unique_ptr<TwoDMatrix> g1m, g2m, g3m;
     // derivatives passed as arguments */
     if (nrhs > 3)
       {
         const mxArray *g1 = prhs[3];
-        int m = (int) mxGetM(g1);
-        int n = (int) mxGetN(g1);
-        g1m = new TwoDMatrix(m, n, Vector{ConstVector{g1}});
+        int m = static_cast<int>(mxGetM(g1));
+        int n = static_cast<int>(mxGetN(g1));
+        g1m = std::make_unique<TwoDMatrix>(m, n, Vector{ConstVector{g1}});
         if (nrhs > 4)
           {
             const mxArray *g2 = prhs[4];
-            int m = (int) mxGetM(g2);
-            int n = (int) mxGetN(g2);
-            g2m = new TwoDMatrix(m, n, Vector{ConstVector{g2}});
+            int m = static_cast<int>(mxGetM(g2));
+            int n = static_cast<int>(mxGetN(g2));
+            g2m = std::make_unique<TwoDMatrix>(m, n, Vector{ConstVector{g2}});
             if (nrhs > 5)
               {
                 const mxArray *g3 = prhs[5];
-                int m = (int) mxGetM(g3);
-                int n = (int) mxGetN(g3);
-                g3m = new TwoDMatrix(m, n, Vector{ConstVector{g3}});
+                int m = static_cast<int>(mxGetM(g3));
+                int n = static_cast<int>(mxGetN(g3));
+                g3m = std::make_unique<TwoDMatrix>(m, n, Vector{ConstVector{g3}});
               }
           }
       }
@@ -222,13 +210,10 @@ extern "C" {
 
     try
       {
-        // make journal name and journal
-        std::string jName(fName); //params.basename);
-        jName += ".jnl";
-        Journal journal(jName.c_str());
+        Journal journal(fName + ".jnl");
 
         std::unique_ptr<DynamicModelAC> dynamicModelFile;
-        if (use_dll == 1)
+        if (use_dll)
           dynamicModelFile = std::make_unique<DynamicModelDLL>(fName);
         else
           dynamicModelFile = std::make_unique<DynamicModelMFile>(fName);
@@ -241,17 +226,17 @@ extern "C" {
                            ySteady, vCov, modParams, nStat, nPred, nForw, nBoth,
                            jcols, NNZD, nSteps, kOrder, journal, std::move(dynamicModelFile),
                            sstol, var_order_vp, llincidence, qz_criterium,
-                           g1m, g2m, g3m);
+                           std::move(g1m), std::move(g2m), std::move(g3m));
 
         // construct main K-order approximation class
 
-        Approximation app(dynare, journal,  nSteps, false, qz_criterium);
+        Approximation app(dynare, journal, nSteps, false, qz_criterium);
         // run stochastic steady
         app.walkStochSteady();
 
         /* Write derivative outputs into memory map */
         std::map<std::string, ConstTwoDMatrix> mm;
-        app.getFoldDecisionRule().writeMMap(mm, std::string());
+        app.getFoldDecisionRule().writeMMap(mm, "");
 
         // get latest ysteady
         ySteady = dynare.getSteady();
@@ -261,25 +246,24 @@ extern "C" {
             /* Set the output pointer to the output matrix ysteady. */
             auto cit = mm.begin();
             ++cit;
-            plhs[1] = mxCreateDoubleMatrix((*cit).second.numRows(), (*cit).second.numCols(), mxREAL);
+            plhs[1] = mxCreateDoubleMatrix(cit->second.numRows(), cit->second.numCols(), mxREAL);
 
             // Copy Dynare++ matrix into MATLAB matrix
-            const ConstVector &vec = (*cit).second.getData();
+            const ConstVector &vec = cit->second.getData();
             assert(vec.skip() == 1);
-            memcpy(mxGetPr(plhs[1]), vec.base(), vec.length() * sizeof(double));
+            std::copy_n(vec.base(), vec.length(), mxGetPr(plhs[1]));
           }
         if (kOrder >= 2)
           {
             int ii = 1;
-            for (auto cit = mm.begin();
-                 ((cit != mm.end()) && (ii < nlhs)); ++cit)
+            for (auto cit = mm.begin(); cit != mm.end() && ii < nlhs; ++cit)
               {
-                plhs[ii] = mxCreateDoubleMatrix((*cit).second.numRows(), (*cit).second.numCols(), mxREAL);
+                plhs[ii] = mxCreateDoubleMatrix(cit->second.numRows(), cit->second.numCols(), mxREAL);
 
                 // Copy Dynare++ matrix into MATLAB matrix
-                const ConstVector &vec = (*cit).second.getData();
+                const ConstVector &vec = cit->second.getData();
                 assert(vec.skip() == 1);
-                memcpy(mxGetPr(plhs[ii]), vec.base(), vec.length() * sizeof(double));
+                std::copy_n(vec.base(), vec.length(), mxGetPr(plhs[ii]));
 
                 ++ii;
 
@@ -312,9 +296,7 @@ extern "C" {
     catch (const KordException &e)
       {
         e.print();
-        std::ostringstream strstrm;
-        strstrm << "dynare:k_order_perturbation: Caught Kord exception: " << e.get_message();
-        DYN_MEX_FUNC_ERR_MSG_TXT(strstrm.str().c_str());
+        DYN_MEX_FUNC_ERR_MSG_TXT("dynare:k_order_perturbation: Caught Kord exception: " + e.get_message());
       }
     catch (const TLException &e)
       {
@@ -328,17 +310,13 @@ extern "C" {
       }
     catch (const DynareException &e)
       {
-        std::ostringstream strstrm;
-        strstrm << "dynare:k_order_perturbation: Caught KordDynare exception: " << e.message();
-        DYN_MEX_FUNC_ERR_MSG_TXT(strstrm.str().c_str());
+        DYN_MEX_FUNC_ERR_MSG_TXT("dynare:k_order_perturbation: Caught KordDynare exception: " + e.message());
       }
     catch (const ogu::Exception &e)
       {
-        std::ostringstream strstrm;
-        strstrm << "dynare:k_order_perturbation: Caught general exception: " << e.message();
-        DYN_MEX_FUNC_ERR_MSG_TXT(strstrm.str().c_str());
+        DYN_MEX_FUNC_ERR_MSG_TXT("dynare:k_order_perturbation: Caught general exception: " + e.message());
       }
     plhs[0] = mxCreateDoubleScalar(0);
   } // end of mexFunction()
 } // end of extern C
-#endif // ifdef MATLAB_MEX_FILE  to exclude mexFunction for other applications
+
