@@ -107,7 +107,7 @@ if isempty(reorder_jacobian_columns)
 
     npred0 = nnz(lead_lag_incidence(maximum_lag+1,no_both_lag_id));
     index_0m = indexi_0+nstatic+(1:npred0);
-    nfwrd0 = nnz(lead_lag_incidence(2,lead_id));
+    nfwrd0 = nnz(lead_lag_incidence(maximum_lag+1,lead_id));
     index_0p = indexi_0+nstatic+npred0+(1:nfwrd0);
     index_m  = 1:(npred+nboth);
     index_p  = npred+nboth+n_current+(1:nfwrd+nboth);
