@@ -26,6 +26,7 @@ function correct_flag=check_consistency_covariances(Covariance_matrix)
 %compute theoretical bound by assuming correlation of 1
 bound=diag(sqrt(diag(Covariance_matrix)))*ones(size(Covariance_matrix))*diag(sqrt(diag(Covariance_matrix)));
 correct_flag=1;
-if any(any(tril(Covariance_matrix,-1)>bound)) || any(any(tril(Covariance_matrix,-1)<-bound))
+% We must check that Covariance_matrix is non-empty, because tril([],-1) fails under Octave
+if length(Covariance_matrix) > 0 && (any(any(tril(Covariance_matrix,-1)>bound)) || any(any(tril(Covariance_matrix,-1)<-bound)))
     correct_flag=0;
 end
