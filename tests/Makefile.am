@@ -396,7 +396,7 @@ MODFILES = \
 	pac/var-4/example.mod \
 	pac/var-5/example.mod \
 	pac/var-5/substitution.mod \
-    pac/var-6/example.mod \
+	pac/var-6/example.mod \
 	pac/var-6/substitution.mod \
 	pac/trend-component-1/example.mod \
 	pac/trend-component-2/example.mod \
@@ -420,21 +420,21 @@ MODFILES = \
 	pac/trend-component-19/example1.mod \
 	pac/trend-component-19/example2.mod \
 	pac/trend-component-19/example3.mod \
-    pac/trend-component-1-mce/example_det.mod \
-    pac/trend-component-1-mce/example_sto.mod \
-    pac/trend-component-2-mce/example_det.mod \
-    pac/trend-component-2-mce/example_sto.mod \
-    pac/trend-component-20-1/example.mod \
-    pac/trend-component-20-2/example.mod \
-    pac/trend-component-20-3/example.mod \
-    pac/trend-component-20-4/example.mod \
-    pac/trend-component-21/example.mod \
-    pac/trend-component-22/example.mod \
-    pac/trend-component-23/example.mod \
-    pac/trend-component-24/example.mod \
-    write/example1.mod \
-    ecb/backward-models/irf/solow_1.mod \
-    ecb/backward-models/irf/solow_2.mod \
+	pac/trend-component-1-mce/example_det.mod \
+	pac/trend-component-1-mce/example_sto.mod \
+	pac/trend-component-2-mce/example_det.mod \
+	pac/trend-component-2-mce/example_sto.mod \
+	pac/trend-component-20-1/example.mod \
+	pac/trend-component-20-2/example.mod \
+	pac/trend-component-20-3/example.mod \
+	pac/trend-component-20-4/example.mod \
+	pac/trend-component-21/example.mod \
+	pac/trend-component-22/example.mod \
+	pac/trend-component-23/example.mod \
+	pac/trend-component-24/example.mod \
+	write/example1.mod \
+	ecb/backward-models/irf/solow_1.mod \
+	ecb/backward-models/irf/solow_2.mod \
 	dynare-command-options/ramst.mod
 
 OLS_MODFILES = \
