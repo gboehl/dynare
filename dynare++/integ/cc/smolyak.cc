@@ -112,11 +112,11 @@ SmolyakQuadrature::SmolyakQuadrature(int d, int l, const OneDQuadrature &uq)
   // todo: check |l>1|, |l>=d|
   // todo: check |l>=uquad.miLevel()|, |l<=uquad.maxLevel()|
   int cum = 0;
-  for (auto &si : SymmetrySet(l-1, d+1))
+  for (const auto &si : SymmetrySet(l-1, d+1))
     {
       if (si[d] <= d-1)
         {
-          IntSequence lev((const IntSequence &) si, 0, d);
+          IntSequence lev(si, 0, d);
           lev.add(1);
           levels.push_back(lev);
           IntSequence levpts(d);
@@ -170,11 +170,11 @@ int
 SmolyakQuadrature::calcNumEvaluations(int lev) const
 {
   int cum = 0;
-  for (auto &si : SymmetrySet(lev-1, dim+1))
+  for (const auto &si : SymmetrySet(lev-1, dim+1))
     {
       if (si[dim] <= dim-1)
         {
-          IntSequence lev((const IntSequence &) si, 0, dim);
+          IntSequence lev(si, 0, dim);
           lev.add(1);
           IntSequence levpts(dim);
           for (int i = 0; i < dim; i++)

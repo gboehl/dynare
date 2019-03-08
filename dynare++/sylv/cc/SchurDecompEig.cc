@@ -53,8 +53,8 @@ SchurDecompEig::tryToSwap(diag_iter &it, diag_iter &itadd)
   --itadd;
 
   lapack_int n = getDim(), ldt = getT().getLD(), ldq = getQ().getLD();
-  lapack_int ifst = (*it).getIndex() + 1;
-  lapack_int ilst = (*itadd).getIndex() + 1;
+  lapack_int ifst = it->getIndex() + 1;
+  lapack_int ilst = itadd->getIndex() + 1;
   std::vector<double> work(n);
   lapack_int info;
   dtrexc("V", &n, getT().base(), &ldt, getQ().base(), &ldq, &ifst, &ilst, work.data(),
@@ -87,7 +87,7 @@ SchurDecompEig::orderEigen()
     {
       diag_iter least = getT().findNextLargerBlock(run, getT().diag_end(),
                                                    last_size);
-      last_size = (*least).getSize();
+      last_size = least->getSize();
       if (run == least)
         ++run;
       else

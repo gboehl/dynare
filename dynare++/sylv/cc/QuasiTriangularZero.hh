@@ -41,7 +41,7 @@ public:
   std::unique_ptr<QuasiTriangular>
   clone(int p, const QuasiTriangular &t) const override
   {
-    return std::make_unique<QuasiTriangularZero>(p, (const QuasiTriangularZero &) t);
+    return std::make_unique<QuasiTriangularZero>(p, dynamic_cast<const QuasiTriangularZero &>(t));
   }
   std::unique_ptr<QuasiTriangular>
   clone(double r) const override
@@ -51,7 +51,7 @@ public:
   std::unique_ptr<QuasiTriangular>
   clone(double r, double rr, const QuasiTriangular &tt) const override
   {
-    return std::make_unique<QuasiTriangularZero>(r, *this, rr, (const QuasiTriangularZero &) tt);
+    return std::make_unique<QuasiTriangularZero>(r, *this, rr, dynamic_cast<const QuasiTriangularZero &>(tt));
   }
   void print() const override;
 };

@@ -269,8 +269,7 @@ TestRunnable::folded_monomial(int ng, int nx, int ny, int nu, int dim)
       res.add(-1.0, mres);
       double normtmp = res.getData().getMax();
       std::cout << "\t\terror normMax:     " << normtmp << '\n';
-      if (normtmp > maxnorm)
-        maxnorm = normtmp;
+      maxnorm = std::max(maxnorm, normtmp);
     }
   return maxnorm < 1.0e-10;
 }
@@ -308,8 +307,7 @@ TestRunnable::unfolded_monomial(int ng, int nx, int ny, int nu, int dim)
       foldres.add(-1.0, mres);
       double normtmp = foldres.getData().getMax();
       std::cout << "\t\terror normMax:     " << normtmp << '\n';
-      if (normtmp > maxnorm)
-        maxnorm = normtmp;
+      maxnorm = std::max(maxnorm, normtmp);
     }
   return maxnorm < 1.0e-10;
 }
@@ -353,8 +351,7 @@ TestRunnable::fold_zcont(int nf, int ny, int nu, int nup, int nbigg,
         res.add(-1.0, mres);
         double normtmp = res.getData().getMax();
         std::cout << "\t\terror normMax:     " << normtmp << '\n';
-        if (normtmp > maxnorm)
-          maxnorm = normtmp;
+        maxnorm = std::max(maxnorm, normtmp);
       }
 
   return maxnorm < 1.0e-10;
@@ -407,8 +404,7 @@ TestRunnable::unfold_zcont(int nf, int ny, int nu, int nup, int nbigg,
         fold_res.add(-1.0, mres);
         double normtmp = fold_res.getData().getMax();
         std::cout << "\t\terror normMax:     " << normtmp << '\n';
-        if (normtmp > maxnorm)
-          maxnorm = normtmp;
+        maxnorm = std::max(maxnorm, normtmp);
       }
 
   return maxnorm < 1.0e-10;
@@ -505,13 +501,13 @@ TestRunnable::poly_eval(int r, int nv, int maxdim)
   fp.evalTrad(out_ft, x);
   ft_cl = clock() - ft_cl;
   std::cout << "\ttime for folded power eval:    "
-    << static_cast<double>(ft_cl)/CLOCKS_PER_SEC << '\n';
+            << static_cast<double>(ft_cl)/CLOCKS_PER_SEC << '\n';
 
   clock_t fh_cl = clock();
   fp.evalHorner(out_fh, x);
   fh_cl = clock() - fh_cl;
   std::cout << "\ttime for folded horner eval:   "
-    << static_cast<double>(fh_cl)/CLOCKS_PER_SEC << '\n';
+            << static_cast<double>(fh_cl)/CLOCKS_PER_SEC << '\n';
 
   UTensorPolynomial up{fp};
 
@@ -1115,10 +1111,8 @@ main()
   int nvmax = 0;
   for (const auto &test : all_tests)
     {
-      if (dmax < test->dim)
-        dmax = test->dim;
-      if (nvmax < test->nvar)
-        nvmax = test->nvar;
+      dmax = std::max(dmax, test->dim);
+      nvmax = std::max(nvmax, test->nvar);
     }
   TLStatic::init(dmax, nvmax); // initialize library
 

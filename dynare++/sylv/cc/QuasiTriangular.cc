@@ -557,8 +557,7 @@ QuasiTriangular::solvePre(Vector &x, double &eig_min)
         }
       else
         eig_size = *di->getAlpha()*(*di->getAlpha());
-      if (eig_size < eig_min)
-        eig_min = eig_size;
+      eig_min = std::min(eig_min, eig_size);
     }
 
   blas_int nn = diagonal.getSize();
@@ -627,7 +626,7 @@ QuasiTriangular::multVecTrans(Vector &x, const ConstVector &b) const
 void
 QuasiTriangular::multaVec(Vector &x, const ConstVector &b) const
 {
-  Vector tmp((const Vector &)x); // new copy
+  Vector tmp(const_cast<const Vector &>(x)); // new copy
   multVec(x, b);
   x.add(1.0, tmp);
 }
@@ -635,7 +634,7 @@ QuasiTriangular::multaVec(Vector &x, const ConstVector &b) const
 void
 QuasiTriangular::multaVecTrans(Vector &x, const ConstVector &b) const
 {
-  Vector tmp((const Vector &)x); // new copy
+  Vector tmp(const_cast<const Vector &>(x)); // new copy
   multVecTrans(x, b);
   x.add(1.0, tmp);
 }
@@ -663,7 +662,7 @@ QuasiTriangular::multaKronTrans(KronVector &x, const ConstKronVector &b) const
 void
 QuasiTriangular::multKron(KronVector &x) const
 {
-  KronVector b((const KronVector &)x); // make copy
+  KronVector b(const_cast<const KronVector &>(x)); // make copy
   x.zeros();
   multaKron(x, b);
 }
@@ -671,7 +670,7 @@ QuasiTriangular::multKron(KronVector &x) const
 void
 QuasiTriangular::multKronTrans(KronVector &x) const
 {
-  KronVector b((const KronVector &)x); // make copy
+  KronVector b(const_cast<const KronVector &>(x)); // make copy
   x.zeros();
   multaKronTrans(x, b);
 }

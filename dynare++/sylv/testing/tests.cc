@@ -99,7 +99,7 @@ TestRunnable::quasi_solve(bool trans, const std::string &mname, const std::strin
   else if (mmt.row() > mmt.col())
     {
       t = std::make_unique<QuasiTriangularZero>(mmt.row()-mmt.col(), mmt.getData(), mmt.col());
-      tsave = std::make_unique<QuasiTriangularZero>((const QuasiTriangularZero &) *t);
+      tsave = std::make_unique<QuasiTriangularZero>(const_cast<const QuasiTriangularZero &>(dynamic_cast<QuasiTriangularZero &>(*t)));
     }
   else
     {
@@ -358,7 +358,7 @@ TestRunnable::tri_sylv(const std::string &m1name, const std::string &m2name, con
   SylvParams pars;
   ts.solve(pars, d);
   pars.print("\t");
-  KronVector dcheck((const KronVector &)d);
+  KronVector dcheck(const_cast<const KronVector &>(d));
   KronUtils::multKron(t1, t2, dcheck);
   dcheck.add(1.0, d);
   dcheck.add(-1.0, v);
@@ -416,7 +416,7 @@ TestRunnable::eig_bubble(const std::string &aname, int from, int to)
 
   int n = mma.row();
   QuasiTriangular orig(mma.getData(), n);
-  SchurDecompEig dec((const QuasiTriangular &)orig);
+  SchurDecompEig dec(const_cast<const QuasiTriangular &>(orig));
   QuasiTriangular::diag_iter itf = dec.getT().diag_begin();
   QuasiTriangular::diag_iter itt = dec.getT().diag_begin();
   for (int i = 0; i < from; i++)
@@ -508,7 +508,7 @@ TestRunnable::iter_sylv(const std::string &m1name, const std::string &m2name, co
   pars.method = SylvParams::solve_method::iter;
   is.solve(pars, d);
   pars.print("\t");
-  KronVector dcheck((const KronVector &)d);
+  KronVector dcheck(const_cast<const KronVector &>(d));
   KronUtils::multKron(t1, t2, dcheck);
   dcheck.add(1.0, d);
   dcheck.add(-1.0, v);

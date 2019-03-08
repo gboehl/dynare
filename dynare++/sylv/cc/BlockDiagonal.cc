@@ -41,7 +41,7 @@ BlockDiagonal::BlockDiagonal(int p, const BlockDiagonal &b)
 void
 BlockDiagonal::setZerosToRU(diag_iter edge)
 {
-  int iedge = (*edge).getIndex();
+  int iedge = edge->getIndex();
   for (int i = 0; i < iedge; i++)
     for (int j = iedge; j < numCols(); j++)
       get(i, j) = 0.0;
@@ -61,24 +61,24 @@ BlockDiagonal::setZeroBlockEdge(diag_iter edge)
 {
   setZerosToRU(edge);
 
-  int iedge = (*edge).getIndex();
+  int iedge = edge->getIndex();
   for (diag_iter run = diag_begin(); run != edge; ++run)
     {
-      int ind = (*run).getIndex();
+      int ind = run->getIndex();
       if (row_len[ind] > iedge)
         {
           row_len[ind] = iedge;
-          if (!(*run).isReal())
+          if (!run->isReal())
             row_len[ind+1] = iedge;
         }
     }
   for (diag_iter run = edge; run != diag_end(); ++run)
     {
-      int ind = (*run).getIndex();
+      int ind = run->getIndex();
       if (col_len[ind] < iedge)
         {
           col_len[ind] = iedge;
-          if (!(*run).isReal())
+          if (!run->isReal())
             col_len[ind+1] = iedge;
         }
     }
@@ -136,7 +136,7 @@ BlockDiagonal::findBlockStart(const_diag_iter from) const
     {
       ++from;
       while (from != diag_end()
-             && col_len[(*from).getIndex()] != (*from).getIndex())
+             && col_len[from->getIndex()] != from->getIndex())
         ++from;
     }
   return from;
@@ -150,12 +150,11 @@ BlockDiagonal::getLargestBlock() const
   const_diag_iter end = findBlockStart(start);
   while (start != diag_end())
     {
-      int si = (*start).getIndex();
+      int si = start->getIndex();
       int ei = diagonal.getSize();
       if (end != diag_end())
-        ei = (*end).getIndex();
-      if (largest < ei-si)
-        largest = ei-si;
+        ei = end->getIndex();
+      largest = std::max(largest, ei-si);
       start = end;
       end = findBlockStart(start);
     }
@@ -177,21 +176,21 @@ void
 BlockDiagonal::multKronBlock(const_diag_iter start, const_diag_iter end,
                              KronVector &x, Vector &work) const
 {
-  int si = (*start).getIndex();
+  int si = start->getIndex();
   int ei = diagonal.getSize();
   if (end != diag_end())
-    ei = (*end).getIndex();
+    ei = end->getIndex();
   savePartOfX(si, ei, x, work);
 
   for (const_diag_iter di = start; di != end; ++di)
     {
-      int jbar = (*di).getIndex();
-      if ((*di).isReal())
+      int jbar = di->getIndex();
+      if (di->isReal())
         {
           KronVector xi(x, jbar);
           xi.zeros();
           Vector wi(work, (jbar-si)*xi.length(), xi.length());
-          xi.add(*((*di).getAlpha()), wi);
+          xi.add(*(di->getAlpha()), wi);
           for (const_row_iter ri = row_begin(*di); ri != row_end(*di); ++ri)
             {
               int col = ri.getCol();
@@ -207,10 +206,10 @@ BlockDiagonal::multKronBlock(const_diag_iter start, const_diag_iter end,
           xii.zeros();
           Vector wi(work, (jbar-si)*xi.length(), xi.length());
           Vector wii(work, (jbar+1-si)*xi.length(), xi.length());
-          xi.add(*((*di).getAlpha()), wi);
-          xi.add((*di).getBeta1(), wii);
-          xii.add((*di).getBeta2(), wi);
-          xii.add(*((*di).getAlpha()), wii);
+          xi.add(*(di->getAlpha()), wi);
+          xi.add(di->getBeta1(), wii);
+          xii.add(di->getBeta2(), wi);
+          xii.add(*(di->getAlpha()), wii);
           for (const_row_iter ri = row_begin(*di); ri != row_end(*di); ++ri)
             {
               int col = ri.getCol();
@@ -226,21 +225,21 @@ void
 BlockDiagonal::multKronBlockTrans(const_diag_iter start, const_diag_iter end,
                                   KronVector &x, Vector &work) const
 {
-  int si = (*start).getIndex();
+  int si = start->getIndex();
   int ei = diagonal.getSize();
   if (end != diag_end())
-    ei = (*end).getIndex();
+    ei = end->getIndex();
   savePartOfX(si, ei, x, work);
 
   for (const_diag_iter di = start; di != end; ++di)
     {
-      int jbar = (*di).getIndex();
-      if ((*di).isReal())
+      int jbar = di->getIndex();
+      if (di->isReal())
         {
           KronVector xi(x, jbar);
           xi.zeros();
           Vector wi(work, (jbar-si)*xi.length(), xi.length());
-          xi.add(*((*di).getAlpha()), wi);
+          xi.add(*(di->getAlpha()), wi);
           for (const_col_iter ci = col_begin(*di); ci != col_end(*di); ++ci)
             {
               int row = ci.getRow();
@@ -256,10 +255,10 @@ BlockDiagonal::multKronBlockTrans(const_diag_iter start, const_diag_iter end,
           xii.zeros();
           Vector wi(work, (jbar-si)*xi.length(), xi.length());
           Vector wii(work, (jbar+1-si)*xi.length(), xi.length());
-          xi.add(*((*di).getAlpha()), wi);
-          xi.add((*di).getBeta2(), wii);
-          xii.add((*di).getBeta1(), wi);
-          xii.add(*((*di).getAlpha()), wii);
+          xi.add(*(di->getAlpha()), wi);
+          xi.add(di->getBeta2(), wii);
+          xii.add(di->getBeta1(), wi);
+          xii.add(*(di->getAlpha()), wii);
           for (const_col_iter ci = col_begin(*di); ci != col_end(*di); ++ci)
             {
               int row = ci.getRow();
@@ -310,10 +309,10 @@ BlockDiagonal::printInfo() const
   const_diag_iter end = findBlockStart(start);
   while (start != diag_end())
     {
-      int si = (*start).getIndex();
+      int si = start->getIndex();
       int ei = diagonal.getSize();
       if (end != diag_end())
-        ei = (*end).getIndex();
+        ei = end->getIndex();
       std::cout << ' ' << ei-si;
       num_blocks++;
       start = end;

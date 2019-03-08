@@ -96,7 +96,7 @@ GeneralSylvester::solve()
   d.multLeftI(bdecomp->getQ());
   d.multRightKron(cdecomp->getInvQ(), order);
   clock_t end = clock();
-  pars.cpu_time = ((double) (end-start))/CLOCKS_PER_SEC;
+  pars.cpu_time = static_cast<double>(end-start)/CLOCKS_PER_SEC;
 
   solved = true;
 }

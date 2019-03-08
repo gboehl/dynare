@@ -354,8 +354,7 @@ ConstVector::getMax() const
 {
   double r = 0;
   for (int i = 0; i < len; i++)
-    if (std::abs(operator[](i)) > r)
-      r = std::abs(operator[](i));
+    r = std::max(r, std::abs(operator[](i)));
   return r;
 }
 

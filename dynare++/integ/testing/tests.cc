@@ -127,7 +127,7 @@ Function1::eval(const Vector &point, const ParameterSignal &sig, Vector &out)
   for (int i = 0; i < dim; i++)
     r *= point[i];
   r = pow(r, 1.0/dim);
-  r *= pow(1.0 + 1.0/dim, (double) dim);
+  r *= pow(1.0 + 1.0/dim, static_cast<double>(dim));
   out[0] = r;
 }
 
@@ -377,7 +377,9 @@ public:
   run() const override
   {
     GeneralMatrix m(2, 2);
-    m.zeros(); m.get(0, 0) = 1; m.get(1, 1) = 1;
+    m.zeros();
+    m.get(0, 0) = 1;
+    m.get(1, 1) = 1;
     return smolyak_normal_moments(m, 4, 4);
   }
 };
@@ -395,8 +397,12 @@ public:
   {
     GeneralMatrix m(3, 3);
     m.zeros();
-    m.get(0, 0) = 1; m.get(0, 2) = 0.5; m.get(1, 1) = 1;
-    m.get(1, 0) = 0.5; m.get(2, 2) = 2; m.get(2, 1) = 4;
+    m.get(0, 0) = 1;
+    m.get(0, 2) = 0.5;
+    m.get(1, 1) = 1;
+    m.get(1, 0) = 0.5;
+    m.get(2, 2) = 2;
+    m.get(2, 1) = 4;
     return smolyak_normal_moments(m, 8, 8);
   }
 };
@@ -413,7 +419,9 @@ public:
   run() const override
   {
     GeneralMatrix m(2, 2);
-    m.zeros(); m.get(0, 0) = 1; m.get(1, 1) = 1;
+    m.zeros();
+    m.get(0, 0) = 1;
+    m.get(1, 1) = 1;
     return product_normal_moments(m, 4, 4);
   }
 };
@@ -431,8 +439,12 @@ public:
   {
     GeneralMatrix m(3, 3);
     m.zeros();
-    m.get(0, 0) = 1; m.get(0, 2) = 0.5; m.get(1, 1) = 1;
-    m.get(1, 0) = 0.5; m.get(2, 2) = 2; m.get(2, 1) = 4;
+    m.get(0, 0) = 1;
+    m.get(0, 2) = 0.5;
+    m.get(1, 1) = 1;
+    m.get(1, 0) = 0.5;
+    m.get(2, 2) = 2;
+    m.get(2, 1) = 4;
     return product_normal_moments(m, 8, 8);
   }
 };
@@ -450,7 +462,8 @@ public:
   run() const override
   {
     Function1Trans f1(6);
-    Vector res(1); res[0] = 1.0;
+    Vector res(1);
+    res[0] = 1.0;
     return smolyak_product_cube(f1, res, 1e-2, 13);
   }
 };
@@ -488,10 +501,8 @@ main()
   int nvmax = 0;
   for (const auto &test : all_tests)
     {
-      if (dmax < test->dim)
-        dmax = test->dim;
-      if (nvmax < test->nvar)
-        nvmax = test->nvar;
+      dmax = std::max(dmax, test->dim);
+      nvmax = std::max(nvmax, test->nvar);
     }
   TLStatic::init(dmax, nvmax); // initialize library
 

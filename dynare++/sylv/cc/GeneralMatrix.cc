@@ -268,9 +268,7 @@ GeneralMatrix::gemm(const std::string &transa, const ConstGeneralMatrix &a,
   if (opa_rows != numRows()
       || opb_cols != numCols()
       || opa_cols != opb_rows)
-    {
-      throw SYLV_MES_EXCEPTION("Wrong dimensions for matrix multiplication.");
-    }
+    throw SYLV_MES_EXCEPTION("Wrong dimensions for matrix multiplication.");
 
   blas_int m = opa_rows;
   blas_int n = opb_cols;
@@ -279,10 +277,8 @@ GeneralMatrix::gemm(const std::string &transa, const ConstGeneralMatrix &a,
   blas_int ldb = b.ld;
   blas_int ldc = ld;
   if (lda > 0 && ldb > 0 && ldc > 0)
-    {
-      dgemm(transa.c_str(), transb.c_str(), &m, &n, &k, &alpha, a.data.base(), &lda,
-            b.data.base(), &ldb, &beta, data.base(), &ldc);
-    }
+    dgemm(transa.c_str(), transb.c_str(), &m, &n, &k, &alpha, a.data.base(), &lda,
+          b.data.base(), &ldb, &beta, data.base(), &ldc);
   else if (numRows()*numCols() > 0)
     {
       if (beta == 0.0)
@@ -299,14 +295,14 @@ GeneralMatrix::gemm_partial_left(const std::string &trans, const ConstGeneralMat
   int icol;
   for (icol = 0; icol + md_length < cols; icol += md_length)
     {
-      GeneralMatrix incopy((const GeneralMatrix &)*this, 0, icol, rows, md_length);
-      GeneralMatrix inplace((GeneralMatrix&)*this, 0, icol, rows, md_length);
+      GeneralMatrix incopy(const_cast<const GeneralMatrix &>(*this), 0, icol, rows, md_length);
+      GeneralMatrix inplace(*this, 0, icol, rows, md_length);
       inplace.gemm(trans, m, "N", ConstGeneralMatrix(incopy), alpha, beta);
     }
   if (cols > icol)
     {
-      GeneralMatrix incopy((const GeneralMatrix &)*this, 0, icol, rows, cols - icol);
-      GeneralMatrix inplace((GeneralMatrix&)*this, 0, icol, rows, cols - icol);
+      GeneralMatrix incopy(const_cast<const GeneralMatrix &>(*this), 0, icol, rows, cols - icol);
+      GeneralMatrix inplace(*this, 0, icol, rows, cols - icol);
       inplace.gemm(trans, m, "N", ConstGeneralMatrix(incopy), alpha, beta);
     }
 }
@@ -318,14 +314,14 @@ GeneralMatrix::gemm_partial_right(const std::string &trans, const ConstGeneralMa
   int irow;
   for (irow = 0; irow + md_length < rows; irow += md_length)
     {
-      GeneralMatrix incopy((const GeneralMatrix &)*this, irow, 0, md_length, cols);
-      GeneralMatrix inplace((GeneralMatrix&)*this, irow, 0, md_length, cols);
+      GeneralMatrix incopy(const_cast<const GeneralMatrix &>(*this), irow, 0, md_length, cols);
+      GeneralMatrix inplace(*this, irow, 0, md_length, cols);
       inplace.gemm("N", ConstGeneralMatrix(incopy), trans, m, alpha, beta);
     }
   if (rows > irow)
     {
-      GeneralMatrix incopy((const GeneralMatrix &)*this, irow, 0, rows - irow, cols);
-      GeneralMatrix inplace((GeneralMatrix&)*this, irow, 0, rows - irow, cols);
+      GeneralMatrix incopy(const_cast<const GeneralMatrix &>(*this), irow, 0, rows - irow, cols);
+      GeneralMatrix inplace(*this, irow, 0, rows - irow, cols);
       inplace.gemm("N", ConstGeneralMatrix(incopy), trans, m, alpha, beta);
     }
 }
@@ -366,8 +362,7 @@ ConstGeneralMatrix::getNormInf() const
   for (int i = 0; i < numRows(); i++)
     {
       double normi = getRow(i).getNorm1();
-      if (norm < normi)
-        norm = normi;
+      norm = std::max(normi, norm);
     }
   return norm;
 }
@@ -379,8 +374,7 @@ ConstGeneralMatrix::getNorm1() const
   for (int j = 0; j < numCols(); j++)
     {
       double normj = getCol(j).getNorm1();
-      if (norm < normj)
-        norm = normj;
+      norm = std::max(normj, norm);
     }
   return norm;
 }
@@ -548,7 +542,7 @@ SVDDecomp::construct(const GeneralMatrix &A)
   // query for optimal lwork
   dgesdd("A", &m, &n, a, &lda, s, u, &ldu, vt, &ldvt, &tmpwork,
          &lwork, iwork.data(), &info);
-  lwork = (lapack_int) tmpwork;
+  lwork = static_cast<lapack_int>(tmpwork);
   Vector work(lwork);
   // do the decomposition
   dgesdd("A", &m, &n, a, &lda, s, u, &ldu, vt, &ldvt, work.base(),
@@ -567,7 +561,7 @@ SVDDecomp::solve(const ConstGeneralMatrix &B, GeneralMatrix &X) const
 
   // reciprocal condition number for determination of zeros in the
   // end of sigma
-  double rcond = 1e-13;
+  constexpr double rcond = 1e-13;
 
   // determine nz=number of zeros in the end of sigma
   int nz = 0;

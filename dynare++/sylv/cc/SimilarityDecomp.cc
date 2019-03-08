@@ -27,8 +27,8 @@ void
 SimilarityDecomp::getXDim(diag_iter start, diag_iter end,
                           int &rows, int &cols) const
 {
-  int si = (*start).getIndex();
-  int ei = (*end).getIndex();
+  int si = start->getIndex();
+  int ei = end->getIndex();
   cols = b->numRows() - ei;
   rows = ei - si;
 }
@@ -41,12 +41,12 @@ bool
 SimilarityDecomp::solveX(diag_iter start, diag_iter end,
                          GeneralMatrix &X, double norm) const
 {
-  int si = (*start).getIndex();
-  int ei = (*end).getIndex();
+  int si = start->getIndex();
+  int ei = end->getIndex();
 
-  SqSylvMatrix A((const GeneralMatrix &)*b, si, si, X.numRows());
-  SqSylvMatrix B((const GeneralMatrix &)*b, ei, ei, X.numCols());
-  GeneralMatrix C((const GeneralMatrix &)*b, si, ei, X.numRows(), X.numCols());
+  SqSylvMatrix A(const_cast<const BlockDiagonal &>(*b), si, si, X.numRows());
+  SqSylvMatrix B(const_cast<const BlockDiagonal &>(*b), ei, ei, X.numCols());
+  GeneralMatrix C(const_cast<const BlockDiagonal &>(*b), si, ei, X.numRows(), X.numCols());
 
   lapack_int isgn = -1;
   lapack_int m = A.numRows();
@@ -73,8 +73,8 @@ void
 SimilarityDecomp::updateTransform(diag_iter start, diag_iter end,
                                   GeneralMatrix &X)
 {
-  int si = (*start).getIndex();
-  int ei = (*end).getIndex();
+  int si = start->getIndex();
+  int ei = end->getIndex();
 
   SqSylvMatrix iX(q->numRows());
   iX.setUnit();
@@ -92,7 +92,7 @@ SimilarityDecomp::bringGuiltyBlock(diag_iter start, diag_iter &end)
 {
   double av = b->getAverageDiagSize(start, end);
   diag_iter guilty = b->findClosestDiagBlock(end, b->diag_end(), av);
-  SchurDecompEig sd((QuasiTriangular&)*b); // works on b including diagonal structure
+  SchurDecompEig sd(*b); // works on b including diagonal structure
   end = sd.bubbleEigen(guilty, end); // iterators are valid
   ++end;
   q->multRight(sd.getQ());

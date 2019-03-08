@@ -34,7 +34,7 @@ SymSchurDecomp::SymSchurDecomp(const ConstGeneralMatrix &mata)
   double *w = lambda.base();
   double *z = q.base();
   lapack_int ldz = q.getLD();
-  std::vector<lapack_int> isuppz(2*std::max(1, (int) m));
+  std::vector<lapack_int> isuppz(2*std::max(1, static_cast<int>(m)));
   double tmpwork;
   lapack_int lwork = -1;
   lapack_int tmpiwork;
@@ -44,7 +44,7 @@ SymSchurDecomp::SymSchurDecomp(const ConstGeneralMatrix &mata)
   // query for lwork and liwork
   dsyevr("V", "A", "U", &n, a, &lda, vl, vu, il, iu, &abstol,
          &m, w, z, &ldz, isuppz.data(), &tmpwork, &lwork, &tmpiwork, &liwork, &info);
-  lwork = (int) tmpwork;
+  lwork = static_cast<lapack_int>(tmpwork);
   liwork = tmpiwork;
   // allocate work arrays
   std::vector<double> work(lwork);

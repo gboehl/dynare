@@ -117,7 +117,7 @@ mxArray *
 SylvParams::IntParamItem::createMatlabArray() const
 {
   mxArray *res = mxCreateNumericMatrix(1, 1, mxINT32_CLASS, mxREAL);
-  *((int *) mxGetData(res)) = value;
+  *reinterpret_cast<int *>(mxGetData(res)) = value;
   return res;
 }
 
