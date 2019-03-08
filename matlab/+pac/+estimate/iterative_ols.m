@@ -57,6 +57,13 @@ else
     is_exogenous_variables = false;
 end
 
+% Set flag for models with exogenous variables (in the optimizing agents part)
+if isfield(M_.pac.(pacmodl).equations.(eqtag), 'optim_additive')
+    is_optim_exogenous_variables = length(M_.pac.(pacmodl).equations.(eqtag).optim_additive.vars)>0;
+else
+    is_optim_exogenous_variables = false;
+end
+
 if is_non_optimizing_agents
     non_optimizing_behaviour = M_.pac.(pacmodl).equations.(eqtag).non_optimizing_behaviour;
     non_optimizing_behaviour_params = NaN(length(non_optimizing_behaviour.params), 1);
@@ -100,13 +107,16 @@ if is_exogenous_variables
     additive.scaling_factor(residual_jd) = [];
     additive.estimation  = ismember(additive.params, ipnames_);
 else
-    additive.params = [];
-    additive.vars = [];
-    additive.isendo = [];
-    additive.lags = [];
-    additive.scaling_factor = [];
-    additive.estimation = [];
+    additive = struct('params', [], 'vars', [], 'isendo', [], 'lags', [], 'scaling_factor', [], 'estimation', []);
 end
+
+if is_optim_exogenous_variables
+    optim_additive = M_.pac.(pacmodl).equations.(eqtag).optim_additive;
+    optim_additive.estimation  = ismember(optim_additive.params, ipnames_);
+else
+    optim_additive = struct('params', [], 'vars', [], 'isendo', [], 'lags', [], 'scaling_factor', [], 'estimation', []);
+end
+
 
 % Build PAC expectation matrix expression.
 dataForPACExpectation0 = dseries();
@@ -207,6 +217,43 @@ else
     dataForExogenousVariables_ = dseries();
 end
 
+% Build data for exogenous variables (in the optimizing behaviour term).
+if is_optim_exogenous_variables
+    listofvariables4 = {}; j = 0;
+    dataForOptimExogenousVariables = dseries();  % Estimated parameters
+    dataForOptimExogenousVariables_ = 0;         % Calibrated parameters
+    is_any_calibrated_parameter_optim_x = false;
+    is_any_estimated_parameter_optim_x = false;
+    for i=1:length(optim_additive.vars)
+        if optim_additive.isendo(i)
+            variable = M_.endo_names{optim_additive.vars(i)};
+        else
+            variable = M_.exo_names{optim_additive.vars(i)};
+        end
+        if optim_additive.estimation(i)
+            j = j+1;
+            is_any_estimated_parameter_optim_x = true;
+            listofvariables4{j} = variable;
+            dataForOptimExogenousVariables = [dataForOptimExogenousVariables, optim_additive.scaling_factor(i)*data{variable}.lag(optim_additive.lags(i))];
+        else
+            is_any_calibrated_parameter_optim_x = true;
+            tmp = data{variable}.lag(optim_additive.lags(i)).data;
+            if ~isnan(optim_additive.params(i))
+                tmp = M_.params(optim_additive.params(i))*tmp;
+            end
+            tmp = optim_additive.scaling_factor(i)*tmp;
+            dataForOptimExogenousVariables_ = dataForOptimExogenousVariables_+tmp;
+        end
+    end
+    if is_any_calibrated_parameter_optim_x
+        dataForOptimExogenousVariables_ = dseries(dataForOptimExogenousVariables_, data.dates(1), 'exogenous_variables_associated_with_calibrated_parameters');
+    end
+else
+    listofvariables4 = {};
+    dataForOptimExogenousVariables = dseries();
+    dataForOptimExogenousVariables_ = dseries();
+end
+
 % Reorder ec.vars locally if necessary. Second variable must be the
 % endogenous variable, while the first must be the associated trend.
 if M_.pac.(pacmodl).equations.(eqtag).ec.isendo(2)
@@ -232,6 +279,10 @@ end
 
 XDATA = DataForOLS{listofvariables3{:}}(range).data;
 
+if is_optim_exogenous_variables && is_any_estimated_parameter_optim_x
+    XDATA = [XDATA, dataForOptimExogenousVariables{listofvariables4{:}}(range).data];
+end
+
 if is_exogenous_variables && is_any_estimated_parameter_x
     XDATA = [XDATA, dataForExogenousVariables{listofvariables2{:}}(range).data];
 end
@@ -245,29 +296,24 @@ else
 end
 
 % Get indices in params0 for EC and AR parameters
-[~, params_id_1] = setdiff(ipnames_, [share_of_optimizing_agents_index, additive.params]);
+[~, params_id_1] = setdiff(ipnames_, [share_of_optimizing_agents_index, optim_additive.params, additive.params, ]);
 
-% Get indices in params0 for other parameters (optimizing agents
-% share plus parameters related to exogenous variables).
+% Get indices in params0 for EC and AR parameters plus parameters related to exogenous variables in the optimal part.
+[~, params_id_5] = setdiff(ipnames_, [share_of_optimizing_agents_index, additive.params]);
+
+% Get indices in params0 for other parameters (optimizing agents share plus parameters related to exogenous variables).
 [~, params_id_2] = setdiff(1:length(ipnames_), params_id_1);
 
-% Get indices in params0 for the parameters associated to the
-% exogenous variables.
+% Get indices in params0 for the parameters associated to the exogenous variables.
 params_id_3 = setdiff(params_id_2, params_id_0);
+[~, params_id_3_o] = ismember(optim_additive.params, ipnames_);
+params_id_3_no = setdiff(params_id_3, params_id_3_o);
 
-% Get indices in params0 for EC/AR parameters and parameters
-% associated to the exogenous variables (if any).
+% Get indices in params0 for EC/AR parameters and parameters associated to the exogenous variables (if any).
 params_id_4 = [params_id_1; params_id_3];
 
-[~, params_id_1] = setdiff(ipnames_, [share_of_optimizing_agents_index, additive.params]);
-
-
-% Get values for EC-AR parameters plus the parameters associated to
-% the exogenous variables (if any).
+% Get values for EC-AR parameters plus the parameters associated to the exogenous variables (if any).
 params0_ = params0([params_id_1; params_id_3]);
-
-% Get values for parameters associated to the exogenous variables.
-params0__ = params0(params_id_3);
 
 % Get value of the share of optimizing agents.
 if estimate_non_optimizing_agents_share
@@ -301,11 +347,17 @@ while noconvergence
     if is_exogenous_variables && is_any_calibrated_parameter_x
         YDATA = YDATA-dataForExogenousVariables_(range).data;
     end
+    if is_optim_exogenous_variables && is_any_calibrated_parameter_optim_x
+        YDATA = YDATA-share_of_optimizing_agents*dataForOptimExogenousVariables_(range).data;
+    end
     % Run OLS to estimate PAC parameters (autoregressive parameters and error correction parameter).
     params1_ = (XDATA\YDATA);
-    params1_(1:length(params_id_1)) = params1_(1:length(params_id_1))/share_of_optimizing_agents;
+    params1_(1:length(params_id_5)) = params1_(1:length(params_id_5))/share_of_optimizing_agents;
     % Compute residuals and sum of squareed residuals.
-    r = YDATA-XDATA*(params1_*share_of_optimizing_agents);
+    r = YDATA-XDATA(:,1:length(params_id_5))*params1_(1:length(params_id_5))*share_of_optimizing_agents;
+    if is_optim_exogenous_variables && is_any_estimated_parameter_optim_x
+        r = r-XDATA(:,length(params_id_5)+1:end)*params1_(length(params_id_5)+1:end);
+    end
     ssr = r'*r;
     % Update convergence dummy variable and display iteration info.
     noconvergence = max(abs(params0_-params1_))>1e-6;
@@ -329,7 +381,10 @@ while noconvergence
             end
         end
         % Set vector for regressor.
-        ZDATA = XDATA(:,1:length(params_id_1))*params0_(1:length(params_id_1))+PacExpectations-dataForNonOptimizingBehaviour(range).data*non_optimizing_behaviour_params;
+        ZDATA = XDATA(:,1:length(params_id_5))*params0_(1:length(params_id_5))+PacExpectations-dataForNonOptimizingBehaviour(range).data*non_optimizing_behaviour_params;
+        if is_optim_exogenous_variables && is_any_calibrated_parameter_optim_x
+            ZDATA = ZDATA+dataForOptimExogenousVariables_(range).data;
+        end
         % Update the (estimated) share of optimizing agents by running OLS
         share_of_optimizing_agents = (ZDATA\YDATA);
         % Force the share of optimizing agents to be in [0,1].

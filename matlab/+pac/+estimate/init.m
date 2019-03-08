@@ -71,6 +71,9 @@ stack = dbstack;
 ipnames__ = ipnames_;                              % The user provided order.
 if isequal(stack(2).name, 'iterative_ols')
     ipnames_ = [M_.pac.(pacmodl).equations.(eqtag).ec.params; M_.pac.(pacmodl).equations.(eqtag).ar.params'];
+    if isfield(M_.pac.(pacmodl).equations.(eqtag), 'optim_additive')
+        ipnames_ = [ipnames_; M_.pac.(pacmodl).equations.(eqtag).optim_additive.params(~isnan(M_.pac.(pacmodl).equations.(eqtag).optim_additive.params))'];
+    end
     if isfield(M_.pac.(pacmodl).equations.(eqtag), 'additive')
         ipnames_ = [ipnames_; M_.pac.(pacmodl).equations.(eqtag).additive.params(~isnan(M_.pac.(pacmodl).equations.(eqtag).additive.params))'];
     end
