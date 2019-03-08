@@ -246,9 +246,9 @@ for i=1:maxlag
             end
         end
         if isequal(id, 1)
-            expression = sprintf('%s*%s', parameter, variable);
+            expression = sprintf('%s*%s\n', parameter, variable);
         else
-            expression = sprintf('%s + %s*%s', expression, parameter, variable);
+            expression = sprintf('%s + %s*%s\n', expression, parameter, variable);
         end
     end
 end
