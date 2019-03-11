@@ -150,7 +150,50 @@ for e=1:number_of_pac_eq
         end
     end 
     % Update the parameter related to the growth neutrality correction.
+    if isfield(equations.(eqtag), 'non_optimizing_behaviour')
+        gamma = DynareModel.params(equations.(eqtag).share_of_optimizing_agents_index);
+    else
+        gamma = 1.0;
+    end
     if growth_flag
-        DynareModel.params(pacmodel.growth_neutrality_param_index) = growthneutrality;
+        % Growth neutrality as returned by hVector is valid iff
+        % there is no exogenous variables in the model and in the
+        % absence of non optimizing agents.
+        gg = -(growthneutrality-1);
+        cc = 1.0-gamma*gg;
+        if isfield(equations.(eqtag), 'optim_additive')
+            tmp = 0;
+            for i=1:length(equations.(eqtag).optim_additive.params)
+                if isnan(equations.(eqtag).optim_additive.params(i)) && equations.(eqtag).optim_additive.bgp(i)
+                    tmp = tmp + equations.(eqtag).optim_additive.scaling_factor(i);
+                elseif ~isnan(equations.(eqtag).optim_additive.params(i)) && equations.(eqtag).optim_additive.bgp(i)
+                    tmp = tmp + equations.(eqtag).optim_additive.params(i)*equations.(eqtag).optim_additive.scaling_factor(i);
+                end
+            end
+            cc = cc - gamma*tmp;
+        end
+        if gamma<1
+            tmp = 0;
+            for i=1:length(equations.(eqtag).non_optimizing_behaviour.params)
+                if isnan(equations.(eqtag).non_optimizing_behaviour.params(i)) && equations.(eqtag).non_optimizing_behaviour.bgp(i)
+                    tmp = tmp + equations.(eqtag).non_optimizing_behaviour.scaling_factor(i);
+                elseif ~isnan(equations.(eqtag).non_optimizing_behaviour.params(i)) && equations.(eqtag).non_optimizing_behaviour.bgp(i)
+                    tmp = tmp + equations.(eqtag).non_optimizing_behaviour.params(i)*equations.(eqtag).non_optimizing_behaviour.scaling_factor(i);
+                end
+            end
+            cc = cc - (1.0-gamma)*tmp;
+        end
+        if isfield(equations.(eqtag), 'additive')
+            tmp = 0;
+            for i=1:length(equations.(eqtag).additive.params)
+                if isnan(equations.(eqtag).additive.params(i)) && equations.(eqtag).additive.bgp(i)
+                    tmp = tmp + equations.(eqtag).additive.scaling_factor(i);
+                elseif ~isnan(equations.(eqtag).additive.params(i)) && equations.(eqtag).additive.bgp(i)
+                    tmp = tmp + equations.(eqtag).additive.params(i)*equations.(eqtag).additive.scaling_factor(i);
+                end
+            end
+            cc = cc - tmp;
+        end
+        DynareModel.params(pacmodel.growth_neutrality_param_index) = cc;
     end
 end

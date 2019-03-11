@@ -33,3 +33,16 @@ else
     M_.pac.(pacmodel).model_consistent_expectations = false;
     get_companion_matrix(M_.pac.(pacmodel).auxiliary_model_name, M_.pac.(pacmodel).auxiliary_model_type);
 end
+
+% Append default bgp fields if needed.
+for i=1:rows(M_.pac.(pacmodel).tag_map)
+    if isfield(M_.pac.(pacmodel).equations.(M_.pac.(pacmodel).tag_map{i,2}), 'additive')
+        M_.pac.(pacmodel).equations.(M_.pac.(pacmodel).tag_map{i,2}).additive.bgp = false(1, length(M_.pac.(pacmodel).equations.(M_.pac.(pacmodel).tag_map{i,2}).additive.params));
+    end
+    if isfield(M_.pac.(pacmodel).equations.(M_.pac.(pacmodel).tag_map{i,2}), 'optim_additive')
+        M_.pac.(pacmodel).equations.(M_.pac.(pacmodel).tag_map{i,2}).optim_additive.bgp = false(1, length(M_.pac.(pacmodel).equations.(M_.pac.(pacmodel).tag_map{i,2}).optim_additive.params));
+    end
+    if isfield(M_.pac.(pacmodel).equations.(M_.pac.(pacmodel).tag_map{i,2}), 'non_optimizing_behaviour')
+        M_.pac.(pacmodel).equations.(M_.pac.(pacmodel).tag_map{i,2}).non_optimizing_behaviour.bgp = false(1, length(M_.pac.(pacmodel).equations.(M_.pac.(pacmodel).tag_map{i,2}).non_optimizing_behaviour.params));
+    end
+end

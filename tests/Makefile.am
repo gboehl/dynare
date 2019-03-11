@@ -433,6 +433,7 @@ MODFILES = \
 	pac/trend-component-23/example.mod \
 	pac/trend-component-24/example.mod \
 	pac/trend-component-25/example.mod \
+	pac/trend-component-26/example.mod \
 	write/example1.mod \
 	ecb/backward-models/irf/solow_1.mod \
 	ecb/backward-models/irf/solow_2.mod \
