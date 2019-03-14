@@ -41,4 +41,4 @@ if nargin<3
     withcalibration = true;
 end
 
-print_expectations(eqname, pacexpectationmodelname, 'pac-expectations', withcalibration);
+print_expectations(eqname, pacexpectationmodelname, 'pac', withcalibration);

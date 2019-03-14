@@ -41,8 +41,20 @@ rhs_ = strsplit(rhs,{'+','-','*','/','^', ...
                     'normcdf(', 'normpdf(', 'erf(', ...
                     'diff(', 'adl(', '(', ')'});
 
+lhs_ = strsplit(lhs, {'+','-','*','/','^', ...
+                    'log(', 'log10(', 'ln(', 'exp(', ...
+                    'sqrt(', 'abs(', 'sign(', ...
+                    'sin(', 'cos(', 'tan(', 'asin(', 'acos(', 'atan(', ...
+                    'min(', 'max(', ...
+                    'normcdf(', 'normpdf(', 'erf(', ...
+                    'diff(', 'adl(', '(', ')'});
+
 % Filter out the numbers and punctuation.
 rhs_(cellfun(@(x) all(isstrprop(x, 'digit')+isstrprop(x, 'punct')), rhs_)) = [];
+
+% Filter out empty elements.
+rhs_(cellfun(@(x) all(isempty(x)), rhs_)) = [];
+lhs_(cellfun(@(x) all(isempty(x)), lhs_)) = [];
 
 % Get list of parameters.
 pnames = DynareModel.param_names;
@@ -64,7 +76,7 @@ if ~isempty(id)
 end
 
 % Add lhs variable in first position of enames.
-enames = [lhs; enames];
+enames = [lhs_; enames];
 
 % Returns vector of indices for parameters endogenous and exogenous
 % variables if required.
