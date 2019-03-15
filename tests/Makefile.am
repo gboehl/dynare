@@ -356,7 +356,9 @@ MODFILES = \
 	observation_trends_and_prefiltering/calib_smoother/Tr_no_prefil_f_obs_loglin_cal_smoother.mod \
 	observation_trends_and_prefiltering/calib_smoother/Tr_prefilter_loglin_calib_smoother.mod \
 	observation_trends_and_prefiltering/calib_smoother/Tr_prefil_f_obs_loglin_cal_smoother.mod \
-	observation_trends_and_prefiltering/ML/Trend_no_prefilter_selected_var.mod \
+	observation_trends_and_prefiltering/ML/Trend_no_prefilter_selected_var.mod
+
+ECB_MODFILES = \
 	var-expectations/1/example.mod \
 	var-expectations/2/example.mod \
 	var-expectations/3/example.mod \
@@ -457,8 +459,9 @@ OLS_MODFILES = \
 	ecb/pooled_fgls/panel_var_diff_NB_simulation_test.mod \
 	ecb/pooled_fgls/test_param_names.mod
 
+ECB_MODFILES += $(OLS_MODFILES)
 
-MODFILES += $(OLS_MODFILES)
+MODFILES += $(ECB_MODFILES)
 
 PARTICLEFILES = \
 	particle/dsge_base2.mod \
@@ -877,6 +880,8 @@ estimation/univariate: m/estimation/univariate o/estimation/univariate
 m/estimation/univariate: $(patsubst %.mod, %.m.trs, $(filter estimation/univariate/%.mod, $(MODFILES)))
 o/estimation/univariate: $(patsubst %.mod, %.o.trs, $(filter estimation/univariate/%.mod, $(MODFILES)))
 
+# ECB files
+M_ECB_TRS_FILES = $(patsubst %.mod, %.m.trs, $(ECB_MODFILES))
 
 # Just OLS files
 M_OLS_TRS_FILES = $(patsubst %.mod, %.m.trs, $(OLS_MODFILES))
@@ -1019,6 +1024,9 @@ check-matlab: $(M_XFAIL_TRS_FILES) $(M_TRS_FILES)
 
 check-octave: $(O_XFAIL_TRS_FILES) $(O_TRS_FILES)
 	@./read_trs_files.sh "$(O_TRS_FILES)" "$(O_XFAIL_TRS_FILES)"
+
+check-matlab-ecb: $(M_ECB_TRS_FILES)
+	@./read_trs_files.sh "$(M_ECB_TRS_FILES)"
 
 check-matlab-ols: $(M_OLS_TRS_FILES)
 	@./read_trs_files.sh "$(M_OLS_TRS_FILES)"
