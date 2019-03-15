@@ -666,6 +666,8 @@ var-expectations/8/substitution.o.trs: var-expectations/8/example.o.trs
 
 pac/var-5/substitution.m.trs: pac/var-5/example.m.trs
 pac/var-5/substitution.o.trs: pac/var-5/example.o.trs
+pac/var-6/substitution.m.trs: pac/var-6/example.m.trs
+pac/var-6/substitution.o.trs: pac/var-6/example.o.trs
 pac/trend-component-14/substitution.m.trs: pac/trend-component-14/example.m.trs
 pac/trend-component-14/substitution.o.trs: pac/trend-component-14/example.o.trs
 
