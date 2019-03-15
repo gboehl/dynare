@@ -40,4 +40,4 @@ if nargin<2
     withcalibration = true;
 end
 
-print_expectations('fake', varexpectationmodelname, 'var', withcalibratiyon);
+print_expectations('fake', varexpectationmodelname, 'var', withcalibration);
