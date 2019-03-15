@@ -70,6 +70,8 @@ if overlapping_dates
         if ~isempty(lhssub{i})
             lhssub{i} = lhssub{i}(maxfp:minlp);
         end
+        startdates{i} = maxfp;
+        enddates{i} = minlp;
     end
 end
 
