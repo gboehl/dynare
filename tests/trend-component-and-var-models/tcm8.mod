@@ -8,7 +8,8 @@ var U2_Q_YED
     U2_G_EYER
     U2_HH_OCOR
     U2_HH_COR
-    U2_H_Q_YER400 ;
+    U2_H_Q_YER400
+    var_allows_second_pac_eqn ;
 
 varexo res_U2_Q_YED
        res_U2_G_YER
@@ -110,6 +111,12 @@ diff(U2_STN)   =   u2_stn_ecm_u2_q_yed_L1   * (U2_Q_YED(-1) - U2_EHIC(-1))
 diff(log(U2_HH_COR)) = ecm_pac*(log(U2_HH_COR(-1))-log(U2_HH_OCOR(-1))) +
                   u2_hh_cor_pac_u2_hh_cor_L1*diff(log(U2_HH_COR(-1))) +
                   pac_expectation(pacman)   +
+                  res_ez;
+
+[name='zpac1']
+diff(log(U2_HH_COR)) = ecm_pac*(log(U2_HH_COR(-1))-log(U2_HH_OCOR(-1))) +
+                  u2_hh_cor_pac_u2_hh_cor_L1*diff(log(U2_HH_COR(-1))) +
+                  pac_expectation(pacman1)   +
                   res_ez;
 end;
 
