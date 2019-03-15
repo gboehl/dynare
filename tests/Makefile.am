@@ -374,6 +374,7 @@ MODFILES = \
 	trend-component-and-var-models/vm2.mod \
 	trend-component-and-var-models/vm3.mod \
 	trend-component-and-var-models/vm4.mod \
+	trend-component-and-var-models/vm5.mod \
 	trend-component-and-var-models/tcm1.mod \
 	trend-component-and-var-models/tcm2.mod \
 	trend-component-and-var-models/tcm3.mod \
