@@ -127,7 +127,7 @@
     ("^[ \t]*#" . font-lock-warning-face) ; For model-local variables
     (,(regexp-opt (append dynare-statements dynare-statements-like dynare-blocks) 'symbols) . font-lock-keyword-face)
     (,(regexp-opt dynare-functions 'symbols) . font-lock-builtin-face)
-    (,(regexp-opt dynare-constants 'symbols) . font-lock-constant-face))
+    (,(regexp-opt dynare-constants 'symbols) . font-lock-constant-face)
     (,(concat (regexp-opt dynare-type-attributes) "\\_>") . font-lock-type-face))
   "Keyword highlighting specification for `dynare-mode'.")
 
