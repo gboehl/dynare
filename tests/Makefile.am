@@ -437,6 +437,9 @@ ECB_MODFILES = \
 	pac/trend-component-24/example.mod \
 	pac/trend-component-25/example.mod \
 	pac/trend-component-26/example.mod \
+	pac/trend-component-27/example.mod \
+	pac/trend-component-28/example1.mod \
+	pac/trend-component-28/example2.mod \
 	write/example1.mod \
 	ecb/backward-models/irf/solow_1.mod \
 	ecb/backward-models/irf/solow_2.mod \
