@@ -7,8 +7,8 @@ function [x,check,info] = trust_region(fcn,x0,j1,j2,jacobian_flag,gstep,tolf,tol
 %    x0:              guess values
 %    j1:              equations index for which the model is solved
 %    j2:              unknown variables index
-%    jacobian_flag=1: jacobian given by the 'func' function
-%    jacobian_flag=0: jacobian obtained numerically
+%    jacobian_flag=true: jacobian given by the 'func' function
+%    jacobian_flag=false: jacobian obtained numerically
 %    gstep            increment multiplier in numercial derivative
 %                     computation
 %    tolf             tolerance for residuals

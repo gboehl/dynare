@@ -56,7 +56,7 @@ if options_.order>2 && ~options_.k_order_solver
     error('You need to set k_order_solver for order>2')
 end
 
-if (options_.aim_solver == 1) && (local_order > 1)
+if options_.aim_solver && (local_order > 1)
     error('Option "aim_solver" is incompatible with order >= 2')
 end
 
@@ -255,7 +255,7 @@ elseif options_.risky_steadystate
     options_.order = orig_order;
 else
     % If required, use AIM solver if not check only
-    if (options_.aim_solver == 1) && (task == 0)
+    if options_.aim_solver && (task == 0)
         [dr,info] = AIM_first_order_solver(jacobia_,M_,dr,options_.qz_criterium);
 
     else  % use original Dynare solver

@@ -30,15 +30,15 @@ function options = set_default_plot_shock_decomposition_options(options)
 
 options.plot_shock_decomp.use_shock_groups = '';
 options.plot_shock_decomp.colormap = '';
-options.plot_shock_decomp.nodisplay = 0;
+options.plot_shock_decomp.nodisplay = false;
 options.plot_shock_decomp.graph_format = 'eps';
-options.plot_shock_decomp.detail_plot = 0;
-options.plot_shock_decomp.interactive = 0;
-options.plot_shock_decomp.screen_shocks = 0;
-options.plot_shock_decomp.steadystate = 0;
+options.plot_shock_decomp.detail_plot = false;
+options.plot_shock_decomp.interactive = false;
+options.plot_shock_decomp.screen_shocks = false;
+options.plot_shock_decomp.steadystate = false;
 options.plot_shock_decomp.type = '';
 options.plot_shock_decomp.fig_name = '';
-options.plot_shock_decomp.write_xls = 0;
+options.plot_shock_decomp.write_xls = false;
 options.plot_shock_decomp.realtime = 0; % 0 is standard; 1 is realtime
                                         % (pool/vintage); 2 is conditional
                                         % (pool/vintage); 3 is forecast

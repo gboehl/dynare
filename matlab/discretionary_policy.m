@@ -24,7 +24,7 @@ oldoptions = options_;
 options_.order = 1;
 info = stoch_simul(var_list);
 
-if options_.noprint == 0
+if ~options_.noprint
     disp_steady_state(M_,oo_)
     for i=M_.orig_endo_nbr:M_.endo_nbr
         if strmatch('mult_', M_.endo_names{i})

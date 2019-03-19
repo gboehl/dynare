@@ -425,7 +425,7 @@ for i = 1:Size
 
         row_indx = n_static+1:n;
 
-        if task ~= 1 && options_.dr_cycle_reduction == 1
+        if task ~= 1 && options_.dr_cycle_reduction
             A1 = [aa(row_indx,index_m ) zeros(n_dynamic,n_fwrd)];
             B1 = [aa(row_indx,index_0m) aa(row_indx,index_0p) ];
             C1 = [zeros(n_dynamic,n_pred) aa(row_indx,index_p)];
@@ -436,7 +436,7 @@ for i = 1:Size
             gx = ghx(1+n_pred:end,:);
         end
 
-        if (task ~= 1 && ((options_.dr_cycle_reduction == 1 && info ==1) || options_.dr_cycle_reduction == 0)) || task == 1
+        if (task ~= 1 && ((options_.dr_cycle_reduction && info ==1) || ~options_.dr_cycle_reduction)) || task == 1
             D = [[aa(row_indx,index_0m) zeros(n_dynamic,n_both) aa(row_indx,index_p)] ; [zeros(n_both, n_pred) eye(n_both) zeros(n_both, n_both + n_fwrd)]];
             E = [-aa(row_indx,[index_m index_0p])  ; [zeros(n_both, n_both + n_pred) eye(n_both, n_both + n_fwrd) ] ];
 
@@ -588,7 +588,7 @@ for i = 1:Size
                 if block_type == 5
                     vghx_other = - inv(kron(eye(size(D_,2)), A_) + kron(C_', B_)) * vec(D_);
                     ghx_other = reshape(vghx_other, size(D_,1), size(D_,2));
-                elseif options_.sylvester_fp == 1
+                elseif options_.sylvester_fp
                     ghx_other = gensylv_fp(A_, B_, C_, D_, i, options_.sylvester_fixed_point_tol);
                 else
                     [err, ghx_other] = gensylv(1, A_, B_, C_, -D_);

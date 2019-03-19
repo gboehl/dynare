@@ -80,11 +80,11 @@ end
 [oo_.steady_state,M_.params,info] = steady_(M_,options_,oo_);
 
 if info(1) == 0
-    if options_.noprint == 0
+    if ~options_.noprint
         disp_steady_state(M_,oo_);
     end
 else
-    if options_.noprint == 0
+    if ~options_.noprint
         if ~isempty(oo_.steady_state)
             resid;
         else

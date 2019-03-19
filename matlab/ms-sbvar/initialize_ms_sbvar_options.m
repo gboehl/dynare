@@ -36,7 +36,7 @@ options_.ms.mh_file = '';
 options_.ms.free_param_file = '';
 options_.ms.output_file_tag = '';
 options_.ms.simulation_file_tag = '';
-options_.ms.create_init = 1;
+options_.ms.create_init = true;
 % prepare ms sbvar & estimation
 options_.ms.coefficients_prior_hyperparameters = [1.0 1.0 0.1 1.2 1.0 1.0];
 options_.ms.freq = 4;
@@ -45,7 +45,7 @@ options_.ms.final_subperiod = '';
 options_.ms.nlags = 1;
 options_.ms.cross_restrictions = 0;
 options_.ms.contemp_reduced_form = 0;
-options_.ms.bayesian_prior = 1;
+options_.ms.bayesian_prior = true;
 options_.ms.alpha = 1;
 options_.ms.beta = 1;
 options_.ms.gsig2_lmdm = 50^2;
@@ -73,28 +73,28 @@ options_.ms.mh_replic = 10000; % default differs from Dan's code
 options_.ms.thinning_factor = 1;
 options_.ms.drop = 0.1*options_.ms.mh_replic*options_.ms.thinning_factor;
 options_.ms.adaptive_mh_draws = 30000;
-options_.ms.save_draws = 0;
+options_.ms.save_draws = false;
 % mdd
 options_.ms.proposal_draws = 100000;
-options_.ms.use_mean_center = 0;
+options_.ms.use_mean_center = false;
 options_.ms.proposal_type = 3;
 options_.ms.proposal_lower_bound = 0.1;
 options_.ms.proposal_upper_bound = 0.9;
 % probabilities
 options_.ms.filtered_probabilities = 0;
-options_.ms.real_time_smoothed_probabilities = 0;
+options_.ms.real_time_smoothed_probabilities = false;
 % irf
 options_.ms.horizon = 12;
-options_.ms.filtered_probabilities = 0;
+options_.ms.filtered_probabilities = false;
 options_.ms.percentiles = [.16 .5 .84];
-options_.ms.parameter_uncertainty = 0;
+options_.ms.parameter_uncertainty = false;
 options_.ms.shock_draws = 10000;
 options_.ms.shocks_per_parameter = 10;
 options_.ms.median = 0;
 options_.ms.regime = 0;
-options_.ms.regimes = 0;
+options_.ms.regimes = false;
 % forecast
 options_.ms.forecast_data_obs = 0;
 % variance decomposition
-options_.ms.error_bands = 1;
+options_.ms.error_bands = true;
 end

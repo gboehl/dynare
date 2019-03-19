@@ -167,7 +167,7 @@ if task ~= 1 && (DynareOptions.dr_cycle_reduction || DynareOptions.dr_logarithmi
     A1 = [aa(row_indx,index_m ) zeros(ndynamic,nfwrd)];
     B1 = [aa(row_indx,index_0m) aa(row_indx,index_0p) ];
     C1 = [zeros(ndynamic,npred) aa(row_indx,index_p)];
-    if DynareOptions.dr_cycle_reduction == 1
+    if DynareOptions.dr_cycle_reduction
         [ghx, info] = cycle_reduction(A1, B1, C1, DynareOptions.dr_cycle_reduction_tol);
     else
         [ghx, info] = logarithmic_reduction(C1, B1, A1, DynareOptions.dr_logarithmic_reduction_tol, DynareOptions.dr_logarithmic_reduction_maxiter);

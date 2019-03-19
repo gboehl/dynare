@@ -214,8 +214,8 @@ elseif steadystate_flag
     if info(1)
         return
     end
-elseif (options.bytecode == 0 && options.block == 0)
-    if options.linear == 0
+elseif ~options.bytecode && ~options.block
+    if ~options.linear
         % non linear model
         static_model = str2func([M.fname '.static']);
         [ys,check] = dynare_solve(@static_problem,...

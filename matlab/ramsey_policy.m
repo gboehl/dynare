@@ -43,7 +43,7 @@ info = stoch_simul(var_list);
 
 oo_.steady_state = oo_.dr.ys;
 
-if options_.noprint == 0
+if ~options_.noprint
     disp_steady_state(M_,oo_)
     for i=M_.orig_endo_nbr:M_.endo_nbr
         if strmatch('mult_', M_.endo_names{i})

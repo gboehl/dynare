@@ -45,7 +45,7 @@ function [dr,info]=PCL_resol(ys,check_flag)
 global M_ options_ oo_
 global it_
 
-jacobian_flag = 0;
+jacobian_flag = false;
 
 info = 0;
 
@@ -84,13 +84,13 @@ if options_.steadystate_flag
 
 else
     % testing if ys isn't a steady state or if we aren't computing Ramsey policy
-    if  options_.ramsey_policy == 0
+    if ~options_.ramsey_policy
         if options_.linear == 0
             % nonlinear models
             if max(abs(feval(fh,dr.ys,[oo_.exo_steady_state; ...
                                     oo_.exo_det_steady_state], M_.params))) > options_.dynatol.f
                 opt = options_;
-                opt.jacobian_flag = 0;
+                opt.jacobian_flag = false;
                 [dr.ys,check1] = dynare_solve(fh,dr.ys,opt,...
                                               [oo_.exo_steady_state; ...
                                     oo_.exo_det_steady_state], M_.params);
@@ -126,7 +126,7 @@ if ~isreal(dr.ys)
 end
 
 dr.fbias = zeros(M_.endo_nbr,1);
-if( (options_.partial_information ==1) || (options_.ACES_solver==1))%&& (check_flag == 0)
+if( options_.partial_information || options_.ACES_solver)%&& (check_flag == 0)
     [dr,info,M_,options_,oo_] = dr1_PI(dr,check_flag,M_,options_,oo_);
 else
     [dr,info,M_,options_,oo_] = dr1(dr,check_flag,M_,options_,oo_);

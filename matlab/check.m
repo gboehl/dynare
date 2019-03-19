@@ -66,7 +66,7 @@ if (nyf == dr.edim) && (dr.full_rank)
     result = 1;
 end
 
-if options.noprint == 0
+if ~options.noprint
     skipline()
     disp('EIGENVALUES:')
     disp(sprintf('%16s %16s %16s\n','Modulus','Real','Imaginary'))

@@ -86,7 +86,7 @@ oo_.kurtosis = (mean(y.^4)./(s2.*s2)-3)';
 labels = M_.endo_names(ivar);
 labels_TeX = M_.endo_names_tex(ivar);
 
-if options_.nomoments == 0
+if ~options_.nomoments
     z = [ m' s' s2' (mean(y.^3)./s2.^1.5)' (mean(y.^4)./(s2.*s2)-3)' ];
     title='MOMENTS OF SIMULATED VARIABLES';
     title=add_filter_subtitle(title, options_);
@@ -97,12 +97,12 @@ if options_.nomoments == 0
     end
 end
 
-if options_.nocorr == 0
+if ~options_.nocorr
     corr = (y'*y/size(y,1))./(s'*s);
     if options_.contemporaneous_correlation
         oo_.contemporaneous_correlation = corr;
     end
-    if options_.noprint == 0
+    if ~options_.noprint
         title = 'CORRELATION OF SIMULATED VARIABLES';
         title=add_filter_subtitle(title,options_);
         headers = vertcat('VARIABLE', M_.endo_names(ivar));
@@ -115,7 +115,7 @@ if options_.nocorr == 0
     end
 end
 
-if options_.noprint == 0 && length(options_.conditional_variance_decomposition)
+if ~options_.noprint && length(options_.conditional_variance_decomposition)
     fprintf('\nSTOCH_SIMUL: conditional_variance_decomposition requires theoretical moments, i.e. periods=0.\n')
 end
 
@@ -126,7 +126,7 @@ if ar > 0
         oo_.autocorr{i} = y(ar+1:end,:)'*y(ar+1-i:end-i,:)./((size(y,1)-ar)*std(y(ar+1:end,:))'*std(y(ar+1-i:end-i,:)));
         autocorr = [ autocorr diag(oo_.autocorr{i}) ];
     end
-    if options_.noprint == 0
+    if ~options_.noprint
         title = 'AUTOCORRELATION OF SIMULATED VARIABLES';
         title=add_filter_subtitle(title,options_);
         headers = vertcat('VARIABLE', cellstr(int2str([1:ar]')));

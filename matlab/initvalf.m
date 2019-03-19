@@ -69,7 +69,7 @@ switch (extension)
     error(['Unsupported extension for datafile: ' extension])
 end
 
-options_.initval_file = 1;
+options_.initval_file = true;
 oo_.endo_simul = [];
 oo_.exo_simul = [];
 

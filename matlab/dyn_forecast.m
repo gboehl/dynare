@@ -169,7 +169,7 @@ if ~isscalar(trend) %add trend back to forecast
     yf(i_var_obs,:) = yf(i_var_obs,:) + trend;
 end
 
-if options.loglinear == 1
+if options.loglinear
     if options.prefilter == 1 %subtract steady state and add mean for observables
         yf(i_var_obs,:)=yf(i_var_obs,:)-repmat(log(oo.dr.ys(i_var_obs)),1,horizon+M.maximum_lag)+ repmat(mean_varobs,1,horizon+M.maximum_lag);
     end
@@ -194,7 +194,7 @@ for i=1:M.exo_det_nbr
     forecast.Exogenous.(M.exo_det_names{i}) = oo.exo_det_simul(maximum_lag+(1:horizon),i);
 end
 
-if options.nograph == 0
+if ~options.nograph
     oo.forecast = forecast;
     forecast_graphs(var_list, M, oo, options)
 end

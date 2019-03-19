@@ -86,7 +86,7 @@ end
 
 ll = DynareOptions.mode_check.neighbourhood_size;
 if isinf(ll)
-    DynareOptions.mode_check.symmetric_plots = 0;
+    DynareOptions.mode_check.symmetric_plots = false;
 end
 
 mcheck = struct('cross',struct(),'emode',struct());
@@ -149,7 +149,7 @@ for plt = 1:nbplt
         z1 = l1:((x(kk)-l1)/(DynareOptions.mode_check.number_of_points/2)):x(kk);
         z2 = x(kk):((l2-x(kk))/(DynareOptions.mode_check.number_of_points/2)):l2;
         z  = union(z1,z2);
-        if DynareOptions.mode_check.nolik==0
+        if ~DynareOptions.mode_check.nolik
             y = zeros(length(z),2);
             dy = priordens(xx,BayesInfo.pshape,BayesInfo.p6,BayesInfo.p7,BayesInfo.p3,BayesInfo.p4);
         end
@@ -164,7 +164,7 @@ for plt = 1:nbplt
                     fprintf('mode_check:: could not solve model for parameter %s at value %4.3f, error code: %u\n',name,z(i),info(1))
                 end
             end
-            if DynareOptions.mode_check.nolik==0
+            if ~DynareOptions.mode_check.nolik
                 lnprior = priordens(xx,BayesInfo.pshape,BayesInfo.p6,BayesInfo.p7,BayesInfo.p3,BayesInfo.p4);
                 y(i,2)  = (y(i,1)+lnprior-dy);
             end
@@ -189,7 +189,7 @@ for plt = 1:nbplt
         hold off
         drawnow
     end
-    if DynareOptions.mode_check.nolik==0
+    if ~DynareOptions.mode_check.nolik
         if isoctave
             axes('outerposition',[0.3 0.93 0.42 0.07],'box','on'),
         else

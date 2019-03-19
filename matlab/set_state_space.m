@@ -69,7 +69,7 @@ else
     both_var = [];
     stat_var = setdiff([1:endo_nbr]',fwrd_var);
 end
-if DynareOptions.block == 1
+if DynareOptions.block
     order_var = DynareModel.block_structure.variable_reordered;
 else
     order_var = [ stat_var(:); pred_var(:); both_var(:); fwrd_var(:)];

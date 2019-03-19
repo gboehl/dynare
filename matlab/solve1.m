@@ -6,8 +6,8 @@ function [x,check] = solve1(func,x,j1,j2,jacobian_flag,gstep,tolf,tolx,maxit,deb
 %    x:               guess values
 %    j1:              equations index for which the model is solved
 %    j2:              unknown variables index
-%    jacobian_flag=1: jacobian given by the 'func' function
-%    jacobian_flag=0: jacobian obtained numerically
+%    jacobian_flag=true: jacobian given by the 'func' function
+%    jacobian_flag=false: jacobian obtained numerically
 %    gstep            increment multiplier in numercial derivative
 %                     computation
 %    tolf             tolerance for residuals

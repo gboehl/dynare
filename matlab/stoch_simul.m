@@ -45,7 +45,7 @@ if isempty(options_.qz_criterium)
     options_.qz_criterium = 1+1e-6;
 end
 
-if options_.partial_information == 1 || options_.ACES_solver == 1
+if options_.partial_information || options_.ACES_solver
     PI_PCL_solver = 1;
     if options_.order ~= 1
         warning('stoch_simul:: forcing order=1 since you are using partial_information or ACES solver')
@@ -182,7 +182,7 @@ if options_.periods > 0 && ~PI_PCL_solver
     end
 end
 
-if options_.nomoments == 0
+if ~options_.nomoments
     if PI_PCL_solver
         PCL_Part_info_moments(0, PCL_varobs, oo_.dr, i_var);
     elseif options_.periods == 0
@@ -266,7 +266,7 @@ if options_.irf
                     end
                 end
             end
-            if options_.nograph == 0
+            if ~options_.nograph
                 number_of_plots_to_draw = size(irfs,1);
                 [nbplt,nr,nc,lr,lc,nstar] = pltorg(number_of_plots_to_draw);
                 if nbplt == 0
@@ -379,7 +379,7 @@ if options_.irf
     end
 end
 
-if options_.SpectralDensity.trigger == 1
+if options_.SpectralDensity.trigger
     [oo_] = UnivariateSpectralDensity(M_,oo_,options_,var_list);
 end
 

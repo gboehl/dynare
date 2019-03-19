@@ -44,8 +44,8 @@ options_.gstep = ones(2,1);
 options_.gstep(1) = 1e-2;
 options_.gstep(2) = 1.0;
 options_.scalv = 1;
-options_.debug = 0;
-options_.initval_file = 0;
+options_.debug = false;
+options_.initval_file = false;
 options_.Schur_vec_tol = 1e-11; % used to find nonstationary variables in Schur decomposition of the
                                 % transition matrix
 options_.qz_criterium = [];
@@ -54,17 +54,17 @@ options_.lyapunov_complex_threshold = 1e-15;
 options_.solve_tolf = eps^(1/3);
 options_.solve_tolx = eps^(2/3);
 options_.dr_display_tol=1e-6;
-options_.minimal_workspace = 0;
+options_.minimal_workspace = false;
 options_.dp.maxit = 3000;
 options_.steady.maxit = 50;
 options_.simul.maxit = 50;
-options_.simul.robust_lin_solve = 0;
+options_.simul.robust_lin_solve = false;
 
-options_.mode_check.status = 0;
+options_.mode_check.status = false;
 options_.mode_check.neighbourhood_size = .5;
-options_.mode_check.symmetric_plots = 1;
+options_.mode_check.symmetric_plots = true;
 options_.mode_check.number_of_points = 20;
-options_.mode_check.nolik = 0;
+options_.mode_check.nolik = false;
 
 options_.huge_number = 1e7;
 
@@ -74,7 +74,7 @@ options_.threads.kronecker.sparse_hessian_times_B_kronecker_C = 1;
 options_.threads.local_state_space_iteration_2 = 1;
 
 % steady state
-options_.jacobian_flag = 1;
+options_.jacobian_flag = true;
 
 % steady state file
 if exist(['+' M_.fname '/steadystate.m'],'file')
@@ -85,7 +85,7 @@ else
     options_.steadystate_flag = 0;
 end
 options_.steadystate_partial = [];
-options_.steadystate.nocheck = 0;
+options_.steadystate.nocheck = false;
 
 % subset of the estimated deep parameters
 options_.ParamSubSet = 'None';
@@ -101,7 +101,7 @@ options_.bvar_prior_decay = 0.5;
 options_.bvar_prior_lambda = 5;
 options_.bvar_prior_mu = 2;
 options_.bvar_prior_omega = 1;
-options_.bvar_prior_flat = 0;
+options_.bvar_prior_flat = false;
 options_.bvar_prior_train = 0;
 options_.bvar.conf_sig = 0.6;
 
@@ -118,7 +118,7 @@ gmhmaxlik.target = 1/3; % Target for the acceptance rate.
 options_.gmhmaxlik = gmhmaxlik;
 
 % Request user input.
-options_.nointeractive = 0;
+options_.nointeractive = false;
 
 % Graphics
 options_.graphics.nrows = 3;
@@ -126,50 +126,50 @@ options_.graphics.ncols = 3;
 options_.graphics.line_types = {'b-'};
 options_.graphics.line_width = 1;
 options_.graph_format = 'eps';
-options_.nodisplay = 0;
-options_.nograph = 0;
-options_.no_graph.posterior = 0;
-options_.no_graph.shock_decomposition = 0;
+options_.nodisplay = false;
+options_.nograph = false;
+options_.no_graph.posterior = false;
+options_.no_graph.shock_decomposition = false;
 options_.XTick = [];
 options_.XTickLabel = [];
-options_.console_mode = 0;
+options_.console_mode = false;
 if isoctave
     if sum(get(0,'screensize'))==4
-        options_.console_mode = 1;
-        options_.nodisplay = 1;
+        options_.console_mode = true;
+        options_.nodisplay = true;
     end
 else
     if isunix && (~usejava('jvm') || ~feature('ShowFigureWindows'))
-        options_.console_mode = 1;
-        options_.nodisplay = 1;
+        options_.console_mode = true;
+        options_.nodisplay = true;
     end
 end
 
 % IRFs & other stoch_simul output
 options_.irf = 40;
 options_.impulse_responses.plot_threshold=1e-10;
-options_.relative_irf = 0;
+options_.relative_irf = false;
 options_.ar = 5;
 options_.hp_filter = 0;
 options_.one_sided_hp_filter = 0;
 options_.hp_ngrid = 512;
-options_.nodecomposition = 0;
-options_.nomoments = 0;
-options_.nocorr = 0;
+options_.nodecomposition = false;
+options_.nomoments = false;
+options_.nocorr = false;
 options_.periods = 0;
-options_.noprint = 0;
-options_.SpectralDensity.trigger = 0;
+options_.noprint = false;
+options_.SpectralDensity.trigger = false;
 options_.SpectralDensity.plot  = 1;
 options_.SpectralDensity.cutoff  = 150;
 options_.SpectralDensity.sdl = 0.01;
 options_.nofunctions = false;
 
-options_.bandpass.indicator = 0;
+options_.bandpass.indicator = false;
 options_.bandpass.passband = [6; 32];
 options_.bandpass.K=12;
 
-options_.irf_opt.diagonal_only = 0;
-options_.irf_opt.stderr_multiples = 0;
+options_.irf_opt.diagonal_only = false;
+options_.irf_opt.stderr_multiples = false;
 options_.irf_opt.irf_shock_graphtitles = {};
 options_.irf_opt.irf_shocks = [];
 
@@ -237,7 +237,7 @@ options_.bnlms = bnlms;
 % Particle filter
 %
 % Default is that we do not use the non linear kalman filter
-particle.status = 0;
+particle.status = false;
 % How do we initialize the states?
 particle.initialization = 1;
 particle.initial_state_prior_std = .1;
@@ -256,23 +256,23 @@ particle.unscented.alpha = 1;
 particle.unscented.beta = 2;
 particle.unscented.kappa = 1;
 % Configuration of resampling in case of particles
-particle.resampling.status.systematic = 1;
-particle.resampling.status.none = 0;
-particle.resampling.status.generic = 0;
+particle.resampling.status.systematic = true;
+particle.resampling.status.none = false;
+particle.resampling.status.generic = false;
 particle.resampling.threshold = .5;
-particle.resampling.method.kitagawa = 1;
-particle.resampling.method.smooth = 0;
-particle.resampling.method.stratified = 0;
+particle.resampling.method.kitagawa = true;
+particle.resampling.method.smooth = false;
+particle.resampling.method.stratified = false;
 % Set default algorithm
 particle.filter_algorithm = 'sis';
 % Approximation of the proposal distribution
-particle.proposal_approximation.cubature = 0;
-particle.proposal_approximation.unscented = 1;
-particle.proposal_approximation.montecarlo = 0;
+particle.proposal_approximation.cubature = false;
+particle.proposal_approximation.unscented = true;
+particle.proposal_approximation.montecarlo = false;
 % Approximation of the particle distribution
-particle.distribution_approximation.cubature = 0;
-particle.distribution_approximation.unscented = 1;
-particle.distribution_approximation.montecarlo = 0;
+particle.distribution_approximation.cubature = false;
+particle.distribution_approximation.unscented = true;
+particle.distribution_approximation.montecarlo = false;
 % Number of partitions for the smoothed resampling method
 particle.resampling.number_of_partitions = 200;
 % Configuration of the mixture filters
@@ -285,8 +285,8 @@ particle.mixture_measurement_shocks = 1 ;
 particle.liu_west_delta = 0.99 ;
 particle.liu_west_chol_sigma_bar = .01 ;
 % Options for setting the weights in conditional particle filters.
-particle.cpf_weights_method.amisanotristani = 1;
-particle.cpf_weights_method.murrayjonesparslow = 0;
+particle.cpf_weights_method.amisanotristani = true;
+particle.cpf_weights_method.murrayjonesparslow = false;
 % Copy ep structure in options_ global structure
 options_.particle = particle;
 options_.rwgmh.init_scale = 1e-4 ;
@@ -294,7 +294,7 @@ options_.rwgmh.scale_chain = 1 ;
 options_.rwgmh.scale_shock = 1e-5 ;
 
 % TeX output
-options_.TeX = 0;
+options_.TeX = false;
 
 % Exel
 options_.xls_sheet = 1; % Octave does not support the empty string, rather use first sheet
@@ -311,31 +311,30 @@ options_.forecasts.conf_sig = 0.9;
 options_.conditional_forecast.conf_sig = 0.9;
 
 % Model
-options_.linear = 0;
+options_.linear = false;
 
 % Deterministic simulation
 options_.stack_solve_algo = 0;
 options_.markowitz = 0.5;
 options_.minimal_solving_periods = 1;
-options_.endogenous_terminal_period = 0;
-options_.no_homotopy = 0;
+options_.endogenous_terminal_period = false;
+options_.no_homotopy = false;
 
 % Solution
 options_.order = 2;
-options_.pruning = 0;
+options_.pruning = false;
 options_.solve_algo = 4;
-options_.linear = 0;
 options_.replic = 50;
 options_.simul_replic = 1;
 options_.drop = 100;
-options_.aim_solver = 0; % i.e. by default do not use G.Anderson's AIM solver, use mjdgges instead
-options_.k_order_solver=0; % by default do not use k_order_perturbation but mjdgges
-options_.partial_information = 0;
-options_.ACES_solver = 0;
+options_.aim_solver = false; % i.e. by default do not use G.Anderson's AIM solver, use mjdgges instead
+options_.k_order_solver = false; % by default do not use k_order_perturbation but mjdgges
+options_.partial_information = false;
+options_.ACES_solver = false;
 options_.conditional_variance_decomposition = [];
 
 % Ramsey policy
-options_.ramsey_policy = 0;
+options_.ramsey_policy = false;
 options_.instruments = {};
 options_.timeless = 0;
 options_.ramsey.maxit = 500;
@@ -352,30 +351,30 @@ options_.dataset.xls_range = [];
 options_.Harvey_scale_factor = 10;
 options_.MaxNumberOfBytes = 1e8;
 options_.MaximumNumberOfMegaBytes = 111;
-options_.analytic_derivation = 0;
+options_.analytic_derivation = 0; % Not a boolean, can also take values -1 or 2
 options_.analytic_derivation_mode = 0;
-options_.bayesian_irf = 0;
+options_.bayesian_irf = false;
 options_.bayesian_th_moments = 0;
-options_.diffuse_filter = 0;
+options_.diffuse_filter = false;
 options_.filter_step_ahead = [];
-options_.filtered_vars = 0;
-options_.smoothed_state_uncertainty = 0;
+options_.filtered_vars = false;
+options_.smoothed_state_uncertainty = false;
 options_.first_obs = NaN;
 options_.nobs = NaN;
 options_.kalman_algo = 0;
-options_.fast_kalman_filter = 0;
+options_.fast_kalman_filter = false;
 options_.kalman_tol = 1e-10;
-options_.kalman.keep_kalman_algo_if_singularity_is_detected = 0;
+options_.kalman.keep_kalman_algo_if_singularity_is_detected = false;
 options_.diffuse_kalman_tol = 1e-6;
 options_.use_univariate_filters_if_singularity_is_detected = 1;
 options_.riccati_tol = 1e-6;
 options_.lik_algo = 1;
 options_.lik_init = 1;
-options_.load_mh_file = 0;
-options_.load_results_after_load_mh = 0;
-options_.logdata = 0;
-options_.loglinear = 0;
-options_.linear_approximation = 0;
+options_.load_mh_file = false;
+options_.load_results_after_load_mh = false;
+options_.logdata = false;
+options_.loglinear = false;
+options_.linear_approximation = false;
 options_.logged_steady_state = 0;
 options_.mh_conf_sig = 0.90;
 options_.prior_interval = 0.90;
@@ -393,7 +392,7 @@ options_.mh_tune_jscale.c3 = 4;
 options_.mh_init_scale = 2*options_.mh_jscale;
 options_.mh_mode = 1;
 options_.mh_nblck = 2;
-options_.mh_recover = 0;
+options_.mh_recover = false;
 options_.mh_replic = 20000;
 options_.recursive_estimation_restart = 0;
 options_.MCMC_jumping_covariance='hessian';
@@ -401,7 +400,7 @@ options_.use_calibration_initialization = 0;
 options_.endo_vars_for_moment_computations_in_estimation=[];
 
 % Run optimizer silently
-options_.silent_optimizer=0;
+options_.silent_optimizer = false;
 
 % Prior restrictions
 options_.prior_restrictions.status = 0;
@@ -409,15 +408,15 @@ options_.prior_restrictions.routine = [];
 
 options_.mode_compute = 4;
 options_.mode_file = '';
-options_.moments_varendo = 0;
+options_.moments_varendo = false;
 options_.nk = 1;
-options_.noconstant = 0;
-options_.nodiagnostic = 0;
+options_.noconstant = false;
+options_.nodiagnostic = false;
 options_.mh_posterior_mode_estimation = 0;
 options_.prefilter = 0;
 options_.presample = 0;
 options_.prior_trunc = 1e-10;
-options_.smoother = 0;
+options_.smoother = false;
 options_.posterior_max_subsample_draws = 1200;
 options_.sub_draws = [];
 options_.ME_plot_tol=1e-6;
@@ -469,13 +468,13 @@ for i=1:length(years)
     options_.conditional_variance_decomposition_dates(i) = ...
         (years(i)-1)*4+quarter;
 end
-options_.filter_covariance = 0;
-options_.filter_decomposition = 0;
-options_.selected_variables_only = 0;
-options_.contemporaneous_correlation = 0;
+options_.filter_covariance = false;
+options_.filter_decomposition = false;
+options_.selected_variables_only = false;
+options_.contemporaneous_correlation = false;
 options_.initialize_estimated_parameters_with_the_prior_mode = 0;
-options_.estimation_dll = 0;
-options_.estimation.moments_posterior_density.indicator = 1;
+options_.estimation_dll = false;
+options_.estimation.moments_posterior_density.indicator = true;
 options_.estimation.moments_posterior_density.gridpoints = 2^9;
 options_.estimation.moments_posterior_density.bandwidth = 0; % Rule of thumb optimal bandwidth parameter.
 options_.estimation.moments_posterior_density.kernel_function = 'gaussian'; % Gaussian kernel for Fast Fourrier Transform approximaton.
@@ -485,7 +484,7 @@ options_.estimation.moments_posterior_density.kernel_function = 'gaussian'; % Ga
 % homotopy for steady state
 options_.homotopy_mode = 0;
 options_.homotopy_steps = 1;
-options_.homotopy_force_continue = 0;
+options_.homotopy_force_continue = false;
 
 % numerical hessian
 hessian.use_penalized_objective = false;
@@ -597,39 +596,39 @@ options_.prior_mc = 20000;
 options_.prior_analysis_endo_var_list = {};
 
 % did model undergo block decomposition + minimum feedback set computation ?
-options_.block = 0;
+options_.block = false;
 
 % model evaluated using a compiled MEX
-options_.use_dll = 0;
+options_.use_dll = false;
 
 % model evaluated using bytecode.dll
-options_.bytecode = 0;
+options_.bytecode = false;
 
-% if equal to 1 use a fixed point method to solve Sylvester equation (for large scale models)
-options_.sylvester_fp = 0;
+% if true, use a fixed point method to solve Sylvester equation (for large scale models)
+options_.sylvester_fp = false;
 
 % convergence criteria to solve iteratively a sylvester equations
 options_.sylvester_fixed_point_tol = 1e-12;
 
-% if 1 use a fixed point method to solve Lyapunov equation (for large scale models)
-options_.lyapunov_fp = 0;
-% if 1 use a doubling algorithm to solve Lyapunov equation (for large scale models)
-options_.lyapunov_db = 0;
-% if 1 use a square root solver to solve Lyapunov equation (for large scale models)
-options_.lyapunov_srs = 0;
+% if true, use a fixed point method to solve Lyapunov equation (for large scale models)
+options_.lyapunov_fp = false;
+% if true, use a doubling algorithm to solve Lyapunov equation (for large scale models)
+options_.lyapunov_db = false;
+% if true, use a square root solver to solve Lyapunov equation (for large scale models)
+options_.lyapunov_srs = false;
 
 % convergence criterion for iteratives methods to solve lyapunov equations
 options_.lyapunov_fixed_point_tol = 1e-10;
 options_.lyapunov_doubling_tol = 1e-16;
 
-% if equal to 1 use a cycle reduction method to compute the decision rule (for large scale models)
-options_.dr_cycle_reduction = 0;
+% if true, use a cycle reduction method to compute the decision rule (for large scale models)
+options_.dr_cycle_reduction = false;
 
 % convergence criterion for iteratives methods to solve the decision rule
 options_.dr_cycle_reduction_tol = 1e-7;
 
-% if equal to 1 use a logarithmic reduction method to compute the decision rule (for large scale models)
-options_.dr_logarithmic_reduction = 0;
+% if true, use a logarithmic reduction method to compute the decision rule (for large scale models)
+options_.dr_logarithmic_reduction = false;
 
 % convergence criterion for iteratives methods to solve the decision rule
 options_.dr_logarithmic_reduction_tol = 1e-12;
@@ -663,8 +662,8 @@ options_.nonlinear_filter = [];
 % SBVAR
 options_.ms.vlistlog = [];
 options_.ms.restriction_fname = 0;
-options_.ms.cross_restrictions = 0;
-options_.ms.contemp_reduced_form = 0;
+options_.ms.cross_restrictions = false;
+options_.ms.contemp_reduced_form = false;
 options_.ms.real_pseudo_forecast = 0;
 options_.ms.dummy_obs = 0;
 options_.ms.ncsk = 0;
@@ -695,7 +694,7 @@ options_.graph_save_formats.fig = 0;
 options_.risky_steadystate = 0;
 
 % endogenous prior
-options_.endogenous_prior = 0;
+options_.endogenous_prior = false;
 options_.endogenous_prior_restrictions.irf={};
 options_.endogenous_prior_restrictions.moment={};
 
@@ -703,17 +702,17 @@ options_.endogenous_prior_restrictions.moment={};
 options_.osr.opt_algo=4;
 
 % use GPU
-options_.gpu = 0;
+options_.gpu = false;
 
 %Geweke convergence diagnostics
 options_.convergence.geweke.taper_steps=[4 8 15];
 options_.convergence.geweke.geweke_interval=[0.2 0.5];
 %Raftery/Lewis convergence diagnostics;
-options_.convergence.rafterylewis.indicator=0;
+options_.convergence.rafterylewis.indicator=false;
 options_.convergence.rafterylewis.qrs=[0.025 0.005 0.95];
 
 % Options for lmmcp solver
-options_.lmmcp.status = 0;
+options_.lmmcp.status = false;
 
 % Options for lcppath solver
 options_.lcppath.A = [];
