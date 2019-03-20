@@ -7,6 +7,7 @@ Upstream-Contact: Dynare Team, whose members in 2019 are:
                   Frédéric Karamé <frederic.karame@univ-lemans.fr>
                   Junior Maih <junior.maih@gmail.com>
                   Ferhat Mihoubi <fmihoubi@univ-evry.fr>
+                  Willi Mutschler <willi@mutschler.eu>
                   Johannes Pfeifer <jpfeifer@gmx.de>
                   Marco Ratto <marco.ratto@ec.europa.eu>
                   Sébastien Villemot <sebastien@dynare.org>
