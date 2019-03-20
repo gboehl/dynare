@@ -181,6 +181,11 @@ MODFILES = \
 	seeds.mod \
 	identification/kim/kim2.mod \
 	identification/as2007/as2007.mod \
+	identification/as2007/as2007_kronflags.mod \
+	identification/as2007/as2007_QT.mod \
+	identification/as2007/as2007_QT_equal_autocorr.mod \
+	identification/BrockMirman/BrockMirman.mod \
+	identification/cgg/cgg_criteria_differ.mod \
 	identification/ident_unit_root/ident_unit_root.mod \
 	identification/rbc_ident/rbc_ident_std_as_structural_par.mod \
 	identification/rbc_ident/rbc_ident_varexo_only.mod \
@@ -832,6 +837,7 @@ EXTRA_DIST = \
 	kalman/likelihood_from_dynare/fs2000ns_estimation_check.inc \
 	identification/kim/kim2_steadystate.m \
 	identification/as2007/as2007_steadystate.m \
+	identification/as2007/G_QT.mat \
 	estimation/fsdat_simul.m \
 	ep/mean_preserving_spread.m \
 	decision_rules/third_order/comparison_policy_functions_dynare_mathematica.m \
