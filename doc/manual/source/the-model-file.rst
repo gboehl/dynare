@@ -8768,77 +8768,23 @@ Performing identification analysis
 .. command:: identification ;
              identification (OPTIONS...);
 
-    |br| This command triggers identification analysis.
+    |br| This command triggers:
 
-    *Options*
+         1. Theoretical identification analysis based on
 
-    .. option:: ar = INTEGER
+            * moments as in *Iskrev (2010)*
+            * spectral density as in *Qu and Tkachenko (2012)*
+            * minimal system as in *Komunjer and Ng (2011)*
+            * reduced-form solution and linear rational expectation model
+              as in *Ratto and Iskrev (2011)*
 
-        Number of lags of computed autocorrelations (theoretical
-        moments). Default: ``1``.
+         2. Identification strength analysis based on sample information matrix as in
+            *Ratto and Iskrev (2011)*
 
-    .. option:: useautocorr = INTEGER
+         3. Parameter checks based on nullspace and multicorrelation coefficients to
+            determine which (combinations of) parameters are involved
 
-        If equal to ``1``, compute derivatives of autocorrelation. If
-        equal to ``0``, compute derivatives of
-        autocovariances. Default: ``0``.
-
-    .. option:: load_ident_files = INTEGER
-
-        If equal to ``1``, allow Dynare to load previously computed
-        analyzes. Default: ``0``.
-
-    .. option:: prior_mc = INTEGER
-
-        Size of Monte-Carlo sample. Default: ``1``.
-
-    .. option:: prior_range = INTEGER
-
-        Triggers uniform sample within the range implied by the prior
-        specifications (when ``prior_mc>1``). Default: ``0``.
-
-    .. option:: advanced = INTEGER
-
-        Shows a more detailed analysis, comprised of an analysis for
-        the linearized rational expectation model as well as the
-        associated reduced form solution. Further performs a brute
-        force search of the groups of parameters best reproducing the
-        behavior of each single parameter. The maximum dimension of
-        the group searched is triggered by
-        ``max_dim_cova_group``. Default: ``0``.
-
-    .. option:: max_dim_cova_group = INTEGER
-
-        In the brute force search (performed when ``advanced=1``) this
-        option sets the maximum dimension of groups of parameters that
-        best reproduce the behavior of each single model
-        parameter. Default: ``2``.
-
-    .. option:: periods = INTEGER
-
-        When the analytic Hessian is not available (i.e. with missing
-        values or diffuse Kalman filter or univariate Kalman filter),
-        this triggers the length of stochastic simulation to compute
-        Simulated Moments Uncertainty. Default: ``300``.
-
-    .. option:: replic = INTEGER
-
-        When the analytic Hessian is not available, this triggers the
-        number of replicas to compute Simulated Moments
-        Uncertainty. Default: ``100``.
-
-    .. option:: gsa_sample_file = INTEGER
-
-        If equal to ``0``, do not use sample file. If equal to ``1``,
-        triggers gsa prior sample. If equal to ``2``, triggers gsa
-        Monte-Carlo sample (i.e. loads a sample corresponding to
-        ``pprior=0`` and ``ppost=0`` in the ``dynare_sensitivity``
-        options). Default: ``0``.
-
-    .. option:: gsa_sample_file = FILENAME
-
-        Uses the provided path to a specific user defined sample
-        file. Default: ``0``.
+*General Options*
 
     .. option:: parameter_set = OPTION
 
@@ -8853,13 +8799,153 @@ Performing identification analysis
 
         Default: ``prior_mean``.
 
-    .. option:: lik_init = INTEGER
+    .. option:: prior_mc = INTEGER
 
-        See :opt:`lik_init <lik_init = INTEGER>`.
+        Size of Monte-Carlo sample.
+        Default: ``1``.
 
-    .. option:: kalman_algo = INTEGER
+    .. option:: prior_range = INTEGER
 
-        See :opt:`kalman_algo <kalman_algo = INTEGER>`.
+        Triggers uniform sample within the range implied by the prior
+        specifications (when ``prior_mc>1``).
+        Default: ``0``.
+
+    .. option:: advanced = INTEGER
+
+        If set to ``1``, shows a more detailed analysis, comprised of
+        an analysis for the linearized rational expectation model as
+        well as the associated reduced form solution. Further performs
+        a bruteforce search of the groups of parameters best reproducing
+        the behavior of each single parameter. The maximum dimension of
+        the group searched is triggered by ``max_dim_cova_group``.
+        Default: ``0``.
+
+    .. option:: max_dim_cova_group = INTEGER
+
+        In the brute force search (performed when ``advanced=1``) this
+        option sets the maximum dimension of groups of parameters that
+        best reproduce the behavior of each single model parameter.
+        Default: ``2``.
+
+    .. option:: gsa_sample_file = INTEGER|FILENAME
+
+        If equal to ``0``, do not use sample file. If equal to ``1``,
+        triggers gsa prior sample. If equal to ``2``, triggers gsa
+        Monte-Carlo sample (i.e. loads a sample corresponding to
+        ``pprior=0`` and ``ppost=0`` in the ``dynare_sensitivity``
+        options). If equal to ``FILENAME`` uses the provided path to 
+        a specific user defined sample file.
+        Default: ``0``.
+
+    .. option:: diffuse_filter
+
+        Deals with non-stationary cases. See :opt:`diffuse_filter`.
+
+*Numerical Options*
+
+    .. option:: analytic_derivation_mode = INTEGER
+
+        Different ways to compute derivatives either analytically or numerically.
+        Possible values are:
+
+            * ``0``: efficient sylvester equation method to compute
+              analytical derivatives
+            * ``1``: kronecker products method to compute analytical
+              derivatives
+            * ``-1``: numerical two-sided finite difference method
+              to compute all identification Jacobians
+            * ``-2``: numerical two-sided finite difference method
+              to compute derivatives of steady state and dynamic
+              model numerically, the identification Jacobians are
+              then computed analytically
+
+        Default: ``0``.
+
+    .. option:: normalize_jacobians = INTEGER
+
+        If set to ``1``: Normalize Jacobian matrices by rescaling
+        each row by its largest element in absolute value.
+        Normalize Gram (or Hessian-type) matrices by transforming
+        into correlation-type matrices.
+        Default: ``1``
+
+    .. option:: tol_rank = DOUBLE
+
+        Tolerance level used for rank computations.
+        Default: ``1.e-10``.
+
+    .. option:: tol_deriv = DOUBLE
+
+        Tolerance level for selecting non-zero columns in Jacobians.
+        Default: ``1.e-8``.
+
+    .. option:: tol_sv = DOUBLE
+
+        Tolerance level for selecting non-zero singular values.
+        Default: ``1.e-3``.
+
+*Identification Strength Options*
+
+    .. option:: no_identification_strength
+
+        Disables computations of identification strength analysis
+        based on sample information matrix.
+
+    .. option:: periods = INTEGER
+
+        When the analytic Hessian is not available (i.e. with missing
+        values or diffuse Kalman filter or univariate Kalman filter),
+        this triggers the length of stochastic simulation to compute
+        Simulated Moments Uncertainty. Default: ``300``.
+
+    .. option:: replic = INTEGER
+
+        When the analytic Hessian is not available, this triggers the
+        number of replicas to compute Simulated Moments
+        Uncertainty. Default: ``100``.
+
+*Moments Options*
+
+    .. option:: no_identification_moments
+
+        Disables computations of identification check based on
+        Iskrev (2010)'s J, i.e. derivative of first two moments.
+
+    .. option:: ar = INTEGER
+
+        Number of lags of computed autocovariances/autocorrelations
+        (theoretical moments) in Iskrev (2010)'s J criteria.
+        Default: ``1``.
+
+    .. option:: useautocorr = INTEGER
+
+        If equal to ``1``, compute derivatives of autocorrelation. If
+        equal to ``0``, compute derivatives of
+        autocovariances. Default: ``0``.
+
+*Spectrum Options*
+
+    .. option:: no_identification_spectrum
+
+        Disables computations of identification check based on
+        Qu and Tkachenko (2012)'s G, i.e. Gram matrix of derivatives of
+        first moment plus outer product of derivatives of spectral density.
+
+    .. option:: grid_nbr = INTEGER
+
+        Number of grid points in [-pi;pi] to approximate the integral
+        to compute Qu and Tkachenko (2012)'s G criteria.
+        Default: ``5000``.
+
+*Minimal State Space System Options*
+
+    .. option:: no_identification_minimal
+
+        Disables computations of identification check based on
+        Komunjer and Ng (2011)'s D, i.e. minimal state space system
+        and observational equivalent spectral density transformations.
+
+*Misc Options*
 
     .. option:: nograph
 
@@ -8873,6 +8959,47 @@ Performing identification analysis
                 graph_format = ( FORMAT, FORMAT... )
 
         See :opt:`graph_format <graph_format = FORMAT>`.
+
+    .. option:: tex
+
+        See :opt:`tex`.
+
+*Debug Options*
+
+    .. option:: load_ident_files = INTEGER
+
+        If equal to ``1``, allow Dynare to load previously computed
+        analyzes. Default: ``0``.
+
+    .. option:: lik_init = INTEGER
+
+        See :opt:`lik_init <lik_init = INTEGER>`.
+
+    .. option:: kalman_algo = INTEGER
+
+        See :opt:`kalman_algo <kalman_algo = INTEGER>`.
+
+    .. option:: no_identification_reducedform
+
+        Disables computations of identification check based on
+        steady state and reduced-form solution.
+
+    .. option:: checks_via_subsets = INTEGER
+
+        If equal to ``1``: finds problematic parameters in a bruteforce
+        fashion: It computes the rank of the Jacobians for all possible
+        parameter combinations. If the rank condition is not fullfilled,
+        these parameter sets are flagged as non-identifiable. 
+        The maximum dimension of the group searched is triggered by 
+        ``max_dim_subsets_groups``.
+        Default: ``0``.
+
+    .. option:: max_dim_subsets_groups = INTEGER
+
+        Sets the maximum dimension of groups of parameters for which
+        the above bruteforce search is performed.
+        Default: ``4``.
+
 
 
 Types of analysis and output files
@@ -9238,14 +9365,20 @@ For example, the placing::
     dynare_sensitivity(identification=1, morris=2);
 
 in the Dynare model file triggers identification analysis using
-analytic derivatives *Iskrev (2010)*, jointly with the mapping of the
-acceptable region.
+analytic derivatives as in *Iskrev (2010)*, jointly with the mapping
+of the acceptable region.
 
 The identification analysis with derivatives can also be triggered by
-the commands ``identification;`` This does not do the mapping of
-acceptable regions for the model and uses the standard random sampler
-of Dynare. It completely offsets any use of the sensitivity analysis
-toolbox.
+the single command::
+
+    identification;
+
+This does not do the mapping of acceptable regions for the model and
+uses the standard random sampler of Dynare. Additionally, using only
+``identification;`` adds two additional identification checks: namely,
+of *Qu and Tkachenko (2012)* based on the spectral density and of
+*Komunjer and Ng (2011)* based on the minimal state space system.
+It completely offsets any use of the sensitivity analysis toolbox.
 
 
 

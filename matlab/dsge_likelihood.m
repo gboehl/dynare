@@ -111,11 +111,11 @@ function [fval,info,exit_flag,DLIK,Hess,SteadyState,trend_coeff,Model,DynareOpti
 %! @sp 2
 %! @strong{This function calls:}
 %! @sp 1
-%! @ref{dynare_resolve}, @ref{lyapunov_symm}, @ref{lyapunov_solver}, @ref{compute_Pinf_Pstar}, @ref{kalman_filter_d}, @ref{missing_observations_kalman_filter_d}, @ref{univariate_kalman_filter_d}, @ref{kalman_steady_state}, @ref{getH}, @ref{kalman_filter}, @ref{score}, @ref{AHessian}, @ref{missing_observations_kalman_filter}, @ref{univariate_kalman_filter}, @ref{priordens}
+%! @ref{dynare_resolve}, @ref{lyapunov_symm}, @ref{lyapunov_solver}, @ref{compute_Pinf_Pstar}, @ref{kalman_filter_d}, @ref{missing_observations_kalman_filter_d}, @ref{univariate_kalman_filter_d}, @ref{kalman_steady_state}, @ref{get_first_order_solution_params_deriv}, @ref{kalman_filter}, @ref{score}, @ref{AHessian}, @ref{missing_observations_kalman_filter}, @ref{univariate_kalman_filter}, @ref{priordens}
 %! @end deftypefn
 %@eod:
 
-% Copyright (C) 2004-2018 Dynare Team
+% Copyright (C) 2004-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -523,10 +523,9 @@ if analytic_derivation
             indparam=[];
         end
         if full_Hess
-            [dum, DT, DOm, DYss, dum2, D2T, D2Om, D2Yss] = getH(A, B, EstimatedParameters, Model,DynareResults,DynareOptions,kron_flag,indparam,indexo,iv);
-            clear dum dum2;
+            [DT, ~, ~, DOm, DYss, ~, D2T, D2Om, D2Yss] = get_first_order_solution_params_deriv(A, B, EstimatedParameters, Model,DynareResults,DynareOptions,kron_flag,indparam,indexo,[],iv);
         else
-            [dum, DT, DOm, DYss] = getH(A, B, EstimatedParameters, Model,DynareResults,DynareOptions,kron_flag,indparam,indexo,iv);
+            [DT, ~, ~, DOm, DYss] = get_first_order_solution_params_deriv(A, B, EstimatedParameters, Model,DynareResults,DynareOptions,kron_flag,indparam,indexo,[],iv);
         end
     else
         DT = derivatives_info.DT(iv,iv,:);

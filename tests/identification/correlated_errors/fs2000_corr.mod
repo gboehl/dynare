@@ -68,8 +68,6 @@ rho = 0.7;
 psi = 0.787;
 del = 0.02;
 
-options_.TeX=1;
-
 model;
 dA = exp(gam+e_a);
 log(m) = (1-rho)*log(mst) + rho*log(m(-1))+e_m;
@@ -132,7 +130,7 @@ corr e_m, e_a, normal_pdf, 0, 0.2;
 end;
 
 
-identification(advanced=1,max_dim_cova_group=3,prior_mc=250);
+identification(advanced=1,max_dim_cova_group=3,prior_mc=250,tex);
 
 collect_latex_files;
 

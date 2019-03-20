@@ -1,26 +1,19 @@
-function [co, b, yhat] = cosn(H)
-% function [co, b, yhat] = cosn(H)
+function [Dp,DpMPinv] = duplication(p)
+% [Dp,DpMPinv] = duplication(p)
 % -------------------------------------------------------------------------
-% computes the cosine of the angle between the (endogenous variable) H(:,1)
-% and its projection onto the span of (exogenous variables) H(:,2:end)
-% Note: This is not the same as multiple correlation coefficient since the 
-% means are not zero
+% Duplication Matrix as defined by Magnus and Neudecker (2002), p.49
 % =========================================================================
 % INPUTS
-%   * H     [n by k]
-%           Data matrix, endogenous variable y is in the first column,
-%           exogenous variables X are in the remaining (k-1) columns
+%   p:  [integer] length of vector
 % -------------------------------------------------------------------------
 % OUTPUTS
-%   * co    [double] (approximate) multiple correlation coefficient
-%   * b     [k by 1] ols estimator
-%   * y     [n by 1] predicted endogenous values given ols estimation
+%   Dp:      Duplication matrix
+%   DpMPinv: Moore-Penroze inverse of Dp
 % -------------------------------------------------------------------------
 % This function is called by 
-%   * identification_checks.m
-%   * ident_bruteforce.m
+%   * get_identification_jacobians.m (previously getJJ.m)
 % =========================================================================
-% Copyright (C) 2008-2019 Dynare Team
+% Copyright (C) 2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -37,17 +30,21 @@ function [co, b, yhat] = cosn(H)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 % =========================================================================
+% Original author: Thomas P Minka (tpminka@media.mit.edu), April 22, 2013
 
-y = H(:,1);
-X = H(:,2:end);
+a = tril(ones(p));
+i = find(a);
+a(i) = 1:length(i);
+a = a + transpose(tril(a,-1));
 
-b=(X\y); %ols estimator
-if any(isnan(b)) || any(isinf(b))
-    b=0;
+j = a(:);
+
+m = p*(p+1)/2;
+Dp = spalloc(p*p,m,p^2);
+for r = 1:size(Dp,1)
+  Dp(r, j(r)) = 1;
 end
-yhat =  X*b; %predicted values
-if rank(yhat)
-    co = abs(y'*yhat/sqrt((y'*y)*(yhat'*yhat)));
-else
-    co=0;
+
+if nargout > 1
+    DpMPinv = (transpose(Dp)*Dp)\transpose(Dp);
 end
