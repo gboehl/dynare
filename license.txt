@@ -85,6 +85,11 @@ Copyright: 2016 Benjamin Born and Johannes Pfeifer
            2016 Dynare Team
 License: GPL-3+
 
+Files: matlab/commutation.m matlab/duplication.m
+Copyright: 1997 Tom Minka <minka@microsoft.com>
+           2019 Dynare Team
+License: GPL-3+
+
 Files: matlab/gsa/Morris_Measure_Groups.m
        matlab/gsa/Sampling_Function_2.m
 Copyright: 2005 European Commission

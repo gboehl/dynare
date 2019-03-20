@@ -13,6 +13,7 @@ function [Dp,DpMPinv] = duplication(p)
 % This function is called by 
 %   * get_identification_jacobians.m (previously getJJ.m)
 % =========================================================================
+% Copyright (C) 1997 Tom Minka <minka@microsoft.com>
 % Copyright (C) 2019 Dynare Team
 %
 % This file is part of Dynare.
