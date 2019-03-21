@@ -837,7 +837,6 @@ EXTRA_DIST = \
 	kalman/likelihood_from_dynare/fs2000ns_estimation_check.inc \
 	identification/kim/kim2_steadystate.m \
 	identification/as2007/as2007_steadystate.m \
-	identification/as2007/G_QT.mat \
 	estimation/fsdat_simul.m \
 	ep/mean_preserving_spread.m \
 	decision_rules/third_order/comparison_policy_functions_dynare_mathematica.m \
