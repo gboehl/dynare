@@ -148,14 +148,66 @@ for i=1:length(eqtags)
 end
 fclose(fid);
 
+% Export parameters
 fid = fopen(sprintf('%s/parameters.inc', outfold), 'w');
 fprintf(fid, 'parameters %s;', sprintf('%s ', plist{:}));
 fclose(fid);
 
+% Export endogegnous variables
 fid = fopen(sprintf('%s/endogenous.inc', outfold), 'w');
-fprintf(fid, 'var %s;', sprintf('%s ', elist{:}));
+printlistofvariables(fid, 'endo', elist, M_);
 fclose(fid);
 
+% Export exogenous variables
 fid = fopen(sprintf('%s/exogenous.inc', outfold), 'w');
-fprintf(fid, 'varexo %s;', sprintf('%s ', xlist{:}));
+printlistofvariables(fid, 'exo', xlist, M_);
 fclose(fid);
+
+
+function printlistofvariables(fid, kind, list, DynareModel)
+    if isfield(DynareModel, sprintf('%s_partitions', kind))
+        % Some endogenous variables are tagged.
+        switch kind
+          case 'exo'
+            tfields = fieldnames(DynareModel.exo_partitions);
+            vlist = 'varexo';
+            vnames = DynareModel.exo_names;
+            partitions = DynareModel.exo_partitions;
+          case 'endo'
+            tfields = fieldnames(DynareModel.endo_partitions);
+            vlist = 'var';
+            vnames = DynareModel.endo_names(1:DynareModel.orig_endo_nbr);
+            partitions = DynareModel.endo_partitions;
+          otherwise
+            error('Illegal value for second input argument.')
+        end
+        for i = 1:length(list)
+            id = strmatch(list{i}, vnames, 'exact');
+            if ~isempty(id)
+                tags = '';
+                for j=1:length(tfields)
+                    if ~isempty(partitions.(tfields{j}){id})
+                        tags = sprintf('%s, %s=''%s''', tags, tfields{j}, partitions.(tfields{j}){id});
+                    end
+                end
+                if ~isempty(tags)
+                    tags = sprintf('(%s)', tags(3:end));
+                end
+                if isempty(tags)
+                    vlist = sprintf('%s\n\t%s', vlist, list{i});
+                else
+                    vlist = sprintf('%s\n\t%s %s', vlist, list{i}, tags);
+                end
+            end
+        end
+        fprintf(fid, '%s;', vlist);
+    else
+        switch kind
+          case 'exo'
+            fprintf(fid, 'varexo %s;', sprintf('%s ', list{:}));
+          case 'endo'
+            fprintf(fid, 'var %s;', sprintf('%s ', list{:}));
+          otherwise
+            error('Illegal value for second input argument.')
+        end
+    end
