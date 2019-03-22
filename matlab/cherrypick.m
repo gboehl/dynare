@@ -56,6 +56,9 @@ if ~exist(sprintf('%s/model/json', infile), 'dir')
     error('Cannot find %s/model/json folder. Did you run %s.mod with the json option?', infile, infile);
 end
 
+% Load json file (original mod file)
+orig = loadjson(sprintf('%s/model/json/modfile-original.json', M_.dname));
+
 % Create a new file.
 fid = fopen(sprintf('%s/model.inc', outfold), 'w');
 
@@ -66,6 +69,8 @@ xlist = {};
 for i=1:length(eqtags)
     rhs = [];
     lhs = [];
+    % Get equation number.
+    eqnum = get_equation_number_by_tag(eqtags{i});
     % Get the original equation.
     [LHS, RHS] = get_lhs_and_rhs(eqtags{i}, M_, true);
     % Get the parameters, endogenous and exogenous variables in the current equation.
@@ -125,6 +130,15 @@ for i=1:length(eqtags)
             xnames = union(xnames, growthneutralitycorrection_xnames);
         end
     end
+    % Print tags
+    tfields = fieldnames(orig.model{eqnum}.tags);
+    tags = sprintf('%s=''%s''', tfields{1}, orig.model{eqnum}.tags.(tfields{1}));
+    for j=2:length(tfields)
+        if ~isempty(orig.model{eqnum}.tags.(tfields{j}))
+            tags = sprintf('%s, %s=''%s''', tags, tfields{j}, orig.model{eqnum}.tags.(tfields{j}));
+        end
+    end
+    fprintf(fid, '[%s]\n', tags);
     % Print equation.
     fprintf(fid, '%s = %s;\n\n', LHS, RHS);
     % Update lists of parameters, endogenous variables and exogenous variables.
