@@ -38,12 +38,8 @@ build_doc:
       - doc/manual/build/
     expire_in: 1 week
 
-testsuite_matlab:
+.testsuite_matlab_template:
   stage: test
-  script:
-    - autoreconf -si
-    - './configure --disable-octave --with-matlab=$(dirname $(dirname $(readlink -f `which matlab`))) MATLAB_VERSION=$(echo version | matlab -nodesktop -nodisplay -nosplash 2>/dev/null | sed -En "/ans\ =/!d;n;n;s/^[^0-9]*([0-9]+\.[0-9]+).*$/\1/;p")'
-    - make -j $(($(nproc) * 3 / 4)) -C tests check-matlab
   artifacts:
     paths:
       - tests/*.m.log
@@ -58,6 +54,24 @@ testsuite_matlab:
     when: always
   dependencies:
     - build_binaries
+
+testsuite_matlab:
+  extends: .testsuite_matlab_template
+  script:
+    - autoreconf -si
+    - './configure --disable-octave --with-matlab=$(dirname $(dirname $(readlink -f `which matlab`))) MATLAB_VERSION=$(echo version | matlab -nodesktop -nodisplay -nosplash 2>/dev/null | sed -En "/ans\ =/!d;n;n;s/^[^0-9]*([0-9]+\.[0-9]+).*$/\1/;p")'
+    - make -j $(($(nproc) * 3 / 4)) -C tests check-matlab
+
+test_old_matlab:
+  extends: .testsuite_matlab_template
+  script:
+    - autoreconf -si
+    - './configure --disable-octave --with-matlab=/usr/local/MATLAB/R2009b MATLAB_VERSION=R2009b'
+    - make -C mex/build/matlab clean
+    - make -j $(nproc) -C mex/build/matlab
+    - make -j $(($(nproc) * 3 / 4)) -C tests check-matlab
+  allow_failure: true
+  when: manual
 
 .testsuite_octave_template:
   stage: test
