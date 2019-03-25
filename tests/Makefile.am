@@ -451,6 +451,7 @@ OLS_MODFILES = \
 	ecb/SURGibbs/fulton_fish.mod \
 	estimation/univariate/ols/ols_wc_1.mod \
 	estimation/univariate/ols/ols_wc_2.mod \
+	estimation/univariate/ols/ols_wc_3.mod \
 	estimation/univariate/ols/ols_param_names.mod \
 	estimation/univariate/ols/ols.mod \
 	ecb/SUR/sur_noniterative.mod \

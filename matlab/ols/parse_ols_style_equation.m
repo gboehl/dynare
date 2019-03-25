@@ -69,22 +69,17 @@ lhssub = dseries();
 Y = evalNode(ds, ast.AST.arg1, line, dseries());
 
 %% Set RHS (X)
-plus_node = ast.AST.arg2;
-last_node_to_parse = [];
 residual = '';
 X = dseries();
-while ~isempty(plus_node) || ~isempty(last_node_to_parse)
+terms = decomposeAdditiveTerms([], ast.AST.arg2, 1);
+for i = 1:length(terms)
     Xtmp = dseries();
-    if isempty(last_node_to_parse)
-        [plus_node, node_to_parse, last_node_to_parse] = findNextplus_node(plus_node, line);
-    else
-        node_to_parse = last_node_to_parse;
-        last_node_to_parse = [];
-    end
+    node_sign = terms{i}{2};
+    node_to_parse = terms{i}{1};
     if strcmp(node_to_parse.node_type, 'VariableNode')
         if strcmp(node_to_parse.type, 'parameter')
             % Intercept
-            Xtmp = dseries(1, ds.dates, node_to_parse.name);
+            Xtmp = dseries(1, ds.dates, node_to_parse.name)*node_sign;
         elseif strcmp(node_to_parse.type, 'exogenous') && ~any(strcmp(ds.name, node_to_parse.name))
             % Residual if not contained in ds
             if isempty(residual)
@@ -113,22 +108,30 @@ while ~isempty(plus_node) || ~isempty(last_node_to_parse)
         lhssub = lhssub + evalNode(ds, node_to_parse, line, dseries());
     elseif strcmp(node_to_parse.node_type, 'BinaryOpNode') && strcmp(node_to_parse.op, '*')
         % Parse param_expr * endog_expr
-        Xtmp = parseTimesNode(ds, node_to_parse, line);
+        [Xtmp, names] = parseTimesNode(ds, node_to_parse, line);
+        Xtmp = Xtmp*node_sign;
         if Xtmp.vobs > 1 || ...
                 (Xtmp.vobs == 1 && ~isnan(str2double(Xtmp.name)))
             % Handle constraits
             % Look through Xtmp names for constant
             % if found, subtract from LHS
-            names = Xtmp.name;
-            for j = length(names):-1:1
-                if ~isnan(str2double(names{j}))
-                    lhssub = lhssub + str2double(names{j}) * Xtmp.(names{j});
-                    Xtmp = Xtmp.remove(names{j});
+            for j = 1:length(names)
+                if strcmp(names{j}{1}.node_type, 'NumConstNode')
+                    pname = num2str(names{j}{1}.value);
+                elseif strcmp(names{j}{1}.node_type, 'VariableNode')
+                    pname = names{j}{1}.name;
                 else
-                    % Multiply by -1 now so that it can be added together below
+                    parsing_error('unexpected node type', node_to_parse, line);
+                end
+                psign = names{j}{2};
+                if ~isnan(str2double(pname))
+                    lhssub = lhssub + psign * str2double(pname) * Xtmp.(pname);
+                    Xtmp = Xtmp.remove(pname);
+                else
+                    % Multiply by psign now so that it can be added together below
                     % Otherwise, it would matter which was encountered first,
                     % a parameter on its own or a linear constraint
-                    Xtmp.(names{j}) = -1 * Xtmp.(names{j});
+                    Xtmp.(pname) = psign * Xtmp.(pname);
                 end
             end
         end
@@ -139,9 +142,8 @@ while ~isempty(plus_node) || ~isempty(last_node_to_parse)
     names = Xtmp.name;
     for j = length(names):-1:1
         % Handle constraits
-        idx = find(strcmp(X.name, names{j}));
-        if ~isempty(idx)
-            X.(X.name{idx}) = X{idx} + Xtmp{j};
+        if any(strcmp(X.name, names{j}))
+            X.(names{j}) = X.(names{j}) + Xtmp.(names{j});
             Xtmp = Xtmp.remove(names{j});
         end
     end
@@ -227,84 +229,58 @@ elseif strcmp(node.node_type, 'BinaryOpNode')
 end
 end
 
-function [next_plus_node, node_to_parse, last_node_to_parse] = findNextplus_node(plus_node, line)
-% Given an additive entry in the AST, find the next additive entry
-% (next_plus_node). Also find the node that will be parsed into
-% parameter*endogenous||param||exog|endog (node_to_parse).
-% Function used for moving through the AST.
-if ~(strcmp(plus_node.node_type, 'BinaryOpNode') && strcmp(plus_node.op, '+'))
-    parsing_error('pairs of nodes must be separated additively', line);
-end
-next_plus_node = [];
-last_node_to_parse = [];
-if strcmp(plus_node.arg1.node_type, 'BinaryOpNode') && strcmp(plus_node.arg1.op, '+')
-    next_plus_node = plus_node.arg1;
-    node_to_parse = getOlsNode(plus_node.arg2, line);
-elseif strcmp(plus_node.arg2.node_type, 'BinaryOpNode') && strcmp(plus_node.arg2.op, '+')
-    next_plus_node = plus_node.arg2;
-    node_to_parse = getOlsNode(plus_node.arg1, line);
+function terms = decomposeAdditiveTerms(terms, node, node_sign)
+if strcmp(node.node_type, 'NumConstNode') || strcmp(node.node_type, 'VariableNode')
+    terms = [terms {{node node_sign}}];
+elseif strcmp(node.node_type, 'UnaryOpNode')
+     if strcmp(node.type, 'uminus')
+         terms = decomposeAdditiveTerms(terms, node.arg, -node_sign);
+     else
+         terms = [terms {{node node_sign}}];
+     end
+elseif strcmp(node.node_type, 'BinaryOpNode')
+    if strcmp(node.op, '+') || strcmp(node.op, '-')
+        terms = decomposeAdditiveTerms(terms, node.arg1, node_sign);
+        if strcmp(node.op, '+')
+            terms = decomposeAdditiveTerms(terms, node.arg2, node_sign);
+        else
+            terms = decomposeAdditiveTerms(terms, node.arg2, -node_sign);
+        end
+    else
+        terms = [terms {{node node_sign}}];
+    end
 else
-    node_to_parse = getOlsNode(plus_node.arg1, line);
-    last_node_to_parse = getOlsNode(plus_node.arg2, line);
+    terms = [terms {{node node_sign}}];
 end
 end
 
-function node_to_parse = getOlsNode(node, line)
-if ~(strcmp(node.node_type, 'BinaryOpNode') && strcmp(node.op, '*')) ...
-        && ~(strcmp(node.node_type, 'BinaryOpNode') && strcmp(node.op, '/')) ...
-        && ~strcmp(node.node_type, 'VariableNode') ...
-        && ~strcmp(node.node_type, 'UnaryOpNode')
-    parsing_error('couldn''t find node to parse', line, node);
-end
-node_to_parse = node;
-end
-
-function X = parseTimesNode(ds, node, line)
+function [X, pterms] = parseTimesNode(ds, node, line)
 % Separate the parameter expression from the endogenous expression
 assert(strcmp(node.node_type, 'BinaryOpNode') && strcmp(node.op, '*'))
-
 if isOlsParamExpr(node.arg1, line)
-    param = assignParam([], node.arg1, line);
-    X = assignEndog(ds, node.arg2, line, dseries());
+    pterms = decomposeAdditiveTerms([], node.arg1, 1);
+    X = evalNode(ds, node.arg2, line, dseries());
 elseif isOlsParamExpr(node.arg2, line)
-    param = assignParam([], node.arg2, line);
-    X = assignEndog(ds, node.arg1, line, dseries());
+    pterms = decomposeAdditiveTerms([], node.arg2, 1);
+    X = evalNode(ds, node.arg1, line, dseries());
 else
     parsing_error('expecting (param expr)*(var expr)', line, node);
 end
-X = X.rename(param{1});
-for ii = 2:length(param)
-    X = [X dseries(X{1}.data, X{1}.firstdate, param{ii})];
-end
-end
-
-function X = assignEndog(ds, node, line, X)
-if ~isempty(X)
-    parsing_error(['got endog * endog' node.name ' (' node.type ')'], line, node);
-end
-X = evalNode(ds, node, line, X);
-end
-
-function param = assignParam(param, node, line)
-if ~isempty(param)
-    parsing_error(['got param * param' node.name ' (' node.type ')'], line, node);
-end
-param = assignParamHelper(param, node, line);
-end
-
-function param = assignParamHelper(param, node, line)
-if strcmp(node.node_type, 'NumConstNode')
-    param{end+1} = num2str(node.value);
-elseif strcmp(node.node_type, 'VariableNode')
-    param{end+1} = node.name;
-elseif strcmp(node.node_type, 'BinaryOpNode')
-    if ~strcmp(node.op, '-')
-        parsing_error(['got unexpected parameter op ' node.op], line, node);
-    end
-    param = assignParamHelper(param, node.arg1, line);
-    param = assignParamHelper(param, node.arg2, line);
+if strcmp(pterms{1}{1}.node_type, 'NumConstNode')
+    X = X.rename(num2str(pterms{1}{1}.value));
+elseif strcmp(pterms{1}{1}.node_type, 'VariableNode')
+    X = X.rename(pterms{1}{1}.name);
 else
-    parsing_error(['got unexpected node (' node.type ')'], line, node);
+    parsing_error('unexpected type', line, node)
+end
+for ii = 2:length(pterms)
+    if strcmp(pterms{ii}{1}.node_type, 'NumConstNode')
+        X = [X dseries(X{1}.data, X{1}.firstdate, num2str(pterms{ii}{1}.value))];
+    elseif strcmp(pterms{ii}{1}.node_type, 'VariableNode')
+        X = [X dseries(X{1}.data, X{1}.firstdate, pterms{ii}{1}.name)];
+    else
+        parsing_error('unexpected type', line, node)
+    end
 end
 end
 
