@@ -865,7 +865,7 @@ EXTRA_DIST = \
 	prior_posterior_function/posterior_function_demo.m
 
 
-if HAVE_CMD_LINE_MATLAB
+if HAVE_MATLAB
 check-local: check-matlab
 endif
 

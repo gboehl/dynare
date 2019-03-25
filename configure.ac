@@ -34,7 +34,6 @@ case ${host_os} in
     # On Windows, we want Dynare++ to be statically linked
     AM_LDFLAGS="-static"
     AC_SUBST([AM_LDFLAGS])
-    have_windows="yes"
     ;;
   *cygwin*)
     AC_MSG_WARN([You are compiling for the Cygwin target. This means that the preprocessor will])
@@ -45,7 +44,6 @@ case ${host_os} in
       # And by default, the AC_PROG_F77 will pick up g77 if it is present (even if gfortran is also here)
       F77=gfortran
     fi
-    have_windows="yes"
     ;;
 esac
 
@@ -140,7 +138,7 @@ if test "$enable_matlab" = yes; then
   AX_MATLAB_BATCH_OPTIONS
 fi
 AM_CONDITIONAL([ENABLE_MATLAB], [test "$enable_matlab" = yes])
-AM_CONDITIONAL([HAVE_CMD_LINE_MATLAB], [test "$ax_enable_matlab" = yes -a -z "$have_windows"])
+AM_CONDITIONAL([HAVE_MATLAB], [test "$ax_enable_matlab" = yes])
 
 AC_ARG_ENABLE([octave], AS_HELP_STRING([--disable-octave], [disable compilation of MEX files for Octave]), [], [enable_octave=yes])
 if test "$enable_octave" = yes; then
