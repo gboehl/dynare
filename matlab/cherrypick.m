@@ -193,11 +193,17 @@ function printlistofvariables(fid, kind, list, DynareModel)
                 if ~isempty(tags)
                     tags = sprintf('(%s)', tags(3:end));
                 end
-                if isempty(tags)
-                    vlist = sprintf('%s\n\t%s', vlist, list{i});
+            else
+                if isequal(list{i}(1:16), 'pac_expectation_') || isequal(list{i}(1:16), 'var_expectation_')
+                    tags = '';
                 else
-                    vlist = sprintf('%s\n\t%s %s', vlist, list{i}, tags);
+                    error('Unknown variable.')
                 end
+            end
+            if isempty(tags)
+                vlist = sprintf('%s\n\t%s', vlist, list{i});
+            else
+                vlist = sprintf('%s\n\t%s %s', vlist, list{i}, tags);
             end
         end
         fprintf(fid, '%s;', vlist);
