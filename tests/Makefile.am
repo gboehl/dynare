@@ -33,7 +33,7 @@ MODFILES = \
 	ep/rbc.mod \
 	estimation/fs2000_with_weibull_prior.mod \
 	estimation/fs2000_initialize_from_calib.mod	\
-    estimation/fs2000_estimated_params_init.mod	\
+	estimation/fs2000_estimated_params_init.mod	\
 	estimation/fs2000_calibrated_covariance.mod \
 	estimation/fs2000_model_comparison.mod \
 	estimation/fs2000_fast.mod \
@@ -341,7 +341,7 @@ MODFILES = \
 	optimizers/fs2000_101.mod \
 	optimizers/fs2000_102.mod \
 	optimizers/fs2000_w.mod \
-    epilogue/example1.mod \
+	epilogue/example1.mod \
 	differentiate_forward_vars/RBC_differentiate_forward.mod \
 	partitioning/partitions.mod \
 	prior_posterior_function/fs2000_prior_posterior_function.mod \
@@ -363,10 +363,10 @@ MODFILES = \
 	observation_trends_and_prefiltering/calib_smoother/Tr_prefilter_loglin_calib_smoother.mod \
 	observation_trends_and_prefiltering/calib_smoother/Tr_prefil_f_obs_loglin_cal_smoother.mod \
 	observation_trends_and_prefiltering/ML/Trend_no_prefilter_selected_var.mod \
-    bgp/solow-1/solow.mod \
-    bgp/nk-1/nk.mod \
-    bgp/ramsey-1/ramsey.mod \
-    dynare-command-options/ramst.mod
+	bgp/solow-1/solow.mod \
+	bgp/nk-1/nk.mod \
+	bgp/ramsey-1/ramsey.mod \
+	dynare-command-options/ramst.mod
 
 PARTICLEFILES = \
 	particle/dsge_base2.mod \
