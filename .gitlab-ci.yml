@@ -38,7 +38,7 @@ build_doc:
       - doc/manual/build/
     expire_in: 1 week
 
-.testsuite_matlab_template:
+.test_matlab_template:
   stage: test
   artifacts:
     paths:
@@ -55,15 +55,15 @@ build_doc:
   dependencies:
     - build_binaries
 
-testsuite_matlab:
-  extends: .testsuite_matlab_template
+test_matlab:
+  extends: .test_matlab_template
   script:
     - autoreconf -si
     - './configure --disable-octave --with-matlab=$(dirname $(dirname $(readlink -f `which matlab`))) MATLAB_VERSION=$(echo version | matlab -nodesktop -nodisplay -nosplash 2>/dev/null | sed -En "/ans\ =/!d;n;n;s/^[^0-9]*([0-9]+\.[0-9]+).*$/\1/;p")'
     - make -j $(($(nproc) * 3 / 4)) -C tests check-matlab
 
 test_old_matlab:
-  extends: .testsuite_matlab_template
+  extends: .test_matlab_template
   script:
     - autoreconf -si
     - './configure --disable-octave --with-matlab=/usr/local/MATLAB/R2009b MATLAB_VERSION=R2009b'
@@ -73,7 +73,7 @@ test_old_matlab:
   allow_failure: true
   when: manual
 
-.testsuite_octave_template:
+.test_octave_template:
   stage: test
   variables:
     OPENBLAS_NUM_THREADS: 1
@@ -97,14 +97,14 @@ test_old_matlab:
     - build_binaries
   allow_failure: true
 
-testsuite_octave_auto:
-  extends: .testsuite_octave_template
+test_octave_auto:
+  extends: .test_octave_template
   only:
     - tags
     - schedules
 
-testsuite_octave_manual:
-  extends: .testsuite_octave_template
+test_octave_manual:
+  extends: .test_octave_template
   except:
     - tags
     - schedules
