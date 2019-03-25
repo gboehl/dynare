@@ -7509,7 +7509,8 @@ the :comm:`bvar_forecast` command.
 
         .. math::
 
-           y_t(contr\_vars)=Ty_{t-1}(contr\_vars)+R(contr\_vars,uncontr\_shocks)\varepsilon_t(uncontr\_shocks) + R(contr\_vars,contr\_shocks)\varepsilon_t(contr\_shocks)
+           y_t(contr\_vars)=Ty_{t-1}(contr\_vars)+R(contr\_vars,uncontr\_shocks)\varepsilon_t(uncontr\_shocks) \\
+           + R(contr\_vars,contr\_shocks)\varepsilon_t(contr\_shocks)
 
     which can be solved algebraically for :math:`\varepsilon_t(contr\_shocks)`.
 
