@@ -915,6 +915,15 @@ EXTRA_DIST = \
 	$(MODFILES) \
 	$(XFAIL_MODFILES) \
 	$(MFILES) \
+	ecb/agregate/1/endogenous.inc \
+	ecb/agregate/1/exogenous.inc \
+	ecb/agregate/1/parameters.inc \
+	ecb/agregate/1/model.inc \
+	ecb/agregate/2/endogenous.inc \
+	ecb/agregate/2/exogenous.inc \
+	ecb/agregate/2/parameters.inc \
+	ecb/agregate/2/model.inc \
+	ecb/agregate/test_agregation_of_cherrypicked_models.m \
 	run_block_byte_tests_matlab.m \
 	run_block_byte_tests_octave.m \
 	run_reporting_test_matlab.m \
