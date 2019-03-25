@@ -84,6 +84,11 @@ if test "${MATLAB_ARCH}" = "glnxa64" -o "${MATLAB_ARCH}" = "win64" -o "${MATLAB_
   AX_COMPARE_VERSION([$MATLAB_VERSION], [ge], [7.8], [MATLAB_FFLAGS="$MATLAB_FFLAGS -fdefault-integer-8"])
 fi
 
+# Kludge for incompatibility of older MATLABs (≤ R2011a) with recent gcc
+# matrix.h is broken because char16_t is not defined
+# Also see <uchar.h>
+AX_COMPARE_VERSION([$MATLAB_VERSION], [le], [7.12], [MATLAB_CFLAGS="$MATLAB_CFLAGS -include stdint.h -Dchar16_t=uint_least16_t"])
+
 # Converts the MATLAB version number into comparable integers with only major and minor version numbers
 # For example, 7.4.2 will become 0704
 ax_matlab_ver=$(echo "$MATLAB_VERSION" | $SED -e 's/\([[0-9]]*\)\.\([[0-9]]*\).*/Z\1ZZ\2Z/' \
