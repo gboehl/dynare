@@ -116,6 +116,9 @@ if test -n "$MATLAB_VERSION"; then
       MATLAB_VERSION="7.0.0"
       ;;
   esac
+  if ! echo "${MATLAB_VERSION}" | grep -qE '^[[0-9.]]+$'; then
+      AC_MSG_ERROR([unknown MATLAB version ${MATLAB_VERSION}])
+  fi
   AC_MSG_RESULT([${MATLAB_VERSION}])
   ax_matlab_version_ok="yes"
 else
