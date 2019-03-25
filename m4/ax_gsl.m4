@@ -26,7 +26,7 @@ AC_ARG_WITH(gsl, AC_HELP_STRING([--with-gsl=DIR], [prefix to GSL installation]),
 
   has_gsl=yes
 
-  if test "x$gsl_prefix" != "x"; then
+  if test -n "$gsl_prefix"; then
     GSL_CPPFLAGS="-I$withval/include"
     GSL_LDFLAGS="-L$withval/lib"
   else
@@ -42,15 +42,15 @@ AC_ARG_WITH(gsl, AC_HELP_STRING([--with-gsl=DIR], [prefix to GSL installation]),
   CPPFLAGS="$CPPFLAGS $GSL_CPPFLAGS"
   LDFLAGS="$LDFLAGS $GSL_LDFLAGS"
 
-	AC_LANG_PUSH(C)
+  AC_LANG_PUSH(C)
   AC_CHECK_HEADER([gsl/gsl_cdf.h], [], [has_gsl=no])
-	AC_LANG_POP(C)
+  AC_LANG_POP(C)
 
   AC_CHECK_LIB([m], [cos])
   AC_CHECK_LIB([gslcblas], [cblas_dgemm], [LIBS="-lgslcblas $LIBS"], [has_gsl=no])
   AC_CHECK_LIB([gsl], [gsl_cdf_ugaussian_P], [LIBS="-lgsl $LIBS"], [has_gsl=no])
 
-  if test "x$has_gsl" = "xyes"; then
+  if test "$has_gsl" = yes; then
     GSL_LIBS="$LIBS"
   else
     GSL_LIBS=""

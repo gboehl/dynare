@@ -27,12 +27,12 @@ AC_CANONICAL_HOST
 
 AX_MATLAB
 
-if test "x$ax_enable_matlab" = "xyes"; then
+if test "$ax_enable_matlab" = yes; then
   AX_MATLAB_VERSION
   AX_DOT_MEXEXT
   AX_MATLAB_ARCH
 
-  if test "x$ax_matlab_version_ok" = "xyes"; then
+  if test "$ax_matlab_version_ok" = yes; then
     AX_MEXOPTS
     AX_COMPARE_VERSION([$MATLAB_VERSION], [lt], [7.9], [AC_MSG_ERROR([Your MATLAB is too old, please upgrade to version 7.9 (R2009b) at least.])])
   fi
@@ -83,15 +83,15 @@ AC_CHECK_LIB([dl], [dlopen], [LIBADD_DLOPEN="-ldl"], [])
 AC_SUBST([LIBADD_DLOPEN])
 # Check for GSL, needed by MS-SBVAR
 AX_GSL
-AM_CONDITIONAL([HAVE_GSL], [test "x$has_gsl" = "xyes"])
+AM_CONDITIONAL([HAVE_GSL], [test "$has_gsl" = yes])
 
 # Check for libmatio, needed by MEX files using Dynare++ code
 AX_MATIO
-AM_CONDITIONAL([HAVE_MATIO], [test "x$has_matio" = "xyes"])
+AM_CONDITIONAL([HAVE_MATIO], [test "$has_matio" = yes])
 
 # Check for libslicot, needed by kalman_steady_state
 AX_SLICOT([matlab])
-AM_CONDITIONAL([HAVE_SLICOT], [test "x$has_slicot" = "xyes"])
+AM_CONDITIONAL([HAVE_SLICOT], [test "$has_slicot" = yes])
 
 # On Windows, we want static linking of the external libraries
 case ${host_os} in
@@ -102,34 +102,34 @@ case ${host_os} in
     ;;
 esac
 
-AM_CONDITIONAL([DO_SOMETHING], [test "x$ax_enable_matlab" = "xyes" -a "x$ax_matlab_version_ok" = "xyes" -a "x$ax_mexopts_ok" = "xyes"])
+AM_CONDITIONAL([DO_SOMETHING], [test "$ax_enable_matlab" = yes -a "$ax_matlab_version_ok" = yes -a "$ax_mexopts_ok" = yes])
 
-if test "x$ax_enable_matlab" = "xyes" -a "x$ax_matlab_version_ok" = "xyes" -a "x$ax_mexopts_ok" = "xyes"; then
+if test "$ax_enable_matlab" = yes -a "$ax_matlab_version_ok" = yes -a "$ax_mexopts_ok" = yes; then
   BUILD_MEX_MATLAB="yes"
 else
   BUILD_MEX_MATLAB="no (missing MATLAB, or unknown version, or unknown architecture)"
 fi
 
-if test "x$ax_enable_matlab" = "xyes" -a "x$has_matio" = "xyes"; then
+if test "$ax_enable_matlab" = yes -a "$has_matio" = yes; then
    BUILD_GENSYLV_KORDER_DYNSIMUL_MEX_MATLAB="yes"
 else
    BUILD_GENSYLV_KORDER_DYNSIMUL_MEX_MATLAB="no (missing MatIO library)"
 fi
 
-if test "x$ax_enable_matlab" = "xyes" -a "x$ax_matlab_version_ok" = "xyes" -a "x$ax_mexopts_ok" = "xyes" -a "x$has_slicot" = "xyes"; then
+if test "$ax_enable_matlab" = yes -a "$ax_matlab_version_ok" = yes -a "$ax_mexopts_ok" = yes -a "$has_slicot" = yes; then
    BUILD_KALMAN_STEADY_STATE_MATLAB="yes"
 else
    BUILD_KALMAN_STEADY_STATE_MATLAB="no (missing SLICOT)"
 fi
 
-if test "x$ax_enable_matlab" = "xyes" -a "x$ax_matlab_version_ok" = "xyes" -a "x$ax_mexopts_ok" = "xyes" -a "x$has_gsl" = "xyes"; then
+if test "$ax_enable_matlab" = yes -a "$ax_matlab_version_ok" = yes -a "$ax_mexopts_ok" = yes -a "$has_gsl" = yes; then
    BUILD_MS_SBVAR_MEX_MATLAB="yes"
 else
    BUILD_MS_SBVAR_MEX_MATLAB="no (missing GSL)"
 fi
 
 AC_ARG_ENABLE([openmp], AS_HELP_STRING([--enable-openmp], [use OpenMP for parallelization of some MEX files]), [
-  if test "x$enable_openmp" = "xyes"; then
+  if test "$enable_openmp" = yes; then
     CPPFLAGS="$CPPFLAGS -DUSE_OMP"
     CFLAGS="$CFLAGS -fopenmp"
     CXXFLAGS="$CXXFLAGS -fopenmp"

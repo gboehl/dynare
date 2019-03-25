@@ -24,7 +24,7 @@ dnl along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 AC_DEFUN([AX_SLICOT],
 [
-  if test "x$1" != "xmatlab" && test "x$1" != "xoctave"; then
+  if test "$1" != matlab && test "$1" != octave; then
     AC_MSG_ERROR([Argument to autoconf slicot macro must be either 'matlab' or 'octave'])
   fi
 
@@ -32,7 +32,7 @@ AC_DEFUN([AX_SLICOT],
               slicot_prefix="$withval", slicot_prefix="")
   has_slicot=yes
 
-  if test "x$slicot_prefix" != "x"; then
+  if test -n "$slicot_prefix"; then
     LDFLAGS_SLICOT="-L$withval/lib"
   else
     LDFLAGS_SLICOT=""
@@ -42,7 +42,7 @@ AC_DEFUN([AX_SLICOT],
 
   AC_F77_FUNC(sb02od)
 
-  if test "x$1" = "xmatlab"; then
+  if test "$1" = matlab; then
     LDFLAGS="$MATLAB_LDFLAGS_NOMAP $LDFLAGS_SLICOT"
 
     case ${MATLAB_ARCH} in
@@ -54,19 +54,19 @@ AC_DEFUN([AX_SLICOT],
          ;;
     esac
 
-    if test "$use_64_bit_indexing" = "yes"; then
+    if test "$use_64_bit_indexing" = yes; then
        AC_CHECK_LIB([slicot64_pic], [$sb02od], [LIBADD_SLICOT="-lslicot64_pic"], [has_slicot=no], [$MATLAB_LIBS])
     else
        AC_CHECK_LIB([slicot_pic], [$sb02od], [LIBADD_SLICOT="-lslicot_pic"], [has_slicot=no], [$MATLAB_LIBS])
     fi
   else
-    LDFLAGS="$LDFLAGS `$MKOCTFILE -p LFLAGS` $LDFLAGS_SLICOT"
+    LDFLAGS="$LDFLAGS $($MKOCTFILE -p LFLAGS) $LDFLAGS_SLICOT"
     # Fallback on libslicot_pic if dynamic libslicot not found
     AC_CHECK_LIB([slicot], [$sb02od], [LIBADD_SLICOT="-lslicot"],
              [
-               AC_CHECK_LIB([slicot_pic], [$sb02od], [LIBADD_SLICOT="-lslicot_pic"], [has_slicot=no], [`$MKOCTFILE -p BLAS_LIBS` `$MKOCTFILE -p LAPACK_LIBS`])
+               AC_CHECK_LIB([slicot_pic], [$sb02od], [LIBADD_SLICOT="-lslicot_pic"], [has_slicot=no], [$($MKOCTFILE -p BLAS_LIBS) $($MKOCTFILE -p LAPACK_LIBS)])
              ],
-             [`$MKOCTFILE -p BLAS_LIBS` `$MKOCTFILE -p LAPACK_LIBS`])
+             [$($MKOCTFILE -p BLAS_LIBS) $($MKOCTFILE -p LAPACK_LIBS)])
   fi
 
   LDFLAGS="$ac_save_LDFLAGS"

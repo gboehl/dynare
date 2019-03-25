@@ -20,7 +20,7 @@ AC_DEFUN([AX_MATLAB_VERSION],
 AC_REQUIRE([AX_MATLAB])
 
 AC_MSG_CHECKING([for MATLAB version])
-if test "x$MATLAB_VERSION" != "x"; then
+if test -n "$MATLAB_VERSION"; then
   case $MATLAB_VERSION in
     *2019a | *2019A)
       MATLAB_VERSION="9.6"

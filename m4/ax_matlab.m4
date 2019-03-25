@@ -42,7 +42,7 @@ AC_ARG_WITH([matlab], AC_HELP_STRING([--with-matlab=ARG], [check for MATLAB [[ye
     # Enable MATLAB and use ARG as the MATLAB prefix.
     # ARG must be an existing directory.
     ax_enable_matlab=yes
-    MATLAB=`cd "${withval-/}" > /dev/null 2>&1 && pwd`
+    MATLAB=$(cd "${withval-/}" > /dev/null 2>&1 && pwd)
     if test -z "$MATLAB" ; then
 	AC_MSG_ERROR([invalid value '$withval' for --with-matlab])
     fi
@@ -50,7 +50,7 @@ AC_ARG_WITH([matlab], AC_HELP_STRING([--with-matlab=ARG], [check for MATLAB [[ye
 esac])
 AC_CACHE_CHECK([for MATLAB prefix], [ax_cv_matlab],
 [if test "${MATLAB+set}" = set ; then
-    ax_cv_matlab=`cd "${MATLAB-/}" > /dev/null 2>&1 && pwd`
+    ax_cv_matlab=$(cd "${MATLAB-/}" > /dev/null 2>&1 && pwd)
 else
     ax_cv_matlab=
     IFS=${IFS= 	} ; ax_ifs=$IFS ; IFS=:
@@ -59,9 +59,9 @@ else
 	    ax_dir=.
 	fi
 	if test -x "$ax_dir/matlab" ; then
-	    ax_dir=`echo "$ax_dir" | sed 's,/bin$,,'`
+	    ax_dir=$(echo "$ax_dir" | sed 's,/bin$,,')
 	    # Directory sanity check.
-	    ax_cv_matlab=`cd "${ax_dir-/}" > /dev/null 2>&1 && pwd`
+	    ax_cv_matlab=$(cd "${ax_dir-/}" > /dev/null 2>&1 && pwd)
 	    if test -n "$ax_cv_matlab" ; then
 		break
 	    fi
@@ -76,13 +76,13 @@ if test "$ax_cv_matlab" = "not found" ; then
     unset MATLAB
 else
     # Strip trailing dashes.
-    MATLAB=`echo "$ax_cv_matlab" | sed 's,/*$,,'`
+    MATLAB=$(echo "$ax_cv_matlab" | sed 's,/*$,,')
 fi
 AC_MSG_CHECKING([whether to enable MATLAB support])
-if test x$ax_enable_matlab != xno ; then
+if test "$ax_enable_matlab" != no; then
     if test "${MATLAB+set}" = set && test -d "$MATLAB/extern/include" ; then
 	ax_enable_matlab=yes
-    elif test x$ax_enable_matlab = x ; then
+    elif test -z "$ax_enable_matlab"; then
 	ax_enable_matlab=no
     else
 	# Fail if MATLAB was explicitly enabled.
@@ -91,7 +91,7 @@ if test x$ax_enable_matlab != xno ; then
     fi
 fi
 AC_MSG_RESULT([$ax_enable_matlab])
-if test x$ax_enable_matlab = xyes ; then
+if test "$ax_enable_matlab" = yes; then
     AC_DEFINE([HAVE_MATLAB], [1], [Define if you have MATLAB.])
 fi
 AC_SUBST([MATLAB])
@@ -104,7 +104,7 @@ AC_DEFUN([AX_REQUIRE_MATLAB],
 [dnl
 AC_PREREQ([2.50])
 AC_REQUIRE([AX_MATLAB])
-if test x$ax_enable_matlab = xno ; then
+if test "$ax_enable_matlab" = no; then
     AC_MSG_ERROR([can not enable MATLAB support])
 fi
 ])
@@ -116,7 +116,7 @@ AC_DEFUN([AX_MATLAB_CONDITIONAL],
 [dnl
 AC_PREREQ([2.50])
 AC_REQUIRE([AX_MATLAB])
-AM_CONDITIONAL([MATLAB], [test x$ax_enable_matlab = xyes])
+AM_CONDITIONAL([MATLAB], [test "$ax_enable_matlab" = yes])
 ])
 
 dnl ax_matlab.m4 ends here

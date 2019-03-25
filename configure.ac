@@ -40,7 +40,7 @@ case ${host_os} in
     AC_MSG_WARN([You are compiling for the Cygwin target. This means that the preprocessor will])
     AC_MSG_WARN([not run from MATLAB unless you add the Cygwin DLL to the path.])
     AC_MSG_WARN([This is probably not what you want. Consider using a MinGW cross-compiler.])
-    if test "x$F77" = "x"; then
+    if test -z "$F77"; then
       # On Cygwin 1.7, g77 comes has version 3, and is not compatible with default gcc/g++ which has version 4
       # And by default, the AC_PROG_F77 will pick up g77 if it is present (even if gfortran is also here)
       F77=gfortran
@@ -69,21 +69,21 @@ AX_CXX11_THREAD
 
 # Check for libmatio, needed by Dynare++
 AX_MATIO
-AM_CONDITIONAL([HAVE_MATIO], [test "x$has_matio" = "xyes"])
+AM_CONDITIONAL([HAVE_MATIO], [test "$has_matio" = yes])
 
 AC_CHECK_PROG([PDFLATEX], [pdflatex], [pdflatex])
-AM_CONDITIONAL([HAVE_PDFLATEX], [test "x$PDFLATEX" != "x"])
+AM_CONDITIONAL([HAVE_PDFLATEX], [test -n "$PDFLATEX"])
 
 AC_CHECK_PROG([BIBTEX], [bibtex], [bibtex])
-AM_CONDITIONAL([HAVE_BIBTEX], [test "x$BIBTEX" != "x"])
+AM_CONDITIONAL([HAVE_BIBTEX], [test -n "$BIBTEX"])
 
 AC_CHECK_PROG([SPHINXBUILD], [sphinx-build], [sphinx-build])
-AM_CONDITIONAL([HAVE_SPHINXBUILD], [test "x$SPHINXBUILD" != "x"])
+AM_CONDITIONAL([HAVE_SPHINXBUILD], [test -n "$SPHINXBUILD"])
 
-if test "x$PDFLATEX" != "x" -a "x$BIBTEX" != "x"; then
+if test -n "$PDFLATEX" -a -n "$BIBTEX"; then
   AX_LATEX_CLASS([beamer], [ax_latex_have_beamer])
 fi
-AM_CONDITIONAL([HAVE_BEAMER], [test "x$ax_latex_have_beamer" = "xyes"])
+AM_CONDITIONAL([HAVE_BEAMER], [test "$ax_latex_have_beamer" = yes])
 
 AC_PROG_F77
 AC_F77_LIBRARY_LDFLAGS
@@ -95,12 +95,12 @@ case ${host_os} in
     ;;
 esac
 
-if test "x$F77" != "x"; then
+if test -n "$F77"; then
    AX_BLAS
    AX_LAPACK
 fi
-AM_CONDITIONAL([HAVE_BLAS], [test x"$ax_blas_ok" = "xyes"])
-AM_CONDITIONAL([HAVE_LAPACK], [test x"$ax_lapack_ok" = "xyes"])
+AM_CONDITIONAL([HAVE_BLAS], [test "$ax_blas_ok" = yes])
+AM_CONDITIONAL([HAVE_LAPACK], [test "$ax_lapack_ok" = yes])
 
 AC_CONFIG_FILES([Makefile
                  VERSION
@@ -134,36 +134,36 @@ AC_CONFIG_FILES([Makefile
 ])
 
 AC_ARG_ENABLE([matlab], AS_HELP_STRING([--disable-matlab], [disable compilation of MEX files for MATLAB]), [], [enable_matlab=yes])
-if test "x$enable_matlab" = "xyes"; then
+if test "$enable_matlab" = yes; then
   AC_CONFIG_SUBDIRS([mex/build/matlab])
   AX_MATLAB
   AX_MATLAB_BATCH_OPTIONS
 fi
-AM_CONDITIONAL([ENABLE_MATLAB], [test "x$enable_matlab" = "xyes"])
-AM_CONDITIONAL([HAVE_CMD_LINE_MATLAB], [test "x$ax_enable_matlab" = "xyes" -a "x$have_windows" = "x"])
+AM_CONDITIONAL([ENABLE_MATLAB], [test "$enable_matlab" = yes])
+AM_CONDITIONAL([HAVE_CMD_LINE_MATLAB], [test "$ax_enable_matlab" = yes -a -z "$have_windows"])
 
 AC_ARG_ENABLE([octave], AS_HELP_STRING([--disable-octave], [disable compilation of MEX files for Octave]), [], [enable_octave=yes])
-if test "x$enable_octave" = "xyes"; then
+if test "$enable_octave" = yes; then
   AC_CONFIG_SUBDIRS([mex/build/octave])
   AC_CHECK_PROG([OCTAVE], [octave], [octave])
 fi
-AM_CONDITIONAL([ENABLE_OCTAVE], [test "x$enable_octave" = "xyes"])
-AM_CONDITIONAL([HAVE_OCTAVE], [test "x$enable_octave" = "xyes" -a "x$OCTAVE" != "x"])
+AM_CONDITIONAL([ENABLE_OCTAVE], [test "$enable_octave" = yes])
+AM_CONDITIONAL([HAVE_OCTAVE], [test "$enable_octave" = yes -a -n "$OCTAVE"])
 
 # Enable exporting of Org files
 # The clean way would be to test for Emacs, Org-mode, latex, dvipng...
 AC_ARG_ENABLE([org-export], AS_HELP_STRING([--enable-org-export], [enable exporting of Org files (requires Emacs, org-mode and other external programs)]))
-AM_CONDITIONAL([ENABLE_ORG_EXPORT], [test "x$enable_org_export" != "x"])
+AM_CONDITIONAL([ENABLE_ORG_EXPORT], [test -n "$enable_org_export"])
 
 # Construct final output message
 
-if test "x$ax_blas_ok" = "xyes" -a "x$ax_lapack_ok" = "xyes" -a "x$has_matio" = "xyes"; then
+if test "$ax_blas_ok" = yes -a "$ax_lapack_ok" = yes -a "$has_matio" = yes; then
   BUILD_DYNAREPLUSPLUS="yes"
 else
   BUILD_DYNAREPLUSPLUS="no (missing one of: BLAS, LAPACK, MatIO)"
 fi
 
-if test "x$PDFLATEX" != "x" -a "x$ax_latex_have_beamer" = "xyes"; then
+if test -n "$PDFLATEX" -a "$ax_latex_have_beamer" = yes; then
   BUILD_BEAMER_DOC="yes"
 else
   BUILD_BEAMER_DOC="no (missing one of: pdflatex, beamer)"
@@ -175,13 +175,13 @@ else
   BUILD_OTHER_PDF_DOC="no (missing pdflatex)"
 fi
 
-if test "x$enable_org_export" != "x"; then
+if test -n "$enable_org_export"; then
   BUILD_DYNARE_INTERNAL_DOC="yes"
 else
   BUILD_DYNARE_INTERNAL_DOC="no (Org export not enabled)"
 fi
 
-if test "x$SPHINXBUILD" != "x"; then
+if test -n "$SPHINXBUILD"; then
   BUILD_DYNARE_HTML_MANUAL="yes"
   BUILD_DYNARE_PDF_MANUAL="yes"
 else
@@ -189,13 +189,13 @@ else
   BUILD_DYNARE_PDF_MANUAL="no (missing sphinx-build)"
 fi
 
-if test "x$OCTAVE" != "x"; then
+if test -n "$OCTAVE"; then
   TESTSUITE_OCTAVE="yes"
 else
   TESTSUITE_OCTAVE="no"
 fi
 
-if test "x$ax_blas_ok" = "xyes" -a "x$ax_lapack_ok" = "xyes"; then
+if test "$ax_blas_ok" = yes -a "$ax_lapack_ok" = yes; then
   TESTSUITE_DYNAREPLUSPLUS="yes"
 else
   TESTSUITE_DYNAREPLUSPLUS="no"

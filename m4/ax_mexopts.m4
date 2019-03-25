@@ -86,9 +86,9 @@ fi
 
 # Converts the MATLAB version number into comparable integers with only major and minor version numbers
 # For example, 7.4.2 will become 0704
-ax_matlab_ver=`echo "$MATLAB_VERSION" | $SED -e 's/\([[0-9]]*\)\.\([[0-9]]*\).*/Z\1ZZ\2Z/' \
-                                             -e 's/Z\([[0-9]]\)Z/Z0\1Z/g' \
-                                             -e 's/[[^0-9]]//g'`
+ax_matlab_ver=$(echo "$MATLAB_VERSION" | $SED -e 's/\([[0-9]]*\)\.\([[0-9]]*\).*/Z\1ZZ\2Z/' \
+                                              -e 's/Z\([[0-9]]\)Z/Z0\1Z/g' \
+                                              -e 's/[[^0-9]]//g')
 
 MATLAB_DEFS="$MATLAB_DEFS -DMATLAB_VERSION=0x${ax_matlab_ver}"
 
@@ -100,27 +100,27 @@ fi
 
 # Allow user to override default Matlab compilation flags
 # Github ticket #1121
-if test "x$MATLAB_MEX_CPPFLAGS" != "x"; then
+if test -n "$MATLAB_MEX_CPPFLAGS"; then
   MATLAB_CPPFLAGS="$MATLAB_CPPFLAGS $MATLAB_MEX_CPPFLAGS"
 fi
 
-if test "x$MATLAB_MEX_DEFS" != "x"; then
+if test -n "$MATLAB_MEX_DEFS"; then
   MATLAB_DEFS="$MATLAB_DEFS $MATLAB_MEX_DEFS"
 fi
 
-if test "x$MATLAB_MEX_CFLAGS" != "x"; then
+if test -n "$MATLAB_MEX_CFLAGS"; then
   MATLAB_CFLAGS="$MATLAB_CFLAGS $MATLAB_MEX_CFLAGS"
 fi
 
-if test "x$MATLAB_MEX_CXXFLAGS" != "x"; then
+if test -n "$MATLAB_MEX_CXXFLAGS"; then
   MATLAB_CXXFLAGS="$MATLAB_CXXFLAGS $MATLAB_MEX_CXXFLAGS"
 fi
 
-if test "x$MATLAB_MEX_LDFLAGS" != "x"; then
+if test -n "$MATLAB_MEX_LDFLAGS"; then
   MATLAB_LDFLAGS="$MATLAB_LDFLAGS $MATLAB_MEX_LDFLAGS"
 fi
 
-if test "x$MATLAB_MEX_LIBS" != "x"; then
+if test -n "$MATLAB_MEX_LIBS"; then
   MATLAB_LIBS="$MATLAB_LIBS $MATLAB_MEX_LIBS"
 fi
 

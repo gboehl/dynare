@@ -24,14 +24,14 @@ AM_INIT_AUTOMAKE([-Wall -Wno-portability foreign])
 
 AC_CHECK_PROG([MKOCTFILE], [mkoctfile], [mkoctfile])
 
-if test "x$MKOCTFILE" != "x"; then
-  CC=`$MKOCTFILE -p CC`
-  CXX=`$MKOCTFILE -p CXX`
-  CFLAGS=`$MKOCTFILE -p CFLAGS`
-  FFLAGS=`$MKOCTFILE -p FFLAGS`
-  CXXFLAGS=`$MKOCTFILE -p CXXFLAGS`
-  LDFLAGS="`$MKOCTFILE -p LFLAGS` `$MKOCTFILE -p LDFLAGS`"
-  OCTAVE_VERSION=`$MKOCTFILE -v 2>&1 | sed 's/mkoctfile, version //'`
+if test -n "$MKOCTFILE"; then
+  CC=$($MKOCTFILE -p CC)
+  CXX=$($MKOCTFILE -p CXX)
+  CFLAGS=$($MKOCTFILE -p CFLAGS)
+  FFLAGS=$($MKOCTFILE -p FFLAGS)
+  CXXFLAGS=$($MKOCTFILE -p CXXFLAGS)
+  LDFLAGS="$($MKOCTFILE -p LFLAGS) $($MKOCTFILE -p LDFLAGS)"
+  OCTAVE_VERSION=$($MKOCTFILE -v 2>&1 | sed 's/mkoctfile, version //')
   AX_COMPARE_VERSION([$OCTAVE_VERSION], [lt], [4.2], [AC_MSG_ERROR([Your Octave is too old, please upgrade to version 4.2 at least.])])
 fi
 
@@ -56,15 +56,15 @@ AC_CHECK_LIB([dl], [dlopen], [LIBADD_DLOPEN="-ldl"], [])
 AC_SUBST([LIBADD_DLOPEN])
 # Check for GSL, needed by MS-SBVAR
 AX_GSL
-AM_CONDITIONAL([HAVE_GSL], [test "x$has_gsl" = "xyes"])
+AM_CONDITIONAL([HAVE_GSL], [test "$has_gsl" = yes])
 
 # Check for libmatio, needed by MEX files using Dynare++ code, and by ms-sbvar (the latter only under Octave, as an alternative to MATLAB's libmat)
 AX_MATIO
-AM_CONDITIONAL([HAVE_MATIO], [test "x$has_matio" = "xyes"])
+AM_CONDITIONAL([HAVE_MATIO], [test "$has_matio" = yes])
 
 # Check for libslicot, needed by kalman_steady_state
 AX_SLICOT([octave])
-AM_CONDITIONAL([HAVE_SLICOT], [test "x$has_slicot" = "xyes"])
+AM_CONDITIONAL([HAVE_SLICOT], [test "$has_slicot" = yes])
 
 # Check for UMFPACK, needed by bytecode
 AC_CHECK_LIB([umfpack], [umfpack_dl_defaults], [LIBADD_UMFPACK="-lumfpack"], [AC_MSG_ERROR([Can't find UMFPACK])])
@@ -77,27 +77,27 @@ case ${host_os} in
 esac
 AC_SUBST([LIBADD_UMFPACK])
 
-AM_CONDITIONAL([DO_SOMETHING], [test "x$MKOCTFILE" != "x"])
+AM_CONDITIONAL([DO_SOMETHING], [test -n "$MKOCTFILE"])
 
-if test "x$MKOCTFILE" != "x"; then
+if test -n "$MKOCTFILE"; then
   BUILD_MEX_OCTAVE="yes"
 else
   BUILD_MEX_OCTAVE="no (missing mkoctfile)"
 fi
 
-if test "x$MKOCTFILE" != "x" -a "x$has_matio" = "xyes"; then
+if test -n "$MKOCTFILE" -a "$has_matio" = yes; then
   BUILD_GENSYLV_KORDER_DYNSIMUL_MEX_OCTAVE="yes"
 else
   BUILD_GENSYLV_KORDER_DYNSIMUL_MEX_OCTAVE="no (missing MatIO library)"
 fi
 
-if  test "x$MKOCTFILE" != "x" -a "x$has_slicot" = "xyes"; then
+if  test -n "$MKOCTFILE" -a "$has_slicot" = yes; then
    BUILD_KALMAN_STEADY_STATE_OCTAVE="yes"
 else
    BUILD_KALMAN_STEADY_STATE_OCTAVE="no (missing SLICOT)"
 fi
 
-if test "x$MKOCTFILE" != "x" -a "x$has_gsl" = "xyes" -a "x$has_matio" = "xyes"; then
+if test -n "$MKOCTFILE" -a "$has_gsl" = yes -a "$has_matio" = yes; then
    BUILD_MS_SBVAR_MEX_OCTAVE="yes"
 else
    BUILD_MS_SBVAR_MEX_OCTAVE="no (missing GSL or MatIO library)"
