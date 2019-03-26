@@ -70,10 +70,9 @@ test_old_matlab:
     - make -C mex/build/matlab clean
     - make -j $(nproc) -C mex/build/matlab
     - make -j $(($(nproc) * 3 / 4)) -C tests check-matlab
-  allow_failure: true
   when: manual
 
-.test_octave_template:
+test_octave:
   stage: test
   variables:
     OPENBLAS_NUM_THREADS: 1
@@ -95,19 +94,6 @@ test_old_matlab:
     when: always
   dependencies:
     - build_binaries
-  allow_failure: true
-
-test_octave_auto:
-  extends: .test_octave_template
-  only:
-    - tags
-    - schedules
-
-test_octave_manual:
-  extends: .test_octave_template
-  except:
-    - tags
-    - schedules
   when: manual
 
 test_dynare++:
