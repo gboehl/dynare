@@ -85,9 +85,8 @@ if test "${MATLAB_ARCH}" = "glnxa64" -o "${MATLAB_ARCH}" = "win64" -o "${MATLAB_
 fi
 
 # Kludge for incompatibility of older MATLABs (≤ R2011a) with recent gcc
-# matrix.h is broken because char16_t is not defined
-# Also see <uchar.h>
-AX_COMPARE_VERSION([$MATLAB_VERSION], [le], [7.12], [MATLAB_CFLAGS="$MATLAB_CFLAGS -include stdint.h -Dchar16_t=uint_least16_t"])
+# Include <uchar.h>, because matrix.h needs char16_t
+AX_COMPARE_VERSION([$MATLAB_VERSION], [le], [7.12], [MATLAB_CFLAGS="$MATLAB_CFLAGS -include uchar.h"])
 
 # Converts the MATLAB version number into comparable integers with only major and minor version numbers
 # For example, 7.4.2 will become 0704
