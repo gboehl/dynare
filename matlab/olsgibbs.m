@@ -1,5 +1,5 @@
-function ds = olsgibbs(ds, eqtag, BetaPriorExpectation, BetaPriorVariance, s2, nu, ndraws, discarddraws, thin, fitted_names_dict, model_name, param_names)
-%function ds = olsgibbs(ds, eqtag, BetaPriorExpectation, BetaPriorVariance, s2, nu, ndraws, discarddraws, thin, fitted_names_dict, model_name, param_names)
+function ds = olsgibbs(ds, eqtag, BetaPriorExpectation, BetaPriorVariance, s2, nu, ndraws, discarddraws, thin, fitted_names_dict, model_name, param_names, ds_range)
+%function ds = olsgibbs(ds, eqtag, BetaPriorExpectation, BetaPriorVariance, s2, nu, ndraws, discarddraws, thin, fitted_names_dict, model_name, param_names, ds_range)
 % Implements Gibbs Sampling for univariate linear model.
 %
 % INPUTS
@@ -22,6 +22,7 @@ function ds = olsgibbs(ds, eqtag, BetaPriorExpectation, BetaPriorVariance, s2, n
 % - model_name                  [string]     name to use in oo_ and inc file
 % - param_names                 [cellstr]    list of parameters to estimate (if
 %                                            empty, estimate all)
+% - ds_range                    [dates]      range of dates to use in estimation
 %
 % OUTPUTS
 % - ds                          [dseries]    dataset updated with fitted value
@@ -49,8 +50,8 @@ function ds = olsgibbs(ds, eqtag, BetaPriorExpectation, BetaPriorVariance, s2, n
 global M_ oo_ options_
 
 %% Check input
-if nargin < 7 || nargin > 12
-    error('Incorrect number of arguments passed to olsgibbs')
+if nargin < 7 || nargin > 13
+    error('Incorrect number of arguments')
 end
 
 if isempty(ds) || ~isdseries(ds)
@@ -135,8 +136,20 @@ else
     end
 end
 
+if nargin <= 12
+    ds_range = ds.dates;
+else
+    if isempty(ds_range)
+        ds_range = ds.dates;
+    else
+        if ds_range(1) < ds.firstdate || ds_range(end) > lastdate(ds)
+            error('There is a problem with the 13th argument: the date range does not correspond to that of the dseries')
+        end
+    end
+end
+
 %% Parse equation
-[Y, lhssub, X, fp, lp] = common_parsing(ds, get_ast({eqtag}), true, param_names);
+[Y, lhssub, X, fp, lp] = common_parsing(ds(ds_range), get_ast({eqtag}), true, param_names);
 lhsname = Y{1}.name;
 Y = Y{1}.data;
 X = X{1};
