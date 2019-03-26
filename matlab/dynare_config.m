@@ -137,6 +137,11 @@ if ~isoctave && matlab_ver_less_than('8.4')
     p{end+1} = '/missing/isdiag';
 end
 
+%% narginchk is missing in MATLAB < R2011b
+if ~isoctave && matlab_ver_less_than('7.13')
+    p{end+1} = '/missing/narginchk';
+end
+
 P = cellfun(@(c)[dynareroot(1:end-1) c], p, 'uni',false);
 
 % Get mex files folder(s)
