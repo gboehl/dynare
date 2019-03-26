@@ -1,5 +1,5 @@
-function ds = dyn_ols(ds, fitted_names_dict, eqtags, model_name, param_names)
-% function varargout = dyn_ols(ds, fitted_names_dict, eqtags, model_name, param_names)
+function ds = dyn_ols(ds, fitted_names_dict, eqtags, model_name, param_names, ds_range)
+% function varargout = dyn_ols(ds, fitted_names_dict, eqtags, model_name, param_names, ds_range)
 % Run OLS on chosen model equations; unlike olseqs, allow for time t
 % endogenous variables on LHS
 %
@@ -18,6 +18,7 @@ function ds = dyn_ols(ds, fitted_names_dict, eqtags, model_name, param_names)
 %                                       same size as eqtags)
 %   param_names       [cell of cellstr] list of parameters to estimate by eqtag
 %                                       (if empty, estimate all)
+%   ds_range          [dates]           range of dates to use in estimation
 %
 % OUTPUTS
 %   ds                [dseries]    data updated with fitted values
@@ -44,22 +45,52 @@ function ds = dyn_ols(ds, fitted_names_dict, eqtags, model_name, param_names)
 
 global M_ oo_ options_
 
-assert(nargin >= 1 && nargin <= 5, 'dyn_ols() takes between 1 and 5 arguments');
-assert(~isempty(ds) && isdseries(ds), 'dyn_ols: the first argument must be a dseries');
+if nargin < 1 || nargin > 6
+    error('dyn_ols() takes between 1 and 6 arguments')
+end
+
+if isempty(ds) || ~isdseries(ds)
+    error('dyn_ols: the first argument must be a dseries')
+end
+
+if nargin < 6
+    ds_range = ds.dates;
+else
+    if isempty(ds_range)
+        ds_range = ds.dates;
+    else
+        if ds_range(1) < ds.firstdate || ds_range(end) > lastdate(ds)
+            error('There is a problem with the 6th argument: the date range does not correspond to that of the dseries')
+        end
+    end
+end
+
+if nargin < 5
+    param_names = {};
+else
+    if ~isempty(param_names)
+        if ~iscell(param_names) || (~isempty(eqtags) && length(param_names) ~= length(eqtags))
+            error('The 5th argument, if provided, must be a cell of the same length as the eqtags argument')
+        end
+        for i = 1:length(param_names)
+            if ~iscellstr(param_names{i})
+                error('every entry of param_names must be a cellstr')
+            end
+        end
+    end
+end
 
 if nargin < 3
     eqtags = {};
-    if nargin == 2
-        assert(isempty(fitted_names_dict) || ...
-            (iscell(fitted_names_dict) && ...
-            (size(fitted_names_dict, 2) == 2 || size(fitted_names_dict, 2) == 3)), ...
-            'dyn_ols: the second argument must be an Nx2 or Nx3 cell array');
-        if nargin == 2
-            eqtags = {};
-        end
-    else
-        fitted_names_dict = {};
-    end
+end
+
+if nargin < 2
+    fitted_names_dict = {};
+else
+    assert(isempty(fitted_names_dict) || ...
+        (iscell(fitted_names_dict) && ...
+        (size(fitted_names_dict, 2) == 2 || size(fitted_names_dict, 2) == 3)), ...
+        'dyn_ols: the second argument must be an Nx2 or Nx3 cell array');
 end
 
 %% Get Equation(s)
@@ -83,23 +114,8 @@ else
     end
 end
 
-if nargin < 5
-    param_names = {};
-else
-    if ~isempty(param_names)
-        if ~iscell(param_names) || (~isempty(eqtags) && length(param_names) ~= length(eqtags))
-            error('The 5th argument, if provided, must be a cell of the same length as the eqtags argument')
-        end
-        for i = 1:length(param_names)
-            if ~iscellstr(param_names{i})
-                error('every entry of param_names must be a cellstr')
-            end
-        end
-    end
-end
-
 %% Parse equations
-[Y, lhssub, X, fp, lp] = common_parsing(ds, ast, true, param_names);
+[Y, lhssub, X, fp, lp] = common_parsing(ds(ds_range), ast, true, param_names);
 
 %% Loop over equations
 for i = 1:length(Y)

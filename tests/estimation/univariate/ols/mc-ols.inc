@@ -29,6 +29,8 @@ verbatim;
         % Perform the estimation of equation 7.
         if strcmp(M_.fname, 'ols_param_names')
             dyn_ols(simdata{idxs}, {}, {'eq7'}, '', {{'de_g_yer_ecm_u2_stn_L1', 'de_g_yer_de_g_yer_L1'}});
+        elseif strcmp(M_.fname, 'ols_date_range')
+            dyn_ols(simdata{idxs}, {}, {'eq7'}, '', {}, simdata.dates(2:end-3));
         else
             dyn_ols(simdata{idxs}, {}, {'eq7'});
         end
@@ -56,6 +58,11 @@ verbatim;
         elseif strcmp(M_.fname, 'ols_param_names')
             good = [-0.125265361034515
                 0.497003481797959];
+        elseif strcmp(M_.fname, 'ols_date_range')
+            good = [0.468607715487806
+                -0.011224442004140
+                0.033681224841824
+                -0.126743281213504];
         elseif strcmp(M_.fname, 'ols_wc_1')
             good = [0.466534186307255
                 -0.010596174928406
