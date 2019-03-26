@@ -42,7 +42,7 @@ clear('pathtocXDHdrXnqo5KwwVpTRuc6OprAW', 'cXDHdrXnqo5KwwVpTRuc6OprAW');
 
 % Get the list of variables in the script.
 mj6F4eU1BN = whos();
-Z3s1ZFBffw = {mj6F4eU1BN(:).name};
+Z3s1ZFBffw = {mj6F4eU1BN(:).name}';
 
 % Check that the variables in varobs are available.
 if ~isequal(sort(intersect(Z3s1ZFBffw, U7ORsJ0vy3)), sort(U7ORsJ0vy3))
@@ -95,7 +95,7 @@ fwriten(fid, '  f(i) = log(rand());')
 fwriten(fid, 'end');
 fclose(fid);
 % Define a set of variables to be loaded.
-listofvariablestobeloaded = {'b', 'a'};
+listofvariablestobeloaded = {'b'; 'a'};
 % Test if we can load the data.
 try
     data = load_m_file_data_legacy('example1.m', listofvariablestobeloaded);
@@ -122,7 +122,7 @@ fwriten(fid, '  f(i) = log(rand());')
 fwriten(fid, 'end');
 fclose(fid);
 % Define a set of variables to be loaded.
-listofvariablestobeloaded = {'e', 'a'};
+listofvariablestobeloaded = {'e'; 'a'};
 % Test if we can load the data.
 try
     data = load_m_file_data_legacy('example2.m', listofvariablestobeloaded);
@@ -149,7 +149,7 @@ fwriten(fid, '  f(i) = log(rand());')
 fwriten(fid, 'end');
 fclose(fid);
 % Define a set of variables to be loaded.
-listofvariablestobeloaded = {'c', 'a'};
+listofvariablestobeloaded = {'c'; 'a'};
 % Test if we can load the data.
 try
     data = load_m_file_data_legacy('example3.m', listofvariablestobeloaded);
