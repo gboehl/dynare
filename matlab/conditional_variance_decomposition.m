@@ -89,7 +89,7 @@ end
 % Measurement error
 
 if ~all(StateSpaceModel.measurement_error==0)
-    if isoctave
+    if isoctave || matlab_ver_less_than('8.1')
         [observable_pos,index_subset,index_observables]=intersect_stable(SubsetOfVariables,StateSpaceModel.observable_pos);
     else
         [observable_pos,index_subset,index_observables]=intersect(SubsetOfVariables,StateSpaceModel.observable_pos,'stable');

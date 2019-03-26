@@ -55,7 +55,7 @@ oo_.var = oo_.gamma_y{1};
 
 ME_present=0;
 if ~all(M_.H==0)
-    if isoctave
+    if isoctave || matlab_ver_less_than('8.1')
         [observable_pos_requested_vars,index_subset,index_observables]=intersect_stable(ivar,options_.varobs_id);
     else
         [observable_pos_requested_vars,index_subset,index_observables]=intersect(ivar,options_.varobs_id,'stable');
@@ -105,7 +105,7 @@ if size(stationary_vars, 1) > 0
             lh = cellofchararraymaxlength(M_.endo_names(ivar(stationary_vars)))+2;
             dyntable(options_, title, headers, M_.endo_names(ivar(stationary_vars)), 100*oo_.gamma_y{options_.ar+2}(stationary_vars,:), lh, 8, 2);
             if ME_present
-                if isoctave
+                if isoctave || matlab_ver_less_than('8.1')
                     [stationary_observables, pos_index_subset] = intersect_stable(index_subset, stationary_vars);
                 else
                     [stationary_observables, pos_index_subset] = intersect(index_subset, stationary_vars, 'stable');

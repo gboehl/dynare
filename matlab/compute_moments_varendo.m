@@ -145,7 +145,7 @@ if M_.exo_nbr > 1
     end
     skipline();
     if ~all(M_.H==0)
-        if isoctave
+        if isoctave || matlab_ver_less_than('8.1')
             [observable_name_requested_vars, varlist_pos] = intersect_stable(var_list_, options_.varobs);
         else
             [observable_name_requested_vars, varlist_pos] = intersect(var_list_, options_.varobs, 'stable');

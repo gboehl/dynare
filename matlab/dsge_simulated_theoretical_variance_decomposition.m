@@ -87,7 +87,7 @@ MaXNumberOfDecompLines = ceil(options_.MaxNumberOfBytes/NumberOfSavedElementsPer
 
 ME_present=0;
 if ~all(M_.H==0)
-    if isoctave
+    if isoctave || matlab_ver_less_than('8.1')
         [observable_pos_requested_vars,index_subset,index_observables]=intersect_stable(ivar,options_.varobs_id);
     else
         [observable_pos_requested_vars,index_subset,index_observables]=intersect(ivar,options_.varobs_id,'stable');

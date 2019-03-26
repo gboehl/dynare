@@ -66,7 +66,7 @@ switch type
                                              M_.exo_names,arg2,vartan,arg1,options_.mh_conf_sig,oo_,options_);
     if ~all(M_.H==0)
         if strmatch(arg1,options_.varobs,'exact')
-            if isoctave
+            if isoctave || matlab_ver_less_than('8.1')
                 [observable_name_requested_vars,index_subset,index_observables]=intersect_stable(vartan,options_.varobs);
             else
                 [observable_name_requested_vars,index_subset,index_observables]=intersect(vartan,options_.varobs,'stable');
