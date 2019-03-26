@@ -132,6 +132,11 @@ if ~isoctave && matlab_ver_less_than('7.11')
     p{end+1} = '/missing/is-row-column-matrix';
 end
 
+%% isdiag is missing in MATLAB < R2014a
+if ~isoctave && matlab_ver_less_than('8.4')
+    p{end+1} = '/missing/isdiag';
+end
+
 P = cellfun(@(c)[dynareroot(1:end-1) c], p, 'uni',false);
 
 % Get mex files folder(s)

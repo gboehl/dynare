@@ -1,4 +1,4 @@
-function b = isdiagonal(A) % --*-- Unitary tests --*--
+function b = isdiag(A) % --*-- Unitary tests --*--
 
 % Copyright (C) 2014-2017 Dynare Team
 %
@@ -25,38 +25,38 @@ if isnumeric(A)
         % in ir and ic (row and column numbers) should be equal.
         b = isequal(ir, ic);
     else
-        error('isdiagonal: Input must be a square matrix!')
+        error('isdiag: Input must be a square matrix!')
     end
 else
-    error('isdiagonal: Input must be numeric!')
+    error('isdiag: Input must be numeric!')
 end
 
 %@test:1
 %$ A = zeros(3,3);
-%$ t = isdiagonal(A);
+%$ t = isdiag(A);
 %$ T = all(t);
 %@eof:1
 
 %@test:2
 %$ A = zeros(3,3); A(1,3) = 1;
-%$ t = ~isdiagonal(A);
+%$ t = ~isdiag(A);
 %$ T = all(t);
 %@eof:2
 
 %@test:3
 %$ A = randn(3,3);
-%$ t = ~isdiagonal(A);
+%$ t = ~isdiag(A);
 %$ T = all(t);
 %@eof:3
 
 %@test:4
 %$ A = diag(randn(3,1));
-%$ t = isdiagonal(A);
+%$ t = isdiag(A);
 %$ T = all(t);
 %@eof:4
 
 %@test:5
 %$ A = diag(randn(3,1)); A(1,1) = 0;
-%$ t = isdiagonal(A);
+%$ t = isdiag(A);
 %$ T = all(t);
 %@eof:5

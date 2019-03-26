@@ -180,7 +180,7 @@ if options_.loglinear && isfield(oo_.dr,'ys') && options_.logged_steady_state==0
     options_.logged_steady_state=1; %set option for use in stoch_simul
 end
 
-if ~isdiagonal(M_.Sigma_e)
+if ~isdiag(M_.Sigma_e)
     warning(sprintf('The innovations are correlated (the covariance matrix has non zero off diagonal elements), the results of the conditional forecasts will\ndepend on the ordering of the innovations (as declared after varexo) because a Cholesky decomposition is used to factorize the covariance matrix.\n\n=> It is preferable to declare the correlations in the model block (explicitly imposing the identification restrictions), unless you are satisfied\nwith the implicit identification restrictions implied by the Cholesky decomposition.'))
     sQ = chol(M_.Sigma_e,'lower');
 else
