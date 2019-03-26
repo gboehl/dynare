@@ -391,7 +391,7 @@ elseif strcmp(node.node_type, 'VariableNode')
         tf = false;
     end
 elseif strcmp(node.node_type, 'UnaryOpNode')
-    tf = containsParameter(node, line);
+    tf = containsParameter(node.arg, line);
 elseif strcmp(node.node_type, 'BinaryOpNode')
     tf = containsParameter(node.arg1, line) || containsParameter(node.arg2, line);
 else
