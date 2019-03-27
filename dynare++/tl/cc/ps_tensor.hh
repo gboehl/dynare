@@ -269,11 +269,11 @@ protected:
 };
 
 /* Here we define an abstraction of the permuted symmetry folded
-   tensor. It is needed in context of the Faa Di Bruno formula for folded
+   tensor. It is needed in context of the Faà Di Bruno formula for folded
    stack container multiplied with container of dense folded tensors, or
    multiplied by one full symmetry sparse tensor.
 
-   For example, if we perform the Faa Di Bruno for $F=f(z)$, where
+   For example, if we perform the Faà Di Bruno for $F=f(z)$, where
    $z=[g(x,y,u,v), h(x,y,u), x, y]^T$, we get for one concrete
    equivalence:
    $$

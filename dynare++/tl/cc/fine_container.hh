@@ -12,14 +12,14 @@
    of each stack in the refined container. The resulting object is stack
    container, so everything works seamlessly.
 
-   We define here a class for refinement of sizes |SizeRefinement|, this
+   We define here a class for refinement of sizes SizeRefinement, this
    is purely an auxiliary class allowing us to write a code more
-   concisely. The main class of this file is |FineContainer|, which
-   corresponds to refining. The two more classes |FoldedFineContainer|
-   and |UnfoldedFineContainer| are its specializations.
+   concisely. The main class of this file is FineContainer, which
+   corresponds to refining. The two more classes FoldedFineContainer
+   and UnfoldedFineContainer are its specializations.
 
    NOTE: This code was implemented with a hope that it will help to cut
-   down memory allocations during the Faa Di Bruno formula
+   down memory allocations during the Faà Di Bruno formula
    evaluation. However, it seems that this needs to be accompanied with a
    similar thing for tensor multidimensional index. Thus, the abstraction
    is not currently used, but it might be useful in future. */
@@ -32,9 +32,9 @@
 #include <vector>
 #include <memory>
 
-/* This class splits the first |nc| elements of the given sequence |s|
-   to a sequence not having items greater than given |max|. The remaining
-   elements (those behind |nc|) are left untouched. It also remembers the
+/* This class splits the first nc elements of the given sequence s
+   to a sequence not having items greater than given max. The remaining
+   elements (those behind nc) are left untouched. It also remembers the
    mapping, i.e. for a given index in a new sequence, it is able to
    return a corresponding index in old sequence. */
 
@@ -68,7 +68,7 @@ public:
 };
 
 /* This main class of this class refines a given stack container, and
-   inherits from the stack container. It also defines the |getType|
+   inherits from the stack container. It also defines the getType()
    method, which returns a type for a given stack as the type of the
    corresponding (old) stack of the former stack container. */
 
@@ -82,19 +82,19 @@ protected:
   std::vector<std::unique_ptr<_Ctype>> ref_conts;
   const _Stype &stack_cont;
 public:
-  /* Here we construct the |SizeRefinement| and allocate space for the
+  /* Here we construct the SizeRefinement and allocate space for the
      refined containers. Then, the containers are created and put to
-     |conts| array. Note that the containers do not claim any further
+     conts array. Note that the containers do not claim any further
      space, since all the tensors of the created containers are in-place
      submatrices.
 
-     Here we use a dirty trick of converting |const| pointer to non-|const|
+     Here we use a dirty trick of converting const pointer to non-const
      pointer and passing it to a subtensor container constructor. The
-     containers are stored in |ref_conts| and then in |conts| from
-     |StackContainer|. However, this is safe since neither |ref_conts| nor
-     |conts| are used in non-|const| contexts. For example,
-     |StackContainer| has only a |const| method to return a member of
-     |conts|. */
+     containers are stored in ref_conts and then in conts from
+     StackContainer. However, this is safe since neither ref_conts nor
+     conts are used in non-const contexts. For example,
+     StackContainer has only a const method to return a member of
+     conts. */
 
   FineContainer(const _Stype &sc, int max)
     : SizeRefinement(sc.getStackSizes(), sc.numConts(), max),
@@ -130,7 +130,7 @@ public:
 
 };
 
-/* Here is |FineContainer| specialization for folded tensors. */
+/* Here is FineContainer specialization for folded tensors. */
 class FoldedFineContainer : public FineContainer<FGSTensor>, public FoldedStackContainer
 {
 public:
@@ -140,7 +140,7 @@ public:
   }
 };
 
-/* Here is |FineContainer| specialization for unfolded tensors. */
+/* Here is FineContainer specialization for unfolded tensors. */
 class UnfoldedFineContainer : public FineContainer<UGSTensor>, public UnfoldedStackContainer
 {
 public:

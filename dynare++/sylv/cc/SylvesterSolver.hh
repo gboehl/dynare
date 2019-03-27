@@ -20,8 +20,8 @@ protected:
   const std::unique_ptr<const QuasiTriangular> matrixK;
   const std::unique_ptr<const QuasiTriangular> matrixF;
 private:
-  /* return true when it is more efficient to use QuasiTriangular
-   * than QuasiTriangularZero */
+  /* Return true when it is more efficient to use QuasiTriangular
+     than QuasiTriangularZero */
   static bool
   zeroPad(const SchurDecompZero &kdecomp)
   {

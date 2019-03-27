@@ -335,29 +335,29 @@ public:
   diag_iter findClosestDiagBlock(diag_iter start, diag_iter end, double a);
   diag_iter findNextLargerBlock(diag_iter start, diag_iter end, double a);
 
-  /* (I+T)y = x, y-->x  */
+  /* (I+T)·y = x, y→x  */
   virtual void solvePre(Vector &x, double &eig_min);
-  /* (I+T')y = x, y-->x */
+  /* (I+T')·y = x, y→x */
   virtual void solvePreTrans(Vector &x, double &eig_min);
   /* (I+T)x = b */
   virtual void solve(Vector &x, const ConstVector &b, double &eig_min);
   /* (I+T')x = b */
   virtual void solveTrans(Vector &x, const ConstVector &b, double &eig_min);
-  /* x = Tb */
+  /* x = T·b */
   virtual void multVec(Vector &x, const ConstVector &b) const;
-  /* x = T'b */
+  /* x = T'·b */
   virtual void multVecTrans(Vector &x, const ConstVector &b) const;
-  /* x = x + Tb */
+  /* x = x + T·b */
   virtual void multaVec(Vector &x, const ConstVector &b) const;
-  /* x = x + T'b */
+  /* x = x + T'·b */
   virtual void multaVecTrans(Vector &x, const ConstVector &b) const;
-  /* x = (T\otimes I)x */
+  /* x = (T⊗I)·x */
   virtual void multKron(KronVector &x) const;
-  /* x = (T'\otimes I)x */
+  /* x = (T'⊗I)·x */
   virtual void multKronTrans(KronVector &x) const;
-  /* A = T*A */
+  /* A = T·A */
   virtual void multLeftOther(GeneralMatrix &a) const;
-  /* A = T'*A */
+  /* A = T'·A */
   virtual void multLeftOtherTrans(GeneralMatrix &a) const;
 
   const_diag_iter
@@ -417,9 +417,9 @@ protected:
   void addMatrix(double r, const QuasiTriangular &t);
 private:
   void addUnit();
-  /* x = x + (T\otimes I)b */
+  /* x = x + (T⊗I)·b */
   void multaKron(KronVector &x, const ConstKronVector &b) const;
-  /* x = x + (T'\otimes I)b */
+  /* x = x + (T'⊗)·b */
   void multaKronTrans(KronVector &x, const ConstKronVector &b) const;
   /* implementation via iterators, useful for large matrices */
   void setMatrixViaIter(double r, const QuasiTriangular &t);

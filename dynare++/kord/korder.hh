@@ -214,9 +214,9 @@ public:
      containers
    - |sylvesterSolve|: solve the sylvester equation (templated fold, and
      unfold)
-   - |faaDiBrunoZ|: calculates derivatives of $F$ by Faa Di Bruno for the
+   - |faaDiBrunoZ|: calculates derivatives of $F$ by Faà Di Bruno for the
      sparse container of system derivatives and $Z$ stack container
-   - |faaDiBrunoG|: calculates derivatives of $G$ by Faa Di Bruno for the
+   - |faaDiBrunoG|: calculates derivatives of $G$ by Faà Di Bruno for the
      dense container $g^{**}$ and $G$ stack
    - |recover_y|: recovers $g_{y^{*i}}$
    - |recover_yu|: recovers $g_{y^{*i}u^j}$
@@ -387,7 +387,7 @@ KOrder::insertDerivative(std::unique_ptr<typename ctraits<t>::Ttensor> der)
                                                                  ypart.nyss(), *der_ptr));
 }
 
-/* Here we implement Faa Di Bruno formula
+/* Here we implement Faà Di Bruno formula
    $$\sum_{l=1}^k\left[f_{z^l}\right]_{\gamma_1\ldots\gamma_l}
    \sum_{c\in M_{l,k}}\prod_{m=1}^l\left[z_{s(c_m)}\right]^{\gamma_m},
    $$
@@ -399,7 +399,7 @@ std::unique_ptr<typename ctraits<t>::Ttensor>
 KOrder::faaDiBrunoZ(const Symmetry &sym) const
 {
   JournalRecordPair pa(journal);
-  pa << "Faa Di Bruno Z container for " << sym << endrec;
+  pa << "Faà Di Bruno Z container for " << sym << endrec;
   auto res = std::make_unique<typename ctraits<t>::Ttensor>(ny, TensorDimens(sym, nvs));
   FaaDiBruno bruno(journal);
   bruno.calculate(Zstack<t>(), f, *res);
@@ -414,7 +414,7 @@ std::unique_ptr<typename ctraits<t>::Ttensor>
 KOrder::faaDiBrunoG(const Symmetry &sym) const
 {
   JournalRecordPair pa(journal);
-  pa << "Faa Di Bruno G container for " << sym << endrec;
+  pa << "Faà Di Bruno G container for " << sym << endrec;
   TensorDimens tdims(sym, nvs);
   auto res = std::make_unique<typename ctraits<t>::Ttensor>(ypart.nyss(), tdims);
   FaaDiBruno bruno(journal);
@@ -762,9 +762,9 @@ KOrder::calcE_k(int k) const
 }
 
 /* Here is the core routine. It calls methods recovering derivatives in
-   the right order. Recall, that the code, namely Faa Di Bruno's formula,
+   the right order. Recall, that the code, namely Faà Di Bruno's formula,
    is implemented as to be run conditionally on the current contents of
-   containers. So, if some call of Faa Di Bruno evaluates derivatives,
+   containers. So, if some call of Faà Di Bruno evaluates derivatives,
    and some derivatives are not present in the container, then it is
    considered to be zero. So, we have to be very careful to put
    everything in the right order. The order here can be derived from

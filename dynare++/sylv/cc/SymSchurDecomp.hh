@@ -13,8 +13,8 @@ protected:
   Vector lambda;
   SqSylvMatrix q;
 public:
-  /** Calculates A = Q*Lambda*Q^T, where A is assummed to be
-   * symmetric and Lambda real diagonal, hence a vector. */
+  /* Computes the factorization A = Q·Λ·Qᵀ, where A is assummed to be
+     symmetric and Λ real diagonal, hence a vector. */
   SymSchurDecomp(const ConstGeneralMatrix &a);
   SymSchurDecomp(const SymSchurDecomp &ssd) = default;
   virtual ~SymSchurDecomp() = default;
@@ -28,15 +28,14 @@ public:
   {
     return q;
   }
-  /** Return factor F*F^T = A, raises and exception if A is not
-   * positive semidefinite, F must be square. */
+  /* Return factor F·Fᵀ = A, raises and exception if A is not
+     positive semidefinite, F must be square. */
   void getFactor(GeneralMatrix &f) const;
-  /** Returns true if A is positive semidefinite. */
+  // Returns true if A is positive semidefinite.
   bool isPositiveSemidefinite() const;
-  /** Correct definitness. This sets all eigenvalues between minus
-   * tolerance and zero to zero. */
+  /* Correct definitness. This sets all eigenvalues between minus
+     tolerance and zero to zero. */
   void correctDefinitness(double tol);
-
 };
 
 #endif

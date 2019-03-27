@@ -1,8 +1,8 @@
 // Copyright 2005, Ondra Kamenik
 
-// Faa Di Bruno evaluator
+// Faà Di Bruno evaluator
 
-/* This defines a class which implements Faa Di Bruno Formula
+/* This defines a class which implements Faà Di Bruno Formula
    $$\left[B_{s^k}\right]_{\alpha_1\ldots\alpha_l}=\left[f_{z^l}\right]_{\beta_1\ldots\beta_l}
    \sum_{c\in M_{l,k}}\prod_{m=1}^l\left[z_{s^k(c_m)}\right]^{\beta_m}_{c_m(\alpha)}$$
    where $s^k$ is a general symmetry of dimension $k$ and $z$ is a stack of

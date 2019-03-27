@@ -3,7 +3,7 @@
 // Tensor containers.
 
 /* One of primary purposes of the tensor library is to perform one step
-   of the Faa Di Bruno formula:
+   of the Faà Di Bruno formula:
    $$\left[B_{s^k}\right]_{\alpha_1\ldots\alpha_k}=
    [h_{y^l}]_{\gamma_1\ldots\gamma_l}\sum_{c\in M_{l,k}}
    \prod_{m=1}^l\left[g_{s^{\vert c_m\vert}}\right]^{\gamma_m}_{c_m(\alpha)}
@@ -30,14 +30,14 @@
    most one tensor.
 
    The class has two purposes: The first is to provide storage (insert
-   and retrieve). The second is to perform the above step of Faa Di Bruno. This is
+   and retrieve). The second is to perform the above step of Faà Di Bruno. This is
    going through all equivalences with $l$ classes, perform the tensor
    product and add to the result.
 
    We define a template class |TensorContainer|. From different
    instantiations of the template class we will inherit to create concrete
    classes, for example container of unfolded general symmetric
-   tensors. The one step of the Faa Di Bruno (we call it |multAndAdd|) is
+   tensors. The one step of the Faà Di Bruno (we call it |multAndAdd|) is
    implemented in the concrete subclasses, because the implementation
    depends on storage. Note even, that |multAndAdd| has not a template
    common declaration. This is because sparse tensor $h$ is multiplied by

@@ -24,7 +24,7 @@ class GeneralSylvester
   std::unique_ptr<SimilarityDecomp> cdecomp;
   std::unique_ptr<SylvesterSolver> sylv;
 public:
-  /* construct with my copy of d*/
+  // Construct with my copy of d
   GeneralSylvester(int ord, int n, int m, int zero_cols,
                    const ConstVector &da, const ConstVector &db,
                    const ConstVector &dc, const ConstVector &dd,
@@ -33,7 +33,7 @@ public:
                    const ConstVector &da, const ConstVector &db,
                    const ConstVector &dc, const ConstVector &dd,
                    bool alloc_for_check = false);
-  /* construct with provided storage for d */
+  // Construct with provided storage for d
   GeneralSylvester(int ord, int n, int m, int zero_cols,
                    const ConstVector &da, const ConstVector &db,
                    const ConstVector &dc, Vector &dd,

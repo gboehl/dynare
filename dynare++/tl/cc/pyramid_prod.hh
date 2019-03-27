@@ -2,8 +2,8 @@
 
 // Multiplying tensor columns.
 
-/* In here, we implement the Faa Di Bruno for folded
-   tensors. Recall, that one step of the Faa Di Bruno is a formula:
+/* In here, we implement the Faà Di Bruno for folded
+   tensors. Recall, that one step of the Faà Di Bruno is a formula:
    $$\left[B_{s^k}\right]_{\alpha_1\ldots\alpha_k}=
    [h_{y^l}]_{\gamma_1\ldots\gamma_l}
    \prod_{m=1}^l\left[g_{s^{\vert c_m\vert}}\right]^{\gamma_m}_{c_m(\alpha)}

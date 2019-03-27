@@ -5,9 +5,9 @@
 #ifndef VECTOR_H
 #define VECTOR_H
 
-/* NOTE! Vector and ConstVector have not common super class in order
- * to avoid running virtual method invokation mechanism. Some
- * members, and methods are thus duplicated */
+/* NOTE: Vector and ConstVector have not common super class in order
+   to avoid running virtual method invokation mechanism. Some
+   members, and methods are thus duplicated */
 
 #include <complex>
 
@@ -23,7 +23,7 @@ class Vector
   friend class ConstVector;
 protected:
   int len{0};
-  int s{1}; // stride (also called "skip" in some places)
+  int s{1}; // stride (also called “skip” in some places)
   double *data;
   bool destroy{true};
 public:
@@ -43,7 +43,7 @@ public:
     v.data = nullptr;
     v.destroy = false;
   }
-  // We don't want implict conversion from ConstVector, since it's expensive
+  // We don't want implict conversion from ConstVector, since it’s expensive
   explicit Vector(const ConstVector &v);
   Vector(double *d, int l)
     : len(l), data{d}, destroy{false}
@@ -90,10 +90,10 @@ public:
     return s;
   }
 
-  /** Exact equality. */
+  // Exact equality.
   bool operator==(const Vector &y) const;
   bool operator!=(const Vector &y) const;
-  /** Lexicographic ordering. */
+  // Lexicographic ordering.
   bool operator<(const Vector &y) const;
   bool operator<=(const Vector &y) const;
   bool operator>(const Vector &y) const;
@@ -125,8 +125,8 @@ public:
   void print() const;
 
   /* multiplies | alpha -beta1|           |b1|   |x1|
-     |             |\otimes I .|  | = |  |
-     | -beta2 alpha|           |b2|   |x2|
+                |             |\otimes I .|  | = |  |
+                | -beta2 alpha|           |b2|   |x2|
   */
   static void mult2(double alpha, double beta1, double beta2,
                     Vector &x1, Vector &x2,

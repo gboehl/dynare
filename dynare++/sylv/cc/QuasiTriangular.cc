@@ -34,9 +34,9 @@ DiagonalBlock::getSize() const
     return std::sqrt(getDeterminant());
 }
 
-// this function makes Diagonal inconsistent, it should only be used
-// on temorary matrices, which will not be used any more, e.g. in
-// QuasiTriangular::solve (we need fast performance)
+/* This function makes Diagonal inconsistent, it should only be used
+   on temorary matrices, which will not be used any more, e.g. in
+   QuasiTriangular::solve() (we need fast performance) */
 void
 DiagonalBlock::setReal()
 {
@@ -64,7 +64,7 @@ DiagonalBlock::checkBlock(const double *d, int d_size)
 
 Diagonal::Diagonal(double *data, int d_size)
 {
-  int nc = getNumComplex(data, d_size); // return nc <= d_size/2
+  int nc = getNumComplex(data, d_size); // return nc ≤ d_size/2
   num_all = d_size - nc;
   num_real = d_size - 2*nc;
 
@@ -184,9 +184,9 @@ Diagonal::getEigenValues(Vector &eig) const
     }
 }
 
-/* swaps logically blocks 'it', and '++it'. remember to move also
- * addresses, alpha, beta1, beta2. This is a dirty (but most
- * effective) way how to do it. */
+/* Swaps logically blocks ‘it’, and ‘++it’. remember to move also
+   addresses, alpha, beta1, beta2. This is a dirty (but most
+   effective) way how to do it. */
 void
 Diagonal::swapLogically(diag_iter it)
 {
@@ -432,7 +432,7 @@ QuasiTriangular::QuasiTriangular(const SchurDecomp &decomp)
 {
 }
 
-/* this pads matrix with intial columns with zeros */
+// This pads matrix with intial columns with zeros
 QuasiTriangular::QuasiTriangular(const SchurDecompZero &decomp)
   : SqSylvMatrix(decomp.getDim())
 {
@@ -590,7 +590,7 @@ QuasiTriangular::solvePreTrans(Vector &x, double &eig_min)
   dtrsv("U", "T", "N", &nn, getData().base(), &lda, x.base(), &incx);
 }
 
-/* calculates x = Tb */
+// Calculates x = T·b
 void
 QuasiTriangular::multVec(Vector &x, const ConstVector &b) const
 {
@@ -639,7 +639,7 @@ QuasiTriangular::multaVecTrans(Vector &x, const ConstVector &b) const
   x.add(1.0, tmp);
 }
 
-/* calculates x=x+(T\otimes I)b, where size of I is given by b (KronVector) */
+// Calculates x=x+(T⊗I)·b, where size of I is given by b (KronVector)
 void
 QuasiTriangular::multaKron(KronVector &x, const ConstKronVector &b) const
 {
@@ -649,7 +649,7 @@ QuasiTriangular::multaKron(KronVector &x, const ConstKronVector &b) const
   x_resh.multAndAdd(b_resh, ConstGeneralMatrix(*this), "trans");
 }
 
-/* calculates x=x+(T'\otimes I)b, where size of I is given by b (KronVector) */
+// Calculates x=x+(T'⊗I)·b, where size of I is given by b (KronVector)
 void
 QuasiTriangular::multaKronTrans(KronVector &x, const ConstKronVector &b) const
 {

@@ -33,9 +33,9 @@ SimilarityDecomp::getXDim(diag_iter start, diag_iter end,
   rows = ei - si;
 }
 
-/* find solution of X for diagonal block given by start(incl.) and
- * end(excl.). If the solution cannot be found, or it is greater than
- * norm, X is not changed and flase is returned.
+/* Find solution of X for diagonal block given by start(incl.) and
+   end(excl.). If the solution cannot be found, or it is greater than
+   norm, X is not changed and flase is returned.
  */
 bool
 SimilarityDecomp::solveX(diag_iter start, diag_iter end,
@@ -68,7 +68,8 @@ SimilarityDecomp::solveX(diag_iter start, diag_iter end,
   return true;
 }
 
-/* multiply Q and invQ with (I -X; 0 I), and (I X; 0 I). This also sets X=-X. */
+/*                         ⎡ I -X ⎤     ⎡ I X ⎤
+  Multiply Q and invQ with ⎣ 0  I ⎦ and ⎣ 0 I ⎦. This also sets X=-X. */
 void
 SimilarityDecomp::updateTransform(diag_iter start, diag_iter end,
                                   GeneralMatrix &X)
@@ -127,21 +128,21 @@ SimilarityDecomp::diagonalize(double norm)
 void
 SimilarityDecomp::check(SylvParams &pars, const GeneralMatrix &m) const
 {
-  // M - Q*B*inv(Q)
+  // M - Q·B·Q⁻¹
   SqSylvMatrix c(getQ() * getB());
   c.multRight(getInvQ());
   c.add(-1.0, m);
   pars.f_err1 = c.getNorm1();
   pars.f_errI = c.getNormInf();
 
-  // I - Q*inv(Q)
+  // I - Q·Q⁻¹
   c.setUnit();
   c.mult(-1);
   c.multAndAdd(getQ(), getInvQ());
   pars.viv_err1 = c.getNorm1();
   pars.viv_errI = c.getNormInf();
 
-  // I - inv(Q)*Q
+  // I - Q⁻¹·Q
   c.setUnit();
   c.mult(-1);
   c.multAndAdd(getInvQ(), getQ());

@@ -40,23 +40,23 @@ public:
   SylvMatrix &operator=(const SylvMatrix &m) = default;
   SylvMatrix &operator=(SylvMatrix &&m) = default;
 
-  /* this = |I 0|* this
-     |0 m|         */
+  /*        ⎡ I 0 ⎤
+     this = ⎣ 0 m ⎦ · this */
   void multLeftI(const SqSylvMatrix &m);
-  /* this = |I  0|* this
-     |0 m'|         */
+  /*        ⎡ I 0  ⎤
+     this = ⎣ 0 m' ⎦ · this */
   void multLeftITrans(const SqSylvMatrix &m);
-  /* this = |0 a|*b, so that |0 a| is square */
+  // this = [0 a]·b, so that [0 a] is square
   void multLeft(int zero_cols, const GeneralMatrix &a, const GeneralMatrix &b);
-  /* this = this * (m\otimes m..\otimes m) */
+  // this = this·(m⊗m⊗…⊗m)
   void multRightKron(const SqSylvMatrix &m, int order);
-  /* this = this * (m'\otimes m'..\otimes m') */
+  // this = this·(mᵀ⊗mᵀ⊗…⊗mᵀ)
   void multRightKronTrans(const SqSylvMatrix &m, int order);
-  /* this = P*this, x = P*x, where P is gauss transformation setting
-   * a given element to zero */
+  /* this = P·this, x = P·x, where P is gauss transformation setting
+     a given element to zero */
   void eliminateLeft(int row, int col, Vector &x);
-  /* this = this*P, x = P'*x, where P is gauss transformation setting
-   * a given element to zero */
+  /* this = this·P, x = Pᵀ·x, where P is gauss transformation setting
+     a given element to zero */
   void eliminateRight(int row, int col, Vector &x);
 };
 
@@ -84,14 +84,14 @@ public:
   }
   SqSylvMatrix &operator=(const SqSylvMatrix &m) = default;
   SqSylvMatrix &operator=(SqSylvMatrix &&m) = default;
-  /* x = (this \otimes this..\otimes this)*d */
+  // x = (this⊗this⊗…⊗this)·d
   void multVecKron(KronVector &x, const ConstKronVector &d) const;
-  /* x = (this' \otimes this'..\otimes this')*d */
+  // x = (thisᵀ⊗thisᵀ⊗…⊗thisᵀ)·d
   void multVecKronTrans(KronVector &x, const ConstKronVector &d) const;
-  /* a = inv(this)*a, b=inv(this)*b */
+  // a = this⁻¹·a, b=this⁻¹·b */
   void multInvLeft2(GeneralMatrix &a, GeneralMatrix &b,
                     double &rcond1, double &rcondinf) const;
-  /* this = I */
+  // this = I
   void setUnit();
 };
 

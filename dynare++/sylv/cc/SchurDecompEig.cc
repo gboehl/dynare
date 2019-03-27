@@ -5,11 +5,11 @@
 
 #include <vector>
 
-/* bubble diagonal 1-1, or 2-2 block from position 'from' to position
- * 'to'. If an eigenvalue cannot be swapped with its neighbour, the
- * neighbour is bubbled also in front. The method returns a new
- * position 'to', where the original block pointed by 'to' happens to
- * appear at the end. 'from' must be greater than 'to'.
+/* Bubble diagonal 1-1, or 2-2 block from position ‘from’ to position
+   ‘to’. If an eigenvalue cannot be swapped with its neighbour, the
+   neighbour is bubbled also in front. The method returns a new
+   position ‘to’, where the original block pointed by ‘to’ happens to
+   appear at the end. ‘from’ must be greater than ‘to’.
  */
 SchurDecompEig::diag_iter
 SchurDecompEig::bubbleEigen(diag_iter from, diag_iter to)
@@ -22,9 +22,9 @@ SchurDecompEig::bubbleEigen(diag_iter from, diag_iter to)
         ++to;
       else
         {
-          // bubble all eigenvalues from runm(incl.) to run(excl.),
-          // this includes either bubbling generated eigenvalues due
-          // to split, or an eigenvalue which couldn't be swapped
+          /* Bubble all eigenvalues from runm(incl.) to run(excl.),
+             this includes either bubbling generated eigenvalues due
+             to split, or an eigenvalue which couldn't be swapped */
           while (runm != run)
             {
               to = bubbleEigen(runm, to);
@@ -35,16 +35,16 @@ SchurDecompEig::bubbleEigen(diag_iter from, diag_iter to)
   return to;
 }
 
-/* this tries to swap two neighbouring eigenvalues, 'it' and '--it',
- * and returns 'itadd'. If the blocks can be swapped, new eigenvalues
- * can emerge due to possible 2-2 block splits. 'it' then points to
- * the last eigenvalue coming from block pointed by 'it' at the
- * begining, and 'itadd' points to the first. On swap failure, 'it' is
- * not changed, and 'itadd' points to previous eignevalue (which must
- * be moved backwards before). In either case, it is necessary to
- * resolve eigenvalues from 'itadd' to 'it', before the 'it' can be
- * resolved.
- * The success is signaled by returned true.
+/* This tries to swap two neighbouring eigenvalues, ‘it’ and ‘--it’,
+   and returns ‘itadd’. If the blocks can be swapped, new eigenvalues
+   can emerge due to possible 2-2 block splits. ‘it’ then points to
+   the last eigenvalue coming from block pointed by ‘it’ at the
+   begining, and ‘itadd’ points to the first. On swap failure, ‘it’ is
+   not changed, and ‘itadd’ points to previous eignevalue (which must
+   be moved backwards before). In either case, it is necessary to
+   resolve eigenvalues from ‘itadd’ to ‘it’, before the ‘it’ can be
+   resolved.
+   The success is signaled by returned true.
  */
 bool
 SchurDecompEig::tryToSwap(diag_iter &it, diag_iter &itadd)
@@ -66,10 +66,10 @@ SchurDecompEig::tryToSwap(diag_iter &it, diag_iter &itadd)
     {
       // swap successful
       getT().swapDiagLogically(itadd);
-      //check for 2-2 block splits
+      // check for 2-2 block splits
       getT().checkDiagConsistency(it);
       getT().checkDiagConsistency(itadd);
-      // and go back by 'it' in NEW eigenvalue set
+      // and go back by ‘it’ in NEW eigenvalue set
       --it;
       return true;
     }

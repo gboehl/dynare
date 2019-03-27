@@ -36,8 +36,8 @@ BlockDiagonal::BlockDiagonal(int p, const BlockDiagonal &b)
 {
 }
 
-/* put zeroes to right upper submatrix whose first column is defined
- * by 'edge' */
+/* Put zeroes to right upper submatrix whose first column is defined
+   by ‘edge’ */
 void
 BlockDiagonal::setZerosToRU(diag_iter edge)
 {
@@ -47,14 +47,14 @@ BlockDiagonal::setZerosToRU(diag_iter edge)
       get(i, j) = 0.0;
 }
 
-/* Updates row_len and col_len so that there are zeroes in upper right part, this
- * |T1 0 |
- * |0  T2|. The first column of T2 is given by diagonal iterator 'edge'.
+/* Updates row_len and col_len so that there are zeroes in upper right part, i.e.
+   ⎡ T1  0 ⎤
+   ⎣  0 T2 ⎦. The first column of T2 is given by diagonal iterator ‘edge’.
 
- * Note the semantics of row_len and col_len. row_len[i] is distance
- * of the right-most non-zero element of i-th row from the left, and
- * col_len[j] is distance of top-most non-zero element of j-th column
- * to the top. (First element has distance 1).
+   Note the semantics of row_len and col_len. row_len[i] is distance
+   of the right-most non-zero element of i-th row from the left, and
+   col_len[j] is distance of top-most non-zero element of j-th column
+   to the top. (First element has distance 1).
  */
 void
 BlockDiagonal::setZeroBlockEdge(diag_iter edge)

@@ -11,10 +11,13 @@ PascalRow::setFromPrevious(const PascalRow &prev)
   prolong(prev);
 }
 
-/** This prolongs the PascalRow. If it is empty, we set the first item
- * to k+1, which is noverk(k+1,k) which is the second item in the real
- * pascal row, which starts from noverk(k,k)=1. Then we calculate
- * other items from the provided row which must be the one with k-1.*/
+/* This prolongs the PascalRow. If it is empty, we set the first item
+                    ⎛k+1⎞
+   to k+1, which is ⎝ k ⎠, which is the second item in the real
+                                 ⎛k⎞
+   pascal row, which starts from ⎝k⎠=1. Then we calculate
+   other items from the provided row which must be the one with k-1.
+ */
 void
 PascalRow::prolong(const PascalRow &prev)
 {

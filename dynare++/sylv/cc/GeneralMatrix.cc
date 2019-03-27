@@ -329,13 +329,13 @@ GeneralMatrix::gemm_partial_right(const std::string &trans, const ConstGeneralMa
 ConstGeneralMatrix::ConstGeneralMatrix(const GeneralMatrix &m, int i, int j, int nrows, int ncols)
   : data(m.getData(), j*m.getLD()+i, (ncols-1)*m.getLD()+nrows), rows(nrows), cols(ncols), ld(m.getLD())
 {
-  // can check that the submatirx is fully in the matrix
+  // FIXME: check that the submatrix is fully in the matrix
 }
 
 ConstGeneralMatrix::ConstGeneralMatrix(const ConstGeneralMatrix &m, int i, int j, int nrows, int ncols)
   : data(m.getData(), j*m.getLD()+i, (ncols-1)*m.getLD()+nrows), rows(nrows), cols(ncols), ld(m.getLD())
 {
-  // can check that the submatirx is fully in the matrix
+  // FIXME: check that the submatrix is fully in the matrix
 }
 
 ConstGeneralMatrix::ConstGeneralMatrix(const GeneralMatrix &m)
@@ -559,8 +559,8 @@ SVDDecomp::solve(const ConstGeneralMatrix &B, GeneralMatrix &X) const
   if (B.numRows() != U.numRows())
     throw SYLV_MES_EXCEPTION("Incompatible number of rows ");
 
-  // reciprocal condition number for determination of zeros in the
-  // end of sigma
+  /* Reciprocal condition number for determination of zeros in the
+     end of sigma */
   constexpr double rcond = 1e-13;
 
   // determine nz=number of zeros in the end of sigma

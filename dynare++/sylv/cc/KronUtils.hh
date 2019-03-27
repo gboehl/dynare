@@ -11,17 +11,16 @@
 class KronUtils
 {
 public:
-  /* multiplies I_m\otimes..\I_m\otimes T\otimes I_m...I_m\otimes I_n
-     with given b and returns x. T must be (m,m), number of
-     \otimes is b.getDepth(), level is a number of I_m's between T
-     and I_n plus 1. If level=0, then we multiply
-     \I_m\otimes ..\otimes I_m\otimes T, T is (n,n) */
+  /* Computes x = (Iₘ⊗…⊗Iₘ⊗T⊗Iₘ⊗…⊗Iₘ⊗Iₙ)·x, where x is n×mᵈ.
+     T must be m×m, number of ⊗ is d, level is the number of Iₘ’s
+     between T and Iₙ plus 1. If level=0, then we multiply by Iₘ⊗…⊗Iₘ⊗T,
+     T must be n×n. */
   static void multAtLevel(int level, const QuasiTriangular &t,
                           KronVector &x);
   static void multAtLevelTrans(int level, const QuasiTriangular &t,
                                KronVector &x);
 
-  /* multiplies x=(F'\otimes F'\otimes..\otimes K)x */
+  // Computes x=(Fᵀ⊗Fᵀ⊗…⊗K)·x
   static void multKron(const QuasiTriangular &f, const QuasiTriangular &k,
                        KronVector &x);
 };

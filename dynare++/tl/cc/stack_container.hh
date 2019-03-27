@@ -3,28 +3,35 @@
 // Stack of containers.
 
 /* Here we develop abstractions for stacked containers of tensors. For
-   instance, in perturbation methods for DSGE we need function
-   $$z(y,u,u',\sigma)=\left[\matrix{G(y,u,u',\sigma)\cr g(y,u,\sigma)\cr y\cr u}\right]$$
-   and we need to calculate one step of Faa Di Bruno formula
-   $$\left[B_{s^k}\right]_{\alpha_1\ldots\alpha_l}=\left[f_{z^l}\right]_{\beta_1\ldots\beta_l}
-   \sum_{c\in M_{l,k}}\prod_{m=1}^l\left[z_{s^k(c_m)}\right]^{\beta_m}_{c_m(\alpha)}$$
-   where we have containers for derivatives of $G$ and $g$.
+   instance, in perturbation methods for DSGE models, we need the function:
+
+                  ⎡ G(y*,u,u′,σ) ⎤
+   z(y*,u,u′,σ) = ⎢  g(y*,u,σ)   ⎥
+                  ⎢      y*      ⎥
+                  ⎣      u       ⎦
+
+   and we need to calculate one step of Faà Di Bruno formula:
+
+                                            ₗ
+   [B_sᵏ]_α₁,…,αₗ = [f_zˡ]_β₁,…,βₗ    ∑     ∏  [z_(s^|cₘ|)]_cₘ(α)^βₘ
+                                   c∈ℳₗ,ₖ ᵐ⁼¹
+
+   where we have containers for derivatives of G and g.
 
    The main purpose of this file is to define abstractions for stack of
-   containers and possibly raw variables, and code |multAndAdd| method
-   calculating (one step of) the Faa Di Bruno formula for folded and
-   unfolded tensors. Note also, that tensors $\left[f_{z^l}\right]$ are
-   sparse.
+   containers and possibly raw variables, and code multAndAdd() method
+   calculating (one step of) the Faà Di Bruno formula for folded and
+   unfolded tensors. Note also, that tensors [f_zˡ] are sparse.
 
    The abstractions are built as follows. At the top, there is an
    interface describing stack of columns. It contains pure virtual
    methods needed for manipulating the container stack. For technical
    reasons it is a template. Both versions (folded, and unfolded) provide
-   all interface necessary for implementation of |multAndAdd|. The second
+   all interface necessary for implementation of multAndAdd(). The second
    way of inheritance is first general implementation of the interface
-   |StackContainer|, and then specific (|ZContainer| for our specific
-   $z$). The only method which is virtual also after |StackContainer| is
-   |getType|, which is implemented in the specialization and determines
+   StackContainer, and then specific (ZContainer for our specific z).
+   The only method which is virtual also after StackContainer is
+   getType(), which is implemented in the specialization and determines
    behaviour of the stack. The complete classes are obtained by
    inheriting from the both branches, as it is drawn below:
 
@@ -53,7 +60,7 @@
    {|UnfoldedStackContainer|}{|ZContainer<UGSTensor>|}{|UnfoldedZContainer|}
    }
 
-   We have also two supporting classes |StackProduct| and |KronProdStack|
+   We have also two supporting classes StackProduct and KronProdStack
    and a number of worker classes used as threads. */
 
 #ifndef STACK_CONTAINER_H
@@ -85,8 +92,8 @@
 
    Method |createPackedColumn| returns a vector of stack derivatives with
    respect to the given symmetry and of the given column, where all zeros
-   from zero types, or unit matrices are deleted. See {\tt
-   kron\_prod2.hweb} for explanation. */
+   from zero types, or unit matrices are deleted. See kron_prod.hh for an
+   explanation. */
 
 template <class _Ttype>
 class StackContainerInterface

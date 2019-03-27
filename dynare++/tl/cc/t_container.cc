@@ -55,7 +55,7 @@ FGSContainer::FGSContainer(const UGSContainer &c)
 }
 
 // |FGSContainer::multAndAdd| folded code
-/* Here we perform one step of the Faa Di Bruno operation. We call the
+/* Here we perform one step of the Faà Di Bruno operation. We call the
    |multAndAdd| for unfolded tensor. */
 void
 FGSContainer::multAndAdd(const FGSTensor &t, FGSTensor &out) const

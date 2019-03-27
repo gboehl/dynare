@@ -5,7 +5,7 @@
 #include <cmath>
 
 /* Here we construct the vector of new sizes of containers (before
-   |nc|) and copy all remaining sizes behind |nc|. */
+   nc) and copy all remaining sizes behind nc. */
 
 SizeRefinement::SizeRefinement(const IntSequence &s, int nc, int max)
 {

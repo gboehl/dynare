@@ -78,8 +78,8 @@ SymSchurDecomp::getFactor(GeneralMatrix &f) const
     }
 }
 
-// LAPACK says that eigenvalues are ordered in ascending order, but we
-// do not rely her on it
+/* LAPACK says that eigenvalues are ordered in ascending order, but we
+   do not rely on it */
 bool
 SymSchurDecomp::isPositiveSemidefinite() const
 {

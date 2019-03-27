@@ -282,7 +282,7 @@ public:
     place(ConstGeneralMatrix(m), i, j);
   }
 
-  /* this = a*b */
+  // this = a·b
   void mult(const ConstGeneralMatrix &a, const ConstGeneralMatrix &b);
   void
   mult(const GeneralMatrix &a, const GeneralMatrix &b)
@@ -290,7 +290,7 @@ public:
     mult(ConstGeneralMatrix(a), ConstGeneralMatrix(b));
   }
 
-  /* this = this + scalar*a*b */
+  // this = this + scalar·a·b
   void multAndAdd(const ConstGeneralMatrix &a, const ConstGeneralMatrix &b,
                   double mult = 1.0);
   void
@@ -300,7 +300,7 @@ public:
     multAndAdd(ConstGeneralMatrix(a), ConstGeneralMatrix(b), mult);
   }
 
-  /* this = this + scalar*a*b' */
+  // this = this + scalar·a·bᵀ
   void multAndAdd(const ConstGeneralMatrix &a, const ConstGeneralMatrix &b,
                   const std::string &dum, double mult = 1.0);
   void
@@ -310,7 +310,7 @@ public:
     multAndAdd(ConstGeneralMatrix(a), ConstGeneralMatrix(b), dum, mult);
   }
 
-  /* this = this + scalar*a'*b */
+  // this = this + scalar·aᵀ·b
   void multAndAdd(const ConstGeneralMatrix &a, const std::string &dum, const ConstGeneralMatrix &b,
                   double mult = 1.0);
   void
@@ -320,7 +320,7 @@ public:
     multAndAdd(ConstGeneralMatrix(a), dum, ConstGeneralMatrix(b), mult);
   }
 
-  /* this = this + scalar*a'*b' */
+  // this = this + scalar·aᵀ·bᵀ
   void multAndAdd(const ConstGeneralMatrix &a, const std::string &dum1,
                   const ConstGeneralMatrix &b, const std::string &dum2, double mult = 1.0);
   void
@@ -330,7 +330,7 @@ public:
     multAndAdd(ConstGeneralMatrix(a), dum1, ConstGeneralMatrix(b), dum2, mult);
   }
 
-  /* this = this + scalar*a*a' */
+  // this = this + scalar·a·aᵀ
   void addOuter(const ConstVector &a, double mult = 1.0);
   void
   addOuter(const Vector &a, double mult = 1.0)
@@ -338,7 +338,7 @@ public:
     addOuter(ConstVector(a), mult);
   }
 
-  /* this = this * m */
+  // this = this·m
   void multRight(const ConstGeneralMatrix &m);
   void
   multRight(const GeneralMatrix &m)
@@ -346,7 +346,7 @@ public:
     multRight(ConstGeneralMatrix(m));
   }
 
-  /* this = m * this */
+  // this = m·this
   void multLeft(const ConstGeneralMatrix &m);
   void
   multLeft(const GeneralMatrix &m)
@@ -354,7 +354,7 @@ public:
     multLeft(ConstGeneralMatrix(m));
   }
 
-  /* this = this * m' */
+  // this = this·mᵀ
   void multRightTrans(const ConstGeneralMatrix &m);
   void
   multRightTrans(const GeneralMatrix &m)
@@ -362,7 +362,7 @@ public:
     multRightTrans(ConstGeneralMatrix(m));
   }
 
-  /* this = m' * this */
+  // this = mᵀ·this
   void multLeftTrans(const ConstGeneralMatrix &m);
   void
   multLeftTrans(const GeneralMatrix &m)
@@ -370,64 +370,64 @@ public:
     multLeftTrans(ConstGeneralMatrix(m));
   }
 
-  /* x = scalar(a)*x + scalar(b)*this*d */
+  // x = scalar(a)·x + scalar(b)·this·d
   void
   multVec(double a, Vector &x, double b, const ConstVector &d) const
   {
     ConstGeneralMatrix(*this).multVec(a, x, b, d);
   }
 
-  /* x = scalar(a)*x + scalar(b)*this'*d */
+  // x = scalar(a)·x + scalar(b)·thisᵀ·d
   void
   multVecTrans(double a, Vector &x, double b, const ConstVector &d) const
   {
     ConstGeneralMatrix(*this).multVecTrans(a, x, b, d);
   }
 
-  /* x = x + this*d */
+  // x = x + this·d
   void
   multaVec(Vector &x, const ConstVector &d) const
   {
     ConstGeneralMatrix(*this).multaVec(x, d);
   }
 
-  /* x = x + this'*d */
+  // x = x + thisᵀ·d */
   void
   multaVecTrans(Vector &x, const ConstVector &d) const
   {
     ConstGeneralMatrix(*this).multaVecTrans(x, d);
   }
 
-  /* x = x - this*d */
+  // x = x - this·d
   void
   multsVec(Vector &x, const ConstVector &d) const
   {
     ConstGeneralMatrix(*this).multsVec(x, d);
   }
 
-  /* x = x - this'*d */
+  // x = x - thisᵀ·d
   void
   multsVecTrans(Vector &x, const ConstVector &d) const
   {
     ConstGeneralMatrix(*this).multsVecTrans(x, d);
   }
 
-  /* this = zero */
+  // this = zero
   void zeros();
 
-  /** this = unit (on main diagonal) */
+  // this = unit (on main diagonal)
   void unit();
 
-  /* this = NaN */
+  // this = NaN
   void nans();
 
-  /* this = Inf */
+  // this = ∞
   void infs();
 
-  /* this = scalar*this */
+  // this = scalar·this
   void mult(double a);
 
-  /* this = this + scalar*m */
+  // this = this + scalar·m
   void add(double a, const ConstGeneralMatrix &m);
   void
   add(double a, const GeneralMatrix &m)
@@ -435,7 +435,7 @@ public:
     add(a, ConstGeneralMatrix(m));
   }
 
-  /* this = this + scalar*m' */
+  // this = this + scalar·mᵀ
   void add(double a, const ConstGeneralMatrix &m, const std::string &dum);
   void
   add(double a, const GeneralMatrix &m, const std::string &dum)
@@ -490,7 +490,7 @@ private:
     gemm_partial_right(trans, ConstGeneralMatrix(m), alpha, beta);
   }
 
-  /* this = op(m) *this (without whole copy of this) */
+  // this = op(m)·this (without whole copy of ‘this’)
   void gemm_partial_left(const std::string &trans, const ConstGeneralMatrix &m,
                          double alpha, double beta);
   void
@@ -504,7 +504,7 @@ private:
   static constexpr int md_length = 23;
 };
 
-// Computes a*b
+// Computes a·b
 inline GeneralMatrix
 operator*(const ConstGeneralMatrix &a, const ConstGeneralMatrix &b)
 {
@@ -513,7 +513,7 @@ operator*(const ConstGeneralMatrix &a, const ConstGeneralMatrix &b)
   return m;
 }
 
-// Computes a*b'
+// Computes a·bᵀ
 template<class T>
 GeneralMatrix
 operator*(const ConstGeneralMatrix &a, const TransposedMatrix<T> &b)
@@ -523,7 +523,7 @@ operator*(const ConstGeneralMatrix &a, const TransposedMatrix<T> &b)
   return m;
 }
 
-// Computes a'*b
+// Computes aᵀ·b
 template<class T>
 GeneralMatrix
 operator*(const TransposedMatrix<T> &a, const ConstGeneralMatrix &b)
@@ -533,7 +533,7 @@ operator*(const TransposedMatrix<T> &a, const ConstGeneralMatrix &b)
   return m;
 }
 
-// Computes a'*b'
+// Computes aᵀ·bᵀ
 template<class T1, class T2>
 GeneralMatrix
 operator*(const TransposedMatrix<T1> &a, const TransposedMatrix<T2> &b)
@@ -546,16 +546,15 @@ operator*(const TransposedMatrix<T1> &a, const TransposedMatrix<T2> &b)
 class SVDDecomp
 {
 protected:
-  /** Minimum of number of rows and columns of the decomposed
-   * matrix. */
+  // Minimum of number of rows and columns of the decomposed matrix
   const int minmn;
-  /** Singular values. */
+  // Singular values
   Vector sigma;
-  /** Orthogonal matrix U. */
+  // Orthogonal matrix U
   GeneralMatrix U;
-  /** Orthogonal matrix V^T. */
+  // Orthogonal matrix Vᵀ
   GeneralMatrix VT;
-  /** Convered flag. */
+  // Convered flag
   bool conv;
 public:
   SVDDecomp(const GeneralMatrix &A)

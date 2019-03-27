@@ -28,7 +28,7 @@ FoldedStackContainer::multAndAdd(const FSSparseTensor &t,
 }
 
 // |FoldedStackContainer::multAndAdd| dense code
-/* Here we perform the Faa Di Bruno step for a given dimension |dim|, and for
+/* Here we perform the Faà Di Bruno step for a given dimension |dim|, and for
    the dense fully symmetric tensor which is scattered in the container
    of general symmetric tensors. The implementation is pretty the same as
    |@<|UnfoldedStackContainer::multAndAdd| dense code@>|. */

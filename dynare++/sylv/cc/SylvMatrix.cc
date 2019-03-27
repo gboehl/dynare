@@ -42,9 +42,9 @@ SylvMatrix::multLeft(int zero_cols, const GeneralMatrix &a, const GeneralMatrix 
       || rows != b.numRows() || cols != b.numCols())
     throw SYLV_MES_EXCEPTION("Wrong matrix dimensions for multLeft.");
 
-  // here we cannot call SylvMatrix::gemm since it would require
-  // another copy of (usually big) b (we are not able to do inplace
-  // submatrix of const GeneralMatrix)
+  /* Here we cannot call SylvMatrix::gemm() since it would require
+     another copy of (usually big) b (we are not able to do inplace
+     submatrix of const GeneralMatrix) */
   if (a.getLD() > 0 && ld > 0)
     {
       blas_int mm = a.numRows();

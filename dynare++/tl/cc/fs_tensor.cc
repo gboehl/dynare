@@ -8,13 +8,13 @@
 #include "pascal_triangle.hh"
 
 /* This constructs a fully symmetric tensor as given by the contraction:
-   $$\left[g_{y^n}\right]_{\alpha_1\ldots\alpha_n}=
-   \left[t_{y^{n+1}}\right]_{\alpha_1\ldots\alpha_n\beta}[x]^\beta$$
 
-   We go through all columns of output tensor $[g]$ and for each column
+   [g_yⁿ]_α₁…αₙ = [t_yⁿ⁺¹]_α₁…αₙβ [x]^β
+
+   We go through all columns of output tensor [g] and for each column
    we cycle through all variables, insert a variable to the column
-   coordinates obtaining a column of tensor $[t]$. the column is multiplied
-   by an appropriate item of |x| and added to the column of $[g]$ tensor. */
+   coordinates obtaining a column of tensor [t]. The column is multiplied
+   by an appropriate item of x and added to the column of [g] tensor. */
 
 FFSTensor::FFSTensor(const FFSTensor &t, const ConstVector &x)
   : FTensor(indor::along_col, IntSequence(t.dimen()-1, t.nvar()),
@@ -38,8 +38,10 @@ FFSTensor::FFSTensor(const FFSTensor &t, const ConstVector &x)
 }
 
 /* This returns number of indices for folded tensor with full
-   symmetry. Let $n$ be a number of variables |nvar| and $d$ the
-   dimension |dim|. Then the number of indices is $\pmatrix{n+d-1\cr d}$. */
+   symmetry. Let n be a number of variables and d the
+                                                ⎛n+d-1⎞
+   dimension dim. Then the number of indices is ⎝  d  ⎠.
+ */
 
 int
 FFSTensor::calcMaxOffset(int nvar, int d)
@@ -91,7 +93,7 @@ FFSTensor::unfold() const
 }
 
 /* Incrementing is easy. We have to increment by calling static method
-   |UTensor::increment| first. In this way, we have coordinates of
+   UTensor::increment() first. In this way, we have coordinates of
    unfolded tensor. Then we have to skip to the closest folded index
    which corresponds to monotonizeing the integer sequence. */
 
@@ -105,7 +107,7 @@ FFSTensor::increment(IntSequence &v) const
   v.monotone();
 }
 
-/* Decrement calls static |FTensor::decrement|. */
+/* Decrement calls static FTensor::decrement(). */
 
 void
 FFSTensor::decrement(IntSequence &v) const
@@ -143,7 +145,7 @@ FFSTensor::addSubTensor(const FGSTensor &t)
   TL_RAISE_IF(nvar() != t.getDims().getNVS().sum(),
               "Wrong nvs for FFSTensor::addSubTensor");
 
-  // set shift for |addSubTensor|
+  // set shift for addSubTensor()
   /* Code shared with UFSTensor::addSubTensor() */
   IntSequence shift_pre(t.getSym().num(), 0);
   for (int i = 1; i < t.getSym().num(); i++)
@@ -160,8 +162,8 @@ FFSTensor::addSubTensor(const FGSTensor &t)
     }
 }
 
-// |UFSTensor| contraction constructor
-/* This is a bit more straightforward than |@<|FFSTensor| contraction constructor@>|.
+// UFSTensor contraction constructor
+/* This is a bit more straightforward than FFSTensor contraction constructor.
    We do not add column by column but we do it by submatrices due to
    regularity of the unfolded tensor. */
 
@@ -186,7 +188,7 @@ UFSTensor::UFSTensor(const UFSTensor &t, const ConstVector &x)
 }
 
 /* Here we convert folded full symmetry tensor to unfolded. We copy all
-   columns of folded tensor, and then call |unfoldData()|. */
+   columns of folded tensor, and then call unfoldData(). */
 
 UFSTensor::UFSTensor(const FFSTensor &ft)
   : UTensor(indor::along_col, IntSequence(ft.dimen(), ft.nvar()),
@@ -207,8 +209,8 @@ UFSTensor::fold() const
   return std::make_unique<FFSTensor>(*this);
 }
 
-// |UFSTensor| increment and decrement
-/* Here we just call |UTensor| respective static methods. */
+// UFSTensor increment and decrement
+/* Here we just call UTensor respective static methods. */
 void
 UFSTensor::increment(IntSequence &v) const
 {
@@ -236,7 +238,7 @@ UFSTensor::getOffset(const IntSequence &v) const
   return UTensor::getOffset(v, nv);
 }
 
-/* This is very similar to |@<|FFSTensor::addSubTensor| code@>|. The
+/* This is very similar to FFSTensor::addSubTensor(). The
    only difference is the addition. We go through all columns in the full
    symmetry tensor and cancel the shift. If the coordinates after the
    cancellation are positive, we find the column in the general symmetry
@@ -250,7 +252,7 @@ UFSTensor::addSubTensor(const UGSTensor &t)
   TL_RAISE_IF(nvar() != t.getDims().getNVS().sum(),
               "Wrong nvs for UFSTensor::addSubTensor");
 
-  // set shift for |addSubTensor|
+  // set shift for addSubTensor()
   /* Code shared with FFSTensor::addSubTensor() */
   IntSequence shift_pre(t.getSym().num(), 0);
   for (int i = 1; i < t.getSym().num(); i++)

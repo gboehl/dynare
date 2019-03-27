@@ -39,7 +39,7 @@ OrdSequence::operator==(const OrdSequence &s) const
   return (i == length());
 }
 
-/* The first |add| adds a given integer to the class, the second
+/* The first add() adds a given integer to the class, the second
    iterates through a given sequence and adds everything found in the
    given class. */
 
@@ -65,7 +65,7 @@ OrdSequence::add(const OrdSequence &s)
     }
 }
 
-/* Answers |true| if a given number is in the class. */
+/* Answers true if a given number is in the class. */
 bool
 OrdSequence::has(int i) const
 {
@@ -183,7 +183,7 @@ Equivalence::findHaving(int i)
   return si;
 }
 
-/* Find $j$-th class for a given $j$. */
+/* Find j-th class for a given j. */
 
 Equivalence::const_seqit
 Equivalence::find(int j) const
@@ -228,7 +228,7 @@ Equivalence::insert(const OrdSequence &s)
 /* Trace the equivalence into the integer sequence. The classes are in
    some order (described earlier), and items within classes are ordered,
    so this implies, that the data can be linearized. This method
-   ``prints'' them to the sequence. We allow for tracing only a given
+   “prints” them to the sequence. We allow for tracing only a given
    number of classes from the beginning. */
 
 void
@@ -275,18 +275,16 @@ Equivalence::print(const std::string &prefix) const
     }
 }
 
-/* Here we construct a set of all equivalences over $n$-element
-   set. The construction proceeds as follows. We maintain a list of added
-   equivalences. At each iteration we pop front of the list, try to add
-   all parents of the popped equivalence. This action adds new
-   equivalences to the object and also to the added list. We finish the
-   iterations when the added list is empty.
+/* Here we construct a set of all equivalences over n-element set. The
+   construction proceeds as follows. We maintain a list of added equivalences.
+   At each iteration we pop front of the list, try to add all parents of the
+   popped equivalence. This action adds new equivalences to the object and also
+   to the added list. We finish the iterations when the added list is empty.
 
-   In the beginning we start with
-   $\{\{0\},\{1\},\ldots,\{n-1\}\}$. Adding of parents is an action which
-   for a given equivalence tries to glue all possible couples and checks
-   whether a new equivalence is already in the equivalence set. This is
-   not effective, but we will do the construction only ones.
+   In the beginning we start with { {0}, {1}, …, {n-1} }. Adding of parents is
+   an action which for a given equivalence tries to glue all possible couples
+   and checks whether a new equivalence is already in the equivalence set. This
+   is not effective, but we will do the construction only ones.
 
    In this way we breath-first search a lattice of all equivalences. Note
    that the lattice is modular, that is why the result of a construction
@@ -311,12 +309,12 @@ EquivalenceSet::EquivalenceSet(int num)
     equis.emplace_back(n, "");
 }
 
-/* This method is used in |addParents| and returns |true| if the object
+/* This method is used in addParents() and returns true if the object
    already has that equivalence. We trace list of equivalences in reverse
    order since equivalences are ordered in the list from the most
    primitive (nothing equivalent) to maximal (all is equivalent). Since
-   we will have much more results of |has| method as |true|, and
-   |operator==| between equivalences is quick if number of classes
+   we will have much more results of has() method as true, and
+   operator==() between equivalences is quick if number of classes
    differ, and in time we will compare with equivalences with less
    classes, then it is more efficient to trace the equivalences from less
    classes to more classes. hence the reverse order. */
@@ -334,7 +332,7 @@ EquivalenceSet::has(const Equivalence &e) const
 
 /* Responsibility of this methods is to try to glue all possible
    couples within a given equivalence and add those which are not in the
-   list yet. These are added also to the |added| list.
+   list yet. These are added also to the ‘added’ list.
 
    If number of classes is 2 or 1, we exit, because there is nothing to
    be added. */
@@ -373,14 +371,14 @@ EquivalenceSet::print(const std::string &prefix) const
     }
 }
 
-/* Construct the bundle. |nmax| is a maximum size of underlying set. */
+/* Construct the bundle. nmax is a maximum size of underlying set. */
 EquivalenceBundle::EquivalenceBundle(int nmax)
 {
   nmax = std::max(nmax, 1);
   generateUpTo(nmax);
 }
 
-/* Remember, that the first item is |EquivalenceSet(1)|. */
+/* Remember, that the first item is EquivalenceSet(1). */
 const EquivalenceSet &
 EquivalenceBundle::get(int n) const
 {
@@ -389,8 +387,8 @@ EquivalenceBundle::get(int n) const
   return bundle[n-1];
 }
 
-/* Get |curmax| which is a maximum size in the bundle, and generate for
-   all sizes from |curmax+1| up to |nmax|. */
+/* Get ‘curmax’ which is a maximum size in the bundle, and generate for
+   all sizes from curmax+1 up to nmax. */
 
 void
 EquivalenceBundle::generateUpTo(int nmax)

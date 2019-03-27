@@ -47,7 +47,7 @@ public:
 
 class SchurDecompZero : public SchurDecomp
 {
-  GeneralMatrix ru; /* right upper matrix */
+  GeneralMatrix ru; // right upper matrix
 public:
   SchurDecompZero(const GeneralMatrix &m);
   ConstGeneralMatrix

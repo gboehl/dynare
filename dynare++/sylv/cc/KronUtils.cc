@@ -10,13 +10,11 @@ KronUtils::multAtLevel(int level, const QuasiTriangular &t,
                        KronVector &x)
 {
   if (0 < level && level < x.getDepth())
-    {
-      for (int i = 0; i < x.getM(); i++)
-        {
-          KronVector xi(x, i);
-          multAtLevel(level, t, xi);
-        }
-    }
+    for (int i = 0; i < x.getM(); i++)
+      {
+        KronVector xi(x, i);
+        multAtLevel(level, t, xi);
+      }
   else if (0 == level && 0 < x.getDepth())
     {
       GeneralMatrix tmp(x, x.getN(), power(x.getM(), x.getDepth()));
@@ -61,8 +59,6 @@ KronUtils::multKron(const QuasiTriangular &f, const QuasiTriangular &k,
 {
   multAtLevel(0, k, x);
   if (x.getDepth() > 0)
-    {
-      for (int level = 1; level <= x.getDepth(); level++)
-        multAtLevelTrans(level, f, x);
-    }
+    for (int level = 1; level <= x.getDepth(); level++)
+      multAtLevelTrans(level, f, x);
 }
