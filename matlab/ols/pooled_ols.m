@@ -1,5 +1,5 @@
-function varargout = pooled_ols(ds, param_common, param_regex, overlapping_dates, eqtags, model_name, param_names)
-% function varargout = pooled_ols(ds, param_common, param_regex, overlapping_dates, eqtags, model_name, param_names)
+function varargout = pooled_ols(ds, param_common, param_regex, overlapping_dates, eqtags, model_name, param_names, ds_range)
+% function varargout = pooled_ols(ds, param_common, param_regex, overlapping_dates, eqtags, model_name, param_names, ds_range)
 % Run Pooled OLS
 % Apply parameter values found to corresponding parameter values in the
 % other blocks of the model
@@ -18,6 +18,7 @@ function varargout = pooled_ols(ds, param_common, param_regex, overlapping_dates
 %   param_names         [cellstr]  list of parameters to estimate (if
 %                                  empty, estimate all) (may contain regex
 %                                  to match param_regex)
+%   ds_range             [dates]   range of dates to use in estimation
 %
 % OUTPUTS
 %   return arguments common to pooled_fgls only if called from pooled_fgls
@@ -46,7 +47,7 @@ function varargout = pooled_ols(ds, param_common, param_regex, overlapping_dates
 global M_ oo_
 
 %% Check input arguments
-if nargin < 1 || nargin > 7
+if nargin < 1 || nargin > 8
     error('Incorrect number of arguments')
 end
 
@@ -54,8 +55,24 @@ if isempty(ds) || ~isdseries(ds)
     error('The first argument must be a dseries');
 end
 
-if nargin < 5
-    eqtags = {};
+if nargin < 8
+    ds_range = ds.dates;
+else
+    if isempty(ds_range)
+        ds_range = ds.dates;
+    else
+        if ds_range(1) < ds.firstdate || ds_range(end) > lastdate(ds)
+            error('There is a problem with the 8th argument: the date range does not correspond to that of the dseries')
+        end
+    end
+end
+
+if nargin < 7
+    param_names = {};
+else
+    if ~isempty(param_names) && ~iscellstr(param_names)
+        error('The 7th argument, if provided, must be a cellstr')
+    end
 end
 
 st = dbstack(1);
@@ -77,9 +94,13 @@ else
     end
 end
 
+if nargin < 5
+    eqtags = {};
+end
+
 if isempty(param_common) && isempty(param_regex)
     disp('Performing OLS instead of Pooled OLS...')
-    dyn_ols(ds, {}, eqtags);
+    dyn_ols(ds, {}, eqtags, model_name, param_names, ds_range);
     return
 end
 
@@ -92,13 +113,7 @@ else
     assert(islogical(overlapping_dates) && length(overlapping_dates) == 1, 'The fourth argument must be a bool');
 end
 
-if nargin < 7
-    param_names = {};
-else
-    if ~isempty(param_names) && ~iscellstr(param_names)
-        error('The 7th argument, if provided, must be a cellstr')
-    end
-end
+
 
 %% Get Equation(s)
 ast = get_ast(eqtags);
@@ -115,7 +130,7 @@ for i = 1:length(param_names)
 end
 
 %% Find parameters and variable names in every equation & Setup estimation matrices
-[Y, lhssub, X, ~, ~, residnames] = common_parsing(ds, ast, overlapping_dates, param_names);
+[Y, lhssub, X, ~, ~, residnames] = common_parsing(ds(ds_range), ast, overlapping_dates, param_names);
 clear ast
 nobs = zeros(length(Y), 1);
 nobs(1) = Y{1}.nobs;

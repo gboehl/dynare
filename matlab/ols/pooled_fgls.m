@@ -1,5 +1,5 @@
-function pooled_fgls(ds, param_common, param_regex, eqtags, model_name, param_names)
-% function pooled_fgls(ds, param_common, param_regex, eqtags, model_name, param_names)
+function pooled_fgls(ds, param_common, param_regex, eqtags, model_name, param_names, ds_range)
+% function pooled_fgls(ds, param_common, param_regex, eqtags, model_name, param_names, ds_range)
 % Run Pooled FGLS
 %
 % INPUTS
@@ -15,6 +15,8 @@ function pooled_fgls(ds, param_common, param_regex, eqtags, model_name, param_na
 %   param_names   [cellstr]      list of parameters to estimate (if
 %                                empty, estimate all) (may contain regex
 %                                to match param_regex)
+%   ds_range      [dates]   range of dates to use in estimation
+%
 % OUTPUTS
 %   none
 %
@@ -41,8 +43,16 @@ function pooled_fgls(ds, param_common, param_regex, eqtags, model_name, param_na
 global M_ oo_
 
 %% Check input arguments
-if nargin < 1 || nargin > 6
+if nargin < 1 || nargin > 7
     error('Incorrect number of arguments')
+end
+
+if isempty(ds) || ~isdseries(ds)
+    error('The first argument must be a dseries');
+end
+
+if nargin < 7
+    ds_range = ds.dates;
 end
 
 if nargin < 6
@@ -61,7 +71,7 @@ maxit = 100;
 tol = 1e-6;
 
 %% Common work between pooled_ols and pooled_fgls
-[Y, X, pbeta, residnames, country_name, model_name] = pooled_ols(ds, param_common, param_regex, true, eqtags, model_name, param_names);
+[Y, X, pbeta, residnames, country_name, model_name] = pooled_ols(ds, param_common, param_regex, true, eqtags, model_name, param_names, ds_range);
 
 %% Estimation
 neqs = length(residnames);

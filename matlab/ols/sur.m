@@ -1,5 +1,5 @@
-function varargout = sur(ds, param_names, eqtags, model_name, noniterative)
-%function varargout = sur(ds, param_names, eqtags, model_name, noniterative)
+function varargout = sur(ds, param_names, eqtags, model_name, noniterative, ds_range)
+%function varargout = sur(ds, param_names, eqtags, model_name, noniterative, ds_range)
 % Seemingly Unrelated Regressions
 %
 % INPUTS
@@ -10,6 +10,7 @@ function varargout = sur(ds, param_names, eqtags, model_name, noniterative)
 %   model_name        [string]     name of model to be displayed with
 %                                  report
 %   noniterative      [bool]       if true use noniterative estimation method
+%   ds_range          [dates]      range of dates to use in estimation
 %
 % OUTPUTS
 %   none
@@ -37,8 +38,24 @@ function varargout = sur(ds, param_names, eqtags, model_name, noniterative)
 global M_ oo_ options_
 
 %% Check input argument
-if nargin < 1 || nargin > 5
-    error('function takes between 1 and 5 arguments');
+if nargin < 1 || nargin > 6
+    error('function takes between 1 and 6 arguments');
+end
+
+if isempty(ds) || ~isdseries(ds)
+    error('The first argument must be a dseries');
+end
+
+if nargin < 6
+    ds_range = ds.dates;
+else
+    if isempty(ds_range)
+        ds_range = ds.dates;
+    else
+        if ds_range(1) < ds.firstdate || ds_range(end) > lastdate(ds)
+            error('There is a problem with the 6th argument: the date range does not correspond to that of the dseries')
+        end
+    end
 end
 
 if nargin < 5
@@ -81,7 +98,7 @@ ast = handle_constant_eqs(get_ast(eqtags));
 neqs = length(ast);
 
 %% Find parameters and variable names in equations and setup estimation matrices
-[Y, lhssub, X, ~, ~, residnames] = common_parsing(ds, ast, true, param_names);
+[Y, lhssub, X, ~, ~, residnames] = common_parsing(ds(ds_range), ast, true, param_names);
 clear ast
 nobs = Y{1}.nobs;
 [Y, lhssub, X, constrained] = put_in_sur_form(Y, lhssub, X);
