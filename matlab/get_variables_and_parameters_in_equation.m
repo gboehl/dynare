@@ -52,6 +52,7 @@ lhs_ = strsplit(lhs, {'+','-','*','/','^', ...
 
 % Filter out the numbers and punctuation.
 rhs_(cellfun(@(x) all(isstrprop(x, 'digit')+isstrprop(x, 'punct')), rhs_)) = [];
+lhs_(cellfun(@(x) all(isstrprop(x, 'digit')+isstrprop(x, 'punct')), lhs_)) = [];
 
 % Filter out empty elements.
 rhs_(cellfun(@(x) all(isempty(x)), rhs_)) = [];
@@ -59,27 +60,15 @@ lhs_(cellfun(@(x) all(isempty(x)), lhs_)) = [];
 
 % Get list of parameters.
 pnames = DynareModel.param_names;
-pnames = intersect(rhs_, pnames);
+pnames = intersect([rhs_, lhs_], pnames);
 
 % Get list of endogenous variables.
 enames = DynareModel.endo_names;
-enames = intersect(rhs_, enames);
+enames = intersect([rhs_, lhs_], enames);
 
 % Get list of exogenous variables
 xnames = DynareModel.exo_names;
-xnames = intersect(rhs_, xnames);
-
-% Decide if we are dealing with a dynamic model. If so, the lhs variable
-% already belongs to enames, we remove this variable from enames. 
-id = find(strcmp(lhs, enames));
-if ~isempty(id)
-    enames(id) = [];
-end
-
-% Add lhs variable in first position of enames.
-if ~isempty(lhs_)
-    enames = [lhs_; enames];
-end
+xnames = intersect([rhs_, lhs_], xnames);
 
 % Returns vector of indices for parameters endogenous and exogenous
 % variables if required.
