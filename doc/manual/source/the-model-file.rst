@@ -957,7 +957,8 @@ The model is declared inside a ``model`` block:
         Don’t create the static model file. This can be useful for
         models which don’t have a steady state.
 
-    .. option:: differentiate_forward_vars differentiate_forward_vars = ( VARIABLE_NAME [VARIABLE_NAME ...] )
+    .. option:: differentiate_forward_vars
+                differentiate_forward_vars = ( VARIABLE_NAME [VARIABLE_NAME ...] )
 
         Tells Dynare to create a new auxiliary variable for each
         endogenous variable that appears with a lead, such that the
