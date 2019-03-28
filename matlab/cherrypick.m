@@ -110,9 +110,14 @@ for i=1:length(eqtags)
     % Print equation for unrolled PAC/VAR-expectation and update
     % list of parameters and endogenous variables (if any).
     if ~isempty(rhs)
+        % Note that the call to get_variables_and_parameters_in_equation()
+        % will not return the lhs variable in expectation_enames since
+        % the name is created on the fly and is not a  member of M_.endo_names.
         [expectation_pnames, expectation_enames] = get_variables_and_parameters_in_equation(lhs, rhs, M_);
         pnames = union(pnames, expectation_pnames);
         enames = union(enames, expectation_enames);
+        enames = union(enames, lhs);
+        fprintf(fid, '[name=''eq:%s'']\n', lhs);
         fprintf(fid, '%s = %s;\n\n', lhs, rhs);
     end
     % Update pnames, enames and xnames if PAC with growth neutrality correction.
