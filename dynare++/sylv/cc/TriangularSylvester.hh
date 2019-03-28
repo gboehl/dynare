@@ -32,10 +32,10 @@ public:
               double &eig_min) const;
   void solviip(double alpha, double betas,
                KronVector &d, double &eig_min) const;
-  /* evaluates:
-     |x1|   |d1| |alpha -beta1|                       |d1|
-     |  | = |  |+|            |\otimes F'...\otimes K |  |
-     |x2|   |d2| |beta2  alpha|                       |d2|
+  /* Computes:
+     ⎛x₁⎞ ⎛d₁⎞ ⎛ α −β₁⎞           ⎛d₁⎞
+     ⎢  ⎥=⎢  ⎥+⎢      ⎥⊗Fᵀ⊗Fᵀ⊗…⊗K·⎢  ⎥
+     ⎝x₂⎠ ⎝d₂⎠ ⎝−β₂ α ⎠           ⎝d₂⎠
   */
   void linEval(double alpha, double beta1, double beta2,
                KronVector &x1, KronVector &x2,
@@ -49,14 +49,10 @@ public:
             ConstKronVector(d1), ConstKronVector(d2));
   }
 
-  /* evaluates:
-     |x1|   |d1|          |gamma -delta1|                       |d1|
-     |  | = |  | + 2alpha*|             |\otimes F'...\otimes K |  | +
-     |x2|   |d2|          |delta2  gamma|                       |d2|
-
-     |gamma -delta1|^2                       |d1|
-     + (alpha^2+betas)*|             |\otimes F'2...\otimes K2 |  |
-     |delta2  gamma|                         |d2|
+  /* Computes:
+     ⎛x₁⎞ ⎛d₁⎞   ⎛γ −δ₁⎞           ⎛d₁⎞       ⎛γ −δ₁⎞²              ⎛d₁⎞
+     ⎢  ⎥=⎢  ⎥+2α⎢     ⎥⊗Fᵀ⊗Fᵀ⊗…⊗K·⎢  ⎥+(α²+β)⎢     ⎥ ⊗Fᵀ²⊗Fᵀ²⊗…⊗K²·⎢  ⎥
+     ⎝x₂⎠ ⎝d₂⎠   ⎝δ₂ γ ⎠           ⎝d₂⎠       ⎝δ₂ γ ⎠               ⎝d₂⎠
   */
   void quaEval(double alpha, double betas,
                double gamma, double delta1, double delta2,
@@ -72,27 +68,28 @@ public:
             ConstKronVector(d1), ConstKronVector(d2));
   }
 private:
-  /* returns square of size of minimal eigenvalue of the system solved,
+  /* Returns square of size of minimal eigenvalue of the system solved,
      now obsolete */
   double getEigSep(int depth) const;
-  /* recursivelly calculates kronecker product of complex vectors (used in getEigSep) */
+  // Recursively calculates kronecker product of complex vectors (used in getEigSep)
   static void multEigVector(KronVector &eig, const Vector &feig, const Vector &keig);
-  /* auxiliary typedefs */
+
   using const_diag_iter = QuasiTriangular::const_diag_iter;
   using const_row_iter = QuasiTriangular::const_row_iter;
-  /* called from solvi */
+
+  // Called from solvi
   void solviRealAndEliminate(double r, const_diag_iter di,
                              KronVector &d, double &eig_min) const;
   void solviComplexAndEliminate(double r, const_diag_iter di,
                                 KronVector &d, double &eig_min) const;
-  /* called from solviip */
+  // Called from solviip
   void solviipRealAndEliminate(double alpha, double betas,
                                const_diag_iter di, const_diag_iter dsi,
                                KronVector &d, double &eig_min) const;
   void solviipComplexAndEliminate(double alpha, double betas,
                                   const_diag_iter di, const_diag_iter dsi,
                                   KronVector &d, double &eig_min) const;
-  /* eliminations */
+  // Eliminations
   void solviEliminateReal(const_diag_iter di, KronVector &d,
                           const KronVector &y, double divisor) const;
   void solviEliminateComplex(const_diag_iter di, KronVector &d,
@@ -107,14 +104,14 @@ private:
                                const KronVector &y1, const KronVector &y11,
                                const KronVector &y2, const KronVector &y22,
                                double divisor) const;
-  /* Lemma 2 */
+  // Lemma 2
   void solviipComplex(double alpha, double betas, double gamma,
                       double delta1, double delta2,
                       KronVector &d1, KronVector &d2,
                       double &eig_min) const;
-  /* norms for what we consider zero on diagonal of F */
+  // Norms for what we consider zero on diagonal of F
   static constexpr double diag_zero = 1.e-15;
-  static constexpr double diag_zero_sq = 1.e-30; // square of diag_zero
+  static constexpr double diag_zero_sq = diag_zero*diag_zero;
 };
 
 #endif /* TRIANGULAR_SYLVESTER_H */

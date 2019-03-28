@@ -153,30 +153,30 @@ public:
   MethodParamItem method; // method of solution: iter/recurse
   DoubleParamItem convergence_tol; // norm for what we consider converged
   IntParamItem max_num_iter; // max number of iterations
-  DoubleParamItem bs_norm; // Bavely Stewart log10 of norm for diagonalization
+  DoubleParamItem bs_norm; // Bavely Stewart log₁₀ of norm for diagonalization
   BoolParamItem want_check; // true => allocate extra space for checks
   // output parameters
   BoolParamItem converged; // true if converged
   DoubleParamItem iter_last_norm; // norm of the last iteration
   IntParamItem num_iter; // number of iterations
-  DoubleParamItem f_err1; // norm 1 of diagonalization abs. error C-V*F*inv(V)
-  DoubleParamItem f_errI; // norm Inf of diagonalization abs. error C-V*F*inv(V)
-  DoubleParamItem viv_err1; // norm 1 of error I-V*inv(V)
-  DoubleParamItem viv_errI; // norm Inf of error I-V*inv(V)
-  DoubleParamItem ivv_err1; // norm 1 of error I-inv(V)*V
-  DoubleParamItem ivv_errI; // norm Inf of error I-inv(V)*V
+  DoubleParamItem f_err1; // norm 1 of diagonalization abs. error C−V·F·V⁻¹
+  DoubleParamItem f_errI; // norm ∞ of diagonalization abs. error C−V·F·V⁻¹
+  DoubleParamItem viv_err1; // norm 1 of error I−V·V⁻¹
+  DoubleParamItem viv_errI; // norm ∞ of error I−V·V⁻¹
+  DoubleParamItem ivv_err1; // norm 1 of error I−V⁻¹·V
+  DoubleParamItem ivv_errI; // norm ∞ of error I−V⁻¹·V
   IntParamItem f_blocks; // number of diagonal blocks of F
   IntParamItem f_largest; // size of largest diagonal block in F
   IntParamItem f_zeros; // number of off diagonal zeros in F
   IntParamItem f_offdiag; // number of all off diagonal elements in F
   DoubleParamItem rcondA1; // reciprocal cond 1 number of A
-  DoubleParamItem rcondAI; // reciprocal cond Inf number of A
+  DoubleParamItem rcondAI; // reciprocal cond ∞ number of A
   DoubleParamItem eig_min; // minimum eigenvalue of the solved system
-  DoubleParamItem mat_err1; // rel. matrix 1 norm of A*X-B*X*kron(C,..,C)-D
-  DoubleParamItem mat_errI; // rel. matrix Inf norm of A*X-B*X*kron(C,..,C)-D
-  DoubleParamItem mat_errF; // rel. matrix Frob. norm of A*X-B*X*kron(C,..,C)-D
-  DoubleParamItem vec_err1; // rel. vector 1 norm of A*X-B*X*kron(C,..,C)-D
-  DoubleParamItem vec_errI; // rel. vector Inf norm of A*X-B*X*kron(C,..,C)-D
+  DoubleParamItem mat_err1; // rel. matrix 1 norm of A·X−B·X·⊗ⁱC−D
+  DoubleParamItem mat_errI; // rel. matrix ∞ norm of A·X−B·X·⊗ⁱC−D
+  DoubleParamItem mat_errF; // rel. matrix Frob. norm of A·X−B·X·⊗ⁱC−D
+  DoubleParamItem vec_err1; // rel. vector 1 norm of A·X−B·X·⊗ⁱC−D
+  DoubleParamItem vec_errI; // rel. vector ∞ norm of A·X−B·X·⊗ⁱC−D
   DoubleParamItem cpu_time; // time of the job in CPU seconds
 
   SylvParams(bool wc = false)

@@ -40,13 +40,13 @@ public:
   SylvMatrix &operator=(const SylvMatrix &m) = default;
   SylvMatrix &operator=(SylvMatrix &&m) = default;
 
-  /*        ⎡ I 0 ⎤
-     this = ⎣ 0 m ⎦ · this */
+  /*        ⎛I 0⎞
+     this = ⎝0 m⎠·this */
   void multLeftI(const SqSylvMatrix &m);
-  /*        ⎡ I 0  ⎤
-     this = ⎣ 0 m' ⎦ · this */
+  /*        ⎛I  0⎞
+     this = ⎝0 mᵀ⎠·this */
   void multLeftITrans(const SqSylvMatrix &m);
-  // this = [0 a]·b, so that [0 a] is square
+  // this = (0 a)·b, so that (0 a) is square
   void multLeft(int zero_cols, const GeneralMatrix &a, const GeneralMatrix &b);
   // this = this·(m⊗m⊗…⊗m)
   void multRightKron(const SqSylvMatrix &m, int order);

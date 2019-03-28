@@ -5,7 +5,7 @@
 
 #include <vector>
 
-/* Bubble diagonal 1-1, or 2-2 block from position ‘from’ to position
+/* Bubble diagonal 1×1 or 2×2 block from position ‘from’ to position
    ‘to’. If an eigenvalue cannot be swapped with its neighbour, the
    neighbour is bubbled also in front. The method returns a new
    position ‘to’, where the original block pointed by ‘to’ happens to
@@ -37,7 +37,7 @@ SchurDecompEig::bubbleEigen(diag_iter from, diag_iter to)
 
 /* This tries to swap two neighbouring eigenvalues, ‘it’ and ‘--it’,
    and returns ‘itadd’. If the blocks can be swapped, new eigenvalues
-   can emerge due to possible 2-2 block splits. ‘it’ then points to
+   can emerge due to possible 2×2 block splits. ‘it’ then points to
    the last eigenvalue coming from block pointed by ‘it’ at the
    begining, and ‘itadd’ points to the first. On swap failure, ‘it’ is
    not changed, and ‘itadd’ points to previous eignevalue (which must
@@ -66,7 +66,7 @@ SchurDecompEig::tryToSwap(diag_iter &it, diag_iter &itadd)
     {
       // swap successful
       getT().swapDiagLogically(itadd);
-      // check for 2-2 block splits
+      // check for 2×2 block splits
       getT().checkDiagConsistency(it);
       getT().checkDiagConsistency(itadd);
       // and go back by ‘it’ in NEW eigenvalue set

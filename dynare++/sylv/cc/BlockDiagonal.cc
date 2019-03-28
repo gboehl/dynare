@@ -48,8 +48,8 @@ BlockDiagonal::setZerosToRU(diag_iter edge)
 }
 
 /* Updates row_len and col_len so that there are zeroes in upper right part, i.e.
-   ⎡ T1  0 ⎤
-   ⎣  0 T2 ⎦. The first column of T2 is given by diagonal iterator ‘edge’.
+   ⎛T1  0⎞
+   ⎝ 0 T2⎠. The first column of T2 is given by diagonal iterator ‘edge’.
 
    Note the semantics of row_len and col_len. row_len[i] is distance
    of the right-most non-zero element of i-th row from the left, and

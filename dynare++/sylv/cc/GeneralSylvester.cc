@@ -107,7 +107,7 @@ GeneralSylvester::check(const ConstVector &ds)
   if (!solved)
     throw SYLV_MES_EXCEPTION("Cannot run check on system, which is not solved yet.");
 
-  // calculate xcheck = A·X+B·X·⊗ⁱC-D
+  // calculate xcheck = A·X+B·X·⊗ⁱC−D
   SylvMatrix dcheck(d.numRows(), d.numCols());
   dcheck.multLeft(b.numRows()-b.numCols(), b, d);
   dcheck.multRightKron(c, order);

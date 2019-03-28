@@ -68,8 +68,8 @@ SimilarityDecomp::solveX(diag_iter start, diag_iter end,
   return true;
 }
 
-/*                         ⎡ I -X ⎤     ⎡ I X ⎤
-  Multiply Q and invQ with ⎣ 0  I ⎦ and ⎣ 0 I ⎦. This also sets X=-X. */
+/*                         ⎛I −X⎞     ⎛I X⎞
+  Multiply Q and invQ with ⎝0  I⎠ and ⎝0 I⎠ respectively. This also sets X=−X. */
 void
 SimilarityDecomp::updateTransform(diag_iter start, diag_iter end,
                                   GeneralMatrix &X)
@@ -128,21 +128,21 @@ SimilarityDecomp::diagonalize(double norm)
 void
 SimilarityDecomp::check(SylvParams &pars, const GeneralMatrix &m) const
 {
-  // M - Q·B·Q⁻¹
+  // M − Q·B·Q⁻¹
   SqSylvMatrix c(getQ() * getB());
   c.multRight(getInvQ());
   c.add(-1.0, m);
   pars.f_err1 = c.getNorm1();
   pars.f_errI = c.getNormInf();
 
-  // I - Q·Q⁻¹
+  // I − Q·Q⁻¹
   c.setUnit();
   c.mult(-1);
   c.multAndAdd(getQ(), getInvQ());
   pars.viv_err1 = c.getNorm1();
   pars.viv_errI = c.getNormInf();
 
-  // I - Q⁻¹·Q
+  // I − Q⁻¹·Q
   c.setUnit();
   c.mult(-1);
   c.multAndAdd(getInvQ(), getQ());

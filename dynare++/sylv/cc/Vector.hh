@@ -108,13 +108,13 @@ public:
   void nans();
   void infs();
   void rotatePair(double alpha, double beta1, double beta2, int i);
-  // Computes this += r*v
+  // Computes this = this + r·v
   void add(double r, const Vector &v);
-  // Computes this += r*v
+  // Computes this = this + r·v
   void add(double r, const ConstVector &v);
-  // Computes this += z*v (where this and v are intepreted as complex vectors)
+  // Computes this = this + z·v (where this and v are intepreted as complex vectors)
   void addComplex(const std::complex<double> &z, const Vector &v);
-  // Computes this += z*v (where this and v are intepreted as complex vectors)
+  // Computes this = this + z·v (where this and v are intepreted as complex vectors)
   void addComplex(const std::complex<double> &z, const ConstVector &v);
   void mult(double r);
   double getNorm() const;
@@ -124,18 +124,27 @@ public:
   bool isFinite() const;
   void print() const;
 
-  /* multiplies | alpha -beta1|           |b1|   |x1|
-                |             |\otimes I .|  | = |  |
-                | -beta2 alpha|           |b2|   |x2|
+  /* Computes:
+     ⎛x₁⎞ ⎛ α −β₁⎞   ⎛b₁⎞
+     ⎢  ⎥=⎢      ⎥⊗I·⎢  ⎥
+     ⎝x₂⎠ ⎝−β₂ α ⎠   ⎝b₂⎠
   */
   static void mult2(double alpha, double beta1, double beta2,
                     Vector &x1, Vector &x2,
                     const Vector &b1, const Vector &b2);
-  /* same, but adds instead of set */
+  /* Computes:
+     ⎛x₁⎞ ⎛x₁⎞ ⎛ α −β₁⎞   ⎛b₁⎞
+     ⎢  ⎥=⎢  ⎥+⎢      ⎥⊗I·⎢  ⎥
+     ⎝x₂⎠ ⎝x₂⎠ ⎝−β₂ α ⎠   ⎝b₂⎠
+  */
   static void mult2a(double alpha, double beta1, double beta2,
                      Vector &x1, Vector &x2,
                      const Vector &b1, const Vector &b2);
-  /* same, but subtracts instead of add */
+  /* Computes:
+     ⎛x₁⎞ ⎛x₁⎞ ⎛ α −β₁⎞   ⎛b₁⎞
+     ⎢  ⎥=⎢  ⎥−⎢      ⎥⊗I·⎢  ⎥
+     ⎝x₂⎠ ⎝x₂⎠ ⎝−β₂ α ⎠   ⎝b₂⎠
+  */
   static void
   mult2s(double alpha, double beta1, double beta2,
          Vector &x1, Vector &x2,
@@ -154,10 +163,10 @@ class ConstVector
   friend class Vector;
 protected:
   int len;
-  int s{1}; // stride (also called "skip" in some places)
+  int s{1}; // stride (also called “skip” in some places)
   const double *data;
 public:
-  // Implicit conversion from Vector is ok, since it's cheap
+  // Implicit conversion from Vector is ok, since it’s cheap
   ConstVector(const Vector &v);
   ConstVector(const ConstVector &v) = default;
   ConstVector(ConstVector &&v) = default;
@@ -193,14 +202,14 @@ public:
   {
     return s;
   }
-  /** Exact equality. */
+  // Exact equality
   bool operator==(const ConstVector &y) const;
   bool
   operator!=(const ConstVector &y) const
   {
     return !operator==(y);
   }
-  /** Lexicographic ordering. */
+  // Lexicographic ordering
   bool operator<(const ConstVector &y) const;
   bool
   operator<=(const ConstVector &y) const

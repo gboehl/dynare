@@ -479,7 +479,7 @@ std::unique_ptr<typename ctraits<t>::Ttensor>
 KOrderStoch::faaDiBrunoZ(const Symmetry &sym) const
 {
   JournalRecordPair pa(journal);
-  pa << "Faà Di Bruno ZX container for " << sym << endrec;
+  pa << u8"Faà Di Bruno ZX container for " << sym << endrec;
   auto res = std::make_unique<typename ctraits<t>::Ttensor>(ypart.ny(), TensorDimens(sym, nvs));
   FaaDiBruno bruno(journal);
   bruno.calculate(Zstack<t>(), f, *res);
@@ -494,7 +494,7 @@ std::unique_ptr<typename ctraits<t>::Ttensor>
 KOrderStoch::faaDiBrunoG(const Symmetry &sym) const
 {
   JournalRecordPair pa(journal);
-  pa << "Faà Di Bruno GX container for " << sym << endrec;
+  pa << u8"Faà Di Bruno GX container for " << sym << endrec;
   TensorDimens tdims(sym, nvs);
   auto res = std::make_unique<typename ctraits<t>::Ttensor>(ypart.nyss(), tdims);
   FaaDiBruno bruno(journal);

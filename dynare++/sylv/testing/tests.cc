@@ -431,10 +431,10 @@ TestRunnable::eig_bubble(const std::string &aname, int from, int to)
   double normInf = check.getNormInf();
   double onorm1 = orig.getNorm1();
   double onormInf = orig.getNormInf();
-  std:: cout << "\tabs. error1 = " << norm1 << std::endl
-             << "\tabs. errorI = " << normInf << std::endl
-             << "\trel. error1 = " << norm1/onorm1 << std::endl
-             << "\trel. errorI = " << normInf/onormInf << std::endl;
+  std:: cout <<   "\tabs. error1 = " << norm1 << std::endl
+             << u8"\tabs. error∞ = " << normInf << std::endl
+             <<   "\trel. error1 = " << norm1/onorm1 << std::endl
+             << u8"\trel. error∞ = " << normInf/onormInf << std::endl;
   return (norm1 < eps_norm*onorm1 && normInf < eps_norm*onormInf);
 }
 
@@ -460,20 +460,20 @@ TestRunnable::block_diag(const std::string &aname, double log10norm)
   double normInf = check.getNormInf();
   double onorm1 = orig.getNorm1();
   double onormInf = orig.getNormInf();
-  std::cout << "\terror Q*B*invQ:" << std::endl
-            << "\tabs. error1 = " << norm1 << std::endl
-            << "\tabs. errorI = " << normInf << std::endl
-            << "\trel. error1 = " << norm1/onorm1 << std::endl
-            << "\trel. errorI = " << normInf/onormInf << std::endl;
+  std::cout << u8"\terror Q·B·Q⁻¹:" << std::endl
+            <<   "\tabs. error1 = " << norm1 << std::endl
+            << u8"\tabs. error∞ = " << normInf << std::endl
+            <<   "\trel. error1 = " << norm1/onorm1 << std::endl
+            << u8"\trel. error∞ = " << normInf/onormInf << std::endl;
   SqSylvMatrix check2(dec.getQ() * dec.getInvQ());
   SqSylvMatrix in(n);
   in.setUnit();
   check2.add(-1, in);
   double nor1 = check2.getNorm1();
   double norInf = check2.getNormInf();
-  std::cout << "\terror Q*invQ:" << std::endl
-            << "\tabs. error1 = " << nor1 << std::endl
-            << "\tabs. errorI = " << norInf << std::endl;
+  std::cout << u8"\terror Q·Q⁻¹:" << std::endl
+            <<   "\tabs. error1 = " << nor1 << std::endl
+            << u8"\tabs. error∞ = " << norInf << std::endl;
   return (norm1 < eps_norm*pow(10, log10norm)*onorm1);
 }
 
@@ -600,7 +600,7 @@ public:
 class QuasiZeroSmallTest : public TestRunnable
 {
 public:
-  QuasiZeroSmallTest() : TestRunnable("quasi tr. zero small test (2x1)")
+  QuasiZeroSmallTest() : TestRunnable(u8"quasi tr. zero small test (2×1)")
   {
   }
   bool run() const override;
@@ -609,7 +609,7 @@ public:
 class MultKronSmallTest : public TestRunnable
 {
 public:
-  MultKronSmallTest() : TestRunnable("kronecker small mult (2=2x1)")
+  MultKronSmallTest() : TestRunnable(u8"kronecker small mult (2=2×1)")
   {
   }
   bool run() const override;
@@ -618,7 +618,7 @@ public:
 class MultKronTest : public TestRunnable
 {
 public:
-  MultKronTest() : TestRunnable("kronecker mult (245=7x7x5)")
+  MultKronTest() : TestRunnable(u8"kronecker mult (245=7×7×5)")
   {
   }
   bool run() const override;
@@ -627,7 +627,7 @@ public:
 class MultKronSmallTransTest : public TestRunnable
 {
 public:
-  MultKronSmallTransTest() : TestRunnable("kronecker small trans mult (2=2x1)")
+  MultKronSmallTransTest() : TestRunnable(u8"kronecker small trans mult (2=2×1)")
   {
   }
   bool run() const override;
@@ -636,7 +636,7 @@ public:
 class MultKronTransTest : public TestRunnable
 {
 public:
-  MultKronTransTest() : TestRunnable("kronecker trans mult (245=7x7x5)")
+  MultKronTransTest() : TestRunnable(u8"kronecker trans mult (245=7×7×5)")
   {
   }
   bool run() const override;
@@ -645,7 +645,7 @@ public:
 class LevelKronTest : public TestRunnable
 {
 public:
-  LevelKronTest() : TestRunnable("kronecker level mult (1715=7x[7]x7x5)")
+  LevelKronTest() : TestRunnable(u8"kronecker level mult (1715=7×[7]×7×5)")
   {
   }
   bool run() const override;
@@ -654,7 +654,7 @@ public:
 class LevelKronTransTest : public TestRunnable
 {
 public:
-  LevelKronTransTest() : TestRunnable("kronecker level trans mult (1715=7x[7]x7x5)")
+  LevelKronTransTest() : TestRunnable(u8"kronecker level trans mult (1715=7×[7]×7×5)")
   {
   }
   bool run() const override;
@@ -663,7 +663,7 @@ public:
 class LevelZeroKronTest : public TestRunnable
 {
 public:
-  LevelZeroKronTest() : TestRunnable("kronecker level mult (1715=7x7x7x[5])")
+  LevelZeroKronTest() : TestRunnable(u8"kronecker level mult (1715=7×7×7×[5])")
   {
   }
   bool run() const override;
@@ -672,7 +672,7 @@ public:
 class LevelZeroKronTransTest : public TestRunnable
 {
 public:
-  LevelZeroKronTransTest() : TestRunnable("kronecker level trans mult (1715=7x7x7x[5])")
+  LevelZeroKronTransTest() : TestRunnable(u8"kronecker level trans mult (1715=7×7×7×[5])")
   {
   }
   bool run() const override;
@@ -681,7 +681,7 @@ public:
 class KronPowerTest : public TestRunnable
 {
 public:
-  KronPowerTest() : TestRunnable("kronecker power mult (1715=7x7x7x5)")
+  KronPowerTest() : TestRunnable(u8"kronecker power mult (1715=7×7×7×5)")
   {
   }
   bool run() const override;
@@ -690,7 +690,7 @@ public:
 class SmallLinEvalTest : public TestRunnable
 {
 public:
-  SmallLinEvalTest() : TestRunnable("lin eval (24=2 x 2x2x3)")
+  SmallLinEvalTest() : TestRunnable(u8"lin eval (24=2 × 2×2×3)")
   {
   }
   bool run() const override;
@@ -699,7 +699,7 @@ public:
 class LinEvalTest : public TestRunnable
 {
 public:
-  LinEvalTest() : TestRunnable("lin eval (490=2 x 7x7x5)")
+  LinEvalTest() : TestRunnable(u8"lin eval (490=2 × 7×7×5)")
   {
   }
   bool run() const override;
@@ -708,7 +708,7 @@ public:
 class SmallQuaEvalTest : public TestRunnable
 {
 public:
-  SmallQuaEvalTest() : TestRunnable("qua eval (24=2 x 2x2x3)")
+  SmallQuaEvalTest() : TestRunnable(u8"qua eval (24=2 × 2×2×3)")
   {
   }
   bool run() const override;
@@ -717,7 +717,7 @@ public:
 class QuaEvalTest : public TestRunnable
 {
 public:
-  QuaEvalTest() : TestRunnable("qua eval (490=2 x 7x7x5)")
+  QuaEvalTest() : TestRunnable(u8"qua eval (490=2 × 7×7×5)")
   {
   }
   bool run() const override;
@@ -726,7 +726,7 @@ public:
 class TriSylvSmallRealTest : public TestRunnable
 {
 public:
-  TriSylvSmallRealTest() : TestRunnable("triangular sylvester small real solve (12=2x2x3)")
+  TriSylvSmallRealTest() : TestRunnable(u8"triangular sylvester small real solve (12=2×2×3)")
   {
   }
   bool run() const override;
@@ -735,7 +735,7 @@ public:
 class TriSylvSmallComplexTest : public TestRunnable
 {
 public:
-  TriSylvSmallComplexTest() : TestRunnable("triangular sylvester small complx solve (12=2x2x3)")
+  TriSylvSmallComplexTest() : TestRunnable(u8"triangular sylvester small complx solve (12=2×2×3)")
   {
   }
   bool run() const override;
@@ -744,7 +744,7 @@ public:
 class TriSylvTest : public TestRunnable
 {
 public:
-  TriSylvTest() : TestRunnable("triangular sylvester solve (245=7x7x5)")
+  TriSylvTest() : TestRunnable(u8"triangular sylvester solve (245=7×7×5)")
   {
   }
   bool run() const override;
@@ -753,7 +753,7 @@ public:
 class TriSylvBigTest : public TestRunnable
 {
 public:
-  TriSylvBigTest() : TestRunnable("triangular sylvester big solve (48000=40x40x30)")
+  TriSylvBigTest() : TestRunnable(u8"triangular sylvester big solve (48000=40×40×30)")
   {
   }
   bool run() const override;
@@ -762,7 +762,7 @@ public:
 class TriSylvLargeTest : public TestRunnable
 {
 public:
-  TriSylvLargeTest() : TestRunnable("triangular sylvester large solve (1920000=40x40x40x30)")
+  TriSylvLargeTest() : TestRunnable(u8"triangular sylvester large solve (1920000=40×40×40×30)")
   {
   }
   bool run() const override;
@@ -771,7 +771,7 @@ public:
 class IterSylvTest : public TestRunnable
 {
 public:
-  IterSylvTest() : TestRunnable("iterative sylvester solve (245=7x7x5)")
+  IterSylvTest() : TestRunnable(u8"iterative sylvester solve (245=7×7×5)")
   {
   }
   bool run() const override;
@@ -780,7 +780,7 @@ public:
 class IterSylvLargeTest : public TestRunnable
 {
 public:
-  IterSylvLargeTest() : TestRunnable("iterative sylvester large solve (1920000=40x40x40x30)")
+  IterSylvLargeTest() : TestRunnable(u8"iterative sylvester large solve (1920000=40×40×40×30)")
   {
   }
   bool run() const override;
@@ -789,7 +789,7 @@ public:
 class GenSylvSmallTest : public TestRunnable
 {
 public:
-  GenSylvSmallTest() : TestRunnable("general sylvester small solve (18=3x3x2)")
+  GenSylvSmallTest() : TestRunnable(u8"general sylvester small solve (18=3×3×2)")
   {
   }
   bool run() const override;
@@ -798,7 +798,7 @@ public:
 class GenSylvTest : public TestRunnable
 {
 public:
-  GenSylvTest() : TestRunnable("general sylvester solve (12000=20x20x30)")
+  GenSylvTest() : TestRunnable(u8"general sylvester solve (12000=20×20×30)")
   {
   }
   bool run() const override;
@@ -807,7 +807,7 @@ public:
 class GenSylvSingTest : public TestRunnable
 {
 public:
-  GenSylvSingTest() : TestRunnable("general sylvester solve for sing. C (2500000=50x50x50x20)")
+  GenSylvSingTest() : TestRunnable(u8"general sylvester solve for sing. C (2500000=50×50×50×20)")
   {
   }
   bool run() const override;
@@ -816,7 +816,7 @@ public:
 class GenSylvLargeTest : public TestRunnable
 {
 public:
-  GenSylvLargeTest() : TestRunnable("general sylvester solve (2500000=50x50x50x20)")
+  GenSylvLargeTest() : TestRunnable(u8"general sylvester solve (2500000=50×50×50×20)")
   {
   }
   bool run() const override;
@@ -825,7 +825,7 @@ public:
 class EigBubFrankTest : public TestRunnable
 {
 public:
-  EigBubFrankTest() : TestRunnable("eig. bubble frank test (12x12)")
+  EigBubFrankTest() : TestRunnable(u8"eig. bubble frank test (12×12)")
   {
   }
   bool run() const override;
@@ -835,7 +835,7 @@ class EigBubSplitTest : public TestRunnable
 {
   // complex eigenvalue is split by swapping it with real
 public:
-  EigBubSplitTest() : TestRunnable("eig. bubble complex split test (3x3)")
+  EigBubSplitTest() : TestRunnable(u8"eig. bubble complex split test (3×3)")
   {
   }
   bool run() const override;
@@ -845,7 +845,7 @@ class EigBubSameTest : public TestRunnable
 {
   // complex eigenevalue bypasses the same complex eigenvalue
 public:
-  EigBubSameTest() : TestRunnable("eig. bubble same test (5x5)")
+  EigBubSameTest() : TestRunnable(u8"eig. bubble same test (5×5)")
   {
   }
   bool run() const override;
@@ -854,7 +854,7 @@ public:
 class BlockDiagSmallTest : public TestRunnable
 {
 public:
-  BlockDiagSmallTest() : TestRunnable("block diagonalization small test (7x7)")
+  BlockDiagSmallTest() : TestRunnable(u8"block diagonalization small test (7×7)")
   {
   }
   bool run() const override;
@@ -863,7 +863,7 @@ public:
 class BlockDiagFrankTest : public TestRunnable
 {
 public:
-  BlockDiagFrankTest() : TestRunnable("block diagonalization of frank (12x12)")
+  BlockDiagFrankTest() : TestRunnable(u8"block diagonalization of frank (12×12)")
   {
   }
   bool run() const override;
@@ -872,7 +872,7 @@ public:
 class BlockDiagIllCondTest : public TestRunnable
 {
 public:
-  BlockDiagIllCondTest() : TestRunnable("block diagonalization of ill conditioned (15x15)")
+  BlockDiagIllCondTest() : TestRunnable(u8"block diagonalization of ill conditioned (15×15)")
   {
   }
   bool run() const override;
@@ -881,7 +881,7 @@ public:
 class BlockDiagBigTest : public TestRunnable
 {
 public:
-  BlockDiagBigTest() : TestRunnable("block diagonalization big test (50x50)")
+  BlockDiagBigTest() : TestRunnable(u8"block diagonalization big test (50×50)")
   {
   }
   bool run() const override;

@@ -639,7 +639,7 @@ QuasiTriangular::multaVecTrans(Vector &x, const ConstVector &b) const
   x.add(1.0, tmp);
 }
 
-// Calculates x=x+(T⊗I)·b, where size of I is given by b (KronVector)
+// Calculates x=x+(this⊗I)·b, where size of I is given by b (KronVector)
 void
 QuasiTriangular::multaKron(KronVector &x, const ConstKronVector &b) const
 {
@@ -649,7 +649,7 @@ QuasiTriangular::multaKron(KronVector &x, const ConstKronVector &b) const
   x_resh.multAndAdd(b_resh, ConstGeneralMatrix(*this), "trans");
 }
 
-// Calculates x=x+(T'⊗I)·b, where size of I is given by b (KronVector)
+// Calculates x=x+(this⊗I)·b, where size of I is given by b (KronVector)
 void
 QuasiTriangular::multaKronTrans(KronVector &x, const ConstKronVector &b) const
 {

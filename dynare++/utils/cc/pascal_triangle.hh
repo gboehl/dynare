@@ -24,8 +24,8 @@ public:
 namespace PascalTriangle
 {
   void ensure(int n, int k);
-  /*         ⎛n⎞
-    Computes ⎝k⎠, hence the function name (“n over k”).
+  /*                              ⎛n⎞
+    Computes binomial coefficient ⎝k⎠, hence the function name (“n over k”).
   */
   int noverk(int n, int k);
   void print();

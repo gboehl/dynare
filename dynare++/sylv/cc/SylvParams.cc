@@ -15,20 +15,20 @@ SylvParams::print(const std::string &prefix) const
 void
 SylvParams::print(std::ostream &fdesc, const std::string &prefix) const
 {
-  method.print(fdesc, prefix, "method             ");
-  rcondA1.print(fdesc, prefix,  "reci. cond1 A      ");
-  rcondAI.print(fdesc, prefix,  "reci. condInf A    ");
-  bs_norm.print(fdesc, prefix,  "log10 diag norm    ");
-  f_err1.print(fdesc, prefix,   "abs. err 1 F diag  ");
-  f_errI.print(fdesc, prefix,   "abs. err I F diag  ");
-  viv_err1.print(fdesc, prefix, "abs. err 1 V*invV  ");
-  viv_errI.print(fdesc, prefix, "abs. err I V*invV  ");
-  ivv_err1.print(fdesc, prefix, "abs. err 1 invV*V  ");
-  ivv_errI.print(fdesc, prefix, "abs. err I invV*V  ");
-  f_blocks.print(fdesc, prefix, "num blocks in F    ");
-  f_largest.print(fdesc, prefix, "largest block in F ");
-  f_zeros.print(fdesc, prefix,  "num zeros in F     ");
-  f_offdiag.print(fdesc, prefix, "num offdiag in F   ");
+  method.print(fdesc, prefix,     "method             ");
+  rcondA1.print(fdesc, prefix,    "reci. cond1 A      ");
+  rcondAI.print(fdesc, prefix,  u8"reci. cond∞ A      ");
+  bs_norm.print(fdesc, prefix,  u8"log₁₀ diag norm    ");
+  f_err1.print(fdesc, prefix,     "abs. err 1 F diag  ");
+  f_errI.print(fdesc, prefix,   u8"abs. err ∞ F diag  ");
+  viv_err1.print(fdesc, prefix, u8"abs. err 1 V·V⁻¹   ");
+  viv_errI.print(fdesc, prefix, u8"abs. err ∞ V·V⁻¹   ");
+  ivv_err1.print(fdesc, prefix, u8"abs. err 1 V⁻¹·V   ");
+  ivv_errI.print(fdesc, prefix, u8"abs. err ∞ V⁻¹·V   ");
+  f_blocks.print(fdesc, prefix,   "num blocks in F    ");
+  f_largest.print(fdesc, prefix,  "largest block in F ");
+  f_zeros.print(fdesc, prefix,    "num zeros in F     ");
+  f_offdiag.print(fdesc, prefix,  "num offdiag in F   ");
   if (*method == solve_method::iter)
     {
       converged.print(fdesc, prefix,       "converged          ");
@@ -40,12 +40,12 @@ SylvParams::print(std::ostream &fdesc, const std::string &prefix) const
   else
     eig_min.print(fdesc, prefix,         "minimum eigenvalue ");
 
-  mat_err1.print(fdesc, prefix, "rel. matrix norm1  ");
-  mat_errI.print(fdesc, prefix, "rel. matrix normInf");
-  mat_errF.print(fdesc, prefix, "rel. matrix normFro");
-  vec_err1.print(fdesc, prefix, "rel. vector norm1  ");
-  vec_errI.print(fdesc, prefix, "rel. vector normInf");
-  cpu_time.print(fdesc, prefix, "time (CPU secs)    ");
+  mat_err1.print(fdesc, prefix,   "rel. matrix norm1  ");
+  mat_errI.print(fdesc, prefix, u8"rel. matrix norm∞  ");
+  mat_errF.print(fdesc, prefix,   "rel. matrix normFro");
+  vec_err1.print(fdesc, prefix,   "rel. vector norm1  ");
+  vec_errI.print(fdesc, prefix, u8"rel. vector norm∞  ");
+  cpu_time.print(fdesc, prefix,   "time (CPU secs)    ");
 }
 
 void
