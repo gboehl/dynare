@@ -77,16 +77,21 @@ switch auxiliary_model_type
     % Get the indices of trend and EC equations in the auxiliary model.
     target_eqnums_in_auxiliary_model = M_.trend_component.(auxiliary_model_name).target_eqn;
     ecm_eqnums_in_auxiliary_model = find(~M_.trend_component.(auxiliary_model_name).targets);
+
     % REMARK It is assumed that the non trend equations are the error correction
     %        equations. We assume that the model can be cast in the following form:
     %
-    %        Δ Xₜ₋₁ = A₀ (Xₜ₋₁ - Zₜ₋₁) + Σᵢ₌₁ᵖ Aᵢ Δ Xₜ₋ᵢ + ϵₜ
+    %        Δ Xₜ₋₁ = A₀ (Xₜ₋₁ - C₀Zₜ₋₁) + Σᵢ₌₁ᵖ Aᵢ Δ Xₜ₋ᵢ + ϵₜ
     %
     %        Zₜ = Zₜ₋₁ + ηₜ
     %
-    %        We first recast the equation into this representation, and
-    %        we rewrite the model in levels (we integrate the first set
-    %        of equations) to rewrite the model as a VAR(1) model. Let
+    %        where Xₜ is a n×1 vector and Zₜ is an m×1 vector, A₀ is a
+    %        n×n matrix, C₀ a n×m matrix, and Aᵢ (i=1,…,p) are n×n
+    %        matrices. Matrix C₀ can be factorized as C₀ = (A₀)⁻¹×Λ,
+    %        where Λ is a n×m matrix.
+    %
+    %        We rewrite the model in levels (we integrate the first set
+    %        of equations) and rewrite the model as a VAR(1) model. Let
     %        Yₜ = [Xₜ; Zₜ] be the vertical concatenation of vectors
     %        Xₜ (variables with EC) and Zₜ (trends). We have
     %
@@ -94,7 +99,7 @@ switch auxiliary_model_type
     %
     %        with
     %
-    %               B₁ = [I+A₀+A₁, -A₀; 0, I]
+    %               B₁ = [I+A₀+A₁, -Λ; 0, I]
     %
     %               Bᵢ = [Aᵢ-Aᵢ₋₁, 0; 0, 0]   for i = 2,…, p
     %        and
@@ -102,6 +107,7 @@ switch auxiliary_model_type
     %
     %        where the dimensions of I and 0 matrices can easily be
     %        deduced from the number of EC and trend equations.
+
     % Check that the lhs of candidate ecm equations are at least first differences.
     for i = 1:m
         if ~get_difference_order(M_.trend_component.(auxiliary_model_name).lhs(ecm_eqnums_in_auxiliary_model(i)))
