@@ -38,12 +38,14 @@ B12 = B(1,2);
 B21 = B(2,1);
 B22 = B(2,2);
 
-trend_component_model(model_name=toto, eqtags=['eq:y1', 'eq:y2', 'eq:y3', 'eq:y4'], targets=['eq:y3', 'eq:y4']);
+Bstar = [B11, B12-B11; B21, B22];
+
+trend_component_model(model_name=toto, eqtags=['eq:y1', 'eq:y4', 'eq:y2', 'eq:y3'], targets=['eq:y3', 'eq:y4']);
 
 model;
 
 [name='eq:y1']
-diff(y1) = B11*(y1(-1)-y3(-1)) + B12*(y2(-1)-y4(-1)) + 
+diff(y1) = B11*(y1(-1)-y3(-1)+y4(-1)) + B12*(y2(-1)-y4(-1)) + 
      A111*diff(y1(-1)) + A112*diff(y2(-1)) +
      A211*diff(y1(-2)) + A212*diff(y2(-2)) +
      A311*diff(y1(-3)) + A312*diff(y2(-3)) + e1; 
@@ -63,10 +65,14 @@ y4 = y4(-1) + e4;
 
 end;
 
-[EC, A0star, AR, T] = get_companion_matrix('toto');
+[A0, A0star, AR, T] = get_companion_matrix('toto');
 
-if max(max(abs(EC-B)))>1e-12
-   error('Error component matrix is wrong.')
+if max(max(abs(A0-B)))>1e-12
+   error('Error component matrix (A0) is wrong.')
+end
+
+if max(max(abs(A0star-Bstar)))>1e-12
+   error('Error component matrix (A0star) is wrong.')
 end
 
 A1fake = AR(:,:,1);

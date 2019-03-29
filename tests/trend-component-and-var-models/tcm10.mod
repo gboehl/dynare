@@ -1,6 +1,6 @@
-var y1 y2 y3 y4;
+var y1 y2 y3 y4 y5;
 
-varexo e1 e2 e3 e4;
+varexo e1 e2 e3 e4 e5;
 
 parameters A111 A112
            A121 A122
@@ -38,19 +38,21 @@ B12 = B(1,2);
 B21 = B(2,1);
 B22 = B(2,2);
 
-trend_component_model(model_name=toto, eqtags=['eq:y1', 'eq:y2', 'eq:y3', 'eq:y4'], targets=['eq:y3', 'eq:y4']);
+Bstar = [B11, B12, -B11; B21, B22, -B21];
+
+trend_component_model(model_name=toto, eqtags=['eq:y1', 'eq:y2', 'eq:y3', 'eq:y4', 'eq:y5'], targets=['eq:y3', 'eq:y4', 'eq:y5']);
 
 model;
 
 [name='eq:y1']
-diff(y1) = B11*(y1(-1)-y3(-1)) + B12*(y2(-1)-y4(-1)) + 
+diff(y1) = B11*(y1(-1)-y3(-1)+y5(-1)) + B12*(y2(-1)-y4(-1)) + 
      A111*diff(y1(-1)) + A112*diff(y2(-1)) +
      A211*diff(y1(-2)) + A212*diff(y2(-2)) +
      A311*diff(y1(-3)) + A312*diff(y2(-3)) + e1; 
 
 
 [name='eq:y2']
-diff(y2) = B21*(y1(-1)-y3(-1)) + B22*(y2(-1)-y4(-1)) +
+diff(y2) = B21*(y1(-1)-y3(-1)+y5(-1)) + B22*(y2(-1)-y4(-1)) +
      A121*diff(y1(-1)) + A122*diff(y2(-1)) +
      A221*diff(y1(-2)) + A222*diff(y2(-2)) +
      A321*diff(y1(-3)) + A322*diff(y2(-3)) + e2; 
@@ -61,12 +63,19 @@ y3 = y3(-1) + e3;
 [name='eq:y4']
 y4 = y4(-1) + e4;
 
+[name='eq:y5']
+y5 = y5(-1) + e5;
+
 end;
 
-[EC, A0star, AR, T] = get_companion_matrix('toto');
+[A0, A0star, AR, T] = get_companion_matrix('toto');
 
-if max(max(abs(EC-B)))>1e-12
-   error('Error component matrix is wrong.')
+if max(max(abs(A0-B)))>1e-12
+   error('Error component matrix (A0) is wrong.')
+end
+
+if max(max(abs(A0star-Bstar)))>1e-12
+   error('Error component matrix (A0star) is wrong.')
 end
 
 A1fake = AR(:,:,1);

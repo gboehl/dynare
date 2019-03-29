@@ -1,4 +1,4 @@
-function [A0, AR, B] = get_companion_matrix(auxiliary_model_name, auxiliary_model_type)
+function [A0, A0star, AR, B] = get_companion_matrix(auxiliary_model_name, auxiliary_model_type)
 
 % Gets the companion VAR representation of a PAC auxiliary model.
 % Depending on the nature of this auxiliary model the output is
@@ -66,6 +66,7 @@ switch auxiliary_model_type
     M_.var.(auxiliary_model_name).list_of_variables_in_companion_var = M_.endo_names(M_.var.(auxiliary_model_name).lhs);
     if nargout
         A0 = [];
+        A0star = [];
         B  = [];
     end
   case 'trend_component'

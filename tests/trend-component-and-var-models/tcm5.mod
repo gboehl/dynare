@@ -64,7 +64,7 @@ y3 = y3(-1) + e3;
 
 end;
 
-[EC, AR, T] = get_companion_matrix('toto');
+[EC, A0star, AR, T] = get_companion_matrix('toto');
 
 if max(max(abs(EC-B)))>1e-12
    error('Error component matrix is wrong.')

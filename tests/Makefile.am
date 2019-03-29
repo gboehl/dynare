@@ -385,6 +385,8 @@ ECB_MODFILES = \
 	trend-component-and-var-models/tcm6.mod \
 	trend-component-and-var-models/tcm7.mod \
 	trend-component-and-var-models/tcm8.mod \
+	trend-component-and-var-models/tcm9.mod \
+	trend-component-and-var-models/tcm10.mod \
 	trend-component-and-var-models/legacy/vm1.mod \
 	trend-component-and-var-models/legacy/vm2.mod \
 	trend-component-and-var-models/legacy/vm3.mod \

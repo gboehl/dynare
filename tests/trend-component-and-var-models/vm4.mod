@@ -45,7 +45,7 @@ end;
 
 [~, b0, ~] = get_companion_matrix_legacy('toto');
 
-[~, b1, ~] = get_companion_matrix('toto');
+[~, ~, b1, ~] = get_companion_matrix('toto');
 
 if any(abs(b0(:)-b1(:))>1e-9)
    error('get_companion_matrix and get_comapnion_matrix_legacy do not return the same AR matrices.')

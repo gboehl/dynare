@@ -96,7 +96,7 @@ y1 = A111*y1(-1) + A112*y2(-1) + A113*y3(-1) + A114*y4(-1) +
 
 end;
 
-[A0, AR, B] = get_companion_matrix('toto');
+[A0, A0star, AR, B] = get_companion_matrix('toto');
 
 if max(max(abs(AR(:,:,1)-A1)))>1e-12
    error('First order autoregressive matrix is wrong.')
