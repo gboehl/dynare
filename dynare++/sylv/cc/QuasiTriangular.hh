@@ -441,9 +441,6 @@ private:
   void multaKron(KronVector &x, const ConstKronVector &b) const;
   /* x = x + (thisᵀ⊗I)·b */
   void multaKronTrans(KronVector &x, const ConstKronVector &b) const;
-  /* implementation via iterators, useful for large matrices */
-  void setMatrixViaIter(double r, const QuasiTriangular &t);
-  void addMatrixViaIter(double r, const QuasiTriangular &t);
   /* hide noneffective implementations of parents */
   void multsVec(Vector &x, const ConstVector &d) const;
   void multsVecTrans(Vector &x, const ConstVector &d) const;

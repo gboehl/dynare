@@ -15,7 +15,6 @@ class BlockDiagonal : public QuasiTriangular
   std::vector<int> row_len, col_len;
 public:
   BlockDiagonal(ConstVector d, int d_size);
-  BlockDiagonal(int p, const BlockDiagonal &b);
   BlockDiagonal(const BlockDiagonal &b) = default;
   BlockDiagonal(const QuasiTriangular &t);
   BlockDiagonal &operator=(const QuasiTriangular &t)

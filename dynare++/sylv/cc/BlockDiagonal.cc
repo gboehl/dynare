@@ -30,12 +30,6 @@ BlockDiagonal::BlockDiagonal(const QuasiTriangular &t)
     }
 }
 
-BlockDiagonal::BlockDiagonal(int p, const BlockDiagonal &b)
-  : QuasiTriangular(p, b),
-    row_len(b.row_len), col_len(b.col_len)
-{
-}
-
 /* Put zeroes to right upper submatrix whose first column is defined
    by ‘edge’ */
 void
