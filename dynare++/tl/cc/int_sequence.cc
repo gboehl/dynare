@@ -141,8 +141,8 @@ IntSequence::monotone()
 
 /* This partially monotones the sequence. The partitioning is done by a
    symmetry. So the subsequence given by the symmetry classes are
-   monotonized. For example, if the symmetry is $y^2u^3$, and the
-   |IntSequence| is $(5,3,1,6,4)$, the result is $(5,5,1,6,6)$. */
+   monotonized. For example, if the symmetry is y²u³, and the
+   IntSequence is (5,3,1,6,4), the result is (5,5,1,6,6). */
 
 void
 IntSequence::pmonotone(const Symmetry &s)
@@ -202,7 +202,7 @@ IntSequence::getNumDistinct() const
 }
 
 /* This returns a maximum of the sequence. If the sequence is empty, it
-   returns the least possible |int| value. */
+   returns the least possible int value. */
 
 int
 IntSequence::getMax() const
@@ -262,7 +262,10 @@ IntSequence::print() const
 }
 
 /* Here we calculate the multinomial coefficients
-    $\left(\matrix{a\cr b_1,\ldots,b_n}\right)$, where $a=b_1+\ldots+b_n$.
+   ⎛   a   ⎞
+   ⎝b₁,…,bₙ⎠ where a=b₁+…+bₙ
+
+   (the notation gives the name to the function: “n over seq(ence)”)
 
    See:
     https://en.wikipedia.org/wiki/Binomial_coefficient#Generalization_to_multinomials
@@ -270,21 +273,25 @@ IntSequence::print() const
 
    For n=1, the coefficient is equal to 1.
    For n=2, the multinomial coeffs correspond to the binomial coeffs, i.e. the binomial
-    (a; b) is equal to the multinomial (a; b,a-b).
-   For n>=3, we have the identity
-   $$\left(\matrix{a\cr b_1,\ldots,b_n}\right)=\left(\matrix{b_1+b_2\cr b_1}\right)\cdot
-   \left(\matrix{a\cr b_1+b_2,b_3,\ldots,b_n}\right)$$ (where the first factor
-   on the right hand side is to be interpreted as a binomial coefficient)
+    ⎛a⎞                             ⎛  a  ⎞
+    ⎝b⎠ is equal to the multinomial ⎝b,a−b⎠
+
+   For n≥3, we have the identity
+   ⎛   a   ⎞ ⎛b₁+b₂⎞ ⎛      a      ⎞
+   ⎝b₁,…,bₙ⎠=⎝  b₁ ⎠·⎝b₁+b₂,b₃,…,bₙ⎠
+   (where the first factor on the right hand side is to be interpreted as a
+    binomial coefficient)
 
    This number is exactly a number of unfolded indices corresponding to one
-   folded index, where the sequence $b_1,\ldots,b_n$ is the symmetry of the
-   index. This can be easily seen if the multinomial coefficient is interpreted
-   as the number of unique permutations of a word, where $a$ is the length of
-   the word, $n$ is the number of distinct letters, and the $b_i$ are the
-   number of repetitions of each letter. For example, for a symmetry of the
-   form $y^4 u^2 v^3$, we want to compute the number of permutations of the word
-   $yyyyuuvvv$. This is equal to the multinomial coefficient (9; 4,2,3). */
-
+   folded index, where the sequence b₁,…,bₙ is the symmetry of the index. This
+   can be easily seen if the multinomial coefficient is interpreted as the
+   number of unique permutations of a word, where ‘a’ is the length of the
+   word, ‘n’ is the number of distinct letters, and the bᵢ are the number of
+   repetitions of each letter. For example, for a symmetry of the form y⁴u²v³,
+   we want to compute the number of permutations of the word ‘yyyyuuvvv’.
+                                                ⎛  9  ⎞
+   This is equal to the multinomial coefficient ⎝4,2,3⎠.
+ */
 int
 IntSequence::noverseq()
 {

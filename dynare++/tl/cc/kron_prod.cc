@@ -5,19 +5,16 @@
 
 #include <tuple>
 
-/* Here we construct Kronecker product dimensions from Kronecker
-   product dimensions by picking a given matrix and all other set to
-   identity. The constructor takes dimensions of $A_1\otimes
-   A_2\otimes\ldots\otimes A_n$, and makes dimensions of $I\otimes
-   A_i\otimes I$, or $I\otimes A_n$, or $A_1\otimes I$ for a given
-   $i$. The identity matrices must fit into the described order. See
-   header file.
+/* Here we construct Kronecker product dimensions from Kronecker product
+   dimensions by picking a given matrix and all other set to identity. The
+   constructor takes dimensions of A₁⊗A₂⊗…⊗Aₙ and makes dimensions of A₁⊗I,
+   I⊗Aᵢ⊗I or I⊗Aₙ for a given i. The identity matrices must fit into the
+   described order. See header file.
 
-   We first decide what is a length of the resulting dimensions. Possible
-   length is three for $I\otimes A\otimes I$, and two for $I\otimes A$,
-   or $A\otimes I$.
+   We first decide what is the length of the resulting dimensions. Possible
+   length is three for I⊗A⊗I, and two for I⊗A or A⊗I.
 
-   Then we fork according to |i|. */
+   Then we fork according to i. */
 
 KronProdDimens::KronProdDimens(const KronProdDimens &kd, int i)
   : rows((i == 0 || i == kd.dimen()-1) ? 2 : 3),
@@ -29,10 +26,10 @@ KronProdDimens::KronProdDimens(const KronProdDimens &kd, int i)
   int kdim = kd.dimen();
   if (i == 0)
     {
-      // set AI dimensions
-      /* The first rows and cols are taken from |kd|. The dimensions of
-         identity matrix is a number of rows in $A_2\otimes\ldots\otimes A_n$
-         since the matrix $A_1\otimes I$ is the first. */
+      // set A⊗I dimensions
+      /* The first rows and cols are taken from ‘kd’. The dimension of the
+         identity matrix is the number of rows in A₂⊗…⊗Aₙ since the matrix A₁⊗I
+         is the first. */
       rows[0] = kd.rows[0];
       rows[1] = kd.rows.mult(1, kdim);
       cols[0] = kd.cols[0];
@@ -40,10 +37,10 @@ KronProdDimens::KronProdDimens(const KronProdDimens &kd, int i)
     }
   else if (i == kdim-1)
     {
-      // set IA dimensions
-      /* The second dimension is taken from |kd|. The dimensions of identity
-         matrix is a number of columns of $A_1\otimes\ldots A_{n-1}$, since the
-         matrix $I\otimes A_n$ is the last. */
+      // set I⊗A dimensions
+      /* The second dimension is taken from ‘kd’. The dimension of the identity
+         matrix is the number of columns of A₁⊗…⊗Aₙ₋₁, since the matrix I⊗Aₙ is
+         the last. */
       rows[0] = kd.cols.mult(0, kdim-1);
       rows[1] = kd.rows[kdim-1];
       cols[0] = rows[0];
@@ -51,12 +48,11 @@ KronProdDimens::KronProdDimens(const KronProdDimens &kd, int i)
     }
   else
     {
-      // set IAI dimensions
-      /* The dimensions of the middle matrix are taken from |kd|. The
-         dimensions of the first identity matrix are a number of columns of
-         $A_1\otimes\ldots\otimes A_{i-1}$, and the dimensions of the last
-         identity matrix are a number of rows of $A_{i+1}\otimes\ldots\otimes
-         A_n$. */
+      // set I⊗A⊗I dimensions
+      /* The dimensions of the middle matrix are taken from ‘kd’. The dimension
+         of the first identity matrix is the number of columns of A₁⊗…⊗Aᵢ₋₁,
+         and the dimension of the last identity matrix is the number of rows of
+         Aᵢ₊₁⊗…⊗Aₙ. */
       rows[0] = kd.cols.mult(0, i);
       cols[0] = rows[0];
       rows[1] = kd.rows[i];
@@ -67,7 +63,7 @@ KronProdDimens::KronProdDimens(const KronProdDimens &kd, int i)
 }
 
 /* This raises an exception if dimensions are bad for multiplication
-   |out = in*this|. */
+   out = in·this. */
 
 void
 KronProd::checkDimForMult(const ConstTwoDMatrix &in, const TwoDMatrix &out) const
@@ -78,8 +74,8 @@ KronProd::checkDimForMult(const ConstTwoDMatrix &in, const TwoDMatrix &out) cons
               "Wrong dimensions for KronProd in KronProd::checkDimForMult");
 }
 
-/* Here we Kronecker multiply two given vectors |v1| and |v2| and
-   store the result in preallocated |res|. */
+/* Here we Kronecker multiply two given vectors v₁ and v₂ and
+   store the result in preallocated ‘res’. */
 
 void
 KronProd::kronMult(const ConstVector &v1, const ConstVector &v2,
@@ -118,13 +114,11 @@ KronProdAll::isUnit() const
   return i == dimen();
 }
 
-/* Here we multiply $B\cdot(I\otimes A)$. If $m$ is a dimension of the
-   identity matrix, then the product is equal to
-   $B\cdot\hbox{diag}_m(A)$. If $B$ is partitioned accordingly, then the
-   result is $[B_1A, B_2A,\ldots B_mA]$.
+/* Here we compute B·(I⊗A). If m is the dimension of the identity matrix, and B
+   is partitioned accordingly, then the result is (B₁·A B₂·A … Bₘ·A).
 
-   Here, |outi| are partitions of |out|, |ini| are const partitions of
-   |in|, and |id_cols| is $m$. We employ level-2 BLAS. */
+   In the implementation, ‘outi’ are partitions of ‘out’, ‘ini’ are const
+   partitions of ‘in’, and ‘id_cols’ is m. We employ level-2 BLAS. */
 
 void
 KronProdIA::mult(const ConstTwoDMatrix &in, TwoDMatrix &out) const
@@ -142,7 +136,7 @@ KronProdIA::mult(const ConstTwoDMatrix &in, TwoDMatrix &out) const
     }
 }
 
-/* Here we construct |KronProdAI| from |KronProdIAI|. It is clear. */
+/* Here we construct KronProdAI from KronProdIAI. It is clear. */
 KronProdAI::KronProdAI(const KronProdIAI &kpiai)
   : KronProd(KronProdDimens(2)), mat(kpiai.mat)
 {
@@ -152,24 +146,25 @@ KronProdAI::KronProdAI(const KronProdIAI &kpiai)
   kpd.cols[1] = kpiai.kpd.cols[2];
 }
 
-/* Here we multiply $B\cdot(A\otimes I)$. Let the dimension of the
-   matrix $A$ be $m\times n$, the dimension of $I$ be $p$, and a number
-   of rows of $B$ be $q$. We use the fact that $B\cdot(A\otimes
-   I)=\hbox{reshape}(\hbox{reshape}(B, q, mp)\cdot A, q, np)$. This works
-   only for matrix $B$, whose storage has leading dimension equal to
+/* Here we compute B·(A⊗I). Let the dimension of the
+   matrix A be m×n, the dimension of I be p, and the number
+   of rows of B be q. We use the fact that:
+
+    B·(A⊗I)=reshape(reshape(B, q, mp)·A, q, np).
+
+   This works only for matrix B, whose storage has leading dimension equal to
    number of rows.
 
    For cases where the leading dimension is not equal to the number of
-   rows, we partition the matrix $A\otimes I$ to $m\times n$ square
-   partitions $a_{ij}I$. Therefore, we partition $B$ to $m$ partitions
-   $[B_1, B_2,\ldots,B_m]$. Each partition of $B$ has the same number of
-   columns as the identity matrix. If $R$ denotes the resulting matrix,
-   then it can be partitioned to $n$ partitions
-   $[R_1,R_2,\ldots,R_n]$. Each partition of $R$ has the same number of
-   columns as the identity matrix. Then we have $R_i=\sum a_{ji}B_j$.
+   rows, we partition the matrix A⊗I into m×n square partitions aᵢⱼI.
+   Therefore, we partition B into m partitions (B₁ B₂ … Bₘ). Each partition of B has the same number of
+   columns as the identity matrix. If R denotes the resulting matrix,
+   then it can be partitioned into n partitions
+   (R₁ R₂ … Rₙ). Each partition of R has the same number of
+   columns as the identity matrix. Then we have Rᵢ=∑aⱼᵢBⱼ.
 
-   In code, |outi| is $R_i$, |ini| is $B_j$, and |id_cols| is a dimension
-   of the identity matrix */
+   In the implementation, ‘outi’ is Rᵢ, ‘ini’ is Bⱼ, and ‘id_cols’ is the
+   dimension of the identity matrix. */
 
 void
 KronProdAI::mult(const ConstTwoDMatrix &in, TwoDMatrix &out) const
@@ -200,17 +195,15 @@ KronProdAI::mult(const ConstTwoDMatrix &in, TwoDMatrix &out) const
     }
 }
 
-/* Here we multiply $B\cdot(I\otimes A\otimes I)$. If $n$ is a
-   dimension of the first identity matrix, then we multiply
-   $B\cdot\hbox{diag}_n(A\otimes I)$. So we partition $B$ and result $R$
-   accordingly, and multiply $B_i\cdot(A\otimes I)$, which is in fact
-   |KronProdAI::mult|. Note that number of columns of partitions of $B$
-   are number of rows of $A\otimes I$, and number of columns of $R$ are
-   number of columns of $A\otimes I$.
+/* Here we compute R=B·(I⊗A⊗I). If n is the dimension of the first identity
+   matrix, and B is partitioned accordingly, then the result is:
+    (B₁·(A⊗I) B₂·(A⊗I) … Bₘ·(A⊗I)).
+   Each Bᵢ·(A⊗I) is in fact KronProdAI::mult(). Note that the number of columns
+   of partitions of B is the number of rows of A⊗I, and the number of columns
+   of partitions of R is the number of columns of A⊗I.
 
-   In code, |id_cols| is $n$, |akronid| is a Kronecker product object of
-   $A\otimes I$, and |in_bl_width|, and |out_bl_width| are rows and cols of
-   $A\otimes I$. */
+   In the implementation, ‘id_cols’ is n, ‘akronid’ is A⊗I, and ‘in_bl_width’
+   and ‘out_bl_width’ are the rows and cols of A⊗I. */
 
 void
 KronProdIAI::mult(const ConstTwoDMatrix &in, TwoDMatrix &out) const
@@ -231,19 +224,18 @@ KronProdIAI::mult(const ConstTwoDMatrix &in, TwoDMatrix &out) const
     }
 }
 
-/* Here we multiply $B\cdot(A_1\otimes\ldots\otimes A_n)$. First we
-   multiply $B\cdot(A_1\otimes I)$, then this is multiplied by all
-   $I\otimes A_i\otimes I$, and finally by $I\otimes A_n$.
+/* Here we compute B·(A₁⊗…⊗Aₙ). First we compute B·(A₁⊗I), then this is
+   multiplied by all I⊗Aᵢ⊗I, and finally by I⊗Aₙ.
 
    If the dimension of the Kronecker product is only 1, then we multiply
-   two matrices in straight way and return.
+   two matrices in a straight manner and return.
 
-   The intermediate results are stored on heap pointed by |last|. A new
+   The intermediate results are stored on heap pointed by ‘last’. A new
    result is allocated, and then the former storage is deallocated.
 
    We have to be careful in cases when last or first matrix is unit and
    no calculations are performed in corresponding codes. The codes should
-   handle |last| safely also if no calcs are done. */
+   handle ‘last’ safely also if no calcs are done. */
 
 void
 KronProdAll::mult(const ConstTwoDMatrix &in, TwoDMatrix &out) const
@@ -257,7 +249,7 @@ KronProdAll::mult(const ConstTwoDMatrix &in, TwoDMatrix &out) const
     }
 
   // quick zero if one of the matrices is zero
-  /* If one of the matrices is exactly zero or the |in| matrix is zero,
+  /* If one of the matrices is exactly zero or the ‘in’ matrix is zero,
      set out to zero and return */
   bool is_zero = false;
   for (int i = 0; i < dimen() && !is_zero; i++)
@@ -279,9 +271,9 @@ KronProdAll::mult(const ConstTwoDMatrix &in, TwoDMatrix &out) const
   int c;
   std::unique_ptr<TwoDMatrix> last;
 
-  // perform first multiplication AI
-  /* Here we have to construct $A_1\otimes I$, allocate intermediate
-     result |last|, and perform the multiplication. */
+  // perform first multiplication by A₁⊗I
+  /* Here we have to construct A₁⊗I, allocate intermediate result ‘last’, and
+     perform the multiplication. */
   if (matlist[0])
     {
       KronProdAI akronid(*this);
@@ -292,10 +284,10 @@ KronProdAll::mult(const ConstTwoDMatrix &in, TwoDMatrix &out) const
   else
     last = std::make_unique<TwoDMatrix>(in.nrows(), in.ncols(), Vector{in.getData()});
 
-  // perform intermediate multiplications IAI
-  /* Here we go through all $I\otimes A_i\otimes I$, construct the
-     product, allocate new storage for result |newlast|, perform the
-     multiplication, deallocate old |last|, and set |last| to |newlast|. */
+  // perform intermediate multiplications by I⊗Aᵢ⊗I
+  /* Here we go through all I⊗Aᵢ⊗I, construct the product, allocate new storage
+     for result ‘newlast’, perform the multiplication and set ‘last’ to
+     ‘newlast’. */
   for (int i = 1; i < dimen()-1; i++)
     if (matlist[i])
       {
@@ -306,9 +298,7 @@ KronProdAll::mult(const ConstTwoDMatrix &in, TwoDMatrix &out) const
         last = std::move(newlast);
       }
 
-  // perform last multiplication IA
-  /* Here just construct $I\otimes A_n$ and perform multiplication and
-     deallocate |last|. */
+  // perform last multiplication by I⊗Aₙ
   if (matlist[dimen()-1])
     {
       KronProdIA idkrona(*this);
@@ -335,12 +325,11 @@ KronProdAll::multRows(const IntSequence &irows) const
     {
       int j = dimen()-1-i;
 
-      // set |row| to the row of |j|-th matrix
-      /* If the |j|-th matrix is real matrix, then the row is constructed
-         from the matrix. It the matrix is unit, we construct a new vector,
-         fill it with zeros, than set the unit to appropriate place, and make
-         the |row| as ConstVector of this vector, which sheduled for
-         deallocation. */
+      // set ‘row’ to the number of rows of j-th matrix
+      /* If the j-th matrix is a real matrix, then the row is constructed from
+         the matrix. It the matrix is unit, we construct a new vector, fill it
+         with zeros, than set the unit to appropriate place, and make the ‘row’
+         as ConstVector of this vector, which is sheduled for deallocation. */
       if (matlist[j])
         row = std::make_unique<ConstVector>(matlist[j]->getRow(irows[j]));
       else
@@ -352,10 +341,10 @@ KronProdAll::multRows(const IntSequence &irows) const
           to_delete.emplace_back(std::move(aux));
         }
 
-      // set |last| to product of |row| and |last|
-      /* If the |last| is exists, we allocate new storage, Kronecker
-         multiply, deallocate the old storage. If the |last| does not exist,
-         then we only make |last| equal to |row|. */
+      // set ‘last’ to product of ‘row’ and ‘last’
+      /* If the ‘last’ exists, we allocate new storage and Kronecker multiply.
+         If the ‘last’ does not exist, then we only make ‘last’ equal to
+         ‘row’. */
       if (last)
         {
           auto newlast = std::make_unique<Vector>(last->length()*row->length());
@@ -369,11 +358,12 @@ KronProdAll::multRows(const IntSequence &irows) const
   return std::move(last);
 }
 
-/* This permutes the matrices so that the new ordering would minimize
-   memory consumption. As shown in |@<|KronProdAllOptim| class declaration@>|,
-   we want ${m_k\over n_k}\leq{m_{k-1}\over n_{k-1}}\ldots\leq{m_1\over n_1}$,
-   where $(m_i,n_i)$ is the dimension of $A_i$. So we implement the bubble
-   sort. */
+/* This permutes the matrices so that the new ordering would minimize memory
+   consumption. As shown in KronProdAllOptim class declaration, we want:
+
+     mₖ/nₖ ≤ mₖ₋₁/nₖ₋₁ ≤ … ≤ m₁/n₁
+
+   where mᵢ×nᵢ is the dimension of Aᵢ. So we implement the bubble sort. */
 
 void
 KronProdAllOptim::optimizeOrder()
@@ -386,7 +376,7 @@ KronProdAllOptim::optimizeOrder()
           if (static_cast<double>(kpd.rows[j])/kpd.cols[j]
               < static_cast<double>(kpd.rows[j+1])/kpd.cols[j+1])
             {
-              // swap dimensions and matrices at |j| and |j+1|
+              // swap dimensions and matrices at j and j+1
               int s = kpd.rows[j+1];
               kpd.rows[j+1] = kpd.rows[j];
               kpd.rows[j] = s;
@@ -397,7 +387,7 @@ KronProdAllOptim::optimizeOrder()
               matlist[j+1] = matlist[j];
               matlist[j] = m;
 
-              // project the swap to the permutation |oper|
+              // project the swap to the permutation ‘oper’
               s = oper.getMap()[j+1];
               oper.getMap()[j+1] = oper.getMap()[j];
               oper.getMap()[j] = s;

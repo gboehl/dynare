@@ -10,7 +10,7 @@
    belong to the same group. The continuity implies that if two items
    belong to one group, then all items between them belong to that
    group. This continuous partitioning of indices is described by
-   |Symmetry| class.
+   Symmetry class.
 
    The dimension of the tensors here are described (besides the symmetry)
    also by number of variables for each group. This is dealt in the class
@@ -29,11 +29,11 @@ class UGSTensor;
 class FSSparseTensor;
 
 /* This class encapsulates symmetry information for the general
-   symmetry tensor. It maintains a vector of variable numbers |nvs|, and
-   symmetry |sym|. For example, let the symmetry be $y^2u^3$, and
-   variable numbers be 10 for $y$, and 5 for $u$. Then the |nvs| is
-   $(10,5)$, and |sym| is $(2,3)$. Also it maintains |nvmax| unfolded |nvs| with
-   respect to the symmetry, this is $(10,10,5,5,5)$.
+   symmetry tensor. It maintains a vector of variable numbers ‘nvs’, and
+   symmetry ‘sym’. For example, let the symmetry be y²u³, and
+   variable numbers be 10 for y, and 5 for u. Then the ‘nvs’ is
+   (10,5), and ‘sym’ is (2,3). Also it maintains ‘nvmax’ unfolded ‘nvs’ with
+   respect to the symmetry, this is (10,10,5,5,5).
 
    The class is able to calculate number of offsets (columns or rows depending
    what matrix coordinate we describe) in unfolded and folded tensors
@@ -103,7 +103,7 @@ public:
 
 /* Here is a class for folded general symmetry tensor. It only contains
    tensor dimensions, it defines types for indices, implement virtual
-   methods of super class |FTensor|. */
+   methods of super class FTensor. */
 
 class GSSparseTensor;
 class FGSTensor : public FTensor
@@ -161,10 +161,11 @@ public:
     return getDims().getSym();
   }
 
-  /* Performs a contraction of one variable in the tensor. This is, for instance
-   $$\left[r_{x^iz^k}\right]_{\alpha_1\ldots\alpha_i\gamma_1\ldots\gamma_k}=
-   \left[t_{x^iy^jz^k}\right]_{\alpha_1\ldots\alpha_i\beta_1\ldots\beta_j\gamma_1\ldots\gamma_k}
-   \left[c\right]^{\beta_1\ldots\beta_j}$$ */
+  /* Performs a contraction of one variable in the tensor. This is, for
+     instance:
+
+      [r_xⁱzᵏ]_α₁…αᵢγ₁…γₖ = [t_xⁱyʲzᵏ]_α₁…αᵢβ₁…βⱼγ₁…γₖ·[c]^β₁…βⱼ
+  */
   void contractAndAdd(int i, FGSTensor &out,
                       const FRSingleTensor &col) const;
 
@@ -175,8 +176,8 @@ public:
   }
 };
 
-/* Besides similar things that has |FGSTensor|, we have here also
-   method |unfoldData|, and helper method |getFirstIndexOf|
+/* Besides similar things that has FGSTensor, we have here also
+   method unfoldData(), and helper method getFirstIndexOf()
    which corresponds to sorting coordinates in fully symmetric case (here
    the action is more complicated, so we put it to the method). */
 

@@ -10,10 +10,18 @@
 
 #include <memory>
 
+/*
+   Stores a (square) quasi-triangular matrix whose first columns are zero:
+    ⎛0 R⎞
+    ⎝0 M⎠
+   where M (square quasi-triangular) is stored in the super-class, and R (rectangular)
+   is stored in ‘ru’.
+*/
+
 class QuasiTriangularZero : public QuasiTriangular
 {
   int nz; // number of zero columns
-  GeneralMatrix ru; // data in right upper part (nz,d_size)
+  GeneralMatrix ru; // data in right upper part (of size nz×d_size)
 public:
   QuasiTriangularZero(int num_zeros, const ConstVector &d, int d_size);
   // Initializes with r·t

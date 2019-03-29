@@ -3,25 +3,21 @@
 // Kronecker product.
 
 /* Here we define an abstraction for a Kronecker product of a sequence of
-   matrices. This is $A_1\otimes\ldots\otimes A_n$. Obviously we do not
-   store the product in memory. First we need to represent a dimension
-   of the Kronecker product. Then we represent the Kronecker product,
-   simply it is the Kronecker product dimension with a vector of
-   references to the matrices $A_1,\ldots, A_n$.
+   matrices, i.e. A₁⊗…⊗Aₙ. Obviously we do not store the product in memory.
+   First we need to represent a dimension of the Kronecker product. Then we
+   represent the Kronecker product, simply it is the Kronecker product
+   dimension with a vector of references to the matrices A₁,…,Aₙ.
 
-   The main task of this class is to calculate a matrix product
-   $B\cdot(A_1\otimes A_2\otimes\ldots\otimes A_n)$ which in
-   our application has much more moderate dimensions than $A_1\otimes
-   A_2\otimes\ldots\otimes A_n$. We calculate it as
-   $$B\cdot(A_1\otimes I)\cdot\ldots\cdot(I\otimes A_i\otimes
-   I)\cdot\ldots\cdot (I\otimes A_n)$$
-   where dimensions of identity matrices differ and are given by the
-   chosen order. One can naturally ask, whether there is some optimal
-   order minimizing maximum storage needed for intermediate
-   results. The optimal ordering is implemented by class |KronProdAllOptim|.
+   The main task of this class is to calculate a matrix product B·(A₁⊗A₂⊗…⊗Aₙ),
+   which in our application has much more moderate dimensions than A₁⊗A₂⊗…⊗Aₙ.
+   We calculate it as B·(A₁⊗I)·…·(I⊗Aᵢ⊗I)·…·(I⊗Aₙ) where dimensions of identity
+   matrices differ and are given by the chosen order. One can naturally ask,
+   whether there is some optimal order minimizing maximum storage needed for
+   intermediate results. The optimal ordering is implemented by class
+   KronProdAllOptim.
 
-   For this multiplication, we also need to represent products of type
-   $A\otimes I$, $I\otimes A\otimes I$, and $I\otimes A$. */
+   For this multiplication, we also need to represent products of type A⊗I,
+   I⊗A⊗I and I⊗A. */
 
 #ifndef KRON_PROD_H
 #define KRON_PROD_H
@@ -40,8 +36,8 @@ class KronProdIA;
 class KronProdIAI;
 class KronProdAI;
 
-/* |KronProdDimens| maintains a dimension of the Kronecker product. So,
-   it maintains two sequences, one for rows, and one for columns. */
+/* KronProdDimens maintains a dimension of the Kronecker product. So, it
+   maintains two sequences, one for rows, and one for columns. */
 
 class KronProdDimens
 {
@@ -54,23 +50,19 @@ private:
   IntSequence rows;
   IntSequence cols;
 public:
-  /* We define three constructors. First initializes to a given
-     dimension, and all rows and cols are set to zeros. Second is a copy
-     constructor. The third constructor takes dimensions of $A_1\otimes
-     A_2\otimes\ldots\otimes A_n$, and makes dimensions of $I\otimes
-     A_i\otimes I$, or $I\otimes A_n$, or $A_1\otimes I$ for a given
-     $i$. The dimensions of identity matrices are such that
-     $$A_1\otimes A_2\otimes\ldots\otimes A_n=
-     (A_1\otimes I)\cdot\ldots\cdot(I\otimes A_i\otimes I)
-     \cdot\ldots\cdot(I\otimes A_n)$$
-     Note that the matrices on the right do not commute only because sizes
-     of identity matrices which are then given by this ordering. */
+  // Initializes to a given dimension, and all rows and cols are set to zeros
   KronProdDimens(int dim)
     : rows(dim, 0), cols(dim, 0)
   {
   }
   KronProdDimens(const KronProdDimens &kd) = default;
   KronProdDimens(KronProdDimens &&kd) = default;
+
+  /* Takes dimensions of A₁⊗…⊗Aₙ, and makes dimensions of A₁⊗I, I⊗Aᵢ⊗I or I⊗Aₙ
+     for a given i. The dimensions of identity matrices are such that
+     A₁⊗…⊗Aₙ=(A₁⊗I)·…·(I⊗Aᵢ⊗I)·…·(I⊗Aₙ). Note that the matrices on the right do
+     not commute only because sizes of identity matrices which are then given
+     by this ordering. */
   KronProdDimens(const KronProdDimens &kd, int i);
 
   KronProdDimens &operator=(const KronProdDimens &kd) = default;
@@ -124,16 +116,15 @@ public:
   }
 };
 
-/* Here we define an abstract class for all Kronecker product classes,
-   which are |KronProdAll| (the most general), |KronProdIA| (for
-   $I\otimes A$), |KronProdAI| (for $A\otimes I$), and |KronProdIAI| (for
-   $I\otimes A\otimes I$). The purpose of the super class is to only
-   define some common methods and common member |kpd| for dimensions and
-   declare pure virtual |mult| which is implemented by the subclasses.
+/* Here we define an abstract class for all Kronecker product classes, which
+   are KronProdAll (the most general), KronProdIA (for I⊗A), KronProdAI (for
+   A⊗I), and KronProdIAI (for I⊗A⊗I). The purpose of the super class is to only
+   define some common methods and common member ‘kpd’ for dimensions and
+   declare pure virtual mult() which is implemented by the subclasses.
 
-   The class also contains a static method |kronMult|, which calculates a
-   Kronecker product of two vectors and stores it in the provided
-   vector. It is useful at a few points of the library. */
+   The class also contains a static method kronMult(), which calculates a
+   Kronecker product of two vectors and stores it in the provided vector. It is
+   useful at a few points of the library. */
 
 class KronProd
 {
@@ -197,21 +188,19 @@ public:
   }
 };
 
-/* |KronProdAll| is a main class of this file. It represents the
-   Kronecker product $A_1\otimes A_2\otimes\ldots\otimes A_n$. Besides
-   dimensions, it stores pointers to matrices in |matlist| array. If a
-   pointer is null, then the matrix is considered to be unit. The array
-   is set by calls to |setMat| method (for real matrices) or |setUnit|
-   method (for unit matrices).
+/* KronProdAll is the main class of this file. It represents the Kronecker
+   product A₁⊗A₂⊗…⊗Aₙ. Besides dimensions, it stores pointers to matrices in
+   ‘matlist’ array. If a pointer is null, then the matrix is considered to be
+   unit. The array is set by calls to setMat() method (for real matrices) or
+   setUnit() method (for unit matrices).
 
-   The object is constructed by a constructor, which allocates the
-   |matlist| and initializes dimensions to zeros. Then a caller must feed
-   the object with matrices by calling |setMat| and |setUnit| repeatedly
-   for different indices.
+   The object is constructed by a constructor, which allocates the ‘matlist’
+   and initializes dimensions to zeros. Then a caller must feed the object with
+   matrices by calling setMat() and setUnit() repeatedly for different indices.
 
-   We implement the |mult| method of |KronProd|, and a new method
-   |multRows|, which creates a vector of kronecker product of all rows of
-   matrices in the object. The rows are given by the |IntSequence|. */
+   We implement the mult() method of KronProd, and a new method multRows(),
+   which creates a vector of kronecker product of all rows of matrices in the
+   object. The rows are given by the IntSequence. */
 
 class KronProdAll : public KronProd
 {
@@ -240,34 +229,35 @@ private:
   bool isUnit() const;
 };
 
-/* The class |KronProdAllOptim| minimizes memory consumption of the
-   product $B\cdot(A_1\otimes A_2\otimes\ldots\otimes A_k)$. The
-   optimization is done by reordering of the matrices $A_1,\ldots,A_k$,
-   in order to minimize a sum of all storages needed for intermediate
-   results. The optimal ordering is also nearly optimal with respect to
-   number of flops.
+/* The class KronProdAllOptim minimizes memory consumption of the product
+   B·(A₁⊗A₂⊗…⊗Aₖ). The optimization is done by reordering of the matrices
+   A₁,…,Aₖ, in order to minimize a sum of all storages needed for intermediate
+   results. The optimal ordering is also nearly optimal with respect to number
+   of flops.
 
-   Let $(m_i,n_i)$ be dimensions of $A_i$. It is easy to observe, that
-   for $i$-th step we need storage of $r\cdot n_1\cdot\ldots\cdot
-   n_i\cdot m_{i+1}\cdot\ldots\cdot m_k$, where $r$ is a number of rows
-   of $B$. To minimize the sum through all $i$ over all permutations of
-   matrices, it is equivalent to minimize the sum
-   $\sum_{i=1}^k{m_{i+1}\cdot\ldots\cdot m_k\over n_{i+1}\cdot\ldots\cdot
-   n_k}$. The optimal ordering will yield ${m_k\over
-   n_k}\leq{m_{k-1}\over n_{k-1}}\ldots\leq{m_1\over n_1}$.
+   Let (mᵢ,nᵢ) be dimensions of Aᵢ. It is easy to observe, that for the i-th
+   step we need storage of r·(n₁·…·nᵢ·mᵢ₊₁·…·mₖ), where r is the number of rows
+   of B. To minimize the sum through all i over all permutations of matrices,
+   it is equivalent to minimizing the sum
+    ₖ
+    ∑ (mᵢ₊₁·…·mₖ)/(nᵢ₊₁·…·nₖ)
+   ⁱ⁼¹
+   The optimal ordering will yield mₖ/nₖ ≤ mₖ₋₁/nₖ₋₁ ≤ … ≤ m₁/n₁
 
-   Now observe, that the number of flops for $i$-th step is $r\cdot
-   n_1\cdot\ldots\cdot n_i\cdot m_i\cdot\ldots\cdot m_k$. In order to
-   minimize a number of flops, it is equivalent to minimize
-   $\sum_{i=1}^km_i{m_{i+1}\cdot\ldots\cdot m_k\over
-   n_{i+1}\cdot\ldots\cdot n_k}$. Note that, normally, the $m_i$ does not
-   change as much as $n_{j+1},\ldots,n_k$, so the ordering minimizing the
-   memory will be nearly optimal with respect to number of flops.
+   Now observe, that the number of flops for the i-th step is
+   r·(n₁·…·nᵢ·mᵢ·…·mₖ). In order to
+   minimize the number of flops, it is equivalent to minimize
+    ₖ
+    ∑ mᵢ(mᵢ₊₁·…·mₖ)/(nᵢ₊₁·…·nₖ)
+   ⁱ⁼¹
+   Note that, normally, mᵢ does not change as much as nᵢ₊₁,…,nₖ, so the
+   ordering minimizing the memory will be nearly optimal with respect to number
+   of flops.
 
-   The class |KronProdAllOptim| inherits from |KronProdAll|. A public
-   method |optimizeOrder| does the reordering. The permutation is stored
-   in |oper|. So, as long as |optimizeOrder| is not called, the class is
-   equivalent to |KronProdAll|. */
+   The class KronProdAllOptim inherits from KronProdAll. A public method
+   optimizeOrder() does the reordering. The permutation is stored in ‘oper’. So
+   as long as optimizeOrder() is not called, the class is equivalent to
+   KronProdAll. */
 
 class KronProdAllOptim : public KronProdAll
 {
@@ -286,8 +276,8 @@ public:
   }
 };
 
-/* This class represents $I\otimes A$. We have only one reference to
-   the matrix, which is set by constructor. */
+/* This class represents I⊗A. We have only one reference to the matrix, which
+   is set by constructor. */
 
 class KronProdIA : public KronProd
 {
@@ -302,8 +292,8 @@ public:
   void mult(const ConstTwoDMatrix &in, TwoDMatrix &out) const override;
 };
 
-/* This class represents $A\otimes I$. We have only one reference to
-   the matrix, which is set by constructor. */
+/* This class represents A⊗I. We have only one reference to the matrix, which
+   is set by constructor. */
 
 class KronProdAI : public KronProd
 {
@@ -321,8 +311,8 @@ public:
   void mult(const ConstTwoDMatrix &in, TwoDMatrix &out) const override;
 };
 
-/* This class represents $I\otimes A\otimes I$. We have only one reference to
-   the matrix, which is set by constructor. */
+/* This class represents I⊗A⊗I. We have only one reference to the matrix, which
+   is set by constructor. */
 
 class KronProdIAI : public KronProd
 {

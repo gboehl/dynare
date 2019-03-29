@@ -28,10 +28,10 @@ class FSSparseTensor;
    We implement a method adding a given general symmetry tensor to the
    full symmetry tensor supposing the variables of the general symmetry
    tensor are stacked giving only one variable of the full symmetry
-   tensor. For instance, if x=(yᵀ, uᵀ)ᵀ, then we can add tensor
-   [g_y²u] to tensor [g_x³]. This is done in method
-   addSubTensor(). Consult FGSTensor class declaration to know
-   what is general symmetry tensor.
+   tensor.             ⎛y⎞
+   For instance, if x= ⎝u⎠, then we can add tensor [g_y²u] to tensor [g_x³].
+   This is done in method addSubTensor(). Consult FGSTensor class declaration
+   to know what is general symmetry tensor.
 
    Note that the past-the-end index is of the form (nv,…,nv), because
    of the specific implementation of FFSTensor::increment().

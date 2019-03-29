@@ -3,36 +3,30 @@
 // Moments of normal distribution.
 
 /* Here we calculate the higher order moments of normally distributed
-   random vector $u$ with means equal to zero and given
-   variance--covariance matrix $V$, this is $u\sim N(0,V)$. The moment
-   generating function for such distribution is $f(t)=e^{{1\over 2}t^TVt}$. If
-   we derivate it wrt $t$ and unfold the higher dimensional tensors
-   row-wise, we obtain terms like
-   $$\eqalign{
-   {\partial\over\partial t}f(t)=&f(t)\cdot Vt\cr
-   {\partial^2\over\partial t^2}f(t)=&f(t)\cdot(Vt\otimes Vt+v)\cr
-   {\partial^3\over\partial t^3}f(t)=&f(t)\cdot
-   (Vt\otimes Vt\otimes Vt+P_?(v\otimes Vt)+P_?(Vt\otimes v)+v\otimes Vt)\cr
-   {\partial^4\over\partial t^4}f(t)=&f(t)\cdot
-   (Vt\otimes Vt\otimes Vt\otimes Vt+S_?(v\otimes Vt\otimes Vt)+
-   S_?(Vt\otimes v\otimes Vt)+S_?(Vt\otimes Vt\otimes v)+S_?(v\otimes v))}
-   $$
-   where $v$ is vectorized $V$ ($v=\hbox{vec}(V)$), and $P_?$ is a
-   suitable row permutation (corresponds to permutation of
-   multidimensional indices) which permutes the tensor data, so that the
-   index of a variable being derived would be the last. This ensures that
-   all (permuted) tensors can be summed yielding a tensor whose indices
-   have some order (in here we chose the order that more recent
-   derivating variables are to the right). Finally, $S_?$ is a suitable
-   sum of various $P_?$.
+   random vector u with means equal to zero and given
+   variance-covariance matrix V, i.e. u↝𝒩(0,V). The moment
+   generating function for such distribution is f(t)=e^½tᵀVt. If
+   we derivate it w.r.t. t and unfold the higher dimensional tensors
+   row-wise, we obtain terms like:
 
-   We are interested in $S_?$ multiplying the Kronecker powers
-   $\otimes^nv$. The $S_?$ is a (possibly) multi-set of permutations of
-   even order. Note that we know a number of permutations in $S_?$. The
-   above formulas for $F(t)$ derivatives are valid also for monomial
-   $u$, and from literature we know that $2n$-th moment is ${(2n!)\over
-   n!2^n}\sigma^2$. So there are ${(2n!)\over n!2^n}$ permutations in
-   $S_?$.
+    ∂f(t)/∂t = f(t)·Vt
+    ∂²f(t)/∂t² = f(t)·(Vt⊗v)
+    ∂³f(t)/∂t³ = f(t)·(Vt⊗Vt⊗Vt + P(v⊗Vt) + P(Vt⊗v) + v⊗Vt)
+    ∂⁴f(t)/∂t⁴ = f(t)·(Vt⊗Vt⊗Vt⊗Vt + S(v⊗Vt⊗Vt) + S(Vt⊗v⊗Vt) + S(Vt⊗Vt⊗v) + S(v⊗v))
+
+   where v is vectorized V (v=vec(V)), and P is a suitable row permutation
+   (corresponds to permutation of multidimensional indices) which permutes the
+   tensor data, so that the index of a variable being derived would be the
+   last. This ensures that all (permuted) tensors can be summed yielding a
+   tensor whose indices have some order (in here we chose the order that more
+   recent derivating variables are to the right). Finally, S is a suitable sum
+   of various P.
+
+   We are interested in S multiplying the Kronecker powers ⊗ⁿv. The S is a
+   (possibly) multi-set of permutations of even order. Note that we know the
+   number of permutations in S. The above formulas for f(t) derivatives are
+   valid also for monomial u, and from literature we know that 2n-th moment is
+   (2n!)/(n!2ⁿ)·σ². So there are (2n!)/(n!2ⁿ) permutations in S.
 
    In order to find the $S_?$ we need to define a couple of
    things. First we define a sort of equivalence between the permutations

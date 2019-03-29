@@ -8,14 +8,14 @@
 
 /* Constructor used for slicing fully symmetric tensor. It constructs the
    dimensions from the partitioning of variables of fully symmetric tensor. Let
-   the partitioning be, for instance, $(a,b,c,d)$, where $(n_a,n_b,n_c,n_d)$
+   the partitioning be, for instance, (a,b,c,d), where (n_a,n_b,n_c,n_d)
    are lengths of the partitions. Let one want to get a slice only of the part
-   of the fully symmetric tensor corresponding to indices of the form $b^2d^3$.
-   This corresponds to the symmetry $a^0b^2c^0d^3$. So, the dimension of the
-   slice would be also $(n_a,n_b,n_c,n_d)$ for number of variables and
-   $(0,2,0,3)$ for the symmetry. So we provide the constructor which takes
-   sizes of partitions $(n_a,n_b,n_c,n_d)$ as |IntSequence|, and indices of
-   picked partitions, in our case $(1,1,3,3,3)$, as |IntSequence|. */
+   of the fully symmetric tensor corresponding to indices of the form b²d³.
+   This corresponds to the symmetry a⁰b²c⁰d³. So, the dimension of the
+   slice would be also (n_a,n_b,n_c,n_d) for number of variables and
+   (0,2,0,3) for the symmetry. So we provide the constructor which takes
+   sizes of partitions (n_a,n_b,n_c,n_d) as IntSequence, and indices of
+   picked partitions, in our case (1,1,3,3,3), as IntSequence. */
 
 TensorDimens::TensorDimens(const IntSequence &ss, const IntSequence &coor)
   : nvs(ss),
@@ -34,7 +34,7 @@ TensorDimens::TensorDimens(const IntSequence &ss, const IntSequence &coor)
     }
 }
 
-/* Number of unfold offsets is a product of all members of |nvmax|. */
+/* Number of unfold offsets is a product of all members of nvmax. */
 int
 TensorDimens::calcUnfoldMaxOffset() const
 {
@@ -67,14 +67,16 @@ TensorDimens::calcFoldMaxOffset() const
    multiplied with all offsets of the inner block (last) plus an offset
    within the second block.
 
-   Generally, the resulting offset $r$ will be
-   $$\sum_{i=1}^s r_i\cdot\left(\prod_{j=i+1}^sn_j\right),$$
-   where $s$ is a number of blocks (|getSym().num()|), $r_i$ is an offset
-   within $i$-th block, and $n_j$ is a number of all offsets in $j$-th
+   Generally, the resulting offset will be
+        ₛ      ₛ
+   r =  ∑ rᵢ·  ∏  nⱼ
+       ⁱ⁼¹   ʲ⁼ⁱ⁺¹
+   where s is the number of blocks (getSym().num()), rᵢ is the offset
+   within the i-th block, and nⱼ is the number of all offsets in the j-th
    block.
 
    In the code, we go from the innermost to the outermost, maintaining the
-   product in |pow|. */
+   product in ‘pow’. */
 
 int
 TensorDimens::calcFoldOffset(const IntSequence &v) const
@@ -103,19 +105,19 @@ TensorDimens::calcFoldOffset(const IntSequence &v) const
 }
 
 /* In order to find the predecessor of index within folded generally
-   symmetric tensor, note, that a decrease action in $i$-th partition of
+   symmetric tensor, note, that a decrease action in i-th partition of
    symmetric indices can happen only if all indices in all subsequent
    partitions are zero. Then the decrease action of whole the index
    consists of decrease action of the first nonzero partition from the
    right, and setting these trailing zero partitions to their maximum
    indices.
 
-   So we set |iblock| to the number of last partitions. During the
-   execution, |block_first|, and |block_last| will point to the first
-   element of |iblock| and, first element of following block.
+   So we set ‘iblock’ to the number of last partitions. During the
+   execution, ‘block_first’, and ‘block_last’ will point to the first
+   element of ‘iblock’ and, first element of following block.
 
    Then we check for all trailing zero partitions, set them to their
-   maximums and return |iblock| to point to the first non-zero partition
+   maximums and return ‘iblock’ to point to the first non-zero partition
    (or the first partition). Then for this partition, we decrease the
    index (fully symmetric within that partition). */
 
@@ -133,7 +135,7 @@ TensorDimens::decrement(IntSequence &v) const
   while (iblock > 0 && v[block_last-1] == 0)
     {
       for (int i = block_first; i < block_last; i++)
-        v[i] = getNVX(i); // equivalent to |nvs[iblock]|
+        v[i] = getNVX(i); // equivalent to nvs[iblock]
       iblock--;
       block_last = block_first;
       block_first -= getSym()[iblock];
@@ -144,7 +146,7 @@ TensorDimens::decrement(IntSequence &v) const
   FTensor::decrement(vtmp, getNVX(block_first));
 }
 
-// |FGSTensor| conversion from |UGSTensor|
+// FGSTensor conversion from UGSTensor
 /* Here we go through columns of folded, calculate column of unfolded,
    and copy data. */
 FGSTensor::FGSTensor(const UGSTensor &ut)
@@ -159,27 +161,27 @@ FGSTensor::FGSTensor(const UGSTensor &ut)
     }
 }
 
-// |FGSTensor| slicing from |FSSparseTensor|
+// FGSTensor slicing from FSSparseTensor
 /* Here is the code of slicing constructor from the sparse tensor. We
    first calculate coordinates of first and last index of the slice
-   within the sparse tensor (these are |lb| and |ub|), and then we
+   within the sparse tensor (these are ‘lb’ and ‘ub’), and then we
    iterate through all items between them (in lexicographical ordering of
-   sparse tensor), and check whether an item is between the |lb| and |ub|
+   sparse tensor), and check whether an item is between the ‘lb’ and ‘ub’
    in Cartesian ordering (this corresponds to belonging to the
-   slices). If it belongs, then we subtract the lower bound |lb| to
-   obtain coordinates in the |this| tensor and we copy the item. */
+   slices). If it belongs, then we subtract the lower bound ‘lb’ to
+   obtain coordinates in the ‘this’ tensor and we copy the item. */
 FGSTensor::FGSTensor(const FSSparseTensor &t, const IntSequence &ss,
                      const IntSequence &coor, TensorDimens td)
   : FTensor(indor::along_col, td.getNVX(), t.nrows(),
             td.calcFoldMaxOffset(), td.dimen()),
     tdims(std::move(td))
 {
-  // set |lb| and |ub| to lower and upper bounds of indices
-  /* Here we first set |s_offsets| to offsets of partitions whose lengths
-     are given by |ss|. So |s_offsets| is a cumulative sum of |ss|.
+  // set ‘lb’ and ‘ub’ to lower and upper bounds of indices
+  /* Here we first set ‘s_offsets’ to offsets of partitions whose lengths
+     are given by ‘ss’. So ‘s_offsets’ is a cumulative sum of ‘ss’.
 
-     Then we create |lb| to be coordinates of the possibly first index from
-     the slice, and |ub| to be coordinates of possibly last index of the
+     Then we create ‘lb’ to be coordinates of the possibly first index from
+     the slice, and ‘ub’ to be coordinates of possibly last index of the
      slice. */
   IntSequence s_offsets(ss.size(), 0);
   for (int i = 1; i < ss.size(); i++)
@@ -208,8 +210,8 @@ FGSTensor::FGSTensor(const FSSparseTensor &t, const IntSequence &ss,
       }
 }
 
-// |FGSTensor| slicing from |FFSTensor|
-/* The code is similar to |@<|FGSTensor| slicing from |FSSparseTensor|@>|. */
+// FGSTensor slicing from FFSTensor
+/* The code is similar to FGSTensor slicing from FSSparseTensor. */
 FGSTensor::FGSTensor(const FFSTensor &t, const IntSequence &ss,
                      const IntSequence &coor, TensorDimens td)
   : FTensor(indor::along_col, td.getNVX(), t.nrows(),
@@ -219,7 +221,7 @@ FGSTensor::FGSTensor(const FFSTensor &t, const IntSequence &ss,
   if (ncols() == 0)
     return;
 
-  // set |lb| and |ub| to lower and upper bounds of indices
+  // set ‘lb’ and ‘ub’ to lower and upper bounds of indices
   /* Same code as in the previous converting constructor */
   IntSequence s_offsets(ss.size(), 0);
   for (int i = 1; i < ss.size(); i++)
@@ -251,7 +253,7 @@ FGSTensor::FGSTensor(const FFSTensor &t, const IntSequence &ss,
     }
 }
 
-// |FGSTensor| conversion from |GSSparseTensor|
+// FGSTensor conversion from GSSparseTensor
 FGSTensor::FGSTensor(const GSSparseTensor &t)
   : FTensor(indor::along_col, t.getDims().getNVX(), t.nrows(),
             t.getDims().calcFoldMaxOffset(), t.dimen()), tdims(t.getDims())
@@ -266,7 +268,7 @@ FGSTensor::FGSTensor(const GSSparseTensor &t)
 
 /* First we increment as unfolded, then we must monotonize within
    partitions defined by the symmetry. This is done by
-   |IntSequence::pmonotone|. */
+   IntSequence::pmonotone(). */
 
 void
 FGSTensor::increment(IntSequence &v) const
@@ -286,22 +288,23 @@ FGSTensor::unfold() const
 }
 
 /* Here we implement the contraction
-   $$\left[r_{x^iz^k}\right]_{\alpha_1\ldots\alpha_i\gamma_1\ldots\gamma_k}=
-   \left[t_{x^iy^jz^k}\right]_{\alpha_1\ldots\alpha_i\beta_1\ldots\beta_j\gamma_1\ldots\gamma_k}
-   \left[c\right]^{\beta_1\ldots\beta_j}
-   $$
-   More generally, $x^i$ and $z^k$ can represent also general symmetries.
+
+    [r_xⁱzᵏ]_α₁…αᵢγ₁…γₖ = [t_xⁱyʲzᵏ]_α₁…αᵢβ₁…βⱼγ₁…γₖ·[c]^β₁…βⱼ
+
+   More generally, xⁱ and zᵏ can represent also general symmetries.
 
    The operation can be rewritten as a matrix product
-   $$\left[t_{x^iy^jz^k}\right]\cdot\left(I_l\otimes c\otimes I_r\right)$$
-   where $l$ is a number of columns in tensor with symmetry on the left
-   (i.e. $x^i$), and $r$ is a number of columns in tensor with a symmetry
-   on the right (i.e. $z^k$). The code proceeds accordingly. We first
-   form two symmetries |sym_left| and |sym_right|, then calculate the
-   number of columns |dleft|$=l$ and |dright|$=r$, form the Kronecker
+
+    [t_xⁱyʲzᵏ]·(Iₗ⊗c⊗Iᵣ)
+
+   where l is a number of columns in tensor with symmetry on the left
+   (i.e. xⁱ), and r is a number of columns in tensor with a symmetry
+   on the right (i.e. zᵏ). The code proceeds accordingly. We first
+   form two symmetries ‘sym_left’ and ‘sym_right’, then calculate the
+   number of columns dleft=l and dright=r, form the Kronecker
    product and multiply and add.
 
-   The input parameter |i| is the order of a variable being contracted
+   The input parameter ‘i’ is the order of a variable being contracted
    starting from 0. */
 
 void
@@ -314,12 +317,12 @@ FGSTensor::contractAndAdd(int i, FGSTensor &out,
   TL_RAISE_IF(getSym()[i] != col.dimen() || tdims.getNVS()[i] != col.nvar(),
               "Wrong dimensions for FGSTensor::contractAndAdd");
 
-  // set |sym_left| and |sym_right| to symmetries around |i|
-  /* Here we have a symmetry of |this| tensor and we have to set
-     |sym_left| to the subsymmetry left from the |i|-th variable and
-     |sym_right| to the subsymmetry right from the |i|-th variable. So we
+  // set ‘sym_left’ and ‘sym_right’ to symmetries around ‘i’
+  /* Here we have a symmetry of ‘this’ tensor and we have to set
+     ‘sym_left’ to the subsymmetry left from the i-th variable and
+     ‘sym_right’ to the subsymmetry right from the i-th variable. So we
      copy first all the symmetry and then put zeros to the left for
-     |sym_right| and to the right for |sym_left|. */
+     ‘sym_right’ and to the right for ‘sym_left’. */
   Symmetry sym_left(getSym());
   Symmetry sym_right(getSym());
   for (int j = 0; j < getSym().num(); j++)
@@ -358,7 +361,7 @@ UGSTensor::UGSTensor(const FGSTensor &ft)
   unfoldData();
 }
 
-// |UGSTensor| slicing from |FSSparseTensor|
+// UGSTensor slicing from FSSparseTensor
 /* This makes a folded slice from the sparse tensor and unfolds it. */
 UGSTensor::UGSTensor(const FSSparseTensor &t, const IntSequence &ss,
                      const IntSequence &coor, TensorDimens td)
@@ -378,7 +381,7 @@ UGSTensor::UGSTensor(const FSSparseTensor &t, const IntSequence &ss,
   unfoldData();
 }
 
-// |UGSTensor| slicing from |UFSTensor|
+// UGSTensor slicing from UFSTensor
 /* This makes a folded slice from dense and unfolds it. */
 UGSTensor::UGSTensor(const UFSTensor &t, const IntSequence &ss,
                      const IntSequence &coor, TensorDimens td)
@@ -396,8 +399,8 @@ UGSTensor::UGSTensor(const UFSTensor &t, const IntSequence &ss,
   unfoldData();
 }
 
-// |UGSTensor| increment and decrement codes
-/* Clear, just call |UTensor| static methods. */
+// UGSTensor increment and decrement codes
+/* Clear, just call UTensor static methods. */
 void
 UGSTensor::increment(IntSequence &v) const
 {
@@ -462,7 +465,7 @@ UGSTensor::getFirstIndexOf(const index &in) const
 }
 
 /* Here is perfectly same code with the same semantics as in
-   |@<|FGSTensor::contractAndAdd| code@>|. */
+   FGSTensor::contractAndAdd(). */
 
 void
 UGSTensor::contractAndAdd(int i, UGSTensor &out,
@@ -473,7 +476,7 @@ UGSTensor::contractAndAdd(int i, UGSTensor &out,
   TL_RAISE_IF(getSym()[i] != col.dimen() || tdims.getNVS()[i] != col.nvar(),
               "Wrong dimensions for UGSTensor::contractAndAdd");
 
-  // set |sym_left| and |sym_right| to symmetries around |i|
+  // set ‘sym_left’ and ‘sym_right’ to symmetries around i
   /* Same code as in FGSTensor::contractAndAdd */
   Symmetry sym_left(getSym());
   Symmetry sym_right(getSym());
