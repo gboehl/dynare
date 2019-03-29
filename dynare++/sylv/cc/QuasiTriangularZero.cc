@@ -30,18 +30,18 @@ QuasiTriangularZero::QuasiTriangularZero(double r,
 
 QuasiTriangularZero::QuasiTriangularZero(double r,
                                          const QuasiTriangularZero &t,
-                                         double rr,
-                                         const QuasiTriangularZero &tt)
-  : QuasiTriangular(r, t, rr, tt),
+                                         double r2,
+                                         const QuasiTriangularZero &t2)
+  : QuasiTriangular(r, t, r2, t2),
     nz(t.nz),
     ru(t.ru)
 {
   ru.mult(r);
-  ru.add(rr, tt.ru);
+  ru.add(r2, t2.ru);
 }
 
-QuasiTriangularZero::QuasiTriangularZero(int p, const QuasiTriangularZero &t)
-  : QuasiTriangular(p, t),
+QuasiTriangularZero::QuasiTriangularZero(const std::string &dummy, const QuasiTriangularZero &t)
+  : QuasiTriangular(dummy, t),
     nz(t.nz),
     ru(t.ru)
 {

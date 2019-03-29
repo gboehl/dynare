@@ -16,7 +16,7 @@ class BlockDiagonal : public QuasiTriangular
 public:
   BlockDiagonal(ConstVector d, int d_size);
   BlockDiagonal(const BlockDiagonal &b) = default;
-  BlockDiagonal(const QuasiTriangular &t);
+  explicit BlockDiagonal(const QuasiTriangular &t);
   BlockDiagonal &operator=(const QuasiTriangular &t)
   {
     GeneralMatrix::operator=(t);

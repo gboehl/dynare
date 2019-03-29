@@ -332,12 +332,15 @@ protected:
   Diagonal diagonal;
 public:
   QuasiTriangular(const ConstVector &d, int d_size);
+  // Initializes with r·t
   QuasiTriangular(double r, const QuasiTriangular &t);
+  // Initializes with r·t+r₂·t₂
   QuasiTriangular(double r, const QuasiTriangular &t,
-                  double rr, const QuasiTriangular &tt);
-  QuasiTriangular(int p, const QuasiTriangular &t);
-  QuasiTriangular(const SchurDecomp &decomp);
-  QuasiTriangular(const SchurDecompZero &decomp);
+                  double r2, const QuasiTriangular &t2);
+  // Initializes with t²
+  QuasiTriangular(const std::string &dummy, const QuasiTriangular &t);
+  explicit QuasiTriangular(const SchurDecomp &decomp);
+  explicit QuasiTriangular(const SchurDecompZero &decomp);
   QuasiTriangular(const QuasiTriangular &t);
   
   ~QuasiTriangular() override = default;
@@ -414,20 +417,23 @@ public:
   {
     return std::make_unique<QuasiTriangular>(*this);
   }
+  // Returns this²
   virtual std::unique_ptr<QuasiTriangular>
-  clone(int p, const QuasiTriangular &t) const
+  square() const
   {
-    return std::make_unique<QuasiTriangular>(p, t);
+    return std::make_unique<QuasiTriangular>("square", *this);
   }
+  // Returns r·this
   virtual std::unique_ptr<QuasiTriangular>
-  clone(double r) const
+  scale(double r) const
   {
     return std::make_unique<QuasiTriangular>(r, *this);
   }
+  // Returns r·this + r₂·t₂
   virtual std::unique_ptr<QuasiTriangular>
-  clone(double r, double rr, const QuasiTriangular &tt) const
+  linearlyCombine(double r, double r2, const QuasiTriangular &t2) const
   {
-    return std::make_unique<QuasiTriangular>(r, *this, rr, tt);
+    return std::make_unique<QuasiTriangular>(r, *this, r2, t2);
   }
 protected:
   // this = r·t

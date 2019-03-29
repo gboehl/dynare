@@ -79,17 +79,13 @@ Diagonal::Diagonal(double *data, int d_size)
       if ((jbar < d_size-1) && !isZero(data[ill]))
         {
           // it is not last column and we have nonzero below diagonal
-          DiagonalBlock b(jbar, false, &data[id], &data[idd],
-                          &data[iur], &data[ill]);
-          blocks.push_back(b);
+          blocks.emplace_back(jbar, false, &data[id], &data[idd],
+                              &data[iur], &data[ill]);
           jbar++;
         }
       else
-        {
-          // it is last column or we have zero below diagonal
-          DiagonalBlock b(jbar, true, &data[id], &data[id], nullptr, nullptr);
-          blocks.push_back(b);
-        }
+        // it is last column or we have zero below diagonal
+        blocks.emplace_back(jbar, true, &data[id], &data[id], nullptr, nullptr);
       jbar++;
       j++;
     }
@@ -100,21 +96,20 @@ Diagonal::Diagonal(double *data, const Diagonal &d)
   num_all = d.num_all;
   num_real = d.num_real;
   int d_size = d.getSize();
-  for (const auto & dit : d)
+  for (const auto &block : d)
     {
       double *beta1 = nullptr;
       double *beta2 = nullptr;
-      int id = dit.getIndex()*(d_size+1);
+      int id = block.getIndex()*(d_size+1);
       int idd = id;
-      if (!dit.isReal())
+      if (!block.isReal())
         {
           beta1 = &data[id+d_size];
           beta2 = &data[id+1];
           idd = id + d_size + 1;
         }
-      DiagonalBlock b(dit.getIndex(), dit.isReal(),
-                      &data[id], &data[idd], beta1, beta2);
-      blocks.push_back(b);
+      blocks.emplace_back(block.getIndex(), block.isReal(),
+                          &data[id], &data[idd], beta1, beta2);
     }
 }
 
@@ -231,8 +226,7 @@ Diagonal::checkConsistency(diag_iter it)
       it->real = true;
       it->beta1 = nullptr;
       it->beta2 = nullptr;
-      DiagonalBlock b(jbar+1, d2);
-      blocks.insert(++it, b);
+      blocks.emplace(++it, jbar+1, d2);
       num_real += 2;
       num_all++;
     }
@@ -397,11 +391,11 @@ QuasiTriangular::QuasiTriangular(double r, const QuasiTriangular &t)
 }
 
 QuasiTriangular::QuasiTriangular(double r, const QuasiTriangular &t,
-                                 double rr, const QuasiTriangular &tt)
+                                 double r2, const QuasiTriangular &t2)
   : SqSylvMatrix(t.numRows()), diagonal(getData().base(), t.diagonal)
 {
   setMatrix(r, t);
-  addMatrix(rr, tt);
+  addMatrix(r2, t2);
 }
 
 QuasiTriangular::QuasiTriangular(const QuasiTriangular &t)
@@ -414,7 +408,7 @@ QuasiTriangular::QuasiTriangular(const ConstVector &d, int d_size)
 {
 }
 
-QuasiTriangular::QuasiTriangular(int p, const QuasiTriangular &t)
+QuasiTriangular::QuasiTriangular(const std::string &dummy, const QuasiTriangular &t)
   : SqSylvMatrix(t.numRows()), diagonal(getData().base(), t.diagonal)
 {
   Vector aux(t.getData());
