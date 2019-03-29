@@ -233,7 +233,7 @@ function terms = decomposeAdditiveTerms(terms, node, node_sign)
 if strcmp(node.node_type, 'NumConstNode') || strcmp(node.node_type, 'VariableNode')
     terms = [terms {{node node_sign}}];
 elseif strcmp(node.node_type, 'UnaryOpNode')
-    if strcmp(node.type, 'uminus')
+    if strcmp(node.op, 'uminus')
         terms = decomposeAdditiveTerms(terms, node.arg, -node_sign);
     else
         terms = [terms {{node node_sign}}];
