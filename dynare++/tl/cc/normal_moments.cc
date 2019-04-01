@@ -14,14 +14,12 @@ UNormalMoments::UNormalMoments(int maxdim, const TwoDMatrix &v)
     generateMoments(maxdim, v);
 }
 
-/* Here we fill up the container with the tensors for $d=2,4,6,\ldots$
-   up to the given dimension. Each tensor of moments is equal to
-   $F_n\left(\otimes^nv\right).$ This has a dimension equal to
-   $2n$. See the header file for proof and details.
+/* Here we fill up the container with the tensors for d=2,4,6,… up to the given
+   dimension. Each tensor of moments is equal to Fₙ(⊗ⁿv). This has a dimension
+   equal to 2n. See the header file for proof and details.
 
-   Here we sequentially construct the Kronecker power
-   $\otimes^nv$, and apply $F_n$. */
-
+   Here we sequentially construct the Kronecker power ⊗ⁿv and apply Fₙ.
+ */
 void
 UNormalMoments::generateMoments(int maxdim, const TwoDMatrix &v)
 {
@@ -42,15 +40,15 @@ UNormalMoments::generateMoments(int maxdim, const TwoDMatrix &v)
                          newkronv->getData());
       kronv = std::move(newkronv);
       auto mom = std::make_unique<URSingleTensor>(nv, d);
-      // apply $F_n$ to |kronv|
+      // apply Fₙ to ‘kronv’
       /* Here we go through all equivalences, select only those having 2
-         elements in each class, then go through all elements in |kronv| and
-         add to permuted location of |mom|.
+         elements in each class, then go through all elements in ‘kronv’ and
+         add to permuted location of ‘mom’.
 
          The permutation must be taken as inverse of the permutation implied by
          the equivalence, since we need a permutation which after application
          to identity of indices yileds indices in the equivalence classes. Note
-         how the |Equivalence::apply| method works. */
+         how the Equivalence::apply() method works. */
       mom->zeros();
       const EquivalenceSet eset = TLStatic::getEquiv(d);
       for (const auto &cit : eset)
@@ -70,7 +68,7 @@ UNormalMoments::generateMoments(int maxdim, const TwoDMatrix &v)
     }
 }
 
-/* We return |true| for an equivalence whose each class has 2 elements. */
+/* We return true for an equivalence whose each class has 2 elements. */
 
 bool
 UNormalMoments::selectEquiv(const Equivalence &e)

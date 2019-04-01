@@ -8,11 +8,10 @@
 
 #include <iostream>
 
-/* Here we decide, what method for filling a slice in slicing
-   constructor to use. A few experiments suggest, that if the tensor is
-   more than 8\% filled, the first method (|fillFromSparseOne|) is
-   better. For fill factors less than 1\%, the second can be 3 times
-   quicker. */
+/* Here we decide, what method for filling a slice in slicing constructor to
+   use. A few experiments suggest, that if the tensor is more than 8% filled,
+   the first method (fillFromSparseOne()) is better. For fill factors less than
+   1%, the second can be 3 times quicker. */
 
 UPSTensor::fill_method
 UPSTensor::decideFillMethod(const FSSparseTensor &t)
@@ -100,17 +99,17 @@ UPSTensor::addTo(FGSTensor &out) const
    iterator, which iterates over tensor at some higher levels. So we
    simulate it by the following code.
 
-   First we set |cols| to the length of the data chunk and |off| to its
-   dimension. Then we need a front part of |nvmax| of |out|, which is
-   |nvmax_part|. Our iterator here is an integer sequence |outrun| with
-   full length, and |outrun_part| its front part. The |outrun| is
-   initialized to zeros. In each step we need to increment |outrun|
-   |cols|-times, this is done by incrementing its prefix |outrun_part|.
+   First we set ‘cols’ to the length of the data chunk and ‘off’ to its
+   dimension. Then we need a front part of ‘nvmax’ of ‘out’, which is
+   ‘nvmax_part’. Our iterator here is an integer sequence ‘outrun’ with
+   full length, and ‘outrun_part’ its front part. The ‘outrun’ is
+   initialized to zeros. In each step we need to increment ‘outrun’
+   ‘cols’-times, this is done by incrementing its prefix ‘outrun_part’.
 
-   So we loop over all |cols|wide partitions of |out|, permute |outrun|
-   to obtain |perrun| to obtain column of this matrix. (note that the
-   trailing part of |perrun| is the same as of |outrun|. Then we
-   construct submatrices, add them, and increment |outrun|. */
+   So we loop over all ‘cols’-wide partitions of ‘out’, permute ‘outrun’
+   to obtain ‘perrun’ to obtain column of this matrix. (note that the
+   trailing part of ‘perrun’ is the same as of ‘outrun’. Then we
+   construct submatrices, add them, and increment ‘outrun’. */
 
 void
 UPSTensor::addTo(UGSTensor &out) const
@@ -124,7 +123,7 @@ UPSTensor::addTo(UGSTensor &out) const
   IntSequence nvmax_part(out.getDims().getNVX(), 0, out.dimen()-off);
   for (int out_col = 0; out_col < out.ncols(); out_col += cols)
     {
-      // permute |outrun|
+      // permute ‘outrun’
       IntSequence perrun(out.dimen());
       tdims.getPer().apply(outrun, perrun);
       index from(*this, perrun);
@@ -133,12 +132,12 @@ UPSTensor::addTo(UGSTensor &out) const
       TwoDMatrix subout(out, out_col, cols);
       // add
       subout.add(1, subfrom);
-      // increment |outrun| by cols
+      // increment ‘outrun’ by cols
       UTensor::increment(outrun_part, nvmax_part);
     }
 }
 
-/* This returns a product of all items in |nvmax| which make up the
+/* This returns a product of all items in ‘nvmax’ which make up the
    trailing identity part. */
 
 int
@@ -147,7 +146,7 @@ UPSTensor::tailIdentitySize() const
   return tdims.getNVX().mult(dimen()-tdims.tailIdentity(), dimen());
 }
 
-/* This fill method is pretty dumb. We go through all columns in |this|
+/* This fill method is pretty dumb. We go through all columns in ‘this’
    tensor, translate coordinates to sparse tensor, sort them and find an
    item in the sparse tensor. There are many not successful lookups for
    really sparse tensor, that is why the second method works better for
@@ -181,20 +180,18 @@ UPSTensor::fillFromSparseOne(const FSSparseTensor &t, const IntSequence &ss,
     }
 }
 
-/* This is the second way of filling the slice. For instance, let the
-   slice correspond to partitions $abac$. In here we first calculate
-   lower and upper bounds for index of the sparse tensor for the
-   slice. These are |lb_srt| and |ub_srt| respectively. They corresponds
-   to ordering $aabc$. Then we go through that interval, and select items
-   which are really between the bounds.  Then we take the index, subtract
-   the lower bound to get it to coordinates of the slice. We get
-   something like $(i_a,j_a,k_b,l_c)$. Then we apply the inverse
-   permutation as of the sorting form $abac\mapsto aabc$ to get index
-   $(i_a,k_b,j_a,l_c)$. Recall that the slice is unfolded, so we have to
-   apply all permutations preserving the stack coordinates $abac$. In our
-   case we get list of indices $(i_a,k_b,j_a,l_c)$ and
-   $(j_a,k_b,i_a,l_c)$. For all we copy the item of the sparse tensor to
-   the appropriate column. */
+/* This is the second way of filling the slice. For instance, let the slice
+   correspond to partitions “abac”. In here we first calculate lower and upper
+   bounds for index of the sparse tensor for the slice. These are ‘lb_srt’ and
+   ‘ub_srt’ respectively. They corresponds to ordering “aabc”. Then we go
+   through that interval, and select items which are really between the bounds.
+   Then we take the index, subtract the lower bound to get it to coordinates of
+   the slice. We get something like (i_a,j_a,k_b,l_c). Then we apply the
+   inverse permutation as of the sorting form abac ↦ aabc to get index
+   (i_a,k_b,j_a,l_c). Recall that the slice is unfolded, so we have to apply
+   all permutations preserving the stack coordinates “abac”. In our case we get
+   list of indices (i_a,k_b,j_a,l_c) and (j_a,k_b,i_a,l_c). For all we copy the
+   item of the sparse tensor to the appropriate column. */
 
 void
 UPSTensor::fillFromSparseTwo(const FSSparseTensor &t, const IntSequence &ss,
@@ -242,7 +239,7 @@ UPSTensor::fillFromSparseTwo(const FSSparseTensor &t, const IntSequence &ss,
 }
 
 /* Here we calculate the maximum offsets in each folded dimension
-   (dimension sizes, hence |ds|). */
+   (dimension sizes, hence ‘ds’). */
 
 void
 PerTensorDimens2::setDimensionSizes()
@@ -255,12 +252,12 @@ PerTensorDimens2::setDimensionSizes()
     }
 }
 
-/* If there are two folded dimensions, the offset in such a dimension
-   is offset of the second plus offset of the first times the maximum
-   offset of the second. If there are $n+1$ dimensions, the offset is a
-   sum of offsets of the last dimension plus the offset in the first $n$
-   dimensions multiplied by the maximum offset of the last
-   dimension. This is exactly what the following code does. */
+/* If there are two folded dimensions, the offset in such a dimension is offset
+   of the second plus offset of the first times the maximum offset of the
+   second. If there are n+1 dimensions, the offset is a sum of offsets of the
+   last dimension plus the offset in the first n dimensions multiplied by the
+   maximum offset of the last dimension. This is exactly what the following
+   code does. */
 
 int
 PerTensorDimens2::calcOffset(const IntSequence &coor) const
@@ -295,9 +292,8 @@ PerTensorDimens2::print() const
 }
 
 /* Here we increment the given integer sequence. It corresponds to
-   |UTensor::increment| of the whole sequence, and then partial
-   monotonizing of the subsequences with respect to the
-   symmetries of each dimension. */
+   UTensor::increment() of the whole sequence, and then partial monotonizing of
+   the subsequences with respect to the symmetries of each dimension. */
 
 void
 FPSTensor::increment(IntSequence &v) const
@@ -326,7 +322,7 @@ FPSTensor::unfold() const
   TL_RAISE("Unfolding of FPSTensor not implemented");
 }
 
-/* We only call |calcOffset| of the |PerTensorDimens2|. */
+/* We only call calcOffset() on the PerTensorDimens2. */
 
 int
 FPSTensor::getOffset(const IntSequence &v) const
@@ -334,8 +330,8 @@ FPSTensor::getOffset(const IntSequence &v) const
   return tdims.calcOffset(v);
 }
 
-/* Here we add the tensor to |out|. We go through all columns of the
-   |out|, apply the permutation to get index in the tensor, and add the
+/* Here we add the tensor to ‘out’. We go through all columns of the
+   ‘out’, apply the permutation to get index in the tensor, and add the
    column. Note that if the permutation is identity, then the dimensions
    of the tensors might not be the same (since this tensor is partially
    folded). */
@@ -353,11 +349,11 @@ FPSTensor::addTo(FGSTensor &out) const
 }
 
 /* Here is the constructor which multiplies the Kronecker product with
-   the general symmetry sparse tensor |GSSparseTensor|. The main idea is
+   the general symmetry sparse tensor GSSparseTensor. The main idea is
    to go through items in the sparse tensor (each item selects rows in
    the matrices form the Kornecker product), then to Kronecker multiply
    the rows and multiply with the item, and to add the resulting row to
-   the appropriate row of the resulting |FPSTensor|.
+   the appropriate row of the resulting FPSTensor.
 
    The realization of this idea is a bit more complicated since we have
    to go through all items, and each item must be added as many times as
@@ -365,12 +361,12 @@ FPSTensor::addTo(FGSTensor &out) const
    order of rows in their Kronecker product.
 
    So, we through all unfolded indices in a tensor with the same
-   dimensions as the |GSSparseTensor| (sparse slice). For each such index
+   dimensions as the GSSparseTensor (sparse slice). For each such index
    we calculate its folded version (corresponds to ordering of
    subsequences within symmetries), we test if there is an item in the
    sparse slice with such coordinates, and if there is, we construct the
    Kronecker product of the rows, and go through all of items with the
-   coordinates, and add to appropriate rows of |this| tensor. */
+   coordinates, and add to appropriate rows of ‘this’ tensor. */
 
 FPSTensor::FPSTensor(const TensorDimens &td, const Equivalence &e, const Permutation &p,
                      const GSSparseTensor &a, const KronProdAll &kp)

@@ -3,7 +3,7 @@
 #include "permutation.hh"
 #include "tl_exception.hh"
 
-/* This is easy, we simply apply the map in the fashion $s\circ m$.. */
+/* This is easy, we simply apply the map in the fashion s∘m */
 
 void
 Permutation::apply(const IntSequence &src, IntSequence &tar) const
@@ -42,13 +42,13 @@ Permutation::tailIdentity() const
 }
 
 /* This calculates a map which corresponds to sorting in the following
-   sense: $(\hbox{sorted }s)\circ m = s$, where $s$ is a given sequence.
+   sense: $(sorted s)∘m = s, where s is a given sequence.
 
-   We go through |s| and find an the same item in sorted |s|. We
-   construct the |permap| from the found pair of indices. We have to be
-   careful, to not assign to two positions in |s| the same position in
-   sorted |s|, so we maintain a bitmap |flag|, in which we remember
-   indices from the sorted |s| already assigned. */
+   We go through ‘s’ and find an the same item in sorted ‘s’. We
+   construct the ‘permap’ from the found pair of indices. We have to be
+   careful, to not assign to two positions in ‘s’ the same position in
+   sorted ‘s’, so we maintain a bitmap ‘flag’, in which we remember
+   indices from the sorted ‘s’ already assigned. */
 
 void
 Permutation::computeSortingMap(const IntSequence &s)
