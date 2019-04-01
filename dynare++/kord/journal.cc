@@ -39,8 +39,10 @@ SystemResources::pageSize()
 long
 SystemResources::physicalPages()
 {
-#ifndef _WIN32
+#if !defined(_WIN32) && !defined(__APPLE__)
   return sysconf(_SC_PHYS_PAGES);
+#elif defined(__APPLE__)
+  return 0; // FIXME
 #else
   MEMORYSTATUS memstat;
   GlobalMemoryStatus(&memstat);
@@ -51,8 +53,10 @@ SystemResources::physicalPages()
 long
 SystemResources::availablePhysicalPages()
 {
-#ifndef _WIN32
+#if !defined(_WIN32) && !defined(__APPLE__)
   return sysconf(_SC_AVPHYS_PAGES);
+#elif defined(__APPLE__)
+  return 0; // FIXME
 #else
   MEMORYSTATUS memstat;
   GlobalMemoryStatus(&memstat);
@@ -66,7 +70,7 @@ SystemResources::onlineProcessors()
 #ifndef _WIN32
   return sysconf(_SC_NPROCESSORS_ONLN);
 #else
-  return -1;
+  return -1; // FIXME
 #endif
 }
 
