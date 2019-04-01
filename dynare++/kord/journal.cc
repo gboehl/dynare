@@ -14,6 +14,10 @@
 # include <sys/utsname.h>  // For uname()
 # include <cstdlib>        // For getloadavg()
 # include <unistd.h>       // For sysconf()
+#ifdef __APPLE__
+# include <sys/types.h>
+# include <sys/sysctl.h>
+#endif
 #else
 # ifndef NOMINMAX
 #  define NOMINMAX         // Do not define "min" and "max" macros
@@ -39,10 +43,8 @@ SystemResources::pageSize()
 long
 SystemResources::physicalPages()
 {
-#if !defined(_WIN32) && !defined(__APPLE__)
+#if !defined(_WIN32)
   return sysconf(_SC_PHYS_PAGES);
-#elif defined(__APPLE__)
-  return 0; // FIXME
 #else
   MEMORYSTATUS memstat;
   GlobalMemoryStatus(&memstat);
@@ -56,7 +58,13 @@ SystemResources::availablePhysicalPages()
 #if !defined(_WIN32) && !defined(__APPLE__)
   return sysconf(_SC_AVPHYS_PAGES);
 #elif defined(__APPLE__)
-  return 0; // FIXME
+  unsigned long usermem = 0;
+  size_t len = sizeof usermem;
+  static int mib[2] = { CTL_HW, HW_USERMEM };
+  int retval = sysctl(mib, 2, &usermem, &len, NULL, 0);
+  if (retval == 0)
+    return static_cast<long>(usermem)/sysconf(_SC_PAGESIZE);
+  return 0;
 #else
   MEMORYSTATUS memstat;
   GlobalMemoryStatus(&memstat);
