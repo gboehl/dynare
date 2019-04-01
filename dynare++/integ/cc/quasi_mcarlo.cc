@@ -5,6 +5,7 @@
 #include <cmath>
 #include <iostream>
 #include <iomanip>
+#include <array>
 
 /* Here in the constructor, we have to calculate a maximum length of
    |coeff| array for a given |base| and given maximum |maxn|. After
