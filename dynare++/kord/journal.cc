@@ -7,6 +7,7 @@
 #include <cmath>
 #include <ctime>
 #include <limits>
+#include <thread>
 
 #ifndef _WIN32
 # include <sys/time.h>     // For getrusage()
@@ -69,16 +70,6 @@ SystemResources::availablePhysicalPages()
   MEMORYSTATUS memstat;
   GlobalMemoryStatus(&memstat);
   return memstat.dwAvailPhys/1024;
-#endif
-}
-
-long
-SystemResources::onlineProcessors()
-{
-#ifndef _WIN32
-  return sysconf(_SC_NPROCESSORS_ONLN);
-#else
-  return -1; // FIXME
 #endif
 }
 
@@ -226,11 +217,12 @@ Journal::printHeader()
   utsname info;
   uname(&info);
   *this << info.sysname << " " << info.release << " " << info.version << " "
-        << info.machine << ", processors online: " << SystemResources::onlineProcessors();
+        << info.machine;
 #else
-  *this << "(not implemented for MinGW)";
+  *this << "Windows";
 #endif
-  *this << "\n\nStart time: ";
+  *this << ", processors online: " << std::thread::hardware_concurrency()
+        << "\n\nStart time: ";
   std::time_t t = std::time(nullptr);
   *this << std::put_time(std::localtime(&t), "%c %Z")
         << "\n\n"

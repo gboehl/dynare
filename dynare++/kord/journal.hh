@@ -23,7 +23,6 @@ struct SystemResources
   static long pageSize();
   static long physicalPages();
   static long availablePhysicalPages();
-  static long onlineProcessors();
   static long availableMemory();
 
   double load_avg;
