@@ -15,10 +15,10 @@
 # include <sys/utsname.h>  // For uname()
 # include <cstdlib>        // For getloadavg()
 # include <unistd.h>       // For sysconf()
-#ifdef __APPLE__
-# include <sys/types.h>
-# include <sys/sysctl.h>
-#endif
+# ifdef __APPLE__
+#  include <sys/types.h>
+#  include <sys/sysctl.h>
+# endif
 #else
 # ifndef NOMINMAX
 #  define NOMINMAX         // Do not define "min" and "max" macros
@@ -28,55 +28,32 @@
 
 const std::chrono::time_point<std::chrono::high_resolution_clock> SystemResources::start = std::chrono::high_resolution_clock::now();
 
-/* The pagesize is set to 1024 bytes on Windows. Real pagesize can differ but
-   it is not important. We can do this since Windows kernel32
-   GlobalMemoryStatus() call returns a number of bytes. */
+#ifndef _WIN32
 long
 SystemResources::pageSize()
 {
-#ifndef _WIN32
   return sysconf(_SC_PAGESIZE);
-#else
-  return 1024;
-#endif
 }
+#endif
 
 long
-SystemResources::physicalPages()
-{
-#if !defined(_WIN32)
-  return sysconf(_SC_PHYS_PAGES);
-#else
-  MEMORYSTATUS memstat;
-  GlobalMemoryStatus(&memstat);
-  return memstat.dwTotalPhys/1024;
-#endif
-}
-
-long
-SystemResources::availablePhysicalPages()
+SystemResources::availableMemory()
 {
 #if !defined(_WIN32) && !defined(__APPLE__)
-  return sysconf(_SC_AVPHYS_PAGES);
+  return sysconf(_SC_AVPHYS_PAGES)*pageSize();
 #elif defined(__APPLE__)
   unsigned long usermem = 0;
   size_t len = sizeof usermem;
   static int mib[2] = { CTL_HW, HW_USERMEM };
   int retval = sysctl(mib, 2, &usermem, &len, NULL, 0);
   if (retval == 0)
-    return static_cast<long>(usermem)/sysconf(_SC_PAGESIZE);
+    return static_cast<long>(usermem);
   return 0;
-#else
+#else // _WIN32
   MEMORYSTATUS memstat;
   GlobalMemoryStatus(&memstat);
-  return memstat.dwAvailPhys/1024;
+  return memstat.dwAvailPhys;
 #endif
-}
-
-long
-SystemResources::availableMemory()
-{
-  return pageSize()*availablePhysicalPages();
 }
 
 SystemResources::SystemResources()
@@ -91,7 +68,7 @@ SystemResources::SystemResources()
   utime = rus.ru_utime.tv_sec+rus.ru_utime.tv_usec*1.0e-6;
   stime = rus.ru_stime.tv_sec+rus.ru_stime.tv_usec*1.0e-6;
   idrss = rus.ru_idrss;
-  majflt = rus.ru_majflt;
+  majflt = rus.ru_majflt * pageSize();
 #else
   utime = std::numeric_limits<double>::quiet_NaN();
   stime = std::numeric_limits<double>::quiet_NaN();
@@ -105,7 +82,7 @@ SystemResources::SystemResources()
   load_avg = std::numeric_limits<double>::quiet_NaN();
 #endif
 
-  pg_avail = availablePhysicalPages();
+  mem_avail = availableMemory();
 }
 
 void
@@ -153,7 +130,7 @@ JournalRecord::writePrefix(const SystemResources &f)
   s  << ':' << recChar << std::setw(5) << ord << ':';
   writeFloatTabular(s, f.load_avg, 3);
   s << ':';
-  writeFloatTabular(s, f.pg_avail*SystemResources::pageSize()/mb, 5);
+  writeFloatTabular(s, f.mem_avail/mb, 5);
   s << ":      : ";
   for (int i = 0; i < 2*journal.getDepth(); i++)
     s << ' ';
@@ -172,9 +149,9 @@ JournalRecordPair::writePrefixForEnd(const SystemResources &f)
   s << ":E" << std::setw(5) << ord << ':';
   writeFloatTabular(s, difnow.load_avg, 3);
   s << ':';
-  writeFloatTabular(s, difnow.pg_avail*SystemResources::pageSize()/mb, 5);
+  writeFloatTabular(s, difnow.mem_avail/mb, 5);
   s << ':';
-  writeFloatTabular(s, difnow.majflt*SystemResources::pageSize()/mb, 6);
+  writeFloatTabular(s, difnow.majflt/mb, 6);
   s << ": ";
   for (int i = 0; i < 2*journal.getDepth(); i++)
     s << ' ';

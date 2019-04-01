@@ -20,13 +20,13 @@ struct SystemResources
   // The starting time of the executable
   static const std::chrono::time_point<std::chrono::high_resolution_clock> start;
 
+#ifndef _WIN32
   static long pageSize();
-  static long physicalPages();
-  static long availablePhysicalPages();
+#endif
   static long availableMemory();
 
   double load_avg;
-  long pg_avail;
+  long mem_avail;
   double utime;
   double stime;
   double elapsed;
