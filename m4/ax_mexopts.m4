@@ -1,4 +1,4 @@
-dnl Copyright (C) 2009-2016 Dynare Team
+dnl Copyright (C) 2009-2019 Dynare Team
 dnl
 dnl This file is part of Dynare.
 dnl
@@ -59,19 +59,14 @@ case ${MATLAB_ARCH} in
     ax_mexopts_ok="yes"
     ;;
   maci | maci64)
-    MACOSX_DEPLOYMENT_TARGET='10.7'
-    if test "${MATLAB_ARCH}" = "maci"; then
-        ARCHS='i386'
-    else
-        ARCHS='x86_64'
-    fi
+    MACOSX_DEPLOYMENT_TARGET='10.9'
     MATLAB_DEFS="$MATLAB_DEFS -DNDEBUG"
-    MATLAB_CFLAGS="-fno-common -arch $ARCHS -mmacosx-version-min=$MACOSX_DEPLOYMENT_TARGET -fexceptions"
-    MATLAB_CXXFLAGS="-fno-common -fexceptions -arch $ARCHS -mmacosx-version-min=$MACOSX_DEPLOYMENT_TARGET"
-    MATLAB_FFLAGS="-fexceptions -fbackslash -arch $ARCHS"
-    MATLAB_LDFLAGS_NOMAP="-L$MATLAB/bin/${MATLAB_ARCH} -Wl,-twolevel_namespace -undefined error -arch $ARCHS -mmacosx-version-min=$MACOSX_DEPLOYMENT_TARGET -bundle"
+    MATLAB_CFLAGS="-fno-common -arch x86_64 -mmacosx-version-min=$MACOSX_DEPLOYMENT_TARGET -fexceptions"
+    MATLAB_CXXFLAGS="$MATLAB_CFLAGS"
+    MATLAB_FFLAGS="-fexceptions -fbackslash -arch x86_64"
+    MATLAB_LDFLAGS_NOMAP="-Wl,-twolevel_namespace -undefined error -arch x86_64 -mmacosx-version-min=$MACOSX_DEPLOYMENT_TARGET -bundle"
     MATLAB_LDFLAGS="$MATLAB_LDFLAGS_NOMAP -Wl,-exported_symbols_list,$(pwd)/$srcdir/mexFunction-MacOSX.map"
-    MATLAB_LIBS="-lmx -lmex -lmat -lstdc++ -lmwlapack -lmwblas"
+    MATLAB_LIBS="-L$MATLAB/bin/maci64 -lmx -lmex -lmat -lmwlapack -lmwblas"
     ax_mexopts_ok="yes"
     ;;
   *)
