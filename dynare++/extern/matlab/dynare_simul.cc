@@ -88,9 +88,9 @@ extern "C" {
             const mwSize *const gk_dim = mxGetDimensions(gk);
             FFSTensor ft(ny, npred+nboth+nexog, dim);
             if (ft.ncols() != static_cast<int>(gk_dim[1]))
-              DYN_MEX_FUNC_ERR_MSG_TXT("Wrong number of columns for folded tensor: got " + std::to_string(gk_dim[1]) + " but i want " + std::to_string(ft.ncols()) + '\n');
+              DYN_MEX_FUNC_ERR_MSG_TXT(("Wrong number of columns for folded tensor: got " + std::to_string(gk_dim[1]) + " but i want " + std::to_string(ft.ncols()) + '\n').c_str());
             if (ft.nrows() != static_cast<int>(gk_dim[0]))
-              DYN_MEX_FUNC_ERR_MSG_TXT("Wrong number of rows for folded tensor: got " + std::to_string(gk_dim[0]) + " but i want " + std::to_string(ft.nrows()) + '\n');
+              DYN_MEX_FUNC_ERR_MSG_TXT(("Wrong number of rows for folded tensor: got " + std::to_string(gk_dim[0]) + " but i want " + std::to_string(ft.nrows()) + '\n').c_str());
             ft.zeros();
             ConstTwoDMatrix gk_mat(ft.nrows(), ft.ncols(), ConstVector{gk});
             ft.add(1.0, gk_mat);

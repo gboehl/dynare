@@ -155,8 +155,8 @@ extern "C" {
 
     TwoDMatrix llincidence(nrows, npar, Vector{mxFldp});
     if (npar != nEndo)
-      DYN_MEX_FUNC_ERR_MSG_TXT("dynare:k_order_perturbation: Incorrect length of lead lag incidences: ncol="
-                               + std::to_string(npar) + " != nEndo=" + std::to_string(nEndo));
+      DYN_MEX_FUNC_ERR_MSG_TXT(("dynare:k_order_perturbation: Incorrect length of lead lag incidences: ncol="
+                                + std::to_string(npar) + " != nEndo=" + std::to_string(nEndo)).c_str());
 
     //get NNZH =NNZD(2) = the total number of non-zero Hessian elements
     mxFldp = mxGetField(M_, 0, "NNZDerivatives");
@@ -296,7 +296,7 @@ extern "C" {
     catch (const KordException &e)
       {
         e.print();
-        DYN_MEX_FUNC_ERR_MSG_TXT("dynare:k_order_perturbation: Caught Kord exception: " + e.get_message());
+        DYN_MEX_FUNC_ERR_MSG_TXT(("dynare:k_order_perturbation: Caught Kord exception: " + e.get_message()).c_str());
       }
     catch (const TLException &e)
       {
@@ -310,11 +310,11 @@ extern "C" {
       }
     catch (const DynareException &e)
       {
-        DYN_MEX_FUNC_ERR_MSG_TXT("dynare:k_order_perturbation: Caught KordDynare exception: " + e.message());
+        DYN_MEX_FUNC_ERR_MSG_TXT(("dynare:k_order_perturbation: Caught KordDynare exception: " + e.message()).c_str());
       }
     catch (const ogu::Exception &e)
       {
-        DYN_MEX_FUNC_ERR_MSG_TXT("dynare:k_order_perturbation: Caught general exception: " + e.message());
+        DYN_MEX_FUNC_ERR_MSG_TXT(("dynare:k_order_perturbation: Caught general exception: " + e.message()).c_str());
       }
     plhs[0] = mxCreateDoubleScalar(0);
   } // end of mexFunction()
