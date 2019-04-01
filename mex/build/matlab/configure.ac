@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 
-dnl Copyright (C) 2009-2017 Dynare Team
+dnl Copyright (C) 2009-2019 Dynare Team
 dnl
 dnl This file is part of Dynare.
 dnl
@@ -66,7 +66,14 @@ AM_PROG_AR
 
 case ${host_os} in
   *darwin*)
-    CXXFLAGS="$CXXFLAGS -stdlib=libc++"
+    string="`$CXX --version`"
+    if test x"${string#*clang}" != x"$string"; then
+      CXXFLAGS="$CXXFLAGS -stdlib=libc++"
+      MATLAB_LIBS="$MATLAB_LIBS -lc++"
+      MATLAB_LDFLAGS="$MATLAB_LDFLAGS -Wl,-syslibroot,`xcrun -sdk macosx --show-sdk-path`"
+    else
+      MATLAB_LIBS="$MATLAB_LIBS -lstdc++"
+    fi
     ;;
 esac
 
