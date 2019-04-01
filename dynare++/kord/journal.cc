@@ -8,7 +8,7 @@
 #include <ctime>
 #include <limits>
 
-#ifndef __MINGW32__
+#ifndef _WIN32
 # include <sys/time.h>     // For getrusage()
 # include <sys/resource.h> // For getrusage()
 # include <sys/utsname.h>  // For uname()
@@ -29,7 +29,7 @@ const std::chrono::time_point<std::chrono::high_resolution_clock> SystemResource
 long
 SystemResources::pageSize()
 {
-#ifndef __MINGW32__
+#ifndef _WIN32
   return sysconf(_SC_PAGESIZE);
 #else
   return 1024;
@@ -39,7 +39,7 @@ SystemResources::pageSize()
 long
 SystemResources::physicalPages()
 {
-#ifndef __MINGW32__
+#ifndef _WIN32
   return sysconf(_SC_PHYS_PAGES);
 #else
   MEMORYSTATUS memstat;
@@ -51,7 +51,7 @@ SystemResources::physicalPages()
 long
 SystemResources::availablePhysicalPages()
 {
-#ifndef __MINGW32__
+#ifndef _WIN32
   return sysconf(_SC_AVPHYS_PAGES);
 #else
   MEMORYSTATUS memstat;
@@ -63,7 +63,7 @@ SystemResources::availablePhysicalPages()
 long
 SystemResources::onlineProcessors()
 {
-#ifndef __MINGW32__
+#ifndef _WIN32
   return sysconf(_SC_NPROCESSORS_ONLN);
 #else
   return -1;
@@ -82,7 +82,7 @@ SystemResources::SystemResources()
   std::chrono::duration<double> duration = now - start;
   elapsed = duration.count();
 
-#ifndef __MINGW32__
+#ifndef _WIN32
   struct rusage rus;
   getrusage(RUSAGE_SELF, &rus);
   utime = rus.ru_utime.tv_sec+rus.ru_utime.tv_usec*1.0e-6;
@@ -96,7 +96,7 @@ SystemResources::SystemResources()
   majflt = -1;
 #endif
 
-#ifndef __MINGW32__
+#ifndef _WIN32
   getloadavg(&load_avg, 1);
 #else
   load_avg = std::numeric_limits<double>::quiet_NaN();
@@ -210,7 +210,7 @@ Journal::printHeader()
         << " for LGPL see http://www.gnu.org/licenses/lgpl.html\n"
         << "\n\n"
         << "System info: ";
-#ifndef __MINGW32__
+#ifndef _WIN32
   utsname info;
   uname(&info);
   *this << info.sysname << " " << info.release << " " << info.version << " "
