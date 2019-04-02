@@ -89,6 +89,8 @@ doc/internals/ltxpng
 /mex/octave/
 
 # Dynare++
+/dynare++/integ/src/quadrature-points.dSYM/
+/dynare++/src/dynare++.dSYM/
 /dynare++/integ/src/quadrature-points
 /dynare++/integ/src/quadrature-points.exe
 /dynare++/integ/testing/tests
