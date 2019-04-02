@@ -82,6 +82,7 @@ for i=1:length(eqtags)
             switch sum(exogenous_variables_to_be_removed)
               case 1
                 RHS = regexprep(RHS, sprintf('(\\ *)(+)(\\ *)%s', xnames{exogenous_variables_to_be_removed}), '');
+                RHS = regexprep(RHS, sprintf('%s', xnames{exogenous_variables_to_be_removed}), '');
               case 0
                 % Nothing to do.
               otherwise
