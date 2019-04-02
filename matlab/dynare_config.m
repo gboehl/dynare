@@ -247,7 +247,7 @@ if verbose
     skipline()
 end
 
-% Initialization of the dates and dseries classes (recursive).
-initialize_dseries_toolbox;
+% Initialization of the dates and dseries classes.
+initialize_dseries_class;
 
 cd(origin);
