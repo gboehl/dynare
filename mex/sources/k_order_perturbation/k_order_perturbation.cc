@@ -17,36 +17,33 @@
  * along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*
-  Defines the entry point for the k-order perturbation application DLL.
+/* Defines the entry point for the k-order perturbation application DLL.
 
-  Inputs:
-  1) dr
-  2) M_
-  3) options
-
-  Outputs:
-  - if order == 1: only g_1
-  - if order == 2: g_0, g_1, g_2
-  - if order == 3: g_0, g_1, g_2, g_3
+   See matlab/mex/k_order_perturbation.m for a description of inputs and
+   outputs.
 */
 
 #include "dynamic_m.hh"
 #include "dynamic_dll.hh"
+#include "k_ord_dynare.hh"
+
+#include "approximation.hh"
+#include "exception.hh"
+#include "dynare_exception.hh"
+#include "kord_exception.hh"
+#include "tl_exception.hh"
+#include "SylvException.hh"
 
 #include <algorithm>
-#include <cmath>
 #include <cassert>
 
 #include "dynmex.h"
 
-//////////////////////////////////////////////////////
-// Convert MATLAB Dynare endo and exo names array to a vector<string> array of string pointers
-// Poblem is that Matlab mx function returns a long string concatenated by columns rather than rows
-// hence a rather low level approach is needed
-///////////////////////////////////////////////////////
+/* Convert MATLAB Dynare endo and exo names array to a vector<string> array of
+   string pointers. MATLAB “mx” function returns a long string concatenated by
+   columns rather than rows hence a rather low level approach is needed. */
 void
-DynareMxArrayToString(const mxArray *mxFldp, const int len, const int width, std::vector<std::string> &out)
+DynareMxArrayToString(const mxArray *mxFldp, int len, int width, std::vector<std::string> &out)
 {
   char *cNamesCharStr = mxArrayToString(mxFldp);
 
@@ -55,7 +52,7 @@ DynareMxArrayToString(const mxArray *mxFldp, const int len, const int width, std
   for (int i = 0; i < width; i++)
     for (int j = 0; j < len; j++)
       // Allow alphanumeric and underscores "_" only:
-      if (isalnum(cNamesCharStr[j+i*len]) || (cNamesCharStr[j+i*len] == '_'))
+      if (std::isalnum(cNamesCharStr[j+i*len]) || (cNamesCharStr[j+i*len] == '_'))
         out[j] += cNamesCharStr[j+i*len];
 }
 
@@ -122,14 +119,10 @@ extern "C" {
     const int nStat = static_cast<int>(mxGetScalar(mxFldp));
     mxFldp = mxGetField(M_, 0, "npred");
     const int nPred = static_cast<int>(mxGetScalar(mxFldp));
-    mxFldp = mxGetField(M_, 0, "nspred");
-    const int nsPred = static_cast<int>(mxGetScalar(mxFldp));
     mxFldp = mxGetField(M_, 0, "nboth");
     const int nBoth = static_cast<int>(mxGetScalar(mxFldp));
     mxFldp = mxGetField(M_, 0, "nfwrd");
     const int nForw = static_cast<int>(mxGetScalar(mxFldp));
-    mxFldp = mxGetField(M_, 0, "nsfwrd");
-    const int nsForw = static_cast<int>(mxGetScalar(mxFldp));
 
     mxFldp = mxGetField(M_, 0, "exo_nbr");
     const int nExog = static_cast<int>(mxGetScalar(mxFldp));
@@ -158,13 +151,10 @@ extern "C" {
       DYN_MEX_FUNC_ERR_MSG_TXT(("dynare:k_order_perturbation: Incorrect length of lead lag incidences: ncol="
                                 + std::to_string(npar) + " != nEndo=" + std::to_string(nEndo)).c_str());
 
-    //get NNZH =NNZD(2) = the total number of non-zero Hessian elements
     mxFldp = mxGetField(M_, 0, "NNZDerivatives");
     Vector NNZD{mxFldp};
     if (NNZD[kOrder-1] == -1)
-      DYN_MEX_FUNC_ERR_MSG_TXT("The derivatives were not computed for the required order. Make sure that you used the right order option inside the stoch_simul command");
-
-    const int jcols = nExog+nEndo+nsPred+nsForw; // Num of Jacobian columns
+      DYN_MEX_FUNC_ERR_MSG_TXT("The derivatives were not computed for the required order. Make sure that you used the right order option inside the 'stoch_simul' command");
 
     mxFldp = mxGetField(M_, 0, "var_order_endo_names");
     const int nendo = static_cast<int>(mxGetM(mxFldp));
@@ -182,9 +172,9 @@ extern "C" {
       DYN_MEX_FUNC_ERR_MSG_TXT("Incorrect number of input parameters.");
 
     std::unique_ptr<TwoDMatrix> g1m, g2m, g3m;
-    // derivatives passed as arguments */
     if (nrhs > 3)
       {
+        // Derivatives have been passed as arguments
         const mxArray *g1 = prhs[3];
         int m = static_cast<int>(mxGetM(g1));
         int n = static_cast<int>(mxGetN(g1));
@@ -206,7 +196,6 @@ extern "C" {
       }
 
     const int nSteps = 0; // Dynare++ solving steps, for time being default to 0 = deterministic steady state
-    const double sstol = 1.e-13; //NL solver tolerance from
 
     try
       {
@@ -222,10 +211,10 @@ extern "C" {
         TLStatic::init(kOrder, nStat+2*nPred+3*nBoth+2*nForw+nExog);
 
         // make KordpDynare object
-        KordpDynare dynare(endoNames, nEndo, exoNames, nExog, nPar,
+        KordpDynare dynare(endoNames, exoNames, nExog, nPar,
                            ySteady, vCov, modParams, nStat, nPred, nForw, nBoth,
-                           jcols, NNZD, nSteps, kOrder, journal, std::move(dynamicModelFile),
-                           sstol, var_order_vp, llincidence, qz_criterium,
+                           NNZD, nSteps, kOrder, journal, std::move(dynamicModelFile),
+                           var_order_vp, llincidence,
                            std::move(g1m), std::move(g2m), std::move(g3m));
 
         // construct main K-order approximation class

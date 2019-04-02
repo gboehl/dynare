@@ -19,6 +19,10 @@
 
 #include "dynamic_dll.hh"
 
+#include "dynare_exception.hh"
+
+#include <iostream>
+
 DynamicModelDLL::DynamicModelDLL(const std::string &modName) noexcept(false)
 {
   std::string fName;
@@ -27,71 +31,51 @@ DynamicModelDLL::DynamicModelDLL(const std::string &modName) noexcept(false)
 #endif
   fName += "+" + modName + "/dynamic" + MEXEXT;
 
-  try
-    {
 #if defined(__CYGWIN32__) || defined(_WIN32)
-      dynamicHinstance = LoadLibrary(fName.c_str());
-      if (!dynamicHinstance)
-        throw 1;
-      ntt = reinterpret_cast<int *>(GetProcAddress(dynamicHinstance, "ntt"));
-      dynamic_resid_tt = reinterpret_cast<dynamic_tt_fct>(GetProcAddress(dynamicHinstance, "dynamic_resid_tt"));
-      dynamic_resid = reinterpret_cast<dynamic_resid_fct>(GetProcAddress(dynamicHinstance, "dynamic_resid"));
-      dynamic_g1_tt = reinterpret_cast<dynamic_tt_fct>(GetProcAddress(dynamicHinstance, "dynamic_g1_tt"));
-      dynamic_g1 = reinterpret_cast<dynamic_g1_fct>(GetProcAddress(dynamicHinstance, "dynamic_g1"));
-      dynamic_g2_tt = reinterpret_cast<dynamic_tt_fct>(GetProcAddress(dynamicHinstance, "dynamic_g2_tt"));
-      dynamic_g2 = reinterpret_cast<dynamic_g2_fct>(GetProcAddress(dynamicHinstance, "dynamic_g2"));
-      dynamic_g3_tt = reinterpret_cast<dynamic_tt_fct>(GetProcAddress(dynamicHinstance, "dynamic_g3_tt"));
-      dynamic_g3 = reinterpret_cast<dynamic_g3_fct>(GetProcAddress(dynamicHinstance, "dynamic_g3"));
-      if (!ntt || !dynamic_resid_tt || !dynamic_resid
-          || !dynamic_g1_tt || !dynamic_g1
-          || !dynamic_g2_tt || !dynamic_g2
-          || !dynamic_g3_tt || !dynamic_g3)
-        {
-          FreeLibrary(dynamicHinstance); // Free the library
-          throw 2;
-        }
+  dynamicHinstance = LoadLibrary(fName.c_str());
+  if (!dynamicHinstance)
+    throw DynareException(__FILE__, __LINE__, "Error when loading " + fName + ": can't dynamically load the file");
+  ntt = reinterpret_cast<int *>(GetProcAddress(dynamicHinstance, "ntt"));
+  dynamic_resid_tt = reinterpret_cast<dynamic_tt_fct>(GetProcAddress(dynamicHinstance, "dynamic_resid_tt"));
+  dynamic_resid = reinterpret_cast<dynamic_resid_fct>(GetProcAddress(dynamicHinstance, "dynamic_resid"));
+  dynamic_g1_tt = reinterpret_cast<dynamic_tt_fct>(GetProcAddress(dynamicHinstance, "dynamic_g1_tt"));
+  dynamic_g1 = reinterpret_cast<dynamic_g1_fct>(GetProcAddress(dynamicHinstance, "dynamic_g1"));
+  dynamic_g2_tt = reinterpret_cast<dynamic_tt_fct>(GetProcAddress(dynamicHinstance, "dynamic_g2_tt"));
+  dynamic_g2 = reinterpret_cast<dynamic_g2_fct>(GetProcAddress(dynamicHinstance, "dynamic_g2"));
+  dynamic_g3_tt = reinterpret_cast<dynamic_tt_fct>(GetProcAddress(dynamicHinstance, "dynamic_g3_tt"));
+  dynamic_g3 = reinterpret_cast<dynamic_g3_fct>(GetProcAddress(dynamicHinstance, "dynamic_g3"));
+  if (!ntt || !dynamic_resid_tt || !dynamic_resid
+      || !dynamic_g1_tt || !dynamic_g1
+      || !dynamic_g2_tt || !dynamic_g2
+      || !dynamic_g3_tt || !dynamic_g3)
+    {
+      FreeLibrary(dynamicHinstance); // Free the library
+      throw DynareException(__FILE__, __LINE__, "Error when loading " + fName + ": can't locate the relevant dynamic symbols within the MEX file");
+    }
 #else // Linux or Mac
-      dynamicHinstance = dlopen(fName.c_str(), RTLD_NOW);
-      if (dynamicHinstance == nullptr)
-        {
-          std::cerr << dlerror() << std::endl;
-          throw 1;
-        }
-      ntt = reinterpret_cast<int *>(dlsym(dynamicHinstance, "ntt"));
-      dynamic_resid_tt = reinterpret_cast<dynamic_tt_fct>(dlsym(dynamicHinstance, "dynamic_resid_tt"));
-      dynamic_resid = reinterpret_cast<dynamic_resid_fct>(dlsym(dynamicHinstance, "dynamic_resid"));
-      dynamic_g1_tt = reinterpret_cast<dynamic_tt_fct>(dlsym(dynamicHinstance, "dynamic_g1_tt"));
-      dynamic_g1 = reinterpret_cast<dynamic_g1_fct>(dlsym(dynamicHinstance, "dynamic_g1"));
-      dynamic_g2_tt = reinterpret_cast<dynamic_tt_fct>(dlsym(dynamicHinstance, "dynamic_g2_tt"));
-      dynamic_g2 = reinterpret_cast<dynamic_g2_fct>(dlsym(dynamicHinstance, "dynamic_g2"));
-      dynamic_g3_tt = reinterpret_cast<dynamic_tt_fct>(dlsym(dynamicHinstance, "dynamic_g3_tt"));
-      dynamic_g3 = reinterpret_cast<dynamic_g3_fct>(dlsym(dynamicHinstance, "dynamic_g3"));
-      if (!ntt || !dynamic_resid_tt || !dynamic_resid
-          || !dynamic_g1_tt || !dynamic_g1
-          || !dynamic_g2_tt || !dynamic_g2
-          || !dynamic_g3_tt || !dynamic_g3)
-        {
-          dlclose(dynamicHinstance); // Free the library
-          std::cerr << dlerror() << std::endl;
-          throw 2;
-        }
+  dynamicHinstance = dlopen(fName.c_str(), RTLD_NOW);
+  if (!dynamicHinstance)
+    throw DynareException(__FILE__, __LINE__, "Error when loading " + fName + ": " + dlerror());
+  ntt = reinterpret_cast<int *>(dlsym(dynamicHinstance, "ntt"));
+  dynamic_resid_tt = reinterpret_cast<dynamic_tt_fct>(dlsym(dynamicHinstance, "dynamic_resid_tt"));
+  dynamic_resid = reinterpret_cast<dynamic_resid_fct>(dlsym(dynamicHinstance, "dynamic_resid"));
+  dynamic_g1_tt = reinterpret_cast<dynamic_tt_fct>(dlsym(dynamicHinstance, "dynamic_g1_tt"));
+  dynamic_g1 = reinterpret_cast<dynamic_g1_fct>(dlsym(dynamicHinstance, "dynamic_g1"));
+  dynamic_g2_tt = reinterpret_cast<dynamic_tt_fct>(dlsym(dynamicHinstance, "dynamic_g2_tt"));
+  dynamic_g2 = reinterpret_cast<dynamic_g2_fct>(dlsym(dynamicHinstance, "dynamic_g2"));
+  dynamic_g3_tt = reinterpret_cast<dynamic_tt_fct>(dlsym(dynamicHinstance, "dynamic_g3_tt"));
+  dynamic_g3 = reinterpret_cast<dynamic_g3_fct>(dlsym(dynamicHinstance, "dynamic_g3"));
+  if (!ntt || !dynamic_resid_tt || !dynamic_resid
+      || !dynamic_g1_tt || !dynamic_g1
+      || !dynamic_g2_tt || !dynamic_g2
+      || !dynamic_g3_tt || !dynamic_g3)
+    {
+      dlclose(dynamicHinstance); // Free the library
+      throw DynareException(__FILE__, __LINE__, "Error when loading " + fName + ": " + dlerror());
+    }
 #endif
 
-    }
-  catch (int i)
-    {
-      std::string msg{"Error when loading " + fName + " ("};
-      if (i == 1)
-        msg += "can't dynamically load the file";
-      if (i == 2)
-        msg += "can't locate the relevant dynamic symbols within the MEX file";
-      msg += ")";
-      throw DynareException(__FILE__, __LINE__, msg);
-    }
-  catch (...)
-    {
-      throw DynareException(__FILE__, __LINE__, "Can't find the relevant dynamic symbols in " + fName);
-    }
+  tt = std::make_unique<double[]>(*ntt);
 }
 
 DynamicModelDLL::~DynamicModelDLL()
@@ -112,21 +96,19 @@ void
 DynamicModelDLL::eval(const Vector &y, const Vector &x, const Vector &modParams, const Vector &ySteady,
                       Vector &residual, TwoDMatrix *g1, TwoDMatrix *g2, TwoDMatrix *g3) noexcept(false)
 {
-  double *T = new double[*ntt];
-  dynamic_resid_tt(y.base(), x.base(), 1, modParams.base(), ySteady.base(), 0, T);
-  dynamic_resid(y.base(), x.base(), 1, modParams.base(), ySteady.base(), 0, T, residual.base());
+  dynamic_resid_tt(y.base(), x.base(), 1, modParams.base(), ySteady.base(), 0, tt.get());
+  dynamic_resid(y.base(), x.base(), 1, modParams.base(), ySteady.base(), 0, tt.get(), residual.base());
   if (g1 || g2 || g3)
-    dynamic_g1_tt(y.base(), x.base(), 1, modParams.base(), ySteady.base(), 0, T);
+    dynamic_g1_tt(y.base(), x.base(), 1, modParams.base(), ySteady.base(), 0, tt.get());
   if (g1)
-    dynamic_g1(y.base(), x.base(), 1, modParams.base(), ySteady.base(), 0, T, g1->base());
+    dynamic_g1(y.base(), x.base(), 1, modParams.base(), ySteady.base(), 0, tt.get(), g1->base());
   if (g2 || g3)
-    dynamic_g2_tt(y.base(), x.base(), 1, modParams.base(), ySteady.base(), 0, T);
+    dynamic_g2_tt(y.base(), x.base(), 1, modParams.base(), ySteady.base(), 0, tt.get());
   if (g2)
-    dynamic_g2(y.base(), x.base(), 1, modParams.base(), ySteady.base(), 0, T, g2->base());
+    dynamic_g2(y.base(), x.base(), 1, modParams.base(), ySteady.base(), 0, tt.get(), g2->base());
   if (g3)
     {
-      dynamic_g3_tt(y.base(), x.base(), 1, modParams.base(), ySteady.base(), 0, T);
-      dynamic_g3(y.base(), x.base(), 1, modParams.base(), ySteady.base(), 0, T, g3->base());
+      dynamic_g3_tt(y.base(), x.base(), 1, modParams.base(), ySteady.base(), 0, tt.get());
+      dynamic_g3(y.base(), x.base(), 1, modParams.base(), ySteady.base(), 0, tt.get(), g3->base());
     }
-  delete[] T;
 }

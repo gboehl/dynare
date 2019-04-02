@@ -18,6 +18,9 @@
  */
 
 #include <algorithm>
+#include <cassert>
+
+#include "dynare_exception.hh"
 
 #include "dynamic_m.hh"
 
@@ -27,9 +30,48 @@ DynamicModelMFile::DynamicModelMFile(const std::string &modName) noexcept(false)
 }
 
 void
+DynamicModelMFile::unpackSparseMatrixAndCopyIntoTwoDMatData(mxArray *sparseMat, TwoDMatrix *tdm)
+{
+  int totalCols = mxGetN(sparseMat);
+  mwIndex *rowIdxVector = mxGetIr(sparseMat);
+  mwSize sizeRowIdxVector = mxGetNzmax(sparseMat);
+  mwIndex *colIdxVector = mxGetJc(sparseMat);
+
+  assert(tdm->ncols() == 3);
+  assert(tdm->nrows() == sizeRowIdxVector);
+
+  double *ptr = mxGetPr(sparseMat);
+
+  int rind = 0;
+  int output_row = 0;
+
+  for (int i = 0; i < totalCols; i++)
+    for (int j = 0; j < static_cast<int>((colIdxVector[i+1]-colIdxVector[i])); j++, rind++)
+      {
+        tdm->get(output_row, 0) = rowIdxVector[rind] + 1;
+        tdm->get(output_row, 1) = i + 1;
+        tdm->get(output_row, 2) = ptr[rind];
+        output_row++;
+      }
+
+  /* If there are less elements than Nzmax (that might happen if some
+     derivative is symbolically not zero but numerically zero at the evaluation
+     point), then fill in the matrix with empty entries, that will be
+     recognized as such by KordpDynare::populateDerivativesContainer() */
+  while (output_row < static_cast<int>(sizeRowIdxVector))
+    {
+      tdm->get(output_row, 0) = 0;
+      tdm->get(output_row, 1) = 0;
+      tdm->get(output_row, 2) = 0;
+      output_row++;
+    }
+}
+
+void
 DynamicModelMFile::eval(const Vector &y, const Vector &x, const Vector &modParams, const Vector &ySteady,
                         Vector &residual, TwoDMatrix *g1, TwoDMatrix *g2, TwoDMatrix *g3) noexcept(false)
 {
+  constexpr int nlhs_dynamic = 4, nrhs_dynamic = 5;
   mxArray *prhs[nrhs_dynamic], *plhs[nlhs_dynamic];
 
   prhs[0] = mxCreateDoubleMatrix(y.length(), 1, mxREAL);
@@ -48,8 +90,11 @@ DynamicModelMFile::eval(const Vector &y, const Vector &x, const Vector &modParam
     throw DynareException(__FILE__, __LINE__, "Trouble calling " + DynamicMFilename);
 
   residual = Vector{plhs[0]};
-  copyDoubleIntoTwoDMatData(mxGetPr(plhs[1]), g1, static_cast<int>(mxGetM(plhs[1])),
-                            static_cast<int>(mxGetN(plhs[1])));
+
+  assert(static_cast<int>(mxGetM(plhs[1])) == g1->nrows());
+  assert(static_cast<int>(mxGetN(plhs[1])) == g1->ncols());
+  std::copy_n(mxGetPr(plhs[1]), mxGetM(plhs[1])*mxGetN(plhs[1]), g1->base());
+
   if (g2)
     unpackSparseMatrixAndCopyIntoTwoDMatData(plhs[2], g2);
   if (g3)

@@ -30,9 +30,9 @@
 #endif
 
 #include <string>
+#include <memory>
 
 #include "dynamic_abstract_class.hh"
-#include "dynare_exception.hh"
 
 using dynamic_tt_fct = void (*)(const double *y, const double *x, int nb_row_x, const double *params, const double *steady_state, int it_, double *T);
 using dynamic_resid_fct = void (*) (const double *y, const double *x, int nb_row_x, const double *params, const double *steady_state, int it_, const double *T, double *residual);
@@ -58,13 +58,14 @@ private:
 #else
   void *dynamicHinstance; // and in Linux or Mac
 #endif
+  std::unique_ptr<double[]> tt; // Vector of temporary terms
 
 public:
   // construct and load Dynamic model DLL
-  explicit DynamicModelDLL(const std::string &fname) noexcept(false);
+  explicit DynamicModelDLL(const std::string &fname);
   virtual ~DynamicModelDLL();
 
   void eval(const Vector &y, const Vector &x, const Vector &params, const Vector &ySteady,
-            Vector &residual, TwoDMatrix *g1, TwoDMatrix *g2, TwoDMatrix *g3) noexcept(false);
+            Vector &residual, TwoDMatrix *g1, TwoDMatrix *g2, TwoDMatrix *g3) override;
 };
 #endif
