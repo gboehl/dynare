@@ -59,15 +59,13 @@ switch(order)
     dr.g_2 = g_2;
   case 3
     if options.pruning
-        [err, g_0, g_1, g_2, g_3, derivs] = k_order_perturbation(dr, ...
-                                                          M,options);
+        [err, g_0, g_1, g_2, g_3, derivs] = k_order_perturbation(dr,M,options);
         if err
             info(1)=9;
             return
         end
     else
-        [err, g_0, g_1, g_2, g_3] = k_order_perturbation(dr, ...
-                                                         M,options);
+        [err, g_0, g_1, g_2, g_3] = k_order_perturbation(dr,M,options);
         if err
             info(1)=9;
             return
@@ -86,14 +84,14 @@ end
 if options.pruning && order == 3
     dr.ghx = derivs.gy;
     dr.ghu = derivs.gu;
-    dr.ghxx = unfold2(derivs.gyy,nspred);
+    dr.ghxx = derivs.gyy;
     dr.ghxu = derivs.gyu;
-    dr.ghuu = unfold2(derivs.guu,exo_nbr);
+    dr.ghuu = derivs.guu;
     dr.ghs2 = derivs.gss;
-    dr.ghxxx = unfold3(derivs.gyyy,nspred);
-    dr.ghxxu = unfold21(derivs.gyyu,nspred,exo_nbr);
-    dr.ghxuu = unfold12(derivs.gyuu,nspred,exo_nbr);
-    dr.ghuuu = unfold3(derivs.guuu,exo_nbr);
+    dr.ghxxx = derivs.gyyy;
+    dr.ghxxu = derivs.gyyu;
+    dr.ghxuu = derivs.gyuu;
+    dr.ghuuu = derivs.guuu;
     dr.ghxss = derivs.gyss;
     dr.ghuss = derivs.guss;
 else
@@ -143,68 +141,5 @@ else
         dr.ghxx = ghxx;
         dr.ghxu = ghxu;
         dr.ghuu = ghuu;
-    end
-end
-
-function y = unfold2(x,n)
-y=zeros(size(x,1),n*n);
-m = 1;
-for i=1:n
-    for j=i:n
-        y(:,(i-1)*n+j)=x(:,m);
-        if j ~= i
-            y(:,(j-1)*n+i)=x(:,m);
-        end
-        m = m+1;
-    end
-end
-
-function y = unfold3(x,n)
-y = zeros(size(x,1),n*n*n);
-m = 1;
-for i=1:n
-    for j=i:n
-        for k=j:n
-            xx = x(:,m);
-            y(:,(i-1)*n*n+(j-1)*n+k) = xx;
-            y(:,(i-1)*n*n+(k-1)*n+j) = xx;
-            y(:,(j-1)*n*n+(k-1)*n+i) = xx;
-            y(:,(j-1)*n*n+(i-1)*n+k) = xx;
-            y(:,(k-1)*n*n+(i-1)*n+j) = xx;
-            y(:,(k-1)*n*n+(j-1)*n+i) = xx;
-            m = m + 1;
-        end
-    end
-end
-
-function y = unfold21(x,n1,n2)
-y = zeros(size(x,1),n1*n1*n2);
-m = 1;
-for i=1:n1
-    for j=i:n1
-        for k=1:n2
-            xx = x(:,m);
-            y(:,(i-1)*n1*n2+(j-1)*n2+k) = xx;
-            if j ~= i
-                y(:,(j-1)*n1*n2+(i-1)*n2+k) = xx;
-            end
-            m = m + 1;
-        end
-    end
-end
-
-function y = unfold12(x,n1,n2)
-y = zeros(size(x,1),n1*n2*n2);
-m = 1;
-for i=1:n1
-    for j=1:n2
-        for k=j:n2
-            xx = x(:,m);
-            y(:,(i-1)*n2*n2+(j-1)*n2+k) = xx;
-            if k ~= j
-                y(:,(i-1)*n2*n2+(k-1)*n2+j) = xx;
-            end
-            m = m + 1;
-        end
     end
 end
