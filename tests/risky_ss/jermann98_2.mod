@@ -93,7 +93,7 @@ shocks;
 var ez; stderr s;  
 end;
 
-options_.risky_steadystate = 1;
+options_.risky_steadystate = true;
 stoch_simul (order=2,irf=0,noprint) erp1, rf1, m1, r1, y, z, c, d, mu, k;
 oo_.steady_state = oo_.dr.ys;
 end

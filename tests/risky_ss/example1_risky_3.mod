@@ -43,5 +43,5 @@ end;
 
 stoch_simul(order=2,irf=0);
 
-options_.risky_steadystate = 1;
+options_.risky_steadystate = true;
 stoch_simul(order=3,irf=0);

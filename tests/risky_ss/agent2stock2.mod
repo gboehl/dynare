@@ -44,6 +44,6 @@ x1 = 0.26;
 x2 = 0.25;
 end;
 
-options_.risky_steadystate = 1;
+options_.risky_steadystate = true;
 
 stoch_simul(irf=0);

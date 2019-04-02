@@ -41,5 +41,5 @@ var u; stderr 0.009;
 var e, u = phi*0.009*0.009;
 end;
 
-options_.risky_steadystate = 1;
+options_.risky_steadystate = true;
 stoch_simul(irf=0);
