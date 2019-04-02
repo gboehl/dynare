@@ -234,7 +234,8 @@ function printlistofvariables(fid, kind, list, DynareModel, vappend)
                     tags = sprintf('(%s)', tags(3:end));
                 end
             elseif ~isempty(strmatch(list{i}, vappend, 'exact'))
-                % Nothing to do, this variable was renamed bvy cherrypick
+                % Nothing to do, this variable was renamed by cherrypick
+                tags = '';
             else
                 if isequal(kind, 'endo') && (isequal(list{i}(1:16), 'pac_expectation_') || isequal(list{i}(1:16), 'var_expectation_'))
                     tags = sprintf('(expectation=''%s'')', list{i}(1:3));
