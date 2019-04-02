@@ -56,6 +56,10 @@ if ~exist(sprintf('%s/model/json', infile), 'dir')
     error('Cannot find %s/model/json folder. Did you run %s.mod with the json option?', infile, infile);
 end
 
+% Check if some variables have to be renamed.
+rename = M_.equations_tags(strcmp('rename',M_.equations_tags(:,2)),[1,3]);
+isrename = ~isempty(rename);
+
 % Load json file (original mod file)
 orig = loadjson(sprintf('%s/model/json/modfile-original.json', M_.dname));
 
@@ -66,6 +70,9 @@ plist = {};
 elist = {};
 xlist = {};
 
+eappend = {};
+xappend = {};
+
 for i=1:length(eqtags)
     rhs = [];
     lhs = [];
@@ -75,6 +82,24 @@ for i=1:length(eqtags)
     [LHS, RHS] = get_lhs_and_rhs(eqtags{i}, M_, true);
     % Get the parameters, endogenous and exogenous variables in the current equation.
     [pnames, enames, xnames] = get_variables_and_parameters_in_equation(LHS, RHS, M_);
+    if isrename
+        [variable_has_to_be_renamed, id] = ismember(eqnum, [rename{:,1}]);
+        if variable_has_to_be_renamed
+            tmp = strsplit(rename{id,2}, '->');
+            LHS = exactstrrep(LHS, tmp{1}, tmp{2});
+            RHS = exactstrrep(RHS, tmp{1}, tmp{2});
+            rep = strcmp(tmp{1}, enames);
+            if any(rep)
+                enames(rep) = tmp(2);
+                eappend = union(eappend, tmp{2});
+            end
+            rep = strcmp(tmp{1}, xnames);
+            if any(rep)
+                xnames(rep) = tmp(2);
+                xappend = union(xappend, tmp{2});
+            end
+        end
+    end
     % Remove residual from equation if required.
     if noresids
         exogenous_variables_to_be_removed = ~ismember(xnames, M_.simulation_exo_names);
@@ -161,12 +186,12 @@ fclose(fid);
 
 % Export endogegnous variables
 fid = fopen(sprintf('%s/endogenous.inc', outfold), 'w');
-printlistofvariables(fid, 'endo', elist, M_);
+printlistofvariables(fid, 'endo', elist, M_, eappend);
 fclose(fid);
 
 % Export exogenous variables
 fid = fopen(sprintf('%s/exogenous.inc', outfold), 'w');
-printlistofvariables(fid, 'exo', xlist, M_);
+printlistofvariables(fid, 'exo', xlist, M_, xappend);
 fclose(fid);
 
 % Export parameter values
@@ -179,7 +204,7 @@ for i=1:length(plist)
 end
 fclose(fid);
 
-function printlistofvariables(fid, kind, list, DynareModel)
+function printlistofvariables(fid, kind, list, DynareModel, vappend)
     if isfield(DynareModel, sprintf('%s_partitions', kind))
         % Some endogenous variables are tagged.
         switch kind
@@ -208,6 +233,8 @@ function printlistofvariables(fid, kind, list, DynareModel)
                 if ~isempty(tags)
                     tags = sprintf('(%s)', tags(3:end));
                 end
+            elseif ~isempty(strmatch(list{i}, vappend, 'exact'))
+                % Nothing to do, this variable was renamed bvy cherrypick
             else
                 if isequal(kind, 'endo') && (isequal(list{i}(1:16), 'pac_expectation_') || isequal(list{i}(1:16), 'var_expectation_'))
                     tags = sprintf('(expectation=''%s'')', list{i}(1:3));
