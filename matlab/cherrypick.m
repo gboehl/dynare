@@ -168,6 +168,15 @@ fid = fopen(sprintf('%s/exogenous.inc', outfold), 'w');
 printlistofvariables(fid, 'exo', xlist, M_);
 fclose(fid);
 
+% Export parameter values
+fid = fopen(sprintf('%s/parameter-values.inc', outfold), 'w');
+for i=1:length(plist)
+    id = strcmp(plist{i}, M_.param_names);
+    if any(id)
+        fprintf(fid, '%s = %s;\n', plist{i}, num2str(M_.params(id), 16));
+    end
+end
+fclose(fid);
 
 function printlistofvariables(fid, kind, list, DynareModel)
     if isfield(DynareModel, sprintf('%s_partitions', kind))

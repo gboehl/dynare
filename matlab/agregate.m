@@ -19,7 +19,7 @@ function agregate(ofile, varargin)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-MAX_NUMBER_OF_ELEMENTS = 1000;
+MAX_NUMBER_OF_ELEMENTS = 10000;
 
 warning off MATLAB:subscripting:noSubscriptsSpecified
 
@@ -107,6 +107,18 @@ for i=1:length(varargin)
 end
 xlist = xlist(1:xnum,:);
 
+% Get parameter values.
+calibration = '';
+for i=1:length(varargin)
+    fid = fopen(sprintf('%s/parameter-values.inc', varargin{i}));
+    cline = fgetl(fid);
+    while ischar(cline)
+        calibration = sprintf('%s\n%s', calibration, cline);
+        cline = fgetl(fid);
+    end
+    fclose(fid);
+end
+
 % Move the endogenous variables which are not LHS of an equation
 % into the set of exogenous variables.
 [~, i1] = intersect(elist(:,1), eqlist(:,1));
@@ -132,6 +144,8 @@ for i=1:length(plist)
     fprintf(fid, '\t%s\n', plist{i});
 end
 fprintf(fid, ';\n\n');
+fprintf(fid, calibration);
+fprintf(fid, '\n\n');
 fprintf(fid, 'var\n');
 for i=1:rows(elist)
     if isempty(elist{i,2})
