@@ -1569,7 +1569,7 @@ in this case ``initval`` is used to specify the terminal conditions.
         equilibrium values.
 
         The fact that ``c`` at :math:`t=0` and ``k`` at :math:`t=201`
-        specified in ``initval`` and ````endval`` are taken as given
+        specified in ``initval`` and ``endval`` are taken as given
         has an important implication for plotting the simulated vector
         for the endogenous variables, i.e. the rows of
         ``oo_.endo_simul``: this vector will also contain the initial
@@ -6360,14 +6360,14 @@ block decomposition of the model (see :opt:`block`).
 
         Variable set by the ``estimation`` command (if used with the
         ``smoother``) without Metropolis, or by the
-        ````calib_smoother`` command. Contains the steady state
+        ``calib_smoother`` command. Contains the steady state
         component of the endogenous variables used in the smoother in
         order of variable declaration.
 
 
     .. matvar:: oo_.Smoother.TrendCoeffs
 
-        Variable set by the ````estimation`` command (if used with the
+        Variable set by the ``estimation`` command (if used with the
         ``smoother``) without Metropolis, or by the ``calib_smoother``
         command. Contains the trend coefficients of the observed
         variables used in the smoother in order of declaration of the
@@ -6377,7 +6377,7 @@ block decomposition of the model (see :opt:`block`).
     .. matvar:: oo_.Smoother.Trend
 
         Variable set by the ``estimation command`` (if used with the
-        ``smoother`` option), or by the ````calib_smoother``
+        ``smoother`` option), or by the ``calib_smoother``
         command. Contains the trend component of the variables used in
         the smoother.
 
