@@ -29,7 +29,7 @@
 
 using namespace std;
 
-#define DIM_MAX 1111
+constexpr int DIM_MAX = 1111;
 
 template<typename T>
 int
@@ -130,9 +130,8 @@ bit_lo0(T n)
       bit++;
       T n2 = n/2;
       if (n == 2*n2)
-        {
-          break;
-        }
+        break;
+
       n = n2;
     }
   return bit;
@@ -157,8 +156,7 @@ ixor(T i, T j)
     {
       T i2 = i / 2;
       T j2 = j / 2;
-      if (
-          ((i == 2 * i2) && (j != 2 * j2))
+      if (((i == 2 * i2) && (j != 2 * j2))
           || ((i != 2 * i2) && (j == 2 * j2)))
         {
           k = k + l;
@@ -392,7 +390,7 @@ next_sobol(int dim_num, T1 *seed, T2 *quasi)
       /*
       **  Set ATMOST = 2^LOG_MAX - 1.
       */
-      atmost = (T1) 0;
+      atmost = static_cast<T1>(0);
       for (int i = 1; i <= LOG_MAX; i++)
         atmost = 2 * atmost + 1;
       /*
@@ -404,7 +402,7 @@ next_sobol(int dim_num, T1 *seed, T2 *quasi)
       */
       for (T1 j = 0; j < maxcol; j++)
         {
-          v[0][j] = (T1) 1;
+          v[0][j] = static_cast<T1>(1);
         }
       /*
       **  Initialize the remaining rows of V.
@@ -423,9 +421,8 @@ next_sobol(int dim_num, T1 *seed, T2 *quasi)
             {
               j = j / 2;
               if (j <= 0)
-                {
-                  break;
-                }
+                break;
+
               m = m + 1;
             }
           /*
@@ -453,9 +450,7 @@ next_sobol(int dim_num, T1 *seed, T2 *quasi)
                 {
                   l = 2 * l;
                   if (includ[k])
-                    {
-                      newv = (newv ^ (l * v[i][j-k-1]));
-                    }
+                    newv = newv ^ (l * v[i][j-k-1]);
                 }
               v[i][j] = newv;
             }
@@ -468,14 +463,12 @@ next_sobol(int dim_num, T1 *seed, T2 *quasi)
         {
           l = 2 * l;
           for (int i = 0; i < dim_num; i++)
-            {
-              v[i][j] = v[i][j] * l;
-            }
+            v[i][j] = v[i][j] * l;
         }
       /*
       **  RECIPD is 1/(common denominator of the elements in V).
       */
-      recipd = 1.0E+00 / ((T2) (2 * l));
+      recipd = 1.0E+00 / static_cast<T2>(2 * l);
     }
   if (*seed < 0)
     *seed = 0;
@@ -484,14 +477,10 @@ next_sobol(int dim_num, T1 *seed, T2 *quasi)
     {
       l = 1;
       for (int i = 0; i < dim_num; i++)
-        {
-          lastq[i] = 0;
-        }
+        lastq[i] = 0;
     }
   else if (*seed == seed_save + 1)
-    {
-      l = bit_lo0(*seed);
-    }
+    l = bit_lo0(*seed);
   else if (*seed <= seed_save)
     {
       seed_save = 0;
@@ -502,9 +491,7 @@ next_sobol(int dim_num, T1 *seed, T2 *quasi)
         {
           l = bit_lo0(seed_temp);
           for (int i = 0; i < dim_num; i++)
-            {
-              lastq[i] = (lastq[i] ^ v[i][l-1]);
-            }
+            lastq[i] = (lastq[i] ^ v[i][l-1]);
         }
       l = bit_lo0(*seed);
     }
@@ -514,9 +501,7 @@ next_sobol(int dim_num, T1 *seed, T2 *quasi)
         {
           l = bit_lo0(seed_temp);
           for (int i = 0; i < dim_num; i++)
-            {
-              lastq[i] = (lastq[i] ^ v[i][l-1]);
-            }
+            lastq[i] = (lastq[i] ^ v[i][l-1]);
         }
       l = bit_lo0(*seed);
     }
@@ -539,8 +524,8 @@ next_sobol(int dim_num, T1 *seed, T2 *quasi)
   */
   for (int i = 0; i < dim_num; i++)
     {
-      quasi[i] = ((T2) lastq[i]) * recipd;
-      lastq[i] = (lastq[i]^v[i][l-1]);
+      quasi[i] = static_cast<T2>(lastq[i]) * recipd;
+      lastq[i] = lastq[i]^v[i][l-1];
     }
   seed_save = *seed;
   *seed = *seed + 1;
@@ -552,31 +537,24 @@ T1
 sobol_block(int dimension, int block_size, T1 seed, T2 *block)
 {
   for (int iter = 0; iter < block_size; iter++)
-    {
-      next_sobol(dimension, &seed, &block[iter*dimension]);
-    }
+    next_sobol(dimension, &seed, &block[iter*dimension]);
   return seed;
 }
 
 template<typename T>
 void
-expand_unit_hypercube(int dimension, int block_size, T *block, T *lower_bound, T *upper_bound)
+expand_unit_hypercube(int dimension, int block_size, T *block, const T *lower_bound, const T *upper_bound)
 {
   T *hypercube_length = new T[dimension];
   for (int dim = 0; dim < dimension; dim++)
-    {
-      hypercube_length[dim] = upper_bound[dim]-lower_bound[dim];
-    }
+    hypercube_length[dim] = upper_bound[dim]-lower_bound[dim];
+
   int base = 0;
   for (int sim = 0; sim < block_size; sim++)
     {
       for (int dim = 0; dim < dimension; dim++)
-        {
-          block[base+dim] = lower_bound[dim] + hypercube_length[dim]*block[base+dim];
-        }
+        block[base+dim] = lower_bound[dim] + hypercube_length[dim]*block[base+dim];
       base += dimension;
     }
   delete[] hypercube_length;
 }
-
-#undef DIM_MAX

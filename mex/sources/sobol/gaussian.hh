@@ -22,18 +22,16 @@
 ** AUTHOR(S): stephane DOT adjemian AT univ DASH lemans DOT fr
 */
 
-#include <cstdlib>
-#include <iostream>
-#include <iomanip>
 #include <cmath>
-#include <ctime>
+#include <limits>
+#include <algorithm>
 
 #include <dynblas.h>
 
 using namespace std;
 
-#define lb  .02425
-#define ub  .97575
+constexpr double lb = .02425;
+constexpr double ub = .97575;
 
 #ifdef USE_OMP
 # include <omp.h>
@@ -81,8 +79,8 @@ icdf(const T uniform)
       2.445134137142996e+00,
       3.754408661907416e+00
     };
-  T gaussian = (T) 0.0;
-  if ((0 < uniform)  && (uniform < lb))
+  T gaussian = static_cast<T>(0.0);
+  if (0 < uniform && uniform < lb)
     {
       T tmp;
       tmp = sqrt(-2*log(uniform));
@@ -90,7 +88,7 @@ icdf(const T uniform)
     }
   else
     {
-      if ((lb <= uniform) && (uniform <= ub))
+      if (lb <= uniform && uniform <= ub)
         {
           T tmp, TMP;
           tmp = uniform - .5;
@@ -99,7 +97,7 @@ icdf(const T uniform)
         }
       else
         {
-          if ((ub < uniform) && (uniform < 1))
+          if (ub < uniform && uniform < 1)
             {
               T tmp;
               tmp = sqrt(-2*log(1-uniform));
@@ -107,7 +105,7 @@ icdf(const T uniform)
             }
         }
     }
-  if ((0 < uniform) && (uniform < 1))
+  if (0 < uniform && uniform < 1)
     {
       T tmp, tmp_;
       tmp = .5*erfc(-gaussian/sqrt(2.0))-uniform;
@@ -115,33 +113,29 @@ icdf(const T uniform)
       gaussian = gaussian - tmp_/(1+.5*gaussian*tmp_);
     }
   if (uniform == 0)
-    {
-      gaussian = -INFINITY;
-    }
+    gaussian = -numeric_limits<T>::infinity();
+
   if (uniform == 1)
-    {
-      gaussian = INFINITY;
-    }
-  return (gaussian);
+    gaussian = numeric_limits<T>::infinity();
+
+  return gaussian;
 }
 
 template<typename T>
 void
-icdfm(const int n, T *U)
+icdfm(int n, T *U)
 {
 #if USE_OMP
 # pragma omp parallel for num_threads(omp_get_num_threads())
 #endif
   for (int i = 0; i < n; i++)
-    {
-      U[i] = icdf(U[i]);
-    }
+    U[i] = icdf(U[i]);
   return;
 }
 
 template<typename T>
 void
-icdfmSigma(const int d, const int n, T *U, const double *LowerCholSigma)
+icdfmSigma(int d, int n, T *U, const double *LowerCholSigma)
 {
   double one = 1.0;
   double zero = 0.0;
@@ -150,13 +144,12 @@ icdfmSigma(const int d, const int n, T *U, const double *LowerCholSigma)
   icdfm(n*d, U);
   double tmp[n*d];
   dgemm("N", "N", &dd, &nn, &dd, &one, LowerCholSigma, &dd, U, &dd, &zero, tmp, &dd);
-  memcpy(U, tmp, d*n*sizeof(double));
-  return;
+  copy_n(tmp, d*n, U);
 }
 
 template<typename T>
 void
-usphere(const int d, const int n, T *U)
+usphere(int d, int n, T *U)
 {
   icdfm(n*d, U);
 #if USE_OMP
@@ -167,21 +160,17 @@ usphere(const int d, const int n, T *U)
       int k = j*d;
       double norm = 0.0;
       for (int i = 0; i < d; i++)// dimension index.
-        {
-          norm = norm + U[k+i]*U[k+i];
-        }
+        norm = norm + U[k+i]*U[k+i];
+
       norm = sqrt(norm);
       for (int i = 0; i < d; i++)// dimension index.
-        {
-          U[k+i] = U[k+i]/norm;
-        }
+        U[k+i] = U[k+i]/norm;
     }
-  return;
 }
 
 template<typename T>
 void
-usphereRadius(const int d, const int n, double radius, T *U)
+usphereRadius(int d, int n, double radius, T *U)
 {
   icdfm(n*d, U);
 #if USE_OMP
@@ -192,14 +181,10 @@ usphereRadius(const int d, const int n, double radius, T *U)
       int k = j*d;
       double norm = 0.0;
       for (int i = 0; i < d; i++)// dimension index.
-        {
-          norm = norm + U[k+i]*U[k+i];
-        }
+        norm = norm + U[k+i]*U[k+i];
+
       norm = sqrt(norm);
       for (int i = 0; i < d; i++)// dimension index.
-        {
-          U[k+i] = radius*U[k+i]/norm;
-        }
+        U[k+i] = radius*U[k+i]/norm;
     }
-  return;
 }
