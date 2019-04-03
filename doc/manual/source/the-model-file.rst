@@ -6990,7 +6990,7 @@ Shock Decomposition
 
     .. option:: parameter_set = OPTION
 
-        See :opt:`parameter_set <parameter_set = OPTION>` for the
+        See :opt:`parameter_set <parameter_set = OPTION>` for
         possible values.
 
     .. option:: datafile = FILENAME
@@ -7296,7 +7296,8 @@ Dynare can also run the smoother on a calibrated model:
 
     .. option:: parameter_set = OPTION
 
-        See :opt:`parameter_set` for the possible values.
+        See :opt:`parameter_set <parameter_set = OPTION>` for
+        possible values. Default: ``calibration``.
 
     .. option:: loglinear
 
@@ -7556,19 +7557,8 @@ the :comm:`bvar_forecast` command.
 
     .. option:: parameter_set = OPTION
 
-        Specify the parameter set to use for the forecasting. Possible
-        values for OPTION are:
-
-            * ``calibration``
-            * ``prior_mode``
-            * ``prior_mean``
-            * ``posterior_mode``
-            * ``posterior_mean``
-            * ``posterior_median``
-
-        No default value, mandatory option. Note that in case of
-        estimated models, ``conditional_forecast`` does not support
-        the ``prefilter`` option.
+        See :opt:`parameter_set <parameter_set = OPTION>` for
+        possible values. No default value, mandatory option.
 
     .. option:: controlled_varexo = (VARIABLE_NAME...)
 
@@ -8790,16 +8780,8 @@ Performing identification analysis
 
     .. option:: parameter_set = OPTION
 
-        Specify the parameter set to use. Possible values for OPTION are:
-
-            * ``calibration``
-            * ``prior_mode``
-            * ``prior_mean``
-            * ``posterior_mode``
-            * ``posterior_mean``
-            * ``posterior_median``
-
-        Default: ``prior_mean``.
+        See :opt:`parameter_set <parameter_set = OPTION>` for
+        possible values. Default: ``prior_mean``.
 
     .. option:: prior_mc = INTEGER
 
