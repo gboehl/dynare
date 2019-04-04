@@ -1,5 +1,5 @@
 # ===========================================================================
-#          http://www.gnu.org/software/autoconf-archive/ax_blas.html
+#         https://www.gnu.org/software/autoconf-archive/ax_blas.html
 # ===========================================================================
 #
 # SYNOPSIS
@@ -48,7 +48,7 @@
 #   Public License for more details.
 #
 #   You should have received a copy of the GNU General Public License along
-#   with this program. If not, see <http://www.gnu.org/licenses/>.
+#   with this program. If not, see <https://www.gnu.org/licenses/>.
 #
 #   As a special exception, the respective Autoconf Macro's copyright owner
 #   gives unlimited permission to copy, distribute and modify the configure
@@ -63,7 +63,7 @@
 #   modified version of the Autoconf Macro, you may extend this special
 #   exception to the GPL to apply to your modified version as well.
 
-#serial 14
+#serial 15
 
 AU_ALIAS([ACX_BLAS], [AX_BLAS])
 AC_DEFUN([AX_BLAS], [
@@ -170,11 +170,11 @@ if test $ax_blas_ok = no; then
 	AC_CHECK_LIB(mkl, $sgemm, [ax_blas_ok=yes;BLAS_LIBS="-lmkl -lguide -lpthread"],,[-lguide -lpthread])
 fi
 
-# BLAS in Apple Accelerate library?
+# BLAS in Apple vecLib library?
 if test $ax_blas_ok = no; then
-	save_LIBS="$LIBS"; LIBS="-framework Accelerate $LIBS"
-	AC_MSG_CHECKING([for $sgemm in -framework Accelerate])
-	AC_TRY_LINK_FUNC($sgemm, [ax_blas_ok=yes;BLAS_LIBS="-framework Accelerate"])
+	save_LIBS="$LIBS"; LIBS="-framework vecLib $LIBS"
+	AC_MSG_CHECKING([for $sgemm in -framework vecLib])
+	AC_TRY_LINK_FUNC($sgemm, [ax_blas_ok=yes;BLAS_LIBS="-framework vecLib"])
 	AC_MSG_RESULT($ax_blas_ok)
 	LIBS="$save_LIBS"
 fi
