@@ -1,137 +1,79 @@
 noinst_LIBRARIES = libdynare++.a
 
-libdynare___a_CPPFLAGS = $(AM_CPPFLAGS) -I$(top_srcdir)/../../../dynare++/src -I$(top_srcdir)/../../../dynare++/kord -I$(top_srcdir)/../../../dynare++/tl/cc -I$(top_srcdir)/../../../dynare++/utils/cc -I$(top_srcdir)/../../../dynare++/sylv/cc -I$(top_srcdir)/../../../dynare++/integ/cc -I$(top_srcdir)/../../sources $(CPPFLAGS_MATIO)
+TOPDIR = $(top_srcdir)/../../../dynare++
+
+libdynare___a_CPPFLAGS = $(AM_CPPFLAGS) -I$(TOPDIR)/src -I$(TOPDIR)/kord -I$(TOPDIR)/tl/cc -I$(TOPDIR)/utils/cc -I$(TOPDIR)/sylv/cc -I$(TOPDIR)/integ/cc $(CPPFLAGS_MATIO)
 
 libdynare___a_CXXFLAGS = $(AM_CXXFLAGS) $(THREAD_CXXFLAGS)
 
-TOPDIR = $(top_srcdir)/../../../dynare++
-
 KORD_SRCS = \
-	$(TOPDIR)/kord/approximation.cc \
-	$(TOPDIR)/kord/approximation.hh \
-	$(TOPDIR)/kord/decision_rule.cc \
-	$(TOPDIR)/kord/decision_rule.hh \
-	$(TOPDIR)/kord/dynamic_model.cc \
-	$(TOPDIR)/kord/dynamic_model.hh \
-	$(TOPDIR)/kord/faa_di_bruno.cc \
-	$(TOPDIR)/kord/faa_di_bruno.hh \
-	$(TOPDIR)/kord/first_order.cc \
-	$(TOPDIR)/kord/first_order.hh \
-	$(TOPDIR)/kord/global_check.cc \
-	$(TOPDIR)/kord/global_check.hh \
-	$(TOPDIR)/kord/kord_exception.hh \
-	$(TOPDIR)/kord/korder.cc \
-	$(TOPDIR)/kord/korder.hh \
-	$(TOPDIR)/kord/korder_stoch.cc \
-	$(TOPDIR)/kord/korder_stoch.hh \
-	$(TOPDIR)/kord/journal.cc \
-	$(TOPDIR)/kord/journal.hh \
-	$(TOPDIR)/kord/normal_conjugate.cc \
-	$(TOPDIR)/kord/normal_conjugate.hh \
-	$(TOPDIR)/kord/seed_generator.cc \
-	$(TOPDIR)/kord/seed_generator.hh
+	approximation.cc \
+	decision_rule.cc \
+	dynamic_model.cc \
+	faa_di_bruno.cc \
+	first_order.cc \
+	global_check.cc \
+	korder.cc \
+	korder_stoch.cc \
+	journal.cc \
+	normal_conjugate.cc \
+	seed_generator.cc
 
 SYLV_SRCS = \
-	$(TOPDIR)/sylv/cc/BlockDiagonal.cc \
-	$(TOPDIR)/sylv/cc/BlockDiagonal.hh \
-	$(TOPDIR)/sylv/cc/GeneralMatrix.cc \
-	$(TOPDIR)/sylv/cc/GeneralMatrix.hh \
-	$(TOPDIR)/sylv/cc/GeneralSylvester.cc \
-	$(TOPDIR)/sylv/cc/GeneralSylvester.hh \
-	$(TOPDIR)/sylv/cc/IterativeSylvester.cc \
-	$(TOPDIR)/sylv/cc/IterativeSylvester.hh \
-	$(TOPDIR)/sylv/cc/KronUtils.cc \
-	$(TOPDIR)/sylv/cc/KronUtils.hh \
-	$(TOPDIR)/sylv/cc/KronVector.cc \
-	$(TOPDIR)/sylv/cc/KronVector.hh \
-	$(TOPDIR)/sylv/cc/QuasiTriangular.cc \
-	$(TOPDIR)/sylv/cc/QuasiTriangular.hh \
-	$(TOPDIR)/sylv/cc/QuasiTriangularZero.cc \
-	$(TOPDIR)/sylv/cc/QuasiTriangularZero.hh \
-	$(TOPDIR)/sylv/cc/SchurDecomp.cc \
-	$(TOPDIR)/sylv/cc/SchurDecomp.hh \
-	$(TOPDIR)/sylv/cc/SchurDecompEig.cc \
-	$(TOPDIR)/sylv/cc/SchurDecompEig.hh \
-	$(TOPDIR)/sylv/cc/SimilarityDecomp.cc \
-	$(TOPDIR)/sylv/cc/SimilarityDecomp.hh \
-	$(TOPDIR)/sylv/cc/SylvException.cc \
-	$(TOPDIR)/sylv/cc/SylvException.hh \
-	$(TOPDIR)/sylv/cc/SylvMatrix.cc \
-	$(TOPDIR)/sylv/cc/SylvMatrix.hh \
-	$(TOPDIR)/sylv/cc/SylvParams.cc \
-	$(TOPDIR)/sylv/cc/SylvParams.hh \
-	$(TOPDIR)/sylv/cc/SylvesterSolver.hh \
-	$(TOPDIR)/sylv/cc/SymSchurDecomp.cc \
-	$(TOPDIR)/sylv/cc/SymSchurDecomp.hh \
-	$(TOPDIR)/sylv/cc/TriangularSylvester.cc \
-	$(TOPDIR)/sylv/cc/TriangularSylvester.hh \
-	$(TOPDIR)/sylv/cc/Vector.cc \
-	$(TOPDIR)/sylv/cc/Vector.hh
+	BlockDiagonal.cc \
+	GeneralMatrix.cc \
+	GeneralSylvester.cc \
+	IterativeSylvester.cc \
+	KronUtils.cc \
+	KronVector.cc \
+	QuasiTriangular.cc \
+	QuasiTriangularZero.cc \
+	SchurDecomp.cc \
+	SchurDecompEig.cc \
+	SimilarityDecomp.cc \
+	SylvException.cc \
+	SylvMatrix.cc \
+	SylvParams.cc \
+	SymSchurDecomp.cc \
+	TriangularSylvester.cc \
+	Vector.cc
 
 TL_SRCS = \
-	$(TOPDIR)/tl/cc/equivalence.cc \
-	$(TOPDIR)/tl/cc/equivalence.hh \
-	$(TOPDIR)/tl/cc/fine_container.cc \
-	$(TOPDIR)/tl/cc/fine_container.hh \
-	$(TOPDIR)/tl/cc/fs_tensor.cc \
-	$(TOPDIR)/tl/cc/fs_tensor.hh \
-	$(TOPDIR)/tl/cc/gs_tensor.cc \
-	$(TOPDIR)/tl/cc/gs_tensor.hh \
-	$(TOPDIR)/tl/cc/int_sequence.cc \
-	$(TOPDIR)/tl/cc/int_sequence.hh \
-	$(TOPDIR)/tl/cc/kron_prod.cc \
-	$(TOPDIR)/tl/cc/kron_prod.hh \
-	$(TOPDIR)/tl/cc/normal_moments.cc \
-	$(TOPDIR)/tl/cc/normal_moments.hh \
-	$(TOPDIR)/tl/cc/permutation.cc \
-	$(TOPDIR)/tl/cc/permutation.hh \
-	$(TOPDIR)/tl/cc/ps_tensor.cc \
-	$(TOPDIR)/tl/cc/ps_tensor.hh \
-	$(TOPDIR)/tl/cc/pyramid_prod.cc \
-	$(TOPDIR)/tl/cc/pyramid_prod.hh \
-	$(TOPDIR)/tl/cc/pyramid_prod2.cc \
-	$(TOPDIR)/tl/cc/pyramid_prod2.hh \
-	$(TOPDIR)/tl/cc/rfs_tensor.cc \
-	$(TOPDIR)/tl/cc/rfs_tensor.hh \
-	$(TOPDIR)/tl/cc/sparse_tensor.cc \
-	$(TOPDIR)/tl/cc/sparse_tensor.hh \
-	$(TOPDIR)/tl/cc/stack_container.cc \
-	$(TOPDIR)/tl/cc/stack_container.hh \
-	$(TOPDIR)/tl/cc/sthread.cc \
-	$(TOPDIR)/tl/cc/sthread.hh \
-	$(TOPDIR)/tl/cc/symmetry.cc \
-	$(TOPDIR)/tl/cc/symmetry.hh \
-	$(TOPDIR)/tl/cc/t_container.cc \
-	$(TOPDIR)/tl/cc/t_container.hh \
-	$(TOPDIR)/tl/cc/t_polynomial.cc \
-	$(TOPDIR)/tl/cc/t_polynomial.hh \
-	$(TOPDIR)/tl/cc/tensor.cc \
-	$(TOPDIR)/tl/cc/tensor.hh \
-	$(TOPDIR)/tl/cc/tl_exception.hh \
-	$(TOPDIR)/tl/cc/tl_static.cc \
-	$(TOPDIR)/tl/cc/tl_static.hh \
-	$(TOPDIR)/tl/cc/twod_matrix.cc \
-	$(TOPDIR)/tl/cc/twod_matrix.hh
+	equivalence.cc \
+	fine_container.cc \
+	fs_tensor.cc \
+	gs_tensor.cc \
+	int_sequence.cc \
+	kron_prod.cc \
+	normal_moments.cc \
+	permutation.cc \
+	ps_tensor.cc \
+	pyramid_prod.cc \
+	pyramid_prod2.cc \
+	rfs_tensor.cc \
+	sparse_tensor.cc \
+	stack_container.cc \
+	sthread.cc \
+	symmetry.cc \
+	t_container.cc \
+	t_polynomial.cc \
+	tensor.cc \
+	tl_static.cc \
+	twod_matrix.cc
 
 INTEG_SRCS = \
-	$(TOPDIR)/integ/cc/quadrature.cc \
-	$(TOPDIR)/integ/cc/quadrature.hh \
-	$(TOPDIR)/integ/cc/quasi_mcarlo.cc \
-	$(TOPDIR)/integ/cc/quasi_mcarlo.hh \
-	$(TOPDIR)/integ/cc/product.cc \
-	$(TOPDIR)/integ/cc/product.hh \
-	$(TOPDIR)/integ/cc/smolyak.cc \
-	$(TOPDIR)/integ/cc/smolyak.hh \
-	$(TOPDIR)/integ/cc/vector_function.cc \
-	$(TOPDIR)/integ/cc/vector_function.hh \
-	$(TOPDIR)/integ/cc/precalc_quadrature.hh
+	quadrature.cc \
+	quasi_mcarlo.cc \
+	product.cc \
+	smolyak.cc \
+	vector_function.cc
 
 UTILS_SRCS = \
-	$(TOPDIR)/utils/cc/exception.hh \
-	$(TOPDIR)/utils/cc/pascal_triangle.cc \
-	$(TOPDIR)/utils/cc/pascal_triangle.hh \
-	$(TOPDIR)/utils/cc/int_power.cc \
-	$(TOPDIR)/utils/cc/int_power.hh
+	pascal_triangle.cc \
+	int_power.cc
+
+OTHER_SRCS = \
+	nlsolve.cc
 
 nodist_libdynare___a_SOURCES = \
 	$(KORD_SRCS) \
@@ -139,5 +81,20 @@ nodist_libdynare___a_SOURCES = \
 	$(SYLV_SRCS) \
 	$(INTEG_SRCS) \
 	$(UTILS_SRCS) \
-	$(TOPDIR)/src/nlsolve.cc \
-	$(TOPDIR)/src/nlsolve.hh
+	$(OTHER_SRCS)
+
+BUILT_SOURCES = $(nodist_libdynare___a_SOURCES)
+CLEANFILES = $(nodist_libdynare___a_SOURCES)
+
+$(KORD_SRCS): %.cc: $(TOPDIR)/kord/%.cc
+	$(LN_S) -f $< $@
+$(TL_SRCS): %.cc: $(TOPDIR)/tl/cc/%.cc
+	$(LN_S) -f $< $@
+$(SYLV_SRCS): %.cc: $(TOPDIR)/sylv/cc/%.cc
+	$(LN_S) -f $< $@
+$(INTEG_SRCS): %.cc: $(TOPDIR)/integ/cc/%.cc
+	$(LN_S) -f $< $@
+$(UTILS_SRCS): %.cc: $(TOPDIR)/utils/cc/%.cc
+	$(LN_S) -f $< $@
+$(OTHER_SRCS): %.cc: $(TOPDIR)/src/%.cc
+	$(LN_S) -f $< $@

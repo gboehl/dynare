@@ -1,20 +1,22 @@
 mex_PROGRAMS = k_order_perturbation
 
-k_order_perturbation_CPPFLAGS = $(AM_CPPFLAGS) -I$(top_srcdir)/../../../dynare++/src -I$(top_srcdir)/../../../dynare++/kord -I$(top_srcdir)/../../../dynare++/tl/cc -I$(top_srcdir)/../../../dynare++/utils/cc -I$(top_srcdir)/../../../dynare++/sylv/cc -I$(top_srcdir)/../../../dynare++/integ/cc -I$(top_srcdir)/../../sources $(CPPFLAGS_MATIO)
+TOPDIR = $(top_srcdir)/../../sources/k_order_perturbation
+
+k_order_perturbation_CPPFLAGS = $(AM_CPPFLAGS) -I$(top_srcdir)/../../../dynare++/src -I$(top_srcdir)/../../../dynare++/kord -I$(top_srcdir)/../../../dynare++/tl/cc -I$(top_srcdir)/../../../dynare++/utils/cc -I$(top_srcdir)/../../../dynare++/sylv/cc -I$(top_srcdir)/../../../dynare++/integ/cc -I$(TOPDIR) $(CPPFLAGS_MATIO)
 
 k_order_perturbation_CXXFLAGS = $(AM_CXXFLAGS) $(THREAD_CXXFLAGS)
 
 k_order_perturbation_LDFLAGS = $(AM_LDFLAGS) $(LDFLAGS_MATIO)
 k_order_perturbation_LDADD = ../libdynare++/libdynare++.a $(LIBADD_DLOPEN) $(LIBADD_MATIO)
 
-TOPDIR = $(top_srcdir)/../../sources/k_order_perturbation
-
 nodist_k_order_perturbation_SOURCES = \
-	$(TOPDIR)/k_order_perturbation.cc \
-	$(TOPDIR)/k_ord_dynare.cc \
-	$(TOPDIR)/k_ord_dynare.hh \
-	$(TOPDIR)/dynamic_dll.cc \
-	$(TOPDIR)/dynamic_dll.hh \
-	$(TOPDIR)/dynamic_abstract_class.hh \
-	$(TOPDIR)/dynamic_m.cc \
-	$(TOPDIR)/dynamic_m.hh
+	k_order_perturbation.cc \
+	k_ord_dynare.cc \
+	dynamic_dll.cc \
+	dynamic_m.cc
+
+BUILT_SOURCES = $(nodist_k_order_perturbation_SOURCES)
+CLEANFILES = $(nodist_k_order_perturbation_SOURCES)
+
+%.cc: $(TOPDIR)/%.cc
+	$(LN_S) -f $< $@

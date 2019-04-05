@@ -1,18 +1,18 @@
 mex_PROGRAMS = bytecode
 
-bytecode_CPPFLAGS =  -Wno-maybe-uninitialized $(AM_CPPFLAGS) -I$(top_srcdir)/../../sources -I$(top_srcdir)/../../sources/bytecode -I$(top_srcdir)/../../../preprocessor/src
-
 TOPDIR = $(top_srcdir)/../../sources/bytecode
 
-nodist_bytecode_SOURCES = \
-	$(TOPDIR)/bytecode.cc \
-	$(TOPDIR)/Interpreter.cc \
-	$(TOPDIR)/Mem_Mngr.cc \
-	$(TOPDIR)/SparseMatrix.cc \
-	$(TOPDIR)/Evaluate.cc \
-	$(TOPDIR)/Interpreter.hh \
-	$(TOPDIR)/Mem_Mngr.hh \
-	$(TOPDIR)/SparseMatrix.hh \
-	$(TOPDIR)/Evaluate.hh \
-	$(TOPDIR)/ErrorHandling.hh
+bytecode_CPPFLAGS =  -Wno-maybe-uninitialized $(AM_CPPFLAGS) -I$(TOPDIR) -I$(top_srcdir)/../../../preprocessor/src
 
+nodist_bytecode_SOURCES = \
+	bytecode.cc \
+	Interpreter.cc \
+	Mem_Mngr.cc \
+	SparseMatrix.cc \
+	Evaluate.cc
+
+BUILT_SOURCES = $(nodist_bytecode_SOURCES)
+CLEANFILES = $(nodist_bytecode_SOURCES)
+
+%.cc: $(TOPDIR)/%.cc
+	$(LN_S) -f $< $@

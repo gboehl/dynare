@@ -88,6 +88,12 @@ doc/internals/ltxpng
 /mex/matlab/
 /mex/octave/
 
+# Symbolic links created for building MEX files
+/mex/build/matlab/*/*.c
+/mex/build/matlab/*/*.cc
+/mex/build/octave/*/*.c
+/mex/build/octave/*/*.cc
+
 # Dynare++
 /dynare++/integ/src/quadrature-points.dSYM/
 /dynare++/src/dynare++.dSYM/

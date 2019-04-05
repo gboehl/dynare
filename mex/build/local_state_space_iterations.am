@@ -1,5 +1,9 @@
-vpath %.cc $(top_srcdir)/../../sources/local_state_space_iterations
-
 mex_PROGRAMS = local_state_space_iteration_2
 
 nodist_local_state_space_iteration_2_SOURCES = local_state_space_iteration_2.cc
+
+BUILT_SOURCES = $(nodist_local_state_space_iteration_2_SOURCES)
+CLEANFILES = $(nodist_local_state_space_iteration_2_SOURCES)
+
+%.cc: $(top_srcdir)/../../sources/local_state_space_iterations/%.cc
+	$(LN_S) -f $< $@
