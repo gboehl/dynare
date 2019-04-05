@@ -5,16 +5,16 @@
 /* Here we develop abstractions for stacked containers of tensors. For
    instance, in perturbation methods for DSGE models, we need the function:
 
-                  ⎛ G(y*,u,u′,σ) ⎞
-   z(y*,u,u′,σ) = ⎢  g(y*,u,σ)   ⎥
-                  ⎢      y*      ⎥
-                  ⎝      u       ⎠
+                   ⎛ G(y*,u,u′,σ) ⎞
+    z(y*,u,u′,σ) = ⎢  g(y*,u,σ)   ⎥
+                   ⎢      y*      ⎥
+                   ⎝      u       ⎠
 
    and we need to calculate one step of Faà Di Bruno formula:
 
-                                            ₗ
-   [B_sᵏ]_α₁,…,αₗ = [f_zˡ]_β₁,…,βₗ    ∑     ∏  [z_(s^|cₘ|)]_cₘ(α)^βₘ
-                                   c∈ℳₗ,ₖ ᵐ⁼¹
+                                         ₗ
+    [B_sᵏ]_α₁…αₗ = [f_zˡ]_β₁…βₗ    ∑     ∏  [z_(s^|cₘ|)]_cₘ(α)^βₘ
+                                c∈ℳₗ,ₖ ᵐ⁼¹
 
    where we have containers for derivatives of G and g.
 

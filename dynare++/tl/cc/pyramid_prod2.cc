@@ -3,9 +3,9 @@
 #include "pyramid_prod2.hh"
 #include "rfs_tensor.hh"
 
-/* Here we only call |sp.createPackedColumns(c, cols, unit_flag)| which
-   fills |cols| and |unit_flag| for the given column |c|. Then we set
-   |end_seq| according to |unit_flag| and columns lengths. */
+/* Here we only call sp.createPackedColumns(c, cols, unit_flag) which
+   fills ‘cols’ and ‘unit_flag’ for the given column ‘c’. Then we set
+   ‘end_seq’ according to ‘unit_flag’ and columns lengths. */
 
 IrregTensorHeader::IrregTensorHeader(const StackProduct<FGSTensor> &sp,
                                      const IntSequence &c)
@@ -36,10 +36,10 @@ IrregTensorHeader::increment(IntSequence &v) const
     return;
   int i = v.size()-1;
 
-  // increment |i|-th item in coordinate |v|
+  // increment i-th item in coordinate ‘v’
   /* Here we increment item of coordinates. Whenever we reached end of
-     column coming from matrices, and |unit_flag| is not $-1$, we have to
-     jump to that |unit_flag|. */
+     column coming from matrices, and ‘unit_flag’ is not -1, we have to
+     jump to that ‘unit_flag’. */
   v[i]++;
   if (unit_flag[i] != -1 && v[i] == cols[i]->length()-1)
     v[i] = unit_flag[i];
@@ -48,7 +48,7 @@ IrregTensorHeader::increment(IntSequence &v) const
     {
       v[i] = 0;
       i--;
-      // increment |i|-th item in coordinate |v|
+      // increment i-th item in coordinate ‘v’
       /* Same code as above */
       v[i]++;
       if (unit_flag[i] != -1 && v[i] == cols[i]->length()-1)
@@ -67,7 +67,7 @@ IrregTensorHeader::calcMaxOffset() const
   return res;
 }
 
-/* Everything is done in |IrregTensorHeader|, only we have to Kronecker
+/* Everything is done in IrregTensorHeader, only we have to Kronecker
    multiply all columns of the header. */
 
 IrregTensor::IrregTensor(const IrregTensorHeader &h)

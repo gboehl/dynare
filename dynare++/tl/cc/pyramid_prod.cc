@@ -4,17 +4,16 @@
 #include "permutation.hh"
 #include "tl_exception.hh"
 
-/* Here we construct the |USubTensor| object. We allocate space via the
-   parent |URTensor|. Number of columns is a length of the list of
-   indices |lst|, number of variables and dimensions are of the tensor
-   $h$, this is given by |hdims|.
+/* Here we construct the USubTensor object. We allocate space via the parent
+   URTensor. Number of columns is a length of the list of indices ‘lst’, number
+   of variables and dimensions are of the tensor $h$, this is given by ‘hdims’.
 
-   We go through all equivalences with number of classes equal to
-   dimension of $B$. For each equivalence we make a permutation
-   |per|. Then we fetch all the necessary tensors $g$ with symmetries
-   implied by symmetry of $B$ and the equivalence. Then we go through the
-   list of indices, permute them by the permutation and add the Kronecker
-   product of the selected columns. This is done by |addKronColumn|. */
+   We go through all equivalences with number of classes equal to dimension of
+   B. For each equivalence we make a permutation ‘per’. Then we fetch all the
+   necessary tensors g with symmetries implied by symmetry of B and the
+   equivalence. Then we go through the list of indices, permute them by the
+   permutation and add the Kronecker product of the selected columns. This is
+   done by addKronColumn(). */
 
 USubTensor::USubTensor(const TensorDimens &bdims,
                        const TensorDimens &hdims,
@@ -43,19 +42,18 @@ USubTensor::USubTensor(const TensorDimens &bdims,
     }
 }
 
-/* This makes a Kronecker product of appropriate columns from tensors
-   in |fs| and adds such data to |i|-th column of this matrix. The
-   appropriate columns are defined by |pindex| sequence. A column of a
-   tensor has index created from a corresponding part of |pindex|. The
-   sizes of these parts are given by dimensions of the tensors in |ts|.
+/* This makes a Kronecker product of appropriate columns from tensors in ‘fs’
+   and adds such data to i-th column of this matrix. The appropriate columns
+   are defined by ‘pindex’ sequence. A column of a tensor has index created
+   from a corresponding part of ‘pindex’. The sizes of these parts are given by
+   dimensions of the tensors in ‘ts’.
 
-   Here we break the given index |pindex| according to the dimensions of
-   the tensors in |ts|, and for each subsequence of the |pindex| we find
-   an index of the folded tensor, which involves calling |getOffset| for
-   folded tensor, which might be costly. We gather all columns to a
-   vector |tmpcols| which are Kronecker multiplied in constructor of
-   |URSingleTensor|. Finally we add data of |URSingleTensor| to the
-   |i|-th column. */
+   Here we break the given index ‘pindex’ according to the dimensions of the
+   tensors in ‘ts’, and for each subsequence of the ‘pindex’ we find an index
+   of the folded tensor, which involves calling getOffset() for folded tensor,
+   which might be costly. We gather all columns to a vector ‘tmpcols’ which are
+   Kronecker multiplied in constructor of URSingleTensor. Finally we add data
+   of URSingleTensor to the i-th column. */
 
 void
 USubTensor::addKronColumn(int i, const std::vector<const FGSTensor *> &ts,
