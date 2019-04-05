@@ -66,11 +66,11 @@ AM_PROG_AR
 
 case ${host_os} in
   *darwin*)
-    string="`$CXX --version`"
-    if test x"${string#*clang}" != x"$string"; then
+    string=$($CXX --version)
+    if test "${string#*clang}" != "$string"; then
       CXXFLAGS="$CXXFLAGS -stdlib=libc++"
       MATLAB_LIBS="$MATLAB_LIBS -lc++"
-      MATLAB_LDFLAGS="$MATLAB_LDFLAGS -Wl,-syslibroot,`xcrun -sdk macosx --show-sdk-path`"
+      MATLAB_LDFLAGS="$MATLAB_LDFLAGS -Wl,-syslibroot,$(xcrun -sdk macosx --show-sdk-path)"
     else
       MATLAB_LIBS="$MATLAB_LIBS -lstdc++"
     fi
