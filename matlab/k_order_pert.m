@@ -22,11 +22,6 @@ info = 0;
 
 M.var_order_endo_names = M.endo_names(dr.order_var);
 
-% k_order_perturbation expects char array for the names of endogenous and
-% exogenous variables (not cells). The mex needs to be fixed...
-M.var_order_endo_names = char(M.var_order_endo_names); 
-M.exo_names = char(M.exo_names);
-
 order = options.order;
 
 if order>1 && options.loglinear

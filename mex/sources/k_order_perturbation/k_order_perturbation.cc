@@ -46,21 +46,17 @@
    ) */
 std::vector<std::string> g_fieldnames;
 
-/* Convert MATLAB Dynare endo and exo names array to a vector<string> array of
-   string pointers. MATLAB “mx” function returns a long string concatenated by
-   columns rather than rows hence a rather low level approach is needed. */
-void
-DynareMxArrayToString(const mxArray *mxFldp, int len, int width, std::vector<std::string> &out)
+/* Convert MATLAB Dynare endo and exo names cell array to a vector<string> array of
+   string pointers. */
+std::vector<std::string>
+DynareMxArrayToString(const mxArray *mxFldp)
 {
-  char *cNamesCharStr = mxArrayToString(mxFldp);
+  assert(mxIsCell(mxFldp));
+  std::vector<std::string> r;
+  for (size_t i = 0; i < mxGetNumberOfElements(mxFldp); i++)
+    r.emplace_back(mxArrayToString(mxGetCell(mxFldp, i)));
 
-  out.resize(len);
-
-  for (int i = 0; i < width; i++)
-    for (int j = 0; j < len; j++)
-      // Allow alphanumeric and underscores "_" only:
-      if (std::isalnum(cNamesCharStr[j+i*len]) || (cNamesCharStr[j+i*len] == '_'))
-        out[j] += cNamesCharStr[j+i*len];
+  return r;
 }
 
 void
@@ -165,18 +161,12 @@ extern "C" {
       DYN_MEX_FUNC_ERR_MSG_TXT("The derivatives were not computed for the required order. Make sure that you used the right order option inside the 'stoch_simul' command");
 
     mxFldp = mxGetField(M_, 0, "var_order_endo_names");
-    const int nendo = static_cast<int>(mxGetM(mxFldp));
-    const int widthEndo = static_cast<int>(mxGetN(mxFldp));
-    std::vector<std::string> endoNames;
-    DynareMxArrayToString(mxFldp, nendo, widthEndo, endoNames);
+    std::vector<std::string> endoNames = DynareMxArrayToString(mxFldp);
 
     mxFldp = mxGetField(M_, 0, "exo_names");
-    const int nexo = static_cast<int>(mxGetM(mxFldp));
-    const int widthExog = static_cast<int>(mxGetN(mxFldp));
-    std::vector<std::string> exoNames;
-    DynareMxArrayToString(mxFldp, nexo, widthExog, exoNames);
+    std::vector<std::string> exoNames = DynareMxArrayToString(mxFldp);
 
-    if (nEndo != nendo || nExog != nexo)
+    if (nEndo != static_cast<int>(endoNames.size()) || nExog != static_cast<int>(exoNames.size()))
       DYN_MEX_FUNC_ERR_MSG_TXT("Incorrect number of input parameters.");
 
     std::unique_ptr<TwoDMatrix> g1m, g2m, g3m;
