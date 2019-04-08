@@ -7491,7 +7491,7 @@ the :comm:`bvar_forecast` command.
             oo_.MeanForecast.MOMENT_NAME.VARIABLE_NAME
 
 
-.. command:: conditional_forecast (OPTIONS...) [VARIABLE_NAME...];
+.. command:: conditional_forecast (OPTIONS...);
 
     |br| This command computes forecasts on an estimated or calibrated
     model for a given constrained path of some future endogenous
@@ -7814,7 +7814,7 @@ computed with the command ``det_cond_forecast``:
         plot(dset_forecast.{'r','e'});
 
 
-.. command:: smoother2histval [(OPTIONS...)]
+.. command:: smoother2histval [(OPTIONS...)];
 
     The purpose of this command is to construct initial conditions
     (for a subsequent simulation) that are the smoothed values of a
