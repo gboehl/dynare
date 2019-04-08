@@ -39,6 +39,13 @@
 
 #include "dynmex.h"
 
+/* Vector for storing field names like “g_0”, “g_1”, …
+   A static structure is needed since MATLAB apparently does not create its own
+   copy of the strings (contrary to what is said at:
+    https://fr.mathworks.com/matlabcentral/answers/315937-mxcreatestructarray-and-mxcreatestructmatrix-field-name-memory-management
+   ) */
+std::vector<std::string> g_fieldnames;
+
 /* Convert MATLAB Dynare endo and exo names array to a vector<string> array of
    string pointers. MATLAB “mx” function returns a long string concatenated by
    columns rather than rows hence a rather low level approach is needed. */
@@ -57,7 +64,7 @@ DynareMxArrayToString(const mxArray *mxFldp, int len, int width, std::vector<std
 }
 
 void
-copy_derivatives(mxArray *destin, const Symmetry &sym, const FGSContainer &derivs, const std::string &fieldname)
+copy_derivatives(mxArray *destin, const Symmetry &sym, const FGSContainer &derivs, const char *fieldname)
 {
   const FGSTensor &x = derivs.get(sym);
   auto x_unfolded = x.unfold();
@@ -65,7 +72,7 @@ copy_derivatives(mxArray *destin, const Symmetry &sym, const FGSContainer &deriv
   int m = x_unfolded->numCols();
   mxArray *tmp = mxCreateDoubleMatrix(n, m, mxREAL);
   std::copy_n(x_unfolded->getData().base(), n*m, mxGetPr(tmp));
-  mxSetField(destin, 0, fieldname.c_str(), tmp);
+  mxSetField(destin, 0, fieldname, tmp);
 }
 
 extern "C" {
@@ -224,64 +231,57 @@ extern "C" {
         // run stochastic steady
         app.walkStochSteady();
 
-        /* Write derivative outputs into memory map */
-        std::map<std::string, ConstTwoDMatrix> mm;
-        app.getFoldDecisionRule().writeMMap(mm, "");
+        const FoldDecisionRule &fdr = app.getFoldDecisionRule();
 
-        // get latest ysteady
-        ySteady = dynare.getSteady();
+        // Add possibly missing field names
+        for (int i = static_cast<int>(g_fieldnames.size()); i <= kOrder; i++)
+          g_fieldnames.emplace_back("g_" + std::to_string(i));
+        // Create structure for storing derivatives in Dynare++ format
+        const char *g_fieldnames_c[kOrder+1];
+        for (int i = 0; i <= kOrder; i++)
+          g_fieldnames_c[i] = g_fieldnames[i].c_str();
+        plhs[1] = mxCreateStructMatrix(1, 1, kOrder+1, g_fieldnames_c);
 
-        if (kOrder == 1)
+        // Fill that structure
+        for (int i = 0; i <= kOrder; i++)
           {
-            /* Set the output pointer to the output matrix ysteady. */
-            auto cit = mm.begin();
-            ++cit;
-            plhs[1] = mxCreateDoubleMatrix(cit->second.numRows(), cit->second.numCols(), mxREAL);
-
-            // Copy Dynare++ matrix into MATLAB matrix
-            const ConstVector &vec = cit->second.getData();
+            const FFSTensor &t = fdr.get(Symmetry{i});
+            mxArray *tmp = mxCreateDoubleMatrix(t.numRows(), t.numCols(), mxREAL);
+            const ConstVector &vec = t.getData();
             assert(vec.skip() == 1);
-            std::copy_n(vec.base(), vec.length(), mxGetPr(plhs[1]));
+            std::copy_n(vec.base(), vec.length(), mxGetPr(tmp));
+            mxSetField(plhs[1], 0, ("g_" + std::to_string(i)).c_str(), tmp);
           }
-        if (kOrder >= 2)
+
+        if (nlhs > 2)
           {
-            int ii = 1;
-            for (auto cit = mm.begin(); cit != mm.end() && ii < nlhs; ++cit)
+            /* Return as 3rd argument a struct containing derivatives in Dynare
+               format (unfolded matrices, without Taylor coefficient) up to 3rd
+               order */
+            const FGSContainer &derivs = app.get_rule_ders();
+
+            size_t nfields = (kOrder == 1 ? 2 : (kOrder == 2 ? 6 : 12));
+            const char *c_fieldnames[] = { "gy", "gu", "gyy", "gyu", "guu", "gss",
+                                           "gyyy", "gyyu", "gyuu", "guuu", "gyss", "guss" };
+            plhs[2] = mxCreateStructMatrix(1, 1, nfields, c_fieldnames);
+
+            copy_derivatives(plhs[2], Symmetry{1, 0, 0, 0}, derivs, "gy");
+            copy_derivatives(plhs[2], Symmetry{0, 1, 0, 0}, derivs, "gu");
+            if (kOrder >= 2)
               {
-                plhs[ii] = mxCreateDoubleMatrix(cit->second.numRows(), cit->second.numCols(), mxREAL);
-
-                // Copy Dynare++ matrix into MATLAB matrix
-                const ConstVector &vec = cit->second.getData();
-                assert(vec.skip() == 1);
-                std::copy_n(vec.base(), vec.length(), mxGetPr(plhs[ii]));
-
-                ++ii;
-
+                copy_derivatives(plhs[2], Symmetry{2, 0, 0, 0}, derivs, "gyy");
+                copy_derivatives(plhs[2], Symmetry{0, 2, 0, 0}, derivs, "guu");
+                copy_derivatives(plhs[2], Symmetry{1, 1, 0, 0}, derivs, "gyu");
+                copy_derivatives(plhs[2], Symmetry{0, 0, 0, 2}, derivs, "gss");
               }
-            if (kOrder == 3 && nlhs > 5)
+            if (kOrder >= 3)
               {
-                /* Return as 5th argument a struct containing *unfolded* matrices
-                   for 3rd order decision rule */
-                const FGSContainer &derivs = app.get_rule_ders();
-                const std::string fieldnames[] = {"gy", "gu", "gyy", "gyu", "guu", "gss",
-                                                  "gyyy", "gyyu", "gyuu", "guuu", "gyss", "guss"};
-                // creates the char** expected by mxCreateStructMatrix()
-                const char *c_fieldnames[12];
-                for (int i = 0; i < 12; ++i)
-                  c_fieldnames[i] = fieldnames[i].c_str();
-                plhs[ii] = mxCreateStructMatrix(1, 1, 12, c_fieldnames);
-                copy_derivatives(plhs[ii], Symmetry{1, 0, 0, 0}, derivs, "gy");
-                copy_derivatives(plhs[ii], Symmetry{0, 1, 0, 0}, derivs, "gu");
-                copy_derivatives(plhs[ii], Symmetry{2, 0, 0, 0}, derivs, "gyy");
-                copy_derivatives(plhs[ii], Symmetry{0, 2, 0, 0}, derivs, "guu");
-                copy_derivatives(plhs[ii], Symmetry{1, 1, 0, 0}, derivs, "gyu");
-                copy_derivatives(plhs[ii], Symmetry{0, 0, 0, 2}, derivs, "gss");
-                copy_derivatives(plhs[ii], Symmetry{3, 0, 0, 0}, derivs, "gyyy");
-                copy_derivatives(plhs[ii], Symmetry{0, 3, 0, 0}, derivs, "guuu");
-                copy_derivatives(plhs[ii], Symmetry{2, 1, 0, 0}, derivs, "gyyu");
-                copy_derivatives(plhs[ii], Symmetry{1, 2, 0, 0}, derivs, "gyuu");
-                copy_derivatives(plhs[ii], Symmetry{1, 0, 0, 2}, derivs, "gyss");
-                copy_derivatives(plhs[ii], Symmetry{0, 1, 0, 2}, derivs, "guss");
+                copy_derivatives(plhs[2], Symmetry{3, 0, 0, 0}, derivs, "gyyy");
+                copy_derivatives(plhs[2], Symmetry{0, 3, 0, 0}, derivs, "guuu");
+                copy_derivatives(plhs[2], Symmetry{2, 1, 0, 0}, derivs, "gyyu");
+                copy_derivatives(plhs[2], Symmetry{1, 2, 0, 0}, derivs, "gyuu");
+                copy_derivatives(plhs[2], Symmetry{1, 0, 0, 2}, derivs, "gyss");
+                copy_derivatives(plhs[2], Symmetry{0, 1, 0, 2}, derivs, "guss");
               }
           }
       }
