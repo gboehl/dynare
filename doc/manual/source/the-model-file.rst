@@ -7577,7 +7577,7 @@ the :comm:`bvar_forecast` command.
 
     .. option:: conf_sig = DOUBLE
 
-        Level of significance for confidence interval. Default: ``0.90``.
+        Level of significance for confidence interval. Default: ``0.80``.
 
     *Output*
 
