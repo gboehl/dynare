@@ -1,4 +1,4 @@
-function nds = evaluate(ds, eqtag)
+function ds = evaluate(ds, eqtags, firstperiod, lastperiod)
 
 % Copyright (C) 2019 Dynare Team
 %
@@ -19,47 +19,136 @@ function nds = evaluate(ds, eqtag)
 
 global M_
 
-% Get equation
-[LHS, RHS] = get_lhs_and_rhs(eqtag, M_, true);
-
-% Parse equation and return list of parameters, endogenous and exogenous variables.
-[pnames, enames, xnames] = get_variables_and_parameters_in_equation(LHS, RHS, M_);
-
-% Load parameter values.
-commands = sprintf('%s = %s;', pnames{1}, num2str(M_.params(strcmp(pnames{1},M_.param_names)), 16));
-for i=2:length(pnames)
-    commands = sprintf('%s %s = %s;', commands, pnames{i}, ...
-                       num2str(M_.params(strcmp(pnames{i},M_.param_names)), 16));
+if ischar(eqtags)
+    eqtags = {eqtags};
 end
-eval(commands)
+
+list_of_expression_tokens = {'+', '-', '*', '/', '^', ...
+        'exp(', 'log(', 'sqrt(', 'abs(', 'sign(', ...
+        'sin(', 'cos(', 'tan(', 'asin(', 'acos(', 'atan(', ...
+        'min(', 'max(', ...
+        'normcdf(', 'normpdf(', 'erf(', ...
+        'diff(', 'adl(', ')'};
+
+if nargin<3
+    range = ds.dates(1):ds.dates(end);
+elseif nargin<4
+    range = firstperiod:ds.dates(end);
+else
+    range = firstperiod:lastperiod;
+end
 
 
-% Substitute endogenous variable x with ds.x
-enames = unique(enames);
-for i=1:length(enames)
-    if ismember(enames{i}, ds.name)
-        RHS = regexprep(RHS, sprintf('\\<(%s)\\>', enames{i}), sprintf('ds.%s', enames{i}));
-    else
-        error('Endogenous variable %s is unknown in dseries objet.', enames{i})
+for i=1:length(eqtags)
+    % Get equation
+    [LHS, RHS] = get_lhs_and_rhs(eqtags{i}, M_, true);
+    % Parse equation and return list of parameters, endogenous and exogenous variables.
+    [pnames, enames, xnames] = get_variables_and_parameters_in_equation(LHS, RHS, M_);
+    % Load parameter values.
+    if ~isempty(pnames)
+        commands = sprintf('%s = %s;', pnames{1}, num2str(M_.params(strcmp(pnames{1},M_.param_names)), 16));
+        for j=2:length(pnames)
+            commands = sprintf('%s %s = %s;', commands, pnames{i}, num2str(M_.params(strcmp(pnames{i},M_.param_names)), 16));
+        end
+        eval(commands)
     end
-end
-
-% Substitute exogenous variable x with ds.x, except if
-if ~isfield(M_, 'simulation_exo_names')
-    M_.simulation_exo_names = M_.exo_names;
-end
-xnames = unique(xnames);
-for i=1:length(xnames)
-    if ismember(xnames{i}, M_.simulation_exo_names)
-        if ismember(xnames{i}, ds.name)
-            RHS = regexprep(RHS, sprintf('\\<(%s)\\>', xnames{i}), sprintf('ds.%s', xnames{i}));
+    % Remove repetitions in enames
+    enames = unique(enames);
+    % Test if LHS is an endogenous variable
+    is_lhs_expression = ~ismember(LHS, enames);
+    if is_lhs_expression
+        variable = strsplit(LHS, list_of_expression_tokens);
+        variable(cellfun(@(x) all(isempty(x)), variable)) = [];
+        if length(variable)>1
+            error('It is not possible to have an expression with more than one variable on the LHS (%s).', LHS)
         else
-            RHS = regexprep(RHS, sprintf('\\<(%s)\\>', xnames{i}), '0');
-            warning('Exogenous variable %s is unknown in dseries objet. Assign zero value.', xnames{i})
+            if isequal(LHS, sprintf('log(%s)', variable{1}))
+                transform = {'exp'};
+            elseif isequal(LHS, sprintf('diff(%s)', variable{1}))
+                transform = {'cumsum'};
+            elseif isequal(LHS, sprintf('diff(log(%s))', variable{1}))
+                transform = {'cumsum', 'exp'};
+            elseif isequal(LHS, sprintf('diff(diff(%s))', variable{1}))
+                transform = {'cumsum', 'cumsum'};
+            elseif isequal(LHS, sprintf('diff(diff(log(%s)))', variable{1}))
+                transform = {'cumsum', 'cumsum', 'exp'};
+            else
+                error('Cannot proceed with provided LHS (%s in %s)', LHS, eqtags{i})
+            end
+            lhs = variable{1};
         end
     else
-        RHS = regexprep(RHS, sprintf('(\\ *)(+)(\\ *)%s', xnames{i}), '');
+        lhs = LHS;
+        transform = {};
+    end
+    % Throw an error if the equation is dynamic.
+    if exactcontains(RHS, lhs)
+        error('RHS cannot contain LHS variable (%s in %s)', lhs, eqtags{i})
+    end
+    % Substitute endogenous variable x with ds.
+    for j=1:length(enames)
+        if ismember(enames{j}, ds.name)
+            RHS = exactstrrep(RHS, enames{j}, sprintf('ds(range).%s', enames{j}));
+        else
+            error('Endogenous variable %s is unknown in dseries objet.', enames{j})
+        end
+    end
+    % Substitute exogenous variable x with ds.x, except if
+    if ~isfield(M_, 'simulation_exo_names')
+        M_.simulation_exo_names = M_.exo_names;
+    end
+    xnames = unique(xnames);
+    for j=1:length(xnames)
+        if ismember(xnames{j}, M_.simulation_exo_names)
+            if ismember(xnames{j}, ds.name)
+                RHS = exactstrrep(RHS, xnames{j}, sprintf('ds(range).%s', xnames{j}));
+            else
+                RHS = exactstrrep(RHS, xnames{j}, '0');
+                warning('Exogenous variable %s is unknown in dseries objet. Assign zero value.', xnames{j})
+            end
+        else
+            RHS = regexprep(RHS, sprintf('(\\ *)(+)(\\ *)%s', xnames{j}), '');
+        end
+    end
+    if isempty(transform)
+        ds{LHS}(range) = eval(RHS);
+    else
+        tmp = eval(RHS);
+        switch length(transform)
+          case 1
+            if isequal(transform{1}, 'cumsum')
+                ds{lhs}(range) = cumsum(tmp)+ds{lhs}(range(1)-1).data;
+            else
+                ds{lhs}(range) = feval(transform{1}, tmp);
+            end
+          case 2
+            if isequal(transform{2}, 'cumsum')
+                % Squared first difference.
+                t2 = zeros(length(range), 1);
+                for t = 1:length(range)
+                    t2(t) = 2*ds{lhs}(range(t)-1).data-ds{lhs}(range(t)-2).data+tmp(range(t)).data;
+                end
+                ds{lhs}(range) = dseries(t2, range(1));
+            else
+                t2 = zeros(length(range), 1);
+                for t = 1:length(range)
+                    t1 = feval(transform{2}, log(ds{lhs}(range(t)-1))+tmp(range(t)).data );
+                    t2(t) = t1.data;
+                end
+                ds{lhs}(range) = dseries(t2, range(1));
+% $$$                 % The commented version below is more efficient but the discrepancy with what is returned by simulating
+% $$$                 % the model is much bigger (see pac/trend-component-28/example4.mod).
+% $$$                 tmp = cumsum(tmp)+log(ds{lhs}(range(1)-1).data);
+% $$$                 ds{lhs}(range) = feval(transform{2}, tmp);
+            end
+          case 3
+                t2 = zeros(length(range), 1);
+                for t = 1:length(range)
+                    t2(t) = feval(transform{3}, 2*log(ds{lhs}(range(t)-1).data)-log(ds{lhs}(range(t)-2).data)+tmp(range(t)).data);
+                end
+                ds{lhs}(range) = dseries(t2, range(1));
+          otherwise
+            error('More than 3 unary ops. in LHS not implemented.')
+        end
     end
 end
-
-nds = eval(RHS);

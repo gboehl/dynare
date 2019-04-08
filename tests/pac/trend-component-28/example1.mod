@@ -1,6 +1,8 @@
 // --+ options: json=compute, stochastic +--
 
-var x1 x2 x1bar x2bar z y x u v s;
+PLOTS = true;
+
+var x1 x2 x3 x1bar x2bar z y x u v s;
 
 varexo ex1
        ex2
@@ -18,7 +20,8 @@ parameters
        a_x1_0 a_x1_1 a_x1_2 a_x1_x2_1 a_x1_x2_2
 	   a_x2_0 a_x2_1 a_x2_2 a_x2_x1_1 a_x2_x1_2
 	   e_c_m c_z_1 c_z_2 c_z_dx2 c_z_u c_z_dv c_z_s cx cy beta
-       lambda;
+       lambda
+       px3;
 
 rho_1 =  .9;
 rho_2 = -.2;
@@ -52,6 +55,8 @@ cy = 1.0;
 
 lambda = 0.5; // Share of optimizing agents.
 
+px3 = -.1;
+
 trend_component_model(model_name=toto, eqtags=['eq:x1', 'eq:x2', 'eq:x1bar', 'eq:x2bar'], targets=['eq:x1bar', 'eq:x2bar']);
 
 pac_model(auxiliary_model_name=toto, discount=beta, model_name=pacman);
@@ -78,6 +83,9 @@ diff(x1) = a_x1_0*(x1(-1)-x1bar(-1)) + a_x1_1*diff(x1(-1)) + a_x1_2*diff(x1(-2))
 
 [name='eq:x2']
 diff(x2) = a_x2_0*(x2(-1)-x2bar(-1)) + a_x2_1*diff(x1(-1)) + a_x2_2*diff(x1(-2)) + a_x2_x1_1*diff(x2(-1)) + a_x2_x1_2*diff(x2(-2)) + ex2;
+
+[name='eq:x3']
+x3 = px3*x + y ;
 
 [name='eq:x1bar']
 x1bar = x1bar(-1) + ex1bar;
@@ -115,9 +123,26 @@ initialconditions = dseries(init, 2000Q1, vertcat(M_.endo_names,M_.exo_names));
 
 // Simulate the model for 500 periods
 TrueData = simul_backward_model(initialconditions, 500);
+TrueData_ = copy(TrueData);
 
-TrueData.x1bis = equation.evaluate(TrueData, 'eq:x1');
+TrueData = equation.evaluate(TrueData, 'eq:x3', 2004Q1);
 
-if max(abs(TrueData.x1bis.data(5:end)-diff(TrueData.x1.data(4:end))))>1e-8
+if PLOTS
+
+    figure(1)
+    plot(TrueData_.x.data(12:end), TrueData_.x3.data(12:end)-TrueData.x3.data(12:end), '.k', 'linewidth', 2);
+
+    figure(2)
+    plot(TrueData_.x.data(12:end), '-k', 'linewidth', 2);
+
+    figure(3)
+    plot([TrueData_.x3.data(12:end)-TrueData.x3.data(12:end)], '-k', 'linewidth', 2);
+
+end
+
+
+fprintf('Max. abs. error is %s.\n', num2str(max(abs(TrueData.x3.data(12:end)-TrueData_.x3.data(12:end))), 16));
+
+if max(abs(TrueData.x3.data(12:end)-TrueData_.x3.data(12:end)))>1e-12
    error('equation.evaluate() returned wrong values.')
 end

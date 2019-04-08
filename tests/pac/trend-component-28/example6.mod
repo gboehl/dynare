@@ -85,7 +85,7 @@ diff(x1) = a_x1_0*(x1(-1)-x1bar(-1)) + a_x1_1*diff(x1(-1)) + a_x1_2*diff(x1(-2))
 diff(x2) = a_x2_0*(x2(-1)-x2bar(-1)) + a_x2_1*diff(x1(-1)) + a_x2_2*diff(x1(-2)) + a_x2_x1_1*diff(x2(-1)) + a_x2_x1_2*diff(x2(-2)) + ex2;
 
 [name='eq:x3']
-log(x3) = x ;
+diff(diff(log(x3))) = x ;
 
 [name='eq:x1bar']
 x1bar = x1bar(-1) + ex1bar;
@@ -105,7 +105,7 @@ shocks;
   var ex2bar = 1.0;
   var ez = 1.0;
   var ey = 0.1;
-  var ex = 0.1;
+  var ex = 0.01;
   var eu = 0.05;
   var ev = 0.05;
   var es = 0.07;
@@ -118,11 +118,11 @@ pac.initialize('pacman');
 pac.update.expectation('pacman');
 
 // Set initial conditions to zero for non logged variables, and one for logged variables
-init = rand(10, M_.endo_nbr+M_.exo_nbr);
+init = ones(10, M_.endo_nbr+M_.exo_nbr);
 initialconditions = dseries(init, 2000Q1, vertcat(M_.endo_names,M_.exo_names));
 
 // Simulate the model for 500 periods
-TrueData = simul_backward_model(initialconditions, 500);
+TrueData = simul_backward_model(initialconditions, 50);
 TrueData_ = copy(TrueData);
 
 TrueData = equation.evaluate(TrueData, 'eq:x3', 2004Q1);

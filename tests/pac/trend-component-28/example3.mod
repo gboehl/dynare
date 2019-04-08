@@ -85,7 +85,7 @@ diff(x1) = a_x1_0*(x1(-1)-x1bar(-1)) + a_x1_1*diff(x1(-1)) + a_x1_2*diff(x1(-2))
 diff(x2) = a_x2_0*(x2(-1)-x2bar(-1)) + a_x2_1*diff(x1(-1)) + a_x2_2*diff(x1(-2)) + a_x2_x1_1*diff(x2(-1)) + a_x2_x1_2*diff(x2(-2)) + ex2;
 
 [name='eq:x3']
-log(x3) = x ;
+diff(x3) = x ;
 
 [name='eq:x1bar']
 x1bar = x1bar(-1) + ex1bar;
@@ -118,7 +118,7 @@ pac.initialize('pacman');
 pac.update.expectation('pacman');
 
 // Set initial conditions to zero for non logged variables, and one for logged variables
-init = rand(10, M_.endo_nbr+M_.exo_nbr);
+init = randn(10, M_.endo_nbr+M_.exo_nbr);
 initialconditions = dseries(init, 2000Q1, vertcat(M_.endo_names,M_.exo_names));
 
 // Simulate the model for 500 periods
@@ -142,6 +142,6 @@ end
 
 fprintf('Max. abs. error is %s.\n', num2str(max(abs(TrueData.x3.data(12:end)-TrueData_.x3.data(12:end))), 16));
 
-if max(abs(TrueData.x3.data(12:end)-TrueData_.x3.data(12:end)))>1e-5
+if max(abs(TrueData.x3.data(12:end)-TrueData_.x3.data(12:end)))>1e-12
    error('equation.evaluate() returned wrong values.')
 end

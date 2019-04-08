@@ -1,15 +1,27 @@
 #!/bin/sh
 
-rm -rf example1
-rm  -rf +example1
-rm -f example1.log
 rm -f *.mat
 rm -f *.m
 rm -f *.dat
+rm -f *.log
+
+rm -rf example1
+rm  -rf +example1
 
 rm -rf example2
 rm  -rf +example2
-rm -f example2.log
-rm -f *.mat
-rm -f *.m
-rm -f *.dat
+
+rm -rf example3
+rm  -rf +example3
+
+rm -rf example4
+rm  -rf +example4
+
+rm -rf example5
+rm  -rf +example5
+
+rm -rf example6
+rm  -rf +example6
+
+
+

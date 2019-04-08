@@ -444,6 +444,10 @@ ECB_MODFILES = \
 	pac/trend-component-27/example.mod \
 	pac/trend-component-28/example1.mod \
 	pac/trend-component-28/example2.mod \
+	pac/trend-component-28/example3.mod \
+	pac/trend-component-28/example4.mod \
+	pac/trend-component-28/example5.mod \
+	pac/trend-component-28/example6.mod \
 	pac/trend-component-29/example2.mod \
 	pac/trend-component-29/example2.mod \
 	write/example1.mod \
