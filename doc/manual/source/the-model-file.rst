@@ -3687,7 +3687,7 @@ according to the declaration order.
 Variable ``oo_.dr.order_var`` maps DR-order to declaration order, and
 variable ``oo_.dr.inv_order_var`` contains the inverse map. In other
 words, the k-th variable in the DR-order corresponds to the endogenous
-variable numbered ``oo_.dr_order_var(k)`` in declaration
+variable numbered ``oo_.dr.order_var(k)`` in declaration
 order. Conversely, k-th declared variable is numbered
 ``oo_.dr.inv_order_var(k)`` in DR-order.
 
