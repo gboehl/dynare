@@ -89,7 +89,7 @@ for i=1:length(eqtags)
     for j=1:length(enames)
         if ismember(enames{j}, ds.name)
             RHS = exactstrrep(RHS, enames{j}, sprintf('ds(range).%s', enames{j}));
-        else
+        elseif ~isequal(enames{j}, lhs)
             error('Endogenous variable %s is unknown in dseries objet.', enames{j})
         end
     end
