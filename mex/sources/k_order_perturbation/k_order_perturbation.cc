@@ -93,10 +93,11 @@ extern "C" {
 
     int kOrder;
     mxArray *mxFldp = mxGetField(options_, 0, "order");
-    if (mxIsNumeric(mxFldp))
-      kOrder = static_cast<int>(mxGetScalar(mxFldp));
-    else
-      kOrder = 1;
+    if (!mxIsNumeric(mxFldp))
+      DYN_MEX_FUNC_ERR_MSG_TXT("options_.order must be a numeric value");
+    kOrder = static_cast<int>(mxGetScalar(mxFldp));
+    if (kOrder < 1 || kOrder > 3)
+      DYN_MEX_FUNC_ERR_MSG_TXT("options_.order must be between 1 and 3");
 
     double qz_criterium = 1+1e-6;
     mxFldp = mxGetField(options_, 0, "qz_criterium");
@@ -109,8 +110,8 @@ extern "C" {
       DYN_MEX_FUNC_ERR_MSG_TXT("The parameters vector contains NaN or Inf");
 
     mxFldp = mxGetField(M_, 0, "Sigma_e");
-    int npar = static_cast<int>(mxGetN(mxFldp));
-    TwoDMatrix vCov(npar, npar, Vector{mxFldp});
+    int dim = static_cast<int>(mxGetN(mxFldp));
+    TwoDMatrix vCov(dim, dim, Vector{mxFldp});
     if (!vCov.isFinite())
       DYN_MEX_FUNC_ERR_MSG_TXT("The covariance matrix of shocks contains NaN or Inf");
 
@@ -136,27 +137,24 @@ extern "C" {
     const int nPar = static_cast<int>(mxGetScalar(mxFldp));
 
     mxFldp = mxGetField(dr, 0, "order_var");
-    npar = static_cast<int>(mxGetM(mxFldp));
-    if (npar != nEndo)
-      DYN_MEX_FUNC_ERR_MSG_TXT("Incorrect number of input var_order vars.");
+    dim = static_cast<int>(mxGetM(mxFldp));
+    if (dim != nEndo)
+      DYN_MEX_FUNC_ERR_MSG_TXT("Incorrect size of dr.order_var");
     std::vector<int> dr_order(nEndo);
-    std::transform(mxGetPr(mxFldp), mxGetPr(mxFldp)+npar, dr_order.begin(),
+    std::transform(mxGetPr(mxFldp), mxGetPr(mxFldp)+dim, dr_order.begin(),
                    [](double x) { return static_cast<int>(x)-1; });
 
     // the lag, current and lead blocks of the jacobian respectively
     mxFldp = mxGetField(M_, 0, "lead_lag_incidence");
-    npar = static_cast<int>(mxGetN(mxFldp));
-    int nrows = static_cast<int>(mxGetM(mxFldp));
-
-    TwoDMatrix llincidence(nrows, npar, Vector{mxFldp});
-    if (npar != nEndo)
-      DYN_MEX_FUNC_ERR_MSG_TXT(("dynare:k_order_perturbation: Incorrect length of lead lag incidences: ncol="
-                                + std::to_string(npar) + " != nEndo=" + std::to_string(nEndo)).c_str());
+    dim = static_cast<int>(mxGetN(mxFldp));
+    if (static_cast<int>(mxGetM(mxFldp)) != 3 || dim != nEndo)
+      DYN_MEX_FUNC_ERR_MSG_TXT("Incorrect size of M_.lead_lag_incidence");
+    TwoDMatrix llincidence(3, dim, Vector{mxFldp});
 
     mxFldp = mxGetField(M_, 0, "NNZDerivatives");
     Vector NNZD{mxFldp};
     if (NNZD[kOrder-1] == -1)
-      DYN_MEX_FUNC_ERR_MSG_TXT("The derivatives were not computed for the required order. Make sure that you used the right order option inside the 'stoch_simul' command");
+      DYN_MEX_FUNC_ERR_MSG_TXT("The derivatives were not computed for the required order. Make sure that you used the right order option inside the `stoch_simul' command");
 
     mxFldp = mxGetField(M_, 0, "endo_names");
     std::vector<std::string> endoNames = DynareMxArrayToString(mxFldp);
@@ -165,7 +163,7 @@ extern "C" {
     std::vector<std::string> exoNames = DynareMxArrayToString(mxFldp);
 
     if (nEndo != static_cast<int>(endoNames.size()) || nExog != static_cast<int>(exoNames.size()))
-      DYN_MEX_FUNC_ERR_MSG_TXT("Incorrect number of input parameters.");
+      DYN_MEX_FUNC_ERR_MSG_TXT("Incorrect size of M_.endo_names or M_.exo_names");
 
     std::unique_ptr<TwoDMatrix> g1m, g2m, g3m;
     if (nrhs > 3)
