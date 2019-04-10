@@ -86,8 +86,6 @@ order_var = dr.order_var;
 endo_nbr = M.endo_nbr;
 exo_nbr = M.exo_nbr;
 
-M.var_order_endo_names = M.endo_names(dr.order_var);
-
 [~,dr.i_fwrd_g,i_fwrd_f] = find(lead_lag_incidence(3,order_var));
 dr.i_fwrd_f = i_fwrd_f;
 nd = nnz(lead_lag_incidence) + M.exo_nbr;
@@ -508,7 +506,6 @@ M_np.endo_names = M.endo_names(v_np);
 dr_np = struct();
 dr_np = set_state_space(dr_np,M_np,options);
 pm.dr_np = dr_np;
-M_np.var_order_endo_names = M_np.endo_names(dr_np.order_var);
 pm.M_np = M_np;
 pm.i_fwrd_g = find(lead_lag_incidence_np(lead_index,dr_np.order_var)');
 

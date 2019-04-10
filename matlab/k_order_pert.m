@@ -20,8 +20,6 @@ function [dr,info] = k_order_pert(dr,M,options)
 
 info = 0;
 
-M.var_order_endo_names = M.endo_names(dr.order_var);
-
 order = options.order;
 
 if order>1 && options.loglinear

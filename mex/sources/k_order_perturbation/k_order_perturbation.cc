@@ -136,14 +136,12 @@ extern "C" {
     const int nPar = static_cast<int>(mxGetScalar(mxFldp));
 
     mxFldp = mxGetField(dr, 0, "order_var");
-    auto dparams = mxGetPr(mxFldp);
     npar = static_cast<int>(mxGetM(mxFldp));
     if (npar != nEndo)
       DYN_MEX_FUNC_ERR_MSG_TXT("Incorrect number of input var_order vars.");
-
-    std::vector<int> var_order_vp(nEndo);
-    for (int v = 0; v < nEndo; v++)
-      var_order_vp[v] = static_cast<int>(*(dparams++));
+    std::vector<int> dr_order(nEndo);
+    std::transform(mxGetPr(mxFldp), mxGetPr(mxFldp)+npar, dr_order.begin(),
+                   [](double x) { return static_cast<int>(x)-1; });
 
     // the lag, current and lead blocks of the jacobian respectively
     mxFldp = mxGetField(M_, 0, "lead_lag_incidence");
@@ -160,7 +158,7 @@ extern "C" {
     if (NNZD[kOrder-1] == -1)
       DYN_MEX_FUNC_ERR_MSG_TXT("The derivatives were not computed for the required order. Make sure that you used the right order option inside the 'stoch_simul' command");
 
-    mxFldp = mxGetField(M_, 0, "var_order_endo_names");
+    mxFldp = mxGetField(M_, 0, "endo_names");
     std::vector<std::string> endoNames = DynareMxArrayToString(mxFldp);
 
     mxFldp = mxGetField(M_, 0, "exo_names");
@@ -212,7 +210,7 @@ extern "C" {
         KordpDynare dynare(endoNames, exoNames, nExog, nPar,
                            ySteady, vCov, modParams, nStat, nPred, nForw, nBoth,
                            NNZD, nSteps, kOrder, journal, std::move(dynamicModelFile),
-                           var_order_vp, llincidence,
+                           dr_order, llincidence,
                            std::move(g1m), std::move(g2m), std::move(g3m));
 
         // construct main K-order approximation class

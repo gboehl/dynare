@@ -25,14 +25,13 @@
 
 #include <utility>
 
-
 KordpDynare::KordpDynare(const std::vector<std::string> &endo,
                          const std::vector<std::string> &exo, int nexog, int npar,
                          Vector &ysteady, TwoDMatrix &vcov, Vector &inParams, int nstat,
                          int npred, int nforw, int nboth, const Vector &nnzd,
                          int nsteps, int norder,
                          Journal &jr, std::unique_ptr<DynamicModelAC> dynamicModelFile_arg,
-                         const std::vector<int> &var_order, const TwoDMatrix &llincidence,
+                         const std::vector<int> &dr_order, const TwoDMatrix &llincidence,
                          std::unique_ptr<TwoDMatrix> g1_arg, std::unique_ptr<TwoDMatrix> g2_arg,
                          std::unique_ptr<TwoDMatrix> g3_arg) :
   nStat{nstat}, nBoth{nboth}, nPred{npred}, nForw{nforw}, nExog{nexog}, nPar{npar},
@@ -44,7 +43,7 @@ KordpDynare::KordpDynare(const std::vector<std::string> &endo,
   g1p{std::move(g1_arg)}, g2p{std::move(g2_arg)}, g3p{std::move(g3_arg)},
   dynamicModelFile{std::move(dynamicModelFile_arg)}
 {
-  computeJacobianPermutation(var_order);
+  computeJacobianPermutation(dr_order);
 }
 
 void
@@ -195,63 +194,56 @@ KordpDynare::LLxSteady(const Vector &yS, Vector &llxSteady)
         llxSteady[static_cast<int>(ll_Incidence.get(ll_row, i))-1] = yS[i];
 }
 
-/************************************
- * Reorder DynareJacobianIndices of variables in a vector according to
- * given int * varOrder together with lead & lag incidence matrix and
- * any the extra columns for exogenous vars, and then,
- * reorders its blocks given by the varOrder and the Dynare++ expectations:
+/*
+   Computes mapping between Dynare and Dynare++ orderings of the (dynamic)
+   variable indices in derivatives.
 
- * extra	nboth+ npred (t-1) lags
- * varOrder
-                static:
-    pred
-    both
-    forward
-    * extra both + nforw (t+1) leads, and
-    * extra exogen
+   If one defines:
+   – y (resp. x) as the vector of all endogenous (size nY), in DR-order (resp.
+     declaration order)
+   – y⁻ (resp. x⁻) as the vector of endogenous that appear at previous period (size nYs),
+     in DR-order (resp. declaration order)
+   – y⁺ (resp. x⁺) as the vector of endogenous that appear at future period (size nYss) in
+     DR-order (resp. declaration order)
+   – u as the vector of exogenous (size nExog)
 
-    * so to match the jacobian organisation expected by the Appoximation class
-      both + nforw (t+1) leads
-      static
-      pred
-      both
-      forward
-      nboth+ npred  (t-1) lags
-      exogen
-************************************/
+   In Dynare, the ordering is (x⁻, x, x⁺, u).
+   In Dynare++, the ordering is (y⁺, y, y⁻, u).
 
+   dr_order is typically equal to M_.order_var.
+*/
 void
-KordpDynare::computeJacobianPermutation(const std::vector<int> &var_order)
+KordpDynare::computeJacobianPermutation(const std::vector<int> &dr_order)
 {
+  // Compute restricted inverse DR-orderings: x⁻→y⁻ and x⁺→y⁺
+  std::vector<int> dr_inv_order_forw(nBoth+nForw), dr_inv_order_pred(nBoth+nPred);
+  std::iota(dr_inv_order_forw.begin(), dr_inv_order_forw.end(), 0);
+  std::sort(dr_inv_order_forw.begin(), dr_inv_order_forw.end(),
+            [&](int i, int j) { return dr_order[nStat+nPred+i] < dr_order[nStat+nPred+j]; });
+  std::iota(dr_inv_order_pred.begin(), dr_inv_order_pred.end(), 0);
+  std::sort(dr_inv_order_pred.begin(), dr_inv_order_pred.end(),
+            [&](int i, int j) { return dr_order[nStat+i] < dr_order[nStat+j]; });
+
+  // Compute restricted DR-orderings: y⁻→x⁻ and y⁺→x⁺
+  std::vector<int> dr_order_forw(nBoth+nForw), dr_order_pred(nBoth+nPred);
+  for (int i = 0; i < nBoth+nForw; i++)
+    dr_order_forw[dr_inv_order_forw[i]] = i;
+  for (int i = 0; i < nBoth+nPred; i++)
+    dr_order_pred[dr_inv_order_pred[i]] = i;
+
+  // Compute Dynare++ → Dynare ordering
   dynppToDyn.resize(nJcols);
-  // create temporary square 2D matrix size nEndo×nEndo (sparse)
-  // for the lag, current and lead blocks of the jacobian
-  std::vector<int> tmp(nY);
-  int rjoff = nJcols-nExog-1;
+  int j = 0;
+  for (; j < nYss; j++)
+    dynppToDyn[j] = dr_order_forw[j]+nYs+nY; // Forward variables
+  for (; j < nYss+nY; j++)
+    dynppToDyn[j] = dr_order[j-nYss]+nYs; // Variables in current period
+  for (; j < nYss+nY+nYs; j++)
+    dynppToDyn[j] = dr_order_pred[j-nY-nYss]; // Predetermined variables
+  for (; j < nJcols; j++)
+    dynppToDyn[j] = j; // Exogenous
 
-  for (int ll_row = 0; ll_row < ll_Incidence.nrows(); ll_row++)
-    {
-      // reorder in orde-var order & populate temporary nEndo (sparse) vector with
-      // the lag, current and lead blocks of the jacobian respectively
-      for (int i = 0; i < nY; i++)
-        tmp[i] = static_cast<int>(ll_Incidence.get(ll_row, var_order[i]-1));
-      // write the reordered blocks back to the jacobian
-      // in reverse order
-      for (int j = nY-1; j >= 0; j--)
-        if (tmp[j])
-          {
-            dynppToDyn[rjoff] = tmp[j]-1;
-            rjoff--;
-            if (rjoff < 0)
-              break;
-          }
-    }
-
-  //add the indices for the nExog exogenous jacobians
-  for (int j = nJcols-nExog; j < nJcols; j++)
-    dynppToDyn[j] = j;
-
-  // Compute reverse ordering
+  // Compute Dynare → Dynare++ ordering
   dynToDynpp.resize(nJcols);
   for (int i = 0; i < nJcols; i++)
     dynToDynpp[dynppToDyn[i]] = i;
