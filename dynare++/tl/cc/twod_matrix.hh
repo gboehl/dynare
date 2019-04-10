@@ -47,6 +47,11 @@ public:
     : ConstGeneralMatrix(m, first_row, first_col, rows, cols)
   {
   }
+#if defined(MATLAB_MEX_FILE) || defined(OCTAVE_MEX_FILE)
+  explicit ConstTwoDMatrix(const mxArray *p) : ConstGeneralMatrix(p)
+  {
+  }
+#endif
   ~ConstTwoDMatrix() override = default;
 
   ConstTwoDMatrix &operator=(const ConstTwoDMatrix &v) = delete;
@@ -128,6 +133,13 @@ public:
     : GeneralMatrix(m, first_row, first_col, rows, cols)
   {
   }
+
+#if defined(MATLAB_MEX_FILE) || defined(OCTAVE_MEX_FILE)
+  explicit TwoDMatrix(mxArray *p) : GeneralMatrix(p)
+  {
+  }
+#endif
+
   ~TwoDMatrix() override = default;
 
   TwoDMatrix &operator=(const TwoDMatrix &m) = default;

@@ -71,6 +71,12 @@ public:
   ConstGeneralMatrix(const GeneralMatrix &m, int i, int j, int nrows, int ncols);
   // Create submatrix (with data sharing)
   ConstGeneralMatrix(const ConstGeneralMatrix &m, int i, int j, int nrows, int ncols);
+#if defined(MATLAB_MEX_FILE) || defined(OCTAVE_MEX_FILE)
+  explicit ConstGeneralMatrix(const mxArray *p)
+    : data(p), rows{static_cast<int>(mxGetM(p))}, cols{static_cast<int>(mxGetN(p))}, ld{rows}
+  {
+  }
+#endif
   virtual ~ConstGeneralMatrix() = default;
 
   ConstGeneralMatrix &operator=(const ConstGeneralMatrix &v) = delete;
@@ -207,6 +213,13 @@ public:
   GeneralMatrix(const GeneralMatrix &m, int i, int j, int nrows, int ncols);
   // Create submatrix (with data sharing)
   GeneralMatrix(GeneralMatrix &m, int i, int j, int nrows, int ncols);
+
+#if defined(MATLAB_MEX_FILE) || defined(OCTAVE_MEX_FILE)
+  explicit GeneralMatrix(mxArray *p)
+    : data(p), rows{static_cast<int>(mxGetM(p))}, cols{static_cast<int>(mxGetN(p))}, ld{rows}
+  {
+  }
+#endif
 
   virtual ~GeneralMatrix() = default;
   GeneralMatrix &operator=(const GeneralMatrix &m) = default;

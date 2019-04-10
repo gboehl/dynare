@@ -145,11 +145,9 @@ extern "C" {
                    [](double x) { return static_cast<int>(x)-1; });
 
     // the lag, current and lead blocks of the jacobian respectively
-    mxFldp = mxGetField(M_, 0, "lead_lag_incidence");
-    dim = static_cast<int>(mxGetN(mxFldp));
-    if (static_cast<int>(mxGetM(mxFldp)) != 3 || dim != nEndo)
+    TwoDMatrix llincidence(mxGetField(M_, 0, "lead_lag_incidence"));
+    if (llincidence.nrows() != 3 || llincidence.ncols() != nEndo)
       DYN_MEX_FUNC_ERR_MSG_TXT("Incorrect size of M_.lead_lag_incidence");
-    TwoDMatrix llincidence(3, dim, Vector{mxFldp});
 
     mxFldp = mxGetField(M_, 0, "NNZDerivatives");
     Vector NNZD{mxFldp};

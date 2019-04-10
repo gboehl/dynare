@@ -73,7 +73,7 @@ extern "C" {
     if (1 != ysteady_dim[1])
       DYN_MEX_FUNC_ERR_MSG_TXT("ysteady has wrong number of cols.\n");
 
-    mxArray *res = mxCreateDoubleMatrix(ny, nper, mxREAL);
+    plhs[1] = mxCreateDoubleMatrix(ny, nper, mxREAL);
 
     try
       {
@@ -84,16 +84,14 @@ extern "C" {
         UTensorPolynomial pol(ny, npred+nboth+nexog);
         for (int dim = 0; dim <= order; dim++)
           {
-            const mxArray *gk = prhs[11+dim];
-            const mwSize *const gk_dim = mxGetDimensions(gk);
+            ConstTwoDMatrix gk(prhs[11+dim]);
             FFSTensor ft(ny, npred+nboth+nexog, dim);
-            if (ft.ncols() != static_cast<int>(gk_dim[1]))
-              DYN_MEX_FUNC_ERR_MSG_TXT(("Wrong number of columns for folded tensor: got " + std::to_string(gk_dim[1]) + " but i want " + std::to_string(ft.ncols()) + '\n').c_str());
-            if (ft.nrows() != static_cast<int>(gk_dim[0]))
-              DYN_MEX_FUNC_ERR_MSG_TXT(("Wrong number of rows for folded tensor: got " + std::to_string(gk_dim[0]) + " but i want " + std::to_string(ft.nrows()) + '\n').c_str());
+            if (ft.ncols() != gk.ncols())
+              DYN_MEX_FUNC_ERR_MSG_TXT(("Wrong number of columns for folded tensor: got " + std::to_string(gk.ncols()) + " but i want " + std::to_string(ft.ncols()) + '\n').c_str());
+            if (ft.nrows() != gk.nrows())
+              DYN_MEX_FUNC_ERR_MSG_TXT(("Wrong number of rows for folded tensor: got " + std::to_string(gk.nrows()) + " but i want " + std::to_string(ft.nrows()) + '\n').c_str());
             ft.zeros();
-            ConstTwoDMatrix gk_mat(ft.nrows(), ft.ncols(), ConstVector{gk});
-            ft.add(1.0, gk_mat);
+            ft.add(1.0, gk);
             pol.insert(std::make_unique<UFSTensor>(ft));
           }
         // form the decision rule
@@ -106,9 +104,8 @@ extern "C" {
         // simulate and copy the results
         TwoDMatrix res_mat{dr.simulate(DecisionRule::emethod::horner, nper,
                                        ConstVector{ystart}, sr)};
-        TwoDMatrix res_tmp_mat{ny, nper, Vector{res}};
+        TwoDMatrix res_tmp_mat{plhs[1]};
         res_tmp_mat = const_cast<const TwoDMatrix &>(res_mat);
-        plhs[1] = res;
       }
     catch (const KordException &e)
       {
