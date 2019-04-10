@@ -163,30 +163,6 @@ extern "C" {
     if (nEndo != static_cast<int>(endoNames.size()) || nExog != static_cast<int>(exoNames.size()))
       DYN_MEX_FUNC_ERR_MSG_TXT("Incorrect size of M_.endo_names or M_.exo_names");
 
-    std::unique_ptr<TwoDMatrix> g1m, g2m, g3m;
-    if (nrhs > 3)
-      {
-        // Derivatives have been passed as arguments
-        const mxArray *g1 = prhs[3];
-        int m = static_cast<int>(mxGetM(g1));
-        int n = static_cast<int>(mxGetN(g1));
-        g1m = std::make_unique<TwoDMatrix>(m, n, Vector{ConstVector{g1}});
-        if (nrhs > 4)
-          {
-            const mxArray *g2 = prhs[4];
-            int m = static_cast<int>(mxGetM(g2));
-            int n = static_cast<int>(mxGetN(g2));
-            g2m = std::make_unique<TwoDMatrix>(m, n, Vector{ConstVector{g2}});
-            if (nrhs > 5)
-              {
-                const mxArray *g3 = prhs[5];
-                int m = static_cast<int>(mxGetM(g3));
-                int n = static_cast<int>(mxGetN(g3));
-                g3m = std::make_unique<TwoDMatrix>(m, n, Vector{ConstVector{g3}});
-              }
-          }
-      }
-
     const int nSteps = 0; // Dynare++ solving steps, for time being default to 0 = deterministic steady state
 
     try
@@ -206,11 +182,19 @@ extern "C" {
         KordpDynare dynare(endoNames, exoNames, nExog, nPar,
                            ySteady, vCov, modParams, nStat, nPred, nForw, nBoth,
                            NNZD, nSteps, kOrder, journal, std::move(dynamicModelFile),
-                           dr_order, llincidence,
-                           std::move(g1m), std::move(g2m), std::move(g3m));
+                           dr_order, llincidence);
+
+        // If model derivatives have been passed as arguments
+        if (nrhs > 3)
+          {
+            dynare.push_back_md(prhs[3]);
+            if (nrhs > 4)
+              dynare.push_back_md(prhs[4]);
+            if (nrhs > 5)
+              dynare.push_back_md(prhs[5]);
+          }
 
         // construct main K-order approximation class
-
         Approximation app(dynare, journal, nSteps, false, qz_criterium);
         // run stochastic steady
         app.walkStochSteady();

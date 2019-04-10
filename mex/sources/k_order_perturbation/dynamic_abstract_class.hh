@@ -20,6 +20,8 @@
 #ifndef _DYNAMICMODELAC_HH
 #define _DYNAMICMODELAC_HH
 
+#include <vector>
+
 #include "twod_matrix.hh"
 
 class DynamicModelAC
@@ -27,6 +29,6 @@ class DynamicModelAC
 public:
   virtual ~DynamicModelAC() = default;
   virtual void eval(const Vector &y, const Vector &x, const Vector &params, const Vector &ySteady,
-                    Vector &residual, TwoDMatrix *g1, TwoDMatrix *g2, TwoDMatrix *g3) = 0;
+                    Vector &residual, std::vector<TwoDMatrix> &md) = 0;
 };
 #endif

@@ -95,14 +95,13 @@ private:
   Vector &ySteady;
   Vector &params;
   TwoDMatrix &vCov;
-  TensorContainer<FSSparseTensor> md; // ModelDerivatives
+  std::vector<TwoDMatrix> dyn_md; // Model derivatives, in Dynare form
+  TensorContainer<FSSparseTensor> md; // Model derivatives, in Dynare++ form
   DynareNameList dnl, denl;
   DynareStateNameList dsnl;
   const TwoDMatrix &ll_Incidence;
   std::vector<int> dynppToDyn; // Maps Dynare++ jacobian variable indices to Dynare ones
   std::vector<int> dynToDynpp; // Maps Dynare jacobian variable indices to Dynare++ ones
-
-  std::unique_ptr<TwoDMatrix> g1p, g2p, g3p;
 
   std::unique_ptr<DynamicModelAC> dynamicModelFile;
 public:
@@ -112,9 +111,7 @@ public:
               int nforw, int nboth, const Vector &NNZD,
               int nSteps, int ord,
               Journal &jr, std::unique_ptr<DynamicModelAC> dynamicModelFile_arg,
-              const std::vector<int> &varOrder, const TwoDMatrix &ll_Incidence,
-              std::unique_ptr<TwoDMatrix> g1_arg,
-              std::unique_ptr<TwoDMatrix> g2_arg, std::unique_ptr<TwoDMatrix> g3_arg);
+              const std::vector<int> &varOrder, const TwoDMatrix &ll_Incidence);
 
   int
   nstat() const override
@@ -194,14 +191,16 @@ public:
     std::cerr << "KordpDynare::clone() not implemented" << std::endl;
     exit(EXIT_FAILURE);
   }
+  // Add model derivatives of a given order passed as argument to the MEX
+  void push_back_md(const mxArray *m);
 private:
   // Given the steady state in yS, returns in llxSteady the steady state extended with leads and lags
   void LLxSteady(const Vector &yS, Vector &llxSteady);
   /* Computes the permutations mapping back and forth between Dynare and
      Dynare++ orderings of variables */
   void computeJacobianPermutation(const std::vector<int> &var_order);
-  // Fills tensor container (with reordering) at a given order
-  void populateDerivativesContainer(const TwoDMatrix &g, int ord);
+  // Fills model derivatives in Dynare++ form (at a given order) given the Dynare form
+  void populateDerivativesContainer(int ord);
 };
 
 #endif

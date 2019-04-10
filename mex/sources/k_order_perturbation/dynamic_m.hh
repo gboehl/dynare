@@ -33,11 +33,11 @@ class DynamicModelMFile : public DynamicModelAC
 {
 private:
   const std::string DynamicMFilename;
-  static void unpackSparseMatrixAndCopyIntoTwoDMatData(mxArray *sparseMat, TwoDMatrix *tdm);
+  static void unpackSparseMatrixAndCopyIntoTwoDMatData(mxArray *sparseMat, TwoDMatrix &tdm);
 public:
   explicit DynamicModelMFile(const std::string &modName);
   virtual ~DynamicModelMFile() = default;
   void eval(const Vector &y, const Vector &x, const Vector &params, const Vector &ySteady,
-            Vector &residual, TwoDMatrix *g1, TwoDMatrix *g2, TwoDMatrix *g3) override;
+            Vector &residual, std::vector<TwoDMatrix> &md) override;
 };
 #endif

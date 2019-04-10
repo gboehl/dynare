@@ -94,21 +94,20 @@ DynamicModelDLL::~DynamicModelDLL()
 
 void
 DynamicModelDLL::eval(const Vector &y, const Vector &x, const Vector &modParams, const Vector &ySteady,
-                      Vector &residual, TwoDMatrix *g1, TwoDMatrix *g2, TwoDMatrix *g3) noexcept(false)
+                      Vector &residual, std::vector<TwoDMatrix> &md) noexcept(false)
 {
   dynamic_resid_tt(y.base(), x.base(), 1, modParams.base(), ySteady.base(), 0, tt.get());
   dynamic_resid(y.base(), x.base(), 1, modParams.base(), ySteady.base(), 0, tt.get(), residual.base());
-  if (g1 || g2 || g3)
-    dynamic_g1_tt(y.base(), x.base(), 1, modParams.base(), ySteady.base(), 0, tt.get());
-  if (g1)
-    dynamic_g1(y.base(), x.base(), 1, modParams.base(), ySteady.base(), 0, tt.get(), g1->base());
-  if (g2 || g3)
-    dynamic_g2_tt(y.base(), x.base(), 1, modParams.base(), ySteady.base(), 0, tt.get());
-  if (g2)
-    dynamic_g2(y.base(), x.base(), 1, modParams.base(), ySteady.base(), 0, tt.get(), g2->base());
-  if (g3)
+  dynamic_g1_tt(y.base(), x.base(), 1, modParams.base(), ySteady.base(), 0, tt.get());
+  dynamic_g1(y.base(), x.base(), 1, modParams.base(), ySteady.base(), 0, tt.get(), md[0].base());
+  if (md.size() >= 2)
+    {
+      dynamic_g2_tt(y.base(), x.base(), 1, modParams.base(), ySteady.base(), 0, tt.get());
+      dynamic_g2(y.base(), x.base(), 1, modParams.base(), ySteady.base(), 0, tt.get(), md[1].base());
+    }
+  if (md.size() >= 3)
     {
       dynamic_g3_tt(y.base(), x.base(), 1, modParams.base(), ySteady.base(), 0, tt.get());
-      dynamic_g3(y.base(), x.base(), 1, modParams.base(), ySteady.base(), 0, tt.get(), g3->base());
+      dynamic_g3(y.base(), x.base(), 1, modParams.base(), ySteady.base(), 0, tt.get(), md[2].base());
     }
 }

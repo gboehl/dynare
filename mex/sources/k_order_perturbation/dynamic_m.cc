@@ -30,15 +30,15 @@ DynamicModelMFile::DynamicModelMFile(const std::string &modName) noexcept(false)
 }
 
 void
-DynamicModelMFile::unpackSparseMatrixAndCopyIntoTwoDMatData(mxArray *sparseMat, TwoDMatrix *tdm)
+DynamicModelMFile::unpackSparseMatrixAndCopyIntoTwoDMatData(mxArray *sparseMat, TwoDMatrix &tdm)
 {
   int totalCols = mxGetN(sparseMat);
   mwIndex *rowIdxVector = mxGetIr(sparseMat);
   mwSize sizeRowIdxVector = mxGetNzmax(sparseMat);
   mwIndex *colIdxVector = mxGetJc(sparseMat);
 
-  assert(tdm->ncols() == 3);
-  assert(tdm->nrows() == sizeRowIdxVector);
+  assert(tdm.ncols() == 3);
+  assert(tdm.nrows() == sizeRowIdxVector);
 
   double *ptr = mxGetPr(sparseMat);
 
@@ -48,9 +48,9 @@ DynamicModelMFile::unpackSparseMatrixAndCopyIntoTwoDMatData(mxArray *sparseMat, 
   for (int i = 0; i < totalCols; i++)
     for (int j = 0; j < static_cast<int>((colIdxVector[i+1]-colIdxVector[i])); j++, rind++)
       {
-        tdm->get(output_row, 0) = rowIdxVector[rind] + 1;
-        tdm->get(output_row, 1) = i + 1;
-        tdm->get(output_row, 2) = ptr[rind];
+        tdm.get(output_row, 0) = rowIdxVector[rind] + 1;
+        tdm.get(output_row, 1) = i + 1;
+        tdm.get(output_row, 2) = ptr[rind];
         output_row++;
       }
 
@@ -60,16 +60,16 @@ DynamicModelMFile::unpackSparseMatrixAndCopyIntoTwoDMatData(mxArray *sparseMat, 
      recognized as such by KordpDynare::populateDerivativesContainer() */
   while (output_row < static_cast<int>(sizeRowIdxVector))
     {
-      tdm->get(output_row, 0) = 0;
-      tdm->get(output_row, 1) = 0;
-      tdm->get(output_row, 2) = 0;
+      tdm.get(output_row, 0) = 0;
+      tdm.get(output_row, 1) = 0;
+      tdm.get(output_row, 2) = 0;
       output_row++;
     }
 }
 
 void
 DynamicModelMFile::eval(const Vector &y, const Vector &x, const Vector &modParams, const Vector &ySteady,
-                        Vector &residual, TwoDMatrix *g1, TwoDMatrix *g2, TwoDMatrix *g3) noexcept(false)
+                        Vector &residual, std::vector<TwoDMatrix> &md) noexcept(false)
 {
   constexpr int nlhs_dynamic = 4, nrhs_dynamic = 5;
   mxArray *prhs[nrhs_dynamic], *plhs[nlhs_dynamic];
@@ -91,14 +91,14 @@ DynamicModelMFile::eval(const Vector &y, const Vector &x, const Vector &modParam
 
   residual = Vector{plhs[0]};
 
-  assert(static_cast<int>(mxGetM(plhs[1])) == g1->nrows());
-  assert(static_cast<int>(mxGetN(plhs[1])) == g1->ncols());
-  std::copy_n(mxGetPr(plhs[1]), mxGetM(plhs[1])*mxGetN(plhs[1]), g1->base());
+  assert(static_cast<int>(mxGetM(plhs[1])) == md[0].nrows());
+  assert(static_cast<int>(mxGetN(plhs[1])) == md[0].ncols());
+  std::copy_n(mxGetPr(plhs[1]), mxGetM(plhs[1])*mxGetN(plhs[1]), md[0].base());
 
-  if (g2)
-    unpackSparseMatrixAndCopyIntoTwoDMatData(plhs[2], g2);
-  if (g3)
-    unpackSparseMatrixAndCopyIntoTwoDMatData(plhs[3], g3);
+  if (md.size() >= 2)
+    unpackSparseMatrixAndCopyIntoTwoDMatData(plhs[2], md[1]);
+  if (md.size() >= 3)
+    unpackSparseMatrixAndCopyIntoTwoDMatData(plhs[3], md[2]);
 
   for (int i = 0; i < nrhs_dynamic; i++)
     mxDestroyArray(prhs[i]);
