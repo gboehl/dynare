@@ -257,10 +257,14 @@ function printlistofvariables(fid, kind, list, DynareModel, vappend)
     else
         switch kind
           case 'exo'
-            fprintf(fid, 'varexo %s;', sprintf('%s ', list{:}));
+            vlist = 'varexo';
           case 'endo'
-            fprintf(fid, 'var %s;', sprintf('%s ', list{:}));
+            vlist = 'var';
           otherwise
             error('Illegal value for second input argument.')
         end
+        for i=1:length(list)
+            vlist = sprintf('%s\n\t%s', vlist, list{i});
+        end
+        fprintf(fid, '%s;', vlist);
     end
