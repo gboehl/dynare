@@ -111,15 +111,15 @@ for i=1:length(eqtags)
         end
     end
     if isempty(transform)
-        ds{LHS}(range) = eval(RHS);
+        ds{LHS} = eval(RHS);
     else
         tmp = eval(RHS);
         switch length(transform)
           case 1
             if isequal(transform{1}, 'cumsum')
-                ds{lhs}(range) = cumsum(tmp)+ds{lhs}(range(1)-1).data;
+                ds{lhs} = cumsum(tmp)+ds{lhs}(range(1)-1).data;
             else
-                ds{lhs}(range) = feval(transform{1}, tmp);
+                ds{lhs} = feval(transform{1}, tmp);
             end
           case 2
             if isequal(transform{2}, 'cumsum')
@@ -128,25 +128,25 @@ for i=1:length(eqtags)
                 for t = 1:length(range)
                     t2(t) = 2*ds{lhs}(range(t)-1).data-ds{lhs}(range(t)-2).data+tmp(range(t)).data;
                 end
-                ds{lhs}(range) = dseries(t2, range(1));
+                ds{lhs} = dseries(t2, range(1));
             else
                 t2 = zeros(length(range), 1);
                 for t = 1:length(range)
                     t1 = feval(transform{2}, log(ds{lhs}(range(t)-1))+tmp(range(t)).data );
                     t2(t) = t1.data;
                 end
-                ds{lhs}(range) = dseries(t2, range(1));
+                ds{lhs} = dseries(t2, range(1));
 % $$$                 % The commented version below is more efficient but the discrepancy with what is returned by simulating
 % $$$                 % the model is much bigger (see pac/trend-component-28/example4.mod).
 % $$$                 tmp = cumsum(tmp)+log(ds{lhs}(range(1)-1).data);
-% $$$                 ds{lhs}(range) = feval(transform{2}, tmp);
+% $$$                 ds{lhs} = feval(transform{2}, tmp);
             end
           case 3
                 t2 = zeros(length(range), 1);
                 for t = 1:length(range)
                     t2(t) = feval(transform{3}, 2*log(ds{lhs}(range(t)-1).data)-log(ds{lhs}(range(t)-2).data)+tmp(range(t)).data);
                 end
-                ds{lhs}(range) = dseries(t2, range(1));
+                ds{lhs} = dseries(t2, range(1));
           otherwise
             error('More than 3 unary ops. in LHS not implemented.')
         end
