@@ -36,10 +36,6 @@ IntSequence::getSymmetry() const
   return r;
 }
 
-
-/* This constructs an ordered integer sequence from the given ordered
-   sequence inserting the given number to the sequence. */
-
 IntSequence
 IntSequence::insert(int i) const
 {
@@ -128,9 +124,6 @@ IntSequence::sort()
   std::sort(data, data+length);
 }
 
-/* Here we monotonize the sequence. If an item is less then its
-   predecessor, it is equalized. */
-
 void
 IntSequence::monotone()
 {
@@ -138,11 +131,6 @@ IntSequence::monotone()
     if (operator[](i-1) > operator[](i))
       operator[](i) = operator[](i-1);
 }
-
-/* This partially monotones the sequence. The partitioning is done by a
-   symmetry. So the subsequence given by the symmetry classes are
-   monotonized. For example, if the symmetry is y²u³, and the
-   IntSequence is (5,3,1,6,4), the result is (5,5,1,6,6). */
 
 void
 IntSequence::pmonotone(const Symmetry &s)
@@ -157,16 +145,11 @@ IntSequence::pmonotone(const Symmetry &s)
     }
 }
 
-/* This returns sum of all elements. Useful for symmetries. */
-
 int
 IntSequence::sum() const
 {
   return std::accumulate(data, data+length, 0);
 }
-
-/* This returns product of subsequent items. Useful for Kronecker product
-   dimensions. */
 
 int
 IntSequence::mult(int i1, int i2) const
@@ -174,8 +157,6 @@ IntSequence::mult(int i1, int i2) const
   return std::accumulate(data+i1, data+i2,
                          1, std::multiplies<int>());
 }
-
-/* Return a number of the same items in the beginning of the sequence. */
 
 int
 IntSequence::getPrefixLength() const
@@ -185,9 +166,6 @@ IntSequence::getPrefixLength() const
     i++;
   return i+1;
 }
-
-/* This returns a number of distinct items in the sequence. It supposes
-   that the sequence is ordered. For the empty sequence it returns zero. */
 
 int
 IntSequence::getNumDistinct() const
@@ -200,9 +178,6 @@ IntSequence::getNumDistinct() const
       res++;
   return res;
 }
-
-/* This returns a maximum of the sequence. If the sequence is empty, it
-   returns the least possible int value. */
 
 int
 IntSequence::getMax() const

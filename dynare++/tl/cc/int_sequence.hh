@@ -145,11 +145,28 @@ public:
   /* For appending at the end, use pos = size() */
   IntSequence insert(int i, int pos) const;
 
+  // In-place sort the sequence in increasing order
   void sort();
+
+  /* Monotonize the sequence: if an item is less then its predecessor, it is
+     equalized. */
   void monotone();
+
+  /* Partially monotonize the sequence. The partitioning is done by a
+   symmetry. So the subsequence given by the symmetry classes are
+   monotonized. For example, if the symmetry is y²u³, and the
+   IntSequence is (5,3,1,6,4), the result is (5,5,1,6,6). */
   void pmonotone(const Symmetry &s);
+
+
+  // Returns the sum of all elements. Useful for symmetries
   int sum() const;
+
+  /* This returns product of elements between indices i1 (included) and i2
+   (excluded). Useful for Kronecker product dimensions. */
   int mult(int i1, int i2) const;
+
+  // Returns the product of all elements
   int
   mult() const
   {
@@ -157,12 +174,22 @@ public:
   }
   void add(int i);
   void add(int f, const IntSequence &s);
+
+  /* Return the number of identical elements at the beginning of the sequence. */
   int getPrefixLength() const;
+
+  /* This returns a number of distinct items in the sequence. It supposes that
+     the sequence is ordered. Returns zero on the empty sequence. */
   int getNumDistinct() const;
+
+  /* This returns a maximum of the sequence. If the sequence is empty, it
+     returns the least possible int value. */
   int getMax() const;
+
   bool isPositive() const;
   bool isConstant() const;
   bool isSorted() const;
+
   void print() const;
   /*                                   ⎛sum(this)⎞
      Computes multinomial coefficient: ⎝  this   ⎠
