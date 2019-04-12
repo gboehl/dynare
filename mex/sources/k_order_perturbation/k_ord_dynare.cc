@@ -116,48 +116,28 @@ KordpDynare::populateDerivativesContainer(int ord)
           }
         s[0]++;
       }
-  else if (ord == 2)
-    {
-      for (int i = 0; i < g.nrows(); i++)
-        {
-          int j = static_cast<int>(g.get(i, 0))-1; // hessian indices start with 1
-          int i1 = static_cast<int>(g.get(i, 1))-1;
-          if (j < 0 || i1 < 0)
-            continue; // Discard empty entries (see comment in DynamicModelAC::unpackSparseMatrix())
-          int s0 = i1 / nJcols;
-          int s1 = i1 % nJcols;
-          s[0] = dynToDynpp[s0];
-          s[1] = dynToDynpp[s1];
-          if (s[1] >= s[0])
-            {
-              double x = g.get(i, 2);
-              mdTi->insert(s, j, x);
-            }
-        }
-    }
-  else if (ord == 3)
-    {
-      int nJcols2 = nJcols*nJcols;
-      for (int i = 0; i < g.nrows(); i++)
-        {
-          int j = static_cast<int>(g.get(i, 0))-1;
-          int i1 = static_cast<int>(g.get(i, 1))-1;
-          if (j < 0 || i1 < 0)
-            continue; // Discard empty entries (see comment in DynamicModelAC::unpackSparseMatrix())
-          int s0 = i1 / nJcols2;
-          int i2 = i1 % nJcols2;
-          int s1 = i2 / nJcols;
-          int s2 = i2 % nJcols;
-          s[0] = dynToDynpp[s0];
-          s[1] = dynToDynpp[s1];
-          s[2] = dynToDynpp[s2];
-          if (s.isSorted())
-            {
-              double x = g.get(i, 2);
-              mdTi->insert(s, j, x);
-            }
-        }
-    }
+  else // ord ≥ 2
+    for (int i = 0; i < g.nrows(); i++)
+      {
+        int j = static_cast<int>(g.get(i, 0))-1;
+        int i1 = static_cast<int>(g.get(i, 1))-1;
+        if (j < 0 || i1 < 0)
+          continue; // Discard empty entries (see comment in DynamicModelAC::unpackSparseMatrix())
+
+        for (int k = 0; k < ord; k++)
+          {
+            s[k] = dynToDynpp[i1 % nJcols];
+            i1 /= nJcols;
+          }
+
+        if ((ord == 2 || ord == 3) && !s.isSorted())
+          continue; // Skip symmetric elements (only needed at order 2 and 3)
+        else if (ord > 3)
+          s.sort(); // For higher order, canonicalize the multi-index
+
+        double x = g.get(i, 2);
+        mdTi->insert(s, j, x);
+      }
 
   md.insert(std::move(mdTi));
 }
