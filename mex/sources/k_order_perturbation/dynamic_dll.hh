@@ -47,7 +47,6 @@ using dynamic_g3_fct = void (*)(const double *y, const double *x, int nb_row_x, 
 class DynamicModelDLL : public DynamicModelAC
 {
 private:
-  int *ntt;
   dynamic_tt_fct dynamic_resid_tt, dynamic_g1_tt, dynamic_g2_tt, dynamic_g3_tt;
   dynamic_resid_fct dynamic_resid;
   dynamic_g1_fct dynamic_g1;
@@ -62,7 +61,7 @@ private:
 
 public:
   // construct and load Dynamic model DLL
-  explicit DynamicModelDLL(const std::string &fname);
+  explicit DynamicModelDLL(const std::string &fname, int ntt_arg);
   virtual ~DynamicModelDLL();
 
   void eval(const Vector &y, const Vector &x, const Vector &params, const Vector &ySteady,

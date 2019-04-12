@@ -163,6 +163,11 @@ extern "C" {
     if (nEndo != static_cast<int>(endoNames.size()) || nExog != static_cast<int>(exoNames.size()))
       DYN_MEX_FUNC_ERR_MSG_TXT("Incorrect size of M_.endo_names or M_.exo_names");
 
+    mxFldp = mxGetField(M_, 0, "dynamic_tmp_nbr");
+    if (static_cast<int>(mxGetM(mxFldp)) < kOrder+1 || mxGetN(mxFldp) != 1)
+      DYN_MEX_FUNC_ERR_MSG_TXT("Incorrect size of M_.dynamic_tmp_nbr");
+    int ntt = std::accumulate(mxGetPr(mxFldp), mxGetPr(mxFldp)+kOrder+1, 0);
+
     const int nSteps = 0; // Dynare++ solving steps, for time being default to 0 = deterministic steady state
 
     try
@@ -171,9 +176,9 @@ extern "C" {
 
         std::unique_ptr<DynamicModelAC> dynamicModelFile;
         if (use_dll)
-          dynamicModelFile = std::make_unique<DynamicModelDLL>(fName);
+          dynamicModelFile = std::make_unique<DynamicModelDLL>(fName, ntt);
         else
-          dynamicModelFile = std::make_unique<DynamicModelMFile>(fName);
+          dynamicModelFile = std::make_unique<DynamicModelMFile>(fName, ntt);
 
         // intiate tensor library
         TLStatic::init(kOrder, nStat+2*nPred+3*nBoth+2*nForw+nExog);

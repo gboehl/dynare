@@ -23,7 +23,8 @@
 
 #include <iostream>
 
-DynamicModelDLL::DynamicModelDLL(const std::string &modName) noexcept(false)
+DynamicModelDLL::DynamicModelDLL(const std::string &modName, int ntt_arg)
+  : DynamicModelAC(ntt_arg)
 {
   std::string fName;
 #if !defined(__CYGWIN32__) && !defined(_WIN32)
@@ -35,7 +36,6 @@ DynamicModelDLL::DynamicModelDLL(const std::string &modName) noexcept(false)
   dynamicHinstance = LoadLibrary(fName.c_str());
   if (!dynamicHinstance)
     throw DynareException(__FILE__, __LINE__, "Error when loading " + fName + ": can't dynamically load the file");
-  ntt = reinterpret_cast<int *>(GetProcAddress(dynamicHinstance, "ntt"));
   dynamic_resid_tt = reinterpret_cast<dynamic_tt_fct>(GetProcAddress(dynamicHinstance, "dynamic_resid_tt"));
   dynamic_resid = reinterpret_cast<dynamic_resid_fct>(GetProcAddress(dynamicHinstance, "dynamic_resid"));
   dynamic_g1_tt = reinterpret_cast<dynamic_tt_fct>(GetProcAddress(dynamicHinstance, "dynamic_g1_tt"));
@@ -44,7 +44,7 @@ DynamicModelDLL::DynamicModelDLL(const std::string &modName) noexcept(false)
   dynamic_g2 = reinterpret_cast<dynamic_g2_fct>(GetProcAddress(dynamicHinstance, "dynamic_g2"));
   dynamic_g3_tt = reinterpret_cast<dynamic_tt_fct>(GetProcAddress(dynamicHinstance, "dynamic_g3_tt"));
   dynamic_g3 = reinterpret_cast<dynamic_g3_fct>(GetProcAddress(dynamicHinstance, "dynamic_g3"));
-  if (!ntt || !dynamic_resid_tt || !dynamic_resid
+  if (!dynamic_resid_tt || !dynamic_resid
       || !dynamic_g1_tt || !dynamic_g1
       || !dynamic_g2_tt || !dynamic_g2
       || !dynamic_g3_tt || !dynamic_g3)
@@ -56,7 +56,6 @@ DynamicModelDLL::DynamicModelDLL(const std::string &modName) noexcept(false)
   dynamicHinstance = dlopen(fName.c_str(), RTLD_NOW);
   if (!dynamicHinstance)
     throw DynareException(__FILE__, __LINE__, "Error when loading " + fName + ": " + dlerror());
-  ntt = reinterpret_cast<int *>(dlsym(dynamicHinstance, "ntt"));
   dynamic_resid_tt = reinterpret_cast<dynamic_tt_fct>(dlsym(dynamicHinstance, "dynamic_resid_tt"));
   dynamic_resid = reinterpret_cast<dynamic_resid_fct>(dlsym(dynamicHinstance, "dynamic_resid"));
   dynamic_g1_tt = reinterpret_cast<dynamic_tt_fct>(dlsym(dynamicHinstance, "dynamic_g1_tt"));
@@ -65,7 +64,7 @@ DynamicModelDLL::DynamicModelDLL(const std::string &modName) noexcept(false)
   dynamic_g2 = reinterpret_cast<dynamic_g2_fct>(dlsym(dynamicHinstance, "dynamic_g2"));
   dynamic_g3_tt = reinterpret_cast<dynamic_tt_fct>(dlsym(dynamicHinstance, "dynamic_g3_tt"));
   dynamic_g3 = reinterpret_cast<dynamic_g3_fct>(dlsym(dynamicHinstance, "dynamic_g3"));
-  if (!ntt || !dynamic_resid_tt || !dynamic_resid
+  if (!dynamic_resid_tt || !dynamic_resid
       || !dynamic_g1_tt || !dynamic_g1
       || !dynamic_g2_tt || !dynamic_g2
       || !dynamic_g3_tt || !dynamic_g3)
@@ -75,7 +74,7 @@ DynamicModelDLL::DynamicModelDLL(const std::string &modName) noexcept(false)
     }
 #endif
 
-  tt = std::make_unique<double[]>(*ntt);
+  tt = std::make_unique<double[]>(ntt);
 }
 
 DynamicModelDLL::~DynamicModelDLL()

@@ -35,7 +35,7 @@ private:
   const std::string DynamicMFilename;
   static void unpackSparseMatrixAndCopyIntoTwoDMatData(mxArray *sparseMat, TwoDMatrix &tdm);
 public:
-  explicit DynamicModelMFile(const std::string &modName);
+  explicit DynamicModelMFile(const std::string &modName, int ntt_arg);
   virtual ~DynamicModelMFile() = default;
   void eval(const Vector &y, const Vector &x, const Vector &params, const Vector &ySteady,
             Vector &residual, std::vector<TwoDMatrix> &md) override;

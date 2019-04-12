@@ -26,7 +26,10 @@
 
 class DynamicModelAC
 {
+protected:
+  int ntt; // Size of vector of temporary terms
 public:
+  DynamicModelAC(int ntt_arg) : ntt{ntt_arg} {};
   virtual ~DynamicModelAC() = default;
   virtual void eval(const Vector &y, const Vector &x, const Vector &params, const Vector &ySteady,
                     Vector &residual, std::vector<TwoDMatrix> &md) = 0;
