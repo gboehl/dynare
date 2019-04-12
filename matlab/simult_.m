@@ -67,7 +67,7 @@ if options_.k_order_solver && ~options_.pruning % Call dynare++ routines.
                                   y_(dr.order_var,1),ex_',M_.Sigma_e,options_.DynareRandomStreams.seed,dr.ys(dr.order_var),dr.g_0, ...
                                   dr.g_1,dr.g_2,dr.g_3);
       otherwise
-        error(['order = ' int2str(order) ' isn''t supported'])
+        error(['order = ' int2str(options_.order) ' isn''t supported'])
     end
     mexErrCheck('dynare_simul_', err);
     y_(dr.order_var,:) = y_;
