@@ -177,13 +177,13 @@ main(int argc, char **argv)
     }
   catch (const KordException &e)
     {
-      printf("Caugth Kord exception: ");
+      printf("Caught Kord exception: ");
       e.print();
       return e.code();
     }
   catch (const TLException &e)
     {
-      printf("Caugth TL exception: ");
+      printf("Caught TL exception: ");
       e.print();
       return 255;
     }
