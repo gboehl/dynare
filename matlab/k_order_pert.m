@@ -30,10 +30,6 @@ if M.maximum_endo_lead == 0 && order>1
            'backward models'])
 end
 
-if order > 3
-    error('order > 3 isn''t implemented')
-end
-
 [err, dynpp_derivs, dyn_derivs] = k_order_perturbation(dr,M,options);
 if err
     info(1)=9;

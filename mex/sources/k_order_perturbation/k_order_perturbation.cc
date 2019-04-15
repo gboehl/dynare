@@ -96,8 +96,8 @@ extern "C" {
     if (!mxIsNumeric(mxFldp))
       DYN_MEX_FUNC_ERR_MSG_TXT("options_.order must be a numeric value");
     kOrder = static_cast<int>(mxGetScalar(mxFldp));
-    if (kOrder < 1 || kOrder > 3)
-      DYN_MEX_FUNC_ERR_MSG_TXT("options_.order must be between 1 and 3");
+    if (kOrder < 1)
+      DYN_MEX_FUNC_ERR_MSG_TXT("options_.order must be at least 1");
 
     double qz_criterium = 1+1e-6;
     mxFldp = mxGetField(options_, 0, "qz_criterium");
