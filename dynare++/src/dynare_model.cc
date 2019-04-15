@@ -471,7 +471,7 @@ DynareParser::DynareParser(const char *stream, int len, int ord)
     {
       if (order_end > order_beg)
         {
-          order = parse_order(order_end > order_beg, stream + order_beg);
+          order = parse_order(order_end - order_beg, stream + order_beg);
         }
     }
   catch (const ogp::ParserException &e)
