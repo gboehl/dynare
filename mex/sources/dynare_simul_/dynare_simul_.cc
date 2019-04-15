@@ -32,7 +32,7 @@
 //      vcov     covariance matrix of shocks (nexog x nexog)
 //      seed     integer seed
 //      ysteady  full vector of decision rule's steady
-//      ...      order+1 matrices of derivatives
+//      dr       structure containing matrices of derivatives (g_0, g_1,…)
 
 // output:
 //      res      simulated results
@@ -51,13 +51,10 @@ extern "C" {
   mexFunction(int nlhs, mxArray *plhs[],
               int nhrs, const mxArray *prhs[])
   {
-    if (nhrs < 12 || nlhs != 2)
-      DYN_MEX_FUNC_ERR_MSG_TXT("dynare_simul_ must have at least 12 input parameters and exactly 2 output arguments.\n");
+    if (nhrs != 12 || nlhs != 2)
+      DYN_MEX_FUNC_ERR_MSG_TXT("dynare_simul_ must have at exactly 12 input parameters and 2 output arguments.\n");
 
     int order = static_cast<int>(mxGetScalar(prhs[0]));
-    if (nhrs != 12 + order)
-      DYN_MEX_FUNC_ERR_MSG_TXT("dynare_simul_ must have exactly 11+order input parameters.\n");
-
     int nstat = static_cast<int>(mxGetScalar(prhs[1]));
     int npred = static_cast<int>(mxGetScalar(prhs[2]));
     int nboth = static_cast<int>(mxGetScalar(prhs[3]));
@@ -69,6 +66,7 @@ extern "C" {
     const mxArray *const vcov = prhs[8];
     int seed = static_cast<int>(mxGetScalar(prhs[9]));
     const mxArray *const ysteady = prhs[10];
+    const mxArray *const dr = prhs[11];
     const mwSize *const ystart_dim = mxGetDimensions(ystart);
     const mwSize *const shocks_dim = mxGetDimensions(shocks);
     const mwSize *const vcov_dim = mxGetDimensions(vcov);
@@ -102,7 +100,10 @@ extern "C" {
         UTensorPolynomial pol(ny, npred+nboth+nexog);
         for (int dim = 0; dim <= order; dim++)
           {
-            ConstTwoDMatrix gk(prhs[11+dim]);
+            const mxArray *gk_m = mxGetField(dr, 0, ("g_" + std::to_string(dim)).c_str());
+            if (!gk_m)
+              DYN_MEX_FUNC_ERR_MSG_TXT(("Can't find field `g_" + std::to_string(dim) + "' in structured passed as last argument").c_str());
+            ConstTwoDMatrix gk(gk_m);
             FFSTensor ft(ny, npred+nboth+nexog, dim);
             if (ft.ncols() != gk.ncols())
               DYN_MEX_FUNC_ERR_MSG_TXT(("Wrong number of columns for folded tensor: got " + std::to_string(gk.ncols()) + " but i want " + std::to_string(ft.ncols()) + '\n').c_str());
@@ -127,11 +128,11 @@ extern "C" {
       }
     catch (const KordException &e)
       {
-        DYN_MEX_FUNC_ERR_MSG_TXT("Caugth Kord exception.");
+        DYN_MEX_FUNC_ERR_MSG_TXT("Caught Kord exception.");
       }
     catch (const TLException &e)
       {
-        DYN_MEX_FUNC_ERR_MSG_TXT("Caugth TL exception.");
+        DYN_MEX_FUNC_ERR_MSG_TXT("Caught TL exception.");
       }
     catch (SylvException &e)
       {
