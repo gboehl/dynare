@@ -1,6 +1,6 @@
 SUBDIRS = cc testing
 
-EXTRA_DIST = sylvester.tex change_log.html matlab
+EXTRA_DIST = sylvester.tex change_log.html
 
 if HAVE_PDFLATEX
 pdf-local: sylvester.pdf

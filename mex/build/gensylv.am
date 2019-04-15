@@ -9,5 +9,5 @@ nodist_gensylv_SOURCES = gensylv.cc
 BUILT_SOURCES = $(nodist_gensylv_SOURCES)
 CLEANFILES = $(nodist_gensylv_SOURCES)
 
-%.cc: $(top_srcdir)/../../../dynare++/sylv/matlab/%.cc
+%.cc: $(top_srcdir)/../../sources/gensylv/%.cc
 	$(LN_S) -f $< $@

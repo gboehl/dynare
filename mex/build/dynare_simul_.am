@@ -7,10 +7,10 @@ dynare_simul__CXXFLAGS = $(AM_CXXFLAGS) $(THREAD_CXXFLAGS)
 dynare_simul__LDFLAGS = $(AM_LDFLAGS) $(LDFLAGS_MATIO)
 dynare_simul__LDADD = ../libdynare++/libdynare++.a $(LIBADD_MATIO)
 
-nodist_dynare_simul__SOURCES = dynare_simul.cc
+nodist_dynare_simul__SOURCES = dynare_simul_.cc
 
 BUILT_SOURCES = $(nodist_dynare_simul__SOURCES)
 CLEANFILES = $(nodist_dynare_simul__SOURCES)
 
-%.cc: $(top_srcdir)/../../../dynare++/extern/matlab/%.cc
+%.cc: $(top_srcdir)/../../sources/dynare_simul_/%.cc
 	$(LN_S) -f $< $@
