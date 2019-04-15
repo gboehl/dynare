@@ -125,11 +125,12 @@ DynamicModelMFile::eval(const Vector &y, const Vector &x, const Vector &modParam
       if (retVal != 0)
         throw DynareException(__FILE__, __LINE__, "Trouble calling " + funcname);
 
-      assert(static_cast<int>(mxGetM(plhs[0])) == md[i-1].nrows());
-      assert(static_cast<int>(mxGetN(plhs[0])) == md[i-1].ncols());
-
       if (i == 1)
-        std::copy_n(mxGetPr(plhs[0]), mxGetM(plhs[0])*mxGetN(plhs[0]), md[i-1].base());
+        {
+          assert(static_cast<int>(mxGetM(plhs[0])) == md[i-1].nrows());
+          assert(static_cast<int>(mxGetN(plhs[0])) == md[i-1].ncols());
+          std::copy_n(mxGetPr(plhs[0]), mxGetM(plhs[0])*mxGetN(plhs[0]), md[i-1].base());
+        }
       else
         unpackSparseMatrixAndCopyIntoTwoDMatData(plhs[0], md[i-1]);
 
