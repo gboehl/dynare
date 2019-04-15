@@ -22,8 +22,9 @@
 #include "dynare_exception.hh"
 
 #include <iostream>
+#include <cassert>
 
-DynamicModelDLL::DynamicModelDLL(const std::string &modName, int ntt_arg)
+DynamicModelDLL::DynamicModelDLL(const std::string &modName, int ntt_arg, int order)
   : DynamicModelAC(ntt_arg)
 {
   std::string fName;
@@ -34,45 +35,43 @@ DynamicModelDLL::DynamicModelDLL(const std::string &modName, int ntt_arg)
 
 #if defined(__CYGWIN32__) || defined(_WIN32)
   dynamicHinstance = LoadLibrary(fName.c_str());
-  if (!dynamicHinstance)
-    throw DynareException(__FILE__, __LINE__, "Error when loading " + fName + ": can't dynamically load the file");
-  dynamic_resid_tt = reinterpret_cast<dynamic_tt_fct>(GetProcAddress(dynamicHinstance, "dynamic_resid_tt"));
-  dynamic_resid = reinterpret_cast<dynamic_resid_fct>(GetProcAddress(dynamicHinstance, "dynamic_resid"));
-  dynamic_g1_tt = reinterpret_cast<dynamic_tt_fct>(GetProcAddress(dynamicHinstance, "dynamic_g1_tt"));
-  dynamic_g1 = reinterpret_cast<dynamic_g1_fct>(GetProcAddress(dynamicHinstance, "dynamic_g1"));
-  dynamic_g2_tt = reinterpret_cast<dynamic_tt_fct>(GetProcAddress(dynamicHinstance, "dynamic_g2_tt"));
-  dynamic_g2 = reinterpret_cast<dynamic_g2_fct>(GetProcAddress(dynamicHinstance, "dynamic_g2"));
-  dynamic_g3_tt = reinterpret_cast<dynamic_tt_fct>(GetProcAddress(dynamicHinstance, "dynamic_g3_tt"));
-  dynamic_g3 = reinterpret_cast<dynamic_g3_fct>(GetProcAddress(dynamicHinstance, "dynamic_g3"));
-  if (!dynamic_resid_tt || !dynamic_resid
-      || !dynamic_g1_tt || !dynamic_g1
-      || !dynamic_g2_tt || !dynamic_g2
-      || !dynamic_g3_tt || !dynamic_g3)
-    {
-      FreeLibrary(dynamicHinstance); // Free the library
-      throw DynareException(__FILE__, __LINE__, "Error when loading " + fName + ": can't locate the relevant dynamic symbols within the MEX file");
-    }
-#else // Linux or Mac
+#else // GNU/Linux or Mac
   dynamicHinstance = dlopen(fName.c_str(), RTLD_NOW);
-  if (!dynamicHinstance)
-    throw DynareException(__FILE__, __LINE__, "Error when loading " + fName + ": " + dlerror());
-  dynamic_resid_tt = reinterpret_cast<dynamic_tt_fct>(dlsym(dynamicHinstance, "dynamic_resid_tt"));
-  dynamic_resid = reinterpret_cast<dynamic_resid_fct>(dlsym(dynamicHinstance, "dynamic_resid"));
-  dynamic_g1_tt = reinterpret_cast<dynamic_tt_fct>(dlsym(dynamicHinstance, "dynamic_g1_tt"));
-  dynamic_g1 = reinterpret_cast<dynamic_g1_fct>(dlsym(dynamicHinstance, "dynamic_g1"));
-  dynamic_g2_tt = reinterpret_cast<dynamic_tt_fct>(dlsym(dynamicHinstance, "dynamic_g2_tt"));
-  dynamic_g2 = reinterpret_cast<dynamic_g2_fct>(dlsym(dynamicHinstance, "dynamic_g2"));
-  dynamic_g3_tt = reinterpret_cast<dynamic_tt_fct>(dlsym(dynamicHinstance, "dynamic_g3_tt"));
-  dynamic_g3 = reinterpret_cast<dynamic_g3_fct>(dlsym(dynamicHinstance, "dynamic_g3"));
-  if (!dynamic_resid_tt || !dynamic_resid
-      || !dynamic_g1_tt || !dynamic_g1
-      || !dynamic_g2_tt || !dynamic_g2
-      || !dynamic_g3_tt || !dynamic_g3)
-    {
-      dlclose(dynamicHinstance); // Free the library
-      throw DynareException(__FILE__, __LINE__, "Error when loading " + fName + ": " + dlerror());
-    }
 #endif
+  if (!dynamicHinstance)
+    throw DynareException(__FILE__, __LINE__, "Error when loading " + fName
+#if !defined(__CYGWIN32__) && !defined(_WIN32)
+                          + ": " + dlerror()
+#endif
+                          );
+
+  for (int i = 0; i <= order; i++)
+    {
+      std::string funcname = "dynamic_" + (i == 0 ? "resid" : "g" + std::to_string(i));
+      void *deriv, *tt;
+#if defined(__CYGWIN32__) || defined(_WIN32)
+      deriv = GetProcAddress(dynamicHinstance, funcname.c_str());
+      tt = GetProcAddress(dynamicHinstance, (funcname + "_tt").c_str());
+#else
+      deriv = dlsym(dynamicHinstance, funcname.c_str());
+      tt = dlsym(dynamicHinstance, (funcname + "_tt").c_str());
+#endif
+      if (!deriv || !tt)
+        {
+#if defined(__CYGWIN32__) || defined(_WIN32)
+          FreeLibrary(dynamicHinstance);
+#else
+          dlclose(dynamicHinstance);
+#endif
+          throw DynareException(__FILE__, __LINE__, "Error when loading symbols from " + fName
+#if !defined(__CYGWIN32__) && !defined(_WIN32)
+                                + ": " + dlerror()
+#endif
+                                );
+        }
+      dynamic_deriv.push_back(reinterpret_cast<dynamic_deriv_fct>(deriv));
+      dynamic_tt.push_back(reinterpret_cast<dynamic_tt_fct>(tt));
+    }
 
   tt = std::make_unique<double[]>(ntt);
 }
@@ -95,18 +94,11 @@ void
 DynamicModelDLL::eval(const Vector &y, const Vector &x, const Vector &modParams, const Vector &ySteady,
                       Vector &residual, std::vector<TwoDMatrix> &md) noexcept(false)
 {
-  dynamic_resid_tt(y.base(), x.base(), 1, modParams.base(), ySteady.base(), 0, tt.get());
-  dynamic_resid(y.base(), x.base(), 1, modParams.base(), ySteady.base(), 0, tt.get(), residual.base());
-  dynamic_g1_tt(y.base(), x.base(), 1, modParams.base(), ySteady.base(), 0, tt.get());
-  dynamic_g1(y.base(), x.base(), 1, modParams.base(), ySteady.base(), 0, tt.get(), md[0].base());
-  if (md.size() >= 2)
+  assert(md.size() == dynamic_deriv.size()-1);
+
+  for (size_t i = 0; i < dynamic_deriv.size(); i++)
     {
-      dynamic_g2_tt(y.base(), x.base(), 1, modParams.base(), ySteady.base(), 0, tt.get());
-      dynamic_g2(y.base(), x.base(), 1, modParams.base(), ySteady.base(), 0, tt.get(), md[1].base());
-    }
-  if (md.size() >= 3)
-    {
-      dynamic_g3_tt(y.base(), x.base(), 1, modParams.base(), ySteady.base(), 0, tt.get());
-      dynamic_g3(y.base(), x.base(), 1, modParams.base(), ySteady.base(), 0, tt.get(), md[2].base());
+      dynamic_tt[i](y.base(), x.base(), 1, modParams.base(), ySteady.base(), 0, tt.get());
+      dynamic_deriv[i](y.base(), x.base(), 1, modParams.base(), ySteady.base(), 0, tt.get(), i == 0 ? residual.base() : md[i-1].base());
     }
 }

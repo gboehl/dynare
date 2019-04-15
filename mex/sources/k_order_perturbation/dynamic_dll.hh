@@ -35,10 +35,7 @@
 #include "dynamic_abstract_class.hh"
 
 using dynamic_tt_fct = void (*)(const double *y, const double *x, int nb_row_x, const double *params, const double *steady_state, int it_, double *T);
-using dynamic_resid_fct = void (*) (const double *y, const double *x, int nb_row_x, const double *params, const double *steady_state, int it_, const double *T, double *residual);
-using dynamic_g1_fct = void (*)(const double *y, const double *x, int nb_row_x, const double *params, const double *steady_state, int it_, const double *T, double *g1);
-using dynamic_g2_fct = void (*)(const double *y, const double *x, int nb_row_x, const double *params, const double *steady_state, int it_, const double *T, double *v2);
-using dynamic_g3_fct = void (*)(const double *y, const double *x, int nb_row_x, const double *params, const double *steady_state, int it_, const double *T, double *v3);
+using dynamic_deriv_fct = void (*) (const double *y, const double *x, int nb_row_x, const double *params, const double *steady_state, int it_, const double *T, double *deriv);
 
 /**
  * creates pointer to Dynamic function inside <model>_dynamic.dll
@@ -47,11 +44,8 @@ using dynamic_g3_fct = void (*)(const double *y, const double *x, int nb_row_x, 
 class DynamicModelDLL : public DynamicModelAC
 {
 private:
-  dynamic_tt_fct dynamic_resid_tt, dynamic_g1_tt, dynamic_g2_tt, dynamic_g3_tt;
-  dynamic_resid_fct dynamic_resid;
-  dynamic_g1_fct dynamic_g1;
-  dynamic_g2_fct dynamic_g2;
-  dynamic_g3_fct dynamic_g3;
+  std::vector<dynamic_tt_fct> dynamic_tt;
+  std::vector<dynamic_deriv_fct> dynamic_deriv;
 #if defined(_WIN32) || defined(__CYGWIN32__)
   HINSTANCE dynamicHinstance;  // DLL instance pointer in Windows
 #else
@@ -61,7 +55,7 @@ private:
 
 public:
   // construct and load Dynamic model DLL
-  explicit DynamicModelDLL(const std::string &fname, int ntt_arg);
+  explicit DynamicModelDLL(const std::string &fname, int ntt_arg, int order);
   virtual ~DynamicModelDLL();
 
   void eval(const Vector &y, const Vector &x, const Vector &params, const Vector &ySteady,

@@ -176,7 +176,7 @@ extern "C" {
 
         std::unique_ptr<DynamicModelAC> dynamicModelFile;
         if (use_dll)
-          dynamicModelFile = std::make_unique<DynamicModelDLL>(fName, ntt);
+          dynamicModelFile = std::make_unique<DynamicModelDLL>(fName, ntt, kOrder);
         else
           dynamicModelFile = std::make_unique<DynamicModelMFile>(fName, ntt);
 
