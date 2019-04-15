@@ -187,5 +187,7 @@ else
             yhat2 = yhat2(ipred);
             yhat3 = yhat3(ipred);
         end
+      otherwise
+          error(['pruning not available for order = ' int2str(options_.order)])
     end
 end
