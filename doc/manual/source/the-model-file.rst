@@ -3138,19 +3138,18 @@ Computing the stochastic solution
 
     .. option:: order = INTEGER
 
-       Order of Taylor approximation. Acceptable values are ``1``,
-       ``2`` and ``3``. Note that for third order, ``k_order_solver``
-       option is implied and only empirical moments are available (you
-       must provide a value for ``periods`` option). Default: ``2``
-       (except after an ``estimation`` command, in which case the
-       default is the value used for the estimation).
+       Order of Taylor approximation. Note that for third order and above, the
+       ``k_order_solver`` option is implied and only empirical moments are
+       available (you must provide a value for ``periods`` option). Default:
+       ``2`` (except after an ``estimation`` command, in which case the default
+       is the value used for the estimation).
 
     .. option:: k_order_solver
 
        Use a k-order solver (implemented in C++) instead of the
        default Dynare solver. This option is not yet compatible with
        the ``bytecode`` option (see :ref:`model-decl`). Default:
-       disabled for order 1 and 2, enabled otherwise.
+       disabled for order 1 and 2, enabled for order 3 and above.
 
     .. option:: periods = INTEGER
 
@@ -3244,6 +3243,7 @@ Computing the stochastic solution
        algorithm of *Kim, Kim, Schaumburg and Sims (2008)*, while at
        third order its generalization by *Andreasen,
        Fernández-Villaverde and Rubio-Ramírez (2013)* is used.
+       Not available above third order.
 
     .. option:: partial_information
 
