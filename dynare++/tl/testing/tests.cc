@@ -1106,15 +1106,11 @@ main()
   all_tests.push_back(std::make_unique<UnfoldZContSmall>());
   all_tests.push_back(std::make_unique<UnfoldZCont>());
 
-  // find maximum dimension and maximum nvar
-  int dmax = 0;
-  int nvmax = 0;
+  /* Initialize library. We do it for each test individually instead of
+     computing the maximum dimension and number of variables, because otherwise it
+     does not pass the check on maximum problem size. */
   for (const auto &test : all_tests)
-    {
-      dmax = std::max(dmax, test->dim);
-      nvmax = std::max(nvmax, test->nvar);
-    }
-  TLStatic::init(dmax, nvmax); // initialize library
+    TLStatic::init(test->dim, test->nvar);
 
   // launch the tests
   int success = 0;
