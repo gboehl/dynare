@@ -48,13 +48,14 @@ DynamicModelDLL::DynamicModelDLL(const std::string &modName, int ntt_arg, int or
   for (int i = 0; i <= order; i++)
     {
       std::string funcname = "dynamic_" + (i == 0 ? "resid" : "g" + std::to_string(i));
-      void *deriv, *tt;
+      dynamic_deriv_fct deriv;
+      dynamic_tt_fct tt;
 #if defined(__CYGWIN32__) || defined(_WIN32)
-      deriv = GetProcAddress(dynamicHinstance, funcname.c_str());
-      tt = GetProcAddress(dynamicHinstance, (funcname + "_tt").c_str());
+      deriv = reinterpret_cast<dynamic_deriv_fct>(GetProcAddress(dynamicHinstance, funcname.c_str()));
+      tt = reinterpret_cast<dynamic_tt_fct>(GetProcAddress(dynamicHinstance, (funcname + "_tt").c_str()));
 #else
-      deriv = dlsym(dynamicHinstance, funcname.c_str());
-      tt = dlsym(dynamicHinstance, (funcname + "_tt").c_str());
+      deriv = reinterpret_cast<dynamic_deriv_fct>(dlsym(dynamicHinstance, funcname.c_str()));
+      tt = reinterpret_cast<dynamic_tt_fct>(dlsym(dynamicHinstance, (funcname + "_tt").c_str()));
 #endif
       if (!deriv || !tt)
         {
@@ -69,8 +70,8 @@ DynamicModelDLL::DynamicModelDLL(const std::string &modName, int ntt_arg, int or
 #endif
                                 );
         }
-      dynamic_deriv.push_back(reinterpret_cast<dynamic_deriv_fct>(deriv));
-      dynamic_tt.push_back(reinterpret_cast<dynamic_tt_fct>(tt));
+      dynamic_deriv.push_back(deriv);
+      dynamic_tt.push_back(tt);
     }
 
   tt = std::make_unique<double[]>(ntt);
