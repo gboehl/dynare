@@ -1,40 +1,23 @@
 function [nodes, weights] = cubature_with_gaussian_weight(d,n,method)
 
-%@info:
-%! @deftypefn {Function File} {@var{nodes}, @var{weights} =} cubature_with_gaussian_weight (@var{d}, @var{n})
-%! @anchor{cubature_with_gaussian_weight}
-%! @sp 1
-%! Computes nodes and weights for a n-order cubature with gaussian weight.
-%! @sp 2
-%! @strong{Inputs}
-%! @sp 1
-%! @table @ @var
-%! @item d
-%! Scalar integer, dimension of the region of integration.
-%! @item n
-%! Scalar integer equal to 3 or 5, approximation order.
-%! @end table
-%! @sp 2
-%! @strong{Outputs}
-%! @sp 1
-%! @table @ @var
-%! @item nodes
-%! n*m matrix of doubles, the m nodes where the integrated function has to be evaluated. The number of nodes, m, is equal to 2*@var{d} is @var{n}==3 or 2*@var{d}^2+1 if @var{n}==5.
-%! @item weights
-%! m*1 vector of doubles, weights associated to the nodes.
-%! @end table
-%! @sp 2
-%! @strong{Remarks}
-%! @sp 1
-%! The routine returns nodes and associated weights to compute a multivariate integral of the form:
-%!
-%! \int_D f(x)*\exp(-<x,x>) dx
-%!
-%!
-%! @end deftypefn
-%@eod:
+% Computes nodes and weights for a n-order cubature with gaussian weight.
+%
+% INPUTS
+% - d        [integer]     scalar, dimension of the region of integration.
+% - n        [integer]     scalar, approximation order (3 or 5).
+% - method   [string]      Method of approximation ('Stroud' or 'ScaledUnscentedTransform')
+%
+% OUTPUTS
+% - nodes    [double]      n×m matrix, with m=2×d if n=3 or m=2×d²+1 if n=5, nodes where the integrated function has to be evaluated.
+% - weights  [double]      m×1 vector, weights associated to the nodes.
+%
+% REMARKS
+% The routine returns nodes and associated weights to compute a multivariate integral of the form:
+%      ∞           -<x,x>
+%     ∫   f(x) × e        dx
+%      -∞
 
-% Copyright (C) 2012-2017 Dynare Team
+% Copyright (C) 2012-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -50,8 +33,6 @@ function [nodes, weights] = cubature_with_gaussian_weight(d,n,method)
 %
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
-
-% AUTHOR(S) stephane DOT adjemian AT univ DASH lemans DOT fr
 
 % Set default.
 if nargin<3 || isempty(method)
