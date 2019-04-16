@@ -1,16 +1,16 @@
 <a name="logo"/>
 <div align="center">
-<a href="http://www.dynare.org/" target="_blank">
-<img src="http://www.dynare.org/img/dynare.png" alt="Dynare Logo"></img>
+<a href="https://www.dynare.org/" target="_blank">
+<img src="https://www.dynare.org/assets/images/logo/dlogo.svg" alt="Dynare Logo"></img>
 </a>
 </div>
 
 # Dynare
 
-Described on the homepage: <http://www.dynare.org/>
+Described on the homepage: <https://www.dynare.org/>
 
 Most users should use the precompiled package available for your OS, also
-available via the Dynare homepage: <http://www.dynare.org/download/dynare-stable>.
+available via the Dynare homepage: <https://www.dynare.org/download/>.
 
 # Contributions
 
@@ -31,8 +31,8 @@ Here, we explain how to build from source:
 
 This source can be retrieved in three forms:
 - via git, at <https://git.dynare.org/Dynare/dynare.git>
-- using the stable source archive of the latest Dynare version (currently 4.4) from <http://www.dynare.org/download/dynare-stable/>
-- using a source snapshot of the unstable version, from <http://www.dynare.org/download/dynare-unstable/source-snapshot>
+- using the stable source archive of the latest Dynare version from <https://www.dynare.org/download/>
+- using a source snapshot of the unstable version, also from <https://www.dynare.org/download/>
 
 Note that if you obtain the source code via git, you will need to install more tools (see below).
 
@@ -68,8 +68,8 @@ A number of tools and libraries are needed in order to recompile everything. You
 - [Boost libraries](http://www.boost.org), version 1.36 or later (with the filesystem library compiled)
 - [Bison](http://www.gnu.org/software/bison/), version 3.0 or later (only if you get the source through Git)
 - [Flex](http://flex.sourceforge.net/), version 2.5.4 or later (only if you get the source through Git)
-- [Autoconf](http://www.gnu.org/software/autoconf/), version 2.62 or later (only if you get the source through Git) (see [Installing an updated version of Autoconf in your own directory, in GNU/Linux](http://www.dynare.org/DynareWiki/AutoMake))
-- [Automake](http://www.gnu.org/software/automake/), version 1.11.2 or later (only if you get the source through Git) (see [Installing an updated version of AutoMake in your own directory, in GNU/Linux](http://www.dynare.org/DynareWiki/AutoMake))
+- [Autoconf](http://www.gnu.org/software/autoconf/), version 2.62 or later (only if you get the source through Git)
+- [Automake](http://www.gnu.org/software/automake/), version 1.11.2 or later (only if you get the source through Git)
 - An implementation of BLAS and LAPACK: either [ATLAS](http://math-atlas.sourceforge.net/), [OpenBLAS](http://xianyi.github.com/OpenBLAS/), Netlib ([BLAS](http://www.netlib.org/blas/), [LAPACK](http://www.netlib.org/lapack/)) or [MKL](http://software.intel.com/en-us/intel-mkl/) (only if you want to build Dynare++)
 - [MAT File I/O library](http://sourceforge.net/projects/matio/), version 1.5 or later (if you want to compile Markov-Switching code, the estimation DLL, k-order DLL and Dynare++)
 - [SLICOT](http://www.slicot.org) (if you want to compile the Kalman steady state DLL)
@@ -290,10 +290,10 @@ currently not supported.
 ## macOS
 
 To simply use a snapshot of Dynare, you have two choices. On MATLAB, you can
-use the [snapshot build](http://www.dynare.org/snapshot/macosx/) provided by
+use the [snapshot build](https://www.dynare.org/snapshot/macosx/) provided by
 Dynare. On Octave, you can simply install [Homebrew](https://brew.sh/) and run
 ```brew install dynare --HEAD``` (See the Install Dynare (unstable) section of
-[this webpage](http://www.dynare.org/DynareWiki/InstallOnMacOSX) for more
+[this webpage](https://archives.dynare.org/DynareWiki/InstallOnMacOSX) for more
 details).
 
 If you do not wish to use the snapshots provided by Dynare or Homebrew, follow
