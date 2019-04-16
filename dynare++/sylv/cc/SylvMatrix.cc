@@ -15,31 +15,31 @@
 void
 SylvMatrix::multLeftI(const SqSylvMatrix &m)
 {
-  int off = rows - m.numRows();
+  int off = rows - m.nrows();
   if (off < 0)
     throw SYLV_MES_EXCEPTION("Wrong matrix dimensions for multLeftI.");
 
-  GeneralMatrix subtmp(*this, off, 0, m.numRows(), cols);
+  GeneralMatrix subtmp(*this, off, 0, m.nrows(), cols);
   subtmp.multLeft(m);
 }
 
 void
 SylvMatrix::multLeftITrans(const SqSylvMatrix &m)
 {
-  int off = rows - m.numRows();
+  int off = rows - m.nrows();
   if (off < 0)
     throw SYLV_MES_EXCEPTION("Wrong matrix dimensions for multLeftITrans.");
 
-  GeneralMatrix subtmp(*this, off, 0, m.numRows(), cols);
+  GeneralMatrix subtmp(*this, off, 0, m.nrows(), cols);
   subtmp.multLeftTrans(m);
 }
 
 void
 SylvMatrix::multLeft(int zero_cols, const GeneralMatrix &a, const GeneralMatrix &b)
 {
-  int off = a.numRows() - a.numCols();
-  if (off < 0 || a.numRows() != rows || off != zero_cols
-      || rows != b.numRows() || cols != b.numCols())
+  int off = a.nrows() - a.ncols();
+  if (off < 0 || a.nrows() != rows || off != zero_cols
+      || rows != b.nrows() || cols != b.ncols())
     throw SYLV_MES_EXCEPTION("Wrong matrix dimensions for multLeft.");
 
   /* Here we cannot call SylvMatrix::gemm() since it would require
@@ -47,9 +47,9 @@ SylvMatrix::multLeft(int zero_cols, const GeneralMatrix &a, const GeneralMatrix 
      submatrix of const GeneralMatrix) */
   if (a.getLD() > 0 && ld > 0)
     {
-      blas_int mm = a.numRows();
+      blas_int mm = a.nrows();
       blas_int nn = cols;
-      blas_int kk = a.numCols();
+      blas_int kk = a.ncols();
       double alpha = 1.0;
       blas_int lda = a.getLD();
       blas_int ldb = ld;
@@ -63,14 +63,14 @@ SylvMatrix::multLeft(int zero_cols, const GeneralMatrix &a, const GeneralMatrix 
 void
 SylvMatrix::multRightKron(const SqSylvMatrix &m, int order)
 {
-  if (power(m.numRows(), order) != cols)
+  if (power(m.nrows(), order) != cols)
     throw SYLV_MES_EXCEPTION("Wrong number of cols for right kron multiply.");
 
-  KronVector auxrow(m.numRows(), m.numRows(), order-1);
+  KronVector auxrow(m.nrows(), m.nrows(), order-1);
   for (int i = 0; i < rows; i++)
     {
       Vector rowi{getRow(i)};
-      KronVector rowikron(rowi, m.numRows(), m.numRows(), order-1);
+      KronVector rowikron(rowi, m.nrows(), m.nrows(), order-1);
       auxrow = rowi; // copy data
       m.multVecKronTrans(rowikron, auxrow);
     }
@@ -79,14 +79,14 @@ SylvMatrix::multRightKron(const SqSylvMatrix &m, int order)
 void
 SylvMatrix::multRightKronTrans(const SqSylvMatrix &m, int order)
 {
-  if (power(m.numRows(), order) != cols)
+  if (power(m.nrows(), order) != cols)
     throw SYLV_MES_EXCEPTION("Wrong number of cols for right kron multiply.");
 
-  KronVector auxrow(m.numRows(), m.numRows(), order-1);
+  KronVector auxrow(m.nrows(), m.nrows(), order-1);
   for (int i = 0; i < rows; i++)
     {
       Vector rowi{getRow(i)};
-      KronVector rowikron(rowi, m.numRows(), m.numRows(), order-1);
+      KronVector rowikron(rowi, m.nrows(), m.nrows(), order-1);
       auxrow = rowi; // copy data
       m.multVecKron(rowikron, auxrow);
     }
@@ -101,7 +101,7 @@ SylvMatrix::eliminateLeft(int row, int col, Vector &x)
     {
       get(row, col) = 0.0;
       double mult = e/d;
-      for (int i = col + 1; i < numCols(); i++)
+      for (int i = col + 1; i < ncols(); i++)
         get(row, i) = get(row, i) - mult*get(col, i);
       x[row] = x[row] - mult*x[col];
     }
@@ -110,7 +110,7 @@ SylvMatrix::eliminateLeft(int row, int col, Vector &x)
       get(row, col) = 0.0;
       get(col, col) = e;
       double mult = d/e;
-      for (int i = col + 1; i < numCols(); i++)
+      for (int i = col + 1; i < ncols(); i++)
         {
           double tx = get(col, i);
           double ty = get(row, i);
@@ -215,7 +215,7 @@ void
 SqSylvMatrix::multInvLeft2(GeneralMatrix &a, GeneralMatrix &b,
                            double &rcond1, double &rcondinf) const
 {
-  if (rows != a.numRows() || rows != b.numRows())
+  if (rows != a.nrows() || rows != b.nrows())
     throw SYLV_MES_EXCEPTION("Wrong dimensions for multInvLeft2.");
 
   // PLU factorization
@@ -225,12 +225,12 @@ SqSylvMatrix::multInvLeft2(GeneralMatrix &a, GeneralMatrix &b,
   lapack_int rows2 = rows, lda = ld;
   dgetrf(&rows2, &rows2, inv.base(), &lda, ipiv.data(), &info);
   // solve a
-  lapack_int acols = a.numCols();
+  lapack_int acols = a.ncols();
   double *abase = a.base();
   dgetrs("N", &rows2, &acols, inv.base(), &lda, ipiv.data(),
          abase, &rows2, &info);
   // solve b
-  lapack_int bcols = b.numCols();
+  lapack_int bcols = b.ncols();
   double *bbase = b.base();
   dgetrs("N", &rows2, &bcols, inv.base(), &lda, ipiv.data(),
          bbase, &rows2, &info);

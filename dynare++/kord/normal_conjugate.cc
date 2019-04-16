@@ -13,15 +13,15 @@ NormalConj::NormalConj(int d)
 
 // |NormalConj| data update constructor
 NormalConj::NormalConj(const ConstTwoDMatrix &ydata)
-  : mu(ydata.numRows()), kappa(ydata.numCols()), nu(ydata.numCols()-1),
-    lambda(ydata.numRows(), ydata.numRows())
+  : mu(ydata.nrows()), kappa(ydata.ncols()), nu(ydata.ncols()-1),
+    lambda(ydata.nrows(), ydata.nrows())
 {
   mu.zeros();
-  for (int i = 0; i < ydata.numCols(); i++)
-    mu.add(1.0/ydata.numCols(), ydata.getCol(i));
+  for (int i = 0; i < ydata.ncols(); i++)
+    mu.add(1.0/ydata.ncols(), ydata.getCol(i));
 
   lambda.zeros();
-  for (int i = 0; i < ydata.numCols(); i++)
+  for (int i = 0; i < ydata.ncols(); i++)
     {
       Vector diff{ydata.getCol(i)};
       diff.add(-1, mu);

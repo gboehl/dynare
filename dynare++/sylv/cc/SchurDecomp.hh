@@ -59,7 +59,7 @@ public:
   int
   getZeroCols() const
   {
-    return ru.numRows();
+    return ru.nrows();
   }
 };
 

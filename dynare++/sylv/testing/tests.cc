@@ -451,7 +451,7 @@ TestRunnable::block_diag(const std::string &aname, double log10norm)
 
   int n = mma.row();
   SqSylvMatrix orig(mma.getData(), n);
-  SimilarityDecomp dec(orig.getData(), orig.numRows(), log10norm);
+  SimilarityDecomp dec(orig.getData(), orig.nrows(), log10norm);
   dec.getB().printInfo();
   SqSylvMatrix check(dec.getQ() * dec.getB());
   check.multRight(dec.getInvQ());

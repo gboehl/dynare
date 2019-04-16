@@ -46,10 +46,10 @@ MMMatrixOut::write(const std::string &fname, const GeneralMatrix &m)
     throw MMException("Cannot open file "+fname+" for writing\n");
 
   fd << "%%%%MatrixMarket matrix array real general" << std::endl
-     << m.numRows() << ' ' << m.numCols() << std::endl
+     << m.nrows() << ' ' << m.ncols() << std::endl
      << std::setprecision(35);
-  for (int i = 0; i < m.numCols(); i++)
-    for (int j = 0; j < m.numRows(); j++)
+  for (int i = 0; i < m.ncols(); i++)
+    for (int j = 0; j < m.nrows(); j++)
       fd << std::setw(40) << m.get(i, j);
   fd.close();
 }

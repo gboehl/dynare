@@ -385,14 +385,14 @@ QuasiTriangular::row_end(const DiagonalBlock &b)
 }
 
 QuasiTriangular::QuasiTriangular(double r, const QuasiTriangular &t)
-  : SqSylvMatrix(t.numRows()), diagonal(getData().base(), t.diagonal)
+  : SqSylvMatrix(t.nrows()), diagonal(getData().base(), t.diagonal)
 {
   setMatrix(r, t);
 }
 
 QuasiTriangular::QuasiTriangular(double r, const QuasiTriangular &t,
                                  double r2, const QuasiTriangular &t2)
-  : SqSylvMatrix(t.numRows()), diagonal(getData().base(), t.diagonal)
+  : SqSylvMatrix(t.nrows()), diagonal(getData().base(), t.diagonal)
 {
   setMatrix(r, t);
   addMatrix(r2, t2);
@@ -409,7 +409,7 @@ QuasiTriangular::QuasiTriangular(const ConstVector &d, int d_size)
 }
 
 QuasiTriangular::QuasiTriangular(const std::string &dummy, const QuasiTriangular &t)
-  : SqSylvMatrix(t.numRows()), diagonal(getData().base(), t.diagonal)
+  : SqSylvMatrix(t.nrows()), diagonal(getData().base(), t.diagonal)
 {
   Vector aux(t.getData());
   blas_int d_size = diagonal.getSize();
@@ -435,13 +435,13 @@ QuasiTriangular::QuasiTriangular(const SchurDecompZero &decomp)
   Vector zv(getData(), 0, zeros);
   zv.zeros();
   // fill right upper part with decomp.getRU()
-  for (int i = 0; i < decomp.getRU().numRows(); i++)
-    for (int j = 0; j < decomp.getRU().numCols(); j++)
+  for (int i = 0; i < decomp.getRU().nrows(); i++)
+    for (int j = 0; j < decomp.getRU().ncols(); j++)
       getData()[(j+decomp.getZeroCols())*decomp.getDim()+i] = decomp.getRU().get(i, j);
 
   // fill right lower part with decomp.getT()
-  for (int i = 0; i < decomp.getT().numRows(); i++)
-    for (int j = 0; j < decomp.getT().numCols(); j++)
+  for (int i = 0; i < decomp.getT().nrows(); i++)
+    for (int j = 0; j < decomp.getT().ncols(); j++)
       getData()[(j+decomp.getZeroCols())*decomp.getDim()+decomp.getZeroCols()+i]
         = decomp.getT().get(i, j);
 

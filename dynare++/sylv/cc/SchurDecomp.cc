@@ -9,9 +9,9 @@
 #include <dynlapack.h>
 
 SchurDecomp::SchurDecomp(const SqSylvMatrix &m)
-  : q(m.numRows())
+  : q(m.nrows())
 {
-  lapack_int rows = m.numRows();
+  lapack_int rows = m.nrows();
   SqSylvMatrix auxt(m);
   lapack_int lda = auxt.getLD(), ldvs = q.getLD();
   lapack_int sdim;
@@ -27,13 +27,13 @@ SchurDecomp::SchurDecomp(const SqSylvMatrix &m)
 }
 
 SchurDecomp::SchurDecomp(const QuasiTriangular &tr)
-  : q(tr.numRows()), t_storage{std::make_unique<QuasiTriangular>(tr)}, t{t_storage.get()}
+  : q(tr.nrows()), t_storage{std::make_unique<QuasiTriangular>(tr)}, t{t_storage.get()}
 {
   q.setUnit();
 }
 
 SchurDecomp::SchurDecomp(QuasiTriangular &tr)
-  : q(tr.numRows()), t{&tr}
+  : q(tr.nrows()), t{&tr}
 {
   q.setUnit();
 }
@@ -41,12 +41,12 @@ SchurDecomp::SchurDecomp(QuasiTriangular &tr)
 int
 SchurDecomp::getDim() const
 {
-  return t->numRows();
+  return t->nrows();
 }
 
 SchurDecompZero::SchurDecompZero(const GeneralMatrix &m)
-  : SchurDecomp(SqSylvMatrix(m, m.numRows()-m.numCols(), 0, m.numCols())),
-    ru(m, 0, 0, m.numRows()-m.numCols(), m.numCols())
+  : SchurDecomp(SqSylvMatrix(m, m.nrows()-m.ncols(), 0, m.ncols())),
+    ru(m, 0, 0, m.nrows()-m.ncols(), m.ncols())
 {
   ru.multRight(getQ());
 }
@@ -54,5 +54,5 @@ SchurDecompZero::SchurDecompZero(const GeneralMatrix &m)
 int
 SchurDecompZero::getDim() const
 {
-  return getT().numRows()+ru.numRows();
+  return getT().nrows()+ru.nrows();
 }

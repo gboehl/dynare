@@ -21,11 +21,11 @@ BlockDiagonal::BlockDiagonal(ConstVector d, int d_size)
 
 BlockDiagonal::BlockDiagonal(const QuasiTriangular &t)
   : QuasiTriangular(t),
-    row_len(t.numRows()), col_len(t.numRows())
+    row_len(t.nrows()), col_len(t.nrows())
 {
-  for (int i = 0; i < t.numRows(); i++)
+  for (int i = 0; i < t.nrows(); i++)
     {
-      row_len[i] = t.numRows();
+      row_len[i] = t.nrows();
       col_len[i] = 0;
     }
 }
@@ -37,7 +37,7 @@ BlockDiagonal::setZerosToRU(diag_iter edge)
 {
   int iedge = edge->getIndex();
   for (int i = 0; i < iedge; i++)
-    for (int j = iedge; j < numCols(); j++)
+    for (int j = iedge; j < ncols(); j++)
       get(i, j) = 0.0;
 }
 

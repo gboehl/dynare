@@ -69,7 +69,7 @@ GeneralSylvester::init()
   pars.rcondA1 = rcond1;
   pars.rcondAI = rcondinf;
   bdecomp = std::make_unique<SchurDecompZero>(ainvb);
-  cdecomp = std::make_unique<SimilarityDecomp>(c.getData(), c.numRows(), *(pars.bs_norm));
+  cdecomp = std::make_unique<SimilarityDecomp>(c.getData(), c.nrows(), *(pars.bs_norm));
   cdecomp->check(pars, c);
   cdecomp->infoToPars(pars);
   if (*(pars.method) == SylvParams::solve_method::recurse)
@@ -108,8 +108,8 @@ GeneralSylvester::check(const ConstVector &ds)
     throw SYLV_MES_EXCEPTION("Cannot run check on system, which is not solved yet.");
 
   // calculate xcheck = A·X+B·X·⊗ⁱC−D
-  SylvMatrix dcheck(d.numRows(), d.numCols());
-  dcheck.multLeft(b.numRows()-b.numCols(), b, d);
+  SylvMatrix dcheck(d.nrows(), d.ncols());
+  dcheck.multLeft(b.nrows()-b.ncols(), b, d);
   dcheck.multRightKron(c, order);
   dcheck.multAndAdd(a, d);
   dcheck.getData().add(-1.0, ds);

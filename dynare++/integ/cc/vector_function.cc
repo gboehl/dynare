@@ -58,20 +58,20 @@ VectorFunctionSet::VectorFunctionSet(VectorFunction &f, int n)
    calculated as lower triangular and yields $\Sigma=AA^T$. */
 
 GaussConverterFunction::GaussConverterFunction(VectorFunction &f, const GeneralMatrix &vcov)
-  : VectorFunction(f), func(&f), A(vcov.numRows(), vcov.numRows()),
+  : VectorFunction(f), func(&f), A(vcov.nrows(), vcov.nrows()),
     multiplier(calcMultiplier())
 {
-  // todo: raise if |A.numRows() != indim()|
+  // todo: raise if |A.nrows() != indim()|
   calcCholeskyFactor(vcov);
 }
 
 /* Here we construct the object in the same way, however we mark the
    function as to be deleted. */
 GaussConverterFunction::GaussConverterFunction(std::unique_ptr<VectorFunction> f, const GeneralMatrix &vcov)
-  : VectorFunction(*f), func_storage{move(f)}, func{func_storage.get()}, A(vcov.numRows(), vcov.numRows()),
+  : VectorFunction(*f), func_storage{move(f)}, func{func_storage.get()}, A(vcov.nrows(), vcov.nrows()),
     multiplier(calcMultiplier())
 {
-  // todo: raise if |A.numRows() != indim()|
+  // todo: raise if |A.nrows() != indim()|
   calcCholeskyFactor(vcov);
 }
 
@@ -120,7 +120,7 @@ GaussConverterFunction::calcCholeskyFactor(const GeneralMatrix &vcov)
 {
   A = vcov;
 
-  lapack_int rows = A.numRows(), lda = A.getLD();
+  lapack_int rows = A.nrows(), lda = A.getLD();
   for (int i = 0; i < rows; i++)
     for (int j = i+1; j < rows; j++)
       A.get(i, j) = 0.0;

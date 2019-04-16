@@ -135,7 +135,7 @@ main(int argc, char **argv)
         vcov.get(it.row(), it.col()) = *it;
 
       // calculate the factor A of vcov, so that A*A^T=VCOV
-      GeneralMatrix A(vcov.numRows(), vcov.numRows());
+      GeneralMatrix A(vcov.nrows(), vcov.nrows());
       SymSchurDecomp ssd(vcov);
       ssd.getFactor(A);
 
@@ -143,9 +143,9 @@ main(int argc, char **argv)
       GaussHermite ghq;
       // construct Smolyak quadrature
       int level = params.max_level;
-      SmolyakQuadrature sq(vcov.numRows(), level, ghq);
+      SmolyakQuadrature sq(vcov.nrows(), level, ghq);
 
-      std::cout << "Dimension:                " << vcov.numRows() << std::endl
+      std::cout << "Dimension:                " << vcov.nrows() << std::endl
                 << "Maximum level:            " << level << std::endl
                 << "Total number of nodes:    " << sq.numEvals(level) << std::endl;
 
@@ -181,7 +181,7 @@ main(int argc, char **argv)
       // dump the results
       int npoints = 0;
       double upscale_weight = 1/(mass-discard_mass);
-      Vector x(vcov.numRows());
+      Vector x(vcov.nrows());
       fout << std::setprecision(16);
       for (int i = 0; i < (int) weights.size(); i++)
         if (weights[i]/mass >= params.discard_weight)

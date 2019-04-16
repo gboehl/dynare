@@ -29,7 +29,7 @@ SimilarityDecomp::getXDim(diag_iter start, diag_iter end,
 {
   int si = start->getIndex();
   int ei = end->getIndex();
-  cols = b->numRows() - ei;
+  cols = b->nrows() - ei;
   rows = ei - si;
 }
 
@@ -44,13 +44,13 @@ SimilarityDecomp::solveX(diag_iter start, diag_iter end,
   int si = start->getIndex();
   int ei = end->getIndex();
 
-  SqSylvMatrix A(const_cast<const BlockDiagonal &>(*b), si, si, X.numRows());
-  SqSylvMatrix B(const_cast<const BlockDiagonal &>(*b), ei, ei, X.numCols());
-  GeneralMatrix C(const_cast<const BlockDiagonal &>(*b), si, ei, X.numRows(), X.numCols());
+  SqSylvMatrix A(const_cast<const BlockDiagonal &>(*b), si, si, X.nrows());
+  SqSylvMatrix B(const_cast<const BlockDiagonal &>(*b), ei, ei, X.ncols());
+  GeneralMatrix C(const_cast<const BlockDiagonal &>(*b), si, ei, X.nrows(), X.ncols());
 
   lapack_int isgn = -1;
-  lapack_int m = A.numRows();
-  lapack_int n = B.numRows();
+  lapack_int m = A.nrows();
+  lapack_int n = B.nrows();
   lapack_int lda = A.getLD(), ldb = B.getLD();
   double scale;
   lapack_int info;
@@ -77,7 +77,7 @@ SimilarityDecomp::updateTransform(diag_iter start, diag_iter end,
   int si = start->getIndex();
   int ei = end->getIndex();
 
-  SqSylvMatrix iX(q->numRows());
+  SqSylvMatrix iX(q->nrows());
   iX.setUnit();
   iX.place(X, si, ei);
   invq->GeneralMatrix::multLeft(iX);

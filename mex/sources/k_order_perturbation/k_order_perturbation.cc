@@ -64,8 +64,8 @@ copy_derivatives(mxArray *destin, const Symmetry &sym, const FGSContainer &deriv
 {
   const FGSTensor &x = derivs.get(sym);
   auto x_unfolded = x.unfold();
-  int n = x_unfolded->numRows();
-  int m = x_unfolded->numCols();
+  int n = x_unfolded->nrows();
+  int m = x_unfolded->ncols();
   mxArray *tmp = mxCreateDoubleMatrix(n, m, mxREAL);
   std::copy_n(x_unfolded->getData().base(), n*m, mxGetPr(tmp));
   mxSetField(destin, 0, fieldname, tmp);
@@ -219,7 +219,7 @@ extern "C" {
         for (int i = 0; i <= kOrder; i++)
           {
             const FFSTensor &t = fdr.get(Symmetry{i});
-            mxArray *tmp = mxCreateDoubleMatrix(t.numRows(), t.numCols(), mxREAL);
+            mxArray *tmp = mxCreateDoubleMatrix(t.nrows(), t.ncols(), mxREAL);
             const ConstVector &vec = t.getData();
             assert(vec.skip() == 1);
             std::copy_n(vec.base(), vec.length(), mxGetPr(tmp));

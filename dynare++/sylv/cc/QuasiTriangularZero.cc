@@ -50,7 +50,7 @@ QuasiTriangularZero::QuasiTriangularZero(const std::string &dummy, const QuasiTr
 
 QuasiTriangularZero::QuasiTriangularZero(const SchurDecompZero &decomp)
   : QuasiTriangular(decomp.getT().getData(),
-                    decomp.getT().numRows()),
+                    decomp.getT().nrows()),
     nz(decomp.getZeroCols()),
     ru(decomp.getRU())
 {
@@ -124,8 +124,8 @@ QuasiTriangularZero::multaVecTrans(Vector &x, const ConstVector &b) const
 void
 QuasiTriangularZero::multLeftOther(GeneralMatrix &a) const
 {
-  GeneralMatrix a1(a, 0, 0, nz, a.numCols());
-  GeneralMatrix a2(a, nz, 0, a.numRows()-nz, a.numCols());
+  GeneralMatrix a1(a, 0, 0, nz, a.ncols());
+  GeneralMatrix a2(a, nz, 0, a.nrows()-nz, a.ncols());
   a1.mult(ru, a2);
   QuasiTriangular::multLeftOther(a2);
 }

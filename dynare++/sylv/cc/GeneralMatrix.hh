@@ -88,12 +88,12 @@ public:
     return data[j*ld+i];
   }
   int
-  numRows() const
+  nrows() const
   {
     return rows;
   }
   int
-  numCols() const
+  ncols() const
   {
     return cols;
   }
@@ -237,12 +237,12 @@ public:
     return data[j*ld+i];
   }
   int
-  numRows() const
+  nrows() const
   {
     return rows;
   }
   int
-  numCols() const
+  ncols() const
   {
     return cols;
   }
@@ -571,10 +571,10 @@ protected:
   bool conv;
 public:
   SVDDecomp(const GeneralMatrix &A)
-    : minmn(std::min<int>(A.numRows(), A.numCols())),
+    : minmn(std::min<int>(A.nrows(), A.ncols())),
       sigma(minmn),
-      U(A.numRows(), A.numRows()),
-      VT(A.numCols(), A.numCols()),
+      U(A.nrows(), A.nrows()),
+      VT(A.ncols(), A.ncols()),
       conv(false)
   {
     construct(A);

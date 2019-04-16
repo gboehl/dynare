@@ -26,7 +26,7 @@ class TwoDMatrix;
 
 /* We make two obvious constructors, and then a constructor making
    submatrix of subsequent columns. We also rename
-   |GeneralMatrix::numRows()| and |GeneralMatrix::numCols()|. */
+   |GeneralMatrix::nrows()| and |GeneralMatrix::ncols()|. */
 
 class ConstTwoDMatrix : public ConstGeneralMatrix
 {
@@ -57,16 +57,6 @@ public:
   ConstTwoDMatrix &operator=(const ConstTwoDMatrix &v) = delete;
   ConstTwoDMatrix &operator=(ConstTwoDMatrix &&v) = delete;
 
-  int
-  nrows() const
-  {
-    return numRows();
-  }
-  int
-  ncols() const
-  {
-    return numCols();
-  }
   void writeMat(mat_t *fd, const std::string &vname) const;
 };
 
@@ -105,12 +95,12 @@ public:
   }
   // Select only some columns (with data copy)
   TwoDMatrix(const TwoDMatrix &m, int first_col, int num)
-    : GeneralMatrix(m, 0, first_col, m.numRows(), num)
+    : GeneralMatrix(m, 0, first_col, m.nrows(), num)
   {
   }
   // Select only some columns (with data sharing)
   TwoDMatrix(TwoDMatrix &m, int first_col, int num)
-    : GeneralMatrix(m, 0, first_col, m.numRows(), num)
+    : GeneralMatrix(m, 0, first_col, m.nrows(), num)
   {
   }
   // Select only some rows (with data copy)
@@ -145,17 +135,6 @@ public:
   TwoDMatrix &operator=(const TwoDMatrix &m) = default;
   TwoDMatrix &operator=(TwoDMatrix &&m) = default;
   TwoDMatrix &operator=(const ConstTwoDMatrix &m);
-
-  int
-  nrows() const
-  {
-    return numRows();
-  }
-  int
-  ncols() const
-  {
-    return numCols();
-  }
 
   // |TwoDMatrix| row methods declarations
   void copyRow(int from, int to);

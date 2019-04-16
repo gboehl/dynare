@@ -75,11 +75,11 @@ GeneralMatrix::getCol(int col) const
 void
 GeneralMatrix::place(const ConstGeneralMatrix &m, int i, int j)
 {
-  if (i + m.numRows() > numRows()
-      || j + m.numCols() > numCols())
+  if (i + m.nrows() > nrows()
+      || j + m.ncols() > ncols())
     throw SYLV_MES_EXCEPTION("Bad submatrix placement, matrix dimensions exceeded.");
 
-  GeneralMatrix tmpsub(*this, i, j, m.numRows(), m.numCols());
+  GeneralMatrix tmpsub(*this, i, j, m.nrows(), m.ncols());
   tmpsub.copy(m);
 }
 
@@ -120,14 +120,14 @@ GeneralMatrix::multAndAdd(const ConstGeneralMatrix &a, const std::string &dum1,
 void
 GeneralMatrix::addOuter(const ConstVector &a, double mult)
 {
-  if (numRows() != numCols())
+  if (nrows() != ncols())
     throw SYLV_MES_EXCEPTION("Matrix is not square in GeneralMatrix::addOuter.");
-  if (numRows() != a.length())
+  if (nrows() != a.length())
     throw SYLV_MES_EXCEPTION("Wrong length of a vector in GeneralMatrix::addOuter.");
 
   // since BLAS dsyr (symmetric rank 1 update) assumes symmetricity, we do this manually
-  for (int i = 0; i < numRows(); i++)
-    for (int j = i; j < numRows(); j++)
+  for (int i = 0; i < nrows(); i++)
+    for (int j = i; j < nrows(); j++)
       {
         double s = mult*a[i]*a[j];
         get(i, j) = get(i, j) + s;
@@ -215,7 +215,7 @@ GeneralMatrix::mult(double a)
 void
 GeneralMatrix::add(double a, const ConstGeneralMatrix &m)
 {
-  if (m.numRows() != rows || m.numCols() != cols)
+  if (m.nrows() != rows || m.ncols() != cols)
     throw SYLV_MES_EXCEPTION("Matrix has different size in GeneralMatrix::add.");
 
   if (ld == rows && m.ld == m.rows)
@@ -229,7 +229,7 @@ GeneralMatrix::add(double a, const ConstGeneralMatrix &m)
 void
 GeneralMatrix::add(double a, const ConstGeneralMatrix &m, const std::string &dum)
 {
-  if (m.numRows() != cols || m.numCols() != rows)
+  if (m.nrows() != cols || m.ncols() != rows)
     throw SYLV_MES_EXCEPTION("Matrix has different size in GeneralMatrix::add.");
 
   for (int i = 0; i < rows; i++)
@@ -250,23 +250,23 @@ GeneralMatrix::gemm(const std::string &transa, const ConstGeneralMatrix &a,
                     const std::string &transb, const ConstGeneralMatrix &b,
                     double alpha, double beta)
 {
-  int opa_rows = a.numRows();
-  int opa_cols = a.numCols();
+  int opa_rows = a.nrows();
+  int opa_cols = a.ncols();
   if (transa == "T")
     {
-      opa_rows = a.numCols();
-      opa_cols = a.numRows();
+      opa_rows = a.ncols();
+      opa_cols = a.nrows();
     }
-  int opb_rows = b.numRows();
-  int opb_cols = b.numCols();
+  int opb_rows = b.nrows();
+  int opb_cols = b.ncols();
   if (transb == "T")
     {
-      opb_rows = b.numCols();
-      opb_cols = b.numRows();
+      opb_rows = b.ncols();
+      opb_cols = b.nrows();
     }
 
-  if (opa_rows != numRows()
-      || opb_cols != numCols()
+  if (opa_rows != nrows()
+      || opb_cols != ncols()
       || opa_cols != opb_rows)
     throw SYLV_MES_EXCEPTION("Wrong dimensions for matrix multiplication.");
 
@@ -279,7 +279,7 @@ GeneralMatrix::gemm(const std::string &transa, const ConstGeneralMatrix &a,
   if (lda > 0 && ldb > 0 && ldc > 0)
     dgemm(transa.c_str(), transb.c_str(), &m, &n, &k, &alpha, a.data.base(), &lda,
           b.data.base(), &ldb, &beta, data.base(), &ldc);
-  else if (numRows()*numCols() > 0)
+  else if (nrows()*ncols() > 0)
     {
       if (beta == 0.0)
         zeros();
@@ -359,7 +359,7 @@ double
 ConstGeneralMatrix::getNormInf() const
 {
   double norm = 0.0;
-  for (int i = 0; i < numRows(); i++)
+  for (int i = 0; i < nrows(); i++)
     {
       double normi = getRow(i).getNorm1();
       norm = std::max(normi, norm);
@@ -371,7 +371,7 @@ double
 ConstGeneralMatrix::getNorm1() const
 {
   double norm = 0.0;
-  for (int j = 0; j < numCols(); j++)
+  for (int j = 0; j < ncols(); j++)
     {
       double normj = getCol(j).getNorm1();
       norm = std::max(normj, norm);
@@ -444,14 +444,14 @@ ConstGeneralMatrix::multInvLeft(const std::string &trans, int mrows, int mcols, 
 void
 ConstGeneralMatrix::multInvLeft(GeneralMatrix &m) const
 {
-  multInvLeft("N", m.numRows(), m.numCols(), m.getLD(), m.getData().base());
+  multInvLeft("N", m.nrows(), m.ncols(), m.getLD(), m.getData().base());
 }
 
 /* m = inv(this')*m */
 void
 ConstGeneralMatrix::multInvLeftTrans(GeneralMatrix &m) const
 {
-  multInvLeft("T", m.numRows(), m.numCols(), m.getLD(), m.getData().base());
+  multInvLeft("T", m.nrows(), m.ncols(), m.getLD(), m.getData().base());
 }
 
 /* d = inv(this)*d */
@@ -477,8 +477,8 @@ ConstGeneralMatrix::multInvLeftTrans(Vector &d) const
 bool
 ConstGeneralMatrix::isFinite() const
 {
-  for (int i = 0; i < numRows(); i++)
-    for (int j = 0; j < numCols(); j++)
+  for (int i = 0; i < nrows(); i++)
+    for (int j = 0; j < ncols(); j++)
       if (!std::isfinite(get(i, j)))
         return false;
   return true;
@@ -487,8 +487,8 @@ ConstGeneralMatrix::isFinite() const
 bool
 ConstGeneralMatrix::isZero() const
 {
-  for (int i = 0; i < numRows(); i++)
-    for (int j = 0; j < numCols(); j++)
+  for (int i = 0; i < nrows(); i++)
+    for (int j = 0; j < ncols(); j++)
       if (get(i, j) != 0.0)
         return false;
   return true;
@@ -525,8 +525,8 @@ SVDDecomp::construct(const GeneralMatrix &A)
   // make copy of the matrix
   GeneralMatrix AA(A);
 
-  lapack_int m = AA.numRows();
-  lapack_int n = AA.numCols();
+  lapack_int m = AA.nrows();
+  lapack_int n = AA.ncols();
   double *a = AA.base();
   lapack_int lda = AA.getLD();
   double *s = sigma.base();
@@ -556,7 +556,7 @@ SVDDecomp::construct(const GeneralMatrix &A)
 void
 SVDDecomp::solve(const ConstGeneralMatrix &B, GeneralMatrix &X) const
 {
-  if (B.numRows() != U.numRows())
+  if (B.nrows() != U.nrows())
     throw SYLV_MES_EXCEPTION("Incompatible number of rows ");
 
   /* Reciprocal condition number for determination of zeros in the
@@ -568,9 +568,9 @@ SVDDecomp::solve(const ConstGeneralMatrix &B, GeneralMatrix &X) const
   while (nz < minmn && sigma[minmn-1-nz] < rcond*sigma[0])
     nz++;
   // take relevant B for sigma inversion
-  int m = U.numRows();
-  int n = VT.numCols();
-  GeneralMatrix Bprime(transpose(U) * B, m-minmn, 0, minmn-nz, B.numCols());
+  int m = U.nrows();
+  int n = VT.ncols();
+  GeneralMatrix Bprime(transpose(U) * B, m-minmn, 0, minmn-nz, B.ncols());
   // solve sigma
   for (int i = 0; i < minmn-nz; i++)
     Bprime.getRow(i).mult(1.0/sigma[i]);

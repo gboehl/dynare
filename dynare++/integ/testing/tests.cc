@@ -31,7 +31,7 @@ class MomentFunction : public VectorFunction
   int k;
 public:
   MomentFunction(const GeneralMatrix &inD, int kk)
-    : VectorFunction(inD.numRows(), UFSTensor::calcMaxOffset(inD.numRows(), kk)),
+    : VectorFunction(inD.nrows(), UFSTensor::calcMaxOffset(inD.nrows(), kk)),
       D(inD), k(kk)
   {
   }
@@ -239,7 +239,7 @@ TestRunnable::smolyak_normal_moments(const GeneralMatrix &m, int imom, int level
   GeneralMatrix msq(m * transpose(m));
 
   // make vector function
-  int dim = m.numRows();
+  int dim = m.nrows();
   TensorPower tp(dim, imom);
   GaussConverterFunction func(tp, msq);
 
@@ -267,7 +267,7 @@ TestRunnable::product_normal_moments(const GeneralMatrix &m, int imom, int level
   GeneralMatrix msq(m * transpose(m));
 
   // make vector function
-  int dim = m.numRows();
+  int dim = m.nrows();
   TensorPower tp(dim, imom);
   GaussConverterFunction func(tp, msq);
 

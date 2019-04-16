@@ -46,12 +46,12 @@ public:
   int
   getM() const
   {
-    return c.numRows();
+    return c.nrows();
   }
   int
   getN() const
   {
-    return a.numRows();
+    return a.nrows();
   }
   const double *
   getResult() const

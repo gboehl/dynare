@@ -12,14 +12,14 @@
 #include <vector>
 
 SymSchurDecomp::SymSchurDecomp(const ConstGeneralMatrix &mata)
-  : lambda(mata.numRows()), q(mata.numRows())
+  : lambda(mata.nrows()), q(mata.nrows())
 {
   // check mata is square
-  if (mata.numRows() != mata.numCols())
+  if (mata.nrows() != mata.ncols())
     throw SYLV_MES_EXCEPTION("Matrix is not square in SymSchurDecomp constructor");
 
   // prepare for dsyevr
-  lapack_int n = mata.numRows();
+  lapack_int n = mata.nrows();
   GeneralMatrix tmpa(mata);
   double *a = tmpa.base();
   lapack_int lda = tmpa.getLD();
@@ -63,15 +63,15 @@ SymSchurDecomp::SymSchurDecomp(const ConstGeneralMatrix &mata)
 void
 SymSchurDecomp::getFactor(GeneralMatrix &f) const
 {
-  if (f.numRows() != q.numRows())
+  if (f.nrows() != q.nrows())
     throw SYLV_MES_EXCEPTION("Wrong dimension of factor matrix in SymSchurDecomp::getFactor");
-  if (f.numRows() != f.numCols())
+  if (f.nrows() != f.ncols())
     throw SYLV_MES_EXCEPTION("Factor matrix is not square in SymSchurDecomp::getFactor");
   if (!isPositiveSemidefinite())
     throw SYLV_MES_EXCEPTION("Symmetric decomposition not positive semidefinite in SymSchurDecomp::getFactor");
 
   f = q;
-  for (int i = 0; i < f.numCols(); i++)
+  for (int i = 0; i < f.ncols(); i++)
     {
       Vector fi{f.getCol(i)};
       fi.mult(std::sqrt(lambda[i]));
