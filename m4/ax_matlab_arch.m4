@@ -1,7 +1,7 @@
 dnl matlabarch.m4 --- check for MATLAB machine architecture.
 dnl
-dnl Copyright (C) 2002, 2003 Ralph Schleicher
-dnl Copyright (C) 2009 Dynare Team
+dnl Copyright © 2002, 2003 Ralph Schleicher
+dnl Copyright © 2009 Dynare Team
 dnl
 dnl This program is free software; you can redistribute it and/or
 dnl modify it under the terms of the GNU General Public License as

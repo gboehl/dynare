@@ -1,7 +1,7 @@
 ;;; dynare.el --- major mode for editing Dynare mod files
 
-;; Copyright (C) 2010 Yannick Kalantzis
-;; Copyright (C) 2019 Dynare Team
+;; Copyright © 2010 Yannick Kalantzis
+;; Copyright © 2019 Dynare Team
 ;;
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by

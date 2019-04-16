@@ -5,7 +5,7 @@ dnl
 dnl AX_SLICOT([matlab])
 dnl AX_SLICOT([octave])
 dnl
-dnl Copyright (C) 2012 Dynare Team
+dnl Copyright © 2012 Dynare Team
 dnl
 dnl This file is part of Dynare.
 dnl

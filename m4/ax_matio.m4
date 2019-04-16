@@ -1,6 +1,6 @@
 dnl Detect the MATIO Library.
 dnl
-dnl Copyright (C) 2012-2014 Dynare Team
+dnl Copyright © 2012-2014 Dynare Team
 dnl
 dnl This file is part of Dynare.
 dnl

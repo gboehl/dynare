@@ -1,6 +1,6 @@
 /* -*- C++ -*- */
 %{
-// Copyright (C) 2007-2011, Ondra Kamenik
+// Copyright © 2007-2011, Ondra Kamenik
 
 #include "location.hh"
 #include "csv_tab.hh"

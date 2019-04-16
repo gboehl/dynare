@@ -1,5 +1,5 @@
 // -*- C++ -*-
-// Copyright (C) 2006-2011, Ondra Kamenik
+// Copyright © 2006-2011, Ondra Kamenik
 
 %{
 #include "location.hh"

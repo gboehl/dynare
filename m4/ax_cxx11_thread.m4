@@ -1,6 +1,6 @@
 dnl Adds flags needed to compile programs using C++11 threads
 
-dnl Copyright (C) 2019 Dynare Team
+dnl Copyright © 2019 Dynare Team
 dnl
 dnl This file is part of Dynare.
 dnl
