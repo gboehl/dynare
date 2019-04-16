@@ -3,19 +3,19 @@
 // Sparse tensor.
 
 /* Here we declare a sparse full and general symmetry tensors with the
-   multidimensional index along columns. We implement them as a |multimap|
-   associating to each sequence of coordinates |IntSequence| a set of
-   pairs (row, number). This is very convenient but not optimal in terms
-   of memory consumption. So the implementation can be changed.
+   multidimensional index along columns. We implement them as a std::multimap
+   associating to each sequence of coordinates IntSequence a set of pairs (row,
+   number). This is very convenient but not optimal in terms of memory
+   consumption. So the implementation can be changed.
 
-   The current |multimap| implementation allows insertions.  Another
+   The current std::multimap implementation allows insertions. Another
    advantage of this approach is that we do not need to calculate column
-   numbers from the |IntSequence|, since the column is accessed directly
-   via the key which is |IntSequence|.
+   numbers from the IntSequence, since the column is accessed directly via the
+   key which is IntSequence.
 
    The only operation we need to do with the full symmetry sparse tensor
    is a left multiplication of a row oriented single column tensor. The
-   result of such operation is a column of the same size as the sparse
+   result of such an operation is a column of the same size as the sparse
    tensor. Other important operations are slicing operations. We need to
    do sparse and dense slices of full symmetry sparse tensors. In fact,
    the only constructor of general symmetry sparse tensor is slicing from
@@ -31,7 +31,6 @@
 
 #include <map>
 
-// |ltseq| predicate
 struct ltseq
 {
   bool
@@ -41,9 +40,9 @@ struct ltseq
   }
 };
 
-/* This is a super class of both full symmetry and general symmetry
-   sparse tensors. It contains a |multimap| and implements insertions. It
-   tracks maximum and minimum row, for which there is an item. */
+/* This is a super class of both full symmetry and general symmetry sparse
+   tensors. It contains a std::multimap and implements insertions. It tracks
+   maximum and minimum row, for which there is an item. */
 
 class SparseTensor
 {
@@ -109,9 +108,9 @@ public:
   bool isFinite() const;
 };
 
-/* This is a full symmetry sparse tensor. It implements
-   |multColumnAndAdd| and in addition to |sparseTensor|, it has |nv|
-   (number of variables), and symmetry (basically it is a dimension). */
+/* This is a full symmetry sparse tensor. It implements multColumnAndAdd() and,
+   in addition to SparseTensor, it has ‘nv’ (number of variables) and symmetry
+   (basically it is a dimension). */
 
 class FSSparseTensor : public SparseTensor
 {
@@ -135,10 +134,10 @@ public:
   void print() const;
 };
 
-/* This is a general symmetry sparse tensor. It has |TensorDimens| and
-   can be constructed as a slice of the full symmetry sparse tensor. The
-   slicing constructor takes the same form as the slicing |FGSTensor|
-   constructor from full symmetry sparse tensor. */
+/* This is a general symmetry sparse tensor. It has TensorDimens and can be
+   constructed as a slice of the full symmetry sparse tensor. The slicing
+   constructor takes the same form as the slicing FGSTensor constructor from
+   full symmetry sparse tensor. */
 
 class GSSparseTensor : public SparseTensor
 {

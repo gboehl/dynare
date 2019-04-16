@@ -2,36 +2,37 @@
 
 // Row-wise full symmetry tensor.
 
-/* Here we define classes for full symmetry tensors with the
-   multidimensional index identified with rows. The primary usage is for
-   storage of data coming from (or from a sum of)
-   $$\prod_{m=1}^l\left[g_{s^{\vert c_m\vert}}\right]^{\gamma_m}_{c_m(\alpha)}$$
-   where $\alpha$ coming from a multidimensional index go through some
-   set $S$ and $c$ is some equivalence. So we model a tensor of the form:
-   $$\left[\prod_{m=1}^l
-   \left[g_{s^{\vert c_m\vert}}\right]^{\gamma_m}_{c_m(\alpha)}
-   \right]_S^{\gamma_1\ldots\gamma_l}$$
-   Since all $\gamma_1,\ldots,\gamma_l$ correspond to the same variable,
-   the tensor is fully symmetric.  The set of indices $S$ cannot be very
-   large and sometimes it is only one element. This case is handled in a
-   special subclass.
+/* Here we define classes for full symmetry tensors with the multidimensional
+   index identified with rows. The primary usage is for storage of data coming
+   from (or from a sum of)
+      ₗ
+      ∏  [g_(s^|cₘ|)]_cₘ(α)^γₘ
+     ᵐ⁼¹
+   where α comes from a multidimensional index that goes through some set S,
+   and cₘ is some equivalence class. So we model a tensor of the form:
 
-   We provide both folded and unfolded versions. Their logic is perfectly
-   the same as in |UFSTensor| and |FFSTensor| with two exceptions. One
-   has been already mentioned, the multidimensional index is along the
-   rows. The second are conversions between the two types. Since this
-   kind of tensor is used to multiply (from the right) a tensor whose
-   multidimensional index is identified with columns, we will need a
-   different way of a conversion. If the multiplication of two folded
-   tensors is to be equivalent with multiplication of two unfolded, the
-   folding of the right tensor must sum all equivalent elements since
-   they are multiplied with the same number from the folded
-   tensor. (Equivalent here means all elements of unfolded tensor
+     ⎡ ₗ                       ⎤
+     ⎢ ∏  [g_(s^|cₘ|)]_cₘ(α)^γₘ⎥
+     ⎣ᵐ⁼¹                      ⎦S^γ₁…γₗ
+
+   Since all γ₁…γₗ correspond to the same variable, the tensor is fully
+   symmetric. The set of indices S cannot be very large and sometimes it is
+   only one element. This case is handled in a special subclass.
+
+   We provide both folded and unfolded versions. Their logic is perfectly the
+   same as in UFSTensor and FFSTensor with two exceptions. One has been already
+   mentioned, the multidimensional index is along the rows. The second are
+   conversions between the two types. Since this kind of tensor is used to
+   multiply (from the right) a tensor whose multidimensional index is
+   identified with columns, we will need a different way of a conversion. If
+   the multiplication of two folded tensors is to be equivalent with
+   multiplication of two unfolded, the folding of the right tensor must sum all
+   equivalent elements since they are multiplied with the same number from the
+   folded tensor. (Equivalent here means all elements of unfolded tensor
    corresponding to one element in folded tensor.) For this reason, it is
    necessary to calculate a column number from the given sequence, so we
-   implement |getOffset|. Process of unfolding is not used, so we
-   implemented it so that unfolding and then folding a tensor would yield
-   the same data. */
+   implement getOffset(). Process of unfolding is not used, so we implemented
+   it so that unfolding and then folding a tensor would yield the same data. */
 
 #ifndef RFS_TENSOR_H
 #define RFS_TENSOR_H
@@ -40,7 +41,7 @@
 #include "fs_tensor.hh"
 #include "symmetry.hh"
 
-/* This is straightforward and very similar to |UFSTensor|. */
+/* This is straightforward and very similar to UFSTensor. */
 
 class FRTensor;
 class URTensor : public UTensor
@@ -75,7 +76,7 @@ public:
   }
 };
 
-/* This is straightforward and very similar to |FFSTensor|. */
+/* This is straightforward and very similar to FFSTensor. */
 
 class FRTensor : public FTensor
 {
@@ -113,12 +114,11 @@ public:
   }
 };
 
-/* The following class represents specialization of |URTensor| coming
-   from Kronecker multiplication of a few vectors. So the resulting
-   row-oriented tensor has one column. We provide two constructors,
-   one constructs the tensor from a few vectors stored as
-   |vector<ConstVector>|. The second makes the Kronecker power of one
-   given vector. */
+/* The following class represents specialization of URTensor coming from
+   Kronecker multiplication of a few vectors. So the resulting row-oriented
+   tensor has one column. We provide two constructors, one constructs the
+   tensor from a few vectors stored as std::vector<ConstVector>. The second
+   makes the Kronecker power of one given vector. */
 
 class URSingleTensor : public URTensor
 {
@@ -135,11 +135,10 @@ public:
   std::unique_ptr<FTensor> fold() const override;
 };
 
-/* This class represents one column row-oriented tensor. The only way
-   how to construct it is from the |URSingleTensor| or from the
-   scratch. The folding algorithm is the same as folding of general
-   |URTensor|. Only its implementation is different, since we do not copy
-   rows, but only elements. */
+/* This class represents one column row-oriented tensor. The only way to
+   construct it is from URSingleTensor or from scratch. The folding algorithm
+   is the same as folding of general URTensor. Only its implementation is
+   different, since we do not copy rows, but only elements. */
 
 class FRSingleTensor : public FRTensor
 {

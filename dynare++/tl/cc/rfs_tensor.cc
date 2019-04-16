@@ -4,11 +4,10 @@
 #include "kron_prod.hh"
 #include "tl_exception.hh"
 
-// |FRTensor| conversion from unfolded
-/* The conversion from unfolded to folded sums up all data from
-   unfolded corresponding to one folded index. So we go through all the
-   rows in the unfolded tensor |ut|, make an index of the folded tensor
-   by sorting the coordinates, and add the row. */
+/* The conversion from unfolded to folded sums up all data from unfolded
+   corresponding to one folded index. So we go through all the rows in the
+   unfolded tensor ‘ut’, make an index of the folded tensor by sorting the
+   coordinates, and add the row. */
 FRTensor::FRTensor(const URTensor &ut)
   : FTensor(indor::along_row, IntSequence(ut.dimen(), ut.nvar()),
             FFSTensor::calcMaxOffset(ut.nvar(), ut.dimen()), ut.ncols(),
@@ -25,15 +24,13 @@ FRTensor::FRTensor(const URTensor &ut)
     }
 }
 
-/* Here just make a new instance and return the reference. */
-
 std::unique_ptr<UTensor>
 FRTensor::unfold() const
 {
   return std::make_unique<URTensor>(*this);
 }
 
-/* Incrementing is easy. The same as for |FFSTensor|. */
+/* Incrementing is easy. The same as for FFSTensor. */
 
 void
 FRTensor::increment(IntSequence &v) const
@@ -45,8 +42,6 @@ FRTensor::increment(IntSequence &v) const
   v.monotone();
 }
 
-/* Decrement calls static |FTensor::decrement|. */
-
 void
 FRTensor::decrement(IntSequence &v) const
 {
@@ -56,7 +51,6 @@ FRTensor::decrement(IntSequence &v) const
   FTensor::decrement(v, nv);
 }
 
-// |URTensor| conversion from folded
 /* Here we convert folded full symmetry tensor to unfolded. We copy all
    columns of folded tensor to unfolded and leave other columns
    (duplicates) zero. In this way, if the unfolded tensor is folded back,
@@ -75,15 +69,11 @@ URTensor::URTensor(const FRTensor &ft)
     }
 }
 
-/* Here we just return a reference to new instance of folded tensor. */
-
 std::unique_ptr<FTensor>
 URTensor::fold() const
 {
   return std::make_unique<FRTensor>(*this);
 }
-
-/* Here we just call |UTensor| respective static methods. */
 
 void
 URTensor::increment(IntSequence &v) const
@@ -112,8 +102,8 @@ URTensor::getOffset(const IntSequence &v) const
   return UTensor::getOffset(v, nv);
 }
 
-/* Here we construct $v_1\otimes v_2\otimes\ldots\otimes v_n$, where
-   $v_1,v_2,\ldots,v_n$ are stored in |vector<ConstVector>|. */
+/* Here we construct v₁⊗v₂⊗…⊗vₙ, where v₁,v₂,…,vₙ are stored in a
+   std::vector<ConstVector>. */
 
 URSingleTensor::URSingleTensor(const std::vector<ConstVector> &cols)
   : URTensor(1, cols[0].length(), cols.size())
@@ -134,8 +124,7 @@ URSingleTensor::URSingleTensor(const std::vector<ConstVector> &cols)
   KronProd::kronMult(cols[0], ConstVector(*last), getData());
 }
 
-/* Here we construct $v\otimes\ldots\otimes v$, where the number of $v$
-   copies is |d|. */
+/* Here we construct v⊗…⊗v, where ‘d’ gives the number of copies of v. */
 
 URSingleTensor::URSingleTensor(const ConstVector &v, int d)
   : URTensor(1, v.length(), d)
@@ -156,19 +145,15 @@ URSingleTensor::URSingleTensor(const ConstVector &v, int d)
   KronProd::kronMult(v, ConstVector(*last), getData());
 }
 
-/* Here we construct |FRSingleTensor| from |URSingleTensor| and return
-   its reference. */
-
 std::unique_ptr<FTensor>
 URSingleTensor::fold() const
 {
   return std::make_unique<FRSingleTensor>(*this);
 }
 
-// |FRSingleTensor| conversion from unfolded
-/* The conversion from unfolded |URSingleTensor| to folded
-   |FRSingleTensor| is completely the same as conversion from |URTensor|
-   to |FRTensor|, only we do not copy rows but elements. */
+/* The conversion from unfolded URSingleTensor to folded FRSingleTensor is
+   exactly the same as the conversion from URTensor to FRTensor, except that we
+   do not copy rows but elements. */
 FRSingleTensor::FRSingleTensor(const URSingleTensor &ut)
   : FRTensor(1, ut.nvar(), ut.dimen())
 {

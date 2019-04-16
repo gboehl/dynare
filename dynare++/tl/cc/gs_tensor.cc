@@ -161,7 +161,7 @@ FGSTensor::FGSTensor(const UGSTensor &ut)
     }
 }
 
-// FGSTensor slicing from FSSparseTensor
+// FGSTensor slicing constructor from FSSparseTensor
 /* Here is the code of slicing constructor from the sparse tensor. We
    first calculate coordinates of first and last index of the slice
    within the sparse tensor (these are ‘lb’ and ‘ub’), and then we

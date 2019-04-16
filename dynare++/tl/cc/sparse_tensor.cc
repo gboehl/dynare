@@ -9,7 +9,7 @@
 #include <cmath>
 
 /* This is straightforward. Before we insert anything, we do a few
-   checks. Then we reset |first_nz_row| and |last_nz_row| if necessary. */
+   checks. Then we reset ‘first_nz_row’ and ‘last_nz_row’ if necessary. */
 
 void
 SparseTensor::insert(IntSequence key, int r, double c)
@@ -23,7 +23,7 @@ SparseTensor::insert(IntSequence key, int r, double c)
 
   auto first_pos = m.lower_bound(key);
 
-  // check that pair |key| and |r| is unique
+  // check that pair ‘key’ and ‘r’ is unique
   auto last_pos = m.upper_bound(key);
   for (auto it = first_pos; it != last_pos; ++it)
     TL_RAISE_IF(it->second.first == r, "Duplicate <key, r> insertion in SparseTensor::insert");
@@ -35,7 +35,7 @@ SparseTensor::insert(IntSequence key, int r, double c)
     last_nz_row = r;
 }
 
-/* This returns true if all items are finite (not Nan nor Inf). */
+/* This returns true if all items are finite (not NaN nor ∞). */
 
 bool
 SparseTensor::isFinite() const
@@ -130,17 +130,17 @@ FSSparseTensor::insert(IntSequence key, int r, double c)
   SparseTensor::insert(std::move(key), r, c);
 }
 
-/* We go through the tensor |t| which is supposed to have single
-   column. If the item of |t| is nonzero, we make a key by sorting the
+/* We go through the tensor ‘t’ which is supposed to have single
+   column. If the item of ‘t’ is nonzero, we make a key by sorting the
    index, and then we go through all items having the same key (it is its
    column), obtain the row number and the element, and do the
    multiplication.
 
-   The test for non-zero is |a != 0.0|, since there will be items which
+   The test for non-zero is ‘a != 0.0’, since there will be items which
    are exact zeros.
 
    I have also tried to make the loop through the sparse tensor outer, and
-   find index of tensor |t| within the loop. Surprisingly, it is little
+   find index of tensor ‘t’ within the loop. Surprisingly, it is little
    slower (for monomial tests with probability of zeros equal 0.3). But
    everything depends how filled is the sparse tensor. */
 
@@ -164,7 +164,7 @@ FSSparseTensor::multColumnAndAdd(const Tensor &t, Vector &v) const
           IntSequence key(it.getCoor());
           key.sort();
 
-          // check that |key| is within the range
+          // check that ‘key’ is within the range
           TL_RAISE_IF(key[0] < 0 || key[key.size()-1] >= nv,
                       "Wrong coordinates of index in FSSparseTensor::multColumnAndAdd");
 
@@ -187,16 +187,16 @@ FSSparseTensor::print() const
   SparseTensor::print();
 }
 
-// |GSSparseTensor| slicing constructor
-/* This is the same as |@<|FGSTensor| slicing from |FSSparseTensor|@>|. */
+// GSSparseTensor slicing constructor
+/* This is the same as FGSTensor slicing constructor from FSSparseTensor. */
 GSSparseTensor::GSSparseTensor(const FSSparseTensor &t, const IntSequence &ss,
                                const IntSequence &coor, TensorDimens td)
   : SparseTensor(td.dimen(), t.nrows(), td.calcFoldMaxOffset()),
     tdims(std::move(td))
 {
-  // set |lb| and |ub| to lower and upper bounds of slice indices
-  /* This is the same as |@<set |lb| and |ub| to lower and upper bounds
-     of indices@>| in {\tt gs\_tensor.cpp}, see that file for details. */
+  // set ‘lb’ and ‘ub’ to lower and upper bounds of slice indices
+  /* The same code is present in FGSTensor slicing constructor, see it for
+     details. */
   IntSequence s_offsets(ss.size(), 0);
   for (int i = 1; i < ss.size(); i++)
     s_offsets[i] = s_offsets[i-1] + ss[i-1];
