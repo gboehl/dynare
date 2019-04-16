@@ -88,7 +88,7 @@ If you have downloaded the sources from an official source archive or the source
 
 If you want to use Git, do the following from a terminal:
 
-    git clone --recursive https://git.dynare.org/Dynare/dynare.git
+    git clone --recurse-submodules https://git.dynare.org/Dynare/dynare.git
     cd dynare
     autoreconf -si
 
@@ -256,7 +256,7 @@ cd ..
 ```
 - Clone and prepare the Dynare sources:
 ```
-git clone --recursive https://git.dynare.org/Dynare/dynare.git
+git clone --recurse-submodules https://git.dynare.org/Dynare/dynare.git
 cd dynare
 autoreconf -si
 ```
@@ -320,7 +320,7 @@ The following commands will download the Dynare source code and compile
 it. They should be entered at the command prompt in Terminal.app from the
 folder where you want Dynare installed.
 
-- `git clone https://git.dynare.org/Dynare/dynare.git`
+- `git clone --recurse-submodules https://git.dynare.org/Dynare/dynare.git`
 - `cd dynare`
 - `PATH="/usr/local/opt/bison/bin:/usr/local/opt/flex/bin:$PATH"`
 - `autoreconf -si`
