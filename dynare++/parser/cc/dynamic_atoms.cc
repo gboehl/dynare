@@ -1,4 +1,4 @@
-// Copyright (C) 2005, Ondra Kamenik
+// Copyright © 2005, Ondra Kamenik
 
 // $Id: dynamic_atoms.cpp 1362 2007-07-10 11:50:18Z kamenik $
 

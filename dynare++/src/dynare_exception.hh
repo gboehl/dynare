@@ -1,4 +1,4 @@
-// Copyright (C) 2006, Ondra Kamenik
+// Copyright © 2006, Ondra Kamenik
 
 // $Id: dynare_exception.h 853 2006-08-01 08:42:42Z kamenik $
 

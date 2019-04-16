@@ -6,8 +6,8 @@ initialize_v_array(int dim_max, int log_max, T **v)
 **
 ** Original files downloaded from http://people.sc.fsu.edu/~burkardt/cpp_src/sobol/ (version 17-Feb-2009 09:46)
 **
-** Copyright (C) 2009 John Burkardt
-** Copyright (C) 2010-2017 Dynare Team
+** Copyright © 2009 John Burkardt
+** Copyright © 2010-2017 Dynare Team
 **
 ** This program is free software: you can redistribute it and/or modify
 ** it under the terms of the GNU Lesser General Public License as published by

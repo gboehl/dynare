@@ -1,4 +1,4 @@
-// Copyright (C) 2006, Ondra Kamenik
+// Copyright © 2006, Ondra Kamenik
 
 // $Id: static_atoms.h 1218 2007-03-19 21:52:49Z kamenik $
 

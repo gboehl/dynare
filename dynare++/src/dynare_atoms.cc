@@ -1,4 +1,4 @@
-// Copyright (C) 2006, Ondra Kamenik
+// Copyright © 2006, Ondra Kamenik
 
 // $Id: dynare_atoms.cpp 1765 2008-03-31 14:32:08Z kamenik $
 

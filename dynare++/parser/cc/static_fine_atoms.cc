@@ -1,4 +1,4 @@
-// Copyright (C) 2006, Ondra Kamenik
+// Copyright © 2006, Ondra Kamenik
 
 // $Id: static_fine_atoms.cpp 82 2007-04-19 11:33:30Z ondra $
 

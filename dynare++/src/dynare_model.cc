@@ -1,4 +1,4 @@
-// Copyright (C) 2006-2011, Ondra Kamenik
+// Copyright © 2006-2011, Ondra Kamenik
 
 #include "parser/cc/parser_exception.hh"
 #include "parser/cc/location.hh"

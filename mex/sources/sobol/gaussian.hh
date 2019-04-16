@@ -2,7 +2,7 @@
 **
 ** Pseudo code of the algorithm is given at http://home.online.no/~pjacklam/notes/invnorm
 **
-** Copyright (C) 2010-2017 Dynare Team
+** Copyright © 2010-2017 Dynare Team
 **
 ** This file is part of Dynare.
 **

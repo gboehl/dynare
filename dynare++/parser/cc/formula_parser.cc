@@ -1,4 +1,4 @@
-// Copyright (C) 2005, Ondra Kamenik
+// Copyright © 2005, Ondra Kamenik
 
 // $Id: formula_parser.cpp 2268 2008-11-22 10:38:03Z michel $
 

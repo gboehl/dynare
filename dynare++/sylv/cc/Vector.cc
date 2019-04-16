@@ -1,4 +1,4 @@
-// Copyright (C) 2004-2011, Ondra Kamenik
+// Copyright © 2004-2011, Ondra Kamenik
 
 #include "Vector.hh"
 #include "GeneralMatrix.hh"

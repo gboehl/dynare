@@ -1,4 +1,4 @@
-// Copyright (C) 2006, Ondra Kamenik
+// Copyright © 2006, Ondra Kamenik
 
 // $Id: parser_exception.h 1761 2008-03-31 14:27:13Z kamenik $
 

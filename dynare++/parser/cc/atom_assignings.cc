@@ -1,4 +1,4 @@
-// Copyright (C) 2006, Ondra Kamenik
+// Copyright © 2006, Ondra Kamenik
 
 // $Id: atom_assignings.cpp 92 2007-04-19 11:38:21Z ondra $
 

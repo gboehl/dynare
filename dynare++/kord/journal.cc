@@ -1,4 +1,4 @@
-// Copyright (C) 2004-2011, Ondra Kamenik
+// Copyright © 2004-2011, Ondra Kamenik
 
 #include "journal.hh"
 #include "kord_exception.hh"
@@ -182,7 +182,7 @@ endrec(JournalRecord &rec)
 void
 Journal::printHeader()
 {
-  *this << "This is Dynare++, Copyright (C) 2004-2011, Ondra Kamenik\n"
+  *this << u8"This is Dynare++, Copyright © 2004-2011, Ondra Kamenik\n"
         << "Dynare++ comes with ABSOLUTELY NO WARRANTY and is distributed under\n"
         << "GPL: modules integ, tl, kord, sylv, src, extern and documentation\n"
         << "LGPL: modules parser, utils\n"

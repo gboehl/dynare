@@ -1,4 +1,4 @@
-// Copyright (C) 2005-2011, Ondra Kamenik
+// Copyright © 2005-2011, Ondra Kamenik
 
 #include "utils/cc/exception.hh"
 

@@ -1,4 +1,4 @@
-// Copyright (C) 2006, Ondra Kamenik
+// Copyright © 2006, Ondra Kamenik
 
 // $Id: nlsolve.cpp 762 2006-05-22 13:00:07Z kamenik $
 

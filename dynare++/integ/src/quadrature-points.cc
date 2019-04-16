@@ -1,4 +1,4 @@
-// Copyright (C) 2008-2011, Ondra Kamenik
+// Copyright © 2008-2011, Ondra Kamenik
 
 #include "parser/cc/matrix_parser.hh"
 #include "utils/cc/exception.hh"

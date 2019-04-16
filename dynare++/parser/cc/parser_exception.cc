@@ -1,4 +1,4 @@
-// Copyright (C) 2006, Ondra Kamenik
+// Copyright © 2006, Ondra Kamenik
 
 // $Id: parser_exception.cpp 2269 2008-11-23 14:33:22Z michel $
 

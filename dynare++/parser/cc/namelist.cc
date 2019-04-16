@@ -1,4 +1,4 @@
-// Copyright (C) 2006, Ondra Kamenik
+// Copyright © 2006, Ondra Kamenik
 
 // $Id: namelist.cpp 42 2007-01-22 21:53:24Z ondra $
 

@@ -1,4 +1,4 @@
-// Copyright (C) 2005, Ondra Kamenik
+// Copyright © 2005, Ondra Kamenik
 
 // $Id: pascal_triangle.h 762 2006-05-22 13:00:07Z kamenik $
 

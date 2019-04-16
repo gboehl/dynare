@@ -1,4 +1,4 @@
-// Copyright (C) 2005-2011, Ondra Kamenik
+// Copyright © 2005-2011, Ondra Kamenik
 
 #ifndef OGDYN_DYNARE_MODEL
 #define OGDYN_DYNARE_MODEL

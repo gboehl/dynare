@@ -1,4 +1,4 @@
-// Copyright (C) 2007, Ondra Kamenik
+// Copyright © 2007, Ondra Kamenik
 
 // $Id$
 

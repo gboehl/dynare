@@ -1,4 +1,4 @@
-// Copyright (C) 2006-2011, Ondra Kamenik
+// Copyright © 2006-2011, Ondra Kamenik
 
 #ifndef PLANNER_BUILDER_H
 #define PLANNER_BUILDER_H

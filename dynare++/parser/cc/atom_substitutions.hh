@@ -1,4 +1,4 @@
-// Copyright (C) 2006, Ondra Kamenik
+// Copyright © 2006, Ondra Kamenik
 
 // $Id: atom_substitutions.h 42 2007-01-22 21:53:24Z ondra $
 

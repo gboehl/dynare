@@ -1,4 +1,4 @@
-// Copyright (C) 2005, Ondra Kamenik
+// Copyright © 2005, Ondra Kamenik
 
 // $Id: exception.h 1367 2007-07-11 14:21:57Z kamenik $
 

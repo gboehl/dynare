@@ -1,6 +1,6 @@
 /*
- * Copyright (C) 2005-2011 Ondra Kamenik
- * Copyright (C) 2019 Dynare Team
+ * Copyright © 2005-2011 Ondra Kamenik
+ * Copyright © 2019 Dynare Team
  *
  * This file is part of Dynare.
  *
