@@ -8,7 +8,7 @@ Bibliography
 * Adjemian, Stéphane, Matthieu Darracq Parriès and Stéphane Moyen (2008): “Towards a monetary policy evaluation framework”, *European Central Bank Working Paper*, 942.
 * Aguiar, Mark and Gopinath, Gita (2004): “Emerging Market Business Cycles: The Cycle is the Trend,” *NBER* Working Paper, 10734.
 * Amisano, Gianni and Tristani, Oreste (2010): “Euro area inflation persistence in an estimated nonlinear DSGE model”, *Journal of Economic Dynamics and Control*, 34(10), 1837–1858.
-* Andreasen, Martin M., Jesús Fernández-Villaverde, and Juan Rubio-Ramírez (2013): “The Pruned State-Space System for Non-Linear DSGE Models: Theory and Empirical Applications,” *Review of Economic Studies*, 85(1), pp. 1-49.
+* Andreasen, Martin M., Jesús Fernández-Villaverde, and Juan Rubio-Ramírez (2018): “The Pruned State-Space System for Non-Linear DSGE Models: Theory and Empirical Applications,” *Review of Economic Studies*, 85(1), pp. 1-49.
 * Andrews, Donald W.K (1991): “Heteroskedasticity and autocorrelation consistent covariance matrix estimation”, *Econometrica*, 59(3), 817–858.
 * Backus, David K., Patrick J. Kehoe, and Finn E. Kydland (1992): “International Real Business Cycles,” *Journal of Political Economy*, 100(4), 745–775.
 * Baxter, Marianne and Robert G. King (1999): “Measuring Business Cycles: Approximate Band-pass Filters for Economic Time Series,” *Review of Economics and Statistics*, 81(4), 575–593.

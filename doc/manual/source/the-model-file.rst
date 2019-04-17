@@ -3242,7 +3242,7 @@ Computing the stochastic solution
        simulations of the solution. At second order, Dynare uses the
        algorithm of *Kim, Kim, Schaumburg and Sims (2008)*, while at
        third order its generalization by *Andreasen,
-       Fernández-Villaverde and Rubio-Ramírez (2013)* is used.
+       Fernández-Villaverde and Rubio-Ramírez (2018)* is used.
        Not available above third order.
 
     .. option:: partial_information
