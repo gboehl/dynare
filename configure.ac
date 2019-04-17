@@ -65,6 +65,14 @@ AC_PROG_MKDIR_P
 
 AX_CXX11_THREAD
 
+AM_PROG_LEX
+
+AC_CHECK_PROG([YACC], [bison], [bison])
+if test -z "$YACC"; then
+  unset YACC # AM_MISSING_PROG needs an unset variable: an empty variable won't do
+  AM_MISSING_PROG([YACC], [bison])
+fi
+
 # Check for libmatio, needed by Dynare++
 AX_MATIO
 AM_CONDITIONAL([HAVE_MATIO], [test "$has_matio" = yes])

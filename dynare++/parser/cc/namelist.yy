@@ -1,30 +1,36 @@
 // -*- C++ -*-
 // Copyright © 2007-2011, Ondra Kamenik
 
-%{
+%code requires
+{
 #include "location.hh"
+#define NAMELIST_LTYPE ogp::location_type
+}
+
+%code
+{
 #include "namelist.hh"
-#include "namelist_tab.hh"
 
-	void namelist_error(const char*);
-	int namelist_lex(void);
-	extern ogp::NameListParser* name_list_parser;
+void namelist_error(const char*);
+int namelist_lex();
+extern ogp::NameListParser* name_list_parser;
+}
 
-%}
-
-%union {
-	int integer;
-	char *string;
-	char character;
+%union
+{
+  int integer;
+  char *string;
+  char character;
 }
 
 %token COMMA CHARACTER
 %token <string> NAME;
 
-%name-prefix="namelist_"
+%define api.prefix {namelist_}
 
 %locations
-%error-verbose
+%defines
+%define parse.error verbose
 
 %%
 
@@ -35,7 +41,8 @@ namelist : namelist NAME       {name_list_parser->add_name($2);}
 
 %%
 
-void namelist_error(const char* mes)
+void
+namelist_error(const char* mes)
 {
-	name_list_parser->namelist_error(mes);
+  name_list_parser->namelist_error(mes);
 }

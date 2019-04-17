@@ -1,28 +1,33 @@
 // -*- C++ -*-
-%{
+%code requires
+{
 #include "location.hh"
+#define CSV_LTYPE ogp::location_type
+}
+
+%code
+{
 #include "csv_parser.hh"
-#include "csv_tab.hh"
 
-	void csv_error(const char*);
-	int csv_lex(void);
-	extern int csv_lineno;
-	extern ogp::CSVParser* csv_parser;
-	extern YYLTYPE csv_lloc;
-%}
+void csv_error(const char*);
+int csv_lex();
+extern ogp::CSVParser* csv_parser;
+}
 
-%union {
-	char* string;
-	int integer;
+%union
+{
+  char* string;
+  int integer;
 }
 
 %token COMMA NEWLINE BOGUS
 %token <string> ITEM
 
-%name-prefix="csv_";
+%define api.prefix {csv_};
 
 %locations
-%error-verbose
+%defines
+%define parse.error verbose
 
 %%
 
@@ -41,7 +46,8 @@ item : ITEM {csv_parser->item(@1.off, @1.ll);};
 
 %%
 
-void csv_error(const char* mes)
+void
+csv_error(const char* mes)
 {
-	csv_parser->csv_error(mes);
+  csv_parser->csv_error(mes);
 }

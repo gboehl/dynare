@@ -30,7 +30,7 @@ BUILT_SOURCES = $(GENERATED_FILES)
 EXTRA_DIST = dynglob.ll dynglob.yy
 
 dynglob_tab.cc dynglob_tab.hh: dynglob.yy
-	$(YACC) -d -odynglob_tab.cc dynglob.yy
+	$(YACC) -W -odynglob_tab.cc dynglob.yy
 
 dynglob_ll.cc: dynglob.ll
 	$(LEX) -i -odynglob_ll.cc dynglob.ll

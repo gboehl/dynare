@@ -5,8 +5,7 @@
 #include "location.hh"
 #include "matrix_tab.hh"
 
-	extern YYLTYPE matrix_lloc;
-	extern void matrix_error(const char*);
+extern void matrix_error(const char*);
 
 #define YY_USER_ACTION SET_LLOC(matrix_);
 %}
@@ -51,12 +50,14 @@
 
 %%
 
-int matrix_wrap()
+int
+matrix_wrap()
 {
-	return 1;
+  return 1;
 }
 
-void matrix__destroy_buffer(void* p)
+void
+matrix__destroy_buffer(void* p)
 {
-	matrix__delete_buffer((YY_BUFFER_STATE)p);
+  matrix__delete_buffer(reinterpret_cast<YY_BUFFER_STATE>(p));
 }

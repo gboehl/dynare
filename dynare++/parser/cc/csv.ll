@@ -5,8 +5,6 @@
 #include "location.hh"
 #include "csv_tab.hh"
 
-	extern YYLTYPE csv_lloc;
-
 #define YY_USER_ACTION SET_LLOC(csv_);
 %}
 
@@ -25,12 +23,14 @@
 
 %%
 
-int csv_wrap()
+int
+csv_wrap()
 {
-	return 1;
+  return 1;
 }
 
-void csv__destroy_buffer(void* p)
+void
+csv__destroy_buffer(void* p)
 {
-	csv__delete_buffer((YY_BUFFER_STATE)p);
+  csv__delete_buffer(reinterpret_cast<YY_BUFFER_STATE>(p));
 }

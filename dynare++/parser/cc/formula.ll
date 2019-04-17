@@ -3,8 +3,6 @@
 #include "location.hh"
 #include "formula_tab.hh"
 
-	extern YYLTYPE fmla_lloc;
-
 #define YY_USER_ACTION SET_LLOC(fmla_);
 %}
 
@@ -62,12 +60,14 @@ diff                 {return YDIFF;}
 
 %%
 
-int fmla_wrap()
+int
+fmla_wrap()
 {
-	return 1;
+  return 1;
 }
 
-void fmla__destroy_buffer(void* p)
+void
+fmla__destroy_buffer(void* p)
 {
-	fmla__delete_buffer((YY_BUFFER_STATE)p);
+  fmla__delete_buffer(reinterpret_cast<YY_BUFFER_STATE>(p));
 }

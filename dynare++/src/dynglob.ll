@@ -3,8 +3,6 @@
 #include "parser/cc/location.hh"
 #include "dynglob_tab.hh"
 
-	extern YYLTYPE dynglob_lloc;
-
 #define YY_USER_ACTION SET_LLOC(dynglob_);
 %}
 
@@ -58,12 +56,14 @@ planner_discount   {return PLANNERDISCOUNT;}
 
 %%
 
-int dynglob_wrap()
+int
+dynglob_wrap()
 {
-	return 1;
+  return 1;
 }
 
-void dynglob__destroy_buffer(void* p)
+void
+dynglob__destroy_buffer(void* p)
 {
-	dynglob__delete_buffer((YY_BUFFER_STATE)p);
+  dynglob__delete_buffer(reinterpret_cast<YY_BUFFER_STATE>(p));
 }

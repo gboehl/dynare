@@ -36,7 +36,7 @@ BUILT_SOURCES = $(GENERATED_FILES)
 EXTRA_DIST = assign.yy csv.yy formula.yy matrix.yy namelist.yy assign.ll csv.ll formula.ll matrix.ll namelist.ll
 
 %_tab.cc %_tab.hh: %.yy
-	$(YACC) -d -o$*_tab.cc $<
+	$(YACC) -W -o$*_tab.cc $<
 
 %_ll.cc: %.ll
 	$(LEX) -i -o$@ $<

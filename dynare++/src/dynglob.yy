@@ -1,38 +1,38 @@
 // -*- C++ -*-
-%{
 // Copyright © 2006-2011, Ondra Kamenik
 
+%code requires
+{
 #include "parser/cc/location.hh"
+#define DYNGLOB_LTYPE ogp::location_type
+}
+
+%code
+{
 #include "dynare_model.hh"
-#include "dynglob_tab.hh"
 
-#include <stdio.h>
+void dynglob_error(const char*);
+int dynglob_lex();
+extern ogdyn::DynareParser* dynare_parser;
+int symblist_flag;
+}
 
-	void dynglob_error(const char*);
-	int dynglob_lex(void);
-	extern int dynglob_lineno;
-	extern ogdyn::DynareParser* dynare_parser;
-	int symblist_flag;
-
-  //	static void print_token_value1 (FILE *, int, YYSTYPE);
-  //#define YYPRINT(file, type, value) print_token_value1 (file, type, value)
-
-%}
-
-%union {
-	int integer;
-	char *string;
-	char character;
+%union
+{
+  int integer;
+  char *string;
+  char character;
 }
 
 %token  END INITVAL MODEL PARAMETERS VAR VAREXO SEMICOLON COMMA EQUAL_SIGN CHARACTER
 %token  VCOV LEFT_BRACKET RIGHT_BRACKET ORDER PLANNEROBJECTIVE PLANNERDISCOUNT
 %token <string> NAME;
 
-%name-prefix="dynglob_"
+%define api.prefix {dynglob_}
 
 %locations
-%error-verbose
+%defines
+%define parse.error verbose
 
 %%
 
@@ -108,17 +108,8 @@ planner_discount : PLANNERDISCOUNT NAME SEMICOLON {
 
 %%
 
-void dynglob_error(const char* mes)
+void
+dynglob_error(const char* mes)
 {
-	dynare_parser->error(mes);
+  dynare_parser->error(mes);
 }
-
-/*
-static void print_token_value1(FILE* file, int type, YYSTYPE value)
-{
-	if (type == NAME)
-		fprintf(file, "%s", value.string);
-	if (type == CHARACTER)
-		fprintf(file, "%c", value.character);
-}
-*/

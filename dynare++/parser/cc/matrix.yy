@@ -1,34 +1,35 @@
 // -*- C++ -*-
 // Copyright © 2006-2011, Ondra Kamenik
 
-%{
+%code requires
+{
 #include "location.hh"
+#define MATRIX_LTYPE ogp::location_type
+}
+
+%code
+{
 #include "matrix_parser.hh"
-#include "matrix_tab.hh"
 
-	void matrix_error(const char*);
-	int matrix_lex(void);
-	extern int matrix_lineno;
-	extern ogp::MatrixParser* mparser;
-	extern YYLTYPE matrix_lloc;
+void matrix_error(const char*);
+int matrix_lex();
+extern ogp::MatrixParser* mparser;
+}
 
-//	static void print_token_value (FILE *, int, YYSTYPE);
-//#define YYPRINT(file, type, value) print_token_value (file, type, value)
-
-%}
-
-%union {
-	double val;
-	int integer;
+%union
+{
+  double val;
+  int integer;
 }
 
 %token NEW_ROW
 %token <val> DNUMBER
 
-%name-prefix="matrix_";
+%define api.prefix {matrix_};
 
 %locations
-%error-verbose
+%defines
+%define parse.error verbose
 
 %%
 
@@ -61,9 +62,10 @@ one_row : NEW_ROW {mparser->start_row();} lod;
 
 %%
 
-void matrix_error(const char* s)
+void
+matrix_error(const char* s)
 {
-	mparser->error(s);
+  mparser->error(s);
 }
 
 

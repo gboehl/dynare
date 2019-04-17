@@ -3,8 +3,6 @@
 #include "location.hh"
 #include "assign_tab.hh"
 
-	extern YYLTYPE asgn_lloc;
-
 #define YY_USER_ACTION SET_LLOC(asgn_);
 %}
 
@@ -44,12 +42,14 @@
 
 %%
 
-int asgn_wrap()
+int
+asgn_wrap()
 {
-	return 1;
+  return 1;
 }
 
-void asgn__destroy_buffer(void* p)
+void
+asgn__destroy_buffer(void* p)
 {
-	asgn__delete_buffer((YY_BUFFER_STATE)p);
+  asgn__delete_buffer(reinterpret_cast<YY_BUFFER_STATE>(p));
 }

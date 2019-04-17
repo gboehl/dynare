@@ -20,24 +20,22 @@
 
 namespace ogp
 {
-
   struct location_type
   {
     int off{0}; // offset of the token
     int ll{0}; // length ot the token
-    location_type()  
-    = default;
+    location_type() = default;
   };
-
 };
-
-#define YYLTYPE ogp::location_type
 
 // set current off to the first off and add all lengths
 #define YYLLOC_DEFAULT(Current, Rhs, N)                         \
-  {(Current).off    =  (Rhs)[1].off;                            \
-    (Current).ll     =  0;                                      \
-    for (int i = 1; i <= N; i++) (Current).ll += (Rhs)[i].ll; }
+  {                                                             \
+    (Current).off = (Rhs)[1].off;                               \
+    (Current).ll = 0;                                           \
+    for (int i = 1; i <= N; i++)                                \
+      (Current).ll += (Rhs)[i].ll;                              \
+  }
 
 #define SET_LLOC(prefix) (prefix ## lloc.off += prefix ## lloc.ll, prefix ## lloc.ll = prefix ## leng)
 

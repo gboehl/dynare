@@ -3,8 +3,6 @@
 #include "location.hh"
 #include "namelist_tab.hh"
 
-	extern YYLTYPE namelist_lloc;
-
 #define YY_USER_ACTION SET_LLOC(namelist_);
 %}
 
@@ -42,12 +40,14 @@
 
 %%
 
-int namelist_wrap()
+int
+namelist_wrap()
 {
-	return 1;
+  return 1;
 }
 
-void namelist__destroy_buffer(void* p)
+void
+namelist__destroy_buffer(void* p)
 {
-	namelist__delete_buffer((YY_BUFFER_STATE)p);
+  namelist__delete_buffer(reinterpret_cast<YY_BUFFER_STATE>(p));
 }

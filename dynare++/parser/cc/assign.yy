@@ -1,37 +1,40 @@
 // -*- C++ -*-
-%{
 /* Copyright © 2006-2011, Ondra Kamenik */
 
+%code requires
+{
 #include "location.hh"
+#define ASGN_LTYPE ogp::location_type
+}
+
+%code
+{
 #include "atom_assignings.hh"
-#include "assign_tab.hh"
 
-#include <stdio.h>
+void asgn_error(const char*);
+int asgn_lex();
+extern ogp::AtomAssignings* aparser;
+}
 
-	void asgn_error(const char*);
-	int asgn_lex(void);
-	extern int asgn_lineno;
-	extern ogp::AtomAssignings* aparser;
-
-%}
-
-%union {
-	int integer;
-	char *string;
-	char character;
+%union
+{
+  int integer;
+  char *string;
+  char character;
 }
 
 %token EQUAL_SIGN SEMICOLON CHARACTER BLANK
 %token <string> NAME;
 
-%name-prefix="asgn_"
+%define api.prefix {asgn_}
 
 %locations
-%error-verbose
+%defines
+%define parse.error verbose
 
 %%
 
-root : assignments | ;
+root : assignments | %empty;
 
 assignments : assignments BLANK | assignments assignment | assignment | BLANK;
 
@@ -47,7 +50,8 @@ space : space BLANK | BLANK;
 
 %%
 
-void asgn_error(const char* mes)
+void
+asgn_error(const char* mes)
 {
-	aparser->error(mes);
+  aparser->error(mes);
 }
