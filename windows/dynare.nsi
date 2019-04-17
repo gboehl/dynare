@@ -135,7 +135,7 @@ SectionGroupEnd
 
 Section "Dynare++ (standalone executable)"
  SetOutPath $INSTDIR\dynare++
- File ..\dynare++\src\dynare++.exe ..\dynare++\extern\matlab\dynare_simul.m
+ File ..\dynare++\src\dynare++.exe
 SectionEnd
 
 Section "Documentation and examples (Dynare and Dynare++)"
