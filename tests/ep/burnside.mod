@@ -55,25 +55,25 @@ ts = extended_path([], 200, [], options_, M_, oo_);
 
 set_dynare_seed('default');
 options_.ep.stochastic.order = 2;
-options_.ep.IntegrationAlgorithm='Stroud-Cubature-3';//'Unscented'; //'Tensor-Gaussian-Quadrature';
+options_.ep.stochastic.IntegrationAlgorithm='Stroud-Cubature-3';//'Unscented'; //'Tensor-Gaussian-Quadrature';
 options_.ep.stochastic.quadrature.nodes = 3;
 ts1_4 = extended_path([], 200, [], options_, M_, oo_);
 
 set_dynare_seed('default');
 options_.ep.stochastic.order = 4;
-options_.ep.IntegrationAlgorithm='Stroud-Cubature-3';//'Unscented'; //'Tensor-Gaussian-Quadrature';
+options_.ep.stochastic.IntegrationAlgorithm='Stroud-Cubature-3';//'Unscented'; //'Tensor-Gaussian-Quadrature';
 options_.ep.stochastic.quadrature.nodes = 3;
 ts1_8 = extended_path([], 200, [], options_, M_, oo_);
 
 set_dynare_seed('default');
 options_.ep.stochastic.order = 6;
-options_.ep.IntegrationAlgorithm='Stroud-Cubature-3';//'Unscented'; //'Tensor-Gaussian-Quadrature';
+options_.ep.stochastic.IntegrationAlgorithm='Stroud-Cubature-3';//'Unscented'; //'Tensor-Gaussian-Quadrature';
 options_.ep.stochastic.quadrature.nodes = 3;
 ts1_12 = extended_path([], 200, [], options_, M_, oo_);
 
 set_dynare_seed('default');
 options_.ep.stochastic.order = 8;
-options_.ep.IntegrationAlgorithm='Stroud-Cubature-3';//'Unscented'; //'Tensor-Gaussian-Quadrature';
+options_.ep.stochastic.IntegrationAlgorithm='Stroud-Cubature-3';//'Unscented'; //'Tensor-Gaussian-Quadrature';
 options_.ep.stochastic.quadrature.nodes = 3;
 ts1_16 = extended_path([], 200, [], options_, M_, oo_);
 
