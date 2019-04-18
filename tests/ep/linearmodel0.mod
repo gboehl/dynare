@@ -31,11 +31,7 @@ stoch_simul(order=1,periods=200, irf=0, nomoments);
 oo = oo_;
 
 options_.simul.maxit = 100;
-options_.ep.verbosity = 0;
-options_.ep.stochastic.status = 0;
 options_.ep.order = 0;
-options_.ep.nnodes = 0;
-options_.console_mode = 0;
 
 ts = extended_path([], 200, oo_.exo_simul, options_, M_, oo_);
 

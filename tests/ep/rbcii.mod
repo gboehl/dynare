@@ -66,20 +66,13 @@ copyfile('rbcii_steady_state.m','+rbcii/steadystate.m');
 
     steady(nocheck);
 
-    options_.simul.maxit = 100;
-    options_.ep.verbosity = 0;
     options_.ep.stochastic.order = 0;
-    options_.ep.stochastic.nodes = 2;
-    options_.console_mode = 0;
 
     ts = extended_path([], 20, [], options_, M_, oo_);
 
     options_.ep.stochastic.order = 1;
-    options_.ep.IntegrationAlgorithm='Tensor-Gaussian-Quadrature';
-//    profile on
     ts1_4 = extended_path([], 20, [], options_, M_, oo_);
-//    profile off
-//    profile viewer
+
 @#else
 
     shocks;

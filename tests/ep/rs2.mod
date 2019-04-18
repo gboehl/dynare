@@ -50,7 +50,7 @@ parameters theta xi beta phi alpha eta KBar chi0 LMax chi IBar rhoinflavg taylrh
   VAIMSS = 1;
   consoldelta = 1;
 
-model;//(use_dll);
+model(use_dll);
 // Value function and Euler equation
 V = exp(lC)^(1-phi) /(1-phi) + chi0 *(LMax-exp(lL))^(1-chi) /(1-chi) + beta *Vkp;
 Int1 = Int/10;
@@ -152,12 +152,5 @@ end;
 
 //stoch_simul(order=3,periods=50000,pruning);
 
-options_.ep.verbosity=0;
-options_.ep.stochastic.algo=1;
-options_.ep.solve_algo = 10;
-options_.ep.maxit = 100;
-options_.ep.IntegrationAlgorithm='UT_2p+1';
-options_.ep.ut.k = 1;
-options_.solve_tolf = 1e-12;
 
-extended_path(order=1,periods=3);
+extended_path(order=0,periods=3);

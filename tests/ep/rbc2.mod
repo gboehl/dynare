@@ -76,6 +76,5 @@ end;
 
 steady;
 
-options_.ep.IntegrationAlgorithm='Tensor-Gaussian-Quadrature';
 extended_path(periods=10);
 
