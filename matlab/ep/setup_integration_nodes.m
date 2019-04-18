@@ -28,7 +28,7 @@ if EpOptions.stochastic.order
         nnodes = length(weights);
       case 'Unscented'
         p = pfm.number_of_shocks;
-        k = EpOptions.ut.k;
+        k = 3;%EpOptions.ut.k;
         C = sqrt(pfm.number_of_shocks + k)*pfm.Omega';
         nodes = [zeros(1,p); -C; C];
         weights = [k/(p+k); (1/(2*(p+k)))*ones(2*p,1)];
