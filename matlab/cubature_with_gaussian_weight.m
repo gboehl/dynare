@@ -1,4 +1,4 @@
-function [nodes, weights] = cubature_with_gaussian_weight(d,n,method)
+function [nodes, weights] = cubature_with_gaussian_weight(d,n,method)  % --*-- Unitary tests --*--
 
 % Computes nodes and weights for a n-order cubature with gaussian weight.
 %
@@ -108,242 +108,163 @@ m(:,2) =  e(n,i)-e(n,j);
 m(:,3) = -m(:,2);
 m(:,4) = -m(:,1);
 
+return
+
 %@test:1
-%$ % Set problem
-%$ d = 4;
-%$
-%$ t = zeros(5,1);
-%$
-%$ % Call the tested routine
-%$ try
-%$     [nodes,weights] = cubature_with_gaussian_weight(d,3);
-%$     t(1) = 1;
-%$ catch
-%$     exception = lasterror;
-%$     t = t(1);
-%$     T = all(t);
-%$     LOG = getReport(exception,'extended');
-%$     return
-%$ end
-%$
-%$ % Check the results.
-%$
-%$ % Compute (approximated) first order moments.
-%$ m1 = nodes*weights;
-%$
-%$ % Compute (approximated) second order moments.
-%$ m2 = nodes.^2*weights;
-%$
-%$ % Compute (approximated) third order moments.
-%$ m3 = nodes.^3*weights;
-%$
-%$ % Compute (approximated) fourth order moments.
-%$ m4 = nodes.^4*weights;
-%$
-%$ t(2) = dassert(m1,zeros(d,1),1e-12);
-%$ t(3) = dassert(m2,ones(d,1),1e-12);
-%$ t(4) = dassert(m3,zeros(d,1),1e-12);
-%$ t(5) = dassert(m4,d*ones(d,1),1e-10);
-%$ T = all(t);
+d = 4;
+t = zeros(5,1);
+
+try
+  [nodes,weights] = cubature_with_gaussian_weight(d,3);
+  t(1) = 1;
+catch
+  t = t(1);
+  T = all(t);
+end
+
+if t(1)
+  m1 = nodes*weights;
+  m2 = nodes.^2*weights;
+  m3 = nodes.^3*weights;
+  m4 = nodes.^4*weights;
+  t(2) = dassert(m1,zeros(d,1),1e-12);
+  t(3) = dassert(m2,ones(d,1),1e-12);
+  t(4) = dassert(m3,zeros(d,1),1e-12);
+  t(5) = dassert(m4,d*ones(d,1),1e-10);
+  T = all(t);
+end
 %@eof:1
 
 %@test:2
-%$ % Set problem
-%$ d = 4;
-%$ Sigma = diag(1:d);
-%$ Omega = diag(sqrt(1:d));
-%$
-%$ t = zeros(5,1);
-%$
-%$ % Call the tested routine
-%$ try
-%$     [nodes,weights] = cubature_with_gaussian_weight(d,3);
-%$     t(1) = 1;
-%$ catch
-%$     exception = lasterror;
-%$     t = t(1);
-%$     T = all(t);
-%$     LOG = getReport(exception,'extended');
-%$     return
-%$ end
-%$
-%$ % Check the results.
-%$ nodes = Omega*nodes;
-%$
-%$ % Compute (approximated) first order moments.
-%$ m1 = nodes*weights;
-%$
-%$ % Compute (approximated) second order moments.
-%$ m2 = nodes.^2*weights;
-%$
-%$ % Compute (approximated) third order moments.
-%$ m3 = nodes.^3*weights;
-%$
-%$ % Compute (approximated) fourth order moments.
-%$ m4 = nodes.^4*weights;
-%$
-%$ t(2) = dassert(m1,zeros(d,1),1e-12);
-%$ t(3) = dassert(m2,transpose(1:d),1e-12);
-%$ t(4) = dassert(m3,zeros(d,1),1e-12);
-%$ t(5) = dassert(m4,d*transpose(1:d).^2,1e-10);
-%$ T = all(t);
+d = 4;
+Sigma = diag(1:d);
+Omega = diag(sqrt(1:d));
+t = zeros(5,1);
+
+try
+  [nodes,weights] = cubature_with_gaussian_weight(d,3);
+  t(1) = 1;
+catch
+  t = t(1);
+  T = all(t);
+end
+
+if t(1)
+  nodes = Omega*nodes;
+  m1 = nodes*weights;
+  m2 = nodes.^2*weights;
+  m3 = nodes.^3*weights;
+  m4 = nodes.^4*weights;
+  t(2) = dassert(m1,zeros(d,1),1e-12);
+  t(3) = dassert(m2,transpose(1:d),1e-12);
+  t(4) = dassert(m3,zeros(d,1),1e-12);
+  t(5) = dassert(m4,d*transpose(1:d).^2,1e-10);
+  T = all(t);
+end
 %@eof:2
 
 %@test:3
-%$ % Set problem
-%$ d = 4;
-%$ Sigma = diag(1:d);
-%$ Omega = diag(sqrt(1:d));
-%$
-%$ t = zeros(4,1);
-%$
-%$ % Call the tested routine
-%$ try
-%$     [nodes,weights] = cubature_with_gaussian_weight(d,3);
-%$     t(1) = 1;
-%$ catch
-%$     exception = lasterror;
-%$     t = t(1);
-%$     T = all(t);
-%$     LOG = getReport(exception,'extended');
-%$     return
-%$ end
-%$
-%$ % Check the results.
-%$ nodes = Omega*nodes;
-%$
-%$ % Compute (approximated) first order moments.
-%$ m1 = nodes*weights;
-%$
-%$ % Compute (approximated) second order moments.
-%$ m2 = bsxfun(@times,nodes,transpose(weights))*transpose(nodes);
-%$
-%$ t(2) = dassert(m1,zeros(d,1),1e-12);
-%$ t(3) = dassert(diag(m2),transpose(1:d),1e-12);
-%$ t(4) = dassert(m2(:),vec(diag(diag(m2))),1e-12);
-%$ T = all(t);
+d = 4;
+Sigma = diag(1:d);
+Omega = diag(sqrt(1:d));
+t = zeros(4,1);
+
+try
+  [nodes,weights] = cubature_with_gaussian_weight(d,3);
+  t(1) = 1;
+catch
+  t = t(1);
+  T = all(t);
+end
+
+if t(1)
+  nodes = Omega*nodes;
+  m1 = nodes*weights;
+  m2 = bsxfun(@times,nodes,transpose(weights))*transpose(nodes);
+  t(2) = dassert(m1,zeros(d,1),1e-12);
+  t(3) = dassert(diag(m2),transpose(1:d),1e-12);
+  t(4) = dassert(m2(:),vec(diag(diag(m2))),1e-12);
+  T = all(t);
+end
 %@eof:3
 
 %@test:4
-%$ % Set problem
-%$ d = 10;
-%$ a = randn(d,2*d);
-%$ Sigma = a*a';
-%$ Omega = chol(Sigma,'lower');
-%$
-%$ t = zeros(4,1);
-%$
-%$ % Call the tested routine
-%$ try
-%$     [nodes,weights] = cubature_with_gaussian_weight(d,3);
-%$     t(1) = 1;
-%$ catch
-%$     exception = lasterror;
-%$     t = t(1);
-%$     T = all(t);
-%$     LOG = getReport(exception,'extended');
-%$     return
-%$ end
-%$
-%$ % Correct nodes for the covariance matrix
-%$ for i=1:length(weights)
-%$     nodes(:,i) = Omega*nodes(:,i);
-%$ end
-%$
-%$ % Check the results.
-%$
-%$ % Compute (approximated) first order moments.
-%$ m1 = nodes*weights;
-%$
-%$ % Compute (approximated) second order moments.
-%$ m2 =  bsxfun(@times,nodes,transpose(weights))*transpose(nodes);
-%$
-%$ % Compute (approximated) third order moments.
-%$ m3 = nodes.^3*weights;
-%$
-%$ t(2) = dassert(m1,zeros(d,1),1e-12);
-%$ t(3) = dassert(m2(:),vec(Sigma),1e-12);
-%$ t(4) = dassert(m3,zeros(d,1),1e-12);
-%$ T = all(t);
+d = 10;
+a = randn(d,2*d);
+Sigma = a*a';
+Omega = chol(Sigma,'lower');
+t = zeros(4,1);
+
+try
+  [nodes,weights] = cubature_with_gaussian_weight(d,3);
+  t(1) = 1;
+catch
+  t = t(1);
+  T = all(t);
+end
+
+if t(1)
+  for i=1:length(weights)
+    nodes(:,i) = Omega*nodes(:,i);
+  end
+  m1 = nodes*weights;
+  m2 =  bsxfun(@times,nodes,transpose(weights))*transpose(nodes);
+  m3 = nodes.^3*weights;
+  t(2) = dassert(m1,zeros(d,1),1e-12);
+  t(3) = dassert(m2(:),vec(Sigma),1e-12);
+  t(4) = dassert(m3,zeros(d,1),1e-12);
+  T = all(t);
+end
 %@eof:4
 
 %@test:5
-%$ % Set problem
-%$ d = 5;
-%$
-%$ t = zeros(6,1);
-%$
-%$ % Call the tested routine
-%$ try
-%$     [nodes,weights] = cubature_with_gaussian_weight(d,5);
-%$     t(1) = 1;
-%$ catch
-%$     exception = lasterror;
-%$     t = t(1);
-%$     T = all(t);
-%$     LOG = getReport(exception,'extended');
-%$     return
-%$ end
-%$
-%$ % Check the results.
-%$ nodes = nodes;
-%$
-%$ % Compute (approximated) first order moments.
-%$ m1 = nodes*weights;
-%$
-%$ % Compute (approximated) second order moments.
-%$ m2 = nodes.^2*weights;
-%$
-%$ % Compute (approximated) third order moments.
-%$ m3 = nodes.^3*weights;
-%$
-%$ % Compute (approximated) fourth order moments.
-%$ m4 = nodes.^4*weights;
-%$
-%$ % Compute (approximated) fifth order moments.
-%$ m5 = nodes.^5*weights;
-%$
-%$ t(2) = dassert(m1,zeros(d,1),1e-12);
-%$ t(3) = dassert(m2,ones(d,1),1e-12);
-%$ t(4) = dassert(m3,zeros(d,1),1e-12);
-%$ t(5) = dassert(m4,3*ones(d,1),1e-12);
-%$ t(6) = dassert(m5,zeros(d,1),1e-12);
-%$ T = all(t);
+d = 5;
+t = zeros(6,1);
+
+try
+  [nodes,weights] = cubature_with_gaussian_weight(d,5);
+  t(1) = 1;
+catch
+  t = t(1);
+  T = all(t);
+end
+
+if t(1)
+  nodes = nodes;
+  m1 = nodes*weights;
+  m2 = nodes.^2*weights;
+  m3 = nodes.^3*weights;
+  m4 = nodes.^4*weights;
+  m5 = nodes.^5*weights;
+  t(2) = dassert(m1,zeros(d,1),1e-12);
+  t(3) = dassert(m2,ones(d,1),1e-12);
+  t(4) = dassert(m3,zeros(d,1),1e-12);
+  t(5) = dassert(m4,3*ones(d,1),1e-12);
+  t(6) = dassert(m5,zeros(d,1),1e-12);
+  T = all(t);
+end
 %@eof:5
 
 %@test:6
-%$ % Set problem
-%$ d = 3;
-%$
-%$ t = zeros(4,1);
-%$
-%$ % Call the tested routine
-%$ try
-%$     [nodes,weights] = cubature_with_gaussian_weight(d,3,'ScaledUnscentedTransform');
-%$     nodes
-%$     weights
-%$     t(1) = 1;
-%$ catch
-%$     exception = lasterror;
-%$     t = t(1);
-%$     T = all(t);
-%$     LOG = getReport(exception,'extended');
-%$     return
-%$ end
-%$
-%$ % Check the results.
-%$
-%$ % Compute (approximated) first order moments.
-%$ m1 = nodes*weights;
-%$
-%$ % Compute (approximated) second order moments.
-%$ m2 = nodes.^2*weights;
-%$
-%$ % Compute (approximated) third order moments.
-%$ m3 = nodes.^3*weights;
-%$
-%$ t(2) = dassert(m1,zeros(d,1),1e-12);
-%$ t(3) = dassert(m2,ones(d,1),1e-12);
-%$ t(4) = dassert(m3,zeros(d,1),1e-12);
-%$ T = all(t);
+d = 3;
+t = zeros(4,1);
+
+% Call the tested routine
+try
+  [nodes,weights] = cubature_with_gaussian_weight(d,3,'ScaledUnscentedTransform');
+  t(1) = 1;
+catch
+  t = t(1);
+  T = all(t);
+end
+
+if t(1)
+  m1 = nodes*weights;
+  m2 = nodes.^2*weights;
+  m3 = nodes.^3*weights;
+  t(2) = dassert(m1,zeros(d,1),1e-12);
+  t(3) = dassert(m2,ones(d,1),1e-12);
+  t(4) = dassert(m3,zeros(d,1),1e-12);
+  T = all(t);
+end
 %@eof:6
