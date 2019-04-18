@@ -24,7 +24,7 @@
 #ifdef USE_OMP
 # include <omp.h>
 #endif
-#include "block_kalman_filter.h"
+#include "block_kalman_filter.hh"
 using namespace std;
 #define BLAS
 //#define CUBLAS
