@@ -4,6 +4,8 @@
 #define OGP_FORMULA_PARSER_H
 
 #include <utility>
+#include <memory>
+#include <vector>
 
 #include "tree.hh"
 
@@ -16,10 +18,8 @@ namespace ogp
   class Atoms
   {
   public:
-    Atoms()
-    = default;
-    virtual ~Atoms()
-    = default;
+    Atoms() = default;
+    virtual ~Atoms() = default;
     /** This returns previously assigned internal index to the
      * given atom, or returns -1 if the atom has not been assigned
      * yet. The method can raise an exception, if the Atoms
@@ -48,8 +48,7 @@ namespace ogp
   class AtomValues
   {
   public:
-    virtual ~AtomValues()
-    = default;
+    virtual ~AtomValues() = default;
     virtual void setValues(EvalTree &et) const = 0;
   };
 
@@ -110,8 +109,7 @@ namespace ogp
     FormulaDerivatives(OperationTree &otree, const vector<int> &vars, int f, int max_order);
     /** Copy constructor. */
     FormulaDerivatives(const FormulaDerivatives &fd);
-    virtual ~FormulaDerivatives()
-    = default;
+    virtual ~FormulaDerivatives() = default;
     /** Random access to the derivatives via multiindex. */
     int derivative(const FoldMultiIndex &mi) const;
     /** Return the order. */
@@ -151,7 +149,7 @@ namespace ogp
     vector<int> formulas;
     /** The vector to derivatives, each vector corresponds to a
      * formula in the vector formulas. */
-    vector<FormulaDerivatives *> ders;
+    vector<std::unique_ptr<FormulaDerivatives>> ders;
   public:
     /** Construct an empty formula parser. */
     FormulaParser(Atoms &a)
@@ -161,8 +159,7 @@ namespace ogp
     FormulaParser(const FormulaParser &fp) = delete;
     /** Copy constructor using a different instance of Atoms. */
     FormulaParser(const FormulaParser &fp, Atoms &a);
-    virtual
-    ~FormulaParser();
+    virtual ~FormulaParser() = default;
 
     /** Requires an addition of the formula; called from the
      * parser. */
@@ -267,7 +264,7 @@ namespace ogp
     int
     nformulas() const
     {
-      return (int) (formulas.size());
+      return static_cast<int>(formulas.size());
     }
 
     /** This returns a reference to atoms. */
@@ -295,9 +292,6 @@ namespace ogp
 
     /** Debug print. */
     void print() const;
-  private:
-    /** Destroy all derivatives. */
-    void destroy_derivatives();
   };
 
   /** This is a pure virtual class defining an interface for all
@@ -307,8 +301,7 @@ namespace ogp
   class FormulaEvalLoader
   {
   public:
-    virtual ~FormulaEvalLoader()
-    = default;
+    virtual ~FormulaEvalLoader() = default;
     /** Set the value res for the given formula. The formula is
      * identified by an index corresponding to the ordering in
      * which the formulas have been parsed (starting from
@@ -368,8 +361,7 @@ namespace ogp
   class FormulaDerEvalLoader
   {
   public:
-    virtual ~FormulaDerEvalLoader()
-    = default;
+    virtual ~FormulaDerEvalLoader() = default;
     /** This loads the result of the derivative of the given
      * order. The semantics of i is the same as in
      * FormulaEvalLoader::load. The indices of variables with
@@ -389,7 +381,7 @@ namespace ogp
     /** Dimension. */
     int ord;
     /** The multiindex. */
-    int *data;
+    std::unique_ptr<int[]> data;
   public:
     /** Initializes to the zero derivative. Order is 0, data is
      * empty. */
@@ -407,10 +399,7 @@ namespace ogp
     /** Copy constructor. */
     FoldMultiIndex(const FoldMultiIndex &fmi);
     /** Desctructor. */
-    virtual ~FoldMultiIndex()
-    {
-      delete [] data;
-    }
+    virtual ~FoldMultiIndex() = default;
     /** Assignment operator. */
     const FoldMultiIndex &operator=(const FoldMultiIndex &fmi);
     /** Operator < implementing lexicographic ordering within one
@@ -443,7 +432,7 @@ namespace ogp
     const int *
     ind() const
     {
-      return data;
+      return data.get();
     }
     /** Return true if the end of the tensor is reached. The
      * result of a subsequent increment should be considered

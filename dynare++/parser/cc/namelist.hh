@@ -7,7 +7,6 @@
 
 namespace ogp
 {
-
   /** Parent class of all parsers parsing a namelist. They must
    * implement add_name() method and error() method, which is called
    * when an parse error occurs.
@@ -20,8 +19,7 @@ namespace ogp
   class NameListParser
   {
   public:
-    virtual ~NameListParser()
-    = default;
+    virtual ~NameListParser() = default;
     virtual void add_name(const char *name) = 0;
     virtual void namelist_error(const char *mes) = 0;
     void namelist_parse(int length, const char *text);

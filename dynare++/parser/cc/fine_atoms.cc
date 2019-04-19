@@ -31,12 +31,12 @@ AllvarOuterOrdering::AllvarOuterOrdering(const vector<const char *> &allvar_oute
     {
       auto it = atoms.endo_outer_map.find(allvar[i]);
       if (it != atoms.endo_outer_map.end())
-        endo2all[(*it).second] = i;
+        endo2all[it->second] = i;
       else
         {
           it = atoms.exo_outer_map.find(allvar[i]);
           if (it != atoms.exo_outer_map.end())
-            exo2all[(*it).second] = i;
+            exo2all[it->second] = i;
           else
             throw ogu::Exception(__FILE__, __LINE__,
                                  string("Name ") + allvar[i] + " is neither endogenous nor exogenous variable in AllvarOuterOrdering constructor");
@@ -89,7 +89,7 @@ FineAtoms::FineAtoms(const FineAtoms &fa)
         throw ogu::Exception(__FILE__, __LINE__,
                              string("Parameter ") + param + " does not exist in FineAtoms copy cosntructor");
       params.push_back(s);
-      param_outer_map.insert(Tvarintmap::value_type(s, params.size()-1));
+      param_outer_map.emplace(s, params.size()-1);
     }
   // fill in endovars
   for (auto endovar : fa.endovars)
@@ -99,7 +99,7 @@ FineAtoms::FineAtoms(const FineAtoms &fa)
         throw ogu::Exception(__FILE__, __LINE__,
                              string("Endo variable ") + endovar + " does not exist in FineAtoms copy constructor");
       endovars.push_back(s);
-      endo_outer_map.insert(Tvarintmap::value_type(s, endovars.size()-1));
+      endo_outer_map.emplace(s, endovars.size()-1);
     }
   // fill in exovars
   for (auto exovar : fa.exovars)
@@ -109,7 +109,7 @@ FineAtoms::FineAtoms(const FineAtoms &fa)
         throw ogu::Exception(__FILE__, __LINE__,
                              string("Exo variable ") + exovar + " does not exist in FineAtoms copy cosntructor");
       exovars.push_back(s);
-      exo_outer_map.insert(Tvarintmap::value_type(s, exovars.size()-1));
+      exo_outer_map.emplace(s, exovars.size()-1);
     }
 
   if (fa.endo_order)
@@ -119,7 +119,7 @@ FineAtoms::FineAtoms(const FineAtoms &fa)
     exo_order = fa.exo_order->clone(exovars, *this);
 
   if (fa.allvar_order)
-    allvar_order = new AllvarOuterOrdering(*(fa.allvar_order), *this);
+    allvar_order = std::make_unique<AllvarOuterOrdering>(*(fa.allvar_order), *this);
 }
 
 int
@@ -156,9 +156,7 @@ FineAtoms::parsing_finished(VarOrdering::ord_type ot)
   allvar_tmp.insert(allvar_tmp.end(), endovars.begin(), endovars.end());
   allvar_tmp.insert(allvar_tmp.end(), exovars.begin(), exovars.end());
 
-  if (allvar_order)
-    delete allvar_order;
-  allvar_order = new AllvarOuterOrdering(allvar_tmp, *this);
+  allvar_order = std::make_unique<AllvarOuterOrdering>(allvar_tmp, *this);
 }
 
 void
@@ -166,9 +164,7 @@ FineAtoms::parsing_finished(VarOrdering::ord_type ot,
                             const vector<const char *> allvar)
 {
   make_internal_orderings(ot);
-  if (allvar_order)
-    delete allvar_order;
-  allvar_order = new AllvarOuterOrdering(allvar, *this);
+  allvar_order = std::make_unique<AllvarOuterOrdering>(allvar, *this);
 }
 
 const vector<const char *> &
@@ -205,14 +201,12 @@ vector<int>
 FineAtoms::variables() const
 {
   if (endo_order)
-    {
-      return der_atoms;
-    }
+    return der_atoms;
   else
     {
       throw ogu::Exception(__FILE__, __LINE__,
                            "FineAtoms::variables called before parsing_finished");
-      return vector<int>();
+      return {};
     }
 }
 
@@ -220,9 +214,7 @@ int
 FineAtoms::nstat() const
 {
   if (endo_order)
-    {
-      return endo_order->nstat();
-    }
+    return endo_order->nstat();
   else
     {
       throw ogu::Exception(__FILE__, __LINE__,
@@ -235,9 +227,7 @@ int
 FineAtoms::npred() const
 {
   if (endo_order)
-    {
-      return endo_order->npred();
-    }
+    return endo_order->npred();
   else
     {
       throw ogu::Exception(__FILE__, __LINE__,
@@ -250,9 +240,7 @@ int
 FineAtoms::nboth() const
 {
   if (endo_order)
-    {
-      return endo_order->nboth();
-    }
+    return endo_order->nboth();
   else
     {
       throw ogu::Exception(__FILE__, __LINE__,
@@ -265,9 +253,7 @@ int
 FineAtoms::nforw() const
 {
   if (endo_order)
-    {
-      return endo_order->nforw();
-    }
+    return endo_order->nforw();
   else
     {
       throw ogu::Exception(__FILE__, __LINE__,
@@ -280,9 +266,7 @@ int
 FineAtoms::get_pos_of_endo(int t) const
 {
   if (endo_order)
-    {
-      return endo_order->get_pos_of(t);
-    }
+    return endo_order->get_pos_of(t);
   else
     {
       throw ogu::Exception(__FILE__, __LINE__,
@@ -295,9 +279,7 @@ int
 FineAtoms::get_pos_of_exo(int t) const
 {
   if (exo_order)
-    {
-      return exo_order->get_pos_of(t);
-    }
+    return exo_order->get_pos_of(t);
   else
     {
       throw ogu::Exception(__FILE__, __LINE__,
@@ -391,7 +373,7 @@ FineAtoms::name2outer_param(const char *name) const
   if (it == param_outer_map.end())
     throw ogu::Exception(__FILE__, __LINE__,
                          "Name is not a parameter in FineAtoms::name2outer_param");
-  return (*it).second;
+  return it->second;
 }
 
 int
@@ -401,7 +383,7 @@ FineAtoms::name2outer_endo(const char *name) const
   if (it == endo_outer_map.end())
     throw ogu::Exception(__FILE__, __LINE__,
                          "Name is not an endogenous variable in FineAtoms::name2outer_endo");
-  return (*it).second;
+  return it->second;
 }
 
 int
@@ -411,7 +393,7 @@ FineAtoms::name2outer_exo(const char *name) const
   if (it == exo_outer_map.end())
     throw ogu::Exception(__FILE__, __LINE__,
                          "Name is not an exogenous variable in FineAtoms::name2outer_exo");
-  return (*it).second;
+  return it->second;
 }
 
 int
@@ -423,12 +405,12 @@ FineAtoms::name2outer_allvar(const char *name) const
 
   auto it = endo_outer_map.find(name);
   if (it != endo_outer_map.end())
-    return allvar_order->get_endo2all()[(*it).second];
+    return allvar_order->get_endo2all()[it->second];
   else
     {
       it = exo_outer_map.find(name);
       if (it != exo_outer_map.end())
-        return allvar_order->get_exo2all()[(*it).second];
+        return allvar_order->get_exo2all()[it->second];
     }
 
   throw ogu::Exception(__FILE__, __LINE__,
@@ -443,7 +425,7 @@ FineAtoms::register_uniq_endo(const char *name)
     throw ogp::ParserException(string("Endogenous variable <")+name+"> is not unique.", 0);
   const char *ss = varnames.insert(name);
   endovars.push_back(ss);
-  endo_outer_map.insert(Tvarintmap::value_type(ss, endovars.size()-1));
+  endo_outer_map.emplace(ss, endovars.size()-1);
 }
 
 void
@@ -453,7 +435,7 @@ FineAtoms::register_uniq_exo(const char *name)
     throw ogp::ParserException(string("Exogenous variable <")+name+"> is not unique.", 0);
   const char *ss = varnames.insert(name);
   exovars.push_back(ss);
-  exo_outer_map.insert(Tvarintmap::value_type(ss, exovars.size()-1));
+  exo_outer_map.emplace(ss, exovars.size()-1);
 }
 
 void
@@ -463,7 +445,7 @@ FineAtoms::register_uniq_param(const char *name)
     throw ogp::ParserException(string("Parameter <")+name+"> is not unique.", 0);
   const char *ss = varnames.insert(name);
   params.push_back(ss);
-  param_outer_map.insert(Tvarintmap::value_type(ss, params.size()-1));
+  param_outer_map.emplace(ss, params.size()-1);
 }
 
 void
@@ -479,12 +461,10 @@ FineAtoms::make_internal_orderings(VarOrdering::ord_type ot)
   if (mlag >= -1 && mlead <= 1)
     {
       // make endo ordering
-      if (endo_order)
-        delete endo_order;
       if (ot == VarOrdering::pbspbfbf)
-        endo_order = new EndoVarOrdering1(endovars, *this);
+        endo_order = std::make_unique<EndoVarOrdering1>(endovars, *this);
       else
-        endo_order = new EndoVarOrdering2(endovars, *this);
+        endo_order = std::make_unique<EndoVarOrdering2>(endovars, *this);
       endo_order->do_ordering();
       endo_ordering_done = true;
     }
@@ -493,9 +473,7 @@ FineAtoms::make_internal_orderings(VarOrdering::ord_type ot)
   if (mlag == 0 && mlead == 0)
     {
       // make exo ordering
-      if (exo_order)
-        delete exo_order;
-      exo_order = new ExoVarOrdering(exovars, *this);
+      exo_order = std::make_unique<ExoVarOrdering>(exovars, *this);
       exo_order->do_ordering();
       exo_ordering_done = true;
     }
@@ -534,22 +512,20 @@ FineAtoms::print() const
       endo_order->print();
     }
   else
-    {
-      printf("Endo ordering not created.\n");
-    }
+    printf("Endo ordering not created.\n");
+
   if (exo_order)
     {
       printf("Exo ordering:\n");
       exo_order->print();
     }
   else
-    {
-      printf("Exo ordering not created.\n");
-    }
+    printf("Exo ordering not created.\n");
+
   printf("endo atoms map:\n");
   for (unsigned int i = 0; i < endo_atoms_map.size(); i++)
-    printf("%d --> %d\n", i, endo_atoms_map[i]);
+    printf(u8"%d → %d\n", i, endo_atoms_map[i]);
   printf("exo atoms map:\n");
   for (unsigned int i = 0; i < exo_atoms_map.size(); i++)
-    printf("%d --> %d\n", i, exo_atoms_map[i]);
+    printf(u8"%d → %d\n", i, exo_atoms_map[i]);
 }

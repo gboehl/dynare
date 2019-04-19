@@ -11,7 +11,7 @@
 #include "formula_tab.hh"
 
 #include <cmath>
-#include <cstring>
+#include <algorithm>
 
 using namespace ogp;
 
@@ -21,29 +21,24 @@ FormulaParser::FormulaParser(const FormulaParser &fp, Atoms &a)
   : otree(fp.otree), atoms(a), formulas(fp.formulas), ders()
 {
   // create derivatives
-  for (auto der : fp.ders)
-    ders.push_back(new FormulaDerivatives(*der));
-}
-
-FormulaParser::~FormulaParser()
-{
-  destroy_derivatives();
+  for (const auto &der : fp.ders)
+    ders.push_back(std::make_unique<FormulaDerivatives>(*der));
 }
 
 void
 FormulaParser::differentiate(int max_order)
 {
-  destroy_derivatives();
+  ders.clear();
   vector<int> vars;
   vars = atoms.variables();
   for (int formula : formulas)
-    ders.push_back(new FormulaDerivatives(otree, vars, formula, max_order));
+    ders.push_back(std::make_unique<FormulaDerivatives>(otree, vars, formula, max_order));
 }
 
 const FormulaDerivatives &
 FormulaParser::derivatives(int i) const
 {
-  if (i < (int) ders.size())
+  if (i < static_cast<int>(ders.size()))
     return *(ders[i]);
   else
     throw ogu::Exception(__FILE__, __LINE__,
@@ -108,11 +103,10 @@ FormulaParser::substitute_formulas(const map<int, int> &smap)
       int f = add_substitution(formulas[i], smap);
       formulas[i] = f;
       // update the derivatives if any
-      if (i < (int) ders.size() && ders[i])
+      if (i < static_cast<int>(ders.size()) && ders[i])
         {
           int order = ders[i]->get_order();
-          delete ders[i];
-          ders[i] = new FormulaDerivatives(otree, atoms.variables(), formulas[i], order);
+          ders[i] = std::make_unique<FormulaDerivatives>(otree, atoms.variables(), formulas[i], order);
         }
     }
 }
@@ -134,16 +128,15 @@ extern location_type fmla_lloc;
 void
 FormulaParser::parse(int length, const char *stream)
 {
-  auto *buffer = new char[length+2];
-  strncpy(buffer, stream, length);
+  auto buffer = std::make_unique<char[]>(length+2);
+  std::copy_n(stream, length, buffer.get());
   buffer[length] = '\0';
   buffer[length+1] = '\0';
   fmla_lloc.off = 0;
   fmla_lloc.ll = 0;
-  void *p = fmla__scan_buffer(buffer, (unsigned int) length+2);
+  void *p = fmla__scan_buffer(buffer.get(), static_cast<unsigned int>(length)+2);
   fparser = this;
   fmla_parse();
-  delete [] buffer;
   fmla__destroy_buffer(p);
 }
 
@@ -158,8 +151,7 @@ FormulaParser::last_formula() const
 {
   int res = -1;
   for (int formula : formulas)
-    if (res < formula)
-      res = formula;
+    res = std::max(res, formula);
   return std::max(res, otree.get_last_nulary());
 }
 
@@ -170,10 +162,7 @@ FormulaParser::pop_last_formula()
     return -1;
   int t = formulas.back();
   if (formulas.size() == ders.size())
-    {
-      delete ders.back();
-      ders.pop_back();
-    }
+    ders.pop_back();
   formulas.pop_back();
   return t;
 }
@@ -191,16 +180,6 @@ FormulaParser::print() const
     {
       printf("derivatives for the formula %d:\n", formulas[i]);
       ders[i]->print(otree);
-    }
-}
-
-void
-FormulaParser::destroy_derivatives()
-{
-  while (ders.size() > 0)
-    {
-      delete ders.back();
-      ders.pop_back();
     }
 }
 
@@ -254,13 +233,11 @@ FormulaDerivatives::FormulaDerivatives(OperationTree &otree,
 
   // build ind2der map
   for (unsigned int i = 0; i < indices.size(); i++)
-    ind2der.insert(Tfmiintmap::value_type(indices[i], i));
+    ind2der.emplace(indices[i], i);
 
 }
 
-FormulaDerivatives::FormulaDerivatives(const FormulaDerivatives &fd)
-   
-= default;
+FormulaDerivatives::FormulaDerivatives(const FormulaDerivatives &fd) = default;
 
 int
 FormulaDerivatives::derivative(const FoldMultiIndex &mi) const
@@ -276,7 +253,7 @@ FormulaDerivatives::derivative(const FoldMultiIndex &mi) const
   if (it == ind2der.end())
     return OperationTree::zero;
   else
-    return tder[(*it).second];
+    return tder[it->second];
 }
 
 void
@@ -299,17 +276,17 @@ FormulaCustomEvaluator::eval(const AtomValues &av, FormulaEvalLoader &loader)
   for (unsigned int i = 0; i < terms.size(); i++)
     {
       double res = etree.eval(terms[i]);
-      loader.load((int) i, res);
+      loader.load(static_cast<int>(i), res);
     }
 }
 
 FoldMultiIndex::FoldMultiIndex(int nv)
-  : nvar(nv), ord(0), data(new int[ord])
+  : nvar(nv), ord(0), data(std::make_unique<int[]>(ord))
 {
 }
 
 FoldMultiIndex::FoldMultiIndex(int nv, int ordd, int ii)
-  : nvar(nv), ord(ordd), data(new int[ord])
+  : nvar(nv), ord(ordd), data(std::make_unique<int[]>(ord))
 {
   for (int i = 0; i < ord; i++)
     data[i] = ii;
@@ -318,7 +295,7 @@ FoldMultiIndex::FoldMultiIndex(int nv, int ordd, int ii)
 /** Note that a monotone sequence mapped by monotone mapping yields a
  * monotone sequence. */
 FoldMultiIndex::FoldMultiIndex(int nv, const FoldMultiIndex &mi, const vector<int> &mp)
-  : nvar(nv), ord(mi.ord), data(new int[ord])
+  : nvar(nv), ord(mi.ord), data(std::make_unique<int[]>(ord))
 {
   for (int i = 0; i < ord; i++)
     {
@@ -335,36 +312,31 @@ FoldMultiIndex::FoldMultiIndex(int nv, const FoldMultiIndex &mi, const vector<in
 FoldMultiIndex::FoldMultiIndex(const FoldMultiIndex &fmi, int new_orders)
   : nvar(fmi.nvar),
     ord(fmi.ord+new_orders),
-    data(new int[ord])
+    data(std::make_unique<int[]>(ord))
 {
-  memcpy(data, fmi.data, fmi.ord*sizeof(int));
+  std::copy_n(fmi.data.get(), fmi.ord, data.get());
   int new_item = (fmi.ord > 0) ? fmi.data[fmi.ord-1] : 0;
   for (int i = fmi.ord; i < ord; i++)
-    {
-      data[i] = new_item;
-    }
+    data[i] = new_item;
 }
 
 FoldMultiIndex::FoldMultiIndex(const FoldMultiIndex &fmi)
   : nvar(fmi.nvar),
     ord(fmi.ord),
-    data(new int[fmi.ord])
+    data(std::make_unique<int[]>(ord))
 {
-  memcpy(data, fmi.data, ord*sizeof(int));
+  std::copy_n(fmi.data.get(), ord, data.get());
 }
 
 const FoldMultiIndex &
 FoldMultiIndex::operator=(const FoldMultiIndex &fmi)
 {
   if (ord != fmi.ord)
-    {
-      delete [] data;
-      data = new int[fmi.ord];
-    }
+    data = std::make_unique<int[]>(fmi.ord);
 
   ord = fmi.ord;
   nvar = fmi.nvar;
-  memcpy(data, fmi.data, ord*sizeof(int));
+  std::copy_n(fmi.data.get(), ord, data.get());
 
   return *this;
 }
@@ -427,13 +399,10 @@ int
 FoldMultiIndex::offset() const
 {
   // make copy for the recursions
-  auto *tmp = new int[ord];
-  for (int i = 0; i < ord; i++)
-    tmp[i] = data[i];
+  auto tmp = std::make_unique<int[]>(ord);
+  std::copy_n(data.get(), ord, tmp.get());
   // call the recursive algorithm
-  int res = offset_recurse(tmp, ord, nvar);
-
-  delete [] tmp;
+  int res = offset_recurse(tmp.get(), ord, nvar);
   return res;
 }
 
@@ -478,8 +447,8 @@ ltfmi::operator()(const FoldMultiIndex &i1, const FoldMultiIndex &i2) const
 FormulaDerEvaluator::FormulaDerEvaluator(const FormulaParser &fp)
   : etree(fp.otree, -1)
 {
-  for (auto der : fp.ders)
-    ders.push_back((const FormulaDerivatives *) der);
+  for (const auto &der : fp.ders)
+    ders.push_back(der.get());
 
   der_atoms = fp.atoms.variables();
 }
@@ -498,28 +467,25 @@ FormulaDerEvaluator::eval(const AtomValues &av, FormulaDerEvalLoader &loader, in
   etree.reset_all();
   av.setValues(etree);
 
-  auto *vars = new int[order];
+  auto vars = std::make_unique<int[]>(order);
 
   for (unsigned int i = 0; i < ders.size(); i++)
     {
-      for (auto it = ders[i]->ind2der.begin();
-           it != ders[i]->ind2der.end(); ++it)
+      for (const auto &it : ders[i]->ind2der)
         {
-          const FoldMultiIndex &mi = (*it).first;
+          const FoldMultiIndex &mi = it.first;
           if (mi.order() == order)
             {
               // set vars from multiindex mi and variables
               for (int k = 0; k < order; k++)
                 vars[k] = der_atoms[mi[k]];
               // evaluate
-              double res = etree.eval(ders[i]->tder[(*it).second]);
+              double res = etree.eval(ders[i]->tder[it.second]);
               // load
-              loader.load(i, order, vars, res);
+              loader.load(i, order, vars.get(), res);
             }
         }
     }
-
-  delete [] vars;
 }
 
 void
@@ -531,7 +497,7 @@ FormulaDerEvaluator::eval(const vector<int> &mp, const AtomValues &av,
 
   int nvar_glob = der_atoms.size();
   int nvar = mp.size();
-  auto *vars = new int[order];
+  auto vars = std::make_unique<int[]>(order);
 
   for (unsigned int i = 0; i < ders.size(); i++)
     {
@@ -549,12 +515,10 @@ FormulaDerEvaluator::eval(const vector<int> &mp, const AtomValues &av,
               // evaluate derivative
               double res = etree.eval(der);
               // load
-              loader.load(i, order, vars, res);
+              loader.load(i, order, vars.get(), res);
             }
           mi.increment();
         }
       while (!mi.past_the_end());
     }
-
-  delete [] vars;
 }

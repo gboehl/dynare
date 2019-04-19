@@ -4,7 +4,8 @@
 
 #include "namelist.hh"
 
-#include <cstring>
+#include <memory>
+#include <algorithm>
 
 using namespace ogp;
 
@@ -19,13 +20,12 @@ void namelist_parse();
 void
 NameListParser::namelist_parse(int length, const char *stream)
 {
-  auto *buffer = new char[length+2];
-  strncpy(buffer, stream, length);
+  auto buffer = std::make_unique<char[]>(length+2);
+  std::copy_n(str, length, buffer.get());
   buffer[length] = '\0';
   buffer[length+1] = '\0';
-  void *p = namelist__scan_buffer(buffer, (unsigned int) length+2);
+  void *p = namelist__scan_buffer(buffer.get(), static_cast<unsigned int>(length)+2);
   name_list_parser = this;
   ::namelist_parse();
-  delete [] buffer;
   namelist__destroy_buffer(p);
 }

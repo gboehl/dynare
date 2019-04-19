@@ -14,6 +14,9 @@
 #include <cmath>
 #include <climits>
 #include <ostream>
+#include <memory>
+#include <algorithm>
+#include <iomanip>
 
 using namespace ogdyn;
 
@@ -117,7 +120,7 @@ DynareModel::print() const
     {
       int tf = eqs.formula(i);
       printf("formula %d:\n", tf);
-      eqs.getTree().print_operation_tree(tf, stdout, dof);
+      eqs.getTree().print_operation_tree(tf, std::cout, dof);
     }
 }
 
@@ -588,43 +591,40 @@ extern ogp::location_type dynglob_lloc;
 void
 DynareParser::parse_glob(int length, const char *stream)
 {
-  auto *buffer = new char[length+2];
-  strncpy(buffer, stream, length);
+  auto buffer = std::make_unique<char[]>(length+2);
+  std::copy_n(stream, length, buffer.get());
   buffer[length] = '\0';
   buffer[length+1] = '\0';
-  void *p = dynglob__scan_buffer(buffer, (unsigned int) length+2);
+  void *p = dynglob__scan_buffer(buffer.get(), static_cast<unsigned int>(length)+2);
   dynare_parser = this;
   dynglob_parse();
-  delete [] buffer;
   dynglob__destroy_buffer(p);
 }
 
 int
 DynareParser::parse_order(int len, const char *str)
 {
-  auto *buf = new char[len+1];
-  strncpy(buf, str, len);
+  auto buf = std::make_unique<char[]>(len+1);
+  std::copy_n(str, len, buf.get());
   buf[len] = '\0';
   int res;
-  sscanf(buf, "%d", &res);
-  delete [] buf;
+  sscanf(buf.get(), "%d", &res);
   return res;
 }
 
 int
 DynareParser::parse_pldiscount(int len, const char *str)
 {
-  auto *buf = new char[len+1];
-  strncpy(buf, str, len);
+  auto buf = std::make_unique<char[]>(len+1);
+  std::copy_n(str, len, buf.get());
   buf[len] = '\0';
-  if (!atoms.is_type(buf, DynareDynamicAtoms::param))
-    throw ogp::ParserException(std::string("Name ") + buf + " is not a parameter", 0);
+  if (!atoms.is_type(buf.get(), DynareDynamicAtoms::param))
+    throw ogp::ParserException(std::string("Name ") + buf.get() + " is not a parameter", 0);
 
-  int t = atoms.index(buf, 0);
+  int t = atoms.index(buf.get(), 0);
   if (t == -1)
-    t = eqs.add_nulary(buf);
+    t = eqs.add_nulary(buf.get());
 
-  delete [] buf;
   return t;
 }
 
@@ -712,14 +712,14 @@ NLSelector::operator()(int t) const
     }
   else if (nary == 1)
     {
-      if (op.getCode() == ogp::UMINUS)
+      if (op.getCode() == ogp::code_t::UMINUS)
         return false;
       else
         return true;
     }
   else
     {
-      if (op.getCode() == ogp::TIMES)
+      if (op.getCode() == ogp::code_t::TIMES)
         // if at least one operand is constant, than the TIMES is linear
         if (model.is_constant_term(op.getOp1())
             || model.is_constant_term(op.getOp2()))
@@ -727,11 +727,11 @@ NLSelector::operator()(int t) const
         else
           return true;
       // both PLUS and MINUS are linear
-      if (op.getCode() == ogp::PLUS
-          || op.getCode() == ogp::MINUS)
+      if (op.getCode() == ogp::code_t::PLUS
+          || op.getCode() == ogp::code_t::MINUS)
         return false;
       // POWER is linear if exponent or base is 0 or one
-      if (op.getCode() == ogp::POWER
+      if (op.getCode() == ogp::code_t::POWER
           && (op.getOp1() == ogp::OperationTree::zero
               || op.getOp1() == ogp::OperationTree::one
               || op.getOp2() == ogp::OperationTree::zero
@@ -741,7 +741,7 @@ NLSelector::operator()(int t) const
         return true;
       // DIVIDE is linear if the denominator is constant, or if
       // the nominator is zero
-      if (op.getCode() == ogp::DIVIDE
+      if (op.getCode() == ogp::code_t::DIVIDE
           && (op.getOp1() == ogp::OperationTree::zero
               || model.is_constant_term(op.getOp2())))
         return false;
@@ -792,23 +792,23 @@ DynareSPModel::DynareSPModel(const char **endo, int num_endo,
 }
 
 void
-ModelSSWriter::write_der0(FILE *fd)
+ModelSSWriter::write_der0(std::ostream &os)
 {
-  write_der0_preamble(fd);
-  write_atom_assignment(fd);
+  write_der0_preamble(os);
+  write_atom_assignment(os);
 
   stop_set.clear();
   for (int fi = 0; fi < model.eqs.nformulas(); fi++)
-    otree.print_operation_tree(model.eqs.formula(fi), fd, *this);
+    otree.print_operation_tree(model.eqs.formula(fi), os, *this);
 
-  write_der0_assignment(fd);
+  write_der0_assignment(os);
 }
 
 void
-ModelSSWriter::write_der1(FILE *fd)
+ModelSSWriter::write_der1(std::ostream &os)
 {
-  write_der1_preamble(fd);
-  write_atom_assignment(fd);
+  write_der1_preamble(os);
+  write_atom_assignment(os);
 
   stop_set.clear();
 
@@ -821,11 +821,11 @@ ModelSSWriter::write_der1(FILE *fd)
         {
           int t = fder.derivative(ogp::FoldMultiIndex(variables.size(), 1, j));
           if (t > 0)
-            otree.print_operation_tree(t, fd, *this);
+            otree.print_operation_tree(t, os, *this);
         }
     }
 
-  write_der1_assignment(fd);
+  write_der1_assignment(os);
 }
 
 MatlabSSWriter::MatlabSSWriter(const DynareModel &dm, const char *idd)
@@ -835,115 +835,102 @@ MatlabSSWriter::MatlabSSWriter(const DynareModel &dm, const char *idd)
 }
 
 void
-MatlabSSWriter::write_der0_preamble(FILE *fd) const
+MatlabSSWriter::write_der0_preamble(std::ostream &os) const
 {
-  fprintf(fd,
-          "%% Usage:\n"
-          "%%       out = %s_f(params, y)\n"
-          "%%   where\n"
-          "%%       out    is a (%d,1) column vector of the residuals\n"
-          "%%              of the static system\n",
-          id, model.getAtoms().ny());
-  write_common1_preamble(fd);
-  fprintf(fd,
-          "function out = %s_f(params, y)\n", id);
-  write_common2_preamble(fd);
+  os << "% Usage:\n"
+     << "%       out = " << id << "_f(params, y)\n"
+     << "%   where\n"
+     << "%       out    is a (" << model.getAtoms().ny() << ",1) column vector of the residuals\n"
+     << "%              of the static system\n";
+  write_common1_preamble(os);
+  os << "function out = " << id << "_f(params, y)\n";
+  write_common2_preamble(os);
 }
 
 void
-MatlabSSWriter::write_der1_preamble(FILE *fd) const
+MatlabSSWriter::write_der1_preamble(std::ostream &os) const
 {
-  fprintf(fd,
-          "%% Usage:\n"
-          "%%       out = %s_ff(params, y)\n"
-          "%%   where\n"
-          "%%       out    is a (%d,%d) matrix of the first order\n"
-          "%%              derivatives of the static system residuals\n"
-          "%%              columns correspond to endo variables in\n"
-          "%%              the ordering as declared\n",
-          id, model.getAtoms().ny(), model.getAtoms().ny());
-  write_common1_preamble(fd);
-  fprintf(fd,
-          "function out = %s_ff(params, y)\n", id);
-  write_common2_preamble(fd);
+  os << "% Usage:\n"
+     << "%       out = " << id << "_ff(params, y)\n"
+     << "%   where\n"
+     << "%       out    is a (" << model.getAtoms().ny() << "," << model.getAtoms().ny() << ") matrix of the first order\n"
+     << "%              derivatives of the static system residuals\n"
+     << "%              columns correspond to endo variables in\n"
+     << "%              the ordering as declared\n";
+  write_common1_preamble(os);
+  os << "function out = " << id << "_ff(params, y)\n";
+  write_common2_preamble(os);
 }
 
 void
-MatlabSSWriter::write_common1_preamble(FILE *fd) const
+MatlabSSWriter::write_common1_preamble(std::ostream &os) const
 {
-  fprintf(fd,
-          "%%       params is a (%d,1) vector of parameter values\n"
-          "%%              in the ordering as declared\n"
-          "%%       y      is a (%d,1) vector of endogenous variables\n"
-          "%%              in the ordering as declared\n"
-          "%%\n"
-          "%% Created by Dynare++ v. %s\n", model.getAtoms().np(),
-          model.getAtoms().ny(), DYNVERSION);
+  os << "%       params is a (" << model.getAtoms().np() << ",1) vector of parameter values\n"
+     << "%              in the ordering as declared\n"
+     << "%       y      is a (" << model.getAtoms().ny() << ",1) vector of endogenous variables\n"
+     << "%              in the ordering as declared\n"
+     << "%\n"
+     << "% Created by Dynare++ v. " << DYNVERSION << "\n";
   // write ordering of parameters
-  fprintf(fd, "\n%% params ordering\n%% =====================\n");
+  os << "\n% params ordering\n% =====================\n";
   for (auto parname : model.getAtoms().get_params())
-    {
-      fprintf(fd, "%% %s\n", parname);
-    }
+    os << "% " << parname << "\n";
+
   // write endogenous variables
-  fprintf(fd, "%%\n%% y ordering\n%% =====================\n");
+  os << "%\n% y ordering\n% =====================\n";
   for (auto endoname : model.getAtoms().get_endovars())
-    {
-      fprintf(fd, "%% %s\n", endoname);
-    }
-  fprintf(fd, "\n");
+    os << "% " << endoname << "\n";
+  os << "\n";
 }
 
 void
-MatlabSSWriter::write_common2_preamble(FILE *fd) const
+MatlabSSWriter::write_common2_preamble(std::ostream &os) const
 {
-  fprintf(fd, "if size(y) ~= [%d,1]\n\terror('Wrong size of y, must be [%d,1]');\nend\n",
-          model.getAtoms().ny(), model.getAtoms().ny());
-  fprintf(fd, "if size(params) ~= [%d,1]\n\terror('Wrong size of params, must be [%d,1]');\nend\n\n",
-          model.getAtoms().np(), model.getAtoms().np());
+  os << "if size(y) ~= [" << model.getAtoms().ny() << ",1]\n"
+     << "\terror('Wrong size of y, must be [" << model.getAtoms().ny() << ",1]');\nend\n"
+     << "if size(params) ~= [" << model.getAtoms().np() << ",1]\n"
+     << "\terror('Wrong size of params, must be [" << model.getAtoms().np() << ",1]');\nend\n\n";
 }
 
 void
-MatlabSSWriter::write_atom_assignment(FILE *fd) const
+MatlabSSWriter::write_atom_assignment(std::ostream &os) const
 {
   // write OperationTree::num_constants
-  fprintf(fd, "%% hardwired constants\n");
+  os << "% hardwired constants\n";
   ogp::EvalTree etree(model.getParser().getTree(), ogp::OperationTree::num_constants-1);
   for (int i = 0; i < ogp::OperationTree::num_constants; i++)
     {
-      format_nulary(i, fd);
+      format_nulary(i, os);
       double g = etree.eval(i);
       if (std::isnan(g))
-        fprintf(fd, " = NaN;\n");
+        os << " = NaN;\n";
       else
-        fprintf(fd, " = %12.8g;\n", etree.eval(i));
+        os << " = " << std::defaultfloat << std::setprecision(8) << etree.eval(i) << ";\n";
     }
   // write numerical constants
-  fprintf(fd, "%% numerical constants\n");
+  os << "% numerical constants\n";
   const ogp::Constants::Tconstantmap &cmap = model.getAtoms().get_constantmap();
   for (auto it : cmap)
     {
-      format_nulary(it.first, fd);
-      fprintf(fd, " = %12.8g;\n", it.second);
+      format_nulary(it.first, os);
+      os << " = " << std::defaultfloat << std::setprecision(8) << it.second << ";\n";
     }
   // write parameters
-  fprintf(fd, "%% parameter values\n");
+  os << "% parameter values\n";
   for (unsigned int ip = 0; ip < model.getAtoms().get_params().size(); ip++)
     {
       const char *parname = model.getAtoms().get_params()[ip];
       int t = model.getAtoms().index(parname, 0);
       if (t == -1)
-        {
-          fprintf(fd, "%% %s not used in the model\n", parname);
-        }
+        os << "% " << parname << " not used in the model\n";
       else
         {
-          format_nulary(t, fd);
-          fprintf(fd, " = params(%d); %% %s\n", ip+1, parname);
+          format_nulary(t, os);
+          os << " = params(" << ip+1 << "); % " << parname << "\n";
         }
     }
   // write exogenous variables
-  fprintf(fd, "%% exogenous variables to zeros\n");
+  os << "% exogenous variables to zeros\n";
   for (unsigned int ie = 0; ie < model.getAtoms().get_exovars().size(); ie++)
     {
       const char *exoname = model.getAtoms().get_exovars()[ie];
@@ -952,8 +939,8 @@ MatlabSSWriter::write_atom_assignment(FILE *fd) const
           const ogp::DynamicAtoms::Tlagmap &lmap = model.getAtoms().lagmap(exoname);
           for (auto it : lmap)
             {
-              format_nulary(it.second, fd);
-              fprintf(fd, " = 0.0; %% %s\n", exoname);
+              format_nulary(it.second, os);
+              os << " = 0.0; % " << exoname << "\n";
             }
         }
       catch (const ogu::Exception &e)
@@ -962,43 +949,43 @@ MatlabSSWriter::write_atom_assignment(FILE *fd) const
         }
     }
   // write endogenous variables
-  fprintf(fd, "%% endogenous variables to y\n");
+  os << "% endogenous variables to y\n";
   for (unsigned int ie = 0; ie < model.getAtoms().get_endovars().size(); ie++)
     {
       const char *endoname = model.getAtoms().get_endovars()[ie];
       const ogp::DynamicAtoms::Tlagmap &lmap = model.getAtoms().lagmap(endoname);
       for (auto it : lmap)
         {
-          format_nulary(it.second, fd);
-          fprintf(fd, " = y(%d); %% %s\n", ie+1, endoname);
+          format_nulary(it.second, os);
+          os << " = y(" << ie+1 << "); % " << endoname << "\n";
         }
     }
-  fprintf(fd, "\n");
+  os << "\n";
 }
 
 void
-MatlabSSWriter::write_der0_assignment(FILE *fd) const
+MatlabSSWriter::write_der0_assignment(std::ostream &os) const
 {
 
   // initialize out variable
-  fprintf(fd, "%% setting the output variable\n");
-  fprintf(fd, "out = zeros(%d, 1);\n", model.getParser().nformulas());
+  os << "% setting the output variable\n"
+     << "out = zeros(" << model.getParser().nformulas() << ", 1);\n";
 
   // fill out with the terms
   for (int i = 0; i < model.getParser().nformulas(); i++)
     {
-      fprintf(fd, "out(%d) = ", i+1);
-      format_term(model.getParser().formula(i), fd);
-      fprintf(fd, ";\n");
+      os << "out(" << i+1 << ") = ";
+      format_term(model.getParser().formula(i), os);
+      os << ";\n";
     }
 }
 
 void
-MatlabSSWriter::write_der1_assignment(FILE *fd) const
+MatlabSSWriter::write_der1_assignment(std::ostream &os) const
 {
   // initialize out variable
-  fprintf(fd, "%% setting the output variable\n");
-  fprintf(fd, "out = zeros(%d, %d);\n", model.getParser().nformulas(), model.getAtoms().ny());
+  os << "% setting the output variable\n";
+  os << "out = zeros(" << model.getParser().nformulas() << ", " << model.getAtoms().ny() << ");\n";
 
   // fill out with the terms
   const vector<int> &variables = model.getAtoms().variables();
@@ -1014,48 +1001,48 @@ MatlabSSWriter::write_der1_assignment(FILE *fd) const
           int t = fder.derivative(ogp::FoldMultiIndex(variables.size(), 1, j));
           if (t != ogp::OperationTree::zero)
             {
-              fprintf(fd, "out(%d,%d) = out(%d,%d) + ", i+1, yi+1, i+1, yi+1);
-              format_term(t, fd);
-              fprintf(fd, "; %% %s(%d)\n", name, model.getAtoms().lead(tvar));
+              os << "out(" << i+1 << "," << yi+1 << ") = out("<< i+1 << "," << yi+1 << ") + ";
+              format_term(t, os);
+              os <<  "; % " << name << "(" << model.getAtoms().lead(tvar) << ")\n";
             }
         }
     }
 }
 
 void
-MatlabSSWriter::format_term(int t, FILE *fd) const
+MatlabSSWriter::format_term(int t, std::ostream &os) const
 {
-  fprintf(fd, "t%d", t);
+  os << 't' << t;
 }
 
 void
-MatlabSSWriter::format_nulary(int t, FILE *fd) const
+MatlabSSWriter::format_nulary(int t, std::ostream &os) const
 {
-  fprintf(fd, "a%d", t);
+  os << 'a' << t;
 }
 
 void
-DebugOperationFormatter::format_nulary(int t, FILE *fd) const
+DebugOperationFormatter::format_nulary(int t, std::ostream &os) const
 {
   const DynareDynamicAtoms &a = model.getAtoms();
 
   if (t == ogp::OperationTree::zero)
-    fprintf(fd, "0");
+    os << '0';
   else if (t == ogp::OperationTree::one)
-    fprintf(fd, "1");
+    os << '1';
   else if (t == ogp::OperationTree::nan)
-    fprintf(fd, "NaN");
+    os << "NaN";
   else if (t == ogp::OperationTree::two_over_pi)
-    fprintf(fd, "2/sqrt(PI)");
+    os << "2/sqrt(PI)";
   else if (a.is_constant(t))
-    fprintf(fd, "%g", a.get_constant_value(t));
+    os << a.get_constant_value(t);
   else
     {
       int ll = a.lead(t);
-      const char *name = a.name(t);
+      std::string name{a.name(t)};
       if (ll == 0)
-        fprintf(fd, "%s", name);
+        os << name;
       else
-        fprintf(fd, "%s(%d)", name, ll);
+        os << name << '(' << ll << ')';
     }
 }

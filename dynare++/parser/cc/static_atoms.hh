@@ -9,7 +9,6 @@
 
 namespace ogp
 {
-
   class StaticAtoms : public Atoms, public Constants
   {
   protected:
@@ -42,8 +41,7 @@ namespace ogp
       import_atoms(da, otree, tmap);
     }
     /* Destructor. */
-    ~StaticAtoms()
-    override = default;
+    ~StaticAtoms() override = default;
     /** This imports atoms from dynamic atoms inserting the new
      * tree indices to the given tree (including constants). The
      * mapping from old atoms to new atoms is traced in tmap. */

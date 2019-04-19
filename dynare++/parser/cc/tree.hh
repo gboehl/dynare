@@ -8,11 +8,11 @@
 #include <map>
 #include <unordered_map>
 #include <unordered_set>
-#include <cstdio>
+#include <ostream>
+#include <memory>
 
 namespace ogp
 {
-
   using std::unordered_set;
   using std::unordered_map;
   using std::vector;
@@ -24,15 +24,15 @@ namespace ogp
    * codes, he should update the code of #OperationTree::add_unary,
    * #OperationTree::add_binary, and of course
    * #OperationTree::add_derivative. */
-  enum code_t {NONE, UMINUS, LOG, EXP, SIN, COS, TAN, SQRT, ERF,
-               ERFC, PLUS, MINUS, TIMES, DIVIDE, POWER};
+  enum class code_t {NONE, UMINUS, LOG, EXP, SIN, COS, TAN, SQRT, ERF,
+                     ERFC, PLUS, MINUS, TIMES, DIVIDE, POWER};
 
   /** Class representing a nulary, unary, or binary operation. */
   class Operation
   {
   protected:
     /** Code of the operation. */
-    code_t code{NONE};
+    code_t code{code_t::NONE};
     /** First operand. If none, then it is -1. */
     int op1{-1};
     /** Second operand. If none, then it is -1. */
@@ -50,18 +50,12 @@ namespace ogp
     {
     }
     /** Constructs a nulary operation. */
-    Operation()
-       
-    = default;
+    Operation() = default;
     /** A copy constructor. */
-    Operation(const Operation &op)
-       
-    = default;
+    Operation(const Operation &op) = default;
 
     /** Operator =. */
-    Operation &
-    operator=(const Operation &op)
-    = default;
+    Operation &operator=(const Operation &op) = default;
     /** Operator ==. */
     bool
     operator==(const Operation &op) const
@@ -86,7 +80,7 @@ namespace ogp
     size_t
     hashval() const
     {
-      return op2+1 + (op1+1)^15 + code^30;
+      return op2+1 + (op1+1)^15 + static_cast<int>(code)^30;
     }
 
     code_t
@@ -104,7 +98,6 @@ namespace ogp
     {
       return op2;
     }
-
   };
 
   /** This struct is a predicate for ordering of the operations in
@@ -133,8 +126,7 @@ namespace ogp
   struct opselector
   {
     virtual bool operator()(int t) const = 0;
-    virtual ~opselector()
-    = default;
+    virtual ~opselector() = default;
   };
 
   /** Forward declaration of OperationFormatter. */
@@ -182,7 +174,6 @@ namespace ogp
     /** This defines a type for a map mapping the unary and binary
      * operations to their indices. */
     using _Topmap = unordered_map<Operation, int, ophash>;
-    using _Topval = _Topmap::value_type;
 
     /** This is the map mapping the unary and binary operations to
      * the indices of the terms.*/
@@ -205,25 +196,18 @@ namespace ogp
     /** The tree index of the last nulary term. */
     int last_nulary;
   public:
-    /** This is a number of constants set in the following
-     * enum. This number reserves space in a vector of terms for
-     * the constants. */
-    static const int num_constants = 4;
     /** Enumeration for special terms. We need zero, one, nan and
      * 2/pi.  These will be always first four terms having indices
      * zero, one and two, three. If adding anything to this
-     * enumeration, make sure you have updated num_constants above.*/
-    enum {zero = 0, one = 1, nan = 2, two_over_pi = 3};
+     * enumeration, make sure ‘num_constants’ remains the last one.*/
+    enum {zero, one, nan, two_over_pi, num_constants};
 
     /** The unique constructor which initializes the object to
      * contain only zero, one and nan and two_over_pi.*/
     OperationTree();
 
     /** Copy constructor. */
-    OperationTree(const OperationTree &ot)
-      
-        
-    = default;
+    OperationTree(const OperationTree &ot) = default;
 
     /** Add a nulary operation. The caller is responsible for not
      * inserting two semantically equivalent nulary operations.
@@ -323,7 +307,7 @@ namespace ogp
 
     /** This outputs the operation to the given file descriptor
      * using the given OperationFormatter. */
-    void print_operation_tree(int t, FILE *fd, OperationFormatter &f) const;
+    void print_operation_tree(int t, std::ostream &os, OperationFormatter &f) const;
 
     /** Debug print of a given operation: */
     void print_operation(int t) const;
@@ -339,7 +323,7 @@ namespace ogp
     int
     get_num_op() const
     {
-      return (int) (terms.size());
+      return static_cast<int>(terms.size());
     }
   private:
     /** This registers a calculated derivative of the term in the
@@ -391,9 +375,9 @@ namespace ogp
      * are done. */
     const OperationTree &otree;
     /** The array of values. */
-    double *const values;
+    const std::unique_ptr<double[]> values;
     /** The array of evaluation flags. */
-    bool *const flags;
+    const std::unique_ptr<bool[]> flags;
     /** The index of last operation in the EvalTree. Length of
      * values and flags will be then last_operation+1. */
     int last_operation;
@@ -404,10 +388,7 @@ namespace ogp
      * (included). */
     EvalTree(const OperationTree &otree, int last = -1);
     EvalTree(const EvalTree &) = delete;
-    virtual ~EvalTree()
-    {
-      delete [] values; delete [] flags;
-    }
+    virtual ~EvalTree() = default;
     /** Set evaluation flag to all terms (besides the first
      * special terms) to false. */
     void reset_all();
@@ -431,8 +412,7 @@ namespace ogp
   {
   public:
     /** Empty virtual destructor. */
-    virtual ~OperationFormatter()
-    = default;
+    virtual ~OperationFormatter() = default;
     /** Print the formatted operation op with a given tree index t
      * to a given descriptor. (See class OperationTree to know
      * what is a tree index.) This prints all the tree. This
@@ -441,7 +421,7 @@ namespace ogp
      * term, the right hand side is a string representation of the
      * operation (which will refer to other string representation
      * of subterms). */
-    virtual void format(const Operation &op, int t, FILE *fd) = 0;
+    virtual void format(const Operation &op, int t, std::ostream &os) = 0;
   };
 
   /** The default formatter formats the formulas with a usual syntax
@@ -460,23 +440,22 @@ namespace ogp
     {
     }
     /** Format the operation with the default syntax. */
-    void format(const Operation &op, int t, FILE *fd) override;
+    void format(const Operation &op, int t, std::ostream &os) override;
     /** This prints a string represenation of the given term, for
      * example 'tmp10' for term 10. In this implementation it
      * prints $10. */
-    virtual void format_term(int t, FILE *fd) const;
+    virtual void format_term(int t, std::ostream &os) const;
     /** Print a string representation of the nulary term. */
-    virtual void format_nulary(int t, FILE *fd) const;
+    virtual void format_nulary(int t, std::ostream &os) const;
     /** Print a delimiter between two statements. By default it is
      * "\n". */
-    virtual void print_delim(FILE *fd) const;
+    virtual void print_delim(std::ostream &os) const;
   };
 
   class NularyStringConvertor
   {
   public:
-    virtual ~NularyStringConvertor()
-    = default;
+    virtual ~NularyStringConvertor() = default;
     /** Return the string representation of the atom with the tree
      * index t. */
     virtual std::string convert(int t) const = 0;
@@ -494,8 +473,7 @@ namespace ogp
     {
     }
     /** Empty virtual destructor. */
-    virtual ~OperationStringConvertor()
-    = default;
+    virtual ~OperationStringConvertor() = default;
     /** Convert the operation to the string mathematical
      * representation. This does not write any equation, just
      * returns a string representation of the formula. */

@@ -63,7 +63,7 @@ ForwSubstBuilder::substitute_for_term(int t, int i, int j)
       info.num_aux_variables++;
       const char *ss = model.atoms.get_name_storage().query(name);
       int auxt = model.eqs.add_nulary(name);
-      model.eqs.add_formula(model.eqs.add_binary(ogp::MINUS, auxt, lagt));
+      model.eqs.add_formula(model.eqs.add_binary(ogp::code_t::MINUS, auxt, lagt));
       aux_map.insert(Tsubstmap::value_type(ss, lagt));
       // now add variables and equations
       // AUXLD_*_*_2 = AUXLD_*_*_1(+1) through
@@ -80,7 +80,7 @@ ForwSubstBuilder::substitute_for_term(int t, int i, int j)
           ss = model.atoms.get_name_storage().query(name);
           auxt = model.eqs.add_nulary(name);
           // add AUXLD_*_*_{ll+1} = AUXLD_*_*_{ll}(+1)
-          model.eqs.add_formula(model.eqs.add_binary(ogp::MINUS, auxt, lastauxt_lead));
+          model.eqs.add_formula(model.eqs.add_binary(ogp::code_t::MINUS, auxt, lastauxt_lead));
           // add substitution to the map; todo: this
           // works well because in the context where
           // aux_map is used the timing doesn't matter,

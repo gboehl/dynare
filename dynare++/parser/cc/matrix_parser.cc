@@ -6,7 +6,9 @@
 #include "matrix_parser.hh"
 #include "location.hh"
 #include "matrix_tab.hh"
-#include <cstring>
+
+#include <memory>
+#include <algorithm>
 
 using namespace ogp;
 
@@ -29,16 +31,15 @@ MatrixParser::parse(int length, const char *stream)
   row_lengths.clear();
   nc = 0;
   // allocate temporary buffer and parse
-  auto *buffer = new char[length+2];
-  strncpy(buffer, stream, length);
+  auto buffer = std::make_unique<char[]>(length+2);
+  std::copy_n(stream, length, buffer.get());
   buffer[length] = '\0';
   buffer[length+1] = '\0';
   matrix_lloc.off = 0;
   matrix_lloc.ll = 0;
-  void *p = matrix__scan_buffer(buffer, (unsigned int) length+2);
+  void *p = matrix__scan_buffer(buffer.get(), static_cast<unsigned int>(length)+2);
   mparser = this;
   matrix_parse();
-  delete [] buffer;
   matrix__destroy_buffer(p);
 }
 
@@ -49,8 +50,7 @@ MatrixParser::add_item(double v)
   if (row_lengths.size() == 0)
     row_lengths.push_back(0);
   (row_lengths.back())++;
-  if (row_lengths.back() > nc)
-    nc = row_lengths.back();
+  nc = std::max(nc, row_lengths.back());
 }
 
 void
@@ -69,7 +69,7 @@ int
 MatrixParser::find_first_non_empty_row(int start) const
 {
   int r = start;
-  while (r < (int) row_lengths.size() && row_lengths[r] == 0)
+  while (r < static_cast<int>(row_lengths.size()) && row_lengths[r] == 0)
     r++;
   return r;
 }

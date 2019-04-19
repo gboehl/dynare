@@ -12,7 +12,8 @@
 #include <set>
 #include <string>
 #include <cstring>
-#include <climits>
+#include <limits>
+#include <memory>
 
 namespace ogp
 {
@@ -45,11 +46,9 @@ namespace ogp
      * allocated or not. */
     set<const char *, ltstr> name_set;
   public:
-    NameStorage()
-    = default;
+    NameStorage() = default;
     NameStorage(const NameStorage &stor);
-    virtual
-    ~NameStorage();
+    virtual ~NameStorage();
     /** Query for the name. If the name has been stored, it
      * returns its address, otherwise 0. */
     const char *query(const char *name) const;
@@ -59,7 +58,7 @@ namespace ogp
     int
     num() const
     {
-      return (int) name_store.size();
+      return static_cast<int>(name_store.size());
     }
     const char *
     get_name(int i) const
@@ -80,8 +79,7 @@ namespace ogp
     /** Map mapping a tree index of a constant to its double value. */
     Tconstantmap cmap;
   public:
-    Constants()
-    = default;
+    Constants() = default;
     /** Copy constructor. */
     Constants(const Constants &c)
       : cmap(c.cmap), cinvmap(c.cinvmap)
@@ -162,15 +160,14 @@ namespace ogp
     /** Number of variables. */
     int nv{0};
     /** Minimum lag, if there is at least one lag, than this is a negative number. */
-    int minlag{INT_MAX};
+    int minlag{std::numeric_limits<int>::max()};
     /** Maximum lead, if there is at least one lead, than this is a positive number. */
-    int maxlead{INT_MIN};
+    int maxlead{std::numeric_limits<int>::min()};
   public:
     /** Construct empty DynamicAtoms. */
     DynamicAtoms();
     DynamicAtoms(const DynamicAtoms &da);
-    ~DynamicAtoms()
-    override = default;
+    ~DynamicAtoms() override = default;
     /** Check the nulary term identified by its string
      * representation. The nulary term can be either a constant or
      * a variable. If constant, -1 is returned so that it could be
@@ -326,7 +323,7 @@ namespace ogp
      * follows: y(t-1), x(t-1), z(t-1), [y(t)], [x(t)], z(t),
      * x(t+1), where a bracketed expresion means non-existent by
      * occupying a space. The map thus will look as follows:
-     * {5->0, 6->1, 3->2, 2->5, 3->6}. Note that nothing is mapped
+     * {5→0, 6→1, 3→2, 2→5, 3→6}. Note that nothing is mapped
      * to positions 3 and 4. */
     map<int, int> positions;
     /** This maps an ordering of the list of variables in
@@ -358,11 +355,10 @@ namespace ogp
     VarOrdering(const VarOrdering &vo, const vector<const char *> &vnames,
                 const DynamicAtoms &a);
     VarOrdering(const VarOrdering &vo) = delete;
-    virtual VarOrdering *clone(const vector<const char *> &vnames,
-                               const DynamicAtoms &a) const = 0;
+    virtual std::unique_ptr<VarOrdering> clone(const vector<const char *> &vnames,
+                                               const DynamicAtoms &a) const = 0;
     /** Destructor does nothing here. */
-    virtual ~VarOrdering()
-    = default;
+    virtual ~VarOrdering() = default;
     /** This is the method setting the ordering and the map. A
      * subclass must reimplement it, possibly using a
      * preimplemented ordering. This method must be called by the

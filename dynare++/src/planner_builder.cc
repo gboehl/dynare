@@ -188,11 +188,11 @@ PlannerBuilder::beta_multiply_b()
 {
   int beta_pow = ogp::OperationTree::one;
   for (int ll = 0; ll >= minlag; ll--,
-         beta_pow = model.eqs.add_binary(ogp::TIMES, beta_pow, tbeta))
+         beta_pow = model.eqs.add_binary(ogp::code_t::TIMES, beta_pow, tbeta))
     for (int yi = 0; yi < diff_b.nrows(); yi++)
       if (diff_b(yi, ll-minlag) != ogp::OperationTree::zero)
         diff_b(yi, ll-minlag)
-          = model.eqs.add_binary(ogp::TIMES, beta_pow, diff_b(yi, ll-minlag));
+          = model.eqs.add_binary(ogp::code_t::TIMES, beta_pow, diff_b(yi, ll-minlag));
 }
 
 void
@@ -200,21 +200,21 @@ PlannerBuilder::beta_multiply_f()
 {
   int beta_pow = ogp::OperationTree::one;
   for (int ll = 0; ll <= maxlead; ll++,
-         beta_pow = model.eqs.add_binary(ogp::DIVIDE, beta_pow, tbeta))
+         beta_pow = model.eqs.add_binary(ogp::code_t::DIVIDE, beta_pow, tbeta))
     for (int yi = 0; yi < diff_f.dim1(); yi++)
       for (int fi = 0; fi < diff_f.dim2(); fi++)
         if (diff_f(yi, fi, ll-minlag) != ogp::OperationTree::zero)
           diff_f(yi, fi, ll-minlag)
-            = model.eqs.add_binary(ogp::TIMES, beta_pow, diff_f(yi, fi, ll-minlag));
+            = model.eqs.add_binary(ogp::code_t::TIMES, beta_pow, diff_f(yi, fi, ll-minlag));
 
   beta_pow = ogp::OperationTree::one;
   for (int ll = 0; ll >= minlag; ll--,
-         beta_pow = model.eqs.add_binary(ogp::TIMES, beta_pow, tbeta))
+         beta_pow = model.eqs.add_binary(ogp::code_t::TIMES, beta_pow, tbeta))
     for (int yi = 0; yi < diff_f.dim1(); yi++)
       for (int fi = 0; fi < diff_f.dim2(); fi++)
         if (diff_f(yi, fi, ll-minlag) != ogp::OperationTree::zero)
           diff_f(yi, fi, ll-minlag)
-            = model.eqs.add_binary(ogp::TIMES, beta_pow, diff_f(yi, fi, ll-minlag));
+            = model.eqs.add_binary(ogp::code_t::TIMES, beta_pow, diff_f(yi, fi, ll-minlag));
 }
 
 void
@@ -271,7 +271,7 @@ PlannerBuilder::lagrange_mult_f()
             sprintf(mult_name, "MULT%d(%d)", fset[fi], -ll);
             int tm = model.eqs.add_nulary(mult_name);
             diff_f(yi, fi, ll-minlag)
-              = model.eqs.add_binary(ogp::TIMES, tm, diff_f(yi, fi, ll-minlag));
+              = model.eqs.add_binary(ogp::code_t::TIMES, tm, diff_f(yi, fi, ll-minlag));
           }
 }
 
@@ -283,10 +283,10 @@ PlannerBuilder::form_equations()
     {
       int eq = ogp::OperationTree::zero;
       for (int ll = minlag; ll <= 0; ll++)
-        eq = model.eqs.add_binary(ogp::PLUS, eq, diff_b(yi, ll-minlag));
+        eq = model.eqs.add_binary(ogp::code_t::PLUS, eq, diff_b(yi, ll-minlag));
       for (int fi = 0; fi < diff_f.dim2(); fi++)
         for (int ll = minlag; ll <= maxlead; ll++)
-          eq = model.eqs.add_binary(ogp::PLUS, eq, diff_f(yi, fi, ll-minlag));
+          eq = model.eqs.add_binary(ogp::code_t::PLUS, eq, diff_f(yi, fi, ll-minlag));
       model.eqs.add_formula(eq);
     }
 
@@ -295,7 +295,7 @@ PlannerBuilder::form_equations()
        it != aux_map.end(); ++it)
     {
       int t = model.atoms.index((*it).first, 0);
-      model.eqs.add_formula(model.eqs.add_binary(ogp::MINUS, t, (*it).second));
+      model.eqs.add_formula(model.eqs.add_binary(ogp::code_t::MINUS, t, (*it).second));
     }
 }
 

@@ -11,6 +11,8 @@
 #include "../kord/global_check.hh"
 #include "../kord/approximation.hh"
 
+#include <fstream>
+
 int
 main(int argc, char **argv)
 {
@@ -51,28 +53,29 @@ main(int argc, char **argv)
         irf_list_ind = ((const DynareNameList &) dynare.getExogNames()).selectIndices(params.irf_list);
 
       // write matlab files
-      FILE *mfd;
       std::string mfile1(params.basename);
       mfile1 += "_f.m";
-      if (nullptr == (mfd = fopen(mfile1.c_str(), "w")))
+      std::ofstream mfd{mfile1, std::ios::out | std::ios::trunc};
+      if (mfd.fail())
         {
           fprintf(stderr, "Couldn't open %s for writing.\n", mfile1.c_str());
           exit(1);
         }
       ogdyn::MatlabSSWriter writer0(dynare.getModel(), params.basename.c_str());
       writer0.write_der0(mfd);
-      fclose(mfd);
+      mfd.close();
 
       std::string mfile2(params.basename);
       mfile2 += "_ff.m";
-      if (nullptr == (mfd = fopen(mfile2.c_str(), "w")))
+      mfd.open(mfile2, std::ios::out | std::ios::trunc);
+      if (mfd.fail())
         {
           fprintf(stderr, "Couldn't open %s for writing.\n", mfile2.c_str());
           exit(1);
         }
       ogdyn::MatlabSSWriter writer1(dynare.getModel(), params.basename.c_str());
       writer1.write_der1(mfd);
-      fclose(mfd);
+      mfd.close();
 
       // open mat file
       std::string matfile(params.basename);
@@ -206,7 +209,7 @@ main(int argc, char **argv)
     }
   catch (const ogp::ParserException &e)
     {
-      printf("Caught parser exception: %s\n", e.message());
+      std::cout << "Caught parser exception: " << e.message() << std::endl;
       return 255;
     }
 

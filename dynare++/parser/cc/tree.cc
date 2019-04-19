@@ -4,8 +4,6 @@
 
 #include "tree.hh"
 
-#include <cstdlib>
-
 #include <cmath>
 #include <limits>
 
@@ -25,13 +23,11 @@ int
 OperationTree::add_nulary()
 {
   int op = terms.size();
-  Operation nulary;
-  terms.push_back(nulary);
+  terms.push_back({});
   _Tintset s;
   s.insert(op);
   nul_incidence.push_back(s);
-  _Tderivmap empty;
-  derivatives.push_back(empty);
+  derivatives.push_back({});
   last_nulary = op;
   return op;
 }
@@ -40,21 +36,21 @@ int
 OperationTree::add_unary(code_t code, int op)
 {
   if (op == zero
-      && (code == UMINUS
-          || code == SIN
-          || code == TAN
-          || code == SQRT
-          || code == ERF))
+      && (code == code_t::UMINUS
+          || code == code_t::SIN
+          || code == code_t::TAN
+          || code == code_t::SQRT
+          || code == code_t::ERF))
     return zero;
-  if ((op == zero && code == LOG) || op == nan)
+  if ((op == zero && code == code_t::LOG) || op == nan)
     return nan;
-  if (op == zero && (code == EXP
-                     || code == COS
-                     || code == ERFC))
+  if (op == zero && (code == code_t::EXP
+                     || code == code_t::COS
+                     || code == code_t::ERFC))
     return one;
 
   Operation unary(code, op);
-  auto i = ((const _Topmap &) opmap).find(unary);
+  auto i = opmap.find(unary);
   if (i == opmap.end())
     {
       int newop = terms.size();
@@ -63,13 +59,13 @@ OperationTree::add_unary(code_t code, int op)
       // copy incidence of the operand
       nul_incidence.push_back(nul_incidence[op]);
       // insert it to opmap
-      opmap.insert(_Topval(unary, newop));
+      opmap.emplace(unary, newop);
       // add empty map of derivatives
       _Tderivmap empty;
       derivatives.push_back(empty);
       return newop;
     }
-  return (*i).second;
+  return i->second;
 }
 
 int
@@ -79,7 +75,7 @@ OperationTree::add_binary(code_t code, int op1, int op2)
   if (op1 == nan || op2 == nan)
     return nan;
   // for plus
-  if (code == PLUS)
+  if (code == code_t::PLUS)
     {
       if (op1 == zero && op2 == zero)
         return zero;
@@ -89,17 +85,17 @@ OperationTree::add_binary(code_t code, int op1, int op2)
         return op1;
     }
   // for minus
-  if (code == MINUS)
+  if (code == code_t::MINUS)
     {
       if (op1 == zero && op2 == zero)
         return zero;
       else if (op1 == zero)
-        return add_unary(UMINUS, op2);
+        return add_unary(code_t::UMINUS, op2);
       else if (op2 == zero)
         return op1;
     }
   // for times
-  if (code == TIMES)
+  if (code == code_t::TIMES)
     {
       if (op1 == zero || op2 == zero)
         return zero;
@@ -109,7 +105,7 @@ OperationTree::add_binary(code_t code, int op1, int op2)
         return op1;
     }
   // for divide
-  if (code == DIVIDE)
+  if (code == code_t::DIVIDE)
     {
       if (op1 == op2)
         return one;
@@ -119,7 +115,7 @@ OperationTree::add_binary(code_t code, int op1, int op2)
         return nan;
     }
   // for power
-  if (code == POWER)
+  if (code == code_t::POWER)
     {
       if (op1 == zero && op2 == zero)
         return nan;
@@ -134,7 +130,7 @@ OperationTree::add_binary(code_t code, int op1, int op2)
     }
 
   // order operands of commutative operations
-  if (code == TIMES || code == PLUS)
+  if (code == code_t::TIMES || code == code_t::PLUS)
     if (op1 > op2)
       {
         int tmp = op1;
@@ -144,7 +140,7 @@ OperationTree::add_binary(code_t code, int op1, int op2)
 
   // construct operation and check/add it
   Operation binary(code, op1, op2);
-  auto i = ((const _Topmap &) opmap).find(binary);
+  auto i = opmap.find(binary);
   if (i == opmap.end())
     {
       int newop = terms.size();
@@ -153,164 +149,159 @@ OperationTree::add_binary(code_t code, int op1, int op2)
       nul_incidence.push_back(nul_incidence[op1]);
       nul_incidence.back().insert(nul_incidence[op2].begin(), nul_incidence[op2].end());
       // add to opmap
-      opmap.insert(_Topval(binary, newop));
+      opmap.emplace(binary, newop);
       // add empty map of derivatives
       _Tderivmap empty;
       derivatives.push_back(empty);
       return newop;
     }
-  return (*i).second;
+  return i->second;
 }
 
 int
 OperationTree::add_derivative(int t, int v)
 {
-  if (t < 0 || t >= (int) terms.size())
+  if (t < 0 || t >= static_cast<int>(terms.size()))
     throw ogu::Exception(__FILE__, __LINE__,
                          "Wrong value for tree index in OperationTree::add_derivative");
 
   // quick returns for nulary terms or empty incidence
   if (terms[t].nary() == 0 && t != v)
-    {
-      return zero;
-    }
+    return zero;
+
   if (terms[t].nary() == 0 && t == v)
-    {
-      return one;
-    }
+    return one;
+
   if (nul_incidence[t].end() == nul_incidence[t].find(v))
-    {
-      return zero;
-    }
+    return zero;
 
   // quick return if the derivative has been registered
-  _Tderivmap::const_iterator i = derivatives[t].find(v);
+  auto i = derivatives[t].find(v);
   if (i != derivatives[t].end())
-    return (*i).second;
+    return i->second;
 
   int res = -1;
   switch (terms[t].getCode())
     {
-
-    case UMINUS:
+    case code_t::UMINUS:
       {
         int tmp = add_derivative(terms[t].getOp1(), v);
-        res = add_unary(UMINUS, tmp);
+        res = add_unary(code_t::UMINUS, tmp);
         break;
       }
-    case LOG:
+    case code_t::LOG:
       {
         int tmp = add_derivative(terms[t].getOp1(), v);
-        res = add_binary(DIVIDE, tmp, terms[t].getOp1());
+        res = add_binary(code_t::DIVIDE, tmp, terms[t].getOp1());
         break;
       }
-    case EXP:
+    case code_t::EXP:
       {
         int tmp = add_derivative(terms[t].getOp1(), v);
-        res = add_binary(TIMES, t, tmp);
+        res = add_binary(code_t::TIMES, t, tmp);
         break;
       }
-    case SIN:
+    case code_t::SIN:
       {
         int tmp = add_derivative(terms[t].getOp1(), v);
-        res = add_binary(TIMES, add_unary(COS, terms[t].getOp1()), tmp);
+        res = add_binary(code_t::TIMES, add_unary(code_t::COS, terms[t].getOp1()), tmp);
         break;
       }
-    case COS:
+    case code_t::COS:
       {
         int tmp = add_derivative(terms[t].getOp1(), v);
-        res = add_unary(UMINUS, add_binary(TIMES, add_unary(SIN, terms[t].getOp1()), tmp));
+        res = add_unary(code_t::UMINUS, add_binary(code_t::TIMES, add_unary(code_t::SIN, terms[t].getOp1()), tmp));
         break;
       }
-    case TAN:
+    case code_t::TAN:
       {
         int tmp = add_derivative(terms[t].getOp1(), v);
-        int tmp2 = add_unary(COS, terms[t].getOp1());
-        res = add_binary(DIVIDE, tmp, add_binary(TIMES, tmp2, tmp2));
+        int tmp2 = add_unary(code_t::COS, terms[t].getOp1());
+        res = add_binary(code_t::DIVIDE, tmp, add_binary(code_t::TIMES, tmp2, tmp2));
         break;
       }
-    case SQRT:
+    case code_t::SQRT:
       {
         int tmp = add_derivative(terms[t].getOp1(), v);
-        res = add_binary(DIVIDE, tmp,
-                         add_binary(PLUS, t, t));
+        res = add_binary(code_t::DIVIDE, tmp,
+                         add_binary(code_t::PLUS, t, t));
         break;
       }
-    case ERF:
+    case code_t::ERF:
       {
-        int tmp = add_binary(TIMES, terms[t].getOp1(), terms[t].getOp1());
-        tmp = add_unary(UMINUS, tmp);
-        tmp = add_unary(EXP, tmp);
+        int tmp = add_binary(code_t::TIMES, terms[t].getOp1(), terms[t].getOp1());
+        tmp = add_unary(code_t::UMINUS, tmp);
+        tmp = add_unary(code_t::EXP, tmp);
         int der = add_derivative(terms[t].getOp1(), v);
-        tmp = add_binary(TIMES, tmp, der);
-        res = add_binary(TIMES, two_over_pi, tmp);
+        tmp = add_binary(code_t::TIMES, tmp, der);
+        res = add_binary(code_t::TIMES, two_over_pi, tmp);
         break;
       }
-    case ERFC:
+    case code_t::ERFC:
       {
-        int tmp = add_binary(TIMES, terms[t].getOp1(), terms[t].getOp1());
-        tmp = add_unary(UMINUS, tmp);
-        tmp = add_unary(EXP, tmp);
+        int tmp = add_binary(code_t::TIMES, terms[t].getOp1(), terms[t].getOp1());
+        tmp = add_unary(code_t::UMINUS, tmp);
+        tmp = add_unary(code_t::EXP, tmp);
         int der = add_derivative(terms[t].getOp1(), v);
-        tmp = add_binary(TIMES, tmp, der);
-        tmp = add_binary(TIMES, two_over_pi, tmp);
-        res = add_unary(UMINUS, tmp);
+        tmp = add_binary(code_t::TIMES, tmp, der);
+        tmp = add_binary(code_t::TIMES, two_over_pi, tmp);
+        res = add_unary(code_t::UMINUS, tmp);
         break;
       }
-    case PLUS:
+    case code_t::PLUS:
       {
         int tmp1 = add_derivative(terms[t].getOp1(), v);
         int tmp2 = add_derivative(terms[t].getOp2(), v);
-        res = add_binary(PLUS, tmp1, tmp2);
+        res = add_binary(code_t::PLUS, tmp1, tmp2);
         break;
       }
-    case MINUS:
+    case code_t::MINUS:
       {
         int tmp1 = add_derivative(terms[t].getOp1(), v);
         int tmp2 = add_derivative(terms[t].getOp2(), v);
-        res = add_binary(MINUS, tmp1, tmp2);
+        res = add_binary(code_t::MINUS, tmp1, tmp2);
         break;
       }
-    case TIMES:
+    case code_t::TIMES:
       {
         int tmp1 = add_derivative(terms[t].getOp1(), v);
         int tmp2 = add_derivative(terms[t].getOp2(), v);
-        int res1 = add_binary(TIMES, terms[t].getOp1(), tmp2);
-        int     res2 = add_binary(TIMES, tmp1, terms[t].getOp2());
-        res = add_binary(PLUS, res1, res2);
+        int res1 = add_binary(code_t::TIMES, terms[t].getOp1(), tmp2);
+        int     res2 = add_binary(code_t::TIMES, tmp1, terms[t].getOp2());
+        res = add_binary(code_t::PLUS, res1, res2);
         break;
       }
-    case DIVIDE:
+    case code_t::DIVIDE:
       {
         int tmp1 = add_derivative(terms[t].getOp1(), v);
         int tmp2 = add_derivative(terms[t].getOp2(), v);
         if (tmp2 == zero)
-          res = add_binary(DIVIDE, tmp1, terms[t].getOp2());
+          res = add_binary(code_t::DIVIDE, tmp1, terms[t].getOp2());
         else
           {
-            int nom = add_binary(MINUS,
-                                 add_binary(TIMES, tmp1, terms[t].getOp2()),
-                                 add_binary(TIMES, tmp2, terms[t].getOp1()));
-            int den = add_binary(TIMES, terms[t].getOp2(), terms[t].getOp2());
-            res = add_binary(DIVIDE, nom, den);
+            int nom = add_binary(code_t::MINUS,
+                                 add_binary(code_t::TIMES, tmp1, terms[t].getOp2()),
+                                 add_binary(code_t::TIMES, tmp2, terms[t].getOp1()));
+            int den = add_binary(code_t::TIMES, terms[t].getOp2(), terms[t].getOp2());
+            res = add_binary(code_t::DIVIDE, nom, den);
           }
         break;
       }
-    case POWER:
+    case code_t::POWER:
       {
         int tmp1 = add_derivative(terms[t].getOp1(), v);
         int tmp2 = add_derivative(terms[t].getOp2(), v);
-        int s1 = add_binary(TIMES, tmp2,
-                            add_binary(TIMES, t,
-                                       add_unary(LOG, terms[t].getOp1())));
-        int s2 = add_binary(TIMES, tmp1,
-                            add_binary(TIMES, terms[t].getOp2(),
-                                       add_binary(POWER, terms[t].getOp1(),
-                                                  add_binary(MINUS, terms[t].getOp2(), one))));
-        res = add_binary(PLUS, s1, s2);
+        int s1 = add_binary(code_t::TIMES, tmp2,
+                            add_binary(code_t::TIMES, t,
+                                       add_unary(code_t::LOG, terms[t].getOp1())));
+        int s2 = add_binary(code_t::TIMES, tmp1,
+                            add_binary(code_t::TIMES, terms[t].getOp2(),
+                                       add_binary(code_t::POWER, terms[t].getOp1(),
+                                                  add_binary(code_t::MINUS, terms[t].getOp2(), one))));
+        res = add_binary(code_t::PLUS, s1, s2);
         break;
       }
-    case NONE:
+    case code_t::NONE:
       break;
     }
 
@@ -336,7 +327,7 @@ OperationTree::add_substitution(int t, const map<int, int> &subst,
   // return substitution of t if it is in the map
   auto it = subst.find(t);
   if (subst.end() != it)
-    return (*it).second;
+    return it->second;
 
   int nary = otree.terms[t].nary();
   if (nary == 2)
@@ -391,7 +382,7 @@ void
 OperationTree::register_derivative(int t, int v, int tder)
 {
   // todo: might check that the insert inserts a new pair
-  derivatives[t].insert(_Tderivmap::value_type(v, tder));
+  derivatives[t].emplace(v, tder);
 }
 
 unordered_set<int>
@@ -416,9 +407,7 @@ OperationTree::select_terms(int t, const opselector &sel, unordered_set<int> &su
         select_terms(op.getOp2(), sel, subterms);
       }
     else if (op.nary() == 1)
-      {
-        select_terms(op.getOp1(), sel, subterms);
-      }
+      select_terms(op.getOp1(), sel, subterms);
 }
 
 unordered_set<int>
@@ -473,23 +462,23 @@ OperationTree::forget_derivative_maps()
 }
 
 void
-OperationTree::print_operation_tree(int t, FILE *fd, OperationFormatter &f) const
+OperationTree::print_operation_tree(int t, std::ostream &os, OperationFormatter &f) const
 {
-  f.format(terms[t], t, fd);
+  f.format(terms[t], t, os);
 }
 
 void
 OperationTree::print_operation(int t) const
 {
   DefaultOperationFormatter dof(*this);
-  print_operation_tree(t, stdout, dof);
+  print_operation_tree(t, std::cout, dof);
 }
 
 void
 OperationTree::update_nul_incidence_after_nularify(int t)
 {
   unordered_set<int> updated;
-  for (int tnode = num_constants; tnode < (int) terms.size(); tnode++)
+  for (int tnode = num_constants; tnode < static_cast<int>(terms.size()); tnode++)
     {
       const Operation &op = terms[tnode];
       if (op.nary() == 2)
@@ -535,12 +524,12 @@ OperationTree::update_nul_incidence_after_nularify(int t)
 
 EvalTree::EvalTree(const OperationTree &ot, int last)
   : otree(ot),
-    values(new double[(last == -1) ? ot.terms.size() : last+1]),
-    flags(new bool[(last == -1) ? ot.terms.size() : last+1]),
+    values(std::make_unique<double[]>((last == -1) ? ot.terms.size() : last+1)),
+    flags(std::make_unique<bool[]>((last == -1) ? ot.terms.size() : last+1)),
     last_operation((last == -1) ? ot.terms.size()-1 : last)
 {
   if (last_operation < OperationTree::num_constants-1
-      || last_operation > (int) ot.terms.size()-1)
+      || last_operation > static_cast<int>(ot.terms.size())-1)
     throw ogu::Exception(__FILE__, __LINE__,
                          "Wrong last in EvalTree constructor.");
 
@@ -594,23 +583,23 @@ EvalTree::eval(int t)
         {
           double r1 = eval(op.getOp1());
           double res;
-          if (op.getCode() == UMINUS)
+          if (op.getCode() == code_t::UMINUS)
             res = -r1;
-          else if (op.getCode() == LOG)
+          else if (op.getCode() == code_t::LOG)
             res = log(r1);
-          else if (op.getCode() == EXP)
+          else if (op.getCode() == code_t::EXP)
             res = exp(r1);
-          else if (op.getCode() == SIN)
+          else if (op.getCode() == code_t::SIN)
             res = sin(r1);
-          else if (op.getCode() == COS)
+          else if (op.getCode() == code_t::COS)
             res = cos(r1);
-          else if (op.getCode() == TAN)
+          else if (op.getCode() == code_t::TAN)
             res = tan(r1);
-          else if (op.getCode() == SQRT)
+          else if (op.getCode() == code_t::SQRT)
             res = sqrt(r1);
-          else if (op.getCode() == ERF)
+          else if (op.getCode() == code_t::ERF)
             res = erf(r1);
-          else if (op.getCode() == ERFC)
+          else if (op.getCode() == code_t::ERFC)
             res = erfc(r1);
           else
             {
@@ -624,19 +613,19 @@ EvalTree::eval(int t)
       else if (op.nary() == 2)
         {
           double res;
-          if (op.getCode() == PLUS)
+          if (op.getCode() == code_t::PLUS)
             {
               double r1 = eval(op.getOp1());
               double r2 = eval(op.getOp2());
               res = r1 + r2;
             }
-          else if (op.getCode() == MINUS)
+          else if (op.getCode() == code_t::MINUS)
             {
               double r1 = eval(op.getOp1());
               double r2 = eval(op.getOp2());
               res = r1 - r2;
             }
-          else if (op.getCode() == TIMES)
+          else if (op.getCode() == code_t::TIMES)
             {
               // pickup less complex formula first
               unsigned int nul1 = otree.nulary_of_term(op.getOp1()).size();
@@ -664,7 +653,7 @@ EvalTree::eval(int t)
                     }
                 }
             }
-          else if (op.getCode() == DIVIDE)
+          else if (op.getCode() == code_t::DIVIDE)
             {
               double r1 = eval(op.getOp1());
               if (r1 == 0)
@@ -675,7 +664,7 @@ EvalTree::eval(int t)
                   res = r1 / r2;
                 }
             }
-          else if (op.getCode() == POWER)
+          else if (op.getCode() == code_t::POWER)
             {
               // suppose that more complex is the first op in average
               double r2 = eval(op.getOp2());
@@ -729,7 +718,7 @@ EvalTree::print() const
 }
 
 void
-DefaultOperationFormatter::format(const Operation &op, int t, FILE *fd)
+DefaultOperationFormatter::format(const Operation &op, int t, std::ostream &os)
 {
   // add to the stop_set
   if (stop_set.end() == stop_set.find(t))
@@ -745,68 +734,66 @@ DefaultOperationFormatter::format(const Operation &op, int t, FILE *fd)
       int t2 = op.getOp2();
       const Operation &op2 = otree.terms[t2];
       if (op1.nary() > 0)
-        format(op1, t1, fd);
+        format(op1, t1, os);
       if (op2.nary() > 0)
-        format(op2, t2, fd);
+        format(op2, t2, os);
     }
   if (op.nary() == 1)
     {
       int t1 = op.getOp1();
       const Operation &op1 = otree.terms[t1];
       if (op1.nary() > 0)
-        format(op1, t1, fd);
+        format(op1, t1, os);
     }
 
   // print 'term ='
-  format_term(t, fd);
-  fprintf(fd, " = ");
+  format_term(t, os);
+  os << " = ";
   if (op.nary() == 0)
-    {
-      format_nulary(t, fd);
-    }
+    format_nulary(t, os);
   else if (op.nary() == 1)
     {
       int t1 = op.getOp1();
       const Operation &op1 = otree.terms[t1];
-      const char *opname = "unknown";
+      std::string opname = "unknown";
       switch (op.getCode())
         {
-        case UMINUS:
+        case code_t::UMINUS:
           opname = "-";
           break;
-        case LOG:
+        case code_t::LOG:
           opname = "log";
           break;
-        case EXP:
+        case code_t::EXP:
           opname = "exp";
           break;
-        case SIN:
+        case code_t::SIN:
           opname = "sin";
           break;
-        case COS:
+        case code_t::COS:
           opname = "cos";
           break;
-        case TAN:
+        case code_t::TAN:
           opname = "tan";
           break;
-        case SQRT:
+        case code_t::SQRT:
           opname = "sqrt";
           break;
-        case ERF:
+        case code_t::ERF:
           opname = "erf";
           break;
-        case ERFC:
+        case code_t::ERFC:
           opname = "erfc";
           break;
         default:
           break;
         }
-      fprintf(fd, "%s(", opname);
+      os << opname << '(';
       if (op1.nary() == 0)
-        format_nulary(t1, fd);
+        format_nulary(t1, os);
       else
-        format_term(t1, fd);
-      fprintf(fd, ")");
+        format_term(t1, os);
+      os << ")";
     }
   else
     {
@@ -814,65 +801,64 @@ DefaultOperationFormatter::format(const Operation &op, int t, FILE *fd)
       const Operation &op1 = otree.terms[t1];
       int t2 = op.getOp2();
       const Operation &op2 = otree.terms[t2];
-      const char *opname = "unknown";
+      std::string opname = "unknown";
       switch (op.getCode())
         {
-        case PLUS:
+        case code_t::PLUS:
           opname = "+";
           break;
-        case MINUS:
+        case code_t::MINUS:
           opname = "-";
           break;
-        case TIMES:
+        case code_t::TIMES:
           opname = "*";
           break;
-        case DIVIDE:
+        case code_t::DIVIDE:
           opname = "/";
           break;
-        case POWER:
+        case code_t::POWER:
           opname = "^";
           break;
         default:
           break;
         }
       if (op1.nary() == 0)
-        format_nulary(t1, fd);
+        format_nulary(t1, os);
       else
-        format_term(t1, fd);
-      fprintf(fd, " %s ", opname);
+        format_term(t1, os);
+      os << ' ' << opname << ' ';
       if (op2.nary() == 0)
-        format_nulary(t2, fd);
+        format_nulary(t2, os);
       else
-        format_term(t2, fd);
+        format_term(t2, os);
     }
 
-  print_delim(fd);
-
+  print_delim(os);
 }
 
 void
-DefaultOperationFormatter::format_term(int t, FILE *fd) const
+DefaultOperationFormatter::format_term(int t, std::ostream &os) const
 {
-  fprintf(fd, "$%d", t);
+  os << '$' << t;
 }
 
 void
-DefaultOperationFormatter::format_nulary(int t, FILE *fd) const
+DefaultOperationFormatter::format_nulary(int t, std::ostream &os) const
 {
   if (t == OperationTree::zero)
-    fprintf(fd, "0");
+    os << '0';
   else if (t == OperationTree::one)
-    fprintf(fd, "1");
+    os << '1';
   else if (t == OperationTree::nan)
-    fprintf(fd, "NaN");
+    os << "NaN";
   else
-    fprintf(fd, "$%d", t);
+    os << '$' << t;
 }
 
 void
-DefaultOperationFormatter::print_delim(FILE *fd) const
+DefaultOperationFormatter::print_delim(std::ostream &os) const
 {
-  fprintf(fd, ";\n");
+  os << ";\n";
 }
 
 std::string
@@ -907,31 +893,31 @@ OperationStringConvertor::convert(const Operation &op, int t) const
       const char *opname = "unknown";
       switch (op.getCode())
         {
-        case UMINUS:
+        case code_t::UMINUS:
           opname = "-";
           break;
-        case LOG:
+        case code_t::LOG:
           opname = "log";
           break;
-        case EXP:
+        case code_t::EXP:
           opname = "exp";
           break;
-        case SIN:
+        case code_t::SIN:
           opname = "sin";
           break;
-        case COS:
+        case code_t::COS:
           opname = "cos";
           break;
-        case TAN:
+        case code_t::TAN:
           opname = "tan";
           break;
-        case SQRT:
+        case code_t::SQRT:
           opname = "sqrt";
           break;
-        case ERF:
+        case code_t::ERF:
           opname = "erf";
           break;
-        case ERFC:
+        case code_t::ERFC:
           opname = "erfc";
           break;
         default:
@@ -949,19 +935,19 @@ OperationStringConvertor::convert(const Operation &op, int t) const
       const char *opname = "unknown";
       switch (op.getCode())
         {
-        case PLUS:
+        case code_t::PLUS:
           opname = "+";
           break;
-        case MINUS:
+        case code_t::MINUS:
           opname = "-";
           break;
-        case TIMES:
+        case code_t::TIMES:
           opname = "*";
           break;
-        case DIVIDE:
+        case code_t::DIVIDE:
           opname = "/";
           break;
-        case POWER:
+        case code_t::POWER:
           opname = "^";
           break;
         default:
@@ -970,15 +956,15 @@ OperationStringConvertor::convert(const Operation &op, int t) const
       // decide about parenthesis
       bool op1_par = true;
       bool op2_par = true;
-      if (op.getCode() == PLUS)
+      if (op.getCode() == code_t::PLUS)
         {
           op1_par = false;
           op2_par = false;
         }
-      else if (op.getCode() == MINUS)
+      else if (op.getCode() == code_t::MINUS)
         {
           op1_par = false;
-          if (op2.getCode() != MINUS && op2.getCode() != PLUS)
+          if (op2.getCode() != code_t::MINUS && op2.getCode() != code_t::PLUS)
             op2_par = false;
         }
       else

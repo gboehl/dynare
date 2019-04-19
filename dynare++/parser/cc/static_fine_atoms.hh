@@ -10,7 +10,6 @@
 
 namespace ogp
 {
-
   /** This class represents static atoms distinguishing between
    * parameters, endogenous and exogenous variables. The class
    * maintains also ordering of all three categories (referenced as
@@ -61,8 +60,7 @@ namespace ogp
      * atoms of exogenous variables. */
     vector<int> exo_atoms_map;
   public:
-    StaticFineAtoms()
-    = default;
+    StaticFineAtoms() = default;
     /** Copy constructor making a new storage for atom names. */
     StaticFineAtoms(const StaticFineAtoms &sfa);
     /** Conversion from dynamic FineAtoms taking its outer
@@ -84,8 +82,7 @@ namespace ogp
     {
       StaticFineAtoms::import_atoms(fa, otree, tmap, dummy);
     }
-    ~StaticFineAtoms()
-    override = default;
+    ~StaticFineAtoms() override = default;
     /** This adds atoms from dynamic atoms inserting new tree
      * indices to the given tree and tracing the mapping from old
      * atoms to new atoms in tmap. The ordering of the static
@@ -166,13 +163,13 @@ namespace ogp
     int
     nexo() const
     {
-      return (int) exovars.size();
+      return static_cast<int>(exovars.size());
     }
     /** Return the number of parameters. */
     int
     np() const
     {
-      return (int) (params.size());
+      return static_cast<int>(params.size());
     }
     /** Register unique endogenous variable name. The order of
      * calls defines the endo outer ordering. The method is
@@ -202,7 +199,6 @@ namespace ogp
      * storage. */
     void register_param(const char *name);
   };
-
 };
 
 #endif

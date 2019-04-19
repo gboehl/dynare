@@ -47,27 +47,27 @@ extern ogp::FormulaParser* fparser;
  equation_list : equation_list equation | equation ;
 
  equation : expression EQUAL_SIGN expression ';' 
-                                  {fparser->add_formula(fparser->add_binary(ogp::MINUS,$1,$3));}
+                                  {fparser->add_formula(fparser->add_binary(ogp::code_t::MINUS,$1,$3));}
       | expression ';'
                                   {fparser->add_formula($1);}
       ;
 
   expression : '(' expression ')' { $$ = $2;}
-      | expression YPLUS expression {$$=fparser->add_binary(ogp::PLUS,$1,$3);}
-      | expression YMINUS expression {$$=fparser->add_binary(ogp::MINUS,$1,$3);}
-      | expression YTIMES expression {$$=fparser->add_binary(ogp::TIMES,$1,$3);}
-      | expression YDIVIDE expression {$$=fparser->add_binary(ogp::DIVIDE,$1,$3);}
-      | expression YPOWER expression {$$=fparser->add_binary(ogp::POWER,$1,$3);}
-      | YMINUS expression %prec YUMINUS {$$=fparser->add_unary(ogp::UMINUS,$2);}
+      | expression YPLUS expression {$$=fparser->add_binary(ogp::code_t::PLUS,$1,$3);}
+      | expression YMINUS expression {$$=fparser->add_binary(ogp::code_t::MINUS,$1,$3);}
+      | expression YTIMES expression {$$=fparser->add_binary(ogp::code_t::TIMES,$1,$3);}
+      | expression YDIVIDE expression {$$=fparser->add_binary(ogp::code_t::DIVIDE,$1,$3);}
+      | expression YPOWER expression {$$=fparser->add_binary(ogp::code_t::POWER,$1,$3);}
+      | YMINUS expression %prec YUMINUS {$$=fparser->add_unary(ogp::code_t::UMINUS,$2);}
       | YPLUS expression %prec YUPLUS {$$ = $2;}
-      | YSIN '(' expression ')' {$$=fparser->add_unary(ogp::SIN,$3);}
-      | YCOS '(' expression ')' {$$=fparser->add_unary(ogp::COS,$3);}
-      | YTAN '(' expression ')' {$$=fparser->add_unary(ogp::TAN,$3);}
-      | YEXP '(' expression ')' {$$=fparser->add_unary(ogp::EXP,$3);}
-      | YLOG '(' expression ')' {$$=fparser->add_unary(ogp::LOG,$3);}
-      | YSQRT '(' expression ')' {$$=fparser->add_unary(ogp::SQRT,$3);}
-      | YERF '(' expression ')' {$$=fparser->add_unary(ogp::ERF,$3);}
-      | YERFC '(' expression ')' {$$=fparser->add_unary(ogp::ERFC,$3);}
+      | YSIN '(' expression ')' {$$=fparser->add_unary(ogp::code_t::SIN,$3);}
+      | YCOS '(' expression ')' {$$=fparser->add_unary(ogp::code_t::COS,$3);}
+      | YTAN '(' expression ')' {$$=fparser->add_unary(ogp::code_t::TAN,$3);}
+      | YEXP '(' expression ')' {$$=fparser->add_unary(ogp::code_t::EXP,$3);}
+      | YLOG '(' expression ')' {$$=fparser->add_unary(ogp::code_t::LOG,$3);}
+      | YSQRT '(' expression ')' {$$=fparser->add_unary(ogp::code_t::SQRT,$3);}
+      | YERF '(' expression ')' {$$=fparser->add_unary(ogp::code_t::ERF,$3);}
+      | YERFC '(' expression ')' {$$=fparser->add_unary(ogp::code_t::ERFC,$3);}
       | YDIFF '(' expression ',' NAME ')' {$$=fparser->add_derivative($3, fparser->add_nulary($5));}
       | NAME {$$=fparser->add_nulary($1);}
       | DNUMBER {$$=fparser->add_nulary($1);}

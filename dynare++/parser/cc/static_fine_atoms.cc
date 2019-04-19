@@ -22,21 +22,21 @@ StaticFineAtoms::StaticFineAtoms(const StaticFineAtoms &sfa)
     {
       const char *name = varnames.query(sfa.params[i]);
       params.push_back(name);
-      param_outer_map.insert(Tvarintmap::value_type(name, i));
+      param_outer_map.emplace(name, i);
     }
 
   for (unsigned int i = 0; i < sfa.endovars.size(); i++)
     {
       const char *name = varnames.query(sfa.endovars[i]);
       endovars.push_back(name);
-      endo_outer_map.insert(Tvarintmap::value_type(name, i));
+      endo_outer_map.emplace(name, i);
     }
 
   for (unsigned int i = 0; i < sfa.exovars.size(); i++)
     {
       const char *name = varnames.query(sfa.exovars[i]);
       exovars.push_back(name);
-      exo_outer_map.insert(Tvarintmap::value_type(name, i));
+      exo_outer_map.emplace(name, i);
     }
 }
 
@@ -97,7 +97,7 @@ int
 StaticFineAtoms::check_variable(const char *name) const
 {
   const char *ss = varnames.query(name);
-  if (ss == nullptr)
+  if (!ss)
     throw ParserException(string("Variable <")+name+"> not declared.", 0);
   return index(name);
 }
@@ -139,7 +139,7 @@ StaticFineAtoms::name2outer_param(const char *name) const
   if (it == param_outer_map.end())
     throw ogu::Exception(__FILE__, __LINE__,
                          "Name is not a parameter in StaticFineAtoms::name2outer_param");
-  return (*it).second;
+  return it->second;
 }
 
 int
@@ -149,7 +149,7 @@ StaticFineAtoms::name2outer_endo(const char *name) const
   if (it == endo_outer_map.end())
     throw ogu::Exception(__FILE__, __LINE__,
                          "Name is not an endogenous variable in StaticFineAtoms::name2outer_endo");
-  return (*it).second;
+  return it->second;
 }
 
 int
@@ -159,7 +159,7 @@ StaticFineAtoms::name2outer_exo(const char *name) const
   if (it == exo_outer_map.end())
     throw ogu::Exception(__FILE__, __LINE__,
                          "Name is not an exogenous variable in StaticFineAtoms::name2outer_exo");
-  return (*it).second;
+  return it->second;
 }
 
 void
@@ -195,10 +195,10 @@ StaticFineAtoms::print() const
   StaticAtoms::print();
   printf("endo atoms map:\n");
   for (unsigned int i = 0; i < endo_atoms_map.size(); i++)
-    printf("%d --> %d\n", i, endo_atoms_map[i]);
+    printf(u8"%d → %d\n", i, endo_atoms_map[i]);
   printf("exo atoms map:\n");
   for (unsigned int i = 0; i < exo_atoms_map.size(); i++)
-    printf("%d --> %d\n", i, exo_atoms_map[i]);
+    printf(u8"%d → %d\n", i, exo_atoms_map[i]);
   printf("der atoms:\n");
   for (unsigned int i = 0; i < der_atoms.size(); i++)
     printf("%d\t%d\n", i, der_atoms[i]);
@@ -208,30 +208,30 @@ void
 StaticFineAtoms::register_endo(const char *name)
 {
   const char *ss = varnames.query(name);
-  if (ss == nullptr)
+  if (!ss)
     throw ogp::ParserException(string("Endogenous variable <")
                                +name+"> not found in storage.", 0);
   endovars.push_back(ss);
-  endo_outer_map.insert(Tvarintmap::value_type(ss, endovars.size()-1));
+  endo_outer_map.emplace(ss, endovars.size()-1);
 }
 
 void
 StaticFineAtoms::register_exo(const char *name)
 {
   const char *ss = varnames.query(name);
-  if (ss == nullptr)
+  if (!ss)
     throw ogp::ParserException(string("Exogenous variable <")
                                +name+"> not found in storage.", 0);
   exovars.push_back(ss);
-  exo_outer_map.insert(Tvarintmap::value_type(ss, exovars.size()-1));
+  exo_outer_map.emplace(ss, exovars.size()-1);
 }
 
 void
 StaticFineAtoms::register_param(const char *name)
 {
   const char *ss = varnames.query(name);
-  if (ss == nullptr)
+  if (!ss)
     throw ogp::ParserException(string("Parameter <")+name+"> not found in storage.", 0);
   params.push_back(ss);
-  param_outer_map.insert(Tvarintmap::value_type(ss, params.size()-1));
+  param_outer_map.emplace(ss, params.size()-1);
 }

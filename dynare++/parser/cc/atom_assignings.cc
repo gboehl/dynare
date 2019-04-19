@@ -10,6 +10,7 @@
 
 #include <limits>
 #include <iostream>
+#include <algorithm>
 
 using namespace ogp;
 
@@ -19,7 +20,7 @@ AtomAssignings::AtomAssignings(const AtomAssignings &aa, ogp::StaticAtoms &a)
 {
   // fill the lname2expr
   for (auto it : aa.lname2expr)
-    lname2expr.insert(Tvarintmap::value_type(left_names.query(it.first), it.second));
+    lname2expr.emplace(left_names.query(it.first), it.second);
 }
 
 /** A global symbol for passing info to the AtomAssignings from
@@ -36,16 +37,15 @@ extern location_type asgn_lloc;
 void
 AtomAssignings::parse(int length, const char *stream)
 {
-  auto *buffer = new char[length+2];
-  strncpy(buffer, stream, length);
+  auto buffer = std::make_unique<char[]>(length+2);
+  std::copy_n(stream, length, buffer.get());
   buffer[length] = '\0';
   buffer[length+1] = '\0';
   asgn_lloc.off = 0;
   asgn_lloc.ll = 0;
-  void *p = asgn__scan_buffer(buffer, (unsigned int) length+2);
+  void *p = asgn__scan_buffer(buffer.get(), static_cast<unsigned int>(length)+2);
   aparser = this;
   asgn_parse();
-  delete [] buffer;
   asgn__destroy_buffer(p);
 }
 
@@ -89,7 +89,7 @@ AtomAssignings::add_assignment_to_double(const char *name, double val)
 
   // register name of the left hand side and put to lname2expr
   const char *ss = left_names.insert(name);
-  lname2expr.insert(Tvarintmap::value_type(ss, order.size()-1));
+  lname2expr.emplace(ss, order.size()-1);
 }
 
 void
@@ -173,7 +173,7 @@ AtomAssignings::apply_subst(const AtomSubstitutions::Toldnamemap &mm)
             {
               const char *newname = itt.first;
               const char *nn = left_names.insert(newname);
-              lname2expr.insert(Tvarintmap::value_type(nn, expr.nformulas()-1));
+              lname2expr.emplace(nn, expr.nformulas()-1);
             }
         }
     }
@@ -182,11 +182,11 @@ AtomAssignings::apply_subst(const AtomSubstitutions::Toldnamemap &mm)
 void
 AtomAssignings::print() const
 {
-  printf("Atom Assignings\nExpressions:\n");
+  std::cout << "Atom Assignings\nExpressions:\n";
   expr.print();
-  printf("Left names:\n");
+  std::cout << "Left names:\n";
   for (auto it : lname2expr)
-    printf("%s ==> %d (t=%d)\n", it.first, expr.formula(it.second), order[it.second]);
+    std::cout << it.first << u8" ⇒ " << expr.formula(it.second) << " (t=" << order[it.second] << ")\n";
 }
 
 void
@@ -207,7 +207,7 @@ AtomAsgnEvaluator::setValues(EvalTree &et) const
           if (it == user_values.end())
             et.set_nulary(t, nan);
           else
-            et.set_nulary(t, (*it).second);
+            et.set_nulary(t, it->second);
         }
     }
 }
@@ -220,9 +220,9 @@ AtomAsgnEvaluator::set_user_value(const char *name, double val)
     {
       auto it = user_values.find(t);
       if (it == user_values.end())
-        user_values.insert(Tusrvalmap::value_type(t, val));
+        user_values.emplace(t, val);
       else
-        (*it).second = val;
+        it->second = val;
     }
 }
 
@@ -244,5 +244,5 @@ AtomAsgnEvaluator::get_value(const char *name) const
   if (it == aa.lname2expr.end())
     return std::numeric_limits<double>::quiet_NaN();
   else
-    return operator[]((*it).second);
+    return operator[](it->second);
 }

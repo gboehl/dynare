@@ -2,7 +2,9 @@
 #include "parser_exception.hh"
 #include "location.hh"
 #include "csv_tab.hh"
-#include <cstring>
+
+#include <memory>
+#include <algorithm>
 
 using namespace ogp;
 
@@ -28,17 +30,16 @@ void
 CSVParser::csv_parse(int length, const char *str)
 {
   // allocate temporary buffer and parse
-  auto *buffer = new char[length+2];
-  strncpy(buffer, str, length);
+  auto buffer = std::make_unique<char[]>(length+2);
+  std::copy_n(str, length, buffer.get());
   buffer[length] = '\0';
   buffer[length+1] = '\0';
   csv_lloc.off = 0;
   csv_lloc.ll = 0;
-  parsed_string = buffer;
-  void *p = csv__scan_buffer(buffer, (unsigned int) length+2);
+  parsed_string = buffer.get();
+  void *p = csv__scan_buffer(buffer.get(), static_cast<unsigned int>(length)+2);
   csv_parser = this;
   ::csv_parse();
-  delete [] buffer;
   csv__destroy_buffer(p);
   parsed_string = nullptr;
 }

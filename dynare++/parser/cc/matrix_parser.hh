@@ -5,7 +5,6 @@
 #ifndef OGP_MATRIX_PARSER
 #define OGP_MATRIX_PARSER
 
-#include <cstdlib> // For NULL
 #include <vector>
 
 namespace ogp
@@ -33,19 +32,14 @@ namespace ogp
     /** Maximum number of row lengths. */
     int nc{0};
   public:
-    MatrixParser()
-       
-    = default;
-    MatrixParser(const MatrixParser &mp)
-       
-    = default;
-    virtual ~MatrixParser()
-    = default;
+    MatrixParser() = default;
+    MatrixParser(const MatrixParser &mp) = default;
+    virtual ~MatrixParser() = default;
     /** Return a number of read rows. */
     int
     nrows() const
     {
-      return (int) row_lengths.size();
+      return static_cast<int>(row_lengths.size());
     }
     /** Return a maximum number of items in the rows. */
     int
@@ -91,8 +85,7 @@ namespace ogp
     int r{0};
 
   public:
-    MPIterator()  
-    = default;
+    MPIterator() = default;
     /** Constructs an iterator pointing to the beginning of the
      * parsed matrix. */
     MPIterator(const MatrixParser &mp);
@@ -118,9 +111,7 @@ namespace ogp
       return c;
     }
     /** Assignment operator. */
-    MPIterator &
-    operator=(const MPIterator &it)
-    = default;
+    MPIterator &operator=(const MPIterator &it) = default;
     /** Return true if the iterators are the same, this is if they
      * have the same underlying object and the same item index. */
     bool

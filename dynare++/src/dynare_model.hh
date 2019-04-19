@@ -14,6 +14,7 @@
 
 #include <map>
 #include <unordered_set>
+#include <ostream>
 
 namespace ogdyn
 {
@@ -405,18 +406,18 @@ namespace ogdyn
      * virtual methods for writing a preamble, then assignment of
      * atoms, and then assignment for resulting object. These are
      * language dependent and are implemented in the subclass. */
-    void write_der0(FILE *fd);
+    void write_der0(std::ostream &os);
     /** This writes the evaluation of the first order derivative of
         the system. It calls pure virtual methods for writing a
         preamble, assignment, and assignemnt of the resulting
         objects. */
-    void write_der1(FILE *fd);
+    void write_der1(std::ostream &os);
   protected:
-    virtual void write_der0_preamble(FILE *fd) const = 0;
-    virtual void write_der1_preamble(FILE *fd) const = 0;
-    virtual void write_atom_assignment(FILE *fd) const = 0;
-    virtual void write_der0_assignment(FILE *fd) const = 0;
-    virtual void write_der1_assignment(FILE *fd) const = 0;
+    virtual void write_der0_preamble(std::ostream &os) const = 0;
+    virtual void write_der1_preamble(std::ostream &os) const = 0;
+    virtual void write_atom_assignment(std::ostream &os) const = 0;
+    virtual void write_der0_assignment(std::ostream &os) const = 0;
+    virtual void write_der1_assignment(std::ostream &os) const = 0;
   };
 
   class MatlabSSWriter : public ModelSSWriter
@@ -432,24 +433,24 @@ namespace ogdyn
     }
   protected:
     // from ModelSSWriter
-    void write_der0_preamble(FILE *fd) const override;
-    void write_der1_preamble(FILE *fd) const override;
+    void write_der0_preamble(std::ostream &os) const override;
+    void write_der1_preamble(std::ostream &os) const override;
     /** This writes atom assignments. We have four kinds of atoms
      * set here: endogenous vars coming from one parameter,
      * parameter values given by the second parameter, constants,
      * and the OperationTree::num_constants hardwired constants in
      * ogp::OperationTree. */
-    void write_atom_assignment(FILE *fd) const override;
-    void write_der0_assignment(FILE *fd) const override;
-    void write_der1_assignment(FILE *fd) const override;
+    void write_atom_assignment(std::ostream &os) const override;
+    void write_der0_assignment(std::ostream &os) const override;
+    void write_der1_assignment(std::ostream &os) const override;
     /** This prints t10 for t=10. */
-    void format_term(int t, FILE *fd) const override;
+    void format_term(int t, std::ostream &os) const override;
     /** This prints a10 for t=10. The atoms a10 are supposed to be
      * set by write_atom_assignments(). */
-    void format_nulary(int t, FILE *fd) const override;
+    void format_nulary(int t, std::ostream &os) const override;
   private:
-    void write_common1_preamble(FILE *fd) const;
-    void write_common2_preamble(FILE *fd) const;
+    void write_common1_preamble(std::ostream &os) const;
+    void write_common2_preamble(std::ostream &os) const;
   };
 
   /** This class implements OperationFormatter for debugging
@@ -465,7 +466,7 @@ namespace ogdyn
         model(m)
     {
     }
-    void format_nulary(int t, FILE *fd) const override;
+    void format_nulary(int t, std::ostream &os) const override;
   };
 };
 

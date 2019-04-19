@@ -21,17 +21,16 @@ namespace ogp
   class ParserException
   {
   protected:
-    char *mes;
+    string mes;
     int off;
     int aux_i1;
     int aux_i2;
     int aux_i3;
   public:
-    ParserException(const char *m, int offset);
-    ParserException(const string &m, int offset);
-    ParserException(const string &m, const char *dum, int i1);
-    ParserException(const string &m, const char *dum, int i1, int i2);
-    ParserException(const string &m, const char *dum, int i1, int i2, int i3);
+    ParserException(string m, int offset);
+    ParserException(string m, const char *dum, int i1);
+    ParserException(string m, const char *dum, int i1, int i2);
+    ParserException(string m, const char *dum, int i1, int i2, int i3);
     ParserException(const ParserException &e, int plus_offset);
     /** Makes a copy and pushes given integer to aux_i1 shuffling
      * others and forgetting the last. */
@@ -42,11 +41,9 @@ namespace ogp
     /** Makes a copy and pushes given three integers to aux_i1, aux_i2, aus_i3 shuffling
      * others and forgetting the last three. */
     ParserException(const ParserException &e, const char *dum, int i1, int i2, int i3);
-    ParserException(const ParserException &e);
-    virtual
-    ~ParserException();
-    void print(FILE *fd) const;
-    const char *
+    ParserException(const ParserException &e) = default;
+    virtual ~ParserException() = default;
+    const string &
     message() const
     {
       return mes;

@@ -22,14 +22,14 @@ StaticAtoms::StaticAtoms(const StaticAtoms &a)
   for (auto var : a.vars)
     {
       const char *s = varnames.query(var.first);
-      vars.insert(Tvarmap::value_type(s, var.second));
+      vars.emplace(s, var.second);
     }
 
   // fill indices
   for (auto indice : a.indices)
     {
       const char *s = varnames.query(indice.second);
-      indices.insert(Tinvmap::value_type(indice.first, s));
+      indices.emplace(indice.first, s);
     }
 }
 
@@ -50,7 +50,7 @@ StaticAtoms::import_atoms(const DynamicAtoms &da, OperationTree &otree, Tintintm
           for (auto it : lmap)
             {
               int told = it.second;
-              tmap.insert(Tintintmap::value_type(told, tnew));
+              tmap.emplace(told, tnew);
             }
         }
     }
@@ -60,13 +60,9 @@ int
 StaticAtoms::check(const char *name) const
 {
   if (DynamicAtoms::is_string_constant(name))
-    {
-      return Constants::check(name);
-    }
+    return Constants::check(name);
   else
-    {
-      return check_variable(name);
-    }
+    return check_variable(name);
 }
 
 int
@@ -76,7 +72,7 @@ StaticAtoms::index(const char *name) const
   if (it == vars.end())
     return -1;
   else
-    return (*it).second;
+    return it->second;
 }
 
 const char *
@@ -86,7 +82,7 @@ StaticAtoms::inv_index(int t) const
   if (it == indices.end())
     return nullptr;
   else
-    return (*it).second;
+    return it->second;
 }
 
 void
@@ -101,8 +97,8 @@ StaticAtoms::assign(const char *name, int t)
   else
     {
       const char *ss = varnames.insert(name);
-      vars.insert(Tvarmap::value_type(ss, t));
-      indices.insert(Tinvmap::value_type(t, ss));
+      vars.emplace(ss, t);
+      indices.emplace(t, ss);
     }
 }
 
@@ -111,9 +107,7 @@ StaticAtoms::variables() const
 {
   vector<int> res;
   for (auto var : vars)
-    {
-      res.push_back(var.second);
-    }
+    res.push_back(var.second);
   return res;
 }
 
@@ -133,5 +127,5 @@ StaticAtoms::print() const
   varnames.print();
   printf("map to tree indices:\n");
   for (auto var : vars)
-    printf("%s\t->\t%d\n", var.first, var.second);
+    printf(u8"%s\t→\t%d\n", var.first, var.second);
 }

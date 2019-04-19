@@ -9,6 +9,7 @@
 
 #include <vector>
 #include <string>
+#include <memory>
 
 namespace ogp
 {
@@ -32,10 +33,10 @@ namespace ogp
       : VarOrdering(vo, vnames, a)
     {
     }
-    VarOrdering *
+    std::unique_ptr<VarOrdering>
     clone(const vector<const char *> &vnames, const DynamicAtoms &a) const override
     {
-      return new EndoVarOrdering1(*this, vnames, a);
+      return std::make_unique<EndoVarOrdering1>(*this, vnames, a);
     }
     void
     do_ordering() override
@@ -60,10 +61,10 @@ namespace ogp
       : VarOrdering(vo, vnames, a)
     {
     }
-    VarOrdering *
+    std::unique_ptr<VarOrdering>
     clone(const vector<const char *> &vnames, const DynamicAtoms &a) const override
     {
-      return new EndoVarOrdering2(*this, vnames, a);
+      return std::make_unique<EndoVarOrdering2>(*this, vnames, a);
     }
     void
     do_ordering() override
@@ -87,10 +88,10 @@ namespace ogp
       : VarOrdering(vo, vnames, a)
     {
     }
-    VarOrdering *
+    std::unique_ptr<VarOrdering>
     clone(const vector<const char *> &vnames, const DynamicAtoms &a) const override
     {
-      return new ExoVarOrdering(*this, vnames, a);
+      return std::make_unique<ExoVarOrdering>(*this, vnames, a);
     }
     void
     do_ordering() override
@@ -201,14 +202,14 @@ namespace ogp
      * to endogenous variables. It is constructed by
      * parsing_finished() method, which should be called after all
      * parsing jobs have been finished. */
-    VarOrdering *endo_order{nullptr};
+    std::unique_ptr<VarOrdering> endo_order;
     /** This is the internal ordering of all atoms corresponding
      * to exogenous variables. It has the same handling as
      * endo_order. */
-    VarOrdering *exo_order{nullptr};
+    std::unique_ptr<VarOrdering> exo_order;
     /** This is the all variables outer ordering. It is
      * constructed by parsing finished. */
-    AllvarOuterOrdering *allvar_order{nullptr};
+    std::unique_ptr<AllvarOuterOrdering> allvar_order;
     /** This vector defines a set of atoms as tree indices used
      * for differentiation. The order of the atoms in this vector
      * defines ordering of the derivative tensors. The ordering is
@@ -228,20 +229,10 @@ namespace ogp
      * atoms of exogenous variables. */
     vector<int> exo_atoms_map;
   public:
-    FineAtoms()
-       
-    = default;
+    FineAtoms() = default;
     FineAtoms(const FineAtoms &fa);
     /** Deletes endo_order and exo_order. */
-    ~FineAtoms() override
-    {
-      if (endo_order)
-        delete endo_order;
-      if (exo_order)
-        delete exo_order;
-      if (allvar_order)
-        delete allvar_order;
-    }
+    ~FineAtoms() override = default;
     /** Overrides DynamicAtoms::check_variable so that the error
      * would be raised if the variable name is not declared. A
      * variable is declared by inserting it to
@@ -387,13 +378,13 @@ namespace ogp
     int
     nexo() const
     {
-      return (int) exovars.size();
+      return static_cast<int>(exovars.size());
     }
     /** Return the number of parameters. */
     int
     np() const
     {
-      return (int) (params.size());
+      return static_cast<int>(params.size());
     }
     /** Register unique endogenous variable name. The order of
      * calls defines the endo outer ordering. The method is
