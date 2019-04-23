@@ -13,7 +13,6 @@
 
 namespace ogp
 {
-
   using std::vector;
   using std::string;
 

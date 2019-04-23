@@ -4,6 +4,7 @@
 
 #include "planner_builder.hh"
 #include "dynare_exception.hh"
+#include "dynare_model.hh"
 
 #include <cmath>
 #include <utility>
@@ -16,7 +17,7 @@ IntegerMatrix::operator=(const IntegerMatrix &im)
   if (nr != im.nr || nc != im.nc)
     throw DynareException(__FILE__, __LINE__,
                           "Matrices have different dimensions in IntegerMatrix::operator=");
-  memcpy(data, im.data, nr*nc*sizeof(int));
+  std::copy_n(im.data.get(), nr*nc, data.get());
   return *this;
 }
 
@@ -26,7 +27,7 @@ IntegerArray3::operator=(const IntegerArray3 &ia3)
   if (n1 != ia3.n1 || n2 != ia3.n2 || n3 != ia3.n3)
     throw DynareException(__FILE__, __LINE__,
                           "Arrays have different dimensions in IntegerArray3::operator=");
-  memcpy(data, ia3.data, n1*n2*n3*sizeof(int));
+  std::copy_n(ia3.data.get(), n1*n2*n3, data.get());
   return *this;
 }
 
@@ -80,8 +81,7 @@ void
 PlannerBuilder::add_derivatives_of_b()
 {
   int yi = 0;
-  for (Tvarset::const_iterator yname = yset.begin();
-       yname != yset.end(); ++yname, yi++)
+  for (auto yname = yset.begin(); yname != yset.end(); ++yname, yi++)
     for (int ll = minlag; ll <= 0; ll++)
       {
         int yt = model.atoms.index(*yname, ll);
@@ -96,8 +96,7 @@ void
 PlannerBuilder::add_derivatives_of_f()
 {
   int yi = 0;
-  for (Tvarset::const_iterator yname = yset.begin();
-       yname != yset.end(); ++yname, yi++)
+  for (auto yname = yset.begin(); yname != yset.end(); ++yname, yi++)
     for (unsigned int fi = 0; fi < fset.size(); fi++)
       for (int ll = minlag; ll <= maxlead; ll++)
         {
@@ -158,17 +157,17 @@ PlannerBuilder::shift_derivatives_of_f()
                 if (ft_maxlead > 0)
                   {
                     // make an auxiliary variable
-                    char name[100];
-                    sprintf(name, "AUX_%d_%d_%d", yi, fset[fi], -ll);
-                    model.atoms.register_uniq_endo(name);
+                    std::string name;
+                    name = "AUX_" + std::to_string(yi) + '_' + std::to_string(fset[fi]) + '_' + std::to_string(-ll);
+                    model.atoms.register_uniq_endo(name.c_str());
                     info.num_aux_variables++;
-                    int taux = model.eqs.add_nulary(name);
-                    sprintf(name, "AUX_%d_%d_%d(%d)", yi, fset[fi], -ll, -ll);
-                    int taux_leaded = model.eqs.add_nulary(name);
+                    int taux = model.eqs.add_nulary(name.c_str());
+                    name = "AUX_" + std::to_string(yi) + '_' + std::to_string(fset[fi]) + '_' + std::to_string(-ll) + '(' + std::to_string(-ll) + ')';
+                    int taux_leaded = model.eqs.add_nulary(name.c_str());
                     // put aux_leaded to the equation
                     diff_f(yi, fi, ll-minlag) = taux_leaded;
                     // save auxiliary variable and the term
-                    aux_map.insert(Tsubstmap::value_type(model.atoms.name(taux), ft));
+                    aux_map.emplace(model.atoms.name(taux), ft);
                   }
                 else
                   {
@@ -242,12 +241,11 @@ PlannerBuilder::make_static_version()
                                          tmap, model.eqs.getTree());
 
   // go through aux_map and fill static_aux_map
-  for (Tsubstmap::const_iterator it = aux_map.begin();
-       it != aux_map.end(); ++it)
+  for (const auto &it : aux_map)
     {
-      int tstatic = static_tree.add_substitution((*it).second, tmap, model.eqs.getTree());
-      const char *name = static_atoms.get_name_storage().query((*it).first);
-      static_aux_map.insert(Tsubstmap::value_type(name, tstatic));
+      int tstatic = static_tree.add_substitution(it.second, tmap, model.eqs.getTree());
+      const char *name = static_atoms.get_name_storage().query(it.first);
+      static_aux_map.emplace(name, tstatic);
     }
 }
 
@@ -255,11 +253,11 @@ void
 PlannerBuilder::lagrange_mult_f()
 {
   // register multipliers
-  char mult_name[100];
+  std::string mult_name;
   for (int fi = 0; fi < diff_f.dim2(); fi++)
     {
-      sprintf(mult_name, "MULT%d", fset[fi]);
-      model.atoms.register_uniq_endo(mult_name);
+      mult_name = "MULT" + std::to_string(fset[fi]);
+      model.atoms.register_uniq_endo(mult_name.c_str());
       info.num_lagrange_mults++;
     }
   // multiply with the multipliers
@@ -268,8 +266,8 @@ PlannerBuilder::lagrange_mult_f()
       for (int ll = minlag; ll <= maxlead; ll++)
         if (diff_f(yi, fi, ll-minlag) != ogp::OperationTree::zero)
           {
-            sprintf(mult_name, "MULT%d(%d)", fset[fi], -ll);
-            int tm = model.eqs.add_nulary(mult_name);
+            mult_name = "MULT" + std::to_string(fset[fi]) + '(' + std::to_string(-ll) + ')';
+            int tm = model.eqs.add_nulary(mult_name.c_str());
             diff_f(yi, fi, ll-minlag)
               = model.eqs.add_binary(ogp::code_t::TIMES, tm, diff_f(yi, fi, ll-minlag));
           }
@@ -291,11 +289,10 @@ PlannerBuilder::form_equations()
     }
 
   // add equations for auxiliary variables
-  for (Tsubstmap::const_iterator it = aux_map.begin();
-       it != aux_map.end(); ++it)
+  for (const auto &it : aux_map)
     {
-      int t = model.atoms.index((*it).first, 0);
-      model.eqs.add_formula(model.eqs.add_binary(ogp::code_t::MINUS, t, (*it).second));
+      int t = model.atoms.index(it.first, 0);
+      model.eqs.add_formula(model.eqs.add_binary(ogp::code_t::MINUS, t, it.second));
     }
 }
 
@@ -313,12 +310,11 @@ PlannerBuilder::fill_aux_map(const ogp::NameStorage &ns, const Tsubstmap &aaux_m
 {
   // fill aux_map
   for (auto it : aaux_map)
-    aux_map.insert(Tsubstmap::value_type(ns.query(it.first), it.second));
+    aux_map.emplace(ns.query(it.first), it.second);
 
   // fill static_aux_map
   for (auto it : astatic_aux_map)
-    static_aux_map.insert(Tsubstmap::value_type(static_atoms.get_name_storage().query(it.first),
-                                                it.second));
+    static_aux_map.emplace(static_atoms.get_name_storage().query(it.first), it.second);
 }
 
 MultInitSS::MultInitSS(const PlannerBuilder &pb, const Vector &pvals, Vector &yy)
@@ -361,9 +357,8 @@ MultInitSS::MultInitSS(const PlannerBuilder &pb, const Vector &pvals, Vector &yy
   // take values of lambda and put it to yy
   for (int fi = 0; fi < builder.diff_f_static.dim2(); fi++)
     {
-      char mult_name[100];
-      sprintf(mult_name, "MULT%d", builder.fset[fi]);
-      int iouter = builder.model.atoms.name2outer_endo(mult_name);
+      std::string mult_name = "MULT" + std::to_string(builder.fset[fi]);
+      int iouter = builder.model.atoms.name2outer_endo(mult_name.c_str());
       int iy = builder.model.atoms.outer2y_endo()[iouter];
       if (!std::isfinite(yy[iy]))
         yy[iy] = lambda[fi];
@@ -374,11 +369,10 @@ MultInitSS::MultInitSS(const PlannerBuilder &pb, const Vector &pvals, Vector &yy
         {
           const ogp::AtomSubstitutions::Toldnamemap &old2new
             = builder.model.atom_substs->get_old2new();
-          const ogp::AtomSubstitutions::Toldnamemap::const_iterator it
-            = old2new.find(mult_name);
+          auto it = old2new.find(mult_name.c_str());
           if (it != old2new.end())
             {
-              const ogp::AtomSubstitutions::Tshiftnameset &sset = (*it).second;
+              const ogp::AtomSubstitutions::Tshiftnameset &sset = it->second;
               for (const auto & itt : sset)
                 {
                   const char *newname = itt.first;
@@ -401,10 +395,8 @@ MultInitSS::load(int i, double res)
     return;
   // decode i and add to either b or F
   if (i < builder.diff_b_static.nrows()*builder.diff_b_static.ncols())
-    {
-      // add to b
-      b[i / builder.diff_b_static.ncols()] += res;
-    }
+    // add to b
+    b[i / builder.diff_b_static.ncols()] += res;
   else
     {
       // add to F

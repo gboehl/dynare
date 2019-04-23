@@ -2,6 +2,8 @@
 
 #include "forw_subst_builder.hh"
 
+#include "dynare_model.hh"
+
 using namespace ogdyn;
 
 ForwSubstBuilder::ForwSubstBuilder(DynareModel &m)
@@ -24,9 +26,8 @@ ForwSubstBuilder::ForwSubstBuilder(DynareModel &m)
           unordered_set<int> nlt = model.get_nonlinear_subterms(ft);
           int j = 0; // indexes subterms
           // and make substitutions for all these non-linear subterms
-          for (unordered_set<int>::const_iterator it = nlt.begin();
-               it != nlt.end(); ++it, ++j)
-            substitute_for_term(*it, i, j);
+          for (const auto &it : nlt)
+            substitute_for_term(it, i, j++);
         }
     }
   // unassign all variables with lead greater than 1
@@ -57,28 +58,27 @@ ForwSubstBuilder::substitute_for_term(int t, int i, int j)
 
       // now maxlead of lagt is +1
       // add AUXLD_*_*_1 = f(x(+1)) to the model
-      char name[100];
-      sprintf(name, "AUXLD_%d_%d_%d", i, j, 1);
-      model.atoms.register_uniq_endo(name);
+      std::string name = "AUXLD_" + std::to_string(i) + '_' + std::to_string(j) + "_1";
+      model.atoms.register_uniq_endo(name.c_str());
       info.num_aux_variables++;
-      const char *ss = model.atoms.get_name_storage().query(name);
-      int auxt = model.eqs.add_nulary(name);
+      const char *ss = model.atoms.get_name_storage().query(name.c_str());
+      int auxt = model.eqs.add_nulary(name.c_str());
       model.eqs.add_formula(model.eqs.add_binary(ogp::code_t::MINUS, auxt, lagt));
-      aux_map.insert(Tsubstmap::value_type(ss, lagt));
+      aux_map.emplace(ss, lagt);
       // now add variables and equations
       // AUXLD_*_*_2 = AUXLD_*_*_1(+1) through
       // AUXLD_*_*_{mlead-1} = AUXLD_*_*_{mlead-2}(+1)
       for (int ll = 1; ll <= mlead-2; ll++)
         {
           // create AUXLD_*_*_{ll}(+1)
-          sprintf(name, "AUXLD_%d_%d_%d(+1)", i, j, ll);
-          int lastauxt_lead = model.eqs.add_nulary(name);
+          name = "AUXLD_" + std::to_string(i) + '_' + std::to_string(j) + '_' + std::to_string(ll) + "(+1)";
+          int lastauxt_lead = model.eqs.add_nulary(name.c_str());
           // create AUXLD_*_*{ll+1}
-          sprintf(name, "AUXLD_%d_%d_%d", i, j, ll+1);
-          model.atoms.register_uniq_endo(name);
+          name = "AUXLD_" + std::to_string(i) + '_' + std::to_string(j) + '_' + std::to_string(ll+1);
+          model.atoms.register_uniq_endo(name.c_str());
           info.num_aux_variables++;
-          ss = model.atoms.get_name_storage().query(name);
-          auxt = model.eqs.add_nulary(name);
+          ss = model.atoms.get_name_storage().query(name.c_str());
+          auxt = model.eqs.add_nulary(name.c_str());
           // add AUXLD_*_*_{ll+1} = AUXLD_*_*_{ll}(+1)
           model.eqs.add_formula(model.eqs.add_binary(ogp::code_t::MINUS, auxt, lastauxt_lead));
           // add substitution to the map; todo: this
@@ -86,12 +86,12 @@ ForwSubstBuilder::substitute_for_term(int t, int i, int j)
           // aux_map is used the timing doesn't matter,
           // however, it is misleading, needs to be
           // changed
-          aux_map.insert(Tsubstmap::value_type(ss, lagt));
+          aux_map.emplace(ss, lagt);
         }
 
       // now we have to substitute AUXLD_*_*{mlead-1}(+1) for t
-      sprintf(name, "AUXLD_%d_%d_%d", i, j, mlead-1);
-      ss = model.atoms.get_name_storage().query(name);
+      name = "AUXLD_" + std::to_string(i) + '_' + std::to_string(j) + '_' + std::to_string(mlead-1);
+      ss = model.atoms.get_name_storage().query(name.c_str());
       model.substitute_atom_for_term(ss, +1, t);
     }
 }
@@ -127,6 +127,6 @@ ForwSubstBuilder::ForwSubstBuilder(const ForwSubstBuilder &b, DynareModel &m)
   for (auto it : b.aux_map)
     {
       const char *ss = m.atoms.get_name_storage().query(it.first);
-      aux_map.insert(Tsubstmap::value_type(ss, it.second));
+      aux_map.emplace(ss, it.second);
     }
 }

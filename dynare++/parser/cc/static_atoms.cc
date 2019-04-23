@@ -90,8 +90,7 @@ StaticAtoms::assign(const char *name, int t)
 {
   if (DynamicAtoms::is_string_constant(name))
     {
-      double val;
-      sscanf(name, "%lf", &val);
+      double val = std::stod(name);
       add_constant(t, val);
     }
   else

@@ -5,15 +5,7 @@
 #include "nlsolve.hh"
 #include "dynare_exception.hh"
 
-#include <cmath>
-
 using namespace ogu;
-
-/** This should not be greater than DBL_EPSILON^(1/2). */
-double GoldenSectionSearch::tol = 1.e-4;
-
-/** This is equal to the golden section ratio. */
-double GoldenSectionSearch::golden = (3.-std::sqrt(5.))/2;
 
 double
 GoldenSectionSearch::search(OneDFunction &f, double x1, double x2)
@@ -117,9 +109,7 @@ GoldenSectionSearch::init_bracket(OneDFunction &f, double x1, double &x2, double
               x2 = bsym;
             }
           else if (f1 > fb && fb < f2)
-            {
-              bracket_found = true;
-            }
+            bracket_found = true;
           else
             {
               double newx2 = b;
@@ -208,9 +198,9 @@ bool
 NLSolver::solve(Vector &xx, int &iter)
 {
   JournalRecord rec(journal);
-  rec << "Iter   lambda      residual" << endrec;
+  rec <<    "Iter   lambda      residual" << endrec;
   JournalRecord rec1(journal);
-  rec1 << "---------------------------" << endrec;
+  rec1 << u8"───────────────────────────" << endrec;
   char tmpbuf[14];
 
   x = const_cast<const Vector &>(xx);

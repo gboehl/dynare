@@ -3,11 +3,18 @@
 #ifndef PLANNER_BUILDER_H
 #define PLANNER_BUILDER_H
 
-#include "dynare_model.hh"
+#include <unordered_set>
+#include <map>
+#include <vector>
+#include <memory>
+#include <algorithm>
+
+#include "parser/cc/static_fine_atoms.hh"
+#include "dynare_atoms.hh"
+#include "GeneralMatrix.hh"
 
 namespace ogdyn
 {
-
   using std::unordered_set;
   using std::map;
   using std::vector;
@@ -22,22 +29,18 @@ namespace ogdyn
     /** Number of columns. */
     int nc;
     /** The pointer to the data. */
-    int *data;
+    std::unique_ptr<int[]> data;
   public:
     /** Construct uninitialized array. */
     IntegerMatrix(int nrr, int ncc)
-      : nr(nrr), nc(ncc), data(new int[nr*nc])
+      : nr(nrr), nc(ncc), data(std::make_unique<int[]>(nr*nc))
     {
     }
     /** Copy constructor. */
     IntegerMatrix(const IntegerMatrix &im)
-      : nr(im.nr), nc(im.nc), data(new int[nr*nc])
+      : nr(im.nr), nc(im.nc), data(std::make_unique<int[]>(nr*nc))
     {
-      memcpy(data, im.data, nr*nc*sizeof(int));
-    }
-    virtual ~IntegerMatrix()
-    {
-      delete [] data;
+      std::copy_n(im.data.get(), nr*nc, data.get());
     }
     /** Assignment operator. It can only assing array with the
      * same dimensions. */
@@ -75,22 +78,18 @@ namespace ogdyn
     /** Third dimension. */
     int n3;
     /** The data. */
-    int *data;
+    std::unique_ptr<int[]> data;
   public:
     /** Constrcut unitialized array. */
     IntegerArray3(int nn1, int nn2, int nn3)
-      : n1(nn1), n2(nn2), n3(nn3), data(new int[n1*n2*n3])
+      : n1(nn1), n2(nn2), n3(nn3), data(std::make_unique<int[]>(n1*n2*n3))
     {
     }
     /** Copy constructor. */
     IntegerArray3(const IntegerArray3 &ia3)
-      : n1(ia3.n1), n2(ia3.n2), n3(ia3.n3), data(new int[n1*n2*n3])
+      : n1(ia3.n1), n2(ia3.n2), n3(ia3.n3), data(std::make_unique<int[]>(n1*n2*n3))
     {
-      memcpy(data, ia3.data, n1*n2*n3*sizeof(int));
-    }
-    virtual ~IntegerArray3()
-    {
-      delete [] data;
+      std::copy_n(ia3.data.get(), n1*n2*n3, data.get());
     }
     /** Assignment operator assigning the arrays with the same dimensions. */
     const IntegerArray3 &operator=(const IntegerArray3 &ia3);
@@ -128,13 +127,10 @@ namespace ogdyn
     int num_lagrange_mults{0};
     int num_aux_variables{0};
     int num_new_terms{0};
-    PlannerInfo()
-      
-        
-    = default;
   };
 
   class MultInitSS;
+  class DynareModel;
 
   /** This class builds the first order conditions of the social
    * planner problem with constraints being the equations in the

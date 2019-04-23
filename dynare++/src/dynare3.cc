@@ -41,9 +41,8 @@ DynareNameList::selectIndices(const std::vector<std::string> &ns) const
 /*       Dynare class                                                                 */
 /**************************************************************************************/
 
-Dynare::Dynare(const char *modname, int ord, double sstol, Journal &jr)
-  : journal(jr), model(nullptr), ysteady(nullptr), md(1), dnl(nullptr), denl(nullptr), dsnl(nullptr),
-    fe(nullptr), fde(nullptr), ss_tol(sstol)
+Dynare::Dynare(const std::string &modname, int ord, double sstol, Journal &jr)
+  : journal(jr), md(1), ss_tol(sstol)
 {
   std::ifstream f{modname};
   if (f.fail())
@@ -55,7 +54,7 @@ Dynare::Dynare(const char *modname, int ord, double sstol, Journal &jr)
 
   try
     {
-      model = new ogdyn::DynareParser(contents.c_str(), contents.length(), ord);
+      model = std::make_unique<ogdyn::DynareParser>(contents.c_str(), contents.length(), ord);
     }
   catch (const ogp::ParserException &pe)
     {
@@ -75,101 +74,69 @@ Dynare::Dynare(const char *modname, int ord, double sstol, Journal &jr)
         }
       throw DynareException(pe.message(), modname, line, col);
     }
-  ysteady = new Vector(model->getAtoms().ny());
-  dnl = new DynareNameList(*this);
-  denl = new DynareExogNameList(*this);
-  dsnl = new DynareStateNameList(*this, *dnl, *denl);
-  fe = new ogp::FormulaEvaluator(model->getParser());
-  fde = new ogp::FormulaDerEvaluator(model->getParser());
+  ysteady = std::make_unique<Vector>(model->getAtoms().ny());
+  dnl = std::make_unique<DynareNameList>(*this);
+  denl = std::make_unique<DynareExogNameList>(*this);
+  dsnl = std::make_unique<DynareStateNameList>(*this, *dnl, *denl);
+  fe = std::make_unique<ogp::FormulaEvaluator>(model->getParser());
+  fde = std::make_unique<ogp::FormulaDerEvaluator>(model->getParser());
   writeModelInfo(journal);
 }
 
-Dynare::Dynare(const char **endo, int num_endo,
-               const char **exo, int num_exo,
-               const char **par, int num_par,
+Dynare::Dynare(const std::vector<std::string> &endo,
+               const std::vector<std::string> &exo,
+               const std::vector<std::string> &par,
                const char *equations, int len, int ord,
                double sstol, Journal &jr)
-  : journal(jr), model(nullptr), ysteady(nullptr), md(1), dnl(nullptr), denl(nullptr), dsnl(nullptr),
-    fe(nullptr), fde(nullptr), ss_tol(sstol)
+  : journal(jr), md(1), ss_tol(sstol)
 {
   try
     {
-      model = new ogdyn::DynareSPModel(endo, num_endo, exo, num_exo, par, num_par,
-                                       equations, len, ord);
+      model = std::make_unique<ogdyn::DynareSPModel>(endo, exo, par, equations, len, ord);
     }
   catch (const ogp::ParserException &pe)
     {
       throw DynareException(pe.message(), pe.offset());
     }
-  ysteady = new Vector(model->getAtoms().ny());
-  dnl = new DynareNameList(*this);
-  denl = new DynareExogNameList(*this);
-  dsnl = new DynareStateNameList(*this, *dnl, *denl);
-  fe = new ogp::FormulaEvaluator(model->getParser());
-  fde = new ogp::FormulaDerEvaluator(model->getParser());
+  ysteady = std::make_unique<Vector>(model->getAtoms().ny());
+  dnl = std::make_unique<DynareNameList>(*this);
+  denl = std::make_unique<DynareExogNameList>(*this);
+  dsnl = std::make_unique<DynareStateNameList>(*this, *dnl, *denl);
+  fe = std::make_unique<ogp::FormulaEvaluator>(model->getParser());
+  fde = std::make_unique<ogp::FormulaDerEvaluator>(model->getParser());
   writeModelInfo(journal);
 }
 
 Dynare::Dynare(const Dynare &dynare)
-  : journal(dynare.journal), model(nullptr),
-    ysteady(nullptr), md(dynare.md),
-    dnl(nullptr), denl(nullptr), dsnl(nullptr), fe(nullptr), fde(nullptr),
-    ss_tol(dynare.ss_tol)
+  : journal(dynare.journal), md(dynare.md), ss_tol(dynare.ss_tol)
 {
   model = dynare.model->clone();
-  ysteady = new Vector(*(dynare.ysteady));
-  dnl = new DynareNameList(*this);
-  denl = new DynareExogNameList(*this);
-  dsnl = new DynareStateNameList(*this, *dnl, *denl);
-  fe = new ogp::FormulaEvaluator(model->getParser());
-  fde = new ogp::FormulaDerEvaluator(model->getParser());
-}
-
-Dynare::~Dynare()
-{
-  if (model)
-    delete model;
-  if (ysteady)
-    delete ysteady;
-  if (dnl)
-    delete dnl;
-  if (dsnl)
-    delete dsnl;
-  if (denl)
-    delete denl;
-  if (fe)
-    delete fe;
-  if (fde)
-    delete fde;
+  ysteady = std::make_unique<Vector>(*(dynare.ysteady));
+  dnl = std::make_unique<DynareNameList>(*this);
+  denl = std::make_unique<DynareExogNameList>(*this);
+  dsnl = std::make_unique<DynareStateNameList>(*this, *dnl, *denl);
+  fe = std::make_unique<ogp::FormulaEvaluator>(model->getParser());
+  fde = std::make_unique<ogp::FormulaDerEvaluator>(model->getParser());
 }
 
 void
-Dynare::writeMat(mat_t *fd, const char *prefix) const
+Dynare::writeMat(mat_t *fd, const std::string &prefix) const
 {
-  char tmp[100];
-  sprintf(tmp, "%s_vars", prefix);
-  getAllEndoNames().writeMat(fd, tmp);
+  getAllEndoNames().writeMat(fd, prefix + "_vars");
   getAllEndoNames().writeMatIndices(fd, prefix);
-  sprintf(tmp, "%s_state_vars", prefix);
-  getStateNames().writeMat(fd, tmp);
-  sprintf(tmp, "%s_shocks", prefix);
-  getExogNames().writeMat(fd, tmp);
+  getStateNames().writeMat(fd, prefix + "_state_vars");
+  getExogNames().writeMat(fd, prefix + "_shocks");
   getExogNames().writeMatIndices(fd, prefix);
-  sprintf(tmp, "%s_vcov_exo", prefix);
-  model->getVcov().writeMat(fd, tmp);
+  model->getVcov().writeMat(fd, prefix + "_vcov_exo");
   TwoDMatrix aux(1, 1);
-  sprintf(tmp, "%s_nstat", prefix);
   aux.get(0, 0) = nstat();
-  aux.writeMat(fd, tmp);
-  sprintf(tmp, "%s_npred", prefix);
+  aux.writeMat(fd, prefix + "_nstat");
   aux.get(0, 0) = npred();
-  aux.writeMat(fd, tmp);
-  sprintf(tmp, "%s_nboth", prefix);
+  aux.writeMat(fd, prefix + "_npred");
   aux.get(0, 0) = nboth();
-  aux.writeMat(fd, tmp);
-  sprintf(tmp, "%s_nforw", prefix);
+  aux.writeMat(fd, prefix + "_nboth");
   aux.get(0, 0) = nforw();
-  aux.writeMat(fd, tmp);
+  aux.writeMat(fd, prefix + "_nforw");
 }
 
 void

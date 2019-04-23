@@ -8,6 +8,8 @@
 
 #include "dynare_atoms.hh"
 #include "twod_matrix.hh"
+#include "planner_builder.hh"
+#include "forw_subst_builder.hh"
 
 #include "Vector.hh"
 #include "GeneralMatrix.hh"
@@ -15,6 +17,7 @@
 #include <map>
 #include <unordered_set>
 #include <ostream>
+#include <memory>
 
 namespace ogdyn
 {
@@ -31,15 +34,12 @@ namespace ogdyn
     int fc;
     int ll;
     int lc;
-    PosInterval()
-    = default;
+    PosInterval() = default;
     PosInterval(int ifl, int ifc, int ill, int ilc)
       : fl(ifl), fc(ifc), ll(ill), lc(ilc)
     {
     }
-    PosInterval &
-    operator=(const PosInterval &pi)
-    = default;
+    PosInterval &operator=(const PosInterval &pi) = default;
     /** This returns the interval beginning and interval length
      * within the given string. */
     void translate(const char *beg, int len, const char * &ibeg, int &ilen) const;
@@ -85,12 +85,12 @@ namespace ogdyn
     /** A vector of parameters values created by a subclass. It
      * is stored with natural ordering (outer) of the parameters
      * given by atoms. */
-    Vector *param_vals{nullptr};
+    std::unique_ptr<Vector> param_vals;
     /** A vector of initial values created by a subclass. It is
      * stored with internal ordering given by atoms. */
-    Vector *init_vals{nullptr};
+    std::unique_ptr<Vector> init_vals;
     /** A matrix for vcov. It is created by a subclass. */
-    TwoDMatrix *vcov_mat{nullptr};
+    std::unique_ptr<TwoDMatrix> vcov_mat;
     /** Tree index of the planner objective. If there was no
      * planner objective keyword, the value is set to -1. */
     int t_plobjective{-1};
@@ -99,27 +99,26 @@ namespace ogdyn
     int t_pldiscount{-1};
     /** Pointer to PlannerBuilder, which is created only if the
      * planner's FOC are added to the model. */
-    PlannerBuilder *pbuilder{nullptr};
+    std::unique_ptr<PlannerBuilder> pbuilder;
     /** Pointer to an object which builds auxiliary variables and
      * equations to rewrite a model containing multiple leads to
      * an equivalent model having only +1 leads. */
-    ForwSubstBuilder *fbuilder{nullptr};
+    std::unique_ptr<ForwSubstBuilder> fbuilder;
     /** Pointer to AtomSubstitutions which are created when the
      * atoms are being substituted because of multiple lags
      * etc. It uses also an old copy of atoms, which is
      * created. */
-    ogp::AtomSubstitutions *atom_substs{nullptr};
+    std::unique_ptr<ogp::AtomSubstitutions> atom_substs;
     /** Pointer to a copy of original atoms before substitutions
      * took place. */
-    ogp::SAtoms *old_atoms{nullptr};
+    std::unique_ptr<ogp::SAtoms> old_atoms;
   public:
     /** Initializes the object to an empty state. */
     DynareModel();
     /** Construct a new deep copy. */
     DynareModel(const DynareModel &dm);
-    virtual
-    ~DynareModel();
-    virtual DynareModel *clone() const = 0;
+    virtual ~DynareModel() = default;
+    virtual std::unique_ptr<DynareModel> clone() const = 0;
     const DynareDynamicAtoms &
     getAtoms() const
     {
@@ -190,7 +189,7 @@ namespace ogdyn
      * sort is governed by the flag. See dynglob.y for values of
      * the flag. This is used by a subclass when declaring the
      * names. */
-    void add_name(const char *name, int flag);
+    void add_name(const std::string &name, int flag);
     /** This checks the model consistency. Thus includes: number
      * of endo variables and number of equations, min and max lag
      * of endogenous variables and occurrrences of exogenous
@@ -257,13 +256,11 @@ namespace ogdyn
      * file. If the given ord is not -1, then it overrides setting
      * in the model file. */
     DynareParser(const char *str, int len, int ord);
-    DynareParser(const DynareParser &p);
-    
-    ~DynareParser() override;
-    DynareModel *
+    DynareParser(const DynareParser &dp);
+    std::unique_ptr<DynareModel>
     clone() const override
     {
-      return new DynareParser(*this);
+      return std::make_unique<DynareParser>(*this);
     }
     /** Adds a name of endogenous, exogenous or a parameter. This
      * addss the name to the parent class DynareModel and also
@@ -274,49 +271,56 @@ namespace ogdyn
     void
     set_model_pos(int off1, int off2)
     {
-      model_beg = off1; model_end = off2;
+      model_beg = off1;
+      model_end = off2;
     }
     /** Sets position of the section setting parameters. Called
      * from dynglob.y. */
     void
     set_paramset_pos(int off1, int off2)
     {
-      paramset_beg = off1; paramset_end = off2;
+      paramset_beg = off1;
+      paramset_end = off2;
     }
     /** Sets position of the initval section. Called from
      * dynglob.y. */
     void
     set_initval_pos(int off1, int off2)
     {
-      initval_beg = off1; initval_end = off2;
+      initval_beg = off1;
+      initval_end = off2;
     }
     /** Sets position of the vcov section. Called from
      * dynglob.y. */
     void
     set_vcov_pos(int off1, int off2)
     {
-      vcov_beg = off1; vcov_end = off2;
+      vcov_beg = off1;
+      vcov_end = off2;
     }
     /** Parser the given string as integer and set to as the
      * order. */
     void
     set_order_pos(int off1, int off2)
     {
-      order_beg = off1; order_end = off2;
+      order_beg = off1;
+      order_end = off2;
     }
     /** Sets position of the planner_objective section. Called
      * from dynglob.y. */
     void
     set_pl_objective_pos(int off1, int off2)
     {
-      plobjective_beg = off1; plobjective_end = off2;
+      plobjective_beg = off1;
+      plobjective_end = off2;
     }
     /** Sets position of the planner_discount section. Called from
      * dynglob.y. */
     void
     set_pl_discount_pos(int off1, int off2)
     {
-      pldiscount_beg = off1; pldiscount_end = off2;
+      pldiscount_beg = off1;
+      pldiscount_end = off2;
     }
     /** Processes a syntax error from bison. */
     void error(const char *mes);
@@ -357,19 +361,16 @@ namespace ogdyn
   class DynareSPModel : public DynareModel
   {
   public:
-    DynareSPModel(const char **endo, int num_endo,
-                  const char **exo, int num_exo,
-                  const char **par, int num_par,
+    DynareSPModel(const std::vector<std::string> &endo,
+                  const std::vector<std::string> &exo,
+                  const std::vector<std::string> &par,
                   const char *equations, int len, int ord);
-    DynareSPModel(const DynareSPModel &dm)
-       
-    = default;
-    ~DynareSPModel()
-    override = default;
-    DynareModel *
+    DynareSPModel(const DynareSPModel &dm) = default;
+    ~DynareSPModel() override = default;
+    std::unique_ptr<DynareModel>
     clone() const override
     {
-      return new DynareSPModel(*this);
+      return std::make_unique<DynareSPModel>(*this);
     }
   };
 
@@ -424,13 +425,9 @@ namespace ogdyn
   {
   protected:
     /** Identifier used in function names. */
-    char *id;
+    std::string id;
   public:
-    MatlabSSWriter(const DynareModel &dm, const char *idd);
-    ~MatlabSSWriter() override
-    {
-      delete [] id;
-    }
+    MatlabSSWriter(const DynareModel &dm, std::string id_arg);
   protected:
     // from ModelSSWriter
     void write_der0_preamble(std::ostream &os) const override;

@@ -114,8 +114,7 @@ Constants::get_constant_value(int t) const
 int
 Constants::check(const char *str) const
 {
-  double d;
-  sscanf(str, "%lf", &d);
+  double d = std::stod(str);
   auto it = cinvmap.find(d);
   if (it != cinvmap.end())
     return it->second;
@@ -184,8 +183,7 @@ DynamicAtoms::assign(const char *name, int t)
 void
 DynamicAtoms::assign_constant(const char *name, int t)
 {
-  double val;
-  sscanf(name, "%lf", &val);
+  double val = std::stod(name);
   add_constant(t, val);
 }
 

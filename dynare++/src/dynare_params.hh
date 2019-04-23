@@ -15,7 +15,7 @@
 
 struct DynareParams
 {
-  const char *modname;
+  std::string modname;
   std::string basename;
   int num_per;
   int num_burn;
@@ -26,7 +26,7 @@ struct DynareParams
   int num_condsim;
   int num_threads;
   int num_steps;
-  const char *prefix;
+  std::string prefix;
   int seed;
   int order;
   /** Tolerance used for steady state calcs. */
@@ -73,13 +73,12 @@ struct DynareParams
     return 10*check_num;
   }
 private:
-  enum {opt_per, opt_burn, opt_sim, opt_rtper, opt_rtsim, opt_condper, opt_condsim,
-        opt_prefix, opt_threads,
-        opt_steps, opt_seed, opt_order, opt_ss_tol, opt_check,
-        opt_check_along_path, opt_check_along_shocks, opt_check_on_ellipse,
-        opt_check_evals, opt_check_scale, opt_check_num, opt_noirfs, opt_irfs,
-        opt_help, opt_version, opt_centralize, opt_no_centralize, opt_qz_criterium};
-  void processCheckFlags(const char *flags);
+  enum class opt {per, burn, sim, rtper, rtsim, condper, condsim,
+                  prefix, threads,
+                  steps, seed, order, ss_tol, check,
+                  check_evals, check_scale, check_num, noirfs, irfs,
+                  help, version, centralize, no_centralize, qz_criterium};
+  void processCheckFlags(const std::string &flags);
   /** This gathers strings from argv[optind] and on not starting
    * with '-' to the irf_list. It stops one item before the end,
    * since this is the model file. */

@@ -30,7 +30,7 @@ DynareStaticAtoms::check_variable(const char *name) const
   if (it == vars.end())
     return -1;
   else
-    return (*it).second;
+    return it->second;
 }
 
 DynareDynamicAtoms::DynareDynamicAtoms(const DynareDynamicAtoms &dda)
@@ -38,7 +38,7 @@ DynareDynamicAtoms::DynareDynamicAtoms(const DynareDynamicAtoms &dda)
 {
   // fill atom_type
   for (auto it : dda.atom_type)
-    atom_type.insert(Tatypemap::value_type(varnames.query(it.first), it.second));
+    atom_type.emplace(varnames.query(it.first), it.second);
 }
 
 void
@@ -53,43 +53,39 @@ DynareDynamicAtoms::parse_variable(const char *in, std::string &out, int &ll) co
       left++;
       auto right = str.find_first_of(")}", left);
       if (string::npos == right)
-        throw ogp::ParserException(
-                                   string("Syntax error when parsing Dynare atom <")+in+">.", 0);
-      std::string tmp(str, left, right-left);
-      sscanf(tmp.c_str(), "%d", &ll);
+        throw ogp::ParserException(string("Syntax error when parsing Dynare atom <")+in+">.", 0);
+      ll = std::stoi(str.substr(left, right-left));
     }
   else
-    {
-      out = in;
-    }
+    out = in;
 }
 
 void
 DynareDynamicAtoms::register_uniq_endo(const char *name)
 {
   FineAtoms::register_uniq_endo(name);
-  atom_type.insert(Tatypemap::value_type(varnames.query(name), endovar));
+  atom_type.emplace(varnames.query(name), atype::endovar);
 }
 
 void
 DynareDynamicAtoms::register_uniq_exo(const char *name)
 {
   FineAtoms::register_uniq_exo(name);
-  atom_type.insert(Tatypemap::value_type(varnames.query(name), exovar));
+  atom_type.emplace(varnames.query(name), atype::exovar);
 }
 
 void
 DynareDynamicAtoms::register_uniq_param(const char *name)
 {
   FineAtoms::register_uniq_param(name);
-  atom_type.insert(Tatypemap::value_type(varnames.query(name), param));
+  atom_type.emplace(varnames.query(name), atype::param);
 }
 
 bool
 DynareDynamicAtoms::is_type(const char *name, atype tp) const
 {
   auto it = atom_type.find(name);
-  if (it != atom_type.end() && (*it).second == tp)
+  if (it != atom_type.end() && it->second == tp)
     return true;
   else
     return false;
@@ -102,7 +98,7 @@ DynareDynamicAtoms::print() const
   printf("Name types:\n");
   for (auto it : atom_type)
     printf("name=%s type=%s\n", it.first,
-           (it.second == endovar) ? "endovar" : ((it.second == exovar) ? "exovar" : "param"));
+           it.second == atype::endovar ? "endovar" : it.second == atype::exovar ? "exovar" : "param");
 }
 
 std::string
@@ -112,7 +108,7 @@ DynareDynamicAtoms::convert(int t) const
     {
       throw ogu::Exception(__FILE__, __LINE__,
                            "Tree index is a built-in constant in DynareDynamicAtoms::convert");
-      return std::string();
+      return {};
     }
   if (is_constant(t))
     {
@@ -122,22 +118,20 @@ DynareDynamicAtoms::convert(int t) const
       const char *s = buf;
       while (*s == ' ')
         ++s;
-      return std::string(s);
+      return s;
     }
 
   const char *s = name(t);
-  if (is_type(s, endovar))
+  if (is_type(s, atype::endovar))
     {
       int ll = lead(t);
-      char buf[100];
       if (ll)
-        sprintf(buf, "%s(%d)", s, ll);
+        return std::string{s} + '(' + std::to_string(ll) + ')';
       else
-        sprintf(buf, "%s", s);
-      return std::string(buf);
+        return s;
     }
 
-  return std::string(s);
+  return s;
 }
 
 void
@@ -148,59 +142,51 @@ DynareAtomValues::setValues(ogp::EvalTree &et) const
 
   // set parameteres
   for (unsigned int i = 0; i < atoms.get_params().size(); i++)
-    {
-      if (atoms.is_referenced(atoms.get_params()[i]))
-        {
-          const ogp::DynamicAtoms::Tlagmap &lmap = atoms.lagmap(atoms.get_params()[i]);
-          for (auto it : lmap)
-            {
-              int t = it.second;
-              et.set_nulary(t, paramvals[i]);
-            }
-        }
-    }
+    if (atoms.is_referenced(atoms.get_params()[i]))
+      {
+        const ogp::DynamicAtoms::Tlagmap &lmap = atoms.lagmap(atoms.get_params()[i]);
+        for (auto it : lmap)
+          {
+            int t = it.second;
+            et.set_nulary(t, paramvals[i]);
+          }
+      }
 
   // set endogenous
   for (unsigned int outer_i = 0; outer_i < atoms.get_endovars().size(); outer_i++)
-    {
-      if (atoms.is_referenced(atoms.get_endovars()[outer_i]))
-        {
-          const ogp::DynamicAtoms::Tlagmap &lmap = atoms.lagmap(atoms.get_endovars()[outer_i]);
-          for (auto it : lmap)
-            {
-              int ll = it.first;
-              int t = it.second;
-              int i = atoms.outer2y_endo()[outer_i];
-              if (ll == -1)
-                {
-                  et.set_nulary(t, yym[i-atoms.nstat()]);
-                }
-              else if (ll == 0)
-                et.set_nulary(t, yy[i]);
-              else
-                et.set_nulary(t, yyp[i-atoms.nstat()-atoms.npred()]);
-            }
-        }
-    }
+    if (atoms.is_referenced(atoms.get_endovars()[outer_i]))
+      {
+        const ogp::DynamicAtoms::Tlagmap &lmap = atoms.lagmap(atoms.get_endovars()[outer_i]);
+        for (auto it : lmap)
+          {
+            int ll = it.first;
+            int t = it.second;
+            int i = atoms.outer2y_endo()[outer_i];
+            if (ll == -1)
+              et.set_nulary(t, yym[i-atoms.nstat()]);
+            else if (ll == 0)
+              et.set_nulary(t, yy[i]);
+            else
+              et.set_nulary(t, yyp[i-atoms.nstat()-atoms.npred()]);
+          }
+      }
 
   // set exogenous
   for (unsigned int outer_i = 0; outer_i < atoms.get_exovars().size(); outer_i++)
-    {
-      if (atoms.is_referenced(atoms.get_exovars()[outer_i]))
-        {
-          const ogp::DynamicAtoms::Tlagmap &lmap = atoms.lagmap(atoms.get_exovars()[outer_i]);
-          for (auto it : lmap)
-            {
-              int ll = it.first;
-              if (ll == 0)   // this is always true because of checks
-                {
-                  int t = it.second;
-                  int i = atoms.outer2y_exo()[outer_i];
-                  et.set_nulary(t, xx[i]);
-                }
-            }
-        }
-    }
+    if (atoms.is_referenced(atoms.get_exovars()[outer_i]))
+      {
+        const ogp::DynamicAtoms::Tlagmap &lmap = atoms.lagmap(atoms.get_exovars()[outer_i]);
+        for (auto it : lmap)
+          {
+            int ll = it.first;
+            if (ll == 0)   // this is always true because of checks
+              {
+                int t = it.second;
+                int i = atoms.outer2y_exo()[outer_i];
+                et.set_nulary(t, xx[i]);
+              }
+          }
+      }
 }
 
 void

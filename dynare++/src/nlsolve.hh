@@ -8,22 +8,24 @@
 #include "twod_matrix.hh"
 #include "journal.hh"
 
+#include <cmath>
+
 namespace ogu
 {
-
   class OneDFunction
   {
   public:
-    virtual ~OneDFunction()
-    = default;
+    virtual ~OneDFunction() = default;
     virtual double eval(double) = 0;
   };
 
   class GoldenSectionSearch
   {
   protected:
-    static double tol;
-    static double golden;
+    /** This should not be greater than DBL_EPSILON^(1/2). */
+    constexpr static double tol = 1.e-4;
+    /** This is equal to the golden section ratio. */
+    constexpr static double golden = (3.-std::sqrt(5.))/2;
   public:
     static double search(OneDFunction &f, double x1, double x2);
   protected:
@@ -45,10 +47,8 @@ namespace ogu
   class VectorFunction
   {
   public:
-    VectorFunction()
-    = default;
-    virtual ~VectorFunction()
-    = default;
+    VectorFunction() = default;
+    virtual ~VectorFunction() = default;
     virtual int inDim() const = 0;
     virtual int outDim() const = 0;
     /** Check dimensions of eval parameters. */
@@ -60,12 +60,10 @@ namespace ogu
   class Jacobian : public TwoDMatrix
   {
   public:
-    Jacobian(int n)
-      : TwoDMatrix(n, n)
+    Jacobian(int n) : TwoDMatrix(n, n)
     {
     }
-    ~Jacobian()
-    override = default;
+    ~Jacobian() override = default;
     virtual void eval(const Vector &in) = 0;
   };
 
@@ -88,8 +86,7 @@ namespace ogu
     {
       xnewton.zeros(); xcauchy.zeros(); x.zeros();
     }
-    ~NLSolver()
-    override = default;
+    ~NLSolver() override = default;
     /** Returns true if the problem has converged. xx as input is the
      * starting value, as output it is a solution. */
     bool solve(Vector &xx, int &iter);
@@ -99,7 +96,6 @@ namespace ogu
      * because it calls func, x, xnewton, xcauchy is not changed. */
     double eval(double lambda) override;
   };
-
 };
 
 #endif

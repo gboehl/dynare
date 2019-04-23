@@ -5,11 +5,12 @@
 #ifndef FORW_SUBST_BUILDER_H
 #define FORW_SUBST_BUILDER_H
 
-#include "dynare_model.hh"
+#include <map>
+
+#include "dynare_atoms.hh"
 
 namespace ogdyn
 {
-
   /** This struct encapsulates information about the process of
    * forward substitutions. */
   struct ForwSubstInfo
@@ -18,11 +19,9 @@ namespace ogdyn
     int num_subst_terms{0};
     int num_aux_variables{0};
     int num_new_terms{0};
-    ForwSubstInfo()
-      
-        
-    = default;
   };
+
+  class DynareModel;
 
   class ForwSubstBuilder
   {

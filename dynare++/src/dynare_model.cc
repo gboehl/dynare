@@ -8,11 +8,9 @@
 #include "planner_builder.hh"
 #include "forw_subst_builder.hh"
 
-#include <cstdlib>
-
 #include <string>
 #include <cmath>
-#include <climits>
+#include <limits>
 #include <ostream>
 #include <memory>
 #include <algorithm>
@@ -35,44 +33,23 @@ DynareModel::DynareModel()
 
 DynareModel::DynareModel(const DynareModel &dm)
   : atoms(dm.atoms), eqs(dm.eqs, atoms), order(dm.order),
-    param_vals(nullptr), init_vals(nullptr), vcov_mat(nullptr),
     t_plobjective(dm.t_plobjective),
-    t_pldiscount(dm.t_pldiscount),
-    pbuilder(nullptr), fbuilder(nullptr),
-    atom_substs(nullptr), old_atoms(nullptr)
+    t_pldiscount(dm.t_pldiscount)
 {
   if (dm.param_vals)
-    param_vals = new Vector(const_cast<const Vector &>(*(dm.param_vals)));
+    param_vals = std::make_unique<Vector>(const_cast<const Vector &>(*dm.param_vals));
   if (dm.init_vals)
-    init_vals = new Vector(const_cast<const Vector &>(*(dm.init_vals)));
+    init_vals = std::make_unique<Vector>(const_cast<const Vector &>(*dm.init_vals));
   if (dm.vcov_mat)
-    vcov_mat = new TwoDMatrix(const_cast<const TwoDMatrix &>(*(dm.vcov_mat)));
+    vcov_mat = std::make_unique<TwoDMatrix>(const_cast<const TwoDMatrix &>(*dm.vcov_mat));
   if (dm.old_atoms)
-    old_atoms = new DynareDynamicAtoms(static_cast<const DynareDynamicAtoms &>(*(dm.old_atoms)));
+    old_atoms = std::make_unique<DynareDynamicAtoms>(static_cast<const DynareDynamicAtoms &>(*dm.old_atoms));
   if (dm.atom_substs)
-    atom_substs = new ogp::AtomSubstitutions((*dm.atom_substs), *old_atoms, atoms);
+    atom_substs = std::make_unique<ogp::AtomSubstitutions>(*dm.atom_substs, *old_atoms, atoms);
   if (dm.pbuilder)
-    pbuilder = new PlannerBuilder(*(dm.pbuilder), *this);
+    pbuilder = std::make_unique<PlannerBuilder>(*dm.pbuilder, *this);
   if (dm.fbuilder)
-    fbuilder = new ForwSubstBuilder(*(dm.fbuilder), *this);
-}
-
-DynareModel::~DynareModel()
-{
-  if (param_vals)
-    delete param_vals;
-  if (init_vals)
-    delete init_vals;
-  if (vcov_mat)
-    delete vcov_mat;
-  if (old_atoms)
-    delete old_atoms;
-  if (atom_substs)
-    delete atom_substs;
-  if (pbuilder)
-    delete pbuilder;
-  if (fbuilder)
-    delete fbuilder;
+    fbuilder = std::make_unique<ForwSubstBuilder>(*dm.fbuilder, *this);
 }
 
 const PlannerInfo *
@@ -171,28 +148,19 @@ DynareModel::dump_model(std::ostream &os) const
 }
 
 void
-DynareModel::add_name(const char *name, int flag)
+DynareModel::add_name(const std::string &name, int flag)
 {
   if (flag == 1)
-    {
-      // endogenous
-      atoms.register_uniq_endo(name);
-    }
+    // endogenous
+    atoms.register_uniq_endo(name.c_str());
   else if (flag == 2)
-    {
-      // exogenous
-      atoms.register_uniq_exo(name);
-    }
+    // exogenous
+    atoms.register_uniq_exo(name.c_str());
   else if (flag == 3)
-    {
-      // parameter
-      atoms.register_uniq_param(name);
-    }
+    // parameter
+    atoms.register_uniq_param(name.c_str());
   else
-    {
-      throw DynareException(__FILE__, __LINE__,
-                            "Unrecognized flag value.");
-    }
+    throw DynareException(__FILE__, __LINE__, "Unrecognized flag value.");
 }
 
 void
@@ -203,11 +171,8 @@ DynareModel::check_model() const
                           "Order of approximation not set in DynareModel::check_model");
 
   if (atoms.ny() != eqs.nformulas())
-    {
-      char mes[1000];
-      sprintf(mes, "Model has %d equations for %d endogenous variables", eqs.nformulas(), atoms.ny());
-      throw DynareException(__FILE__, __LINE__, mes);
-    }
+    throw DynareException(__FILE__, __LINE__, "Model has " + std::to_string(eqs.nformulas())
+                          + " equations for " + std::to_string(atoms.ny()) + " endogenous variables");
 
   // check whether all nulary terms of all formulas in eqs are
   // either constant or assigned to a name
@@ -242,7 +207,7 @@ int
 DynareModel::variable_shift(int t, int tshift)
 {
   const char *name = atoms.name(t);
-  if (atoms.is_type(name, DynareDynamicAtoms::param)
+  if (atoms.is_type(name, DynareDynamicAtoms::atype::param)
       || atoms.is_constant(t))
     throw DynareException(__FILE__, __LINE__,
                           "The tree index is not a variable in DynareModel::variable_shift");
@@ -250,12 +215,7 @@ DynareModel::variable_shift(int t, int tshift)
   int res = atoms.index(name, ll);
   if (res == -1)
     {
-      std::string str(name);
-      str += '(';
-      char tmp[50];
-      sprintf(tmp, "%d", ll);
-      str += tmp;
-      str += ')';
+      std::string str = name + '(' + std::to_string(ll) + ')';
       res = eqs.add_nulary(str.c_str());
     }
   return res;
@@ -267,38 +227,34 @@ DynareModel::variable_shift_map(const unordered_set<int> &a_set, int tshift,
 {
   s_map.clear();
   for (int t : a_set)
-    {
-      // make shift map only for non-constants and non-parameters
-      if (!atoms.is_constant(t))
-        {
-          const char *name = atoms.name(t);
-          if (atoms.is_type(name, DynareDynamicAtoms::endovar)
-              || atoms.is_type(name, DynareDynamicAtoms::exovar))
-            {
-              int tt = variable_shift(t, tshift);
-              s_map.insert(map<int, int>::value_type(t, tt));
-            }
-        }
-    }
+    // make shift map only for non-constants and non-parameters
+    if (!atoms.is_constant(t))
+      {
+        const char *name = atoms.name(t);
+        if (atoms.is_type(name, DynareDynamicAtoms::atype::endovar)
+            || atoms.is_type(name, DynareDynamicAtoms::atype::exovar))
+          {
+            int tt = variable_shift(t, tshift);
+            s_map.emplace(t, tt);
+          }
+      }
 }
 
 void
 DynareModel::termspan(int t, int &mlead, int &mlag) const
 {
-  mlead = INT_MIN;
-  mlag = INT_MAX;
+  mlead = std::numeric_limits<int>::min();
+  mlag = std::numeric_limits<int>::max();
   const unordered_set<int> &nul_terms = eqs.nulary_of_term(t);
   for (int nul_term : nul_terms)
     {
       if (!atoms.is_constant(nul_term)
-          && (atoms.is_type(atoms.name(nul_term), DynareDynamicAtoms::endovar)
-              || atoms.is_type(atoms.name(nul_term), DynareDynamicAtoms::exovar)))
+          && (atoms.is_type(atoms.name(nul_term), DynareDynamicAtoms::atype::endovar)
+              || atoms.is_type(atoms.name(nul_term), DynareDynamicAtoms::atype::exovar)))
         {
           int ll = atoms.lead(nul_term);
-          if (ll < mlag)
-            mlag = ll;
-          if (ll > mlead)
-            mlead = ll;
+          mlag = std::min(ll, mlag);
+          mlead = std::max(ll, mlead);
         }
     }
 }
@@ -309,7 +265,7 @@ DynareModel::is_constant_term(int t) const
   const unordered_set<int> &nul_terms = eqs.nulary_of_term(t);
   for (int nul_term : nul_terms)
     if (!atoms.is_constant(nul_term)
-        && !atoms.is_type(atoms.name(nul_term), DynareDynamicAtoms::param))
+        && !atoms.is_type(atoms.name(nul_term), DynareDynamicAtoms::atype::param))
       return false;
   return true;
 }
@@ -351,26 +307,18 @@ DynareModel::final_job()
 
       // construct the planner builder, this adds a lot of stuff to
       // the model
-      if (pbuilder)
-        delete pbuilder;
-      pbuilder = new PlannerBuilder(*this, vset, eset);
+      pbuilder = std::make_unique<PlannerBuilder>(*this, vset, eset);
     }
 
   // construct ForwSubstBuilder
-  if (fbuilder)
-    delete fbuilder;
-  fbuilder = new ForwSubstBuilder(*this);
+  fbuilder = std::make_unique<ForwSubstBuilder>(*this);
 
   // call parsing_finished (this will define an outer ordering of all variables)
   atoms.parsing_finished(ogp::VarOrdering::bfspbfpb);
   // make a copy of atoms and name it old_atoms
-  if (old_atoms)
-    delete old_atoms;
-  old_atoms = new DynareDynamicAtoms(atoms);
+  old_atoms = std::make_unique<DynareDynamicAtoms>(atoms);
   // construct empty substitutions from old_atoms to atoms
-  if (atom_substs)
-    delete atom_substs;
-  atom_substs = new ogp::AtomSubstitutions(*old_atoms, atoms);
+  atom_substs = std::make_unique<ogp::AtomSubstitutions>(*old_atoms, atoms);
   // do the actual substitution, it will also call
   // parsing_finished for atoms which creates internal orderings
   atoms.substituteAllLagsAndExo1Leads(eqs, *atom_substs);
@@ -435,9 +383,7 @@ DynareParser::DynareParser(const char *stream, int len, int ord)
   try
     {
       if (vcov_end > vcov_beg)
-        {
-          vcov.parse(vcov_end-vcov_beg, stream+vcov_beg);
-        }
+        vcov.parse(vcov_end-vcov_beg, stream+vcov_beg);
     }
   catch (const ogp::ParserException &e)
     {
@@ -460,10 +406,8 @@ DynareParser::DynareParser(const char *stream, int len, int ord)
   try
     {
       if (pldiscount_end > pldiscount_beg)
-        {
-          t_pldiscount = parse_pldiscount(pldiscount_end - pldiscount_beg,
-                                          stream + pldiscount_beg);
-        }
+        t_pldiscount = parse_pldiscount(pldiscount_end - pldiscount_beg,
+                                        stream + pldiscount_beg);
     }
   catch (const ogp::ParserException &e)
     {
@@ -473,9 +417,7 @@ DynareParser::DynareParser(const char *stream, int len, int ord)
   try
     {
       if (order_end > order_beg)
-        {
-          order = parse_order(order_end - order_beg, stream + order_beg);
-        }
+        order = parse_order(order_end - order_beg, stream + order_beg);
     }
   catch (const ogp::ParserException &e)
     {
@@ -495,11 +437,11 @@ DynareParser::DynareParser(const char *stream, int len, int ord)
   calc_init();
 
   if (vcov_end > vcov_beg)
-    vcov_mat = new ParsedMatrix(vcov);
+    vcov_mat = std::make_unique<ParsedMatrix>(vcov);
   else
     {
       // vcov has not been asserted, set it to unit matrix
-      vcov_mat = new TwoDMatrix(atoms.nexo(), atoms.nexo());
+      vcov_mat = std::make_unique<TwoDMatrix>(atoms.nexo(), atoms.nexo());
       vcov_mat->unit();
     }
 
@@ -525,24 +467,17 @@ DynareParser::DynareParser(const DynareParser &dp)
 {
 }
 
-DynareParser::~DynareParser()
-= default;
-
 void
 DynareParser::add_name(const char *name, int flag)
 {
   DynareModel::add_name(name, flag);
   // register with static atoms used for atom assignements
   if (flag == 1)
-    {
-      // endogenous
-      ia_atoms.register_name(name);
-    }
+    // endogenous
+    ia_atoms.register_name(name);
   else if (flag == 2)
-    {
-      // exogenous
-      ia_atoms.register_name(name);
-    }
+    // exogenous
+    ia_atoms.register_name(name);
   else if (flag == 3)
     {
       // parameter
@@ -550,10 +485,7 @@ DynareParser::add_name(const char *name, int flag)
       ia_atoms.register_name(name);
     }
   else
-    {
-      throw DynareException(__FILE__, __LINE__,
-                            "Unrecognized flag value.");
-    }
+    throw DynareException(__FILE__, __LINE__, "Unrecognized flag value.");
 }
 
 void
@@ -618,8 +550,8 @@ DynareParser::parse_pldiscount(int len, const char *str)
   auto buf = std::make_unique<char[]>(len+1);
   std::copy_n(str, len, buf.get());
   buf[len] = '\0';
-  if (!atoms.is_type(buf.get(), DynareDynamicAtoms::param))
-    throw ogp::ParserException(std::string("Name ") + buf.get() + " is not a parameter", 0);
+  if (!atoms.is_type(buf.get(), DynareDynamicAtoms::atype::param))
+    throw ogp::ParserException(std::string{"Name "} + buf.get() + " is not a parameter", 0);
 
   int t = atoms.index(buf.get(), 0);
   if (t == -1)
@@ -631,10 +563,7 @@ DynareParser::parse_pldiscount(int len, const char *str)
 void
 DynareParser::calc_params()
 {
-  if (param_vals)
-    delete param_vals;
-
-  param_vals = new Vector(atoms.np());
+  param_vals = std::make_unique<Vector>(atoms.np());
   ogp::AtomAsgnEvaluator aae(paramset);
   aae.eval();
   for (int i = 0; i < atoms.np(); i++)
@@ -654,9 +583,7 @@ DynareParser::calc_init()
     initval.apply_subst(atom_substs->get_old2new());
 
   // calculate the vector of initial values
-  if (init_vals)
-    delete init_vals;
-  init_vals = new Vector(atoms.ny());
+  init_vals = std::make_unique<Vector>(atoms.ny());
   ogp::AtomAsgnEvaluator aae(initval);
   // set parameters
   for (int ip = 0; ip < atoms.np(); ip++)
@@ -676,9 +603,7 @@ DynareParser::calc_init()
   // if the planner's FOCs have been added, then add estimate of
   // Lagrange multipliers to the vector
   if (pbuilder)
-    {
-      MultInitSS mis(*pbuilder, *param_vals, *init_vals);
-    }
+    MultInitSS mis(*pbuilder, *param_vals, *init_vals);
 
   // if forward substitution builder has been created, we have to
   // its substitutions and evaluate them
@@ -704,8 +629,8 @@ NLSelector::operator()(int t) const
   int nary = op.nary();
   if (nary == 0)
     {
-      if (atoms.is_type(atoms.name(t), DynareDynamicAtoms::endovar)
-          || atoms.is_type(atoms.name(t), DynareDynamicAtoms::exovar))
+      if (atoms.is_type(atoms.name(t), DynareDynamicAtoms::atype::endovar)
+          || atoms.is_type(atoms.name(t), DynareDynamicAtoms::atype::exovar))
         return true;
       else
         return false;
@@ -754,9 +679,9 @@ NLSelector::operator()(int t) const
   return false;
 }
 
-DynareSPModel::DynareSPModel(const char **endo, int num_endo,
-                             const char **exo, int num_exo,
-                             const char **par, int num_par,
+DynareSPModel::DynareSPModel(const std::vector<std::string> &endo,
+                             const std::vector<std::string> &exo,
+                             const std::vector<std::string> &par,
                              const char *equations, int len,
                              int ord)
   : DynareModel()
@@ -765,12 +690,12 @@ DynareSPModel::DynareSPModel(const char **endo, int num_endo,
   order = ord;
 
   // add names
-  for (int i = 0; i < num_endo; i++)
-    add_name(endo[i], 1);
-  for (int i = 0; i < num_exo; i++)
-    add_name(exo[i], 2);
-  for (int i = 0; i < num_par; i++)
-    add_name(par[i], 3);
+  for (const auto &it : endo)
+    add_name(it, 1);
+  for (const auto &it : exo)
+    add_name(it, 2);
+  for (const auto &it : par)
+    add_name(it, 3);
 
   // parse the equations
   eqs.parse(len, equations);
@@ -779,9 +704,9 @@ DynareSPModel::DynareSPModel(const char **endo, int num_endo,
   atoms.parsing_finished(ogp::VarOrdering::bfspbfpb);
 
   // create what has to be created from DynareModel
-  param_vals = new Vector(atoms.np());
-  init_vals = new Vector(atoms.ny());
-  vcov_mat = new TwoDMatrix(atoms.nexo(), atoms.nexo());
+  param_vals = std::make_unique<Vector>(atoms.np());
+  init_vals = std::make_unique<Vector>(atoms.ny());
+  vcov_mat = std::make_unique<TwoDMatrix>(atoms.nexo(), atoms.nexo());
 
   // check the model
   check_model();
@@ -828,10 +753,9 @@ ModelSSWriter::write_der1(std::ostream &os)
   write_der1_assignment(os);
 }
 
-MatlabSSWriter::MatlabSSWriter(const DynareModel &dm, const char *idd)
-  : ModelSSWriter(dm), id(new char[strlen(idd)+1])
+MatlabSSWriter::MatlabSSWriter(const DynareModel &dm, std::string id_arg)
+  : ModelSSWriter(dm), id(std::move(id_arg))
 {
-  strcpy(id, idd);
 }
 
 void

@@ -13,6 +13,7 @@
 #include "nlsolve.hh"
 
 #include <vector>
+#include <memory>
 
 #include <matio.h>
 
@@ -84,34 +85,35 @@ class Dynare : public DynamicModel
   friend class DynareStateNameList;
   friend class DynareJacobian;
   Journal &journal;
-  ogdyn::DynareModel *model;
-  Vector *ysteady;
+  std::unique_ptr<ogdyn::DynareModel> model;
+  std::unique_ptr<Vector> ysteady;
   TensorContainer<FSSparseTensor> md;
-  DynareNameList *dnl;
-  DynareExogNameList *denl;
-  DynareStateNameList *dsnl;
-  ogp::FormulaEvaluator *fe;
-  ogp::FormulaDerEvaluator *fde;
+  std::unique_ptr<DynareNameList> dnl;
+  std::unique_ptr<DynareExogNameList> denl;
+  std::unique_ptr<DynareStateNameList> dsnl;
+  std::unique_ptr<ogp::FormulaEvaluator> fe;
+  std::unique_ptr<ogp::FormulaDerEvaluator> fde;
   const double ss_tol;
 public:
   /** Parses the given model file and uses the given order to
    * override order from the model file (if it is != -1). */
-  Dynare(const char *modname, int ord, double sstol, Journal &jr);
+  Dynare(const std::string &modname, int ord, double sstol, Journal &jr);
   /** Parses the given equations with explicitly given names. */
-  Dynare(const char **endo, int num_endo,
-         const char **exo, int num_exo,
-         const char **par, int num_par,
+  Dynare(const std::vector<std::string> &endo,
+         const std::vector<std::string> &exo,
+         const std::vector<std::string> &par,
          const char *equations, int len, int ord,
          double sstol, Journal &jr);
   /** Makes a deep copy of the object. */
   Dynare(const Dynare &dyn);
+  Dynare(Dynare &&) = default;
   std::unique_ptr<DynamicModel>
   clone() const override
   {
     return std::make_unique<Dynare>(*this);
   }
   
-  ~Dynare() override;
+  ~Dynare() override = default;
   int
   nstat() const override
   {
@@ -234,7 +236,7 @@ public:
   void calcDerivatives(const Vector &yy, const Vector &xx);
   void calcDerivativesAtSteady() override;
 
-  void writeMat(mat_t *fd, const char *prefix) const;
+  void writeMat(mat_t *fd, const std::string &prefix) const;
   void writeDump(const std::string &basename) const;
 private:
   void writeModelInfo(Journal &jr) const;
@@ -268,8 +270,7 @@ protected:
   Dynare &d;
 public:
   DynareJacobian(Dynare &dyn);
-  ~DynareJacobian()
-  override = default;
+  ~DynareJacobian() override = default;
   void load(int i, int iord, const int *vars, double res) override;
   void eval(const Vector &in) override;
 };
@@ -283,8 +284,7 @@ public:
     : d(dyn)
   {
   }
-  ~DynareVectorFunction()
-  override = default;
+  ~DynareVectorFunction() override = default;
   int
   inDim() const override
   {

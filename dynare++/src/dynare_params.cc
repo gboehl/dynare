@@ -5,50 +5,11 @@
 #include "sthread.hh"
 
 #include <getopt.h>
-#include <cstdio>
-#include <cstring>
-
-const char *help_str
-= "usage: dynare++ [--help] [--version] [options] <model file>\n"
-  "\n"
-  "    --help               print this message and return\n"
-  "    --version            print version and return\n"
-  "\n"
-  "options:\n"
-  "    --per <num>          number of periods simulated after burnt [100]\n"
-  "    --burn <num>         number of periods burnt [0]\n"
-  "    --sim <num>          number of simulations [80]\n"
-  "    --rtper <num>        number of RT periods simulated after burnt [0]\n"
-  "    --rtsim <num>        number of RT simulations [0]\n"
-  "    --condper <num>      number of periods in cond. simulations [0]\n"
-  "    --condsim <num>      number of conditional simulations [0]\n"
-  "    --steps <num>        steps towards stoch. SS [0=deter.]\n"
-  "    --centralize         centralize the rule [do centralize]\n"
-  "    --no-centralize      do not centralize the rule [do centralize]\n"
-  "    --prefix <string>    prefix of variables in Mat-4 file [\"dyn\"]\n"
-  "    --seed <num>         random number generator seed [934098]\n"
-  "    --order <num>        order of approximation [no default]\n"
-  "    --threads <num>      number of max parallel threads [1/2 * nb. of logical CPUs]\n"
-  "    --ss-tol <num>       steady state calcs tolerance [1.e-13]\n"
-  "    --check pesPES       check model residuals [no checks]\n"
-  "                         lower/upper case switches off/on\n"
-  "                           pP  checking along simulation path\n"
-  "                           eE  checking on ellipse\n"
-  "                           sS  checking along shocks\n"
-  "    --check-evals <num>  max number of evals per residual [1000]\n"
-  "    --check-num <num>    number of checked points [10]\n"
-  "    --check-scale <num>  scaling of checked points [2.0]\n"
-  "    --no-irfs            shuts down IRF simulations [do IRFs]\n"
-  "    --irfs               performs IRF simulations [do IRFs]\n"
-  "    --qz-criterium <num> threshold for stable eigenvalues [1.000001]\n"
-  "\n\n";
-
-// returns the pointer to the first character after the last slash or
-// backslash in the string
-const char *dyn_basename(const char *str);
+#include <string>
+#include <iostream>
 
 DynareParams::DynareParams(int argc, char **argv)
-  : modname(nullptr), num_per(100), num_burn(0), num_sim(80),
+  : num_per(100), num_burn(0), num_sim(80),
     num_rtper(0), num_rtsim(0),
     num_condper(0), num_condsim(0),
     num_threads(sthread::default_threads_number()), num_steps(0),
@@ -58,12 +19,12 @@ DynareParams::DynareParams(int argc, char **argv)
     do_irfs_all(true), do_centralize(true), qz_criterium(1.0+1e-6),
     help(false), version(false)
 {
-  if (argc == 1 || !strcmp(argv[1], "--help"))
+  if (argc == 1 || std::string{argv[1]} == "--help")
     {
       help = true;
       return;
     }
-  if (argc == 1 || !strcmp(argv[1], "--version"))
+  if (argc == 1 || std::string{argv[1]} == "--version")
     {
       version = true;
       return;
@@ -73,36 +34,36 @@ DynareParams::DynareParams(int argc, char **argv)
   argc--;
 
   struct option const opts [] = {
-    {"periods", required_argument, nullptr, opt_per},
-    {"per", required_argument, nullptr, opt_per},
-    {"burn", required_argument, nullptr, opt_burn},
-    {"simulations", required_argument, nullptr, opt_sim},
-    {"sim", required_argument, nullptr, opt_sim},
-    {"rtperiods", required_argument, nullptr, opt_rtper},
-    {"rtper", required_argument, nullptr, opt_rtper},
-    {"rtsimulations", required_argument, nullptr, opt_rtsim},
-    {"rtsim", required_argument, nullptr, opt_rtsim},
-    {"condperiods", required_argument, nullptr, opt_condper},
-    {"condper", required_argument, nullptr, opt_condper},
-    {"condsimulations", required_argument, nullptr, opt_condsim},
-    {"condsim", required_argument, nullptr, opt_condsim},
-    {"prefix", required_argument, nullptr, opt_prefix},
-    {"threads", required_argument, nullptr, opt_threads},
-    {"steps", required_argument, nullptr, opt_steps},
-    {"seed", required_argument, nullptr, opt_seed},
-    {"order", required_argument, nullptr, opt_order},
-    {"ss-tol", required_argument, nullptr, opt_ss_tol},
-    {"check", required_argument, nullptr, opt_check},
-    {"check-scale", required_argument, nullptr, opt_check_scale},
-    {"check-evals", required_argument, nullptr, opt_check_evals},
-    {"check-num", required_argument, nullptr, opt_check_num},
-    {"qz-criterium", required_argument, nullptr, opt_qz_criterium},
-    {"no-irfs", no_argument, nullptr, opt_noirfs},
-    {"irfs", no_argument, nullptr, opt_irfs},
-    {"centralize", no_argument, nullptr, opt_centralize},
-    {"no-centralize", no_argument, nullptr, opt_no_centralize},
-    {"help", no_argument, nullptr, opt_help},
-    {"version", no_argument, nullptr, opt_version},
+    {"periods", required_argument, nullptr, static_cast<int>(opt::per)},
+    {"per", required_argument, nullptr, static_cast<int>(opt::per)},
+    {"burn", required_argument, nullptr, static_cast<int>(opt::burn)},
+    {"simulations", required_argument, nullptr, static_cast<int>(opt::sim)},
+    {"sim", required_argument, nullptr, static_cast<int>(opt::sim)},
+    {"rtperiods", required_argument, nullptr, static_cast<int>(opt::rtper)},
+    {"rtper", required_argument, nullptr, static_cast<int>(opt::rtper)},
+    {"rtsimulations", required_argument, nullptr, static_cast<int>(opt::rtsim)},
+    {"rtsim", required_argument, nullptr, static_cast<int>(opt::rtsim)},
+    {"condperiods", required_argument, nullptr, static_cast<int>(opt::condper)},
+    {"condper", required_argument, nullptr, static_cast<int>(opt::condper)},
+    {"condsimulations", required_argument, nullptr, static_cast<int>(opt::condsim)},
+    {"condsim", required_argument, nullptr, static_cast<int>(opt::condsim)},
+    {"prefix", required_argument, nullptr, static_cast<int>(opt::prefix)},
+    {"threads", required_argument, nullptr, static_cast<int>(opt::threads)},
+    {"steps", required_argument, nullptr, static_cast<int>(opt::steps)},
+    {"seed", required_argument, nullptr, static_cast<int>(opt::seed)},
+    {"order", required_argument, nullptr, static_cast<int>(opt::order)},
+    {"ss-tol", required_argument, nullptr, static_cast<int>(opt::ss_tol)},
+    {"check", required_argument, nullptr, static_cast<int>(opt::check)},
+    {"check-scale", required_argument, nullptr, static_cast<int>(opt::check_scale)},
+    {"check-evals", required_argument, nullptr, static_cast<int>(opt::check_evals)},
+    {"check-num", required_argument, nullptr, static_cast<int>(opt::check_num)},
+    {"qz-criterium", required_argument, nullptr, static_cast<int>(opt::qz_criterium)},
+    {"no-irfs", no_argument, nullptr, static_cast<int>(opt::noirfs)},
+    {"irfs", no_argument, nullptr, static_cast<int>(opt::irfs)},
+    {"centralize", no_argument, nullptr, static_cast<int>(opt::centralize)},
+    {"no-centralize", no_argument, nullptr, static_cast<int>(opt::no_centralize)},
+    {"help", no_argument, nullptr, static_cast<int>(opt::help)},
+    {"version", no_argument, nullptr, static_cast<int>(opt::version)},
     {nullptr, 0, nullptr, 0}
   };
 
@@ -110,149 +71,180 @@ DynareParams::DynareParams(int argc, char **argv)
   int index;
   while (-1 != (ret = getopt_long(argc, argv, "", opts, &index)))
     {
-      switch (ret)
+      if (ret == '?')
         {
-        case opt_per:
-          if (1 != sscanf(optarg, "%d", &num_per))
-            fprintf(stderr, "Couldn't parse integer %s, ignored\n", optarg);
-          break;
-        case opt_burn:
-          if (1 != sscanf(optarg, "%d", &num_burn))
-            fprintf(stderr, "Couldn't parse integer %s, ignored\n", optarg);
-          break;
-        case opt_sim:
-          if (1 != sscanf(optarg, "%d", &num_sim))
-            fprintf(stderr, "Couldn't parse integer %s, ignored\n", optarg);
-          break;
-        case opt_rtper:
-          if (1 != sscanf(optarg, "%d", &num_rtper))
-            fprintf(stderr, "Couldn't parse integer %s, ignored\n", optarg);
-          break;
-        case opt_rtsim:
-          if (1 != sscanf(optarg, "%d", &num_rtsim))
-            fprintf(stderr, "Couldn't parse integer %s, ignored\n", optarg);
-          break;
-        case opt_condper:
-          if (1 != sscanf(optarg, "%d", &num_condper))
-            fprintf(stderr, "Couldn't parse integer %s, ignored\n", optarg);
-          break;
-        case opt_condsim:
-          if (1 != sscanf(optarg, "%d", &num_condsim))
-            fprintf(stderr, "Couldn't parse integer %s, ignored\n", optarg);
-          break;
-        case opt_prefix:
-          prefix = optarg;
-          break;
-        case opt_threads:
-          if (1 != sscanf(optarg, "%d", &num_threads))
-            fprintf(stderr, "Couldn't parse integer %s, ignored\n", optarg);
-          break;
-        case opt_steps:
-          if (1 != sscanf(optarg, "%d", &num_steps))
-            fprintf(stderr, "Couldn't parse integer %s, ignored\n", optarg);
-          break;
-        case opt_seed:
-          if (1 != sscanf(optarg, "%d", &seed))
-            fprintf(stderr, "Couldn't parse integer %s, ignored\n", optarg);
-          break;
-        case opt_order:
-          if (1 != sscanf(optarg, "%d", &order))
-            fprintf(stderr, "Couldn't parse integer %s, ignored\n", optarg);
-          break;
-        case opt_ss_tol:
-          if (1 != sscanf(optarg, "%lf", &ss_tol))
-            fprintf(stderr, "Couldn't parse float %s, ignored\n", optarg);
-          break;
-        case opt_check:
-          processCheckFlags(optarg);
-          break;
-        case opt_check_scale:
-          if (1 != sscanf(optarg, "%lf", &check_scale))
-            fprintf(stderr, "Couldn't parse float %s, ignored\n", optarg);
-          break;
-        case opt_check_evals:
-          if (1 != sscanf(optarg, "%d", &check_evals))
-            fprintf(stderr, "Couldn't parse integer %s, ignored\n", optarg);
-          break;
-        case opt_check_num:
-          if (1 != sscanf(optarg, "%d", &check_num))
-            fprintf(stderr, "Couldn't parse integer %s, ignored\n", optarg);
-          break;
-        case opt_noirfs:
-          irf_list.clear();
-          do_irfs_all = false;
-          break;
-        case opt_irfs:
-          processIRFList(argc, argv);
-          if (irf_list.empty())
-            do_irfs_all = true;
-          else
-            do_irfs_all = false;
-          break;
-        case opt_centralize:
-          do_centralize = true;
-          break;
-        case opt_no_centralize:
-          do_centralize = false;
-          break;
-        case opt_qz_criterium:
-          if (1 != sscanf(optarg, "%lf", &qz_criterium))
-            fprintf(stderr, "Couldn't parse float %s, ignored\n", optarg);
-          break;
-        case opt_help:
-          help = true;
-          break;
-        case opt_version:
-          version = true;
-          break;
-        case '?':
-          fprintf(stderr, "Unknown option, ignored\n");
-          break;
+          std::cerr << "Unknown option, ignored\n";
+          continue;
+        }
+
+      try
+        {
+          switch (static_cast<opt>(ret))
+            {
+            case opt::per:
+              num_per = std::stoi(optarg);
+              break;
+            case opt::burn:
+              num_burn = std::stoi(optarg);
+              break;
+            case opt::sim:
+              num_sim = std::stoi(optarg);
+              break;
+            case opt::rtper:
+              num_rtper = std::stoi(optarg);
+              break;
+            case opt::rtsim:
+              num_rtsim = std::stoi(optarg);
+              break;
+            case opt::condper:
+              num_condper = std::stoi(optarg);
+              break;
+            case opt::condsim:
+              num_condsim = std::stoi(optarg);
+              break;
+            case opt::prefix:
+              prefix = optarg;
+              break;
+            case opt::threads:
+              num_threads = std::stoi(optarg);
+              break;
+            case opt::steps:
+              num_steps = std::stoi(optarg);
+              break;
+            case opt::seed:
+              seed = std::stoi(optarg);
+              break;
+            case opt::order:
+              order = std::stoi(optarg);
+              break;
+            case opt::ss_tol:
+              ss_tol = std::stod(optarg);
+              break;
+            case opt::check:
+              processCheckFlags(optarg);
+              break;
+            case opt::check_scale:
+              check_scale = std::stod(optarg);
+              break;
+            case opt::check_evals:
+              check_evals = std::stoi(optarg);
+              break;
+            case opt::check_num:
+              check_num = std::stoi(optarg);
+              break;
+            case opt::noirfs:
+              irf_list.clear();
+              do_irfs_all = false;
+              break;
+            case opt::irfs:
+              processIRFList(argc, argv);
+              if (irf_list.empty())
+                do_irfs_all = true;
+              else
+                do_irfs_all = false;
+              break;
+            case opt::centralize:
+              do_centralize = true;
+              break;
+            case opt::no_centralize:
+              do_centralize = false;
+              break;
+            case opt::qz_criterium:
+              qz_criterium = std::stod(optarg);
+              break;
+            case opt::help:
+              help = true;
+              break;
+            case opt::version:
+              version = true;
+              break;
+            }
+        }
+      catch (std::invalid_argument)
+        {
+          std::cerr << "Couldn't parse option " << optarg << ", ignored\n";
+        }
+      catch (std::out_of_range)
+        {
+          std::cerr << "Out-of-range value " << optarg << ", ignored\n";
         }
     }
 
-  // make basename (get rid of the extension)
-  basename = dyn_basename(modname);
-  std::string::size_type i = basename.rfind('.');
-  if (i != std::string::npos)
-    basename.erase(i);
+  // make basename (get rid of the directory and the extension)
+  basename = modname;
+  auto pos = basename.find_last_of(R"(/\)");
+  if (pos != std::string::npos)
+    basename = basename.substr(pos+1);
+  pos = basename.find_last_of('.');
+  if (pos != std::string::npos)
+    basename.erase(pos);
 }
 
 void
 DynareParams::printHelp() const
 {
-  printf("%s", help_str);
+  std::cout << "usage: dynare++ [--help] [--version] [options] <model file>\n"
+    "\n"
+    "    --help               print this message and return\n"
+    "    --version            print version and return\n"
+    "\n"
+    "options:\n"
+    "    --per <num>          number of periods simulated after burnt [100]\n"
+    "    --burn <num>         number of periods burnt [0]\n"
+    "    --sim <num>          number of simulations [80]\n"
+    "    --rtper <num>        number of RT periods simulated after burnt [0]\n"
+    "    --rtsim <num>        number of RT simulations [0]\n"
+    "    --condper <num>      number of periods in cond. simulations [0]\n"
+    "    --condsim <num>      number of conditional simulations [0]\n"
+    "    --steps <num>        steps towards stoch. SS [0=deter.]\n"
+    "    --centralize         centralize the rule [do centralize]\n"
+    "    --no-centralize      do not centralize the rule [do centralize]\n"
+    "    --prefix <string>    prefix of variables in Mat-4 file [\"dyn\"]\n"
+    "    --seed <num>         random number generator seed [934098]\n"
+    "    --order <num>        order of approximation [no default]\n"
+    "    --threads <num>      number of max parallel threads [1/2 * nb. of logical CPUs]\n"
+    "    --ss-tol <num>       steady state calcs tolerance [1.e-13]\n"
+    "    --check pesPES       check model residuals [no checks]\n"
+    "                         lower/upper case switches off/on\n"
+    "                           pP  checking along simulation path\n"
+    "                           eE  checking on ellipse\n"
+    "                           sS  checking along shocks\n"
+    "    --check-evals <num>  max number of evals per residual [1000]\n"
+    "    --check-num <num>    number of checked points [10]\n"
+    "    --check-scale <num>  scaling of checked points [2.0]\n"
+    "    --no-irfs            shuts down IRF simulations [do IRFs]\n"
+    "    --irfs               performs IRF simulations [do IRFs]\n"
+    "    --qz-criterium <num> threshold for stable eigenvalues [1.000001]\n"
+    "\n\n";
 }
 
 void
-DynareParams::processCheckFlags(const char *flags)
+DynareParams::processCheckFlags(const std::string &flags)
 {
-  for (unsigned int i = 0; i < strlen(flags); i++)
-    {
-      switch (flags[i])
-        {
-        case 'p':
-          check_along_path = false;
-          break;
-        case 'P':
-          check_along_path = true;
-          break;
-        case 'e':
-          check_on_ellipse = false;
-          break;
-        case 'E':
-          check_on_ellipse = true;
-          break;
-        case 's':
-          check_along_shocks = false;
-          break;
-        case 'S':
-          check_along_shocks = true;
-          break;
-        default:
-          fprintf(stderr, "Unknown check type selection character <%c>, ignored.\n", flags[i]);
-        }
-    }
+  for (char c : flags)
+    switch (c)
+      {
+      case 'p':
+        check_along_path = false;
+        break;
+      case 'P':
+        check_along_path = true;
+        break;
+      case 'e':
+        check_on_ellipse = false;
+        break;
+      case 'E':
+        check_on_ellipse = true;
+        break;
+      case 's':
+        check_along_shocks = false;
+        break;
+      case 'S':
+        check_along_shocks = true;
+        break;
+      default:
+        std::cerr << "Unknown check type selection character <" << c << ">, ignored.\n";
+      }
 }
 
 void
@@ -264,13 +256,4 @@ DynareParams::processIRFList(int argc, char **argv)
       irf_list.push_back(argv[optind]);
       optind++;
     }
-}
-
-const char *
-dyn_basename(const char *str)
-{
-  int i = strlen(str);
-  while (i > 0 && str[i-1] != '/' && str[i-1] != '\\')
-    i--;
-  return str+i;
 }

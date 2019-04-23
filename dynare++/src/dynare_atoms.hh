@@ -17,7 +17,6 @@
 
 namespace ogdyn
 {
-
   using std::map;
   using std::vector;
 
@@ -33,11 +32,8 @@ namespace ogdyn
       : StaticAtoms()
     {
     }
-    DynareStaticAtoms(const DynareStaticAtoms &a)
-       
-    = default;
-    ~DynareStaticAtoms()
-    override = default;
+    DynareStaticAtoms(const DynareStaticAtoms &a) = default;
+    ~DynareStaticAtoms() override = default;
     /** This registers a unique varname identifier. It throws an
      * exception if the variable name is duplicate. It checks the
      * uniqueness and then it calls StaticAtoms::register_name. */
@@ -52,7 +48,7 @@ namespace ogdyn
   class DynareDynamicAtoms : public ogp::SAtoms, public ogp::NularyStringConvertor
   {
   public:
-    enum atype {endovar, exovar, param};
+    enum class atype {endovar, exovar, param};
   protected:
     using Tatypemap = map<const char *, atype, ogp::ltstr>;
     /** The map assigining a type to each name. */
@@ -63,8 +59,7 @@ namespace ogdyn
     {
     }
     DynareDynamicAtoms(const DynareDynamicAtoms &dda);
-    ~DynareDynamicAtoms()
-    override = default;
+    ~DynareDynamicAtoms() override = default;
     /** This parses a variable of the forms: varname(+3),
      * varname(3), varname, varname(-3), varname(0), varname(+0),
      * varname(-0). */

@@ -127,11 +127,11 @@ JournalRecord::writePrefix(const SystemResources &f)
   std::ostringstream s;
   s << std::setfill('0');
   writeFloatTabular(s, f.elapsed, 7);
-  s  << ':' << recChar << std::setw(5) << ord << ':';
+  s  << u8"│" << recChar << std::setw(5) << ord << u8"│";
   writeFloatTabular(s, f.load_avg, 3);
-  s << ':';
+  s << u8"│";
   writeFloatTabular(s, f.mem_avail/mb, 5);
-  s << ":      : ";
+  s << u8"│      │ ";
   for (int i = 0; i < 2*journal.getDepth(); i++)
     s << ' ';
   prefix = s.str();
@@ -146,13 +146,13 @@ JournalRecordPair::writePrefixForEnd(const SystemResources &f)
   std::ostringstream s;
   s << std::setfill('0');
   writeFloatTabular(s, f.elapsed+difnow.elapsed, 7);
-  s << ":E" << std::setw(5) << ord << ':';
+  s << u8"│E" << std::setw(5) << ord << u8"│";
   writeFloatTabular(s, difnow.load_avg, 3);
-  s << ':';
+  s << u8"│";
   writeFloatTabular(s, difnow.mem_avail/mb, 5);
-  s << ':';
+  s << u8"│";
   writeFloatTabular(s, difnow.majflt/mb, 6);
-  s << ": ";
+  s << u8"│ ";
   for (int i = 0; i < 2*journal.getDepth(); i++)
     s << ' ';
   prefix_end = s.str();
@@ -203,12 +203,11 @@ Journal::printHeader()
   std::time_t t = std::time(nullptr);
   *this << std::put_time(std::localtime(&t), "%c %Z")
         << "\n\n"
-        << "  ------ elapsed time (seconds)                     \n"
-        << "  |       ------ record unique identifier           \n"
-        << "  |       |     ------ load average                 \n"
-        << "  |       |     |    ------ available memory (MB)   \n"
-        << "  |       |     |    |     ------  major faults (MB)\n"
-        << "  |       |     |    |     |                        \n"
-        << "  V       V     V    V     V                        \n"
-        << "\n";
+        << u8"  ┌────╼ elapsed time (seconds)                     \n"
+        << u8"  │       ┌────╼ record unique identifier           \n"
+        << u8"  │       │     ┌────╼ load average                 \n"
+        << u8"  │       │     │    ┌────╼ available memory (MB)   \n"
+        << u8"  │       │     │    │     ┌─────╼ major faults (MB)\n"
+        << u8"  │       │     │    │     │                        \n"
+        << u8"  ╽       ╽     ╽    ╽     ╽                        \n";
 }
