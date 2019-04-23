@@ -69,5 +69,5 @@ fmla_wrap()
 void
 fmla__destroy_buffer(void* p)
 {
-  fmla__delete_buffer(reinterpret_cast<YY_BUFFER_STATE>(p));
+  fmla__delete_buffer(static_cast<YY_BUFFER_STATE>(p));
 }

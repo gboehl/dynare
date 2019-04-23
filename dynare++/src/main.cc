@@ -50,7 +50,7 @@ main(int argc, char **argv)
         for (int i = 0; i < dynare.nexog(); i++)
           irf_list_ind.push_back(i);
       else
-        irf_list_ind = ((const DynareNameList &) dynare.getExogNames()).selectIndices(params.irf_list);
+        irf_list_ind = (static_cast<const DynareNameList &>(dynare.getExogNames())).selectIndices(params.irf_list);
 
       // write matlab files
       std::string mfile1(params.basename);

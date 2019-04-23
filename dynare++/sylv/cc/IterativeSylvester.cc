@@ -31,7 +31,7 @@ IterativeSylvester::solve(SylvParams &pars, KronVector &x) const
 double
 IterativeSylvester::performFirstStep(KronVector &x) const
 {
-  KronVector xtmp((const KronVector &)x);
+  KronVector xtmp(const_cast<const KronVector &>(x));
   KronUtils::multKron(*matrixF, *matrixK, xtmp);
   x.add(-1., xtmp);
   double norm = xtmp.getMax();
@@ -42,7 +42,7 @@ double
 IterativeSylvester::performStep(const QuasiTriangular &k, const QuasiTriangular &f,
                                 KronVector &x)
 {
-  KronVector xtmp((const KronVector &)x);
+  KronVector xtmp(const_cast<const KronVector &>(x));
   KronUtils::multKron(f, k, xtmp);
   x.add(1.0, xtmp);
   double norm = xtmp.getMax();

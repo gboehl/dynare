@@ -59,5 +59,5 @@ matrix_wrap()
 void
 matrix__destroy_buffer(void* p)
 {
-  matrix__delete_buffer(reinterpret_cast<YY_BUFFER_STATE>(p));
+  matrix__delete_buffer(static_cast<YY_BUFFER_STATE>(p));
 }

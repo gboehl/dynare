@@ -250,7 +250,7 @@ public:
   int
   numSyms() const
   {
-    return (int) syms.size();
+    return static_cast<int>(syms.size());
   }
   const Symmetry &
   getSym(int i) const

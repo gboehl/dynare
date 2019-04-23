@@ -118,9 +118,9 @@ Interpreter::evaluate_a_block(bool initialization)
         }
       break;
     case SOLVE_FORWARD_SIMPLE:
-      g1 = (double *) mxMalloc(size*size*sizeof(double));
+      g1 = static_cast<double *>(mxMalloc(size*size*sizeof(double)));
       test_mxMalloc(g1, __LINE__, __FILE__, __func__, size*size*sizeof(double));
-      r = (double *) mxMalloc(size*sizeof(double));
+      r = static_cast<double *>(mxMalloc(size*sizeof(double)));
       test_mxMalloc(r, __LINE__, __FILE__, __func__, size*sizeof(double));
       if (steady_state)
         {
@@ -160,7 +160,7 @@ Interpreter::evaluate_a_block(bool initialization)
 #ifdef DEBUG
       mexPrintf("in SOLVE_FORWARD_COMPLETE r = mxMalloc(%d*sizeof(double))\n", size);
 #endif
-      r = (double *) mxMalloc(size*sizeof(double));
+      r = static_cast<double *>(mxMalloc(size*sizeof(double)));
       test_mxMalloc(r, __LINE__, __FILE__, __func__, size*sizeof(double));
       if (steady_state)
         {
@@ -219,9 +219,9 @@ Interpreter::evaluate_a_block(bool initialization)
         }
       break;
     case SOLVE_BACKWARD_SIMPLE:
-      g1 = (double *) mxMalloc(size*size*sizeof(double));
+      g1 = static_cast<double *>(mxMalloc(size*size*sizeof(double)));
       test_mxMalloc(g1, __LINE__, __FILE__, __func__, size*size*sizeof(double));
-      r = (double *) mxMalloc(size*sizeof(double));
+      r = static_cast<double *>(mxMalloc(size*sizeof(double)));
       test_mxMalloc(r, __LINE__, __FILE__, __func__, size*sizeof(double));
       if (steady_state)
         {
@@ -258,7 +258,7 @@ Interpreter::evaluate_a_block(bool initialization)
           fixe_u(&u, u_count_int, u_count_int);
           Read_SparseMatrix(bin_base_name, size, 1, 0, 0, false, stack_solve_algo, solve_algo);
         }
-      r = (double *) mxMalloc(size*sizeof(double));
+      r = static_cast<double *>(mxMalloc(size*sizeof(double)));
       test_mxMalloc(r, __LINE__, __FILE__, __func__, size*sizeof(double));
       if (steady_state)
         {
@@ -296,7 +296,7 @@ Interpreter::evaluate_a_block(bool initialization)
           Read_SparseMatrix(bin_base_name, size, periods, y_kmin, y_kmax, true, stack_solve_algo, solve_algo);
         }
       u_count = u_count_int*(periods+y_kmax+y_kmin);
-      r = (double *) mxMalloc(size*sizeof(double));
+      r = static_cast<double *>(mxMalloc(size*sizeof(double)));
       test_mxMalloc(r, __LINE__, __FILE__, __func__, size*sizeof(double));
       begining = it_code;
       for (it_ = y_kmin; it_ < periods+y_kmin; it_++)
@@ -436,11 +436,11 @@ Interpreter::simulate_a_block(vector_table_conditional_local_type vector_table_c
           Read_SparseMatrix(bin_base_name, size, periods, y_kmin, y_kmax, true, stack_solve_algo, solve_algo);
         }
       u_count = u_count_int*(periods+y_kmax+y_kmin);
-      r = (double *) mxMalloc(size*sizeof(double));
+      r = static_cast<double *>(mxMalloc(size*sizeof(double)));
       test_mxMalloc(r, __LINE__, __FILE__, __func__, size*sizeof(double));
-      res = (double *) mxMalloc(size*periods*sizeof(double));
+      res = static_cast<double *>(mxMalloc(size*periods*sizeof(double)));
       test_mxMalloc(res, __LINE__, __FILE__, __func__, size*periods*sizeof(double));
-      y_save = (double *) mxMalloc(y_size*sizeof(double)*(periods+y_kmax+y_kmin));
+      y_save = static_cast<double *>(mxMalloc(y_size*sizeof(double)*(periods+y_kmax+y_kmin)));
       test_mxMalloc(y_save, __LINE__, __FILE__, __func__, y_size*sizeof(double)*(periods+y_kmax+y_kmin));
       start_code = it_code;
       iter = 0;
@@ -590,7 +590,7 @@ Interpreter::ReadCodeFile(string file_name, CodeLoad &code)
       tmp << " in compute_blocks, " << file_name << ".cod cannot be opened\n";
       throw FatalExceptionHandling(tmp.str());
     }
-  if (block >= (int) code.get_block_number())
+  if (block >= static_cast<int>(code.get_block_number()))
     {
       ostringstream tmp;
       tmp << " in compute_blocks, input argument block = " << block+1 << " is greater than the number of blocks in the model (" << code.get_block_number() << " see M_.block_structure_stat.block)\n";
@@ -661,7 +661,7 @@ Interpreter::MainLoop(string bin_basename, CodeLoad code, bool evaluate, int blo
 #endif
           //it's a new block
           {
-            FBEGINBLOCK_ *fb = (FBEGINBLOCK_ *) it_code->second;
+            FBEGINBLOCK_ *fb = static_cast<FBEGINBLOCK_ *>(it_code->second);
             Block_Contain = fb->get_Block_Contain();
             it_code++;
             if (constrained)
@@ -752,12 +752,12 @@ Interpreter::MainLoop(string bin_basename, CodeLoad code, bool evaluate, int blo
           break;
         case FDIMT:
 #ifdef DEBUG
-          mexPrintf("FDIMT size=%d\n", ((FDIMT_ *) it_code->second)->get_size());
+          mexPrintf("FDIMT size=%d\n", static_cast<FDIMT_ *>(it_code->second)->get_size());
 #endif
-          var = ((FDIMT_ *) it_code->second)->get_size();
+          var = static_cast<FDIMT_ *>(it_code->second)->get_size();
           if (T)
             mxFree(T);
-          T = (double *) mxMalloc(var*(periods+y_kmin+y_kmax)*sizeof(double));
+          T = static_cast<double *>(mxMalloc(var*(periods+y_kmin+y_kmax)*sizeof(double)));
           test_mxMalloc(T, __LINE__, __FILE__, __func__, var*(periods+y_kmin+y_kmax)*sizeof(double));
           if (block >= 0)
             {
@@ -768,9 +768,9 @@ Interpreter::MainLoop(string bin_basename, CodeLoad code, bool evaluate, int blo
           break;
         case FDIMST:
 #ifdef DEBUG
-          mexPrintf("FDIMST size=%d\n", ((FDIMST_ *) it_code->second)->get_size());
+          mexPrintf("FDIMST size=%d\n", static_cast<FDIMST_ *>(it_code->second)->get_size());
 #endif
-          var = ((FDIMST_ *) it_code->second)->get_size();
+          var = static_cast<FDIMST_ *>(it_code->second)->get_size();
           if (T)
             mxFree(T);
           if (global_temporary_terms)
@@ -779,13 +779,13 @@ Interpreter::MainLoop(string bin_basename, CodeLoad code, bool evaluate, int blo
                 {
                   mexPrintf("GlobalTemporaryTerms is NULL\n"); mexEvalString("drawnow;");
                 }
-              if (var != (int) mxGetNumberOfElements(GlobalTemporaryTerms))
+              if (var != static_cast<int>(mxGetNumberOfElements(GlobalTemporaryTerms)))
                 GlobalTemporaryTerms = mxCreateDoubleMatrix(var, 1, mxREAL);
               T = mxGetPr(GlobalTemporaryTerms);
             }
           else
             {
-              T = (double *) mxMalloc(var*sizeof(double));
+              T = static_cast<double *>(mxMalloc(var*sizeof(double)));
               test_mxMalloc(T, __LINE__, __FILE__, __func__, var*sizeof(double));
             }
 
@@ -858,9 +858,9 @@ Interpreter::extended_path(string file_name, string bin_basename, bool evaluate,
     double *y_save = (double *) mxMalloc(size_of_direction);
     double *x_save = (double *) mxMalloc((periods + y_kmax + y_kmin) * col_x *sizeof(double));*/
   size_t size_of_direction = y_size*col_y*sizeof(double);
-  double *y_save = (double *) mxMalloc(size_of_direction);
+  double *y_save = static_cast<double *>(mxMalloc(size_of_direction));
   test_mxMalloc(y_save, __LINE__, __FILE__, __func__, size_of_direction);
-  double *x_save = (double *) mxMalloc(nb_row_x * col_x *sizeof(double));
+  double *x_save = static_cast<double *>(mxMalloc(nb_row_x * col_x *sizeof(double)));
   test_mxMalloc(x_save, __LINE__, __FILE__, __func__, nb_row_x * col_x *sizeof(double));
 
   vector_table_conditional_local_type vector_table_conditional_local;

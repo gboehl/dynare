@@ -46,13 +46,13 @@ DynareDynamicAtoms::parse_variable(const char *in, std::string &out, int &ll) co
 {
   ll = 0;
   std::string str = in;
-  int left = str.find_first_of("({");
-  if (left != -1)
+  auto left = str.find_first_of("({");
+  if (left != string::npos)
     {
       out = str.substr(0, left);
       left++;
-      int right = str.find_first_of(")}", left);
-      if ((int) string::npos == right)
+      auto right = str.find_first_of(")}", left);
+      if (string::npos == right)
         throw ogp::ParserException(
                                    string("Syntax error when parsing Dynare atom <")+in+">.", 0);
       std::string tmp(str, left, right-left);

@@ -70,7 +70,7 @@ TestRunnable::test() const
   clock_t start = clock();
   bool passed = run();
   clock_t end = clock();
-  std::cout << "CPU time " << ((double) (end-start))/CLOCKS_PER_SEC << " (CPU seconds)..................";
+  std::cout << "CPU time " << (static_cast<double>(end-start))/CLOCKS_PER_SEC << " (CPU seconds)..................";
   if (passed)
     std::cout << "passed";
   else

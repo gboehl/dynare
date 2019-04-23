@@ -321,7 +321,7 @@ KOrder::sylvesterSolve<Storage::fold>(ctraits<Storage::fold>::Ttensor &der) cons
   ctraits<Storage::unfold>::Ttensor tmp(der);
   sylvesterSolve<Storage::unfold>(tmp);
   ctraits<Storage::fold>::Ttensor ftmp(tmp);
-  der.getData() = (const Vector &) (ftmp.getData());
+  der.getData() = const_cast<const Vector &>(ftmp.getData());
 }
 
 void

@@ -63,7 +63,7 @@ Dynare::Dynare(const char *modname, int ord, double sstol, Journal &jr)
       int line = 1;
       int col = 0;
       size_t i = 0;
-      while (i < contents.length() && i < (size_t) pe.offset())
+      while (i < contents.length() && i < static_cast<size_t>(pe.offset()))
         {
           if (contents[i] == '\n')
             {
@@ -187,7 +187,7 @@ Dynare::solveDeterministicSteady(Vector &steady)
 {
   JournalRecordPair pa(journal);
   pa << "Non-linear solver for deterministic steady state" << endrec;
-  steady = (const Vector &) model->getInit();
+  steady = const_cast<const Vector &>(model->getInit());
   DynareVectorFunction dvf(*this);
   DynareJacobian dj(*this);
   ogu::NLSolver nls(dvf, dj, 500, ss_tol, journal);

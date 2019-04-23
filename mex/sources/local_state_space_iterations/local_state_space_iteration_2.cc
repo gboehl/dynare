@@ -319,20 +319,20 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     }
   if (nrhs == 9)
     {
-      int numthreads = (int) mxGetScalar(prhs[8]);
+      int numthreads = static_cast<int>(mxGetScalar(prhs[8]));
       double *y;
       plhs[0] = mxCreateDoubleMatrix(m, s, mxREAL);
       y = mxGetPr(plhs[0]);
-      ss2Iteration(y, yhat, epsilon, ghx, ghu, constant, ghxx, ghuu, ghxu, (int) m, (int) n, (int) q, (int) s, numthreads);
+      ss2Iteration(y, yhat, epsilon, ghx, ghu, constant, ghxx, ghuu, ghxu, static_cast<int>(m), static_cast<int>(n), static_cast<int>(q), static_cast<int>(s), numthreads);
     }
   else
     {
-      int numthreads = (int) mxGetScalar(prhs[10]);
+      int numthreads = static_cast<int>(mxGetScalar(prhs[10]));
       double *y, *y_;
       plhs[0] = mxCreateDoubleMatrix(m, s, mxREAL);
       plhs[1] = mxCreateDoubleMatrix(m, s, mxREAL);
       y = mxGetPr(plhs[0]);
       y_ = mxGetPr(plhs[1]);
-      ss2Iteration_pruning(y, y_, yhat, yhat_, epsilon, ghx, ghu, constant, ghxx, ghuu, ghxu, ss, (int) m, (int) n, (int) q, (int) s, numthreads);
+      ss2Iteration_pruning(y, y_, yhat, yhat_, epsilon, ghx, ghu, constant, ghxx, ghuu, ghxu, ss, static_cast<int>(m), static_cast<int>(n), static_cast<int>(q), static_cast<int>(s), numthreads);
     }
 }

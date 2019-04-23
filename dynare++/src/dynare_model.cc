@@ -42,13 +42,13 @@ DynareModel::DynareModel(const DynareModel &dm)
     atom_substs(nullptr), old_atoms(nullptr)
 {
   if (dm.param_vals)
-    param_vals = new Vector((const Vector &) *(dm.param_vals));
+    param_vals = new Vector(const_cast<const Vector &>(*(dm.param_vals)));
   if (dm.init_vals)
-    init_vals = new Vector((const Vector &) *(dm.init_vals));
+    init_vals = new Vector(const_cast<const Vector &>(*(dm.init_vals)));
   if (dm.vcov_mat)
-    vcov_mat = new TwoDMatrix((const TwoDMatrix &) *(dm.vcov_mat));
+    vcov_mat = new TwoDMatrix(const_cast<const TwoDMatrix &>(*(dm.vcov_mat)));
   if (dm.old_atoms)
-    old_atoms = new DynareDynamicAtoms((const DynareDynamicAtoms &) *(dm.old_atoms));
+    old_atoms = new DynareDynamicAtoms(static_cast<const DynareDynamicAtoms &>(*(dm.old_atoms)));
   if (dm.atom_substs)
     atom_substs = new ogp::AtomSubstitutions((*dm.atom_substs), *old_atoms, atoms);
   if (dm.pbuilder)
@@ -147,7 +147,7 @@ DynareModel::dump_model(std::ostream &os) const
 
   // parameter values
   os.precision(16);
-  for (int i = 0; i < (int) atoms.get_params().size(); i++)
+  for (int i = 0; i < static_cast<int>(atoms.get_params().size()); i++)
     os << atoms.get_params()[i] << "=" << getParams()[i] << ";\n";
   os << "\n\n";
 
@@ -165,7 +165,7 @@ DynareModel::dump_model(std::ostream &os) const
 
   // initval as steady state
   os << "initval;\n";
-  for (int i = 0; i < (int) atoms.get_endovars().size(); i++)
+  for (int i = 0; i < static_cast<int>(atoms.get_endovars().size()); i++)
     os << atoms.get_endovars()[atoms.y2outer_endo()[i]] << "=" << getInit()[i] << ";\n";
   os << "end;\n";
 }

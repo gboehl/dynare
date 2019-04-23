@@ -171,10 +171,10 @@ BlockKalmanFilter::BlockKalmanFilter(int nlhs, mxArray *plhs[], int nrhs, const 
       pP = mxDuplicateArray(prhs[7]);
       pY = mxDuplicateArray(prhs[8]);
       start = mxGetScalar(prhs[9]);
-      mfd = (double *) mxGetData(prhs[10]);
+      mfd = static_cast<double *>(mxGetData(prhs[10]));
       kalman_tol = mxGetScalar(prhs[11]);
       riccati_tol = mxGetScalar(prhs[12]);
-      nz_state_var = (double *) mxGetData(prhs[13]);
+      nz_state_var = static_cast<double *>(mxGetData(prhs[13]));
       n_diag = mxGetScalar(prhs[14]);
       pure_obs = mxGetScalar(prhs[15]);
     }
@@ -192,10 +192,10 @@ BlockKalmanFilter::BlockKalmanFilter(int nlhs, mxArray *plhs[], int nrhs, const 
       n   = mxGetN(pT);           // Number of state variables.
       pp   = mxGetM(pY);          // Maximum number of observed variables.
       smpl = mxGetN(pY);          // Sample size.          ;
-      mfd = (double *) mxGetData(prhs[7]);
+      mfd = static_cast<double *>(mxGetData(prhs[7]));
       kalman_tol = mxGetScalar(prhs[8]);
       riccati_tol = mxGetScalar(prhs[9]);
-      nz_state_var = (double *) mxGetData(prhs[10]);
+      nz_state_var = static_cast<double *>(mxGetData(prhs[10]));
       n_diag = mxGetScalar(prhs[11]);
       pure_obs = mxGetScalar(prhs[12]);
     }
@@ -219,16 +219,16 @@ BlockKalmanFilter::BlockKalmanFilter(int nlhs, mxArray *plhs[], int nrhs, const 
   n_shocks = mxGetM(pQ);
 
   if (missing_observations)
-    if (mxGetNumberOfElements(pdata_index) != (unsigned int) smpl)
+    if (mxGetNumberOfElements(pdata_index) != static_cast<unsigned int>(smpl))
       DYN_MEX_FUNC_ERR_MSG_TXT("the number of element in the cell array passed to block_missing_observation_kalman_filter as first argument has to be equal to the smpl size");
 
-  i_nz_state_var = (int *) mxMalloc(n*sizeof(int));
+  i_nz_state_var = static_cast<int *>(mxMalloc(n*sizeof(int)));
   for (int i = 0; i < n; i++)
     i_nz_state_var[i] = nz_state_var[i];
 
   pa = mxCreateDoubleMatrix(n, 1, mxREAL);         // State vector.
   *a = mxGetPr(pa);
-  tmp_a = (double *) mxMalloc(n * sizeof(double));
+  tmp_a = static_cast<double *>(mxMalloc(n * sizeof(double)));
   dF = 0.0;                                            // det(F).
 
   p_tmp1 = mxCreateDoubleMatrix(n, n_shocks, mxREAL);
@@ -240,12 +240,12 @@ BlockKalmanFilter::BlockKalmanFilter(int nlhs, mxArray *plhs[], int nrhs, const 
   LIK  = 0.0;                                          // Default value of the log likelihood.
   notsteady   = true;                                 // Steady state flag.
   F_singular  = true;
-  *v_pp = (double *) mxMalloc(pp * sizeof(double));
-  *v_n = (double *) mxMalloc(n * sizeof(double));
-  mf = (int *) mxMalloc(pp * sizeof(int));
+  *v_pp = static_cast<double *>(mxMalloc(pp * sizeof(double)));
+  *v_n = static_cast<double *>(mxMalloc(n * sizeof(double)));
+  mf = static_cast<int *>(mxMalloc(pp * sizeof(int)));
   for (int i = 0; i < pp; i++)
     mf[i] = mfd[i] - 1;
-  pi = atan2((double) 0.0, (double) -1.0);
+  pi = atan2(0.0, -1.0);
 
   /*compute QQ = R*Q*transpose(R)*/                        // Variance of R times the vector of structural innovations.;
   // tmp = R * Q;
@@ -278,9 +278,9 @@ BlockKalmanFilter::BlockKalmanFilter(int nlhs, mxArray *plhs[], int nrhs, const 
   piF =  mxCreateDoubleMatrix(pp, pp, mxREAL);
   iF = mxGetPr(piF);
   lw = pp * 4;
-  w = (double *) mxMalloc(lw * sizeof(double));
-  iw = (lapack_int *) mxMalloc(pp * sizeof(lapack_int));
-  ipiv = (lapack_int *) mxMalloc(pp * sizeof(lapack_int));
+  w = static_cast<double *>(mxMalloc(lw * sizeof(double)));
+  iw = static_cast<lapack_int *>(mxMalloc(pp * sizeof(lapack_int)));
+  ipiv = static_cast<lapack_int *>(mxMalloc(pp * sizeof(lapack_int)));
   info = 0;
 #if defined(BLAS) || defined(CUBLAS)
   p_tmp = mxCreateDoubleMatrix(n, n, mxREAL);
@@ -291,8 +291,8 @@ BlockKalmanFilter::BlockKalmanFilter(int nlhs, mxArray *plhs[], int nrhs, const 
   *K = mxGetPr(pK);
   p_K_P = mxCreateDoubleMatrix(n, n, mxREAL);
   *K_P = mxGetPr(p_K_P);
-  oldK  = (double *) mxMalloc(n * n * sizeof(double));
-  *P_mf = (double *) mxMalloc(n * n * sizeof(double));
+  oldK  = static_cast<double *>(mxMalloc(n * n * sizeof(double)));
+  *P_mf = static_cast<double *>(mxMalloc(n * n * sizeof(double)));
   for (int i = 0; i < n  * n; i++)
     oldK[i] = Inf;
 #else
@@ -304,8 +304,8 @@ BlockKalmanFilter::BlockKalmanFilter(int nlhs, mxArray *plhs[], int nrhs, const 
   *K = mxGetPr(pK);
   p_K_P = mxCreateDoubleMatrix(n_state, n_state, mxREAL);
   *K_P = mxGetPr(p_K_P);
-  oldK  = (double *) mxMalloc(n * pp * sizeof(double));
-  *P_mf = (double *) mxMalloc(n * pp * sizeof(double));
+  oldK  = static_cast<double *>(mxMalloc(n * pp * sizeof(double)));
+  *P_mf = static_cast<double *>(mxMalloc(n * pp * sizeof(double)));
   for (int i = 0; i < n  * pp; i++)
     oldK[i] = Inf;
 #endif
@@ -369,7 +369,7 @@ BlockKalmanFilter::block_kalman_filter(int nlhs, mxArray *plhs[], double *P_mf, 
 
           // retrieve the d_index
           pd_index = mxGetCell(pdata_index, t);
-          dd_index = (double *) mxGetData(pd_index);
+          dd_index = static_cast<double *>(mxGetData(pd_index));
           size_d_index = mxGetM(pd_index);
           d_index.resize(size_d_index);
           for (int i = 0; i < size_d_index; i++)
@@ -441,12 +441,12 @@ BlockKalmanFilter::block_kalman_filter(int nlhs, mxArray *plhs[], double *P_mf, 
       /* Modifies F in place with a LU decomposition */
       dgetrf(&size_d_index, &size_d_index, iF, &size_d_index, ipiv, &info);
       if (info != 0)
-        mexPrintf("dgetrf failure with error %d\n", (int) info);
+        mexPrintf("dgetrf failure with error %d\n", static_cast<int>(info));
 
       /* Computes the reciprocal norm */
       dgecon("1", &size_d_index, iF, &size_d_index, &anorm, &rcond, w, iw, &info);
       if (info != 0)
-        mexPrintf("dgecon failure with error %d\n", (int) info);
+        mexPrintf("dgecon failure with error %d\n", static_cast<int>(info));
 
       if (rcond < kalman_tol)
         if (not_all_abs_F_bellow_crit(F, size_d_index * size_d_index, kalman_tol))   //~all(abs(F(:))<kalman_tol)
@@ -519,7 +519,7 @@ BlockKalmanFilter::block_kalman_filter(int nlhs, mxArray *plhs[], double *P_mf, 
           //int lwork = 4/*2*/* pp;
           dgetri(&size_d_index, iF, &size_d_index, ipiv, w, &lw, &info);
           if (info != 0)
-            mexPrintf("dgetri failure with error %d\n", (int) info);
+            mexPrintf("dgetri failure with error %d\n", static_cast<int>(info));
 
           //lik(t) = log(dF)+transpose(v)*iF*v;
 #ifdef USE_OMP

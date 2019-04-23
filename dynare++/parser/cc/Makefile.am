@@ -38,5 +38,9 @@ EXTRA_DIST = assign.yy csv.yy formula.yy matrix.yy namelist.yy assign.ll csv.ll 
 %_tab.cc %_tab.hh: %.yy
 	$(YACC) -W -o$*_tab.cc $<
 
+%_tab.$(OBJEXT): CXXFLAGS += -Wno-old-style-cast
+
 %_ll.cc: %.ll
 	$(LEX) -i -o$@ $<
+
+%_ll.$(OBJEXT): CXXFLAGS += -Wno-old-style-cast

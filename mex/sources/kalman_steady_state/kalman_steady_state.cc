@@ -93,7 +93,7 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 
   // Check the type of the input arguments and get the size of the matrices.
   mwSize n = mxGetM(prhs[0]);
-  if ((size_t) n != mxGetN(prhs[0]))
+  if (static_cast<size_t>(n) != mxGetN(prhs[0]))
     {
       DYN_MEX_FUNC_ERR_MSG_TXT("kalman_steady_state: The first input argument (T) must be a square matrix!");
     }
@@ -102,7 +102,7 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
       DYN_MEX_FUNC_ERR_MSG_TXT("kalman_steady_state: The first input argument (T) must be a real matrix!");
     }
   mwSize q = mxGetM(prhs[1]);
-  if ((size_t) q != mxGetN(prhs[1]))
+  if (static_cast<size_t>(q) != mxGetN(prhs[1]))
     {
       DYN_MEX_FUNC_ERR_MSG_TXT("kalman_steady_state: The second input argument (QQ) must be a square matrix!");
     }
@@ -115,7 +115,7 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
       DYN_MEX_FUNC_ERR_MSG_TXT("kalman_steady_state: The size of the second input argument (QQ) must match the size of the first argument (T)!");
     }
   mwSize p = mxGetN(prhs[2]);
-  if (mxGetM(prhs[2]) != (size_t) n)
+  if (mxGetM(prhs[2]) != static_cast<size_t>(n))
     {
       DYN_MEX_FUNC_ERR_MSG_TXT("kalman_steady_state: The number of rows of the third argument (Z) must match the number of rows of the first argument (T)!");
     }
@@ -129,7 +129,7 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
         {
           DYN_MEX_FUNC_ERR_MSG_TXT("kalman_steady_state: The fourth input argument (H) must be a square matrix!");
         }
-      if (mxGetM(prhs[3]) != (size_t) p)
+      if (mxGetM(prhs[3]) != static_cast<size_t>(p))
         {
           DYN_MEX_FUNC_ERR_MSG_TXT("kalman_steady_state: The number of rows of the fourth input argument (H) must match the number of rows of the third input argument!");
         }
@@ -140,62 +140,62 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     }
   // Get input matrices.
   double *T, *QQ, *Z, *H, *L; // Remark. L will not be used.
-  T = (double *) mxCalloc(n*n, sizeof(double));
+  T = static_cast<double *>(mxCalloc(n*n, sizeof(double)));
   memcpy(T, mxGetPr(prhs[0]), n*n*sizeof(double));
-  QQ = (double *) mxCalloc(n*n, sizeof(double));
+  QQ = static_cast<double *>(mxCalloc(n*n, sizeof(double)));
   memcpy(QQ, mxGetPr(prhs[1]), n*n*sizeof(double));
-  Z = (double *) mxCalloc(n*p, sizeof(double));
+  Z = static_cast<double *>(mxCalloc(n*p, sizeof(double)));
   memcpy(Z, mxGetPr(prhs[2]), n*p*sizeof(double));
-  H = (double *) mxCalloc(p*p, sizeof(double));
+  H = static_cast<double *>(mxCalloc(p*p, sizeof(double)));
   if (measurement_error_flag)
     {
       memcpy(H, mxGetPr(prhs[3]), p*p*sizeof(double));
     }
-  L = (double *) mxCalloc(n*p, sizeof(double));
+  L = static_cast<double *>(mxCalloc(n*p, sizeof(double)));
   char *DICO, *JOBB, *FACT, *UPLO, *JOBL, *SORT;
-  DICO = (char *) mxCalloc(2, sizeof(char));
+  DICO = static_cast<char *>(mxCalloc(2, sizeof(char)));
   memcpy(DICO, "D", 2*sizeof(char)); // We want to solve a discrete Riccati equation.
-  JOBB = (char *) mxCalloc(2, sizeof(char));
+  JOBB = static_cast<char *>(mxCalloc(2, sizeof(char)));
   memcpy(JOBB, "B", 2*sizeof(char)); // Matrices Z and H are given.
-  FACT = (char *) mxCalloc(2, sizeof(char));
+  FACT = static_cast<char *>(mxCalloc(2, sizeof(char)));
   memcpy(FACT, "N", 2*sizeof(char)); // Given matrices H and QQ are not factored.
-  UPLO = (char *) mxCalloc(2, sizeof(char));
+  UPLO = static_cast<char *>(mxCalloc(2, sizeof(char)));
   memcpy(UPLO, "U", 2*sizeof(char)); // Upper triangle of matrix H is stored.
-  JOBL = (char *) mxCalloc(2, sizeof(char));
+  JOBL = static_cast<char *>(mxCalloc(2, sizeof(char)));
   memcpy(JOBL, "Z", 2*sizeof(char)); // L matrix is zero.
-  SORT = (char *) mxCalloc(2, sizeof(char));
+  SORT = static_cast<char *>(mxCalloc(2, sizeof(char)));
   memcpy(SORT, "S", 2*sizeof(char)); // Stable eigenvalues come first.
   mwSize nn = 2*n;
-  mwSize LDA = max((mwSize) 1, n);
+  mwSize LDA = max(static_cast<mwSize>(1), n);
   mwSize LDQ = LDA;
-  mwSize LDU = max((mwSize) 1, nn);
-  mwSize LDS = max((mwSize) 1, nn+p);
-  mwSize LIWORK = max((mwSize) 1, p, nn);
-  mwSize LDR = max((mwSize) 1, p);
+  mwSize LDU = max(static_cast<mwSize>(1), nn);
+  mwSize LDS = max(static_cast<mwSize>(1), nn+p);
+  mwSize LIWORK = max(static_cast<mwSize>(1), p, nn);
+  mwSize LDR = max(static_cast<mwSize>(1), p);
   mwSize LDB = LDA;
   mwSize LDL = LDA;
   mwSize LDT = LDS;
   mwSize LDX = LDA;
-  mwSize LDWORK = max((mwSize) 7*((mwSize) 2*n + (mwSize) 1) + (mwSize) 16, (mwSize) 16*n);
-  LDWORK = max(LDWORK, (mwSize) 2*n + p, (mwSize) 3*p);
+  mwSize LDWORK = max(static_cast<mwSize>(7)*(static_cast<mwSize>(2)*n + static_cast<mwSize>(1)) + static_cast<mwSize>(16), static_cast<mwSize>(16)*n);
+  LDWORK = max(LDWORK, static_cast<mwSize>(2)*n + p, static_cast<mwSize>(3)*p);
   double tolerance = .0000000000000001;
   lapack_int INFO;
   // Outputs of subroutine sb02OD
   double rcond;
   double *WR, *WI, *BETA, *S, *TT, *UU;
-  WR = (double *) mxCalloc(nn, sizeof(double));
-  WI = (double *) mxCalloc(nn, sizeof(double));
-  BETA = (double *) mxCalloc(nn, sizeof(double));
-  S = (double *) mxCalloc(LDS*(nn+p), sizeof(double));
-  TT = (double *) mxCalloc(LDT*nn, sizeof(double));
-  UU = (double *) mxCalloc(LDU*nn, sizeof(double));
+  WR = static_cast<double *>(mxCalloc(nn, sizeof(double)));
+  WI = static_cast<double *>(mxCalloc(nn, sizeof(double)));
+  BETA = static_cast<double *>(mxCalloc(nn, sizeof(double)));
+  S = static_cast<double *>(mxCalloc(LDS*(nn+p), sizeof(double)));
+  TT = static_cast<double *>(mxCalloc(LDT*nn, sizeof(double)));
+  UU = static_cast<double *>(mxCalloc(LDU*nn, sizeof(double)));
   // Working arrays
   lapack_int *IWORK;
-  IWORK = (lapack_int *) mxCalloc(LIWORK, sizeof(lapack_int));
+  IWORK = static_cast<lapack_int *>(mxCalloc(LIWORK, sizeof(lapack_int)));
   double *DWORK;
-  DWORK = (double *) mxCalloc(LDWORK, sizeof(double));
+  DWORK = static_cast<double *>(mxCalloc(LDWORK, sizeof(double)));
   lapack_int *BWORK;
-  BWORK = (lapack_int *) mxCalloc(nn, sizeof(lapack_int));
+  BWORK = static_cast<lapack_int *>(mxCalloc(nn, sizeof(lapack_int)));
   // Initialize the output of the mex file
   double *P;
   plhs[1] = mxCreateDoubleMatrix(n, n, mxREAL);

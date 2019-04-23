@@ -152,13 +152,13 @@ main(int argc, char **argv)
       // put the points to the vector
       std::vector<std::unique_ptr<Vector>> points;
       for (smolpit qit = sq.start(level); qit != sq.end(level); ++qit)
-        points.push_back(std::make_unique<Vector>((const Vector &) qit.point()));
+        points.push_back(std::make_unique<Vector>(const_cast<const Vector &>(qit.point())));
       // sort and uniq
       std::sort(points.begin(), points.end(), [](auto &a, auto &b) { return a.get() < b.get(); });
       auto new_end = std::unique(points.begin(), points.end());
       points.erase(new_end, points.end());
 
-      std::cout << "Duplicit nodes removed:   " << (unsigned long) (sq.numEvals(level)-points.size())
+      std::cout << "Duplicit nodes removed:   " << static_cast<unsigned long>(sq.numEvals(level)-points.size())
                 << std::endl;
 
       // calculate weights and mass
@@ -183,7 +183,7 @@ main(int argc, char **argv)
       double upscale_weight = 1/(mass-discard_mass);
       Vector x(vcov.nrows());
       fout << std::setprecision(16);
-      for (int i = 0; i < (int) weights.size(); i++)
+      for (int i = 0; i < static_cast<int>(weights.size()); i++)
         if (weights[i]/mass >= params.discard_weight)
           {
             // print the upscaled weight

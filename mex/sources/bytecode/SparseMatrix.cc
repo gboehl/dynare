@@ -616,7 +616,7 @@ dynSparseMatrix::Read_SparseMatrix(string file_name, const int Size, int periods
             }
         }
     }
-  index_vara = (int *) mxMalloc(Size*(periods+y_kmin+y_kmax)*sizeof(int));
+  index_vara = static_cast<int *>(mxMalloc(Size*(periods+y_kmin+y_kmax)*sizeof(int)));
   test_mxMalloc(index_vara, __LINE__, __FILE__, __func__, Size*(periods+y_kmin+y_kmax)*sizeof(int));
   for (int j = 0; j < Size; j++)
     SaveCode.read(reinterpret_cast<char *>(&index_vara[j]), sizeof(*index_vara));
@@ -626,7 +626,7 @@ dynSparseMatrix::Read_SparseMatrix(string file_name, const int Size, int periods
         for (int j = 0; j < Size; j++)
           index_vara[j+Size*i] = index_vara[j+Size*(i-1)] + y_size;
       }
-  index_equa = (int *) mxMalloc(Size*sizeof(int));
+  index_equa = static_cast<int *>(mxMalloc(Size*sizeof(int)));
   test_mxMalloc(index_equa, __LINE__, __FILE__, __func__, Size*sizeof(int));
   for (int j = 0; j < Size; j++)
     SaveCode.read(reinterpret_cast<char *>(&index_equa[j]), sizeof(*index_equa));
@@ -638,37 +638,37 @@ dynSparseMatrix::Simple_Init(int Size, map<pair<pair<int, int>, int>, int> &IM, 
   int i, eq, var, lag;
   map<pair<pair<int, int>, int>, int>::iterator it4;
   NonZeroElem *first;
-  pivot = (int *) mxMalloc(Size*sizeof(int));
+  pivot = static_cast<int *>(mxMalloc(Size*sizeof(int)));
   test_mxMalloc(pivot, __LINE__, __FILE__, __func__, Size*sizeof(int));
-  pivot_save = (int *) mxMalloc(Size*sizeof(int));
+  pivot_save = static_cast<int *>(mxMalloc(Size*sizeof(int)));
   test_mxMalloc(pivot_save, __LINE__, __FILE__, __func__, Size*sizeof(int));
-  pivotk = (int *) mxMalloc(Size*sizeof(int));
+  pivotk = static_cast<int *>(mxMalloc(Size*sizeof(int)));
   test_mxMalloc(pivotk, __LINE__, __FILE__, __func__, Size*sizeof(int));
-  pivotv = (double *) mxMalloc(Size*sizeof(double));
+  pivotv = static_cast<double *>(mxMalloc(Size*sizeof(double)));
   test_mxMalloc(pivotv, __LINE__, __FILE__, __func__, Size*sizeof(double));
-  pivotva = (double *) mxMalloc(Size*sizeof(double));
+  pivotva = static_cast<double *>(mxMalloc(Size*sizeof(double)));
   test_mxMalloc(pivotva, __LINE__, __FILE__, __func__, Size*sizeof(double));
-  b = (int *) mxMalloc(Size*sizeof(int));
+  b = static_cast<int *>(mxMalloc(Size*sizeof(int)));
   test_mxMalloc(b, __LINE__, __FILE__, __func__, Size*sizeof(int));
-  line_done = (bool *) mxMalloc(Size*sizeof(bool));
+  line_done = static_cast<bool *>(mxMalloc(Size*sizeof(bool)));
   test_mxMalloc(line_done, __LINE__, __FILE__, __func__, Size*sizeof(bool));
 
   mem_mngr.init_CHUNK_BLCK_SIZE(u_count);
   g_save_op = NULL;
   g_nop_all = 0;
   i = Size*sizeof(NonZeroElem *);
-  FNZE_R = (NonZeroElem **) mxMalloc(i);
+  FNZE_R = static_cast<NonZeroElem **>(mxMalloc(i));
   test_mxMalloc(FNZE_R, __LINE__, __FILE__, __func__, i);
-  FNZE_C = (NonZeroElem **) mxMalloc(i);
+  FNZE_C = static_cast<NonZeroElem **>(mxMalloc(i));
   test_mxMalloc(FNZE_C, __LINE__, __FILE__, __func__, i);
-  NonZeroElem **temp_NZE_R = (NonZeroElem **) mxMalloc(i);
+  NonZeroElem **temp_NZE_R = static_cast<NonZeroElem **>(mxMalloc(i));
   test_mxMalloc(temp_NZE_R, __LINE__, __FILE__, __func__, i);
-  NonZeroElem **temp_NZE_C = (NonZeroElem **) mxMalloc(i);
+  NonZeroElem **temp_NZE_C = static_cast<NonZeroElem **>(mxMalloc(i));
   test_mxMalloc(temp_NZE_C, __LINE__, __FILE__, __func__, i);
   i = Size*sizeof(int);
-  NbNZRow = (int *) mxMalloc(i);
+  NbNZRow = static_cast<int *>(mxMalloc(i));
   test_mxMalloc(NbNZRow, __LINE__, __FILE__, __func__, i);
-  NbNZCol = (int *) mxMalloc(i);
+  NbNZCol = static_cast<int *>(mxMalloc(i));
   test_mxMalloc(NbNZCol, __LINE__, __FILE__, __func__, i);
   it4 = IM.begin();
   eq = -1;
@@ -847,7 +847,7 @@ void
 dynSparseMatrix::Init_UMFPACK_Sparse_Simple(int Size, map<pair<pair<int, int>, int>, int> &IM, SuiteSparse_long **Ap, SuiteSparse_long **Ai, double **Ax, double **b, bool &zero_solution, mxArray *x0_m)
 {
   int eq, var;
-  *b = (double *) mxMalloc(Size * sizeof(double));
+  *b = static_cast<double *>(mxMalloc(Size * sizeof(double)));
   test_mxMalloc(*b, __LINE__, __FILE__, __func__, Size * sizeof(double));
   if (!(*b))
     {
@@ -862,7 +862,7 @@ dynSparseMatrix::Init_UMFPACK_Sparse_Simple(int Size, map<pair<pair<int, int>, i
       tmp << " in Init_UMFPACK_Sparse_Simple, can't retrieve x0 vector\n";
       throw FatalExceptionHandling(tmp.str());
     }
-  *Ap = (SuiteSparse_long *) mxMalloc((Size+1) * sizeof(SuiteSparse_long));
+  *Ap = static_cast<SuiteSparse_long *>(mxMalloc((Size+1) * sizeof(SuiteSparse_long)));
   test_mxMalloc(*Ap, __LINE__, __FILE__, __func__, (Size+1) * sizeof(SuiteSparse_long));
   if (!(*Ap))
     {
@@ -871,7 +871,7 @@ dynSparseMatrix::Init_UMFPACK_Sparse_Simple(int Size, map<pair<pair<int, int>, i
       throw FatalExceptionHandling(tmp.str());
     }
   size_t prior_nz = IM.size();
-  *Ai = (SuiteSparse_long *) mxMalloc(prior_nz * sizeof(SuiteSparse_long));
+  *Ai = static_cast<SuiteSparse_long *>(mxMalloc(prior_nz * sizeof(SuiteSparse_long)));
   test_mxMalloc(*Ai, __LINE__, __FILE__, __func__, prior_nz * sizeof(SuiteSparse_long));
   if (!(*Ai))
     {
@@ -879,7 +879,7 @@ dynSparseMatrix::Init_UMFPACK_Sparse_Simple(int Size, map<pair<pair<int, int>, i
       tmp << " in Init_UMFPACK_Sparse, can't allocate Ai index vector\n";
       throw FatalExceptionHandling(tmp.str());
     }
-  *Ax = (double *) mxMalloc(prior_nz * sizeof(double));
+  *Ax = static_cast<double *>(mxMalloc(prior_nz * sizeof(double)));
   test_mxMalloc(*Ax, __LINE__, __FILE__, __func__, prior_nz * sizeof(double));
   if (!(*Ax))
     {
@@ -1003,7 +1003,7 @@ dynSparseMatrix::Init_UMFPACK_Sparse(int periods, int y_kmin, int y_kmax, int Si
   int col_x;
 #endif
   int n = periods * Size;
-  *b = (double *) mxMalloc(n * sizeof(double));
+  *b = static_cast<double *>(mxMalloc(n * sizeof(double)));
   if (!(*b))
     {
       ostringstream tmp;
@@ -1017,7 +1017,7 @@ dynSparseMatrix::Init_UMFPACK_Sparse(int periods, int y_kmin, int y_kmax, int Si
       tmp << " in Init_UMFPACK_Sparse_Simple, can't retrieve x0 vector\n";
       throw FatalExceptionHandling(tmp.str());
     }
-  *Ap = (SuiteSparse_long *) mxMalloc((n+1) * sizeof(SuiteSparse_long));
+  *Ap = static_cast<SuiteSparse_long *>(mxMalloc((n+1) * sizeof(SuiteSparse_long)));
   test_mxMalloc(*Ap, __LINE__, __FILE__, __func__, (n+1) * sizeof(SuiteSparse_long));
   if (!(*Ap))
     {
@@ -1026,7 +1026,7 @@ dynSparseMatrix::Init_UMFPACK_Sparse(int periods, int y_kmin, int y_kmax, int Si
       throw FatalExceptionHandling(tmp.str());
     }
   size_t prior_nz = IM.size() * periods;
-  *Ai = (SuiteSparse_long *) mxMalloc(prior_nz * sizeof(SuiteSparse_long));
+  *Ai = static_cast<SuiteSparse_long *>(mxMalloc(prior_nz * sizeof(SuiteSparse_long)));
   test_mxMalloc(*Ai, __LINE__, __FILE__, __func__, prior_nz * sizeof(SuiteSparse_long));
   if (!(*Ai))
     {
@@ -1034,7 +1034,7 @@ dynSparseMatrix::Init_UMFPACK_Sparse(int periods, int y_kmin, int y_kmax, int Si
       tmp << " in Init_UMFPACK_Sparse, can't allocate Ai index vector\n";
       throw FatalExceptionHandling(tmp.str());
     }
-  *Ax = (double *) mxMalloc(prior_nz * sizeof(double));
+  *Ax = static_cast<double *>(mxMalloc(prior_nz * sizeof(double)));
   test_mxMalloc(*Ax, __LINE__, __FILE__, __func__, prior_nz * sizeof(double));
   if (!(*Ax))
     {
@@ -1296,7 +1296,7 @@ dynSparseMatrix::Init_CUDA_Sparse_Simple(int Size, map<pair<pair<int, int>, int>
 {
   int eq, var;
 
-  *b = (double *) mxMalloc(Size * sizeof(double));
+  *b = static_cast<double *>(mxMalloc(Size * sizeof(double)));
   test_mxMalloc(*b, __LINE__, __FILE__, __func__, Size * sizeof(double));
   if (!(*b))
     {
@@ -1311,7 +1311,7 @@ dynSparseMatrix::Init_CUDA_Sparse_Simple(int Size, map<pair<pair<int, int>, int>
       tmp << " in Init_CUDA_Sparse_Simple, can't retrieve x0 vector\n";
       throw FatalExceptionHandling(tmp.str());
     }
-  *Ap = (SuiteSparse_long *) mxMalloc((Size+1) * sizeof(SuiteSparse_long));
+  *Ap = static_cast<SuiteSparse_long *>(mxMalloc((Size+1) * sizeof(SuiteSparse_long)));
   test_mxMalloc(*Ap, __LINE__, __FILE__, __func__, (Size+1) * sizeof(SuiteSparse_long));
   if (!(*Ap))
     {
@@ -1320,7 +1320,7 @@ dynSparseMatrix::Init_CUDA_Sparse_Simple(int Size, map<pair<pair<int, int>, int>
       throw FatalExceptionHandling(tmp.str());
     }
   size_t prior_nz = IM.size();
-  *Ai = (SuiteSparse_long *) mxMalloc(prior_nz * sizeof(SuiteSparse_long));
+  *Ai = static_cast<SuiteSparse_long *>(mxMalloc(prior_nz * sizeof(SuiteSparse_long)));
   test_mxMalloc(*Ai, __LINE__, __FILE__, __func__, prior_nz * sizeof(SuiteSparse_long));
   if (!(*Ai))
     {
@@ -1328,7 +1328,7 @@ dynSparseMatrix::Init_CUDA_Sparse_Simple(int Size, map<pair<pair<int, int>, int>
       tmp << " in Init_CUDA_Sparse, can't allocate Ai index vector\n";
       throw FatalExceptionHandling(tmp.str());
     }
-  *Ax = (double *) mxMalloc(prior_nz * sizeof(double));
+  *Ax = static_cast<double *>(mxMalloc(prior_nz * sizeof(double)));
   test_mxMalloc(*Ax, __LINE__, __FILE__, __func__, prior_nz * sizeof(double));
   if (!(*Ax))
     {
@@ -1698,13 +1698,13 @@ void
 dynSparseMatrix::PrintM(int n, double *Ax, mwIndex *Ap, mwIndex *Ai)
 {
   int nnz = Ap[n];
-  double *A = (double *) mxMalloc(n * n * sizeof(double));
+  double *A = static_cast<double *>(mxMalloc(n * n * sizeof(double)));
   test_mxMalloc(A, __LINE__, __FILE__, __func__, n * n * sizeof(double));
   memset(A, 0, n * n  * sizeof(double));
   int k = 0;
   for (int i = 0; i < n; i++)
     {
-      for (int j = Ap[i]; j < (int) Ap[i + 1]; j++)
+      for (int j = Ap[i]; j < static_cast<int>(Ap[i + 1]); j++)
         {
           int row = Ai[j];
           A[row *n + i] = Ax[j];
@@ -1876,36 +1876,36 @@ dynSparseMatrix::Init_GE(int periods, int y_kmin, int y_kmax, int Size, map<pair
   double tmp_b = 0.0;
   map<pair<pair<int, int>, int>, int>::iterator it4;
   NonZeroElem *first;
-  pivot = (int *) mxMalloc(Size*periods*sizeof(int));
+  pivot = static_cast<int *>(mxMalloc(Size*periods*sizeof(int)));
   test_mxMalloc(pivot, __LINE__, __FILE__, __func__, Size*periods*sizeof(int));
-  pivot_save = (int *) mxMalloc(Size*periods*sizeof(int));
+  pivot_save = static_cast<int *>(mxMalloc(Size*periods*sizeof(int)));
   test_mxMalloc(pivot_save, __LINE__, __FILE__, __func__, Size*periods*sizeof(int));
-  pivotk = (int *) mxMalloc(Size*periods*sizeof(int));
+  pivotk = static_cast<int *>(mxMalloc(Size*periods*sizeof(int)));
   test_mxMalloc(pivotk, __LINE__, __FILE__, __func__, Size*periods*sizeof(int));
-  pivotv = (double *) mxMalloc(Size*periods*sizeof(double));
+  pivotv = static_cast<double *>(mxMalloc(Size*periods*sizeof(double)));
   test_mxMalloc(pivotv, __LINE__, __FILE__, __func__, Size*periods*sizeof(double));
-  pivotva = (double *) mxMalloc(Size*periods*sizeof(double));
+  pivotva = static_cast<double *>(mxMalloc(Size*periods*sizeof(double)));
   test_mxMalloc(pivotva, __LINE__, __FILE__, __func__, Size*periods*sizeof(double));
-  b = (int *) mxMalloc(Size*periods*sizeof(int));
+  b = static_cast<int *>(mxMalloc(Size*periods*sizeof(int)));
   test_mxMalloc(b, __LINE__, __FILE__, __func__, Size*periods*sizeof(int));
-  line_done = (bool *) mxMalloc(Size*periods*sizeof(bool));
+  line_done = static_cast<bool *>(mxMalloc(Size*periods*sizeof(bool)));
   test_mxMalloc(line_done, __LINE__, __FILE__, __func__, Size*periods*sizeof(bool));
   mem_mngr.init_CHUNK_BLCK_SIZE(u_count);
   g_save_op = NULL;
   g_nop_all = 0;
   i = (periods+y_kmax+1)*Size*sizeof(NonZeroElem *);
-  FNZE_R = (NonZeroElem **) mxMalloc(i);
+  FNZE_R = static_cast<NonZeroElem **>(mxMalloc(i));
   test_mxMalloc(FNZE_R, __LINE__, __FILE__, __func__, i);
-  FNZE_C = (NonZeroElem **) mxMalloc(i);
+  FNZE_C = static_cast<NonZeroElem **>(mxMalloc(i));
   test_mxMalloc(FNZE_C, __LINE__, __FILE__, __func__, i);
-  NonZeroElem **temp_NZE_R = (NonZeroElem **) mxMalloc(i);
+  NonZeroElem **temp_NZE_R = static_cast<NonZeroElem **>(mxMalloc(i));
   test_mxMalloc(temp_NZE_R, __LINE__, __FILE__, __func__, i);
-  NonZeroElem **temp_NZE_C = (NonZeroElem **) mxMalloc(i);
+  NonZeroElem **temp_NZE_C = static_cast<NonZeroElem **>(mxMalloc(i));
   test_mxMalloc(temp_NZE_C, __LINE__, __FILE__, __func__, i);
   i = (periods+y_kmax+1)*Size*sizeof(int);
-  NbNZRow = (int *) mxMalloc(i);
+  NbNZRow = static_cast<int *>(mxMalloc(i));
   test_mxMalloc(NbNZRow, __LINE__, __FILE__, __func__, i);
-  NbNZCol = (int *) mxMalloc(i);
+  NbNZCol = static_cast<int *>(mxMalloc(i));
   test_mxMalloc(NbNZCol, __LINE__, __FILE__, __func__, i);
 
   for (int i = 0; i < periods*Size; i++)
@@ -2011,7 +2011,7 @@ dynSparseMatrix::Get_u()
       else
         {
           u_count_alloc += 5*u_count_alloc_save;
-          u = (double *) mxRealloc(u, u_count_alloc*sizeof(double));
+          u = static_cast<double *>(mxRealloc(u, u_count_alloc*sizeof(double)));
           if (!u)
             {
               ostringstream tmp;
@@ -2069,17 +2069,17 @@ dynSparseMatrix::compare(int *save_op, int *save_opa, int *save_opaa, int beg_t,
   bool OK = true;
   t_save_op_s *save_op_s, *save_opa_s, *save_opaa_s;
   int *diff1, *diff2;
-  diff1 = (int *) mxMalloc(nop*sizeof(int));
+  diff1 = static_cast<int *>(mxMalloc(nop*sizeof(int)));
   test_mxMalloc(diff1, __LINE__, __FILE__, __func__, nop*sizeof(int));
-  diff2 = (int *) mxMalloc(nop*sizeof(int));
+  diff2 = static_cast<int *>(mxMalloc(nop*sizeof(int)));
   test_mxMalloc(diff2, __LINE__, __FILE__, __func__, nop*sizeof(int));
   int max_save_ops_first = -1;
   j = i = 0;
   while (i < nop4 && OK)
     {
-      save_op_s = (t_save_op_s *) &(save_op[i]);
-      save_opa_s = (t_save_op_s *) &(save_opa[i]);
-      save_opaa_s = (t_save_op_s *) &(save_opaa[i]);
+      save_op_s = reinterpret_cast<t_save_op_s *>(&(save_op[i]));
+      save_opa_s = reinterpret_cast<t_save_op_s *>(&(save_opa[i]));
+      save_opaa_s = reinterpret_cast<t_save_op_s *>(&(save_opaa[i]));
       diff1[j] = save_op_s->first-save_opa_s->first;
       if (max_save_ops_first < save_op_s->first+diff1[j]*(periods-beg_t))
         {
@@ -2119,7 +2119,7 @@ dynSparseMatrix::compare(int *save_op, int *save_opa, int *save_opaa, int beg_t,
       if (max_save_ops_first >= u_count_alloc)
         {
           u_count_alloc += max_save_ops_first;
-          u = (double *) mxRealloc(u, u_count_alloc*sizeof(double));
+          u = static_cast<double *>(mxRealloc(u, u_count_alloc*sizeof(double)));
           if (!u)
             {
               ostringstream tmp;
@@ -2133,7 +2133,7 @@ dynSparseMatrix::compare(int *save_op, int *save_opa, int *save_opaa, int beg_t,
           double *up;
           while (i < nop4)
             {
-              t_save_op_s *save_op_s = (t_save_op_s *) (&(save_op[i]));
+              t_save_op_s *save_op_s = reinterpret_cast<t_save_op_s *>(&(save_op[i]));
               up = &u[save_op_s->first+t*diff1[j]];
               switch (save_op_s->operat)
                 {
@@ -2165,7 +2165,7 @@ dynSparseMatrix::compare(int *save_op, int *save_opa, int *save_opaa, int beg_t,
           int gap = periods_beg_t-t;
           while (i < nop4)
             {
-              t_save_op_s *save_op_s = (t_save_op_s *) (&(save_op[i]));
+              t_save_op_s *save_op_s = reinterpret_cast<t_save_op_s *>(&(save_op[i]));
               if (save_op_s->lag < gap)
                 {
                   double *up = &u[save_op_s->first+t*diff1[j]];
@@ -2222,10 +2222,10 @@ dynSparseMatrix::complete(int beg_t, int Size, int periods, int *b)
   double yy = 0.0, err;
 
   int size_of_save_code = (1+y_kmax)*Size*(Size+1+4)/2*4;
-  save_code = (int *) mxMalloc(size_of_save_code*sizeof(int));
+  save_code = static_cast<int *>(mxMalloc(size_of_save_code*sizeof(int)));
   test_mxMalloc(save_code, __LINE__, __FILE__, __func__, size_of_save_code*sizeof(int));
   int size_of_diff = (1+y_kmax)*Size*(Size+1+4);
-  diff = (int *) mxMalloc(size_of_diff*sizeof(int));
+  diff = static_cast<int *>(mxMalloc(size_of_diff*sizeof(int)));
   test_mxMalloc(diff, __LINE__, __FILE__, __func__, size_of_diff*sizeof(int));
   cal_y = y_size*y_kmin;
 
@@ -2483,7 +2483,7 @@ dynSparseMatrix::CheckIt(int y_size, int y_kmin, int y_kmax, int Size, int perio
   SaveResult >> row;
   mexPrintf("row(2)=%d\n", row);
   double *B;
-  B = (double *) mxMalloc(row*sizeof(double));
+  B = static_cast<double *>(mxMalloc(row*sizeof(double)));
   test_mxMalloc(B, __LINE__, __FILE__, __func__, row*sizeof(double));
   for (int i = 0; i < row; i++)
     SaveResult >> B[i];
@@ -2546,7 +2546,7 @@ dynSparseMatrix::substract_A_B(mxArray *A_m, mxArray *B_m)
   double *B_d = mxGetPr(B_m);
   mxArray *C_m = mxCreateDoubleMatrix(m_A, n_B, mxREAL);
   double *C_d = mxGetPr(C_m);
-  for (int j = 0; j < (int) n_A; j++)
+  for (int j = 0; j < static_cast<int>(n_A); j++)
     for (unsigned int i = 0; i < m_A; i++)
       {
         size_t index = j*m_A+i;
@@ -2570,7 +2570,7 @@ dynSparseMatrix::Sparse_substract_A_SB(mxArray *A_m, mxArray *B_m)
   unsigned int B_col = 0;
   while (nze_B < total_nze_B)
     {
-      while (nze_B >= (unsigned int) B_j[B_col+1] && (nze_B < total_nze_B))
+      while (nze_B >= static_cast<unsigned int>(B_j[B_col+1]) && (nze_B < total_nze_B))
         B_col++;
       C_d[B_col*m_B+B_i[nze_B]] -= B_d[nze_B];
       nze_B++;
@@ -2601,10 +2601,10 @@ dynSparseMatrix::Sparse_substract_SA_SB(mxArray *A_m, mxArray *B_m)
   C_j[C_col] = 0;
   while (nze_A < total_nze_A || nze_B < total_nze_B)
     {
-      while (nze_A >= (unsigned int) A_j[A_col+1] && (nze_A < total_nze_A))
+      while (nze_A >= static_cast<unsigned int>(A_j[A_col+1]) && (nze_A < total_nze_A))
         A_col++;
       size_t A_row = A_i[nze_A];
-      while (nze_B >= (unsigned int) B_j[B_col+1] && (nze_B < total_nze_B))
+      while (nze_B >= static_cast<unsigned int>(B_j[B_col+1]) && (nze_B < total_nze_B))
         B_col++;
       size_t B_row = B_i[nze_B];
       if (A_col == B_col)
@@ -2674,13 +2674,13 @@ dynSparseMatrix::mult_SAT_B(mxArray *A_m, mxArray *B_m)
   double *B_d = mxGetPr(B_m);
   mxArray *C_m = mxCreateDoubleMatrix(m_A, n_B, mxREAL);
   double *C_d = mxGetPr(C_m);
-  for (int j = 0; j < (int) n_B; j++)
+  for (int j = 0; j < static_cast<int>(n_B); j++)
     {
       for (unsigned int i = 0; i < n_A; i++)
         {
           double sum = 0;
           size_t nze_A = A_j[i];
-          while (nze_A < (unsigned int) A_j[i+1])
+          while (nze_A < static_cast<unsigned int>(A_j[i+1]))
             {
               size_t i_A = A_i[nze_A];
               sum += A_d[nze_A++] * B_d[i_A];
@@ -2717,7 +2717,7 @@ dynSparseMatrix::Sparse_mult_SAT_B(mxArray *A_m, mxArray *B_m)
         {
           double sum = 0;
           size_t nze_A = A_j[i];
-          while (nze_A < (unsigned int) A_j[i+1])
+          while (nze_A < static_cast<unsigned int>(A_j[i+1]))
             {
               size_t i_A = A_i[nze_A];
               sum += A_d[nze_A++] * B_d[i_A];
@@ -2764,7 +2764,7 @@ dynSparseMatrix::Sparse_mult_SAT_SB(mxArray *A_m, mxArray *B_m)
           double sum = 0;
           nze_B = B_j[j];
           nze_A = A_j[i];
-          while (nze_A < (unsigned int) A_j[i+1] && nze_B < (unsigned int) B_j[j+1])
+          while (nze_A < static_cast<unsigned int>(A_j[i+1]) && nze_B < static_cast<unsigned int>(B_j[j+1]))
             {
               size_t i_A = A_i[nze_A];
               size_t i_B = B_i[nze_B];
@@ -2809,7 +2809,7 @@ dynSparseMatrix::Sparse_transpose(mxArray *A_m)
   map<pair<mwIndex, unsigned int>, double> B2;
   for (unsigned int i = 0; i < n_A; i++)
     {
-      while (nze_A < (unsigned int) A_j[i+1])
+      while (nze_A < static_cast<unsigned int>(A_j[i+1]))
         {
           C_j[A_i[nze_A]+1]++;
           B2[make_pair(A_i[nze_A], i)] = A_d[nze_A];
@@ -3065,7 +3065,7 @@ dynSparseMatrix::Solve_Matlab_Relaxation(mxArray *A_m, mxArray *b_m, unsigned in
     A3*/
   while (var < 2*Size && nze < max_nze)
     {
-      if ((unsigned int) A_m_j[var+1] <= nze)
+      if (static_cast<unsigned int>(A_m_j[var+1]) <= nze)
         {
           if (var < Size)
             b1_d[var] = b_m_d[var];
@@ -3188,7 +3188,7 @@ dynSparseMatrix::Solve_Matlab_Relaxation(mxArray *A_m, mxArray *b_m, unsigned in
         nze--;
       while (var < (t+2)*Size && nze < max_nze)
         {
-          if ((unsigned int) A_m_j[var+1] <= nze)
+          if (static_cast<unsigned int>(A_m_j[var+1]) <= nze)
             {
               b2_d[var - (t+1) * Size] = b_m_d[var];
               var++;
@@ -3265,7 +3265,7 @@ dynSparseMatrix::Solve_Matlab_LU_UMFPack(mxArray *A_m, mxArray *b_m, int Size, d
   mexCallMATLAB(1, &z, 2, rhs, "mldivide");
   double *res = mxGetPr(z);
   if (is_two_boundaries)
-    for (int i = 0; i < (int) n; i++)
+    for (int i = 0; i < static_cast<int>(n); i++)
       {
         int eq = index_vara[i+Size*y_kmin];
         double yy = -(res[i] + y[eq]);
@@ -3273,7 +3273,7 @@ dynSparseMatrix::Solve_Matlab_LU_UMFPack(mxArray *A_m, mxArray *b_m, int Size, d
         y[eq] += slowc_l * yy;
       }
   else
-    for (int i = 0; i < (int) n; i++)
+    for (int i = 0; i < static_cast<int>(n); i++)
       {
         int eq = index_vara[i];
         double yy = -(res[i] + y[eq+it_*y_size]);
@@ -3540,9 +3540,9 @@ dynSparseMatrix::Solve_LU_UMFPack(mxArray *A_m, mxArray *b_m, int Size, double s
 {
   SuiteSparse_long n = mxGetM(A_m);
 
-  SuiteSparse_long *Ap = (SuiteSparse_long *) mxGetJc(A_m);
+  SuiteSparse_long *Ap = reinterpret_cast<SuiteSparse_long *>(mxGetJc(A_m));
 
-  SuiteSparse_long *Ai = (SuiteSparse_long *) mxGetIr(A_m);
+  SuiteSparse_long *Ai = reinterpret_cast<SuiteSparse_long *>(mxGetIr(A_m));
   double *Ax = mxGetPr(A_m);
   double *B  = mxGetPr(b_m);
   SuiteSparse_long status, sys = 0;
@@ -4853,7 +4853,7 @@ dynSparseMatrix::Solve_Matlab_GMRES(mxArray *A_m, mxArray *b_m, int Size, double
   rhs[1] = b_m;
   rhs[2] = mxCreateDoubleScalar(Size);
   rhs[3] = mxCreateDoubleScalar(1e-6);
-  rhs[4] = mxCreateDoubleScalar((double) n);
+  rhs[4] = mxCreateDoubleScalar(static_cast<double>(n));
   rhs[5] = L1;
   rhs[6] = U1;
   rhs[7] = x0_m;
@@ -4892,7 +4892,7 @@ dynSparseMatrix::Solve_Matlab_GMRES(mxArray *A_m, mxArray *b_m, int Size, double
     {
       double *res = mxGetPr(z);
       if (is_two_boundaries)
-        for (int i = 0; i < (int) n; i++)
+        for (int i = 0; i < static_cast<int>(n); i++)
           {
             int eq = index_vara[i+Size*y_kmin];
             double yy = -(res[i] + y[eq]);
@@ -4900,7 +4900,7 @@ dynSparseMatrix::Solve_Matlab_GMRES(mxArray *A_m, mxArray *b_m, int Size, double
             y[eq] += slowc * yy;
           }
       else
-        for (int i = 0; i < (int) n; i++)
+        for (int i = 0; i < static_cast<int>(n); i++)
           {
             int eq = index_vara[i];
             double yy = -(res[i] + y[eq+it_*y_size]);
@@ -4955,7 +4955,7 @@ dynSparseMatrix::Solve_Matlab_BiCGStab(mxArray *A_m, mxArray *b_m, int Size, dou
       const int milu = 2;
       const int udiag = 3;
       const int thresh = 4;
-      mwSize dims[1] = {(mwSize) 1 };
+      mwSize dims[1] = {static_cast<mwSize>(1) };
       mxArray *Setup = mxCreateStructArray(1, dims, 5, field_names);
       mxSetFieldByNumber(Setup, 0, type, mxCreateString("ilutp"));
       mxSetFieldByNumber(Setup, 0, droptol, mxCreateDoubleScalar(lu_inc_tol));
@@ -4984,7 +4984,7 @@ dynSparseMatrix::Solve_Matlab_BiCGStab(mxArray *A_m, mxArray *b_m, int Size, dou
       mxArray *res = mult_SAT_B(Sparse_transpose(A_m), x0_m);
       double *resid = mxGetPr(res);
       double *b = mxGetPr(b_m);
-      for (int i = 0; i < (int) n; i++)
+      for (int i = 0; i < static_cast<int>(n); i++)
         resid[i] = b[i] - resid[i];
       mxArray *rhs[2];
       mxArray *lhs[1];
@@ -4997,14 +4997,14 @@ dynSparseMatrix::Solve_Matlab_BiCGStab(mxArray *A_m, mxArray *b_m, int Size, dou
       z = lhs[0];
       double *phat = mxGetPr(z);
       double *x0 = mxGetPr(x0_m);
-      for (int i = 0; i < (int) n; i++)
+      for (int i = 0; i < static_cast<int>(n); i++)
         phat[i] = x0[i] + phat[i];
 
       /*Check the solution*/
       res = mult_SAT_B(Sparse_transpose(A_m), z);
       resid = mxGetPr(res);
       double cum_abs = 0;
-      for (int i = 0; i < (int) n; i++)
+      for (int i = 0; i < static_cast<int>(n); i++)
         {
           resid[i] = b[i] - resid[i];
           cum_abs += fabs(resid[i]);
@@ -5026,7 +5026,7 @@ dynSparseMatrix::Solve_Matlab_BiCGStab(mxArray *A_m, mxArray *b_m, int Size, dou
           rhs[0] = A_m;
           rhs[1] = b_m;
           rhs[2] = mxCreateDoubleScalar(1e-6);
-          rhs[3] = mxCreateDoubleScalar((double) n);
+          rhs[3] = mxCreateDoubleScalar(static_cast<double>(n));
           rhs[4] = Diag;
           //rhs[5] = x0_m;
           mxArray *lhs[2];
@@ -5047,7 +5047,7 @@ dynSparseMatrix::Solve_Matlab_BiCGStab(mxArray *A_m, mxArray *b_m, int Size, dou
           rhs[0] = A_m;
           rhs[1] = b_m;
           rhs[2] = mxCreateDoubleScalar(1e-6);
-          rhs[3] = mxCreateDoubleScalar((double) n);
+          rhs[3] = mxCreateDoubleScalar(static_cast<double>(n));
           rhs[4] = L1;
           rhs[5] = U1;
           rhs[6] = x0_m;
@@ -5089,7 +5089,7 @@ dynSparseMatrix::Solve_Matlab_BiCGStab(mxArray *A_m, mxArray *b_m, int Size, dou
     {
       double *res = mxGetPr(z);
       if (is_two_boundaries)
-        for (int i = 0; i < (int) n; i++)
+        for (int i = 0; i < static_cast<int>(n); i++)
           {
             int eq = index_vara[i+Size*y_kmin];
             double yy = -(res[i] + y[eq]);
@@ -5097,7 +5097,7 @@ dynSparseMatrix::Solve_Matlab_BiCGStab(mxArray *A_m, mxArray *b_m, int Size, dou
             y[eq] += slowc * yy;
           }
       else
-        for (int i = 0; i < (int) n; i++)
+        for (int i = 0; i < static_cast<int>(n); i++)
           {
             int eq = index_vara[i];
             double yy = -(res[i] + y[eq+it_*y_size]);
@@ -5207,15 +5207,15 @@ dynSparseMatrix::Solve_ByteCode_Sparse_GaussianElimination(int Size, int blck, i
   NonZeroElem *first, *firsta, *first_suba;
   double piv_abs;
   NonZeroElem **bc;
-  bc = (NonZeroElem **) mxMalloc(Size*sizeof(*bc));
+  bc = static_cast<NonZeroElem **>(mxMalloc(Size*sizeof(*bc)));
   test_mxMalloc(bc, __LINE__, __FILE__, __func__, Size*sizeof(*bc));
-  piv_v = (double *) mxMalloc(Size*sizeof(double));
+  piv_v = static_cast<double *>(mxMalloc(Size*sizeof(double)));
   test_mxMalloc(piv_v, __LINE__, __FILE__, __func__, Size*sizeof(double));
-  pivj_v = (int *) mxMalloc(Size*sizeof(int));
+  pivj_v = static_cast<int *>(mxMalloc(Size*sizeof(int)));
   test_mxMalloc(pivj_v, __LINE__, __FILE__, __func__, Size*sizeof(int));
-  pivk_v = (int *) mxMalloc(Size*sizeof(int));
+  pivk_v = static_cast<int *>(mxMalloc(Size*sizeof(int)));
   test_mxMalloc(pivk_v, __LINE__, __FILE__, __func__, Size*sizeof(int));
-  NR = (int *) mxMalloc(Size*sizeof(int));
+  NR = static_cast<int *>(mxMalloc(Size*sizeof(int)));
   test_mxMalloc(NR, __LINE__, __FILE__, __func__, Size*sizeof(int));
 
   for (int i = 0; i < Size; i++)
@@ -5480,17 +5480,17 @@ dynSparseMatrix::Solve_ByteCode_Symbolic_Sparse_GaussianElimination(int Size, bo
   int tmp_u_count, lag;
   int tbreak = 0, last_period = periods;
 
-  piv_v = (double *) mxMalloc(Size*sizeof(double));
+  piv_v = static_cast<double *>(mxMalloc(Size*sizeof(double)));
   test_mxMalloc(piv_v, __LINE__, __FILE__, __func__, Size*sizeof(double));
-  pivj_v = (int *) mxMalloc(Size*sizeof(int));
+  pivj_v = static_cast<int *>(mxMalloc(Size*sizeof(int)));
   test_mxMalloc(pivj_v, __LINE__, __FILE__, __func__, Size*sizeof(int));
-  pivk_v = (int *) mxMalloc(Size*sizeof(int));
+  pivk_v = static_cast<int *>(mxMalloc(Size*sizeof(int)));
   test_mxMalloc(pivk_v, __LINE__, __FILE__, __func__, Size*sizeof(int));
-  NR = (int *) mxMalloc(Size*sizeof(int));
+  NR = static_cast<int *>(mxMalloc(Size*sizeof(int)));
   test_mxMalloc(NR, __LINE__, __FILE__, __func__, Size*sizeof(int));
   //clock_t time00 = clock();
   NonZeroElem **bc;
-  bc = (NonZeroElem **) mxMalloc(Size*sizeof(first));
+  bc = static_cast<NonZeroElem **>(mxMalloc(Size*sizeof(first)));
   test_mxMalloc(bc, __LINE__, __FILE__, __func__, Size*sizeof(first));
 
   for (int t = 0; t < periods; t++)
@@ -5509,7 +5509,7 @@ dynSparseMatrix::Solve_ByteCode_Symbolic_Sparse_GaussianElimination(int Size, bo
             mxFree(save_op);
             save_op = NULL;
             }*/
-          save_op = (int *) mxMalloc(nop*sizeof(int));
+          save_op = static_cast<int *>(mxMalloc(nop*sizeof(int)));
           test_mxMalloc(save_op, __LINE__, __FILE__, __func__, nop*sizeof(int));
           nopa = nop;
         }
@@ -5647,10 +5647,10 @@ dynSparseMatrix::Solve_ByteCode_Symbolic_Sparse_GaussianElimination(int Size, bo
             {
               if (nop+1 >= nopa)
                 {
-                  nopa = long (mem_increasing_factor*(double) nopa);
-                  save_op = (int *) mxRealloc(save_op, nopa*sizeof(int));
+                  nopa = long (mem_increasing_factor*static_cast<double>(nopa));
+                  save_op = static_cast<int *>(mxRealloc(save_op, nopa*sizeof(int)));
                 }
-              save_op_s = (t_save_op_s *) (&(save_op[nop]));
+              save_op_s = reinterpret_cast<t_save_op_s *>(&(save_op[nop]));
               save_op_s->operat = IFLD;
               save_op_s->first = pivk;
               save_op_s->lag = 0;
@@ -5671,10 +5671,10 @@ dynSparseMatrix::Solve_ByteCode_Symbolic_Sparse_GaussianElimination(int Size, bo
                   u[first->u_index] /= piv;
                   if (nop+j*2+1 >= nopa)
                     {
-                      nopa = long (mem_increasing_factor*(double) nopa);
-                      save_op = (int *) mxRealloc(save_op, nopa*sizeof(int));
+                      nopa = static_cast<long>(mem_increasing_factor*static_cast<double>(nopa));
+                      save_op = static_cast<int *>(mxRealloc(save_op, nopa*sizeof(int)));
                     }
-                  save_op_s = (t_save_op_s *) (&(save_op[nop+j*2]));
+                  save_op_s = reinterpret_cast<t_save_op_s *>(&(save_op[nop+j*2]));
                   save_op_s->operat = IFDIV;
                   save_op_s->first = first->u_index;
                   save_op_s->lag = first->lag_index;
@@ -5684,10 +5684,10 @@ dynSparseMatrix::Solve_ByteCode_Symbolic_Sparse_GaussianElimination(int Size, bo
               u[b[pivj]] /= piv;
               if (nop+1 >= nopa)
                 {
-                  nopa = long (mem_increasing_factor*(double) nopa);
-                  save_op = (int *) mxRealloc(save_op, nopa*sizeof(int));
+                  nopa = static_cast<long>(mem_increasing_factor*static_cast<double>(nopa));
+                  save_op = static_cast<int *>(mxRealloc(save_op, nopa*sizeof(int)));
                 }
-              save_op_s = (t_save_op_s *) (&(save_op[nop]));
+              save_op_s = reinterpret_cast<t_save_op_s *>(&(save_op[nop]));
               save_op_s->operat = IFDIV;
               save_op_s->first = b[pivj];
               save_op_s->lag = 0;
@@ -5713,10 +5713,10 @@ dynSparseMatrix::Solve_ByteCode_Symbolic_Sparse_GaussianElimination(int Size, bo
                   double first_elem = u[first->u_index];
                   if (nop+1 >= nopa)
                     {
-                      nopa = long (mem_increasing_factor*(double) nopa);
-                      save_op = (int *) mxRealloc(save_op, nopa*sizeof(int));
+                      nopa = static_cast<long>(mem_increasing_factor*static_cast<double>(nopa));
+                      save_op = static_cast<int *>(mxRealloc(save_op, nopa*sizeof(int)));
                     }
-                  save_op_s_l = (t_save_op_s *) (&(save_op[nop]));
+                  save_op_s_l = reinterpret_cast<t_save_op_s *>(&(save_op[nop]));
                   save_op_s_l->operat = IFLD;
                   save_op_s_l->first = first->u_index;
                   save_op_s_l->lag = abs(first->lag_index);
@@ -5755,10 +5755,10 @@ dynSparseMatrix::Solve_ByteCode_Symbolic_Sparse_GaussianElimination(int Size, bo
                           u[tmp_u_count] = -u[first_piv->u_index]*first_elem;
                           if (nop+2 >= nopa)
                             {
-                              nopa = long (mem_increasing_factor*(double) nopa);
-                              save_op = (int *) mxRealloc(save_op, nopa*sizeof(int));
+                              nopa = static_cast<long>(mem_increasing_factor*static_cast<double>(nopa));
+                              save_op = static_cast<int *>(mxRealloc(save_op, nopa*sizeof(int)));
                             }
-                          save_op_s_l = (t_save_op_s *) (&(save_op[nop]));
+                          save_op_s_l = reinterpret_cast<t_save_op_s *>(&(save_op[nop]));
                           save_op_s_l->operat = IFLESS;
                           save_op_s_l->first = tmp_u_count;
                           save_op_s_l->second = first_piv->u_index;
@@ -5800,10 +5800,10 @@ dynSparseMatrix::Solve_ByteCode_Symbolic_Sparse_GaussianElimination(int Size, bo
                               u[first_sub->u_index] -= u[first_piv->u_index]*first_elem;
                               if (nop+3 >= nopa)
                                 {
-                                  nopa = long (mem_increasing_factor*(double) nopa);
-                                  save_op = (int *) mxRealloc(save_op, nopa*sizeof(int));
+                                  nopa = static_cast<long>(mem_increasing_factor*static_cast<double>(nopa));
+                                  save_op = static_cast<int *>(mxRealloc(save_op, nopa*sizeof(int)));
                                 }
-                              save_op_s_l = (t_save_op_s *) (&(save_op[nop]));
+                              save_op_s_l = reinterpret_cast<t_save_op_s *>(&(save_op[nop]));
                               save_op_s_l->operat = IFSUB;
                               save_op_s_l->first = first_sub->u_index;
                               save_op_s_l->second = first_piv->u_index;
@@ -5828,10 +5828,10 @@ dynSparseMatrix::Solve_ByteCode_Symbolic_Sparse_GaussianElimination(int Size, bo
 
                   if (nop+3 >= nopa)
                     {
-                      nopa = long (mem_increasing_factor*(double) nopa);
-                      save_op = (int *) mxRealloc(save_op, nopa*sizeof(int));
+                      nopa = static_cast<long>(mem_increasing_factor*static_cast<double>(nopa));
+                      save_op = static_cast<int *>(mxRealloc(save_op, nopa*sizeof(int)));
                     }
-                  save_op_s_l = (t_save_op_s *) (&(save_op[nop]));
+                  save_op_s_l = reinterpret_cast<t_save_op_s *>(&(save_op[nop]));
                   save_op_s_l->operat = IFSUB;
                   save_op_s_l->first = b[row];
                   save_op_s_l->second = b[pivj];
@@ -6177,7 +6177,7 @@ dynSparseMatrix::Check_and_Correct_Previous_Iteration(int block_num, int y_size,
       if (false)
         {
 
-          double *p = (double *) mxMalloc(size * sizeof(double));
+          double *p = static_cast<double *>(mxMalloc(size * sizeof(double)));
           test_mxMalloc(p, __LINE__, __FILE__, __func__, size * sizeof(double));
           Grad_f_product(size, b_m_save, p, A_m_save, Ap_save, Ai_save, Ax_save, b_save);
           double slope = 0.0;
@@ -6403,9 +6403,9 @@ dynSparseMatrix::Simulate_One_Boundary(int block_num, int y_size, int y_kmin, in
             {
               mxFree(Ai_save);
               mxFree(Ax_save);
-              Ai_save = (SuiteSparse_long *) mxMalloc(Ap[size] * sizeof(SuiteSparse_long));
+              Ai_save = static_cast<SuiteSparse_long *>(mxMalloc(Ap[size] * sizeof(SuiteSparse_long)));
               test_mxMalloc(Ai_save, __LINE__, __FILE__, __func__, Ap[size] * sizeof(SuiteSparse_long));
-              Ax_save = (double *) mxMalloc(Ap[size] * sizeof(double));
+              Ax_save = static_cast<double *>(mxMalloc(Ap[size] * sizeof(double)));
               test_mxMalloc(Ax_save, __LINE__, __FILE__, __func__, Ap[size] * sizeof(double));
             }
           memcpy(Ap_save, Ap, (size + 1) * sizeof(SuiteSparse_long));
@@ -6485,21 +6485,21 @@ dynSparseMatrix::solve_non_linear(const int block_num, const int y_size, const i
 void
 dynSparseMatrix::Simulate_Newton_One_Boundary(const bool forward)
 {
-  g1 = (double *) mxMalloc(size*size*sizeof(double));
+  g1 = static_cast<double *>(mxMalloc(size*size*sizeof(double)));
   test_mxMalloc(g1, __LINE__, __FILE__, __func__, size*size*sizeof(double));
-  r = (double *) mxMalloc(size*sizeof(double));
+  r = static_cast<double *>(mxMalloc(size*sizeof(double)));
   test_mxMalloc(r, __LINE__, __FILE__, __func__, size*sizeof(double));
   iter = 0;
   if ((solve_algo == 6 && steady_state) || ((stack_solve_algo == 0 || stack_solve_algo == 1 || stack_solve_algo == 4) && !steady_state))
     {
-      Ap_save = (SuiteSparse_long *) mxMalloc((size + 1) * sizeof(SuiteSparse_long));
+      Ap_save = static_cast<SuiteSparse_long *>(mxMalloc((size + 1) * sizeof(SuiteSparse_long)));
       test_mxMalloc(Ap_save, __LINE__, __FILE__, __func__, (size + 1) * sizeof(SuiteSparse_long));
       Ap_save[size] = 0;
-      Ai_save = (SuiteSparse_long *) mxMalloc(1 * sizeof(SuiteSparse_long));
+      Ai_save = static_cast<SuiteSparse_long *>(mxMalloc(1 * sizeof(SuiteSparse_long)));
       test_mxMalloc(Ai_save, __LINE__, __FILE__, __func__, 1 * sizeof(SuiteSparse_long));
-      Ax_save = (double *) mxMalloc(1 * sizeof(double));
+      Ax_save = static_cast<double *>(mxMalloc(1 * sizeof(double)));
       test_mxMalloc(Ax_save, __LINE__, __FILE__, __func__, 1 * sizeof(double));
-      b_save = (double *) mxMalloc((size) * sizeof(SuiteSparse_long));
+      b_save = static_cast<double *>(mxMalloc((size) * sizeof(SuiteSparse_long)));
       test_mxMalloc(b_save, __LINE__, __FILE__, __func__, (size) * sizeof(SuiteSparse_long));
     }
   if (steady_state)
@@ -6852,7 +6852,7 @@ dynSparseMatrix::fixe_u(double **u, int u_count_int, int max_lag_plus_max_lead_p
 #ifdef DEBUG
   mexPrintf("fixe_u : alloc(%d double)\n", u_count_alloc);
 #endif
-  (*u) = (double *) mxMalloc(u_count_alloc*sizeof(double));
+  (*u) = static_cast<double *>(mxMalloc(u_count_alloc*sizeof(double)));
   test_mxMalloc(*u, __LINE__, __FILE__, __func__, u_count_alloc*sizeof(double));
 #ifdef DEBUG
   mexPrintf("*u=%d\n", *u);

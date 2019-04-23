@@ -65,5 +65,5 @@ dynglob_wrap()
 void
 dynglob__destroy_buffer(void* p)
 {
-  dynglob__delete_buffer(reinterpret_cast<YY_BUFFER_STATE>(p));
+  dynglob__delete_buffer(static_cast<YY_BUFFER_STATE>(p));
 }

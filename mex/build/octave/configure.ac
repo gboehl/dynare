@@ -37,7 +37,7 @@ fi
 
 CFLAGS="$CFLAGS -Wall -Wno-parentheses"
 FFLAGS="$FFLAGS -Wall"
-CXXFLAGS="$CXXFLAGS -Wall -Wno-parentheses"
+CXXFLAGS="$CXXFLAGS -Wall -Wno-parentheses -Wold-style-cast"
 
 AC_PROG_F77([gfortran g77 f77])
 AC_PROG_CC

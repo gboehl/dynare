@@ -196,7 +196,7 @@ VectorFunction::check_for_eval(const ConstVector &in, Vector &out) const
 double
 NLSolver::eval(double lambda)
 {
-  Vector xx((const Vector &)x);
+  Vector xx(const_cast<const Vector &>(x));
   xx.add(1-lambda, xcauchy);
   xx.add(lambda, xnewton);
   Vector ff(func.outDim());
@@ -213,7 +213,7 @@ NLSolver::solve(Vector &xx, int &iter)
   rec1 << "---------------------------" << endrec;
   char tmpbuf[14];
 
-  x = (const Vector &) xx;
+  x = const_cast<const Vector &>(xx);
   iter = 0;
   // setup fx
   Vector fx(func.outDim());
@@ -237,10 +237,10 @@ NLSolver::solve(Vector &xx, int &iter)
       Jg.zeros();
       ConstTwoDMatrix(jacob).multaVec(Jg, g);
       double m = -g.dot(g)/Jg.dot(Jg);
-      xcauchy = (const Vector &) g;
+      xcauchy = const_cast<const Vector &>(g);
       xcauchy.mult(m);
       // calculate newton step
-      xnewton = (const Vector &) fx;
+      xnewton = const_cast<const Vector &>(fx);
       ConstTwoDMatrix(jacob).multInvLeft(xnewton);
       xnewton.mult(-1);
 
@@ -259,7 +259,7 @@ NLSolver::solve(Vector &xx, int &iter)
       sprintf(tmpbuf, "%10.6g", fx.getMax());
       rec3 << iter << "    " << lambda << "   " << tmpbuf << endrec;
     }
-  xx = (const Vector &) x;
+  xx = const_cast<const Vector &>(x);
 
   return converged;
 }

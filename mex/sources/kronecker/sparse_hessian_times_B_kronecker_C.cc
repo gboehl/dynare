@@ -34,7 +34,7 @@
 #define DEBUG_OMP 0
 
 void
-sparse_hessian_times_B_kronecker_B(mwIndex *isparseA, mwIndex *jsparseA, double *vsparseA,
+sparse_hessian_times_B_kronecker_B(const mwIndex *isparseA, const mwIndex *jsparseA, double *vsparseA,
                                    double *B, double *D, mwSize mA, mwSize nA, mwSize mB, mwSize nB, int number_of_threads)
 {
   /*
@@ -90,7 +90,7 @@ sparse_hessian_times_B_kronecker_B(mwIndex *isparseA, mwIndex *jsparseA, double 
 }
 
 void
-sparse_hessian_times_B_kronecker_C(mwIndex *isparseA, mwIndex *jsparseA, double *vsparseA,
+sparse_hessian_times_B_kronecker_C(const mwIndex *isparseA, const mwIndex *jsparseA, double *vsparseA,
                                    double *B, double *C, double *D,
                                    mwSize mA, mwSize nA, mwSize mB, mwSize nB, mwSize mC, mwSize nC, int number_of_threads)
 {
@@ -171,15 +171,15 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   double *B, *C;
   int numthreads;
   B = mxGetPr(prhs[1]);
-  numthreads = (int) mxGetScalar(prhs[2]);
+  numthreads = static_cast<int>(mxGetScalar(prhs[2]));
   if (nrhs == 4)
     {
       C = mxGetPr(prhs[2]);
-      numthreads = (int) mxGetScalar(prhs[3]);
+      numthreads = static_cast<int>(mxGetScalar(prhs[3]));
     }
   // Sparse (dynare) hessian matrix.
-  mwIndex *isparseA = (mwIndex *) mxGetIr(prhs[0]);
-  mwIndex *jsparseA = (mwIndex *) mxGetJc(prhs[0]);
+  const mwIndex *isparseA = mxGetIr(prhs[0]);
+  const mwIndex *jsparseA = mxGetJc(prhs[0]);
   double  *vsparseA = mxGetPr(prhs[0]);
   // Initialization of the ouput:
   double *D;

@@ -32,5 +32,9 @@ EXTRA_DIST = dynglob.ll dynglob.yy
 dynglob_tab.cc dynglob_tab.hh: dynglob.yy
 	$(YACC) -W -odynglob_tab.cc dynglob.yy
 
+dynare__-dynglob_tab.$(OBJEXT): CXXFLAGS += -Wno-old-style-cast
+
 dynglob_ll.cc: dynglob.ll
 	$(LEX) -i -odynglob_ll.cc dynglob.ll
+
+dynare__-dynglob_ll.$(OBJEXT): CXXFLAGS += -Wno-old-style-cast

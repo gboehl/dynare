@@ -21,7 +21,7 @@ ParameterSignal::ParameterSignal(int n)
 void
 ParameterSignal::signalAfter(int l)
 {
-  for (size_t i = 0; i < std::min((size_t) l, data.size()); i++)
+  for (size_t i = 0; i < std::min(static_cast<size_t>(l), data.size()); i++)
     data[i] = false;
   for (size_t i = l; i < data.size(); i++)
     data[i] = true;

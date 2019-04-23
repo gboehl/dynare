@@ -335,7 +335,7 @@ public:
       {
         nb_endo = mxGetM(mxGetFieldByNumber(M_, 0, mxGetFieldNumber(M_, "endo_names")));
         endo_name_length = mxGetN(mxGetFieldByNumber(M_, 0, mxGetFieldNumber(M_, "endo_names")));
-        P_endo_names = (char *) mxGetPr(mxGetFieldByNumber(M_, 0, mxGetFieldNumber(M_, "endo_names")));
+        P_endo_names = reinterpret_cast<char *>(mxGetPr(mxGetFieldByNumber(M_, 0, mxGetFieldNumber(M_, "endo_names"))));
       }
     if (mxGetFieldNumber(M_, "exo_names") == -1)
       {
@@ -347,7 +347,7 @@ public:
       {
         nb_exo = mxGetM(mxGetFieldByNumber(M_, 0, mxGetFieldNumber(M_, "exo_names")));
         exo_name_length = mxGetN(mxGetFieldByNumber(M_, 0, mxGetFieldNumber(M_, "exo_names")));
-        P_exo_names = (char *) mxGetPr(mxGetFieldByNumber(M_, 0, mxGetFieldNumber(M_, "exo_names")));
+        P_exo_names = reinterpret_cast<char *>(mxGetPr(mxGetFieldByNumber(M_, 0, mxGetFieldNumber(M_, "exo_names"))));
       }
     if (mxGetFieldNumber(M_, "param_names") == -1)
       {
@@ -359,7 +359,7 @@ public:
       {
         nb_param = mxGetM(mxGetFieldByNumber(M_, 0, mxGetFieldNumber(M_, "param_names")));
         param_name_length = mxGetN(mxGetFieldByNumber(M_, 0, mxGetFieldNumber(M_, "param_names")));
-        P_param_names = (char *) mxGetPr(mxGetFieldByNumber(M_, 0, mxGetFieldNumber(M_, "param_names")));
+        P_param_names = reinterpret_cast<char *>(mxGetPr(mxGetFieldByNumber(M_, 0, mxGetFieldNumber(M_, "param_names"))));
       }
     is_load_variable_list = false;
   }
@@ -400,14 +400,14 @@ public:
   load_variable_list()
   {
     ostringstream res;
-    for (unsigned int variable_num = 0; variable_num < (unsigned int) nb_endo; variable_num++)
+    for (unsigned int variable_num = 0; variable_num < static_cast<unsigned int>(nb_endo); variable_num++)
       {
         for (unsigned int i = 0; i < endo_name_length; i++)
           if (P_endo_names[CHAR_LENGTH*(variable_num+i*nb_endo)] != ' ')
             res << P_endo_names[CHAR_LENGTH*(variable_num+i*nb_endo)];
         Variable_list.push_back(make_pair(res.str(), make_pair(SymbolType::endogenous, variable_num)));
       }
-    for (unsigned int variable_num = 0; variable_num < (unsigned int) nb_exo; variable_num++)
+    for (unsigned int variable_num = 0; variable_num < static_cast<unsigned int>(nb_exo); variable_num++)
       {
         for (unsigned int i = 0; i < exo_name_length; i++)
           if (P_exo_names[CHAR_LENGTH*(variable_num+i*nb_exo)] != ' ')
@@ -427,7 +427,7 @@ public:
     size_t n = Variable_list.size();
     int i = 0;
     bool notfound = true;
-    while (notfound && i < (int) n)
+    while (notfound && i < static_cast<int>(n))
       {
         if (variable_name == Variable_list[i].first)
           {
@@ -624,7 +624,7 @@ public:
         switch (it_code->first)
           {
           case FNUMEXPR:
-            switch (((FNUMEXPR_ *) it_code->second)->get_expression_type())
+            switch (static_cast<FNUMEXPR_ *>(it_code->second)->get_expression_type())
               {
               case TemporaryTerm:
                 equation_type = TemporaryTerm;
@@ -673,16 +673,16 @@ public:
                 break;
               default:
                 ostringstream tmp;
-                tmp << " in print_expression, expression type " << ((FNUMEXPR_ *) it_code->second)->get_expression_type() << " not implemented yet\n";
+                tmp << " in print_expression, expression type " << static_cast<FNUMEXPR_ *>(it_code->second)->get_expression_type() << " not implemented yet\n";
                 throw FatalExceptionHandling(tmp.str());
               }
             break;
           case FLDV:
             //load a variable in the processor
-            switch (static_cast<SymbolType>(((FLDV_ *) it_code->second)->get_type()))
+            switch (static_cast<SymbolType>(static_cast<FLDV_ *>(it_code->second)->get_type()))
               {
               case SymbolType::parameter:
-                var = ((FLDV_ *) it_code->second)->get_pos();
+                var = static_cast<FLDV_ *>(it_code->second)->get_pos();
 #ifdef DEBUG
                 mexPrintf("FLDV_ Param var=%d\n", var);
                 mexPrintf("get_variable(SymbolType::parameter, var)=%s\n", get_variable(SymbolType::parameter, var).c_str());
@@ -693,8 +693,8 @@ public:
                   Stackf.push(params[var]);
                 break;
               case SymbolType::endogenous:
-                var = ((FLDV_ *) it_code->second)->get_pos();
-                lag = ((FLDV_ *) it_code->second)->get_lead_lag();
+                var = static_cast<FLDV_ *>(it_code->second)->get_pos();
+                lag = static_cast<FLDV_ *>(it_code->second)->get_lead_lag();
 #ifdef DEBUG
                 mexPrintf("FLDV_ endo var=%d, lag=%d\n", var, lag);
                 mexPrintf("get_variable(SymbolType::endogenous, var)=%s, compute=%d\n", get_variable(SymbolType::endogenous, var).c_str(), compute);
@@ -718,8 +718,8 @@ public:
                   }
                 break;
               case SymbolType::exogenous:
-                var = ((FLDV_ *) it_code->second)->get_pos();
-                lag = ((FLDV_ *) it_code->second)->get_lead_lag();
+                var = static_cast<FLDV_ *>(it_code->second)->get_pos();
+                lag = static_cast<FLDV_ *>(it_code->second)->get_lead_lag();
 #ifdef DEBUG
                 mexPrintf("FLDV_ exo var=%d, lag=%d", var, lag);
 #endif
@@ -733,8 +733,8 @@ public:
                   Stackf.push(x[it_+lag+var*nb_row_x]);
                 break;
               case SymbolType::exogenousDet:
-                var = ((FLDV_ *) it_code->second)->get_pos();
-                lag = ((FLDV_ *) it_code->second)->get_lead_lag();
+                var = static_cast<FLDV_ *>(it_code->second)->get_pos();
+                lag = static_cast<FLDV_ *>(it_code->second)->get_lead_lag();
 #ifdef DEBUG
                 mexPrintf("FLDV_ exo_det var=%d, lag=%d", var, lag);
 #endif
@@ -756,10 +756,10 @@ public:
           case FLDSV:
           case FLDVS:
             //load a variable in the processor
-            switch (static_cast<SymbolType>(((FLDSV_ *) it_code->second)->get_type()))
+            switch (static_cast<SymbolType>(static_cast<FLDSV_ *>(it_code->second)->get_type()))
               {
               case SymbolType::parameter:
-                var = ((FLDSV_ *) it_code->second)->get_pos();
+                var = static_cast<FLDSV_ *>(it_code->second)->get_pos();
 #ifdef DEBUG
                 mexPrintf("FLDSV_ param var=%d", var);
 #endif
@@ -768,7 +768,7 @@ public:
                   Stackf.push(params[var]);
                 break;
               case SymbolType::endogenous:
-                var = ((FLDSV_ *) it_code->second)->get_pos();
+                var = static_cast<FLDSV_ *>(it_code->second)->get_pos();
 #ifdef DEBUG
                 mexPrintf("FLDSV_ endo var=%d", var);
 #endif
@@ -787,7 +787,7 @@ public:
                   }
                 break;
               case SymbolType::exogenous:
-                var = ((FLDSV_ *) it_code->second)->get_pos();
+                var = static_cast<FLDSV_ *>(it_code->second)->get_pos();
 #ifdef DEBUG
                 mexPrintf("FLDSV_ exo var=%d", var);
 #endif
@@ -799,7 +799,7 @@ public:
                   Stackf.push(x[var]);
                 break;
               case SymbolType::exogenousDet:
-                var = ((FLDSV_ *) it_code->second)->get_pos();
+                var = static_cast<FLDSV_ *>(it_code->second)->get_pos();
 #ifdef DEBUG
                 mexPrintf("FLDSV_ exo_det var=%d", var);
 #endif
@@ -815,7 +815,7 @@ public:
             break;
           case FLDT:
             //load a temporary variable in the processor
-            var = ((FLDT_ *) it_code->second)->get_pos();
+            var = static_cast<FLDT_ *>(it_code->second)->get_pos();
 #ifdef DEBUG
             mexPrintf("FLDT_ var=%d", var);
 #endif
@@ -827,7 +827,7 @@ public:
             break;
           case FLDST:
             //load a temporary variable in the processor
-            var = ((FLDST_ *) it_code->second)->get_pos();
+            var = static_cast<FLDST_ *>(it_code->second)->get_pos();
 #ifdef DEBUG
             mexPrintf("FLDST_ var=%d", var);
 #endif
@@ -839,7 +839,7 @@ public:
             break;
           case FLDU:
             //load u variable in the processor
-            var = ((FLDU_ *) it_code->second)->get_pos();
+            var = static_cast<FLDU_ *>(it_code->second)->get_pos();
 #ifdef DEBUG
             mexPrintf("FLDU_ var=%d", var);
 #endif
@@ -852,7 +852,7 @@ public:
             break;
           case FLDSU:
             //load u variable in the processor
-            var = ((FLDSU_ *) it_code->second)->get_pos();
+            var = static_cast<FLDSU_ *>(it_code->second)->get_pos();
 #ifdef DEBUG
             mexPrintf("FLDSU_ var=%d", var);
 #endif
@@ -863,7 +863,7 @@ public:
               Stackf.push(u[var]);
             break;
           case FLDR:
-            var = ((FLDR_ *) it_code->second)->get_pos();
+            var = static_cast<FLDR_ *>(it_code->second)->get_pos();
 #ifdef DEBUG
             mexPrintf("FLDSR_ var=%d", var);
 #endif
@@ -886,7 +886,7 @@ public:
             break;
           case FLDC:
             //load a numerical constant in the processor
-            ll = ((FLDC_ *) it_code->second)->get_value();
+            ll = static_cast<FLDC_ *>(it_code->second)->get_value();
             tmp_out.str("");
 #ifdef DEBUG
             mexPrintf("FLDC_ ll=%f", ll);
@@ -899,10 +899,10 @@ public:
           case FSTPV:
             //load a variable in the processor
             go_on = false;
-            switch (static_cast<SymbolType>(((FSTPV_ *) it_code->second)->get_type()))
+            switch (static_cast<SymbolType>(static_cast<FSTPV_ *>(it_code->second)->get_type()))
               {
               case SymbolType::parameter:
-                var = ((FSTPV_ *) it_code->second)->get_pos();
+                var = static_cast<FSTPV_ *>(it_code->second)->get_pos();
 #ifdef DEBUG
                 mexPrintf("FSTPV_ param var=%d", var);
 #endif
@@ -918,8 +918,8 @@ public:
                   }
                 break;
               case SymbolType::endogenous:
-                var = ((FSTPV_ *) it_code->second)->get_pos();
-                lag = ((FSTPV_ *) it_code->second)->get_lead_lag();
+                var = static_cast<FSTPV_ *>(it_code->second)->get_pos();
+                lag = static_cast<FSTPV_ *>(it_code->second)->get_lead_lag();
 #ifdef DEBUG
                 mexPrintf("FSTPV_ endo var=%d, lag=%d", var, lag);
 #endif
@@ -940,8 +940,8 @@ public:
                   }
                 break;
               case SymbolType::exogenous:
-                var = ((FSTPV_ *) it_code->second)->get_pos();
-                lag = ((FSTPV_ *) it_code->second)->get_lead_lag();
+                var = static_cast<FSTPV_ *>(it_code->second)->get_pos();
+                lag = static_cast<FSTPV_ *>(it_code->second)->get_lead_lag();
 #ifdef DEBUG
                 mexPrintf("FSTPV_ exo var=%d, lag=%d", var, lag);
 #endif
@@ -960,8 +960,8 @@ public:
                   }
                 break;
               case SymbolType::exogenousDet:
-                var = ((FSTPV_ *) it_code->second)->get_pos();
-                lag = ((FSTPV_ *) it_code->second)->get_lead_lag();
+                var = static_cast<FSTPV_ *>(it_code->second)->get_pos();
+                lag = static_cast<FSTPV_ *>(it_code->second)->get_lead_lag();
 #ifdef DEBUG
                 mexPrintf("FSTPV_ exodet var=%d, lag=%d", var, lag);
 #endif
@@ -986,10 +986,10 @@ public:
           case FSTPSV:
             go_on = false;
             //load a variable in the processor
-            switch (static_cast<SymbolType>(((FSTPSV_ *) it_code->second)->get_type()))
+            switch (static_cast<SymbolType>(static_cast<FSTPSV_ *>(it_code->second)->get_type()))
               {
               case SymbolType::parameter:
-                var = ((FSTPSV_ *) it_code->second)->get_pos();
+                var = static_cast<FSTPSV_ *>(it_code->second)->get_pos();
 #ifdef DEBUG
                 mexPrintf("FSTPSV_ param var=%d", var);
 #endif
@@ -1006,7 +1006,7 @@ public:
                   }
                 break;
               case SymbolType::endogenous:
-                var = ((FSTPSV_ *) it_code->second)->get_pos();
+                var = static_cast<FSTPSV_ *>(it_code->second)->get_pos();
 #ifdef DEBUG
                 mexPrintf("FSTPSV_ endo var=%d", var);
 #endif
@@ -1024,7 +1024,7 @@ public:
                 break;
               case SymbolType::exogenous:
               case SymbolType::exogenousDet:
-                var = ((FSTPSV_ *) it_code->second)->get_pos();
+                var = static_cast<FSTPSV_ *>(it_code->second)->get_pos();
 #ifdef DEBUG
                 mexPrintf("FSTPSV_ exo var=%d", var);
 #endif
@@ -1047,7 +1047,7 @@ public:
           case FSTPT:
             go_on = false;
             //store in a temporary variable from the processor
-            var = ((FSTPT_ *) it_code->second)->get_pos();
+            var = static_cast<FSTPT_ *>(it_code->second)->get_pos();
 #ifdef DEBUG
             mexPrintf("FSTPT_ var=%d", var);
 #endif
@@ -1063,7 +1063,7 @@ public:
           case FSTPST:
             go_on = false;
             //store in a temporary variable from the processor
-            var = ((FSTPST_ *) it_code->second)->get_pos();
+            var = static_cast<FSTPST_ *>(it_code->second)->get_pos();
 #ifdef DEBUG
             mexPrintf("FSTPST_ var=%d", var);
 #endif
@@ -1079,7 +1079,7 @@ public:
           case FSTPU:
             go_on = false;
             //store in u variable from the processor
-            var = ((FSTPU_ *) it_code->second)->get_pos();
+            var = static_cast<FSTPU_ *>(it_code->second)->get_pos();
 #ifdef DEBUG
             mexPrintf("FSTPU_ var=%d", var);
 #endif
@@ -1096,7 +1096,7 @@ public:
           case FSTPSU:
             go_on = false;
             //store in u variable from the processor
-            var = ((FSTPSU_ *) it_code->second)->get_pos();
+            var = static_cast<FSTPSU_ *>(it_code->second)->get_pos();
 #ifdef DEBUG
             mexPrintf("FSTPSU_ var=%d", var);
 #endif
@@ -1112,7 +1112,7 @@ public:
           case FSTPR:
             go_on = false;
             //store in residual variable from the processor
-            var = ((FSTPR_ *) it_code->second)->get_pos();
+            var = static_cast<FSTPR_ *>(it_code->second)->get_pos();
 #ifdef DEBUG
             mexPrintf("FSTPR_ var=%d", var);
 #endif
@@ -1128,7 +1128,7 @@ public:
           case FSTPG:
             go_on = false;
             //store in derivative (g) variable from the processor
-            var = ((FSTPG_ *) it_code->second)->get_pos();
+            var = static_cast<FSTPG_ *>(it_code->second)->get_pos();
 #ifdef DEBUG
             mexPrintf("FSTG_ var=%d", var);
 #endif
@@ -1144,8 +1144,8 @@ public:
           case FSTPG2:
             go_on = false;
             //store in derivative (g) variable from the processor
-            eq = ((FSTPG2_ *) it_code->second)->get_row();
-            var = ((FSTPG2_ *) it_code->second)->get_col();
+            eq = static_cast<FSTPG2_ *>(it_code->second)->get_row();
+            var = static_cast<FSTPG2_ *>(it_code->second)->get_col();
 #ifdef DEBUG
             mexPrintf("FSTG2_ eq=%d var=%d", eq, var);
 #endif
@@ -1172,10 +1172,10 @@ public:
                 r = Stackf.top();
                 Stackf.pop();
               }
-            eq = ((FSTPG3_ *) it_code->second)->get_row();
-            var = ((FSTPG3_ *) it_code->second)->get_col();
-            lag = ((FSTPG3_ *) it_code->second)->get_lag();
-            pos_col = ((FSTPG3_ *) it_code->second)->get_col_pos();
+            eq = static_cast<FSTPG3_ *>(it_code->second)->get_row();
+            var = static_cast<FSTPG3_ *>(it_code->second)->get_col();
+            lag = static_cast<FSTPG3_ *>(it_code->second)->get_lag();
+            pos_col = static_cast<FSTPG3_ *>(it_code->second)->get_col_pos();
             switch (equation_type)
               {
               case FirstEndoDerivative:
@@ -1225,7 +1225,7 @@ public:
 #endif
             break;
           case FBINARY:
-            op = ((FBINARY_ *) it_code->second)->get_op_type();
+            op = static_cast<FBINARY_ *>(it_code->second)->get_op_type();
             v2 = Stack.top();
             Stack.pop();
             v1 = Stack.top();
@@ -1560,7 +1560,7 @@ public:
               }
             break;
           case FUNARY:
-            op = ((FUNARY_ *) it_code->second)->get_op_type();
+            op = static_cast<FUNARY_ *>(it_code->second)->get_op_type();
             v1 = Stack.top();
             Stack.pop();
             if (compute)
@@ -1724,7 +1724,7 @@ public:
               }
             break;
           case FTRINARY:
-            op = ((FTRINARY_ *) it_code->second)->get_op_type();
+            op = static_cast<FTRINARY_ *>(it_code->second)->get_op_type();
             v3 = Stack.top();
             Stack.pop();
             v2 = Stack.top();
@@ -1766,7 +1766,7 @@ public:
               mexPrintf("------------------------------\n");
               mexPrintf("CALL "); mexEvalString("drawnow;");
 #endif
-              FCALL_ *fc = (FCALL_ *) it_code->second;
+              FCALL_ *fc = static_cast<FCALL_ *>(it_code->second);
               string function_name = fc->get_function_name();
 #ifdef DEBUG
               mexPrintf("function_name=%s ", function_name.c_str()); mexEvalString("drawnow;");
@@ -1801,7 +1801,7 @@ public:
                   {
                     if (compute)
                       {
-                        input_arguments = (mxArray **) mxMalloc(nb_input_arguments * sizeof(mxArray *));
+                        input_arguments = static_cast<mxArray **>(mxMalloc(nb_input_arguments * sizeof(mxArray *)));
 #ifdef DEBUG
                         mexPrintf("Stack.size()=%d\n", Stack.size());
                         mexEvalString("drawnow;");
@@ -1838,7 +1838,7 @@ public:
                   {
                     if (compute)
                       {
-                        input_arguments = (mxArray **) mxMalloc((nb_input_arguments+1+nb_add_input_arguments) * sizeof(mxArray *));
+                        input_arguments = static_cast<mxArray **>(mxMalloc((nb_input_arguments+1+nb_add_input_arguments) * sizeof(mxArray *)));
                         mxArray *vv = mxCreateString(arg_func_name.c_str());
                         input_arguments[0] = vv;
                         vv = mxCreateDoubleScalar(fc->get_row());
@@ -1892,7 +1892,7 @@ public:
                   {
                     if (compute)
                       {
-                        input_arguments = (mxArray **) mxMalloc(nb_input_arguments * sizeof(mxArray *));
+                        input_arguments = static_cast<mxArray **>(mxMalloc(nb_input_arguments * sizeof(mxArray *)));
                         for (unsigned int i = 0; i < nb_input_arguments; i++)
                           {
                             mxArray *vv = mxCreateDoubleScalar(Stackf.top());
@@ -1923,7 +1923,7 @@ public:
                   {
                     if (compute)
                       {
-                        input_arguments = (mxArray **) mxMalloc((nb_input_arguments+1+nb_add_input_arguments) * sizeof(mxArray *));
+                        input_arguments = static_cast<mxArray **>(mxMalloc((nb_input_arguments+1+nb_add_input_arguments) * sizeof(mxArray *)));
                         mxArray *vv = mxCreateString(arg_func_name.c_str());
                         input_arguments[0] = vv;
                         vv = mxCreateDoubleScalar(fc->get_row());
@@ -1976,7 +1976,7 @@ public:
                   {
                     if (compute)
                       {
-                        input_arguments = (mxArray **) mxMalloc(nb_input_arguments * sizeof(mxArray *));
+                        input_arguments = static_cast<mxArray **>(mxMalloc(nb_input_arguments * sizeof(mxArray *)));
                         for (unsigned int i = 0; i < nb_input_arguments; i++)
                           {
                             mxArray *vv = mxCreateDoubleScalar(Stackf.top());
@@ -2012,7 +2012,7 @@ public:
             }
           case FSTPTEF:
             go_on = false;
-            var = ((FSTPTEF_ *) it_code->second)->get_number();
+            var = static_cast<FSTPTEF_ *>(it_code->second)->get_number();
 #ifdef DEBUG
             mexPrintf("FSTPTEF\n");
             mexPrintf("var=%d Stack.size()=%d\n", var, Stack.size());
@@ -2048,7 +2048,7 @@ public:
 #endif
             break;
           case FLDTEF:
-            var = ((FLDTEF_ *) it_code->second)->get_number();
+            var = static_cast<FLDTEF_ *>(it_code->second)->get_number();
 #ifdef DEBUG
             mexPrintf("FLDTEF\n");
             mexPrintf("var=%d Stack.size()=%d\n", var, Stackf.size());
@@ -2075,8 +2075,8 @@ public:
           case FSTPTEFD:
             {
               go_on = false;
-              unsigned int indx = ((FSTPTEFD_ *) it_code->second)->get_indx();
-              unsigned int row = ((FSTPTEFD_ *) it_code->second)->get_row();
+              unsigned int indx = static_cast<FSTPTEFD_ *>(it_code->second)->get_indx();
+              unsigned int row = static_cast<FSTPTEFD_ *>(it_code->second)->get_row();
 #ifdef DEBUG
               mexPrintf("FSTPTEFD\n");
               mexPrintf("indx=%d Stack.size()=%d\n", indx, Stack.size());
@@ -2100,8 +2100,8 @@ public:
             break;
           case FLDTEFD:
             {
-              unsigned int indx = ((FLDTEFD_ *) it_code->second)->get_indx();
-              unsigned int row = ((FLDTEFD_ *) it_code->second)->get_row();
+              unsigned int indx = static_cast<FLDTEFD_ *>(it_code->second)->get_indx();
+              unsigned int row = static_cast<FLDTEFD_ *>(it_code->second)->get_row();
 #ifdef DEBUG
               mexPrintf("FLDTEFD\n");
               mexPrintf("indx=%d row=%d Stack.size()=%d\n", indx, row, Stack.size());
@@ -2122,9 +2122,9 @@ public:
           case FSTPTEFDD:
             {
               go_on = false;
-              unsigned int indx = ((FSTPTEFDD_ *) it_code->second)->get_indx();
-              unsigned int row = ((FSTPTEFDD_ *) it_code->second)->get_row();
-              unsigned int col = ((FSTPTEFDD_ *) it_code->second)->get_col();
+              unsigned int indx = static_cast<FSTPTEFDD_ *>(it_code->second)->get_indx();
+              unsigned int row = static_cast<FSTPTEFDD_ *>(it_code->second)->get_row();
+              unsigned int col = static_cast<FSTPTEFDD_ *>(it_code->second)->get_col();
 #ifdef DEBUG
               mexPrintf("FSTPTEFD\n");
               mexPrintf("indx=%d Stack.size()=%d\n", indx, Stack.size());
@@ -2151,9 +2151,9 @@ public:
             break;
           case FLDTEFDD:
             {
-              unsigned int indx = ((FLDTEFDD_ *) it_code->second)->get_indx();
-              unsigned int row = ((FLDTEFDD_ *) it_code->second)->get_row();
-              unsigned int col = ((FSTPTEFDD_ *) it_code->second)->get_col();
+              unsigned int indx = static_cast<FLDTEFDD_ *>(it_code->second)->get_indx();
+              unsigned int row = static_cast<FLDTEFDD_ *>(it_code->second)->get_row();
+              unsigned int col = static_cast<FSTPTEFDD_ *>(it_code->second)->get_col();
 #ifdef DEBUG
               mexPrintf("FLDTEFD\n");
               mexPrintf("indx=%d Stack.size()=%d\n", indx, Stack.size());

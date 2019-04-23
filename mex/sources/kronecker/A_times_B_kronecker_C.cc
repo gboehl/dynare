@@ -155,10 +155,10 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   if (nrhs == 4)
     {
       C = mxGetPr(prhs[2]);
-      numthreads = (int) mxGetScalar(prhs[3]);
+      numthreads = static_cast<int>(mxGetScalar(prhs[3]));
     }
   else
-    numthreads = (int) mxGetScalar(prhs[2]);
+    numthreads = static_cast<int>(mxGetScalar(prhs[2]));
 
   // Initialization of the ouput:
   double *D;

@@ -49,5 +49,5 @@ namelist_wrap()
 void
 namelist__destroy_buffer(void* p)
 {
-  namelist__delete_buffer(reinterpret_cast<YY_BUFFER_STATE>(p));
+  namelist__delete_buffer(static_cast<YY_BUFFER_STATE>(p));
 }

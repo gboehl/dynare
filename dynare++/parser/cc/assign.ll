@@ -51,5 +51,5 @@ asgn_wrap()
 void
 asgn__destroy_buffer(void* p)
 {
-  asgn__delete_buffer(reinterpret_cast<YY_BUFFER_STATE>(p));
+  asgn__delete_buffer(static_cast<YY_BUFFER_STATE>(p));
 }
