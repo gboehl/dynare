@@ -76,6 +76,6 @@ end;
 
 steady;
 
-options_.ep.IntegrationAlgorithm='Tensor-Gaussian-Quadrature';
+options_.ep.stochastic.IntegrationAlgorithm='Tensor-Gaussian-Quadrature';
 extended_path(periods=10);
 

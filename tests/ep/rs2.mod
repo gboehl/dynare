@@ -156,7 +156,7 @@ options_.ep.verbosity=0;
 options_.ep.stochastic.algo=1;
 options_.ep.solve_algo = 10;
 options_.ep.maxit = 100;
-options_.ep.IntegrationAlgorithm='UT_2p+1';
+options_.ep.stochastic.IntegrationAlgorithm='Stroud-Cubature-3';
 options_.ep.ut.k = 1;
 options_.solve_tolf = 1e-12;
 

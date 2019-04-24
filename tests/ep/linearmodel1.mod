@@ -38,7 +38,7 @@ ts = extended_path([], 10, [], options_, M_, oo_);
 
 // Stochastic extended path simulation
 options_.ep.stochastic.status = 1;
-options_.ep.IntegrationAlgorithm='Tensor-Gaussian-Quadrature';
+options_.ep.stochastic.IntegrationAlgorithm='Tensor-Gaussian-Quadrature';
 options_.ep.order = 1;
 options_.ep.nnodes = 3;
 sts = extended_path([], 10, [], options_, M_, oo_);

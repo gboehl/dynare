@@ -11,7 +11,7 @@ function global_initialization()
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2003-2017 Dynare Team
+% Copyright (C) 2003-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -213,6 +213,7 @@ ep.replic_nbr = 1;
 % Parallel execution of replications
 ep.parallel = false;
 % Stochastic extended path related options.
+ep.stochastic.IntegrationAlgorithm = 'Tensor-Gaussian-Quadrature'; % Other possible values are 'Stroud-Cubature-3' and 'Stroud-Cubature-5'
 ep.stochastic.method = '';
 ep.stochastic.algo = 0;
 ep.stochastic.quadrature.ortpol = 'hermite';

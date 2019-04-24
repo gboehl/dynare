@@ -79,7 +79,7 @@ ts0 = extended_path([], 10, [], options_, M_, oo_);
 
 options_.ep.stochastic.order = 1;
 options_.ep.stochastic.nodes = 3;
-options_.ep.IntegrationAlgorithm='Tensor-Gaussian-Quadrature';
+options_.ep.stochastic.IntegrationAlgorithm='Tensor-Gaussian-Quadrature';
 ts1_3 = extended_path([], 10, [], options_, M_, oo_);
 
 options_.ep.stochastic.nodes = 5;

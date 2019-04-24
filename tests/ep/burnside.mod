@@ -53,7 +53,7 @@ set_dynare_seed('default');
 ts = extended_path([], 5000, [], options_, M_, oo_);
 
 options_.ep.stochastic.order = 2;
-options_.ep.IntegrationAlgorithm='Tensor-Gaussian-Quadrature';
+options_.ep.stochastic.IntegrationAlgorithm='Tensor-Gaussian-Quadrature';
 set_dynare_seed('default');
 ts1_4 = extended_path([], 5000, [], options_, M_, oo_);
 
