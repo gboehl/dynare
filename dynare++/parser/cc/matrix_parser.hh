@@ -6,6 +6,7 @@
 #define OGP_MATRIX_PARSER
 
 #include <vector>
+#include <string>
 
 namespace ogp
 {
@@ -48,7 +49,7 @@ namespace ogp
       return nc;
     }
     /** Parses a given data. This initializes the object data. */
-    void parse(int length, const char *stream);
+    void parse(const std::string &stream);
     /** Adds newly read item. This should be called from bison
      * parser. */
     void add_item(double v);
@@ -56,7 +57,7 @@ namespace ogp
      * parser. */
     void start_row();
     /** Process a parse error from the parser. */
-    void error(const char *mes) const;
+    void error(std::string mes) const;
     /** Return begin iterator. */
     MPIterator begin() const;
     /** Return end iterator. */

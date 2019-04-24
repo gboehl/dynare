@@ -10,8 +10,9 @@
 %code
 {
 #include "atom_assignings.hh"
+#include <string>
 
-void asgn_error(const char*);
+void asgn_error(std::string);
 int asgn_lex();
 extern ogp::AtomAssignings* aparser;
 }
@@ -51,7 +52,7 @@ space : space BLANK | BLANK;
 %%
 
 void
-asgn_error(const char* mes)
+asgn_error(std::string mes)
 {
-  aparser->error(mes);
+  aparser->error(std::move(mes));
 }

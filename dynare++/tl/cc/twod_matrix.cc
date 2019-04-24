@@ -104,7 +104,7 @@ TwoDMatrix::save(const std::string &fname) const
   if (fd.fail())
     TL_RAISE("Cannot open file for writing in TwoDMatrix::save");
 
-  fd << std::setprecision(std::numeric_limits<double>::digits10 + 1);
+  fd << std::setprecision(std::numeric_limits<double>::max_digits10);
 
   for (int row = 0; row < nrows(); row++)
     {

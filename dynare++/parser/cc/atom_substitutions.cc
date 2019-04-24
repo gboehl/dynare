@@ -9,46 +9,24 @@ using namespace ogp;
 
 AtomSubstitutions::AtomSubstitutions(const AtomSubstitutions &as, const FineAtoms &oa,
                                      FineAtoms &na)
-  : old_atoms(oa), new_atoms(na)
+  : new2old(as.new2old), old2new(as.old2new), old_atoms(oa), new_atoms(na)
 {
-  const NameStorage &ns = na.get_name_storage();
-
-  // fill new2old
-  for (const auto & it : as.new2old)
-    new2old.emplace(ns.query(it.first),
-                    Tshiftname(ns.query(it.second.first),
-                               it.second.second));
-  // fill old2new
-  for (const auto & it : as.old2new)
-    {
-      Tshiftnameset sset;
-      for (const auto & itt : it.second)
-        sset.emplace(ns.query(itt.first), itt.second);
-      old2new.emplace(ns.query(it.first), sset);
-    }
 }
 
 void
-AtomSubstitutions::add_substitution(const char *newname, const char *oldname, int tshift)
+AtomSubstitutions::add_substitution(string newname, string oldname, int tshift)
 {
-  // make sure the storage is from the new_atoms
-  newname = new_atoms.get_name_storage().query(newname);
-  oldname = new_atoms.get_name_storage().query(oldname);
-  if (!newname || !oldname)
-    throw ogu::Exception(__FILE__, __LINE__,
-                         "Bad newname or oldname in AtomSubstitutions::add_substitution");
-
   // insert to new2old map
   new2old.emplace(newname, Tshiftname(oldname, tshift));
   // insert to old2new map
   auto it = old2new.find(oldname);
   if (it != old2new.end())
-    it->second.emplace(newname, -tshift);
+    it->second.emplace(std::move(newname), -tshift);
   else
     {
       Tshiftnameset snset;
-      snset.emplace(newname, -tshift);
-      old2new.emplace(oldname, snset);
+      snset.emplace(std::move(newname), -tshift);
+      old2new.emplace(std::move(oldname), snset);
     }
 
   // put to info
@@ -59,14 +37,14 @@ void
 AtomSubstitutions::substitutions_finished(VarOrdering::ord_type ot)
 {
   // create an external ordering of new_atoms from old_atoms
-  const vector<const char *> &oa_ext = old_atoms.get_allvar();
-  vector<const char *> na_ext;
-  for (auto oname : oa_ext)
+  const vector<string> &oa_ext = old_atoms.get_allvar();
+  vector<string> na_ext;
+  for (const auto &oname : oa_ext)
     {
       // add the old name itself
       na_ext.push_back(oname);
       // add all new names derived from the old name
-      Toldnamemap::const_iterator it = old2new.find(oname);
+      auto it = old2new.find(oname);
       if (it != old2new.end())
         for (const auto & itt : it->second)
           na_ext.push_back(itt.first);
@@ -76,8 +54,8 @@ AtomSubstitutions::substitutions_finished(VarOrdering::ord_type ot)
   new_atoms.parsing_finished(ot, na_ext);
 }
 
-const char *
-AtomSubstitutions::get_new4old(const char *oldname, int tshift) const
+string
+AtomSubstitutions::get_new4old(const string &oldname, int tshift) const
 {
   auto it = old2new.find(oldname);
   if (it != old2new.end())
@@ -87,7 +65,7 @@ AtomSubstitutions::get_new4old(const char *oldname, int tshift) const
         if (itt.second == -tshift)
           return itt.first;
     }
-  return nullptr;
+  return "";
 }
 
 void
@@ -106,25 +84,25 @@ AtomSubstitutions::print() const
 void
 SAtoms::substituteAllLagsAndLeads(FormulaParser &fp, AtomSubstitutions &as)
 {
-  const char *name;
+  string name;
 
   int mlead, mlag;
   endovarspan(mlead, mlag);
 
   // substitute all endo lagged more than 1
-  while (name = findEndoWithLeadInInterval(mlag, -2))
+  while (!(name = findEndoWithLeadInInterval(mlag, -2)).empty())
     makeAuxVariables(name, -1, -2, mlag, fp, as);
   // substitute all endo leaded more than 1
-  while (name = findEndoWithLeadInInterval(2, mlead))
+  while (!(name = findEndoWithLeadInInterval(2, mlead)).empty())
     makeAuxVariables(name, 1, 2, mlead, fp, as);
 
   exovarspan(mlead, mlag);
 
   // substitute all lagged exo
-  while (name = findExoWithLeadInInterval(mlag, -1))
+  while (!(name = findExoWithLeadInInterval(mlag, -1)).empty())
     makeAuxVariables(name, -1, -1, mlag, fp, as);
   // substitute all leaded exo
-  while (name = findExoWithLeadInInterval(1, mlead))
+  while (!(name = findExoWithLeadInInterval(1, mlead)).empty())
     makeAuxVariables(name, 1, 1, mlead, fp, as);
 
   // notify that substitution have been finished
@@ -134,30 +112,30 @@ SAtoms::substituteAllLagsAndLeads(FormulaParser &fp, AtomSubstitutions &as)
 void
 SAtoms::substituteAllLagsAndExo1Leads(FormulaParser &fp, AtomSubstitutions &as)
 {
-  const char *name;
+  string name;
 
   int mlead, mlag;
   endovarspan(mlead, mlag);
 
   // substitute all endo lagged more than 1
-  while (name = findEndoWithLeadInInterval(mlag, -2))
+  while (!(name = findEndoWithLeadInInterval(mlag, -2)).empty())
     makeAuxVariables(name, -1, -2, mlag, fp, as);
 
   exovarspan(mlead, mlag);
 
   // substitute all lagged exo
-  while (name = findExoWithLeadInInterval(mlag, -1))
+  while (!(name = findExoWithLeadInInterval(mlag, -1)).empty())
     makeAuxVariables(name, -1, -1, mlag, fp, as);
   // substitute all leaded exo by 1
-  while (name = findExoWithLeadInInterval(1, 1))
+  while (!(name = findExoWithLeadInInterval(1, 1)).empty())
     makeAuxVariables(name, 1, 1, 1, fp, as);
 
   // notify that substitution have been finished
   as.substitutions_finished(order_type);
 }
 
-const char *
-SAtoms::findNameWithLeadInInterval(const vector<const char *> &names,
+string
+SAtoms::findNameWithLeadInInterval(const vector<string> &names,
                                    int ll1, int ll2) const
 {
   for (auto name : names)
@@ -165,7 +143,7 @@ SAtoms::findNameWithLeadInInterval(const vector<const char *> &names,
       auto it = vars.find(name);
       if (it != vars.end())
         {
-          const DynamicAtoms::Tlagmap &lmap = (*it).second;
+          const DynamicAtoms::Tlagmap &lmap = it->second;
           for (auto itt : lmap)
             if (itt.first >= ll1 && itt.first <= ll2)
               return name;
@@ -173,29 +151,29 @@ SAtoms::findNameWithLeadInInterval(const vector<const char *> &names,
     }
 
   // nothing found
-  return nullptr;
+  return "";
 }
 
 void
-SAtoms::attemptAuxName(const char *str, int ll, string &out) const
+SAtoms::attemptAuxName(const string &str, int ll, string &out) const
 {
   char c = (ll >= 0) ? ((ll == 0) ? 'e' : 'p') : 'm';
   string absll = std::to_string(std::abs(ll));
   int iter = 1;
   do
     {
-      out = string(str) + '_';
+      out = str + '_';
       for (int i = 0; i < iter; i++)
         out += c;
       if (ll != 0)
         out += absll;
       iter++;
     }
-  while (varnames.query(out.c_str()));
+  while (varnames.query(out));
 }
 
 void
-SAtoms::makeAuxVariables(const char *name, int step, int start, int limit_lead,
+SAtoms::makeAuxVariables(const string &name, int step, int start, int limit_lead,
                          FormulaParser &fp, AtomSubstitutions &as)
 {
   if (!(step == 1 || step == -1))
@@ -220,10 +198,7 @@ SAtoms::makeAuxVariables(const char *name, int step, int start, int limit_lead,
   // index of atom "a(-2)"
   int tprev = index(name, start-step);
   if (tprev == -1)
-    {
-      string tmp = string{name} + '(' + std::to_string(start-step) + ')';
-      tprev = fp.add_nulary(tmp.c_str());
-    }
+    tprev = fp.add_nulary(name + '(' + std::to_string(start-step) + ')');
 
   int ll = start;
   do
@@ -234,17 +209,15 @@ SAtoms::makeAuxVariables(const char *name, int step, int start, int limit_lead,
       // check if "a_m2(0)" has not been already created (with
       // different step), in this case do not add equation "a_m2(0)
       // = a(-2)"
-      const char *newname;
-      string newname_str;
+      string newname, newname_str;
       int taux;
-      if (!(newname = as.get_new4old(name, ll-step)))
+      if ((newname = as.get_new4old(name, ll-step)).empty())
         {
           attemptAuxName(name, ll-step, newname_str);
-          newname = newname_str.c_str();
+          newname = newname_str;
           register_uniq_endo(newname);
           newname = varnames.query(newname);
-          string tmp = string{newname} + "(0)";
-          taux = fp.add_nulary(tmp.c_str());
+          taux = fp.add_nulary(newname + "(0)");
           // add to substitutions
           as.add_substitution(newname, name, ll-step);
 
@@ -269,8 +242,7 @@ SAtoms::makeAuxVariables(const char *name, int step, int start, int limit_lead,
       if (t == -1)
         {
           // no "a(-3)", make t <-> a_m2(-1)
-          string tmp = string{newname} + '(' + std::to_string(step) + ')';
-          t = fp.add_nulary(tmp.c_str());
+          t = fp.add_nulary(newname + '(' + std::to_string(step) + ')');
         }
       else
         {

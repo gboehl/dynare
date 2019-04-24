@@ -146,7 +146,7 @@ namespace ogdyn
     friend class MultInitSS;
   public:
     /** Type for a set of variable names. */
-    using Tvarset = unordered_set<const char *>;
+    using Tvarset = unordered_set<string>;
     /** Type for a set of equations. An equation is identified by
      * an index to an equation in the equation vector given by
      * DynareModel::eqs. The tree index of the i-th formula is

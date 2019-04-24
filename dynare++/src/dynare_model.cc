@@ -89,14 +89,14 @@ DynareModel::setInitOuter(const Vector &x)
 void
 DynareModel::print() const
 {
-  printf("all atoms:\n");
+  std::cout << "all atoms:\n";
   atoms.print();
-  printf("formulas:\n");
+  std::cout << "formulas:\n";
   DebugOperationFormatter dof(*this);
   for (int i = 0; i < eqs.nformulas(); i++)
     {
       int tf = eqs.formula(i);
-      printf("formula %d:\n", tf);
+      std::cout << "formula " << tf << "%d:\n";
       eqs.getTree().print_operation_tree(tf, std::cout, dof);
     }
 }
@@ -148,17 +148,17 @@ DynareModel::dump_model(std::ostream &os) const
 }
 
 void
-DynareModel::add_name(const std::string &name, int flag)
+DynareModel::add_name(std::string name, int flag)
 {
   if (flag == 1)
     // endogenous
-    atoms.register_uniq_endo(name.c_str());
+    atoms.register_uniq_endo(name);
   else if (flag == 2)
     // exogenous
-    atoms.register_uniq_exo(name.c_str());
+    atoms.register_uniq_exo(name);
   else if (flag == 3)
     // parameter
-    atoms.register_uniq_param(name.c_str());
+    atoms.register_uniq_param(name);
   else
     throw DynareException(__FILE__, __LINE__, "Unrecognized flag value.");
 }
@@ -206,7 +206,7 @@ DynareModel::check_model() const
 int
 DynareModel::variable_shift(int t, int tshift)
 {
-  const char *name = atoms.name(t);
+  const string &name = atoms.name(t);
   if (atoms.is_type(name, DynareDynamicAtoms::atype::param)
       || atoms.is_constant(t))
     throw DynareException(__FILE__, __LINE__,
@@ -214,10 +214,7 @@ DynareModel::variable_shift(int t, int tshift)
   int ll = atoms.lead(t) + tshift;
   int res = atoms.index(name, ll);
   if (res == -1)
-    {
-      std::string str = name + '(' + std::to_string(ll) + ')';
-      res = eqs.add_nulary(str.c_str());
-    }
+    res = eqs.add_nulary(name + '(' + std::to_string(ll) + ')');
   return res;
 }
 
@@ -230,7 +227,7 @@ DynareModel::variable_shift_map(const unordered_set<int> &a_set, int tshift,
     // make shift map only for non-constants and non-parameters
     if (!atoms.is_constant(t))
       {
-        const char *name = atoms.name(t);
+        const string &name = atoms.name(t);
         if (atoms.is_type(name, DynareDynamicAtoms::atype::endovar)
             || atoms.is_type(name, DynareDynamicAtoms::atype::exovar))
           {
@@ -278,7 +275,7 @@ DynareModel::get_nonlinear_subterms(int t) const
 }
 
 void
-DynareModel::substitute_atom_for_term(const char *name, int ll, int t)
+DynareModel::substitute_atom_for_term(const string &name, int ll, int t)
 {
   // if the term t is itself a named atom (parameter, exo, endo),
   // then we have to unassign it first
@@ -326,7 +323,7 @@ DynareModel::final_job()
 
 extern ogp::location_type dynglob_lloc;
 
-DynareParser::DynareParser(const char *stream, int len, int ord)
+DynareParser::DynareParser(const string &stream, int ord)
   : DynareModel(),
     pa_atoms(), paramset(pa_atoms),
     ia_atoms(), initval(ia_atoms), vcov(),
@@ -341,7 +338,7 @@ DynareParser::DynareParser(const char *stream, int len, int ord)
   // global parse
   try
     {
-      parse_glob(len, stream);
+      parse_glob(stream);
     }
   catch (const ogp::ParserException &e)
     {
@@ -351,7 +348,7 @@ DynareParser::DynareParser(const char *stream, int len, int ord)
   try
     {
       if (paramset_end > paramset_beg)
-        paramset.parse(paramset_end-paramset_beg, stream+paramset_beg);
+        paramset.parse(stream.substr(paramset_beg, paramset_end-paramset_beg));
     }
   catch (const ogp::ParserException &e)
     {
@@ -361,7 +358,7 @@ DynareParser::DynareParser(const char *stream, int len, int ord)
   try
     {
       if (model_end > model_beg)
-        eqs.parse(model_end-model_beg, stream+model_beg);
+        eqs.parse(stream.substr(model_beg, model_end-model_beg));
       else
         throw ogp::ParserException("Model section not found.", 0);
     }
@@ -373,7 +370,7 @@ DynareParser::DynareParser(const char *stream, int len, int ord)
   try
     {
       if (initval_end > initval_beg)
-        initval.parse(initval_end-initval_beg, stream+initval_beg);
+        initval.parse(stream.substr(initval_beg, initval_end-initval_beg));
     }
   catch (const ogp::ParserException &e)
     {
@@ -383,7 +380,7 @@ DynareParser::DynareParser(const char *stream, int len, int ord)
   try
     {
       if (vcov_end > vcov_beg)
-        vcov.parse(vcov_end-vcov_beg, stream+vcov_beg);
+        vcov.parse(stream.substr(vcov_beg, vcov_end-vcov_beg));
     }
   catch (const ogp::ParserException &e)
     {
@@ -394,7 +391,7 @@ DynareParser::DynareParser(const char *stream, int len, int ord)
     {
       if (plobjective_end > plobjective_beg)
         {
-          eqs.parse(plobjective_end-plobjective_beg, stream+plobjective_beg);
+          eqs.parse(stream.substr(plobjective_beg, plobjective_end-plobjective_beg));
           t_plobjective = eqs.pop_last_formula();
         }
     }
@@ -406,8 +403,7 @@ DynareParser::DynareParser(const char *stream, int len, int ord)
   try
     {
       if (pldiscount_end > pldiscount_beg)
-        t_pldiscount = parse_pldiscount(pldiscount_end - pldiscount_beg,
-                                        stream + pldiscount_beg);
+        t_pldiscount = parse_pldiscount(stream.substr(pldiscount_beg, pldiscount_end - pldiscount_beg));
     }
   catch (const ogp::ParserException &e)
     {
@@ -417,7 +413,7 @@ DynareParser::DynareParser(const char *stream, int len, int ord)
   try
     {
       if (order_end > order_beg)
-        order = parse_order(order_end - order_beg, stream + order_beg);
+        order = parse_order(stream.substr(order_beg, order_end - order_beg));
     }
   catch (const ogp::ParserException &e)
     {
@@ -468,45 +464,45 @@ DynareParser::DynareParser(const DynareParser &dp)
 }
 
 void
-DynareParser::add_name(const char *name, int flag)
+DynareParser::add_name(string name, int flag)
 {
   DynareModel::add_name(name, flag);
   // register with static atoms used for atom assignements
   if (flag == 1)
     // endogenous
-    ia_atoms.register_name(name);
+    ia_atoms.register_name(std::move(name));
   else if (flag == 2)
     // exogenous
-    ia_atoms.register_name(name);
+    ia_atoms.register_name(std::move(name));
   else if (flag == 3)
     {
       // parameter
       pa_atoms.register_name(name);
-      ia_atoms.register_name(name);
+      ia_atoms.register_name(std::move(name));
     }
   else
     throw DynareException(__FILE__, __LINE__, "Unrecognized flag value.");
 }
 
 void
-DynareParser::error(const char *mes)
+DynareParser::error(string mes)
 {
   // throwing zero offset since this exception will be caugth at
   // constructor
-  throw ogp::ParserException(mes, 0);
+  throw ogp::ParserException(std::move(mes), 0);
 }
 
 void
 DynareParser::print() const
 {
   DynareModel::print();
-  printf("parameter atoms:\n");
+  std::cout << "parameter atoms:\n";
   paramset.print();
-  printf("initval atoms:\n");
+  std::cout << "initval atoms:\n";
   initval.print();
-  printf("model position: %d %d\n", model_beg, model_end);
-  printf("paramset position: %d %d\n", paramset_beg, paramset_end);
-  printf("initval position: %d %d\n", initval_beg, initval_end);
+  std::cout << "model position: " << model_beg << ' ' << model_end << '\n'
+            << "paramset position: " << paramset_beg << ' ' << paramset_end << '\n'
+            << "initval position: " << initval_beg << ' ' << initval_end << '\n';
 }
 
 /** A global symbol for passing info to the DynareParser from
@@ -515,47 +511,35 @@ DynareParser *dynare_parser;
 
 /** The declarations of functions defined in dynglob_ll.cc and
  * dynglob_tab.cc generated from dynglob.lex and dynglob.y */
-void *dynglob__scan_buffer(char *, size_t);
+void *dynglob__scan_string(const char *);
 void dynglob__destroy_buffer(void *);
 void dynglob_parse();
 extern ogp::location_type dynglob_lloc;
 
 void
-DynareParser::parse_glob(int length, const char *stream)
+DynareParser::parse_glob(const string &stream)
 {
-  auto buffer = std::make_unique<char[]>(length+2);
-  std::copy_n(stream, length, buffer.get());
-  buffer[length] = '\0';
-  buffer[length+1] = '\0';
-  void *p = dynglob__scan_buffer(buffer.get(), static_cast<unsigned int>(length)+2);
+  void *p = dynglob__scan_string(stream.c_str());
   dynare_parser = this;
   dynglob_parse();
   dynglob__destroy_buffer(p);
 }
 
 int
-DynareParser::parse_order(int len, const char *str)
+DynareParser::parse_order(const string &str)
 {
-  auto buf = std::make_unique<char[]>(len+1);
-  std::copy_n(str, len, buf.get());
-  buf[len] = '\0';
-  int res;
-  sscanf(buf.get(), "%d", &res);
-  return res;
+  return std::stoi(str);
 }
 
 int
-DynareParser::parse_pldiscount(int len, const char *str)
+DynareParser::parse_pldiscount(const string &str)
 {
-  auto buf = std::make_unique<char[]>(len+1);
-  std::copy_n(str, len, buf.get());
-  buf[len] = '\0';
-  if (!atoms.is_type(buf.get(), DynareDynamicAtoms::atype::param))
-    throw ogp::ParserException(std::string{"Name "} + buf.get() + " is not a parameter", 0);
+  if (!atoms.is_type(str, DynareDynamicAtoms::atype::param))
+    throw ogp::ParserException(std::string{"Name "} + str + " is not a parameter", 0);
 
-  int t = atoms.index(buf.get(), 0);
+  int t = atoms.index(str, 0);
   if (t == -1)
-    t = eqs.add_nulary(buf.get());
+    t = eqs.add_nulary(str);
 
   return t;
 }
@@ -571,8 +555,7 @@ DynareParser::calc_params()
 
   for (unsigned int i = 0; i < atoms.get_params().size(); i++)
     if (!std::isfinite((*param_vals)[i]))
-      printf("dynare++: warning: value for parameter %s is not finite\n",
-             atoms.get_params()[i]);
+      std::cout << "dynare++: warning: value for parameter " << atoms.get_params()[i] << " is not finite\n";
 }
 
 void
@@ -613,8 +596,7 @@ DynareParser::calc_init()
 
   for (unsigned int i = 0; i < atoms.get_endovars().size(); i++)
     if (!std::isfinite((*init_vals)[i]))
-      printf("dynare++: warning: initval for <%s> is not finite\n",
-             atoms.get_endovars()[atoms.y2outer_endo()[i]]);
+      std::cout << "dynare++: warning: initval for <" << atoms.get_endovars()[atoms.y2outer_endo()[i]] << "> is not finite\n";
 }
 
 // this returns false for linear functions
@@ -682,7 +664,7 @@ NLSelector::operator()(int t) const
 DynareSPModel::DynareSPModel(const std::vector<std::string> &endo,
                              const std::vector<std::string> &exo,
                              const std::vector<std::string> &par,
-                             const char *equations, int len,
+                             const string &equations,
                              int ord)
   : DynareModel()
 {
@@ -698,7 +680,7 @@ DynareSPModel::DynareSPModel(const std::vector<std::string> &endo,
     add_name(it, 3);
 
   // parse the equations
-  eqs.parse(len, equations);
+  eqs.parse(equations);
 
   // parsing finished
   atoms.parsing_finished(ogp::VarOrdering::bfspbfpb);
@@ -843,7 +825,7 @@ MatlabSSWriter::write_atom_assignment(std::ostream &os) const
   os << "% parameter values\n";
   for (unsigned int ip = 0; ip < model.getAtoms().get_params().size(); ip++)
     {
-      const char *parname = model.getAtoms().get_params()[ip];
+      const string &parname = model.getAtoms().get_params()[ip];
       int t = model.getAtoms().index(parname, 0);
       if (t == -1)
         os << "% " << parname << " not used in the model\n";
@@ -857,7 +839,7 @@ MatlabSSWriter::write_atom_assignment(std::ostream &os) const
   os << "% exogenous variables to zeros\n";
   for (unsigned int ie = 0; ie < model.getAtoms().get_exovars().size(); ie++)
     {
-      const char *exoname = model.getAtoms().get_exovars()[ie];
+      const string &exoname = model.getAtoms().get_exovars()[ie];
       try
         {
           const ogp::DynamicAtoms::Tlagmap &lmap = model.getAtoms().lagmap(exoname);
@@ -876,7 +858,7 @@ MatlabSSWriter::write_atom_assignment(std::ostream &os) const
   os << "% endogenous variables to y\n";
   for (unsigned int ie = 0; ie < model.getAtoms().get_endovars().size(); ie++)
     {
-      const char *endoname = model.getAtoms().get_endovars()[ie];
+      const string &endoname = model.getAtoms().get_endovars()[ie];
       const ogp::DynamicAtoms::Tlagmap &lmap = model.getAtoms().lagmap(endoname);
       for (auto it : lmap)
         {
@@ -920,7 +902,7 @@ MatlabSSWriter::write_der1_assignment(std::ostream &os) const
       for (int j : eam)
         {
           int tvar = variables[j];
-          const char *name = model.getAtoms().name(tvar);
+          const string &name = model.getAtoms().name(tvar);
           int yi = model.getAtoms().name2outer_endo(name);
           int t = fder.derivative(ogp::FoldMultiIndex(variables.size(), 1, j));
           if (t != ogp::OperationTree::zero)
@@ -963,7 +945,7 @@ DebugOperationFormatter::format_nulary(int t, std::ostream &os) const
   else
     {
       int ll = a.lead(t);
-      std::string name{a.name(t)};
+      const std::string &name = a.name(t);
       if (ll == 0)
         os << name;
       else

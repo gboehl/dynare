@@ -54,7 +54,7 @@ Dynare::Dynare(const std::string &modname, int ord, double sstol, Journal &jr)
 
   try
     {
-      model = std::make_unique<ogdyn::DynareParser>(contents.c_str(), contents.length(), ord);
+      model = std::make_unique<ogdyn::DynareParser>(contents, ord);
     }
   catch (const ogp::ParserException &pe)
     {
@@ -86,13 +86,13 @@ Dynare::Dynare(const std::string &modname, int ord, double sstol, Journal &jr)
 Dynare::Dynare(const std::vector<std::string> &endo,
                const std::vector<std::string> &exo,
                const std::vector<std::string> &par,
-               const char *equations, int len, int ord,
+               const std::string &equations, int ord,
                double sstol, Journal &jr)
   : journal(jr), md(1), ss_tol(sstol)
 {
   try
     {
-      model = std::make_unique<ogdyn::DynareSPModel>(endo, exo, par, equations, len, ord);
+      model = std::make_unique<ogdyn::DynareSPModel>(endo, exo, par, equations, ord);
     }
   catch (const ogp::ParserException &pe)
     {
@@ -142,9 +142,8 @@ Dynare::writeMat(mat_t *fd, const std::string &prefix) const
 void
 Dynare::writeDump(const std::string &basename) const
 {
-  std::string fname(basename);
-  fname += ".dump";
-  std::ofstream out(fname.c_str());
+  std::string fname(basename + ".dump");
+  std::ofstream out(fname);
   model->dump_model(out);
   out.close();
 }
@@ -271,7 +270,7 @@ DynareNameList::DynareNameList(const Dynare &dynare)
   for (int i = 0; i < dynare.ny(); i++)
     {
       int j = dynare.model->getAtoms().y2outer_endo()[i];
-      const char *name = dynare.model->getAtoms().get_endovars()[j];
+      const std::string &name = dynare.model->getAtoms().get_endovars()[j];
       names.push_back(name);
     }
 }
@@ -290,7 +289,7 @@ DynareExogNameList::DynareExogNameList(const Dynare &dynare)
   for (int i = 0; i < dynare.nexog(); i++)
     {
       int j = dynare.model->getAtoms().y2outer_exo()[i];
-      const char *name = dynare.model->getAtoms().get_exovars()[j];
+      const std::string &name = dynare.model->getAtoms().get_exovars()[j];
       names.push_back(name);
     }
 }

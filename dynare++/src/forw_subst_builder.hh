@@ -25,7 +25,7 @@ namespace ogdyn
 
   class ForwSubstBuilder
   {
-    using Ttermauxmap = map<int, const char *>;
+    using Ttermauxmap = map<int, string>;
   protected:
     /** Reference to the model, to which we will add equations and
      * change some equations. */
@@ -78,7 +78,7 @@ namespace ogdyn
      * all nulary terms with a lead greater than 1. */
     void unassign_gt_1_leads();
     /** This unassigns all leads greater than 1 of the given name. */
-    void unassign_gt_1_leads(const char *name);
+    void unassign_gt_1_leads(const string &name);
   };
 };
 

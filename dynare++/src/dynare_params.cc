@@ -160,11 +160,11 @@ DynareParams::DynareParams(int argc, char **argv)
               break;
             }
         }
-      catch (std::invalid_argument)
+      catch (std::invalid_argument &)
         {
           std::cerr << "Couldn't parse option " << optarg << ", ignored\n";
         }
-      catch (std::out_of_range)
+      catch (std::out_of_range &)
         {
           std::cerr << "Out-of-range value " << optarg << ", ignored\n";
         }

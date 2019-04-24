@@ -10,17 +10,15 @@
 
 #include <limits>
 #include <iostream>
-#include <algorithm>
+#include <sstream>
+#include <iomanip>
 
 using namespace ogp;
 
 AtomAssignings::AtomAssignings(const AtomAssignings &aa, ogp::StaticAtoms &a)
   : atoms(a), expr(aa.expr, atoms), left_names(aa.left_names),
-    order(aa.order)
+    lname2expr(aa.lname2expr), order(aa.order)
 {
-  // fill the lname2expr
-  for (auto it : aa.lname2expr)
-    lname2expr.emplace(left_names.query(it.first), it.second);
 }
 
 /** A global symbol for passing info to the AtomAssignings from
@@ -29,34 +27,30 @@ AtomAssignings *aparser;
 
 /** The declaration of functions defined in asgn_ll.cc and asgn_tab.cc
  * generated from assign.lex assign.y */
-void *asgn__scan_buffer(char *, size_t);
+void *asgn__scan_string(const char *);
 void asgn__destroy_buffer(void *);
 void asgn_parse();
 extern location_type asgn_lloc;
 
 void
-AtomAssignings::parse(int length, const char *stream)
+AtomAssignings::parse(const string &stream)
 {
-  auto buffer = std::make_unique<char[]>(length+2);
-  std::copy_n(stream, length, buffer.get());
-  buffer[length] = '\0';
-  buffer[length+1] = '\0';
   asgn_lloc.off = 0;
   asgn_lloc.ll = 0;
-  void *p = asgn__scan_buffer(buffer.get(), static_cast<unsigned int>(length)+2);
+  void *p = asgn__scan_string(stream.c_str());
   aparser = this;
   asgn_parse();
   asgn__destroy_buffer(p);
 }
 
 void
-AtomAssignings::error(const char *mes)
+AtomAssignings::error(string mes)
 {
-  throw ParserException(mes, asgn_lloc.off);
+  throw ParserException(std::move(mes), asgn_lloc.off);
 }
 
 void
-AtomAssignings::add_assignment_to_double(const char *name, double val)
+AtomAssignings::add_assignment_to_double(string name, double val)
 {
   // if left hand side is a registered atom, insert it to tree
   int t;
@@ -75,25 +69,26 @@ AtomAssignings::add_assignment_to_double(const char *name, double val)
   order.push_back(t);
 
   // add the double to the tree
-  char tmp[100];
-  sprintf(tmp, "%30.25g", val);
+  std::ostringstream buf;
+  buf << std::setprecision(std::numeric_limits<double>::max_digits10)
+      << val;
   try
     {
-      expr.parse(strlen(tmp), tmp);
+      expr.parse(buf.str());
     }
   catch (const ParserException &e)
     {
       // should never happen
-      throw ParserException(string("Error parsing double ")+tmp+": "+e.message(), 0);
+      throw ParserException(string("Error parsing double ")+buf.str()+": "+e.message(), 0);
     }
 
   // register name of the left hand side and put to lname2expr
-  const char *ss = left_names.insert(name);
-  lname2expr.emplace(ss, order.size()-1);
+  left_names.insert(name);
+  lname2expr.emplace(std::move(name), order.size()-1);
 }
 
 void
-AtomAssignings::add_assignment(int asgn_off, const char *str, int name_len,
+AtomAssignings::add_assignment(int asgn_off, const string &str, int name_len,
                                int right_off, int right_len)
 {
   // the order of doing things here is important: since the
@@ -102,23 +97,21 @@ AtomAssignings::add_assignment(int asgn_off, const char *str, int name_len,
   // nulary term for the left hand side, it must be inserted to the
   // expression tree before the expression is parsed.
 
-  // find the name in the atoms, make copy of name to be able to put
-  // '\0' at the end
-  auto *buf = new char[name_len+1];
-  strncpy(buf, str, name_len);
-  buf[name_len] = '\0';
+  // find the name in the atoms
+  string name = str.substr(0, name_len);
+
   // if left hand side is a registered atom, insert it to tree
   int t;
   try
     {
-      t = atoms.check(buf);
+      t = atoms.check(name);
       if (t == -1)
-        t = expr.add_nulary(buf);
+        t = expr.add_nulary(name);
     }
   catch (const ParserException &e)
     {
-      atoms.register_name(buf);
-      t = expr.add_nulary(buf);
+      atoms.register_name(name);
+      t = expr.add_nulary(name);
     }
   // register left hand side in order
   order.push_back(t);
@@ -126,7 +119,7 @@ AtomAssignings::add_assignment(int asgn_off, const char *str, int name_len,
   // parse expression on the right
   try
     {
-      expr.parse(right_len, str+right_off);
+      expr.parse(str.substr(right_off, right_len));
     }
   catch (const ParserException &e)
     {
@@ -134,17 +127,14 @@ AtomAssignings::add_assignment(int asgn_off, const char *str, int name_len,
     }
 
   // register name of the left hand side and put to lname2expr
-  const char *ss = left_names.insert(buf);
-  if (lname2expr.find(ss) != lname2expr.end())
+  left_names.insert(name);
+  if (lname2expr.find(name) != lname2expr.end())
     {
       // Prevent the occurrence of #415
-      std::cerr << "Changing the value of " << ss << " is not supported. Aborting." << std::endl;
+      std::cerr << "Changing the value of " << name << " is not supported. Aborting." << std::endl;
       exit(EXIT_FAILURE);
     }
-  lname2expr[ss] = order.size()-1;
-
-  // delete name
-  delete [] buf;
+  lname2expr[name] = order.size()-1;
 }
 
 void
@@ -154,7 +144,7 @@ AtomAssignings::apply_subst(const AtomSubstitutions::Toldnamemap &mm)
   // variables
   for (const auto & it : mm)
     {
-      const char *oldname = it.first;
+      const string &oldname = it.first;
       const AtomSubstitutions::Tshiftnameset &sset = it.second;
       if (!sset.empty())
         {
@@ -171,9 +161,9 @@ AtomAssignings::apply_subst(const AtomSubstitutions::Toldnamemap &mm)
           // reference to the newly added formula
           for (const auto & itt : sset)
             {
-              const char *newname = itt.first;
-              const char *nn = left_names.insert(newname);
-              lname2expr.emplace(nn, expr.nformulas()-1);
+              const string &newname = itt.first;
+              left_names.insert(newname);
+              lname2expr.emplace(newname, expr.nformulas()-1);
             }
         }
     }
@@ -199,7 +189,7 @@ AtomAsgnEvaluator::setValues(EvalTree &et) const
   double nan = std::numeric_limits<double>::quiet_NaN();
   for (int i = 0; i < aa.atoms.nvar(); i++)
     {
-      const char *ss = aa.atoms.name(i);
+      const string &ss = aa.atoms.name(i);
       int t = aa.atoms.index(ss);
       if (t >= 0)
         {
@@ -213,7 +203,7 @@ AtomAsgnEvaluator::setValues(EvalTree &et) const
 }
 
 void
-AtomAsgnEvaluator::set_user_value(const char *name, double val)
+AtomAsgnEvaluator::set_user_value(const string &name, double val)
 {
   int t = aa.atoms.index(name);
   if (t >= 0)
@@ -238,7 +228,7 @@ AtomAsgnEvaluator::load(int i, double res)
 }
 
 double
-AtomAsgnEvaluator::get_value(const char *name) const
+AtomAsgnEvaluator::get_value(const string &name) const
 {
   auto it = aa.lname2expr.find(name);
   if (it == aa.lname2expr.end())

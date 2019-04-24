@@ -23,22 +23,22 @@ namespace ogp
   public:
     using Tintintmap = map<int, int>;
   protected:
-    using Tvarintmap = map<const char *, int, ltstr>;
+    using Tvarintmap = map<string, int>;
   private:
     /** The vector of parameter names, gives the parameter
      * ordering. */
-    vector<const char *> params;
+    vector<string> params;
     /** A map mappping a parameter name to an index in the ordering. */
     Tvarintmap param_outer_map;
     /** The vector of endogenous variables. This defines the order
      * like parameters. */
-    vector<const char *> endovars;
+    vector<string> endovars;
     /** A map mapping a name of an endogenous variable to an index
      * in the ordering. */
     Tvarintmap endo_outer_map;
     /** The vector of exogenous variables. Also defines the order
      * like parameters and endovars. */
-    vector<const char *> exovars;
+    vector<string> exovars;
     /** A map mapping a name of an exogenous variable to an index
      * in the outer ordering. */
     Tvarintmap exo_outer_map;
@@ -61,8 +61,6 @@ namespace ogp
     vector<int> exo_atoms_map;
   public:
     StaticFineAtoms() = default;
-    /** Copy constructor making a new storage for atom names. */
-    StaticFineAtoms(const StaticFineAtoms &sfa);
     /** Conversion from dynamic FineAtoms taking its outer
      * ordering as ordering of parameters, endogenous and
      * exogenous. A biproduct is an integer to integer map mapping
@@ -99,21 +97,21 @@ namespace ogp
      * variable is declared by inserting it to
      * StaticAtoms::varnames, which is done with registering
      * methods. This a responsibility of a subclass. */
-    int check_variable(const char *name) const override;
+    int check_variable(const string &name) const override;
     /** Return an (external) ordering of parameters. */
-    const vector<const char *> &
+    const vector<string> &
     get_params() const
     {
       return params;
     }
     /** Return an external ordering of endogenous variables. */
-    const vector<const char *> &
+    const vector<string> &
     get_endovars() const
     {
       return endovars;
     }
     /** Return an external ordering of exogenous variables. */
-    const vector<const char *> &
+    const vector<string> &
     get_exovars() const
     {
       return exovars;
@@ -144,15 +142,15 @@ namespace ogp
     /** Return an index in the outer ordering of a given
      * parameter. An exception is thrown if the name is not a
      * parameter. */
-    int name2outer_param(const char *name) const;
+    int name2outer_param(const string &name) const;
     /** Return an index in the outer ordering of a given
      * endogenous variable. An exception is thrown if the name is not a
      * and endogenous variable. */
-    int name2outer_endo(const char *name) const;
+    int name2outer_endo(const string &name) const;
     /** Return an index in the outer ordering of a given
      * exogenous variable. An exception is thrown if the name is not a
      * and exogenous variable. */
-    int name2outer_exo(const char *name) const;
+    int name2outer_exo(const string &name) const;
     /** Return the number of endogenous variables. */
     int
     ny() const
@@ -175,29 +173,29 @@ namespace ogp
      * calls defines the endo outer ordering. The method is
      * virtual, since a superclass may want to do some additional
      * action. */
-    virtual void register_uniq_endo(const char *name);
+    virtual void register_uniq_endo(string name);
     /** Register unique exogenous variable name. The order of
      * calls defines the exo outer ordering. The method is
      * virtual, since a superclass may want to do somem additional
      * action. */
-    virtual void register_uniq_exo(const char *name);
+    virtual void register_uniq_exo(string name);
     /** Register unique parameter name. The order of calls defines
      * the param outer ordering. The method is
      * virtual, since a superclass may want to do somem additional
      * action. */
-    virtual void register_uniq_param(const char *name);
+    virtual void register_uniq_param(string name);
     /** Debug print. */
     void print() const override;
   private:
     /** Add endogenous variable name, which is already in the name
      * storage. */
-    void register_endo(const char *name);
+    void register_endo(string name);
     /** Add exogenous variable name, which is already in the name
      * storage. */
-    void register_exo(const char *name);
+    void register_exo(string name);
     /** Add parameter name, which is already in the name
      * storage. */
-    void register_param(const char *name);
+    void register_param(string name);
   };
 };
 

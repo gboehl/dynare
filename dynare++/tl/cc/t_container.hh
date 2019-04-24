@@ -222,7 +222,7 @@ public:
         for (int i = 0; i < sym.num(); i++)
           lname += '_' + std::to_string(sym[i]);
         ConstTwoDMatrix m(*(it.second));
-        m.writeMat(fd, lname.c_str());
+        m.writeMat(fd, lname);
       }
   }
 

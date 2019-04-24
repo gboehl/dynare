@@ -23,17 +23,17 @@ namespace ogp
   class EndoVarOrdering1 : public VarOrdering
   {
   public:
-    EndoVarOrdering1(const vector<const char *> &vnames, const DynamicAtoms &a)
+    EndoVarOrdering1(const vector<string> &vnames, const DynamicAtoms &a)
       : VarOrdering(vnames, a)
     {
     }
-    EndoVarOrdering1(const EndoVarOrdering1 &vo, const vector<const char *> &vnames,
+    EndoVarOrdering1(const EndoVarOrdering1 &vo, const vector<string> &vnames,
                      const DynamicAtoms &a)
       : VarOrdering(vo, vnames, a)
     {
     }
     std::unique_ptr<VarOrdering>
-    clone(const vector<const char *> &vnames, const DynamicAtoms &a) const override
+    clone(const vector<string> &vnames, const DynamicAtoms &a) const override
     {
       return std::make_unique<EndoVarOrdering1>(*this, vnames, a);
     }
@@ -51,17 +51,17 @@ namespace ogp
   class EndoVarOrdering2 : public VarOrdering
   {
   public:
-    EndoVarOrdering2(const vector<const char *> &vnames, const DynamicAtoms &a)
+    EndoVarOrdering2(const vector<string> &vnames, const DynamicAtoms &a)
       : VarOrdering(vnames, a)
     {
     }
-    EndoVarOrdering2(const EndoVarOrdering2 &vo, const vector<const char *> &vnames,
+    EndoVarOrdering2(const EndoVarOrdering2 &vo, const vector<string> &vnames,
                      const DynamicAtoms &a)
       : VarOrdering(vo, vnames, a)
     {
     }
     std::unique_ptr<VarOrdering>
-    clone(const vector<const char *> &vnames, const DynamicAtoms &a) const override
+    clone(const vector<string> &vnames, const DynamicAtoms &a) const override
     {
       return std::make_unique<EndoVarOrdering2>(*this, vnames, a);
     }
@@ -78,17 +78,17 @@ namespace ogp
   class ExoVarOrdering : public VarOrdering
   {
   public:
-    ExoVarOrdering(const vector<const char *> &vnames, const DynamicAtoms &a)
+    ExoVarOrdering(const vector<string> &vnames, const DynamicAtoms &a)
       : VarOrdering(vnames, a)
     {
     }
-    ExoVarOrdering(const ExoVarOrdering &vo, const vector<const char *> &vnames,
+    ExoVarOrdering(const ExoVarOrdering &vo, const vector<string> &vnames,
                    const DynamicAtoms &a)
       : VarOrdering(vo, vnames, a)
     {
     }
     std::unique_ptr<VarOrdering>
-    clone(const vector<const char *> &vnames, const DynamicAtoms &a) const override
+    clone(const vector<string> &vnames, const DynamicAtoms &a) const override
     {
       return std::make_unique<ExoVarOrdering>(*this, vnames, a);
     }
@@ -109,12 +109,12 @@ namespace ogp
   {
   protected:
     /** Type for a map mapping a variable name to an integer. */
-    using Tvarintmap = map<const char *, int, ltstr>;
+    using Tvarintmap = map<string, int>;
     /** Reference to atoms. */
     const FineAtoms &atoms;
     /** The vector of all endo and exo variables in outer
      * ordering. The pointers point to storage in atoms. */
-    vector<const char *> allvar;
+    vector<string> allvar;
     /** The mapping from outer endogenous to outer all. For
      * example endo2all[0] is the order of the first outer
      * endogenous variable in the allvar ordering. */
@@ -129,7 +129,7 @@ namespace ogp
      * arbitrary storage, the storage is transformed to the atoms
      * storage. An exception is thrown if either the list is not
      * exhaustive, or some string is not a variable. */
-    AllvarOuterOrdering(const vector<const char *> &allvar_outer, const FineAtoms &a);
+    AllvarOuterOrdering(const vector<string> &allvar_outer, const FineAtoms &a);
     /** Copy constructor using the storage of provided atoms. */
     AllvarOuterOrdering(const AllvarOuterOrdering &allvar_outer, const FineAtoms &a);
     /** Return endo2all mapping. */
@@ -145,7 +145,7 @@ namespace ogp
       return exo2all;
     }
     /** Return the allvar ordering. */
-    const vector<const char *> &
+    const vector<string> &
     get_allvar() const
     {
       return allvar;
@@ -175,23 +175,23 @@ namespace ogp
   {
     friend class AllvarOuterOrdering;
   protected:
-    using Tvarintmap = map<const char *, int, ltstr>;
+    using Tvarintmap = map<string, int>;
   private:
     /** The vector of parameters names. The order gives the order
      * the data is communicated with outside world. */
-    vector<const char *> params;
+    vector<string> params;
     /** A map mapping a name of a parameter to an index in the outer
      * ordering. */
     Tvarintmap param_outer_map;
     /** The vector of endogenous variables. This defines the order
      * like parameters. */
-    vector<const char *> endovars;
+    vector<string> endovars;
     /** A map mapping a name of an endogenous variable to an index
      * in the outer ordering. */
     Tvarintmap endo_outer_map;
     /** The vector of exogenous variables. Also defines the order
      * like parameters and endovars. */
-    vector<const char *> exovars;
+    vector<string> exovars;
     /** A map mapping a name of an exogenous variable to an index
      * in the outer ordering. */
     Tvarintmap exo_outer_map;
@@ -237,7 +237,7 @@ namespace ogp
      * variable is declared by inserting it to
      * DynamicAtoms::varnames. This is a responsibility of a
      * subclass. */
-    int check_variable(const char *name) const override;
+    int check_variable(const string &name) const override;
     /** This calculates min lag and max lead of endogenous variables. */
     void
     endovarspan(int &mlead, int &mlag) const
@@ -254,19 +254,19 @@ namespace ogp
      * one exogenous variable occurs. */
     int num_exo_periods() const;
     /** Return an (external) ordering of parameters. */
-    const vector<const char *> &
+    const vector<string> &
     get_params() const
     {
       return params;
     }
     /** Return an external ordering of endogenous variables. */
-    const vector<const char *> &
+    const vector<string> &
     get_endovars() const
     {
       return endovars;
     }
     /** Return an external ordering of exogenous variables. */
-    const vector<const char *> &
+    const vector<string> &
     get_exovars() const
     {
       return exovars;
@@ -282,20 +282,20 @@ namespace ogp
      * inputing a different outer ordering of all variables. The
      * ordering is input as a list of strings, their storage can
      * be arbitrary. */
-    void parsing_finished(VarOrdering::ord_type ot, const vector<const char *> avo);
+    void parsing_finished(VarOrdering::ord_type ot, const vector<string> &avo);
     /** Return the external ordering of all variables (endo and
      * exo). This is either the second argument to
      * parsing_finished or the default external ordering. This
      * must be called only after parsing_finished. */
-    const vector<const char *>&get_allvar() const;
+    const vector<string> &get_allvar() const;
     /** Return the map from outer ordering of endo variables to
      * the allvar ordering. This must be called only after
      * parsing_finished. */
-    const vector<int>&outer_endo2all() const;
+    const vector<int> &outer_endo2all() const;
     /** Return the map from outer ordering of exo variables to
      * the allvar ordering. This must be called only after
      * parsing_finished. */
-    const vector<int>&outer_exo2all() const;
+    const vector<int> &outer_exo2all() const;
     /** Return the atoms with respect to which we are going to
      * differentiate. This must be called after
      * parsing_finished. */
@@ -340,20 +340,20 @@ namespace ogp
     /** Return an index in the outer ordering of a given
      * parameter. An exception is thrown if the name is not a
      * parameter. */
-    int name2outer_param(const char *name) const;
+    int name2outer_param(const string &name) const;
     /** Return an index in the outer ordering of a given
      * endogenous variable. An exception is thrown if the name is not a
      * and endogenous variable. */
-    int name2outer_endo(const char *name) const;
+    int name2outer_endo(const string &name) const;
     /** Return an index in the outer ordering of a given
      * exogenous variable. An exception is thrown if the name is not a
      * and exogenous variable. */
-    int name2outer_exo(const char *name) const;
+    int name2outer_exo(const string &name) const;
     /** Return an index in the outer ordering of all variables
      * (endo and exo) for a given name. An exception is thrown if
      * the name is not a variable. This must be called only after
      * parsing_finished(). */
-    int name2outer_allvar(const char *name) const;
+    int name2outer_allvar(const string &name) const;
     /** Return the number of endogenous variables at time t-1, these are state
      * variables. */
     int
@@ -389,17 +389,17 @@ namespace ogp
      * calls defines the endo outer ordering. The method is
      * virtual, since a superclass may want to do some additional
      * action. */
-    virtual void register_uniq_endo(const char *name);
+    virtual void register_uniq_endo(string name);
     /** Register unique exogenous variable name. The order of
      * calls defines the exo outer ordering. The method is
      * virtual, since a superclass may want to do somem additional
      * action. */
-    virtual void register_uniq_exo(const char *name);
+    virtual void register_uniq_exo(string name);
     /** Register unique parameter name. The order of calls defines
      * the param outer ordering. The method is
      * virtual, since a superclass may want to do somem additional
      * action. */
-    virtual void register_uniq_param(const char *name);
+    virtual void register_uniq_param(string name);
     /** Debug print. */
     void print() const override;
   private:

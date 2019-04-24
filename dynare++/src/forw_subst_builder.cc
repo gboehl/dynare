@@ -59,12 +59,11 @@ ForwSubstBuilder::substitute_for_term(int t, int i, int j)
       // now maxlead of lagt is +1
       // add AUXLD_*_*_1 = f(x(+1)) to the model
       std::string name = "AUXLD_" + std::to_string(i) + '_' + std::to_string(j) + "_1";
-      model.atoms.register_uniq_endo(name.c_str());
+      model.atoms.register_uniq_endo(name);
       info.num_aux_variables++;
-      const char *ss = model.atoms.get_name_storage().query(name.c_str());
-      int auxt = model.eqs.add_nulary(name.c_str());
+      int auxt = model.eqs.add_nulary(name);
       model.eqs.add_formula(model.eqs.add_binary(ogp::code_t::MINUS, auxt, lagt));
-      aux_map.emplace(ss, lagt);
+      aux_map.emplace(name, lagt);
       // now add variables and equations
       // AUXLD_*_*_2 = AUXLD_*_*_1(+1) through
       // AUXLD_*_*_{mlead-1} = AUXLD_*_*_{mlead-2}(+1)
@@ -72,13 +71,12 @@ ForwSubstBuilder::substitute_for_term(int t, int i, int j)
         {
           // create AUXLD_*_*_{ll}(+1)
           name = "AUXLD_" + std::to_string(i) + '_' + std::to_string(j) + '_' + std::to_string(ll) + "(+1)";
-          int lastauxt_lead = model.eqs.add_nulary(name.c_str());
+          int lastauxt_lead = model.eqs.add_nulary(name);
           // create AUXLD_*_*{ll+1}
           name = "AUXLD_" + std::to_string(i) + '_' + std::to_string(j) + '_' + std::to_string(ll+1);
-          model.atoms.register_uniq_endo(name.c_str());
+          model.atoms.register_uniq_endo(name);
           info.num_aux_variables++;
-          ss = model.atoms.get_name_storage().query(name.c_str());
-          auxt = model.eqs.add_nulary(name.c_str());
+          auxt = model.eqs.add_nulary(name);
           // add AUXLD_*_*_{ll+1} = AUXLD_*_*_{ll}(+1)
           model.eqs.add_formula(model.eqs.add_binary(ogp::code_t::MINUS, auxt, lastauxt_lead));
           // add substitution to the map; todo: this
@@ -86,38 +84,36 @@ ForwSubstBuilder::substitute_for_term(int t, int i, int j)
           // aux_map is used the timing doesn't matter,
           // however, it is misleading, needs to be
           // changed
-          aux_map.emplace(ss, lagt);
+          aux_map.emplace(name, lagt);
         }
 
       // now we have to substitute AUXLD_*_*{mlead-1}(+1) for t
       name = "AUXLD_" + std::to_string(i) + '_' + std::to_string(j) + '_' + std::to_string(mlead-1);
-      ss = model.atoms.get_name_storage().query(name.c_str());
-      model.substitute_atom_for_term(ss, +1, t);
+      model.substitute_atom_for_term(name, +1, t);
     }
 }
 
 void
-ForwSubstBuilder::unassign_gt_1_leads(const char *name)
+ForwSubstBuilder::unassign_gt_1_leads(const string &name)
 {
-  const char *ss = model.atoms.get_name_storage().query(name);
   int mlead, mlag;
   model.atoms.varspan(name, mlead, mlag);
   for (int ll = 2; ll <= mlead; ll++)
     {
-      int t = model.atoms.index(ss, ll);
+      int t = model.atoms.index(name, ll);
       if (t != -1)
-        model.atoms.unassign_variable(ss, ll, t);
+        model.atoms.unassign_variable(name, ll, t);
     }
 }
 
 void
 ForwSubstBuilder::unassign_gt_1_leads()
 {
-  const vector<const char *> &endovars = model.atoms.get_endovars();
-  for (auto endovar : endovars)
+  auto &endovars = model.atoms.get_endovars();
+  for (const auto &endovar : endovars)
     unassign_gt_1_leads(endovar);
-  const vector<const char *> &exovars = model.atoms.get_exovars();
-  for (auto exovar : exovars)
+  auto &exovars = model.atoms.get_exovars();
+  for (const auto &exovar : exovars)
     unassign_gt_1_leads(exovar);
 }
 
@@ -125,8 +121,5 @@ ForwSubstBuilder::ForwSubstBuilder(const ForwSubstBuilder &b, DynareModel &m)
   : model(m)
 {
   for (auto it : b.aux_map)
-    {
-      const char *ss = m.atoms.get_name_storage().query(it.first);
-      aux_map.emplace(ss, it.second);
-    }
+    aux_map.insert(it);
 }

@@ -186,8 +186,8 @@ Journal::printHeader()
         << "Dynare++ comes with ABSOLUTELY NO WARRANTY and is distributed under\n"
         << "GPL: modules integ, tl, kord, sylv, src, extern and documentation\n"
         << "LGPL: modules parser, utils\n"
-        << " for GPL  see http://www.gnu.org/licenses/gpl.html\n"
-        << " for LGPL see http://www.gnu.org/licenses/lgpl.html\n"
+        << " for GPL  see https://www.gnu.org/licenses/gpl.html\n"
+        << " for LGPL see https://www.gnu.org/licenses/lgpl.html\n"
         << "\n\n"
         << "System info: ";
 #ifndef _WIN32

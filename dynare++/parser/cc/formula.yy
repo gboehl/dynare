@@ -10,8 +10,9 @@
 %code
 {
 #include "formula_parser.hh" 
+#include <string>
 
-void fmla_error(const char*);
+void fmla_error(std::string);
 int fmla_lex();
 extern ogp::FormulaParser* fparser;
 }
@@ -76,7 +77,7 @@ extern ogp::FormulaParser* fparser;
 %%
 
 void
-fmla_error(const char* s)
+fmla_error(std::string s)
 {
-  fparser->error(s);
+  fparser->error(std::move(s));
 }

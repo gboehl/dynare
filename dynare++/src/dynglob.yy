@@ -9,9 +9,11 @@
 
 %code
 {
+#include <string>
+
 #include "dynare_model.hh"
 
-void dynglob_error(const char*);
+void dynglob_error(std::string);
 int dynglob_lex();
 extern ogdyn::DynareParser* dynare_parser;
 int symblist_flag;
@@ -109,7 +111,7 @@ planner_discount : PLANNERDISCOUNT NAME SEMICOLON {
 %%
 
 void
-dynglob_error(const char* mes)
+dynglob_error(std::string mes)
 {
   dynare_parser->error(mes);
 }

@@ -6,6 +6,8 @@
 
 #include <cmath>
 #include <limits>
+#include <sstream>
+#include <iomanip>
 
 using namespace ogp;
 
@@ -539,7 +541,7 @@ EvalTree::EvalTree(const OperationTree &ot, int last)
   flags[1] = true;
   values[2] = std::numeric_limits<double>::quiet_NaN();
   flags[2] = true;
-  values[3] = 2.0/sqrt(M_PI);
+  values[3] = 2.0/std::sqrt(M_PI);
   flags[3] = true;
   // this sets from num_constants on
   reset_all();
@@ -688,32 +690,29 @@ EvalTree::eval(int t)
       return values[t];
     }
 
-  // if (! std::isfinite(values[t]))
-  //	printf("Tree value t=%d is not finite = %f\n", t, values[t]);
-
   return values[t];
 }
 
 void
 EvalTree::print() const
 {
-  printf("last_op=%d\n", last_operation);
-  printf("         0     1     2     3     4     5     6     7     8     9\n");
-  printf("----------------------------------------------------------------\n");
+  std::cout <<   "last_op=" << last_operation << '\n'
+            <<   "         0     1     2     3     4     5     6     7     8     9\n"
+            << u8"────────────────────────────────────────────────────────────────\n";
   for (int i = 0; i <= (last_operation+1)/10; i++)
     {
-      printf("%-3d|", i);
+      std::cout << std::setw(3) << i << u8"│";
       int j = 0;
       while (j < 10 && 10*i+j < last_operation+1)
         {
           int k = 10*i+j;
           if (flags[k])
-            printf(" %5.1g", values[k]);
+            std::cout << " " << std::setw(5) << std::setprecision(1) << values[k];
           else
-            printf(" -----");
+            std::cout << u8" ─────";
           j++;
         }
-      printf("\n");
+      std::cout << "\n";
     }
 }
 
@@ -868,21 +867,20 @@ OperationStringConvertor::convert(const Operation &op, int t) const
     {
       if (t < OperationTree::num_constants)
         if (t == OperationTree::zero)
-          return std::string("0");
+          return "0";
         else if (t == OperationTree::one)
-          return std::string("1");
+          return "1";
         else if (t == OperationTree::nan)
-          return std::string("NaN");
+          return "NaN";
         else if (t == OperationTree::two_over_pi)
           {
-            char buf[100];
-            sprintf(buf, "%20.16g", 2.0/std::sqrt(M_PI));
-            return std::string(buf);
+            std::ostringstream buf;
+            buf << std::setprecision(std::numeric_limits<double>::max_digits10)
+                << 2.0/std::sqrt(M_PI);
+            return buf.str();
           }
         else
-          {
-            return std::string("error!error");
-          }
+          return "error!error";
       else
         return nulsc.convert(t);
     }
@@ -890,7 +888,7 @@ OperationStringConvertor::convert(const Operation &op, int t) const
     {
       int t1 = op.getOp1();
       const Operation &op1 = otree.operation(t1);
-      const char *opname = "unknown";
+      std::string opname = "unknown";
       switch (op.getCode())
         {
         case code_t::UMINUS:
@@ -924,7 +922,7 @@ OperationStringConvertor::convert(const Operation &op, int t) const
           break;
         }
       std::string s1 = convert(op1, t1);
-      return std::string(opname) + "(" + s1 + ")";
+      return opname + "(" + s1 + ")";
     }
   else
     {
@@ -932,7 +930,7 @@ OperationStringConvertor::convert(const Operation &op, int t) const
       const Operation &op1 = otree.operation(t1);
       int t2 = op.getOp2();
       const Operation &op2 = otree.operation(t2);
-      const char *opname = "unknown";
+      std::string opname = "unknown";
       switch (op.getCode())
         {
         case code_t::PLUS:

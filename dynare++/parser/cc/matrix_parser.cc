@@ -7,7 +7,6 @@
 #include "location.hh"
 #include "matrix_tab.hh"
 
-#include <memory>
 #include <algorithm>
 
 using namespace ogp;
@@ -18,26 +17,22 @@ MatrixParser *mparser;
 
 /** The declaration of functions defined in matrix_ll.cc and
  * matrix_tab.cc generated from matrix.lex and matrix.y. */
-void *matrix__scan_buffer(char *, size_t);
+void *matrix__scan_string(const char *);
 void matrix__destroy_buffer(void *);
 int matrix_parse();
 extern ogp::location_type matrix_lloc;
 
 void
-MatrixParser::parse(int length, const char *stream)
+MatrixParser::parse(const string &stream)
 {
   // reinitialize the object
   data.clear();
   row_lengths.clear();
   nc = 0;
   // allocate temporary buffer and parse
-  auto buffer = std::make_unique<char[]>(length+2);
-  std::copy_n(stream, length, buffer.get());
-  buffer[length] = '\0';
-  buffer[length+1] = '\0';
   matrix_lloc.off = 0;
   matrix_lloc.ll = 0;
-  void *p = matrix__scan_buffer(buffer.get(), static_cast<unsigned int>(length)+2);
+  void *p = matrix__scan_string(stream.c_str());
   mparser = this;
   matrix_parse();
   matrix__destroy_buffer(p);
@@ -60,9 +55,9 @@ MatrixParser::start_row()
 }
 
 void
-MatrixParser::error(const char *mes) const
+MatrixParser::error(string mes) const
 {
-  throw ParserException(mes, matrix_lloc.off);
+  throw ParserException(std::move(mes), matrix_lloc.off);
 }
 
 int

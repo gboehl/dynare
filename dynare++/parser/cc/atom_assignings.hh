@@ -14,7 +14,6 @@
 
 namespace ogp
 {
-
   class AtomAsgnEvaluator;
 
   /** This class represents atom assignments used in parameters
@@ -26,7 +25,7 @@ namespace ogp
   {
     friend class AtomAsgnEvaluator;
   protected:
-    using Tvarintmap = std::map<const char *, int, ltstr>;
+    using Tvarintmap = std::map<string, int>;
     /** All atoms which should be sufficient for formulas at the
      * right hand sides. The atoms should be filled with names
      * (preregistered). This is a responsibility of the caller. */
@@ -53,14 +52,14 @@ namespace ogp
     AtomAssignings(const AtomAssignings &aa, StaticAtoms &a);
     virtual ~AtomAssignings() = default;
     /** Parse the assignments from the given string. */
-    void parse(int length, const char *stream);
+    void parse(const string &stream);
     /** Process a syntax error from bison. */
-    void error(const char *mes);
+    void error(string mes);
     /** Add an assignment of the given name to the given
      * double. Can be called by a user, anytime. */
-    void add_assignment_to_double(const char *name, double val);
+    void add_assignment_to_double(string name, double val);
     /** Add an assignment. Called from assign.y. */
-    void add_assignment(int asgn_off, const char *str, int name_len,
+    void add_assignment(int asgn_off, const string &str, int name_len,
                         int right_off, int right_len);
     /** This applies old2new map (possibly from atom
      * substitutions) to this object. It registers new variables
@@ -107,7 +106,7 @@ namespace ogp
      * parameters are known and should be set to their values. In
      * constrast endogenous variables are set initially to NaNs by
      * AtomValues::setValues. */
-    void set_user_value(const char *name, double val);
+    void set_user_value(const string &name, double val);
     /** This sets the result of i-th expression in aa to res, and
      * also checks whether the i-th expression is an atom. If so,
      * it sets the value of the atom in ogp::EvalTree
@@ -126,9 +125,8 @@ namespace ogp
     /** This returns a value for a given name. If the name is not
      * found among atoms, or there is no assignment for the atom,
      * NaN is returned. */
-    double get_value(const char *name) const;
+    double get_value(const string &name) const;
   };
-
 };
 
 #endif

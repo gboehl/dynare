@@ -9,21 +9,20 @@
 
 using namespace ogp;
 
-AllvarOuterOrdering::AllvarOuterOrdering(const vector<const char *> &allvar_outer,
+AllvarOuterOrdering::AllvarOuterOrdering(const vector<string> &allvar_outer,
                                          const FineAtoms &a)
   : atoms(a), allvar(),
     endo2all(a.get_endovars().size(), -1),
     exo2all(a.get_exovars().size(), -1)
 {
   // fill in the allvar from allvar_outer
-  for (auto i : allvar_outer)
+  for (const auto &s : allvar_outer)
     {
-      const char *s = atoms.varnames.query(i);
-      if (s)
+      if (atoms.varnames.query(s))
         allvar.push_back(s);
       else
         throw ogu::Exception(__FILE__, __LINE__,
-                             string("Variable ") + i + " is not a declared symbol in AllvarOuterOrdering constructor");
+                             string("Variable ") + s + " is not a declared symbol in AllvarOuterOrdering constructor");
     }
 
   // fill in endo2all and exo2all
@@ -62,54 +61,44 @@ AllvarOuterOrdering::AllvarOuterOrdering(const vector<const char *> &allvar_oute
 
 AllvarOuterOrdering::AllvarOuterOrdering(const AllvarOuterOrdering &avo,
                                          const FineAtoms &a)
-  : atoms(a), allvar(),
+  : atoms(a), allvar(avo.allvar),
     endo2all(avo.endo2all),
     exo2all(avo.exo2all)
 {
-  // fill in the allvar from avo.allvar
-  for (auto i : avo.allvar)
-    {
-      const char *s = atoms.varnames.query(i);
-      allvar.push_back(s);
-    }
 }
 
 FineAtoms::FineAtoms(const FineAtoms &fa)
   : DynamicAtoms(fa), params(), endovars(), exovars(),
-    endo_order(nullptr), exo_order(nullptr), allvar_order(nullptr),
     der_atoms(fa.der_atoms),
     endo_atoms_map(fa.endo_atoms_map),
     exo_atoms_map(fa.exo_atoms_map)
 {
   // fill in params
-  for (auto param : fa.params)
+  for (const auto &param : fa.params)
     {
-      const char *s = varnames.query(param);
-      if (!s)
+      if (!varnames.query(param))
         throw ogu::Exception(__FILE__, __LINE__,
                              string("Parameter ") + param + " does not exist in FineAtoms copy cosntructor");
-      params.push_back(s);
-      param_outer_map.emplace(s, params.size()-1);
+      params.push_back(param);
+      param_outer_map.emplace(param, params.size()-1);
     }
   // fill in endovars
-  for (auto endovar : fa.endovars)
+  for (const auto &endovar : fa.endovars)
     {
-      const char *s = varnames.query(endovar);
-      if (!s)
+      if (!varnames.query(endovar))
         throw ogu::Exception(__FILE__, __LINE__,
                              string("Endo variable ") + endovar + " does not exist in FineAtoms copy constructor");
-      endovars.push_back(s);
-      endo_outer_map.emplace(s, endovars.size()-1);
+      endovars.push_back(endovar);
+      endo_outer_map.emplace(endovar, endovars.size()-1);
     }
   // fill in exovars
-  for (auto exovar : fa.exovars)
+  for (const auto &exovar : fa.exovars)
     {
-      const char *s = varnames.query(exovar);
-      if (!s)
+      if (!varnames.query(exovar))
         throw ogu::Exception(__FILE__, __LINE__,
                              string("Exo variable ") + exovar + " does not exist in FineAtoms copy cosntructor");
-      exovars.push_back(s);
-      exo_outer_map.emplace(s, exovars.size()-1);
+      exovars.push_back(exovar);
+      exo_outer_map.emplace(exovar, exovars.size()-1);
     }
 
   if (fa.endo_order)
@@ -123,12 +112,12 @@ FineAtoms::FineAtoms(const FineAtoms &fa)
 }
 
 int
-FineAtoms::check_variable(const char *name) const
+FineAtoms::check_variable(const string &name) const
 {
   string str;
   int ll;
   parse_variable(name, str, ll);
-  if (varnames.query(str.c_str()))
+  if (varnames.query(str))
     return DynamicAtoms::check_variable(name);
   else
     {
@@ -152,7 +141,7 @@ FineAtoms::parsing_finished(VarOrdering::ord_type ot)
 
   // by default, concatenate outer endo and outer exo and make it as
   // allvar outer:
-  vector<const char *> allvar_tmp;
+  vector<string> allvar_tmp;
   allvar_tmp.insert(allvar_tmp.end(), endovars.begin(), endovars.end());
   allvar_tmp.insert(allvar_tmp.end(), exovars.begin(), exovars.end());
 
@@ -161,13 +150,13 @@ FineAtoms::parsing_finished(VarOrdering::ord_type ot)
 
 void
 FineAtoms::parsing_finished(VarOrdering::ord_type ot,
-                            const vector<const char *> allvar)
+                            const vector<string> &allvar)
 {
   make_internal_orderings(ot);
   allvar_order = std::make_unique<AllvarOuterOrdering>(allvar, *this);
 }
 
-const vector<const char *> &
+const vector<string> &
 FineAtoms::get_allvar() const
 {
   if (!allvar_order)
@@ -367,7 +356,7 @@ FineAtoms::get_exo_atoms_map() const
 }
 
 int
-FineAtoms::name2outer_param(const char *name) const
+FineAtoms::name2outer_param(const string &name) const
 {
   auto it = param_outer_map.find(name);
   if (it == param_outer_map.end())
@@ -377,7 +366,7 @@ FineAtoms::name2outer_param(const char *name) const
 }
 
 int
-FineAtoms::name2outer_endo(const char *name) const
+FineAtoms::name2outer_endo(const string &name) const
 {
   auto it = endo_outer_map.find(name);
   if (it == endo_outer_map.end())
@@ -387,7 +376,7 @@ FineAtoms::name2outer_endo(const char *name) const
 }
 
 int
-FineAtoms::name2outer_exo(const char *name) const
+FineAtoms::name2outer_exo(const string &name) const
 {
   auto it = exo_outer_map.find(name);
   if (it == exo_outer_map.end())
@@ -397,7 +386,7 @@ FineAtoms::name2outer_exo(const char *name) const
 }
 
 int
-FineAtoms::name2outer_allvar(const char *name) const
+FineAtoms::name2outer_allvar(const string &name) const
 {
   if (!allvar_order)
     throw ogu::Exception(__FILE__, __LINE__,
@@ -419,33 +408,33 @@ FineAtoms::name2outer_allvar(const char *name) const
 }
 
 void
-FineAtoms::register_uniq_endo(const char *name)
+FineAtoms::register_uniq_endo(string name)
 {
   if (varnames.query(name))
     throw ogp::ParserException(string("Endogenous variable <")+name+"> is not unique.", 0);
-  const char *ss = varnames.insert(name);
-  endovars.push_back(ss);
-  endo_outer_map.emplace(ss, endovars.size()-1);
+  varnames.insert(name);
+  endovars.push_back(name);
+  endo_outer_map.emplace(std::move(name), endovars.size()-1);
 }
 
 void
-FineAtoms::register_uniq_exo(const char *name)
+FineAtoms::register_uniq_exo(string name)
 {
   if (varnames.query(name))
     throw ogp::ParserException(string("Exogenous variable <")+name+"> is not unique.", 0);
-  const char *ss = varnames.insert(name);
-  exovars.push_back(ss);
-  exo_outer_map.emplace(ss, exovars.size()-1);
+  varnames.insert(name);
+  exovars.push_back(name);
+  exo_outer_map.emplace(std::move(name), exovars.size()-1);
 }
 
 void
-FineAtoms::register_uniq_param(const char *name)
+FineAtoms::register_uniq_param(string name)
 {
   if (varnames.query(name))
     throw ogp::ParserException(string("Parameter <")+name+"> is not unique.", 0);
-  const char *ss = varnames.insert(name);
-  params.push_back(ss);
-  param_outer_map.emplace(ss, params.size()-1);
+  varnames.insert(name);
+  params.push_back(name);
+  param_outer_map.emplace(std::move(name), params.size()-1);
 }
 
 void
@@ -508,24 +497,24 @@ FineAtoms::print() const
   DynamicAtoms::print();
   if (endo_order)
     {
-      printf("Endo ordering:\n");
+      std::cout << "Endo ordering:\n";
       endo_order->print();
     }
   else
-    printf("Endo ordering not created.\n");
+    std::cout << "Endo ordering not created.\n";
 
   if (exo_order)
     {
-      printf("Exo ordering:\n");
+      std::cout << "Exo ordering:\n";
       exo_order->print();
     }
   else
-    printf("Exo ordering not created.\n");
+    std::cout << "Exo ordering not created.\n";
 
-  printf("endo atoms map:\n");
+  std::cout << "endo atoms map:\n";
   for (unsigned int i = 0; i < endo_atoms_map.size(); i++)
-    printf(u8"%d → %d\n", i, endo_atoms_map[i]);
-  printf("exo atoms map:\n");
+    std::cout << i << u8" → " << endo_atoms_map[i] << "\n";
+  std::cout << "exo atoms map:\n";
   for (unsigned int i = 0; i < exo_atoms_map.size(); i++)
-    printf(u8"%d → %d\n", i, exo_atoms_map[i]);
+    std::cout << i << u8" → " << exo_atoms_map[i] << "\n";
 }

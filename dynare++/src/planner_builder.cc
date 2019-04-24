@@ -159,11 +159,11 @@ PlannerBuilder::shift_derivatives_of_f()
                     // make an auxiliary variable
                     std::string name;
                     name = "AUX_" + std::to_string(yi) + '_' + std::to_string(fset[fi]) + '_' + std::to_string(-ll);
-                    model.atoms.register_uniq_endo(name.c_str());
+                    model.atoms.register_uniq_endo(name);
                     info.num_aux_variables++;
-                    int taux = model.eqs.add_nulary(name.c_str());
+                    int taux = model.eqs.add_nulary(name);
                     name = "AUX_" + std::to_string(yi) + '_' + std::to_string(fset[fi]) + '_' + std::to_string(-ll) + '(' + std::to_string(-ll) + ')';
-                    int taux_leaded = model.eqs.add_nulary(name.c_str());
+                    int taux_leaded = model.eqs.add_nulary(name);
                     // put aux_leaded to the equation
                     diff_f(yi, fi, ll-minlag) = taux_leaded;
                     // save auxiliary variable and the term
@@ -244,8 +244,7 @@ PlannerBuilder::make_static_version()
   for (const auto &it : aux_map)
     {
       int tstatic = static_tree.add_substitution(it.second, tmap, model.eqs.getTree());
-      const char *name = static_atoms.get_name_storage().query(it.first);
-      static_aux_map.emplace(name, tstatic);
+      static_aux_map.emplace(it.first, tstatic);
     }
 }
 
@@ -257,7 +256,7 @@ PlannerBuilder::lagrange_mult_f()
   for (int fi = 0; fi < diff_f.dim2(); fi++)
     {
       mult_name = "MULT" + std::to_string(fset[fi]);
-      model.atoms.register_uniq_endo(mult_name.c_str());
+      model.atoms.register_uniq_endo(mult_name);
       info.num_lagrange_mults++;
     }
   // multiply with the multipliers
@@ -267,7 +266,7 @@ PlannerBuilder::lagrange_mult_f()
         if (diff_f(yi, fi, ll-minlag) != ogp::OperationTree::zero)
           {
             mult_name = "MULT" + std::to_string(fset[fi]) + '(' + std::to_string(-ll) + ')';
-            int tm = model.eqs.add_nulary(mult_name.c_str());
+            int tm = model.eqs.add_nulary(mult_name);
             diff_f(yi, fi, ll-minlag)
               = model.eqs.add_binary(ogp::code_t::TIMES, tm, diff_f(yi, fi, ll-minlag));
           }
@@ -301,7 +300,7 @@ PlannerBuilder::fill_yset(const ogp::NameStorage &ns,
                           const PlannerBuilder::Tvarset &yyset)
 {
   for (auto it : yyset)
-    yset.insert(ns.query(it));
+    yset.insert(it);
 }
 
 void
@@ -310,11 +309,11 @@ PlannerBuilder::fill_aux_map(const ogp::NameStorage &ns, const Tsubstmap &aaux_m
 {
   // fill aux_map
   for (auto it : aaux_map)
-    aux_map.emplace(ns.query(it.first), it.second);
+    aux_map.insert(it);
 
   // fill static_aux_map
   for (auto it : astatic_aux_map)
-    static_aux_map.emplace(static_atoms.get_name_storage().query(it.first), it.second);
+    static_aux_map.insert(it);
 }
 
 MultInitSS::MultInitSS(const PlannerBuilder &pb, const Vector &pvals, Vector &yy)
@@ -358,7 +357,7 @@ MultInitSS::MultInitSS(const PlannerBuilder &pb, const Vector &pvals, Vector &yy
   for (int fi = 0; fi < builder.diff_f_static.dim2(); fi++)
     {
       std::string mult_name = "MULT" + std::to_string(builder.fset[fi]);
-      int iouter = builder.model.atoms.name2outer_endo(mult_name.c_str());
+      int iouter = builder.model.atoms.name2outer_endo(mult_name);
       int iy = builder.model.atoms.outer2y_endo()[iouter];
       if (!std::isfinite(yy[iy]))
         yy[iy] = lambda[fi];
@@ -369,13 +368,13 @@ MultInitSS::MultInitSS(const PlannerBuilder &pb, const Vector &pvals, Vector &yy
         {
           const ogp::AtomSubstitutions::Toldnamemap &old2new
             = builder.model.atom_substs->get_old2new();
-          auto it = old2new.find(mult_name.c_str());
+          auto it = old2new.find(mult_name);
           if (it != old2new.end())
             {
               const ogp::AtomSubstitutions::Tshiftnameset &sset = it->second;
               for (const auto & itt : sset)
                 {
-                  const char *newname = itt.first;
+                  const std::string &newname = itt.first;
                   int iouter = builder.model.atoms.name2outer_endo(newname);
                   int iy = builder.model.atoms.outer2y_endo()[iouter];
                   if (!std::isfinite(yy[iy]))

@@ -29,7 +29,7 @@ struct QuadParams
   QuadParams(int argc, char **argv);
   void check_consistency() const;
 private:
-  enum {opt_max_level, opt_discard_weight, opt_vcov};
+  enum class opt {max_level, discard_weight, vcov};
 };
 
 QuadParams::QuadParams(int argc, char **argv)
@@ -45,9 +45,9 @@ QuadParams::QuadParams(int argc, char **argv)
   argc--;
 
   struct option const opts [] = {
-    {"max-level", required_argument, nullptr, opt_max_level},
-    {"discard-weight", required_argument, nullptr, opt_discard_weight},
-    {"vcov", required_argument, nullptr, opt_vcov},
+    {"max-level", required_argument, nullptr, static_cast<int>(opt::max_level)},
+    {"discard-weight", required_argument, nullptr, static_cast<int>(opt::discard_weight)},
+    {"vcov", required_argument, nullptr, static_cast<int>(opt::vcov)},
     {nullptr, 0, nullptr, 0}
   };
 
@@ -55,29 +55,35 @@ QuadParams::QuadParams(int argc, char **argv)
   int index;
   while (-1 != (ret = getopt_long(argc, argv, "", opts, &index)))
     {
-      switch (ret)
+      if (ret == '?')
         {
-        case opt_max_level:
+          std::cerr << "Unknown option, ignored\n";
+          continue;
+        }
+
+      switch (static_cast<opt>(ret))
+        {
+        case opt::max_level:
           try
             {
-              max_level = std::stoi(std::string{optarg});
+              max_level = std::stoi(optarg);
             }
           catch (const std::invalid_argument &e)
             {
               std::cerr << "Couldn't parse integer " << optarg << ", ignored" << std::endl;
             }
           break;
-        case opt_discard_weight:
+        case opt::discard_weight:
           try
             {
-              discard_weight = std::stod(std::string{optarg});
+              discard_weight = std::stod(optarg);
             }
           catch (const std::invalid_argument &e)
             {
               std::cerr << "Couldn't parse float " << optarg << ", ignored" << std::endl;
             }
           break;
-        case opt_vcov:
+        case opt::vcov:
           vcovname = optarg;
           break;
         }
@@ -124,7 +130,7 @@ main(int argc, char **argv)
 
       // parse the vcov matrix
       ogp::MatrixParser mp;
-      mp.parse(contents.length(), contents.c_str());
+      mp.parse(contents);
       if (mp.nrows() != mp.ncols())
         throw ogu::Exception(__FILE__, __LINE__,
                              "VCOV matrix not square");

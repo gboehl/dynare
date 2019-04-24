@@ -102,7 +102,7 @@ public:
   Dynare(const std::vector<std::string> &endo,
          const std::vector<std::string> &exo,
          const std::vector<std::string> &par,
-         const char *equations, int len, int ord,
+         const std::string &equations, int ord,
          double sstol, Journal &jr);
   /** Makes a deep copy of the object. */
   Dynare(const Dynare &dyn);

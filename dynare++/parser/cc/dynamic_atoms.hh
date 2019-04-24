@@ -11,7 +11,6 @@
 #include <map>
 #include <set>
 #include <string>
-#include <cstring>
 #include <limits>
 #include <memory>
 
@@ -21,15 +20,6 @@ namespace ogp
   using std::map;
   using std::set;
   using std::string;
-
-  struct ltstr
-  {
-    bool
-    operator()(const char *a1, const char *a2) const
-    {
-      return strcmp(a1, a2) < 0;
-    }
-  };
 
   /** Class storing names. We will keep names of variables in
    * various places, and all these pointers will point to one
@@ -41,26 +31,26 @@ namespace ogp
   {
   protected:
     /** Vector of names allocated, this is the storage. */
-    vector<char *> name_store;
+    vector<string> name_store;
     /** Map useful to quickly decide if the name is already
      * allocated or not. */
-    set<const char *, ltstr> name_set;
+    set<string> name_set;
   public:
-    NameStorage() = default;
-    NameStorage(const NameStorage &stor);
-    virtual ~NameStorage();
     /** Query for the name. If the name has been stored, it
-     * returns its address, otherwise 0. */
-    const char *query(const char *name) const;
-    /** Insert the name if it has not been inserted yet, and
-     * return its new or old allocation. */
-    const char *insert(const char *name);
+     * true, otherwise false. */
+    bool
+    query(const string &name) const
+    {
+      return name_set.find(name) != name_set.end();
+    }
+    /** Insert the name if it has not been inserted yet. */
+    void insert(string name);
     int
     num() const
     {
       return static_cast<int>(name_store.size());
     }
-    const char *
+    const string &
     get_name(int i) const
     {
       return name_store[i];
@@ -112,7 +102,7 @@ namespace ogp
     /** Return -1 if the given string representation of a constant
      * is not among the constants (double represenations). If it
      * is, its tree index is returned. */
-    int check(const char *str) const;
+    int check(const string &str) const;
     /** Debug print. */
     void print() const;
     const Tconstantmap &
@@ -141,9 +131,9 @@ namespace ogp
     using Tlagmap = map<int, int>;
   protected:
     /** Definition of a type mapping names of the atoms to Tlagmap. */
-    using Tvarmap = map<const char *, Tlagmap, ltstr>;
+    using Tvarmap = map<string, Tlagmap>;
     /** Definition of a type mapping indices of variables to the variable names. */
-    using Tindexmap = map<int, const char *>;
+    using Tindexmap = map<int, string>;
     /** This is just a storage for variable names, since all other
      * instances of a variable name just point to the memory
      * allocated by this object. */
@@ -165,9 +155,7 @@ namespace ogp
     int maxlead{std::numeric_limits<int>::min()};
   public:
     /** Construct empty DynamicAtoms. */
-    DynamicAtoms();
-    DynamicAtoms(const DynamicAtoms &da);
-    ~DynamicAtoms() override = default;
+    DynamicAtoms() = default;
     /** Check the nulary term identified by its string
      * representation. The nulary term can be either a constant or
      * a variable. If constant, -1 is returned so that it could be
@@ -175,11 +163,11 @@ namespace ogp
      * appeared or not. If variable, then -1 is returned only if
      * the variable has not been assigned an index, otherwise the
      * assigned index is returned. */
-    int check(const char *name) const override;
+    int check(const string &name) const override;
     /** Assign the nulary term identified by its string
      * representation. This method should be called when check()
      * returns -1. */
-    void assign(const char *name, int t) override;
+    void assign(const string &name, int t) override;
     /** Return a number of all variables. */
     int
     nvar() const override
@@ -196,9 +184,9 @@ namespace ogp
     /** Return max lead and min lag for a variable given by the
      * name (without lead, lag). The same is valid if the variable
      * name cannot be found. */
-    void varspan(const char *name, int &mlead, int &mlag) const;
+    void varspan(const string &name, int &mlead, int &mlag) const;
     /** Return max lead and min lag for a vector of variables given by the names. */
-    void varspan(const vector<const char *> &names, int &mlead, int &mlag) const;
+    void varspan(const vector<string> &names, int &mlead, int &mlag) const;
     /** Return true for all tree indices corresponding to a
      * variable in the sense of this class. (This is parameters,
      * exo and endo). Since the semantics of 'variable' will be
@@ -207,15 +195,15 @@ namespace ogp
     bool is_named_atom(int t) const;
     /** Return index of the variable described by the variable
      * name and lag/lead. If it doesn't exist, return -1. */
-    int index(const char *name, int ll) const;
+    int index(const string &name, int ll) const;
     /** Return true if a variable is referenced, i.e. it has lag
      * map. */
-    bool is_referenced(const char *name) const;
+    bool is_referenced(const string &name) const;
     /** Return the lag map for the variable name. */
-    const Tlagmap&lagmap(const char *name) const;
+    const Tlagmap &lagmap(const string &name) const;
     /** Return the variable name for the tree index. It throws an
      * exception if the tree index t is not a named atom. */
-    const char *name(int t) const;
+    const string &name(int t) const;
     /** Return the lead/lag for the tree index. It throws an
      * exception if the tree index t is not a named atom. */
     int lead(int t) const;
@@ -242,25 +230,25 @@ namespace ogp
      * from the varnames storage. The method checks if the
      * variable iwht the given lead/lag is not assigned. If so, an
      * exception is thrown. */
-    void assign_variable(const char *varname, int ll, int t);
+    void assign_variable(const string &varname, int ll, int t);
     /** Unassign the variable with a given lead and given tree
      * index. The tree index is only provided as a check. An
      * exception is thrown if the name, ll, and the tree index t
      * are not consistent. The method also updates nv, indices,
      * maxlead and minlag. The varname must be from the varnames
      * storage. */
-    void unassign_variable(const char *varname, int ll, int t);
+    void unassign_variable(const string &varname, int ll, int t);
     /** Debug print. */
     void print() const override;
   protected:
     /** Do the check for the variable. A subclass may need to
      * reimplement this so that it could raise an error if the
      * variable is not among a given list. */
-    virtual int check_variable(const char *name) const;
+    virtual int check_variable(const string &name) const;
     /** Assign the constant. */
-    void assign_constant(const char *name, int t);
+    void assign_constant(const string &name, int t);
     /** Assign the variable. */
-    void assign_variable(const char *name, int t);
+    void assign_variable(const string &name, int t);
     /** The method just updates minlag or/and maxlead. Note that
      * when assigning variables, the update is done when inserting
      * to the maps, however, if removing a variable, we need to
@@ -268,10 +256,10 @@ namespace ogp
     void update_minmaxll();
     /** The method parses the string to recover a variable name
      * and lag/lead ll. The variable name doesn't contain a lead/lag. */
-    virtual void parse_variable(const char *in, string &out, int &ll) const = 0;
+    virtual void parse_variable(const string &in, string &out, int &ll) const = 0;
   public:
     /** Return true if the str represents a double.*/
-    static bool is_string_constant(const char *str);
+    static bool is_string_constant(const string &str);
   };
 
   /** This class is a parent of all orderings of the dynamic atoms
@@ -336,7 +324,7 @@ namespace ogp
     vector<int> y2outer;
     /** This is just a reference for variable names to keep it
      * from constructor to do_ordering() implementations. */
-    const vector<const char *> &varnames;
+    const vector<string> &varnames;
     /** This is just a reference to atoms to keep it from
      * constructor to do_ordering() implementations. */
     const DynamicAtoms &atoms;
@@ -348,14 +336,14 @@ namespace ogp
      * with their dynamic occurrences defined by the atoms. It
      * calls the virtual method do_ordering which can be
      * reimplemented. */
-    VarOrdering(const vector<const char *> &vnames, const DynamicAtoms &a)
+    VarOrdering(const vector<string> &vnames, const DynamicAtoms &a)
       : n_stat(0), n_pred(0), n_both(0), n_forw(0), varnames(vnames), atoms(a)
     {
     }
-    VarOrdering(const VarOrdering &vo, const vector<const char *> &vnames,
+    VarOrdering(const VarOrdering &vo, const vector<string> &vnames,
                 const DynamicAtoms &a);
     VarOrdering(const VarOrdering &vo) = delete;
-    virtual std::unique_ptr<VarOrdering> clone(const vector<const char *> &vnames,
+    virtual std::unique_ptr<VarOrdering> clone(const vector<string> &vnames,
                                                const DynamicAtoms &a) const = 0;
     /** Destructor does nothing here. */
     virtual ~VarOrdering() = default;

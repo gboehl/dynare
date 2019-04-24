@@ -9,37 +9,6 @@
 
 using namespace ogp;
 
-StaticFineAtoms::StaticFineAtoms(const StaticFineAtoms &sfa)
-  : StaticAtoms(sfa),
-    params(), param_outer_map(),
-    endovars(), endo_outer_map(),
-    exovars(), exo_outer_map(),
-    der_atoms(sfa.der_atoms),
-    endo_atoms_map(sfa.endo_atoms_map),
-    exo_atoms_map(sfa.exo_atoms_map)
-{
-  for (unsigned int i = 0; i < sfa.params.size(); i++)
-    {
-      const char *name = varnames.query(sfa.params[i]);
-      params.push_back(name);
-      param_outer_map.emplace(name, i);
-    }
-
-  for (unsigned int i = 0; i < sfa.endovars.size(); i++)
-    {
-      const char *name = varnames.query(sfa.endovars[i]);
-      endovars.push_back(name);
-      endo_outer_map.emplace(name, i);
-    }
-
-  for (unsigned int i = 0; i < sfa.exovars.size(); i++)
-    {
-      const char *name = varnames.query(sfa.exovars[i]);
-      exovars.push_back(name);
-      exo_outer_map.emplace(name, i);
-    }
-}
-
 void
 StaticFineAtoms::import_atoms(const FineAtoms &fa, OperationTree &otree, Tintintmap &tmap)
 {
@@ -49,18 +18,18 @@ StaticFineAtoms::import_atoms(const FineAtoms &fa, OperationTree &otree, Tintint
   // respective vectors, the names are already in the storage
 
   // parameters
-  const vector<const char *> &fa_params = fa.get_params();
-  for (auto fa_param : fa_params)
+  auto &fa_params = fa.get_params();
+  for (const auto &fa_param : fa_params)
     register_param(fa_param);
 
   // endogenous
-  const vector<const char *> &fa_endovars = fa.get_endovars();
-  for (auto fa_endovar : fa_endovars)
+  auto &fa_endovars = fa.get_endovars();
+  for (const auto &fa_endovar : fa_endovars)
     register_endo(fa_endovar);
 
   // exogenous
-  const vector<const char *> &fa_exovars = fa.get_exovars();
-  for (auto fa_exovar : fa_exovars)
+  auto &fa_exovars = fa.get_exovars();
+  for (const auto &fa_exovar : fa_exovars)
     register_exo(fa_exovar);
 
   parsing_finished();
@@ -76,17 +45,17 @@ StaticFineAtoms::import_atoms(const FineAtoms &fa, OperationTree &otree, Tintint
   // respective vectors, the names are already in the storage
 
   // parameters
-  const vector<const char *> &fa_params = fa.get_params();
-  for (auto fa_param : fa_params)
+  auto &fa_params = fa.get_params();
+  for (const auto &fa_param : fa_params)
     register_param(fa_param);
 
   // endogenous
-  const vector<const char *> &fa_endovars = fa.get_endovars();
+  auto &fa_endovars = fa.get_endovars();
   for (unsigned int i = 0; i < fa_endovars.size(); i++)
     register_endo(fa_endovars[fa.y2outer_endo()[i]]);
 
   // exogenous
-  const vector<const char *> &fa_exovars = fa.get_exovars();
+  auto &fa_exovars = fa.get_exovars();
   for (unsigned int i = 0; i < fa_exovars.size(); i++)
     register_exo(fa_exovars[fa.y2outer_exo()[i]]);
 
@@ -94,10 +63,9 @@ StaticFineAtoms::import_atoms(const FineAtoms &fa, OperationTree &otree, Tintint
 }
 
 int
-StaticFineAtoms::check_variable(const char *name) const
+StaticFineAtoms::check_variable(const string &name) const
 {
-  const char *ss = varnames.query(name);
-  if (!ss)
+  if (!varnames.query(name))
     throw ParserException(string("Variable <")+name+"> not declared.", 0);
   return index(name);
 }
@@ -133,7 +101,7 @@ StaticFineAtoms::parsing_finished()
 }
 
 int
-StaticFineAtoms::name2outer_param(const char *name) const
+StaticFineAtoms::name2outer_param(const string &name) const
 {
   auto it = param_outer_map.find(name);
   if (it == param_outer_map.end())
@@ -143,7 +111,7 @@ StaticFineAtoms::name2outer_param(const char *name) const
 }
 
 int
-StaticFineAtoms::name2outer_endo(const char *name) const
+StaticFineAtoms::name2outer_endo(const string &name) const
 {
   auto it = endo_outer_map.find(name);
   if (it == endo_outer_map.end())
@@ -153,7 +121,7 @@ StaticFineAtoms::name2outer_endo(const char *name) const
 }
 
 int
-StaticFineAtoms::name2outer_exo(const char *name) const
+StaticFineAtoms::name2outer_exo(const string &name) const
 {
   auto it = exo_outer_map.find(name);
   if (it == exo_outer_map.end())
@@ -163,75 +131,72 @@ StaticFineAtoms::name2outer_exo(const char *name) const
 }
 
 void
-StaticFineAtoms::register_uniq_endo(const char *name)
+StaticFineAtoms::register_uniq_endo(string name)
 {
   if (varnames.query(name))
     throw ogp::ParserException(string("Endogenous variable <")+name+"> is not unique.", 0);
-  const char *ss = varnames.insert(name);
-  register_endo(ss);
+  varnames.insert(name);
+  register_endo(std::move(name));
 }
 
 void
-StaticFineAtoms::register_uniq_exo(const char *name)
+StaticFineAtoms::register_uniq_exo(string name)
 {
   if (varnames.query(name))
     throw ogp::ParserException(string("Exogenous variable <")+name+"> is not unique.", 0);
-  const char *ss = varnames.insert(name);
-  register_exo(ss);
+  varnames.insert(name);
+  register_exo(std::move(name));
 }
 
 void
-StaticFineAtoms::register_uniq_param(const char *name)
+StaticFineAtoms::register_uniq_param(string name)
 {
   if (varnames.query(name))
     throw ogp::ParserException(string("Parameter <")+name+"> is not unique.", 0);
-  const char *ss = varnames.insert(name);
-  register_param(ss);
+  varnames.insert(name);
+  register_param(std::move(name));
 }
 
 void
 StaticFineAtoms::print() const
 {
   StaticAtoms::print();
-  printf("endo atoms map:\n");
+  std::cout << "endo atoms map:\n";
   for (unsigned int i = 0; i < endo_atoms_map.size(); i++)
-    printf(u8"%d → %d\n", i, endo_atoms_map[i]);
-  printf("exo atoms map:\n");
+    std::cout << i << u8" → " << endo_atoms_map[i] << "\n";
+  std::cout << "exo atoms map:\n";
   for (unsigned int i = 0; i < exo_atoms_map.size(); i++)
-    printf(u8"%d → %d\n", i, exo_atoms_map[i]);
-  printf("der atoms:\n");
+    std::cout << i << u8" → " << exo_atoms_map[i] << "\n";
+  std::cout << "der atoms:\n";
   for (unsigned int i = 0; i < der_atoms.size(); i++)
-    printf("%d\t%d\n", i, der_atoms[i]);
+    std::cout << i << "\t" << der_atoms[i] << "\n";
 }
 
 void
-StaticFineAtoms::register_endo(const char *name)
+StaticFineAtoms::register_endo(string name)
 {
-  const char *ss = varnames.query(name);
-  if (!ss)
+  if (!varnames.query(name))
     throw ogp::ParserException(string("Endogenous variable <")
                                +name+"> not found in storage.", 0);
-  endovars.push_back(ss);
-  endo_outer_map.emplace(ss, endovars.size()-1);
+  endovars.push_back(name);
+  endo_outer_map.emplace(std::move(name), endovars.size()-1);
 }
 
 void
-StaticFineAtoms::register_exo(const char *name)
+StaticFineAtoms::register_exo(string name)
 {
-  const char *ss = varnames.query(name);
-  if (!ss)
+  if (!varnames.query(name))
     throw ogp::ParserException(string("Exogenous variable <")
                                +name+"> not found in storage.", 0);
-  exovars.push_back(ss);
-  exo_outer_map.emplace(ss, exovars.size()-1);
+  exovars.push_back(name);
+  exo_outer_map.emplace(std::move(name), exovars.size()-1);
 }
 
 void
-StaticFineAtoms::register_param(const char *name)
+StaticFineAtoms::register_param(string name)
 {
-  const char *ss = varnames.query(name);
-  if (!ss)
+  if (!varnames.query(name))
     throw ogp::ParserException(string("Parameter <")+name+"> not found in storage.", 0);
-  params.push_back(ss);
-  param_outer_map.emplace(ss, params.size()-1);
+  params.push_back(name);
+  param_outer_map.emplace(std::move(name), params.size()-1);
 }

@@ -65,7 +65,7 @@ FormulaParser::add_unary(code_t code, int t)
 }
 
 int
-FormulaParser::add_nulary(const char *str)
+FormulaParser::add_nulary(const string &str)
 {
   int t = -1;
   try
@@ -116,7 +116,7 @@ FormulaParser *fparser;
 
 /** The declarations of functions defined in formula_ll.cc and
  * formula_tab.cc generated from formula.lex and formula.y */
-void *fmla__scan_buffer(char *, size_t);
+void *fmla__scan_string(const char *);
 void fmla__destroy_buffer(void *);
 int fmla_parse();
 extern location_type fmla_lloc;
@@ -126,24 +126,20 @@ extern location_type fmla_lloc;
  * the pointer returned from fmla_scan_buffer must be freed at the
  * end. */
 void
-FormulaParser::parse(int length, const char *stream)
+FormulaParser::parse(const string &stream)
 {
-  auto buffer = std::make_unique<char[]>(length+2);
-  std::copy_n(stream, length, buffer.get());
-  buffer[length] = '\0';
-  buffer[length+1] = '\0';
   fmla_lloc.off = 0;
   fmla_lloc.ll = 0;
-  void *p = fmla__scan_buffer(buffer.get(), static_cast<unsigned int>(length)+2);
+  void *p = fmla__scan_string(stream.c_str());
   fparser = this;
   fmla_parse();
   fmla__destroy_buffer(p);
 }
 
 void
-FormulaParser::error(const char *mes) const
+FormulaParser::error(string mes) const
 {
-  throw ParserException(mes, fmla_lloc.off);
+  throw ParserException(std::move(mes), fmla_lloc.off);
 }
 
 int
@@ -173,12 +169,12 @@ FormulaParser::print() const
   atoms.print();
   for (int formula : formulas)
     {
-      printf("formula %d:\n", formula);
+      std::cout << "formula " << formula << ":\n";
       otree.print_operation(formula);
     }
   for (unsigned int i = 0; i < ders.size(); i++)
     {
-      printf("derivatives for the formula %d:\n", formulas[i]);
+      std::cout << "derivatives for the formula " << formulas[i] << ":\n";
       ders[i]->print(otree);
     }
 }
@@ -261,9 +257,9 @@ FormulaDerivatives::print(const OperationTree &otree) const
 {
   for (const auto & it : ind2der)
     {
-      printf("derivative ");
+      std::cout << "derivative ";
       it.first.print();
-      printf(" is formula %d\n", tder[it.second]);
+      std::cout << " is formula " << tder[it.second] << '\n';
       otree.print_operation(tder[it.second]);
     }
 }
@@ -409,10 +405,10 @@ FoldMultiIndex::offset() const
 void
 FoldMultiIndex::print() const
 {
-  printf("[");
+  std::cout << "[";
   for (int i = 0; i < ord; i++)
-    printf("%d ", data[i]);
-  printf("]");
+    std::cout << data[i] << ' ';
+  std::cout << "]";
 }
 
 int

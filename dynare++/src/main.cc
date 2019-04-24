@@ -12,6 +12,8 @@
 #include "../kord/approximation.hh"
 
 #include <fstream>
+#include <iostream>
+#include <cstdlib>
 
 int
 main(int argc, char **argv)
@@ -20,27 +22,24 @@ main(int argc, char **argv)
   if (params.help)
     {
       params.printHelp();
-      return 0;
+      return EXIT_SUCCESS;
     }
   if (params.version)
     {
-      printf(u8"Dynare++ v. %s. Copyright © 2004-2011, Ondra Kamenik\n",
-             DYNVERSION);
-      printf("Dynare++ comes with ABSOLUTELY NO WARRANTY and is distributed under\n");
-      printf("GPL: modules integ, tl, kord, sylv, src, extern and documentation\n");
-      printf("LGPL: modules parser, utils\n");
-      printf(" for GPL  see http://www.gnu.org/licenses/gpl.html\n");
-      printf(" for LGPL see http://www.gnu.org/licenses/lgpl.html\n");
-      return 0;
+      std::cout << u8"Dynare++ v. " << DYNVERSION << ". Copyright © 2004-2011, Ondra Kamenik\n"
+                << "Dynare++ comes with ABSOLUTELY NO WARRANTY and is distributed under\n"
+                << "GPL: modules integ, tl, kord, sylv, src, extern and documentation\n"
+                << "LGPL: modules parser, utils\n"
+                << " for GPL  see https://www.gnu.org/licenses/gpl.html\n"
+                << " for LGPL see https://www.gnu.org/licenses/lgpl.html\n";
+      return EXIT_SUCCESS;
     }
   sthread::detach_thread_group::max_parallel_threads = params.num_threads;
 
   try
     {
-      // make journal name and journal
-      std::string jname(params.basename);
-      jname += ".jnl";
-      Journal journal(jname.c_str());
+      // make journal
+      Journal journal(params.basename + ".jnl");
 
       // make dynare object
       Dynare dynare(params.modname, params.order, params.ss_tol, journal);
@@ -50,41 +49,38 @@ main(int argc, char **argv)
         for (int i = 0; i < dynare.nexog(); i++)
           irf_list_ind.push_back(i);
       else
-        irf_list_ind = (static_cast<const DynareNameList &>(dynare.getExogNames())).selectIndices(params.irf_list);
+        irf_list_ind = static_cast<const DynareNameList &>(dynare.getExogNames()).selectIndices(params.irf_list);
 
       // write matlab files
-      std::string mfile1(params.basename);
-      mfile1 += "_f.m";
+      std::string mfile1(params.basename + "_f.m");
       std::ofstream mfd{mfile1, std::ios::out | std::ios::trunc};
       if (mfd.fail())
         {
-          fprintf(stderr, "Couldn't open %s for writing.\n", mfile1.c_str());
-          exit(1);
+          std::cerr << "Couldn't open " << mfile1 << " for writing.\n";
+          std::exit(EXIT_FAILURE);
         }
-      ogdyn::MatlabSSWriter writer0(dynare.getModel(), params.basename.c_str());
+      ogdyn::MatlabSSWriter writer0(dynare.getModel(), params.basename);
       writer0.write_der0(mfd);
       mfd.close();
 
-      std::string mfile2(params.basename);
-      mfile2 += "_ff.m";
+      std::string mfile2(params.basename + "_ff.m");
       mfd.open(mfile2, std::ios::out | std::ios::trunc);
       if (mfd.fail())
         {
-          fprintf(stderr, "Couldn't open %s for writing.\n", mfile2.c_str());
-          exit(1);
+          std::cerr << "Couldn't open " << mfile2 << " for writing.\n";
+          std::exit(EXIT_FAILURE);
         }
-      ogdyn::MatlabSSWriter writer1(dynare.getModel(), params.basename.c_str());
+      ogdyn::MatlabSSWriter writer1(dynare.getModel(), params.basename);
       writer1.write_der1(mfd);
       mfd.close();
 
       // open mat file
-      std::string matfile(params.basename);
-      matfile += ".mat";
+      std::string matfile(params.basename + ".mat");
       mat_t *matfd = Mat_Create(matfile.c_str(), nullptr);
-      if (matfd == nullptr)
+      if (!matfd)
         {
-          fprintf(stderr, "Couldn't open %s for writing.\n", matfile.c_str());
-          exit(1);
+          std::cerr << "Couldn't open " << matfile << " for writing.\n";
+          std::exit(EXIT_FAILURE);
         }
 
       // write info about the model (dimensions and variables)
@@ -106,16 +102,15 @@ main(int argc, char **argv)
       catch (const KordException &e)
         {
           // tell about the exception and continue
-          printf("Caught (not yet fatal) Kord exception: ");
+          std::cout << "Caught (not yet fatal) Kord exception: ";
           e.print();
           JournalRecord rec(journal);
           rec << "Solution routine not finished (" << e.get_message()
               << "), see what happens" << endrec;
         }
 
-      std::string ss_matrix_name(params.prefix);
-      ss_matrix_name += "_steady_states";
-      ConstTwoDMatrix(app.getSS()).writeMat(matfd, ss_matrix_name.c_str());
+      std::string ss_matrix_name(params.prefix + "_steady_states");
+      ConstTwoDMatrix(app.getSS()).writeMat(matfd, ss_matrix_name);
 
       // check the approximation
       if (params.check_along_path || params.check_along_shocks
@@ -176,42 +171,41 @@ main(int argc, char **argv)
         }
 
       Mat_Close(matfd);
-
     }
   catch (const KordException &e)
     {
-      printf("Caught Kord exception: ");
+      std::cout << "Caught Kord exception: ";
       e.print();
       return e.code();
     }
   catch (const TLException &e)
     {
-      printf("Caught TL exception: ");
+      std::cout << "Caught TL exception: ";
       e.print();
       return 255;
     }
   catch (SylvException &e)
     {
-      printf("Caught Sylv exception: ");
+      std::cout << "Caught Sylv exception: ";
       e.printMessage();
       return 255;
     }
   catch (const DynareException &e)
     {
-      printf("Caught Dynare exception: %s\n", e.message().c_str());
+      std::cout << "Caught Dynare exception: " << e.message() << '\n';
       return 255;
     }
   catch (const ogu::Exception &e)
     {
-      printf("Caught ogu::Exception: ");
+      std::cout << "Caught ogu::Exception: ";
       e.print();
       return 255;
     }
   catch (const ogp::ParserException &e)
     {
-      std::cout << "Caught parser exception: " << e.message() << std::endl;
+      std::cout << "Caught parser exception: " << e.message() << '\n';
       return 255;
     }
 
-  return 0;
+  return EXIT_SUCCESS;
 }

@@ -9,22 +9,25 @@
 
 #include <string>
 #include <cmath>
+#include <limits>
+#include <sstream>
+#include <iomanip>
 
 using namespace ogdyn;
 using std::string;
 
 void
-DynareStaticAtoms::register_name(const char *name)
+DynareStaticAtoms::register_name(string name)
 {
   if (varnames.query(name))
     throw ogp::ParserException(string("The name ")+name+" is not unique.", 0);
-  StaticAtoms::register_name(name);
+  StaticAtoms::register_name(std::move(name));
 }
 
 int
-DynareStaticAtoms::check_variable(const char *name) const
+DynareStaticAtoms::check_variable(const string &name) const
 {
-  if (nullptr == varnames.query(name))
+  if (!varnames.query(name))
     throw ogp::ParserException(std::string("Unknown name <")+name+">", 0);
   auto it = vars.find(name);
   if (it == vars.end())
@@ -33,56 +36,47 @@ DynareStaticAtoms::check_variable(const char *name) const
     return it->second;
 }
 
-DynareDynamicAtoms::DynareDynamicAtoms(const DynareDynamicAtoms &dda)
-  : SAtoms(dda)
-{
-  // fill atom_type
-  for (auto it : dda.atom_type)
-    atom_type.emplace(varnames.query(it.first), it.second);
-}
-
 void
-DynareDynamicAtoms::parse_variable(const char *in, std::string &out, int &ll) const
+DynareDynamicAtoms::parse_variable(const string &in, std::string &out, int &ll) const
 {
   ll = 0;
-  std::string str = in;
-  auto left = str.find_first_of("({");
+  auto left = in.find_first_of("({");
   if (left != string::npos)
     {
-      out = str.substr(0, left);
+      out = in.substr(0, left);
       left++;
-      auto right = str.find_first_of(")}", left);
+      auto right = in.find_first_of(")}", left);
       if (string::npos == right)
         throw ogp::ParserException(string("Syntax error when parsing Dynare atom <")+in+">.", 0);
-      ll = std::stoi(str.substr(left, right-left));
+      ll = std::stoi(in.substr(left, right-left));
     }
   else
     out = in;
 }
 
 void
-DynareDynamicAtoms::register_uniq_endo(const char *name)
+DynareDynamicAtoms::register_uniq_endo(string name)
 {
   FineAtoms::register_uniq_endo(name);
-  atom_type.emplace(varnames.query(name), atype::endovar);
+  atom_type.emplace(std::move(name), atype::endovar);
 }
 
 void
-DynareDynamicAtoms::register_uniq_exo(const char *name)
+DynareDynamicAtoms::register_uniq_exo(string name)
 {
   FineAtoms::register_uniq_exo(name);
-  atom_type.emplace(varnames.query(name), atype::exovar);
+  atom_type.emplace(std::move(name), atype::exovar);
 }
 
 void
-DynareDynamicAtoms::register_uniq_param(const char *name)
+DynareDynamicAtoms::register_uniq_param(string name)
 {
   FineAtoms::register_uniq_param(name);
-  atom_type.emplace(varnames.query(name), atype::param);
+  atom_type.emplace(std::move(name), atype::param);
 }
 
 bool
-DynareDynamicAtoms::is_type(const char *name, atype tp) const
+DynareDynamicAtoms::is_type(const string &name, atype tp) const
 {
   auto it = atom_type.find(name);
   if (it != atom_type.end() && it->second == tp)
@@ -95,10 +89,11 @@ void
 DynareDynamicAtoms::print() const
 {
   SAtoms::print();
-  printf("Name types:\n");
+  std::cout << "Name types:\n";
   for (auto it : atom_type)
-    printf("name=%s type=%s\n", it.first,
-           it.second == atype::endovar ? "endovar" : it.second == atype::exovar ? "exovar" : "param");
+    std::cout << "name=" << it.first << " type="
+              << (it.second == atype::endovar ? "endovar" : it.second == atype::exovar ? "exovar" : "param")
+              << '\n';
 }
 
 std::string
@@ -113,22 +108,18 @@ DynareDynamicAtoms::convert(int t) const
   if (is_constant(t))
     {
       double v = get_constant_value(t);
-      char buf[100];
-      sprintf(buf, "%20.16g", v);
-      const char *s = buf;
-      while (*s == ' ')
-        ++s;
-      return s;
+      std::ostringstream buf;
+      buf << std::setprecision(std::numeric_limits<double>::max_digits10)
+          << v;
+      return buf.str();
     }
 
-  const char *s = name(t);
+  const string &s = name(t);
   if (is_type(s, atype::endovar))
     {
       int ll = lead(t);
       if (ll)
-        return std::string{s} + '(' + std::to_string(ll) + ')';
-      else
-        return s;
+        return s + '(' + std::to_string(ll) + ')';
     }
 
   return s;
@@ -248,7 +239,7 @@ DynareSteadySubstitutions::DynareSteadySubstitutions(const ogp::FineAtoms &a,
 void
 DynareSteadySubstitutions::load(int i, double res)
 {
-  const char *name = left_hand_sides[i];
+  const string &name = left_hand_sides[i];
   int iouter = atoms.name2outer_endo(name);
   int iy = atoms.outer2y_endo()[iouter];
   if (!std::isfinite(y[iy]))
@@ -263,7 +254,7 @@ DynareStaticSteadySubstitutions(const ogp::FineAtoms &a, const ogp::StaticFineAt
   : atoms(a), atoms_static(sa), y(yy)
 {
   // fill the vector of left and right hand sides
-  for (auto it : subst)
+  for (const auto &it : subst)
     {
       left_hand_sides.push_back(it.first);
       right_hand_sides.push_back(it.second);
@@ -278,7 +269,7 @@ DynareStaticSteadySubstitutions(const ogp::FineAtoms &a, const ogp::StaticFineAt
 void
 DynareStaticSteadySubstitutions::load(int i, double res)
 {
-  const char *name = left_hand_sides[i];
+  const string &name = left_hand_sides[i];
   int iouter = atoms.name2outer_endo(name);
   int iy = atoms.outer2y_endo()[iouter];
   if (!std::isfinite(y[iy]))

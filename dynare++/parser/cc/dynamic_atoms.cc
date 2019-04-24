@@ -7,51 +7,13 @@
 
 using namespace ogp;
 
-NameStorage::NameStorage(const NameStorage &stor)
+void
+NameStorage::insert(string name)
 {
-  for (auto i : stor.name_store)
+  if (!query(name))
     {
-      auto *str = new char[strlen(i)+1];
-      strcpy(str, i);
-      name_store.push_back(str);
-      name_set.insert(str);
-    }
-}
-
-NameStorage::~NameStorage()
-{
-  while (name_store.size() > 0)
-    {
-      delete [] name_store.back();
-      name_store.pop_back();
-    }
-}
-
-const char *
-NameStorage::query(const char *name) const
-{
-  auto it = name_set.find(name);
-  if (it == name_set.end())
-    return nullptr;
-  else
-    return (*it);
-}
-
-const char *
-NameStorage::insert(const char *name)
-{
-  auto it = name_set.find(name);
-  if (it == name_set.end())
-    {
-      auto *str = new char[strlen(name)+1];
-      strcpy(str, name);
-      name_store.push_back(str);
-      name_set.insert(str);
-      return str;
-    }
-  else
-    {
-      return (*it);
+      name_store.push_back(name);
+      name_set.insert(std::move(name));
     }
 }
 
@@ -104,15 +66,12 @@ Constants::get_constant_value(int t) const
   if (it != cmap.end())
     return it->second;
   else
-    {
-      throw ogu::Exception(__FILE__, __LINE__,
-                           "Tree index is not constant in Constants::get_constant_value");
-      return 0;
-    }
+    throw ogu::Exception(__FILE__, __LINE__,
+                         "Tree index is not constant in Constants::get_constant_value");
 }
 
 int
-Constants::check(const char *str) const
+Constants::check(const string &str) const
 {
   double d = std::stod(str);
   auto it = cinvmap.find(d);
@@ -126,26 +85,11 @@ void
 Constants::print() const
 {
   for (const auto &it : cmap)
-    printf("$%d:  %8.4g\n", it.first, it.second);
-}
-
-DynamicAtoms::DynamicAtoms() = default;
-
-DynamicAtoms::DynamicAtoms(const DynamicAtoms &da)
-  : Constants(da),
-    varnames(da.varnames), vars(), indices(),
-    nv(da.nv), minlag(da.minlag), maxlead(da.maxlead)
-{
-  // copy vars
-  for (const auto & var : da.vars)
-    vars.emplace(varnames.query(var.first), var.second);
-  // copy indices
-  for (auto indice : da.indices)
-    indices.emplace(indice.first, varnames.query(indice.second));
+    std::cout << "$" << it.first << ":  " << it.second << "\n";
 }
 
 int
-DynamicAtoms::check(const char *name) const
+DynamicAtoms::check(const string &name) const
 {
   if (is_string_constant(name))
     return Constants::check(name);
@@ -154,12 +98,12 @@ DynamicAtoms::check(const char *name) const
 }
 
 int
-DynamicAtoms::check_variable(const char *name) const
+DynamicAtoms::check_variable(const string &name) const
 {
   string str;
   int ll;
   parse_variable(name, str, ll);
-  auto it = vars.find(str.c_str());
+  auto it = vars.find(str);
 
   if (it != vars.end())
     {
@@ -172,7 +116,7 @@ DynamicAtoms::check_variable(const char *name) const
 }
 
 void
-DynamicAtoms::assign(const char *name, int t)
+DynamicAtoms::assign(const string &name, int t)
 {
   if (is_string_constant(name))
     assign_constant(name, t);
@@ -181,7 +125,7 @@ DynamicAtoms::assign(const char *name, int t)
 }
 
 void
-DynamicAtoms::assign_constant(const char *name, int t)
+DynamicAtoms::assign_constant(const string &name, int t)
 {
   double val = std::stod(name);
   add_constant(t, val);
@@ -190,19 +134,19 @@ DynamicAtoms::assign_constant(const char *name, int t)
 // parse the name and then call assing_variable(varname, ll, t)
 
 void
-DynamicAtoms::assign_variable(const char *name, int t)
+DynamicAtoms::assign_variable(const string &name, int t)
 {
   int ll;
   string str;
   parse_variable(name, str, ll);
   // here str is just name without lead/lag
-  const char *ss = varnames.insert(str.c_str());
+  varnames.insert(str);
 
-  assign_variable(ss, ll, t);
+  assign_variable(str, ll, t);
 }
 
 void
-DynamicAtoms::assign_variable(const char *varname, int ll, int t)
+DynamicAtoms::assign_variable(const string &varname, int ll, int t)
 {
   if (indices.end() != indices.find(t))
     throw ogu::Exception(__FILE__, __LINE__,
@@ -226,14 +170,12 @@ DynamicAtoms::assign_variable(const char *varname, int ll, int t)
   indices.emplace(t, varname);
 
   nv++;
-  if (ll < minlag)
-    minlag = ll;
-  if (ll > maxlead)
-    maxlead = ll;
+  minlag = std::min(ll, minlag);
+  maxlead = std::max(ll, maxlead);
 }
 
 void
-DynamicAtoms::unassign_variable(const char *varname, int ll, int t)
+DynamicAtoms::unassign_variable(const string &varname, int ll, int t)
 {
   auto it = vars.find(varname);
   if (it != vars.end())
@@ -315,7 +257,7 @@ DynamicAtoms::varspan(int t, int &mlead, int &mlag) const
 }
 
 void
-DynamicAtoms::varspan(const char *name, int &mlead, int &mlag) const
+DynamicAtoms::varspan(const string &name, int &mlead, int &mlag) const
 {
   auto it = vars.find(name);
   if (vars.end() == it)
@@ -332,11 +274,11 @@ DynamicAtoms::varspan(const char *name, int &mlead, int &mlag) const
 }
 
 void
-DynamicAtoms::varspan(const vector<const char *> &names, int &mlead, int &mlag) const
+DynamicAtoms::varspan(const vector<string> &names, int &mlead, int &mlag) const
 {
   mlead = std::numeric_limits<int>::min();
   mlag = std::numeric_limits<int>::max();
-  for (auto name : names)
+  for (const auto &name : names)
     {
       int lag, lead;
       varspan(name, lead, lag);
@@ -348,11 +290,11 @@ DynamicAtoms::varspan(const vector<const char *> &names, int &mlead, int &mlag) 
 bool
 DynamicAtoms::is_named_atom(int t) const
 {
-  return (indices.end() != indices.find(t));
+  return indices.end() != indices.find(t);
 }
 
 int
-DynamicAtoms::index(const char *name, int ll) const
+DynamicAtoms::index(const string &name, int ll) const
 {
   auto it = vars.find(name);
   if (vars.end() != it)
@@ -366,14 +308,13 @@ DynamicAtoms::index(const char *name, int ll) const
 }
 
 bool
-DynamicAtoms::is_referenced(const char *name) const
+DynamicAtoms::is_referenced(const string &name) const
 {
-  auto it = vars.find(name);
-  return it != vars.end();
+  return vars.find(name) != vars.end();
 }
 
 const DynamicAtoms::Tlagmap &
-DynamicAtoms::lagmap(const char *name) const
+DynamicAtoms::lagmap(const string &name) const
 {
   auto it = vars.find(name);
   if (vars.end() == it)
@@ -383,7 +324,7 @@ DynamicAtoms::lagmap(const char *name) const
   return it->second;
 }
 
-const char *
+const string &
 DynamicAtoms::name(int t) const
 {
   auto it = indices.find(t);
@@ -396,7 +337,7 @@ DynamicAtoms::name(int t) const
 int
 DynamicAtoms::lead(int t) const
 {
-  const char *nam = name(t);
+  const string &nam = name(t);
   const Tlagmap &lmap = lagmap(nam);
   auto it = lmap.begin();
   while (it != lmap.end() && it->second != t)
@@ -410,32 +351,32 @@ DynamicAtoms::lead(int t) const
 void
 DynamicAtoms::print() const
 {
-  printf("names:\n");
+  std::cout << "names:\n";
   varnames.print();
-  printf("constants:\n");
+  std::cout << "constants:\n";
   Constants::print();
-  printf("variables:\n");
+  std::cout << "variables:\n";
   for (const auto & var : vars)
     {
       const Tlagmap &lmap = var.second;
       for (auto itt : lmap)
-        printf("$%d: %s(%d)\n", itt.second, var.first, itt.first);
+        std::cout << "$" << itt.second << ": " << var.first << "(" << itt.first << ")\n";
     }
-  printf("indices:\n");
+  std::cout << "indices:\n";
   for (auto indice : indices)
-    printf(u8"t=%d ⇒ %s\n", indice.first, indice.second);
+    std::cout << "t=" << indice.first << u8" ⇒ " << indice.second << "\n";
 }
 
 /** Note that the str has been parsed by the lexicographic
  * analyzer. It can be either a variable or a double. So it is easy to
  * recognize it by the first character. */
 bool
-DynamicAtoms::is_string_constant(const char *str)
+DynamicAtoms::is_string_constant(const string &str)
 {
   return str[0] == '.' || str[0] == '-' || (str[0] >= '0' && str[0] <= '9');
 }
 
-VarOrdering::VarOrdering(const VarOrdering &vo, const vector<const char *> &vnames,
+VarOrdering::VarOrdering(const VarOrdering &vo, const vector<string> &vnames,
                          const DynamicAtoms &a)
   : n_stat(vo.n_stat), n_pred(vo.n_pred), n_both(vo.n_both), n_forw(vo.n_forw),
     der_atoms(vo.der_atoms), positions(vo.positions),
@@ -446,8 +387,7 @@ VarOrdering::VarOrdering(const VarOrdering &vo, const vector<const char *> &vnam
 bool
 VarOrdering::check(int t) const
 {
-  auto it = positions.find(t);
-  return it != positions.end();
+  return positions.find(t) != positions.end();
 }
 
 int
@@ -455,15 +395,10 @@ VarOrdering::get_pos_of(int t) const
 {
   auto it = positions.find(t);
   if (it != positions.end())
-    {
-      return it->second;
-    }
+    return it->second;
   else
-    {
-      throw ogu::Exception(__FILE__, __LINE__,
-                           "Couldn't find the tree index in VarOrdering::get_pos_of");
-      return -1;
-    }
+    throw ogu::Exception(__FILE__, __LINE__,
+                         "Couldn't find the tree index in VarOrdering::get_pos_of");
 }
 
 void
@@ -487,7 +422,7 @@ VarOrdering::do_general(ord_type ordering)
 
   for (unsigned int i = 0; i < varnames.size(); i++)
     {
-      const char *ss = varnames[i];
+      const string &ss = varnames[i];
       int lead;
       int lag;
       atoms.varspan(ss, lead, lag);
@@ -516,10 +451,8 @@ VarOrdering::do_general(ord_type ordering)
           y2o_both.push_back(i);
         }
       else
-        {
-          throw ogu::Exception(__FILE__, __LINE__,
-                               "A wrong lag/lead of a variable in VarOrdering::do_pbspbfbf");
-        }
+        throw ogu::Exception(__FILE__, __LINE__,
+                             "A wrong lag/lead of a variable in VarOrdering::do_pbspbfbf");
     }
 
   // here we fill ords according to ordering
@@ -546,11 +479,9 @@ VarOrdering::do_general(ord_type ordering)
       ords[6] = &pred_minus;
       ords[7] = &both_minus;
     }
-  else // BEWARE: when implementing a new ordering, check also a
-    {// code below setting y2outer
-      throw ogu::Exception(__FILE__, __LINE__,
-                           "Ordering not implemented in VarOrdering::do_general");
-    }
+  else // BEWARE: when implementing a new ordering, check also the code below setting y2outer
+    throw ogu::Exception(__FILE__, __LINE__,
+                         "Ordering not implemented in VarOrdering::do_general");
 
   // make der_atoms and positions
   int off = 0;
@@ -652,18 +583,19 @@ VarOrdering::do_increasing_time()
 void
 VarOrdering::print() const
 {
-  printf("nstat=%d, npred=%d, nboth=%d, nforw=%d\n", n_stat, n_pred, n_both, n_forw);
-  printf("der_atoms:\n");
+  std::cout << "nstat=" << n_stat << ", npred=" << n_pred << ", nboth=" << n_both
+            << ", nforw=" << n_forw << "\n"
+            << "der_atoms:\n";
   for (int der_atom : der_atoms)
-    printf(" %d", der_atom);
-  printf("\nmap:\n");
+    std::cout << " " << der_atom;
+  std::cout << "\nmap:\n";
   for (auto position : positions)
-    printf(u8" [%d→%d]", position.first, position.second);
-  printf("\ny2outer:\n");
+    std::cout << " [" << position.first << u8"→" << position.second << "]";
+  std::cout << "\ny2outer:\n";
   for (int i : y2outer)
-    printf(" %d", i);
-  printf("\nouter2y:\n");
+    std::cout << " " <<  i;
+  std::cout << "\nouter2y:\n";
   for (int i : outer2y)
-    printf(" %d", i);
-  printf("\n");
+    std::cout << " " << i;
+  std::cout << "\n";
 }

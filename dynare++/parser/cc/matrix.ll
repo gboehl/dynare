@@ -2,10 +2,12 @@
 %{
 // Copyright © 2006-2011, Ondra Kamenik
 
+#include <string>
+
 #include "location.hh"
 #include "matrix_tab.hh"
 
-extern void matrix_error(const char*);
+extern void matrix_error(std::string);
 
 #define YY_USER_ACTION SET_LLOC(matrix_);
 %}
@@ -43,9 +45,7 @@ extern void matrix_error(const char*);
 }
 
 . {
-	char mes[300];
-	sprintf(mes, "Unrecognized character %s", matrix_text);
-	matrix_error(mes); 
+        matrix_error(std::string{"Unrecognized character "} + matrix_text);
 }
 
 %%

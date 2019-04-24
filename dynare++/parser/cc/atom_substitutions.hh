@@ -30,10 +30,10 @@ namespace ogp
   class AtomSubstitutions
   {
   public:
-    using Tshiftname = pair<const char *, int>;
-    using Tshiftmap = map<const char *, Tshiftname, ltstr>;
+    using Tshiftname = pair<string, int>;
+    using Tshiftmap = map<string, Tshiftname>;
     using Tshiftnameset = set<Tshiftname>;
-    using Toldnamemap = map<const char *, Tshiftnameset, ltstr>;
+    using Toldnamemap = map<string, Tshiftnameset>;
   protected:
     /** This maps a new name to a shifted old name. This is, one
      * entry looks as "a_m3 ==> a(-3)", saying that a variable
@@ -76,15 +76,15 @@ namespace ogp
      * substitution method of the new atoms. This says that the
      * new name, say "a_m3" is a substitution of old name "a"
      * shifted by -3. */
-    void add_substitution(const char *newname, const char *oldname, int tshift);
+    void add_substitution(string newname, string oldname, int tshift);
     /** This is called when all substitutions are finished. This
      * forms the new external ordering of the new atoms and calls
      * parsing_finished() for the new atoms with the given ordering type. */
     void substitutions_finished(VarOrdering::ord_type ot);
     /** Returns a new name for old name and given tshift. For "a"
      * and tshift=-3, it returns "a_m3". If there is no such
-     * substitution, it returns NULL. */
-    const char *get_new4old(const char *oldname, int tshift) const;
+     * substitution, it returns an empty string. */
+    string get_new4old(const string &oldname, int tshift) const;
     /** Return new2old. */
     const Tshiftmap &
     get_new2old() const
@@ -127,7 +127,6 @@ namespace ogp
     {
     }
     SAtoms(const SAtoms &sa) = default;
-    ~SAtoms() override = default;
     /** This substitutes all lags and leads for all exogenous and
      * all lags and leads greater than 1 for all endogenous
      * variables. This is useful for perfect foresight problems
@@ -140,14 +139,14 @@ namespace ogp
   protected:
     /** This finds an endogenous variable name which occurs between
      * ll1 and ll2 included. */
-    const char *
+    string
     findEndoWithLeadInInterval(int ll1, int ll2) const
     {
       return findNameWithLeadInInterval(get_endovars(), ll1, ll2);
     }
     /** This finds an exogenous variable name which occurs between
      * ll1 and ll2 included. */
-    const char *
+    string
     findExoWithLeadInInterval(int ll1, int ll2) const
     {
       return findNameWithLeadInInterval(get_exovars(), ll1, ll2);
@@ -159,7 +158,7 @@ namespace ogp
      * such form is already registered, one more character (either
      * 'p' or 'm') is added and the test is performed again. The
      * resulting name is returned in a string out. */
-    void attemptAuxName(const char *str, int ll, string &out) const;
+    void attemptAuxName(const string &str, int ll, string &out) const;
 
     /** This makes auxiliary variables to eliminate all leads/lags
      * greater/less than or equal to start up to the limit_lead
@@ -170,13 +169,13 @@ namespace ogp
      * atoms are created in this object. The auxiliary equations
      * are created in the given FormulaParser. The value of step
      * is allowed to be either -1 (lags) or +1 (leads). */
-    void makeAuxVariables(const char *name, int step, int start, int limit_lead,
+    void makeAuxVariables(const string &name, int step, int start, int limit_lead,
                           FormulaParser &fp, AtomSubstitutions &as);
   private:
     /** This is a worker routine for findEndoWithLeadInInterval
      * and findExoWithLeadInInterval. */
-    const char *findNameWithLeadInInterval(const vector<const char *> &names,
-                                           int ll1, int ll2) const;
+    string findNameWithLeadInInterval(const vector<string> &names,
+                                      int ll1, int ll2) const;
 
   };
 

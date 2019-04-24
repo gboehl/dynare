@@ -7,32 +7,6 @@
 
 using namespace ogp;
 
-StaticAtoms::StaticAtoms(const StaticAtoms &a)
-  : Atoms(), Constants(a), varnames(a.varnames),
-    varorder(), vars(), indices()
-{
-  // fill varorder
-  for (auto i : a.varorder)
-    {
-      const char *s = varnames.query(i);
-      varorder.push_back(s);
-    }
-
-  // fill vars
-  for (auto var : a.vars)
-    {
-      const char *s = varnames.query(var.first);
-      vars.emplace(s, var.second);
-    }
-
-  // fill indices
-  for (auto indice : a.indices)
-    {
-      const char *s = varnames.query(indice.second);
-      indices.emplace(indice.first, s);
-    }
-}
-
 void
 StaticAtoms::import_atoms(const DynamicAtoms &da, OperationTree &otree, Tintintmap &tmap)
 {
@@ -40,14 +14,14 @@ StaticAtoms::import_atoms(const DynamicAtoms &da, OperationTree &otree, Tintintm
 
   for (int i = 0; i < da.get_name_storage().num(); i++)
     {
-      const char *name = da.get_name_storage().get_name(i);
+      const string &name = da.get_name_storage().get_name(i);
       register_name(name);
       int tnew = otree.add_nulary();
       assign(name, tnew);
       if (da.is_referenced(name))
         {
           const DynamicAtoms::Tlagmap &lmap = da.lagmap(name);
-          for (auto it : lmap)
+          for (const auto &it : lmap)
             {
               int told = it.second;
               tmap.emplace(told, tnew);
@@ -57,7 +31,7 @@ StaticAtoms::import_atoms(const DynamicAtoms &da, OperationTree &otree, Tintintm
 }
 
 int
-StaticAtoms::check(const char *name) const
+StaticAtoms::check(const string &name) const
 {
   if (DynamicAtoms::is_string_constant(name))
     return Constants::check(name);
@@ -66,7 +40,7 @@ StaticAtoms::check(const char *name) const
 }
 
 int
-StaticAtoms::index(const char *name) const
+StaticAtoms::index(const string &name) const
 {
   auto it = vars.find(name);
   if (it == vars.end())
@@ -75,18 +49,8 @@ StaticAtoms::index(const char *name) const
     return it->second;
 }
 
-const char *
-StaticAtoms::inv_index(int t) const
-{
-  auto it = indices.find(t);
-  if (it == indices.end())
-    return nullptr;
-  else
-    return it->second;
-}
-
 void
-StaticAtoms::assign(const char *name, int t)
+StaticAtoms::assign(const string &name, int t)
 {
   if (DynamicAtoms::is_string_constant(name))
     {
@@ -95,9 +59,9 @@ StaticAtoms::assign(const char *name, int t)
     }
   else
     {
-      const char *ss = varnames.insert(name);
-      vars.emplace(ss, t);
-      indices.emplace(t, ss);
+      varnames.insert(name);
+      vars.emplace(name, t);
+      indices.emplace(t, name);
     }
 }
 
@@ -105,26 +69,26 @@ vector<int>
 StaticAtoms::variables() const
 {
   vector<int> res;
-  for (auto var : vars)
+  for (const auto &var : vars)
     res.push_back(var.second);
   return res;
 }
 
 void
-StaticAtoms::register_name(const char *name)
+StaticAtoms::register_name(string name)
 {
-  const char *ss = varnames.insert(name);
-  varorder.push_back(ss);
+  varnames.insert(name);
+  varorder.push_back(std::move(name));
 }
 
 void
 StaticAtoms::print() const
 {
-  printf("constants:\n");
+  std::cout << "constants:\n";
   Constants::print();
-  printf("variable names:\n");
+  std::cout << "variable names:\n";
   varnames.print();
-  printf("map to tree indices:\n");
+  std::cout << "map to tree indices:\n";
   for (auto var : vars)
-    printf(u8"%s\t→\t%d\n", var.first, var.second);
+    std::cout << var.first << u8"\t→\t" << var.second << "\n";
 }

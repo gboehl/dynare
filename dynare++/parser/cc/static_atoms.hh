@@ -12,12 +12,12 @@ namespace ogp
   class StaticAtoms : public Atoms, public Constants
   {
   protected:
-    using Tvarmap = map<const char *, int, ltstr>;
-    using Tinvmap = map<int, const char *>;
+    using Tvarmap = map<string, int>;
+    using Tinvmap = map<int, string>;
     /** Storage for names. */
     NameStorage varnames;
     /** Outer order of variables. */
-    vector<const char *> varorder;
+    vector<string> varorder;
     /** This is the map mapping a variable name to the tree
      * index. */
     Tvarmap vars;
@@ -25,11 +25,7 @@ namespace ogp
      * variable name. */
     Tinvmap indices;
   public:
-    StaticAtoms() : Atoms(), Constants(), varnames(), varorder(), vars()
-    {
-    }
-    /* Copy constructor. */
-    StaticAtoms(const StaticAtoms &a);
+    StaticAtoms() = default;
     /** Conversion from DynamicAtoms. This takes all atoms from
      * the DynamicAtoms and adds its static version. The new tree
      * indices are allocated in the passed OperationTree. Whole
@@ -51,10 +47,10 @@ namespace ogp
      * constant is registered in Constants, it returns -1
      * otherwise. If the name is not constant, it returns result
      * from check_variable, which is implemented by a subclass. */
-    int check(const char *name) const override;
+    int check(const string &name) const override;
     /** This assigns a given tree index to the variable name. The
      * name should have been checked before the call. */
-    void assign(const char *name, int t) override;
+    void assign(const string &name, int t) override;
     int
     nvar() const override
     {
@@ -63,12 +59,9 @@ namespace ogp
     /** This returns a vector of all variables. */
     vector<int> variables() const override;
     /** This returns a tree index of the given variable. */
-    int index(const char *name) const;
-    /** This returns a name from the given tree index. NULL is
-     * returned if the tree index doesn't exist. */
-    const char *inv_index(int t) const;
+    int index(const string &name) const;
     /** This returns a name in a outer ordering. (There is no other ordering.) */
-    const char *
+    const string &
     name(int i) const
     {
       return varorder[i];
@@ -79,7 +72,7 @@ namespace ogp
      * this, for example, to ensure uniqueness of the
      * name. However, this method should be always called in
      * overriding methods to do the registering job. */
-    virtual void register_name(const char *name);
+    virtual void register_name(string name);
     /** Return the name storage to allow querying to other
      * classes. */
     const NameStorage &
@@ -91,7 +84,7 @@ namespace ogp
     /** This checks the variable. The implementing subclass might
      * want to throw an exception if the variable has not been
      * registered. */
-    virtual int check_variable(const char *name) const = 0;
+    virtual int check_variable(const string &name) const = 0;
   };
 };
 

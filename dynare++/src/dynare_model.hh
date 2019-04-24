@@ -18,6 +18,7 @@
 #include <unordered_set>
 #include <ostream>
 #include <memory>
+#include <iostream>
 
 namespace ogdyn
 {
@@ -40,14 +41,11 @@ namespace ogdyn
     {
     }
     PosInterval &operator=(const PosInterval &pi) = default;
-    /** This returns the interval beginning and interval length
-     * within the given string. */
-    void translate(const char *beg, int len, const char * &ibeg, int &ilen) const;
     /** Debug print. */
     void
     print() const
     {
-      printf("fl=%d fc=%d ll=%d lc=%d\n", fl, fc, ll, lc);
+      std::cout << "fl=" << fl << " fc=" << fc << " ll=" << ll << " lc=" << lc << '\n';
     }
   };
 
@@ -189,7 +187,7 @@ namespace ogdyn
      * sort is governed by the flag. See dynglob.y for values of
      * the flag. This is used by a subclass when declaring the
      * names. */
-    void add_name(const std::string &name, int flag);
+    void add_name(std::string name, int flag);
     /** This checks the model consistency. Thus includes: number
      * of endo variables and number of equations, min and max lag
      * of endogenous variables and occurrrences of exogenous
@@ -224,7 +222,7 @@ namespace ogdyn
      * this way, all occurrences of term t are substituted with
      * the atom name(ll). The method handles also rewriting
      * operation tree including derivatives of the term t. */
-    void substitute_atom_for_term(const char *name, int ll, int t);
+    void substitute_atom_for_term(const string &name, int ll, int t);
     /** This performs a final job after the model is parsed. It
      * creates the PlannerBuilder object if the planner's FOC are
      * needed, then it creates ForwSubstBuilder handling multiple
@@ -255,7 +253,7 @@ namespace ogdyn
      * of the given length corresponding to the Dynare++ model
      * file. If the given ord is not -1, then it overrides setting
      * in the model file. */
-    DynareParser(const char *str, int len, int ord);
+    DynareParser(const string &str, int ord);
     DynareParser(const DynareParser &dp);
     std::unique_ptr<DynareModel>
     clone() const override
@@ -265,7 +263,7 @@ namespace ogdyn
     /** Adds a name of endogenous, exogenous or a parameter. This
      * addss the name to the parent class DynareModel and also
      * registers the name to either paramset, or initval. */
-    void add_name(const char *name, int flag);
+    void add_name(string name, int flag);
     /** Sets position of the model section. Called from
      * dynglob.y. */
     void
@@ -323,13 +321,13 @@ namespace ogdyn
       pldiscount_end = off2;
     }
     /** Processes a syntax error from bison. */
-    void error(const char *mes);
+    void error(string mes);
     /** Debug print. */
     void print() const;
   protected:
-    void parse_glob(int length, const char *stream);
-    int parse_order(int length, const char *stream);
-    int parse_pldiscount(int length, const char *stream);
+    void parse_glob(const string &stream);
+    int parse_order(const string &stream);
+    int parse_pldiscount(const string &stream);
     /** Evaluate paramset assignings and set param_vals. */
     void calc_params();
     /** Evaluate initval assignings and set init_vals. */
@@ -364,7 +362,7 @@ namespace ogdyn
     DynareSPModel(const std::vector<std::string> &endo,
                   const std::vector<std::string> &exo,
                   const std::vector<std::string> &par,
-                  const char *equations, int len, int ord);
+                  const string &equations, int ord);
     DynareSPModel(const DynareSPModel &dm) = default;
     ~DynareSPModel() override = default;
     std::unique_ptr<DynareModel>

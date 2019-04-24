@@ -105,7 +105,7 @@ SimResults::writeMat(const std::string &base, const std::string &lname) const
   mat_t *matfd = Mat_Create(matfile_name.c_str(), nullptr);
   if (matfd)
     {
-      writeMat(matfd, lname.c_str());
+      writeMat(matfd, lname);
       Mat_Close(matfd);
     }
 }

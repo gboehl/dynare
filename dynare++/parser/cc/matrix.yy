@@ -11,7 +11,7 @@
 {
 #include "matrix_parser.hh"
 
-void matrix_error(const char*);
+void matrix_error(std::string);
 int matrix_lex();
 extern ogp::MatrixParser* mparser;
 }
@@ -63,9 +63,9 @@ one_row : NEW_ROW {mparser->start_row();} lod;
 %%
 
 void
-matrix_error(const char* s)
+matrix_error(std::string s)
 {
-  mparser->error(s);
+  mparser->error(std::move(s));
 }
 
 

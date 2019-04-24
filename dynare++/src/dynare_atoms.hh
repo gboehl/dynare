@@ -19,11 +19,12 @@ namespace ogdyn
 {
   using std::map;
   using std::vector;
+  using std::string;
 
   /** A definition of a type mapping a string to an integer. Used as
    * a substitution map, saying what names are substituted for what
    * expressions represented by tree indices. */
-  using Tsubstmap = map<const char *, int, ogp::ltstr>;
+  using Tsubstmap = map<string, int>;
 
   class DynareStaticAtoms : public ogp::StaticAtoms
   {
@@ -37,12 +38,12 @@ namespace ogdyn
     /** This registers a unique varname identifier. It throws an
      * exception if the variable name is duplicate. It checks the
      * uniqueness and then it calls StaticAtoms::register_name. */
-    void register_name(const char *name) override;
+    void register_name(string name) override;
   protected:
     /** This returns a tree index of the given variable, and if
      * the variable has not been registered, it throws an
      * exception. */
-    int check_variable(const char *name) const override;
+    int check_variable(const string &name) const override;
   };
 
   class DynareDynamicAtoms : public ogp::SAtoms, public ogp::NularyStringConvertor
@@ -50,7 +51,7 @@ namespace ogdyn
   public:
     enum class atype {endovar, exovar, param};
   protected:
-    using Tatypemap = map<const char *, atype, ogp::ltstr>;
+    using Tatypemap = map<string, atype>;
     /** The map assigining a type to each name. */
     Tatypemap atom_type;
   public:
@@ -58,20 +59,18 @@ namespace ogdyn
       : ogp::SAtoms()
     {
     }
-    DynareDynamicAtoms(const DynareDynamicAtoms &dda);
-    ~DynareDynamicAtoms() override = default;
     /** This parses a variable of the forms: varname(+3),
      * varname(3), varname, varname(-3), varname(0), varname(+0),
      * varname(-0). */
-    void parse_variable(const char *in, std::string &out, int &ll) const override;
+    void parse_variable(const string &in, std::string &out, int &ll) const override;
     /** Registers unique name of endogenous variable. */
-    void register_uniq_endo(const char *name) override;
+    void register_uniq_endo(string name) override;
     /** Registers unique name of exogenous variable. */
-    void register_uniq_exo(const char *name) override;
+    void register_uniq_exo(string name) override;
     /** Registers unique name of parameter. */
-    void register_uniq_param(const char *name) override;
+    void register_uniq_param(string name) override;
     /** Return true if the name is a given type. */
-    bool is_type(const char *name, atype tp) const;
+    bool is_type(const string &name, atype tp) const;
     /** Debug print. */
     void print() const override;
     /** Implement NularyStringConvertor::convert. */
@@ -194,7 +193,7 @@ namespace ogdyn
     void load(int i, double res) override;
   protected:
     Vector &y;
-    vector<const char *> left_hand_sides;
+    vector<string> left_hand_sides;
     vector<int> right_hand_sides;
   };
 
@@ -217,7 +216,7 @@ namespace ogdyn
     void load(int i, double res) override;
   protected:
     Vector &y;
-    vector<const char *> left_hand_sides;
+    vector<string> left_hand_sides;
     vector<int> right_hand_sides;
   };
 

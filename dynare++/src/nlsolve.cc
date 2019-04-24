@@ -5,6 +5,9 @@
 #include "nlsolve.hh"
 #include "dynare_exception.hh"
 
+#include <sstream>
+#include <iomanip>
+
 using namespace ogu;
 
 double
@@ -50,10 +53,8 @@ GoldenSectionSearch::search(OneDFunction &f, double x1, double x2)
             {
               // x is on the right from b
               if (f1 > fb && fb < fx)
-                {
-                  // pickup bracket [f1,fb,fx]
-                  x2 = x;
-                }
+                // pickup bracket [f1,fb,fx]
+                x2 = x;
               else
                 {
                   // pickup bracket [fb,fx,f2]
@@ -201,7 +202,6 @@ NLSolver::solve(Vector &xx, int &iter)
   rec <<    "Iter   lambda      residual" << endrec;
   JournalRecord rec1(journal);
   rec1 << u8"───────────────────────────" << endrec;
-  char tmpbuf[14];
 
   x = const_cast<const Vector &>(xx);
   iter = 0;
@@ -213,8 +213,13 @@ NLSolver::solve(Vector &xx, int &iter)
                           "Initial guess does not yield finite residual in NLSolver::solve");
   bool converged = fx.getMax() < tol;
   JournalRecord rec2(journal);
-  sprintf(tmpbuf, "%10.6g", fx.getMax());
-  rec2 << iter << "         N/A   " << tmpbuf << endrec;
+  auto format_double = [](double v)
+                       {
+                         std::ostringstream buf;
+                         buf << std::setw(11) << v;
+                         return buf.str();
+                       };
+  rec2 << iter << "         N/A   " << format_double(fx.getMax()) << endrec;
   while (!converged && iter < max_iter)
     {
       // setup Jacobian
@@ -246,8 +251,7 @@ NLSolver::solve(Vector &xx, int &iter)
       iter++;
 
       JournalRecord rec3(journal);
-      sprintf(tmpbuf, "%10.6g", fx.getMax());
-      rec3 << iter << "    " << lambda << "   " << tmpbuf << endrec;
+      rec3 << iter << "    " << lambda << "   " << format_double(fx.getMax()) << endrec;
     }
   xx = const_cast<const Vector &>(x);
 
