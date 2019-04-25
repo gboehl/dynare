@@ -1,4 +1,4 @@
-EXTRA_DIST = dynare++-ramsey.tex dynare++-tutorial.tex
+EXTRA_DIST = dynare++-ramsey.tex dynare++-tutorial.tex changelog-old.html
 
 if HAVE_PDFLATEX
 pdf-local: dynare++-ramsey.pdf dynare++-tutorial.pdf
