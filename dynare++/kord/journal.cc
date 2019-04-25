@@ -184,7 +184,7 @@ Journal::printHeader()
 {
   *this << u8"This is Dynare++, Copyright © 2004-2011, Ondra Kamenik\n"
         << "Dynare++ comes with ABSOLUTELY NO WARRANTY and is distributed under\n"
-        << "GPL: modules integ, tl, kord, sylv, src, extern and documentation\n"
+        << "GPL: modules integ, tl, kord, sylv, src and documentation\n"
         << "LGPL: modules parser, utils\n"
         << " for GPL  see https://www.gnu.org/licenses/gpl.html\n"
         << " for LGPL see https://www.gnu.org/licenses/lgpl.html\n"
