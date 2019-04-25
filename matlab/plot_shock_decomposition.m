@@ -11,7 +11,7 @@ function [z, steady_state] = plot_shock_decomposition(M_,oo_,options_,varlist)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2016-2018 Dynare Team
+% Copyright (C) 2016-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -36,7 +36,7 @@ if isempty(varlist)
     varlist = M_.endo_names(1:M_.orig_endo_nbr);
 end
 
-[i_var, nvar, index_uniques] = varlist_indices(varlist, M_.endo_names);
+[i_var, ~, index_uniques] = varlist_indices(varlist, M_.endo_names);
 varlist = varlist(index_uniques);
 
 % number of variables

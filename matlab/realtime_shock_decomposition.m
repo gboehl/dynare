@@ -22,7 +22,7 @@ function oo_ = realtime_shock_decomposition(M_,oo_,options_,varlist,bayestopt_,e
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2009-2018 Dynare Team
+% Copyright (C) 2009-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -44,7 +44,7 @@ if isempty(varlist)
     varlist = M_.endo_names(1:M_.orig_endo_nbr);
 end
 
-[i_var, nvar, index_uniques] = varlist_indices(varlist,M_.endo_names);
+[~, ~, index_uniques] = varlist_indices(varlist,M_.endo_names);
 varlist = varlist(index_uniques);
 
 % number of variables
@@ -120,7 +120,6 @@ if fast_realtime
     end
     options_.nobs=nobs;
     [oo2,M_,~,~,Smoothed_Variables_deviation_from_mean2] = evaluate_smoother(parameter_set,varlist,M_,oo_,options_,bayestopt_,estim_params_);
-    gend2 = size(oo2.SmoothedShocks.(M_.exo_names{1}),1);
     prctdone=1;
     if isoctave
         printf([running_text,' %3.f%% done\r'], prctdone*100);
