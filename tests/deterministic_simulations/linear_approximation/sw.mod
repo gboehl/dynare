@@ -121,7 +121,7 @@ if ~oo_.deterministic_simulation.status
    error('Perfect foresight simulation failed')
 end
 
-simul(linear_approximation,periods=300);
+simul(linear_approximation,periods=300, stack_solve_algo=7);
 endo_simul_1 = oo_.endo_simul;
 if ~oo_.deterministic_simulation.status
    error('Perfect foresight simulation failed')

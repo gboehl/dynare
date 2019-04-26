@@ -41,11 +41,12 @@ residuals = zeros(T*ny,1);
 z = zeros(columns(dynamicjacobian), 1);
 
 if nargout == 2
-    JJacobian = spalloc(T*ny, T*ny, T*nnzJ);
+    iJacobian = cell(T,1);
 end
 
 i_rows = 1:ny;
 i_cols_J = i_cols;
+offset = 0;
 
 for it = maximum_lag+(1:T)
     z(jendo) = YY(i_cols);
@@ -53,16 +54,26 @@ for it = maximum_lag+(1:T)
     residuals(i_rows) = dynamicjacobian*z;
     if nargout == 2
         if T==1 && it==maximum_lag+1
-            JJacobian(i_rows, i_cols_J0) = dynamicjacobian(:,i_cols_0);
+            [rows, cols, vals] = find(dynamicjacobian(:,i_cols_0));
+            iJacobian{1} = [rows, i_cols_J0(cols), vals];
         elseif it == maximum_lag+1
-            JJacobian(i_rows,i_cols_J1) = dynamicjacobian(:,i_cols_1);
+            [rows,cols,vals] = find(dynamicjacobian(:,i_cols_1));
+            iJacobian{1} = [offset+rows, i_cols_J1(cols), vals];
         elseif it == maximum_lag+T
-            JJacobian(i_rows,i_cols_J(i_cols_T)) = dynamicjacobian(:,i_cols_T);
+            [rows,cols,vals] = find(dynamicjacobian(:,i_cols_T));
+            iJacobian{T} = [offset+rows, i_cols_J(i_cols_T(cols)), vals];
         else
-            JJacobian(i_rows,i_cols_J) = dynamicjacobian(:,i_cols_j);
+            [rows,cols,vals] = find(dynamicjacobian(:,i_cols_j));
+            iJacobian{it-maximum_lag} = [offset+rows, i_cols_J(cols), vals];
             i_cols_J = i_cols_J + ny;
         end
+        offset = offset + ny;
     end
     i_rows = i_rows + ny;
     i_cols = i_cols + ny;
+end
+
+if nargout == 2
+    iJacobian = cat(1,iJacobian{:});
+    JJacobian = sparse(iJacobian(:,1), iJacobian(:,2), iJacobian(:,3), T*ny, T*ny);
 end
