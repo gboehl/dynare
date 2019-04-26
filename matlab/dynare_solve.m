@@ -46,7 +46,7 @@ if isoctave
 else
     caller_file_name=stack(2).file;
 end
-if strcmp(caller_file_name,'simulation_core.m') || strcmp(caller_file_name,'solve_stacked_problem.m')
+if strcmp(caller_file_name,'solve_stacked_problem.m')
     tolf = options.dynatol.f;
 else
     tolf = options.solve_tolf;
