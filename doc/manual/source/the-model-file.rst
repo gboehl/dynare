@@ -2841,7 +2841,15 @@ speed-up on large models.
        condition, it cannot be simply attached to any
        equation. Rather, it must be attached to the correct affected
        equation as otherwise the solver will solve a different problem
-       than originally intended.
+       than originally intended. Also, since the problem to be solved
+       is nonlinear, the sign of the residuals of the dynamic equation
+       matters. In the previous example, for the nominal interest rate
+       rule, if the LHS and RHS are reversed the sign of the residuals
+       (the difference between the LHS and the RHS) will change and it
+       may happen that solver fails to identify the solution path. More
+       generally, convergence of the nonlinear solver is not guaranteed
+       when using mathematically equivalent representations of the same
+       equation.
 
        Note that in the current implementation, the content of the
        ``mcp`` equation tag is not parsed by the preprocessor. The
