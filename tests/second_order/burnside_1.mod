@@ -29,7 +29,7 @@ steady;
 stoch_simul(order=2,irf=0);
 
 sigma2=M_.Sigma_e;
-i = linspace(1,800,800);
+i = 1:800;
 a = theta*xbar*i+(theta^2*sigma2)/(2*(1-rho)^2)*(i-2*rho*(1-rho.^i)/(1-rho)+rho^2*(1-rho.^(2*i))/(1-rho^2));
 a1 = theta^2*sigma2/(2*(1-rho)^2)*(i-2*rho*(1-rho.^i)/(1-rho)+rho^2*(1-rho.^(2*i))/(1-rho^2));
 b = theta*rho*(1-rho.^i)/(1-rho);
