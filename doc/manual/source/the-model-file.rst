@@ -2066,6 +2066,8 @@ Finding the steady state with Dynare nonlinear solver
        value. Iteration will cease when the residuals are smaller than
        ``tolf``. Default: ``eps^(1/3)``
 
+    .. _solvalg:
+
     .. option:: solve_algo = INTEGER
 
        Determines the non-linear solver to use. Possible values for the
@@ -2483,8 +2485,6 @@ Getting information about the model
     close to :opt:`qz_criterium <qz_criterium = DOUBLE>`.
 
     *Options*
-
-    .. _solvalg:
 
     .. option:: solve_algo = INTEGER
 
