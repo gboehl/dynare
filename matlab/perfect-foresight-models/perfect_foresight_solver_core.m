@@ -1,5 +1,5 @@
 function [oo_, maxerror] = perfect_foresight_solver_core(M_, options_, oo_)
-%function [oo_, maxerror] = perfect_foresight_solver_core(M_, options_, oo_)
+
 % Core function calling solvers for perfect foresight model
 %
 % INPUTS
@@ -11,7 +11,7 @@ function [oo_, maxerror] = perfect_foresight_solver_core(M_, options_, oo_)
 % - oo_                 [struct] contains results
 % - maxerror            [double] contains the maximum absolute error
 
-% Copyright (C) 2015-2017 Dynare Team
+% Copyright (C) 2015-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -33,18 +33,20 @@ if options_.lmmcp.status
     options_.solve_algo = 10;
 end
 
+periods = options_.periods;
+
 if options_.linear_approximation && ~(isequal(options_.stack_solve_algo,0) || isequal(options_.stack_solve_algo,7))
-    error('perfect_foresight_solver: Option linear_approximation is only available with option stack_solve_algo equal to 0.')
+    error('perfect_foresight_solver: Option linear_approximation is only available with option stack_solve_algo equal to 0 or 7.')
 end
 
-if options_.linear && isequal(options_.stack_solve_algo,0)
-    options_.linear_approximation = 1;
+if options_.linear && (isequal(options_.stack_solve_algo, 0) || isequal(options_.stack_solve_algo, 7))
+    options_.linear_approximation = true;
 end
 
 if options_.block
     if options_.bytecode
         try
-            [info, tmp] = bytecode('dynamic', oo_.endo_simul, oo_.exo_simul, M_.params, repmat(oo_.steady_state,1,options_.periods+2), options_.periods);
+            [info, tmp] = bytecode('dynamic', oo_.endo_simul, oo_.exo_simul, M_.params, repmat(oo_.steady_state,1, periods+2), periods);
         catch
             info = 1;
         end
@@ -63,7 +65,7 @@ if options_.block
 else
     if options_.bytecode
         try
-            [info, tmp] = bytecode('dynamic', oo_.endo_simul, oo_.exo_simul, M_.params, repmat(oo_.steady_state,1,options_.periods+2), options_.periods);
+            [info, tmp] = bytecode('dynamic', oo_.endo_simul, oo_.exo_simul, M_.params, repmat(oo_.steady_state, 1, periods+2), periods);
         catch
             info = 1;
         end
@@ -119,14 +121,19 @@ end
 
 if nargout>1
     y0 = oo_.endo_simul(:,1);
-    yT = oo_.endo_simul(:,options_.periods+2);
-    yy  = oo_.endo_simul(:,2:options_.periods+1);
-    if ~exist('illi')
-        illi = M_.lead_lag_incidence';
-        [i_cols,~,i_cols_j] = find(illi(:));
-        illi = illi(:,2:3);
-        [i_cols_J1,~,i_cols_1] = find(illi(:));
-        i_cols_T = nonzeros(M_.lead_lag_incidence(1:2,:)');
+    yT = oo_.endo_simul(:,periods+2);
+    yy  = oo_.endo_simul(:,2:periods+1);
+    illi = M_.lead_lag_incidence';
+    [i_cols,~,i_cols_j] = find(illi(:));
+    illi = illi(:,2:3);
+    [i_cols_J1,~,i_cols_1] = find(illi(:));
+    i_cols_T = nonzeros(M_.lead_lag_incidence(1:2,:)');
+    if periods==1
+        i_cols_0 = nonzeros(M_.lead_lag_incidence(2,:)');
+        i_cols_J0 = find(M_.lead_lag_incidence(2,:)');
+    else
+        i_cols_0 = [];
+        i_cols_J0 = [];
     end
     if options_.block && ~options_.bytecode
         maxerror = oo_.deterministic_simulation.error;
@@ -136,8 +143,8 @@ if nargout>1
         else
             residuals = perfect_foresight_problem(yy(:),str2func([M_.fname '.dynamic']), y0, yT, ...
                                                   oo_.exo_simul,M_.params,oo_.steady_state, ...
-                                                  M_.maximum_lag,options_.periods,M_.endo_nbr,i_cols, ...
-                                                  i_cols_J1, i_cols_1, i_cols_T, i_cols_j, ...
+                                                  M_.maximum_lag, periods,M_.endo_nbr,i_cols, ...
+                                                  i_cols_J1, i_cols_1, i_cols_T, i_cols_j, i_cols_0, i_cols_J0, ...
                                                   M_.NNZDerivatives(1));
         end
         maxerror = max(max(abs(residuals)));

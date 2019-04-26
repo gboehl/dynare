@@ -37,6 +37,8 @@ if isempty(options_.scalv) || options_.scalv == 0
     options_.scalv = oo_.steady_state;
 end
 
+periods = options_.periods;
+
 options_.scalv= 1;
 
 if options_.debug
@@ -56,7 +58,7 @@ if options_.debug
 end
 
 initperiods = 1:M_.maximum_lag;
-lastperiods = (M_.maximum_lag+options_.periods+1):(M_.maximum_lag+options_.periods+M_.maximum_lead);
+lastperiods = (M_.maximum_lag+periods+1):(M_.maximum_lag+periods+M_.maximum_lead);
 
 oo_ = perfect_foresight_solver_core(M_,options_,oo_);
 
@@ -91,8 +93,8 @@ if ~oo_.deterministic_simulation.status && ~options_.no_homotopy
     options_.verbosity = 0;
 
     % Set initial paths for the endogenous and exogenous variables.
-    endoinit = repmat(oo_.steady_state, 1,M_.maximum_lag+options_.periods+M_.maximum_lead);
-    exoinit = repmat(oo_.exo_steady_state',M_.maximum_lag+options_.periods+M_.maximum_lead,1);
+    endoinit = repmat(oo_.steady_state, 1,M_.maximum_lag+periods+M_.maximum_lead);
+    exoinit = repmat(oo_.exo_steady_state',M_.maximum_lag+periods+M_.maximum_lead,1);
 
     % Copy the current paths for the exogenous and endogenous variables.
     exosim = oo_.exo_simul;
@@ -131,7 +133,7 @@ if ~oo_.deterministic_simulation.status && ~options_.no_homotopy
 
         if isequal(iteration, 1)
             % First iteration, same initial guess as in the first call to perfect_foresight_solver_core routine.
-            oo_.endo_simul(:,M_.maximum_lag+1:end-M_.maximum_lead) = endoinit(:,1:options_.periods);
+            oo_.endo_simul(:,M_.maximum_lag+1:end-M_.maximum_lead) = endoinit(:,1:periods);
         elseif path_with_nans || path_with_cplx
             % If solver failed with NaNs or complex number, use previous solution as an initial guess.
             oo_.endo_simul(:,M_.maximum_lag+1:end-M_.maximum_lead) = saved_endo_simul(:,1+M_.maximum_lag:end-M_.maximum_lead);
@@ -174,19 +176,26 @@ if ~oo_.deterministic_simulation.status && ~options_.no_homotopy
 end
 
 
-if ~isreal(oo_.endo_simul(:)) %can only happen without bytecode
+if ~isreal(oo_.endo_simul(:)) % can only happen without bytecode
     y0 = real(oo_.endo_simul(:,1));
-    yT = real(oo_.endo_simul(:,options_.periods+2));
-    yy  = real(oo_.endo_simul(:,2:options_.periods+1));
+    yT = real(oo_.endo_simul(:,periods+2));
+    yy  = real(oo_.endo_simul(:,2:periods+1));
     illi = M_.lead_lag_incidence';
     [i_cols,~,i_cols_j] = find(illi(:));
     illi = illi(:,2:3);
     [i_cols_J1,~,i_cols_1] = find(illi(:));
     i_cols_T = nonzeros(M_.lead_lag_incidence(1:2,:)');
+    if periods==1
+        i_cols_0 = nonzeros(M_.lead_lag_incidence(2,:)');
+        i_cols_J0 = find(M_.lead_lag_incidence(2,:)');
+    else
+        i_cols_0 = [];
+        i_cols_J0 = [];
+    end
     residuals = perfect_foresight_problem(yy(:),str2func([M_.fname '.dynamic']), y0, yT, ...
                                           oo_.exo_simul,M_.params,oo_.steady_state, ...
-                                          M_.maximum_lag,options_.periods,M_.endo_nbr,i_cols, ...
-                                          i_cols_J1, i_cols_1, i_cols_T, i_cols_j, ...
+                                          M_.maximum_lag, periods, M_.endo_nbr, i_cols, ...
+                                          i_cols_J1, i_cols_1, i_cols_T, i_cols_j, i_cols_0, i_cols_J0, ...
                                           M_.NNZDerivatives(1));
     if max(abs(residuals))< options_.dynatol.f
         oo_.deterministic_simulation.status = 1;

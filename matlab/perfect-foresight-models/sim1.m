@@ -101,7 +101,7 @@ for iter = 1:options.simul.maxit
     m = 0;
     for it = (maximum_lag+1):(maximum_lag+periods)
         [d1,jacobian] = model_dynamic(Y(i_cols), exogenousvariables, params, steadystate,it);
-        if it == maximum_lag+periods && it == maximum_lag+1
+        if periods==1 && it==maximum_lag+1
             [r,c,v] = find(jacobian(:,i_cols_0));
             iA((1:length(v))+m,:) = [i_rows(r(:)),i_cols_A0(c(:)),v(:)];
         elseif it == maximum_lag+periods

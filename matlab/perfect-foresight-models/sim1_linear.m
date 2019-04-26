@@ -142,7 +142,7 @@ i_cols_A = ipcn;
 i_cols = ipcn+(maximum_lag-1)*ny;
 m = 0;
 for it = (maximum_lag+1):(maximum_lag+periods)
-    if isequal(it, maximum_lag+periods) && isequal(it, maximum_lag+1)
+    if periods==1 && isequal(it, maximum_lag+1)
         nv = length(v0);
         iA(iv0+m,:) = [i_rows(r0),ic(c0),v0];
     elseif isequal(it, maximum_lag+periods)

@@ -2,47 +2,48 @@ function [residuals,JJacobian] = perfect_foresight_problem(y, dynamic_function, 
                                                   exo_simul, params, steady_state, ...
                                                   maximum_lag, T, ny, i_cols, ...
                                                   i_cols_J1, i_cols_1, i_cols_T, ...
-                                                  i_cols_j,nnzJ)
-% function [residuals,JJacobian] = perfect_foresight_problem(y, dynamic_function, Y0, YT, ...
-%                                            exo_simul, params, steady_state, ...
-%                                            maximum_lag, T, ny, i_cols, ...
-%                                            i_cols_J1, i_cols_1, i_cols_T, ...
-%                                            i_cols_j,nnzJ)
-% computes the residuals and the Jacobian matrix for a perfect foresight problem over T periods.
+                                                  i_cols_j, i_cols_0, i_cols_J0, nnzJ)
+
+% Computes the residuals and the Jacobian matrix for a perfect foresight problem over T periods.
 %
 % INPUTS
-%   y                   [double] N*1 array, terminal conditions for the endogenous variables
-%   dynamic_function    [handle] function handle to _dynamic-file
-%   Y0                  [double] N*1 array, initial conditions for the endogenous variables
-%   YT                  [double] N*1 array, terminal conditions for the endogenous variables
-%   exo_simul           [double] nperiods*M_.exo_nbr matrix of exogenous variables (in declaration order)
+% - y                   [double] N*1 array, terminal conditions for the endogenous variables
+% - dynamic_function    [handle] function handle to _dynamic-file
+% - Y0                  [double] N*1 array, initial conditions for the endogenous variables
+% - YT                  [double] N*1 array, terminal conditions for the endogenous variables
+% - exo_simul           [double] nperiods*M_.exo_nbr matrix of exogenous variables (in declaration order)
 %                                for all simulation periods
-%   params              [double] nparams*1 array, parameter values
-%   steady_state        [double] endo_nbr*1 vector of steady state values
-%   maximum_lag         [scalar] maximum lag present in the model
-%   T                   [scalar] number of simulation periods
-%   ny                  [scalar] number of endogenous variables
-%   i_cols              [double] indices of variables appearing in M.lead_lag_incidence
+% - params              [double] nparams*1 array, parameter values
+% - steady_state        [double] endo_nbr*1 vector of steady state values
+% - maximum_lag         [scalar] maximum lag present in the model
+% - T                   [scalar] number of simulation periods
+% - ny                  [scalar] number of endogenous variables
+% - i_cols              [double] indices of variables appearing in M.lead_lag_incidence
 %                                and that need to be passed to _dynamic-file
-%   i_cols_J1           [double] indices of contemporaneous and forward looking variables
+% - i_cols_J1           [double] indices of contemporaneous and forward looking variables
 %                                appearing in M.lead_lag_incidence
-%   i_cols_1            [double] indices of contemporaneous and forward looking variables in
+% - i_cols_1            [double] indices of contemporaneous and forward looking variables in
 %                                M.lead_lag_incidence in dynamic Jacobian (relevant in first period)
-%   i_cols_T            [double] columns of dynamic Jacobian related to contemporaneous and backward-looking
+% - i_cols_T            [double] columns of dynamic Jacobian related to contemporaneous and backward-looking
 %                                variables (relevant in last period)
-%   i_cols_j            [double] indices of variables in M.lead_lag_incidence
+% - i_cols_j            [double] indices of contemporaneous variables in M.lead_lag_incidence
 %                                in dynamic Jacobian (relevant in intermediate periods)
-%   nnzJ                [scalar] number of non-zero elements in Jacobian
+% - i_cols_0            [double] indices of contemporaneous variables in M.lead_lag_incidence in dynamic
+%                                Jacobian (relevant in problems with periods=1)
+% - i_cols_J0           [double] indices of contemporaneous variables appearing in M.lead_lag_incidence (relevant in problems with periods=1)
+% - nnzJ                [scalar] number of non-zero elements in Jacobian
+%
 % OUTPUTS
-%   residuals           [double] (N*T)*1 array, residuals of the stacked problem
-%   JJacobian           [double] (N*T)*(N*T) array, Jacobian of the stacked problem
+% - residuals           [double] (N*T)*1 array, residuals of the stacked problem
+% - JJacobian           [double] (N*T)*(N*T) array, Jacobian of the stacked problem
+%
 % ALGORITHM
-%   None
+% None
 %
 % SPECIAL REQUIREMENTS
-%   None.
+% None.
 
-% Copyright (C) 1996-2017 Dynare Team
+% Copyright (C) 1996-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -73,12 +74,13 @@ offset = 0;
 
 for it = maximum_lag+(1:T)
     if nargout == 1
-        residuals(i_rows) = dynamic_function(YY(i_cols),exo_simul, params, ...
-                                             steady_state,it);
+        residuals(i_rows) = dynamic_function(YY(i_cols), exo_simul, params, steady_state, it);
     elseif nargout == 2
-        [residuals(i_rows),jacobian] = dynamic_function(YY(i_cols),exo_simul, params, ...
-                                                        steady_state,it);
-        if it == maximum_lag+1
+        [residuals(i_rows),jacobian] = dynamic_function(YY(i_cols), exo_simul, params, steady_state, it);
+        if T==1 && it==maximum_lag+1
+            [rows, cols, vals] = find(jacobian(:,i_cols_0));
+            iJacobian{1} = [rows, i_cols_J0(cols), vals];
+        elseif it == maximum_lag+1
             [rows,cols,vals] = find(jacobian(:,i_cols_1));
             iJacobian{1} = [offset+rows, i_cols_J1(cols), vals];
         elseif it == maximum_lag+T
@@ -91,13 +93,11 @@ for it = maximum_lag+(1:T)
         end
         offset = offset + ny;
     end
-
     i_rows = i_rows + ny;
     i_cols = i_cols + ny;
 end
 
 if nargout == 2
     iJacobian = cat(1,iJacobian{:});
-    JJacobian = sparse(iJacobian(:,1),iJacobian(:,2),iJacobian(:,3),T* ...
-                       ny,T*ny);
+    JJacobian = sparse(iJacobian(:,1), iJacobian(:,2), iJacobian(:,3), T*ny, T*ny);
 end
