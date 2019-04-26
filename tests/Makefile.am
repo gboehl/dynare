@@ -134,6 +134,7 @@ MODFILES = \
 	k_order_perturbation/fs2000k3_m.mod \
 	k_order_perturbation/fs2000k3_p.mod \
 	k_order_perturbation/fs2000k4.mod \
+	k_order_perturbation/burnside_k_order.mod \
 	partial_information/PItest3aHc0PCLsimModPiYrVarobsAll.mod \
 	partial_information/PItest3aHc0PCLsimModPiYrVarobsCNR.mod \
 	arima/mod1.mod \
