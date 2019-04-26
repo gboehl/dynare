@@ -180,9 +180,11 @@ end
 fclose(fid);
 
 % Export parameters
-fid = fopen(sprintf('%s/parameters.inc', outfold), 'w');
-fprintf(fid, 'parameters %s;', sprintf('%s ', plist{:}));
-fclose(fid);
+if ~isempty(plist)
+    fid = fopen(sprintf('%s/parameters.inc', outfold), 'w');
+    fprintf(fid, 'parameters %s;', sprintf('%s ', plist{:}));
+    fclose(fid);
+end
 
 % Export endogegnous variables
 fid = fopen(sprintf('%s/endogenous.inc', outfold), 'w');
@@ -190,19 +192,23 @@ printlistofvariables(fid, 'endo', elist, M_, eappend);
 fclose(fid);
 
 % Export exogenous variables
-fid = fopen(sprintf('%s/exogenous.inc', outfold), 'w');
-printlistofvariables(fid, 'exo', xlist, M_, xappend);
-fclose(fid);
+if ~isempty(xlist)
+    fid = fopen(sprintf('%s/exogenous.inc', outfold), 'w');
+    printlistofvariables(fid, 'exo', xlist, M_, xappend);
+    fclose(fid);
+end
 
 % Export parameter values
-fid = fopen(sprintf('%s/parameter-values.inc', outfold), 'w');
-for i=1:length(plist)
-    id = strcmp(plist{i}, M_.param_names);
-    if any(id)
-        fprintf(fid, '%s = %s;\n', plist{i}, num2str(M_.params(id), 16));
+if ~isempty(plist)
+    fid = fopen(sprintf('%s/parameter-values.inc', outfold), 'w');
+    for i=1:length(plist)
+        id = strcmp(plist{i}, M_.param_names);
+        if any(id)
+            fprintf(fid, '%s = %s;\n', plist{i}, num2str(M_.params(id), 16));
+        end
     end
+    fclose(fid);
 end
-fclose(fid);
 
 function printlistofvariables(fid, kind, list, DynareModel, vappend)
     if isfield(DynareModel, sprintf('%s_partitions', kind))
