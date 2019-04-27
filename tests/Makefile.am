@@ -453,6 +453,7 @@ ECB_MODFILES = \
 	write/example1.mod \
 	ecb/backward-models/irf/solow_1.mod \
 	ecb/backward-models/irf/solow_2.mod \
+	ecb/cherrypick/test1.mod \
 	dynare-command-options/ramst.mod
 
 OLS_MODFILES = \
@@ -1188,6 +1189,8 @@ clean-local:
 	rm -f initval_file/ramst_initval_file_data_col_vec_mat.mat initval_file/ramst_initval_file_data_row_vec_mat.mat initval_file/ramst_initval_file_excel.xls
 
 	rm -f loglinear/results_exp_histval.mat loglinear/results_exp.mat
+
+	rm -rf ecb/cherrypick/simulation-files1 ecb/cherrypick/simulation-files2 toto.mod
 
 	find . -name "*.tex" -type f -delete
 	find . -name "*.aux" -type f -delete
