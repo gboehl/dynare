@@ -27,6 +27,11 @@ warning off MATLAB:subscripting:noSubscriptsSpecified
 % Get parameters.
 for i=1:length(varargin)
     fid = fopen(sprintf('%s/parameters.inc', varargin{i}));
+    if fid<0
+        % No parameters in the cherrypicked (sub)model, go to the
+        % next cherrypicked model.
+        continue
+    end
     statement = fgetl(fid);
     if exist('plist', 'var')
         plist = union(plist, strsplit(statement, {'parameters', ' ', ';'}));
@@ -91,6 +96,11 @@ xlist = cell(MAX_NUMBER_OF_ELEMENTS, 2);
 xnum = 0;
 for i=1:length(varargin)
     fid = fopen(sprintf('%s/exogenous.inc', varargin{i}));
+    if fid<0
+        % No exogenous variables in the cherrypicked (sub)model, go to the
+        % next cherrypicked model.
+        continue
+    end
     cline = fgetl(fid);
     while ischar(cline)
         if ~isequal(cline, 'varexo')
@@ -111,6 +121,11 @@ xlist = xlist(1:xnum,:);
 calibration = '';
 for i=1:length(varargin)
     fid = fopen(sprintf('%s/parameter-values.inc', varargin{i}));
+    if fid<0
+        % No calibrations in the cherrypicked (sub)model, go to the
+        % next cherrypicked model.
+        continue
+    end
     cline = fgetl(fid);
     while ischar(cline)
         calibration = sprintf('%s\n%s', calibration, cline);
