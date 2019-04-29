@@ -126,4 +126,4 @@ pac.update.expectation('pacman');
 // innovations ex1bar and ex2bar will not appear in the equations.
 cherrypick('test1', 'simulation-files1', {'z1', 'z2', 'z3'}, true);
 cherrypick('test1', 'simulation-files2', {'zpac', 'eq:x1', 'eq:x', 'eq:y'}, true);
-agregate('toto.mod', 'simulation-files1', 'simulation-files2');
+aggregate('toto.mod', 'simulation-files1', 'simulation-files2');

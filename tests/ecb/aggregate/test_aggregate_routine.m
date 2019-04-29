@@ -1,4 +1,4 @@
 addpath ../../../matlab
 dynare_config();
 
-agregate('toto.mod', '1', '2');
+aggregate('toto.mod', '1', '2');
