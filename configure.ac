@@ -136,6 +136,7 @@ AC_CONFIG_FILES([Makefile
                  dynare++/integ/testing/Makefile
                  dynare++/kord/Makefile
                  dynare++/src/Makefile
+                 dynare++/tests/Makefile
                  mex/sources/Makefile
 ])
 
