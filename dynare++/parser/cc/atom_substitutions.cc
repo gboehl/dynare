@@ -216,7 +216,6 @@ SAtoms::makeAuxVariables(const string &name, int step, int start, int limit_lead
           attemptAuxName(name, ll-step, newname_str);
           newname = newname_str;
           register_uniq_endo(newname);
-          newname = varnames.query(newname);
           taux = fp.add_nulary(newname + "(0)");
           // add to substitutions
           as.add_substitution(newname, name, ll-step);
