@@ -204,7 +204,7 @@ function [lhs, rhs] = getequation(str)
     terms = strsplit(str, {'=',';'});
     terms(cellfun(@(x) all(isempty(x)), terms)) = [];
     terms(1) = {strrep(terms{1}, ' ', '')};
-    lhs = regexp(terms{1}, '^(diff\(\w*\)|log\(\w*\)|diff\(diff\(\w*\)\)|diff\(log\(\w*\)\)|\w*)', 'match');
+    lhs = regexp(terms{1}, '^(diff\(\w*\)|log\(\w*\)|diff\(diff\(\w*\)\)|diff\(log\(\w*\)\)|diff\(diff\(log\(\w*\)\)\)|\w*)', 'match');
     if ~isempty(lhs)
         lhs = lhs{1};
         rhs = terms{2};
