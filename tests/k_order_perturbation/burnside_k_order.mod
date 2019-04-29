@@ -81,8 +81,9 @@ end;
 
 steady;
 
-stoch_simul(order=@{k},k_order_solver,irf=0);
+stoch_simul(order=@{k},k_order_solver,irf=0,drop=0,periods=100);
 
+% Verify that the policy function coefficients are correct
 sigma2=M_.Sigma_e;
 i = 1:800;
 c = theta^2*sigma2/(2*(1-rho)^2)*(i-2*rho*(1-rho.^i)/(1-rho)+rho^2*(1-rho.^(2*i))/(1-rho^2));
@@ -102,4 +103,23 @@ for ord = 0:@{k}
       error(['Error in matrix oo_.dr.g_' num2str(ord)])
     end
   end
+end
+
+% Verify that the simulated time series is correct
+xss = oo_.steady_state(2);
+xlag = xss;
+
+for T = 1:size(oo_.endo_simul,2)
+  e_ = oo_.exo_simul(T);
+  y_ = oo_.steady_state(1);
+  for ord = 0:@{k}
+    g = oo_.dr.(['g_' num2str(ord)])(2,:); % Retrieve computed policy function for variable y
+    for m = 0:ord
+      y_ = y_ + g(ord+1-m)*(xlag-xss)^m*e_^(ord-m)*nchoosek(ord,m);
+    end
+  end
+  if abs(y_-oo_.endo_simul(1,T)) > 1e-14
+    error(['Error in dynare_simul_ DLL'])
+  end
+  xlag = oo_.endo_simul(2,T);
 end
