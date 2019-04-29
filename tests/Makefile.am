@@ -454,6 +454,7 @@ ECB_MODFILES = \
 	ecb/backward-models/irf/solow_1.mod \
 	ecb/backward-models/irf/solow_2.mod \
 	ecb/cherrypick/test1.mod \
+	ecb/cherrypick/test2.mod \
 	dynare-command-options/ramst.mod
 
 OLS_MODFILES = \
