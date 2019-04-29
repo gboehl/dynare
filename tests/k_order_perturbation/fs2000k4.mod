@@ -1,4 +1,5 @@
-// checks whether second order coefficients are the same with order=2 and order=3 with k_order_solver=1
+/* Check that Dynare++ and Dynare with k_order_solver give the same result
+   (see fs2000k++.mod for the Dynare++ mod file) */
 var m m_1 P P_1 c e W R k d n l gy_obs gp_obs y dA;
 varexo e_a e_m;
 

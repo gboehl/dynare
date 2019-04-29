@@ -1,5 +1,5 @@
-/* Checks that, for order = 2, k_order_solver = 0 (fs2000k2a)
-   and k_order_solver = 1 (this file) give the same results */
+/* Checks that, for order = 2, the historical Dynare solver (fs2000k2a)
+   and k_order_solver (this file) give the same results (use_dll version) */
 
 var m P c e W R k d n l gy_obs gp_obs y dA ;
 varexo e_a e_m;

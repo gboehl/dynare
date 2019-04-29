@@ -1,5 +1,6 @@
-/* Checks that, for order = 2 and k_order_solver = 1, a model with 2 leads
-   and the same model with one lead (using auxiliary vars) give the same result */
+/* Checks that, for order = 2 and k_order_solver, a model with 2 leads
+   and the same model with one lead (using auxiliary vars) give the same result (use_dll version).
+   The counterfactual is fs2000k2_use_dll.mod. */
 
 var m m_1 P P_1 c e W R k d n l gy_obs gp_obs y dA AUXv;
 varexo e_a e_m;

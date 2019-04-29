@@ -34,6 +34,8 @@
  — cᵢ = ─────── ⎢i − ────(1−ρⁱ) + ρ² ─────⎥
         2(1−ρ)² ⎝    1−ρ             1−ρ² ⎠
 
+ Note that derivatives with respect to an odd order for s (i.e. ∂²ᵖ⁺¹s) are always
+ equal to zero.
 
  The policy function as returned in the oo_.dr.g_* matrices has the following properties:
  — its elements are pre-multiplied by the Taylor coefficients;

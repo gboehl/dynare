@@ -1,4 +1,4 @@
-/* Used to check that Dynare++ and Dynare with k_order_solver=1 give the same result */
+/* Counterfactual Dynare++ mod file, used by fs2000k4.mod */
 
 var m m_1 P P_1 c e W R k d n l gy_obs gp_obs y dA;
 varexo e_a e_m;
