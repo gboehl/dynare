@@ -1,5 +1,5 @@
 /*
- * Copyright © 2007-2011 Dynare Team
+ * Copyright © 2007-2019 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -22,8 +22,6 @@
  * one can consider large matrices B and/or C.
  */
 
-#include <string.h>
-
 #include <dynmex.h>
 #include <dynblas.h>
 
@@ -34,10 +32,10 @@
 #define DEBUG_OMP 0
 
 void
-full_A_times_kronecker_B_C(double *A, double *B, double *C, double *D,
+full_A_times_kronecker_B_C(const double *A, const double *B, const double *C, double *D,
                            blas_int mA, blas_int nA, blas_int mB, blas_int nB, blas_int mC, blas_int nC, int number_of_threads)
 {
-#if USE_OMP
+#ifdef USE_OMP
 # pragma omp parallel for num_threads(number_of_threads)
   for (blas_int colD = 0; colD < nB*nC; colD++)
     {
@@ -54,23 +52,20 @@ full_A_times_kronecker_B_C(double *A, double *B, double *C, double *D,
           blas_int idxD = colD*mA;
           double BC = B[colB*mB+rowB]*C[colC*mC+rowC];
           for (blas_int rowD = 0; rowD < mA; rowD++)
-            {
-              D[idxD+rowD] += A[idxA+rowD]*BC;
-            }
+            D[idxD+rowD] += A[idxA+rowD]*BC;
         }
     }
 #else
   const blas_int shiftA = mA*mC;
   const blas_int shiftD = mA*nC;
   blas_int kd = 0, ka = 0;
-  char transpose[2] = "N";
   double one = 1.0;
   for (blas_int col = 0; col < nB; col++)
     {
       ka = 0;
       for (blas_int row = 0; row < mB; row++)
         {
-          dgemm(transpose, transpose, &mA, &nC, &mC, &B[mB*col+row], &A[ka], &mA, &C[0], &mC, &one, &D[kd], &mA);
+          dgemm("N", "N", &mA, &nC, &mC, &B[mB*col+row], &A[ka], &mA, C, &mC, &one, &D[kd], &mA);
           ka += shiftA;
         }
       kd += shiftD;
@@ -79,9 +74,9 @@ full_A_times_kronecker_B_C(double *A, double *B, double *C, double *D,
 }
 
 void
-full_A_times_kronecker_B_B(double *A, double *B, double *D, blas_int mA, blas_int nA, blas_int mB, blas_int nB, int number_of_threads)
+full_A_times_kronecker_B_B(const double *A, const double *B, double *D, blas_int mA, blas_int nA, blas_int mB, blas_int nB, int number_of_threads)
 {
-#if USE_OMP
+#ifdef USE_OMP
 # pragma omp parallel for num_threads(number_of_threads)
   for (blas_int colD = 0; colD < nB*nB; colD++)
     {
@@ -98,23 +93,20 @@ full_A_times_kronecker_B_B(double *A, double *B, double *D, blas_int mA, blas_in
           blas_int idxD = colD*mA;
           double BB = B[j1B*mB+i1B]*B[j2B*mB+i2B];
           for (blas_int rowD = 0; rowD < mA; rowD++)
-            {
-              D[idxD+rowD] += A[idxA+rowD]*BB;
-            }
+            D[idxD+rowD] += A[idxA+rowD]*BB;
         }
     }
 #else
   const blas_int shiftA = mA*mB;
   const blas_int shiftD = mA*nB;
   blas_int kd = 0, ka = 0;
-  char transpose[2] = "N";
   double one = 1.0;
   for (blas_int col = 0; col < nB; col++)
     {
       ka = 0;
       for (blas_int row = 0; row < mB; row++)
         {
-          dgemm(transpose, transpose, &mA, &nB, &mB, &B[mB*col+row], &A[ka], &mA, &B[0], &mB, &one, &D[kd], &mA);
+          dgemm("N", "N", &mA, &nB, &mB, &B[mB*col+row], &A[ka], &mA, B, &mB, &one, &D[kd], &mA);
           ka += shiftA;
         }
       kd += shiftD;
@@ -130,11 +122,11 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     DYN_MEX_FUNC_ERR_MSG_TXT("A_times_B_kronecker_C takes 3 or 4 input arguments and provides 2 output arguments.");
 
   // Get & Check dimensions (columns and rows):
-  mwSize mA, nA, mB, nB, mC, nC;
-  mA = mxGetM(prhs[0]);
-  nA = mxGetN(prhs[0]);
-  mB = mxGetM(prhs[1]);
-  nB = mxGetN(prhs[1]);
+  size_t mA = mxGetM(prhs[0]);
+  size_t nA = mxGetN(prhs[0]);
+  size_t mB = mxGetM(prhs[1]);
+  size_t nB = mxGetN(prhs[1]);
+  size_t mC, nC;
   if (nrhs == 4) // A*kron(B,C) is to be computed.
     {
       mC = mxGetM(prhs[2]);
@@ -148,10 +140,10 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
         DYN_MEX_FUNC_ERR_MSG_TXT("Input dimension error!");
     }
   // Get input matrices:
-  double *B, *C, *A;
   int numthreads;
-  A = mxGetPr(prhs[0]);
-  B = mxGetPr(prhs[1]);
+  const double *A = mxGetPr(prhs[0]);
+  const double *B = mxGetPr(prhs[1]);
+  const double *C;
   if (nrhs == 4)
     {
       C = mxGetPr(prhs[2]);
@@ -161,24 +153,17 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     numthreads = static_cast<int>(mxGetScalar(prhs[2]));
 
   // Initialization of the ouput:
-  double *D;
   if (nrhs == 4)
-    {
-      plhs[0] = mxCreateDoubleMatrix(mA, nB*nC, mxREAL);
-    }
+    plhs[0] = mxCreateDoubleMatrix(mA, nB*nC, mxREAL);
   else
-    {
-      plhs[0] = mxCreateDoubleMatrix(mA, nB*nB, mxREAL);
-    }
-  D = mxGetPr(plhs[0]);
+    plhs[0] = mxCreateDoubleMatrix(mA, nB*nB, mxREAL);
+  double *D = mxGetPr(plhs[0]);
+
   // Computational part:
   if (nrhs == 3)
-    {
-      full_A_times_kronecker_B_B(A, B, &D[0], mA, nA, mB, nB, numthreads);
-    }
+    full_A_times_kronecker_B_B(A, B, D, mA, nA, mB, nB, numthreads);
   else
-    {
-      full_A_times_kronecker_B_C(A, B, C, &D[0], mA, nA, mB, nB, mC, nC, numthreads);
-    }
+    full_A_times_kronecker_B_C(A, B, C, D, mA, nA, mB, nB, mC, nC, numthreads);
+
   plhs[1] = mxCreateDoubleScalar(0);
 }
