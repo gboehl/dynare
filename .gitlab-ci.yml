@@ -107,6 +107,10 @@ test_dynare++:
   artifacts:
     paths:
       - dynare++/kord/out.txt
+      - dynare++/tests/*.jnl
+      - dynare++/tests/*.m
+      - dynare++/tests/*.mat
+      - dynare++/tests/*.dump
 
 deploy_manual_unstable:
   stage: deploy

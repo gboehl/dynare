@@ -117,6 +117,10 @@ doc/internals/ltxpng
 /dynare++/src/dynglob_tab.hh
 /dynare++/tl/testing/tests
 /dynare++/tl/testing/tests.exe
+/dynare++/tests/*.jnl
+/dynare++/tests/*.m
+/dynare++/tests/*.mat
+/dynare++/tests/*.dump
 !/dynare++/extern/R/Makefile
 
 # Windows
