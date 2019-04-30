@@ -1,5 +1,5 @@
 /*
- * Copyright © 2006-2017 Dynare Team
+ * Copyright © 2006-2019 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -17,8 +17,9 @@
  * along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <string.h>
-#include <math.h>
+#include <cmath>
+#include <algorithm>
+#include <memory>
 
 #include <dynmex.h>
 #include <dynlapack.h>
@@ -26,55 +27,28 @@
 double criterium;
 
 lapack_int
-my_criteria(const double *alphar, const double *alphai, const double *beta)
+my_criteria(const double *alpha_r, const double *alpha_i, const double *beta)
 {
-  return ((*alphar **alphar + *alphai **alphai) < criterium * criterium **beta **beta);
-}
-
-void
-mjdgges(double *a, double *b, double *z, unsigned int n, double *sdim, double *alphar, double *alphai, double *beta, double *info)
-{
-  lapack_int i_n, i_info, i_sdim, lwork;
-  double *work;
-  double *junk;
-  lapack_int *bwork;
-
-  i_n = (lapack_int) n;
-  lwork = 16*i_n+16;
-  work = mxCalloc(lwork, sizeof(double));
-  bwork = mxCalloc(i_n, sizeof(lapack_int));
-  /* made necessary by bug in Lapack */
-  junk = mxCalloc(i_n*i_n, sizeof(double));
-
-  dgges("N", "V", "S", my_criteria, &i_n, a, &i_n, b, &i_n, &i_sdim, alphar, alphai, beta, junk, &i_n, z, &i_n, work, &lwork, bwork, &i_info);
-
-  *sdim = i_sdim;
-  *info = i_info;
+  return *alpha_r * *alpha_r + *alpha_i * *alpha_i < criterium * criterium * *beta * *beta;
 }
 
 /* MATLAB interface */
 void
 mexFunction(int nlhs, mxArray *plhs[],
             int nrhs, const mxArray *prhs[])
-
 {
-  unsigned int m1, n1, m2, n2;
-  double *s, *t, *z, *sdim, *info, *a, *b;
-
   /* Check for proper number of arguments */
-
   if (nrhs < 2 || nrhs > 4 || nlhs == 0 || nlhs > 7)
     DYN_MEX_FUNC_ERR_MSG_TXT("MJDGGES: takes 2, 3 or 4 input arguments and between 1 and 7 output arguments.");
 
   /* Check that A and B are real matrices of the same dimension.*/
-
-  m1 = mxGetM(prhs[0]);
-  n1 = mxGetN(prhs[0]);
-  m2 = mxGetM(prhs[1]);
-  n2 = mxGetN(prhs[1]);
+  size_t m1 = mxGetM(prhs[0]);
+  size_t n1 = mxGetN(prhs[0]);
+  size_t m2 = mxGetM(prhs[1]);
+  size_t n2 = mxGetN(prhs[1]);
   if (!mxIsDouble(prhs[0]) || mxIsComplex(prhs[0])
       || !mxIsDouble(prhs[1]) || mxIsComplex(prhs[1])
-      || (m1 != n1) || (m2 != n1) || (m2 != n2))
+      || m1 != n1 || m2 != n1 || m2 != n2)
     DYN_MEX_FUNC_ERR_MSG_TXT("MJDGGES requires two square real matrices of the same dimension.");
 
   /* Create a matrix for the return argument */
@@ -86,55 +60,56 @@ mexFunction(int nlhs, mxArray *plhs[],
   plhs[6] = mxCreateDoubleMatrix(1, 1, mxREAL);
 
   /* Assign pointers to the various parameters */
-  s = mxGetPr(plhs[1]);
-  t = mxGetPr(plhs[2]);
-  z = mxGetPr(plhs[3]);
-  sdim = mxGetPr(plhs[4]);
+  double *s = mxGetPr(plhs[1]);
+  double *t = mxGetPr(plhs[2]);
+  double *z = mxGetPr(plhs[3]);
+  double *sdim = mxGetPr(plhs[4]);
 #if defined(MATLAB_MEX_FILE) && MATLAB_VERSION >= 0x0904
   mxComplexDouble *gev = mxGetComplexDoubles(plhs[5]);
 #else
   double *gev_r = mxGetPr(plhs[5]);
   double *gev_i = mxGetPi(plhs[5]);
 #endif
-  info = mxGetPr(plhs[6]);
+  double *info = mxGetPr(plhs[6]);
 
-  a = mxGetPr(prhs[0]);
-  b = mxGetPr(prhs[1]);
+  const double *a = mxGetPr(prhs[0]);
+  const double *b = mxGetPr(prhs[1]);
 
   /* set criterium for stable eigenvalues */
   if (nrhs >= 3 && mxGetM(prhs[2]) > 0)
-    {
-      criterium = *mxGetPr(prhs[2]);
-    }
+    criterium = *mxGetPr(prhs[2]);
   else
-    {
-      criterium = 1+1e-6;
-    }
+    criterium = 1+1e-6;
 
   /* set criterium for 0/0 generalized eigenvalues */
   double zhreshold;
   if (nrhs == 4 && mxGetM(prhs[3]) > 0)
-    {
-      zhreshold = *mxGetPr(prhs[3]);
-    }
+    zhreshold = *mxGetPr(prhs[3]);
   else
-    {
-      zhreshold = 1e-6;
-    }
+    zhreshold = 1e-6;
 
   /* keep a and b intact */
-  memcpy(s, a, sizeof(double)*n1*n1);
-  memcpy(t, b, sizeof(double)*n1*n1);
+  std::copy_n(a, n1*n1, s);
+  std::copy_n(b, n1*n1, t);
 
-  double *alpha_r = mxCalloc(n1, sizeof(double));
-  double *alpha_i = mxCalloc(n1, sizeof(double));
-  double *beta = mxCalloc(n1, sizeof(double));
+  lapack_int i_n = static_cast<lapack_int>(n1);
+  auto alpha_r = std::make_unique<double[]>(n1);
+  auto alpha_i = std::make_unique<double[]>(n1);
+  auto beta = std::make_unique<double[]>(n1);
+  lapack_int lwork = 16*i_n+16;
+  auto work = std::make_unique<double[]>(lwork);
+  auto bwork = std::make_unique<lapack_int[]>(i_n);
+  lapack_int i_info, i_sdim;
 
-  mjdgges(s, t, z, n1, sdim, alpha_r, alpha_i, beta, info);
+  dgges("N", "V", "S", my_criteria, &i_n, s, &i_n, t, &i_n, &i_sdim, alpha_r.get(), alpha_i.get(),
+        beta.get(), nullptr, &i_n, z, &i_n, work.get(), &lwork, bwork.get(), &i_info);
 
-  for (int i = 0; i < n1; i++)
+  *sdim = static_cast<double>(i_sdim);
+  *info = static_cast<double>(i_info);
+
+  for (size_t i = 0; i < n1; i++)
     {
-      if ((fabs(alpha_r[i]) > zhreshold) || (fabs(beta[i]) > zhreshold))
+      if (std::abs(alpha_r[i]) > zhreshold || std::abs(beta[i]) > zhreshold)
 #if defined(MATLAB_MEX_FILE) && MATLAB_VERSION >= 0x0904
         gev[i].real = alpha_r[i] / beta[i];
 #else
@@ -163,8 +138,3 @@ mexFunction(int nlhs, mxArray *plhs[],
 
   plhs[0] = mxCreateDoubleScalar(0);
 }
-
-/*
-  07/30/03 MJ added user set criterium for stable eigenvalues
-  corrected error messages in mexfunction()
-*/
