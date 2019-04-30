@@ -1,5 +1,5 @@
 /*
- * Copyright © 2007-2017 Dynare Team
+ * Copyright © 2007-2019 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -26,9 +26,11 @@
 # include "mex_interface.hh"
 #endif
 
+#include <vector>
+#include <memory>
+
 #include <dynblas.h>
 #include <dynlapack.h>
-using namespace std;
 
 class BlockKalmanFilter
 {
@@ -40,25 +42,27 @@ public:
   lapack_int pp, lw, info;
 
   double *nz_state_var;
-  int *i_nz_state_var, *mf;
+  std::unique_ptr<int[]> i_nz_state_var, mf;
   int n_diag, t;
   mxArray *M_;
   mxArray *pa, *p_tmp, *p_tmp1, *plik;
-  double *tmp_a, *tmp1, *lik, *v_n, *w, *oldK;
+  std::unique_ptr<double[]> tmp_a;
+  double *tmp1, *lik;
+  std::unique_ptr<double[]> v_n, v_pp, w, oldK, P_mf;
   bool notsteady, F_singular, missing_observations;
-  lapack_int *iw, *ipiv;
+  std::unique_ptr<lapack_int[]> iw, ipiv;
   double anorm, rcond;
   lapack_int size_d_index;
   int no_more_missing_observations, number_of_observations;
   const mxArray *pdata_index;
-  vector<int> d_index;
+  std::vector<int> d_index;
   const mxArray *pd_index;
   double *dd_index;
-
+  double *K, *a, *K_P, *P_t_t1, *tmp, *P;
 public:
-  BlockKalmanFilter(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[], double *P_mf[], double *v_pp[], double *K[], double *v_n[], double *a[], double *K_P[], double *P_t_t1[], double *tmp[], double *P[]);
-  bool block_kalman_filter(int nlhs, mxArray *plhs[], double *P_mf, double *v_pp, double *K, double *v_n, double *a, double *K_P, double *P_t_t1, double *tmp, double *P);
-  void block_kalman_filter_ss(double *P_mf, double *v_pp, double *K, double *v_n, double *a, double *K_P, double *P_t_t1, double *tmp, double *P);
-  void return_results_and_clean(int nlhs, mxArray *plhs[], double *P_mf[], double *v_pp[], double *K[], double *v_n[], double *a[], double *K_P[], double *P_t_t1[], double *tmp[], double *P[]);
+  BlockKalmanFilter(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]);
+  bool block_kalman_filter(int nlhs, mxArray *plhs[]);
+  void block_kalman_filter_ss();
+  void return_results_and_clean(int nlhs, mxArray *plhs[]);
 };
 #endif
