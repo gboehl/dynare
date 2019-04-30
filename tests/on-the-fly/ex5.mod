@@ -31,6 +31,6 @@ if ~isequal(length(intersect(M_.endo_names, {'D'; 'S'; 'p'})), 3)
    error('Endogenous variables are wrong.')
 end
 
-if isfield(M_, 'exo_names')
+if length(M_.exo_names) > 0
    error('Exogenous variables are wrong.')
 end
