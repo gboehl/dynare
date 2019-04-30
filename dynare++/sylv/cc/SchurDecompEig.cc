@@ -3,7 +3,7 @@
 
 #include <dynlapack.h>
 
-#include <vector>
+#include <memory>
 
 /* Bubble diagonal 1×1 or 2×2 block from position ‘from’ to position
    ‘to’. If an eigenvalue cannot be swapped with its neighbour, the
@@ -55,9 +55,9 @@ SchurDecompEig::tryToSwap(diag_iter &it, diag_iter &itadd)
   lapack_int n = getDim(), ldt = getT().getLD(), ldq = getQ().getLD();
   lapack_int ifst = it->getIndex() + 1;
   lapack_int ilst = itadd->getIndex() + 1;
-  std::vector<double> work(n);
+  auto work = std::make_unique<double[]>(n);
   lapack_int info;
-  dtrexc("V", &n, getT().base(), &ldt, getQ().base(), &ldq, &ifst, &ilst, work.data(),
+  dtrexc("V", &n, getT().base(), &ldt, getQ().base(), &ldq, &ifst, &ilst, work.get(),
          &info);
   if (info < 0)
     throw SYLV_MES_EXCEPTION("Wrong argument to dtrexc.");

@@ -163,7 +163,7 @@ FirstOrder::solve(const TwoDMatrix &fd)
   lapack_int ldvsl = vsl.getLD(), ldvsr = vsr.getLD();
   lapack_int lwork = 100*n+16;
   Vector work(lwork);
-  std::vector<lapack_int> bwork(n);
+  auto bwork = std::make_unique<lapack_int[]>(n);
   lapack_int info;
   lapack_int sdim2 = sdim;
   {
@@ -172,7 +172,7 @@ FirstOrder::solve(const TwoDMatrix &fd)
     dgges("N", "V", "S", order_eigs, &n, matE.getData().base(), &lda,
         matD.getData().base(), &ldb, &sdim2, alphar.base(), alphai.base(),
         beta.base(), vsl.getData().base(), &ldvsl, vsr.getData().base(), &ldvsr,
-        work.base(), &lwork, bwork.data(), &info);
+        work.base(), &lwork, bwork.get(), &info);
   }
   if (info)
     throw KordException(__FILE__, __LINE__,

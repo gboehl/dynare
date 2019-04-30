@@ -22,7 +22,7 @@ NameList::writeMat(mat_t *fd, const std::string &vname) const
   if (maxlen == 0)
     return;
 
-  std::vector<char> m(getNum()*maxlen);
+  auto m = std::make_unique<char[]>(getNum()*maxlen);
 
   for (int i = 0; i < getNum(); i++)
     for (int j = 0; j < maxlen; j++)
@@ -35,7 +35,7 @@ NameList::writeMat(mat_t *fd, const std::string &vname) const
   dims[0] = getNum();
   dims[1] = maxlen;
 
-  matvar_t *v = Mat_VarCreate(vname.c_str(), MAT_C_CHAR, MAT_T_UINT8, 2, dims, m.data(), 0);
+  matvar_t *v = Mat_VarCreate(vname.c_str(), MAT_C_CHAR, MAT_T_UINT8, 2, dims, m.get(), 0);
 
   Mat_VarWrite(fd, v, MAT_COMPRESSION_NONE);
 
