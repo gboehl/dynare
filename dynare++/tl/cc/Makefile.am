@@ -29,8 +29,6 @@ libtl_a_SOURCES = \
 	sparse_tensor.hh \
 	stack_container.cc \
 	stack_container.hh \
-	sthread.cc \
-	sthread.hh \
 	symmetry.cc \
 	symmetry.hh \
 	t_container.cc \

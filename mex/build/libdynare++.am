@@ -53,7 +53,6 @@ TL_SRCS = \
 	rfs_tensor.cc \
 	sparse_tensor.cc \
 	stack_container.cc \
-	sthread.cc \
 	symmetry.cc \
 	t_container.cc \
 	t_polynomial.cc \
@@ -70,7 +69,8 @@ INTEG_SRCS = \
 
 UTILS_SRCS = \
 	pascal_triangle.cc \
-	int_power.cc
+	int_power.cc \
+	sthread.cc
 
 OTHER_SRCS = \
 	nlsolve.cc

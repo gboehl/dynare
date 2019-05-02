@@ -5,4 +5,6 @@ libutils_a_SOURCES = \
 	pascal_triangle.cc \
 	pascal_triangle.hh \
 	int_power.hh \
-	int_power.cc
+	int_power.cc \
+	sthread.hh \
+	sthread.cc
