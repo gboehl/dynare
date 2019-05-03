@@ -1,4 +1,4 @@
-function agregate(ofile, varargin)
+function aggregate(ofile, varargin)
 
 % Agregates cherry-picked models.
 
@@ -142,6 +142,8 @@ if ~isequal(length(i1),rows(eqlist))
 end
 i2 = setdiff(1:rows(elist), i1);
 xlist = [xlist; elist(i2,:)];
+[~,idx] = unique(xlist(:,1));        % Ensure that the exogenous variable names are unique.
+xlist=[xlist(idx,1) xlist(idx,2)];   % We do not test that the tags are the same.
 elist = elist(i1,:);
 
 % Print all cherry-picked models in one mod-file.
