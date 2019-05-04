@@ -156,13 +156,6 @@ if isempty(filepath)
 else
     fid = fopen(sprintf('%s%s%s%s', filepath, filesep(), filename, fileext), 'w');
 end
-fprintf(fid, 'parameters\n');
-for i=1:length(plist)
-    fprintf(fid, '\t%s\n', plist{i});
-end
-fprintf(fid, ';\n\n');
-fprintf(fid, calibration);
-fprintf(fid, '\n\n');
 fprintf(fid, 'var\n');
 for i=1:rows(elist)
     if isempty(elist{i,2})
@@ -171,13 +164,24 @@ for i=1:rows(elist)
         fprintf(fid, '\t%s %s\n', elist{i,1}, elist{i,2});
     end
 end
-fprintf(fid, ';\n\n');
-fprintf(fid, 'varexo\n');
-for i=1:rows(xlist)
-    if isempty(xlist{i,2})
-        fprintf(fid, '\t%s\n', xlist{i,1});
-    else
-        fprintf(fid, '\t%s %s\n', xlist{i,1}, xlist{i,2});
+if ~isempty(plist)
+    fprintf(fid, ';\n\n');
+    fprintf(fid, 'parameters\n');
+    for i=1:length(plist)
+        fprintf(fid, '\t%s\n', plist{i});
+    end
+    fprintf(fid, ';\n\n');
+    fprintf(fid, calibration);
+end
+if ~isempty(xlist)
+    fprintf(fid, '\n\n');
+    fprintf(fid, 'varexo\n');
+    for i=1:rows(xlist)
+        if isempty(xlist{i,2})
+            fprintf(fid, '\t%s\n', xlist{i,1});
+        else
+            fprintf(fid, '\t%s %s\n', xlist{i,1}, xlist{i,2});
+        end
     end
 end
 fprintf(fid, ';\n\n');
