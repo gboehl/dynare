@@ -245,9 +245,9 @@ function printlistofvariables(fid, kind, list, DynareModel, vappend)
             else
                 if isequal(kind, 'endo') &&  (isequal(list{i}(1:3), 'PE_') || isequal(list{i}(1:3), 'VE_'))
                     if isequal(list{i}(1:3), 'PE_')
-                        tags = sprintf('(expectation=''%s'')', 'pac');
+                        tags = sprintf('(expectation_kind=''%s'')', 'pac');
                     else
-                        tags = sprintf('(expectation=''%s'')', 'var');
+                        tags = sprintf('(expectation_kind=''%s'')', 'var');
                     end
                 else
                     error('Unknown variable.')
