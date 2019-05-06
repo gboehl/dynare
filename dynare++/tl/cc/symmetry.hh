@@ -2,40 +2,32 @@
 
 // Symmetry.
 
-/* Symmetry is an abstraction for a term of the form $y^3u^2$. It manages
-   only indices, not the variable names. So if one uses this
-   abstraction, he must keep in mind that $y$ is the first, and $u$ is
-   the second.
+/* Symmetry is an abstraction for a term of the form y³u². It manages only
+   indices, not the variable names. So if one uses this abstraction, it must
+   be kept in mind that y is the first and u is the second.
 
    In fact, the symmetry is a special case of equivalence, but its
    implementation is much simpler. We do not need an abstraction for the
-   term $yyuyu$ but due to Green theorem we can have term $y^3u^2$. That
+   term “yyuyu” but due to Green theorem we can have term y³u². That
    is why the equivalence is too general for our purposes.
 
    One of a main purposes of the tensor library is to calculate something like:
-   $$\left[B_{y^2u^3}\right]_{\alpha_1\alpha_2\beta_1\beta_2\beta_3}
-   =\left[g_{y^l}\right]_{\gamma_1\ldots\gamma_l}
-   \left(\sum_{c\in M_{l,5}}
-   \prod_{m=1}^l\left[g_{c_m}\right]^{\gamma_m}_{c_m(\alpha,\beta)}\right)$$
-   If, for instance, $l=3$, and $c=\{\{0,4\},\{1,2\},\{3\}\}$, then we
-   have to calculate
-   $$\left[g_{y^3}\right]_{\gamma_1\gamma_2\gamma_3}
-   \left[g_{yu}\right]^{\gamma_1}_{\alpha_1\beta_3}
-   \left[g_{yu}\right]^{\gamma_2}_{\alpha_2\beta_1}
-   \left[g_u\right]^{\gamma_3}_{\beta_2}
-   $$
 
-   We must be able to calculate a symmetry induced by symmetry $y^2u^3$
-   and by an equivalence class from equivalence $c$. For equivalence
-   class $\{0,4\}$ the induced symmetry is $yu$, since we pick first and
-   fifth variable from $y^2u^3$. For a given outer symmetry, the class
-   |InducedSymmetries| does this for all classes of a given equivalence.
+                                                ₗ
+    [B_y²u³]_α₁α₂β₁β₂β₃ = [f_zˡ]_γ₁…γₗ    ∑     ∏  [g_{s^|cₘ|}]_cₘ(α,β)^γₘ
+                                       c∈ℳₗ,₅ ᵐ⁼¹
+
+   We must be able to calculate a symmetry induced by symmetry y²u³ and by an
+   equivalence class from equivalence c. For equivalence class {0,4} the
+   induced symmetry is “yu”, since we pick first and fifth variable from y²u³.
+   For a given outer symmetry, the class InducedSymmetries does this for all
+   classes of a given equivalence.
 
    We need also to cycle through all possible symmetries yielding the
-   given dimension. For this purpose we define classes |SymmetrySet| and
-   |symiterator|.
+   given dimension. For this purpose we define classes SymmetrySet and
+   symiterator.
 
-   The symmetry is implemented as |IntSequence|, in fact, it inherits
+   The symmetry is implemented as IntSequence, in fact, it inherits
    from it. */
 
 #ifndef SYMMETRY_H
@@ -50,7 +42,7 @@
 #include <utility>
 #include <memory>
 
-/* Clear. The method |isFull| returns true if and only if the symmetry
+/* Clear. The method isFull() returns true if and only if the symmetry
    allows for any permutation of indices.
 
    WARNING: Symmetry(n) and Symmetry{n} are not the same. The former
@@ -66,7 +58,7 @@ public:
   {
   }
   /* Constructor using an initializer list, that gives the contents of the
-     Symmetry. Used for symmetries of the form $y^n$, $y^n u^m$, $y^nu^m\sigma^k$ */
+     Symmetry. Typically used for symmetries of the form yⁿ, yⁿuᵐ, yⁿuᵐσᵏ */
   Symmetry(std::initializer_list<int> init)
     : IntSequence(std::move(init))
   {
@@ -98,7 +90,7 @@ public:
    dimension (see the SymmetrySet class for details).
 
    The beginning iterator is (0, …, 0, dim).
-   Increasing it gives (0, … , 1, dim-1)
+   Increasing it gives (0, … , 1, dim−1)
    The just-before-end iterator is (dim, 0, …, 0)
    The past-the-end iterator is (dim+1, 0, …, 0)
 
@@ -130,18 +122,18 @@ public:
   }
 };
 
-/* The class |SymmetrySet| defines a set of symmetries of the given length
+/* The class SymmetrySet defines a set of symmetries of the given length
    having given dimension (i.e. it represents all the lists of integers of
-   length "len" and of sum equal to "dim"). It does not store all the
+   length ‘len’ and of sum equal to ‘dim’). It does not store all the
    symmetries, it is just a convenience class for iteration.
 
-   The typical usage of the abstractions for |SymmetrySet| and
-   |symiterator| is as follows:
+   The typical usage of the abstractions for SymmetrySet and
+   symiterator is as follows:
 
      for (auto &si : SymmetrySet(6, 4))
 
    It goes through all symmetries of lenght 4 having dimension 6. One can use
-   "si" as the symmetry in the body. */
+   ‘si’ as the symmetry in the body. */
 
 class SymmetrySet
 {

@@ -8,9 +8,8 @@
    equivalence bundle and a permutation bundle. Both depend on dimension of the
    problem, and maximum number of variables.
 
-   So we declare static |tls| variable of type |TLStatic| encapsulating
-   the variables. The |tls| must be initialized at the beginning of
-   the program, as dimension and number of variables is known. */
+   TLStatic::init() must be called at the beginning of the program, as
+   soon as dimension and number of variables is known. */
 
 #ifndef TL_STATIC_H
 #define TL_STATIC_H

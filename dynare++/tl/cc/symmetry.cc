@@ -7,11 +7,11 @@
 #include <iostream>
 
 /* This constructs an implied symmetry from a more general symmetry and
-   equivalence class. For example, let the general symmetry be $y^3u^2$ and the
-   equivalence class is $\{0,4\}$ picking up first and fifth variable, we
-   calculate symmetry corresponding to the picked variables. These are $yu$.
-   Thus the constructed sequence must be $(1,1)$, meaning that we picked one
-   $y$ and one $u$. */
+   equivalence class. For example, let the general symmetry be y³u² and the
+   equivalence class is {0,4} picking up first and fifth variable, we
+   calculate symmetry corresponding to the picked variables. These are “yu”.
+   Thus the constructed sequence must be (1,1), meaning that we picked one
+   y and one u. */
 
 Symmetry::Symmetry(const Symmetry &sy, const OrdSequence &cl)
   : IntSequence(sy.num())
@@ -89,7 +89,7 @@ symiterator::operator++()
           run[0]++;
           run[1] = 0;
           /* subit is equal to the past-the-end iterator, so the range
-             2..(size()-1) is already set to 0 */
+             2…(size()−1) is already set to 0 */
           run[run.size()-1] = dim-run[0];
         }
     }
@@ -102,7 +102,7 @@ InducedSymmetries::InducedSymmetries(const Equivalence &e, const Symmetry &s)
     emplace_back(s, i);
 }
 
-// |InducedSymmetries| permuted constructor code
+// InducedSymmetries permuted constructor code
 InducedSymmetries::InducedSymmetries(const Equivalence &e, const Permutation &p,
                                      const Symmetry &s)
 {

@@ -6,18 +6,17 @@
 
 #include <memory>
 
-// |FoldedStackContainer::multAndAdd| sparse code
-/* Here we multiply the sparse tensor with the
-   |FoldedStackContainer|. We have four implementations,
-   |multAndAddSparse1|, |multAndAddSparse2|, |multAndAddSparse3|, and
-   |multAndAddSparse4|.  The third is not threaded yet and I expect that
-   it is certainly the slowest. The |multAndAddSparse4| exploits the
-   sparsity, however, it seems to be still worse than |multAndAddSparse2|
-   even for really sparse matrices. On the other hand, it can be more
-   efficient than |multAndAddSparse2| for large problems, since it does
-   not need that much of memory and can avoid much swapping. Very
-   preliminary examination shows that |multAndAddSparse2| is the best in
-   terms of time. */
+// FoldedStackContainer::multAndAdd() sparse code
+/* Here we multiply the sparse tensor with the FoldedStackContainer. We have
+   four implementations, multAndAddSparse1(), multAndAddSparse2(),
+   multAndAddSparse3(), and multAndAddSparse4(). The third is not threaded yet
+   and I expect that it is certainly the slowest. The multAndAddSparse4()
+   exploits the sparsity, however, it seems to be still worse than
+   multAndAddSparse2() even for really sparse matrices. On the other hand, it
+   can be more efficient than multAndAddSparse2() for large problems, since it
+   does not need that much of memory and can avoid much swapping. Very
+   preliminary examination shows that multAndAddSparse2() is the best in terms
+   of time. */
 void
 FoldedStackContainer::multAndAdd(const FSSparseTensor &t,
                                  FGSTensor &out) const
@@ -27,11 +26,11 @@ FoldedStackContainer::multAndAdd(const FSSparseTensor &t,
   multAndAddSparse2(t, out);
 }
 
-// |FoldedStackContainer::multAndAdd| dense code
-/* Here we perform the Faà Di Bruno step for a given dimension |dim|, and for
+// FoldedStackContainer::multAndAdd() dense code
+/* Here we perform the Faà Di Bruno step for a given dimension ‘dim’, and for
    the dense fully symmetric tensor which is scattered in the container
    of general symmetric tensors. The implementation is pretty the same as
-   |@<|UnfoldedStackContainer::multAndAdd| dense code@>|. */
+   UnfoldedStackContainer::multAndAdd() dense code. */
 void
 FoldedStackContainer::multAndAdd(int dim, const FGSContainer &c, FGSTensor &out) const
 {
@@ -47,8 +46,7 @@ FoldedStackContainer::multAndAdd(int dim, const FGSContainer &c, FGSTensor &out)
   gr.run();
 }
 
-/* This is analogous to |@<|WorkerUnfoldMAADense::operator()()|
-   code@>|. */
+/* This is analogous to WorkerUnfoldMAADense::operator()() code. */
 
 void
 WorkerFoldMAADense::operator()(std::mutex &mut)
@@ -67,8 +65,7 @@ WorkerFoldMAADense::WorkerFoldMAADense(const FoldedStackContainer &container,
 {
 }
 
-/* This is analogous to |@<|UnfoldedStackContainer::multAndAddSparse1|
-   code@>|. */
+/* This is analogous to UnfoldedStackContainer::multAndAddSparse1() code. */
 void
 FoldedStackContainer::multAndAddSparse1(const FSSparseTensor &t,
                                         FGSTensor &out) const
@@ -81,13 +78,13 @@ FoldedStackContainer::multAndAddSparse1(const FSSparseTensor &t,
   gr.run();
 }
 
-/* This is analogous to |@<|WorkerUnfoldMAASparse1::operator()()| code@>|.
-   The only difference is that instead of |UPSTensor| as a
+/* This is analogous to WorkerUnfoldMAASparse1::operator()() code.
+   The only difference is that instead of UPSTensor as a
    result of multiplication of unfolded tensor and tensors from
-   containers, we have |FPSTensor| with partially folded permuted
+   containers, we have FPSTensor with partially folded permuted
    symmetry.
 
-   todo: make slice vertically narrowed according to the fill of t,
+   TODO: make slice vertically narrowed according to the fill of t,
    vertically narrow out accordingly. */
 
 void
@@ -135,10 +132,10 @@ WorkerFoldMAASparse1::WorkerFoldMAASparse1(const FoldedStackContainer &container
 {
 }
 
-/* Here is the second implementation of sparse folded |multAndAdd|. It
+/* Here is the second implementation of sparse folded multAndAdd(). It
    is pretty similar to implementation of
-   |@<|UnfoldedStackContainer::multAndAddSparse2| code@>|. We make a
-   dense folded |slice|, and then call folded |multAndAddStacks|, which
+   UnfoldedStackContainer::multAndAddSparse2() code. We make a
+   dense folded slice, and then call folded multAndAddStacks(), which
    multiplies all the combinations compatible with the slice. */
 
 void
@@ -153,11 +150,11 @@ FoldedStackContainer::multAndAddSparse2(const FSSparseTensor &t,
   gr.run();
 }
 
-/* Here we make a sparse slice first and then call |multAndAddStacks|
+/* Here we make a sparse slice first and then call multAndAddStacks()
    if the slice is not empty. If the slice is really sparse, we call
-   sparse version of |multAndAddStacks|. What means ``really sparse'' is
-   given by |fill_threshold|. It is not tuned yet, a practice shows that
-   it must be a really low number, since sparse |multAndAddStacks| is
+   sparse version of multAndAddStacks(). What means “really sparse” is
+   given by ‘fill_threshold’. It is not tuned yet, a practice shows that
+   it must be a really low number, since sparse multAndAddStacks() is
    much slower than the dense version.
 
    Further, we take only nonzero rows of the slice, and accordingly of
@@ -193,17 +190,17 @@ WorkerFoldMAASparse2::WorkerFoldMAASparse2(const FoldedStackContainer &container
 }
 
 /* Here is the third implementation of the sparse folded
-   |multAndAdd|. It is column-wise implementation, and thus is not a good
+   multAndAdd(). It is column-wise implementation, and thus is not a good
    candidate for the best performer.
 
    We go through all columns from the output. For each column we
-   calculate folded |sumcol| which is a sum of all appropriate columns
+   calculate folded ‘sumcol’ which is a sum of all appropriate columns
    for all suitable equivalences. So we go through all suitable
-   equivalences, for each we construct a |StackProduct| object and
-   construct |IrregTensor| for a corresponding column of $z$. The
-   |IrregTensor| is an abstraction for Kronecker multiplication of
+   equivalences, for each we construct a StackProduct object and
+   construct IrregTensor for a corresponding column of z. The
+   IrregTensor is an abstraction for Kronecker multiplication of
    stacked columns of the two containers without zeros. Then the column
-   is added to |sumcol|. Finally, the |sumcol| is multiplied by the
+   is added to ‘sumcol’. Finally, the ‘sumcol’ is multiplied by the
    sparse tensor. */
 
 void
@@ -229,12 +226,12 @@ FoldedStackContainer::multAndAddSparse3(const FSSparseTensor &t,
 }
 
 /* Here is the fourth implementation of sparse
-   |FoldedStackContainer::multAndAdd|. It is almost equivalent to
-   |multAndAddSparse2| with the exception that the |FPSTensor| as a
+   FoldedStackContainer::multAndAdd(). It is almost equivalent to
+   multAndAddSparse2() with the exception that the FPSTensor as a
    result of a product of a slice and Kronecker product of the stack
    derivatives is calculated in the sparse fashion. For further details, see
-   |@<|FoldedStackContainer::multAndAddStacks| sparse code@>| and
-   |@<|FPSTensor| sparse constructor@>|. */
+   FoldedStackContainer::multAndAddStacks() sparse code and
+   FPSTensor| sparse constructor. */
 
 void
 FoldedStackContainer::multAndAddSparse4(const FSSparseTensor &t, FGSTensor &out) const
@@ -247,9 +244,9 @@ FoldedStackContainer::multAndAddSparse4(const FSSparseTensor &t, FGSTensor &out)
   gr.run();
 }
 
-/* The |WorkerFoldMAASparse4| is the same as |WorkerFoldMAASparse2|
+/* The WorkerFoldMAASparse4 is the same as WorkerFoldMAASparse2
    with the exception that we call a sparse version of
-   |multAndAddStacks|. */
+   multAndAddStacks(). */
 
 void
 WorkerFoldMAASparse4::operator()(std::mutex &mut)
@@ -267,15 +264,13 @@ WorkerFoldMAASparse4::WorkerFoldMAASparse4(const FoldedStackContainer &container
 {
 }
 
-// |FoldedStackContainer::multAndAddStacks| dense code
-/* This is almost the same as
-   |@<|UnfoldedStackContainer::multAndAddStacks| code@>|. The only
-   difference is that we do not construct a |UPSTensor| from
-   |KronProdStack|, but we construct partially folded permuted
-   symmetry |FPSTensor|. Note that the tensor |g| must be unfolded
-   in order to be able to multiply with unfolded rows of Kronecker
-   product. However, columns of such a product are partially
-   folded giving a rise to the |FPSTensor|. */
+// FoldedStackContainer::multAndAddStacks() dense code
+/* This is almost the same as UnfoldedStackContainer::multAndAddStacks() code.
+   The only difference is that we do not construct a UPSTensor from
+   KronProdStack, but we construct partially folded permuted symmetry
+   FPSTensor. Note that the tensor ‘g’ must be unfolded in order to be able to
+   multiply with unfolded rows of Kronecker product. However, columns of such a
+   product are partially folded giving a rise to the FPSTensor. */
 void
 FoldedStackContainer::multAndAddStacks(const IntSequence &coor,
                                        const FGSTensor &g,
@@ -313,12 +308,11 @@ FoldedStackContainer::multAndAddStacks(const IntSequence &coor,
     }
 }
 
-// |FoldedStackContainer::multAndAddStacks| sparse code
-/* This is almost the same as
-   |@<|FoldedStackContainer::multAndAddStacks| dense code@>|. The only
+// FoldedStackContainer::multAndAddStacks() sparse code
+/* This is almost the same as FoldedStackContainer::multAndAddStacks() dense code. The only
    difference is that the Kronecker product of the stacks is multiplied
-   with sparse slice |GSSparseTensor| (not dense slice |FGSTensor|). The
-   multiplication is done in |@<|FPSTensor| sparse constructor@>|. */
+   with sparse slice GSSparseTensor (not dense slice FGSTensor). The
+   multiplication is done in FPSTensor sparse constructor. */
 void
 FoldedStackContainer::multAndAddStacks(const IntSequence &coor,
                                        const GSSparseTensor &g,
@@ -352,9 +346,9 @@ FoldedStackContainer::multAndAddStacks(const IntSequence &coor,
     }
 }
 
-// |UnfoldedStackContainer::multAndAdd| sparse code
-/*  Here we simply call either |multAndAddSparse1| or
-    |multAndAddSparse2|. The first one allows for optimization of
+// UnfoldedStackContainer::multAndAdd() sparse code
+/*  Here we simply call either multAndAddSparse1() or
+    multAndAddSparse2(). The first one allows for optimization of
     Kronecker products, so it seems to be more efficient. */
 void
 UnfoldedStackContainer::multAndAdd(const FSSparseTensor &t,
@@ -365,11 +359,11 @@ UnfoldedStackContainer::multAndAdd(const FSSparseTensor &t,
   multAndAddSparse2(t, out);
 }
 
-// |UnfoldedStackContainer::multAndAdd| dense code
+// UnfoldedStackContainer::multAndAdd() dense code
 /* Here we implement the formula for stacks for fully symmetric tensor
    scattered in a number of general symmetry tensors contained in a given
    container. The implementations is pretty the same as in
-   |multAndAddSparse2| but we do not do the slices of sparse tensor, but
+   multAndAddSparse2() but we do not do the slices of sparse tensor, but
    only a lookup to the container.
 
    This means that we do not iterate through a dummy folded tensor to
@@ -411,18 +405,15 @@ WorkerUnfoldMAADense::WorkerUnfoldMAADense(const UnfoldedStackContainer &contain
 }
 
 /* Here we implement the formula for unfolded tensors. If, for instance,
-   a coordinate $z$ of a tensor $\left[f_{z^2}\right]$ is partitioned as
-   $z=[a, b]$, then we perform the following:
-   $$
-   \eqalign{
-   \left[f_{z^2}\right]\left(\sum_c\left[\matrix{a_{c(x)}\cr b_{c(y)}}\right]
-   \otimes\left[\matrix{a_{c(y)}\cr b_{c(y)}}\right]\right)=&
-   \left[f_{aa}\right]\left(\sum_ca_{c(x)}\otimes a_{c(y)}\right)+
-   \left[f_{ab}\right]\left(\sum_ca_{c(x)}\otimes b_{c(y)}\right)+\cr
-   &\left[f_{ba}\right]\left(\sum_cb_{c(x)}\otimes a_{c(y)}\right)+
-   \left[f_{bb}\right]\left(\sum_cb_{c(x)}\otimes b_{c(y)}\right)\cr
-   }
-   $$
+   a coordinate z of a tensor [f_z²] is partitioned as
+   z=(a, b), then we perform the following:
+
+               ⎛a_c(x)⎞ ⎛a_c(y)⎞
+    [f_z²] · ∑ ⎢      ⎥⊗⎢      ⎥ = [f_aa] · ∑ a_c(x)⊗a_c(y) + [f_ab] · ∑ a_c(x)⊗b_c(y)
+             ᶜ ⎝b_c(x)⎠ ⎝b_c(y)⎠            ᶜ                          ᶜ
+
+                                 + [f_ba] · ∑ b_c(x)⊗a_c(y) + [f_bb] · ∑ b_c(x)⊗b_c(y)
+
    This is exactly what happens here. The code is clear. It goes through
    all combinations of stacks, and each thread is responsible for
    operation for the slice corresponding to the combination of the stacks. */
@@ -439,31 +430,28 @@ UnfoldedStackContainer::multAndAddSparse1(const FSSparseTensor &t,
   gr.run();
 }
 
-/* This does a step of |@<|UnfoldedStackContainer::multAndAddSparse1| code@>| for
+/* This does a step of UnfoldedStackContainer::multAndAddSparse1() for
    a given coordinates. First it makes the slice of the given stack coordinates.
    Then it multiplies everything what should be multiplied with the slice.
-   That is it goes through all equivalences, creates |StackProduct|, then
-   |KronProdStack|, which is added to |out|. So far everything is clear.
+   That is it goes through all equivalences, creates StackProduct, then
+   KronProdStack, which is added to ‘out’. So far everything is clear.
 
-   However, we want to use optimized |KronProdAllOptim| to minimize
-   a number of flops and memory needed in the Kronecker product. So we go
-   through all permutations |per|, permute the coordinates to get
-   |percoor|, go through all equivalences, and make |KronProdStack| and
-   optimize it. The result of optimization is a permutation |oper|. Now,
-   we multiply the Kronecker product with the slice, only if the slice
-   has the same ordering of coordinates as the Kronecker product
-   |KronProdStack|. However, it is not perfectly true. Since we go
-   through {\bf all} permutations |per|, there might be two different
-   permutations leading to the same ordering in |KronProdStack| and thus
-   the same ordering in the optimized |KronProdStack|. The two cases
-   would be counted twice, which is wrong. That is why we do not
-   condition on $\hbox{coor}\circ\hbox{oper}\circ\hbox{per} =
-   \hbox{coor}$, but we condition on
-   $\hbox{oper}\circ\hbox{per}=\hbox{id}$. In this way, we rule out
-   permutations |per| leading to the same ordering of stacks when
-   applied on |coor|.
+   However, we want to use optimized KronProdAllOptim to minimize a number of
+   flops and memory needed in the Kronecker product. So we go through all
+   permutations ‘per’, permute the coordinates to get ‘percoor’, go through all
+   equivalences, and make KronProdStack and optimize it. The result of
+   optimization is a permutation ‘oper’. Now, we multiply the Kronecker product
+   with the slice, only if the slice has the same ordering of coordinates as
+   the Kronecker product KronProdStack. However, it is not perfectly true.
+   Since we go through *all* permutations ‘per’, there might be two different
+   permutations leading to the same ordering in KronProdStack and thus the same
+   ordering in the optimized KronProdStack. The two cases would be counted
+   twice, which is wrong. That is why we do not condition on
+   coor∘oper∘per = coor, but we condition on oper∘per = id. In this way, we
+   rule out permutations ‘per’ leading to the same ordering of stacks when
+   applied on ‘coor’.
 
-   todo: vertically narrow slice and out according to the fill in t. */
+   TODO: vertically narrow slice and out according to the fill in t. */
 
 void
 WorkerUnfoldMAASparse1::operator()(std::mutex &mut)
@@ -509,25 +497,25 @@ WorkerUnfoldMAASparse1::WorkerUnfoldMAASparse1(const UnfoldedStackContainer &con
 }
 
 /* In here we implement the formula by a bit different way. We use the
-   fact, using notation of |@<|UnfoldedStackContainer::multAndAddSparse2|
-   code@>|, that
-   $$
-   \left[f_{ba}\right]\left(\sum_cb_{c(x)}\otimes a_{c(y)}\right)=
-   \left[f_{ab}\right]\left(\sum_ca_{c(y)}\otimes b_{c(b)}\right)\cdot P
-   $$
-   where $P$ is a suitable permutation of columns. The permutation
-   corresponds to (in this example) a swap of $a$ and $b$. An advantage
-   of this approach is that we do not need |UPSTensor| for $f_{ba}$, and
+   fact, using notation of UnfoldedStackContainer::multAndAddSparse2(),
+   that
+                                      ⎛               ⎞
+   [f_ba] · ∑ b_c(x)⊗a_c(y) = [f_ba] ·⎢∑ a_c(y)⊗b_c(x)⎥· P
+            ᶜ                         ⎝ᶜ              ⎠
+
+   where P is a suitable permutation of columns. The permutation
+   corresponds to (in this example) a swap of a and b. An advantage
+   of this approach is that we do not need UPSTensor for [f_ba], and
    thus we decrease the number of needed slices.
 
    So we go through all folded indices of stack coordinates, then for
-   each such index |fi| we make a slice and call |multAndAddStacks|. This
+   each such index ‘fi’ we make a slice and call multAndAddStacks(). This
    goes through all corresponding unfolded indices to perform the
    formula. Each unsorted (unfold) index implies a sorting permutation
-   |sort_per| which must be used to permute stacks in |StackProduct|, and
-   permute equivalence classes when |UPSTensor| is formed. In this way
-   the column permutation $P$ from the formula is factored to the
-   permutation of |UPSTensor|. */
+   ‘sort_per’ which must be used to permute stacks in StackProduct, and
+   permute equivalence classes when UPSTensor is formed. In this way
+   the column permutation P from the formula is factored to the
+   permutation of UPSTensor. */
 
 void
 UnfoldedStackContainer::multAndAddSparse2(const FSSparseTensor &t,
@@ -541,12 +529,12 @@ UnfoldedStackContainer::multAndAddSparse2(const FSSparseTensor &t,
   gr.run();
 }
 
-/* This does a step of |@<|UnfoldedStackContainer::multAndAddSparse2| code@>| for
-   a given coordinates.
+/* This does a step of UnfoldedStackContainer::multAndAddSparse2() for a given
+   coordinates.
 
-   todo: implement |multAndAddStacks| for sparse slice as
-   |@<|FoldedStackContainer::multAndAddStacks| sparse code@>| and do this method as
-   |@<|WorkerFoldMAASparse2::operator()()| code@>|. */
+   TODO: implement multAndAddStacks() for sparse slice as
+   FoldedStackContainer::multAndAddStacks() sparse code and do this method as
+   WorkerFoldMAASparse2::operator()(). */
 
 void
 WorkerUnfoldMAASparse2::operator()(std::mutex &mut)
@@ -573,21 +561,21 @@ WorkerUnfoldMAASparse2::WorkerUnfoldMAASparse2(const UnfoldedStackContainer &con
 {
 }
 
-/* For a given unfolded coordinates of stacks |fi|, and appropriate
-   tensor $g$, whose symmetry is a symmetry of |fi|, the method
-   contributes to |out| all tensors in unfolded stack formula involving
-   stacks chosen by |fi|.
+/* For a given unfolded coordinates of stacks ‘fi’, and appropriate
+   tensor g, whose symmetry is a symmetry of ‘fi’, the method
+   contributes to ‘out’ all tensors in unfolded stack formula involving
+   stacks chosen by ‘fi’.
 
-   We go through all |ui| coordinates which yield |fi| after sorting. We
-   construct a permutation |sort_per| which sorts |ui| to |fi|. We go
-   through all appropriate equivalences, and construct |StackProduct|
-   from equivalence classes permuted by |sort_per|, then |UPSTensor| with
+   We go through all ‘ui’ coordinates which yield ‘fi’ after sorting. We
+   construct a permutation ‘sort_per’ which sorts ‘ui’ to ‘fi’. We go
+   through all appropriate equivalences, and construct StackProduct
+   from equivalence classes permuted by ‘sort_per’, then UPSTensor with
    implied permutation of columns by the permuted equivalence by
-   |sort_per|. The |UPSTensor| is then added to |out|.
+   ‘sort_per’. The UPSTensor is then added to ‘out’.
 
-   We cannot use here the optimized |KronProdStack|, since the symmetry
-   of |UGSTensor& g| prescribes the ordering of the stacks. However, if
-   |g| is fully symmetric, we can do the optimization harmlessly. */
+   We cannot use here the optimized KronProdStack, since the symmetry
+   of ‘UGSTensor& g’ prescribes the ordering of the stacks. However, if
+   ‘g’ is fully symmetric, we can do the optimization harmlessly. */
 
 void
 UnfoldedStackContainer::multAndAddStacks(const IntSequence &fi,

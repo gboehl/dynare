@@ -2,46 +2,42 @@
 
 // Tensor concept.
 
-/* Here we define a tensor class. Tensor is a mathematical object
-   corresponding to a $(n+1)$-dimensional array. An element of such array
-   is denoted $[B]_{\alpha_1\ldots\alpha_n}^\beta$, where $\beta$ is a
-   special index and $\alpha_1\ldots\alpha_n$ are other indices. The
-   class |Tensor| and its subclasses view such array as a 2D matrix,
-   where $\beta$ corresponds to one dimension, and
-   $\alpha_1\ldots\alpha_2$ unfold to the other dimension. Whether
-   $\beta$ correspond to rows or columns is decided by tensor subclasses,
-   however, most of our tensors will have rows indexed by $\beta$, and
-   $\alpha_1\ldots\alpha_n$ will unfold column-wise.
+/* Here we define a tensor class. A tensor is a mathematical object
+   corresponding to an (n+1)-dimensional array. An element of such array is
+   denoted [B]_α₁…αₙ^β, where β is a special index and α₁…αₙ are other indices.
+   The class Tensor and its subclasses view such array as a 2D matrix, where β
+   corresponds to one dimension, and α₁…αₙ unfold to the other dimension.
+   Whether β corresponds to rows or columns is decided by tensor subclasses,
+   however, most of our tensors will have rows indexed by β, and α₁…αₙ will
+   unfold column-wise.
 
-   There might be some symmetries in the tensor data. For instance, if
-   $\alpha_1$ is interchanged with $\alpha_3$ and the both elements equal
-   for all possible $\alpha_i$, and $\beta$, then there is a symmetry
-   of $\alpha_1$ and $\alpha_3$.
+   There might be some symmetries in the tensor data. For instance, if α₁ is
+   interchanged with α₃ and the other elements remain equal for all possible αᵢ
+   and β, then there is a symmetry of α₁ and α₃.
 
    For any symmetry, there are basically two possible storages of the
    data. The first is unfolded storage, which stores all elements
    regardless the symmetry. The other storage type is folded, which
    stores only elements which do not repeat. We declare abstract classes
-   for unfolded tensor, and folded tensor.
+   for unfolded and folded tensor alike.
 
-   Also, here we also define a concept of tensor index which is the
-   $n$-tuple $\alpha_1\ldots\alpha_n$. It is an iterator, which iterates
-   in dependence of symmetry and storage of the underlying tensor.
+   Also, here we also define a concept of tensor index which is the n-tuple
+   α₁…αₙ. It is an iterator, which iterates in dependence of symmetry and
+   storage of the underlying tensor.
 
-   Although we do not decide about possible symmetries at this point, it
-   is worth noting that we implement two kinds of symmetries. The first
-   one is a full symmetry where all indices are interchangeable. The
-   second one is a generalization of the first. We define tensor of a
-   symmetry, where there are a few groups of indices interchangeable
-   within a group and not across. Moreover, the groups are required to be
-   consequent partitions of the index $n$-tuple. This is, we do not allow
-   $\alpha_1$ be interchangeable with $\alpha_3$ and not with $\alpha_2$
-   at the same time.
+   Although we do not decide about possible symmetries at this point, it is
+   worth noting that we implement two kinds of symmetries in subclasses. The
+   first one is a full symmetry where all indices are interchangeable. The
+   second one is a generalization of the first, where there are a few groups of
+   indices interchangeable within a group and not across. Moreover, the groups
+   are required to be consequent partitions of the index n-tuple. For example,
+   we do not allow α₁ to be interchangeable with α₃ and not with α₂ at the same
+   time.
 
-   However, some intermediate results are, in fact, tensors of a symmetry
-   not fitting to our concept. We develop the tensor abstraction for it,
-   but these objects are not used very often. They have limited usage
-   due to their specialized constructor. */
+   However, some intermediate results are, in fact, tensors with a symmetry not
+   fitting to our concept. We develop the tensor abstraction for it, but these
+   objects are not used very often. They have limited usage due to their
+   specialized constructor. */
 
 #ifndef TENSOR_H
 #define TENSOR_H
@@ -52,49 +48,46 @@
 #include <memory>
 #include <iostream>
 
-/* Here is the |Tensor| class, which is nothing else than a simple subclass
-   of |TwoDMatrix|. The unique semantically new member is |dim| which is tensor
-   dimension (length of $\alpha_1\ldots\alpha_n$). We also declare
-   |increment|, |decrement| and |getOffset| methods as pure virtual.
+/* Here is the Tensor class, which is nothing else than a simple subclass of
+   TwoDMatrix. The unique semantically new member is ‘dim’ which is tensor
+   dimension (length of α₁…αₙ). We also declare increment(), decrement() and
+   getOffset() methods as pure virtual.
 
-   We also add members for index begin and index end. This is useful,
-   since |begin| and |end| methods do not return instance but only
-   references, which prevent making additional copy of index (for example
-   in for cycles as |in != end()| which would do a copy of index for each
-   cycle). The index begin |in_beg| is constructed as a sequence of all
-   zeros, and |in_end| is constructed from the sequence |last| passed to
-   the constructor, since it depends on subclasses. Also we have to say,
-   along what coordinate is the multidimensional index. This is used only
-   for initialization of |in_end|. */
+   We also add members for index begin and index end. This is useful, since
+   begin() and end() methods do not return instance but only references, which
+   prevent making additional copy of index (for example in for cycles as ‘in !=
+   end()’ which would do a copy of index for each cycle). The index begin
+   ‘in_beg’ is constructed as a sequence of all zeros, and ‘in_end’ is
+   constructed from the sequence ‘last’ passed to the constructor, since it
+   depends on subclasses. Also we have to say, along what coordinate is the
+   multidimensional index. This is used only for initialization of ‘in_end’. */
 
 class Tensor : public TwoDMatrix
 {
 public:
   enum class indor {along_row, along_col};
 
-  /* The index represents $n$-tuple $\alpha_1\ldots\alpha_n$. Since its
-     movement is dependent on the underlying tensor (with storage and
-     symmetry), we maintain a reference to that tensor, we maintain the
-     $n$-tuple (or coordinates) as |IntSequence| and also we maintain the
-     offset number (column, or row) of the index in the tensor. The reference
-     is const, since we do not need to change data through the index.
+  /* The index represents n-tuple α₁…αₙ. Since its movement is dependent on the
+     underlying tensor (with storage and symmetry), we maintain a reference to
+     that tensor, we maintain the n-tuple (or coordinates) as IntSequence and
+     also we maintain the offset number (column, or row) of the index in the
+     tensor. The reference is const, since we do not need to change data
+     through the index.
 
-     Here we require the |tensor| to implement |increment| and |decrement|
-     methods, which calculate following and preceding $n$-tuple. Also, we
-     need to calculate offset number from the given coordinates, so the
-     tensor must implement method |getOffset|. This method is used only in
-     construction of the index from the given coordinates. As the index is
-     created, the offset is automatically incremented, and decremented
-     together with index. The |getOffset| method can be relatively
-     computationally complex. This must be kept in mind.  Also we generally
-     suppose that n-tuple of all zeros is the first offset (first columns
-     or row).
+     Here we require the Tensor to implement increment() and decrement()
+     methods, which calculate following and preceding n-tuple. Also, we need to
+     calculate offset number from the given coordinates, so the tensor must
+     implement method getOffset(). This method is used only in construction of
+     the index from the given coordinates. As the index is created, the offset
+     is automatically incremented, and decremented together with index. The
+     getOffset() method can be relatively computationally complex. This must be
+     kept in mind. Also we generally suppose that n-tuple of all zeros is the
+     first offset (first columns or row).
 
-     What follows is a definition of index class, the only
-     interesting point is |operator==| which decides only according to
-     offset, not according to the coordinates. This is useful since there
-     can be more than one of coordinate representations of past-the-end
-     index. */
+     What follows is a definition of index class, the only interesting point is
+     operator==() which decides only according to offset, not according to the
+     coordinates. This is useful since there can be more than one of coordinate
+     representations of past-the-end index. */
   class index
   {
     const Tensor &tensor;
@@ -220,11 +213,10 @@ public:
   }
 };
 
-/* Here is an abstraction for unfolded tensor. We provide a pure
-   virtual method |fold| which returns a new instance of folded tensor of
-   the same symmetry. Also we provide static methods for incrementing and
-   decrementing an index with full symmetry and general symmetry as
-   defined above. */
+/* Here is an abstraction for unfolded tensor. We provide a pure virtual method
+   fold() which returns a new instance of folded tensor of the same symmetry.
+   Also we provide static methods for incrementing and decrementing an index
+   with full symmetry and general symmetry as defined above. */
 
 class FTensor;
 class UTensor : public Tensor
@@ -255,12 +247,12 @@ public:
 };
 
 /* This is an abstraction for folded tensor. It only provides a method
-   |unfold|, which returns the unfolded version of the same symmetry, and
+   unfold(), which returns the unfolded version of the same symmetry, and
    static methods for decrementing indices.
 
-   We also provide static methods for decrementing the |IntSequence| in
+   We also provide static methods for decrementing the IntSequence in
    folded fashion and also calculating an offset for a given
-   |IntSequence|. However, this is relatively complex calculation, so
+   IntSequence. However, this is relatively complex calculation, so
    this should be avoided if possible. */
 
 class FTensor : public Tensor

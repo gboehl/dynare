@@ -6,13 +6,13 @@
    index identified with rows. The primary usage is for storage of data coming
    from (or from a sum of)
       ₗ
-      ∏  [g_(s^|cₘ|)]_cₘ(α)^γₘ
+      ∏  [g_{s^|cₘ|}]_cₘ(α)^γₘ
      ᵐ⁼¹
    where α comes from a multidimensional index that goes through some set S,
    and cₘ is some equivalence class. So we model a tensor of the form:
 
      ⎡ ₗ                       ⎤
-     ⎢ ∏  [g_(s^|cₘ|)]_cₘ(α)^γₘ⎥
+     ⎢ ∏  [g_{s^|cₘ|}]_cₘ(α)^γₘ⎥
      ⎣ᵐ⁼¹                      ⎦S^γ₁…γₗ
 
    Since all γ₁…γₗ correspond to the same variable, the tensor is fully

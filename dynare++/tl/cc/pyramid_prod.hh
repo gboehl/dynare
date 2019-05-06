@@ -6,7 +6,7 @@
    tensors. Recall, that one step of the Faà Di Bruno is a formula:
 
                                  ₗ
-    [B_sᵏ]_α₁…αₗ = [h_yˡ]_γ₁…γₗ  ∏  [g_(s^|cₘ|)]_cₘ(α)^γₘ
+    [B_sᵏ]_α₁…αₗ = [h_yˡ]_γ₁…γₗ  ∏  [g_{s^|cₘ|}]_cₘ(α)^γₘ
                                 ᵐ⁼¹
 
    In contrast to unfolded implementation of UGSContainer::multAndAdd()
@@ -14,7 +14,7 @@
    different strategy. We cannot afford full instantiation of
 
              ₗ
-       ∑     ∏  [g_(s^|cₘ|)]_cₘ(α)^γₘ
+       ∑     ∏  [g_{s^|cₘ|}]_cₘ(α)^γₘ
     c∈ℳₗ,ₖ ᵐ⁼¹
 
    and therefore we do it per partes. We select some number of columns,
@@ -22,7 +22,7 @@
    form unfolded tensor
 
                   ⎡         ₗ                       ⎤
-    [G]_S^γ₁…γₗ = ⎢   ∑     ∏  [g_(s^|cₘ|)]_cₘ(α)^γₘ⎥
+    [G]_S^γ₁…γₗ = ⎢   ∑     ∏  [g_{s^|cₘ|}]_cₘ(α)^γₘ⎥
                   ⎣c∈ℳₗ,ₖ ᵐ⁼¹                       ⎦_S
 
    where S is the selected set of 10 indices. This is done as Kronecker

@@ -4,45 +4,41 @@
 
 /* One of primary purposes of the tensor library is to perform one step
    of the Faà Di Bruno formula:
-   $$\left[B_{s^k}\right]_{\alpha_1\ldots\alpha_k}=
-   [h_{y^l}]_{\gamma_1\ldots\gamma_l}\sum_{c\in M_{l,k}}
-   \prod_{m=1}^l\left[g_{s^{\vert c_m\vert}}\right]^{\gamma_m}_{c_m(\alpha)}
-   $$
-   where $h_{y^l}$ and $g_{s^i}$ are tensors, $M_{l,k}$ is a set of all
-   equivalences with $l$ classes of $k$ element set, $c_m$ is $m$-the
-   class of equivalence $c$, and $\vert c_m\vert$ is its
-   cardinality. Further, $c_m(\alpha)$ is a sequence of $\alpha$s picked
-   by equivalence class $c_m$.
 
-   In order to accomplish this operation, we basically need some storage
-   of all tensors of the form $\left[g_{s^i}\right]$. Note that $s$ can
-   be compound, for instance $s=[y,u]$. Then we need storage for
-   $\left[g_{y^3}\right]$, $\left[g_{y^2u}\right]$,
-   $\left[g_{yu^5}\right]$, etc.
+                                         ₗ
+    [B_sᵏ]_α₁…αₗ = [h_zˡ]_γ₁…γₗ    ∑     ∏  [g_{s^|cₘ|}]_cₘ(α)^γₘ
+                                c∈ℳₗ,ₖ ᵐ⁼¹
 
-   We need an object holding all tensors of the same type. Here type
-   means an information, that coordinates of the tensors can be of type
-   $y$, or $u$. We will group only tensors, whose symmetry is described
-   by |Symmetry| class. These are only $y^2u^3$, not $yuyu^2$. So, we are
-   going to define a class which will hold tensors whose symmetries are
-   of type |Symmetry| and have the same symmetry length (number of
-   different coordinate types). Also, for each symmetry there will be at
-   most one tensor.
+   where [h_zˡ] and [g_sⁱ] are tensors, ℳₗ,ₖ is the set of all equivalences
+   with l classes of k element set, cₘ is an m-class of equivalence c, and |cₘ|
+   is its cardinality. Further, cₘ(α) is the sequence of α’s picked by
+   equivalence class cₘ.
 
-   The class has two purposes: The first is to provide storage (insert
-   and retrieve). The second is to perform the above step of Faà Di Bruno. This is
-   going through all equivalences with $l$ classes, perform the tensor
-   product and add to the result.
+   In order to accomplish this operation, we basically need some storage of all
+   tensors of the form [g_sⁱ]. Note that s can be compound, for instance
+   s=(y,u). Then we need storage for [g_y³], [g_y²u], [g_yu⁵], etc.
 
-   We define a template class |TensorContainer|. From different
-   instantiations of the template class we will inherit to create concrete
-   classes, for example container of unfolded general symmetric
-   tensors. The one step of the Faà Di Bruno (we call it |multAndAdd|) is
-   implemented in the concrete subclasses, because the implementation
-   depends on storage. Note even, that |multAndAdd| has not a template
-   common declaration. This is because sparse tensor $h$ is multiplied by
-   folded tensors $g$ yielding folded tensor $B$, but unfolded tensor $h$
-   is multiplied by unfolded tensors $g$ yielding unfolded tensor $B$. */
+   We need an object holding all tensors of the same type. Here type means an
+   information, that coordinates of the tensors can be of type y or u. We will
+   group only tensors, whose symmetry is described by the Symmetry class. These
+   are only y²u³, not yuyu². So, we are going to define a class which will hold
+   tensors whose symmetries are of type Symmetry and have the same symmetry
+   length (number of different coordinate types). Also, for each symmetry there
+   will be at most one tensor.
+
+   The class has two purposes. The first is to provide storage (insert and
+   retrieve). The second is to perform the above step of Faà Di Bruno. This is
+   going through all equivalences with $l$ classes, perform the tensor product
+   and add to the result.
+
+   We define a template class TensorContainer. From different instantiations of
+   the template class we will inherit to create concrete classes, for example
+   container of unfolded general symmetric tensors. The one step of the Faà Di
+   Bruno (we call it multAndAdd()) is implemented in the concrete subclasses,
+   because the implementation depends on storage. Note even, that multAndAdd()
+   has not a template common declaration. This is because sparse tensor h is
+   multiplied by folded tensors g yielding folded tensor B, but unfolded tensor
+   h is multiplied by unfolded tensors g yielding unfolded tensor B. */
 
 #ifndef T_CONTAINER_H
 #define T_CONTAINER_H
@@ -63,7 +59,7 @@
 
 #include <matio.h>
 
-// |ltsym| predicate
+// ltsym predicate
 /* We need a predicate on strict weak ordering of
    symmetries. */
 struct ltsym
@@ -75,21 +71,20 @@ struct ltsym
   }
 };
 
-/* Here we define the template class for tensor container. We implement
-   it as |stl::map|. It is a unique container, no two tensors with same
-   symmetries can coexist. Keys of the map are symmetries, values are
-   pointers to tensor. The class is responsible for deallocating all
-   tensors. Creation of the tensors is done outside.
+/* Here we define the template class for tensor container. We implement it as
+   an stl::map. It is a unique container, no two tensors with same symmetries
+   can coexist. Keys of the map are symmetries, values are pointers to tensor.
+   The class is responsible for deallocating all tensors. Creation of the
+   tensors is done outside.
 
-   The class has integer |n| as its member. It is a number of different
-   coordinate types of all contained tensors. Besides intuitive insert
-   and retrieve interface, we define a method |fetchTensors|, which for a
-   given symmetry and given equivalence calculates symmetries implied by
-   the symmetry and all equivalence classes, and fetches corresponding
-   tensors in a vector.
+   The class has integer ‘n’ as its member. It is a number of different
+   coordinate types of all contained tensors. Besides intuitive insert and
+   retrieve interface, we define a method fetchTensors(), which for a given
+   symmetry and given equivalence calculates symmetries implied by the symmetry
+   and all equivalence classes, and fetches corresponding tensors in a vector.
 
-   Also, each instance of the container has a reference to
-   |EquivalenceBundle| which allows an access to equivalences. */
+   Also, each instance of the container has a reference to EquivalenceBundle
+   which allows an access to equivalences. */
 
 template<class _Ttype>
 class TensorContainer
@@ -113,7 +108,7 @@ public:
   }
   TensorContainer(TensorContainer<_Ttype> &&) = default;
 
-  // |TensorContainer| subtensor constructor
+  // TensorContainer subtensor constructor
   /* This constructor constructs a new tensor container, whose tensors
      are in-place subtensors of the given container. */
   TensorContainer(int first_row, int num, TensorContainer<_Ttype> &c)
@@ -287,7 +282,7 @@ public:
   }
 };
 
-/* Here is a container storing |UGSTensor|s. We declare |multAndAdd| method. */
+/* Here is a container storing UGSTensor’s. We declare multAndAdd() method. */
 
 class FGSContainer;
 class UGSContainer : public TensorContainer<UGSTensor>
@@ -301,18 +296,17 @@ public:
   void multAndAdd(const UGSTensor &t, UGSTensor &out) const;
 };
 
-/* Here is a container storing |FGSTensor|s. We declare two versions of
-   |multAndAdd| method. The first works for folded $B$ and folded $h$
-   tensors, the second works for folded $B$ and unfolded $h$. There is no
-   point to do it for unfolded $B$ since the algorithm go through all the
-   indices of $B$ and calculates corresponding columns. So, if $B$ is
-   needed unfolded, it is more effective to calculate its folded version
-   and then unfold by conversion.
+/* Here is a container storing FGSTensor’s. We declare two versions of
+   multAndAdd() method. The first works for folded B and folded h tensors, the
+   second works for folded B and unfolded h. There is no point to do it for
+   unfolded B since the algorithm goes through all the indices of B and
+   calculates corresponding columns. So, if B is needed unfolded, it is more
+   effective to calculate its folded version and then unfold by conversion.
 
-   The static member |num_one_time| is a number of columns formed from
-   product of $g$ tensors at one time. This is subject to change, probably
-   we will have to do some tuning and decide about this number based on
-   symmetries, and dimensions in the runtime. */
+   The static member ‘num_one_time’ is a number of columns formed from product
+   of g tensors at one time. This is subject to change, probably we will have
+   to do some tuning and decide about this number based on symmetries, and
+   dimensions in the runtime. */
 
 class FGSContainer : public TensorContainer<FGSTensor>
 {

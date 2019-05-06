@@ -3,8 +3,8 @@
 #include "t_polynomial.hh"
 #include "kron_prod.hh"
 
-// |PowerProvider::getNext| unfolded code
-/* This method constructs unfolded |ut| of higher dimension, deleting
+// PowerProvider::getNext() unfolded code
+/* This method constructs unfolded ‘ut’ of higher dimension, deleting
    the previous. */
 
 const URSingleTensor &
@@ -24,9 +24,8 @@ PowerProvider::getNext(dummy<URSingleTensor>)
   return *ut;
 }
 
-// |PowerProvider::getNext| folded code
-/* This method just constructs next unfolded |ut| and creates folded
-   |ft|. */
+// PowerProvider::getNext() folded code
+/* This method just constructs next unfolded ‘ut’ and creates folded ‘ft’. */
 
 const FRSingleTensor &
 PowerProvider::getNext(dummy<FRSingleTensor>)

@@ -4,7 +4,7 @@
 
 /* We need to calculate the following tensor product:
                    ⱼ                      ₗ
-   [f_sʲ]_α₁…αⱼ =  ∑ [f_zˡ]_β₁…βₗ   ∑     ∏  [z_(s^|cₘ|)]_cₘ(α)^βₘ
+   [f_sʲ]_α₁…αⱼ =  ∑ [f_zˡ]_β₁…βₗ   ∑     ∏  [z_{s^|cₘ|}]_cₘ(α)^βₘ
                   ˡ⁼¹            c∈ℳₗ,ₖ ᵐ⁼¹
    where s=(y,u,u′,σ), and z is a composition of four variables, say (v,w,y,u).
    Note that z ends with y and u, and the only non-zero derivative of the

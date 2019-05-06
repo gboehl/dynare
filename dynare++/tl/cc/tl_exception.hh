@@ -16,23 +16,22 @@
 #include <utility>
 #include <string>
 
-/* The basic idea of raising an exception if some condition fails is
-   that the conditions is checked only if required. We define global
-   |TL_DEBUG| macro which is integer and says, how many debug messages
-   the programm has to emit. We also define |TL_DEBUG_EXCEPTION| which
-   says, for what values of |TL_DEBUG| we will check for conditions of
-   the exceptions. If the |TL_DEBUG| is equal or higher than
-   |TL_DEBUG_EXCEPTION|, the exception conditions are checked.
+/* The basic idea of raising an exception if some condition fails is that the
+   conditions is checked only if required. We define global TL_DEBUG macro
+   which is integer and says, how many debug messages the programm has to emit.
+   We also define TL_DEBUG_EXCEPTION which says, for what values of TL_DEBUG we
+   will check for conditions of the exceptions. If the TL_DEBUG is equal or
+   higher than TL_DEBUG_EXCEPTION, the exception conditions are checked.
 
-   We define |TL_RAISE|, and |TL_RAISE_IF| macros which throw an instance of
-   |TLException| (only if |TL_DEBUG >= TL_DEBUG_EXCEPTION| for the latter). The
+   We define TL_RAISE, and TL_RAISE_IF macros which throw an instance of
+   TLException (only if TL_DEBUG >= TL_DEBUG_EXCEPTION for the latter). The
    first is unconditional throw, the second is conditioned by a given
-   expression. Note that if |TL_DEBUG < TL_DEBUG_EXCEPTION| then the code is
+   expression. Note that if TL_DEBUG < TL_DEBUG_EXCEPTION then the code is
    compiled but evaluation of the condition is passed. If code is optimized,
-   the optimizer also passes evaluation of |TL_DEBUG| and |TL_DEBUG_EXCEPTION|
+   the optimizer also passes evaluation of TL_DEBUG and TL_DEBUG_EXCEPTION
    comparison (I hope).
 
-   We provide default values for |TL_DEBUG| and |TL_DEBUG_EXCEPTION|. */
+   We provide default values for TL_DEBUG and TL_DEBUG_EXCEPTION. */
 
 #ifndef TL_DEBUG_EXCEPTION
 # define TL_DEBUG_EXCEPTION 1

@@ -124,42 +124,45 @@ FTensor::decrement(IntSequence &v, int nv)
     v[j] = nv-1;
 }
 
-/* This calculates order of the given index of our ordering of
-   indices. In order to understand how it works, let us take number of
-   variables $n$ and dimension $k$, and write down all the possible
-   combinations of indices in our ordering. For example for $n=4$ and
-   $k=3$, the sequence looks as (in column-major order):
+/* This calculates order of the given index of our ordering of indices. In
+   order to understand how it works, let us take number of variables n and
+   dimension k, and write down all the possible combinations of indices in our
+   ordering. For example for n=4 and k=3, the sequence looks as the following
+   (in column-major order):
 
-   000  111  222  333
-   001  112  223
-   002  113  233
-   003  122
-   011  123
-   012  133
-   013
-   022
-   023
-   033
+    000  111  222  333
+    001  112  223
+    002  113  233
+    003  122
+    011  123
+    012  133
+    013
+    022
+    023
+    033
 
-   Now observe, that a number of sequences starting with zero is the same
-   as the total number of sequences with the same number of variables but
-   with dimension minus one. More generally, if $S_{n,k}$ denotes the number
-   of indices of $n$ variables and dimension $k$, then the number of
-   indices beginning with $m$ is exactly $S_{n-m,k-1}$. This is because $m$
-   can be subtracted from all items, and we obtain the sequence of indices of
-   $n-m$ variables. So we have the formula:
-   $$S_{n,k}=S_{n,k-1}+S_{n-1,k-1}+\ldots+S_{1,k-1}$$
+   Now observe, that a number of sequences starting with zero is the same as
+   the total number of sequences with the same number of variables but with
+   dimension minus one. More generally, if Sₙ,ₖ denotes the number of indices
+   of n variables and dimension k, then the number of indices beginning with m
+   is exactly Sₙ₋ₘ,ₖ₋₁. This is because m can be subtracted from all items, and
+   we obtain the sequence of indices of n−m variables. So we have the formula:
 
-   Now it is easy to calculate the offset of index of the form
-   $(m,\ldots,m)$. It is a sum of all above it, this is
-   $S_{n,k-1}+\ldots+S_{n-m,k-1}$. We know that $S_{n,k}=\matrix{n+k-1 \\ k}$.
-   Using the above formula, we can calculate offset of $(m,\ldots,m)$ as
-   $$\pmatrix{n+k-1 \cr k}-\pmatrix{n-m+k-1 \cr k}$$
+    Sₙ,ₖ = Sₙ,ₖ₋₁ + Sₙ₋₁,ₖ₋₁ + … + S₁,ₖ₋₁
 
-   The offset of general index $(m_1,m_2,\ldots,m_k)$ is calculated
-   recursively, since it is the offset of $(m_1,\ldots,m_1)$ for $n$
-   variables plus the offset of $(m_2-m_1,m_3-m_1,\ldots,m_k-m_1)$ for
-   $n-m_1$ variables. */
+   Now it is easy to calculate the offset of an index of the form (m,…,m). It
+   is the sum of all above it, that is Sₙ,ₖ₋₁ + … + Sₙ₋ₘ,ₖ₋₁. Also, since Sₙ,ₖ
+   is the number of ways to choose k elements from a set of n elements with
+   repetitions allowed, it is well known that:
+           ⎛n+k−1⎞
+    Sₙ,ₖ = ⎝  k  ⎠.
+   Using the above formula, one can therefore calculate the offset of (m,…,m):
+    ⎛n+k−1⎞ ⎛n−m+k−1⎞
+    ⎝  k  ⎠−⎝   k   ⎠
+
+   The offset of general index (m₁,m₂,…,mₖ) is calculated recursively, since it
+   is the offset of (m₁,…,m₁) for n variables plus the offset of
+   (m₂−m₁,m₃−m₁,…,mₖ−m₁) for n−m₁ variables. */
 
 int
 FTensor::getOffsetRecurse(IntSequence &v, int nv)

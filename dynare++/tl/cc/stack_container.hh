@@ -13,7 +13,7 @@
    and we need to calculate one step of Faà Di Bruno formula:
 
                                          ₗ
-    [B_sᵏ]_α₁…αₗ = [f_zˡ]_β₁…βₗ    ∑     ∏  [z_(s^|cₘ|)]_cₘ(α)^βₘ
+    [B_sᵏ]_α₁…αₗ = [f_zˡ]_β₁…βₗ    ∑     ∏  [z_{s^|cₘ|}]_cₘ(α)^βₘ
                                 c∈ℳₗ,ₖ ᵐ⁼¹
 
    where we have containers for derivatives of G and g.
@@ -35,30 +35,24 @@
    behaviour of the stack. The complete classes are obtained by
    inheriting from the both branches, as it is drawn below:
 
-   \def\drawpenta#1#2#3#4#5{%
-   \hbox{$
-   \hgrid=40pt\vgrid=20pt%
-   \sarrowlength=25pt%
-   \gridcommdiag{%
-   &&\hbox{#1}&&\cr
-   &\llap{virtual}\arrow(-1,-1)&&\arrow(1,-1)\rlap{virtual}&\cr
-   \hbox{#2}&&&&\hbox{#3}\cr
-   \arrow(0,-1)&&&&\cr
-   \hbox{#4}&&&
-   {\multiply\sarrowlength by 63\divide\sarrowlength by 50\arrow(-1,-2)}&\cr
-   &\arrow(1,-1)&&&\cr
-   &&\hbox{#5}&&\cr
-   }$}}
 
-   \centerline{
-   \drawpenta{|StackContainerInterface<FGSTensor>|}{|StackContainer<FGSTensor>|}%
-   {|FoldedStackContainer|}{|ZContainer<FGSTensor>|}{|FoldedZContainer|}
-   }
+                        StackContainerInterface<FGSTensor>
+                          ↙                           ↘
+            StackContainer<FGSTensor>             FoldedStackContainer
+                        ↓
+              ZContainer<FGSTensor>                 ↙
+                                  ↘
+                                   FoldedZContainer
 
-   \centerline{
-   \drawpenta{|StackContainerInterface<UGSTensor>|}{|StackContainer<UGSTensor>|}%
-   {|UnfoldedStackContainer|}{|ZContainer<UGSTensor>|}{|UnfoldedZContainer|}
-   }
+
+                        StackContainerInterface<UGSTensor>
+                          ↙                           ↘
+            StackContainer<UGSTensor>           UnfoldedStackContainer
+                        ↓
+              ZContainer<UGSTensor>                 ↙
+                                 ↘
+                                  UnfoldedZContainer
+
 
    We have also two supporting classes StackProduct and KronProdStack
    and a number of worker classes used as threads. */
@@ -75,22 +69,22 @@
 #include "sthread.hh"
 
 /* Here is the general interface to stack container. The subclasses
-   maintain |IntSequence| of stack sizes, i.e. size of $G$, $g$, $y$, and
-   $u$. Then a convenience |IntSequence| of stack offsets. Then vector of
-   pointers to containers, in our example $G$, and $g$.
+   maintain IntSequence of stack sizes, i.e. size of G, g, y, and
+   u. Then a convenience IntSequence of stack offsets. Then vector of
+   pointers to containers, in our example G, and g.
 
-   A non-virtual subclass must implement |getType| which determines
+   A non-virtual subclass must implement getType() which determines
    dependency of stack items on symmetries. There are three possible types
    for a symmetry. Either the stack item derivative wrt. the symmetry is
    a matrix, or a unit matrix, or zero.
 
-   Method |isZero| returns true if the derivative of a given stack item
-   wrt. to given symmetry is zero as defined by |getType| or the
+   Method isZero() returns true if the derivative of a given stack item
+   wrt. to given symmetry is zero as defined by getType() or the
    derivative is not present in the container. In this way, we can
    implement the formula conditional some of the tensors are zero, which
    is not true (they are only missing).
 
-   Method |createPackedColumn| returns a vector of stack derivatives with
+   Method createPackedColumn() returns a vector of stack derivatives with
    respect to the given symmetry and of the given column, where all zeros
    from zero types, or unit matrices are deleted. See kron_prod.hh for an
    explanation. */
@@ -127,8 +121,8 @@ public:
   }
 };
 
-/* Here is |StackContainer|, which implements almost all interface
-   |StackContainerInterface| but one method |getType| which is left for
+/* Here is StackContainer, which implements almost all interface
+   StackContainerInterface but one method getType() which is left for
    implementation to specializations.
 
    It does not own its tensors. */
@@ -325,16 +319,15 @@ protected:
                         UGSTensor &out, std::mutex &mut) const;
 };
 
-/* Here is the specialization of the |StackContainer|. We implement
-   here the $z$ needed in DSGE context. We implement |getType| and define
+/* Here is the specialization of the StackContainer. We implement
+   here the z needed in DSGE context. We implement getType() and define
    a constructor feeding the data and sizes.
 
-   Note that it has two containers, the first is dependent on four
-   variables $G(y^*,u,u',\sigma)$, and the second dependent on three
-   variables $g(y^*,u,\sigma)$. So that we would be able to stack them,
-   we make the second container $g$ be dependent on four variables, the
-   third being $u'$ a dummy and always returning zero if dimension of
-   $u'$ is positive. */
+   Note that it has two containers, the first is dependent on four variables
+   G(y*,u,u′,σ), and the second dependent on three variables g(y*,u,σ). So that
+   we would be able to stack them, we make the second container g be dependent
+   on four variables, the third being u′ a dummy and always returning zero if
+   dimension of u′ is positive. */
 
 template <class _Ttype>
 class ZContainer : public StackContainer<_Ttype>
@@ -354,8 +347,8 @@ public:
     _Tparent::calculateOffsets();
   }
 
-  /* Here we say, what happens if we derive $z$. recall the top of the
-     file, how $z$ looks, and code is clear. */
+  /* Here we say, what happens if we derive z. recall the top of the
+     file, how z looks, and code is clear. */
 
   itype
   getType(int i, const Symmetry &s) const override
@@ -409,13 +402,14 @@ public:
 
 /* Here we have another specialization of container used in context of
    DSGE. We define a container for
-   $$G(y,u,u',\sigma)=g^{**}(g^*(y,u,\sigma),u',\sigma)$$
 
-   For some reason, the symmetry of $g^{**}$ has length $4$ although it
-   is really dependent on three variables. (To now the reason, consult
-   |@<|ZContainer| class declaration@>|.) So, it has four stack, the
+    G(y,u,u′,σ)=g**(g*(y,u,σ),u′,σ)
+
+   For some reason, the symmetry of g** has length 4 although it
+   is really dependent on three variables (To now the reason, consult
+   the ZContainer class declaration). So, it has four stacks, the
    third one is dummy, and always returns zero. The first stack
-   corresponds to a container of $g^*$. */
+   corresponds to a container of g*. */
 
 template <class _Ttype>
 class GContainer : public StackContainer<_Ttype>
@@ -433,9 +427,8 @@ public:
     _Tparent::calculateOffsets();
   }
 
-  /* Here we define the dependencies in
-     $g^{**}(g^*(y,u,\sigma),u',\sigma)$. Also note, that first derivative
-     of $g^*$ wrt $\sigma$ is always zero, so we also add this
+  /* Here we define the dependencies in g**(g*(y,u,σ),u′,σ). Also note, that
+     first derivative of g* w.r.t. σ is always zero, so we also add this
      information. */
 
   itype
@@ -486,8 +479,8 @@ public:
   }
 };
 
-/* Here we have a support class for product of |StackContainer|s. It
-   only adds a dimension to |StackContainer|. It selects the symmetries
+/* Here we have a support class for product of StackContainers. It
+   only adds a dimension to StackContainer. It selects the symmetries
    according to equivalence classes passed to the constructor. The
    equivalence can have permuted classes by some given
    permutation. Nothing else is interesting. */
@@ -600,8 +593,8 @@ public:
   }
 };
 
-/* Here we only inherit from Kronecker product |KronProdAllOptim|, only to
-   allow for a constructor constructing from |StackProduct|. */
+/* Here we only inherit from Kronecker product KronProdAllOptim, only to
+   allow for a constructor constructing from StackProduct. */
 
 template <class _Ttype>
 class KronProdStack : public KronProdAllOptim
@@ -610,12 +603,12 @@ public:
   using _Ptype = StackProduct<_Ttype>;
   using _Stype = StackContainerInterface<_Ttype>;
 
-  /* Here we construct |KronProdAllOptim| from |StackContainer| and given
+  /* Here we construct KronProdAllOptim from StackContainer and given
      selections of stack items from stack containers in the product. We
      only decide whether to insert matrix, or unit matrix.
 
-     At this point, we do not call |KronProdAllOptim::optimizeOrder|, so
-     the |KronProdStack| behaves like |KronProdAll| (i.e. no optimization
+     At this point, we do not call KronProdAllOptim::optimizeOrder(), so
+     the KronProdStack behaves like KronProdAll (i.e. no optimization
      is done). */
 
   KronProdStack(const _Ptype &sp, const IntSequence &istack)

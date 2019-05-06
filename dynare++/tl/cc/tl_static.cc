@@ -8,7 +8,7 @@
 #include <limits>
 #include <cmath>
 
-/* Note that we allow for repeated calls of |init|. This is not normal
+/* Note that we allow for repeated calls of init(). This is not normal
    and the only purpose of allowing this is the test suite. */
 
 namespace TLStatic
