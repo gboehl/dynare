@@ -17,7 +17,7 @@ function [endogenousvariables, info] = sim1(endogenousvariables, exogenousvariab
 % SPECIAL REQUIREMENTS
 %   None.
 
-% Copyright (C) 1996-2018 Dynare Team
+% Copyright (C) 1996-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -77,9 +77,6 @@ if verbose
 end
 
 model_dynamic = str2func([M.fname,'.dynamic']);
-z = Y(find(lead_lag_incidence'));
-
-[d1,jacobian] = model_dynamic(z, exogenousvariables, params, steadystate,maximum_lag+1);
 
 res = zeros(periods*ny,1);
 
