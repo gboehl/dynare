@@ -1,6 +1,6 @@
 function [residuals,JJacobian] = linear_perfect_foresight_problem(y, dynamicjacobian, Y0, YT, ...
                                                   exo_simul, params, steady_state, maximum_lag, T, ny, i_cols, ...
-                                                  i_cols_J1, i_cols_1, i_cols_T, i_cols_j, i_cols_0, i_cols_J0, nnzJ, jendo, jexog)
+                                                  i_cols_J1, i_cols_1, i_cols_T, i_cols_j, i_cols_0, i_cols_J0, jendo, jexog)
 
 % Computes the residuals and the Jacobian matrix for a linear perfect foresight problem over T periods.
 %

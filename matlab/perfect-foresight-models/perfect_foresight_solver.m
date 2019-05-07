@@ -12,7 +12,7 @@ function perfect_foresight_solver()
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 1996-2018 Dynare Team
+% Copyright (C) 1996-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -195,8 +195,7 @@ if ~isreal(oo_.endo_simul(:)) % can only happen without bytecode
     residuals = perfect_foresight_problem(yy(:),str2func([M_.fname '.dynamic']), y0, yT, ...
                                           oo_.exo_simul,M_.params,oo_.steady_state, ...
                                           M_.maximum_lag, periods, M_.endo_nbr, i_cols, ...
-                                          i_cols_J1, i_cols_1, i_cols_T, i_cols_j, i_cols_0, i_cols_J0, ...
-                                          M_.NNZDerivatives(1));
+                                          i_cols_J1, i_cols_1, i_cols_T, i_cols_j, i_cols_0, i_cols_J0);
     if max(abs(residuals))< options_.dynatol.f
         oo_.deterministic_simulation.status = 1;
         oo_.endo_simul=real(oo_.endo_simul);

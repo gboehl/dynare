@@ -2,7 +2,7 @@ function [residuals,JJacobian] = perfect_foresight_problem(y, dynamic_function, 
                                                   exo_simul, params, steady_state, ...
                                                   maximum_lag, T, ny, i_cols, ...
                                                   i_cols_J1, i_cols_1, i_cols_T, ...
-                                                  i_cols_j, i_cols_0, i_cols_J0, nnzJ)
+                                                  i_cols_j, i_cols_0, i_cols_J0)
 
 % Computes the residuals and the Jacobian matrix for a perfect foresight problem over T periods.
 %
@@ -31,7 +31,6 @@ function [residuals,JJacobian] = perfect_foresight_problem(y, dynamic_function, 
 % - i_cols_0            [double] indices of contemporaneous variables in M.lead_lag_incidence in dynamic
 %                                Jacobian (relevant in problems with periods=1)
 % - i_cols_J0           [double] indices of contemporaneous variables appearing in M.lead_lag_incidence (relevant in problems with periods=1)
-% - nnzJ                [scalar] number of non-zero elements in Jacobian
 %
 % OUTPUTS
 % - residuals           [double] (N*T)*1 array, residuals of the stacked problem

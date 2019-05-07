@@ -1,6 +1,6 @@
 function [endogenousvariables, info] = solve_stacked_linear_problem(endogenousvariables, exogenousvariables, steadystate_y, steadystate_x, M, options)
 
-% Copyright (C) 2015-2017 Dynare Team
+% Copyright (C) 2015-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -46,7 +46,7 @@ x = bsxfun(@minus, exogenousvariables, steadystate_x');
                           x, M.params, steadystate_y, ...
                           M.maximum_lag, options.periods, M.endo_nbr, i_cols, ...
                           i_cols_J1, i_cols_1, i_cols_T, i_cols_j, i_cols_0, i_cols_J0, ...
-                          M.NNZDerivatives(1), jendo, jexog);
+                          jendo, jexog);
 
 if all(imag(y)<.1*options.dynatol.x)
     if ~isreal(y)
