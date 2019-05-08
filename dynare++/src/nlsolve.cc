@@ -10,6 +10,8 @@
 
 using namespace ogu;
 
+double GoldenSectionSearch::golden = (3.-std::sqrt(5.))/2;
+
 double
 GoldenSectionSearch::search(OneDFunction &f, double x1, double x2)
 {

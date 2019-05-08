@@ -24,8 +24,8 @@ namespace ogu
   protected:
     /** This should not be greater than DBL_EPSILON^(1/2). */
     constexpr static double tol = 1.e-4;
-    /** This is equal to the golden section ratio: (3.-std::sqrt(5.))/2; */
-    constexpr static double golden = (3.-2.236067977499790)/2;
+    /** This is equal to the golden section ratio. */
+    static double golden;
   public:
     static double search(OneDFunction &f, double x1, double x2);
   protected:
