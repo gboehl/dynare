@@ -72,10 +72,14 @@ if options_.TeX && any(strcmp('eps',cellstr(options_.graph_format)))
     fprintf(fidTeX,['%% ' datestr(now,0) '\n']);
 end
 
+t = ['Plot of '] ;
 if options_.rplottype == 0
+    for j = 1:size(y,1)
+        t = [t s1{j} ' '] ;
+    end
     hh=dyn_figure(options_.nodisplay,'Name', 'Simulated Trajectory');
     plot(ix(i),y(:,i)) ;
-    title (['Plot of ' strjoin(s1, ' ')],'Interpreter','none') ;
+    title (t,'Interpreter','none') ;
     xlabel('Periods') ;
     xlim([min(ix(i)) max(ix(i))])
     if length(s1) > 1
