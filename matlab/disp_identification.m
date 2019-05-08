@@ -201,7 +201,8 @@ for jide = 1:4
                                 for j = transpose(ide.problpars{jset}(jrow,:))
                                     probparamset_nbr = probparamset_nbr + 1;
                                     %pno = 100*length(find(ide.ind0(:,j)==0))/SampleSize;
-                                    problparnamestring = strjoin(eval(['[', sprintf('name(%d), ', j), ']']),',');
+                                    problparnamestring = sprintf('%s,', name{j});
+                                    problparnamestring = problparnamestring(1:end-1);
                                     if SampleSize > 1
                                         if length(j) == 1
                                             disp(['    ',problparnamestring,' is not identified for ',num2str(pno),'% of MC runs!' ])
