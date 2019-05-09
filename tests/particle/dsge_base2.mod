@@ -1,9 +1,9 @@
 // DGP
 @#ifndef RISKY_CALIBRATION
-@#define RISKY_CALIBRATION = 0
+@#define RISKY_CALIBRATION = 1
 @#endif
 @#ifndef EXTREME_CALIBRATION
-@#define EXTREME_CALIBRATION = 1
+@#define EXTREME_CALIBRATION = 0
 @#endif
 @#ifndef BENCHMARK_CALIBRATION
 @#define BENCHMARK_CALIBRATION = 0
@@ -13,8 +13,11 @@
 @#ifndef LINEAR_KALMAN
 @#define LINEAR_KALMAN = 0
 @#endif
+@#ifndef NON_LINEAR_KALMAN
+@#define NON_LINEAR_KALMAN = 0
+@#endif
 @#ifndef ALGO_SIR
-@#define ALGO_SIR = 0
+@#define ALGO_SIR = 1
 @#endif
 @#ifndef ALGO_SISmoothR
 @#define ALGO_SISmoothR = 0
@@ -29,7 +32,7 @@
 @#define ALGO_GCF = 0
 @#endif
 @#ifndef ALGO_GUF
-@#define ALGO_GUF = 1
+@#define ALGO_GUF = 0
 @#endif
 @#ifndef ALGO_GMPF
 @#define ALGO_GMPF = 0
@@ -86,7 +89,7 @@ stderr l, uniform_pdf,,, 0.00001, 0.1;
 stderr i, uniform_pdf,,, 0.00001, 0.1;
 end;
 
-@#if RISKY_CALIBRATION
+@#if EXTREME_CALIBRATION
   estimated_params_init;
   alp, 0.4;
   bet, 0.99;
@@ -101,7 +104,7 @@ end;
   end;
 @#endif
 
-@#if EXTREME_CALIBRATION
+@#if RISKY_CALIBRATION
   estimated_params_init;
   alp, 0.4;
   bet, 0.99;
@@ -118,8 +121,9 @@ end;
 
 varobs y l i ;
 
-options_.mode_check.neighbourhood_size = .01 ;
+options_.mode_check.neighbourhood_size = .1 ;
 options_.mode_check.number_of_points = 250;
+options_.threads.local_state_space_iteration_2 = 4;
 
 @#if EXTREME_CALIBRATION
   data(file='./extreme.m');
@@ -135,11 +139,15 @@ options_.mode_check.number_of_points = 250;
 
 
 @#if LINEAR_KALMAN
-%  estimation(nograph,order=1,mode_compute=8,mh_replic=0,mode_check);
+  estimation(nograph,order=1,mode_compute=8,mh_replic=0,mode_check);
+@#endif
+
+@#if NON_LINEAR_KALMAN
+  estimation(nograph,order=2,filter_algorithm=nlkf,mode_compute=8,mh_replic=0);
 @#endif
 
 @#if ALGO_SIR
-  estimation(order=2,nograph,number_of_particles=1000,mh_replic=0,mode_compute=8,mode_check);
+  estimation(order=2,nograph,number_of_particles=1000,mh_replic=0,mode_compute=8);
 @#endif
 
 @#if ALGO_SISmoothR
@@ -149,7 +157,7 @@ options_.mode_check.number_of_points = 250;
 @#endif
 
 @#if ALGO_APF
-  estimation(order=2,nograph,filter_algorithm=apf,number_of_particles=1000,mh_replic=0,mode_compute=8,mode_check);
+  estimation(order=2,nograph,filter_algorithm=apf,number_of_particles=10000,resampling=none,mh_replic=0,mode_compute=8,mode_check);
 @#endif
 
 @#if ALGO_GPF
@@ -163,7 +171,7 @@ options_.mode_check.number_of_points = 250;
 @#endif
 
 @#if ALGO_GUF
-  estimation(order=2,nograph,filter_algorithm=gf,proposal_approximation=unscented,distribution_approximation=unscented,mh_replic=0,mode_compute=4);
+  estimation(order=2,nograph,filter_algorithm=gf,proposal_approximation=unscented,distribution_approximation=unscented,mh_replic=0,mode_compute=8);
   estimation(order=2,nograph,filter_algorithm=gf,proposal_approximation=unscented,distribution_approximation=unscented,mh_replic=0,mode_compute=8,mode_check);
 @#endif
 
