@@ -22,7 +22,16 @@ AC_REQUIRE([AX_MATLAB_ARCH])
 AC_REQUIRE([AX_MATLAB_VERSION])
 
 AX_COMPARE_VERSION([$MATLAB_VERSION], [ge], [9.6],
-  [MATLAB_BATCH_OPTIONS='-noFigureWindows -batch'],
+  [
+    if test "${MATLAB_ARCH}" = win32 -o "${MATLAB_ARCH}" = win64; then
+      MATLAB_BATCH_OPTIONS='-noFigureWindows -batch'
+    else
+      dnl The new -batch option leads to random crashes in Gitlab CI (as of
+      dnl MATLAB R2019a Update 1), so avoid it for the time being (except under
+      dnl Windows where it is quite useful)
+      MATLAB_BATCH_OPTIONS='-nosplash -nodisplay -r'
+    fi
+  ],
   [
     if test "${MATLAB_ARCH}" = win32 -o "${MATLAB_ARCH}" = win64; then
       MATLAB_BATCH_OPTIONS='-nosplash -automation -wait -sd "$(CURDIR)" -r'
