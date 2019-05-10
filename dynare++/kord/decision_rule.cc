@@ -13,7 +13,7 @@
 #include <utility>
 #include <memory>
 
-// |FoldDecisionRule| conversion from |UnfoldDecisionRule|
+// FoldDecisionRule conversion from UnfoldDecisionRule
 FoldDecisionRule::FoldDecisionRule(const UnfoldDecisionRule &udr)
   : DecisionRuleImpl<Storage::fold>(ctraits<Storage::fold>::Tpol(udr.nrows(), udr.nvars()),
                                    udr.ypart, udr.nu, udr.ysteady)
@@ -22,7 +22,7 @@ FoldDecisionRule::FoldDecisionRule(const UnfoldDecisionRule &udr)
     insert(std::make_unique<ctraits<Storage::fold>::Ttensym>(*(it.second)));
 }
 
-// |UnfoldDecisionRule| conversion from |FoldDecisionRule|
+// UnfoldDecisionRule conversion from FoldDecisionRule
 UnfoldDecisionRule::UnfoldDecisionRule(const FoldDecisionRule &fdr)
   : DecisionRuleImpl<Storage::unfold>(ctraits<Storage::unfold>::Tpol(fdr.nrows(), fdr.nvars()),
                                      fdr.ypart, fdr.nu, fdr.ysteady)
@@ -51,7 +51,7 @@ SimResults::simulate(int num_sim, const DecisionRule &dr, const Vector &start,
 }
 
 /* This runs a given number of simulations by creating
-   |SimulationWorker| for each simulation and inserting them to the
+   SimulationWorker for each simulation and inserting them to the
    thread group. */
 
 void
@@ -422,7 +422,7 @@ SimulationWorker::operator()(std::mutex &mut)
   }
 }
 
-/* Here we create a new instance of |ExplicitShockRealization| of the
+/* Here we create a new instance of ExplicitShockRealization of the
    corresponding control, add the impulse, and simulate. */
 
 void
@@ -464,7 +464,7 @@ RTSimulationWorker::operator()(std::mutex &mut)
   if (ip >= res.num_burn)
     nc.update(y);
 
-  // simulate other real-time periods@>=
+  // simulate other real-time periods
   while (y.isFinite() && ip < res.num_burn + res.num_per)
     {
       ip++;
@@ -485,7 +485,7 @@ RTSimulationWorker::operator()(std::mutex &mut)
   }
 }
 
-/* This calculates factorization $FF^T=V$ in the Cholesky way. It does
+/* This calculates factorization FFᵀ=V in the Cholesky way. It does
    not work for semidefinite matrices. */
 
 void
@@ -503,8 +503,8 @@ RandomShockRealization::choleskyFactor(const ConstTwoDMatrix &v)
                 "Info!=0 in RandomShockRealization::choleskyFactor");
 }
 
-/* This calculates $FF^T=V$ factorization by symmetric Schur
-   decomposition. It works for semidifinite matrices. */
+/* This calculates FFᵀ=V factorization by symmetric Schur
+   decomposition. It works for semidefinite matrices. */
 
 void
 RandomShockRealization::schurFactor(const ConstTwoDMatrix &v)

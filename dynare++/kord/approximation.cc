@@ -15,9 +15,8 @@ ZAuxContainer::ZAuxContainer(const _Ctype *gss, int ngss, int ng, int ny, int nu
   calculateOffsets();
 }
 
-/* The |getType| method corresponds to
-   $f(g^{**}(y^*,u',\sigma),0,0,0)$. For the first argument we return
-   |matrix|, for other three we return |zero|. */
+/* The getType() method corresponds to f(g**(y*,u′,σ),0,0,0). For the first
+   argument we return ‘matrix’, for other three we return ‘zero’. */
 
 ZAuxContainer::itype
 ZAuxContainer::getType(int i, const Symmetry &s) const
@@ -41,7 +40,7 @@ Approximation::Approximation(DynamicModel &m, Journal &j, int ns, bool dr_centr,
   ss.nans();
 }
 
-/* This just returns |fdr| with a check that it is created. */
+/* This just returns ‘fdr’ with a check that it is created. */
 const FoldDecisionRule &
 Approximation::getFoldDecisionRule() const
 {
@@ -50,7 +49,7 @@ Approximation::getFoldDecisionRule() const
   return *fdr;
 }
 
-/* This just returns |udr| with a check that it is created. */
+/* This just returns ‘udr’ with a check that it is created. */
 const UnfoldDecisionRule &
 Approximation::getUnfoldDecisionRule() const
 {
@@ -60,9 +59,9 @@ Approximation::getUnfoldDecisionRule() const
 }
 
 /* This methods assumes that the deterministic steady state is
-   |model.getSteady()|. It makes an approximation about it and stores the
-   derivatives to |rule_ders| and |rule_ders_ss|. Also it runs a |check|
-   for $\sigma=0$. */
+   model.getSteady(). It makes an approximation about it and stores the
+   derivatives to ‘rule_ders’ and ‘rule_ders_ss’. Also it runs a check() for
+   σ=0. */
 void
 Approximation::approxAtSteady()
 {
@@ -93,35 +92,33 @@ Approximation::approxAtSteady()
   check(0.0);
 }
 
-/* This is the core routine of |Approximation| class.
+/* This is the core routine of Approximation class.
 
-   First we solve for the approximation about the deterministic steady
-   state. Then we perform |steps| cycles toward the stochastic steady
-   state. Each cycle moves the size of shocks by |dsigma=1.0/steps|. At
-   the end of a cycle, we have |rule_ders| being the derivatives at
-   stochastic steady state for $\sigma=sigma\_so\_far+dsigma$ and
-   |model.getSteady()| being the steady state.
+   First we solve for the approximation about the deterministic steady state.
+   Then we perform ‘steps’ cycles toward the stochastic steady state. Each
+   cycle moves the size of shocks by dsigma=1.0/steps. At the end of a cycle,
+   we have ‘rule_ders’ being the derivatives at stochastic steady state for
+   σ=sigma_so_far+dsigma and model.getSteady() being the steady state.
 
-   If the number of |steps| is zero, the decision rule |dr| at the bottom
-   is created from derivatives about deterministic steady state, with
-   size of $\sigma=1$. Otherwise, the |dr| is created from the
-   approximation about stochastic steady state with $\sigma=0$.
+   If the number of ‘steps’ is zero, the decision rule ‘dr’ at the bottom is
+   created from derivatives about deterministic steady state, with size of σ=1.
+   Otherwise, the ‘dr’ is created from the approximation about stochastic
+   steady state with σ=0.
 
    Within each cycle, we first make a backup of the last steady (from
-   initialization or from a previous cycle), then we calculate the fix
-   point of the last rule with $\sigma=dsigma$. This becomes a new steady
-   state at the $\sigma=sigma\_so\_far+dsigma$. We calculate expectations
-   of $g^{**}(y,\sigma\eta_{t+1},\sigma$ expressed as a Taylor expansion
-   around the new $\sigma$ and the new steady state. Then we solve for
-   the decision rule with explicit $g^{**}$ at $t+1$ and save the rule.
+   initialization or from a previous cycle), then we calculate the fix point of
+   the last rule with σ=dsigma. This becomes a new steady state at the
+   σ=sigma_so_far+dsigma. We calculate expectations of g**(y,σ ηₜ₊₁,σ)
+   expressed as a Taylor expansion around the new σ and the new steady state.
+   Then we solve for the decision rule with explicit g** at t+1 and save the
+   rule.
 
-   After we reached $\sigma=1$, the decision rule is formed.
+   After we reached σ=1, the decision rule is formed.
 
-   The biproduct of this method is the matrix |ss|, whose columns are
-   steady states for subsequent $\sigma$s. The first column is the
-   deterministic steady state, the last column is the stochastic steady
-   state for a full size of shocks ($\sigma=1$). There are |steps+1|
-   columns. */
+   The biproduct of this method is the matrix ‘ss’, whose columns are steady
+   states for subsequent σ’s. The first column is the deterministic steady
+   state, the last column is the stochastic steady state for a full size of
+   shocks (σ=1). There are ‘steps+1’ columns. */
 
 void
 Approximation::walkStochSteady()
@@ -129,7 +126,7 @@ Approximation::walkStochSteady()
   // initial approximation at deterministic steady
   /* Here we solve for the deterministic steady state, calculate
      approximation at the deterministic steady and save the steady state
-     to |ss|. */
+     to ‘ss’. */
   model.solveDeterministicSteady();
   approxAtSteady();
   Vector steady0{ss.getCol(0)};
@@ -144,10 +141,10 @@ Approximation::walkStochSteady()
 
       Vector last_steady(model.getSteady());
 
-      // calculate fix-point of the last rule for |dsigma|
-      /* We form the |DRFixPoint| object from the last rule with
-         $\sigma=dsigma$. Then we save the steady state to |ss|. The new steady
-         is also put to |model.getSteady()|. */
+      // calculate fix-point of the last rule for ‘dsigma’
+      /* We form the DRFixPoint object from the last rule with σ=dsigma. Then
+         we save the steady state to ‘ss’. The new steady is also put to
+         model.getSteady(). */
       DRFixPoint<Storage::fold> fp(*rule_ders, ypart, model.getSteady(), dsigma);
       bool converged = fp.calcFixPoint(DecisionRule::emethod::horner, model.getSteady());
       JournalRecord rec(journal);
@@ -163,11 +160,11 @@ Approximation::walkStochSteady()
       Vector steadyi{ss.getCol(i)};
       steadyi = model.getSteady();
 
-      // calculate |hh| as expectations of the last $g^{**}$
-      /* We form the steady state shift |dy|, which is the new steady state
-         minus the old steady state. Then we create |StochForwardDerivs|
-         object, which calculates the derivatives of $g^{**}$ expectations at
-         new sigma and new steady. */
+      // calculate ‘hh’ as expectations of the last g**
+      /* We form the steady state shift ‘dy’, which is the new steady state
+         minus the old steady state. Then we create StochForwardDerivs object,
+         which calculates the derivatives of g** expectations at new sigma and
+         new steady. */
       Vector dy(model.getSteady());
       dy.add(-1.0, last_steady);
 
@@ -176,9 +173,9 @@ Approximation::walkStochSteady()
       JournalRecord rec1(journal);
       rec1 << "Calculation of g** expectations done" << endrec;
 
-      // form |KOrderStoch|, solve and save
+      // form KOrderStoch, solve and save
       /* We calculate derivatives of the model at the new steady, form
-         |KOrderStoch| object and solve, and save the rule. */
+         KOrderStoch object and solve, and save the rule. */
       model.calcDerivativesAtSteady();
       KOrderStoch korder_stoch(ypart, model.nexog(), model.getModelDerivatives(),
                                hh, journal);
@@ -219,7 +216,7 @@ Approximation::walkStochSteady()
     }
 }
 
-/* Here we simply make a new hardcopy of the given rule |rule_ders|,
+/* Here we simply make a new hardcopy of the given rule ‘rule_ders’,
    and make a new container of in-place subtensors of the derivatives
    corresponding to forward looking variables. The given container comes
    from a temporary object and will be destroyed. */
@@ -236,17 +233,20 @@ Approximation::saveRuleDerivs(const FGSContainer &g)
     }
 }
 
-/* This method calculates a shift of the system equations due to
-   integrating shocks at a given $\sigma$ and current steady state. More precisely, if
-   $$F(y,u,u',\sigma)=f(g^{**}(g^*(y,u,\sigma),u',\sigma),g(y,u,\sigma),y,u)$$
-   then the method returns a vector
-   $$\sum_{d=1}{1\over d!}\sigma^d\left[F_{u'^d}\right]_{\alpha_1\ldots\alpha_d}
-   \Sigma^{\alpha_1\ldots\alpha_d}$$
+/* This method calculates a shift of the system equations due to integrating
+   shocks at a given σ and current steady state. More precisely, if
 
-   For a calculation of $\left[F_{u'^d}\right]$ we use |@<|ZAuxContainer|
-   class declaration@>|, so we create its object. In each cycle we
-   calculate $\left[F_{u'^d}\right]$@q'@>, and then multiply with the shocks,
-   and add the ${\sigma^d\over d!}$ multiple to the result. */
+    F(y,u,u′,σ)=f(g**(g*(y,u,σ),u′,σ),g(y,u,σ),y,u)
+
+   then the method returns a vector
+
+       σᵈ
+    ∑  ── [F_u′ᵈ]_α₁…α_d Σ^α₁…α_d
+   d=1 d!
+
+   For a calculation of [F_u′ᵈ] we use ZAuxContainer, so we create its object.
+   In each cycle we calculate [F_u′ᵈ], and then multiply with the shocks, and
+   add the σᵈ/d! multiple to the result. */
 
 void
 Approximation::calcStochShift(Vector &out, double at_sigma) const
@@ -265,7 +265,7 @@ Approximation::calcStochShift(Vector &out, double at_sigma) const
         {
           Symmetry sym{0, d, 0, 0};
 
-          // calculate $F_{u'^d}$ via |ZAuxContainer|
+          // calculate F_u′ᵈ via ZAuxContainer
           auto ten = std::make_unique<FGSTensor>(ypart.ny(), TensorDimens(sym, nvs));
           ten->zeros();
           for (int l = 1; l <= d; l++)
@@ -285,11 +285,14 @@ Approximation::calcStochShift(Vector &out, double at_sigma) const
 }
 
 /* This method calculates and reports
-   $$f(\bar y)+\sum_{d=1}{1\over d!}\sigma^d\left[F_{u'^d}\right]_{\alpha_1\ldots\alpha_d}
-   \Sigma^{\alpha_1\ldots\alpha_d}$$
-   at $\bar y$, zero shocks and $\sigma$. This number should be zero.
 
-   We evaluate the error both at a given $\sigma$ and $\sigma=1.0$. */
+              σᵈ
+    f(ȳ) + ∑  ── [F_u′ᵈ]_α₁…α_d Σ^α₁…α_d
+          d=1 d!
+
+   at ȳ, zero shocks and σ. This number should be zero.
+
+   We evaluate the error both at a given σ and σ=1.0. */
 
 void
 Approximation::check(double at_sigma) const
@@ -312,18 +315,26 @@ Approximation::check(double at_sigma) const
 
 /* The method returns unconditional variance of endogenous variables
    based on the first order. The first order approximation looks like
-   $$\hat y_t=g_{y^*}\hat y^*_{t-1}+g_uu_t$$
-   where $\hat y$ denotes a deviation from the steady state. It can be written as
-   $$\hat y_t=\left[0\, g_{y^*}\, 0\right]\hat y_{t-1}+g_uu_t$$
-   which yields unconditional covariance $V$ for which
-   $$V=GVG^T + g_u\Sigma g_u^T,$$
-   where $G=[0\, g_{y^*}\, 0]$ and $\Sigma$ is the covariance of the shocks.
+
+    ŷₜ = g_y* ŷ*ₜ₋₁ + gᵤ uₜ
+
+   where ŷ denotes a deviation from the steady state. It can be written as
+
+    ŷₜ = (0 g_y* 0) ŷₜ₋₁ + gᵤ uₜ
+
+   which yields unconditional covariance V for which
+
+    V = GVGᵀ + gᵤ Σ gᵤᵀ
+
+   where G=(0 g_y* 0) and Σ is the covariance of the shocks.
 
    For solving this Lyapunov equation we use the Sylvester module, which
    solves equation of the type
-   $$AX+BX(C\otimes\cdots\otimes C)=D$$
-   So we invoke the Sylvester solver for the first dimension with $A=I$,
-   $B=-G$, $C=G^T$ and $D=g_u\Sigma g_u^T$. */
+
+    AX + BX(C⊗…⊗C) = D
+
+   So we invoke the Sylvester solver for the first dimension with A = I,
+   B = −G, C = Gᵀ and D = gᵤ Σ gᵤᵀ. */
 
 TwoDMatrix
 Approximation::calcYCov() const
