@@ -250,6 +250,7 @@ for j = 1:length(pnames)
     idxs(j) = find(strcmp(M_.param_names, pnames{j}));
     M_.params(idxs(j)) = oo_.olsgibbs.(model_name).posterior.mean.beta(j);
 end
+oo_.olsgibbs.(model_name).pnames = pnames;
 
 % Write .inc file
 write_param_init_inc_file('olsgibbs', model_name, idxs, oo_.olsgibbs.(model_name).posterior.mean.beta);
