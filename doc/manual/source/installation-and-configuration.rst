@@ -7,7 +7,7 @@ Installation and configuration
 Software requirements
 =====================
 
-Packaged versions of Dynare are available for Windows XP/Vista/7/8/10,
+Packaged versions of Dynare are available for Windows 7/8/10,
 `Debian GNU/Linux <http://www.debian.org/>`_, `Ubuntu`_ and macOS 10.8
 or later. Dynare should work on other systems, but some compilation
 steps are necessary in that case.
@@ -197,8 +197,7 @@ Homebrew, type::
 
 If you don’t want to type this command every time you run Octave, you
 can put it in a file called ``.octaverc`` in your home directory
-(under Windows this will generally be ``c:\Documents and
-Settings\USERNAME\`` while under macOS it is
+(under Windows this will generally be ``c:\Users\USERNAME`` while under macOS it is
 ``/Users/USERNAME/``). This file is run by Octave at every startup.
 
 

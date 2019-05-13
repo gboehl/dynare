@@ -72,9 +72,8 @@ by the correct version number):
   addpath c:\dynare\4.x.y\matlab
 
 Note: if you don't want to type this command every time you run Octave, you can
-put it in a file called ‘.octaverc’ in your home directory (‘c:\Documents and
-Settings\USERNAME’ for Windows XP or ‘c:\Users\USERNAME’ for more recent
-versions of Windows). This file is run by Octave at every startup.
+put it in a file called ‘.octaverc’ in your home directory
+(typically ‘c:\Users\USERNAME’). This file is run by Octave at every startup.
 
 You can test your installation by typing ‘dynare’ at the Octave prompt. This
 should give you an error message complaining that you did not specify a MOD

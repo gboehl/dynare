@@ -17,9 +17,7 @@ computations.
 
 On Linux and macOS, the default location of the configuration file is
 ``$HOME/.dynare``, while on Windows it is ``%APPDATA%\dynare.ini``
-(typically ``C:\Documents and Settings\USERNAME\Application
-Data\dynare.ini`` under Windows XP, or
-``C:\Users\USERNAME\AppData\dynare.ini`` under Windows Vista/7/8). You
+(typically ``c:\Users\USERNAME\AppData\dynare.ini``). You
 can specify a non standard location using the ``conffile`` option of
 the ``dynare`` command (see :ref:`dyn-invoc`).
 
