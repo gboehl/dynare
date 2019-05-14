@@ -98,7 +98,7 @@ else
 end
 
 % Get equation.
-[~, jsonmodel] = get_ast_jsonmodel(eqtags);
+[~, jsonmodel] = get_ast(equationname);
 lhs = jsonmodel{1}.lhs;
 rhs = jsonmodel{1}.rhs;
 

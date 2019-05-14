@@ -1,4 +1,4 @@
-// --+ options: json=compute +--
+// --+ options: json=compute nostrict +--
 
 /* REMARK
 ** ------
