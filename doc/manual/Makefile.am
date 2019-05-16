@@ -2,7 +2,7 @@ EXTRA_DIST = source \
 	utils/dynare_dom.py \
 	utils/dynare_lex.py
 
-SRC = $(wildcard src/source/*.rst)
+SRC = $(wildcard source/*.rst)
 
 html-local: build/html/index.html
 
