@@ -98,7 +98,8 @@ for declaring variables and parameters are described below.
     the model. See :ref:`conv` for the syntax of *VAR_NAME* and
     *MODEL_EXPR*. Optionally it is possible to give a
     LaTeX name to the variable or, if it is
-    nonstationary, provide information regarding its deflator. ``var``
+    nonstationary, provide information regarding its deflator. The variables in
+    the list can be separated by spaces or by commas. ``var``
     commands can appear several times in the file and Dynare will
     concatenate them. Dynare stores the list of declared parameters,
     in the order of declaration, in a column cell array
@@ -163,7 +164,8 @@ for declaring variables and parameters are described below.
     model. See :ref:`conv` for the syntax of ``VAR_NAME``. Optionally
     it is possible to give a LaTeX name to the
     variable. Exogenous variables are required if the user wants to be
-    able to apply shocks to her model. ``varexo`` commands can appear
+    able to apply shocks to her model.  The variables in
+    the list can be separated by spaces or by commas. ``varexo`` commands can appear
     several times in the file and Dynare will concatenate them.
 
     *Options*
@@ -206,7 +208,8 @@ for declaring variables and parameters are described below.
     |br| This optional command declares exogenous deterministic
     variables in a stochastic model. See :ref:`conv` for the syntax of
     VARIABLE_NAME. Optionally it is possible to give a LaTeX
-    name to the variable. ``varexo_det`` commands can appear several
+    name to the variable.  The variables in
+    the list can be separated by spaces or by commas. ``varexo_det`` commands can appear several
     times in the file and Dynare will concatenate them.
 
     It is possible to mix deterministic and stochastic shocks to build
@@ -247,7 +250,9 @@ for declaring variables and parameters are described below.
 
     The parameters must subsequently be assigned values (see :ref:`param-init`).
 
-    ``parameters`` commands can appear several times in the file and Dynare will concatenate them.
+    The parameters in the list can be separated by spaces or by commas.
+    ``parameters`` commands can appear several times in the file and Dynare
+    will concatenate them.
 
     *Options*
 
@@ -794,7 +799,7 @@ Internally, the parameter values are stored in ``M_.params``:
 .. matvar:: M_.params
 
     Contains the values of model parameters. The parameters are in the
-    order that was used in the parameters command, hence oredered as
+    order that was used in the ``parameters`` command, hence ordered as
     in ``M_.param_names``.
 
 
@@ -1089,14 +1094,14 @@ equations using the ``write_latex_static_model`` command.
           the default Dynare timing convention; in other words,
           variables declared as predetermined will be lagged on period
           back,
-        * The expectation operators (see :op:`expectation <EXPECTATION
-          (INTEGER) (MODEL_EXPRESSION)>`) will have been removed,
-          replaced by auxiliary variables and new equations as
-          explained in the documentation of the operator,
+        * The ``EXPECTATION`` operators will have been removed, replaced by
+          auxiliary variables and new equations (as explained in the
+          documentation of
+          :op:`EXPECTATION <EXPECTATION (INTEGER) (MODEL_EXPRESSION)>`),
         * Endogenous variables with leads or lags greater or equal
           than two will have been removed, replaced by new auxiliary
           variables and equations,
-        * F_or a stochastic model, exogenous variables with leads or
+        * For a stochastic model, exogenous variables with leads or
           lags will also have been replaced by new auxiliary variables
           and equations.
 
@@ -1291,9 +1296,9 @@ in this case ``initval`` is used to specify the terminal conditions.
 
     |br| *In a deterministic (i.e. perfect foresight) model*
 
-    First, it will fill both the ``oo_.endo_simul`` and
-    ``oo_.exo_simul`` variables storing the endogenous and exogenous
-    variables with the values provided by this block. If there are no
+    First, both the ``oo_.endo_simul`` and ``oo_.exo_simul`` variables
+    storing the endogenous and exogenous variables will be filled with
+    the values provided by this block. If there are no
     other blocks present, it will therefore provide the initial and
     terminal conditions for all the endogenous and exogenous
     variables, because it will also fill the last column/row of these
@@ -1442,6 +1447,11 @@ in this case ``initval`` is used to specify the terminal conditions.
             var c k;
             varexo x;
 
+            model;
+            c + k - aa*x*k(-1)^alph - (1-delt)*k(-1);
+            c^(-gam) - (1+bet)^(-1)*(aa*alph*x(+1)*k^(alph-1) + 1 - delt)*c(+1)^(-gam);
+            end;
+
             initval;
             c = 1.2;
             k = 12;
@@ -1458,13 +1468,24 @@ in this case ``initval`` is used to specify the terminal conditions.
 
             steady;
 
+            simul(periods=200);
+
+        In this example, the problem is finding the optimal path for
+        consumption and capital for the periods :math:`t=1` to
+        :math:`T=200`, given the path of the exogenous technology
+        level ``x``. ``c`` is a forward-looking variable and the
+        exogenous variable ``x`` appears with a lead in the expected
+        return of physical capital, while ``k`` is a purely backward-looking
+        (state) variable.
+
         The initial equilibrium is computed by ``steady`` conditional
         on ``x=1``, and the terminal one conditional on ``x=2``. The
-        ``initval`` block sets the initial condition for ``k``, while
+        ``initval`` block sets the initial condition for ``k`` (since it is the
+        only backward-looking variable), while
         the ``endval`` block sets the terminal condition for
-        ``c``. The starting values for the perfect foresight solver
-        are given by the ``endval`` block. A detailed explanation
-        follows below the next example.
+        ``c`` (since it is the only forward-looking endogenous variable).
+        The starting values for the perfect foresight solver
+        are given by the ``endval`` block. See below for more details.
 
     *Example*
 
@@ -1486,16 +1507,14 @@ in this case ``initval`` is used to specify the terminal conditions.
             c = 2;
             x = 1.1;
             end;
+
             simul(periods=200);
 
-        In this example, the problem is finding the optimal path for
-        consumption and capital for the periods :math:`t=1` to
-        :math:`T=200`, given the path of the exogenous technology
-        level ``x``. ``c`` is a forward-looking variable and the
-        exogenous variable ``x`` appears with a lead in the expected
-        return of physical capital, so we need terminal conditions for
-        them, while ``k`` is a purely backward-looking (state)
-        variable, so we need an initial condition for it.
+        In this example, there is no `steady` command, hence the
+        conditions are exactly those specified in the `initval` and `endval` blocks.
+        We need terminal conditions for
+        ``c`` and ``x``, since both appear with a lead, and an initial
+        condition for ``k``, since it appears with a lag.
 
         Setting ``x=1.1`` in the ``endval`` block without a ``shocks``
         block implies that technology is at :math:`1.1` in :math:`t=1`
@@ -1746,7 +1765,10 @@ in this case ``initval`` is used to specify the terminal conditions.
 
     .. warning:: The extension must be omitted in the command
                  argument. Dynare will automatically figure out the
-                 extension and select the appropriate file type.
+                 extension and select the appropriate file type. If
+                 there are several files with the same name but different
+                 extensions, then the order of precedence is as follows:
+                 first ``.m``, then ``.mat``, ``.xls`` and finally ``.xlsx``.
 
 
 .. command:: histval_file (filename = FILENAME);
@@ -1949,7 +1971,7 @@ blocks.
     exogenous at some date, it means 5% above its steady state value
     (as given by the last ``initval`` or ``endval`` block).
 
-    The syntax is the same than ``shocks`` in a deterministic context.
+    The syntax is the same as ``shocks`` in a deterministic context.
 
     This command is only meaningful in two situations:
 
@@ -2159,7 +2181,7 @@ Finding the steady state with Dynare nonlinear solver
                 simultaneously, and the distance between the boundaries
                 for each parameter is divided in as many intervals as
                 there are steps (as defined by the ``homotopy_steps``
-                option); the problem is solves as many times as there
+                option); the problem is solved as many times as there
                 are steps.
 
            ``2``
@@ -2224,7 +2246,7 @@ After computation, the steady state is available in the following variable:
 .. matvar:: oo_.steady_state
 
     Contains the computed steady state. Endogenous variables are
-    ordered in order of declaration used in the ``var`` command (which
+    ordered in the order of declaration used in the ``var`` command (which
     is also the order used in ``M_.endo_names``).
 
 
@@ -3482,12 +3504,12 @@ Computing the stochastic solution
             more details. **Beware**, this is the autocorrelation
             function, not the autocovariance function.
 
-        ``oo_.gamma{nar+2}``
+        ``oo_.gamma{ar+2}``
 
             Unconditional variance decomposition, see
             :mvar:`oo_.variance_decomposition`.
 
-        ``oo_.gamma{nar+3}``
+        ``oo_.gamma{ar+3}``
 
             If a second order approximation has been requested,
             contains the vector of the mean correction terms.
@@ -8308,10 +8330,10 @@ with ``discretionary_policy`` or for optimal simple rule with ``osr``
     optimal policy for the first time and committing not to
     re-optimize in the future.
 
-    Because it entails computing at least a second order
-    approximation, this computation is skipped with a message when the
-    model is too large (more than 180 state variables, including
-    lagged Lagrange multipliers).
+    Because it entails computing at least a second order approximation, the
+    computation of the planner objective value is skipped with a message when
+    the model is too large (more than 180 state variables, including lagged
+    Lagrange multipliers).
 
     *Steady state*
 

@@ -74,7 +74,7 @@ below. Basic operations can be performed on dates:
 **horzcat operator ([,])**
 
     Concatenates dates objects without removing repetitions. For
-    instance ``[1950Q1, 1950Q2]`` is a a ``dates`` object with two
+    instance ``[1950Q1, 1950Q2]`` is a ``dates`` object with two
     elements (``1950Q1`` and ``1950Q2``).
 
 **vertcat operator ([;])**
@@ -132,7 +132,7 @@ he would extract some elements from a vector in Matlab/Octave. Let ``a
 the two last elements of ``a`` (by instantiating the ``dates`` object
 ``[1950Q4, 1951Q1]``).
 
-Remark Dynare substitutes any occurrence of dates in the ``.mod`` file
+Remark: Dynare substitutes any occurrence of dates in the ``.mod`` file
 into an instantiation of the ``dates`` class regardless of the
 context. For instance, ``d = 1950Q1`` will be translated as ``d =
 dates('1950Q1');``. This automatic substitution can lead to a crash if
@@ -776,7 +776,7 @@ The dseries class
 
     |br| The Matlab/Octave ``dseries`` class handles time series
     data. As any Matlab/Octave statements, this class can be used in a
-    Dynare’s mod file. A ``dseries`` object has eight members:
+    Dynare’s mod file. A ``dseries`` object has six members:
 
     :arg name: A ``nobs*1`` cell of strings or a ``nobs*p`` character
                array, the names of the variables.
@@ -784,6 +784,8 @@ The dseries class
               array, the tex names of the variables.
     :arg dates dates: An object with ``nobs`` elements, the dates of the sample.
     :arg double data: A ``nobs`` by ``vobs`` array, the data.
+    :arg ops: The history of operations on the variables.
+    :arg tags: The user-defined tags on the variables.
 
     ``data``, ``name``, ``tex`` are private members. The following
     constructors are available:
@@ -791,7 +793,7 @@ The dseries class
     .. construct:: dseries ()
                    dseries (INITIAL_DATE)
 
-        |br| Instantiates an empty ``dseries`` object, with, if
+        |br| Instantiates an empty ``dseries`` object with, if
         defined, an initial date given by the single element ``dates``
         object *INITIAL_DATE.*
 
@@ -967,7 +969,7 @@ The dseries class
                 deterministic_trend = .1*transpose(1:200);
                 x = zeros(200,1);
                 for i=2:200
-                    x(i) = .75*x(i-1) + e(i);
+                    x(i) = .75*x(i-1) + u(i);
                 end
                 y = x + stochastic_trend + deterministic_trend;
 
@@ -1075,7 +1077,7 @@ The dseries class
                 6Y | 64
                 7Y | 128
 
-                >> ts3 = ts1.cumsum(dates('3Y'));
+                >> ts3 = ts1.cumprod(dates('3Y'));
                 >> ts3
 
                 ts3 is a dseries object:
@@ -1089,7 +1091,7 @@ The dseries class
                 6Y | 8
                 7Y | 16
 
-                >> ts4 = ts1.cumsum(dates('3Y'),dseries(pi));
+                >> ts4 = ts1.cumprod(dates('3Y'),dseries(pi));
                 >> ts4
 
                 ts4 is a dseries object:
@@ -1351,7 +1353,7 @@ The dseries class
                 deterministic_trend = .1*transpose(1:200);
                 x = zeros(200,1);
                 for i=2:200
-                    x(i) = .75*x(i-1) + e(i);
+                    x(i) = .75*x(i-1) + u(i);
                 end
                 y = x + stochastic_trend + deterministic_trend;
 
