@@ -167,7 +167,7 @@ for e=1:number_of_pac_eq
                 if isnan(equations.(eqtag).optim_additive.params(i)) && equations.(eqtag).optim_additive.bgp(i)
                     tmp = tmp + equations.(eqtag).optim_additive.scaling_factor(i);
                 elseif ~isnan(equations.(eqtag).optim_additive.params(i)) && equations.(eqtag).optim_additive.bgp(i)
-                    tmp = tmp + equations.(eqtag).optim_additive.params(i)*equations.(eqtag).optim_additive.scaling_factor(i);
+                    tmp = tmp + DynareModel.params(equations.(eqtag).optim_additive.params(i))*equations.(eqtag).optim_additive.scaling_factor(i);
                 end
             end
             cc = cc - gamma*tmp;
@@ -178,7 +178,7 @@ for e=1:number_of_pac_eq
                 if isnan(equations.(eqtag).non_optimizing_behaviour.params(i)) && equations.(eqtag).non_optimizing_behaviour.bgp(i)
                     tmp = tmp + equations.(eqtag).non_optimizing_behaviour.scaling_factor(i);
                 elseif ~isnan(equations.(eqtag).non_optimizing_behaviour.params(i)) && equations.(eqtag).non_optimizing_behaviour.bgp(i)
-                    tmp = tmp + equations.(eqtag).non_optimizing_behaviour.params(i)*equations.(eqtag).non_optimizing_behaviour.scaling_factor(i);
+                    tmp = tmp + DynareModel.params(equations.(eqtag).non_optimizing_behaviour.params(i))*equations.(eqtag).non_optimizing_behaviour.scaling_factor(i);
                 end
             end
             cc = cc - (1.0-gamma)*tmp;
@@ -189,7 +189,7 @@ for e=1:number_of_pac_eq
                 if isnan(equations.(eqtag).additive.params(i)) && equations.(eqtag).additive.bgp(i)
                     tmp = tmp + equations.(eqtag).additive.scaling_factor(i);
                 elseif ~isnan(equations.(eqtag).additive.params(i)) && equations.(eqtag).additive.bgp(i)
-                    tmp = tmp + equations.(eqtag).additive.params(i)*equations.(eqtag).additive.scaling_factor(i);
+                    tmp = tmp + DynareModel.params(equations.(eqtag).additive.params(i))*equations.(eqtag).additive.scaling_factor(i);
                 end
             end
             cc = cc - tmp;
