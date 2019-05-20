@@ -121,12 +121,12 @@ for i=1:length(eqtags)
     ispac = regexp(RHS, 'pac_expectation\(model_name = (?<name>\w+)\)', 'names');
     if ~isempty(isvar)
         rhs = write_expectations(eqtags{i}, isvar.name, 'var');
-        lhs = sprintf('VE_%s', eqtags{i});
+        lhs = sprintf('%s_VE', eqtags{i});
         RHS = strrep(RHS, sprintf('var_expectation(model_name = %s)', isvar.name), lhs);
     else
         if ~isempty(ispac)
             [rhs, growthneutralitycorrection] = write_expectations(eqtags{i}, ispac.name, 'pac');
-            lhs = sprintf('PE_%s', eqtags{i});
+            lhs = sprintf('%s_PE', eqtags{i});
             RHS = strrep(RHS, sprintf('pac_expectation(model_name = %s)', ispac.name), lhs);
             if ~isempty(growthneutralitycorrection)
                 RHS = sprintf('%s + %s', RHS, growthneutralitycorrection);
@@ -243,8 +243,8 @@ function printlistofvariables(fid, kind, list, DynareModel, vappend)
                 % Nothing to do, this variable was renamed by cherrypick
                 tags = '';
             else
-                if isequal(kind, 'endo') &&  (isequal(list{i}(1:3), 'PE_') || isequal(list{i}(1:3), 'VE_'))
-                    if isequal(list{i}(1:3), 'PE_')
+                if isequal(kind, 'endo') &&  (isequal(list{i}(end-2:end), '_PE') || isequal(list{i}(end-2:end), '_VE'))
+                    if isequal(list{i}(end-2:end), '_PE')
                         tags = sprintf('(expectation_kind=''%s'')', 'pac');
                     else
                         tags = sprintf('(expectation_kind=''%s'')', 'var');
