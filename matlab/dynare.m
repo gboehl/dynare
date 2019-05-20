@@ -219,7 +219,7 @@ if preprocessoroutput
     if isempty(varargin)
         disp('none')
     else
-        disp(varargin);
+        disp(strjoin(varargin));
     end
 end
 
