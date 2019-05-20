@@ -10,6 +10,7 @@
    members, and methods are thus duplicated */
 
 #include <complex>
+#include <utility>
 
 #if defined(MATLAB_MEX_FILE) || defined(OCTAVE_MEX_FILE)
 # include <dynmex.h>
@@ -37,11 +38,10 @@ public:
   {
   }
   Vector(const Vector &v);
-  Vector(Vector &&v) : len{v.len}, s{v.s}, data{v.data}, destroy{v.destroy}
+  Vector(Vector &&v) : len{std::exchange(v.len, 0)}, s{v.s},
+                       data{std::exchange(v.data, nullptr)},
+                       destroy{std::exchange(v.destroy, false)}
   {
-    v.len = 0;
-    v.data = nullptr;
-    v.destroy = false;
   }
   // We don't want implict conversion from ConstVector, since it’s expensive
   explicit Vector(const ConstVector &v);

@@ -27,6 +27,7 @@
 #include <vector>
 #include <algorithm>
 #include <initializer_list>
+#include <utility>
 
 /* The implementation of IntSequence is straightforward. It has a pointer
    ‘data’, an ‘offset’ integer indicating the beginning of the data relatively
@@ -71,11 +72,9 @@ public:
   }
   // Move constructor
   IntSequence(IntSequence &&s)
-    : data{s.data}, length{s.length}, destroy{s.destroy}
+    : data{std::exchange(s.data, nullptr)}, length{std::exchange(s.length, 0)},
+      destroy{std::exchange(s.destroy, false)}
   {
-    s.data = nullptr;
-    s.length = 0;
-    s.destroy = false;
   }
   // Subsequence constructor (which shares the data pointer)
   IntSequence(IntSequence &s, int i1, int i2)
