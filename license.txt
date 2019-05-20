@@ -173,6 +173,12 @@ Copyright: 1993-1996 Kurt Hornik
            2016 Dynare Team
 License: GPL-3+
 
+Files: matlab/missing/strjoin/strjoin.m
+Copyright: 2013-2019 Ben Abbott
+           2007 Muthiah Annamalai
+           2019 Dynare Team
+License: GPL-3+
+
 Files: matlab/missing/corrcoef/corrcoef.m matlab/missing/corrcoef/sumskipnan.m
  matlab/missing/corrcoef/flag_implicit_skip_nan.m matlab/missing/corrcoef/tcdf.m
 Copyright: 2000-2005,2008,2009,2011 by Alois Schloegl <alois.schloegl@gmail.com>

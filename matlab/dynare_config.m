@@ -122,9 +122,10 @@ if (isoctave && octave_ver_less_than('5')) || (~isoctave && matlab_ver_less_than
     p{end+1} = '/missing/isfile';
 end
 
-% strsplit is missing in Matlab<R2013a
+% strsplit and strjoin are missing in MATLAB < R2013a
 if ~isoctave && matlab_ver_less_than('8.1')
     p{end+1} = '/missing/strsplit';
+    p{end+1} = '/missing/strjoin';
 end
 
 % isrow, iscolumn and ismatrix are missing in Matlab<R2010b
