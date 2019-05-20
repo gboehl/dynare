@@ -559,9 +559,9 @@ for Node=1:length(DataInput) % To obtain a recoursive function remove the 'for'
     if (DataInput(Node).Local == 1)
         if Environment
             if ~ismac
-                [si0 de0]=system('grep processor /proc/cpuinfo');
+                [si0, de0] = system('nproc');
             else
-                [si0 de0]=system('sysctl -n hw.ncpu');
+                [si0 de0] = system('sysctl -n hw.ncpu');
                 Environment1=2;
             end
         else
@@ -576,7 +576,8 @@ for Node=1:length(DataInput) % To obtain a recoursive function remove the 'for'
             end
             if OStargetUnix
                 if RemoteEnvironment ==1
-                    [si0 de0]=system(['ssh ',ssh_token,' ',DataInput(Node).UserName,'@',DataInput(Node).ComputerName,' grep processor /proc/cpuinfo']);
+                    command_string = ['ssh ',ssh_token,' ', ...
+                                      DataInput(Node).UserName,'@',DataInput(Node).ComputerName,' nproc'];
                 else % it is MAC
                     [si0 de0]=system(['ssh ',ssh_token,' ',DataInput(Node).UserName,'@',DataInput(Node).ComputerName,' sysctl -n hw.ncpu']);
                     Environment1=2;
@@ -591,7 +592,6 @@ for Node=1:length(DataInput) % To obtain a recoursive function remove the 'for'
 
 
     RealCPUnbr='';
-    %    keyboard;
     RealCPUnbr=GiveCPUnumber(de0,Environment1);
 
     % Questo controllo penso che si possa MIGLIORARE!!!!!
@@ -603,12 +603,12 @@ for Node=1:length(DataInput) % To obtain a recoursive function remove the 'for'
     if  isempty (RealCPUnbr)
         % An error occurred when we try to know the Cpu/Cores
         % numbers.
-        disp('It is impossible determine the number of Cpu/Processor avaiable on this machine!')
+        disp('It is impossible determine the number of Cpu/Processor available on this machine!')
         skipline()
         disp('ErrorCode 2.')
         skipline()
         if Environment
-            disp('Check the command "$less /proc/cpuinfo" ... !')
+            disp('Check the command "$grep - /proc/cpuinfo" ... !')
         else
             disp('Check if the pstools are installed and are in machine path! And check the command "psinfo \\"')
         end

@@ -65,9 +65,7 @@ switch Environment
     return
   case 1            %LIKE UNIX OPERATING SYSTEM
 
-    % Da generalizzare a un numero di CPu maggiore di 9!!!
-
-    nCPU=str2num(ComputerInformations(length(ComputerInformations)-1))+1;
+    nCPU=str2num(ComputerInformations);
 
   case 2            %MAC-OS OPERATING SYSTEM
 
