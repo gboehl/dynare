@@ -310,12 +310,6 @@ if prior_exist
     end
 end
 
-% add function for generalyzed sylvester equation, we also check this in dynare_estimation_init, however, for analytic_derivation=0, we make double sure that it is added
-if ~(exist('sylvester3','file')==2)
-    dynareroot = strrep(which('dynare'),'dynare.m','');
-    addpath([dynareroot 'gensylv'])
-end
-
 % check if identification directory is already created
 IdentifDirectoryName = CheckPath('identification',dname);
 

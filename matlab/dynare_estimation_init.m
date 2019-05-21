@@ -493,10 +493,6 @@ if options_.analytic_derivation
         error('analytic derivation is incompatible with diffuse filter')
     end
     options_.analytic_derivation = 1;
-    if ~(exist('sylvester3','file')==2)
-        dynareroot = strrep(which('dynare'),'dynare.m','');
-        addpath([dynareroot 'gensylv'])
-    end
     if estim_params_.np
         % check if steady state changes param values
         M=M_;
