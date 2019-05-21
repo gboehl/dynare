@@ -100,9 +100,26 @@ mexFunction(int nlhs, mxArray *plhs[],
   auto work = std::make_unique<double[]>(lwork);
   auto bwork = std::make_unique<lapack_int[]>(i_n);
   lapack_int i_info, i_sdim;
+#if defined(MATLAB_MEX_FILE) && MATLAB_VERSION < 0x0904
+  /* The left Schur vectors (VSL) are normally not computed, since JOBVSL="N".
+     But old MKL versions (at least the one shipped with MATLAB R2009b/7.9, which
+     is MKL 10.1) are
+     buggy, and passing nullptr for VSL leads to a crash. Hence we need to
+     allocate space for it.
+     The bug seems to be fixed in MATLAB R2010a/7.10 (MKL 10.2), but we use the
+     workaround for all versions < R2018a/9.4, since those share the same
+     ABI and hence the same executables. */
+  auto vsl = std::make_unique<double[]>(n1*n1);
+#endif
 
   dgges("N", "V", "S", my_criteria, &i_n, s, &i_n, t, &i_n, &i_sdim, alpha_r.get(), alpha_i.get(),
-        beta.get(), nullptr, &i_n, z, &i_n, work.get(), &lwork, bwork.get(), &i_info);
+        beta.get(),
+#if defined(MATLAB_MEX_FILE) && MATLAB_VERSION < 0x0904
+        vsl.get(),
+#else
+        nullptr,
+#endif
+        &i_n, z, &i_n, work.get(), &lwork, bwork.get(), &i_info);
 
   *sdim = static_cast<double>(i_sdim);
   *info = static_cast<double>(i_info);
