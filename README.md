@@ -114,7 +114,9 @@ Note that the MATLAB version can also be specified via the MATLAB family product
 
 Alternatively, you can disable the compilation of MEX files for MATLAB with the `--disable-matlab` flag, and MEX files for Octave with `--disable-octave`.
 
-You may need to specify additional options to the configure script, see the platform specific instructions below.
+You may need to specify additional options to the configure script, see the
+output of the `--help` option, and also the platform specific instructions
+below.
 
 Note that if you don't want to compile the C/C++ programs with debugging information, you can specify the `CFLAGS` and `CXXFLAGS` variables to the configure script, such as:
 ```
