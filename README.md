@@ -9,7 +9,7 @@
 
 Described on the homepage: <https://www.dynare.org/>
 
-Most users should use the precompiled package available for your OS, also
+Most users should use the precompiled package available for their OS, also
 available via the Dynare homepage: <https://www.dynare.org/download/>.
 
 # Contributions
@@ -38,13 +38,19 @@ Note that if you obtain the source code via git, you will need to install more t
 
 The first section of this page gives general instructions, which apply to all platforms. Then some specific platforms are discussed.
 
-**Note:** Here, when we refer to 32-bit or 64-bit, we refer to the type of MATLAB installation, not the type of Windows installation. It is perfectly possible to run a 32-bit MATLAB on a 64-bit Windows: in that case, instructions for Windows 32-bit should be followed. To determine the type of your MATLAB installation, type:
+**Note:** Here, when we refer to 32-bit or 64-bit, we refer to the type of
+MATLAB or Octave installation, not the type of operating system installation.
+For example, it is perfectly possible to run a 32-bit MATLAB on a 64-bit
+Windows: in that case, instructions for Windows 32-bit should be followed. To
+determine the type of your MATLAB/Octave installation, type:
 ```matlab
 >> computer
 ```
-at the MATLAB prompt: if it returns `PCWIN64`, `GLNX64` or `MACI64`, then you
-have a 64-bit MATLAB; if it returns `PCWIN`, `MACI` or `GLNX`, then you have a
-32-bit MATLAB.
+at the MATLAB/Octave prompt. Under MATLAB, if it returns `PCWIN64`, `GLNX64` or
+`MACI64`, then it is a 64-bit MATLAB; if it returns `PCWIN`, `MACI` or `GLNX`,
+then it is a 32-bit MATLAB. Under Octave, if it returns a string that begins
+with `x86_64`, it is a 64-bit Octave; if the strings begins with `i686`, it is
+a 32-bit Octave.
 
 **Contents**
 
@@ -102,9 +108,9 @@ Simply launch the configure script from a terminal:
 ```
 If you have MATLAB, you need to indicate both the MATLAB location and version. For example, on GNU/Linux:
 ```
-./configure --with-matlab=/usr/local/MATLAB/R2013a MATLAB_VERSION=8.1
+./configure --with-matlab=/usr/local/MATLAB/R2019a MATLAB_VERSION=9.6
 ```
-Note that the MATLAB version can also be specified via the MATLAB family product release (R2009a, R2008b, ...).
+Note that the MATLAB version can also be specified via the MATLAB family product release (R2019a, R2018b, …).
 
 Alternatively, you can disable the compilation of MEX files for MATLAB with the `--disable-matlab` flag, and MEX files for Octave with `--disable-octave`.
 
@@ -114,14 +120,14 @@ Note that if you don't want to compile the C/C++ programs with debugging informa
 ```
 ./configure CFLAGS="-O3" CXXFLAGS="-O3"
 ```
-To remove debugging information for MATLAB MEX functions, the analagous call would be:
+To remove debugging information for MATLAB MEX functions, the analogous call would be:
 ```
 ./configure MATLAB_MEX_CFLAGS="-O3" MATLAB_MEX_CXXFLAGS="-O3"
 ```
 
 If you want to give a try to the parallelized versions of some mex files (`A_times_B_kronecker_C` and `sparse_hessian_times_B_kronecker_C` used to get the reduced form of the second order approximation of the model) you can add the `--enable-openmp` flag, for instance:
 ```
-./configure --with-matlab=/usr/local/MATLAB/R2013a MATLAB_VERSION=8.1 --enable-openmp
+./configure --with-matlab=/usr/local/MATLAB/R2019a MATLAB_VERSION=9.6 --enable-openmp
 ```
 If the configuration goes well, the script will tell you which components are correctly configured and will be built.
 
@@ -151,7 +157,7 @@ The Git source comes with unit tests (in the MATLAB functions) and integration t
 make check
 ```
 In the `tests` subfolder. If Dynare has been compiled against MATLAB and Octave, the tests will be run with MATLAB and Octave. Depending on
-your PC, this can take several hours. It is possible to run the tests only with MATLAB:
+the performance of your machine, this can take several hours. It is possible to run the tests only with MATLAB:
 ```
 make check-matlab
 ```
@@ -230,7 +236,8 @@ apt install build-essential gfortran liboctave-dev libboost-graph-dev libboost-f
 
 ## Windows
 
-- Install [MSYS2](http://www.msys2.org) (pick the 64-bit version)
+- Install [MSYS2](http://www.msys2.org) (pick the 64-bit version, unless you
+  have a 32-bit Windows, in which case see below)
 - Run a MSYS MinGW 64-bit shell
 - Update the system:
 ```
