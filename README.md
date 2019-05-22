@@ -131,6 +131,18 @@ If you want to give a try to the parallelized versions of some mex files (`A_tim
 ```
 If the configuration goes well, the script will tell you which components are correctly configured and will be built.
 
+Note that it is possible that some MEX files cannot be compiled, due to missing
+build dependencies. If you find no way of installing the missing dependencies,
+a workaround can be to give up on compiling these MEX files and rather use
+slower implementations (in the MATLAB/Octave language) that are available under
+the `matlab/missing/mex/` subdirectories. For example, if you fail to compile
+the gensylv MEX, you can type the following at the MATLAB/Octave prompt before
+running Dynare:
+```matlab
+addpath <DYNARE_ROOT>/matlab/missing/mex/gensylv
+```
+(where you need to replace `<DYNARE_ROOT>` with the full path to your Dynare copy).
+
 ### Building
 
 Binaries and Info documentation are built with:
