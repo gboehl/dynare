@@ -2,17 +2,17 @@
 
 // Decision rule and simulation
 
-/* The main purpose of this file is a decision rule representation which
-   can run a simulation. So we define an interface for classes providing
-   realizations of random shocks, and define the class
-   |DecisionRule|. The latter basically takes tensor container of
-   derivatives of policy rules, and adds them up with respect to
-   $\sigma$. The class allows to specify the $\sigma$ different from $1$.
+/* The main purpose of this file is a decision rule representation which can
+   run a simulation. So we define an interface for classes providing
+   realizations of random shocks, and define the class DecisionRule. The latter
+   basically takes tensor container of derivatives of policy rules, and adds
+   them up with respect to σ. The class allows to specify the σ different from
+   1.
 
-   In addition, we provide classes for running simulations and storing
-   the results, calculating some statistics and generating IRF. The class
-   |DRFixPoint| allows for calculation of the fix point of a given
-   decision rule. */
+   In addition, we provide classes for running simulations and storing the
+   results, calculating some statistics and generating IRF. The class
+   DRFixPoint allows for calculation of the fix point of a given decision
+   rule. */
 
 #ifndef DECISION_RULE_H
 #define DECISION_RULE_H
@@ -27,11 +27,9 @@
 #include <random>
 #include <string>
 
-/* This is a general interface to a shock realizations. The interface
-   has only one method returning the shock realizations at the given
-   time. This method is not constant, since it may change a state of the
-   object. */
-
+/* This is a general interface to a shock realizations. The interface has only
+   one method returning the shock realizations at the given time. This method
+   is not constant, since it may change a state of the object. */
 class ShockRealization
 {
 public:
@@ -40,58 +38,68 @@ public:
   virtual int numShocks() const = 0;
 };
 
-/* This class is an abstract interface to decision rule. Its main
-   purpose is to define a common interface for simulation of a decision
-   rule. We need only a simulate, evaluate, cetralized clone and output
-   method. The |simulate| method simulates the rule for a given
-   realization of the shocks. |eval| is a primitive evaluation (it takes
-   a vector of state variables (predetermined, both and shocks) and
-   returns the next period variables. Both input and output are in
-   deviations from the rule's steady. |evaluate| method makes only one
-   step of simulation (in terms of absolute values, not
-   deviations). |centralizedClone| returns a new copy of the decision
-   rule, which is centralized about provided fix-point. And finally
-   |writeMat| writes the decision rule to the MAT file. */
-
+/* This class is an abstract interface to decision rule. Its main purpose is to
+   define a common interface for simulation of a decision rule. We need only a
+   simulate, evaluate, centralized clone and output method. */
 class DecisionRule
 {
 public:
   enum class emethod { horner, trad };
   virtual ~DecisionRule() = default;
+
+  // simulates the rule for a given realization of the shocks
   virtual TwoDMatrix simulate(emethod em, int np, const ConstVector &ystart,
                               ShockRealization &sr) const = 0;
+
+  /* primitive evaluation (it takes a vector of state variables (predetermined,
+     both and shocks) and returns the next period variables. Both input and
+     output are in deviations from the rule's steady. */
   virtual void eval(emethod em, Vector &out, const ConstVector &v) const = 0;
+
+  /* makes only one step of simulation (in terms of absolute values, not
+   deviations) */
   virtual void evaluate(emethod em, Vector &out, const ConstVector &ys,
                         const ConstVector &u) const = 0;
+
+  // writes the decision rule to the MAT file
   virtual void writeMat(mat_t *fd, const std::string &prefix) const = 0;
+
+  /* returns a new copy of the decision rule, which is centralized about
+     provided fix-point */
   virtual std::unique_ptr<DecisionRule> centralizedClone(const Vector &fixpoint) const = 0;
+
   virtual const Vector &getSteady() const = 0;
   virtual int nexog() const = 0;
   virtual const PartitionY &getYPart() const = 0;
 };
 
-/* The main purpose of this class is to implement |DecisionRule|
-   interface, which is a simulation. To be able to do this we have to
-   know the partitioning of state vector $y$ since we will need to pick
-   only predetermined part $y^*$. Also, we need to know the steady state.
+/* The main purpose of this class is to implement DecisionRule interface, which
+   is a simulation. To be able to do this we have to know the partitioning of
+   state vector y since we will need to pick only predetermined part y*. Also,
+   we need to know the steady state.
 
-   The decision rule will take the form: $$y_t-\bar
-   y=\sum_{i=0}^n\left[g_{(yu)^i}\right]_{\alpha_1\ldots\alpha_i}\prod_{m=1}^i
-   \left[\matrix{y^*_{t-1}-\bar y^*\cr u_t}\right]^{\alpha_m},$$ where
-   the tensors $\left[g_{(yu)^i}\right]$ are tensors of the constructed
-   container, and $\bar y$ is the steady state.
+   The decision rule will take the form:
 
-   If we know the fix point of the rule (conditional zero shocks)
-   $\tilde y$, the rule can be transformed to so called ``centralized''
-   form. This is very similar to the form above but the zero dimensional
-   tensor is zero:
-   $$y_t-\tilde y=\sum_{i=1}^n
-   \left[\tilde g_{(yu)^i}\right]_{\alpha_1\ldots\alpha_i}\prod_{m=1}^i
-   \left[\matrix{y^*_{t-1}-\tilde y^*\cr u_t}\right]^{\alpha_m}.$$
-   We provide a method and a constructor to transform a rule to the centralized form.
+             ₙ                   ᵢ  ⎡y*ₜ₋₁ − ȳ*⎤αₘ
+    yₜ − ȳ = ∑  [g_(yu)ⁱ]_α₁…αᵢ  ∏  ⎢          ⎥
+            ⁱ⁼⁰                 ᵐ⁼¹ ⎣    uₜ    ⎦
 
-   The class is templated, the template argument is either |Storage::fold|
-   or |Storage::unfold|. So, there are two implementations of |DecisionRule|
+   where the tensors [g_(yu)ⁱ] are tensors of the constructed container, and ȳ
+   is the steady state.
+
+   If we know the fix point of the rule (conditional zero shocks) ỹ, the rule
+   can be transformed to so called “centralized” form. This is very similar to
+   the form above but the zero dimensional tensor is zero:
+
+             ₙ                   ᵢ  ⎡y*ₜ₋₁ − ỹ*⎤αₘ
+    yₜ − ỹ = ∑  [g_(yu)ⁱ]_α₁…αᵢ  ∏  ⎢          ⎥
+            ⁱ⁼¹                 ᵐ⁼¹ ⎣    uₜ    ⎦
+
+   We provide a method and a constructor to transform a rule to the centralized
+   form.
+
+   The class is templated, the template argument is either Storage::fold or
+   Storage::unfold. So, there are two implementations of the DecisionRule
    interface. */
 
 template <Storage t>
@@ -157,41 +165,41 @@ protected:
   void eval(emethod em, Vector &out, const ConstVector &v) const override;
 };
 
-/* Here we have to fill the tensor polynomial. This involves two
-   separated actions. First is to evaluate the approximation at a given
-   $\sigma$, the second is to compile the tensors $[g_{{(yu)}^{i+j}}]$ from
-   $[g_{y^iu^j}]$. The first action is done here, the second is done by
-   method |addSubTensor| of a full symmetry tensor.
+/* Here we have to fill the tensor polynomial. This involves two separated
+   actions. The first is to evaluate the approximation at a given σ, the second
+   is to compile the tensors [g_(yu)ⁱ⁺ʲ] from [g_yⁱuʲ]. The first action is
+   done here, the second is done by method addSubTensor() of a full symmetry
+   tensor.
 
    The way how the evaluation is done is described here:
 
-   The $q-$order approximation to the solution can be written as:
+   The q-order approximation to the solution can be written as:
 
-   $$
-   \eqalign{
-   y_t-\bar y &= \sum_{l=1}^q{1\over l!}\left[\sum_{i+j+k=l}
-   \left(\matrix{l\cr i,j,k}\right)\left[g_{y^iu^j\sigma^k}\right]
-   _{\alpha_1\ldots\alpha_j\beta_1\ldots\beta_j}
-   \prod_{m=1}^i[y^*_{t-1}-\bar y^*]^{\alpha_m}
-   \prod_{n=1}^j[u_t]^{\beta_m}\sigma^k\right]\cr
-   &= \sum_{l=1}^q\left[\sum_{i+j\leq l}\left(\matrix{i+j\cr i}\right)
-   \left[\sum_{k=0}^{l-i-j}{1\over l!}
-   \left(\matrix{l\cr k}\right)\left[g_{y^iu^j\sigma^k}\right]\sigma^k\right]
-   \prod_{m=1}^i[y^*_{t-1}-\bar y^*]^{\alpha_m}
-   \prod_{n=1}^j[u_t]^{\beta_m}\sigma^k\right]
-   }
-   $$
+                  ⎡                                                               ⎤
+             q  1 ⎢       ⎛  l  ⎞⎡        ⎤            ᵢ ⎡          ⎤αₘ ⱼ ⎡  ⎤βₘ  ⎥ 
+    yₜ − ȳ = ∑  ──⎢   ∑   ⎢     ⎥⎢g_yⁱuʲσᵏ⎥            ∏ ⎢y*ₜ₋₁ − ȳ*⎥   ∏ ⎢uₜ⎥  σᵏ⎥ 
+            ˡ⁼¹ l!⎢ⁱ⁺ʲ⁺ᵏ⁼ˡ⎝i,j,k⎠⎣        ⎦α₁…αⱼβ₁…βⱼ ᵐ⁼¹⎣          ⎦  ᵐ⁼¹⎣  ⎦    ⎥
+                  ⎣                                                               ⎦
 
-   This means that for each $i+j+k=l$ we have to add
-   $${1\over l!}\left(\matrix{l\cr
-   k}\right)\left[g_{y^iu^j\sigma^k}\right]\cdot\sigma^k=
-   {1\over (i+j)!k!}\left[g_{y^iu^j\sigma^k}\right]\cdot\sigma^k$$ to
-   $g_{(yu)^{i+j}}$. In addition, note that the multiplier
-   $\left(\matrix{i+j\cr i}\right)$ is applied when the fully symmetric
-   tensor $[g_{(yu)^{i+j}}]$ is evaluated.
+               ⎡           ⎡                                   ⎤                           ⎤
+             q ⎢      ⎛i+j⎞⎢ₗ₋ᵢ₋ⱼ 1  ⎛l⎞ ⎡        ⎤            ⎥  ᵢ ⎡          ⎤αₘ ⱼ ⎡  ⎤βₘ⎥ 
+           = ∑ ⎢  ∑   ⎢   ⎥⎢  ∑   ── ⎢ ⎥ ⎢g_yⁱuʲσᵏ⎥          σᵏ⎥  ∏ ⎢y*ₜ₋₁ − ȳ*⎥   ∏ ⎢uₜ⎥  ⎥ 
+            ˡ⁼¹⎢i+j≤l ⎝ i ⎠⎢ ᵏ⁼⁰  l! ⎝k⎠ ⎣        ⎦α₁…αⱼβ₁…βⱼ  ⎥ ᵐ⁼¹⎣          ⎦  ᵐ⁼¹⎣  ⎦  ⎥
+               ⎣           ⎣                                   ⎦                           ⎦
 
-   So we go through $i+j=d=0\ldots q$ and in each loop we form the fully
-   symmetric tensor $[g_{(yu)^l}]$ and insert it to the container. */
+   This means that for each i+j+k=l we have to add
+
+    1  ⎛l⎞                     1
+    ── ⎢ ⎥ [g_yⁱuʲσᵏ]·σᵏ = ──────── [g_yⁱuʲσᵏ]·σᵏ
+    l! ⎝k⎠                 (i+j)!k!
+
+   to [g_(yu)ⁱ⁺ʲ].
+                                         ⎛i+j⎞
+   In addition, note that the multiplier ⎝ k ⎠ is applied when the fully symmetric
+   tensor [g_(yu)ⁱ⁺ʲ] is evaluated.
+
+   So we go through i+j=d=0…q and in each loop we form the fully symmetric
+   tensor [g_(yu)ᵈ] and insert it to the container. */
 
 template <Storage t>
 void
@@ -204,16 +212,16 @@ DecisionRuleImpl<t>::fillTensors(const _Tg &g, double sigma)
       auto g_yud = std::make_unique<_Ttensym>(ypart.ny(), ypart.nys()+nu, d);
       g_yud->zeros();
 
-      // fill tensor of |g_yud| of dimension |d|
-      /* Here we have to fill the tensor $\left[g_{(yu)^d}\right]$. So we go
-         through all pairs $(i,j)$ giving $i+j=d$, and through all $k$ from
-         zero up to maximal dimension minus $d$. In this way we go through all
-         symmetries of $g_{y^iu^j\sigma^k}$ which will be added to $g_{(yu)^d}$.
+      // fill tensor of ‘g_yud’ of dimension ‘d’
+      /* Here we have to fill the tensor [g_(yu)ᵈ]. So we go through all pairs
+         (i,j) such that i+j=d, and through all k from zero up to maximal
+         dimension minus d. In this way we go through all symmetries of
+         [g_yⁱuʲσᵏ] which will be added to [g_(yu)ᵈ].
 
-         Note that at the beginning, |dfact| is a factorial of |d|. We
-         calculate |kfact| is equal to $k!$. As indicated in
-         |@<|DecisionRuleImpl::fillTensors| code@>|, the added tensor is thus
-         multiplied with ${1\over d!k!}\sigma^k$. */
+         Note that at the beginning, ‘dfact’ is a factorial of ‘d’. We
+         calculate ‘kfact’ is equal to k!. As indicated in
+         DecisionRuleImpl::fillTensors(), the added tensor is thus multiplied
+         with 1/(d!k!)·σᵏ. */
 
       for (int i = 0; i <= d; i++)
         {
@@ -238,14 +246,17 @@ DecisionRuleImpl<t>::fillTensors(const _Tg &g, double sigma)
     }
 }
 
-/* The centralization is straightforward. We suppose here that the
-   object's steady state is the fix point $\tilde y$. It is clear that
-   the new derivatives $\left[\tilde g_{(yu)^i}\right]$ will be equal to
-   the derivatives of the original decision rule |dr| at the new steady
-   state $\tilde y$. So, the new derivatives are obtained by derivating the
-   given decision rule $dr$ and evaluating its polynomial at
-   $$dstate=\left[\matrix{\tilde y^*-\bar y^*\cr 0}\right],$$
-   where $\bar y$ is the steady state of the original rule |dr|. */
+/* The centralization is straightforward. We suppose here that the object’s
+   steady state is the fix point ỹ. It is clear that the new derivatives
+   [g~_(yu)ⁱ] will be equal to the derivatives of the original decision rule
+   ‘dr’ at the new steady state ỹ. So, the new derivatives are obtained by
+   derivating the given decision rule ‘dr’ and evaluating its polynomial at:
+
+             ⎡ỹ* − ȳ*⎤
+    dstate = ⎢       ⎥,
+             ⎣   0   ⎦
+
+   where ȳ is the steady state of the original rule ‘dr’. */
 
 template <Storage t>
 void
@@ -270,16 +281,15 @@ DecisionRuleImpl<t>::centralize(const DecisionRuleImpl &dr)
     }
 }
 
-/* Here we evaluate repeatedly the polynomial storing results in the
-   created matrix. For exogenous shocks, we use |ShockRealization|
-   class, for predetermined variables, we use |ystart| as the first
-   state. The |ystart| vector is required to be all state variables
-   |ypart.ny()|, although only the predetermined part of |ystart| is
-   used.
+/* Here we evaluate repeatedly the polynomial storing results in the created
+   matrix. For exogenous shocks, we use ShockRealization class, for
+   predetermined variables, we use ‘ystart’ as the first state. The ‘ystart’
+   vector is required to be all state variables ypart.ny(), although only the
+   predetermined part of ‘ystart’ is used.
 
-   We simulate in terms of $\Delta y$, this is, at the beginning the
-   |ysteady| is canceled from |ystart|, we simulate, and at the end
-   |ysteady| is added to all columns of the result. */
+   We simulate in terms of Δy, this is, at the beginning the ‘ysteady’ is
+   canceled from ‘ystart’, we simulate, and at the end ‘ysteady’ is added to
+   all columns of the result. */
 
 template <Storage t>
 TwoDMatrix
@@ -291,9 +301,8 @@ DecisionRuleImpl<t>::simulate(emethod em, int np, const ConstVector &ystart,
   TwoDMatrix res(ypart.ny(), np);
 
   // initialize vectors and subvectors for simulation
-  /* Here allocate the stack vector $(\Delta y^*, u)$, define the
-     subvectors |dy|, and |u|, then we pickup predetermined parts of
-     |ystart| and |ysteady|. */
+  /* Here allocate the stack vector (Δy*,u), define the subvectors ‘dy’, and
+     ‘u’, then we pickup predetermined parts of ‘ystart’ and ‘ysteady’. */
   Vector dyu(ypart.nys()+nu);
   ConstVector ystart_pred(ystart, ypart.nstat, ypart.nys());
   ConstVector ysteady_pred(ysteady, ypart.nstat, ypart.nys());
@@ -301,8 +310,8 @@ DecisionRuleImpl<t>::simulate(emethod em, int np, const ConstVector &ystart,
   Vector u(dyu, ypart.nys(), nu);
 
   // perform the first step of simulation
-  /* We cancel |ysteady| from |ystart|, get realization to |u|, and
-     evaluate the polynomial. */
+  /* We cancel ‘ysteady’ from ‘ystart’, get realization to ‘u’, and evaluate
+     the polynomial. */
   dy = ystart_pred;
   dy.add(-1.0, ysteady_pred);
   sr.get(0, u);
@@ -310,8 +319,8 @@ DecisionRuleImpl<t>::simulate(emethod em, int np, const ConstVector &ystart,
   eval(em, out, dyu);
 
   // perform all other steps of simulations
-  /* Also clear. If the result at some period is not finite, we pad the
-     rest of the matrix with zeros. */
+  /* Also clear. If the result at some period is not finite, we pad the rest of
+     the matrix with zeros. */
   int i = 1;
   while (i < np)
     {
@@ -333,9 +342,9 @@ DecisionRuleImpl<t>::simulate(emethod em, int np, const ConstVector &ystart,
       i++;
     }
 
-  // add the steady state to columns of |res|
-  /* Even clearer. We add the steady state to the numbers computed above
-     and leave the padded columns to zero. */
+  // add the steady state to columns of ‘res’
+  /* Even clearer. We add the steady state to the numbers computed above and
+     leave the padded columns to zero. */
   for (int j = 0; j < i; j++)
     {
       Vector col{res.getCol(j)};
@@ -345,10 +354,10 @@ DecisionRuleImpl<t>::simulate(emethod em, int np, const ConstVector &ystart,
   return res;
 }
 
-/* This is one period evaluation of the decision rule. The simulation
-   is a sequence of repeated one period evaluations with a difference,
-   that the steady state (fix point) is cancelled and added once. Hence
-   we have two special methods. */
+/* This is one period evaluation of the decision rule. The simulation is a
+   sequence of repeated one period evaluations with a difference, that the
+   steady state (fix point) is cancelled and added once. Hence we have two
+   special methods. */
 
 template <Storage t>
 void
@@ -370,8 +379,8 @@ DecisionRuleImpl<t>::evaluate(emethod em, Vector &out, const ConstVector &ys,
   out.add(1.0, ysteady);
 }
 
-/* This is easy. We just return the newly created copy using the
-   centralized constructor. */
+/* This is easy. We just return the newly created copy using the centralized
+   constructor. */
 
 template <Storage t>
 std::unique_ptr<DecisionRule>
@@ -380,8 +389,8 @@ DecisionRuleImpl<t>::centralizedClone(const Vector &fixpoint) const
   return std::make_unique<DecisionRuleImpl<t>>(*this, fixpoint);
 }
 
-/* Here we only encapsulate two implementations to one, deciding
-   according to the parameter. */
+/* Here we only encapsulate two implementations to one, deciding according to
+   the parameter. */
 
 template <Storage t>
 void
@@ -405,10 +414,9 @@ DecisionRuleImpl<t>::writeMat(mat_t *fd, const std::string &prefix) const
   ConstTwoDMatrix(dum).writeMat(fd, prefix + "_ss");
 }
 
-/* This is exactly the same as |DecisionRuleImpl<Storage::fold>|. The
-   only difference is that we have a conversion from
-   |UnfoldDecisionRule|, which is exactly
-   |DecisionRuleImpl<Storage::unfold>|. */
+/* This is exactly the same as DecisionRuleImpl<Storage::fold>. The only
+   difference is that we have a conversion from UnfoldDecisionRule, which is
+   exactly DecisionRuleImpl<Storage::unfold>. */
 
 class UnfoldDecisionRule;
 class FoldDecisionRule : public DecisionRuleImpl<Storage::fold>
@@ -437,9 +445,9 @@ public:
   FoldDecisionRule(const UnfoldDecisionRule &udr);
 };
 
-/* This is exactly the same as |DecisionRuleImpl<Storage::unfold>|, but
-   with a conversion from |FoldDecisionRule|, which is exactly
-   |DecisionRuleImpl<Storage::fold>|. */
+/* This is exactly the same as DecisionRuleImpl<Storage::unfold>, but with a
+   conversion from FoldDecisionRule, which is exactly
+   DecisionRuleImpl<Storage::fold>. */
 
 class UnfoldDecisionRule : public DecisionRuleImpl<Storage::unfold>
 {
@@ -467,18 +475,17 @@ public:
   UnfoldDecisionRule(const FoldDecisionRule &udr);
 };
 
-/* This class serves for calculation of the fix point of the decision
-   rule given that the shocks are zero. The class is very similar to the
-   |DecisionRuleImpl|. Besides the calculation of the fix point, the only
-   difference between |DRFixPoint| and |DecisionRuleImpl| is that the
-   derivatives wrt. shocks are ignored (since shocks are zero during the
-   calculations). That is why have a different |fillTensor| method.
+/* This class serves for calculation of the fix point of the decision rule
+   given that the shocks are zero. The class is very similar to the
+   DecisionRuleImpl. Besides the calculation of the fix point, the only
+   difference between DRFixPoint and DecisionRuleImpl is that the derivatives
+   wrt. shocks are ignored (since shocks are zero during the calculations).
+   That is why have a different fillTensor() method.
 
    The solution algorithm is Newton and is described in
-   |@<|DRFixPoint::solveNewton| code@>|. It solves $F(y)=0$, where
-   $F=g(y,0)-y$. The function $F$ is given by its derivatives |bigf|. The
-   Jacobian of the solved system is given by derivatives stored in
-   |bigfder|. */
+   DRFixPoint::solveNewton(). It solves F(y)=0, where F=g(y,0)−y. The function
+   F is given by its derivatives ‘bigf’. The Jacobian of the solved system is
+   given by derivatives stored in ‘bigfder’. */
 
 template <Storage t>
 class DRFixPoint : public ctraits<t>::Tpol
@@ -526,10 +533,9 @@ private:
   int newton_iter_total;
 };
 
-/* Here we have to setup the function $F=g(y,0)-y$ and ${\partial
-   F\over\partial y}$. The former is taken from the given derivatives of
-   $g$ where a unit matrix is subtracted from the first derivative
-   (|Symmetry(1)|). Then the derivative of the $F$ polynomial is
+/* Here we have to setup the function F=g(y,0)−y and ∂F/∂y. The former is taken
+   from the given derivatives of g where a unit matrix is subtracted from the
+   first derivative (Symmetry{1}). Then the derivative of the F polynomial is
    calculated. */
 
 template <Storage t>
@@ -547,11 +553,10 @@ DRFixPoint<t>::DRFixPoint(const _Tg &g, const PartitionY &yp,
   bigfder = std::make_unique<_Tpol>(*bigf, 0);
 }
 
-/* Here we fill the tensors for the |DRFixPoint| class. We ignore the
-   derivatives $g_{y^iu^j\sigma^k}$ for which $j>0$. So we go through all
-   dimensions |d|, and all |k| such that |d+k| is between the maximum
-   dimension and |d|, and add ${\sigma^k\over d!k!}g_{y^d\sigma^k}$ to
-   the tensor $g_{(y)^d}$. */
+/* Here we fill the tensors for the DRFixPoint class. We ignore the derivatives
+   [g_yⁱuʲσᵏ] for which j>0. So we go through all dimensions ‘d’, and all ‘k’
+   such that ‘d+k’ is between the maximum dimension and ‘d’, and add
+   σᵏ/(d!k!)[g_yᵈσᵏ] to the tensor [g_yᵈ]. */
 
 template <Storage t>
 void
@@ -576,19 +581,17 @@ DRFixPoint<t>::fillTensors(const _Tg &g, double sigma)
     }
 }
 
-/* This tries to solve polynomial equation $F(y)=0$, where $F$
-   polynomial is |bigf| and its derivative is in |bigfder|. It returns
-   true if the Newton converged. The method takes the given vector as
-   initial guess, and rewrites it with a solution. The method guarantees
-   to return the vector, which has smaller norm of the residual. That is
-   why the input/output vector |y| is always changed.
+/* This tries to solve polynomial equation F(y)=0, where F polynomial is ‘bigf’
+   and its derivative is in ‘bigfder’. It returns true if the Newton converged.
+   The method takes the given vector as initial guess, and rewrites it with a
+   solution. The method guarantees to return the vector, which has smaller norm
+   of the residual. That is why the input/output vector ‘y’ is always changed.
 
-   The method proceeds with a Newton step, if the Newton step improves
-   the residual error. So we track residual errors in |flastnorm| and
-   |fnorm| (former and current). In addition, at each step we search for
-   an underrelaxation parameter |urelax|, which improves the residual. If
-   |urelax| is less that |urelax_threshold|, we stop searching and stop
-   the Newton. */
+   The method proceeds with a Newton step, if the Newton step improves the
+   residual error. So we track residual errors in ‘flastnorm’ and ‘fnorm’
+   (former and current). In addition, at each step we search for an
+   underrelaxation parameter ‘urelax’, which improves the residual. If ‘urelax’
+   is less that ‘urelax_threshold’, we stop searching and stop the Newton. */
 
 template <Storage t>
 bool
@@ -615,12 +618,12 @@ DRFixPoint<t>::solveNewton(Vector &y)
         {
           ConstTwoDMatrix(*jacob).multInvLeft(delta);
 
-          // find |urelax| improving residual
-          /* Here we find the |urelax|. We cycle as long as the new residual size
-             |fnorm| is greater than last residual size |flastnorm|. If the urelax
-             is less than |urelax_threshold| we give up. The |urelax| is damped by
-             the ratio of |flastnorm| and |fnorm|. It the ratio is close to one, we
-             damp by one half. */
+          // find ‘urelax’ improving residual
+          /* Here we find the ‘urelax’. We cycle as long as the new residual
+             size ‘fnorm’ is greater than last residual size ‘flastnorm’. If
+             the urelax is less than ‘urelax_threshold’ we give up. The
+             ‘urelax’ is damped by the ratio of ‘flastnorm’ and ‘fnorm’. It the
+             ratio is close to one, we damp by one half. */
           bool urelax_found = false;
           urelax = 1.0;
           while (!urelax_found && urelax > urelax_threshold)
@@ -653,19 +656,18 @@ DRFixPoint<t>::solveNewton(Vector &y)
   return converged;
 }
 
-/* This method solves the fix point of the no-shocks rule
-   $y_{t+1}=f(y_t)$. It combines dull steps with Newton attempts. The
-   dull steps correspond to evaluations setting $y_{t+1}=f(y_t)$. For
-   reasonable models the dull steps converge to the fix-point but very
-   slowly. That is why we make Newton attempt from time to time. The
-   frequency of the Newton attempts is given by |newton_pause|. We
-   perform the calculations in deviations from the steady state. So, at
-   the end, we have to add the steady state.
+/* This method solves the fix point of the no-shocks rule yₜ₊₁=f(yₜ). It
+   combines dull steps with Newton attempts. The dull steps correspond to
+   evaluations setting yₜ₊₁=f(yₜ). For reasonable models the dull steps
+   converge to the fix-point but very slowly. That is why we make Newton
+   attempt from time to time. The frequency of the Newton attempts is given by
+   ‘newton_pause’. We perform the calculations in deviations from the steady
+   state. So, at the end, we have to add the steady state.
 
-   The method also sets the members |iter|, |newton_iter_last| and
-   |newton_iter_total|. These numbers can be examined later.
+   The method also sets the members ‘iter’, ‘newton_iter_last’ and
+   ‘newton_iter_total’. These numbers can be examined later.
 
-   The |out| vector is not touched if the algorithm has not convered. */
+   The ‘out’ vector is not touched if the algorithm has not convered. */
 
 template <Storage t>
 bool
@@ -708,10 +710,10 @@ DRFixPoint<t>::calcFixPoint(emethod em, Vector &out)
   return converged;
 }
 
-/* This is a basically a number of matrices of the same dimensions,
-   which can be obtained as simulation results from a given decision rule
-   and shock realizations. We also store the realizations of shocks and the
-   starting point of each simulation. */
+/* This is a basically a number of matrices of the same dimensions, which can
+   be obtained as simulation results from a given decision rule and shock
+   realizations. We also store the realizations of shocks and the starting
+   point of each simulation. */
 
 class ExplicitShockRealization;
 class SimResults
@@ -768,8 +770,8 @@ public:
   void writeMat(mat_t *fd, const std::string &lname) const;
 };
 
-/* This does the same as |SimResults| plus it calculates means and
-   covariances of the simulated data. */
+/* This does the same as SimResults plus it calculates means and covariances of
+   the simulated data. */
 
 class SimResultsStats : public SimResults
 {
@@ -789,9 +791,9 @@ protected:
   void calcVcov();
 };
 
-/* This does the similar thing as |SimResultsStats| but the statistics are
-   not calculated over all periods but only within each period. Then we
-   do not calculate covariances with periods but only variances. */
+/* This does the similar thing as SimResultsStats but the statistics are not
+   calculated over all periods but only within each period. Then we do not
+   calculate covariances with periods but only variances. */
 
 class SimResultsDynamicStats : public SimResults
 {
@@ -811,12 +813,12 @@ protected:
   void calcVariance();
 };
 
-/* This goes through control simulation results, and for each control
-   it adds a given impulse to a given shock and runs a simulation. The
-   control simulation is then cancelled and the result is stored. After
-   that these results are averaged with variances calculated.
+/* This goes through control simulation results, and for each control it adds a
+   given impulse to a given shock and runs a simulation. The control simulation
+   is then cancelled and the result is stored. After that these results are
+   averaged with variances calculated.
 
-   The means and the variances are then written to the MAT-4 file. */
+   The means and the variances are then written to the MAT file. */
 
 class SimulationIRFWorker;
 class SimResultsIRF : public SimResults
@@ -843,11 +845,11 @@ protected:
   void calcVariances();
 };
 
-/* This simulates and gathers all statistics from the real time
-   simulations. In the |simulate| method, it runs |RTSimulationWorker|s
-   which accummulate information from their own estimates. The estimation
-   is done by means of |NormalConj| class, which is a conjugate family of
-   densities for normal distibutions. */
+/* This simulates and gathers all statistics from the real time simulations. In
+   the simulate() method, it runs RTSimulationWorker’s which accummulate
+   information from their own estimates. The estimation is done by means of
+   NormalConj class, which is a conjugate family of densities for normal
+   distibutions. */
 
 class RTSimulationWorker;
 class RTSimResultsStats
@@ -875,19 +877,18 @@ public:
   void writeMat(mat_t *fd, const std::string &lname);
 };
 
-/* For each shock, this simulates plus and minus impulse. The class
-   maintains a vector of simulation results, each gets a particular shock
-   and sign (positive/negative). The results of type |SimResultsIRF| are
-   stored in a vector so that even ones are positive, odd ones are
-   negative.
+/* For each shock, this simulates plus and minus impulse. The class maintains a
+   vector of simulation results, each gets a particular shock and sign
+   (positive/negative). The results of type SimResultsIRF are stored in a
+   vector so that even ones are positive, odd ones are negative.
 
-   The constructor takes a reference to the control simulations, which
-   must be finished before the constructor is called. The control
-   simulations are passed to all |SimResultsIRF|s.
+   The constructor takes a reference to the control simulations, which must be
+   finished before the constructor is called. The control simulations are
+   passed to all SimResultsIRF’s.
 
-   The constructor also takes the vector of indices of exogenous
-   variables (|ili|) for which the IRFs are generated. The list is kept
-   (as |irf_list_ind|) for other methods. */
+   The constructor also takes the vector of indices of exogenous variables
+   (‘ili’) for which the IRFs are generated. The list is kept (as
+   ‘irf_list_ind’) for other methods. */
 
 class DynamicModel;
 class IRFResults
@@ -902,8 +903,8 @@ public:
   void writeMat(mat_t *fd, const std::string &prefix) const;
 };
 
-/* This worker simulates the given decision rule and inserts the result
-   to |SimResults|. */
+/* This worker simulates the given decision rule and inserts the result to
+   SimResults. */
 
 class SimulationWorker : public sthread::detach_thread
 {
@@ -925,10 +926,9 @@ public:
   void operator()(std::mutex &mut) override;
 };
 
-/* This worker simulates a given impulse |imp| to a given shock
-   |ishock| based on a given control simulation with index |idata|. The
-   control simulations are contained in |SimResultsIRF| which is passed
-   to the constructor. */
+/* This worker simulates a given impulse ‘imp’ to a given shock ‘ishock’ based
+   on a given control simulation with index ‘idata’. The control simulations
+   are contained in SimResultsIRF which is passed to the constructor. */
 
 class SimulationIRFWorker : public sthread::detach_thread
 {
@@ -951,11 +951,10 @@ public:
   void operator()(std::mutex &mut) override;
 };
 
-/* This class does the real time simulation job for
-   |RTSimResultsStats|. It simulates the model period by period. It
-   accummulates the information in the |RTSimResultsStats::nc|. If NaN or
-   Inf is observed, it ends the simulation and adds to the
-   |thrown_periods| of |RTSimResultsStats|. */
+/* This class does the real time simulation job for RTSimResultsStats. It
+   simulates the model period by period. It accummulates the information in
+   ‘RTSimResultsStats::nc’. If NaN or Inf is observed, it ends the simulation
+   and adds to the ‘thrown_periods’ of RTSimResultsStats. */
 
 class RTSimulationWorker : public sthread::detach_thread
 {
@@ -977,9 +976,9 @@ public:
   void operator()(std::mutex &mut) override;
 };
 
-/* This class generates draws from Gaussian distribution with zero mean
-   and the given variance-covariance matrix. It stores the factor of vcov
-   $V$ matrix, yielding $FF^T = V$. */
+/* This class generates draws from Gaussian distribution with zero mean and the
+   given variance-covariance matrix. It stores the factor of vcov V matrix,
+   yielding FFᵀ = V. */
 
 class RandomShockRealization : virtual public ShockRealization
 {
@@ -1004,8 +1003,8 @@ protected:
   void schurFactor(const ConstTwoDMatrix &v);
 };
 
-/* This is just a matrix of finite numbers. It can be constructed from
-   any |ShockRealization| with a given number of periods. */
+/* This is just a matrix of finite numbers. It can be constructed from any
+   ShockRealization with a given number of periods. */
 
 class ExplicitShockRealization : virtual public ShockRealization
 {
@@ -1035,14 +1034,14 @@ public:
   }
 };
 
-/* This represents a user given shock realization. The first matrix of
-   the constructor is a covariance matrix of shocks, the second matrix is
-   a rectangular matrix, where columns correspond to periods, rows to
-   shocks. If an element of the matrix is {\tt NaN}, or {\tt Inf}, or
-   {\tt -Inf}, then the random shock is taken instead of that element.
+/* This represents a user given shock realization. The first matrix of the
+   constructor is a covariance matrix of shocks, the second matrix is a
+   rectangular matrix, where columns correspond to periods, rows to shocks. If
+   an element of the matrix is NaN or ±∞, then the random shock is taken
+   instead of that element.
 
-   In this way it is a generalization of both |RandomShockRealization|
-   and |ExplicitShockRealization|. */
+   In this way it is a generalization of both RandomShockRealization and
+   ExplicitShockRealization. */
 
 class GenShockRealization : public RandomShockRealization, public ExplicitShockRealization
 {
