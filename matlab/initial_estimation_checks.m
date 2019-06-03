@@ -45,11 +45,13 @@ if DynareOptions.order>1 && any(any(isnan(DynareDataset.data)))
     error('initial_estimation_checks:: particle filtering does not support missing observations')
 end
 
-if maximum_number_non_missing_observations>Model.exo_nbr+EstimatedParameters.nvn
+non_zero_ME=length(EstimatedParameters.H_entries_to_check_for_positive_definiteness);
+
+if maximum_number_non_missing_observations>Model.exo_nbr+non_zero_ME
     error(['initial_estimation_checks:: Estimation can''t take place because there are less declared shocks than observed variables!'])
 end
 
-if maximum_number_non_missing_observations>length(find(diag(Model.Sigma_e)))+EstimatedParameters.nvn
+if maximum_number_non_missing_observations>length(find(diag(Model.Sigma_e)))+non_zero_ME
     error(['initial_estimation_checks:: Estimation can''t take place because too many shocks have been calibrated with a zero variance!'])
 end
 
