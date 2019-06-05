@@ -68,9 +68,10 @@ if isempty(parameter_set)
     end
 end
 
-presample = max(1,options_.presample);
+presample = max(1,options_.presample-1);
 if isfield(options_.shock_decomp,'presample')
-    presample = max(presample,options_.shock_decomp.presample);
+    my_presample = max(1,options_.shock_decomp.presample);
+    presample = min(presample,my_presample);
 end
 % forecast_=0;
 forecast_ = options_.shock_decomp.forecast;
@@ -244,7 +245,9 @@ for j=presample+1:nobs
             %             zn(:,1:nshocks,i) = zn(:,1:nshocks,i) + B(inv_order_var,:).*repmat(epsilon(:,i+gend-forecast_-1)',endo_nbr,1);
             zn(:,nshocks+1,i) = zn(:,nshocks+2,i) - sum(zn(:,1:nshocks,i),2);
         end
-        oo_.conditional_shock_decomposition.(['time_' int2str(j-forecast_)])=zn;
+        if ismember(j-forecast_,save_realtime)
+            oo_.conditional_shock_decomposition.(['time_' int2str(j-forecast_)])=zn;
+        end
     end
     %%
 
@@ -260,28 +263,39 @@ for j=presample+1:nobs
 
     if forecast_
         zfrcst(:,:,j+1) = z(:,:,gend+1);
-        oo_.realtime_forecast_shock_decomposition.(['time_' int2str(j)])=z(:,:,gend:end);
+        ootmp.realtime_forecast_shock_decomposition.(['time_' int2str(j)])=z(:,:,gend:end);
+        if ismember(j,save_realtime)
+            oo_.realtime_forecast_shock_decomposition.(['time_' int2str(j)]) = ...
+                ootmp.realtime_forecast_shock_decomposition.(['time_' int2str(j)]);
+        end
         if j>forecast_+presample
             %% realtime conditional shock decomp k step ahead
-            oo_.realtime_conditional_shock_decomposition.(['time_' int2str(j-forecast_)]) = ...
+            ootmp.realtime_conditional_shock_decomposition.(['time_' int2str(j-forecast_)]) = ...
                 zreal(:,:,j-forecast_:j) - ...
-                oo_.realtime_forecast_shock_decomposition.(['time_' int2str(j-forecast_)]);
-            oo_.realtime_conditional_shock_decomposition.(['time_' int2str(j-forecast_)])(:,end-1,:) = ...
-                oo_.realtime_conditional_shock_decomposition.(['time_' int2str(j-forecast_)])(:,end-1,:) + ...
-                oo_.realtime_forecast_shock_decomposition.(['time_' int2str(j-forecast_)])(:,end,:);
-            oo_.realtime_conditional_shock_decomposition.(['time_' int2str(j-forecast_)])(:,end,:) = ...
+                ootmp.realtime_forecast_shock_decomposition.(['time_' int2str(j-forecast_)]);
+            ootmp.realtime_conditional_shock_decomposition.(['time_' int2str(j-forecast_)])(:,end-1,:) = ...
+                ootmp.realtime_conditional_shock_decomposition.(['time_' int2str(j-forecast_)])(:,end-1,:) + ...
+                ootmp.realtime_forecast_shock_decomposition.(['time_' int2str(j-forecast_)])(:,end,:);
+            ootmp.realtime_conditional_shock_decomposition.(['time_' int2str(j-forecast_)])(:,end,:) = ...
                 zreal(:,end,j-forecast_:j);
-
+            if ismember(j-forecast_,save_realtime)
+                oo_.realtime_conditional_shock_decomposition.(['time_' int2str(j-forecast_)]) = ...
+                    ootmp.realtime_conditional_shock_decomposition.(['time_' int2str(j-forecast_)]);
+            end
             if j==nobs
                 for my_forecast_=(forecast_-1):-1:1
-                    oo_.realtime_conditional_shock_decomposition.(['time_' int2str(j-my_forecast_)]) = ...
+                    ootmp.realtime_conditional_shock_decomposition.(['time_' int2str(j-my_forecast_)]) = ...
                         zreal(:,:,j-my_forecast_:j) - ...
-                        oo_.realtime_forecast_shock_decomposition.(['time_' int2str(j-my_forecast_)])(:,:,1:my_forecast_+1);
-                    oo_.realtime_conditional_shock_decomposition.(['time_' int2str(j-my_forecast_)])(:,end-1,:) = ...
-                        oo_.realtime_conditional_shock_decomposition.(['time_' int2str(j-my_forecast_)])(:,end-1,:) + ...
-                        oo_.realtime_forecast_shock_decomposition.(['time_' int2str(j-my_forecast_)])(:,end,1:my_forecast_+1);
-                    oo_.realtime_conditional_shock_decomposition.(['time_' int2str(j-my_forecast_)])(:,end,:) = ...
+                        ootmp.realtime_forecast_shock_decomposition.(['time_' int2str(j-my_forecast_)])(:,:,1:my_forecast_+1);
+                    ootmp.realtime_conditional_shock_decomposition.(['time_' int2str(j-my_forecast_)])(:,end-1,:) = ...
+                        ootmp.realtime_conditional_shock_decomposition.(['time_' int2str(j-my_forecast_)])(:,end-1,:) + ...
+                        ootmp.realtime_forecast_shock_decomposition.(['time_' int2str(j-my_forecast_)])(:,end,1:my_forecast_+1);
+                    ootmp.realtime_conditional_shock_decomposition.(['time_' int2str(j-my_forecast_)])(:,end,:) = ...
                         zreal(:,end,j-my_forecast_:j);
+                    if ismember(j-my_forecast_,save_realtime)
+                        oo_.realtime_conditional_shock_decomposition.(['time_' int2str(j-my_forecast_)]) = ...
+                            ootmp.realtime_conditional_shock_decomposition.(['time_' int2str(j-my_forecast_)]);
+                    end
                 end
             end
 
