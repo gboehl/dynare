@@ -1,6 +1,6 @@
 // Copyright 2004, Ondra Kamenik
 
-// First order at deterministic steady
+// First order at deterministic steady state
 
 #ifndef FIRST_ORDER_H
 #define FIRST_ORDER_H
@@ -73,8 +73,8 @@ protected:
   void journalEigs();
 };
 
-/* This class only converts the derivatives $g_{y^*}$ and $g_u$ to a
-   folded or unfolded container. */
+/* This class only converts the derivatives g_y* and gᵤ to a folded or unfolded
+   container. */
 
 template <Storage t>
 class FirstOrderDerivs : public ctraits<t>::Tg

@@ -5,9 +5,9 @@
 
 #include <cmath>
 
-// |FaaDiBruno::calculate| folded sparse code
-/* We take an opportunity to refine the stack container to avoid
-   allocation of more memory than available. */
+// FaaDiBruno::calculate() folded sparse code
+/* We take an opportunity to refine the stack container to avoid allocation of
+   more memory than available. */
 void
 FaaDiBruno::calculate(const StackContainer<FGSTensor> &cont,
                       const TensorContainer<FSSparseTensor> &f,
@@ -26,9 +26,9 @@ FaaDiBruno::calculate(const StackContainer<FGSTensor> &cont,
     }
 }
 
-// |FaaDiBruno::calculate| folded dense code
-/* Here we just simply evaluate |multAndAdd| for the dense
-   container. There is no opportunity for tuning. */
+// FaaDiBruno::calculate() folded dense code
+/* Here we just simply evaluate multAndAdd() for the dense container. There is
+   no opportunity for tuning. */
 void
 FaaDiBruno::calculate(const FoldedStackContainer &cont, const FGSContainer &g,
                       FGSTensor &out)
@@ -44,10 +44,9 @@ FaaDiBruno::calculate(const FoldedStackContainer &cont, const FGSContainer &g,
     }
 }
 
-// |FaaDiBruno::calculate| unfolded sparse code
-/* This is the same as |@<|FaaDiBruno::calculate| folded sparse
-   code@>|. The only difference is that we construct unfolded fine
-   container. */
+// FaaDiBruno::calculate() unfolded sparse code
+/* This is the same as FaaDiBruno::calculate() folded sparse code. The only
+   difference is that we construct unfolded fine container. */
 void
 FaaDiBruno::calculate(const StackContainer<UGSTensor> &cont,
                       const TensorContainer<FSSparseTensor> &f,
@@ -66,7 +65,7 @@ FaaDiBruno::calculate(const StackContainer<UGSTensor> &cont,
     }
 }
 
-// |FaaDiBruno::calculate| unfolded dense code
+// FaaDiBruno::calculate() unfolded dense code
 /* Again, no tuning opportunity here. */
 void
 FaaDiBruno::calculate(const UnfoldedStackContainer &cont, const UGSContainer &g,
@@ -83,36 +82,35 @@ FaaDiBruno::calculate(const UnfoldedStackContainer &cont, const UGSContainer &g,
     }
 }
 
-/* This function returns a number of maximum rows used for refinement of
-   the stacked container. We want to set the maximum so that the expected
-   memory consumption for the number of paralel threads would be less
-   than available memory. On the other hand we do not want to be too
-   pesimistic since a very fine refinement can be very slow.
+/* This function returns a number of maximum rows used for refinement of the
+   stacked container. We want to set the maximum so that the expected memory
+   consumption for the number of paralel threads would be less than available
+   memory. On the other hand we do not want to be too pesimistic since a very
+   fine refinement can be very slow.
 
-   Besides memory needed for a dense unfolded slice of a tensor from
-   |f|, each thread needs |magic_mult*per_size| bytes of memory. In the
-   worst case, |magic_mult| will be equal to 2, this means memory
-   |per_size| for target temporary (permuted symmetry) tensor plus one
-   copy for intermediate result. However, this shows to be too
-   pesimistic, so we set |magic_mult| to 1.5. The memory for permuted
-   symmetry temporary tensor |per_size| is estimated as a weigthed
-   average of unfolded memory of the |out| tensor and unfolded memory of
-   a symetric tensor with the largest coordinate size. Some experiments
-   showed that the best combination of the two is to take 100\% if the
-   latter, so we set |lambda| to zero.
+   Besides memory needed for a dense unfolded slice of a tensor from ‘f’, each
+   thread needs ‘magic_mult*per_size’ bytes of memory. In the worst case,
+   ‘magic_mult’ will be equal to 2, this means memory ‘per_size’ for target
+   temporary (permuted symmetry) tensor plus one copy for intermediate result.
+   However, this shows to be too pesimistic, so we set ‘magic_mult’ to 1.5. The
+   memory for permuted symmetry temporary tensor ‘per_size’ is estimated as a
+   weigthed average of unfolded memory of the ‘out’ tensor and unfolded memory
+   of a symetric tensor with the largest coordinate size. Some experiments
+   showed that the best combination of the two is to take 100% if the latter,
+   so we set ‘lambda’ to zero.
 
-   The |max| number of rows in the refined |cont| must be such that each
+   The ‘max’ number of rows in the refined ‘cont’ must be such that each
    slice fits to remaining memory. Number of columns of the slice are
-   never greater $max^l$. (This is not true, since stacks corresponing to
-   unit/zero matrices cannot be further refined). We get en equation:
+   never greater maxˡ. (This is not true, since stacks corresponding to
+   unit/zero matrices cannot be further refined). We get an equation:
 
-   $$nthreads\cdot max^l\cdot 8\cdot r = mem -
-   magic\_mult\cdot nthreads\cdot per\_size\cdot 8\cdot r,$$
-   where |mem| is available memory in bytes, |nthreads| is a number of
-   threads, $r$ is a number of rows, and $8$ is |sizeof(double)|.
+    nthreads·maxˡ·8·r = mem − magic_mult·nthreads·per_size·8·r
 
-   If the right hand side is less than zero, we set |max| to 10, just to
-   let it do something. */
+   where ‘mem’ is available memory in bytes, ‘nthreads’ is a number of threads,
+   r is a number of rows, and 8 is ‘sizeof(double)’.
+
+   If the right hand side is less than zero, we set ‘max’ to 10, just to let it
+   do something. */
 
 std::tuple<int, int, int>
 FaaDiBruno::estimRefinement(const TensorDimens &tdims, int nr, int l)

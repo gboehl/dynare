@@ -133,17 +133,17 @@ public:
   }
 protected:
   void writePrefix(const SystemResources &f);
-  /* Writes a floating point number as a field of exactly "width" characters
+  /* Writes a floating point number as a field of exactly ‘width’ characters
      large. Note that the width will not be respected if the integer part is
      too large. */
   static void writeFloatTabular(std::ostream &s, double d, int width);
 };
 
 /*
-  Constructs a "pair" of symmetric records with a RAII-like logic:
-   - when fed with "endrec", print the opening record
-   - subsequent records will have depth increased by 1
-   - when deleted, prints the symmetric closing record, and decrease depth
+  Constructs a ‘pair’ of symmetric records with a RAII-like logic:
+   — when fed with ‘endrec’, print the opening record
+   — subsequent records will have depth increased by 1
+   — when deleted, prints the symmetric closing record, and decrease depth
 */
 class JournalRecordPair : public JournalRecord
 {
