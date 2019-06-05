@@ -28,12 +28,19 @@ function [z, steady_state] = plot_shock_decomposition(M_,oo_,options_,varlist)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
+options0 = evalin('base','options_'); % this is to store in global options the index of variables plotted
 options_.nodisplay = options_.plot_shock_decomp.nodisplay;
 options_.graph_format = options_.plot_shock_decomp.graph_format;
 
 % indices of endogenous variables
-if isempty(varlist)
-    varlist = M_.endo_names(1:M_.orig_endo_nbr);
+exist_varlist = 1;
+if size(varlist,1) == 0
+    exist_varlist = 0;
+    if size( M_.endo_names,1) >= M_.orig_endo_nbr
+        varlist = M_.endo_names(1:M_.orig_endo_nbr);
+    else
+        varlist = M_.endo_names;
+    end
 end
 
 if isfield(options_.plot_shock_decomp,'init2shocks') % private trap for uimenu calls
@@ -46,8 +53,66 @@ if ~isempty(init2shocks)
 end
 
 
-[i_var, ~, index_uniques] = varlist_indices(varlist, M_.endo_names);
+if isfield(options_.shock_decomp,'i_var') && (M_.endo_nbr>=M_.orig_endo_nbr)
+    M_.endo_names = M_.endo_names(options_.shock_decomp.i_var,:);
+    M_.endo_names_tex = M_.endo_names_tex(options_.shock_decomp.i_var,:);
+    M_.endo_nbr = length( options_.shock_decomp.i_var );
+end
+try
+    [i_var,nvar,index_uniques] = varlist_indices(varlist,M_.endo_names);
+catch ME
+    if isfield(options_.shock_decomp,'i_var')
+        warning('shock decomp results for some input variable was not stored: I recompute all decompositions')
+        M_ = evalin('base','M_');
+        bayestopt_ = evalin('base','bayestopt_');
+        estim_params_ = evalin('base','estim_params_');
+        var_list_ = char();
+        disp('recomputing shock decomposition ...')
+        [oo_,M_]= shock_decomposition(M_,oo_,options_,var_list_,bayestopt_,estim_params_);
+        if isfield(oo_,'realtime_shock_decomposition') || options_.plot_shock_decomp.realtime
+            disp('recomputing realtime shock decomposition ...')
+            oo_ = realtime_shock_decomposition(M_,oo_,options_,var_list_,bayestopt_,estim_params_);
+        end
+        if isfield(oo_,'initval_decomposition')
+            disp('recomputing initval shock decomposition ...')
+            oo_ = initial_condition_decomposition(M_,oo_,options_,0,bayestopt_,estim_params_);   
+        end
+        assignin('base','oo_',oo_)
+        [i_var,nvar,index_uniques] = varlist_indices(varlist,M_.endo_names);
+        options_.shock_decomp = rmfield(options_.shock_decomp,'i_var');
+        options0.shock_decomp = rmfield(options0.shock_decomp,'i_var');
+    else
+        rethrow(ME)
+    end
+end
+
 varlist = varlist(index_uniques);
+
+if ~isfield(options0.shock_decomp,'i_var') && exist_varlist
+    if ~isfield(options0.plot_shock_decomp,'i_var')
+        options0.plot_shock_decomp.i_var = i_var;
+    else
+        options0.plot_shock_decomp.i_var = union(i_var, options0.plot_shock_decomp.i_var);
+    end
+    assignin('base','options_',options0)
+end
+
+type=options_.plot_shock_decomp.type;
+if isequal(type, 'aoa') && isfield(options_.plot_shock_decomp,'q2a') && isstruct(options_.plot_shock_decomp.q2a)
+    q2avec=options_.plot_shock_decomp.q2a;
+    if nvar>1
+        for jv = 1:nvar
+            my_varlist = varlist(jv);
+            indv = strcmp(my_varlist,{q2avec.qname});
+            options_.plot_shock_decomp.q2a =  q2avec(indv);
+            plot_shock_decomposition(M_,oo_,options_,my_varlist);
+        end
+        return
+    else
+        indv = strcmp(varlist,{q2avec.qname});
+        options_.plot_shock_decomp.q2a =  q2avec(indv);
+    end
+end
 
 % number of variables
 endo_nbr = M_.endo_nbr;
@@ -76,10 +141,14 @@ if ~isfield(options_.plot_shock_decomp,'init_cond_decomp')
     options_.plot_shock_decomp.init_cond_decomp=0;
 end
 
+options_.plot_shock_decomp.initval=0;
 if ~isempty(options_.plot_shock_decomp.fig_name)
     fig_name=[' ' options_.plot_shock_decomp.fig_name];
+    if length(fig_name)>=8 && strcmp(fig_name(end-6:end),'initval')
+        options_.plot_shock_decomp.initval=1;
+    end
 end
-type=options_.plot_shock_decomp.type;
+
 detail_plot=options_.plot_shock_decomp.detail_plot;
 realtime_= options_.plot_shock_decomp.realtime;
 vintage_ = options_.plot_shock_decomp.vintage;
@@ -200,8 +269,8 @@ if isequal(type,'aoa') && isstruct(q2a)
         if isempty(t0)
             error('the realtime decompositions are not stored in Q4! Please check your dates and settings.')
         end
-        if ~isfield(q2a,'var_type') % private trap for aoa calls
-            q2a.var_type=1;
+        if ~isfield(q2a,'type') % private trap for aoa calls
+            q2a.type=1;
         end
         if ~isfield(q2a,'islog') % private trap for aoa calls
             q2a.islog=0;
@@ -251,6 +320,15 @@ if options_.plot_shock_decomp.use_shock_groups
             [z, shock_names, M_] = make_the_groups(z,gend,endo_nbr,nshocks,M_,options_);
             M_.endo_names = endo_names;
             M_.endo_names_tex = endo_names_tex;
+        else
+            % here we know we only have one variable to handle
+            [~, yssa, ~, gyssa] = ...
+                quarterly2annual(repmat(steady_state,16,1),steady_state,q2a.GYTREND0,q2a.type,q2a.islog,q2a.aux);
+            if q2a.plot==1
+                steady_state = gyssa;
+            else
+                steady_state = yssa;
+            end
         end
     else
         gend = size(z,3);
@@ -333,8 +411,8 @@ switch type
     end
     if isstruct(q2a)
         if realtime_ == 0
-            if ~isfield(q2a,'var_type') % private trap for aoa calls
-                q2a.var_type=1;
+            if ~isfield(q2a,'type') % private trap for aoa calls
+                q2a.type=1;
             end
             if ~isfield(q2a,'islog') % private trap for aoa calls
                 q2a.islog=0;
@@ -360,13 +438,14 @@ switch type
                 q2a.aux.y=y_aux;
                 q2a.aux.yss=steady_state_aux;
             end
+            i_var0 = i_var;
             [za, endo_names, endo_names_tex, steady_state, i_var, oo_] = ...
                 annualized_shock_decomposition(z,M_, options_, i_var, t0, options_.nobs, realtime_, vintage_, steady_state,q2a);
                 if options_.plot_shock_decomp.interactive && ~isempty(options_.plot_shock_decomp.use_shock_groups)
                     mygroup = options_.plot_shock_decomp.use_shock_groups;
                     options_.plot_shock_decomp.use_shock_groups='';
                     zafull = ...
-                        annualized_shock_decomposition(z,M_, options_, i_var, t0, options_.nobs, realtime_, vintage_, steady_state,q2a);
+                        annualized_shock_decomposition(zfull(i_var0,:,:),M_, options_, i_var, t0, options_.nobs, realtime_, vintage_, steady_state,q2a);
                     options_.plot_shock_decomp.use_shock_groups = mygroup;
                 end
             end
@@ -378,7 +457,7 @@ switch type
         M_.endo_names = endo_names;
         M_.endo_names_tex = endo_names_tex;
         %     endo_nbr = size(z,1);
-        if realtime_<2
+        if realtime_<2 || vintage_ == 0
             initial_date = initial_date1;
         else
             initial_date = initial_date0;
