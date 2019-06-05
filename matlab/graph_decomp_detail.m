@@ -36,6 +36,7 @@ fig_mode='';
 fig_mode1='';
 % fig_name='';
 % screen_shocks=0;
+initval = DynareOptions.plot_shock_decomp.initval;
 use_shock_groups = DynareOptions.plot_shock_decomp.use_shock_groups;
 if use_shock_groups
     shock_groups = DynareModel.shock_groups.(use_shock_groups);
@@ -58,6 +59,11 @@ if isfield(opts_decomp,'init_cond_decomp')
     init_cond_decomp = opts_decomp.init_cond_decomp ;
 else
     init_cond_decomp = 0;
+end
+if isfield(opts_decomp,'min_nrows')
+    min_nrows = opts_decomp.min_nrows ;
+else
+    min_nrows = 6;
 end
 screen_shocks = opts_decomp.screen_shocks;
 if ~isempty(DynareOptions.plot_shock_decomp.use_shock_groups) || comp_nbr<=18
@@ -138,9 +144,13 @@ end
 ncol=3;
 nrow=ceil(comp_nbr/ncol);
 ntotrow = nrow;
-nrow = min(ntotrow, 6);
+nrow = min(ntotrow, min_nrows);
 nfigs = ceil(ntotrow/nrow);
-labels = char(char(shock_names),'Initial values');
+if initval
+    labels = char(char(shock_names),'All shocks');
+else
+    labels = char(char(shock_names),'Initial values');
+end
 if ~(screen_shocks && comp_nbr>18)
     screen_shocks=0;
 end
@@ -150,7 +160,11 @@ for j=1:nvar
     z1 = squeeze(z(i_var(j),:,:));
     if screen_shocks,
         [~, isort] = sort(mean(abs(z1(1:end-2,:)')), 'descend');
-        labels = char(char(shock_names(isort(1:16))),'Others', 'Initial values');
+        if initval
+            labels = char(char(shock_names(isort(1:16))),'Others', 'All shocks');
+        else
+            labels = char(char(shock_names(isort(1:16))),'Others', 'Initial values');
+        end
         zres = sum(z1(isort(17:end),:),1);
         z1 = [z1(isort(1:16),:); zres; z1(comp_nbr0:end,:)];
         comp_nbr=18;
@@ -221,7 +235,7 @@ for j=1:nvar
                     c = uicontextmenu;
                     hax.UIContextMenu=c;
                     browse_menu = uimenu(c,'Label','Browse group');
-                    expand_menu = uimenu(c,'Label','Expand group','Callback',['expand_group(''' mydata.plot_shock_decomp.use_shock_groups ''',''' deblank(mydata.plot_shock_decomp.orig_varlist{j}) ''',' int2str(ic) ')']);
+                    expand_menu = uimenu(c,'Label','Expand group','Callback',['expand_group(''' mydata.plot_shock_decomp.use_shock_groups ''',''' mydata.plot_shock_decomp.orig_varlist{j} ''',' int2str(ic) ')']);
                     set(expand_menu,'UserData',mydata,'Tag',['group' int2str(ic)]);
                     for jmember = mydata.shock_group.shocks
                         uimenu('parent',browse_menu,'Label',char(jmember))

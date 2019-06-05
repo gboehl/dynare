@@ -67,4 +67,4 @@ options.plot_shock_decomp.colormap = MAP;
 options.plot_shock_decomp.endo_names = mydata.endo_names;
 options.plot_shock_decomp.endo_names_tex = mydata.endo_names_tex;
 
-plot_shock_decomposition(M,oo,options,var_list_);
+plot_shock_decomposition(M,oo,options,{var_list_});
