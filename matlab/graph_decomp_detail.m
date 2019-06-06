@@ -24,7 +24,7 @@ function []=graph_decomp_detail(z,shock_names,endo_names,i_var,initial_date,Dyna
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU General Public License for more details.
-%
+%xf
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -63,7 +63,7 @@ end
 if isfield(opts_decomp,'min_nrows')
     min_nrows = opts_decomp.min_nrows ;
 else
-    min_nrows = 6;
+    max_nrows = 6;
 end
 screen_shocks = opts_decomp.screen_shocks;
 if ~isempty(DynareOptions.plot_shock_decomp.use_shock_groups) || comp_nbr<=18
@@ -144,7 +144,7 @@ end
 ncol=3;
 nrow=ceil(comp_nbr/ncol);
 ntotrow = nrow;
-nrow = min(ntotrow, min_nrows);
+nrow = min(ntotrow, max_nrows);
 nfigs = ceil(ntotrow/nrow);
 if initval
     labels = char(char(shock_names),'All shocks');
