@@ -8286,7 +8286,7 @@ Note that the use of this block requires the use of a constrained optimizer, @i{
 
 @example
 
-osr_param_bounds;
+osr_params_bounds;
 gamma_inf_, 0, 2.5;
 end;
 
