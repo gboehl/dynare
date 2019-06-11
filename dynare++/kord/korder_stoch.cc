@@ -2,8 +2,8 @@
 
 #include "korder_stoch.hh"
 
-/* Same as |@<|MatrixA| constructor code@>|, but the submatrix |gss_ys| is
-   passed directly. */
+/* Same as MatrixA constructor, but the submatrix ‘gss_ys’ is passed
+   directly. */
 
 MatrixAA::MatrixAA(const FSSparseTensor &f, const IntSequence &ss,
                    const TwoDMatrix &gss_ys, const PartitionY &ypart)
@@ -23,7 +23,7 @@ MatrixAA::MatrixAA(const FSSparseTensor &f, const IntSequence &ss,
   calcPLU();
 }
 
-// |KOrderStoch| folded constructor code
+// KOrderStoch folded constructor code
 KOrderStoch::KOrderStoch(const PartitionY &yp, int nu,
                          const TensorContainer<FSSparseTensor> &fcont,
                          const FGSContainer &hh, Journal &jr)
@@ -40,7 +40,7 @@ KOrderStoch::KOrderStoch(const PartitionY &yp, int nu,
 {
 }
 
-// |KOrderStoch| unfolded constructor code
+// KOrderStoch unfolded constructor code
 KOrderStoch::KOrderStoch(const PartitionY &yp, int nu,
                          const TensorContainer<FSSparseTensor> &fcont,
                          const UGSContainer &hh, Journal &jr)
@@ -57,7 +57,7 @@ KOrderStoch::KOrderStoch(const PartitionY &yp, int nu,
 {
 }
 
-// |KOrderStoch| convenience method specializations
+// KOrderStoch convenience method specializations
 template<>
 ctraits<Storage::unfold>::Tg &KOrderStoch::g<Storage::unfold>()
 {

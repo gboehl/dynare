@@ -3,9 +3,9 @@
 #include "kord_exception.hh"
 #include "korder.hh"
 
-/* Here we set |ipiv| and |inv| members of the |PLUMatrix| depending on
-   its content. It is assumed that subclasses will call this method at
-   the end of their constructors. */
+/* Here we set ‘ipiv’ and ‘inv’ members of the PLUMatrix depending on its
+   content. It is assumed that subclasses will call this method at the end of
+   their constructors. */
 
 void
 PLUMatrix::calcPLU()
@@ -34,11 +34,12 @@ PLUMatrix::multInv(TwoDMatrix &m) const
                 "Info!=0 in PLUMatrix::multInv");
 }
 
-/* Here we construct the matrix $A$. Its dimension is |ny|, and it is
-   $$A=\left[f_{y}\right]+
-   \left[0 \left[f_{y^{**}_+}\right]\cdot\left[g^{**}_{y^*}\right] 0\right]$$,
-   where the first zero spans |nstat| columns, and last zero spans
-   |nforw| columns. */
+/* Here we construct the matrix A. Its dimension is ‘ny’, and it is
+
+    A=[f_y] + [0 [f_y**₊]·[g**_y*] 0],
+
+   where the first zero spans ‘nstat’ columns, and last zero spans ‘nforw’
+   columns. */
 
 MatrixA::MatrixA(const FSSparseTensor &f, const IntSequence &ss,
                  const TwoDMatrix &gy, const PartitionY &ypart)
@@ -59,13 +60,12 @@ MatrixA::MatrixA(const FSSparseTensor &f, const IntSequence &ss,
   calcPLU();
 }
 
-/* Here we construct the matrix $S$. Its dimension is |ny|, and it is
-   $$S=\left[f_{y}\right]+
-   \left[0\quad\left[f_{y^{**}_+}\right]\cdot\left[g^{**}_{y^*}\right]\quad
-   0\right]+ \left[0\quad 0\quad\left[f_{y^{**}_+}\right]\right]$$
-   It is, in fact, the matrix $A$ plus the third summand. The first zero
-   in the summand spans |nstat| columns, the second zero spans |npred|
-   columns. */
+/* Here we construct the matrix S. Its dimension is ‘ny’, and it is
+
+    S = [f_y] + [0 [f_y**₊]·[g**_y*] 0] + [0 0 [f_y**₊]]
+
+   It is, in fact, the matrix A plus the third summand. The first zero in the
+   summand spans ‘nstat’ columns, the second zero spans ‘npred’ columns. */
 
 MatrixS::MatrixS(const FSSparseTensor &f, const IntSequence &ss,
                  const TwoDMatrix &gy, const PartitionY &ypart)
@@ -89,7 +89,7 @@ MatrixS::MatrixS(const FSSparseTensor &f, const IntSequence &ss,
   calcPLU();
 }
 
-// |KOrder| member access method specializations
+// KOrder member access method specializations
 /* These are the specializations of container access methods. Nothing
    interesting here. */
 
@@ -206,17 +206,17 @@ template<>
 const ctraits<Storage::fold>::Tm& KOrder::m<Storage::fold>() const
 { return _fm;}
 
-/* Here is the constructor of the |KOrder| class. We pass what we have
-   to. The partitioning of the $y$ vector, a sparse container with model
-   derivatives, then the first order approximation, these are $g_y$ and
-   $g_u$ matrices, and covariance matrix of exogenous shocks |v|.
+/* Here is the constructor of the KOrder class. We pass what we have to. The
+   partitioning of the y vector, a sparse container with model derivatives,
+   then the first order approximation, these are g_y and gᵤ matrices, and
+   covariance matrix of exogenous shocks ‘v’.
 
-   We build the members, it is nothing difficult. Note that we do not make
-   a physical copy of sparse tensors, so during running the class, the
-   outer world must not change them.
+   We build the members, it is nothing difficult. Note that we do not make a
+   physical copy of sparse tensors, so during running the class, the outer
+   world must not change them.
 
-   In the body, we have to set |nvs| array, and initialize $g$ and $G$
-   containers to comply to preconditions of |performStep|. */
+   In the body, we have to set ‘nvs’ array, and initialize g and G containers
+   to comply to preconditions of performStep(). */
 
 KOrder::KOrder(int num_stat, int num_pred, int num_both, int num_forw,
                const TensorContainer<FSSparseTensor> &fcont,
@@ -252,9 +252,9 @@ KOrder::KOrder(int num_stat, int num_pred, int num_both, int num_forw,
   KORD_RAISE_IF(gu.ncols() != nu,
                 "Wrong number of columns in gu in KOrder constructor");
 
-  // put $g_y$ and $g_u$ to the container
-  /* Note that $g_\sigma$ is zero by the nature and we do not insert it to
-     the container. We insert a new physical copies. */
+  // Put g_y and gᵤ in the container
+  /* Note that g_σ is zero by construction and we do not insert it to the
+     container. We insert a new physical copies. */
   auto tgy = std::make_unique<UGSTensor>(ny, TensorDimens(Symmetry{1, 0, 0, 0}, nvs));
   tgy->getData() = gy.getData();
   insertDerivative<Storage::unfold>(std::move(tgy));
@@ -262,8 +262,8 @@ KOrder::KOrder(int num_stat, int num_pred, int num_both, int num_forw,
   tgu->getData() = gu.getData();
   insertDerivative<Storage::unfold>(std::move(tgu));
 
-  // put $G_y$, $G_u$ and $G_{u'}$ to the container
-  /* Also note that since $g_\sigma$ is zero, so $G_\sigma$. */
+  // Put G_y, G_u and G_u′ in the container
+  /* Also note that since g_σ is zero, so is G_σ. */
   auto tGy = faaDiBrunoG<Storage::unfold>(Symmetry{1, 0, 0, 0});
   G<Storage::unfold>().insert(std::move(tGy));
   auto tGu = faaDiBrunoG<Storage::unfold>(Symmetry{0, 1, 0, 0});
@@ -272,19 +272,18 @@ KOrder::KOrder(int num_stat, int num_pred, int num_both, int num_forw,
   G<Storage::unfold>().insert(std::move(tGup));
 }
 
-// |KOrder::sylvesterSolve| unfolded specialization
-/* Here we have an unfolded specialization of |sylvesterSolve|. We
-   simply create the sylvester object and solve it. Note that the $g^*_y$
-   is not continuous in memory as assumed by the sylvester code, so we
-   make a temporary copy and pass it as matrix $C$.
+// KOrder::sylvesterSolve() unfolded specialization
+/* Here we have an unfolded specialization of sylvesterSolve(). We simply
+   create the sylvester object and solve it. Note that the g*_y is not
+   continuous in memory as assumed by the sylvester code, so we make a
+   temporary copy and pass it as matrix C.
 
-   If the $B$ matrix is empty, in other words there are now forward
-   looking variables, then the system becomes $AX=D$ which is solved by
-   simple |matA.multInv()|.
+   If the B matrix is empty, in other words there are now forward looking
+   variables, then the system becomes AX=D which is solved by simple
+   matA.multInv().
 
-   If one wants to display the diagnostic messages from the Sylvester
-   module, then after the |sylv.solve()| one needs to call
-   |sylv.getParams().print("")|. */
+   If one wants to display the diagnostic messages from the Sylvester module,
+   then after the sylv.solve() one needs to call sylv.getParams().print(""). */
 
 template<>
 void
@@ -304,15 +303,13 @@ KOrder::sylvesterSolve<Storage::unfold>(ctraits<Storage::unfold>::Ttensor &der) 
       sylv.solve();
     }
   else if (ypart.nys() > 0 && ypart.nyss() == 0)
-    {
-      matA.multInv(der);
-    }
+    matA.multInv(der);
 }
 
-// |KOrder::sylvesterSolve| folded specialization
-/* Here is the folded specialization of sylvester. We unfold the right
-   hand side. Then we solve it by the unfolded version of
-   |sylvesterSolve|, and fold it back and copy to output vector. */
+// KOrder::sylvesterSolve() folded specialization
+/* Here is the folded specialization of sylvester. We unfold the right hand
+   side. Then we solve it by the unfolded version of sylvesterSolve(), and fold
+   it back and copy to output vector. */
 
 template<>
 void
@@ -350,9 +347,7 @@ KOrder::switchToFolded()
             auto ft = std::make_unique<FGSTensor>(G<Storage::unfold>().get(si));
             G<Storage::fold>().insert(std::move(ft));
             if (dim > 1)
-              {
-                G<Storage::fold>().remove(si);
-              }
+              G<Storage::fold>().remove(si);
           }
       }
 }

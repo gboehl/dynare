@@ -2,24 +2,22 @@
 
 // Higher order at deterministic steady
 
-/*
-  The main purpose of this file is to implement a perturbation method
-  algorithm for an DSGE model for higher order approximations. The input
-  of the algorithm are sparse tensors as derivatives of the dynamic
-  system, then dimensions of vector variables, then the first order
-  approximation to the decision rule and finally a covariance matrix of
-  exogenous shocks. The output are higher order derivatives of decision
-  rule $y_t=g(y^*_{t-1},u_t,\sigma)$. The class provides also a method
-  for checking a size of residuals of the solved equations.
+/* The main purpose of this file is to implement a perturbation method
+   algorithm for an DSGE model for higher order approximations. The input of
+   the algorithm are sparse tensors as derivatives of the dynamic system, then
+   dimensions of vector variables, then the first order approximation to the
+   decision rule and finally a covariance matrix of exogenous shocks. The
+   output are higher order derivatives of decision rule yₜ=g(y*ₜ₋₁,uₜ,σ). The
+   class provides also a method for checking a size of residuals of the solved
+   equations.
 
-  The algorithm is implemented in |KOrder| class. The class contains
-  both unfolded and folded containers to allow for switching (usually
-  from unfold to fold) during the calculations. The algorithm is
-  implemented in a few templated methods. To do this, we need some
-  container type traits, which are in |ctraits| struct. Also, the
-  |KOrder| class contains some information encapsulated in other
-  classes, which are defined here. These include: |PartitionY|,
-  |MatrixA|, |MatrixS| and |MatrixB|.
+   The algorithm is implemented in KOrder class. The class contains both
+   unfolded and folded containers to allow for switching (usually from unfold
+   to fold) during the calculations. The algorithm is implemented in a few
+   templated methods. To do this, we need some container type traits, which are
+   in ‘ctraits’ struct. Also, the KOrder class contains some information
+   encapsulated in other classes, which are defined here. These include:
+   PartitionY, MatrixA, MatrixS and MatrixB.
 */
 
 #ifndef KORDER_H
@@ -47,9 +45,9 @@
 // The enum class passed as template parameter for many data structures
 enum class Storage { fold, unfold };
 
-/* In |ctraits| we define a number of types. We have a type for tensor
-   |Ttensor|, and types for each pair of folded/unfolded containers used as a
-   member in |KOrder|. */
+/* In ‘ctraits’ we define a number of types. We have a type for tensor Ttensor,
+   and types for each pair of folded/unfolded containers used as a member in
+   KOrder. */
 
 class FoldedZXContainer;
 class UnfoldedZXContainer;
@@ -74,22 +72,21 @@ public:
   using TGXstack = std::conditional_t<type == Storage::fold, FoldedGXContainer, UnfoldedGXContainer>;
 };
 
-/* The |PartitionY| class defines the partitioning of state variables
-   $y$. The vector $y$, and subvector $y^*$, and $y^{**}$ are defined.
+/* The PartitionY class defines the partitioning of state variables y. The
+   vector y, and subvectors y* and y** are defined as:
 
-   $$y=\left[\matrix{\hbox{static}\cr\hbox{predeter}\cr\hbox{both}\cr
-   \hbox{forward}}\right],\quad
-   y^*=\left[\matrix{\hbox{predeter}\cr\hbox{both}}\right],\quad
-   y^{**}=\left[\matrix{\hbox{both}\cr\hbox{forward}}\right],$$
+        ⎡ static⎤
+        ⎢  pred ⎥
+    y = ⎢  both ⎥        ⎡pred⎤         ⎡  both ⎤
+        ⎣forward⎦   y* = ⎣both⎦   y** = ⎣forward⎦
 
-   where ``static'' means variables appearing only at time $t$,
-   ``predeter'' means variables appearing at time $t-1$, but not at
-   $t+1$, ``both'' means variables appearing both at $t-1$ and $t+1$
-   (regardless appearance at $t$), and ``forward'' means variables
-   appearing at $t+1$, but not at $t-1$.
+   where ‘static’ means variables appearing only at time t, ‘pred’ means
+   variables appearing at time t−1, but not at t+1, ‘both’ means variables
+   appearing both at t−1 and t+1 (regardless of appearance at t), and ‘forward’
+   means variables appearing at t+1 but not at t−1.
 
-   The class maintains the four lengths, and returns the whole length,
-   length of $y^s$, and length of $y^{**}$.
+   The class maintains the four lengths, and returns the whole length, length
+   of y*, and length of y**$.
 */
 
 struct PartitionY
@@ -121,12 +118,12 @@ struct PartitionY
   }
 };
 
-/* This is an abstraction for a square matrix with attached PLU
-   factorization. It can calculate the PLU factorization and apply the
-   inverse with some given matrix.
+/* This is an abstraction for a square matrix with attached PLU factorization.
+   It can calculate the PLU factorization and apply the inverse with some given
+   matrix.
 
-   We use LAPACK $PLU$ decomposition for the inverse. We store the $L$
-   and $U$ in the |inv| array and |ipiv| is the permutation $P$. */
+   We use LAPACK PLU decomposition for the inverse. We store the L and U in the
+   ‘inv’ array and ‘ipiv’ is the permutation P. */
 
 class PLUMatrix : public TwoDMatrix
 {
@@ -145,8 +142,7 @@ protected:
   void calcPLU();
 };
 
-/* The class |MatrixA| is used for matrix $\left[f_{y}\right]+ \left[0
-   \left[f_{y^{**}_+}\right]\cdot\left[g^{**}_{y^*}\right] 0\right]$,
+/* The class MatrixA is used for matrix [f_y] + [0 [f_y**₊]·[g**_y*] 0]
    which is central for the perturbation method step. */
 
 class MatrixA : public PLUMatrix
@@ -156,11 +152,9 @@ public:
           const TwoDMatrix &gy, const PartitionY &ypart);
 };
 
-/* The class |MatrixS| slightly differs from |MatrixA|. It is used for
-   matrix $$\left[f_{y}\right]+ \left[0
-   \quad\left[f_{y^{**}_+}\right]\cdot\left[g^{**}_{y^*}\right]\quad
-   0\right]+\left[0\quad 0\quad\left[f_{y^{**}_+}\right]\right]$$, which is
-   needed when recovering $g_{\sigma^k}$. */
+/* The class MatrixS slightly differs from MatrixA. It is used for
+   [f_y] + [0 [f_y**₊]·[g**_y*] 0] + [0 0 [f_y**₊]]
+   which is needed when recovering g_σᵏ. */
 
 class MatrixS : public PLUMatrix
 {
@@ -169,8 +163,7 @@ public:
           const TwoDMatrix &gy, const PartitionY &ypart);
 };
 
-/* The $B$ matrix is equal to $\left[f_{y^{**}_+}\right]$. We have just
-   a constructor. */
+/* The B matrix is equal to [f_y**₊]. We have just a constructor. */
 
 class MatrixB : public TwoDMatrix
 {
@@ -182,68 +175,34 @@ public:
   }
 };
 
-/* Here we have the class for the higher order approximations.
-
-   It contains the following data:
-
-   - variable sizes ypart: |PartitionY| struct maintaining partitions of
-     $y$, see |@<|PartitionY| struct declaration@>|
-   - tensor variable dimension |nvs| : variable sizes of all tensors in
-     containers, sizes of $y^*$, $u$, $u'$ and $\sigma$
-   - tensor containers: folded and unfolded containers for $g$, $g_{y^*}$,
-     $g_{y^**}$ (the latter two collect appropriate subtensors of $g$, they
-     do not allocate any new space), $G$, $G$ stack, $Z$ stack
-   - dynamic model derivatives: just a reference to the container of
-     sparse tensors of the system derivatives, lives outside the class
-   - moments: both folded and unfolded normal moment containers, both are
-     calculated at initialization
-   - matrices: matrix $A$, matrix $S$, and matrix $B$, see |@<|MatrixA| class
-     declaration@>| and |@<|MatrixB| class declaration@>
-
-   The methods are the following:
-   - member access: we declare template methods for accessing containers
-     depending on |fold| and |unfold| flag, we implement their
-     specializations
-   - |performStep|: this performs $k$-order step provided that $k=2$ or
-     the $k-1$-th step has been run, this is the core method
-   - |check|: this calculates residuals of all solved equations for
-     $k$-order and reports their sizes, it is runnable after $k$-order
-     |performStep| has been run
-   - |insertDerivative|: inserts a $g$ derivative to the $g$ container and
-     also creates subtensors and insert them to $g_{y^*}$ and $g_{y^{**}}$
-     containers
-   - |sylvesterSolve|: solve the sylvester equation (templated fold, and
-     unfold)
-   - |faaDiBrunoZ|: calculates derivatives of $F$ by Faà Di Bruno for the
-     sparse container of system derivatives and $Z$ stack container
-   - |faaDiBrunoG|: calculates derivatives of $G$ by Faà Di Bruno for the
-     dense container $g^{**}$ and $G$ stack
-   - |recover_y|: recovers $g_{y^{*i}}$
-   - |recover_yu|: recovers $g_{y^{*i}u^j}$
-   - |recover_ys|: recovers $g_{y^{*i}\sigma^j}$
-   - |recover_yus|: recovers $g_{y^{*i}u^j\sigma^k}$
-   - |recover_s|: recovers $g_{\sigma^i}$
-   - |fillG|: calculates specified derivatives of $G$ and inserts them to
-     the container
-   - |calcE_ijk|: calculates $E_{ijk}$
-   - |calcD_ijk|: calculates $D_{ijk}$
+/* Class for the higher order approximations.
 
    Most of the code is templated, and template types are calculated in
-   |ctraits|. So all templated methods get a template argument |T|, which
-   can be either |Storage::fold|, or |Storage::unfold|.
+   ‘ctraits’. So all templated methods get a template argument ‘T’, which
+   can be either ‘Storage::fold’, or ‘Storage::unfold’.
 */
 
 class KOrder
 {
 protected:
+  /* Variable sizes: PartitionY struct maintaining partitions of y, see
+     PartitionY struct declaration */
   const PartitionY ypart;
+
   const int ny;
   const int nu;
   const int maxk;
+
+  /* Tensor variable dimension: variable sizes of all tensors in
+     containers, sizes of y*, u, u′ and σ */
   IntSequence nvs;
 
-  /* These are containers. The names are not important because they do
-     not appear anywhere else since we access them by template functions. */
+  /* Tensor containers: folded and unfolded containers for g, g_y*, g_y** (the
+     latter two collect appropriate subtensors of g, they do not allocate any
+     new space), G, G stack, Z stack
+
+     The names are not important because they do not appear anywhere else since
+     we access them by template functions. */
   UGSContainer _ug;
   FGSContainer _fg;
   UGSContainer _ugs;
@@ -256,16 +215,25 @@ protected:
   FoldedZContainer _fZstack;
   UnfoldedGContainer _uGstack;
   FoldedGContainer _fGstack;
+
+  /* Moments: both folded and unfolded normal moment containers, both are
+     calculated at initialization */
   UNormalMoments _um;
   FNormalMoments _fm;
+
+  /* Dynamic model derivatives: just a reference to the container of sparse
+     tensors of the system derivatives, lives outside the class */
   const TensorContainer<FSSparseTensor> &f;
 
+  /* Matrices: matrix A, matrix S, and matrix B, see MatrixA and MatrixB class
+     declarations */
   const MatrixA matA;
   const MatrixS matS;
   const MatrixB matB;
 
   /* These are the declarations of the template functions accessing the
-     containers. */
+     containers. We declare template methods for accessing containers depending
+     on ‘fold’ and ‘unfold’ flag, we implement their specializations*/
   template<Storage t>
   typename ctraits<t>::Tg &g();
   template<Storage t>
@@ -307,10 +275,17 @@ public:
          const TensorContainer<FSSparseTensor> &fcont,
          const TwoDMatrix &gy, const TwoDMatrix &gu, const TwoDMatrix &v,
          Journal &jr);
+
+  /* Performs k-order step provided that k=2 or the k−1-th step has been
+     run, this is the core method */
   template <Storage t>
   void performStep(int order);
+
+  /* Calculates residuals of all solved equations for k-order and reports their
+     sizes, it is runnable after k-order performStep() has been run */
   template <Storage t>
   double check(int dim) const;
+
   template <Storage t>
   Vector calcStochShift(int order, double sigma) const;
   void switchToFolded();
@@ -335,29 +310,45 @@ public:
     return i % 2 == 0;
   }
 protected:
+  /* Inserts a g derivative to the g container and also creates subtensors and
+     insert them to g_y* and g_y** containers */
   template <Storage t>
   void insertDerivative(std::unique_ptr<typename ctraits<t>::Ttensor> der);
+
+  /* Solves the sylvester equation (templated fold, and unfold) */
   template<Storage t>
   void sylvesterSolve(typename ctraits<t>::Ttensor &der) const;
 
+  /* Calculates derivatives of F by Faà Di Bruno for the sparse container of
+     system derivatives and Z stack container */
   template <Storage t>
   std::unique_ptr<typename ctraits<t>::Ttensor> faaDiBrunoZ(const Symmetry &sym) const;
+
+  /* Calculates derivatives of G by Faà Di Bruno for the dense container g**
+     and G stack */
   template <Storage t>
   std::unique_ptr<typename ctraits<t>::Ttensor> faaDiBrunoG(const Symmetry &sym) const;
 
+  // Recovers g_y*ⁱ
   template<Storage t>
   void recover_y(int i);
+  // Recovers g_y*ⁱuʲ
   template <Storage t>
   void recover_yu(int i, int j);
+  // Recovers g_y*ⁱσʲ
   template <Storage t>
   void recover_ys(int i, int j);
+  // Recovers g_y*ⁱuʲσᵏ
   template <Storage t>
   void recover_yus(int i, int j, int k);
   template <Storage t>
+  // Recovers g_σⁱ
   void recover_s(int i);
+  // Calculates specified derivatives of G and inserts them to the container
   template<Storage t>
   void fillG(int i, int j, int k);
 
+  // Calculates Dᵢⱼₖ
   template <Storage t>
   typename ctraits<t>::Ttensor calcD_ijk(int i, int j, int k) const;
   template <Storage t>
@@ -365,6 +356,7 @@ protected:
   template <Storage t>
   typename ctraits<t>::Ttensor calcD_k(int k) const;
 
+  // Calculates Eᵢⱼₖ
   template <Storage t>
   typename ctraits<t>::Ttensor calcE_ijk(int i, int j, int k) const;
   template <Storage t>
@@ -388,11 +380,12 @@ KOrder::insertDerivative(std::unique_ptr<typename ctraits<t>::Ttensor> der)
 }
 
 /* Here we implement Faà Di Bruno formula
-   $$\sum_{l=1}^k\left[f_{z^l}\right]_{\gamma_1\ldots\gamma_l}
-   \sum_{c\in M_{l,k}}\prod_{m=1}^l\left[z_{s(c_m)}\right]^{\gamma_m},
-   $$
-   where $s$ is a given outer symmetry and $k$ is the dimension of the
-   symmetry. */
+
+    ₖ                        ₗ
+    ∑  [f_zˡ]_γ₁…γₗ    ∑     ∏  [z_{s^|cₘ|}]^γₘ
+   ˡ⁼¹              c∈ℳₗ,ₖ ᵐ⁼¹
+
+   where s is a given outer symmetry and k is the dimension of the symmetry. */
 
 template <Storage t>
 std::unique_ptr<typename ctraits<t>::Ttensor>
@@ -406,8 +399,7 @@ KOrder::faaDiBrunoZ(const Symmetry &sym) const
   return res;
 }
 
-/* The same as |@<|KOrder::faaDiBrunoZ| templated code@>|, but for
-   $g^{**}$ and $G$ stack. */
+/* The same as KOrder::faaDiBrunoZ(), but for g** and G stack. */
 
 template <Storage t>
 std::unique_ptr<typename ctraits<t>::Ttensor>
@@ -422,18 +414,16 @@ KOrder::faaDiBrunoG(const Symmetry &sym) const
   return res;
 }
 
-/* Here we solve $\left[F_{y^i}\right]=0$. First we calculate
-   conditional $G_{y^i}$ (it misses $l=1$ and $l=i$ since $g_{y^i}$ does
-   not exist yet). Then calculate conditional $F_{y^i}$ and we have the
-   right hand side of equation. Since we miss two orders, we solve by
-   Sylvester, and insert the solution as the derivative $g_{y^i}$. Then
-   we need to update $G_{y^i}$ running |multAndAdd| for both dimensions
-   $1$ and $i$.
+/* Here we solve [F_yⁱ]=0. First we calculate conditional G_yⁱ (it misses l=1
+   and l=i since g_yⁱ does not exist yet). Then calculate conditional F_yⁱ and
+   we have the right hand side of equation. Since we miss two orders, we solve
+   by Sylvester, and insert the solution as the derivative g_yⁱ. Then we need
+   to update G_yⁱ running multAndAdd() for both dimensions 1 and i.
 
-   {\bf Requires:} everything at order $\leq i-1$
+   Requires: everything at order ≤ i−1
 
-   {\bf Provides:} $g_{y^i}$, and $G_{y^i}$ */
-
+   Provides: g_yⁱ and G_yⁱ
+ */
 template<Storage t>
 void
 KOrder::recover_y(int i)
@@ -459,17 +449,15 @@ KOrder::recover_y(int i)
   gs<t>().multAndAdd(gss_yi, *G_yi_ptr);
 }
 
-/* Here we solve $\left[F_{y^iu^j}\right]=0$ to obtain $g_{y^iu^j}$ for
-   $j>0$. We calculate conditional $G_{y^iu^j}$ (this misses only $l=1$)
-   and calculate conditional $F_{y^iu^j}$ and we have the right hand
-   side. It is solved by multiplication of inversion of $A$. Then we insert
-   the result, and update $G_{y^iu^j}$ by |multAndAdd| for $l=1$.
+/* Here we solve [F_yⁱuʲ]=0 to obtain g_yⁱuʲ for j>0. We calculate conditional
+   G_yⁱuʲ (this misses only l=1) and calculate conditional F_yⁱuʲ and we have
+   the right hand side. It is solved by multiplication of inversion of A. Then
+   we insert the result, and update G_yⁱuʲ by multAndAdd() for l=1.
 
-   {\bf Requires:} everything at order $\leq i+j-1$, $G_{y^{i+j}}$, and
-   $g_{y^{i+j}}$.
+   Requires: everything at order ≤ i+j−1, G_yⁱ⁺ʲ and g_yⁱ⁺ʲ.
 
-   {\bf Provides:} $g_{y^iu^j}$, and $G_{y^iu^j}$ */
-
+   Provides: g_yⁱuʲ and G_yⁱuʲ
+ */
 template <Storage t>
 void
 KOrder::recover_yu(int i, int j)
@@ -490,26 +478,19 @@ KOrder::recover_yu(int i, int j)
   gs<t>().multAndAdd(gss<t>().get(Symmetry{1, 0, 0, 0}), *G_yiuj_ptr);
 }
 
-/* Here we solve
-   $\left[F_{y^i\sigma^j}\right]+\left[D_{ij}\right]+\left[E_{ij}\right]=0$
-   to obtain $g_{y^i\sigma^j}$. We calculate conditional
-   $G_{y^i\sigma^j}$ (missing dimensions $1$ and $i+j$), calculate
-   conditional $F_{y^i\sigma^j}$. Before we can calculate $D_{ij}$ and
-   $E_{ij}$, we have to calculate $G_{y^iu'^m\sigma^{j-m}}$ for
-   $m=1,\ldots,j$. Then we add the $D_{ij}$ and $E_{ij}$ to obtain the
-   right hand side. Then we solve the sylvester to obtain
-   $g_{y^i\sigma^j}$. Then we update $G_{y^i\sigma^j}$ for $l=1$ and
-   $l=i+j$.
+/* Here we solve [F_yⁱσʲ]+[Dᵢⱼ]+[Eᵢⱼ]=0 to obtain g_yⁱσʲ. We calculate
+   conditional G_yⁱσʲ (missing dimensions 1 and i+j), calculate conditional
+   F_yⁱσʲ. Before we can calculate Dᵢⱼ and Eᵢⱼ, we have to calculate
+   G_yⁱu′ᵐσʲ⁻ᵐ for m=1,…,j. Then we add the Dᵢⱼ and Eᵢⱼ to obtain the right
+   hand side. Then we solve the sylvester to obtain g_yⁱσʲ. Then we update
+   G_yⁱσʲ for l=1 and l=i+j.
 
-   {\bf Requires:} everything at order $\leq i+j-1$, $g_{y^{i+j}}$,
-   $G_{y^iu'^j}$ and $g_{y^iu^j}$ through $D_{ij}$,
-   $g_{y^iu^m\sigma^{j-m}}$ for
-   $m=1,\ldots,j-1$ through $E_{ij}$.
+   Requires: everything at order ≤ i+j−1, g_yⁱ⁺ʲ, G_yⁱu′ʲ and g_yⁱuʲ through
+     Dᵢⱼ, g_yⁱuᵐσʲ⁻ᵐ for m=1,…,j−1 through Eᵢⱼ.
 
-   {\bf Provides:} $g_{y^i\sigma^j}$ and $G_{y^i\sigma^j}$, and finally
-   $G_{y^iu'^m\sigma^{j-m}}$ for $m=1,\ldots,j$. The latter is calculated
-   by |fillG| before the actual calculation. */
-
+   Provides: g_yⁱσʲ and G_yⁱσʲ, and finally G_yⁱu′ᵐσʲ⁻ᵐ for m=1,…,j. The latter
+     is calculated by fillG() before the actual calculation.
+ */
 template <Storage t>
 void
 KOrder::recover_ys(int i, int j)
@@ -550,25 +531,19 @@ KOrder::recover_ys(int i, int j)
     }
 }
 
-/* Here we solve
-   $\left[F_{y^iu^j\sigma^k}\right]+\left[D_{ijk}\right]+\left[E_{ijk}\right]=0$
-   to obtain $g_{y^iu^j\sigma^k}$. First we calculate conditional
-   $G_{y^iu^j\sigma^k}$ (missing only for dimension $l=1$), then we
-   evaluate conditional $F_{y^iu^j\sigma^k}$. Before we can calculate
-   $D_{ijk}$, and $E_{ijk}$, we need to insert
-   $G_{y^iu^ju'^m\sigma^{k-m}}$ for $m=1,\ldots, k$. This is done by
-   |fillG|. Then we have right hand side and we multiply by $A^{-1}$ to
-   obtain $g_{y^iu^j\sigma^k}$. Finally we have to update
-   $G_{y^iu^j\sigma^k}$ by |multAndAdd| for dimension $l=1$.
+/* Here we solve [F_yⁱuʲσᵏ]+[Dᵢⱼₖ]+[Eᵢⱼₖ]=0 to obtain g_yⁱuʲσᵏ. First we
+   calculate conditional G_yⁱuʲσᵏ (missing only for dimension l=1), then we
+   evaluate conditional F_yⁱuʲσᵏ. Before we can calculate Dᵢⱼₖ, and Eᵢⱼₖ, we
+   need to insert G_yⁱuʲu′ᵐσᵏ⁻ᵐ for m=1,…,k. This is done by fillG(). Then we
+   have right hand side and we multiply by A⁻¹ to obtain g_yⁱuʲσᵏ. Finally we
+   have to update G_yⁱuʲσᵏ by multAndAdd() for dimension l=1.
 
-   {\bf Requires:} everything at order $\leq i+j+k$, $g_{y^{i+j}\sigma^k}$
-   through $G_{y^iu^j\sigma^k}$ involved in right hand side, then
-   $g_{y^iu^{j+k}}$ through $D_{ijk}$, and $g_{y^iu^{j+m}\sigma^{k-m}}$
-   for $m=1,\ldots,k-1$ through $E_{ijk}$.
+   Requires: everything at order ≤ i+j+k, g_yⁱ⁺ʲσᵏ through G_yⁱuʲσᵏ involved in
+     right hand side, then g_yⁱuʲ⁺ᵏ through Dᵢⱼₖ, and g_yⁱuʲ⁺ᵐσᵏ⁻ᵐ for m=1,…,k−1
+     through Eᵢⱼₖ.
 
-   {\bf Provides:} $g_{y^iu^j\sigma^k}$, $G_{y^iu^j\sigma^k}$, and
-   $G_{y^iu^ju'^m\sigma^{k-m}}$ for $m=1,\ldots, k$ */
-
+   Provides: g_yⁱuʲσᵏ, G_yⁱuʲσᵏ, and G_yⁱuʲu′ᵐσᵏ⁻ᵐ for m=1,…,k
+ */
 template <Storage t>
 void
 KOrder::recover_yus(int i, int j, int k)
@@ -607,34 +582,26 @@ KOrder::recover_yus(int i, int j, int k)
     }
 }
 
-/* Here we solve
-   $\left[F_{\sigma^i}\right]+\left[D_i\right]+\left[E_i\right]=0$ to
-   recover $g_{\sigma^i}$. First we calculate conditional $G_{\sigma^i}$
-   (missing dimension $l=1$ and $l=i$), then we calculate conditional
-   $F_{\sigma^i}$. Before we can calculate $D_i$ and $E_i$, we have to
-   obtain $G_{u'm\sigma^{i-m}}$ for $m=1,\ldots,i$. Than
-   adding $D_i$ and $E_i$ we have the right hand side. We solve by
-   $S^{-1}$ multiplication and update $G_{\sigma^i}$ by calling
-   |multAndAdd| for dimension $l=1$.
+/* Here we solve [F_{σⁱ}]+[Dᵢ]+[Eᵢ]=0 to recover g_σⁱ. First we calculate
+   conditional G_σⁱ (missing dimension l=1 and l=i), then we calculate
+   conditional F_σⁱ. Before we can calculate Dᵢ and Eᵢ, we have to obtain
+   G_u′ᵐσⁱ⁻ᵐ for m=1,…,i. Then adding Dᵢ and Eᵢ we have the right hand side. We
+   solve by S⁻¹ multiplication and update G_σⁱ by calling multAndAdd() for
+   dimension l=1.
 
    Recall that the solved equation here is:
-   $$
-   \left[f_y\right]\left[g_{\sigma^k}\right]+
-   \left[f_{y^{**}_+}\right]\left[g^{**}_{y^*}\right]\left[g^*_{\sigma^k}\right]+
-   \left[f_{y^{**}_+}\right]\left[g^{**}_{\sigma^k}\right]=\hbox{RHS}
-   $$
+
+    [f_y][g_σᵏ]+[f_y**₊][g**_y*][g*_σᵏ]+[f_y**₊][g**_σᵏ] = RHS
+
    This is a sort of deficient sylvester equation (sylvester equation for
-   dimension=0), we solve it by $S^{-1}$. See |@<|MatrixS| constructor
-   code@>| to see how $S$ looks like.
+   dimension=0), we solve it by S⁻¹. See the constructor of MatrixS to see how
+   S looks like.
 
-   {\bf Requires:} everything at order $\leq i-1$, $g_{y^i}$ and
-   $g_{y^{i-j}\sigma^j}$, then $g_{u^k}$ through $F_{u'^k}$, and
-   $g_{y^mu^j\sigma^k}$ for $j=1,\ldots,i-1$ and $m+j+k=i$ through
-   $F_{u'j\sigma^{i-j}}$.
+   Requires: everything at order ≤ i−1, g_yⁱ and g_yⁱ⁻ʲσʲ, then g_uᵏ through
+     F_u′ᵏ, and g_yᵐuʲσᵏ for j=1,…,i−1 and m+j+k=i through F_u′ʲσⁱ⁻ʲ.
 
-   {\bf Provides:} $g_{\sigma^i}$, $G_{\sigma^i}$, and
-   $G_{u'^m\sigma^{i-m}}$ for $m=1,\ldots,i$ */
-
+   Provides: g_σⁱ, G_σⁱ, and G_u′ᵐσⁱ⁻ᵐ for m=1,…,i
+ */
 template <Storage t>
 void
 KOrder::recover_s(int i)
@@ -674,9 +641,8 @@ KOrder::recover_s(int i)
     }
 }
 
-/* Here we calculate and insert $G_{y^iu^ju'^m\sigma^{k-m}}$ for
-   $m=1,\ldots, k$. The derivatives are inserted only for $k-m$ being
-   even. */
+/* Here we calculate and insert G_yⁱuʲu′ᵐσᵏ⁻ᵐ for m=1,…,k. The derivatives are
+   inserted only for k−m being even. */
 
 template<Storage t>
 void
@@ -690,12 +656,11 @@ KOrder::fillG(int i, int j, int k)
       }
 }
 
-/* Here we calculate
-   $$\left[D_{ijk}\right]_{\alpha_1\ldots\alpha_i\beta_1\ldots\beta_j}=
-   \left[F_{y^iu^ju'^k}\right]
-   _{\alpha_1\ldots\alpha_i\beta_1\ldots\beta_j\gamma_1\ldots\gamma_k}
-   \left[\Sigma\right]^{\gamma_1\ldots\gamma_k}$$
-   So it is non zero only for even $k$. */
+/* Here we calculate:
+
+    [Dᵢⱼₖ]_α₁…αᵢβ₁…βⱼ = [F_yⁱuʲu′ᵏ]_α₁…αᵢβ₁…βⱼγ₁…γₖ [Σ]^γ₁…γₖ
+
+   So it is non zero only for even k. */
 
 template <Storage t>
 typename ctraits<t>::Ttensor
@@ -712,11 +677,10 @@ KOrder::calcD_ijk(int i, int j, int k) const
 }
 
 /* Here we calculate
-   $$\left[E_{ijk}\right]_{\alpha_1\ldots\alpha_i\beta_1\ldots\beta_j}=
-   \sum_{m=1}^{k-1}\left(\matrix{k\cr m}\right)\left[F_{y^iu^ju'^m\sigma^{k-m}}\right]
-   _{\alpha_1\ldots\alpha_i\beta_1\ldots\beta_j\gamma_1\ldots\gamma_m}
-   \left[\Sigma\right]^{\gamma_1\ldots\gamma_m}$$
-   The sum can sum only for even $m$. */
+                        ₖ₋₁ ⎛k⎞
+    [Eᵢⱼₖ]_α₁…αᵢβ₁…βⱼ =  ∑  ⎝m⎠ [F_yⁱuʲu′ᵐσᵏ⁻ᵐ]_α₁…αᵢβ₁…βⱼγ₁…γₘ [Σ]^γ₁…γₘ
+                        ᵐ⁼¹
+   The sum can sum only for even m. */
 
 template <Storage t>
 typename ctraits<t>::Ttensor
@@ -761,27 +725,25 @@ KOrder::calcE_k(int k) const
   return calcE_ijk<t>(0, 0, k);
 }
 
-/* Here is the core routine. It calls methods recovering derivatives in
-   the right order. Recall, that the code, namely Faà Di Bruno's formula,
-   is implemented as to be run conditionally on the current contents of
-   containers. So, if some call of Faà Di Bruno evaluates derivatives,
-   and some derivatives are not present in the container, then it is
-   considered to be zero. So, we have to be very careful to put
-   everything in the right order. The order here can be derived from
-   dependencies, or it is in the paper.
+/* Here is the core routine. It calls methods recovering derivatives in the
+   right order. Recall, that the code, namely Faà Di Bruno’s formula, is
+   implemented as to be run conditionally on the current contents of
+   containers. So, if some call of Faà Di Bruno evaluates derivatives, and some
+   derivatives are not present in the container, then it is considered to be
+   zero. So, we have to be very careful to put everything in the right order.
+   The order here can be derived from dependencies, or it is in the paper.
 
-   The method recovers all the derivatives of the given |order|.
+   The method recovers all the derivatives of the given ‘order’.
 
-   The precondition of the method is that all tensors of order |order-1|,
-   which are not zero, exist (including $G$). The postcondition of of the
-   method is derivatives of $g$ and $G$ of order |order| are calculated
-   and stored in the containers. Responsibility of precondition lays upon
-   the constructor (for |order==2|), or upon the previous call of
-   |performStep|.
+   The precondition of the method is that all tensors of order ‘order-1’, which
+   are not zero, exist (including G). The postcondition of of the method is
+   derivatives of g and G of order ‘order’ are calculated and stored in the
+   containers. Responsibility of precondition lays upon the constructor (for
+   ‘order==2’), or upon the previous call of performStep().
 
-   From the code, it is clear, that all $g$ are calculated. If one goes
-   through all the recovering methods, he should find out that also all
-   $G$ are provided. */
+   From the code, it is clear, that all g are calculated. If one goes through
+   all the recovering methods, he should find out that also all G are
+   provided. */
 
 template <Storage t>
 void
@@ -810,9 +772,9 @@ KOrder::performStep(int order)
   recover_s<t>(order);
 }
 
-/* Here we check for residuals of all the solved equations at the given
-   order. The method returns the largest residual size. Each check simply
-   evaluates the equation. */
+/* Here we check for residuals of all the solved equations at the given order.
+   The method returns the largest residual size. Each check simply evaluates
+   the equation. */
 
 template <Storage t>
 double
@@ -825,7 +787,7 @@ KOrder::check(int dim) const
 
   double maxerror = 0.0;
 
-  // check for $F_{y^iu^j}=0
+  // Check for F_yⁱuʲ=0
   for (int i = 0; i <= dim; i++)
     {
       Symmetry sym{dim-i, i, 0,  0};
@@ -835,7 +797,7 @@ KOrder::check(int dim) const
       maxerror = std::max(err, maxerror);
     }
 
-  // check for $F_{y^iu^ju'^k}+D_{ijk}+E_{ijk}=0$
+  // Check for F_yⁱuʲu′ᵏ+Dᵢⱼₖ+Eᵢⱼₖ=0
   for (auto &si : SymmetrySet(dim, 3))
     {
       int i = si[0];
@@ -855,7 +817,7 @@ KOrder::check(int dim) const
         }
     }
 
-  // check for $F_{\sigma^i}+D_i+E_i=0
+  // Check for F_σⁱ+Dᵢ+Eᵢ=0
   auto r = faaDiBrunoZ<t>(Symmetry{0, 0, 0, dim});
   auto D_k = calcD_k<t>(dim);
   r->add(1.0, D_k);

@@ -2,25 +2,23 @@
 
 // Higher order at stochastic steady
 
-/* This file defines a number of classes of which |KOrderStoch| is the
-   main purpose. Basically, |KOrderStoch| calculates first and higher
-   order Taylor expansion of a policy rule at $\sigma>0$ with explicit
-   forward $g^{**}$. More formally, we have to solve a policy rule $g$
-   from
-   $$E_t\left[f(g^{**}(g^*(y^*_t,u_t,\sigma),u_{t+1},\sigma),g(y^*,u_t,\sigma),y^*,u_t)\right]$$
-   As an introduction in {\tt approximation.hweb} argues, $g^{**}$ at
-   tine $t+1$ must be given from outside. Let the explicit
-   $E_t(g^{**}(y^*,u_{t+1},\sigma)$ be equal to $h(y^*,\sigma)$. Then we
-   have to solve
-   $$f(h(g^*(y^*,u,\sigma),\sigma),g(y,u,\sigma),y,u),$$
-   which is much easier than fully implicit system for $\sigma=0$.
+/* This file defines a number of classes of which KOrderStoch is the main
+   purpose. Basically, KOrderStoch calculates first and higher order Taylor
+   expansion of a policy rule at σ>0 with explicit forward g**. More formally,
+   we have to solve a policy rule g from
 
-   Besides the class |KOrderStoch|, we declare here also classes for the
-   new containers corresponding to
-   $f(h(g^*(y^*,u,\sigma),\sigma),g(y,u,\sigma),y,u)$. Further, we
-   declare |IntegDerivs| and |StochForwardDerivs| classes which basically
-   calculate $h$ as an extrapolation based on an approximation to $g$ at
-   lower $\sigma$. */
+    𝔼ₜ[f(g**(g*(y*ₜ,uₜ,σ),uₜ₊₁,σ),g(y*,uₜ,σ),y*,uₜ)]
+
+   As the introduction in approximation.hh argues, g** at tine t+1 must be
+   given from outside. Let the explicit 𝔼ₜ(g**(y*,uₜ₊₁,σ) be equal to h(y*,σ).
+   Then we have to solve f(h(g*(y*,u,σ),σ),g(y,u,σ),y,u), which is much easier
+   than fully implicit system for σ=0.
+
+   Besides the class KOrderStoch, we declare here also classes for the new
+   containers corresponding to f(h(g*(y*,u,σ),σ),g(y,u,σ),y,u). Further, we
+   declare IntegDerivs and StochForwardDerivs classes which basically calculate
+   h as an extrapolation based on an approximation to g at lower σ.
+ */
 
 #include <memory>
 
@@ -29,8 +27,8 @@
 #include "journal.hh"
 #include "pascal_triangle.hh"
 
-/* This class is a container, which has a specialized constructor
-   integrating the policy rule at given $\sigma$. */
+/* This class is a container, which has a specialized constructor integrating
+   the policy rule at given σ. */
 
 template <Storage t>
 class IntegDerivs : public ctraits<t>::Tgss
@@ -40,45 +38,51 @@ public:
               const typename ctraits<t>::Tm &mom, double at_sigma);
 };
 
-/* This constructor integrates a rule (namely its $g^{**}$ part) with
-   respect to $u=\tilde\sigma\eta$, and stores to the object the
-   derivatives of this integral $h$ at $(y^*,u,\sigma)=(\tilde
-   y^*,0,\tilde\sigma)$. The original container of $g^{**}$, the moments of
-   the stochastic shocks |mom| and the $\tilde\sigma$ are input.
+/* This constructor integrates a rule (namely its g** part) with respect to
+   u=σ~·η, and stores to the object the derivatives of this integral h at
+   (y*,u,σ)=(ỹ*,0,σ~). The original container of g**, the moments of the
+   stochastic shocks ‘mom’ and the σ~ are input.
 
    The code follows the following derivation
-   \def\lims{\vbox{\baselineskip=0pt\lineskip=1pt
-   \setbox0=\hbox{$\scriptstyle n+k=p$}\hbox to\wd0{\hss$\scriptstyle m=0$\hss}\box0}}
-   $$
-   \eqalign{h(y,\sigma)&=E_t\left[g(y,u',\sigma)\right]=\cr
-   &=\tilde y+\sum_{d=1}{1\over d!}\sum_{i+j+k=d}\pmatrix{d\cr i,j,k}\left[g_{y^iu^j\sigma^k}\right]
-   (y^*-\tilde y^*)^i\sigma^j\Sigma^j(\sigma-\tilde\sigma)^k\cr
-   &=\tilde y+\sum_{d=1}{1\over d!}\sum_{i+m+n+k=d}\pmatrix{d\cr i,m+n,k}
-   \left[g_{y^iu^{m+n}\sigma^k}\right]
-   \hat y^{*i}\Sigma^{m+n}\pmatrix{m+n\cr m,n}{\tilde\sigma}^m\hat\sigma^{k+n}\cr
-   &=\tilde y+\sum_{d=1}{1\over d!}\sum_{i+m+n+k=d}\pmatrix{d\cr i,m,n,k}
-   \left[g_{y^iu^{m+n}\sigma^k}\right]
-   \Sigma^{m+n}{\tilde\sigma}^m\hat y^{*i}\hat\sigma^{k+n}\cr
-   &=\tilde y+\sum_{d=1}{1\over d!}\sum_{i+p=d}\sum_{\lims}\pmatrix{d\cr i,m,n,k}
-   \left[g_{y^iu^{m+n}\sigma^k}\right]
-   \Sigma^{m+n}{\tilde\sigma}^m\hat y^{*i}\hat\sigma^{k+n}\cr
-   &=\tilde y+\sum_{d=1}{1\over d!}\sum_{i+p=d}\pmatrix{d\cr i,p}
-   \left[\sum_{\lims}\pmatrix{p\cr n,k}{1\over m!}
-   \left[g_{y^iu^{m+n}\sigma^k}\right]
-   \Sigma^{m+n}{\tilde\sigma}^m\right]\hat y^{*i}\hat\sigma^{k+n},
-   }
-   $$
-   where $\pmatrix{a\cr b_1,\ldots, b_n}$ is a generalized combination
-   number, $p=k+n$, $\hat\sigma=\sigma-\tilde\sigma$, $\hat
-   y^*=y^*-\tilde y$, and we dropped writing the multidimensional indexes
-   in Einstein summation.
 
-   This implies that
-   $$h_{y^i\sigma^p}=\sum_{\lims}\pmatrix{p\cr n,k}{1\over m!}
-   \left[g_{y^iu^{m+n}\sigma^k}\right]
-   \Sigma^{m+n}{\tilde\sigma}^m$$
-   and this is exactly what the code does. */
+   h(y,σ) = 𝔼ₜ[g(y,u′,σ)]
 
+              1         ⎛  d  ⎞
+    = ỹ + ∑  ──    ∑    ⎝i,j,k⎠ [g_yⁱuʲσᵏ] (y*-ỹ*)ⁱ σʲ Σʲ (σ-σ~)ᵏ
+         ᵈ⁼¹ d! ⁱ⁺ʲ⁺ᵏ⁼ᵈ
+
+              1          ⎛   d   ⎞                       ⎛m+n⎞
+    = ỹ + ∑  ──     ∑    ⎝i,m+n,k⎠ [g_yⁱuᵐ⁺ⁿσᵏ] ŷ*ⁱ Σᵐ⁺ⁿ ⎝m,n⎠ σ~ᵐ σ^ᵏ⁺ⁿ
+         ᵈ⁼¹ d! ⁱ⁺ᵐ⁺ⁿ⁺ᵏ⁼ᵈ
+
+              1          ⎛   d   ⎞
+    = ỹ + ∑  ──     ∑    ⎝i,m,n,k⎠ [g_yⁱuᵐ⁺ⁿσᵏ] Σᵐ⁺ⁿ σ~ᵐ ŷ*ⁱ σ^ᵏ⁺ⁿ
+         ᵈ⁼¹ d! ⁱ⁺ᵐ⁺ⁿ⁺ᵏ⁼ᵈ
+
+              1             ⎛   d   ⎞
+    = ỹ + ∑  ──   ∑     ∑   ⎝i,m,n,k⎠ [g_yⁱuᵐ⁺ⁿσᵏ] Σᵐ⁺ⁿ σ~ᵐ ŷ*ⁱ σ^ᵏ⁺ⁿ
+         ᵈ⁼¹ d! ⁱ⁺ᵖ⁼ᵈ  ᵐ⁼⁰
+                      ⁿ⁺ᵏ⁼ᵖ
+
+              1       ⎛ d ⎞ ⎡      ⎛ p ⎞  1                      ⎤
+    = ỹ + ∑  ──   ∑   ⎝i,p⎠ ⎢  ∑   ⎝n,k⎠ ── [g_yⁱuᵐ⁺ⁿσᵏ] Σᵐ⁺ⁿ σ~ᵐ⎥ ŷ*ⁱ σ^ᵏ⁺ⁿ
+         ᵈ⁼¹ d! ⁱ⁺ᵖ⁼ᵈ       ⎢ ᵐ⁼⁰        m!                      ⎥
+                            ⎣ⁿ⁺ᵏ⁼ᵖ                               ⎦
+
+         ⎛   a   ⎞
+   where ⎝b₁,…,bₙ⎠ is a generalized combination number, p=k+n, σ^=σ-σ~,
+   ŷ*=y*-ỹ, and we gave up writing the multidimensional indexes in Einstein
+   summation.
+
+   This implies that:
+
+                   ⎛ p ⎞  1
+    h_yⁱσᵖ =   ∑   ⎝n,k⎠ ── [g_yⁱuᵐ⁺ⁿσᵏ] Σᵐ⁺ⁿ σ~ᵐ
+              ᵐ⁼⁰        m!
+             ⁿ⁺ᵏ⁼ᵖ
+
+   and this is exactly what the code does.
+ */
 template <Storage t>
 IntegDerivs<t>::IntegDerivs(int r, const IntSequence &nvs, const typename ctraits<t>::Tgss &g,
                             const typename ctraits<t>::Tm &mom, double at_sigma)
@@ -93,12 +97,15 @@ IntegDerivs<t>::IntegDerivs(int r, const IntSequence &nvs, const typename ctrait
           Symmetry sym{i, 0, 0, p};
           auto ten = std::make_unique<typename ctraits<t>::Ttensor>(r, TensorDimens(sym, nvs));
 
-          // calculate derivative $h_{y^i\sigma^p}$
-          /* This code calculates
-             $$h_{y^i\sigma^p}=\sum_{\lims}\pmatrix{p\cr n,k}{1\over m!}
-             \left[g_{y^iu^{m+n}\sigma^k}\right]
-             \Sigma^{m+n}{\tilde\sigma}^m$$
-             and stores it in |ten|. */
+          // Calculate derivative h_yⁱσᵖ
+          /* This code calculates:
+
+                             ⎛ p ⎞  1
+              h_yⁱσᵖ =   ∑   ⎝n,k⎠ ── [g_yⁱuᵐ⁺ⁿσᵏ] Σᵐ⁺ⁿ σ~ᵐ
+                        ᵐ⁼⁰        m!
+                       ⁿ⁺ᵏ⁼ᵖ
+
+             and stores it in ‘ten’. */
           ten->zeros();
           for (int n = 0; n <= p; n++)
             {
@@ -126,12 +133,10 @@ IntegDerivs<t>::IntegDerivs(int r, const IntSequence &nvs, const typename ctrait
 }
 
 /* This class calculates an extrapolation of expectation of forward
-   derivatives. It is a container, all calculations are done in a
-   constructor.
+   derivatives. It is a container, all calculations are done in a constructor.
 
-   The class calculates derivatives of $E[g(y*,u,\sigma)]$ at $(\bar
-   y^*,\bar\sigma)$. The derivatives are extrapolated based on
-   derivatives at $(\tilde y^*,\tilde\sigma)$. */
+   The class calculates derivatives of E[g(y*,u,σ)] at (ȳ*,σ¯). The derivatives
+   are extrapolated based on derivatives at (ỹ*,σ~). */
 
 template <Storage t>
 class StochForwardDerivs : public ctraits<t>::Tgss
@@ -144,22 +149,19 @@ public:
 };
 
 /* This is the constructor which performs the integration and the
-   extrapolation. Its parameters are: |g| is the container of derivatives
-   at $(\tilde y,\tilde\sigma)$; |m| are the moments of stochastic
-   shocks; |ydelta| is a difference of the steady states $\bar y-\tilde
-   y$; |sdelta| is a difference between new sigma and old sigma
-   $\bar\sigma-\tilde\sigma$, and |at_sigma| is $\tilde\sigma$. There is
-   no need of inputing the $\tilde y$.
+   extrapolation. Its parameters are: ‘g’ is the container of derivatives at
+   (ỹ,σ~); ‘m’ are the moments of stochastic shocks; ‘ydelta’ is a difference
+   of the steady states ȳ−ỹ; ‘sdelta’ is the difference between new sigma and
+   old sigma σ¯−σ~, and ‘at_sigma’ is σ~. There is no need of inputing the ỹ.
 
    We do the operation in four steps:
-   \orderedlist
-   \li Integrate $g^{**}$, the derivatives are at $(\tilde y,\tilde\sigma)$
-   \li Form the (full symmetric) polynomial from the derivatives stacking
-   $\left[\matrix{y^*\cr\sigma}\right]$
-   \li Centralize this polynomial about $(\bar y,\bar\sigma)$
-   \li Recover general symmetry tensors from the (full symmetric) polynomial
-   \endorderedlist */
-
+   — Integrate g**, the derivatives are at (ỹ,σ~)
+   — Form the (full symmetric) polynomial from the derivatives stacking
+     ⎡y*⎤
+     ⎣σ ⎦
+   — Centralize this polynomial about (ȳ,σ¯)
+   — Recover general symmetry tensors from the (full symmetric) polynomial
+*/
 template <Storage t>
 StochForwardDerivs<t>::StochForwardDerivs(const PartitionY &ypart, int nu,
                                           const typename ctraits<t>::Tgss &g,
@@ -171,17 +173,18 @@ StochForwardDerivs<t>::StochForwardDerivs(const PartitionY &ypart, int nu,
   int maxd = g.getMaxDim();
   int r = ypart.nyss();
 
-  // make |g_int| be integral of $g^{**}$ at $(\tilde y,\tilde\sigma)$
-  /* This simply constructs |IntegDerivs| class. Note that the |nvs| of
+  // Make ‘g_int’ be integral of g** at (ỹ,σ~)
+  /* This simply constructs IntegDerivs class. Note that the ‘nvs’ of
      the tensors has zero dimensions for shocks, this is because we need to
-     make easily stacks of the form $\left[\matrix{y^*\cr\sigma}\right]$ in
-     the next step. */
+                                    ⎡y*⎤
+     make easily stacks of the form ⎣σ ⎦ in the next step. */
   IntSequence nvs{ypart.nys(), 0, 0, 1};
   IntegDerivs<t> g_int(r, nvs, g, m, at_sigma);
 
-  // make |g_int_sym| be full symmetric polynomial from |g_int|
+  // Make ‘g_int_sym’ be full symmetric polynomial from ‘g_int’
   /* Here we just form a polynomial whose unique variable corresponds to
-     $\left[\matrix{y^*\cr\sigma}\right]$ stack. */
+     ⎡y*⎤
+     ⎣σ ⎦ stack. */
   typename ctraits<t>::Tpol g_int_sym(r, ypart.nys()+1);
   for (int d = 1; d <= maxd; d++)
     {
@@ -196,13 +199,11 @@ StochForwardDerivs<t>::StochForwardDerivs(const PartitionY &ypart, int nu,
       g_int_sym.insert(std::move(ten));
     }
 
-  // make |g_int_cent| the centralized polynomial about $(\bar y,\bar\sigma)$
-  /* Here we centralize the polynomial to $(\bar y,\bar\sigma)$ knowing
-     that the polynomial was centralized about $(\tilde
-     y,\tilde\sigma)$. This is done by derivating and evaluating the
-     derivated polynomial at $(\bar y-\tilde
-     y,\bar\sigma-\tilde\sigma)$. The stack of this vector is |delta| in
-     the code. */
+  // Make ‘g_int_cent’ the centralized polynomial about (ȳ,σ¯)
+  /* Here we centralize the polynomial to (ȳ,σ¯) knowing that the polynomial
+     was centralized about (ỹ,σ~). This is done by derivating and evaluating
+     the derivated polynomial at (ȳ−ỹ,σ¯-σ~). The stack of this vector is
+     ‘delta’ in the code. */
   Vector delta(ypart.nys()+1);
   Vector dy(delta, 0, ypart.nys());
   ConstVector dy_in(ydelta, ypart.nstat, ypart.nys());
@@ -216,9 +217,9 @@ StochForwardDerivs<t>::StochForwardDerivs(const PartitionY &ypart, int nu,
       g_int_cent.insert(std::move(der));
     }
 
-  // pull out general symmetry tensors from |g_int_cent|
+  // Pull out general symmetry tensors from ‘g_int_cent’
   /* Here we only recover the general symmetry derivatives from the full
-     symmetric polynomial. Note that the derivative get the true |nvs|. */
+     symmetric polynomial. Note that the derivative get the true ‘nvs’. */
   IntSequence ss{ypart.nys(), 0, 0, 1};
   IntSequence pp{0, 1, 2, 3};
   IntSequence true_nvs(nvs);
@@ -237,10 +238,9 @@ StochForwardDerivs<t>::StochForwardDerivs(const PartitionY &ypart, int nu,
         }
 }
 
-/* This container corresponds to $h(g^*(y,u,\sigma),\sigma)$. Note that
-   in our application, the $\sigma$ as a second argument to $h$ will be
-   its fourth variable in symmetry, so we have to do four member stack
-   having the second and third stack dummy. */
+/* This container corresponds to h(g*(y,u,σ),σ). Note that in our application,
+   the σ as a second argument to h will be its fourth variable in symmetry, so
+   we have to do four member stack having the second and third stack dummy. */
 
 template <class _Ttype>
 class GXContainer : public GContainer<_Ttype>
@@ -257,8 +257,11 @@ public:
 };
 
 /* This routine corresponds to this stack:
-   $$\left[\matrix{g^*(y,u,\sigma)\cr dummy\cr dummy\cr\sigma}\right]$$ */
-
+   ⎡ g*(y,u,σ) ⎤
+   ⎢   dummy   ⎥
+   ⎢   dummy   ⎥
+   ⎣     σ     ⎦
+ */
 template <class _Ttype>
 typename GXContainer<_Ttype>::itype
 GXContainer<_Ttype>::getType(int i, const Symmetry &s) const
@@ -281,10 +284,9 @@ GXContainer<_Ttype>::getType(int i, const Symmetry &s) const
   KORD_RAISE("Wrong stack index in GXContainer::getType");
 }
 
-/* This container corresponds to $f(H(y,u,\sigma),g(y,u,sigma),y,u)$,
-   where the $H$ has the size (number of rows) as $g^{**}$. Since it is
-   very simmilar to |ZContainer|, we inherit form it and override only
-   |getType| method. */
+/* This container corresponds to f(H(y,u,σ),g(y,u,sigma),y,u), where the H has
+   the size (number of rows) as g**. Since it is very simmilar to ZContainer,
+   we inherit form it and override only getType() method. */
 
 template <class _Ttype>
 class ZXContainer : public ZContainer<_Ttype>
@@ -300,9 +302,12 @@ public:
   itype getType(int i, const Symmetry &s) const override;
 };
 
-/* This |getType| method corresponds to this stack:
-   $$\left[\matrix{H(y,u,\sigma)\cr g(y,u,\sigma)\cr y\cr u}\right]$$ */
-
+/* This getType() method corresponds to this stack:
+   ⎡ H(y,u,σ) ⎤
+   ⎢ g(y,u,σ) ⎥
+   ⎢    y     ⎥
+   ⎣    u     ⎦
+*/
 template <class _Ttype>
 typename ZXContainer<_Ttype>::itype
 ZXContainer<_Ttype>::getType(int i, const Symmetry &s) const
@@ -372,11 +377,12 @@ public:
 };
 
 /* This matrix corresponds to
-   $$\left[f_{y}\right]+ \left[0
-   \left[f_{y^{**}_+}\right]\cdot\left[h^{**}_{y^*}\right] 0\right]$$
-   This is very the same as |MatrixA|, the only difference that the
-   |MatrixA| is constructed from whole $h_{y^*}$, not only from
-   $h^{**}_{y^*}$, hence the new abstraction. */
+
+    [f_{y}]+ [0 [f_y**₊]·[h**_y*] 0]
+
+   This is almost the same as MatrixA, the only difference that the MatrixA is
+   constructed from whole h_y*, not only from h**_y*, hence the new
+   abstraction. */
 
 class MatrixAA : public PLUMatrix
 {
@@ -385,18 +391,17 @@ public:
            const TwoDMatrix &gyss, const PartitionY &ypart);
 };
 
-/* This class calculates derivatives of $g$ given implicitly by
-   $f(h(g^*(y,u,\sigma),\sigma),g(y,u,\sigma),y,u)$, where $h(y,\sigma)$
-   is given from outside.
+/* This class calculates derivatives of g given implicitly by
+   f(h(g*(y,u,σ),σ),g(y,u,σ),y,u), where h(y,σ) is given from outside.
 
-   Structurally, the class is very similar to |KOrder|, but calculations
-   are much easier. The two constructors construct an object from sparse
-   derivatives of $f$, and derivatives of $h$. The caller must ensure
-   that the both derivatives are done at the same point.
+   Structurally, the class is very similar to KOrder, but calculations are much
+   easier. The two constructors construct an object from sparse derivatives of
+   f, and derivatives of h. The caller must ensure that the both derivatives
+   are done at the same point.
 
-   The calculation for order $k$ (including $k=1$) is done by a call
-   |performStep(k)|. The derivatives can be retrived by |getFoldDers()|
-   or |getUnfoldDers()|. */
+   The calculation for order k (including k=1) is done by a call
+   performStep(k). The derivatives can be retrived by getFoldDers() or
+   getUnfoldDers(). */
 
 class KOrderStoch
 {
@@ -441,7 +446,7 @@ protected:
   template <Storage t>
   std::unique_ptr<typename ctraits<t>::Ttensor> faaDiBrunoG(const Symmetry &sym) const;
 
-  // convenience access methods
+  // Convenience access methods
   template<Storage t>
   typename ctraits<t>::Tg &g();
   template<Storage t>
@@ -471,8 +476,8 @@ protected:
   const typename ctraits<t>::TGXstack &Gstack() const;
 };
 
-/* This calculates a derivative of $f(G(y,u,\sigma),g(y,u,\sigma),y,u)$
-   of a given symmetry. */
+/* This calculates a derivative of f(G(y,u,σ),g(y,u,σ),y,u) of a given
+   symmetry. */
 
 template <Storage t>
 std::unique_ptr<typename ctraits<t>::Ttensor>
@@ -486,8 +491,8 @@ KOrderStoch::faaDiBrunoZ(const Symmetry &sym) const
   return res;
 }
 
-/* This calculates a derivative of
-   $G(y,u,\sigma)=h(g^*(y,u,\sigma),\sigma)$ of a given symmetry. */
+/* This calculates a derivative of G(y,u,σ)=h(g*(y,u,σ),σ) of a given
+   symmetry. */
 
 template <Storage t>
 std::unique_ptr<typename ctraits<t>::Ttensor>
@@ -502,16 +507,15 @@ KOrderStoch::faaDiBrunoG(const Symmetry &sym) const
   return res;
 }
 
-/* This retrieves all $g$ derivatives of a given dimension from implicit
-   $f(h(g^*(y,u,\sigma),\sigma),g(y,u,\sigma),y,u)$. It suppose that all
-   derivatives of smaller dimensions have been retrieved.
+/* This retrieves all g derivatives of a given dimension from implicit
+   f(h(g*(y,u,σ),σ),g(y,u,σ),y,u). It supposes that all derivatives of smaller
+   dimensions have been retrieved.
 
-   So, we go through all symmetries $s$, calculate $G_s$ conditional on
-   $g_s=0$, insert the derivative to the $G$ container, then calculate
-   $F_s$ conditional on $g_s=0$. This is a righthand side. The left hand
-   side is $matA\cdot g_s$. The $g_s$ is retrieved as
-   $$g_s=-matA^{-1}\cdot RHS.$$ Finally we have to update $G_s$ by
-   calling |Gstack<t>().multAndAdd(1, h<t>(), *G_sym)|. */
+   So, we go through all symmetries s, calculate Gₛ conditional on gₛ=0, insert
+   the derivative to the G container, then calculate Fₛ conditional on gₛ=0.
+   This is a righthand side. The left hand side is matA·gₛ. The gₛ is retrieved
+   as gₛ=-matA⁻¹·RHS. Finally we have to update Gₛ by calling
+   Gstack<t>().multAndAdd(1, h<t>(), *G_sym_ptr). */
 
 template <Storage t>
 void

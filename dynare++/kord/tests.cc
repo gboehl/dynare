@@ -126,7 +126,7 @@ const double gu_data [] = { // just some numbers, no structure
   -1.2421792262, -1.0724161722, -0.4276904972, 0.1801494950, -2.0716473264
 };
 
-const double vdata2 [] = { // 10x10 positive definite
+const double vdata2 [] = { // 10×10 positive definite
   0.79666, -0.15536, 0.05667, -0.21026, 0.20262, 0.28505, 0.60341, -0.09703, 0.32363, 0.13299,
   -0.15536, 0.64380, -0.01131, 0.00980, 0.03755, 0.43791, 0.21784, -0.31755, -0.55911, -0.29655,
   0.05667, -0.01131, 0.56165, -0.34357, -0.40584, 0.20990, 0.28348, 0.20398, -0.19856, 0.35820,
@@ -139,7 +139,7 @@ const double vdata2 [] = { // 10x10 positive definite
   0.13299, -0.29655, 0.35820, -0.31560, -0.12919, -0.02155, -0.19016, 0.41750, -0.12992, 0.89608
 };
 
-const double gy_data2 [] = { // 600 items make gy 30x20, whose gy(6:25,:) has spectrum within unit
+const double gy_data2 [] = { // 600 items make gy 30×20, whose gy(6:25,:) has spectrum within unit
   0.39414, -0.29766, 0.08948, -0.19204, -0.00750, 0.21159, 0.05494, 0.06225, 0.01771, 0.21913,
   -0.01373, 0.20086, -0.06086, -0.10955, 0.14424, -0.08390, 0.03948, -0.14713, 0.11674, 0.05091,
   0.24039, 0.28307, -0.11835, 0.13030, 0.11682, -0.27444, -0.19311, -0.16654, 0.12867, 0.25116,
@@ -293,7 +293,7 @@ TestRunnable::korder_unfold_fold(int maxdim, int unfold_dim,
               << std::defaultfloat;
   Journal jr("out.txt");
   KOrder kord(nstat, npred, nboth, nforw, c, gy, gu, v, jr);
-  // perform unfolded steps until unfold_dim
+  // Perform unfolded steps until unfold_dim
   double maxerror = 0.0;
   for (int d = 2; d <= unfold_dim; d++)
     {
@@ -311,7 +311,7 @@ TestRunnable::korder_unfold_fold(int maxdim, int unfold_dim,
                 << std::endl;
       maxerror = std::max(err, maxerror);
     }
-  // perform folded steps until maxdim
+  // Perform folded steps until maxdim
   if (unfold_dim < maxdim)
     {
       clock_t swtime = clock();
@@ -362,7 +362,7 @@ public:
   }
 };
 
-// same dimension as Smets & Wouters
+// Same dimension as Smets & Wouters
 class UnfoldKOrderSW : public TestRunnable
 {
 public:
@@ -415,12 +415,12 @@ int
 main()
 {
   std::vector<std::unique_ptr<TestRunnable>> all_tests;
-  // fill in vector of all tests
+  // Fill in vector of all tests
   all_tests.push_back(std::make_unique<UnfoldKOrderSmall>());
   all_tests.push_back(std::make_unique<UnfoldKOrderSW>());
   all_tests.push_back(std::make_unique<UnfoldFoldKOrderSW>());
 
-  // find maximum dimension and maximum nvar
+  // Find maximum dimension and maximum nvar
   int dmax = 0;
   int nvmax = 0;
   for (const auto &test : all_tests)
@@ -432,7 +432,7 @@ main()
     }
   TLStatic::init(dmax, nvmax); // initialize library
 
-  // launch the tests
+  // Launch the tests
   int success = 0;
   for (const auto &test : all_tests)
     {

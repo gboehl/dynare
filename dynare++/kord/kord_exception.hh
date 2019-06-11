@@ -52,7 +52,7 @@ public:
   }
 };
 
-// |KordException| error code definitions
+// KordException error code definitions
 constexpr int KORD_FP_NOT_CONV = 254;
 constexpr int KORD_FP_NOT_FINITE = 253;
 constexpr int KORD_MD_NOT_STABLE = 252;

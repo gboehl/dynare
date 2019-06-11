@@ -13,7 +13,7 @@
 #include <cmath>
 
 /* Here we just set a reference to the approximation, and create a new
-   |DynamicModel|. */
+   DynamicModel. */
 
 ResidFunction::ResidFunction(const Approximation &app)
   : VectorFunction(app.getModel().nexog(), app.getModel().numeq()), approx(app),
@@ -34,8 +34,7 @@ ResidFunction::ResidFunction(const ResidFunction &rf)
     hss = std::make_unique<FTensorPolynomial>(*(rf.hss));
 }
 
-/* This sets $y^*$ and $u$. We have to create |ystar|, |u|, |yplus| and
-   |hss|. */
+/* This sets y* and u. We have to create ‘ystar’, ‘u’, ‘yplus’ and ‘hss’. */
 
 void
 ResidFunction::setYU(const ConstVector &ys, const ConstVector &xx)
@@ -47,23 +46,22 @@ ResidFunction::setYU(const ConstVector &ys, const ConstVector &xx)
                                         *yplus, *ystar, *u);
 
   // make a tensor polynomial of in-place subtensors from decision rule
-  /* Note that the non-|const| polynomial will be used for a
-     construction of |hss| and will be used in |const| context. So this
-     const_cast is safe.
+  /* Note that the non-const polynomial will be used for a construction of
+     ‘hss’ and will be used in a const context. So this const cast is safe.
 
-     Note, that there is always a folded decision rule in |Approximation|. */
+     Note, that there is always a folded decision rule in Approximation. */
   const FoldDecisionRule &dr = approx.getFoldDecisionRule();
   FTensorPolynomial dr_ss(model->nstat()+model->npred(), model->nboth()+model->nforw(),
                           const_cast<FoldDecisionRule &>(dr));
 
-  // make |ytmp_star| be a difference of |yplus| from steady
+  // make ‘ytmp_star’ be a difference of ‘yplus’ from steady
   Vector ytmp_star(ConstVector(*yplus, model->nstat(), model->npred()+model->nboth()));
   ConstVector ysteady_star(dr.getSteady(), model->nstat(),
                            model->npred()+model->nboth());
   ytmp_star.add(-1.0, ysteady_star);
 
-  // make |hss| and add steady to it
-  /* Here is the |const| context of |dr_ss|. */
+  // make ‘hss’ and add steady to it
+  /* Here is the const context of ‘dr_ss’. */
   hss = std::make_unique<FTensorPolynomial>(dr_ss, ytmp_star);
   ConstVector ysteady_ss(dr.getSteady(), model->nstat()+model->npred(),
                          model->nboth()+model->nforw());
@@ -77,8 +75,8 @@ ResidFunction::setYU(const ConstVector &ys, const ConstVector &xx)
     }
 }
 
-/* Here we evaluate the residual $F(y^*,u,u')$. We have to evaluate |hss|
-   for $u'=$|point| and then we evaluate the system $f$. */
+/* Here we evaluate the residual F(y*,u,u′). We have to evaluate ‘hss’ for
+   u′=point and then we evaluate the system f. */
 
 void
 ResidFunction::eval(const Vector &point, const ParameterSignal &sig, Vector &out)
@@ -92,9 +90,8 @@ ResidFunction::eval(const Vector &point, const ParameterSignal &sig, Vector &out
   model->evaluateSystem(out, *ystar, *yplus, yss, *u);
 }
 
-/* This checks the $E[F(y^*,u,u')]$ for a given $y^*$ and $u$ by
-   integrating with a given quadrature. Note that the input |ys| is $y^*$
-   not whole $y$. */
+/* This checks the 𝔼[F(y*,u,u′)] for a given y* and u by integrating with a
+   given quadrature. Note that the input ‘ys’ is y* not whole y. */
 
 void
 GlobalChecker::check(const Quadrature &quad, int level,
@@ -105,13 +102,13 @@ GlobalChecker::check(const Quadrature &quad, int level,
   quad.integrate(vfs, level, out);
 }
 
-/* This method is a bulk version of |@<|GlobalChecker::check| vector
-   code@>|. It decides between Smolyak and product quadrature according
-   to |max_evals| constraint.
+/* This method is a bulk version of GlobalChecker::check() vector code. It
+   decides between Smolyak and product quadrature according to ‘max_evals’
+   constraint.
 
-   Note that |y| can be either full (all endogenous variables including
-   static and forward looking), or just $y^*$ (state variables). The
-   method is able to recognize it. */
+   Note that ‘y’ can be either full (all endogenous variables including static
+   and forward looking), or just y* (state variables). The method is able to
+   recognize it. */
 
 void
 GlobalChecker::check(int max_evals, const ConstTwoDMatrix &y,
@@ -121,7 +118,7 @@ GlobalChecker::check(int max_evals, const ConstTwoDMatrix &y,
   pa << "Checking approximation error for " << y.ncols()
      << " states with at most " << max_evals << " evaluations" << endrec;
 
-  // decide about type of quadrature
+  // Decide about which type of quadrature
   GaussHermite gh;
 
   SmolyakQuadrature dummy_sq(model.nexog(), 1, gh);
@@ -139,7 +136,7 @@ GlobalChecker::check(int max_evals, const ConstTwoDMatrix &y,
   std::unique_ptr<Quadrature> quad;
   int lev;
 
-  // create the quadrature and report the decision
+  // Create the quadrature and report the decision
   if (take_smolyak)
     {
       quad = std::make_unique<SmolyakQuadrature>(model.nexog(), smol_level, gh);
@@ -159,7 +156,7 @@ GlobalChecker::check(int max_evals, const ConstTwoDMatrix &y,
           << smol_evals << ")" << endrec;
     }
 
-  // check all column of |y| and |x|
+  // Check all columns of ‘y’ and ‘x’
   int first_row = (y.nrows() == model.numeq()) ? model.nstat() : 0;
   ConstTwoDMatrix ysmat(y, first_row, 0, model.npred()+model.nboth(), y.ncols());
   for (int j = 0; j < y.ncols(); j++)
@@ -171,10 +168,10 @@ GlobalChecker::check(int max_evals, const ConstTwoDMatrix &y,
     }
 }
 
-/* This method checks an error of the approximation by evaluating
-   residual $E[F(y^*,u,u')\vert y^*,u]$ for $y^*$ being the steady state, and
-   changing $u$. We go through all elements of $u$ and vary them from
-   $-mult\cdot\sigma$ to $mult\cdot\sigma$ in |m| steps. */
+/* This method checks an error of the approximation by evaluating residual
+   𝔼[F(y*,u,u′) | y*,u] for y* equal to the steady state, and changing u. We go
+   through all elements of u and vary them from −mult·σ to mult·σ in ‘m’
+   steps. */
 
 void
 GlobalChecker::checkAlongShocksAndSave(mat_t *fd, const std::string &prefix,
@@ -184,7 +181,7 @@ GlobalChecker::checkAlongShocksAndSave(mat_t *fd, const std::string &prefix,
   pa << "Calculating errors along shocks +/- "
      << mult << " std errors, granularity " << m << endrec;
 
-  // setup |y_mat| of steady states for checking
+  // Setup ‘y_mat’ of steady states for checking
   TwoDMatrix y_mat(model.numeq(), 2*m*model.nexog()+1);
   for (int j = 0; j < 2*m*model.nexog()+1; j++)
     {
@@ -192,7 +189,7 @@ GlobalChecker::checkAlongShocksAndSave(mat_t *fd, const std::string &prefix,
       yj = model.getSteady();
     }
 
-  // setup |exo_mat| for checking
+  // Setup ‘exo_mat’ for checking
   TwoDMatrix exo_mat(model.nexog(), 2*m*model.nexog()+1);
   exo_mat.zeros();
   for (int ishock = 0; ishock < model.nexog(); ishock++)
@@ -208,7 +205,7 @@ GlobalChecker::checkAlongShocksAndSave(mat_t *fd, const std::string &prefix,
   TwoDMatrix errors(model.numeq(), 2*m*model.nexog()+1);
   check(max_evals, y_mat, exo_mat, errors);
 
-  // report errors along shock and save them
+  // Report errors along shock and save them
   TwoDMatrix res(model.nexog(), 2*m+1);
   JournalRecord rec(journal);
   rec << "Shock    value         error" << endrec;
@@ -244,19 +241,18 @@ GlobalChecker::checkAlongShocksAndSave(mat_t *fd, const std::string &prefix,
     }
 }
 
-/* This method checks errors on ellipse of endogenous states
-   (predetermined variables). The ellipse is shaped according to
-   covariance matrix of endogenous variables based on the first order
-   approximation and scaled by |mult|. The points on the
-   ellipse are chosen as polar images of the low discrepancy grid in a
-   cube.
+/* This method checks errors on ellipse of endogenous states (predetermined
+   variables). The ellipse is shaped according to covariance matrix of
+   endogenous variables based on the first order approximation and scaled by
+   ‘mult’. The points on the ellipse are chosen as polar images of the low
+   discrepancy grid in a cube.
 
-   The method works as follows: First we calculate symmetric Schur factor of
-   covariance matrix of the states. Second we generate low discrepancy
-   points on the unit sphere. Third we transform the sphere with the
-   variance-covariance matrix factor and multiplier |mult| and initialize
-   matrix of $u_t$ to zeros. Fourth we run the |check| method and save
-   the results. */
+   The method works as follows. First we calculate symmetric Schur factor of
+   covariance matrix of the states. Second we generate low discrepancy points
+   on the unit sphere. Third we transform the sphere with the
+   variance-covariance matrix factor and multiplier ‘mult’ and initialize
+   matrix of uₜ to zeros. Fourth we run the check() method and save the
+   results. */
 
 void
 GlobalChecker::checkOnEllipseAndSave(mat_t *fd, const std::string &prefix,
@@ -266,9 +262,9 @@ GlobalChecker::checkOnEllipseAndSave(mat_t *fd, const std::string &prefix,
   pa << "Calculating errors at " << m
      << " ellipse points scaled by " << mult << endrec;
 
-  // make factor of covariance of variables
-  /* Here we set |ycovfac| to the symmetric Schur decomposition factor of
-     a submatrix of covariances of all endogenous variables. The submatrix
+  // Make factor of covariance of variables
+  /* Here we set ‘ycovfac’ to the symmetric Schur decomposition factor of a
+     submatrix of covariances of all endogenous variables. The submatrix
      corresponds to state variables (predetermined plus both). */
   TwoDMatrix ycov{approx.calcYCov()};
   TwoDMatrix ycovpred(const_cast<const TwoDMatrix &>(ycov), model.nstat(), model.nstat(),
@@ -281,17 +277,18 @@ GlobalChecker::checkOnEllipseAndSave(mat_t *fd, const std::string &prefix,
 				  semidefinite in GlobalChecker::checkOnEllipseAndSave");
   ssd.getFactor(ycovfac);
 
-  // put low discrepancy sphere points to |ymat|
-  /* Here we first calculate dimension |d| of the sphere, which is a
-     number of state variables minus one. We go through the |d|-dimensional
-     cube $\langle 0,1\rangle^d$ by |QMCarloCubeQuadrature| and make a
-     polar transformation to the sphere. The polar transformation $f^i$ can
-     be written recursively wrt. the dimension $i$ as:
-     $$\eqalign{
-     f^0() &= \left[1\right]\cr
-     f^i(x_1,\ldots,x_i) &=
-     \left[\matrix{cos(2\pi x_i)\cdot f^{i-1}(x_1,\ldots,x_{i-1})\cr sin(2\pi x_i)}\right]
-     }$$ */
+  // Put low discrepancy sphere points to ‘ymat’
+  /* Here we first calculate dimension ‘d’ of the sphere, which is a number of
+     state variables minus one. We go through the ‘d’-dimensional cube [0,1]ᵈ
+     by QMCarloCubeQuadrature and make a polar transformation to the sphere.
+     The polar transformation fⁱ can be written recursively w.r.t. the
+     dimension i as:
+
+      f⁰() = [1]
+
+                    ⎡cos(2πxᵢ)·fⁱ⁻¹(x₁,…,xᵢ₋₁)⎤
+      fⁱ(x₁,…,xᵢ) = ⎣        sin(2πxᵢ)        ⎦
+  */
   int d = model.npred()+model.nboth()-1;
   TwoDMatrix ymat(model.npred()+model.nboth(), (d == 0) ? 2 : m);
   if (d == 0)
@@ -321,10 +318,10 @@ GlobalChecker::checkOnEllipseAndSave(mat_t *fd, const std::string &prefix,
         }
     }
 
-  // transform sphere |ymat| and prepare |umat| for checking
-  /* Here we multiply the sphere points in |ymat| with the Cholesky
-     factor to obtain the ellipse, scale the ellipse by the given |mult|,
-     and initialize matrix of shocks |umat| to zero. */
+  // Transform sphere ‘ymat’ and prepare ‘umat’ for checking
+  /* Here we multiply the sphere points in ‘ymat’ with the Cholesky factor to
+     obtain the ellipse, scale the ellipse by the given ‘mult’, and initialize
+     matrix of shocks ‘umat’ to zero. */
   TwoDMatrix umat(model.nexog(), ymat.ncols());
   umat.zeros();
   ymat.mult(mult);
@@ -337,7 +334,7 @@ GlobalChecker::checkOnEllipseAndSave(mat_t *fd, const std::string &prefix,
       ycol.add(1.0, ys);
     }
 
-  // check on ellipse and save
+  // Check on ellipse and save
   /* Here we check the points and save the results to MAT-4 file. */
   TwoDMatrix out(model.numeq(), ymat.ncols());
   check(max_evals, ymat, umat, out);
@@ -346,8 +343,8 @@ GlobalChecker::checkOnEllipseAndSave(mat_t *fd, const std::string &prefix,
   out.writeMat(fd, prefix + "_ellipse_errors");
 }
 
-/* Here we check the errors along a simulation. We simulate, then set
-   |x| to zeros, check and save results. */
+/* Here we check the errors along a simulation. We simulate, then set ‘x’ to
+   zeros, check and save results. */
 
 void
 GlobalChecker::checkAlongSimulationAndSave(mat_t *fd, const std::string &prefix,

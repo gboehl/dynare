@@ -3,34 +3,33 @@
 // Global check
 
 /* The purpose of this file is to provide classes for checking error of
-   approximation. If $y_t=g(y^*_{t-1},u)$ is an approximate solution,
-   then we check for the error of residuals of the system equations. Let
-   $F(y^*,u,u')=f(g^{**}(g^*(y^*,u'),u),g(y^*,u),y^*,u)$, then we
-   calculate integral
-   $$E[F(y^*,u,u')]$$@q'@>
-   which we want to be zero for all $y^*$, and $u$.
+   approximation. If yₜ=g(y*ₜ₋₁,u) is an approximate solution, then we check
+   for the error of residuals of the system equations. Let
+   F(y*,u,u′)=f(g**(g*(y*,u′),u),g(y*,u),y*,u), then we calculate the integral:
 
-   There are a few possibilities how and where the integral is
-   evaluated. Currently we offer the following:
+    𝔼ₜ[F(y*,u,u′)]
 
-   \numberedlist
-   \li Along shocks. The $y^*$ is set to steady state, and $u$ is set to
-   zero but one element is going from minus through plus shocks in few
-   steps. The user gives the scaling factor, for instance interval
-   $\langle<-3\sigma,3\sigma\rangle$ (where $sigma$ is a standard error
-   of the shock), and a number of steps. This is repeated for each shock
-   (element of the $u$ vector).
-   \li Along simulation. Some random simulation is run, and for each
-   realization of $y^*$ and $u$ along the path we evaluate the residual.
-   \li On ellipse. Let $V=AA^T$ be a covariance matrix of the
-   predetermined variables $y^*$ based on linear approximation, then we
-   calculate integral for points on the ellipse $\{Ax\vert\, \Vert
-   x\Vert_2=1\}$. The points are selected by means of low discrepancy
-   method and polar transformation. The shock $u$ are zeros.
+   which we want to be zero for all y* and u.
 
-   \li Unconditional distribution.
+   There are a few possibilities how and where the integral is evaluated.
+   Currently we offer the following ones:
 
-   \endnumberedlist */
+   — Along shocks. The y* is set to the steady state, and u is set to zero but
+     one element is going from minus through plus shocks in few steps. The user
+     gives the scaling factor, for instance the interval [−3σ,3σ] (where σ is
+     one standard error of the shock), and a number of steps. This is repeated
+     for each shock (element of the u vector).
+
+   — Along simulation. Some random simulation is run, and for each realization
+     of y* and u along the path we evaluate the residual.
+
+   — On ellipse. Let V=AAᵀ be a covariance matrix of the predetermined
+     variables y* based on linear approximation, then we calculate integral for
+     points on the ellipse { Ax | ‖x‖₂=1 }. The points are selected by means of
+     low discrepancy method and polar transformation. The shock u are zeros.
+
+   — Unconditional distribution.
+*/
 
 #ifndef GLOBAL_CHECK_H
 #define GLOBAL_CHECK_H
@@ -46,23 +45,22 @@
 #include "journal.hh"
 #include "approximation.hh"
 
-/* This is a class for implementing |VectorFunction| interface
-   evaluating the residual of equations, this is
-   $$F(y^*,u,u')=f(g^{**}(g^*(y^*,u),u'),y^*,u)$$
-   is written as a function of $u'$.
+/* This is a class for implementing the VectorFunction interface evaluating the
+   residual of equations, this is F(y*,u,u′)=f(g**(g*(y*,u),u′),y*,u) is
+   written as a function of u′.
 
-   When the object is constructed, one has to specify $(y^*,u)$, this is
-   done by |setYU| method. The object has basically two states. One is
-   after construction and before call to |setYU|. The second is after
-   call |setYU|. We distinguish between the two states, an object in the
-   second state contains |yplus|, |ystar|, |u|, and |hss|.
+   When the object is constructed, one has to specify (y*,u), this is done by
+   the setYU() method. The object has basically two states. One is after
+   construction and before the call to setYU(). The second is after the call to
+   setYU(). We distinguish between the two states, an object in the second
+   state contains ‘yplus’, ‘ystar’, ‘u’, and ‘hss’.
 
-   The vector |yplus| is $g^*(y^*,u)$. |ystar| is $y^*$, and polynomial
-   |hss| is partially evaluated $g^**(yplus, u)$.
+   The vector ‘yplus’ is g*(y*,u). ‘ystar’ is y*, and polynomial ‘hss’ is
+   partially evaluated g**(yplus, u).
 
-   The pointer to |DynamicModel| is important, since the |DynamicModel|
-   evaluates the function $f$. When copying the object, we have to make
-   also a copy of |DynamicModel|. */
+   The pointer to DynamicModel is important, since the DynamicModel evaluates
+   the function f. When copying the object, we have to make also a copy of
+   DynamicModel. */
 
 class ResidFunction : public VectorFunction
 {
@@ -84,7 +82,7 @@ public:
   void setYU(const ConstVector &ys, const ConstVector &xx);
 };
 
-/* This is a |ResidFunction| wrapped with |GaussConverterFunction|. */
+/* This is a ResidFunction wrapped with GaussConverterFunction. */
 
 class GResidFunction : public GaussConverterFunction
 {
@@ -105,17 +103,16 @@ public:
   }
 };
 
-/* This is a class encapsulating checking algorithms. Its core routine
-   is |check|, which calculates integral $E[F(y^*,u,u')\vert y^*,u]$ for
-   given realizations of $y^*$ and $u$. The both are given in
-   matrices. The methods checking along shocks, on ellipse and anlong a
-   simulation path, just fill the matrices and call the core |check|.
+/* This is a class encapsulating checking algorithms. Its core routine is
+   check(), which calculates integral 𝔼[F(y*,u,u′) | y*,u] for given
+   realizations of y* and u. The both are given in matrices. The methods
+   checking along shocks, on ellipse and anlong a simulation path, just fill
+   the matrices and call the core check().
 
-   The method |checkUnconditionalAndSave| evaluates unconditional
-   $E[F(y,u,u')]$.
+   The method checkUnconditionalAndSave() evaluates unconditional 𝔼[F(y,u,u′)].
 
-   The object also maintains a set of |GResidFunction| functions |vfs| in
-   order to save (possibly expensive) copying of |DynamicModel|s. */
+   The object also maintains a set of GResidFunction functions ‘vfs’ in order
+   to save (possibly expensive) copying of DynamicModel’s. */
 
 class GlobalChecker
 {

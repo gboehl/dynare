@@ -95,7 +95,7 @@ SystemResources::diff(const SystemResources &pre)
   majflt -= pre.majflt;
 }
 
-// |JournalRecord::operator<<| symmetry code
+// JournalRecord::operator<<() symmetry code
 JournalRecord &
 JournalRecord::operator<<(const IntSequence &s)
 {
