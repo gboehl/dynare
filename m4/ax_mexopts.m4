@@ -53,7 +53,10 @@ case ${MATLAB_ARCH} in
     MATLAB_FFLAGS="-fexceptions -g -O2 -fno-underscoring"
     MATLAB_DEFS="$MATLAB_DEFS -DNDEBUG"
     # Note that static-libstdc++ is only supported since GCC 4.5 (but generates no error on older versions)
-    MATLAB_LDFLAGS_NOMAP="-static-libgcc -static-libstdc++ -shared -L$MATLAB/bin/${MATLAB_ARCH}"
+    # The last part about winpthread is a hack to avoid dynamically linking
+    # against libwinpthread DLL (which is pulled in by libstdc++, even without
+    # using threads, since we are using the POSIX threads version of MinGW)
+    MATLAB_LDFLAGS_NOMAP="-static-libgcc -static-libstdc++ -shared -L$MATLAB/bin/${MATLAB_ARCH} -Wl,-Bstatic,--whole-archive -lwinpthread -Wl,-Bdynamic,--no-whole-archive"
     MATLAB_LDFLAGS="$MATLAB_LDFLAGS_NOMAP $(pwd)/$srcdir/mex.def"
     MATLAB_LIBS="-lmex -lmx -lmat -lmwlapack -lmwblas"
     ax_mexopts_ok="yes"
