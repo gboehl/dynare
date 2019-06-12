@@ -48,7 +48,7 @@ phi   = 0.1;
 @#error "String problem"
 @#endif
 
-@#define f(y, z) = "@{y}bar@{z}"
+@#define f(y, z) = y + "bar" + z
 @#if f("foo", "baz") != "foobarbaz"
 @#error "Function problem"
 @#endif
@@ -56,18 +56,18 @@ phi   = 0.1;
 
 @#define x = 1:3
 
-@#define y = [ i in x ; i > 1 ]
+@#define y = [ i in x when i > 1 ]
 @#if y != [ 2, 3 ]
 @# error "One-dimensional comprehension problem"
 @#endif
 
-@#define z = [ (i,j) in x^2 ; i != j ]
+@#define z = [ (i,j) in x^2 when i != j ]
 @#if z != [ (1,2), (1,3), (2,1), (2,3), (3,1), (3,2) ]
 @# error "Two-dimensional comprehension problem"
 @#endif
 
 @#define t = 2:4
-@#define tt = [ (i,j) in t^2 ; (i,j) in [ (k,l) in x^2 ; k != l ] ]
+@#define tt = [ (i,j) in t^2 when (i,j) in [ (k,l) in x^2 when k != l ] ]
 @#if tt != [ (2,3), (3,2) ]
 @# error "Nested comprehension problem"
 @#endif
@@ -112,3 +112,48 @@ stoch_simul;
 @#else
 @#error "IFDEF PROBLEM"
 @#endif
+
+@#define a = 1
+@#define f(x) = x + a
+@#define a = 2
+@#define g(a) = f(1) + a
+@#define a = 3
+@#define h(a) = g(2) + a
+
+@#if f(1) != 4
+@#error "Problem with functions 1"
+@#endif
+
+@#if g(2) != 6
+@#error "Problem with functions 2"
+@#endif
+
+@#if h(1) != 7
+@#error "Problem with functions 3"
+@#endif
+
+@#if h(g(f(1))+1) != 15
+@#error "Problem with functions 4"
+@#endif
+
+@#define zerotol = 1e-15
+@#if exp(ln(5)) <= 5-zerotol && exp(ln(5)) >= 5+zerotol
+@#error "Problem with math functions"
+@#endif
+
+@#if log(0) != -inf || 1/0 != inf
+@#error "Problem with inf"
+@#endif
+
+@#if 5 < nan
+@#error "Problem with NaN comparison"
+@#endif
+
+@#if 5 >= inf
+@#error "Problem with inf comparison"
+@#endif
+
+@#if "Aaaaaaaa" > "B" || "AA" != "AA"
+@#error "String comparison"
+@#endif
+
