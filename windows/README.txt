@@ -10,13 +10,9 @@ There is also a complete reference manual documenting all Dynare functions
 (under HTML format in ‘dynare-manual.html\index.html’, under PDF format in
 ‘dynare-manual.pdf’).
 
-You can also get more information on the web, on Dynare homepage:
+You can also get more information on the Dynare homepage:
 
   https://www.dynare.org
-
-Or on Dynare Wiki:
-
-  https://www.dynare.org/DynareWiki
 
 Note: Dynare comes with an automated uninstaller, which you can run from the
 “Add/Remove Programs” menu of the Control Panel.
@@ -65,9 +61,9 @@ Octave can be downloaded at:
 — For 32-bit systems:
   https://ftpmirror.gnu.org/gnu/octave/windows/octave-5.1.0-w32-installer.exe
 
-Every time you run Octave, you should type the two following commands (assuming
-that you have installed Dynare at the standard location, and replacing ‘4.x.y’
-by the correct version number):
+Every time you run Octave, you should type the following command (assuming that
+you have installed Dynare at the standard location, and replacing ‘4.x.y’ by
+the correct version number):
 
   addpath c:\dynare\4.x.y\matlab
 
