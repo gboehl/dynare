@@ -384,6 +384,7 @@ elseif (kronflag == 0 || kronflag == 1)
         d2g1_full = sparse(endo_nbr*yy0ex0_nbr, param_nbr*param_nbr); %initialize
         dyy0ex0 = sparse([dyy0; zeros(yy0ex0_nbr-yy0_nbr,param_nbr)]);     %Jacobian (wrt model parameters) of steady state of dynamic (endogenous and auxiliary) and exogenous variables
         
+        g3 = unfold_g3(g3, yy0ex0_nbr);
         g3_tmp = reshape(g3,[endo_nbr*yy0ex0_nbr*yy0ex0_nbr yy0ex0_nbr]); 
         d2g1_part4_left = sparse(endo_nbr*yy0ex0_nbr*yy0ex0_nbr,param_nbr);
         for j = 1:param_nbr

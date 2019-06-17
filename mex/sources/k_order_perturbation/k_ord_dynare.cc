@@ -130,9 +130,9 @@ KordpDynare::populateDerivativesContainer(int ord)
             i1 /= nJcols;
           }
 
-        if ((ord == 2 || ord == 3) && !s.isSorted())
-          continue; // Skip symmetric elements (only needed at order 2 and 3)
-        else if (ord > 3)
+        if (ord == 2 && !s.isSorted())
+          continue; // Skip symmetric elements (only needed at order 2)
+        else if (ord > 2)
           s.sort(); // For higher order, canonicalize the multi-index
 
         double x = g.get(i, 2);
