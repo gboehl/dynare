@@ -124,6 +124,8 @@ pac.update.expectation('pacman');
 // Select a subset of the equations and print the equations, the list of parameters, endogenous
 // variables and exogenous variables in .inc files under ./simulation-files folder. Note that
 // innovations ex1bar and ex2bar will not appear in the equations.
-cherrypick('test1', 'simulation-files1', {'z1', 'z2', 'z3'}, true);
-cherrypick('test1', 'simulation-files2', {'zpac', 'eq:x1', 'eq:x', 'eq:y'}, true);
-aggregate('toto.mod', 'simulation-files1', 'simulation-files2');
+verbatim;
+  cherrypick('test1', 'simulation-files1', {'z1', 'z2', 'z3'}, true);
+  cherrypick('test1', 'simulation-files2', {'zpac', 'eq:x1', 'eq:x', 'eq:y'}, true);
+  aggregate('toto.mod', 'simulation-files1', 'simulation-files2');
+end;
