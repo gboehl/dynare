@@ -18,7 +18,7 @@ function simulation = simul_backward_model(initialconditions, samplesize, innova
 % [3] If the first input argument is empty, the endogenous variables are initialized with 0, or if available with the informations
 %     provided thrtough the histval block.
 
-% Copyright (C) 2012-2018 Dynare Team
+% Copyright (C) 2012-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -36,6 +36,10 @@ function simulation = simul_backward_model(initialconditions, samplesize, innova
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 global options_ M_ oo_
+
+if M_.maximum_lead
+    error('Model defined in %s.mod is not backward or static.', M_.fname)
+end
 
 if nargin<3
     Innovations = [];
