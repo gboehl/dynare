@@ -38,7 +38,15 @@ function simulations = simul_backward_nonlinear_model(varargin)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-[initialconditions, samplesize, innovations, DynareOptions, DynareModel, DynareOutput, endonames, exonames, nx, ny1, iy1, jdx, model_dynamic, y] = ...
+if M_.maximum_lead
+    error('Model defined in %s.mod is not backward.', M_.fname)
+end
+
+if M_.maximum_lag
+    error('Model defined in %s.mod is not backward.', M_.fname)
+end
+
+[initialconditions, samplesize, innovations, DynareOptions, DynareModel, DynareOutput, endonames, exonames, ~, ~, iy1, ~, model_dynamic] = ...
     simul_backward_model_init(varargin{:});
 
 [ysim, xsim] = simul_backward_nonlinear_model_(initialconditions, samplesize, DynareOptions, DynareModel, DynareOutput, innovations, iy1, model_dynamic);
