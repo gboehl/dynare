@@ -104,7 +104,6 @@ doc/internals/ltxpng
 /dynare++/kord/tests
 /dynare++/kord/tests.exe
 /dynare++/kord/out.txt
-/dynare++/sylv/testing/*.mm
 /dynare++/sylv/testing/tests
 /dynare++/sylv/testing/tests.exe
 /dynare++/parser/cc/*_ll.cc
