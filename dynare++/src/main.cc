@@ -1,4 +1,22 @@
-// Copyright © 2004-2011, Ondra Kamenik
+/*
+ * Copyright © 2004-2011 Ondra Kamenik
+ * Copyright © 2019 Dynare Team
+ *
+ * This file is part of Dynare.
+ *
+ * Dynare is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Dynare is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 #include "dynare3.hh"
 #include "dynare_exception.hh"
@@ -26,12 +44,12 @@ main(int argc, char **argv)
     }
   if (params.version)
     {
-      std::cout << u8"Dynare++ v. " << DYNVERSION << ". Copyright © 2004-2011, Ondra Kamenik\n"
-                << "Dynare++ comes with ABSOLUTELY NO WARRANTY and is distributed under\n"
-                << "GPL: modules integ, tl, kord, sylv, src and documentation\n"
-                << "LGPL: modules parser, utils\n"
-                << " for GPL  see https://www.gnu.org/licenses/gpl.html\n"
-                << " for LGPL see https://www.gnu.org/licenses/lgpl.html\n";
+      std::cout << "Dynare++ v. " << VERSION << '\n'
+                << '\n'
+                << u8"Copyright © 2004-2011 Ondra Kamenik\n"
+                << u8"Copyright © 2019 Dynare Team\n"
+                << "Dynare++ comes with ABSOLUTELY NO WARRANTY and is distributed under the GNU GPL,\n"
+                << "version 3 or later (see https://www.gnu.org/licenses/gpl.html)\n";
       return EXIT_SUCCESS;
     }
   sthread::detach_thread_group::max_parallel_threads = params.num_threads;

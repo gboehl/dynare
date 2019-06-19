@@ -25,7 +25,7 @@ libkord_a_SOURCES = \
 	seed_generator.cc \
 	seed_generator.hh
 
-libkord_a_CPPFLAGS = -I../sylv/cc -I../tl/cc -I../integ/cc -I../utils/cc -I$(top_srcdir)/mex/sources $(CPPFLAGS_MATIO)
+libkord_a_CPPFLAGS = -I../sylv/cc -I../tl/cc -I../integ/cc -I../utils/cc -I$(top_srcdir)/mex/sources $(CPPFLAGS_MATIO) -DDYNVERSION=\"$(PACKAGE_VERSION)\"
 libkord_a_CXXFLAGS = $(AM_CXXFLAGS) $(THREAD_CXXFLAGS)
 
 check_PROGRAMS = tests

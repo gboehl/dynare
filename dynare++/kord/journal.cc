@@ -1,4 +1,22 @@
-// Copyright © 2004-2011, Ondra Kamenik
+/*
+ * Copyright © 2004-2011 Ondra Kamenik
+ * Copyright © 2019 Dynare Team
+ *
+ * This file is part of Dynare.
+ *
+ * Dynare is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Dynare is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 #include "journal.hh"
 #include "kord_exception.hh"
@@ -182,12 +200,12 @@ endrec(JournalRecord &rec)
 void
 Journal::printHeader()
 {
-  *this << u8"This is Dynare++, Copyright © 2004-2011, Ondra Kamenik\n"
-        << "Dynare++ comes with ABSOLUTELY NO WARRANTY and is distributed under\n"
-        << "GPL: modules integ, tl, kord, sylv, src and documentation\n"
-        << "LGPL: modules parser, utils\n"
-        << " for GPL  see https://www.gnu.org/licenses/gpl.html\n"
-        << " for LGPL see https://www.gnu.org/licenses/lgpl.html\n"
+  *this << "Dynare++ v. " << VERSION << '\n'
+        << '\n'
+        << u8"Copyright © 2004-2011 Ondra Kamenik\n"
+        << u8"Copyright © 2019 Dynare Team\n"
+        << "Dynare++ comes with ABSOLUTELY NO WARRANTY and is distributed under the GNU GPL,"
+        << "version 3 or later (see https://www.gnu.org/licenses/gpl.html)\n"
         << "\n\n"
         << "System info: ";
 #ifndef _WIN32
