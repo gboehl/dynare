@@ -6,7 +6,7 @@ function [dbase, info] = checkdatabase(dbase, DynareModel, inversionflag, simula
 % endogenous variables in difference (which may be lagged), or lags on the
 % exogenous variables, then thee routine complete the database.
 
-% Copyright (C) 2018 Dynare Team
+% Copyright (C) 2018-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -76,7 +76,7 @@ if inversionflag
     % If some exogenous variables are missing, check that they can be interpreted as residuals.
     missingexogenousvariables = setdiff(info.exonames, dbase.name);
     if ~isempty(missingexogenousvariables)
-        disp(sprintf('%s exogenous variables are missing in the database...', num2str(length(missingexogenousvariables))))
+        dprintf('%s exogenous variables are missing in the database...', num2str(length(missingexogenousvariables)))
         listofmissinglaggedexognousvariables = intersect(listoflaggedexogenousvariables, missingexogenousvariables);
         if isempty(listofmissinglaggedexognousvariables)
             info.residuals = missingexogenousvariables;
