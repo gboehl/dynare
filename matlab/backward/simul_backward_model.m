@@ -63,7 +63,7 @@ else
                     if ismember(exonames{i}, innovations.name)
                         Innovations(:,i) = innovations{exonames{i}}.data(1:samplesize);
                     else
-                        disp(sprintf('Exogenous variable %s is not available in third argument, default value is zero.', exonames{i}));
+                        dprintf('Exogenous variable %s is not available in third argument, default value is zero.', exonames{i})
                     end
                 end
             else
@@ -80,7 +80,7 @@ else
                     if ismember(exonames{i}, innovations.name)
                         Innovations(:,i) = innovations{exonames{i}}.data(1:samplesize);
                     else
-                        disp(sprintf('Exogenous variable %s is not available in third argument, default value is zero.', exonames{i}));
+                        dprintf('Exogenous variable %s is not available in third argument, default value is zero.', exonames{i})
                     end
                 end
             else

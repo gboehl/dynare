@@ -2,7 +2,7 @@ function [initialconditions, samplesize, innovations, DynareOptions, DynareModel
 
 % Initialization of the routines simulating backward models.    
 
-% Copyright (C) 2017-2018 Dynare Team
+% Copyright (C) 2017-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -97,7 +97,7 @@ for i = 1:length(endowithlagnames)
         missinginitialcondition = true;
         for j=variable.nobs:-1:variable.nobs-(lags-1)
             if isnan(variable.data(j))
-                disp(sprintf('Variable %s should not have a NaN value in period %s.', endowithlagnames{i}, date2string(variable.dates(j))))
+                dprintf('Variable %s should not have a NaN value in period %s.', endowithlagnames{i}, date2string(variable.dates(j)))
             end
         end
     end
@@ -140,7 +140,7 @@ for i = 1:length(exowithlagnames)
         missinginitialcondition = true;
         for j=variable.nobs:-1:variable.nobs-(lags-1)
             if isnan(variable.data(j))
-                disp(sprintf('Variable %s should not have a NaN value in period %s.', exowithlagnames{i}, date2string(variable.dates(j))))
+                dprintf('Variable %s should not have a NaN value in period %s.', exowithlagnames{i}, date2string(variable.dates(j)))
             end
         end
     end
